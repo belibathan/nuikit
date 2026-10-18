@@ -90,11 +90,15 @@ Ok "root password saved to $Secrets"
 Step "FXServer"
 $fx = "$Server\FXServer.exe"
 if (Test-Path $fx) { Ok "already at $Server" } else {
-  $base = "https://runtime.fivem.net/artifacts/fivem/build_server_windows/master/"
-  $page = Invoke-WebRequest $base -UseBasicParsing
-  $href = ($page.Links | Where-Object { $_.outerHTML -match "LATEST RECOMMENDED" } | Select-Object -First 1).href
-  if (-not $href) { throw "Couldn't find the recommended build on $base" }
-  $url = if ($href -match "^https?://") { $href } else { $base + $href.TrimStart(".", "/") }
+  # Cfx's version API first; the download page as a fallback (the old artifact index now redirects there).
+  $url = $null
+  try { $url = (Invoke-RestMethod "https://changelogs-live.fivem.net/api/changelog/versions/win32/server").recommended_download } catch {}
+  if (-not $url) {
+    $html = (Invoke-WebRequest "https://docs.fivem.net/docs/server-download/?os=windows&platform=legacy" -UseBasicParsing).Content
+    $m = [regex]::Match($html, 'https://runtime\.fivem\.net/artifacts/fivem/build_server_windows/master/[^"''\s]+/server\.7z')
+    if ($m.Success) { $url = $m.Value }
+  }
+  if (-not $url) { throw "Couldn't find the recommended FXServer build. Download it from https://docs.fivem.net/docs/server-download/ and extract it to $Server, then run this again." }
   Info "downloading $url"
   $archive = "$env:TEMP\fxserver.7z"
   Invoke-WebRequest $url -OutFile $archive -UseBasicParsing
