@@ -21,8 +21,9 @@ const PREFIXES: Record<string, IconPrefix> = {
   "fa-brands": "fab",
 };
 
-export function isImage(icon: IconInput): icon is string {
-  return typeof icon === "string" && /^(https?:|nui:|data:|\.{0,2}\/)/.test(icon);
+/** ox_lib's rule: a string is an image if it contains "://", ".png" or ".webp". */
+export function isImage(icon: IconInput): boolean {
+  return typeof icon === "string" && (icon.includes("://") || icon.includes(".png") || icon.includes(".webp"));
 }
 
 /** Resolve any ox_lib icon value to a Font Awesome lookup, or null. */
@@ -62,16 +63,19 @@ export function Icon({
   icon,
   color,
   animation,
+  allowImage,
   className,
   style,
 }: {
   icon: IconInput;
   color?: string;
   animation?: IconAnimation | string;
+  /** Context menus, list menus and radials accept image URLs; everything else is Font Awesome only. */
+  allowImage?: boolean;
   className?: string;
   style?: CSSProperties;
 }) {
-  if (isImage(icon)) return <img src={icon} alt="" className={cn("size-4 shrink-0 object-contain", className)} style={style} />;
+  if (allowImage && isImage(icon)) return <img src={icon as string} alt="" className={cn("size-4 shrink-0 object-contain", className)} style={style} />;
   const def = lookup(icon);
   if (!def) return null;
   const a = animation as IconAnimation | undefined;

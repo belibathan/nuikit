@@ -1,0 +1,39 @@
+/* index.css is synced from the nuikit template (stock shadcn neutral theme). This file adds what
+   the ox_lib UI needs on top: shadcn's animation utilities and a transparent, unscrollable page. */
+@import "./index.css";
+@import "tw-animate-css";
+
+html,
+body {
+  background: transparent !important;
+  overflow: hidden;
+  user-select: none;
+}
+
+/* Markdown from scripts: keep it inside the theme. */
+.ox-md p { margin: 0; }
+.ox-md p + p { margin-top: 0.25rem; }
+.ox-md h1 { font-size: 1.125rem; font-weight: 600; }
+.ox-md h2 { font-size: 1rem; font-weight: 600; }
+.ox-md h3 { font-size: 0.875rem; font-weight: 600; }
+.ox-md a { text-decoration: underline; text-underline-offset: 2px; }
+.ox-md code { font-family: var(--font-mono, ui-monospace, monospace); font-size: 0.85em; }
+.ox-md ul { list-style: disc; padding-left: 1.25rem; }
+.ox-md ol { list-style: decimal; padding-left: 1.25rem; }
+.ox-md table { border-collapse: collapse; margin: 0.25rem 0; }
+.ox-md th, .ox-md td { border: 1px solid var(--border); padding: 0.125rem 0.5rem; }
+.ox-md img { max-width: 100%; max-height: 100%; }
+
+@keyframes ox-drain {
+  from { stroke-dashoffset: 0; }
+  to { stroke-dashoffset: 100; }
+}
+
+@keyframes ox-fill {
+  from { width: 0%; }
+  to { width: 100%; }
+}
+
+@keyframes ox-ring {
+  to { stroke-dashoffset: 0; }
+}
