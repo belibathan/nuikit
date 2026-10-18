@@ -1,0 +1,39 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><style>
+*{box-sizing:border-box;margin:0}
+body{width:1600px;height:900px;background:#fafafa;color:#0a0a0a;font:500 12px/1.3 ui-monospace,Menlo,monospace;display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(2,1fr)}
+.c{outline:1px solid #e5e5e5;position:relative;display:grid;place-items:center}
+.l{position:absolute;left:16px;top:14px;letter-spacing:.08em;text-transform:uppercase;color:#737373}
+.n{position:absolute;left:16px;bottom:14px;right:16px;color:#525252;font-weight:400}
+.sm{position:absolute;right:16px;top:12px;display:flex;gap:8px;align-items:center}
+</style></head><body>
+<!-- One rule for every study: strokes are shadcn's (two parallel bars, equal weight and gap),
+     the angle is FiveM's steep diagonal (68°), the container is a rounded square. -->
+<svg width="0" height="0" style="position:absolute"><defs>
+  <!-- A: shadcn as-is (reference) -->
+  <symbol id="a" viewBox="0 0 100 100"><rect x="6" y="6" width="88" height="88" rx="20"/><path d="M30 74 L70 26" stroke="#fafafa" stroke-width="9" stroke-linecap="round"/><path d="M46 74 L74 41" stroke="#fafafa" stroke-width="9" stroke-linecap="round"/></symbol>
+  <!-- B: shadcn slashes at FiveM's steep angle -->
+  <symbol id="b" viewBox="0 0 100 100"><rect x="6" y="6" width="88" height="88" rx="20"/><path d="M34 78 L54 22" stroke="#fafafa" stroke-width="10" stroke-linecap="round"/><path d="M52 78 L72 22" stroke="#fafafa" stroke-width="10" stroke-linecap="round"/></symbol>
+  <!-- C: the two slashes lean into each other → FiveM's apex, built from shadcn strokes -->
+  <symbol id="c" viewBox="0 0 100 100"><rect x="6" y="6" width="88" height="88" rx="20"/><path d="M28 78 L48 24" stroke="#fafafa" stroke-width="10" stroke-linecap="round"/><path d="M56 40 L70 78" stroke="#fafafa" stroke-width="10" stroke-linecap="round"/></symbol>
+  <!-- D: apex without container -->
+  <symbol id="d" viewBox="0 0 100 100"><path d="M20 90 L46 12" stroke="#0a0a0a" stroke-width="15" stroke-linecap="butt"/><path d="M56 40 L74 90" stroke="#0a0a0a" stroke-width="15" stroke-linecap="butt"/></symbol>
+  <!-- E: keycap (from board 1) carrying the steep slash pair -->
+  <symbol id="e" viewBox="0 0 100 100"><rect x="6" y="6" width="88" height="88" rx="20"/><rect x="15" y="12" width="70" height="64" rx="13" fill="#fafafa"/><path d="M34 64 L48 24" stroke="#0a0a0a" stroke-width="9" stroke-linecap="round"/><path d="M50 64 L64 24" stroke="#0a0a0a" stroke-width="9" stroke-linecap="round"/></symbol>
+  <!-- F: n from two strokes: a steep slash + an arch (slash continues into n's shoulder) -->
+  <symbol id="f" viewBox="0 0 100 100"><rect x="6" y="6" width="88" height="88" rx="20"/><path d="M32 74 V40" stroke="#fafafa" stroke-width="10" stroke-linecap="round"/><path d="M32 52 C32 40 40 34 50 34 C61 34 68 41 68 52 V74" fill="none" stroke="#fafafa" stroke-width="10" stroke-linecap="round"/></symbol>
+  <!-- G: square cut by one steep slash (shadcn's container sliced at FiveM's angle) -->
+  <symbol id="g" viewBox="0 0 100 100"><defs><clipPath id="sq"><rect x="6" y="6" width="88" height="88" rx="20"/></clipPath></defs><g clip-path="url(#sq)"><path d="M0 0 H52 L22 100 H0z"/><path d="M66 0 H100 V100 H36z"/></g></symbol>
+  <!-- H: apex as negative space: square with an A-shaped cut -->
+  <symbol id="h" viewBox="0 0 100 100"><rect x="6" y="6" width="88" height="88" rx="20"/><path d="M28 80 L46 26 L56 26 L72 80 L62 80 L51 46 L38 80z" fill="#fafafa"/></symbol>
+</defs></svg>
+
+<div class="c"><span class="l">A · shadcn (reference)</span><svg width="180" height="180"><use href="#a"/></svg><span class="n">45°, round caps, rounded square.</span></div>
+<div class="c"><span class="l">B · shadcn at FiveM's angle</span><span class="sm"><svg width="32" height="32"><use href="#b"/></svg><svg width="16" height="16"><use href="#b"/></svg></span><svg width="180" height="180"><use href="#b"/></svg><span class="n">Same two strokes, tilted to 68°. Smallest possible change; reads as "shadcn, but fast".</span></div>
+<div class="c"><span class="l">C · slashes form the apex</span><span class="sm"><svg width="32" height="32"><use href="#c"/></svg><svg width="16" height="16"><use href="#c"/></svg></span><svg width="180" height="180"><use href="#c"/></svg><span class="n">One stroke leans back: FiveM's broken "A" built from shadcn's strokes. Strongest fusion.</span></div>
+<div class="c"><span class="l">D · apex, no container</span><svg width="180" height="180"><use href="#d"/></svg><span class="n">Same as C without the square. Bolder, but closest to Cfx's own mark (trademark risk).</span></div>
+<div class="c"><span class="l">E · keycap + steep slashes</span><span class="sm"><svg width="32" height="32"><use href="#e"/></svg><svg width="16" height="16"><use href="#e"/></svg></span><svg width="180" height="180"><use href="#e"/></svg><span class="n">Board 1's keycap carrying B's strokes: "press /". Busiest at 16px.</span></div>
+<div class="c"><span class="l">F · n from two strokes</span><span class="sm"><svg width="32" height="32"><use href="#f"/></svg><svg width="16" height="16"><use href="#f"/></svg></span><svg width="180" height="180"><use href="#f"/></svg><span class="n">shadcn's stroke weight, drawn as an n. Clean but loses both references.</span></div>
+<div class="c"><span class="l">G · square sliced at 68°</span><span class="sm"><svg width="32" height="32"><use href="#g"/></svg><svg width="16" height="16"><use href="#g"/></svg></span><svg width="180" height="180"><use href="#g"/></svg><span class="n">One cut through shadcn's container. Very iconic, very minimal; little FiveM.</span></div>
+<div class="c"><span class="l">H · apex as negative space</span><span class="sm"><svg width="32" height="32"><use href="#h"/></svg><svg width="16" height="16"><use href="#h"/></svg></span><svg width="180" height="180"><use href="#h"/></svg><span class="n">FiveM's broken A cut out of shadcn's square. Reads well; the split leg is the signature.</span></div>
+</body></html>
