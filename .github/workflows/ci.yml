@@ -53,7 +53,7 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm -r --filter ./packages/** build
-      - run: node packages/create-nuikit/dist/index.js e2e-hud --yes --pm pnpm --link "$GITHUB_WORKSPACE"
+      - run: node "$GITHUB_WORKSPACE/packages/create-nuikit/dist/index.js" e2e-hud --yes --pm pnpm --link "$GITHUB_WORKSPACE"
         working-directory: ${{ runner.temp }}
       - run: pnpm build && grep -q "web/dist/index.html" ../fxmanifest.lua
         working-directory: ${{ runner.temp }}/e2e-hud/web

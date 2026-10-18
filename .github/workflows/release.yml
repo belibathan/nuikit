@@ -21,9 +21,15 @@ jobs:
           node-version: 22
           cache: pnpm
           registry-url: https://registry.npmjs.org
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm -r --filter ./packages/** build
-      - uses: changesets/action@v1
+      - id: token
+        # Releases need an NPM_TOKEN secret. Until it exists, skip quietly instead of failing.
+        run: echo "present=${{ secrets.NPM_TOKEN != '' }}" >> "$GITHUB_OUTPUT"
+      - if: steps.token.outputs.present == 'true'
+        run: pnpm install --frozen-lockfile
+      - if: steps.token.outputs.present == 'true'
+        run: pnpm -r --filter ./packages/** build
+      - if: steps.token.outputs.present == 'true'
+        uses: changesets/action@v1
         with:
           publish: pnpm changeset publish
           title: "chore: release"
