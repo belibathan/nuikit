@@ -33,7 +33,7 @@ for (const name of systems) {
 
 fs.writeFileSync(
   path.join(stage, "README.md"),
-  `# [nuikit]\n\nOne design system for your whole server: https://github.com/belibathan/nuikit\n\n1. Put this folder in \`resources/\`.\n2. In server.cfg:\n\n\`\`\`cfg\nensure nuikit\nensure [nuikit]\n\`\`\`\n\n3. Stop the resources these replace (for example \`qbx_hud\`).\n4. Theme everything from \`nuikit/theme.css\` (paste any TweakCN theme).\n`,
+  `# [nuikit]\n\nOne design system for your whole server: https://github.com/belibathan/nuikit\n\n1. Put this folder in \`resources/\`.\n2. In server.cfg:\n\n\`\`\`cfg\nensure nuikit\nensure [nuikit]\n\`\`\`\n\n3. Stop the resources these replace (for example \`qbx_hud\`). On Qbox/QBCore, \`nuikit_stress\` keeps the stress system qbx_hud used to run.\n4. Theme everything from \`nuikit/theme.css\` (paste any TweakCN theme).\n`,
 );
 execFileSync("zip", ["-qr", "nuikit-systems.zip", "[nuikit]"], { cwd: out });
 console.log(`→ ${path.relative(root, path.join(out, "nuikit-systems.zip"))}`);

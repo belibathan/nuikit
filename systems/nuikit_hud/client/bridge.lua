@@ -189,6 +189,15 @@ local frameworkPoll = adapters[NUI.player.framework]()
 
 -- ───────────────────────────────── polled values (every framework)
 
+--- pma-voice talks over Mumble (MumbleIsPlayerTalking returns 1/0); native voice chat sets
+--- NetworkIsPlayerTalking. Either counts.
+local function isTalking()
+  local id = PlayerId()
+  local mumble = MumbleIsPlayerTalking and MumbleIsPlayerTalking(id)
+  if mumble == 1 or mumble == true then return true end
+  return NetworkIsPlayerTalking(id) == true or NetworkIsPlayerTalking(id) == 1
+end
+
 --- Read the values natives and statebags own. Called on a loop; exposed for tests.
 function NUI.player.poll()
   local ped = PlayerPedId()
@@ -202,7 +211,9 @@ function NUI.player.poll()
     dead = IsEntityDead(ped) or player.downed == true,
     voice = {
       range = proximity and proximity.distance or nil,
-      talking = NetworkIsPlayerTalking(PlayerId()) == true,
+      -- pma-voice names its modes ("Whisper", "Normal", "Shouting"); the label follows its config
+      mode = proximity and proximity.mode or nil,
+      talking = isTalking(),
       radio = (state.radioChannel and state.radioChannel ~= 0) and state.radioChannel or nil,
     },
   }

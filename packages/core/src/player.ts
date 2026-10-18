@@ -35,6 +35,8 @@ export interface NuiPlayer {
   voice: {
     /** Proximity range in meters (pma-voice). */
     range?: number;
+    /** The proximity mode's name from the voice resource's config, e.g. "Whisper", "Normal", "Shouting". */
+    mode?: string;
     talking: boolean;
     /** Radio channel, when on one. */
     radio?: number;

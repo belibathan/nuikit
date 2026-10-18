@@ -7,8 +7,9 @@ Works on **Qbox**, **QBCore**, **ESX** or **standalone** (detected automatically
 ## Install
 
 1. Put it in `resources/[nuikit]/` next to the `nuikit` resource.
-2. Stop the HUD it replaces (for Qbox: remove `ensure qbx_hud` or `stop qbx_hud`).
+2. Stop the HUD it replaces (for Qbox: remove `ensure qbx_hud`).
 3. `ensure nuikit` then `ensure nuikit_hud`.
+4. **Qbox / QBCore:** stress gain and its screen effects live inside `qbx_hud` / `qb-hud`, so stopping them turns stress off. `ensure nuikit_stress` (same events, same metadata) to keep it.
 
 Settings are in `config.lua` (units, when to show the minimap).
 

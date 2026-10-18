@@ -36,19 +36,26 @@ export function ProgressBar() {
         className="w-[350px] data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95"
       >
         <div className="relative h-[45px] overflow-hidden rounded-md border bg-card/90 shadow-lg">
+          {/* the label twice: card colours over the track, primary-foreground over the fill (no blend modes) */}
+          {run.label && <Label text={run.label} className="text-card-foreground" />}
           <div
             key={run.id}
-            className="absolute inset-y-0 left-0 bg-primary"
+            className="absolute inset-y-0 left-0 overflow-hidden bg-primary"
             style={{ width: "0%", animation: `ox-fill ${run.duration}ms linear forwards` }}
             onAnimationEnd={() => setOpen(false)}
-          />
-          {run.label && (
-            <div className="absolute inset-0 grid place-items-center px-3">
-              <span className="truncate text-base font-medium text-foreground mix-blend-difference">{run.label}</span>
-            </div>
-          )}
+          >
+            {run.label && <Label text={run.label} className="w-[348px] text-primary-foreground" />}
+          </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+function Label({ text, className }: { text: string; className?: string }) {
+  return (
+    <div className={cn("absolute inset-y-0 left-0 grid w-full place-items-center px-3", className)}>
+      <span className="max-w-full truncate text-base font-medium">{text}</span>
     </div>
   );
 }
