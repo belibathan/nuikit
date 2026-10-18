@@ -1,0 +1,49 @@
+name: Prerelease
+
+# Push any commit to a `next/<name>` branch to publish its pending changesets to npm under the
+# `next` dist-tag, for testing in a real server before merging:
+#   git push origin HEAD:next/surfaces
+#   npm create nuikit@next my-ui
+on:
+  push:
+    branches: ["next/**"]
+
+jobs:
+  prerelease:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - name: Authenticate to npm
+        run: |
+          echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
+          npm whoami
+      - run: pnpm install --frozen-lockfile
+      - name: Snapshot versions (x.y.z-next-<timestamp>)
+        run: pnpm changeset version --snapshot next
+      - name: Point the template at the snapshot versions
+        run: |
+          node -e '
+            const fs = require("fs");
+            const v = (p) => JSON.parse(fs.readFileSync(p, "utf8")).version;
+            const f = "packages/create-nuikit/template/web/package.json";
+            const pkg = JSON.parse(fs.readFileSync(f, "utf8"));
+            pkg.dependencies["nuikit-core"] = v("packages/core/package.json");
+            pkg.devDependencies["vite-plugin-nuikit"] = v("packages/vite/package.json");
+            fs.writeFileSync(f, JSON.stringify(pkg, null, 2) + "\n");
+            console.log(pkg.dependencies["nuikit-core"], pkg.devDependencies["vite-plugin-nuikit"]);
+          '
+      - run: pnpm -r --filter "./packages/**" build
+      - name: Publish under the next tag
+        env:
+          NPM_CONFIG_PROVENANCE: "true"
+        run: pnpm changeset publish --tag next --no-git-tag

@@ -59,14 +59,15 @@
   },
   "devDependencies": {
     "@testing-library/react": "^16.1.0",
-    "@types/react": "^19.0.0",
     "@types/node": "^22.10.0",
+    "@types/react": "^19.0.0",
     "jsdom": "^25.0.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "tsup": "^8.3.5",
     "typescript": "^5.6.3",
-    "vitest": "^2.1.8"
+    "vitest": "^2.1.8",
+    "wasmoon": "^1.16.0"
   },
   "bugs": "https://github.com/belibathan/nuikit/issues"
 }

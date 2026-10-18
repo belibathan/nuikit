@@ -24,9 +24,14 @@ export interface NuiCallbacks {}
 /** Built-ins every nuikit resource understands (mirrored in lua/nuikit.lua). */
 export interface BuiltinEvents {
   "nuikit:visible": boolean;
+  "nuikit:surfaces": import("./surfaces").SurfacesSnapshot;
+  "nuikit:back": string;
 }
 export interface BuiltinCallbacks {
-  "nuikit:close": { req: void; res: { ok: boolean } };
+  "nuikit:close": { req: void | { name?: string }; res: { ok: boolean } };
+  "nuikit:escape": { req: void; res: { ok: boolean; closed?: string; back?: string } };
+  "nuikit:surface:open": { req: { name: string; data?: unknown }; res: { ok: boolean } };
+  "nuikit:surface:close": { req: { name: string }; res: { ok: boolean } };
 }
 
 type AllEvents = BuiltinEvents & NuiEvents;
@@ -271,6 +276,26 @@ export function __reset(): void {
   visibilityListeners.clear();
   visible = true;
   onNui("nuikit:visible", (v) => setVisible(Boolean(v)));
+  __resetSurfaces();
 }
 
 export { applyTheme, clearTheme, parseTheme, toRgba, type ThemeVars } from "./theme";
+export {
+  closeSurface,
+  defineSurface,
+  getSurface,
+  getSurfaces,
+  onSurfaceBack,
+  onSurfaces,
+  openSurface,
+  setSurfaceState,
+  type NuiSurfaces,
+  type SurfaceData,
+  type SurfaceInput,
+  type SurfaceLayer,
+  type SurfaceName,
+  type SurfaceOptions,
+  type SurfaceState,
+  type SurfacesSnapshot,
+} from "./surfaces";
+import { __resetSurfaces } from "./surfaces";

@@ -48,6 +48,28 @@ const { visible, close } = useNuiVisibility(); // NUI.open/close + Escape
 const buy = useNuiCallback("shop:buy");       // { call, loading, error, data }
 ```
 
+## Surfaces
+
+Declare each piece of UI in Lua; nuikit decides focus, cursor, stacking and Escape across every resource that uses it.
+
+```lua
+local inv = NUI.surface('inventory', { layer = 'panel', exclusive = true, hides = { 'hud' } })
+inv:open({ items = GetItems() })
+NUI.state('dead', true) -- surfaces with blockedBy = { 'dead' } refuse to open
+```
+
+```tsx
+import { Surface, useSurface } from "nuikit-core/react";
+
+<Surface name="inventory" layer="panel" hides={["hud"]}>
+  {(data) => <InventoryGrid items={data.items} />}
+</Surface>;
+
+const inv = useSurface("inventory"); // { open, visible, focused, data, close }
+```
+
+Layers stack `hud` < `world` < `panel` < `modal` < `system`. Focus goes to the top surface that takes input; Escape closes top-down. Type surface data with `interface NuiSurfaces` next to your events.
+
 ## Devtools
 
 ```tsx
@@ -75,7 +97,10 @@ Copy `lua/nuikit.lua` into your resource (`create-nuikit` does it for you) and l
 ```lua
 NUI.send('hud:vitals', { health = 80 })
 NUI.on('shop:buy', function(data) return { ok = true } end)
-NUI.open({ cursor = true, keepInput = false })
+local menu = NUI.surface('menu', { layer = 'panel' })
+menu:open(data) menu:close()
+NUI.state('dead', true)
+NUI.open({ cursor = true, keepInput = false }) -- single-UI mode
 NUI.close()
 NUI.notify({ title = 'Paid', type = 'success' })
 ```

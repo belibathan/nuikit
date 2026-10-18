@@ -1,5 +1,7 @@
-// Fake game for browser development. Fire events, mock callbacks, swap backdrops.
+// Fake game for browser development. Fire events, mock callbacks, open surfaces, swap backdrops.
+import { openSurface, closeSurface } from "nuikit-core";
 import { NuiDevtools, defineMocks } from "nuikit-core/devtools";
+import { useEffect } from "react";
 
 const mocks = defineMocks({
   events: {
@@ -12,16 +14,25 @@ const mocks = defineMocks({
       { title: "Paid", description: "+$500 from the dealer", type: "success" },
       { title: "Low fuel", description: "12% remaining", type: "warning" },
     ],
-    "nuikit:visible": [true, false],
   },
+  // Play client/main.lua's part in the browser.
   callbacks: {
     "menu:select": ({ id }) => {
-      console.log("[lua] menu:select", id);
+      if (id === "armor") openSurface("confirm", { id, title: "Buy body armor?", price: 500 });
+      else closeSurface("menu");
+      return { ok: true };
+    },
+    "confirm:answer": ({ yes }) => {
+      closeSurface("confirm");
+      if (yes) closeSurface("menu");
       return { ok: true };
     },
   },
 });
 
 export default function Dev() {
-  return <NuiDevtools {...mocks} />;
+  useEffect(() => {
+    openSurface("hud"); // in game, client/main.lua does this
+  }, []);
+  return <NuiDevtools {...mocks} states={["dead"]} />;
 }
