@@ -70,3 +70,17 @@ jobs:
             exit 1
           fi
           git push --follow-tags || true
+
+      # A GitHub release per version, with the server zips ([nuikit] + addons). Skipped if it exists.
+      - if: steps.token.outputs.present == 'true' && steps.pending.outputs.count == '0'
+        name: GitHub release with server zips
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          version=$(node -p 'require("./packages/core/package.json").version')
+          tag="v$version"
+          if gh release view "$tag" >/dev/null 2>&1; then echo "$tag exists"; exit 0; fi
+          pnpm build:systems && pnpm pack:systems
+          notes="docs/releases/$tag.md"
+          [ -f "$notes" ] || notes=/dev/null
+          gh release create "$tag" out/*.zip --target "$GITHUB_SHA" --title "nuikit $version" --notes-file "$notes" --latest
