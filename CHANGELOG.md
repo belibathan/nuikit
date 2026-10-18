@@ -1,5 +1,9 @@
 # Changelog
 
+## create-nuikit 0.1.1 (2026-10-18)
+
+- Template depends on `nuikit-core` (the runtime's published name) and drops the deprecated `baseUrl` from `tsconfig.json`.
+
 ## 0.1.0 (2026-10-18)
 
 First release.
