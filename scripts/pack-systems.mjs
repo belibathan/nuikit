@@ -37,3 +37,15 @@ fs.writeFileSync(
 );
 execFileSync("zip", ["-qr", "nuikit-systems.zip", "[nuikit]"], { cwd: out });
 console.log(`→ ${path.relative(root, path.join(out, "nuikit-systems.zip"))}`);
+
+// Addons replace another resource's UI. Ship them shaped like that resource, so the zip merges in place:
+//   nuikit-ox_lib.zip → ox_lib/web/build/…
+for (const name of fs.existsSync(path.join(root, "addons")) ? fs.readdirSync(path.join(root, "addons")) : []) {
+  const build = path.join(root, "addons", name, "web", "build");
+  if (!fs.existsSync(path.join(build, "index.html"))) throw new Error(`addons/${name}: web/build is missing; build it first`);
+  const stageAddon = path.join(out, "addons", name);
+  fs.cpSync(build, path.join(stageAddon, "web", "build"), { recursive: true });
+  fs.copyFileSync(path.join(root, "addons", name, "README.md"), path.join(stageAddon, "NUIKIT.md"));
+  execFileSync("zip", ["-qr", path.join(out, `nuikit-${name}.zip`), name], { cwd: path.join(out, "addons") });
+  console.log(`→ out/nuikit-${name}.zip`);
+}
