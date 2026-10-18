@@ -1,0 +1,126 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "name": "nuikit",
+  "homepage": "https://nuikit.vercel.app",
+  "items": [
+    {
+      "name": "theme",
+      "type": "registry:theme",
+      "title": "nuikit theme",
+      "description": "A dark-first violet game theme. Pure shadcn tokens — swap it for any TweakCN theme.",
+      "cssVars": {
+        "theme": { "radius": "0.75rem" },
+        "light": {
+          "background": "oklch(0.985 0.004 285)",
+          "foreground": "oklch(0.18 0.02 280)",
+          "card": "oklch(1 0 0)",
+          "card-foreground": "oklch(0.18 0.02 280)",
+          "popover": "oklch(1 0 0)",
+          "popover-foreground": "oklch(0.18 0.02 280)",
+          "primary": "oklch(0.56 0.24 295)",
+          "primary-foreground": "oklch(0.99 0 0)",
+          "secondary": "oklch(0.95 0.01 285)",
+          "secondary-foreground": "oklch(0.25 0.03 280)",
+          "muted": "oklch(0.95 0.01 285)",
+          "muted-foreground": "oklch(0.5 0.03 280)",
+          "accent": "oklch(0.93 0.03 295)",
+          "accent-foreground": "oklch(0.25 0.03 280)",
+          "destructive": "oklch(0.6 0.23 22)",
+          "border": "oklch(0.9 0.01 285)",
+          "input": "oklch(0.9 0.01 285)",
+          "ring": "oklch(0.56 0.24 295)",
+          "chart-1": "oklch(0.66 0.19 150)",
+          "chart-2": "oklch(0.68 0.15 230)",
+          "chart-3": "oklch(0.76 0.16 75)",
+          "chart-4": "oklch(0.65 0.2 330)",
+          "chart-5": "oklch(0.7 0.13 195)"
+        },
+        "dark": {
+          "background": "oklch(0.16 0.02 280)",
+          "foreground": "oklch(0.97 0.01 280)",
+          "card": "oklch(0.21 0.03 280)",
+          "card-foreground": "oklch(0.97 0.01 280)",
+          "popover": "oklch(0.21 0.03 280)",
+          "popover-foreground": "oklch(0.97 0.01 280)",
+          "primary": "oklch(0.62 0.24 295)",
+          "primary-foreground": "oklch(0.99 0 0)",
+          "secondary": "oklch(0.28 0.03 280)",
+          "secondary-foreground": "oklch(0.97 0.01 280)",
+          "muted": "oklch(0.28 0.03 280)",
+          "muted-foreground": "oklch(0.72 0.03 280)",
+          "accent": "oklch(0.32 0.05 290)",
+          "accent-foreground": "oklch(0.97 0.01 280)",
+          "destructive": "oklch(0.66 0.22 22)",
+          "border": "oklch(1 0 0 / 10%)",
+          "input": "oklch(1 0 0 / 14%)",
+          "ring": "oklch(0.62 0.24 295)",
+          "chart-1": "oklch(0.7 0.19 150)",
+          "chart-2": "oklch(0.75 0.15 230)",
+          "chart-3": "oklch(0.8 0.16 80)",
+          "chart-4": "oklch(0.7 0.2 330)",
+          "chart-5": "oklch(0.75 0.13 195)"
+        }
+      }
+    },
+    {
+      "name": "vital",
+      "type": "registry:ui",
+      "title": "Vital",
+      "description": "A diamond that fills like liquid — health, armor, hunger, fuel. Pulses when low.",
+      "files": [{ "path": "registry/nuikit/ui/vital.tsx", "type": "registry:ui" }]
+    },
+    {
+      "name": "key-hint",
+      "type": "registry:ui",
+      "title": "Key Hint",
+      "description": "\"[E] Talk\" prompt with optional hold-to-confirm.",
+      "files": [{ "path": "registry/nuikit/ui/key-hint.tsx", "type": "registry:ui" }]
+    },
+    {
+      "name": "task-progress",
+      "type": "registry:ui",
+      "title": "Task Progress",
+      "description": "Timed action bar (lockpicking, repairing) with cancel key. Built on shadcn Progress.",
+      "registryDependencies": ["progress"],
+      "files": [{ "path": "registry/nuikit/ui/task-progress.tsx", "type": "registry:ui" }]
+    },
+    {
+      "name": "nui-menu",
+      "type": "registry:ui",
+      "title": "NUI Menu",
+      "description": "Keyboard-first list menu for garages, jobs and interactions. Arrows/WS + Enter/E.",
+      "files": [{ "path": "registry/nuikit/ui/nui-menu.tsx", "type": "registry:ui" }]
+    },
+    {
+      "name": "radial-menu",
+      "type": "registry:ui",
+      "title": "Radial Menu",
+      "description": "Action wheel. Mouse angle or arrow keys pick a wedge.",
+      "files": [{ "path": "registry/nuikit/ui/radial-menu.tsx", "type": "registry:ui" }]
+    },
+    {
+      "name": "speedometer",
+      "type": "registry:ui",
+      "title": "Speedometer",
+      "description": "Vehicle HUD gauge: speed, RPM arc with redline, gear, fuel.",
+      "files": [{ "path": "registry/nuikit/ui/speedometer.tsx", "type": "registry:ui" }]
+    },
+    {
+      "name": "nui-toaster",
+      "type": "registry:ui",
+      "title": "NUI Toaster",
+      "description": "Stock shadcn Sonner wired to Lua's NUI.notify().",
+      "dependencies": ["@nuikit/core"],
+      "registryDependencies": ["sonner"],
+      "files": [{ "path": "registry/nuikit/ui/nui-toaster.tsx", "type": "registry:ui" }]
+    },
+    {
+      "name": "use-nui-store",
+      "type": "registry:hook",
+      "title": "useNuiStore",
+      "description": "Merge partial state updates from Lua into one object.",
+      "dependencies": ["@nuikit/core"],
+      "files": [{ "path": "registry/nuikit/hooks/use-nui-store.ts", "type": "registry:hook" }]
+    }
+  ]
+}

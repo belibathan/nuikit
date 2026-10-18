@@ -1,0 +1,60 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "types": [
+      "vite/client",
+      "node"
+    ],
+    "baseUrl": ".",
+    "noUncheckedIndexedAccess": false,
+    "paths": {
+      "@/components/ui/vital": [
+        "../../registry/nuikit/ui/vital.tsx"
+      ],
+      "@/components/ui/key-hint": [
+        "../../registry/nuikit/ui/key-hint.tsx"
+      ],
+      "@/components/ui/task-progress": [
+        "../../registry/nuikit/ui/task-progress.tsx"
+      ],
+      "@/components/ui/nui-menu": [
+        "../../registry/nuikit/ui/nui-menu.tsx"
+      ],
+      "@/components/ui/radial-menu": [
+        "../../registry/nuikit/ui/radial-menu.tsx"
+      ],
+      "@/components/ui/speedometer": [
+        "../../registry/nuikit/ui/speedometer.tsx"
+      ],
+      "@/components/ui/nui-toaster": [
+        "../../registry/nuikit/ui/nui-toaster.tsx"
+      ],
+      "@/hooks/use-nui-store": [
+        "../../registry/nuikit/hooks/use-nui-store.ts"
+      ],
+      "@/*": [
+        "./src/*"
+      ],
+      "react": [
+        "./node_modules/@types/react/index.d.ts"
+      ],
+      "react/jsx-runtime": [
+        "./node_modules/@types/react/jsx-runtime.d.ts"
+      ],
+      "@nuikit/core/react": [
+        "./node_modules/@nuikit/core/dist/react.d.ts"
+      ],
+      "@nuikit/core": [
+        "./node_modules/@nuikit/core/dist/index.d.ts"
+      ],
+      "sonner": [
+        "./node_modules/sonner/dist/index.d.ts"
+      ]
+    }
+  },
+  "include": [
+    "src",
+    "../../registry"
+  ]
+}

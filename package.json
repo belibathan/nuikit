@@ -1,0 +1,20 @@
+{
+  "name": "nuikit-monorepo",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@10.28.0",
+  "scripts": {
+    "build": "pnpm -r --filter \"./packages/**\" build && pnpm registry:build && pnpm --filter www build",
+    "dev": "pnpm --filter www dev",
+    "test": "pnpm -r --filter \"./packages/**\" test",
+    "typecheck": "pnpm -r --filter \"./packages/**\" --filter www typecheck",
+    "registry:build": "shadcn build -o apps/www/public/r",
+    "proof": "pnpm --filter cef-proof proof",
+    "changeset": "changeset"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.31.1",
+    "shadcn": "^4.22.0",
+    "typescript": "^5.6.3"
+  }
+}

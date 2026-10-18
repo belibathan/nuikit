@@ -1,0 +1,26 @@
+name: Bug report
+description: Something renders or behaves wrong
+labels: [bug]
+body:
+  - type: dropdown
+    id: where
+    attributes:
+      label: Where does it happen?
+      options: [In game (CEF), In the browser (dev), Build / CLI]
+    validations: { required: true }
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: Include the Tailwind classes or CSS involved and a screenshot if it's visual.
+    validations: { required: true }
+  - type: textarea
+    id: repro
+    attributes:
+      label: Minimal reproduction
+      description: A repo, a snippet, or a failing case for examples/cef-proof/page.html.
+  - type: input
+    id: versions
+    attributes:
+      label: Versions
+      placeholder: "@nuikit/vite 0.1.0, tailwindcss 4.1, FiveM build 12345"

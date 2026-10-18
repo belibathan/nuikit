@@ -1,0 +1,28 @@
+<div class="relative h-[540px] w-[960px] overflow-hidden p-8 font-sans">
+  <div data-probe="grid" class="grid grid-cols-1 gap-6 md:grid-cols-2">
+    <div class="rounded-xl border bg-card/80 p-6 text-card-foreground shadow-sm">
+      <div class="flex items-center justify-between">
+        <h3 data-probe="title" class="bg-gradient-to-r from-primary to-chart-2 bg-clip-text text-lg font-semibold text-transparent">Vehicle Shop</h3>
+        <span data-probe="badge" class="rounded-md border border-primary/30 bg-primary/15 px-2 py-0.5 text-xs font-medium text-primary">NEW</span>
+      </div>
+      <p class="mt-1 text-sm text-muted-foreground">Pegassi Zentorno · 2 seats</p>
+      <div class="mt-5 space-y-3">
+        <div class="flex items-center gap-3 text-sm"><span class="w-16 text-muted-foreground">Speed</span><div class="h-2 flex-1 rounded-full bg-chart-1/20"><div class="h-2 w-[86%] rounded-full bg-chart-1"></div></div></div>
+        <div class="flex items-center gap-3 text-sm"><span class="w-16 text-muted-foreground">Braking</span><div class="h-2 flex-1 rounded-full bg-chart-2/20"><div class="h-2 w-[64%] rounded-full bg-chart-2"></div></div></div>
+        <div class="flex items-center gap-3 text-sm"><span class="w-16 text-muted-foreground">Grip</span><div class="h-2 flex-1 rounded-full bg-chart-3/20"><div class="h-2 w-[72%] rounded-full bg-chart-3"></div></div></div>
+      </div>
+      <div class="mt-6 flex gap-2">
+        <button data-probe="buy" class="inline-flex h-9 items-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground shadow-xs hover:bg-primary/90">Buy $725,000</button>
+        <button class="inline-flex h-9 items-center rounded-md border bg-input/30 px-4 text-sm font-medium">Test drive</button>
+      </div>
+    </div>
+    <div class="space-y-3">
+      <div class="rounded-lg border border-destructive/40 bg-destructive/15 p-4 text-sm"><b class="text-destructive">Low fuel</b> <span class="text-muted-foreground">· 12% remaining</span></div>
+      <div class="rounded-lg border bg-card/60 p-4 text-sm backdrop-blur-sm">Press <kbd class="rounded border bg-muted px-1.5 font-mono text-xs">E</kbd> to talk to the dealer</div>
+      <input class="h-9 w-full rounded-md border border-input bg-input/30 px-3 text-sm outline-none ring-[3px] ring-ring/40" placeholder="Search vehicles" value="Search vehicles" />
+    </div>
+  </div>
+  <div data-probe="dialog" class="absolute left-1/2 top-[78%] w-72 -translate-x-1/2 -translate-y-1/2 rounded-xl border bg-card/90 p-4 text-center text-sm shadow-lg">
+    Dialog centered with <code class="text-primary">-translate-1/2</code>
+  </div>
+</div>

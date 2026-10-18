@@ -1,0 +1,70 @@
+{
+  "name": "@nuikit/core",
+  "version": "0.1.0",
+  "description": "Typed, framework-agnostic NUI runtime for FiveM: fetchNui, events, focus, and a browser devtools that fakes the game.",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": false,
+  "keywords": [
+    "fivem",
+    "nui",
+    "cfx",
+    "redm",
+    "react",
+    "shadcn",
+    "gta",
+    "roleplay",
+    "qbcore",
+    "qbox",
+    "esx"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/belibathan/nuikit",
+    "directory": "packages/core"
+  },
+  "homepage": "https://github.com/belibathan/nuikit#readme",
+  "files": [
+    "dist",
+    "lua",
+    "README.md"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./react": {
+      "types": "./dist/react.d.ts",
+      "import": "./dist/react.js"
+    },
+    "./devtools": {
+      "types": "./dist/devtools.d.ts",
+      "import": "./dist/devtools.js"
+    }
+  },
+  "scripts": {
+    "build": "tsup",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "react": ">=18"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@testing-library/react": "^16.1.0",
+    "@types/react": "^19.0.0",
+    "@types/node": "^22.10.0",
+    "jsdom": "^25.0.1",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "tsup": "^8.3.5",
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.8"
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "name": "@nuikit/vite",
+  "version": "0.1.0",
+  "description": "Make shadcn/ui and Tailwind v4 render in FiveM's Chromium 103 NUI, plus in-game hot reload.",
+  "license": "MIT",
+  "type": "module",
+  "keywords": ["fivem", "nui", "vite-plugin", "tailwindcss", "tailwind-v4", "shadcn", "oklch", "color-mix", "cef", "chromium-103", "redm"],
+  "repository": { "type": "git", "url": "https://github.com/belibathan/nuikit", "directory": "packages/vite" },
+  "homepage": "https://github.com/belibathan/nuikit#readme",
+  "files": ["dist", "README.md"],
+  "exports": {
+    ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" }
+  },
+  "bin": { "nuikit-doctor": "./dist/cli.js" },
+  "scripts": {
+    "build": "tsup",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "browserslist": "^4.24.0",
+    "lightningcss": "^1.29.0"
+  },
+  "peerDependencies": {
+    "vite": ">=5"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.1.0",
+    "@types/node": "^22.10.0",
+    "tailwindcss": "^4.1.0",
+    "tsup": "^8.3.5",
+    "typescript": "^5.6.3",
+    "vite": "^6.0.0",
+    "vitest": "^2.1.8"
+  }
+}

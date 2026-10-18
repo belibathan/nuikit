@@ -1,0 +1,59 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - run: pnpm typecheck
+      - run: pnpm test
+
+  chromium-103:
+    name: Render in Chromium 103 (FiveM CEF)
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @nuikit/vite build
+      - run: pnpm proof
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: chromium-103-render
+          path: examples/cef-proof/out/*.png
+
+  scaffold:
+    name: create-nuikit end to end
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm -r --filter ./packages/** build
+      - run: node packages/create-nuikit/dist/index.js e2e-hud --yes --pm pnpm --link "$GITHUB_WORKSPACE"
+        working-directory: ${{ runner.temp }}
+      - run: pnpm build && grep -q "web/dist/index.html" ../fxmanifest.lua
+        working-directory: ${{ runner.temp }}/e2e-hud/web

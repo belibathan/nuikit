@@ -1,0 +1,14 @@
+name: Feature or component request
+description: A new component, API or compat fix
+labels: [enhancement]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What do you want to build?
+      description: Describe the server feature, not just the API. "A phone shell for my server's apps" beats "add <Phone />".
+    validations: { required: true }
+  - type: textarea
+    id: today
+    attributes:
+      label: How do you do it today?
