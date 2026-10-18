@@ -1,12 +1,12 @@
 // Proof that nuikit fixes shadcn/Tailwind v4 in FiveM: compile a real shadcn page with
 // Tailwind v4, render it in Chromium 103 (the version FiveM's NUI runs) before and after
-// @nuikit/vite, and assert computed styles. Writes before.png / after.png / compare.png.
+// vite-plugin-nuikit, and assert computed styles. Writes before.png / after.png / compare.png.
 import { execFileSync } from "node:child_process";
 import fs from "node:fs";
 import { createRequire } from "node:module";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { formatReport, lowerCss } from "@nuikit/vite";
+import { formatReport, lowerCss } from "vite-plugin-nuikit";
 
 const require = createRequire(import.meta.url);
 const puppeteer = require("puppeteer-core");
@@ -59,7 +59,7 @@ const img = (f) => `data:image/png;base64,${fs.readFileSync(out(f)).toString("ba
 const page = await browser.newPage();
 await page.setViewport({ width: 1280, height: 440, deviceScaleFactor: 2 });
 await page.setContent(`<!doctype html><body style="margin:0;background:#07080c;font:600 15px Inter,system-ui,sans-serif;color:#e7e9ee">
-<div style="display:flex;gap:24px;padding:28px 32px 32px">${[["before.png", "Stock shadcn + Tailwind v4", "#f87171", "in FiveM (Chromium 103)"], ["after.png", "With @nuikit/vite", "#a78bfa", "same code, same browser"]]
+<div style="display:flex;gap:24px;padding:28px 32px 32px">${[["before.png", "Stock shadcn + Tailwind v4", "#f87171", "in FiveM (Chromium 103)"], ["after.png", "With vite-plugin-nuikit", "#a78bfa", "same code, same browser"]]
   .map(([f, t, c, s]) => `<figure style="margin:0;flex:1"><figcaption style="margin-bottom:12px;display:flex;gap:8px;align-items:center"><span style="width:8px;height:8px;border-radius:2px;transform:rotate(45deg);background:${c}"></span>${t}<span style="color:#6b7385;font-weight:400">${s}</span></figcaption><img src="${img(f)}" style="width:100%;border-radius:12px;border:1px solid #ffffff1a;display:block"></figure>`)
   .join("")}</div></body>`);
 await page.screenshot({ path: out("compare.png") });

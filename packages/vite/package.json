@@ -1,5 +1,5 @@
 {
-  "name": "@nuikit/vite",
+  "name": "vite-plugin-nuikit",
   "version": "0.1.0",
   "description": "Make shadcn/ui and Tailwind v4 render in FiveM's Chromium 103 NUI, plus in-game hot reload.",
   "license": "MIT",

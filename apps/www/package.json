@@ -9,7 +9,7 @@
     "typecheck": "tsc --noEmit -p ."
   },
   "dependencies": {
-    "@nuikit/core": "workspace:*",
+    "nuikit": "workspace:*",
     "@radix-ui/react-progress": "^1.1.0",
     "clsx": "^2.1.1",
     "lucide-react": "^0.460.0",
@@ -19,7 +19,7 @@
     "tailwind-merge": "^3.0.0"
   },
   "devDependencies": {
-    "@nuikit/vite": "workspace:*",
+    "vite-plugin-nuikit": "workspace:*",
     "@tailwindcss/vite": "^4.1.0",
     "@types/node": "^22.10.0",
     "@types/react": "^19.0.0",

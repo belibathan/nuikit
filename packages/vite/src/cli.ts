@@ -3,7 +3,7 @@
  * nuikit-doctor — check any built NUI for CSS that FiveM's Chromium 103 can't render.
  *
  *   npx nuikit-doctor web/dist          # report
- *   npx nuikit-doctor web/dist --fix    # lower in place (for UIs not built with @nuikit/vite)
+ *   npx nuikit-doctor web/dist --fix    # lower in place (for UIs not built with vite-plugin-nuikit)
  */
 import fs from "node:fs";
 import path from "node:path";
@@ -53,7 +53,7 @@ for (const file of files) {
 }
 
 if (!fix && problems) {
-  console.log(`\n\x1b[2mRun with --fix to lower in place, or build with @nuikit/vite.\x1b[0m`);
+  console.log(`\n\x1b[2mRun with --fix to lower in place, or build with vite-plugin-nuikit.\x1b[0m`);
   process.exit(1);
 }
 console.log(`\n\x1b[32m✓\x1b[0m ready for Chromium 103`);

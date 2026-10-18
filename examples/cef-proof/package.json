@@ -5,7 +5,7 @@
   "description": "Renders stock shadcn/Tailwind v4 vs nuikit-lowered CSS in a real Chromium 103 (FiveM's CEF) and asserts the difference.",
   "scripts": { "proof": "node proof.mjs" },
   "devDependencies": {
-    "@nuikit/vite": "workspace:*",
+    "vite-plugin-nuikit": "workspace:*",
     "@sparticuz/chromium": "103.0.0",
     "@tailwindcss/cli": "^4.1.0",
     "puppeteer-core": "15.5.0",

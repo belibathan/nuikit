@@ -1,5 +1,5 @@
 // Theme presets, written exactly like a TweakCN / shadcn export (.dark block, oklch).
-// The playground feeds them through applyTheme() from @nuikit/core.
+// The playground feeds them through applyTheme() from nuikit.
 export const themes: { name: string; swatch: string[]; css: string }[] = [
   {
     name: "nuikit",

@@ -8,7 +8,7 @@ FiveM's NUI runs **Chromium 103**, and Tailwind v4 needs **111**. nuikit compile
 It also gives you typed Lua ↔ React messaging, browser devtools that fake the game, hot reload in game, and a registry of HUD components.
 
 [![CI](https://github.com/belibathan/nuikit/actions/workflows/ci.yml/badge.svg)](https://github.com/belibathan/nuikit/actions/workflows/ci.yml)
-[![npm](https://img.shields.io/npm/v/@nuikit/vite?label=%40nuikit%2Fvite&color=8b5cf6)](https://www.npmjs.com/package/@nuikit/vite)
+[![npm](https://img.shields.io/npm/v/vite-plugin-nuikit?label=vite-plugin-nuikit&color=8b5cf6)](https://www.npmjs.com/package/vite-plugin-nuikit)
 [![Chromium 103](https://img.shields.io/badge/verified%20in-Chromium%20103-22c55e)](examples/cef-proof)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Stars](https://img.shields.io/github/stars/belibathan/nuikit?style=social)](https://github.com/belibathan/nuikit)
@@ -25,7 +25,7 @@ npm create nuikit@latest my-hud
 
 <img src="docs/assets/compare.png" alt="The same shadcn page rendered in Chromium 103: stock (no colors, broken layout) vs. with nuikit (correct)" width="100%" />
 
-<sub>Same code, same browser. Left: stock shadcn + Tailwind v4 in Chromium 103. Right: built with <code>@nuikit/vite</code>. Rendered by <a href="examples/cef-proof">our CI</a> in a real Chromium 103 on every push.</sub>
+<sub>Same code, same browser. Left: stock shadcn + Tailwind v4 in Chromium 103. Right: built with <code>vite-plugin-nuikit</code>. Rendered by <a href="examples/cef-proof">our CI</a> in a real Chromium 103 on every push.</sub>
 
 ## Why
 
@@ -74,18 +74,18 @@ Already have a NUI? Use only the parts you want ([plugin](#nuikitvite), [runtime
 
 | Package | What it does |
 |---|---|
-| [`@nuikit/vite`](packages/vite) | Vite plugin. Lowers Tailwind v4 / shadcn CSS for Chromium 103, in-game HMR, `nuikit-doctor` CLI. |
-| [`@nuikit/core`](packages/core) | 4 KB runtime. Typed `fetchNui` / `useNuiEvent`, visibility & focus, devtools, runtime theming. Plus `nuikit.lua`. |
+| [`vite-plugin-nuikit`](packages/vite) | Vite plugin. Lowers Tailwind v4 / shadcn CSS for Chromium 103, in-game HMR, `nuikit-doctor` CLI. |
+| [`nuikit`](packages/core) | 4 KB runtime. Typed `fetchNui` / `useNuiEvent`, visibility & focus, devtools, runtime theming. Plus `nuikit.lua`. |
 | [`create-nuikit`](packages/create-nuikit) | One command to a working resource. |
 | [Registry](#components) | Game components for the shadcn CLI: vitals, speedometer, radial, menus… |
 
-### `@nuikit/vite`
+### `vite-plugin-nuikit`
 
 ```ts
 // vite.config.ts
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
-import { nuikit } from "@nuikit/vite";
+import { nuikit } from "vite-plugin-nuikit";
 
 export default defineConfig({
   plugins: [react(), tailwindcss(), nuikit()], // after tailwindcss()
@@ -115,7 +115,7 @@ One `nui.d.ts` types both directions:
 
 ```ts
 // web/src/nui.d.ts
-declare module "@nuikit/core" {
+declare module "nuikit" {
   interface NuiEvents {    // Lua → UI
     "hud:vitals": { health: number; armor: number };
   }
@@ -130,7 +130,7 @@ declare module "@nuikit/core" {
 <tr><td>
 
 ```tsx
-import { fetchNui, useNuiState, useNuiVisibility } from "@nuikit/core/react";
+import { fetchNui, useNuiState, useNuiVisibility } from "nuikit/react";
 
 const vitals = useNuiState("hud:vitals", { health: 100, armor: 0 });
 const { visible, close } = useNuiVisibility(); // Esc closes
@@ -156,7 +156,7 @@ NUI.notify({ title = 'Paid', type = 'success' })
 </td></tr>
 </table>
 
-| `@nuikit/core` | |
+| `nuikit` | |
 |---|---|
 | `fetchNui(name, data?, { mock?, timeout? })` | Call a Lua callback. Resolves with its return value. Mocked in the browser. |
 | `onNui(name, fn)` / `useNuiEvent(name, fn)` | Handle `NUI.send` messages. |
@@ -165,7 +165,7 @@ NUI.notify({ title = 'Paid', type = 'success' })
 | `useNuiCallback(name)` | `{ call, loading, error, data }`. |
 | `mockNui(name, response)` / `emit(name, data)` | Fake Lua in the browser or tests. |
 | `applyTheme(css \| vars)` | Apply a pasted TweakCN theme at runtime, with Chromium 103 channels. |
-| `<NuiDevtools events callbacks />` | Browser-only panel (`@nuikit/core/devtools`). Renders nothing in game. |
+| `<NuiDevtools events callbacks />` | Browser-only panel (`nuikit/devtools`). Renders nothing in game. |
 
 | `nuikit.lua` | |
 |---|---|
@@ -209,13 +209,13 @@ nuikit has no theme system of its own. **shadcn's tokens are the system.** Paste
 To switch themes at runtime (per job, per player setting), use `applyTheme()`. It converts oklch to RGB in JS, because the game's browser can't.
 
 ```ts
-import { applyTheme } from "@nuikit/core";
+import { applyTheme } from "nuikit";
 applyTheme(`.dark { --primary: oklch(0.72 0.19 150); --radius: 0rem; }`);
 ```
 
 ## How it works
 
-`@nuikit/vite` runs after Tailwind on the final CSS:
+`vite-plugin-nuikit` runs after Tailwind on the final CSS:
 
 1. **Lightning CSS → `chrome 103`:** oklch/lab to hex (with wide-gamut `@supports` blocks for newer browsers), flattened nesting, media range syntax.
 2. **Token channels:** every color custom property gets `--x-rgb` / `--x-a`, alias chains included (`--color-primary: var(--primary)`).
@@ -237,7 +237,7 @@ RedM uses the same CEF, so it should work. Change <code>game 'gta5'</code> to <c
 </details>
 
 <details><summary><b>Vue / Svelte / vanilla?</b></summary>
-<code>@nuikit/vite</code> and the core runtime (<code>@nuikit/core</code>) are framework-agnostic. Only <code>/react</code>, <code>/devtools</code> and the registry components are React.
+<code>vite-plugin-nuikit</code> and the core runtime (<code>nuikit</code>) are framework-agnostic. Only <code>/react</code>, <code>/devtools</code> and the registry components are React.
 </details>
 
 <details><summary><b>What happens when Cfx updates CEF?</b></summary>

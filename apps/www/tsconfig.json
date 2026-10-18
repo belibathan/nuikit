@@ -42,11 +42,11 @@
       "react/jsx-runtime": [
         "./node_modules/@types/react/jsx-runtime.d.ts"
       ],
-      "@nuikit/core/react": [
-        "./node_modules/@nuikit/core/dist/react.d.ts"
+      "nuikit/react": [
+        "./node_modules/nuikit/dist/react.d.ts"
       ],
-      "@nuikit/core": [
-        "./node_modules/@nuikit/core/dist/index.d.ts"
+      "nuikit": [
+        "./node_modules/nuikit/dist/index.d.ts"
       ],
       "sonner": [
         "./node_modules/sonner/dist/index.d.ts"

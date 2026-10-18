@@ -32,7 +32,7 @@ jobs:
           node-version: 22
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: pnpm --filter @nuikit/vite build
+      - run: pnpm --filter vite-plugin-nuikit build
       - run: pnpm proof
       - uses: actions/upload-artifact@v4
         if: always()

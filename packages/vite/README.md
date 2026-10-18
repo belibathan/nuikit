@@ -1,15 +1,15 @@
-# @nuikit/vite
+# vite-plugin-nuikit
 
 **Make shadcn/ui and Tailwind v4 render in FiveM.** FiveM's NUI is Chromium 103, and Tailwind v4 targets 111+. This Vite plugin lowers your CSS at build time, keeps themes live, and gives you in-game hot reload.
 
 ```bash
-npm i -D @nuikit/vite
+npm i -D vite-plugin-nuikit
 ```
 
 ```ts
 // vite.config.ts
 import tailwindcss from "@tailwindcss/vite";
-import { nuikit } from "@nuikit/vite";
+import { nuikit } from "vite-plugin-nuikit";
 
 export default defineConfig({
   plugins: [react(), tailwindcss(), nuikit()], // after tailwindcss()
@@ -46,7 +46,7 @@ It also sets `base: "./"` (NUI loads from `nui://`) and `build.target: "chrome10
 
 ## Runtime themes
 
-Opacity modifiers read `--x-rgb` / `--x-a` channels. To change a theme at runtime, use `applyTheme()` from `@nuikit/core`. It sets both.
+Opacity modifiers read `--x-rgb` / `--x-a` channels. To change a theme at runtime, use `applyTheme()` from `nuikit`. It sets both.
 
 ## nuikit-doctor
 
@@ -60,7 +60,7 @@ npx nuikit-doctor web/dist --fix
 ## Programmatic
 
 ```ts
-import { lowerCss, formatReport } from "@nuikit/vite";
+import { lowerCss, formatReport } from "vite-plugin-nuikit";
 const { code, report } = lowerCss(css, { chrome: 103 });
 ```
 

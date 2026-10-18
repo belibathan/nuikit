@@ -1,5 +1,5 @@
 import path from "node:path";
-import { nuikit } from "@nuikit/vite";
+import { nuikit } from "vite-plugin-nuikit";
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
@@ -17,6 +17,6 @@ export default defineConfig({
       { find: "@/hooks/use-nui-store", replacement: `${registry}/hooks/use-nui-store.ts` },
       { find: "@", replacement: path.resolve(__dirname, "src") },
     ],
-    dedupe: ["react", "react-dom", "@nuikit/core", "sonner"],
+    dedupe: ["react", "react-dom", "nuikit", "sonner"],
   },
 });

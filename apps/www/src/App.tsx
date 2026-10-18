@@ -1,4 +1,4 @@
-import { applyTheme, clearTheme, emit, type ThemeVars } from "@nuikit/core/react";
+import { applyTheme, clearTheme, emit, type ThemeVars } from "nuikit/react";
 import { ArrowRight, Box, Braces, Flame, Gauge, Github, MonitorPlay, Paintbrush, Radar, Sparkles, Zap } from "lucide-react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { CodeBlock, Command, CopyButton } from "@/components/code";
@@ -139,7 +139,7 @@ function Proof() {
         title="vite.config.ts"
         lang="ts"
         code={`import tailwindcss from "@tailwindcss/vite";
-import { nuikit } from "@nuikit/vite";
+import { nuikit } from "vite-plugin-nuikit";
 
 export default defineConfig({
   plugins: [react(), tailwindcss(), nuikit()], // ← that's it
@@ -322,7 +322,7 @@ function Bridge() {
         <CodeBlock
           title="web/src/nui.d.ts"
           lang="ts"
-          code={`declare module "@nuikit/core" {
+          code={`declare module "nuikit" {
   // Lua → UI
   interface NuiEvents {
     "hud:vitals": { health: number; armor: number };
@@ -374,7 +374,7 @@ function Devtools() {
     { icon: <Flame className="size-5" />, title: "In-game HMR", text: "While dev runs, ui_page points at Vite. ensure once and every save hot-reloads in game." },
     { icon: <Gauge className="size-5" />, title: "nuikit-doctor", text: "Point it at any built NUI to list what won't render in Chromium 103, or --fix it in place." },
     { icon: <Box className="size-5" />, title: "One command", text: "npm create nuikit gives you fxmanifest, Lua, React, shadcn and Tailwind v4, wired." },
-    { icon: <Braces className="size-5" />, title: "4 KB runtime", text: "@nuikit/core is framework-agnostic with zero dependencies. React hooks are a separate entry." },
+    { icon: <Braces className="size-5" />, title: "4 KB runtime", text: "nuikit is framework-agnostic with zero dependencies. React hooks are a separate entry." },
   ];
   return (
     <section className="mx-auto max-w-6xl px-6 py-24">
@@ -405,8 +405,8 @@ function Footer() {
         </span>
         <span>Not affiliated with Cfx.re, Rockstar Games or shadcn.</span>
         <a href={REPO} className="ml-auto hover:text-foreground">GitHub</a>
-        <a href={`${REPO}/blob/main/packages/vite/README.md`} className="hover:text-foreground">@nuikit/vite</a>
-        <a href={`${REPO}/blob/main/packages/core/README.md`} className="hover:text-foreground">@nuikit/core</a>
+        <a href={`${REPO}/blob/main/packages/vite/README.md`} className="hover:text-foreground">vite-plugin-nuikit</a>
+        <a href={`${REPO}/blob/main/packages/core/README.md`} className="hover:text-foreground">nuikit</a>
       </div>
     </footer>
   );

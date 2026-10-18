@@ -5,7 +5,7 @@
 /*
  * Theme: stock shadcn tokens. Paste any TweakCN / shadcn theme over the :root and .dark
  * blocks and every component (yours, shadcn's, nuikit's) follows. oklch is fine —
- * @nuikit/vite lowers it for FiveM's Chromium 103 at build time.
+ * vite-plugin-nuikit lowers it for FiveM's Chromium 103 at build time.
  */
 :root {
   --radius: 0.75rem;

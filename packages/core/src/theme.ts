@@ -1,7 +1,7 @@
 /**
  * Runtime theming that survives Chromium 103.
  *
- * @nuikit/vite gives every color token rgb channels (--primary-rgb, --primary-a) so
+ * vite-plugin-nuikit gives every color token rgb channels (--primary-rgb, --primary-a) so
  * opacity modifiers like bg-primary/50 work in FiveM. When you change a theme at
  * runtime, those channels must change too — applyTheme() sets both, converting
  * oklch/hsl/hex/rgb in JS because the game's browser can't.

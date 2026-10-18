@@ -23,7 +23,7 @@ interface Args {
   yes: boolean;
   install?: boolean;
   pm?: PM;
-  /** contributors: link @nuikit/* to a local checkout */
+  /** contributors: link nuikit + vite-plugin-nuikit to a local checkout */
   link?: string;
 }
 
@@ -168,8 +168,8 @@ async function main() {
 
 function linkLocal(pkgPath: string, repo: string) {
   const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf8"));
-  pkg.dependencies["@nuikit/core"] = `link:${path.join(repo, "packages/core")}`;
-  pkg.devDependencies["@nuikit/vite"] = `link:${path.join(repo, "packages/vite")}`;
+  pkg.dependencies["nuikit"] = `link:${path.join(repo, "packages/core")}`;
+  pkg.devDependencies["vite-plugin-nuikit"] = `link:${path.join(repo, "packages/vite")}`;
   fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + "\n");
 }
 

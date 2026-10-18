@@ -23,4 +23,4 @@ body:
     id: versions
     attributes:
       label: Versions
-      placeholder: "@nuikit/vite 0.1.0, tailwindcss 4.1, FiveM build 12345"
+      placeholder: "vite-plugin-nuikit 0.1.0, tailwindcss 4.1, FiveM build 12345"

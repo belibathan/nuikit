@@ -1,5 +1,5 @@
 // Fake game for browser development. Fire events, mock callbacks, swap backdrops.
-import { NuiDevtools, defineMocks } from "@nuikit/core/devtools";
+import { NuiDevtools, defineMocks } from "nuikit/devtools";
 
 const mocks = defineMocks({
   events: {

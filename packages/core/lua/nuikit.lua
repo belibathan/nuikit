@@ -1,5 +1,5 @@
 --[[
-  nuikit.lua — the Lua half of @nuikit/core.  MIT · https://github.com/belibathan/nuikit
+  nuikit.lua — the Lua half of nuikit.  MIT · https://github.com/belibathan/nuikit
 
   Drop into any resource as a client_script. Framework-agnostic (QBCore, Qbox, ESX, ox, standalone).
 

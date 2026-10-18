@@ -1,6 +1,6 @@
 "use client";
 
-import { useNuiEvent } from "@nuikit/core/react";
+import { useNuiEvent } from "nuikit/react";
 import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
 
@@ -18,7 +18,7 @@ export interface NuiNotify {
   id?: string | number;
 }
 
-declare module "@nuikit/core" {
+declare module "nuikit" {
   interface NuiEvents {
     "nuikit:notify": NuiNotify;
   }

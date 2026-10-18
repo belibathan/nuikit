@@ -1,5 +1,5 @@
 /**
- * @nuikit/core — the NUI runtime.
+ * nuikit — the NUI runtime.
  *
  * Wire format (compatible with the common `{ action, data }` convention):
  *   Lua  → UI : SendNUIMessage({ action = "hud:vitals", data = { health = 80 } })
@@ -7,7 +7,7 @@
  *
  * Types come from module augmentation, so both directions are checked:
  *
- *   declare module "@nuikit/core" {
+ *   declare module "nuikit" {
  *     interface NuiEvents    { "hud:vitals": { health: number } }
  *     interface NuiCallbacks { "inventory:use": { req: { slot: number }; res: { ok: boolean } } }
  *   }

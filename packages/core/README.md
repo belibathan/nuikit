@@ -1,16 +1,16 @@
-# @nuikit/core
+# nuikit
 
 Typed, framework-agnostic NUI runtime for FiveM, plus the Lua half (`lua/nuikit.lua`).
 
 ```bash
-npm i @nuikit/core
+npm i nuikit
 ```
 
 ## Types, once
 
 ```ts
 // nui.d.ts
-declare module "@nuikit/core" {
+declare module "nuikit" {
   interface NuiEvents {    // Lua → UI  (NUI.send)
     "hud:vitals": { health: number; armor: number };
   }
@@ -23,7 +23,7 @@ declare module "@nuikit/core" {
 ## Vanilla
 
 ```ts
-import { fetchNui, onNui, closeNui, isBrowser, mockNui } from "@nuikit/core";
+import { fetchNui, onNui, closeNui, isBrowser, mockNui } from "nuikit";
 
 onNui("hud:vitals", (v) => render(v));
 const { ok } = await fetchNui("shop:buy", { id: "zentorno" });
@@ -33,7 +33,7 @@ mockNui("shop:buy", ({ id }) => ({ ok: id !== "sold-out" })); // browser only
 ## React
 
 ```tsx
-import { useNuiEvent, useNuiState, useNuiVisibility, useNuiCallback } from "@nuikit/core/react";
+import { useNuiEvent, useNuiState, useNuiVisibility, useNuiCallback } from "nuikit/react";
 
 const vitals = useNuiState("hud:vitals", { health: 100, armor: 0 });
 const { visible, close } = useNuiVisibility(); // NUI.open/close + Escape
@@ -43,7 +43,7 @@ const buy = useNuiCallback("shop:buy");       // { call, loading, error, data }
 ## Devtools
 
 ```tsx
-import { NuiDevtools, defineMocks } from "@nuikit/core/devtools";
+import { NuiDevtools, defineMocks } from "nuikit/devtools";
 
 const mocks = defineMocks({
   events: { "hud:vitals": [{ health: 100, armor: 50 }, { health: 12, armor: 0 }] },
@@ -56,7 +56,7 @@ const mocks = defineMocks({
 ## Runtime theming
 
 ```ts
-import { applyTheme } from "@nuikit/core";
+import { applyTheme } from "nuikit";
 applyTheme(pastedTweakcnCss); // sets vars + Chromium 103 rgb channels
 ```
 
