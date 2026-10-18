@@ -1,6 +1,11 @@
 import { useEffect, useState, type ReactNode } from "react";
 import {
+  closeSurface,
   emit,
+  getSurfaces,
+  onSurfaces,
+  openSurface,
+  setSurfaceState,
   getVisible,
   isBrowser,
   mockNui,
@@ -32,6 +37,10 @@ export interface NuiDevtoolsProps {
   defaultOpen?: boolean;
   /** Render even inside the game (you almost never want this). */
   force?: boolean;
+  /** Example data per surface for the Surfaces tab's Open button. */
+  surfaces?: Record<string, unknown>;
+  /** Client-wide states to toggle in the Surfaces tab (as NUI.state would), e.g. ["dead", "cuffed"]. */
+  states?: string[];
 }
 
 export type SceneName = "none" | "day" | "dusk" | "night" | "grid";
@@ -104,10 +113,18 @@ let seq = 0;
  *
  *   <NuiDevtools events={{ "hud:vitals": [{ health: 100 }, { health: 12 }] }} />
  */
-export function NuiDevtools({ events = {}, callbacks = {}, scene: initialScene = "night", defaultOpen = false, force }: NuiDevtoolsProps) {
+export function NuiDevtools({
+  events = {},
+  callbacks = {},
+  scene: initialScene = "night",
+  defaultOpen = false,
+  force,
+  surfaces: surfaceData = {},
+  states: stateNames = ["dead"],
+}: NuiDevtoolsProps) {
   const enabled = force || isBrowser();
   const [open, setOpen] = useState(defaultOpen);
-  const [tab, setTab] = useState<"events" | "log" | "scene">("events");
+  const [tab, setTab] = useState<"events" | "surfaces" | "log" | "scene">("events");
   const [log, setLog] = useState<LogEntry[]>([]);
   const [scene, setScene] = useState<string>(() => {
     try {
@@ -183,9 +200,9 @@ export function NuiDevtools({ events = {}, callbacks = {}, scene: initialScene =
               </button>
             </div>
             <div className="nkdt-tabs" role="tablist">
-              {(["events", "log", "scene"] as const).map((t) => (
+              {(["events", "surfaces", "log", "scene"] as const).map((t) => (
                 <button key={t} className="nkdt-tab" role="tab" aria-selected={tab === t} onClick={() => setTab(t)}>
-                  {t === "events" ? "Events" : t === "log" ? `Log${log.length ? ` · ${log.length}` : ""}` : "Scene"}
+                  {t === "events" ? "Events" : t === "surfaces" ? "Surfaces" : t === "log" ? `Log${log.length ? ` · ${log.length}` : ""}` : "Scene"}
                 </button>
               ))}
             </div>
@@ -204,6 +221,7 @@ export function NuiDevtools({ events = {}, callbacks = {}, scene: initialScene =
                   <CustomEvent />
                 </>
               )}
+              {tab === "surfaces" && <SurfacesTab data={surfaceData} stateNames={stateNames} />}
               {tab === "log" && (
                 <div className="nkdt-log">
                   {log.length === 0 && <span className="nkdt-dim">Nothing yet. Fire an event or call fetchNui.</span>}
@@ -243,6 +261,48 @@ export function NuiDevtools({ events = {}, callbacks = {}, scene: initialScene =
           </div>
         )}
       </div>
+    </>
+  );
+}
+
+function SurfacesTab({ data, stateNames }: { data: Record<string, unknown>; stateNames: string[] }) {
+  const [snap, setSnap] = useState(getSurfaces());
+  useEffect(() => onSurfaces(() => setSnap(getSurfaces())), []);
+  const entries = Object.entries(snap.surfaces).sort(([, a], [, b]) => (b.z ?? 0) - (a.z ?? 0) || (a.open === b.open ? 0 : a.open ? -1 : 1));
+  const names = [...new Set([...stateNames, ...Object.keys(snap.states)])];
+  return (
+    <>
+      {entries.length === 0 && (
+        <p className="nkdt-dim">
+          No surfaces yet. Render a {"<Surface name=…>"} or call defineSurface(); Lua declares them with NUI.surface().
+        </p>
+      )}
+      {entries.map(([name, s]) => (
+        <div className="nkdt-card" key={name}>
+          <div className="nkdt-row">
+            <span className="nkdt-name">
+              {name} <span className="nkdt-dim">{s.layer}</span>
+            </span>
+            <button className={`nkdt-btn${s.open ? "" : " p"}`} onClick={() => (s.open ? closeSurface(name) : openSurface(name, data[name] as never))}>
+              {s.open ? "Close" : "Open"}
+            </button>
+          </div>
+          {s.open && (
+            <div className="nkdt-chips">
+              <span className="nkdt-chip" style={{ cursor: "default" }}>z {s.z}</span>
+              {s.focused && <span className="nkdt-chip" style={{ cursor: "default", color: "#fff" }}>focus</span>}
+              {!s.visible && <span className="nkdt-chip" style={{ cursor: "default" }}>hidden</span>}
+            </div>
+          )}
+        </div>
+      ))}
+      <div className="nkdt-card">
+        <span className="nkdt-dim">States (NUI.state)</span>
+        {names.map((n) => (
+          <Toggle key={n} label={n} checked={Boolean(snap.states[n])} onChange={(v) => setSurfaceState(n, v)} />
+        ))}
+      </div>
+      <p className="nkdt-dim">Escape closes the top surface that takes input, like in game.</p>
     </>
   );
 }

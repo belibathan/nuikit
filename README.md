@@ -93,7 +93,7 @@ You get a complete FiveM resource:
 my-hud/
 ├─ fxmanifest.lua
 ├─ client/
-│  ├─ main.lua        ← your Lua: NUI.send / NUI.on / NUI.open
+│  ├─ main.lua        ← your Lua: surfaces, NUI.send / NUI.on
 │  └─ nuikit.lua      ← the runtime (framework-agnostic)
 └─ web/               ← Vite + React 19 + Tailwind v4 + shadcn
    └─ src/
@@ -102,7 +102,7 @@ my-hud/
       └─ dev.tsx      ← fake game data for the browser
 ```
 
-- **In the browser:** `npm run dev`, then press <kbd>`</kbd> for the devtools. You can fire Lua events, mock callbacks, watch traffic and swap day/night backdrops.
+- **In the browser:** `npm run dev`, then press <kbd>`</kbd> for the devtools. You can fire Lua events, mock callbacks, open surfaces, toggle states, watch traffic and swap day/night backdrops.
 - **In game:** drop the folder into `resources/`, `ensure my-hud`. While `dev` runs, `ui_page` points at Vite, so **every save hot-reloads in game**.
 - **Ship:** `npm run build`. `ui_page` is restored automatically.
 
@@ -113,7 +113,7 @@ Already have a NUI? Use only the parts you want ([plugin](#vite-plugin-nuikit), 
 | Package | What it does |
 |---|---|
 | [`vite-plugin-nuikit`](packages/vite) | Vite plugin. Lowers Tailwind v4 / shadcn CSS for Chromium 103, in-game HMR, `nuikit-doctor` CLI. |
-| [`nuikit-core`](packages/core) | 4 KB runtime. Typed `fetchNui` / `useNuiEvent`, visibility & focus, devtools, runtime theming. Plus `nuikit.lua`. |
+| [`nuikit-core`](packages/core) | The runtime. Typed `fetchNui` / `useNuiEvent`, [surfaces](#surfaces) (focus, layers, Escape across resources), devtools, runtime theming. Plus `nuikit.lua`. |
 | [`create-nuikit`](packages/create-nuikit) | One command to a working resource. |
 | [Registry](#components) | HUD components for the shadcn CLI, composed from stock shadcn (Card, Item, Kbd, Progress, Badge). |
 
@@ -199,18 +199,57 @@ NUI.notify({ title = 'Paid', type = 'success' })
 | `fetchNui(name, data?, { mock?, timeout? })` | Call a Lua callback. Resolves with its return value. Mocked in the browser. |
 | `onNui(name, fn)` / `useNuiEvent(name, fn)` | Handle `NUI.send` messages. |
 | `useNuiState(name, initial)` | Latest payload as state. |
-| `useNuiVisibility()` | `{ visible, close }`, driven by `NUI.open/close`, Escape built in. |
+| `useSurface(name)` / `<Surface name …>` | A surface's `{ open, visible, focused, data }` and the component that renders it. |
+| `openSurface(name, data?)` / `closeSurface(name)` | Open or close a surface declared in Lua. |
+| `useNuiStates()` | Client-wide states from `NUI.state()`. |
+| `useNuiVisibility()` | `{ visible, close }` for single-UI resources (`NUI.open/close`). |
 | `useNuiCallback(name)` | `{ call, loading, error, data }`. |
 | `mockNui(name, response)` / `emit(name, data)` | Fake Lua in the browser or tests. |
 | `applyTheme(css \| vars)` | Apply a pasted TweakCN theme at runtime, with Chromium 103 channels. |
-| `<NuiDevtools events callbacks />` | Browser-only panel (`nuikit-core/devtools`). Renders nothing in game. |
+| `<NuiDevtools events callbacks surfaces states />` | Browser-only panel (`nuikit-core/devtools`): events, surfaces, states, log. Renders nothing in game. |
 
 | `nuikit.lua` | |
 |---|---|
 | `NUI.send(action, data)` | Message the UI. |
 | `NUI.on(name, fn)` | Handle `fetchNui`. The return value is the response; errors are caught. |
-| `NUI.open({ focus?, cursor?, keepInput? })` / `NUI.close()` / `NUI.toggle()` | Visibility and focus in one call. Focus is released on resource stop. |
+| `NUI.surface(name, opts)` → `:open(data)` `:close()` `:update(data)` `:toggle()` `:isOpen()` | Declare a surface; nuikit handles focus, stacking and Escape. |
+| `NUI.state(name, value)` / `NUI.getState(name)` | Client-wide states shared by every nuikit resource. |
+| `NUI.open({ focus?, cursor?, keepInput? })` / `NUI.close()` / `NUI.toggle()` | Single-UI mode: a `main` surface on the panel layer. Focus is released on resource stop. |
 | `NUI.notify({ title, description?, type? })` | Toast via `<NuiToaster />`. |
+
+## Surfaces
+
+A server's UI is many pieces at once: a HUD, a target eye, an inventory, a phone, a confirm dialog. Each one usually calls `SetNuiFocus` on its own, so they fight over the cursor and Escape closes the wrong thing. With nuikit, every piece **declares what it is** and nuikit decides focus, cursor, stacking and Escape **across every resource that uses it**.
+
+```lua
+local hud     = NUI.surface('hud',       { layer = 'hud' })                    -- takes no input
+local inv     = NUI.surface('inventory', { layer = 'panel', exclusive = true, hides = { 'hud' }, blockedBy = { 'dead' } })
+local confirm = NUI.surface('confirm',   { layer = 'modal' })
+
+hud:open()
+inv:open({ items = GetItems() })    -- focus + cursor, HUD hidden
+confirm:open({ amount = 500 })      -- on top: takes focus; Escape closes it, then the inventory
+NUI.state('dead', true)             -- shared: blocked surfaces refuse to open
+```
+
+```tsx
+<Surface name="inventory" layer="panel" hides={["hud"]}>
+  {(data) => <InventoryGrid items={data.items} />}
+</Surface>
+
+const confirm = useSurface("confirm"); // { open, visible, focused, data, close }
+```
+
+| Rule | |
+|---|---|
+| **Layers** | `hud` < `world` < `panel` < `modal` < `system`. Later opens stack above earlier ones in the same layer. |
+| **Focus** | The top-most open surface that takes input (`input`: `none`, `cursor`, `keyboard`, `full`) gets NUI focus, in whichever resource owns it. |
+| **Escape** | Closes the top surface that takes input, one per press. `escape = 'back'` sends it to your UI instead; `'ignore'` keeps it open. |
+| **exclusive** | Opening it closes other open surfaces on its layer, in any resource. |
+| **hides** | Names or layers hidden (not closed) while it's open. |
+| **blockedBy** | States from `NUI.state()` that stop it opening. |
+
+There's no extra resource to install: every resource that bundles `nuikit.lua` keeps the same copy of the client-wide stack, and a resource started mid-session catches up. The manager runs under real Lua 5.4 in CI, with events delivered both synchronously and queued. `NUI.open()` / `NUI.close()` still work for a single UI.
 
 ## Components
 
