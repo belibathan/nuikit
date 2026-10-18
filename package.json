@@ -11,7 +11,7 @@
     "registry:build": "shadcn build -o apps/www/public/r",
     "proof": "pnpm --filter cef-proof proof",
     "changeset": "changeset",
-    "build:systems": "pnpm -r --filter \"./systems/**\" build",
+    "build:systems": "pnpm -r --filter \"./systems/**\" --filter \"./addons/**\" build",
     "pack:systems": "node scripts/pack-systems.mjs",
     "sync": "node scripts/sync-template.mjs"
   },

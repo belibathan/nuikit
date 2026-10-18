@@ -143,6 +143,22 @@ describe("bridge.lua", () => {
     expect(latest(hud)).toMatchObject({ loaded: true, health: 100, armor: 0, dead: false });
     expect(latest(hud).cash).toBeUndefined();
   });
+
+  it("pma-voice: Mumble talking (returns 1) and the proximity mode label", async () => {
+    client = await createClient();
+    const hud = await client.start("hud", {
+      before: natives(`
+        MUMBLE = 0
+        function MumbleIsPlayerTalking() return MUMBLE end
+        LocalPlayer.state.proximity = { index = 3, distance = 6.0, mode = "Shouting" }
+      `),
+      scripts: ["bridge.lua"],
+    });
+    await hud.run(`NUI.player.poll()`);
+    expect(latest(hud).voice).toMatchObject({ talking: false, range: 6, mode: "Shouting" });
+    await hud.run(`MUMBLE = 1; NUI.player.poll()`);
+    expect(latest(hud).voice.talking).toBe(true);
+  });
 });
 
 /** JS value → Lua table literal (test fixtures only). */

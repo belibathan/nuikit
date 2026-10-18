@@ -33,7 +33,19 @@ for (const name of systems) {
 
 fs.writeFileSync(
   path.join(stage, "README.md"),
-  `# [nuikit]\n\nOne design system for your whole server: https://github.com/belibathan/nuikit\n\n1. Put this folder in \`resources/\`.\n2. In server.cfg:\n\n\`\`\`cfg\nensure nuikit\nensure [nuikit]\n\`\`\`\n\n3. Stop the resources these replace (for example \`qbx_hud\`).\n4. Theme everything from \`nuikit/theme.css\` (paste any TweakCN theme).\n`,
+  `# [nuikit]\n\nOne design system for your whole server: https://github.com/belibathan/nuikit\n\n1. Put this folder in \`resources/\`.\n2. In server.cfg:\n\n\`\`\`cfg\nensure nuikit\nensure [nuikit]\n\`\`\`\n\n3. Stop the resources these replace (for example \`qbx_hud\`). On Qbox/QBCore, \`nuikit_stress\` keeps the stress system qbx_hud used to run.\n4. Theme everything from \`nuikit/theme.css\` (paste any TweakCN theme).\n`,
 );
 execFileSync("zip", ["-qr", "nuikit-systems.zip", "[nuikit]"], { cwd: out });
 console.log(`→ ${path.relative(root, path.join(out, "nuikit-systems.zip"))}`);
+
+// Addons replace another resource's UI. Ship them shaped like that resource, so the zip merges in place:
+//   nuikit-ox_lib.zip → ox_lib/web/build/…
+for (const name of fs.existsSync(path.join(root, "addons")) ? fs.readdirSync(path.join(root, "addons")) : []) {
+  const build = path.join(root, "addons", name, "web", "build");
+  if (!fs.existsSync(path.join(build, "index.html"))) throw new Error(`addons/${name}: web/build is missing; build it first`);
+  const stageAddon = path.join(out, "addons", name);
+  fs.cpSync(build, path.join(stageAddon, "web", "build"), { recursive: true });
+  fs.copyFileSync(path.join(root, "addons", name, "README.md"), path.join(stageAddon, "NUIKIT.md"));
+  execFileSync("zip", ["-qr", path.join(out, `nuikit-${name}.zip`), name], { cwd: path.join(out, "addons") });
+  console.log(`→ out/nuikit-${name}.zip`);
+}

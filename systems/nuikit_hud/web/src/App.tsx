@@ -51,7 +51,8 @@ function Status({ player, needs }: { player: NuiPlayer; needs: boolean }) {
 }
 
 function Voice({ voice }: { voice: NuiPlayer["voice"] }) {
-  const range = voice.range === undefined ? null : voice.range <= 1.5 ? "Whisper" : voice.range <= 3.5 ? "Normal" : "Shout";
+  // The voice resource's own label wins; distances differ between native audio and 3D audio.
+  const range = voice.mode ?? (voice.range === undefined ? null : `${Math.round(voice.range * 10) / 10} m`);
   if (!range && !voice.radio) return null;
   return (
     <div className="flex items-center gap-1.5 pt-1">
@@ -83,8 +84,8 @@ function Wallet({ player }: { player: NuiPlayer }) {
         </div>
       )}
       {player.bank !== undefined && (
-        <div className="flex items-center gap-2 text-sm tabular-nums text-muted-foreground drop-shadow">
-          <LandmarkIcon className="size-4" />
+        <div className="flex items-center gap-2 text-sm font-medium tabular-nums text-foreground/85 [text-shadow:0_1px_3px_rgb(0_0_0/0.7)]">
+          <LandmarkIcon className="size-4 text-muted-foreground" />
           {money.format(player.bank)}
         </div>
       )}

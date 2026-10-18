@@ -42,6 +42,7 @@ export function applyTheme(theme: ThemeVars | string, target?: HTMLElement, mode
   const el = target ?? document.documentElement;
   let vars: ThemeVars;
   if (typeof theme === "string") {
+    loadImports(theme);
     const { light, dark } = parseTheme(theme);
     const isDark = mode ? mode === "dark" : el.closest(".dark") !== null || document.documentElement.classList.contains("dark");
     vars = isDark ? { ...light, ...dark } : light;
@@ -59,6 +60,25 @@ export function applyTheme(theme: ThemeVars | string, target?: HTMLElement, mode
     }
   }
   return vars;
+}
+
+/** `@import url("https://fonts.googleapis.com/…")` lines in a pasted theme → <link> tags, once each. */
+export function loadImports(css: string): string[] {
+  const urls: string[] = [];
+  for (const m of css.matchAll(/@import\s+(?:url\(\s*)?["']?([^"')\s;]+)["']?\s*\)?[^;]*;/g)) {
+    const href = m[1]!;
+    if (!/^https?:\/\//.test(href)) continue;
+    urls.push(href);
+    if (typeof document === "undefined") continue;
+    const seen = [...document.querySelectorAll<HTMLLinkElement>("link[data-nuikit-import]")].some((l) => l.dataset.nuikitImport === href);
+    if (seen) continue;
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = href;
+    link.dataset.nuikitImport = href;
+    document.head.appendChild(link);
+  }
+  return urls;
 }
 
 /** Remove everything applyTheme() set. */

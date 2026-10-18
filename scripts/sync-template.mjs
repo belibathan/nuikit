@@ -11,7 +11,9 @@ import { fileURLToPath } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
-const SHADCN = new Set(["badge", "button", "card", "item", "kbd", "progress", "separator", "sonner", "textarea"]);
+const SHADCN = new Set(
+  fs.readdirSync(path.join(root, "vendor/shadcn/ui")).filter((f) => f.endsWith(".tsx")).map((f) => f.replace(/\.tsx$/, "")),
+);
 
 /** Where each component comes from. */
 const source = (c) => (SHADCN.has(c) ? `vendor/shadcn/ui/${c}.tsx` : `registry/nuikit/ui/${c}.tsx`);
@@ -22,6 +24,16 @@ const targets = [
     lua: ["nuikit.lua"],
     components: ["badge", "button", "card", "item", "kbd", "progress", "separator", "sonner", "vital", "key-hint", "nui-menu", "nui-toaster"],
     hooks: ["use-nui-store"],
+  },
+  {
+    // Drop-in replacement for ox_lib's web UI (builds to web/build).
+    dir: "addons/ox_lib",
+    lua: [],
+    components: [
+      "alert-dialog", "badge", "button", "calendar", "card", "checkbox", "dialog", "field", "input", "item", "kbd",
+      "label", "popover", "progress", "scroll-area", "select", "separator", "slider", "spinner", "switch", "textarea",
+    ],
+    hooks: [],
   },
   {
     dir: "systems/nuikit_hud",
