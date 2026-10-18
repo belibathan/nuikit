@@ -12,7 +12,7 @@ jobs:
   prerelease:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
       id-token: write
     env:
       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
@@ -47,3 +47,14 @@ jobs:
         env:
           NPM_CONFIG_PROVENANCE: "true"
         run: pnpm changeset publish --tag next --no-git-tag
+      - name: Build [nuikit] systems
+        run: pnpm build:systems && pnpm pack:systems
+      - name: Attach [nuikit] to a GitHub prerelease
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          tag="next-${GITHUB_SHA::7}"
+          version=$(node -p 'require("./packages/core/package.json").version')
+          gh release create "$tag" out/nuikit-systems.zip --prerelease --target "$GITHUB_SHA" \
+            --title "next: ${GITHUB_REF_NAME#next/} ($version)" \
+            --notes "Prerelease for testing. Unzip into resources/, then \`ensure nuikit\` and \`ensure [nuikit]\`. npm: \`npm create nuikit@next\` ($version)."

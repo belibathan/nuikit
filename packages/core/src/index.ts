@@ -26,8 +26,11 @@ export interface BuiltinEvents {
   "nuikit:visible": boolean;
   "nuikit:surfaces": import("./surfaces").SurfacesSnapshot;
   "nuikit:back": string;
+  "nuikit:player": import("./player").NuiPlayer;
+  "nuikit:theme": string;
 }
 export interface BuiltinCallbacks {
+  "nuikit:ready": { req: void; res: { ok: boolean; resource?: string } };
   "nuikit:close": { req: void | { name?: string }; res: { ok: boolean } };
   "nuikit:escape": { req: void; res: { ok: boolean; closed?: string; back?: string } };
   "nuikit:surface:open": { req: { name: string; data?: unknown }; res: { ok: boolean } };
@@ -257,6 +260,21 @@ export function onVisible(listener: (v: boolean) => void): () => void {
 // Lua → UI visibility is a built-in event.
 onNui("nuikit:visible", (v) => setVisible(Boolean(v)));
 
+// Built-in: the server theme (theme.css in the `nuikit` resource) applies to every nuikit UI.
+onNui("nuikit:theme", (css) => {
+  if (typeof css === "string" && css) applyTheme(css);
+});
+
+// In game, tell Lua the page is listening so it resends surfaces, player, theme: messages sent
+// before the page loaded are lost otherwise.
+if (!isBrowser() && typeof window !== "undefined") {
+  setTimeout(() => {
+    fetchNui("nuikit:ready").catch(() => {
+      /* resource without nuikit.lua */
+    });
+  }, 0);
+}
+
 /** Ask Lua to close this UI (releases NUI focus). Also hides it locally. */
 export async function closeNui(): Promise<void> {
   setVisible(false);
@@ -276,10 +294,15 @@ export function __reset(): void {
   visibilityListeners.clear();
   visible = true;
   onNui("nuikit:visible", (v) => setVisible(Boolean(v)));
+  onNui("nuikit:theme", (css) => {
+    if (typeof css === "string" && css) applyTheme(css);
+  });
   __resetSurfaces();
+  __resetPlayer();
 }
 
 export { applyTheme, clearTheme, parseTheme, toRgba, type ThemeVars } from "./theme";
+import { applyTheme } from "./theme";
 export {
   closeSurface,
   defineSurface,
@@ -299,3 +322,5 @@ export {
   type SurfacesSnapshot,
 } from "./surfaces";
 import { __resetSurfaces } from "./surfaces";
+export { DEFAULT_PLAYER, getPlayer, onPlayer, type NuiPlayer, type NuiPlayerJob } from "./player";
+import { __resetPlayer } from "./player";

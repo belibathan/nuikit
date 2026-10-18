@@ -150,6 +150,21 @@ describe.each([
     expect(await ui.run(`return NUI.isOpen()`)).toBe(false);
   });
 
+  it("nuikit:ready resends state the page missed, plus the server theme", async () => {
+    client = await createClient();
+    const ui = await client.start("ui", {
+      before: `
+        function GetResourceState(r) return r == 'nuikit' and 'started' or 'missing' end
+        function LoadResourceFile(r, f) return '.dark { --primary: oklch(0.7 0.2 150); }' end
+      `,
+    });
+    await ui.run(`H = NUI.surface('hud', { layer = 'hud' }) H:open()`);
+    ui.messages.length = 0; // the page wasn't listening yet
+    expect(await ui.call("nuikit:ready")).toMatchObject({ ok: true, resource: "ui" });
+    expect(ui.messages.map((m) => m.action)).toEqual(["nuikit:surfaces", "nuikit:theme"]);
+    expect(ui.surfaces().hud.open).toBe(true);
+  });
+
   it("NUI.on still returns handler results and turns errors into { error }", async () => {
     client = await createClient();
     const ui = await client.start("ui");
