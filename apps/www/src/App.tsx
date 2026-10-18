@@ -2,6 +2,7 @@ import { applyTheme, clearTheme, emit, type ThemeVars } from "nuikit-core/react"
 import { ArrowRightIcon, CarIcon, GithubIcon, HeartPulseIcon, KeyIcon, ShieldIcon, WrenchIcon, ZapIcon } from "lucide-react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { CodeBlock, Command, CopyButton } from "@/components/code";
+import { Logo } from "@/components/logo";
 import { Stage, radialItems } from "@/components/stage";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -41,8 +42,8 @@ function Nav() {
   return (
     <header className="sticky top-0 z-40 border-b bg-background/80 backdrop-blur">
       <nav className="mx-auto flex h-14 max-w-6xl items-center gap-6 px-6 text-sm">
-        <a href="#" className="font-semibold tracking-tight">
-          nuikit
+        <a href="#" aria-label="nuikit home">
+          <Logo className="text-lg" />
         </a>
         <div className="hidden gap-5 text-muted-foreground md:flex">
           <a href="#proof" className="hover:text-foreground">Why</a>
@@ -62,7 +63,12 @@ function Nav() {
 
 function Hero() {
   return (
-    <section className="mx-auto max-w-6xl px-6 pt-20 pb-16">
+    <section className="relative">
+      <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[640px] overflow-hidden" aria-hidden>
+        <img src="/la.jpg" alt="" className="size-full scale-110 object-cover opacity-30 blur-xl" />
+        <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-background/70 to-background" />
+      </div>
+      <div className="mx-auto max-w-6xl px-6 pt-20 pb-16">
       <div className="flex justify-center">
         <Badge variant="outline" asChild>
           <a href="#proof">
@@ -91,6 +97,7 @@ function Hero() {
           Live demo. Hold <Kbd>E</Kbd> and click the menu. Every value arrives through <code className="font-mono text-foreground">useNuiEvent</code>, the
           same way Lua sends it in game.
         </p>
+      </div>
       </div>
     </section>
   );
@@ -405,8 +412,8 @@ function Footer() {
   return (
     <footer className="border-t">
       <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-4 px-6 py-8 text-sm text-muted-foreground">
-        <span className="font-semibold text-foreground">nuikit</span>
-        <span>Not affiliated with Cfx.re, Rockstar Games or shadcn.</span>
+        <Logo className="text-base text-foreground" />
+        <span>Not affiliated with Cfx.re, Rockstar Games or shadcn. Photo: <a href="https://unsplash.com/photos/3fJO4DBFO30" className="underline-offset-4 hover:underline">Jessica Christian</a>.</span>
         <a href={REPO} className="ml-auto hover:text-foreground">GitHub</a>
         <a href="https://www.npmjs.com/package/vite-plugin-nuikit" className="hover:text-foreground">npm</a>
       </div>

@@ -257,6 +257,6 @@ PRs welcome. See [CONTRIBUTING.md](CONTRIBUTING.md). `pnpm i && pnpm test && pnp
 
 ## License
 
-[MIT](LICENSE). Not affiliated with Cfx.re, Rockstar Games, or shadcn.
+[MIT](LICENSE). Not affiliated with Cfx.re, Rockstar Games, or shadcn. Backdrop photo by [Jessica Christian](https://unsplash.com/photos/3fJO4DBFO30) on Unsplash. Brand assets live in [`docs/brand`](docs/brand).
 
 <div align="center"><sub>If nuikit saved you a night of debugging CEF, a ⭐ helps other server devs find it.</sub></div>
