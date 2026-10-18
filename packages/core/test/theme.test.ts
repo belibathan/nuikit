@@ -42,3 +42,20 @@ describe("themes", () => {
     expect(el.style.getPropertyValue("--border-a")).toBe("0.1");
   });
 });
+
+describe("theme imports", () => {
+  it("turns a full TweakCN paste's font @import into one <link>, and still reads the vars", () => {
+    const css = `@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap");
+:root { --primary: #111111; --font-sans: Inter, sans-serif; }
+.dark { --primary: #fafafa; }
+@theme inline { --color-primary: var(--primary); --font-sans: var(--font-sans); }`;
+    const el = document.createElement("div");
+    applyTheme(css, el, "dark");
+    applyTheme(css, el, "dark");
+    const links = document.querySelectorAll("link[data-nuikit-import]");
+    expect(links).toHaveLength(1);
+    expect((links[0] as HTMLLinkElement).href).toContain("family=Inter");
+    expect(el.style.getPropertyValue("--primary")).toBe("#fafafa");
+    expect(el.style.getPropertyValue("--font-sans")).toBe("Inter, sans-serif");
+  });
+});

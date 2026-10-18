@@ -84,8 +84,8 @@ function Wallet({ player }: { player: NuiPlayer }) {
         </div>
       )}
       {player.bank !== undefined && (
-        <div className="flex items-center gap-2 text-sm tabular-nums text-muted-foreground drop-shadow">
-          <LandmarkIcon className="size-4" />
+        <div className="flex items-center gap-2 text-sm font-medium tabular-nums text-foreground/85 [text-shadow:0_1px_3px_rgb(0_0_0/0.7)]">
+          <LandmarkIcon className="size-4 text-muted-foreground" />
           {money.format(player.bank)}
         </div>
       )}
