@@ -4,6 +4,8 @@
 
 <h3>shadcn/ui and Tailwind v4 for FiveM NUI, rendered right.</h3>
 
+<sub>Made by <a href="https://github.com/belibathan"><img src="https://github.com/belibathan.png?size=40" width="20" height="20" align="center" style="border-radius:50%" /> <b>@belibathan</b></a></sub>
+
 FiveM's NUI runs **Chromium 103**, and Tailwind v4 needs **111**. nuikit compiles your CSS down at build time.<br/>
 It also gives you typed Lua ↔ React messaging, browser devtools that fake the game, hot reload in game, and a registry of HUD components.
 
@@ -257,6 +259,6 @@ PRs welcome. See [CONTRIBUTING.md](CONTRIBUTING.md). `pnpm i && pnpm test && pnp
 
 ## License
 
-[MIT](LICENSE). Not affiliated with Cfx.re, Rockstar Games, or shadcn. Backdrop photo by [Jessica Christian](https://unsplash.com/photos/3fJO4DBFO30) on Unsplash. Brand assets live in [`docs/brand`](docs/brand).
+[MIT](LICENSE). Not affiliated with Cfx.re, Rockstar Games, or shadcn. Brand assets live in [`docs/brand`](docs/brand).
 
 <div align="center"><sub>If nuikit saved you a night of debugging CEF, a ⭐ helps other server devs find it.</sub></div>

@@ -3,6 +3,8 @@ import { ArrowRightIcon, CarIcon, GithubIcon, HeartPulseIcon, KeyIcon, ShieldIco
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { CodeBlock, Command, CopyButton } from "@/components/code";
 import { Logo } from "@/components/logo";
+import { Credit } from "@/components/credit";
+import { Backdrop } from "@/components/scene";
 import { Stage, radialItems } from "@/components/stage";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -65,11 +67,12 @@ function Hero() {
   return (
     <section className="relative">
       <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[640px] overflow-hidden" aria-hidden>
-        <img src="/la.jpg" alt="" className="size-full scale-110 object-cover opacity-30 blur-xl" />
+        <img src="/bg/hero.jpg" alt="" className="size-full object-cover opacity-45" />
         <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-background/70 to-background" />
       </div>
-      <div className="mx-auto max-w-6xl px-6 pt-20 pb-16">
-      <div className="flex justify-center">
+      <div className="mx-auto max-w-6xl px-6 pt-16 pb-16">
+      <div className="flex flex-col items-center gap-3">
+        <Credit />
         <Badge variant="outline" asChild>
           <a href="#proof">
             FiveM runs Chromium 103. Tailwind v4 needs 111. <ArrowRightIcon />
@@ -256,7 +259,9 @@ function Gallery() {
     return () => clearInterval(id);
   }, []);
   return (
-    <section className="mx-auto max-w-6xl px-6 py-20">
+    <section className="relative">
+      <Backdrop src="/bg/garage.jpg" />
+      <div className="mx-auto max-w-6xl px-6 py-20">
       <SectionTitle id="components" eyebrow="Registry" title="Game UI, composed from shadcn's own components.">
         Installed with the shadcn CLI you already use; their shadcn dependencies (Card, Item, Kbd, Progress, Badge) come with them. The code lands in your project
         and every piece is token-only and Chromium 103 safe.
@@ -307,6 +312,7 @@ function Gallery() {
         <MiniCard name="nui-toaster" text="The stock shadcn Sonner Toaster, wired to NUI.notify() in Lua." />
         <MiniCard name="use-nui-store" text="Merge partial updates from Lua into one object." />
       </div>
+      </div>
     </section>
   );
 }
@@ -324,7 +330,9 @@ function MiniCard({ name, text }: { name: string; text: string }) {
 
 function Bridge() {
   return (
-    <section className="mx-auto max-w-6xl px-6 py-20">
+    <section className="relative">
+      <Backdrop src="/bg/street.jpg" />
+      <div className="mx-auto max-w-6xl px-6 py-20">
       <SectionTitle id="bridge" eyebrow="Runtime" title="Lua and React, typed end to end.">
         One <code className="font-mono text-foreground">nui.d.ts</code> describes every message. <code className="font-mono text-foreground">fetchNui</code> autocompletes
         and checks payloads; whatever your Lua handler returns is the response. Framework-agnostic: QBCore, Qbox, ESX, ox or standalone.
@@ -374,6 +382,7 @@ NUI.send('hud:vitals', { health = 80, armor = 50 })
 NUI.notify({ title = 'Paid', type = 'success' })`}
         />
       </div>
+      </div>
     </section>
   );
 }
@@ -413,7 +422,13 @@ function Footer() {
     <footer className="border-t">
       <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-4 px-6 py-8 text-sm text-muted-foreground">
         <Logo className="text-base text-foreground" />
-        <span>Not affiliated with Cfx.re, Rockstar Games or shadcn. Photo: <a href="https://unsplash.com/photos/3fJO4DBFO30" className="underline-offset-4 hover:underline">Jessica Christian</a>.</span>
+        <span>
+          by{" "}
+          <a href="https://github.com/belibathan" className="font-medium text-foreground underline-offset-4 hover:underline">
+            @belibathan
+          </a>
+        </span>
+        <span>Not affiliated with Cfx.re, Rockstar Games or shadcn.</span>
         <a href={REPO} className="ml-auto hover:text-foreground">GitHub</a>
         <a href="https://www.npmjs.com/package/vite-plugin-nuikit" className="hover:text-foreground">npm</a>
       </div>
