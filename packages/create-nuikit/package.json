@@ -1,14 +1,37 @@
 {
   "name": "create-nuikit",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Scaffold a FiveM NUI resource with shadcn/ui, Tailwind v4, typed Lua↔JS and browser devtools — that renders right in game.",
+  "author": "belibathan (https://github.com/belibathan)",
   "license": "MIT",
   "type": "module",
-  "bin": { "create-nuikit": "./dist/index.js" },
-  "files": ["dist", "template"],
-  "keywords": ["fivem", "nui", "create", "scaffold", "shadcn", "tailwindcss", "vite", "react", "redm", "qbcore", "qbox", "esx"],
-  "repository": { "type": "git", "url": "https://github.com/belibathan/nuikit", "directory": "packages/create-nuikit" },
-  "homepage": "https://github.com/belibathan/nuikit#readme",
+  "bin": {
+    "create-nuikit": "./dist/index.js"
+  },
+  "files": [
+    "dist",
+    "template"
+  ],
+  "keywords": [
+    "fivem",
+    "nui",
+    "create",
+    "scaffold",
+    "shadcn",
+    "tailwindcss",
+    "vite",
+    "react",
+    "redm",
+    "qbcore",
+    "qbox",
+    "esx"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/belibathan/nuikit",
+    "directory": "packages/create-nuikit"
+  },
+  "homepage": "https://nuikit.vercel.app",
   "scripts": {
     "prebuild": "node ../../scripts/sync-template.mjs",
     "build": "tsup",
@@ -20,5 +43,6 @@
     "picocolors": "^1.1.1",
     "tsup": "^8.3.5",
     "typescript": "^5.6.3"
-  }
+  },
+  "bugs": "https://github.com/belibathan/nuikit/issues"
 }

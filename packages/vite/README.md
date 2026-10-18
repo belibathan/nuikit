@@ -1,4 +1,12 @@
+<a href="https://nuikit.vercel.app"><img src="https://raw.githubusercontent.com/belibathan/nuikit/main/docs/assets/banner.png" alt="nuikit — shadcn/ui + Tailwind v4 for FiveM" width="100%" /></a>
+
 # vite-plugin-nuikit
+
+[![npm](https://img.shields.io/npm/v/vite-plugin-nuikit?style=flat-square&labelColor=0a0a0a&color=262626)](https://www.npmjs.com/package/vite-plugin-nuikit)
+[![CI](https://img.shields.io/github/actions/workflow/status/belibathan/nuikit/ci.yml?branch=main&label=CI&style=flat-square&labelColor=0a0a0a&color=262626)](https://github.com/belibathan/nuikit/actions/workflows/ci.yml)
+[![MIT](https://img.shields.io/badge/license-MIT-262626?style=flat-square&labelColor=0a0a0a)](https://github.com/belibathan/nuikit/blob/main/LICENSE)
+
+Part of **[nuikit](https://github.com/belibathan/nuikit)**: shadcn/ui and Tailwind v4 for FiveM NUI, rendered right. [Website & live demo →](https://nuikit.vercel.app)
 
 **Make shadcn/ui and Tailwind v4 render in FiveM.** FiveM's NUI is Chromium 103, and Tailwind v4 targets 111+. This Vite plugin lowers your CSS at build time, keeps themes live, and gives you in-game hot reload.
 
@@ -66,4 +74,6 @@ import { lowerCss, formatReport } from "vite-plugin-nuikit";
 const { code, report } = lowerCss(css, { chrome: 103 });
 ```
 
-MIT · part of [nuikit](https://github.com/belibathan/nuikit)
+---
+
+<sub>MIT · Built by <a href="https://github.com/belibathan">@belibathan</a> · <a href="https://github.com/belibathan/nuikit">github.com/belibathan/nuikit</a></sub>

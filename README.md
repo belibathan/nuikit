@@ -1,21 +1,25 @@
 <div align="center">
 
-<img src="docs/assets/banner.png" alt="nuikit — shadcn + Tailwind v4 for FiveM, rendered right" width="100%" />
+<a href="https://nuikit.vercel.app"><img src="docs/assets/banner.png" alt="nuikit — shadcn/ui + Tailwind v4 for FiveM, rendered right. By @belibathan." width="100%" /></a>
 
-<h3>shadcn/ui and Tailwind v4 for FiveM NUI, rendered right.</h3>
+<br/>
+<br/>
 
-<sub>Made by <a href="https://github.com/belibathan"><img src="https://github.com/belibathan.png?size=40" width="20" height="20" align="center" style="border-radius:50%" /> <b>@belibathan</b></a></sub>
+**FiveM's NUI runs Chromium 103. Tailwind v4 needs 111.**<br/>
+nuikit compiles stock shadcn/ui down at build time, then adds typed Lua ↔ React,<br/>
+browser devtools that fake the game, in-game hot reload, and a registry of HUD components.
 
-FiveM's NUI runs **Chromium 103**, and Tailwind v4 needs **111**. nuikit compiles your CSS down at build time.<br/>
-It also gives you typed Lua ↔ React messaging, browser devtools that fake the game, hot reload in game, and a registry of HUD components.
+<br/>
 
-[![CI](https://github.com/belibathan/nuikit/actions/workflows/ci.yml/badge.svg)](https://github.com/belibathan/nuikit/actions/workflows/ci.yml)
-[![npm](https://img.shields.io/npm/v/vite-plugin-nuikit?label=vite-plugin-nuikit&color=8b5cf6)](https://www.npmjs.com/package/vite-plugin-nuikit)
-[![Chromium 103](https://img.shields.io/badge/verified%20in-Chromium%20103-22c55e)](examples/cef-proof)
-[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Stars](https://img.shields.io/github/stars/belibathan/nuikit?style=social)](https://github.com/belibathan/nuikit)
+[![vite-plugin-nuikit](https://img.shields.io/npm/v/vite-plugin-nuikit?label=vite-plugin-nuikit&style=flat-square&labelColor=0a0a0a&color=262626)](https://www.npmjs.com/package/vite-plugin-nuikit)
+[![nuikit-core](https://img.shields.io/npm/v/nuikit-core?label=nuikit-core&style=flat-square&labelColor=0a0a0a&color=262626)](https://www.npmjs.com/package/nuikit-core)
+[![create-nuikit](https://img.shields.io/npm/v/create-nuikit?label=create-nuikit&style=flat-square&labelColor=0a0a0a&color=262626)](https://www.npmjs.com/package/create-nuikit)
+<br/>
+[![CI](https://img.shields.io/github/actions/workflow/status/belibathan/nuikit/ci.yml?branch=main&label=CI&style=flat-square&labelColor=0a0a0a&color=262626)](https://github.com/belibathan/nuikit/actions/workflows/ci.yml)
+[![Verified in Chromium 103](https://img.shields.io/badge/verified%20in-Chromium%20103-262626?style=flat-square&labelColor=0a0a0a)](examples/cef-proof)
+[![MIT](https://img.shields.io/badge/license-MIT-262626?style=flat-square&labelColor=0a0a0a)](LICENSE)
 
-**[Website & live demo](https://nuikit.vercel.app)** · [Quick start](#quick-start) · [Why](#why) · [Components](#components) · [API](#api)
+**[Website](https://nuikit.vercel.app)** &nbsp;·&nbsp; [Quick start](#quick-start) &nbsp;·&nbsp; [Components](#components) &nbsp;·&nbsp; [API](#api) &nbsp;·&nbsp; [Theming](#theming) &nbsp;·&nbsp; [How it works](#how-it-works)
 
 </div>
 
@@ -25,9 +29,40 @@ It also gives you typed Lua ↔ React messaging, browser devtools that fake the 
 npm create nuikit@latest my-hud
 ```
 
-<img src="docs/assets/compare.png" alt="The same shadcn page rendered in Chromium 103: stock (no colors, broken layout) vs. with nuikit (correct)" width="100%" />
+<a href="https://nuikit.vercel.app"><img src="docs/assets/hud.jpg" alt="A HUD built from stock shadcn/ui components over a Los Santos street: list menu, vitals, key hint and speedometer" width="100%" /></a>
 
-<sub>Same code, same browser. Left: stock shadcn + Tailwind v4 in Chromium 103. Right: built with <code>vite-plugin-nuikit</code>. Rendered by <a href="examples/cef-proof">our CI</a> in a real Chromium 103 on every push.</sub>
+<p align="center"><sub>The <a href="https://nuikit.vercel.app">live demo</a>: every panel is stock shadcn (Card, Item, Progress, Kbd, Badge), driven by typed <code>NUI.send</code> events.</sub></p>
+
+<table>
+<tr>
+<td width="50%" valign="top">
+
+**Stock shadcn, in game**<br/>
+oklch themes, `bg-primary/50`, breakpoints, transforms and gradients lowered for Chromium 103. Themes stay live.
+
+</td>
+<td width="50%" valign="top">
+
+**Typed Lua ↔ React**<br/>
+One `nui.d.ts` types `NUI.send`, `fetchNui` and `NUI.on`. A wrong payload is a compile error.
+
+</td>
+</tr>
+<tr>
+<td valign="top">
+
+**Devtools that fake the game**<br/>
+Press <kbd>`</kbd> in the browser to fire Lua events, mock callbacks and watch traffic. No client restarts.
+
+</td>
+<td valign="top">
+
+**Hot reload in game**<br/>
+While `dev` runs, `ui_page` points at Vite. Every save updates the HUD in your running client.
+
+</td>
+</tr>
+</table>
 
 ## Why
 
@@ -71,7 +106,7 @@ my-hud/
 - **In game:** drop the folder into `resources/`, `ensure my-hud`. While `dev` runs, `ui_page` points at Vite, so **every save hot-reloads in game**.
 - **Ship:** `npm run build`. `ui_page` is restored automatically.
 
-Already have a NUI? Use only the parts you want ([plugin](#nuikitvite), [runtime](#nuikitcore), [components](#components)).
+Already have a NUI? Use only the parts you want ([plugin](#vite-plugin-nuikit), [runtime](#api), [components](#components)).
 
 ## What's inside
 
@@ -206,7 +241,7 @@ Anything else, use stock shadcn: `npx shadcn add dialog tabs select`. It'll rend
 
 nuikit has no theme system of its own. **shadcn's tokens are the system.** Paste any [TweakCN](https://tweakcn.com) or [shadcn theme](https://ui.shadcn.com/themes) into `web/src/index.css` and every component follows: yours, shadcn's and nuikit's.
 
-<img src="docs/assets/theme.png" alt="The same HUD under a different TweakCN theme" width="100%" />
+<img src="docs/assets/theme.jpg" alt="The same HUD under a different TweakCN theme" width="100%" />
 
 To switch themes at runtime (per job, per player setting), use `applyTheme()`. It converts oklch to RGB in JS, because the game's browser can't.
 
@@ -240,7 +275,7 @@ RedM uses the same CEF, so it should work. Change <code>game 'gta5'</code> to <c
 </details>
 
 <details><summary><b>Vue / Svelte / vanilla?</b></summary>
-<code>vite-plugin-nuikit</code> and the core runtime (<code>nuikit</code>) are framework-agnostic. Only <code>/react</code>, <code>/devtools</code> and the registry components are React.
+<code>vite-plugin-nuikit</code> and <code>nuikit-core</code> are framework-agnostic. Only <code>/react</code>, <code>/devtools</code> and the registry components are React.
 </details>
 
 <details><summary><b>What happens when Cfx updates CEF?</b></summary>
@@ -259,6 +294,14 @@ PRs welcome. See [CONTRIBUTING.md](CONTRIBUTING.md). `pnpm i && pnpm test && pnp
 
 ## License
 
-[MIT](LICENSE). Not affiliated with Cfx.re, Rockstar Games, or shadcn. Brand assets live in [`docs/brand`](docs/brand).
+[MIT](LICENSE). Not affiliated with Cfx.re, Rockstar Games, or shadcn. Logos and artwork live in [`docs/brand`](docs/brand).
 
-<div align="center"><sub>If nuikit saved you a night of debugging CEF, a ⭐ helps other server devs find it.</sub></div>
+<br/>
+
+<div align="center">
+<a href="https://github.com/belibathan/nuikit"><img src="docs/brand/mark-white.svg#gh-dark-mode-only" width="28" alt="nuikit" /><img src="docs/brand/mark-black.svg#gh-light-mode-only" width="28" alt="nuikit" /></a>
+<br/>
+<sub>Designed and built by <a href="https://github.com/belibathan"><img src="https://github.com/belibathan.png?size=40" width="16" height="16" align="center" /> <b>@belibathan</b></a></sub>
+<br/>
+<sub>If nuikit saved you a night of debugging CEF, a ⭐ helps other server devs find it.</sub>
+</div>

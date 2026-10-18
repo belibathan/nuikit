@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.1 (2026-10-18)
+
+- New brand: the nuikit mark, Geist type, and Los Santos backdrops across the README, website and npm pages. Brand guide and assets in [`docs/brand`](docs/brand).
+- Package metadata: author, homepage and issue links.
+
 ## 0.2.0 (2026-10-18)
 
 - **Registry components are now compositions of stock shadcn/ui**, following its file conventions (`data-slot`, `React.ComponentProps`, `cva`): `vital` = icon + `Progress`; `key-hint` = `Kbd` (+ `Progress` for hold); `task-progress` = `Card` + `Progress` + `Kbd`; `nui-menu` = `Card` + `Item`; `speedometer` uses `Badge` and `Progress`; `radial-menu` uses `popover`/`accent` like shadcn menus. Dependencies are declared as `registryDependencies`.
