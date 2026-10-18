@@ -19,6 +19,13 @@
     <div class="space-y-3">
       <div class="rounded-lg border border-destructive/40 bg-destructive/15 p-4 text-sm"><b class="text-destructive">Low fuel</b> <span class="text-muted-foreground">· 12% remaining</span></div>
       <div class="rounded-lg border bg-card/60 p-4 text-sm backdrop-blur-sm">Press <kbd class="rounded border bg-muted px-1.5 font-mono text-xs">E</kbd> to talk to the dealer</div>
+      <div data-slot="card" class="flex flex-col gap-2 rounded-xl border bg-card py-3 text-card-foreground shadow-sm">
+        <div data-probe="cardheader" data-slot="card-header" class="@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-2 px-4 has-data-[slot=card-action]:grid-cols-[1fr_auto]">
+          <div data-slot="card-title" class="leading-none font-semibold">Garage</div>
+          <div data-slot="card-description" class="text-sm text-muted-foreground">Stock shadcn CardAction (uses :has)</div>
+          <div data-slot="card-action" class="col-start-2 row-span-2 row-start-1 self-start justify-self-end"><button data-probe="svgbtn" class="inline-flex h-8 items-center gap-1.5 rounded-md border px-4 text-xs has-[>svg]:px-3"><svg width="12" height="12" viewBox="0 0 12 12"><circle cx="6" cy="6" r="5" fill="currentColor"/></svg>3 cars</button></div>
+        </div>
+      </div>
       <input class="h-9 w-full rounded-md border border-input bg-input/30 px-3 text-sm outline-none ring-[3px] ring-ring/40" placeholder="Search vehicles" value="Search vehicles" />
     </div>
   </div>

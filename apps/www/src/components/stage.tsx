@@ -32,15 +32,15 @@ export function Stage({ className, menu = true, scene = "dusk" }: { className?: 
   useFakeLua();
 
   return (
-    <div className={cn("relative isolate aspect-video w-full overflow-hidden rounded-2xl border bg-black shadow-2xl", className)}>
+    <div className={cn("relative isolate aspect-video w-full overflow-hidden rounded-xl border bg-black", className)}>
       <Scene variant={scene} />
       <div className="absolute top-0 left-0 origin-top-left" style={{ width: 1280, height: 720, transform: "scale(var(--stage-scale, 1))" }} ref={useFit()}>
         {/* zone C: player */}
-        <div className="absolute bottom-10 left-10 flex items-end gap-2">
-          <Vital label="Health" value={vitals.health} tone="destructive" icon={<HeartPulse />} size="lg" />
-          <Vital label="Armor" value={vitals.armor} tone="chart-2" icon={<Shield />} size="lg" low={-1} />
-          <Vital label="Hunger" value={vitals.hunger} tone="chart-3" icon={<Sandwich />} size="lg" />
-          <Vital label="Thirst" value={vitals.thirst} tone="chart-1" icon={<Droplet />} size="lg" />
+        <div className="absolute bottom-12 left-12 flex flex-col gap-2.5 rounded-lg border bg-background/80 p-3 shadow-sm">
+          <Vital label="Health" value={vitals.health} tone="destructive" icon={<HeartPulse />} />
+          <Vital label="Armor" value={vitals.armor} tone="chart-1" icon={<Shield />} low={-1} />
+          <Vital label="Hunger" value={vitals.hunger} tone="chart-2" icon={<Sandwich />} />
+          <Vital label="Thirst" value={vitals.thirst} tone="chart-3" icon={<Droplet />} />
         </div>
 
         {/* zone D: vehicle */}
@@ -51,8 +51,8 @@ export function Stage({ className, menu = true, scene = "dusk" }: { className?: 
         {/* zone E: prompt + progress */}
         <div className="absolute bottom-12 left-1/2 flex -translate-x-1/2 flex-col items-center gap-3">
           {task && <TaskProgress key={task.key} label={task.label} duration={task.duration} onComplete={() => setTask(null)} />}
-          <KeyHint keyLabel="E" hold={900} onConfirm={() => emit("nuikit:notify", { title: "Simeon", description: "\"Get in. We've got cars to sell.\"" })}>
-            Talk to Simeon <span className="text-muted-foreground">· hold</span>
+          <KeyHint keys="E" hold={900} onConfirm={() => emit("nuikit:notify", { title: "Simeon", description: "\"Get in. We've got cars to sell.\"" })}>
+            Hold to talk to Simeon
           </KeyHint>
         </div>
 
@@ -61,7 +61,7 @@ export function Stage({ className, menu = true, scene = "dusk" }: { className?: 
             <NuiMenu
               global={false}
               title="Premium Deluxe Motorsport"
-              subtitle="↑↓ move · Enter select"
+              description="↑↓ move · Enter select"
               items={[
                 { id: "buy", label: "Buy vehicle", description: "Pegassi Zentorno · $725,000", icon: <Car />, meta: "$725k" },
                 { id: "repair", label: "Repair", description: "Fix body and engine", icon: <Wrench />, meta: "$1,200" },

@@ -7,5 +7,5 @@ export default defineConfig({
   clean: true,
   target: "node18",
   platform: "node",
-  external: ["vite", "lightningcss"],
+  external: ["vite", "lightningcss", "postcss", "css-has-pseudo"],
 });

@@ -50,11 +50,51 @@
       ],
       "sonner": [
         "./node_modules/sonner/dist/index.d.ts"
+      ],
+      "@/components/ui/badge": [
+        "../../vendor/shadcn/ui/badge.tsx"
+      ],
+      "@/components/ui/button": [
+        "../../vendor/shadcn/ui/button.tsx"
+      ],
+      "@/components/ui/card": [
+        "../../vendor/shadcn/ui/card.tsx"
+      ],
+      "@/components/ui/item": [
+        "../../vendor/shadcn/ui/item.tsx"
+      ],
+      "@/components/ui/kbd": [
+        "../../vendor/shadcn/ui/kbd.tsx"
+      ],
+      "@/components/ui/progress": [
+        "../../vendor/shadcn/ui/progress.tsx"
+      ],
+      "@/components/ui/separator": [
+        "../../vendor/shadcn/ui/separator.tsx"
+      ],
+      "@/components/ui/sonner": [
+        "../../vendor/shadcn/ui/sonner.tsx"
+      ],
+      "@/components/ui/textarea": [
+        "../../vendor/shadcn/ui/textarea.tsx"
+      ],
+      "radix-ui": [
+        "./node_modules/radix-ui"
+      ],
+      "class-variance-authority": [
+        "./node_modules/class-variance-authority"
+      ],
+      "next-themes": [
+        "./node_modules/next-themes"
+      ],
+      "lucide-react": [
+        "./node_modules/lucide-react"
       ]
     }
   },
   "include": [
     "src",
-    "../../registry"
+    "../../registry",
+    "../../vendor"
   ]
 }

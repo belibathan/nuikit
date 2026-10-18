@@ -26,7 +26,8 @@ export default defineConfig({
 | `translate:` / `scale:` / `rotate:` | ignored | one `transform`, composed via non-inheriting `@property` |
 | `linear-gradient(to right in oklab, …)` | ignored | `linear-gradient(to right, …)` |
 | CSS nesting, `dvh` | ignored | flattened, `vh` |
-| `:has()`, `@container`, `light-dark()`, `@starting-style` | ignored | **reported** at build so nothing fails silently |
+| `:has()` (shadcn Button, Card, Item) | ignored | reported; `hasPolyfill: true` opts in to css-has-pseudo (static menus only, not 10 Hz HUDs) |
+| `@container`, `light-dark()`, `@starting-style` | ignored | **reported** at build so nothing fails silently |
 
 Verified by rendering in a real Chromium 103 in CI: see [`examples/cef-proof`](../../examples/cef-proof).
 
@@ -38,6 +39,7 @@ nuikit({
   page: "web/dist/index.html",   // ui_page value for builds
   hotInGame: true,               // point ui_page at the dev server during `vite dev`
   compat: true,                  // or a Chromium major (e.g. 120) when Cfx updates CEF; false to disable
+  hasPolyfill: false,            // opt in to css-has-pseudo for :has() (static UIs)
   report: true,                  // print the compat summary
 });
 ```

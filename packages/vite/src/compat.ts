@@ -15,13 +15,21 @@
  *   - dvh/svh/lvh → vh (NUI viewport is fixed anyway).
  *   - reports what can't be lowered (:has(), @container, …) so nothing fails silently.
  */
+import cssHasPseudo from "css-has-pseudo";
 import { transform as lightning } from "lightningcss";
+import postcss from "postcss";
 
 export interface CompatOptions {
   /** Chromium major version of the target CEF. FiveM/RedM: 103. */
   chrome?: number;
   /** Minify the output (build). Default false. */
   minify?: boolean;
+  /**
+   * Polyfill :has() (Chromium 105+) with css-has-pseudo. shadcn uses it in Button, Card
+   * and Item. Needs the runtime the Vite plugin injects. Default false: the runtime
+   * re-evaluates selectors on DOM changes, which a 10 Hz HUD can't afford.
+   */
+  has?: boolean;
   /** Lower translate/scale/rotate into transform. Default true. */
   transforms?: boolean;
   filename?: string;
@@ -38,6 +46,7 @@ export interface CompatReport {
   opacityRewrites: number;
   transformRewrites: number;
   gradientRewrites: number;
+  hasSelectors: number;
   viewportUnits: number;
   warnings: CompatWarning[];
 }
@@ -50,7 +59,7 @@ export interface CompatResult {
 const SUPPORTS_COLOR_MIX = /@supports\s*\(\s*color\s*:\s*color-mix\(\s*in\s+lab\s*,\s*red\s*,\s*red\s*\)\s*\)\s*\{/g;
 
 export function lowerCss(input: string, options: CompatOptions = {}): CompatResult {
-  const { chrome = 103, transforms = true, filename = "nuikit.css", minify = false } = options;
+  const { chrome = 103, transforms = true, has = false, filename = "nuikit.css", minify = false } = options;
 
   // Pass 1 — Lightning CSS
   let code = lightning({
@@ -61,7 +70,7 @@ export function lowerCss(input: string, options: CompatOptions = {}): CompatResu
     errorRecovery: true,
   }).code.toString();
 
-  const report: CompatReport = { colorTokens: 0, opacityRewrites: 0, transformRewrites: 0, gradientRewrites: 0, viewportUnits: 0, warnings: [] };
+  const report: CompatReport = { colorTokens: 0, opacityRewrites: 0, transformRewrites: 0, gradientRewrites: 0, hasSelectors: 0, viewportUnits: 0, warnings: [] };
 
   // Pass 2a — color tokens get rgb channels
   const colorVars = collectColorVars(code);
@@ -100,7 +109,14 @@ export function lowerCss(input: string, options: CompatOptions = {}): CompatResu
     return `${d}v${unit}`;
   });
 
-  report.warnings = audit(code);
+  // Pass 2f — :has() → attribute selectors maintained by the css-has-pseudo runtime
+  if (has && /:has\(/.test(code)) {
+    const before = (code.match(/:has\(/g) ?? []).length;
+    code = postcss([cssHasPseudo({ preserve: true })]).process(code, { from: undefined }).css;
+    report.hasSelectors = before;
+  }
+
+  report.warnings = audit(code, { hasPolyfilled: report.hasSelectors > 0 });
 
   if (minify) {
     code = lightning({ filename, code: Buffer.from(code), targets: { chrome: chrome << 16 }, minify: true, errorRecovery: true }).code.toString();
@@ -356,7 +372,7 @@ function trimNum(n: number) {
 }
 
 const CHECKS: { feature: string; re: RegExp; hint: string }[] = [
-  { feature: ":has()", re: /:has\(/g, hint: "Chromium 105+. Rules using it are ignored in game; avoid has-* variants for anything that matters." },
+  { feature: ":has()", re: /:has\(/g, hint: "Chromium 105+, ignored in game. In stock shadcn (Button, Card, Item) these are small layout tweaks that degrade gracefully; hasPolyfill: true polyfills them for static UIs." },
   { feature: "@container", re: /@container\b/g, hint: "Chromium 105+. Container-query styles won't apply in game; use breakpoints or plain flex/grid." },
   { feature: "color-mix() (non-token)", re: /color-mix\(/g, hint: "Couldn't be lowered (e.g. currentColor/50 or two variables). The solid fallback color is used." },
   { feature: "oklch()/oklab()", re: /okl(?:ch|ab)\(/g, hint: "Unsupported color syntax left in output." },
@@ -366,11 +382,12 @@ const CHECKS: { feature: string; re: RegExp; hint: string }[] = [
   { feature: "field-sizing", re: /field-sizing/g, hint: "Chromium 123+. Auto-growing textareas won't grow." },
 ];
 
-function audit(css: string): CompatWarning[] {
+function audit(css: string, { hasPolyfilled = false } = {}): CompatWarning[] {
   // ignore features that only appear inside @supports guards (progressive enhancement is fine)
   const unguarded = stripSupportsBlocks(css);
   const warnings: CompatWarning[] = [];
   for (const c of CHECKS) {
+    if (hasPolyfilled && c.feature === ":has()") continue;
     const count = unguarded.match(c.re)?.length ?? 0;
     if (count) warnings.push({ feature: c.feature, count, hint: c.hint });
   }
@@ -401,6 +418,7 @@ export function formatReport(report: CompatReport, file?: string): string {
     `  ${c(32, "✓")} ${report.opacityRewrites} opacity modifiers rewritten ${c(2, "(bg-primary/50 …)")}`,
   ];
   if (report.transformRewrites) lines.push(`  ${c(32, "✓")} ${report.transformRewrites} translate/scale/rotate → transform`);
+  if (report.hasSelectors) lines.push(`  ${c(32, "✓")} ${report.hasSelectors} :has() selectors polyfilled ${c(2, "(css-has-pseudo)")}`);
   if (report.gradientRewrites) lines.push(`  ${c(32, "✓")} ${report.gradientRewrites} gradient color spaces dropped ${c(2, "(to right in oklab → to right)")}`);
   if (report.viewportUnits) lines.push(`  ${c(32, "✓")} ${report.viewportUnits} dvh/svh → vh`);
   for (const w of report.warnings) lines.push(`  ${c(33, "!")} ${w.feature} ×${w.count} ${c(2, "— " + w.hint)}`);

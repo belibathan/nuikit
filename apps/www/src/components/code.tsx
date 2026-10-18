@@ -1,29 +1,31 @@
 import { Check, Copy } from "lucide-react";
 import { useState, type ReactNode } from "react";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 export function CopyButton({ text, className }: { text: string; className?: string }) {
   const [done, setDone] = useState(false);
   return (
-    <button
-      type="button"
+    <Button
+      variant="ghost"
+      size="icon-sm"
       aria-label="Copy"
-      className={cn("grid size-7 place-items-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground", className)}
+      className={cn("text-muted-foreground", className)}
       onClick={() => {
         navigator.clipboard?.writeText(text);
         setDone(true);
         setTimeout(() => setDone(false), 1400);
       }}
     >
-      {done ? <Check className="size-3.5 text-chart-1" /> : <Copy className="size-3.5" />}
-    </button>
+      {done ? <Check /> : <Copy />}
+    </Button>
   );
 }
 
 export function Command({ children, className }: { children: string; className?: string }) {
   return (
-    <div className={cn("flex items-center gap-3 rounded-xl border bg-card/70 py-2 pr-2 pl-4 font-mono text-sm backdrop-blur", className)}>
-      <span className="select-none text-primary">$</span>
+    <div className={cn("flex h-12 items-center gap-3 rounded-md border bg-muted/40 pr-2 pl-4 font-mono text-sm", className)}>
+      <span className="select-none text-muted-foreground">$</span>
       <span className="flex-1 truncate">{children}</span>
       <CopyButton text={children} />
     </div>
@@ -72,7 +74,7 @@ function highlight(code: string, lang: "ts" | "lua" | "bash"): ReactNode[] {
 
 export function CodeBlock({ code, lang, title, className }: { code: string; lang: "ts" | "lua" | "bash"; title?: string; className?: string }) {
   return (
-    <div className={cn("overflow-hidden rounded-xl border bg-card/60 backdrop-blur", className)}>
+    <div className={cn("overflow-hidden rounded-xl border bg-card", className)}>
       {title && (
         <div className="flex items-center justify-between border-b px-4 py-2 text-xs text-muted-foreground">
           <span className="font-mono">{title}</span>

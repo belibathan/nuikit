@@ -38,7 +38,8 @@ Every modern shadcn theme is written in `oklch()`, and Tailwind v4 compiles to m
 | `md:grid-cols-2` | `@media (width >= 48rem)` | ✗ ignored (104+) | → `(min-width: 48rem)` |
 | `-translate-x-1/2` | `translate: …` | ✗ ignored (104+) | → `transform: translate(…)` |
 | `bg-linear-to-r` | `linear-gradient(to right in oklab, …)` | ✗ ignored (111+) | → `to right` |
-| `:has()`, `@container` | as-is | ✗ (105+) | ⚠ reported at build time |
+| `has-[>svg]:px-3`, `CardAction` | `:has(…)` | ✗ ignored (105+) | ⚠ reported; opt-in polyfill (`hasPolyfill: true`) for static menus |
+| `@container`, `light-dark()` | as-is | ✗ (105+/123+) | ⚠ reported at build time |
 
 The tricky one is `bg-primary/50`: it's a variable, so no build tool can precompute it. nuikit gives every color token RGB channels (`--primary-rgb`, `--primary-a`) and rewrites the opacity math to use them. **Changing the theme at runtime still works**, including in game.
 
@@ -77,7 +78,7 @@ Already have a NUI? Use only the parts you want ([plugin](#nuikitvite), [runtime
 | [`vite-plugin-nuikit`](packages/vite) | Vite plugin. Lowers Tailwind v4 / shadcn CSS for Chromium 103, in-game HMR, `nuikit-doctor` CLI. |
 | [`nuikit-core`](packages/core) | 4 KB runtime. Typed `fetchNui` / `useNuiEvent`, visibility & focus, devtools, runtime theming. Plus `nuikit.lua`. |
 | [`create-nuikit`](packages/create-nuikit) | One command to a working resource. |
-| [Registry](#components) | Game components for the shadcn CLI: vitals, speedometer, radial, menus… |
+| [Registry](#components) | HUD components for the shadcn CLI, composed from stock shadcn (Card, Item, Kbd, Progress, Badge). |
 
 ### `vite-plugin-nuikit`
 
@@ -176,7 +177,7 @@ NUI.notify({ title = 'Paid', type = 'success' })
 
 ## Components
 
-Installed with the shadcn CLI you already use. The code lands in your project and you own it. Every component uses **only shadcn tokens**, so it follows your theme.
+Installed with the shadcn CLI you already use. They're **compositions of stock shadcn components**: the CLI pulls in the `card`, `item`, `kbd`, `progress` and `badge` they're built from. They follow shadcn's file conventions (`data-slot`, `React.ComponentProps`, `cva` variants) and use **only theme tokens**, so they follow your theme. Nothing here has its own visual language.
 
 ```bash
 npx shadcn add https://nuikit.vercel.app/r/speedometer.json
@@ -188,15 +189,14 @@ npx shadcn add @nuikit/speedometer
 
 | Component | |
 |---|---|
-| `vital` | A diamond that fills like liquid: health, armor, hunger, fuel. Pulses when low. |
-| `speedometer` | Speed, RPM arc with redline, gear, fuel. |
-| `key-hint` | `[E] Talk` prompts with hold-to-confirm. |
-| `nui-menu` | Keyboard-first list menu (garages, jobs, interactions). |
-| `radial-menu` | The action wheel. |
-| `task-progress` | Timed actions with a cancel key, built on shadcn `progress`. |
+| `vital` | Player stat: icon + `Progress`, colored by a theme token. Pulses when low. |
+| `speedometer` | SVG arc in `primary` / `destructive`; gear is a `Badge`, fuel a `Progress`. |
+| `key-hint` | `[E] Talk`: `Kbd` + label, hold-to-confirm on `Progress`. |
+| `nui-menu` | Keyboard-first list menu: a `Card` of `Item`s, highlighted with `accent` like shadcn menus. |
+| `radial-menu` | The action wheel. SVG, because shadcn has no radial; styled like its menus (`popover`, `border`, `accent`). |
+| `task-progress` | Timed actions: `Card` + `Progress` + `Kbd` cancel hint. |
 | `nui-toaster` | Stock shadcn `sonner`, wired to `NUI.notify()`. |
 | `use-nui-store` | Merge partial updates from Lua into one object. |
-| `theme` | The violet theme from the demo. |
 
 Anything else, use stock shadcn: `npx shadcn add dialog tabs select`. It'll render in game.
 
@@ -222,7 +222,8 @@ applyTheme(`.dark { --primary: oklch(0.72 0.19 150); --radius: 0rem; }`);
 3. **Opacity:** `color-mix(in oklab, var(--x) N%, transparent)` → `rgba(var(--x-rgb), calc(var(--x-a) * N))`, and the `@supports (color: color-mix(…))` guards are unwrapped so it applies on 103.
 4. **Transforms:** `translate` / `scale` / `rotate` → one `transform`, composed from non-inheriting `@property` registrations. Keyframes are left alone.
 5. **Gradients:** `in oklab` interpolation dropped; `dvh/svh` → `vh`.
-6. **Audit:** anything that can't be lowered (`:has()`, `@container`, `light-dark()`…) is reported, not silently shipped.
+6. **`:has()`:** shadcn uses it for small layout tweaks in Button, Card and Item, which degrade gracefully in game. `hasPolyfill: true` opts in to [css-has-pseudo](https://github.com/csstools/postcss-plugins/tree/main/plugins/css-has-pseudo); it's off by default because its runtime re-checks selectors on every DOM change, which a HUD updating 10 times a second can't afford.
+7. **Audit:** anything that still can't be lowered (`@container`, `light-dark()`…) is reported, not silently shipped.
 
 [`examples/cef-proof`](examples/cef-proof) compiles a real shadcn page and renders it before and after in **Chromium 103.0.5058** (via `@sparticuz/chromium@103`), asserting computed styles. It runs in CI.
 
@@ -248,7 +249,6 @@ RedM uses the same CEF, so it should work. Change <code>game 'gta5'</code> to <c
 
 - [ ] `nuikit types`: generate LuaLS annotations from `nui.d.ts`
 - [ ] More components: phone shell, inventory grid, minimap frame, notifications stack, target eye
-- [ ] Lower `:has()` for common shadcn patterns
 - [ ] Svelte and Vue templates
 
 ## Contributing

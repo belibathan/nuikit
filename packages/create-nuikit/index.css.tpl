@@ -47,8 +47,7 @@
   html,
   body {
     background: transparent;
-    @apply text-foreground antialiased select-none;
-    font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
+    @apply text-foreground select-none;
   }
   input,
   textarea {

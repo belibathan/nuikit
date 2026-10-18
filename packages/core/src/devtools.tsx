@@ -53,12 +53,12 @@ const SCENES: Record<SceneName, string> = {
 type LogEntry = { id: number; t: number; kind: "event" | "call"; name: string; data: unknown; response?: unknown };
 
 const css = `
-.nkdt{--a:#a78bfa;--b:#22d3ee;position:fixed;right:16px;bottom:16px;z-index:2147483646;font:12px/1.4 ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;color:#e7e9ee;letter-spacing:0}
+.nkdt{position:fixed;right:16px;bottom:16px;z-index:2147483646;font:12px/1.4 ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;color:#e7e9ee;letter-spacing:0}
 .nkdt *{box-sizing:border-box}
-.nkdt-fab{display:flex;align-items:center;gap:8px;height:34px;padding:0 14px 0 10px;border-radius:999px;border:1px solid #ffffff1f;background:#0d1018e6;backdrop-filter:blur(12px);color:inherit;cursor:pointer;box-shadow:0 8px 30px #0008}
+.nkdt-fab{display:flex;align-items:center;gap:8px;height:34px;padding:0 14px 0 10px;border-radius:999px;border:1px solid #ffffff1f;background:#0a0a0ae6;backdrop-filter:blur(12px);color:inherit;cursor:pointer;box-shadow:0 8px 30px #0008}
 .nkdt-fab:hover{border-color:#ffffff40}
-.nkdt-gem{width:10px;height:10px;transform:rotate(45deg);border-radius:2px;background:linear-gradient(135deg,var(--a),var(--b));box-shadow:0 0 10px #a78bfa99}
-.nkdt-panel{width:380px;max-height:min(560px,calc(100vh - 32px));display:flex;flex-direction:column;border-radius:14px;border:1px solid #ffffff1a;background:#0b0e15f2;backdrop-filter:blur(16px);box-shadow:0 20px 60px #000a;overflow:hidden}
+.nkdt-gem{width:8px;height:8px;border-radius:2px;background:#fafafa}
+.nkdt-panel{width:380px;max-height:min(560px,calc(100vh - 32px));display:flex;flex-direction:column;border-radius:14px;border:1px solid #ffffff1a;background:#0a0a0af2;backdrop-filter:blur(16px);box-shadow:0 20px 60px #000a;overflow:hidden}
 .nkdt-head{display:flex;align-items:center;gap:8px;padding:10px 12px;border-bottom:1px solid #ffffff12}
 .nkdt-title{font-weight:600;flex:1}
 .nkdt-title small{color:#8b93a7;font-weight:400;margin-left:6px}
@@ -68,15 +68,15 @@ const css = `
 .nkdt-body{overflow:auto;padding:10px;display:flex;flex-direction:column;gap:8px}
 .nkdt-card{border:1px solid #ffffff12;border-radius:10px;background:#ffffff06;padding:8px}
 .nkdt-row{display:flex;align-items:center;gap:6px}
-.nkdt-name{font:500 12px ui-monospace,SFMono-Regular,Menlo,monospace;color:#c4b5fd;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.nkdt-name{font:500 12px ui-monospace,SFMono-Regular,Menlo,monospace;color:#e5e5e5;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .nkdt-btn{height:24px;padding:0 10px;border-radius:7px;border:1px solid #ffffff1f;background:#ffffff0d;color:#e7e9ee;cursor:pointer;font:inherit}
 .nkdt-btn:hover{background:#ffffff1a}
-.nkdt-btn.p{border:0;background:linear-gradient(135deg,var(--a),var(--b));color:#0b0e15;font-weight:600}
+.nkdt-btn.p{border:0;background:#fafafa;color:#0a0a0a;font-weight:600}
 .nkdt-chips{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
 .nkdt-chip{height:20px;padding:0 8px;border-radius:999px;border:1px solid #ffffff1a;background:transparent;color:#aab2c5;cursor:pointer;font:inherit;font-size:11px}
 .nkdt-chip:hover{color:#fff;border-color:#ffffff40}
-.nkdt-ta{width:100%;min-height:64px;margin-top:6px;resize:vertical;border-radius:8px;border:1px solid #ffffff14;background:#05070c;color:#d6dbe6;padding:6px 8px;font:11px/1.45 ui-monospace,SFMono-Regular,Menlo,monospace;outline:none}
-.nkdt-ta:focus{border-color:#a78bfa80}
+.nkdt-ta{width:100%;min-height:64px;margin-top:6px;resize:vertical;border-radius:8px;border:1px solid #ffffff14;background:#050505;color:#d6dbe6;padding:6px 8px;font:11px/1.45 ui-monospace,SFMono-Regular,Menlo,monospace;outline:none}
+.nkdt-ta:focus{border-color:#ffffff40}
 .nkdt-err{color:#fda4af;font-size:11px;margin-top:4px}
 .nkdt-log{font:11px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;display:flex;flex-direction:column;gap:4px}
 .nkdt-log div{padding:6px 8px;border-radius:8px;background:#ffffff06;border:1px solid #ffffff0d;word-break:break-word}
@@ -85,12 +85,12 @@ const css = `
 .nkdt-dim{color:#6b7385}
 .nkdt-scenes{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
 .nkdt-scene{aspect-ratio:16/10;border-radius:8px;border:1px solid #ffffff1a;cursor:pointer;position:relative}
-.nkdt-scene[aria-pressed=true]{outline:2px solid var(--a);outline-offset:1px}
+.nkdt-scene[aria-pressed=true]{outline:2px solid #fafafa;outline-offset:1px}
 .nkdt-scene span{position:absolute;left:5px;bottom:3px;font-size:10px;color:#fff;text-shadow:0 1px 2px #000}
 .nkdt-toggle{display:flex;align-items:center;justify-content:space-between}
 .nkdt-switch{width:34px;height:20px;border-radius:999px;border:0;background:#ffffff1f;position:relative;cursor:pointer}
 .nkdt-switch::after{content:"";position:absolute;top:3px;left:3px;width:14px;height:14px;border-radius:50%;background:#fff;transition:transform .15s}
-.nkdt-switch[aria-checked=true]{background:linear-gradient(135deg,var(--a),var(--b))}
+.nkdt-switch[aria-checked=true]{background:#fafafa}.nkdt-switch[aria-checked=true]::after{background:#0a0a0a}
 .nkdt-switch[aria-checked=true]::after{transform:translateX(14px)}
 .nkdt-kbd{font:10px ui-monospace,monospace;color:#8b93a7;border:1px solid #ffffff1f;border-radius:4px;padding:0 4px}
 .nkdt-scene-bg{position:fixed;inset:0;z-index:-1;pointer-events:none}

@@ -1,6 +1,6 @@
 {
   "name": "create-nuikit",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Scaffold a FiveM NUI resource with shadcn/ui, Tailwind v4, typed Lua↔JS and browser devtools — that renders right in game.",
   "license": "MIT",
   "type": "module",

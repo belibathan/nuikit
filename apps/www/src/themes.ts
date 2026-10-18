@@ -1,26 +1,34 @@
 // Theme presets, written exactly like a TweakCN / shadcn export (.dark block, oklch).
+// "Neutral" is the stock `shadcn init` theme and the default; the rest are examples.
 // The playground feeds them through applyTheme() from nuikit.
 export const themes: { name: string; swatch: string[]; css: string }[] = [
   {
-    name: "nuikit",
-    swatch: ["#955aff", "#22c55e", "#38bdf8"],
+    name: "Neutral",
+    swatch: ["#e5e5e5", "#737373", "#171717"],
     css: `.dark {
-  --radius: 0.75rem;
-  --background: oklch(0.16 0.02 280);
-  --card: oklch(0.21 0.03 280);
-  --card-foreground: oklch(0.97 0.01 280);
-  --popover: oklch(0.21 0.03 280);
-  --primary: oklch(0.62 0.24 295);
-  --primary-foreground: oklch(0.99 0 0);
-  --muted: oklch(0.28 0.03 280);
-  --muted-foreground: oklch(0.72 0.03 280);
-  --accent: oklch(0.32 0.05 290);
-  --destructive: oklch(0.66 0.22 22);
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.922 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
   --border: oklch(1 0 0 / 10%);
-  --ring: oklch(0.62 0.24 295);
-  --chart-1: oklch(0.7 0.19 150);
-  --chart-2: oklch(0.75 0.15 230);
-  --chart-3: oklch(0.8 0.16 80);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+  --chart-1: oklch(0.87 0 0);
+  --chart-2: oklch(0.556 0 0);
+  --chart-3: oklch(0.439 0 0);
+  --chart-4: oklch(0.371 0 0);
+  --chart-5: oklch(0.269 0 0);
 }`,
   },
   {
@@ -87,28 +95,6 @@ export const themes: { name: string; swatch: string[]; css: string }[] = [
   --chart-1: oklch(0.85 0.1 150);
   --chart-2: oklch(0.7 0.14 250);
   --chart-3: oklch(0.83 0.15 85);
-}`,
-  },
-  {
-    name: "shadcn",
-    swatch: ["#e5e5e5", "#737373", "#ef4444"],
-    css: `.dark {
-  --radius: 0.625rem;
-  --background: oklch(0.145 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
 }`,
   },
 ];

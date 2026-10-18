@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.0 (2026-10-18)
+
+- **Registry components are now compositions of stock shadcn/ui**, following its file conventions (`data-slot`, `React.ComponentProps`, `cva`): `vital` = icon + `Progress`; `key-hint` = `Kbd` (+ `Progress` for hold); `task-progress` = `Card` + `Progress` + `Kbd`; `nui-menu` = `Card` + `Item`; `speedometer` uses `Badge` and `Progress`; `radial-menu` uses `popover`/`accent` like shadcn menus. Dependencies are declared as `registryDependencies`.
+- The `theme` registry item is removed. The template and site default to the stock `shadcn init` neutral theme.
+- **vite-plugin-nuikit:** opt-in `hasPolyfill: true` polyfills `:has()` (shadcn Button, Card, Item) with css-has-pseudo, verified in Chromium 103. Off by default: its runtime is too expensive for HUDs that update many times a second.
+- Devtools panel restyled to neutral.
+
 ## create-nuikit 0.1.1 (2026-10-18)
 
 - Template depends on `nuikit-core` (the runtime's published name) and drops the deprecated `baseUrl` from `tsconfig.json`.

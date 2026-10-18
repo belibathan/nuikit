@@ -39,10 +39,13 @@ describe("lowerCss on real Tailwind v4 + shadcn output", () => {
     expect(code).not.toMatch(/@supports \(color: color-mix\(in lab, red, red\)\)/);
   });
 
-  it("flags what it can't lower", () => {
-    const { report } = lowerCss(tailwindOut);
-    const features = report.warnings.map((w) => w.feature);
-    expect(features).toContain(":has()");
+  it("flags :has() by default, polyfills it with css-has-pseudo when opted in", () => {
+    const on = lowerCss(tailwindOut, { has: true });
+    expect(on.report.hasSelectors).toBeGreaterThan(0);
+    expect(on.code).toContain(".js-has-pseudo [csstools-has-");
+    expect(on.report.warnings.map((w) => w.feature)).not.toContain(":has()");
+    const off = lowerCss(tailwindOut);
+    expect(off.report.warnings.map((w) => w.feature)).toContain(":has()");
   });
 
   it("is safe to minify", () => {
