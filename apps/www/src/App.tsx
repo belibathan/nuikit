@@ -14,7 +14,7 @@ import { themes } from "@/themes";
 import { HeartPulse, Shield, Car, Wrench, Key } from "lucide-react";
 
 const REPO = "https://github.com/belibathan/nuikit";
-const SITE = typeof window !== "undefined" ? window.location.origin : "https://nuikit.vercel.app";
+const SITE = "https://nuikit.vercel.app";
 
 export default function App() {
   return (
