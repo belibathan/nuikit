@@ -66,17 +66,55 @@ Ok "pnpm $(pnpm --version)"
 Step "MariaDB"
 $secretsFile = Join-Path $Root "nuikit-secrets.txt"
 New-Item -ItemType Directory -Force -Path $Root | Out-Null
-$secrets = @{}
+$secrets = [ordered]@{}
 if (Test-Path $secretsFile) {
   Get-Content $secretsFile | Where-Object { $_ -match "^(\w+)=(.*)$" } | ForEach-Object { $secrets[$Matches[1]] = $Matches[2] }
 }
-
+function Save-Secrets {
+  $lines = @("# nuikit dev server secrets. Local only; don't commit or share.")
+  foreach ($k in $secrets.Keys) { $lines += "$k=$($secrets[$k])" }
+  $lines | Set-Content $secretsFile
+}
 function Find-Mysql {
   Get-ChildItem "C:\Program Files\MariaDB*\bin\mysql.exe" -ErrorAction SilentlyContinue | Sort-Object FullName -Descending | Select-Object -First 1 -ExpandProperty FullName
 }
+function Get-DbService { Get-Service | Where-Object { $_.Name -like "MariaDB*" -or $_.Name -like "MySQL*" } | Select-Object -First 1 }
+# Run the mysql client without native stderr turning into a terminating error (Windows PowerShell 5.1).
+function Invoke-Mysql([string]$Password, [string]$Sql, [switch]$NoAuth) {
+  $prev = $ErrorActionPreference; $ErrorActionPreference = "Continue"
+  $auth = if ($NoAuth) { @() } else { @("--password=$Password") }
+  $Sql | & $script:mysql -u root @auth 2>&1 | Out-Null
+  $code = $LASTEXITCODE; $ErrorActionPreference = $prev
+  return ($code -eq 0)
+}
+function Test-Root([string]$Password) { Invoke-Mysql $Password "SELECT 1;" }
+# Forgotten root password: restart MariaDB without auth, set a new one, restart normally.
+function Reset-Root {
+  $bin  = Split-Path $script:mysql
+  $ini  = Join-Path (Split-Path $bin) "data\my.ini"
+  $svc  = Get-DbService
+  $new  = New-Secret
+  Info "resetting the MariaDB root password..."
+  if ($svc) { Stop-Service $svc.Name -Force }
+  $mysqldArgs = @("--skip-grant-tables")
+  if (Test-Path $ini) { $mysqldArgs = @("--defaults-file=`"$ini`"") + $mysqldArgs }
+  $proc = Start-Process (Join-Path $bin "mysqld.exe") -ArgumentList $mysqldArgs -PassThru -WindowStyle Hidden
+  $up = $false
+  for ($i = 0; $i -lt 30 -and -not $up; $i++) { Start-Sleep 1; $up = Invoke-Mysql "" "SELECT 1;" -NoAuth }
+  if (-not $up) { Stop-Process $proc -Force -ErrorAction SilentlyContinue; if ($svc) { Start-Service $svc.Name }; throw "Couldn't start MariaDB in recovery mode." }
+  $ok = Invoke-Mysql "" "FLUSH PRIVILEGES; ALTER USER 'root'@'localhost' IDENTIFIED BY '$new'; FLUSH PRIVILEGES;" -NoAuth
+  $prev = $ErrorActionPreference; $ErrorActionPreference = "Continue"
+  & (Join-Path $bin "mysqladmin.exe") -u root "--password=$new" shutdown 2>&1 | Out-Null
+  $ErrorActionPreference = $prev
+  Start-Sleep 2; Stop-Process $proc -Force -ErrorAction SilentlyContinue
+  if ($svc) { Start-Service $svc.Name }
+  if (-not $ok) { throw "Couldn't set a new root password." }
+  return $new
+}
+
 $mysql = Find-Mysql
 if (-not $mysql) {
-  if (-not $secrets.ROOT_PASSWORD) { $secrets.ROOT_PASSWORD = New-Secret }
+  if (-not $secrets.ROOT_PASSWORD) { $secrets.ROOT_PASSWORD = New-Secret; Save-Secrets }
   Info "installing MariaDB (service 'MariaDB', port 3306)..."
   winget install --id MariaDB.Server -e --silent --accept-package-agreements --accept-source-agreements `
     --override "SERVICENAME=MariaDB PORT=3306 PASSWORD=$($secrets.ROOT_PASSWORD) /qn" | Out-Null
@@ -85,14 +123,29 @@ if (-not $mysql) {
   Ok "MariaDB installed"
 } else {
   Ok "MariaDB already installed"
-  if (-not $secrets.ROOT_PASSWORD) {
-    $secure = Read-Host "  MariaDB root password" -AsSecureString
-    $secrets.ROOT_PASSWORD = [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($secure))
-  }
 }
-Start-Service MariaDB -ErrorAction SilentlyContinue
+$svc = Get-DbService
+if ($svc -and $svc.Status -ne "Running") { Start-Service $svc.Name }
 
-if (-not $secrets.DB_PASSWORD) { $secrets.DB_PASSWORD = New-Secret }
+if (-not ($secrets.ROOT_PASSWORD -and (Test-Root $secrets.ROOT_PASSWORD))) {
+  if (Test-Root "") {
+    $secrets.ROOT_PASSWORD = ""
+  } else {
+    Write-Host "  MariaDB is already installed and has a root password." -ForegroundColor Gray
+    Write-Host "  Type it, or just press Enter if you don't know it and it will be reset." -ForegroundColor Gray
+    $secure = Read-Host "  MariaDB root password" -AsSecureString
+    $typed = [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($secure))
+    if ($typed -and (Test-Root $typed)) { $secrets.ROOT_PASSWORD = $typed }
+    else {
+      if ($typed) { Warn "that password didn't work" }
+      $secrets.ROOT_PASSWORD = Reset-Root
+    }
+  }
+  Save-Secrets
+}
+Ok "root login works (saved to $secretsFile)"
+
+if (-not $secrets.DB_PASSWORD) { $secrets.DB_PASSWORD = New-Secret; Save-Secrets }
 $sql = @"
 CREATE DATABASE IF NOT EXISTS ``$DbName`` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 CREATE USER IF NOT EXISTS '$DbUser'@'localhost' IDENTIFIED BY '$($secrets.DB_PASSWORD)';
@@ -100,11 +153,7 @@ ALTER USER '$DbUser'@'localhost' IDENTIFIED BY '$($secrets.DB_PASSWORD)';
 GRANT ALL PRIVILEGES ON ``$DbName``.* TO '$DbUser'@'localhost';
 FLUSH PRIVILEGES;
 "@
-$ErrorActionPreference = "Continue"   # native stderr must not throw in Windows PowerShell 5.1
-$sql | & $mysql -u root "-p$($secrets.ROOT_PASSWORD)" 2>&1 | Out-Null
-$code = $LASTEXITCODE
-$ErrorActionPreference = "Stop"
-if ($code -ne 0) { throw "Couldn't log in to MariaDB as root. Check the root password in $secretsFile, then run this again." }
+if (-not (Invoke-Mysql $secrets.ROOT_PASSWORD $sql)) { throw "Couldn't create the '$DbName' database." }
 Ok "database '$DbName' and user '$DbUser' ready (utf8mb4_unicode_ci)"
 
 # -- 3. FXServer -------------------------------------------------------------
@@ -129,12 +178,8 @@ if (Test-Path $fx) {
 
 # -- 4. Save secrets + launch ------------------------------------------------
 $conn = "mysql://$($DbUser):$($secrets.DB_PASSWORD)@localhost:3306/$($DbName)?charset=utf8mb4"
-@(
-  "# nuikit dev server secrets. Local only; don't commit or share.",
-  "ROOT_PASSWORD=$($secrets.ROOT_PASSWORD)",
-  "DB_PASSWORD=$($secrets.DB_PASSWORD)",
-  "DB_CONNECTION=$conn"
-) | Set-Content $secretsFile
+$secrets.DB_CONNECTION = $conn
+Save-Secrets
 Ok "credentials saved to $secretsFile"
 
 Step "Next: finish in txAdmin (opens in your browser)"
