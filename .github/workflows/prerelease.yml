@@ -1,11 +1,12 @@
 name: Prerelease
 
-# Push a tag like `next-surfaces-1` on any commit to publish its pending changesets to npm under
-# the `next` dist-tag, for testing in a real server before merging:
+# Push any commit to a `next/<name>` branch to publish its pending changesets to npm under the
+# `next` dist-tag, for testing in a real server before merging:
+#   git push origin HEAD:next/surfaces
 #   npm create nuikit@next my-ui
 on:
   push:
-    tags: ["next-*"]
+    branches: ["next/**"]
 
 jobs:
   prerelease:
