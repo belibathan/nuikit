@@ -9,3 +9,6 @@ examples/cef-proof/out
 packages/vite/test/fixtures/out.css
 packages/vite/test/fixtures/low.css
 apps/www/public/r
+out
+addons/*/web/build
+*.tsbuildinfo

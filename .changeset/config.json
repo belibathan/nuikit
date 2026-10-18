@@ -12,8 +12,9 @@
   "access": "public",
   "baseBranch": "main",
   "ignore": [
-    "www",
-    "cef-proof"
+    "cef-proof",
+    "nuikit-hud-web",
+    "www"
   ],
   "snapshot": {
     "useCalculatedVersion": true,

@@ -12,6 +12,9 @@ import {
   type SurfaceOptions,
   type SurfaceState,
   closeNui,
+  getPlayer,
+  onPlayer,
+  type NuiPlayer,
   fetchNui,
   getVisible,
   onNui,
@@ -204,4 +207,15 @@ export function Surface<K extends SurfaceName>(props: SurfaceProps<K>): ReactEle
     },
     content,
   );
+}
+
+// ───────────────────────────────── player
+
+/**
+ * The player from lua/bridge.lua, the same shape on Qbox, QBCore, ESX or standalone.
+ *
+ *   const { health, armor, cash, job } = usePlayer();
+ */
+export function usePlayer(): NuiPlayer {
+  return useSyncExternalStore(onPlayer, getPlayer, getPlayer);
 }

@@ -202,6 +202,7 @@ NUI.notify({ title = 'Paid', type = 'success' })
 | `useSurface(name)` / `<Surface name …>` | A surface's `{ open, visible, focused, data }` and the component that renders it. |
 | `openSurface(name, data?)` / `closeSurface(name)` | Open or close a surface declared in Lua. |
 | `useNuiStates()` | Client-wide states from `NUI.state()`. |
+| `usePlayer()` | The player from `bridge.lua`, one shape on Qbox, QBCore, ESX or standalone. |
 | `useNuiVisibility()` | `{ visible, close }` for single-UI resources (`NUI.open/close`). |
 | `useNuiCallback(name)` | `{ call, loading, error, data }`. |
 | `mockNui(name, response)` / `emit(name, data)` | Fake Lua in the browser or tests. |
@@ -250,6 +251,28 @@ const confirm = useSurface("confirm"); // { open, visible, focused, data, close 
 | **blockedBy** | States from `NUI.state()` that stop it opening. |
 
 There's no extra resource to install: every resource that bundles `nuikit.lua` keeps the same copy of the client-wide stack, and a resource started mid-session catches up. The manager runs under real Lua 5.4 in CI, with events delivered both synchronously and queued. `NUI.open()` / `NUI.close()` still work for a single UI.
+
+## `[nuikit]` systems
+
+nuikit is growing into the UI for a whole server: a `[nuikit]` folder you drop into `resources/`, the way Qbox ships `[qbx]`. Every system is built from stock shadcn components, themed by one file, and stacked by the surface manager. nuikit owns how things look; your framework keeps the data and the rules.
+
+| Resource | What it does | Status |
+|---|---|---|
+| [`nuikit`](systems/nuikit) | `theme.css`: paste a TweakCN theme and every nuikit UI on the server follows. | Prerelease |
+| [`nuikit_hud`](systems/nuikit_hud) | Health, armor, hunger, thirst, stress, voice and radio, cash, bank, job, speedometer with fuel, gear and seatbelt. Replaces `qbx_hud`. | Prerelease |
+| Interaction, menus, inventory, death, pause, spawn, garages, vehicle shop, banking | See the [roadmap](#roadmap). | Planned |
+
+They run on **Qbox, QBCore, ESX or standalone**: `bridge.lua` turns each framework's player data into one shape (`usePlayer()` in React), so a system is written once.
+
+```lua
+-- any nuikit resource
+NUI.player.get()          -- { loaded, name, health, armor, hunger, thirst, stress, cash, bank, job, voice, ... }
+NUI.player.onChange(fn)
+```
+
+```tsx
+const { health, cash, job, voice } = usePlayer();
+```
 
 ## Components
 
@@ -323,9 +346,14 @@ RedM uses the same CEF, so it should work. Change <code>game 'gta5'</code> to <c
 
 ## Roadmap
 
+- [x] Surfaces: one owner for focus, layers and Escape across resources
+- [x] `bridge.lua`: one player shape for Qbox, QBCore, ESX, standalone
+- [x] `nuikit_hud`
+- [ ] ox_lib adapter: every ox_lib menu, dialog, notification and progress bar, restyled by swapping one folder
+- [ ] Interaction (target eye, prompts, progress), death screen, custom pause menu
+- [ ] Inventory (ox_inventory), garages, vehicle shop, banking, spawn and character select
+- [ ] `create-nuikit -t qbox`: zero to a themed local server in one command
 - [ ] `nuikit types`: generate LuaLS annotations from `nui.d.ts`
-- [ ] More components: phone shell, inventory grid, minimap frame, notifications stack, target eye
-- [ ] Svelte and Vue templates
 
 ## Contributing
 

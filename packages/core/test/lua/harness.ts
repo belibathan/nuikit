@@ -9,7 +9,16 @@ import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { LuaFactory, type LuaEngine } from "wasmoon";
 
-const SOURCE = readFileSync(fileURLToPath(new URL("../../lua/nuikit.lua", import.meta.url)), "utf8");
+const lua_ = (file: string) =>
+  readFileSync(file.startsWith("/") ? file : fileURLToPath(new URL(`../../lua/${file}`, import.meta.url)), "utf8");
+const SOURCE = lua_("nuikit.lua");
+
+export interface StartOptions {
+  /** Lua run before nuikit.lua: mock natives, framework exports, statebags. */
+  before?: string;
+  /** More files to load after nuikit.lua, in order: names in lua/ ("bridge.lua") or absolute paths. */
+  scripts?: string[];
+}
 
 type Handler = { resource: string; fn: (...args: unknown[]) => unknown };
 
@@ -62,7 +71,7 @@ export async function createClient(options: { syncEvents?: boolean } = {}) {
     }
   }
 
-  async function start(name: string): Promise<Resource> {
+  async function start(name: string, startOptions: StartOptions = {}): Promise<Resource> {
     // No proxies: event args must arrive as real Lua tables, like msgpack-decoded args in FiveM.
     const lua = await factory.createEngine({ enableProxy: false });
     const callbacks = new Map<string, (data: unknown, cb: (r: unknown) => void) => void>();
@@ -115,8 +124,16 @@ export async function createClient(options: { syncEvents?: boolean } = {}) {
       trigger(event, ...args);
     });
     g.set("json", { encode: (v: unknown) => JSON.stringify(v ?? null) });
+    g.set("RegisterNetEvent", (event: string, fn?: any) => {
+      if (!fn) return;
+      const list = handlers.get(event) ?? [];
+      list.push({ resource: name, fn });
+      handlers.set(event, list);
+    });
     resources.set(name, res);
+    if (startOptions.before) await lua.doString(startOptions.before);
     await lua.doString(SOURCE);
+    for (const file of startOptions.scripts ?? []) await lua.doString(lua_(file));
     flush();
     return res;
   }
@@ -140,5 +157,11 @@ export async function createClient(options: { syncEvents?: boolean } = {}) {
     for (const r of resources.values()) r.lua.global.close();
   }
 
-  return { start, stop, focused, close, resources };
+  /** Deliver an event to every resource, as the server's TriggerClientEvent would. */
+  function event(name: string, ...args: unknown[]) {
+    trigger(name, ...args);
+    flush();
+  }
+
+  return { start, stop, focused, close, event, resources };
 }

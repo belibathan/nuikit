@@ -433,6 +433,29 @@ NUI.on('nuikit:close', function(req)
   return { ok = true }
 end)
 
+-- ───────────────────────────────── handshake + server theme
+
+--- The server-wide theme: theme.css in the `nuikit` resource (paste any TweakCN / shadcn theme).
+--- Every nuikit UI applies it, so the whole server shares one look. Returns nil when absent.
+---@return string|nil
+function NUI.theme()
+  if GetResourceState('nuikit') ~= 'started' then return nil end
+  local css = LoadResourceFile('nuikit', 'theme.css')
+  if css and css:find('%-%-') then return css end
+  return nil
+end
+
+-- The page loads after this script runs, so anything sent before it is lost. The UI calls
+-- nuikit:ready once it's listening; resend the current state (and the server theme).
+NUI.on('nuikit:ready', function()
+  lastSent, lastMain = nil, nil
+  apply()
+  local css = NUI.theme()
+  if css then NUI.send('nuikit:theme', css) end
+  if NUI.player and NUI.player.resend then NUI.player.resend() end
+  return { ok = true, resource = RESOURCE }
+end)
+
 -- Join the client-wide stack.
 TriggerEvent(EV.hello, RESOURCE)
 if not synced then

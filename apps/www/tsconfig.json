@@ -94,7 +94,6 @@
   },
   "include": [
     "src",
-    "../../registry",
-    "../../vendor"
+    "../../registry"
   ]
 }
