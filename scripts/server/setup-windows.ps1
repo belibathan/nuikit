@@ -84,7 +84,7 @@ $script:mysqlError = ""
 function Invoke-Mysql([string]$Password, [string]$Sql, [switch]$NoAuth) {
   $prev = $ErrorActionPreference; $ErrorActionPreference = "Continue"
   $auth = if ($NoAuth) { @() } else { @("--password=$Password") }
-  $out = $Sql | & $script:mysql -u root -h 127.0.0.1 -P 3306 @auth 2>&1
+  $out = $Sql | & $script:mysql -u root @auth 2>&1
   $code = $LASTEXITCODE; $ErrorActionPreference = $prev
   $script:mysqlError = ($out | Out-String).Trim()
   return ($code -eq 0)
