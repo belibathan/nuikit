@@ -27,7 +27,7 @@ jobs:
       - if: steps.token.outputs.present == 'true'
         run: pnpm install --frozen-lockfile
       - if: steps.token.outputs.present == 'true'
-        run: pnpm -r --filter ./packages/** build
+        run: pnpm -r --filter "./packages/**" build
       - if: steps.token.outputs.present == 'true'
         uses: changesets/action@v1
         with:
