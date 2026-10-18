@@ -31,7 +31,7 @@ const targets = [
     lua: [],
     components: [
       "alert-dialog", "badge", "button", "calendar", "card", "checkbox", "dialog", "field", "input", "item", "kbd",
-      "label", "popover", "progress", "scroll-area", "select", "separator", "slider", "sonner", "spinner", "switch", "textarea",
+      "label", "popover", "progress", "scroll-area", "select", "separator", "slider", "spinner", "switch", "textarea",
     ],
     hooks: [],
   },
