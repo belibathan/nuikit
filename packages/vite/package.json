@@ -1,6 +1,6 @@
 {
   "name": "vite-plugin-nuikit",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "Make shadcn/ui and Tailwind v4 render in FiveM's Chromium 103 NUI, plus in-game hot reload.",
   "author": "belibathan (https://github.com/belibathan)",
   "license": "MIT",
