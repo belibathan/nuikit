@@ -1,4 +1,4 @@
-import { emit, useNuiEvent } from "nuikit/react";
+import { emit, useNuiEvent } from "nuikit-core/react";
 import { Beer, Car, Droplet, Fuel, HeartPulse, Key, Phone, Shield, Shirt, Sandwich, Wrench } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { KeyHint } from "@/components/ui/key-hint";
@@ -11,7 +11,7 @@ import { useNuiStore } from "@/hooks/use-nui-store";
 import { cn } from "@/lib/utils";
 import { Scene } from "./scene";
 
-declare module "nuikit" {
+declare module "nuikit-core" {
   interface NuiEvents {
     "hud:vitals": { health: number; armor: number; hunger: number; thirst: number };
     "hud:vehicle": { speed: number; rpm: number; gear: number; fuel: number };

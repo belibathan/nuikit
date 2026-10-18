@@ -17,6 +17,6 @@ export default defineConfig({
       { find: "@/hooks/use-nui-store", replacement: `${registry}/hooks/use-nui-store.ts` },
       { find: "@", replacement: path.resolve(__dirname, "src") },
     ],
-    dedupe: ["react", "react-dom", "nuikit", "sonner"],
+    dedupe: ["react", "react-dom", "nuikit-core", "sonner"],
   },
 });

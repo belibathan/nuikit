@@ -1,5 +1,5 @@
 {
-  "name": "nuikit",
+  "name": "nuikit-core",
   "version": "0.1.0",
   "description": "Typed, framework-agnostic NUI runtime for FiveM: fetchNui, events, focus, and a browser devtools that fakes the game.",
   "license": "MIT",

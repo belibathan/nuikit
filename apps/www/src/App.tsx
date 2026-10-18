@@ -1,4 +1,4 @@
-import { applyTheme, clearTheme, emit, type ThemeVars } from "nuikit/react";
+import { applyTheme, clearTheme, emit, type ThemeVars } from "nuikit-core/react";
 import { ArrowRight, Box, Braces, Flame, Gauge, Github, MonitorPlay, Paintbrush, Radar, Sparkles, Zap } from "lucide-react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { CodeBlock, Command, CopyButton } from "@/components/code";
@@ -322,7 +322,7 @@ function Bridge() {
         <CodeBlock
           title="web/src/nui.d.ts"
           lang="ts"
-          code={`declare module "nuikit" {
+          code={`declare module "nuikit-core" {
   // Lua → UI
   interface NuiEvents {
     "hud:vitals": { health: number; armor: number };

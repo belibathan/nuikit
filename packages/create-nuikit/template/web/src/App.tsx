@@ -1,4 +1,4 @@
-import { closeNui, fetchNui, useNuiVisibility } from "nuikit/react";
+import { closeNui, fetchNui, useNuiVisibility } from "nuikit-core/react";
 import { HeartPulse, Shield, Sparkles, Syringe, Zap } from "lucide-react";
 import { useState } from "react";
 import { KeyHint } from "@/components/ui/key-hint";

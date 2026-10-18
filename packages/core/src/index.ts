@@ -7,7 +7,7 @@
  *
  * Types come from module augmentation, so both directions are checked:
  *
- *   declare module "nuikit" {
+ *   declare module "nuikit-core" {
  *     interface NuiEvents    { "hud:vitals": { health: number } }
  *     interface NuiCallbacks { "inventory:use": { req: { slot: number }; res: { ok: boolean } } }
  *   }

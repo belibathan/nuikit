@@ -75,7 +75,7 @@ Already have a NUI? Use only the parts you want ([plugin](#nuikitvite), [runtime
 | Package | What it does |
 |---|---|
 | [`vite-plugin-nuikit`](packages/vite) | Vite plugin. Lowers Tailwind v4 / shadcn CSS for Chromium 103, in-game HMR, `nuikit-doctor` CLI. |
-| [`nuikit`](packages/core) | 4 KB runtime. Typed `fetchNui` / `useNuiEvent`, visibility & focus, devtools, runtime theming. Plus `nuikit.lua`. |
+| [`nuikit-core`](packages/core) | 4 KB runtime. Typed `fetchNui` / `useNuiEvent`, visibility & focus, devtools, runtime theming. Plus `nuikit.lua`. |
 | [`create-nuikit`](packages/create-nuikit) | One command to a working resource. |
 | [Registry](#components) | Game components for the shadcn CLI: vitals, speedometer, radial, menus… |
 
@@ -115,7 +115,7 @@ One `nui.d.ts` types both directions:
 
 ```ts
 // web/src/nui.d.ts
-declare module "nuikit" {
+declare module "nuikit-core" {
   interface NuiEvents {    // Lua → UI
     "hud:vitals": { health: number; armor: number };
   }
@@ -130,7 +130,7 @@ declare module "nuikit" {
 <tr><td>
 
 ```tsx
-import { fetchNui, useNuiState, useNuiVisibility } from "nuikit/react";
+import { fetchNui, useNuiState, useNuiVisibility } from "nuikit-core/react";
 
 const vitals = useNuiState("hud:vitals", { health: 100, armor: 0 });
 const { visible, close } = useNuiVisibility(); // Esc closes
@@ -156,7 +156,7 @@ NUI.notify({ title = 'Paid', type = 'success' })
 </td></tr>
 </table>
 
-| `nuikit` | |
+| `nuikit-core` | |
 |---|---|
 | `fetchNui(name, data?, { mock?, timeout? })` | Call a Lua callback. Resolves with its return value. Mocked in the browser. |
 | `onNui(name, fn)` / `useNuiEvent(name, fn)` | Handle `NUI.send` messages. |
@@ -165,7 +165,7 @@ NUI.notify({ title = 'Paid', type = 'success' })
 | `useNuiCallback(name)` | `{ call, loading, error, data }`. |
 | `mockNui(name, response)` / `emit(name, data)` | Fake Lua in the browser or tests. |
 | `applyTheme(css \| vars)` | Apply a pasted TweakCN theme at runtime, with Chromium 103 channels. |
-| `<NuiDevtools events callbacks />` | Browser-only panel (`nuikit/devtools`). Renders nothing in game. |
+| `<NuiDevtools events callbacks />` | Browser-only panel (`nuikit-core/devtools`). Renders nothing in game. |
 
 | `nuikit.lua` | |
 |---|---|
@@ -209,7 +209,7 @@ nuikit has no theme system of its own. **shadcn's tokens are the system.** Paste
 To switch themes at runtime (per job, per player setting), use `applyTheme()`. It converts oklch to RGB in JS, because the game's browser can't.
 
 ```ts
-import { applyTheme } from "nuikit";
+import { applyTheme } from "nuikit-core";
 applyTheme(`.dark { --primary: oklch(0.72 0.19 150); --radius: 0rem; }`);
 ```
 

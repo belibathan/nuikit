@@ -46,7 +46,7 @@ It also sets `base: "./"` (NUI loads from `nui://`) and `build.target: "chrome10
 
 ## Runtime themes
 
-Opacity modifiers read `--x-rgb` / `--x-a` channels. To change a theme at runtime, use `applyTheme()` from `nuikit`. It sets both.
+Opacity modifiers read `--x-rgb` / `--x-a` channels. To change a theme at runtime, use `applyTheme()` from `nuikit-core`. It sets both.
 
 ## nuikit-doctor
 

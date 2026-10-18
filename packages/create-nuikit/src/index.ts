@@ -168,7 +168,7 @@ async function main() {
 
 function linkLocal(pkgPath: string, repo: string) {
   const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf8"));
-  pkg.dependencies["nuikit"] = `link:${path.join(repo, "packages/core")}`;
+  pkg.dependencies["nuikit-core"] = `link:${path.join(repo, "packages/core")}`;
   pkg.devDependencies["vite-plugin-nuikit"] = `link:${path.join(repo, "packages/vite")}`;
   fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + "\n");
 }

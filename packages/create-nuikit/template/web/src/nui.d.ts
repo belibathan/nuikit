@@ -1,8 +1,8 @@
 // One place for every message between Lua and the UI. fetchNui, useNuiEvent and the
 // devtools all type-check against this. Keep it next to your Lua as the contract.
-import "nuikit";
+import "nuikit-core";
 
-declare module "nuikit" {
+declare module "nuikit-core" {
   /** Lua → UI  (NUI.send) */
   interface NuiEvents {
     "hud:vitals": { health: number; armor: number };

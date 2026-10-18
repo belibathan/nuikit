@@ -110,7 +110,7 @@
       "type": "registry:ui",
       "title": "NUI Toaster",
       "description": "Stock shadcn Sonner wired to Lua's NUI.notify().",
-      "dependencies": ["nuikit"],
+      "dependencies": ["nuikit-core"],
       "registryDependencies": ["sonner"],
       "files": [{ "path": "registry/nuikit/ui/nui-toaster.tsx", "type": "registry:ui" }]
     },
@@ -119,7 +119,7 @@
       "type": "registry:hook",
       "title": "useNuiStore",
       "description": "Merge partial state updates from Lua into one object.",
-      "dependencies": ["nuikit"],
+      "dependencies": ["nuikit-core"],
       "files": [{ "path": "registry/nuikit/hooks/use-nui-store.ts", "type": "registry:hook" }]
     }
   ]

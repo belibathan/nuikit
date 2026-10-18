@@ -1,6 +1,6 @@
 "use client";
 
-import { useNuiEvent, type EventData, type EventName } from "nuikit/react";
+import { useNuiEvent, type EventData, type EventName } from "nuikit-core/react";
 import * as React from "react";
 
 /**

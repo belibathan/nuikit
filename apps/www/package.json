@@ -9,7 +9,7 @@
     "typecheck": "tsc --noEmit -p ."
   },
   "dependencies": {
-    "nuikit": "workspace:*",
+    "nuikit-core": "workspace:*",
     "@radix-ui/react-progress": "^1.1.0",
     "clsx": "^2.1.1",
     "lucide-react": "^0.460.0",
