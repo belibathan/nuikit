@@ -80,12 +80,19 @@ function Find-Mysql {
 }
 function Get-DbService { Get-Service | Where-Object { $_.Name -like "MariaDB*" -or $_.Name -like "MySQL*" } | Select-Object -First 1 }
 # Run the mysql client without native stderr turning into a terminating error (Windows PowerShell 5.1).
+$script:mysqlError = ""
 function Invoke-Mysql([string]$Password, [string]$Sql, [switch]$NoAuth) {
   $prev = $ErrorActionPreference; $ErrorActionPreference = "Continue"
   $auth = if ($NoAuth) { @() } else { @("--password=$Password") }
-  $Sql | & $script:mysql -u root @auth 2>&1 | Out-Null
+  $out = $Sql | & $script:mysql -u root -h 127.0.0.1 -P 3306 @auth 2>&1
   $code = $LASTEXITCODE; $ErrorActionPreference = $prev
+  $script:mysqlError = ($out | Out-String).Trim()
   return ($code -eq 0)
+}
+# The service can take a few seconds to accept connections after (re)starting.
+function Wait-Root([string]$Password, [int]$Seconds = 30) {
+  for ($i = 0; $i -lt $Seconds; $i++) { if (Test-Root $Password) { return $true }; Start-Sleep 1 }
+  return $false
 }
 function Test-Root([string]$Password) { Invoke-Mysql $Password "SELECT 1;" }
 # Forgotten root password: restart MariaDB without auth, set a new one, restart normally.
@@ -106,7 +113,9 @@ function Reset-Root {
   $prev = $ErrorActionPreference; $ErrorActionPreference = "Continue"
   & (Join-Path $bin "mysqladmin.exe") -u root "--password=$new" shutdown 2>&1 | Out-Null
   $ErrorActionPreference = $prev
-  Start-Sleep 2; Stop-Process $proc -Force -ErrorAction SilentlyContinue
+  for ($i = 0; $i -lt 15 -and -not $proc.HasExited; $i++) { Start-Sleep 1 }
+  Stop-Process $proc -Force -ErrorAction SilentlyContinue
+  Start-Sleep 1
   if ($svc) { Start-Service $svc.Name }
   if (-not $ok) { throw "Couldn't set a new root password." }
   return $new
@@ -143,6 +152,7 @@ if (-not ($secrets.ROOT_PASSWORD -and (Test-Root $secrets.ROOT_PASSWORD))) {
   }
   Save-Secrets
 }
+if (-not (Wait-Root $secrets.ROOT_PASSWORD)) { throw "MariaDB root login failed: $($script:mysqlError)" }
 Ok "root login works (saved to $secretsFile)"
 
 if (-not $secrets.DB_PASSWORD) { $secrets.DB_PASSWORD = New-Secret; Save-Secrets }
@@ -153,7 +163,7 @@ ALTER USER '$DbUser'@'localhost' IDENTIFIED BY '$($secrets.DB_PASSWORD)';
 GRANT ALL PRIVILEGES ON ``$DbName``.* TO '$DbUser'@'localhost';
 FLUSH PRIVILEGES;
 "@
-if (-not (Invoke-Mysql $secrets.ROOT_PASSWORD $sql)) { throw "Couldn't create the '$DbName' database." }
+if (-not (Invoke-Mysql $secrets.ROOT_PASSWORD $sql)) { throw "Couldn't create the '$DbName' database: $($script:mysqlError)" }
 Ok "database '$DbName' and user '$DbUser' ready (utf8mb4_unicode_ci)"
 
 # -- 3. FXServer -------------------------------------------------------------
