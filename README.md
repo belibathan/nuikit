@@ -260,7 +260,9 @@ nuikit is growing into the UI for a whole server: a `[nuikit]` folder you drop i
 |---|---|---|
 | [`nuikit`](systems/nuikit) | `theme.css`: paste a TweakCN theme and every nuikit UI on the server follows. | Prerelease |
 | [`nuikit_hud`](systems/nuikit_hud) | Health, armor, hunger, thirst, stress, voice and radio, cash, bank, job, speedometer with fuel, gear and seatbelt. Replaces `qbx_hud`. | Prerelease |
-| Interaction, menus, inventory, death, pause, spawn, garages, vehicle shop, banking | See the [roadmap](#roadmap). | Planned |
+| [`nuikit_pause`](systems/nuikit_pause) | Esc pause menu: server name, Resume, Map, Settings, Key bindings, Help, Disconnect, player card and players online. P still opens GTA's. | Prerelease |
+| [`nuikit_death`](systems/nuikit_death) | Death and last-stand screen: countdown and the keys your medical resource listens for (qbx_medical, qb-ambulancejob, esx_death). Presentation only. | Prerelease |
+| Interaction, menus, inventory, spawn, garages, vehicle shop, banking | See the [roadmap](#roadmap). | Planned |
 
 They run on **Qbox, QBCore, ESX or standalone**: `bridge.lua` turns each framework's player data into one shape (`usePlayer()` in React), so a system is written once.
 
@@ -350,7 +352,8 @@ RedM uses the same CEF, so it should work. Change <code>game 'gta5'</code> to <c
 - [x] `bridge.lua`: one player shape for Qbox, QBCore, ESX, standalone
 - [x] `nuikit_hud`
 - [ ] ox_lib adapter: every ox_lib menu, dialog, notification and progress bar, restyled by swapping one folder
-- [ ] Interaction (target eye, prompts, progress), death screen, custom pause menu
+- [x] `nuikit_pause`, `nuikit_death`
+- [ ] Interaction (target eye, prompts, progress)
 - [ ] Inventory (ox_inventory), garages, vehicle shop, banking, spawn and character select
 - [ ] `create-nuikit -t qbox`: zero to a themed local server in one command
 - [ ] `nuikit types`: generate LuaLS annotations from `nui.d.ts`
