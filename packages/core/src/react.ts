@@ -114,7 +114,9 @@ const Z: Record<string, number> = { hud: 10, world: 20, panel: 30, modal: 40, sy
 
 // A surface fills the screen like the game's NUI frame, but only its own content takes clicks,
 // so a HUD never blocks a panel and a panel never blocks the HUD's neighbours.
-const SURFACE_CSS = "[data-surface]{position:absolute;inset:0;pointer-events:none}[data-surface]>*{pointer-events:auto}";
+// fixed, not absolute: a Radix modal locks scroll by making <body> position:relative, and an
+// absolute surface would then collapse to the body's zero height.
+const SURFACE_CSS = "[data-surface]{position:fixed;inset:0;pointer-events:none}[data-surface]>*{pointer-events:auto}";
 let surfaceCssInjected = false;
 function injectSurfaceCss() {
   if (surfaceCssInjected || typeof document === "undefined") return;

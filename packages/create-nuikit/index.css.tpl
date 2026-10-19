@@ -183,9 +183,11 @@
 @utility nk-enter {
   animation: nk-enter 160ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
+/* Opacity only: a transform here would override the translate that centres dialogs, and
+   Chromium 103 has no separate `scale` property. */
 @keyframes nk-enter {
-  from { opacity: 0; transform: scale(0.98); }
-  to { opacity: 1; transform: none; }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 @media (prefers-reduced-motion: reduce) {
   .nk-enter { animation: none; }

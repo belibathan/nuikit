@@ -51,7 +51,7 @@ screen is the same size relative to the game at every resolution. Design at 1080
 4. **Numbers are tabular** (`nk-num`). Mono only for codes a player might type (plate, citizen ID).
 5. **Rows, not tiles,** for lists of actions: `nk-row`, 40px, icon + label + trailing meta.
 6. **Keys** are shadcn `Kbd`, next to the action they trigger.
-7. **One motion.** Panels open with `nk-enter` (160ms fade + 2% scale). Nothing animates on its own
+7. **One motion.** Panels open with `nk-enter` (160ms fade). Nothing animates on its own
    except things that are live (progress, timers, talking).
 8. **HUD stays out of the way.** Always-on elements use `nk-chip` or bare text with a shadow, no
    panels, and sit on the `--nk-edge` margin.
