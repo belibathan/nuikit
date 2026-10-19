@@ -193,6 +193,12 @@ export const GENERATED: { name: string; group: string; type: string; description
     "description": "Text and icons on hud"
   },
   {
+    "name": "scrim",
+    "group": "base",
+    "type": "color",
+    "description": "Darkens the game behind full-screen screens, bar tracks and shadows on the game; always used with opacity"
+  },
+  {
     "name": "vital-health",
     "group": "vital",
     "type": "color",

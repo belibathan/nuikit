@@ -52,8 +52,7 @@ nuikit_protocol '1'
   [§5.6](#56-opting-out-the-nuikit-handshake-meta)) MUST NOT declare `nuikit_protocol`, because the Lua it
   runs against is not nuikit's.
 
-**Change needed:** no shipped `fxmanifest.lua` declares `nuikit_protocol` yet; `create-nuikit`'s template and
-every `systems/*` resource with a `ui_page` should add it.
+Every `systems/*` resource with a `ui_page`, `create-nuikit`'s template and `scripts/new-system.mjs` declare it.
 
 ### 2.2 Negotiating in the ready handshake
 
@@ -482,7 +481,7 @@ resource's protocol, so ad-hoc Escape is reported as advisory for them, not as a
 with styles but no page of its own (a chat theme, the `nuikit` theme resource) is graded on Level 1 only.
 
 Exceptions are marked in source with `nuikit-ignore [rule …]` (same line, or alone on the line above) or
-`nuikit-ignore-next-line [rule …]`, with a reason.
+`nuikit-ignore-next-line [rule …]`, or around a block with `nuikit-ignore-start [rule …]` … `nuikit-ignore-end`, with a reason.
 
 ## 11. Changes needed in the runtime
 

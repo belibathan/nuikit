@@ -2,7 +2,7 @@
 /**
  * nuikit: the command line for the nuikit protocol.
  *
- *   nuikit check [path] [--level 1|2|3] [--json] [--verbose] [--include-built]
+ *   nuikit check [path…] [--level 1|2|3] [--json] [--verbose] [--include-built]
  *   nuikit tokens [--json | --css]
  */
 import fs from "node:fs";
@@ -15,7 +15,7 @@ const VERSION = "0.4.0";
 const HELP = `${bold("nuikit")} ${dim(VERSION)}: the UI platform layer for FiveM
 
 ${bold("Usage")}
-  nuikit check [path]     audit a resource (or a folder of resources) against the protocol
+  nuikit check [path…]    audit resources (or folders of resources) against the protocol
     --level <1|2|3>       exit 1 if any resource is below this level
     --json                machine-readable output
     --verbose             list every finding (default: 5 per rule)
@@ -64,18 +64,20 @@ function main(argv: string[]): number {
   if (cmd === "check") {
     const valueFlags = new Set(["--level"]);
     const positional = args.filter((a, i) => !a.startsWith("--") && !valueFlags.has(args[i - 1] ?? ""));
-    const target = positional[0] ?? ".";
-    if (!fs.existsSync(target)) {
-      console.error(red(`✗ ${target} does not exist`));
-      return 2;
-    }
+    const targets = positional.length ? positional : ["."];
+    const target = targets.join(", ");
+    for (const t of targets)
+      if (!fs.existsSync(t)) {
+        console.error(red(`✗ ${t} does not exist`));
+        return 2;
+      }
     const levelArg = flag(args, "--level");
     const threshold = levelArg === undefined ? 0 : Number(levelArg);
     if (![0, 1, 2, 3].includes(threshold)) {
       console.error(red(`✗ --level must be 1, 2 or 3`));
       return 2;
     }
-    const results = check(target, { includeBuilt: args.includes("--include-built") });
+    const results = targets.flatMap((t) => check(t, { includeBuilt: args.includes("--include-built") }));
     if (!results.length) {
       console.error(red(`✗ no resource found under ${target} (looked for fxmanifest.lua, web/ or index.html)`));
       return 2;

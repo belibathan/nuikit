@@ -92,6 +92,8 @@ export const COLOR_TOKEN_NAMES = TOKENS.filter((t) => t.type === "color").map((t
  */
 export function isTokenDefinition(name: string): boolean {
   if (TOKEN_NAMES.has(name)) return true;
+  // pages that can't own :root token names (a theme for another resource's page) prefix them: --nk-primary
+  if (name.startsWith("nk-") && !TOKEN_NAMES.has(name) && isTokenDefinition(name.slice(3))) return true;
   if (TOKEN_NAMES.has(name.replace(/-(rgb|a)$/, ""))) return true;
   return /^shadow(-|$)/.test(name);
 }

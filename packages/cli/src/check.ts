@@ -84,7 +84,8 @@ const IGNORED_DIRS = new Set(["node_modules", ".git", ".turbo", ".vite", "covera
 const BUILT_DIRS = new Set(["dist", "build", "out"]);
 const UI_EXT = /\.(css|scss|sass|less|html?|tsx|jsx|ts|js|mjs|cjs|vue|svelte)$/i;
 const SKIP_FILE = /(\.d\.ts|\.test\.[jt]sx?|\.spec\.[jt]sx?|\.stories\.[jt]sx?|\.min\.js|\.map)$|(^|\/)(dev\.[jt]sx?|vite\.config\.[jt]s|tailwind\.config\.[jt]s|postcss\.config\.[cm]?js|vitest\.config\.[jt]s|tsup\.config\.[jt]s|eslint\.config\.[cm]?js)$/i;
-const SKIP_DIR_IN_PATH = /(^|\/)(test|tests|__tests__|__mocks__|fixtures)\//;
+// test code, and server-side scripts (never part of a page)
+const SKIP_DIR_IN_PATH = /(^|\/)(test|tests|__tests__|__mocks__|fixtures)\/|^server\//;
 
 function walk(dir: string, rel = "", out: { rel: string; built: boolean }[] = [], built = false): typeof out {
   let entries: fs.Dirent[];
@@ -111,12 +112,17 @@ function ignored(lines: string[], line: number, rule: RuleId): boolean {
     const rules = (m[1] ?? "").split(/[\s,]+/).filter((r) => r.includes("/"));
     return rules.length === 0 || rules.some((r) => rule === r || rule.startsWith(r.replace(/\*$/, "")));
   };
+  // nuikit-ignore-start [rules] … nuikit-ignore-end: a block of data the theme can't know
+  for (let i = line - 1; i >= 0; i--) {
+    if (/nuikit-ignore-end/.test(lines[i]!) && i !== line - 1) break;
+    if (test(lines[i], /nuikit-ignore-start(?:\s+([\w/*,\s-]+))?/)) return true;
+  }
   const above = lines[line - 2];
   const aboveIsComment = !!above && /^\s*(\/\/|\/\*|\*|--|<!--|\{\/\*)/.test(above);
   return (
-    test(lines[line - 1], /nuikit-ignore(?!-next-line)(?:\s+([\w/*,\s-]+))?/) ||
+    test(lines[line - 1], /nuikit-ignore(?!-next-line|-start|-end)(?:\s+([\w/*,\s-]+))?/) ||
     test(above, /nuikit-ignore-next-line(?:\s+([\w/*,\s-]+))?/) ||
-    (aboveIsComment && test(above, /nuikit-ignore(?!-next-line)(?:\s+([\w/*,\s-]+))?/))
+    (aboveIsComment && test(above, /nuikit-ignore(?!-next-line|-start|-end)(?:\s+([\w/*,\s-]+))?/))
   );
 }
 
@@ -549,7 +555,8 @@ export function findResources(dir: string, depth = 4): string[] {
     return [];
   }
   return entries
-    .filter((e) => e.isDirectory() && !IGNORED_DIRS.has(e.name) && !e.name.startsWith("."))
+    // build output repeats its sources; check it by pointing at it directly
+    .filter((e) => e.isDirectory() && !IGNORED_DIRS.has(e.name) && !BUILT_DIRS.has(e.name) && !e.name.startsWith("."))
     .sort((a, b) => a.name.localeCompare(b.name))
     .flatMap((e) => findResources(path.join(dir, e.name), depth - 1));
 }

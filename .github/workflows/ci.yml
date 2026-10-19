@@ -19,11 +19,12 @@ jobs:
       - run: pnpm build
       - run: pnpm typecheck
       - run: pnpm test
-      # Protocol conformance of every system and override (informational until they reach level 1).
+      # Protocol conformance (docs/protocol.md §10): every page is native (level 3); the theme
+      # resource and the chat theme have no page of their own, so level 1 is their maximum.
       - name: nuikit check
         run: |
-          node packages/cli/dist/cli.js check systems
-          node packages/cli/dist/cli.js check addons
+          node packages/cli/dist/cli.js check systems/nuikit_death systems/nuikit_hud systems/nuikit_loading systems/nuikit_pause addons packages/create-nuikit/template --level 3
+          node packages/cli/dist/cli.js check systems --level 1
 
   chromium-103:
     name: Render in Chromium 103 (FiveM CEF)

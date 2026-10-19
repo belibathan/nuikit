@@ -9,7 +9,7 @@ npx nuikit check ./resources --level 2  # every resource under a folder; exit 1 
 npx nuikit tokens                       # the theme tokens a UI should read
 ```
 
-## `nuikit check [path]`
+## `nuikit check [path…]`
 
 Audits a FiveM resource folder (fxmanifest.lua or `__resource.lua`, client Lua, web sources and/or built files)
 and reports the conformance level it reaches, with `file:line:column` for everything that keeps it from the next.
@@ -45,7 +45,7 @@ background: #1c1f21;
 ```
 
 `nuikit-ignore [rules]` works on the same line or alone on the line above; `nuikit-ignore-next-line [rules]` on the
-line above. Without rule ids it silences every rule on that line.
+line above. Without rule ids it silences every rule on that line. For a block (a table of colours an upstream protocol sends), wrap it in `nuikit-ignore-start [rules]` … `nuikit-ignore-end`.
 
 Options: `--level <1|2|3>` (exit 1 below it), `--json`, `--verbose` (every finding, not five per rule),
 `--include-built` (also grade `dist/` and `build/` when sources exist; with no sources, built HTML and CSS are graded

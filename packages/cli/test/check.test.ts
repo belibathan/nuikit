@@ -169,3 +169,37 @@ describe("cli", () => {
     expect(spawnSync(process.execPath, [cli, "check", fixture("nope")]).status).toBe(2);
   });
 });
+
+describe("exemptions", () => {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "nuikit-check-"));
+  const res = path.join(tmp, "res");
+  const put = (rel: string, src: string) => {
+    fs.mkdirSync(path.dirname(path.join(tmp, rel)), { recursive: true });
+    fs.writeFileSync(path.join(tmp, rel), src);
+  };
+  put("res/web/index.html", "<!doctype html><div class=\"bg-primary\"></div>");
+  put(
+    "res/web/data.ts",
+    [
+      "// nuikit-ignore-start color/hardcoded: palette the upstream protocol sends",
+      'export const HUES = { red: "#fa5252",',
+      '  blue: "#228be6" };',
+      "// nuikit-ignore-end",
+      'export const after = "#123456";',
+    ].join("\n"),
+  );
+  put("res/web/theme.css", ":root { --nk-primary: rgb(229, 229, 229); --nk-primary-rgb: 229, 229, 229; }");
+  put("res/server/main.js", 'const fallback = "rgba(0, 0, 0, 0.45)";');
+  put("out/res/web/index.html", "<div style=\"color:#fff\"></div>");
+  const r = checkResource(res);
+
+  it("honours ignore blocks only up to nuikit-ignore-end", () => {
+    expect(at(r, "color/hardcoded")).toEqual(["web/data.ts:5"]);
+  });
+  it("treats --nk-<token> as a token definition and skips server scripts", () => {
+    expect(r.findings.some((f) => f.file === "web/theme.css" || f.file.startsWith("server/"))).toBe(false);
+  });
+  it("doesn't descend into build output", () => {
+    expect(findResources(tmp).map((p) => path.relative(tmp, p))).toEqual(["res"]);
+  });
+});
