@@ -2,8 +2,8 @@ import { applyTheme, clearTheme, emit, type ThemeVars } from "nuikit-core/react"
 import { ArrowRightIcon, CarIcon, GithubIcon, HeartPulseIcon, KeyIcon, ShieldIcon, WrenchIcon, ZapIcon } from "lucide-react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { CodeBlock, Command, CopyButton } from "@/components/code";
-import { Logo } from "@/components/logo";
 import { Credit } from "@/components/credit";
+import { Footer, Nav, REPO, SITE } from "@/components/site";
 import { Backdrop } from "@/components/scene";
 import { Stage, radialItems } from "@/components/stage";
 import { Badge } from "@/components/ui/badge";
@@ -20,15 +20,13 @@ import { Vital } from "@/components/ui/vital";
 import { cn } from "@/lib/utils";
 import { themes } from "@/themes";
 
-const REPO = "https://github.com/belibathan/nuikit";
-const SITE = "https://nuikit.vercel.app";
-
 export default function App() {
   return (
     <div className="min-h-screen">
       <Nav />
       <main>
         <Hero />
+        <Screens />
         <Proof />
         <Themes />
         <Gallery />
@@ -37,29 +35,6 @@ export default function App() {
       </main>
       <Footer />
     </div>
-  );
-}
-
-function Nav() {
-  return (
-    <header className="sticky top-0 z-40 border-b bg-background/80 backdrop-blur">
-      <nav className="mx-auto flex h-14 max-w-6xl items-center gap-6 px-6 text-sm">
-        <a href="#" aria-label="nuikit home">
-          <Logo className="text-lg" />
-        </a>
-        <div className="hidden gap-5 text-muted-foreground md:flex">
-          <a href="#proof" className="hover:text-foreground">Why</a>
-          <a href="#themes" className="hover:text-foreground">Themes</a>
-          <a href="#components" className="hover:text-foreground">Components</a>
-          <a href="#bridge" className="hover:text-foreground">Lua ↔ React</a>
-        </div>
-        <Button variant="outline" size="sm" className="ml-auto" asChild>
-          <a href={REPO}>
-            <GithubIcon /> GitHub
-          </a>
-        </Button>
-      </nav>
-    </header>
   );
 }
 
@@ -80,11 +55,15 @@ function Hero() {
         </Badge>
       </div>
       <h1 className="mx-auto mt-6 max-w-3xl text-center text-4xl font-semibold tracking-tight text-balance sm:text-6xl">
-        shadcn/ui for FiveM, rendered right.
+        One design system for your whole FiveM server.
       </h1>
       <p className="mx-auto mt-5 max-w-2xl text-center text-lg text-muted-foreground text-pretty">
-        Stock shadcn/ui and Tailwind v4 in your NUI, compiled for the game's browser. Typed Lua ↔ React, browser devtools that fake the game, hot
-        reload in game, and HUD components built from shadcn's own.
+        A pause menu, HUD, death and loading screen, and new interfaces for ox_lib, ox_inventory, banking and more, all stock shadcn/ui compiled for
+        the game's browser and coloured by one TweakCN theme. Build your own resources from the same{" "}
+        <a href="/components" className="text-foreground underline underline-offset-4">
+          components
+        </a>{" "}
+        and they match.
       </p>
       <div className="mx-auto mt-8 flex max-w-xl flex-col gap-3 sm:flex-row">
         <Command className="flex-1">npm create nuikit@latest</Command>
@@ -113,6 +92,39 @@ function SectionTitle({ eyebrow, title, children, id }: { eyebrow: string; title
       <h2 className="mt-3 text-3xl font-semibold tracking-tight text-balance">{title}</h2>
       {children && <p className="mt-4 text-muted-foreground text-pretty">{children}</p>}
     </div>
+  );
+}
+
+/** What 0.4 ships, captured from each screen's browser dev mode (scripts/screens.mjs). */
+const SCREENS = [
+  { src: "/screens/pause.png", title: "Pause menu", text: "nuikit_pause replaces GTA's Esc menu." },
+  { src: "/screens/hud.png", title: "HUD", text: "nuikit_hud: vitals, needs, voice, money, speedometer." },
+  { src: "/screens/death.png", title: "Death screen", text: "nuikit_death follows your medical resource's timers." },
+  { src: "/screens/loading.png", title: "Loading screen", text: "nuikit_loading, with the real handover progress." },
+  { src: "/screens/ox-lib.png", title: "ox_lib", text: "Menus, dialogs, progress and notifications for every Qbox resource." },
+  { src: "/screens/ox-inventory.png", title: "ox_inventory", text: "Inventory, shops and crafting." },
+  { src: "/screens/banking.png", title: "Renewed-Banking", text: "Accounts, transfers and history." },
+  { src: "/screens/appearance.png", title: "illenium-appearance", text: "Character creator, clothing, barber and tattoos." },
+];
+
+function Screens() {
+  return (
+    <section className="mx-auto max-w-6xl px-6 py-20">
+      <SectionTitle id="screens" eyebrow="0.4" title="Every screen on the server, one look.">
+        Drop the [nuikit] folder into resources and these replace the stock interfaces. Paste a TweakCN theme into nuikit/theme.css and all of them
+        change together.
+      </SectionTitle>
+      <div className="mt-12 grid gap-5 sm:grid-cols-2">
+        {SCREENS.map((s) => (
+          <figure key={s.src} className="overflow-hidden rounded-xl border bg-card">
+            <img src={s.src} alt={s.title} loading="lazy" className="aspect-video w-full bg-muted object-cover" />
+            <figcaption className="px-4 py-3 text-sm">
+              <span className="font-medium">{s.title}</span> <span className="text-muted-foreground">{s.text}</span>
+            </figcaption>
+          </figure>
+        ))}
+      </div>
+    </section>
   );
 }
 
@@ -414,24 +426,5 @@ function Loop() {
         <p className="mt-3 text-sm text-muted-foreground">MIT licensed. Built for the FiveM and RedM community.</p>
       </div>
     </section>
-  );
-}
-
-function Footer() {
-  return (
-    <footer className="border-t">
-      <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-4 px-6 py-8 text-sm text-muted-foreground">
-        <Logo className="text-base text-foreground" />
-        <span>
-          by{" "}
-          <a href="https://github.com/belibathan" className="font-medium text-foreground underline-offset-4 hover:underline">
-            @belibathan
-          </a>
-        </span>
-        <span>Not affiliated with Cfx.re, Rockstar Games or shadcn.</span>
-        <a href={REPO} className="ml-auto hover:text-foreground">GitHub</a>
-        <a href="https://www.npmjs.com/package/vite-plugin-nuikit" className="hover:text-foreground">npm</a>
-      </div>
-    </footer>
   );
 }
