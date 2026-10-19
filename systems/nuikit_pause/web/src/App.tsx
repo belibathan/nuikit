@@ -1,6 +1,5 @@
 import { fetchNui, Surface, usePlayer, type NuiPlayer } from "nuikit-core/react";
 import {
-  BriefcaseIcon,
   CircleHelpIcon,
   KeyboardIcon,
   LandmarkIcon,
@@ -26,9 +25,6 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Kbd } from "@/components/ui/kbd";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
@@ -74,22 +70,20 @@ function Pause({ data, player }: { data: PauseData; player: NuiPlayer }) {
 
       <div className="relative flex h-full">
         {/* left: who we are and where to go */}
-        <aside className="pause-rail flex h-full w-[420px] shrink-0 flex-col px-14 py-16">
-          <header className="flex items-center gap-4">
+        <aside className="pause-rail flex h-full w-80 shrink-0 flex-col px-12 py-12">
+          <header className="flex items-center gap-3">
             {server.logo ? (
-              <div className="flex size-14 shrink-0 items-center justify-center rounded-xl bg-primary text-lg font-bold tracking-tight text-primary-foreground shadow-lg">
+              <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary text-sm font-semibold text-primary-foreground">
                 {server.logo}
               </div>
             ) : null}
             <div className="min-w-0">
-              <h1 className="truncate text-3xl font-semibold tracking-tight text-foreground">{server.name ?? "Paused"}</h1>
-              {server.tagline ? (
-                <p className="mt-0.5 text-xs font-medium tracking-[0.32em] text-muted-foreground uppercase">{server.tagline}</p>
-              ) : null}
+              <h1 className="truncate text-xl leading-6 font-semibold tracking-tight">{server.name ?? "Paused"}</h1>
+              {server.tagline ? <p className="truncate text-sm text-muted-foreground">{server.tagline}</p> : null}
             </div>
           </header>
 
-          <nav className="mt-14 flex flex-col gap-1" aria-label="Pause menu">
+          <nav className="pause-nav mt-12 flex flex-col gap-0.5" aria-label="Pause menu">
             {buttons.map((b, i) => {
               if (b === "disconnect") return null;
               const item = NAV[b];
@@ -97,42 +91,41 @@ function Pause({ data, player }: { data: PauseData; player: NuiPlayer }) {
               const Icon = item.icon;
               const active = b === "help" && view === "help";
               return (
-                <Button
+                <button
                   key={b}
                   autoFocus={i === 0}
-                  variant={active ? "secondary" : "ghost"}
-                  size="lg"
                   onClick={() => run(b)}
-                  className="pause-nav h-12 w-full justify-start gap-3 px-4 text-base"
-                  style={{ animationDelay: `${80 + i * 35}ms` }}
+                  className={cn(
+                    "nk-row w-full text-left font-medium outline-none hover:bg-accent hover:text-accent-foreground focus-visible:bg-accent",
+                    active && "bg-accent text-accent-foreground",
+                  )}
                 >
-                  <Icon className="size-5 text-muted-foreground" />
-                  <span className="flex-1 text-left">{item.label}</span>
+                  <Icon className="size-4 text-muted-foreground" />
+                  <span className="flex-1">{item.label}</span>
                   {item.kbd ? <Kbd>{item.kbd}</Kbd> : null}
-                </Button>
+                </button>
               );
             })}
+            {buttons.includes("disconnect") ? (
+              <>
+                <Separator className="my-3" />
+                <Disconnect />
+              </>
+            ) : null}
           </nav>
 
-          {buttons.includes("disconnect") ? (
-            <>
-              <Separator className="my-4 opacity-60" />
-              <Disconnect />
-            </>
-          ) : null}
-
-          <div className="mt-auto flex flex-col gap-3">
+          <div className="mt-auto flex flex-col gap-2">
             {links.map((l) => (
               <div key={l.label} className="flex items-baseline justify-between gap-4 text-sm">
                 <span className="text-muted-foreground">{l.label}</span>
-                <span className="truncate font-medium text-foreground/90">{l.value}</span>
+                <span className="truncate font-medium">{l.value}</span>
               </div>
             ))}
           </div>
         </aside>
 
         {/* right: the player, or the help sheet */}
-        <main className="flex flex-1 items-center justify-end px-16">
+        <main className="flex flex-1 items-center justify-end px-12">
           {view === "help" ? <Help help={help} /> : <PlayerCard player={player} data={data} />}
         </main>
       </div>
@@ -144,18 +137,14 @@ function Disconnect() {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button
-          variant="ghost"
-          size="lg"
-          className="pause-nav h-12 w-full justify-start gap-3 px-4 text-base text-destructive hover:bg-destructive/10 hover:text-destructive dark:hover:bg-destructive/15"
-        >
-          <LogOutIcon className="size-5" />
-          <span className="flex-1 text-left">Disconnect</span>
-        </Button>
+        <button className="nk-row w-full text-left font-medium text-destructive outline-none hover:bg-accent focus-visible:bg-accent">
+          <LogOutIcon className="size-4" />
+          <span className="flex-1">Disconnect</span>
+        </button>
       </AlertDialogTrigger>
-      <AlertDialogContent className="pause-dialog">
+      <AlertDialogContent className="nk-panel nk-enter max-w-sm gap-4 p-6">
         <AlertDialogHeader>
-          <AlertDialogTitle>Leave the server?</AlertDialogTitle>
+          <AlertDialogTitle className="nk-title">Leave the server?</AlertDialogTitle>
           <AlertDialogDescription>Your character is saved. You can reconnect from the server list at any time.</AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
@@ -179,95 +168,84 @@ function PlayerCard({ player, data }: { player: NuiPlayer; data: PauseData }) {
   const job = player.loaded ? player.job : undefined;
   const players = data?.players;
   const max = data?.maxPlayers;
+  const role = job ? [job.label ?? job.name, job.gradeLabel].filter(Boolean).join(", ") : player.loaded ? "Civilian" : "No character loaded";
 
   return (
-    <Card className="pause-card w-[380px] gap-0 py-0 shadow-2xl">
-      <CardHeader className="flex flex-row items-center gap-4 border-b px-6 py-6">
-        <Avatar className="size-14">
-          <AvatarFallback className="bg-primary text-lg font-semibold text-primary-foreground">{initials(name)}</AvatarFallback>
+    <section className="nk-panel nk-enter w-80 overflow-hidden">
+      <header className="nk-panel-header gap-3">
+        <Avatar className="size-10">
+          <AvatarFallback className="bg-muted text-sm font-semibold">{initials(name)}</AvatarFallback>
         </Avatar>
-        <div className="flex min-w-0 flex-col gap-1.5">
-          <CardTitle className="truncate text-xl">{name}</CardTitle>
-          {job ? (
-            <Badge variant="secondary" className="max-w-full">
-              <BriefcaseIcon />
-              <span className="truncate">{job.label ?? job.name}</span>
-              {job.gradeLabel ? <span className="text-muted-foreground">· {job.gradeLabel}</span> : null}
-              {job.onDuty !== undefined ? (
-                <span
-                  className={cn("size-1.5 rounded-full", job.onDuty ? "bg-primary" : "bg-muted-foreground/50")}
-                  aria-label={job.onDuty ? "On duty" : "Off duty"}
-                />
-              ) : null}
-            </Badge>
-          ) : (
-            <CardDescription>{player.loaded ? "Civilian" : "No character loaded"}</CardDescription>
-          )}
+        <div className="min-w-0 flex-1">
+          <h2 className="nk-title truncate">{name}</h2>
+          <p className="nk-label flex items-center gap-1.5 truncate">
+            {role}
+            {job?.onDuty !== undefined ? (
+              <span className={cn("size-1.5 rounded-full", job.onDuty ? "bg-primary" : "bg-muted-foreground/50")} aria-label={job.onDuty ? "On duty" : "Off duty"} />
+            ) : null}
+          </p>
         </div>
-      </CardHeader>
+      </header>
 
       {player.loaded && (player.cash !== undefined || player.bank !== undefined) ? (
-        <CardContent className="grid grid-cols-2 gap-px bg-border p-0">
+        <div className="grid grid-cols-2 gap-4 px-4 py-4">
           <Stat icon={<WalletIcon />} label="Cash" value={player.cash !== undefined ? money.format(player.cash) : "—"} />
           <Stat icon={<LandmarkIcon />} label="Bank" value={player.bank !== undefined ? money.format(player.bank) : "—"} />
-        </CardContent>
+        </div>
       ) : null}
 
-      <CardFooter className="flex flex-col items-stretch gap-3 border-t px-6 py-5">
-        <div className="flex items-center justify-between text-sm">
+      <footer className="flex flex-col gap-3 border-t px-4 py-3 text-sm">
+        <div className="flex items-center justify-between">
           <span className="flex items-center gap-2 text-muted-foreground">
             <UsersIcon className="size-4" />
             Players online
           </span>
-          <span className="font-medium tabular-nums">
+          <span className="nk-num font-medium">
             {players ?? "—"}
             {max ? <span className="text-muted-foreground"> / {max}</span> : null}
           </span>
         </div>
         {players !== undefined && max ? <Progress value={Math.min(100, (players / max) * 100)} className="h-1" /> : null}
-        <div className="flex items-center justify-between text-sm">
+        <div className="flex items-center justify-between">
           <span className="text-muted-foreground">Server ID</span>
-          <span className="font-mono font-medium tabular-nums">{data?.serverId ?? "—"}</span>
+          <span className="nk-num font-medium">{data?.serverId ?? "—"}</span>
         </div>
-      </CardFooter>
-    </Card>
+      </footer>
+    </section>
   );
 }
 
 function Stat({ icon, label, value }: { icon: ReactNode; label: string; value: string }) {
   return (
-    <div className="flex flex-col gap-1 bg-card px-6 py-5">
-      <span className="flex items-center gap-1.5 text-xs font-medium tracking-wide text-muted-foreground uppercase [&_svg]:size-3.5">
+    <div className="flex min-w-0 flex-col gap-1">
+      <span className="nk-label flex items-center gap-1.5 [&_svg]:size-3.5">
         {icon}
         {label}
       </span>
-      <span className="truncate text-xl font-semibold tracking-tight tabular-nums">{value}</span>
+      <span className="nk-num truncate text-xl font-semibold">{value}</span>
     </div>
   );
 }
 
 function Help({ help }: { help: PauseData["help"] }) {
   return (
-    <Card className="pause-card w-[380px] shadow-2xl">
-      <CardHeader>
-        <CardTitle className="text-xl">Controls</CardTitle>
-        <CardDescription>Keys this server uses. Change yours in Key bindings.</CardDescription>
-      </CardHeader>
-      <CardContent className="flex flex-col">
+    <section className="nk-panel nk-enter w-80 overflow-hidden">
+      <header className="nk-panel-header flex-col items-start gap-0.5">
+        <h2 className="nk-title">Controls</h2>
+        <p className="nk-label">Change yours in Key bindings.</p>
+      </header>
+      <div className="nk-panel-body">
         {help.length ? (
-          help.map((h, i) => (
-            <div key={h.key + h.label}>
-              {i > 0 ? <Separator /> : null}
-              <div className="flex items-center justify-between py-2.5 text-sm">
-                <span>{h.label}</span>
-                <Kbd className="min-w-8">{h.key}</Kbd>
-              </div>
+          help.map((h) => (
+            <div key={h.key + h.label} className="nk-row justify-between">
+              <span>{h.label}</span>
+              <Kbd className="min-w-8">{h.key}</Kbd>
             </div>
           ))
         ) : (
-          <p className="text-sm text-muted-foreground">No controls listed.</p>
+          <p className="nk-row text-muted-foreground">This server hasn't listed its controls.</p>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 }
