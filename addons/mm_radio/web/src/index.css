@@ -126,12 +126,14 @@
   background-color: var(--popover) !important;
   color: var(--popover-foreground) !important;
   border: 1px solid var(--border);
-  border-radius: calc(var(--radius) + 4px);
+  border-radius: calc(var(--radius) + 4px) !important;
   box-shadow: 0 0 0 1px rgb(0 0 0 / 0.25), 0 24px 64px -24px rgb(0 0 0 / 0.7);
 }
 /* Panel header: one line, title left, meta/actions right. */
 @utility nk-panel-header {
   display: flex;
+  flex-direction: row;
+  text-align: left;
   align-items: center;
   gap: 0.75rem;
   min-height: 3.25rem;
