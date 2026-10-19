@@ -1,6 +1,5 @@
 import { ChevronRight, Eye } from "lucide-react";
 import { Fragment, useEffect, useRef, useState } from "react";
-import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Icon } from "@/lib/icon";
 import { post, useTargetMessages } from "@/lib/nui";
@@ -70,25 +69,24 @@ export default function App() {
 
   return (
     <div className="pointer-events-none fixed inset-0 select-none">
+      {/* The eye: a HUD mark on the game (rule 8). Turns primary while something is targetable. */}
       <div
         aria-hidden
         className={cn(
-          "absolute top-1/2 left-1/2 flex size-9 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border shadow-md transition-all duration-150",
-          active
-            ? "scale-110 border-primary bg-primary text-primary-foreground ring-4 ring-primary/30"
-            : "border-border bg-popover/80 text-muted-foreground",
+          "absolute top-1/2 left-1/2 flex size-8 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full transition-colors duration-150",
+          active ? "bg-primary text-primary-foreground" : "tgt-hud",
         )}
       >
-        <Eye className="size-[18px]" strokeWidth={2.25} />
+        <Eye className="size-4" />
       </div>
 
       {active && (
         <div
           key={session}
           role="menu"
+          // Beside the eye (16px gap), first row centred on it: 1px border + 8px padding + 20px.
           className={cn(
-            "absolute top-1/2 left-1/2 ml-8 -mt-5 flex w-max max-w-80 min-w-52 flex-col rounded-lg border bg-popover/95 p-1 text-popover-foreground shadow-xl",
-            "animate-in fade-in-0 slide-in-from-left-2 duration-150",
+            "nk-panel nk-enter absolute top-1/2 left-1/2 ml-8 -mt-7 flex w-max max-w-80 min-w-56 flex-col p-2",
             inert ? "pointer-events-none" : "pointer-events-auto",
           )}
         >
@@ -96,35 +94,25 @@ export default function App() {
             <Fragment key={group.key}>
               {gi > 0 && <Separator className="my-1" />}
               {group.rows.map((row) => (
-                <Button
+                <button
                   key={row.key}
+                  type="button"
                   role="menuitem"
-                  variant="ghost"
-                  size="sm"
-                  // Full-strength accent on hover (stock ghost uses accent/50 in dark mode, too faint
-                  // over a bright game scene). While inert, hover styles are switched off outright:
-                  // CEF can keep :hover matching after focus is gone.
+                  // While inert, hover styles are switched off outright: CEF can keep :hover matching
+                  // after focus is gone.
                   className={cn(
-                    "group/row w-full justify-start gap-2.5 px-2 font-normal",
-                    inert
-                      ? "hover:bg-transparent hover:text-foreground dark:hover:bg-transparent"
-                      : "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent",
-                    row.back && "text-muted-foreground hover:text-muted-foreground",
-                    row.back && !inert && "hover:text-accent-foreground",
+                    "group/row nk-row w-full text-left font-medium outline-none",
+                    !inert && "hover:bg-accent hover:text-accent-foreground focus-visible:bg-accent",
+                    row.back && "text-muted-foreground",
                   )}
                   onClick={() => select(row)}
                 >
                   <span className={cn("flex w-4 shrink-0 justify-center text-muted-foreground", !inert && "group-hover/row:text-accent-foreground")}>
                     <Icon icon={row.option.icon} color={row.option.iconColor} />
                   </span>
-                  <span className="truncate">{String(row.option.label ?? "")}</span>
-                  {/* Wrapped so Button's :has(>svg) padding tweak (absent in Chromium 103) never applies. */}
-                  {row.submenu && (
-                    <span className={cn("ml-auto flex pl-2 text-muted-foreground", !inert && "group-hover/row:text-accent-foreground")}>
-                      <ChevronRight />
-                    </span>
-                  )}
-                </Button>
+                  <span className="min-w-0 flex-1 truncate">{String(row.option.label ?? "")}</span>
+                  {row.submenu && <ChevronRight className="size-4 shrink-0 text-muted-foreground" />}
+                </button>
               ))}
             </Fragment>
           ))}

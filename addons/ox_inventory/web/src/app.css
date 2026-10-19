@@ -1,13 +1,8 @@
-/* index.css is synced from the nuikit template (stock shadcn neutral theme). This file adds what
-   the inventory needs on top: animation utilities, a transparent unscrollable page and a
-   resolution-relative rem so the whole UI scales with the game's resolution. */
+/* index.css is synced from the nuikit template (theme tokens + the kit layer, including the
+   resolution-scaled html font-size: 1rem = 16px at 1080p). This file adds only what the inventory
+   needs on top: animation utilities, a transparent unscrollable page, scrollbars and item art. */
 @import "./index.css";
 @import "tw-animate-css";
-
-html {
-  /* 16px at 1080p, 21px at 1440p, capped for 4K */
-  font-size: clamp(11px, 1.48vh, 26px);
-}
 
 html,
 body {
@@ -46,12 +41,13 @@ body.inv-dragging * {
   image-rendering: -webkit-optimize-contrast;
   -webkit-user-drag: none;
   pointer-events: none;
-  filter: drop-shadow(0 0.25rem 0.375rem rgb(0 0 0 / 0.45));
+  filter: drop-shadow(0 0.125rem 0.25rem rgb(0 0 0 / 0.35));
 }
 
-/* Text that sits on item art or bright scenes. */
-.inv-shadow {
-  text-shadow: 0 1px 2px rgb(0 0 0 / 0.7);
+/* Hotbar tile: a HUD element on the game (rule 8), same surface as nk-chip. */
+.inv-hud {
+  background-color: rgb(0 0 0 / 0.45);
+  color: #fff;
 }
 
 /* Markdown descriptions */
@@ -59,11 +55,15 @@ body.inv-dragging * {
   margin: 0;
   white-space: pre-line;
 }
+/* Hard breaks ("  \n") already break through pre-line; don't break twice. */
+.inv-md br {
+  display: none;
+}
 .inv-md p + p {
   margin-top: 0.25rem;
 }
 .inv-md strong {
-  font-weight: 600;
+  font-weight: 500;
   color: var(--popover-foreground);
 }
 .inv-md a {
@@ -76,58 +76,9 @@ body.inv-dragging * {
 }
 .inv-md ul {
   list-style: disc;
-  padding-left: 1.1rem;
+  padding-left: 1rem;
 }
 .inv-md ol {
   list-style: decimal;
-  padding-left: 1.1rem;
-}
-
-@keyframes inv-hotbar-in {
-  from {
-    opacity: 0;
-    transform: translateY(1.5rem);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-.inv-hotbar-in {
-  animation: inv-hotbar-in 180ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
-}
-
-@keyframes inv-pop {
-  from {
-    opacity: 0;
-    transform: translateY(0.75rem) scale(0.96);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-.inv-pop {
-  animation: inv-pop 200ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
-}
-
-@keyframes inv-fade-in {
-  from {
-    opacity: 0;
-    transform: scale(0.985);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-.inv-fade-in {
-  animation: inv-fade-in 160ms ease-out both;
-}
-
-/* Elevation without colored-shadow utilities (Tailwind's shadow-black/50 needs color-mix). */
-.inv-elev {
-  box-shadow:
-    0 1.5rem 3rem -0.75rem rgb(0 0 0 / 0.55),
-    0 0.25rem 0.75rem rgb(0 0 0 / 0.25);
+  padding-left: 1rem;
 }

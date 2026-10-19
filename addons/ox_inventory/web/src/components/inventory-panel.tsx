@@ -15,7 +15,6 @@ import {
 import { useEffect, useMemo, useState, type UIEvent } from "react";
 import { Meter } from "@/components/item-image";
 import { SlotTile } from "@/components/slot-tile";
-import { Card } from "@/components/ui/card";
 import type { Side } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { canCraft, canPurchase, formatKg, inv, totalWeight } from "@/state/inventory";
@@ -37,6 +36,9 @@ const KINDS: Record<string, { icon: LucideIcon; name: string }> = {
 };
 
 const PAGE = 60;
+
+/** Panel width (5 × 5.5rem slots, 0.5rem gaps, 1rem padding, hairline border), for the empty right-hand placeholder. */
+export const PANEL_WIDTH = "w-[31.625rem]";
 
 export function InventoryPanel({ side }: { side: Side }) {
   const inventory = inv.use((s) => (side === "left" ? s.left : s.right));
@@ -61,6 +63,8 @@ export function InventoryPanel({ side }: { side: Side }) {
   const label = inventory.label || kind.name;
   const max = inventory.maxWeight || 0;
   const percent = max ? (weight / max) * 100 : 0;
+  const used = inventory.items.filter((i) => i.name).length;
+  const catalogue = inventory.type === "shop" || inventory.type === "crafting";
 
   const onScroll = (e: UIEvent<HTMLDivElement>) => {
     const el = e.currentTarget;
@@ -68,30 +72,31 @@ export function InventoryPanel({ side }: { side: Side }) {
   };
 
   return (
-    <Card className="w-[31.25rem] gap-0 overflow-hidden rounded-xl border-border/80 bg-card/95 py-0 inv-elev">
-      <div className="flex flex-col gap-2.5 border-b border-border/70 px-4 pt-3.5 pb-3">
-        <div className="flex items-center gap-2.5">
-          <span className="grid size-8 shrink-0 place-items-center rounded-md bg-secondary text-secondary-foreground">
-            <Icon className="size-4" />
-          </span>
-          <div className="min-w-0 flex-1">
-            <div className="truncate text-sm leading-tight font-semibold">{label}</div>
-            <div className="text-xs leading-tight text-muted-foreground tabular-nums">
-              {inventory.items.filter((i) => i.name).length} / {inventory.slots}
-            </div>
-          </div>
+    <section className="nk-panel nk-enter w-max overflow-hidden">
+      <header className="nk-panel-header flex-col items-stretch gap-3">
+        <div className="flex items-center gap-3">
+          <Icon className="size-4 shrink-0 text-muted-foreground" />
+          <h2 className="nk-title min-w-0 flex-1 truncate">{label}</h2>
+          {catalogue ? (
+            <span className="nk-label nk-num shrink-0">
+              {used} {inventory.type === "shop" ? (used === 1 ? "item" : "items") : used === 1 ? "recipe" : "recipes"}
+            </span>
+          ) : (
+            <span className="nk-label nk-num shrink-0">
+              {used} / {inventory.slots} slots
+            </span>
+          )}
           {max > 0 && (
-            <div className="shrink-0 text-right text-xs tabular-nums">
-              <span className={cn("font-semibold", percent >= 90 ? "text-red-400" : "text-foreground")}>{formatKg(weight)}</span>
-              <span className="text-muted-foreground"> / {formatKg(max)} kg</span>
-            </div>
+            <span className="nk-label nk-num shrink-0">
+              <span className={cn(percent >= 90 ? "text-destructive" : "text-foreground")}>{formatKg(weight)}</span> / {formatKg(max)} kg
+            </span>
           )}
         </div>
-        {max > 0 && <Meter value={percent} tone="weight" className="h-1.5" />}
-      </div>
+        {max > 0 && <Meter value={percent} tone="weight" />}
+      </header>
 
-      <div className={cn("inv-scroll max-h-[37rem] p-3 pr-1.5", busy && "pointer-events-none")} onScroll={onScroll}>
-        <div className="grid grid-cols-5 gap-[0.45rem]">
+      <div className={cn("inv-scroll max-h-[37rem] py-4 pr-2.5 pl-4", busy && "pointer-events-none")} onScroll={onScroll}>
+        <div className="grid grid-cols-[repeat(5,5.5rem)] gap-2">
           {inventory.items.slice(0, limit).map((item, i) => (
             <SlotTile
               key={`${inventory.type}-${inventory.id}-${item.slot}`}
@@ -105,6 +110,6 @@ export function InventoryPanel({ side }: { side: Side }) {
           ))}
         </div>
       </div>
-    </Card>
+    </section>
   );
 }

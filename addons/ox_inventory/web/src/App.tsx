@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { Controls } from "@/components/controls";
-import { InventoryPanel } from "@/components/inventory-panel";
+import { InventoryPanel, PANEL_WIDTH } from "@/components/inventory-panel";
 import { ItemMenu } from "@/components/item-menu";
 import { ItemTooltip } from "@/components/item-tooltip";
 import { DragPreview, Hotbar, ItemNotifications } from "@/components/overlays";
@@ -76,11 +76,11 @@ export default function App() {
   return (
     <>
       {visible && (
-        <div className="inv-fade-in fixed inset-0 grid place-items-center px-6" onContextMenu={(e) => e.preventDefault()}>
+        <div className="fixed inset-0 grid place-items-center px-6" onContextMenu={(e) => e.preventDefault()}>
           <div className="flex items-start gap-4">
             <InventoryPanel side="left" />
             <Controls />
-            {hasRight ? <InventoryPanel side="right" /> : <div className="w-[31.25rem]" />}
+            {hasRight ? <InventoryPanel side="right" /> : <div className={PANEL_WIDTH} />}
           </div>
           <ItemTooltip />
           <ItemMenu />

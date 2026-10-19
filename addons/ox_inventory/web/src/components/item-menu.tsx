@@ -52,7 +52,7 @@ export function ItemMenu() {
       </DropdownMenuTrigger>
       {open && item && (
         <DropdownMenuContent align="start" side="right" sideOffset={2} className="w-56" onCloseAutoFocus={(e) => e.preventDefault()}>
-          <DropdownMenuLabel className="truncate text-xs text-muted-foreground">{itemLabel(item)}</DropdownMenuLabel>
+          <DropdownMenuLabel className="nk-label truncate">{itemLabel(item)}</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem onSelect={() => useItem(item.slot)}>
             <SparklesIcon />

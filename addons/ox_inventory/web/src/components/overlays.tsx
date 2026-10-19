@@ -28,11 +28,11 @@ export function DragPreview() {
   const moving = shift && count > 1 ? Math.floor(count / 2) : amount === 0 || amount > count ? count : amount;
   return (
     <div ref={ref} className="pointer-events-none fixed top-0 left-0 z-[70]">
-      <div className="relative grid size-[5rem] place-items-center rounded-xl border border-primary/60 bg-card/90 inv-elev">
-        <ItemImage src={itemImage(drag.item)} className="size-[3.6rem]" />
-        {count > 0 && (
-          <span className="absolute -top-2 -right-2 rounded-full bg-primary px-1.5 py-0.5 text-[0.68rem] leading-none font-bold text-primary-foreground tabular-nums shadow">
-            {moving.toLocaleString("en-US")}x
+      <div className="nk-panel relative grid size-16 place-items-center">
+        <ItemImage src={itemImage(drag.item)} className="size-11" />
+        {count > 1 && (
+          <span className="nk-num absolute -top-2 -right-2 grid h-5 min-w-5 place-items-center rounded-full bg-primary px-1.5 text-xs leading-none font-medium text-primary-foreground">
+            {moving.toLocaleString("en-US")}
           </span>
         )}
       </div>
@@ -59,10 +59,10 @@ export function Hotbar() {
   if (!visible) return null;
   const slots: Slot[] = Array.from({ length: 5 }, (_, i) => items[i] ?? { slot: i + 1 });
   return (
-    <div className="pointer-events-none fixed inset-x-0 bottom-[4vh] flex justify-center">
-      <div className="inv-hotbar-in flex gap-2 rounded-2xl border border-border/80 bg-card/95 p-2 inv-elev">
+    <div className="nk-edge pointer-events-none fixed inset-x-0 bottom-[var(--nk-edge)] flex justify-center">
+      <div className="nk-enter flex gap-2">
         {slots.map((s) => (
-          <div key={s.slot} className="w-[5.25rem]">
+          <div key={s.slot} className="w-16">
             <SlotTile side="left" item={s} invType="player" display imagepath={imagepath} rev={rev} />
           </div>
         ))}
@@ -89,14 +89,13 @@ export function ItemNotifications() {
 
   if (!notes.length) return null;
   return (
-    <div className="pointer-events-none fixed inset-x-0 bottom-[17vh] flex justify-center gap-2">
+    // Above the hotbar's row (edge + 4rem tile + 0.75rem), newest at the bottom.
+    <div className="nk-edge pointer-events-none fixed inset-x-0 bottom-[calc(var(--nk-edge)+4.75rem)] flex flex-col items-center gap-2">
       {notes.map((n) => (
-        <div key={n.id} className="inv-pop w-[6.5rem] overflow-hidden rounded-xl border border-border/80 bg-card/95 inv-elev">
-          <div className="bg-primary px-2 py-1 text-center text-[0.68rem] leading-tight font-semibold text-primary-foreground">{n.text}</div>
-          <div className="grid h-[4.5rem] place-items-center p-2">
-            <ItemImage src={itemImage(n.item)} className="size-[3.5rem]" />
-          </div>
-          <div className="truncate px-2 pb-1.5 text-center text-[0.68rem] font-medium">{itemLabel(n.item)}</div>
+        <div key={n.id} className="nk-chip nk-enter max-w-80 pl-1.5">
+          <ItemImage src={itemImage(n.item)} className="size-5 shrink-0" />
+          <span className="nk-num shrink-0 text-white/70">{n.text}</span>
+          <span className="truncate">{itemLabel(n.item)}</span>
         </div>
       ))}
     </div>
