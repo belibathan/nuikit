@@ -6,11 +6,12 @@
  * being synchronous across resources.
  */
 import { readFileSync } from "node:fs";
+import { isAbsolute } from "node:path";
 import { fileURLToPath } from "node:url";
 import { LuaFactory, type LuaEngine } from "wasmoon";
 
 const lua_ = (file: string) =>
-  readFileSync(file.startsWith("/") ? file : fileURLToPath(new URL(`../../lua/${file}`, import.meta.url)), "utf8");
+  readFileSync(isAbsolute(file) ? file : fileURLToPath(new URL(`../../lua/${file}`, import.meta.url)), "utf8");
 const SOURCE = lua_("nuikit.lua");
 
 export interface StartOptions {
