@@ -142,7 +142,7 @@ function Disconnect() {
           <span className="flex-1">Disconnect</span>
         </button>
       </AlertDialogTrigger>
-      <AlertDialogContent className="nk-panel nk-enter max-w-sm gap-4 p-6">
+      <AlertDialogContent className="nk-panel nk-enter gap-4 p-6 data-[size=default]:sm:max-w-sm">
         <AlertDialogHeader>
           <AlertDialogTitle className="nk-title">Leave the server?</AlertDialogTitle>
           <AlertDialogDescription>Your character is saved. You can reconnect from the server list at any time.</AlertDialogDescription>

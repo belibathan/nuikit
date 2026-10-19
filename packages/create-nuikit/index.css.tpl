@@ -81,7 +81,6 @@
 /* Panel header: one line, title left, meta/actions right. */
 @utility nk-panel-header {
   display: flex;
-  flex-direction: row;
   text-align: left;
   align-items: center;
   gap: 0.75rem;
@@ -101,15 +100,16 @@
 }
 /* Title inside a panel header. */
 @utility nk-title {
-  font-size: 0.9375rem;
+  /* !important: shadcn titles carry text-lg, which would otherwise win */
+  font-size: 0.9375rem !important;
   font-weight: 600;
-  line-height: 1.25rem;
+  line-height: 1.25rem !important;
   letter-spacing: -0.01em;
 }
 /* Small secondary label, sentence case. */
 @utility nk-label {
-  font-size: 0.75rem;
-  line-height: 1rem;
+  font-size: 0.75rem !important;
+  line-height: 1rem !important;
   font-weight: 500;
   color: var(--muted-foreground);
 }
