@@ -1,0 +1,24 @@
+{
+  "target": {
+    "resource": "illenium-appearance",
+    "path": "web/dist"
+  },
+  "lua": [],
+  "components": [
+    "accordion",
+    "alert-dialog",
+    "badge",
+    "button",
+    "button-group",
+    "input",
+    "kbd",
+    "popover",
+    "scroll-area",
+    "separator",
+    "slider",
+    "spinner",
+    "tabs",
+    "toggle",
+    "tooltip"
+  ]
+}
