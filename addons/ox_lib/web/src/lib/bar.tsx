@@ -7,7 +7,7 @@ export function Bar({ value, scheme, fallback = "var(--primary)", className }: {
   return (
     <Progress
       value={Math.max(0, Math.min(100, value))}
-      className={cn("h-1.5 bg-muted [&_[data-slot=progress-indicator]]:bg-[var(--ox-bar)]", className)}
+      className={cn("h-1 bg-muted [&_[data-slot=progress-indicator]]:bg-[var(--ox-bar)]", className)}
       style={{ ["--ox-bar" as string]: schemeColor(scheme, fallback) }}
     />
   );

@@ -1,0 +1,20 @@
+/* index.css is synced from the nuikit template (stock shadcn neutral theme). This adds a
+   transparent, unscrollable page and the meter's enter/leave transition. */
+@import "./index.css";
+
+html,
+body {
+  background: transparent !important;
+  overflow: hidden;
+  user-select: none;
+}
+
+.meter {
+  transform: translateY(-50%);
+  transition: opacity 150ms ease, transform 150ms ease;
+}
+.meter[data-open="false"] {
+  opacity: 0;
+  transform: translateY(-50%) translateX(-0.5rem);
+  pointer-events: none;
+}

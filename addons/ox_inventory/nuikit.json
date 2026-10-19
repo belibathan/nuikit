@@ -1,0 +1,18 @@
+{
+  "target": {
+    "resource": "ox_inventory",
+    "path": "web/build"
+  },
+  "lua": [],
+  "components": [
+    "badge",
+    "button",
+    "card",
+    "dialog",
+    "dropdown-menu",
+    "input",
+    "kbd",
+    "separator",
+    "tooltip"
+  ]
+}

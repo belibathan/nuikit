@@ -1,0 +1,28 @@
+/* index.css is synced from the nuikit template (stock shadcn theme); it also scales 1rem with the
+   game's resolution. This adds a transparent, unscrollable page and the card's identity marks. */
+@import "./index.css";
+
+html,
+body {
+  margin: 0;
+  background: transparent !important;
+  overflow: hidden;
+  user-select: none;
+}
+
+/* The card type's colour (config/shared.lua `background`), as "r, g, b" in --idc-accent:
+   a hairline across the top and a faint wash from the corner. */
+.idc-tint {
+  background:
+    linear-gradient(rgba(var(--idc-accent), 0.9), rgba(var(--idc-accent), 0.9)) top / 100% 2px no-repeat,
+    radial-gradient(90% 70% at 100% 0%, rgba(var(--idc-accent), 0.1) 0%, transparent 70%);
+}
+.idc-mark {
+  background: rgba(var(--idc-accent), 0.14);
+  color: rgb(var(--idc-accent));
+}
+
+.idc-signature {
+  font-family: "Brush Script MT", "Segoe Script", "Snell Roundhand", cursive;
+  font-style: italic;
+}

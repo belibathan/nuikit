@@ -267,8 +267,12 @@ onNui("nuikit:theme", (css) => {
 
 // In game, tell Lua the page is listening so it resends surfaces, player, theme: messages sent
 // before the page loaded are lost otherwise.
+// Pages that replace another resource's UI (addons) opt out with
+// <meta name="nuikit-handshake" content="off">: that resource's Lua has no nuikit:ready callback.
+const handshakeOff = () => document.querySelector('meta[name="nuikit-handshake"][content="off"]') !== null;
 if (!isBrowser() && typeof window !== "undefined") {
   setTimeout(() => {
+    if (handshakeOff()) return;
     fetchNui("nuikit:ready").catch(() => {
       /* resource without nuikit.lua */
     });

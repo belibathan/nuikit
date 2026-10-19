@@ -1,0 +1,8 @@
+{
+  "target": {
+    "resource": "qbx_scoreboard",
+    "path": "html"
+  },
+  "lua": [],
+  "components": ["badge", "card", "item", "progress", "separator"]
+}

@@ -55,7 +55,15 @@ interface DialogData {
   options?: { allowCancel?: boolean; size?: "xs" | "sm" | "md" | "lg" | "xl" };
 }
 
-const WIDTH = { xs: "sm:max-w-[320px]", sm: "sm:max-w-[380px]", md: "sm:max-w-[440px]", lg: "sm:max-w-[620px]", xl: "sm:max-w-[780px]" };
+export const WIDTH = { xs: "sm:max-w-80", sm: "sm:max-w-96", md: "sm:max-w-md", lg: "sm:max-w-2xl", xl: "sm:max-w-3xl" };
+
+/**
+ * The kit panel on shadcn's DialogContent: header / body / footer, no padding of its own.
+ * DialogContent's own bg-background / rounded-lg out-rank nk-panel in the cascade, so they're
+ * restated here with the panel's tokens (bg-popover, rounded-xl = radius + 4px).
+ */
+export const DIALOG_PANEL = "nk-panel nk-enter gap-0 overflow-hidden rounded-xl bg-popover p-0 text-popover-foreground";
+export const DIALOG_HEADER = "nk-panel-header flex-row text-left";
 
 const toDate = (v: unknown): Date | undefined => {
   if (v === true) return new Date();
@@ -185,21 +193,23 @@ export function InputDialog() {
     <Dialog open={open}>
       <DialogContent
         showCloseButton={false}
-        className={cn("gap-5", WIDTH[data.options?.size ?? "xs"])}
+        className={cn(DIALOG_PANEL, WIDTH[data.options?.size ?? "xs"])}
         onEscapeKeyDown={(e) => {
           e.preventDefault();
           cancel();
         }}
         onInteractOutside={(e) => e.preventDefault()}
       >
-        <DialogHeader>
-          <DialogTitle className="text-center">{data.heading}</DialogTitle>
+        <DialogHeader className={DIALOG_HEADER}>
+          <DialogTitle className="nk-title truncate">{data.heading}</DialogTitle>
         </DialogHeader>
-        <form onSubmit={submit} className="flex flex-col gap-4">
-          {rows.map((row, i) => (
-            <RowField key={i} row={row} value={values[i]} invalid={invalid.has(i)} onChange={(v) => set(i, v)} />
-          ))}
-          <DialogFooter className="mt-1">
+        <form onSubmit={submit} className="flex min-h-0 flex-col">
+          <div className="flex max-h-[70vh] flex-col gap-4 overflow-y-auto p-4">
+            {rows.map((row, i) => (
+              <RowField key={i} row={row} value={values[i]} invalid={invalid.has(i)} onChange={(v) => set(i, v)} />
+            ))}
+          </div>
+          <DialogFooter className="nk-panel-footer">
             <Button type="button" variant="outline" disabled={!allowCancel} onClick={cancel}>
               {locale.cancel}
             </Button>
@@ -216,7 +226,7 @@ function Label({ row, children }: { row: Row; children?: ReactNode }) {
   return (
     <FieldLabel className="gap-1">
       {row.label}
-      {row.required && <span className="text-destructive">*</span>}
+      {row.required && <span className="text-muted-foreground">*</span>}
       {children}
     </FieldLabel>
   );
@@ -224,7 +234,7 @@ function Label({ row, children }: { row: Row; children?: ReactNode }) {
 
 function RowField({ row, value, invalid, onChange }: { row: Row; value: any; invalid: boolean; onChange: (v: any) => void }) {
   const [reveal, setReveal] = useState(false);
-  const icon = row.icon ? <Icon icon={row.icon} className="pointer-events-none absolute top-1/2 left-3 size-3.5 -translate-y-1/2 text-muted-foreground" /> : null;
+  const icon = row.icon ? <Icon icon={row.icon} className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" /> : null;
   const pad = row.icon ? "pl-9" : undefined;
   const common = { disabled: row.disabled, "aria-invalid": invalid || undefined } as const;
 
@@ -345,19 +355,18 @@ function RowField({ row, value, invalid, onChange }: { row: Row; value: any; inv
       const min = Number(row.min ?? 0);
       const max = Number(row.max ?? 100);
       control = (
-        <div className="flex flex-col gap-2 pt-1">
+        <div className="flex h-5 items-center">
           <Slider disabled={row.disabled} min={min} max={max} step={row.step ?? 1} value={[Number(value)]} onValueChange={([v]) => onChange(v)} />
-          <div className="flex justify-between text-xs text-muted-foreground tabular-nums">
-            <span>{min}</span>
-            <span className="text-foreground">{value}</span>
-            <span>{max}</span>
-          </div>
         </div>
       );
       return (
-        <Field data-invalid={invalid || undefined}>
-          <Label row={row} />
+        <Field data-invalid={invalid || undefined} className="gap-2">
+          <div className="flex items-center justify-between gap-3">
+            <Label row={row} />
+            <span className="nk-num text-sm text-muted-foreground">{value}</span>
+          </div>
           {control}
+          {row.description && <FieldDescription>{row.description}</FieldDescription>}
         </Field>
       );
     }
@@ -369,7 +378,7 @@ function RowField({ row, value, invalid, onChange }: { row: Row; value: any; inv
             disabled={row.disabled}
             value={toHex(value) ?? "#000000"}
             onChange={(e) => onChange(e.target.value)}
-            className="size-9 shrink-0 cursor-pointer rounded-md border bg-transparent p-1"
+            className="ox-swatch size-9 shrink-0 cursor-pointer rounded-md border bg-transparent p-1.5"
           />
           <Input {...common} readOnly placeholder={row.placeholder} value={value ? formatColor(value, row.format) : ""} />
         </div>
@@ -448,7 +457,7 @@ function RowField({ row, value, invalid, onChange }: { row: Row; value: any; inv
   }
 
   return (
-    <Field data-invalid={invalid || undefined}>
+    <Field data-invalid={invalid || undefined} className="gap-2">
       <Label row={row} />
       {control}
       {row.description && <FieldDescription>{row.description}</FieldDescription>}

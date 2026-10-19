@@ -1,0 +1,8 @@
+{
+  "target": {
+    "resource": "qbx_idcard",
+    "path": "web"
+  },
+  "lua": [],
+  "components": ["badge", "card", "kbd", "separator"]
+}

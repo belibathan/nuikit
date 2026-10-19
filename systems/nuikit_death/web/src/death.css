@@ -1,0 +1,68 @@
+/*
+ * nuikit_death: the tint, the vignette and motion. Loaded after index.css.
+ * In game the backdrop-filter tint only affects other NUI (CEF draws over the game); the world is
+ * desaturated by GTA itself (Config.effects). The vignette is painted, so it shows either way. The red is the theme's
+ * --destructive; strength comes from `opacity`, not color-mix, so Chromium 103 renders it as written.
+ */
+
+/* the game behind: drained in last stand, nearly black-and-white once unconscious */
+.death-tint {
+  -webkit-backdrop-filter: saturate(0.45) contrast(1.06);
+  backdrop-filter: saturate(0.45) contrast(1.06);
+  background: radial-gradient(ellipse 60% 55% at 50% 42%, rgb(0 0 0 / 0.5) 0%, rgb(0 0 0 / 0.38) 100%);
+}
+.death-dead .death-tint {
+  -webkit-backdrop-filter: grayscale(0.9) brightness(0.62) blur(2px);
+  backdrop-filter: grayscale(0.9) brightness(0.62) blur(2px);
+  background: rgb(0 0 0 / 0.55);
+}
+
+/* red bleeding in from the edges */
+.death-vignette::before,
+.death-vignette::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+.death-vignette::before {
+  background: radial-gradient(ellipse 72% 68% at 50% 45%, transparent 38%, var(--destructive) 100%);
+  opacity: 0.75;
+}
+.death-vignette::after {
+  background: radial-gradient(ellipse 72% 72% at 50% 45%, transparent 30%, rgb(0 0 0 / 0.7) 100%);
+}
+.death-laststand .death-vignette::before {
+  animation: death-pulse 1.4s ease-in-out infinite;
+}
+.death-dead .death-vignette::before {
+  opacity: 0.3;
+}
+
+@keyframes death-pulse {
+  0%, 100% { opacity: 0.55; }
+  14% { opacity: 0.85; }
+  28% { opacity: 0.62; }
+  40% { opacity: 0.78; }
+}
+@keyframes death-in {
+  from { opacity: 0; transform: translateY(10px); filter: blur(4px); }
+  to { opacity: 1; transform: none; filter: none; }
+}
+@keyframes death-urgent {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.55; }
+}
+
+.death-tint, .death-vignette { animation: death-fade 600ms ease-out both; }
+@keyframes death-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.death-in { animation: death-in 700ms cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+.death-text { text-shadow: 0 1px 8px rgb(0 0 0 / 0.6); }
+.death-clock { text-shadow: 0 4px 32px rgb(0 0 0 / 0.5); }
+.death-urgent { animation: death-urgent 1s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .death-tint, .death-vignette, .death-in, .death-urgent, .death-laststand .death-vignette::before { animation: none; }
+}

@@ -1,6 +1,6 @@
 import { Surface, useNuiState, usePlayer, type NuiPlayer } from "nuikit-core/react";
 import {
-  BriefcaseIcon,
+  CarFrontIcon,
   DropletIcon,
   FlameIcon,
   HeartPulseIcon,
@@ -8,16 +8,23 @@ import {
   MicIcon,
   RadioIcon,
   ShieldIcon,
+  TriangleAlertIcon,
   UtensilsIcon,
   WalletIcon,
 } from "lucide-react";
+import type { ReactNode } from "react";
 import type { HudVehicle } from "./nui";
-import { Badge } from "@/components/ui/badge";
 import { Speedometer } from "@/components/ui/speedometer";
 import { Vital } from "@/components/ui/vital";
 import { cn } from "@/lib/utils";
 
 const money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
+
+/** Bare text on the game world: a soft shadow instead of a panel (kit rule 8). */
+const onGame = "[text-shadow:0_1px_2px_rgb(0_0_0/0.6)]";
+const onGameMarks = "drop-shadow-[0_1px_1px_rgb(0_0_0/0.5)]";
+/** Vital tracks sit on the game, not a panel: a dark track reads over a bright sky. */
+const track = "[&_[data-slot=progress]]:bg-black/35";
 
 export default function App() {
   const player = usePlayer();
@@ -26,11 +33,11 @@ export default function App() {
   return (
     <Surface name="hud" layer="hud">
       {(settings) => (
-        <>
+        <div className="nk-edge absolute inset-0 text-foreground">
           <Status player={player} needs={settings?.needs !== false} />
           <Wallet player={player} />
           {vehicle && <Vehicle vehicle={vehicle} />}
-        </>
+        </div>
       )}
     </Surface>
   );
@@ -39,14 +46,25 @@ export default function App() {
 /** Bottom left: vitals, needs and voice. */
 function Status({ player, needs }: { player: NuiPlayer; needs: boolean }) {
   return (
-    <div className="absolute bottom-10 left-10 flex flex-col gap-2 rounded-xl border bg-background/60 p-3 backdrop-blur-sm">
-      <Vital label="Health" value={player.health} tone="destructive" icon={<HeartPulseIcon />} />
-      <Vital label="Armor" value={player.armor} icon={<ShieldIcon />} low={-1} />
-      {needs && player.hunger !== undefined && <Vital label="Hunger" value={player.hunger} tone="chart-1" icon={<UtensilsIcon />} />}
-      {needs && player.thirst !== undefined && <Vital label="Thirst" value={player.thirst} tone="chart-2" icon={<DropletIcon />} />}
-      {needs && !!player.stress && <Vital label="Stress" value={player.stress} tone="chart-4" icon={<FlameIcon />} low={-1} />}
+    <div className="absolute bottom-(--nk-edge) left-(--nk-edge) flex flex-col gap-3">
+      <div className={cn("flex flex-col gap-2", onGameMarks)}>
+        <Vital className={track} label="Health" value={player.health} tone="destructive" icon={<HeartPulseIcon />} />
+        <Vital className={track} label="Armor" value={player.armor} icon={<ShieldIcon />} low={-1} />
+        {needs && player.hunger !== undefined && <Vital className={track} label="Hunger" value={player.hunger} tone="chart-1" icon={<UtensilsIcon />} />}
+        {needs && player.thirst !== undefined && <Vital className={track} label="Thirst" value={player.thirst} tone="chart-2" icon={<DropletIcon />} />}
+        {needs && !!player.stress && <Vital className={track} label="Stress" value={player.stress} tone="chart-4" icon={<FlameIcon />} low={-1} />}
+      </div>
       <Voice voice={player.voice} />
     </div>
+  );
+}
+
+function Chip({ icon, children, className }: { icon: ReactNode; children: ReactNode; className?: string }) {
+  return (
+    <span className={cn("nk-chip nk-num [&_svg]:size-3.5 [&_svg]:shrink-0", className)}>
+      {icon}
+      {children}
+    </span>
   );
 }
 
@@ -55,19 +73,16 @@ function Voice({ voice }: { voice: NuiPlayer["voice"] }) {
   const range = voice.mode ?? (voice.range === undefined ? null : `${Math.round(voice.range * 10) / 10} m`);
   if (!range && !voice.radio) return null;
   return (
-    <div className="flex items-center gap-1.5 pt-1">
+    <div className="flex items-center gap-2">
       {range && (
-        <Badge variant={voice.talking ? "default" : "secondary"} className="transition-colors">
-          <MicIcon />
+        <Chip
+          icon={<MicIcon className={cn("transition-colors", voice.talking ? "text-primary" : "opacity-60")} />}
+          className={cn("transition-shadow", voice.talking && "ring-1 ring-primary")}
+        >
           {range}
-        </Badge>
+        </Chip>
       )}
-      {voice.radio !== undefined && (
-        <Badge variant="outline" className="tabular-nums">
-          <RadioIcon />
-          {voice.radio} MHz
-        </Badge>
-      )}
+      {voice.radio !== undefined && <Chip icon={<RadioIcon className="opacity-60" />}>{voice.radio} MHz</Chip>}
     </div>
   );
 }
@@ -75,29 +90,31 @@ function Voice({ voice }: { voice: NuiPlayer["voice"] }) {
 /** Top right: cash, bank and job. Hidden until a character is loaded. */
 function Wallet({ player }: { player: NuiPlayer }) {
   if (!player.loaded || (player.cash === undefined && !player.job)) return null;
+  const job = player.job;
   return (
-    <div className="absolute top-10 right-10 flex flex-col items-end gap-1.5 text-right">
+    <div className={cn("absolute top-(--nk-edge) right-(--nk-edge) flex flex-col items-end gap-1 text-right", onGame)}>
       {player.cash !== undefined && (
-        <div className="flex items-center gap-2 text-2xl font-semibold tracking-tight tabular-nums text-foreground drop-shadow">
-          <WalletIcon className="size-5 text-muted-foreground" />
+        <div className="nk-num flex items-center gap-2 text-xl leading-7 font-semibold" aria-label="Cash">
+          <WalletIcon className={cn("size-4 opacity-60", onGameMarks)} />
           {money.format(player.cash)}
         </div>
       )}
       {player.bank !== undefined && (
-        <div className="flex items-center gap-2 text-sm font-medium tabular-nums text-foreground/85 [text-shadow:0_1px_3px_rgb(0_0_0/0.7)]">
-          <LandmarkIcon className="size-4 text-muted-foreground" />
+        <div className="nk-num flex items-center gap-2 text-sm font-medium opacity-80" aria-label="Bank">
+          <LandmarkIcon className={cn("size-4 opacity-75", onGameMarks)} />
           {money.format(player.bank)}
         </div>
       )}
-      {player.job && (
-        <Badge variant="secondary" className="mt-1">
-          <BriefcaseIcon />
-          {player.job.label ?? player.job.name}
-          {player.job.gradeLabel && <span className="text-muted-foreground">· {player.job.gradeLabel}</span>}
-          {player.job.onDuty !== undefined && (
-            <span className={cn("size-1.5 rounded-full", player.job.onDuty ? "bg-primary" : "bg-muted-foreground/50")} aria-label={player.job.onDuty ? "On duty" : "Off duty"} />
+      {job && (
+        <div className="mt-1 flex items-center gap-1.5 text-xs font-medium opacity-80">
+          {job.onDuty !== undefined && (
+            <span
+              className={cn("size-1.5 rounded-full", job.onDuty ? "bg-primary" : "bg-foreground/40")}
+              aria-label={job.onDuty ? "On duty" : "Off duty"}
+            />
           )}
-        </Badge>
+          {[job.label ?? job.name, job.gradeLabel].filter(Boolean).join(", ")}
+        </div>
       )}
     </div>
   );
@@ -108,12 +125,20 @@ function Vehicle({ vehicle }: { vehicle: HudVehicle }) {
   const unbuckled = !vehicle.seatbelt && vehicle.speed > 10;
   const engine = vehicle.engine < 35;
   return (
-    <div className="absolute right-10 bottom-10 flex flex-col items-center gap-2">
-      <Speedometer speed={vehicle.speed} rpm={vehicle.rpm} gear={vehicle.gear} fuel={vehicle.fuel} unit={vehicle.units.toUpperCase()} size={180} />
+    <div className="absolute right-(--nk-edge) bottom-(--nk-edge) flex flex-col items-center gap-3">
+      <Speedometer
+        speed={vehicle.speed}
+        rpm={vehicle.rpm}
+        gear={vehicle.gear}
+        fuel={vehicle.fuel}
+        unit={vehicle.units === "kmh" ? "km/h" : "mph"}
+        size={176}
+        className={onGameMarks}
+      />
       {(unbuckled || engine) && (
-        <div className="flex gap-1.5">
-          {unbuckled && <Badge variant="destructive">Seatbelt</Badge>}
-          {engine && <Badge variant="destructive">Engine {vehicle.engine}%</Badge>}
+        <div className="flex gap-2">
+          {unbuckled && <Chip icon={<TriangleAlertIcon className="text-destructive" />}>Seatbelt</Chip>}
+          {engine && <Chip icon={<CarFrontIcon className="text-destructive" />}>Engine {vehicle.engine}%</Chip>}
         </div>
       )}
     </div>

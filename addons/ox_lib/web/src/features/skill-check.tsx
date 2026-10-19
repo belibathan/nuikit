@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { Kbd } from "@/components/ui/kbd";
 import { post, useOx } from "@/lib/nui";
+import { presenceMotion } from "@/lib/motion";
 import { usePresence } from "@/lib/presence";
+import { cn } from "@/lib/utils";
 
 type Difficulty = "easy" | "medium" | "hard" | { areaSize: number; speedMultiplier: number };
 
@@ -112,7 +114,7 @@ export function SkillCheck() {
   }, [open]);
 
   if (!presence.mounted || !check) return null;
-  const r = 50;
+  const r = 52;
   const C = 2 * Math.PI * r;
   const arc = (from: number, len: number) => ({
     strokeDasharray: `${(len / 360) * C} ${C}`,
@@ -122,17 +124,17 @@ export function SkillCheck() {
 
   return (
     <div className="pointer-events-none fixed inset-0 z-40 grid place-items-center">
-      <div
-        data-state={presence.state}
-        className="relative size-[150px] [@media(min-height:1440px)]:size-[190px] data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95"
-      >
-        <svg viewBox="0 0 120 120" className="size-full overflow-visible">
-          <circle cx="60" cy="60" r={r} fill="none" strokeWidth="8" className="stroke-card/85" />
-          <circle cx="60" cy="60" r={r} fill="none" strokeWidth="8" className="stroke-primary" style={arc(check.start, check.size)} />
-          <circle cx="60" cy="60" r={r} fill="none" strokeWidth="16" className="stroke-destructive" style={arc(angle, 3)} />
+      <div data-state={presence.state} className={cn("relative size-40", presenceMotion)}>
+        <svg viewBox="0 0 120 120" className="size-full overflow-visible drop-shadow-[0_8px_24px_rgb(0_0_0/0.45)]">
+          {/* track, target zone (the one primary), needle */}
+          <circle cx="60" cy="60" r={r} fill="none" strokeWidth="6" className="stroke-popover" />
+          <circle cx="60" cy="60" r={r + 3} fill="none" strokeWidth="1" className="stroke-border" />
+          <circle cx="60" cy="60" r={r - 3} fill="none" strokeWidth="1" className="stroke-border" />
+          <circle cx="60" cy="60" r={r} fill="none" strokeWidth="6" className="stroke-primary" style={arc(check.start, check.size)} />
+          <circle cx="60" cy="60" r={r} fill="none" strokeWidth="12" className="stroke-foreground" style={arc(angle - 1, 2)} />
         </svg>
         <div className="absolute inset-0 grid place-items-center">
-          <Kbd className="h-8 min-w-8 text-base uppercase">{check.key}</Kbd>
+          <Kbd className="h-8 min-w-8 rounded-md bg-popover px-2 text-sm font-semibold text-popover-foreground uppercase shadow-sm ring-1 ring-border">{check.key}</Kbd>
         </div>
       </div>
     </div>

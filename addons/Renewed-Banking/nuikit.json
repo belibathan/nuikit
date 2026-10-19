@@ -1,0 +1,27 @@
+{
+  "target": {
+    "resource": "Renewed-Banking",
+    "path": "web/public"
+  },
+  "lua": [],
+  "components": [
+    "badge",
+    "button",
+    "card",
+    "dialog",
+    "empty",
+    "field",
+    "input",
+    "input-group",
+    "kbd",
+    "label",
+    "scroll-area",
+    "separator",
+    "spinner",
+    "table",
+    "tabs",
+    "textarea",
+    "toggle",
+    "toggle-group"
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "target": {
+    "resource": "mm_radio",
+    "path": "build"
+  },
+  "lua": [],
+  "components": [
+    "badge",
+    "button",
+    "card",
+    "empty",
+    "input",
+    "kbd",
+    "label",
+    "scroll-area",
+    "separator",
+    "slider",
+    "switch",
+    "tabs",
+    "toggle",
+    "toggle-group"
+  ]
+}

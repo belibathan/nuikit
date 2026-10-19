@@ -1,0 +1,24 @@
+/* index.css is synced from the nuikit template (stock shadcn neutral theme + the kit layer). This file
+   adds what the Renewed-Banking UI needs on top: shadcn's animation utilities and a transparent,
+   unscrollable page. Numbers use the kit's nk-num; panels and toasts open with nk-enter. */
+@import "./index.css";
+@import "tw-animate-css";
+
+html,
+body {
+  background: transparent !important;
+  overflow: hidden;
+  user-select: none;
+}
+
+input,
+textarea {
+  user-select: text;
+}
+
+/* Number inputs: no spinners (they're tiny and fiddly with a game cursor). */
+.rb-amount::-webkit-outer-spin-button,
+.rb-amount::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}

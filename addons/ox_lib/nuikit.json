@@ -1,0 +1,30 @@
+{
+  "target": {
+    "resource": "ox_lib",
+    "path": "web/build"
+  },
+  "lua": [],
+  "components": [
+    "alert-dialog",
+    "badge",
+    "button",
+    "calendar",
+    "card",
+    "checkbox",
+    "dialog",
+    "field",
+    "input",
+    "item",
+    "kbd",
+    "label",
+    "popover",
+    "progress",
+    "scroll-area",
+    "select",
+    "separator",
+    "slider",
+    "spinner",
+    "switch",
+    "textarea"
+  ]
+}

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { post, useOx } from "@/lib/nui";
+import { presenceMotion } from "@/lib/motion";
 import { usePresence } from "@/lib/presence";
 import { cn } from "@/lib/utils";
 
@@ -31,31 +32,17 @@ export function ProgressBar() {
   if (!presence.mounted || !run) return null;
   return (
     <div className="pointer-events-none fixed inset-x-0 bottom-0 z-20 flex h-[20%] items-center justify-center">
-      <div
-        data-state={presence.state}
-        className="w-[350px] data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95"
-      >
-        <div className="relative h-[45px] overflow-hidden rounded-md border bg-card/90 shadow-lg">
-          {/* the label twice: card colours over the track, primary-foreground over the fill (no blend modes) */}
-          {run.label && <Label text={run.label} className="text-card-foreground" />}
+      <div data-state={presence.state} className={cn("nk-panel flex w-80 flex-col gap-2 px-4 py-3", presenceMotion)}>
+        {run.label && <span className="truncate text-sm leading-5 font-medium">{run.label}</span>}
+        <div className="h-1 overflow-hidden rounded-full bg-muted">
           <div
             key={run.id}
-            className="absolute inset-y-0 left-0 overflow-hidden bg-primary"
+            className="h-full rounded-full bg-primary"
             style={{ width: "0%", animation: `ox-fill ${run.duration}ms linear forwards` }}
             onAnimationEnd={() => setOpen(false)}
-          >
-            {run.label && <Label text={run.label} className="w-[348px] text-primary-foreground" />}
-          </div>
+          />
         </div>
       </div>
-    </div>
-  );
-}
-
-function Label({ text, className }: { text: string; className?: string }) {
-  return (
-    <div className={cn("absolute inset-y-0 left-0 grid w-full place-items-center px-3", className)}>
-      <span className="max-w-full truncate text-base font-medium">{text}</span>
     </div>
   );
 }
@@ -83,24 +70,22 @@ export function ProgressCircle() {
   }, [open, run]);
 
   if (!presence.mounted || !run) return null;
-  const r = 41.5; // size 90, stroke 7
+  const r = 34; // 80 box, 4 stroke, 2 inset
   const C = 2 * Math.PI * r;
   return (
     <div className={cn("pointer-events-none fixed inset-x-0 z-20 flex justify-center", run.position === "bottom" ? "bottom-0 h-[20%] items-center" : "inset-y-0 items-center")}>
-      <div
-        data-state={presence.state}
-        className="flex flex-col items-center gap-2 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95"
-      >
-        <div className="relative size-[90px]">
-          <svg viewBox="0 0 90 90" className="-rotate-90">
-            <circle cx="45" cy="45" r={r} fill="none" strokeWidth="7" className="stroke-card/80" />
+      <div data-state={presence.state} className={cn("flex flex-col items-center gap-3", presenceMotion)}>
+        <div className="relative size-20">
+          <svg viewBox="0 0 80 80" className="size-full -rotate-90 drop-shadow-[0_8px_24px_rgb(0_0_0/0.45)]">
+            <circle cx="40" cy="40" r={r + 4} className="fill-popover stroke-border" strokeWidth="1" />
+            <circle cx="40" cy="40" r={r} fill="none" strokeWidth="4" className="stroke-muted" />
             <circle
               key={run.id}
-              cx="45"
-              cy="45"
+              cx="40"
+              cy="40"
               r={r}
               fill="none"
-              strokeWidth="7"
+              strokeWidth="4"
               strokeLinecap="round"
               className="stroke-primary"
               strokeDasharray={C}
@@ -108,9 +93,9 @@ export function ProgressCircle() {
               onAnimationEnd={() => setOpen(false)}
             />
           </svg>
-          <div className="absolute inset-0 grid place-items-center font-mono text-sm font-medium text-foreground tabular-nums [text-shadow:0_1px_2px_rgb(0_0_0/0.6)]">{pct}%</div>
+          <div className="nk-num absolute inset-0 grid place-items-center text-sm font-semibold text-popover-foreground">{pct}%</div>
         </div>
-        {run.label && <div className="rounded-md bg-card/80 px-2.5 py-1 text-sm font-medium">{run.label}</div>}
+        {run.label && <div className="nk-chip">{run.label}</div>}
       </div>
     </div>
   );

@@ -1,0 +1,11 @@
+/* index.css is synced from the nuikit template (stock shadcn theme). This adds a transparent,
+   unscrollable page (index.css scales 1rem with the game's resolution). */
+@import "./index.css";
+
+html,
+body {
+  margin: 0;
+  background: transparent !important;
+  overflow: hidden;
+  user-select: none;
+}

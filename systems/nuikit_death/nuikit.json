@@ -1,0 +1,4 @@
+{
+  "lua": ["nuikit.lua"],
+  "components": ["badge", "kbd", "progress", "separator"]
+}

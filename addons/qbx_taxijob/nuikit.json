@@ -1,0 +1,9 @@
+{
+  "target": {
+    "resource": "qbx_taxijob",
+    "path": "html",
+    "entry": "meter.html"
+  },
+  "lua": [],
+  "components": ["badge", "button", "card", "kbd", "separator"]
+}

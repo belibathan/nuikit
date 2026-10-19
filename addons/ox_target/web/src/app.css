@@ -1,0 +1,18 @@
+/* index.css is synced from the nuikit template (stock shadcn neutral theme). This file adds what
+   the ox_target UI needs on top: shadcn's animation utilities and a transparent, unscrollable page. */
+@import "./index.css";
+@import "tw-animate-css";
+
+html,
+body {
+  background: transparent !important;
+  overflow: hidden;
+  user-select: none;
+  white-space: nowrap;
+}
+
+/* The idle eye: a HUD mark on the game (rule 8), same surface as nk-chip. */
+.tgt-hud {
+  background-color: rgb(0 0 0 / 0.45);
+  color: #fff;
+}

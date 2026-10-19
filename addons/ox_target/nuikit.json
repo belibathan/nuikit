@@ -1,0 +1,11 @@
+{
+  "target": {
+    "resource": "ox_target",
+    "path": "web"
+  },
+  "lua": [],
+  "components": [
+    "button",
+    "separator"
+  ]
+}
