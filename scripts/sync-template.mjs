@@ -4,6 +4,7 @@
 //   registry/nuikit/*                 → web/src/components/ui, web/src/hooks
 //   vendor/shadcn/colors/neutral.json → web/src/index.css (stock shadcn neutral theme)
 //   nuikit-core compileTheme()        → web/src/index.css (nuikit token defaults; build core first)
+//   nuikit-core fxserver-compiler.js  → server/compiler.js (nuikit.json "compiler": true)
 // Copies are committed so each resource is complete on its own (you own the components, as with
 // shadcn). Never edit the copies here; edit the sources and run `pnpm sync`.
 import fs from "node:fs";
@@ -36,7 +37,7 @@ for (const group of ["systems", "addons"]) {
     const manifest = path.join(base, name, "nuikit.json");
     if (!fs.existsSync(manifest)) continue;
     const m = JSON.parse(fs.readFileSync(manifest, "utf8"));
-    targets.push({ dir: `${group}/${name}`, lua: m.lua ?? [], components: m.components ?? [], hooks: m.hooks ?? [], css: m.css !== false });
+    targets.push({ dir: `${group}/${name}`, lua: m.lua ?? [], components: m.components ?? [], hooks: m.hooks ?? [], css: m.css !== false, compiler: m.compiler === true });
   }
 }
 
@@ -72,6 +73,7 @@ for (const t of targets) {
   for (const f of t.lua) copy(`packages/core/lua/${f}`, `client/${f}`);
   for (const c of t.components) copy(source(c), `web/src/components/ui/${c}.tsx`);
   for (const h of t.hooks) copy(`registry/nuikit/hooks/${h}.ts`, `web/src/hooks/${h}.ts`);
+  if (t.compiler) copy("packages/core/dist/fxserver-compiler.js", "server/compiler.js");
   if (t.css !== false) fs.writeFileSync(path.join(root, t.dir, "web/src/index.css"), css);
   console.log(`✓ synced ${t.dir}`);
 }

@@ -33,6 +33,14 @@ export interface Resource {
   run<T = unknown>(code: string): Promise<T>;
   /** Simulate the UI calling fetchNui(name, data). */
   call(name: string, data?: unknown): Promise<any>;
+  /** Like call(), but resolves whenever Lua answers (callbacks that answer later, e.g. long-polls). */
+  callLater(name: string, data?: unknown): Promise<any>;
+  /** This resource's KVP store. */
+  kvp: Map<string, string>;
+  /** Commands it registered. */
+  commands: Map<string, (source: number, args: string[]) => void>;
+  /** Server events it triggered. */
+  serverEvents: { event: string; args: unknown[] }[];
   /** Latest `nuikit:surfaces` payload. */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   surfaces(): any;
@@ -46,6 +54,11 @@ export async function createClient(options: { syncEvents?: boolean } = {}) {
   const factory = new LuaFactory();
   const handlers = new Map<string, Handler[]>();
   const resources = new Map<string, Resource>();
+  // Replicated state (GlobalState) and its change handlers, shared by every resource on the client.
+  const globalState = new Map<string, unknown>();
+  const bagHandlers: { resource: string; key: string; fn: (bag: string, key: string, value: unknown) => void }[] = [];
+  // SetTimeout callbacks, run by runTimers().
+  const timers: { resource: string; ms: number; fn: () => void }[] = [];
 
   const queue: { event: string; args: unknown[] }[] = [];
   function trigger(event: string, ...args: unknown[]) {
@@ -96,6 +109,16 @@ export async function createClient(options: { syncEvents?: boolean } = {}) {
           flush();
           resolve(result);
         }),
+      callLater: (cbName, data = {}) =>
+        new Promise((resolve, reject) => {
+          const fn = callbacks.get(cbName);
+          if (!fn) return reject(new Error(`no NUI callback "${cbName}" in ${name}`));
+          fn(clone(data), (r) => resolve(clone(r)));
+          flush();
+        }),
+      kvp: new Map(),
+      commands: new Map(),
+      serverEvents: [],
       surfaces: () => [...res.messages].reverse().find((m) => m.action === "nuikit:surfaces")?.data?.surfaces ?? {},
     };
     const g = lua.global;
@@ -123,7 +146,27 @@ export async function createClient(options: { syncEvents?: boolean } = {}) {
     g.set("TriggerEvent", (event: string, ...args: unknown[]) => {
       trigger(event, ...args);
     });
-    g.set("json", { encode: (v: unknown) => JSON.stringify(v ?? null) });
+    g.set("json", {
+      encode: (v: unknown) => JSON.stringify(v ?? null),
+      decode: (s: string) => clone(JSON.parse(s)),
+    });
+    g.set("GetResourceKvpString", (k: string) => res.kvp.get(k));
+    g.set("SetResourceKvp", (k: string, v: string) => {
+      res.kvp.set(k, String(v));
+    });
+    g.set("SetTimeout", (ms: number, fn: () => void) => {
+      timers.push({ resource: name, ms, fn });
+    });
+    g.set("RegisterCommand", (cmd: string, fn: any) => {
+      res.commands.set(cmd, fn);
+    });
+    g.set("TriggerServerEvent", (event: string, ...args: unknown[]) => {
+      res.serverEvents.push({ event, args: args.map(clone) });
+    });
+    g.set("__globalState", (k: string) => clone(globalState.get(k)));
+    g.set("AddStateBagChangeHandler", (key: string, bag: string, fn: any) => {
+      if (bag === "global") bagHandlers.push({ resource: name, key, fn });
+    });
     g.set("RegisterNetEvent", (event: string, fn?: any) => {
       if (!fn) return;
       const list = handlers.get(event) ?? [];
@@ -131,6 +174,10 @@ export async function createClient(options: { syncEvents?: boolean } = {}) {
       handlers.set(event, list);
     });
     resources.set(name, res);
+    await lua.doString(`
+      GlobalState = setmetatable({}, { __index = function(_, k) return __globalState(k) end })
+      exports = setmetatable({}, { __call = function() end })
+    `);
     if (startOptions.before) await lua.doString(startOptions.before);
     await lua.doString(SOURCE);
     for (const file of startOptions.scripts ?? []) await lua.doString(lua_(file));
@@ -140,6 +187,8 @@ export async function createClient(options: { syncEvents?: boolean } = {}) {
 
   function stop(name: string) {
     for (const [event, list] of handlers) handlers.set(event, list.filter((h) => h.resource !== name));
+    for (let i = bagHandlers.length - 1; i >= 0; i--) if (bagHandlers[i]!.resource === name) bagHandlers.splice(i, 1);
+    for (let i = timers.length - 1; i >= 0; i--) if (timers[i]!.resource === name) timers.splice(i, 1);
     trigger("onClientResourceStop", name);
     flush();
     resources.get(name)?.lua.global.close();
@@ -163,5 +212,19 @@ export async function createClient(options: { syncEvents?: boolean } = {}) {
     flush();
   }
 
-  return { start, stop, focused, close, event, resources };
+  /** The server set GlobalState[key] (replicated): handlers run, then reads see the new value. */
+  function setGlobal(key: string, value: unknown) {
+    for (const h of [...bagHandlers]) if (h.key === key) h.fn("global", key, clone(value));
+    globalState.set(key, value);
+    flush();
+  }
+
+  /** Fire every pending SetTimeout (time passing). */
+  function runTimers() {
+    const due = timers.splice(0);
+    for (const t of due) t.fn();
+    flush();
+  }
+
+  return { start, stop, focused, close, event, resources, setGlobal, runTimers };
 }

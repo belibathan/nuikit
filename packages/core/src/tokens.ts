@@ -386,7 +386,8 @@ export function compileTheme(input: ThemeInput, opts: CompileOptions = {}): Comp
     if (!hasDark && !hasLight && Object.keys(p.theme).length === 0 && !opts.partial) warnings.push("The theme has no variables; the stock theme is used.");
   } else if (isCompiled(input)) {
     raw = { ...input.vars };
-    imports = [...(input.imports ?? [])];
+    // through Lua an empty array arrives as {}
+    imports = (Array.isArray(input.imports) ? input.imports : Object.values(input.imports ?? {})).filter((u): u is string => typeof u === "string");
     mode = input.mode ?? mode;
   } else if (input && typeof input === "object" && isDtcg(input as Record<string, unknown>)) {
     raw = parseDtcg(input as DtcgDocument);
