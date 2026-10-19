@@ -43,7 +43,7 @@ export function PedSection() {
   };
 
   return (
-    <div className="space-y-4 px-4 py-4">
+    <div className="flex flex-col gap-4 p-4">
       <div>
         <FieldLabel
           label={locale.ped.model}
@@ -52,20 +52,20 @@ export function PedSection() {
           onReset={stored.model !== current.model ? () => void choose(stored.model) : undefined}
         />
         <ButtonGroup className="mt-1 w-full">
-          <Button variant="outline" size="icon-sm" onClick={() => step(-1)} disabled={busy || items.length < 2} aria-label="Previous model">
+          <Button variant="outline" size="icon-sm" className="text-muted-foreground" onClick={() => step(-1)} disabled={busy || items.length < 2} aria-label="Previous model">
             <ChevronLeft />
           </Button>
           <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
               <Button variant="outline" size="sm" className="min-w-0 flex-1 justify-between rounded-none font-mono text-xs" disabled={busy}>
                 <span className="truncate">{current.model}</span>
-                {busy ? <Spinner /> : <ChevronsUpDown className="opacity-60" />}
+                {busy ? <Spinner /> : <ChevronsUpDown className="text-muted-foreground" />}
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-80 p-0" align="start" sideOffset={6}>
+            <PopoverContent className="nk-panel nk-enter w-80 p-0" align="start" sideOffset={8}>
               <div className="relative border-b p-2">
-                <Search className="pointer-events-none absolute top-1/2 left-4 size-4 -translate-y-1/2 text-muted-foreground" />
-                <Input autoFocus placeholder="Search models" value={query} onChange={(e) => setQuery(e.target.value)} className="h-8 pl-8" />
+                <Search className="pointer-events-none absolute top-1/2 left-5 size-4 -translate-y-1/2 text-muted-foreground" />
+                <Input autoFocus placeholder="Search models" value={query} onChange={(e) => setQuery(e.target.value)} className="h-9 pl-9" />
               </div>
               <ScrollArea className="h-72">
                 <div className="p-1">
@@ -75,28 +75,28 @@ export function PedSection() {
                       type="button"
                       onClick={() => void choose(m)}
                       className={cn(
-                        "flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-left font-mono text-xs outline-none hover:bg-accent hover:text-accent-foreground focus-visible:bg-accent",
+                        "flex h-8 w-full items-center gap-2 rounded-md px-2 text-left font-mono text-xs outline-none hover:bg-accent hover:text-accent-foreground focus-visible:bg-accent",
                         m === current.model && "text-foreground",
                       )}
                     >
-                      <Check className={cn("size-3.5 shrink-0", m === current.model ? "opacity-100" : "opacity-0")} />
+                      <Check className={cn("size-4 shrink-0", m === current.model ? "opacity-100" : "opacity-0")} />
                       <span className="truncate">{m}</span>
-                      {FREEMODE[m] && <span className="ml-auto shrink-0 font-sans text-[10px] text-muted-foreground uppercase">{FREEMODE[m]}</span>}
+                      {FREEMODE[m] && <span className="nk-label ml-auto shrink-0 font-sans">{FREEMODE[m]}</span>}
                     </button>
                   ))}
-                  {!filtered.length && <p className="px-2 py-6 text-center text-xs text-muted-foreground">No model matches “{query}”.</p>}
-                  {filtered.length === 300 && <p className="px-2 py-2 text-center text-[11px] text-muted-foreground">Type to narrow the list…</p>}
+                  {!filtered.length && <p className="px-2 py-6 text-center text-sm text-muted-foreground">No model matches “{query}”. Try part of the name.</p>}
+                  {filtered.length === 300 && <p className="nk-label px-2 py-2 text-center">Type to narrow the list.</p>}
                 </div>
               </ScrollArea>
             </PopoverContent>
           </Popover>
-          <Button variant="outline" size="icon-sm" onClick={() => step(1)} disabled={busy || items.length < 2} aria-label="Next model">
+          <Button variant="outline" size="icon-sm" className="text-muted-foreground" onClick={() => step(1)} disabled={busy || items.length < 2} aria-label="Next model">
             <ChevronRight />
           </Button>
         </ButtonGroup>
       </div>
       {!FREEMODE[current.model] && (
-        <p className="rounded-md border border-dashed px-3 py-2 text-xs text-muted-foreground">
+        <p className="rounded-md bg-muted px-3 py-2 text-xs leading-4 text-muted-foreground">
           Heritage, face, makeup and tattoos need a freemode ped. Clothing and accessories still apply.
         </p>
       )}

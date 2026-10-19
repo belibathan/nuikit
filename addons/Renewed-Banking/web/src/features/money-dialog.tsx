@@ -66,29 +66,27 @@ export function MoneyDialog({
 
   return (
     <Dialog open={!!request} onOpenChange={(o) => !o && !busy && onCancel()}>
-      <DialogContent className="sm:max-w-md" showCloseButton={false}>
-        <form onSubmit={submit} className="flex flex-col gap-5">
-          <DialogHeader>
-            <div className="flex items-center gap-3">
-              <span className="bg-primary text-primary-foreground flex size-10 items-center justify-center rounded-lg">
-                <Icon className="size-5" />
-              </span>
-              <div className="min-w-0 text-left">
-                <DialogTitle>{t(LABEL[action])}</DialogTitle>
-                <DialogDescription className="truncate">{request ? accountTitle(request.account) : ""}</DialogDescription>
-              </div>
+      <DialogContent className="nk-panel nk-enter gap-0 p-0 sm:max-w-md" showCloseButton={false}>
+        <form onSubmit={submit} className="flex flex-col">
+          <DialogHeader className="flex-row items-center gap-3 px-6 pt-6 text-left">
+            <span className="bg-muted text-muted-foreground flex size-8 shrink-0 items-center justify-center rounded-md">
+              <Icon className="size-4" />
+            </span>
+            <div className="min-w-0">
+              <DialogTitle className="nk-title text-[0.9375rem] leading-5">{t(LABEL[action])}</DialogTitle>
+              <DialogDescription className="nk-label truncate text-xs">{request ? accountTitle(request.account) : ""}</DialogDescription>
             </div>
           </DialogHeader>
 
-          <div className="bg-muted/50 flex items-center justify-between rounded-lg px-3 py-2 text-sm">
-            <span className="text-muted-foreground">{action === "deposit" ? cashLabel() : t("balance")}</span>
-            <span className="rb-num font-semibold">{money(available)}</span>
-          </div>
-
-          <FieldGroup className="gap-4">
-            <Field>
-              <FieldLabel htmlFor="rb-amount">{t("amount")}</FieldLabel>
-              <InputGroup className="h-11">
+          <FieldGroup className="gap-4 p-6">
+            <Field className="gap-2">
+              <div className="flex items-baseline justify-between gap-3">
+                <FieldLabel htmlFor="rb-amount">{t("amount")}</FieldLabel>
+                <span className="nk-label">
+                  {action === "deposit" ? cashLabel() : t("balance")} <span className="nk-num text-foreground">{money(available)}</span>
+                </span>
+              </div>
+              <InputGroup className="h-10">
                 <InputGroupAddon>
                   <InputGroupText>{symbol()}</InputGroupText>
                 </InputGroupAddon>
@@ -102,18 +100,18 @@ export function MoneyDialog({
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
                   placeholder="0"
-                  className="rb-amount rb-num text-lg font-semibold"
+                  className="rb-amount nk-num text-base font-semibold"
                 />
               </InputGroup>
               {presets.length > 0 && (
-                <div className="flex flex-wrap gap-1.5">
+                <div className="grid auto-cols-fr grid-flow-col gap-2">
                   {presets.map((p) => (
-                    <Button key={p} type="button" variant="secondary" size="xs" className="rb-num" onClick={() => setAmount(String(p))}>
+                    <Button key={p} type="button" variant="outline" size="sm" className="nk-num px-0 font-normal" onClick={() => setAmount(String(p))}>
                       {money(p, "whole")}
                     </Button>
                   ))}
                   {available >= 1 && (
-                    <Button type="button" variant="secondary" size="xs" onClick={() => setAmount(String(Math.floor(available)))}>
+                    <Button type="button" variant="outline" size="sm" className="px-0 font-normal" onClick={() => setAmount(String(Math.floor(available)))}>
                       {t("nuikit_max")}
                     </Button>
                   )}
@@ -121,19 +119,19 @@ export function MoneyDialog({
               )}
             </Field>
             {action === "transfer" && (
-              <Field>
+              <Field className="gap-2">
                 <FieldLabel htmlFor="rb-target">{t("transfer")}</FieldLabel>
                 <Input id="rb-target" value={target} onChange={(e) => setTarget(e.target.value)} placeholder="#" className="font-mono" />
               </Field>
             )}
-            <Field>
+            <Field className="gap-2">
               <FieldLabel htmlFor="rb-comment">{t("comment")}</FieldLabel>
               <Input id="rb-comment" value={comment} onChange={(e) => setComment(e.target.value)} maxLength={120} />
             </Field>
           </FieldGroup>
 
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={onCancel} disabled={busy}>
+          <DialogFooter className="nk-panel-footer justify-end">
+            <Button type="button" variant="ghost" onClick={onCancel} disabled={busy}>
               {t("cancel")}
             </Button>
             <Button type="submit" disabled={!valid || busy}>

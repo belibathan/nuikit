@@ -11,16 +11,16 @@ import type { RGB } from "@/lib/types";
 /** Label row: name on the left, value and an optional revert-to-original on the right. */
 export function FieldLabel({ label, value, hint, onReset }: { label: ReactNode; value?: ReactNode; hint?: ReactNode; onReset?: () => void }) {
   return (
-    <div className="flex h-6 items-center gap-2 text-xs">
-      <span className="truncate font-medium text-foreground/90">{label}</span>
+    <div className="flex h-6 min-w-0 items-center gap-2 text-xs leading-4">
+      <span className="truncate font-medium">{label}</span>
       {hint !== undefined && <span className="truncate text-muted-foreground">{hint}</span>}
-      <span className="ml-auto flex items-center gap-1">
+      <span className="ml-auto flex shrink-0 items-center gap-1">
         {onReset && (
           <Button variant="ghost" size="icon-xs" className="text-muted-foreground hover:text-foreground" onClick={onReset} aria-label="Revert to original">
             <RotateCcw />
           </Button>
         )}
-        {value !== undefined && <span className="font-mono text-[11px] text-muted-foreground tabular-nums">{value}</span>}
+        {value !== undefined && <span className="nk-num text-muted-foreground">{value}</span>}
       </span>
     </div>
   );
@@ -83,11 +83,11 @@ export function Stepper({
       <FieldLabel
         label={label}
         hint={hint ?? format?.(value)}
-        value={count <= 1 ? (count === 1 ? "only one" : "none") : `${value} / ${max}`}
+        value={count <= 1 ? (count === 1 ? "Only one" : "None") : `${value} / ${max}`}
         onReset={original !== undefined && original !== value ? () => onChange(original) : undefined}
       />
       <ButtonGroup className="mt-1 w-full">
-        <Button variant="outline" size="icon-sm" disabled={disabled} onClick={() => step(-1)} aria-label="Previous">
+        <Button variant="outline" size="icon-sm" className="text-muted-foreground" disabled={disabled} onClick={() => step(-1)} aria-label="Previous">
           <ChevronLeft />
         </Button>
         <Input
@@ -101,10 +101,10 @@ export function Stepper({
             else if (e.key === "ArrowUp") (e.preventDefault(), step(1));
             else if (e.key === "ArrowDown") (e.preventDefault(), step(-1));
           }}
-          className="h-8 min-w-0 rounded-none text-center font-mono text-sm tabular-nums"
+          className="nk-num h-8 min-w-0 rounded-none text-center text-sm font-medium"
           aria-label={typeof label === "string" ? label : undefined}
         />
-        <Button variant="outline" size="icon-sm" disabled={disabled} onClick={() => step(1)} aria-label="Next">
+        <Button variant="outline" size="icon-sm" className="text-muted-foreground" disabled={disabled} onClick={() => step(1)} aria-label="Next">
           <ChevronRight />
         </Button>
       </ButtonGroup>
@@ -147,8 +147,8 @@ export function RangeSlider({
         value={shown}
         onReset={original !== undefined && Math.abs(original - value) > 1e-6 ? () => onChange(original) : undefined}
       />
+      <div className="mt-1 flex h-8 items-center">
       <Slider
-        className="mt-2 mb-1"
         min={min}
         max={max}
         step={step}
@@ -158,8 +158,9 @@ export function RangeSlider({
           if (next !== value) onChange(next);
         }}
       />
+      </div>
       {ends && (
-        <div className="flex justify-between text-[10px] tracking-wide text-muted-foreground uppercase">
+        <div className="-mt-1 flex justify-between text-xs leading-4 text-muted-foreground">
           <span>{ends[0]}</span>
           <span>{ends[1]}</span>
         </div>
@@ -186,7 +187,7 @@ export function Swatches({
   return (
     <div className="min-w-0">
       <FieldLabel label={label} value={`#${value}`} onReset={original !== undefined && original !== value ? () => onChange(original) : undefined} />
-      <div className="mt-1.5 grid grid-cols-16 gap-1" role="radiogroup">
+      <div className="mt-1 grid grid-cols-16 gap-1" role="radiogroup">
         {colors.map((c, i) => (
           <button
             key={i}
@@ -196,8 +197,8 @@ export function Swatches({
             aria-label={`${typeof label === "string" ? label : "Colour"} ${i}`}
             onClick={() => value !== i && onChange(i)}
             className={cn(
-              "aspect-square w-full rounded-[4px] border border-white/10 ring-offset-2 ring-offset-background transition-transform outline-none hover:scale-110 focus-visible:ring-2 focus-visible:ring-ring",
-              value === i && "z-10 scale-110 border-transparent ring-2 ring-foreground",
+              "aspect-square w-full rounded-sm border border-white/10 ring-offset-2 ring-offset-popover transition-transform outline-none hover:scale-110 focus-visible:ring-2 focus-visible:ring-ring",
+              value === i && "z-10 border-transparent ring-2 ring-foreground",
             )}
             style={{ backgroundColor: `rgb(${c[0]}, ${c[1]}, ${c[2]})` }}
           />
@@ -209,5 +210,5 @@ export function Swatches({
 
 /** A titled block inside an accordion item. */
 export function Fields({ children, cols = 1 }: { children: ReactNode; cols?: 1 | 2 }) {
-  return <div className={cn("grid gap-x-3 gap-y-3", cols === 2 && "grid-cols-2")}>{children}</div>;
+  return <div className={cn("grid gap-x-3 gap-y-4", cols === 2 && "grid-cols-2")}>{children}</div>;
 }

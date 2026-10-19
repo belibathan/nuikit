@@ -1,10 +1,7 @@
 import { ArrowDownLeft, ArrowLeftRight, ArrowUpRight, Info, Landmark, Snowflake, Wallet, X } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { Kbd } from "@/components/ui/kbd";
-import { Separator } from "@/components/ui/separator";
 import { Spinner } from "@/components/ui/spinner";
 import { AccountChips, AccountIcon, AccountList, accountTitle } from "@/features/accounts";
 import { MoneyDialog, type MoneyRequest } from "@/features/money-dialog";
@@ -118,7 +115,7 @@ export default function App() {
   return (
     <>
       {visible && accounts.length > 0 && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/40 p-6">
+        <div className="fixed inset-0 flex items-center justify-center bg-black/40 p-12">
           {atm ? (
             <AtmView accounts={accounts} active={active} cash={cash} onSelect={setActiveId} onAction={open} onClose={close} />
           ) : (
@@ -131,22 +128,22 @@ export default function App() {
 
       {loading && !visible && (
         <div className="fixed inset-0 flex items-center justify-center">
-          <Card className="flex-row items-center gap-3 px-5 py-4">
-            <Spinner className="size-5" />
+          <div className="nk-panel nk-enter flex items-center gap-3 px-4 py-3">
+            <Spinner className="text-muted-foreground size-4" />
             <div>
-              <div className="text-sm font-semibold">{t("bank_name")}</div>
-              <div className="text-muted-foreground text-xs">{t("nuikit_loading")}</div>
+              <div className="nk-title">{t("bank_name")}</div>
+              <div className="nk-label">{t("nuikit_loading")}</div>
             </div>
-          </Card>
+          </div>
         </div>
       )}
 
       <div className="pointer-events-none fixed inset-x-0 top-6 z-[60] flex flex-col items-center gap-2">
         {toasts.map((n) => (
-          <Card key={n.id} className="rb-toast flex-row items-center gap-3 px-4 py-3 shadow-lg">
+          <div key={n.id} className="nk-panel nk-enter flex min-h-10 items-center gap-3 px-4 py-2 text-sm font-medium">
             <Info className="text-muted-foreground size-4 shrink-0" />
-            <span className="text-sm font-medium">{n.text}</span>
-          </Card>
+            {n.text}
+          </div>
         ))}
       </div>
     </>
@@ -162,28 +159,29 @@ interface ViewProps {
   onClose: () => void;
 }
 
+/** One loud action per surface: deposit at the bank, withdraw at the ATM; the rest stay outlined. */
 function Actions({ account, atm, onAction, className }: { account: Account; atm: boolean; onAction: ViewProps["onAction"]; className?: string }) {
   if (isFrozen(account)) {
     return (
-      <Badge variant="outline" className={cn("h-9 gap-2 px-3 text-sm", className)}>
-        <Snowflake />
+      <div className={cn("text-muted-foreground flex h-9 items-center gap-2 rounded-md border px-3 text-sm", className)}>
+        <Snowflake className="size-4 shrink-0" />
         {t("frozen")}
-      </Badge>
+      </div>
     );
   }
   return (
-    <div className={cn("flex flex-wrap gap-2", className)}>
+    <div className={cn("flex gap-2", className)}>
       {!atm && (
         <Button onClick={() => onAction("deposit", account)}>
           <ArrowDownLeft />
           {t("deposit_but")}
         </Button>
       )}
-      <Button variant={atm ? "default" : "secondary"} onClick={() => onAction("withdraw", account)}>
+      <Button variant={atm ? "default" : "outline"} onClick={() => onAction("withdraw", account)}>
         <ArrowUpRight />
         {t("withdraw_but")}
       </Button>
-      <Button variant="secondary" onClick={() => onAction("transfer", account)}>
+      <Button variant="outline" onClick={() => onAction("transfer", account)}>
         <ArrowLeftRight />
         {t("transfer_but")}
       </Button>
@@ -193,36 +191,41 @@ function Actions({ account, atm, onAction, className }: { account: Account; atm:
 
 function Brand({ atm }: { atm: boolean }) {
   return (
-    <div className="flex items-center gap-3">
-      <span className="bg-primary text-primary-foreground flex size-9 items-center justify-center rounded-lg">
-        <Landmark className="size-[18px]" />
+    <div className="flex min-w-0 items-center gap-3">
+      <span className="bg-muted text-muted-foreground flex size-8 shrink-0 items-center justify-center rounded-md">
+        <Landmark className="size-4" />
       </span>
-      <div className="leading-tight">
-        <div className="flex items-center gap-2 font-semibold">
-          {t("bank_name")}
-          {atm && <Badge variant="secondary">{t("nuikit_atm")}</Badge>}
-        </div>
-      </div>
+      <h1 className="nk-title truncate">{t("bank_name")}</h1>
+      {atm && <span className="nk-label">{t("nuikit_atm")}</span>}
     </div>
   );
 }
 
-function CashPill({ cash }: { cash: number }) {
+function Cash({ cash }: { cash: number }) {
   return (
-    <div className="bg-muted/60 flex items-center gap-2 rounded-full px-3 py-1.5 text-sm">
+    <span className="flex items-center gap-2 text-sm">
       <Wallet className="text-muted-foreground size-4" />
       <span className="text-muted-foreground">{cashLabel()}</span>
-      <span className="rb-num font-semibold">{money(cash)}</span>
-    </div>
+      <span className="nk-num font-medium">{money(cash)}</span>
+    </span>
   );
 }
 
 function CloseButton({ onClose }: { onClose: () => void }) {
   return (
-    <Button variant="ghost" size="sm" onClick={onClose} className="text-muted-foreground gap-2">
+    <Button variant="ghost" size="sm" onClick={onClose} className="text-muted-foreground gap-2" aria-label={t("nuikit_close")}>
       <Kbd>Esc</Kbd>
       <X />
     </Button>
+  );
+}
+
+function Balance({ account, className }: { account: Account; className?: string }) {
+  return (
+    <div className={cn("min-w-0", className)}>
+      <div className="nk-num truncate text-4xl leading-none font-semibold tracking-tight">{money(account.amount)}</div>
+      <div className="nk-label mt-2">{t("balance")}</div>
+    </div>
   );
 }
 
@@ -232,48 +235,48 @@ function BankView({ accounts, active, cash, onSelect, onAction, onClose, onExpor
   const personal = active?.id === accounts[0]?.id;
 
   return (
-    <Card className="h-[min(760px,88vh)] w-[min(1180px,94vw)] gap-0 overflow-hidden py-0 shadow-2xl">
-      <header className="flex items-center gap-4 border-b px-5 py-3">
+    <section className="nk-panel nk-enter flex h-[46rem] max-h-full w-[72rem] max-w-full flex-col overflow-hidden">
+      <header className="nk-panel-header">
         <Brand atm={false} />
-        <div className="ml-auto flex items-center gap-2">
-          <CashPill cash={cash} />
+        <div className="ml-auto flex items-center gap-4">
+          <Cash cash={cash} />
           <CloseButton onClose={onClose} />
         </div>
       </header>
 
       <div className="flex min-h-0 flex-1">
-        <aside className="bg-muted/20 flex w-80 shrink-0 flex-col border-r p-4">
+        <aside className="flex w-72 shrink-0 flex-col border-r">
           <AccountList accounts={accounts} activeId={active?.id} onSelect={onSelect} />
         </aside>
 
-        <main className="flex min-w-0 flex-1 flex-col gap-5 p-5">
+        <main className="flex min-w-0 flex-1 flex-col">
           {active ? (
             <>
-              <section className="flex flex-wrap items-end gap-x-8 gap-y-4">
-                <div className="flex min-w-0 flex-1 items-start gap-4">
-                  <AccountIcon personal={personal} className="size-12 rounded-xl" />
-                  <div className="min-w-0">
-                    <div className="text-muted-foreground truncate text-sm">{accountTitle(active)}</div>
-                    <div className="truncate text-lg font-semibold">{active.name}</div>
-                    <div className="rb-num mt-2 text-4xl font-bold tracking-tight">{money(active.amount)}</div>
-                    <div className="text-muted-foreground mt-1 text-xs">{t("balance")}</div>
+              <section className="flex flex-wrap items-end gap-x-6 gap-y-4 border-b p-6">
+                <div className="flex min-w-0 flex-1 flex-col gap-6">
+                  <div className="flex min-w-0 items-center gap-3">
+                    <AccountIcon personal={personal} />
+                    <div className="min-w-0">
+                      <div className="truncate text-sm font-medium">{active.name}</div>
+                      <div className="nk-label truncate">{accountTitle(active)}</div>
+                    </div>
                   </div>
+                  <Balance account={active} />
                 </div>
-                <div className="flex flex-col items-end gap-3">
-                  <div className="flex gap-6 text-right">
+                <div className="flex flex-col items-end gap-4">
+                  <dl className="flex gap-6 text-right">
                     <div>
-                      <div className="text-muted-foreground text-xs">{t("nuikit_total_in")}</div>
-                      <div className={cn("rb-num font-semibold", !totals.in && "text-muted-foreground")}>+{money(totals.in)}</div>
+                      <dt className="nk-label">{t("nuikit_total_in")}</dt>
+                      <dd className={cn("nk-num mt-1 text-sm font-medium", !totals.in && "text-muted-foreground")}>+{money(totals.in)}</dd>
                     </div>
                     <div>
-                      <div className="text-muted-foreground text-xs">{t("nuikit_total_out")}</div>
-                      <div className={cn("rb-num font-semibold", totals.out ? "text-destructive" : "text-muted-foreground")}>−{money(totals.out)}</div>
+                      <dt className="nk-label">{t("nuikit_total_out")}</dt>
+                      <dd className={cn("nk-num mt-1 text-sm font-medium", !totals.out && "text-muted-foreground")}>−{money(totals.out)}</dd>
                     </div>
-                  </div>
+                  </dl>
                   <Actions account={active} atm={false} onAction={onAction} />
                 </div>
               </section>
-              <Separator />
               <TransactionsPanel key={active.id} transactions={txs} onExport={onExport} canExport />
             </>
           ) : (
@@ -281,31 +284,30 @@ function BankView({ accounts, active, cash, onSelect, onAction, onClose, onExpor
           )}
         </main>
       </div>
-    </Card>
+    </section>
   );
 }
 
 function AtmView({ accounts, active, cash, onSelect, onAction, onClose }: ViewProps) {
   return (
-    <Card className="w-[min(440px,94vw)] gap-0 overflow-hidden py-0 shadow-2xl">
-      <header className="flex items-center gap-3 border-b px-4 py-3">
+    <section className="nk-panel nk-enter flex w-[26rem] max-w-full flex-col overflow-hidden">
+      <header className="nk-panel-header">
         <Brand atm />
         <div className="ml-auto">
           <CloseButton onClose={onClose} />
         </div>
       </header>
-      <div className="flex flex-col gap-4 p-4">
+      <div className="flex flex-col gap-6 p-4">
         <AccountChips accounts={accounts} activeId={active?.id} onSelect={onSelect} />
         {active ? (
           <>
-            <div className="bg-muted/40 rounded-xl border p-4">
-              <div className="text-muted-foreground truncate text-xs">{accountTitle(active)}</div>
-              <div className="rb-num mt-1 text-3xl font-bold tracking-tight">{money(active.amount)}</div>
-              <div className="text-muted-foreground mt-0.5 text-xs">{t("balance")}</div>
-              <Actions account={active} atm onAction={onAction} className="mt-4 [&>button]:flex-1" />
+            <div className="flex flex-col gap-4">
+              <div className="nk-label truncate">{accountTitle(active)}</div>
+              <Balance account={active} />
+              <Actions account={active} atm onAction={onAction} className="[&>button]:flex-1" />
             </div>
-            <div>
-              <div className="text-muted-foreground mb-1 text-xs font-medium tracking-wide uppercase">{t("nuikit_recent")}</div>
+            <div className="flex flex-col gap-1">
+              <h2 className="text-sm font-medium">{t("nuikit_recent")}</h2>
               <RecentList transactions={transactionsOf(active)} />
             </div>
           </>
@@ -313,9 +315,9 @@ function AtmView({ accounts, active, cash, onSelect, onAction, onClose }: ViewPr
           <p className="text-muted-foreground py-6 text-center text-sm">{t("select_account")}</p>
         )}
       </div>
-      <footer className="flex items-center justify-between border-t px-4 py-2.5">
-        <CashPill cash={cash} />
+      <footer className="nk-panel-footer">
+        <Cash cash={cash} />
       </footer>
-    </Card>
+    </section>
   );
 }

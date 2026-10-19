@@ -44,7 +44,7 @@ export function ComponentsSection() {
         const o = stored.components.find((x) => x.component_id === c.id);
         if (!s || !v) return null;
         return (
-          <Group key={c.id} value={String(c.id)} title={L[c.label]} meta={`${v.drawable}·${v.texture}`} changed={!!o && (o.drawable !== v.drawable || o.texture !== v.texture)}>
+          <Group key={c.id} value={String(c.id)} title={L[c.label]} meta={v.drawable} changed={!!o && (o.drawable !== v.drawable || o.texture !== v.texture)}>
             <Fields cols={2}>
               <Stepper
                 label={L.drawable}
@@ -89,13 +89,13 @@ export function PropsSection() {
             key={p.id}
             value={String(p.id)}
             title={L[p.label]}
-            meta={none ? "none" : `${v.drawable}·${v.texture}`}
+            meta={none ? "None" : v.drawable}
             changed={!!o && (o.drawable !== v.drawable || o.texture !== v.texture)}
           >
             <Fields cols={2}>
               <Stepper
                 label={L.drawable}
-                hint={none ? "none" : undefined}
+                hint={none ? "None" : undefined}
                 value={v.drawable}
                 original={o?.drawable}
                 min={s.drawable.min}

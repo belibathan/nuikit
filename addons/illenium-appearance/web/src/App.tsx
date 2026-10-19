@@ -10,7 +10,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Kbd } from "@/components/ui/kbd";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -53,29 +52,25 @@ function Editor({ onConfirm }: { onConfirm: (kind: "save" | "exit") => void }) {
 
   return (
     <Tabs value={active?.id ?? ""} onValueChange={setTab} className="flex h-full min-h-0 flex-col gap-0">
-      <header className="flex items-center gap-2 px-4 pt-4 pb-3">
-        <h1 className="truncate text-lg leading-none font-semibold tracking-tight">{active?.title}</h1>
-        {dirty && (
-          <Badge variant="secondary" className="ml-auto">
-            Unsaved
-          </Badge>
-        )}
-      </header>
-      {sections.length > 1 && (
-        <div className="px-3 pb-3">
-          <TabsList className="h-auto w-full">
+      <header className="nk-panel-header flex-col items-stretch gap-3">
+        <div className="flex h-7 items-center gap-3">
+          <h1 className="nk-title min-w-0 flex-1 truncate">{active?.title}</h1>
+          {dirty && (
+            <span className="nk-label flex shrink-0 items-center gap-1.5">
+              <span className="size-1.5 rounded-full bg-primary" aria-hidden />
+              Unsaved changes
+            </span>
+          )}
+        </div>
+        {sections.length > 1 && (
+          <TabsList className="w-full">
             {sections.map((s) => (
-              <TabsTrigger
-                key={s.id}
-                value={s.id}
-                className="h-9 p-0 dark:data-[state=active]:border-transparent dark:data-[state=active]:bg-primary dark:data-[state=active]:text-primary-foreground"
-                aria-label={s.title}
-              >
+              <TabsTrigger key={s.id} value={s.id} className="p-0" aria-label={s.title}>
                 {/* The tooltip sits inside: its data-state must not replace the tab's active state. */}
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <span className="flex size-full items-center justify-center">
-                      <s.icon className="size-[18px]" />
+                      <s.icon className="size-4" />
                     </span>
                   </TooltipTrigger>
                   <TooltipContent side="bottom">{s.title}</TooltipContent>
@@ -83,9 +78,8 @@ function Editor({ onConfirm }: { onConfirm: (kind: "save" | "exit") => void }) {
               </TabsTrigger>
             ))}
           </TabsList>
-        </div>
-      )}
-      <div className="h-px bg-border" />
+        )}
+      </header>
       {sections.map((s) => (
         <TabsContent key={s.id} value={s.id} className="min-h-0 flex-1">
           <ScrollArea className="h-full">
@@ -93,25 +87,17 @@ function Editor({ onConfirm }: { onConfirm: (kind: "save" | "exit") => void }) {
           </ScrollArea>
         </TabsContent>
       ))}
-      <div className="h-px bg-border" />
-      <footer className="space-y-3 p-4">
-        <div className="flex gap-2">
-          {config.enableExit && (
-            <Button variant="outline" onClick={() => onConfirm("exit")}>
-              <LogOut />
-              Exit
-            </Button>
-          )}
-          <Button className="flex-1" onClick={() => onConfirm("save")}>
-            <Save />
-            Save
+      <footer className="nk-panel-footer">
+        {config.enableExit && (
+          <Button variant="outline" onClick={() => onConfirm("exit")}>
+            <LogOut />
+            Exit
           </Button>
-        </div>
-        <p className="flex items-center justify-center gap-1.5 text-[11px] text-muted-foreground">
-          <Kbd>A</Kbd>
-          <Kbd>D</Kbd>
-          turn your character
-        </p>
+        )}
+        <Button className="flex-1" onClick={() => onConfirm("save")}>
+          <Save />
+          Save
+        </Button>
       </footer>
     </Tabs>
   );
@@ -150,7 +136,7 @@ function Shell() {
   return (
     <TooltipProvider delayDuration={300}>
       <div className="pointer-events-none fixed inset-0 select-none">
-        <aside className="appearance-panel pointer-events-auto absolute top-6 bottom-6 left-6 flex w-[380px] flex-col overflow-hidden rounded-xl border bg-background/90 text-foreground shadow-2xl backdrop-blur-md">
+        <aside className="appearance-panel nk-panel nk-enter pointer-events-auto absolute top-6 bottom-6 left-6 flex w-96 flex-col overflow-hidden">
           {ready ? (
             <Editor onConfirm={setConfirm} />
           ) : (
@@ -165,11 +151,20 @@ function Shell() {
             <CameraControls />
           </div>
         )}
+        {ready && (
+          <p className="nk-chip absolute bottom-6 left-1/2 -translate-x-1/2 gap-2 pl-1.5">
+            <span className="flex gap-1">
+              <Kbd>A</Kbd>
+              <Kbd>D</Kbd>
+            </span>
+            Turn your character
+          </p>
+        )}
       </div>
       <AlertDialog open={!!confirm} onOpenChange={(o) => !o && setConfirm(null)}>
-        <AlertDialogContent size="sm">
+        <AlertDialogContent className="nk-panel nk-enter gap-4 p-6 data-[size=default]:sm:max-w-sm">
           <AlertDialogHeader>
-            <AlertDialogTitle>{modal?.title}</AlertDialogTitle>
+            <AlertDialogTitle className="nk-title text-[0.9375rem] leading-5">{modal?.title}</AlertDialogTitle>
             <AlertDialogDescription>{modal?.description}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

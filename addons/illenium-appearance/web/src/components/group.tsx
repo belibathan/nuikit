@@ -10,18 +10,18 @@ export function Groups({ children, open }: { children: ReactNode; open?: string[
   );
 }
 
-/** One collapsible group: title, optional meta on the right (current value, a count), controls inside. */
+/** One collapsible group: a 40px row with title and current value, controls inside. */
 export function Group({ value, title, meta, changed, children }: { value: string; title: ReactNode; meta?: ReactNode; changed?: boolean; children: ReactNode }) {
   return (
-    <AccordionItem value={value} className="border-border/60">
-      <AccordionTrigger className="items-center py-3 hover:no-underline">
+    <AccordionItem value={value}>
+      <AccordionTrigger className="h-10 items-center py-0 hover:no-underline [&>svg]:translate-y-0">
         <span className="flex min-w-0 flex-1 items-center gap-2">
           <span className="truncate">{title}</span>
           {changed && <span className="size-1.5 shrink-0 rounded-full bg-primary" aria-label="Changed" />}
-          {meta !== undefined && <span className="ml-auto shrink-0 font-mono text-[11px] font-normal text-muted-foreground tabular-nums">{meta}</span>}
+          {meta !== undefined && <span className="nk-num ml-auto shrink-0 text-xs font-normal text-muted-foreground">{meta}</span>}
         </span>
       </AccordionTrigger>
-      <AccordionContent className="space-y-3 pb-4">{children}</AccordionContent>
+      <AccordionContent className="flex flex-col gap-4 pt-1 pb-4">{children}</AccordionContent>
     </AccordionItem>
   );
 }

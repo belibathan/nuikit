@@ -30,7 +30,7 @@ export function HairSection() {
 
   return (
     <Groups open={["hair"]}>
-      <Group value="hair" title={L.hair.title} meta={`${current.hair.style}·${current.hair.texture}`} changed={hairChanged}>
+      <Group value="hair" title={L.hair.title} meta={current.hair.style} changed={hairChanged}>
         <Fields cols={2}>
           <Stepper
             label={L.hair.style}
@@ -98,7 +98,7 @@ export function HairSection() {
           if (!os || !v) return null;
           const changed = !!sv && (v.style !== sv.style || v.opacity !== sv.opacity || v.color !== sv.color || v.secondColor !== sv.secondColor);
           return (
-            <Group key={o} value={o} title={L[o]} meta={v.opacity > 0 ? `${v.style} · ${Math.round(v.opacity * 100)}%` : "off"} changed={changed}>
+            <Group key={o} value={o} title={L[o]} meta={v.opacity > 0 ? `${Math.round(v.opacity * 100)}%` : "Off"} changed={changed}>
               <Stepper label={L.style} value={v.style} original={sv?.style} min={os.style.min} max={os.style.max} onChange={(x) => actions.headOverlay(o, "style", x)} />
               <RangeSlider
                 label={L.opacity}

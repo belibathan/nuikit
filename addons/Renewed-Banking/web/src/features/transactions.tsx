@@ -21,15 +21,10 @@ export function matches(tx: Transaction, q: string) {
   return [tx.message, tx.trans_id, tx.receiver].some((f) => String(f ?? "").toLowerCase().includes(n));
 }
 
+/** Direction is carried by the arrow and the sign, so amounts stay neutral. */
 function Direction({ out, className }: { out: boolean; className?: string }) {
   return (
-    <span
-      className={cn(
-        "flex size-8 shrink-0 items-center justify-center rounded-full",
-        out ? "bg-destructive/15 text-destructive" : "bg-primary/10 text-foreground",
-        className,
-      )}
-    >
+    <span className={cn("bg-muted text-muted-foreground flex size-8 shrink-0 items-center justify-center rounded-full", className)}>
       {out ? <ArrowUpRight className="size-4" /> : <ArrowDownLeft className="size-4" />}
     </span>
   );
@@ -38,7 +33,7 @@ function Direction({ out, className }: { out: boolean; className?: string }) {
 export function Amount({ tx, className }: { tx: Transaction; className?: string }) {
   const out = isOut(tx);
   return (
-    <span className={cn("rb-num font-semibold whitespace-nowrap", out ? "text-destructive" : "text-foreground", className)}>
+    <span className={cn("nk-num font-medium whitespace-nowrap", className)}>
       {out ? "−" : "+"}
       {money(Math.abs(Number(tx.amount) || 0))}
     </span>
@@ -52,7 +47,7 @@ export function NoTransactions({ text }: { text: string }) {
         <EmptyMedia variant="icon">
           <ReceiptText />
         </EmptyMedia>
-        <EmptyTitle>{text}</EmptyTitle>
+        <EmptyTitle className="text-sm font-medium">{text}</EmptyTitle>
       </EmptyHeader>
     </Empty>
   );
@@ -68,72 +63,67 @@ export function TransactionsPanel({ transactions, onExport, canExport }: { trans
   );
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col gap-3">
-      <div className="flex flex-wrap items-center gap-2">
-        <h2 className="mr-auto text-sm font-semibold">{t("transactions")}</h2>
+    <div className="flex min-h-0 flex-1 flex-col">
+      <div className="flex flex-wrap items-center gap-2 px-6 pt-4 pb-3">
+        <h2 className="mr-4 text-sm font-medium">{t("transactions")}</h2>
+        <InputGroup className="h-8 min-w-48 flex-1">
+          <InputGroupAddon>
+            <Search />
+          </InputGroupAddon>
+          <InputGroupInput value={q} onChange={(e) => setQ(e.target.value)} placeholder={t("trans_search")} />
+        </InputGroup>
         <ToggleGroup type="single" variant="outline" size="sm" value={dir} onValueChange={(v) => v && setDir(v as Dir)}>
           <ToggleGroupItem value="all" className="px-3">
             {t("nuikit_all")}
           </ToggleGroupItem>
           <ToggleGroupItem value="in" className="px-3">
-            <ArrowDownLeft />
             {t("nuikit_in")}
           </ToggleGroupItem>
           <ToggleGroupItem value="out" className="px-3">
-            <ArrowUpRight />
             {t("nuikit_out")}
           </ToggleGroupItem>
         </ToggleGroup>
         {canExport && (
-          <Button variant="outline" size="sm" onClick={onExport}>
+          <Button variant="ghost" size="icon-sm" className="text-muted-foreground" onClick={onExport} aria-label={t("export_data")} title={t("export_data")}>
             <FileDown />
-            {t("export_data")}
           </Button>
         )}
       </div>
-      <InputGroup>
-        <InputGroupAddon>
-          <Search />
-        </InputGroupAddon>
-        <InputGroupInput value={q} onChange={(e) => setQ(e.target.value)} placeholder={t("trans_search")} />
-      </InputGroup>
-      <div className="min-h-0 flex-1 overflow-hidden rounded-lg border">
+      <div className="min-h-0 flex-1 overflow-hidden">
         {rows.length === 0 ? (
           <NoTransactions text={t("trans_not_found")} />
         ) : (
           <ScrollArea className="h-full [&_[data-slot=scroll-area-viewport]>div]:!block">
             <Table className="table-fixed">
-              <TableHeader className="bg-muted/40">
-                <TableRow>
-                  <TableHead className="pl-4">{t("message")}</TableHead>
-                  <TableHead className="w-[30%]">
+              <TableHeader>
+                <TableRow className="hover:bg-transparent">
+                  <TableHead className="nk-label h-8 pl-6">{t("message")}</TableHead>
+                  <TableHead className="nk-label h-8 w-[30%]">
                     {t("nuikit_from")} → {t("nuikit_to")}
                   </TableHead>
-                  <TableHead className="w-24">ID</TableHead>
-                  <TableHead className="w-36 pr-4 text-right">{t("amount")}</TableHead>
+                  <TableHead className="nk-label h-8 w-24">ID</TableHead>
+                  <TableHead className="nk-label h-8 w-36 pr-6 text-right">{t("amount")}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {rows.map((tx, i) => (
-                  <TableRow key={`${tx.trans_id}:${i}`}>
-                    <TableCell className="pl-4">
-                      <div className="flex items-center gap-3">
+                  <TableRow key={`${tx.trans_id}:${i}`} className="border-border/60">
+                    <TableCell className="py-2 pl-6">
+                      <div className="flex items-center gap-3" title={tx.title}>
                         <Direction out={isOut(tx)} />
                         <div className="min-w-0">
                           <div className="truncate font-medium">{tx.message || tx.title}</div>
-                          <div className="text-muted-foreground truncate text-xs">
-                            {ago(tx.time)} · {tx.title}
-                          </div>
+                          <div className="nk-label truncate font-normal">{ago(tx.time)}</div>
                         </div>
                       </div>
                     </TableCell>
                     <TableCell className="text-muted-foreground">
-                      <div className="truncate text-xs">
-                        <span className="text-foreground">{tx.issuer}</span> → <span className="text-foreground">{tx.receiver}</span>
+                      <div className="truncate">
+                        {tx.issuer} → {tx.receiver}
                       </div>
                     </TableCell>
                     <TableCell className="text-muted-foreground font-mono text-xs">{String(tx.trans_id ?? "").slice(0, 8)}</TableCell>
-                    <TableCell className="pr-4 text-right">
+                    <TableCell className="pr-6 text-right">
                       <Amount tx={tx} />
                     </TableCell>
                   </TableRow>
@@ -154,11 +144,11 @@ export function RecentList({ transactions, limit = 4 }: { transactions: Transact
   return (
     <div className="flex flex-col">
       {rows.map((tx, i) => (
-        <div key={`${tx.trans_id}:${i}`} className="flex items-center gap-3 border-b py-2 last:border-b-0">
-          <Direction out={isOut(tx)} className="size-7" />
+        <div key={`${tx.trans_id}:${i}`} className="flex min-h-12 items-center gap-3 border-b py-2 last:border-b-0">
+          <Direction out={isOut(tx)} />
           <div className="min-w-0 flex-1">
             <div className="truncate text-sm font-medium">{tx.message || tx.title}</div>
-            <div className="text-muted-foreground truncate text-xs">{ago(tx.time)}</div>
+            <div className="nk-label truncate font-normal">{ago(tx.time)}</div>
           </div>
           <Amount tx={tx} className="text-sm" />
         </div>

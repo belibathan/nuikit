@@ -2,7 +2,6 @@ import { Check, Search, Trash2 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { RangeSlider } from "@/components/controls";
 import { Group, Groups } from "@/components/group";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -50,12 +49,12 @@ function Zone({ zone, items }: { zone: TattooZone; items: Tattoo[] }) {
   };
 
   return (
-    <div className="space-y-3">
+    <div className="flex flex-col gap-3">
       <div className="relative">
-        <Search className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground" />
-        <Input placeholder={`${items.length} designs`} value={query} onChange={(e) => setQuery(e.target.value)} className="h-8 pl-8 text-sm" />
+        <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
+        <Input placeholder={`Search ${items.length} designs`} value={query} onChange={(e) => setQuery(e.target.value)} className="h-9 pl-9" />
       </div>
-      <ScrollArea className="h-52 rounded-md border bg-background/40">
+      <ScrollArea className="h-60 rounded-md border [&_[data-slot=scroll-area-viewport]>div]:!block">
         <div className="p-1">
           {filtered.map((t) => {
             const on = applied.some((a) => a.name === t.name);
@@ -65,24 +64,20 @@ function Zone({ zone, items }: { zone: TattooZone; items: Tattoo[] }) {
                 type="button"
                 onClick={() => select(t)}
                 className={cn(
-                  "flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-left text-sm outline-none hover:bg-accent focus-visible:bg-accent",
+                  "nk-row w-full gap-2 px-2 text-left outline-none hover:bg-accent hover:text-accent-foreground focus-visible:bg-accent",
                   selected?.name === t.name && "bg-accent text-accent-foreground",
                 )}
               >
-                <Check className={cn("size-3.5 shrink-0 text-primary", on ? "opacity-100" : "opacity-0")} />
+                <Check className={cn("size-4 shrink-0", on ? "opacity-100" : "opacity-0")} aria-label={on ? "Applied" : undefined} />
                 <span className="min-w-0 flex-1">
                   <span className="block truncate">{t.label}</span>
-                  <span className="block truncate font-mono text-[10px] text-muted-foreground">{t.collection}</span>
+                  <span className="nk-label block truncate">{t.collection}</span>
                 </span>
-                {typeof t.cost === "number" && !on && (
-                  <Badge variant="outline" className="shrink-0 font-mono text-[10px]">
-                    ${t.cost}
-                  </Badge>
-                )}
+                {typeof t.cost === "number" && !on && <span className="nk-num shrink-0 text-xs text-muted-foreground">${t.cost}</span>}
               </button>
             );
           })}
-          {!filtered.length && <p className="px-2 py-6 text-center text-xs text-muted-foreground">Nothing matches “{query}”.</p>}
+          {!filtered.length && <p className="px-2 py-6 text-center text-sm text-muted-foreground">Nothing matches “{query}”. Try another word.</p>}
         </div>
       </ScrollArea>
       <RangeSlider
@@ -97,9 +92,10 @@ function Zone({ zone, items }: { zone: TattooZone; items: Tattoo[] }) {
           if (selected && !appliedOne) actions.previewTattoo(selected, v);
         }}
       />
-      <Button className="w-full" variant={appliedOne ? "outline" : "default"} disabled={!selected || busy} onClick={() => void apply()}>
+      <Button className="w-full" variant={appliedOne ? "outline" : "secondary"} disabled={!selected || busy} onClick={() => void apply()}>
         {busy && <Spinner />}
-        {selected ? `${appliedOne ? L.delete : L.apply} · ${selected.label}` : L.apply}
+        {appliedOne ? L.delete : L.apply}
+        {selected && <span className="min-w-0 truncate font-normal text-muted-foreground">{selected.label}</span>}
       </Button>
       {declined && declined === selected?.name && <p className="text-center text-xs text-destructive">Not applied.</p>}
     </div>
@@ -125,13 +121,13 @@ export function TattoosSection() {
     <>
       <Groups open={zones.slice(0, 1)}>
         {zones.map((z) => (
-          <Group key={z} value={z} title={(L.items as Record<string, string>)[z] ?? z} meta={current.tattoos[z]?.length ? `${current.tattoos[z]!.length} on` : undefined}>
+          <Group key={z} value={z} title={(L.items as Record<string, string>)[z] ?? z} meta={current.tattoos[z]?.length ? `${current.tattoos[z]!.length} applied` : undefined}>
             <Zone zone={z} items={byZone[z] ?? []} />
           </Group>
         ))}
       </Groups>
-      <div className="px-4 py-4">
-        <Button variant="outline" className="w-full text-destructive hover:text-destructive" disabled={total === 0} onClick={() => void actions.clearTattoos()}>
+      <div className="px-4 pt-2 pb-4">
+        <Button variant="ghost" className="w-full text-destructive hover:text-destructive" disabled={total === 0} onClick={() => void actions.clearTattoos()}>
           <Trash2 />
           {L.deleteAll}
         </Button>

@@ -23,54 +23,49 @@ function Tip({ label, children, kbd }: { label: string; children: ReactNode; kbd
   );
 }
 
-const ON = "text-foreground/80 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground";
+// Off: a quiet icon. On: the accent fill, so the icon itself reads as the state.
+const ICON = "text-muted-foreground hover:bg-accent hover:text-accent-foreground";
 
-function Caption({ children }: { children: ReactNode }) {
-  return <span className="block pb-1 text-center text-[9px] font-semibold tracking-[0.14em] text-muted-foreground uppercase">{children}</span>;
-}
-
+/** Three groups (view, orbit, undress) separated by hairlines; the tooltips name each control. */
 export function CameraControls() {
   const { camera, rotate, clothes, actions } = useLoaded();
   const cam = (key: "head" | "body" | "bottom", label: string, icon: ReactNode) => (
     <Tip label={camera[key] ? "Back to full view" : label}>
-      <Toggle size="lg" className={ON} pressed={camera[key]} onPressedChange={() => actions.setCamera(key)} aria-label={label}>
+      <Toggle className={ICON} pressed={camera[key]} onPressedChange={() => actions.setCamera(key)} aria-label={label}>
         {icon}
       </Toggle>
     </Tip>
   );
   const wear = (key: "head" | "body" | "bottom", label: string, icon: ReactNode) => (
     <Tip label={clothes[key] ? `Put ${label} back on` : `Take off ${label}`}>
-      <Toggle size="lg" className={ON} pressed={clothes[key]} onPressedChange={() => actions.toggleClothes(key)} aria-label={`Toggle ${label}`}>
+      <Toggle className={ICON} pressed={clothes[key]} onPressedChange={() => actions.toggleClothes(key)} aria-label={`Toggle ${label}`}>
         {icon}
       </Toggle>
     </Tip>
   );
 
   return (
-    <div className="pointer-events-auto flex flex-col items-center gap-1.5 rounded-xl border bg-background/85 p-1.5 shadow-xl backdrop-blur-md">
-      <Caption>View</Caption>
+    <div className="nk-panel nk-enter pointer-events-auto flex flex-col items-center gap-1 p-1">
       {cam("head", "Focus on face", <ScanFace />)}
       {cam("body", "Focus on body", <PersonStanding />)}
       {cam("bottom", "Focus on legs", <ArrowDownToLine />)}
-      <Separator className="my-1 w-6" />
-      <Caption>Orbit</Caption>
+      <Separator className="my-1 !w-6" />
       <Tip label={rotate.left ? "Back to front view" : "Orbit left"}>
-        <Toggle size="lg" className={ON} pressed={rotate.left} onPressedChange={() => actions.rotate("left")} aria-label="Orbit camera left">
+        <Toggle className={ICON} pressed={rotate.left} onPressedChange={() => actions.rotate("left")} aria-label="Orbit camera left">
           <RotateCcw />
         </Toggle>
       </Tip>
       <Tip label={rotate.right ? "Back to front view" : "Orbit right"}>
-        <Toggle size="lg" className={ON} pressed={rotate.right} onPressedChange={() => actions.rotate("right")} aria-label="Orbit camera right">
+        <Toggle className={ICON} pressed={rotate.right} onPressedChange={() => actions.rotate("right")} aria-label="Orbit camera right">
           <RotateCw />
         </Toggle>
       </Tip>
       <Tip label="Turn around">
-        <Button variant="ghost" size="icon-lg" className="text-foreground/80" onClick={actions.turnAround} aria-label="Turn around">
+        <Button variant="ghost" size="icon" className="text-muted-foreground" onClick={actions.turnAround} aria-label="Turn around">
           <Repeat2 />
         </Button>
       </Tip>
-      <Separator className="my-1 w-6" />
-      <Caption>Undress</Caption>
+      <Separator className="my-1 !w-6" />
       {wear("head", "headwear", <HardHat />)}
       {wear("body", "top", <Shirt />)}
       {wear("bottom", "trousers & shoes", <Footprints />)}
