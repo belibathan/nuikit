@@ -422,6 +422,7 @@ end)
 ---@field focus? boolean      take NUI focus (default true)
 ---@field cursor? boolean     show the cursor (default = focus)
 ---@field keepInput? boolean  let the player keep moving while focused (default false)
+---@field escape? 'close'|'back'|'ignore'  what Escape does (default 'close')
 
 local main = nil
 
@@ -433,7 +434,7 @@ function NUI.open(opts)
   local cursor = opts.cursor
   if cursor == nil then cursor = focus end
   local input = not focus and 'none' or (cursor and 'full' or 'keyboard')
-  main = NUI.surface('main', { layer = 'panel', input = input, keepInput = opts.keepInput })
+  main = NUI.surface('main', { layer = 'panel', input = input, keepInput = opts.keepInput, escape = opts.escape })
   main:open(data.main)
 end
 
@@ -548,14 +549,22 @@ TriggerEvent('nuikit:prefs:request', RESOURCE)
 
 -- The page loads after this script runs, so anything sent before it is lost. The UI calls
 -- nuikit:ready once it's listening; resend the current state (theme and prefs too).
-NUI.on('nuikit:ready', function()
+--- The protocol version this library speaks (docs/protocol.md §2).
+NUI.PROTOCOL = 1
+
+NUI.on('nuikit:ready', function(req)
   lastSent, lastMain = nil, nil
   apply()
   local theme = NUI.theme()
   if theme then NUI.send('nuikit:theme', theme) end
   NUI.send('nuikit:prefs', NUI.prefs.get())
-  if NUI.player and NUI.player.resend then NUI.player.resend() end
-  return { ok = true, resource = RESOURCE }
+  local hasPlayer = NUI.player ~= nil and NUI.player.resend ~= nil
+  if hasPlayer then NUI.player.resend() end
+  -- §2.2: a 0.4.0 page sends no protocol (version 0); it ignores the extra fields.
+  local capabilities = { 'surfaces', 'states', 'notify', 'prefs' }
+  if theme then capabilities[#capabilities + 1] = 'theme' end
+  if hasPlayer then capabilities[#capabilities + 1] = 'player' end
+  return { ok = true, resource = RESOURCE, protocol = NUI.PROTOCOL, capabilities = capabilities }
 end)
 
 -- ───────────────────────────────── hosted mode (docs/host.md)

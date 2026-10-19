@@ -1,4 +1,7 @@
+import { readFileSync } from "node:fs";
 import { defineConfig } from "tsup";
+
+const { version } = JSON.parse(readFileSync(new URL("./package.json", import.meta.url), "utf8")) as { version: string };
 
 export default defineConfig([
   {
@@ -16,6 +19,7 @@ export default defineConfig([
     clean: false, // two configs share dist/: the build script empties it first
     target: "es2020",
     external: ["react", "react-dom", "react-dom/client", "react/jsx-runtime"],
+    define: { __NUIKIT_CORE_VERSION__: JSON.stringify(version) },
   },
   // The theme compiler for the nuikit resource's server script (FXServer's Node runtime).
   {

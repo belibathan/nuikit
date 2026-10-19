@@ -1,8 +1,7 @@
 # nuikit protocol v1
 
-*Status: draft for 0.6. Derived from `packages/core/lua/nuikit.lua`, `packages/core/lua/bridge.lua` and
-`packages/core/src` as of 0.4.0. Where the 0.4.0 runtime differs from this spec, the difference is called
-out in a **Change needed** note and listed again in [§11](#11-changes-needed-in-the-runtime).*
+*Status: v1, implemented by the reference runtime (`packages/core/lua/nuikit.lua`, `packages/core/lua/bridge.lua`,
+`packages/core/src`) on `feat/platform`. Not yet released: ships with the next minor.*
 
 The nuikit protocol is the contract between a FiveM resource's Lua, its NUI page, and every other resource
 on the same client, so that a server's UIs share focus, Escape, stacking, theme and player context like apps
@@ -74,8 +73,9 @@ and Lua answers with its own:
   (§6), `player` (§7.1, present when `bridge.lua` is loaded), `notify` (§5.4) and `prefs` (§7.3). A page MUST
   treat an absent capability as "not provided" and SHOULD degrade (for example, keep its compiled-in theme).
 
-**Change needed:** 0.4.0 `fetchNui("nuikit:ready")` sends `{}` and Lua answers `{ ok, resource }`. Add
-`protocol` / `client` to the request and `protocol` / `capabilities` to the response.
+In the reference implementation: `nuikit-core` sends `{ protocol: 1, client }` and exposes the reply as
+`getHandshake()`, `protocolVersion()` and `hasCapability(name)`; `nuikit.lua` answers with `NUI.PROTOCOL` and
+lists `theme` only when a server theme exists and `player` only when `bridge.lua` is loaded.
 
 ## 3. Surfaces
 
@@ -119,8 +119,9 @@ peer MUST:
 Only the peer that owns the focus target calls focus natives; nobody else ever does. Because every peer applies
 the same replicated changes in the same order, exactly one resource holds focus at a time.
 
-`input = 'keyboard'` gives keyboard focus without a cursor. `input = 'cursor'` is, in v1, identical to `'full'`
-at the native level (FiveM has no "mouse only" focus); a page MUST NOT rely on keystrokes not reaching it.
+`input = 'keyboard'` gives keyboard focus without a cursor. `input = 'cursor'` is, in v1, an alias of `'full'`
+at the native level (FiveM has no "mouse only" focus); a page MUST NOT rely on keystrokes not reaching it. A
+later version may give it its own meaning (mouse-only focus via `keepInput` with look controls disabled).
 
 ### 3.3 Visibility (`hides`)
 
@@ -175,6 +176,8 @@ sequenceDiagram
   exactly one surface.
 - A page MUST NOT post its own close callback on Escape, and Lua MUST NOT close surfaces on Escape outside
   this flow (that is "ad-hoc Escape", which `nuikit check` reports).
+- A page that handles Escape MUST call `preventDefault()`, so a second listener on the same page (simple mode
+  and surfaces together) does not send a second `nuikit:escape`.
 
 ### 3.6 Replicated events
 
@@ -251,9 +254,11 @@ After every recompute a peer sends its page one message describing **its own** s
 ### 3.11 Simple mode
 
 `NUI.open(opts)` / `NUI.close()` / `NUI.toggle()` are a surface named `main` on the `panel` layer, with
-`input` derived from `opts.focus` / `opts.cursor` (`'none'`, `'keyboard'` or `'full'`). For `main`, Lua also
-sends `nuikit:visible` (`open and visible`, boolean) whenever it changes. The page asks to close with the
-callback `nuikit:close` `{ name? }` (default `main`).
+`input` derived from `opts.focus` / `opts.cursor` (`'none'`, `'keyboard'` or `'full'`) and `escape` from
+`opts.escape` (default `'close'`). For `main`, Lua also sends `nuikit:visible` (`open and visible`, boolean)
+whenever it changes. The page asks to close with the callback `nuikit:close` `{ name? }` (default `main`), for
+close buttons; Escape goes through `nuikit:escape` like any surface (§3.5), so the topmost focused surface on the
+client gets it even when another resource's modal is above `main`.
 
 ## 4. The open flow
 
@@ -320,8 +325,8 @@ resource's client scripts run. So:
 1. The page MUST, once it is listening, call `nuikit:ready` (the reference implementation does it in a
    `setTimeout(…, 0)` after module load).
 2. On `nuikit:ready`, Lua MUST forget its de-duplication state and send, in this order: `nuikit:surfaces` (and
-   `nuikit:visible` for simple mode), `nuikit:theme` when a server theme exists, `nuikit:player` when the bridge
-   is loaded. Then it answers per §2.2.
+   `nuikit:visible` for simple mode), `nuikit:theme` when a server theme exists, `nuikit:prefs`, `nuikit:player`
+   when the bridge is loaded. Then it answers per §2.2.
 3. The page MAY call `nuikit:ready` again (after a reload); Lua MUST answer the same way each time.
 
 ### 5.6 Opting out: the `nuikit-handshake` meta
@@ -350,19 +355,23 @@ prints the list.
   (`var(--primary)`, or a utility that resolves to it such as Tailwind's `bg-primary`). Fixed colours are allowed
   only for what a theme cannot know (GTA palettes, item images); mark them with a `nuikit-ignore` comment so
   `nuikit check` can tell them apart.
-- **Distribution.** The server theme is `theme.css` in the resource named `nuikit`, and nothing else is a
-  server-wide theme. A peer reads it with `LoadResourceFile('nuikit', 'theme.css')` (only when `nuikit` is
-  started and the file contains a custom property) and sends it as `nuikit:theme` (CSS text with `:root` and/or
-  `.dark` blocks, the TweakCN/shadcn shape). The page applies it to `document.documentElement` (dark set when
-  `<html>` has `.dark`). Handshake-off pages fetch the same file (§5.6); the loading screen receives it in the
-  connection handover (`deferrals.handover({ nuikit = { theme = … } })`); the chat theme reads it from its
-  `chat_theme` script.
+- **Source.** The server theme is `theme.css` in the resource named `nuikit` (any TweakCN / shadcn paste or a
+  DTCG token file), and nothing else is a server-wide theme.
+- **Compiled once.** The `nuikit` resource compiles it at start and on `nuikit theme reload` (`compileTheme`:
+  oklch lowered to `rgb()`/`rgba()`, missing tokens derived, dark set chosen, contrast checked, warnings in the
+  server console) and publishes the result as `GlobalState.nuikitTheme`:
+  `{ version: 1, mode, hash, vars: { [token]: value }, imports: string[] }` (see [`docs/tokens.md`](tokens.md#distribution)).
+- **`nuikit:theme`.** Lua sends the compiled theme on `nuikit:ready` and again whenever the state bag
+  changes (live reload). The page applies `vars` (and each token's `-rgb` / `-a` channels) to
+  `document.documentElement` and loads `imports` (fonts) once each. For compatibility the payload MAY instead
+  be CSS text (`:root` / `.dark` blocks), from an older `nuikit` resource; a page MUST accept both and compile
+  the text itself.
+- **Pages that can't receive messages** (handshake-off overrides, §5.6, and the chat theme) call the NUI
+  callback `https://nuikit/theme`, then keep a request open that answers when the theme or the player's prefs
+  change (or "unchanged" after 25 s). If that callback doesn't answer they fetch `theme.css` and compile it.
+  The loading screen receives the compiled theme in the connection handover
+  (`deferrals.handover({ nuikit = { theme = … } })`).
 - A page MUST render correctly with its compiled-in defaults when no theme arrives.
-
-**Change needed (theme engine, in progress, `docs/next/blocks.md` Part 0):** v1 adds compiled themes (the
-`nuikit` resource compiles `theme.css` once, fills derived tokens, checks contrast, publishes the result) and a
-live reload. Until then the theme is only sent on `nuikit:ready`, so a theme edit needs the UI to reload. The
-wire shape of `nuikit:theme` (CSS text) stays; a compiled theme is still CSS text.
 
 ## 7. Context
 
@@ -395,10 +404,8 @@ interface NuiPlayer {
   `get()`, `set(fields)`, `onChange(fn)`, `resend()`.
 - Fields a framework does not provide MUST be omitted, not zeroed (`hunger` on standalone is absent).
 - Pages SHOULD merge onto defaults `{ loaded: false, health: 100, armor: 0, dead: false, voice: { talking: false } }`.
-- The bridge also keeps a `downed` field internally to compute `dead`; it is not part of the contract.
-
-**Change needed:** the 0.4.0 bridge sends `downed` on the wire; it should drop it from the payload (or the spec
-should adopt it).
+- The bridge also keeps a `downed` field internally to compute `dead`; it is not part of the contract and is
+  never sent (`NUI.player.get()` leaves it out too).
 
 ### 7.2 Locale
 
@@ -413,22 +420,21 @@ Per-player accessibility preferences, never a different theme:
 { "action": "nuikit:prefs", "data": { "scale": 1, "reducedMotion": false, "highContrast": false } }
 ```
 
-- `scale` multiplies the kit's size (`--nk-scale`, default `1`, range 0.75–1.5). `reducedMotion` sets
-  `--nk-motion: 0` and pages MUST then drop non-essential animation. `highContrast` lets the theme compiler
-  pick its high-contrast variant.
-- Stored per player (client KVP) by the `nuikit` resource, sent after `nuikit:theme` on ready and whenever they
-  change.
-
-**Change needed:** not implemented in 0.4.0 (no `nuikit:prefs`, no KVP). Until it ships, Lua MUST NOT list
-`prefs` in `capabilities`, and pages use `prefers-reduced-motion`.
+- `scale` (0.85–1.25, default `1`) multiplies the theme's `--nk-scale`. `reducedMotion` sets `--nk-motion: 0`
+  and `data-nk-motion="off"` on `<html>`; pages MUST then drop non-essential animation. `highContrast` applies
+  the compiler's high-contrast adjustments and sets `data-nk-contrast="high"`.
+- Stored per player in the `nuikit` resource's client KVP (or the UI resource's own KVP without it). Lua sends
+  them after `nuikit:theme` on ready and to every UI whenever they change.
+- Set with `NUI.prefs.set(patch)`, `exports.nuikit:setPrefs(patch)` or `/nuikit scale|motion|contrast|reset`;
+  read with `NUI.prefs.get()`. Details in [`docs/tokens.md`](tokens.md#player-preferences).
 
 ## 8. Lua API summary (reference implementation)
 
 `NUI.send(action, data)` · `NUI.on(name, handler)` (pcall, `{ error }` on failure) · `NUI.notify(n)` ·
 `NUI.surface(name, opts)` → `:open(data)` `:close()` `:update(data)` `:toggle(data)` `:isOpen()` ·
 `NUI.state(name, value)` · `NUI.getState(name)` · `NUI.surfaces()` (stack, bottom → top) · `NUI.open(opts)`
-`NUI.close()` `NUI.toggle(opts)` `NUI.isOpen()` · `NUI.theme()` · `NUI.player.*` (§7.1). Debug logging:
-convar `nuikit_debug 1`.
+`NUI.close()` `NUI.toggle(opts)` `NUI.isOpen()` · `NUI.theme()` · `NUI.prefs.get()` `NUI.prefs.set(patch)` ·
+`NUI.player.*` (§7.1) · `NUI.PROTOCOL`. Debug logging: convar `nuikit_debug 1`.
 
 ## 9. Security
 
@@ -485,12 +491,7 @@ Exceptions are marked in source with `nuikit-ignore [rule …]` (same line, or a
 
 ## 11. Changes needed in the runtime
 
-| # | Area | Change |
-|---|---|---|
-| 1 | Versioning | `nuikit_protocol '1'` in the create-nuikit template and every `systems/*` fxmanifest with a `ui_page`. |
-| 2 | Handshake | `nuikit:ready` request `{ protocol, client }`; response `{ ok, resource, protocol, capabilities }` (JS + Lua). |
-| 3 | Theme | Live reload: re-send `nuikit:theme` when the `nuikit` resource's theme changes (part of the theme engine). |
-| 4 | Prefs | `nuikit:prefs` message, KVP storage in the `nuikit` resource, `prefs` capability. |
-| 5 | Player | Drop the internal `downed` field from the `nuikit:player` payload (or document it). |
-| 6 | Escape | `useNuiVisibility({ closeOnEscape })` in `nuikit-core/react` posts `nuikit:close` on Escape by itself; in v1 simple mode should route Escape through `nuikit:escape` like any surface, so there is one Escape path. |
-| 7 | Input | `input = 'cursor'` is identical to `'full'`; either document it as an alias (this spec) or implement mouse-only focus with `keepInput` plus disabled look controls in a later version. |
+None: every change this spec asked of 0.4.0 shipped on `feat/platform` (versioned manifests, the versioned
+handshake with capabilities, compiled themes with live reload, player prefs, `downed` kept internal, one Escape
+path for simple mode, `input = 'cursor'` documented as an alias). Open questions for v2: `locale` (§7.2) and a
+real mouse-only `input = 'cursor'`.

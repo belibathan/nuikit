@@ -149,6 +149,7 @@ function installEscape() {
     if (e.key !== "Escape" || e.defaultPrevented || isTyping(e)) return;
     const focused = Object.values(snapshot.surfaces).some((s) => s.focused);
     if (!focused) return;
+    e.preventDefault(); // one Escape, one nuikit:escape (useNuiVisibility listens too)
     if (isBrowser()) browser.escape();
     else void fetchNui("nuikit:escape" as never).catch(() => {});
   });

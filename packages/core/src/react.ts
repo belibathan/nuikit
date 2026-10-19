@@ -16,6 +16,7 @@ import {
   onPlayer,
   type NuiPlayer,
   fetchNui,
+  isBrowser,
   getVisible,
   onNui,
   onVisible,
@@ -52,10 +53,14 @@ export function useNuiState<K extends EventName>(action: K, initial: EventData<K
 }
 
 /**
- * Visibility driven by Lua's NUI.open()/NUI.close(), with Escape-to-close built in.
+ * Visibility driven by Lua's NUI.open()/NUI.close(), with Escape built in.
  *
  *   const { visible, close } = useNuiVisibility();
  *   if (!visible) return null;
+ *
+ * In game, Escape goes through nuikit:escape like any surface (protocol §3.5): Lua gives it to the
+ * topmost focused surface on the client, which is this UI's 'main' unless something is above it,
+ * and honours NUI.open({ escape = 'ignore' | 'back' }). In the browser it closes locally.
  */
 export function useNuiVisibility(options: { closeOnEscape?: boolean } = {}) {
   const { closeOnEscape = true } = options;
@@ -65,7 +70,10 @@ export function useNuiVisibility(options: { closeOnEscape?: boolean } = {}) {
   useEffect(() => {
     if (!visible || !closeOnEscape) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && !isTyping(e)) close();
+      if (e.key !== "Escape" || e.defaultPrevented || isTyping(e)) return;
+      e.preventDefault();
+      if (isBrowser()) close();
+      else void fetchNui("nuikit:escape").catch(() => {});
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);

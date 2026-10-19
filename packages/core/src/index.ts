@@ -33,7 +33,7 @@ export interface BuiltinEvents {
   "nuikit:prefs": Partial<import("./tokens").NuiPrefs>;
 }
 export interface BuiltinCallbacks {
-  "nuikit:ready": { req: void; res: { ok: boolean; resource?: string } };
+  "nuikit:ready": { req: { protocol: number; client: string }; res: Handshake };
   "nuikit:close": { req: void | { name?: string }; res: { ok: boolean } };
   "nuikit:escape": { req: void; res: { ok: boolean; closed?: string; back?: string } };
   "nuikit:surface:open": { req: { name: string; data?: unknown }; res: { ok: boolean } };
@@ -304,12 +304,48 @@ builtinTheme();
 // Pages that replace another resource's UI (addons) opt out with
 // <meta name="nuikit-handshake" content="off">: that resource's Lua has no nuikit:ready callback.
 const handshakeOff = () => document.querySelector('meta[name="nuikit-handshake"][content="off"]') !== null;
+
+/** The protocol version this nuikit-core speaks (docs/protocol.md §2). */
+export const PROTOCOL = 1;
+declare const __NUIKIT_CORE_VERSION__: string | undefined;
+const CLIENT = `nuikit-core@${typeof __NUIKIT_CORE_VERSION__ === "string" ? __NUIKIT_CORE_VERSION__ : "dev"}`;
+
+/** Lua's answer to the ready handshake (protocol §2.2). */
+export interface Handshake {
+  ok: boolean;
+  resource?: string;
+  /** Lua's protocol version; absent means 0 (a 0.4.0 nuikit.lua). */
+  protocol?: number;
+  /** Optional parts Lua provides: surfaces, states, theme, player, notify, prefs. */
+  capabilities?: string[];
+}
+let handshake: Handshake | null = null;
+
+/** The handshake reply, once Lua answered (null before, outside the game, or with the handshake off). */
+export function getHandshake(): Handshake | null {
+  return handshake;
+}
+
+/** The effective protocol version: the lower of ours and Lua's (§2.2). 0 until Lua answers. */
+export function protocolVersion(): number {
+  return Math.min(PROTOCOL, handshake?.protocol ?? 0);
+}
+
+/** Does this UI's Lua provide `capability`? (§2.2: absent means not provided.) */
+export function hasCapability(capability: string): boolean {
+  return !!handshake?.capabilities?.includes(capability);
+}
+
 if (!isBrowser() && typeof window !== "undefined") {
   setTimeout(() => {
     if (handshakeOff()) return;
-    fetchNui("nuikit:ready").catch(() => {
-      /* resource without nuikit.lua */
-    });
+    fetchNui("nuikit:ready", { protocol: PROTOCOL, client: CLIENT })
+      .then((res) => {
+        if (res && typeof res === "object") handshake = res as Handshake;
+      })
+      .catch(() => {
+        /* resource without nuikit.lua */
+      });
   }, 0);
 }
 
@@ -325,6 +361,7 @@ export async function closeNui(): Promise<void> {
 
 /** For tests: reset all module state. */
 export function __reset(): void {
+  handshake = null;
   handlers.clear();
   anyHandlers.clear();
   mocks.clear();

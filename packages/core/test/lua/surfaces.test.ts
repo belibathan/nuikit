@@ -165,6 +165,36 @@ describe.each([
     expect(ui.surfaces().hud.open).toBe(true);
   });
 
+  it("nuikit:ready answers with the protocol version and the capabilities Lua provides (§2.2)", async () => {
+    client = await createClient();
+    const themed = await client.start("themed", {
+      before: `
+        function GetResourceState(r) return r == 'nuikit' and 'started' or 'missing' end
+        function LoadResourceFile(r, f) return '.dark { --primary: red; }' end
+      `,
+    });
+    const reply = await themed.call("nuikit:ready", { protocol: 1, client: "nuikit-core@test" });
+    expect(reply).toMatchObject({ ok: true, resource: "themed", protocol: 1 });
+    expect([...reply.capabilities].sort()).toEqual(["notify", "prefs", "states", "surfaces", "theme"]);
+    // no nuikit resource → no theme; no bridge.lua → no player; a 0.4.0 page (empty request) still gets an answer
+    const bare = await client.start("bare", { before: `function GetResourceState() return 'missing' end` });
+    const old = await bare.call("nuikit:ready");
+    expect(old.protocol).toBe(1);
+    expect(old.capabilities).not.toContain("theme");
+    expect(old.capabilities).not.toContain("player");
+  });
+
+  it("NUI.open({ escape = 'ignore' }) keeps the UI open on Escape", async () => {
+    client = await createClient();
+    const ui = await client.start("ui");
+    await ui.run(`NUI.open({ escape = 'ignore' })`);
+    expect(await ui.call("nuikit:escape")).toEqual({ ok: false });
+    expect(await ui.run(`return NUI.isOpen()`)).toBe(true);
+    await ui.run(`NUI.close() NUI.open()`);
+    expect(await ui.call("nuikit:escape")).toEqual({ ok: true, closed: "main" });
+    expect(await ui.run(`return NUI.isOpen()`)).toBe(false);
+  });
+
   it("NUI.on still returns handler results and turns errors into { error }", async () => {
     client = await createClient();
     const ui = await client.start("ui");

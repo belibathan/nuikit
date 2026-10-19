@@ -101,7 +101,7 @@ describe("host: routing", () => {
     await shop.run(shopLua + " S:open({ items = 2 })");
     const t = tokenOf(host, "shop");
     host.messages.length = 0;
-    expect(await host.call("nuikit:host:call", { t, n: "nuikit:ready" })).toEqual({ ok: true, resource: "shop" });
+    expect(await host.call("nuikit:host:call", { t, n: "nuikit:ready" })).toMatchObject({ ok: true, resource: "shop", protocol: 1 });
     const surfaces = toModule(host, "shop").find((m) => m.action === "nuikit:surfaces");
     expect(surfaces.data.surfaces.shop).toMatchObject({ open: true, focused: true, data: { items: 2 } });
     expect(toModule(host, "shop").find((m) => m.action === "nuikit:theme")?.data).toMatch(/--primary/);
