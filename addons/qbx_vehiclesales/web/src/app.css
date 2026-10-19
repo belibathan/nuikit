@@ -1,0 +1,35 @@
+/* index.css is synced from the nuikit template (stock shadcn neutral theme). This adds a
+   transparent, unscrollable page and the contract's enter transition. */
+@import "./index.css";
+
+html,
+body {
+  background: transparent !important;
+  overflow: hidden;
+  user-select: none;
+}
+
+@keyframes contract-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.5rem) scale(0.98);
+  }
+}
+@keyframes backdrop-in {
+  from {
+    opacity: 0;
+  }
+}
+.contract-backdrop {
+  animation: backdrop-in 150ms ease-out;
+}
+.contract {
+  animation: contract-in 180ms ease-out;
+}
+
+/* The price field: no number spinners. */
+.price-input::-webkit-outer-spin-button,
+.price-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}

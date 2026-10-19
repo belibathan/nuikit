@@ -1,0 +1,320 @@
+/*
+ * nuikit_chat: a theme for the cfx `chat` resource, built on the shadcn tokens.
+ *
+ * Every colour comes from a --nk-* variable. The values below are the stock shadcn neutral
+ * (dark) theme; theme.js replaces them with your nuikit/theme.css at runtime. Only plain rgb()/
+ * rgba() reach the page (Chromium 103: no oklch(), no color-mix()).
+ *
+ * MIT, https://github.com/belibathan/nuikit
+ */
+
+:root {
+  --nk-background: rgb(10, 10, 10);
+  --nk-background-rgb: 10, 10, 10;
+  --nk-foreground: rgb(250, 250, 250);
+  --nk-foreground-rgb: 250, 250, 250;
+  --nk-card: rgb(23, 23, 23);
+  --nk-card-rgb: 23, 23, 23;
+  --nk-card-foreground: rgb(250, 250, 250);
+  --nk-popover: rgb(23, 23, 23);
+  --nk-popover-rgb: 23, 23, 23;
+  --nk-popover-foreground: rgb(250, 250, 250);
+  --nk-primary: rgb(229, 229, 229);
+  --nk-primary-rgb: 229, 229, 229;
+  --nk-primary-foreground: rgb(23, 23, 23);
+  --nk-muted: rgb(38, 38, 38);
+  --nk-muted-rgb: 38, 38, 38;
+  --nk-muted-foreground: rgb(161, 161, 161);
+  --nk-muted-foreground-rgb: 161, 161, 161;
+  --nk-accent: rgb(38, 38, 38);
+  --nk-accent-foreground: rgb(250, 250, 250);
+  --nk-destructive: rgb(255, 100, 103);
+  --nk-destructive-rgb: 255, 100, 103;
+  --nk-border: rgba(255, 255, 255, 0.1);
+  --nk-input: rgba(255, 255, 255, 0.15);
+  --nk-ring: rgb(115, 115, 115);
+  --nk-ring-rgb: 115, 115, 115;
+  --nk-radius: 0.625rem;
+  --nk-font-sans: system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --nk-font-mono: ui-monospace, "Cascadia Mono", Consolas, "Liberation Mono", monospace;
+
+  /* Meaning, not brand: these stay put whatever the theme (red stays red). */
+  --nk-success-rgb: 52, 211, 153;
+  --nk-warning-rgb: 251, 191, 36;
+  --nk-info-rgb: 96, 165, 250;
+}
+
+/* ── window ─────────────────────────────────────────────────────────────── */
+
+/* chat sets its own background inline; the bubbles carry the surface instead. */
+.chat-window {
+  background: transparent !important;
+  font-family: var(--nk-font-sans);
+}
+
+.chat-messages {
+  font-size: 1.6vh;
+  line-height: 1.4;
+  color: var(--nk-foreground);
+  text-shadow: none;
+  /* older messages fade out under the top edge */
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 1.75em);
+  padding-top: 1em;
+  box-sizing: border-box;
+}
+
+.chat-messages .msg {
+  margin: 0 0 0.35em;
+}
+/* chat gives multi-line messages a hanging indent; a bubble needs none (newlines still break) */
+.chat-messages .msg.multiline {
+  margin-left: 0;
+  text-indent: 0;
+}
+
+/* Messages with a script's own markup still read over the game. */
+.chat-messages .msg > span {
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+}
+
+/* ── templates ──────────────────────────────────────────────────────────── */
+
+.chat-messages .nk {
+  display: inline-block;
+  max-width: 100%;
+  box-sizing: border-box;
+  padding: 0.4em 0.7em;
+  border: 1px solid var(--nk-border);
+  border-radius: calc(var(--nk-radius) - 2px);
+  background: rgba(var(--nk-card-rgb), 0.86);
+  color: var(--nk-card-foreground);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+  text-shadow: none;
+  text-indent: 0; /* chat indents .multiline messages */
+  overflow-wrap: anywhere;
+  vertical-align: top;
+}
+
+.chat-messages .nk-author {
+  font-weight: 600;
+  margin-right: 0.45em;
+}
+
+.chat-messages .nk-text {
+  font-weight: 400;
+}
+
+/* print: console output */
+.chat-messages .nk-print {
+  background: rgba(var(--nk-background-rgb), 0.9);
+  font-family: var(--nk-font-mono);
+  font-size: 0.88em;
+  white-space: pre-wrap;
+}
+.chat-messages .nk-tag {
+  display: inline-block;
+  margin-right: 0.6em;
+  padding: 0 0.45em;
+  border-radius: calc(var(--nk-radius) - 4px);
+  background: var(--nk-muted);
+  color: var(--nk-muted-foreground);
+  font-family: var(--nk-font-sans);
+  font-size: 0.78em;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  line-height: 1.6;
+  text-transform: uppercase;
+  vertical-align: 0.1em;
+}
+
+/* notices: system / info / success / warning / error */
+.chat-messages .nk-note {
+  --nk-tone-rgb: var(--nk-muted-foreground-rgb);
+  display: inline-flex;
+  align-items: flex-start;
+  border-color: rgba(var(--nk-tone-rgb), 0.35);
+  background:
+    linear-gradient(rgba(var(--nk-tone-rgb), 0.12), rgba(var(--nk-tone-rgb), 0.12)),
+    rgba(var(--nk-card-rgb), 0.9);
+}
+.chat-messages .nk-info { --nk-tone-rgb: var(--nk-info-rgb); }
+.chat-messages .nk-success { --nk-tone-rgb: var(--nk-success-rgb); }
+.chat-messages .nk-warning { --nk-tone-rgb: var(--nk-warning-rgb); }
+.chat-messages .nk-error { --nk-tone-rgb: var(--nk-destructive-rgb); }
+
+.chat-messages .nk-icon {
+  flex: none;
+  width: 1.05em;
+  height: 1.05em;
+  margin: 0.17em 0.55em 0 -0.1em;
+  background: rgb(var(--nk-tone-rgb));
+  -webkit-mask: center / contain no-repeat;
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='16' rx='3'/%3E%3Cpath d='m8 10 2.5 2L8 14M13 14h3'/%3E%3C/svg%3E");
+}
+.chat-messages .nk-info .nk-icon {
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M12 11v5M12 8h.01'/%3E%3C/svg%3E");
+}
+.chat-messages .nk-success .nk-icon {
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='m8.5 12.5 2.5 2.5 4.5-5'/%3E%3C/svg%3E");
+}
+.chat-messages .nk-warning .nk-icon {
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M10.3 4.6 2.9 17.5A2 2 0 0 0 4.6 20.5h14.8a2 2 0 0 0 1.7-3L13.7 4.6a2 2 0 0 0-3.4 0Z'/%3E%3Cpath d='M12 10v3.5M12 17h.01'/%3E%3C/svg%3E");
+}
+.chat-messages .nk-error .nk-icon {
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='m9.5 9.5 5 5M14.5 9.5l-5 5'/%3E%3C/svg%3E");
+}
+
+/* join / quit: quiet pills */
+.chat-messages .nk-presence {
+  padding: 0.15em 0.7em 0.15em 0.6em;
+  border-radius: 999px;
+  background: rgba(var(--nk-card-rgb), 0.6);
+  color: var(--nk-muted-foreground);
+  font-size: 0.86em;
+}
+.chat-messages .nk-presence::before {
+  content: "";
+  display: inline-block;
+  width: 0.45em;
+  height: 0.45em;
+  margin-right: 0.5em;
+  border-radius: 50%;
+  vertical-align: 0.12em;
+  background: rgb(var(--nk-success-rgb));
+}
+.chat-messages .nk-quit::before {
+  background: rgb(var(--nk-destructive-rgb));
+}
+
+/* ^0–^9 colour codes, tuned to read on the card */
+.chat-window .color-0,
+.chat-window .color-7 { color: var(--nk-foreground); }
+.chat-window .color-1 { color: #f87171; }
+.chat-window .color-2 { color: #4ade80; }
+.chat-window .color-3 { color: #facc15; }
+.chat-window .color-4 { color: #60a5fa; }
+.chat-window .color-5 { color: #38bdf8; }
+.chat-window .color-6 { color: #c084fc; }
+.chat-window .color-8 { color: #ef4444; }
+.chat-window .color-9 { color: #f472b6; }
+
+/* ── input ──────────────────────────────────────────────────────────────── */
+
+.chat-input {
+  font-family: var(--nk-font-sans);
+  font-size: 1.6vh;
+  color: var(--nk-foreground);
+}
+
+/* the row holding the mode prefix and the textarea */
+.chat-input > div:first-child {
+  position: relative;
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  border: 1px solid var(--nk-input);
+  border-radius: var(--nk-radius);
+  background: rgba(var(--nk-card-rgb), 0.95) !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+  overflow: hidden;
+  transition: border-color 150ms, box-shadow 150ms;
+}
+.chat-input > div:first-child:focus-within {
+  border-color: var(--nk-ring);
+  box-shadow: 0 0 0 3px rgba(var(--nk-ring-rgb), 0.5), 0 6px 20px rgba(0, 0, 0, 0.35);
+}
+
+.chat-input .prefix {
+  position: static !important;
+  flex: none;
+  height: auto;
+  margin: 0 0 0 0.55em;
+  padding: 0.1em 0.5em;
+  border-radius: calc(var(--nk-radius) - 4px);
+  background: var(--nk-muted);
+  color: var(--nk-muted-foreground); /* a mode's own colour (inline) wins */
+  font-size: 0.72em;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  line-height: 1.5;
+  text-transform: uppercase;
+}
+.chat-input .prefix:empty {
+  display: none;
+}
+
+.chat-input textarea {
+  flex: 1;
+  display: block;
+  width: auto;
+  min-width: 0;
+  box-sizing: border-box; /* chat sizes it to scrollHeight + 2 */
+  margin: 0;
+  padding: 0.6em 0.75em;
+  border: 0;
+  outline: none;
+  resize: none;
+  background: transparent !important;
+  color: var(--nk-foreground);
+  caret-color: var(--nk-primary);
+  font: inherit;
+  line-height: 1.4;
+}
+.chat-input textarea::placeholder {
+  color: var(--nk-muted-foreground);
+}
+.chat-input textarea::selection {
+  background: rgba(var(--nk-primary-rgb), 0.3);
+}
+
+/* command suggestions */
+.chat-input .suggestions {
+  list-style: none;
+  margin: 0.4em 0 0;
+  padding: 0.3em;
+  box-sizing: border-box;
+  width: 100%;
+  border: 1px solid var(--nk-border);
+  border-radius: var(--nk-radius);
+  background: rgba(var(--nk-popover-rgb), 0.97) !important;
+  color: var(--nk-popover-foreground);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+  font-size: 0.95em;
+}
+.chat-input .suggestion {
+  margin: 0;
+  padding: 0.35em 0.55em;
+  border-radius: calc(var(--nk-radius) - 4px);
+}
+.chat-input .suggestion:first-child {
+  background: var(--nk-accent);
+  color: var(--nk-accent-foreground);
+}
+.chat-input .suggestion p {
+  margin: 0;
+  font-family: var(--nk-font-mono);
+  font-size: 0.95em;
+}
+.chat-input .suggestion .param {
+  margin-left: 0.4em;
+  color: var(--nk-muted-foreground);
+}
+.chat-input .suggestion .help {
+  display: block;
+  margin-top: 0.1em;
+  color: var(--nk-muted-foreground);
+  font-size: 0.86em;
+}
+.chat-input .disabled {
+  color: var(--nk-muted-foreground);
+  opacity: 0.6;
+}
+
+.chat-input .chat-hide-state {
+  margin: 0.4em 0 0 0.2em;
+  color: var(--nk-muted-foreground);
+  font-size: 0.8em;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
