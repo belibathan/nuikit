@@ -19,6 +19,11 @@ jobs:
       - run: pnpm build
       - run: pnpm typecheck
       - run: pnpm test
+      # Protocol conformance of every system and override (informational until they reach level 1).
+      - name: nuikit check
+        run: |
+          node packages/cli/dist/cli.js check systems
+          node packages/cli/dist/cli.js check addons
 
   chromium-103:
     name: Render in Chromium 103 (FiveM CEF)
