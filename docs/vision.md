@@ -81,6 +81,17 @@ protocol carries the platform.
    build and benchmark the host prototype. Decide on the host from the numbers.
 5. **Later:** Vue and Svelte bindings, DUI surfaces, gamepad navigation, the seller program built on `nuikit check`.
 
+## Status (Oct 19, 2026, `feat/platform`)
+
+- **Protocol v1:** written (`docs/protocol.md`) and fully implemented: versioned manifests and handshake with
+  capabilities, one Escape path, compiled themes with live reload, player prefs. `nuikit check` audits any
+  resource; every nuikit page is at level 3 and CI keeps it there.
+- **Tokens v1:** `docs/tokens.md`, a DTCG file and JSON Schema, `compileTheme` with contrast checks, one
+  distribution path (`nuikit theme reload` repaints every UI live).
+- **Host:** prototype works end to end (`docs/host.md`); benchmark in `bench/host/results.md`. The gain depends
+  on whether FiveM gives each NUI frame its own process: up to −44% memory and −51% main-thread work at 20 UIs
+  if so, about −5% memory (but half the JS heap) if not. Stays opt-in until that is measured in game.
+
 ## Risks, plainly
 
 - **Cfx could ship something like this.** Unlikely soon (they've never shipped a UI layer), but stay protocol-first
