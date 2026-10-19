@@ -5,7 +5,7 @@ lua54 'yes'
 name 'nuikit_hud'
 description 'nuikit HUD: vitals, needs, voice, money, job and vehicle, on Qbox, QBCore, ESX or standalone.'
 repository 'https://github.com/belibathan/nuikit'
-version '0.3.0'
+version '0.4.0'
 
 ui_page 'web/dist/index.html'
 

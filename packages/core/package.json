@@ -1,6 +1,6 @@
 {
   "name": "nuikit-core",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Typed, framework-agnostic NUI runtime for FiveM: fetchNui, events, focus, and a browser devtools that fakes the game.",
   "author": "belibathan (https://github.com/belibathan)",
   "license": "MIT",
