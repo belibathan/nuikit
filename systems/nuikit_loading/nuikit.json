@@ -1,0 +1,4 @@
+{
+  "lua": [],
+  "components": ["badge", "button", "card", "progress", "separator", "spinner"]
+}

@@ -47,7 +47,9 @@ for (const name of fs.existsSync(path.join(root, "addons")) ? fs.readdirSync(pat
   if (!fs.existsSync(manifestPath)) continue;
   const { target } = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
   const build = path.join(dir, "web", "build");
-  if (!fs.existsSync(path.join(build, "index.html"))) throw new Error(`addons/${name}: web/build is missing; build it first`);
+  // The entry keeps the replaced resource's ui_page name (index.html, or e.g. ui.html for qbx_scoreboard).
+  const built = fs.existsSync(build) && fs.readdirSync(build).some((f) => f.endsWith(".html"));
+  if (!built) throw new Error(`addons/${name}: web/build is missing; build it first`);
   const rel = path.join(target.resource, target.path);
   for (const base of [path.join(stage, "overrides"), path.join(out, "addons", name)]) {
     fs.cpSync(build, path.join(base, rel), { recursive: true });

@@ -1,0 +1,56 @@
+/* index.css is synced from the nuikit template (stock shadcn theme). This adds the loading
+   screen's own look. Unlike in-game overlays, a loading screen is opaque. */
+@import "./index.css";
+
+html {
+  /* 16px at 1080p, scaling with the screen like the game's own UI */
+  font-size: max(12px, 1.4815vh);
+}
+
+html,
+body {
+  margin: 0;
+  overflow: hidden;
+  background: var(--background);
+  cursor: default;
+}
+
+.nk-loading {
+  font-feature-settings: "cv11", "ss01";
+}
+
+/* Theme backdrop when no images are configured: soft light from the theme's own colors. */
+.nk-glow {
+  background:
+    radial-gradient(60% 70% at 85% 10%, rgba(var(--primary-rgb), 0.22) 0%, transparent 70%),
+    radial-gradient(50% 60% at 10% 100%, rgba(var(--chart-2-rgb), 0.2) 0%, transparent 70%),
+    var(--background);
+}
+
+.nk-slide {
+  opacity: 0;
+  transform: scale(1.04);
+  transition: opacity 1.6s ease;
+}
+.nk-slide-on {
+  opacity: 1;
+  animation: nk-zoom 24s ease-out forwards;
+}
+@keyframes nk-zoom {
+  from { transform: scale(1.04); }
+  to { transform: scale(1.14); }
+}
+
+/* Keeps text legible over any image: dark at the bottom (status) and top (name). */
+.nk-scrim {
+  background:
+    linear-gradient(to top, rgba(var(--background-rgb), 0.96) 0%, rgba(var(--background-rgb), 0.55) 38%, rgba(var(--background-rgb), 0.15) 65%, rgba(var(--background-rgb), 0.55) 100%);
+}
+
+.nk-fade {
+  animation: nk-fade 0.6s ease both;
+}
+@keyframes nk-fade {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: none; }
+}

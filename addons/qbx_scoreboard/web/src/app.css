@@ -1,0 +1,16 @@
+/* index.css is synced from the nuikit template (stock shadcn theme). This adds a transparent,
+   unscrollable page sized like the game's own UI. */
+@import "./index.css";
+
+html {
+  /* 16px at 1080p, scaling with the screen like qbx_scoreboard's vh-based layout */
+  font-size: max(12px, 1.4815vh);
+}
+
+html,
+body {
+  margin: 0;
+  background: transparent !important;
+  overflow: hidden;
+  user-select: none;
+}

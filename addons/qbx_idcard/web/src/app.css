@@ -1,0 +1,41 @@
+/* index.css is synced from the nuikit template (stock shadcn theme). This adds a transparent,
+   unscrollable page sized like the game's own UI, and the card's finishing touches. */
+@import "./index.css";
+
+html {
+  /* 16px at 1080p, scaling with the screen like qbx_idcard's vh-based layout */
+  font-size: max(12px, 1.4815vh);
+}
+
+html,
+body {
+  margin: 0;
+  background: transparent !important;
+  overflow: hidden;
+  user-select: none;
+}
+
+/* The card type's colour (config/shared.lua `background`), as "r, g, b" in --nk-accent. */
+.nk-tint {
+  background:
+    linear-gradient(90deg, rgba(var(--nk-accent), 0.95), rgba(var(--nk-accent), 0.4)) top / 100% 4px no-repeat,
+    radial-gradient(120% 90% at 100% 0%, rgba(var(--nk-accent), 0.2) 0%, transparent 62%);
+}
+.nk-chip {
+  background: rgba(var(--nk-accent), 0.14);
+  border-color: rgba(var(--nk-accent), 0.35);
+  color: rgb(var(--nk-accent));
+}
+
+.nk-signature {
+  font-family: "Brush Script MT", "Segoe Script", "Snell Roundhand", cursive;
+  font-style: italic;
+}
+
+.nk-enter {
+  animation: nk-enter 0.28s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+@keyframes nk-enter {
+  from { opacity: 0; transform: translateX(24px); }
+  to { opacity: 1; transform: none; }
+}
