@@ -54,7 +54,7 @@ write(
   `<!doctype html>
 <html lang="en" class="dark">
   <head>
-    <meta charset="UTF-8" />
+    <meta charset="UTF-8" />${addon ? '\n    <meta name="nuikit-handshake" content="off" />' : ""}
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>${name}</title>
   </head>
