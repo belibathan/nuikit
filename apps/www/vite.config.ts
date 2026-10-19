@@ -1,3 +1,4 @@
+import fs from "node:fs";
 import path from "node:path";
 import { nuikit } from "vite-plugin-nuikit";
 import tailwindcss from "@tailwindcss/vite";
@@ -6,9 +7,10 @@ import { defineConfig } from "vite";
 
 const registry = path.resolve(__dirname, "../../registry/nuikit");
 const vendor = path.resolve(__dirname, "../../vendor/shadcn/ui");
-const fromRegistry = ["vital", "key-hint", "task-progress", "nui-menu", "radial-menu", "speedometer", "nui-toaster"];
+const names = (dir: string) => fs.readdirSync(dir).filter((f) => f.endsWith(".tsx")).map((f) => f.slice(0, -4));
+const fromRegistry = names(`${registry}/ui`);
 // Stock shadcn components, unmodified (see vendor/shadcn/README.md).
-const fromShadcn = ["badge", "button", "card", "item", "kbd", "progress", "separator", "sonner", "textarea"];
+const fromShadcn = names(vendor);
 
 export default defineConfig({
   // Dogfood: this site's CSS goes through the same Chromium 103 lowering as your NUI.

@@ -6,7 +6,7 @@
   "scripts": {
     "build": "pnpm -r --filter \"./packages/**\" build && pnpm registry:build && pnpm --filter www build && pnpm build:systems",
     "dev": "pnpm --filter www dev",
-    "test": "pnpm -r --filter \"./packages/**\" test",
+    "test": "pnpm -r --filter \"./packages/**\" --filter www test",
     "typecheck": "pnpm -r --filter \"./packages/**\" --filter www --filter \"./systems/**\" typecheck",
     "registry:build": "shadcn build -o apps/www/public/r",
     "proof": "pnpm --filter cef-proof proof",
