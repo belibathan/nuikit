@@ -25,7 +25,7 @@ const targets = [
   {
     dir: "packages/create-nuikit/template",
     lua: ["nuikit.lua"],
-    components: ["badge", "button", "card", "item", "kbd", "progress", "separator", "sonner", "vital", "key-hint", "nui-menu", "nui-toaster"],
+    components: ["badge", "button", "checkbox", "kbd", "progress", "scroll-area", "separator", "sonner", "panel", "menu-row", "meter", "stat", "hud-chip", "key-hint", "nui-toaster"],
     hooks: ["use-nui-store"],
   },
 ];
