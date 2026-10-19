@@ -3,6 +3,7 @@
  * Named hues map to fixed colours so meaning survives (red stays red); 'dark.*' and missing
  * values follow the theme. Raw CSS colours pass through.
  */
+// nuikit-ignore-start color/hardcoded: Mantine's palette, the colour names ox_lib sends
 export const HUES: Record<string, string> = {
   gray: "#868e96",
   red: "#fa5252",
@@ -18,6 +19,7 @@ export const HUES: Record<string, string> = {
   yellow: "#fab005",
   orange: "#fd7e14",
 };
+// nuikit-ignore-end
 
 export function schemeColor(scheme: string | undefined, fallback = "var(--primary)"): string {
   if (!scheme) return fallback;

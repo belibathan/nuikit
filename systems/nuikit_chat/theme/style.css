@@ -194,6 +194,7 @@
 }
 
 /* ^0–^9 colour codes, tuned to read on the card */
+/* nuikit-ignore-start color/hardcoded: GTA's chat colour codes mean fixed hues */
 .chat-window .color-0,
 .chat-window .color-7 { color: var(--nk-foreground); }
 .chat-window .color-1 { color: #f87171; }
@@ -204,6 +205,7 @@
 .chat-window .color-6 { color: #c084fc; }
 .chat-window .color-8 { color: #ef4444; }
 .chat-window .color-9 { color: #f472b6; }
+/* nuikit-ignore-end */
 
 /* ── input ──────────────────────────────────────────────────────────────── */
 

@@ -376,6 +376,7 @@ function RowField({ row, value, invalid, onChange }: { row: Row; value: any; inv
           <input
             type="color"
             disabled={row.disabled}
+            // nuikit-ignore-next-line color/hardcoded: <input type=color> needs a hex value when the field is empty
             value={toHex(value) ?? "#000000"}
             onChange={(e) => onChange(e.target.value)}
             className="ox-swatch size-9 shrink-0 cursor-pointer rounded-md border bg-transparent p-1.5"
@@ -476,7 +477,7 @@ function toHex(v: string | null): string | null {
 }
 
 function formatColor(hex: string, format = "hex"): string {
-  const h = toHex(hex) ?? "#000000";
+  const h = toHex(hex) ?? "#000000"; // nuikit-ignore color/hardcoded: colour field value, not UI
   const r = parseInt(h.slice(1, 3), 16);
   const g = parseInt(h.slice(3, 5), 16);
   const b = parseInt(h.slice(5, 7), 16);
