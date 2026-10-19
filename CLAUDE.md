@@ -5,7 +5,7 @@ in FiveM's NUI (Chromium 103) and are themed by one server-wide TweakCN theme. R
 anything, then read `docs/design.md`.
 
 Current release: **0.4.0** (npm `nuikit-core`, `vite-plugin-nuikit`, `create-nuikit`; GitHub release
-`v0.4.0` with `nuikit.zip`). Active work: `docs/next/blocks.md`.
+`v0.4.0` with `nuikit.zip`). Direction: `docs/vision.md` (read first). Active work: `docs/next/blocks.md`.
 
 ## Map
 
@@ -47,7 +47,7 @@ New system or override: `node scripts/new-system.mjs systems/nuikit_x "Title"` o
 
 ## Hard rules
 
-- **Chromium 103.** No `color-mix()`/`oklch` in inline styles (the plugin only lowers stylesheets). Nothing
+- **Chromium 103** (until Chromium 144, on canary since Oct 2026, reaches the release channel; see `docs/vision.md`). No `color-mix()`/`oklch` in inline styles (the plugin only lowers stylesheets). Nothing
   essential on `:has()` or `@container` (ignored; the build warns). No individual `scale`/`translate`
   properties in custom CSS; animations that use `transform` break centred dialogs. Test at 1920×1080,
   2560×1440 and 1280×720.
