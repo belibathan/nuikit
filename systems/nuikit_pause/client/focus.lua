@@ -32,7 +32,7 @@ end
 --- Why the camera can't focus right now, or nil.
 function Focus.unavailable()
   if Config.views and Config.views.preview == false then return 'turned off in config' end
-  if IsEntityDead(PlayerPedId()) then return 'dead' end
+  if Camera.down() then return 'dead' end
   return nil
 end
 

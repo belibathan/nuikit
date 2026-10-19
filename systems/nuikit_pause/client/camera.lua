@@ -14,8 +14,9 @@
 --     cut to the same view: seamless. Claiming while another owner holds the camera hands over: the
 --     new camera takes the screen first, then the old one is destroyed, with no blend back to the game
 --     in between. The previous owner's onLost('handover') runs.
---   * The gameplay camera comes back on release, when this resource stops, and when the player dies
---     (onLost('dead') runs). World streaming (SetFocusPosAndVel) is cleared with the camera.
+--   * The gameplay camera comes back on release, when this resource stops, and when the player goes
+--     down (onLost('dead') runs): dead to GTA, or down to the death system (Qbox's last stand revives
+--     the ped, so IsEntityDead alone turns false again). World streaming (SetFocusPosAndVel) is cleared with the camera.
 
 Camera = {}
 
@@ -37,6 +38,14 @@ local function lost(c, reason)
   end
 end
 
+--- The player is down: dead to GTA, or dead / in last stand to the death system (nuikit_death sets
+--- the client-wide 'dead' state).
+---@return boolean
+function Camera.down()
+  if IsEntityDead(PlayerPedId()) then return true end
+  return NUI ~= nil and NUI.getState ~= nil and NUI.getState('dead') and true or false
+end
+
 --- Watch for the things that must take the camera back without the owner asking.
 local watching = false
 local function watch()
@@ -44,7 +53,7 @@ local function watch()
   watching = true
   CreateThread(function()
     while claim do
-      if IsEntityDead(PlayerPedId()) then
+      if Camera.down() then
         local c = claim
         Camera.release(c.id, { instant = true })
         lost(c, 'dead')

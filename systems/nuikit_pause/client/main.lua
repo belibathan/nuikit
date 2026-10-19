@@ -124,13 +124,20 @@ local function teardown(instant)
   blur(false)
 end
 
-function Pause.close()
+---@param instant? boolean cut straight back to the game (the player went down) instead of gliding
+function Pause.close(instant)
   pause:close()
   quietUntil = GetGameTimer() + QUIET_MS
   if wasOpen then
     wasOpen = false
-    teardown(false)
+    teardown(instant == true)
   end
+end
+
+--- Dead, or down in last stand: the death screen owns the screen, so the menu has to go.
+---@return boolean
+function Pause.down()
+  return Camera.down() or NUI.player.get().dead == true
 end
 
 --- Switch views. Home, Key bindings and Info share the focus camera on the player; the map has
@@ -157,12 +164,9 @@ function Pause.setView(next)
   return { ok = true, preview = Focus.isActive() }
 end
 
--- The focus camera only gives up if the player dies: blur instead.
+-- The focus camera only gives up when the player goes down, and the menu closes with it.
 Focus.onLost = function()
-  if pause:isOpen() and view ~= "map" then
-    blur(true)
-    pause:update(payload())
-  end
+  if pause:isOpen() then Pause.close(true) end
 end
 
 function Pause.isOpen()
@@ -175,6 +179,8 @@ function Pause.tick()
   if pause:isOpen() then
     wasOpen = true
     SetPauseMenuActive(false)
+    -- blockedBy only stops it opening: going down with it open (any view) closes it, cameras and all
+    if Pause.down() then Pause.close(true) end
     return
   end
   if wasOpen then

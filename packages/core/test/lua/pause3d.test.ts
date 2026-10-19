@@ -312,15 +312,41 @@ describe("systems/nuikit_pause: the bigger menu", () => {
     expect(await pause.run(`return Camera.isActive()`)).toBe(false);
     expect(await pause.run(`return RENDER[#RENDER]`)).toBe(false);
     expect(await pause.run(`return Focus.isActive()`)).toBe(false);
-    expect(await pause.run(`return BLUR`)).toBe(1); // Home falls back to the blur
+    expect(await pause.run(`return Pause.isOpen()`)).toBe(false); // the death screen owns the screen now
+    expect(await pause.run(`return BLUR`)).toBe(0);
 
-    await pause.run(`DEAD = false Pause.close() NOW = NOW + 1000`);
+    await pause.run(`DEAD = false NOW = NOW + 1000`);
     await pause.run(press);
     await pause.call("pause:view", { view: "map" });
     expect(await pause.run(`return Camera.owner()`)).toBe("map");
     await pause.run(`TriggerEvent('onClientResourceStop', GetCurrentResourceName())`);
     expect(await pause.run(`return Camera.isActive()`)).toBe(false);
     expect(await pause.run(`return RENDER[#RENDER]`)).toBe(false);
+  });
+
+  it("going down with the map open (Qbox last stand: the ped is alive again) closes the menu and gives the camera back", async () => {
+    client = await createClient();
+    const pause = await client.start("nuikit_pause", { before: natives, scripts });
+    await pause.run(press);
+    await pause.call("pause:view", { view: "map" });
+    expect(await pause.run(`return Camera.owner()`)).toBe("map");
+    // nuikit_death sets the client-wide state; GTA doesn't think the ped is dead
+    await pause.run(`NUI.state('dead', 'laststand')`);
+    await pause.run(`Pause.tick()`);
+    expect(await pause.run(`return Pause.isOpen()`)).toBe(false);
+    expect(await pause.run(`return Camera.isActive()`)).toBe(false);
+    expect(await pause.run(`return RENDER[#RENDER]`)).toBe(false);
+    expect(await pause.run(`return Map3D.isActive()`)).toBe(false);
+    expect(client.focused()).toBe(null);
+    // nothing brings the focus camera back while down: not the inventory, not Esc
+    expect(await pause.run(`return Focus.start()`)).toBe(false);
+    await pause.run(`NOW = NOW + 1000 ${press}`);
+    expect(await pause.run(`return Pause.isOpen()`)).toBe(false);
+
+    await pause.run(`NUI.state('dead', false) NOW = NOW + 1000`);
+    await pause.run(press);
+    expect(await pause.run(`return Pause.isOpen()`)).toBe(true);
+    expect(await pause.run(`return Camera.owner()`)).toBe("focus");
   });
 
   it("is flat for reduced motion or Config.camera = false: no scripted cameras, Home blurs, Map is GTA's", async () => {
