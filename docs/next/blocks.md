@@ -12,6 +12,35 @@ and matches the server theme without designing anything:
 
 Read `CLAUDE.md` and `docs/design.md` first. Reference implementation: `systems/nuikit_pause`.
 
+## Part 0: the theme engine (before components)
+
+Today a theme is shadcn's ~30 CSS variables, usually pasted from TweakCN. That covers surfaces, text,
+primary, radius and fonts, but not what a game UI needs, so UIs hard-code the rest (success/warning
+greens and ambers in notifications and inventory, the 45% black behind HUD chips, vitals guessing which
+`chart-*` means health). Pasted themes are never checked, and each kind of UI loads the theme its own
+way (message, cross-resource fetch, loading-screen handover, chat script). TweakCN stays a convenient
+editor; the standard is ours.
+
+1. **Token contract v1** (`docs/design.md`, versioned): shadcn's tokens plus nuikit semantic tokens,
+   each with a derived default so any plain shadcn theme still works:
+   `--success` `--warning` `--info` (status), `--hud` / `--hud-foreground` (surfaces drawn on the game),
+   `--vital-health` `--vital-armor` `--vital-hunger` `--vital-thirst` `--vital-stress` (default to
+   `chart-*`), `--nk-scale` (UI size multiplier), `--nk-motion` (on/off). Kit utilities and components read
+   only these, so no UI hard-codes a colour.
+2. **Theme compiler** in `nuikit-core` (`compileTheme(css) → { vars, warnings }`), used everywhere a theme
+   is applied: parse any shadcn/TweakCN paste, lower oklch, fill derived tokens, force the dark set for
+   in-game use, and check contrast (foreground on popover/card ≥ 4.5:1, primary-foreground on primary,
+   HUD text on `--hud`), returning warnings. Unit-tested against a set of reference themes.
+3. **One distribution path:** the `nuikit` resource compiles `theme.css` at start, logs the warnings in
+   the server console, and publishes the compiled tokens (GlobalState) to every nuikit UI and override.
+   `nuikit theme reload` re-reads the file and repaints every open UI live, with no restarts.
+4. **Player preferences** (optional, per player via KVP): UI scale, reduced motion, high contrast. These
+   are accessibility, never a different theme.
+5. **Theme studio on the site:** paste a TweakCN/shadcn theme or tweak tokens, see the real kit screens
+   (HUD, pause, inventory, ox_lib menus) update live, read the contrast warnings, download `theme.css`.
+6. **CI:** render the key screens with 4 reference themes (stock neutral, a high-chroma one, a light-mode
+   paste, a low-contrast one) and fail on contrast regressions.
+
 ## Part A: finalize 0.4 (small, first)
 
 - [ ] `create-nuikit` template: rebuild its demo UI (`packages/create-nuikit/template/web/src/App.tsx`) on the
@@ -86,7 +115,7 @@ includes the Lua side (`client/main.lua` with `NUI.surface` and example events).
 
 ## Order and acceptance
 
-1. Part A, then `panel`, `menu-row`, `stat`, `meter`, `hud-chip` (most blocks need them), then the rest of B.
+1. Part 0, then Part A, then `panel`, `menu-row`, `stat`, `meter`, `hud-chip` (most blocks need them), then the rest of B.
 2. Rebuild `nuikit_pause` and `nuikit_hud` on the new components as the proof, then the blocks, then the
    other systems and overrides where it simplifies them (overrides must keep their protocol behaviour; re-run
    their POST checks).
