@@ -166,11 +166,7 @@
   }
 }
 
-/*
- * nuikit kit layer: the sizing, spacing and surface rules every nuikit UI shares (docs/design.md).
- * Colours always come from the theme above; this only fixes proportions so every screen on the
- * server feels like one product.
- */
+/* NUI scale: the kit is designed at 1080p and grows with the game's resolution (docs/design.md). */
 @layer base {
   /* 1rem = 16px at 1080p, scaling with the game's resolution (21px at 1440p, 32px at 4K),
      times --nk-scale (the theme's UI size × the player's UI scale preference). */
@@ -180,6 +176,13 @@
     -webkit-font-smoothing: antialiased;
   }
 }
+
+/*
+ * nuikit kit utilities: the sizing, spacing and surface rules every nuikit UI shares (docs/design.md).
+ * Colours always come from the theme; this only fixes proportions so every screen on the server
+ * feels like one product. Single source: `pnpm sync` inlines it into every index.css, and the site
+ * imports it directly. Never redefine an nk-* name in a UI.
+ */
 
 /* Floating panel: menus, inventories, dialogs, cards on top of the game. */
 @utility nk-panel {
@@ -209,6 +212,42 @@
   gap: 0.5rem;
   padding: 0.75rem 1rem;
   border-top: 1px solid var(--border);
+}
+/* Two-row panel header: a title row (nk-panel-title-row) above tabs, a search or a meter. */
+@utility nk-panel-header-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  text-align: left;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border);
+}
+/* The title row of a header: icon, title, then meta and actions pushed right. 28px tall so a
+   ghost icon button fits without changing the header's height. */
+@utility nk-panel-title-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 1.75rem;
+}
+/* Form field inside a panel: a label row above its control (slider, stepper, input, swatches). */
+@utility nk-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+/* The field's label row: name, an optional hint, then the value and a reset button on the right
+   (give that group ml-auto). 24px tall, so an icon-xs reset button never moves it. */
+@utility nk-field-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+  min-height: 1.5rem;
+  font-size: 0.75rem;
+  line-height: 1rem;
+  font-weight: 500;
 }
 /* Title inside a panel header. */
 @utility nk-title {
@@ -290,6 +329,71 @@
 /* Distance from the screen edge for anything anchored to it. */
 @utility nk-edge {
   --nk-edge: 1.5rem;
+}
+/*
+ * Anchors: pin an element to a corner or edge of the screen, --nk-edge in (1.5rem unless an
+ * ancestor sets it). Absolute, so put them inside the full-screen root. The edge-centred ones
+ * centre with auto margins, not a transform, so nk-enter and dialogs never fight over it.
+ */
+@utility nk-anchor-tl {
+  position: absolute;
+  top: var(--nk-edge, 1.5rem);
+  left: var(--nk-edge, 1.5rem);
+}
+@utility nk-anchor-tr {
+  position: absolute;
+  top: var(--nk-edge, 1.5rem);
+  right: var(--nk-edge, 1.5rem);
+}
+@utility nk-anchor-bl {
+  position: absolute;
+  bottom: var(--nk-edge, 1.5rem);
+  left: var(--nk-edge, 1.5rem);
+}
+@utility nk-anchor-br {
+  position: absolute;
+  bottom: var(--nk-edge, 1.5rem);
+  right: var(--nk-edge, 1.5rem);
+}
+@utility nk-anchor-t {
+  position: absolute;
+  top: var(--nk-edge, 1.5rem);
+  left: 0;
+  right: 0;
+  width: max-content;
+  margin-inline: auto;
+}
+@utility nk-anchor-b {
+  position: absolute;
+  bottom: var(--nk-edge, 1.5rem);
+  left: 0;
+  right: 0;
+  width: max-content;
+  margin-inline: auto;
+}
+@utility nk-anchor-l {
+  position: absolute;
+  left: var(--nk-edge, 1.5rem);
+  top: 0;
+  bottom: 0;
+  height: max-content;
+  margin-block: auto;
+}
+@utility nk-anchor-r {
+  position: absolute;
+  right: var(--nk-edge, 1.5rem);
+  top: 0;
+  bottom: 0;
+  height: max-content;
+  margin-block: auto;
+}
+/*
+ * A floating menu that opens beside a point (the target eye, the cursor, a row) lines its first
+ * row up with that point: place the panel's top on the point, then pull it up by the 1px border,
+ * the 8px nk-panel-body padding and half a 40px nk-row.
+ */
+@utility nk-first-row {
+  margin-top: calc(-1px - 0.5rem - 1.25rem);
 }
 /* The one open animation. --nk-motion: 0 (theme or the player's reduced-motion pref) skips it. */
 @utility nk-enter {

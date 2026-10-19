@@ -5,6 +5,7 @@
 //   registry/nuikit/*                 → web/src/components/ui, web/src/hooks
 //   vendor/shadcn/colors/neutral.json → web/src/index.css (stock shadcn neutral theme)
 //   nuikit-core compileTheme()        → web/src/index.css (nuikit token defaults; build core first)
+//   packages/create-nuikit/kit.css    → web/src/index.css (the nk-* kit utilities)
 //   nuikit-core fxserver-compiler.js  → server/compiler.js (nuikit.json "compiler": true)
 // Copies are committed so each resource is complete on its own (you own the components, as with
 // shadcn). Never edit the copies here; edit the sources and run `pnpm sync`.
@@ -63,7 +64,8 @@ const nuikitTokens = (mode) => {
 const css = fs
   .readFileSync(path.join(root, "packages/create-nuikit/index.css.tpl"), "utf8")
   .replace("/* {{theme}} */", [block(":root", cssVars.light), block(".dark", cssVars.dark)].join("\n\n"))
-  .replace("/* {{tokens}} */", [block(":root", nuikitTokens("light")), block(".dark", nuikitTokens("dark"))].join("\n\n"));
+  .replace("/* {{tokens}} */", [block(":root", nuikitTokens("light")), block(".dark", nuikitTokens("dark"))].join("\n\n"))
+  .replace("/* {{kit}} */", fs.readFileSync(path.join(root, "packages/create-nuikit/kit.css"), "utf8").trimEnd());
 
 for (const t of targets) {
   const copy = (from, to) => {
