@@ -169,7 +169,7 @@ local function loop()
     SetCamCoord(cam, ex, ey, ez)
     SetCamRot(cam, cur.pitch, 0.0, cur.heading, 2)
     SetCamFov(cam, cur.fov)
-    SetFocusPosAndVel(cur.x, cur.y, cur.z, 0.0, 0.0, 0.0)
+    Camera.stream(cur.x, cur.y, cur.z)
     local ped = PlayerPedId()
     tidyWorld(ped)
     -- pins every frame they move; the slower panel text a few times a second
@@ -218,9 +218,20 @@ function Map3D.start()
     pitch = cfg.startPitch or -60.0,
     heading = cur.heading,
   }
-  cam = CreateCamWithParams('DEFAULT_SCRIPTED_CAMERA', gc.x, gc.y, gc.z, gr.x, gr.y, gr.z, cur.fov, false, 2)
-  SetCamActive(cam, true)
-  RenderScriptCams(true, false, 0, true, false)
+  -- the camera service starts it on the current view and takes it back on death
+  cam = Camera.claim({
+    id = 'map',
+    fov = cur.fov,
+    onLost = function()
+      -- the focus camera took over (or the player died): the map's own effects go with it
+      active, cam = false, nil
+      if timecycle then
+        ClearTimecycleModifier()
+        timecycle = false
+      end
+    end,
+  })
+  Camera.stream(goal.x, goal.y, goal.z) -- start loading the world where the map is headed
   if cfg.timecycle and cfg.timecycle ~= '' then
     SetTimecycleModifier(cfg.timecycle)
     SetTimecycleModifierStrength(1.0)
@@ -238,10 +249,9 @@ function Map3D.stop(mode)
   if not active then return end
   active = false
   if mode == true then mode = 'instant' end
-  if mode ~= 'handover' then RenderScriptCams(false, mode ~= 'instant', mode == 'instant' and 0 or 600, true, false) end
-  if cam then DestroyCam(cam, false) end
+  -- the service clears world streaming with the camera (or when the focus camera takes over)
+  if mode ~= 'handover' then Camera.release('map', { instant = mode == 'instant' }) end
   cam = nil
-  ClearFocus()
   if timecycle then
     ClearTimecycleModifier()
     timecycle = false

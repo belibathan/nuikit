@@ -3,7 +3,7 @@ import { afterEach, describe, expect, it } from "vitest";
 import { createClient } from "./harness";
 
 const PAUSE = fileURLToPath(new URL("../../../../systems/nuikit_pause/", import.meta.url));
-const scripts = [PAUSE + "config.lua", "bridge.lua", PAUSE + "client/map3d.lua", PAUSE + "client/focus.lua", PAUSE + "client/keys.lua", PAUSE + "client/main.lua", PAUSE + "client/inventory.lua"];
+const scripts = [PAUSE + "config.lua", "bridge.lua", PAUSE + "client/camera.lua", PAUSE + "client/map3d.lua", PAUSE + "client/focus.lua", PAUSE + "client/keys.lua", PAUSE + "client/main.lua", PAUSE + "client/inventory.lua"];
 let client: Awaited<ReturnType<typeof createClient>>;
 afterEach(() => client?.close());
 
@@ -37,7 +37,6 @@ const natives = `
   function GetEntityHealth() return 200 end
   function GetEntityMaxHealth() return 200 end
   function GetPedArmour() return 0 end
-  function IsEntityDead() return false end
   function NetworkIsPlayerTalking() return false end
   function IsPauseMenuActive() return false end
   function IsNuiFocused() return false end
@@ -85,6 +84,12 @@ const natives = `
   function SetCamRot() end
   function RenderScriptCams(on) RENDER[#RENDER + 1] = on end
   function ClearFocus() FOCUS = FOCUS + 1 end
+  STREAM = nil
+  function SetFocusPosAndVel(x, y, z) STREAM = { x, y, z } end
+  function DoesCamExist(c) return c ~= nil end
+  DEAD = false
+  function IsEntityDead() return DEAD end
+  STOP_HANDLERS = {}
   function SetTimecycleModifier() end
   function ClearTimecycleModifier() end
   -- picking
@@ -275,6 +280,68 @@ describe("systems/nuikit_pause: the bigger menu", () => {
     // the pause menu's own framing is untouched by the inventory's
     await pause.run(press);
     expect(await pause.run(`return Focus.state().frame.x`)).toBeCloseTo(0.36, 6);
+  });
+
+  it("the camera service hands over between owners, streams with the claim and always gives the camera back", async () => {
+    client = await createClient();
+    const pause = await client.start("nuikit_pause", { before: natives, scripts });
+    await pause.run(`LOST = {} Camera.claim({ id = 'a', onLost = function(r) LOST[#LOST + 1] = 'a:' .. r end }) Camera.stream(1, 2, 3)`);
+    expect(await pause.run(`return Camera.owner()`)).toBe("a");
+    expect(await pause.run(`return STREAM[1]`)).toBe(1);
+    // b takes over: a's camera goes, a's streaming is cleared, a hears about it; nothing blended back
+    const renders = await pause.run<number>(`return #RENDER`);
+    await pause.run(`Camera.claim({ id = 'b' })`);
+    expect(await pause.run(`return Camera.owner()`)).toBe("b");
+    expect(await pause.run(`return LOST[1]`)).toBe("a:handover");
+    expect(await pause.run(`return FOCUS`)).toBe(1);
+    expect(await pause.run(`return RENDER[${renders} + 1]`)).toBe(true);
+    // only the owner can release
+    expect(await pause.run(`return Camera.release('a')`)).toBe(false);
+    expect(await pause.run(`return Camera.release('b')`)).toBe(true);
+    expect(await pause.run(`return RENDER[#RENDER]`)).toBe(false);
+    expect(await pause.run(`return Camera.isActive()`)).toBe(false);
+  });
+
+  it("the camera comes back when the player dies, and when the resource stops", async () => {
+    client = await createClient();
+    const pause = await client.start("nuikit_pause", { before: natives, scripts });
+    await pause.run(press);
+    expect(await pause.run(`return Camera.owner()`)).toBe("focus");
+    // the service's watch thread is the last one created: run one pass of it as the player dies
+    await pause.run(`DEAD = true THREADS[#THREADS]()`);
+    expect(await pause.run(`return Camera.isActive()`)).toBe(false);
+    expect(await pause.run(`return RENDER[#RENDER]`)).toBe(false);
+    expect(await pause.run(`return Focus.isActive()`)).toBe(false);
+    expect(await pause.run(`return BLUR`)).toBe(1); // Home falls back to the blur
+
+    await pause.run(`DEAD = false Pause.close() NOW = NOW + 1000`);
+    await pause.run(press);
+    await pause.call("pause:view", { view: "map" });
+    expect(await pause.run(`return Camera.owner()`)).toBe("map");
+    await pause.run(`TriggerEvent('onClientResourceStop', GetCurrentResourceName())`);
+    client.flush?.();
+    expect(await pause.run(`return Camera.isActive()`)).toBe(false);
+    expect(await pause.run(`return RENDER[#RENDER]`)).toBe(false);
+  });
+
+  it("is flat for reduced motion or Config.camera = false: no scripted cameras, Home blurs, Map is GTA's", async () => {
+    client = await createClient();
+    const pause = await client.start("nuikit_pause", { before: natives, scripts });
+    await pause.run(`NUI.prefs.set({ reducedMotion = true })`);
+    await pause.run(press);
+    expect(await pause.run(`return Camera.isActive()`)).toBe(false);
+    expect(await pause.run(`return BLUR`)).toBe(1);
+    const data = pause.surfaces().pause.data;
+    expect(data.views.map).toBe(false); // the UI sends Map to GTA's map instead
+    expect(data.views.preview).toBe(false);
+    expect(await pause.call("pause:view", { view: "map" })).toEqual({ ok: false });
+    await pause.run(`LocalPlayer.state.invOpen = true Inventory.tick()`);
+    expect(await pause.run(`return Camera.isActive()`)).toBe(false);
+    await pause.run(`Pause.close() LocalPlayer.state.invOpen = false Inventory.tick()`);
+
+    await pause.run(`NUI.prefs.set({ reducedMotion = false }) Config.camera = false NOW = NOW + 1000`);
+    await pause.run(press);
+    expect(await pause.run(`return Camera.isActive()`)).toBe(false);
   });
 
   it("names keys from GTA's button codes", async () => {

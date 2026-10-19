@@ -28,7 +28,7 @@ end
 function Inventory.tick()
   local open = LocalPlayer.state.invOpen == true
   if open and not focusing then
-    if Pause.isOpen() or Focus.isActive() then return end
+    if Pause.isOpen() or Focus.isActive() or not Pause.cameras() then return end
     local w, h = GetActiveScreenResolution()
     focusing = Focus.start({ frame = Inventory.frame(w, h) })
   elseif not open and focusing then

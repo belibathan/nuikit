@@ -182,9 +182,14 @@ function Focus.start(opts)
     pitch = fromRot.x - t.pitch, yaw = Map3D.turn(t.yaw, fromRot.z),
     fov = GetFinalRenderedCamFov() - FOV,
   }
-  cam = CreateCamWithParams('DEFAULT_SCRIPTED_CAMERA', from.x, from.y, from.z, fromRot.x, 0.0, fromRot.z, FOV + residual.fov, false, 2)
-  SetCamActive(cam, true)
-  RenderScriptCams(true, false, 0, true, false) -- a cut to the exact same view: seamless
+  -- the camera service starts it on the current view (seamless) and takes it back on death
+  cam = Camera.claim({
+    id = 'focus',
+    onLost = function(reason)
+      active, cam, residual = false, nil, nil
+      if reason == 'dead' and Focus.onLost then Focus.onLost() end
+    end,
+  })
   active = true
   CreateThread(loop)
   if Config.debug then
@@ -199,11 +204,8 @@ end
 function Focus.stop(mode)
   if not active then return end
   active = false
-  if mode ~= 'handover' then
-    local ms = cfg.blendMs or 600
-    RenderScriptCams(false, mode ~= 'instant', mode == 'instant' and 0 or ms, true, false)
-  end
-  if cam then DestroyCam(cam, false) end
+  -- after a handover the map owns the camera already; release() only acts for the owner anyway
+  if mode ~= 'handover' then Camera.release('focus', { instant = mode == 'instant', ms = cfg.blendMs or 600 }) end
   cam = nil
   residual = nil
 end

@@ -23,6 +23,15 @@ local enabled = {}
 for _, b in ipairs(Config.buttons or {}) do enabled[b] = true end
 
 local views = Config.views or {}
+
+--- Scripted cameras (the focus camera and the 3D map) only when the server allows them
+--- (Config.camera) and the player hasn't asked for reduced motion (NUI.prefs). Otherwise the menu is
+--- flat: Home blurs the game and Map opens GTA's own map.
+function Pause.cameras()
+  if Config.camera == false then return false end
+  local prefs = NUI.prefs and NUI.prefs.get() or {}
+  return not prefs.reducedMotion
+end
 local view = "home"        -- home | map | keys | info
 local blurred = false
 
@@ -59,7 +68,12 @@ local function payload()
     ping = info.ping,
     uptime = info.uptime,
     restartIn = info.restartIn,
-    views = { map = views.map ~= false, keys = views.keys ~= false, info = views.info ~= false, preview = views.preview ~= false },
+    views = {
+      map = views.map ~= false and Pause.cameras(),
+      keys = views.keys ~= false,
+      info = views.info ~= false,
+      preview = views.preview ~= false and Pause.cameras(),
+    },
     preview = Focus.isActive(),
     places = places(),
     pages = Config.pages or {},
@@ -90,7 +104,7 @@ function Pause.open()
   view = "home"
   -- The focus camera replaces the blur; without it the world's blur has to come from GTA (CEF
   -- draws over the game).
-  local focused = views.preview ~= false and Focus.start()
+  local focused = views.preview ~= false and Pause.cameras() and Focus.start()
   if not pause:open(payload()) then
     if focused then Focus.stop('instant') end
     return false
@@ -126,7 +140,7 @@ end
 ---@return table
 function Pause.setView(next)
   if next ~= "home" and next ~= "map" and next ~= "keys" and next ~= "info" then return { ok = false } end
-  if next == "map" and views.map == false then return { ok = false } end
+  if next == "map" and (views.map == false or not Pause.cameras()) then return { ok = false } end
   if next == view then return { ok = true, preview = Focus.isActive() } end
   local was = view
   view = next
@@ -135,7 +149,7 @@ function Pause.setView(next)
     Map3D.start()
     Focus.stop("handover")
   elseif was == "map" then
-    local focused = views.preview ~= false and Focus.start()
+    local focused = views.preview ~= false and Pause.cameras() and Focus.start()
     Map3D.stop(focused and "handover" or nil)
     blur(not focused)
   end

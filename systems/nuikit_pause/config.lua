@@ -26,6 +26,11 @@ Config = {
   --   page if views.keys is off), info (your pages below), settings (GTA's), help, disconnect
   buttons = { 'resume', 'map', 'keybinds', 'info', 'settings', 'disconnect' },
 
+  -- Scripted cameras: the focus camera on Home and the inventory, and the 3D map. false turns them
+  -- all off (low-end servers): Home blurs the game and Map opens GTA's map. Players who turn on
+  -- reduced motion (/nuikit motion off) get the same flat menu whatever this says.
+  camera = true,
+
   -- The bigger menu (docs/pause-3d.md). Turn any part off to fall back to the simple menu.
   --   map: Map opens a 3D view of the real world instead of GTA's map
   --   keys: Key bindings shows the player's current keys, read live from the game

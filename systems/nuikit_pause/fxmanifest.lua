@@ -23,6 +23,7 @@ shared_scripts {
 }
 
 client_scripts {
+  'client/camera.lua',
   'client/map3d.lua',
   'client/focus.lua',
   'client/keys.lua',
