@@ -1,0 +1,27 @@
+@import "tailwindcss";
+
+:root {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --primary: oklch(0.922 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --hud: rgb(0 0 0 / 0.45);
+  --hud-foreground: #fff;
+  --vital-armor: var(--chart-2);
+  --radius: 0.625rem;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-primary: var(--primary);
+}
+
+@utility nk-chip {
+  background-color: var(--hud);
+  color: var(--hud-foreground);
+}
+
+@utility nk-shadow {
+  text-shadow: 0 1px 2px rgb(0 0 0 / 0.6);
+  filter: drop-shadow(0 1px 1px rgb(0 0 0 / 0.35));
+}

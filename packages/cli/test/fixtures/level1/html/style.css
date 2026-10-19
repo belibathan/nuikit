@@ -1,0 +1,25 @@
+/* Defaults for servers without the nuikit resource: token definitions are not hard-coding. */
+:root {
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.922 0 0);
+  --primary-rgb: 229, 229, 229;
+  --radius: 0.625rem;
+}
+
+.garage {
+  background: var(--popover);
+  color: var(--popover-foreground);
+  border-radius: calc(var(--radius) + 4px);
+  box-shadow: 0 24px 64px -24px rgb(0 0 0 / 0.7);
+}
+
+.primary {
+  background: var(--primary, #e5e5e5);
+  color: var(--primary-foreground);
+}
+
+.paint {
+  /* nuikit-ignore color/hardcoded: GTA's own vehicle palette, the theme can't know it */
+  background: #0d1116;
+}

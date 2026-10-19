@@ -1,0 +1,171 @@
+import { execFileSync, spawnSync } from "node:child_process";
+import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { describe, expect, it } from "vitest";
+import { check, checkResource, findResources, type CheckResult, type RuleId } from "../src/check";
+import { DEFAULT_TOKENS, TOKENS } from "../src/tokens";
+
+const here = path.dirname(fileURLToPath(import.meta.url));
+const fixture = (name: string) => path.join(here, "fixtures", name);
+const rules = (r: CheckResult) => [...new Set(r.findings.map((f) => f.rule))].sort();
+const at = (r: CheckResult, rule: RuleId) => r.findings.filter((f) => f.rule === rule).map((f) => `${f.file}:${f.line}`);
+
+describe("bad resource", () => {
+  const r = checkResource(fixture("bad"));
+
+  it("is level 0 and reports every rule", () => {
+    expect(r.level).toBe(0);
+    expect(r.kind).toBe("resource");
+    expect(rules(r)).toEqual(
+      [
+        "color/hardcoded",
+        "color/palette-class",
+        "escape/adhoc",
+        "focus/direct",
+        "focus/no-release",
+        "manifest/protocol",
+        "native/components",
+        "native/runtime",
+        "perf/frame-send",
+        "perf/remote-asset",
+        "surfaces/none",
+        "tokens/none",
+      ].sort(),
+    );
+  });
+
+  it("reports file:line for colours, and nothing from comments or anchors", () => {
+    expect(at(r, "color/hardcoded")).toEqual([
+      "html/app.js:16",
+      "html/app.js:18",
+      "html/index.html:12",
+      "html/index.html:12",
+      "html/style.css:5",
+      "html/style.css:7",
+      "html/style.css:12",
+      "html/style.css:13",
+      "html/style.css:17",
+    ]);
+    // the black box-shadow and `color: white` are allowed
+    expect(r.findings.some((f) => /box-shadow/.test(f.message))).toBe(false);
+    expect(at(r, "color/palette-class")).toEqual(["html/app.js:17", "html/index.html:10", "html/index.html:10"]);
+  });
+
+  it("finds direct focus calls but not those in comments or strings", () => {
+    expect(at(r, "focus/direct")).toEqual(["client/main.lua:5", "client/main.lua:11"]);
+    expect(at(r, "focus/no-release")).toEqual(["client/main.lua:5"]);
+  });
+
+  it("finds ad-hoc Escape, per-frame sends and remote fonts", () => {
+    expect(at(r, "escape/adhoc")).toEqual(["html/app.js:9"]);
+    expect(at(r, "perf/frame-send")).toEqual(["client/main.lua:18"]);
+    expect(at(r, "perf/remote-asset")).toEqual(["html/index.html:5", "html/style.css:2"]);
+    expect(r.findings.filter((f) => f.rule.startsWith("perf/")).every((f) => f.severity === "warning" && f.level === 0)).toBe(true);
+  });
+});
+
+describe("level 1 resource", () => {
+  const r = checkResource(fixture("level1"));
+  it("is themed: token definitions, fallbacks, neutral shadows and nuikit-ignore are fine", () => {
+    expect(r.level).toBe(1);
+    expect(r.findings.filter((f) => f.level === 1)).toEqual([]);
+    expect(r.protocol).toBe("1");
+  });
+  it("fails level 2 on focus, but releases it on stop", () => {
+    expect(rules(r)).toEqual(["focus/direct", "native/components", "native/runtime", "surfaces/none"]);
+  });
+  it("doesn't flag sends from a Wait(1000) loop", () => {
+    expect(at(r, "perf/frame-send")).toEqual([]);
+  });
+});
+
+describe("level 2 resource", () => {
+  const r = checkResource(fixture("level2"));
+  it("is well-behaved: nuikit.lua owns focus, Escape goes through nuikit:escape", () => {
+    expect(r.level).toBe(2);
+    expect(rules(r)).toEqual(["native/components", "native/runtime"]);
+    expect(r.findings.find((f) => f.rule === "native/runtime")!.message).toMatch(/nuikit-core/);
+  });
+});
+
+describe("level 3 resource (built like nuikit_hud)", () => {
+  const r = checkResource(fixture("level3"));
+  it("is native with no findings", () => {
+    expect(r.findings).toEqual([]);
+    expect(r.level).toBe(3);
+    expect(r.page).toEqual({ type: "ui_page", path: "web/dist/index.html" });
+    expect(r.stats.tokenRefs).toBeGreaterThan(5);
+  });
+});
+
+describe("override and no-UI folders", () => {
+  it("grades an override on page rules; its Escape is advisory", () => {
+    const r = checkResource(fixture("override"));
+    expect(r.kind).toBe("override");
+    expect(r.level).toBe(3);
+    expect(r.skipped).toContain("focus/direct");
+    const esc = r.findings.find((f) => f.rule === "escape/adhoc")!;
+    expect(esc.severity).toBe("warning");
+    expect(esc.level).toBe(0);
+  });
+
+  it("doesn't grade a resource without UI, and ignores Wait(0) loops that send nothing", () => {
+    const r = checkResource(fixture("no-ui"));
+    expect(r.level).toBeNull();
+    expect(r.findings).toEqual([]);
+  });
+});
+
+describe("discovery", () => {
+  it("checks every resource under a folder", () => {
+    const names = findResources(path.join(here, "fixtures")).map((p) => path.basename(p));
+    expect(names).toEqual(["bad", "level1", "level2", "level3", "no-ui", "override"]);
+    expect(check(path.join(here, "fixtures")).map((r) => r.level)).toEqual([0, 1, 2, 3, null, 3]);
+  });
+
+  it("marks findings in a synced index.css as inherited", () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "nuikit-check-"));
+    fs.mkdirSync(path.join(dir, "web/src"), { recursive: true });
+    fs.writeFileSync(path.join(dir, "web/index.html"), "<html></html>");
+    fs.writeFileSync(path.join(dir, "web/src/index.css"), "/* nuikit kit layer */\n@utility nk-chip { color: #fff; background: var(--hud); }\n");
+    const r = checkResource(dir);
+    expect(r.findings.filter((f) => f.rule === "color/hardcoded").every((f) => f.inherited)).toBe(true);
+    fs.rmSync(dir, { recursive: true });
+  });
+});
+
+describe("tokens", () => {
+  it("has the tokens v1 names", () => {
+    const names = TOKENS.map((t) => t.name);
+    for (const n of ["primary", "success-foreground", "warning", "info", "hud", "hud-foreground", "vital-health", "vital-stress", "nk-scale", "nk-motion", "chart-5", "radius"]) expect(names).toContain(n);
+    expect(new Set(names).size).toBe(names.length);
+    expect(DEFAULT_TOKENS.length).toBeGreaterThan(40);
+  });
+});
+
+describe("cli", () => {
+  const cli = path.join(here, "../dist/cli.js");
+  const built = fs.existsSync(cli);
+
+  it.skipIf(!built)("exits non-zero below --level and prints JSON", () => {
+    const fail = spawnSync(process.execPath, [cli, "check", fixture("level1"), "--level", "2", "--json"], { encoding: "utf8" });
+    expect(fail.status).toBe(1);
+    const json = JSON.parse(fail.stdout);
+    expect(json.pass).toBe(false);
+    expect(json.results[0].level).toBe(1);
+    const pass = spawnSync(process.execPath, [cli, "check", fixture("level3"), "--level", "3"], { encoding: "utf8" });
+    expect(pass.status).toBe(0);
+    expect(pass.stdout).toMatch(/level 3/);
+  });
+
+  it.skipIf(!built)("prints tokens", () => {
+    const out = execFileSync(process.execPath, [cli, "tokens", "--css"], { encoding: "utf8" });
+    expect(out.split("\n")).toContain("--vital-health");
+  });
+
+  it.skipIf(!built)("exits 2 for a missing path", () => {
+    expect(spawnSync(process.execPath, [cli, "check", fixture("nope")]).status).toBe(2);
+  });
+});

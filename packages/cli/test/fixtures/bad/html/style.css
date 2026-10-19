@@ -1,0 +1,18 @@
+/* #ffffff in a comment is fine */
+@import url("https://fonts.googleapis.com/css2?family=Rubik&display=swap");
+
+.panel {
+  background: #1e1e2e;
+  color: white;
+  border: 1px solid hsl(220 10% 30%);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.5);
+}
+
+.panel .accent {
+  color: oklch(0.7 0.2 150);
+  border-color: tomato;
+}
+
+:root {
+  --brand: #ff00aa;
+}
