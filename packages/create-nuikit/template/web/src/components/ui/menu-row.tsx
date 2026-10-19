@@ -49,6 +49,10 @@ const menuRowVariants = cva(
 const onHighlight =
   "group-hover/menu-row:text-accent-foreground group-focus-visible/menu-row:text-accent-foreground group-data-[active]/menu-row:text-accent-foreground"
 
+/** In many themes muted = accent, so a Kbd would vanish into the highlight: lift it off it. */
+const kbdOnHighlight =
+  "group-hover/menu-row:bg-background/60 group-focus-visible/menu-row:bg-background/60 group-data-[active]/menu-row:bg-background/60"
+
 type MenuRowProps = Omit<React.ComponentProps<"button">, "value"> &
   VariantProps<typeof menuRowVariants> & {
     icon?: React.ReactNode
@@ -118,7 +122,7 @@ function MenuRow({
           {meta}
         </span>
       )}
-      {kbd !== undefined && <Kbd>{kbd}</Kbd>}
+      {kbd !== undefined && <Kbd className={kbdOnHighlight}>{kbd}</Kbd>}
       {isCheck && (
         <Checkbox checked={checked} disabled={disabled} tabIndex={-1} aria-hidden className="pointer-events-none" />
       )}

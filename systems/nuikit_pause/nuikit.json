@@ -1,4 +1,4 @@
 {
   "lua": ["nuikit.lua", "bridge.lua"],
-  "components": ["button", "card", "badge", "separator", "kbd", "avatar", "alert-dialog", "progress"]
+  "components": ["button", "separator", "kbd", "avatar", "alert-dialog", "progress", "checkbox", "scroll-area", "panel", "menu-row", "stat", "meter"]
 }
