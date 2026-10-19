@@ -27,7 +27,10 @@ export interface BuiltinEvents {
   "nuikit:surfaces": import("./surfaces").SurfacesSnapshot;
   "nuikit:back": string;
   "nuikit:player": import("./player").NuiPlayer;
-  "nuikit:theme": string;
+  /** The server theme: compiled tokens from the nuikit resource (or a raw theme.css from an older one). */
+  "nuikit:theme": string | import("./tokens").CompiledTheme;
+  /** The player's UI preferences (scale, reduced motion, high contrast). */
+  "nuikit:prefs": Partial<import("./tokens").NuiPrefs>;
 }
 export interface BuiltinCallbacks {
   "nuikit:ready": { req: void; res: { ok: boolean; resource?: string } };
@@ -260,10 +263,17 @@ export function onVisible(listener: (v: boolean) => void): () => void {
 // Lua → UI visibility is a built-in event.
 onNui("nuikit:visible", (v) => setVisible(Boolean(v)));
 
-// Built-in: the server theme (theme.css in the `nuikit` resource) applies to every nuikit UI.
-onNui("nuikit:theme", (css) => {
-  if (typeof css === "string" && css) applyTheme(css);
-});
+// Built-ins: the server theme (compiled by the `nuikit` resource) and the player's prefs apply
+// to every nuikit UI, live.
+function builtinTheme() {
+  onNui("nuikit:theme", (theme) => {
+    if ((typeof theme === "string" && theme) || (theme && typeof theme === "object")) applyTheme(theme);
+  });
+  onNui("nuikit:prefs", (p) => {
+    if (p && typeof p === "object") setPrefs(p);
+  });
+}
+builtinTheme();
 
 // In game, tell Lua the page is listening so it resends surfaces, player, theme: messages sent
 // before the page loaded are lost otherwise.
@@ -298,15 +308,46 @@ export function __reset(): void {
   visibilityListeners.clear();
   visible = true;
   onNui("nuikit:visible", (v) => setVisible(Boolean(v)));
-  onNui("nuikit:theme", (css) => {
-    if (typeof css === "string" && css) applyTheme(css);
-  });
+  builtinTheme();
+  __resetTheme();
   __resetSurfaces();
   __resetPlayer();
 }
 
-export { applyTheme, clearTheme, parseTheme, toRgba, type ThemeVars } from "./theme";
-import { applyTheme } from "./theme";
+export { applyTheme, clearTheme, getPrefs, getTheme, loadImports, onTheme, parseTheme, setPrefs, toRgba, type ThemeVars } from "./theme";
+import { __resetTheme, applyTheme, setPrefs } from "./theme";
+export {
+  checkContrast,
+  compileTheme,
+  CONTRAST_PAIRS,
+  DEFAULT_PREFS,
+  highContrast,
+  lowerValue,
+  NEUTRAL,
+  normalizePrefs,
+  parseDtcg,
+  parseThemeCss,
+  themeChannels,
+  themeJsonSchema,
+  themeToCss,
+  toDtcg,
+  TOKEN_NAMES,
+  TOKENS,
+  TOKENS_VERSION,
+  VITALS,
+  withPrefs,
+  type CompileOptions,
+  type CompiledTheme,
+  type ContrastResult,
+  type DtcgDocument,
+  type NuiPrefs,
+  type ThemeInput,
+  type ThemeMode,
+  type TokenSpec,
+  type TokenType,
+} from "./tokens";
+export { composite, contrastRatio, formatRgba, luminance, oklchToRgb, rgbToOklch, type RGBA } from "./color";
+export { applyServerTheme, loadServerTheme, type ServerThemePayload } from "./remote";
 export {
   closeSurface,
   defineSurface,

@@ -1,7 +1,7 @@
 {
   "name": "nuikit-core",
   "version": "0.4.0",
-  "description": "The runtime behind nuikit, one design system for your whole FiveM server: typed fetchNui and events, surfaces (focus, layers, Escape across resources), runtime theming and browser devtools.",
+  "description": "The runtime behind nuikit, one design system for your whole FiveM server: typed fetchNui and events, surfaces (focus, layers, Escape across resources), the theme compiler (tokens v1, DTCG) and browser devtools.",
   "author": "belibathan (https://github.com/belibathan)",
   "license": "MIT",
   "type": "module",
@@ -28,6 +28,7 @@
   "files": [
     "dist",
     "lua",
+    "tokens",
     "README.md"
   ],
   "exports": {
@@ -42,10 +43,12 @@
     "./devtools": {
       "types": "./dist/devtools.d.ts",
       "import": "./dist/devtools.js"
-    }
+    },
+    "./tokens.json": "./tokens/nuikit.tokens.json",
+    "./theme.schema.json": "./tokens/nuikit-theme.schema.json"
   },
   "scripts": {
-    "build": "tsup",
+    "build": "tsup && node scripts/export-tokens.mjs",
     "test": "vitest run",
     "typecheck": "tsc --noEmit"
   },
