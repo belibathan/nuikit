@@ -78,9 +78,10 @@ protocol carries the platform.
    rollout is confirmed, then relax the 103-only rules in `CLAUDE.md` and turn the compiler into opt-in compat.
 3. **0.5 order:** the theme engine (tokens as a standard) first, then components and blocks, as planned.
 4. **Done early (on `feat/platform`):** protocol spec v1, `nuikit check`, the host prototype and benchmark.
-5. **0.6: universal.** Intents (what scripts ask for) separated from renderers (how it looks), with adapters
-   so ox_lib, QBCore and ESX libraries all land on one themed UI without rewriting scripts. Plan, coverage
-   targets and risks: [`docs/architecture.md`](architecture.md).
+5. **0.6: universal.** One runtime per server with an importable Lua API (`@nuikit/init.lua`), intents
+   (what scripts ask for) separated from swappable renderers (how it looks), adapter packs so ox, QBCore and
+   ESX scripts land on one themed UI without rewrites, shared services (surfaces, camera, controls) and
+   `nuikit doctor`. Design, alternatives rejected, plan and risks: [`docs/architecture.md`](architecture.md).
 6. **Later:** Vue and Svelte bindings, DUI surfaces, gamepad navigation, the seller program built on `nuikit check`.
 
 ## Status (Oct 19, 2026, `feat/platform`)

@@ -22,7 +22,7 @@ Current release: **0.4.0** (npm `nuikit-core`, `vite-plugin-nuikit`, `create-nui
 | `apps/www` | The site + registry host (Vercel, deploys from `main`). |
 | `scripts/` | `sync-template.mjs` (`pnpm sync`), `pack-systems.mjs` (`pnpm pack:systems` → `out/nuikit.zip`), `new-system.mjs` (scaffold). |
 | `bench/host` | Host benchmark (iframes vs one frame) and the host's end-to-end check. Results in `results.md`. |
-| `docs/` | `vision.md` (direction), `architecture.md` (the 0.6 plan: intents, adapters, renderers), `protocol.md` (the standard, v1), `tokens.md` (tokens v1, theme pipeline, prefs), `host.md` (host prototype), `design.md` (kit language), `coverage.md`, protocol specs, `releases/`. |
+| `docs/` | `vision.md` (direction), `architecture.md` (the target design: runtime, intents, adapters, renderers, services, doctor; the 0.6 plan), `protocol.md` (the standard, v1), `tokens.md` (tokens v1, theme pipeline, prefs), `host.md` (host prototype), `design.md` (kit language), `coverage.md`, protocol specs, `releases/`. |
 
 ## Commands
 

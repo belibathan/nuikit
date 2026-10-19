@@ -1,181 +1,208 @@
 # Architecture: one UI layer for any FiveM server
 
-*Oct 19, 2026. The plan for 0.6 onward. Builds on `docs/vision.md` (why), `docs/protocol.md` (v1, shipped on
-`feat/platform`) and `docs/tokens.md`. Read this before adding a system, an override or a library integration.*
+*Oct 19, 2026. The design nuikit builds toward from 0.6 on, decided after weighing the alternatives below. Builds
+on `docs/vision.md` (why), `docs/protocol.md` (v1) and `docs/tokens.md`. Read it before adding a system, an
+override, an adapter or a package.*
 
-## The problem, from first principles
+## The idea in one paragraph
 
-Frameworks differ; what scripts ask their UI for doesn't. Every server needs the same dozen things: a
-notification, a menu, an input form, a progress bar, a confirm, a key prompt, an interaction list, a radial, a
-skill check. ox_lib, qb-menu, esx_menu_default, okokNotify and mythic_notify are different **APIs** for those same
-**intents**, each with its own look, its own focus handling and its own Escape. That is why every server is a
-patchwork, and why restyling one library (what nuikit 0.4 does with ox_lib) only fixes the servers built on it.
+Every FiveM server needs the same few things from its UI: notifications, menus, forms, progress, prompts,
+interaction lists, radials. Today each library (ox_lib, qb-menu, esx_menu_default, okokNotify…) is a different
+**API** for those same **intents**, with its own look, its own focus handling and its own Escape. nuikit
+separates **what a script asks for** from **how it looks**, the way an operating system does: scripts (old ones
+through adapters, new ones directly) ask for intents; one runtime per server draws them with swappable,
+themed renderers, and coordinates everything every UI shares (focus, Escape, camera, controls, theme, player).
+Screens that are genuinely bespoke (HUD, pause, inventory, phone) plug into the same runtime through the
+protocol.
 
-The foundation is to separate **what a script asks for** from **how it looks**, the way an operating system does:
-an app says "show a notification" and the system draws it.
-
-## The model
+## Building blocks
 
 ```mermaid
-flowchart LR
-  subgraph scripts[Existing scripts, unchanged]
-    A[qbx_garages<br/>lib.registerContext]
-    B[qb-jobs<br/>exports['qb-menu']:openMenu]
-    C[esx_jobs<br/>ESX.ShowNotification]
-    D[your script<br/>exports.nuikit:menu]
+flowchart TB
+  subgraph callers[Callers: no rewrites]
+    OLD[Existing scripts<br/>lib.notify · exports['qb-menu'] · ESX.ShowNotification]
+    NEW[New scripts<br/>nk.menu · nk.notify]
+    SCREENS[Bespoke screens<br/>HUD · pause · inventory · phone]
   end
-  subgraph adapters[Adapters]
-    OX[ox_lib adapter]
-    QB[qb adapters]
-    ESX[esx adapters]
+  subgraph adapters[Adapter packs]
+    AOX["[nuikit-ox]"]
+    AQB["[nuikit-qb]"]
+    AESX["[nuikit-esx]"]
   end
-  subgraph runtime[nuikit runtime: one per server]
-    I[Intent API<br/>notify · menu · input · progress · confirm<br/>prompt · target · radial · challenge]
-    S[Surfaces: focus, Escape, layers]
-    T[Theme + prefs + player context]
+  subgraph runtime["nuikit (runtime, one per server)"]
+    LIB["@nuikit/init.lua<br/>the Lua API every script imports"]
+    INT[Intents]
+    SVC[Services<br/>surfaces · camera · controls]
+    CTX[Context<br/>theme · prefs · player · locale]
+    FRAME[nuikit frame<br/>module loader + intent renderers]
+    DOC[doctor]
   end
-  R[Renderers<br/>default: the kit<br/>swappable per intent]
-  P[Bespoke UIs<br/>phone, inventory, minigames<br/>protocol surfaces]
-  A --> OX --> I
-  B --> QB --> I
-  C --> ESX --> I
-  D --> I
-  I --> R
-  S --- R
-  T --- R
-  P --- S
-  P --- T
+  REND[Renderer packs<br/>default: the kit · swappable per intent]
+  OLD --> adapters --> INT
+  NEW --> LIB --> INT
+  SCREENS --> LIB
+  LIB --> SVC
+  INT --> FRAME
+  REND -. modules .-> FRAME
+  CTX --- FRAME
+  CTX --- SCREENS
 ```
 
-### 1. Runtime: the `nuikit` resource
+### 1. The runtime: the `nuikit` resource
 
-One per server, and the only part every server must run. It owns what must be shared:
+The only thing every server must run. It is three parts:
 
-- **Surfaces:** focus, cursor, Escape, layers, states. Built (protocol §3).
-- **Theme and prefs:** compiled tokens, live reload, player accessibility prefs. Built (`docs/tokens.md`).
-- **Player context:** one player shape over Qbox, QBCore, ESX, ox_core, standalone. Built (`bridge.lua`).
-- **The intent API.** New, see below.
+- **`@nuikit/init.lua`, the Lua API.** Scripts import it the way they import ox_lib:
+  `shared_script '@nuikit/init.lua'`. It defines `nk` (intents, services, context) in the calling resource and
+  talks to the runtime. It replaces copying `nuikit.lua` into every resource (`pnpm sync` today): updating
+  nuikit updates every script, and the versioned handshake keeps old scripts working on a newer runtime.
+  Vendoring stays possible for a script that must run without nuikit.
+- **Services**: what UIs share and must not fight over, each with one owner at a time, a stack, and
+  restoration on close, resource stop and death:
+  - **surfaces**: focus, cursor, Escape, layers, states (built, protocol §3);
+  - **camera**: `nk.camera.claim(opts)` / `release()`, so a 3D pause menu, a clothing shop and a garage
+    preview never leave the player looking at the wrong thing;
+  - **controls**: which game controls are disabled while a UI is open, merged across UIs.
+- **Context**: compiled theme and live reload, player prefs (built, `docs/tokens.md`), the player over any
+  framework (built, `bridge.lua`), and locale.
 
-Intents render in nuikit's **own** frame, so one stack, one focus owner and one theme cover every intent from
-every library. This needs no decision about the host (`docs/host.md`): nuikit's frame is already one frame.
+The runtime's own frame hosts the intent renderers (below). One frame means one stack, one focus owner and one
+theme for every intent from every library, whatever FiveM's process model turns out to be.
 
 ### 2. Intents: the contract
 
-An intent is a versioned schema plus a lifecycle (open, update, resolve, cancel). Callable from Lua and JS:
+An intent is a versioned schema plus a lifecycle: open, update, resolve, cancel. Called through `nk`
+(or `exports.nuikit:*` from any language):
 
 ```lua
-local choice = exports.nuikit:menu({ title = 'Garage', items = { … } })   -- blocks the thread, like lib.* does
-exports.nuikit:notify({ title = 'Paid', description = '$500', status = 'success' })
-local id = exports.nuikit:progress({ label = 'Repairing', duration = 5000, cancel = true })
+local choice = nk.menu({ title = 'Garage', items = { … } })     -- yields until resolved, like lib.* does
+nk.notify({ title = 'Paid', description = '$500', status = 'success' })
+local p = nk.progress({ label = 'Repairing', duration = 5000, cancel = true })
 ```
 
-**Catalogue v1.** Each schema is a **superset** of what the libraries we adapt can express, so an adapter never
-loses information. "Sources" are the APIs it has to cover.
+Catalogue v1. Each schema is a **superset** of what the libraries we adapt can express, so an adapter never
+drops information.
 
-| Intent | What it is | Sources it must cover |
+| Intent | What it is | Must cover |
 |---|---|---|
 | `notify` | Toast: title, description, status, icon, duration, position | ox `lib.notify`, `QBCore:Notify`, `ESX.ShowNotification`, esx_notify, okokNotify, mythic_notify |
-| `menu` | List or context menu: items with icon, description, metadata, image, progress, disabled, submenus, events | ox `registerContext`/`showContext`, ox `registerMenu` (list menu), qb-menu, esx_context, esx_menu_default |
+| `menu` | Context or list menu: items with icon, description, metadata, image, progress, disabled, submenus | ox `registerContext`/`registerMenu`, qb-menu, esx_context, esx_menu_default |
 | `input` | Form: text, number, select, checkbox, slider, date, colour; validation | ox `inputDialog`, qb-input, esx_menu_dialog |
 | `confirm` | Alert with cancel / confirm | ox `alertDialog` |
-| `progress` | Timed bar or circle, cancellable, with animation/prop hints passed through to the caller's Lua | ox `progressBar`/`progressCircle`, QBCore `Progressbar` (progressbar resource), esx_progressbar |
-| `prompt` | Persistent text/key hint ("[E] Open garage") | ox `showTextUI`, qb-core `DrawText`, esx_textui |
-| `target` | Interaction options on an entity, model, zone | ox_target, qb-target (options list only; raycasting stays theirs) |
-| `radial` | Radial menu items and submenus | ox `registerRadial`, qb-radialmenu |
-| `challenge` | Skill check / minigame step | ox `skillCheck`, ps-ui-style circles |
+| `progress` | Timed bar or circle, cancellable; animation and prop stay with the caller's Lua | ox `progressBar`/`progressCircle`, QBCore `Progressbar`, esx_progressbar |
+| `prompt` | Persistent key hint ("[E] Open garage") | ox `showTextUI`, qb-core `DrawText`, esx_textui |
+| `target` | Options on an entity, model or zone (the raycast stays the targeting library's) | ox_target, qb-target |
+| `radial` | Radial items and submenus | ox `registerRadial`, qb-radialmenu |
+| `challenge` | Skill check | ox `skillCheck` |
 
-Not intents (they stay **surfaces** under the protocol): HUD, pause, death, loading, chat, inventory, phone,
-banking, character creation. They are whole screens, not requests.
-
-**One schema source.** Each intent's schema lives once (`packages/core/intents/*.json`) and generates the
-TypeScript types, Lua annotations, browser mocks and `nuikit check` rules (the "typed messaging" layer from the
-vision).
+**One source of truth.** Each schema is written once (`packages/core/intents/`) and generates the TypeScript
+types, LuaLS annotations for `nk`, runtime validation, browser mocks, docs and `nuikit check` rules.
 
 ### 3. Adapters: how existing scripts get in
 
-An adapter is a small resource that makes a library's public API land on intents. Scripts don't change. Three
-mechanisms, chosen per library and proven in game before shipping:
+Adapter packs are resource folders per ecosystem: `[nuikit-ox]`, `[nuikit-qb]`, `[nuikit-esx]`, and later
+`[nuikit-standalone]` for okokNotify, mythic_notify and the like. Each library gets **one adapter resource**
+that makes its public API land on intents, so the owner removes exactly what nuikit replaces and nothing else.
+Three mechanisms, chosen per library after an in-game spike:
 
-1. **Stand-in.** The adapter declares `provide '<library>'` (dependencies and `ensure` order resolve to it) and
-   answers the library's exports by handling `__cfx_export_<library>_<name>`, the mechanism ox_target uses to
-   stand in for qtarget. For libraries that are mostly a UI (qb-menu, qb-input, esx_context, okokNotify), the
-   adapter **replaces** them. No files overwritten.
-2. **Listener.** For event-driven APIs (`QBCore:Notify`, `esx:showNotification`), the adapter handles the event.
-   Where the library also draws its own UI, its config switch turns that off; if none exists, mechanism 3.
-3. **Page override (fallback).** What 0.4 does: replace the library's web page. Kept where 1 and 2 can't be made
-   reliable, and for ox_lib first (its UI is called from inside ox_lib's own resource). The override page stays
-   protocol-exact (`docs/ox-lib-protocol.md`) and renders with the same intent renderers.
+1. **Stand-in.** The adapter replaces the library (`nuikit_qb_menu` instead of `qb-menu`): `provide 'qb-menu'`
+   makes dependencies and start order resolve to it, and it answers calls under the library's name (the
+   pattern commercial targeting scripts already ship for qb-target and ox_target). The original is stopped;
+   nothing is overwritten. Default for libraries that are mostly UI.
+2. **Listener.** For event-driven APIs (`QBCore:Notify`, `esx:showNotification`) the adapter handles the event,
+   and the library's own UI is turned off by its config where it has one.
+3. **Page override.** Replace the library's web page (what 0.4 does). For ox_lib, whose UI functions run
+   inside ox_lib itself, this stays the mechanism; the page routes its intents to the shared renderers.
 
-Every adapter, like every override today, is **clean-room**: written from the library's public API and a spec in
-`docs/adapters/<library>.md`, never from its code, and tested by replaying the library's calls and checking what
-the calling script gets back.
-
-**Order and conflicts.** The runtime warns in the server console when a library and its stand-in both run, when
-an override was wiped by an update, or when an adapter starts after its consumers.
+Adapters are **clean-room** like overrides: written from the library's public API and a spec in
+`docs/adapters/<library>.md`, never from its code, and tested by replaying recorded calls and checking what the
+calling script gets back.
 
 ### 4. Renderers: how it looks
 
-A renderer draws one intent. The kit is the default renderer for every intent (built from the 0.5 components),
-and a server can swap them **per intent**: install a resource that declares `nuikit_renderer 'notify'` and its
-module replaces the default notifications, still themed by the tokens and stacked by the runtime. This is the
-layer sellers build on: renderer packs and themes, checked by `nuikit check`.
+A renderer draws one intent. It is a **module** in the same format the host prototype already loads
+(`mount(element, props, context)`, built with `nuikitModule()`), so the contract is framework-agnostic: React by
+default, anything that can mount into an element works. The kit is the default renderer for every intent. A
+resource that declares `nuikit_renderer 'notify'` and ships a module replaces the default notifications,
+still themed by the tokens and stacked by the runtime. Renderer packs and themes are what sellers build and sell.
 
-The 3D pause menu, the 3D inventory and the other flagship screens are surfaces built from the same components:
-the showcase, not special cases. Camera control becomes a runtime-coordinated resource like focus (one owner,
-restored on close, stop and death) before more screens use it.
+This makes the host's module loader core infrastructure, used for every renderer. Hosting whole screens in
+nuikit's frame stays opt-in until the in-game process measurement (`docs/host.md`).
 
-### 5. Bespoke UIs: the protocol
+### 5. Screens: the protocol
 
-Scripts with their own screens (phones, inventories, minigames, Tebex UIs) join through protocol v1 unchanged:
-surfaces for focus and Escape, tokens for the look, context for the player, optionally hosted. Intents don't
-replace this; they cover the common requests so bespoke UIs are only needed for genuinely bespoke screens.
+Bespoke screens keep their own `ui_page` and join through protocol v1 (surfaces, tokens, context), using the
+services for camera and controls. The kit's screens (HUD, pause, death, loading, chat, the 3D pause and
+inventory) are built from the same components as the renderers. They are the showcase, not special cases.
+
+### 6. Doctor: the server tells you what's left
+
+`nuikit doctor` in the server console:
+
+- the framework detected and which adapter packs fit it;
+- every resource with a UI and its status: on nuikit (level), adapted, or untouched;
+- conflicts: a library and its stand-in both running, an override wiped by a library update, an adapter
+  starting after its consumers;
+- theme contrast warnings and live intent counts by source.
+
+"Universal" stops being a claim: every server can see its own coverage, and owners get the next step instead of
+a support question.
+
+## Distribution and developer experience
+
+| Who | Gets | Experience |
+|---|---|---|
+| **Server owner** | `nuikit-<framework>.zip` (Qbox, QBCore, ESX, standalone): `nuikit`, `[nuikit]` screens, the matching adapter pack, `nuikit.cfg` | Drop the folder in, add `exec @nuikit/nuikit.cfg` to `server.cfg`, run `nuikit doctor`, follow what it says. Theme: paste into `nuikit/theme.css`, `nuikit theme reload`. A txAdmin recipe does it for new servers. |
+| **Script developer** | `@nuikit/init.lua` | One line in the fxmanifest, then `nk.notify{…}`. Types in the editor through LuaLS annotations. No web code. |
+| **UI developer** | npm: `create-nuikit`, `nuikit-core`, `vite-plugin-nuikit`; components and blocks via `npx shadcn add` | `npm create nuikit` gives a resource with Lua and web, browser devtools with fake game data, hot reload in game. `nuikit check` before publishing. |
+| **Seller** | Same, plus renderer packs | `nuikit check` level 3 is the "built on nuikit" mark. |
+
+Versioning: the protocol is an integer that changes rarely (the runtime supports the previous one); each intent
+schema has its own version; packages follow semver; the runtime prints a notice when a newer release exists
+(convar to turn it off).
+
+## Considered and rejected
+
+- **Replace every resource's UI with one app** (host everything). Maximum control, but it breaks isolation
+  between resources and every existing UI at once. Kept as opt-in hosting for screens.
+- **Fork or compete with ox_lib.** ox_lib is mostly gameplay utilities; nuikit owns only presentation. ox
+  becomes an input, not a rival.
+- **Lua-only declarative UI** (a better ox_lib). Covers intents, fails bespoke screens; the protocol covers both.
+- **Web components as the renderer contract.** Framework-agnostic but heavy in Chromium 103 and awkward with
+  React portals. The module `mount` contract gets the same independence with less.
+- **Keep vendoring `nuikit.lua`.** Simple, but updates never reach scripts and versions drift per resource.
+- **Overwriting library files as the main install path.** Fragile under library updates; kept only where
+  stand-ins can't work, with the doctor watching it.
 
 ## What "universal" means, measurably
 
-**Coverage:** the share of UI calls on a stock server that end up drawn by nuikit. Measured on three reference
-servers (the txAdmin Qbox, QBCore and ESX recipes) by logging every UI call during a scripted session (join,
-spawn, menus, a job, an inventory, death). Target for 0.6: **90%+ on Qbox, 75%+ on QBCore and ESX.** The report
-lists every call that isn't covered and which script made it, and becomes the backlog.
-
-**Install:** one zip and one config block per framework, no files overwritten for stand-in adapters, and a
-txAdmin recipe for new servers.
-
-## What changes from today
-
-| Today (0.4 / `feat/platform`) | Becomes |
-|---|---|
-| ox_lib page override | ox_lib adapter (page override first, routed to shared intent renderers) |
-| No QBCore/ESX library coverage | qb and esx adapters, stand-ins where possible |
-| Each override renders its own way | One renderer per intent, swappable |
-| Overrides wiped silently by updates | Runtime warns in the console |
-| `nuikit.zip` + manual copy | Per-framework install, txAdmin recipe |
-
-Protocol v1, tokens v1, surfaces, prefs and the kit are kept as they are. Intents arrive as a protocol capability
-(`intents`) so v1 pages are unaffected.
+**Coverage**: the share of UI calls on a stock server drawn by nuikit, on the txAdmin Qbox, QBCore and ESX
+recipes, from a scripted session (join, spawn, menus, a job, inventory, death). Target for 0.6: 90%+ on Qbox,
+75%+ on QBCore and ESX. The misses become the backlog; the doctor reports the same on any live server.
 
 ## Plan (0.6)
 
-1. **Intent schemas and API** for the nine intents, generated types, browser mocks, and the default renderers
-   (lifted from the ox_lib override's features into the 0.5 components).
-2. **Runtime rendering**: intents drawn in nuikit's frame, stacked with surfaces.
-3. **Spike: interception in game.** Prove each mechanism on a real client: export stand-in (`provide` +
-   `__cfx_export_*`), event listener, and routing the ox_lib override to shared renderers. Pick per library.
-4. **ox_lib adapter** on the shared renderers; every ox POST re-verified against its protocol doc.
-5. **QBCore adapters:** qb-menu, qb-input, qb-target options, `QBCore:Notify`, progressbar, DrawText, qb-radialmenu.
-6. **ESX adapters:** esx_notify, esx_context, esx_menu_default/dialog, esx_progressbar, esx_textui.
-7. **Popular standalones:** okokNotify, mythic_notify (picked from the coverage report).
-8. **Coverage harness** on the three reference servers, plus the runtime's console checks.
-9. **Install:** per-framework packaging and a txAdmin recipe.
+1. **`@nuikit/init.lua` and `nk`**: the runtime as an importable library; the kit's systems move off vendored
+   Lua.
+2. **Intent schemas and generation**, default renderers lifted from the ox_lib override into 0.5 components,
+   rendered in nuikit's frame.
+3. **Services**: camera and controls next to surfaces.
+4. **In-game spike**: stand-in, listener and ox_lib page routing on a real client; choose per library.
+5. **`[nuikit-ox]`** on the shared renderers, every ox POST re-verified against `docs/ox-lib-protocol.md`.
+6. **`[nuikit-qb]`**: qb-menu, qb-input, qb-target options, `QBCore:Notify`, progressbar, DrawText, qb-radialmenu.
+7. **`[nuikit-esx]`**: esx_notify, esx_context, esx_menu_default/dialog, esx_progressbar, esx_textui.
+8. **Doctor and coverage harness** on the three reference servers.
+9. **Packaging**: per-framework zips, `nuikit.cfg`, txAdmin recipe; renderer packs via `nuikit_renderer`.
 
-Owner tests each step in game via a `next/*` prerelease, as always.
+The owner tests each step in game through a `next/*` prerelease.
 
 ## Risks
 
-- **Fidelity.** A superset schema can still miss a library's edge behaviour (ox menus with live-updating
-  options, qb-menu's `isMenuHeader`). Mitigation: a clean-room spec and replay tests per adapter.
-- **Interception reliability.** Export stand-ins depend on start order and on libraries not changing their
-  exports. Mitigation: `provide`, the runtime's start-order warning, the spike before committing.
-- **Scope creep into gameplay.** Adapters translate UI calls only. ox_lib's callbacks, zones, points and the
-  like stay ox_lib's; nuikit never owns gameplay (only exception: `nuikit_stress`).
-- **Becoming another lib to depend on.** The intent API is small and versioned on purpose; the look lives in
-  renderers, which servers and sellers can replace.
+- **Fidelity**: superset schemas can still miss edge behaviour (live-updating ox menus, qb-menu headers).
+  Clean-room specs and replay tests per adapter.
+- **Interception**: stand-ins depend on start order and on libraries keeping their APIs. `provide`, the doctor's
+  warnings, and the spike before committing to a mechanism.
+- **Scope**: adapters translate UI calls only. Callbacks, zones, points and other gameplay stay with their
+  libraries; nuikit never owns gameplay (only exception: `nuikit_stress`).
+- **Dependency weight**: the `nk` API and intents stay small and versioned; the look lives in replaceable
+  renderers, so depending on nuikit never locks a server into one design.
