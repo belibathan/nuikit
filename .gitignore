@@ -12,3 +12,4 @@ apps/www/public/r
 out
 addons/*/web/build
 *.tsbuildinfo
+.claude/
