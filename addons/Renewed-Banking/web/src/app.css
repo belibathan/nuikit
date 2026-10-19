@@ -1,0 +1,34 @@
+/* index.css is synced from the nuikit template (stock shadcn neutral theme). This file adds what
+   the Renewed-Banking UI needs on top: shadcn's animation utilities and a transparent, unscrollable page. */
+@import "./index.css";
+@import "tw-animate-css";
+
+html,
+body {
+  background: transparent !important;
+  overflow: hidden;
+  user-select: none;
+}
+
+input,
+textarea {
+  user-select: text;
+}
+
+/* Amounts line up in columns. */
+.rb-num {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Number inputs: no spinners (they're tiny and fiddly with a game cursor). */
+.rb-amount::-webkit-outer-spin-button,
+.rb-amount::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+@keyframes rb-toast-in {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: none; }
+}
+.rb-toast { animation: rb-toast-in 160ms ease-out; }
