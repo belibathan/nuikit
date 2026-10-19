@@ -12,8 +12,8 @@ What a nuikit UI reads from `nuikit/theme.css` (any TweakCN / shadcn theme provi
 |---|---|
 | `--background` / `--foreground` | Full-screen surfaces (pause, loading, death scrim), text on the game |
 | `--popover` / `--popover-foreground` | Every floating panel (`nk-panel`) |
-| `--card` / `--card-foreground` | Raised blocks inside a panel (slots, stat tiles) |
-| `--muted` / `--muted-foreground` | Tracks, empty slots, secondary text |
+| `--card` / `--card-foreground` | Raised blocks on a full-screen surface (not inside a panel: in many themes card = popover) |
+| `--muted` / `--muted-foreground` | Tracks, slots and wells inside a panel, secondary text |
 | `--accent` / `--accent-foreground` | Hover and keyboard highlight |
 | `--primary` / `--primary-foreground` | The one main action per surface, progress fills, selection |
 | `--destructive` | Danger, damage, low values, death |
@@ -57,6 +57,13 @@ screen is the same size relative to the game at every resolution. Design at 1080
    panels, and sit on the `--nk-edge` margin.
 9. **Empty and error states** say what to do next in one sentence.
 10. **Stock components.** Compose shadcn; never fork its files. If shadcn has it, use it.
+
+## Kit utilities
+
+`nk-panel` `nk-panel-header` `nk-panel-body` `nk-panel-footer` · `nk-title` `nk-display` `nk-label` `nk-num` ·
+`nk-row` `nk-scroll` · `nk-chip` `nk-chip-active` `nk-hud` `nk-track` `nk-shadow` · `nk-edge` (`--nk-edge`) · `nk-enter`.
+Defined once in every synced `index.css`; never redefine an `nk-*` name locally. `nk-panel`'s depth is a
+`box-shadow`, so mark a selected panel with `outline`, not `ring-*`.
 
 Sizes are in rem (Tailwind's scale), never px, so they follow the resolution scale.
 Reference implementation: `systems/nuikit_pause`.

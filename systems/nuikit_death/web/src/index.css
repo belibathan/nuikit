@@ -122,8 +122,9 @@
 
 /* Floating panel: menus, inventories, dialogs, cards on top of the game. */
 @utility nk-panel {
-  background-color: var(--popover);
-  color: var(--popover-foreground);
+  /* !important so it wins over a shadcn primitive's own surface (DialogContent's bg-background) */
+  background-color: var(--popover) !important;
+  color: var(--popover-foreground) !important;
   border: 1px solid var(--border);
   border-radius: calc(var(--radius) + 4px);
   box-shadow: 0 0 0 1px rgb(0 0 0 / 0.25), 0 24px 64px -24px rgb(0 0 0 / 0.7);
@@ -189,6 +190,39 @@
   color: #fff;
   font-size: 0.75rem;
   font-weight: 500;
+}
+/* Active chip (talking, selected). */
+@utility nk-chip-active {
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+}
+/* Square HUD tile on the game (hotbar slots, the target eye): the chip's surface, any size. */
+@utility nk-hud {
+  border-radius: calc(var(--radius) + 2px);
+  background-color: rgb(0 0 0 / 0.45);
+  color: #fff;
+}
+/* Bar track on the game world: theme-tinted tracks vanish over a bright sky. */
+@utility nk-track {
+  background-color: rgb(0 0 0 / 0.35);
+}
+/* Text and marks drawn straight on the game. */
+@utility nk-shadow {
+  text-shadow: 0 1px 2px rgb(0 0 0 / 0.6);
+  filter: drop-shadow(0 1px 1px rgb(0 0 0 / 0.35));
+}
+/* Full-screen title (pause, loading, death): 32px at 1080p. */
+@utility nk-display {
+  font-size: 2rem;
+  line-height: 2.5rem;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+}
+/* Scrolling list inside a panel. */
+@utility nk-scroll {
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-gutter: stable;
 }
 /* Distance from the screen edge for anything anchored to it. */
 @utility nk-edge {
