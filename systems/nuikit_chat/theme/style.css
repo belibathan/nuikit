@@ -42,6 +42,10 @@
   --nk-success-rgb: 52, 211, 153;
   --nk-warning-rgb: 251, 191, 36;
   --nk-info-rgb: 96, 165, 250;
+
+  /* The kit's scale (docs/design.md), in px at 1080p: the chat page isn't ours, so instead of
+     rem this follows the game's height directly. calc(var(--nk-px) * 14) is 14px at 1080p. */
+  --nk-px: calc(100vh / 1080);
 }
 
 /* ── window ─────────────────────────────────────────────────────────────── */
@@ -53,18 +57,18 @@
 }
 
 .chat-messages {
-  font-size: 1.6vh;
-  line-height: 1.4;
+  font-size: calc(var(--nk-px) * 14);
+  line-height: calc(var(--nk-px) * 20);
   color: var(--nk-foreground);
   text-shadow: none;
   /* older messages fade out under the top edge */
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 1.75em);
-  padding-top: 1em;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 calc(var(--nk-px) * 24));
+  padding-top: calc(var(--nk-px) * 16);
   box-sizing: border-box;
 }
 
 .chat-messages .msg {
-  margin: 0 0 0.35em;
+  margin: 0 0 calc(var(--nk-px) * 4);
 }
 /* chat gives multi-line messages a hanging indent; a bubble needs none (newlines still break) */
 .chat-messages .msg.multiline {
@@ -83,12 +87,12 @@
   display: inline-block;
   max-width: 100%;
   box-sizing: border-box;
-  padding: 0.4em 0.7em;
+  padding: calc(var(--nk-px) * 6) calc(var(--nk-px) * 12);
   border: 1px solid var(--nk-border);
   border-radius: calc(var(--nk-radius) - 2px);
   background: rgba(var(--nk-card-rgb), 0.86);
   color: var(--nk-card-foreground);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
   text-shadow: none;
   text-indent: 0; /* chat indents .multiline messages */
   overflow-wrap: anywhere;
@@ -97,7 +101,7 @@
 
 .chat-messages .nk-author {
   font-weight: 600;
-  margin-right: 0.45em;
+  margin-right: calc(var(--nk-px) * 8);
 }
 
 .chat-messages .nk-text {
@@ -108,23 +112,21 @@
 .chat-messages .nk-print {
   background: rgba(var(--nk-background-rgb), 0.9);
   font-family: var(--nk-font-mono);
-  font-size: 0.88em;
+  font-size: calc(var(--nk-px) * 13);
   white-space: pre-wrap;
 }
 .chat-messages .nk-tag {
   display: inline-block;
-  margin-right: 0.6em;
-  padding: 0 0.45em;
+  margin-right: calc(var(--nk-px) * 8);
+  padding: 0 calc(var(--nk-px) * 6);
   border-radius: calc(var(--nk-radius) - 4px);
   background: var(--nk-muted);
   color: var(--nk-muted-foreground);
   font-family: var(--nk-font-sans);
-  font-size: 0.78em;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  line-height: 1.6;
-  text-transform: uppercase;
-  vertical-align: 0.1em;
+  font-size: calc(var(--nk-px) * 12);
+  font-weight: 500;
+  line-height: calc(var(--nk-px) * 18);
+  vertical-align: calc(var(--nk-px) * 1);
 }
 
 /* notices: system / info / success / warning / error */
@@ -144,9 +146,9 @@
 
 .chat-messages .nk-icon {
   flex: none;
-  width: 1.05em;
-  height: 1.05em;
-  margin: 0.17em 0.55em 0 -0.1em;
+  width: calc(var(--nk-px) * 16);
+  height: calc(var(--nk-px) * 16);
+  margin: calc(var(--nk-px) * 2) calc(var(--nk-px) * 8) 0 calc(var(--nk-px) * -2);
   background: rgb(var(--nk-tone-rgb));
   -webkit-mask: center / contain no-repeat;
   -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='16' rx='3'/%3E%3Cpath d='m8 10 2.5 2L8 14M13 14h3'/%3E%3C/svg%3E");
@@ -166,20 +168,24 @@
 
 /* join / quit: quiet pills */
 .chat-messages .nk-presence {
-  padding: 0.15em 0.7em 0.15em 0.6em;
+  padding: calc(var(--nk-px) * 4) calc(var(--nk-px) * 10);
+  border-color: transparent;
   border-radius: 999px;
   background: rgba(var(--nk-card-rgb), 0.6);
+  box-shadow: none;
   color: var(--nk-muted-foreground);
-  font-size: 0.86em;
+  font-size: calc(var(--nk-px) * 12);
+  font-weight: 500;
+  line-height: calc(var(--nk-px) * 16);
 }
 .chat-messages .nk-presence::before {
   content: "";
   display: inline-block;
-  width: 0.45em;
-  height: 0.45em;
-  margin-right: 0.5em;
+  width: calc(var(--nk-px) * 6);
+  height: calc(var(--nk-px) * 6);
+  margin-right: calc(var(--nk-px) * 6);
   border-radius: 50%;
-  vertical-align: 0.12em;
+  vertical-align: calc(var(--nk-px) * 1);
   background: rgb(var(--nk-success-rgb));
 }
 .chat-messages .nk-quit::before {
@@ -202,7 +208,7 @@
 
 .chat-input {
   font-family: var(--nk-font-sans);
-  font-size: 1.6vh;
+  font-size: calc(var(--nk-px) * 14);
   color: var(--nk-foreground);
 }
 
@@ -212,32 +218,31 @@
   display: flex;
   align-items: center;
   box-sizing: border-box;
+  min-height: calc(var(--nk-px) * 36);
   border: 1px solid var(--nk-input);
-  border-radius: var(--nk-radius);
-  background: rgba(var(--nk-card-rgb), 0.95) !important;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+  border-radius: calc(var(--nk-radius) - 2px);
+  background: rgba(var(--nk-popover-rgb), 0.95) !important;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25), 0 12px 32px -12px rgba(0, 0, 0, 0.7);
   overflow: hidden;
   transition: border-color 150ms, box-shadow 150ms;
 }
 .chat-input > div:first-child:focus-within {
   border-color: var(--nk-ring);
-  box-shadow: 0 0 0 3px rgba(var(--nk-ring-rgb), 0.5), 0 6px 20px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 0 0 3px rgba(var(--nk-ring-rgb), 0.5), 0 12px 32px -12px rgba(0, 0, 0, 0.7);
 }
 
 .chat-input .prefix {
   position: static !important;
   flex: none;
   height: auto;
-  margin: 0 0 0 0.55em;
-  padding: 0.1em 0.5em;
+  margin: 0 0 0 calc(var(--nk-px) * 8);
+  padding: 0 calc(var(--nk-px) * 6);
   border-radius: calc(var(--nk-radius) - 4px);
   background: var(--nk-muted);
   color: var(--nk-muted-foreground); /* a mode's own colour (inline) wins */
-  font-size: 0.72em;
-  font-weight: 600;
-  letter-spacing: 0.05em;
-  line-height: 1.5;
-  text-transform: uppercase;
+  font-size: calc(var(--nk-px) * 12);
+  font-weight: 500;
+  line-height: calc(var(--nk-px) * 20);
 }
 .chat-input .prefix:empty {
   display: none;
@@ -250,7 +255,7 @@
   min-width: 0;
   box-sizing: border-box; /* chat sizes it to scrollHeight + 2 */
   margin: 0;
-  padding: 0.6em 0.75em;
+  padding: calc(var(--nk-px) * 8) calc(var(--nk-px) * 12);
   border: 0;
   outline: none;
   resize: none;
@@ -258,7 +263,7 @@
   color: var(--nk-foreground);
   caret-color: var(--nk-primary);
   font: inherit;
-  line-height: 1.4;
+  line-height: calc(var(--nk-px) * 20);
 }
 .chat-input textarea::placeholder {
   color: var(--nk-muted-foreground);
@@ -270,21 +275,21 @@
 /* command suggestions */
 .chat-input .suggestions {
   list-style: none;
-  margin: 0.4em 0 0;
-  padding: 0.3em;
+  margin: calc(var(--nk-px) * 8) 0 0;
+  padding: calc(var(--nk-px) * 4);
   box-sizing: border-box;
   width: 100%;
   border: 1px solid var(--nk-border);
-  border-radius: var(--nk-radius);
+  border-radius: calc(var(--nk-radius) + 4px);
   background: rgba(var(--nk-popover-rgb), 0.97) !important;
   color: var(--nk-popover-foreground);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
-  font-size: 0.95em;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25), 0 24px 64px -24px rgba(0, 0, 0, 0.7);
+  font-size: calc(var(--nk-px) * 14);
 }
 .chat-input .suggestion {
   margin: 0;
-  padding: 0.35em 0.55em;
-  border-radius: calc(var(--nk-radius) - 4px);
+  padding: calc(var(--nk-px) * 6) calc(var(--nk-px) * 12);
+  border-radius: calc(var(--nk-radius) - 2px);
 }
 .chat-input .suggestion:first-child {
   background: var(--nk-accent);
@@ -293,17 +298,20 @@
 .chat-input .suggestion p {
   margin: 0;
   font-family: var(--nk-font-mono);
-  font-size: 0.95em;
+  font-size: calc(var(--nk-px) * 13);
+  font-weight: 500;
+  line-height: calc(var(--nk-px) * 20);
 }
 .chat-input .suggestion .param {
-  margin-left: 0.4em;
+  margin-left: calc(var(--nk-px) * 6);
   color: var(--nk-muted-foreground);
+  font-weight: 400;
 }
 .chat-input .suggestion .help {
   display: block;
-  margin-top: 0.1em;
   color: var(--nk-muted-foreground);
-  font-size: 0.86em;
+  font-size: calc(var(--nk-px) * 12);
+  line-height: calc(var(--nk-px) * 16);
 }
 .chat-input .disabled {
   color: var(--nk-muted-foreground);
@@ -311,10 +319,9 @@
 }
 
 .chat-input .chat-hide-state {
-  margin: 0.4em 0 0 0.2em;
+  margin: calc(var(--nk-px) * 8) 0 0 calc(var(--nk-px) * 4);
   color: var(--nk-muted-foreground);
-  font-size: 0.8em;
+  font-size: calc(var(--nk-px) * 12);
+  font-weight: 500;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
 }
