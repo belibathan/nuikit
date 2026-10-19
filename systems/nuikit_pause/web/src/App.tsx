@@ -1,18 +1,7 @@
 import { fetchNui, Surface, usePlayer, type NuiPlayer } from "nuikit-core/react";
-import {
-  CircleHelpIcon,
-  KeyboardIcon,
-  LandmarkIcon,
-  LogOutIcon,
-  MapIcon,
-  PlayIcon,
-  SettingsIcon,
-  UsersIcon,
-  WalletIcon,
-  type LucideIcon,
-} from "lucide-react";
-import { useState } from "react";
-import type { PauseButton, PauseData } from "./nui";
+import { CircleHelpIcon, InfoIcon, KeyboardIcon, LogOutIcon, MapIcon, PlayIcon, SettingsIcon, type LucideIcon } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+import type { PauseButton, PauseData, PauseView } from "./nui";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -24,17 +13,13 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Kbd } from "@/components/ui/kbd";
 import { MenuRow } from "@/components/ui/menu-row";
-import { Meter } from "@/components/ui/meter";
-import { Panel, PanelBody, PanelFooter, PanelHeader } from "@/components/ui/panel";
 import { Separator } from "@/components/ui/separator";
-import { Stat } from "@/components/ui/stat";
-import { cn } from "@/lib/utils";
-
-const money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
-const list = <T,>(v: T[] | undefined | Record<string, never>): T[] => (Array.isArray(v) ? v : []);
+import { list } from "@/lib/format";
+import { HelpPanel, Home } from "./views/home";
+import { InfoPanel } from "./views/info";
+import { KeysPanel } from "./views/keys";
+import { MapView } from "./views/map";
 
 export default function App() {
   // Subscribed here, not in <Pause>: bridge.lua only sends the player when it changes, so a
@@ -50,26 +35,61 @@ export default function App() {
 const NAV: Record<Exclude<PauseButton, "disconnect">, { label: string; icon: LucideIcon; kbd?: string }> = {
   resume: { label: "Resume", icon: PlayIcon, kbd: "Esc" },
   map: { label: "Map", icon: MapIcon, kbd: "P" },
-  settings: { label: "Settings", icon: SettingsIcon },
   keybinds: { label: "Key bindings", icon: KeyboardIcon },
+  info: { label: "Info", icon: InfoIcon },
+  settings: { label: "Settings", icon: SettingsIcon },
   help: { label: "Help", icon: CircleHelpIcon },
 };
 
+type Side = PauseView | "help";
+
 function Pause({ data, player }: { data: PauseData; player: NuiPlayer }) {
-  const [view, setView] = useState<"player" | "help">("player");
-  const buttons = list(data?.buttons);
-  const help = list(data?.help);
-  const links = list(data?.links);
-  const server = data?.server ?? {};
+  const views = data?.views;
+  const [view, setView] = useState<Side>(data?.view ?? "home");
+  const [standIn, setStandIn] = useState(!!data?.preview);
+  useEffect(() => setStandIn(!!data?.preview), [data?.preview]);
+
+  const go = useCallback((next: Side) => {
+    setView(next);
+    // Lua runs the cameras; "help" is only a panel here, Home as far as Lua is concerned
+    const lua: PauseView = next === "help" ? "home" : next;
+    void fetchNui("pause:view", { view: lua })
+      .then((r) => r?.preview !== undefined && setStandIn(!!r.preview))
+      .catch(() => {});
+  }, []);
+
+  // In a sub-view Esc goes back Home instead of closing the menu (nuikit skips a handled Escape).
+  useEffect(() => {
+    if (view === "home") return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== "Escape" || e.defaultPrevented) return;
+      if (document.querySelector("[role=alertdialog]")) return; // the dialog's own Escape
+      e.preventDefault();
+      go("home");
+    };
+    window.addEventListener("keydown", onKey, true);
+    return () => window.removeEventListener("keydown", onKey, true);
+  }, [view, go]);
 
   const run = (b: PauseButton) => {
-    if (b === "help") return setView((v) => (v === "help" ? "player" : "help"));
+    const toggle = (v: Side) => go(view === v ? "home" : v);
+    if (b === "map" && views?.map) return go("map");
+    if (b === "keybinds" && views?.keys) return toggle("keys");
+    if (b === "info") return toggle("info");
+    if (b === "help") return toggle("help");
     if (b !== "disconnect") void fetchNui(`pause:${b}`).catch(() => {});
   };
 
+  if (view === "map") return <MapView data={data} onBack={() => go("home")} />;
+
+  const buttons = list(data?.buttons).filter((b) => b !== "info" || (views?.info && list(data?.pages).length > 0));
+  const server = data?.server ?? {};
+  const active = (b: PauseButton) =>
+    (b === "keybinds" && view === "keys") || (b === "info" && view === "info") || (b === "help" && view === "help");
+
   return (
     <div className="pause-root absolute inset-0 overflow-hidden">
-      <div className="pause-scrim absolute inset-0" aria-hidden />
+      <div className="pause-scrim absolute inset-0" data-stage={standIn || undefined} aria-hidden />
 
       <div className="relative flex h-full">
         {/* left: who we are and where to go */}
@@ -92,14 +112,7 @@ function Pause({ data, player }: { data: PauseData; player: NuiPlayer }) {
               const item = NAV[b];
               if (!item) return null;
               return (
-                <MenuRow
-                  key={b}
-                  autoFocus={i === 0}
-                  icon={<item.icon />}
-                  kbd={item.kbd}
-                  active={b === "help" && view === "help"}
-                  onClick={() => run(b)}
-                >
+                <MenuRow key={b} autoFocus={i === 0} icon={<item.icon />} kbd={item.kbd} active={active(b)} onClick={() => run(b)}>
                   {item.label}
                 </MenuRow>
               );
@@ -113,7 +126,7 @@ function Pause({ data, player }: { data: PauseData; player: NuiPlayer }) {
           </nav>
 
           <dl className="mt-auto flex flex-col gap-2 text-sm">
-            {links.map((l) => (
+            {list(data?.links).map((l) => (
               <div key={l.label} className="flex items-baseline justify-between gap-4">
                 <dt className="text-muted-foreground">{l.label}</dt>
                 <dd className="truncate font-medium">{l.value}</dd>
@@ -122,10 +135,15 @@ function Pause({ data, player }: { data: PauseData; player: NuiPlayer }) {
           </dl>
         </aside>
 
-        {/* right: the player, or the help sheet */}
-        <main className="flex flex-1 items-center justify-end px-12">
-          {view === "help" ? <Help help={help} /> : <PlayerCard player={player} data={data} />}
-        </main>
+        {view === "home" ? (
+          <Home data={data} player={player} standIn={standIn} />
+        ) : (
+          <main className="flex flex-1 items-center justify-end px-12">
+            {view === "keys" && <KeysPanel onChange={() => void fetchNui("pause:keybinds").catch(() => {})} />}
+            {view === "info" && <InfoPanel pages={list(data?.pages)} />}
+            {view === "help" && <HelpPanel help={list(data?.help)} />}
+          </main>
+        )}
       </div>
     </div>
   );
@@ -152,86 +170,5 @@ function Disconnect() {
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
-  );
-}
-
-function initials(name: string) {
-  const parts = name.trim().split(/\s+/).filter(Boolean);
-  return ((parts[0]?.[0] ?? "?") + (parts.length > 1 ? parts[parts.length - 1][0] : "")).toUpperCase();
-}
-
-function PlayerCard({ player, data }: { player: NuiPlayer; data: PauseData }) {
-  const name = (player.loaded && player.name) || data?.playerName || "Player";
-  const job = player.loaded ? player.job : undefined;
-  const players = data?.players;
-  const max = data?.maxPlayers;
-  const role = job ? [job.label ?? job.name, job.gradeLabel].filter(Boolean).join(", ") : player.loaded ? "Civilian" : "No character loaded";
-  const showMoney = player.loaded && (player.cash !== undefined || player.bank !== undefined);
-
-  return (
-    <Panel>
-      <PanelHeader
-        icon={
-          <Avatar className="size-10">
-            <AvatarFallback className="bg-muted text-sm font-semibold text-foreground">{initials(name)}</AvatarFallback>
-          </Avatar>
-        }
-        title={name}
-        description={
-          <span className="flex items-center gap-1.5">
-            <span className="truncate">{role}</span>
-            {job?.onDuty !== undefined ? (
-              <span
-                className={cn("size-1.5 shrink-0 rounded-full", job.onDuty ? "bg-primary" : "bg-muted-foreground/50")}
-                aria-label={job.onDuty ? "On duty" : "Off duty"}
-              />
-            ) : null}
-          </span>
-        }
-      />
-
-      {showMoney ? (
-        <PanelBody variant="form" className="grid grid-cols-2">
-          <Stat icon={<WalletIcon />} label="Cash" value={player.cash !== undefined ? money.format(player.cash) : "—"} />
-          <Stat icon={<LandmarkIcon />} label="Bank" value={player.bank !== undefined ? money.format(player.bank) : "—"} />
-        </PanelBody>
-      ) : null}
-
-      <PanelFooter className="flex-col items-stretch gap-3">
-        {players !== undefined && max ? (
-          <Meter icon={<UsersIcon />} label="Players online" value={players} max={max} valueText={`${players} / ${max}`} size="sm" />
-        ) : (
-          <div className="flex items-center gap-1.5">
-            <UsersIcon className="size-4 text-muted-foreground" />
-            <span className="nk-label flex-1">Players online</span>
-            <span className="nk-num text-xs font-medium">{players ?? "—"}</span>
-          </div>
-        )}
-        <div className="flex items-center justify-between">
-          <span className="nk-label">Server ID</span>
-          <span className="nk-num text-xs font-medium">{data?.serverId ?? "—"}</span>
-        </div>
-      </PanelFooter>
-    </Panel>
-  );
-}
-
-function Help({ help }: { help: PauseData["help"] }) {
-  return (
-    <Panel>
-      <PanelHeader title="Controls" description="Change yours in Key bindings." />
-      <PanelBody>
-        {help.length ? (
-          help.map((h) => (
-            <div key={h.key + h.label} className="nk-row justify-between">
-              <span>{h.label}</span>
-              <Kbd className="min-w-8">{h.key}</Kbd>
-            </div>
-          ))
-        ) : (
-          <p className="nk-row text-muted-foreground">This server hasn't listed its controls.</p>
-        )}
-      </PanelBody>
-    </Panel>
   );
 }

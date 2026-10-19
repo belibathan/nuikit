@@ -1,4 +1,4 @@
 {
   "lua": [],
-  "components": ["button", "separator", "kbd", "avatar", "alert-dialog", "progress", "checkbox", "scroll-area", "panel", "menu-row", "stat", "meter"]
+  "components": ["button", "separator", "kbd", "avatar", "alert-dialog", "progress", "checkbox", "scroll-area", "input", "tabs", "panel", "menu-row", "stat", "meter", "hud-chip"]
 }

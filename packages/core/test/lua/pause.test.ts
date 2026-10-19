@@ -4,7 +4,8 @@ import { afterEach, describe, expect, it } from "vitest";
 import { createClient } from "./harness";
 
 const PAUSE = fileURLToPath(new URL("../../../../systems/nuikit_pause/", import.meta.url));
-const scripts = [PAUSE + "config.lua", "bridge.lua", PAUSE + "client/main.lua"];
+const SIMPLE = fileURLToPath(new URL("./fixtures/pause-simple.lua", import.meta.url));
+const scripts = [PAUSE + "config.lua", SIMPLE, "bridge.lua", PAUSE + "client/map3d.lua", PAUSE + "client/focus.lua", PAUSE + "client/keys.lua", PAUSE + "client/main.lua", PAUSE + "client/inventory.lua"];
 let client: Awaited<ReturnType<typeof createClient>>;
 afterEach(() => client?.close());
 
@@ -45,6 +46,10 @@ const natives = `
   function CreateThread(fn) THREADS[#THREADS + 1] = fn end
   function Wait() end
   LocalPlayer = { state = {} }
+  -- the bigger menu: no stand-in here (the player is in a vehicle), so Home blurs like before
+  function IsPedInAnyVehicle() return true end
+  function IsEntityDead() return false end
+  function vec3(x, y, z) return { x = x, y = y, z = z } end
   EXPORTS = {}
   exports = setmetatable({}, { __call = function(_, name, fn) EXPORTS[name] = fn end })
 `;
@@ -63,7 +68,7 @@ describe("systems/nuikit_pause", () => {
     await pause.run(press);
     expect(pause.surfaces().pause).toMatchObject({
       open: true, focused: true, layer: "modal",
-      data: { serverId: 7, playerName: "niko", buttons: ["resume", "map", "settings", "keybinds", "help", "disconnect"] },
+      data: { serverId: 7, playerName: "niko", buttons: ["resume", "map", "keybinds", "info", "settings", "disconnect"] },
     });
     expect(client.focused()).toBe("nuikit_pause");
     expect(await pause.run(`return table.concat(SERVER, ',')`)).toBe("nuikit_pause:request");
@@ -178,7 +183,7 @@ describe("systems/nuikit_pause", () => {
     client = await createClient();
     const pause = await client.start("nuikit_pause", {
       before: natives,
-      scripts: [PAUSE + "config.lua", "bridge.lua"],
+      scripts: [PAUSE + "config.lua", SIMPLE, "bridge.lua", PAUSE + "client/map3d.lua", PAUSE + "client/focus.lua", PAUSE + "client/keys.lua"],
     });
     await pause.run(`Config.buttons = { 'resume', 'disconnect' }`);
     await pause.run(readFileSync(PAUSE + "client/main.lua", "utf8"));
