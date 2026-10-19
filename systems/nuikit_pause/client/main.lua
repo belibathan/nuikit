@@ -16,14 +16,19 @@ Pause = {}
 local info = {}          -- { players, max } from the server, refreshed on every open
 local wasOpen = false
 local quietUntil = 0
+-- set when a button opened one of GTA's frontend menus: bring ours back once it closes
+local returning = nil   -- { seen = bool, deadline = ms }
 
 local enabled = {}
 for _, b in ipairs(Config.buttons or {}) do enabled[b] = true end
 
 local function payload()
   local me = PlayerId()
+  local server = {}
+  for k, v in pairs(Config.server or {}) do server[k] = v end
+  if not server.name or server.name == '' then server.name = info.name end
   return {
-    server = Config.server or {},
+    server = server,
     links = Config.links or {},
     buttons = Config.buttons or {},
     help = Config.help or {},
@@ -93,7 +98,18 @@ function Pause.tick()
   if IsPauseMenuActive() then
     -- the game's frontend (P, Map, Settings) owns Esc until it closes
     quietUntil = now + QUIET_MS
+    if returning then returning.seen = true end
     return
+  end
+  if returning then
+    if returning.seen then
+      -- the frontend we opened just closed: back to our menu, like GTA's own pause menu
+      returning = nil
+      Pause.open()
+      return
+    elseif now > returning.deadline then
+      returning = nil -- it never opened; give up quietly
+    end
   end
   if IsNuiFocused() then return end
   local player = NUI.player.get()
@@ -111,6 +127,7 @@ end
 ---@param deeper? boolean step into the first tab (the map) once it's open
 local function frontend(menu, deeper)
   Pause.close()
+  if Config.returnToMenu ~= false then returning = { seen = false, deadline = GetGameTimer() + 2000 } end
   CreateThread(function()
     Wait(50) -- let NUI focus drop first
     ActivateFrontendMenu(GetHashKey(menu), false, -1)

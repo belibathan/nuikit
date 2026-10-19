@@ -3,6 +3,12 @@
 
 local last = {}
 
+local function projectName()
+  local name = GetConvar('sv_projectName', '')
+  if name == '' then name = GetConvar('sv_hostname', '') end
+  return (name:gsub('%^%d', '')) -- strip ^1 colour codes
+end
+
 RegisterNetEvent('nuikit_pause:request', function()
   local src = source
   local now = GetGameTimer()
@@ -11,6 +17,7 @@ RegisterNetEvent('nuikit_pause:request', function()
   TriggerClientEvent('nuikit_pause:info', src, {
     players = #GetPlayers(),
     max = GetConvarInt('sv_maxclients', 48),
+    name = projectName(),
   })
 end)
 

@@ -63,7 +63,7 @@ describe("systems/nuikit_pause", () => {
     await pause.run(press);
     expect(pause.surfaces().pause).toMatchObject({
       open: true, focused: true, layer: "modal",
-      data: { serverId: 7, playerName: "niko", server: { name: "Los Santos" }, buttons: ["resume", "map", "settings", "keybinds", "help", "disconnect"] },
+      data: { serverId: 7, playerName: "niko", buttons: ["resume", "map", "settings", "keybinds", "help", "disconnect"] },
     });
     expect(client.focused()).toBe("nuikit_pause");
     expect(await pause.run(`return table.concat(SERVER, ',')`)).toBe("nuikit_pause:request");
@@ -145,6 +145,33 @@ describe("systems/nuikit_pause", () => {
     await pause.call("pause:settings");
     await pause.run(`THREADS[#THREADS]()`);
     expect(await pause.run(`return table.concat(MENUS, ',')`)).toBe("FE_MENU_VERSION_LANDING_MENU");
+  });
+
+  it("closing GTA's map brings the menu back; never opening it gives up quietly", async () => {
+    client = await createClient();
+    const pause = await client.start("nuikit_pause", { before: natives, scripts });
+    await pause.run(press);
+    await pause.call("pause:map");
+    await pause.run(`THREADS[#THREADS]()`);
+    await pause.run(`FRONTEND = true Pause.tick() Pause.tick()`);
+    expect(pause.surfaces().pause.open).toBe(false);
+    await pause.run(`FRONTEND = false Pause.tick()`);
+    expect(pause.surfaces().pause.open).toBe(true);
+
+    // a frontend that never appears: after 2s the next ticks don't reopen anything
+    await pause.call("pause:resume");
+    await pause.run(`NOW = NOW + 1000 ${press}`);
+    await pause.call("pause:settings");
+    await pause.run(`NOW = NOW + 2500 Pause.tick() Pause.tick()`);
+    expect(pause.surfaces().pause.open).toBe(false);
+  });
+
+  it("uses the server's project name when the config leaves it empty", async () => {
+    client = await createClient();
+    const pause = await client.start("nuikit_pause", { before: natives, scripts });
+    await pause.run(press);
+    client.event("nuikit_pause:info", { players: 3, max: 64, name: "My City RP" });
+    expect(pause.surfaces().pause.data.server.name).toBe("My City RP");
   });
 
   it("Disconnect asks the server to drop this player; hidden buttons do nothing", async () => {

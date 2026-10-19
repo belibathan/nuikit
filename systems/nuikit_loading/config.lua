@@ -8,7 +8,7 @@ Config = {
 
   -- Shown one at a time. A string, or { title = '...', text = '...' }.
   tips = {
-    { title = 'Press F1 for the menu', text = 'Your phone, inventory, emotes and vehicle options live in one place.' },
+    { title = 'Press Z for the radial menu', text = 'Emotes, vehicle options, your phone and more live in one place.' },
     { title = 'Read the rules', text = 'They are short, and staff will ask you about them. Find them on our Discord.' },
     { title = 'Stay in character', text = 'Out-of-character chat goes in /ooc. Everything else is your story.' },
     { title = 'Need help?', text = 'Use /report in game. A staff member will get back to you.' },

@@ -7,7 +7,7 @@ It's a theme, not a new chat: chat's Lua, commands, modes, suggestions and every
 ## Install
 
 1. Put it in `resources/[nuikit]/` next to the `nuikit` resource.
-2. Stop the theme it replaces (Qbox: remove `ensure qbx_chat_theme`). Chat loads the theme of every started resource at once, so only one should run.
+2. Stop the theme it replaces. Qbox starts `qbx_chat_theme` through a category, so add `stop qbx_chat_theme` after the category's `ensure` in server.cfg. Chat loads the theme of every started resource at once, so only one should run.
 3. `ensure nuikit` then `ensure nuikit_chat` (after `chat`).
 
 Without the `nuikit` resource it uses the stock shadcn neutral dark theme built into `theme/style.css`.

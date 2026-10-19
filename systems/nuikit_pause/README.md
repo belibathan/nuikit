@@ -18,9 +18,9 @@ Works on **Qbox**, **QBCore**, **ESX** or **standalone**: the player card comes 
 |---|---|
 | Esc | Opens the menu. Esc again, or Resume, closes it. |
 | P | GTA's pause menu, untouched. |
-| Map | Closes the menu and opens GTA's pause menu on the map. |
-| Settings | GTA's settings page. |
-| Key bindings | FiveM's key bindings page. |
+| Map | Opens GTA's map. Closing it brings this menu back (`returnToMenu`). |
+| Settings | GTA's settings page; closing it returns here. |
+| Key bindings | FiveM's key bindings page; closing it returns here. |
 | Help | A list of your server's keys (from `config.lua`). |
 | Disconnect | Asks first, then the server drops the player with your message. A player can only ever disconnect themselves. |
 
@@ -32,7 +32,8 @@ Other resources can open it: `exports.nuikit_pause:open()`, `close()`, `isOpen()
 
 `config.lua`:
 
-- `server`: `name`, `tagline`, and `logo` (short text in a badge, `''` to hide it).
+- `server`: `name` (empty uses the server's `sv_projectName`, like the loading screen), `tagline`, and `logo` (short text in a badge, `''` to hide it).
+- `returnToMenu`: closing GTA's map, settings or key bindings brings this menu back (default `true`).
 - `links`: label + value rows at the bottom (Discord, website). The game can't open a browser, so they're for reading.
 - `buttons`: which actions appear, in order: `resume`, `map`, `settings`, `keybinds`, `help`, `disconnect`. Remove one to hide it (its callback is refused too).
 - `help`: the keys on the Help page.
@@ -47,9 +48,15 @@ Other resources can open it: `exports.nuikit_pause:open()`, `close()`, `isOpen()
 - The surface is `layer = 'modal'`, `input = 'full'`, `exclusive`, `hides = { 'hud' }`, `blockedBy = { 'dead' }` (`nuikit_death` sets that state).
 - `server/main.lua` answers the player count (`#GetPlayers()` / `sv_maxclients`) each time it opens, and handles Disconnect with `DropPlayer`.
 
+## What FiveM doesn't allow
+
+GTA's map and settings pages are the game's own (scaleform) screens: a resource can open them but not
+restyle them, so nuikit opens them and brings you back. P (GTA's pause menu) is left as the game's,
+because some players rely on it; to make Esc the only way in, players can unbind P in GTA's settings.
+
 ## Verified
 
-- Lua logic in Lua 5.4 with mocked natives (`packages/core/test/lua/pause.test.ts`): Esc opens it, focus and HUD hiding, the blocked cases, the quiet window, Map/Settings natives, hidden buttons refused, Disconnect, exports.
+- Lua logic in Lua 5.4 with mocked natives (`packages/core/test/lua/pause.test.ts`): Esc opens it, focus and HUD hiding, the blocked cases, the quiet window, Map/Settings natives, returning to the menu after them, the project-name fallback, hidden buttons refused, Disconnect, exports.
 - UI: typecheck, build, and screenshots of every state in the browser.
 
 ## Check in game

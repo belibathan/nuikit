@@ -5,7 +5,7 @@ A drop-in replacement for [ox_lib](https://github.com/overextended/ox_lib)'s int
 ## Install
 
 1. Download `nuikit-ox_lib.zip` from the latest nuikit release.
-2. Replace `ox_lib/web/build` with the `web/build` folder from the zip.
+2. Copy `ox_lib/web/build` somewhere as a backup, then replace it with the `web/build` folder from the zip.
 3. Optional: add the `nuikit` resource (from `[nuikit]`) and paste any [TweakCN](https://tweakcn.com) theme into `nuikit/theme.css`. Without it, the stock shadcn neutral theme is used, with your `ox:primaryColor` convar as the accent.
 4. `restart ox_lib` (or restart the server).
 

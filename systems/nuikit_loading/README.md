@@ -5,7 +5,7 @@ The loading screen for your server, built from stock shadcn/ui and themed by `nu
 ## Install
 
 1. It ships in `[nuikit]`. Keep `ensure nuikit` (the theme) before `ensure [nuikit]`.
-2. Stop your old loading screen: remove `ensure loadscreen` (or delete that resource). Only one loading screen can run.
+2. Stop your old loading screen. Qbox starts `loadscreen` through a category, so add `stop loadscreen` after the category's `ensure` in server.cfg. Only one loading screen can run.
 3. Edit `config.lua`: name, tagline, tips, links, and optionally a logo, backgrounds and music. Put your files in `media/` and list them as `media/<file>`, or use `https://` URLs.
 4. Restart the server (loading screens are picked up when players connect).
 

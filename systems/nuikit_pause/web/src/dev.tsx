@@ -26,6 +26,7 @@ const data: PauseData = {
   ],
   buttons: ["resume", "map", "settings", "keybinds", "help", "disconnect"],
   help: [
+    { key: "Z", label: "Radial menu" },
     { key: "F1", label: "Phone" },
     { key: "TAB", label: "Inventory" },
     { key: "F", label: "Enter vehicle" },

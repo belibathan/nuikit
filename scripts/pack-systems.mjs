@@ -78,12 +78,25 @@ ensure [nuikit]
 
 ${list(systems.map((s) => `\`${s}\``))}
 
-Each system's README says what it replaces (stop that resource). Delete any system you don't want.
+Each system's README says what it replaces. Qbox starts most resources through categories
+(\`ensure [qbx]\`, \`ensure [standalone]\`), so stop the replaced ones by name after those lines:
+
+\`\`\`cfg
+stop qbx_hud          # nuikit_hud (+ nuikit_stress keeps stress)
+stop loadscreen       # nuikit_loading
+stop qbx_chat_theme   # nuikit_chat
+\`\`\`
+
+Delete any system you don't want.
+
+**Upgrading from 0.3.0:** delete your old \`nuikit\`, \`nuikit_hud\` and \`nuikit_stress\` folders first (wherever
+they are in \`resources/\`), keeping a copy of \`nuikit/theme.css\`. Two resources with the same name won't start.
 
 ## 2. Overrides: \`overrides/\`
 
-New interfaces for resources you already run. Their Lua is untouched. Copy each folder over the
-real resource (back up the original first), then restart it:
+New interfaces for resources you already run. Their Lua is untouched. For each one: copy the real
+folder somewhere as a backup, then copy ours **over** it so the files merge (don't delete the original
+folder: some resources keep images next to their UI), then restart it:
 
 ${list(overrides.map((o) => `\`overrides/${o.rel}\` → \`${o.resource}/${o.rel.slice(o.resource.length + 1)}\``))}
 

@@ -1,10 +1,15 @@
 Config = {
-  -- Shown at the top of the menu. `logo` is short text in a badge (e.g. 'RP', 'V'); '' hides it.
+  -- Shown at the top of the menu. An empty name uses the server's sv_projectName (like the
+  -- loading screen). `logo` is short text in a badge (e.g. 'RP', 'V'); '' hides it.
   server = {
-    name = 'Los Santos',
-    tagline = 'Roleplay',
-    logo = 'LS',
+    name = '',
+    tagline = '',
+    logo = '',
   },
+
+  -- Closing GTA's map, settings or key bindings (opened from this menu) brings this menu back,
+  -- the way GTA's own pause menu behaves. false: closing them returns straight to the game.
+  returnToMenu = true,
 
   -- Shown as text at the bottom of the menu (the game can't open a browser, so they're for reading).
   -- Remove an entry to hide it.
@@ -19,6 +24,7 @@ Config = {
 
   -- The Help page: keys your server uses. Keep it short.
   help = {
+    { key = 'Z', label = 'Radial menu' },
     { key = 'F1', label = 'Phone' },
     { key = 'TAB', label = 'Inventory' },
     { key = 'F', label = 'Enter vehicle' },
