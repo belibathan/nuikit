@@ -1,9 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Kbd } from "@/components/ui/kbd";
-import { Separator } from "@/components/ui/separator";
 import { post, useMessages } from "@/lib/nui";
 import { loadServerTheme } from "@/lib/theme";
 import { cn } from "@/lib/utils";
@@ -82,70 +79,62 @@ export default function App() {
   }, []);
 
   return (
-    <div data-open={open} className="meter fixed top-1/2 left-[2.5vw] w-64">
-      <Card className="gap-0 py-0 shadow-lg">
-        <CardHeader className="flex flex-row items-center justify-between gap-2 px-4 pt-3 pb-2">
-          <CardTitle className="text-muted-foreground text-xs font-medium tracking-wider uppercase">Taxi meter</CardTitle>
+    <div data-open={open} className="meter fixed top-1/2 left-6 w-64">
+      <section className="nk-panel overflow-hidden">
+        <header className="nk-panel-header">
+          <h2 className="nk-title flex-1">Taxi meter</h2>
           <button
             type="button"
             onClick={toggle}
-            className="rounded-full outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
+            className="nk-label -mr-1.5 flex h-6 items-center gap-1.5 rounded-full px-1.5 outline-none hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50"
             aria-pressed={running}
             title={running ? "Stop the meter" : "Start the meter"}
           >
-            <Badge
-              variant="outline"
-              className={cn(
-                "gap-1.5 transition-colors",
-                running ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-400" : "text-muted-foreground",
-              )}
-            >
-              <span className={cn("size-1.5 rounded-full", running ? "animate-pulse bg-emerald-400" : "bg-muted-foreground/60")} />
-              {running ? "Running" : "Stopped"}
-            </Badge>
+            <span className={cn("size-1.5 rounded-full", running ? "animate-pulse bg-primary" : "bg-muted-foreground/60")} />
+            <span className={cn(running && "text-foreground")}>{running ? "Running" : "Stopped"}</span>
           </button>
-        </CardHeader>
-        <CardContent className="px-4 pb-3">
-          <div className="text-muted-foreground text-xs">Fare</div>
-          <div className={cn("text-4xl leading-tight font-semibold tracking-tight tabular-nums", !running && fare === 0 && "text-muted-foreground")}>
-            {money(fare)}
+        </header>
+
+        <div className="flex flex-col gap-1 px-4 py-4">
+          <span className="nk-label">Fare</span>
+          <span className={cn("nk-num text-[2rem] leading-10 font-semibold", !running && fare === 0 && "text-muted-foreground")}>{money(fare)}</span>
+        </div>
+
+        <dl className="flex flex-col gap-2 border-t px-4 py-3 text-sm">
+          <div className="flex items-center justify-between">
+            <dt className="text-muted-foreground">Rate</dt>
+            <dd className="nk-num font-medium">
+              {money(rate.perMile, 2)}
+              <span className="text-muted-foreground font-normal"> / mi</span>
+            </dd>
           </div>
-          <Separator className="my-3" />
-          <dl className="grid grid-cols-2 gap-3 text-sm">
-            <div>
-              <dt className="text-muted-foreground text-xs">Rate</dt>
-              <dd className="font-medium tabular-nums">
-                {money(rate.perMile, 2)}
-                <span className="text-muted-foreground font-normal"> / mi</span>
-              </dd>
-            </div>
-            <div>
-              <dt className="text-muted-foreground text-xs">Distance</dt>
-              <dd className="font-medium tabular-nums">
-                {miles.toFixed(2)}
-                <span className="text-muted-foreground font-normal"> mi</span>
-              </dd>
-            </div>
-            {rate.start > 0 && (
-              <div className="col-span-2 -mt-1">
-                <dt className="text-muted-foreground inline text-xs">Starting fare </dt>
-                <dd className="inline text-xs font-medium tabular-nums">{money(rate.start, 2)}</dd>
-              </div>
-            )}
-          </dl>
-          {cursor && (
-            <div className="mt-3 flex items-center justify-between gap-2">
-              <Button size="sm" variant={running ? "secondary" : "default"} className="flex-1" onClick={toggle}>
-                {running ? "Stop meter" : "Start meter"}
-              </Button>
-              <Button size="sm" variant="ghost" onClick={release} className="text-muted-foreground">
-                <Kbd>Esc</Kbd>
-                Done
-              </Button>
+          <div className="flex items-center justify-between">
+            <dt className="text-muted-foreground">Distance</dt>
+            <dd className="nk-num font-medium">
+              {miles.toFixed(2)}
+              <span className="text-muted-foreground font-normal"> mi</span>
+            </dd>
+          </div>
+          {rate.start > 0 && (
+            <div className="flex items-center justify-between">
+              <dt className="text-muted-foreground">Starting fare</dt>
+              <dd className="nk-num font-medium">{money(rate.start, 2)}</dd>
             </div>
           )}
-        </CardContent>
-      </Card>
+        </dl>
+
+        {cursor && (
+          <footer className="nk-panel-footer">
+            <Button size="sm" variant={running ? "secondary" : "default"} className="flex-1" onClick={toggle}>
+              {running ? "Stop meter" : "Start meter"}
+            </Button>
+            <Button size="sm" variant="ghost" onClick={release} className="text-muted-foreground">
+              Done
+              <Kbd>Esc</Kbd>
+            </Button>
+          </footer>
+        )}
+      </section>
     </div>
   );
 }

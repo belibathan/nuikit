@@ -1,11 +1,8 @@
 import { useEffect, useRef, useState } from "react";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Kbd } from "@/components/ui/kbd";
-import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { post, useMessages, type Callback } from "@/lib/nui";
 import { loadServerTheme } from "@/lib/theme";
@@ -43,21 +40,20 @@ function Breakdown({ price }: { price: number }) {
     ["Dealer fee", "4%", money(p * 0.04)],
   ];
   return (
-    <div className="bg-muted/40 rounded-md border px-3 py-2 text-sm">
+    <div className="flex flex-col gap-2 text-sm">
       {rows.map(([label, pct, value]) => (
-        <div key={label} className="text-muted-foreground flex items-center justify-between py-0.5">
+        <div key={label} className="text-muted-foreground flex items-center justify-between">
           <span>
-            {label} <span className="text-xs opacity-70">{pct}</span>
+            {label} <span className="nk-num text-xs">{pct}</span>
           </span>
-          <span className="tabular-nums">−{value}</span>
+          <span className="nk-num">−{value}</span>
         </div>
       ))}
-      <Separator className="my-1.5" />
-      <div className="flex items-center justify-between py-0.5 font-medium">
+      <div className="flex items-center justify-between border-t pt-2 font-medium">
         <span>
-          Seller receives <span className="text-muted-foreground text-xs font-normal">77%</span>
+          Seller receives <span className="nk-num text-muted-foreground text-xs font-normal">77%</span>
         </span>
-        <span className="tabular-nums">{money(Math.ceil((p / 100) * 77))}</span>
+        <span className="nk-num">{money(Math.ceil((p / 100) * 77))}</span>
       </div>
     </div>
   );
@@ -65,8 +61,8 @@ function Breakdown({ price }: { price: number }) {
 
 function Detail({ label, value, mono }: { label: string; value: string; mono?: boolean }) {
   return (
-    <div className="min-w-0">
-      <dt className="text-muted-foreground text-xs">{label}</dt>
+    <div className="flex min-w-0 flex-col gap-1">
+      <dt className="nk-label">{label}</dt>
       <dd className={cn("truncate text-sm font-medium", mono && "font-mono text-[0.8125rem]")} title={value}>
         {value || "—"}
       </dd>
@@ -143,34 +139,33 @@ export default function App() {
 
   return (
     <div className="contract-backdrop fixed inset-0 flex items-center justify-center bg-black/40 p-6">
-      <Card className="contract w-full max-w-md gap-5 shadow-2xl">
-        <CardHeader className="flex flex-row items-center gap-3">
-          <img src="./logo.svg" alt="" className="size-10 shrink-0 rounded-lg" draggable={false} />
+      <section className="nk-panel nk-enter w-full max-w-md overflow-hidden" role="dialog" aria-labelledby="contract-title">
+        <header className="nk-panel-header">
+          <img src="./logo.svg" alt="" className="size-8 shrink-0 rounded-md" draggable={false} />
           <div className="min-w-0 flex-1">
-            <CardTitle className="truncate leading-snug" title={c.bizName}>
+            <h2 id="contract-title" className="nk-title truncate" title={c.bizName}>
               {/* "Vehicle Sales Contract - Larry's Vehicle Sales" → the business is the title */}
               {c.bizName.split(" - ").slice(1).join(" - ").trim() || c.bizName || "Vehicle sale contract"}
-            </CardTitle>
-            <CardDescription>{selling ? "List your vehicle for sale" : c.takeBack ? "Your listing" : "Vehicle for sale"}</CardDescription>
+            </h2>
+            <p className="nk-label truncate">{selling ? "List your vehicle for sale" : c.takeBack ? "Your listing" : "Vehicle for sale"}</p>
           </div>
           {c.plate && (
-            <Badge variant="outline" className="bg-background/60 shrink-0 rounded-md px-2 py-1 font-mono text-xs tracking-widest uppercase">
+            <span className="shrink-0 rounded-md border bg-muted px-2 py-1 font-mono text-xs leading-4 font-medium uppercase" title="Plate">
               {c.plate}
-            </Badge>
+            </span>
           )}
-        </CardHeader>
+        </header>
 
-        <CardContent className="flex flex-col gap-5">
-          <dl className="grid grid-cols-3 gap-3">
-            <Detail label="Seller" value={c.seller} />
-            <Detail label="Bank account" value={c.account} mono />
-            <Detail label="Phone" value={c.phone} mono />
-          </dl>
-          <Separator />
+        <dl className="grid grid-cols-3 gap-4 border-b px-4 py-3">
+          <Detail label="Seller" value={c.seller} />
+          <Detail label="Bank account" value={c.account} mono />
+          <Detail label="Phone" value={c.phone} mono />
+        </dl>
 
+        <div className="flex flex-col gap-4 p-4">
           {selling ? (
             <FieldGroup className="gap-4">
-              <Field>
+              <Field className="gap-2">
                 <FieldLabel htmlFor="desc">Description</FieldLabel>
                 <Textarea
                   id="desc"
@@ -181,7 +176,7 @@ export default function App() {
                   maxLength={500}
                 />
               </Field>
-              <Field data-invalid={error ? true : undefined}>
+              <Field className="gap-2" data-invalid={error ? true : undefined}>
                 <FieldLabel htmlFor="price">Asking price</FieldLabel>
                 <div className="relative">
                   <span className="text-muted-foreground pointer-events-none absolute inset-y-0 left-3 flex items-center text-sm">$</span>
@@ -191,7 +186,7 @@ export default function App() {
                     inputMode="numeric"
                     autoComplete="off"
                     placeholder="0"
-                    className="price-input pl-6 tabular-nums"
+                    className="price-input nk-num pl-6"
                     value={priceText}
                     aria-invalid={error ? true : undefined}
                     onChange={(e) => {
@@ -201,34 +196,38 @@ export default function App() {
                     onKeyDown={(e) => e.key === "Enter" && sell()}
                   />
                 </div>
-                {error ? <FieldError>{error}</FieldError> : <FieldDescription>Buyers pay this. The lot keeps 23%.</FieldDescription>}
+                {error ? <FieldError>{error}</FieldError> : <FieldDescription className="text-xs">Buyers pay this. The lot keeps 23%.</FieldDescription>}
               </Field>
-              <Breakdown price={typed} />
+              <div className="border-t pt-4">
+                <Breakdown price={typed} />
+              </div>
             </FieldGroup>
           ) : (
-            <div className="flex flex-col gap-4">
-              <div>
-                <div className="text-muted-foreground mb-1 text-xs">Description</div>
-                <p className={cn("text-sm whitespace-pre-line", !c.desc && "text-muted-foreground italic")}>
-                  {c.desc || "No description."}
-                </p>
+            <>
+              <div className="flex flex-col gap-1">
+                <span className="nk-label">Description</span>
+                <p className={cn("text-sm whitespace-pre-line", !c.desc && "text-muted-foreground")}>{c.desc || "No description."}</p>
               </div>
               <div className="flex items-end justify-between gap-3">
-                <div>
-                  <div className="text-muted-foreground text-xs">Price</div>
-                  <div className="text-3xl font-semibold tracking-tight tabular-nums">{money(c.price)}</div>
+                <div className="flex flex-col gap-1">
+                  <span className="nk-label">Price</span>
+                  <span className="nk-num text-[2rem] leading-10 font-semibold">{money(c.price)}</span>
                 </div>
-                <span className="text-muted-foreground pb-1 text-xs">Paid from your bank</span>
+                <span className="nk-label pb-1.5 font-normal">Paid from your bank</span>
               </div>
-              {c.takeBack && <Breakdown price={c.price} />}
-            </div>
+              {c.takeBack && (
+                <div className="border-t pt-4">
+                  <Breakdown price={c.price} />
+                </div>
+              )}
+            </>
           )}
-        </CardContent>
+        </div>
 
-        <CardFooter className="flex items-center justify-between gap-2">
-          <Button variant="ghost" className="text-muted-foreground" onClick={() => finish()}>
-            <Kbd>Esc</Kbd>
+        <footer className="nk-panel-footer justify-between">
+          <Button variant="ghost" className="text-muted-foreground -ml-2" onClick={() => finish()}>
             Cancel
+            <Kbd>Esc</Kbd>
           </Button>
           <div className="flex items-center gap-2">
             {selling ? (
@@ -243,8 +242,8 @@ export default function App() {
               </>
             )}
           </div>
-        </CardFooter>
-      </Card>
+        </footer>
+      </section>
     </div>
   );
 }

@@ -1,6 +1,5 @@
 import { ArrowRight, Delete, Lock, MicOff, Radio as RadioIcon, Settings, Star, Unplug } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -38,23 +37,25 @@ export function Home() {
 
   if (!on) {
     return (
-      <div className="flex h-full flex-col items-center justify-center gap-3 text-center">
-        <span className="bg-muted text-muted-foreground flex size-12 items-center justify-center rounded-full">
-          <RadioIcon className="size-5" />
+      <div className="flex h-full flex-col items-center justify-center gap-3 px-4 text-center">
+        <span className="bg-muted text-muted-foreground flex size-10 items-center justify-center rounded-full">
+          <RadioIcon className="size-4" />
         </span>
-        <div className="text-sm font-semibold tracking-wide">{soft(t("notconnected"))}</div>
-        <div className="text-muted-foreground text-xs">{soft(t("channels"))} · {soft(t("radio"))}</div>
+        <div className="flex flex-col gap-1">
+          <div className="text-sm font-medium">{soft(t("notconnected"))}</div>
+          <div className="text-muted-foreground text-xs">{t("nuikit_offline_hint")}</div>
+        </div>
       </div>
     );
   }
 
   return (
     <div className="flex h-full flex-col">
-      <div className="flex items-center justify-between">
-        <Badge variant="secondary" className="gap-1.5">
+      <div className="flex h-8 items-center justify-between">
+        <span className="nk-label text-foreground flex items-center gap-2">
           <span className="bg-primary size-1.5 rounded-full" />
           {soft(t("header"))}
-        </Badge>
+        </span>
         <Button
           variant="ghost"
           size="icon-sm"
@@ -62,25 +63,20 @@ export function Home() {
           disabled={isFav && !removable}
           aria-pressed={isFav}
           aria-label={t("favorites")}
-          className="disabled:opacity-100"
+          className={cn("-mr-1.5 disabled:opacity-100", !isFav && "text-muted-foreground")}
         >
           {isFav && !removable ? <Lock className="text-muted-foreground" /> : <Star className={cn(isFav && "fill-current")} />}
         </Button>
       </div>
-      <div className="flex flex-1 flex-col justify-center">
-        <div className="text-muted-foreground text-[11px] tracking-wider uppercase">{soft(t("frequency"))}</div>
-        <div className="radio-lcd text-5xl leading-none font-bold">{String(ch)}</div>
-        <div className="text-muted-foreground mt-1 flex items-center gap-2 text-xs">
-          <span>MHz</span>
-          {label && (
-            <>
-              <span>·</span>
-              <span className="text-foreground truncate font-medium">{label}</span>
-            </>
-          )}
+      <div className="flex min-w-0 flex-1 flex-col justify-center gap-2">
+        <span className="nk-label">{soft(t("frequency"))}</span>
+        <div className="flex items-baseline gap-2">
+          <span className="radio-lcd text-5xl leading-none font-semibold">{String(ch)}</span>
+          <span className="text-muted-foreground text-sm">MHz</span>
         </div>
+        {label && <span className="truncate text-sm font-medium">{label}</span>}
       </div>
-      <Button variant="destructive" size="sm" onClick={() => void post("leave")}>
+      <Button variant="outline" size="sm" className="text-destructive hover:text-destructive" onClick={() => void post("leave")}>
         <Unplug />
         {soft(t("disconnect"))}
       </Button>
@@ -90,10 +86,10 @@ export function Home() {
 
 function ChannelList({ channels }: { channels: number[] }) {
   const { data, t } = useCtx();
-  if (channels.length === 0) return <p className="text-muted-foreground py-8 text-center text-xs">{t("nuikit_empty")}</p>;
+  if (channels.length === 0) return <p className="text-muted-foreground px-4 py-8 text-center text-xs">{t("nuikit_no_channels")}</p>;
   return (
     <ScrollArea className="h-full [&_[data-slot=scroll-area-viewport]>div]:!block">
-      <div className="flex flex-col">
+      <div className="flex flex-col gap-0.5">
         {channels.map((ch, i) => {
           const { label } = channelLabel(ch, data.channelName);
           const current = data.onRadio && data.channel === ch;
@@ -102,13 +98,14 @@ function ChannelList({ channels }: { channels: number[] }) {
               key={`${ch}:${i}`}
               type="button"
               onClick={() => void post("join", ch)}
-              className="hover:bg-accent flex items-center gap-2 rounded-md px-2 py-1.5 text-left outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
+              className="nk-row hover:bg-accent focus-visible:bg-accent px-2 text-left outline-none"
+              aria-current={current || undefined}
             >
               <span className="min-w-0 flex-1">
-                <span className="radio-lcd block text-base leading-tight font-semibold">{ch} MHz</span>
-                {label && <span className="text-muted-foreground block truncate text-[11px]">{label}</span>}
+                <span className="radio-lcd block text-sm font-medium">{ch} MHz</span>
+                {label && <span className="text-muted-foreground block truncate text-xs">{label}</span>}
               </span>
-              {current ? <Badge variant="secondary">●</Badge> : <ArrowRight className="text-muted-foreground size-4" />}
+              {current ? <span className="bg-primary mr-1.5 size-1.5 shrink-0 rounded-full" aria-label="Joined" /> : <ArrowRight className="text-muted-foreground size-4 shrink-0" />}
             </button>
           );
         })}
@@ -121,9 +118,9 @@ export function Channels() {
   const { data, t } = useCtx();
   return (
     <Tabs defaultValue="favourite" className="h-full gap-2">
-      <TabsList className="w-full">
-        <TabsTrigger value="favourite">{soft(t("favorites"))}</TabsTrigger>
-        <TabsTrigger value="recomended">{soft(t("recommended"))}</TabsTrigger>
+      <TabsList className="h-8 w-full">
+        <TabsTrigger value="favourite" className="text-xs">{soft(t("favorites"))}</TabsTrigger>
+        <TabsTrigger value="recomended" className="text-xs">{soft(t("recommended"))}</TabsTrigger>
       </TabsList>
       <TabsContent value="favourite" className="min-h-0">
         <ChannelList channels={nums(data.favourite)} />
@@ -171,16 +168,16 @@ export function Keypad() {
   const keys = ["1", "2", "3", "4", "5", "6", "7", "8", "9", ".", "0", "back"];
   return (
     <div className="flex h-full flex-col gap-2">
-      <div className="bg-muted/60 flex h-11 items-center gap-2 rounded-md border px-3">
-        <span className={cn("radio-lcd flex-1 truncate text-2xl font-bold", !text && "text-muted-foreground")}>{text || "000.00"}</span>
+      <div className="flex h-10 shrink-0 items-baseline gap-2 border-b px-1 pt-1">
+        <span className={cn("radio-lcd flex-1 truncate text-2xl leading-8 font-semibold", !text && "text-muted-foreground/60")}>{text || "000.00"}</span>
         <span className="text-muted-foreground text-xs">MHz</span>
       </div>
-      <div className="grid min-h-0 flex-1 grid-cols-3 grid-rows-4 gap-1.5">
+      <div className="grid min-h-0 flex-1 grid-cols-3 grid-rows-4 gap-1">
         {keys.map((k) => (
           <Button
             key={k}
-            variant="secondary"
-            className="radio-lcd h-full min-h-0 py-0 text-base font-semibold"
+            variant="ghost"
+            className="radio-lcd hover:bg-accent h-full min-h-0 py-0 text-base font-medium"
             onClick={() => setText((s) => pressKey(s, k, data.maxChannel))}
             aria-label={k === "back" ? "Backspace" : k}
           >
@@ -216,27 +213,28 @@ export function Members() {
 
   return (
     <div className="flex h-full flex-col gap-2">
-      <div className="flex items-center justify-between">
-        <span className="text-xs font-semibold">{soft(t("members"))}</span>
-        <Badge variant="outline" className="radio-lcd">
-          {data.channel} MHz · {entries.length}
-        </Badge>
+      <div className="flex h-6 shrink-0 items-center justify-between px-2">
+        <span className="text-sm font-medium">{soft(t("members"))}</span>
+        <span className="nk-label nk-num" aria-label={`${entries.length} on ${data.channel} MHz`}>
+          {entries.length}
+        </span>
       </div>
-      <div className="min-h-0 flex-1 rounded-md border">
+      <div className="min-h-0 flex-1">
         {entries.length === 0 ? (
-          <p className="text-muted-foreground py-8 text-center text-xs">{t("nuikit_empty")}</p>
+          <p className="text-muted-foreground px-4 py-8 text-center text-xs">{t("nuikit_no_members")}</p>
         ) : (
           <ScrollArea className="h-full [&_[data-slot=scroll-area-viewport]>div]:!block">
-            <div className="flex flex-col p-1">
+            <div className="flex flex-col">
               {entries.map(([id, m]) => {
                 const isOff = isMuted(muted, id);
                 return (
-                  <div key={id} className="flex items-center gap-2 rounded px-2 py-1">
-                    <span className={cn("size-2 shrink-0 rounded-full", m.isTalking ? "bg-primary" : "bg-muted-foreground/30")} />
-                    <span className={cn("min-w-0 flex-1 truncate text-xs", m.isTalking && "font-semibold")}>{m.name}</span>
+                  <div key={id} className="flex h-9 items-center gap-2 rounded-md pr-0.5 pl-2">
+                    <span className={cn("size-1.5 shrink-0 rounded-full", m.isTalking ? "bg-primary" : "bg-muted-foreground/30")} />
+                    <span className={cn("min-w-0 flex-1 truncate text-sm", m.isTalking ? "font-medium" : "text-muted-foreground")}>{m.name}</span>
                     <Button
                       variant={isOff ? "secondary" : "ghost"}
-                      size="icon-xs"
+                      size="icon-sm"
+                      aria-label={isOff ? "Unmute" : "Mute"}
                       onClick={() => void toggleMute(id)}
                       aria-pressed={isOff}
                       className={cn(!isOff && "text-muted-foreground")}
@@ -250,7 +248,7 @@ export function Members() {
           </ScrollArea>
         )}
       </div>
-      <div className="flex gap-1.5">
+      <div className="flex shrink-0 gap-2">
         <Button variant="secondary" size="sm" className="flex-1" onClick={toggleOverlay}>
           {soft(overlayOn ? t("hide_overlay") : t("show_overlay"))}
         </Button>
@@ -265,7 +263,7 @@ export function Members() {
 function Row({ label, children }: { label: string; children: ReactNode }) {
   return (
     <div className="flex items-center justify-between gap-3">
-      <Label className="text-xs font-normal">{label}</Label>
+      <Label className="text-sm font-normal">{label}</Label>
       {children}
     </div>
   );
@@ -285,10 +283,10 @@ export function SettingsScreen() {
   return (
     <div className="flex h-full flex-col gap-2">
       <ScrollArea className="min-h-0 flex-1 [&_[data-slot=scroll-area-viewport]>div]:!block">
-        <div className="flex flex-col gap-3 pr-2">
-          <div className="text-xs font-semibold">{t("radio_settings")}</div>
+        <div className="flex flex-col gap-3 pr-3 pb-1">
+          <div className="nk-label">{soft(t("radio_settings"))}</div>
           <div className="flex flex-col gap-2">
-            <Label className="text-xs font-normal">{t("nuikit_size")}</Label>
+            <Label className="text-sm font-normal">{t("nuikit_size")}</Label>
             <Slider
               min={25}
               max={75}
@@ -326,15 +324,15 @@ export function SettingsScreen() {
           {withOverlay && (
             <>
               <Separator />
-              <div className="text-xs font-semibold">{t("overlay_settings")}</div>
-              <div className="flex flex-col gap-1.5">
-                <Label htmlFor="radio-name" className="text-xs font-normal">
+              <div className="nk-label">{soft(t("overlay_settings"))}</div>
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="radio-name" className="text-sm font-normal">
                   {t("nuikit_name")}
                 </Label>
-                <Input id="radio-name" value={name} maxLength={64} onChange={(e) => setName(e.target.value)} className="h-8 text-xs" />
+                <Input id="radio-name" value={name} maxLength={64} onChange={(e) => setName(e.target.value)} className="h-8 text-sm" />
               </div>
               <div className="flex flex-col gap-2">
-                <Label className="text-xs font-normal">{t("nuikit_overlay_size")}</Label>
+                <Label className="text-sm font-normal">{t("nuikit_overlay_size")}</Label>
                 <Slider
                   min={25}
                   max={75}

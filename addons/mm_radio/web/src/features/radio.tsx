@@ -19,7 +19,6 @@ import {
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
 import { soft } from "@/lib/locale";
 import { post } from "@/lib/nui";
@@ -32,35 +31,35 @@ function BatteryIcon({ level }: { level: number }) {
   return <I className={cn("size-4", level < 20 && "text-destructive")} />;
 }
 
-/** LCD status bar: clock, signal, battery; a notify message takes it over for its duration. */
+/** Status bar: clock, signal, battery; a notify message takes it over for its duration. */
 function StatusBar({ message }: { message: string | null }) {
   const { data, t } = useCtx();
   const battery = Math.round(Number(data.battery ?? 100));
   if (message) {
     return (
-      <div className="bg-primary text-primary-foreground -mx-3 -mt-3 mb-2 flex h-8 items-center overflow-hidden rounded-t-xl px-3">
-        <span className="truncate text-xs font-semibold" title={message}>
+      <div className="bg-accent text-accent-foreground -mx-3 -mt-3 mb-3 flex h-8 shrink-0 items-center overflow-hidden px-3">
+        <span className="truncate text-xs font-medium" title={message}>
           {message}
         </span>
       </div>
     );
   }
   return (
-    <div className="text-muted-foreground -mx-3 -mt-3 mb-2 flex h-8 items-center gap-2 border-b px-3 text-xs">
-      <span className="radio-lcd text-foreground font-semibold">{data.time ?? "--:--"}</span>
-      <span className="ml-auto flex items-center gap-1">
+    <div className="text-muted-foreground -mx-3 -mt-3 mb-3 flex h-8 shrink-0 items-center gap-3 border-b px-3 text-xs">
+      <span className="nk-num text-foreground font-semibold">{data.time ?? "--:--"}</span>
+      <span className="ml-auto flex items-center gap-1.5">
         {data.insideJammerZone ? (
           <>
             <SignalZero className="text-destructive size-4" />
-            <span className="text-destructive text-[10px] font-semibold uppercase">{t("nuikit_jammed")}</span>
+            <span className="text-destructive font-medium">{t("nuikit_jammed")}</span>
           </>
         ) : (
-          <Signal className={cn("size-4", data.onRadio ? "text-foreground" : "")} />
+          <Signal className={cn("size-4", data.onRadio && "text-foreground")} />
         )}
       </span>
       <span className="flex items-center gap-1">
         <BatteryIcon level={battery} />
-        <span className="radio-lcd">{battery}%</span>
+        <span className="nk-num">{battery}%</span>
       </span>
     </div>
   );
@@ -71,10 +70,10 @@ function NavKey({ icon: Icon, label, tab, disabled }: { icon: LucideIcon; label:
   const active = current === tab;
   return (
     <Button
-      variant={active ? "default" : "secondary"}
+      variant="ghost"
       disabled={disabled}
       onClick={() => setTab(active ? "home" : tab)}
-      className="h-auto flex-1 flex-col gap-1 py-2 text-[10px] font-medium"
+      className={cn("text-muted-foreground h-12 min-w-0 flex-1 flex-col gap-1 px-1 text-xs font-medium", active && "bg-accent text-accent-foreground")}
       aria-pressed={active}
     >
       <Icon className="size-4" />
@@ -100,7 +99,15 @@ function Volume() {
 
   return (
     <div className="flex items-center gap-2">
-      <Button variant="ghost" size="icon-sm" onClick={toggleMute} disabled={!on} aria-label={t("nuikit_volume")} aria-pressed={volume === 0}>
+      <Button
+        variant="ghost"
+        size="icon-sm"
+        onClick={toggleMute}
+        disabled={!on}
+        aria-label={t("nuikit_volume")}
+        aria-pressed={volume === 0}
+        className="text-muted-foreground"
+      >
         <Icon />
       </Button>
       <Slider
@@ -114,7 +121,7 @@ function Volume() {
         onValueCommit={([v]) => void post("volumeChange", v)}
         aria-label={t("nuikit_volume")}
       />
-      <span className="radio-lcd text-muted-foreground w-8 text-right text-xs">{volume}</span>
+      <span className="nk-num text-muted-foreground w-8 text-right text-xs">{volume}</span>
     </div>
   );
 }
@@ -143,22 +150,22 @@ export function Handheld() {
   const screen = { home: <Home />, channels: <Channels />, keypad: <Keypad />, members: <Members />, settings: <SettingsScreen /> }[tab];
 
   return (
-    <div className="relative pt-12">
+    <div className="relative pt-10">
       {/* antenna */}
-      <div className="bg-muted absolute top-0 left-8 h-16 w-6 rounded-t-lg border border-b-0" />
-      <div className="bg-muted-foreground/40 absolute top-2 left-[2.6rem] h-1 w-2 rounded-full" />
-      <Card className={cn("relative w-[280px] gap-3 rounded-[28px] p-3 shadow-2xl", moveMode && "ring-primary cursor-move ring-2")}>
-        {/* speaker grille */}
-        <div className="flex items-center gap-2 px-2">
-          <div className="flex flex-1 flex-col gap-1 py-1">
-            {[0, 1, 2].map((i) => (
-              <div key={i} className="bg-muted h-1 rounded-full" />
-            ))}
-          </div>
-          {moveMode && <Move className="text-primary size-4" />}
+      <div className="bg-muted absolute top-0 left-8 h-14 w-5 rounded-t-md border border-b-0" />
+      <section
+        className={cn(
+          "nk-panel relative flex w-72 flex-col gap-3 rounded-[1.75rem] p-3",
+          moveMode && "outline-primary cursor-move outline-2 outline-offset-2",
+        )}
+      >
+        {/* speaker slot */}
+        <div className="relative flex h-3 items-center justify-center">
+          <div className="bg-muted h-1 w-12 rounded-full" />
+          {moveMode && <Move className="text-primary absolute right-2 size-4" />}
         </div>
 
-        <div className="bg-background relative h-[300px] overflow-hidden rounded-xl border p-3 shadow-inner">
+        <div className="bg-background relative h-[18.75rem] overflow-hidden rounded-2xl border p-3">
           {charged ? (
             <div className="flex h-full flex-col">
               <StatusBar message={message} />
@@ -166,18 +173,18 @@ export function Handheld() {
                 <button
                   type="button"
                   onClick={() => setTab("home")}
-                  className="text-muted-foreground hover:text-foreground -mt-0.5 mb-1.5 flex items-center gap-0.5 self-start text-[11px] outline-none"
+                  className="text-muted-foreground hover:text-foreground -mt-1 mb-2 flex h-6 shrink-0 items-center gap-1 self-start text-xs font-medium outline-none"
                 >
-                  <ChevronLeft className="size-3.5" />
+                  <ChevronLeft className="-ml-1 size-4" />
                   {t("nuikit_back")}
                 </button>
               )}
               <div className="min-h-0 flex-1">{screen}</div>
             </div>
           ) : (
-            <div className="flex h-full flex-col items-center justify-center gap-2">
-              <BatteryWarning className="text-destructive size-8" />
-              <span className="text-destructive text-xs font-bold tracking-widest uppercase">{t("nuikit_no_charge")}</span>
+            <div className="flex h-full flex-col items-center justify-center gap-3">
+              <BatteryWarning className="text-destructive size-6" />
+              <span className="text-destructive text-sm font-medium">{soft(t("nuikit_no_charge"))}</span>
             </div>
           )}
         </div>
@@ -185,7 +192,7 @@ export function Handheld() {
         {charged && (
           <>
             <Volume />
-            <div className="flex gap-1.5">
+            <div className="flex gap-1">
               <NavKey icon={ListMusic} label={soft(t("channels"))} tab="channels" />
               <NavKey icon={Grid3x3} label={soft(t("radio"))} tab="keypad" />
               {never ? (
@@ -194,13 +201,13 @@ export function Handheld() {
                 <NavKey icon={UsersRound} label={soft(t("members"))} tab="members" disabled={!data.onRadio} />
               )}
             </div>
-            <div className="text-muted-foreground flex items-center justify-center gap-1.5 pb-1 text-[11px]">
-              <MapPin className="size-3" />
+            <div className="text-muted-foreground flex h-5 items-center justify-center gap-1.5 text-xs">
+              <MapPin className="size-3.5 shrink-0" />
               <span className="truncate">{data.street || "—"}</span>
             </div>
           </>
         )}
-      </Card>
+      </section>
     </div>
   );
 }

@@ -1,8 +1,5 @@
-import { CheckIcon, ClockIcon, UsersIcon, XIcon } from "lucide-react";
+import { UsersIcon } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Item, ItemActions, ItemContent, ItemGroup, ItemSeparator, ItemTitle } from "@/components/ui/item";
 import { Progress } from "@/components/ui/progress";
 import { loadServerTheme } from "@/lib/theme";
 import { cn } from "@/lib/utils";
@@ -62,69 +59,56 @@ export default function App() {
     <div
       aria-hidden={!open}
       className={cn(
-        "fixed top-[30vh] right-[3vh] w-[22rem] transition-[opacity,transform] duration-150 ease-out",
+        "fixed top-[30vh] right-6 w-80 transition-[opacity,transform] duration-150 ease-out",
         open ? "opacity-100" : "pointer-events-none translate-x-2 opacity-0",
       )}
     >
-      <Card className="gap-4 border-border/60 bg-background/85 py-5 shadow-2xl backdrop-blur-md">
-        <CardHeader className="gap-3 px-5">
-          <div className="flex items-center justify-between gap-3">
-            <div className="flex flex-col gap-1">
-              <CardDescription className="text-xs font-medium tracking-wide uppercase">Players online</CardDescription>
-              <CardTitle className="flex items-baseline gap-1.5 text-2xl tracking-tight tabular-nums">
-                {players}
-                {max > 0 && <span className="text-base font-normal text-muted-foreground">/ {max}</span>}
-              </CardTitle>
-            </div>
-            <div className="flex size-10 items-center justify-center rounded-full border bg-muted/40">
-              <UsersIcon className="size-4 text-muted-foreground" />
-            </div>
-          </div>
-          {max > 0 && <Progress value={Math.min(100, (players / max) * 100)} className="h-1 bg-foreground/15" />}
-        </CardHeader>
+      <section className="nk-panel overflow-hidden">
+        <header className="nk-panel-header border-b-0">
+          <UsersIcon className="size-4 text-muted-foreground" />
+          <h2 className="nk-title flex-1">Players online</h2>
+          <span className="nk-num text-sm font-medium">
+            {players}
+            {max > 0 && <span className="text-muted-foreground"> / {max}</span>}
+          </span>
+        </header>
+        {max > 0 ? (
+          <Progress value={Math.min(100, (players / max) * 100)} className="h-px rounded-none" />
+        ) : (
+          <div className="border-t" />
+        )}
 
         {keys.length > 0 && (
-          <CardContent className="px-5">
-            <ItemGroup>
-              {keys.map((key, n) => {
-                const a = activities[key];
-                return (
-                  <div key={key}>
-                    {n > 0 && <ItemSeparator className="opacity-60" />}
-                    <Item size="sm" className="px-0 py-2.5">
-                      <ItemContent>
-                        <ItemTitle className="font-normal">{labels[key] ?? a?.label ?? key}</ItemTitle>
-                      </ItemContent>
-                      <ItemActions>{a && <Status activity={a} cops={Number(data.currentCops) || 0} />}</ItemActions>
-                    </Item>
-                  </div>
-                );
-              })}
-            </ItemGroup>
-          </CardContent>
+          <ul className="nk-panel-body">
+            {keys.map((key) => {
+              const a = activities[key];
+              return (
+                <li key={key} className="nk-row justify-between">
+                  <span className="truncate">{labels[key] ?? a?.label ?? key}</span>
+                  {a && <Status activity={a} cops={Number(data.currentCops) || 0} />}
+                </li>
+              );
+            })}
+          </ul>
         )}
-      </Card>
+      </section>
     </div>
   );
 }
 
 /** The same three states qbx_scoreboard shows: busy, enough police, not enough police. */
 function Status({ activity, cops }: { activity: Activity; cops: number }) {
-  if (activity.busy)
-    return (
-      <Badge variant="secondary">
-        <ClockIcon /> In progress
-      </Badge>
-    );
-  if (cops >= (Number(activity.minimumPolice) || 0))
-    return (
-      <Badge>
-        <CheckIcon /> Available
-      </Badge>
-    );
+  const state = activity.busy ? "busy" : cops >= (Number(activity.minimumPolice) || 0) ? "available" : "unavailable";
   return (
-    <Badge variant="outline" className="text-muted-foreground">
-      <XIcon /> Unavailable
-    </Badge>
+    <span className={cn("nk-label flex shrink-0 items-center gap-2", state === "available" && "text-foreground")}>
+      <span
+        aria-hidden
+        className={cn(
+          "size-1.5 rounded-full",
+          state === "available" ? "bg-primary" : state === "busy" ? "bg-muted-foreground" : "border border-muted-foreground/60",
+        )}
+      />
+      {state === "busy" ? "In progress" : state === "available" ? "Available" : "Unavailable"}
+    </span>
   );
 }

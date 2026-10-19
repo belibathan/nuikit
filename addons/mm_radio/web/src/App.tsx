@@ -145,21 +145,19 @@ function Overlay({ forced, draggable }: { forced: boolean; draggable: boolean })
       style={{ right: pos.x, top: pos.y, transform: `scale(${scaleOf(data.userData?.overlaySizeMultiplier)})`, transformOrigin: "top right" }}
       onMouseDown={onMouseDown}
     >
-      {forced && (
-        <div className="bg-background/80 text-muted-foreground radio-lcd rounded-md border px-2 py-0.5 text-[11px]">{data.channel} MHz</div>
+      {forced && <div className="nk-chip radio-lcd opacity-70">{data.channel} MHz</div>}
+      {rows.map(([id, m]) =>
+        m.isTalking ? (
+          <div key={id} className="bg-primary text-primary-foreground flex h-7 max-w-full items-center gap-1.5 rounded-full px-2.5 text-xs font-medium">
+            <Mic className="size-3.5 shrink-0" />
+            <span className="truncate">{m.name}</span>
+          </div>
+        ) : (
+          <div key={id} className="nk-chip max-w-full">
+            <span className="truncate opacity-70">{m.name}</span>
+          </div>
+        ),
       )}
-      {rows.map(([id, m]) => (
-        <div
-          key={id}
-          className={cn(
-            "flex max-w-full items-center gap-1.5 rounded-md border px-2 py-1 text-sm font-semibold shadow-sm transition-colors",
-            m.isTalking ? "bg-primary text-primary-foreground border-transparent" : "bg-background/80 text-muted-foreground",
-          )}
-        >
-          <span className="truncate">{m.name}</span>
-          {m.isTalking && <Mic className="size-3.5 shrink-0" />}
-        </div>
-      ))}
     </div>
   );
 }
