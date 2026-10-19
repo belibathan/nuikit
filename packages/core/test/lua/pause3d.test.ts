@@ -319,7 +319,6 @@ describe("systems/nuikit_pause: the bigger menu", () => {
     await pause.call("pause:view", { view: "map" });
     expect(await pause.run(`return Camera.owner()`)).toBe("map");
     await pause.run(`TriggerEvent('onClientResourceStop', GetCurrentResourceName())`);
-    client.flush?.();
     expect(await pause.run(`return Camera.isActive()`)).toBe(false);
     expect(await pause.run(`return RENDER[#RENDER]`)).toBe(false);
   });
