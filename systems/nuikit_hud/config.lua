@@ -4,8 +4,9 @@ Config = {
   -- Show GTA's minimap: 'vehicle' (only while driving), 'always' or 'never'
   radar = 'vehicle',
   -- nuikit frames GTA's minimap in the theme (docs/minimap.md). enabled = false leaves GTA's radar alone.
+  -- Off by default while it's unfinished: the map doesn't fill the frame yet and the compass stutters.
   minimap = {
-    enabled = true,
+    enabled = false,
     shape = 'square',        -- 'square' (rounded) or 'circle' (experimental: see fit)
     size = 15.0,              -- the frame, in rem (1rem = 16px at 1080p)
     band = 0.375,             -- frame thickness, in rem
@@ -16,7 +17,7 @@ Config = {
     fit = { x = 1.0, y = 1.0 },
   },
   -- Print where the minimap went to the F8 console.
-  debug = true,
+  debug = false,
   -- Hide hunger/thirst/stress when your framework doesn't track them (they're never faked)
   needs = true,
 }
