@@ -1,6 +1,13 @@
 # What nuikit is for
 
-*Written Oct 18, 2026, after 0.4.0. Read this before planning anything big.*
+*Written Oct 18, 2026, after 0.4.0; identity settled Oct 19. Read this before planning anything big.*
+
+> **nuikit is the shared layer between scripts and screens on any FiveM server.** One runtime coordinates
+> what every UI shares; scripts ask for intents, swappable themed renderers draw them, adapters bring existing
+> scripts in, and bespoke screens join through the protocol (`docs/architecture.md`).
+>
+> We build it so **every step ships something useful on its own**, and **every mechanism is tested before we
+> commit to it**.
 
 ## What the research says
 

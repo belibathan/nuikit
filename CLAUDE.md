@@ -1,8 +1,19 @@
 # nuikit: guide for coding agents
 
-nuikit is one design system for a whole FiveM server: stock shadcn/ui React UIs that render correctly
-in FiveM's NUI (Chromium 103) and are themed by one server-wide TweakCN theme. Read this before changing
-anything, then read `docs/design.md`.
+**What nuikit is:** the shared layer between scripts and screens on any FiveM server. One runtime
+coordinates what every UI shares (focus, Escape, camera, controls, theme, player context); scripts ask for
+intents (notify, menu, input…) and swappable, themed renderers draw them; adapters bring ox, QBCore and ESX
+scripts in without rewrites; bespoke screens join through the protocol. The kit (stock shadcn/ui, one
+TweakCN theme) is the default look and the showcase, not the product. Design: `docs/architecture.md`.
+
+**How we work:**
+- Every step ships something useful on its own. If work stopped after any step, what's there must
+  already be better than what servers have today.
+- Test a mechanism before committing to it: spike it on a real client, measure it, then build on it
+  (the host benchmark and the adapter spike are the model).
+- Be honest about what's unproven, in docs and in replies; say what would change the plan.
+
+Read this before changing anything, then `docs/design.md`.
 
 Current release: **0.4.0** (npm `nuikit-core`, `vite-plugin-nuikit`, `create-nuikit`; GitHub release
 `v0.4.0` with `nuikit.zip`). Direction: `docs/vision.md` (read first), then `docs/architecture.md`. Active work: `docs/next/blocks.md`.
