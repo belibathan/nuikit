@@ -297,6 +297,25 @@ NUI.player.onChange(fn)
 const { health, cash, job, voice } = usePlayer();
 ```
 
+## Use the standard in your own resource
+
+Everything in `[nuikit]` is built from three things you can use too, so a resource you write (or buy) looks like
+the rest of the server without anyone designing it:
+
+1. **The kit.** `nk-*` utilities for panels, rows, labels, numbers, HUD chips and screen anchors, in every
+   `index.css` that `npm create nuikit` writes. The rules are on [nuikit.vercel.app/design](https://nuikit.vercel.app/design).
+2. **The components.** `panel`, `menu-row`, `stat`, `meter`, `hud-chip` and the rest, from the registry below.
+   See every state on [nuikit.vercel.app/components](https://nuikit.vercel.app/components).
+3. **The theme.** Read colours only from shadcn tokens. The server's `nuikit/theme.css` (any TweakCN theme)
+   then recolours your UI along with the pause menu, HUD and overrides.
+
+```bash
+npm create nuikit@latest my-resource          # starts on the kit, with a HUD, a menu and a confirm
+npx shadcn add https://nuikit.vercel.app/r/panel.json https://nuikit.vercel.app/r/menu-row.json
+```
+
+Whole screens (a HUD, a shop, a garage, a bank…) are coming as blocks you can install the same way.
+
 ## Components
 
 Installed with the shadcn CLI you already use. They're **compositions of stock shadcn components**: the CLI pulls in the `card`, `item`, `kbd`, `progress` and `badge` they're built from. They follow shadcn's file conventions (`data-slot`, `React.ComponentProps`, `cva` variants) and use **only theme tokens**, so they follow your theme. Nothing here has its own visual language.
@@ -311,6 +330,11 @@ npx shadcn add @nuikit/speedometer
 
 | Component | |
 |---|---|
+| `panel` | The one floating surface: header (title, description, actions, optional tabs row), scrolling body, footer. |
+| `menu-row` | 40px action row: icon, label, description, trailing meta / chevron / `Kbd` / checkbox / stepper. |
+| `stat` | Label over a tabular number that matters, in three sizes, with meta and a delta. On a panel or the game. |
+| `meter` | Slim bar on a theme or game track, with low/high thresholds and segments. |
+| `hud-chip` | Always-on pill or tile on the game: icon and text, active or warning. |
 | `vital` | Player stat: icon + `Progress`, colored by a theme token. Pulses when low. |
 | `speedometer` | SVG arc in `primary` / `destructive`; gear is a `Badge`, fuel a `Progress`. |
 | `key-hint` | `[E] Talk`: `Kbd` + label, hold-to-confirm on `Progress`. |
