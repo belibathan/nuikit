@@ -1,0 +1,231 @@
+/*
+ * nuikit kit utilities: the sizing, spacing and surface rules every nuikit UI shares (docs/design.md).
+ * Colours always come from the theme; this only fixes proportions so every screen on the server
+ * feels like one product. Single source: `pnpm sync` inlines it into every index.css, and the site
+ * imports it directly. Never redefine an nk-* name in a UI.
+ */
+
+/* Floating panel: menus, inventories, dialogs, cards on top of the game. */
+@utility nk-panel {
+  /* !important so it wins over a shadcn primitive's own surface (DialogContent's bg-background) */
+  background-color: var(--popover) !important;
+  color: var(--popover-foreground) !important;
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius) + 4px) !important;
+  box-shadow: 0 0 0 1px rgb(0 0 0 / 0.25), 0 24px 64px -24px rgb(0 0 0 / 0.7);
+}
+/* Panel header: one line, title left, meta/actions right. */
+@utility nk-panel-header {
+  display: flex;
+  text-align: left;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 3.25rem;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border);
+}
+@utility nk-panel-body {
+  padding: 0.5rem;
+}
+@utility nk-panel-footer {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-top: 1px solid var(--border);
+}
+/* Two-row panel header: a title row (nk-panel-title-row) above tabs, a search or a meter. */
+@utility nk-panel-header-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  text-align: left;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border);
+}
+/* The title row of a header: icon, title, then meta and actions pushed right. 28px tall so a
+   ghost icon button fits without changing the header's height. */
+@utility nk-panel-title-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 1.75rem;
+}
+/* Form field inside a panel: a label row above its control (slider, stepper, input, swatches). */
+@utility nk-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+/* The field's label row: name, an optional hint, then the value and a reset button on the right
+   (give that group ml-auto). 24px tall, so an icon-xs reset button never moves it. */
+@utility nk-field-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+  min-height: 1.5rem;
+  font-size: 0.75rem;
+  line-height: 1rem;
+  font-weight: 500;
+}
+/* Title inside a panel header. */
+@utility nk-title {
+  /* !important: shadcn titles carry text-lg, which would otherwise win */
+  font-size: 0.9375rem !important;
+  font-weight: 600;
+  line-height: 1.25rem !important;
+  letter-spacing: -0.01em;
+}
+/* Small secondary label, sentence case. */
+@utility nk-label {
+  font-size: 0.75rem !important;
+  line-height: 1rem !important;
+  font-weight: 500;
+  color: var(--muted-foreground);
+}
+/* Interactive row in a list: 40px tall at 1080p. */
+@utility nk-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 2.5rem;
+  padding: 0.375rem 0.75rem;
+  border-radius: calc(var(--radius) - 2px);
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+/* Numbers: money, timers, counts. */
+@utility nk-num {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+/* HUD chip: always-on, no border, sits on the game. */
+@utility nk-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  height: 1.75rem;
+  padding: 0 0.625rem;
+  border-radius: 9999px;
+  background-color: rgb(0 0 0 / 0.45);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+/* Active chip (talking, selected). */
+@utility nk-chip-active {
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+}
+/* Square HUD tile on the game (hotbar slots, the target eye): the chip's surface, any size. */
+@utility nk-hud {
+  border-radius: calc(var(--radius) + 2px);
+  background-color: rgb(0 0 0 / 0.45);
+  color: #fff;
+}
+/* Bar track on the game world: theme-tinted tracks vanish over a bright sky. */
+@utility nk-track {
+  background-color: rgb(0 0 0 / 0.35);
+}
+/* Text and marks drawn straight on the game. */
+@utility nk-shadow {
+  text-shadow: 0 1px 2px rgb(0 0 0 / 0.6);
+  filter: drop-shadow(0 1px 1px rgb(0 0 0 / 0.35));
+}
+/* Full-screen title (pause, loading, death): 32px at 1080p. */
+@utility nk-display {
+  font-size: 2rem;
+  line-height: 2.5rem;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+}
+/* Scrolling list inside a panel. */
+@utility nk-scroll {
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-gutter: stable;
+}
+/* Distance from the screen edge for anything anchored to it. */
+@utility nk-edge {
+  --nk-edge: 1.5rem;
+}
+/*
+ * Anchors: pin an element to a corner or edge of the screen, --nk-edge in (1.5rem unless an
+ * ancestor sets it). Absolute, so put them inside the full-screen root. The edge-centred ones
+ * centre with auto margins, not a transform, so nk-enter and dialogs never fight over it.
+ */
+@utility nk-anchor-tl {
+  position: absolute;
+  top: var(--nk-edge, 1.5rem);
+  left: var(--nk-edge, 1.5rem);
+}
+@utility nk-anchor-tr {
+  position: absolute;
+  top: var(--nk-edge, 1.5rem);
+  right: var(--nk-edge, 1.5rem);
+}
+@utility nk-anchor-bl {
+  position: absolute;
+  bottom: var(--nk-edge, 1.5rem);
+  left: var(--nk-edge, 1.5rem);
+}
+@utility nk-anchor-br {
+  position: absolute;
+  bottom: var(--nk-edge, 1.5rem);
+  right: var(--nk-edge, 1.5rem);
+}
+@utility nk-anchor-t {
+  position: absolute;
+  top: var(--nk-edge, 1.5rem);
+  left: 0;
+  right: 0;
+  width: max-content;
+  margin-inline: auto;
+}
+@utility nk-anchor-b {
+  position: absolute;
+  bottom: var(--nk-edge, 1.5rem);
+  left: 0;
+  right: 0;
+  width: max-content;
+  margin-inline: auto;
+}
+@utility nk-anchor-l {
+  position: absolute;
+  left: var(--nk-edge, 1.5rem);
+  top: 0;
+  bottom: 0;
+  height: max-content;
+  margin-block: auto;
+}
+@utility nk-anchor-r {
+  position: absolute;
+  right: var(--nk-edge, 1.5rem);
+  top: 0;
+  bottom: 0;
+  height: max-content;
+  margin-block: auto;
+}
+/*
+ * A floating menu that opens beside a point (the target eye, the cursor, a row) lines its first
+ * row up with that point: place the panel's top on the point, then pull it up by the 1px border,
+ * the 8px nk-panel-body padding and half a 40px nk-row.
+ */
+@utility nk-first-row {
+  margin-top: calc(-1px - 0.5rem - 1.25rem);
+}
+/* The one open animation. */
+@utility nk-enter {
+  animation: nk-enter 160ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+/* Opacity only: a transform here would override the translate that centres dialogs, and
+   Chromium 103 has no separate `scale` property. */
+@keyframes nk-enter {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .nk-enter { animation: none; }
+}

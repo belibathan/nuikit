@@ -3,6 +3,7 @@
 //   vendor/shadcn/ui/*                → web/src/components/ui (stock shadcn, unmodified)
 //   registry/nuikit/*                 → web/src/components/ui, web/src/hooks
 //   vendor/shadcn/colors/neutral.json → web/src/index.css (stock shadcn neutral theme)
+//   packages/create-nuikit/kit.css    → web/src/index.css (the nk-* kit utilities)
 // Copies are committed so each resource is complete on its own (you own the components, as with
 // shadcn). Never edit the copies here; edit the sources and run `pnpm sync`.
 import fs from "node:fs";
@@ -43,7 +44,8 @@ const { cssVars } = JSON.parse(fs.readFileSync(path.join(root, "vendor/shadcn/co
 const block = (sel, vars) => `${sel} {\n${Object.entries(vars).map(([k, v]) => `  --${k}: ${v};`).join("\n")}\n}`;
 const css = fs
   .readFileSync(path.join(root, "packages/create-nuikit/index.css.tpl"), "utf8")
-  .replace("/* {{theme}} */", [block(":root", cssVars.light), block(".dark", cssVars.dark)].join("\n\n"));
+  .replace("/* {{theme}} */", [block(":root", cssVars.light), block(".dark", cssVars.dark)].join("\n\n"))
+  .replace("/* {{kit}} */", fs.readFileSync(path.join(root, "packages/create-nuikit/kit.css"), "utf8").trimEnd());
 
 for (const t of targets) {
   const copy = (from, to) => {

@@ -13,7 +13,7 @@ Current release: **0.4.0** (npm `nuikit-core`, `vite-plugin-nuikit`, `create-nui
 |---|---|
 | `packages/vite` | `vite-plugin-nuikit`: lowers Tailwind v4/shadcn CSS to Chromium 103 (oklch → rgb, color-mix → rgba channels, media ranges, transforms), in-game HMR, `nuikit-doctor`. |
 | `packages/core` | `nuikit-core`: `fetchNui`/`onNui`, surfaces (focus, layers, Escape across resources), `applyTheme`, player bridge types, devtools. `lua/nuikit.lua` + `lua/bridge.lua` are the Lua halves. |
-| `packages/create-nuikit` | `npm create nuikit`. `index.css.tpl` is the **single source** of every UI's `index.css` (theme + kit utilities). |
+| `packages/create-nuikit` | `npm create nuikit`. `index.css.tpl` (theme + NUI scale) and `kit.css` (the `nk-*` utilities) are the **single sources** of every UI's `index.css`; the site imports `kit.css` directly. |
 | `registry/nuikit/{ui,hooks}` + `registry.json` | shadcn registry items (`npx shadcn add https://nuikit.vercel.app/r/<name>.json`). Compositions of stock shadcn. |
 | `vendor/shadcn/ui` | Unmodified shadcn new-york-v4 components (only the `cn` import path changed). Never edit; re-copy from upstream. |
 | `systems/<name>` | `[nuikit]` resources (fxmanifest, Lua, `web/`). Reference UI: `systems/nuikit_pause`. |
@@ -38,7 +38,7 @@ pnpm --filter <web-package> dev           # browser dev with devtools (press `);
 Each `systems/*` and `addons/*` has a `nuikit.json`:
 `{ "lua": ["nuikit.lua","bridge.lua"], "components": ["button","card"], "hooks": [], "target": {"resource","path"} }`.
 `pnpm sync` copies the listed Lua from `packages/core/lua`, components from `vendor/shadcn/ui` or
-`registry/nuikit/ui`, and writes `web/src/index.css` from `index.css.tpl`. **Synced copies are committed
+`registry/nuikit/ui`, and writes `web/src/index.css` from `index.css.tpl` + `kit.css`. **Synced copies are committed
 but never edited by hand**: change the source, run `pnpm sync`. Feature CSS goes in a separate file
 (`app.css`, `pause.css`) imported after `index.css`.
 
