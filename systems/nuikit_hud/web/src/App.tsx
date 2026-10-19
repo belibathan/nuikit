@@ -12,7 +12,9 @@ import {
   UtensilsIcon,
   WalletIcon,
 } from "lucide-react";
-import type { HudVehicle } from "./nui";
+import type { CSSProperties } from "react";
+import { Minimap, useMinimapFrame } from "./minimap";
+import type { HudVehicle, MinimapFrame, MinimapState } from "./nui";
 import { HudChip } from "@/components/ui/hud-chip";
 import { Meter } from "@/components/ui/meter";
 import { Speedometer } from "@/components/ui/speedometer";
@@ -27,12 +29,17 @@ const onGameMarks = "drop-shadow-[0_1px_1px_rgb(0_0_0/0.5)]";
 export default function App() {
   const player = usePlayer();
   const vehicle = useNuiState("hud:vehicle", false);
+  const frame = useMinimapFrame();
+  const map = useNuiState("hud:minimap", null as unknown as MinimapState) as MinimapState | null;
+  // the vitals step aside for a map in the bottom-left corner
+  const beside = frame && map?.visible && frame.x < 0.5 && frame.y > 0.5 ? frame : null;
 
   return (
     <Surface name="hud" layer="hud">
       {(settings) => (
         <div className="nk-edge absolute inset-0 text-foreground">
-          <Status player={player} needs={settings?.needs !== false} />
+          {frame && map && <Minimap frame={frame} state={map} />}
+          <Status player={player} needs={settings?.needs !== false} beside={beside} />
           <Wallet player={player} />
           {vehicle && <Vehicle vehicle={vehicle} />}
         </div>
@@ -41,10 +48,13 @@ export default function App() {
   );
 }
 
-/** Bottom left: vitals, needs and voice. */
-function Status({ player, needs }: { player: NuiPlayer; needs: boolean }) {
+/** Bottom left: vitals, needs and voice; beside the minimap when it sits in that corner. */
+function Status({ player, needs, beside }: { player: NuiPlayer; needs: boolean; beside: MinimapFrame | null }) {
+  const style: CSSProperties | undefined = beside
+    ? { left: `calc(${(beside.x + beside.w) * 100}% + 1rem)`, bottom: `${(1 - beside.y - beside.h) * 100}%` }
+    : undefined;
   return (
-    <div className="nk-anchor-bl flex flex-col gap-3">
+    <div className={cn("flex flex-col gap-3", beside ? "absolute" : "nk-anchor-bl")} style={style}>
       <div className={cn("flex w-32 flex-col gap-2", onGameMarks)}>
         <Meter aria-label="Health" icon={<HeartPulseIcon />} value={player.health} low={20} tone="destructive" track="game" size="sm" />
         <Meter aria-label="Armor" icon={<ShieldIcon />} value={player.armor} track="game" size="sm" />

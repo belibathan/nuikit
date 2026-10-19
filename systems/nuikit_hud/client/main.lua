@@ -36,7 +36,9 @@ CreateThread(function()
     local isPaused = IsPauseMenuActive()
     if isPaused ~= paused then paused = isPaused; sync() end
 
-    DisplayRadar(Config.radar == 'always' or (Config.radar == 'vehicle' and driving))
+    local radarOn = Config.radar == 'always' or (Config.radar == 'vehicle' and driving)
+    DisplayRadar(radarOn)
+    Minimap.radarOn = radarOn
 
     if driving then
       local speed = GetEntitySpeed(vehicle) * SPEED
