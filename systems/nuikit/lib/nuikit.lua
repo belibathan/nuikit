@@ -1,7 +1,9 @@
 --[[
   nuikit.lua: the Lua half of nuikit.  MIT · https://github.com/belibathan/nuikit
 
-  Drop into any resource as a client_script. Framework-agnostic (QBCore, Qbox, ESX, ox, standalone).
+  Import it with `shared_script '@nuikit/init.lua'` (and `dependency 'nuikit'`), which loads this file
+  from the running nuikit resource, or copy it into a resource as a client_script to run without nuikit.
+  Framework-agnostic (QBCore, Qbox, ESX, ox, standalone). `nk` and `NUI` are the same table.
 
   Messages
     NUI.send('hud:vitals', { health = 80 })           -- Lua → UI   (useNuiEvent / onNui)
@@ -558,8 +560,10 @@ NUI.on('nuikit:ready', function(req)
   local theme = NUI.theme()
   if theme then NUI.send('nuikit:theme', theme) end
   NUI.send('nuikit:prefs', NUI.prefs.get())
-  local hasPlayer = NUI.player ~= nil and NUI.player.resend ~= nil
-  if hasPlayer then NUI.player.resend() end
+  -- rawget: with @nuikit/init.lua, reading NUI.player would load the bridge into every resource
+  local player = rawget(NUI, 'player')
+  local hasPlayer = player ~= nil and player.resend ~= nil
+  if hasPlayer then player.resend() end
   -- §2.2: a 0.4.0 page sends no protocol (version 0); it ignores the extra fields.
   local capabilities = { 'surfaces', 'states', 'notify', 'prefs' }
   if theme then capabilities[#capabilities + 1] = 'theme' end

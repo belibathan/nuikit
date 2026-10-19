@@ -95,10 +95,9 @@ You get a complete FiveM resource:
 
 ```
 my-hud/
-├─ fxmanifest.lua
+├─ fxmanifest.lua     ← imports the runtime: shared_script '@nuikit/init.lua'
 ├─ client/
-│  ├─ main.lua        ← your Lua: surfaces, NUI.send / NUI.on
-│  └─ nuikit.lua      ← the runtime (framework-agnostic)
+│  └─ main.lua        ← your Lua: surfaces, nk.send / nk.on
 └─ web/               ← Vite + React 19 + Tailwind v4 + shadcn
    └─ src/
       ├─ App.tsx
@@ -107,7 +106,7 @@ my-hud/
 ```
 
 - **In the browser:** `npm run dev`, then press <kbd>`</kbd> for the devtools. You can fire Lua events, mock callbacks, open surfaces, toggle states, watch traffic and swap day/night backdrops.
-- **In game:** drop the folder into `resources/`, `ensure my-hud`. While `dev` runs, `ui_page` points at Vite, so **every save hot-reloads in game**.
+- **In game:** with the `nuikit` resource installed (it ships the Lua runtime your resource imports, like ox_lib), drop the folder into `resources/`, `ensure my-hud`. While `dev` runs, `ui_page` points at Vite, so **every save hot-reloads in game**.
 - **Ship:** `npm run build`. `ui_page` is restored automatically.
 
 Already have a NUI? Use only the parts you want ([plugin](#vite-plugin-nuikit), [runtime](#api), [components](#components)).
@@ -117,7 +116,7 @@ Already have a NUI? Use only the parts you want ([plugin](#vite-plugin-nuikit), 
 | Package | What it does |
 |---|---|
 | [`vite-plugin-nuikit`](packages/vite) | Vite plugin. Lowers Tailwind v4 / shadcn CSS for Chromium 103, in-game HMR, `nuikit-doctor` CLI. |
-| [`nuikit-core`](packages/core) | The runtime. Typed `fetchNui` / `useNuiEvent`, [surfaces](#surfaces) (focus, layers, Escape across resources), devtools, runtime theming. Plus `nuikit.lua`. |
+| [`nuikit-core`](packages/core) | The runtime. Typed `fetchNui` / `useNuiEvent`, [surfaces](#surfaces) (focus, layers, Escape across resources), devtools, runtime theming. Plus the Lua runtime, which resources import with `shared_script '@nuikit/init.lua'`. |
 | [`create-nuikit`](packages/create-nuikit) | One command to a working resource. |
 | [Registry](#components) | HUD components for the shadcn CLI, composed from stock shadcn (Card, Item, Kbd, Progress, Badge). |
 
@@ -213,7 +212,7 @@ NUI.notify({ title = 'Paid', type = 'success' })
 | `applyTheme(css \| vars)` | Apply a pasted TweakCN theme at runtime, with Chromium 103 channels. |
 | `<NuiDevtools events callbacks surfaces states />` | Browser-only panel (`nuikit-core/devtools`): events, surfaces, states, log. Renders nothing in game. |
 
-| `nuikit.lua` | |
+| Lua (`nk`, imported with `shared_script '@nuikit/init.lua'`; `NUI` is the same table) | |
 |---|---|
 | `NUI.send(action, data)` | Message the UI. |
 | `NUI.on(name, fn)` | Handle `fetchNui`. The return value is the response; errors are caught. |
@@ -254,7 +253,7 @@ const confirm = useSurface("confirm"); // { open, visible, focused, data, close 
 | **hides** | Names or layers hidden (not closed) while it's open. |
 | **blockedBy** | States from `NUI.state()` that stop it opening. |
 
-There's no extra resource to install: every resource that bundles `nuikit.lua` keeps the same copy of the client-wide stack, and a resource started mid-session catches up. The manager runs under real Lua 5.4 in CI, with events delivered both synchronously and queued. `NUI.open()` / `NUI.close()` still work for a single UI.
+Every resource that imports the runtime (`@nuikit/init.lua`) keeps the same copy of the client-wide stack, and a resource started mid-session catches up. Updating the `nuikit` resource updates every resource that imports it; to run without it, copy `lib/nuikit.lua` from the nuikit resource into yours as a client script. The manager runs under real Lua 5.4 in CI, with events delivered both synchronously and queued. `NUI.open()` / `NUI.close()` still work for a single UI.
 
 ## `[nuikit]` systems
 

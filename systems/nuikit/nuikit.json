@@ -1,5 +1,6 @@
 {
-  "lua": ["nuikit.lua", "host.lua"],
+  "lua": [],
   "components": [],
-  "compiler": true
+  "compiler": true,
+  "runtime": true
 }

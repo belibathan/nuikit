@@ -203,3 +203,23 @@ describe("exemptions", () => {
     expect(findResources(tmp).map((p) => path.relative(tmp, p))).toEqual(["res"]);
   });
 });
+
+describe("a resource importing the runtime (@nuikit/init.lua)", () => {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "nuikit-import-"));
+  fs.cpSync(fixture("level3"), tmp, { recursive: true });
+  fs.rmSync(path.join(tmp, "client/nuikit.lua"));
+  fs.rmSync(path.join(tmp, "client/bridge.lua"));
+  const manifest = path.join(tmp, "fxmanifest.lua");
+  fs.writeFileSync(
+    manifest,
+    fs
+      .readFileSync(manifest, "utf8")
+      .replace("  'client/nuikit.lua',\n  'client/bridge.lua',\n", "")
+      .replace("client_scripts {", "dependency 'nuikit'\nshared_script '@nuikit/init.lua'\n\nclient_scripts {"),
+  );
+  it("is native: the import counts as the nuikit runtime", () => {
+    const r = checkResource(tmp);
+    expect(r.findings.filter((f) => f.rule === "native/runtime")).toEqual([]);
+    expect(r.level).toBe(3);
+  });
+});

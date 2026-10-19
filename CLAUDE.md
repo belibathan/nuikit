@@ -23,7 +23,7 @@ Current release: **0.4.0** (npm `nuikit-core`, `vite-plugin-nuikit`, `create-nui
 | Path | What |
 |---|---|
 | `packages/vite` | `vite-plugin-nuikit`: lowers Tailwind v4/shadcn CSS to Chromium 103 (oklch → rgb, color-mix → rgba channels, media ranges, transforms), in-game HMR, `nuikit-doctor`. |
-| `packages/core` | `nuikit-core`: `fetchNui`/`onNui`, surfaces (focus, layers, Escape across resources), `compileTheme`/`applyTheme`, prefs, the versioned handshake, player bridge types, devtools, host (`/host`, `/module`, `/boot`). `lua/nuikit.lua` + `lua/bridge.lua` + `lua/host.lua` are the Lua halves. `tokens/` is the published DTCG file and schema. |
+| `packages/core` | `nuikit-core`: `fetchNui`/`onNui`, surfaces (focus, layers, Escape across resources), `compileTheme`/`applyTheme`, prefs, the versioned handshake, player bridge types, devtools, host (`/host`, `/module`, `/boot`). `lua/nuikit.lua` + `lua/bridge.lua` + `lua/host.lua` are the Lua halves; `lua/init.lua` is the import (`shared_script '@nuikit/init.lua'`), synced with them into the `nuikit` resource's `init.lua` + `lib/`. `tokens/` is the published DTCG file and schema. |
 | `packages/cli` | `nuikit` CLI: `nuikit check` (conformance audit against `docs/protocol.md`), `nuikit tokens`. |
 | `packages/create-nuikit` | `npm create nuikit`. `index.css.tpl` is the **single source** of every UI's `index.css` (theme + kit utilities). |
 | `registry/nuikit/{ui,hooks}` + `registry.json` | shadcn registry items (`npx shadcn add https://nuikit.vercel.app/r/<name>.json`). Compositions of stock shadcn. |
@@ -50,7 +50,9 @@ pnpm --filter <web-package> dev           # browser dev with devtools (press `);
 
 Each `systems/*` and `addons/*` has a `nuikit.json`:
 `{ "lua": ["nuikit.lua","bridge.lua"], "components": ["button","card"], "hooks": [], "target": {"resource","path"} }`.
-`pnpm sync` copies the listed Lua from `packages/core/lua`, components from `vendor/shadcn/ui` or
+Systems and the template import the Lua runtime (`dependency 'nuikit'`, `shared_script '@nuikit/init.lua'`);
+`"lua"` vendors files into `client/` only for resources that must run without nuikit, and `"runtime": true`
+(the `nuikit` resource) receives `init.lua` + `lib/`. `pnpm sync` copies the listed Lua from `packages/core/lua`, components from `vendor/shadcn/ui` or
 `registry/nuikit/ui`, and writes `web/src/index.css` from `index.css.tpl`. **Synced copies are committed
 but never edited by hand**: change the source, run `pnpm sync`. Feature CSS goes in a separate file
 (`app.css`, `pause.css`) imported after `index.css`.

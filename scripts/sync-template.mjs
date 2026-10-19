@@ -1,5 +1,6 @@
 // Single sources of truth, copied into the create-nuikit template and every [nuikit] system:
-//   packages/core/lua/*.lua           → client/
+//   packages/core/lua/*.lua           → client/ (vendored, nuikit.json "lua"), or the nuikit resource's
+//                                       lib/ + init.lua (nuikit.json "runtime": true; others import it)
 //   vendor/shadcn/ui/*                → web/src/components/ui (stock shadcn, unmodified)
 //   registry/nuikit/*                 → web/src/components/ui, web/src/hooks
 //   vendor/shadcn/colors/neutral.json → web/src/index.css (stock shadcn neutral theme)
@@ -25,7 +26,7 @@ const source = (c) => (SHADCN.has(c) ? `vendor/shadcn/ui/${c}.tsx` : `registry/n
 const targets = [
   {
     dir: "packages/create-nuikit/template",
-    lua: ["nuikit.lua"],
+    lua: [], // imports @nuikit/init.lua
     components: ["badge", "button", "card", "item", "kbd", "progress", "separator", "sonner", "vital", "key-hint", "nui-menu", "nui-toaster"],
     hooks: ["use-nui-store"],
   },
@@ -37,7 +38,7 @@ for (const group of ["systems", "addons"]) {
     const manifest = path.join(base, name, "nuikit.json");
     if (!fs.existsSync(manifest)) continue;
     const m = JSON.parse(fs.readFileSync(manifest, "utf8"));
-    targets.push({ dir: `${group}/${name}`, lua: m.lua ?? [], components: m.components ?? [], hooks: m.hooks ?? [], css: m.css !== false, compiler: m.compiler === true });
+    targets.push({ dir: `${group}/${name}`, lua: m.lua ?? [], components: m.components ?? [], hooks: m.hooks ?? [], css: m.css !== false, compiler: m.compiler === true, runtime: m.runtime === true });
   }
 }
 
@@ -71,6 +72,11 @@ for (const t of targets) {
     fs.copyFileSync(path.join(root, from), dest);
   };
   for (const f of t.lua) copy(`packages/core/lua/${f}`, `client/${f}`);
+  // The runtime other resources import with shared_script '@nuikit/init.lua'.
+  if (t.runtime) {
+    for (const f of ["nuikit.lua", "bridge.lua", "host.lua"]) copy(`packages/core/lua/${f}`, `lib/${f}`);
+    copy("packages/core/lua/init.lua", "init.lua");
+  }
   for (const c of t.components) copy(source(c), `web/src/components/ui/${c}.tsx`);
   for (const h of t.hooks) copy(`registry/nuikit/hooks/${h}.ts`, `web/src/hooks/${h}.ts`);
   if (t.compiler) copy("packages/core/dist/fxserver-compiler.js", "server/compiler.js");

@@ -17,7 +17,7 @@ The key words MUST, MUST NOT, REQUIRED, SHOULD, SHOULD NOT, MAY and OPTIONAL are
 |---|---|
 | **Resource** | A FiveM resource. Its name is `GetCurrentResourceName()` in Lua and `GetParentResourceName()` in the page. |
 | **Page** | A resource's NUI document (`ui_page`), running in its own CEF frame. |
-| **Peer** | One copy of a protocol implementation (in practice, one resource's copy of `nuikit.lua`). Every resource that bundles it is a peer; there is no central process. |
+| **Peer** | One copy of a protocol implementation (in practice, one resource's copy of `nuikit.lua`). Every resource that imports it (`@nuikit/init.lua`) or bundles a copy is a peer; there is no central process: the `nuikit` resource serves the code, each resource runs its own copy. |
 | **Surface** | A named piece of UI that a resource declares: a HUD, a panel, a dialog. |
 | **Stack** | The client-wide, ordered list of open surfaces, replicated in every peer. |
 | **State** | A client-wide named value (`dead`, `cuffed`) that surfaces can be blocked by. |
@@ -429,6 +429,10 @@ Per-player accessibility preferences, never a different theme:
   read with `NUI.prefs.get()`. Details in [`docs/tokens.md`](tokens.md#player-preferences).
 
 ## 8. Lua API summary (reference implementation)
+
+Resources import it with `dependency 'nuikit'` and `shared_script '@nuikit/init.lua'`, which loads it from the
+running `nuikit` resource (`nk` and `NUI` are the same table; the framework bridge loads on first use of
+`nk.player`). A copy of `lib/nuikit.lua` as a client script also works, without the nuikit resource.
 
 `NUI.send(action, data)` · `NUI.on(name, handler)` (pcall, `{ error }` on failure) · `NUI.notify(n)` ·
 `NUI.surface(name, opts)` → `:open(data)` `:close()` `:update(data)` `:toggle(data)` `:isOpen()` ·

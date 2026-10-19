@@ -39,7 +39,7 @@ const hud = path.join(root, "systems/nuikit_hud/web");
 
 const manifest = addon
   ? { target: { resource: flag("--resource") ?? name, path: flag("--path") ?? "web/build" }, lua: [], components: ["button", "card"] }
-  : { lua: ["nuikit.lua", "bridge.lua"], components: ["button", "card"] };
+  : { lua: [], components: ["button", "card"] }; // systems import @nuikit/init.lua
 write("nuikit.json", JSON.stringify(manifest, null, 2) + "\n");
 
 const pkg = JSON.parse(fs.readFileSync(path.join(hud, "package.json"), "utf8"));
@@ -132,6 +132,8 @@ description 'nuikit: ${title}'
 repository 'https://github.com/belibathan/nuikit'
 version '${version}'
 
+dependency 'nuikit'
+
 ui_page 'web/dist/index.html'
 nuikit_protocol '1'
 
@@ -140,9 +142,9 @@ files {
   'web/dist/**/*',
 }
 
+shared_script '@nuikit/init.lua'
+
 client_scripts {
-  'client/nuikit.lua',
-  'client/bridge.lua',
   'client/main.lua',
 }
 `,

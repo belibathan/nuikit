@@ -26,7 +26,7 @@ Change the theme by pasting any [TweakCN](https://tweakcn.com) theme into `web/s
 | | |
 |---|---|
 | `client/main.lua` | Your Lua. `NUI.send`, `NUI.on`, `NUI.open`, `NUI.close`, `NUI.notify` |
-| `client/nuikit.lua` | The nuikit Lua runtime (don't edit) |
+| `fxmanifest.lua` | Imports the nuikit runtime: `shared_script '@nuikit/init.lua'` (needs the `nuikit` resource running) |
 | `web/src/nui.d.ts` | Types for every event and callback, shared by both sides |
 | `web/src/dev.tsx` | Fake payloads for browser development |
 | `web/src/App.tsx` | Your UI |

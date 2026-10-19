@@ -183,7 +183,7 @@ recipes, from a scripted session (join, spawn, menus, a job, inventory, death). 
 ## Plan (0.6)
 
 1. **`@nuikit/init.lua` and `nk`**: the runtime as an importable library; the kit's systems move off vendored
-   Lua.
+   Lua. *Built on `feat/runtime`: the kit's systems and the template import it; the bridge loads lazily.*
 2. **Intent schemas and generation**, default renderers lifted from the ox_lib override into 0.5 components,
    rendered in nuikit's frame.
 3. **Services**: camera and controls next to surfaces.

@@ -1,4 +1,13 @@
 {
-  "lua": ["nuikit.lua", "bridge.lua"],
-  "components": ["button", "card", "badge", "separator", "kbd", "avatar", "alert-dialog", "progress"]
+  "lua": [],
+  "components": [
+    "button",
+    "card",
+    "badge",
+    "separator",
+    "kbd",
+    "avatar",
+    "alert-dialog",
+    "progress"
+  ]
 }
