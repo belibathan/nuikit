@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Icon, isImage } from "@/lib/icon";
 import { useLocale } from "@/lib/locale";
 import { post, useOx } from "@/lib/nui";
+import { presenceMotion } from "@/lib/motion";
 import { usePresence } from "@/lib/presence";
 import { cn } from "@/lib/utils";
 
@@ -71,36 +72,40 @@ export function RadialMenu() {
     void post("radialClose");
   };
 
+  // One SVG unit = 1px at 1080p: the wheel is 24rem and scales with the resolution like the rest.
   const sectors = Math.max(3, slots.length);
-  const size = 350;
+  const size = 384;
   const c = size / 2;
-  const R = 175;
-  const r0 = 34;
+  const R = c - 1;
+  const r0 = 36; // centre button
+  const ri = r0 + 8; // sectors start after an 8px gap
 
   return (
     <div
       data-state={presence.state}
-      className="fixed inset-0 z-30 grid place-items-center data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95"
+      className={cn("fixed inset-0 z-30 grid place-items-center", presenceMotion)}
       onContextMenu={(e) => {
         e.preventDefault();
         if (page > 1 || menu.sub) center();
       }}
     >
-      <svg viewBox={`0 0 ${size} ${size}`} width={size * 1.1} height={size * 1.1} className="overflow-visible">
-        <circle cx={c} cy={c} r={R} className="fill-popover/90 stroke-border" strokeWidth={1} />
+      <svg viewBox={`0 0 ${size} ${size}`} className="size-96 overflow-visible drop-shadow-[0_24px_48px_rgb(0_0_0/0.5)]">
+        <circle cx={c} cy={c} r={R} className="fill-popover stroke-border" strokeWidth={1} />
         {slots.map((item, i) => {
           const a0 = (i / sectors) * Math.PI * 2 - Math.PI / 2 - Math.PI / sectors;
           const a1 = ((i + 1) / sectors) * Math.PI * 2 - Math.PI / 2 - Math.PI / sectors;
           const mid = (a0 + a1) / 2;
           const large = a1 - a0 > Math.PI ? 1 : 0;
           const p = (r: number, a: number) => `${c + r * Math.cos(a)} ${c + r * Math.sin(a)}`;
-          const d = `M ${p(r0 + 6, a0)} L ${p(R, a0)} A ${R} ${R} 0 ${large} 1 ${p(R, a1)} L ${p(r0 + 6, a1)} A ${r0 + 6} ${r0 + 6} 0 ${large} 0 ${p(r0 + 6, a0)} Z`;
-          const lx = c + (R * 0.62) * Math.cos(mid);
-          const ly = c + (R * 0.62) * Math.sin(mid);
+          const d = `M ${p(ri, a0)} L ${p(R, a0)} A ${R} ${R} 0 ${large} 1 ${p(R, a1)} L ${p(ri, a1)} A ${ri} ${ri} 0 ${large} 0 ${p(ri, a0)} Z`;
+          const lx = c + ((R + ri) / 2) * Math.cos(mid);
+          const ly = c + ((R + ri) / 2) * Math.sin(mid);
           const active = hover === i;
           const abs = page === 1 ? i : STRIDE * (page - 1) + i;
           const lines = wrap(item.label);
-          const fs = item.label.length > 20 ? 10 : item.label.length > 15 ? 12 : 13;
+          const fs = item.label.length > 12 ? 12 : 14;
+          const lh = fs + 4;
+          const top = ly - (20 + 8 + lines.length * lh) / 2; // icon 20 + gap 8 + text block, centred on the ring
           return (
             <g
               key={`${page}:${i}`}
@@ -109,26 +114,27 @@ export function RadialMenu() {
               onMouseLeave={() => setHover((h) => (h === i ? null : h))}
               onClick={() => (item.more ? void turnPage(1) : void post("radialClick", abs))}
             >
-              <path d={d} className={cn("stroke-border transition-colors", active ? "fill-primary" : "fill-transparent")} strokeWidth={1} />
-              <g className={cn("transition-colors", active ? "text-primary-foreground" : "text-foreground")}>
+              <path d={d} className={cn("transition-colors duration-100", active ? "fill-accent" : "fill-transparent")} />
+              <g className={cn("transition-colors duration-100", active ? "text-accent-foreground" : "text-popover-foreground")}>
                 {isImage(item.icon) ? (
                   <image
                     href={item.icon as string}
                     x={lx - clamp(item.iconWidth) / 2}
-                    y={ly - clamp(item.iconHeight) / 2 - 12}
+                    y={top + 10 - clamp(item.iconHeight) / 2}
                     width={clamp(item.iconWidth)}
                     height={clamp(item.iconHeight)}
                   />
                 ) : (
-                  <foreignObject x={lx - 16} y={ly - 30} width={32} height={32}>
-                    <div className="grid size-8 place-items-center">
-                      <Icon icon={item.icon} className="size-7" />
+                  <foreignObject x={lx - 10} y={top} width={20} height={20}>
+                    {/* px inside the SVG: its units already scale with the wheel */}
+                    <div className={cn("grid h-full w-full place-items-center", !active && "text-muted-foreground")}>
+                      <Icon icon={item.icon} style={{ width: 20, height: 20 }} />
                     </div>
                   </foreignObject>
                 )}
-                <text x={lx} y={ly + 16} textAnchor="middle" fontSize={fs} fill="currentColor" className="font-medium">
+                <text x={lx} y={top + 28 + fs - 1} textAnchor="middle" fontSize={fs} fill="currentColor" fontWeight={500}>
                   {lines.map((line, j) => (
-                    <tspan key={j} x={lx} dy={j === 0 ? 0 : fs + 2}>
+                    <tspan key={j} x={lx} dy={j === 0 ? 0 : lh}>
                       {line}
                     </tspan>
                   ))}
@@ -137,11 +143,18 @@ export function RadialMenu() {
             </g>
           );
         })}
-        <g className="cursor-pointer" onClick={center}>
-          <circle cx={c} cy={c} r={r0} className="fill-primary stroke-popover transition-opacity hover:opacity-90" strokeWidth={4} />
-          <foreignObject x={c - 12} y={c - 12} width={24} height={24}>
-            <div className="grid size-6 place-items-center text-primary-foreground">
-              <Icon icon={page === 1 && !menu.sub ? "xmark" : "arrow-rotate-left"} className="size-5" />
+        {/* hairline dividers, over the hover fill */}
+        <g className="pointer-events-none stroke-border" strokeWidth={1}>
+          {Array.from({ length: sectors }, (_, i) => {
+            const a = (i / sectors) * Math.PI * 2 - Math.PI / 2 - Math.PI / sectors;
+            return <line key={i} x1={c + ri * Math.cos(a)} y1={c + ri * Math.sin(a)} x2={c + R * Math.cos(a)} y2={c + R * Math.sin(a)} />;
+          })}
+        </g>
+        <g className="group cursor-pointer" onClick={center}>
+          <circle cx={c} cy={c} r={r0} className="fill-secondary stroke-border transition-colors group-hover:fill-accent" strokeWidth={1} />
+          <foreignObject x={c - 8} y={c - 8} width={16} height={16}>
+            <div className="grid h-full w-full place-items-center text-secondary-foreground">
+              <Icon icon={page === 1 && !menu.sub ? "xmark" : "arrow-rotate-left"} style={{ width: 16, height: 16 }} />
             </div>
           </foreignObject>
         </g>

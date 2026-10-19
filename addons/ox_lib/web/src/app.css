@@ -24,9 +24,10 @@ body {
 .ox-md th, .ox-md td { border: 1px solid var(--border); padding: 0.125rem 0.5rem; }
 .ox-md img { max-width: 100%; max-height: 100%; }
 
-@keyframes ox-drain {
-  from { stroke-dashoffset: 0; }
-  to { stroke-dashoffset: 100; }
+/* notification time left: a hairline that empties */
+@keyframes ox-shrink {
+  from { transform: scaleX(1); }
+  to { transform: scaleX(0); }
 }
 
 @keyframes ox-fill {
@@ -37,3 +38,7 @@ body {
 @keyframes ox-ring {
   to { stroke-dashoffset: 0; }
 }
+
+/* input dialog colour row: the native picker as a plain swatch */
+.ox-swatch::-webkit-color-swatch-wrapper { padding: 0; }
+.ox-swatch::-webkit-color-swatch { border: none; border-radius: calc(var(--radius) - 6px); }

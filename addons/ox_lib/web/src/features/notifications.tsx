@@ -31,11 +31,12 @@ interface Toast extends NotifyData {
 const MAX = 20;
 const EXIT_MS = 400;
 
-const TYPES: Record<string, { icon: string; color: string }> = {
+// The icon is the state, so it carries the colour. Success/warning have no theme token: fixed hues.
+const TYPES: Record<string, { icon: string; color?: string }> = {
   error: { icon: "circle-xmark", color: "var(--destructive)" },
   success: { icon: "circle-check", color: "#12b886" },
   warning: { icon: "circle-exclamation", color: "#fab005" },
-  info: { icon: "circle-info", color: "var(--primary)" },
+  info: { icon: "circle-info" },
 };
 
 function normalizePosition(p?: string): Position {
@@ -45,15 +46,16 @@ function normalizePosition(p?: string): Position {
   return valid.includes(p as Position) ? (p as Position) : "top-right";
 }
 
+// --nk-edge (1.5rem) from the screen edge.
 const ANCHOR: Record<Position, string> = {
-  "top-left": "top-4 left-4 items-start",
-  "top-center": "top-4 left-1/2 -translate-x-1/2 items-center",
-  "top-right": "top-4 right-4 items-end",
-  "center-left": "top-1/2 left-4 -translate-y-1/2 items-start",
-  "center-right": "top-1/2 right-4 -translate-y-1/2 items-end",
-  "bottom-left": "bottom-4 left-4 items-start flex-col-reverse",
-  "bottom-center": "bottom-4 left-1/2 -translate-x-1/2 items-center flex-col-reverse",
-  "bottom-right": "bottom-4 right-4 items-end flex-col-reverse",
+  "top-left": "top-6 left-6 items-start",
+  "top-center": "top-6 left-1/2 -translate-x-1/2 items-center",
+  "top-right": "top-6 right-6 items-end",
+  "center-left": "top-1/2 left-6 -translate-y-1/2 items-start",
+  "center-right": "top-1/2 right-6 -translate-y-1/2 items-end",
+  "bottom-left": "bottom-6 left-6 items-start flex-col-reverse",
+  "bottom-center": "bottom-6 left-1/2 -translate-x-1/2 items-center flex-col-reverse",
+  "bottom-right": "bottom-6 right-6 items-end flex-col-reverse",
 };
 
 let seq = 0;
@@ -121,52 +123,36 @@ function Notification({ toast: t, position }: { toast: Toast; position: Position
   // Full class names (Tailwind only generates classes it can read in the source).
   const exit = t.leaving
     ? position.endsWith("right")
-      ? "animate-out fade-out-0 duration-400 slide-out-to-right-8"
+      ? "animate-out fade-out-0 duration-400 slide-out-to-right-4"
       : position.endsWith("left")
-        ? "animate-out fade-out-0 duration-400 slide-out-to-left-8"
+        ? "animate-out fade-out-0 duration-400 slide-out-to-left-4"
         : position.startsWith("top")
-          ? "animate-out fade-out-0 duration-400 slide-out-to-top-4"
-          : "animate-out fade-out-0 duration-400 slide-out-to-bottom-4"
+          ? "animate-out fade-out-0 duration-400 slide-out-to-top-2"
+          : "animate-out fade-out-0 duration-400 slide-out-to-bottom-2"
     : position.startsWith("bottom")
-      ? "animate-in fade-in-0 duration-200 slide-in-from-bottom-4"
-      : "animate-in fade-in-0 duration-200 slide-in-from-top-4";
+      ? "animate-in fade-in-0 duration-200 slide-in-from-bottom-2"
+      : "animate-in fade-in-0 duration-200 slide-in-from-top-2";
 
   return (
     <div
       data-state={t.leaving ? "closed" : "open"}
-      className={cn("w-75 rounded-lg border bg-popover p-3 text-popover-foreground shadow-lg", exit, t.leaving && "fill-mode-forwards")}
+      className={cn("nk-panel relative w-80 overflow-hidden", exit, t.leaving && "fill-mode-forwards")}
       style={t.style}
     >
-      <div className={cn("flex gap-3", t.alignIcon === "top" ? "items-start" : "items-center")}>
-        <span className="relative grid size-9 shrink-0 place-items-center">
-          {showDuration && (
-            <svg viewBox="0 0 36 36" className="absolute inset-0 -rotate-90" aria-hidden>
-              <circle cx="18" cy="18" r="16.5" fill="none" strokeWidth="2" className="stroke-border" />
-              <circle
-                key={t.at}
-                cx="18"
-                cy="18"
-                r="16.5"
-                fill="none"
-                strokeWidth="2"
-                pathLength={100}
-                strokeDasharray="100"
-                stroke={color}
-                style={{ animation: `ox-drain ${duration}ms linear forwards` }}
-              />
-            </svg>
-          )}
-          {/* tinted badge: a 15% layer of the icon colour (no color-mix: FiveM's browser lacks it) */}
-          <span className="relative grid size-7 place-items-center rounded-full" style={{ color }}>
-            <span className="absolute inset-0 rounded-full opacity-15" style={{ background: color }} />
-            <Icon icon={t.icon ?? kind.icon} animation={t.iconAnimation} className="relative size-3.5" />
-          </span>
+      <div className={cn("flex gap-3 px-4 py-3", (t.alignIcon ?? (t.title && t.description ? "top" : "center")) === "top" ? "items-start" : "items-center")}>
+        <span className={cn("grid h-5 shrink-0 place-items-center", !color && "text-muted-foreground")} style={color ? { color } : undefined}>
+          <Icon icon={t.icon ?? kind.icon} animation={t.iconAnimation} className="size-4" />
         </span>
         <div className="min-w-0 flex-1">
-          {t.title && <div className="text-sm leading-tight font-medium">{t.title}</div>}
-          <Markdown className={cn("text-muted-foreground", t.title ? "mt-0.5 text-xs" : "text-sm text-foreground")}>{t.description}</Markdown>
+          {t.title && <div className="text-sm leading-5 font-medium">{t.title}</div>}
+          <Markdown className={t.title ? "nk-label mt-0.5 font-normal" : "text-sm leading-5"}>{t.description}</Markdown>
         </div>
       </div>
+      {showDuration && (
+        <div aria-hidden className="absolute inset-x-0 bottom-0 h-0.5">
+          <div key={t.at} className="h-full w-full bg-muted-foreground opacity-40" style={{ transformOrigin: "left", animation: `ox-shrink ${duration}ms linear forwards` }} />
+        </div>
+      )}
     </div>
   );
 }

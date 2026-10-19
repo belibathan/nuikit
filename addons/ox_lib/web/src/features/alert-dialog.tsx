@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { DIALOG_HEADER, DIALOG_PANEL, WIDTH } from "@/features/input-dialog";
 import { useLocale } from "@/lib/locale";
 import { Markdown } from "@/lib/markdown";
 import { post, useOx } from "@/lib/nui";
@@ -16,7 +17,6 @@ interface AlertData {
   labels?: { cancel?: string; confirm?: string };
 }
 
-const WIDTH = { xs: "sm:max-w-[320px]", sm: "sm:max-w-[380px]", md: "sm:max-w-[440px]", lg: "sm:max-w-[620px]", xl: "sm:max-w-[780px]" };
 
 /** ox_lib's alert dialog (lib.alertDialog). Protocol: docs/ox-lib-protocol.md §8. */
 export function AlertDialog() {
@@ -41,6 +41,7 @@ export function AlertDialog() {
       <DialogContent
         showCloseButton={false}
         className={cn(
+          DIALOG_PANEL,
           WIDTH[data.size ?? "md"],
           !data.centered && "top-[12%] translate-y-0",
           data.overflow && "max-h-[80vh] grid-rows-[auto_minmax(0,1fr)_auto]",
@@ -51,25 +52,23 @@ export function AlertDialog() {
         }}
         onInteractOutside={(e) => e.preventDefault()}
       >
-        <DialogHeader>
+        <DialogHeader className={DIALOG_HEADER}>
           <DialogTitle asChild>
-            <div>
+            <div className="nk-title min-w-0">
               <Markdown>{data.header}</Markdown>
             </div>
           </DialogTitle>
         </DialogHeader>
-        <div className={cn("text-sm text-muted-foreground", data.overflow && "overflow-y-auto pr-1")}>
+        <div className={cn("p-4 text-sm leading-6 text-muted-foreground", data.overflow && "min-h-0 overflow-y-auto")}>
           <Markdown gfm>{data.content}</Markdown>
         </div>
-        <DialogFooter>
+        <DialogFooter className="nk-panel-footer">
           {data.cancel && (
             <Button variant="outline" onClick={() => close("cancel")}>
               {data.labels?.cancel ?? locale.cancel}
             </Button>
           )}
-          <Button variant={data.cancel ? "default" : "secondary"} onClick={() => close("confirm")}>
-            {data.labels?.confirm ?? locale.confirm}
-          </Button>
+          <Button onClick={() => close("confirm")}>{data.labels?.confirm ?? locale.confirm}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
