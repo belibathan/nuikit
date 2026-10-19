@@ -155,7 +155,8 @@ function installEscape() {
 }
 
 function isTyping(e: KeyboardEvent) {
-  const el = e.target as HTMLElement | null;
+  // composedPath: inside a hosted module (shadow root) e.target is retargeted to the host element.
+  const el = ((e.composedPath?.()[0] as HTMLElement | undefined) ?? e.target) as HTMLElement | null;
   return !!el && (el.tagName === "INPUT" || el.tagName === "TEXTAREA" || el.isContentEditable);
 }
 

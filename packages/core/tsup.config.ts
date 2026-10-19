@@ -6,12 +6,16 @@ export default defineConfig([
       index: "src/index.ts",
       react: "src/react.ts",
       devtools: "src/devtools.tsx",
+      // The host (docs/host.md): module side, ui_page boot, and the host page runtime.
+      module: "src/module.ts",
+      boot: "src/boot.ts",
+      host: "src/host.ts",
     },
     format: ["esm"],
     dts: true,
     clean: false, // two configs share dist/: the build script empties it first
     target: "es2020",
-    external: ["react", "react-dom"],
+    external: ["react", "react-dom", "react-dom/client", "react/jsx-runtime"],
   },
   // The theme compiler for the nuikit resource's server script (FXServer's Node runtime).
   {

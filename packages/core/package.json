@@ -45,7 +45,19 @@
       "import": "./dist/devtools.js"
     },
     "./tokens.json": "./tokens/nuikit.tokens.json",
-    "./theme.schema.json": "./tokens/nuikit-theme.schema.json"
+    "./theme.schema.json": "./tokens/nuikit-theme.schema.json",
+    "./module": {
+      "types": "./dist/module.d.ts",
+      "import": "./dist/module.js"
+    },
+    "./boot": {
+      "types": "./dist/boot.d.ts",
+      "import": "./dist/boot.js"
+    },
+    "./host": {
+      "types": "./dist/host.d.ts",
+      "import": "./dist/host.js"
+    }
   },
   "scripts": {
     "build": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\" && tsup && node scripts/export-tokens.mjs",
@@ -53,10 +65,14 @@
     "typecheck": "tsc --noEmit"
   },
   "peerDependencies": {
-    "react": ">=18"
+    "react": ">=18",
+    "react-dom": ">=18"
   },
   "peerDependenciesMeta": {
     "react": {
+      "optional": true
+    },
+    "react-dom": {
       "optional": true
     }
   },
@@ -64,6 +80,7 @@
     "@testing-library/react": "^16.1.0",
     "@types/node": "^22.10.0",
     "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.3.0",
     "jsdom": "^25.0.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

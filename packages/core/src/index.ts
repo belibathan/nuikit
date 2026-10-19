@@ -69,12 +69,16 @@ declare global {
 
 /** True when running in a normal browser (dev), false inside the game's CEF. */
 export function isBrowser(): boolean {
+  const hosted = hostedContext();
+  if (hosted) return !hosted.inGame;
   if (typeof window === "undefined") return true;
   return typeof window.GetParentResourceName !== "function" && !window.invokeNative;
 }
 
 /** The current resource name. Falls back to "nuikit" in the browser. */
 export function resourceName(): string {
+  const hosted = hostedContext();
+  if (hosted) return hosted.resource;
   if (typeof window !== "undefined" && typeof window.GetParentResourceName === "function") {
     return window.GetParentResourceName();
   }
@@ -91,6 +95,14 @@ let listening = false;
 function ensureListener() {
   if (listening || typeof window === "undefined") return;
   listening = true;
+  // Hosted module: the host delivers only this resource's messages.
+  const hosted = hostedContext();
+  if (hosted) {
+    hosted.listen((msg) => {
+      if (msg && typeof msg.action === "string") dispatch(msg as NuiMessage);
+    });
+    return;
+  }
   window.addEventListener("message", (event: MessageEvent) => {
     const msg = event.data as Partial<NuiMessage> | null;
     if (!msg || typeof msg !== "object" || typeof msg.action !== "string") return;
@@ -133,7 +145,7 @@ export function onAnyNui(handler: (msg: NuiMessage) => void): () => void {
  */
 export function emit<K extends EventName>(action: K, data: EventData<K>): void {
   ensureListener();
-  if (typeof window === "undefined") {
+  if (typeof window === "undefined" || hostedContext()) {
     dispatch({ action, data });
     return;
   }
@@ -211,15 +223,25 @@ export async function fetchNui<K extends CallbackName>(
 
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), options?.timeout ?? 10_000);
+  const hosted = hostedContext();
   try {
-    const res = await fetch(`https://${resourceName()}/${name}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json; charset=UTF-8" },
-      body: JSON.stringify(data ?? {}),
-      signal: controller.signal,
-    });
-    const text = await res.text();
-    const response = (text ? JSON.parse(text) : {}) as CallbackRes<K>;
+    let response: CallbackRes<K>;
+    if (hosted) {
+      // Hosted module: the host forwards the call to this resource's Lua.
+      const aborted = new Promise<never>((_, reject) =>
+        controller.signal.addEventListener("abort", () => reject(Object.assign(new Error("aborted"), { name: "AbortError" }))),
+      );
+      response = ((await Promise.race([hosted.post(name, data ?? {}), aborted])) ?? {}) as CallbackRes<K>;
+    } else {
+      const res = await fetch(`https://${resourceName()}/${name}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json; charset=UTF-8" },
+        body: JSON.stringify(data ?? {}),
+        signal: controller.signal,
+      });
+      const text = await res.text();
+      response = (text ? JSON.parse(text) : {}) as CallbackRes<K>;
+    }
     callLog.forEach((h) => h({ name, data, response, mocked: false }));
     if (response && typeof response === "object" && "error" in (response as object)) {
       throw new NuiError(name, String((response as unknown as { error: unknown }).error));
@@ -264,13 +286,15 @@ export function onVisible(listener: (v: boolean) => void): () => void {
 onNui("nuikit:visible", (v) => setVisible(Boolean(v)));
 
 // Built-ins: the server theme (compiled by the `nuikit` resource) and the player's prefs apply
-// to every nuikit UI, live.
+// to every nuikit UI, live. A hosted module shares the host's document: the host page applies
+// both once, for all modules.
 function builtinTheme() {
   onNui("nuikit:theme", (theme) => {
+    if (hostedContext()) return;
     if ((typeof theme === "string" && theme) || (theme && typeof theme === "object")) applyTheme(theme);
   });
   onNui("nuikit:prefs", (p) => {
-    if (p && typeof p === "object") setPrefs(p);
+    if (!hostedContext() && p && typeof p === "object") setPrefs(p);
   });
 }
 builtinTheme();
@@ -314,6 +338,8 @@ export function __reset(): void {
   __resetPlayer();
 }
 
+export { hostedContext, type HostedContext, type HostedMessage } from "./hosted";
+import { hostedContext } from "./hosted";
 export { applyTheme, clearTheme, getPrefs, getTheme, loadImports, onTheme, parseTheme, setPrefs, toRgba, type ThemeVars } from "./theme";
 import { __resetTheme, applyTheme, setPrefs } from "./theme";
 export {
