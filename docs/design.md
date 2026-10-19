@@ -6,24 +6,29 @@ A server that pastes a new theme changes every screen at once and they still loo
 
 ## Token contract
 
-What a nuikit UI reads from `nuikit/theme.css` (any TweakCN / shadcn theme provides all of them):
+The full contract is **[tokens v1](tokens.md)**: names, derived defaults, the compiler, contrast checks
+and how the theme reaches every UI. In short, what a nuikit UI reads:
 
 | Token | Used for |
 |---|---|
-| `--background` / `--foreground` | Full-screen surfaces (pause, loading, death scrim), text on the game |
+| `--background` / `--foreground` | Full-screen surfaces (pause, loading, death scrim) |
 | `--popover` / `--popover-foreground` | Every floating panel (`nk-panel`) |
 | `--card` / `--card-foreground` | Raised blocks on a full-screen surface (not inside a panel: in many themes card = popover) |
 | `--muted` / `--muted-foreground` | Tracks, slots and wells inside a panel, secondary text |
 | `--accent` / `--accent-foreground` | Hover and keyboard highlight |
 | `--primary` / `--primary-foreground` | The one main action per surface, progress fills, selection |
-| `--destructive` | Danger, damage, low values, death |
+| `--destructive` / `--success` / `--warning` / `--info` (+ `-foreground`) | Status: danger and low values, done, caution, notices |
+| `--hud` / `--hud-foreground` | Surfaces and text drawn straight on the game (`nk-chip`, `nk-hud`) |
+| `--vital-health` … `--vital-stress` | Health, armor, hunger, thirst, stress bars |
 | `--border` / `--input` / `--ring` | Hairlines, fields, focus |
-| `--chart-1` … `--chart-5` | Categorical meaning (vitals, needs, transaction types) |
+| `--chart-1` … `--chart-5` | Other categorical meaning (transaction types, charts) |
 | `--radius` | Panel corners = radius + 4px, controls = radius − 2px, chips = full |
 | `--font-sans` / `--font-mono` | Text / codes and IDs only |
+| `--nk-scale` / `--nk-motion` | UI size multiplier, animations on/off (theme × player preference) |
 
+A server theme is any shadcn / TweakCN paste; the nuikit tokens are derived when it doesn't set them.
 A UI never hard-codes a colour that one of these covers. Fixed colours are allowed only for things
-the theme can't know: GTA's own palettes (hair colours), item images, and white text on the game world.
+the theme can't know: GTA's own palettes (hair colours, chat `^1` codes), item images, and shadows.
 
 ## Scale
 
@@ -52,7 +57,7 @@ screen is the same size relative to the game at every resolution. Design at 1080
 5. **Rows, not tiles,** for lists of actions: `nk-row`, 40px, icon + label + trailing meta.
 6. **Keys** are shadcn `Kbd`, next to the action they trigger.
 7. **One motion.** Panels open with `nk-enter` (160ms fade). Nothing animates on its own
-   except things that are live (progress, timers, talking).
+   except things that are live (progress, timers, talking). Everything stops when `--nk-motion` is 0.
 8. **HUD stays out of the way.** Always-on elements use `nk-chip` or bare text with a shadow, no
    panels, and sit on the `--nk-edge` margin.
 9. **Empty and error states** say what to do next in one sentence.
