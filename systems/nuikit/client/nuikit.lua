@@ -18,6 +18,11 @@
     NUI.state('dead', true)                            -- surfaces with blockedBy = { 'dead' } refuse to open
 
   Simple mode (one UI, no surfaces): NUI.open() / NUI.close() / NUI.toggle(), as before.
+
+  Theme and preferences: the server theme (compiled by the `nuikit` resource) and the player's UI
+  prefs reach the UI by themselves, live (`nuikit theme reload`, /nuikit scale 1.1).
+    NUI.theme()                                        -- the compiled theme (tokens v1)
+    NUI.prefs.get()  NUI.prefs.set({ scale = 1.1 })    -- scale 0.85–1.25, reducedMotion, highContrast
 ]]
 
 NUI = NUI or {}
@@ -455,25 +460,100 @@ NUI.on('nuikit:close', function(req)
   return { ok = true }
 end)
 
--- ───────────────────────────────── handshake + server theme
+-- ───────────────────────────────── server theme + player preferences
 
---- The server-wide theme: theme.css in the `nuikit` resource (paste any TweakCN / shadcn theme).
---- Every nuikit UI applies it, so the whole server shares one look. Returns nil when absent.
----@return string|nil
+--- The server-wide theme: the `nuikit` resource compiles its theme.css (any TweakCN / shadcn paste)
+--- into the nuikit tokens (docs/tokens.md) and publishes them as GlobalState.nuikitTheme. Every
+--- nuikit UI applies it, so the whole server shares one look. Falls back to the raw theme.css from an
+--- older nuikit resource. Returns nil without the nuikit resource.
+---@return { version: integer, mode: string, hash: string, vars: table<string, string>, imports: string[] }|string|nil
 function NUI.theme()
+  local compiled = GlobalState and GlobalState.nuikitTheme
+  if type(compiled) == 'table' and compiled.vars then return compiled end
   if GetResourceState('nuikit') ~= 'started' then return nil end
   local css = LoadResourceFile('nuikit', 'theme.css')
   if css and css:find('%-%-') then return css end
   return nil
 end
 
+-- `nuikit theme reload` on the server: repaint this UI live.
+if AddStateBagChangeHandler then
+  AddStateBagChangeHandler('nuikitTheme', 'global', function(_, _, value)
+    if type(value) == 'table' and value.vars then NUI.send('nuikit:theme', value) end
+  end)
+end
+
+---@class NuiPrefs
+---@field scale number          0.85–1.25, multiplies the theme's --nk-scale
+---@field reducedMotion boolean no animations or transitions
+---@field highContrast boolean  maximum-contrast text and borders
+
+local PREFS_KVP = 'nuikit:prefs'
+local prefs = nil -- last known, from the nuikit resource (or this resource's KVP without it)
+
+local function normalizePrefs(p)
+  p = type(p) == 'table' and p or {}
+  local scale = tonumber(p.scale) or 1.0
+  if scale < 0.85 then scale = 0.85 elseif scale > 1.25 then scale = 1.25 end
+  return { scale = math.floor(scale * 100 + 0.5) / 100, reducedMotion = p.reducedMotion == true, highContrast = p.highContrast == true }
+end
+
+local function nuikitRunning()
+  return GetResourceState and GetResourceState('nuikit') == 'started'
+end
+
+local function localPrefs()
+  local raw = GetResourceKvpString and GetResourceKvpString(PREFS_KVP)
+  if raw and raw ~= '' and json.decode then
+    local ok, data = pcall(json.decode, raw)
+    if ok then return normalizePrefs(data) end
+  end
+  return normalizePrefs(nil)
+end
+
+NUI.prefs = {}
+
+--- The player's UI preferences (shared by every nuikit UI; owned by the nuikit resource).
+---@return NuiPrefs
+function NUI.prefs.get()
+  local p = prefs or localPrefs()
+  return { scale = p.scale, reducedMotion = p.reducedMotion, highContrast = p.highContrast }
+end
+
+--- Change preferences (missing keys keep their value). Saved, and applied to every nuikit UI.
+---@param patch { scale?: number, reducedMotion?: boolean, highContrast?: boolean }
+function NUI.prefs.set(patch)
+  if type(patch) ~= 'table' then return end
+  if nuikitRunning() then
+    TriggerEvent('nuikit:prefs:set', patch)
+    return
+  end
+  -- no nuikit resource: this resource's UI only
+  local merged = NUI.prefs.get()
+  for k, v in pairs(patch) do merged[k] = v end
+  prefs = normalizePrefs(merged)
+  if SetResourceKvp then SetResourceKvp(PREFS_KVP, json.encode(prefs)) end
+  NUI.send('nuikit:prefs', prefs)
+end
+
+-- From the nuikit resource: to everyone on a change, or to one resource answering its request.
+AddEventHandler('nuikit:prefs:changed', function(p, to)
+  if to and to ~= RESOURCE then return end
+  prefs = normalizePrefs(p)
+  NUI.send('nuikit:prefs', prefs)
+end)
+TriggerEvent('nuikit:prefs:request', RESOURCE)
+
+-- ───────────────────────────────── handshake
+
 -- The page loads after this script runs, so anything sent before it is lost. The UI calls
--- nuikit:ready once it's listening; resend the current state (and the server theme).
+-- nuikit:ready once it's listening; resend the current state (theme and prefs too).
 NUI.on('nuikit:ready', function()
   lastSent, lastMain = nil, nil
   apply()
-  local css = NUI.theme()
-  if css then NUI.send('nuikit:theme', css) end
+  local theme = NUI.theme()
+  if theme then NUI.send('nuikit:theme', theme) end
+  NUI.send('nuikit:prefs', NUI.prefs.get())
   if NUI.player and NUI.player.resend then NUI.player.resend() end
   return { ok = true, resource = RESOURCE }
 end)

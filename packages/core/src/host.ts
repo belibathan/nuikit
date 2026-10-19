@@ -419,6 +419,8 @@ function cssEscape(s: string) {
 
 const ROOT_LIKE = /^(?::root|html|:host|\.dark)$/;
 const LEADING_ROOT = /^(:root|html|:host|\.dark)(\s*[>+~]\s*|\s+)(.+)$/s;
+/** html[data-nk-motion="off"] …: document state (player prefs) set on the host's <html>, not the module's root. */
+const DOC_STATE = /^(html(?:\[[^\]]+\])+)\s+(.+)$/s;
 
 /** Split a selector list on top-level commas (not the ones inside :is(), :not(), […]). */
 export function splitSelectors(list: string): string[] {
@@ -453,6 +455,8 @@ export function scopeSelector(selector: string, scope: string): string {
   return splitSelectors(selector)
     .map((s) => {
       if (ROOT_LIKE.test(s)) return scope;
+      const d = DOC_STATE.exec(s);
+      if (d) return shadow ? `:host-context(${d[1]}) ${d[2]}` : `${d[1]} ${scope} ${d[2]}`;
       const m = LEADING_ROOT.exec(s);
       if (m) return shadow ? `:host${m[2]}${m[3]}` : `${scope}${m[2]}${m[3]}`;
       return shadow ? s : `${scope} ${s}`;

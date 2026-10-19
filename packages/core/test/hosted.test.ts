@@ -97,6 +97,9 @@ describe("host CSS scoping", () => {
     expect(scopeSelector(":root, :host", ":host")).toBe(":host, :host");
     expect(scopeSelector(".dark", ":host")).toBe(":host");
     expect(scopeSelector("html .x", ":host")).toBe(":host .x");
+    // player prefs live on the host document's <html>
+    expect(scopeSelector('html[data-nk-motion="off"] *', ":host")).toBe(':host-context(html[data-nk-motion="off"]) *');
+    expect(scopeSelector('html[data-nk-motion="off"] *::before', '[data-nk="hud"]')).toBe('html[data-nk-motion="off"] [data-nk="hud"] *::before');
     expect(scopeSelector(".flex", ":host")).toBe(".flex");
     expect(scopeSelector(".dark\\:bg-x:is(.dark *)", ":host")).toBe(".dark\\:bg-x:is(.dark *)");
   });

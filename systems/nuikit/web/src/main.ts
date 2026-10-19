@@ -1,14 +1,13 @@
 // The nuikit host page (docs/host.md). client/host.lua tells it which modules to load; each one
 // mounts in its own shadow root with the server theme, and talks only to its own resource.
-import { applyTheme, onNui } from "nuikit-core";
+import { resourceName } from "nuikit-core";
 import { createHost, type Isolation } from "nuikit-core/host";
 import "./index.css";
 
-// The theme is the host's job: applied once to this document, every module inherits it.
-// (nuikit-core also sends nuikit:ready from this page, and nuikit.lua answers with theme.css.)
-onNui("nuikit:theme", (css) => {
-  if (typeof css === "string" && css) applyTheme(css);
-});
+// The theme and the player's prefs are the host's job: nuikit-core applies them to this document
+// (live, from GlobalState via nuikit.lua) and every module inherits them. Modules skip their own.
+// nuikit-core is side-effect free for bundlers, so a bare import would be dropped: use a binding.
+document.documentElement.dataset.nkHost = resourceName();
 
 // Query parameters are for browser tests and bench/host only; the game loads the bare page.
 const params = new URLSearchParams(location.search);
