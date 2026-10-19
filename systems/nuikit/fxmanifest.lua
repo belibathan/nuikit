@@ -15,8 +15,21 @@ server_scripts {
   'server/main.js',
 }
 
--- Player UI preferences (scale, reduced motion, high contrast) and the theme for override pages.
-client_script 'client.lua'
+-- The host (docs/host.md, prototype): renders the UI modules of resources that declare
+-- `nuikit_ui` in this one frame. `setr nuikit_host 0` turns it off; they use their ui_page.
+ui_page 'web/dist/index.html'
+nuikit_protocol '1'
 
--- Still served: older nuikit UIs (and the fallback path of new ones) read the file directly.
-files { 'theme.css' }
+-- theme.css is still served: older nuikit UIs (and the fallback path of new ones) read it directly.
+files {
+  'theme.css',
+  'web/dist/index.html',
+  'web/dist/**/*',
+}
+
+-- client.lua: player UI preferences and the theme for override pages. host.lua: the host.
+client_scripts {
+  'client/nuikit.lua',
+  'client/host.lua',
+  'client.lua',
+}
