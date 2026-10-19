@@ -16,7 +16,11 @@ jobs:
           node-version: 22
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: pnpm build
+      # Failures also become annotations (readable from the API without the log blob).
+      - name: pnpm build
+        run: |
+          set -o pipefail
+          pnpm build 2>&1 | tee build.log || { grep -iE "error|cannot|failed|not found" build.log | tail -20 | sed 's/^/::error::/'; exit 1; }
       - run: pnpm typecheck
       - run: pnpm test
       # Protocol conformance (docs/protocol.md §10): every page is native (level 3); the theme
