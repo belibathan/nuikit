@@ -7,7 +7,7 @@
 
 .pause-scrim {
   inset: -32px; /* past the edges, so the blur has no hard border */
-  background: rgb(0 0 0 / 0.42);
+  background: color-mix(in oklab, var(--scrim) 42%, transparent);
   -webkit-backdrop-filter: blur(16px) saturate(1.15);
   backdrop-filter: blur(16px) saturate(1.15);
 }
@@ -26,7 +26,7 @@
   content: "";
   position: absolute;
   inset: 0;
-  background: radial-gradient(120% 90% at 70% 50%, transparent 45%, rgb(0 0 0 / 0.55) 100%);
+  background: radial-gradient(120% 90% at 70% 50%, transparent 45%, color-mix(in oklab, var(--scrim) 55%, transparent) 100%);
 }
 
 @keyframes pause-fade {

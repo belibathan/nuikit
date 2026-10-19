@@ -53,6 +53,7 @@
   --color-info-foreground: var(--info-foreground);
   --color-hud: var(--hud);
   --color-hud-foreground: var(--hud-foreground);
+  --color-scrim: var(--scrim);
   --color-vital-health: var(--vital-health);
   --color-vital-armor: var(--vital-armor);
   --color-vital-hunger: var(--vital-hunger);
@@ -177,12 +178,12 @@
 }
 /* Bar track on the game world: theme-tinted tracks vanish over a bright sky. */
 @utility nk-track {
-  background-color: rgb(0 0 0 / 0.35);
+  background-color: color-mix(in oklab, var(--scrim) 35%, transparent);
 }
 /* Text and marks drawn straight on the game. */
 @utility nk-shadow {
-  text-shadow: 0 1px 2px rgb(0 0 0 / 0.6);
-  filter: drop-shadow(0 1px 1px rgb(0 0 0 / 0.35));
+  text-shadow: 0 1px 2px color-mix(in oklab, var(--scrim) 60%, transparent);
+  filter: drop-shadow(0 1px 1px color-mix(in oklab, var(--scrim) 35%, transparent));
 }
 /* Full-screen title (pause, loading, death): 32px at 1080p. */
 @utility nk-display {

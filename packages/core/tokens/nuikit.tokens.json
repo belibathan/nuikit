@@ -424,6 +424,19 @@
       },
       "$description": "Text and icons on hud"
     },
+    "scrim": {
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0,
+          0,
+          0
+        ],
+        "alpha": 1,
+        "hex": "#000000"
+      },
+      "$description": "Darkens the game behind full-screen screens, bar tracks and shadows on the game; always used with opacity"
+    },
     "vital-health": {
       "$value": {
         "colorSpace": "srgb",

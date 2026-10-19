@@ -40,7 +40,7 @@ describe("the token contract", () => {
       "accent", "accent-foreground", "destructive", "destructive-foreground", "border", "input", "ring",
       "chart-1", "chart-2", "chart-3", "chart-4", "chart-5", "radius", "font-sans", "font-mono",
       "success", "success-foreground", "warning", "warning-foreground", "info", "info-foreground",
-      "hud", "hud-foreground", "vital-health", "vital-armor", "vital-hunger", "vital-thirst", "vital-stress",
+      "hud", "hud-foreground", "scrim", "vital-health", "vital-armor", "vital-hunger", "vital-thirst", "vital-stress",
       "nk-scale", "nk-motion",
     ]);
     for (const t of TOKENS) expect(t.fallback, t.name).toBeTruthy();
@@ -85,6 +85,7 @@ describe("reference theme: stock neutral (systems/nuikit/theme.css)", () => {
     expect(t.vars["info-foreground"]).toBe(t.vars["primary-foreground"]);
     expect(t.vars.hud).toBe("rgba(0, 0, 0, 0.45)");
     expect(t.vars["hud-foreground"]).toBe("rgb(255, 255, 255)");
+    expect(t.vars.scrim).toBe("rgb(0, 0, 0)");
     expect(hue(t.vars.success!)).toBeGreaterThan(130);
     expect(hue(t.vars.success!)).toBeLessThan(170);
     expect(hue(t.vars.warning!)).toBeGreaterThan(55);

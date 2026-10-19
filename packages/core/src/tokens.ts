@@ -66,6 +66,7 @@ export const TOKENS: readonly TokenSpec[] = [
   n("info-foreground", "color", "Text on info", "primary-foreground"),
   n("hud", "color", "Surfaces drawn straight on the game: HUD chips, hotbar, target eye", "rgba(0, 0, 0, 0.45)"),
   n("hud-foreground", "color", "Text and icons on hud", "rgb(255, 255, 255)"),
+  n("scrim", "color", "Darkens the game behind full-screen screens, bar tracks and shadows on the game; always used with opacity", "rgb(0, 0, 0)"),
   n("vital-health", "color", "Health bar", "chart-1 if red, else another red chart-*, else destructive if red, else oklch(0.68 0.21 25)"),
   n("vital-armor", "color", "Armor bar", "chart-2 if blue, else another blue chart-*, else oklch(0.68 0.16 250)"),
   n("vital-hunger", "color", "Hunger bar", "chart-3 if orange/amber, else another one, else oklch(0.78 0.16 70)"),
@@ -545,6 +546,7 @@ function derive(vars: ThemeVars, mode: ThemeMode, warnings: string[], onlyNumber
   if (vars["info-foreground"] === undefined) vars["info-foreground"] = vars["primary-foreground"]!;
   if (vars.hud === undefined) vars.hud = "rgba(0, 0, 0, 0.45)";
   if (vars["hud-foreground"] === undefined) vars["hud-foreground"] = "rgb(255, 255, 255)";
+  if (vars.scrim === undefined) vars.scrim = "rgb(0, 0, 0)";
 
   const used = new Set<number>();
   for (const v of VITALS) {

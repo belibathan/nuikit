@@ -54,6 +54,7 @@ so a plain shadcn paste always works.
 | `--info-foreground` | Text on info | `--primary-foreground` | `rgb(23, 23, 23)` |
 | `--hud` | Surfaces drawn straight on the game: HUD chips, hotbar tiles, target eye (`nk-chip`, `nk-hud`) | `rgba(0, 0, 0, 0.45)` | `rgba(0, 0, 0, 0.45)` |
 | `--hud-foreground` | Text and icons on `--hud` | `rgb(255, 255, 255)` | `rgb(255, 255, 255)` |
+| `--scrim` | Darkens the game: behind full-screen screens (pause, death, loading), bar tracks and shadows drawn on the game. Always used with opacity (`bg-scrim/40`, or `color-mix(in oklab, var(--scrim) 40%, transparent)` in CSS, which the plugin lowers) | `rgb(0, 0, 0)` | `rgb(0, 0, 0)` |
 | `--vital-health` | Health bar | See [vitals](#vitals) | `rgb(255, 100, 103)` (destructive) |
 | `--vital-armor` | Armor bar | | `rgb(59, 156, 246)` |
 | `--vital-hunger` | Hunger bar | | `rgb(247, 162, 36)` |

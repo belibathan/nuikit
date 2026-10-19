@@ -72,6 +72,7 @@
         "info-foreground",
         "hud",
         "hud-foreground",
+        "scrim",
         "vital-health",
         "vital-armor",
         "vital-hunger",
@@ -252,6 +253,11 @@
           "type": "string",
           "pattern": "^rgba?\\(",
           "description": "Text and icons on hud"
+        },
+        "scrim": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "Darkens the game behind full-screen screens, bar tracks and shadows on the game; always used with opacity"
         },
         "vital-health": {
           "type": "string",
