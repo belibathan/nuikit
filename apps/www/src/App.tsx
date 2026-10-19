@@ -97,14 +97,14 @@ function SectionTitle({ eyebrow, title, children, id }: { eyebrow: string; title
 
 /** What 0.4 ships, captured from each screen's browser dev mode (scripts/screens.mjs). */
 const SCREENS = [
-  { src: "/screens/pause.png", title: "Pause menu", text: "nuikit_pause replaces GTA's Esc menu." },
-  { src: "/screens/hud.png", title: "HUD", text: "nuikit_hud: vitals, needs, voice, money, speedometer." },
-  { src: "/screens/death.png", title: "Death screen", text: "nuikit_death follows your medical resource's timers." },
-  { src: "/screens/loading.png", title: "Loading screen", text: "nuikit_loading, with the real handover progress." },
-  { src: "/screens/ox-lib.png", title: "ox_lib", text: "Menus, dialogs, progress and notifications for every Qbox resource." },
-  { src: "/screens/ox-inventory.png", title: "ox_inventory", text: "Inventory, shops and crafting." },
-  { src: "/screens/banking.png", title: "Renewed-Banking", text: "Accounts, transfers and history." },
-  { src: "/screens/appearance.png", title: "illenium-appearance", text: "Character creator, clothing, barber and tattoos." },
+  { src: "/screens/pause.jpg", title: "Pause menu", text: "nuikit_pause replaces GTA's Esc menu." },
+  { src: "/screens/hud.jpg", title: "HUD", text: "nuikit_hud: vitals, needs, voice, money, speedometer." },
+  { src: "/screens/death.jpg", title: "Death screen", text: "nuikit_death follows your medical resource's timers." },
+  { src: "/screens/loading.jpg", title: "Loading screen", text: "nuikit_loading, with the real handover progress." },
+  { src: "/screens/ox-lib.jpg", title: "ox_lib", text: "Menus, dialogs, progress and notifications for every Qbox resource." },
+  { src: "/screens/ox-inventory.jpg", title: "ox_inventory", text: "Inventory, shops and crafting." },
+  { src: "/screens/banking.jpg", title: "Renewed-Banking", text: "Accounts, transfers and history." },
+  { src: "/screens/appearance.jpg", title: "illenium-appearance", text: "Character creator, clothing, barber and tattoos." },
 ];
 
 function Screens() {
