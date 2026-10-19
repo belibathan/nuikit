@@ -77,9 +77,11 @@ protocol carries the platform.
 2. **Plan around Chromium 144.** Verify the kit on 144 (canary) now; keep 103 support until release-channel
    rollout is confirmed, then relax the 103-only rules in `CLAUDE.md` and turn the compiler into opt-in compat.
 3. **0.5 order:** the theme engine (tokens as a standard) first, then components and blocks, as planned.
-4. **0.6:** write the protocol spec v1 (`docs/protocol.md`) from what already exists, add `nuikit check`, and
-   build and benchmark the host prototype. Decide on the host from the numbers.
-5. **Later:** Vue and Svelte bindings, DUI surfaces, gamepad navigation, the seller program built on `nuikit check`.
+4. **Done early (on `feat/platform`):** protocol spec v1, `nuikit check`, the host prototype and benchmark.
+5. **0.6: universal.** Intents (what scripts ask for) separated from renderers (how it looks), with adapters
+   so ox_lib, QBCore and ESX libraries all land on one themed UI without rewriting scripts. Plan, coverage
+   targets and risks: [`docs/architecture.md`](architecture.md).
+6. **Later:** Vue and Svelte bindings, DUI surfaces, gamepad navigation, the seller program built on `nuikit check`.
 
 ## Status (Oct 19, 2026, `feat/platform`)
 

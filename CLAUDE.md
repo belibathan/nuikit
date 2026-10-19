@@ -5,7 +5,7 @@ in FiveM's NUI (Chromium 103) and are themed by one server-wide TweakCN theme. R
 anything, then read `docs/design.md`.
 
 Current release: **0.4.0** (npm `nuikit-core`, `vite-plugin-nuikit`, `create-nuikit`; GitHub release
-`v0.4.0` with `nuikit.zip`). Direction: `docs/vision.md` (read first). Active work: `docs/next/blocks.md`.
+`v0.4.0` with `nuikit.zip`). Direction: `docs/vision.md` (read first), then `docs/architecture.md`. Active work: `docs/next/blocks.md`.
 
 ## Map
 
@@ -22,7 +22,7 @@ Current release: **0.4.0** (npm `nuikit-core`, `vite-plugin-nuikit`, `create-nui
 | `apps/www` | The site + registry host (Vercel, deploys from `main`). |
 | `scripts/` | `sync-template.mjs` (`pnpm sync`), `pack-systems.mjs` (`pnpm pack:systems` → `out/nuikit.zip`), `new-system.mjs` (scaffold). |
 | `bench/host` | Host benchmark (iframes vs one frame) and the host's end-to-end check. Results in `results.md`. |
-| `docs/` | `vision.md` (direction), `protocol.md` (the standard, v1), `tokens.md` (tokens v1, theme pipeline, prefs), `host.md` (host prototype), `design.md` (kit language), `coverage.md`, protocol specs, `releases/`. |
+| `docs/` | `vision.md` (direction), `architecture.md` (the 0.6 plan: intents, adapters, renderers), `protocol.md` (the standard, v1), `tokens.md` (tokens v1, theme pipeline, prefs), `host.md` (host prototype), `design.md` (kit language), `coverage.md`, protocol specs, `releases/`. |
 
 ## Commands
 
