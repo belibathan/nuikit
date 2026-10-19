@@ -254,15 +254,33 @@ There's no extra resource to install: every resource that bundles `nuikit.lua` k
 
 ## `[nuikit]` systems
 
-nuikit is growing into the UI for a whole server: a `[nuikit]` folder you drop into `resources/`, the way Qbox ships `[qbx]`. Every system is built from stock shadcn components, themed by one file, and stacked by the surface manager. nuikit owns how things look; your framework keeps the data and the rules.
+The UI for a whole server, in one download: `nuikit.zip` holds a **`[nuikit]`** folder you drop into `resources/` (the way Qbox ships `[qbx]`) and an **`overrides/`** folder of new interfaces for resources you already run. Everything is built from stock shadcn components and themed by one file. nuikit owns how things look; your framework and scripts keep the data and the rules. [What's covered on a Qbox server →](docs/coverage.md)
 
-| Resource | What it does | Status |
+**Systems** (`[nuikit]/`)
+
+| Resource | What it does | Replaces |
 |---|---|---|
-| [`nuikit`](systems/nuikit) | `theme.css`: paste a TweakCN theme and every nuikit UI on the server follows. | Prerelease |
-| [`nuikit_hud`](systems/nuikit_hud) | Health, armor, hunger, thirst, stress, voice and radio, cash, bank, job, speedometer with fuel, gear and seatbelt. Replaces `qbx_hud`. | Prerelease |
-| [`nuikit_pause`](systems/nuikit_pause) | Esc pause menu: server name, Resume, Map, Settings, Key bindings, Help, Disconnect, player card and players online. P still opens GTA's. | Prerelease |
-| [`nuikit_death`](systems/nuikit_death) | Death and last-stand screen: countdown and the keys your medical resource listens for (qbx_medical, qb-ambulancejob, esx_death). Presentation only. | Prerelease |
-| Interaction, menus, inventory, spawn, garages, vehicle shop, banking | See the [roadmap](#roadmap). | Planned |
+| [`nuikit`](systems/nuikit) | `theme.css`: paste a TweakCN theme and every nuikit UI on the server follows. | — |
+| [`nuikit_hud`](systems/nuikit_hud) | Health, armor, needs, stress, voice and radio, cash, bank, job; speedometer with fuel, gear and seatbelt. | `qbx_hud` |
+| [`nuikit_stress`](systems/nuikit_stress) | Keeps stress gain and its effects when the HUD is replaced. | stress in `qbx_hud` |
+| [`nuikit_pause`](systems/nuikit_pause) | Esc pause menu: Resume, Map, Settings, Key bindings, Help, Disconnect, player card, players online. | GTA's Esc menu |
+| [`nuikit_death`](systems/nuikit_death) | Death and last-stand screen with the countdown and keys of your medical resource. | its drawn text |
+| [`nuikit_loading`](systems/nuikit_loading) | Loading screen with real progress, tips, links and the server theme. | `loadscreen` |
+| [`nuikit_chat`](systems/nuikit_chat) | Chat theme in your theme's colours. | `qbx_chat_theme` |
+
+**Overrides** (`overrides/`: same Lua, new interface)
+
+| Resource | Interface |
+|---|---|
+| [`ox_lib`](addons/ox_lib) | Notifications, context and list menus, radial, input and alert dialogs, progress, skill check, text UI. Themes every Qbox script that uses ox_lib: garages, mechanic, customs, vehicle shop, jobs, multicharacter… |
+| [`ox_inventory`](addons/ox_inventory) | Inventory, trunks, stashes, shops, crafting, hotbar, tooltips, drag and drop. |
+| [`ox_target`](addons/ox_target) | The target eye and its options. |
+| [`illenium-appearance`](addons/illenium-appearance) | Character creator, clothing, barber, tattoo and surgeon shops. |
+| [`Renewed-Banking`](addons/Renewed-Banking) | Bank and ATM: accounts, transactions, deposit, withdraw, transfer. |
+| [`mm_radio`](addons/mm_radio) | Radio. |
+| [`qbx_scoreboard`](addons/qbx_scoreboard) · [`qbx_idcard`](addons/qbx_idcard) · [`qbx_taxijob`](addons/qbx_taxijob) · [`qbx_vehiclesales`](addons/qbx_vehiclesales) | Scoreboard, ID cards, taxi meter, used-car sale contract. |
+
+Each override is a clean-room implementation of that resource's UI protocol (specs in [`docs/`](docs)), with none of its code.
 
 They run on **Qbox, QBCore, ESX or standalone**: `bridge.lua` turns each framework's player data into one shape (`usePlayer()` in React), so a system is written once.
 
@@ -350,11 +368,10 @@ RedM uses the same CEF, so it should work. Change <code>game 'gta5'</code> to <c
 
 - [x] Surfaces: one owner for focus, layers and Escape across resources
 - [x] `bridge.lua`: one player shape for Qbox, QBCore, ESX, standalone
-- [x] `nuikit_hud`
-- [ ] ox_lib adapter: every ox_lib menu, dialog, notification and progress bar, restyled by swapping one folder
-- [x] `nuikit_pause`, `nuikit_death`
-- [ ] Interaction (target eye, prompts, progress)
-- [ ] Inventory (ox_inventory), garages, vehicle shop, banking, spawn and character select
+- [x] Systems: HUD, stress, pause, death, loading screen, chat theme
+- [x] Overrides: ox_lib, ox_inventory, ox_target, illenium-appearance, Renewed-Banking, mm_radio, scoreboard, ID card, taxi meter, vehicle sales
+- [ ] Theme spec: the contract any script can follow to match the server theme
+- [ ] Phone (npwd), minigames, police fingerprint, lap races
 - [ ] `create-nuikit -t qbox`: zero to a themed local server in one command
 - [ ] `nuikit types`: generate LuaLS annotations from `nui.d.ts`
 
