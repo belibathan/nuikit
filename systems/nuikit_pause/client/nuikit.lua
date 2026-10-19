@@ -37,11 +37,25 @@ end
 -- ───────────────────────────────── messages
 
 --- Send a message to the UI. Arrives as `{ action, data }`.
+--- While the nuikit host renders this resource's module (docs/host.md), it goes through the host.
 ---@param action string
 ---@param data? any
 function NUI.send(action, data)
   log('→ ui', action)
-  SendNUIMessage({ action = action, data = data })
+  if NUI.hosted then
+    TriggerEvent('nuikit:host:send', action, data)
+  else
+    SendNUIMessage({ action = action, data = data })
+  end
+end
+
+-- Every NUI callback this resource registers, so the host can forward a hosted module's calls
+-- to it (raw RegisterNUICallback handlers included). nuikit.lua must load before them.
+local nuiCallbacks = {}
+local registerNUICallback = RegisterNUICallback
+RegisterNUICallback = function(name, fn)
+  nuiCallbacks[name] = fn
+  return registerNUICallback(name, fn)
 end
 
 --- Handle a fetchNui call from the UI. Return a table (or nothing) as the response.
@@ -151,12 +165,19 @@ local function isHidden(list, index)
   return false
 end
 
+-- Who calls SetNuiFocus for a surface: its resource, unless the nuikit host renders that
+-- resource's module, in which case the host's frame must take focus (NUI.hostFocus, host.lua).
+local function ownsFocus(target)
+  if target.resource == RESOURCE then return not NUI.hosted end
+  return NUI.hostFocus ~= nil and NUI.hostFocus(target.resource) == true
+end
+
 -- Recompute focus and tell this resource's UI what its surfaces look like.
 local function apply()
   local list = ordered()
   local target = focusTarget(list)
 
-  if target and target.resource == RESOURCE then
+  if target and ownsFocus(target) then
     SetNuiFocus(true, target.input == 'full' or target.input == 'cursor')
     SetNuiFocusKeepInput(target.keepInput == true)
     hasFocus = true
@@ -358,6 +379,7 @@ AddEventHandler('onClientResourceStop', function(resource)
     end
     return
   end
+  if resource == 'nuikit' and NUI.hosted then NUI._setHosted(false) end
   local changed = false
   for i = #stack, 1, -1 do
     if stack[i].resource == resource then
@@ -536,8 +558,57 @@ NUI.on('nuikit:ready', function()
   return { ok = true, resource = RESOURCE }
 end)
 
+-- ───────────────────────────────── hosted mode (docs/host.md)
+--
+-- A resource whose fxmanifest has `nuikit_ui 'web/dist/module.js'` can be rendered by the nuikit
+-- host (the `nuikit` resource's page) instead of its own ui_page. The host adopts it; from then
+-- on NUI.send goes through the host, the host's frame takes focus for its surfaces, and the host
+-- forwards the module's fetchNui calls here. Only the `nuikit` resource can adopt or call in.
+
+local HOST = 'nuikit'
+NUI.hosted = false
+
+---@param on boolean
+function NUI._setHosted(on)
+  if NUI.hosted == on then return end
+  NUI.hosted = on
+  log(on and 'hosted by nuikit' or 'host gone: using ui_page')
+  lastSent, lastMain = nil, nil
+  -- Our own page: stay empty (adopted) or render the app (fallback). See nuikit-core/boot.
+  SendNUIMessage({ action = on and 'nuikit:host:adopted' or 'nuikit:host:fallback' })
+  apply()
+end
+
+--- Re-run focus and the surface view (the host calls it when modules come and go).
+function NUI._refresh() apply() end
+
+AddEventHandler('nuikit:host:adopt', function(resource)
+  if resource == RESOURCE and GetInvokingResource() == HOST then NUI._setHosted(true) end
+end)
+
+-- A hosted module's fetchNui, forwarded by the host: run our callback, reply with the id.
+AddEventHandler('nuikit:host:forward', function(resource, id, name, payload)
+  if resource ~= RESOURCE or GetInvokingResource() ~= HOST then return end
+  local done = false
+  local function reply(result)
+    if done then return end
+    done = true
+    TriggerEvent('nuikit:host:reply', id, result == nil and {} or result)
+  end
+  local fn = nuiCallbacks[name]
+  if not fn then return reply({ error = ('no NUI callback "%s" in %s'):format(tostring(name), RESOURCE) }) end
+  local ok, err = pcall(fn, payload or {}, reply)
+  if not ok then reply({ error = tostring(err) }) end
+end)
+
+-- Our own ui_page asks whether to render (nuikit-core/boot).
+NUI.on('nuikit:host:mode', function() return { hosted = NUI.hosted } end)
+
 -- Join the client-wide stack.
 TriggerEvent(EV.hello, RESOURCE)
+if RESOURCE ~= HOST and GetNumResourceMetadata and GetNumResourceMetadata(RESOURCE, 'nuikit_ui') > 0 then
+  TriggerEvent('nuikit:host:hello', RESOURCE)
+end
 if not synced then
   synced = true -- first nuikit resource (or nobody answered): start empty
   apply()

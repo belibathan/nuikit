@@ -18,6 +18,8 @@ export interface StartOptions {
   before?: string;
   /** More files to load after nuikit.lua, in order: names in lua/ ("bridge.lua") or absolute paths. */
   scripts?: string[];
+  /** fxmanifest metadata, e.g. { nuikit_ui: ["web/dist/module.js"] } (GetResourceMetadata). */
+  metadata?: Record<string, string[]>;
 }
 
 type Handler = { resource: string; fn: (...args: unknown[]) => unknown };
@@ -41,6 +43,8 @@ export interface Resource {
   commands: Map<string, (source: number, args: string[]) => void>;
   /** Server events it triggered. */
   serverEvents: { event: string; args: unknown[] }[];
+  /** Like call, for callbacks that answer later: `done`/`result` fill in when cb runs. */
+  callPending(name: string, data?: unknown): { done: boolean; result: any };
   /** Latest `nuikit:surfaces` payload. */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   surfaces(): any;
@@ -50,7 +54,7 @@ export interface Resource {
 const clone = <T>(v: T): T =>
   v === undefined || v === null ? (undefined as T) : JSON.parse(JSON.stringify(v), (_k, x) => (x === null ? undefined : x));
 
-export async function createClient(options: { syncEvents?: boolean } = {}) {
+export async function createClient(options: { syncEvents?: boolean; onNuiMessage?: (resource: string, msg: unknown) => void } = {}) {
   const factory = new LuaFactory();
   const handlers = new Map<string, Handler[]>();
   const resources = new Map<string, Resource>();
@@ -59,19 +63,29 @@ export async function createClient(options: { syncEvents?: boolean } = {}) {
   const bagHandlers: { resource: string; key: string; fn: (bag: string, key: string, value: unknown) => void }[] = [];
   // SetTimeout callbacks, run by runTimers().
   const timers: { resource: string; ms: number; fn: () => void }[] = [];
+  const metadata = new Map<string, Record<string, string[]>>();
 
-  const queue: { event: string; args: unknown[] }[] = [];
+  const queue: { event: string; args: unknown[]; from?: string }[] = [];
+  /** The resource that triggered the event being delivered (FiveM's GetInvokingResource()). */
+  let invoker: string | undefined;
   function trigger(event: string, ...args: unknown[]) {
-    // Synchronous mode: handlers run right away, nested in the caller, like FiveM's local TriggerEvent.
-    if (options.syncEvents) deliver(event, args.map(clone));
-    else queue.push({ event, args: args.map(clone) });
+    triggerFrom(undefined, event, ...args);
   }
-  function deliver(event: string, args: unknown[]) {
+  function triggerFrom(from: string | undefined, event: string, ...args: unknown[]) {
+    // Synchronous mode: handlers run right away, nested in the caller, like FiveM's local TriggerEvent.
+    if (options.syncEvents) deliver(event, args.map(clone), from);
+    else queue.push({ event, args: args.map(clone), from });
+  }
+  function deliver(event: string, args: unknown[], from?: string) {
     for (const h of [...(handlers.get(event) ?? [])]) {
+      const outer = invoker;
+      invoker = from;
       try {
         h.fn(...args.map(clone));
       } catch (e) {
         throw new Error(`${event} → ${h.resource} with ${JSON.stringify(args)}: ${e}`);
+      } finally {
+        invoker = outer;
       }
     }
   }
@@ -79,8 +93,8 @@ export async function createClient(options: { syncEvents?: boolean } = {}) {
   function flush() {
     for (let guard = 0; queue.length; guard++) {
       if (guard > 10_000) throw new Error("event loop did not settle");
-      const { event, args } = queue.shift()!;
-      deliver(event, args);
+      const { event, args, from } = queue.shift()!;
+      deliver(event, args, from);
     }
   }
 
@@ -119,6 +133,17 @@ export async function createClient(options: { syncEvents?: boolean } = {}) {
       kvp: new Map(),
       commands: new Map(),
       serverEvents: [],
+      callPending: (cbName, data = {}) => {
+        const fn = callbacks.get(cbName);
+        if (!fn) throw new Error(`no NUI callback "${cbName}" in ${name}`);
+        const state: { done: boolean; result: any } = { done: false, result: undefined };
+        fn(clone(data), (r) => {
+          state.done = true;
+          state.result = clone(r);
+        });
+        flush();
+        return state;
+      },
       surfaces: () => [...res.messages].reverse().find((m) => m.action === "nuikit:surfaces")?.data?.surfaces ?? {},
     };
     const g = lua.global;
@@ -128,6 +153,7 @@ export async function createClient(options: { syncEvents?: boolean } = {}) {
     // Natives return nothing (wasmoon can't push some JS values back into Lua).
     g.set("SendNUIMessage", (m: { action: string; data: unknown }) => {
       res.messages.push(clone(m) as any);
+      options.onNuiMessage?.(name, clone(m));
     });
     g.set("RegisterNUICallback", (n: string, fn: any) => {
       callbacks.set(n, fn);
@@ -144,7 +170,7 @@ export async function createClient(options: { syncEvents?: boolean } = {}) {
       handlers.set(event, list);
     });
     g.set("TriggerEvent", (event: string, ...args: unknown[]) => {
-      trigger(event, ...args);
+      triggerFrom(name, event, ...args);
     });
     g.set("json", {
       encode: (v: unknown) => JSON.stringify(v ?? null),
@@ -167,6 +193,15 @@ export async function createClient(options: { syncEvents?: boolean } = {}) {
     g.set("AddStateBagChangeHandler", (key: string, bag: string, fn: any) => {
       if (bag === "global") bagHandlers.push({ resource: name, key, fn });
     });
+    g.set("GetInvokingResource", () => invoker);
+    // Resource natives over the resources started in this client (tests can override in `before`).
+    g.set("GetResourceState", (r: string) => (resources.has(r) ? "started" : "missing"));
+    g.set("GetNumResources", () => resources.size);
+    g.set("GetResourceByFindIndex", (i: number) => [...resources.keys()][i]);
+    g.set("GetNumResourceMetadata", (r: string, key: string) => metadata.get(r)?.[key]?.length ?? 0);
+    g.set("GetResourceMetadata", (r: string, key: string, i: number) => metadata.get(r)?.[key]?.[i]);
+    g.set("GetGameTimer", () => Math.floor(performance.now()));
+    metadata.set(name, startOptions.metadata ?? {});
     g.set("RegisterNetEvent", (event: string, fn?: any) => {
       if (!fn) return;
       const list = handlers.get(event) ?? [];
@@ -182,10 +217,13 @@ export async function createClient(options: { syncEvents?: boolean } = {}) {
     await lua.doString(SOURCE);
     for (const file of startOptions.scripts ?? []) await lua.doString(lua_(file));
     flush();
+    trigger("onClientResourceStart", name);
+    flush();
     return res;
   }
 
   function stop(name: string) {
+    metadata.delete(name);
     for (const [event, list] of handlers) handlers.set(event, list.filter((h) => h.resource !== name));
     for (let i = bagHandlers.length - 1; i >= 0; i--) if (bagHandlers[i]!.resource === name) bagHandlers.splice(i, 1);
     for (let i = timers.length - 1; i >= 0; i--) if (timers[i]!.resource === name) timers.splice(i, 1);
