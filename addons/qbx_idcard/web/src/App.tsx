@@ -100,7 +100,7 @@ function IdCard({ data, config, labels }: { data: PlayerData; config: IdConfig; 
         </div>
         <div className="min-w-0 flex-1">
           <h2 className="nk-title truncate">{title}</h2>
-          <p className="nk-label truncate">{sentence(labels.lang_header)}</p>
+          <p className="nk-label truncate">{titleCase(labels.lang_header)}</p>
         </div>
       </header>
 
@@ -128,6 +128,13 @@ function IdCard({ data, config, labels }: { data: PlayerData; config: IdConfig; 
 }
 
 /** "LOS SANTOS" / "pilot license" → "Los santos" / "Pilot license"; mixed-case strings are left alone. */
+/** An ALL-CAPS place name ("LOS SANTOS") → "Los Santos"; anything else is left as written. */
+function titleCase(s: string) {
+  const t = (s ?? "").trim();
+  if (t !== t.toUpperCase()) return t;
+  return t.toLowerCase().replace(/(^|[\s-])(\p{L})/gu, (_, a: string, b: string) => a + b.toUpperCase());
+}
+
 function sentence(s: string) {
   const t = s.trim();
   if (!t) return t;
