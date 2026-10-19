@@ -9,7 +9,7 @@ The loading screen for your server, built from stock shadcn/ui and themed by `nu
 3. Edit `config.lua`: name, tagline, tips, links, and optionally a logo, backgrounds and music. Put your files in `media/` and list them as `media/<file>`, or use `https://` URLs.
 4. Restart the server (loading screens are picked up when players connect).
 
-The theme reaches the loading screen through the connection handover: `server/main.lua` reads `nuikit/theme.css` for every connecting player, so theme edits apply on the next connection.
+The theme reaches the loading screen through the connection handover: `server/main.lua` sends the `nuikit` resource's compiled theme for every connecting player, so `nuikit theme reload` applies from the next connection.
 
 ### Multicharacter
 

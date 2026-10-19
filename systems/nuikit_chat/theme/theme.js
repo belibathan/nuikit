@@ -1,10 +1,14 @@
 /*
- * nuikit_chat: brings the server theme (nuikit/theme.css) into the chat resource's page.
+ * nuikit_chat: brings the server theme into the chat resource's page.
  *
- * The chat page isn't ours and FiveM's Chromium 103 can't read oklch(), so this fetches the
- * theme, takes its :root + .dark variables, converts every colour to rgb and sets them on <html>
- * as --nk-<name> (plus --nk-<name>-rgb channels for translucent fills). style.css reads only
- * those. Without the nuikit resource nothing is set and style.css's built-in values stay.
+ * The chat page isn't ours and FiveM's Chromium 103 can't read oklch(), so this sets every theme
+ * token on <html> as --nk-<name> (plus --nk-<name>-rgb channels for translucent fills), colours as
+ * rgb. style.css reads only those.
+ *
+ * 1. The nuikit resource's compiled theme (tokens v1, already lowered) from its NUI callback
+ *    https://nuikit/theme, then a long-poll on it so `nuikit theme reload` repaints the chat live.
+ * 2. Older nuikit resource: fetch nuikit/theme.css and convert it here.
+ * 3. No nuikit resource: nothing is set and style.css's built-in values stay.
  *
  * Plain ES2017, no build step. MIT, https://github.com/belibathan/nuikit
  */
@@ -12,6 +16,7 @@
   "use strict";
 
   var SOURCES = ["https://cfx-nui-nuikit/theme.css", "nui://nuikit/theme.css"];
+  var CALLBACK = "https://nuikit/theme";
 
   /** { light, dark } variable maps from pasted TweakCN / shadcn CSS. */
   function parseTheme(css) {
@@ -150,6 +155,12 @@
     var k;
     for (k in t.light) vars[k] = t.light[k];
     for (k in t.dark) vars[k] = t.dark[k];
+    return varsDecls(vars);
+  }
+
+  /** The same declarations from a flat token map (a compiled theme's vars). */
+  function varsDecls(vars) {
+    var k;
     var out = {};
     for (k in vars) {
       var value = vars[k].replace(/var\(\s*--/g, "var(--nk-");
@@ -166,22 +177,92 @@
     return out;
   }
 
-  function apply(css) {
-    var decls = themeDecls(css);
-    var root = document.documentElement;
-    for (var k in decls) root.style.setProperty(k, decls[k]);
-    // Google Fonts @imports in a pasted theme
-    var imp = /@import\s+(?:url\(\s*)?["']?(https?:\/\/[^"')\s;]+)["']?\s*\)?[^;]*;/g;
+  /** Google Fonts @imports in a pasted theme (quoted URLs may contain ";"). */
+  function importUrls(css) {
+    var urls = [];
+    var imp = /@import\s+(?:url\(\s*)?(["'])(https?:\/\/.*?)\1/g;
     var m;
-    while ((m = imp.exec(css))) {
-      if (document.querySelector('link[data-nuikit-import="' + m[1] + '"]')) continue;
+    while ((m = imp.exec(css))) urls.push(m[2]);
+    return urls;
+  }
+
+  function applyDecls(decls, imports) {
+    var root = document.documentElement;
+    var prev = root.__nkThemeKeys || {};
+    var k;
+    for (k in prev) if (!(k in decls)) root.style.removeProperty(k);
+    for (k in decls) root.style.setProperty(k, decls[k]);
+    root.__nkThemeKeys = decls;
+    for (var i = 0; i < imports.length; i++) {
+      if (document.querySelector('link[data-nuikit-import="' + imports[i] + '"]')) continue;
       var link = document.createElement("link");
       link.rel = "stylesheet";
-      link.href = m[1];
-      link.setAttribute("data-nuikit-import", m[1]);
+      link.href = imports[i];
+      link.setAttribute("data-nuikit-import", imports[i]);
       document.head.appendChild(link);
     }
     root.setAttribute("data-nuikit-theme", "server");
+  }
+
+  function apply(css) {
+    applyDecls(themeDecls(css), importUrls(css));
+  }
+
+  /** A payload from the nuikit resource: { hash, theme: { vars, imports }, css?, prefs? }. */
+  function applyPayload(p) {
+    if (p && p.theme && p.theme.vars) {
+      applyDecls(varsDecls(p.theme.vars), p.theme.imports || []);
+      return true;
+    }
+    if (p && typeof p.css === "string" && p.css.indexOf("--") !== -1) {
+      apply(p.css);
+      return true;
+    }
+    return false;
+  }
+
+  function post(body, timeout) {
+    var controller = typeof AbortController === "function" ? new AbortController() : null;
+    var timer = setTimeout(function () {
+      if (controller) controller.abort();
+    }, timeout);
+    return fetch(CALLBACK, {
+      method: "POST",
+      headers: { "Content-Type": "application/json; charset=UTF-8" },
+      body: JSON.stringify(body),
+      signal: controller ? controller.signal : undefined,
+    })
+      .then(function (res) {
+        return res.ok ? res.text() : null;
+      })
+      .then(function (text) {
+        var data = text ? JSON.parse(text) : null;
+        return data && typeof data.hash === "string" ? data : null;
+      })
+      .catch(function () {
+        return null;
+      })
+      .then(function (data) {
+        clearTimeout(timer);
+        return data;
+      });
+  }
+
+  /** Wait for `nuikit theme reload`: the callback answers when the theme changes. */
+  function poll(hash) {
+    post({ hash: hash, wait: true }, 40000).then(function (next) {
+      if (!next) return setTimeout(function () { poll(hash); }, 30000);
+      if (!next.unchanged && next.hash !== hash) applyPayload(next);
+      poll(next.hash);
+    });
+  }
+
+  function start() {
+    if (typeof fetch !== "function") return;
+    post({ hash: null }, 4000).then(function (first) {
+      if (first) poll(first.hash);
+      if (!applyPayload(first)) load(0);
+    });
   }
 
   function load(i) {
@@ -199,7 +280,7 @@
       });
   }
 
-  var api = { parseTheme: parseTheme, toRgba: toRgba, themeDecls: themeDecls, apply: apply };
+  var api = { parseTheme: parseTheme, toRgba: toRgba, themeDecls: themeDecls, varsDecls: varsDecls, importUrls: importUrls, apply: apply, applyPayload: applyPayload };
   if (typeof module === "object" && module.exports) module.exports = api;
-  else load(0);
+  else start();
 })();

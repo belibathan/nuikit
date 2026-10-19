@@ -3,11 +3,12 @@
 //   vendor/shadcn/ui/*                → web/src/components/ui (stock shadcn, unmodified)
 //   registry/nuikit/*                 → web/src/components/ui, web/src/hooks
 //   vendor/shadcn/colors/neutral.json → web/src/index.css (stock shadcn neutral theme)
+//   nuikit-core compileTheme()        → web/src/index.css (nuikit token defaults; build core first)
 // Copies are committed so each resource is complete on its own (you own the components, as with
 // shadcn). Never edit the copies here; edit the sources and run `pnpm sync`.
 import fs from "node:fs";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -41,9 +42,26 @@ for (const group of ["systems", "addons"]) {
 
 const { cssVars } = JSON.parse(fs.readFileSync(path.join(root, "vendor/shadcn/colors/neutral.json"), "utf8"));
 const block = (sel, vars) => `${sel} {\n${Object.entries(vars).map(([k, v]) => `  --${k}: ${v};`).join("\n")}\n}`;
+
+// The nuikit tokens' defaults, exactly as compileTheme() derives them from the stock theme.
+const coreDist = path.join(root, "packages/core/dist/index.js");
+if (!fs.existsSync(coreDist)) {
+  console.error("pnpm sync needs nuikit-core built first: pnpm -r --filter \"./packages/**\" build");
+  process.exit(1);
+}
+const { compileTheme, TOKENS } = await import(pathToFileURL(coreDist).href);
+const nuikitTokens = (mode) => {
+  const { vars } = compileTheme({ ...cssVars[mode] }, { mode });
+  const out = {};
+  for (const t of TOKENS) if (t.group === "nuikit" || t.name === "destructive-foreground") out[t.name] = vars[t.name];
+  out.info = "var(--primary)";
+  out["info-foreground"] = "var(--primary-foreground)";
+  return out;
+};
 const css = fs
   .readFileSync(path.join(root, "packages/create-nuikit/index.css.tpl"), "utf8")
-  .replace("/* {{theme}} */", [block(":root", cssVars.light), block(".dark", cssVars.dark)].join("\n\n"));
+  .replace("/* {{theme}} */", [block(":root", cssVars.light), block(".dark", cssVars.dark)].join("\n\n"))
+  .replace("/* {{tokens}} */", [block(":root", nuikitTokens("light")), block(".dark", nuikitTokens("dark"))].join("\n\n"));
 
 for (const t of targets) {
   const copy = (from, to) => {

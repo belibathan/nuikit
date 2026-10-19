@@ -6,9 +6,10 @@ import { Progress } from "@/components/ui/progress"
 
 /**
  * Vital — a player stat (health, armor, hunger…): an icon and a shadcn Progress.
- * The tone only picks which theme token colors it.
+ * The tone only picks which theme token colors it: health, armor, hunger, thirst and stress use
+ * the theme's --vital-* tokens (docs/tokens.md).
  *
- *   <Vital value={health} tone="destructive" icon={<HeartIcon />} label="Health" />
+ *   <Vital value={health} tone="health" icon={<HeartIcon />} label="Health" />
  */
 const vitalVariants = cva(
   "flex items-center gap-2 [&_svg:not([class*='size-'])]:size-4 [&_svg]:shrink-0",
@@ -19,6 +20,16 @@ const vitalVariants = cva(
           "text-primary [&_[data-slot=progress]]:bg-primary/20 [&_[data-slot=progress-indicator]]:bg-primary",
         destructive:
           "text-destructive [&_[data-slot=progress]]:bg-destructive/20 [&_[data-slot=progress-indicator]]:bg-destructive",
+        health:
+          "text-vital-health [&_[data-slot=progress]]:bg-vital-health/20 [&_[data-slot=progress-indicator]]:bg-vital-health",
+        armor:
+          "text-vital-armor [&_[data-slot=progress]]:bg-vital-armor/20 [&_[data-slot=progress-indicator]]:bg-vital-armor",
+        hunger:
+          "text-vital-hunger [&_[data-slot=progress]]:bg-vital-hunger/20 [&_[data-slot=progress-indicator]]:bg-vital-hunger",
+        thirst:
+          "text-vital-thirst [&_[data-slot=progress]]:bg-vital-thirst/20 [&_[data-slot=progress-indicator]]:bg-vital-thirst",
+        stress:
+          "text-vital-stress [&_[data-slot=progress]]:bg-vital-stress/20 [&_[data-slot=progress-indicator]]:bg-vital-stress",
         "chart-1":
           "text-chart-1 [&_[data-slot=progress]]:bg-chart-1/20 [&_[data-slot=progress-indicator]]:bg-chart-1",
         "chart-2":

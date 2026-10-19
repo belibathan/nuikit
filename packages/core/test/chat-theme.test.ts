@@ -4,6 +4,7 @@ import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import { toRgba } from "../src/theme";
+import { compileTheme } from "../src/tokens";
 
 const dir = fileURLToPath(new URL("../../../systems/nuikit_chat/", import.meta.url));
 const source = readFileSync(dir + "theme/theme.js", "utf8");
@@ -14,6 +15,8 @@ const chat = (() => {
     toRgba(v: string): number[] | null;
     parseTheme(css: string): { light: Record<string, string>; dark: Record<string, string> };
     themeDecls(css: string): Record<string, string>;
+    varsDecls(vars: Record<string, string>): Record<string, string>;
+    importUrls(css: string): string[];
   };
 })();
 
@@ -68,6 +71,31 @@ describe("nuikit_chat theme.js", () => {
     // every --nk-*-rgb the stylesheet reads has a built-in fallback
     const used = new Set([...css.matchAll(/var\((--nk-[\w-]+-rgb)\)/g)].map((m) => m[1]));
     for (const v of used) if (v !== "--nk-tone-rgb") expect(css, v).toContain(`${v}:`);
+  });
+});
+
+describe("nuikit_chat theme.js with the compiled theme (tokens v1)", () => {
+  const stock = compileTheme(readFileSync(dir + "../nuikit/theme.css", "utf8"));
+
+  it("sets every token, semantic ones included, from the nuikit resource's compiled vars", () => {
+    const d = chat.varsDecls(stock.vars);
+    expect(d["--nk-success"]).toBe(stock.vars.success);
+    expect(d["--nk-warning-rgb"]).toBe(toRgba(stock.vars.warning!)!.slice(0, 3).join(", "));
+    expect(d["--nk-hud-a"]).toBe("0.45");
+  });
+
+  it("style.css's built-in status colours are the stock theme's derived tokens", () => {
+    const css = readFileSync(dir + "theme/style.css", "utf8");
+    for (const name of ["success", "warning", "info"]) {
+      const rgb = toRgba(stock.vars[name]!)!.slice(0, 3).join(", ");
+      expect(css, name).toContain(`--nk-${name}-rgb: ${rgb};`);
+    }
+  });
+
+  it("reads Google Fonts imports with ; in the URL", () => {
+    expect(chat.importUrls(`@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap");`)).toEqual([
+      "https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap",
+    ]);
   });
 });
 

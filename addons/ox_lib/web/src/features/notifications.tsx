@@ -31,12 +31,12 @@ interface Toast extends NotifyData {
 const MAX = 20;
 const EXIT_MS = 400;
 
-// The icon is the state, so it carries the colour. Success/warning have no theme token: fixed hues.
+// The icon is the state, so it carries the colour: the theme's status tokens (docs/tokens.md).
 const TYPES: Record<string, { icon: string; color?: string }> = {
   error: { icon: "circle-xmark", color: "var(--destructive)" },
-  success: { icon: "circle-check", color: "#12b886" },
-  warning: { icon: "circle-exclamation", color: "#fab005" },
-  info: { icon: "circle-info" },
+  success: { icon: "circle-check", color: "var(--success)" },
+  warning: { icon: "circle-exclamation", color: "var(--warning)" },
+  info: { icon: "circle-info", color: "var(--info)" },
 };
 
 function normalizePosition(p?: string): Position {
