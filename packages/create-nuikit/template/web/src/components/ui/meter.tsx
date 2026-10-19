@@ -28,7 +28,20 @@ const meterVariants = cva("min-w-0", {
   },
 })
 
-type MeterTone = "primary" | "foreground" | "destructive" | "chart-1" | "chart-2" | "chart-3" | "chart-4" | "chart-5"
+type MeterTone =
+  | "primary"
+  | "foreground"
+  | "destructive"
+  | "chart-1"
+  | "chart-2"
+  | "chart-3"
+  | "chart-4"
+  | "chart-5"
+  | "health"
+  | "armor"
+  | "hunger"
+  | "thirst"
+  | "stress"
 
 /** Literal class names, so Tailwind finds them. */
 const TONES: Record<MeterTone, { text: string; fill: string; track: string }> = {
@@ -40,6 +53,12 @@ const TONES: Record<MeterTone, { text: string; fill: string; track: string }> = 
   "chart-3": { text: "text-chart-3", fill: "bg-chart-3", track: "bg-chart-3/20" },
   "chart-4": { text: "text-chart-4", fill: "bg-chart-4", track: "bg-chart-4/20" },
   "chart-5": { text: "text-chart-5", fill: "bg-chart-5", track: "bg-chart-5/20" },
+  // tokens v1 vitals (docs/tokens.md)
+  health: { text: "text-vital-health", fill: "bg-vital-health", track: "bg-vital-health/20" },
+  armor: { text: "text-vital-armor", fill: "bg-vital-armor", track: "bg-vital-armor/20" },
+  hunger: { text: "text-vital-hunger", fill: "bg-vital-hunger", track: "bg-vital-hunger/20" },
+  thirst: { text: "text-vital-thirst", fill: "bg-vital-thirst", track: "bg-vital-thirst/20" },
+  stress: { text: "text-vital-stress", fill: "bg-vital-stress", track: "bg-vital-stress/20" },
 }
 
 const FILL: Record<MeterTone, string> = {
@@ -51,6 +70,11 @@ const FILL: Record<MeterTone, string> = {
   "chart-3": "[&_[data-slot=progress-indicator]]:bg-chart-3",
   "chart-4": "[&_[data-slot=progress-indicator]]:bg-chart-4",
   "chart-5": "[&_[data-slot=progress-indicator]]:bg-chart-5",
+  health: "[&_[data-slot=progress-indicator]]:bg-vital-health",
+  armor: "[&_[data-slot=progress-indicator]]:bg-vital-armor",
+  hunger: "[&_[data-slot=progress-indicator]]:bg-vital-hunger",
+  thirst: "[&_[data-slot=progress-indicator]]:bg-vital-thirst",
+  stress: "[&_[data-slot=progress-indicator]]:bg-vital-stress",
 }
 
 type MeterLevel = "normal" | "low" | "high"
@@ -110,7 +134,7 @@ function Meter({
   const { percent, level } = meterLevel(value, { max, low, high })
   const critical = level !== "normal"
   const t = TONES[critical ? "destructive" : tone]
-  const trackClass = track === "game" ? "bg-black/35" : t.track
+  const trackClass = track === "game" ? "bg-scrim/35" : t.track
   const stacked = label !== undefined || valueText !== undefined
   // flex-1 only beside an icon: in the stacked column it would collapse the bar's height to 0
   const grow = stacked ? "w-full" : "flex-1"

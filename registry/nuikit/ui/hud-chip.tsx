@@ -28,7 +28,7 @@ const hudChipVariants = cva(
       state: {
         default: "[&_[data-slot=hud-chip-icon]]:opacity-75",
         active: "nk-chip-active",
-        warning: "bg-destructive text-white",
+        warning: "bg-destructive text-destructive-foreground",
       },
     },
     defaultVariants: {

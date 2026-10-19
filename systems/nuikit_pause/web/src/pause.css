@@ -61,25 +61,25 @@
 }
 .pause-scrim[data-stage]::after {
   background:
-    linear-gradient(270deg, rgb(0 0 0 / 0.55) 0%, rgb(0 0 0 / 0.25) 24%, transparent 40%),
-    linear-gradient(0deg, rgb(0 0 0 / 0.35) 0%, transparent 22%);
+    linear-gradient(270deg, color-mix(in oklab, var(--scrim) 55%, transparent) 0%, color-mix(in oklab, var(--scrim) 25%, transparent) 24%, transparent 40%),
+    linear-gradient(0deg, color-mix(in oklab, var(--scrim) 35%, transparent) 0%, transparent 22%);
 }
 
 /* The map: the world stays sharp; a light shade at the edges keeps the panels readable. */
 .pause-map-shade {
   background:
-    linear-gradient(90deg, rgb(0 0 0 / 0.45) 0%, transparent 30%),
-    linear-gradient(0deg, rgb(0 0 0 / 0.35) 0%, transparent 20%);
+    linear-gradient(90deg, color-mix(in oklab, var(--scrim) 45%, transparent) 0%, transparent 30%),
+    linear-gradient(0deg, color-mix(in oklab, var(--scrim) 35%, transparent) 0%, transparent 20%);
   animation: pause-fade 240ms ease-out both;
 }
 
 /* Pins and the player dot sit on the world, so they get the game-text shadow treatment. */
 .pause-pin,
 .pause-you {
-  box-shadow: 0 0 0 1px rgb(255 255 255 / 0.18), 0 2px 8px rgb(0 0 0 / 0.45);
+  box-shadow: 0 0 0 1px color-mix(in oklab, var(--hud-foreground) 18%, transparent), 0 2px 8px color-mix(in oklab, var(--scrim) 45%, transparent);
 }
 .pause-you {
-  box-shadow: 0 0 0 3px rgb(255 255 255 / 0.9), 0 2px 10px rgb(0 0 0 / 0.5);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--hud-foreground) 90%, transparent), 0 2px 10px color-mix(in oklab, var(--scrim) 50%, transparent);
 }
 
 /* Map pins: the anchor is moved with a transform every frame (no layout); the child centres it. */

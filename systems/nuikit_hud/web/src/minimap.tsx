@@ -84,9 +84,9 @@ function Location({ frame, state }: { frame: MinimapFrame; state: MinimapState }
     style.right = `${(1 - frame.x - frame.w) * 100}%`;
   }
   return (
-    <div className={cn("nk-shadow absolute flex max-w-80 flex-col text-white", frame.x > 0.5 && "items-end text-right")} style={style}>
+    <div className={cn("nk-shadow absolute flex max-w-80 flex-col text-hud-foreground", frame.x > 0.5 && "items-end text-right")} style={style}>
       <span className="truncate text-sm leading-5 font-semibold">{state.street}</span>
-      <span className="truncate text-xs leading-4 font-medium text-white/80">
+      <span className="truncate text-xs leading-4 font-medium text-hud-foreground/80">
         {state.crossing ? `Near ${state.crossing}, ${state.zone}` : state.zone}
       </span>
     </div>

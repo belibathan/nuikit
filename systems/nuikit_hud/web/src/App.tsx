@@ -56,16 +56,16 @@ function Status({ player, needs, beside }: { player: NuiPlayer; needs: boolean; 
   return (
     <div className={cn("flex flex-col gap-3", beside ? "absolute" : "nk-anchor-bl")} style={style}>
       <div className={cn("flex w-32 flex-col gap-2", onGameMarks)}>
-        <Meter aria-label="Health" icon={<HeartPulseIcon />} value={player.health} low={20} tone="destructive" track="game" size="sm" />
-        <Meter aria-label="Armor" icon={<ShieldIcon />} value={player.armor} track="game" size="sm" />
+        <Meter aria-label="Health" icon={<HeartPulseIcon />} value={player.health} low={20} tone="health" track="game" size="sm" />
+        <Meter aria-label="Armor" icon={<ShieldIcon />} value={player.armor} tone="armor" track="game" size="sm" />
         {needs && player.hunger !== undefined && (
-          <Meter aria-label="Hunger" icon={<UtensilsIcon />} value={player.hunger} low={20} tone="chart-1" track="game" size="sm" />
+          <Meter aria-label="Hunger" icon={<UtensilsIcon />} value={player.hunger} low={20} tone="hunger" track="game" size="sm" />
         )}
         {needs && player.thirst !== undefined && (
-          <Meter aria-label="Thirst" icon={<DropletIcon />} value={player.thirst} low={20} tone="chart-2" track="game" size="sm" />
+          <Meter aria-label="Thirst" icon={<DropletIcon />} value={player.thirst} low={20} tone="thirst" track="game" size="sm" />
         )}
         {needs && !!player.stress && (
-          <Meter aria-label="Stress" icon={<FlameIcon />} value={player.stress} high={80} tone="chart-4" track="game" size="sm" />
+          <Meter aria-label="Stress" icon={<FlameIcon />} value={player.stress} high={80} tone="stress" track="game" size="sm" />
         )}
       </div>
       <Voice voice={player.voice} />
@@ -100,9 +100,9 @@ function Wallet({ player }: { player: NuiPlayer }) {
         <Stat surface="game" align="end" size="sm" icon={<LandmarkIcon />} label="Bank" value={money.format(player.bank)} />
       )}
       {job && (
-        <div className="nk-shadow flex items-center gap-1.5 text-xs font-medium text-white">
+        <div className="nk-shadow flex items-center gap-1.5 text-xs font-medium text-hud-foreground">
           {job.onDuty !== undefined && (
-            <span className={cn("size-1.5 rounded-full", job.onDuty ? "bg-primary" : "bg-white/40")} aria-label={job.onDuty ? "On duty" : "Off duty"} />
+            <span className={cn("size-1.5 rounded-full", job.onDuty ? "bg-primary" : "bg-hud-foreground/40")} aria-label={job.onDuty ? "On duty" : "Off duty"} />
           )}
           {[job.label ?? job.name, job.gradeLabel].filter(Boolean).join(", ")}
         </div>

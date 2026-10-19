@@ -29,7 +29,7 @@ const statVariants = cva("flex min-w-0 flex-col", {
     },
     surface: {
       panel: "",
-      game: "nk-shadow text-white",
+      game: "nk-shadow text-hud-foreground",
     },
   },
   defaultVariants: {
@@ -84,7 +84,7 @@ function Stat({
         data-slot="stat-label"
         className={cn(
           "nk-label flex min-w-0 items-center gap-1.5 [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-3.5",
-          game && "text-white/80",
+          game && "text-hud-foreground/80",
           align === "end" && "flex-row-reverse"
         )}
       >
@@ -98,7 +98,7 @@ function Stat({
             data-slot="stat-meta"
             className={cn(
               "shrink-0 text-xs font-medium",
-              game ? "text-white/80" : "text-muted-foreground",
+              game ? "text-hud-foreground/80" : "text-muted-foreground",
               size === "display" && "text-sm"
             )}
           >
@@ -112,7 +112,7 @@ function Stat({
           data-trend={trend}
           className={cn(
             "nk-num flex items-center gap-1 text-xs font-medium [&_svg]:size-3.5",
-            trend === "down" ? "text-destructive" : game ? "text-white/80" : "text-muted-foreground"
+            trend === "down" ? "text-destructive" : game ? "text-hud-foreground/80" : "text-muted-foreground"
           )}
         >
           {trend === "up" && <ArrowUpRightIcon aria-hidden />}
