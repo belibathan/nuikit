@@ -1,5 +1,5 @@
 import { applyTheme, clearTheme, emit, type ThemeVars } from "nuikit-core/react";
-import { ArrowRightIcon, CarIcon, GithubIcon, HeartPulseIcon, KeyIcon, ShieldIcon, WrenchIcon, ZapIcon } from "lucide-react";
+import { ArrowRightIcon, CarIcon, DownloadIcon, GithubIcon, HeartPulseIcon, KeyIcon, ShieldIcon, WrenchIcon, ZapIcon } from "lucide-react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { CodeBlock, Command, CopyButton } from "@/components/code";
 import { Logo } from "@/components/logo";
@@ -74,26 +74,33 @@ function Hero() {
       <div className="flex flex-col items-center gap-3">
         <Credit />
         <Badge variant="outline" asChild>
-          <a href="#proof">
-            FiveM runs Chromium 103. Tailwind v4 needs 111. <ArrowRightIcon />
+          <a href={`${REPO}/releases/latest`}>
+            0.4: the whole kit is out <ArrowRightIcon />
           </a>
         </Badge>
       </div>
       <h1 className="mx-auto mt-6 max-w-3xl text-center text-4xl font-semibold tracking-tight text-balance sm:text-6xl">
-        shadcn/ui for FiveM, rendered right.
+        One design system for your whole FiveM server.
       </h1>
       <p className="mx-auto mt-5 max-w-2xl text-center text-lg text-muted-foreground text-pretty">
-        Stock shadcn/ui and Tailwind v4 in your NUI, compiled for the game's browser. Typed Lua ↔ React, browser devtools that fake the game, hot
-        reload in game, and HUD components built from shadcn's own.
+        HUD, menus, inventory, pause, loading screen and more, rebuilt in stock shadcn/ui and themed by one file. Drop in a folder, paste a TweakCN
+        theme, and every screen on your server matches. Free and open source.
       </p>
       <div className="mx-auto mt-8 flex max-w-xl flex-col gap-3 sm:flex-row">
-        <Command className="flex-1">npm create nuikit@latest</Command>
-        <Button size="lg" className="h-12" asChild>
+        <Button size="lg" className="h-12 flex-1" asChild>
+          <a href={`${REPO}/releases/latest`}>
+            <DownloadIcon /> Download nuikit.zip
+          </a>
+        </Button>
+        <Button size="lg" variant="outline" className="h-12" asChild>
           <a href={REPO}>
-            <GithubIcon /> Star on GitHub
+            <GithubIcon /> GitHub
           </a>
         </Button>
       </div>
+      <p className="mx-auto mt-4 text-center text-sm text-muted-foreground">
+        Building your own UI? <code className="font-mono text-foreground">npm create nuikit@latest</code>
+      </p>
       <div className="mt-14">
         <Stage />
         <p className="mt-3 text-center text-sm text-muted-foreground">

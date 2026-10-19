@@ -1,13 +1,13 @@
 <div align="center">
 
-<a href="https://nuikit.vercel.app"><img src="docs/assets/banner.png" alt="nuikit — shadcn/ui + Tailwind v4 for FiveM, rendered right. By @belibathan." width="100%" /></a>
+<a href="https://nuikit.vercel.app"><img src="docs/assets/banner.png" alt="nuikit: one design system for your whole FiveM server. By @belibathan." width="100%" /></a>
 
 <br/>
 <br/>
 
-**FiveM's NUI runs Chromium 103. Tailwind v4 needs 111.**<br/>
-nuikit compiles stock shadcn/ui down at build time, then adds typed Lua ↔ React,<br/>
-browser devtools that fake the game, in-game hot reload, and a registry of HUD components.
+**One design system for your whole FiveM server.**<br/>
+HUD, menus, inventory, pause, loading screen and more, rebuilt in stock shadcn/ui<br/>
+and themed by one file. Drop in a folder, paste a TweakCN theme. Free and open source.
 
 <br/>
 
@@ -19,11 +19,15 @@ browser devtools that fake the game, in-game hot reload, and a registry of HUD c
 [![Verified in Chromium 103](https://img.shields.io/badge/verified%20in-Chromium%20103-262626?style=flat-square&labelColor=0a0a0a)](examples/cef-proof)
 [![MIT](https://img.shields.io/badge/license-MIT-262626?style=flat-square&labelColor=0a0a0a)](LICENSE)
 
-**[Website](https://nuikit.vercel.app)** &nbsp;·&nbsp; [Quick start](#quick-start) &nbsp;·&nbsp; [Components](#components) &nbsp;·&nbsp; [API](#api) &nbsp;·&nbsp; [Theming](#theming) &nbsp;·&nbsp; [How it works](#how-it-works)
+**[Download nuikit.zip](https://github.com/belibathan/nuikit/releases/latest)** &nbsp;·&nbsp; [Website](https://nuikit.vercel.app) &nbsp;·&nbsp; [What it covers](docs/coverage.md) &nbsp;·&nbsp; [Quick start](#quick-start) &nbsp;·&nbsp; [Components](#components) &nbsp;·&nbsp; [API](#api) &nbsp;·&nbsp; [Theming](#theming) &nbsp;·&nbsp; [How it works](#how-it-works)
 
 </div>
 
 <br/>
+
+**For servers:** download [`nuikit.zip`](https://github.com/belibathan/nuikit/releases/latest), put `[nuikit]` in `resources/`, copy the `overrides/` over the scripts you run, paste a theme. The zip's README walks through it. Works on Qbox and any server running ox_lib.
+
+**For developers:** build your own resource on the same standard ([kit language](docs/design.md), components, theme):
 
 ```bash
 npm create nuikit@latest my-hud

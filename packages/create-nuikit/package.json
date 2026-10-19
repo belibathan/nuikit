@@ -1,7 +1,7 @@
 {
   "name": "create-nuikit",
   "version": "0.4.0",
-  "description": "Scaffold a FiveM NUI resource with shadcn/ui, Tailwind v4, typed Lua↔JS and browser devtools — that renders right in game.",
+  "description": "Start a FiveM NUI resource on nuikit: stock shadcn/ui, the nuikit kit and theme, typed Lua\u2194React and browser devtools.",
   "author": "belibathan (https://github.com/belibathan)",
   "license": "MIT",
   "type": "module",
