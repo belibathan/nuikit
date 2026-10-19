@@ -1,6 +1,8 @@
 @import "tailwindcss";
 @import "@fontsource-variable/geist";
 @import "@fontsource-variable/geist-mono";
+/* The same nk-* kit every game UI is built with (synced into their index.css). */
+@import "../../../packages/create-nuikit/kit.css";
 @source "../../../registry";
 @source "../../../vendor";
 
@@ -103,4 +105,23 @@
   body {
     @apply bg-background text-foreground antialiased;
   }
+}
+
+/* Markdown pages (/design, /coverage). */
+@layer components {
+  .doc { @apply text-[15px] leading-7 text-foreground; }
+  .doc h1 { @apply mb-6 text-4xl font-semibold tracking-tight text-balance; }
+  .doc h2 { @apply mt-14 mb-4 border-b pb-2 text-2xl font-semibold tracking-tight; }
+  .doc h3 { @apply mt-10 mb-3 text-lg font-semibold; }
+  .doc p { @apply my-4 text-pretty; }
+  .doc a { @apply underline underline-offset-4; }
+  .doc strong { @apply font-semibold; }
+  .doc ul { @apply my-4 list-disc pl-6; }
+  .doc ol { @apply my-4 list-decimal pl-6; }
+  .doc li { @apply my-1.5; }
+  .doc :not(pre) > code { @apply rounded bg-muted px-1.5 py-0.5 font-mono text-[0.85em]; }
+  .doc pre { @apply my-5 overflow-x-auto rounded-lg border bg-muted/40 p-4 font-mono text-[13px] leading-6; }
+  .doc table { @apply my-6 w-full border-collapse text-sm; }
+  .doc th { @apply border-b px-3 py-2 text-left font-medium text-muted-foreground; }
+  .doc td { @apply border-b px-3 py-2 align-top; }
 }

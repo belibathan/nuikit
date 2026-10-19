@@ -112,6 +112,8 @@ function Meter({
   const t = TONES[critical ? "destructive" : tone]
   const trackClass = track === "game" ? "bg-black/35" : t.track
   const stacked = label !== undefined || valueText !== undefined
+  // flex-1 only beside an icon: in the stacked column it would collapse the bar's height to 0
+  const grow = stacked ? "w-full" : "flex-1"
 
   const bar =
     segments && segments > 1 ? (
@@ -121,7 +123,7 @@ function Meter({
         aria-valuemax={100}
         aria-valuenow={Math.round(percent)}
         aria-label={typeof label === "string" ? label : props["aria-label"]}
-        className="flex min-w-0 flex-1 gap-0.5"
+        className={cn("flex min-w-0 gap-0.5", grow)}
       >
         {segmentFills(percent, segments).map((fill, i) => (
           <div key={i} data-slot="meter-segment" className={cn("relative h-(--meter-h) flex-1 overflow-hidden rounded-full", trackClass)}>
@@ -133,7 +135,7 @@ function Meter({
       <Progress
         value={percent}
         aria-label={typeof label === "string" ? label : props["aria-label"]}
-        className={cn("h-(--meter-h) min-w-0 flex-1", trackClass, FILL[critical ? "destructive" : tone])}
+        className={cn("h-(--meter-h) min-w-0", grow, trackClass, FILL[critical ? "destructive" : tone])}
       />
     )
 
