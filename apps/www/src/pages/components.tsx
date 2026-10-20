@@ -62,6 +62,7 @@ import {
 import { Confirm, ConfirmPanel, type ConfirmTone } from "@/components/ui/confirm";
 import { KeyPrompt, KeyPromptStack } from "@/components/ui/key-prompt";
 import { ProgressRing } from "@/components/ui/progress-ring";
+import { Speedometer } from "@/components/ui/speedometer";
 import { cn } from "@/lib/utils";
 
 export function ComponentsPage() {
@@ -271,6 +272,23 @@ export function ComponentsPage() {
         >
           <ProgressRingStates />
           <ProgressRingDemo />
+        </Section>
+
+        <Section
+          name="speedometer"
+          title="Speedometer"
+          text="The vehicle gauge, on the HUD tokens: white text with a shadow and a dark track, so it reads over any sky with any theme. RPM in primary, destructive past the redline; the gear on the HUD surface; a fuel line that turns destructive when low. On a panel, the theme's colours."
+          stageClassName="items-center"
+        >
+          <Speedometer speed={87} rpm={0.62} gear={3} fuel={64} />
+          <Speedometer speed={132} rpm={0.94} gear={5} fuel={41} />
+          <Speedometer speed={18} rpm={0.31} gear="R" fuel={9} unit="km/h" />
+          <Panel size="auto">
+            <PanelHeader title="Dyno" description="On a panel: the theme surface" />
+            <PanelBody variant="form">
+              <Speedometer surface="theme" speed={64} rpm={0.48} gear={2} fuel={88} size={160} />
+            </PanelBody>
+          </Panel>
         </Section>
       </main>
       <Footer />
