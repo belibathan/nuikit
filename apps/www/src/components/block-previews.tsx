@@ -8,6 +8,8 @@ import { deathScreenFixtures } from "@/blocks/death-screen/fixtures";
 import { HudMinimal } from "@/blocks/hud-minimal/hud-minimal";
 import { jobMenuFixtures } from "@/blocks/job-menu/fixtures";
 import { JobMenu } from "@/blocks/job-menu/job-menu";
+import { hotbarFixtures, inventoryFixtures } from "@/blocks/inventory/fixtures";
+import { Hotbar, Inventory } from "@/blocks/inventory/inventory";
 import { hudMinimalFixtures } from "@/blocks/hud-minimal/fixtures";
 import { LoadingScreen } from "@/blocks/loading-screen/loading-screen";
 import { loadingHandovers, loadStateAt } from "@/blocks/loading-screen/fixtures";
@@ -127,6 +129,17 @@ export const BLOCKS: BlockPreview[] = [
       Actions: () => <JobMenu data={jobMenuFixtures.boss} autoFocus={false} onRequest={async () => ({ ok: true })} />,
       "Off duty": () => <JobMenu data={jobMenuFixtures["off-duty"]} autoFocus={false} onRequest={async () => ({ ok: true })} />,
       Refused: () => <JobMenu data={jobMenuFixtures.boss} defaultTab="staff" autoFocus={false} onRequest={async () => ({ ok: false, error: "Only the boss can do that." })} />,
+    },
+  },
+  {
+    name: "inventory",
+    title: "Inventory",
+    description: "Your pockets and a second container side by side: drag to move (Shift half, Ctrl one), stack and swap, a tooltip, weight meters, use, and a hotbar. Lua and the server decide every move.",
+    states: {
+      Stash: () => <Inventory data={inventoryFixtures.locker} defaultSelected={2} autoFocus={false} onMove={async () => ({ ok: true })} onUse={async () => ({ ok: true })} />,
+      Pockets: () => <Inventory data={inventoryFixtures.pockets} autoFocus={false} onMove={async () => ({ ok: true })} onUse={async () => ({ ok: true })} />,
+      Heavy: () => <Inventory data={inventoryFixtures.heavy} autoFocus={false} />,
+      Hotbar: () => <Hotbar data={hotbarFixtures.hotbar} />,
     },
   },
 ];

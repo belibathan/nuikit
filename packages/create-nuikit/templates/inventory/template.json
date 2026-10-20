@@ -1,0 +1,9 @@
+{
+  "block": "inventory",
+  "title": "Inventory",
+  "description": "Your pockets and a stash side by side: drag, split, stack, swap, use, a hotbar; every move checked by the server",
+  "next": [
+    "press TAB for your pockets; stand at the locker in config.lua for a stash; 1-5 use the hotbar",
+    "running ox_inventory or qb-inventory? this is a standalone inventory: use one or the other"
+  ]
+}

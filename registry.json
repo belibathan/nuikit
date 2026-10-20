@@ -780,6 +780,44 @@
         "screens"
       ],
       "docs": "Mount <JobMenuSurface /> in App.tsx. In Lua, open nk.surface(\"job\", { layer = \"panel\", exclusive = true }) with a JobMenuData table, answer nk.on(\"job:duty\"), nk.on(\"job:action\"), nk.on(\"job:hire\"), nk.on(\"job:fire\") and nk.on(\"job:grade\") with { ok, error }, and :update it after a change. Check every boss action on the server against the caller's own job and grade. A whole resource with the Lua: npm create nuikit@latest my-jobs -- -t job-menu"
+    },
+    {
+      "name": "inventory",
+      "type": "registry:block",
+      "title": "Inventory",
+      "description": "The player's items and a second container side by side: pointer-driven drag and drop (Shift half, Ctrl one), stack and swap, a tooltip, weight meters, use, and a hotbar with a HUD strip. Protocol-agnostic; Lua decides every move.",
+      "files": [
+        {
+          "path": "registry/nuikit/blocks/inventory/inventory.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/inventory/inventory.tsx"
+        },
+        {
+          "path": "registry/nuikit/blocks/inventory/nui.ts",
+          "type": "registry:lib",
+          "target": "components/blocks/inventory/nui.ts"
+        },
+        {
+          "path": "registry/nuikit/blocks/inventory/fixtures.ts",
+          "type": "registry:lib",
+          "target": "components/blocks/inventory/fixtures.ts"
+        }
+      ],
+      "dependencies": [
+        "lucide-react",
+        "nuikit-core"
+      ],
+      "registryDependencies": [
+        "button",
+        "spinner",
+        "https://nuikit.vercel.app/r/panel.json",
+        "https://nuikit.vercel.app/r/item-slot.json",
+        "https://nuikit.vercel.app/r/meter.json"
+      ],
+      "categories": [
+        "screens"
+      ],
+      "docs": "Mount <InventorySurface /> in App.tsx. In Lua, open nk.surface(\"inventory\", { layer = \"panel\", exclusive = true, hides = { \"hotbar\" } }) with an InventoryData table, answer nk.on(\"inventory:move\") and nk.on(\"inventory:use\") with { ok, error }, and :update it after each; open nk.surface(\"hotbar\", { layer = \"hud\", input = \"none\" }) for a moment when a hotbar key is used. Check every move on the server. A whole resource with the Lua: npm create nuikit@latest my-inventory -- -t inventory"
     }
   ]
 }
