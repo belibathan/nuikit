@@ -326,15 +326,20 @@ const TONE_VAR: Record<MeterTone, string> = {
   stress: "--vital-stress",
 }
 
+/** Colour names that mean "no colour": the muted tone. */
+const MUTED_NAMES = new Set(["muted", "dark", "gray", "grey"])
+
 /**
  * A progress colour as a CSS value: a tone ("success", "chart-2") or a name a library uses
  * (ox's Mantine "green", "red.6", through meterColor()) becomes `var(--token)`, so it follows the
  * theme; a CSS colour ("#4dabf7", "rgb(…)") passes through; anything else is undefined (the
- * default primary bar).
+ * default primary bar). `muted` (and ox's greys, `dark.3`, `gray.6`: what a bar gets when the script
+ * set no colour) is `--muted-foreground`, so an uncoloured bar stays quiet beside coloured ones.
  */
 function menuRowColor(input?: string | null): string | undefined {
   const v = (input ?? "").trim()
   if (!v) return undefined
+  if (MUTED_NAMES.has(v.toLowerCase().replace(/\.\d+$/, ""))) return "var(--muted-foreground)"
   if (Object.prototype.hasOwnProperty.call(TONE_VAR, v)) return `var(${TONE_VAR[v as MeterTone]})`
   const m = meterColor(v)
   if (m.tone) return `var(${TONE_VAR[m.tone]})`
