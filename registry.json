@@ -416,6 +416,43 @@
         "screens"
       ],
       "docs": "Mount <SettingsSurface /> in App.tsx. In Lua, open nk.surface(\"settings\", { layer = \"panel\", exclusive = true }) with a SettingsData table and answer nk.on(\"settings:change\") with the value to show (and nk.on(\"settings:reset\")). nk.prefs gives you UI size, reduced motion and high contrast for free. A whole resource with the Lua: npm create nuikit@latest my-settings -- -t settings"
+    },
+    {
+      "name": "scoreboard",
+      "type": "registry:block",
+      "title": "Scoreboard",
+      "description": "Who's online with server IDs, names, jobs and ping, a search by name, ID or job, how full the server is, and which activities can start given who's on duty. Read only: the scoreboard surface with a ScoreboardData snapshot.",
+      "files": [
+        {
+          "path": "registry/nuikit/blocks/scoreboard/scoreboard.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/scoreboard/scoreboard.tsx"
+        },
+        {
+          "path": "registry/nuikit/blocks/scoreboard/nui.ts",
+          "type": "registry:lib",
+          "target": "components/blocks/scoreboard/nui.ts"
+        },
+        {
+          "path": "registry/nuikit/blocks/scoreboard/fixtures.ts",
+          "type": "registry:lib",
+          "target": "components/blocks/scoreboard/fixtures.ts"
+        }
+      ],
+      "dependencies": [
+        "lucide-react",
+        "nuikit-core"
+      ],
+      "registryDependencies": [
+        "badge",
+        "input",
+        "https://nuikit.vercel.app/r/panel.json",
+        "https://nuikit.vercel.app/r/meter.json"
+      ],
+      "categories": [
+        "screens"
+      ],
+      "docs": "Mount <ScoreboardSurface /> in App.tsx. In Lua, open nk.surface(\"scoreboard\", { layer = \"panel\", exclusive = true }) with a ScoreboardData table ({ players = { { id, name, job, ping, you } }, max, activities }) and :update it while it's open. A whole resource with the Lua: npm create nuikit@latest my-scoreboard -- -t scoreboard"
     }
   ]
 }
