@@ -939,6 +939,47 @@
         "screens"
       ],
       "docs": "Mount <VehicleShopSurface /> in App.tsx. In Lua, open nk.surface(\"vehicle-shop\", { layer = \"panel\", exclusive = true, escape = \"back\" }) with a VehicleShopData table; answer nk.on(\"vehicle-shop:preview\") by showing that model and colour (a local car), and nk.on(\"vehicle-shop:test-drive\") and nk.on(\"vehicle-shop:buy\") with { ok, error }. On the server, use your own prices, spawn the car yourself and refund if it can't be delivered. A whole resource with the Lua: npm create nuikit@latest my-dealership -- -t vehicle-shop"
+    },
+    {
+      "name": "character-select",
+      "type": "registry:block",
+      "title": "Character select",
+      "description": "Who to play: character slots, the chosen one as a PlayerCard with Play and Delete (behind a destructive confirm), spawn points after Play, and a create form with the same rules the server checks. Protocol-agnostic.",
+      "files": [
+        {
+          "path": "registry/nuikit/blocks/character-select/character-select.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/character-select/character-select.tsx"
+        },
+        {
+          "path": "registry/nuikit/blocks/character-select/nui.ts",
+          "type": "registry:lib",
+          "target": "components/blocks/character-select/nui.ts"
+        },
+        {
+          "path": "registry/nuikit/blocks/character-select/fixtures.ts",
+          "type": "registry:lib",
+          "target": "components/blocks/character-select/fixtures.ts"
+        }
+      ],
+      "dependencies": [
+        "lucide-react",
+        "nuikit-core"
+      ],
+      "registryDependencies": [
+        "button",
+        "spinner",
+        "https://nuikit.vercel.app/r/panel.json",
+        "https://nuikit.vercel.app/r/menu-row.json",
+        "https://nuikit.vercel.app/r/player-card.json",
+        "https://nuikit.vercel.app/r/money.json",
+        "https://nuikit.vercel.app/r/confirm.json",
+        "https://nuikit.vercel.app/r/form-field.json"
+      ],
+      "categories": [
+        "screens"
+      ],
+      "docs": "Mount <CharacterSelectSurface /> in App.tsx. In Lua, open nk.surface(\"character-select\", { layer = \"modal\", exclusive = true, escape = \"back\" }) with a CharacterSelectData table when the player joins; answer nk.on(\"character:play\"), nk.on(\"character:create\") and nk.on(\"character:delete\") with { ok, error }. On the server, check that the character is the caller's, that the spawn point is yours (send its coordinates), and that a new character is valid. A whole resource with the Lua: npm create nuikit@latest my-characters -- -t character-select"
     }
   ]
 }

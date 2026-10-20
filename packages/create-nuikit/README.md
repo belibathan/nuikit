@@ -41,6 +41,7 @@ npm create nuikit@latest my-death -- -t death-screen
 | `shop` | A catalogue by category, a cart and checkout with a confirm; prices, stock and money checked by the server. Needs OneSync |
 | `inventory` | Your pockets and a stash side by side: drag, split, stack, swap, use, a hotbar; every move checked by the server |
 | `vehicle-shop` | A showroom: categories, stats, paint, test drives and buying with a confirm; the server spawns and checks everything. Needs OneSync |
+| `character-select` | Character slots, a player card, create with validation, delete with a confirm, and where to spawn; checked by the server |
 
 Without `-t` you get the demo (a HUD, a menu and a confirm dialog), or pick from a list.
 
