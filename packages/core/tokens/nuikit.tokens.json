@@ -1,9 +1,9 @@
 {
-  "$description": "nuikit default theme (stock shadcn neutral) (nuikit tokens v1.1, dark)",
+  "$description": "nuikit default theme (stock shadcn neutral) (nuikit tokens v1.2, dark)",
   "$extensions": {
     "dev.nuikit": {
       "tokens": 1,
-      "revision": "1.1",
+      "revision": "1.2",
       "mode": "dark"
     }
   },
@@ -614,7 +614,7 @@
     "motion": {
       "$type": "number",
       "$value": 1,
-      "$description": "1 = animations on, 0 = off. Players can turn motion off."
+      "$description": "1 = animations on, 0 = off. Painted as 0 when the theme or the player's reduced-motion pref turns motion down."
     },
     "type-ratio": {
       "$type": "number",
@@ -778,6 +778,20 @@
           "type": "keyword"
         }
       }
+    },
+    "motion-feel": {
+      "$value": "crisp",
+      "$description": "How the identity moves: crisp (Graphite), snap (Signal: no glide on selection, flash instead of press scale), smooth (Velvet: longer springs, a hint of bounce), stepped (Vector: values tick in steps)",
+      "$extensions": {
+        "dev.nuikit": {
+          "type": "keyword"
+        }
+      }
+    },
+    "spring-bounce": {
+      "$type": "number",
+      "$value": 0,
+      "$description": "Bounce folded into the snap, move and soft springs (0 = critically damped; 0.3 is the most the kit allows)"
     }
   }
 }

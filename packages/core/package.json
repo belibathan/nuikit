@@ -42,6 +42,10 @@
       "types": "./dist/react.d.ts",
       "import": "./dist/react.js"
     },
+    "./motion": {
+      "types": "./dist/motion.d.ts",
+      "import": "./dist/motion.js"
+    },
     "./devtools": {
       "types": "./dist/devtools.d.ts",
       "import": "./dist/devtools.js"

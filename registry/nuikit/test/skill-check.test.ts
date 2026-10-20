@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import { SKILL_CHECK_PRESETS, skillCheckAngle, skillCheckHit, skillCheckTurnMs, skillCheckZone } from "@/components/ui/skill-check"
+import { SKILL_CHECK_PRESETS, SKILL_CHECK_SWEEP, skillCheckAngle, skillCheckHit, skillCheckTurnMs, skillCheckZone } from "@/components/ui/skill-check"
 
 describe("skill-check", () => {
   it("turns once in 2000ms / speed", () => {
@@ -47,5 +47,12 @@ describe("skill-check", () => {
   it("has the usual presets, harder = smaller and faster", () => {
     expect(SKILL_CHECK_PRESETS.easy.zoneSize).toBeGreaterThan(SKILL_CHECK_PRESETS.hard.zoneSize)
     expect(SKILL_CHECK_PRESETS.hard.speed).toBeGreaterThan(SKILL_CHECK_PRESETS.easy.speed)
+  })
+
+  // design v2 §5A: one linear rotation of the needle's layer, read back through currentTime
+  it("sweeps as one rotation whose angle at currentTime is skillCheckAngle", () => {
+    expect(SKILL_CHECK_SWEEP).toEqual([{ transform: "rotate(0deg)" }, { transform: "rotate(360deg)" }])
+    const turn = skillCheckTurnMs(1.5)
+    for (const t of [0, 100, turn / 2, turn]) expect(skillCheckAngle(t, turn)).toBeCloseTo((t / turn) * 360, 9)
   })
 })

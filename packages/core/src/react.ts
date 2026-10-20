@@ -28,6 +28,7 @@ import {
   type EventData,
   type EventName,
 } from "./index";
+import { flipFrom, indicator, spring, type Channel, type SpringName } from "./motion";
 
 export * from "./index";
 
@@ -251,4 +252,79 @@ export function Surface<K extends SurfaceName>(props: SurfaceProps<K>): ReactEle
  */
 export function usePlayer(): NuiPlayer {
   return useSyncExternalStore(onPlayer, getPlayer, getPlayer);
+}
+
+// ───────────────────────────────── motion (nuikit-core/motion)
+
+/**
+ * Spring one channel of `ref` to `value` whenever it changes, retargeting a spring in flight. The first
+ * value is set without animating. No React state is set during the animation.
+ *
+ *   useSpring(badge, count > 0 ? 1 : 0.9, "scale", "pop");
+ */
+export function useSpring(ref: { current: HTMLElement | null }, value: number, channel: Channel = "y", preset: SpringName | string = "move"): void {
+  const first = useRef(true);
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const from = first.current ? value : undefined;
+    first.current = false;
+    void spring(el, channel, value, { from, preset });
+  }, [ref, value, channel, preset]);
+}
+
+/**
+ * FLIP the children of `ref` whenever `deps` change: each child that moved glides from where it was drawn
+ * to its new place (toast stacks, inventory reorders). Translate only; positions are read once per change.
+ */
+export function useFlip(ref: { current: HTMLElement | null }, deps: readonly unknown[], preset: SpringName | string = "move"): void {
+  const prev = useRef(new WeakMap<Element, [number, number]>());
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (el) flipFrom(el.children as unknown as ArrayLike<HTMLElement>, prev.current, preset);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, deps);
+}
+
+/**
+ * Drive a list's sliding selection indicator (kit.css `nk-indicator`): `indicatorRef` moves to the row at
+ * `active` (the elements in `listRef` matching `rows`) with the key-repeat rule of motion's indicator().
+ * Row offsets are read on mount, when the row count changes and on resize, never per move.
+ */
+export function useIndicator(
+  listRef: { current: HTMLElement | null },
+  indicatorRef: { current: HTMLElement | null },
+  active: number | null | undefined,
+  rows = ".nk-row",
+): void {
+  const offsets = useRef<[number, number][]>([]);
+  const move = useRef<ReturnType<typeof indicator> | null>(null);
+  const [epoch, setEpoch] = useState(0);
+  const read = useCallback(() => {
+    const list = listRef.current;
+    offsets.current = list ? Array.from(list.querySelectorAll<HTMLElement>(rows)).map((r) => [r.offsetTop, r.offsetHeight]) : [];
+  }, [listRef, rows]);
+  useLayoutEffect(() => {
+    const list = listRef.current;
+    if (!list || typeof ResizeObserver === "undefined") return;
+    const ro = new ResizeObserver(() => {
+      read();
+      setEpoch((e) => e + 1);
+    });
+    ro.observe(list);
+    return () => ro.disconnect();
+  }, [listRef, read]);
+  useLayoutEffect(() => {
+    const el = indicatorRef.current;
+    const list = listRef.current;
+    if (!el || !list) return;
+    if (list.querySelectorAll(rows).length !== offsets.current.length) read();
+    const at = active === null || active === undefined ? undefined : offsets.current[active];
+    el.toggleAttribute("data-hidden", !at);
+    if (!at) return;
+    move.current ??= indicator(el);
+    const base = offsets.current[0]![1] || 1;
+    el.style.height = `${base}px`;
+    move.current(at[0], at[1] / base);
+  }, [active, epoch, indicatorRef, listRef, rows, read]);
 }

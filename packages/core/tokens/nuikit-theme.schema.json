@@ -296,7 +296,7 @@
         "nk-motion": {
           "type": "string",
           "pattern": "^-?\\d+(\\.\\d+)?$",
-          "description": "1 = animations on, 0 = off. Players can turn motion off."
+          "description": "1 = animations on, 0 = off. Painted as 0 when the theme or the player's reduced-motion pref turns motion down."
         },
         "brand": {
           "type": "string",
@@ -531,6 +531,128 @@
           "type": "string",
           "description": "clip-path of chips, tiles and buttons: half the panel chamfer",
           "$comment": "tokens 1.1"
+        },
+        "nk-motion-feel": {
+          "enum": [
+            "crisp",
+            "snap",
+            "smooth",
+            "stepped"
+          ],
+          "description": "How the identity moves: crisp (Graphite), snap (Signal: no glide on selection, flash instead of press scale), smooth (Velvet: longer springs, a hint of bounce), stepped (Vector: values tick in steps)",
+          "$comment": "tokens 1.2"
+        },
+        "nk-spring-bounce": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "Bounce folded into the snap, move and soft springs (0 = critically damped; 0.3 is the most the kit allows)",
+          "$comment": "tokens 1.2"
+        },
+        "nk-motion-move": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "1 = things may move (translate, scale, rotate, FLIP, stagger); 0 under reduced motion or off, where only fades of at most 100ms are kept",
+          "$comment": "tokens 1.2"
+        },
+        "nk-time-instant": {
+          "type": "string",
+          "description": "State that must be immediate: keyboard and controller selection, held key-repeat",
+          "$comment": "tokens 1.2"
+        },
+        "nk-time-press": {
+          "type": "string",
+          "description": "Press, toggle, key-chip flash: 0.5 × d, 50–100ms",
+          "$comment": "tokens 1.2"
+        },
+        "nk-time-hover": {
+          "type": "string",
+          "description": "Pointer hover colour and row background: 0.75 × d",
+          "$comment": "tokens 1.2"
+        },
+        "nk-time-base": {
+          "type": "string",
+          "description": "Panel and menu enter, the selection indicator, tab switch: d (kit.css --nk-time)",
+          "$comment": "tokens 1.2"
+        },
+        "nk-time-exit": {
+          "type": "string",
+          "description": "Every exit (panel, toast, menu, modal): 0.7 × d",
+          "$comment": "tokens 1.2"
+        },
+        "nk-time-move": {
+          "type": "string",
+          "description": "Toasts entering, FLIP moves, meters gaining: 1.5 × d, at most 300ms",
+          "$comment": "tokens 1.2"
+        },
+        "nk-time-modal": {
+          "type": "string",
+          "description": "Dialog enter (on an inner wrapper): 1.25 × d",
+          "$comment": "tokens 1.2"
+        },
+        "nk-time-screen": {
+          "type": "string",
+          "description": "Full-screen enter (pause, death, loading): 2.5 × d, at most 400ms",
+          "$comment": "tokens 1.2"
+        },
+        "nk-time-ambient": {
+          "type": "string",
+          "description": "HUD show-on-change fades and the damage trail; not scaled by the identity",
+          "$comment": "tokens 1.2"
+        },
+        "nk-stagger": {
+          "type": "string",
+          "description": "Delay per item on a list's first open: 0.15 × d (snap and smooth 0.125 × d), at most 20ms (smooth 30ms)",
+          "$comment": "tokens 1.2"
+        },
+        "nk-stagger-max": {
+          "type": "string",
+          "description": "Total stagger cap: items past the fifth enter together",
+          "$comment": "tokens 1.2"
+        },
+        "nk-ease-out": {
+          "type": "string",
+          "description": "Enter, hover, anything arriving: the identity's --nk-ease",
+          "$comment": "tokens 1.2"
+        },
+        "nk-ease-in": {
+          "type": "string",
+          "description": "Exits (speeds up as it leaves)",
+          "$comment": "tokens 1.2"
+        },
+        "nk-ease-in-out": {
+          "type": "string",
+          "description": "On-screen moves (indicator, FLIP, tab underline) when not a spring",
+          "$comment": "tokens 1.2"
+        },
+        "nk-ease-emphasized": {
+          "type": "string",
+          "description": "Full-screen enter, big moments",
+          "$comment": "tokens 1.2"
+        },
+        "nk-ease-linear": {
+          "type": "string",
+          "description": "Progress, countdowns, streamed values, needles",
+          "$comment": "tokens 1.2"
+        },
+        "nk-spring-snap": {
+          "type": "string",
+          "description": "Spring (duration, bounce): selection indicator, tab underline, needle catch-up",
+          "$comment": "tokens 1.2"
+        },
+        "nk-spring-move": {
+          "type": "string",
+          "description": "Spring (duration, bounce): toasts in, FLIP reflow, drawers, digit roll",
+          "$comment": "tokens 1.2"
+        },
+        "nk-spring-soft": {
+          "type": "string",
+          "description": "Spring (duration, bounce): full-screen content, large frame changes",
+          "$comment": "tokens 1.2"
+        },
+        "nk-spring-pop": {
+          "type": "string",
+          "description": "Spring (duration, bounce): rewards only (item added, level-up, a ×3 badge)",
+          "$comment": "tokens 1.2"
         }
       },
       "additionalProperties": {
