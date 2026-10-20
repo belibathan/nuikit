@@ -4,6 +4,7 @@ import { RangeSlider } from "@/components/controls";
 import { Group, Groups } from "@/components/group";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { MenuRow } from "@/components/ui/menu-row";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Spinner } from "@/components/ui/spinner";
 import { useLoaded } from "@/lib/store";
@@ -59,22 +60,18 @@ function Zone({ zone, items }: { zone: TattooZone; items: Tattoo[] }) {
           {filtered.map((t) => {
             const on = applied.some((a) => a.name === t.name);
             return (
-              <button
+              <MenuRow
                 key={t.name}
-                type="button"
                 onClick={() => select(t)}
-                className={cn(
-                  "nk-row w-full gap-2 px-2 text-left outline-none hover:bg-accent hover:text-accent-foreground focus-visible:bg-accent",
-                  selected?.name === t.name && "bg-accent text-accent-foreground",
-                )}
+                active={selected?.name === t.name}
+                className="gap-2 px-2"
+                // The check marks the applied ones; an empty slot keeps the labels aligned.
+                icon={<Check className={cn(on ? "text-foreground" : "opacity-0")} aria-label={on ? "Applied" : undefined} />}
+                description={t.collection}
+                meta={typeof t.cost === "number" && !on ? `$${t.cost}` : undefined}
               >
-                <Check className={cn("size-4 shrink-0", on ? "opacity-100" : "opacity-0")} aria-label={on ? "Applied" : undefined} />
-                <span className="min-w-0 flex-1">
-                  <span className="block truncate">{t.label}</span>
-                  <span className="nk-label block truncate">{t.collection}</span>
-                </span>
-                {typeof t.cost === "number" && !on && <span className="nk-num shrink-0 text-xs text-muted-foreground">${t.cost}</span>}
-              </button>
+                {t.label}
+              </MenuRow>
             );
           })}
           {!filtered.length && <p className="px-2 py-6 text-center text-sm text-muted-foreground">Nothing matches “{query}”. Try another word.</p>}
