@@ -186,7 +186,13 @@ await page.setViewportSize({ width: 1920, height: 1080 });
 // ox_lib's Lua can't route through the host (it isn't nuikit.lua), so this only checks rendering
 // and input: the test posts its message as host.lua would, and its posts go nowhere.
 await hostFrame().evaluate(() => window.__nuikitHost.load({ resource: "ox_lib", url: "https://cfx-nui-ox_lib/module.js" }));
-await until(() => hostFrame().evaluate(() => window.__nuikitHost.modules().find((m) => m.resource === "ox_lib")?.status === "mounted"));
+const oxStart = Date.now();
+const oxMounted = await until(() => hostFrame().evaluate(() => window.__nuikitHost.modules().find((m) => m.resource === "ox_lib")?.status === "mounted"), 20000);
+console.log(`  ox_lib module mounted in ${Date.now() - oxStart} ms`);
+if (!oxMounted) check("ox_lib module mounts", false, "not mounted after 20 s");
+// "mounted" is set when the module's root renders; its message listeners attach in effects right after.
+// In game ox_lib's first message comes from a player action, long after; here, wait two frames first.
+await hostFrame().evaluate(() => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r))));
 forcedFocus = "nuikit";
 await page.evaluate(() => window.focusFrame("nuikit"));
 await page.evaluate(() =>
