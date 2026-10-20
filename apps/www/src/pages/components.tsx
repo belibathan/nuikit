@@ -63,6 +63,7 @@ import { Confirm, ConfirmPanel, type ConfirmTone } from "@/components/ui/confirm
 import { KeyPrompt, KeyPromptStack } from "@/components/ui/key-prompt";
 import { ProgressRing } from "@/components/ui/progress-ring";
 import { Speedometer } from "@/components/ui/speedometer";
+import { Countdown } from "@/components/ui/countdown";
 import { cn } from "@/lib/utils";
 
 export function ComponentsPage() {
@@ -289,6 +290,17 @@ export function ComponentsPage() {
               <Speedometer surface="theme" speed={64} rpm={0.48} gear={2} fuel={88} size={160} />
             </PanelBody>
           </Panel>
+        </Section>
+
+        <Section
+          name="countdown"
+          title="Countdown"
+          text="A timer that matters: until you can respawn, until the alarm, until the restart. Tabular mm:ss (h:mm:ss past an hour), a label, a line that drains, a warning threshold, a dimmed done state. From Lua's seconds, or running on its own with onComplete from a timer."
+          stageClassName="min-h-[36rem] items-center"
+        >
+          <Countdown surface="game" size="hero" seconds={154} total={300} label="Until you can respawn" />
+          <CountdownStates />
+          <CountdownDemo />
         </Section>
       </main>
       <Footer />
@@ -1122,6 +1134,50 @@ function MeterTimed() {
         </Panel>
       )}
     </div>
+  );
+}
+
+/**
+ * The other states from props, straight on the game (surface="game": HUD text with a shadow).
+ * On a panel or a tinted full-screen surface, the default theme surface (the Bank alarm panel).
+ */
+function CountdownStates() {
+  return (
+    <div className="flex flex-col items-center gap-8">
+      <Countdown surface="game" seconds={8} total={60} warnAt={30} label="Until you bleed out" />
+      <Countdown surface="game" seconds={0} total={300} label="You can respawn" />
+      <Countdown surface="game" size="sm" seconds={3723} label="Until the server restarts" />
+    </div>
+  );
+}
+
+/** Running on its own: 12 s, warning at 5, onComplete from a timer. */
+function CountdownDemo() {
+  const [run, setRun] = useState(1);
+  const [result, setResult] = useState("Running");
+  return (
+    <Panel size="sm">
+      <PanelHeader title="Bank alarm" description="Warning at 5 seconds" />
+      <PanelBody variant="form" className="items-center">
+        <Countdown key={run} duration={12_000} warnAt={5} warnTone="warning" label="Until the alarm" onComplete={() => setResult("Alarm!")} />
+      </PanelBody>
+      <PanelFooter>
+        <span data-slot="countdown-demo-result" className="text-sm">
+          {result}
+        </span>
+        <Button
+          size="sm"
+          variant="outline"
+          className="ml-auto"
+          onClick={() => {
+            setRun((r) => r + 1);
+            setResult("Running");
+          }}
+        >
+          Restart
+        </Button>
+      </PanelFooter>
+    </Panel>
   );
 }
 
