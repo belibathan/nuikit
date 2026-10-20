@@ -378,7 +378,8 @@ function validateField(rule: FieldRule, value: unknown): FieldIssue | null {
       return null
     }
     case "color":
-      return normalizeHex(String(value)) ? null : { code: "invalid", message: "Enter a colour like #c8102e" }
+      // An example the player reads, not a colour the UI draws.
+      return normalizeHex(String(value)) ? null : { code: "invalid", message: "Enter a colour like #c8102e" } // nuikit-ignore color/hardcoded
     default:
       return null
   }
@@ -1061,7 +1062,7 @@ function ColorControl({
   value,
   onValueChange,
   swatches,
-  placeholder = "#000000",
+  placeholder = "#000000", // nuikit-ignore color/hardcoded (placeholder text showing the format, not a drawn colour)
 }: Omit<ColorFieldProps, keyof RowProps | "defaultValue"> & { value: string | null; onValueChange: (v: string | null) => void }) {
   const f = useFormField()
   const [text, setText] = React.useState(value ?? "")
