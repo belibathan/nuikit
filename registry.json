@@ -25,7 +25,7 @@
       "name": "menu-row",
       "type": "registry:ui",
       "title": "Menu Row",
-      "description": "The 40px action row: icon, label, description and a trailing meta, chevron, Kbd, checkbox or value stepper. Active, disabled and destructive.",
+      "description": "The 40px action row: icon, label, description, a progress bar in any tone or colour, and a trailing meta, chevron, Kbd, checkbox or value stepper. Active, disabled and destructive. MenuRowDetails shows metadata with per-item bar colours.",
       "files": [
         {
           "path": "registry/nuikit/ui/menu-row.tsx",
@@ -40,7 +40,8 @@
       "registryDependencies": [
         "checkbox",
         "kbd",
-        "progress"
+        "progress",
+        "https://nuikit.vercel.app/r/meter.json"
       ]
     },
     {
