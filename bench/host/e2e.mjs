@@ -48,6 +48,7 @@ const hudNatives = `
   function GetConvar(_, d) return d end
   function PlayerPedId() return 1 end
   function PlayerId() return 0 end
+  function GetPlayerServerId() return 7 end
   function GetEntityHealth() return 170 end
   function GetEntityMaxHealth() return 200 end
   function GetPedArmour() return 40 end
@@ -131,7 +132,7 @@ const host = await startResource(
 const hud = await startResource(
   "nuikit_hud",
   // As shipped: the HUD imports the runtime (shared_script '@nuikit/init.lua'); the bridge loads on first nk.player use.
-  { runtime: "import", before: `THEME = [[${THEME}]]` + hudNatives, scripts: [HUD + "config.lua", HUD + "client/main.lua"], metadata: { nuikit_ui: ["web/dist/module.js"] } },
+  { runtime: "import", before: `THEME = [[${THEME}]]` + hudNatives, scripts: ["config.lua", "client/adapters.lua", "client/location.lua", "client/vehicle.lua", "client/main.lua"].map((f) => HUD + f), metadata: { nuikit_ui: ["web/dist/module.js"] } },
   "https://cfx-nui-nuikit_hud/web/dist/index.html",
 );
 const hostFrame = () => page.frames().find((f) => f.url().startsWith("https://cfx-nui-nuikit/"));
@@ -147,7 +148,7 @@ await chain;
 const inShadow = (sel) => hostFrame().evaluate((s) => !!document.querySelector('nk-module[data-resource="nuikit_hud"]')?.shadowRoot?.querySelector(s), sel);
 check("Lua → module: player + surface reach the HUD module", !!(await until(() => inShadow('[data-surface="hud"] [aria-label="Cash"]'))));
 
-await hud.run(`NUI.send('hud:vehicle', { speed = 87, units = 'mph', rpm = 0.62, gear = 4, fuel = 64, engine = 92, seatbelt = false })`);
+await hud.run(`NUI.send('hud:vehicle', { kind = 'car', speed = 87, units = 'mph', engineOn = true, redline = 0.9, rpm = 0.62, gear = 4, fuel = 64, engine = 92, body = 100, moving = true, seatbelt = false })`);
 await chain;
 check("Lua → module: hud:vehicle renders the speedometer", !!(await until(() => inShadow("svg"))));
 

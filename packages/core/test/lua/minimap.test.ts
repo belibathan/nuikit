@@ -3,7 +3,7 @@ import { afterEach, describe, expect, it } from "vitest";
 import { createClient } from "./harness";
 
 const HUD = fileURLToPath(new URL("../../../../systems/nuikit_hud/", import.meta.url));
-const scripts = [HUD + "config.lua", HUD + "client/minimap.lua"];
+const scripts = [HUD + "config.lua", HUD + "client/layout.lua", HUD + "client/minimap.lua"];
 let client: Awaited<ReturnType<typeof createClient>>;
 afterEach(() => client?.close());
 
@@ -130,15 +130,15 @@ describe("systems/nuikit_hud: the minimap", () => {
     const hud = await client.start("nuikit_hud", { before: natives, scripts });
     const sent = () => hud.messages.filter((m) => m.action === "hud:minimap:heading").map((m) => m.data);
     await hud.run(`CAMZ = -90.04 Minimap.compass()`); // GTA gives -180..180
-    expect(sent()).toEqual([270]);
+    expect(sent()).toEqual([90]);
     await hud.run(`CAMZ = -90.02 Minimap.compass()`); // the same tenth: nothing
-    expect(sent()).toEqual([270]);
+    expect(sent()).toEqual([90]);
     await hud.run(`CAMZ = -89.5 Minimap.compass() CAMZ = 179.96 Minimap.compass() CAMZ = -179.96 Minimap.compass()`);
-    expect(sent()).toEqual([270, 270.5, 180]); // 179.96 and -179.96 are the same heading: sent once
+    expect(sent()).toEqual([90, 89.5, 180]); // a bearing (GTA yaw negated); 179.96 and -179.96 are the same heading: sent once
     // the page reloads: the heading goes out again even though it didn't change
     await hud.call("hud:minimap:ready");
     await hud.run(`Minimap.compass()`);
-    expect(sent()).toEqual([270, 270.5, 180, 180]);
+    expect(sent()).toEqual([90, 89.5, 180, 180]);
   });
 
   it("places the radar only once the player is in the world (joining left GTA's big map stuck on)", async () => {
