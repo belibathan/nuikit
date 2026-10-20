@@ -2,9 +2,10 @@ import { applyTheme } from "nuikit-core";
 import { CheckIcon, Volume2Icon, VolumeXIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
+import { Meter } from "@/components/ui/meter";
 import { Separator } from "@/components/ui/separator";
 import { Spinner } from "@/components/ui/spinner";
+import { Stat } from "@/components/ui/stat";
 import { useHandover, type Link, type LoadingHandover, type Tip } from "@/lib/handover";
 import { PHASES, useLoadProgress, type LoadState } from "@/lib/progress";
 import { cn } from "@/lib/utils";
@@ -106,17 +107,14 @@ function Tips({ tips, interval = 8000 }: { tips: Tip[]; interval?: number }) {
 function Links({ links }: { links: Link[] }) {
   if (links.length === 0) return null;
   return (
-    <dl className="flex items-center gap-6 text-sm">
+    <div className="flex items-center gap-6">
       {links.map((l, n) => (
         <div key={l.label + n} className="flex items-center gap-6">
           {n > 0 && <Separator orientation="vertical" className="h-8!" />}
-          <div className="flex flex-col gap-0.5 text-right">
-            <dt className="nk-label">{l.label}</dt>
-            {l.url && <dd className="font-medium">{l.url}</dd>}
-          </div>
+          <Stat size="sm" align="end" label={l.label} value={l.url} />
         </div>
       ))}
-    </dl>
+    </div>
   );
 }
 
@@ -135,12 +133,20 @@ function Status({ load, player }: { load: LoadState; player?: string }) {
             {ready ? "Ready. Hang tight…" : PHASES[load.phase]}
           </p>
         </div>
-        <p className="nk-num text-[2rem] leading-none font-semibold">
-          {pct}
-          <span className="text-xl text-muted-foreground">%</span>
-        </p>
+        {/* the % sits tight against the number (Stat's meta would leave a gap and drop to 14px) */}
+        <Stat
+          size="display"
+          align="end"
+          label="Loaded"
+          value={
+            <>
+              {pct}
+              <span className="text-xl text-muted-foreground">%</span>
+            </>
+          }
+        />
       </div>
-      <Progress value={pct} className="h-1 bg-foreground/15" />
+      <Meter value={pct} size="sm" aria-label="Loaded" />
       <div className="nk-label flex h-4 items-center justify-between gap-6 font-normal">
         <span className="truncate">{detail}</span>
         {load.count > 0 && (

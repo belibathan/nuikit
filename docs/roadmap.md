@@ -45,7 +45,7 @@ GTA's pause map is opened and closed (not seen on a fresh join).
 | Lane | Scope | Status |
 |---|---|---|
 | Components | The 9 remaining components + `progress-ring` + `skill-check`, redesigned as the default renderers for the intents | Ready to dispatch |
-| Screens | death, loading, chat and the overrides (ox_lib first) rebuilt on the components, protocol-exact | Ready to dispatch |
+| Screens | death, loading, chat and the overrides (ox_lib first) rebuilt on the components, protocol-exact | In progress. PR #9: ox_lib menus on `panel` + `menu-row`, progress on `meter`. PR 2: death and loading bars on `meter`, loading's percentage and links on `stat`. Chat stays as is (a theme for the stock chat resource, not React). Next: the rest of ox_lib as `notice`, `field`, `confirm`, `key-prompt`, `progress-ring` land |
 | Blocks + site | The 14 blocks, `npm create nuikit -t <block>`, `/blocks`, theme switcher, theme studio | Ready to dispatch (starts with blocks the 5 shipped components cover) |
 | Showcase | pause, HUD, inventory: minimap restart quirk, FPS budget | Owner's existing agent |
 

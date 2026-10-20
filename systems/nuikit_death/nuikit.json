@@ -4,6 +4,7 @@
     "badge",
     "kbd",
     "progress",
-    "separator"
+    "separator",
+    "meter"
   ]
 }
