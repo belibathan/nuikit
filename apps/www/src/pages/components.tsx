@@ -1,4 +1,5 @@
 import {
+  AnchorIcon,
   ArrowDownIcon,
   ArrowDownLeftIcon,
   ArrowDownRightIcon,
@@ -925,7 +926,8 @@ function ScheduleForm() {
       <PanelHeader title="Schedule" description="Date ranges and times" />
       <PanelBody variant="form">
         <DateRangeField label="Apartment lease" hint="From, to" required min="2026-10-20" value={lease} onValueChange={setLease} error={leaseError} />
-        <TimeField label="Meet at the docks" format="12" value={meet} onValueChange={setMeet} description="12-hour, with AM and PM." />
+        <TimeField label="Meet at the docks" format="12" value={meet} onValueChange={setMeet} clearable icon={<AnchorIcon />} description="12-hour, with AM and PM; clears without a reset." />
+        <DateRangeField label="Empty range" />
         <TimeField label="Shift starts" min="08:00" max="18:00" minuteStep={15} defaultValue={timeToEpoch("06:45")} error="At 08:00 or later" />
         <DateRangeField
           label="Vacation"
