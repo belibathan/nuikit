@@ -47,7 +47,8 @@ The owner is not a relay.
 | Screens | `systems/nuikit_death`, `nuikit_loading`, `nuikit_chat`, `addons/*` **except** `addons/ox_inventory` | `feat/screens` |
 | Blocks + site | `registry/nuikit/blocks/*`, `packages/create-nuikit` (templates, `src/` for `-t <block>`, its build script; not `kit.css` / `index.css.tpl`), `apps/www` (except the components page) | `feat/blocks` |
 | Design (lead-run) | `docs/design/**`, `docs/design.md` (with the lead), the Figma design system ("nuikit — design system v2"); implementation of v2 goes through Components | `feat/design-*` |
-| Showcase | `systems/nuikit_pause`, `systems/nuikit_hud`, `systems/nuikit_stress`, `addons/ox_inventory` | `feat/showcase` |
+| Showcase | `systems/nuikit_pause`, `systems/nuikit_stress`, `addons/ox_inventory` | `feat/showcase` |
+| Design (lead) | `docs/design/`, identity tokens in `packages/core` compiler + `tokens/`, `index.css.tpl`, `kit.css`, `systems/nuikit_hud` | `feat/identity`, `feat/hud-v2` |
 
 Shared and append-only: `registry.json` entries, `.changeset/*.md` (one file per PR). `packages/create-nuikit/kit.css`
 and `index.css.tpl` belong to the lead: propose new `nk-*` utilities under "Requests". Synced copies
@@ -112,6 +113,11 @@ mm_radio.
   contrast warnings from `compileTheme`, download `theme.css`).
 
 ## Lane: Design (lead-run, with the owner as design lead)
+
+**The brief is [`docs/design/v2.md`](../design/v2.md)**: premium by default, unique by design. Identity tokens over three
+tiers (identity → semantic → component), four identities, and the flagship HUD/vehicle/map. Until step 3, other lanes
+keep building on the current kit and must not add new hard-coded looks: anything a server might want different goes
+through a token.
 
 Audit everything shipped (`docs/design/audit/`), research the quality bar of top FiveM servers by principle (never
 copy proprietary looks), define design language v2 in `docs/design.md`, and keep a Figma design system whose
