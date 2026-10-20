@@ -69,6 +69,7 @@ import { ItemSlot } from "@/components/ui/item-slot";
 import { PlayerCard } from "@/components/ui/player-card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { SKILL_CHECK_PRESETS, SkillCheck, skillCheckZone } from "@/components/ui/skill-check";
+import { RadialMenu, type RadialMenuItem } from "@/components/ui/radial-menu";
 import { cn } from "@/lib/utils";
 
 export function ComponentsPage() {
@@ -426,6 +427,15 @@ export function ComponentsPage() {
         >
           <SkillCheckStates />
           <SkillCheckDemo />
+        </Section>
+
+        <Section
+          name="radial-menu"
+          title="Radial menu"
+          text="The action wheel: icons and labels in wedges, the highlighted one in accent, its description in the centre. Items can open a submenu (the centre becomes Back). Point, or focus it and use the arrows, Enter, 1–9 and Backspace."
+          stageClassName="min-h-[30rem] items-center"
+        >
+          <RadialDemo />
         </Section>
       </main>
       <Footer />
@@ -1477,6 +1487,52 @@ function SkillCheckDemo() {
         </PanelFooter>
       </Panel>
     </div>
+  );
+}
+
+const WHEEL: RadialMenuItem[] = [
+  { id: "phone", label: "Phone", icon: <RadioIcon />, description: "Open your phone" },
+  {
+    id: "vehicle",
+    label: "Vehicle",
+    icon: <CarIcon />,
+    items: [
+      { id: "lock", label: "Lock", icon: <LockIcon />, description: "Lock the doors" },
+      { id: "engine", label: "Engine", icon: <WrenchIcon />, description: "Turn the engine off" },
+      { id: "trunk", label: "Trunk", icon: <BackpackIcon />, description: "Open the trunk" },
+      { id: "fuel", label: "Fuel", icon: <FuelIcon />, description: "12% left", disabled: true },
+    ],
+  },
+  { id: "wallet", label: "Wallet", icon: <WalletIcon />, description: "Show your ID or pay" },
+  { id: "map", label: "Map", icon: <MapIcon />, description: "Set a waypoint" },
+  { id: "emote", label: "Emotes", icon: <SparklesIcon />, disabled: true },
+  { id: "voice", label: "Voice", icon: <MicIcon />, description: "Normal range" },
+];
+
+const BIG_WHEEL: RadialMenuItem[] = Array.from({ length: 10 }, (_, i) => ({
+  id: `slot-${i}`,
+  label: `Emote ${i + 1}`,
+  icon: [<PlayIcon />, <SparklesIcon />, <HeartPulseIcon />, <FlameIcon />, <UsersIcon />][i % 5],
+}));
+
+/** A live wheel with a submenu, and a 10-item wheel highlighted from props (labels hidden past 8). */
+function RadialDemo() {
+  const [last, setLast] = useState("Nothing yet");
+  return (
+    <>
+      <RadialMenu label="Actions" items={WHEEL} onSelect={(item, path) => setLast([...path.map((p) => p.label), item.label].join(" › "))} />
+      <div className="flex flex-col items-center gap-6">
+        <RadialMenu label="Emotes" items={BIG_WHEEL} defaultActive="slot-3" size={240} onSelect={(item) => setLast(item.label)} />
+        <Panel size="sm">
+          <PanelHeader title="Last chosen" />
+          <PanelBody variant="form">
+            <span data-slot="radial-demo-last" className="text-sm">
+              {last}
+            </span>
+          </PanelBody>
+        </Panel>
+      </div>
+    </>
   );
 }
 
