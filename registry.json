@@ -295,6 +295,88 @@
         "screens"
       ],
       "docs": "Mount <HudMinimalSurface /> in App.tsx. In Lua, open nk.surface(\"hud\", { layer = \"hud\" }) once nk.player.get().loaded, send hud:vehicle on change and stream hud:vehicle:speed and hud:vehicle:rpm with nk.stream. A whole resource with the Lua: npm create nuikit@latest my-hud -- -t hud-minimal"
+    },
+    {
+      "name": "pause-menu",
+      "type": "registry:block",
+      "title": "Pause Menu",
+      "description": "Esc opens it in place of GTA's: the server and its actions (resume, map, settings, key bindings, disconnect with a confirm) on a rail, the player and the server on cards, the game blurred behind. Wired to the pause surface and one pause:action callback.",
+      "files": [
+        {
+          "path": "registry/nuikit/blocks/pause-menu/pause-menu.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/pause-menu/pause-menu.tsx"
+        },
+        {
+          "path": "registry/nuikit/blocks/pause-menu/nui.ts",
+          "type": "registry:lib",
+          "target": "components/blocks/pause-menu/nui.ts"
+        },
+        {
+          "path": "registry/nuikit/blocks/pause-menu/fixtures.ts",
+          "type": "registry:lib",
+          "target": "components/blocks/pause-menu/fixtures.ts"
+        }
+      ],
+      "dependencies": [
+        "lucide-react",
+        "nuikit-core"
+      ],
+      "registryDependencies": [
+        "alert-dialog",
+        "avatar",
+        "separator",
+        "https://nuikit.vercel.app/r/menu-row.json",
+        "https://nuikit.vercel.app/r/panel.json",
+        "https://nuikit.vercel.app/r/stat.json",
+        "https://nuikit.vercel.app/r/meter.json"
+      ],
+      "categories": [
+        "screens"
+      ],
+      "docs": "Mount <PauseMenuSurface /> in App.tsx. In Lua, catch Esc (control 200), open nk.surface(\"pause\", { layer = \"modal\", input = \"full\", exclusive = true, hides = { \"hud\" }, blockedBy = { \"dead\" } }) with a PauseMenuData table, and answer nk.on(\"pause:action\"). A whole resource with the Lua: npm create nuikit@latest my-pause -- -t pause-menu"
+    },
+    {
+      "name": "loading-screen",
+      "type": "registry:block",
+      "title": "Loading Screen",
+      "description": "The real load progress (the game's own load events, phase by phase), tips, links, backgrounds and music, in the server's nuikit theme handed over on connect. For a resource's loadscreen page.",
+      "files": [
+        {
+          "path": "registry/nuikit/blocks/loading-screen/loading-screen.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/loading-screen/loading-screen.tsx"
+        },
+        {
+          "path": "registry/nuikit/blocks/loading-screen/handover.ts",
+          "type": "registry:lib",
+          "target": "components/blocks/loading-screen/handover.ts"
+        },
+        {
+          "path": "registry/nuikit/blocks/loading-screen/progress.ts",
+          "type": "registry:lib",
+          "target": "components/blocks/loading-screen/progress.ts"
+        },
+        {
+          "path": "registry/nuikit/blocks/loading-screen/fixtures.ts",
+          "type": "registry:lib",
+          "target": "components/blocks/loading-screen/fixtures.ts"
+        }
+      ],
+      "dependencies": [
+        "lucide-react",
+        "nuikit-core"
+      ],
+      "registryDependencies": [
+        "button",
+        "separator",
+        "spinner",
+        "https://nuikit.vercel.app/r/meter.json"
+      ],
+      "categories": [
+        "screens"
+      ],
+      "docs": "Mount <LoadingScreenPage /> in App.tsx of a resource whose fxmanifest has loadscreen 'web/dist/index.html' and loadscreen_manual_shutdown 'yes'. Hand it data from the server with deferrals.handover({ nuikit = { serverName, tips, theme = GlobalState.nuikitTheme, … } }). A whole resource with the Lua: npm create nuikit@latest my-loading -- -t loading-screen"
     }
   ]
 }
