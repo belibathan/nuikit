@@ -1,8 +1,18 @@
 import { describe, expect, it } from "vitest"
 
-import { countdownState, formatCountdown, spokenCountdown } from "@/components/ui/countdown"
+import { countdownState, countdownVariants, formatCountdown, spokenCountdown } from "@/components/ui/countdown"
+import { cn } from "@/lib/utils"
 
 describe("countdown", () => {
+  it("keeps leading-none at every size after tailwind-merge (a font size used to drop it)", () => {
+    for (const size of ["sm", "default", "hero"] as const) {
+      // the component merges exactly like this: cn(countdownVariants({ size }), …)
+      const classes = cn(countdownVariants({ size }), "text-destructive opacity-40").split(" ")
+      expect(classes, size).toContain("leading-none")
+      expect(classes.filter((c) => c.startsWith("text-[") || c === "text-xl"), size).toHaveLength(1)
+    }
+  })
+
   it("formats as mm:ss, h:mm:ss past an hour, rounding up", () => {
     expect(formatCountdown(0)).toBe("00:00")
     expect(formatCountdown(0.2)).toBe("00:01")
