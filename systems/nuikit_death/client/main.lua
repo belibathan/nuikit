@@ -35,23 +35,27 @@ end
 local keys = { held = 0, heldSince = nil, full = nil, gPressed = false }
 local current = nil   -- last snapshot (nil = alive)
 -- What the detected medical resource adds to the keys (filled in below): `hold`, the ms E must be held
--- before it respawns (a number, or a function of when the press started), and `frame`, run every frame.
+-- before it respawns (a number, or a function of when the press started), and `frame`, run every
+-- frame. A resource that only looks at E on its own ticks (qbx_medical) sets `ticks`, and `frame`
+-- returns true on the frame a tick happened.
 local source = {}
 
 --- Called every frame while downed: how long E has been held, and whether G was just pressed.
 --- Medical resources disable most controls while downed but re-enable E/G; check both forms.
 function Death.watchKeys()
-  if source.frame then source.frame() end
+  local ticked = source.frame and source.frame() or false
   local e = IsControlPressed(0, KEY_E) or IsDisabledControlPressed(0, KEY_E)
   if e then
     if not keys.heldSince then
       keys.heldSince = now()
       keys.full = type(source.hold) == 'function' and source.hold(keys.heldSince) or source.hold
     end
-    keys.held = now() - keys.heldSince
-  else
-    keys.heldSince, keys.held, keys.full = nil, 0, nil
+  elseif not source.ticks or ticked then
+    -- Released. A ticking resource only sees E at its ticks: a release and re-press between two
+    -- ticks doesn't reset its count, so the hold (and the bar) only ends at a tick that finds E up.
+    keys.heldSince, keys.full = nil, nil
   end
+  keys.held = keys.heldSince and now() - keys.heldSince or 0
   if IsControlJustPressed(0, KEY_G) or IsDisabledControlJustPressed(0, KEY_G) then keys.gPressed = true end
   -- the bar: nuikit's own hold time in ms against the resource's, never the resource's own counter
   local respawn = current and not current.treatment and current.respawn
@@ -117,15 +121,20 @@ sources.qbx = function()
   -- RespawnHoldTime 5 → 1, and the tick that finds it at 1 respawns, so the respawn lands on the
   -- fifth tick after the press: the time to the next tick plus 4 s. The ticks are seen as
   -- GetDeathTime() changing (the same loop counts it down), so the bar ends on that tick.
+  -- The same loop only looks at E on those ticks: a tick that finds E up resets its count to 5
+  -- (`ticks` below), and a release and re-press between two ticks goes unnoticed.
   local lastTime, tickAt = nil, nil
   local extras = {
+    ticks = true,
+    --- true on the frame qbx_medical's loop ticked (and whenever the loop isn't running).
     frame = function()
-      if LocalPlayer.state['qbx_medical:deathState'] ~= 3 then lastTime, tickAt = nil, nil return end
+      if LocalPlayer.state['qbx_medical:deathState'] ~= 3 then lastTime, tickAt = nil, nil return true end
       local t = exports.qbx_medical:GetDeathTime()
-      if t ~= lastTime then
-        if lastTime then tickAt = now() end
-        lastTime = t
-      end
+      if t == lastTime then return false end
+      local ticked = lastTime ~= nil
+      if ticked then tickAt = now() end
+      lastTime = t
+      return ticked
     end,
     hold = function(pressedAt)
       local toTick = tickAt and 1000 - (pressedAt - tickAt) % 1000 or 1000

@@ -141,8 +141,51 @@ describe("systems/nuikit_death", () => {
     // nuikit never respawns anyone: qbx_medical does, on its own tick
     expect(await d.run(`return table.concat(SERVER, ',')`)).toBe("nuikit_death:doctors");
 
-    // released: back to empty
+    // released between ticks: qbx_medical hasn't seen it yet, so neither has the bar
     await d.run(`KEYS[38] = false NOW = 6600 Death.watchKeys()`);
+    expect(holds(d).at(-1)).toBe(1);
+    // the next tick finds E up: qbx_medical resets its count, and the bar empties with it
+    await d.run(`NOW = 7000 DT = DT - 1 Death.watchKeys()`);
+    expect(holds(d).at(-1)).toBe(0);
+  });
+
+  it("Qbox: a release and re-press between two ticks keeps the bar in step; a tick with E up resets it", async () => {
+    client = await createClient();
+    const d = await client.start("nuikit_death", { before: natives("qbx_medical = true, qbx_ambulancejob = true"), scripts });
+    await d.run(`LocalPlayer.state['qbx_medical:deathState'] = 3 DT = 100`);
+    await d.run(update);
+    // ticks at 1000, 2000, …; E down at 1300: the bar runs over 4700 ms, full on the 6000 tick
+    await d.run(`NOW = 0 Death.watchKeys() NOW = 1000 DT = 99 Death.watchKeys() NOW = 1300 KEYS[38] = true Death.watchKeys()`);
+    const at = async (t: number, lua = "") => {
+      await d.run(`NOW = ${t} ${t % 1000 === 0 ? "DT = DT - 1" : ""} ${lua} Death.watchKeys()`);
+      return holds(d).at(-1)!;
+    };
+    expect(await at(2000)).toBeCloseTo(700 / 4700, 2);
+    // let go at 2300, press again at 2700: no tick in between, so qbx_medical counts on
+    expect(await at(2300, "KEYS[38] = false")).toBeCloseTo(1000 / 4700, 2);
+    expect(await at(2500)).toBeCloseTo(1200 / 4700, 2); // still moving: the hold isn't over until a tick
+    expect(await at(2700, "KEYS[38] = true")).toBeCloseTo(1400 / 4700, 2);
+    expect(await at(3000)).toBeCloseTo(1700 / 4700, 2);
+    expect(await at(3600)).toBeCloseTo(2300 / 4700, 2); // exactly where an unbroken hold would be
+    // let go at 3800 and stay up through the 4000 tick: qbx_medical resets to 5, the bar empties
+    expect(await at(3800, "KEYS[38] = false")).toBeCloseTo(2500 / 4700, 2);
+    expect(await at(4000)).toBe(0);
+    // a fresh press at 4200: 800 ms to the 5000 tick + 4 s
+    expect(await at(4200, "KEYS[38] = true")).toBe(0);
+    expect(await at(4300)).toBeCloseTo(100 / 4800, 2);
+    expect(await at(9000)).toBe(1);
+  });
+
+  it("QBCore: a release empties the bar at once (qb-ambulancejob reads E every frame)", async () => {
+    client = await createClient();
+    const d = await client.start("nuikit_death", { before: natives("['qb-ambulancejob'] = true"), scripts });
+    client.event("QBCore:Player:SetPlayerData", { metadata: { isdead: true } });
+    await d.run(`NOW = 1000`);
+    await d.run(update);
+    expect(d.surfaces().death.data.respawn).toMatchObject({ available: true });
+    await d.run(`KEYS[38] = true Death.watchKeys() NOW = NOW + 2500 Death.watchKeys()`);
+    expect(holds(d).at(-1)).toBe(0.5);
+    await d.run(`KEYS[38] = false NOW = NOW + 100 Death.watchKeys()`);
     expect(holds(d).at(-1)).toBe(0);
   });
 
