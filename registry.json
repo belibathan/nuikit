@@ -297,8 +297,8 @@
         "nuikit-core"
       ],
       "registryDependencies": [
-        "kbd",
-        "https://nuikit.vercel.app/r/meter.json",
+        "https://nuikit.vercel.app/r/countdown.json",
+        "https://nuikit.vercel.app/r/key-prompt.json",
         "https://nuikit.vercel.app/r/hud-chip.json"
       ],
       "categories": [
@@ -529,13 +529,13 @@
         "nuikit-core"
       ],
       "registryDependencies": [
-        "alert-dialog",
         "avatar",
         "separator",
         "https://nuikit.vercel.app/r/menu-row.json",
         "https://nuikit.vercel.app/r/panel.json",
         "https://nuikit.vercel.app/r/stat.json",
-        "https://nuikit.vercel.app/r/meter.json"
+        "https://nuikit.vercel.app/r/meter.json",
+        "https://nuikit.vercel.app/r/confirm.json"
       ],
       "categories": [
         "screens"
@@ -613,10 +613,10 @@
       "registryDependencies": [
         "button",
         "kbd",
-        "slider",
         "tabs",
         "https://nuikit.vercel.app/r/panel.json",
-        "https://nuikit.vercel.app/r/menu-row.json"
+        "https://nuikit.vercel.app/r/menu-row.json",
+        "https://nuikit.vercel.app/r/form-field.json"
       ],
       "categories": [
         "screens"

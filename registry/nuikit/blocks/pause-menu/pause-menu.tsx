@@ -1,5 +1,5 @@
 import * as React from "react"
-import { fetchNui, Surface, usePlayer, type NuiPlayer } from "nuikit-core/react"
+import { fetchNui, Surface, usePlayer, useSurface, type NuiPlayer } from "nuikit-core/react"
 import {
   ActivityIcon,
   KeyboardIcon,
@@ -15,18 +15,8 @@ import {
 } from "lucide-react"
 
 import { cn } from "@/lib/utils"
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { Confirm } from "@/components/ui/confirm"
 import { MenuRow } from "@/components/ui/menu-row"
 import { Meter } from "@/components/ui/meter"
 import { Panel, PanelBody, PanelFooter, PanelHeader } from "@/components/ui/panel"
@@ -39,20 +29,31 @@ import type { PauseMenuAction, PauseMenuData } from "./nui"
  * PauseMenu — Esc opens this in place of GTA's pause menu: the server and the actions on a rail at
  * the left, the player and the server on cards at the right, the game blurred behind. Map, Settings
  * and Key bindings hand over to the game's own pages; Disconnect asks first. Built from the kit:
- * MenuRow, Panel, Stat, Meter, with stock shadcn Avatar, Separator and AlertDialog.
+ * MenuRow, Panel, Stat, Meter, Confirm, with stock shadcn Avatar and Separator.
  *
  *   <PauseMenuSurface />                                  // wired: nk.surface('pause', …) in Lua opens it
  *   <PauseMenu data={data} player={player} />             // a still, for previews
  *
- * Escape closes it through nuikit (the surface's default), so it never fights another UI for Esc.
+ * Escape goes through nuikit (escape = 'back'), so it never fights another UI for Esc: it closes
+ * the Disconnect confirm when that's open, else the menu.
  */
 function PauseMenuSurface() {
   // Subscribed here, not inside the menu: the bridge only sends the player when it changes, so a
   // listener that mounts with the menu would miss it.
   const player = usePlayer()
+  const pause = useSurface("pause")
+  const back = React.useRef<() => void>(() => pause.close())
   return (
-    <Surface name="pause" layer="modal" input="full" exclusive hides={["hud"]} blockedBy={["dead"]}>
-      {(data) => <PauseMenu data={data} player={player} onAction={(action) => void fetchNui("pause:action", { action }).catch(() => {})} />}
+    <Surface name="pause" layer="modal" input="full" exclusive escape="back" onBack={() => back.current()} hides={["hud"]} blockedBy={["dead"]}>
+      {(data) => (
+        <PauseMenu
+          data={data}
+          player={player}
+          onBack={(fn) => (back.current = fn)}
+          onClose={() => pause.close()}
+          onAction={(action) => void fetchNui("pause:action", { action }).catch(() => {})}
+        />
+      )}
     </Surface>
   )
 }
@@ -89,19 +90,33 @@ function PauseMenu({
   data,
   player,
   onAction,
+  onBack,
+  onClose,
   autoFocus = true,
+  confirming: confirmingProp,
   className,
   ...props
 }: Omit<React.ComponentProps<"div">, "children"> & {
   data: PauseMenuData
   player: NuiPlayer
   onAction?: (action: PauseMenuAction) => void
+  /** Gives the surface what Escape should do now (close the confirm, else the menu). */
+  onBack?: (fn: () => void) => void
+  onClose?: () => void
+  /** Start with the Disconnect confirm open (stills). */
+  confirming?: boolean
   /** Focus Resume when it opens (off for stills next to other content). */
   autoFocus?: boolean
 }) {
   const actions = list(data?.actions)
   const server = data?.server ?? {}
   const nav = React.useRef<HTMLElement>(null)
+  const [confirming, setConfirming] = React.useState(!!confirmingProp)
+
+  // Escape: the confirm first, then the menu.
+  React.useEffect(() => {
+    onBack?.(() => (confirming ? setConfirming(false) : onClose?.()))
+  }, [confirming, onBack, onClose])
 
   // Up / Down (or W / S) move between the rows, like GTA's menu; Enter presses one.
   const onKeyDown = (e: React.KeyboardEvent) => {
@@ -150,7 +165,9 @@ function PauseMenu({
             {actions.includes("disconnect") && (
               <>
                 <Separator className="my-3" />
-                <PauseDisconnect onConfirm={() => onAction?.("disconnect")} />
+                <MenuRow tone="destructive" icon={<LogOutIcon />} onClick={() => setConfirming(true)}>
+                  Disconnect
+                </MenuRow>
               </>
             )}
           </nav>
@@ -170,32 +187,24 @@ function PauseMenu({
           <PauseServerCard data={data} />
         </main>
       </div>
-    </div>
-  )
-}
 
-/** Disconnect, behind a confirm: the one destructive action. */
-function PauseDisconnect({ onConfirm }: { onConfirm: () => void }) {
-  return (
-    <AlertDialog>
-      <AlertDialogTrigger asChild>
-        <MenuRow tone="destructive" icon={<LogOutIcon />}>
-          Disconnect
-        </MenuRow>
-      </AlertDialogTrigger>
-      <AlertDialogContent className="nk-panel nk-enter gap-4 p-6 data-[size=default]:sm:max-w-sm">
-        <AlertDialogHeader>
-          <AlertDialogTitle className="nk-title">Leave the server?</AlertDialogTitle>
-          <AlertDialogDescription>Your character is saved. You can reconnect from the server list at any time.</AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel>Stay</AlertDialogCancel>
-          <AlertDialogAction variant="destructive" onClick={onConfirm}>
-            Disconnect
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+      {confirming && (
+        <Confirm
+          tone="destructive"
+          size="sm"
+          title="Leave the server?"
+          description="Your character is saved. You can reconnect from the server list at any time."
+          cancelLabel="Stay"
+          confirmLabel="Disconnect"
+          initialFocus="cancel"
+          onCancel={() => setConfirming(false)}
+          onConfirm={() => {
+            setConfirming(false)
+            onAction?.("disconnect")
+          }}
+        />
+      )}
+    </div>
   )
 }
 

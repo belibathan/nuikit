@@ -7,7 +7,7 @@ import { Footer, Nav } from "@/components/site";
 import { ThemePreview } from "@/components/theme-preview";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Slider } from "@/components/ui/slider";
+import { SliderField } from "@/components/ui/form-field";
 import { Textarea } from "@/components/ui/textarea";
 import { exportThemeCss, studioTheme, toHex, TWEAKS, withAlpha } from "@/lib/theme-studio";
 import { cn } from "@/lib/utils";
@@ -193,19 +193,16 @@ export function ThemePage() {
                     </div>
                   </div>
                 ))}
-                <div className="flex flex-col gap-2">
-                  <p className="flex items-center justify-between text-xs font-medium text-muted-foreground">
-                    Corner radius <span className="font-mono">{theme.vars.radius}</span>
-                  </p>
-                  <Slider
-                    aria-label="Corner radius"
-                    min={0}
-                    max={1.5}
-                    step={0.125}
-                    value={[parseFloat(theme.vars.radius ?? "0.625") || 0]}
-                    onValueChange={([v]) => v !== undefined && setTweaks((prev) => ({ ...prev, radius: `${v}rem` }))}
-                  />
-                </div>
+                <SliderField
+                  label="Corner radius"
+                  min={0}
+                  max={1.5}
+                  step={0.125}
+                  value={parseFloat(theme.vars.radius ?? "0.625") || 0}
+                  format={() => theme.vars.radius}
+                  onValueChange={(v) => setTweaks((prev) => ({ ...prev, radius: `${v}rem` }))}
+                />
+
               </CardContent>
             </Card>
 
