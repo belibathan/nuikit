@@ -30,7 +30,8 @@ const itemSlotVariants = cva(
         /** A well in a panel (inventory, shop, stash). */
         panel: "",
         /** The game's HUD surface (a hotbar on the world). */
-        hud: "nk-hud nk-shadow text-hud-foreground",
+        // The surface itself (nk-hud, or primary when active) is picked in the component.
+        hud: "nk-shadow rounded-[calc(var(--radius)+2px)]",
       },
       size: {
         fill: "w-full",
@@ -124,6 +125,7 @@ function ItemSlot({
   const filled = (image !== undefined && image !== null && image !== "") || (label !== undefined && label !== null && label !== "")
   const state = itemSlotState({ filled, active, dropTarget, dragging, locked })
   const hud = surface === "hud"
+  const hudActive = hud && state === "active"
   const interactive = !!onClick && filled && !locked
   const corner = hotkey ?? stock
   const right = price ?? (count !== undefined && count > 1 ? count.toLocaleString() : null)
@@ -143,7 +145,10 @@ function ItemSlot({
         !hud && (filled ? "bg-muted/60" : "bg-muted/25"),
         interactive && "cursor-pointer hover:bg-accent hover:text-accent-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50",
         // A ring, not an outline: the base outline-none would win over outline-2.
-        state === "active" && (hud ? "nk-chip-active" : "ring-2 ring-primary ring-inset"),
+        // On the HUD: the HUD surface, or primary with primary-foreground content when active
+        // (never both: nk-hud sets its own background and colour).
+        hud && (hudActive ? "bg-primary text-primary-foreground" : "nk-hud"),
+        state === "active" && !hud && "ring-2 ring-primary ring-inset",
         state === "drop-target" && "bg-accent ring-2 ring-primary ring-inset",
         state === "dragging" && "opacity-40",
         state === "locked" && "opacity-50 grayscale",
@@ -161,7 +166,7 @@ function ItemSlot({
     >
       <div
         data-slot="item-slot-top"
-        className={cn("nk-num flex h-3 shrink-0 items-center justify-between gap-1 text-xs leading-none", hud ? "opacity-75" : "text-muted-foreground")}
+        className={cn("nk-num flex h-3 shrink-0 items-center justify-between gap-1 text-xs leading-none", hudActive ? "" : hud ? "opacity-75" : "text-muted-foreground")}
       >
         <span data-slot="item-slot-corner">{corner}</span>
         {right !== null && right !== undefined && (
@@ -197,10 +202,16 @@ function ItemSlot({
           aria-valuemin={0}
           aria-valuemax={100}
           aria-valuenow={Math.round(dur.value)}
-          className={cn("absolute inset-x-2 bottom-1 h-0.5 overflow-hidden rounded-full", hud ? "bg-scrim/35" : "bg-foreground/15")}
+          className={cn(
+            "absolute inset-x-2 bottom-1 h-0.5 overflow-hidden rounded-full",
+            hudActive ? "bg-primary-foreground/25" : hud ? "bg-scrim/35" : "bg-foreground/15"
+          )}
         >
           <div
-            className={cn("h-full rounded-full", dur.low ? "bg-destructive" : hud ? "bg-hud-foreground" : "bg-foreground")}
+            className={cn(
+              "h-full rounded-full",
+              dur.low ? "bg-destructive" : hudActive ? "bg-primary-foreground" : hud ? "bg-hud-foreground" : "bg-foreground"
+            )}
             style={{ width: `${dur.value}%` }}
           />
         </div>
