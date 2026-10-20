@@ -3,6 +3,14 @@
 *How several coding agents work on nuikit at once without colliding. The lead session owns the platform
 (0.6, `docs/architecture.md`); agents own the lanes below. Status lives in [`../roadmap.md`](../roadmap.md).*
 
+## Lead decisions log
+
+- Oct 20: `form-field` naming accepted; Blocks owns `create-nuikit/src` for `-t <block>`; `nuikit check` accepts
+  `nk.surface` / `nk.open`. Component requests (menu-row muted stepper tone, meter additions, speedometer on HUD
+  tokens, `countdown`) belong to the Components lane; site requests (`@theme` tokens, ThemePicker applying the
+  preset on load, `react-day-picker` if a calendar is wanted) to Blocks + site. One session per lane: a second
+  session on the same branch must stop.
+
 ## Every agent, before anything
 
 1. Read `CLAUDE.md`, then `docs/vision.md`, `docs/architecture.md`, `docs/design.md`, `docs/tokens.md`, and this file.
@@ -29,7 +37,7 @@
 | Lead (platform) | `packages/core` (src, lua, intents, tokens), `packages/cli`, `packages/vite`, `systems/nuikit` (the runtime resource), `scripts/`, `docs/architecture.md` `protocol.md` `tokens.md` `host.md` | `feat/intents`, … |
 | Components | `registry/nuikit/ui/*`, `registry/nuikit/hooks/*`, `registry.json`, `apps/www/src/components.tsx` and component previews | `feat/components` |
 | Screens | `systems/nuikit_death`, `nuikit_loading`, `nuikit_chat`, `addons/*` **except** `addons/ox_inventory` | `feat/screens` |
-| Blocks + site | `registry/nuikit/blocks/*`, `packages/create-nuikit` templates, `apps/www` (except the components page) | `feat/blocks` |
+| Blocks + site | `registry/nuikit/blocks/*`, `packages/create-nuikit` (templates, `src/` for `-t <block>`, its build script; not `kit.css` / `index.css.tpl`), `apps/www` (except the components page) | `feat/blocks` |
 | Showcase | `systems/nuikit_pause`, `systems/nuikit_hud`, `systems/nuikit_stress`, `addons/ox_inventory` | `feat/showcase` |
 
 Shared and append-only: `registry.json` entries, `.changeset/*.md` (one file per PR). `packages/create-nuikit/kit.css`
@@ -46,7 +54,7 @@ already carry every field the intent needs:
 |---|---|---|
 | `notify` | `notice` (+ stack) | title, description, status (info/success/warning/error), icon, duration with a time-left line, position |
 | `menu` | `panel` + `menu-row` (shipped; extend) | items: icon, label, description, metadata rows, image, progress, disabled, submenu arrow, active |
-| `input` | `field` | text, number, select, checkbox, slider, date, colour; label, hint, error, required, min/max |
+| `input` | `form-field` (not `field`: shadcn's `field` exists and a registry item of that name would overwrite it) | text, number, select, checkbox, slider, date, colour; label, hint, error, required, min/max |
 | `confirm` | `confirm` | title, body, cancel and confirm labels, destructive or primary |
 | `progress` | `meter` (shipped), `progress-ring` (new) | label, value or duration, cancellable, bar or circle |
 | `prompt` | `key-prompt` | keys, label, hold-to-confirm with progress, multiple prompts |
@@ -63,7 +71,7 @@ attributes; `cva` variants; tests where there's logic (countdown, money, skill-c
 each one on `/components` with all its states over a game scene. Premium, minimal, consistent with
 `systems/nuikit_pause` and `docs/design.md`.
 
-Order: `notice`, `field`, `confirm`, `key-prompt`, `progress-ring` first (the intents need them), then the rest.
+Order: `notice`, `form-field`, `confirm`, `key-prompt`, `progress-ring` first (the intents need them), then the rest.
 
 ## Lane: Screens (`feat/screens`)
 
