@@ -13,7 +13,17 @@ The theme reaches the loading screen through the connection handover: `server/ma
 
 ### Multicharacter
 
-By default the loading screen closes as soon as the game has loaded. If your multicharacter or spawn resource closes it itself (it calls `ShutdownLoadingScreenNui()`), set `Config.externalShutdown = true`: the screen then shows "Ready" until that resource takes over.
+`Config.externalShutdown` decides who closes the loading screen once the game has loaded:
+
+- `'auto'` (the default): on Qbox with its own character menu, the screen stays up and shows "Ready" until `qbx_core` closes it as the character selection appears. Everywhere else it closes right away.
+- `true`: always wait. Use it when your multicharacter or spawn resource closes the screen itself (it calls `ShutdownLoadingScreenNui()`).
+- `false`: always close right away.
+
+How `'auto'` knows: `qbx_core` is running, and its `config/client.lua` doesn't set `characters.useExternalCharacters = true`. With that setting `qbx_core` skips its menu (`client/character.lua` returns at once) and doesn't close the screen, so nuikit closes it, unless you set `true` for your own multicharacter. Qbox has no convar for this, so the setting is read from that file, which `qbx_core` already sends to every client. If the file can't be read, `qbx_core`'s default applies (its own menu).
+
+In `'auto'` the wait has a safety limit. If `qbx_core` hasn't closed the screen after `Config.externalShutdownTimeout` seconds on "Ready" (default 60), for example because its character menu failed, nuikit closes it and prints a yellow line in the F8 console saying `qbx_core` never called `ShutdownLoadingScreenNui()`. An explicit `true` has no limit and waits as long as it takes.
+
+An `externalShutdown = false` kept from an older `config.lua` still means "close right away". Change it to `'auto'` on Qbox.
 
 ## Edit it
 
