@@ -104,12 +104,16 @@ describe("applyTheme (compiled tokens)", () => {
     expect(css("primary")).toBe("rgb(0, 255, 0)");
   });
 
-  it("player prefs repaint: scale multiplies, motion off, high contrast", () => {
+  it("player prefs repaint: scale multiplies, motion reduced, high contrast", () => {
     applyTheme(".dark { --nk-scale: 1.1; }");
     emit("nuikit:prefs", { scale: 1.2, reducedMotion: true });
     expect(css("nk-scale")).toBe("1.32");
     expect(css("nk-motion")).toBe("0");
-    expect(html().getAttribute("data-nk-motion")).toBe("off");
+    // tokens 1.2: the pref is "reduced" (no movement, fades ≤ 100ms); "off" is the theme's --nk-motion: 0
+    expect(html().getAttribute("data-nk-motion")).toBe("reduced");
+    expect(css("nk-motion-move")).toBe("0");
+    expect(css("nk-time-base")).toBe("100ms");
+    expect(css("nk-time-press")).toBe("70ms");
     setPrefs({ highContrast: true });
     expect(html().getAttribute("data-nk-contrast")).toBe("high");
     expect(css("hud")).toBe("rgba(0, 0, 0, 0.72)");

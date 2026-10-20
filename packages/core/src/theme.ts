@@ -15,6 +15,7 @@ import {
   compileTheme,
   IDENTITY_TOKENS,
   DEFAULT_PREFS,
+  themeMotionLevel,
   importUrls,
   normalizePrefs,
   themeChannels,
@@ -43,6 +44,7 @@ export const KEYWORD_ATTRS: readonly (readonly [string, string])[] = [
   ["data-nk-gauge", "nk-gauge-style"],
   ["data-nk-elevation", "nk-elevation"],
   ["data-nk-label-case", "nk-label-case"],
+  ["data-nk-feel", "nk-motion-feel"],
 ];
 const DERIVED = new Set(IDENTITY_TOKENS.filter((t) => t.group === "derived").map((t) => t.name));
 let prefs: NuiPrefs = { ...DEFAULT_PREFS };
@@ -84,7 +86,8 @@ function paint(el: HTMLElement, theme: CompiledTheme, placeholder = false): Them
   const prev = painted.get(el);
   if (prev) for (const k of prev.keys) if (!(k in all)) el.style.removeProperty(`--${k}`);
   for (const [k, v] of Object.entries(all)) el.style.setProperty(`--${k}`, v);
-  el.setAttribute("data-nk-motion", vars["nk-motion"] === "0" ? "off" : "on");
+  // on | reduced (the player's pref: no movement, short fades) | off (the theme's --nk-motion: 0)
+  el.setAttribute("data-nk-motion", themeMotionLevel(theme.vars, prefs));
   // identity keywords CSS can't branch on (tokens 1.1): kit.css and UIs select on these
   for (const [attr, token] of KEYWORD_ATTRS) {
     if (vars[token]) el.setAttribute(attr, vars[token]!);

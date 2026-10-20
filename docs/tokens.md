@@ -1,11 +1,12 @@
-# nuikit tokens v1 (revision 1.1)
+# nuikit tokens v1 (revision 1.2)
 
 The theme contract every nuikit UI reads. A server's theme is any shadcn / TweakCN paste in
 `nuikit/theme.css`; the compiler (`compileTheme` in `nuikit-core`) turns it into this exact set of
 CSS variables, so a UI built on the tokens matches every server it runs on.
 
-- **Version:** tokens v1 (`TOKENS_VERSION = 1`), revision 1.1 (`TOKENS_REVISION`, `revision` on a compiled
-  theme). Adding a token keeps v1; renaming or removing one is v2. 1.1 added the
+- **Version:** tokens v1 (`TOKENS_VERSION = 1`), revision 1.2 (`TOKENS_REVISION`, `revision` on a compiled
+  theme). Adding a token keeps v1; renaming or removing one is v2. 1.2 added the [motion tokens](#motion-12)
+  (additive). 1.1 added the
   [identity tokens](#identity-tokens-11) and [component tokens](#component-tokens-11): additive, every v1 name
   and meaning is unchanged. The defaults of `--font-sans` / `--font-mono` changed from the system stack to
   Inter / Geist Mono (bundled, with the system stack behind them).
@@ -223,13 +224,75 @@ every nuikit UI and override:
 | Pref | Values | Effect |
 |---|---|---|
 | `scale` | 0.85–1.25 (default 1) | `--nk-scale` = theme scale × this |
-| `reducedMotion` | boolean | `--nk-motion: 0`: no animations or transitions |
+| `reducedMotion` | boolean | Reduced motion (1.2): `data-nk-motion="reduced"`, no movement, fades kept at ≤ 100 ms ([Motion](#motion-12)). `--nk-motion` is painted as 0, as before, so legacy `calc(× --nk-motion)` stays instant |
 | `highContrast` | boolean | Panel/surface text pure white or black, muted text ≥ 7:1, borders at 35% text colour, `--hud` at 72% black; `data-nk-contrast="high"` on `<html>` |
 
 - Players: `/nuikit` (show), `/nuikit scale 1.1`, `/nuikit motion off`, `/nuikit contrast on`, `/nuikit reset`.
 - Lua (any resource with nuikit.lua): `NUI.prefs.get()`, `NUI.prefs.set({ scale = 1.1 })`; client exports
   `exports.nuikit:getPrefs()` / `setPrefs(patch)`; local event `nuikit:prefs:changed (prefs)`.
 - UI: `getPrefs()`, `setPrefs()` and the `nuikit:prefs` message (nuikit-core applies it).
+
+## Motion (1.2)
+
+Design v2 §5A, spec in `docs/design/research/motion.md` (on `main`). Two identity inputs, the rest
+derived from `--nk-duration` (d) and `--nk-ease`. The compiler writes **literal** values, so nothing relies on
+`calc()` on a `<time>` inside an animation shorthand in Chromium 103.
+
+**Inputs (identity):**
+
+| Token | Values | Default | Meaning |
+|---|---|---|---|
+| `--nk-motion-feel` | `crisp` `snap` `smooth` `stepped` | `crisp` | How the identity moves. Painted as `html[data-nk-feel]`. snap: selection jumps, press flashes (no scale). smooth: longer springs, smooth stagger. stepped: bar fills tick in steps, press flashes |
+| `--nk-spring-bounce` | 0–0.3 | 0 | Bounce folded into the snap, move and soft springs |
+
+**Derived** (Graphite values, d = 140 ms):
+
+| Token | Formula | Graphite | Use |
+|---|---|---|---|
+| `--nk-motion-move` | 1, or 0 under reduced or off | 1 | Multiply movement distances in your own CSS by it |
+| `--nk-time-instant` | 0 | 0ms | Keyboard and controller selection, held key-repeat |
+| `--nk-time-press` | 0.5 × d, 50–100 ms | 70ms | Press, toggle, key-chip flash |
+| `--nk-time-hover` | 0.75 × d | 105ms | Pointer hover colour |
+| `--nk-time-base` | d | 140ms | Panel enter, indicator, tab switch (kit.css `--nk-time`) |
+| `--nk-time-exit` | 0.7 × d | 98ms | Every exit |
+| `--nk-time-move` | 1.5 × d, ≤ 300 | 210ms | Toasts in, FLIP, meters gaining |
+| `--nk-time-modal` | 1.25 × d | 175ms | Dialog enter (inner wrapper) |
+| `--nk-time-screen` | 2.5 × d, ≤ 400 | 350ms | Full-screen enter |
+| `--nk-time-ambient` | fixed | 400ms | HUD show-on-change fades, damage trail |
+| `--nk-stagger` | 0.15 × d ≤ 20 (snap 0.125 × d; smooth 0.125 × d ≤ 30) | 20ms | Per item, first open only |
+| `--nk-stagger-max` | fixed | 100ms | Total stagger cap |
+| `--nk-ease-out` | `--nk-ease` | `cubic-bezier(0.2, 0.8, 0.2, 1)` | Enter, hover |
+| `--nk-ease-in` | fixed | `cubic-bezier(0.4, 0, 1, 1)` | Exit |
+| `--nk-ease-in-out` | fixed | `cubic-bezier(0.2, 0, 0, 1)` | On-screen moves |
+| `--nk-ease-emphasized` | fixed | `cubic-bezier(0.05, 0.7, 0.1, 1)` | Full-screen, big moments |
+| `--nk-ease-linear` | fixed | `linear` | Progress, countdowns, needles |
+| `--nk-spring-snap` / `-move` / `-soft` / `-pop` | period × feel ratio, bounce | `160ms 0` / `240ms 0.1` / `360ms 0` / `260ms 0.3` | Springs as `<duration> <bounce>`, run by `nuikit-core/motion` (mass 1, k = (2π/T)², c = 4π(1 − bounce)/T) |
+
+Identities: Graphite crisp (140 ms; springs 160/240/360), Signal snap (120 ms; 130/200/300, stagger 15 ms),
+Velvet smooth (240 ms, bounce 0.1; 260/340/420, pop 360, stagger 30 ms), Vector stepped (140 ms; 140/200/300).
+The compiler warns above `--nk-duration: 260ms`.
+
+**Levels** (`html[data-nk-motion]`, painted by `applyTheme`; the prefs message is unchanged):
+
+| Level | From | Times | Movement |
+|---|---|---|---|
+| `on` | default | as compiled | yes |
+| `reduced` | the player's `reducedMotion` pref (and the OS `prefers-reduced-motion`, in kit.css and the helper) | every `--nk-time-*` clamped to ≤ 100 ms, stagger 0 | none: `--nk-motion-move: 0`; kit utilities fall back to fades; shadcn's tw-animate slides, zooms and spins are zeroed |
+| `off` | the theme's `--nk-motion: 0` | 0 ms | none; every CSS animation and transition is 0 s |
+
+Timed runs (progress lines and rings, the skill-check needle, notice timer bars) play at every level:
+progress is information.
+
+**`nuikit-core/motion`** (no dependencies; 2.0 kB min+gz for everything, 1.8 kB for `spring` + `flip` + `timed`,
+0.2 kB for `timed` alone):
+`spring(el, channel, to, { from, preset, velocity })` (channels `x` `y` `scale` `rotate` `opacity`; retargets a
+running spring from its analytic value and velocity), `flip(els, mutate)` / `flipFrom(els, prev)`,
+`timed(el, keyframes, ms, { startedAt })`, `stagger(i)`, `indicator(el)` (the key-repeat rule),
+`motionLevel()`, `springOf()`, `springValues()`. Springs are sampled at 60 Hz into linear WAAPI keyframes;
+finished animations write their end value inline and cancel, so nothing stays running. One transform channel
+per element (a spring on `y` and a FLIP on the same element overwrite each other).
+React (`nuikit-core/react`): `useSpring(ref, value, channel, preset)`, `useFlip(ref, deps)`,
+`useIndicator(listRef, indicatorRef, active)`. No React state is set while anything animates.
 
 ## Component tokens (1.1)
 

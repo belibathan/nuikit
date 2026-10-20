@@ -57,8 +57,8 @@ screen is the same size relative to the game at every resolution. Design at 1080
 4. **Numbers are tabular** (`nk-num`). Mono only for codes a player might type (plate, citizen ID).
 5. **Rows, not tiles,** for lists of actions: `nk-row`, 44px (× density), icon + label + trailing meta.
 6. **Keys** are shadcn `Kbd`, next to the action they trigger.
-7. **One motion.** Panels open with `nk-enter` (160ms fade). Nothing animates on its own
-   except things that are live (progress, timers, talking). Everything stops when `--nk-motion` is 0.
+7. **Motion with a purpose** ([Motion](#motion)). Panels open with `nk-enter`; nothing animates on its own
+   except things that are live (progress, timers, talking). Keyboard and controller state is instant.
 8. **HUD stays out of the way.** Always-on elements use `nk-chip` or bare text with a shadow, no
    panels, and sit on the `--nk-edge` margin.
 9. **Empty and error states** say what to do next in one sentence.
@@ -68,13 +68,45 @@ screen is the same size relative to the game at every resolution. Design at 1080
 
 `nk-panel` `nk-panel-header` `nk-panel-header-stack` `nk-panel-title-row` `nk-panel-body` `nk-panel-footer` ·
 `nk-title` `nk-display` `nk-label` `nk-num` · `nk-row` `nk-scroll` · `nk-field` `nk-field-label` ·
-`nk-chip` `nk-chip-active` `nk-hud` `nk-track` `nk-shadow` · `nk-edge` (`--nk-edge`) `nk-anchor-*` `nk-first-row` · `nk-enter`.
+`nk-chip` `nk-chip-active` `nk-hud` `nk-track` `nk-shadow` · `nk-edge` (`--nk-edge`) `nk-anchor-*` `nk-first-row` ·
+`nk-enter` `nk-rise` `nk-pop` `nk-stagger` `nk-press` `nk-skeleton` `nk-blink` `nk-indicator`.
 Defined once in `packages/create-nuikit/kit.css` and inlined into every synced `index.css`; never redefine an
 `nk-*` name locally. `nk-panel`'s depth is a `box-shadow`, so mark a selected panel with `outline`, not `ring-*`.
 
 Sizes are in rem (Tailwind's scale), never px, so they follow the resolution scale.
 Building or changing a registry component? The **[component contract](design/contract.md)** is the merge checklist:
 tokens, states, motion, controller focus, identity screenshots, registry metadata, and which items CI checks.
+
+## Motion
+
+Design v2 §5A. Tokens and the helper: [`tokens.md#motion-12`](tokens.md#motion-12). Proof: `bench/motion/results.md`.
+
+1. **Instant state.** Row highlight, tabs, toggles, checkboxes and focus driven by the keyboard or a controller
+   change with no transition (kit.css zeroes them, shadcn's included). Only pointer hover eases
+   (`--nk-time-hover`). Highlight locally first; the POST confirms.
+2. **One moving thing per list.** If selection should glide, use one `nk-indicator` behind the rows
+   (`useIndicator`), never transitions on the rows. Key-repeat: moves sooner than `--nk-time` apart glide in
+   `--nk-time-press`; from the third, it jumps, so it never trails a held d-pad.
+3. **Fast, and exits faster.** Use the ladder, never raw ms: press ≤ 100, panel `--nk-time`, exit
+   `--nk-time-exit`, full screen ≤ 400. Enter with `--nk-ease-out`, exit with `--nk-ease-in`, opacity only.
+4. **Transform and opacity only.** Never animate `width`, `height`, `top`, `left`, `margin`, `box-shadow`,
+   `filter`, `clip-path` or a CSS variable. No `transition: all` in new code. Meters move by `scaleX` or
+   `translateX`; needles and rings by `rotate`.
+5. **Chromium 103.** cubic-bezier only (no `linear()`), no `@starting-style`, no individual `translate` /
+   `scale` / `rotate` properties, nothing essential on `:has()`. Springs come from `nuikit-core/motion`
+   (sampled WAAPI keyframes), never a requestAnimationFrame loop.
+6. **Never on a centred dialog's own element** (its transform centres it): `nk-pop`, `nk-rise` and `nk-press` go
+   on an inner wrapper there. `nk-pop` handles its own `[data-state=closed]` exit; use it plain, not behind a
+   `data-[state=open]:` variant.
+7. **Stagger the first open only**, the first five items (`nk-stagger` + `--i`), never on updates, filtering or
+   navigation.
+8. **Zero cost when idle.** No infinite animation on an always-on surface: a threshold gets `nk-blink` (two
+   blinks), not a pulse. A finished animation leaves nothing running (`document.getAnimations()` is empty).
+   Timed runs are one animation for the whole run, and `onComplete` stays on a timer.
+9. **Reduced motion keeps meaning.** Under `data-nk-motion="reduced"` nothing moves and fades stay ≤ 100 ms;
+   colour still carries state. Progress still plays.
+10. **Identity, not code, sets the feel.** Signal snaps, Velvet glides, Vector steps: read the tokens and
+    `data-nk-feel`, never branch on the identity's name.
 Reference implementation: `systems/nuikit_pause`. The registry components (`panel`, `menu-row`, `stat`,
 `meter`, `hud-chip`, …) are these utilities with props; prefer them over the raw classes.
 

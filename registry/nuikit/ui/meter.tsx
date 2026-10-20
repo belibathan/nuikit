@@ -22,8 +22,11 @@ import { Progress } from "@/components/ui/progress"
  *   <Meter {...meterColor(option.colorScheme)} value={option.progress} />
  *
  * With `duration` the bar fills on its own over that many ms and `onComplete` fires from a timer
- * (never an animation event, so it still fires with motion off). Restart it with a new `key`. It
- * glides from tick to tick and reaches 100% exactly at `duration` (see timedStep()).
+ * (never an animation event, so it still fires with motion off). Restart it with a new `key`. The fill
+ * is one linear compositor animation (Web Animations, transform only) that reaches 100% exactly at
+ * `duration`: no React render while it runs. It plays at every motion level: progress is information.
+ *
+ * Fills move with transforms only (the bar translates, segments scale on X): never `width`.
  */
 const meterVariants = cva("min-w-0", {
   variants: {
@@ -162,60 +165,66 @@ function meterColor(input?: string | null): { tone?: MeterTone; color?: string }
   return {}
 }
 
-const STEP_MS = 100
-
 /**
- * Where a timed fill is drawn at `elapsed` ms of `duration`: one step ahead (clamped to
- * `duration`), reached by a linear transition of `ms`, so the bar lands on the true value at each
- * tick and on 100% exactly at `duration` (aiming at the current value would trail it by a step).
- * With motion off there is no transition: draw the true value.
+ * The keyframes of segment `i` of `count` in a timed run: empty until its share of the run starts,
+ * full when it ends (one linear run over the whole duration, so segments hand over exactly).
  */
-function timedStep(elapsed: number, duration: number, motion = true, step = STEP_MS) {
-  const e = Math.max(0, Math.min(duration, Number.isFinite(elapsed) ? elapsed : 0))
-  if (!motion) return { at: e, ms: 0 }
-  const at = Math.min(duration, e + step)
-  return { at, ms: at - e }
+function segmentKeyframes(i: number, count: number): Keyframe[] {
+  const n = Math.max(1, Math.floor(count))
+  const from = Math.max(0, Math.min(1, i / n))
+  const to = Math.max(0, Math.min(1, (i + 1) / n))
+  return [
+    { transform: "scaleX(0)", offset: 0 },
+    { transform: "scaleX(0)", offset: from },
+    { transform: "scaleX(1)", offset: to },
+    { transform: "scaleX(1)", offset: 1 },
+  ]
 }
 
-/** Transitions are off when the theme or the player turned motion off (kit.css). */
-const motionOn = () => typeof document === "undefined" || document.documentElement.getAttribute("data-nk-motion") !== "off"
+/** The bar's keyframes in a timed run: shadcn Progress draws a level by translating its fill. */
+const BAR_KEYFRAMES: Keyframe[] = [{ transform: "translateX(-100%)" }, { transform: "translateX(0%)" }]
 
 /**
- * A `duration` run, ticking every STEP_MS: the true elapsed ms, and where to draw it (timedStep).
- * `onComplete` once from its own timer.
+ * A `duration` run from mount: one linear Web Animation per fill (found in `root` by `selector`), all
+ * started on the same clock reading so they reach the end exactly at `duration`. React renders twice:
+ * at the start and at the end, when `onComplete` fires from its own timer (never an animation event).
  */
-function useTimedFill(duration: number | undefined, onComplete?: () => void) {
-  const [state, setState] = React.useState({ elapsed: 0, at: 0, ms: 0 })
-  const done = React.useRef(onComplete)
+function useTimedFill(root: React.RefObject<HTMLElement | null>, duration: number | undefined, frames: (i: number, count: number) => Keyframe[], selector: string, onComplete?: () => void) {
+  const [done, setDone] = React.useState(false)
+  const complete = React.useRef(onComplete)
+  const anims = React.useRef<Animation[]>([])
   React.useEffect(() => {
-    done.current = onComplete
+    complete.current = onComplete
   })
-  React.useEffect(() => {
+  React.useLayoutEffect(() => {
     if (!duration || duration <= 0) return
-    const start = Date.now()
-    const update = () => {
-      const elapsed = Math.min(duration, Date.now() - start)
-      setState({ elapsed, ...timedStep(elapsed, duration, motionOn()) })
-      return elapsed
-    }
-    setState({ elapsed: 0, at: 0, ms: 0 })
-    // The first frame draws 0; from the next, aim a step ahead.
-    const first = requestAnimationFrame(update)
-    const tick = setInterval(() => {
-      if (update() >= duration) clearInterval(tick)
-    }, STEP_MS)
-    // Full at duration in every mode (with motion off the last tick can land just after it).
+    setDone(false)
+    const t0 = performance.now()
+    const els = Array.from(root.current?.querySelectorAll<HTMLElement>(selector) ?? [])
+    anims.current = els.flatMap((el, i) => {
+      if (!el.animate) return []
+      const a = el.animate(frames(i, els.length), { duration, easing: "linear", fill: "both" })
+      a.startTime = t0 // the document timeline's clock: full exactly at t0 + duration
+      return [a]
+    })
     const end = setTimeout(() => {
-      setState({ elapsed: duration, at: duration, ms: 0 })
-      done.current?.()
+      setDone(true)
+      complete.current?.()
     }, duration)
     return () => {
-      cancelAnimationFrame(first)
-      clearInterval(tick)
       clearTimeout(end)
+      anims.current.forEach((a) => a.cancel())
+      anims.current = []
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [duration])
-  return state
+  // At the end the fills are drawn full by React (value 100); the animations are let go, so nothing is left running.
+  React.useLayoutEffect(() => {
+    if (!done) return
+    anims.current.forEach((a) => a.cancel())
+    anims.current = []
+  }, [done])
+  return done
 }
 
 function Meter({
@@ -264,33 +273,37 @@ function Meter({
     /** With `duration`: called once when the time is up, from a timer. */
     onComplete?: () => void
   }) {
-  const run = useTimedFill(duration, onComplete)
+  const root = React.useRef<HTMLDivElement>(null)
+  const segmented = !!segments && segments > 1
+  const done = useTimedFill(
+    root,
+    duration,
+    segmented ? segmentKeyframes : () => BAR_KEYFRAMES,
+    segmented ? "[data-slot=meter-fill]" : "[data-slot=progress-indicator]",
+    onComplete
+  )
   const timed = duration !== undefined && duration > 0
-  const value = timed ? run.elapsed : valueProp
+  const value = timed ? (done ? duration : 0) : valueProp
   const max = timed ? duration : maxProp
   const { percent, level } = meterLevel(value, { max, low, high })
-  // What the bar draws: timed runs aim a step ahead (timedStep); aria and thresholds keep the true value.
-  const drawn = timed ? meterLevel(run.at, { max }).percent : percent
+  const drawn = percent
   const critical = level !== "normal"
   const custom = !!color && !critical
   const t = custom ? CUSTOM : TONES[critical ? "destructive" : tone] ?? TONES.primary
   const trackClass = track === "game" ? "bg-scrim/35" : t.track
   const fillClass = custom ? CUSTOM_FILL : FILL[critical ? "destructive" : tone] ?? FILL.primary
-  // Timed: each step glides linearly onto the value it will be at the next tick, in --meter-step
-  // (the time until then); with motion off kit.css zeroes it and timedStep draws the true value.
-  const timedClass =
-    timed && "[&_[data-slot=progress-indicator]]:duration-(--meter-step) [&_[data-slot=progress-indicator]]:ease-linear"
+  // Timed: the animation draws the fill; React only sets the end state, with no transition.
+  const timedClass = timed && "[&_[data-slot=progress-indicator]]:transition-none"
   const rootStyle = {
     ...style,
     ...(custom && { "--meter-fill": color }),
-    ...(timed && { "--meter-step": `${run.ms}ms` }),
   } as React.CSSProperties
   const stacked = label !== undefined || valueText !== undefined
   // flex-1 only beside an icon: in the stacked column it would collapse the bar's height to 0
   const grow = stacked ? "w-full" : "flex-1"
 
   const bar =
-    segments && segments > 1 ? (
+    segmented ? (
       <div
         role="progressbar"
         aria-valuemin={0}
@@ -301,7 +314,12 @@ function Meter({
       >
         {segmentFills(drawn, segments).map((fill, i) => (
           <div key={i} data-slot="meter-segment" className={cn("relative h-(--meter-h) flex-1 overflow-hidden rounded-full", trackClass)}>
-            <div className={cn("h-full transition-[width]", t.fill, timed && "duration-(--meter-step) ease-linear")} style={{ width: `${fill}%` }} />
+            {/* scaleX, never width: the compositor moves it, nothing is laid out again */}
+            <div
+              data-slot="meter-fill"
+              className={cn("h-full w-full origin-left", t.fill, timed ? "transition-none" : "transition-transform ease-out")}
+              style={{ transform: `scaleX(${fill / 100})` }}
+            />
           </div>
         ))}
       </div>
@@ -319,7 +337,7 @@ function Meter({
   const iconEl = icon && (
     <span
       data-slot="meter-icon"
-      className={cn("flex shrink-0 [&_svg:not([class*='size-'])]:size-4", t.text, critical && "animate-pulse")}
+      className={cn("flex shrink-0 [&_svg:not([class*='size-'])]:size-4", t.text, critical && "nk-blink")}
     >
       {icon}
     </span>
@@ -331,6 +349,7 @@ function Meter({
       data-level={level}
       data-complete={(timed && percent >= 100) || undefined}
       className={cn(meterVariants({ size }), stacked ? "flex flex-col gap-1.5" : "flex items-center gap-2", className)}
+      ref={root}
       style={rootStyle}
       {...props}
     >
@@ -355,4 +374,4 @@ function Meter({
   )
 }
 
-export { Meter, meterVariants, meterLevel, segmentFills, meterColor, timedStep, type MeterTone, type MeterLevel }
+export { Meter, meterVariants, meterLevel, segmentFills, meterColor, segmentKeyframes, type MeterTone, type MeterLevel }
