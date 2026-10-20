@@ -1,0 +1,10 @@
+{
+  "block": "interaction",
+  "title": "Interaction",
+  "description": "A target eye with the options of what you aim at, and [E] key prompts near places; server options checked by the server",
+  "next": [
+    "hold Left Alt and aim at a car, then click; walk into the 24/7 on Innocence Blvd for the prompts",
+    "running ox_target or qb-target? they use Left Alt too: change Config.key",
+    "options and points marked server = true need OneSync"
+  ]
+}

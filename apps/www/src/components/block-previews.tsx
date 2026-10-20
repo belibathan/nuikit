@@ -8,6 +8,8 @@ import { deathScreenFixtures } from "@/blocks/death-screen/fixtures";
 import { HudMinimal } from "@/blocks/hud-minimal/hud-minimal";
 import { jobMenuFixtures } from "@/blocks/job-menu/fixtures";
 import { JobMenu } from "@/blocks/job-menu/job-menu";
+import { interactionFixtures, type InteractionScene } from "@/blocks/interaction/fixtures";
+import { Prompts, Target } from "@/blocks/interaction/interaction";
 import { hudMinimalFixtures } from "@/blocks/hud-minimal/fixtures";
 import { LoadingScreen } from "@/blocks/loading-screen/loading-screen";
 import { loadingHandovers, loadStateAt } from "@/blocks/loading-screen/fixtures";
@@ -129,7 +131,27 @@ export const BLOCKS: BlockPreview[] = [
       Refused: () => <JobMenu data={jobMenuFixtures.boss} defaultTab="staff" autoFocus={false} onRequest={async () => ({ ok: false, error: "Only the boss can do that." })} />,
     },
   },
+  {
+    name: "interaction",
+    title: "Interaction",
+    description: "The target eye with the options of what the player aims at, chosen with the cursor or the scroll wheel, and key prompts near places with press or hold. Lua does the raycast and reads the keys; the server checks anything that matters.",
+    states: {
+      Vehicle: () => <InteractionStill scene={interactionFixtures.vehicle} />,
+      Choosing: () => <InteractionStill scene={interactionFixtures.picking} />,
+      "Hold a key": () => <InteractionStill scene={interactionFixtures.hold} />,
+      Idle: () => <InteractionStill scene={interactionFixtures.idle} />,
+    },
+  },
 ];
+
+function InteractionStill({ scene }: { scene: InteractionScene }) {
+  return (
+    <>
+      {scene.prompts && <Prompts data={scene.prompts} />}
+      {scene.target && <Target data={scene.target} autoFocus={false} onSelect={async () => ({ ok: true })} />}
+    </>
+  );
+}
 
 function SettingsStill({ data }: { data: (typeof settingsFixtures)[keyof typeof settingsFixtures] }) {
   return (
