@@ -374,6 +374,23 @@
         "class-variance-authority",
         "lucide-react"
       ]
+    },
+    {
+      "name": "player-card",
+      "type": "registry:ui",
+      "title": "Player card",
+      "description": "Who someone is at a glance: avatar or initials, name, job and grade with an on/off duty dot and the words, a grid of stats (mono for codes), and footer actions. On the panel recipe.",
+      "files": [
+        {
+          "path": "registry/nuikit/ui/player-card.tsx",
+          "type": "registry:ui"
+        }
+      ],
+      "registryDependencies": [
+        "avatar",
+        "https://nuikit.vercel.app/r/panel.json",
+        "https://nuikit.vercel.app/r/stat.json"
+      ]
     }
   ]
 }
