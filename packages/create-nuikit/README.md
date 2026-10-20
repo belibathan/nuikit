@@ -39,6 +39,7 @@ npm create nuikit@latest my-death -- -t death-screen
 | `job-menu` | Duty toggle and job actions; for bosses, staff with promote, demote, fire and hire, checked by the server |
 | `interaction` | A target eye with the options of what you aim at, and [E] key prompts near places, press or hold |
 | `shop` | A catalogue by category, a cart and checkout with a confirm; prices, stock and money checked by the server. Needs OneSync |
+| `inventory` | Your pockets and a stash side by side: drag, split, stack, swap, use, a hotbar; every move checked by the server |
 
 Without `-t` you get the demo (a HUD, a menu and a confirm dialog), or pick from a list.
 
