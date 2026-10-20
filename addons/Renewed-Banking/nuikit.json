@@ -22,6 +22,10 @@
     "tabs",
     "textarea",
     "toggle",
-    "toggle-group"
+    "toggle-group",
+    "checkbox",
+    "panel",
+    "menu-row",
+    "stat"
   ]
 }
