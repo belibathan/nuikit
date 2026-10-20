@@ -391,6 +391,25 @@
         "https://nuikit.vercel.app/r/panel.json",
         "https://nuikit.vercel.app/r/stat.json"
       ]
+    },
+    {
+      "name": "empty-state",
+      "type": "registry:ui",
+      "title": "Empty state",
+      "description": "When there's nothing to show or something went wrong: an icon, a short title, one sentence on what to do next, optional actions. Stock shadcn Empty on the kit's scale; empty or error tone; panel or screen size.",
+      "files": [
+        {
+          "path": "registry/nuikit/ui/empty-state.tsx",
+          "type": "registry:ui"
+        }
+      ],
+      "dependencies": [
+        "class-variance-authority",
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "empty"
+      ]
     }
   ]
 }
