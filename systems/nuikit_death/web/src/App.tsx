@@ -1,6 +1,6 @@
-import { Surface } from "nuikit-core/react";
+import { Surface, useFollow } from "nuikit-core/react";
 import { CheckIcon, HeartPulseIcon } from "lucide-react";
-import type { ReactNode } from "react";
+import { useRef, type ReactNode } from "react";
 import type { DeathData } from "./nui";
 import { Kbd } from "@/components/ui/kbd";
 import { Meter } from "@/components/ui/meter";
@@ -104,10 +104,7 @@ function Hints({ data }: { data: DeathData }) {
 
       {respawn ? (
         respawn.available ? (
-          <div className="flex flex-col gap-2">
-            <Hint kbd={respawn.key} label="Hold to respawn" meta={respawn.cost ? money.format(respawn.cost) : undefined} />
-            <Meter value={respawn.progress ?? 0} max={1} size="sm" tone="foreground" aria-label="Respawn hold" className="w-full" />
-          </div>
+          <HoldToRespawn kbd={respawn.key} cost={respawn.cost} />
         ) : (
           <Hint
             kbd={respawn.key}
@@ -117,6 +114,35 @@ function Hints({ data }: { data: DeathData }) {
           />
         )
       ) : null}
+    </div>
+  );
+}
+
+/**
+ * "Hold E to respawn" and its bar. The bar follows death:hold, a live value (NUI.stream) of how long
+ * E has been held against how long the medical resource needs: painted on animation frames between
+ * messages, without a React render, so it moves smoothly. React keeps the Meter at 0 and never
+ * overwrites the painted width.
+ */
+function HoldToRespawn({ kbd, cost }: { kbd: string; cost?: number }) {
+  const root = useRef<HTMLDivElement>(null);
+  useFollow(
+    "death:hold",
+    (v) => {
+      const p = Math.max(0, Math.min(1, v)) * 100;
+      const bar = root.current?.querySelector<HTMLElement>('[data-slot="progress-indicator"]');
+      if (bar) {
+        bar.style.transition = "none";
+        bar.style.transform = `translateX(-${100 - p}%)`;
+      }
+      root.current?.querySelector('[role="progressbar"]')?.setAttribute("aria-valuenow", String(Math.round(p)));
+    },
+    { start: 0 },
+  );
+  return (
+    <div ref={root} className="flex flex-col gap-2">
+      <Hint kbd={kbd} label="Hold to respawn" meta={cost ? money.format(cost) : undefined} />
+      <Meter value={0} max={1} size="sm" tone="foreground" aria-label="Respawn hold" className="w-full" />
     </div>
   );
 }
