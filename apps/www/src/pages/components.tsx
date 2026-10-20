@@ -238,7 +238,9 @@ export function ComponentsPage() {
           name="key-prompt"
           title="Key prompt"
           text="The key and what it does, near what the player can use. One or several, a combination, hold-to-confirm with a line that fills, the active one, a locked one with a reason. On a panel or on the HUD. In game the key is read in Lua; the hold arrives as progress."
-          stageClassName="min-h-[32rem] items-center"
+          // The stage is smaller than a screen: anchor 2.5rem in (not the in-game 1.5rem) so the
+          // edge rows have room inside its rounded border.
+          stageClassName="min-h-[34rem] items-center [--nk-edge:2.5rem]"
         >
           <KeyPromptStates />
           <KeyPromptDemo />

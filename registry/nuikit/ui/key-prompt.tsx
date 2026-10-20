@@ -65,20 +65,26 @@ function parseKeyText(text: string): { keys: string[]; label: string } {
   return label ? { keys, label } : { keys: [], label: text.trim() }
 }
 
-/** Run a hold: start/stop it, and get its progress every frame while it runs. */
-function useHold(duration: number | undefined, onComplete?: () => void) {
-  const [progress, setProgress] = React.useState(0)
+/**
+ * Run a hold: start/stop it. Each frame calls `onFrame(progress)` (draw it straight onto an
+ * element, no re-render); React state only changes when the hold starts and stops.
+ */
+function useHold(duration: number | undefined, onComplete?: () => void, onFrame?: (progress: number) => void) {
+  const [holding, setHolding] = React.useState(false)
   const done = React.useRef(onComplete)
+  const draw = React.useRef(onFrame)
   const frame = React.useRef(0)
   const started = React.useRef(0)
   React.useEffect(() => {
     done.current = onComplete
+    draw.current = onFrame
   })
 
   const stop = React.useCallback(() => {
     cancelAnimationFrame(frame.current)
     started.current = 0
-    setProgress(0)
+    draw.current?.(0)
+    setHolding(false)
   }, [])
 
   const start = React.useCallback(() => {
@@ -88,12 +94,14 @@ function useHold(duration: number | undefined, onComplete?: () => void) {
       return
     }
     started.current = performance.now()
+    setHolding(true)
     const tick = () => {
       const p = holdProgress(performance.now() - started.current, duration)
-      setProgress(p)
+      draw.current?.(p)
       if (p >= 1) {
         started.current = 0
-        setProgress(0)
+        draw.current?.(0)
+        setHolding(false)
         done.current?.()
         return
       }
@@ -103,7 +111,7 @@ function useHold(duration: number | undefined, onComplete?: () => void) {
   }, [duration])
 
   React.useEffect(() => () => cancelAnimationFrame(frame.current), [])
-  return { progress, holding: progress > 0, start, stop }
+  return { holding, start, stop }
 }
 
 function isTyping(e: KeyboardEvent) {
@@ -155,8 +163,13 @@ function KeyPrompt({
   ...props
 }: KeyPromptProps) {
   const list = typeof keys === "string" ? [keys] : [...keys]
-  const internal = useHold(hold, onConfirm)
-  const p = progress !== undefined ? holdProgress(progress, 1) : internal.progress
+  const line = React.useRef<HTMLSpanElement>(null)
+  const internal = useHold(hold, onConfirm, (n) => {
+    if (line.current) line.current.style.transform = `scaleX(${n})`
+  })
+  const controlled = progress !== undefined
+  const p = controlled ? holdProgress(progress, 1) : 0
+  const holding = controlled ? p > 0 : internal.holding
   const interactive = !!onConfirm && !disabled
   const bind = typeof listen === "string" ? listen : listen ? list[0] : undefined
 
@@ -204,7 +217,7 @@ function KeyPrompt({
       data-slot="key-prompt"
       data-active={active || undefined}
       data-disabled={disabled || undefined}
-      data-holding={p > 0 || undefined}
+      data-holding={holding || undefined}
       className={cn(
         keyPromptVariants({ surface, size }),
         active && "outline-2 -outline-offset-1 outline-primary",
@@ -251,9 +264,12 @@ function KeyPrompt({
       </span>
       {hold !== undefined && (
         <span
+          ref={line}
           aria-hidden
           data-slot="key-prompt-hold"
           className="absolute inset-x-0 bottom-0 h-0.5 origin-left bg-primary"
+          // Controlled: from props. Internal: the hold draws on this element each frame; the
+          // constant here never changes, so React leaves that drawing alone.
           style={{ transform: `scaleX(${p})` }}
         />
       )}
