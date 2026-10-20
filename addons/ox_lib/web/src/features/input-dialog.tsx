@@ -1,19 +1,23 @@
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
-import { CalendarIcon, EyeIcon, EyeOffIcon, XIcon } from "lucide-react";
+import { CalendarIcon, XIcon } from "lucide-react";
 import { useRef, useState, type FormEvent, type ReactNode } from "react";
 import type { DateRange } from "react-day-picker";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { DatePicker } from "@/features/date-picker";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
+import {
+  CheckboxField,
+  ColorField,
+  FormField,
+  NumberField,
+  SelectField,
+  SliderField,
+  TextField,
+} from "@/components/ui/form-field";
 import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Slider } from "@/components/ui/slider";
-import { Textarea } from "@/components/ui/textarea";
 import { Icon } from "@/lib/icon";
 import { useLocale } from "@/lib/locale";
 import { post, useOx } from "@/lib/nui";
@@ -136,14 +140,34 @@ function output(row: Row, v: any): unknown {
 const empty = (row: Row, v: any) =>
   row.type === "checkbox" ? !v : row.type === "date-range" ? !v?.[0] || !v?.[1] : v === null || v === undefined || v === "" || (Array.isArray(v) && v.length === 0);
 
-/** ox_lib's input dialog (lib.inputDialog). Protocol: docs/ox-lib-protocol.md §7. */
+/** Why a row can't be submitted, in one sentence (design.md rule 9), or undefined. */
+function problem(row: Row, v: any): string | undefined {
+  if (row.required && empty(row, v)) return row.type === "checkbox" ? "Tick this to continue." : "Fill this in to continue.";
+  if (row.type === "number" && v !== null && v !== "" && v !== undefined) {
+    const n = Number(v);
+    const lo = row.min !== undefined ? Number(row.min) : undefined;
+    const hi = row.max !== undefined ? Number(row.max) : undefined;
+    if ((lo !== undefined && n < lo) || (hi !== undefined && n > hi)) {
+      return lo !== undefined && hi !== undefined ? `Enter a number from ${lo} to ${hi}.` : lo !== undefined ? `Enter ${lo} or more.` : `Enter ${hi} or less.`;
+    }
+  }
+  if (row.type === "date" && v) {
+    const day = dayjs(v).startOf("day");
+    const lo = toDate(row.min);
+    const hi = toDate(row.max);
+    if ((lo && day.isBefore(dayjs(lo).startOf("day"))) || (hi && day.isAfter(dayjs(hi).startOf("day")))) return "Pick a date in the allowed range.";
+  }
+  return undefined;
+}
+
+/** ox_lib's input dialog (lib.inputDialog), its rows drawn with the kit's form-field presets. Protocol: docs/ox-lib-protocol.md §7. */
 export function InputDialog() {
   const locale = useLocale();
   const [data, setData] = useState<DialogData | null>(null);
   const [rows, setRows] = useState<Row[]>([]);
   const [values, setValues] = useState<any[]>([]);
   const [open, setOpen] = useState(false);
-  const [invalid, setInvalid] = useState<Set<number>>(new Set());
+  const [errors, setErrors] = useState<Record<number, string>>({});
   const pending = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   useOx<DialogData>("openDialog", (d) => {
@@ -151,7 +175,7 @@ export function InputDialog() {
     const normalized = (d.rows ?? []).map((r) => (typeof r === "string" ? ({ type: "input", label: r } as Row) : r));
     setRows(normalized);
     setValues(normalized.map(initial));
-    setInvalid(new Set());
+    setErrors({});
     setData(d);
     setOpen(true);
   });
@@ -170,30 +194,24 @@ export function InputDialog() {
 
   const submit = (e?: FormEvent) => {
     e?.preventDefault();
-    const bad = new Set<number>();
+    const bad: Record<number, string> = {};
     rows.forEach((row, i) => {
-      const v = values[i];
-      if (row.required && empty(row, v)) bad.add(i);
-      if (row.type === "number" && v !== null && v !== "") {
-        if (row.min !== undefined && Number(v) < Number(row.min)) bad.add(i);
-        if (row.max !== undefined && Number(v) > Number(row.max)) bad.add(i);
-      }
-      // §7.3 also bounds dates (min/max date strings).
-      if (row.type === "date" && v) {
-        const day = dayjs(v).startOf("day");
-        const lo = toDate(row.min);
-        const hi = toDate(row.max);
-        if ((lo && day.isBefore(dayjs(lo).startOf("day"))) || (hi && day.isAfter(dayjs(hi).startOf("day")))) bad.add(i);
-      }
+      const p = problem(row, values[i]);
+      if (p) bad[i] = p;
     });
-    setInvalid(bad);
-    if (bad.size) return;
+    setErrors(bad);
+    if (Object.keys(bad).length) return;
     finish(rows.map((row, i) => output(row, values[i])));
   };
 
   const set = (i: number, v: any) => {
     setValues((all) => all.map((x, j) => (j === i ? v : x)));
-    setInvalid((s) => (s.has(i) ? new Set([...s].filter((x) => x !== i)) : s));
+    setErrors((s) => {
+      if (!(i in s)) return s;
+      const next = { ...s };
+      delete next[i];
+      return next;
+    });
   };
 
   if (!data) return null;
@@ -215,11 +233,11 @@ export function InputDialog() {
         </DialogHeader>
         {/* noValidate: the browser's own checks (a number off its `step`, e.g. 12.345 with precision 2)
             silently blocked the submit. ox_lib rounds to `precision` and checks only required and
-            min/max (§7.3), which submit() does. */}
+            min/max (§7.3), which problem() does. */}
         <form noValidate onSubmit={submit} className="flex min-h-0 flex-col">
           <div className="flex max-h-[70vh] flex-col gap-4 overflow-y-auto p-4">
             {rows.map((row, i) => (
-              <RowField key={i} row={row} value={values[i]} invalid={invalid.has(i)} onChange={(v) => set(i, v)} />
+              <RowField key={i} row={row} value={values[i]} error={errors[i]} onChange={(v) => set(i, v)} />
             ))}
           </div>
           <DialogFooter className="nk-panel-footer">
@@ -234,270 +252,182 @@ export function InputDialog() {
   );
 }
 
-function Label({ row, children }: { row: Row; children?: ReactNode }) {
-  if (!row.label && !children) return null;
-  return (
-    <FieldLabel className="gap-1">
-      {row.label}
-      {row.required && <span className="text-muted-foreground">*</span>}
-      {children}
-    </FieldLabel>
-  );
-}
+/**
+ * One dialog row as the kit's form-field preset for its type (the `input` intent's renderer).
+ * Values stay in this file's shapes (initial/output above), so what Lua receives is unchanged.
+ * date-range and time have no preset yet and keep their own controls inside a FormField row.
+ */
+function RowField({ row, value, error, onChange }: { row: Row; value: any; error?: string; onChange: (v: any) => void }) {
+  const icon = row.icon ? <Icon icon={row.icon} className="size-4" /> : undefined;
+  const base = { label: row.label, description: row.description, error, required: row.required, disabled: row.disabled };
 
-function RowField({ row, value, invalid, onChange }: { row: Row; value: any; invalid: boolean; onChange: (v: any) => void }) {
-  const [reveal, setReveal] = useState(false);
-  const icon = row.icon ? <Icon icon={row.icon} className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" /> : null;
-  const pad = row.icon ? "pl-9" : undefined;
-  const common = { disabled: row.disabled, "aria-invalid": invalid || undefined } as const;
-
-  let control: ReactNode;
   switch (row.type) {
     case "input":
-      control = (
-        <div className="relative">
-          {icon}
-          <Input
-            {...common}
-            type={row.password && !reveal ? "password" : "text"}
-            placeholder={row.placeholder}
-            minLength={row.min as number | undefined}
-            maxLength={row.max as number | undefined}
-            value={value ?? ""}
-            onChange={(e) => onChange(e.target.value)}
-            className={cn(pad, row.password && "pr-9")}
-          />
-          {row.password && (
-            <button type="button" tabIndex={-1} onClick={() => setReveal((r) => !r)} className="absolute top-1/2 right-2.5 -translate-y-1/2 text-muted-foreground">
-              {reveal ? <EyeOffIcon className="size-4" /> : <EyeIcon className="size-4" />}
-            </button>
-          )}
-        </div>
-      );
-      break;
-    case "textarea":
-      control = (
-        <Textarea
-          {...common}
+      return (
+        <TextField
+          {...base}
+          icon={icon}
+          password={row.password}
           placeholder={row.placeholder}
+          minLength={row.min as number | undefined}
+          maxLength={row.max as number | undefined}
+          value={value ?? ""}
+          onValueChange={onChange}
+        />
+      );
+    case "textarea":
+      return (
+        <TextField
+          {...base}
+          multiline
           rows={(row.min as number) ?? 2}
+          placeholder={row.placeholder}
           minLength={row.minLength}
           maxLength={row.maxLength}
           value={value ?? ""}
-          onChange={(e) => onChange(e.target.value)}
-          className={cn(!row.autosize && "field-sizing-fixed")}
+          onValueChange={onChange}
         />
       );
-      break;
     case "number":
-      control = (
-        <div className="relative">
-          {icon}
-          <Input
-            {...common}
-            type="number"
-            placeholder={row.placeholder}
-            min={row.min as number | undefined}
-            max={row.max as number | undefined}
-            step={row.step ?? (row.precision ? 1 / 10 ** row.precision : 1)}
-            value={value ?? ""}
-            onChange={(e) => onChange(e.target.value === "" ? null : e.target.value)}
-            className={pad}
-          />
-        </div>
-      );
-      break;
-    case "checkbox":
       return (
-        <Field orientation="horizontal" data-invalid={invalid || undefined}>
-          <Checkbox {...common} checked={Boolean(value)} onCheckedChange={(c) => onChange(c === true)} />
-          <Label row={row} />
-        </Field>
-      );
-    case "select":
-      control = (
-        <div className="flex gap-1.5">
-          <Select disabled={row.disabled} value={value ?? ""} onValueChange={onChange}>
-            <SelectTrigger className="w-full" aria-invalid={invalid || undefined}>
-              <SelectValue placeholder={row.placeholder} />
-            </SelectTrigger>
-            <SelectContent>
-              {(row.options ?? []).map((o) => (
-                <SelectItem key={o.value} value={o.value}>
-                  {o.label ?? o.value}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          {row.clearable && value && (
-            <Button type="button" variant="ghost" size="icon" onClick={() => onChange(null)} aria-label="Clear">
-              <XIcon />
-            </Button>
-          )}
-        </div>
-      );
-      break;
-    case "multi-select": {
-      const selected: string[] = value ?? [];
-      const max = row.maxSelectedValues;
-      const label = selected.length ? selected.map((v) => row.options?.find((o) => o.value === v)?.label ?? v).join(", ") : row.placeholder;
-      control = (
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button type="button" variant="outline" disabled={row.disabled} aria-invalid={invalid || undefined} className={cn("w-full justify-start font-normal", !selected.length && "text-muted-foreground")}>
-              <span className="truncate">{label || " "}</span>
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-(--radix-popover-trigger-width) p-1">
-            {(row.options ?? []).map((o) => {
-              const on = selected.includes(o.value);
-              const full = max !== undefined && selected.length >= max && !on;
-              return (
-                <label key={o.value} className={cn("flex items-center gap-2 rounded-sm px-2 py-1.5 text-sm hover:bg-accent", full && "opacity-50")}>
-                  <Checkbox checked={on} disabled={full} onCheckedChange={(c) => onChange(c ? [...selected, o.value] : selected.filter((v) => v !== o.value))} />
-                  {o.label ?? o.value}
-                </label>
-              );
-            })}
-          </PopoverContent>
-        </Popover>
-      );
-      break;
-    }
-    case "slider": {
-      const min = Number(row.min ?? 0);
-      const max = Number(row.max ?? 100);
-      control = (
-        <div className="flex h-5 items-center">
-          <Slider disabled={row.disabled} min={min} max={max} step={row.step ?? 1} value={[Number(value)]} onValueChange={([v]) => onChange(v)} />
-        </div>
-      );
-      return (
-        <Field data-invalid={invalid || undefined} className="gap-2">
-          <div className="flex items-center justify-between gap-3">
-            <Label row={row} />
-            <span className="nk-num text-sm text-muted-foreground">{value}</span>
-          </div>
-          {control}
-          {row.description && <FieldDescription>{row.description}</FieldDescription>}
-        </Field>
-      );
-    }
-    case "color":
-      control = (
-        <div className="relative flex items-center gap-2">
-          <input
-            type="color"
-            disabled={row.disabled}
-            // nuikit-ignore-next-line color/hardcoded: <input type=color> needs a hex value when the field is empty
-            value={toHex(value) ?? "#000000"}
-            onChange={(e) => onChange(e.target.value)}
-            className="ox-swatch size-9 shrink-0 cursor-pointer rounded-md border bg-transparent p-1.5"
-          />
-          <Input {...common} readOnly placeholder={row.placeholder} value={value ? formatColor(value, row.format) : ""} />
-        </div>
-      );
-      break;
-    case "date": {
-      const minD = toDate(row.min);
-      const maxD = toDate(row.max);
-      control = (
-        <DatePicker
-          value={(value as Date | null) ?? null}
-          onChange={onChange}
-          format={row.format ?? "DD/MM/YYYY"}
-          min={minD}
-          max={maxD}
-          disabled={row.disabled}
-          invalid={invalid}
-          clearable={
-            row.clearable && value ? (
-              <Button type="button" variant="ghost" size="icon" onClick={() => onChange(null)} aria-label="Clear">
-                <XIcon />
-              </Button>
-            ) : undefined
-          }
+        <NumberField
+          {...base}
+          icon={icon}
+          placeholder={row.placeholder}
+          min={row.min as number | undefined}
+          max={row.max as number | undefined}
+          step={row.step ?? (row.precision ? 1 / 10 ** row.precision : 1)}
+          value={value === null || value === "" || value === undefined ? null : Number(value)}
+          onValueChange={onChange}
         />
       );
-      break;
-    }
-    case "date-range": {
-      const range = true;
-      const fmt = row.format ?? "DD/MM/YYYY";
-      const minD = toDate(row.min);
-      const maxD = toDate(row.max);
-      const disabled = [...(minD ? [{ before: minD }] : []), ...(maxD ? [{ after: maxD }] : [])];
-      const text = range
-        ? value?.[0]
-          ? `${dayjs(value[0]).format(fmt)} – ${value[1] ? dayjs(value[1]).format(fmt) : ""}`
-          : ""
-        : value
-          ? dayjs(value).format(fmt)
-          : "";
-      control = (
-        <div className="flex gap-1.5">
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button type="button" variant="outline" disabled={row.disabled} aria-invalid={invalid || undefined} className={cn("w-full justify-start font-normal", !text && "text-muted-foreground")}>
-                <CalendarIcon />
-                {text || fmt}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0">
-              {range ? (
-                <Calendar
-                  mode="range"
-                  selected={{ from: value?.[0] ?? undefined, to: value?.[1] ?? undefined }}
-                  onSelect={(r: DateRange | undefined) => onChange([r?.from ?? null, r?.to ?? null])}
-                  disabled={disabled}
-                />
-              ) : (
-                <Calendar mode="single" selected={value ?? undefined} onSelect={(d: Date | undefined) => onChange(d ?? null)} disabled={disabled} />
-              )}
-            </PopoverContent>
-          </Popover>
-          {row.clearable && (range ? value?.[0] : value) && (
-            <Button type="button" variant="ghost" size="icon" onClick={() => onChange(range ? [null, null] : null)} aria-label="Clear">
-              <XIcon />
-            </Button>
-          )}
-        </div>
+    case "checkbox":
+      return <CheckboxField {...base} checked={Boolean(value)} onCheckedChange={onChange} />;
+    case "select":
+      return (
+        <SelectField
+          {...base}
+          options={row.options ?? []}
+          placeholder={row.placeholder}
+          clearable={row.clearable}
+          value={value ?? null}
+          onValueChange={onChange}
+        />
       );
-      break;
-    }
-    case "time": {
-      const d = value as Date | null;
-      const hhmm = d ? `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}` : "";
-      control = (
-        <div className="relative">
-          {icon}
-          <Input
-            {...common}
-            type="time"
-            value={hhmm}
-            onChange={(e) => {
-              if (!e.target.value) return onChange(row.clearable ? null : value);
-              const [h, m] = e.target.value.split(":").map(Number);
-              const next = new Date();
-              next.setHours(h ?? 0, m ?? 0, 0, 0);
-              onChange(next);
-            }}
-            className={pad}
+    case "multi-select":
+      return (
+        <SelectField
+          {...base}
+          multiple
+          options={row.options ?? []}
+          placeholder={row.placeholder}
+          clearable={row.clearable}
+          maxSelected={row.maxSelectedValues}
+          value={value ?? []}
+          onValueChange={onChange}
+        />
+      );
+    case "slider":
+      return <SliderField {...base} min={Number(row.min ?? 0)} max={Number(row.max ?? 100)} step={row.step ?? 1} value={Number(value)} onValueChange={onChange} />;
+    case "color":
+      // The field holds "#rrggbb"; output() turns it into the row's format when posting.
+      return <ColorField {...base} placeholder={row.placeholder} value={toHex(value)} onValueChange={onChange} />;
+    case "date":
+      // form-field's DateField types the date in parts but has no calendar yet: the picker with
+      // year and decade levels (#46, from the 0.6.1 test) stays until it has one (Requests).
+      return (
+        <FormField {...base}>
+          <DatePicker
+            value={(value as Date | null) ?? null}
+            onChange={onChange}
+            format={row.format ?? "DD/MM/YYYY"}
+            min={toDate(row.min)}
+            max={toDate(row.max)}
+            disabled={row.disabled}
+            invalid={Boolean(error)}
+            clearable={
+              row.clearable && value ? (
+                <Button type="button" variant="ghost" size="icon" onClick={() => onChange(null)} aria-label="Clear">
+                  <XIcon />
+                </Button>
+              ) : undefined
+            }
           />
-        </div>
+        </FormField>
       );
-      break;
-    }
+    case "date-range":
+      return (
+        <FormField {...base}>
+          <DateRangeControl row={row} value={value} invalid={Boolean(error)} onChange={onChange} />
+        </FormField>
+      );
+    case "time":
+      return (
+        <FormField {...base}>
+          <TimeControl row={row} value={value} icon={icon} invalid={Boolean(error)} onChange={onChange} />
+        </FormField>
+      );
     default:
-      control = null;
+      return null;
   }
+}
 
+/** date-range: no form-field preset yet, so a calendar popover for the two days. */
+function DateRangeControl({ row, value, invalid, onChange }: { row: Row; value: any; invalid: boolean; onChange: (v: any) => void }) {
+  const fmt = row.format ?? "DD/MM/YYYY";
+  const minD = toDate(row.min);
+  const maxD = toDate(row.max);
+  const disabled = [...(minD ? [{ before: minD }] : []), ...(maxD ? [{ after: maxD }] : [])];
+  const text = value?.[0] ? `${dayjs(value[0]).format(fmt)} – ${value[1] ? dayjs(value[1]).format(fmt) : ""}` : "";
   return (
-    <Field data-invalid={invalid || undefined} className="gap-2">
-      <Label row={row} />
-      {control}
-      {row.description && <FieldDescription>{row.description}</FieldDescription>}
-    </Field>
+    <div className="flex gap-1.5">
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button type="button" variant="outline" disabled={row.disabled} aria-invalid={invalid || undefined} className={cn("w-full justify-start font-normal", !text && "text-muted-foreground")}>
+            <CalendarIcon />
+            {text || fmt}
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-auto p-0">
+          <Calendar
+            mode="range"
+            selected={{ from: value?.[0] ?? undefined, to: value?.[1] ?? undefined }}
+            onSelect={(r: DateRange | undefined) => onChange([r?.from ?? null, r?.to ?? null])}
+            disabled={disabled}
+          />
+        </PopoverContent>
+      </Popover>
+      {row.clearable && value?.[0] && (
+        <Button type="button" variant="ghost" size="icon" onClick={() => onChange([null, null])} aria-label="Clear">
+          <XIcon />
+        </Button>
+      )}
+    </div>
+  );
+}
+
+/** time: no form-field preset yet, so the time input (hours and minutes on today's date). */
+function TimeControl({ row, value, icon, invalid, onChange }: { row: Row; value: any; icon?: ReactNode; invalid: boolean; onChange: (v: any) => void }) {
+  const d = value as Date | null;
+  const hhmm = d ? `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}` : "";
+  return (
+    <div className="relative">
+      {icon && <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-muted-foreground">{icon}</span>}
+      <Input
+        disabled={row.disabled}
+        aria-invalid={invalid || undefined}
+        type="time"
+        value={hhmm}
+        onChange={(e) => {
+          if (!e.target.value) return onChange(row.clearable ? null : value);
+          const [h, m] = e.target.value.split(":").map(Number);
+          const next = new Date();
+          next.setHours(h ?? 0, m ?? 0, 0, 0);
+          onChange(next);
+        }}
+        className={cn(icon && "pl-9")}
+      />
+    </div>
   );
 }
 
