@@ -33,6 +33,7 @@
     "meter",
     "notice",
     "confirm",
-    "key-prompt"
+    "key-prompt",
+    "form-field"
   ]
 }
