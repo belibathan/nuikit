@@ -29,6 +29,7 @@
     "panel",
     "menu-row",
     "meter",
-    "notice"
+    "notice",
+    "confirm"
   ]
 }
