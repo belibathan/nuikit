@@ -247,7 +247,7 @@
       "name": "form-field",
       "type": "registry:ui",
       "title": "Form field",
-      "description": "One row of a game form (label, hint, description, error, required, inline value, reset) and a preset per value: text, number with stepper, select and multi-select, checkbox or switch, slider, date, colour. validateField() for required, min/max and length. The default look of the input intent; nothing relies on :has() or native pickers.",
+      "description": "One row of a game form (label, hint, description, error, required, inline value, reset) and a preset per value: text, number with stepper, select and multi-select, checkbox or switch, slider, date, date range, time (12 or 24h), colour. Date range and time values in ox_lib's shapes (epoch ms). validateField() for required, min/max, length and order. The default look of the input intent; nothing relies on :has() or native pickers.",
       "files": [
         {
           "path": "registry/nuikit/ui/form-field.tsx",

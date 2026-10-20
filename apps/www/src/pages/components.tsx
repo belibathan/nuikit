@@ -52,6 +52,10 @@ import {
   CheckboxField,
   ColorField,
   DateField,
+  DateRangeField,
+  TimeField,
+  dateToEpoch,
+  timeToEpoch,
   NumberField,
   SelectField,
   SliderField,
@@ -247,6 +251,7 @@ export function ComponentsPage() {
           <TransferForm />
           <CharacterForm />
           <FieldStates />
+          <ScheduleForm />
         </Section>
 
         <Section
@@ -880,6 +885,34 @@ function CharacterForm() {
 }
 
 /** Errors, disabled, password, switch, multi-select: states straight from props. */
+/**
+ * ox_lib's date-range and time rows: values in its shapes (epoch ms), typed boxes, no native
+ * picker. The "Value" line shows what Lua would get back.
+ */
+function ScheduleForm() {
+  const [lease, setLease] = useState<[number | null, number | null]>([dateToEpoch("2026-10-24"), dateToEpoch("2026-10-31")]);
+  const [meet, setMeet] = useState<number | null>(timeToEpoch("21:30"));
+  const leaseError = validateField({ kind: "date-range", required: true, min: "2026-10-20" }, lease)?.message;
+  return (
+    <Panel>
+      <PanelHeader title="Schedule" description="Date ranges and times" />
+      <PanelBody variant="form">
+        <DateRangeField label="Apartment lease" hint="From, to" required min="2026-10-20" value={lease} onValueChange={setLease} error={leaseError} />
+        <TimeField label="Meet at the docks" format="12" value={meet} onValueChange={setMeet} description="12-hour, with AM and PM." />
+        <TimeField label="Shift starts" min="08:00" max="18:00" minuteStep={15} defaultValue={timeToEpoch("06:45")} error="At 08:00 or later" />
+        <DateRangeField
+          label="Vacation"
+          defaultValue={[dateToEpoch("2026-12-28"), dateToEpoch("2026-12-20")]}
+          error="The end can't be before the start"
+        />
+        <p data-slot="schedule-demo-value" className="nk-label font-normal break-all">
+          Value: lease {JSON.stringify(lease)}, meet {JSON.stringify(meet)}
+        </p>
+      </PanelBody>
+    </Panel>
+  );
+}
+
 function FieldStates() {
   return (
     <Panel>
