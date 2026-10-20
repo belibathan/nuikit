@@ -8,9 +8,12 @@ import {
   ArrowUpLeftIcon,
   ArrowUpRightIcon,
   BackpackIcon,
+  BandageIcon,
   CarIcon,
   CarFrontIcon,
+  CupSodaIcon,
   DropletIcon,
+  KeyRoundIcon,
   EyeIcon,
   FlameIcon,
   FuelIcon,
@@ -47,7 +50,7 @@ import { Separator } from "@/components/ui/separator";
 import { Slider } from "@/components/ui/slider";
 import { Stat } from "@/components/ui/stat";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Notice, Notices, useNotices, type NoticePosition, type NoticeStatus } from "@/components/ui/notice";
+import { Notice, NoticeStack, Notices, useNotices, type NoticePosition, type NoticeStatus } from "@/components/ui/notice";
 import {
   CheckboxField,
   ColorField,
@@ -68,6 +71,7 @@ import { KeyPrompt, KeyPromptStack } from "@/components/ui/key-prompt";
 import { ProgressRing } from "@/components/ui/progress-ring";
 import { Speedometer } from "@/components/ui/speedometer";
 import { Countdown } from "@/components/ui/countdown";
+import { Band } from "@/components/ui/band";
 import { Money } from "@/components/ui/money";
 import { ItemSlot } from "@/components/ui/item-slot";
 import { PlayerCard } from "@/components/ui/player-card";
@@ -241,6 +245,29 @@ export function ComponentsPage() {
           stageClassName="min-h-[40rem] items-center"
         >
           <NoticeDemo />
+        </Section>
+
+        <Section
+          name="notice"
+          title="Slabs"
+          text="Transient feedback on the game, one anatomy for every script: an item added or removed (icon tile, name, change; changes to the same item within 1.5 s merge), a prompt (key chip, verb), a timed progress (label, thin line, cancel key), and a full-width band for a state. notice, key-prompt, meter and band draw them."
+          install={false}
+          stageClassName="min-h-[36rem] [--nk-edge:2.5rem]"
+        >
+          <SlabStates />
+        </Section>
+
+        <Section
+          name="band"
+          title="Band"
+          text="A full-width band for a state the player is in: incapacitated, cuffed, spectating. The game darkened and tinted by the tone, hairlines above and below, a title in the display face and a caption. Pinned to the bottom or top, or in the flow."
+          stageClassName="min-h-[30rem] flex-col items-stretch justify-center gap-6 px-0"
+        >
+          <Band position="inline" title="You are incapacitated" subtitle="Wait for EMS" />
+          <Band position="inline" tone="warning" title="Cuffed" subtitle="Officer Vale has you in custody" />
+          <Band position="inline" tone="neutral" title="Spectating" subtitle="Niko Bellic">
+            <Countdown surface="game" size="sm" seconds={42} label="Back in" className="mt-2" />
+          </Band>
         </Section>
 
         <Section
@@ -1064,9 +1091,59 @@ function KeyPromptStates() {
       </KeyPromptStack>
       <KeyPromptStack position="bottom-center" className="flex-row">
         <KeyPrompt surface="hud" size="sm" keys="F" label="Enter vehicle" />
-        <KeyPrompt surface="hud" size="sm" keys="Y" label="Talk" active />
-        <KeyPrompt surface="hud" size="sm" keys="X" label="Hands up" hold={800} progress={0.3} />
+        <KeyPrompt surface="panel" size="sm" keys="Y" label="Talk" active />
+        <KeyPrompt size="sm" keys="X" label="Hands up" hold={800} progress={0.3} />
       </KeyPromptStack>
+      <KeyPromptStack position="top-center" className="flex-row items-start">
+        <KeyPrompt keys={[]} label="Searching the glovebox" />
+        <KeyPrompt keys="E" wrap className="max-w-64" label="Talk to the bartender about the job at the Vanilla Unicorn" />
+      </KeyPromptStack>
+    </>
+  );
+}
+
+/** The four slabs, every state from props, plus a live item queue that merges. */
+function SlabStates() {
+  const { notices, notify, dismiss } = useNotices();
+  const [run, setRun] = useState(0);
+  return (
+    <>
+      <NoticeStack position="center-left">
+        <Notice animate={false} duration={0} item={{ name: "Water bottle", count: 2, icon: <CupSodaIcon /> }} />
+        <Notice animate={false} duration={0} item={{ name: "Bandage", count: 1, icon: <BandageIcon /> }} />
+        <Notice animate={false} duration={0} item={{ name: "Lockpick", count: -1, icon: <KeyRoundIcon /> }} />
+      </NoticeStack>
+      <Notices notices={notices} onDismiss={dismiss} />
+      <KeyPromptStack position="center-right">
+        <KeyPrompt keys="E" label="Clean dishes" />
+        <KeyPrompt keys="G" label="Search the counter" hold={1200} progress={0.45} />
+      </KeyPromptStack>
+      <div className="nk-anchor-b bottom-[9rem]!">
+        <Meter
+          key={run}
+          variant="slab"
+          label="Raw crystals"
+          duration={run ? 6000 : undefined}
+          value={run ? undefined : 45}
+          cancelKey="Esc"
+          onCancel={() => setRun(0)}
+        />
+      </div>
+      <Band title="You are incapacitated" subtitle="Wait for EMS" />
+      <Panel size="sm" className="self-start">
+        <PanelHeader title="Try it" description="Quick presses merge" />
+        <PanelBody variant="form" className="flex-row flex-wrap">
+          <Button size="sm" onClick={() => notify({ item: { name: "Water bottle", count: 1, icon: <CupSodaIcon /> }, position: "top-right", duration: 3000 })}>
+            Add water
+          </Button>
+          <Button size="sm" variant="outline" onClick={() => notify({ item: { name: "Water bottle", count: -1, icon: <CupSodaIcon /> }, position: "top-right", duration: 3000 })}>
+            Drink one
+          </Button>
+          <Button size="sm" variant="outline" onClick={() => setRun((n) => n + 1)}>
+            Start progress
+          </Button>
+        </PanelBody>
+      </Panel>
     </>
   );
 }
@@ -1623,7 +1700,7 @@ function RadialDemo() {
 
 const DEPRECATED: { name: string; what: string; use: string[]; how?: string }[] = [
   { name: "nui-toaster", what: "Sonner toasts wired to NUI.notify()", use: ["notice"], how: "useNotices() + <Notices>" },
-  { name: "task-progress", what: "A timed action in a Card", use: ["meter", "progress-ring"], how: "duration + onComplete" },
+  { name: "task-progress", what: "A timed action in a Card", use: ["meter", "progress-ring"], how: 'variant="slab" + duration, cancelKey, onCancel' },
   { name: "key-hint", what: '"[E] Talk" with hold-to-confirm', use: ["key-prompt"] },
 ];
 
