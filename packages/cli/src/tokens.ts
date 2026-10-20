@@ -69,6 +69,13 @@ export const DEFAULT_TOKENS: Token[] = [
   { name: "font-mono", group: "font", type: "fontFamily", description: "Codes and IDs only" },
   { name: "nk-scale", group: "kit", type: "number", description: "UI size multiplier (player preference, default 1)" },
   { name: "nk-motion", group: "kit", type: "number", description: "1 = motion on, 0 = reduced motion" },
+  // tokens 1.1, derived by compileTheme (left out of the DTCG file, which lists inputs only)
+  c("brand", "base", "The server's signature colour"),
+  c("brand-foreground", "base", "Text on brand"),
+  c("surface", "base", "Floating panel surface: popover tinted by brand"),
+  { name: "nk-elevation-shadow", group: "kit", type: "dimension", description: "The panel shadow --nk-elevation names" },
+  { name: "nk-hud-shadow", group: "kit", type: "dimension", description: "The text shadow --nk-hud-text-shadow names" },
+  { name: "world-shadow", group: "kit", type: "dimension", description: "The text shadow that keeps text on the game legible" },
 ];
 
 /** The DTCG file wins per name (type, description); tokens it doesn't list keep their embedded entry. */

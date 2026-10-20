@@ -1,0 +1,65 @@
+/*
+ * Graphite: the nuikit default identity, the utilitarian baseline (docs/design/v2.md §4). Minimal, neat,
+ * compact: every element earns its place. Stock shadcn neutral colours, Inter; flat surfaces with a
+ * crisp hairline and a machined edge; a compact rhythm (density 0.875) with 16px reading text; small
+ * uppercase captions; thin meters; a bar on the active row; arc gauges. Every identity value below is
+ * the default: a plain TweakCN paste gets exactly this.
+ *
+ * Use it: copy this file over nuikit/theme.css, then `nuikit theme reload`. Change any value; leave out
+ * what you don't change. Tokens: docs/tokens.md.
+ */
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.922 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+  --chart-1: oklch(0.87 0 0);
+  --chart-2: oklch(0.556 0 0);
+  --chart-3: oklch(0.439 0 0);
+  --chart-4: oklch(0.371 0 0);
+  --chart-5: oklch(0.269 0 0);
+  --radius: 0.625rem;
+
+  /* identity (tokens 1.1) */
+  --font-sans: Inter, ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Inter Tight", Inter, ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --nk-type-ratio: 1.2;
+  --nk-weight-body: 400;
+  --nk-weight-strong: 600;
+  --nk-weight-display: 700;
+  --nk-tracking-display: -0.02em;
+  --nk-label-case: uppercase;
+  --nk-tracking-label: 0.06em;
+  --nk-border-width: 1px;
+  --nk-cut: 0px;
+  --nk-surface-opacity: 0.96;
+  --nk-surface-tint: 0.02;
+  --nk-surface-gradient: 0;
+  --nk-surface-edge: 0.06;
+  --nk-elevation: soft;
+  --nk-glow: 0;
+  --nk-density: 0.875;
+  --nk-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --nk-duration: 140ms;
+  --nk-hud-opacity: 0.55;
+  --nk-hud-text-shadow: soft;
+  --nk-gauge-style: arc;
+  --nk-gauge-track: 0.25rem;
+  --nk-gauge-ticks: 1;
+  --nk-row-indicator: bar;
+}

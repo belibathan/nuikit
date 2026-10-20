@@ -3,6 +3,12 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
+ * Identity fonts (docs/tokens.md#fonts): open (OFL) woff2 files, latin subset. Bundled into this UI,
+ * or served once by the nuikit resource (nui://nuikit/fonts/…), depending on how pnpm sync ran.
+ */
+/* {{fonts}} */
+
+/*
  * Theme: stock shadcn tokens. Paste any TweakCN / shadcn theme over the :root and .dark
  * blocks and every component (yours, shadcn's, nuikit's) follows. oklch is fine —
  * vite-plugin-nuikit lowers it for FiveM's Chromium 103 at build time.
@@ -11,10 +17,20 @@
 /* {{theme}} */
 
 /*
- * nuikit tokens v1 (docs/tokens.md): game semantics on top of shadcn's. These are the defaults
- * compileTheme() derives from the stock theme above; info follows primary.
+ * nuikit tokens v1.1 (docs/tokens.md): game semantics and the identity tokens (type, shape, surface,
+ * density, motion, HUD style) on top of shadcn's. These are the defaults compileTheme() derives from
+ * the stock theme above (the Graphite identity); info follows primary.
  */
 /* {{tokens}} */
+
+/* Readability at 1080p (docs/design/research.md §3): small text one step up from Tailwind's defaults,
+   13px captions and 15px secondary text; kit body text is 16px (--nk-text-base). */
+@theme {
+  --text-xs: 0.8125rem;
+  --text-xs--line-height: calc(1.125 / 0.8125);
+  --text-sm: 0.9375rem;
+  --text-sm--line-height: calc(1.375 / 0.9375);
+}
 
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
@@ -54,11 +70,20 @@
   --color-hud: var(--hud);
   --color-hud-foreground: var(--hud-foreground);
   --color-scrim: var(--scrim);
+  --color-world-foreground: var(--world-foreground);
+  --color-world-foreground-muted: var(--world-foreground-muted);
   --color-vital-health: var(--vital-health);
   --color-vital-armor: var(--vital-armor);
   --color-vital-hunger: var(--vital-hunger);
   --color-vital-thirst: var(--vital-thirst);
   --color-vital-stress: var(--vital-stress);
+  --color-brand: var(--brand);
+  --color-brand-foreground: var(--brand-foreground);
+  --color-surface: var(--surface);
+  --font-display: var(--font-display);
+  --font-numeric: var(--font-numeric);
+  --default-transition-duration: var(--nk-duration);
+  --default-transition-timing-function: var(--nk-ease);
 }
 
 @layer base {
@@ -77,6 +102,10 @@
   }
 }
 
+/* The page's surface (nuikit.json "surface"): "world" draws the whole page straight on the game, so
+   its text reads --world-foreground (light in every theme). Panels inside keep the theme's colours. */
+/* {{surface}} */
+
 /* NUI scale: the kit is designed at 1080p and grows with the game's resolution (docs/design.md). */
 @layer base {
   /* 1rem = 16px at 1080p, scaling with the game's resolution (21px at 1440p, 32px at 4K),
@@ -84,6 +113,7 @@
   html {
     font-size: calc(clamp(12px, 1.4815vh, 32px) * var(--nk-scale, 1));
     font-family: var(--font-sans, ui-sans-serif, system-ui, sans-serif);
+    font-weight: var(--nk-weight-body, 400);
     -webkit-font-smoothing: antialiased;
   }
 }

@@ -14,3 +14,4 @@ addons/*/web/build
 bench/host/.out
 *.tsbuildinfo
 .claude/
+bench/identity/shots/*/

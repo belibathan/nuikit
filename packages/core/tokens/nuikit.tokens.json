@@ -1,8 +1,9 @@
 {
-  "$description": "nuikit default theme (stock shadcn neutral) (nuikit tokens v1, dark)",
+  "$description": "nuikit default theme (stock shadcn neutral) (nuikit tokens v1.1, dark)",
   "$extensions": {
     "dev.nuikit": {
       "tokens": 1,
+      "revision": "1.1",
       "mode": "dark"
     }
   },
@@ -501,6 +502,58 @@
         "hex": "#cc67e3"
       },
       "$description": "Stress bar"
+    },
+    "brand": {
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.8314,
+          0.8314,
+          0.8314
+        ],
+        "alpha": 1,
+        "hex": "#d4d4d4"
+      },
+      "$description": "The server's signature colour: active indicators, gauge needles, focus, logos (not the action: that's primary)"
+    },
+    "brand-foreground": {
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0,
+          0,
+          0
+        ],
+        "alpha": 1,
+        "hex": "#000000"
+      },
+      "$description": "Text on brand"
+    },
+    "world-foreground": {
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          1,
+          1,
+          1
+        ],
+        "alpha": 1,
+        "hex": "#ffffff"
+      },
+      "$description": "Text and icons drawn straight on the game, no panel (death text, unplated HUD values, nk-on-game). Light in every theme, light or dark"
+    },
+    "world-foreground-muted": {
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          1,
+          1,
+          1
+        ],
+        "alpha": 0.8,
+        "hex": "#ffffff"
+      },
+      "$description": "Secondary text on the game"
     }
   },
   "radius": {
@@ -515,6 +568,7 @@
     "$type": "fontFamily",
     "sans": {
       "$value": [
+        "Inter",
         "ui-sans-serif",
         "system-ui",
         "sans-serif"
@@ -523,23 +577,207 @@
     },
     "mono": {
       "$value": [
+        "Geist Mono",
         "ui-monospace",
         "SFMono-Regular",
         "Menlo",
         "monospace"
       ],
       "$description": "Codes and IDs a player might type"
+    },
+    "display": {
+      "$value": [
+        "Inter Tight",
+        "Inter",
+        "ui-sans-serif",
+        "system-ui",
+        "sans-serif"
+      ],
+      "$description": "Headings and big moments (titles, timers, the balance)"
+    },
+    "numeric": {
+      "$value": [
+        "Inter",
+        "ui-sans-serif",
+        "system-ui",
+        "sans-serif"
+      ],
+      "$description": "Every number on a gauge, money or timer (always tabular)"
     }
   },
   "nk": {
-    "$type": "number",
     "scale": {
+      "$type": "number",
       "$value": 1,
       "$description": "UI size multiplier (unitless). Players can scale further (0.85–1.25)."
     },
     "motion": {
+      "$type": "number",
       "$value": 1,
       "$description": "1 = animations on, 0 = off. Players can turn motion off."
+    },
+    "type-ratio": {
+      "$type": "number",
+      "$value": 1.2,
+      "$description": "Step between type sizes: 1.125 calm … 1.333 dramatic"
+    },
+    "weight-body": {
+      "$type": "number",
+      "$value": 400,
+      "$description": "Body text weight"
+    },
+    "weight-strong": {
+      "$type": "number",
+      "$value": 600,
+      "$description": "Titles, key numbers, active rows"
+    },
+    "weight-display": {
+      "$type": "number",
+      "$value": 700,
+      "$description": "Display type (full-screen titles, big numbers)"
+    },
+    "tracking-display": {
+      "$type": "dimension",
+      "$value": {
+        "value": -0.02,
+        "unit": "em"
+      },
+      "$description": "Letter-spacing of display type"
+    },
+    "label-case": {
+      "$value": "uppercase",
+      "$description": "Captions (the short names of values) in uppercase or as written",
+      "$extensions": {
+        "dev.nuikit": {
+          "type": "keyword"
+        }
+      }
+    },
+    "tracking-label": {
+      "$type": "dimension",
+      "$value": {
+        "value": 0.06,
+        "unit": "em"
+      },
+      "$description": "Letter-spacing of captions (uppercase wants 0.06–0.12em)"
+    },
+    "border-width": {
+      "$type": "dimension",
+      "$value": {
+        "value": 1,
+        "unit": "px"
+      },
+      "$description": "Hairline weight of panels, rows and fields"
+    },
+    "cut": {
+      "$type": "dimension",
+      "$value": {
+        "value": 0,
+        "unit": "px"
+      },
+      "$description": "Chamfered corners (top left, bottom right), drawn with clip-path; 0 = off"
+    },
+    "surface-opacity": {
+      "$type": "number",
+      "$value": 0.96,
+      "$description": "Panel opacity over the game (floor 0.92 for text panels)"
+    },
+    "surface-tint": {
+      "$type": "number",
+      "$value": 0.02,
+      "$description": "How much brand tints neutral surfaces (0–0.12)"
+    },
+    "surface-gradient": {
+      "$type": "number",
+      "$value": 0,
+      "$description": "Top-to-bottom light falloff on panels (0 = flat)"
+    },
+    "surface-edge": {
+      "$type": "number",
+      "$value": 0.06,
+      "$description": "Inner top highlight, the machined edge (alpha)"
+    },
+    "elevation": {
+      "$value": "soft",
+      "$description": "Shadow recipe of floating panels",
+      "$extensions": {
+        "dev.nuikit": {
+          "type": "keyword"
+        }
+      }
+    },
+    "glow": {
+      "$type": "number",
+      "$value": 0,
+      "$description": "Brand glow on active parts and HUD fills (alpha, 0 = off)"
+    },
+    "density": {
+      "$type": "number",
+      "$value": 0.875,
+      "$description": "Multiplies the kit's spacing scale: 0.875 compact (Graphite) … 1.15 roomy"
+    },
+    "ease": {
+      "$type": "cubicBezier",
+      "$value": [
+        0.2,
+        0.8,
+        0.2,
+        1
+      ],
+      "$description": "The one easing curve"
+    },
+    "duration": {
+      "$type": "duration",
+      "$value": {
+        "value": 140,
+        "unit": "ms"
+      },
+      "$description": "Base duration (panel enter, transitions); × nk-motion"
+    },
+    "hud-opacity": {
+      "$type": "number",
+      "$value": 0.55,
+      "$description": "Minimum backplate opacity of HUD chips and tiles"
+    },
+    "hud-text-shadow": {
+      "$value": "soft",
+      "$description": "Shadow under text drawn on the game",
+      "$extensions": {
+        "dev.nuikit": {
+          "type": "keyword"
+        }
+      }
+    },
+    "gauge-style": {
+      "$value": "arc",
+      "$description": "How gauges are drawn",
+      "$extensions": {
+        "dev.nuikit": {
+          "type": "keyword"
+        }
+      }
+    },
+    "gauge-track": {
+      "$type": "dimension",
+      "$value": {
+        "value": 0.25,
+        "unit": "rem"
+      },
+      "$description": "Gauge and meter track thickness"
+    },
+    "gauge-ticks": {
+      "$type": "number",
+      "$value": 1,
+      "$description": "Tick marks on gauges: 1 on, 0 off"
+    },
+    "row-indicator": {
+      "$value": "bar",
+      "$description": "How the active row is marked",
+      "$extensions": {
+        "dev.nuikit": {
+          "type": "keyword"
+        }
+      }
     }
   }
 }

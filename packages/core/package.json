@@ -29,6 +29,8 @@
     "dist",
     "lua",
     "tokens",
+    "fonts",
+    "themes",
     "README.md"
   ],
   "exports": {
@@ -45,6 +47,8 @@
       "import": "./dist/devtools.js"
     },
     "./tokens.json": "./tokens/nuikit.tokens.json",
+    "./fonts/*": "./fonts/*",
+    "./themes/*": "./themes/*",
     "./theme.schema.json": "./tokens/nuikit-theme.schema.json",
     "./module": {
       "types": "./dist/module.d.ts",

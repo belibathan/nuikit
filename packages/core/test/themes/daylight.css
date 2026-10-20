@@ -1,0 +1,60 @@
+/*
+ * Daylight: the flexibility check (docs/tokens.md#flexibility). Light, roomy and round: as far from
+ * Graphite as a theme gets, from this one file. No kit code changes; every value is a token.
+ */
+:root {
+  --background: oklch(0.985 0.004 85);
+  --foreground: oklch(0.24 0.02 260);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.24 0.02 260);
+  --popover: oklch(0.995 0.003 85);
+  --popover-foreground: oklch(0.24 0.02 260);
+  --primary: oklch(0.52 0.19 262);
+  --primary-foreground: oklch(0.99 0 0);
+  --secondary: oklch(0.95 0.01 85);
+  --secondary-foreground: oklch(0.24 0.02 260);
+  --muted: oklch(0.95 0.008 85);
+  --muted-foreground: oklch(0.48 0.02 260);
+  --accent: oklch(0.94 0.03 262);
+  --accent-foreground: oklch(0.24 0.02 260);
+  --destructive: oklch(0.56 0.21 25);
+  --border: oklch(0.24 0.02 260 / 10%);
+  --input: oklch(0.24 0.02 260 / 16%);
+  --ring: oklch(0.52 0.19 262);
+  --chart-1: oklch(0.6 0.21 25);
+  --chart-2: oklch(0.58 0.17 255);
+  --chart-3: oklch(0.72 0.16 70);
+  --chart-4: oklch(0.66 0.12 215);
+  --chart-5: oklch(0.58 0.2 320);
+  --radius: 1.25rem;
+  /* nothing set for the game layer: --world-foreground (and --hud-foreground with it) stays light */
+  --scrim: oklch(0.3 0.03 260);
+
+  /* identity */
+  --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-numeric: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  --nk-type-ratio: 1.25;
+  --nk-weight-strong: 500;
+  --nk-weight-display: 600;
+  --nk-tracking-display: -0.03em;
+  --nk-label-case: none;
+  --nk-tracking-label: 0em;
+  --nk-surface-opacity: 0.98;
+  --nk-surface-tint: 0;
+  --nk-surface-gradient: 0;
+  --nk-surface-edge: 0;
+  --nk-elevation: deep;
+  --nk-density: 1.25;
+  --nk-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --nk-duration: 220ms;
+  --nk-hud-text-shadow: none;
+  --nk-gauge-style: bar;
+  --nk-gauge-track: 0.5rem;
+  --nk-row-indicator: fill;
+
+  /* component details */
+  --nk-chip-radius: 9999px;
+  --nk-row-radius: 9999px;
+  --nk-panel-radius: calc(var(--radius) + 0.25rem);
+}
