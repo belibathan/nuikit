@@ -109,6 +109,8 @@ function output(row: Row, v: any): unknown {
       return Number(v);
     case "checkbox":
       return Boolean(v);
+    case "select":
+      return v ?? null; // §7.2: the selected value, or null (was "" when nothing was picked)
     case "multi-select":
       return v && v.length ? v : null;
     case "color":
@@ -175,6 +177,13 @@ export function InputDialog() {
         if (row.min !== undefined && Number(v) < Number(row.min)) bad.add(i);
         if (row.max !== undefined && Number(v) > Number(row.max)) bad.add(i);
       }
+      // §7.3 also bounds dates (min/max date strings).
+      if (row.type === "date" && v) {
+        const day = dayjs(v).startOf("day");
+        const lo = toDate(row.min);
+        const hi = toDate(row.max);
+        if ((lo && day.isBefore(dayjs(lo).startOf("day"))) || (hi && day.isAfter(dayjs(hi).startOf("day")))) bad.add(i);
+      }
     });
     setInvalid(bad);
     if (bad.size) return;
@@ -203,7 +212,10 @@ export function InputDialog() {
         <DialogHeader className={DIALOG_HEADER}>
           <DialogTitle className="nk-title truncate">{data.heading}</DialogTitle>
         </DialogHeader>
-        <form onSubmit={submit} className="flex min-h-0 flex-col">
+        {/* noValidate: the browser's own checks (a number off its `step`, e.g. 12.345 with precision 2)
+            silently blocked the submit. ox_lib rounds to `precision` and checks only required and
+            min/max (§7.3), which submit() does. */}
+        <form noValidate onSubmit={submit} className="flex min-h-0 flex-col">
           <div className="flex max-h-[70vh] flex-col gap-4 overflow-y-auto p-4">
             {rows.map((row, i) => (
               <RowField key={i} row={row} value={values[i]} invalid={invalid.has(i)} onChange={(v) => set(i, v)} />
