@@ -70,6 +70,24 @@ const inv = useSurface("inventory"); // { open, visible, focused, data, close }
 
 Layers stack `hud` < `world` < `panel` < `modal` < `system`. Focus goes to the top surface that takes input; Escape closes top-down. Type surface data with `interface NuiSurfaces` next to your events.
 
+## Live values
+
+A value that moves every frame (a compass, a speedometer) streams from Lua at ≤30 messages a second, only when it changed, and the page glides between them at the game's frame rate without rendering ([protocol §5.7](../../docs/protocol.md#57-live-values)).
+
+```lua
+local rpm = NUI.stream('hud:rpm', { rate = 30, precision = 0.01 }) -- kind = 'angle' for headings
+rpm:push(GetVehicleCurrentRpm(vehicle)) -- from any loop; it decides when to send
+```
+
+```tsx
+import { useFollow } from "nuikit-core/react"; // or follow() from "nuikit-core", without React
+
+const bar = useRef<HTMLDivElement>(null);
+useFollow("hud:rpm", (v) => { bar.current!.style.transform = `scaleX(${v})`; }, { start: 0 });
+```
+
+In FiveM `requestAnimationFrame` runs at the game's frame rate (140–300/s): never send a message or a callback per frame.
+
 ## Devtools
 
 ```tsx
@@ -103,6 +121,7 @@ NUI.state('dead', true)
 NUI.open({ cursor = true, keepInput = false }) -- single-UI mode
 NUI.close()
 NUI.notify({ title = 'Paid', type = 'success' })
+NUI.stream('hud:rpm', { rate = 30 }):push(0.62) -- a live value (see above)
 ```
 
 Set `setr nuikit_debug 1` to log traffic.

@@ -1,7 +1,9 @@
 --[[
   nuikit.lua: the Lua half of nuikit.  MIT · https://github.com/belibathan/nuikit
 
-  Drop into any resource as a client_script. Framework-agnostic (QBCore, Qbox, ESX, ox, standalone).
+  Import it with `shared_script '@nuikit/init.lua'` (and `dependency 'nuikit'`), which loads this file
+  from the running nuikit resource, or copy it into a resource as a client_script to run without nuikit.
+  Framework-agnostic (QBCore, Qbox, ESX, ox, standalone). `nk` and `NUI` are the same table.
 
   Messages
     NUI.send('hud:vitals', { health = 80 })           -- Lua → UI   (useNuiEvent / onNui)
@@ -9,6 +11,8 @@
       return { ok = UseItem(data.slot) }               --   whatever you return is the response
     end)
     NUI.notify({ title = 'Paid', type = 'success' })   -- toast (with <NuiToaster />)
+    local rpm = NUI.stream('hud:rpm', { rate = 30 })   -- a live value: ≤30/s, only on change
+    rpm:push(GetVehicleCurrentRpm(veh))                --   the page glides: follow / useFollow
 
   Surfaces: every piece of UI declares what it is; nuikit owns focus, cursor, stacking and Escape
   across *all* resources that use nuikit, so two UIs never fight over the cursor.
@@ -73,6 +77,78 @@ function NUI.on(name, handler)
       cb({ error = tostring(result) })
     end
   end)
+end
+
+-- ───────────────────────────────── live values (docs/protocol.md §5.7)
+--
+-- A value that moves all the time (a compass, a speedometer, a progress bar) costs a message every
+-- time it is sent, and each message costs the game frame it lands in. A stream sends it on its own
+-- channel at most `rate` times a second, and only when it changed by a `precision` step. The page
+-- glides between messages at its own frame rate (nuikit-core `follow` / `useFollow`), so the motion
+-- is smooth from ~30 small messages a second.
+--
+--   local rpm = NUI.stream('hud:vehicle:rpm', { rate = 30, precision = 0.01 })
+--   rpm:push(GetVehicleCurrentRpm(vehicle))          -- call it as often as you like; it decides
+
+---@class NuiStreamOptions
+---@field rate? number       messages a second at most (default 30)
+---@field precision? number  rounding step: sends only when the rounded value changed (default 0.01)
+---@field kind? 'linear'|'angle'  'angle' keeps degrees in 0–360, so 359.96 and -0.04 are one heading
+
+---@class NuiStream
+---@field action string
+local Stream = {}
+Stream.__index = Stream
+
+--- Round `value` to the precision and send it if it changed and the rate allows. Returns whether it
+--- sent. A value the rate holds back is not kept: push again (from your loop) and it goes out.
+---@param value number
+---@return boolean
+function Stream:push(value)
+  value = tonumber(value)
+  if not value or value ~= value then return false end
+  if self.angle then value = value % 360.0 end
+  local v = math.floor(value * self.inv + 0.5) / self.inv
+  if self.angle then v = v % 360.0 end
+  if v == self.last then return false end
+  local now = GetGameTimer()
+  if self.sentAt and now - self.sentAt < self.gap then return false end
+  self.last, self.sentAt = v, now
+  NUI.send(self.action, v)
+  return true
+end
+
+--- Forget the last value, so the next push sends (e.g. when the page reloads).
+function Stream:reset()
+  self.last, self.sentAt = nil, nil
+end
+
+--- The last value sent, or nil.
+---@return number|nil
+function Stream:value()
+  return self.last
+end
+
+--- A live value on its own channel. The page follows it with `follow(action, paint, { kind })`.
+---@param action string
+---@param opts? NuiStreamOptions
+---@return NuiStream
+function NUI.stream(action, opts)
+  opts = opts or {}
+  local precision = tonumber(opts.precision) or 0.01
+  if precision <= 0 then precision = 0.01 end
+  -- round to 1/precision as a whole number when it is one (0.1 → 10), so 270.5 stays 270.5
+  local inv = 1 / precision
+  local whole = math.floor(inv + 0.5)
+  if math.abs(inv - whole) < 1e-9 then inv = whole end
+  local rate = tonumber(opts.rate) or 30
+  return setmetatable({
+    action = action,
+    inv = inv,
+    -- whole milliseconds, so a loop with Wait(33) is never held back at 30 a second
+    gap = rate > 0 and math.floor(1000 / rate) or 0,
+    angle = opts.kind == 'angle',
+  }, Stream)
 end
 
 ---@class NuiNotify
@@ -558,8 +634,10 @@ NUI.on('nuikit:ready', function(req)
   local theme = NUI.theme()
   if theme then NUI.send('nuikit:theme', theme) end
   NUI.send('nuikit:prefs', NUI.prefs.get())
-  local hasPlayer = NUI.player ~= nil and NUI.player.resend ~= nil
-  if hasPlayer then NUI.player.resend() end
+  -- rawget: with @nuikit/init.lua, reading NUI.player would load the bridge into every resource
+  local player = rawget(NUI, 'player')
+  local hasPlayer = player ~= nil and player.resend ~= nil
+  if hasPlayer then player.resend() end
   -- §2.2: a 0.4.0 page sends no protocol (version 0); it ignores the extra fields.
   local capabilities = { 'surfaces', 'states', 'notify', 'prefs' }
   if theme then capabilities[#capabilities + 1] = 'theme' end

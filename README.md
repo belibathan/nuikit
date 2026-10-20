@@ -95,10 +95,9 @@ You get a complete FiveM resource:
 
 ```
 my-hud/
-├─ fxmanifest.lua
+├─ fxmanifest.lua     ← imports the runtime: shared_script '@nuikit/init.lua'
 ├─ client/
-│  ├─ main.lua        ← your Lua: surfaces, NUI.send / NUI.on
-│  └─ nuikit.lua      ← the runtime (framework-agnostic)
+│  └─ main.lua        ← your Lua: surfaces, nk.send / nk.on
 └─ web/               ← Vite + React 19 + Tailwind v4 + shadcn
    └─ src/
       ├─ App.tsx
@@ -107,7 +106,7 @@ my-hud/
 ```
 
 - **In the browser:** `npm run dev`, then press <kbd>`</kbd> for the devtools. You can fire Lua events, mock callbacks, open surfaces, toggle states, watch traffic and swap day/night backdrops.
-- **In game:** drop the folder into `resources/`, `ensure my-hud`. While `dev` runs, `ui_page` points at Vite, so **every save hot-reloads in game**.
+- **In game:** with the `nuikit` resource installed (it ships the Lua runtime your resource imports, like ox_lib), drop the folder into `resources/`, `ensure my-hud`. While `dev` runs, `ui_page` points at Vite, so **every save hot-reloads in game**.
 - **Ship:** `npm run build`. `ui_page` is restored automatically.
 
 Already have a NUI? Use only the parts you want ([plugin](#vite-plugin-nuikit), [runtime](#api), [components](#components)).
@@ -117,7 +116,7 @@ Already have a NUI? Use only the parts you want ([plugin](#vite-plugin-nuikit), 
 | Package | What it does |
 |---|---|
 | [`vite-plugin-nuikit`](packages/vite) | Vite plugin. Lowers Tailwind v4 / shadcn CSS for Chromium 103, in-game HMR, `nuikit-doctor` CLI. |
-| [`nuikit-core`](packages/core) | The runtime. Typed `fetchNui` / `useNuiEvent`, [surfaces](#surfaces) (focus, layers, Escape across resources), devtools, runtime theming. Plus `nuikit.lua`. |
+| [`nuikit-core`](packages/core) | The runtime. Typed `fetchNui` / `useNuiEvent`, [surfaces](#surfaces) (focus, layers, Escape across resources), devtools, runtime theming. Plus the Lua runtime, which resources import with `shared_script '@nuikit/init.lua'`. |
 | [`create-nuikit`](packages/create-nuikit) | One command to a working resource. |
 | [Registry](#components) | HUD components for the shadcn CLI, composed from stock shadcn (Card, Item, Kbd, Progress, Badge). |
 
@@ -213,7 +212,7 @@ NUI.notify({ title = 'Paid', type = 'success' })
 | `applyTheme(css \| vars)` | Apply a pasted TweakCN theme at runtime, with Chromium 103 channels. |
 | `<NuiDevtools events callbacks surfaces states />` | Browser-only panel (`nuikit-core/devtools`): events, surfaces, states, log. Renders nothing in game. |
 
-| `nuikit.lua` | |
+| Lua (`nk`, imported with `shared_script '@nuikit/init.lua'`; `NUI` is the same table) | |
 |---|---|
 | `NUI.send(action, data)` | Message the UI. |
 | `NUI.on(name, fn)` | Handle `fetchNui`. The return value is the response; errors are caught. |
@@ -254,7 +253,7 @@ const confirm = useSurface("confirm"); // { open, visible, focused, data, close 
 | **hides** | Names or layers hidden (not closed) while it's open. |
 | **blockedBy** | States from `NUI.state()` that stop it opening. |
 
-There's no extra resource to install: every resource that bundles `nuikit.lua` keeps the same copy of the client-wide stack, and a resource started mid-session catches up. The manager runs under real Lua 5.4 in CI, with events delivered both synchronously and queued. `NUI.open()` / `NUI.close()` still work for a single UI.
+Every resource that imports the runtime (`@nuikit/init.lua`) keeps the same copy of the client-wide stack, and a resource started mid-session catches up. Updating the `nuikit` resource updates every resource that imports it; to run without it, copy `lib/nuikit.lua` from the nuikit resource into yours as a client script. The manager runs under real Lua 5.4 in CI, with events delivered both synchronously and queued. `NUI.open()` / `NUI.close()` still work for a single UI.
 
 ## `[nuikit]` systems
 
@@ -298,6 +297,25 @@ NUI.player.onChange(fn)
 const { health, cash, job, voice } = usePlayer();
 ```
 
+## Use the standard in your own resource
+
+Everything in `[nuikit]` is built from three things you can use too, so a resource you write (or buy) looks like
+the rest of the server without anyone designing it:
+
+1. **The kit.** `nk-*` utilities for panels, rows, labels, numbers, HUD chips and screen anchors, in every
+   `index.css` that `npm create nuikit` writes. The rules are on [nuikit.vercel.app/design](https://nuikit.vercel.app/design).
+2. **The components.** `panel`, `menu-row`, `stat`, `meter`, `hud-chip` and the rest, from the registry below.
+   See every state on [nuikit.vercel.app/components](https://nuikit.vercel.app/components).
+3. **The theme.** Read colours only from shadcn tokens. The server's `nuikit/theme.css` (any TweakCN theme)
+   then recolours your UI along with the pause menu, HUD and overrides.
+
+```bash
+npm create nuikit@latest my-resource          # starts on the kit, with a HUD, a menu and a confirm
+npx shadcn add https://nuikit.vercel.app/r/panel.json https://nuikit.vercel.app/r/menu-row.json
+```
+
+Whole screens (a HUD, a shop, a garage, a bank…) are coming as blocks you can install the same way.
+
 ## Components
 
 Installed with the shadcn CLI you already use. They're **compositions of stock shadcn components**: the CLI pulls in the `card`, `item`, `kbd`, `progress` and `badge` they're built from. They follow shadcn's file conventions (`data-slot`, `React.ComponentProps`, `cva` variants) and use **only theme tokens**, so they follow your theme. Nothing here has its own visual language.
@@ -312,6 +330,11 @@ npx shadcn add @nuikit/speedometer
 
 | Component | |
 |---|---|
+| `panel` | The one floating surface: header (title, description, actions, optional tabs row), scrolling body, footer. |
+| `menu-row` | 40px action row: icon, label, description, trailing meta / chevron / `Kbd` / checkbox / stepper. |
+| `stat` | Label over a tabular number that matters, in three sizes, with meta and a delta. On a panel or the game. |
+| `meter` | Slim bar on a theme or game track, with low/high thresholds and segments. |
+| `hud-chip` | Always-on pill or tile on the game: icon and text, active or warning. |
 | `vital` | Player stat: icon + `Progress`, colored by a theme token. Pulses when low. |
 | `speedometer` | SVG arc in `primary` / `destructive`; gear is a `Badge`, fuel a `Progress`. |
 | `key-hint` | `[E] Talk`: `Kbd` + label, hold-to-confirm on `Progress`. |

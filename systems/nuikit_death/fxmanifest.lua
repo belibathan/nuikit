@@ -7,6 +7,8 @@ description 'nuikit: death and last-stand screen. Shows what your medical resour
 repository 'https://github.com/belibathan/nuikit'
 version '0.4.0'
 
+dependency 'nuikit'
+
 ui_page 'web/dist/index.html'
 nuikit_protocol '1'
 
@@ -15,10 +17,12 @@ files {
   'web/dist/**/*',
 }
 
-shared_script 'config.lua'
+shared_scripts {
+  '@nuikit/init.lua',
+  'config.lua',
+}
 
 client_scripts {
-  'client/nuikit.lua',
   'client/main.lua',
 }
 

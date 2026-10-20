@@ -22,6 +22,35 @@ local returning = nil   -- { seen = bool, deadline = ms }
 local enabled = {}
 for _, b in ipairs(Config.buttons or {}) do enabled[b] = true end
 
+local views = Config.views or {}
+
+--- Scripted cameras (the focus camera and the 3D map) only when the server allows them
+--- (Config.camera) and the player hasn't asked for reduced motion (NUI.prefs). Otherwise the menu is
+--- flat: Home blurs the game and Map opens GTA's own map.
+function Pause.cameras()
+  if Config.camera == false then return false end
+  local prefs = NUI.prefs and NUI.prefs.get() or {}
+  return not prefs.reducedMotion
+end
+local view = "home"        -- home | map | keys | info
+local blurred = false
+
+--- One place that owns the screen blur, so fades always pair up.
+local function blur(on)
+  if on == blurred then return end
+  blurred = on
+  if on then TriggerScreenblurFadeIn(BLUR_MS) else TriggerScreenblurFadeOut(BLUR_MS) end
+end
+
+--- Places for the UI: plain numbers, no vectors.
+local function places()
+  local out = {}
+  for _, p in ipairs(Config.places or {}) do
+    out[#out + 1] = { id = p.id, label = p.label, category = p.category, icon = p.icon, x = p.coords.x, y = p.coords.y }
+  end
+  return out
+end
+
 local function payload()
   local me = PlayerId()
   local server = {}
@@ -36,6 +65,18 @@ local function payload()
     playerName = GetPlayerName(me),
     players = info.players,
     maxPlayers = info.max,
+    ping = info.ping,
+    uptime = info.uptime,
+    restartIn = info.restartIn,
+    views = {
+      map = views.map ~= false and Pause.cameras(),
+      keys = views.keys ~= false,
+      info = views.info ~= false,
+      preview = views.preview ~= false and Pause.cameras(),
+    },
+    preview = Focus.isActive(),
+    places = places(),
+    pages = Config.pages or {},
   }
 end
 
@@ -60,21 +101,72 @@ end
 function Pause.open()
   if pause:isOpen() or Pause.blocked() then return false end
   SetPauseMenuActive(false)
-  if not pause:open(payload()) then return false end
+  view = "home"
+  -- The focus camera replaces the blur; without it the world's blur has to come from GTA (CEF
+  -- draws over the game).
+  local focused = views.preview ~= false and Pause.cameras() and Focus.start()
+  if not pause:open(payload()) then
+    if focused then Focus.stop('instant') end
+    return false
+  end
   wasOpen = true
-  -- CEF draws over the game, so the world's blur has to come from GTA
-  TriggerScreenblurFadeIn(BLUR_MS)
+  blur(not focused)
   TriggerServerEvent('nuikit_pause:request')
   return true
 end
 
-function Pause.close()
+--- Everything the menu put on screen, gone: the cameras glide back to the game, the blur fades.
+local function teardown(instant)
+  local mode = instant and 'instant' or nil
+  Map3D.stop(mode)
+  Focus.stop(mode)
+  view = "home"
+  blur(false)
+end
+
+---@param instant? boolean cut straight back to the game (the player went down) instead of gliding
+function Pause.close(instant)
   pause:close()
   quietUntil = GetGameTimer() + QUIET_MS
   if wasOpen then
     wasOpen = false
-    TriggerScreenblurFadeOut(BLUR_MS)
+    teardown(instant == true)
   end
+end
+
+--- Dead, or down in last stand: the death screen owns the screen, so the menu has to go.
+---@return boolean
+function Pause.down()
+  return Camera.down() or NUI.player.get().dead == true
+end
+
+--- Switch views. Home, Key bindings and Info share the focus camera on the player; the map has
+--- its own. Going between them, the new camera starts from the old one's exact view and the old
+--- one steps aside, so it's one continuous move.
+---@param next string
+---@return table
+function Pause.setView(next)
+  if next ~= "home" and next ~= "map" and next ~= "keys" and next ~= "info" then return { ok = false } end
+  if next == "map" and (views.map == false or not Pause.cameras()) then return { ok = false } end
+  if next == view then return { ok = true, preview = Focus.isActive() } end
+  local was = view
+  view = next
+  if next == "map" then
+    blur(false)
+    Map3D.start()
+    Focus.stop("handover")
+  elseif was == "map" then
+    local focused = views.preview ~= false and Pause.cameras() and Focus.start()
+    Map3D.stop(focused and "handover" or nil)
+    blur(not focused)
+  end
+  if next == "keys" then NUI.send("pause:keys", Keys.resolve()) end
+  return { ok = true, preview = Focus.isActive() }
+end
+
+-- The focus camera only gives up when the player goes down, and the menu closes with it.
+Focus.onLost = function()
+  if pause:isOpen() then Pause.close(true) end
 end
 
 function Pause.isOpen()
@@ -87,13 +179,15 @@ function Pause.tick()
   if pause:isOpen() then
     wasOpen = true
     SetPauseMenuActive(false)
+    -- blockedBy only stops it opening: going down with it open (any view) closes it, cameras and all
+    if Pause.down() then Pause.close(true) end
     return
   end
   if wasOpen then
     -- closed by Esc in the UI (nuikit.lua handles that) or by another surface
     wasOpen = false
     quietUntil = now + QUIET_MS
-    TriggerScreenblurFadeOut(BLUR_MS)
+    teardown(false)
   end
   if IsPauseMenuActive() then
     -- the game's frontend (P, Map, Settings) owns Esc until it closes
@@ -150,6 +244,38 @@ action('resume', function() Pause.close() end)
 action('map', function() frontend(Config.frontend.map, true) end)
 action('settings', function() frontend(Config.frontend.settings) end)
 action('keybinds', function() frontend(Config.frontend.keybinds) end)
+
+-- The bigger menu (docs/pause-3d.md). Every handler is a no-op unless the menu is open.
+local function open(name, fn)
+  NUI.on(name, function(data)
+    if not pause:isOpen() then return { ok = false } end
+    local r = fn(type(data) == "table" and data or {})
+    if type(r) == "table" then return r end
+    return { ok = r ~= false }
+  end)
+end
+local function num(v) return tonumber(v) or 0.0 end
+
+open("pause:view", function(d) return Pause.setView(d.view) end)
+open("pause:gamemap", function() frontend(Config.frontend.map, true) end)
+open("pause:preview:frame", function(d) Focus.setFrame(d) end)
+open("pause:preview:rotate", function(d) Focus.rotate(num(d.dx)) end)
+open("pause:map:pan", function(d) Map3D.pan(num(d.dx), num(d.dy)) end)
+open("pause:map:rotate", function(d) Map3D.rotate(num(d.dx), num(d.dy)) end)
+open("pause:map:zoom", function(d) Map3D.zoom(num(d.delta)) end)
+open("pause:map:focus", function(d) return Map3D.focus(d.id) end)
+open("pause:map:recenter", function() return Map3D.recenter() end)
+open("pause:map:topdown", function(d) Map3D.topdown(d.on == true) end)
+open("pause:map:pick", function(d)
+  local hit = Map3D.pick(num(d.u), num(d.v))
+  if not hit then return { ok = false } end
+  hit.ok = true
+  return hit
+end)
+open("pause:map:waypoint", function(d)
+  if d.clear then return Map3D.waypoint(nil) end
+  return Map3D.waypoint(num(d.x), num(d.y))
+end)
 action('disconnect', function()
   Pause.close()
   TriggerServerEvent('nuikit_pause:disconnect')
@@ -174,5 +300,8 @@ CreateThread(function()
 end)
 
 AddEventHandler('onClientResourceStop', function(resource)
-  if resource == RESOURCE and wasOpen then TriggerScreenblurFadeOut(0.0) end
+  if resource ~= RESOURCE then return end
+  Map3D.stop('instant')
+  Focus.stop('instant')
+  if blurred then TriggerScreenblurFadeOut(0.0) end
 end)

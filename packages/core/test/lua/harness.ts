@@ -6,11 +6,12 @@
  * being synchronous across resources.
  */
 import { readFileSync } from "node:fs";
+import { isAbsolute } from "node:path";
 import { fileURLToPath } from "node:url";
 import { LuaFactory, type LuaEngine } from "wasmoon";
 
 const lua_ = (file: string) =>
-  readFileSync(file.startsWith("/") ? file : fileURLToPath(new URL(`../../lua/${file}`, import.meta.url)), "utf8");
+  readFileSync(isAbsolute(file) ? file : fileURLToPath(new URL(`../../lua/${file}`, import.meta.url)), "utf8");
 const SOURCE = lua_("nuikit.lua");
 
 export interface StartOptions {
@@ -20,6 +21,14 @@ export interface StartOptions {
   scripts?: string[];
   /** fxmanifest metadata, e.g. { nuikit_ui: ["web/dist/module.js"] } (GetResourceMetadata). */
   metadata?: Record<string, string[]>;
+  /**
+   * How the resource gets the runtime. "vendored" (default): nuikit.lua runs as its own client script.
+   * "import": shared_script '@nuikit/init.lua', which loads lib/*.lua from the nuikit resource
+   * (LoadResourceFile('nuikit', 'lib/…') serves packages/core/lua). "none": no runtime at all.
+   */
+  runtime?: "vendored" | "import" | "none";
+  /** "import" only: pretend the nuikit resource isn't there (LoadResourceFile returns nil). */
+  runtimeMissing?: boolean;
 }
 
 type Handler = { resource: string; fn: (...args: unknown[]) => unknown };
@@ -214,7 +223,25 @@ export async function createClient(options: { syncEvents?: boolean; onNuiMessage
       exports = setmetatable({}, { __call = function() end })
     `);
     if (startOptions.before) await lua.doString(startOptions.before);
-    await lua.doString(SOURCE);
+    const runtime = startOptions.runtime ?? "vendored";
+    if (runtime === "vendored") await lua.doString(SOURCE);
+    else if (runtime === "import") {
+      g.set("__nuikitLib", (file: string) => {
+        if (startOptions.runtimeMissing) return undefined;
+        const m = /^lib\/(nuikit|bridge|host)\.lua$/.exec(file);
+        return m ? lua_(`${m[1]}.lua`) : undefined;
+      });
+      await lua.doString(`
+        local prev = LoadResourceFile
+        LoadResourceFile = function(r, f)
+          if r == 'nuikit' and f:sub(1, 4) == 'lib/' then return __nuikitLib(f) end
+          if prev then return prev(r, f) end
+        end
+        IsDuplicityVersion = IsDuplicityVersion or function() return false end
+      `);
+      g.set("__nuikitInit", lua_("init.lua"));
+      await lua.doString(lua_("init.lua"));
+    }
     for (const file of startOptions.scripts ?? []) await lua.doString(lua_(file));
     flush();
     trigger("onClientResourceStart", name);

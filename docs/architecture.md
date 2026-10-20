@@ -127,7 +127,8 @@ resource that declares `nuikit_renderer 'notify'` and ships a module replaces th
 still themed by the tokens and stacked by the runtime. Renderer packs and themes are what sellers build and sell.
 
 This makes the host's module loader core infrastructure, used for every renderer. Hosting whole screens in
-nuikit's frame stays opt-in until the in-game process measurement (`docs/host.md`).
+nuikit's frame stays opt-in: measured in game, FiveM already shares one browser process across every NUI frame,
+so hosting saves ~5 MB, not a process (`docs/host.md`).
 
 ### 5. Screens: the protocol
 
@@ -183,7 +184,7 @@ recipes, from a scripted session (join, spawn, menus, a job, inventory, death). 
 ## Plan (0.6)
 
 1. **`@nuikit/init.lua` and `nk`**: the runtime as an importable library; the kit's systems move off vendored
-   Lua.
+   Lua. *Built on `feat/runtime`: the kit's systems and the template import it; the bridge loads lazily.*
 2. **Intent schemas and generation**, default renderers lifted from the ox_lib override into 0.5 components,
    rendered in nuikit's frame.
 3. **Services**: camera and controls next to surfaces.

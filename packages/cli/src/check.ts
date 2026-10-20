@@ -48,7 +48,7 @@ export const RULES: Record<RuleId, { level: Level; description: string }> = {
   "focus/direct": { level: 2, description: "SetNuiFocus / SetNuiFocusKeepInput called outside nuikit.lua" },
   "focus/no-release": { level: 2, description: "Focus taken directly and never released when the resource stops" },
   "escape/adhoc": { level: 2, description: "Escape handled with a keydown listener that posts a close callback, not through surfaces" },
-  "native/runtime": { level: 3, description: "Doesn't use the nuikit runtime (nuikit.lua + nuikit-core)" },
+  "native/runtime": { level: 3, description: "Doesn't use the nuikit runtime (@nuikit/init.lua or nuikit.lua, + nuikit-core)" },
   "native/components": { level: 3, description: "Doesn't build on shadcn/ui or nuikit registry components" },
   "perf/remote-asset": { level: 0, description: "Font or asset loaded from the network instead of the resource" },
   "perf/frame-send": { level: 0, description: "NUI message sent from a Wait(0) loop (every frame)" },
@@ -444,7 +444,8 @@ function readManifest(root: string): Manifest | null {
       src,
       page: page ? { type: page[1] as "ui_page" | "loadscreen", path: page[2]!, offset: page.index! + page[0].indexOf(page[1]!) } : undefined,
       protocol: protocol?.[1],
-      loadsNuikitLua: /["'][^"']*nuikit\.lua["']/.test(code),
+      // a copy of nuikit.lua, or the runtime imported from the nuikit resource
+      loadsNuikitLua: /["'][^"']*nuikit\.lua["']/.test(code) || /["']@nuikit\/init\.lua["']/.test(code),
     };
   }
   return null;
@@ -503,7 +504,7 @@ export function checkResource(root: string, options: CheckOptions = {}): CheckRe
     }
     if (hasUi && !manifest.page) skipped.push("native/runtime", "native/components");
     else if (hasUi) {
-      const missing = [isUiPage && !lua.usesNuikitLua && !manifest.loadsNuikitLua ? "nuikit.lua isn't loaded" : null, ctx.hasScript && !ctx.importsCore ? "the page doesn't import nuikit-core" : null].filter(Boolean);
+      const missing = [isUiPage && !lua.usesNuikitLua && !manifest.loadsNuikitLua ? "the nuikit runtime isn't loaded (shared_script '@nuikit/init.lua')" : null, ctx.hasScript && !ctx.importsCore ? "the page doesn't import nuikit-core" : null].filter(Boolean);
       if (!uiFiles.some((f) => /\.(m?[jt]sx?|vue|svelte|html?)$/.test(f.rel) && !f.built)) missing.push("no page source to run nuikit-core");
       if (missing.length) report("native/runtime", manifest.page?.offset ?? 0, `Not on the nuikit runtime: ${missing.join("; ")}`);
     } else skipped.push("native/runtime");

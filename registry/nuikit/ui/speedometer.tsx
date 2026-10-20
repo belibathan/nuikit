@@ -13,9 +13,23 @@ import { Progress } from "@/components/ui/progress"
  * resolution scale like the rest of the UI.
  *
  * Feed it from Lua at ~10Hz: NUI.send('hud:vehicle', { speed = 87, rpm = 0.62, gear = 3, fuel = 41 })
+ *
+ * Live (the game's frame rate, no React render): stream speed and rpm from Lua (NUI.stream) and
+ * follow them with useFollow, writing [data-slot=speedometer-rpm] (style.strokeDasharray =
+ * speedometerDash(rpm, size), transition none) and [data-slot=speedometer-speed]; pass `redline`
+ * yourself. See systems/nuikit_hud.
  */
 const SWEEP = 240
 const STROKE = 3
+/** Past this rpm (0–1) the arc and the gear turn destructive. */
+const SPEEDOMETER_REDLINE = 0.88
+
+/** The rpm arc's stroke-dasharray for an rpm (0–1) on a speedometer of `size`. */
+function speedometerDash(rpm: number, size = 192) {
+  const circumference = 2 * Math.PI * (size / 2 - STROKE)
+  const value = Math.max(0, Math.min(1, rpm))
+  return `${(circumference * SWEEP * value) / 360} ${circumference}`
+}
 
 function Speedometer({
   className,
@@ -25,6 +39,7 @@ function Speedometer({
   fuel,
   unit = "mph",
   size = 192,
+  redline: redlineProp,
   style,
   ...props
 }: React.ComponentProps<"div"> & {
@@ -37,11 +52,13 @@ function Speedometer({
   unit?: string
   /** Diameter in px at 1080p. */
   size?: number
+  /** Past the redline; by default rpm > 0.88. For a live gauge whose rpm you write yourself. */
+  redline?: boolean
 }) {
   const r = size / 2 - STROKE
   const c = size / 2
   const value = Math.max(0, Math.min(1, rpm))
-  const redline = value > 0.88
+  const redline = redlineProp ?? value > SPEEDOMETER_REDLINE
   const circumference = 2 * Math.PI * r
   const arc = (circumference * SWEEP) / 360
   const start = 90 + (360 - SWEEP) / 2
@@ -69,6 +86,7 @@ function Speedometer({
           transform={`rotate(${start} ${c} ${c})`}
         />
         <circle
+          data-slot="speedometer-rpm"
           cx={c}
           cy={c}
           r={r}
@@ -81,7 +99,7 @@ function Speedometer({
         />
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span className="text-5xl leading-none font-semibold tracking-tight tabular-nums">{Math.round(speed)}</span>
+        <span data-slot="speedometer-speed" className="text-5xl leading-none font-semibold tracking-tight tabular-nums">{Math.round(speed)}</span>
         <span className="mt-1 text-xs font-medium text-muted-foreground">{unit}</span>
       </div>
       <div className="absolute inset-x-0 bottom-0 flex flex-col items-center gap-2">
@@ -107,4 +125,4 @@ function Speedometer({
   )
 }
 
-export { Speedometer }
+export { Speedometer, speedometerDash, SPEEDOMETER_REDLINE }

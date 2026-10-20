@@ -7,6 +7,8 @@ description 'nuikit HUD: vitals, needs, voice, money, job and vehicle, on Qbox, 
 repository 'https://github.com/belibathan/nuikit'
 version '0.4.0'
 
+dependency 'nuikit'
+
 ui_page 'web/dist/index.html'
 nuikit_protocol '1'
 -- With the nuikit host running, nuikit renders this module in its own frame and the ui_page
@@ -18,10 +20,12 @@ files {
   'web/dist/**/*',
 }
 
-shared_script 'config.lua'
+shared_scripts {
+  '@nuikit/init.lua',
+  'config.lua',
+}
 
 client_scripts {
-  'client/nuikit.lua',
-  'client/bridge.lua',
+  'client/minimap.lua',
   'client/main.lua',
 }

@@ -20,8 +20,13 @@ server_scripts {
 ui_page 'web/dist/index.html'
 nuikit_protocol '1'
 
--- theme.css is still served: older nuikit UIs (and the fallback path of new ones) read it directly.
+-- init.lua + lib/: the runtime other resources import (shared_script '@nuikit/init.lua'), loaded into
+-- each of them from here. theme.css is still served: older nuikit UIs (and the fallback path of new ones)
+-- read it directly.
 files {
+  'init.lua',
+  'lib/nuikit.lua',
+  'lib/bridge.lua',
   'theme.css',
   'web/dist/index.html',
   'web/dist/**/*',
@@ -29,7 +34,7 @@ files {
 
 -- client.lua: player UI preferences and the theme for override pages. host.lua: the host.
 client_scripts {
-  'client/nuikit.lua',
-  'client/host.lua',
+  'lib/nuikit.lua',
+  'lib/host.lua',
   'client.lua',
 }

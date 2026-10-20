@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Kbd, KbdGroup } from "@/components/ui/kbd";
+import { Separator } from "@/components/ui/separator";
 import { useT } from "@/lib/locale";
 import { cn } from "@/lib/utils";
 import { exit } from "@/state/actions";
@@ -107,28 +108,32 @@ function UsefulControls() {
   );
 }
 
+/** The action bar along the bottom: amount, the Use and Give drop zones, close and help. */
 export function Controls() {
   const t = useT();
   return (
-    <div className="nk-panel nk-enter flex w-44 flex-col self-center overflow-hidden">
-      <div className="flex flex-col gap-2 p-3">
+    <div className="nk-panel nk-enter flex items-center gap-2 p-2">
+      <div className="w-32">
         <AmountInput />
+      </div>
+      <div className="w-36">
         <DropZone id="use" icon={<SparklesIcon />}>
           {t("ui_use")}
         </DropZone>
+      </div>
+      <div className="w-36">
         <DropZone id="give" icon={<HandIcon />}>
           {t("ui_give")}
         </DropZone>
       </div>
-      <footer className="nk-panel-footer px-3 py-2">
-        <Button variant="ghost" size="sm" className="flex-1 justify-between px-2 font-medium" onClick={exit}>
-          {t("ui_close")}
-          <Kbd>Esc</Kbd>
-        </Button>
-        <Button variant="ghost" size="icon" className="size-8 text-muted-foreground" onClick={() => ui.set({ help: true })} aria-label={t("ui_usefulcontrols")}>
-          <CircleHelpIcon />
-        </Button>
-      </footer>
+      <Separator orientation="vertical" className="mx-1 h-6!" />
+      <Button variant="ghost" size="sm" className="h-10 gap-2 px-3 font-medium" onClick={exit}>
+        {t("ui_close")}
+        <Kbd>Esc</Kbd>
+      </Button>
+      <Button variant="ghost" size="icon" className="size-10 text-muted-foreground" onClick={() => ui.set({ help: true })} aria-label={t("ui_usefulcontrols")}>
+        <CircleHelpIcon />
+      </Button>
       <UsefulControls />
     </div>
   );

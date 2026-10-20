@@ -1,4 +1,4 @@
 {
-  "lua": ["nuikit.lua", "bridge.lua"],
-  "components": ["badge", "progress", "vital", "speedometer"]
+  "lua": [],
+  "components": ["badge", "progress", "speedometer", "meter", "stat", "hud-chip"]
 }

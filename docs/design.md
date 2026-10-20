@@ -65,10 +65,51 @@ screen is the same size relative to the game at every resolution. Design at 1080
 
 ## Kit utilities
 
-`nk-panel` `nk-panel-header` `nk-panel-body` `nk-panel-footer` · `nk-title` `nk-display` `nk-label` `nk-num` ·
-`nk-row` `nk-scroll` · `nk-chip` `nk-chip-active` `nk-hud` `nk-track` `nk-shadow` · `nk-edge` (`--nk-edge`) · `nk-enter`.
-Defined once in every synced `index.css`; never redefine an `nk-*` name locally. `nk-panel`'s depth is a
-`box-shadow`, so mark a selected panel with `outline`, not `ring-*`.
+`nk-panel` `nk-panel-header` `nk-panel-header-stack` `nk-panel-title-row` `nk-panel-body` `nk-panel-footer` ·
+`nk-title` `nk-display` `nk-label` `nk-num` · `nk-row` `nk-scroll` · `nk-field` `nk-field-label` ·
+`nk-chip` `nk-chip-active` `nk-hud` `nk-track` `nk-shadow` · `nk-edge` (`--nk-edge`) `nk-anchor-*` `nk-first-row` · `nk-enter`.
+Defined once in `packages/create-nuikit/kit.css` and inlined into every synced `index.css`; never redefine an
+`nk-*` name locally. `nk-panel`'s depth is a `box-shadow`, so mark a selected panel with `outline`, not `ring-*`.
 
 Sizes are in rem (Tailwind's scale), never px, so they follow the resolution scale.
-Reference implementation: `systems/nuikit_pause`.
+Reference implementation: `systems/nuikit_pause`. The registry components (`panel`, `menu-row`, `stat`,
+`meter`, `hud-chip`, …) are these utilities with props; prefer them over the raw classes.
+
+## Recipes
+
+**Two-row header.** A header that carries tabs, a search or a meter under its title:
+
+```tsx
+<header className="nk-panel-header-stack">
+  <div className="nk-panel-title-row">
+    <h2 className="nk-title flex-1 truncate">Wardrobe</h2>
+    <span className="nk-label">Unsaved changes</span>
+  </div>
+  <TabsList className="w-full">…</TabsList>
+</header>
+```
+
+**Field row.** A control in a form panel gets a label row: name, optional hint, then value and reset on the right.
+
+```tsx
+<div className="nk-field">
+  <div className="nk-field-label">
+    <span className="truncate">Nose width</span>
+    <span className="ml-auto flex items-center gap-1">
+      <Button variant="ghost" size="icon-xs" aria-label="Reset"><RotateCcwIcon /></Button>
+      <span className="nk-num text-muted-foreground">0.40</span>
+    </span>
+  </div>
+  <Slider … />
+</div>
+```
+
+**Anchoring.** Anything pinned to the screen sits `--nk-edge` (24px) from it: `nk-anchor-tl` `-tr` `-bl` `-br` for corners,
+`nk-anchor-t` `-b` `-l` `-r` for the middle of an edge. They are `position: absolute`, so the full-screen root is
+their container, and the edge-centred ones centre with auto margins (no transform for `nk-enter` or a dialog to fight).
+Set `--nk-edge` on the root (or add `nk-edge`) to move every anchor at once.
+
+**First-row alignment.** A floating menu that opens beside a point (the target eye, the cursor, a row it came from)
+lines its first row up with that point, not its top edge. Put the panel's top on the point and add `nk-first-row`:
+it pulls the panel up by the 1px border, the 8px body padding and half a 40px row. Leave a 16px (`ml-4` / `mt-4`) gap
+between the point and the panel.
