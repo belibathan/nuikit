@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { flushSync } from "react-dom";
 import { Meter } from "@/components/ui/meter";
 import { Panel } from "@/components/ui/panel";
 import { post, useOx } from "@/lib/nui";
@@ -27,11 +28,16 @@ function useRun() {
   const start = (duration: number, label?: string, position?: string) => {
     const ms = Math.max(0, Number(duration) || 0);
     clearTimeout(timer.current);
-    setRun({ id: ++id.current, duration: ms, label, position });
-    setOpen(true);
-    // ≥ 50 ms so a 0 ms run still mounts before it hides; otherwise usePresence never sees it open
-    // and progressComplete is never posted (Lua would wait for a cancel). §9.2 only forbids < duration − 100.
-    timer.current = setTimeout(() => setOpen(false), Math.max(ms, 50));
+    // Commit "open" now. The message that starts a run isn't a React event, so React would render
+    // it later, on its scheduler; a short run's own timer can fire first, and open → true → false
+    // then batch into one render where it never opened: usePresence has nothing to exit and
+    // progressComplete is never posted (Lua waits for a cancel). flushSync makes every run, 0 ms
+    // included, open for at least one commit before it can close.
+    flushSync(() => {
+      setRun({ id: ++id.current, duration: ms, label, position });
+      setOpen(true);
+    });
+    timer.current = setTimeout(() => setOpen(false), ms);
   };
   const stop = () => {
     clearTimeout(timer.current);
