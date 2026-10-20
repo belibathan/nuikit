@@ -25,12 +25,14 @@ import { Progress } from "@/components/ui/progress"
  * (never an animation event, so it still fires with motion off). Restart it with a new `key`. It
  * glides from tick to tick and reaches 100% exactly at `duration` (see timedStep()).
  */
+// The bar's thickness is the identity's (--nk-meter-height: --nk-gauge-track, 4px in Graphite);
+// sm and lg step it down and up from there.
 const meterVariants = cva("min-w-0", {
   variants: {
     size: {
-      sm: "[--meter-h:0.25rem]",
-      default: "[--meter-h:0.375rem]",
-      lg: "[--meter-h:0.5rem]",
+      sm: "[--meter-h:max(0.125rem,calc(var(--nk-meter-height,0.25rem)*0.75))]",
+      default: "[--meter-h:var(--nk-meter-height,0.25rem)]",
+      lg: "[--meter-h:calc(var(--nk-meter-height,0.25rem)*1.5)]",
     },
   },
   defaultVariants: {
@@ -218,6 +220,45 @@ function useTimedFill(duration: number | undefined, onComplete?: () => void) {
   return state
 }
 
+/** The theme variable behind each tone (its `-rgb` channels colour the slab line). */
+const TONE_VAR: Record<MeterTone, string> = {
+  primary: "--brand",
+  foreground: "--foreground",
+  destructive: "--destructive",
+  success: "--success",
+  warning: "--warning",
+  info: "--info",
+  "chart-1": "--chart-1",
+  "chart-2": "--chart-2",
+  "chart-3": "--chart-3",
+  "chart-4": "--chart-4",
+  "chart-5": "--chart-5",
+  health: "--vital-health",
+  armor: "--vital-armor",
+  hunger: "--vital-hunger",
+  thirst: "--vital-thirst",
+  stress: "--vital-stress",
+}
+
+/** Calls `onCancel` when `key` is pressed (any case) while mounted; never while typing in a field. */
+function useCancelKey(key: string | undefined, onCancel?: () => void) {
+  const cancel = React.useRef(onCancel)
+  React.useEffect(() => {
+    cancel.current = onCancel
+  })
+  const armed = !!key && onCancel !== undefined
+  React.useEffect(() => {
+    if (!armed || !key) return
+    const down = (e: KeyboardEvent) => {
+      const el = e.target as HTMLElement | null
+      if (e.repeat || (el && (el.tagName === "INPUT" || el.tagName === "TEXTAREA" || el.isContentEditable))) return
+      if (e.key.toLowerCase() === key.toLowerCase()) cancel.current?.()
+    }
+    window.addEventListener("keydown", down)
+    return () => window.removeEventListener("keydown", down)
+  }, [key, armed])
+}
+
 function Meter({
   className,
   size,
@@ -234,6 +275,10 @@ function Meter({
   segments,
   duration,
   onComplete,
+  variant = "bar",
+  cancelKey,
+  cancelLabel = "Cancel",
+  onCancel,
   style,
   ...props
 }: Omit<React.ComponentProps<"div">, "children"> &
@@ -263,6 +308,19 @@ function Meter({
     duration?: number
     /** With `duration`: called once when the time is up, from a timer. */
     onComplete?: () => void
+    /**
+     * bar (default): the bar, with an optional label row. slab: the timed-progress slab on the game
+     * (design v2 §4.5, `nk-slab-stack`): the label, the cancel key and its verb, a thin line. The
+     * successor of `task-progress`: `<Meter variant="slab" label="Repairing" duration={5000}
+     * cancelKey="X" onCancel={cancel} />`.
+     */
+    variant?: "bar" | "slab"
+    /** slab: the key that cancels, shown as a key chip; with `onCancel` the meter listens for it. */
+    cancelKey?: string
+    /** slab: the verb after the cancel key. Default "Cancel". */
+    cancelLabel?: React.ReactNode
+    /** slab: called when `cancelKey` is pressed (KeyboardEvent.key, any case). */
+    onCancel?: () => void
   }) {
   const run = useTimedFill(duration, onComplete)
   const timed = duration !== undefined && duration > 0
@@ -274,7 +332,7 @@ function Meter({
   const critical = level !== "normal"
   const custom = !!color && !critical
   const t = custom ? CUSTOM : TONES[critical ? "destructive" : tone] ?? TONES.primary
-  const trackClass = track === "game" ? "bg-scrim/35" : t.track
+  const trackClass = track === "game" ? "nk-track" : t.track
   const fillClass = custom ? CUSTOM_FILL : FILL[critical ? "destructive" : tone] ?? FILL.primary
   // Timed: each step glides linearly onto the value it will be at the next tick, in --meter-step
   // (the time until then); with motion off kit.css zeroes it and timedStep draws the true value.
@@ -289,6 +347,68 @@ function Meter({
   // flex-1 only beside an icon: in the stacked column it would collapse the bar's height to 0
   const grow = stacked ? "w-full" : "flex-1"
 
+  useCancelKey(variant === "slab" ? cancelKey : undefined, onCancel)
+
+  if (variant === "slab") {
+    const toneVar = custom ? undefined : (TONE_VAR[critical ? "destructive" : tone] ?? TONE_VAR.primary)
+    return (
+      <div
+        data-slot="meter"
+        data-variant="slab"
+        data-level={level}
+        data-complete={(timed && percent >= 100) || undefined}
+        className={cn("nk-slab-stack", className)}
+        style={
+          {
+            ...style,
+            ...(toneVar
+              ? { "--nk-slab-tone-rgb": toneVar === "--brand" ? "var(--brand-rgb, var(--primary-rgb))" : `var(${toneVar}-rgb)` }
+              : { "--nk-slab-line-fill": color }),
+          } as React.CSSProperties
+        }
+        {...props}
+      >
+        {(label !== undefined || valueText !== undefined || cancelKey) && (
+          <div data-slot="meter-label-row" className="nk-slab-stack-row">
+            <span data-slot="meter-label" className="nk-caption min-w-0 truncate">
+              {label}
+            </span>
+            {valueText !== undefined && (
+              <span data-slot="meter-value" className="nk-num">
+                {valueText}
+              </span>
+            )}
+            {cancelKey && (
+              <>
+                <kbd data-slot="meter-cancel-key" className="nk-slab-key">
+                  {cancelKey}
+                </kbd>
+                <span data-slot="meter-cancel-label">{cancelLabel}</span>
+              </>
+            )}
+          </div>
+        )}
+        <div
+          role="progressbar"
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-valuenow={Math.round(percent)}
+          aria-label={typeof label === "string" ? label : props["aria-label"]}
+          data-slot="meter-line"
+          className="nk-slab-line"
+          // The fill is a scaleX of --nk-slab-progress (kit.css). A timed run glides each step in
+          // the step's time, through the line's own --nk-time.
+          style={
+            {
+              "--nk-slab-progress": drawn / 100,
+              ...(timed && { "--nk-time": `${run.ms}ms` }),
+            } as React.CSSProperties
+          }
+        />
+      </div>
+    )
+  }
+
   const bar =
     segments && segments > 1 ? (
       <div
@@ -300,7 +420,7 @@ function Meter({
         className={cn("flex min-w-0 gap-0.5", grow)}
       >
         {segmentFills(drawn, segments).map((fill, i) => (
-          <div key={i} data-slot="meter-segment" className={cn("relative h-(--meter-h) flex-1 overflow-hidden rounded-full", trackClass)}>
+          <div key={i} data-slot="meter-segment" className={cn("relative h-(--meter-h) flex-1 overflow-hidden rounded-(--nk-meter-radius)", trackClass)}>
             <div className={cn("h-full transition-[width]", t.fill, timed && "duration-(--meter-step) ease-linear")} style={{ width: `${fill}%` }} />
           </div>
         ))}
@@ -338,9 +458,11 @@ function Meter({
         <>
           <div className="flex min-w-0 items-center gap-1.5">
             {iconEl}
-            {label !== undefined && <span className="nk-label min-w-0 flex-1 truncate">{label}</span>}
+            {label !== undefined && <span data-slot="meter-label" className="nk-caption min-w-0 flex-1 truncate">{label}</span>}
             {valueText !== undefined && (
-              <span className={cn("nk-num ml-auto shrink-0 text-xs font-medium", critical && "text-destructive")}>{valueText}</span>
+              <span data-slot="meter-value" className={cn("nk-num ml-auto shrink-0 text-(length:--nk-caption-size) leading-4 font-medium", critical && "text-destructive")}>
+                {valueText}
+              </span>
             )}
           </div>
           {bar}

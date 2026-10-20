@@ -62,14 +62,11 @@ export function TextUi() {
           keys={keys}
           // ox_lib's icon is fixed width and takes the theme's muted colour unless the script sets one
           icon={data.icon ? <Icon icon={data.icon} color={data.iconColor} animation={data.iconAnimation} className="size-4" /> : undefined}
-          // the label wraps (KeyPrompt truncates one line; a script's text can be long or Markdown)
-          label={<Markdown gfm className="leading-5 whitespace-normal">{label}</Markdown>}
+          // the label wraps (a script's text can be long or Markdown); with no leading key, no key chip
+          wrap
+          label={<Markdown gfm className="leading-5">{label}</Markdown>}
           style={parseStyle(data.style)}
-          className={cn(
-            data.alignIcon === "top" && "items-start",
-            // TODO(components): drop once key-prompt takes no keys (Requests in the PR)
-            keys.length === 0 && "pl-3 [&>[data-slot=key-prompt-keys]]:hidden",
-          )}
+          className={cn(data.alignIcon === "top" && "items-start")}
         />
       </KeyPromptStack>
     </div>
