@@ -1,8 +1,7 @@
 # nuikit_hud
 
-The HUD for `[nuikit]`: vitals, voice, money and job; a vehicle cluster with a real gauge for cars,
-bikes and boats and flight instruments for aircraft; a themed frame around GTA's minimap, a location
-strip and a heading strip. Everything is anchored to GTA's safe zone and the minimap's real rectangle,
+The HUD for `[nuikit]`: vitals, voice, money and job; ammo; a vehicle cluster for cars, bikes and boats
+and flight instruments for aircraft; GTA's minimap with the compass on its ring, and the location. Everything is anchored to GTA's safe zone and the minimap's real rectangle,
 styled only by the server's theme (`nuikit/theme.css`), and every element can be turned off in
 `config.lua`.
 
@@ -17,6 +16,23 @@ resources report, it never ejects anyone or holds a speed.
 3. `ensure nuikit` then `ensure nuikit_hud`.
 4. **Qbox / QBCore:** stress gain and its screen effects live inside `qbx_hud` / `qb-hud`, so stopping them turns stress off. `ensure nuikit_stress` (same events, same metadata) to keep it.
 
+## Layouts
+
+`Config.layout` places the same parts two ways. Each part is its own component (`web/src/hud/*`): move it,
+restyle it through tokens, or replace it.
+
+| Part | `compact` (default) | `classic` (0.6) |
+|---|---|---|
+| Map | A 12rem circle top right on the safe area: a thin ring, cardinals and ticks that turn on it, the heading in degrees above a lubber mark, the waypoint distance as a tag on the ring (its arrow points at the waypoint) | A framed square bottom left, N on the frame |
+| Location | Under the map: zone, street, the cross street smaller; postal beside the zone | A strip above the map with a heading badge |
+| Money and job | Under the location | Top right |
+| Vitals | Bottom left: labelled pills with a thin level line (health, armor), status dots (hunger, thirst, stress), a mic dot, the radio channel | Rings with values beside the map |
+| Vehicle | Bottom right: segmented rpm ticks with the gear in the centre, speed with dimmed leading zeros, a separate fuel arc, telltales as a column lit only when on | The large arc / bar / digital gauge, shift lights, telltale row, worded warnings |
+| Ammo | Over the vehicle, bottom right | Under the money, top right |
+| Heading strip | None (the ring carries it) | Top centre |
+
+A 0.6 `config.lua` (`layout = { source = … }`) keeps `classic`. Aircraft use the flight instruments in both.
+
 ## Features
 
 | Area | What it shows | Where |
@@ -25,6 +41,7 @@ resources report, it never ejects anyone or holds a speed.
 | Voice | Range (pma-voice's mode name, or the distance) while talking or when it changes; the radio channel while on one | End of the vitals row |
 | Wallet | Cash (always) and bank (on change) with the difference (+$500 / −$500); job, grade and duty | Top right |
 | Vehicle cluster | Speed (mph / km/h, per player), RPM on an arc with ticks and a redline zone, a needle on the fill, gear (R / N / 1–n), five shift lights that flash at the redline, fuel, turn signals and hazards | Bottom right |
+| Ammo | `12 / 48` (clip / reserve) with a weapon glyph; thrown weapons show the count. Only while armed with a gun or a throwable; an empty clip turns the warning colour | See Layouts |
 | Telltales | Lights (low / high beam), seatbelt, cruise (with its speed), handbrake, engine and body damage. Lit in their colour; unlit ones stay faintly in place so the row never jumps | Under the gauge |
 | Warnings | "Fasten seatbelt" (moving, unbuckled), "Low fuel 7 %", "Engine 18 %" | Under the telltales |
 | Gauge styles | `arc`, `bar`, `digital`, from the identity's `--nk-gauge-style` (or forced in config) | |
@@ -44,9 +61,13 @@ Everything is in `config.lua` with a comment on each line. The main switches:
 |---|---|
 | `units`, `playerUnits` | `'mph'` / `'kmh'`; let players choose |
 | `radar` | `'vehicle'`, `'always'`, `'never'` |
-| `layout.source` | `'game'` (read GTA's HUD alignment, fall back when it looks wrong) or `'stage'` (the 0.5.0 rule) |
-| `minimap.enabled` | `false` leaves GTA's radar alone; the HUD still lines up beside its stock rectangle |
-| `minimap.shape`, `size`, `band`, `anchor`, `compass`, `location` | as in 0.5.0 |
+| `layout` | `'compact'` (default) or `'classic'` (see Layouts) |
+| `area` | `'game'` (read GTA's HUD alignment, fall back when it looks wrong) or `'stage'` (the 0.5.0 rule); was `layout.source` |
+| `minimap.style` | `'ring'` (default: nuikit places GTA's radar and draws the ring or frame) or `'stock'` (GTA's radar untouched, put back to GTA's own placement; the HUD lays out around it). `enabled = false` is the 0.6 spelling of `'stock'` |
+| `minimap.yieldTo` | Minimap resources nuikit gives way to: when one is started the style becomes `'stock'` and F8 says so once. `nil` = the built-in list (`circleminimap`, `squaremap`, `minimap`, `jg-hud`, `ps-hud`, `qb-hud`, `qbx_hud`), `{}` = never |
+| `minimap.shape`, `size`, `band`, `anchor` | `nil` takes the layout's value (compact: circle, 12rem, 0.125rem, top-right; classic: square, 15rem, 0.375rem, bottom-left) |
+| `minimap.compass`, `location` | cardinals and heading on the ring / frame; the location next to the map |
+| `ammo` | `false` hides the ammo |
 | `vitals.enabled`, `vitals.health` … `vitals.stress` | `'auto'`, `'always'`, `false`; `low`, `high`, `linger` (ms) |
 | `needs`, `voice` | hide hunger/thirst/stress, hide voice |
 | `wallet.cash`, `wallet.bank`, `wallet.job` | `'always'`, `'change'`, `false` |
@@ -56,7 +77,7 @@ Everything is in `config.lua` with a comment on each line. The main switches:
 | `vehicle.redline`, `bicycles`, `airUnits`, `boatUnits` | rpm 0.2–1; show on bicycles; `'kts'` or `'units'` |
 | `fuel` | `'auto'`, `'ox_fuel'`, `'LegacyFuel'`, `'cdn-fuel'`, `'ps-fuel'`, `'lc_fuel'`, `'native'`, `false` |
 | `location.enabled`, `onFoot`, `crossing`, `zone`, `postal`, `waypoint` | `postal`: `'auto'` (nearest-postal), a resource name, `false` |
-| `compass.enabled`, `compass.onFoot` | the heading strip |
+| `compass.enabled`, `compass.onFoot` | the heading strip (classic) |
 
 The look is the identity's: colours from the theme tokens, and these identity / component tokens when
 the theme sets them (design v2): `--brand`, `--font-display`, `--font-numeric`, `--nk-label-case`,
@@ -78,7 +99,9 @@ exports.nuikit_hud:setCruise(true, 80)
 ```
 
 Also read without any change to your scripts: `LocalPlayer.state.seatbelt` and `LocalPlayer.state.cruise`
-(boolean, or the cruise speed as a number), and qb-smallresources' `seatbelt:client:ToggleSeatbelt`.
+(boolean, or the cruise speed as a number), and qb-smallresources' `seatbelt:client:ToggleSeatbelt`, and qbx_smallresources' `qbx_cruise`, which only fires
+`seatbelt:client:ToggleCruise` (no arguments) on and off: the HUD follows the toggle and shows the speed
+the car had when it turned on.
 Leaving the vehicle resets both. Until something reports them, the seatbelt and cruise telltales stay
 hidden (`'auto'`).
 
@@ -95,8 +118,8 @@ hidden (`'auto'`).
 Live values (protocol §5.7, `NUI.stream`, ≤ 30 a second and only when they change): `hud:vehicle:speed`
 (whole units), `hud:vehicle:rpm` (0.01), `hud:vehicle:heading` (1°, aircraft and boats),
 `hud:vehicle:altitude` (1 ft / m, ≤ 15 a second), `hud:minimap:heading` (the camera's bearing, 0.1°).
-Everything else is sent on change: `hud:vehicle`, `hud:location`, `hud:minimap`, `hud:minimap:frame`,
-`hud:layout`, `nuikit:player`. The contract is `web/src/nui.d.ts`.
+Everything else is sent on change: `hud:vehicle`, `hud:location` (with the waypoint's bearing in 5° steps),
+`hud:weapon`, `hud:minimap`, `hud:minimap:frame`, `hud:layout`, `nuikit:player`. The contract is `web/src/nui.d.ts`.
 
 ## Cost
 
@@ -107,13 +130,14 @@ Everything else is sent on change: `hud:vehicle`, `hud:location`, `hud:minimap`,
 | Vehicle (`main.lua`) | every 400 ms: one `GetVehiclePedIsIn` | every 33 ms: 2–4 natives + `push` (sends only on change); every 150 ms: ~15 natives + a flat-table compare, `hud:vehicle` only on change |
 | Radar, pause, location (`main.lua`) | every 500 ms: ~8 natives, `hud:location` only on change | every 250 ms |
 | Radar visibility (`minimap.lua`) | every 500 ms: 3 natives | every 250 ms |
-| Compass | every 33 ms while shown: 1 native + `push`, a message only while the camera turns | same |
+| Compass | every 33 ms while shown (compact: while the radar shows; classic: also the strip and badge): 1 native + `push`, a message only while the camera turns | same |
+| Weapon (`weapon.lua`) | every 500 ms unarmed: 1 native; every 100 ms armed: 3–4 natives, `hud:weapon` only on change | same |
 | HUD area / minimap placement | every 1.5 s: 2 natives (re-placed only on a change) | same |
 | Bridge (`nk.player`) | every 250 ms: ~8 natives + one `json.encode` | same |
 
 How that adds up (resmon averages a resource's script time over frames): a woken thread with a few
-natives costs roughly 0.005–0.02 ms. On foot that is about 2 + 2 + 4 + 0.7 slow wakes a second plus the
-compass at 30 a second, ≈ 0.4–0.6 ms of script time a second, which at 60 fps is **≈ 0.007–0.01 ms per
+natives costs roughly 0.005–0.02 ms. On foot that is about 2 + 2 + 4 + 2 + 0.7 slow wakes a second (10
+more while armed) plus the compass at 30 a second while the radar shows, ≈ 0.4–0.6 ms of script time a second, which at 60 fps is **≈ 0.007–0.01 ms per
 frame**, and less with the camera still. Driving adds the 30 Hz live loop and the 150 ms read, ≈ 1.5–2.5 ms
 a second, **≈ 0.03–0.045 ms per frame** at 60 fps (half that at 120 fps). No loop runs every frame
 (`Wait(0)`), and no message is sent when nothing changed. The page paints live values with
@@ -123,11 +147,25 @@ a second, **≈ 0.03–0.045 ms per frame** at 60 fps (half that at 120 fps). No
 
 - **Ultrawide.** The HUD area comes from `GetScriptGfxPosition` under 'L','B' alignment (the alignment
   the minimap components use). Its answer at 21:9 and 32:9 hasn't been seen in game; if it looks wrong
-  the HUD falls back to the 0.5.0 rule, and `layout.source = 'stage'` forces that. `Config.debug` prints
+  the HUD falls back to the 0.5.0 rule, and `area = 'stage'` forces that. `Config.debug` prints
   both to F8.
 - **Compass direction.** The bearing is GTA's camera yaw negated (GTA's 90° faces west). By the maths the
   0.5.0 compass used the yaw as is, which would put east and west the wrong way round on the round
   frame. Check: face east, the strip and the badge read E / 090, and N sits on your left.
+- **Compact map.** The ring is drawn from the rectangle Lua sends, the same numbers that place the radar,
+  so it should sit exactly on the circle; the heading room above it (1.75rem) and the waypoint arrow's
+  direction (bearing − camera heading) are browser-checked only.
+- **Radar width.** Component x/w are in 16:9-width units (height × 16/9) at every aspect; the in-game test
+  at 1.88:1 showed the measured HUD width left the radar 16 px short. `Config.debug` prints the radar's
+  width on screen next to the hole's.
+- **Putting the radar back.** `'stock'` and a resource stop restore GTA's frontend.xml placements
+  (minimap −0.0045 0.002 0.150 0.188888, mask 0.020 0.032 0.111 0.159, blur −0.03 0.022 0.266 0.237),
+  the square clip, GTA's mask and the north blip. On a stop the big-map flick that makes GTA re-read them
+  can't wait a frame; if the radar stays put until the next vehicle exit, that's why.
+- **Handbrake.** Lit from `GetVehicleHandbrake` or the driver holding INPUT_VEH_HANDBRAKE (76).
+- **Weapon groups.** `client/weapon.lua` maps `GetWeapontypeGroup` hashes (pistol, SMG, rifle, MG,
+  shotgun, sniper, heavy, thrown) to glyphs; melee, the stun gun and the petrol can show nothing.
+  `GetAmmoInClip` for thrown weapons isn't used (their count is the reserve).
 - **Natives** `GetVehicleIndicatorLights`, `GetVehicleHighGear`, `GetLandingGearState` and the
   `fPetrolTankVolume` handling field are read through `pcall` where they might be missing.
 - **Fuel exports** are called as `exports[name]:GetFuel(vehicle)`; a fork with another signature falls

@@ -45,6 +45,9 @@ const natives = `
   function GetVehicleBodyHealth() return 1000.0 end
   function GetIsVehicleEngineRunning() return true end
   function GetVehicleHandbrake() return false end
+  function GetPedInVehicleSeat() return 1 end
+  HANDBRAKE_KEY = false
+  function IsControlPressed() return HANDBRAKE_KEY end
   function GetVehicleIndicatorLights() return 0 end
   function GetVehicleLightsState() return true, 0, 0 end
   function GetEntityHeading() return 0.0 end

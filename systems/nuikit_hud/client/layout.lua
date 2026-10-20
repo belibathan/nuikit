@@ -92,13 +92,26 @@ function Layout.measure(width, height, safezone)
   return Layout.stage(width, height, safezone)
 end
 
+--- The width of one minimap component unit: a 16:9 width at this height, on every screen (the
+--- minimap components never use the wider HUD area GetScriptGfxPosition reports).
+function Layout.unit16(height) return height * 16.0 / 9.0 end
+
+--- GTA's own minimap component placements (frontend.xml), 'L','B': x, y, w, h. Restored whenever
+--- nuikit stops placing the radar.
+Layout.STOCK = {
+  minimap = { -0.0045, 0.002, 0.150, 0.188888 },
+  minimap_mask = { 0.020, 0.032, 0.111, 0.159 },
+  minimap_blur = { -0.03, 0.022, 0.266, 0.237 },
+}
+
 --- GTA's stock minimap rectangle in px (frontend.xml: x -0.0045, y 0.002, w 0.150, h 0.188888 in
 --- component units from the area's left and bottom). Where the radar is when nuikit doesn't place it.
 function Layout.stockMinimap(area)
-  local x, y, w, h = -0.0045, 0.002, 0.150, 0.188888
-  local px = area.left + x * area.unitW
+  local x, y, w, h = Layout.STOCK.minimap[1], Layout.STOCK.minimap[2], Layout.STOCK.minimap[3], Layout.STOCK.minimap[4]
+  local unitW = Layout.unit16(area.height or area.unitH)
+  local px = area.left + x * unitW
   local bottom = area.bottom + y * area.unitH
-  return { x = px, y = bottom - h * area.unitH, w = w * area.unitW, h = h * area.unitH }
+  return { x = px, y = bottom - h * area.unitH, w = w * unitW, h = h * area.unitH }
 end
 
 --- What goes to the page: the area's insets as fractions of the screen.

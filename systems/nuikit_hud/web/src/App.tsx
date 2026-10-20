@@ -65,7 +65,10 @@ function Compact({ settings, vehicle, location, weapon, layout, frame, state, pl
   const units = settings.units === "kmh" ? "kmh" : "mph";
   const mapShown = !!frame && !!state?.visible;
   const ring = mapShown && frame!.framed !== false && settings.frame !== false;
-  const vars = layoutVars(layout ?? stageLayout(w, h), null, w, h) as Record<string, string>;
+  // a map in the bottom-left corner (Config.minimap.style = 'stock', or a ring anchored there): the
+  // vitals sit beside its bottom edge instead of under it
+  const besideMap = !!frame && mapShown && frame.x < 0.5 && frame.y > 0.5;
+  const vars = layoutVars(layout ?? stageLayout(w, h), besideMap ? frame : null, w, h) as Record<string, string>;
   // the column (location, money) hangs under the map, or stands over it when the map is in a bottom corner
   let column: CSSProperties = {};
   if (frame) {
@@ -84,7 +87,7 @@ function Compact({ settings, vehicle, location, weapon, layout, frame, state, pl
         {settings.location !== false && location && <MapLocation location={location} units={units} waypoint={!ring} />}
         <Wallet player={player} settings={settings} inline compact />
       </div>
-      <div className="hud-anchor-bl">
+      <div className={besideMap ? "hud-beside-map" : "hud-anchor-bl"}>
         <VitalsCompact player={player} settings={settings} />
       </div>
       <div className="hud-anchor-br hud-br-stack">

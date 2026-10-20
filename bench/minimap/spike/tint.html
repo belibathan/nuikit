@@ -1,0 +1,35 @@
+<!doctype html>
+<!-- One radar tile, recoloured: the stock texture (nui-img) mapped to a two-stop ramp, dark
+     land/sea → the theme colour, light roads stay light. An SVG filter, so the canvas never has to
+     read pixels back (nui-img may be cross-origin). Bench only. -->
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      html, body { margin: 0; width: 100%; height: 100%; overflow: hidden; background: transparent; }
+      img { width: 100%; height: 100%; display: block; filter: url(#ramp); }
+    </style>
+  </head>
+  <body>
+    <svg width="0" height="0" style="position: absolute">
+      <filter id="ramp" color-interpolation-filters="sRGB">
+        <feColorMatrix type="saturate" values="0" />
+        <feComponentTransfer>
+          <feFuncR id="r" type="table" tableValues="0 1" />
+          <feFuncG id="g" type="table" tableValues="0 1" />
+          <feFuncB id="b" type="table" tableValues="0 1" />
+        </feComponentTransfer>
+      </filter>
+    </svg>
+    <img id="tile" alt="" />
+    <script>
+      const q = new URLSearchParams(location.search);
+      const tile = q.get("tile");
+      const hex = (q.get("hex") || "0f172a").padEnd(6, "0");
+      const c = [0, 2, 4].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255);
+      // dark end → the theme colour; light end → near white (roads, labels)
+      ["r", "g", "b"].forEach((ch, i) => document.getElementById(ch).setAttribute("tableValues", `${c[i]} 0.94`));
+      document.getElementById("tile").src = `https://nui-img/${tile}/${tile}`;
+    </script>
+  </body>
+</html>

@@ -33,7 +33,12 @@ const natives = `
   function GetVehicleEngineHealth() return 350.0 end
   function GetVehicleBodyHealth() return 905.0 end
   function GetIsVehicleEngineRunning() return ENGINE_ON end
-  function GetVehicleHandbrake() return true end
+  HANDBRAKE = true
+  function GetVehicleHandbrake() return HANDBRAKE end
+  function GetPedInVehicleSeat() return 1 end
+  HANDBRAKE_KEY = false
+  function IsControlPressed(_, c) return c == 76 and HANDBRAKE_KEY end
+  function GetVehiclePedIsIn() return 5 end
   function GetVehicleIndicatorLights() return 3 end
   function GetVehicleLightsState() return true, 1, 1 end
   function GetLandingGearState() return 3 end
@@ -279,5 +284,26 @@ describe("nuikit_hud: the waypoint bearing and the weapon (client/location.lua, 
     expect(sent().at(-1)).toEqual({ clip: 3, kind: "thrown" });
     await hud.run(`GROUP = -728555052 Weapon.tick()`);
     expect(sent().at(-1)).toBe(false);
+  });
+});
+
+describe("nuikit_hud: in-game fixes (Oct 20)", () => {
+  it("lights the handbrake while the driver holds the key, when GetVehicleHandbrake misses it", async () => {
+    const hud = await start();
+    expect(await hud.run(`HANDBRAKE = false return Vehicle.read(5, 'car', 'mph').handbrake`)).toBe(false);
+    expect(await hud.run(`HANDBRAKE_KEY = true return Vehicle.read(5, 'car', 'mph').handbrake`)).toBe(true);
+  });
+
+  it("follows qbx_cruise's bare toggle event, with the speed it held", async () => {
+    const hud = await start();
+    expect(await hud.run(`local on = Adapters.cruise(2.236936) return on`)).toBe(null);
+    await hud.run(`SPEED_MS = 26.8224 TriggerEvent('seatbelt:client:ToggleCruise')`);
+    expect(await hud.run(`return { Adapters.cruise(2.236936) }`)).toEqual([true, 60]);
+    await hud.run(`TriggerEvent('seatbelt:client:ToggleCruise')`);
+    expect(await hud.run(`return { Adapters.cruise(2.236936) }`)).toEqual([false]);
+    // leaving the vehicle ends it (qbx_cruise's loop stops without an event)
+    await hud.run(`TriggerEvent('seatbelt:client:ToggleCruise')`); // events are delivered after the call
+    await hud.run(`Adapters.leftVehicle()`);
+    expect(await hud.run(`local on = Adapters.cruise(2.236936) return on`)).toBe(false);
   });
 });

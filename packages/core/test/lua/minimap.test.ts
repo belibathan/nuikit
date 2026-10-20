@@ -20,6 +20,8 @@ const natives = `
   function GetNorthRadarBlip() return 9 end
   function SetBlipAlpha(_, a) NORTH_ALPHA = a end
   function SetRadarBigmapEnabled() end
+  STARTED = {}
+  function GetResourceState(r) return STARTED[r] and 'started' or 'missing' end
   function RequestScaleformMovie() return 1 end
   function CreateThread() end
   function Wait() end
@@ -192,5 +194,52 @@ describe("systems/nuikit_hud: the minimap", () => {
     expect(await hud.run(`Config.layout = { source = 'stage' } return Layout.preset()`)).toBe("classic");
     expect(await hud.run(`return Layout.source()`)).toBe("stage");
     expect(await hud.run(`Config.layout = 'compact' Config.area = nil return Layout.source()`)).toBe("game");
+  });
+
+  it("sizes the radar in 16:9 units at every aspect, so it fills its frame (1.78, 1.88, 2.33, 3.56)", async () => {
+    client = await createClient();
+    const hud = await client.start("nuikit_hud", { before: natives, scripts });
+    // the game's HUD area spans the screen (GetScriptGfxPosition), but the components don't
+    for (const [w, h] of [[1920, 1080], [2418, 1286], [2560, 1097], [5120, 1440]] as const) {
+      const area = `Layout.fromGfx(${w}, ${h}, 0.0, 1.0, 1.0, 2.0) or Layout.stage(${w}, ${h}, 1.0)`;
+      const [frame, , radar] = await hud.run<[any, number, any]>(`local a = ${area} return { Minimap.layout(${w}, ${h}, 1.0, a) }`);
+      const c = await hud.run<number[]>(`local a = ${area} local _, _, r = Minimap.layout(${w}, ${h}, 1.0, a) return { Minimap.component(r, ${w}, ${h}, 1.0, a) }`);
+      const unit = (h * 16) / 9;
+      expect(c[2]! * unit).toBeCloseTo(radar.w, 3); // on screen the radar is exactly the hole
+      expect(c[3]! * h).toBeCloseTo(radar.h, 3);
+      expect(radar.w).toBeCloseTo(radar.h, 3); // round stays round
+      expect(frame.x + frame.w).toBeLessThanOrEqual(w);
+    }
+    // the stock rectangle uses the same unit: 0.150 of a 16:9 width
+    const stock = await hud.run<any>(`local a = Layout.fromGfx(2418, 1286, 0.0, 1.0, 1.0, 2.0) a.height = 1286 return Layout.stockMinimap(a)`);
+    expect(stock.w).toBeCloseTo(0.15 * ((1286 * 16) / 9), 3);
+  });
+
+  it("style 'stock' and a live stop put GTA's radar back; a started minimap resource makes nuikit yield", async () => {
+    client = await createClient();
+    const hud = await client.start("nuikit_hud", { before: natives, scripts });
+    expect(await hud.run(`return Minimap.style()`)).toBe("ring");
+    await hud.run(`Layout.update() Minimap.apply()`);
+    await hud.run(`Config.minimap.style = 'stock' Minimap.applyStock()`);
+    expect(await hud.run(`return PLACED.minimap`)).toEqual([-0.0045, 0.002, 0.15, 0.188888]);
+    expect(await hud.run(`return PLACED.minimap_mask`)).toEqual([0.02, 0.032, 0.111, 0.159]);
+    expect(await hud.run(`return PLACED.minimap_blur`)).toEqual([-0.03, 0.022, 0.266, 0.237]);
+    expect(await hud.run(`return CLIP`)).toBe(0);
+    expect(await hud.run(`return NORTH_ALPHA`)).toBe(255);
+    expect(await hud.run(`return REPLACED`)).toBe(null);
+    const sent = hud.messages.filter((m) => m.action === "hud:minimap:frame").at(-1)!.data;
+    expect(sent.framed).toBe(false);
+
+    // a live restart after placing it
+    await hud.run(`Config.minimap.style = 'ring' PLACED = {} Minimap.apply() TriggerEvent('onClientResourceStop', GetCurrentResourceName())`);
+    expect(await hud.run(`return PLACED.minimap`)).toEqual([-0.0045, 0.002, 0.15, 0.188888]);
+
+    // another minimap resource: yield, and never write over its placement
+    await hud.run(`STARTED['circleminimap'] = true TriggerEvent('onClientResourceStart', 'circleminimap')`);
+    expect(await hud.run(`return Minimap.style()`)).toBe("stock");
+    expect(await hud.run(`PLACED = {} Minimap.applyStock() return PLACED.minimap`)).toBe(null);
+    // the list is configurable: {} never yields
+    await hud.run(`Config.minimap.yieldTo = {} TriggerEvent('onClientResourceStart', 'x')`); // delivered after the call
+    expect(await hud.run(`return Minimap.style()`)).toBe("ring");
   });
 });

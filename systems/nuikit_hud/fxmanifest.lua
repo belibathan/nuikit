@@ -9,7 +9,7 @@ version '0.6.0'
 
 dependency 'nuikit'
 
-ui_page 'http://localhost:5871'
+ui_page 'web/dist/index.html'
 nuikit_protocol '1'
 -- With the nuikit host running, nuikit renders this module in its own frame and the ui_page
 -- above stays an empty page (docs/host.md). Without it, the ui_page renders the HUD as before.

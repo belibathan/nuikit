@@ -26,6 +26,11 @@ Config = {
   --   compact: circle, 12rem, a 0.125rem ring, top-right;  classic: square, 15rem, 0.375rem, bottom-left
   minimap = {
     enabled = true,
+    -- 'ring': nuikit places GTA's radar and draws the ring / frame (default). 'stock': GTA's radar is
+    -- left as it is and the HUD lays out around it. A started minimap resource from `yieldTo` turns
+    -- this to 'stock' on its own (one line in F8 says which); nil uses the built-in list, {} never yields.
+    style = 'ring',
+    yieldTo = nil,
     shape = nil,             -- 'square' (rounded) or 'circle'
     size = nil,              -- the frame, in rem (1rem = 16px at 1080p)
     band = nil,              -- frame thickness, in rem

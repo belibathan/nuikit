@@ -190,11 +190,10 @@ export function MapLocation({ location, units, waypoint }: { location: HudLocati
       <span className="hud-loc-street">
         <span className="hud-loc-clip">{location.street}</span>
       </span>
-      {location.crossing && (
-        <span className="hud-loc-cross">
-          <span className="hud-loc-clip">{location.crossing}</span>
-        </span>
-      )}
+      {/* always there, so the money under it never moves when a crossing comes and goes */}
+      <span className="hud-loc-cross" aria-hidden={!location.crossing}>
+        <span className="hud-loc-clip">{location.crossing ?? "\u00a0"}</span>
+      </span>
       {/* without the ring (radar off), the waypoint distance reads here (no arrow: no heading is streamed) */}
       {waypoint && location.waypoint !== undefined && (
         <span data-slot="hud-waypoint" className="hud-loc-waypoint hud-num">

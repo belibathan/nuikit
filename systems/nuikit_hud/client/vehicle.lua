@@ -104,11 +104,15 @@ function Vehicle.read(vehicle, kind, units)
       local ok, high = pcall(GetVehicleHighGear, vehicle)
       v.gears = (ok and type(high) == 'number' and high > 0) and high or nil
     end
-    if cfg.handbrake ~= false and kind ~= 'boat' then v.handbrake = GetVehicleHandbrake(vehicle) == true end
+    if cfg.handbrake ~= false and kind ~= 'boat' then
+      -- GetVehicleHandbrake misses the driver holding the key (in game, Oct 20): read the control too
+      v.handbrake = GetVehicleHandbrake(vehicle) == true
+        or (GetPedInVehicleSeat(vehicle, -1) == PlayerPedId() and IsControlPressed(0, 76))
+    end
     if cfg.indicators ~= false and kind ~= 'boat' then v.indicators = GetVehicleIndicatorLights(vehicle) or 0 end
     if cfg.seatbelt ~= false and kind == 'car' then v.seatbelt = Adapters.seatbelt() end
     if cfg.cruise ~= false then
-      local on, at = Adapters.cruise()
+      local on, at = Adapters.cruise(Vehicle.FACTOR[Vehicle.speedUnits(kind, units)])
       v.cruise, v.cruiseSpeed = on, at
     end
   end

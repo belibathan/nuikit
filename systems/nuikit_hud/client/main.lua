@@ -45,7 +45,7 @@ local function settings()
       onFoot = (Config.compass or {}).onFoot == true,
       ring = (Config.minimap or {}).compass ~= false,
     },
-    frame = (Config.minimap or {}).enabled ~= false,
+    frame = not (Minimap and Minimap.style) or Minimap.style() == 'ring',
   }
 end
 
@@ -171,7 +171,7 @@ CreateThread(function()
     local locationOn = locationCfg.enabled ~= false and mapCfg.location ~= false and (inVehicle or radarOn or locationCfg.onFoot ~= false)
     -- the heading streams while anything shows it: the frame's N, the strip, the location badge
     Minimap.compassOn = not isPaused and (
-      (radarOn and mapCfg.enabled ~= false and mapCfg.compass ~= false)
+      (radarOn and (not Minimap.style or Minimap.style() == 'ring') and mapCfg.compass ~= false)
       or (compassCfg.enabled ~= false and (inVehicle or compassCfg.onFoot == true) and Layout.preset() == 'classic')
       -- classic: the location strip's heading badge (compact reads the heading on the ring only)
       or (locationOn and Layout.preset() == 'classic'))

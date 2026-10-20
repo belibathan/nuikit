@@ -81,8 +81,9 @@ end
 --   TriggerEvent('nuikit_hud:seatbelt', true)          -- buckled
 --   TriggerEvent('nuikit_hud:cruise', true, 80)         -- on, at 80 (the HUD's units; optional)
 --   exports.nuikit_hud:setSeatbelt(true)  exports.nuikit_hud:setCruise(false)
--- Also read: LocalPlayer.state.seatbelt / .cruise (Qbox-style state bags), and qb-smallresources'
--- 'seatbelt:client:ToggleSeatbelt' toggle event.
+-- Also read: LocalPlayer.state.seatbelt / .cruise (Qbox-style state bags), qb-smallresources'
+-- 'seatbelt:client:ToggleSeatbelt' toggle event, and qbx_smallresources' qbx_cruise, which only fires
+-- 'seatbelt:client:ToggleCruise' (no arguments) when cruise turns on and when it turns off.
 
 local hooks = { seatbelt = nil, cruise = nil, cruiseSpeed = nil, seen = { seatbelt = false, cruise = false } }
 Adapters.hooks = hooks
@@ -95,13 +96,24 @@ end
 function Adapters.setCruise(on, speed)
   hooks.cruise = on == true
   hooks.cruiseSpeed = (on and tonumber(speed)) and math.floor(tonumber(speed) + 0.5) or nil
+  hooks.cruiseMs = nil
   hooks.seen.cruise = true
+end
+
+--- qbx_cruise's toggle: flip, and remember the speed it holds (the vehicle's speed now, m/s).
+function Adapters.toggleCruise()
+  local on = not hooks.cruise
+  Adapters.setCruise(on)
+  if on then
+    local vehicle = GetVehiclePedIsIn(PlayerPedId(), false)
+    hooks.cruiseMs = vehicle ~= 0 and GetEntitySpeed(vehicle) or nil
+  end
 end
 
 --- Leaving a vehicle unbuckles and ends cruise (every seatbelt script does the same).
 function Adapters.leftVehicle()
   if hooks.seatbelt ~= nil then hooks.seatbelt = false end
-  if hooks.cruise ~= nil then hooks.cruise, hooks.cruiseSpeed = false, nil end
+  if hooks.cruise ~= nil then hooks.cruise, hooks.cruiseSpeed, hooks.cruiseMs = false, nil, nil end
 end
 
 --- Current seatbelt: true/false once anything reported it, nil when nothing ever did.
@@ -112,14 +124,19 @@ function Adapters.seatbelt()
   return nil
 end
 
---- Current cruise: on (boolean or nil when unknown) and its speed (or nil).
-function Adapters.cruise()
+--- Current cruise: on (boolean or nil when unknown) and its speed (or nil). `factor` turns m/s into
+--- the HUD's units, for a speed only known in m/s (qbx_cruise).
+function Adapters.cruise(factor)
   local bag = LocalPlayer and LocalPlayer.state and LocalPlayer.state.cruise
   if bag ~= nil then
     if type(bag) == 'number' then return bag > 0, math.floor(bag + 0.5) end
     return bag == true, hooks.cruiseSpeed
   end
-  if hooks.seen.cruise then return hooks.cruise == true, hooks.cruiseSpeed end
+  if hooks.seen.cruise then
+    local at = hooks.cruiseSpeed
+    if not at and hooks.cruise and hooks.cruiseMs and factor then at = math.floor(hooks.cruiseMs * factor + 0.5) end
+    return hooks.cruise == true, at
+  end
   return nil, nil
 end
 
@@ -127,6 +144,8 @@ AddEventHandler('nuikit_hud:seatbelt', function(on) Adapters.setSeatbelt(on) end
 AddEventHandler('nuikit_hud:cruise', function(on, speed) Adapters.setCruise(on, speed) end)
 -- qb-smallresources toggles its seatbelt and fires this (no state): follow along
 AddEventHandler('seatbelt:client:ToggleSeatbelt', function() Adapters.setSeatbelt(not hooks.seatbelt) end)
+-- qbx_cruise (qbx_smallresources): the same kind of toggle for cruise
+AddEventHandler('seatbelt:client:ToggleCruise', Adapters.toggleCruise)
 pcall(exports, 'setSeatbelt', Adapters.setSeatbelt)
 pcall(exports, 'setCruise', Adapters.setCruise)
 
