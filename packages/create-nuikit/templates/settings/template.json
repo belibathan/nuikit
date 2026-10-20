@@ -1,0 +1,6 @@
+{
+  "block": "settings",
+  "title": "Settings",
+  "description": "Player settings: toggles, choices, sliders, key hints, and nuikit's accessibility prefs",
+  "next": ["press F10 (or /{{name}}); add your settings in config.lua and react to them with AddEventHandler('{{name}}:changed')"]
+}
