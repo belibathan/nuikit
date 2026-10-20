@@ -3,6 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Kbd } from "@/components/ui/kbd";
+import { Panel, PanelFooter, PanelHeader } from "@/components/ui/panel";
+import { Stat } from "@/components/ui/stat";
 import { Textarea } from "@/components/ui/textarea";
 import { post, useMessages, type Callback } from "@/lib/nui";
 import { loadServerTheme } from "@/lib/theme";
@@ -139,22 +141,24 @@ export default function App() {
 
   return (
     <div className="contract-backdrop fixed inset-0 flex items-center justify-center bg-black/40 p-6">
-      <section className="nk-panel nk-enter w-full max-w-md overflow-hidden" role="dialog" aria-labelledby="contract-title">
-        <header className="nk-panel-header">
-          <img src="./logo.svg" alt="" className="size-8 shrink-0 rounded-md" draggable={false} />
-          <div className="min-w-0 flex-1">
-            <h2 id="contract-title" className="nk-title truncate" title={c.bizName}>
-              {/* "Vehicle Sales Contract - Larry's Vehicle Sales" → the business is the title */}
+      <Panel className="w-full max-w-md" role="dialog" aria-labelledby="contract-title">
+        <PanelHeader
+          icon={<img src="./logo.svg" alt="" className="size-8 rounded-md" draggable={false} />}
+          // "Vehicle Sales Contract - Larry's Vehicle Sales" → the business is the title
+          title={
+            <span id="contract-title" title={c.bizName}>
               {c.bizName.split(" - ").slice(1).join(" - ").trim() || c.bizName || "Vehicle sale contract"}
-            </h2>
-            <p className="nk-label truncate">{selling ? "List your vehicle for sale" : c.takeBack ? "Your listing" : "Vehicle for sale"}</p>
-          </div>
-          {c.plate && (
-            <span className="shrink-0 rounded-md border bg-muted px-2 py-1 font-mono text-xs leading-4 font-medium uppercase" title="Plate">
-              {c.plate}
             </span>
-          )}
-        </header>
+          }
+          description={selling ? "List your vehicle for sale" : c.takeBack ? "Your listing" : "Vehicle for sale"}
+          actions={
+            c.plate && (
+              <span className="rounded-md border bg-muted px-2 py-1 font-mono text-xs leading-4 font-medium uppercase" title="Plate">
+                {c.plate}
+              </span>
+            )
+          }
+        />
 
         <dl className="grid grid-cols-3 gap-4 border-b px-4 py-3">
           <Detail label="Seller" value={c.seller} />
@@ -209,10 +213,7 @@ export default function App() {
                 <p className={cn("text-sm whitespace-pre-line", !c.desc && "text-muted-foreground")}>{c.desc || "No description."}</p>
               </div>
               <div className="flex items-end justify-between gap-3">
-                <div className="flex flex-col gap-1">
-                  <span className="nk-label">Price</span>
-                  <span className="nk-num text-[2rem] leading-10 font-semibold">{money(c.price)}</span>
-                </div>
+                <Stat size="display" label="Price" value={money(c.price)} />
                 <span className="nk-label pb-1.5 font-normal">Paid from your bank</span>
               </div>
               {c.takeBack && (
@@ -224,7 +225,7 @@ export default function App() {
           )}
         </div>
 
-        <footer className="nk-panel-footer justify-between">
+        <PanelFooter className="justify-between">
           <Button variant="ghost" className="text-muted-foreground -ml-2" onClick={() => finish()}>
             Cancel
             <Kbd>Esc</Kbd>
@@ -242,8 +243,8 @@ export default function App() {
               </>
             )}
           </div>
-        </footer>
-      </section>
+        </PanelFooter>
+      </Panel>
     </div>
   );
 }
