@@ -50,7 +50,7 @@ Known issues in 0.6.0:
 
 | Lane | Scope | Status |
 |---|---|---|
-| Components | The 9 remaining components + `progress-ring` + `skill-check`, redesigned as the default renderers for the intents | **Done** (released in 0.6.0, #8–#40). Paused |
+| Components | The 9 remaining components + `progress-ring` + `skill-check`, redesigned as the default renderers for the intents | **Done** (released in 0.6.0, #8–#40). Follow-ups in review: `form-field` check ignores (#45), `DateRangeField` + `TimeField` for ox_lib's `date-range` and `time` rows (#47) |
 | Screens | death, loading, chat and the overrides (ox_lib first) rebuilt on the components, protocol-exact | Released in 0.6.0: ox_lib menus + progress, death + loading, ox_target, Renewed-Banking, illenium-appearance, qbx_taxijob, qbx_vehiclesales. **Batch 2 first:** death respawn fix + loading `externalShutdown` detection; then ox_lib notify (#42), input, alert, text UI, circle, skill check; qbx_scoreboard, qbx_idcard, mm_radio |
 | Blocks + site | The 14 blocks, `npm create nuikit -t <block>`, `/blocks`, theme switcher, theme studio | Released in 0.6.0: 9 blocks (`hud-minimal`, `death-screen`, `pause-menu`, `loading-screen`, `settings`, `scoreboard`, `garage`, `bank`, `job-menu`), `/blocks`, `/theme`. Next: `interaction`, `shop`, `inventory`, `vehicle-shop`, `character-select`, existing blocks on the new components |
 | Design | Audit, research, design language v2, Figma design system mapped to tokens, flagship reference screens | Started Oct 20 (lead-run; owner is design lead) |
