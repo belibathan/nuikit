@@ -21,11 +21,11 @@ const fixtures: Record<string, DeathData> = {
   },
   "qbx-dead": {
     phase: "dead", medical: "qbx", seconds: 247, total: 300,
-    respawn: { key: "E", available: false, progress: 0, cost: 2000 }, ...deadText,
+    respawn: { key: "E", available: false, cost: 2000 }, ...deadText,
   },
   "qbx-dead-hold": {
     phase: "dead", medical: "qbx", seconds: 0, total: 300,
-    respawn: { key: "E", available: true, progress: 0.5, cost: 2000 }, ...deadText,
+    respawn: { key: "E", available: true, cost: 2000 }, ...deadText,
   },
   "qb-laststand": {
     phase: "laststand", medical: "qb", seconds: 290, total: 360, estimated: true, helpable: true,
@@ -33,22 +33,42 @@ const fixtures: Record<string, DeathData> = {
   },
   "esx-dead": {
     phase: "dead", medical: "esx_death", seconds: 642, total: 660,
-    respawn: { key: "E", available: false, wait: 43, progress: 0 }, ems: { key: "G", state: "available" }, ...deadText,
+    respawn: { key: "E", available: false, wait: 43 }, ems: { key: "G", state: "available" }, ...deadText,
   },
   "esx-cooldown": {
     phase: "dead", medical: "esx_death", seconds: 512, total: 660,
-    respawn: { key: "E", available: true, progress: 0.2 }, ems: { key: "G", state: "cooldown", seconds: 38 }, ...deadText,
+    respawn: { key: "E", available: true }, ems: { key: "G", state: "cooldown", seconds: 38 }, ...deadText,
   },
   native: { phase: "dead", medical: "native", ...deadText, subtitle: undefined },
 };
+
+// How far E is held in each fixture: client/main.lua streams it on death:hold (NUI.stream).
+const holds: Record<string, number> = { "qbx-dead-hold": 0.5, "esx-cooldown": 0.2 };
 
 const mocks = defineMocks({ events: {} });
 
 export default function Dev() {
   useEffect(() => {
-    const name = new URLSearchParams(location.search).get("fixture") ?? "qbx-laststand-help";
+    const params = new URLSearchParams(location.search);
+    const name = params.get("fixture") ?? "qbx-laststand-help";
     // client/main.lua opens this when the medical resource puts the player down
     void openSurface("death", fixtures[name] ?? fixtures["qbx-laststand-help"]);
+    const hold = holds[name];
+    if (hold === undefined) return;
+    if (params.has("live")) {
+      // ?live: E held for 4.7 s, streamed like the game does (≤30 a second, 0.01 steps), then let go
+      const start = performance.now();
+      const send = () => {
+        const v = Math.min(1, Math.round(((performance.now() - start) / 4700) * 100) / 100);
+        window.postMessage({ action: "death:hold", data: v }, "*");
+        if (v < 1) timer = window.setTimeout(send, 33);
+      };
+      let timer = window.setTimeout(send, 33);
+      return () => clearTimeout(timer);
+    }
+    // once the bar is on screen (a value sent before anything follows it is not kept)
+    const timer = window.setTimeout(() => window.postMessage({ action: "death:hold", data: hold }, "*"), 100);
+    return () => clearTimeout(timer);
   }, []);
   return <NuiDevtools {...mocks} surfaces={{ death: fixtures["qbx-laststand-help"] }} scene="day" />;
 }

@@ -28,6 +28,8 @@ const natives = (started: string) => `
   function GetGameTimer() return NOW end
   function PlayerPedId() return 1 end
   function IsEntityDead() return DEAD end
+  ANIM = false -- the ped lies in a qbx_ambulancejob bed
+  function IsEntityPlayingAnim(_, dict, anim) return ANIM and dict == 'anim@gangops@morgue@table@' and anim == 'body_search' end
   function IsControlPressed(_, c) return KEYS[c] == true end
   function IsDisabledControlPressed() return false end
   function IsControlJustPressed(_, c) return JUST[c] == true end
@@ -54,6 +56,9 @@ const natives = (started: string) => `
 `;
 
 const update = `return Death.update()`;
+/** The values sent on the respawn bar's live channel (NUI.stream 'death:hold'), oldest first. */
+const holds = (d: { messages: { action: string; data: any }[] }) =>
+  d.messages.filter((m) => m.action === "death:hold").map((m) => m.data as number);
 
 describe("systems/nuikit_death", () => {
   it("reads numbers from the medical resource's config, including `60000 * 10`", async () => {
@@ -95,14 +100,101 @@ describe("systems/nuikit_death", () => {
     await d.run(update);
     expect(d.surfaces().death.data).toMatchObject({
       phase: "dead", seconds: 120, total: 300,
-      respawn: { key: "E", available: false, progress: 0.5, cost: 2000 },
+      respawn: { key: "E", available: false, cost: 2000 },
     });
+    // the hold bar is never drawn from qbx_medical's own counter (HOLD = 3 above)
+    expect(d.surfaces().death.data.respawn.progress).toBeUndefined();
 
     await d.run(`LocalPlayer.state['qbx_medical:deathState'] = 1`);
     await d.run(update);
     expect(d.surfaces().death.open).toBe(false);
     // GTA's own effect only while unconscious, stopped on revive
     expect(await d.run(`return table.concat(FX, ',')`)).toBe("+DeathFailMPIn,-DeathFailMPIn");
+  });
+
+  it("Qbox: the E bar is nuikit's own hold time, smooth, ending on the qbx_medical tick that respawns", async () => {
+    client = await createClient();
+    const d = await client.start("nuikit_death", { before: natives("qbx_medical = true, qbx_ambulancejob = true"), scripts });
+    await d.run(`LocalPlayer.state['qbx_medical:deathState'] = 3 DT = 100`);
+    await d.run(update); // no doctors on duty: "Hold E to respawn"
+    expect(d.surfaces().death.data.respawn).toMatchObject({ available: true, cost: 2000 });
+    expect(holds(d)).toEqual([0]);
+
+    // qbx_medical's loop ticks at 1000, 2000, … (seen as GetDeathTime() changing). E goes down at
+    // 1300; it respawns on the fifth tick that finds E down: 2000, 3000, 4000, 5000, 6000.
+    await d.run(`NOW = 0 Death.watchKeys() NOW = 1000 DT = 99 Death.watchKeys() NOW = 1300 KEYS[38] = true Death.watchKeys()`);
+    const seen: Record<number, number> = {};
+    for (let t = 1400; t <= 6500; t += 100) {
+      if (t % 1000 === 0) await d.run(`DT = DT - 1`);
+      // qbx_medical's own counter moves in whole seconds (5 → 1); nuikit doesn't read it any more
+      await d.run(`NOW = ${t} HOLD = ${Math.max(1, 5 - Math.floor((t - 1000) / 1000))} Death.watchKeys()`);
+      seen[t] = holds(d).at(-1)!;
+    }
+    expect(seen[1400]).toBeCloseTo(100 / 4700, 2);
+    expect(seen[3600]).toBeCloseTo(2300 / 4700, 2);
+    expect(seen[5900]).toBeCloseTo(4600 / 4700, 2);
+    expect(seen[6000]).toBe(1);
+    // smooth: a new value every 100 ms, never going back
+    const values = holds(d).slice(1);
+    expect(new Set(values).size).toBeGreaterThan(40);
+    values.forEach((v, i) => expect(v).toBeGreaterThanOrEqual(i > 0 ? values[i - 1]! : 0));
+    // nuikit never respawns anyone: qbx_medical does, on its own tick
+    expect(await d.run(`return table.concat(SERVER, ',')`)).toBe("nuikit_death:doctors");
+
+    // released: back to empty
+    await d.run(`KEYS[38] = false NOW = 6600 Death.watchKeys()`);
+    expect(holds(d).at(-1)).toBe(0);
+  });
+
+  it("Qbox: hides during qbx_ambulancejob's hospital-bed treatment, and comes back if it's interrupted", async () => {
+    client = await createClient();
+    const d = await client.start("nuikit_death", { before: natives("qbx_medical = true, qbx_ambulancejob = true"), scripts });
+    await d.run(`LocalPlayer.state['qbx_medical:deathState'] = 3 DT = 0`);
+    await d.run(update);
+    expect(d.surfaces().death.open).toBe(true);
+
+    // respawned: the server checks the player into a bed (deathState stays 3 until treated)
+    client.event("qbx_ambulancejob:client:checkedIn", "pillboxhospital", 2);
+    await d.run(update); // fading out, the animation hasn't started yet
+    expect(d.surfaces().death.open).toBe(false);
+    expect(await d.run(`return NUI.getState('dead')`)).toBe("dead"); // still down: the pause menu stays blocked
+    expect(await d.run(`return Death.isDown()`)).toBe(true);
+    await d.run(`NOW = 3000 ANIM = true`);
+    await d.run(update);
+    expect(d.surfaces().death.open).toBe(false);
+    await d.run(`NOW = 15000`);
+    await d.run(update); // past the grace window, the animation keeps it hidden
+    expect(d.surfaces().death.open).toBe(false);
+
+    // interrupted (out of the bed while still dead): the dead screen is back
+    await d.run(`NOW = 16000 ANIM = false`);
+    await d.run(update);
+    expect(d.surfaces().death.open).toBe(true);
+    expect(d.surfaces().death.data).toMatchObject({ phase: "dead" });
+    expect(d.surfaces().death.data.treatment).toBeUndefined();
+
+    // an EMS puts the player in a bed but the animation never comes: back after the grace window
+    client.event("qbx_ambulancejob:client:putPlayerInBed", "pillboxhospital", 3);
+    await d.run(update);
+    expect(d.surfaces().death.open).toBe(false);
+    await d.run(`NOW = 16000 + 10001`);
+    await d.run(update);
+    expect(d.surfaces().death.open).toBe(true);
+
+    // the animation alone (a bed reached without the events) also hides it
+    await d.run(`ANIM = true`);
+    await d.run(update);
+    expect(d.surfaces().death.open).toBe(false);
+
+    // treated: qbx_medical revives, everything ends as usual
+    await d.run(`LocalPlayer.state['qbx_medical:deathState'] = 1`);
+    await d.run(update);
+    expect(d.surfaces().death.open).toBe(false);
+    expect(await d.run(`return NUI.getState('dead')`)).toBeFalsy();
+    // the screen effect stops in the bed and plays again whenever the screen comes back
+    expect(await d.run(`return table.concat(FX, ',')`)).toBe(
+      "+DeathFailMPIn,-DeathFailMPIn,+DeathFailMPIn,-DeathFailMPIn,+DeathFailMPIn,-DeathFailMPIn",
+    );
   });
 
   it("sets the client-wide 'dead' state, so the pause menu won't open over it", async () => {
@@ -144,10 +236,11 @@ describe("systems/nuikit_death", () => {
     await d.run(update);
     expect(d.surfaces().death.data).toMatchObject({ phase: "dead", seconds: 290, respawn: { key: "E", available: false, cost: 2000 } });
 
-    await d.run(`NOW = 70000 + 291000 KEYS[38] = true`);
-    await d.run(`Death.watchKeys() NOW = NOW + 2500 Death.watchKeys()`);
+    await d.run(`NOW = 70000 + 291000`);
     await d.run(update);
-    expect(d.surfaces().death.data).toMatchObject({ seconds: 0, respawn: { available: true, progress: 0.5 } });
+    expect(d.surfaces().death.data).toMatchObject({ seconds: 0, respawn: { available: true } });
+    await d.run(`KEYS[38] = true Death.watchKeys() NOW = NOW + 2500 Death.watchKeys()`);
+    expect(holds(d).at(-1)).toBe(0.5); // qb-ambulancejob's 5 s hold (Config.fallback.qb.hold)
 
     client.event("QBCore:Player:SetPlayerData", { metadata: {} });
     await d.run(update);
