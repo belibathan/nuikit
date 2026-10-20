@@ -2,6 +2,7 @@ import { Surface, useFollow } from "nuikit-core/react";
 import { CheckIcon, HeartPulseIcon } from "lucide-react";
 import { useRef, type ReactNode } from "react";
 import type { DeathData } from "./nui";
+import { Countdown } from "@/components/ui/countdown";
 import { Kbd } from "@/components/ui/kbd";
 import { Meter } from "@/components/ui/meter";
 import { cn } from "@/lib/utils";
@@ -17,18 +18,11 @@ export default function App() {
   );
 }
 
-function clock(s: number) {
-  const t = Math.max(0, Math.ceil(s));
-  const m = Math.floor(t / 60);
-  return `${String(m).padStart(2, "0")}:${String(t % 60).padStart(2, "0")}`;
-}
-
 function Death({ data }: { data: DeathData }) {
   const laststand = data.phase === "laststand";
   const hasTimer = typeof data.seconds === "number";
   const seconds = data.seconds ?? 0;
   const total = data.total && data.total > 0 ? data.total : undefined;
-  const urgent = hasTimer && seconds <= 30;
   const bleeding = laststand || data.medical === "esx_death" || data.medical === "esx";
   const label = bleeding ? "Until you bleed out" : seconds > 0 ? "Until you can respawn" : "You can respawn";
 
@@ -49,30 +43,17 @@ function Death({ data }: { data: DeathData }) {
         ) : null}
 
         {hasTimer ? (
-          <div className="death-in mt-12 flex flex-col items-center" style={{ animationDelay: "120ms" }}>
-            <div
-              className={cn(
-                "death-clock nk-num text-[8rem] leading-none font-semibold",
-                urgent && laststand ? "death-urgent text-destructive" : "text-foreground",
-                !laststand && seconds <= 0 && "text-foreground/40",
-              )}
-              role="timer"
-              aria-live="off"
-            >
-              {clock(seconds)}
-            </div>
-            <div className="mt-4 text-sm font-medium text-foreground/75">{label}</div>
-            {total ? (
-              <Meter
-                value={seconds}
-                max={total}
-                size="sm"
-                tone={laststand ? "destructive" : "foreground"}
-                aria-label={label}
-                className="mt-6 w-80"
-              />
-            ) : null}
-          </div>
+          // The kit's Countdown: mm:ss at the hero size, the label, the line that drains (with a
+          // total), red and pulsing in the last 30 s of last stand, dimmed at 00:00.
+          <Countdown
+            seconds={seconds}
+            total={total}
+            label={label}
+            size="hero"
+            warnAt={laststand ? 30 : undefined}
+            className="death-in mt-12"
+            style={{ animationDelay: "120ms" }}
+          />
         ) : (
           <div className="death-in mt-12 text-sm font-medium text-foreground/75" style={{ animationDelay: "120ms" }}>
             Waiting to respawn
