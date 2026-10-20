@@ -358,6 +358,22 @@
       "dependencies": [
         "class-variance-authority"
       ]
+    },
+    {
+      "name": "item-slot",
+      "type": "registry:ui",
+      "title": "Item slot",
+      "description": "One square of an inventory, shop, hotbar or crafting grid: image, name, count, hotkey or stock, price, a durability line, and the drag-and-drop states (empty, active, drop target, dragging, locked). Wells on a panel or the HUD surface for a hotbar.",
+      "files": [
+        {
+          "path": "registry/nuikit/ui/item-slot.tsx",
+          "type": "registry:ui"
+        }
+      ],
+      "dependencies": [
+        "class-variance-authority",
+        "lucide-react"
+      ]
     }
   ]
 }
