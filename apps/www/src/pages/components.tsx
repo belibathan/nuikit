@@ -31,7 +31,7 @@ import {
   WarehouseIcon,
   WrenchIcon,
 } from "lucide-react";
-import { applyTheme, clearTheme } from "nuikit-core/react";
+import { applyTheme, clearTheme, closeSurface, openSurface, Surface } from "nuikit-core/react";
 import { useEffect, useState, type ReactNode } from "react";
 import { Command } from "@/components/code";
 import { Scene } from "@/components/scene";
@@ -58,6 +58,7 @@ import {
   validateField,
   type FieldRule,
 } from "@/components/ui/form-field";
+import { Confirm, ConfirmPanel, type ConfirmTone } from "@/components/ui/confirm";
 import { cn } from "@/lib/utils";
 import { themes } from "@/themes";
 
@@ -220,6 +221,16 @@ export function ComponentsPage() {
           <TransferForm />
           <CharacterForm />
           <FieldStates />
+        </Section>
+
+        <Section
+          name="confirm"
+          title="Confirm"
+          text="Are you sure? A title, a sentence on what happens, cancel and one action: the surface's primary, or destructive when something is lost. Enter presses the focused action; Escape cancels through the surface, like every other nuikit UI."
+          stageClassName="items-center"
+        >
+          <ConfirmStates />
+          <ConfirmDemo />
         </Section>
       </main>
       <Footer />
@@ -658,6 +669,115 @@ function FieldStates() {
         <TextField label="Citizen ID" disabled defaultValue="NKT-48210" />
       </PanelBody>
     </Panel>
+  );
+}
+
+/** Every state from props: primary, destructive with an icon, running, acknowledge only. */
+function ConfirmStates() {
+  return (
+    <div className="grid grid-cols-2 items-start gap-6">
+      <ConfirmPanel
+        size="sm"
+        title="Release your Sultan?"
+        description="The impound fee is $250, taken from your bank."
+        confirmLabel="Pay $250"
+      />
+      <ConfirmPanel
+        size="sm"
+        tone="destructive"
+        icon={<TriangleAlertIcon />}
+        title="Sell your Zentorno?"
+        description="You get $412,000. This can't be undone."
+        confirmLabel="Sell"
+      />
+      <ConfirmPanel
+        size="sm"
+        tone="destructive"
+        title="Leave the server?"
+        description="Your car stays where you parked it."
+        confirmLabel="Leave"
+        loading
+      />
+      <ConfirmPanel size="sm" title="Server rules updated" description="No random deathmatch in the city. Read the rest in /rules." confirmLabel="Got it" showCancel={false} />
+    </div>
+  );
+}
+
+type Ask = { tone: ConfirmTone; title: string; description: string; confirmLabel: string; icon?: ReactNode; showCancel?: boolean };
+
+const ASKS: Record<string, Ask> = {
+  sell: {
+    tone: "destructive",
+    icon: <TriangleAlertIcon />,
+    title: "Sell your Zentorno?",
+    description: "You get $412,000. This can't be undone.",
+    confirmLabel: "Sell",
+  },
+  release: { tone: "primary", title: "Release your Sultan?", description: "The impound fee is $250, taken from your bank.", confirmLabel: "Pay $250" },
+  rules: { tone: "primary", title: "Server rules updated", description: "No random deathmatch in the city. Read the rest in /rules.", confirmLabel: "Got it", showCancel: false },
+};
+
+/**
+ * The real thing: each button opens a modal Surface with escape: "back", so Escape reaches
+ * onCancel through nuikit's Escape path (the browser manager here, Lua in game).
+ */
+function ConfirmDemo() {
+  const [ask, setAsk] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [last, setLast] = useState("Nothing yet");
+  const open = (key: string) => {
+    setAsk(key);
+    void openSurface("components-confirm");
+  };
+  const done = (answer: string) => {
+    setLast(answer);
+    setLoading(false);
+    void closeSurface("components-confirm");
+  };
+  const a = ask ? ASKS[ask] : undefined;
+  return (
+    <>
+      <Panel size="sm">
+        <PanelHeader title="Try it" description="Enter confirms, Escape cancels" />
+        <PanelBody>
+          <MenuRow icon={<CarIcon />} tone="destructive" onClick={() => open("sell")}>
+            Sell vehicle
+          </MenuRow>
+          <MenuRow icon={<WarehouseIcon />} onClick={() => open("release")}>
+            Release from impound
+          </MenuRow>
+          <MenuRow icon={<SparklesIcon />} onClick={() => open("rules")}>
+            Show the rules
+          </MenuRow>
+        </PanelBody>
+        <PanelFooter>
+          <span className="nk-label">Last answer</span>
+          <span data-slot="confirm-demo-answer" className="ml-auto text-sm">
+            {last}
+          </span>
+        </PanelFooter>
+      </Panel>
+      <Surface name="components-confirm" layer="modal" escape="back" onBack={() => !loading && done("Cancelled with Escape")}>
+        {a && (
+          <Confirm
+            key={ask}
+            tone={a.tone}
+            icon={a.icon}
+            title={a.title}
+            description={a.description}
+            confirmLabel={a.confirmLabel}
+            showCancel={a.showCancel}
+            loading={loading}
+            onCancel={() => done("Cancelled")}
+            onConfirm={() => {
+              if (ask !== "sell") return done(`${a.confirmLabel}: confirmed`);
+              setLoading(true);
+              setTimeout(() => done("Sold for $412,000"), 900);
+            }}
+          />
+        )}
+      </Surface>
+    </>
   );
 }
 

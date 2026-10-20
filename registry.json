@@ -341,6 +341,26 @@
         "screens"
       ],
       "docs": "Mount <HudMinimalSurface /> in App.tsx. In Lua, open nk.surface(\"hud\", { layer = \"hud\" }) once nk.player.get().loaded, send hud:vehicle on change and stream hud:vehicle:speed and hud:vehicle:rpm with nk.stream. A whole resource with the Lua: npm create nuikit@latest my-hud -- -t hud-minimal"
+    },
+    {
+      "name": "confirm",
+      "type": "registry:ui",
+      "title": "Confirm",
+      "description": "Are you sure? Title, body, cancel and one primary or destructive action, a running state and acknowledge-only. Escape cancels through the nuikit surface (not a private key handler); Enter presses the focused action; Tab stays inside. The default look of the confirm intent.",
+      "files": [
+        {
+          "path": "registry/nuikit/ui/confirm.tsx",
+          "type": "registry:ui"
+        }
+      ],
+      "dependencies": [
+        "class-variance-authority"
+      ],
+      "registryDependencies": [
+        "button",
+        "spinner",
+        "https://nuikit.vercel.app/r/panel.json"
+      ]
     }
   ]
 }
