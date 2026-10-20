@@ -30,6 +30,7 @@
     "menu-row",
     "meter",
     "notice",
-    "confirm"
+    "confirm",
+    "key-prompt"
   ]
 }

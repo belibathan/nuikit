@@ -1,5 +1,5 @@
 import { useState, type CSSProperties } from "react";
-import { Kbd } from "@/components/ui/kbd";
+import { KeyPrompt, KeyPromptStack, keyPromptPosition, parseKeyText } from "@/components/ui/key-prompt";
 import { Icon } from "@/lib/icon";
 import { Markdown } from "@/lib/markdown";
 import { useOx } from "@/lib/nui";
@@ -17,25 +17,6 @@ interface TextUiData {
   style?: CSSProperties | string;
 }
 
-// --nk-edge (1.5rem) from the screen edge.
-const POS = {
-  "right-center": "right-6 top-1/2 -translate-y-1/2",
-  "left-center": "left-6 top-1/2 -translate-y-1/2",
-  "top-center": "top-6 left-1/2 -translate-x-1/2",
-  "bottom-center": "bottom-6 left-1/2 -translate-x-1/2",
-} as const;
-
-/**
- * Scripts write the key into the text: "[E] - Open garage", "**[E]** Pick up". A leading key
- * becomes a Kbd next to the action; anything else renders as the script wrote it.
- */
-function splitKey(text: string): { key?: string; rest: string } {
-  const m = /^\s*(\*\*|__)?\[([^\]\s]{1,12})\](\*\*|__)?\s*(?:[-–—:]\s*)?/.exec(text);
-  if (!m || (m[1] ?? "") !== (m[3] ?? "")) return { rest: text };
-  const rest = text.slice(m[0].length);
-  return rest.trim() ? { key: m[2], rest } : { rest: text };
-}
-
 /** CSS text ("color: red; font-size: 12px") to a style object. ox_lib's own UI crashes on this. */
 function parseStyle(style: TextUiData["style"]): CSSProperties | undefined {
   if (!style) return undefined;
@@ -50,7 +31,13 @@ function parseStyle(style: TextUiData["style"]): CSSProperties | undefined {
   return out;
 }
 
-/** ox_lib's text UI (lib.showTextUI). Protocol: docs/ox-lib-protocol.md §11. */
+/**
+ * ox_lib's text UI (lib.showTextUI) as a KeyPrompt. Protocol: docs/ox-lib-protocol.md §11.
+ *
+ * Scripts write the key into the text: "[E] - Open garage", "**[E]** Pick up", "[Shift] + [E] Lock".
+ * Leading keys become the prompt's keys and the rest its label (Markdown, wrapping). Text without a
+ * leading key ("Press [E] to talk") is the label alone, as the script wrote it.
+ */
 export function TextUi() {
   const [data, setData] = useState<TextUiData | null>(null);
   const [open, setOpen] = useState(false);
@@ -63,26 +50,28 @@ export function TextUi() {
   useOx("textUiHide", () => setOpen(false));
 
   if (!presence.mounted || !data) return null;
-  const { key, rest } = splitKey(String(data.text ?? ""));
+  const text = String(data.text ?? "");
+  const parsed = parseKeyText(text);
+  const keys = parsed.keys;
+  // without a leading key the text is kept whole (parseKeyText would strip a leading "- ", a list)
+  const label = keys.length ? parsed.label : text;
   return (
-    <div className={cn("pointer-events-none fixed z-10", POS[data.position ?? "right-center"] ?? POS["right-center"])}>
-      <div
-        data-state={presence.state}
-        style={parseStyle(data.style)}
-        className={cn(
-          "nk-panel flex min-h-10 max-w-80 gap-3 px-3 py-2 text-sm font-medium",
-          data.alignIcon === "top" ? "items-start" : "items-center",
-          presenceMotion,
-        )}
-      >
-        {data.icon && (
-          <span className={cn("grid h-5 shrink-0 place-items-center", !data.iconColor && "text-muted-foreground")}>
-            <Icon icon={data.icon} color={data.iconColor} animation={data.iconAnimation} className="size-4" />
-          </span>
-        )}
-        {key && <Kbd className="h-6 min-w-6 px-1.5 text-xs">{key}</Kbd>}
-        <Markdown gfm className="leading-5">{rest}</Markdown>
-      </div>
+    <div className="pointer-events-none fixed inset-0 z-10">
+      <KeyPromptStack position={keyPromptPosition(data.position)} data-state={presence.state} className={presenceMotion}>
+        <KeyPrompt
+          keys={keys}
+          // ox_lib's icon is fixed width and takes the theme's muted colour unless the script sets one
+          icon={data.icon ? <Icon icon={data.icon} color={data.iconColor} animation={data.iconAnimation} className="size-4" /> : undefined}
+          // the label wraps (KeyPrompt truncates one line; a script's text can be long or Markdown)
+          label={<Markdown gfm className="leading-5 whitespace-normal">{label}</Markdown>}
+          style={parseStyle(data.style)}
+          className={cn(
+            data.alignIcon === "top" && "items-start",
+            // TODO(components): drop once key-prompt takes no keys (Requests in the PR)
+            keys.length === 0 && "pl-3 [&>[data-slot=key-prompt-keys]]:hidden",
+          )}
+        />
+      </KeyPromptStack>
     </div>
   );
 }
