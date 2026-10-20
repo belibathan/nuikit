@@ -19,6 +19,11 @@ cd web
 trunk" and "Lock or unlock". Walk into the 24/7 on Innocence Blvd: the fridge (press E) and the bell at the counter
 (hold G).
 
+**ox_target or qb-target:** don't run this example alongside them on the same key. Left Alt is their default too,
+and two eyes on one key fight over the cursor and the controls. Change `Config.key` (players can also rebind it
+in Settings → Key Bindings → FiveM, as "Target (hold)"), or stop one of them. The server prints a warning at start
+when either is running.
+
 ## What does the work
 
 Lua does everything the page draws: the raycast, which options apply, the keys, the hold. The page never decides.

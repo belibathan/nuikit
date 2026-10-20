@@ -13,6 +13,19 @@ if not ONESYNC then
   print(('^1[%s] OneSync is off: options and points marked server = true will be refused (set onesync on in server.cfg).^0'):format(resource))
 end
 
+-- ox_target and qb-target hold Left Alt too: two eyes on one key fight over the cursor and the
+-- controls. Say so once, at start (and again whenever one of them starts later).
+local OTHERS = { 'ox_target', 'qb-target' }
+local function warnOthers(only)
+  for _, name in ipairs(OTHERS) do
+    if (not only or only == name) and GetResourceState(name) == 'started' then
+      print(('^3[%s] %s is running. Both target on a held key (Left Alt by default): give this one another key (Config.key, or players rebind it in Settings → Key Bindings → FiveM) or stop one of them.^0'):format(resource, name))
+    end
+  end
+end
+warnOthers()
+AddEventHandler('onResourceStart', function(name) warnOthers(name) end)
+
 for _, t in ipairs(Config.targets) do
   if t.models then
     t.hashes = {}

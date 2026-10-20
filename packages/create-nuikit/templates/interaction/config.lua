@@ -1,5 +1,6 @@
 Config = {
-  -- Hold this key to target (players can rebind it in Settings → Key Bindings → FiveM).
+  -- Hold this key to target (players can rebind it in Settings → Key Bindings → FiveM). Left Alt
+  -- is also ox_target's and qb-target's: don't run them on the same key (the server warns at start).
   key = 'LMENU',
   -- How the player chooses an option while targeting:
   --   'cursor': left click gives them the cursor, then they click the option (like ox_target);
