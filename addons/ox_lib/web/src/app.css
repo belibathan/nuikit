@@ -30,10 +30,6 @@ body {
   to { transform: translateX(0); }
 }
 
-@keyframes ox-ring {
-  to { stroke-dashoffset: 0; }
-}
-
 /* input dialog colour row: the native picker as a plain swatch */
 .ox-swatch::-webkit-color-swatch-wrapper { padding: 0; }
 .ox-swatch::-webkit-color-swatch { border: none; border-radius: calc(var(--radius) - 6px); }

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { flushSync } from "react-dom";
 import { Meter } from "@/components/ui/meter";
 import { Panel } from "@/components/ui/panel";
+import { ProgressRing } from "@/components/ui/progress-ring";
 import { post, useOx } from "@/lib/nui";
 import { presenceMotion } from "@/lib/motion";
 import { usePresence } from "@/lib/presence";
@@ -95,32 +96,21 @@ export function ProgressCircle() {
   }, [open, run]);
 
   if (!presence.mounted || !run) return null;
-  const r = 34; // 80 box, 4 stroke, 2 inset
-  const C = 2 * Math.PI * r;
+  // The kit's ProgressRing on the world (size lg, ox's ring is 90px). Its own `duration` run is
+  // only the picture (100 ms steps); useRun's timer decides when the run ends, and its onComplete
+  // is not used. The centre is ox's counter: +1 every duration/100 ms, 99 on a cancel (§9.1).
   return (
     <div className={cn("pointer-events-none fixed inset-x-0 z-20 flex justify-center", run.position === "bottom" ? "bottom-0 h-[20%] items-center" : "inset-y-0 items-center")}>
-      <div data-state={presence.state} className={cn("flex flex-col items-center gap-3", presenceMotion)}>
-        <div className="relative size-20">
-          <svg viewBox="0 0 80 80" className="size-full -rotate-90 drop-shadow-[0_8px_24px_rgb(0_0_0/0.45)]">
-            <circle cx="40" cy="40" r={r + 4} className="fill-popover stroke-border" strokeWidth="1" />
-            <circle cx="40" cy="40" r={r} fill="none" strokeWidth="4" className="stroke-muted" />
-            <circle
-              key={run.id}
-              cx="40"
-              cy="40"
-              r={r}
-              fill="none"
-              strokeWidth="4"
-              strokeLinecap="round"
-              className="stroke-primary"
-              strokeDasharray={C}
-              style={{ strokeDashoffset: C, animation: `ox-ring ${run.duration}ms linear forwards`, ["--ox-c" as string]: C }}
-            />
-          </svg>
-          <div className="nk-num absolute inset-0 grid place-items-center text-sm font-semibold text-popover-foreground">{pct}%</div>
-        </div>
-        {run.label && <div className="nk-chip">{run.label}</div>}
-      </div>
+      <ProgressRing
+        key={run.id}
+        size="lg"
+        duration={run.duration}
+        label={run.label}
+        aria-label={run.label || "Progress"}
+        center={`${pct}%`}
+        data-state={presence.state}
+        className={presenceMotion}
+      />
     </div>
   );
 }
