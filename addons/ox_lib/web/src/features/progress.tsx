@@ -12,28 +12,43 @@ const EXIT_MS = 100;
  * The one rule that matters (docs/ox-lib-protocol.md §9.2): post `progressComplete` only once the
  * hide transition has finished. Lua judges success by elapsed time, so posting early fails the run.
  * Like ox_lib, it's posted after every hide, including a cancel.
+ *
+ * The clock is a timer over `duration`, never the fill animation: with reduced motion
+ * (html[data-nk-motion="off"], from the player's prefs via loadServerTheme) kit.css forces every
+ * animation to 0s, so an animationend clock would post at once and Lua would fail the run.
  */
 function useRun() {
   const [run, setRun] = useState<{ id: number; duration: number; label?: string; position?: string } | null>(null);
   const [open, setOpen] = useState(false);
   const id = useRef(0);
+  const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
   const presence = usePresence(open, EXIT_MS, () => void post("progressComplete"));
+  useEffect(() => () => clearTimeout(timer.current), []);
   const start = (duration: number, label?: string, position?: string) => {
-    setRun({ id: ++id.current, duration: Math.max(0, Number(duration) || 0), label, position });
+    const ms = Math.max(0, Number(duration) || 0);
+    clearTimeout(timer.current);
+    setRun({ id: ++id.current, duration: ms, label, position });
     setOpen(true);
+    // ≥ 50 ms so a 0 ms run still mounts before it hides; otherwise usePresence never sees it open
+    // and progressComplete is never posted (Lua would wait for a cancel). §9.2 only forbids < duration − 100.
+    timer.current = setTimeout(() => setOpen(false), Math.max(ms, 50));
   };
-  return { run, open, setOpen, start, presence };
+  const stop = () => {
+    clearTimeout(timer.current);
+    setOpen(false);
+  };
+  return { run, open, start, stop, presence };
 }
 
 /** lib.progressBar */
 export function ProgressBar() {
-  const { run, setOpen, start, presence } = useRun();
+  const { run, start, stop, presence } = useRun();
   useOx<{ label?: string; duration: number }>("progress", (d) => start(d.duration, d.label));
-  useOx("progressCancel", () => setOpen(false));
+  useOx("progressCancel", stop);
 
   if (!presence.mounted || !run) return null;
-  // The kit's Meter, filled by a CSS animation over `duration` rather than by `value`: the fill's
-  // own animationend is the completion clock (§9.2), with no per-frame renders.
+  // The kit's Meter, filled by a CSS animation over `duration` rather than by `value` (no per-frame
+  // renders). The animation is only the picture; useRun's timer decides when the run ends.
   return (
     <div className="pointer-events-none fixed inset-x-0 bottom-0 z-20 flex h-[20%] items-center justify-center">
       <Panel animate={false} data-state={presence.state} className={cn("gap-2 px-4 py-3", presenceMotion)}>
@@ -45,7 +60,6 @@ export function ProgressBar() {
           aria-label={run.label || "Progress"}
           className="[&_[data-slot=progress-indicator]]:animate-[ox-fill_var(--ox-duration)_linear_forwards]"
           style={{ ["--ox-duration" as string]: `${run.duration}ms` }}
-          onAnimationEnd={(e) => e.animationName === "ox-fill" && setOpen(false)}
         />
       </Panel>
     </div>
@@ -54,7 +68,7 @@ export function ProgressBar() {
 
 /** lib.progressCircle */
 export function ProgressCircle() {
-  const { run, open, setOpen, start, presence } = useRun();
+  const { run, open, start, stop, presence } = useRun();
   const [pct, setPct] = useState(0);
 
   useOx<{ duration: number; position?: "middle" | "bottom"; label?: string }>("circleProgress", (d) => {
@@ -64,7 +78,7 @@ export function ProgressCircle() {
   });
   useOx("progressCancel", () => {
     setPct(99);
-    setOpen(false);
+    stop();
   });
 
   useEffect(() => {
@@ -95,7 +109,6 @@ export function ProgressCircle() {
               className="stroke-primary"
               strokeDasharray={C}
               style={{ strokeDashoffset: C, animation: `ox-ring ${run.duration}ms linear forwards`, ["--ox-c" as string]: C }}
-              onAnimationEnd={() => setOpen(false)}
             />
           </svg>
           <div className="nk-num absolute inset-0 grid place-items-center text-sm font-semibold text-popover-foreground">{pct}%</div>

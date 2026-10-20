@@ -182,8 +182,10 @@ const noStep = () => {};
  */
 function Row({ index, item, active, scroll, checked }: { index: number; item: MenuItem; active: boolean; scroll: number; checked: boolean }) {
   const value = isValues(item) ? item.values![scroll] : undefined;
+  // Only the highlighted row's value is bright; the others stay muted, as on the rest of the kit.
+  const valueLabel = typeof value === "object" ? value?.label : value;
   const kind = isValues(item)
-    ? { value: typeof value === "object" ? value?.label : value, onStep: noStep }
+    ? { value: <span className={active ? undefined : "text-muted-foreground"}>{valueLabel}</span>, onStep: noStep }
     : isCheck(item)
       ? { checked }
       : item.progress !== undefined
