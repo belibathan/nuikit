@@ -59,6 +59,7 @@ import {
   type FieldRule,
 } from "@/components/ui/form-field";
 import { Confirm, ConfirmPanel, type ConfirmTone } from "@/components/ui/confirm";
+import { KeyPrompt, KeyPromptStack } from "@/components/ui/key-prompt";
 import { cn } from "@/lib/utils";
 import { themes } from "@/themes";
 
@@ -231,6 +232,16 @@ export function ComponentsPage() {
         >
           <ConfirmStates />
           <ConfirmDemo />
+        </Section>
+
+        <Section
+          name="key-prompt"
+          title="Key prompt"
+          text="The key and what it does, near what the player can use. One or several, a combination, hold-to-confirm with a line that fills, the active one, a locked one with a reason. On a panel or on the HUD. In game the key is read in Lua; the hold arrives as progress."
+          stageClassName="min-h-[32rem] items-center"
+        >
+          <KeyPromptStates />
+          <KeyPromptDemo />
         </Section>
       </main>
       <Footer />
@@ -777,6 +788,46 @@ function ConfirmDemo() {
           />
         )}
       </Surface>
+    </>
+  );
+}
+
+/** Every state from props, where they'd sit in game: a stack on the right, HUD prompts at the bottom. */
+function KeyPromptStates() {
+  return (
+    <>
+      <KeyPromptStack position="center-right">
+        <KeyPrompt keys="E" label="Open garage" active />
+        <KeyPrompt keys="G" label="Rob register" hold={1500} progress={0.6} />
+        <KeyPrompt keys={["Shift", "E"]} icon={<CarIcon />} label="Lock vehicle" />
+        <KeyPrompt keys="H" label="Hotwire" description="Needs a lockpick" disabled />
+      </KeyPromptStack>
+      <KeyPromptStack position="bottom-center" className="flex-row">
+        <KeyPrompt surface="hud" size="sm" keys="F" label="Enter vehicle" />
+        <KeyPrompt surface="hud" size="sm" keys="Y" label="Talk" active />
+        <KeyPrompt surface="hud" size="sm" keys="X" label="Hands up" hold={800} progress={0.3} />
+      </KeyPromptStack>
+    </>
+  );
+}
+
+/** Press and hold with the pointer, or hold G while the page has focus. */
+function KeyPromptDemo() {
+  const [robbed, setRobbed] = useState(0);
+  const [talked, setTalked] = useState(0);
+  return (
+    <>
+      <KeyPromptStack position="center-left">
+        <KeyPrompt keys="G" label="Rob register" description="Hold, or hold G" hold={1500} listen onConfirm={() => setRobbed((n) => n + 1)} />
+        <KeyPrompt keys="T" label="Talk to the clerk" listen onConfirm={() => setTalked((n) => n + 1)} />
+      </KeyPromptStack>
+      <Panel size="sm">
+        <PanelHeader title="Try it" description="Hold the prompt on the left" />
+        <PanelBody variant="form">
+          <Stat label="Registers robbed" value={robbed} size="sm" />
+          <Stat label="Times you talked" value={talked} size="sm" />
+        </PanelBody>
+      </Panel>
     </>
   );
 }

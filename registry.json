@@ -288,6 +288,24 @@
         "spinner",
         "https://nuikit.vercel.app/r/panel.json"
       ]
+    },
+    {
+      "name": "key-prompt",
+      "type": "registry:ui",
+      "title": "Key prompt",
+      "description": "\"[E] Open garage\": keys (one or a combination), label, description, icon; hold-to-confirm with a filling line, driven by Lua (progress) or by pointer and key when the page has focus; active and disabled; on a panel or the HUD; a stack for any edge. The default look of the prompt intent; supersedes key-hint.",
+      "files": [
+        {
+          "path": "registry/nuikit/ui/key-prompt.tsx",
+          "type": "registry:ui"
+        }
+      ],
+      "dependencies": [
+        "class-variance-authority"
+      ],
+      "registryDependencies": [
+        "kbd"
+      ]
     }
   ]
 }

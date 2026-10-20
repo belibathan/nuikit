@@ -44,7 +44,7 @@ GTA's pause map is opened and closed (not seen on a fresh join).
 
 | Lane | Scope | Status |
 |---|---|---|
-| Components | The 9 remaining components + `progress-ring` + `skill-check`, redesigned as the default renderers for the intents | In progress (`feat/components`): `notice` + stack + `useNotices` (notify, #8) and `form-field` + presets (input, #11) and `confirm` (confirm) in review; next `key-prompt`, `progress-ring`, then menu-row and meter extensions |
+| Components | The 9 remaining components + `progress-ring` + `skill-check`, redesigned as the default renderers for the intents | In progress (`feat/components`): `notice` + stack + `useNotices` (notify, #8) and `form-field` + presets (input, #11) `confirm` (confirm, #13) and `key-prompt` (prompt) in review; next `progress-ring`, then menu-row, meter, speedometer, countdown, the rest of Part B |
 | Screens | death, loading, chat and the overrides (ox_lib first) rebuilt on the components, protocol-exact | Ready to dispatch |
 | Blocks + site | The 14 blocks, `npm create nuikit -t <block>`, `/blocks`, theme switcher, theme studio | Ready to dispatch (starts with blocks the 5 shipped components cover) |
 | Showcase | pause, HUD, inventory: minimap restart quirk, FPS budget | Owner's existing agent |
