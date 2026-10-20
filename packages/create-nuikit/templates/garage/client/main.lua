@@ -47,7 +47,10 @@ end
 --- What the panel shows (web/src/components/blocks/garage/nui.ts: GarageData), or nil.
 local function snapshot()
   local res = request('list', { garage = here.id })
-  if not res or not res.ok then return nil end
+  if not res or not res.ok then
+    print(('^1[{{name}}] %s^0'):format(res and res.error or "The garage didn't answer."))
+    return nil
+  end
   return { title = here.label, vehicles = res.vehicles, canStore = driving() ~= nil }
 end
 

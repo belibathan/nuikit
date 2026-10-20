@@ -12,6 +12,11 @@ cd web
 {{pm}} run build  # production build into web/dist
 ```
 
+**Needs OneSync.** The server spawns, reads and deletes the vehicles and checks where you stand, which only
+works with OneSync. Qbox, QBCore and ESX servers already run it; otherwise add `set onesync on` to `server.cfg`.
+Without it the resource prints a red error at start and refuses every request ("This garage needs OneSync on
+the server.").
+
 **In game:** `ensure nuikit` first, then `ensure {{name}}`. Go to a garage from `config.lua` (Legion Square is
 the default) and press F6 or run `/{{name}}`. Drive a car in and press **Store vehicle**; pick it and
 press **Take out** (or Enter) to get it back at the garage's spawn point.
