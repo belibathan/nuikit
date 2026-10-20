@@ -29,23 +29,23 @@ const GRAPHITE = {
   "nk-weight-strong": "600",
   "nk-weight-display": "700",
   "nk-tracking-display": "-0.02em",
-  "nk-label-case": "none",
-  "nk-tracking-label": "0em",
+  "nk-label-case": "uppercase",
+  "nk-tracking-label": "0.06em",
   "nk-border-width": "1px",
   "nk-cut": "0px",
   "nk-surface-opacity": "0.96",
   "nk-surface-tint": "0.02",
-  "nk-surface-gradient": "0.04",
+  "nk-surface-gradient": "0",
   "nk-surface-edge": "0.06",
   "nk-elevation": "soft",
   "nk-glow": "0",
-  "nk-density": "1",
+  "nk-density": "0.875",
   "nk-ease": "cubic-bezier(0.2, 0.8, 0.2, 1)",
-  "nk-duration": "160ms",
+  "nk-duration": "140ms",
   "nk-hud-opacity": "0.55",
   "nk-hud-text-shadow": "soft",
   "nk-gauge-style": "arc",
-  "nk-gauge-track": "0.375rem",
+  "nk-gauge-track": "0.25rem",
   "nk-gauge-ticks": "1",
   "nk-row-indicator": "bar",
 };
@@ -86,7 +86,7 @@ describe("a plain TweakCN paste is Graphite", () => {
   });
 
   it("derives what CSS can't branch on: shadows, clip, row flags", () => {
-    expect(t.vars["nk-elevation-shadow"]).toBe("0 0 0 1px rgba(0, 0, 0, 0.25), 0 24px 64px -24px rgba(0, 0, 0, 0.7)");
+    expect(t.vars["nk-elevation-shadow"]).toBe("0 0 0 1px rgba(0, 0, 0, 0.25), 0 12px 32px -16px rgba(0, 0, 0, 0.6)");
     expect(t.vars["nk-hud-shadow"]).toBe("0 1px 2px rgba(0, 0, 0, 0.6)");
     expect(t.vars["nk-clip"]).toBe("none");
     expect([t.vars["nk-row-bar"], t.vars["nk-row-fill"], t.vars["nk-row-outline"]]).toEqual(["1", "0", "0"]);
@@ -117,7 +117,7 @@ describe("validation and floors", () => {
   it("replaces invalid values with the default, saying what's allowed", () => {
     const t = compileTheme(`.dark { --nk-elevation: huge; --nk-density: 3; --nk-cut: big; --nk-ease: linear(0, 1); }`);
     expect(t.vars["nk-elevation"]).toBe("soft");
-    expect(t.vars["nk-density"]).toBe("1");
+    expect(t.vars["nk-density"]).toBe("0.875");
     expect(t.vars["nk-cut"]).toBe("0px");
     expect(t.vars["nk-ease"]).toBe("cubic-bezier(0.2, 0.8, 0.2, 1)");
     expect(t.warnings.join("\n")).toMatch(/--nk-elevation must be none, soft, deep \(got huge\)/);
@@ -214,5 +214,50 @@ describe("applyTheme and identity keywords", () => {
     setPrefs({ reducedMotion: true });
     expect(document.documentElement.style.getPropertyValue("--nk-motion")).toBe("0");
     expect(document.documentElement.style.getPropertyValue("--nk-duration")).toBe("240ms");
+  });
+});
+
+// docs/tokens.md#flexibility: tokens encode qualities, never one look. One theme.css (test/themes/daylight.css)
+// turns the compact, dark Graphite baseline into something light, roomy and round, with no kit code changes.
+describe("flexibility", () => {
+  const kit = read("packages/create-nuikit/kit.css");
+  const daylight = compileTheme(read("packages/core/test/themes/daylight.css"), { mode: "light" });
+  const graphite = compileTheme(identity("graphite"));
+
+  it("one theme.css moves every quality away from Graphite, with no warnings", () => {
+    expect(daylight.warnings).toEqual([]);
+    expect(daylight.mode).toBe("light");
+    const qualities = [
+      "background", // light
+      "hud",
+      "nk-density", // roomy
+      "radius", // round
+      "nk-elevation",
+      "nk-surface-edge",
+      "nk-label-case",
+      "nk-type-ratio",
+      "nk-weight-strong",
+      "font-sans",
+      "nk-duration",
+      "nk-ease",
+      "nk-gauge-style",
+      "nk-gauge-track",
+      "nk-row-indicator",
+    ];
+    for (const k of qualities) expect(daylight.vars[k], k).not.toBe(graphite.vars[k]);
+    // component tokens a theme sets pass through (the detail tier; references to theme vars resolved)
+    expect(daylight.vars["nk-chip-radius"]).toBe("9999px");
+    expect(daylight.vars["nk-panel-radius"]).toBe("calc(1.25rem + 0.25rem)");
+  });
+
+  it("the kit reads identity tokens only through var(), each with the Graphite default as its fallback", () => {
+    let checked = 0;
+    for (const [, name, fallback] of kit.matchAll(/var\(--(nk-[a-z-]+), ([^()]+?)\)/g)) {
+      const spec = IDENTITY_TOKENS.find((t) => t.name === name && t.group !== "derived");
+      if (!spec) continue;
+      expect(fallback!.trim(), `--${name} fallback`).toBe(graphite.vars[name!]);
+      checked++;
+    }
+    expect(checked).toBeGreaterThan(10);
   });
 });

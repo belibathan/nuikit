@@ -11,7 +11,7 @@ import { spawn } from "node:child_process";
 import fs from "node:fs";
 import { createRequire } from "node:module";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const repo = path.resolve(here, "../..");
@@ -69,13 +69,18 @@ const SCREENS = {
   death: { app: "systems/nuikit_death/web", path: "/?fixture=qbx-dead", scene: "stage-dusk.jpg", settle: 1200 },
   hud: { app: "systems/nuikit_hud/web", path: "/?fixture=driving", scene: "stage-day.jpg", settle: 1500 },
   bank: { app: "addons/Renewed-Banking/web", path: "/?bank", scene: "garage.jpg", settle: 1500 },
+  // the slab anatomy (design v2 §4.5) and a small panel: kit utilities only (specimen/index.html)
+  slabs: { serve: "bench/identity/specimen/serve.mjs", path: "/", scene: "street.jpg", settle: 900 },
 };
 const CHOSEN = arg("screens", Object.keys(SCREENS).join(",")).split(",");
 
-function startDev(app, port) {
-  const dir = path.join(repo, app);
-  const vite = path.join(dir, "node_modules/vite/bin/vite.js");
-  const child = spawn(process.execPath, [vite, "--port", String(port), "--strictPort", "--host", "127.0.0.1"], { cwd: dir, stdio: ["ignore", "pipe", "pipe"] });
+function startDev(s, port) {
+  const app = s.app ?? s.serve;
+  const dir = path.join(repo, s.app ?? path.dirname(s.serve));
+  const args = s.serve
+    ? [path.join(repo, s.serve), `--port=${port}`]
+    : [path.join(dir, "node_modules/vite/bin/vite.js"), "--port", String(port), "--strictPort", "--host", "127.0.0.1"];
+  const child = spawn(process.execPath, args, { cwd: dir, stdio: ["ignore", "pipe", "pipe"] });
   let log = "";
   child.stdout.on("data", (d) => (log += d));
   child.stderr.on("data", (d) => (log += d));
@@ -99,7 +104,16 @@ async function stopDev(dev) {
   await Promise.race([exited, sleep(10000)]);
 }
 
-const themes = Object.fromEntries(IDS.map((id) => [id, fs.readFileSync(path.join(repo, "packages/core/themes", `${id}.css`), "utf8")]));
+// The four identities, sent as theme.css text (compiled in the page, as the fallback path does in game).
+// `daylight` is the flexibility check (packages/core/test/themes/daylight.css): a light theme, so it's
+// sent compiled in light mode, as the nuikit resource would publish it.
+const { compileTheme } = await import(pathToFileURL(path.join(repo, "packages/core/dist/index.js")).href);
+const themeFor = (id) => {
+  const shipped = path.join(repo, "packages/core/themes", `${id}.css`);
+  if (fs.existsSync(shipped)) return fs.readFileSync(shipped, "utf8");
+  return compileTheme(fs.readFileSync(path.join(repo, "packages/core/test/themes", `${id}.css`), "utf8"), { mode: "light" });
+};
+const themes = Object.fromEntries(IDS.map((id) => [id, themeFor(id)]));
 const bg = (name) => (name ? `data:image/jpeg;base64,${fs.readFileSync(path.join(repo, "apps/www/public/bg", name)).toString("base64")}` : null);
 
 const browser = await chromium.launch({ executablePath: "/opt/pw-browsers/chromium-1194/chrome-linux/chrome" });
@@ -107,7 +121,7 @@ let port = 5800;
 const made = [];
 for (const name of CHOSEN) {
   const s = SCREENS[name];
-  const dev = startDev(s.app, port++);
+  const dev = startDev(s, port++);
   try {
     await dev.ready;
     for (const id of IDS) {

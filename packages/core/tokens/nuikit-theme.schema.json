@@ -354,12 +354,12 @@
             "none",
             "uppercase"
           ],
-          "description": "Labels in uppercase or as written",
+          "description": "Captions (the short names of values) in uppercase or as written",
           "$comment": "tokens 1.1"
         },
         "nk-tracking-label": {
           "type": "string",
-          "description": "Letter-spacing of labels (uppercase wants 0.06–0.12em)",
+          "description": "Letter-spacing of captions (uppercase wants 0.06–0.12em)",
           "$comment": "tokens 1.1"
         },
         "nk-border-width": {
@@ -414,7 +414,7 @@
         "nk-density": {
           "type": "string",
           "pattern": "^-?\\d+(\\.\\d+)?$",
-          "description": "Multiplies the kit's spacing scale: 0.85 compact … 1.15 roomy",
+          "description": "Multiplies the kit's spacing scale: 0.875 compact (Graphite) … 1.15 roomy",
           "$comment": "tokens 1.1"
         },
         "nk-ease": {

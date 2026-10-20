@@ -227,23 +227,23 @@ var NuikitTheme = (() => {
     id("nk-weight-strong", "number", "Titles, key numbers, active rows", "600", { range: [100, 900] }),
     id("nk-weight-display", "number", "Display type (full-screen titles, big numbers)", "700", { range: [100, 900] }),
     id("nk-tracking-display", "dimension", "Letter-spacing of display type", "-0.02em"),
-    id("nk-label-case", "keyword", "Labels in uppercase or as written", "none", { values: ["none", "uppercase"] }),
-    id("nk-tracking-label", "dimension", "Letter-spacing of labels (uppercase wants 0.06\u20130.12em)", "0em"),
+    id("nk-label-case", "keyword", "Captions (the short names of values) in uppercase or as written", "uppercase", { values: ["none", "uppercase"] }),
+    id("nk-tracking-label", "dimension", "Letter-spacing of captions (uppercase wants 0.06\u20130.12em)", "0.06em"),
     id("nk-border-width", "dimension", "Hairline weight of panels, rows and fields", "1px"),
     id("nk-cut", "dimension", "Chamfered corners (top left, bottom right), drawn with clip-path; 0 = off", "0px"),
     id("nk-surface-opacity", "number", "Panel opacity over the game (floor 0.92 for text panels)", "0.96", { range: [0, 1] }),
     id("nk-surface-tint", "number", "How much brand tints neutral surfaces (0\u20130.12)", "0.02", { range: [0, 0.12] }),
-    id("nk-surface-gradient", "number", "Top-to-bottom light falloff on panels (0 = flat)", "0.04", { range: [0, 0.2] }),
+    id("nk-surface-gradient", "number", "Top-to-bottom light falloff on panels (0 = flat)", "0", { range: [0, 0.2] }),
     id("nk-surface-edge", "number", "Inner top highlight, the machined edge (alpha)", "0.06", { range: [0, 0.3] }),
     id("nk-elevation", "keyword", "Shadow recipe of floating panels", "soft", { values: ["none", "soft", "deep"] }),
     id("nk-glow", "number", "Brand glow on active parts and HUD fills (alpha, 0 = off)", "0", { range: [0, 1] }),
-    id("nk-density", "number", "Multiplies the kit's spacing scale: 0.85 compact \u2026 1.15 roomy", "1", { range: [0.75, 1.3] }),
+    id("nk-density", "number", "Multiplies the kit's spacing scale: 0.875 compact (Graphite) \u2026 1.15 roomy", "0.875", { range: [0.75, 1.3] }),
     id("nk-ease", "cubicBezier", "The one easing curve", "cubic-bezier(0.2, 0.8, 0.2, 1)"),
-    id("nk-duration", "duration", "Base duration (panel enter, transitions); \xD7 nk-motion", "160ms"),
+    id("nk-duration", "duration", "Base duration (panel enter, transitions); \xD7 nk-motion", "140ms"),
     id("nk-hud-opacity", "number", "Minimum backplate opacity of HUD chips and tiles", "0.55", { range: [0, 1] }),
     id("nk-hud-text-shadow", "keyword", "Shadow under text drawn on the game", "soft", { values: ["none", "soft", "strong"] }),
     id("nk-gauge-style", "keyword", "How gauges are drawn", "arc", { values: ["arc", "bar", "digital"] }),
-    id("nk-gauge-track", "dimension", "Gauge and meter track thickness", "0.375rem"),
+    id("nk-gauge-track", "dimension", "Gauge and meter track thickness", "0.25rem"),
     id("nk-gauge-ticks", "number", "Tick marks on gauges: 1 on, 0 off", "1", { range: [0, 1] }),
     id("nk-row-indicator", "keyword", "How the active row is marked", "bar", { values: ["bar", "fill", "outline"] }),
     dv("surface", "color", "Floating panel surface: popover tinted by brand (\xD7 nk-surface-tint); drawn at nk-surface-opacity", "mix(popover, brand, nk-surface-tint)"),
@@ -688,7 +688,7 @@ var NuikitTheme = (() => {
     if (level === "none") return `0 0 0 0 rgba(${s}, 0)`;
     if (level === "deep")
       return `0 0 0 1px rgba(${s}, 0.3), 0 2px 4px rgba(${s}, 0.2), 0 18px 40px -10px rgba(${s}, 0.55), 0 44px 96px -28px rgba(${s}, 0.75)`;
-    return `0 0 0 1px rgba(${s}, 0.25), 0 24px 64px -24px rgba(${s}, 0.7)`;
+    return `0 0 0 1px rgba(${s}, 0.25), 0 12px 32px -16px rgba(${s}, 0.6)`;
   }
   function hudTextShadow(level, s) {
     if (level === "none") return "none";

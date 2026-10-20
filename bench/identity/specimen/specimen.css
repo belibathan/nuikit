@@ -1,0 +1,3 @@
+/* A shipped UI's synced index.css (tokens, kit, fonts), unchanged, plus this page as a Tailwind source. */
+@import "../../../systems/nuikit_death/web/src/index.css";
+@source "./index.html";

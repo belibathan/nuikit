@@ -619,8 +619,8 @@
       "$description": "Letter-spacing of display type"
     },
     "label-case": {
-      "$value": "none",
-      "$description": "Labels in uppercase or as written",
+      "$value": "uppercase",
+      "$description": "Captions (the short names of values) in uppercase or as written",
       "$extensions": {
         "dev.nuikit": {
           "type": "keyword"
@@ -630,10 +630,10 @@
     "tracking-label": {
       "$type": "dimension",
       "$value": {
-        "value": 0,
+        "value": 0.06,
         "unit": "em"
       },
-      "$description": "Letter-spacing of labels (uppercase wants 0.06–0.12em)"
+      "$description": "Letter-spacing of captions (uppercase wants 0.06–0.12em)"
     },
     "border-width": {
       "$type": "dimension",
@@ -663,7 +663,7 @@
     },
     "surface-gradient": {
       "$type": "number",
-      "$value": 0.04,
+      "$value": 0,
       "$description": "Top-to-bottom light falloff on panels (0 = flat)"
     },
     "surface-edge": {
@@ -687,8 +687,8 @@
     },
     "density": {
       "$type": "number",
-      "$value": 1,
-      "$description": "Multiplies the kit's spacing scale: 0.85 compact … 1.15 roomy"
+      "$value": 0.875,
+      "$description": "Multiplies the kit's spacing scale: 0.875 compact (Graphite) … 1.15 roomy"
     },
     "ease": {
       "$type": "cubicBezier",
@@ -703,7 +703,7 @@
     "duration": {
       "$type": "duration",
       "$value": {
-        "value": 160,
+        "value": 140,
         "unit": "ms"
       },
       "$description": "Base duration (panel enter, transitions); × nk-motion"
@@ -734,7 +734,7 @@
     "gauge-track": {
       "$type": "dimension",
       "$value": {
-        "value": 0.375,
+        "value": 0.25,
         "unit": "rem"
       },
       "$description": "Gauge and meter track thickness"
