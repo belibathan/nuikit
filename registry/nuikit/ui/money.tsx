@@ -57,7 +57,7 @@ function formatMoney(
   const digits = fractionDigits ?? (compact ? undefined : 0)
   const options: Intl.NumberFormatOptions = {
     ...(currency ? { style: "currency", currency, currencyDisplay: "narrowSymbol" } : {}),
-    ...(compact ? { notation: "compact", maximumFractionDigits: digits ?? 1 } : { minimumFractionDigits: digits, maximumFractionDigits: digits }),
+    ...(compact ? { notation: "compact", minimumFractionDigits: 0, maximumFractionDigits: digits ?? 1 } : { minimumFractionDigits: digits, maximumFractionDigits: digits }),
     signDisplay: sign === "always" ? "exceptZero" : sign === "never" ? "never" : "auto",
   }
   let text: string

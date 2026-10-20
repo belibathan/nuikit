@@ -4,7 +4,7 @@
 PR. Design: [`architecture.md`](architecture.md). Kit brief: [`next/blocks.md`](next/blocks.md). Lanes and
 rules for parallel agents: [`next/dispatch.md`](next/dispatch.md).*
 
-Last updated: Oct 19 2026, after the 0.5.0 release.
+Last updated: Oct 20 2026, batch 1 (all kit lanes) in test.
 
 ## Released
 
@@ -44,9 +44,9 @@ GTA's pause map is opened and closed (not seen on a fresh join).
 
 | Lane | Scope | Status |
 |---|---|---|
-| Components | The 9 remaining components + `progress-ring` + `skill-check`, redesigned as the default renderers for the intents | In progress (`feat/components`): `notice` + stack + `useNotices` (notify, #8), `form-field` + presets (input, #11), `confirm` (confirm, #13), `key-prompt` (prompt, #14), `progress-ring` (progress, #17) and `menu-row` items (progress, image, details, readOnly, inert, #20), `meter` (tones, library colours, timed, #24), `speedometer` (HUD tokens, #27), `countdown` (#28), `money` (#30), `item-slot` (#33), `player-card` (#34), `empty-state` (#36), `skill-check` (challenge, #37) and the `radial-menu` redesign (radial) in review: the dispatch list is complete. Waiting on the lead's batches and in-game tests |
-| Screens | death, loading, chat and the overrides (ox_lib first) rebuilt on the components, protocol-exact | In progress. #9 ox_lib, #12 death and loading (chat stays: not React), #15 ox_target, #18 Renewed-Banking, #21 illenium-appearance, #23 qbx_taxijob. PR 7: qbx_vehiclesales (contract on `panel`, price on `stat`). Skipped, no real simplification: qbx_scoreboard, qbx_idcard. Next: mm_radio, then the ox_lib parts as the Components stack (through #24) lands |
-| Blocks + site | The 14 blocks, `npm create nuikit -t <block>`, `/blocks`, theme switcher, theme studio | In progress: the six starter blocks in PRs (#10, #16, #22, #26, stacked; none tested in game yet); site: tokens and ThemePicker (#19, merged), theme studio at `/theme` (#29), `/blocks` with live previews and the theme switcher (#31); Part C blocks on the shipped components: `garage` (#35), `bank` (`feat/blocks-bank`), then `job-menu`. Next: moving blocks onto `key-prompt`, `confirm`, `form-field` once they're on main |
+| Components | The 9 remaining components + `progress-ring` + `skill-check`, redesigned as the default renderers for the intents | **Done (Part B)**, in batch 1: `notice`, `form-field`, `confirm`, `key-prompt`, `progress-ring`, `menu-row` items, `meter` tones/timed mode, `speedometer` on HUD tokens, `countdown`, `money`, `item-slot`, `player-card`, `empty-state`, `skill-check`, `radial-menu` (#8–#39). Next: deprecate `nui-toaster`, `task-progress` |
+| Screens | death, loading, chat and the overrides (ox_lib first) rebuilt on the components, protocol-exact | In batch 1: ox_lib menus + progress (#9, #32), death + loading (#12), ox_target (#15), Renewed-Banking (#18), illenium-appearance (#21), qbx_taxijob (#23), qbx_vehiclesales (#25). Chat stays as is. Next: rest of ox_lib (notify, input, alert, text UI, circle, skill check) on the new components, qbx_scoreboard, qbx_idcard, mm_radio |
+| Blocks + site | The 14 blocks, `npm create nuikit -t <block>`, `/blocks`, theme switcher, theme studio | In batch 1: blocks `hud-minimal`, `death-screen`, `pause-menu`, `loading-screen`, `settings`, `scoreboard`, `garage`, `bank` (all scaffold, build, level 3; CI-checked); site `/blocks` (#31), theme studio `/theme` (#29), tokens + ThemePicker (#19, merged). Next: `interaction`, `inventory`, `shop`, `vehicle-shop`, `character-select`, `job-menu` |
 | Showcase | pause, HUD, inventory: minimap restart quirk, FPS budget | Owner's existing agent |
 
 ### Open items for the owner

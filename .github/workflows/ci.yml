@@ -67,3 +67,13 @@ jobs:
         working-directory: ${{ runner.temp }}
       - run: pnpm build && grep -q "web/dist/index.html" ../fxmanifest.lua
         working-directory: ${{ runner.temp }}/e2e-hud/web
+      # Every block as a template: scaffolds, builds, and passes the level-3 conformance gate.
+      - name: Block templates (npm create nuikit -t <block>)
+        working-directory: ${{ runner.temp }}
+        run: |
+          set -e
+          for t in $(ls "$GITHUB_WORKSPACE/registry/nuikit/blocks"); do
+            node "$GITHUB_WORKSPACE/packages/create-nuikit/dist/index.js" "tpl-$t" -t "$t" --yes --pm pnpm --link "$GITHUB_WORKSPACE"
+            (cd "tpl-$t/web" && pnpm build)
+            node "$GITHUB_WORKSPACE/packages/cli/dist/cli.js" check "tpl-$t" --level 3
+          done
