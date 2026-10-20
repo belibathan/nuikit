@@ -60,11 +60,33 @@ local function snapshot(src, title, atm)
   }
 end
 
---- A whole positive number of dollars, or nil.
+--- A whole, positive, sane number of dollars, or nil. Only real numbers: no strings, NaN, infinity,
+--- negatives (a negative transfer would pay the sender) or amounts past what any account holds.
+local MAX_AMOUNT = 1e9
 local function amountOf(v)
-  local n = tonumber(v)
-  if not n or n <= 0 or n ~= math.floor(n) or n > 1e9 then return nil end
-  return n
+  if type(v) ~= 'number' or v ~= v or v <= 0 or v > MAX_AMOUNT or v ~= math.floor(v) then return nil end
+  return math.floor(v)
+end
+
+--- A short note, or nil.
+local function noteOf(v)
+  if type(v) ~= 'string' or v == '' then return nil end
+  return v:sub(1, 60)
+end
+
+--- Take `amount` from one account and put it in another, all or nothing: if the second half fails
+--- (a framework that refuses, a recipient who left), the first is undone.
+local function move(fromSrc, fromAccount, toSrc, toAccount, amount, why)
+  if not change(fromSrc, fromAccount, -amount, why) then return false end
+  if toSrc ~= fromSrc and not GetPlayerName(toSrc) then -- left between the checks and now
+    change(fromSrc, fromAccount, amount, why .. ' (refund)')
+    return false
+  end
+  if not change(toSrc, toAccount, amount, why) then
+    change(fromSrc, fromAccount, amount, why .. ' (refund)')
+    return false
+  end
+  return true
 end
 
 local handlers = {}
@@ -78,9 +100,8 @@ handlers.deposit = function(src, data)
   if not amount then return { ok = false, error = 'Enter whole dollars above $0.' } end
   if data.account ~= 'checking' and data.account ~= 'savings' then return { ok = false, error = 'Unknown account.' } end
   if balance(src, 'cash') < amount then return { ok = false, error = "You don't have that much cash." } end
-  if not change(src, 'cash', -amount, 'bank deposit') then return { ok = false, error = "The deposit didn't go through." } end
-  change(src, data.account, amount, 'bank deposit')
-  log(src, data.account, 'deposit', 'Cash deposit', amount, data.note)
+  if not move(src, 'cash', src, data.account, amount, 'bank deposit') then return { ok = false, error = "The deposit didn't go through." } end
+  log(src, data.account, 'deposit', 'Cash deposit', amount, noteOf(data.note))
   save()
   return { ok = true }
 end
@@ -90,9 +111,8 @@ handlers.withdraw = function(src, data)
   if not amount then return { ok = false, error = 'Enter whole dollars above $0.' } end
   if data.account ~= 'checking' and data.account ~= 'savings' then return { ok = false, error = 'Unknown account.' } end
   if balance(src, data.account) < amount then return { ok = false, error = "There isn't that much in the account." } end
-  if not change(src, data.account, -amount, 'bank withdrawal') then return { ok = false, error = "The withdrawal didn't go through." } end
-  change(src, 'cash', amount, 'bank withdrawal')
-  log(src, data.account, 'withdraw', 'Cash withdrawal', -amount, data.note)
+  if not move(src, data.account, src, 'cash', amount, 'bank withdrawal') then return { ok = false, error = "The withdrawal didn't go through." } end
+  log(src, data.account, 'withdraw', 'Cash withdrawal', -amount, noteOf(data.note))
   save()
   return { ok = true }
 end
@@ -101,25 +121,27 @@ handlers.transfer = function(src, data)
   local amount = amountOf(data.amount)
   if not amount then return { ok = false, error = 'Enter whole dollars above $0.' } end
   if data.atm then return { ok = false, error = "ATMs can't send transfers." } end
-  -- to: a server ID or the "LS-000012" number the page shows; your own savings with "savings"
-  local to = tostring(data.to or ''):gsub('%s', '')
-  local target = tonumber(to:match('^LS%-(%d+)$') or to)
-  if to:lower() == 'savings' or (target == src and data.account == 'savings') then
+  if data.account ~= 'checking' and data.account ~= 'savings' then return { ok = false, error = 'Unknown account.' } end
+  local note = noteOf(data.note)
+  -- to: a server ID or the "LS-000012" number the page shows; your own other account with "savings"
+  local to = (type(data.to) == 'string' or type(data.to) == 'number') and tostring(data.to):gsub('%s', '') or ''
+  local target = tonumber(to:match('^LS%-(%d+)$') or to:match('^%d+$') or '')
+  if to:lower() == 'savings' then
     local from, into = data.account, data.account == 'savings' and 'checking' or 'savings'
     if balance(src, from) < amount then return { ok = false, error = "There isn't that much in the account." } end
-    change(src, from, -amount, 'own transfer')
-    change(src, into, amount, 'own transfer')
-    log(src, from, 'transfer', ('To %s'):format(into == 'savings' and 'Savings' or 'Checking'), -amount, data.note)
-    log(src, into, 'transfer', ('From %s'):format(from == 'savings' and 'Savings' or 'Checking'), amount, data.note)
+    if not move(src, from, src, into, amount, 'own transfer') then return { ok = false, error = "The transfer didn't go through." } end
+    log(src, from, 'transfer', ('To %s'):format(into == 'savings' and 'Savings' or 'Checking'), -amount, note)
+    log(src, into, 'transfer', ('From %s'):format(from == 'savings' and 'Savings' or 'Checking'), amount, note)
     save()
     return { ok = true }
   end
-  if not target or target == src or not GetPlayerName(target) then return { ok = false, error = 'No one with that ID or account is online.' } end
+  if target == src then return { ok = false, error = "That's you. To move money between your accounts, send it to savings." } end
+  if not target or not GetPlayerName(target) then return { ok = false, error = 'No one with that ID or account is online.' } end
   if balance(src, data.account) < amount then return { ok = false, error = "There isn't that much in the account." } end
-  if not change(src, data.account, -amount, 'transfer') then return { ok = false, error = "The transfer didn't go through." } end
-  change(target, 'checking', amount, 'transfer')
-  log(src, data.account, 'transfer', ('Transfer to %s'):format(GetPlayerName(target)), -amount, data.note)
-  log(target, 'checking', 'transfer', ('Transfer from %s'):format(GetPlayerName(src)), amount, data.note)
+  local them, me = GetPlayerName(target), GetPlayerName(src)
+  if not move(src, data.account, target, 'checking', amount, 'transfer') then return { ok = false, error = "The transfer didn't go through. Nothing was taken." } end
+  log(src, data.account, 'transfer', ('Transfer to %s'):format(them), -amount, note)
+  log(target, 'checking', 'transfer', ('Transfer from %s'):format(me), amount, note)
   save()
   return { ok = true }
 end
