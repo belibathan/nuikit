@@ -119,6 +119,21 @@ variables mirror `nuikit.tokens.json` 1:1. Reference screens for the flagships (
 menus, death) become the target for every lane. Until v2 lands, Blocks does functional work and keeps visuals on the
 current kit; Components implements v2 when it's approved.
 
+## Server-authoritative checklist (every block or template with server Lua)
+
+A template is copied into real servers, so its example code must be safe as shipped:
+1. Never trust the page: prices, amounts, targets, grades, item names and IDs are looked up or recomputed on the
+   server; page-sent values are inputs to validate, never facts.
+2. Validate types and ranges (numbers are numbers, not "100"; integers where money is integer; hex colours,
+   enum values, string lengths).
+3. Check identity and permission on the server for every action (owner of the job, of the vehicle, the account).
+4. Check presence and distance on the server (OneSync coords) where the action is local; fail loudly at start if
+   OneSync is required and missing.
+5. Money and items move atomically: take, act, and roll back (refund, remove the spawned entity) on any failure.
+6. Rate-limit or serialize actions per player (one purchase at a time).
+7. Never send licenses or other identifiers to the page; use opaque IDs.
+8. Lua tests for each rule (wasmoon harness), including the failure paths.
+
 ## Lane: Showcase (`feat/showcase`, the owner's existing agent)
 
 Pause, HUD and inventory: fix the 0.5.0 minimap restart quirk; keep the FPS budget (report numbers in PRs);

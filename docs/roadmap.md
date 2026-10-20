@@ -56,6 +56,12 @@ Known issues in 0.6.0:
 | Design | Audit, research, design language v2, Figma design system mapped to tokens, flagship reference screens | Started Oct 20 (lead-run; owner is design lead) |
 | Showcase | pause, HUD, inventory: minimap restart quirk, FPS budget | Owner's existing agent |
 
+### Lead backlog (requests from the lanes)
+
+- `compileTheme`: warn on an empty token value.
+- Runtime context: server currency and locale (part of 0.7 context; `money` and blocks read it).
+- `cn()` / tailwind-merge: teach it the `nk-*` utilities so `nk-title` and `text-sm` resolve correctly (the #33 bug class).
+
 ### Open items for the owner
 
 - Claim the npm name `nuikit` (one manual publish), then remove `"private": true` from `packages/cli/package.json`.
