@@ -1,6 +1,7 @@
-import { ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
+import { ChevronDownIcon } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Checkbox } from "@/components/ui/checkbox";
+import { MenuRow } from "@/components/ui/menu-row";
+import { Panel, PanelBody, PanelHeader } from "@/components/ui/panel";
 import { Bar } from "@/lib/bar";
 import { Icon } from "@/lib/icon";
 import { debounce, post, useOx } from "@/lib/nui";
@@ -146,11 +147,9 @@ export function ListMenu() {
 
   return (
     <div className={cn("pointer-events-none fixed z-30 flex items-start gap-2", CORNER[menu.position ?? "top-left"], menu.position?.endsWith("right") && "flex-row-reverse")}>
-      <section className="nk-panel nk-enter w-80 overflow-hidden">
-        <header className="nk-panel-header">
-          <h2 className="nk-title truncate">{menu.title}</h2>
-        </header>
-        <div ref={list} className="nk-panel-body flex max-h-[19.25rem] flex-col gap-0.5 overflow-y-hidden">
+      <Panel>
+        <PanelHeader title={menu.title} />
+        <PanelBody ref={list} className="max-h-[19.25rem] overflow-y-hidden">
           {items.map((item, i) =>
             item.label ? (
               <Row key={i} index={i} item={item} active={i === selected} scroll={indexes[i] ?? 0} checked={checks[i] ?? false} />
@@ -158,39 +157,50 @@ export function ListMenu() {
               <span key={i} data-index={i} hidden />
             ),
           )}
-        </div>
+        </PanelBody>
         {items.length > 6 && selected !== items.length - 1 && (
           <div className="-mt-1 flex justify-center pb-1 text-muted-foreground">
             <ChevronDownIcon className="size-4" />
           </div>
         )}
-      </section>
-      {tooltip && <div className="nk-panel nk-enter w-max max-w-64 px-3 py-2 text-sm text-muted-foreground">{tooltip}</div>}
+      </Panel>
+      {tooltip && (
+        <Panel size="auto" className="max-w-64 px-3 py-2 text-sm text-muted-foreground">
+          {tooltip}
+        </Panel>
+      )}
     </div>
   );
 }
 
+const noStep = () => {};
+
+/**
+ * One item as a MenuRow: a stepper for `values`, a checkbox for `checked`, a bar for `progress`.
+ * The rows only show state; every key is handled by the window listener above (the cursor is off
+ * and the container ignores the pointer), so the rows' own handlers never post anything.
+ */
 function Row({ index, item, active, scroll, checked }: { index: number; item: MenuItem; active: boolean; scroll: number; checked: boolean }) {
   const value = isValues(item) ? item.values![scroll] : undefined;
+  // Only the highlighted row's value is bright; the others stay muted, as on the rest of the kit.
+  const valueLabel = typeof value === "object" ? value?.label : value;
+  const kind = isValues(item)
+    ? { value: <span className={active ? undefined : "text-muted-foreground"}>{valueLabel}</span>, onStep: noStep }
+    : isCheck(item)
+      ? { checked }
+      : item.progress !== undefined
+        ? { meta: <Bar value={item.progress} scheme={item.colorScheme} className="w-24" /> }
+        : {};
   return (
-    <div data-index={index} className={cn("nk-row shrink-0 font-medium", active && "bg-accent text-accent-foreground")}>
-      {item.icon && (
-        <span className="grid size-4 shrink-0 place-items-center text-muted-foreground">
-          <Icon icon={item.icon} color={item.iconColor} animation={item.iconAnimation} allowImage className="size-4" />
-        </span>
-      )}
-      <span className="min-w-0 flex-1 truncate">{item.label}</span>
-      {isValues(item) ? (
-        <span className="flex min-w-0 items-center gap-1 text-muted-foreground">
-          <ChevronLeftIcon className="size-4 shrink-0" />
-          <span className={cn("nk-num truncate", active && "text-accent-foreground")}>{typeof value === "object" ? value?.label : value}</span>
-          <ChevronRightIcon className="size-4 shrink-0" />
-        </span>
-      ) : isCheck(item) ? (
-        <Checkbox checked={checked} tabIndex={-1} className="pointer-events-none" />
-      ) : item.progress !== undefined ? (
-        <Bar value={item.progress} scheme={item.colorScheme} className="w-24 shrink-0" />
-      ) : null}
-    </div>
+    <MenuRow
+      data-index={index}
+      tabIndex={-1}
+      active={active}
+      className="shrink-0"
+      icon={item.icon ? <Icon icon={item.icon} color={item.iconColor} animation={item.iconAnimation} allowImage className="size-4" /> : undefined}
+      {...kind}
+    >
+      {item.label}
+    </MenuRow>
   );
 }
