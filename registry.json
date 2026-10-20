@@ -268,6 +268,26 @@
         "switch",
         "textarea"
       ]
+    },
+    {
+      "name": "confirm",
+      "type": "registry:ui",
+      "title": "Confirm",
+      "description": "Are you sure? Title, body, cancel and one primary or destructive action, a running state and acknowledge-only. Escape cancels through the nuikit surface (not a private key handler); Enter presses the focused action; Tab stays inside. The default look of the confirm intent.",
+      "files": [
+        {
+          "path": "registry/nuikit/ui/confirm.tsx",
+          "type": "registry:ui"
+        }
+      ],
+      "dependencies": [
+        "class-variance-authority"
+      ],
+      "registryDependencies": [
+        "button",
+        "spinner",
+        "https://nuikit.vercel.app/r/panel.json"
+      ]
     }
   ]
 }
