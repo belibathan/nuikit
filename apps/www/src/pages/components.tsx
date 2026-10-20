@@ -41,7 +41,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { HudChip } from "@/components/ui/hud-chip";
 import { MenuRow, MenuRowDetails, menuMetadata } from "@/components/ui/menu-row";
-import { Meter } from "@/components/ui/meter";
+import { Meter, meterColor } from "@/components/ui/meter";
 import { Panel, PanelBody, PanelFooter, PanelHeader } from "@/components/ui/panel";
 import { Separator } from "@/components/ui/separator";
 import { Slider } from "@/components/ui/slider";
@@ -163,6 +163,17 @@ export function ComponentsPage() {
             <Meter aria-label="Thirst" icon={<DropletIcon />} value={58} tone="chart-2" track="game" size="sm" />
             <Meter aria-label="Stress" icon={<FlameIcon />} value={84} high={80} tone="chart-4" track="game" size="sm" />
           </div>
+        </Section>
+
+        <Section
+          name="meter"
+          title="Meter: tones, colours, timed"
+          text="Status tones from the theme; a library's colour through meterColor() (Mantine names become theme tones, CSS colours pass through); and a timed bar whose onComplete fires from a timer, so it still finishes with motion off."
+          install={false}
+          stageClassName="items-center"
+        >
+          <MeterTones />
+          <MeterTimed />
         </Section>
 
         <Section
@@ -1029,6 +1040,70 @@ function InertListDemo() {
         </MenuRow>
       </PanelBody>
     </Panel>
+  );
+}
+
+/** Status tones, and colours as a library sends them (ox colorScheme), through meterColor(). */
+function MeterTones() {
+  return (
+    <Panel>
+      <PanelHeader title="Tones and colours" description="Status from the theme; library colours mapped" />
+      <PanelBody variant="form">
+        <Meter label="Paid off" value={80} valueText="80%" tone="success" />
+        <Meter label="Fuel reserve" value={35} valueText="35%" tone="warning" />
+        <Meter label="Download" value={55} valueText="55%" tone="info" />
+        <Separator />
+        <Meter label='colorScheme "green"' value={64} valueText="64%" {...meterColor("green")} />
+        <Meter label='colorScheme "red.6"' value={42} valueText="42%" {...meterColor("red.6")} />
+        <Meter label='colorScheme "#4dabf7"' value={70} valueText="70%" segments={5} {...meterColor("#4dabf7")} />
+      </PanelBody>
+    </Panel>
+  );
+}
+
+/** A timed bar (ox progressBar): fills over its duration; onComplete from a timer. */
+function MeterTimed() {
+  const [run, setRun] = useState(0);
+  const [running, setRunning] = useState(false);
+  const [last, setLast] = useState("Nothing yet");
+  return (
+    <div className="flex w-80 flex-col gap-4">
+      <Panel size="default">
+        <PanelHeader title="Try it" description="A 3 second search" />
+        <PanelBody>
+          <MenuRow
+            icon={<BackpackIcon />}
+            onClick={() => {
+              setRun((r) => r + 1);
+              setRunning(true);
+            }}
+          >
+            Search the glovebox
+          </MenuRow>
+        </PanelBody>
+        <PanelFooter>
+          <span className="nk-label">Last result</span>
+          <span data-slot="meter-demo-result" className="ml-auto text-sm">
+            {last}
+          </span>
+        </PanelFooter>
+      </Panel>
+      {running && (
+        <Panel size="default" className="nk-enter">
+          <PanelBody variant="form">
+            <Meter
+              key={run}
+              label="Searching the glovebox"
+              duration={3000}
+              onComplete={() => {
+                setRunning(false);
+                setLast("Found $120");
+              }}
+            />
+          </PanelBody>
+        </Panel>
+      )}
+    </div>
   );
 }
 
