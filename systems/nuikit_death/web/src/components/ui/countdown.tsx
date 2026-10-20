@@ -19,14 +19,17 @@ import { Progress } from "@/components/ui/progress"
  * event), so it still fires with motion off. Restart a run with a new `key`.
  */
 
-const countdownVariants = cva("nk-num leading-none font-semibold tracking-tight", {
+// The line-height lives in each size, after its text-*: tailwind-merge treats a font size as
+// overriding an earlier leading-*, so a base leading-none would be dropped (the hero clock then
+// got a tall line box and pushed its label down).
+const countdownVariants = cva("nk-num font-semibold tracking-tight", {
   variants: {
     size: {
-      sm: "text-xl",
+      sm: "text-xl leading-none",
       /** nk-display: 32px, a number that is the point of a panel. */
-      default: "text-[2rem]",
+      default: "text-[2rem] leading-none",
       /** The full-screen clock (death, loading): 128px at 1080p. */
-      hero: "text-[8rem]",
+      hero: "text-[8rem] leading-none",
     },
   },
   defaultVariants: {
@@ -96,6 +99,29 @@ const TONE = {
   destructive: "text-destructive",
 } as const
 
+type CountdownLineTone = "neutral" | "primary" | "warning" | "destructive"
+
+/** The line's fill per tone (literal class names, so Tailwind finds them). Neutral follows the surface. */
+const LINE_FILL: Record<Exclude<CountdownLineTone, "neutral">, string> = {
+  primary: "[&_[data-slot=progress-indicator]]:bg-primary",
+  warning: "[&_[data-slot=progress-indicator]]:bg-warning",
+  destructive: "[&_[data-slot=progress-indicator]]:bg-destructive",
+}
+
+/**
+ * The line's tone: `warnTone` once the warning starts (warnAt), the caller's `lineTone` before
+ * that (a last stand drains in destructive from the start), neutral otherwise.
+ */
+function countdownLineTone(
+  state: CountdownState,
+  lineTone: CountdownLineTone = "neutral",
+  warnTone: keyof typeof TONE = "destructive"
+): CountdownLineTone {
+  const has = (o: object, k: string) => Object.prototype.hasOwnProperty.call(o, k)
+  if (state === "warning") return has(TONE, warnTone) ? warnTone : "destructive"
+  return has(LINE_FILL, lineTone) ? lineTone : "neutral"
+}
+
 function Countdown({
   className,
   size,
@@ -106,6 +132,7 @@ function Countdown({
   label,
   warnAt,
   warnTone = "destructive",
+  lineTone = "neutral",
   surface = "theme",
   line,
   format = formatCountdown,
@@ -123,6 +150,12 @@ function Countdown({
     /** At or below this many seconds the clock turns `warnTone` and pulses (not with motion off). */
     warnAt?: number
     warnTone?: keyof typeof TONE
+    /**
+     * The line's tone from the start (a theme token): a last stand drains in `destructive`, a
+     * heist timer in `primary`. Neutral (default) follows the surface. Once `warnAt` is reached,
+     * `warnTone` takes over.
+     */
+    lineTone?: CountdownLineTone
     /** theme: on a full-screen surface or a panel. game: straight on the world (HUD tokens). */
     surface?: "theme" | "game"
     /** Draw the line (default: when there's a total, or when running on its own). */
@@ -136,6 +169,7 @@ function Countdown({
   const state = countdownState(seconds, warnAt)
   const showLine = (line ?? whole !== undefined) && !!whole && whole > 0
   const game = surface === "game"
+  const lineFill = countdownLineTone(state, lineTone, warnTone)
 
   return (
     <div
@@ -168,16 +202,15 @@ function Countdown({
       {showLine && (
         <Progress
           data-slot="countdown-line"
+          data-tone={lineFill}
           value={Math.max(0, Math.min(100, (seconds / whole!) * 100))}
           aria-hidden
           className={cn(
             "h-1",
             size === "hero" ? "mt-6 w-80" : size === "sm" ? "mt-2 w-24" : "mt-3 w-40",
             game ? "bg-scrim/35" : "bg-foreground/15",
-            state === "warning"
-              ? warnTone === "warning"
-                ? "[&_[data-slot=progress-indicator]]:bg-warning"
-                : "[&_[data-slot=progress-indicator]]:bg-destructive"
+            lineFill !== "neutral"
+              ? LINE_FILL[lineFill]
               : game
                 ? "[&_[data-slot=progress-indicator]]:bg-hud-foreground"
                 : "[&_[data-slot=progress-indicator]]:bg-foreground",
@@ -189,4 +222,13 @@ function Countdown({
   )
 }
 
-export { Countdown, countdownVariants, formatCountdown, spokenCountdown, countdownState, type CountdownState }
+export {
+  Countdown,
+  countdownVariants,
+  formatCountdown,
+  spokenCountdown,
+  countdownState,
+  countdownLineTone,
+  type CountdownState,
+  type CountdownLineTone,
+}

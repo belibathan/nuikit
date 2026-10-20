@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
-import { CalendarIcon, ChevronDownIcon, EyeIcon, EyeOffIcon, MinusIcon, PlusIcon, RotateCcwIcon, XIcon } from "lucide-react"
+import { CalendarIcon, ChevronDownIcon, ClockIcon, EyeIcon, EyeOffIcon, MinusIcon, PlusIcon, RotateCcwIcon, XIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -323,12 +323,12 @@ function normalizeHex(text: string | null | undefined): string | null {
   return `#${h.length === 3 ? [...h].map((c) => c + c).join("") : h}`
 }
 
-type FieldKind = "text" | "number" | "select" | "checkbox" | "slider" | "date" | "color"
+type FieldKind = "text" | "number" | "select" | "checkbox" | "slider" | "date" | "date-range" | "time" | "color"
 
 type FieldRule = {
   kind: FieldKind
   required?: boolean
-  /** number, slider: a value; date: "YYYY-MM-DD". */
+  /** number, slider: a value; date, date-range: "YYYY-MM-DD"; time: "HH:MM" (24h). */
   min?: number | string
   max?: number | string
   /** text: characters. */
@@ -338,7 +338,7 @@ type FieldRule = {
 }
 
 type FieldIssue = {
-  code: "required" | "min" | "max" | "minLength" | "maxLength" | "invalid"
+  code: "required" | "min" | "max" | "minLength" | "maxLength" | "invalid" | "incomplete" | "order"
   message: string
 }
 
@@ -349,7 +349,12 @@ const isEmpty = (v: unknown) => v === undefined || v === null || v === "" || (Ar
  * `required`; the other rules apply to what's there.
  */
 function validateField(rule: FieldRule, value: unknown): FieldIssue | null {
-  const empty = rule.kind === "checkbox" ? value !== true : isEmpty(value)
+  const empty =
+    rule.kind === "checkbox"
+      ? value !== true
+      : rule.kind === "date-range"
+        ? !Array.isArray(value) || value.every((v) => v === null || v === undefined)
+        : isEmpty(value)
   if (empty) return rule.required ? { code: "required", message: "Required" } : null
   switch (rule.kind) {
     case "text": {
@@ -375,6 +380,28 @@ function validateField(rule: FieldRule, value: unknown): FieldIssue | null {
         return { code: "min", message: `On or after ${formatDate(String(rule.min), rule.dateOrder)}` }
       if (rule.max !== undefined && iso > String(rule.max))
         return { code: "max", message: `On or before ${formatDate(String(rule.max), rule.dateOrder)}` }
+      return null
+    }
+    case "date-range": {
+      // [startMs, endMs] as ox_lib returns them (local midnight), either end may be null.
+      const [a, b] = value as [number | null, number | null]
+      if (a === null || a === undefined || b === null || b === undefined) return { code: "incomplete", message: "Pick both dates" }
+      const start = epochToDate(a)
+      const end = epochToDate(b)
+      if (!start || !end) return { code: "invalid", message: "Enter real dates" }
+      if (end < start) return { code: "order", message: "The end can't be before the start" }
+      if (rule.min !== undefined && start < String(rule.min))
+        return { code: "min", message: `On or after ${formatDate(String(rule.min), rule.dateOrder)}` }
+      if (rule.max !== undefined && end > String(rule.max))
+        return { code: "max", message: `On or before ${formatDate(String(rule.max), rule.dateOrder)}` }
+      return null
+    }
+    case "time": {
+      // Epoch ms (ox_lib's shape): only the clock time counts.
+      const t = epochToTime(typeof value === "number" ? value : Number(value))
+      if (!t) return { code: "invalid", message: "Enter a real time" }
+      if (rule.min !== undefined && t < String(rule.min)) return { code: "min", message: `At ${rule.min} or later` }
+      if (rule.max !== undefined && t > String(rule.max)) return { code: "max", message: `At ${rule.max} or earlier` }
       return null
     }
     case "color":
@@ -929,6 +956,136 @@ function stepDatePart(part: DatePart, text: string, direction: 1 | -1, { min, ma
   return String(next).padStart(2, "0")
 }
 
+type Segment = {
+  key: string
+  /** aria-label of this box: "Day", "End year", "Hours". */
+  label: string
+  placeholder: string
+  /** Digits it takes; it hands focus on when full. */
+  length: number
+  width: string
+  value: string
+}
+
+/**
+ * The typed-box control every date and time field uses: digits only, auto-advance, arrow keys to
+ * step, Backspace on an empty box goes back, a separator key moves on. No native picker (they
+ * don't draw in game).
+ */
+function SegmentedInput({
+  segments,
+  separator,
+  onSegment,
+  onStep,
+  firstId,
+  icon,
+  invalid,
+  dense = false,
+  children,
+}: {
+  segments: Segment[]
+  /** Drawn before segment i (i > 0). */
+  separator: (i: number) => React.ReactNode
+  onSegment: (key: string, digits: string) => void
+  onStep: (key: string, direction: 1 | -1) => void
+  firstId?: string
+  icon?: React.ReactNode
+  invalid?: boolean
+  /** Tighter gaps and padding (two dates in one box). */
+  dense?: boolean
+  /** After the boxes (the AM/PM toggle). */
+  children?: React.ReactNode
+}) {
+  const f = useFormField()
+  const refs = React.useRef<(HTMLInputElement | null)[]>([])
+  const focus = (i: number) => {
+    const el = refs.current[i]
+    el?.focus()
+    el?.select()
+  }
+  const bad = f.invalid || invalid || undefined
+  return (
+    <div
+      role="group"
+      data-slot="form-field-control"
+      aria-labelledby={f.labelId}
+      aria-describedby={f.describedBy}
+      aria-invalid={bad}
+      data-disabled={f.disabled || undefined}
+      className={cn(
+        "flex h-9 w-full min-w-0 items-center rounded-md border border-input bg-transparent text-sm shadow-xs transition-[color,box-shadow] dark:bg-input/30",
+        dense ? "gap-0.5 px-2" : "gap-1 px-3",
+        "focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/50",
+        "aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40",
+        "data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+      )}
+      onClick={(e) => {
+        if (e.target !== e.currentTarget) return
+        const empty = segments.findIndex((s) => s.value === "")
+        focus(empty >= 0 ? empty : 0)
+      }}
+    >
+      {icon}
+      {segments.map((s, i) => (
+        <React.Fragment key={s.key}>
+          {i > 0 && separator(i)}
+          <input
+            ref={(el) => {
+              refs.current[i] = el
+            }}
+            id={i === 0 ? (firstId ?? f.id) : undefined}
+            aria-label={s.label}
+            aria-required={f.required || undefined}
+            aria-invalid={bad}
+            disabled={f.disabled}
+            inputMode="numeric"
+            autoComplete="off"
+            maxLength={s.length}
+            placeholder={s.placeholder}
+            value={s.value}
+            onFocus={(e) => e.currentTarget.select()}
+            onChange={(e) => {
+              const digits = e.target.value.replace(/\D/g, "").slice(0, s.length)
+              onSegment(s.key, digits)
+              if (digits.length === s.length && i < segments.length - 1) focus(i + 1)
+            }}
+            onKeyDown={(e) => {
+              const last = i === segments.length - 1
+              if (e.key === "ArrowUp" || e.key === "ArrowDown") {
+                e.preventDefault()
+                onStep(s.key, e.key === "ArrowUp" ? 1 : -1)
+              } else if (e.key === "Backspace" && s.value === "" && i > 0) {
+                e.preventDefault()
+                focus(i - 1)
+              } else if (["/", "-", ":", "."].includes(e.key)) {
+                e.preventDefault()
+                if (!last) focus(i + 1)
+              } else if (e.key === "ArrowLeft" && e.currentTarget.selectionStart === 0 && i > 0) {
+                e.preventDefault()
+                focus(i - 1)
+              } else if (e.key === "ArrowRight" && e.currentTarget.selectionEnd === s.value.length && !last) {
+                e.preventDefault()
+                focus(i + 1)
+              }
+            }}
+            className={cn("nk-num bg-transparent text-center outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed", s.width)}
+          />
+        </React.Fragment>
+      ))}
+      {children}
+    </div>
+  )
+}
+
+const sepClass = "text-muted-foreground"
+
+type DateParts = Record<DatePart, string>
+
+const partsOf = (iso: string | null | undefined): DateParts => {
+  const p = parseDate(iso)
+  return { day: p?.day ?? "", month: p?.month ?? "", year: p?.year ?? "" }
+}
+
 function DateControl({
   value,
   onValueChange,
@@ -936,103 +1093,298 @@ function DateControl({
   max,
   order = "dmy",
 }: Omit<DateFieldProps, keyof RowProps | "defaultValue"> & { value: string | null; onValueChange: (v: string | null) => void }) {
-  const f = useFormField()
-  const fromValue = () => {
-    const p = parseDate(value)
-    return { day: p?.day ?? "", month: p?.month ?? "", year: p?.year ?? "" }
-  }
-  const [parts, setParts] = React.useState<Record<DatePart, string>>(fromValue)
-  const refs = React.useRef<Partial<Record<DatePart, HTMLInputElement | null>>>({})
+  const [parts, setParts] = React.useState<DateParts>(() => partsOf(value))
   const order3 = PARTS[order]
   const complete = parts.day.length > 0 && parts.month.length > 0 && parts.year.length === 4
   const real = dateFromParts(parts.day, parts.month, parts.year)
 
   // Follow the value when it changes from outside (a reset, a new form).
   React.useEffect(() => {
-    if (value !== real) setParts(fromValue())
+    if (value !== real) setParts(partsOf(value))
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value])
 
-  const update = (next: Record<DatePart, string>) => {
+  const update = (next: DateParts) => {
     setParts(next)
     const iso = dateFromParts(next.day, next.month, next.year)
     if (iso !== value) onValueChange(iso)
   }
-  const focus = (i: number) => {
-    const el = refs.current[order3[i]!]
-    el?.focus()
-    el?.select()
+
+  return (
+    <SegmentedInput
+      icon={<CalendarIcon aria-hidden className="mr-1 size-4 shrink-0 text-muted-foreground" />}
+      invalid={complete && !real}
+      separator={() => (
+        <span aria-hidden className={sepClass}>
+          {order === "ymd" ? "-" : "/"}
+        </span>
+      )}
+      segments={order3.map((part) => ({ key: part, ...PART[part], value: parts[part] }))}
+      onSegment={(key, digits) => update({ ...parts, [key]: digits })}
+      onStep={(key, dir) => update({ ...parts, [key]: stepDatePart(key as DatePart, parts[key as DatePart], dir, { min, max }) })}
+    />
+  )
+}
+
+/* date range */
+
+/** "YYYY-MM-DD" → epoch ms of that day's local midnight (what ox_lib returns), or null. */
+function dateToEpoch(iso: string | null | undefined): number | null {
+  const p = parseDate(iso)
+  return p ? new Date(Number(p.year), Number(p.month) - 1, Number(p.day)).getTime() : null
+}
+
+/** Epoch ms → the local "YYYY-MM-DD" it falls on, or null. */
+function epochToDate(ms: number | null | undefined): string | null {
+  if (ms === null || ms === undefined || !Number.isFinite(ms)) return null
+  const d = new Date(ms)
+  return dateFromParts(d.getDate(), d.getMonth() + 1, String(d.getFullYear()).padStart(4, "0"))
+}
+
+type DateRange = [number | null, number | null]
+
+type DateRangeFieldProps = RowProps & {
+  /** [start, end] as epoch ms of local midnight (ox_lib's date-range shape); null while empty. */
+  value?: DateRange
+  defaultValue?: DateRange
+  onValueChange?: (value: DateRange) => void
+  /** "YYYY-MM-DD" bounds. */
+  min?: string
+  max?: string
+  order?: DateOrder
+}
+
+function DateRangeField(props: DateRangeFieldProps) {
+  const [row, { value, defaultValue = [null, null] as DateRange, onValueChange, ...control }] = rowProps(props)
+  const [v, setV] = useControllable(value, defaultValue, onValueChange)
+  return (
+    <FormField {...row}>
+      <DateRangeControl value={v} onValueChange={setV} {...control} />
+    </FormField>
+  )
+}
+
+const RANGE_PART: Record<DatePart, { length: number; placeholder: string; width: string }> = {
+  day: { length: 2, placeholder: "DD", width: "w-5" },
+  month: { length: 2, placeholder: "MM", width: "w-6" },
+  year: { length: 4, placeholder: "YYYY", width: "w-9" },
+}
+
+function DateRangeControl({
+  value,
+  onValueChange,
+  min,
+  max,
+  order = "dmy",
+}: Omit<DateRangeFieldProps, keyof RowProps | "defaultValue"> & { value: DateRange; onValueChange: (v: DateRange) => void }) {
+  const fromValue = () => ({ start: partsOf(epochToDate(value[0])), end: partsOf(epochToDate(value[1])) })
+  const [parts, setParts] = React.useState(fromValue)
+  const order3 = PARTS[order]
+  const iso = (p: DateParts) => dateFromParts(p.day, p.month, p.year)
+  const full = (p: DateParts) => p.day.length > 0 && p.month.length > 0 && p.year.length === 4
+  const s = iso(parts.start)
+  const e = iso(parts.end)
+  const backwards = !!s && !!e && e < s
+
+  React.useEffect(() => {
+    if (dateToEpoch(s) !== value[0] || dateToEpoch(e) !== value[1]) setParts(fromValue())
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [value[0], value[1]])
+
+  const update = (next: { start: DateParts; end: DateParts }) => {
+    setParts(next)
+    const out: DateRange = [dateToEpoch(iso(next.start)), dateToEpoch(iso(next.end))]
+    if (out[0] !== value[0] || out[1] !== value[1]) onValueChange(out)
+  }
+  const side = (key: string) => key.split(":") as ["start" | "end", DatePart]
+  const segments = (["start", "end"] as const).flatMap((which) =>
+    order3.map((p) => ({
+      key: `${which}:${p}`,
+      label: `${which === "start" ? "Start" : "End"} ${PART[p].label.toLowerCase()}`,
+      ...RANGE_PART[p],
+      value: parts[which][p],
+    }))
+  )
+
+  return (
+    <SegmentedInput
+      icon={<CalendarIcon aria-hidden className="mr-1 size-4 shrink-0 text-muted-foreground" />}
+      dense
+      invalid={(full(parts.start) && !s) || (full(parts.end) && !e) || backwards}
+      separator={(i) =>
+        i === order3.length ? (
+          <span aria-hidden className={cn(sepClass, "px-0.5")}>
+            –
+          </span>
+        ) : (
+          <span aria-hidden className={sepClass}>
+            {order === "ymd" ? "-" : "/"}
+          </span>
+        )
+      }
+      segments={segments}
+      onSegment={(key, digits) => {
+        const [w, p] = side(key)
+        update({ ...parts, [w]: { ...parts[w], [p]: digits } })
+      }}
+      onStep={(key, dir) => {
+        const [w, p] = side(key)
+        update({ ...parts, [w]: { ...parts[w], [p]: stepDatePart(p, parts[w][p], dir, { min, max }) } })
+      }}
+    />
+  )
+}
+
+/* time */
+
+/** "HH:MM" (24h) from hours and minutes, or null when they aren't a real time. */
+function timeFromParts(hours: string | number, minutes: string | number): string | null {
+  const h = Number(hours)
+  const m = Number(minutes)
+  if (String(hours) === "" || String(minutes) === "" || !Number.isInteger(h) || !Number.isInteger(m)) return null
+  if (h < 0 || h > 23 || m < 0 || m > 59) return null
+  return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`
+}
+
+/** "HH:MM" → epoch ms of today (or `base`'s day) at that time, seconds 0 (ox_lib's time shape). */
+function timeToEpoch(hhmm: string | null | undefined, base: Date = new Date()): number | null {
+  const m = /^(\d{2}):(\d{2})$/.exec(hhmm ?? "")
+  if (!m || !timeFromParts(m[1]!, m[2]!)) return null
+  return new Date(base.getFullYear(), base.getMonth(), base.getDate(), Number(m[1]), Number(m[2]), 0, 0).getTime()
+}
+
+/** Epoch ms → its local "HH:MM", or null. */
+function epochToTime(ms: number | null | undefined): string | null {
+  if (ms === null || ms === undefined || !Number.isFinite(ms)) return null
+  const d = new Date(ms)
+  return timeFromParts(d.getHours(), d.getMinutes())
+}
+
+/** 24h hour → 12h hour and meridiem, and back. */
+function to12(h24: number): { hour: number; pm: boolean } {
+  return { hour: h24 % 12 === 0 ? 12 : h24 % 12, pm: h24 >= 12 }
+}
+function to24(hour12: number, pm: boolean) {
+  return (hour12 % 12) + (pm ? 12 : 0)
+}
+
+/** One arrow-key press on an hour or minute box, wrapping. */
+function stepTimePart(part: "hour" | "minute", text: string, direction: 1 | -1, { twelve = false, minuteStep = 1 } = {}) {
+  if (part === "minute") {
+    const step = Math.max(1, Math.floor(minuteStep))
+    const n = text === "" ? (direction > 0 ? -step : 60) : Number(text)
+    const next = (((Math.round(n / step) * step + direction * step) % 60) + 60) % 60
+    return String(next).padStart(2, "0")
+  }
+  if (twelve) {
+    const n = text === "" ? (direction > 0 ? 0 : 13) : Number(text)
+    return String((((n - 1 + direction) % 12) + 12) % 12 + 1).padStart(2, "0")
+  }
+  const n = text === "" ? (direction > 0 ? -1 : 24) : Number(text)
+  return String((((n + direction) % 24) + 24) % 24).padStart(2, "0")
+}
+
+type TimeFieldProps = RowProps & {
+  /** Epoch ms of today at the picked time (ox_lib's time shape); null while empty or incomplete. */
+  value?: number | null
+  defaultValue?: number | null
+  onValueChange?: (value: number | null) => void
+  /** "12" shows hours 1–12 and an AM/PM toggle; "24" (default) hours 0–23. */
+  format?: "12" | "24"
+  /** "HH:MM" bounds (24h), for validateField. */
+  min?: string
+  max?: string
+  /** The minute box's arrow-key step. */
+  minuteStep?: number
+}
+
+function TimeField(props: TimeFieldProps) {
+  const [row, { value, defaultValue = null, onValueChange, ...control }] = rowProps(props)
+  const [v, setV] = useControllable(value, defaultValue, onValueChange)
+  return (
+    <FormField {...row}>
+      <TimeControl value={v} onValueChange={setV} {...control} />
+    </FormField>
+  )
+}
+
+function TimeControl({
+  value,
+  onValueChange,
+  format = "24",
+  minuteStep = 1,
+}: Omit<TimeFieldProps, keyof RowProps | "defaultValue"> & { value: number | null; onValueChange: (v: number | null) => void }) {
+  const f = useFormField()
+  const twelve = format === "12"
+  const fromValue = () => {
+    const t = epochToTime(value)
+    if (!t) return { hour: "", minute: "", pm: false }
+    const [h, m] = t.split(":").map(Number) as [number, number]
+    if (!twelve) return { hour: String(h).padStart(2, "0"), minute: String(m).padStart(2, "0"), pm: false }
+    const x = to12(h)
+    return { hour: String(x.hour).padStart(2, "0"), minute: String(m).padStart(2, "0"), pm: x.pm }
+  }
+  const [parts, setParts] = React.useState(fromValue)
+  const hhmm = (p: typeof parts) => {
+    if (p.hour === "" || p.minute.length < 2) return null
+    const h = Number(p.hour)
+    if (twelve && (h < 1 || h > 12)) return null
+    return timeFromParts(twelve ? to24(h, p.pm) : h, p.minute)
+  }
+  const current = hhmm(parts)
+  const complete = parts.hour.length === 2 && parts.minute.length === 2
+
+  React.useEffect(() => {
+    if (epochToTime(value) !== current) setParts(fromValue())
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [value])
+
+  const update = (next: typeof parts) => {
+    setParts(next)
+    const t = hhmm(next)
+    const ms = t ? timeToEpoch(t) : null
+    if ((ms === null ? null : epochToTime(ms)) !== epochToTime(value)) onValueChange(ms)
   }
 
   return (
-    <div
-      role="group"
-      data-slot="form-field-control"
-      aria-labelledby={f.labelId}
-      aria-describedby={f.describedBy}
-      aria-invalid={f.invalid || (complete && !real) || undefined}
-      data-disabled={f.disabled || undefined}
-      className={cn(
-        "flex h-9 w-full min-w-0 items-center gap-1 rounded-md border border-input bg-transparent px-3 text-sm shadow-xs transition-[color,box-shadow] dark:bg-input/30",
-        "focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/50",
-        "aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40",
-        "data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+    <SegmentedInput
+      icon={<ClockIcon aria-hidden className="mr-1 size-4 shrink-0 text-muted-foreground" />}
+      invalid={complete && !current}
+      separator={() => (
+        <span aria-hidden className={sepClass}>
+          :
+        </span>
       )}
-      onClick={(e) => {
-        if (e.target === e.currentTarget) focus(order3.findIndex((p) => parts[p] === "") >= 0 ? order3.findIndex((p) => parts[p] === "") : 0)
-      }}
+      segments={[
+        { key: "hour", label: "Hours", placeholder: "HH", length: 2, width: "w-6", value: parts.hour },
+        { key: "minute", label: "Minutes", placeholder: "MM", length: 2, width: "w-7", value: parts.minute },
+      ]}
+      onSegment={(key, digits) => update({ ...parts, [key]: digits })}
+      onStep={(key, dir) =>
+        update({ ...parts, [key]: stepTimePart(key as "hour" | "minute", parts[key as "hour" | "minute"], dir, { twelve, minuteStep }) })
+      }
     >
-      <CalendarIcon aria-hidden className="mr-1 size-4 shrink-0 text-muted-foreground" />
-      {order3.map((part, i) => (
-        <React.Fragment key={part}>
-          {i > 0 && (
-            <span aria-hidden className="text-muted-foreground">
-              {order === "ymd" ? "-" : "/"}
-            </span>
-          )}
-          <input
-            ref={(el) => {
-              refs.current[part] = el
-            }}
-            id={i === 0 ? f.id : undefined}
-            aria-label={PART[part].label}
-            aria-required={f.required || undefined}
-            aria-invalid={f.invalid || (complete && !real) || undefined}
-            disabled={f.disabled}
-            inputMode="numeric"
-            autoComplete="off"
-            maxLength={PART[part].length}
-            placeholder={PART[part].placeholder}
-            value={parts[part]}
-            onFocus={(e) => e.currentTarget.select()}
-            onChange={(e) => {
-              const digits = e.target.value.replace(/\D/g, "").slice(0, PART[part].length)
-              update({ ...parts, [part]: digits })
-              if (digits.length === PART[part].length && i < order3.length - 1) focus(i + 1)
-            }}
-            onKeyDown={(e) => {
-              if (e.key === "ArrowUp" || e.key === "ArrowDown") {
-                e.preventDefault()
-                update({ ...parts, [part]: stepDatePart(part, parts[part], e.key === "ArrowUp" ? 1 : -1, { min, max }) })
-              } else if (e.key === "Backspace" && parts[part] === "" && i > 0) {
-                e.preventDefault()
-                focus(i - 1)
-              } else if ((e.key === "ArrowLeft" && e.currentTarget.selectionStart === 0 && i > 0) || (e.key === "/" && i > 0)) {
-                e.preventDefault()
-                focus(e.key === "/" ? Math.min(i + 1, order3.length - 1) : i - 1)
-              } else if (e.key === "ArrowRight" && e.currentTarget.selectionEnd === parts[part].length && i < order3.length - 1) {
-                e.preventDefault()
-                focus(i + 1)
-              }
-            }}
-            className={cn(
-              "nk-num bg-transparent text-center outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed",
-              PART[part].width
-            )}
-          />
-        </React.Fragment>
-      ))}
-    </div>
+      {twelve && (
+        <button
+          type="button"
+          data-slot="form-field-meridiem"
+          aria-label={parts.pm ? "PM, switch to AM" : "AM, switch to PM"}
+          aria-pressed={parts.pm}
+          disabled={f.disabled}
+          onClick={() => update({ ...parts, pm: !parts.pm })}
+          onKeyDown={(e) => {
+            if (e.key === "ArrowUp" || e.key === "ArrowDown" || e.key.toLowerCase() === "a" || e.key.toLowerCase() === "p") {
+              e.preventDefault()
+              const pm = e.key.toLowerCase() === "a" ? false : e.key.toLowerCase() === "p" ? true : !parts.pm
+              if (pm !== parts.pm) update({ ...parts, pm })
+            }
+          }}
+          className="nk-num ml-1 rounded-sm px-1 text-xs font-medium text-muted-foreground outline-none hover:text-foreground focus-visible:bg-accent focus-visible:text-accent-foreground"
+        >
+          {parts.pm ? "PM" : "AM"}
+        </button>
+      )}
+    </SegmentedInput>
   )
 }
 
@@ -1145,6 +1497,8 @@ export {
   CheckboxField,
   SliderField,
   DateField,
+  DateRangeField,
+  TimeField,
   ColorField,
   useFormField,
   formFieldVariants,
@@ -1157,6 +1511,12 @@ export {
   stepDatePart,
   daysInMonth,
   normalizeHex,
+  dateToEpoch,
+  epochToDate,
+  timeFromParts,
+  timeToEpoch,
+  epochToTime,
+  stepTimePart,
   type FormFieldProps,
   type TextFieldProps,
   type NumberFieldProps,
@@ -1164,6 +1524,9 @@ export {
   type CheckboxFieldProps,
   type SliderFieldProps,
   type DateFieldProps,
+  type DateRangeFieldProps,
+  type DateRange,
+  type TimeFieldProps,
   type ColorFieldProps,
   type FieldOption,
   type FieldKind,
