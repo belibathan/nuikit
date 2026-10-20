@@ -25,6 +25,9 @@
     "slider",
     "spinner",
     "switch",
-    "textarea"
+    "textarea",
+    "panel",
+    "menu-row",
+    "meter"
   ]
 }

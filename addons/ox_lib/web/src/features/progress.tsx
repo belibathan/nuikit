@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState } from "react";
+import { Meter } from "@/components/ui/meter";
+import { Panel } from "@/components/ui/panel";
 import { post, useOx } from "@/lib/nui";
 import { presenceMotion } from "@/lib/motion";
 import { usePresence } from "@/lib/presence";
@@ -30,19 +32,22 @@ export function ProgressBar() {
   useOx("progressCancel", () => setOpen(false));
 
   if (!presence.mounted || !run) return null;
+  // The kit's Meter, filled by a CSS animation over `duration` rather than by `value`: the fill's
+  // own animationend is the completion clock (§9.2), with no per-frame renders.
   return (
     <div className="pointer-events-none fixed inset-x-0 bottom-0 z-20 flex h-[20%] items-center justify-center">
-      <div data-state={presence.state} className={cn("nk-panel flex w-80 flex-col gap-2 px-4 py-3", presenceMotion)}>
+      <Panel animate={false} data-state={presence.state} className={cn("gap-2 px-4 py-3", presenceMotion)}>
+        {/* The label is the surface's only text, so it reads as body text, not as Meter's 12px label row. */}
         {run.label && <span className="truncate text-sm leading-5 font-medium">{run.label}</span>}
-        <div className="h-1 overflow-hidden rounded-full bg-muted">
-          <div
-            key={run.id}
-            className="h-full rounded-full bg-primary"
-            style={{ width: "0%", animation: `ox-fill ${run.duration}ms linear forwards` }}
-            onAnimationEnd={() => setOpen(false)}
-          />
-        </div>
-      </div>
+        <Meter
+          key={run.id}
+          value={0}
+          aria-label={run.label || "Progress"}
+          className="[&_[data-slot=progress-indicator]]:animate-[ox-fill_var(--ox-duration)_linear_forwards]"
+          style={{ ["--ox-duration" as string]: `${run.duration}ms` }}
+          onAnimationEnd={(e) => e.animationName === "ox-fill" && setOpen(false)}
+        />
+      </Panel>
     </div>
   );
 }

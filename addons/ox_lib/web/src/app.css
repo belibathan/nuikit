@@ -30,9 +30,10 @@ body {
   to { transform: scaleX(0); }
 }
 
+/* progress bar: slides the Meter's indicator in from translateX(-100%), the transform its value 0 sets */
 @keyframes ox-fill {
-  from { width: 0%; }
-  to { width: 100%; }
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0); }
 }
 
 @keyframes ox-ring {
