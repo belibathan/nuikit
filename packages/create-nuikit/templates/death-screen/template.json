@@ -2,5 +2,8 @@
   "block": "death-screen",
   "title": "Death screen",
   "description": "Last stand and death: countdown, call EMS, hold to respawn",
-  "next": ["die (or run /{{name}}:die) to see it; hold E to respawn when the timer ends"]
+  "next": [
+    "die (or run /{{name}}:die) to see it; hold E to get up when the timer ends",
+    "with qbx_medical, qb-ambulancejob or esx_ambulancejob running, the example rules step aside (see README)"
+  ]
 }

@@ -11,15 +11,27 @@ cd web
 ```
 
 **In game:** `ensure nuikit` first, then `ensure {{name}}`. Die (or run `/{{name}}:die`) to see it; when
-the timer ends, hold E to get up. G calls EMS (`callEms` in `client/main.lua` is where your dispatch goes).
+the timer ends, hold E to get up where you fell. G calls EMS (`callEms` in `client/main.lua` is where your
+dispatch goes).
+
+## Standalone or framework server
+
+`client/main.lua` has two parts: the screen and its hold stream, which are always there, and **example
+rules** (die, wait, hold E to get up where you fell, G calls EMS).
+
+- **Standalone server:** the example rules run. If `spawnmanager` respawns players on its own, set
+  `Config.disableAutoSpawn = true` (it calls `exports.spawnmanager:setAutoSpawn(false)`) so the screen
+  gets to decide.
+- **Server with a medical resource** (`qbx_medical`, `qb-ambulancejob`, `esx_death`, `esx_ambulancejob`):
+  the example rules switch themselves off, since that resource owns death and respawning, and the client
+  console says so once. Open and update the screen from what that resource is doing instead;
+  [nuikit_death](https://github.com/belibathan/nuikit/tree/main/systems/nuikit_death) shows how for each
+  of them. `Config.example = false` turns the rules off everywhere.
 
 ## Make it yours
 
-- `client/main.lua` holds the rules: when the screen opens, the timers, the keys and what respawning
-  does. On a server with a medical resource (qbx_medical, qb-ambulancejob, esx_ambulancejob…), keep the
-  surface and the hold stream and fill the screen's data from that resource instead.
-- Vanilla servers: if `spawnmanager` respawns players on its own, turn that off
-  (`exports.spawnmanager:setAutoSpawn(false)`) so the screen gets to decide.
+- The text, timers and keys come from the data `client/main.lua` sends; the example says "get up here",
+  because that's what its rules do. Change both together (a hospital, a bill via `Config.cost`).
 - The screen is in `web/src/components/blocks/death-screen/`: `death-screen.tsx` (the UI), `nui.ts` (the
   messages: the `death` surface's data and the `death:hold` live value) and `fixtures.ts` (every state,
   for the browser).
@@ -27,7 +39,7 @@ the timer ends, hold E to get up. G calls EMS (`callEms` in `client/main.lua` is
 | Phase | What the player sees |
 |---|---|
 | `down` | "You are down", the bleed-out timer in red under 30 s, call EMS, "another player can revive you" |
-| `dead` | "You are unconscious", the respawn timer, then "Hold E to respawn" with a bar and the bill |
+| `dead` | "You are unconscious", the respawn timer, then "Hold E to respawn" with a bar (and a bill, if you send one) |
 
 ## Files
 

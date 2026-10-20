@@ -3,7 +3,7 @@
 import type { DeathScreenData } from "./nui"
 
 const downText = { title: "You are down", subtitle: "Stay with us. Help may be on the way." }
-const deadText = { title: "You are unconscious", subtitle: "Wait for EMS or respawn at the hospital." }
+const deadText = { title: "You are unconscious", subtitle: "Wait for EMS, or respawn when the timer ends." }
 
 export const deathScreenFixtures = {
   down: { phase: "down", seconds: 182, total: 300, helpable: true, ...downText },
