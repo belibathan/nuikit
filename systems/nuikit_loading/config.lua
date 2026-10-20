@@ -34,7 +34,8 @@ Config = {
     { label = 'Website', url = 'yourserver.com' },
   },
 
+  -- 'auto': keep it up for Qbox's own character menu (qbx_core closes it), close it right away elsewhere.
   -- false: close the loading screen as soon as the game has loaded.
   -- true: keep it up until another resource (e.g. your multicharacter) calls ShutdownLoadingScreenNui().
-  externalShutdown = false,
+  externalShutdown = 'auto',
 }
