@@ -44,13 +44,15 @@ function Death({ data }: { data: DeathData }) {
 
         {hasTimer ? (
           // The kit's Countdown: mm:ss at the hero size, the label, the line that drains (with a
-          // total), red and pulsing in the last 30 s of last stand, dimmed at 00:00.
+          // total), dimmed at 00:00. In last stand the line drains red throughout (as in 0.6.0) and
+          // the clock turns red and pulses in the last 30 s.
           <Countdown
             seconds={seconds}
             total={total}
             label={label}
             size="hero"
             warnAt={laststand ? 30 : undefined}
+            lineTone={laststand ? "destructive" : "neutral"}
             className="death-in mt-12"
             style={{ animationDelay: "120ms" }}
           />
