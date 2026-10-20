@@ -29,7 +29,10 @@ export interface MinimapFrame {
 export interface MinimapState {
   /** the radar is on screen (driving, not in the big map, not hidden by another screen) */
   visible: boolean;
-  /** camera heading in degrees: north sits this far clockwise from the top of the radar */
+  /**
+   * camera heading in degrees when this was sent: north sits this far clockwise from the top of the
+   * radar. The compass starts here and then follows `hud:minimap:heading`.
+   */
   heading: number;
   street: string;
   crossing?: string;
@@ -42,6 +45,8 @@ declare module "nuikit-core" {
     "hud:vehicle": HudVehicle | false;
     "hud:minimap:frame": MinimapFrame;
     "hud:minimap": MinimapState;
+    /** the camera heading (0.1°), about 30 times a second while it turns */
+    "hud:minimap:heading": number;
   }
   interface NuiCallbacks {
     "hud:minimap:ready": { req: Record<string, never>; res: { ok: boolean } };

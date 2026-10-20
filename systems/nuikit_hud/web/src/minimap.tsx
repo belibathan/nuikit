@@ -1,5 +1,5 @@
-import { fetchNui, useNuiState } from "nuikit-core/react";
-import { useEffect, type CSSProperties } from "react";
+import { fetchNui, onNui, useNuiState } from "nuikit-core/react";
+import { useEffect, useRef, type CSSProperties } from "react";
 import type { MinimapFrame, MinimapState } from "./nui";
 import { cn } from "@/lib/utils";
 
@@ -14,13 +14,57 @@ const CARDINALS = [
  * Where a cardinal sits on the frame's band, for a direction `deg` clockwise from the top: on the
  * circle's middle line, or slid along the square's edge (projected out to the square).
  */
-function onBand(deg: number, shape: MinimapFrame["shape"], half: number, band: number): { x: number; y: number } {
+export function onBand(deg: number, shape: MinimapFrame["shape"], half: number, band: number): { x: number; y: number } {
   const a = (deg * Math.PI) / 180;
   const dx = Math.sin(a);
   const dy = -Math.cos(a);
   const r = half - band / 2;
   const k = shape === "circle" ? r : r / Math.max(Math.abs(dx), Math.abs(dy));
   return { x: half + dx * k, y: half + dy * k };
+}
+
+/** Shortest signed turn from a to b, in degrees. */
+const turn = (a: number, b: number) => ((((b - a) % 360) + 540) % 360) - 180;
+
+/**
+ * Follow the camera heading at the browser's frame rate (the game's, in FiveM) without React. Lua
+ * sends the heading about 30 times a second while it turns; each message starts a straight glide from
+ * where the compass is to the new heading, lasting as long as the gap since the last message. A
+ * steady turn is one even motion (one message behind, ~33 ms), and it never overshoots when the
+ * camera stops. `paint` runs only when the angle moved, so a still camera repaints nothing.
+ * Returns a stop function.
+ */
+export function followHeading(start: number, paint: (deg: number) => void): () => void {
+  let shown = start;
+  let from = start;
+  let to = start;
+  let began = performance.now();
+  let span = 33;
+  let lastMessage = began;
+  let raf = 0;
+  const off = onNui("hud:minimap:heading", (h) => {
+    const now = performance.now();
+    span = Math.min(60, Math.max(16, now - lastMessage));
+    lastMessage = now;
+    from = shown;
+    to = h;
+    began = now;
+  });
+  const tick = (now: number) => {
+    const t = Math.min(1, (now - began) / span);
+    const next = (from + turn(from, to) * t + 360) % 360;
+    if (Math.abs(turn(shown, next)) > 0.01) {
+      shown = next;
+      paint(shown);
+    }
+    raf = requestAnimationFrame(tick);
+  };
+  paint(start);
+  raf = requestAnimationFrame(tick);
+  return () => {
+    off();
+    cancelAnimationFrame(raf);
+  };
 }
 
 /**
@@ -34,6 +78,10 @@ export function MinimapFrameView({ frame, state }: { frame: MinimapFrame; state:
   const band = Math.max(2, frame.band * h);
   const half = size / 2;
   const round = frame.shape === "circle";
+  const marks = useRef<(HTMLSpanElement | null)[]>([]);
+  // where the compass is, kept across a resize or a shape change
+  const heading = useRef<number | null>(null);
+  heading.current ??= state.heading;
   const style: CSSProperties = {
     left: `${frame.x * 100}%`,
     top: `${frame.y * 100}%`,
@@ -41,6 +89,26 @@ export function MinimapFrameView({ frame, state }: { frame: MinimapFrame; state:
     height: size,
     borderWidth: band,
   };
+
+  // the square only shows north; on the circle all four ride the ring
+  const shown = round ? CARDINALS : CARDINALS.slice(0, 1);
+
+  // Every browser frame, straight onto the marks' transforms: no React render, no layout.
+  useEffect(
+    () =>
+      followHeading(heading.current ?? 0, (deg) => {
+        heading.current = deg;
+        shown.forEach((c, i) => {
+          const el = marks.current[i];
+          if (!el) return;
+          const at = onBand((c.offset - deg + 360) % 360, frame.shape, half, band);
+          // from the frame's outer corner (the band is a border, so offset it back)
+          el.style.transform = `translate3d(${(at.x - band).toFixed(2)}px, ${(at.y - band).toFixed(2)}px, 0) translate(-50%, -50%)`;
+        });
+      }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [frame.shape, half, band],
+  );
 
   return (
     <div
@@ -50,20 +118,18 @@ export function MinimapFrameView({ frame, state }: { frame: MinimapFrame; state:
       style={style}
       aria-hidden
     >
-      {CARDINALS.map((c) => {
-        const at = onBand((c.offset - state.heading + 360) % 360, frame.shape, half, band);
+      {shown.map((c, i) => {
         const north = c.label === "N";
-        // the square only shows north; on the circle all four ride the ring
-        if (!round && !north) return null;
         return (
           <span
             key={c.label}
+            ref={(el) => {
+              marks.current[i] = el;
+            }}
             className={cn(
-              "absolute flex items-center justify-center rounded-full text-[0.625rem] leading-none font-semibold",
+              "absolute top-0 left-0 flex items-center justify-center rounded-full text-[0.625rem] leading-none font-semibold will-change-transform",
               north ? "size-4 bg-primary text-primary-foreground" : "size-3.5 text-muted-foreground",
             )}
-            // positioned from the frame's outer corner (the band is a border, so offset it back)
-            style={{ left: at.x - band, top: at.y - band, transform: "translate(-50%, -50%)" }}
           >
             {c.label}
           </span>

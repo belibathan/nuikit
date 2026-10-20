@@ -24,6 +24,15 @@ const natives = `
   function CreateThread() end
   function Wait() end
   function print() end
+  PIXELS, REPLACED = 0, nil
+  CAMZ = 0.0
+  function GetGameplayCamRot() return { x = 0.0, y = 0.0, z = CAMZ } end
+  function CreateRuntimeTxd(n) return n end
+  function CreateRuntimeTexture(_, n) return n end
+  function SetRuntimeTexturePixel() PIXELS = PIXELS + 1 end
+  function CommitRuntimeTexture() end
+  function RemoveReplaceTexture() REPLACED = nil end
+  function AddReplaceTexture(_, from, txd, tex) REPLACED = from .. '>' .. txd .. '/' .. tex end
 `;
 
 describe("systems/nuikit_hud: the minimap", () => {
@@ -83,7 +92,40 @@ describe("systems/nuikit_hud: the minimap", () => {
     expect(sent.x).toBeCloseTo((1.5 * 1080 * 0.014815) / 1920, 6);
     expect(sent.w).toBeCloseTo((15 * 1080 * 0.014815) / 1920, 6);
 
+    // nuikit's own mask over GTA's: opaque for the square, so the radar fills its box
+    expect(await hud.run(`return REPLACED`)).toBe("radarmasksm>nuikit_minimap/square");
+
     await hud.run(`Config.minimap.shape = 'circle' Minimap.apply()`);
     expect(await hud.run(`return CLIP`)).toBe(1);
+    expect(await hud.run(`return REPLACED`)).toBe("radarmasksm>nuikit_minimap/circle");
+    // each mask is drawn once (8x8 square + 128x128 circle)
+    await hud.run(`Minimap.apply()`);
+    expect(await hud.run(`return PIXELS`)).toBe(64 + 128 * 128);
+  });
+
+  it("draws the circle mask as a disc with a soft one-pixel edge, and the square fully opaque", async () => {
+    client = await createClient();
+    const hud = await client.start("nuikit_hud", { before: natives, scripts });
+    const px = (shape: string, x: number, y: number) => hud.run<number>(`return Minimap.maskPixel('${shape}', 128, ${x}, ${y})`);
+    expect(await px("square", 0, 0)).toBe(255);
+    expect(await px("circle", 64, 64)).toBe(255); // middle
+    expect(await px("circle", 0, 0)).toBe(0); // corner
+    expect(await px("circle", 0, 64)).toBe(127); // the leftmost pixel, mid-height: half on the rim
+    expect(await px("circle", 1, 64)).toBe(255); // one in: inside
+    const edge = await px("circle", 108, 109); // 63.6 px from the centre: on the rim
+    expect(edge).toBeGreaterThan(0);
+    expect(edge).toBeLessThan(255);
+  });
+
+  it("sends the compass heading on its own channel, to 0.1°, only when that changed", async () => {
+    client = await createClient();
+    const hud = await client.start("nuikit_hud", { before: natives, scripts });
+    const sent = () => hud.messages.filter((m) => m.action === "hud:minimap:heading").map((m) => m.data);
+    await hud.run(`CAMZ = -90.04 Minimap.compass()`); // GTA gives -180..180
+    expect(sent()).toEqual([270]);
+    await hud.run(`CAMZ = -90.02 Minimap.compass()`); // the same tenth: nothing
+    expect(sent()).toEqual([270]);
+    await hud.run(`CAMZ = -89.5 Minimap.compass() CAMZ = 179.96 Minimap.compass() CAMZ = -179.96 Minimap.compass()`);
+    expect(sent()).toEqual([270, 270.5, 180]); // 179.96 and -179.96 are the same heading: sent once
   });
 });

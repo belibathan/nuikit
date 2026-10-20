@@ -6,13 +6,20 @@ local hud = NUI.surface('hud', { layer = 'hud' })
 local units = Config.units == 'kmh' and 'kmh' or 'mph'
 local SPEED = units == 'kmh' and 3.6 or 2.236936
 
--- Shown while a character is loaded and the game's pause menu is closed. Full-screen surfaces
--- from any nuikit resource can hide it with `hides = { 'hud' }`.
+-- Shown while a character is loaded, the game's pause menu is closed and no inventory is open
+-- (ox_inventory's invOpen state; its panels cover the HUD's corners). Full-screen surfaces from any
+-- nuikit resource can hide it with `hides = { 'hud' }`.
+local invOpen = LocalPlayer.state.invOpen == true
 local function sync()
-  local visible = NUI.player.get().loaded and not IsPauseMenuActive()
+  local visible = NUI.player.get().loaded and not IsPauseMenuActive() and not invOpen
   if visible then hud:open({ units = units, needs = Config.needs ~= false }) else hud:close() end
 end
 NUI.player.onChange(sync)
+-- the moment the inventory opens or closes, not on the next loop
+AddStateBagChangeHandler('invOpen', ('player:%d'):format(GetPlayerServerId(PlayerId())), function(_, _, value)
+  invOpen = value == true
+  sync()
+end)
 
 local function fuel(vehicle)
   local state = Entity(vehicle).state

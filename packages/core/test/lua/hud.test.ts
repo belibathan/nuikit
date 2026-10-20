@@ -14,6 +14,9 @@ const natives = `
   function GetConvar(_, d) return d end
   function PlayerPedId() return 1 end
   function PlayerId() return 0 end
+  function GetPlayerServerId() return 7 end
+  BAGS = {}
+  function AddStateBagChangeHandler(key, bag, fn) BAGS[key] = { bag = bag, fn = fn } end
   function GetEntityHealth() return 200 end
   function GetEntityMaxHealth() return 200 end
   function GetPedArmour() return 0 end
@@ -49,5 +52,16 @@ describe("systems/nuikit_hud", () => {
     await shop.run(`S = NUI.surface('shop', { hides = { 'hud' } }) S:open()`);
     expect(client.focused()).toBe("shop");
     expect(hud.surfaces().hud).toMatchObject({ open: true, visible: false });
+  });
+
+  it("hides while ox_inventory is open (its invOpen state bag), the moment it changes", async () => {
+    client = await createClient();
+    const hud = await client.start("nuikit_hud", { before: natives, scripts: [HUD + "config.lua", "bridge.lua", HUD + "client/main.lua"] });
+    expect(hud.surfaces().hud.open).toBe(true);
+    expect(await hud.run(`return BAGS.invOpen.bag`)).toBe("player:7");
+    await hud.run(`BAGS.invOpen.fn("player:7", "invOpen", true)`);
+    expect(hud.surfaces().hud.open).toBe(false);
+    await hud.run(`BAGS.invOpen.fn("player:7", "invOpen", false)`);
+    expect(hud.surfaces().hud.open).toBe(true);
   });
 });
