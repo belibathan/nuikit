@@ -325,6 +325,24 @@
       "registryDependencies": [
         "kbd"
       ]
+    },
+    {
+      "name": "countdown",
+      "type": "registry:ui",
+      "title": "Countdown",
+      "description": "A timer that matters: tabular mm:ss (h:mm:ss past an hour), a label, a line that drains, a warning threshold, a done state, sizes up to a full-screen clock, theme or game surface. From Lua's seconds, or running on its own with onComplete from a timer.",
+      "files": [
+        {
+          "path": "registry/nuikit/ui/countdown.tsx",
+          "type": "registry:ui"
+        }
+      ],
+      "dependencies": [
+        "class-variance-authority"
+      ],
+      "registryDependencies": [
+        "progress"
+      ]
     }
   ]
 }
