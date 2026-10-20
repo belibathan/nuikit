@@ -64,7 +64,7 @@
       "name": "meter",
       "type": "registry:ui",
       "title": "Meter",
-      "description": "A slim bar on a theme or game track, with a label and value, low/high thresholds that turn it destructive, and optional segments.",
+      "description": "A slim bar on a theme or game track, with a caption and value, low/high thresholds that turn it destructive, and optional segments; timed runs; and the timed-progress slab (variant=\"slab\": label, thin line, cancel key), the successor of task-progress.",
       "files": [
         {
           "path": "registry/nuikit/ui/meter.tsx",
@@ -229,7 +229,7 @@
       "name": "notice",
       "type": "registry:ui",
       "title": "Notice",
-      "description": "A notification on the game (status icon, title, description, a time-left line that pauses on hover) and the stack that pins them to any of eight positions, with a useNotices() queue. The default look of the notify intent.",
+      "description": "A notification on the game (status icon, title, description, a time-left line that pauses on hover) and the stack that pins them to any of eight positions, with a useNotices() queue; an item add/remove slab (icon tile, name, delta) whose changes merge within 1.5 s. The default look of the notify intent.",
       "files": [
         {
           "path": "registry/nuikit/ui/notice.tsx",
@@ -248,7 +248,7 @@
       "name": "form-field",
       "type": "registry:ui",
       "title": "Form field",
-      "description": "One row of a game form (label, hint, description, error, required, inline value, reset) and a preset per value: text, number with stepper, select and multi-select, checkbox or switch, slider, date, date range, time (12 or 24h), colour. Date range and time values in ox_lib's shapes (epoch ms). validateField() for required, min/max, length and order. The default look of the input intent; nothing relies on :has() or native pickers.",
+      "description": "One row of a game form (label, hint, description, error, required, inline value, reset) and a preset per value: text, number with stepper, select and multi-select, checkbox or switch, slider, date (typed, or a picker that steps up to years and decades), date range, time (12 or 24h), colour. Date range and time values in ox_lib's shapes (epoch ms). validateField() for required, min/max, length and order. The default look of the input intent; nothing relies on :has() or native pickers.",
       "files": [
         {
           "path": "registry/nuikit/ui/form-field.tsx",
@@ -368,7 +368,7 @@
       "name": "key-prompt",
       "type": "registry:ui",
       "title": "Key prompt",
-      "description": "\"[E] Open garage\": keys (one or a combination), label, description, icon; hold-to-confirm with a filling line, driven by Lua (progress) or by pointer and key when the page has focus; active and disabled; on a panel or the HUD; a stack for any edge. The default look of the prompt intent; supersedes key-hint.",
+      "description": "\"[E] Open garage\": the prompt slab (key chip + verb) by default, or a panel or HUD surface; keys (none, one or a combination), label that truncates or wraps, description, icon; hold-to-confirm with a filling line, driven by Lua (progress) or by pointer and key when the page has focus; active and disabled; a stack for any edge. The default look of the prompt intent; supersedes key-hint.",
       "files": [
         {
           "path": "registry/nuikit/ui/key-prompt.tsx",
@@ -404,7 +404,7 @@
       "name": "countdown",
       "type": "registry:ui",
       "title": "Countdown",
-      "description": "A timer that matters: tabular mm:ss (h:mm:ss past an hour), a label, a line that drains, a warning threshold, a done state, sizes up to a full-screen clock, theme or game surface. From Lua's seconds, or running on its own with onComplete from a timer.",
+      "description": "A timer that matters: tabular mm:ss (h:mm:ss past an hour) in the identity's display type, a caption, a line that drains on its own between updates, a warning threshold, a done state, sizes up to a full-screen clock, theme or game surface. From Lua's seconds, or running on its own with onComplete from a timer.",
       "files": [
         {
           "path": "registry/nuikit/ui/countdown.tsx",
@@ -413,9 +413,21 @@
       ],
       "dependencies": [
         "class-variance-authority"
+      ]
+    },
+    {
+      "name": "band",
+      "type": "registry:ui",
+      "title": "Band",
+      "description": "A full-width band for a state the player is in (incapacitated, cuffed, spectating): the game darkened and tinted by a tone, tone hairlines above and below, a display title and a caption. The band slab of design v2, pinned to the bottom or top edge or in the flow.",
+      "files": [
+        {
+          "path": "registry/nuikit/ui/band.tsx",
+          "type": "registry:ui"
+        }
       ],
-      "registryDependencies": [
-        "progress"
+      "dependencies": [
+        "class-variance-authority"
       ]
     },
     {
