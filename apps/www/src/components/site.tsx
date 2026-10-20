@@ -61,11 +61,26 @@ export function Footer() {
   );
 }
 
-/** Swap the whole page to one of the TweakCN presets, the way a server's nuikit/theme.css does in game. */
-export function ThemePicker({ className }: { className?: string }) {
-  const [active, setActive] = useState(0);
+/**
+ * Swap the whole page to one of the TweakCN presets, the way a server's nuikit/theme.css does in game.
+ * The selected preset (the first, stock Neutral, unless `initial` says otherwise) is applied as soon as
+ * the picker mounts, compiled like a server theme, so a page with a picker needs no theme code of its own.
+ */
+export function ThemePicker({ className, initial = 0 }: { className?: string; initial?: number }) {
+  const [active, setActive] = useState(initial);
   const applied = useRef<ThemeVars | null>(null);
-  useEffect(() => () => void (applied.current && clearTheme(applied.current)), []);
+  const apply = (i: number) => {
+    const t = themes[i];
+    if (!t) return;
+    setActive(i);
+    if (applied.current) clearTheme(applied.current);
+    applied.current = applyTheme(t.css, document.documentElement, "dark");
+  };
+  useEffect(() => {
+    apply(initial);
+    return () => void (applied.current && clearTheme(applied.current));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   return (
     <div className={cn("flex flex-wrap gap-2", className)}>
       {themes.map((t, i) => (
@@ -73,11 +88,7 @@ export function ThemePicker({ className }: { className?: string }) {
           key={t.name}
           variant={active === i ? "secondary" : "outline"}
           size="sm"
-          onClick={() => {
-            setActive(i);
-            if (applied.current) clearTheme(applied.current);
-            applied.current = applyTheme(t.css, document.documentElement, "dark");
-          }}
+          onClick={() => apply(i)}
         >
           <span className="flex -space-x-1">
             {t.swatch.map((c) => (
