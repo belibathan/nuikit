@@ -12,6 +12,11 @@ cd web
 {{pm}} run build  # production build into web/dist
 ```
 
+**Needs OneSync.** The server spawns, reads and deletes the vehicles and checks where you stand, which only
+works with OneSync. Qbox, QBCore and ESX servers already run it; otherwise add `set onesync on` to `server.cfg`.
+Without it the resource prints a red error at start and refuses every request ("This garage needs OneSync on
+the server.").
+
 **In game:** `ensure nuikit` first, then `ensure {{name}}`. Go to a garage from `config.lua` (Legion Square is
 the default) and press F6 or run `/{{name}}`. Drive a car in and press **Store vehicle**; pick it and
 press **Take out** (or Enter) to get it back at the garage's spawn point.
@@ -20,13 +25,16 @@ press **Take out** (or Enter) to get it back at the garage's spawn point.
 
 | | The example | On your server |
 |---|---|---|
-| Who owns what | Any vehicle you store becomes yours, kept in `vehicles.json` in this resource, per license | Read ownership from your framework's vehicle table (`player_vehicles`, `owned_vehicles`) in `server/main.lua` |
+| Who owns what | Any vehicle you store becomes yours unless its plate is already someone else's, kept in `vehicles.json` in this resource, per license | Read ownership from your framework's vehicle table (`player_vehicles`, `owned_vehicles`) in `server/main.lua` |
 | Impound | `exports['{{name}}']:impound(plate, fee)` from your police script | The same, or your impound resource's state |
-| The fee | `Config.charge` (commented Qbox, QBCore, ESX lines; free when standalone) | Uncomment yours |
+| The fee | `Config.charge` takes it and `Config.refund` gives it back if the release fails (commented Qbox, QBCore, ESX lines; free when standalone) | Uncomment yours |
 | Vehicle mods | Not saved (model, plate, fuel, engine and body only) | Save and apply your framework's vehicle properties |
 
-Every button asks `client/main.lua`, which asks the server. If the answer is an error ("Something is parked
-in the way", "You can't pay the fee"), it shows on the panel; the page never decides on its own.
+Every button asks `client/main.lua`, which asks the server. The server checks everything again and trusts
+nothing from the page: ids and plates must be short strings, only your own records are looked up, you must
+be at the garage, a stored vehicle is read from the game (the one you're driving), and the server spawns and
+deletes the vehicles itself (OneSync), so a vehicle can't come out twice. If the answer is an error ("Something is parked in the way",
+"You can't pay the fee"), it shows on the panel; the page never decides on its own.
 
 ## Files
 

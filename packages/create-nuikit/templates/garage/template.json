@@ -1,6 +1,9 @@
 {
   "block": "garage",
   "title": "Garage",
-  "description": "Your vehicles with fuel, engine and body; take out, store, release from the impound",
-  "next": ["stand at a garage in config.lua and press F6 (or /{{name}}); drive in and Store to add a vehicle"]
+  "description": "Your vehicles with fuel, engine and body; take out, store, release from the impound (needs OneSync)",
+  "next": [
+    "needs OneSync on the server (Qbox, QBCore and ESX servers run it; otherwise set onesync on in server.cfg)",
+    "stand at a garage in config.lua and press F6 (or /{{name}}); drive in and Store to add a vehicle"
+  ]
 }
