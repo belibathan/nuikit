@@ -24,12 +24,6 @@ body {
 .ox-md th, .ox-md td { border: 1px solid var(--border); padding: 0.125rem 0.5rem; }
 .ox-md img { max-width: 100%; max-height: 100%; }
 
-/* notification time left: a hairline that empties */
-@keyframes ox-shrink {
-  from { transform: scaleX(1); }
-  to { transform: scaleX(0); }
-}
-
 /* progress bar: slides the Meter's indicator in from translateX(-100%), the transform its value 0 sets */
 @keyframes ox-fill {
   from { transform: translateX(-100%); }
