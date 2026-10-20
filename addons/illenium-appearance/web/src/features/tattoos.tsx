@@ -68,7 +68,7 @@ function Zone({ zone, items }: { zone: TattooZone; items: Tattoo[] }) {
                 // The check marks the applied ones; an empty slot keeps the labels aligned.
                 icon={<Check className={cn(on ? "text-foreground" : "opacity-0")} aria-label={on ? "Applied" : undefined} />}
                 description={t.collection}
-                meta={typeof t.cost === "number" && !on ? `$${t.cost}` : undefined}
+                meta={typeof t.cost === "number" && !on ? `$${t.cost.toLocaleString("en-US")}` : undefined}
               >
                 {t.label}
               </MenuRow>
