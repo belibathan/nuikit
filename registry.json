@@ -897,6 +897,48 @@
         "screens"
       ],
       "docs": "Mount <InventorySurface /> in App.tsx. In Lua, open nk.surface(\"inventory\", { layer = \"panel\", exclusive = true, hides = { \"hotbar\" } }) with an InventoryData table, answer nk.on(\"inventory:move\") and nk.on(\"inventory:use\") with { ok, error }, and :update it after each; open nk.surface(\"hotbar\", { layer = \"hud\", input = \"none\" }) for a moment when a hotbar key is used. Check every move on the server. A whole resource with the Lua: npm create nuikit@latest my-inventory -- -t inventory"
+    },
+    {
+      "name": "vehicle-shop",
+      "type": "registry:block",
+      "title": "Vehicle shop",
+      "description": "A showroom: vehicles by category on the left edge (the real car stands behind), stats, a paint colour from swatches or any hex, cash or bank, a test drive, and buy with a confirm. Protocol-agnostic.",
+      "files": [
+        {
+          "path": "registry/nuikit/blocks/vehicle-shop/vehicle-shop.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/vehicle-shop/vehicle-shop.tsx"
+        },
+        {
+          "path": "registry/nuikit/blocks/vehicle-shop/nui.ts",
+          "type": "registry:lib",
+          "target": "components/blocks/vehicle-shop/nui.ts"
+        },
+        {
+          "path": "registry/nuikit/blocks/vehicle-shop/fixtures.ts",
+          "type": "registry:lib",
+          "target": "components/blocks/vehicle-shop/fixtures.ts"
+        }
+      ],
+      "dependencies": [
+        "lucide-react",
+        "nuikit-core"
+      ],
+      "registryDependencies": [
+        "button",
+        "spinner",
+        "tabs",
+        "https://nuikit.vercel.app/r/panel.json",
+        "https://nuikit.vercel.app/r/menu-row.json",
+        "https://nuikit.vercel.app/r/meter.json",
+        "https://nuikit.vercel.app/r/money.json",
+        "https://nuikit.vercel.app/r/form-field.json",
+        "https://nuikit.vercel.app/r/confirm.json"
+      ],
+      "categories": [
+        "screens"
+      ],
+      "docs": "Mount <VehicleShopSurface /> in App.tsx. In Lua, open nk.surface(\"vehicle-shop\", { layer = \"panel\", exclusive = true, escape = \"back\" }) with a VehicleShopData table; answer nk.on(\"vehicle-shop:preview\") by showing that model and colour (a local car), and nk.on(\"vehicle-shop:test-drive\") and nk.on(\"vehicle-shop:buy\") with { ok, error }. On the server, use your own prices, spawn the car yourself and refund if it can't be delivered. A whole resource with the Lua: npm create nuikit@latest my-dealership -- -t vehicle-shop"
     }
   ]
 }

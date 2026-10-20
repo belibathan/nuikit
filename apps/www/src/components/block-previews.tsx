@@ -14,6 +14,8 @@ import { shopCarts, shopFixtures } from "@/blocks/shop/fixtures";
 import { Shop } from "@/blocks/shop/shop";
 import { hotbarFixtures, inventoryFixtures } from "@/blocks/inventory/fixtures";
 import { Hotbar, Inventory } from "@/blocks/inventory/inventory";
+import { vehicleShopFixtures } from "@/blocks/vehicle-shop/fixtures";
+import { VehicleShop } from "@/blocks/vehicle-shop/vehicle-shop";
 import { hudMinimalFixtures } from "@/blocks/hud-minimal/fixtures";
 import { LoadingScreen } from "@/blocks/loading-screen/loading-screen";
 import { loadingHandovers, loadStateAt } from "@/blocks/loading-screen/fixtures";
@@ -166,6 +168,17 @@ export const BLOCKS: BlockPreview[] = [
       Pockets: () => <Inventory data={inventoryFixtures.pockets} autoFocus={false} onMove={async () => ({ ok: true })} onUse={async () => ({ ok: true })} />,
       Heavy: () => <Inventory data={inventoryFixtures.heavy} autoFocus={false} />,
       Hotbar: () => <Hotbar data={hotbarFixtures.hotbar} />,
+    },
+  },
+  {
+    name: "vehicle-shop",
+    title: "Vehicle shop",
+    description: "A showroom: vehicles by category, stats, paint from swatches or any hex, cash or bank, a test drive, and buy with a confirm. The car stands behind the panels; the server spawns it and refunds if it can't be delivered.",
+    states: {
+      Showroom: () => <VehicleShop data={vehicleShopFixtures.pdm} autoFocus={false} onBuy={async () => ({ ok: true })} onTestDrive={async () => ({ ok: true })} />,
+      Confirm: () => <VehicleShop data={vehicleShopFixtures.pdm} defaultSelected="banshee" confirming autoFocus={false} onBuy={async () => ({ ok: true })} />,
+      Locked: () => <VehicleShop data={vehicleShopFixtures.pdm} defaultSelected="policeb" autoFocus={false} />,
+      "Not enough": () => <VehicleShop data={vehicleShopFixtures.budget} defaultSelected="banshee" autoFocus={false} />,
     },
   },
 ];
