@@ -968,8 +968,19 @@ type Segment = {
   placeholder: string
   /** Digits it takes; it hands focus on when full. */
   length: number
-  width: string
+  /** Unused: each box sizes itself to the wider of its placeholder and its digits (segmentSizer). */
+  width?: string
   value: string
+}
+
+/**
+ * What sizes a segment box: the wider of its placeholder ("MM", "YYYY") and a full value
+ * ("0000"), drawn invisibly in the box's own font under the input. So the box fits both in every
+ * identity's numeric face (proportional, condensed, serif or mono), at every resolution: a box in
+ * fixed rem clipped "MM", "YYYY" and the last digit of a year.
+ */
+function segmentSizer(placeholder: string, length: number) {
+  return [placeholder, "0".repeat(Math.max(1, length))]
 }
 
 /**
@@ -1034,6 +1045,12 @@ function SegmentedInput({
       {segments.map((s, i) => (
         <React.Fragment key={s.key}>
           {i > 0 && separator(i)}
+          <span data-slot="form-field-segment" className="relative inline-grid shrink-0">
+            {segmentSizer(s.placeholder, s.length).map((t, j) => (
+              <span key={j} aria-hidden className="nk-num invisible col-start-1 row-start-1 px-px whitespace-pre">
+                {t}
+              </span>
+            ))}
           <input
             ref={(el) => {
               refs.current[i] = el
@@ -1073,8 +1090,11 @@ function SegmentedInput({
                 focus(i + 1)
               }
             }}
-            className={cn("nk-num bg-transparent text-center outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed", s.width)}
+            // absolute: no intrinsic width of its own (an input keeps one even at size 1), so the sizers set the box
+            size={1}
+            className="nk-num absolute inset-0 size-full min-w-0 bg-transparent text-center outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed"
           />
+          </span>
         </React.Fragment>
       ))}
       {children}
@@ -1554,6 +1574,10 @@ type TimeFieldProps = RowProps & {
   max?: string
   /** The minute box's arrow-key step. */
   minuteStep?: number
+  /** Replaces the clock icon at the start of the box; `null` or `false` for none. */
+  icon?: React.ReactNode
+  /** A clear button at the end of the box (empties the value), separate from the label row's reset. */
+  clearable?: boolean
 }
 
 function TimeField(props: TimeFieldProps) {
@@ -1571,6 +1595,8 @@ function TimeControl({
   onValueChange,
   format = "24",
   minuteStep = 1,
+  icon,
+  clearable = false,
 }: Omit<TimeFieldProps, keyof RowProps | "defaultValue"> & { value: number | null; onValueChange: (v: number | null) => void }) {
   const f = useFormField()
   const twelve = format === "12"
@@ -1606,7 +1632,15 @@ function TimeControl({
 
   return (
     <SegmentedInput
-      icon={<ClockIcon aria-hidden className="mr-1 size-4 shrink-0 text-muted-foreground" />}
+      icon={
+        icon === undefined ? (
+          <ClockIcon aria-hidden className="mr-1 size-4 shrink-0 text-muted-foreground" />
+        ) : icon === null || icon === false ? undefined : (
+          <span aria-hidden data-slot="form-field-icon" className="mr-1 flex shrink-0 text-muted-foreground [&_svg:not([class*='size-'])]:size-4">
+            {icon}
+          </span>
+        )
+      }
       invalid={complete && !current}
       separator={() => (
         <span aria-hidden className={sepClass}>
@@ -1641,6 +1675,20 @@ function TimeControl({
         >
           {parts.pm ? "PM" : "AM"}
         </button>
+      )}
+      {clearable && (parts.hour !== "" || parts.minute !== "") && (
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          data-slot="form-field-clear"
+          aria-label="Clear"
+          disabled={f.disabled}
+          onClick={() => update({ hour: "", minute: "", pm: parts.pm })}
+          className="-mr-2 ml-auto size-7 shrink-0 text-muted-foreground"
+        >
+          <XIcon />
+        </Button>
       )}
     </SegmentedInput>
   )
