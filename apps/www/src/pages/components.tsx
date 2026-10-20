@@ -47,6 +47,17 @@ import { Slider } from "@/components/ui/slider";
 import { Stat } from "@/components/ui/stat";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Notice, Notices, useNotices, type NoticePosition, type NoticeStatus } from "@/components/ui/notice";
+import {
+  CheckboxField,
+  ColorField,
+  DateField,
+  NumberField,
+  SelectField,
+  SliderField,
+  TextField,
+  validateField,
+  type FieldRule,
+} from "@/components/ui/form-field";
 import { cn } from "@/lib/utils";
 import { themes } from "@/themes";
 
@@ -199,6 +210,16 @@ export function ComponentsPage() {
           stageClassName="min-h-[40rem] items-center"
         >
           <NoticeDemo />
+        </Section>
+
+        <Section
+          name="form-field"
+          title="Form field"
+          text="One row of a game form, and a preset for each kind of value: text, number, select, checkbox or switch, slider, date, colour. Label, hint, description, error, required, min and max, an inline value and a reset. validateField() decides what's wrong; the form decides when to say it."
+        >
+          <TransferForm />
+          <CharacterForm />
+          <FieldStates />
         </Section>
       </main>
       <Footer />
@@ -496,6 +517,147 @@ function NoticeDemo() {
       </Panel>
       <Notices notices={notices} onDismiss={dismiss} closable />
     </>
+  );
+}
+
+const ACCOUNTS = [
+  { value: "lamar", label: "Lamar Davis, 4410" },
+  { value: "franklin", label: "Franklin Clinton, 2207" },
+  { value: "lester", label: "Lester Crest, 0913" },
+];
+
+const TRANSFER: Record<string, FieldRule> = {
+  to: { kind: "select", required: true },
+  amount: { kind: "number", required: true, min: 1, max: 5000 },
+  reference: { kind: "text", maxLength: 60 },
+  confirm: { kind: "checkbox", required: true },
+};
+
+/** A real form: errors appear when you press Send, and clear as you fix them. */
+function TransferForm() {
+  const [values, setValues] = useState<Record<string, unknown>>({ to: null, amount: null, reference: "", confirm: false });
+  const [tried, setTried] = useState(false);
+  const errors = Object.fromEntries(Object.entries(TRANSFER).map(([k, rule]) => [k, tried ? validateField(rule, values[k])?.message : undefined]));
+  const set = (k: string) => (v: unknown) => setValues((all) => ({ ...all, [k]: v }));
+  return (
+    <Panel>
+      <PanelHeader icon={<LandmarkIcon />} title="Transfer" description="Fleeca, balance $4,210" />
+      <PanelBody variant="form">
+        <SelectField
+          label="To"
+          required
+          options={ACCOUNTS}
+          placeholder="Pick an account"
+          value={values.to as string | null}
+          onValueChange={set("to")}
+          error={errors.to}
+        />
+        <NumberField
+          label="Amount"
+          hint="Up to $5,000 a day"
+          required
+          min={1}
+          max={5000}
+          step={50}
+          placeholder="500"
+          value={values.amount as number | null}
+          onValueChange={set("amount")}
+          error={errors.amount}
+        />
+        <TextField
+          label="Reference"
+          hint="Optional"
+          multiline
+          rows={2}
+          maxLength={60}
+          placeholder="What it's for"
+          value={values.reference as string}
+          onValueChange={set("reference")}
+          error={errors.reference}
+        />
+        <CheckboxField
+          label="I've checked the account"
+          required
+          checked={values.confirm as boolean}
+          onCheckedChange={set("confirm")}
+          error={errors.confirm}
+        />
+      </PanelBody>
+      <PanelFooter>
+        <Button variant="ghost" size="sm" onClick={() => (setTried(false), setValues({ to: null, amount: null, reference: "", confirm: false }))}>
+          Cancel
+        </Button>
+        <Button size="sm" className="ml-auto" onClick={() => setTried(true)}>
+          Send
+        </Button>
+      </PanelFooter>
+    </Panel>
+  );
+}
+
+// GTA paint colours: a game palette the theme can't know.
+const PAINT = ["#0d1116", "#c2c4c6", "#9c1016", "#ff5c00", "#ffcf20", "#3a8f3a", "#2354a1", "#6b1f7b"];
+
+function CharacterForm() {
+  const [nose, setNose] = useState(0.15);
+  return (
+    <Panel>
+      <PanelHeader title="New character" description="Step 1 of 3" />
+      <PanelBody variant="form">
+        <TextField label="First name" required defaultValue="Niko" />
+        <DateField label="Date of birth" hint="Day, month, year" required min="1920-01-01" max="2008-12-31" defaultValue="1990-02-01" />
+        <SelectField
+          label="Nationality"
+          options={[
+            { value: "us", label: "American" },
+            { value: "rs", label: "Serbian" },
+            { value: "mx", label: "Mexican" },
+          ]}
+          defaultValue="rs"
+        />
+        <SliderField label="Nose width" hint="Bone width" min={-1} max={1} step={0.01} value={nose} onValueChange={setNose} resetTo={0} />
+        <ColorField label="Hair colour" swatches={PAINT} defaultValue="#0d1116" />
+      </PanelBody>
+      <PanelFooter>
+        <Button variant="ghost" size="sm">
+          Back
+        </Button>
+        <Button size="sm" className="ml-auto">
+          Next
+        </Button>
+      </PanelFooter>
+    </Panel>
+  );
+}
+
+/** Errors, disabled, password, switch, multi-select: states straight from props. */
+function FieldStates() {
+  return (
+    <Panel>
+      <PanelHeader title="States" description="Every one from props" />
+      <PanelBody variant="form">
+        <TextField label="Plate" hint="2 to 8 characters" required maxLength={8} defaultValue="Z" error="At least 2 characters" />
+        <TextField label="PIN" password defaultValue="4410" description="Four digits, never shared." />
+        <NumberField label="Seats" min={1} max={4} defaultValue={0} error="At least 1" />
+        <DateField label="Licence issued" max="2026-10-19" defaultValue="2027-01-01" error="On or before 19/10/2026" />
+        <SelectField
+          label="Licences"
+          multiple
+          maxSelected={3}
+          clearable
+          placeholder="None"
+          options={[
+            { value: "car", label: "Car" },
+            { value: "bike", label: "Bike" },
+            { value: "truck", label: "Truck" },
+            { value: "pilot", label: "Pilot", disabled: true },
+          ]}
+          defaultValue={["car", "bike"]}
+        />
+        <CheckboxField variant="switch" label="Show HUD" description="Health, armor and the minimap." defaultChecked />
+        <TextField label="Citizen ID" disabled defaultValue="NKT-48210" />
+      </PanelBody>
+    </Panel>
   );
 }
 

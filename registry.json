@@ -241,6 +241,33 @@
       "registryDependencies": [
         "button"
       ]
+    },
+    {
+      "name": "form-field",
+      "type": "registry:ui",
+      "title": "Form field",
+      "description": "One row of a game form (label, hint, description, error, required, inline value, reset) and a preset per value: text, number with stepper, select and multi-select, checkbox or switch, slider, date, colour. validateField() for required, min/max and length. The default look of the input intent; nothing relies on :has() or native pickers.",
+      "files": [
+        {
+          "path": "registry/nuikit/ui/form-field.tsx",
+          "type": "registry:ui"
+        }
+      ],
+      "dependencies": [
+        "class-variance-authority",
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "button",
+        "checkbox",
+        "input",
+        "label",
+        "popover",
+        "select",
+        "slider",
+        "switch",
+        "textarea"
+      ]
     }
   ]
 }
