@@ -4,12 +4,6 @@ on:
   push:
     branches: [main]
   pull_request:
-  workflow_dispatch:
-    inputs:
-      update-baselines:
-        description: "Write new visual baselines (bench/visual) and upload them as an artifact to commit"
-        type: boolean
-        default: false
 
 jobs:
   test:
@@ -97,45 +91,3 @@ jobs:
             (cd "tpl-$t/web" && pnpm build)
             node "$GITHUB_WORKSPACE/packages/cli/dist/cli.js" check "tpl-$t" --level 3
           done
-
-  # Visual baselines (bench/visual, docs/design/contract.md item 23): every registry section on /components in
-  # Graphite, Signal, Velvet, Vector and Daylight, compared with the committed PNGs. Pinned image so renders
-  # match from run to run. Non-blocking until baselines written by this image are committed (the first set
-  # was made outside it): run the workflow by hand with update-baselines, commit the artifact, then drop
-  # continue-on-error.
-  visual:
-    name: Visual baselines (components × identities)
-    runs-on: ubuntu-latest
-    needs: test
-    continue-on-error: true
-    container:
-      image: mcr.microsoft.com/playwright:v1.56.0-noble
-    env:
-      HOME: /root
-    steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm -r --filter "./packages/**" build
-      - name: Compare
-        if: ${{ !inputs.update-baselines }}
-        run: pnpm visual
-      - name: Write new baselines
-        if: ${{ inputs.update-baselines }}
-        run: pnpm visual:update
-      - uses: actions/upload-artifact@v4
-        if: ${{ inputs.update-baselines }}
-        with:
-          name: visual-baselines
-          path: bench/visual/baselines
-      - uses: actions/upload-artifact@v4
-        if: failure()
-        with:
-          name: visual-diff
-          path: |
-            bench/visual/.report
-            bench/visual/.out

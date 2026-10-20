@@ -14,13 +14,10 @@
     "build:systems": "pnpm -r --filter \"./systems/**\" --filter \"./addons/**\" build",
     "pack:systems": "node scripts/pack-systems.mjs",
     "sync": "node scripts/sync-template.mjs",
-    "visual": "playwright test -c bench/visual/playwright.config.ts",
-    "visual:update": "playwright test -c bench/visual/playwright.config.ts --update-snapshots",
     "lint:classes": "eslint registry systems addons --report-unused-disable-directives-severity off -f ./scripts/eslint-github.cjs"
   },
   "devDependencies": {
     "@changesets/cli": "^2.31.1",
-    "@playwright/test": "1.56.0",
     "@typescript-eslint/parser": "8.71.1",
     "eslint": "9.39.5",
     "eslint-plugin-better-tailwindcss": "4.8.0",

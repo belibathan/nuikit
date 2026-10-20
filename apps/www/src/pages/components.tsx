@@ -32,10 +32,8 @@ import {
   WarehouseIcon,
   WrenchIcon,
 } from "lucide-react";
-import { applyTheme, clearTheme, closeSurface, openSurface, Surface } from "nuikit-core/react";
-import { cloneElement, useEffect, useRef, useState, type ReactElement, type ReactNode } from "react";
-import daylight from "../../../../packages/core/test/themes/daylight.css?raw";
-import { identities } from "@/themes";
+import { closeSurface, openSurface, Surface } from "nuikit-core/react";
+import { cloneElement, useRef, useState, type ReactElement, type ReactNode } from "react";
 import { Command } from "@/components/code";
 import { Scene } from "@/components/scene";
 import { Footer, Nav, SITE, ThemePicker } from "@/components/site";
@@ -79,20 +77,7 @@ import { RadialMenu, type RadialMenuItem } from "@/components/ui/radial-menu";
 import { cn } from "@/lib/utils";
 import registry from "../../../../registry.json";
 
-// ?identity=graphite|signal|velvet|vector|daylight renders the page in that identity (visual baselines,
-// bench/visual; Daylight is the flexibility check, light mode). Runs after the ThemePicker's own default.
-const IDENTITY = new URLSearchParams(location.search).get("identity")?.toLowerCase();
-
 export function ComponentsPage() {
-  useEffect(() => {
-    if (!IDENTITY) return;
-    const css = IDENTITY === "daylight" ? daylight : identities.find((i) => i.name.toLowerCase() === IDENTITY)?.css;
-    if (!css) return;
-    const mode = IDENTITY === "daylight" ? "light" : "dark";
-    document.documentElement.classList.toggle("dark", mode === "dark");
-    const applied = applyTheme(css, document.documentElement, mode);
-    return () => clearTheme(applied);
-  }, []);
   return (
     <div className="min-h-screen">
       <Nav />
