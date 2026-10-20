@@ -55,6 +55,8 @@
   --nk-density: 1.15;
   --nk-ease: cubic-bezier(0.22, 1, 0.36, 1);
   --nk-duration: 240ms;
+  --nk-motion-feel: smooth;
+  --nk-spring-bounce: 0.1;
   --nk-hud-opacity: 0.6;
   --nk-hud-text-shadow: soft;
   --nk-gauge-style: arc;

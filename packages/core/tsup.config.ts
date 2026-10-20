@@ -8,6 +8,8 @@ export default defineConfig([
     entry: {
       index: "src/index.ts",
       react: "src/react.ts",
+      // springs, FLIP and timed runs on WAAPI (docs/tokens.md#motion): dependency-free, imports nothing
+      motion: "src/motion.ts",
       devtools: "src/devtools.tsx",
       // The host (docs/host.md): module side, ui_page boot, and the host page runtime.
       module: "src/module.ts",

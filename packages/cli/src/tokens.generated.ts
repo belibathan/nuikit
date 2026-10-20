@@ -292,7 +292,7 @@ export const GENERATED: { name: string; group: string; type: string; description
     "name": "nk-motion",
     "group": "kit",
     "type": "number",
-    "description": "1 = animations on, 0 = off. Players can turn motion off."
+    "description": "1 = animations on, 0 = off. Painted as 0 when the theme or the player's reduced-motion pref turns motion down."
   },
   {
     "name": "nk-type-ratio",
@@ -437,5 +437,17 @@ export const GENERATED: { name: string; group: string; type: string; description
     "group": "kit",
     "type": "number",
     "description": "How the active row is marked"
+  },
+  {
+    "name": "nk-motion-feel",
+    "group": "kit",
+    "type": "number",
+    "description": "How the identity moves: crisp (Graphite), snap (Signal: no glide on selection, flash instead of press scale), smooth (Velvet: longer springs, a hint of bounce), stepped (Vector: values tick in steps)"
+  },
+  {
+    "name": "nk-spring-bounce",
+    "group": "kit",
+    "type": "number",
+    "description": "Bounce folded into the snap, move and soft springs (0 = critically damped; 0.3 is the most the kit allows)"
   }
 ];

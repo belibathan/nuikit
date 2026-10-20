@@ -13,8 +13,8 @@ export type ThemeMode = "dark" | "light";
 
 /** The token contract version. Bumped only for breaking renames/removals; additions keep v1. */
 export const TOKENS_VERSION = 1 as const;
-/** The contract revision: 1.1 added the identity tokens (IDENTITY_TOKENS). Additive, so still v1. */
-export const TOKENS_REVISION = "1.1" as const;
+/** The contract revision: 1.1 added the identity tokens (IDENTITY_TOKENS), 1.2 the motion tokens (MOTION_TOKENS). Additive, so still v1. */
+export const TOKENS_REVISION = "1.2" as const;
 
 export type TokenType = "color" | "dimension" | "fontFamily" | "number" | "keyword" | "duration" | "cubicBezier" | "shadow";
 
@@ -25,6 +25,7 @@ export interface TokenSpec {
    * shadcn: what every shadcn/TweakCN theme has. nuikit: game semantics, derived when absent.
    * identity (1.1): type, shape, surface, density, motion, brand and HUD style, derived when absent.
    * derived (1.1): computed from identity tokens so CSS needn't branch (a theme may still set them).
+   * Motion tokens (1.2) are identity (nk-motion-feel, nk-spring-bounce) and derived (the ladder, easings, springs).
    */
   group: "shadcn" | "nuikit" | "identity" | "derived";
   description: string;
@@ -35,7 +36,7 @@ export interface TokenSpec {
   /** Numbers: accepted range. */
   range?: readonly [number, number];
   /** The revision that added it. */
-  since?: "1.1";
+  since?: "1.1" | "1.2";
 }
 
 /** The default sans stack (Graphite): Inter, bundled with every nuikit UI (docs/tokens.md#fonts). */
@@ -90,7 +91,7 @@ export const TOKENS: readonly TokenSpec[] = [
   n("vital-thirst", "color", "Thirst bar", "chart-4 if cyan/blue, else another one, else oklch(0.76 0.13 215)"),
   n("vital-stress", "color", "Stress bar", "chart-5 if purple/magenta, else another one, else oklch(0.68 0.2 320)"),
   n("nk-scale", "number", "UI size multiplier (unitless). Players can scale further (0.85–1.25).", "1"),
-  n("nk-motion", "number", "1 = animations on, 0 = off. Players can turn motion off.", "1"),
+  n("nk-motion", "number", "1 = animations on, 0 = off. Painted as 0 when the theme or the player's reduced-motion pref turns motion down.", "1"),
 ];
 
 /** The v1 names (unchanged since 1.0). Every compiled theme carries them. */
@@ -99,6 +100,90 @@ export const TOKEN_NAMES: readonly string[] = TOKENS.map((t) => t.name);
 const id = (name: string, type: TokenType, description: string, fallback: string, extra: Partial<TokenSpec> = {}): TokenSpec => ({ name, type, group: "identity", description, fallback, since: "1.1", ...extra });
 const dv = (name: string, type: TokenType, description: string, fallback: string): TokenSpec => ({ name, type, group: "derived", description, fallback, since: "1.1" });
 
+/** Motion feels (tokens 1.2): how an identity moves. Painted as html[data-nk-feel]. */
+export const MOTION_FEELS = ["crisp", "snap", "smooth", "stepped"] as const;
+export type MotionFeel = (typeof MOTION_FEELS)[number];
+/** The four spring presets (docs/tokens.md#motion), run by nuikit-core/motion as sampled WAAPI keyframes. */
+export const SPRING_PRESETS = ["snap", "move", "soft", "pop"] as const;
+export type SpringPresetName = (typeof SPRING_PRESETS)[number];
+
+const mt = (name: string, type: TokenType, description: string, fallback: string): TokenSpec => ({ name, type, group: "derived", description, fallback, since: "1.2" });
+
+/**
+ * Motion tokens (tokens 1.2, docs/design/research/motion.md §2.2). Two identity inputs; everything else is
+ * derived from --nk-duration (d), --nk-ease, the feel and the bounce. The compiler writes literal values (no
+ * calc() on <time> inside animation shorthands in Chromium 103), and the player's prefs clamp them
+ * (withPrefs): off = 0ms; reduced = at most 100ms and no movement (--nk-motion-move: 0).
+ */
+export const MOTION_TOKENS: readonly TokenSpec[] = [
+  { name: "nk-motion-feel", type: "keyword", group: "identity", description: "How the identity moves: crisp (Graphite), snap (Signal: no glide on selection, flash instead of press scale), smooth (Velvet: longer springs, a hint of bounce), stepped (Vector: values tick in steps)", fallback: "crisp", values: MOTION_FEELS, since: "1.2" },
+  { name: "nk-spring-bounce", type: "number", group: "identity", description: "Bounce folded into the snap, move and soft springs (0 = critically damped; 0.3 is the most the kit allows)", fallback: "0", range: [0, 0.3], since: "1.2" },
+  mt("nk-motion-move", "number", "1 = things may move (translate, scale, rotate, FLIP, stagger); 0 under reduced motion or off, where only fades of at most 100ms are kept", "1"),
+  mt("nk-time-instant", "duration", "State that must be immediate: keyboard and controller selection, held key-repeat", "0ms"),
+  mt("nk-time-press", "duration", "Press, toggle, key-chip flash: 0.5 × d, 50–100ms", "70ms"),
+  mt("nk-time-hover", "duration", "Pointer hover colour and row background: 0.75 × d", "105ms"),
+  mt("nk-time-base", "duration", "Panel and menu enter, the selection indicator, tab switch: d (kit.css --nk-time)", "140ms"),
+  mt("nk-time-exit", "duration", "Every exit (panel, toast, menu, modal): 0.7 × d", "98ms"),
+  mt("nk-time-move", "duration", "Toasts entering, FLIP moves, meters gaining: 1.5 × d, at most 300ms", "210ms"),
+  mt("nk-time-modal", "duration", "Dialog enter (on an inner wrapper): 1.25 × d", "175ms"),
+  mt("nk-time-screen", "duration", "Full-screen enter (pause, death, loading): 2.5 × d, at most 400ms", "350ms"),
+  mt("nk-time-ambient", "duration", "HUD show-on-change fades and the damage trail; not scaled by the identity", "400ms"),
+  mt("nk-stagger", "duration", "Delay per item on a list's first open: 0.15 × d (snap and smooth 0.125 × d), at most 20ms (smooth 30ms)", "20ms"),
+  mt("nk-stagger-max", "duration", "Total stagger cap: items past the fifth enter together", "100ms"),
+  mt("nk-ease-out", "cubicBezier", "Enter, hover, anything arriving: the identity's --nk-ease", "nk-ease"),
+  mt("nk-ease-in", "cubicBezier", "Exits (speeds up as it leaves)", "cubic-bezier(0.4, 0, 1, 1)"),
+  mt("nk-ease-in-out", "cubicBezier", "On-screen moves (indicator, FLIP, tab underline) when not a spring", "cubic-bezier(0.2, 0, 0, 1)"),
+  mt("nk-ease-emphasized", "cubicBezier", "Full-screen enter, big moments", "cubic-bezier(0.05, 0.7, 0.1, 1)"),
+  mt("nk-ease-linear", "keyword", "Progress, countdowns, streamed values, needles", "linear"),
+  mt("nk-spring-snap", "keyword", "Spring (duration, bounce): selection indicator, tab underline, needle catch-up", "160ms 0"),
+  mt("nk-spring-move", "keyword", "Spring (duration, bounce): toasts in, FLIP reflow, drawers, digit roll", "240ms 0.1"),
+  mt("nk-spring-soft", "keyword", "Spring (duration, bounce): full-screen content, large frame changes", "360ms 0"),
+  mt("nk-spring-pop", "keyword", "Spring (duration, bounce): rewards only (item added, level-up, a ×3 badge)", "260ms 0.3"),
+];
+
+/** Spring period per preset (snap, move, soft, pop) as a multiple of d, per feel (motion.md §2.4). */
+const SPRING_RATIO: Record<MotionFeel, readonly [number, number, number, number]> = {
+  crisp: [1.15, 1.7, 2.55, 1.85],
+  snap: [1.1, 1.65, 2.5, 1.8],
+  smooth: [1.08, 1.42, 1.75, 1.5],
+  stepped: [1, 1.43, 2.15, 1.7],
+};
+/** Each preset's ceiling (ms). */
+const SPRING_MAX = [400, 400, 450, 400] as const;
+/** The slowest base duration the kit allows; the compiler warns above it (motion.md §2.4). */
+export const MAX_DURATION_MS = 260;
+
+/** The derived motion tokens for a base duration (ms), feel and bounce, as literals. Graphite is (140, crisp, 0). */
+export function motionTokens(d: number, feel: MotionFeel = "crisp", bounce = 0): ThemeVars {
+  const ms = (x: number) => `${Math.round(x)}ms`;
+  const b = Math.max(0, Math.min(0.3, bounce));
+  const r = SPRING_RATIO[feel] ?? SPRING_RATIO.crisp;
+  const bounces = [b, Math.max(0.1, b), b, Math.max(0.3, b)];
+  const out: ThemeVars = {
+    "nk-motion-move": "1",
+    "nk-time-instant": "0ms",
+    "nk-time-press": ms(Math.max(50, Math.min(100, d * 0.5))),
+    "nk-time-hover": ms(d * 0.75),
+    "nk-time-base": ms(d),
+    "nk-time-exit": ms(d * 0.7),
+    "nk-time-move": ms(Math.min(300, d * 1.5)),
+    "nk-time-modal": ms(d * 1.25),
+    "nk-time-screen": ms(Math.min(400, d * 2.5)),
+    "nk-time-ambient": "400ms",
+    "nk-stagger": ms(feel === "smooth" ? Math.min(30, d * 0.125) : Math.min(20, d * (feel === "snap" ? 0.125 : 0.15))),
+    "nk-stagger-max": "100ms",
+  };
+  SPRING_PRESETS.forEach((name, i) => {
+    const t = Math.min(SPRING_MAX[i]!, Math.round((d * r[i]!) / 10) * 10);
+    out[`nk-spring-${name}`] = `${t}ms ${Math.round(bounces[i]! * 1000) / 1000}`;
+  });
+  return out;
+}
+
+/** The time tokens the player's prefs clamp (the whole ladder except instant and the stagger cap). */
+export const MOTION_TIME_TOKENS: readonly string[] = ["nk-time-press", "nk-time-hover", "nk-time-base", "nk-time-exit", "nk-time-move", "nk-time-modal", "nk-time-screen", "nk-time-ambient", "nk-stagger"];
+/** Under reduced motion fades are kept, but no longer than this (WCAG 2.3.3 counts opacity and colour changes as non-motion). */
+export const REDUCED_FADE_MS = 100;
 
 /**
  * Identity tokens (tokens 1.1, docs/design/v2.md): what makes a UI recognisable besides colour. A server
@@ -144,6 +229,7 @@ export const IDENTITY_TOKENS: readonly TokenSpec[] = [
   dv("nk-row-outline", "number", "1 when nk-row-indicator is outline", "from nk-row-indicator"),
   dv("nk-clip", "keyword", "clip-path of panels: the nk-cut chamfer, or none when nk-cut is 0 (a clip-path would also clip the shadow)", "from nk-cut"),
   dv("nk-clip-sm", "keyword", "clip-path of chips, tiles and buttons: half the panel chamfer", "from nk-cut"),
+  ...MOTION_TOKENS,
 ];
 
 /** The chamfer (top left and bottom right) as a clip-path of a cut size. */
@@ -789,6 +875,17 @@ function deriveIdentity(vars: ThemeVars, warnings: string[], given: ReadonlySet<
   const ind = vars["nk-row-indicator"]!;
   for (const k of ["bar", "fill", "outline"]) if (vars[`nk-row-${k}`] === undefined) vars[`nk-row-${k}`] = ind === k ? "1" : "0";
 
+  // motion (1.2): the duration ladder, easings and springs, as literals, from d, the ease, the feel and the bounce
+  const d = parseFloat(vars["nk-duration"]!);
+  const motion = motionTokens(d, vars["nk-motion-feel"] as MotionFeel, parseFloat(vars["nk-spring-bounce"]!));
+  motion["nk-ease-out"] = vars["nk-ease"]!;
+  motion["nk-ease-in"] = "cubic-bezier(0.4, 0, 1, 1)";
+  motion["nk-ease-in-out"] = "cubic-bezier(0.2, 0, 0, 1)";
+  motion["nk-ease-emphasized"] = "cubic-bezier(0.05, 0.7, 0.1, 1)";
+  motion["nk-ease-linear"] = "linear";
+  for (const [k, v] of Object.entries(motion)) if (vars[k] === undefined) vars[k] = v;
+  if (d > MAX_DURATION_MS) warnings.push(`--nk-duration is ${d}ms (the kit's ceiling is ${MAX_DURATION_MS}ms); panels and menus will feel slow to a player who opens them hundreds of times.`);
+
   // floors (docs/design/research.md §3): warn, never block
   const op = parseFloat(vars["nk-surface-opacity"]!);
   if (op < 0.92) warnings.push(`--nk-surface-opacity is ${op} (floor 0.92); the game will show through text in panels, and a bright sky will wash it out.`);
@@ -1020,6 +1117,26 @@ export function withPrefs(vars: ThemeVars, prefs: Partial<NuiPrefs> = DEFAULT_PR
   if (p.highContrast) highContrast(out);
   const scale = (parseFloat(out["nk-scale"] ?? "1") || 1) * p.scale;
   out["nk-scale"] = String(Math.round(scale * 1000) / 1000);
-  out["nk-motion"] = p.reducedMotion || out["nk-motion"] === "0" ? "0" : "1";
+  const level = themeMotionLevel(vars, p);
+  out["nk-motion"] = level === "on" ? "1" : "0";
+  if (level !== "on") {
+    // off: nothing animates. reduced: no movement, fades kept but at most REDUCED_FADE_MS (tokens 1.2).
+    if (out["nk-motion-move"] !== undefined || out["nk-time-base"] !== undefined) out["nk-motion-move"] = "0";
+    for (const name of MOTION_TIME_TOKENS) {
+      const v = out[name];
+      if (v === undefined) continue;
+      const ms = parseFloat(v) * (/\ds$/.test(v) && !/ms$/.test(v) ? 1000 : 1);
+      out[name] = level === "off" || name === "nk-stagger" ? "0ms" : `${Math.min(Number.isFinite(ms) ? ms : 0, REDUCED_FADE_MS)}ms`;
+    }
+  }
   return out;
+}
+
+/**
+ * The motion level for a theme and a player's prefs: "off" when the theme sets --nk-motion: 0, "reduced" when
+ * the player asked for reduced motion, else "on". applyTheme paints it as html[data-nk-motion].
+ */
+export function themeMotionLevel(vars: ThemeVars, prefs: Partial<NuiPrefs> = DEFAULT_PREFS): "on" | "reduced" | "off" {
+  if (vars["nk-motion"] === "0") return "off";
+  return prefs.reducedMotion === true ? "reduced" : "on";
 }
