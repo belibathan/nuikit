@@ -1,4 +1,4 @@
-import { execFileSync } from "node:child_process";
+import { execFileSync, execSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import { beforeAll, describe, expect, it } from "vitest";
@@ -10,7 +10,12 @@ let tailwindOut = "";
 beforeAll(() => {
   // Compile the stock shadcn/ui globals + real shadcn class strings with Tailwind v4.
   const bin = path.join(__dirname, "../node_modules/.bin/tailwindcss");
-  tailwindOut = execFileSync(bin, ["-i", path.join(dir, "shadcn.css")], { cwd: dir, encoding: "utf8" });
+  // On Windows node_modules/.bin holds .cmd shims, which only run through a shell.
+  const input = path.join(dir, "shadcn.css");
+  tailwindOut =
+    process.platform === "win32"
+      ? execSync(`"${bin}.cmd" -i "${input}"`, { cwd: dir, encoding: "utf8" })
+      : execFileSync(bin, ["-i", input], { cwd: dir, encoding: "utf8" });
 }, 60_000);
 
 describe("lowerCss on real Tailwind v4 + shadcn output", () => {
