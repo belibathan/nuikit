@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { Notice, NoticeStack, noticePosition, type NoticePosition, type NoticeStatus } from "@/components/ui/notice";
 import { Icon } from "@/lib/icon";
 import { Markdown } from "@/lib/markdown";
 import { useOx } from "@/lib/nui";
@@ -20,53 +21,51 @@ export interface NotifyData {
   style?: CSSProperties;
 }
 
-type Position = "top-left" | "top-center" | "top-right" | "center-left" | "center-right" | "bottom-left" | "bottom-center" | "bottom-right";
-
 interface Toast extends NotifyData {
   key: string;
   at: number;
   leaving?: boolean;
 }
 
+/** ox_lib keeps at most 20 toasts on screen, across all positions (the oldest go first). */
 const MAX = 20;
 const EXIT_MS = 400;
+/** ox_lib's default: a falsy duration means 3000 ms. */
+const DEFAULT_MS = 3000;
 
-// The icon is the state, so it carries the colour: the theme's status tokens (docs/tokens.md).
-const TYPES: Record<string, { icon: string; color?: string }> = {
-  error: { icon: "circle-xmark", color: "var(--destructive)" },
-  success: { icon: "circle-check", color: "var(--success)" },
-  warning: { icon: "circle-exclamation", color: "var(--warning)" },
-  info: { icon: "circle-info", color: "var(--info)" },
-};
+/** ox_lib's rule: success, error and warning pick their look; anything else (inform, info, warn…) is info. */
+const status = (type?: string): NoticeStatus => (type === "success" || type === "error" || type === "warning" ? type : "info");
 
-function normalizePosition(p?: string): Position {
-  if (p === "top") return "top-center";
-  if (p === "bottom") return "bottom-center";
-  const valid: Position[] = ["top-left", "top-center", "top-right", "center-left", "center-right", "bottom-left", "bottom-center", "bottom-right"];
-  return valid.includes(p as Position) ? (p as Position) : "top-right";
-}
+/** ox_lib's default icon per type, used when a script styles the icon without naming one. */
+const DEFAULT_ICON: Record<NoticeStatus, string> = { error: "circle-xmark", success: "circle-check", warning: "circle-exclamation", info: "circle-info" };
 
-// --nk-edge (1.5rem) from the screen edge.
-const ANCHOR: Record<Position, string> = {
-  "top-left": "top-6 left-6 items-start",
-  "top-center": "top-6 left-1/2 -translate-x-1/2 items-center",
-  "top-right": "top-6 right-6 items-end",
-  "center-left": "top-1/2 left-6 -translate-y-1/2 items-start",
-  "center-right": "top-1/2 right-6 -translate-y-1/2 items-end",
-  "bottom-left": "bottom-6 left-6 items-start flex-col-reverse",
-  "bottom-center": "bottom-6 left-1/2 -translate-x-1/2 items-center flex-col-reverse",
-  "bottom-right": "bottom-6 right-6 items-end flex-col-reverse",
+/** ox_lib's exit: sideways for side positions, up or down for the centre ones (0.4 s). */
+const EXIT: Record<NoticePosition, string> = {
+  "top-left": "slide-out-to-left-4",
+  "center-left": "slide-out-to-left-4",
+  "bottom-left": "slide-out-to-left-4",
+  "top-right": "slide-out-to-right-4",
+  "center-right": "slide-out-to-right-4",
+  "bottom-right": "slide-out-to-right-4",
+  "top-center": "slide-out-to-top-2",
+  "bottom-center": "slide-out-to-bottom-2",
 };
 
 let seq = 0;
 
+/**
+ * ox_lib's notifications (lib.notify), drawn with the kit's Notice and NoticeStack, the
+ * components behind the `notify` intent. ox_lib's own rules stay here: 3 s default, an id
+ * updates in place and restarts its time, 20 on screen at most, no pause on hover (the game
+ * keeps the cursor), and nothing is ever posted back to Lua. Protocol: docs/ox-lib-protocol.md §3.
+ */
 export function Notifications() {
   const [toasts, setToasts] = useState<Toast[]>([]);
   const timers = useRef(new Map<string, ReturnType<typeof setTimeout>>());
 
   const remove = (key: string) => {
     setToasts((all) => all.map((t) => (t.key === key ? { ...t, leaving: true } : t)));
-    setTimeout(() => setToasts((all) => all.filter((t) => t.key !== key)), EXIT_MS);
+    setTimeout(() => setToasts((all) => all.filter((t) => t.key !== key || !t.leaving)), EXIT_MS);
   };
 
   const schedule = (key: string, ms: number) => {
@@ -82,7 +81,7 @@ export function Notifications() {
 
   useOx<NotifyData>("notify", (data) => {
     if (!data || (!data.title && !data.description)) return; // ox drops empty toasts
-    const duration = data.duration || 3000;
+    const duration = data.duration || DEFAULT_MS;
     const key = data.id !== undefined && data.id !== null ? `id:${String(data.id)}` : `n:${++seq}`;
     setToasts((all) => {
       const next: Toast = { ...data, key, at: Date.now(), leaving: false };
@@ -96,63 +95,42 @@ export function Notifications() {
 
   useEffect(() => () => timers.current.forEach(clearTimeout), []);
 
-  const groups = new Map<Position, Toast[]>();
+  // One stack per position, newest first (NoticeStack puts the newest nearest the edge).
+  const groups = new Map<NoticePosition, Toast[]>();
   for (const t of toasts) {
-    const p = normalizePosition(t.position);
-    groups.set(p, [...(groups.get(p) ?? []), t]);
+    const p = noticePosition(t.position);
+    groups.set(p, [t, ...(groups.get(p) ?? [])]);
   }
 
   return (
     <>
       {[...groups].map(([position, list]) => (
-        <div key={position} className={cn("pointer-events-none fixed z-50 flex flex-col gap-2", ANCHOR[position])}>
-          {(position.startsWith("bottom") ? list : [...list].reverse()).map((t) => (
-            <Notification key={t.key} toast={t} position={position} />
+        <NoticeStack key={position} position={position}>
+          {list.map((t) => (
+            // Keyed on `at` too: an update in place restarts the time line, as ox_lib does.
+            <Notice
+              key={`${t.key}:${t.at}`}
+              status={status(t.type)}
+              // A script's icon is a Font Awesome name. Its iconColor beats the status colour, also on
+              // the default icon (ox_lib's own default for the type then, so the colour has a shape).
+              icon={
+                t.icon || t.iconColor || t.iconAnimation ? (
+                  <Icon icon={t.icon ?? DEFAULT_ICON[status(t.type)]} animation={t.iconAnimation} color={t.iconColor} className="size-4" />
+                ) : undefined
+              }
+              title={t.title}
+              description={t.description ? <Markdown>{t.description}</Markdown> : undefined}
+              duration={t.duration || DEFAULT_MS}
+              showDuration={t.showDuration !== false}
+              pauseOnHover={false}
+              iconAlign={t.alignIcon === "top" ? "start" : t.alignIcon === "center" ? "center" : undefined}
+              data-state={t.leaving ? "closed" : "open"}
+              className={cn(t.leaving && "animate-out fade-out-0 duration-400 fill-mode-forwards", t.leaving && EXIT[position])}
+              style={t.style}
+            />
           ))}
-        </div>
+        </NoticeStack>
       ))}
     </>
-  );
-}
-
-function Notification({ toast: t, position }: { toast: Toast; position: Position }) {
-  const kind = TYPES[t.type ?? ""] ?? TYPES.info!;
-  const color = t.iconColor ?? kind.color;
-  const duration = t.duration || 3000;
-  const showDuration = t.showDuration !== false;
-  // Full class names (Tailwind only generates classes it can read in the source).
-  const exit = t.leaving
-    ? position.endsWith("right")
-      ? "animate-out fade-out-0 duration-400 slide-out-to-right-4"
-      : position.endsWith("left")
-        ? "animate-out fade-out-0 duration-400 slide-out-to-left-4"
-        : position.startsWith("top")
-          ? "animate-out fade-out-0 duration-400 slide-out-to-top-2"
-          : "animate-out fade-out-0 duration-400 slide-out-to-bottom-2"
-    : position.startsWith("bottom")
-      ? "animate-in fade-in-0 duration-200 slide-in-from-bottom-2"
-      : "animate-in fade-in-0 duration-200 slide-in-from-top-2";
-
-  return (
-    <div
-      data-state={t.leaving ? "closed" : "open"}
-      className={cn("nk-panel relative w-80 overflow-hidden", exit, t.leaving && "fill-mode-forwards")}
-      style={t.style}
-    >
-      <div className={cn("flex gap-3 px-4 py-3", (t.alignIcon ?? (t.title && t.description ? "top" : "center")) === "top" ? "items-start" : "items-center")}>
-        <span className={cn("grid h-5 shrink-0 place-items-center", !color && "text-muted-foreground")} style={color ? { color } : undefined}>
-          <Icon icon={t.icon ?? kind.icon} animation={t.iconAnimation} className="size-4" />
-        </span>
-        <div className="min-w-0 flex-1">
-          {t.title && <div className="text-sm leading-5 font-medium">{t.title}</div>}
-          <Markdown className={t.title ? "nk-label mt-0.5 font-normal" : "text-sm leading-5"}>{t.description}</Markdown>
-        </div>
-      </div>
-      {showDuration && (
-        <div aria-hidden className="absolute inset-x-0 bottom-0 h-0.5">
-          <div key={t.at} className="h-full w-full bg-muted-foreground opacity-40" style={{ transformOrigin: "left", animation: `ox-shrink ${duration}ms linear forwards` }} />
-        </div>
-      )}
-    </div>
   );
 }
