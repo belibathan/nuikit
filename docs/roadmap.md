@@ -46,7 +46,7 @@ GTA's pause map is opened and closed (not seen on a fresh join).
 |---|---|---|
 | Components | The 9 remaining components + `progress-ring` + `skill-check`, redesigned as the default renderers for the intents | In progress (`feat/components`): `notice` + stack + `useNotices` (notify, #8) and `form-field` + presets (input) in review; next `confirm`, `key-prompt`, `progress-ring`, then menu-row and meter extensions |
 | Screens | death, loading, chat and the overrides (ox_lib first) rebuilt on the components, protocol-exact | In progress (`feat/screens`). PR 1: ox_lib context menu and list menu on `panel` + `menu-row`, progress bar on `meter`; every POST unchanged (Playwright before/after diff). Next: notify, input, alert, text UI, progress circle and skill check as `notice`, `field`, `confirm`, `key-prompt`, `progress-ring` land; then death, loading, chat |
-| Blocks + site | The 14 blocks, `npm create nuikit -t <block>`, `/blocks`, theme switcher, theme studio | Ready to dispatch (starts with blocks the 5 shipped components cover) |
+| Blocks + site | The 14 blocks, `npm create nuikit -t <block>`, `/blocks`, theme switcher, theme studio | In progress (`feat/blocks`): `hud-minimal` and `death-screen` in the registry and as `-t` templates (draft PR, not yet tested in game). Next: `pause-menu`, `loading-screen`, `settings`, `scoreboard`, then `/blocks` |
 | Showcase | pause, HUD, inventory: minimap restart quirk, FPS budget | Owner's existing agent |
 
 ### Open items for the owner

@@ -34,7 +34,7 @@
   "homepage": "https://nuikit.vercel.app",
   "scripts": {
     "prebuild": "node ../../scripts/sync-template.mjs",
-    "build": "tsup",
+    "build": "tsup && node scripts/templates.mjs",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {

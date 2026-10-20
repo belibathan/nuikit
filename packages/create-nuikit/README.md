@@ -15,7 +15,23 @@ pnpm create nuikit my-hud
 
 Scaffolds a FiveM resource: `fxmanifest.lua`, a Lua client using `nuikit.lua`, and a `web/` app with Vite, React 19, Tailwind v4 and shadcn. CSS is lowered for FiveM's Chromium 103, and you get browser devtools and in-game hot reload.
 
-Options: `--yes`, `--pm pnpm|npm|yarn|bun`, `--no-install`.
+Options: `-t, --template <block>`, `--yes`, `--pm pnpm|npm|yarn|bun`, `--no-install`.
+
+## Start from a block
+
+A block is a whole screen from the [nuikit registry](https://nuikit.vercel.app), with its Lua:
+
+```bash
+npm create nuikit@latest my-hud -- -t hud-minimal
+npm create nuikit@latest my-death -- -t death-screen
+```
+
+| Block | What |
+|---|---|
+| `hud-minimal` | Vitals, needs, voice, cash, bank, job and a speedometer, on any framework |
+| `death-screen` | Last stand and death: countdown, call EMS, hold to respawn |
+
+Without `-t` you get the demo (a HUD, a menu and a confirm dialog), or pick from a list.
 
 ---
 
