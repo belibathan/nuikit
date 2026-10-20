@@ -1,6 +1,8 @@
-import { ChevronLeftIcon, ChevronRightIcon, XIcon } from "lucide-react";
+import { ChevronLeftIcon, XIcon } from "lucide-react";
 import { useEffect, useRef, useState, type MouseEvent } from "react";
 import { Button } from "@/components/ui/button";
+import { MenuRow } from "@/components/ui/menu-row";
+import { Panel, PanelBody, PanelHeader } from "@/components/ui/panel";
 import { Bar } from "@/lib/bar";
 import { Icon } from "@/lib/icon";
 import { Markdown } from "@/lib/markdown";
@@ -34,13 +36,16 @@ interface ContextData {
   options: Option[] | Record<string, Option>;
 }
 
-/** ox_lib's context menu (lib.registerContext / lib.showContext). Protocol: docs/ox-lib-protocol.md §4. */
+/**
+ * ox_lib's context menu (lib.registerContext / lib.showContext), drawn with the kit's Panel and
+ * MenuRow, the components behind the `menu` intent. Protocol: docs/ox-lib-protocol.md §4.
+ */
 export function ContextMenu() {
   const [data, setData] = useState<ContextData | null>(null);
   const [open, setOpen] = useState(false);
   const swap = useRef<ReturnType<typeof setTimeout>>(undefined);
   const presence = usePresence(open, 100);
-  const panel = useRef<HTMLDivElement>(null);
+  const anchor = useRef<HTMLDivElement>(null);
   const [hover, setHover] = useState<{ key: string; top: number } | null>(null);
   useEffect(() => setHover(null), [data]);
 
@@ -81,40 +86,49 @@ export function ContextMenu() {
   const hovered = hover ? (data.options as Record<string, Option>)[hover.key] : undefined;
 
   const enter = (key: string, e: MouseEvent<HTMLElement>) => {
-    const top = e.currentTarget.getBoundingClientRect().top - (panel.current?.getBoundingClientRect().top ?? 0);
+    const top = e.currentTarget.getBoundingClientRect().top - (anchor.current?.getBoundingClientRect().top ?? 0);
     setHover({ key, top });
   };
 
+  // The hover card is a sibling of the panel, not a child: Panel clips its own overflow.
   return (
-    <div data-state={presence.state} className={cn("fixed top-[15%] right-[25%] z-30 w-80", presenceMotion)}>
-      <div ref={panel} className="nk-panel relative">
-        <header className="nk-panel-header gap-2 pr-3">
+    <div ref={anchor} data-state={presence.state} className={cn("fixed top-[15%] right-[25%] z-30", presenceMotion)}>
+      <Panel animate={false}>
+        <PanelHeader
+          className="gap-2 pr-3"
+          actions={
+            <Button variant="ghost" size="icon-sm" className="text-muted-foreground" disabled={data.canClose === false} onClick={close} aria-label="Close">
+              <XIcon />
+            </Button>
+          }
+        >
           {data.menu && (
             <Button variant="ghost" size="icon-sm" className="-ml-2 shrink-0 text-muted-foreground" onClick={() => post("openContext", { id: data.menu, back: true })} aria-label="Back">
               <ChevronLeftIcon />
             </Button>
           )}
           <Markdown className="nk-title min-w-0 flex-1 truncate">{data.title}</Markdown>
-          <Button variant="ghost" size="icon-sm" className="shrink-0 text-muted-foreground" disabled={data.canClose === false} onClick={close} aria-label="Close">
-            <XIcon />
-          </Button>
-        </header>
-        <div className="nk-panel-body flex max-h-[35rem] flex-col gap-0.5 overflow-y-auto" onScroll={() => setHover(null)}>
+        </PanelHeader>
+        <PanelBody className="max-h-[35rem] overflow-y-auto" onScroll={() => setHover(null)}>
           {entries.map(([key, option]) => (
             <ContextOption key={key} id={key} option={option} onEnter={(e) => enter(key, e)} onLeave={() => setHover((h) => (h?.key === key ? null : h))} />
           ))}
-        </div>
-        {hovered && !hovered.disabled && (hovered.metadata || hovered.image) && <HoverCard key={hover!.key} option={hovered} top={hover!.top} />}
-      </div>
+        </PanelBody>
+      </Panel>
+      {hovered && !hovered.disabled && (hovered.metadata || hovered.image) && <HoverCard key={hover!.key} option={hovered} top={hover!.top} />}
     </div>
   );
 }
+
+/** ox_lib's readOnly: looks like the other options, but never highlights or presses. */
+const readOnlyRow = "cursor-default hover:bg-transparent hover:text-inherit active:bg-transparent";
 
 function ContextOption({ id, option, onEnter, onLeave }: { id: string; option: Option; onEnter: (e: MouseEvent<HTMLElement>) => void; onLeave: () => void }) {
   // A missing title on a keyed option shows the key itself (ox_lib does this).
   const title = option.title ?? (Number.isNaN(Number(id)) ? id : undefined);
   const inert = option.disabled || option.readOnly;
-  const arrow = (option.menu || option.arrow) && option.arrow !== false;
+  const arrow = Boolean(option.menu || option.arrow) && option.arrow !== false;
+  const hasProgress = option.progress !== undefined;
 
   const click = () => {
     if (inert) return;
@@ -123,31 +137,28 @@ function ContextOption({ id, option, onEnter, onLeave }: { id: string; option: O
   };
 
   return (
-    <button
-      type="button"
+    <MenuRow
       disabled={option.disabled}
+      aria-readonly={option.readOnly || undefined}
+      tabIndex={option.readOnly ? -1 : undefined}
       onClick={click}
       onMouseEnter={onEnter}
       onMouseLeave={onLeave}
-      className={cn(
-        "nk-row w-full py-2 text-left outline-none",
-        !inert && "hover:bg-accent hover:text-accent-foreground focus-visible:bg-accent",
-        option.readOnly && "cursor-default",
-        option.disabled && "cursor-not-allowed opacity-50",
-      )}
+      icon={option.icon ? <Icon icon={option.icon} color={option.iconColor} animation={option.iconAnimation} allowImage className="size-4" /> : undefined}
+      // MenuRow has no progress slot yet, so ox's bar goes under the description, where ox_lib puts it.
+      description={
+        option.description || hasProgress ? (
+          <>
+            {option.description && <Markdown>{option.description}</Markdown>}
+            {hasProgress && <Bar value={option.progress!} scheme={option.colorScheme} fallback="var(--muted-foreground)" className="mt-1.5 mb-0.5" />}
+          </>
+        ) : undefined
+      }
+      chevron={arrow}
+      className={cn(option.readOnly && readOnlyRow)}
     >
-      {option.icon && (
-        <span className="grid size-4 shrink-0 place-items-center text-muted-foreground">
-          <Icon icon={option.icon} color={option.iconColor} animation={option.iconAnimation} allowImage className="size-4" />
-        </span>
-      )}
-      <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-        {title && <Markdown className="font-medium">{title}</Markdown>}
-        {option.description && <Markdown className="nk-label font-normal">{option.description}</Markdown>}
-        {option.progress !== undefined && <Bar value={option.progress} scheme={option.colorScheme} fallback="var(--muted-foreground)" className="mt-1.5" />}
-      </span>
-      {arrow && <ChevronRightIcon className="size-4 shrink-0 text-muted-foreground" />}
-    </button>
+      {title && <Markdown>{title}</Markdown>}
+    </MenuRow>
   );
 }
 
@@ -167,7 +178,7 @@ function HoverCard({ option, top }: { option: Option; top: number }) {
       : Object.entries(meta).map(([label, value]) => ({ label, value }));
 
   return (
-    <div className="nk-panel nk-enter absolute right-full mr-2 flex w-64 flex-col gap-3 p-4 text-sm" style={{ top }}>
+    <Panel className="absolute right-full mr-2 w-64 gap-3 p-4 text-sm" style={{ top }}>
       {option.image && <img src={option.image} alt="" className="max-h-40 w-full rounded-md object-contain" />}
       {rows.map((r, i) => (
         <div key={i} className="flex flex-col gap-1.5">
@@ -182,6 +193,6 @@ function HoverCard({ option, top }: { option: Option; top: number }) {
           {r.progress !== undefined && <Bar value={r.progress} scheme={r.colorScheme ?? option.colorScheme} fallback="var(--muted-foreground)" />}
         </div>
       ))}
-    </div>
+    </Panel>
   );
 }

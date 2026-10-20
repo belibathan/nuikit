@@ -21,6 +21,8 @@ export default defineConfig({
       { find: new RegExp(`^@/components/ui/(${fromRegistry.join("|")})$`), replacement: `${registry}/ui/$1.tsx` },
       { find: new RegExp(`^@/components/ui/(${fromShadcn.join("|")})$`), replacement: `${vendor}/$1.tsx` },
       { find: "@/hooks/use-nui-store", replacement: `${registry}/hooks/use-nui-store.ts` },
+      // The registry's blocks, for /blocks (their own imports resolve through the lines above).
+      { find: /^@\/blocks\/(.*)$/, replacement: `${registry}/blocks/$1` },
       { find: "@", replacement: path.resolve(__dirname, "src") },
     ],
     dedupe: ["react", "react-dom", "nuikit-core", "sonner", "radix-ui", "next-themes", "class-variance-authority", "lucide-react", "clsx", "tailwind-merge"],

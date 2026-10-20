@@ -44,7 +44,9 @@ const LOW = readFileSync(fileURLToPath(new URL("./themes/low-contrast.css", impo
 describe("the nuikit resource's server script", () => {
   it("ships the current compiler (run pnpm build + pnpm sync after changing tokens.ts)", () => {
     const fresh = readFileSync(fileURLToPath(new URL("../dist/fxserver-compiler.js", import.meta.url)), "utf8");
-    expect(scripts[0]![1]).toBe(fresh);
+    // line endings aside: a Windows checkout may turn the committed copy into CRLF
+    const lf = (t: string) => t.replace(/\r\n/g, "\n");
+    expect(lf(scripts[0]![1])).toBe(lf(fresh));
   });
 
   it("compiles theme.css at start and publishes GlobalState.nuikitTheme", () => {

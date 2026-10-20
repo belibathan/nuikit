@@ -13,6 +13,9 @@ import { Progress } from "@/components/ui/progress"
  *
  *   <KeyHint keys="E">Talk to dealer</KeyHint>
  *   <KeyHint keys="F" hold={1200} onConfirm={rob}>Rob register</KeyHint>
+ *
+ * @deprecated Use `key-prompt` (KeyPrompt, KeyPromptStack): kit surfaces, several keys, Lua-driven
+ * hold progress, active and disabled states. KeyHint keeps working.
  */
 const keyHintVariants = cva(
   "inline-flex items-center gap-2 text-sm text-foreground",

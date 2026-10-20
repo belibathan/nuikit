@@ -22,6 +22,39 @@ const SHADCN = new Set(
 /** Where each component comes from. */
 const source = (c) => (SHADCN.has(c) ? `vendor/shadcn/ui/${c}.tsx` : `registry/nuikit/ui/${c}.tsx`);
 
+// Components a component needs (registry.json registryDependencies), so a target that lists `menu-row` also
+// gets the stock `progress` it imports. Transitive; only names this repo can supply (stock shadcn or registry).
+const REGISTRY = JSON.parse(fs.readFileSync(path.join(root, "registry.json"), "utf8"));
+const DEPS = new Map(REGISTRY.items.filter((i) => i.type === "registry:ui").map((i) => [i.name, i.registryDependencies ?? []]));
+const available = (c) => SHADCN.has(c) || fs.existsSync(path.join(root, `registry/nuikit/ui/${c}.tsx`));
+// Guard: every "@/components/ui/<x>" a registry component imports must be in its registryDependencies, or
+// `npx shadcn add` installs it broken (and targets here would miss the file).
+const undeclared = [];
+for (const [name, deps] of DEPS) {
+  const file = path.join(root, `registry/nuikit/ui/${name}.tsx`);
+  if (!fs.existsSync(file)) continue;
+  const declared = new Set(deps.map((d) => String(d).replace(/^@nuikit\//, "").replace(/^https?:.*\/r\/([\w-]+)\.json$/, "$1")));
+  for (const m of fs.readFileSync(file, "utf8").matchAll(/from\s+["']@\/components\/ui\/([\w-]+)["']/g)) {
+    if (m[1] !== name && !declared.has(m[1])) undeclared.push(`${name} imports ${m[1]}`);
+  }
+}
+if (undeclared.length) {
+  console.error(`registry.json: add these to registryDependencies:\n  ${undeclared.join("\n  ")}`);
+  process.exit(1);
+}
+
+function withDeps(list) {
+  const out = new Set();
+  const visit = (c) => {
+    const name = String(c).replace(/^@nuikit\//, "").replace(/^https?:.*\/r\/([\w-]+)\.json$/, "$1");
+    if (out.has(name) || !available(name)) return;
+    out.add(name);
+    for (const d of DEPS.get(name) ?? []) visit(d);
+  };
+  list.forEach(visit);
+  return [...out];
+}
+
 // The create-nuikit template, plus every system/addon that declares what it needs in nuikit.json:
 //   { "lua": ["nuikit.lua", "bridge.lua"], "components": ["button", "card"], "hooks": [] }
 const targets = [
@@ -79,7 +112,7 @@ for (const t of targets) {
     for (const f of ["nuikit.lua", "bridge.lua", "host.lua"]) copy(`packages/core/lua/${f}`, `lib/${f}`);
     copy("packages/core/lua/init.lua", "init.lua");
   }
-  for (const c of t.components) copy(source(c), `web/src/components/ui/${c}.tsx`);
+  for (const c of withDeps(t.components)) copy(source(c), `web/src/components/ui/${c}.tsx`);
   for (const h of t.hooks) copy(`registry/nuikit/hooks/${h}.ts`, `web/src/hooks/${h}.ts`);
   if (t.compiler) copy("packages/core/dist/fxserver-compiler.js", "server/compiler.js");
   if (t.css !== false) fs.writeFileSync(path.join(root, t.dir, "web/src/index.css"), css);

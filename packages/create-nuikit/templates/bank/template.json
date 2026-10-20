@@ -1,0 +1,6 @@
+{
+  "block": "bank",
+  "title": "Bank",
+  "description": "Accounts, balance, transactions; deposit, withdraw and transfer, checked by the server",
+  "next": ["stand at a bank or ATM from config.lua and press F9 (or /{{name}}); fill in Config.money for your framework's cash and bank"]
+}

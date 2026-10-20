@@ -223,3 +223,14 @@ describe("a resource importing the runtime (@nuikit/init.lua)", () => {
     expect(r.level).toBe(3);
   });
 });
+
+describe("surfaces declared with nk.*", () => {
+  it("counts nk.surface as a surface", () => {
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "nuikit-nk-"));
+    fs.cpSync(fixture("level3"), tmp, { recursive: true });
+    const main = path.join(tmp, "client/main.lua");
+    fs.writeFileSync(main, fs.readFileSync(main, "utf8").replace(/\bNUI\./g, "nk."));
+    expect(fs.readFileSync(main, "utf8")).toMatch(/nk\.surface|nk\.open/);
+    expect(checkResource(tmp).findings.filter((f) => f.rule === "surfaces/none")).toEqual([]);
+  });
+});

@@ -19,6 +19,9 @@
     "spinner",
     "tabs",
     "toggle",
-    "tooltip"
+    "tooltip",
+    "checkbox",
+    "panel",
+    "menu-row"
   ]
 }

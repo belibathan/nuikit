@@ -4,7 +4,7 @@
 PR. Design: [`architecture.md`](architecture.md). Kit brief: [`next/blocks.md`](next/blocks.md). Lanes and
 rules for parallel agents: [`next/dispatch.md`](next/dispatch.md).*
 
-Last updated: Oct 19 2026, after the 0.5.0 release.
+Last updated: Oct 20 2026, batch 1 (all kit lanes) in test.
 
 ## Released
 
@@ -44,9 +44,9 @@ GTA's pause map is opened and closed (not seen on a fresh join).
 
 | Lane | Scope | Status |
 |---|---|---|
-| Components | The 9 remaining components + `progress-ring` + `skill-check`, redesigned as the default renderers for the intents | Ready to dispatch |
-| Screens | death, loading, chat and the overrides (ox_lib first) rebuilt on the components, protocol-exact | Ready to dispatch |
-| Blocks + site | The 14 blocks, `npm create nuikit -t <block>`, `/blocks`, theme switcher, theme studio | In progress: `hud-minimal`, `death-screen` (#10, in the lead's test batch), `pause-menu`, `loading-screen` (#16, stacked on #10); site: nuikit tokens in the site CSS, ThemePicker applies its preset on mount (`feat/blocks-site`). None tested in game yet. Next: `settings`, `scoreboard`, then `/blocks` |
+| Components | The 9 remaining components + `progress-ring` + `skill-check`, redesigned as the default renderers for the intents | **Done (Part B)**, in batch 1: `notice`, `form-field`, `confirm`, `key-prompt`, `progress-ring`, `menu-row` items, `meter` tones/timed mode, `speedometer` on HUD tokens, `countdown`, `money`, `item-slot`, `player-card`, `empty-state`, `skill-check`, `radial-menu` (#8–#39); `nui-toaster` and `task-progress` deprecated (#40). Paused |
+| Screens | death, loading, chat and the overrides (ox_lib first) rebuilt on the components, protocol-exact | In batch 1: ox_lib menus + progress (#9, #32), death + loading (#12), ox_target (#15), Renewed-Banking (#18), illenium-appearance (#21), qbx_taxijob (#23), qbx_vehiclesales (#25). Chat stays as is. Next: rest of ox_lib (notify, input, alert, text UI, circle, skill check) on the new components, qbx_scoreboard, qbx_idcard, mm_radio |
+| Blocks + site | The 14 blocks, `npm create nuikit -t <block>`, `/blocks`, theme switcher, theme studio | In batch 1: blocks `hud-minimal`, `death-screen`, `pause-menu`, `loading-screen`, `settings`, `scoreboard`, `garage`, `bank` (all scaffold, build, level 3; CI-checked); site `/blocks` (#31), theme studio `/theme` (#29), tokens + ThemePicker (#19, merged). Next: `interaction`, `inventory`, `shop`, `vehicle-shop`, `character-select`, `job-menu` |
 | Showcase | pause, HUD, inventory: minimap restart quirk, FPS budget | Owner's existing agent |
 
 ### Open items for the owner

@@ -1,0 +1,6 @@
+{
+  "block": "hud-minimal",
+  "title": "Minimal HUD",
+  "description": "Vitals, needs, voice, cash, bank, job and a speedometer, on any framework",
+  "next": ["the HUD shows once a character is loaded; get in a car for the speedometer"]
+}

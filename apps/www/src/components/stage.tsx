@@ -13,9 +13,9 @@ import { Scene } from "./scene";
 
 declare module "nuikit-core" {
   interface NuiEvents {
-    "hud:vitals": { health: number; armor: number; hunger: number; thirst: number };
-    "hud:vehicle": { speed: number; rpm: number; gear: number; fuel: number };
-    "hud:task": { label: string; duration: number } | null;
+    "stage:vitals": { health: number; armor: number; hunger: number; thirst: number };
+    "stage:vehicle": { speed: number; rpm: number; gear: number; fuel: number };
+    "stage:task": { label: string; duration: number } | null;
   }
 }
 
@@ -24,11 +24,11 @@ declare module "nuikit-core" {
  * loop calls emit() (= SendNUIMessage) and the components subscribe with useNuiEvent.
  */
 export function Stage({ className, menu = true, scene = "dusk" }: { className?: string; menu?: boolean; scene?: "dusk" | "day" }) {
-  const vitals = useNuiStore("hud:vitals", { health: 86, armor: 54, hunger: 62, thirst: 18 });
-  const car = useNuiStore("hud:vehicle", { speed: 0, rpm: 0.1, gear: 1, fuel: 41 });
+  const vitals = useNuiStore("stage:vitals", { health: 86, armor: 54, hunger: 62, thirst: 18 });
+  const car = useNuiStore("stage:vehicle", { speed: 0, rpm: 0.1, gear: 1, fuel: 41 });
   const [task, setTask] = useState<{ label: string; duration: number; key: number } | null>(null);
   const [picked, setPicked] = useState<string | null>(null);
-  useNuiEvent("hud:task", (t) => setTask(t ? { ...t, key: Date.now() } : null));
+  useNuiEvent("stage:task", (t) => setTask(t ? { ...t, key: Date.now() } : null));
   useFakeLua();
 
   return (
@@ -70,7 +70,7 @@ export function Stage({ className, menu = true, scene = "dusk" }: { className?: 
               ]}
               onSelect={(i) => {
                 setPicked(i.id);
-                if (i.id === "repair") emit("hud:task", { label: "Repairing engine", duration: 3200 });
+                if (i.id === "repair") emit("stage:task", { label: "Repairing engine", duration: 3200 });
                 else emit("nuikit:notify", { title: i.label, description: "fetchNui(\"shop:select\") → Lua", type: "success" });
               }}
               data-picked={picked ?? undefined}
@@ -113,7 +113,7 @@ function useFakeLua() {
       const speed = Math.max(0, 62 + Math.sin(t * 0.7) * 48 + Math.sin(t * 2.3) * 6);
       const gear = Math.min(6, Math.max(1, Math.ceil(speed / 22)));
       const rpm = Math.min(0.97, 0.18 + ((speed % 22) / 22) * 0.75);
-      emit("hud:vehicle", { speed, rpm, gear, fuel: 41 - (t % 30) });
+      emit("stage:vehicle", { speed, rpm, gear, fuel: 41 - (t % 30) });
       if (Math.round(t * 10) % 20 === 0) {
         v = {
           health: Math.max(8, v.health - Math.random() * 6),
@@ -122,10 +122,10 @@ function useFakeLua() {
           thirst: v.thirst < 8 ? 92 : v.thirst - 1.2,
         };
         if (v.health <= 10) v.health = 96;
-        emit("hud:vitals", v);
+        emit("stage:vitals", v);
       }
       if (Math.round(t * 10) % 70 === 0) emit("nuikit:notify", notes[Math.round(t * 10 / 70) % notes.length]!);
-      if (Math.round(t * 10) % 110 === 55) emit("hud:task", { label: "Picking lock", duration: 2600 });
+      if (Math.round(t * 10) % 110 === 55) emit("stage:task", { label: "Picking lock", duration: 2600 });
     }, 100);
     return () => {
       running--;

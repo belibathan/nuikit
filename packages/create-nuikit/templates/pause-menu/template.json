@@ -1,0 +1,9 @@
+{
+  "block": "pause-menu",
+  "title": "Pause menu",
+  "description": "Esc opens it in place of GTA's: resume, map, settings, key bindings, disconnect",
+  "next": [
+    "press Esc; P still opens GTA's map, and the menu's Map / Settings / Key bindings come back here when closed",
+    "don't run it next to nuikit_pause: both want Esc"
+  ]
+}

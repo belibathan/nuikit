@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Kbd } from "@/components/ui/kbd";
+import { Panel, PanelFooter, PanelHeader } from "@/components/ui/panel";
+import { Stat } from "@/components/ui/stat";
 import { post, useMessages } from "@/lib/nui";
 import { loadServerTheme } from "@/lib/theme";
 import { cn } from "@/lib/utils";
@@ -80,25 +82,30 @@ export default function App() {
 
   return (
     <div data-open={open} className="meter fixed top-1/2 left-6 w-64">
-      <section className="nk-panel overflow-hidden">
-        <header className="nk-panel-header">
-          <h2 className="nk-title flex-1">Taxi meter</h2>
-          <button
-            type="button"
-            onClick={toggle}
-            className="nk-label -mr-1.5 flex h-6 items-center gap-1.5 rounded-full px-1.5 outline-none hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50"
-            aria-pressed={running}
-            title={running ? "Stop the meter" : "Start the meter"}
-          >
-            <span className={cn("size-1.5 rounded-full", running ? "animate-pulse bg-primary" : "bg-muted-foreground/60")} />
-            <span className={cn(running && "text-foreground")}>{running ? "Running" : "Stopped"}</span>
-          </button>
-        </header>
+      <Panel size="auto" animate={false} className="w-full">
+        <PanelHeader
+          title="Taxi meter"
+          actions={
+            <button
+              type="button"
+              onClick={toggle}
+              className="nk-label -mr-1.5 flex h-6 items-center gap-1.5 rounded-full px-1.5 outline-none hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50"
+              aria-pressed={running}
+              title={running ? "Stop the meter" : "Start the meter"}
+            >
+              <span className={cn("size-1.5 rounded-full", running ? "animate-pulse bg-success" : "bg-muted-foreground/60")} />
+              <span className={cn(running && "text-foreground")}>{running ? "Running" : "Stopped"}</span>
+            </button>
+          }
+        />
 
-        <div className="flex flex-col gap-1 px-4 py-4">
-          <span className="nk-label">Fare</span>
-          <span className={cn("nk-num text-[2rem] leading-10 font-semibold", !running && fare === 0 && "text-muted-foreground")}>{money(fare)}</span>
-        </div>
+        {/* The number that is the point: a display Stat, quiet until the meter has run. */}
+        <Stat
+          size="display"
+          label="Fare"
+          value={<span className={cn(!running && fare === 0 && "text-muted-foreground")}>{money(fare)}</span>}
+          className="p-4"
+        />
 
         <dl className="flex flex-col gap-2 border-t px-4 py-3 text-sm">
           <div className="flex items-center justify-between">
@@ -124,7 +131,7 @@ export default function App() {
         </dl>
 
         {cursor && (
-          <footer className="nk-panel-footer">
+          <PanelFooter>
             <Button size="sm" variant={running ? "secondary" : "default"} className="flex-1" onClick={toggle}>
               {running ? "Stop meter" : "Start meter"}
             </Button>
@@ -132,9 +139,9 @@ export default function App() {
               Done
               <Kbd>Esc</Kbd>
             </Button>
-          </footer>
+          </PanelFooter>
         )}
-      </section>
+      </Panel>
     </div>
   );
 }

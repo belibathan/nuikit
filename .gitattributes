@@ -1,0 +1,10 @@
+# LF everywhere: synced and generated files are compared byte for byte, and FiveM reads LF fine.
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.webp binary
+*.ico binary
+*.zip binary
+*.woff binary
+*.woff2 binary
+*.ttf binary

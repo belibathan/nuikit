@@ -398,9 +398,9 @@ function scanLua(rel: string, src: string, report: Report, ctx: LuaContext) {
   if (!own) {
     for (const m of bare.matchAll(/\bSetNuiFocus(KeepInput)?\s*\(/g)) {
       ctx.focusCalls.push({ file: rel, offset: m.index! });
-      report("focus/direct", m.index!, `${m[0].replace(/\s*\($/, "")} called directly; declare a surface (NUI.surface) and let nuikit own focus (protocol §3.2)`);
+      report("focus/direct", m.index!, `${m[0].replace(/\s*\($/, "")} called directly; declare a surface (nk.surface) and let nuikit own focus (protocol §3.2)`);
     }
-    if (/\bNUI\s*\.\s*(surface|open|toggle)\s*\(/.test(bare)) ctx.surfaces = true;
+    if (/\b(?:NUI|nk)\s*\.\s*(surface|open|toggle)\s*\(/.test(bare)) ctx.surfaces = true;
   }
   const blocks = luaBlocks(bare);
   // focus release in a stop handler
@@ -496,7 +496,7 @@ export function checkResource(root: string, options: CheckOptions = {}): CheckRe
     const report = collector.file(manifest.file, manifest.src);
     if (isUiPage && !manifest.protocol) report("manifest/protocol", manifest.page!.offset, "ui_page without nuikit_protocol '1': declare the protocol version this UI speaks (protocol §2.1)");
     if (!isUiPage) skipped.push("manifest/protocol", "surfaces/none");
-    else if (!lua.surfaces) report("surfaces/none", manifest.page!.offset, "This UI registers no surface (NUI.surface / NUI.open), so nuikit can't coordinate its focus, stacking or Escape");
+    else if (!lua.surfaces) report("surfaces/none", manifest.page!.offset, "This UI registers no surface (nk.surface / nk.open), so nuikit can't coordinate its focus, stacking or Escape");
     if (lua.focusCalls.length && !lua.releasesOnStop) {
       const first = lua.focusCalls[0]!;
       const src = fs.readFileSync(path.join(abs, first.file), "utf8");

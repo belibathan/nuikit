@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import { meterLevel, segmentFills } from "@/components/ui/meter"
+import { meterColor, meterLevel, segmentFills } from "@/components/ui/meter"
 
 describe("meter", () => {
   it("turns a value into a clamped percentage of max", () => {
@@ -30,5 +30,20 @@ describe("meter", () => {
     expect(segmentFills(62.5, 4)).toEqual([100, 100, 50, 0])
     expect(segmentFills(40, 1)).toEqual([40])
     expect(segmentFills(Number.NaN, 2)).toEqual([0, 0])
+  })
+
+  it("maps a library's colour to a theme tone, or passes a CSS colour through", () => {
+    expect(meterColor("green")).toEqual({ tone: "success" })
+    expect(meterColor("red.6")).toEqual({ tone: "destructive" })
+    expect(meterColor("Yellow.4")).toEqual({ tone: "warning" })
+    expect(meterColor("cyan")).toEqual({ tone: "info" })
+    expect(meterColor("grape")).toEqual({ tone: "stress" })
+    expect(meterColor("gray")).toEqual({ tone: "foreground" })
+    expect(meterColor("success")).toEqual({ tone: "success" })
+    expect(meterColor("#4dabf7")).toEqual({ color: "#4dabf7" })
+    expect(meterColor("rgb(77, 171, 247)")).toEqual({ color: "rgb(77, 171, 247)" })
+    expect(meterColor("chartreuse")).toEqual({})
+    expect(meterColor("")).toEqual({})
+    expect(meterColor(undefined)).toEqual({})
   })
 })

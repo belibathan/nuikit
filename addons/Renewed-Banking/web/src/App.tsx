@@ -2,7 +2,9 @@ import { ArrowDownLeft, ArrowLeftRight, ArrowUpRight, Info, Landmark, Snowflake,
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Kbd } from "@/components/ui/kbd";
+import { Panel, PanelFooter, PanelHeader } from "@/components/ui/panel";
 import { Spinner } from "@/components/ui/spinner";
+import { Stat } from "@/components/ui/stat";
 import { AccountChips, AccountIcon, AccountList, accountTitle } from "@/features/accounts";
 import { MoneyDialog, type MoneyRequest } from "@/features/money-dialog";
 import { RecentList, TransactionsPanel, isOut } from "@/features/transactions";
@@ -220,12 +222,25 @@ function CloseButton({ onClose }: { onClose: () => void }) {
   );
 }
 
-function Balance({ account, className }: { account: Account; className?: string }) {
+/** The number that is the point: a display Stat (32px), label above. */
+function Balance({ account, label = t("balance") }: { account: Account; label?: string }) {
+  return <Stat size="display" label={label} value={money(account.amount)} />;
+}
+
+/** A money-in / money-out total; zero reads muted. */
+function Total({ label, sign, value }: { label: string; sign: string; value: number }) {
   return (
-    <div className={cn("min-w-0", className)}>
-      <div className="nk-num truncate text-4xl leading-none font-semibold tracking-tight">{money(account.amount)}</div>
-      <div className="nk-label mt-2">{t("balance")}</div>
-    </div>
+    <Stat
+      size="sm"
+      align="end"
+      label={label}
+      value={
+        <span className={cn(!value && "text-muted-foreground")}>
+          {sign}
+          {money(value)}
+        </span>
+      }
+    />
   );
 }
 
@@ -235,14 +250,17 @@ function BankView({ accounts, active, cash, onSelect, onAction, onClose, onExpor
   const personal = active?.id === accounts[0]?.id;
 
   return (
-    <section className="nk-panel nk-enter flex h-[46rem] max-h-full w-[72rem] max-w-full flex-col overflow-hidden">
-      <header className="nk-panel-header">
+    <Panel size="auto" className="h-[46rem] max-h-full w-[72rem] max-w-full">
+      <PanelHeader
+        actions={
+          <div className="flex items-center gap-4">
+            <Cash cash={cash} />
+            <CloseButton onClose={onClose} />
+          </div>
+        }
+      >
         <Brand atm={false} />
-        <div className="ml-auto flex items-center gap-4">
-          <Cash cash={cash} />
-          <CloseButton onClose={onClose} />
-        </div>
-      </header>
+      </PanelHeader>
 
       <div className="flex min-h-0 flex-1">
         <aside className="flex w-72 shrink-0 flex-col border-r">
@@ -264,16 +282,10 @@ function BankView({ accounts, active, cash, onSelect, onAction, onClose, onExpor
                   <Balance account={active} />
                 </div>
                 <div className="flex flex-col items-end gap-4">
-                  <dl className="flex gap-6 text-right">
-                    <div>
-                      <dt className="nk-label">{t("nuikit_total_in")}</dt>
-                      <dd className={cn("nk-num mt-1 text-sm font-medium", !totals.in && "text-muted-foreground")}>+{money(totals.in)}</dd>
-                    </div>
-                    <div>
-                      <dt className="nk-label">{t("nuikit_total_out")}</dt>
-                      <dd className={cn("nk-num mt-1 text-sm font-medium", !totals.out && "text-muted-foreground")}>−{money(totals.out)}</dd>
-                    </div>
-                  </dl>
+                  <div className="flex gap-6">
+                    <Total label={t("nuikit_total_in")} sign="+" value={totals.in} />
+                    <Total label={t("nuikit_total_out")} sign="−" value={totals.out} />
+                  </div>
                   <Actions account={active} atm={false} onAction={onAction} />
                 </div>
               </section>
@@ -284,26 +296,23 @@ function BankView({ accounts, active, cash, onSelect, onAction, onClose, onExpor
           )}
         </main>
       </div>
-    </section>
+    </Panel>
   );
 }
 
 function AtmView({ accounts, active, cash, onSelect, onAction, onClose }: ViewProps) {
   return (
-    <section className="nk-panel nk-enter flex w-[26rem] max-w-full flex-col overflow-hidden">
-      <header className="nk-panel-header">
+    <Panel size="auto" className="w-[26rem] max-w-full">
+      <PanelHeader actions={<CloseButton onClose={onClose} />}>
         <Brand atm />
-        <div className="ml-auto">
-          <CloseButton onClose={onClose} />
-        </div>
-      </header>
+      </PanelHeader>
       <div className="flex flex-col gap-6 p-4">
         <AccountChips accounts={accounts} activeId={active?.id} onSelect={onSelect} />
         {active ? (
           <>
             <div className="flex flex-col gap-4">
-              <div className="nk-label truncate">{accountTitle(active)}</div>
-              <Balance account={active} />
+              {/* the account is the label of its balance here (one card, one account at a time) */}
+              <Balance account={active} label={accountTitle(active)} />
               <Actions account={active} atm onAction={onAction} className="[&>button]:flex-1" />
             </div>
             <div className="flex flex-col gap-1">
@@ -315,9 +324,9 @@ function AtmView({ accounts, active, cash, onSelect, onAction, onClose }: ViewPr
           <p className="text-muted-foreground py-6 text-center text-sm">{t("select_account")}</p>
         )}
       </div>
-      <footer className="nk-panel-footer">
+      <PanelFooter>
         <Cash cash={cash} />
-      </footer>
-    </section>
+      </PanelFooter>
+    </Panel>
   );
 }

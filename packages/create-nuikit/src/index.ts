@@ -5,6 +5,7 @@
  *
  *   npm create nuikit@latest my-hud
  *   pnpm create nuikit my-hud --yes
+ *   npm create nuikit@latest my-hud -- -t hud-minimal     (start from a block)
  */
 import { spawn } from "node:child_process";
 import fs from "node:fs";
@@ -14,17 +15,39 @@ import * as p from "@clack/prompts";
 import pc from "picocolors";
 
 const REGISTRY = "https://nuikit.vercel.app";
-const TEMPLATE = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../template");
+const HERE = path.dirname(fileURLToPath(import.meta.url));
+const TEMPLATE = path.resolve(HERE, "../template");
+/** Block templates, assembled at build time by scripts/templates.mjs (base + registry block + Lua). */
+const BLOCKS = path.resolve(HERE, "templates");
+/** nuikit-core, vite-plugin-nuikit and create-nuikit are released together with one version. */
+const VERSION: string = JSON.parse(fs.readFileSync(path.resolve(HERE, "../package.json"), "utf8")).version;
 
 type PM = "pnpm" | "npm" | "yarn" | "bun";
+
+interface Block {
+  name: string;
+  title: string;
+  description: string;
+  next: string[];
+}
 
 interface Args {
   name?: string;
   yes: boolean;
   install?: boolean;
   pm?: PM;
+  /** a block template (`-t hud-minimal`); the demo when absent */
+  template?: string;
   /** contributors: link nuikit + vite-plugin-nuikit to a local checkout */
   link?: string;
+}
+
+function blocks(): Block[] {
+  try {
+    return JSON.parse(fs.readFileSync(path.join(BLOCKS, "index.json"), "utf8")) as Block[];
+  } catch {
+    return [];
+  }
 }
 
 function parseArgs(argv: string[]): Args {
@@ -35,6 +58,8 @@ function parseArgs(argv: string[]): Args {
     else if (a === "--no-install") args.install = false;
     else if (a === "--install") args.install = true;
     else if (a === "--pm") args.pm = argv[++i] as PM;
+    else if (a === "-t" || a === "--template") args.template = argv[++i];
+    else if (a.startsWith("--template=")) args.template = a.slice("--template=".length);
     else if (a === "--link") args.link = path.resolve(argv[++i]!);
     else if (a === "-h" || a === "--help") help();
     else if (!a.startsWith("-") && !args.name) args.name = a;
@@ -49,9 +74,13 @@ function help(): never {
   ${pc.bold("Usage")}   npm create nuikit@latest ${pc.dim("[resource-name] [options]")}
 
   ${pc.bold("Options")}
-    -y, --yes        accept defaults
-    --pm <pm>        pnpm | npm | yarn | bun ${pc.dim("(default: the one you ran)")}
-    --no-install     skip installing dependencies
+    -t, --template <block>  start from a block ${pc.dim("(default: the demo)")}
+    -y, --yes               accept defaults
+    --pm <pm>               pnpm | npm | yarn | bun ${pc.dim("(default: the one you ran)")}
+    --no-install            skip installing dependencies
+
+  ${pc.bold("Blocks")}
+${blocks().map((b) => `    ${b.name.padEnd(22)}  ${b.description}`).join("\n") || "    (none in this build)"}
 `);
   process.exit(0);
 }
@@ -122,6 +151,29 @@ async function main() {
     if (p.isCancel(ok) || !ok) return cancel();
   }
 
+  const available = blocks();
+  let block: Block | undefined;
+  if (args.template) {
+    block = available.find((b) => b.name === args.template);
+    if (!block) {
+      p.cancel(
+        `There's no "${args.template}" template. Blocks: ${available.map((b) => b.name).join(", ") || "none in this build"}.`,
+      );
+      process.exit(1);
+    }
+  } else if (!args.yes && available.length) {
+    const answer = await p.select({
+      message: "Start from",
+      initialValue: "",
+      options: [
+        { value: "", label: "Demo", hint: "a HUD, a menu and a confirm dialog" },
+        ...available.map((b) => ({ value: b.name, label: b.title, hint: b.description })),
+      ],
+    });
+    if (p.isCancel(answer)) return cancel();
+    block = available.find((b) => b.name === answer);
+  }
+
   const pm = args.pm ?? detectPM();
   let install = args.install;
   if (install === undefined) {
@@ -135,9 +187,13 @@ async function main() {
 
   const s = p.spinner();
   s.start("Scaffolding resource");
-  copyDir(TEMPLATE, dir, { name, pm, registry: REGISTRY });
+  const vars = { name, pm, registry: REGISTRY };
+  copyDir(block ? path.join(BLOCKS, block.name) : TEMPLATE, dir, vars);
+  pinVersions(path.join(dir, "web/package.json"));
   if (args.link) linkLocal(path.join(dir, "web/package.json"), args.link);
-  s.stop(`Created ${pc.cyan(name + "/")} ${pc.dim("fxmanifest · client/*.lua · web/ (Vite, React, shadcn, Tailwind v4)")}`);
+  s.stop(
+    `Created ${pc.cyan(name + "/")} ${pc.dim(`${block ? `${block.title} · ` : ""}fxmanifest · client/*.lua · web/ (Vite, React, shadcn, Tailwind v4)`)}`,
+  );
 
   if (install) {
     s.start(`Installing with ${pm}`);
@@ -151,19 +207,29 @@ async function main() {
   }
 
   const runCmd = pm === "npm" ? "npm run" : pm;
+  const fill = (text: string) => text.replace(/\{\{(\w+)\}\}/g, (m, k: string) => (vars as Record<string, string>)[k] ?? m);
   p.note(
     [
       `${pc.bold("Browser")}   cd ${name}/web && ${runCmd} dev`,
       `          ${pc.dim("devtools: press ` to fire Lua events and swap backdrops")}`,
       "",
-      `${pc.bold("In game")}   copy ${name}/ into your resources, add ${pc.cyan(`ensure ${name}`)}`,
-      `          ${pc.dim("while dev runs, saves hot-reload in game · open with F7")}`,
+      `${pc.bold("In game")}   copy ${name}/ into your resources, add ${pc.cyan("ensure nuikit")} then ${pc.cyan(`ensure ${name}`)}`,
+      `          ${pc.dim(`while dev runs, saves hot-reload in game${block ? "" : " · open with F7"}`)}`,
+      ...(block?.next ?? []).map((line) => `          ${pc.dim(fill(line))}`),
       "",
       `${pc.bold("Add UI")}    npx shadcn add dialog @nuikit/speedometer`,
     ].join("\n"),
     "Next",
   );
   p.outro(`${pc.magenta("◆")} Star it if it saved you time → ${pc.underline("github.com/belibathan/nuikit")}`);
+}
+
+/** The template's nuikit packages at this release (the file in the repo can lag behind it). */
+function pinVersions(pkgPath: string) {
+  const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf8"));
+  if (pkg.dependencies?.["nuikit-core"]) pkg.dependencies["nuikit-core"] = `^${VERSION}`;
+  if (pkg.devDependencies?.["vite-plugin-nuikit"]) pkg.devDependencies["vite-plugin-nuikit"] = `^${VERSION}`;
+  fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + "\n");
 }
 
 function linkLocal(pkgPath: string, repo: string) {

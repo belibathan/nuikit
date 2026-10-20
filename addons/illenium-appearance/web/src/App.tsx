@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Kbd } from "@/components/ui/kbd";
+import { Panel, PanelFooter, PanelHeader } from "@/components/ui/panel";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Spinner } from "@/components/ui/spinner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -52,34 +53,37 @@ function Editor({ onConfirm }: { onConfirm: (kind: "save" | "exit") => void }) {
 
   return (
     <Tabs value={active?.id ?? ""} onValueChange={setTab} className="flex h-full min-h-0 flex-col gap-0">
-      <header className="nk-panel-header flex-col items-stretch gap-3">
-        <div className="flex h-7 items-center gap-3">
-          <h1 className="nk-title min-w-0 flex-1 truncate">{active?.title}</h1>
-          {dirty && (
-            <span className="nk-label flex shrink-0 items-center gap-1.5">
+      {/* The kit's two-row header (docs/design.md recipe): title row, then the section tabs. */}
+      <PanelHeader
+        title={active?.title}
+        actions={
+          dirty && (
+            <span className="nk-label flex items-center gap-1.5">
               <span className="size-1.5 rounded-full bg-primary" aria-hidden />
               Unsaved changes
             </span>
-          )}
-        </div>
-        {sections.length > 1 && (
-          <TabsList className="w-full">
-            {sections.map((s) => (
-              <TabsTrigger key={s.id} value={s.id} className="p-0" aria-label={s.title}>
-                {/* The tooltip sits inside: its data-state must not replace the tab's active state. */}
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <span className="flex size-full items-center justify-center">
-                      <s.icon className="size-4" />
-                    </span>
-                  </TooltipTrigger>
-                  <TooltipContent side="bottom">{s.title}</TooltipContent>
-                </Tooltip>
-              </TabsTrigger>
-            ))}
-          </TabsList>
-        )}
-      </header>
+          )
+        }
+        tabs={
+          sections.length > 1 && (
+            <TabsList className="w-full">
+              {sections.map((s) => (
+                <TabsTrigger key={s.id} value={s.id} className="p-0" aria-label={s.title}>
+                  {/* The tooltip sits inside: its data-state must not replace the tab's active state. */}
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <span className="flex size-full items-center justify-center">
+                        <s.icon className="size-4" />
+                      </span>
+                    </TooltipTrigger>
+                    <TooltipContent side="bottom">{s.title}</TooltipContent>
+                  </Tooltip>
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          )
+        }
+      />
       {sections.map((s) => (
         <TabsContent key={s.id} value={s.id} className="min-h-0 flex-1">
           <ScrollArea className="h-full">
@@ -87,7 +91,7 @@ function Editor({ onConfirm }: { onConfirm: (kind: "save" | "exit") => void }) {
           </ScrollArea>
         </TabsContent>
       ))}
-      <footer className="nk-panel-footer">
+      <PanelFooter>
         {config.enableExit && (
           <Button variant="outline" onClick={() => onConfirm("exit")}>
             <LogOut />
@@ -98,7 +102,7 @@ function Editor({ onConfirm }: { onConfirm: (kind: "save" | "exit") => void }) {
           <Save />
           Save
         </Button>
-      </footer>
+      </PanelFooter>
     </Tabs>
   );
 }
@@ -136,7 +140,7 @@ function Shell() {
   return (
     <TooltipProvider delayDuration={300}>
       <div className="pointer-events-none fixed inset-0 select-none">
-        <aside className="appearance-panel nk-panel nk-enter pointer-events-auto absolute top-6 bottom-6 left-6 flex w-96 flex-col overflow-hidden">
+        <Panel className="pointer-events-auto absolute top-6 bottom-6 left-6 w-96">
           {ready ? (
             <Editor onConfirm={setConfirm} />
           ) : (
@@ -145,7 +149,7 @@ function Shell() {
               Loading
             </div>
           )}
-        </aside>
+        </Panel>
         {ready && (
           <div className="absolute top-1/2 right-6 -translate-y-1/2">
             <CameraControls />

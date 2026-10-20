@@ -3,7 +3,7 @@ import { CheckIcon, HeartPulseIcon } from "lucide-react";
 import type { ReactNode } from "react";
 import type { DeathData } from "./nui";
 import { Kbd } from "@/components/ui/kbd";
-import { Progress } from "@/components/ui/progress";
+import { Meter } from "@/components/ui/meter";
 import { cn } from "@/lib/utils";
 
 const money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
@@ -63,12 +63,13 @@ function Death({ data }: { data: DeathData }) {
             </div>
             <div className="mt-4 text-sm font-medium text-foreground/75">{label}</div>
             {total ? (
-              <Progress
-                value={Math.max(0, Math.min(100, (seconds / total) * 100))}
-                className={cn(
-                  "mt-6 h-1 w-80 bg-foreground/15 [&>[data-slot=progress-indicator]]:bg-foreground",
-                  laststand && "[&>[data-slot=progress-indicator]]:bg-destructive",
-                )}
+              <Meter
+                value={seconds}
+                max={total}
+                size="sm"
+                tone={laststand ? "destructive" : "foreground"}
+                aria-label={label}
+                className="mt-6 w-80"
               />
             ) : null}
           </div>
@@ -105,10 +106,7 @@ function Hints({ data }: { data: DeathData }) {
         respawn.available ? (
           <div className="flex flex-col gap-2">
             <Hint kbd={respawn.key} label="Hold to respawn" meta={respawn.cost ? money.format(respawn.cost) : undefined} />
-            <Progress
-              value={(respawn.progress ?? 0) * 100}
-              className="h-1 w-full bg-foreground/15 [&>[data-slot=progress-indicator]]:bg-foreground"
-            />
+            <Meter value={respawn.progress ?? 0} max={1} size="sm" tone="foreground" aria-label="Respawn hold" className="w-full" />
           </div>
         ) : (
           <Hint
