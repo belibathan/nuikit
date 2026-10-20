@@ -24,7 +24,16 @@ Picked automatically (`Config.medical = 'auto'`), in this order:
 
 Timers and the bill are read from the medical resource's own config file at start (`laststandReviveInterval`, `deathTime`, `laststandTimer`, `checkInCost`, `Config.ReviveInterval`, `Config.BillCost`, `Config.EarlyRespawnTimer`, …), so your edits there show up here. `Config.fallback` is used only if a file can't be read.
 
-**Qbox details**, mirrored from `qbx_ambulancejob/client/setdownedstate.lua`: "Request EMS (G)" is shown only while `qbx_ambulancejob` is running, at least one EMS is on duty (`server/main.lua` asks `qbx_core`'s `GetDutyCountType('ems')`, refreshed every minute like the original) and the bleed-out timer is at or below its `laststandTimer`. After G it reads "EMS have been notified" until you're revived. While dead with EMS on duty it shows the respawn countdown; otherwise "Hold E to respawn · $2,000" with a progress bar that follows `qbx_medical`'s own hold counter.
+**Qbox details**, mirrored from `qbx_ambulancejob/client/setdownedstate.lua`: "Request EMS (G)" is shown only while `qbx_ambulancejob` is running, at least one EMS is on duty (`server/main.lua` asks `qbx_core`'s `GetDutyCountType('ems')`, refreshed every minute like the original) and the bleed-out timer is at or below its `laststandTimer`. After G it reads "EMS have been notified" until you're revived. While dead with EMS on duty it shows the respawn countdown; otherwise "Hold E to respawn · $2,000" with a progress bar.
+
+**The E bar** is nuikit's own measure of how long you've held E, in milliseconds, streamed to the page (`NUI.stream('death:hold')`, at most 30 updates a second) and painted every frame, so it fills smoothly. `qbx_medical` still decides when you respawn: its loop in `client/dead.lua` ticks once a second, counts `RespawnHoldTime` from 5 down to 1 on each tick that finds E held, and respawns on the tick that finds it at 1. That is the next tick after you press E plus four more, so nuikit times the bar to that tick (it sees the ticks as `GetDeathTime()` changing, which the same loop counts down). The same loop only looks at E on its ticks, so the bar does too. If you let go and press again between two ticks, `qbx_medical` never notices, and the bar keeps going. If a tick finds E up, `qbx_medical` starts its count again and the bar empties. The bar no longer reads `GetRespawnHoldTimeDeprecated`, which only moved in whole seconds. Respawn timing is unchanged.
+
+**Hospital bed.** After a respawn, `qbx_ambulancejob` checks you into a bed and treats you for its `aiHealTimer` (20 s by default). You stay dead in `qbx_medical` (deathState 3) until the server revives you at the end, so the dead screen used to stay up over the treatment. nuikit now hides it while you're in the bed, and stops the screen effect. It detects the bed in two ways:
+
+- the client events `qbx_ambulancejob:client:checkedIn` (respawn or check-in) and `qbx_ambulancejob:client:putPlayerInBed` (an EMS puts you in a bed), both sent by its server with `(hospitalName, bedIndex)`. These open a 10 s window for the fade to the bed;
+- the bed animation from `client/hospital.lua` (`anim@gangops@morgue@table@`, `body_search`) playing on your ped, which also works if a bed is reached some other way.
+
+If the animation stops while you're still dead, or it never starts within 10 s of the event, the dead screen comes back. While hidden you're still down: the `dead` state stays set (the pause menu stays blocked) and `isDown()` stays true. When the treatment ends, `qbx_medical` revives you and everything clears as usual.
 
 ## Duplicate text from the medical resource
 
@@ -42,12 +51,12 @@ nuikit keeps the bottom of the screen clear so the original text doesn't overlap
 
 ## Verified
 
-- Lua logic in Lua 5.4 with mocked natives (`packages/core/test/lua/death.test.ts`): config parsing, the Qbox statebag/exports flow including when G counts, the QBCore mirrored timers, esx_death's export, standalone, and that the pause menu is blocked while down.
+- Lua logic in Lua 5.4 with mocked natives (`packages/core/test/lua/death.test.ts`): config parsing, the Qbox statebag/exports flow including when G counts, the E bar's streamed values against `qbx_medical`'s tick, hiding and restoring around the hospital bed, the QBCore mirrored timers, esx_death's export, standalone, and that the pause menu is blocked while down.
 - UI: typecheck, build, and screenshots of every state in the browser.
 
 ## Check in game
 
-- Qbox: the countdown matches `qbx_ambulancejob`'s drawn text second for second; "Request EMS" appears exactly when its prompt does; the E progress bar follows the hold.
+- Qbox: the countdown matches `qbx_ambulancejob`'s drawn text second for second; "Request EMS" appears exactly when its prompt does; the E bar fills smoothly and is full when the respawn happens; the screen is gone during the hospital-bed treatment and back if the treatment is interrupted.
 - QBCore and old ESX: how close the mirrored timers stay to the resource's own (they start when the metadata/event arrives).
 - esx_death: the export's values and the CSS hide.
 - `DeathFailMPIn` looks right on your build and stops on revive/respawn.

@@ -5,6 +5,9 @@
 local KEY_E, KEY_G = 38, 47 -- the controls the stock medical resources listen for
 
 local screen = NUI.surface('death', { layer = 'system', input = 'none', hides = { 'hud' } })
+-- How far E has been held, 0–1, on its own channel: the page glides it (useFollow), so the bar moves
+-- smoothly whatever steps the medical resource counts in, and the screen's data doesn't churn.
+local holdBar = NUI.stream('death:hold', { rate = 30, precision = 0.01 })
 
 Death = {}
 
@@ -29,19 +32,35 @@ end
 
 -- ───────────────────────────────── keys (mirrors of what the medical resource sees)
 
-local keys = { held = 0, heldSince = nil, gPressed = false }
+local keys = { held = 0, heldSince = nil, full = nil, gPressed = false }
+local current = nil   -- last snapshot (nil = alive)
+-- What the detected medical resource adds to the keys (filled in below): `hold`, the ms E must be held
+-- before it respawns (a number, or a function of when the press started), and `frame`, run every
+-- frame. A resource that only looks at E on its own ticks (qbx_medical) sets `ticks`, and `frame`
+-- returns true on the frame a tick happened.
+local source = {}
 
 --- Called every frame while downed: how long E has been held, and whether G was just pressed.
 --- Medical resources disable most controls while downed but re-enable E/G; check both forms.
 function Death.watchKeys()
+  local ticked = source.frame and source.frame() or false
   local e = IsControlPressed(0, KEY_E) or IsDisabledControlPressed(0, KEY_E)
   if e then
-    keys.heldSince = keys.heldSince or now()
-    keys.held = now() - keys.heldSince
-  else
-    keys.heldSince, keys.held = nil, 0
+    if not keys.heldSince then
+      keys.heldSince = now()
+      keys.full = type(source.hold) == 'function' and source.hold(keys.heldSince) or source.hold
+    end
+  elseif not source.ticks or ticked then
+    -- Released. A ticking resource only sees E at its ticks: a release and re-press between two
+    -- ticks doesn't reset its count, so the hold (and the bar) only ends at a tick that finds E up.
+    keys.heldSince, keys.full = nil, nil
   end
+  keys.held = keys.heldSince and now() - keys.heldSince or 0
   if IsControlJustPressed(0, KEY_G) or IsDisabledControlJustPressed(0, KEY_G) then keys.gPressed = true end
+  -- the bar: nuikit's own hold time in ms against the resource's, never the resource's own counter
+  local respawn = current and not current.treatment and current.respawn
+  local full = respawn and respawn.available and keys.full
+  holdBar:push(full and full > 0 and math.min(1, keys.held / full) or 0)
 end
 
 --- G since the last read (consumed, so a press while it isn't offered doesn't count later).
@@ -55,10 +74,34 @@ end
 --
 -- read() returns nil while alive, otherwise:
 --   { phase = 'laststand'|'dead', seconds, total, estimated,
---     respawn = { key, available, progress, cost, wait },
---     ems = { key, state = 'available'|'requested'|'cooldown', seconds } }
+--     respawn = { key, available, cost, wait },
+--     ems = { key, state = 'available'|'requested'|'cooldown', seconds },
+--     treatment = true while a hospital bed treats the player (the screen hides; still down) }
+-- and, as a second value, the `source` extras above. How far E is held goes out on 'death:hold'.
 
 local sources = {}
+
+-- qbx_ambulancejob's hospital bed (client/hospital.lua). Respawning, or checking in, sends the
+-- client 'qbx_ambulancejob:client:checkedIn' (hospitalName, bedIndex); an EMS putting you in a bed
+-- sends 'qbx_ambulancejob:client:putPlayerInBed' (same arguments). The client then fades out, lays
+-- the ped on the bed with the animation below and, after a respawn, treats for config.aiHealTimer
+-- seconds before the server revives (deathState back to 1). The player stays dead (3) all that time.
+local BED_DICT, BED_ANIM = 'anim@gangops@morgue@table@', 'body_search'
+local BED_GRACE = 10000 -- ms from the event to the animation (fade out, resurrect, move, Wait(500))
+local bed = nil         -- { since, seen }: an event said a bed is coming
+
+--- Is the player lying in a qbx_ambulancejob bed? The events open a short window for the fade;
+--- after that the animation decides, so an interrupted treatment brings the screen back. The
+--- animation alone also counts (a bed reached without the events).
+function Death.inBed()
+  if IsEntityPlayingAnim(PlayerPedId(), BED_DICT, BED_ANIM, 3) then
+    if bed then bed.seen = true end
+    return true
+  end
+  if bed and not bed.seen and now() - bed.since < BED_GRACE then return true end
+  bed = nil
+  return false
+end
 
 -- qbx_medical owns the state (statebag) and the timers (exports); qbx_ambulancejob draws the
 -- prompts and listens for G. Its rules are mirrored exactly (client/setdownedstate.lua).
@@ -70,11 +113,40 @@ sources.qbx = function()
   local helpBelow = Death.configNumber('qbx_ambulancejob', 'config/client.lua', 'laststandTimer') or f.helpBelow
   local cost = amb and (Death.configNumber('qbx_ambulancejob', 'config/shared.lua', 'checkInCost') or f.cost) or nil
   local requested = false
+  local function onBed() bed = { since = now(), seen = false } end
+  RegisterNetEvent('qbx_ambulancejob:client:checkedIn', onBed)
+  RegisterNetEvent('qbx_ambulancejob:client:putPlayerInBed', onBed)
+
+  -- qbx_medical's respawn loop (client/dead.lua) ticks once a second: each tick with E down counts
+  -- RespawnHoldTime 5 → 1, and the tick that finds it at 1 respawns, so the respawn lands on the
+  -- fifth tick after the press: the time to the next tick plus 4 s. The ticks are seen as
+  -- GetDeathTime() changing (the same loop counts it down), so the bar ends on that tick.
+  -- The same loop only looks at E on those ticks: a tick that finds E up resets its count to 5
+  -- (`ticks` below), and a release and re-press between two ticks goes unnoticed.
+  local lastTime, tickAt = nil, nil
+  local extras = {
+    ticks = true,
+    --- true on the frame qbx_medical's loop ticked (and whenever the loop isn't running).
+    frame = function()
+      if LocalPlayer.state['qbx_medical:deathState'] ~= 3 then lastTime, tickAt = nil, nil return true end
+      local t = exports.qbx_medical:GetDeathTime()
+      if t == lastTime then return false end
+      local ticked = lastTime ~= nil
+      if ticked then tickAt = now() end
+      lastTime = t
+      return ticked
+    end,
+    hold = function(pressedAt)
+      local toTick = tickAt and 1000 - (pressedAt - tickAt) % 1000 or 1000
+      return toTick + 4000
+    end,
+  }
 
   return function(ctx)
     local state = LocalPlayer.state['qbx_medical:deathState']
     if state ~= 2 and state ~= 3 then
       requested = false
+      bed = nil
       return nil
     end
     local medical = exports.qbx_medical
@@ -89,14 +161,14 @@ sources.qbx = function()
       }
     end
     local t = medical:GetDeathTime() or 0
-    local hold = medical:GetRespawnHoldTimeDeprecated() or 5 -- 5 → 1 while E is held
     -- qbx_ambulancejob advertises the timer while doctors are on duty, else "hold E"
     local available = not amb or t <= 0 or ctx.doctors == 0
     return {
       phase = 'dead', seconds = t, total = death,
-      respawn = { key = 'E', available = available, progress = math.max(0, math.min(1, (5 - hold) / 4)), cost = cost },
+      respawn = { key = 'E', available = available, cost = cost },
+      treatment = amb and Death.inBed() or nil,
     }
-  end
+  end, extras
 end
 
 -- qb-ambulancejob keeps its timers in locals, so they're mirrored from its config and the moment
@@ -139,9 +211,9 @@ sources.qb = function()
     local available = t <= 0
     return {
       phase = 'dead', seconds = t, total = total, estimated = true,
-      respawn = { key = 'E', available = available, progress = available and math.min(1, keys.held / (f.hold * 1000)) or 0, cost = cost },
+      respawn = { key = 'E', available = available, cost = cost },
     }
-  end
+  end, { hold = f.hold * 1000 }
 end
 
 -- esx_death (current ESX) exports its live state.
@@ -160,10 +232,10 @@ sources.esx_death = function()
     local distress = math.ceil(s.distressRemaining or 0)
     return {
       phase = 'dead', seconds = math.ceil(s.remaining or 0), total = total,
-      respawn = { key = 'E', available = wait <= 0, wait = wait > 0 and wait or nil, progress = wait <= 0 and math.min(1, keys.held / (hold * 1000)) or 0 },
+      respawn = { key = 'E', available = wait <= 0, wait = wait > 0 and wait or nil },
       ems = { key = 'G', state = distress > 0 and 'cooldown' or 'available', seconds = distress > 0 and distress or nil },
     }
-  end
+  end, { hold = hold * 1000 }
 end
 
 -- esx_ambulancejob before esx_death: timers from its config, started by esx:onPlayerDeath.
@@ -184,10 +256,10 @@ sources.esx = function()
     if ctx.g then sent = true end
     return {
       phase = 'dead', seconds = math.max(0, math.ceil(early + bleed - elapsed)), total = early + bleed, estimated = true,
-      respawn = { key = 'E', available = wait <= 0, wait = wait > 0 and wait or nil, progress = wait <= 0 and math.min(1, keys.held / (f.hold * 1000)) or 0 },
+      respawn = { key = 'E', available = wait <= 0, wait = wait > 0 and wait or nil },
       ems = { key = 'G', state = sent and 'requested' or 'available' },
     }
-  end
+  end, { hold = f.hold * 1000 }
 end
 
 -- No medical resource: the game's own death. Nothing to press; the spawn manager decides.
@@ -208,14 +280,14 @@ local function detect()
 end
 
 Death.medical = detect()
-local read = sources[Death.medical]()
+local read, extras = sources[Death.medical]()
+source = extras or {}
 local ctx = { doctors = 0 }
 
 RegisterNetEvent('nuikit_death:doctors', function(n) ctx.doctors = tonumber(n) or 0 end)
 
 -- ───────────────────────────────── screen
 
-local current = nil   -- last snapshot (nil = alive)
 local effect = nil    -- screen effect playing (Config.effects)
 
 -- CEF draws over the game, so CSS can't touch the world behind it; GTA's own post effects can.
@@ -246,22 +318,30 @@ function Death.update()
     if not was and Death.medical == 'qbx' then TriggerServerEvent('nuikit_death:doctors') doctorsAt = now() end
     -- every nuikit surface with blockedBy = { 'dead' } (the pause menu, shops…) now refuses to open
     NUI.state('dead', snap.phase)
-    setEffect(snap.phase)
   elseif not snap and was then
     NUI.state('dead', false)
-    setEffect(nil)
-    keys.gPressed, keys.held, keys.heldSince = false, 0, nil
+    keys.gPressed, keys.held, keys.heldSince, keys.full = false, 0, nil, nil
   elseif snap and Death.medical == 'qbx' and now() - doctorsAt > 60000 then
     -- qbx_ambulancejob refreshes its doctor count once a minute; so do we
     doctorsAt = now()
     TriggerServerEvent('nuikit_death:doctors')
   end
 
-  if snap then
+  -- In a hospital bed the player is still down (the 'dead' state stays), but the treatment is
+  -- on screen: no dead screen, no screen effect, and the HUD is back.
+  local shown = snap and not snap.treatment
+  setEffect(shown and snap.phase or nil)
+  if shown then
     local encoded = json.encode(snap)
     if encoded ~= lastSent then
       lastSent = encoded
-      if screen:isOpen() then screen:update(snap) else screen:open(snap) end
+      if screen:isOpen() then
+        screen:update(snap)
+      else
+        holdBar:reset() -- a fresh page: send the bar's value again
+        holdBar:push(0)
+        screen:open(snap)
+      end
     end
   elseif screen:isOpen() then
     lastSent = nil
