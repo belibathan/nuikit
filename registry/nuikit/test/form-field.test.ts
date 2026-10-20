@@ -16,7 +16,37 @@ import {
   timeToEpoch,
   epochToTime,
   stepTimePart,
+  pickerOpening,
+  yearPageStart,
+  decadePageStart,
+  monthGrid,
 } from "@/components/ui/form-field"
+
+describe("form-field date picker", () => {
+  it("opens on the value, else max in the past (a birth date), else min in the future, else today", () => {
+    const today = "2026-10-20"
+    expect(pickerOpening("1990-06-15", "1900-01-01", "2006-12-31", today)).toEqual({ year: 1990, month: 6 })
+    expect(pickerOpening(null, "1900-01-01", "2006-12-31", today)).toEqual({ year: 2006, month: 12 })
+    expect(pickerOpening(null, "2027-03-01", undefined, today)).toEqual({ year: 2027, month: 3 })
+    expect(pickerOpening(null, undefined, undefined, today)).toEqual({ year: 2026, month: 10 })
+    expect(pickerOpening("1990-13-40", undefined, undefined, today)).toEqual({ year: 2026, month: 10 })
+  })
+
+  it("steps up to a page of 24 years, then 12 decades, as ox_lib's picker does", () => {
+    // Qbox's birth date, opened on December 2006: "1986 – 2009", then "1900 – 2019"
+    expect(yearPageStart(2006)).toBe(1986)
+    expect(decadePageStart(1986)).toBe(1900)
+    expect(decadePageStart(1966)).toBe(1880)
+  })
+
+  it("lays a month out from its first weekday", () => {
+    const oct = monthGrid(2026, 10) // 1 October 2026 is a Thursday
+    expect(oct.slice(0, 4)).toEqual([null, null, null, null])
+    expect(oct[4]).toBe("2026-10-01")
+    expect(oct.filter(Boolean)).toHaveLength(31)
+    expect(monthGrid(2024, 2).filter(Boolean)).toHaveLength(29)
+  })
+})
 
 describe("form-field numbers", () => {
   it("parses text to a number or null, rounding to precision", () => {

@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
-import { CalendarIcon, ChevronDownIcon, ClockIcon, EyeIcon, EyeOffIcon, MinusIcon, PlusIcon, RotateCcwIcon, XIcon } from "lucide-react"
+import { CalendarIcon, ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon, ClockIcon, EyeIcon, EyeOffIcon, MinusIcon, PlusIcon, RotateCcwIcon, XIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -916,6 +916,11 @@ type DateFieldProps = RowProps & {
   max?: string
   /** Which part comes first (default day/month/year). */
   order?: DateOrder
+  /**
+   * A calendar button after the boxes (default on): days, then a page of years, then decades,
+   * the way ox_lib's date row picks a birth year in a few clicks.
+   */
+  picker?: boolean
 }
 
 function DateField(props: DateFieldProps) {
@@ -1092,7 +1097,9 @@ function DateControl({
   min,
   max,
   order = "dmy",
+  picker = true,
 }: Omit<DateFieldProps, keyof RowProps | "defaultValue"> & { value: string | null; onValueChange: (v: string | null) => void }) {
+  const f = useFormField()
   const [parts, setParts] = React.useState<DateParts>(() => partsOf(value))
   const order3 = PARTS[order]
   const complete = parts.day.length > 0 && parts.month.length > 0 && parts.year.length === 4
@@ -1122,7 +1129,258 @@ function DateControl({
       segments={order3.map((part) => ({ key: part, ...PART[part], value: parts[part] }))}
       onSegment={(key, digits) => update({ ...parts, [key]: digits })}
       onStep={(key, dir) => update({ ...parts, [key]: stepDatePart(key as DatePart, parts[key as DatePart], dir, { min, max }) })}
-    />
+    >
+      {picker && <DatePickerButton value={value} min={min} max={max} disabled={f.disabled} onPick={(iso) => update(partsOf(iso))} />}
+    </SegmentedInput>
+  )
+}
+
+/* date picker: days → years → decades (ox_lib's date row, #46) */
+
+type DatePickerView = "days" | "years" | "decades"
+
+/** A page of years: 6 rows of 4. */
+const PICKER_YEARS = 24
+/** A page of decades: 3 rows of 4. */
+const PICKER_DECADES = 12
+
+const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+const WEEKDAYS = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"]
+
+/** "YYYY-MM-DD" of today (local). */
+function todayIso(now: Date = new Date()) {
+  return dateFromParts(now.getDate(), now.getMonth() + 1, String(now.getFullYear()).padStart(4, "0"))!
+}
+
+/**
+ * The month a closed picker opens on: the value; else `max` when it is in the past (a birth date),
+ * `min` when it is in the future, else today.
+ */
+function pickerOpening(value: string | null | undefined, min?: string, max?: string, today: string = todayIso()) {
+  const base = parseDate(value) ? value! : max && parseDate(max) && max < today ? max : min && parseDate(min) && min > today ? min : today
+  const p = parseDate(base)!
+  return { year: Number(p.year), month: Number(p.month) }
+}
+
+/** The first year of the year page that holds `year` (it sits in the page's fifth row, as in ox_lib). */
+function yearPageStart(year: number) {
+  return year - 20
+}
+
+/** The first year of the decade page above a year page starting at `yearPage`. */
+function decadePageStart(yearPage: number) {
+  return Math.floor(yearPage / 10) * 10 - 80
+}
+
+/** Whether a whole year (or the decade from `year`, with `span` 10) lies outside min/max. */
+function yearOutside(year: number, span: number, min?: string, max?: string) {
+  const lo = Number(parseDate(min)?.year ?? -Infinity)
+  const hi = Number(parseDate(max)?.year ?? Infinity)
+  return year + span - 1 < lo || year > hi
+}
+
+/** The days of a month view: leading blanks (null) to the first weekday, then each day's ISO date. */
+function monthGrid(year: number, month: number) {
+  const first = new Date(year, month - 1, 1).getDay()
+  const days = daysInMonth(year, month)
+  const y = String(year).padStart(4, "0")
+  return [
+    ...Array.from({ length: first }, () => null),
+    ...Array.from({ length: days }, (_, i) => dateFromParts(i + 1, month, y)!),
+  ]
+}
+
+/**
+ * The calendar button at the end of a date field. The header steps up like ox_lib's picker
+ * (Mantine's): click the month title for a page of 24 years, click again for 12 decades; picking a
+ * decade, then a year, walks back down to that year's month, and picking a day closes it. Days,
+ * years and decades outside min/max are disabled, and the arrows stop at the range. Every cell is
+ * a button, so Tab and Enter work all the way. No native date input (Chromium 103).
+ */
+function DatePickerButton({
+  value,
+  onPick,
+  min,
+  max,
+  disabled,
+}: {
+  value: string | null
+  onPick: (iso: string) => void
+  min?: string
+  max?: string
+  disabled?: boolean
+}) {
+  const [open, setOpen] = React.useState(false)
+  const [view, setView] = React.useState<DatePickerView>("days")
+  const [cursor, setCursor] = React.useState(() => pickerOpening(value, min, max))
+  const [page, setPage] = React.useState(0)
+  const lo = parseDate(min) ? min! : undefined
+  const hi = parseDate(max) ? max! : undefined
+  const loYear = lo ? Number(lo.slice(0, 4)) : -Infinity
+  const hiYear = hi ? Number(hi.slice(0, 4)) : Infinity
+  const monthKey = (y: number, m: number) => y * 12 + m
+  const selected = parseDate(value) ? value : null
+
+  const show = (next: boolean) => {
+    if (next) {
+      setView("days")
+      setCursor(pickerOpening(value, min, max))
+    }
+    setOpen(next)
+  }
+
+  const up = () => {
+    if (view === "days") {
+      setPage(yearPageStart(cursor.year))
+      setView("years")
+    } else if (view === "years") {
+      setPage(decadePageStart(page))
+      setView("decades")
+    }
+  }
+
+  const step = (dir: -1 | 1) => {
+    if (view === "days") {
+      const k = monthKey(cursor.year, cursor.month - 1) + dir
+      setCursor({ year: Math.floor(k / 12), month: (k % 12) + 1 })
+    } else setPage(page + dir * (view === "years" ? PICKER_YEARS : PICKER_DECADES * 10))
+  }
+
+  const prevOff =
+    view === "days"
+      ? !!lo && monthKey(cursor.year, cursor.month) <= monthKey(loYear, Number(lo.slice(5, 7)))
+      : view === "years"
+        ? page <= loYear
+        : page <= loYear - 9
+  const nextOff =
+    view === "days"
+      ? !!hi && monthKey(cursor.year, cursor.month) >= monthKey(hiYear, Number(hi.slice(5, 7)))
+      : view === "years"
+        ? page + PICKER_YEARS - 1 >= hiYear
+        : page + PICKER_DECADES * 10 - 1 >= hiYear
+
+  const title =
+    view === "days"
+      ? `${MONTHS[cursor.month - 1]} ${cursor.year}`
+      : view === "years"
+        ? `${page} – ${page + PICKER_YEARS - 1}`
+        : `${page} – ${page + PICKER_DECADES * 10 - 1}`
+
+  const pickYear = (year: number) => {
+    // keep the month, inside min/max
+    let next = { year, month: cursor.month }
+    if (lo && monthKey(next.year, next.month) < monthKey(loYear, Number(lo.slice(5, 7)))) next = { year: loYear, month: Number(lo.slice(5, 7)) }
+    if (hi && monthKey(next.year, next.month) > monthKey(hiYear, Number(hi.slice(5, 7)))) next = { year: hiYear, month: Number(hi.slice(5, 7)) }
+    setCursor(next)
+    setView("days")
+  }
+
+  const cell = (key: string | number, label: React.ReactNode, on: boolean, off: boolean, pick: () => void, aria?: string) => (
+    <Button
+      key={key}
+      type="button"
+      variant={on ? "default" : "ghost"}
+      disabled={off}
+      aria-pressed={on || undefined}
+      aria-label={aria}
+      onClick={pick}
+      className="nk-num h-(--cell-size) px-0 font-normal"
+    >
+      {label}
+    </Button>
+  )
+
+  return (
+    <Popover open={open} onOpenChange={show}>
+      <PopoverTrigger asChild>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          disabled={disabled}
+          aria-label="Pick a date"
+          data-slot="form-field-date-picker"
+          className="-mr-2 ml-auto size-7 shrink-0 text-muted-foreground"
+        >
+          <CalendarIcon />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent align="end" className="w-auto p-3" onOpenAutoFocus={(e) => e.preventDefault()}>
+        <div data-slot="form-field-date-picker-content" data-view={view} className="flex flex-col gap-2 [--cell-size:2rem]">
+          <div className="flex w-[calc(var(--cell-size)*7)] items-center gap-1">
+            <Button type="button" variant="ghost" size="icon" className="size-(--cell-size)" disabled={prevOff} onClick={() => step(-1)} aria-label="Previous">
+              <ChevronLeftIcon />
+            </Button>
+            <Button
+              type="button"
+              variant="ghost"
+              data-slot="form-field-date-picker-title"
+              className="h-(--cell-size) flex-1 [font-weight:var(--nk-weight-strong,600)]"
+              disabled={view === "decades"}
+              onClick={up}
+              aria-label={view === "days" ? `${title}: choose a year` : view === "years" ? `${title}: choose a decade` : title}
+            >
+              {title}
+            </Button>
+            <Button type="button" variant="ghost" size="icon" className="size-(--cell-size)" disabled={nextOff} onClick={() => step(1)} aria-label="Next">
+              <ChevronRightIcon />
+            </Button>
+          </div>
+
+          {view === "days" && (
+            <div className="grid w-[calc(var(--cell-size)*7)] grid-cols-7" role="grid" aria-label={title}>
+              {WEEKDAYS.map((d) => (
+                <span key={d} aria-hidden className="nk-caption grid h-(--cell-size) place-items-center">
+                  {d}
+                </span>
+              ))}
+              {monthGrid(cursor.year, cursor.month).map((iso, i) =>
+                iso === null ? (
+                  <span key={`blank-${i}`} aria-hidden />
+                ) : (
+                  cell(
+                    iso,
+                    Number(iso.slice(8)),
+                    iso === selected,
+                    (!!lo && iso < lo) || (!!hi && iso > hi),
+                    () => {
+                      onPick(iso)
+                      setOpen(false)
+                    },
+                    iso
+                  )
+                )
+              )}
+            </div>
+          )}
+
+          {view === "years" && (
+            <div className="grid w-[calc(var(--cell-size)*7)] grid-cols-4 gap-1" role="grid" aria-label="Years">
+              {Array.from({ length: PICKER_YEARS }, (_, i) => page + i).map((y) =>
+                cell(y, y, !!selected && Number(selected.slice(0, 4)) === y, y < loYear || y > hiYear, () => pickYear(y))
+              )}
+            </div>
+          )}
+
+          {view === "decades" && (
+            <div className="grid w-[calc(var(--cell-size)*7)] grid-cols-4 gap-1" role="grid" aria-label="Decades">
+              {Array.from({ length: PICKER_DECADES }, (_, i) => page + i * 10).map((d) =>
+                cell(
+                  d,
+                  `${d}s`,
+                  !!selected && Math.floor(Number(selected.slice(0, 4)) / 10) * 10 === d,
+                  yearOutside(d, 10, lo, hi),
+                  () => {
+                    setPage(d)
+                    setView("years")
+                  }
+                )
+              )}
+            </div>
+          )}
+        </div>
+      </PopoverContent>
+    </Popover>
   )
 }
 
@@ -1509,6 +1767,10 @@ export {
   parseDate,
   formatDate,
   stepDatePart,
+  pickerOpening,
+  yearPageStart,
+  decadePageStart,
+  monthGrid,
   daysInMonth,
   normalizeHex,
   dateToEpoch,
