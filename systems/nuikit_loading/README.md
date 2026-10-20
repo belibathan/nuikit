@@ -21,6 +21,8 @@ The theme reaches the loading screen through the connection handover: `server/ma
 
 How `'auto'` knows: `qbx_core` is running, and its `config/client.lua` doesn't set `characters.useExternalCharacters = true`. With that setting `qbx_core` skips its menu (`client/character.lua` returns at once) and doesn't close the screen, so nuikit closes it, unless you set `true` for your own multicharacter. Qbox has no convar for this, so the setting is read from that file, which `qbx_core` already sends to every client. If the file can't be read, `qbx_core`'s default applies (its own menu).
 
+In `'auto'` the wait has a safety limit. If `qbx_core` hasn't closed the screen after `Config.externalShutdownTimeout` seconds on "Ready" (default 60), for example because its character menu failed, nuikit closes it and prints a yellow line in the F8 console saying `qbx_core` never called `ShutdownLoadingScreenNui()`. An explicit `true` has no limit and waits as long as it takes.
+
 An `externalShutdown = false` kept from an older `config.lua` still means "close right away". Change it to `'auto'` on Qbox.
 
 ## Edit it

@@ -34,11 +34,36 @@ function Loading.external()
   return Loading.qboxCharacters()
 end
 
+local function shutdown()
+  ShutdownLoadingScreen()
+  ShutdownLoadingScreenNui()
+end
+
+--- 'auto' on Qbox only: if qbx_core hasn't closed the screen after Config.externalShutdownTimeout
+--- seconds on "Ready", close it here, so a failed character menu never leaves players on it.
+--- qbx_core closes the game's loading screen together with the page (ShutdownLoadingScreen() then
+--- ShutdownLoadingScreenNui()), so GetIsLoadingScreenActive() turning false means it did.
+function Loading.fallback()
+  local timeout = (tonumber(Config.externalShutdownTimeout) or 60) * 1000
+  local started = GetGameTimer()
+  while GetIsLoadingScreenActive() do
+    if GetGameTimer() - started >= timeout then
+      print(('^3[nuikit_loading] qbx_core never called ShutdownLoadingScreenNui() within %d s; closed the loading screen. Check qbx_core\'s character menu (or set Config.externalShutdown = true to always wait).^7')
+        :format(math.floor(timeout / 1000)))
+      shutdown()
+      return true
+    end
+    Wait(500)
+  end
+  return false
+end
+
 CreateThread(function()
   if Loading.external() then
     SendLoadingScreenMessage(json.encode({ eventName = 'nuikit:ready' }))
+    -- an explicit true waits as long as it takes
+    if Config.externalShutdown ~= true then Loading.fallback() end
     return
   end
-  ShutdownLoadingScreen()
-  ShutdownLoadingScreenNui()
+  shutdown()
 end)

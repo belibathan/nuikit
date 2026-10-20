@@ -16,21 +16,37 @@ const qbxConfig = (external: string) => `return {
     },
 }`;
 
-/** The game around client/main.lua. */
-const natives = ({ states = "", file }: { states?: string; file?: string }) => `
+type Opts = {
+  states?: string;
+  file?: string;
+  override?: string;
+  /** ms after the game loaded when the other resource (qbx_core) closes the screen; null: never */
+  closesAt?: number | null;
+};
+
+/** The game around client/main.lua. Time passes only in Wait(). */
+const natives = ({ states = "", file, closesAt = 5000 }: Opts) => `
     STATES = { ${states} }
     FILE = ${file === undefined ? "nil" : JSON.stringify(file)}
     LOG = {}
+    NOW, ACTIVE, CLOSES_AT = 0, true, ${closesAt === null ? "nil" : closesAt}
     function GetResourceState(r) return STATES[r] or 'missing' end
     function LoadResourceFile(r, f) if r == 'qbx_core' and f == 'config/client.lua' then return FILE end end
     function SendLoadingScreenMessage(m) LOG[#LOG + 1] = 'message ' .. m end
-    function ShutdownLoadingScreen() LOG[#LOG + 1] = 'ShutdownLoadingScreen' end
+    function ShutdownLoadingScreen() ACTIVE = false LOG[#LOG + 1] = 'ShutdownLoadingScreen' end
     function ShutdownLoadingScreenNui() LOG[#LOG + 1] = 'ShutdownLoadingScreenNui' end
+    function GetIsLoadingScreenActive() return ACTIVE end
+    function GetGameTimer() return NOW end
+    function Wait(ms)
+      NOW = NOW + ms
+      if CLOSES_AT and NOW >= CLOSES_AT then ACTIVE = false end -- the other resource closed it (not logged)
+    end
+    function print(s) LOG[#LOG + 1] = 'print ' .. s end
     function CreateThread(fn) THREAD = fn end
 `;
 
 /** Start the resource; `override` is a server owner's edit to config.lua, applied before the game loads. */
-async function start(opts: { states?: string; file?: string; override?: string }) {
+async function start(opts: Opts) {
   client = await createClient();
   const r = await client.start("nuikit_loading", { before: natives(opts), scripts });
   if (opts.override) await r.run(opts.override);
@@ -80,6 +96,33 @@ describe("systems/nuikit_loading", () => {
     const { r, log } = await start({ states: "['qb-core'] = 'started', ['qb-multicharacter'] = 'started'" });
     expect(await r.run(`return Loading.qboxCharacters()`)).toBe(false);
     expect(await log()).toBe(CLOSE);
+  });
+
+  it("auto, Qbox never closes it: closes it after externalShutdownTimeout with one yellow line", async () => {
+    const { r, log } = await start({ states: "qbx_core = 'started'", file: qbxConfig("false"), closesAt: null });
+    expect(await r.run(`return Config.externalShutdownTimeout`)).toBe(60);
+    expect(await r.run(`return NOW`)).toBe(60000);
+    const lines = (await log()).split(" | ");
+    expect(lines[0]).toBe(WAIT);
+    expect(lines[1]).toMatch(/^print \^3\[nuikit_loading\] qbx_core never called ShutdownLoadingScreenNui\(\) within 60 s; .*\^7$/);
+    expect(lines.slice(2).join(" | ")).toBe(CLOSE);
+  });
+
+  it("auto: a timeout from config, and qbx_core closing it first cancels the fallback", async () => {
+    const short = await start({ states: "qbx_core = 'started'", file: qbxConfig("false"), closesAt: null, override: "Config.externalShutdownTimeout = 15" });
+    expect(await short.r.run(`return NOW`)).toBe(15000);
+    expect(await short.log()).toContain("within 15 s");
+    client.close();
+    // qbx_core closes it at 59.5 s: nuikit stops watching, prints nothing, closes nothing
+    const first = await start({ states: "qbx_core = 'started'", file: qbxConfig("false"), closesAt: 59500 });
+    expect(await first.r.run(`return NOW`)).toBe(59500);
+    expect(await first.log()).toBe(WAIT);
+  });
+
+  it("explicit true never times out", async () => {
+    const { r, log } = await start({ states: "qbx_core = 'started'", file: qbxConfig("false"), closesAt: null, override: "Config.externalShutdown = true" });
+    expect(await r.run(`return NOW`)).toBe(0); // returned right after "Ready": no watching at all
+    expect(await log()).toBe(WAIT);
   });
 
   it("an explicit setting wins over detection", async () => {

@@ -38,4 +38,7 @@ Config = {
   -- false: close the loading screen as soon as the game has loaded.
   -- true: keep it up until another resource (e.g. your multicharacter) calls ShutdownLoadingScreenNui().
   externalShutdown = 'auto',
+  -- 'auto' only: if Qbox hasn't closed it after this many seconds on "Ready", close it anyway (with a
+  -- yellow line in the F8 console). true never times out.
+  externalShutdownTimeout = 60,
 }
