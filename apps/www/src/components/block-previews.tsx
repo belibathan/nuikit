@@ -8,6 +8,8 @@ import { deathScreenFixtures } from "@/blocks/death-screen/fixtures";
 import { HudMinimal } from "@/blocks/hud-minimal/hud-minimal";
 import { jobMenuFixtures } from "@/blocks/job-menu/fixtures";
 import { JobMenu } from "@/blocks/job-menu/job-menu";
+import { vehicleShopFixtures } from "@/blocks/vehicle-shop/fixtures";
+import { VehicleShop } from "@/blocks/vehicle-shop/vehicle-shop";
 import { hudMinimalFixtures } from "@/blocks/hud-minimal/fixtures";
 import { LoadingScreen } from "@/blocks/loading-screen/loading-screen";
 import { loadingHandovers, loadStateAt } from "@/blocks/loading-screen/fixtures";
@@ -127,6 +129,17 @@ export const BLOCKS: BlockPreview[] = [
       Actions: () => <JobMenu data={jobMenuFixtures.boss} autoFocus={false} onRequest={async () => ({ ok: true })} />,
       "Off duty": () => <JobMenu data={jobMenuFixtures["off-duty"]} autoFocus={false} onRequest={async () => ({ ok: true })} />,
       Refused: () => <JobMenu data={jobMenuFixtures.boss} defaultTab="staff" autoFocus={false} onRequest={async () => ({ ok: false, error: "Only the boss can do that." })} />,
+    },
+  },
+  {
+    name: "vehicle-shop",
+    title: "Vehicle shop",
+    description: "A showroom: vehicles by category, stats, paint from swatches or any hex, cash or bank, a test drive, and buy with a confirm. The car stands behind the panels; the server spawns it and refunds if it can't be delivered.",
+    states: {
+      Showroom: () => <VehicleShop data={vehicleShopFixtures.pdm} autoFocus={false} onBuy={async () => ({ ok: true })} onTestDrive={async () => ({ ok: true })} />,
+      Confirm: () => <VehicleShop data={vehicleShopFixtures.pdm} defaultSelected="banshee" confirming autoFocus={false} onBuy={async () => ({ ok: true })} />,
+      Locked: () => <VehicleShop data={vehicleShopFixtures.pdm} defaultSelected="policeb" autoFocus={false} />,
+      "Not enough": () => <VehicleShop data={vehicleShopFixtures.budget} defaultSelected="banshee" autoFocus={false} />,
     },
   },
 ];

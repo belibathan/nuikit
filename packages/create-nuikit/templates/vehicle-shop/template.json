@@ -1,0 +1,9 @@
+{
+  "block": "vehicle-shop",
+  "title": "Vehicle shop",
+  "description": "A showroom: categories, stats, paint, test drives and buying with a confirm; the server spawns and checks everything (needs OneSync)",
+  "next": [
+    "walk into Premium Deluxe Motorsport and press E (or /{{name}})",
+    "fill in Config.money and Config.onBought for your framework; needs OneSync"
+  ]
+}
