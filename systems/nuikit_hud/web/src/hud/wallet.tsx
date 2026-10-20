@@ -26,7 +26,7 @@ function useDelta(value: number | undefined) {
   return fresh;
 }
 
-function Money({ icon, label, value, mode, size }: { icon: ReactNode; label: string; value: number | undefined; mode: WalletMode; size: "lg" | "sm" }) {
+function Money({ icon, label, value, mode, size }: { icon: ReactNode; label: string; value: number | undefined; mode: WalletMode; size: "lg" | "md" | "sm" }) {
   const delta = useDelta(value);
   if (value === undefined || mode === false) return null;
   const shown = mode === "always" || !!delta;
@@ -44,13 +44,14 @@ function Money({ icon, label, value, mode, size }: { icon: ReactNode; label: str
   );
 }
 
-export function Wallet({ player, settings }: { player: NuiPlayer; settings: HudSettings }) {
+/** Cash, bank and job. `inline`: placed by its parent (compact: under the map), else top right. */
+export function Wallet({ player, settings, inline = false, compact = false }: { player: NuiPlayer; settings: HudSettings; inline?: boolean; compact?: boolean }) {
   const w = settings.wallet ?? {};
   if (!player.loaded) return null;
   const job = w.job !== false ? player.job : undefined;
   return (
-    <div data-slot="hud-wallet" className="hud-wallet hud-anchor-tr">
-      <Money icon={<WalletIcon />} label="Cash" value={player.cash} mode={w.cash === undefined ? "always" : w.cash} size="lg" />
+    <div data-slot="hud-wallet" data-compact={compact || undefined} className={inline ? "hud-wallet" : "hud-wallet hud-anchor-tr"}>
+      <Money icon={<WalletIcon />} label="Cash" value={player.cash} mode={w.cash === undefined ? "always" : w.cash} size={compact ? "md" : "lg"} />
       <Money icon={<LandmarkIcon />} label="Bank" value={player.bank} mode={w.bank === undefined ? "change" : w.bank} size="sm" />
       {job && (
         <div data-slot="hud-job" className="hud-job">

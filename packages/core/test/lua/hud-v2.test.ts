@@ -92,7 +92,7 @@ describe("nuikit_hud: the HUD area (client/layout.lua)", () => {
       function GetActiveScreenResolution() return SCREEN[1], SCREEN[2] end
       function GetSafeZoneSize() return 0.9 end
     `);
-    await hud.run(`Config.layout.source = 'stage' Layout.update() Layout.update()`);
+    await hud.run(`Config.area = 'stage' Layout.update() Layout.update()`);
     const sent = hud.messages.filter((m) => m.action === "hud:layout").map((m) => m.data);
     expect(sent).toHaveLength(1);
     expect(sent[0]).toMatchObject({ l: 0.05, r: 0.05, t: 0.05, b: 0.05, source: "stage" });
@@ -238,5 +238,46 @@ describe("nuikit_hud: the location (client/location.lua)", () => {
     await hud.run(`Location.tick('kmh', false) Location.tick('kmh', false)`);
     expect(sent().at(-1)).toEqual({ visible: false });
     expect(sent()).toHaveLength(3);
+  });
+});
+
+describe("nuikit_hud: the waypoint bearing and the weapon (client/location.lua, client/weapon.lua)", () => {
+  it("gives the waypoint's compass bearing in 5 degree steps", async () => {
+    const hud = await start();
+    expect(await hud.run(`return Location.bearing(0, 100)`)).toBe(0); // north is +y
+    expect(await hud.run(`return Location.bearing(100, 0)`)).toBe(90); // east is +x
+    expect(await hud.run(`return Location.bearing(-100, -100)`)).toBe(225);
+    expect(await hud.run(`return Location.bearing(-1, 1000)`)).toBe(0); // 359.9 rounds to north
+    await hud.run(`WAYPOINT = { x = 100.0, y = 100.0, z = 0.0 } Location.tick('kmh', true)`);
+    const loc = hud.messages.filter((m) => m.action === "hud:location").at(-1)!.data;
+    expect(loc).toMatchObject({ bearing: 45, waypoint: 140 });
+  });
+
+  it("sends the weapon's clip and reserve while armed, nothing for melee, only on change", async () => {
+    client = await createClient();
+    const hud = await client.start("nuikit_hud", {
+      before: natives + `
+        WEAPON, GROUP, TOTAL, CLIP = 0, 0, 0, 0
+        function GetSelectedPedWeapon() return WEAPON end
+        function GetWeapontypeGroup() return GROUP end
+        function GetAmmoInPedWeapon() return TOTAL end
+        function GetAmmoInClip() return true, CLIP end
+      `,
+      scripts: [...scripts, HUD + "client/weapon.lua"],
+    });
+    const sent = () => hud.messages.filter((m) => m.action === "hud:weapon").map((m) => m.data);
+    expect(await hud.run(`return Weapon.kind(416676503)`)).toBe("pistol");
+    expect(await hud.run(`return Weapon.kind(-957766203)`)).toBe("smg"); // signed, as the native returns it
+    expect(await hud.run(`return Weapon.kind(-728555052)`)).toBe(null); // melee
+    await hud.run(`Weapon.tick()`);
+    expect(sent()).toEqual([false]);
+    await hud.run(`WEAPON, GROUP, TOTAL, CLIP = 453432689, 416676503, 60, 12 Weapon.tick() Weapon.tick()`);
+    expect(sent()).toEqual([false, { clip: 12, reserve: 48, kind: "pistol" }]);
+    await hud.run(`TOTAL, CLIP = 59, 11 Weapon.tick()`);
+    expect(sent().at(-1)).toEqual({ clip: 11, reserve: 48, kind: "pistol" });
+    await hud.run(`GROUP, TOTAL = 1548507267, 3 Weapon.tick()`);
+    expect(sent().at(-1)).toEqual({ clip: 3, kind: "thrown" });
+    await hud.run(`GROUP = -728555052 Weapon.tick()`);
+    expect(sent().at(-1)).toBe(false);
   });
 });

@@ -6,9 +6,9 @@ import { DropletIcon, FlameIcon, HeartPulseIcon, MicIcon, RadioIcon, ShieldIcon,
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import type { HudSettings, VitalMode } from "../nui";
 
-type Tone = "health" | "armor" | "hunger" | "thirst" | "stress";
+export type Tone = "health" | "armor" | "hunger" | "thirst" | "stress";
 
-const ICONS: Record<Tone, ReactNode> = {
+export const ICONS: Record<Tone, ReactNode> = {
   health: <HeartPulseIcon />,
   armor: <ShieldIcon />,
   hunger: <UtensilsIcon />,
@@ -16,7 +16,7 @@ const ICONS: Record<Tone, ReactNode> = {
   stress: <FlameIcon />,
 };
 
-const LABELS: Record<Tone, string> = { health: "Health", armor: "Armor", hunger: "Hunger", thirst: "Thirst", stress: "Stress" };
+export const LABELS: Record<Tone, string> = { health: "Health", armor: "Armor", hunger: "Hunger", thirst: "Thirst", stress: "Stress" };
 
 /** Whether a vital is past its threshold: low for most, high for stress. */
 export function vitalCritical(tone: Tone, value: number, low = 25, high = 60) {
@@ -27,7 +27,7 @@ export function vitalCritical(tone: Tone, value: number, low = 25, high = 60) {
  * Shown now? 'always' yes; false never; 'auto' while it changed in the last `linger` ms, or while it's
  * past its threshold. Everything shows for `linger` when the HUD first appears.
  */
-function useShown(value: unknown, mode: VitalMode, critical: boolean, linger: number) {
+export function useShown(value: unknown, mode: VitalMode, critical: boolean, linger: number) {
   const [until, setUntil] = useState(() => Date.now() + linger);
   const first = useRef(true);
   const [, tick] = useState(0);

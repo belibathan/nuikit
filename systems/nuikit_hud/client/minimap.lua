@@ -27,6 +27,28 @@ local lastKey = ''
 
 local function clamp(v, a, b) return math.max(a, math.min(b, v)) end
 
+-- What each layout preset puts on the map; Config.minimap overrides any of them.
+local PRESETS = {
+  compact = { shape = 'circle', size = 12.0, band = 0.125, anchor = 'top-right', headroom = 1.75 },
+  classic = { shape = 'square', size = 15.0, band = 0.375, anchor = 'bottom-left', headroom = 0 },
+}
+
+--- The map's shape, size, band, anchor and headroom (rem above a top-anchored map for the heading),
+--- from the preset with Config.minimap on top. Read on every call, so a test or a reload can change it.
+function Minimap.options()
+  local preset = Layout.preset()
+  local p = PRESETS[preset]
+  local o = { preset = preset }
+  for k, v in pairs(p) do o[k] = v end
+  for _, k in ipairs({ 'shape', 'size', 'band', 'anchor' }) do
+    if cfg[k] ~= nil then o[k] = cfg[k] end
+  end
+  o.shape = o.shape == 'circle' and 'circle' or 'square'
+  -- the heading reads above the ring only on a round compact map
+  if o.shape ~= 'circle' or cfg.compass == false then o.headroom = 0 end
+  return o
+end
+
 local MASK_TXD = 'nuikit_minimap'
 local tune = {}            -- debug overrides (Config.debug only): raw mask placement
 
@@ -77,18 +99,19 @@ local function rem(height) return clamp(height * 0.014815, 12.0, 32.0) end
 --- the HUD area (Layout.measure); without it, the 0.5.0 rule (Layout.stage).
 function Minimap.layout(width, height, safezone, area)
   area = area or Layout.stage(width, height, safezone)
+  local o = Minimap.options()
   local r = rem(height)
-  local size = (cfg.size or 15.0) * r
-  local band = (cfg.band or 0.375) * r
+  local size = o.size * r
+  local band = o.band * r
   -- --nk-edge (1.5rem) inside GTA's safe area, like every other anchor of the HUD
   local edge = 1.5 * r
-  local anchor = cfg.anchor or 'bottom-left'
+  local anchor = o.anchor
   local x = anchor:find('right') and (area.right - edge - size) or (area.left + edge)
-  local y = anchor:find('top') and (area.top + edge) or (area.bottom - edge - size)
+  local y = anchor:find('top') and (area.top + edge + o.headroom * r) or (area.bottom - edge - size)
   local frame = { x = x, y = y, w = size, h = size }
   -- the radar sits under the frame's hole, with its edge half a pixel into the band so the
   -- game's rounding never leaves a gap
-  local inset = (cfg.shape == 'circle') and band * 0.5 or band - 0.5
+  local inset = (o.shape == 'circle') and band * 0.5 or band - 0.5
   local radar = { x = x + inset, y = y + inset, w = size - 2.0 * inset, h = size - 2.0 * inset }
   return frame, band, radar
 end
@@ -118,9 +141,10 @@ function Minimap.apply()
   local safezone = GetSafeZoneSize()
   local area = Layout.measure(width, height, safezone)
   local frame, band, radar = Minimap.layout(width, height, safezone, area)
+  local o = Minimap.options()
   -- the texture shapes the radar; the round clip type keeps edge blips on the circle
-  SetMinimapClipType(tune.clip or (cfg.shape == 'circle' and 1 or 0))
-  useMask(tune.texture or cfg.shape)
+  SetMinimapClipType(tune.clip or (o.shape == 'circle' and 1 or 0))
+  useMask(tune.texture or o.shape)
   local x, y, w, h, mx, my, mw, mh = place(radar, width, height, safezone, area)
   if cfg.compass ~= false then SetBlipAlpha(GetNorthRadarBlip(), 0) end
   -- GTA only re-reads component positions when the radar changes mode: flick the big map. Make
@@ -133,14 +157,14 @@ function Minimap.apply()
   if not scaleform then scaleform = RequestScaleformMovie('minimap') end
   placed = {
     x = frame.x / width, y = frame.y / height, w = frame.w / width, h = frame.h / height,
-    band = band / height, shape = cfg.shape == 'circle' and 'circle' or 'square', framed = true,
+    band = band / height, shape = o.shape, framed = true, preset = o.preset,
   }
   NUI.send('hud:minimap:frame', placed)
   if Config.debug then
     print(('[nuikit_hud] minimap: %dx%d safezone %.2f, frame %.0f,%.0f %.0fpx, radar %.0f,%.0f %.0fx%.0fpx'):format(
       width, height, safezone, frame.x, frame.y, frame.w, radar.x, radar.y, radar.w, radar.h))
     print(('[nuikit_hud] minimap: radar %.4f %.4f %.4f %.4f, mask %.4f %.4f %.4f %.4f (%s)'):format(
-      x, y, w, h, mx, my, mw, mh, cfg.shape or 'square'))
+      x, y, w, h, mx, my, mw, mh, o.shape))
   end
 end
 
@@ -195,7 +219,7 @@ function Minimap.applyStock()
   local width, height = area.width, area.height
   placed = {
     x = box.x / width, y = box.y / height, w = box.w / width, h = box.h / height,
-    band = 0, shape = 'square', framed = false,
+    band = 0, shape = 'square', framed = false, preset = Layout.preset(),
   }
   NUI.send('hud:minimap:frame', placed)
 end

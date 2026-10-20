@@ -20,14 +20,21 @@ function Location.quantize(meters, units)
   return math.floor(math.floor(meters / 160.9344 + 0.5) * 160.9344 + 0.5)
 end
 
---- Distance (m, 2D) to the waypoint, or nil when there is none.
+--- The compass bearing (0 north, 90 east) from dx, dy, in 5° steps so turning on the spot doesn't
+--- re-send: the page turns the waypoint's arrow by the live camera heading between messages.
+function Location.bearing(dx, dy)
+  local deg = math.deg(math.atan(dx, dy)) % 360.0
+  return math.floor(deg / 5 + 0.5) * 5 % 360
+end
+
+--- Distance (m, 2D) to the waypoint and its bearing, or nil when there is none.
 local function waypoint(c)
   if not IsWaypointActive() then return nil end
   local blip = GetFirstBlipInfoId(8)
   if not blip or blip == 0 then return nil end
   local w = GetBlipInfoIdCoord(blip)
   local dx, dy = w.x - c.x, w.y - c.y
-  return math.sqrt(dx * dx + dy * dy)
+  return math.sqrt(dx * dx + dy * dy), Location.bearing(dx, dy)
 end
 
 local last = nil
@@ -40,19 +47,22 @@ function Location.tick(units, shown)
   if shown then
     local c = GetEntityCoords(PlayerPedId())
     local s1, s2 = GetStreetNameAtCoord(c.x, c.y, c.z)
+    local dist, bearing
+    if cfg.waypoint ~= false then dist, bearing = waypoint(c) end
     s = {
       visible = true,
       street = GetStreetNameFromHashKey(s1),
       crossing = (cfg.crossing ~= false and s2 and s2 ~= 0) and GetStreetNameFromHashKey(s2) or nil,
       zone = cfg.zone ~= false and GetLabelText(GetNameOfZone(c.x, c.y, c.z)) or nil,
       postal = Adapters.postal(),
-      waypoint = cfg.waypoint ~= false and Location.quantize(waypoint(c), units) or nil,
+      waypoint = Location.quantize(dist, units),
+      bearing = dist and bearing or nil,
     }
     if s.crossing == '' or s.crossing == s.street then s.crossing = nil end
   else
     s = { visible = false }
   end
-  local key = ('%s|%s|%s|%s|%s|%s'):format(tostring(s.visible), s.street or '', s.crossing or '', s.zone or '', s.postal or '', s.waypoint or '')
+  local key = ('%s|%s|%s|%s|%s|%s|%s'):format(tostring(s.visible), s.street or '', s.crossing or '', s.zone or '', s.postal or '', s.waypoint or '', s.bearing or '')
   if key ~= last then
     last = key
     NUI.send('hud:location', s)

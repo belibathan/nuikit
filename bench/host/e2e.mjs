@@ -132,7 +132,7 @@ const host = await startResource(
 const hud = await startResource(
   "nuikit_hud",
   // As shipped: the HUD imports the runtime (shared_script '@nuikit/init.lua'); the bridge loads on first nk.player use.
-  { runtime: "import", before: `THEME = [[${THEME}]]` + hudNatives, scripts: ["config.lua", "client/adapters.lua", "client/location.lua", "client/vehicle.lua", "client/main.lua"].map((f) => HUD + f), metadata: { nuikit_ui: ["web/dist/module.js"] } },
+  { runtime: "import", before: `THEME = [[${THEME}]]` + hudNatives, scripts: ["config.lua", "client/layout.lua", "client/adapters.lua", "client/location.lua", "client/vehicle.lua", "client/main.lua"].map((f) => HUD + f), metadata: { nuikit_ui: ["web/dist/module.js"] } },
   "https://cfx-nui-nuikit_hud/web/dist/index.html",
 );
 const hostFrame = () => page.frames().find((f) => f.url().startsWith("https://cfx-nui-nuikit/"));

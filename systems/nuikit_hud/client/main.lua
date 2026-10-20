@@ -23,7 +23,10 @@ local units = pickUnits()
 --- What the page needs from config.lua (the look comes from the theme).
 local function settings()
   local v, w = Config.vehicle or {}, Config.wallet or {}
+  local preset = Layout.preset()
   return {
+    layout = preset,
+    ammo = Config.ammo ~= false,
     units = units,
     needs = Config.needs ~= false,
     voice = Config.voice ~= false,
@@ -36,7 +39,12 @@ local function settings()
       seatbelt = v.seatbelt == nil and 'auto' or v.seatbelt, cruise = v.cruise == nil and 'auto' or v.cruise,
     },
     location = Config.location and Config.location.enabled ~= false and (Config.minimap or {}).location ~= false,
-    compass = { enabled = (Config.compass or {}).enabled ~= false, onFoot = (Config.compass or {}).onFoot == true },
+    -- compact has no heading strip: the heading is on the map ring
+    compass = {
+      enabled = preset == 'classic' and (Config.compass or {}).enabled ~= false,
+      onFoot = (Config.compass or {}).onFoot == true,
+      ring = (Config.minimap or {}).compass ~= false,
+    },
     frame = (Config.minimap or {}).enabled ~= false,
   }
 end
@@ -164,8 +172,9 @@ CreateThread(function()
     -- the heading streams while anything shows it: the frame's N, the strip, the location badge
     Minimap.compassOn = not isPaused and (
       (radarOn and mapCfg.enabled ~= false and mapCfg.compass ~= false)
-      or (compassCfg.enabled ~= false and (inVehicle or compassCfg.onFoot == true))
-      or locationOn)
+      or (compassCfg.enabled ~= false and (inVehicle or compassCfg.onFoot == true) and Layout.preset() == 'classic')
+      -- classic: the location strip's heading badge (compact reads the heading on the ring only)
+      or (locationOn and Layout.preset() == 'classic'))
     Location.tick(units, locationOn)
     Wait(inVehicle and 250 or 500)
   end
@@ -176,6 +185,7 @@ end)
 NUI.on('hud:ready', function()
   Location.resend()
   Minimap.resend()
+  if Weapon then Weapon.resend() end
   if current ~= 0 then
     resetLive()
     readVehicle(true)

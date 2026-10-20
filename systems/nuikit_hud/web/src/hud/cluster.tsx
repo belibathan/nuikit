@@ -9,6 +9,7 @@ import type { HudSettings, HudVehicle } from "../nui";
 import { BodyIcon, CruiseIcon, EngineIcon, HandbrakeIcon, HighBeamIcon, LowBeamIcon, SeatbeltIcon } from "./icons";
 import type { GaugeStyle, HudLook } from "./look";
 import { Aircraft } from "./aircraft";
+import { CompactGauge, TelltaleColumn } from "./compact";
 import { cardinal, setText, UNIT_LABEL } from "./util";
 import { HudChip } from "@/components/ui/hud-chip";
 import { cn } from "@/lib/utils";
@@ -35,7 +36,7 @@ const clamp01 = (v: number) => Math.max(0, Math.min(1, Number.isFinite(v) ? v : 
 // ───────────────────────────────── shared pieces
 
 /** Turn-signal arrows: blink while on (a live thing, so it may animate; off with motion off). */
-function Signal({ side, on }: { side: "left" | "right"; on: boolean }) {
+export function Signal({ side, on }: { side: "left" | "right"; on: boolean }) {
   return (
     <span data-slot="hud-signal" data-side={side} data-on={on || undefined} className="hud-signal" aria-label={on ? `Indicator ${side}` : undefined}>
       {side === "left" ? <ArrowBigLeftIcon /> : <ArrowBigRightIcon />}
@@ -76,7 +77,7 @@ function Fuel({ value }: { value: number }) {
   );
 }
 
-interface Tell {
+export interface Tell {
   key: string;
   icon: ReactNode;
   on: boolean;
@@ -87,7 +88,7 @@ interface Tell {
 }
 
 /** The dashboard's telltales: unlit ones stay faintly in place, so the row never jumps. */
-function telltales(v: HudVehicle, s: NonNullable<HudSettings["vehicle"]>): Tell[] {
+export function telltales(v: HudVehicle, s: NonNullable<HudSettings["vehicle"]>): Tell[] {
   const out: Tell[] = [];
   if (s.lights !== false && v.lights !== undefined) {
     out.push(
@@ -413,8 +414,11 @@ interface GaugeProps {
 
 const GAUGES: Record<GaugeStyle, (p: GaugeProps) => ReactNode> = { arc: ArcGauge, bar: BarGauge, digital: DigitalGauge };
 
-/** Bottom right while in a vehicle. */
-export function Cluster({ vehicle, settings, look }: { vehicle: HudVehicle; settings: HudSettings; look: HudLook }) {
+/**
+ * Bottom right while in a vehicle. `compact` (the default layout) draws the small segmented gauge and
+ * a telltale column; `classic` the large arc, bar or digital gauge from the identity.
+ */
+export function Cluster({ vehicle, settings, look, compact = false, anchored = true }: { vehicle: HudVehicle; settings: HudSettings; look: HudLook; compact?: boolean; anchored?: boolean }) {
   const s = settings.vehicle ?? {};
   const style: GaugeStyle = s.gauge && s.gauge !== "theme" ? s.gauge : look.gauge;
   const paint = useRef<Painter | null>(null);
@@ -435,12 +439,20 @@ export function Cluster({ vehicle, settings, look }: { vehicle: HudVehicle; sett
     p.speed(followed("hud:vehicle:speed") ?? start.speed);
     p.rpm(followed("hud:vehicle:rpm") ?? start.rpm);
     p.heading?.(followed("hud:vehicle:heading") ?? start.heading);
-  }, [style, start]);
+  }, [style, start, compact]);
 
-  if (air) return <Aircraft vehicle={vehicle} />;
+  if (air) return <Aircraft vehicle={vehicle} anchored={anchored} />;
+  if (compact) {
+    return (
+      <div data-slot="hud-cluster" data-kind={vehicle.kind} data-layout="compact" className={cn("hud-c-cluster", anchored && "hud-anchor-br")}>
+        <CompactGauge v={shown} look={look} paint={paint} settings={s} center={boat ? "heading" : "gear"} />
+        <TelltaleColumn items={telltales(vehicle, s)} />
+      </div>
+    );
+  }
   const Gauge = GAUGES[style];
   return (
-    <div data-slot="hud-cluster" data-kind={vehicle.kind} className={cn("hud-cluster hud-anchor-br")}>
+    <div data-slot="hud-cluster" data-kind={vehicle.kind} className={cn("hud-cluster", anchored && "hud-anchor-br")}>
       <Gauge v={shown} look={look} paint={paint} settings={s} center={boat ? "heading" : "gear"} />
       <Telltales items={telltales(vehicle, s)} />
       <Warnings v={vehicle} s={s} />

@@ -7,11 +7,14 @@
 // &scene=<url|name> the background (an image URL, or day / dusk / night)
 // &heading=<deg>    the camera's bearing
 // &rule=stage       the 0.5.0 layout rule (16:9 in the middle) instead of the game's edges
-// &shape=circle     round minimap
+// &shape=circle     round minimap (classic)
+// &layout=classic   the 0.6 layout (default: compact)
+// &weapon=<kind>|none  the weapon in hand: pistol (default on foot), smg, rifle, shotgun, sniper, heavy, thrown
+// &radar=off        hide the radar (compact on foot with Config.radar = 'vehicle')
 import { applyTheme, emit, openSurface } from "nuikit-core";
 import { NuiDevtools, defineMocks } from "nuikit-core/devtools";
 import { useEffect, useState } from "react";
-import type { HudLayout, HudLocation, HudSettings, HudVehicle, MinimapFrame } from "./nui";
+import type { HudLayout, HudLocation, HudPreset, HudSettings, HudVehicle, HudWeapon, MinimapFrame } from "./nui";
 
 const q = new URLSearchParams(location.search);
 
@@ -83,18 +86,35 @@ function layoutFor(): HudLayout {
   return { l: side, r: side, t: 0, b: 0, aspect, source: stage ? "stage" : "game" };
 }
 
-/** What client/minimap.lua computes (Minimap.layout): bottom-left, 15rem, 0.375rem band, 1.5rem in. */
-function frameFor(layout: HudLayout, shape: MinimapFrame["shape"]): MinimapFrame {
+/** What client/minimap.lua computes (Minimap.layout). Classic: bottom-left, 15rem, 0.375rem band;
+ * compact: a 12rem circle top-right with 1.75rem headroom for the heading; 1.5rem in from the edges. */
+function frameFor(layout: HudLayout, shape: MinimapFrame["shape"], preset: HudPreset): MinimapFrame {
   const w = innerWidth;
   const h = innerHeight;
   const rem = Math.min(32, Math.max(12, h * 0.014815));
+  if (preset === "compact") {
+    const size = 12 * rem;
+    const x = w - layout.r * w - 1.5 * rem - size;
+    const y = layout.t * h + 1.5 * rem + 1.75 * rem;
+    return { x: x / w, y: y / h, w: size / w, h: size / h, band: (0.125 * rem) / h, shape: "circle", framed: true, preset };
+  }
   const size = 15 * rem;
   const x = layout.l * w + 1.5 * rem;
   const y = h - layout.b * h - 1.5 * rem - size;
-  return { x: x / w, y: y / h, w: size / w, h: size / h, band: (0.375 * rem) / h, shape, framed: true };
+  return { x: x / w, y: y / h, w: size / w, h: size / h, band: (0.375 * rem) / h, shape, framed: true, preset };
 }
 
-const place: HudLocation = { visible: true, street: "Elgin Ave", crossing: "Vespucci Blvd", zone: "Pillbox Hill", postal: "7023", waypoint: 1850 };
+const WEAPONS: Record<string, HudWeapon> = {
+  pistol: { kind: "pistol", clip: 12, reserve: 48 },
+  smg: { kind: "smg", clip: 24, reserve: 120 },
+  rifle: { kind: "rifle", clip: 30, reserve: 90 },
+  shotgun: { kind: "shotgun", clip: 0, reserve: 16 },
+  sniper: { kind: "sniper", clip: 5, reserve: 20 },
+  heavy: { kind: "heavy", clip: 1, reserve: 4 },
+  thrown: { kind: "thrown", clip: 3 },
+};
+
+const place: HudLocation = { visible: true, street: "Elgin Ave", crossing: "Vespucci Blvd", zone: "Pillbox Hill", postal: "7023", waypoint: 1850, bearing: 300 };
 
 // Identity tokens from design v2 (another branch ships them); here only to show the HUD reads them.
 const IDENTITIES: Record<string, Record<string, string>> = {
@@ -166,31 +186,38 @@ export default function Dev() {
     if (theme) applyTheme(theme);
     for (const [k, v] of Object.entries(IDENTITIES[q.get("identity") ?? ""] ?? {})) document.documentElement.style.setProperty(k, v);
 
+    const preset: HudPreset = q.get("layout") === "classic" ? "classic" : "compact";
     const settings: HudSettings = {
+      layout: preset,
+      ammo: true,
       units: "mph",
       needs: true,
       vehicle: { gauge: (q.get("gauge") as "arc" | "bar" | "digital" | null) ?? "theme", seatbelt: "auto", cruise: "auto" },
-      compass: { enabled: true, onFoot: false },
+      compass: { enabled: preset === "classic", onFoot: false, ring: true },
     };
     emit("nuikit:player", f.player as never);
     // client/layout.lua and minimap.lua do this in game
     const layout = layoutFor();
     emit("hud:layout", layout);
     const v = f.vehicle;
-    const mf = frameFor(layout, q.get("shape") === "circle" ? "circle" : "square");
+    const mf = frameFor(layout, q.get("shape") === "circle" ? "circle" : "square", preset);
     emit("hud:minimap:frame", mf);
     const heading = Number(q.get("heading") ?? 32);
     emit("hud:minimap:heading", heading);
-    emit("hud:minimap", { visible: !!v, heading });
+    // compact shows the map on foot too (Config.radar = 'always'); &radar=off hides it
+    const radar = q.get("radar") !== "off" && (!!v || preset === "compact");
+    emit("hud:minimap", { visible: radar, heading });
     emit("hud:location", place);
+    const weapon = q.get("weapon") ?? (v ? "none" : "pistol");
+    emit("hud:weapon", WEAPONS[weapon] ?? false);
     if (v) {
       emit("hud:vehicle", v);
       emit("hud:vehicle:speed", v.speed);
       if (v.rpm !== undefined) emit("hud:vehicle:rpm", v.rpm);
       if (v.heading !== undefined) emit("hud:vehicle:heading", v.heading);
       if (v.altitude !== undefined) emit("hud:vehicle:altitude", v.altitude);
-      setFrame(mf);
     }
+    if (radar) setFrame(mf);
     openSurface("hud", settings);
     if (f.changes) {
       const t = setTimeout(() => emit("nuikit:player", f.changes as never), 400);

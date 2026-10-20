@@ -74,7 +74,7 @@ const threads = `
     end
   end
 `;
-const HUD_SCRIPTS =["config.lua", "client/adapters.lua", "client/location.lua", "client/vehicle.lua", "client/main.lua"].map((f) => HUD + f);
+const HUD_SCRIPTS = ["config.lua", "client/layout.lua", "client/adapters.lua", "client/location.lua", "client/vehicle.lua", "client/main.lua"].map((f) => HUD + f);
 HUD_SCRIPTS.splice(1, 0, "bridge.lua");
 
 describe("systems/nuikit_hud", () => {

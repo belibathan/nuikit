@@ -12,7 +12,7 @@ const ROSE_LABEL: Record<number, string> = { 0: "N", 90: "E", 180: "S", 270: "W"
 
 const thousands = new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 });
 
-export function Aircraft({ vehicle }: { vehicle: HudVehicle }) {
+export function Aircraft({ vehicle, anchored = true }: { vehicle: HudVehicle; anchored?: boolean }) {
   const [start] = useState(() => ({ speed: vehicle.speed, heading: vehicle.heading ?? 0, altitude: vehicle.altitude ?? 0 }));
   const speed = useRef<HTMLSpanElement>(null);
   const alt = useRef<HTMLSpanElement>(null);
@@ -33,7 +33,7 @@ export function Aircraft({ vehicle }: { vehicle: HudVehicle }) {
   const gear = vehicle.landingGear;
   const lights = vehicle.lights;
   return (
-    <div data-slot="hud-cluster" data-kind={vehicle.kind} className="hud-cluster hud-anchor-br">
+    <div data-slot="hud-cluster" data-kind={vehicle.kind} className={anchored ? "hud-cluster hud-anchor-br" : "hud-cluster"}>
       <div data-slot="hud-gauge" data-style="air" data-off={!vehicle.engineOn || undefined} className="hud-gauge hud-air">
         <span className="hud-plate hud-plate-rect" aria-hidden />
         <div className="hud-air-col">

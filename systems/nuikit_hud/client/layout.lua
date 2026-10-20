@@ -13,6 +13,21 @@
 
 Layout = {}
 
+--- The layout preset: 'compact' (default) or 'classic'. A 0.6 config (`layout = { source = … }`) keeps
+--- the classic layout it was written for.
+function Layout.preset()
+  local l = Config.layout
+  if l == 'classic' or (type(l) == 'table' and l.preset ~= 'compact') then return 'classic' end
+  return 'compact'
+end
+
+--- 'game' or 'stage' (Config.area; 0.6 configs: Config.layout.source).
+function Layout.source()
+  local l = Config.layout
+  if type(l) == 'table' and l.source then return l.source end
+  return Config.area == 'stage' and 'stage' or 'game'
+end
+
 local function clamp(v, a, b) return math.max(a, math.min(b, v)) end
 
 --- The 0.5.0 rule, pure: the HUD area is the middle 16:9 of the screen (all of it up to 16:9),
@@ -68,7 +83,7 @@ end
 
 --- The HUD area for this screen: the game's, or the 0.5.0 rule.
 function Layout.measure(width, height, safezone)
-  if (Config.layout or {}).source ~= 'stage' then
+  if Layout.source() ~= 'stage' then
     local p0x, p0y = gfx(0.0, 0.0)
     local p1x, p1y = gfx(1.0, 1.0)
     local area = Layout.fromGfx(width, height, p0x, p0y, p1x, p1y)

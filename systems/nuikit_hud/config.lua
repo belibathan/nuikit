@@ -8,23 +8,30 @@ Config = {
   -- Show GTA's radar: 'vehicle' (only while in a vehicle), 'always' or 'never'.
   radar = 'vehicle',
 
+  -- Where the parts go. Both presets use the same parts (map, location, vitals, wallet, ammo,
+  -- vehicle), placed differently:
+  --   'compact'  a round map top right with the compass on its ring, the location and money under it;
+  --              labelled vitals bottom left; a small cluster and the ammo bottom right.
+  --   'classic'  the 0.6 layout: a framed square map bottom left with the location above it, vitals
+  --              beside it, the heading strip top centre, money top right, the large cluster.
+  layout = 'compact',
+
   -- Where the HUD's edges are. 'game' reads GTA's own HUD alignment for this screen and safe zone
   -- (16:9, 21:9, 32:9), falling back to 'stage' if the game's answer looks wrong. 'stage' is the
   -- 0.5.0 rule: the middle 16:9 of the screen, inset by the safe zone.
-  layout = {
-    source = 'game',
-  },
+  area = 'game',
 
-  -- nuikit frames GTA's minimap in the theme. enabled = false leaves GTA's radar alone (the HUD still
-  -- lines up beside it).
+  -- nuikit shapes and frames GTA's minimap. enabled = false leaves GTA's radar alone (the HUD still
+  -- lines up beside it). Values left out (nil) come from the layout preset:
+  --   compact: circle, 12rem, a 0.125rem ring, top-right;  classic: square, 15rem, 0.375rem, bottom-left
   minimap = {
     enabled = true,
-    shape = 'square',        -- 'square' (rounded) or 'circle'
-    size = 15.0,             -- the frame, in rem (1rem = 16px at 1080p)
-    band = 0.375,            -- frame thickness, in rem
-    anchor = 'bottom-left',  -- bottom-left, bottom-right, top-left, top-right
-    compass = true,          -- N on the frame (circle: N E S W turning with the camera)
-    location = true,         -- the location strip above the map (see `location` below)
+    shape = nil,             -- 'square' (rounded) or 'circle'
+    size = nil,              -- the frame, in rem (1rem = 16px at 1080p)
+    band = nil,              -- frame thickness, in rem
+    anchor = nil,            -- bottom-left, bottom-right, top-left, top-right
+    compass = true,          -- cardinals on the ring (square: N on the frame), heading above (compact)
+    location = true,         -- the location under (compact) or above (classic) the map
   },
 
   -- Health, armor, hunger, thirst, stress. Each one: 'auto' (shows when it changes or crosses its
@@ -45,7 +52,7 @@ Config = {
   -- Voice range and radio channel (pma-voice): the range shows while talking or when it changes.
   voice = true,
 
-  -- Top right. 'always', 'change' (shows on change with the difference, then fades) or false.
+  -- Under the map (compact) or top right (classic). 'always', 'change' (shows on change with the difference, then fades) or false.
   wallet = {
     cash = 'always',
     bank = 'change',
@@ -88,8 +95,11 @@ Config = {
     waypoint = true,   -- distance to the map waypoint
   },
 
+  -- The weapon's ammo, `12 / 48` with a glyph, only while armed with a gun or a throwable.
+  ammo = true,
+
   compass = {
-    enabled = true,    -- the heading strip at the top of the screen
+    enabled = true,    -- classic: the heading strip at the top of the screen (compact: on the map ring)
     onFoot = false,
   },
 

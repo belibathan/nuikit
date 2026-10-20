@@ -53,6 +53,19 @@ export interface MinimapFrame {
   shape: "square" | "circle";
   /** false: nuikit doesn't frame the radar (Config.minimap.enabled = false); the rect is GTA's own */
   framed?: boolean;
+  /** the layout preset the map was placed for */
+  preset?: HudPreset;
+}
+
+export type HudPreset = "compact" | "classic";
+
+/** The weapon in hand (client/weapon.lua); false when unarmed or holding something without ammo. */
+export interface HudWeapon {
+  /** rounds in the clip; for thrown weapons, how many are left */
+  clip: number;
+  /** rounds outside the clip; absent for thrown weapons */
+  reserve?: number;
+  kind: "pistol" | "smg" | "rifle" | "shotgun" | "sniper" | "heavy" | "thrown";
 }
 
 /** Whether GTA's radar is on screen. */
@@ -80,12 +93,18 @@ export interface HudLocation {
   postal?: string;
   /** metres to the waypoint, rounded to what is shown */
   waypoint?: number;
+  /** the waypoint's compass bearing from the player (0 north, 90 east), in 5° steps */
+  bearing?: number;
 }
 
 export type VitalMode = "auto" | "always" | false;
 export type WalletMode = "always" | "change" | false;
 
 export interface HudSettings {
+  /** where the parts go (Config.layout); absent from a 0.6 client: classic */
+  layout?: HudPreset;
+  /** the ammo readout (Config.ammo) */
+  ammo?: boolean;
   units: "mph" | "kmh";
   needs: boolean;
   voice?: boolean;
@@ -114,7 +133,7 @@ export interface HudSettings {
     cruise?: "auto" | boolean;
   };
   location?: boolean;
-  compass?: { enabled?: boolean; onFoot?: boolean };
+  compass?: { enabled?: boolean; onFoot?: boolean; /** compact: cardinals and heading on the map ring (Config.minimap.compass) */ ring?: boolean };
   frame?: boolean;
 }
 
@@ -136,6 +155,7 @@ declare module "nuikit-core" {
     "hud:minimap:heading": number;
     "hud:layout": HudLayout;
     "hud:location": HudLocation;
+    "hud:weapon": HudWeapon | false;
   }
   interface NuiCallbacks {
     "hud:minimap:ready": { req: Record<string, never>; res: { ok: boolean } };
