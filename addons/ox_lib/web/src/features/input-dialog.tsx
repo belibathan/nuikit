@@ -5,6 +5,7 @@ import { useRef, useState, type FormEvent, type ReactNode } from "react";
 import type { DateRange } from "react-day-picker";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
+import { DatePicker } from "@/features/date-picker";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
@@ -397,9 +398,31 @@ function RowField({ row, value, invalid, onChange }: { row: Row; value: any; inv
         </div>
       );
       break;
-    case "date":
+    case "date": {
+      const minD = toDate(row.min);
+      const maxD = toDate(row.max);
+      control = (
+        <DatePicker
+          value={(value as Date | null) ?? null}
+          onChange={onChange}
+          format={row.format ?? "DD/MM/YYYY"}
+          min={minD}
+          max={maxD}
+          disabled={row.disabled}
+          invalid={invalid}
+          clearable={
+            row.clearable && value ? (
+              <Button type="button" variant="ghost" size="icon" onClick={() => onChange(null)} aria-label="Clear">
+                <XIcon />
+              </Button>
+            ) : undefined
+          }
+        />
+      );
+      break;
+    }
     case "date-range": {
-      const range = row.type === "date-range";
+      const range = true;
       const fmt = row.format ?? "DD/MM/YYYY";
       const minD = toDate(row.min);
       const maxD = toDate(row.max);
