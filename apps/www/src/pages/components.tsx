@@ -32,8 +32,8 @@ import {
   WarehouseIcon,
   WrenchIcon,
 } from "lucide-react";
-import { applyTheme, clearTheme, closeSurface, openSurface, Surface } from "nuikit-core/react";
-import { useEffect, useState, type ReactNode } from "react";
+import { closeSurface, openSurface, Surface } from "nuikit-core/react";
+import { useState, type ReactNode } from "react";
 import { Command } from "@/components/code";
 import { Scene } from "@/components/scene";
 import { Footer, Nav, SITE, ThemePicker } from "@/components/site";
@@ -63,15 +63,8 @@ import { Confirm, ConfirmPanel, type ConfirmTone } from "@/components/ui/confirm
 import { KeyPrompt, KeyPromptStack } from "@/components/ui/key-prompt";
 import { ProgressRing } from "@/components/ui/progress-ring";
 import { cn } from "@/lib/utils";
-import { themes } from "@/themes";
 
 export function ComponentsPage() {
-  // Start on the compiled default theme, so the nuikit tokens shadcn doesn't have (success,
-  // warning, info, hud, scrim, vitals) have values before anyone touches the picker.
-  useEffect(() => {
-    const vars = applyTheme(themes[0]!.css, document.documentElement, "dark");
-    return () => clearTheme(vars);
-  }, []);
   return (
     <div className="min-h-screen">
       <Nav />
