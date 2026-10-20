@@ -729,13 +729,12 @@
       ],
       "registryDependencies": [
         "button",
-        "dialog",
-        "input",
-        "label",
         "spinner",
         "https://nuikit.vercel.app/r/panel.json",
         "https://nuikit.vercel.app/r/menu-row.json",
-        "https://nuikit.vercel.app/r/stat.json"
+        "https://nuikit.vercel.app/r/stat.json",
+        "https://nuikit.vercel.app/r/confirm.json",
+        "https://nuikit.vercel.app/r/form-field.json"
       ],
       "categories": [
         "screens"
@@ -769,13 +768,13 @@
         "nuikit-core"
       ],
       "registryDependencies": [
-        "alert-dialog",
         "button",
         "spinner",
         "tabs",
         "https://nuikit.vercel.app/r/panel.json",
         "https://nuikit.vercel.app/r/menu-row.json",
-        "https://nuikit.vercel.app/r/stat.json"
+        "https://nuikit.vercel.app/r/stat.json",
+        "https://nuikit.vercel.app/r/confirm.json"
       ],
       "categories": [
         "screens"

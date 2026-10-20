@@ -1,5 +1,5 @@
 import * as React from "react"
-import { fetchNui, Surface } from "nuikit-core/react"
+import { fetchNui, Surface, useSurface } from "nuikit-core/react"
 import {
   ArrowDownLeftIcon,
   ArrowLeftRightIcon,
@@ -16,9 +16,8 @@ import {
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import { Confirm } from "@/components/ui/confirm"
+import { TextField } from "@/components/ui/form-field"
 import { MenuRow } from "@/components/ui/menu-row"
 import { Panel, PanelBody, PanelHeader } from "@/components/ui/panel"
 import { Spinner } from "@/components/ui/spinner"
@@ -31,19 +30,22 @@ import type { BankAccount, BankAccountKind, BankAnswer, BankData, BankMoneyActio
  * right; deposit, withdraw and transfer in a dialog that checks the amount before Lua does. Lua
  * answers every move, and its error stays in the dialog. At an ATM there are no transfers.
  * Protocol-agnostic: fill BankData from any banking resource. Built from the kit: Panel, MenuRow,
- * Stat, with stock shadcn Dialog, Input, Label, Button and Spinner (the amount form moves to the
- * kit's form-field and confirm once they ship).
+ * Stat, Confirm and TextField (form-field), with stock shadcn Button and Spinner.
  *
  *   <BankSurface />                                   // wired: nk.surface('bank', …) in Lua opens it
  *   <Bank data={data} onMoney={…} />                  // a still, or your own wiring
  */
 function BankSurface() {
+  const bank = useSurface("bank")
+  const back = React.useRef<() => void>(() => bank.close())
   return (
-    <Surface name="bank" layer="panel" exclusive>
+    <Surface name="bank" layer="panel" exclusive escape="back" onBack={() => back.current()}>
       {(data) =>
         data ? (
           <Bank
             data={data}
+            onBack={(fn) => (back.current = fn)}
+            onClose={() => bank.close()}
             onMoney={(action, req) =>
               (action === "transfer"
                 ? fetchNui("bank:transfer", { ...req, to: req.to ?? "" })
@@ -94,11 +96,16 @@ const list = <T,>(v: T[] | undefined): T[] => (Array.isArray(v) ? v : [])
 function Bank({
   data,
   onMoney,
+  onBack,
+  onClose,
   autoFocus = true,
   className,
   ...props
 }: Omit<React.ComponentProps<"div">, "children"> & {
   data: BankData
+  /** Gives the surface what Escape should do now (close the money dialog, else the bank). */
+  onBack?: (fn: () => void) => void
+  onClose?: () => void
   /** Ask Lua; resolve with its answer. */
   onMoney?: (action: BankMoneyAction, req: { account: string; amount: number; to?: string; note?: string }) => Promise<BankAnswer> | void
   /** Focus the selected account when it opens (off for stills next to other content). */
@@ -109,6 +116,16 @@ function Bank({
   const account = accounts.find((a) => a.id === selectedId) ?? accounts[0]
   const [dialog, setDialog] = React.useState<BankMoneyAction | null>(null)
   const transactions = list(data.transactions).filter((t) => t.account === account?.id)
+  const busy = React.useRef(false)
+
+  // Escape: the money dialog first (not while it's sending), then the bank.
+  React.useEffect(() => {
+    onBack?.(() => {
+      if (dialog) {
+        if (!busy.current) setDialog(null)
+      } else onClose?.()
+    })
+  }, [dialog, onBack, onClose])
 
   return (
     <div data-slot="bank" className={cn("nk-edge absolute inset-0", className)} {...props}>
@@ -150,11 +167,13 @@ function Bank({
         )}
       </div>
 
-      {account && (
+      {account && dialog && (
         <BankMoneyDialog
+          key={dialog}
           action={dialog}
           account={account}
           cash={data.cash}
+          onBusy={(b) => (busy.current = b)}
           onClose={() => setDialog(null)}
           onSubmit={(action, req) => onMoney?.(action, { account: account.id, ...req })}
         />
@@ -226,17 +245,24 @@ function BankAccountPanel({
   )
 }
 
-/** Deposit, withdraw or transfer: the amount (and recipient), checked here, then answered by Lua. */
+/**
+ * Deposit, withdraw or transfer: the amount (and recipient), checked here, then answered by Lua.
+ * The kit's Confirm (a panel over a scrim, no private Escape) with form-field rows in it. Enter in
+ * a field sends, as the form did; Escape in a field moves to Cancel, and the next Escape closes the
+ * dialog through the surface.
+ */
 function BankMoneyDialog({
   action,
   account,
   cash,
+  onBusy,
   onClose,
   onSubmit,
 }: {
-  action: BankMoneyAction | null
+  action: BankMoneyAction
   account: BankAccount
   cash: number
+  onBusy?: (busy: boolean) => void
   onClose: () => void
   onSubmit: (action: BankMoneyAction, req: { amount: number; to?: string; note?: string }) => Promise<BankAnswer> | void
 }) {
@@ -246,106 +272,92 @@ function BankMoneyDialog({
   const [busy, setBusy] = React.useState(false)
   const [error, setError] = React.useState<string | null>(null)
   const [touched, setTouched] = React.useState(false)
+  const fields = React.useRef<HTMLDivElement>(null)
 
+  // The amount takes the keyboard when the dialog opens (after the click that opened it).
   React.useEffect(() => {
-    if (!action) return
-    setAmount("")
-    setTo("")
-    setNote("")
-    setError(null)
-    setTouched(false)
-  }, [action])
+    const t = setTimeout(() => fields.current?.querySelector<HTMLInputElement>("input")?.focus(), 0)
+    return () => clearTimeout(t)
+  }, [])
 
   const available = action === "deposit" ? cash : account.balance
-  const check = action ? bankAmountError(action, amount, available, to) : null
+  const check = bankAmountError(action, amount, available, to)
+  // The recipient's message goes under the recipient; every other one under the amount.
+  const toError = touched && check && action === "transfer" && !to.trim() && !bankAmountError(action, amount, available, "x") ? check : undefined
+  const amountError = touched && check && !toError ? check : undefined
 
-  const submit = (e: React.FormEvent) => {
-    e.preventDefault()
+  const submit = () => {
     setTouched(true)
-    if (!action || check || busy) return
+    if (check || busy) return
     setBusy(true)
+    onBusy?.(true)
     setError(null)
     void Promise.resolve(onSubmit(action, { amount: Number(amount), to: action === "transfer" ? to.trim() : undefined, note: note.trim() || undefined }))
       .then((answer) => {
         if (answer && !answer.ok) setError(answer.error ?? "That didn't go through.")
         else onClose()
       })
-      .finally(() => setBusy(false))
+      .finally(() => {
+        setBusy(false)
+        onBusy?.(false)
+      })
   }
 
   return (
-    <Dialog open={!!action} onOpenChange={(open) => !open && !busy && onClose()}>
-      <DialogContent
-        className="nk-panel nk-enter gap-4 p-6 data-[size=default]:sm:max-w-sm"
-        // One Escape closes the dialog only, not the bank behind it (nuikit skips a handled Escape).
-        onEscapeKeyDown={(e) => {
-          e.preventDefault()
-          if (!busy) onClose()
+    <Confirm
+      tone="primary"
+      size="sm"
+      title={`${ACTION_LABEL[action]} ${action === "deposit" ? "to" : "from"} ${account.label}`}
+      description={action === "deposit" ? `Cash on hand: ${money.format(cash)}` : `Available: ${money.format(account.balance)}`}
+      cancelLabel="Cancel"
+      // The amount field takes the keyboard (autoFocus below), not the action.
+      initialFocus="none"
+      confirmLabel={`${ACTION_LABEL[action]}${!check && amount ? ` ${money.format(Number(amount))}` : ""}`}
+      loading={busy}
+      onCancel={() => !busy && onClose()}
+      onConfirm={submit}
+    >
+      <div
+        ref={fields}
+        className="flex flex-col gap-4"
+        onKeyDown={(e) => {
+          if (e.key === "Enter" && (e.target as HTMLElement).tagName === "INPUT") {
+            e.preventDefault()
+            submit()
+          }
+          // nuikit leaves Escape typed in a field to the field (protocol §3.5), so here it only
+          // leaves the field for Cancel. The next Escape goes through the surface's back: the
+          // dialog closes, then the bank.
+          if (e.key === "Escape" && (e.target as HTMLElement).tagName === "INPUT") {
+            e.preventDefault()
+            e.currentTarget.closest('[data-slot="confirm"]')?.querySelector<HTMLButtonElement>('[data-slot="confirm-cancel"]')?.focus()
+          }
         }}
       >
-        <form onSubmit={submit} className="flex flex-col gap-4" noValidate>
-          <DialogHeader>
-            <DialogTitle className="nk-title">
-              {action ? ACTION_LABEL[action] : ""} {action === "deposit" ? "to" : "from"} {account.label}
-            </DialogTitle>
-            <DialogDescription>
-              {action === "deposit" ? `Cash on hand: ${money.format(cash)}` : `Available: ${money.format(account.balance)}`}
-            </DialogDescription>
-          </DialogHeader>
-
-          <div className="nk-field">
-            <div className="nk-field-label">
-              <Label htmlFor="bank-amount">Amount</Label>
-              <Button type="button" variant="ghost" size="sm" className="ml-auto h-6 px-2 text-xs" onClick={() => setAmount(String(Math.floor(available)))}>
-                All {money.format(available)}
-              </Button>
-            </div>
-            <Input
-              id="bank-amount"
-              inputMode="numeric"
-              autoFocus
-              placeholder="$0"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value.replace(/[^\d.]/g, ""))}
-              aria-invalid={touched && !!check}
-              className="nk-num"
-            />
-          </div>
-          {action === "transfer" && (
-            <div className="nk-field">
-              <div className="nk-field-label">
-                <Label htmlFor="bank-to">Send to</Label>
-              </div>
-              <Input id="bank-to" placeholder="Server ID or account number" value={to} onChange={(e) => setTo(e.target.value)} aria-invalid={touched && !to.trim()} />
-            </div>
-          )}
-          <div className="nk-field">
-            <div className="nk-field-label">
-              <Label htmlFor="bank-note">Note</Label>
-              <span className="ml-auto text-muted-foreground">Optional</span>
-            </div>
-            <Input id="bank-note" maxLength={60} value={note} onChange={(e) => setNote(e.target.value)} />
-          </div>
-
-          {(error || (touched && check)) && (
-            <p role="alert" className="text-sm text-destructive">
-              {error ?? check}
-            </p>
-          )}
-
-          <DialogFooter>
-            <Button type="button" variant="outline" disabled={busy} onClick={onClose}>
-              Cancel
+        <TextField
+          label="Amount"
+          hint={
+            <Button type="button" variant="ghost" size="sm" className="h-6 px-2 text-xs" onClick={() => setAmount(String(Math.floor(available)))}>
+              All {money.format(available)}
             </Button>
-            <Button type="submit" disabled={busy || (touched && !!check)}>
-              {busy && <Spinner />}
-              {action ? ACTION_LABEL[action] : ""}
-              {!check && amount ? ` ${money.format(Number(amount))}` : ""}
-            </Button>
-          </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
+          }
+          placeholder="$0"
+          value={amount}
+          onValueChange={(v) => setAmount(v.replace(/[^\d.]/g, ""))}
+          error={amountError}
+          inputProps={{ inputMode: "numeric", className: "nk-num" }}
+        />
+        {action === "transfer" && (
+          <TextField label="Send to" placeholder="Server ID or account number" value={to} onValueChange={setTo} error={toError} />
+        )}
+        <TextField label="Note" hint="Optional" maxLength={60} showCount={false} value={note} onValueChange={setNote} />
+        {error && (
+          <p role="alert" className="text-sm text-destructive">
+            {error}
+          </p>
+        )}
+      </div>
+    </Confirm>
   )
 }
 
