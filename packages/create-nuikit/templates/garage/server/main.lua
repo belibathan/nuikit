@@ -9,6 +9,14 @@
 -- vehicles itself so a record can't be taken out twice.
 
 local resource = GetCurrentResourceName()
+
+-- OneSync is required: the server spawns, reads and deletes the vehicles and checks where the
+-- player stands, and none of that works without it. Qbox, QBCore and ESX servers already run it;
+-- otherwise add `set onesync on` to server.cfg. Without it the garage refuses every request.
+local ONESYNC = GetConvar('onesync', 'off') ~= 'off'
+if not ONESYNC then
+  print(('^1[%s] OneSync is off. This garage needs it (set onesync on in server.cfg); every request will be refused.^0'):format(resource))
+end
 local db = json.decode(LoadResourceFile(resource, Config.saveFile) or '{}') or {}
 
 -- Vehicles this resource spawned, in memory (they're deleted when the resource stops):
@@ -51,11 +59,10 @@ local function pct(n)
   return math.floor(math.max(0, math.min(100, n)) + 0.5)
 end
 
---- Is the player within reach of the garage? (Server-side position needs OneSync, which Qbox,
---- QBCore and ESX servers run; without it the check is skipped.)
+--- Is the player within reach of the garage? (Server-side positions need OneSync; see the top.)
 local function near(src, garage)
   local ped = GetPlayerPed(src)
-  if not ped or ped == 0 then return true end
+  if not ped or ped == 0 then return false end
   local p, c = GetEntityCoords(ped), garage.coords
   local dx, dy, dz = p.x - c.x, p.y - c.y, p.z - c.z
   return dx * dx + dy * dy + dz * dz <= (Config.radius + 5.0) ^ 2
@@ -211,6 +218,10 @@ end
 
 RegisterNetEvent('{{name}}:req', function(id, name, data)
   local src = source
+  if not ONESYNC then
+    TriggerClientEvent('{{name}}:res', src, id, { ok = false, error = 'This garage needs OneSync on the server.' })
+    return
+  end
   local handler = type(name) == 'string' and handlers[name]
   local ok, result = pcall(function() return handler and handler(src, type(data) == 'table' and data or {}) end)
   if not ok then print(('[{{name}}] %s failed: %s'):format(name, result)) end
