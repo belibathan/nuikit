@@ -310,6 +310,23 @@
           "description": "Text on brand",
           "$comment": "tokens 1.1"
         },
+        "world-foreground": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "Text and icons drawn straight on the game, no panel (death text, unplated HUD values, nk-on-game). Light in every theme, light or dark",
+          "$comment": "tokens 1.1"
+        },
+        "world-foreground-muted": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "Secondary text on the game",
+          "$comment": "tokens 1.1"
+        },
+        "world-shadow": {
+          "type": "string",
+          "description": "Text-shadow that keeps world-foreground legible over any frame",
+          "$comment": "tokens 1.1"
+        },
         "font-display": {
           "type": "string",
           "description": "Headings and big moments (titles, timers, the balance)",

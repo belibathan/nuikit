@@ -220,6 +220,9 @@ var NuikitTheme = (() => {
   var IDENTITY_TOKENS = [
     id("brand", "color", "The server's signature colour: active indicators, gauge needles, focus, logos (not the action: that's primary)", "primary if chromatic (OKLCH C \u2265 0.06), else chart-1"),
     id("brand-foreground", "color", "Text on brand", "foreground or background, whichever contrasts more"),
+    id("world-foreground", "color", "Text and icons drawn straight on the game, no panel (death text, unplated HUD values, nk-on-game). Light in every theme, light or dark", "rgb(255, 255, 255)"),
+    id("world-foreground-muted", "color", "Secondary text on the game", "world-foreground at 80% (3:1 on a mid-grey frame)"),
+    id("world-shadow", "shadow", "Text-shadow that keeps world-foreground legible over any frame", "0 1px 2px rgba(0, 0, 0, 0.65), 0 0 0.5rem rgba(0, 0, 0, 0.35)"),
     id("font-display", "fontFamily", "Headings and big moments (titles, timers, the balance)", "font-sans; Inter Tight when font-sans is the default Inter"),
     id("font-numeric", "fontFamily", "Every number on a gauge, money or timer (always tabular)", "font-sans"),
     id("nk-type-ratio", "number", "Step between type sizes: 1.125 calm \u2026 1.333 dramatic", "1.2", { range: [1, 1.6] }),
@@ -523,8 +526,9 @@ var NuikitTheme = (() => {
       resolved[name] = lowered;
     }
     if (!opts.partial) {
+      const given = new Set(Object.keys(resolved));
       derive(resolved, mode, warnings);
-      deriveIdentity(resolved, warnings);
+      deriveIdentity(resolved, warnings, given);
     } else if (resolved["nk-scale"] !== void 0 || resolved["nk-motion"] !== void 0) derive(resolved, mode, warnings, true);
     if (opts.highContrast) highContrast(resolved);
     const contrast = checkContrast(resolved);
@@ -557,6 +561,8 @@ var NuikitTheme = (() => {
   var clamp = (x, lo, hi) => Math.max(lo, Math.min(hi, x));
   var WHITE = [255, 255, 255, 1];
   var BLACK = [0, 0, 0, 1];
+  var WORLD_SHADOW = "0 1px 2px rgba(0, 0, 0, 0.65), 0 0 0.5rem rgba(0, 0, 0, 0.35)";
+  var MID_GREY = [128, 128, 128, 1];
   function bestText(vars, bg) {
     const solid = opaque(bg, vars);
     const candidates = [rgba(vars, "foreground"), rgba(vars, "background"), WHITE, BLACK].filter((x) => !!x && x[3] === 1);
@@ -589,7 +595,7 @@ var NuikitTheme = (() => {
     return o.c >= 0.06 && o.l >= 0.45 && o.l <= 0.93 && inHue(o.h, ranges);
   }
   function derive(vars, mode, warnings, onlyNumbers = false) {
-    var _a;
+    var _a, _b;
     const scale = vars["nk-scale"] === void 0 ? 1 : parseFloat(vars["nk-scale"]);
     if (Number.isNaN(scale) || scale < 0.5 || scale > 2) {
       warnings.push(`--nk-scale must be a number between 0.5 and 2 (got ${vars["nk-scale"]}); 1 is used.`);
@@ -614,7 +620,11 @@ var NuikitTheme = (() => {
     if (vars.info === void 0) vars.info = vars.primary;
     if (vars["info-foreground"] === void 0) vars["info-foreground"] = vars["primary-foreground"];
     if (vars.hud === void 0) vars.hud = "rgba(0, 0, 0, 0.45)";
-    if (vars["hud-foreground"] === void 0) vars["hud-foreground"] = "rgb(255, 255, 255)";
+    const world = (_b = rgba(vars, "world-foreground")) != null ? _b : WHITE;
+    if (vars["world-foreground"] === void 0) vars["world-foreground"] = formatRgba(world);
+    if (vars["world-foreground-muted"] === void 0) vars["world-foreground-muted"] = formatRgba([world[0], world[1], world[2], 0.8]);
+    if (vars["world-shadow"] === void 0) vars["world-shadow"] = WORLD_SHADOW;
+    if (vars["hud-foreground"] === void 0) vars["hud-foreground"] = vars["world-foreground"];
     if (vars.scrim === void 0) vars.scrim = "rgb(0, 0, 0)";
     const used = /* @__PURE__ */ new Set();
     for (const v of VITALS) {
@@ -702,19 +712,19 @@ var NuikitTheme = (() => {
     const a = Math.max(hud[3], parseFloat((_a = vars["nk-hud-opacity"]) != null ? _a : "0") || 0);
     return composite([hud[0], hud[1], hud[2], a], WHITE);
   }
-  function deriveIdentity(vars, warnings) {
+  function deriveIdentity(vars, warnings, given = /* @__PURE__ */ new Set()) {
     var _a, _b, _c;
     for (const spec of IDENTITY_TOKENS) {
       if (spec.type === "color" || spec.type === "fontFamily" || spec.type === "shadow" || spec.group === "derived") continue;
-      const given = vars[spec.name];
-      if (given === void 0) {
+      const given2 = vars[spec.name];
+      if (given2 === void 0) {
         vars[spec.name] = spec.fallback;
         continue;
       }
-      const v = identityValue(spec, given);
+      const v = identityValue(spec, given2);
       if (v === null) {
         const want = spec.values ? spec.values.join(", ") : spec.range ? `a number from ${spec.range[0]} to ${spec.range[1]}` : spec.type === "dimension" ? "a length in px, rem or em" : spec.type === "duration" ? "a duration up to 2000ms" : "cubic-bezier(x1, y1, x2, y2)";
-        warnings.push(`--${spec.name} must be ${want} (got ${given}); ${spec.fallback} is used.`);
+        warnings.push(`--${spec.name} must be ${want} (got ${given2}); ${spec.fallback} is used.`);
         vars[spec.name] = spec.fallback;
       } else vars[spec.name] = v;
     }
@@ -753,6 +763,16 @@ var NuikitTheme = (() => {
       if (ratio < 4.5)
         warnings.push(`hud-foreground on the HUD backplate over a white sky is ${ratio.toFixed(1)}:1 (needs 4.5:1); raise --nk-hud-opacity or darken --hud so HUD text reads over snow and midday sky.`);
     }
+    for (const name of ["world-foreground", "world-foreground-muted"]) {
+      if (!given.has(name)) continue;
+      const c2 = rgba(vars, name);
+      if (!c2) continue;
+      const onGrey = composite(c2, MID_GREY);
+      const ratio = contrastRatio(onGrey, MID_GREY);
+      const lighter = contrastRatio(onGrey, BLACK) > contrastRatio(MID_GREY, BLACK);
+      if (!lighter || ratio < 3)
+        warnings.push(`--${name} is ${lighter ? `${ratio.toFixed(1)}:1 against a mid-grey frame (needs 3:1)` : "darker than a mid-grey frame"}; text drawn straight on the game (death text, unplated HUD values) will be hard to read. Keep it light, whatever the theme's mode.`);
+    }
   }
   function highContrast(vars) {
     const best = (bg) => {
@@ -784,6 +804,8 @@ var NuikitTheme = (() => {
     }
     vars.hud = "rgba(0, 0, 0, 0.72)";
     vars["hud-foreground"] = "rgb(255, 255, 255)";
+    vars["world-foreground"] = "rgb(255, 255, 255)";
+    vars["world-foreground-muted"] = "rgba(255, 255, 255, 0.85)";
     if (vars["nk-surface-opacity"] !== void 0) vars["nk-surface-opacity"] = "1";
     if (vars["nk-hud-opacity"] !== void 0) vars["nk-hud-opacity"] = "0.72";
     return vars;

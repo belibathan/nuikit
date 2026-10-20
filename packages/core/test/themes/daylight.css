@@ -27,8 +27,7 @@
   --chart-4: oklch(0.66 0.12 215);
   --chart-5: oklch(0.58 0.2 320);
   --radius: 1.25rem;
-  --hud: oklch(0.99 0.003 85 / 88%);
-  --hud-foreground: oklch(0.24 0.02 260);
+  /* nothing set for the game layer: --world-foreground (and --hud-foreground with it) stays light */
   --scrim: oklch(0.3 0.03 260);
 
   /* identity */
@@ -58,5 +57,4 @@
   --nk-chip-radius: 9999px;
   --nk-row-radius: 9999px;
   --nk-panel-radius: calc(var(--radius) + 0.25rem);
-  --nk-slab-band-bg: oklch(0.99 0.003 85 / 90%);
 }

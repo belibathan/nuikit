@@ -528,6 +528,32 @@
         "hex": "#000000"
       },
       "$description": "Text on brand"
+    },
+    "world-foreground": {
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          1,
+          1,
+          1
+        ],
+        "alpha": 1,
+        "hex": "#ffffff"
+      },
+      "$description": "Text and icons drawn straight on the game, no panel (death text, unplated HUD values, nk-on-game). Light in every theme, light or dark"
+    },
+    "world-foreground-muted": {
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          1,
+          1,
+          1
+        ],
+        "alpha": 0.8,
+        "hex": "#ffffff"
+      },
+      "$description": "Secondary text on the game"
     }
   },
   "radius": {

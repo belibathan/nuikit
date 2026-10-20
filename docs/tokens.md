@@ -57,7 +57,7 @@ so a plain shadcn paste always works.
 | `--info` | Neutral notices, tips | `--primary` | `rgb(229, 229, 229)` |
 | `--info-foreground` | Text on info | `--primary-foreground` | `rgb(23, 23, 23)` |
 | `--hud` | Surfaces drawn straight on the game: HUD chips, hotbar tiles, target eye (`nk-chip`, `nk-hud`) | `rgba(0, 0, 0, 0.45)` | `rgba(0, 0, 0, 0.45)` |
-| `--hud-foreground` | Text and icons on `--hud` | `rgb(255, 255, 255)` | `rgb(255, 255, 255)` |
+| `--hud-foreground` | Text and icons on `--hud` | `--world-foreground` (1.1; [text on the game](#text-on-the-game)) | `rgb(255, 255, 255)` |
 | `--scrim` | Darkens the game: behind full-screen screens (pause, death, loading), bar tracks and shadows drawn on the game. Always used with opacity (`bg-scrim/40`, or `color-mix(in oklab, var(--scrim) 40%, transparent)` in CSS, which the plugin lowers) | `rgb(0, 0, 0)` | `rgb(0, 0, 0)` |
 | `--vital-health` | Health bar | See [vitals](#vitals) | `rgb(255, 100, 103)` (destructive) |
 | `--vital-armor` | Armor bar | | `rgb(59, 156, 246)` |
@@ -312,8 +312,6 @@ round:
   --background: oklch(0.985 0.004 85);   /* light colours, a blue brand … */
   --primary: oklch(0.52 0.19 262);
   --radius: 1.25rem;                      /* round */
-  --hud: oklch(0.99 0.003 85 / 88%);      /* a light HUD plate, dark text */
-  --hud-foreground: oklch(0.24 0.02 260);
   --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
   --nk-density: 1.25;                     /* roomy */
   --nk-label-case: none;                  /* captions as written */
@@ -327,12 +325,37 @@ round:
 from Graphite, and that every identity fallback in `kit.css` equals the compiled Graphite default. The
 `daylight` contact sheet (`bench/identity/shots/daylight.jpg`) shows the same shipped screens in it.
 
-**What it found.** Panels, rows, notices, the bank, pause cards and slabs all follow. Two places don't,
-because text drawn straight on the game shares a token with text on a surface: the death screen writes
-its title and timer in `--foreground` over `--scrim`, and the HUD draws its speed and street in
-`--hud-foreground` with no plate. In a light theme both turn dark on a dark game. The fix is a semantic
-token for text on the game (on `--scrim` and unplated HUD; light by default, independent of the theme's
-mode) that those screens read. It's proposed, not built: it touches the death and HUD screens (other lanes).
+**What it found, and the fix.** The first Daylight run showed death and HUD text dark on a dark game:
+text drawn straight on the game shared `--foreground` / `--hud-foreground` with text on surfaces. That's
+why [text on the game](#text-on-the-game) has its own tokens now; Daylight sets nothing for the game layer,
+and death and the HUD read.
+
+### Text on the game
+
+Text and icons drawn straight on the world, with no panel behind them (the death title and timer, unplated
+HUD values, street names, labels over the scene), have their own tokens (1.1). They are **light in every
+theme, light or dark**: a light theme changes the panels, not the game.
+
+| Token | Used for | Derived default |
+|---|---|---|
+| `--world-foreground` | Text and icons on the game | `rgb(255, 255, 255)`, whatever the theme's mode |
+| `--world-foreground-muted` | Secondary text on the game | `--world-foreground` at 80% (3.1:1 on a mid-grey frame) |
+| `--world-shadow` | The text-shadow that keeps it legible over any frame | `0 1px 2px rgba(0,0,0,.65), 0 0 0.5rem rgba(0,0,0,.35)` (black: it shades the game, not the theme) |
+
+- `--hud-foreground` (text on HUD plates) now defaults to `--world-foreground`. A theme with light HUD
+  plates sets `--hud-foreground` dark itself; unplated HUD text should then read `--world-foreground`.
+- **Floor** (warning, never blocking): a theme that sets `--world-foreground` or `-muted` darker than a
+  mid-grey frame (`#808080`), or under 3:1 against it, gets a warning. High contrast sets them to pure white
+  and white at 85%.
+- **Tailwind:** `text-world-foreground`, `text-world-foreground-muted`.
+- **`nk-on-game`** (kit utility): marks a subtree as drawn on the game. Inside it, `--foreground` and
+  `--muted-foreground` (and their channels) are the world's, `--background` is the game (the scrim
+  colour, so `bg-foreground text-background` keycaps invert correctly), and text carries `--world-shadow`.
+  An `nk-panel` inside restores the theme's colours.
+- **Whole page:** `"surface": "world"` in a system's `nuikit.json` makes `pnpm sync` write
+  `body { @apply nk-on-game }` into its `index.css`. `nuikit_death` and `nuikit_hud` declare it, so their
+  existing `text-foreground` classes read the world colour with no source change. Lanes adopt
+  `text-world-foreground` / `nk-on-game` directly in new code.
 
 Text size outside the kit: synced `index.css` raises Tailwind's two small steps (`text-xs` 13px,
 `text-sm` 15px) for readability at 1080p; `text-base` and up are Tailwind's.
