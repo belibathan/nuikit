@@ -67,6 +67,7 @@ import { Countdown } from "@/components/ui/countdown";
 import { Money } from "@/components/ui/money";
 import { ItemSlot } from "@/components/ui/item-slot";
 import { PlayerCard } from "@/components/ui/player-card";
+import { EmptyState } from "@/components/ui/empty-state";
 import { cn } from "@/lib/utils";
 
 export function ComponentsPage() {
@@ -374,6 +375,46 @@ export function ComponentsPage() {
               { label: "Rank", value: 3 },
             ]}
           />
+        </Section>
+
+        <Section
+          name="empty-state"
+          title="Empty state"
+          text="When there's nothing to show, or something went wrong: a short title and one sentence on what to do next, with an optional action. Stock shadcn Empty on the kit's scale; named empty-state because shadcn already has empty."
+          stageClassName="items-start"
+        >
+          <Panel>
+            <PanelHeader icon={<WarehouseIcon />} title="Garage" description="Legion Square" />
+            <PanelBody>
+              <EmptyState
+                icon={<CarIcon />}
+                title="No cars here"
+                description="Buy one at the dealership, or park one inside to store it."
+                action={
+                  <Button size="sm" variant="outline">
+                    <MapIcon /> Mark the dealership
+                  </Button>
+                }
+              />
+            </PanelBody>
+          </Panel>
+          <Panel>
+            <PanelHeader icon={<LandmarkIcon />} title="Fleeca" description="Personal account" />
+            <PanelBody>
+              <EmptyState
+                tone="error"
+                title="Couldn't load your account"
+                description="The bank didn't answer. Try again in a moment."
+                action={<Button size="sm">Try again</Button>}
+              />
+            </PanelBody>
+          </Panel>
+          <Panel>
+            <PanelHeader icon={<UsersIcon />} title="Players" description='Search: "zentorno"' />
+            <PanelBody>
+              <EmptyState icon={<UsersIcon />} title="No one matches" description="Check the spelling, or search by server ID." />
+            </PanelBody>
+          </Panel>
         </Section>
       </main>
       <Footer />
