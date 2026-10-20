@@ -15,8 +15,8 @@ import { Kbd } from "@/components/ui/kbd"
  *
  * With `duration` it runs on its own and `onComplete` fires from a timer when the time is up
  * (never from an animation event, so it still fires with motion off). Restart it with a new `key`.
- * The ring moves in 100ms steps with a matching linear transition: smooth, and still correct when
- * transitions are off.
+ * The ring moves in 100ms steps, each gliding linearly onto the value of the next tick (ringStep),
+ * so it closes exactly at `duration`; with transitions off it steps on the true value.
  */
 
 const progressRingVariants = cva("relative shrink-0", {
@@ -59,11 +59,27 @@ function ringOffset(percent: number, circumference = CIRCUMFERENCE) {
 }
 
 /**
- * Elapsed ms of a timed run, ticking every STEP_MS from mount (or a new `duration`), and
- * `onComplete` once from its own timer at `duration`.
+ * Where a timed ring is drawn at `elapsed` ms of `duration`: one step ahead (clamped to
+ * `duration`), reached by a linear transition of `ms`, so it lands on the true value at each tick
+ * and closes exactly at `duration` (aiming at the current value would trail it by a step). With
+ * motion off there is no transition: draw the true value.
+ */
+function ringStep(elapsed: number, duration: number, motion = true, step = STEP_MS) {
+  const e = Math.max(0, Math.min(duration, Number.isFinite(elapsed) ? elapsed : 0))
+  if (!motion) return { at: e, ms: 0 }
+  const at = Math.min(duration, e + step)
+  return { at, ms: at - e }
+}
+
+/** Transitions are off when the theme or the player turned motion off (kit.css). */
+const motionOn = () => typeof document === "undefined" || document.documentElement.getAttribute("data-nk-motion") !== "off"
+
+/**
+ * A timed run, ticking every STEP_MS from mount (or a new `duration`): the true elapsed ms and
+ * where to draw it (ringStep). `onComplete` once from its own timer at `duration`.
  */
 function useTimedRun(duration: number | undefined, onComplete?: () => void) {
-  const [elapsed, setElapsed] = React.useState(0)
+  const [state, setState] = React.useState({ elapsed: 0, at: 0, ms: 0 })
   const done = React.useRef(onComplete)
   React.useEffect(() => {
     done.current = onComplete
@@ -71,19 +87,29 @@ function useTimedRun(duration: number | undefined, onComplete?: () => void) {
   React.useEffect(() => {
     if (!duration || duration <= 0) return
     const start = Date.now()
-    setElapsed(0)
+    const update = () => {
+      const elapsed = Math.min(duration, Date.now() - start)
+      setState({ elapsed, ...ringStep(elapsed, duration, motionOn()) })
+      return elapsed
+    }
+    setState({ elapsed: 0, at: 0, ms: 0 })
+    // The first frame draws 0; from the next, aim a step ahead.
+    const first = requestAnimationFrame(update)
     const tick = setInterval(() => {
-      const e = Math.min(duration, Date.now() - start)
-      setElapsed(e)
-      if (e >= duration) clearInterval(tick)
+      if (update() >= duration) clearInterval(tick)
     }, STEP_MS)
-    const end = setTimeout(() => done.current?.(), duration)
+    // Full at duration in every mode (with motion off the last tick can land just after it).
+    const end = setTimeout(() => {
+      setState({ elapsed: duration, at: duration, ms: 0 })
+      done.current?.()
+    }, duration)
     return () => {
+      cancelAnimationFrame(first)
       clearInterval(tick)
       clearTimeout(end)
     }
   }, [duration])
-  return elapsed
+  return state
 }
 
 type ProgressRingProps = Omit<React.ComponentProps<"div">, "children"> &
@@ -123,9 +149,11 @@ function ProgressRing({
   onCancel,
   ...props
 }: ProgressRingProps) {
-  const elapsed = useTimedRun(duration, onComplete)
+  const run = useTimedRun(duration, onComplete)
   const timed = duration !== undefined && duration > 0
-  const percent = timed ? ringPercent(elapsed, duration) : ringPercent(value, max)
+  const percent = timed ? ringPercent(run.elapsed, duration) : ringPercent(value, max)
+  // What the ring draws: timed runs aim a step ahead (ringStep); the text and aria keep the true value.
+  const drawn = timed ? ringPercent(run.at, duration) : percent
   const game = track === "game"
   const inside = center === undefined ? `${Math.round(percent)}%` : center
 
@@ -170,8 +198,14 @@ function ProgressRing({
             strokeLinecap="round"
             transform="rotate(-90 50 50)"
             strokeDasharray={CIRCUMFERENCE}
-            strokeDashoffset={ringOffset(percent)}
-            className={cn(TONE[tone] ?? TONE.primary, "transition-[stroke-dashoffset] ease-linear", timed ? "duration-100" : "duration-200")}
+            strokeDashoffset={ringOffset(drawn)}
+            // Timed: glide onto the value of the next tick in the time until then (kit.css zeroes it with motion off).
+            style={timed ? ({ "--progress-ring-step": `${run.ms}ms` } as React.CSSProperties) : undefined}
+            className={cn(
+              TONE[tone] ?? TONE.primary,
+              "transition-[stroke-dashoffset] ease-linear",
+              timed ? "duration-(--progress-ring-step)" : "duration-200"
+            )}
           />
         </svg>
         {inside !== false && inside !== null && (
@@ -202,4 +236,4 @@ function ProgressRing({
   )
 }
 
-export { ProgressRing, progressRingVariants, ringPercent, ringOffset, type ProgressRingTone, type ProgressRingProps }
+export { ProgressRing, progressRingVariants, ringPercent, ringOffset, ringStep, type ProgressRingTone, type ProgressRingProps }
