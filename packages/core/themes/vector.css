@@ -1,0 +1,74 @@
+/*
+ * Vector (docs/design/v2.md): a tactical instrument. Mono numerals and labels, cyan hairlines on
+ * blue-black, outlined active rows, segmented meters, ticks everywhere, digital gauges, a slight glow.
+ *
+ * Use it: copy this file over nuikit/theme.css, then `nuikit theme reload`. Tokens: docs/tokens.md.
+ */
+.dark {
+  --background: oklch(0.135 0.014 235);
+  --foreground: oklch(0.95 0.012 200);
+  --card: oklch(0.175 0.018 235);
+  --card-foreground: oklch(0.95 0.012 200);
+  --popover: oklch(0.165 0.018 235);
+  --popover-foreground: oklch(0.95 0.012 200);
+  --primary: oklch(0.86 0.13 190);
+  --primary-foreground: oklch(0.17 0.02 235);
+  --secondary: oklch(0.23 0.022 235);
+  --secondary-foreground: oklch(0.95 0.012 200);
+  --muted: oklch(0.225 0.022 235);
+  --muted-foreground: oklch(0.72 0.03 215);
+  --accent: oklch(0.24 0.03 220);
+  --accent-foreground: oklch(0.97 0.012 200);
+  --destructive: oklch(0.68 0.2 25);
+  --border: oklch(0.86 0.13 190 / 16%);
+  --input: oklch(0.86 0.13 190 / 22%);
+  --ring: oklch(0.86 0.13 190);
+  --chart-1: oklch(0.68 0.2 25);
+  --chart-2: oklch(0.7 0.14 255);
+  --chart-3: oklch(0.82 0.15 85);
+  --chart-4: oklch(0.86 0.13 190);
+  --chart-5: oklch(0.72 0.17 310);
+  --radius: 0.125rem;
+  --brand: oklch(0.86 0.13 190);
+
+  /* identity (tokens 1.1) */
+  --font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Chakra Petch", "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-numeric: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --nk-type-ratio: 1.2;
+  --nk-weight-body: 400;
+  --nk-weight-strong: 600;
+  --nk-weight-display: 600;
+  --nk-tracking-display: 0.02em;
+  --nk-label-case: uppercase;
+  --nk-tracking-label: 0.12em;
+  --nk-border-width: 1px;
+  --nk-cut: 0px;
+  --nk-surface-opacity: 0.94;
+  --nk-surface-tint: 0.04;
+  --nk-surface-gradient: 0;
+  --nk-surface-edge: 0.08;
+  --nk-elevation: none;
+  --nk-glow: 0.35;
+  --nk-density: 0.85;
+  --nk-ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --nk-duration: 140ms;
+  --nk-hud-opacity: 0.6;
+  --nk-hud-text-shadow: soft;
+  --nk-gauge-style: digital;
+  --nk-gauge-track: 0.25rem;
+  --nk-gauge-ticks: 1;
+  --nk-row-indicator: outline;
+
+  /* component details */
+  --nk-heading-case: uppercase;
+  --nk-heading-tracking: 0.06em;
+  --nk-caption-font: var(--font-numeric);
+  --nk-num-tracking: 0;
+  --nk-meter-segments: 1;
+  --nk-meter-radius: 0;
+  --nk-chip-radius: 0.125rem;
+  --nk-panel-bracket: 0.875rem;
+  --nk-panel-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35), 0 0 2rem -0.75rem oklch(0.86 0.13 190 / 45%);
+}

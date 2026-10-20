@@ -1,4 +1,5 @@
 {
+  "fonts": "graphite",
   "target": {
     "resource": "qbx_taxijob",
     "path": "html",

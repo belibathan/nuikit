@@ -163,6 +163,10 @@ var NuikitTheme = (() => {
 
   // src/tokens.ts
   var TOKENS_VERSION = 1;
+  var TOKENS_REVISION = "1.1";
+  var DEFAULT_FONT_SANS = "Inter, ui-sans-serif, system-ui, sans-serif";
+  var DEFAULT_FONT_DISPLAY = `"Inter Tight", ${DEFAULT_FONT_SANS}`;
+  var DEFAULT_FONT_MONO = `"Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace`;
   var c = (name, description, fallback = "stock shadcn neutral") => ({ name, type: "color", group: "shadcn", description, fallback });
   var n = (name, type, description, fallback) => ({ name, type, group: "nuikit", description, fallback });
   var TOKENS = [
@@ -191,8 +195,8 @@ var NuikitTheme = (() => {
     c("chart-4", "Categorical colour 4"),
     c("chart-5", "Categorical colour 5"),
     { name: "radius", type: "dimension", group: "shadcn", description: "Corner radius (panels radius + 4px, controls radius \u2212 2px)", fallback: "0.625rem" },
-    { name: "font-sans", type: "fontFamily", group: "shadcn", description: "Text", fallback: "ui-sans-serif, system-ui, sans-serif" },
-    { name: "font-mono", type: "fontFamily", group: "shadcn", description: "Codes and IDs a player might type", fallback: "ui-monospace, SFMono-Regular, Menlo, monospace" },
+    { name: "font-sans", type: "fontFamily", group: "shadcn", description: "Text", fallback: DEFAULT_FONT_SANS },
+    { name: "font-mono", type: "fontFamily", group: "shadcn", description: "Codes and IDs a player might type", fallback: DEFAULT_FONT_MONO },
     n("success", "color", "Positive status: done, paid, online", "oklch(L, C, 150): green at the lightness/chroma of destructive"),
     n("success-foreground", "color", "Text on success", "foreground or background, whichever contrasts more"),
     n("warning", "color", "Caution status: low fuel, about to expire", "oklch(L + 0.08, C, 75): amber at the lightness/chroma of destructive"),
@@ -211,7 +215,50 @@ var NuikitTheme = (() => {
     n("nk-motion", "number", "1 = animations on, 0 = off. Players can turn motion off.", "1")
   ];
   var TOKEN_NAMES = TOKENS.map((t) => t.name);
-  var SPEC = new Map(TOKENS.map((t) => [t.name, t]));
+  var id = (name, type, description, fallback, extra = {}) => ({ name, type, group: "identity", description, fallback, since: "1.1", ...extra });
+  var dv = (name, type, description, fallback) => ({ name, type, group: "derived", description, fallback, since: "1.1" });
+  var IDENTITY_TOKENS = [
+    id("brand", "color", "The server's signature colour: active indicators, gauge needles, focus, logos (not the action: that's primary)", "primary if chromatic (OKLCH C \u2265 0.06), else chart-1"),
+    id("brand-foreground", "color", "Text on brand", "foreground or background, whichever contrasts more"),
+    id("font-display", "fontFamily", "Headings and big moments (titles, timers, the balance)", "font-sans; Inter Tight when font-sans is the default Inter"),
+    id("font-numeric", "fontFamily", "Every number on a gauge, money or timer (always tabular)", "font-sans"),
+    id("nk-type-ratio", "number", "Step between type sizes: 1.125 calm \u2026 1.333 dramatic", "1.2", { range: [1, 1.6] }),
+    id("nk-weight-body", "number", "Body text weight", "400", { range: [100, 900] }),
+    id("nk-weight-strong", "number", "Titles, key numbers, active rows", "600", { range: [100, 900] }),
+    id("nk-weight-display", "number", "Display type (full-screen titles, big numbers)", "700", { range: [100, 900] }),
+    id("nk-tracking-display", "dimension", "Letter-spacing of display type", "-0.02em"),
+    id("nk-label-case", "keyword", "Labels in uppercase or as written", "none", { values: ["none", "uppercase"] }),
+    id("nk-tracking-label", "dimension", "Letter-spacing of labels (uppercase wants 0.06\u20130.12em)", "0em"),
+    id("nk-border-width", "dimension", "Hairline weight of panels, rows and fields", "1px"),
+    id("nk-cut", "dimension", "Chamfered corners (top left, bottom right), drawn with clip-path; 0 = off", "0px"),
+    id("nk-surface-opacity", "number", "Panel opacity over the game (floor 0.92 for text panels)", "0.96", { range: [0, 1] }),
+    id("nk-surface-tint", "number", "How much brand tints neutral surfaces (0\u20130.12)", "0.02", { range: [0, 0.12] }),
+    id("nk-surface-gradient", "number", "Top-to-bottom light falloff on panels (0 = flat)", "0.04", { range: [0, 0.2] }),
+    id("nk-surface-edge", "number", "Inner top highlight, the machined edge (alpha)", "0.06", { range: [0, 0.3] }),
+    id("nk-elevation", "keyword", "Shadow recipe of floating panels", "soft", { values: ["none", "soft", "deep"] }),
+    id("nk-glow", "number", "Brand glow on active parts and HUD fills (alpha, 0 = off)", "0", { range: [0, 1] }),
+    id("nk-density", "number", "Multiplies the kit's spacing scale: 0.85 compact \u2026 1.15 roomy", "1", { range: [0.75, 1.3] }),
+    id("nk-ease", "cubicBezier", "The one easing curve", "cubic-bezier(0.2, 0.8, 0.2, 1)"),
+    id("nk-duration", "duration", "Base duration (panel enter, transitions); \xD7 nk-motion", "160ms"),
+    id("nk-hud-opacity", "number", "Minimum backplate opacity of HUD chips and tiles", "0.55", { range: [0, 1] }),
+    id("nk-hud-text-shadow", "keyword", "Shadow under text drawn on the game", "soft", { values: ["none", "soft", "strong"] }),
+    id("nk-gauge-style", "keyword", "How gauges are drawn", "arc", { values: ["arc", "bar", "digital"] }),
+    id("nk-gauge-track", "dimension", "Gauge and meter track thickness", "0.375rem"),
+    id("nk-gauge-ticks", "number", "Tick marks on gauges: 1 on, 0 off", "1", { range: [0, 1] }),
+    id("nk-row-indicator", "keyword", "How the active row is marked", "bar", { values: ["bar", "fill", "outline"] }),
+    dv("surface", "color", "Floating panel surface: popover tinted by brand (\xD7 nk-surface-tint); drawn at nk-surface-opacity", "mix(popover, brand, nk-surface-tint)"),
+    dv("nk-elevation-shadow", "shadow", "The box-shadow nk-elevation names, in scrim colour", "from nk-elevation"),
+    dv("nk-hud-shadow", "shadow", "The text-shadow nk-hud-text-shadow names, in scrim colour", "from nk-hud-text-shadow"),
+    dv("nk-row-bar", "number", "1 when nk-row-indicator is bar", "from nk-row-indicator"),
+    dv("nk-row-fill", "number", "1 when nk-row-indicator is fill", "from nk-row-indicator"),
+    dv("nk-row-outline", "number", "1 when nk-row-indicator is outline", "from nk-row-indicator"),
+    dv("nk-clip", "keyword", "clip-path of panels: the nk-cut chamfer, or none when nk-cut is 0 (a clip-path would also clip the shadow)", "from nk-cut"),
+    dv("nk-clip-sm", "keyword", "clip-path of chips, tiles and buttons: half the panel chamfer", "from nk-cut")
+  ];
+  var chamferClip = (cut) => `polygon(${cut} 0, 100% 0, 100% calc(100% - ${cut}), calc(100% - ${cut}) 100%, 0 100%, 0 ${cut})`;
+  var ALL_TOKENS = [...TOKENS, ...IDENTITY_TOKENS];
+  var ALL_TOKEN_NAMES = ALL_TOKENS.map((t) => t.name);
+  var SPEC = new Map(ALL_TOKENS.map((t) => [t.name, t]));
   var NEUTRAL = {
     light: {
       background: "oklch(1 0 0)",
@@ -388,6 +435,7 @@ var NuikitTheme = (() => {
     if (value === void 0 || value === null) return null;
     if (typeof value === "number") return String(value);
     if (typeof value === "string") return value;
+    if (Array.isArray(value) && type === "cubicBezier" && value.length === 4) return `cubic-bezier(${value.join(", ")})`;
     if (Array.isArray(value)) return value.map((f) => /[\s"']/.test(String(f)) && !/^["']/.test(String(f)) ? `"${f}"` : String(f)).join(", ");
     if (typeof value === "object") {
       const o = value;
@@ -474,8 +522,10 @@ var NuikitTheme = (() => {
       }
       resolved[name] = lowered;
     }
-    if (!opts.partial) derive(resolved, mode, warnings);
-    else if (resolved["nk-scale"] !== void 0 || resolved["nk-motion"] !== void 0) derive(resolved, mode, warnings, true);
+    if (!opts.partial) {
+      derive(resolved, mode, warnings);
+      deriveIdentity(resolved, warnings);
+    } else if (resolved["nk-scale"] !== void 0 || resolved["nk-motion"] !== void 0) derive(resolved, mode, warnings, true);
     if (opts.highContrast) highContrast(resolved);
     const contrast = checkContrast(resolved);
     for (const r of contrast) {
@@ -484,7 +534,7 @@ var NuikitTheme = (() => {
       warnings.push(`${r.fg} on ${r.bg} is ${r.ratio.toFixed(1)}:1 (needs ${r.min}:1); ${reason}.`);
     }
     const vars = order(resolved);
-    return { version: TOKENS_VERSION, mode, vars, imports, warnings, contrast, hash: hash(JSON.stringify([vars, imports])) };
+    return { version: TOKENS_VERSION, revision: TOKENS_REVISION, mode, vars, imports, warnings, contrast, hash: hash(JSON.stringify([vars, imports])) };
   }
   function lower(value) {
     const v = value.trim();
@@ -585,6 +635,125 @@ var NuikitTheme = (() => {
       vars[v.name] = pick != null ? pick : fmtOklch(v.fallback[0], v.fallback[1], v.fallback[2]);
     }
   }
+  var NUM = /^-?(?:\d+\.?\d*|\.\d+)$/;
+  var DIM = /^(-?(?:\d+\.?\d*|\.\d+))(px|rem|em)$/;
+  var DUR = /^(\d+\.?\d*|\.\d+)(ms|s)$/;
+  var BEZIER = /^cubic-bezier\(\s*(-?[\d.]+)\s*,\s*(-?[\d.]+)\s*,\s*(-?[\d.]+)\s*,\s*(-?[\d.]+)\s*\)$/;
+  var EASE_KEYWORDS = {
+    linear: "cubic-bezier(0, 0, 1, 1)",
+    ease: "cubic-bezier(0.25, 0.1, 0.25, 1)",
+    "ease-in": "cubic-bezier(0.42, 0, 1, 1)",
+    "ease-out": "cubic-bezier(0, 0, 0.58, 1)",
+    "ease-in-out": "cubic-bezier(0.42, 0, 0.58, 1)"
+  };
+  var trimNum = (n2) => String(Math.round(n2 * 1e4) / 1e4);
+  function identityValue(spec, raw) {
+    var _a;
+    const v = raw.trim();
+    switch (spec.type) {
+      case "number": {
+        if (!NUM.test(v)) return null;
+        const n2 = parseFloat(v);
+        if (spec.range && (n2 < spec.range[0] || n2 > spec.range[1])) return null;
+        return trimNum(n2);
+      }
+      case "dimension": {
+        if (v === "0") return "0px";
+        const m = DIM.exec(v);
+        return m ? `${trimNum(parseFloat(m[1]))}${m[2]}` : null;
+      }
+      case "duration": {
+        const m = DUR.exec(v);
+        if (!m) return null;
+        const ms = parseFloat(m[1]) * (m[2] === "s" ? 1e3 : 1);
+        return ms <= 2e3 ? `${trimNum(ms)}ms` : null;
+      }
+      case "cubicBezier": {
+        const k = EASE_KEYWORDS[v];
+        if (k) return k;
+        const m = BEZIER.exec(v);
+        if (!m) return null;
+        const [x1, y1, x2, y2] = m.slice(1).map(Number);
+        if (x1 < 0 || x1 > 1 || x2 < 0 || x2 > 1) return null;
+        return `cubic-bezier(${[x1, y1, x2, y2].map(trimNum).join(", ")})`;
+      }
+      case "keyword":
+        return ((_a = spec.values) == null ? void 0 : _a.includes(v)) ? v : null;
+      default:
+        return v || null;
+    }
+  }
+  var chromatic = (c2) => !!c2 && c2[3] > 0 && rgbToOklch(c2).c >= 0.06;
+  function elevationShadow(level, s) {
+    if (level === "none") return `0 0 0 0 rgba(${s}, 0)`;
+    if (level === "deep")
+      return `0 0 0 1px rgba(${s}, 0.3), 0 2px 4px rgba(${s}, 0.2), 0 18px 40px -10px rgba(${s}, 0.55), 0 44px 96px -28px rgba(${s}, 0.75)`;
+    return `0 0 0 1px rgba(${s}, 0.25), 0 24px 64px -24px rgba(${s}, 0.7)`;
+  }
+  function hudTextShadow(level, s) {
+    if (level === "none") return "none";
+    if (level === "strong") return `0 0 2px rgba(${s}, 0.9), 0 1px 3px rgba(${s}, 0.8)`;
+    return `0 1px 2px rgba(${s}, 0.6)`;
+  }
+  function hudPlateOverWhite(vars) {
+    var _a;
+    const hud = rgba(vars, "hud");
+    if (!hud) return null;
+    const a = Math.max(hud[3], parseFloat((_a = vars["nk-hud-opacity"]) != null ? _a : "0") || 0);
+    return composite([hud[0], hud[1], hud[2], a], WHITE);
+  }
+  function deriveIdentity(vars, warnings) {
+    var _a, _b, _c;
+    for (const spec of IDENTITY_TOKENS) {
+      if (spec.type === "color" || spec.type === "fontFamily" || spec.type === "shadow" || spec.group === "derived") continue;
+      const given = vars[spec.name];
+      if (given === void 0) {
+        vars[spec.name] = spec.fallback;
+        continue;
+      }
+      const v = identityValue(spec, given);
+      if (v === null) {
+        const want = spec.values ? spec.values.join(", ") : spec.range ? `a number from ${spec.range[0]} to ${spec.range[1]}` : spec.type === "dimension" ? "a length in px, rem or em" : spec.type === "duration" ? "a duration up to 2000ms" : "cubic-bezier(x1, y1, x2, y2)";
+        warnings.push(`--${spec.name} must be ${want} (got ${given}); ${spec.fallback} is used.`);
+        vars[spec.name] = spec.fallback;
+      } else vars[spec.name] = v;
+    }
+    if (vars.brand === void 0) {
+      const primary = rgba(vars, "primary");
+      vars.brand = chromatic(primary) || !vars["chart-1"] ? vars.primary : vars["chart-1"];
+    }
+    const brand = (_a = rgba(vars, "brand")) != null ? _a : rgba(vars, "primary");
+    if (vars["brand-foreground"] === void 0) vars["brand-foreground"] = bestText(vars, brand);
+    const sans = (_b = vars["font-sans"]) != null ? _b : DEFAULT_FONT_SANS;
+    if (vars["font-display"] === void 0) vars["font-display"] = sans === DEFAULT_FONT_SANS ? DEFAULT_FONT_DISPLAY : sans;
+    if (vars["font-numeric"] === void 0) vars["font-numeric"] = sans;
+    if (vars.surface === void 0) {
+      const pop = rgba(vars, "popover");
+      if (pop) {
+        const t = parseFloat(vars["nk-surface-tint"]);
+        const m = mix(pop, [brand[0], brand[1], brand[2], pop[3]], t);
+        vars.surface = formatRgba(m);
+      }
+    }
+    const scrim = (_c = rgba(vars, "scrim")) != null ? _c : BLACK;
+    const s = `${scrim[0]}, ${scrim[1]}, ${scrim[2]}`;
+    if (vars["nk-elevation-shadow"] === void 0) vars["nk-elevation-shadow"] = elevationShadow(vars["nk-elevation"], s);
+    if (vars["nk-hud-shadow"] === void 0) vars["nk-hud-shadow"] = hudTextShadow(vars["nk-hud-text-shadow"], s);
+    const cut = parseFloat(vars["nk-cut"]);
+    if (vars["nk-clip"] === void 0) vars["nk-clip"] = cut > 0 ? chamferClip("var(--nk-cut)") : "none";
+    if (vars["nk-clip-sm"] === void 0) vars["nk-clip-sm"] = cut > 0 ? chamferClip("calc(var(--nk-cut) / 2)") : "none";
+    const ind = vars["nk-row-indicator"];
+    for (const k of ["bar", "fill", "outline"]) if (vars[`nk-row-${k}`] === void 0) vars[`nk-row-${k}`] = ind === k ? "1" : "0";
+    const op = parseFloat(vars["nk-surface-opacity"]);
+    if (op < 0.92) warnings.push(`--nk-surface-opacity is ${op} (floor 0.92); the game will show through text in panels, and a bright sky will wash it out.`);
+    const plate = hudPlateOverWhite(vars);
+    const hudFg = rgba(vars, "hud-foreground");
+    if (plate && hudFg) {
+      const ratio = contrastRatio(composite(hudFg, plate), plate);
+      if (ratio < 4.5)
+        warnings.push(`hud-foreground on the HUD backplate over a white sky is ${ratio.toFixed(1)}:1 (needs 4.5:1); raise --nk-hud-opacity or darken --hud so HUD text reads over snow and midday sky.`);
+    }
+  }
   function highContrast(vars) {
     const best = (bg) => {
       const b = rgba(vars, bg);
@@ -615,6 +784,8 @@ var NuikitTheme = (() => {
     }
     vars.hud = "rgba(0, 0, 0, 0.72)";
     vars["hud-foreground"] = "rgb(255, 255, 255)";
+    if (vars["nk-surface-opacity"] !== void 0) vars["nk-surface-opacity"] = "1";
+    if (vars["nk-hud-opacity"] !== void 0) vars["nk-hud-opacity"] = "0.72";
     return vars;
   }
   function checkContrast(vars) {
@@ -632,7 +803,7 @@ var NuikitTheme = (() => {
   }
   function order(vars) {
     const out = {};
-    for (const name of TOKEN_NAMES) if (vars[name] !== void 0) out[name] = vars[name];
+    for (const name of ALL_TOKEN_NAMES) if (vars[name] !== void 0) out[name] = vars[name];
     for (const name of Object.keys(vars).sort()) if (!(name in out)) out[name] = vars[name];
     return out;
   }
@@ -669,14 +840,15 @@ ${lines.join("\n")}
     var _a;
     const color = { $type: "color" };
     const doc = {
-      $description: `${description} (nuikit tokens v${TOKENS_VERSION}, ${theme.mode})`,
-      $extensions: { "dev.nuikit": { tokens: TOKENS_VERSION, mode: theme.mode, ...theme.imports.length ? { imports: theme.imports } : {} } },
+      $description: `${description} (nuikit tokens v${TOKENS_REVISION}, ${theme.mode})`,
+      $extensions: { "dev.nuikit": { tokens: TOKENS_VERSION, revision: TOKENS_REVISION, mode: theme.mode, ...theme.imports.length ? { imports: theme.imports } : {} } },
       color
     };
     const font = { $type: "fontFamily" };
-    const nk = { $type: "number" };
+    const nk = {};
     for (const [name, value] of Object.entries(theme.vars)) {
       const spec = SPEC.get(name);
+      if ((spec == null ? void 0 : spec.group) === "derived") continue;
       const desc = spec ? { $description: spec.description } : {};
       const col = toRgba(value);
       if (col && ((_a = spec == null ? void 0 : spec.type) != null ? _a : "color") === "color") {
@@ -691,12 +863,23 @@ ${lines.join("\n")}
       } else if (name.startsWith("font-")) {
         font[name.slice(5)] = { $value: value.split(",").map((f) => f.trim().replace(/^["']|["']$/g, "")), ...desc };
       } else if (name.startsWith("nk-")) {
-        nk[name.slice(3)] = { $value: Number(value), ...desc };
+        nk[name.slice(3)] = dtcgNk(spec, value, desc);
       }
     }
     if (Object.keys(font).length > 1) doc.font = font;
     if (Object.keys(nk).length > 1) doc.nk = nk;
     return doc;
+  }
+  function dtcgNk(spec, value, desc) {
+    var _a, _b;
+    const dim = DIM.exec(value);
+    const dur = DUR.exec(value);
+    const bez = BEZIER.exec(value);
+    if (NUM.test(value) && ((_a = spec == null ? void 0 : spec.type) != null ? _a : "number") === "number") return { $type: "number", $value: Number(value), ...desc };
+    if (dim) return { $type: "dimension", $value: { value: parseFloat(dim[1]), unit: dim[2] }, ...desc };
+    if (dur) return { $type: "duration", $value: { value: parseFloat(dur[1]), unit: dur[2] }, ...desc };
+    if (bez) return { $type: "cubicBezier", $value: bez.slice(1).map(Number), ...desc };
+    return { $value: value, ...desc, $extensions: { "dev.nuikit": { type: (_b = spec == null ? void 0 : spec.type) != null ? _b : "keyword" } } };
   }
   return __toCommonJS(fxserver_exports);
 })();

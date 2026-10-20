@@ -1,6 +1,22 @@
 // Theme presets, written exactly like a TweakCN / shadcn export (.dark block, oklch).
 // "Neutral" is the stock `shadcn init` theme and the default; the rest are examples.
 // The playground feeds them through applyTheme() from nuikit.
+import graphite from "nuikit-core/themes/graphite.css?raw";
+import signal from "nuikit-core/themes/signal.css?raw";
+import velvet from "nuikit-core/themes/velvet.css?raw";
+import vector from "nuikit-core/themes/vector.css?raw";
+
+/**
+ * The four nuikit identities (tokens 1.1, docs/tokens.md#identities): colour plus type, shape, surface,
+ * density, motion and HUD style. Single source: nuikit-core/themes. Not yet in a picker (Blocks + site).
+ */
+export const identities: { name: string; swatch: string[]; css: string }[] = [
+  { name: "Graphite", swatch: ["#e5e5e5", "#d4d4d4", "#171717"], css: graphite },
+  { name: "Signal", swatch: ["#f5e21c", "#f4f3ee", "#0f0e0c"], css: signal },
+  { name: "Velvet", swatch: ["#e6c188", "#f6efe6", "#281a1e"], css: velvet },
+  { name: "Vector", swatch: ["#4dece4", "#eef6f7", "#0a191d"], css: vector },
+];
+
 export const themes: { name: string; swatch: string[]; css: string }[] = [
   {
     name: "Neutral",

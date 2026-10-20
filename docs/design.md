@@ -39,8 +39,8 @@ screen is the same size relative to the game at every resolution. Design at 1080
 |---|---|
 | Spacing | 4, 8, 12, 16, 24 px (`1 2 3 4 6`) inside panels; 48 (`12`) for full-screen gutters. Nothing in between. |
 | Screen edge | 24px (`--nk-edge`) for anything anchored to an edge |
-| Control height | 32 (compact), 36 (default), 40 (list row) |
-| Text | 12 label · 14 body · 15 panel title · 20 section · 32+ numbers that are the point (balance, timer) |
+| Control height | 32 (compact), 36 (default), 44 (list row, × `--nk-density`) |
+| Text | 13 label · 16 body · 17–18 panel title · 23 section · 36+ numbers that are the point (balance, timer); 18+ HUD values. Graphite at ratio 1.2; identities change the ratio (tokens 1.1) |
 | Weight | 400 body, 500 labels and rows, 600 titles and key numbers |
 | Icons | 16px lucide, `muted-foreground` unless the icon is the state |
 | Panel padding | header 12/16, body 8 (lists) or 16 (forms), footer 12/16 |
@@ -52,9 +52,10 @@ screen is the same size relative to the game at every resolution. Design at 1080
 2. **Quiet by default.** Neutral surfaces; `primary` appears once per surface (the main action or
    the progress fill). Colour carries meaning, never decoration.
 3. **Sentence case.** No uppercase tracked labels, no eyebrow text above titles, no `A · B · C` meta
-   strings. Labels say what the value is in plain words.
+   strings. Labels say what the value is in plain words. Write text in sentence case; an identity may
+   uppercase captions and headings (`--nk-label-case`, `--nk-heading-case`, tokens 1.1), never in markup.
 4. **Numbers are tabular** (`nk-num`). Mono only for codes a player might type (plate, citizen ID).
-5. **Rows, not tiles,** for lists of actions: `nk-row`, 40px, icon + label + trailing meta.
+5. **Rows, not tiles,** for lists of actions: `nk-row`, 44px (× density), icon + label + trailing meta.
 6. **Keys** are shadcn `Kbd`, next to the action they trigger.
 7. **One motion.** Panels open with `nk-enter` (160ms fade). Nothing animates on its own
    except things that are live (progress, timers, talking). Everything stops when `--nk-motion` is 0.
@@ -111,5 +112,5 @@ Set `--nk-edge` on the root (or add `nk-edge`) to move every anchor at once.
 
 **First-row alignment.** A floating menu that opens beside a point (the target eye, the cursor, a row it came from)
 lines its first row up with that point, not its top edge. Put the panel's top on the point and add `nk-first-row`:
-it pulls the panel up by the 1px border, the 8px body padding and half a 40px row. Leave a 16px (`ml-4` / `mt-4`) gap
+it pulls the panel up by the 1px border, the 8px body padding and half a row. Leave a 16px (`ml-4` / `mt-4`) gap
 between the point and the panel.
