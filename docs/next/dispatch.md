@@ -3,6 +3,14 @@
 *How several coding agents work on nuikit at once without colliding. The lead session owns the platform
 (0.7, `docs/architecture.md`); agents own the lanes below. Status lives in [`../roadmap.md`](../roadmap.md).*
 
+## The agent bus (how agents talk)
+
+GitHub issue **#53** is the one channel between the lead (cloud), the kit coordinator (owner's PC) and the test
+assistant (owner's PC). Every report, request, `BATCHED PR FIX: #NN <sha>` notice and test report is a comment
+there, starting with `[from: …] [to: …] [type: report|request|fix|decision|test] <summary>`. The lead watches it
+and answers there. Only things that need the owner (an in-game test, a product decision) are marked `[to: owner]`.
+The owner is not a relay.
+
 ## Lead decisions log
 
 - Oct 20: `form-field` naming accepted; Blocks owns `create-nuikit/src` for `-t <block>`; `nuikit check` accepts
@@ -38,6 +46,7 @@
 | Components | `registry/nuikit/ui/*`, `registry/nuikit/hooks/*`, `registry.json`, `apps/www/src/components.tsx` and component previews | `feat/components` |
 | Screens | `systems/nuikit_death`, `nuikit_loading`, `nuikit_chat`, `addons/*` **except** `addons/ox_inventory` | `feat/screens` |
 | Blocks + site | `registry/nuikit/blocks/*`, `packages/create-nuikit` (templates, `src/` for `-t <block>`, its build script; not `kit.css` / `index.css.tpl`), `apps/www` (except the components page) | `feat/blocks` |
+| Design (lead-run) | `docs/design/**`, `docs/design.md` (with the lead), the Figma design system ("nuikit — design system v2"); implementation of v2 goes through Components | `feat/design-*` |
 | Showcase | `systems/nuikit_pause`, `systems/nuikit_hud`, `systems/nuikit_stress`, `addons/ox_inventory` | `feat/showcase` |
 
 Shared and append-only: `registry.json` entries, `.changeset/*.md` (one file per PR). `packages/create-nuikit/kit.css`
@@ -101,6 +110,14 @@ mm_radio.
 - Site: `/blocks` with live previews over a game scene, a theme switcher (TweakCN presets + paste your own),
   the install command per block; theme studio (paste a theme or tweak tokens, see the kit update live, read the
   contrast warnings from `compileTheme`, download `theme.css`).
+
+## Lane: Design (lead-run, with the owner as design lead)
+
+Audit everything shipped (`docs/design/audit/`), research the quality bar of top FiveM servers by principle (never
+copy proprietary looks), define design language v2 in `docs/design.md`, and keep a Figma design system whose
+variables mirror `nuikit.tokens.json` 1:1. Reference screens for the flagships (HUD, pause, inventory, notifications,
+menus, death) become the target for every lane. Until v2 lands, Blocks does functional work and keeps visuals on the
+current kit; Components implements v2 when it's approved.
 
 ## Lane: Showcase (`feat/showcase`, the owner's existing agent)
 
