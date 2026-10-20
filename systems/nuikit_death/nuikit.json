@@ -5,6 +5,7 @@
     "kbd",
     "progress",
     "separator",
-    "meter"
+    "meter",
+    "countdown"
   ]
 }
