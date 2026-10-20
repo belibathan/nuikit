@@ -149,14 +149,19 @@ export function ListMenu() {
     <div className={cn("pointer-events-none fixed z-30 flex items-start gap-2", CORNER[menu.position ?? "top-left"], menu.position?.endsWith("right") && "flex-row-reverse")}>
       <Panel>
         <PanelHeader title={menu.title} />
-        <PanelBody ref={list} className="max-h-[19.25rem] overflow-y-hidden">
-          {items.map((item, i) =>
-            item.label ? (
-              <Row key={i} index={i} item={item} active={i === selected} scroll={indexes[i] ?? 0} checked={checks[i] ?? false} />
-            ) : (
-              <span key={i} data-index={i} hidden />
-            ),
-          )}
+        <PanelBody>
+          {/* The scrolling box sits inside the body's padding and is exactly 7 rows tall
+              (7 × 40px + 6 × 2px gaps = 18.25rem), so scrollIntoView({ block: "nearest" }) always
+              lands on a whole row: no half row peeking out under the header. */}
+          <div ref={list} className="flex max-h-[18.25rem] flex-col gap-0.5 overflow-y-hidden">
+            {items.map((item, i) =>
+              item.label ? (
+                <Row key={i} index={i} item={item} active={i === selected} scroll={indexes[i] ?? 0} checked={checks[i] ?? false} />
+              ) : (
+                <span key={i} data-index={i} hidden />
+              ),
+            )}
+          </div>
         </PanelBody>
         {items.length > 6 && selected !== items.length - 1 && (
           <div className="-mt-1 flex justify-center pb-1 text-muted-foreground">
