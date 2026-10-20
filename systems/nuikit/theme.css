@@ -2,6 +2,10 @@
  * The theme for every nuikit UI on this server.
  * Paste any TweakCN (tweakcn.com) or shadcn (ui.shadcn.com/themes) theme over these blocks.
  * nuikit UIs run in dark mode, so .dark is the one players see.
+ *
+ * Identities (docs/tokens.md#identities): this is Graphite, the default. themes/ holds Graphite, Signal,
+ * Velvet and Vector, each a complete theme.css: copy one over this file and run `nuikit theme reload`.
+ * Type, shape, surface, density, motion and HUD style are tokens too (--nk-cut, --nk-elevation…).
  */
 :root {
   --background: oklch(1 0 0);
