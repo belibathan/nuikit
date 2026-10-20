@@ -66,6 +66,53 @@
   --chart-5: oklch(0.269 0 0);
 }
 
+/*
+ * nuikit tokens v1 (docs/tokens.md): game semantics on top of shadcn's, so the kit's components
+ * (meter tracks on the game, HUD chips, status colours, vitals) render here as they do in game.
+ * The same defaults compileTheme() derives from the stock theme above, i.e. what `pnpm sync` writes
+ * into every UI's index.css from index.css.tpl (src/tokens.test.ts keeps them equal); info follows
+ * primary. A preset applied with applyTheme() (ThemePicker) replaces them all.
+ */
+:root {
+  --destructive-foreground: rgb(255, 255, 255);
+  --success: rgb(0, 146, 66);
+  --success-foreground: rgb(10, 10, 10);
+  --warning: rgb(194, 131, 0);
+  --warning-foreground: rgb(10, 10, 10);
+  --info: var(--primary);
+  --info-foreground: var(--primary-foreground);
+  --hud: rgba(0, 0, 0, 0.45);
+  --hud-foreground: rgb(255, 255, 255);
+  --scrim: rgb(0, 0, 0);
+  --vital-health: rgb(228, 0, 21);
+  --vital-armor: rgb(59, 156, 246);
+  --vital-hunger: rgb(247, 162, 36);
+  --vital-thirst: rgb(30, 197, 228);
+  --vital-stress: rgb(204, 103, 227);
+  --nk-scale: 1;
+  --nk-motion: 1;
+}
+
+.dark {
+  --destructive-foreground: rgb(10, 10, 10);
+  --success: rgb(20, 190, 90);
+  --success-foreground: rgb(10, 10, 10);
+  --warning: rgb(245, 166, 0);
+  --warning-foreground: rgb(0, 0, 0);
+  --info: var(--primary);
+  --info-foreground: var(--primary-foreground);
+  --hud: rgba(0, 0, 0, 0.45);
+  --hud-foreground: rgb(255, 255, 255);
+  --scrim: rgb(0, 0, 0);
+  --vital-health: rgb(255, 100, 103);
+  --vital-armor: rgb(59, 156, 246);
+  --vital-hunger: rgb(247, 162, 36);
+  --vital-thirst: rgb(30, 197, 228);
+  --vital-stress: rgb(204, 103, 227);
+  --nk-scale: 1;
+  --nk-motion: 1;
+}
+
 @theme inline {
   --font-sans: "Geist Variable", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "Geist Mono Variable", ui-monospace, monospace;
@@ -88,6 +135,7 @@
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
   --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
@@ -96,6 +144,20 @@
   --color-chart-3: var(--chart-3);
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
+  --color-hud: var(--hud);
+  --color-hud-foreground: var(--hud-foreground);
+  --color-scrim: var(--scrim);
+  --color-vital-health: var(--vital-health);
+  --color-vital-armor: var(--vital-armor);
+  --color-vital-hunger: var(--vital-hunger);
+  --color-vital-thirst: var(--vital-thirst);
+  --color-vital-stress: var(--vital-stress);
 }
 
 @layer base {
