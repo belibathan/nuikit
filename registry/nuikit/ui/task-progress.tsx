@@ -12,6 +12,10 @@ import { Progress } from "@/components/ui/progress"
  * `duration` ms, then calls onComplete.
  *
  *   <TaskProgress label="Repairing engine" duration={5000} onComplete={done} cancelKey="X" onCancel={cancel} />
+ *
+ * @deprecated Use `meter` in timed mode (`duration` + `onComplete`, on a panel) for a bar, or
+ * `progress-ring` (`duration`, `cancelKey`, `onCancel`) for a circle: both complete from a timer,
+ * so they finish with motion off. TaskProgress keeps working.
  */
 function TaskProgress({
   className,

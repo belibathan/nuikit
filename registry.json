@@ -114,7 +114,7 @@
       "name": "key-hint",
       "type": "registry:ui",
       "title": "Key Hint",
-      "description": "\"[E] Talk\" prompts built on shadcn Kbd, with hold-to-confirm on Progress.",
+      "description": "Deprecated: use key-prompt. \"[E] Talk\" prompts built on shadcn Kbd, with hold-to-confirm on Progress. Still works.",
       "files": [
         {
           "path": "registry/nuikit/ui/key-hint.tsx",
@@ -133,7 +133,7 @@
       "name": "task-progress",
       "type": "registry:ui",
       "title": "Task Progress",
-      "description": "Timed action (lockpicking, repairing) in a shadcn Card with Progress and a cancel Kbd.",
+      "description": "Deprecated: use meter (timed mode) or progress-ring. Timed action (lockpicking, repairing) in a shadcn Card with Progress and a cancel Kbd. Still works.",
       "files": [
         {
           "path": "registry/nuikit/ui/task-progress.tsx",
@@ -194,7 +194,7 @@
       "name": "nui-toaster",
       "type": "registry:ui",
       "title": "NUI Toaster",
-      "description": "The stock shadcn Sonner Toaster, wired to Lua's NUI.notify().",
+      "description": "Deprecated: use notice (useNotices() + <Notices>). The stock shadcn Sonner Toaster, wired to Lua's NUI.notify(). Still works.",
       "files": [
         {
           "path": "registry/nuikit/ui/nui-toaster.tsx",
