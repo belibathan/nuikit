@@ -33,7 +33,7 @@ import {
   WrenchIcon,
 } from "lucide-react";
 import { closeSurface, openSurface, Surface } from "nuikit-core/react";
-import { useState, type ReactNode } from "react";
+import { cloneElement, useState, type ReactElement, type ReactNode } from "react";
 import { Command } from "@/components/code";
 import { Scene } from "@/components/scene";
 import { Footer, Nav, SITE, ThemePicker } from "@/components/site";
@@ -65,6 +65,7 @@ import { ProgressRing } from "@/components/ui/progress-ring";
 import { Speedometer } from "@/components/ui/speedometer";
 import { Countdown } from "@/components/ui/countdown";
 import { Money } from "@/components/ui/money";
+import { ItemSlot } from "@/components/ui/item-slot";
 import { cn } from "@/lib/utils";
 
 export function ComponentsPage() {
@@ -311,6 +312,15 @@ export function ComponentsPage() {
           stageClassName="items-center"
         >
           <MoneyStates />
+        </Section>
+
+        <Section
+          name="item-slot"
+          title="Item slot"
+          text="One square of an inventory, a shop or a hotbar: image, name, count, hotkey, a durability line, price and stock, and the states drag and drop needs: empty, active, drop target, dragging, locked. Wells on a panel, the HUD surface on the game."
+          stageClassName="min-h-[34rem] items-center"
+        >
+          <ItemSlotStates />
         </Section>
       </main>
       <Footer />
@@ -1242,6 +1252,66 @@ function MoneyStates() {
             </div>
           </PanelBody>
         </Panel>
+      </div>
+    </>
+  );
+}
+
+// Lucide icons stand in for an inventory's own item images.
+const ITEM_ICON = "size-8 text-muted-foreground";
+const POCKETS = [
+  { image: <DropletIcon className={ITEM_ICON} />, label: "Water", count: 3 },
+  { image: <UtensilsIcon className={ITEM_ICON} />, label: "Sandwich", count: 2 },
+  { image: <WrenchIcon className={ITEM_ICON} />, label: "Lockpick", durability: 14 },
+  { image: <RadioIcon className={ITEM_ICON} />, label: "Radio", durability: 88 },
+  { image: <PillIcon className={ITEM_ICON} />, label: "Painkillers", count: 12 },
+];
+
+/** An inventory (every state), a shop (price, stock, locked) and the hotbar on the game. */
+function ItemSlotStates() {
+  const [selected, setSelected] = useState(1);
+  return (
+    <>
+      <Panel size="auto">
+        <PanelHeader icon={<BackpackIcon />} title="Pockets" description="Click to select; the states from props" />
+        <PanelBody variant="form" className="gap-0">
+          <div className="grid w-[26rem] grid-cols-5 gap-2">
+            {POCKETS.map((p, i) => (
+              <ItemSlot key={p.label} hotkey={i + 1} {...p} active={selected === i} onClick={() => setSelected(i)} />
+            ))}
+            <ItemSlot image={<FuelIcon className={ITEM_ICON} />} label="Jerry can" dragging />
+            <ItemSlot dropTarget />
+            <ItemSlot />
+            <ItemSlot image={<ShieldIcon className={ITEM_ICON} />} label="Armor" locked />
+            <ItemSlot />
+          </div>
+        </PanelBody>
+      </Panel>
+      <div className="flex flex-col items-center gap-6">
+        <Panel size="auto">
+          <PanelHeader icon={<WalletIcon />} title="24/7" description="Price and stock" />
+          <PanelBody variant="form" className="gap-0">
+            <div className="grid w-[16rem] grid-cols-3 gap-2">
+              <ItemSlot image={<DropletIcon className={ITEM_ICON} />} label="Water" stock={24} price={<Money amount={2} />} onClick={() => {}} />
+              <ItemSlot image={<UtensilsIcon className={ITEM_ICON} />} label="Sandwich" stock={8} price={<Money amount={5} />} onClick={() => {}} />
+              <ItemSlot image={<RadioIcon className={ITEM_ICON} />} label="Radio" stock={0} price={<Money amount={250} />} locked />
+            </div>
+          </PanelBody>
+        </Panel>
+        <div className="flex gap-2">
+          {POCKETS.map((p, i) => (
+            <ItemSlot
+              key={p.label}
+              surface="hud"
+              size="sm"
+              hotkey={i + 1}
+              image={cloneElement(p.image as ReactElement<{ className?: string }>, { className: "size-6" })}
+              count={p.count}
+              durability={p.durability}
+              active={selected === i}
+            />
+          ))}
+        </div>
       </div>
     </>
   );
