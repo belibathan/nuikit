@@ -437,6 +437,39 @@ export function ComponentsPage() {
         >
           <RadialDemo />
         </Section>
+
+        <section id="deprecated" className="mt-20 scroll-mt-20">
+          <h2 className="text-2xl font-semibold tracking-tight">Deprecated</h2>
+          <p className="mt-2 max-w-2xl text-muted-foreground text-pretty">
+            Still in the registry and still working, so nothing breaks; new UI should use the component that replaced them.
+          </p>
+          <div className="mt-6 divide-y rounded-xl border">
+            {DEPRECATED.map((d) => (
+              <div key={d.name} data-slot="deprecated-item" className="flex flex-wrap items-center gap-x-6 gap-y-2 px-5 py-4">
+                <div className="min-w-48">
+                  <div className="flex items-center gap-2">
+                    <code className="font-mono text-sm">{d.name}</code>
+                    <Badge variant="outline">Deprecated</Badge>
+                  </div>
+                  <p className="mt-1 text-sm text-muted-foreground">{d.what}</p>
+                </div>
+                <p className="flex-1 text-sm">
+                  Use{" "}
+                  {d.use.map((u, i) => (
+                    <span key={u}>
+                      {i > 0 && " or "}
+                      <a href={`#${u}`} className="font-mono underline underline-offset-4">
+                        {u}
+                      </a>
+                    </span>
+                  ))}
+                  {d.how && <span className="text-muted-foreground"> ({d.how})</span>}
+                </p>
+                <Command className="h-9 w-full max-w-xs text-xs">{`npx shadcn add ${SITE}/r/${d.name}.json`}</Command>
+              </div>
+            ))}
+          </div>
+        </section>
       </main>
       <Footer />
     </div>
@@ -1535,4 +1568,10 @@ function RadialDemo() {
     </>
   );
 }
+
+const DEPRECATED: { name: string; what: string; use: string[]; how?: string }[] = [
+  { name: "nui-toaster", what: "Sonner toasts wired to NUI.notify()", use: ["notice"], how: "useNotices() + <Notices>" },
+  { name: "task-progress", what: "A timed action in a Card", use: ["meter", "progress-ring"], how: "duration + onComplete" },
+  { name: "key-hint", what: '"[E] Talk" with hold-to-confirm', use: ["key-prompt"] },
+];
 
