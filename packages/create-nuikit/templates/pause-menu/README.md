@@ -20,6 +20,9 @@ Settings and Key bindings open GTA's own pages and bring this menu back when the
 
 ## How it behaves
 
+- **It replaces GTA's Esc pause menu.** While this menu can open, `client/main.lua` disables GTA's Esc
+  pause control (200) every frame and opens this menu instead. P (control 199) is left alone and still
+  opens GTA's own pause menu on the map. Stop the resource and Esc is GTA's again.
 - It doesn't open while another UI has focus (chat, a phone, an inventory), while another nuikit modal
   is up, or while the player is dead. In those cases Esc does what it did before.
 - Escape closes it through nuikit, so it never fights another UI for Esc. Going down while it's open
