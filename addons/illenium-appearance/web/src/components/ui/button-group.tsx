@@ -1,3 +1,4 @@
+// synced by pnpm sync: don't edit here. Change vendor/shadcn/ui/button-group.tsx, then run pnpm sync.
 import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 import { Slot } from "radix-ui"

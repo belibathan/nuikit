@@ -1,3 +1,4 @@
+// synced by pnpm sync: don't edit here. Change registry/nuikit/ui/hud-chip.tsx, then run pnpm sync.
 import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
 

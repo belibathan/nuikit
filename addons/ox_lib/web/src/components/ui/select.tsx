@@ -1,3 +1,4 @@
+// synced by pnpm sync: don't edit here. Change vendor/shadcn/ui/select.tsx, then run pnpm sync.
 "use client"
 
 import * as React from "react"

@@ -1,3 +1,4 @@
+// synced by pnpm sync: don't edit here. Change vendor/shadcn/ui/kbd.tsx, then run pnpm sync.
 import { cn } from "@/lib/utils"
 
 function Kbd({ className, ...props }: React.ComponentProps<"kbd">) {

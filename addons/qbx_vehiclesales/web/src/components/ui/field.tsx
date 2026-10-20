@@ -1,3 +1,4 @@
+// synced by pnpm sync: don't edit here. Change vendor/shadcn/ui/field.tsx, then run pnpm sync.
 "use client"
 
 import { useMemo } from "react"

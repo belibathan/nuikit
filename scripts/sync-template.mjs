@@ -161,6 +161,20 @@ const MANIFEST = path.join(root, "scripts/sync-manifest.json");
 const previous = fs.existsSync(MANIFEST) ? (JSON.parse(fs.readFileSync(MANIFEST, "utf8")).targets ?? {}) : {};
 const manifest = {};
 
+// A header on every synced TS/TSX/CSS copy, so whoever opens one (people, agents) edits the source instead.
+// Not in the create-nuikit template: `npm create nuikit` hands those files to the user, who owns them.
+// lib/utils.ts already says it's generated. CI runs pnpm sync and fails on any diff (ci.yml).
+const SYNCED = "synced by pnpm sync: don't edit here. Change";
+const HEADERS = {
+  ".ts": (src) => `// ${SYNCED} ${src}, then run pnpm sync.\n`,
+  ".tsx": (src) => `// ${SYNCED} ${src}, then run pnpm sync.\n`,
+  ".css": (src) => `/* ${SYNCED} ${src}, then run pnpm sync. */\n`,
+};
+const withoutHeader = (buf) => {
+  const s = buf.toString("utf8");
+  return s.includes(SYNCED) && s.indexOf("\n") < s.indexOf(SYNCED) + 200 ? Buffer.from(s.slice(s.indexOf("\n") + 1)) : buf;
+};
+
 /** A target with no manifest entry yet: its components and hooks that are exact copies of a source. */
 function adoptExactCopies(dir) {
   const found = [];
@@ -170,7 +184,7 @@ function adoptExactCopies(dir) {
     for (const f of fs.readdirSync(abs)) {
       const src = sourceOf(f);
       if (!src || !fs.existsSync(path.join(root, src))) continue;
-      if (fs.readFileSync(path.join(abs, f)).equals(fs.readFileSync(path.join(root, src)))) found.push(`${sub}/${f}`);
+      if (withoutHeader(fs.readFileSync(path.join(abs, f))).equals(fs.readFileSync(path.join(root, src)))) found.push(`${sub}/${f}`);
     }
   };
   scan("web/src/components/ui", (f) => (f.endsWith(".tsx") ? source(f.slice(0, -4)) : null));
@@ -180,10 +194,13 @@ function adoptExactCopies(dir) {
 
 for (const t of targets) {
   const written = new Set();
+  const headers = t.dir !== "packages/create-nuikit/template";
   const copy = (from, to) => {
     const dest = path.join(root, t.dir, to);
     fs.mkdirSync(path.dirname(dest), { recursive: true });
-    fs.copyFileSync(path.join(root, from), dest);
+    const header = headers && from !== UTILS && to.startsWith("web/") ? HEADERS[path.extname(to)] : undefined;
+    if (header) fs.writeFileSync(dest, header(from) + fs.readFileSync(path.join(root, from), "utf8"));
+    else fs.copyFileSync(path.join(root, from), dest);
     written.add(to);
   };
   for (const f of t.lua) copy(`packages/core/lua/${f}`, `client/${f}`);
@@ -206,7 +223,8 @@ for (const t of targets) {
   if (t.components.length || fs.existsSync(path.join(root, t.dir, "web/src/lib/utils.ts"))) copy(UTILS, "web/src/lib/utils.ts");
   if (t.compiler) copy("packages/core/dist/fxserver-compiler.js", "server/compiler.js");
   if (t.css !== false) {
-    fs.writeFileSync(path.join(root, t.dir, "web/src/index.css"), cssFor(fontMode, t.surface));
+    const css = cssFor(fontMode, t.surface);
+    fs.writeFileSync(path.join(root, t.dir, "web/src/index.css"), headers ? HEADERS[".css"]("packages/create-nuikit/index.css.tpl or kit.css") + css : css);
     written.add("web/src/index.css");
   }
   // prune: what sync wrote last time and no longer writes (never a file sync didn't write)
