@@ -26,6 +26,11 @@ const natives = `
   function print() end
   PIXELS, REPLACED = 0, nil
   CAMZ = 0.0
+  LOADING, ACTIVE, BIG = false, true, false
+  function GetIsLoadingScreenActive() return LOADING end
+  function NetworkIsPlayerActive() return ACTIVE end
+  function PlayerId() return 0 end
+  function IsBigmapActive() return BIG end
   function GetGameplayCamRot() return { x = 0.0, y = 0.0, z = CAMZ } end
   -- the compass thread's pace: 33 ms between calls (its stream sends at most 30 a second)
   NOW = 0
@@ -134,5 +139,16 @@ describe("systems/nuikit_hud: the minimap", () => {
     await hud.call("hud:minimap:ready");
     await hud.run(`Minimap.compass()`);
     expect(sent()).toEqual([270, 270.5, 180, 180]);
+  });
+
+  it("places the radar only once the player is in the world (joining left GTA's big map stuck on)", async () => {
+    client = await createClient();
+    const hud = await client.start("nuikit_hud", { before: natives, scripts });
+    expect(await hud.run(`LOADING = true return Minimap.inGame()`)).toBe(false);
+    expect(await hud.run(`LOADING, ACTIVE = false, false return Minimap.inGame()`)).toBe(false);
+    expect(await hud.run(`ACTIVE = true return Minimap.inGame()`)).toBe(true);
+    // a big map still on after the flick is switched off again
+    await hud.run(`CALLS = {} SetRadarBigmapEnabled = function(on) CALLS[#CALLS + 1] = tostring(on) end BIG = true Minimap.apply()`);
+    expect(await hud.run(`return table.concat(CALLS, ",")`)).toBe("true,false,false");
   });
 });

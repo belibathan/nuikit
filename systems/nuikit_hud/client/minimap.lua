@@ -128,10 +128,13 @@ function Minimap.apply()
   useMask(tune.texture or cfg.shape)
   local x, y, w, h, mx, my, mw, mh = place(radar, width, height, safezone)
   if cfg.compass ~= false then SetBlipAlpha(GetNorthRadarBlip(), 0) end
-  -- GTA only re-reads component positions when the radar changes mode: flick the big map
+  -- GTA only re-reads component positions when the radar changes mode: flick the big map. Make
+  -- sure it ends off: one left on hides the frame and fills the corner with the big radar.
   SetRadarBigmapEnabled(true, false)
   Wait(50)
   SetRadarBigmapEnabled(false, false)
+  Wait(250)
+  if IsBigmapActive() then SetRadarBigmapEnabled(false, false) end
   if not scaleform then scaleform = RequestScaleformMovie('minimap') end
   placed = {
     x = frame.x / width, y = frame.y / height, w = frame.w / width, h = frame.h / height,
@@ -144,6 +147,15 @@ function Minimap.apply()
     print(('[nuikit_hud] minimap: radar %.4f %.4f %.4f %.4f, mask %.4f %.4f %.4f %.4f (%s)'):format(
       x, y, w, h, mx, my, mw, mh, cfg.shape or 'square'))
   end
+end
+
+--- The player is in the world: no loading screen, the network session running and the character
+--- loaded. Placing the radar before that (while joining) left GTA's big map stuck on.
+---@return boolean
+function Minimap.inGame()
+  if GetIsLoadingScreenActive() or not NetworkIsPlayerActive(PlayerId()) then return false end
+  local player = NUI.player and NUI.player.get and NUI.player.get()
+  return not player or player.loaded ~= false
 end
 
 --- What the frame shows this moment: whether the radar is on screen, the camera heading for the
@@ -249,17 +261,22 @@ if cfg.enabled ~= false then
       end
     end
   end)
-  -- Re-place only when the render size or safe zone changes.
+  -- Place the radar once the player is in the world, again each time they come back (a character
+  -- switch goes through the loading screen) and whenever the render size or safe zone changes.
   CreateThread(function()
-    local lw, lh, ls = 0, 0, 0.0
+    local lw, lh, ls, was = 0, 0, 0.0, false
     while true do
-      local w, h = GetActiveScreenResolution()
-      local s = GetSafeZoneSize()
-      if w ~= lw or h ~= lh or math.abs(s - ls) > 0.0001 then
-        lw, lh, ls = w, h, s
-        Minimap.apply()
+      local now = Minimap.inGame()
+      if now then
+        local w, h = GetActiveScreenResolution()
+        local s = GetSafeZoneSize()
+        if not was or w ~= lw or h ~= lh or math.abs(s - ls) > 0.0001 then
+          lw, lh, ls = w, h, s
+          Minimap.apply()
+        end
       end
-      Wait(1500)
+      was = now
+      Wait(now and 1500 or 500)
     end
   end)
   -- The HUD draws vitals itself: hide GTA's health and armour arcs around the radar.
