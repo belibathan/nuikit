@@ -93,7 +93,7 @@ export default function App() {
               aria-pressed={running}
               title={running ? "Stop the meter" : "Start the meter"}
             >
-              <span className={cn("size-1.5 rounded-full", running ? "animate-pulse bg-primary" : "bg-muted-foreground/60")} />
+              <span className={cn("size-1.5 rounded-full", running ? "animate-pulse bg-success" : "bg-muted-foreground/60")} />
               <span className={cn(running && "text-foreground")}>{running ? "Running" : "Stopped"}</span>
             </button>
           }
