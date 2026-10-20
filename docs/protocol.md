@@ -369,8 +369,9 @@ second (`systems/nuikit_pause/web/src/lib/batch.ts`), and Lua lands each step ov
 The exception is a value that must lock to the game's own picture every frame (3D pins tracking the camera):
 it pays per-frame messages on purpose, while it is on screen.
 
-Reference: the minimap compass (`hud:minimap:heading`, 0.1°) and the speedometer (`hud:vehicle:speed`,
-whole units, and `hud:vehicle:rpm`, 0.01) in `systems/nuikit_hud`.
+Reference: the compass (`hud:minimap:heading`, 0.1°), the gauge (`hud:vehicle:speed`, whole units,
+`hud:vehicle:rpm`, 0.01) and the flight instruments (`hud:vehicle:heading`, 1°, `hud:vehicle:altitude`,
+1 unit at ≤15 a second) in `systems/nuikit_hud`.
 
 ## 6. Theme
 

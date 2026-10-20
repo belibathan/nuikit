@@ -27,14 +27,65 @@ const natives = `
   function Wait() end
   LocalPlayer = { state = {} }
   exports = { qbx_core = { GetPlayerData = function() return PD end } }
+  -- minimap.lua has its own tests (minimap.test.ts); main.lua only flags it
+  Minimap = { resend = function() end }
+  -- the vehicle and the street (vehicle.lua, location.lua, adapters.lua)
+  VEH, SPEED_MS, RPM, CLASS = 0, 0.0, 0.2, 0
+  function DisplayRadar() end
+  function GetVehiclePedIsIn() return VEH end
+  function GetVehicleClass() return CLASS end
+  function GetEntitySpeed() return SPEED_MS end
+  function GetEntitySpeedVector() return { x = 0.0, y = SPEED_MS, z = 0.0 } end
+  function GetVehicleCurrentRpm() return RPM end
+  function GetVehicleCurrentGear() return 3 end
+  function GetVehicleHighGear() return 6 end
+  function GetVehicleFuelLevel() return 64.0 end
+  function GetVehicleHandlingFloat() return 100.0 end
+  function GetVehicleEngineHealth() return 1000.0 end
+  function GetVehicleBodyHealth() return 1000.0 end
+  function GetIsVehicleEngineRunning() return true end
+  function GetVehicleHandbrake() return false end
+  function GetPedInVehicleSeat() return 1 end
+  HANDBRAKE_KEY = false
+  function IsControlPressed() return HANDBRAKE_KEY end
+  function GetVehicleIndicatorLights() return 0 end
+  function GetVehicleLightsState() return true, 0, 0 end
+  function GetEntityHeading() return 0.0 end
+  function GetEntityCoords() return { x = 0.0, y = 0.0, z = 30.0 } end
+  function GetStreetNameAtCoord() return 1, 0 end
+  function GetStreetNameFromHashKey() return 'Elgin Ave' end
+  function GetNameOfZone() return 'PBOX' end
+  function GetLabelText() return 'Pillbox Hill' end
+  function IsWaypointActive() return false end
+  function Entity() return { state = {} } end
 `;
+// main.lua's threads run as coroutines; STEP(ms) moves the clock and wakes the ones that are due
+const threads = `
+  Minimap = { resend = function() end }
+  NOW, THREADS = 0, {}
+  function GetGameTimer() return NOW end
+  function CreateThread(fn) THREADS[#THREADS + 1] = { co = coroutine.create(fn), at = 0 } end
+  function Wait(ms) coroutine.yield(ms) end
+  function STEP(ms)
+    NOW = NOW + ms
+    for _, t in ipairs(THREADS) do
+      if coroutine.status(t.co) == 'suspended' and t.at <= NOW then
+        local ok, wait = coroutine.resume(t.co)
+        assert(ok, wait)
+        t.at = NOW + (wait or 0)
+      end
+    end
+  end
+`;
+const HUD_SCRIPTS = ["config.lua", "client/layout.lua", "client/adapters.lua", "client/location.lua", "client/vehicle.lua", "client/main.lua"].map((f) => HUD + f);
+HUD_SCRIPTS.splice(1, 0, "bridge.lua");
 
 describe("systems/nuikit_hud", () => {
   it("shows the HUD once a character is loaded and hides it on logout", async () => {
     client = await createClient();
     const hud = await client.start("nuikit_hud", {
       before: natives + ` PD = {} `,
-      scripts: [HUD + "config.lua", "bridge.lua", HUD + "client/main.lua"],
+      scripts: HUD_SCRIPTS,
     });
     expect(hud.surfaces().hud.open).toBe(false);
 
@@ -47,7 +98,7 @@ describe("systems/nuikit_hud", () => {
 
   it("never takes focus, so it can't block other UIs", async () => {
     client = await createClient();
-    const hud = await client.start("nuikit_hud", { before: natives, scripts: [HUD + "config.lua", "bridge.lua", HUD + "client/main.lua"] });
+    const hud = await client.start("nuikit_hud", { before: natives, scripts: HUD_SCRIPTS });
     const shop = await client.start("shop");
     await shop.run(`S = NUI.surface('shop', { hides = { 'hud' } }) S:open()`);
     expect(client.focused()).toBe("shop");
@@ -56,36 +107,7 @@ describe("systems/nuikit_hud", () => {
 
   it("streams speed and rpm as live values while driving; hud:vehicle only when the rest changes", async () => {
     client = await createClient();
-    // main.lua's threads run as coroutines; STEP(ms) moves the clock and wakes the ones that are due
-    const threads = `
-      Minimap = {}
-      NOW, THREADS = 0, {}
-      function GetGameTimer() return NOW end
-      function CreateThread(fn) THREADS[#THREADS + 1] = { co = coroutine.create(fn), at = 0 } end
-      function Wait(ms) coroutine.yield(ms) end
-      function STEP(ms)
-        NOW = NOW + ms
-        for _, t in ipairs(THREADS) do
-          if coroutine.status(t.co) == 'suspended' and t.at <= NOW then
-            local ok, wait = coroutine.resume(t.co)
-            assert(ok, wait)
-            t.at = NOW + (wait or 0)
-          end
-        end
-      end
-      VEH, SPEED_MS, RPM = 0, 0.0, 0.2
-      function DisplayRadar() end
-      function GetVehiclePedIsIn() return VEH end
-      function GetEntityModel() return 1 end
-      function IsThisModelABicycle() return false end
-      function GetEntitySpeed() return SPEED_MS end
-      function GetVehicleCurrentRpm() return RPM end
-      function GetVehicleCurrentGear() return 3 end
-      function GetVehicleFuelLevel() return 64.0 end
-      function GetVehicleEngineHealth() return 1000.0 end
-      function Entity() return { state = {} } end
-    `;
-    const hud = await client.start("nuikit_hud", { before: natives + threads, scripts: [HUD + "config.lua", "bridge.lua", HUD + "client/main.lua"] });
+    const hud = await client.start("nuikit_hud", { before: natives + threads, scripts: HUD_SCRIPTS });
     const sent = (a: string) => hud.messages.filter((m) => m.action === a).map((m) => m.data);
     await hud.run(`STEP(0)`);
 
@@ -123,12 +145,30 @@ describe("systems/nuikit_hud", () => {
 
   it("hides while ox_inventory is open (its invOpen state bag), the moment it changes", async () => {
     client = await createClient();
-    const hud = await client.start("nuikit_hud", { before: natives, scripts: [HUD + "config.lua", "bridge.lua", HUD + "client/main.lua"] });
+    const hud = await client.start("nuikit_hud", { before: natives, scripts: HUD_SCRIPTS });
     expect(hud.surfaces().hud.open).toBe(true);
     expect(await hud.run(`return BAGS.invOpen.bag`)).toBe("player:7");
     await hud.run(`BAGS.invOpen.fn("player:7", "invOpen", true)`);
     expect(hud.surfaces().hud.open).toBe(false);
     await hud.run(`BAGS.invOpen.fn("player:7", "invOpen", false)`);
     expect(hud.surfaces().hud.open).toBe(true);
+  });
+
+  it("flies: airspeed in knots, heading and altitude streamed, no rpm; on foot it costs no messages", async () => {
+    client = await createClient();
+    const hud = await client.start("nuikit_hud", { before: natives + threads + ` CLASS = 16 function GetLandingGearState() return 0 end `, scripts: HUD_SCRIPTS });
+    const sent = (a: string) => hud.messages.filter((m) => m.action === a).map((m) => m.data);
+    // on foot for ten seconds: after the first location, nothing
+    await hud.run(`for i = 1, 100 do STEP(100) end`);
+    const idle = hud.messages.length;
+    await hud.run(`for i = 1, 100 do STEP(100) end`);
+    expect(hud.messages.length).toBe(idle);
+
+    await hud.run(`VEH, SPEED_MS = 9, 60.0 for i = 1, 20 do STEP(50) end`);
+    expect(sent("hud:vehicle").at(-1)).toMatchObject({ kind: "plane", units: "kts", altUnits: "ft", landingGear: "down", speed: 117, heading: 0, altitude: 98 });
+    await hud.run(`for i = 1, 30 do SPEED_MS = 60.0 + i GetEntityHeading = function() return 360 - i * 2 end STEP(34) end`);
+    expect(sent("hud:vehicle:speed").length).toBeGreaterThan(10);
+    expect(sent("hud:vehicle:heading").at(-1)).toBeGreaterThan(40);
+    expect(sent("hud:vehicle:rpm")).toEqual([]);
   });
 });

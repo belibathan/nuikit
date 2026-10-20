@@ -1,20 +1,113 @@
+-- nuikit_hud settings. Every element can be turned off here; the look comes from the server's
+-- identity (nuikit/theme.css). See README.md for what each one does.
 Config = {
-  -- 'mph' or 'kmh'
+  -- Speed unit: 'mph' or 'kmh'. With playerUnits, each player can pick their own (/hud units kmh).
   units = 'mph',
-  -- Show GTA's minimap: 'vehicle' (only while driving), 'always' or 'never'
+  playerUnits = true,
+
+  -- Show GTA's radar: 'vehicle' (only while in a vehicle), 'always' or 'never'.
   radar = 'vehicle',
-  -- nuikit frames GTA's minimap in the theme (docs/minimap.md). enabled = false leaves GTA's radar alone.
+
+  -- Where the parts go. Both presets use the same parts (map, location, vitals, wallet, ammo,
+  -- vehicle), placed differently:
+  --   'compact'  a round map top right with the compass on its ring, the location and money under it;
+  --              labelled vitals bottom left; a small cluster and the ammo bottom right.
+  --   'classic'  the 0.6 layout: a framed square map bottom left with the location above it, vitals
+  --              beside it, the heading strip top centre, money top right, the large cluster.
+  layout = 'compact',
+
+  -- Where the HUD's edges are. 'game' reads GTA's own HUD alignment for this screen and safe zone
+  -- (16:9, 21:9, 32:9), falling back to 'stage' if the game's answer looks wrong. 'stage' is the
+  -- 0.5.0 rule: the middle 16:9 of the screen, inset by the safe zone.
+  area = 'game',
+
+  -- nuikit shapes and frames GTA's minimap. enabled = false leaves GTA's radar alone (the HUD still
+  -- lines up beside it). Values left out (nil) come from the layout preset:
+  --   compact: circle, 12rem, a 0.125rem ring, top-right;  classic: square, 15rem, 0.375rem, bottom-left
   minimap = {
     enabled = true,
-    shape = 'square',        -- 'square' (rounded) or 'circle'
-    size = 15.0,              -- the frame, in rem (1rem = 16px at 1080p)
-    band = 0.375,             -- frame thickness, in rem
-    anchor = 'bottom-left',  -- bottom-left, bottom-right, top-left, top-right (of the 16:9 stage)
-    compass = true,           -- N on the frame (circle: N E S W turning with the camera)
-    location = true,          -- street and area beside the map
+    -- 'ring': nuikit places GTA's radar and draws the ring / frame (default). 'stock': GTA's radar is
+    -- left as it is and the HUD lays out around it. A started minimap resource from `yieldTo` turns
+    -- this to 'stock' on its own (one line in F8 says which); nil uses the built-in list, {} never yields.
+    style = 'ring',
+    yieldTo = nil,
+    shape = nil,             -- 'square' (rounded) or 'circle'
+    size = nil,              -- the frame, in rem (1rem = 16px at 1080p)
+    band = nil,              -- frame thickness, in rem
+    anchor = nil,            -- bottom-left, bottom-right, top-left, top-right
+    compass = true,          -- cardinals on the ring (square: N on the frame), heading above (compact)
+    location = true,         -- the location under (compact) or above (classic) the map
   },
-  -- Print where the minimap went to the F8 console.
-  debug = false,
-  -- Hide hunger/thirst/stress when your framework doesn't track them (they're never faked)
+
+  -- Health, armor, hunger, thirst, stress. Each one: 'auto' (shows when it changes or crosses its
+  -- threshold, then fades), 'always', or false (never).
+  vitals = {
+    enabled = true,
+    health = 'auto',
+    armor = 'auto',
+    hunger = 'auto',
+    thirst = 'auto',
+    stress = 'auto',
+    low = 25,          -- health, armor, hunger, thirst at or below this (%) stay on screen
+    high = 60,         -- stress at or above this (%) stays on screen
+    linger = 5000,     -- ms a vital stays after it changed
+  },
+  -- Hide hunger/thirst/stress entirely (they're never faked when the framework lacks them).
   needs = true,
+  -- Voice range and radio channel (pma-voice): the range shows while talking or when it changes.
+  voice = true,
+
+  -- Under the map (compact) or top right (classic). 'always', 'change' (shows on change with the difference, then fades) or false.
+  wallet = {
+    cash = 'always',
+    bank = 'change',
+    job = true,
+  },
+
+  vehicle = {
+    enabled = true,
+    -- 'theme' follows the identity's --nk-gauge-style; or force 'arc', 'bar' or 'digital'.
+    gauge = 'theme',
+    redline = 0.9,     -- rpm (0.2 idle … 1.0 limiter) where the red zone starts
+    shiftLight = true,
+    rpm = true,
+    gear = true,
+    fuel = true,
+    damage = true,     -- engine and body warnings
+    lights = true,
+    indicators = true,
+    handbrake = true,
+    -- Seatbelt and cruise come from hooks (README: hook events). 'auto' shows the indicator once any
+    -- resource reports it; true always; false never.
+    seatbelt = 'auto',
+    cruise = 'auto',
+    bicycles = false,  -- show the cluster on bicycles
+    airUnits = 'kts',  -- aircraft airspeed: 'kts' or 'units' (Config.units); altitude is ft with mph, m with km/h
+    boatUnits = 'kts', -- boats: 'kts' or 'units'
+  },
+
+  -- Fuel source: 'auto' (ox_fuel, LegacyFuel, cdn-fuel, ps-fuel, lc_fuel when started, else the
+  -- native), one of those names, 'native', or false to hide fuel.
+  fuel = 'auto',
+
+  location = {
+    enabled = true,
+    onFoot = true,     -- also when the radar is hidden
+    crossing = true,
+    zone = true,
+    -- 'auto' reads nearest-postal when it's started; a resource name with a getPostal export; or false
+    postal = 'auto',
+    waypoint = true,   -- distance to the map waypoint
+  },
+
+  -- The weapon's ammo, `12 / 48` with a glyph, only while armed with a gun or a throwable.
+  ammo = true,
+
+  compass = {
+    enabled = true,    -- classic: the heading strip at the top of the screen (compact: on the map ring)
+    onFoot = false,
+  },
+
+  -- Print where the minimap and the HUD's edges went to the F8 console.
+  debug = false,
 }

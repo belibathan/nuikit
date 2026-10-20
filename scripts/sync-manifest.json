@@ -95,12 +95,7 @@
       "web/src/index.css"
     ],
     "systems/nuikit_hud": [
-      "web/src/components/ui/badge.tsx",
       "web/src/components/ui/hud-chip.tsx",
-      "web/src/components/ui/meter.tsx",
-      "web/src/components/ui/progress.tsx",
-      "web/src/components/ui/speedometer.tsx",
-      "web/src/components/ui/stat.tsx",
       "web/src/index.css"
     ],
     "systems/nuikit_loading": [

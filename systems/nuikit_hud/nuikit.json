@@ -1,5 +1,5 @@
 {
   "lua": [],
   "surface": "world",
-  "components": ["badge", "progress", "speedometer", "meter", "stat", "hud-chip"]
+  "components": ["hud-chip"]
 }
