@@ -46,6 +46,7 @@ const LAYOUT = new Set([
   "padding", "padding-left", "margin-left", "margin-top", "margin-inline", "margin-block", "gap", "flex", "flex-direction",
   "align-items", "justify-content", "text-align", "white-space", "overflow", "overflow-y", "scrollbar-width", "scrollbar-gutter",
   "clip-path", "transition-property", "transition-duration", "transition-timing-function", "transition", "animation",
+  "animation-delay", "will-change",
   "transform", "transform-origin", "background-position", "background-size", "background-repeat", "background-origin",
   "content", "inset", "opacity", "pointer-events",
 ]);

@@ -46,6 +46,13 @@ type KitClassGroup =
   | "nk-anchor-r"
   | "nk-first-row"
   | "nk-enter"
+  | "nk-pop"
+  | "nk-rise"
+  | "nk-stagger"
+  | "nk-press"
+  | "nk-skeleton"
+  | "nk-blink"
+  | "nk-indicator"
 
 const twMerge = extendTailwindMerge<KitClassGroup>({
   extend: {
@@ -91,6 +98,13 @@ const twMerge = extendTailwindMerge<KitClassGroup>({
       "nk-anchor-r": ["nk-anchor-r"],
       "nk-first-row": ["nk-first-row"],
       "nk-enter": ["nk-enter"],
+      "nk-pop": ["nk-pop"],
+      "nk-rise": ["nk-rise"],
+      "nk-stagger": ["nk-stagger"],
+      "nk-press": ["nk-press"],
+      "nk-skeleton": ["nk-skeleton"],
+      "nk-blink": ["nk-blink"],
+      "nk-indicator": ["nk-indicator"],
     },
     conflictingClassGroups: {
       "nk-panel": ["bg-color", "nk-chip", "nk-hud", "nk-slab", "text-color"],
@@ -125,6 +139,8 @@ const twMerge = extendTailwindMerge<KitClassGroup>({
       "nk-anchor-b": ["nk-anchor-bl", "nk-anchor-br", "nk-anchor-l", "nk-anchor-r", "nk-anchor-t", "nk-anchor-tl", "nk-anchor-tr"],
       "nk-anchor-l": ["nk-anchor-b", "nk-anchor-bl", "nk-anchor-br", "nk-anchor-r", "nk-anchor-t", "nk-anchor-tl", "nk-anchor-tr"],
       "nk-anchor-r": ["nk-anchor-b", "nk-anchor-bl", "nk-anchor-br", "nk-anchor-l", "nk-anchor-t", "nk-anchor-tl", "nk-anchor-tr"],
+      "nk-skeleton": ["bg-color", "text-color"],
+      "nk-indicator": ["bg-color"],
     },
   },
 })
