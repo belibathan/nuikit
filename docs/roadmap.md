@@ -60,7 +60,12 @@ Known issues in 0.6.0:
 
 - `compileTheme`: warn on an empty token value.
 - Runtime context: server currency and locale (part of 0.7 context; `money` and blocks read it).
-- `cn()` / tailwind-merge: teach it the `nk-*` utilities so `nk-title` and `text-sm` resolve correctly (the #33 bug class).
+- ~~`cn()` / tailwind-merge: teach it the `nk-*` utilities~~ **In review** (`feat/hardening`, design v2 §5B): kit-aware
+  `cn()` generated from `kit.css` (colour and type; shape and the leading rule wait for baselines), CI sync-drift gate
+  with headers on synced copies, class lint (`pnpm lint:classes`, warnings), the
+  [component contract](design/contract.md), registry `meta` + deprecation policy (status on `/components`), visual
+  baselines for `/components` × 4 identities + Daylight (`pnpm visual`; CI job non-blocking until baselines from the
+  CI image are committed).
 
 ### Open items for the owner
 

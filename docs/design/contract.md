@@ -93,7 +93,9 @@ doesn't fail. Everything else is a review item: the reviewer checks it against t
     (`linear()` easing, runtime `color-mix`). **CI (warn)**: class lint flags `has-*` and `@*` variants.
 23. **Screenshots in every identity**: Graphite, Signal, Velvet, Vector, and the Daylight flexibility check
     (`packages/core/test/themes/daylight.css`: light, roomy, round), at 1920×1080 for every state, plus 1280×720
-    and 2560×1440 for the canonical state. Attach them to the PR and look at them.
+    and 2560×1440 for the canonical state. Attach them to the PR and look at them. **CI (non-blocking for now)**:
+    the `visual` job compares every `/components` section in the five themes with `bench/visual/baselines/`;
+    a component that changes on purpose updates its baselines (`pnpm visual:update`, ideally from the CI image).
 
 ## Shipping
 

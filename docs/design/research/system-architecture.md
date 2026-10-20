@@ -453,6 +453,16 @@ Each step ships on its own:
   classes, and marker classes with no CSS (`pause-root`) too. (d) `scale-*`/`translate-*` aren't banned:
   `vite-plugin-nuikit` lowers the individual transform properties Tailwind emits; the CLAUDE.md ban is on
   custom CSS. Kept as warnings for that noise; promote to errors once (c) is handled (an ignore list per UI).
+- **Visual baselines (3.3), in Playwright's Chromium, not 103 yet.** [V] `bench/visual` shoots the 19 sections of
+  `/components` in Graphite, Signal, Velvet, Vector and Daylight (`?identity=`), 95 PNGs, ~9 MB. Determinism comes
+  from construction, not tolerance: Playwright's clock is paused before the first script and moved by a fixed
+  `runFor`, so countdowns, timed meters and enter timers land on the same frame; animations are off; the photo
+  behind each stage is hidden; fonts are all bundled. Two full local runs matched; a 2px change to `nk-chip`'s
+  padding fails `hud-chip` (4,454 px). **Unproven:** that CI's renders match baselines made outside its image
+  (fonts rasterise per environment), so the `visual` job runs in the pinned `playwright:v1.56.0` image and is
+  non-blocking until baselines written there are committed (CI by hand with `update-baselines`). Not done:
+  Chromium 103 (needs the puppeteer-core 15 path), 1280×720 / 2560×1440, axe (3.9), and per-state routes; the
+  page shows the states side by side instead.
 
 ---
 
