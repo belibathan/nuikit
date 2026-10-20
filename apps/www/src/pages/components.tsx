@@ -68,6 +68,7 @@ import { Money } from "@/components/ui/money";
 import { ItemSlot } from "@/components/ui/item-slot";
 import { PlayerCard } from "@/components/ui/player-card";
 import { EmptyState } from "@/components/ui/empty-state";
+import { SKILL_CHECK_PRESETS, SkillCheck, skillCheckZone } from "@/components/ui/skill-check";
 import { cn } from "@/lib/utils";
 
 export function ComponentsPage() {
@@ -415,6 +416,16 @@ export function ComponentsPage() {
               <EmptyState icon={<UsersIcon />} title="No one matches" description="Check the spelling, or search by server ID." />
             </PanelBody>
           </Panel>
+        </Section>
+
+        <Section
+          name="skill-check"
+          title="Skill check"
+          text="Press the key while the needle is in the zone: one clockwise turn, faster and narrower as it gets harder. It runs itself and reads the key, or takes the angle from outside; a sequence of checks is a sequence of keys."
+          stageClassName="min-h-[30rem] items-center"
+        >
+          <SkillCheckStates />
+          <SkillCheckDemo />
         </Section>
       </main>
       <Footer />
@@ -1408,6 +1419,64 @@ function ItemSlotStates() {
         </div>
       </div>
     </>
+  );
+}
+
+/** Every state from props: idle, the needle in the zone, a hit, a miss. */
+function SkillCheckStates() {
+  return (
+    <div className="grid grid-cols-2 place-items-center gap-6">
+      <SkillCheck size="sm" zoneStart={200} zoneSize={40} angle={0} />
+      <SkillCheck size="sm" zoneStart={200} zoneSize={40} angle={218} keyLabel="F" />
+      <SkillCheck size="sm" zoneStart={150} zoneSize={50} angle={170} result="success" />
+      <SkillCheck size="sm" zoneStart={260} zoneSize={25} angle={240} result="fail" />
+    </div>
+  );
+}
+
+const PINS = 3;
+
+/** A lockpick: three medium checks in a row; press E (click the stage first so the page has keys). */
+function SkillCheckDemo() {
+  const [round, setRound] = useState(0);
+  const [zone, setZone] = useState(() => skillCheckZone(SKILL_CHECK_PRESETS.medium.zoneSize));
+  const [status, setStatus] = useState<"idle" | "running" | "open" | "broke">("idle");
+  const restart = () => {
+    setRound(0);
+    setZone(skillCheckZone(SKILL_CHECK_PRESETS.medium.zoneSize));
+    setStatus("running");
+  };
+  return (
+    <div className="flex flex-col items-center gap-6">
+      <SkillCheck
+        key={`${round}-${zone.start}`}
+        zoneStart={zone.start}
+        zoneSize={zone.size}
+        speed={SKILL_CHECK_PRESETS.medium.speed}
+        keyLabel="E"
+        running={status === "running"}
+        listen
+        onResult={(hit) => {
+          if (!hit) return setStatus("broke");
+          if (round + 1 >= PINS) return setStatus("open");
+          setTimeout(() => {
+            setRound((r) => r + 1);
+            setZone(skillCheckZone(SKILL_CHECK_PRESETS.medium.zoneSize));
+          }, 250);
+        }}
+      />
+      <Panel size="sm">
+        <PanelHeader title="Lockpick" description={`Pin ${Math.min(round + 1, PINS)} of ${PINS}, press E in the zone`} />
+        <PanelFooter>
+          <span data-slot="skill-demo-status" className="text-sm">
+            {status === "idle" ? "Ready" : status === "running" ? "Picking…" : status === "open" ? "Unlocked" : "The pick broke"}
+          </span>
+          <Button size="sm" variant={status === "idle" ? "default" : "outline"} className="ml-auto" onClick={restart} disabled={status === "running"}>
+            {status === "idle" ? "Start" : "Again"}
+          </Button>
+        </PanelFooter>
+      </Panel>
+    </div>
   );
 }
 
