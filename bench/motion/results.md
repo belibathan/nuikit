@@ -19,21 +19,21 @@ are identical between builds.
 
 ## 1. ox_lib requests: identical, within ±15 ms
 
-Median of 5 runs, measured from the message (or the key press) that causes the request. "before" is `lead/next`
-(rAF skill check, 100 ms-step ring and bar), "after" is this branch.
+Median of 9 runs, measured from the message (or the key press) that causes the request. "before" is `lead/next`
+(rAF skill check, 100 ms-step ring and bar), "after" is this branch merged with `lead/next` (8d189e9).
 
 | Case | Request | before (ms) | after (ms) | Δ (ms) |
 |---|---|---|---|---|
-| progress 1000 ms | progressComplete() | 1112.3 | 1111.9 | -0.4 |
-| progress cancelled at 400 ms | progressComplete() | 101.8 | 101.5 | -0.3 |
-| circle 1000 ms | progressComplete() | 1111.4 | 1113.0 | +1.6 |
-| skill easy, no press (miss at a full turn) | skillCheckOver(false) | 2008.4 | 2000.7 | -7.7 |
-| skill easy, press in the zone (1330 ms) | skillCheckOver(true) | 0.4 | 0.5 | +0.1 |
-| skill easy, press early (600 ms) | skillCheckOver(false) | 0.3 | 0.6 | +0.3 |
+| progress 1000 ms | progressComplete() | 1112.0 | 1112.9 | +0.9 |
+| progress cancelled at 400 ms | progressComplete() | 101.5 | 101.7 | +0.2 |
+| circle 1000 ms | progressComplete() | 1114.6 | 1117.6 | +3.0 |
+| skill easy, no press (miss at a full turn) | skillCheckOver(false) | 2010.6 | 2000.6 | -10.0 |
+| skill easy, press in the zone (1330 ms) | skillCheckOver(true) | 0.3 | 0.6 | +0.3 |
+| skill easy, press early (600 ms) | skillCheckOver(false) | 0.4 | 0.6 | +0.2 |
 | skill medium ×2, both in the zone | skillCheckOver(true) | 0.2 | 0.2 | +0.0 |
 
 Every request and body is the same. The miss now comes from a timer at exactly one turn instead of the first
-animation frame after it, so it's 8 ms earlier and steadier (2000.6–2003.8 vs 2004.7–2015.4). The hit test reads
+animation frame after it, so it's about 10 ms earlier and steadier (it lands at 2000–2003 ms; before, 2004–2015). Progress timings are noisy run to run in headless Chromium (one 5-run sample had a 1165 ms outlier on the circle); the medians hold. The hit test reads
 the needle animation's `currentTime`, the angle on screen.
 
 ## 2. Frames and main thread (2560×1440)
