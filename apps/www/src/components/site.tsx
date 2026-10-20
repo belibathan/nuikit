@@ -12,6 +12,7 @@ export const SITE = "https://nuikit.vercel.app";
 const PAGES = [
   { href: "/design", label: "Design" },
   { href: "/components", label: "Components" },
+  { href: "/theme", label: "Theme studio" },
   { href: "/coverage", label: "Coverage" },
 ];
 
@@ -29,7 +30,6 @@ export function Nav() {
               {p.label}
             </a>
           ))}
-          <a href="/#themes" className="hover:text-foreground">Themes</a>
           <a href="/#bridge" className="hover:text-foreground">Lua ↔ React</a>
         </div>
         <Button variant="outline" size="sm" className="ml-auto" asChild>
