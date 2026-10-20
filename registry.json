@@ -222,6 +222,79 @@
       "dependencies": [
         "nuikit-core"
       ]
+    },
+    {
+      "name": "death-screen",
+      "type": "registry:block",
+      "title": "Death Screen",
+      "description": "Last stand and death over the game: a countdown and bar, call EMS, hold to respawn with a live bar, red at the edges. Wired to the death surface and the death:hold live value, with fixtures for every state.",
+      "files": [
+        {
+          "path": "registry/nuikit/blocks/death-screen/death-screen.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/death-screen/death-screen.tsx"
+        },
+        {
+          "path": "registry/nuikit/blocks/death-screen/nui.ts",
+          "type": "registry:lib",
+          "target": "components/blocks/death-screen/nui.ts"
+        },
+        {
+          "path": "registry/nuikit/blocks/death-screen/fixtures.ts",
+          "type": "registry:lib",
+          "target": "components/blocks/death-screen/fixtures.ts"
+        }
+      ],
+      "dependencies": [
+        "lucide-react",
+        "nuikit-core"
+      ],
+      "registryDependencies": [
+        "kbd",
+        "https://nuikit.vercel.app/r/meter.json",
+        "https://nuikit.vercel.app/r/hud-chip.json"
+      ],
+      "categories": [
+        "screens"
+      ],
+      "docs": "Mount <DeathScreenSurface /> in App.tsx and open it from Lua: nk.surface(\"death\", { layer = \"system\", input = \"none\", hides = { \"hud\" } }):open(data). Stream the respawn hold with nk.stream(\"death:hold\"). A whole resource with the Lua: npm create nuikit@latest my-death -- -t death-screen"
+    },
+    {
+      "name": "hud-minimal",
+      "type": "registry:block",
+      "title": "Minimal HUD",
+      "description": "The always-on HUD: vitals and needs with voice, cash, bank and job, and a speedometer with seatbelt and engine warnings while driving. The player comes from nuikit's bridge (any framework); speed and rpm are live values.",
+      "files": [
+        {
+          "path": "registry/nuikit/blocks/hud-minimal/hud-minimal.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/hud-minimal/hud-minimal.tsx"
+        },
+        {
+          "path": "registry/nuikit/blocks/hud-minimal/nui.ts",
+          "type": "registry:lib",
+          "target": "components/blocks/hud-minimal/nui.ts"
+        },
+        {
+          "path": "registry/nuikit/blocks/hud-minimal/fixtures.ts",
+          "type": "registry:lib",
+          "target": "components/blocks/hud-minimal/fixtures.ts"
+        }
+      ],
+      "dependencies": [
+        "lucide-react",
+        "nuikit-core"
+      ],
+      "registryDependencies": [
+        "https://nuikit.vercel.app/r/meter.json",
+        "https://nuikit.vercel.app/r/stat.json",
+        "https://nuikit.vercel.app/r/hud-chip.json",
+        "https://nuikit.vercel.app/r/speedometer.json"
+      ],
+      "categories": [
+        "screens"
+      ],
+      "docs": "Mount <HudMinimalSurface /> in App.tsx. In Lua, open nk.surface(\"hud\", { layer = \"hud\" }) once nk.player.get().loaded, send hud:vehicle on change and stream hud:vehicle:speed and hud:vehicle:rpm with nk.stream. A whole resource with the Lua: npm create nuikit@latest my-hud -- -t hud-minimal"
     }
   ]
 }

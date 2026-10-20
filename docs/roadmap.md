@@ -46,7 +46,7 @@ GTA's pause map is opened and closed (not seen on a fresh join).
 |---|---|---|
 | Components | The 9 remaining components + `progress-ring` + `skill-check`, redesigned as the default renderers for the intents | Ready to dispatch |
 | Screens | death, loading, chat and the overrides (ox_lib first) rebuilt on the components, protocol-exact | Ready to dispatch |
-| Blocks + site | The 14 blocks, `npm create nuikit -t <block>`, `/blocks`, theme switcher, theme studio | Ready to dispatch (starts with blocks the 5 shipped components cover) |
+| Blocks + site | The 14 blocks, `npm create nuikit -t <block>`, `/blocks`, theme switcher, theme studio | In progress (`feat/blocks`): `hud-minimal` and `death-screen` in the registry and as `-t` templates (draft PR, not yet tested in game). Next: `pause-menu`, `loading-screen`, `settings`, `scoreboard`, then `/blocks` |
 | Showcase | pause, HUD, inventory: minimap restart quirk, FPS budget | Owner's existing agent |
 
 ### Open items for the owner
