@@ -28,12 +28,14 @@ import { Progress } from "@/components/ui/progress"
  *
  * Fills move with transforms only (the bar translates, segments scale on X): never `width`.
  */
+// The bar's thickness is the identity's (--nk-meter-height: --nk-gauge-track, 4px in Graphite);
+// sm and lg step it down and up from there.
 const meterVariants = cva("min-w-0", {
   variants: {
     size: {
-      sm: "[--meter-h:0.25rem]",
-      default: "[--meter-h:0.375rem]",
-      lg: "[--meter-h:0.5rem]",
+      sm: "[--meter-h:max(0.125rem,calc(var(--nk-meter-height,0.25rem)*0.75))]",
+      default: "[--meter-h:var(--nk-meter-height,0.25rem)]",
+      lg: "[--meter-h:calc(var(--nk-meter-height,0.25rem)*1.5)]",
     },
   },
   defaultVariants: {
@@ -181,6 +183,9 @@ function segmentKeyframes(i: number, count: number): Keyframe[] {
   ]
 }
 
+/** The slab line's keyframes in a timed run: its fill scales from the left. */
+const LINE_KEYFRAMES: Keyframe[] = [{ transform: "scaleX(0)" }, { transform: "scaleX(1)" }]
+
 /** The bar's keyframes in a timed run: shadcn Progress draws a level by translating its fill. */
 const BAR_KEYFRAMES: Keyframe[] = [{ transform: "translateX(-100%)" }, { transform: "translateX(0%)" }]
 
@@ -227,6 +232,45 @@ function useTimedFill(root: React.RefObject<HTMLElement | null>, duration: numbe
   return done
 }
 
+/** The theme variable behind each tone (its `-rgb` channels colour the slab line). */
+const TONE_VAR: Record<MeterTone, string> = {
+  primary: "--brand",
+  foreground: "--foreground",
+  destructive: "--destructive",
+  success: "--success",
+  warning: "--warning",
+  info: "--info",
+  "chart-1": "--chart-1",
+  "chart-2": "--chart-2",
+  "chart-3": "--chart-3",
+  "chart-4": "--chart-4",
+  "chart-5": "--chart-5",
+  health: "--vital-health",
+  armor: "--vital-armor",
+  hunger: "--vital-hunger",
+  thirst: "--vital-thirst",
+  stress: "--vital-stress",
+}
+
+/** Calls `onCancel` when `key` is pressed (any case) while mounted; never while typing in a field. */
+function useCancelKey(key: string | undefined, onCancel?: () => void) {
+  const cancel = React.useRef(onCancel)
+  React.useEffect(() => {
+    cancel.current = onCancel
+  })
+  const armed = !!key && onCancel !== undefined
+  React.useEffect(() => {
+    if (!armed || !key) return
+    const down = (e: KeyboardEvent) => {
+      const el = e.target as HTMLElement | null
+      if (e.repeat || (el && (el.tagName === "INPUT" || el.tagName === "TEXTAREA" || el.isContentEditable))) return
+      if (e.key.toLowerCase() === key.toLowerCase()) cancel.current?.()
+    }
+    window.addEventListener("keydown", down)
+    return () => window.removeEventListener("keydown", down)
+  }, [key, armed])
+}
+
 function Meter({
   className,
   size,
@@ -243,6 +287,10 @@ function Meter({
   segments,
   duration,
   onComplete,
+  variant = "bar",
+  cancelKey,
+  cancelLabel = "Cancel",
+  onCancel,
   style,
   ...props
 }: Omit<React.ComponentProps<"div">, "children"> &
@@ -272,14 +320,28 @@ function Meter({
     duration?: number
     /** With `duration`: called once when the time is up, from a timer. */
     onComplete?: () => void
+    /**
+     * bar (default): the bar, with an optional label row. slab: the timed-progress slab on the game
+     * (design v2 §4.5, `nk-slab-stack`): the label, the cancel key and its verb, a thin line. The
+     * successor of `task-progress`: `<Meter variant="slab" label="Repairing" duration={5000}
+     * cancelKey="X" onCancel={cancel} />`.
+     */
+    variant?: "bar" | "slab"
+    /** slab: the key that cancels, shown as a key chip; with `onCancel` the meter listens for it. */
+    cancelKey?: string
+    /** slab: the verb after the cancel key. Default "Cancel". */
+    cancelLabel?: React.ReactNode
+    /** slab: called when `cancelKey` is pressed (KeyboardEvent.key, any case). */
+    onCancel?: () => void
   }) {
   const root = React.useRef<HTMLDivElement>(null)
   const segmented = !!segments && segments > 1
+  const slab = variant === "slab"
   const done = useTimedFill(
     root,
     duration,
-    segmented ? segmentKeyframes : () => BAR_KEYFRAMES,
-    segmented ? "[data-slot=meter-fill]" : "[data-slot=progress-indicator]",
+    slab ? () => LINE_KEYFRAMES : segmented ? segmentKeyframes : () => BAR_KEYFRAMES,
+    slab ? "[data-slot=meter-line-fill]" : segmented ? "[data-slot=meter-fill]" : "[data-slot=progress-indicator]",
     onComplete
   )
   const timed = duration !== undefined && duration > 0
@@ -290,7 +352,7 @@ function Meter({
   const critical = level !== "normal"
   const custom = !!color && !critical
   const t = custom ? CUSTOM : TONES[critical ? "destructive" : tone] ?? TONES.primary
-  const trackClass = track === "game" ? "bg-scrim/35" : t.track
+  const trackClass = track === "game" ? "nk-track" : t.track
   const fillClass = custom ? CUSTOM_FILL : FILL[critical ? "destructive" : tone] ?? FILL.primary
   // Timed: the animation draws the fill; React only sets the end state, with no transition.
   const timedClass = timed && "[&_[data-slot=progress-indicator]]:transition-none"
@@ -301,6 +363,72 @@ function Meter({
   const stacked = label !== undefined || valueText !== undefined
   // flex-1 only beside an icon: in the stacked column it would collapse the bar's height to 0
   const grow = stacked ? "w-full" : "flex-1"
+
+  useCancelKey(variant === "slab" ? cancelKey : undefined, onCancel)
+
+  if (variant === "slab") {
+    const toneVar = custom ? undefined : (TONE_VAR[critical ? "destructive" : tone] ?? TONE_VAR.primary)
+    return (
+      <div
+        data-slot="meter"
+        data-variant="slab"
+        data-level={level}
+        data-complete={(timed && percent >= 100) || undefined}
+        className={cn("nk-slab-stack", className)}
+        ref={root}
+        style={
+          {
+            ...style,
+            ...(toneVar
+              ? { "--nk-slab-tone-rgb": toneVar === "--brand" ? "var(--brand-rgb, var(--primary-rgb))" : `var(${toneVar}-rgb)` }
+              : { "--nk-slab-line-fill": color }),
+          } as React.CSSProperties
+        }
+        {...props}
+      >
+        {(label !== undefined || valueText !== undefined || cancelKey) && (
+          <div data-slot="meter-label-row" className="nk-slab-stack-row">
+            <span data-slot="meter-label" className="nk-caption min-w-0 truncate">
+              {label}
+            </span>
+            {valueText !== undefined && (
+              <span data-slot="meter-value" className="nk-num">
+                {valueText}
+              </span>
+            )}
+            {cancelKey && (
+              <>
+                <kbd data-slot="meter-cancel-key" className="nk-slab-key">
+                  {cancelKey}
+                </kbd>
+                <span data-slot="meter-cancel-label">{cancelLabel}</span>
+              </>
+            )}
+          </div>
+        )}
+        <div
+          role="progressbar"
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-valuenow={Math.round(percent)}
+          aria-label={typeof label === "string" ? label : props["aria-label"]}
+          data-slot="meter-line"
+          // The line's own ::after fill is replaced by an element, so a timed run can animate it
+          // (one linear Web Animation, like the bar); it reads the same tokens.
+          className="nk-slab-line after:hidden"
+        >
+          <span
+            data-slot="meter-line-fill"
+            className={cn(
+              "absolute inset-0 origin-left bg-[var(--nk-slab-line-fill,rgb(var(--nk-slab-tone-rgb)))] [box-shadow:0_0_0.5rem_rgba(var(--nk-slab-tone-rgb),var(--nk-glow,0))]",
+              timed ? "transition-none" : "transition-transform ease-out"
+            )}
+            style={{ transform: `scaleX(${drawn / 100})` }}
+          />
+        </div>
+      </div>
+    )
+  }
 
   const bar =
     segmented ? (
@@ -313,7 +441,7 @@ function Meter({
         className={cn("flex min-w-0 gap-0.5", grow)}
       >
         {segmentFills(drawn, segments).map((fill, i) => (
-          <div key={i} data-slot="meter-segment" className={cn("relative h-(--meter-h) flex-1 overflow-hidden rounded-full", trackClass)}>
+          <div key={i} data-slot="meter-segment" className={cn("relative h-(--meter-h) flex-1 overflow-hidden rounded-(--nk-meter-radius)", trackClass)}>
             {/* scaleX, never width: the compositor moves it, nothing is laid out again */}
             <div
               data-slot="meter-fill"
@@ -357,9 +485,11 @@ function Meter({
         <>
           <div className="flex min-w-0 items-center gap-1.5">
             {iconEl}
-            {label !== undefined && <span className="nk-label min-w-0 flex-1 truncate">{label}</span>}
+            {label !== undefined && <span data-slot="meter-label" className="nk-caption min-w-0 flex-1 truncate">{label}</span>}
             {valueText !== undefined && (
-              <span className={cn("nk-num ml-auto shrink-0 text-xs font-medium", critical && "text-destructive")}>{valueText}</span>
+              <span data-slot="meter-value" className={cn("nk-num ml-auto shrink-0 text-(length:--nk-caption-size) leading-4 font-medium", critical && "text-destructive")}>
+                {valueText}
+              </span>
             )}
           </div>
           {bar}

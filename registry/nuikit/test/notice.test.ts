@@ -7,6 +7,9 @@ import {
   noticeStatus,
   noticeTimeLeft,
   NOTICE_DURATION,
+  NOTICE_ITEM_MERGE_MS,
+  formatItemDelta,
+  noticeItemKey,
   type NoticeData,
   type NoticeEntry,
 } from "@/components/ui/notice"
@@ -94,5 +97,47 @@ describe("notice", () => {
       ["bottom-left", ["b"]],
       ["bottom-center", ["d"]],
     ])
+  })
+})
+
+describe("notice items", () => {
+  it("shows an item change with no title", () => {
+    const s = show([], "a", 0, { item: { name: "Water bottle", count: 2 } })
+    expect(s).toHaveLength(1)
+    expect(s[0]!.item!.count).toBe(2)
+  })
+
+  it("merges the same item, same direction, within 1.5 s; the time restarts", () => {
+    let s = show([], "a", 0, { item: { name: "Water bottle", count: 1 } })
+    s = show(s, "b", 600, { item: { name: "Water bottle", count: 1 } })
+    s = show(s, "c", 600 + NOTICE_ITEM_MERGE_MS, { item: { name: "Water bottle", count: 3 } })
+    expect(s).toHaveLength(1)
+    expect(s[0]).toMatchObject({ key: "a", at: 600 + NOTICE_ITEM_MERGE_MS, merged: 2 })
+    expect(s[0]!.item!.count).toBe(5)
+  })
+
+  it("keeps changes apart when late, opposite, another item, elsewhere or with an id", () => {
+    let s = show([], "a", 0, { item: { name: "Lockpick", count: 1 } })
+    s = show(s, "b", NOTICE_ITEM_MERGE_MS + 1, { item: { name: "Lockpick", count: 1 } })
+    s = show(s, "c", NOTICE_ITEM_MERGE_MS + 2, { item: { name: "Lockpick", count: -1 } })
+    s = show(s, "d", NOTICE_ITEM_MERGE_MS + 3, { item: { name: "Bandage", count: 1 } })
+    s = show(s, "e", NOTICE_ITEM_MERGE_MS + 4, { item: { name: "Lockpick", count: 1 }, position: "top-left" })
+    s = show(s, "f", NOTICE_ITEM_MERGE_MS + 5, { id: 7, item: { name: "Lockpick", count: 1 } }, 9)
+    expect(s.map((n) => n.key)).toEqual(["a", "b", "c", "d", "e", "f"])
+  })
+
+  it("merges by item id when the name isn't text", () => {
+    const name = { label: "Water" } as unknown as string
+    let s = show([], "a", 0, { item: { id: "water", name, count: 1 } })
+    s = show(s, "b", 10, { item: { id: "water", name, count: 1 } })
+    expect(s).toHaveLength(1)
+    expect(noticeItemKey(s[0]!.item)).toBe("id:water")
+  })
+
+  it("writes the change with a true minus", () => {
+    expect(formatItemDelta(2)).toBe("+2")
+    expect(formatItemDelta(-1)).toBe("−1")
+    expect(formatItemDelta(1200)).toBe("+1,200")
+    expect(formatItemDelta(0)).toBe("0")
   })
 })

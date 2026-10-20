@@ -3,7 +3,7 @@
 
 import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
-import { CircleCheckIcon, CircleXIcon, InfoIcon, TriangleAlertIcon, XIcon } from "lucide-react"
+import { CircleCheckIcon, CircleXIcon, InfoIcon, PackageIcon, TriangleAlertIcon, XIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -25,6 +25,13 @@ import { Button } from "@/components/ui/button"
  *
  * The time left runs on its own (and pauses while hovered or focused); `onExpire` fires when it
  * runs out. Colours are the theme's status tokens; the time line is hidden when motion is off.
+ *
+ * Items added or removed are the item slab (design v2 §4.5, `nk-slab`): an icon tile, the name and
+ * the change. Through the queue, changes to the same item in the same direction within 1.5 s merge
+ * into one slab ("+1", "+1", "+1" → "+3"):
+ *
+ *   notify({ item: { name: "Water bottle", count: 2, icon: <CupSodaIcon /> }, position: "center-left" })
+ *   <Notice item={{ name: "Lockpick", count: -1 }} />
  */
 
 type NoticeStatus = "info" | "success" | "warning" | "error"
@@ -41,6 +48,36 @@ type NoticePosition =
 
 /** How long a notice stays when no duration is given, in ms. */
 const NOTICE_DURATION = 5000
+
+/** Item changes to the same item, in the same direction, this close together (ms) merge into one. */
+const NOTICE_ITEM_MERGE_MS = 1500
+
+/** An item added (count > 0) or removed (count < 0): the item slab. */
+type NoticeItem = {
+  name: React.ReactNode
+  /** The change: 2 for two added, -1 for one removed. */
+  count: number
+  /** The tile: an icon, or `image` (a URL: the inventory's own item image). */
+  icon?: React.ReactNode
+  image?: string
+  /** What makes two changes the same item, for merging. Default: the name, when it is a string. */
+  id?: string | number
+}
+
+/** "+2", "−1" (a true minus sign), "0". */
+function formatItemDelta(count: number) {
+  const n = Number.isFinite(count) ? count : 0
+  if (n > 0) return `+${n.toLocaleString()}`
+  if (n < 0) return `\u2212${Math.abs(n).toLocaleString()}`
+  return "0"
+}
+
+/** The merge key of an item change, or undefined when it can't be merged. */
+function noticeItemKey(item?: NoticeItem | null) {
+  if (!item) return undefined
+  if (item.id !== undefined && item.id !== null) return `id:${item.id}`
+  return typeof item.name === "string" || typeof item.name === "number" ? `name:${item.name}` : undefined
+}
 
 const NOTICE_POSITIONS: readonly NoticePosition[] = [
   "top-left",
@@ -188,6 +225,7 @@ function Notice({
   onMouseLeave,
   onFocus,
   onBlur,
+  item,
   ...props
 }: Omit<React.ComponentProps<"div">, "title"> &
   VariantProps<typeof noticeVariants> & {
@@ -212,6 +250,8 @@ function Notice({
     onExpire?: () => void
     /** Shows a close button that calls this. */
     onDismiss?: () => void
+    /** An item added or removed: draws the item slab (icon tile + name + change) instead of a panel. */
+    item?: NoticeItem
   }) {
   const [held, setHeld] = React.useState(false)
   const line = React.useRef<HTMLDivElement>(null)
@@ -221,7 +261,32 @@ function Notice({
   const iconEl = icon === undefined ? s.icon : icon
 
   useNoticeTimer(duration, elapsed, frozen, onExpire)
-  useTimeLine(line, duration, elapsed, frozen, timed && showDuration)
+  useTimeLine(line, duration, elapsed, frozen, !item && timed && showDuration)
+
+  if (item) {
+    const down = item.count < 0
+    return (
+      <div
+        data-slot="notice"
+        data-variant="item"
+        data-delta={down ? "down" : "up"}
+        role="status"
+        className={cn("nk-slab pointer-events-auto max-w-80", animate && "nk-enter", className)}
+        {...props}
+      >
+        <span data-slot="notice-item-tile" className="nk-slab-tile">
+          {item.image ? <img src={item.image} alt="" draggable={false} className="size-full object-contain p-0.5" /> : (item.icon ?? <PackageIcon />)}
+        </span>
+        <span data-slot="notice-item-name" className="min-w-0 truncate">
+          {item.name}
+        </span>
+        <span data-slot="notice-item-delta" className="nk-slab-delta" data-delta={down ? "down" : undefined}>
+          {formatItemDelta(item.count)}
+        </span>
+        {children}
+      </div>
+    )
+  }
 
   return (
     <div
@@ -231,7 +296,7 @@ function Notice({
       role={status === "error" ? "alert" : "status"}
       className={cn(
         noticeVariants({ iconAlign: iconAlign ?? (title && description ? "start" : "center") }),
-        "gap-3",
+        "gap-[calc(var(--nk-space)*3)]",
         animate && "nk-enter",
         className
       )}
@@ -263,7 +328,7 @@ function Notice({
       )}
       <div className="flex min-w-0 flex-1 flex-col gap-0.5 break-words">
         {title && (
-          <p data-slot="notice-title" className="font-medium">
+          <p data-slot="notice-title" className="[font-weight:var(--nk-weight-strong,600)]">
             {title}
           </p>
         )}
@@ -291,7 +356,7 @@ function Notice({
           aria-hidden
           data-slot="notice-time"
           className={cn(
-            "absolute inset-x-0 bottom-0 h-0.5 origin-left motion-reduce:hidden [html[data-nk-motion=off]_&]:hidden",
+            "absolute inset-x-0 bottom-0 h-(--nk-slab-line-height) origin-left motion-reduce:hidden [html[data-nk-motion=off]_&]:hidden",
             s.line
           )}
         />
@@ -344,12 +409,16 @@ type NoticeData = {
   duration?: number
   showDuration?: boolean
   position?: NoticePosition
+  /** An item added or removed (the item slab); merges with the same item's recent change. */
+  item?: NoticeItem
 }
 
 type NoticeEntry = NoticeData & {
   key: string
   /** When it was shown or last updated (ms). */
   at: number
+  /** How many later changes were merged into it (item notices). */
+  merged?: number
 }
 
 type NoticeAction =
@@ -360,13 +429,41 @@ type NoticeAction =
 /**
  * The queue: show (a notice with a key already on screen is replaced in place), dismiss, clear.
  * At most `max` (default 5) stay in each position; the oldest there go first. A notice with
- * neither title nor description is ignored.
+ * neither title, description nor item is ignored. An item change with no id merges into the same
+ * item's change in the same position and direction when that was shown or updated at most
+ * NOTICE_ITEM_MERGE_MS before: the counts add up and its time restarts.
  */
 function noticeReducer(state: NoticeEntry[], action: NoticeAction): NoticeEntry[] {
   switch (action.type) {
     case "show": {
       const { notice, key, at, max = 5 } = action
-      if (!notice.title && !notice.description) return state
+      if (!notice.title && !notice.description && !notice.item) return state
+      const itemKey = notice.id === undefined || notice.id === null ? noticeItemKey(notice.item) : undefined
+      if (itemKey && notice.item) {
+        const sign = Math.sign(notice.item.count)
+        const position = noticePosition(notice.position)
+        const j = state.findIndex(
+          (n) =>
+            !!n.item &&
+            noticeItemKey(n.item) === itemKey &&
+            Math.sign(n.item.count) === sign &&
+            noticePosition(n.position) === position &&
+            at - n.at >= 0 &&
+            at - n.at <= NOTICE_ITEM_MERGE_MS
+        )
+        if (j >= 0) {
+          const prev = state[j]!
+          const merged: NoticeEntry = {
+            ...prev,
+            ...notice,
+            item: { ...prev.item!, ...notice.item, count: prev.item!.count + notice.item.count },
+            key: prev.key,
+            at,
+            merged: (prev.merged ?? 0) + 1,
+          }
+          return state.map((n, i) => (i === j ? merged : n))
+        }
+      }
       const next: NoticeEntry = { ...notice, key, at }
       const i = state.findIndex((n) => n.key === key)
       if (i >= 0) return state.map((n, j) => (j === i ? next : n))
@@ -429,11 +526,13 @@ function Notices({
     <>
       {groupNotices(notices).map(([position, list]) => (
         <NoticeStack key={position} position={position} className={className}>
-          {list.map(({ key, at, id: _id, position: _position, ...n }) => (
-            // Keyed on `at` too: an update restarts the time (and fades in again).
+          {list.map(({ key, at, id: _id, position: _position, merged, ...n }) => (
+            // Keyed on `at` too: an update restarts the time (and fades in again, unless it is a
+            // merged item change: that one just updates its count).
             <Notice
               key={`${key}:${at}`}
               {...n}
+              animate={!merged}
               onExpire={() => onDismiss(key)}
               onDismiss={closable ? () => onDismiss(key) : undefined}
             />
@@ -454,9 +553,13 @@ export {
   noticeStatus,
   noticePosition,
   noticeTimeLeft,
+  noticeItemKey,
+  formatItemDelta,
   groupNotices,
   NOTICE_DURATION,
+  NOTICE_ITEM_MERGE_MS,
   NOTICE_POSITIONS,
+  type NoticeItem,
   type NoticeStatus,
   type NoticePosition,
   type NoticeData,

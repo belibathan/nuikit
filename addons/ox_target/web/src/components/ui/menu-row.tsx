@@ -155,7 +155,7 @@ function MenuRow({
 
   const lead =
     image !== undefined && image !== null ? (
-      <span data-slot="menu-row-image" className="flex size-8 shrink-0 overflow-hidden rounded-md bg-muted">
+      <span data-slot="menu-row-image" className="flex size-8 shrink-0 overflow-hidden rounded-(--nk-key-radius) bg-muted">
         {typeof image === "string" ? <img src={image} alt="" className="size-full object-cover" /> : image}
       </span>
     ) : (
@@ -327,15 +327,20 @@ const TONE_VAR: Record<MeterTone, string> = {
   stress: "--vital-stress",
 }
 
+/** Colour names that mean "no colour": the muted tone. */
+const MUTED_NAMES = new Set(["muted", "dark", "gray", "grey"])
+
 /**
  * A progress colour as a CSS value: a tone ("success", "chart-2") or a name a library uses
  * (ox's Mantine "green", "red.6", through meterColor()) becomes `var(--token)`, so it follows the
  * theme; a CSS colour ("#4dabf7", "rgb(…)") passes through; anything else is undefined (the
- * default primary bar).
+ * default primary bar). `muted` (and ox's greys, `dark.3`, `gray.6`: what a bar gets when the script
+ * set no colour) is `--muted-foreground`, so an uncoloured bar stays quiet beside coloured ones.
  */
 function menuRowColor(input?: string | null): string | undefined {
   const v = (input ?? "").trim()
   if (!v) return undefined
+  if (MUTED_NAMES.has(v.toLowerCase().replace(/\.\d+$/, ""))) return "var(--muted-foreground)"
   if (Object.prototype.hasOwnProperty.call(TONE_VAR, v)) return `var(${TONE_VAR[v as MeterTone]})`
   const m = meterColor(v)
   if (m.tone) return `var(${TONE_VAR[m.tone]})`
@@ -400,7 +405,7 @@ function MenuRowDetails({
               {items.map((m, i) => (
                 <div key={i} data-slot="menu-row-details-item" className="flex flex-col gap-1">
                   <div className="flex min-w-0 items-center gap-2">
-                    {m.label !== undefined && <dt className="truncate font-medium text-muted-foreground">{m.label}</dt>}
+                    {m.label !== undefined && <dt className="nk-caption truncate">{m.label}</dt>}
                     {m.value !== undefined && <dd className={cn("nk-num truncate", m.label !== undefined && "ml-auto")}>{m.value}</dd>}
                   </div>
                   {m.progress !== undefined && (

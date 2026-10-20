@@ -68,6 +68,10 @@ describe("menu-row", () => {
     expect(menuRowColor("green")).toBe("var(--success)")
     expect(menuRowColor("Yellow.4")).toBe("var(--warning)")
     expect(menuRowColor("blue")).toBe("var(--info)")
+    // muted, and ox's greys (dark.3 is its default bar): quiet, not near-white
+    expect(menuRowColor("muted")).toBe("var(--muted-foreground)")
+    expect(menuRowColor("dark.3")).toBe("var(--muted-foreground)")
+    expect(menuRowColor("gray.6")).toBe("var(--muted-foreground)")
     // CSS colours pass through
     expect(menuRowColor("#c8102e")).toBe("#c8102e") // nuikit-ignore color/hardcoded
     expect(menuRowColor("rgb(77, 171, 247)")).toBe("rgb(77, 171, 247)")

@@ -243,7 +243,7 @@ function SkillCheck({
           strokeWidth="6"
           strokeDasharray={zone.dash}
           transform={zone.rotate}
-          className={shown === "success" ? "stroke-success" : shown === "fail" ? "stroke-destructive" : "stroke-primary"}
+          className={shown === "success" ? "stroke-success" : shown === "fail" ? "stroke-destructive" : "stroke-(--nk-gauge-fill)"}
         />
       </svg>
       {/* the needle, drawn at 12 o'clock on its own layer; the layer turns (transform only) */}

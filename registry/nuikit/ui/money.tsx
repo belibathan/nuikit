@@ -22,9 +22,10 @@ const moneyVariants = cva("nk-num whitespace-nowrap", {
   variants: {
     size: {
       inherit: "",
-      sm: "text-sm leading-5 font-semibold",
-      md: "text-xl leading-7 font-semibold",
-      display: "nk-display",
+      sm: "text-(length:--nk-text-base) leading-5 [font-weight:var(--nk-weight-strong,600)]",
+      md: "text-(length:--nk-hud-value-size) leading-7 [font-weight:var(--nk-weight-strong,600)]",
+      /** The money hero (a bank balance): display type in the numeric face. */
+      display: "nk-display [font-family:var(--nk-num-font)]!",
     },
   },
   defaultVariants: {

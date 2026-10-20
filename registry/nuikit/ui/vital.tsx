@@ -42,8 +42,8 @@ const vitalVariants = cva(
           "text-chart-5 [&_[data-slot=progress]]:bg-chart-5/20 [&_[data-slot=progress-indicator]]:bg-chart-5",
       },
       size: {
-        default: "w-32 [&_[data-slot=progress]]:h-1",
-        sm: "w-20 [&_[data-slot=progress]]:h-1",
+        default: "w-32 [&_[data-slot=progress]]:h-(--nk-meter-height)",
+        sm: "w-20 [&_[data-slot=progress]]:h-(--nk-meter-height)",
       },
     },
     defaultVariants: {
