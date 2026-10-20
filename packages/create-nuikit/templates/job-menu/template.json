@@ -1,0 +1,9 @@
+{
+  "block": "job-menu",
+  "title": "Job menu",
+  "description": "Duty toggle and job actions; for bosses, staff with promote, demote, fire and hire, checked by the server",
+  "next": [
+    "give yourself a job from the server console: {{name}}_setjob <your id> police 4",
+    "press F5 (or /{{name}}); hiring someone nearby needs OneSync"
+  ]
+}
