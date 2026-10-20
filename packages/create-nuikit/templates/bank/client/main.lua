@@ -4,7 +4,8 @@
 -- fresh balances; an error goes back to the page's dialog.
 -- Lua → UI: surfaces nk.surface(name, opts) · UI → Lua: nk.on(callback, fn) ↔ fetchNui()
 
-local panel = nk.surface('bank', { layer = 'panel', exclusive = true })
+-- escape = 'back': Esc goes to the page, which closes the money dialog first, then the bank.
+local panel = nk.surface('bank', { layer = 'panel', exclusive = true, escape = 'back' })
 local where = nil -- { title, atm } of the bank or ATM it's open at
 
 -- ───────────────────────────────── asking the server

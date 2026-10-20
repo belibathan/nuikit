@@ -1,19 +1,10 @@
 import * as React from "react"
-import { fetchNui, Surface } from "nuikit-core/react"
+import { fetchNui, Surface, useSurface } from "nuikit-core/react"
 import { BriefcaseIcon, ChevronDownIcon, ChevronUpIcon, UserMinusIcon, UserPlusIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
+import { Confirm } from "@/components/ui/confirm"
 import { MenuRow } from "@/components/ui/menu-row"
 import { Panel, PanelBody, PanelHeader } from "@/components/ui/panel"
 import { Spinner } from "@/components/ui/spinner"
@@ -26,19 +17,23 @@ import type { JobAnswer, JobEmployee, JobGrade, JobMenuData } from "./nui"
  * JobMenu — your job in one panel: go on or off duty and run the job's actions; a boss also gets
  * the staff (promote, demote, fire, with a confirm) and whoever is nearby to hire. Lua answers every
  * button and its error shows at the top of the panel. Built from the kit: Panel (with a tabs
- * header), MenuRow, Stat, with stock shadcn Tabs, Button, AlertDialog and Spinner (the fire confirm
- * moves to the kit's confirm once it ships).
+ * header), MenuRow, Stat, Confirm (for firing), with stock shadcn Tabs, Button and Spinner. Escape
+ * goes through the surface (escape = 'back'): the confirm first, then the menu.
  *
  *   <JobMenuSurface />                                // wired: nk.surface('job', …) in Lua opens it
  *   <JobMenu data={data} onRequest={…} />             // a still, or your own wiring
  */
 function JobMenuSurface() {
+  const job = useSurface("job")
+  const back = React.useRef<() => void>(() => job.close())
   return (
-    <Surface name="job" layer="panel" exclusive>
+    <Surface name="job" layer="panel" exclusive escape="back" onBack={() => back.current()}>
       {(data) =>
         data ? (
           <JobMenu
             data={data}
+            onBack={(fn) => (back.current = fn)}
+            onClose={() => job.close()}
             onRequest={(req) => {
               const call =
                 req.kind === "duty"
@@ -82,6 +77,8 @@ function jobNextGrade(grades: JobGrade[], grade: number, dir: 1 | -1): number | 
 function JobMenu({
   data,
   onRequest,
+  onBack,
+  onClose,
   autoFocus = true,
   defaultTab = "actions",
   className,
@@ -92,6 +89,9 @@ function JobMenu({
   data: JobMenuData
   /** Ask Lua; resolve with its answer. */
   onRequest?: (req: JobRequest) => Promise<JobAnswer> | void
+  /** Gives the surface what Escape should do now (close the fire confirm, else the menu). */
+  onBack?: (fn: () => void) => void
+  onClose?: () => void
   /** Focus the first row when it opens (off for stills next to other content). */
   autoFocus?: boolean
 }) {
@@ -99,6 +99,11 @@ function JobMenu({
   const [busy, setBusy] = React.useState<string | null>(null)
   const [error, setError] = React.useState<string | null>(null)
   const [firing, setFiring] = React.useState<JobEmployee | null>(null)
+
+  // Escape: the fire confirm first, then the menu.
+  React.useEffect(() => {
+    onBack?.(() => (firing ? setFiring(null) : onClose?.()))
+  }, [firing, onBack, onClose])
 
   const send = (key: string, req: JobRequest) => {
     if (!onRequest || busy) return
@@ -210,33 +215,22 @@ function JobMenu({
         </Panel>
       </div>
 
-      <AlertDialog open={!!firing} onOpenChange={(open) => !open && setFiring(null)}>
-        <AlertDialogContent
-          className="nk-panel nk-enter gap-4 p-6 data-[size=default]:sm:max-w-sm"
-          // One Escape closes the dialog only, not the menu behind it.
-          onEscapeKeyDown={(e) => {
-            e.preventDefault()
+      {firing && (
+        <Confirm
+          tone="destructive"
+          size="sm"
+          title={`Fire ${firing.name}?`}
+          description="They lose the job and its access straight away. You can hire them again later."
+          cancelLabel="Keep them"
+          confirmLabel="Fire"
+          initialFocus="cancel"
+          onCancel={() => setFiring(null)}
+          onConfirm={() => {
+            send(`fire:${firing.id}`, { kind: "fire", id: firing.id })
             setFiring(null)
           }}
-        >
-          <AlertDialogHeader>
-            <AlertDialogTitle className="nk-title">Fire {firing?.name}?</AlertDialogTitle>
-            <AlertDialogDescription>They lose the job and its access straight away. You can hire them again later.</AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Keep them</AlertDialogCancel>
-            <AlertDialogAction
-              variant="destructive"
-              onClick={() => {
-                if (firing) send(`fire:${firing.id}`, { kind: "fire", id: firing.id })
-                setFiring(null)
-              }}
-            >
-              Fire
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+        />
+      )}
     </div>
   )
 }
