@@ -16,6 +16,7 @@ import {
   FuelIcon,
   HeartPulseIcon,
   LandmarkIcon,
+  LockIcon,
   LogOutIcon,
   MapIcon,
   MicIcon,
@@ -861,7 +862,14 @@ function ProgressRingStates() {
         <PanelBody variant="form" className="flex-row gap-6">
           <ProgressRing track="theme" size="sm" value={80} label="Engine" />
           <ProgressRing track="theme" size="sm" value={40} label="Brakes" />
-          <ProgressRing track="theme" size="sm" value={0} label="Turbo" center={false} />
+          <ProgressRing
+            track="theme"
+            size="sm"
+            value={0}
+            label="Turbo"
+            aria-label="Turbo, not installed"
+            center={<LockIcon className="size-3.5 text-muted-foreground" />}
+          />
         </PanelBody>
       </Panel>
     </div>
