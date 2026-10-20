@@ -740,6 +740,46 @@
         "screens"
       ],
       "docs": "Mount <BankSurface /> in App.tsx. In Lua, open nk.surface(\"bank\", { layer = \"panel\", exclusive = true }) with a BankData table, answer nk.on(\"bank:deposit\"), nk.on(\"bank:withdraw\") and nk.on(\"bank:transfer\") with { ok, error }, and :update it with fresh balances. Check every amount on the server. A whole resource with the Lua: npm create nuikit@latest my-bank -- -t bank"
+    },
+    {
+      "name": "job-menu",
+      "type": "registry:block",
+      "title": "Job menu",
+      "description": "Your job in one panel: a duty toggle and the job's actions; for the boss, a Staff tab with the job account, promote, demote, fire (with a confirm) and hire whoever is nearby. Protocol-agnostic.",
+      "files": [
+        {
+          "path": "registry/nuikit/blocks/job-menu/job-menu.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/job-menu/job-menu.tsx"
+        },
+        {
+          "path": "registry/nuikit/blocks/job-menu/nui.ts",
+          "type": "registry:lib",
+          "target": "components/blocks/job-menu/nui.ts"
+        },
+        {
+          "path": "registry/nuikit/blocks/job-menu/fixtures.ts",
+          "type": "registry:lib",
+          "target": "components/blocks/job-menu/fixtures.ts"
+        }
+      ],
+      "dependencies": [
+        "lucide-react",
+        "nuikit-core"
+      ],
+      "registryDependencies": [
+        "alert-dialog",
+        "button",
+        "spinner",
+        "tabs",
+        "https://nuikit.vercel.app/r/panel.json",
+        "https://nuikit.vercel.app/r/menu-row.json",
+        "https://nuikit.vercel.app/r/stat.json"
+      ],
+      "categories": [
+        "screens"
+      ],
+      "docs": "Mount <JobMenuSurface /> in App.tsx. In Lua, open nk.surface(\"job\", { layer = \"panel\", exclusive = true }) with a JobMenuData table, answer nk.on(\"job:duty\"), nk.on(\"job:action\"), nk.on(\"job:hire\"), nk.on(\"job:fire\") and nk.on(\"job:grade\") with { ok, error }, and :update it after a change. Check every boss action on the server against the caller's own job and grade. A whole resource with the Lua: npm create nuikit@latest my-jobs -- -t job-menu"
     }
   ]
 }

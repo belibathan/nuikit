@@ -6,6 +6,8 @@ import { garageFixtures } from "@/blocks/garage/fixtures";
 import { Garage } from "@/blocks/garage/garage";
 import { deathScreenFixtures } from "@/blocks/death-screen/fixtures";
 import { HudMinimal } from "@/blocks/hud-minimal/hud-minimal";
+import { jobMenuFixtures } from "@/blocks/job-menu/fixtures";
+import { JobMenu } from "@/blocks/job-menu/job-menu";
 import { hudMinimalFixtures } from "@/blocks/hud-minimal/fixtures";
 import { LoadingScreen } from "@/blocks/loading-screen/loading-screen";
 import { loadingHandovers, loadStateAt } from "@/blocks/loading-screen/fixtures";
@@ -114,6 +116,17 @@ export const BLOCKS: BlockPreview[] = [
       ATM: () => <Bank data={bankFixtures.atm} autoFocus={false} onMoney={async () => ({ ok: true })} />,
       Frozen: () => <Bank data={bankFixtures.frozen} autoFocus={false} />,
       "New account": () => <Bank data={bankFixtures.new} autoFocus={false} />,
+    },
+  },
+  {
+    name: "job-menu",
+    title: "Job menu",
+    description: "A duty toggle and the job's actions; the boss also gets the staff to promote, demote or fire (with a confirm) and whoever is nearby to hire. The server checks every request against the caller's own job.",
+    states: {
+      Staff: () => <JobMenu data={jobMenuFixtures.boss} defaultTab="staff" autoFocus={false} onRequest={async () => ({ ok: true })} />,
+      Actions: () => <JobMenu data={jobMenuFixtures.boss} autoFocus={false} onRequest={async () => ({ ok: true })} />,
+      "Off duty": () => <JobMenu data={jobMenuFixtures["off-duty"]} autoFocus={false} onRequest={async () => ({ ok: true })} />,
+      Refused: () => <JobMenu data={jobMenuFixtures.boss} defaultTab="staff" autoFocus={false} onRequest={async () => ({ ok: false, error: "Only the boss can do that." })} />,
     },
   },
 ];
