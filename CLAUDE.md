@@ -15,8 +15,8 @@ TweakCN theme) is the default look and the showcase, not the product. Design: `d
 
 Read this before changing anything, then `docs/design.md`.
 
-Current release: **0.5.0** (npm `nuikit-core`, `vite-plugin-nuikit`, `create-nuikit`; GitHub release
-`v0.5.0` with `nuikit.zip`). Direction: `docs/vision.md` (read first), then `docs/architecture.md`.
+Current release: **0.6.0** (npm `nuikit-core`, `vite-plugin-nuikit`, `create-nuikit`; GitHub release
+`v0.6.0` with `nuikit.zip`). Direction: `docs/vision.md` (read first), then `docs/architecture.md`.
 **Status and what's next: `docs/roadmap.md`** (update your rows in every PR). Parallel agents: `docs/next/dispatch.md`
 (lanes, file ownership, rules).
 
@@ -35,7 +35,7 @@ Current release: **0.5.0** (npm `nuikit-core`, `vite-plugin-nuikit`, `create-nui
 | `apps/www` | The site + registry host (Vercel, deploys from `main`). |
 | `scripts/` | `sync-template.mjs` (`pnpm sync`), `pack-systems.mjs` (`pnpm pack:systems` → `out/nuikit.zip`), `new-system.mjs` (scaffold). |
 | `bench/host` | Host benchmark (iframes vs one frame) and the host's end-to-end check. Results in `results.md`. |
-| `docs/` | `roadmap.md` (status, the one tracker), `next/dispatch.md` (agent lanes), `vision.md` (direction), `architecture.md` (the target design: runtime, intents, adapters, renderers, services, doctor; the 0.6 plan), `protocol.md` (the standard, v1), `tokens.md` (tokens v1, theme pipeline, prefs), `host.md` (host prototype), `design.md` (kit language), `coverage.md`, protocol specs, `releases/`. |
+| `docs/` | `roadmap.md` (status, the one tracker), `next/dispatch.md` (agent lanes), `vision.md` (direction), `architecture.md` (the target design: runtime, intents, adapters, renderers, services, doctor; the 0.7 plan), `protocol.md` (the standard, v1), `tokens.md` (tokens v1, theme pipeline, prefs), `host.md` (host prototype), `design.md` (kit language), `coverage.md`, protocol specs, `releases/`. |
 
 ## Commands
 

@@ -4,7 +4,7 @@
 PR. Design: [`architecture.md`](architecture.md). Kit brief: [`next/blocks.md`](next/blocks.md). Lanes and
 rules for parallel agents: [`next/dispatch.md`](next/dispatch.md).*
 
-Last updated: Oct 20 2026, batch 1 (all kit lanes) in test.
+Last updated: Oct 20 2026, after the 0.6.0 release (batch 1).
 
 ## Released
 
@@ -12,9 +12,15 @@ Last updated: Oct 20 2026, batch 1 (all kit lanes) in test.
 |---|---|---|
 | 0.4.0 | The full kit: HUD, pause, death, loading, chat, stress, 10 overrides | Yes |
 | **0.5.0** | Tokens v1 + theme engine (live reload, contrast checks, player prefs); protocol v1 (versioned handshake, one Escape path, live values §5.7); `nuikit check` (every screen level 3, CI-enforced); Lua runtime imported like ox_lib (`@nuikit/init.lua`, `nk`); showcase pause (focus camera, 3D map), inventory and minimap; components `panel` `menu-row` `stat` `meter` `hud-chip`; site `/components` `/design` `/coverage`; host prototype (opt-in) | Yes (next-7679bf9, next-4447310 + fix ea7ac52) |
+| **0.6.0** | Batch 1: 15 components (Part B complete), 7 screens rebuilt on them (ox_lib menus + progress, ox_target, Renewed-Banking, illenium-appearance, qbx_taxijob, qbx_vehiclesales, death + loading), 9 blocks with `npm create nuikit -t`, `/blocks`, theme studio `/theme`; fixes the 0.5.0 reduced-motion progress bug | Yes (next-9d1784f: 7 of 8; respawn issue predates it) |
 
-Known issue in 0.5.0: after repeated live restarts of `nuikit`/`nuikit_hud`, the minimap can render blank until
-GTA's pause map is opened and closed (not seen on a fresh join).
+Known issues in 0.6.0:
+- Death screen with qbx_medical + qbx_ambulancejob: hold-to-respawn bar moves in 1 s steps (draw it from the
+  key-hold time instead), and the dead screen stays up during the ~20 s hospital-bed treatment (needs a bed signal:
+  `qbx_ambulancejob:client:checkedIn` / `putPlayerInBed` or the bed animation). Screens lane, first in batch 2.
+- After repeated live restarts of `nuikit`/`nuikit_hud`, the minimap can render blank until GTA's pause map is
+  opened and closed (not seen on a fresh join). Showcase lane.
+- `nuikit_loading` ships `externalShutdown = false`; Qbox multicharacter needs `true`. Detect it (Screens lane).
 
 ## Decisions settled by measurement
 
@@ -26,7 +32,7 @@ GTA's pause map is opened and closed (not seen on a fresh join).
 
 ## In progress and next
 
-### Platform (lead) — 0.6, [`architecture.md`](architecture.md)
+### Platform (lead) — 0.7 universal, [`architecture.md`](architecture.md)
 
 | # | Step | Status |
 |---|---|---|
@@ -44,9 +50,9 @@ GTA's pause map is opened and closed (not seen on a fresh join).
 
 | Lane | Scope | Status |
 |---|---|---|
-| Components | The 9 remaining components + `progress-ring` + `skill-check`, redesigned as the default renderers for the intents | **Done (Part B)**, in batch 1: `notice`, `form-field`, `confirm`, `key-prompt`, `progress-ring`, `menu-row` items, `meter` tones/timed mode, `speedometer` on HUD tokens, `countdown`, `money`, `item-slot`, `player-card`, `empty-state`, `skill-check`, `radial-menu` (#8–#39); `nui-toaster` and `task-progress` deprecated (#40). Paused |
-| Screens | death, loading, chat and the overrides (ox_lib first) rebuilt on the components, protocol-exact | In batch 1: ox_lib menus + progress (#9, #32), death + loading (#12), ox_target (#15), Renewed-Banking (#18), illenium-appearance (#21), qbx_taxijob (#23), qbx_vehiclesales (#25). Chat stays as is. Next: rest of ox_lib (notify, input, alert, text UI, circle, skill check) on the new components, qbx_scoreboard, qbx_idcard, mm_radio |
-| Blocks + site | The 14 blocks, `npm create nuikit -t <block>`, `/blocks`, theme switcher, theme studio | In batch 1: blocks `hud-minimal`, `death-screen`, `pause-menu`, `loading-screen`, `settings`, `scoreboard`, `garage`, `bank` (all scaffold, build, level 3; CI-checked); site `/blocks` (#31), theme studio `/theme` (#29), tokens + ThemePicker (#19, merged). Next: `interaction`, `inventory`, `shop`, `vehicle-shop`, `character-select`, `job-menu` |
+| Components | The 9 remaining components + `progress-ring` + `skill-check`, redesigned as the default renderers for the intents | **Done** (released in 0.6.0, #8–#40). Paused |
+| Screens | death, loading, chat and the overrides (ox_lib first) rebuilt on the components, protocol-exact | Released in 0.6.0: ox_lib menus + progress, death + loading, ox_target, Renewed-Banking, illenium-appearance, qbx_taxijob, qbx_vehiclesales. **Batch 2 first:** death respawn fix + loading `externalShutdown` detection; then ox_lib notify (#42), input, alert, text UI, circle, skill check; qbx_scoreboard, qbx_idcard, mm_radio |
+| Blocks + site | The 14 blocks, `npm create nuikit -t <block>`, `/blocks`, theme switcher, theme studio | Released in 0.6.0: 9 blocks (`hud-minimal`, `death-screen`, `pause-menu`, `loading-screen`, `settings`, `scoreboard`, `garage`, `bank`, `job-menu`), `/blocks`, `/theme`. Next: `interaction`, `shop`, `inventory`, `vehicle-shop`, `character-select`, existing blocks on the new components |
 | Showcase | pause, HUD, inventory: minimap restart quirk, FPS budget | Owner's existing agent |
 
 ### Open items for the owner

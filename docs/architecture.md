@@ -1,6 +1,6 @@
 # Architecture: one UI layer for any FiveM server
 
-*Oct 19, 2026. The design nuikit builds toward from 0.6 on, decided after weighing the alternatives below. Builds
+*Oct 19, 2026. The design nuikit builds toward (the universal milestone, 0.7), decided after weighing the alternatives below. Builds
 on `docs/vision.md` (why), `docs/protocol.md` (v1) and `docs/tokens.md`. Read it before adding a system, an
 override, an adapter or a package.*
 
@@ -178,10 +178,10 @@ schema has its own version; packages follow semver; the runtime prints a notice 
 ## What "universal" means, measurably
 
 **Coverage**: the share of UI calls on a stock server drawn by nuikit, on the txAdmin Qbox, QBCore and ESX
-recipes, from a scripted session (join, spawn, menus, a job, inventory, death). Target for 0.6: 90%+ on Qbox,
+recipes, from a scripted session (join, spawn, menus, a job, inventory, death). Target for 0.7: 90%+ on Qbox,
 75%+ on QBCore and ESX. The misses become the backlog; the doctor reports the same on any live server.
 
-## Plan (0.6)
+## Plan (0.7: universal)
 
 1. **`@nuikit/init.lua` and `nk`**: the runtime as an importable library; the kit's systems move off vendored
    Lua. *Built on `feat/runtime`: the kit's systems and the template import it; the bridge loads lazily.*

@@ -5,7 +5,7 @@ lua54 'yes'
 name 'nuikit_loading'
 description 'nuikit: loading screen with real load progress, tips, backgrounds and music, themed by nuikit/theme.css.'
 repository 'https://github.com/belibathan/nuikit'
-version '0.5.0'
+version '0.6.0'
 
 -- The loading screen is a page of its own: it runs before any other resource, so it gets the
 -- server theme through the connection handover (server/main.lua), not through NUI messages.

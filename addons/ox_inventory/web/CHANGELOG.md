@@ -1,5 +1,11 @@
 # nuikit-ox-inventory-ui
 
+## 0.1.3
+
+### Patch Changes
+
+- nuikit-core@0.6.0
+
 ## 0.1.2
 
 ### Patch Changes

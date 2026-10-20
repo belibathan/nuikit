@@ -10,7 +10,7 @@ import { check, LEVEL_NAMES, RULES, type Level } from "./check";
 import { bold, dim, formatResult, formatSummary, formatTokens, red } from "./format";
 import { TOKENS, TOKEN_SOURCE } from "./tokens";
 
-const VERSION = "0.5.0";
+const VERSION = "0.6.0";
 
 const HELP = `${bold("nuikit")} ${dim(VERSION)}: the UI platform layer for FiveM
 

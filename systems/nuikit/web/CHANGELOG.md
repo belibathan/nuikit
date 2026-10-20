@@ -1,5 +1,11 @@
 # nuikit-host-web
 
+## 0.4.2
+
+### Patch Changes
+
+- nuikit-core@0.6.0
+
 ## 0.4.1
 
 ### Patch Changes

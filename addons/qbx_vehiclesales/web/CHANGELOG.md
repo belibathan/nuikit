@@ -1,5 +1,12 @@
 # nuikit-qbx-vehiclesales-ui
 
+## 0.3.3
+
+### Patch Changes
+
+- 5e4b9b7: qbx_vehiclesales override: the sale contract is now drawn with the kit's `panel` (header with logo, business, subtitle and plate; footer), and the price as a display `stat`. Every callback is unchanged.
+  - nuikit-core@0.6.0
+
 ## 0.3.2
 
 ### Patch Changes

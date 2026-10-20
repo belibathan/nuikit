@@ -1,6 +1,6 @@
 {
   "name": "create-nuikit",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "Start a FiveM NUI resource on nuikit: stock shadcn/ui, the nuikit kit and theme, typed Lua↔React and browser devtools.",
   "author": "belibathan (https://github.com/belibathan)",
   "license": "MIT",

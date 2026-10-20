@@ -1,7 +1,7 @@
 # Dispatch: parallel agents on the kit
 
 *How several coding agents work on nuikit at once without colliding. The lead session owns the platform
-(0.6, `docs/architecture.md`); agents own the lanes below. Status lives in [`../roadmap.md`](../roadmap.md).*
+(0.7, `docs/architecture.md`); agents own the lanes below. Status lives in [`../roadmap.md`](../roadmap.md).*
 
 ## Lead decisions log
 
@@ -47,7 +47,7 @@ and `index.css.tpl` belong to the lead: propose new `nk-*` utilities under "Requ
 ## Lane: Components (`feat/components`)
 
 Finish and redesign the component set (`docs/next/blocks.md` Part B) **as the default renderers for the
-intents** (`docs/architecture.md` §2). In 0.6 each intent is drawn by these components, so their props should
+intents** (`docs/architecture.md` §2). In 0.7 each intent is drawn by these components, so their props should
 already carry every field the intent needs:
 
 | Intent | Component(s) | Props must cover |
@@ -86,7 +86,7 @@ mm_radio.
 - Use the components as Lane Components ships them (rebase on `main` after each merge); until a component
   exists, keep the screen's current markup rather than building a private copy.
 - The ox_lib override's notify, menu, input, alert, progress, text UI and skill check are the first users of
-  the intent renderers: keep their structure close to the component props above so 0.6 can route ox_lib calls to
+  the intent renderers: keep their structure close to the component props above so 0.7 can route ox_lib calls to
   the shared renderers.
 
 ## Lane: Blocks + site (`feat/blocks`)
@@ -106,7 +106,7 @@ mm_radio.
 
 Pause, HUD and inventory: fix the 0.5.0 minimap restart quirk; keep the FPS budget (report numbers in PRs);
 move to the shared components as they land. The camera module stays self-contained: the lead moves it into the
-runtime as `nk.camera` (0.6 step 3), and the pause menu then calls that.
+runtime as `nk.camera` (0.7 step 3), and the pause menu then calls that.
 
 ## How the lead integrates
 

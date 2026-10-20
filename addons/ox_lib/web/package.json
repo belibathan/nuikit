@@ -1,7 +1,7 @@
 {
   "name": "nuikit-ox-lib-ui",
   "private": true,
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "A drop-in replacement for ox_lib's web UI, built from stock shadcn/ui and themed by nuikit/theme.css.",
   "type": "module",
   "scripts": {
