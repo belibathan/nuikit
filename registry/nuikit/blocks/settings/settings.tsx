@@ -2,12 +2,11 @@ import * as React from "react"
 import { fetchNui, Surface } from "nuikit-core/react"
 import { RotateCcwIcon, SettingsIcon } from "lucide-react"
 
-import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Kbd } from "@/components/ui/kbd"
 import { MenuRow } from "@/components/ui/menu-row"
 import { Panel, PanelBody, PanelFooter, PanelHeader } from "@/components/ui/panel"
-import { Slider } from "@/components/ui/slider"
+import { SliderField } from "@/components/ui/form-field"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 import type { SettingsData, SettingsItem, SettingsSection, SettingsSlider, SettingsValue } from "./nui"
@@ -16,7 +15,7 @@ import type { SettingsData, SettingsItem, SettingsSection, SettingsSlider, Setti
  * Settings — the player's settings for your server in one panel: toggles, choices, sliders and key
  * hints, grouped in sections (tabs). Every change goes to Lua (`settings:change`) and the row shows
  * what Lua answers, so Lua can clamp or refuse a value. Sliders send once, when let go. Built from the
- * kit: Panel, MenuRow (checkbox and stepper rows), the nk-field recipe with stock shadcn Slider, Tabs
+ * kit: Panel, MenuRow (checkbox and stepper rows), SliderField (form-field), with stock shadcn Tabs
  * and Kbd.
  *
  *   <SettingsSurface />                                    // wired: nk.surface('settings', …) in Lua opens it
@@ -238,7 +237,11 @@ function SettingsRow({
   }
 }
 
-/** The kit's field recipe: a label row with the value, the slider under it. Sends once, when let go. */
+/**
+ * The kit's SliderField (form-field): label, the value with its unit, the slider. It moves as the
+ * player drags, and sends once, when let go: on pointer-up or key-up, and only when the value changed
+ * since the last send (as the slider's own commit did), so Lua gets the same messages as before.
+ */
 function SettingsSliderRow({
   item,
   value,
@@ -248,27 +251,26 @@ function SettingsSliderRow({
   value: number
   onValue: (id: string, value: SettingsValue, send?: boolean) => void
 }) {
+  const latest = React.useRef(value)
+  latest.current = value
+  const sent = React.useRef(value)
+  const commit = () => {
+    if (latest.current === sent.current) return
+    sent.current = latest.current
+    onValue(item.id, latest.current)
+  }
   return (
-    <div data-settings-slider className={cn("nk-field px-3 py-2", item.disabled && "opacity-50")}>
-      <div className="nk-field-label">
-        <span className="flex min-w-0 flex-col">
-          <span className="truncate text-sm">{item.label}</span>
-          {item.description && <span className="truncate font-normal text-muted-foreground">{item.description}</span>}
-        </span>
-        <span className="nk-num ml-auto text-sm text-muted-foreground">
-          {value}
-          {item.unit}
-        </span>
-      </div>
-      <Slider
-        aria-label={item.label}
+    <div data-settings-slider className="px-3 py-2" onPointerUp={commit} onKeyUp={commit}>
+      <SliderField
+        label={item.label}
+        description={item.description}
         min={item.min}
         max={item.max}
         step={item.step ?? 1}
-        value={[value]}
+        value={value}
         disabled={item.disabled}
-        onValueChange={([v]) => v !== undefined && onValue(item.id, v, false)}
-        onValueCommit={([v]) => v !== undefined && onValue(item.id, v)}
+        format={(v) => `${v}${item.unit ?? ""}`}
+        onValueChange={(v) => onValue(item.id, v, false)}
       />
     </div>
   )
