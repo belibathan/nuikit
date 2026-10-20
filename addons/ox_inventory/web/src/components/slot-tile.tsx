@@ -84,9 +84,9 @@ export const SlotTile = memo(function SlotTile({ side, item, invType, locked, di
         locked && "opacity-40 grayscale",
       )}
     >
-      <div className={cn("nk-num flex h-3 shrink-0 items-center justify-between gap-1 text-xs leading-none", display ? "text-white/70" : "text-muted-foreground")}>
+      <div className={cn("nk-num flex h-3 shrink-0 items-center justify-between gap-1 text-xs leading-none", display ? "text-hud-foreground/70" : "text-muted-foreground")}>
         <span>{hot ? item.slot : stock}</span>
-        {shop ? <Price item={item} /> : count && <span className={cn("font-medium", display ? "text-white" : "text-foreground")}>{count}</span>}
+        {shop ? <Price item={item} /> : count && <span className={cn("font-medium", display ? "text-hud-foreground" : "text-foreground")}>{count}</span>}
       </div>
 
       {filled && (

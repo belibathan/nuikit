@@ -3,11 +3,13 @@
 //   vendor/shadcn/ui/*                → web/src/components/ui (stock shadcn, unmodified)
 //   registry/nuikit/*                 → web/src/components/ui, web/src/hooks
 //   vendor/shadcn/colors/neutral.json → web/src/index.css (stock shadcn neutral theme)
+//   nuikit-core compileTheme()        → web/src/index.css (nuikit token defaults; build core first)
+//   nuikit-core fxserver-compiler.js  → server/compiler.js (nuikit.json "compiler": true)
 // Copies are committed so each resource is complete on its own (you own the components, as with
 // shadcn). Never edit the copies here; edit the sources and run `pnpm sync`.
 import fs from "node:fs";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -35,15 +37,32 @@ for (const group of ["systems", "addons"]) {
     const manifest = path.join(base, name, "nuikit.json");
     if (!fs.existsSync(manifest)) continue;
     const m = JSON.parse(fs.readFileSync(manifest, "utf8"));
-    targets.push({ dir: `${group}/${name}`, lua: m.lua ?? [], components: m.components ?? [], hooks: m.hooks ?? [], css: m.css !== false });
+    targets.push({ dir: `${group}/${name}`, lua: m.lua ?? [], components: m.components ?? [], hooks: m.hooks ?? [], css: m.css !== false, compiler: m.compiler === true });
   }
 }
 
 const { cssVars } = JSON.parse(fs.readFileSync(path.join(root, "vendor/shadcn/colors/neutral.json"), "utf8"));
 const block = (sel, vars) => `${sel} {\n${Object.entries(vars).map(([k, v]) => `  --${k}: ${v};`).join("\n")}\n}`;
+
+// The nuikit tokens' defaults, exactly as compileTheme() derives them from the stock theme.
+const coreDist = path.join(root, "packages/core/dist/index.js");
+if (!fs.existsSync(coreDist)) {
+  console.error("pnpm sync needs nuikit-core built first: pnpm -r --filter \"./packages/**\" build");
+  process.exit(1);
+}
+const { compileTheme, TOKENS } = await import(pathToFileURL(coreDist).href);
+const nuikitTokens = (mode) => {
+  const { vars } = compileTheme({ ...cssVars[mode] }, { mode });
+  const out = {};
+  for (const t of TOKENS) if (t.group === "nuikit" || t.name === "destructive-foreground") out[t.name] = vars[t.name];
+  out.info = "var(--primary)";
+  out["info-foreground"] = "var(--primary-foreground)";
+  return out;
+};
 const css = fs
   .readFileSync(path.join(root, "packages/create-nuikit/index.css.tpl"), "utf8")
-  .replace("/* {{theme}} */", [block(":root", cssVars.light), block(".dark", cssVars.dark)].join("\n\n"));
+  .replace("/* {{theme}} */", [block(":root", cssVars.light), block(".dark", cssVars.dark)].join("\n\n"))
+  .replace("/* {{tokens}} */", [block(":root", nuikitTokens("light")), block(".dark", nuikitTokens("dark"))].join("\n\n"));
 
 for (const t of targets) {
   const copy = (from, to) => {
@@ -54,6 +73,7 @@ for (const t of targets) {
   for (const f of t.lua) copy(`packages/core/lua/${f}`, `client/${f}`);
   for (const c of t.components) copy(source(c), `web/src/components/ui/${c}.tsx`);
   for (const h of t.hooks) copy(`registry/nuikit/hooks/${h}.ts`, `web/src/hooks/${h}.ts`);
+  if (t.compiler) copy("packages/core/dist/fxserver-compiler.js", "server/compiler.js");
   if (t.css !== false) fs.writeFileSync(path.join(root, t.dir, "web/src/index.css"), css);
   console.log(`✓ synced ${t.dir}`);
 }

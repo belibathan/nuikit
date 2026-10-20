@@ -1,9 +1,10 @@
 /*
  * nuikit_chat: a theme for the cfx `chat` resource, built on the shadcn tokens.
  *
- * Every colour comes from a --nk-* variable. The values below are the stock shadcn neutral
- * (dark) theme; theme.js replaces them with your nuikit/theme.css at runtime. Only plain rgb()/
- * rgba() reach the page (Chromium 103: no oklch(), no color-mix()).
+ * Every colour comes from a --nk-* variable: the nuikit tokens (docs/tokens.md). The values below
+ * are the stock theme (shadcn neutral, dark, with nuikit's derived tokens); theme.js replaces them
+ * with the server theme at runtime. Only plain rgb()/rgba() reach the page (Chromium 103: no
+ * oklch(), no color-mix()).
  *
  * MIT, https://github.com/belibathan/nuikit
  */
@@ -38,10 +39,10 @@
   --nk-font-sans: system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --nk-font-mono: ui-monospace, "Cascadia Mono", Consolas, "Liberation Mono", monospace;
 
-  /* Meaning, not brand: these stay put whatever the theme (red stays red). */
-  --nk-success-rgb: 52, 211, 153;
-  --nk-warning-rgb: 251, 191, 36;
-  --nk-info-rgb: 96, 165, 250;
+  /* Status tokens (the theme's success / warning / info; defaults derived from the stock theme). */
+  --nk-success-rgb: 20, 190, 90;
+  --nk-warning-rgb: 245, 166, 0;
+  --nk-info-rgb: 229, 229, 229;
 
   /* The kit's scale (docs/design.md), in px at 1080p: the chat page isn't ours, so instead of
      rem this follows the game's height directly. calc(var(--nk-px) * 14) is 14px at 1080p. */
@@ -193,6 +194,7 @@
 }
 
 /* ^0–^9 colour codes, tuned to read on the card */
+/* nuikit-ignore-start color/hardcoded: GTA's chat colour codes mean fixed hues */
 .chat-window .color-0,
 .chat-window .color-7 { color: var(--nk-foreground); }
 .chat-window .color-1 { color: #f87171; }
@@ -203,6 +205,7 @@
 .chat-window .color-6 { color: #c084fc; }
 .chat-window .color-8 { color: #ef4444; }
 .chat-window .color-9 { color: #f472b6; }
+/* nuikit-ignore-end */
 
 /* ── input ──────────────────────────────────────────────────────────────── */
 

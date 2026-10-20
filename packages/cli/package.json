@@ -1,0 +1,56 @@
+{
+  "name": "nuikit",
+  "private": true,
+  "version": "0.4.0",
+  "description": "The nuikit command line: `nuikit check` audits a FiveM resource against the nuikit protocol's conformance levels (themed, well-behaved, native), `nuikit tokens` lists the theme tokens.",
+  "author": "belibathan (https://github.com/belibathan)",
+  "license": "MIT",
+  "type": "module",
+  "keywords": [
+    "fivem",
+    "nui",
+    "cfx",
+    "lint",
+    "conformance",
+    "design-tokens",
+    "shadcn",
+    "qbox",
+    "qbcore",
+    "esx"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/belibathan/nuikit",
+    "directory": "packages/cli"
+  },
+  "homepage": "https://nuikit.vercel.app",
+  "bugs": "https://github.com/belibathan/nuikit/issues",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "bin": {
+    "nuikit": "./dist/cli.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "gen:tokens": "node scripts/gen-tokens.mjs",
+    "build": "node scripts/gen-tokens.mjs && tsup",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "tsup": "^8.3.5",
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.8"
+  }
+}

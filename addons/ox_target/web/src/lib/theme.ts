@@ -1,26 +1,6 @@
-import { applyTheme, isBrowser } from "nuikit-core";
-
 /**
- * The server theme lives in the `nuikit` resource (nuikit/theme.css). ox_lib's Lua is untouched,
- * so instead of waiting for a message this page loads the file itself. NUI serves every resource's
- * listed files at https://cfx-nui-<resource>/<path>.
+ * The server theme from the `nuikit` resource: compiled tokens (docs/tokens.md) and the player's UI
+ * prefs, kept live (`nuikit theme reload` repaints this page too), with nuikit/theme.css as the
+ * fallback. ox_target's Lua is untouched, so this page can't receive nuikit.lua's messages.
  */
-const SOURCES = ["https://cfx-nui-nuikit/theme.css", "nui://nuikit/theme.css"];
-
-export async function loadServerTheme(): Promise<boolean> {
-  if (isBrowser()) return false;
-  for (const url of SOURCES) {
-    try {
-      const res = await fetch(url);
-      if (!res.ok) continue;
-      const css = await res.text();
-      if (css.includes("--")) {
-        applyTheme(css);
-        return true;
-      }
-    } catch {
-      /* try the next form; without the nuikit resource the built-in theme stays */
-    }
-  }
-  return false;
-}
+export { loadServerTheme } from "nuikit-core";

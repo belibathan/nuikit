@@ -9,6 +9,7 @@ version '0.1.0'
 -- `pnpm dev` points this at the Vite dev server for in-game hot reload,
 -- and `pnpm build` puts it back. You never have to edit it by hand.
 ui_page 'web/dist/index.html'
+nuikit_protocol '1'
 
 files {
   'web/dist/index.html',

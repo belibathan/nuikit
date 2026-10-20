@@ -1,6 +1,9 @@
 // @vitest-environment jsdom
-import { describe, expect, it } from "vitest";
-import { applyTheme, parseTheme, toRgba } from "../src/theme";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { __reset, emit } from "../src/index";
+import { applyServerTheme, loadServerTheme } from "../src/remote";
+import { applyTheme, clearTheme, getPrefs, getTheme, onTheme, parseTheme, setPrefs, toRgba } from "../src/theme";
+import { compileTheme } from "../src/tokens";
 
 const near = (a: number[] | null, b: number[], tol = 2) => {
   expect(a).not.toBeNull();
@@ -37,7 +40,7 @@ describe("themes", () => {
     const el = document.createElement("div");
     applyTheme(tweakcn, el, "dark");
     expect(el.style.getPropertyValue("--radius")).toBe("0.5rem");
-    expect(el.style.getPropertyValue("--primary")).toMatch(/^rgba\(/);
+    expect(el.style.getPropertyValue("--primary")).toMatch(/^rgba?\(/);
     expect(el.style.getPropertyValue("--primary-rgb")).toMatch(/^\d+, \d+, \d+$/);
     expect(el.style.getPropertyValue("--border-a")).toBe("0.1");
   });
@@ -55,7 +58,134 @@ describe("theme imports", () => {
     const links = document.querySelectorAll("link[data-nuikit-import]");
     expect(links).toHaveLength(1);
     expect((links[0] as HTMLLinkElement).href).toContain("family=Inter");
-    expect(el.style.getPropertyValue("--primary")).toBe("#fafafa");
+    expect(el.style.getPropertyValue("--primary")).toBe("rgb(250, 250, 250)");
     expect(el.style.getPropertyValue("--font-sans")).toBe("Inter, sans-serif");
+  });
+});
+
+describe("applyTheme (compiled tokens)", () => {
+  afterEach(() => {
+    clearTheme();
+    __reset();
+  });
+  const html = () => document.documentElement;
+  const css = (name: string) => html().style.getPropertyValue(`--${name}`);
+
+  it("paints every token with channels, and tells listeners", () => {
+    const seen: string[] = [];
+    onTheme((t) => seen.push(t.hash));
+    const vars = applyTheme(".dark { --primary: oklch(0.7 0.2 150); }");
+    expect(css("primary")).toBe(vars.primary);
+    expect(css("success")).toMatch(/^rgb\(/);
+    expect(css("hud")).toBe("rgba(0, 0, 0, 0.45)");
+    expect(css("hud-a")).toBe("0.45");
+    expect(css("vital-health-rgb")).toMatch(/^\d+, \d+, \d+$/);
+    expect(css("nk-scale")).toBe("1");
+    expect(html().getAttribute("data-nk-motion")).toBe("on");
+    expect(seen).toHaveLength(1);
+    expect(getTheme()?.vars.primary).toBe(vars.primary);
+  });
+
+  it("a plain object patches the current theme; a new theme removes stale extras", () => {
+    applyTheme(".dark { --primary: #111111; --sidebar: #222222; }");
+    applyTheme({ "--radius": "0.25rem" });
+    expect(css("radius")).toBe("0.25rem");
+    expect(css("primary")).toBe("rgb(17, 17, 17)");
+    applyTheme(".dark { --primary: #333333; }");
+    expect(css("sidebar")).toBe("");
+    expect(css("sidebar-rgb")).toBe("");
+    expect(css("radius")).toBe("0.625rem");
+  });
+
+  it("accepts the compiled theme Lua sends as nuikit:theme, and raw CSS from older servers", () => {
+    emit("nuikit:theme", compileTheme(".dark { --primary: #ff0000; }"));
+    expect(css("primary")).toBe("rgb(255, 0, 0)");
+    emit("nuikit:theme", ".dark { --primary: #00ff00; }");
+    expect(css("primary")).toBe("rgb(0, 255, 0)");
+  });
+
+  it("player prefs repaint: scale multiplies, motion off, high contrast", () => {
+    applyTheme(".dark { --nk-scale: 1.1; }");
+    emit("nuikit:prefs", { scale: 1.2, reducedMotion: true });
+    expect(css("nk-scale")).toBe("1.32");
+    expect(css("nk-motion")).toBe("0");
+    expect(html().getAttribute("data-nk-motion")).toBe("off");
+    setPrefs({ highContrast: true });
+    expect(html().getAttribute("data-nk-contrast")).toBe("high");
+    expect(css("hud")).toBe("rgba(0, 0, 0, 0.72)");
+    expect(getPrefs()).toEqual({ scale: 1.2, reducedMotion: true, highContrast: true });
+    // a new theme keeps the prefs
+    applyTheme(".dark { --primary: #123456; }");
+    expect(css("nk-scale")).toBe("1.2");
+  });
+
+  it("prefs before any theme still apply (on the stock theme)", () => {
+    setPrefs({ scale: 0.9 });
+    expect(css("nk-scale")).toBe("0.9");
+    expect(css("background")).toBe("");
+    setPrefs({ highContrast: true });
+    expect(css("background")).toBe("rgb(10, 10, 10)");
+  });
+});
+
+describe("loadServerTheme (override pages)", () => {
+  afterEach(() => {
+    clearTheme();
+    __reset();
+    vi.unstubAllGlobals();
+    delete (window as { GetParentResourceName?: unknown }).GetParentResourceName;
+  });
+
+  it("does nothing in the browser", async () => {
+    const fetch = vi.fn();
+    vi.stubGlobal("fetch", fetch);
+    expect(await loadServerTheme()).toBe(false);
+    expect(fetch).not.toHaveBeenCalled();
+  });
+
+  it("asks the nuikit resource for the compiled theme + prefs, then long-polls with the hash", async () => {
+    window.GetParentResourceName = () => "ox_lib";
+    const theme = compileTheme(".dark { --primary: #ff00ff; }");
+    const bodies: unknown[] = [];
+    let release: (v: Response) => void = () => {};
+    vi.stubGlobal(
+      "fetch",
+      vi.fn((url: string, init?: RequestInit) => {
+        bodies.push([url, JSON.parse(String(init?.body))]);
+        if (bodies.length === 1) return Promise.resolve(new Response(JSON.stringify({ hash: "a", theme, prefs: { scale: 1.1 } })));
+        return new Promise<Response>((r) => (release = r));
+      }),
+    );
+    expect(await loadServerTheme()).toBe(true);
+    expect(document.documentElement.style.getPropertyValue("--primary")).toBe("rgb(255, 0, 255)");
+    expect(document.documentElement.style.getPropertyValue("--nk-scale")).toBe("1.1");
+    await new Promise((r) => setTimeout(r, 0));
+    expect(bodies).toEqual([
+      ["https://nuikit/theme", { hash: null }],
+      ["https://nuikit/theme", { hash: "a", wait: true }],
+    ]);
+    // `nuikit theme reload` on the server → the pending request answers with the new theme
+    release(new Response(JSON.stringify({ hash: "b", theme: compileTheme(".dark { --primary: #00ffff; }") })));
+    await new Promise((r) => setTimeout(r, 0));
+    await new Promise((r) => setTimeout(r, 0));
+    expect(document.documentElement.style.getPropertyValue("--primary")).toBe("rgb(0, 255, 255)");
+  });
+
+  it("falls back to nuikit/theme.css from an older nuikit resource", async () => {
+    window.GetParentResourceName = () => "ox_lib";
+    vi.stubGlobal(
+      "fetch",
+      vi.fn((url: string) =>
+        Promise.resolve(url.endsWith("theme.css") ? new Response(".dark { --primary: #0000ff; }") : new Response("", { status: 404 })),
+      ),
+    );
+    expect(await loadServerTheme({ live: false })).toBe(true);
+    expect(document.documentElement.style.getPropertyValue("--primary")).toBe("rgb(0, 0, 255)");
+  });
+
+  it("applyServerTheme takes raw CSS when the server couldn't compile", () => {
+    expect(applyServerTheme({ hash: "x", css: ".dark { --primary: #010203; }" })).toBe(true);
+    expect(document.documentElement.style.getPropertyValue("--primary")).toBe("rgb(1, 2, 3)");
+    expect(applyServerTheme({ hash: "y" })).toBe(false);
   });
 });

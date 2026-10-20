@@ -6,7 +6,8 @@
     [
       "nuikit-core",
       "vite-plugin-nuikit",
-      "create-nuikit"
+      "create-nuikit",
+      "nuikit"
     ]
   ],
   "access": "public",

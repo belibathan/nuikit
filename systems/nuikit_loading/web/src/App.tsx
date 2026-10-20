@@ -13,7 +13,7 @@ export default function App() {
   const h = useHandover();
   const load = useLoadProgress();
 
-  // The server theme arrives with the handover (server/main.lua reads nuikit/theme.css).
+  // The server theme arrives with the handover (server/main.lua: the compiled theme, or theme.css).
   useEffect(() => {
     if (h.theme) applyTheme(h.theme);
   }, [h.theme]);

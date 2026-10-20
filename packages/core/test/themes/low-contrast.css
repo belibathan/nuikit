@@ -1,0 +1,28 @@
+/* Reference theme: a pretty but low-contrast dark paste (muted text, pastel primary with white text). */
+.dark {
+  --background: oklch(0.32 0.02 250);
+  --foreground: oklch(0.62 0.02 250);
+  --card: oklch(0.36 0.02 250);
+  --card-foreground: oklch(0.66 0.02 250);
+  --popover: oklch(0.38 0.02 250);
+  --popover-foreground: oklch(0.7 0.02 250);
+  --primary: oklch(0.8 0.1 160);
+  --primary-foreground: oklch(0.98 0 0);
+  --secondary: oklch(0.42 0.02 250);
+  --secondary-foreground: oklch(0.75 0.02 250);
+  --muted: oklch(0.42 0.02 250);
+  --muted-foreground: oklch(0.5 0.02 250);
+  --accent: oklch(0.45 0.03 250);
+  --accent-foreground: oklch(0.8 0.02 250);
+  --destructive: oklch(0.5 0.12 25);
+  --border: oklch(1 0 0 / 8%);
+  --input: oklch(1 0 0 / 10%);
+  --ring: oklch(0.8 0.1 160);
+  --chart-1: oklch(0.7 0.1 160);
+  --chart-2: oklch(0.6 0.1 200);
+  --chart-3: oklch(0.5 0.1 240);
+  --chart-4: oklch(0.6 0.1 280);
+  --chart-5: oklch(0.7 0.1 320);
+  --hud: oklch(0 0 0 / 15%);
+  --radius: 0.375rem;
+}

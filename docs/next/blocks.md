@@ -14,6 +14,10 @@ Read `CLAUDE.md` and `docs/design.md` first. Reference implementation: `systems/
 
 ## Part 0: the theme engine (before components)
 
+Status: 1–4 done (tokens v1 in [`docs/tokens.md`](../tokens.md), `compileTheme` in nuikit-core, the
+`nuikit` resource compiles and publishes, `nuikit theme reload`, player prefs); 5 (theme studio) and 6 (CI
+screenshots) open. Needs in-game verification on a prerelease.
+
 Today a theme is shadcn's ~30 CSS variables, usually pasted from TweakCN. That covers surfaces, text,
 primary, radius and fonts, but not what a game UI needs, so UIs hard-code the rest (success/warning
 greens and ambers in notifications and inventory, the 45% black behind HUD chips, vitals guessing which

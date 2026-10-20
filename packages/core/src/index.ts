@@ -27,10 +27,13 @@ export interface BuiltinEvents {
   "nuikit:surfaces": import("./surfaces").SurfacesSnapshot;
   "nuikit:back": string;
   "nuikit:player": import("./player").NuiPlayer;
-  "nuikit:theme": string;
+  /** The server theme: compiled tokens from the nuikit resource (or a raw theme.css from an older one). */
+  "nuikit:theme": string | import("./tokens").CompiledTheme;
+  /** The player's UI preferences (scale, reduced motion, high contrast). */
+  "nuikit:prefs": Partial<import("./tokens").NuiPrefs>;
 }
 export interface BuiltinCallbacks {
-  "nuikit:ready": { req: void; res: { ok: boolean; resource?: string } };
+  "nuikit:ready": { req: { protocol: number; client: string }; res: Handshake };
   "nuikit:close": { req: void | { name?: string }; res: { ok: boolean } };
   "nuikit:escape": { req: void; res: { ok: boolean; closed?: string; back?: string } };
   "nuikit:surface:open": { req: { name: string; data?: unknown }; res: { ok: boolean } };
@@ -66,12 +69,16 @@ declare global {
 
 /** True when running in a normal browser (dev), false inside the game's CEF. */
 export function isBrowser(): boolean {
+  const hosted = hostedContext();
+  if (hosted) return !hosted.inGame;
   if (typeof window === "undefined") return true;
   return typeof window.GetParentResourceName !== "function" && !window.invokeNative;
 }
 
 /** The current resource name. Falls back to "nuikit" in the browser. */
 export function resourceName(): string {
+  const hosted = hostedContext();
+  if (hosted) return hosted.resource;
   if (typeof window !== "undefined" && typeof window.GetParentResourceName === "function") {
     return window.GetParentResourceName();
   }
@@ -88,6 +95,14 @@ let listening = false;
 function ensureListener() {
   if (listening || typeof window === "undefined") return;
   listening = true;
+  // Hosted module: the host delivers only this resource's messages.
+  const hosted = hostedContext();
+  if (hosted) {
+    hosted.listen((msg) => {
+      if (msg && typeof msg.action === "string") dispatch(msg as NuiMessage);
+    });
+    return;
+  }
   window.addEventListener("message", (event: MessageEvent) => {
     const msg = event.data as Partial<NuiMessage> | null;
     if (!msg || typeof msg !== "object" || typeof msg.action !== "string") return;
@@ -130,7 +145,7 @@ export function onAnyNui(handler: (msg: NuiMessage) => void): () => void {
  */
 export function emit<K extends EventName>(action: K, data: EventData<K>): void {
   ensureListener();
-  if (typeof window === "undefined") {
+  if (typeof window === "undefined" || hostedContext()) {
     dispatch({ action, data });
     return;
   }
@@ -208,15 +223,25 @@ export async function fetchNui<K extends CallbackName>(
 
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), options?.timeout ?? 10_000);
+  const hosted = hostedContext();
   try {
-    const res = await fetch(`https://${resourceName()}/${name}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json; charset=UTF-8" },
-      body: JSON.stringify(data ?? {}),
-      signal: controller.signal,
-    });
-    const text = await res.text();
-    const response = (text ? JSON.parse(text) : {}) as CallbackRes<K>;
+    let response: CallbackRes<K>;
+    if (hosted) {
+      // Hosted module: the host forwards the call to this resource's Lua.
+      const aborted = new Promise<never>((_, reject) =>
+        controller.signal.addEventListener("abort", () => reject(Object.assign(new Error("aborted"), { name: "AbortError" }))),
+      );
+      response = ((await Promise.race([hosted.post(name, data ?? {}), aborted])) ?? {}) as CallbackRes<K>;
+    } else {
+      const res = await fetch(`https://${resourceName()}/${name}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json; charset=UTF-8" },
+        body: JSON.stringify(data ?? {}),
+        signal: controller.signal,
+      });
+      const text = await res.text();
+      response = (text ? JSON.parse(text) : {}) as CallbackRes<K>;
+    }
     callLog.forEach((h) => h({ name, data, response, mocked: false }));
     if (response && typeof response === "object" && "error" in (response as object)) {
       throw new NuiError(name, String((response as unknown as { error: unknown }).error));
@@ -260,22 +285,67 @@ export function onVisible(listener: (v: boolean) => void): () => void {
 // Lua → UI visibility is a built-in event.
 onNui("nuikit:visible", (v) => setVisible(Boolean(v)));
 
-// Built-in: the server theme (theme.css in the `nuikit` resource) applies to every nuikit UI.
-onNui("nuikit:theme", (css) => {
-  if (typeof css === "string" && css) applyTheme(css);
-});
+// Built-ins: the server theme (compiled by the `nuikit` resource) and the player's prefs apply
+// to every nuikit UI, live. A hosted module shares the host's document: the host page applies
+// both once, for all modules.
+function builtinTheme() {
+  onNui("nuikit:theme", (theme) => {
+    if (hostedContext()) return;
+    if ((typeof theme === "string" && theme) || (theme && typeof theme === "object")) applyTheme(theme);
+  });
+  onNui("nuikit:prefs", (p) => {
+    if (!hostedContext() && p && typeof p === "object") setPrefs(p);
+  });
+}
+builtinTheme();
 
 // In game, tell Lua the page is listening so it resends surfaces, player, theme: messages sent
 // before the page loaded are lost otherwise.
 // Pages that replace another resource's UI (addons) opt out with
 // <meta name="nuikit-handshake" content="off">: that resource's Lua has no nuikit:ready callback.
 const handshakeOff = () => document.querySelector('meta[name="nuikit-handshake"][content="off"]') !== null;
+
+/** The protocol version this nuikit-core speaks (docs/protocol.md §2). */
+export const PROTOCOL = 1;
+declare const __NUIKIT_CORE_VERSION__: string | undefined;
+const CLIENT = `nuikit-core@${typeof __NUIKIT_CORE_VERSION__ === "string" ? __NUIKIT_CORE_VERSION__ : "dev"}`;
+
+/** Lua's answer to the ready handshake (protocol §2.2). */
+export interface Handshake {
+  ok: boolean;
+  resource?: string;
+  /** Lua's protocol version; absent means 0 (a 0.4.0 nuikit.lua). */
+  protocol?: number;
+  /** Optional parts Lua provides: surfaces, states, theme, player, notify, prefs. */
+  capabilities?: string[];
+}
+let handshake: Handshake | null = null;
+
+/** The handshake reply, once Lua answered (null before, outside the game, or with the handshake off). */
+export function getHandshake(): Handshake | null {
+  return handshake;
+}
+
+/** The effective protocol version: the lower of ours and Lua's (§2.2). 0 until Lua answers. */
+export function protocolVersion(): number {
+  return Math.min(PROTOCOL, handshake?.protocol ?? 0);
+}
+
+/** Does this UI's Lua provide `capability`? (§2.2: absent means not provided.) */
+export function hasCapability(capability: string): boolean {
+  return !!handshake?.capabilities?.includes(capability);
+}
+
 if (!isBrowser() && typeof window !== "undefined") {
   setTimeout(() => {
     if (handshakeOff()) return;
-    fetchNui("nuikit:ready").catch(() => {
-      /* resource without nuikit.lua */
-    });
+    fetchNui("nuikit:ready", { protocol: PROTOCOL, client: CLIENT })
+      .then((res) => {
+        if (res && typeof res === "object") handshake = res as Handshake;
+      })
+      .catch(() => {
+        /* resource without nuikit.lua */
+      });
   }, 0);
 }
 
@@ -291,6 +361,7 @@ export async function closeNui(): Promise<void> {
 
 /** For tests: reset all module state. */
 export function __reset(): void {
+  handshake = null;
   handlers.clear();
   anyHandlers.clear();
   mocks.clear();
@@ -298,15 +369,48 @@ export function __reset(): void {
   visibilityListeners.clear();
   visible = true;
   onNui("nuikit:visible", (v) => setVisible(Boolean(v)));
-  onNui("nuikit:theme", (css) => {
-    if (typeof css === "string" && css) applyTheme(css);
-  });
+  builtinTheme();
+  __resetTheme();
   __resetSurfaces();
   __resetPlayer();
 }
 
-export { applyTheme, clearTheme, parseTheme, toRgba, type ThemeVars } from "./theme";
-import { applyTheme } from "./theme";
+export { hostedContext, type HostedContext, type HostedMessage } from "./hosted";
+import { hostedContext } from "./hosted";
+export { applyTheme, clearTheme, getPrefs, getTheme, loadImports, onTheme, parseTheme, setPrefs, toRgba, type ThemeVars } from "./theme";
+import { __resetTheme, applyTheme, setPrefs } from "./theme";
+export {
+  checkContrast,
+  compileTheme,
+  CONTRAST_PAIRS,
+  DEFAULT_PREFS,
+  highContrast,
+  lowerValue,
+  NEUTRAL,
+  normalizePrefs,
+  parseDtcg,
+  parseThemeCss,
+  themeChannels,
+  themeJsonSchema,
+  themeToCss,
+  toDtcg,
+  TOKEN_NAMES,
+  TOKENS,
+  TOKENS_VERSION,
+  VITALS,
+  withPrefs,
+  type CompileOptions,
+  type CompiledTheme,
+  type ContrastResult,
+  type DtcgDocument,
+  type NuiPrefs,
+  type ThemeInput,
+  type ThemeMode,
+  type TokenSpec,
+  type TokenType,
+} from "./tokens";
+export { composite, contrastRatio, formatRgba, luminance, oklchToRgb, rgbToOklch, type RGBA } from "./color";
+export { applyServerTheme, loadServerTheme, type ServerThemePayload } from "./remote";
 export {
   closeSurface,
   defineSurface,

@@ -18,6 +18,11 @@
     NUI.state('dead', true)                            -- surfaces with blockedBy = { 'dead' } refuse to open
 
   Simple mode (one UI, no surfaces): NUI.open() / NUI.close() / NUI.toggle(), as before.
+
+  Theme and preferences: the server theme (compiled by the `nuikit` resource) and the player's UI
+  prefs reach the UI by themselves, live (`nuikit theme reload`, /nuikit scale 1.1).
+    NUI.theme()                                        -- the compiled theme (tokens v1)
+    NUI.prefs.get()  NUI.prefs.set({ scale = 1.1 })    -- scale 0.85–1.25, reducedMotion, highContrast
 ]]
 
 NUI = NUI or {}
@@ -32,11 +37,25 @@ end
 -- ───────────────────────────────── messages
 
 --- Send a message to the UI. Arrives as `{ action, data }`.
+--- While the nuikit host renders this resource's module (docs/host.md), it goes through the host.
 ---@param action string
 ---@param data? any
 function NUI.send(action, data)
   log('→ ui', action)
-  SendNUIMessage({ action = action, data = data })
+  if NUI.hosted then
+    TriggerEvent('nuikit:host:send', action, data)
+  else
+    SendNUIMessage({ action = action, data = data })
+  end
+end
+
+-- Every NUI callback this resource registers, so the host can forward a hosted module's calls
+-- to it (raw RegisterNUICallback handlers included). nuikit.lua must load before them.
+local nuiCallbacks = {}
+local registerNUICallback = RegisterNUICallback
+RegisterNUICallback = function(name, fn)
+  nuiCallbacks[name] = fn
+  return registerNUICallback(name, fn)
 end
 
 --- Handle a fetchNui call from the UI. Return a table (or nothing) as the response.
@@ -146,12 +165,19 @@ local function isHidden(list, index)
   return false
 end
 
+-- Who calls SetNuiFocus for a surface: its resource, unless the nuikit host renders that
+-- resource's module, in which case the host's frame must take focus (NUI.hostFocus, host.lua).
+local function ownsFocus(target)
+  if target.resource == RESOURCE then return not NUI.hosted end
+  return NUI.hostFocus ~= nil and NUI.hostFocus(target.resource) == true
+end
+
 -- Recompute focus and tell this resource's UI what its surfaces look like.
 local function apply()
   local list = ordered()
   local target = focusTarget(list)
 
-  if target and target.resource == RESOURCE then
+  if target and ownsFocus(target) then
     SetNuiFocus(true, target.input == 'full' or target.input == 'cursor')
     SetNuiFocusKeepInput(target.keepInput == true)
     hasFocus = true
@@ -353,6 +379,7 @@ AddEventHandler('onClientResourceStop', function(resource)
     end
     return
   end
+  if resource == 'nuikit' and NUI.hosted then NUI._setHosted(false) end
   local changed = false
   for i = #stack, 1, -1 do
     if stack[i].resource == resource then
@@ -395,6 +422,7 @@ end)
 ---@field focus? boolean      take NUI focus (default true)
 ---@field cursor? boolean     show the cursor (default = focus)
 ---@field keepInput? boolean  let the player keep moving while focused (default false)
+---@field escape? 'close'|'back'|'ignore'  what Escape does (default 'close')
 
 local main = nil
 
@@ -406,7 +434,7 @@ function NUI.open(opts)
   local cursor = opts.cursor
   if cursor == nil then cursor = focus end
   local input = not focus and 'none' or (cursor and 'full' or 'keyboard')
-  main = NUI.surface('main', { layer = 'panel', input = input, keepInput = opts.keepInput })
+  main = NUI.surface('main', { layer = 'panel', input = input, keepInput = opts.keepInput, escape = opts.escape })
   main:open(data.main)
 end
 
@@ -433,31 +461,163 @@ NUI.on('nuikit:close', function(req)
   return { ok = true }
 end)
 
--- ───────────────────────────────── handshake + server theme
+-- ───────────────────────────────── server theme + player preferences
 
---- The server-wide theme: theme.css in the `nuikit` resource (paste any TweakCN / shadcn theme).
---- Every nuikit UI applies it, so the whole server shares one look. Returns nil when absent.
----@return string|nil
+--- The server-wide theme: the `nuikit` resource compiles its theme.css (any TweakCN / shadcn paste)
+--- into the nuikit tokens (docs/tokens.md) and publishes them as GlobalState.nuikitTheme. Every
+--- nuikit UI applies it, so the whole server shares one look. Falls back to the raw theme.css from an
+--- older nuikit resource. Returns nil without the nuikit resource.
+---@return { version: integer, mode: string, hash: string, vars: table<string, string>, imports: string[] }|string|nil
 function NUI.theme()
+  local compiled = GlobalState and GlobalState.nuikitTheme
+  if type(compiled) == 'table' and compiled.vars then return compiled end
   if GetResourceState('nuikit') ~= 'started' then return nil end
   local css = LoadResourceFile('nuikit', 'theme.css')
   if css and css:find('%-%-') then return css end
   return nil
 end
 
+-- `nuikit theme reload` on the server: repaint this UI live.
+if AddStateBagChangeHandler then
+  AddStateBagChangeHandler('nuikitTheme', 'global', function(_, _, value)
+    if type(value) == 'table' and value.vars then NUI.send('nuikit:theme', value) end
+  end)
+end
+
+---@class NuiPrefs
+---@field scale number          0.85–1.25, multiplies the theme's --nk-scale
+---@field reducedMotion boolean no animations or transitions
+---@field highContrast boolean  maximum-contrast text and borders
+
+local PREFS_KVP = 'nuikit:prefs'
+local prefs = nil -- last known, from the nuikit resource (or this resource's KVP without it)
+
+local function normalizePrefs(p)
+  p = type(p) == 'table' and p or {}
+  local scale = tonumber(p.scale) or 1.0
+  if scale < 0.85 then scale = 0.85 elseif scale > 1.25 then scale = 1.25 end
+  return { scale = math.floor(scale * 100 + 0.5) / 100, reducedMotion = p.reducedMotion == true, highContrast = p.highContrast == true }
+end
+
+local function nuikitRunning()
+  return GetResourceState and GetResourceState('nuikit') == 'started'
+end
+
+local function localPrefs()
+  local raw = GetResourceKvpString and GetResourceKvpString(PREFS_KVP)
+  if raw and raw ~= '' and json.decode then
+    local ok, data = pcall(json.decode, raw)
+    if ok then return normalizePrefs(data) end
+  end
+  return normalizePrefs(nil)
+end
+
+NUI.prefs = {}
+
+--- The player's UI preferences (shared by every nuikit UI; owned by the nuikit resource).
+---@return NuiPrefs
+function NUI.prefs.get()
+  local p = prefs or localPrefs()
+  return { scale = p.scale, reducedMotion = p.reducedMotion, highContrast = p.highContrast }
+end
+
+--- Change preferences (missing keys keep their value). Saved, and applied to every nuikit UI.
+---@param patch { scale?: number, reducedMotion?: boolean, highContrast?: boolean }
+function NUI.prefs.set(patch)
+  if type(patch) ~= 'table' then return end
+  if nuikitRunning() then
+    TriggerEvent('nuikit:prefs:set', patch)
+    return
+  end
+  -- no nuikit resource: this resource's UI only
+  local merged = NUI.prefs.get()
+  for k, v in pairs(patch) do merged[k] = v end
+  prefs = normalizePrefs(merged)
+  if SetResourceKvp then SetResourceKvp(PREFS_KVP, json.encode(prefs)) end
+  NUI.send('nuikit:prefs', prefs)
+end
+
+-- From the nuikit resource: to everyone on a change, or to one resource answering its request.
+AddEventHandler('nuikit:prefs:changed', function(p, to)
+  if to and to ~= RESOURCE then return end
+  prefs = normalizePrefs(p)
+  NUI.send('nuikit:prefs', prefs)
+end)
+TriggerEvent('nuikit:prefs:request', RESOURCE)
+
+-- ───────────────────────────────── handshake
+
 -- The page loads after this script runs, so anything sent before it is lost. The UI calls
--- nuikit:ready once it's listening; resend the current state (and the server theme).
-NUI.on('nuikit:ready', function()
+-- nuikit:ready once it's listening; resend the current state (theme and prefs too).
+--- The protocol version this library speaks (docs/protocol.md §2).
+NUI.PROTOCOL = 1
+
+NUI.on('nuikit:ready', function(req)
   lastSent, lastMain = nil, nil
   apply()
-  local css = NUI.theme()
-  if css then NUI.send('nuikit:theme', css) end
-  if NUI.player and NUI.player.resend then NUI.player.resend() end
-  return { ok = true, resource = RESOURCE }
+  local theme = NUI.theme()
+  if theme then NUI.send('nuikit:theme', theme) end
+  NUI.send('nuikit:prefs', NUI.prefs.get())
+  local hasPlayer = NUI.player ~= nil and NUI.player.resend ~= nil
+  if hasPlayer then NUI.player.resend() end
+  -- §2.2: a 0.4.0 page sends no protocol (version 0); it ignores the extra fields.
+  local capabilities = { 'surfaces', 'states', 'notify', 'prefs' }
+  if theme then capabilities[#capabilities + 1] = 'theme' end
+  if hasPlayer then capabilities[#capabilities + 1] = 'player' end
+  return { ok = true, resource = RESOURCE, protocol = NUI.PROTOCOL, capabilities = capabilities }
 end)
+
+-- ───────────────────────────────── hosted mode (docs/host.md)
+--
+-- A resource whose fxmanifest has `nuikit_ui 'web/dist/module.js'` can be rendered by the nuikit
+-- host (the `nuikit` resource's page) instead of its own ui_page. The host adopts it; from then
+-- on NUI.send goes through the host, the host's frame takes focus for its surfaces, and the host
+-- forwards the module's fetchNui calls here. Only the `nuikit` resource can adopt or call in.
+
+local HOST = 'nuikit'
+NUI.hosted = false
+
+---@param on boolean
+function NUI._setHosted(on)
+  if NUI.hosted == on then return end
+  NUI.hosted = on
+  log(on and 'hosted by nuikit' or 'host gone: using ui_page')
+  lastSent, lastMain = nil, nil
+  -- Our own page: stay empty (adopted) or render the app (fallback). See nuikit-core/boot.
+  SendNUIMessage({ action = on and 'nuikit:host:adopted' or 'nuikit:host:fallback' })
+  apply()
+end
+
+--- Re-run focus and the surface view (the host calls it when modules come and go).
+function NUI._refresh() apply() end
+
+AddEventHandler('nuikit:host:adopt', function(resource)
+  if resource == RESOURCE and GetInvokingResource() == HOST then NUI._setHosted(true) end
+end)
+
+-- A hosted module's fetchNui, forwarded by the host: run our callback, reply with the id.
+AddEventHandler('nuikit:host:forward', function(resource, id, name, payload)
+  if resource ~= RESOURCE or GetInvokingResource() ~= HOST then return end
+  local done = false
+  local function reply(result)
+    if done then return end
+    done = true
+    TriggerEvent('nuikit:host:reply', id, result == nil and {} or result)
+  end
+  local fn = nuiCallbacks[name]
+  if not fn then return reply({ error = ('no NUI callback "%s" in %s'):format(tostring(name), RESOURCE) }) end
+  local ok, err = pcall(fn, payload or {}, reply)
+  if not ok then reply({ error = tostring(err) }) end
+end)
+
+-- Our own ui_page asks whether to render (nuikit-core/boot).
+NUI.on('nuikit:host:mode', function() return { hosted = NUI.hosted } end)
 
 -- Join the client-wide stack.
 TriggerEvent(EV.hello, RESOURCE)
+if RESOURCE ~= HOST and GetNumResourceMetadata and GetNumResourceMetadata(RESOURCE, 'nuikit_ui') > 0 then
+  TriggerEvent('nuikit:host:hello', RESOURCE)
+end
 if not synced then
   synced = true -- first nuikit resource (or nobody answered): start empty
   apply()

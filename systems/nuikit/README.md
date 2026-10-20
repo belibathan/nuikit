@@ -1,18 +1,34 @@
 # nuikit
 
-The core of `[nuikit]`. It holds one file that themes every nuikit UI on your server.
+The core of `[nuikit]`. It holds one file that themes every nuikit UI on your server, compiles it,
+and keeps each player's UI preferences.
 
 ## theme.css
 
-Paste any [TweakCN](https://tweakcn.com) or [shadcn theme](https://ui.shadcn.com/themes) into `theme.css`. **Paste the whole export as-is**: `:root`, `.dark` and the `@theme inline` block are all fine; nuikit reads the variables it needs and ignores the rest. Every `[nuikit]` resource, every resource built with nuikit and the nuikit ox_lib UI pick it up the next time their UI loads. `restart` those resources, or reconnect, to see a change.
+Paste any [TweakCN](https://tweakcn.com) or [shadcn theme](https://ui.shadcn.com/themes) into `theme.css`. **Paste the whole export as-is**: `:root`, `.dark` and the `@theme inline` block are all fine. At start the server compiles it into the [nuikit tokens](../../docs/tokens.md) (UIs run in dark mode, so `.dark` is what players see), prints any problems in the server console, and sends the result to every player: every `[nuikit]` resource, every resource built with nuikit, the overrides (ox_lib, ox_inventory…), the chat and the loading screen.
 
-What the theme controls: every colour (`primary`, `accent`, `card`, `chart-1`…`chart-5` for HUD bars), `radius`, shadows and fonts.
+```
+[nuikit] theme compiled: tokens v1, 42 values, dark set, 8/9 contrast checks pass (3f2a91c0)
+[nuikit] primary-foreground on primary is 2.1:1 (needs 4.5:1); text on buttons will be hard to read.
+```
+
+**Edit, then `nuikit theme reload`** in the server console: open UIs repaint right away, no restarts. `nuikit theme` shows the contrast checks again. Admins can run it in game as `/nuikit theme reload` with the ace `command.nuikit`:
+
+```cfg
+add_ace group.admin command.nuikit allow
+```
+
+What the theme controls: every colour, `radius`, shadows and fonts. nuikit adds what game UIs need on top (success/warning/info colours, the dark surface behind HUD chips, the HUD vitals' colours, a UI scale) and derives them from your theme when it doesn't set them: see [tokens v1](../../docs/tokens.md). To pick them yourself, add e.g. `--vital-health: oklch(0.65 0.22 25);` or `--nk-scale: 1.1;` to the `.dark` block.
 
 **Fonts.** nuikit doesn't bundle fonts (the stock ox_lib UI shipped Roboto; the nuikit replacement doesn't). The theme's `--font-sans` is used if the player's machine can load it; otherwise the system sans-serif is used. To guarantee a font, put an `@import` from Google Fonts as the first line of `theme.css`:
 
 ```css
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap");
 ```
+
+## Player preferences
+
+Each player can set, for every nuikit UI at once: `/nuikit scale 1.1` (0.85–1.25), `/nuikit motion off`, `/nuikit contrast on`, `/nuikit reset`. Saved on their machine. Scripts: `NUI.prefs.get()` / `NUI.prefs.set({ scale = 1.1 })` (nuikit.lua) or `exports.nuikit:getPrefs()` / `setPrefs()`.
 
 ## Start order
 

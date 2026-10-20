@@ -1,3 +1,4 @@
+import type { CompiledTheme } from "nuikit-core";
 import { useSyncExternalStore } from "react";
 
 export type Tip = string | { title?: string; text: string };
@@ -8,7 +9,8 @@ export interface Link {
 
 /** What server/main.lua hands over under `nuikit` (docs/loadscreen-events.md). */
 export interface LoadingHandover {
-  theme?: string | null;
+  /** The compiled server theme (nuikit resource), or raw theme.css from an older one. */
+  theme?: string | CompiledTheme | null;
   serverName?: string;
   tagline?: string;
   playerName?: string;

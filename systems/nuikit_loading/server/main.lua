@@ -1,6 +1,7 @@
 -- nuikit_loading: hand the loading screen everything it shows, while the player connects.
--- The loading screen starts before any resource runs on the client, so it can't fetch
--- nuikit/theme.css itself; the server reads it here and sends it with the handover.
+-- The loading screen starts before any resource runs on the client, so it can't fetch the theme
+-- itself; the server sends it with the handover: the nuikit resource's compiled theme
+-- (GlobalState.nuikitTheme, tokens v1), or theme.css as it is from an older nuikit resource.
 local resource = GetCurrentResourceName()
 
 --- A path inside this resource → a URL the loading screen can load. URLs pass through.
@@ -33,8 +34,8 @@ end
 AddEventHandler('playerConnecting', function(name, _, deferrals)
   deferrals.handover({
     nuikit = {
-      -- Read on every connection, so theme edits apply without a restart.
-      theme = LoadResourceFile('nuikit', 'theme.css'),
+      -- Read on every connection, so `nuikit theme reload` applies without a restart.
+      theme = GlobalState.nuikitTheme or LoadResourceFile('nuikit', 'theme.css'),
       serverName = serverName(),
       tagline = Config.tagline,
       playerName = name,

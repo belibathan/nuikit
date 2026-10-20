@@ -72,4 +72,4 @@ Right side of the screen, about 30 % from the top, roughly 40 vh wide. nuikit ke
 
 - Rows follow `setup` order, then any keys only seen in `open`.
 - Unknown actions are ignored. Devtools' `{ action, data }` envelope is also accepted (browser only in practice).
-- Theme: the page fetches `https://cfx-nui-nuikit/theme.css` (falls back to `nui://nuikit/theme.css`) and applies it; without the `nuikit` resource the stock shadcn theme stays.
+- Theme: the page asks the `nuikit` resource for the compiled theme (`POST https://nuikit/theme`, then a long-poll for `nuikit theme reload`; see `docs/tokens.md`), falling back to `https://cfx-nui-nuikit/theme.css` / `nui://nuikit/theme.css`; without the `nuikit` resource the stock shadcn theme stays. These requests go to `nuikit`, never to qbx_scoreboard.

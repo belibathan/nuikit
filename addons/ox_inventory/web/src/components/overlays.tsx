@@ -94,7 +94,7 @@ export function ItemNotifications() {
       {notes.map((n) => (
         <div key={n.id} className="nk-chip nk-enter max-w-80 pl-1.5">
           <ItemImage src={itemImage(n.item)} className="size-5 shrink-0" />
-          <span className="nk-num shrink-0 text-white/70">{n.text}</span>
+          <span className="nk-num shrink-0 text-hud-foreground/70">{n.text}</span>
           <span className="truncate">{itemLabel(n.item)}</span>
         </div>
       ))}

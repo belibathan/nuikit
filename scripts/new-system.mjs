@@ -133,6 +133,7 @@ repository 'https://github.com/belibathan/nuikit'
 version '${version}'
 
 ui_page 'web/dist/index.html'
+nuikit_protocol '1'
 
 files {
   'web/dist/index.html',

@@ -34,7 +34,7 @@ end)
 
 | Field | Type | Source |
 |---|---|---|
-| `theme` | string \| nil | `LoadResourceFile('nuikit', 'theme.css')`, read per connection. Applied with nuikit-core's `applyTheme()`. |
+| `theme` | object \| string \| nil | `GlobalState.nuikitTheme` (the compiled theme, tokens v1: `{ version, vars, imports, hash }`), or `LoadResourceFile('nuikit', 'theme.css')` from an older nuikit resource; read per connection. Applied with nuikit-core's `applyTheme()`, which takes either. |
 | `serverName` | string | `Config.serverName`, else `sv_projectName`, else `sv_hostname` (`^n` colour codes stripped). |
 | `tagline` | string? | `Config.tagline` |
 | `playerName` | string | `playerConnecting`'s `name` |

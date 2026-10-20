@@ -1,6 +1,13 @@
 # What nuikit is for
 
-*Written Oct 18, 2026, after 0.4.0. Read this before planning anything big.*
+*Written Oct 18, 2026, after 0.4.0; identity settled Oct 19. Read this before planning anything big.*
+
+> **nuikit is the shared layer between scripts and screens on any FiveM server.** One runtime coordinates
+> what every UI shares; scripts ask for intents, swappable themed renderers draw them, adapters bring existing
+> scripts in, and bespoke screens join through the protocol (`docs/architecture.md`).
+>
+> We build it so **every step ships something useful on its own**, and **every mechanism is tested before we
+> commit to it**.
 
 ## What the research says
 
@@ -77,9 +84,23 @@ protocol carries the platform.
 2. **Plan around Chromium 144.** Verify the kit on 144 (canary) now; keep 103 support until release-channel
    rollout is confirmed, then relax the 103-only rules in `CLAUDE.md` and turn the compiler into opt-in compat.
 3. **0.5 order:** the theme engine (tokens as a standard) first, then components and blocks, as planned.
-4. **0.6:** write the protocol spec v1 (`docs/protocol.md`) from what already exists, add `nuikit check`, and
-   build and benchmark the host prototype. Decide on the host from the numbers.
-5. **Later:** Vue and Svelte bindings, DUI surfaces, gamepad navigation, the seller program built on `nuikit check`.
+4. **Done early (on `feat/platform`):** protocol spec v1, `nuikit check`, the host prototype and benchmark.
+5. **0.6: universal.** One runtime per server with an importable Lua API (`@nuikit/init.lua`), intents
+   (what scripts ask for) separated from swappable renderers (how it looks), adapter packs so ox, QBCore and
+   ESX scripts land on one themed UI without rewrites, shared services (surfaces, camera, controls) and
+   `nuikit doctor`. Design, alternatives rejected, plan and risks: [`docs/architecture.md`](architecture.md).
+6. **Later:** Vue and Svelte bindings, DUI surfaces, gamepad navigation, the seller program built on `nuikit check`.
+
+## Status (Oct 19, 2026, `feat/platform`)
+
+- **Protocol v1:** written (`docs/protocol.md`) and fully implemented: versioned manifests and handshake with
+  capabilities, one Escape path, compiled themes with live reload, player prefs. `nuikit check` audits any
+  resource; every nuikit page is at level 3 and CI keeps it there.
+- **Tokens v1:** `docs/tokens.md`, a DTCG file and JSON Schema, `compileTheme` with contrast checks, one
+  distribution path (`nuikit theme reload` repaints every UI live).
+- **Host:** prototype works end to end (`docs/host.md`); benchmark in `bench/host/results.md`. The gain depends
+  on whether FiveM gives each NUI frame its own process: up to −44% memory and −51% main-thread work at 20 UIs
+  if so, about −5% memory (but half the JS heap) if not. Stays opt-in until that is measured in game.
 
 ## Risks, plainly
 

@@ -10,6 +10,6 @@ export function applyOxConfig(config: { primaryColor?: string; primaryShade?: nu
   if (!hue) return;
   const root = document.documentElement.style;
   root.setProperty("--primary", hue);
-  root.setProperty("--primary-foreground", "#ffffff");
+  root.setProperty("--primary-foreground", "#ffffff"); // nuikit-ignore color/hardcoded: white on the server's ox:primaryColor, only without a nuikit theme
   root.setProperty("--ring", hue);
 }

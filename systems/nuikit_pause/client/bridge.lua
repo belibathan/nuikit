@@ -30,12 +30,23 @@ local function merge(into, from)
   for k, v in pairs(from) do into[k] = v end
 end
 
+-- What goes on the wire (protocol §7.1): the player without the bridge's internal fields.
+local INTERNAL = { downed = true } -- downed feeds `dead`; it is not part of the contract
+local function public()
+  local out = {}
+  for k, v in pairs(player) do
+    if not INTERNAL[k] then out[k] = v end
+  end
+  return out
+end
+
 local function flush()
-  local encoded = json.encode(player)
+  local out = public()
+  local encoded = json.encode(out)
   if encoded == lastSent then return end
   lastSent = encoded
-  NUI.send('nuikit:player', player)
-  for _, fn in ipairs(listeners) do pcall(fn, player) end
+  NUI.send('nuikit:player', out)
+  for _, fn in ipairs(listeners) do pcall(fn, out) end
 end
 
 --- Merge fields into the player and push the result to the UI if it changed.
@@ -53,7 +64,7 @@ end
 
 ---@return table
 function NUI.player.get()
-  return player
+  return public()
 end
 
 ---@param fn fun(player: table)

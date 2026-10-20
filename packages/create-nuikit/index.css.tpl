@@ -6,8 +6,15 @@
  * Theme: stock shadcn tokens. Paste any TweakCN / shadcn theme over the :root and .dark
  * blocks and every component (yours, shadcn's, nuikit's) follows. oklch is fine —
  * vite-plugin-nuikit lowers it for FiveM's Chromium 103 at build time.
+ * In game the server theme (nuikit/theme.css, compiled by the nuikit resource) replaces these.
  */
 /* {{theme}} */
+
+/*
+ * nuikit tokens v1 (docs/tokens.md): game semantics on top of shadcn's. These are the defaults
+ * compileTheme() derives from the stock theme above; info follows primary.
+ */
+/* {{tokens}} */
 
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
@@ -29,6 +36,7 @@
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
   --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
@@ -37,6 +45,20 @@
   --color-chart-3: var(--chart-3);
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
+  --color-hud: var(--hud);
+  --color-hud-foreground: var(--hud-foreground);
+  --color-scrim: var(--scrim);
+  --color-vital-health: var(--vital-health);
+  --color-vital-armor: var(--vital-armor);
+  --color-vital-hunger: var(--vital-hunger);
+  --color-vital-thirst: var(--vital-thirst);
+  --color-vital-stress: var(--vital-stress);
 }
 
 @layer base {
@@ -61,9 +83,10 @@
  * server feels like one product.
  */
 @layer base {
-  /* 1rem = 16px at 1080p, scaling with the game's resolution (21px at 1440p, 32px at 4K). */
+  /* 1rem = 16px at 1080p, scaling with the game's resolution (21px at 1440p, 32px at 4K),
+     times --nk-scale (the theme's UI size × the player's UI scale preference). */
   html {
-    font-size: clamp(12px, 1.4815vh, 32px);
+    font-size: calc(clamp(12px, 1.4815vh, 32px) * var(--nk-scale, 1));
     font-family: var(--font-sans, ui-sans-serif, system-ui, sans-serif);
     -webkit-font-smoothing: antialiased;
   }
@@ -137,8 +160,8 @@
   height: 1.75rem;
   padding: 0 0.625rem;
   border-radius: 9999px;
-  background-color: rgb(0 0 0 / 0.45);
-  color: #fff;
+  background-color: var(--hud);
+  color: var(--hud-foreground);
   font-size: 0.75rem;
   font-weight: 500;
 }
@@ -150,17 +173,17 @@
 /* Square HUD tile on the game (hotbar slots, the target eye): the chip's surface, any size. */
 @utility nk-hud {
   border-radius: calc(var(--radius) + 2px);
-  background-color: rgb(0 0 0 / 0.45);
-  color: #fff;
+  background-color: var(--hud);
+  color: var(--hud-foreground);
 }
 /* Bar track on the game world: theme-tinted tracks vanish over a bright sky. */
 @utility nk-track {
-  background-color: rgb(0 0 0 / 0.35);
+  background-color: color-mix(in oklab, var(--scrim) 35%, transparent);
 }
 /* Text and marks drawn straight on the game. */
 @utility nk-shadow {
-  text-shadow: 0 1px 2px rgb(0 0 0 / 0.6);
-  filter: drop-shadow(0 1px 1px rgb(0 0 0 / 0.35));
+  text-shadow: 0 1px 2px color-mix(in oklab, var(--scrim) 60%, transparent);
+  filter: drop-shadow(0 1px 1px color-mix(in oklab, var(--scrim) 35%, transparent));
 }
 /* Full-screen title (pause, loading, death): 32px at 1080p. */
 @utility nk-display {
@@ -179,9 +202,9 @@
 @utility nk-edge {
   --nk-edge: 1.5rem;
 }
-/* The one open animation. */
+/* The one open animation. --nk-motion: 0 (theme or the player's reduced-motion pref) skips it. */
 @utility nk-enter {
-  animation: nk-enter 160ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  animation: nk-enter calc(160ms * var(--nk-motion, 1)) cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
 /* Opacity only: a transform here would override the translate that centres dialogs, and
    Chromium 103 has no separate `scale` property. */
@@ -191,4 +214,14 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .nk-enter { animation: none; }
+}
+/* Reduced motion (applyTheme sets data-nk-motion="off" when --nk-motion is 0): no animations or
+   transitions anywhere, shadcn's included. */
+html[data-nk-motion="off"] *,
+html[data-nk-motion="off"] *::before,
+html[data-nk-motion="off"] *::after {
+  animation-duration: 0s !important;
+  animation-delay: 0s !important;
+  transition-duration: 0s !important;
+  transition-delay: 0s !important;
 }

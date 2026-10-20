@@ -48,11 +48,11 @@ function Status({ player, needs }: { player: NuiPlayer; needs: boolean }) {
   return (
     <div className="absolute bottom-(--nk-edge) left-(--nk-edge) flex flex-col gap-3">
       <div className={cn("flex flex-col gap-2", onGameMarks)}>
-        <Vital className={track} label="Health" value={player.health} tone="destructive" icon={<HeartPulseIcon />} />
-        <Vital className={track} label="Armor" value={player.armor} icon={<ShieldIcon />} low={-1} />
-        {needs && player.hunger !== undefined && <Vital className={track} label="Hunger" value={player.hunger} tone="chart-1" icon={<UtensilsIcon />} />}
-        {needs && player.thirst !== undefined && <Vital className={track} label="Thirst" value={player.thirst} tone="chart-2" icon={<DropletIcon />} />}
-        {needs && !!player.stress && <Vital className={track} label="Stress" value={player.stress} tone="chart-4" icon={<FlameIcon />} low={-1} />}
+        <Vital className={track} label="Health" value={player.health} tone="health" icon={<HeartPulseIcon />} />
+        <Vital className={track} label="Armor" value={player.armor} tone="armor" icon={<ShieldIcon />} low={-1} />
+        {needs && player.hunger !== undefined && <Vital className={track} label="Hunger" value={player.hunger} tone="hunger" icon={<UtensilsIcon />} />}
+        {needs && player.thirst !== undefined && <Vital className={track} label="Thirst" value={player.thirst} tone="thirst" icon={<DropletIcon />} />}
+        {needs && !!player.stress && <Vital className={track} label="Stress" value={player.stress} tone="stress" icon={<FlameIcon />} low={-1} />}
       </div>
       <Voice voice={player.voice} />
     </div>

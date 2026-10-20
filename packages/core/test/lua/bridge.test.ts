@@ -37,6 +37,22 @@ const latest = (r: { messages: { action: string; data: any }[] }) =>
   [...r.messages].reverse().find((m) => m.action === "nuikit:player")?.data;
 
 describe("bridge.lua", () => {
+  it("keeps downed internal: last stand makes the player dead, but downed never goes on the wire (§7.1)", async () => {
+    client = await createClient();
+    const hud = await client.start("hud", {
+      before: natives(`
+        STARTED.qbx_core = true
+        PD = ${luaTable({ ...qboxPlayer, metadata: { ...qboxPlayer.metadata, inlaststand: true } })}
+        exports.qbx_core = { GetPlayerData = function() return PD end }
+      `),
+      scripts: ["bridge.lua"],
+    });
+    await hud.run(`NUI.player.poll()`);
+    expect(latest(hud).dead).toBe(true);
+    expect(hud.messages.filter((m) => m.action === "nuikit:player").some((m) => "downed" in m.data)).toBe(false);
+    expect(await hud.run(`return NUI.player.get().downed`)).toBeNull();
+  });
+
   it("Qbox: maps PlayerData to the nuikit player shape", async () => {
     client = await createClient();
     const hud = await client.start("hud", {

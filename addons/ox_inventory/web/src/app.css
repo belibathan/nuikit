@@ -46,8 +46,8 @@ body.inv-dragging * {
 
 /* Hotbar tile: a HUD element on the game (rule 8), same surface as nk-chip. */
 .inv-hud {
-  background-color: rgb(0 0 0 / 0.45);
-  color: #fff;
+  background-color: var(--hud);
+  color: var(--hud-foreground);
 }
 
 /* Markdown descriptions */

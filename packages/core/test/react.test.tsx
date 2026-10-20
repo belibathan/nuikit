@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { act, render, screen } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
-import { __reset, emit, setVisible, useNuiState, useNuiVisibility } from "../src/react";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { __reset, defineSurface, emit, getHandshake, hasCapability, protocolVersion, setVisible, useNuiState, useNuiVisibility } from "../src/react";
 
 afterEach(() => __reset());
 
@@ -32,5 +32,31 @@ describe("react hooks", () => {
     expect(screen.queryByTestId("menu")).toBeNull();
     act(() => setVisible(true));
     expect(screen.queryByTestId("menu")).not.toBeNull();
+  });
+
+  it("in game, useNuiVisibility sends Escape to Lua as one nuikit:escape (§3.5), even with surfaces listening", async () => {
+    (window as any).GetParentResourceName = () => "my-ui";
+    const calls: string[] = [];
+    vi.stubGlobal("fetch", async (url: string) => {
+      calls.push(url);
+      return new Response(JSON.stringify({ ok: true }));
+    });
+    defineSurface("main"); // installs the surfaces Escape listener too
+    emit("nuikit:surfaces", { surfaces: { main: { open: true, visible: true, focused: true, layer: "panel" } }, states: {} });
+    const view = render(<Menu />);
+    await act(async () => {
+      window.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", cancelable: true }));
+    });
+    expect(calls.filter((u) => u.endsWith("/nuikit:escape"))).toHaveLength(1);
+    expect(calls.some((u) => u.endsWith("/nuikit:close"))).toBe(false);
+    expect(view.container.querySelector("[data-testid=menu]")).not.toBeNull(); // Lua decides; it hides the UI with nuikit:visible
+    delete (window as any).GetParentResourceName;
+    vi.unstubAllGlobals();
+  });
+
+  it("no handshake outside the game: protocol 0, no capabilities", () => {
+    expect(getHandshake()).toBeNull();
+    expect(protocolVersion()).toBe(0);
+    expect(hasCapability("theme")).toBe(false);
   });
 });
