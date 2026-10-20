@@ -178,7 +178,7 @@
       "name": "speedometer",
       "type": "registry:ui",
       "title": "Speedometer",
-      "description": "Vehicle gauge: SVG arc in primary/destructive, gear as a Badge, fuel as a Progress.",
+      "description": "Vehicle gauge on the HUD tokens: SVG arc in primary/destructive over a scrim track, gear as a Badge on the HUD surface, fuel as a Progress that turns destructive when low; surface=theme for panels.",
       "files": [
         {
           "path": "registry/nuikit/ui/speedometer.tsx",
