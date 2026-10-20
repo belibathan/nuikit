@@ -3,7 +3,7 @@ game 'gta5'
 lua54 'yes'
 
 name 'nuikit_hud'
-description 'nuikit HUD: vitals, needs, voice, money, job and vehicle, on Qbox, QBCore, ESX or standalone.'
+description 'nuikit HUD: vitals, voice, money, a vehicle, aircraft and boat cluster, a framed minimap and location, on Qbox, QBCore, ESX or standalone.'
 repository 'https://github.com/belibathan/nuikit'
 version '0.6.0'
 
@@ -26,6 +26,10 @@ shared_scripts {
 }
 
 client_scripts {
+  'client/layout.lua',
+  'client/adapters.lua',
   'client/minimap.lua',
+  'client/location.lua',
+  'client/vehicle.lua',
   'client/main.lua',
 }

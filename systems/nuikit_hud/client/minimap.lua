@@ -1,4 +1,4 @@
--- nuikit_hud: the minimap. GTA's own radar, placed on the HUD's 16:9 stage and framed by the UI.
+-- nuikit_hud: the minimap. GTA's own radar, placed in the HUD's area (client/layout.lua) and framed by the UI.
 --
 -- Lua owns the geometry: it works out the frame's rectangle on screen, puts the native radar inside
 -- it, and sends the rectangle to the page, which draws the themed frame exactly there. Nothing is
@@ -73,21 +73,18 @@ end
 local function rem(height) return clamp(height * 0.014815, 12.0, 32.0) end
 
 --- The frame's rectangle in screen pixels, its band width, and the radar box inside it.
---- Pure maths, so it can be tested: width, height and safe zone (0.9–1.0) in, numbers out.
-function Minimap.layout(width, height, safezone)
+--- Pure maths, so it can be tested: width, height and safe zone (0.8–1.0) in, numbers out. `area` is
+--- the HUD area (Layout.measure); without it, the 0.5.0 rule (Layout.stage).
+function Minimap.layout(width, height, safezone, area)
+  area = area or Layout.stage(width, height, safezone)
   local r = rem(height)
   local size = (cfg.size or 15.0) * r
   local band = (cfg.band or 0.375) * r
-  -- the 16:9 stage: on wider screens the HUD stays in the middle 16:9 band
-  local stageW = math.min(width, height * 16.0 / 9.0)
-  local stageX = (width - stageW) / 2.0
-  -- the edge distance grows with GTA's safe-zone setting, like the game's own HUD
-  local sz = clamp(safezone or 1.0, 0.8, 1.0)
-  local edgeX = 1.5 * r + stageW * (1.0 - sz) / 2.0
-  local edgeY = 1.5 * r + height * (1.0 - sz) / 2.0
+  -- --nk-edge (1.5rem) inside GTA's safe area, like every other anchor of the HUD
+  local edge = 1.5 * r
   local anchor = cfg.anchor or 'bottom-left'
-  local x = anchor:find('right') and (stageX + stageW - edgeX - size) or (stageX + edgeX)
-  local y = anchor:find('top') and edgeY or (height - edgeY - size)
+  local x = anchor:find('right') and (area.right - edge - size) or (area.left + edge)
+  local y = anchor:find('top') and (area.top + edge) or (area.bottom - edge - size)
   local frame = { x = x, y = y, w = size, h = size }
   -- the radar sits under the frame's hole, with its edge half a pixel into the band so the
   -- game's rounding never leaves a gap
@@ -96,19 +93,16 @@ function Minimap.layout(width, height, safezone)
   return frame, band, radar
 end
 
---- GTA's rule for SetMinimapComponentPosition('L', 'B', x, y, w, h): x and w are fractions of a
---- 16:9 width centred on the screen, y and h fractions of the height, measured from the safe
---- zone's left and bottom edges. Returns those four numbers for a box in screen pixels.
-function Minimap.component(box, width, height, safezone)
-  local sz = clamp(safezone or 1.0, 0.8, 1.0)
-  local unitW = height * 16.0 / 9.0
-  local originX = math.ceil(width * (1.0 - sz) * 0.5) + math.max(0.0, (width - unitW) / 2.0)
-  local safeBottom = math.floor(height - height * (1.0 - sz) * 0.5)
-  return (box.x - originX) / unitW, (box.y + box.h - safeBottom) / height, box.w / unitW, box.h / height
+--- GTA's rule for SetMinimapComponentPosition('L', 'B', x, y, w, h): x and w in component units
+--- from the HUD area's left edge (a 16:9 width on most screens), y and h from its bottom edge.
+--- Returns those four numbers for a box in screen pixels. `area` as in Minimap.layout.
+function Minimap.component(box, width, height, safezone, area)
+  area = area or Layout.stage(width, height, safezone)
+  return (box.x - area.left) / area.unitW, (box.y + box.h - area.bottom) / area.unitH, box.w / area.unitW, box.h / area.unitH
 end
 
-local function place(box, width, height, safezone)
-  local x, y, w, h = Minimap.component(box, width, height, safezone)
+local function place(box, width, height, safezone, area)
+  local x, y, w, h = Minimap.component(box, width, height, safezone, area)
   SetMinimapComponentPosition('minimap', 'L', 'B', x, y, w, h)
   SetMinimapComponentPosition('minimap_blur', 'L', 'B', x, y, w, h)
   local mx, my, mw, mh = Minimap.maskComponent(x, y, w, h)
@@ -122,11 +116,12 @@ function Minimap.apply()
   local width, height = GetActiveScreenResolution()
   if not width or width <= 0 or height <= 0 then return end
   local safezone = GetSafeZoneSize()
-  local frame, band, radar = Minimap.layout(width, height, safezone)
+  local area = Layout.measure(width, height, safezone)
+  local frame, band, radar = Minimap.layout(width, height, safezone, area)
   -- the texture shapes the radar; the round clip type keeps edge blips on the circle
   SetMinimapClipType(tune.clip or (cfg.shape == 'circle' and 1 or 0))
   useMask(tune.texture or cfg.shape)
-  local x, y, w, h, mx, my, mw, mh = place(radar, width, height, safezone)
+  local x, y, w, h, mx, my, mw, mh = place(radar, width, height, safezone, area)
   if cfg.compass ~= false then SetBlipAlpha(GetNorthRadarBlip(), 0) end
   -- GTA only re-reads component positions when the radar changes mode: flick the big map. Make
   -- sure it ends off: one left on hides the frame and fills the corner with the big radar.
@@ -138,7 +133,7 @@ function Minimap.apply()
   if not scaleform then scaleform = RequestScaleformMovie('minimap') end
   placed = {
     x = frame.x / width, y = frame.y / height, w = frame.w / width, h = frame.h / height,
-    band = band / height, shape = cfg.shape == 'circle' and 'circle' or 'square',
+    band = band / height, shape = cfg.shape == 'circle' and 'circle' or 'square', framed = true,
   }
   NUI.send('hud:minimap:frame', placed)
   if Config.debug then
@@ -158,38 +153,27 @@ function Minimap.inGame()
   return not player or player.loaded ~= false
 end
 
---- What the frame shows this moment: whether the radar is on screen, the camera heading for the
---- compass, and where the player is.
---- The camera heading, to a tenth of a degree.
+--- The camera's compass bearing, to a tenth of a degree (0 north, 90 east: what the compass and the
+--- frame's N follow). GTA's yaw turns the other way (90 = facing west), so it is negated.
 function Minimap.cameraHeading()
-  return math.floor((GetGameplayCamRot(2).z % 360.0) * 10.0 + 0.5) / 10.0 % 360.0
+  return math.floor(((-GetGameplayCamRot(2).z) % 360.0) * 10.0 + 0.5) / 10.0 % 360.0
 end
 
-local function state(radarOn)
-  local ped = PlayerPedId()
-  local c = GetEntityCoords(ped)
-  local s1, s2 = GetStreetNameAtCoord(c.x, c.y, c.z)
-  local street = GetStreetNameFromHashKey(s1)
-  local crossing = (s2 and s2 ~= 0) and GetStreetNameFromHashKey(s2) or nil
-  return {
-    visible = radarOn and not IsBigmapActive() and not IsRadarHidden(),
-    heading = Minimap.cameraHeading(), -- where the compass starts; it follows hud:minimap:heading
-    street = street,
-    crossing = crossing,
-    zone = GetLabelText(GetNameOfZone(c.x, c.y, c.z)),
-  }
+--- Whether GTA's radar is on screen right now.
+function Minimap.visible(radarOn)
+  return radarOn and not IsBigmapActive() and not IsRadarHidden()
 end
 
---- Called by main.lua every tick with whether the radar should show.
+--- Called by main.lua with whether the radar should show; tells the page when that changes.
+--- (Street, zone and the rest are client/location.lua's `hud:location`.)
 ---@param radarOn boolean
 function Minimap.tick(radarOn)
-  if cfg.enabled == false then return end
-  local s = state(radarOn)
-  -- the heading has its own, faster channel (Minimap.compass): turning never re-sends this
-  local key = ('%s|%s|%s|%s'):format(tostring(s.visible), s.street, s.crossing or '', s.zone)
+  local visible = Minimap.visible(radarOn)
+  local key = tostring(visible)
   if key ~= lastKey then
     lastKey = key
-    NUI.send('hud:minimap', s)
+    -- `heading` is where the compass starts; then it follows hud:minimap:heading
+    NUI.send('hud:minimap', { visible = visible, heading = Minimap.cameraHeading() })
   end
 end
 
@@ -202,8 +186,23 @@ function Minimap.compass()
   heading:push(Minimap.cameraHeading())
 end
 
+--- With Config.minimap.enabled = false nuikit leaves GTA's radar where it is; the page still gets its
+--- rectangle (no frame drawn) so the vitals sit beside it.
+function Minimap.applyStock()
+  local area = Layout.current
+  if not area then return end
+  local box = Layout.stockMinimap(area)
+  local width, height = area.width, area.height
+  placed = {
+    x = box.x / width, y = box.y / height, w = box.w / width, h = box.h / height,
+    band = 0, shape = 'square', framed = false,
+  }
+  NUI.send('hud:minimap:frame', placed)
+end
+
 --- The page asks for the frame when it (re)loads.
 function Minimap.resend()
+  Layout.resend()
   if placed then NUI.send('hud:minimap:frame', placed) end
   lastKey = ''
   heading:reset()
@@ -242,43 +241,49 @@ if Config.debug then
   end)
 end
 
+-- Whether the radar shows: a few times a second (cheap: three natives, a message only on change).
+CreateThread(function()
+  while true do
+    Minimap.tick(Minimap.radarOn)
+    Wait(Minimap.radarOn and 250 or 500)
+  end
+end)
+
+-- The compass: about 30 times a second while something shows it (the frame's N, the heading strip,
+-- the location badge), and only when it turned. Minimap.compassOn is set by main.lua.
+Minimap.compassOn = false
+CreateThread(function()
+  while true do
+    if Minimap.compassOn then
+      Minimap.compass()
+      Wait(33)
+    else
+      Wait(500)
+    end
+  end
+end)
+
+-- The HUD's edges and the radar: once the player is in the world, again each time they come back (a
+-- character switch goes through the loading screen) and whenever the render size or safe zone changes.
+CreateThread(function()
+  local lw, lh, ls, was = 0, 0, 0.0, false
+  while true do
+    local now = Minimap.inGame()
+    if now then
+      local w, h = GetActiveScreenResolution()
+      local s = GetSafeZoneSize()
+      if not was or w ~= lw or h ~= lh or math.abs(s - ls) > 0.0001 then
+        lw, lh, ls = w, h, s
+        Layout.update()
+        if cfg.enabled ~= false then Minimap.apply() else Minimap.applyStock() end
+      end
+    end
+    was = now
+    Wait(now and 1500 or 500)
+  end
+end)
+
 if cfg.enabled ~= false then
-  -- Street, area and whether the radar shows: a few times a second.
-  CreateThread(function()
-    while true do
-      Minimap.tick(Minimap.radarOn)
-      Wait(Minimap.radarOn and 200 or 500)
-    end
-  end)
-  -- The compass: about 30 times a second while the radar shows (and only when it turned).
-  CreateThread(function()
-    while true do
-      if Minimap.radarOn and cfg.compass ~= false then
-        Minimap.compass()
-        Wait(33)
-      else
-        Wait(500)
-      end
-    end
-  end)
-  -- Place the radar once the player is in the world, again each time they come back (a character
-  -- switch goes through the loading screen) and whenever the render size or safe zone changes.
-  CreateThread(function()
-    local lw, lh, ls, was = 0, 0, 0.0, false
-    while true do
-      local now = Minimap.inGame()
-      if now then
-        local w, h = GetActiveScreenResolution()
-        local s = GetSafeZoneSize()
-        if not was or w ~= lw or h ~= lh or math.abs(s - ls) > 0.0001 then
-          lw, lh, ls = w, h, s
-          Minimap.apply()
-        end
-      end
-      was = now
-      Wait(now and 1500 or 500)
-    end
-  end)
   -- The HUD draws vitals itself: hide GTA's health and armour arcs around the radar.
   CreateThread(function()
     while true do
