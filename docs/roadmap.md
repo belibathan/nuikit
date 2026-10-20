@@ -58,6 +58,7 @@ Known issues in 0.6.0:
 
 ### Lead backlog (requests from the lanes)
 
+- Host: a module reports `mounted` one frame before its `onNui` listeners attach, so a message sent in that gap is dropped (seen in `bench/host/e2e.mjs`, fixed there by waiting two frames). If `host.lua` flushes queued messages at mount, buffer them until the module's first listener subscribes.
 - `compileTheme`: warn on an empty token value.
 - Runtime context: server currency and locale (part of 0.7 context; `money` and blocks read it).
 - `cn()` / tailwind-merge: teach it the `nk-*` utilities so `nk-title` and `text-sm` resolve correctly (the #33 bug class).
