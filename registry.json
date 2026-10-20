@@ -222,6 +222,25 @@
       "dependencies": [
         "nuikit-core"
       ]
+    },
+    {
+      "name": "notice",
+      "type": "registry:ui",
+      "title": "Notice",
+      "description": "A notification on the game (status icon, title, description, a time-left line that pauses on hover) and the stack that pins them to any of eight positions, with a useNotices() queue. The default look of the notify intent.",
+      "files": [
+        {
+          "path": "registry/nuikit/ui/notice.tsx",
+          "type": "registry:ui"
+        }
+      ],
+      "dependencies": [
+        "class-variance-authority",
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "button"
+      ]
     }
   ]
 }
