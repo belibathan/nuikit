@@ -1,4 +1,6 @@
 import type { ReactNode } from "react";
+import { Bank } from "@/blocks/bank/bank";
+import { bankFixtures } from "@/blocks/bank/fixtures";
 import { DeathScreen } from "@/blocks/death-screen/death-screen";
 import { garageFixtures } from "@/blocks/garage/fixtures";
 import { Garage } from "@/blocks/garage/garage";
@@ -101,6 +103,17 @@ export const BLOCKS: BlockPreview[] = [
       Impound: () => <Garage data={garageFixtures.impounded} autoFocus={false} onAction={async () => ({ ok: true })} />,
       "On foot, refused": () => <Garage data={garageFixtures["on-foot"]} autoFocus={false} onAction={async () => ({ ok: false, error: "Something is parked in the way." })} />,
       Empty: () => <Garage data={garageFixtures.empty} autoFocus={false} />,
+    },
+  },
+  {
+    name: "bank",
+    title: "Bank",
+    description: "Accounts, balance and recent transactions; deposit, withdraw and transfer in a dialog that checks the amount, then the server checks it again. Protocol-agnostic.",
+    states: {
+      Bank: () => <Bank data={bankFixtures.full} autoFocus={false} onMoney={async () => ({ ok: true })} />,
+      ATM: () => <Bank data={bankFixtures.atm} autoFocus={false} onMoney={async () => ({ ok: true })} />,
+      Frozen: () => <Bank data={bankFixtures.frozen} autoFocus={false} />,
+      "New account": () => <Bank data={bankFixtures.new} autoFocus={false} />,
     },
   },
 ];

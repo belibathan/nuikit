@@ -35,6 +35,7 @@ npm create nuikit@latest my-death -- -t death-screen
 | `settings` | Player settings: toggles, choices, sliders, key hints, and nuikit's accessibility prefs |
 | `scoreboard` | Who's online with IDs, jobs and ping, a search, and which activities can start |
 | `garage` | Your vehicles with fuel, engine and body; take out, store, release from the impound |
+| `bank` | Accounts, balance, transactions; deposit, withdraw and transfer, checked by the server |
 
 Without `-t` you get the demo (a HUD, a menu and a confirm dialog), or pick from a list.
 

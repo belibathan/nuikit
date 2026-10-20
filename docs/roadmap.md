@@ -46,7 +46,7 @@ GTA's pause map is opened and closed (not seen on a fresh join).
 |---|---|---|
 | Components | The 9 remaining components + `progress-ring` + `skill-check`, redesigned as the default renderers for the intents | Ready to dispatch |
 | Screens | death, loading, chat and the overrides (ox_lib first) rebuilt on the components, protocol-exact | Ready to dispatch |
-| Blocks + site | The 14 blocks, `npm create nuikit -t <block>`, `/blocks`, theme switcher, theme studio | In progress: the six starter blocks in PRs (#10, #16, #22, #26, stacked; none tested in game yet); site: tokens and ThemePicker (#19, merged), theme studio at `/theme` (#29), `/blocks` with live previews and the theme switcher (#31); Part C blocks on the shipped components: `garage` (`feat/blocks-garage`), then `bank`, `job-menu`. Next: moving blocks onto `key-prompt`, `confirm`, `form-field` once they're on main |
+| Blocks + site | The 14 blocks, `npm create nuikit -t <block>`, `/blocks`, theme switcher, theme studio | In progress: the six starter blocks in PRs (#10, #16, #22, #26, stacked; none tested in game yet); site: tokens and ThemePicker (#19, merged), theme studio at `/theme` (#29), `/blocks` with live previews and the theme switcher (#31); Part C blocks on the shipped components: `garage` (#35), `bank` (`feat/blocks-bank`), then `job-menu`. Next: moving blocks onto `key-prompt`, `confirm`, `form-field` once they're on main |
 | Showcase | pause, HUD, inventory: minimap restart quirk, FPS budget | Owner's existing agent |
 
 ### Open items for the owner
