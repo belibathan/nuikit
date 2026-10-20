@@ -327,6 +327,13 @@ round:
 from Graphite, and that every identity fallback in `kit.css` equals the compiled Graphite default. The
 `daylight` contact sheet (`bench/identity/shots/daylight.jpg`) shows the same shipped screens in it.
 
+**What it found.** Panels, rows, notices, the bank, pause cards and slabs all follow. Two places don't,
+because text drawn straight on the game shares a token with text on a surface: the death screen writes
+its title and timer in `--foreground` over `--scrim`, and the HUD draws its speed and street in
+`--hud-foreground` with no plate. In a light theme both turn dark on a dark game. The fix is a semantic
+token for text on the game (on `--scrim` and unplated HUD; light by default, independent of the theme's
+mode) that those screens read. It's proposed, not built: it touches the death and HUD screens (other lanes).
+
 Text size outside the kit: synced `index.css` raises Tailwind's two small steps (`text-xs` 13px,
 `text-sm` 15px) for readability at 1080p; `text-base` and up are Tailwind's.
 
