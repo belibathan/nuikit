@@ -1,6 +1,7 @@
 import { Building2, Search, Snowflake, UserRound } from "lucide-react";
 import { useMemo, useState } from "react";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";
+import { MenuRow } from "@/components/ui/menu-row";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { money, t } from "@/lib/locale";
 import { isFrozen, type Account } from "@/lib/types";
@@ -20,26 +21,20 @@ export function AccountIcon({ personal, className }: { personal: boolean; classN
 function AccountRow({ account, personal, active, onSelect }: { account: Account; personal: boolean; active: boolean; onSelect: () => void }) {
   const frozen = isFrozen(account);
   return (
-    <button
-      type="button"
-      onClick={onSelect}
+    <MenuRow
+      active={active}
       aria-pressed={active}
-      className={cn(
-        "nk-row w-full px-2 text-left transition-colors outline-none",
-        "focus-visible:bg-accent hover:bg-accent hover:text-accent-foreground",
-        active && "bg-accent text-accent-foreground",
-      )}
+      onClick={onSelect}
+      className="px-2"
+      icon={<AccountIcon personal={personal} className={active ? "text-foreground" : undefined} />}
+      description={account.type}
+      meta={money(account.amount, "compact")}
     >
-      <AccountIcon personal={personal} className={active ? "text-foreground" : undefined} />
-      <span className="min-w-0 flex-1">
-        <span className="flex items-center gap-1.5">
-          <span className="truncate font-medium">{account.name || account.id}</span>
-          {frozen && <Snowflake className="text-muted-foreground size-3.5 shrink-0" aria-label={t("frozen")} />}
-        </span>
-        <span className="nk-label block truncate">{account.type}</span>
+      <span className="flex items-center gap-1.5">
+        <span className="truncate">{account.name || account.id}</span>
+        {frozen && <Snowflake className="text-muted-foreground size-3.5 shrink-0" aria-label={t("frozen")} />}
       </span>
-      <span className="nk-num shrink-0 font-medium">{money(account.amount, "compact")}</span>
-    </button>
+    </MenuRow>
   );
 }
 
