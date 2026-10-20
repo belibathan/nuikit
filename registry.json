@@ -410,6 +410,24 @@
       "registryDependencies": [
         "empty"
       ]
+    },
+    {
+      "name": "skill-check",
+      "type": "registry:ui",
+      "title": "Skill check",
+      "description": "Press the key while the needle is in the zone: zone start and size (wrapping past 360°), speed, the key, a success or fail outcome. Runs itself (needle drawn per frame without re-rendering, a full turn is a miss) and reads the key, or takes the angle from outside. The default look of the challenge intent.",
+      "files": [
+        {
+          "path": "registry/nuikit/ui/skill-check.tsx",
+          "type": "registry:ui"
+        }
+      ],
+      "dependencies": [
+        "class-variance-authority"
+      ],
+      "registryDependencies": [
+        "kbd"
+      ]
     }
   ]
 }
