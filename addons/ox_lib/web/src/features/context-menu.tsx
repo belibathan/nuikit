@@ -1,9 +1,8 @@
 import { ChevronLeftIcon, XIcon } from "lucide-react";
 import { useEffect, useRef, useState, type MouseEvent } from "react";
 import { Button } from "@/components/ui/button";
-import { MenuRow } from "@/components/ui/menu-row";
+import { MenuRow, MenuRowDetails, menuMetadata } from "@/components/ui/menu-row";
 import { Panel, PanelBody, PanelHeader } from "@/components/ui/panel";
-import { Bar } from "@/lib/bar";
 import { Icon } from "@/lib/icon";
 import { Markdown } from "@/lib/markdown";
 import { presenceMotion } from "@/lib/motion";
@@ -120,18 +119,17 @@ export function ContextMenu() {
   );
 }
 
-/** ox_lib's readOnly: looks like the other options, but never highlights or presses. */
-const readOnlyRow = "cursor-default hover:bg-transparent hover:text-inherit active:bg-transparent";
+/** ox's default colorScheme for context bars (protocol §4). menu-row reads Mantine names through meterColor(). */
+const OX_BAR = "dark.3";
 
 function ContextOption({ id, option, onEnter, onLeave }: { id: string; option: Option; onEnter: (e: MouseEvent<HTMLElement>) => void; onLeave: () => void }) {
   // A missing title on a keyed option shows the key itself (ox_lib does this).
   const title = option.title ?? (Number.isNaN(Number(id)) ? id : undefined);
-  const inert = option.disabled || option.readOnly;
   const arrow = Boolean(option.menu || option.arrow) && option.arrow !== false;
   const hasProgress = option.progress !== undefined;
 
+  // menu-row never calls onClick for a disabled or readOnly row
   const click = () => {
-    if (inert) return;
     if (option.menu) void post("openContext", { id: option.menu, back: false });
     else void post("clickContext", id);
   };
@@ -139,30 +137,23 @@ function ContextOption({ id, option, onEnter, onLeave }: { id: string; option: O
   return (
     <MenuRow
       disabled={option.disabled}
-      aria-readonly={option.readOnly || undefined}
-      tabIndex={option.readOnly ? -1 : undefined}
+      readOnly={option.readOnly}
       onClick={click}
       onMouseEnter={onEnter}
       onMouseLeave={onLeave}
       icon={option.icon ? <Icon icon={option.icon} color={option.iconColor} animation={option.iconAnimation} allowImage className="size-4" /> : undefined}
-      // MenuRow has no progress slot yet, so ox's bar goes under the description, where ox_lib puts it.
-      description={
-        option.description || hasProgress ? (
-          <>
-            {option.description && <Markdown>{option.description}</Markdown>}
-            {hasProgress && <Bar value={option.progress!} scheme={option.colorScheme} fallback="var(--muted-foreground)" className="mt-1.5 mb-0.5" />}
-          </>
-        ) : undefined
-      }
+      description={option.description ? <Markdown>{option.description}</Markdown> : undefined}
+      // ox shows the bar whenever `progress` is present, 0 included
+      progress={hasProgress ? Number(option.progress) : undefined}
+      progressColor={option.colorScheme ?? OX_BAR}
       chevron={arrow}
-      className={cn(option.readOnly && readOnlyRow)}
     >
       {title && <Markdown>{title}</Markdown>}
     </MenuRow>
   );
 }
 
-/** Image and metadata, shown beside the hovered option. */
+/** Image and metadata, shown beside the hovered option (ox opens it after 200 ms). */
 function HoverCard({ option, top }: { option: Option; top: number }) {
   const [shown, setShown] = useState(false);
   useEffect(() => {
@@ -170,29 +161,7 @@ function HoverCard({ option, top }: { option: Option; top: number }) {
     return () => clearTimeout(t);
   }, []);
   if (!shown) return null;
-  const meta = option.metadata;
-  const rows: Array<{ label?: string; value?: unknown; progress?: number; colorScheme?: string; text?: string }> = !meta
-    ? []
-    : Array.isArray(meta)
-      ? meta.map((m) => (typeof m === "string" ? { text: m } : m))
-      : Object.entries(meta).map(([label, value]) => ({ label, value }));
-
-  return (
-    <Panel className="absolute right-full mr-2 w-64 gap-3 p-4 text-sm" style={{ top }}>
-      {option.image && <img src={option.image} alt="" className="max-h-40 w-full rounded-md object-contain" />}
-      {rows.map((r, i) => (
-        <div key={i} className="flex flex-col gap-1.5">
-          {r.text !== undefined ? (
-            <span>{r.text}</span>
-          ) : (
-            <div className="flex items-baseline justify-between gap-3">
-              <span className="text-muted-foreground">{r.label}</span>
-              <span className="nk-num truncate font-medium">{String(r.value ?? "")}</span>
-            </div>
-          )}
-          {r.progress !== undefined && <Bar value={r.progress} scheme={r.colorScheme ?? option.colorScheme} fallback="var(--muted-foreground)" />}
-        </div>
-      ))}
-    </Panel>
-  );
+  // Each bar keeps its own colorScheme; without one it takes the option's, then ox's default.
+  const items = menuMetadata(option.metadata).map((m) => (m.progress !== undefined && !m.color ? { ...m, color: option.colorScheme ?? OX_BAR } : m));
+  return <MenuRowDetails image={option.image} items={items} className="absolute right-full mr-2" style={{ top }} />;
 }
