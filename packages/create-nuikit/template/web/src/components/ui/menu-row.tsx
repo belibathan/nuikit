@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Kbd } from "@/components/ui/kbd"
 import { Progress } from "@/components/ui/progress"
+import { meterColor, type MeterTone } from "@/components/ui/meter"
 
 /**
  * MenuRow — the 40px action row every list is made of (docs/design.md, rule 5): an icon or an
@@ -33,7 +34,9 @@ import { Progress } from "@/components/ui/progress"
  * you read, not use: no highlight, no click, not dimmed.
  *
  * `MenuRowDetails` is the card beside a hovered row: an image and metadata (label, value,
- * progress). `menuMetadata()` reads ox_lib's metadata shapes into its items.
+ * progress, each bar in its own colour). `menuMetadata()` reads ox_lib's metadata shapes into its
+ * items, keeping each item's colorScheme. `menuRowColor()` turns a tone, a library colour name or
+ * a CSS colour into what the bars paint with (`progressColor`, an item's `color`).
  */
 const menuRowVariants = cva(
   [
@@ -81,6 +84,11 @@ type MenuRowProps = Omit<React.ComponentProps<"button">, "value" | "inert"> &
     description?: React.ReactNode
     /** A slim bar under the label, 0–100. */
     progress?: number
+    /**
+     * The bar's colour, like Meter's: a tone ("success", "chart-2", "health"), a library colour
+     * name (ox's "green", "red.6") or a CSS colour ("#4dabf7"). Default: primary.
+     */
+    progressColor?: string
     /** Right-aligned text: a price, a count, a plate. Tabular. */
     meta?: React.ReactNode
     /** The key that triggers this row, as a shadcn Kbd. */
@@ -112,6 +120,7 @@ function MenuRow({
   image,
   description,
   progress,
+  progressColor,
   meta,
   kbd,
   chevron = false,
@@ -167,12 +176,11 @@ function MenuRow({
           </span>
         )}
         {progress !== undefined && (
-          <Progress
+          <ProgressLine
             data-slot="menu-row-progress"
-            value={clampPercent(progress)}
-            // shadcn's Progress never hands `value` to Radix's root: give the root its aria-valuenow.
-            aria-valuenow={Math.round(clampPercent(progress))}
-            aria-label={typeof children === "string" ? children : undefined}
+            value={progress}
+            color={progressColor}
+            label={typeof children === "string" ? children : undefined}
             className="mt-1.5 mb-0.5 h-1"
           />
         )}
@@ -262,11 +270,18 @@ function MenuRow({
   )
 }
 
-type MenuMetadataItem = { label?: React.ReactNode; value?: React.ReactNode; progress?: number }
+type MenuMetadataItem = {
+  label?: React.ReactNode
+  value?: React.ReactNode
+  progress?: number
+  /** The bar's colour: a tone, a library colour name ("green", "red.6") or a CSS colour. */
+  color?: string
+}
 
 /**
  * ox_lib's metadata in any of its shapes to MenuRowDetails items: a list of strings, a record of
- * label → value, or a list of { label, value, progress }. Anything else gives no items.
+ * label → value, or a list of { label, value, progress, colorScheme }. Each item keeps its own
+ * colorScheme (as `color`). Anything else gives no items.
  */
 function menuMetadata(meta: unknown): MenuMetadataItem[] {
   const text = (v: unknown) => (v === undefined || v === null ? undefined : typeof v === "object" ? JSON.stringify(v) : String(v))
@@ -275,14 +290,82 @@ function menuMetadata(meta: unknown): MenuMetadataItem[] {
     return meta.flatMap((m): MenuMetadataItem[] => {
       if (typeof m === "string" || typeof m === "number") return [{ value: String(m) }]
       if (m && typeof m === "object" && "label" in m) {
-        const o = m as { label: unknown; value?: unknown; progress?: unknown }
+        const o = m as { label: unknown; value?: unknown; progress?: unknown; colorScheme?: unknown }
         const p = Number(o.progress)
-        return [{ label: text(o.label), value: text(o.value), progress: o.progress !== undefined && Number.isFinite(p) ? p : undefined }]
+        const item: MenuMetadataItem = {
+          label: text(o.label),
+          value: text(o.value),
+          progress: o.progress !== undefined && Number.isFinite(p) ? p : undefined,
+        }
+        if (typeof o.colorScheme === "string" && o.colorScheme.trim()) item.color = o.colorScheme.trim()
+        return [item]
       }
       return []
     })
   }
   return Object.entries(meta as Record<string, unknown>).map(([label, value]) => ({ label, value: text(value) }))
+}
+
+/** Theme variables behind each tone (docs/tokens.md). */
+const TONE_VAR: Record<MeterTone, string> = {
+  primary: "--primary",
+  foreground: "--foreground",
+  destructive: "--destructive",
+  success: "--success",
+  warning: "--warning",
+  info: "--info",
+  "chart-1": "--chart-1",
+  "chart-2": "--chart-2",
+  "chart-3": "--chart-3",
+  "chart-4": "--chart-4",
+  "chart-5": "--chart-5",
+  health: "--vital-health",
+  armor: "--vital-armor",
+  hunger: "--vital-hunger",
+  thirst: "--vital-thirst",
+  stress: "--vital-stress",
+}
+
+/**
+ * A progress colour as a CSS value: a tone ("success", "chart-2") or a name a library uses
+ * (ox's Mantine "green", "red.6", through meterColor()) becomes `var(--token)`, so it follows the
+ * theme; a CSS colour ("#4dabf7", "rgb(…)") passes through; anything else is undefined (the
+ * default primary bar).
+ */
+function menuRowColor(input?: string | null): string | undefined {
+  const v = (input ?? "").trim()
+  if (!v) return undefined
+  if (Object.prototype.hasOwnProperty.call(TONE_VAR, v)) return `var(${TONE_VAR[v as MeterTone]})`
+  const m = meterColor(v)
+  if (m.tone) return `var(${TONE_VAR[m.tone]})`
+  return m.color
+}
+
+/**
+ * The slim bar a row or a details item draws. A colour rides in --menu-row-progress and is painted
+ * by a class, so nothing is mixed in an inline style (Chromium 103); a coloured bar gets a neutral
+ * track (the colour's own tint can't be mixed inline).
+ */
+function ProgressLine({
+  value,
+  color,
+  label,
+  className,
+  ...props
+}: Omit<React.ComponentProps<typeof Progress>, "color"> & { value: number; color?: string; label?: string }) {
+  const fill = menuRowColor(color)
+  return (
+    <Progress
+      value={clampPercent(value)}
+      // shadcn's Progress never hands `value` to Radix's root: give the root its aria-valuenow.
+      aria-valuenow={Math.round(clampPercent(value))}
+      aria-label={label}
+      data-color={color}
+      style={fill ? ({ "--menu-row-progress": fill } as React.CSSProperties) : undefined}
+      className={cn(fill && "bg-foreground/15 [&_[data-slot=progress-indicator]]:bg-(--menu-row-progress)", className)}
+      {...props}
+    />
+  )
 }
 
 /**
@@ -320,10 +403,11 @@ function MenuRowDetails({
                     {m.value !== undefined && <dd className={cn("nk-num truncate", m.label !== undefined && "ml-auto")}>{m.value}</dd>}
                   </div>
                   {m.progress !== undefined && (
-                    <Progress
-                      value={clampPercent(m.progress)}
-                      aria-valuenow={Math.round(clampPercent(m.progress))}
-                      aria-label={typeof m.label === "string" ? m.label : undefined}
+                    <ProgressLine
+                      data-slot="menu-row-details-progress"
+                      value={m.progress}
+                      color={m.color}
+                      label={typeof m.label === "string" ? m.label : undefined}
                       className="h-1"
                     />
                   )}
@@ -338,4 +422,12 @@ function MenuRowDetails({
   )
 }
 
-export { MenuRow, MenuRowDetails, menuRowVariants, menuMetadata, type MenuRowProps, type MenuMetadataItem }
+export {
+  MenuRow,
+  MenuRowDetails,
+  menuRowVariants,
+  menuMetadata,
+  menuRowColor,
+  type MenuRowProps,
+  type MenuMetadataItem,
+}

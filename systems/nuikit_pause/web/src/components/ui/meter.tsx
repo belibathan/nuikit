@@ -22,7 +22,8 @@ import { Progress } from "@/components/ui/progress"
  *   <Meter {...meterColor(option.colorScheme)} value={option.progress} />
  *
  * With `duration` the bar fills on its own over that many ms and `onComplete` fires from a timer
- * (never an animation event, so it still fires with motion off). Restart it with a new `key`.
+ * (never an animation event, so it still fires with motion off). Restart it with a new `key`. It
+ * glides from tick to tick and reaches 100% exactly at `duration` (see timedStep()).
  */
 const meterVariants = cva("min-w-0", {
   variants: {
@@ -163,9 +164,28 @@ function meterColor(input?: string | null): { tone?: MeterTone; color?: string }
 
 const STEP_MS = 100
 
-/** ms elapsed of a `duration` run, ticking every STEP_MS; `onComplete` once from its own timer. */
+/**
+ * Where a timed fill is drawn at `elapsed` ms of `duration`: one step ahead (clamped to
+ * `duration`), reached by a linear transition of `ms`, so the bar lands on the true value at each
+ * tick and on 100% exactly at `duration` (aiming at the current value would trail it by a step).
+ * With motion off there is no transition: draw the true value.
+ */
+function timedStep(elapsed: number, duration: number, motion = true, step = STEP_MS) {
+  const e = Math.max(0, Math.min(duration, Number.isFinite(elapsed) ? elapsed : 0))
+  if (!motion) return { at: e, ms: 0 }
+  const at = Math.min(duration, e + step)
+  return { at, ms: at - e }
+}
+
+/** Transitions are off when the theme or the player turned motion off (kit.css). */
+const motionOn = () => typeof document === "undefined" || document.documentElement.getAttribute("data-nk-motion") !== "off"
+
+/**
+ * A `duration` run, ticking every STEP_MS: the true elapsed ms, and where to draw it (timedStep).
+ * `onComplete` once from its own timer.
+ */
 function useTimedFill(duration: number | undefined, onComplete?: () => void) {
-  const [elapsed, setElapsed] = React.useState(0)
+  const [state, setState] = React.useState({ elapsed: 0, at: 0, ms: 0 })
   const done = React.useRef(onComplete)
   React.useEffect(() => {
     done.current = onComplete
@@ -173,19 +193,29 @@ function useTimedFill(duration: number | undefined, onComplete?: () => void) {
   React.useEffect(() => {
     if (!duration || duration <= 0) return
     const start = Date.now()
-    setElapsed(0)
+    const update = () => {
+      const elapsed = Math.min(duration, Date.now() - start)
+      setState({ elapsed, ...timedStep(elapsed, duration, motionOn()) })
+      return elapsed
+    }
+    setState({ elapsed: 0, at: 0, ms: 0 })
+    // The first frame draws 0; from the next, aim a step ahead.
+    const first = requestAnimationFrame(update)
     const tick = setInterval(() => {
-      const e = Math.min(duration, Date.now() - start)
-      setElapsed(e)
-      if (e >= duration) clearInterval(tick)
+      if (update() >= duration) clearInterval(tick)
     }, STEP_MS)
-    const end = setTimeout(() => done.current?.(), duration)
+    // Full at duration in every mode (with motion off the last tick can land just after it).
+    const end = setTimeout(() => {
+      setState({ elapsed: duration, at: duration, ms: 0 })
+      done.current?.()
+    }, duration)
     return () => {
+      cancelAnimationFrame(first)
       clearInterval(tick)
       clearTimeout(end)
     }
   }, [duration])
-  return elapsed
+  return state
 }
 
 function Meter({
@@ -234,19 +264,27 @@ function Meter({
     /** With `duration`: called once when the time is up, from a timer. */
     onComplete?: () => void
   }) {
-  const elapsed = useTimedFill(duration, onComplete)
+  const run = useTimedFill(duration, onComplete)
   const timed = duration !== undefined && duration > 0
-  const value = timed ? elapsed : valueProp
+  const value = timed ? run.elapsed : valueProp
   const max = timed ? duration : maxProp
   const { percent, level } = meterLevel(value, { max, low, high })
+  // What the bar draws: timed runs aim a step ahead (timedStep); aria and thresholds keep the true value.
+  const drawn = timed ? meterLevel(run.at, { max }).percent : percent
   const critical = level !== "normal"
   const custom = !!color && !critical
   const t = custom ? CUSTOM : TONES[critical ? "destructive" : tone] ?? TONES.primary
   const trackClass = track === "game" ? "bg-scrim/35" : t.track
   const fillClass = custom ? CUSTOM_FILL : FILL[critical ? "destructive" : tone] ?? FILL.primary
-  // Timed: each 100ms step glides linearly into the next (and simply steps with motion off).
-  const timedClass = timed && "[&_[data-slot=progress-indicator]]:duration-100 [&_[data-slot=progress-indicator]]:ease-linear"
-  const rootStyle = custom ? ({ ...style, "--meter-fill": color } as React.CSSProperties) : style
+  // Timed: each step glides linearly onto the value it will be at the next tick, in --meter-step
+  // (the time until then); with motion off kit.css zeroes it and timedStep draws the true value.
+  const timedClass =
+    timed && "[&_[data-slot=progress-indicator]]:duration-(--meter-step) [&_[data-slot=progress-indicator]]:ease-linear"
+  const rootStyle = {
+    ...style,
+    ...(custom && { "--meter-fill": color }),
+    ...(timed && { "--meter-step": `${run.ms}ms` }),
+  } as React.CSSProperties
   const stacked = label !== undefined || valueText !== undefined
   // flex-1 only beside an icon: in the stacked column it would collapse the bar's height to 0
   const grow = stacked ? "w-full" : "flex-1"
@@ -261,15 +299,15 @@ function Meter({
         aria-label={typeof label === "string" ? label : props["aria-label"]}
         className={cn("flex min-w-0 gap-0.5", grow)}
       >
-        {segmentFills(percent, segments).map((fill, i) => (
+        {segmentFills(drawn, segments).map((fill, i) => (
           <div key={i} data-slot="meter-segment" className={cn("relative h-(--meter-h) flex-1 overflow-hidden rounded-full", trackClass)}>
-            <div className={cn("h-full transition-[width]", t.fill, timed && "duration-100 ease-linear")} style={{ width: `${fill}%` }} />
+            <div className={cn("h-full transition-[width]", t.fill, timed && "duration-(--meter-step) ease-linear")} style={{ width: `${fill}%` }} />
           </div>
         ))}
       </div>
     ) : (
       <Progress
-        value={percent}
+        value={drawn}
         // shadcn's Progress keeps `value` for its indicator and never hands it to Radix's root,
         // so the root has no aria-valuenow: give it one.
         aria-valuenow={Math.round(percent)}
@@ -317,4 +355,4 @@ function Meter({
   )
 }
 
-export { Meter, meterVariants, meterLevel, segmentFills, meterColor, type MeterTone, type MeterLevel }
+export { Meter, meterVariants, meterLevel, segmentFills, meterColor, timedStep, type MeterTone, type MeterLevel }
