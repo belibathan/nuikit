@@ -1,0 +1,6 @@
+{
+  "block": "scoreboard",
+  "title": "Scoreboard",
+  "description": "Who's online with IDs, jobs and ping, a search, and which activities can start",
+  "next": ["press HOME (or /{{name}}); fill in Config.job in config.lua for jobs and activity counts"]
+}

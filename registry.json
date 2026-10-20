@@ -25,7 +25,7 @@
       "name": "menu-row",
       "type": "registry:ui",
       "title": "Menu Row",
-      "description": "The 40px action row: icon or image, label, description, a progress line, and a trailing meta, chevron, Kbd, checkbox or value stepper. Active, disabled, destructive, read-only and inert (hover changes nothing). With MenuRowDetails, the image-and-metadata card beside a hovered row.",
+      "description": "The 40px action row: icon, label, description and a trailing meta, chevron, Kbd, checkbox or value stepper. Active, disabled and destructive.",
       "files": [
         {
           "path": "registry/nuikit/ui/menu-row.tsx",
@@ -39,8 +39,7 @@
       ],
       "registryDependencies": [
         "checkbox",
-        "kbd",
-        "progress"
+        "kbd"
       ]
     },
     {
@@ -63,7 +62,7 @@
       "name": "meter",
       "type": "registry:ui",
       "title": "Meter",
-      "description": "A slim bar on a theme or game track, with a label and value, low/high thresholds that turn it destructive, optional segments, status tones, a library's colour through meterColor(), and a timed mode whose onComplete fires from a timer.",
+      "description": "A slim bar on a theme or game track, with a label and value, low/high thresholds that turn it destructive, and optional segments.",
       "files": [
         {
           "path": "registry/nuikit/ui/meter.tsx",
@@ -166,22 +165,19 @@
       "name": "radial-menu",
       "type": "registry:ui",
       "title": "Radial Menu",
-      "description": "The action wheel (the radial intent): SVG wedges styled like shadcn menus, icons and labels, a centre with the highlighted item's description, submenus with Back, keyboard while focused (arrows, Enter, 1-9, Backspace), laid out in rem.",
+      "description": "Action wheel in SVG (shadcn has no radial), styled like shadcn menus: popover, border, accent.",
       "files": [
         {
           "path": "registry/nuikit/ui/radial-menu.tsx",
           "type": "registry:ui"
         }
-      ],
-      "dependencies": [
-        "lucide-react"
       ]
     },
     {
       "name": "speedometer",
       "type": "registry:ui",
       "title": "Speedometer",
-      "description": "Vehicle gauge on the HUD tokens: SVG arc in primary/destructive over a scrim track, gear as a Badge on the HUD surface, fuel as a Progress that turns destructive when low; surface=theme for panels.",
+      "description": "Vehicle gauge: SVG arc in primary/destructive, gear as a Badge, fuel as a Progress.",
       "files": [
         {
           "path": "registry/nuikit/ui/speedometer.tsx",
@@ -504,6 +500,245 @@
       "registryDependencies": [
         "kbd"
       ]
+    },
+    {
+      "name": "pause-menu",
+      "type": "registry:block",
+      "title": "Pause Menu",
+      "description": "Esc opens it in place of GTA's: the server and its actions (resume, map, settings, key bindings, disconnect with a confirm) on a rail, the player and the server on cards, the game blurred behind. Wired to the pause surface and one pause:action callback.",
+      "files": [
+        {
+          "path": "registry/nuikit/blocks/pause-menu/pause-menu.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/pause-menu/pause-menu.tsx"
+        },
+        {
+          "path": "registry/nuikit/blocks/pause-menu/nui.ts",
+          "type": "registry:lib",
+          "target": "components/blocks/pause-menu/nui.ts"
+        },
+        {
+          "path": "registry/nuikit/blocks/pause-menu/fixtures.ts",
+          "type": "registry:lib",
+          "target": "components/blocks/pause-menu/fixtures.ts"
+        }
+      ],
+      "dependencies": [
+        "lucide-react",
+        "nuikit-core"
+      ],
+      "registryDependencies": [
+        "alert-dialog",
+        "avatar",
+        "separator",
+        "https://nuikit.vercel.app/r/menu-row.json",
+        "https://nuikit.vercel.app/r/panel.json",
+        "https://nuikit.vercel.app/r/stat.json",
+        "https://nuikit.vercel.app/r/meter.json"
+      ],
+      "categories": [
+        "screens"
+      ],
+      "docs": "Mount <PauseMenuSurface /> in App.tsx. In Lua, catch Esc (control 200), open nk.surface(\"pause\", { layer = \"modal\", input = \"full\", exclusive = true, hides = { \"hud\" }, blockedBy = { \"dead\" } }) with a PauseMenuData table, and answer nk.on(\"pause:action\"). A whole resource with the Lua: npm create nuikit@latest my-pause -- -t pause-menu"
+    },
+    {
+      "name": "loading-screen",
+      "type": "registry:block",
+      "title": "Loading Screen",
+      "description": "The real load progress (the game's own load events, phase by phase), tips, links, backgrounds and music, in the server's nuikit theme handed over on connect. For a resource's loadscreen page.",
+      "files": [
+        {
+          "path": "registry/nuikit/blocks/loading-screen/loading-screen.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/loading-screen/loading-screen.tsx"
+        },
+        {
+          "path": "registry/nuikit/blocks/loading-screen/handover.ts",
+          "type": "registry:lib",
+          "target": "components/blocks/loading-screen/handover.ts"
+        },
+        {
+          "path": "registry/nuikit/blocks/loading-screen/progress.ts",
+          "type": "registry:lib",
+          "target": "components/blocks/loading-screen/progress.ts"
+        },
+        {
+          "path": "registry/nuikit/blocks/loading-screen/fixtures.ts",
+          "type": "registry:lib",
+          "target": "components/blocks/loading-screen/fixtures.ts"
+        }
+      ],
+      "dependencies": [
+        "lucide-react",
+        "nuikit-core"
+      ],
+      "registryDependencies": [
+        "button",
+        "separator",
+        "spinner",
+        "https://nuikit.vercel.app/r/meter.json"
+      ],
+      "categories": [
+        "screens"
+      ],
+      "docs": "Mount <LoadingScreenPage /> in App.tsx of a resource whose fxmanifest has loadscreen 'web/dist/index.html' and loadscreen_manual_shutdown 'yes'. Hand it data from the server with deferrals.handover({ nuikit = { serverName, tips, theme = GlobalState.nuikitTheme, … } }). A whole resource with the Lua: npm create nuikit@latest my-loading -- -t loading-screen"
+    },
+    {
+      "name": "settings",
+      "type": "registry:block",
+      "title": "Settings",
+      "description": "Player settings in one panel: toggles, choices, sliders and key hints in tabbed sections. Every change goes to Lua (settings:change) and the row shows what Lua answers; sliders send once, when let go.",
+      "files": [
+        {
+          "path": "registry/nuikit/blocks/settings/settings.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/settings/settings.tsx"
+        },
+        {
+          "path": "registry/nuikit/blocks/settings/nui.ts",
+          "type": "registry:lib",
+          "target": "components/blocks/settings/nui.ts"
+        },
+        {
+          "path": "registry/nuikit/blocks/settings/fixtures.ts",
+          "type": "registry:lib",
+          "target": "components/blocks/settings/fixtures.ts"
+        }
+      ],
+      "dependencies": [
+        "lucide-react",
+        "nuikit-core"
+      ],
+      "registryDependencies": [
+        "button",
+        "kbd",
+        "slider",
+        "tabs",
+        "https://nuikit.vercel.app/r/panel.json",
+        "https://nuikit.vercel.app/r/menu-row.json"
+      ],
+      "categories": [
+        "screens"
+      ],
+      "docs": "Mount <SettingsSurface /> in App.tsx. In Lua, open nk.surface(\"settings\", { layer = \"panel\", exclusive = true }) with a SettingsData table and answer nk.on(\"settings:change\") with the value to show (and nk.on(\"settings:reset\")). nk.prefs gives you UI size, reduced motion and high contrast for free. A whole resource with the Lua: npm create nuikit@latest my-settings -- -t settings"
+    },
+    {
+      "name": "scoreboard",
+      "type": "registry:block",
+      "title": "Scoreboard",
+      "description": "Who's online with server IDs, names, jobs and ping, a search by name, ID or job, how full the server is, and which activities can start given who's on duty. Read only: the scoreboard surface with a ScoreboardData snapshot.",
+      "files": [
+        {
+          "path": "registry/nuikit/blocks/scoreboard/scoreboard.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/scoreboard/scoreboard.tsx"
+        },
+        {
+          "path": "registry/nuikit/blocks/scoreboard/nui.ts",
+          "type": "registry:lib",
+          "target": "components/blocks/scoreboard/nui.ts"
+        },
+        {
+          "path": "registry/nuikit/blocks/scoreboard/fixtures.ts",
+          "type": "registry:lib",
+          "target": "components/blocks/scoreboard/fixtures.ts"
+        }
+      ],
+      "dependencies": [
+        "lucide-react",
+        "nuikit-core"
+      ],
+      "registryDependencies": [
+        "badge",
+        "input",
+        "https://nuikit.vercel.app/r/panel.json",
+        "https://nuikit.vercel.app/r/meter.json"
+      ],
+      "categories": [
+        "screens"
+      ],
+      "docs": "Mount <ScoreboardSurface /> in App.tsx. In Lua, open nk.surface(\"scoreboard\", { layer = \"panel\", exclusive = true }) with a ScoreboardData table ({ players = { { id, name, job, ping, you } }, max, activities }) and :update it while it's open. A whole resource with the Lua: npm create nuikit@latest my-scoreboard -- -t scoreboard"
+    },
+    {
+      "name": "garage",
+      "type": "registry:block",
+      "title": "Garage",
+      "description": "Your vehicles at a garage, filtered by stored, out and impounded, with the selected one's fuel, engine and body. Take out, store the one you're driving, release from the impound; Lua answers each and its errors show on the panel.",
+      "files": [
+        {
+          "path": "registry/nuikit/blocks/garage/garage.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/garage/garage.tsx"
+        },
+        {
+          "path": "registry/nuikit/blocks/garage/nui.ts",
+          "type": "registry:lib",
+          "target": "components/blocks/garage/nui.ts"
+        },
+        {
+          "path": "registry/nuikit/blocks/garage/fixtures.ts",
+          "type": "registry:lib",
+          "target": "components/blocks/garage/fixtures.ts"
+        }
+      ],
+      "dependencies": [
+        "lucide-react",
+        "nuikit-core"
+      ],
+      "registryDependencies": [
+        "button",
+        "kbd",
+        "spinner",
+        "tabs",
+        "https://nuikit.vercel.app/r/panel.json",
+        "https://nuikit.vercel.app/r/menu-row.json",
+        "https://nuikit.vercel.app/r/meter.json"
+      ],
+      "categories": [
+        "screens"
+      ],
+      "docs": "Mount <GarageSurface /> in App.tsx. In Lua, open nk.surface(\"garage\", { layer = \"panel\", exclusive = true }) with a GarageData table and answer nk.on(\"garage:takeOut\"), nk.on(\"garage:store\") and nk.on(\"garage:release\") with { ok, error }. A whole resource with the Lua: npm create nuikit@latest my-garage -- -t garage"
+    },
+    {
+      "name": "bank",
+      "type": "registry:block",
+      "title": "Bank",
+      "description": "Accounts, the selected one's balance and recent transactions, and deposit, withdraw and transfer in a dialog that checks the amount before Lua does. Protocol-agnostic; ATMs have no transfers.",
+      "files": [
+        {
+          "path": "registry/nuikit/blocks/bank/bank.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/bank/bank.tsx"
+        },
+        {
+          "path": "registry/nuikit/blocks/bank/nui.ts",
+          "type": "registry:lib",
+          "target": "components/blocks/bank/nui.ts"
+        },
+        {
+          "path": "registry/nuikit/blocks/bank/fixtures.ts",
+          "type": "registry:lib",
+          "target": "components/blocks/bank/fixtures.ts"
+        }
+      ],
+      "dependencies": [
+        "lucide-react",
+        "nuikit-core"
+      ],
+      "registryDependencies": [
+        "button",
+        "dialog",
+        "input",
+        "label",
+        "spinner",
+        "https://nuikit.vercel.app/r/panel.json",
+        "https://nuikit.vercel.app/r/menu-row.json",
+        "https://nuikit.vercel.app/r/stat.json"
+      ],
+      "categories": [
+        "screens"
+      ],
+      "docs": "Mount <BankSurface /> in App.tsx. In Lua, open nk.surface(\"bank\", { layer = \"panel\", exclusive = true }) with a BankData table, answer nk.on(\"bank:deposit\"), nk.on(\"bank:withdraw\") and nk.on(\"bank:transfer\") with { ok, error }, and :update it with fresh balances. Check every amount on the server. A whole resource with the Lua: npm create nuikit@latest my-bank -- -t bank"
     }
   ]
 }

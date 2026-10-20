@@ -16,6 +16,9 @@
       "@/hooks/use-nui-store": [
         "../../registry/nuikit/hooks/use-nui-store.ts"
       ],
+      "@/blocks/*": [
+        "../../registry/nuikit/blocks/*"
+      ],
       "@/*": [
         "./src/*"
       ],

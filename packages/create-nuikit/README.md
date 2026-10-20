@@ -30,6 +30,12 @@ npm create nuikit@latest my-death -- -t death-screen
 |---|---|
 | `hud-minimal` | Vitals, needs, voice, cash, bank, job and a speedometer, on any framework |
 | `death-screen` | Last stand and death: countdown, call EMS, hold to respawn |
+| `pause-menu` | Esc opens it in place of GTA's: resume, map, settings, key bindings, disconnect |
+| `loading-screen` | The real load progress, tips, links, backgrounds and music, in the server theme |
+| `settings` | Player settings: toggles, choices, sliders, key hints, and nuikit's accessibility prefs |
+| `scoreboard` | Who's online with IDs, jobs and ping, a search, and which activities can start |
+| `garage` | Your vehicles with fuel, engine and body; take out, store, release from the impound |
+| `bank` | Accounts, balance, transactions; deposit, withdraw and transfer, checked by the server |
 
 Without `-t` you get the demo (a HUD, a menu and a confirm dialog), or pick from a list.
 

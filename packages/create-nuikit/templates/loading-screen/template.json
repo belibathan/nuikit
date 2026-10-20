@@ -1,0 +1,9 @@
+{
+  "block": "loading-screen",
+  "title": "Loading screen",
+  "description": "The real load progress, tips, links, backgrounds and music, in the server theme",
+  "next": [
+    "connect to the server to see it; edit config.lua for tips, links and media/ backgrounds",
+    "only one loading screen runs per server: stop nuikit_loading (or any other) first"
+  ]
+}
