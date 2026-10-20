@@ -60,6 +60,7 @@ import {
 } from "@/components/ui/form-field";
 import { Confirm, ConfirmPanel, type ConfirmTone } from "@/components/ui/confirm";
 import { KeyPrompt, KeyPromptStack } from "@/components/ui/key-prompt";
+import { ProgressRing } from "@/components/ui/progress-ring";
 import { cn } from "@/lib/utils";
 import { themes } from "@/themes";
 
@@ -244,6 +245,16 @@ export function ComponentsPage() {
         >
           <KeyPromptStates />
           <KeyPromptDemo />
+        </Section>
+
+        <Section
+          name="progress-ring"
+          title="Progress ring"
+          text="A circle that fills: a level, or a timed run that says when it's done from a timer, so it still finishes with motion off. On the game or on a panel, three sizes, status tones, any centre, a cancel hint. The bar is the meter."
+          stageClassName="min-h-[30rem] items-center [--nk-edge:2.5rem]"
+        >
+          <ProgressRingStates />
+          <ProgressRingDemo />
         </Section>
       </main>
       <Footer />
@@ -830,6 +841,77 @@ function KeyPromptDemo() {
           <Stat label="Times you talked" value={talked} size="sm" />
         </PanelBody>
       </Panel>
+    </>
+  );
+}
+
+/** Levels from props: sizes, tones, centres, on the game and on a panel. */
+function ProgressRingStates() {
+  return (
+    <div className="flex flex-col items-center gap-8">
+      <div className="flex items-end gap-8">
+        <ProgressRing size="sm" value={25} label="Small" />
+        <ProgressRing value={62} label="Downloading" />
+        <ProgressRing size="lg" value={100} tone="success" label="Done" />
+        <ProgressRing value={18} tone="destructive" label="Signal" center={<RadioIcon className="size-5" />} />
+        <ProgressRing value={45} tone="warning" label="Lockpicking" cancelKey="X" />
+      </div>
+      <Panel size="auto">
+        <PanelHeader title="Upgrades" description="On a panel: the theme track" />
+        <PanelBody variant="form" className="flex-row gap-6">
+          <ProgressRing track="theme" size="sm" value={80} label="Engine" />
+          <ProgressRing track="theme" size="sm" value={40} label="Brakes" />
+          <ProgressRing track="theme" size="sm" value={0} label="Turbo" center={false} />
+        </PanelBody>
+      </Panel>
+    </div>
+  );
+}
+
+/** A timed run: onComplete from a timer, cancel by click (in game Lua reads X). */
+function ProgressRingDemo() {
+  const [run, setRun] = useState(0);
+  const [running, setRunning] = useState(false);
+  const [last, setLast] = useState("Nothing yet");
+  return (
+    <>
+      <Panel size="sm">
+        <PanelHeader title="Try it" description="A 4 second run" />
+        <PanelBody>
+          <MenuRow
+            icon={<WrenchIcon />}
+            onClick={() => {
+              setRun((r) => r + 1);
+              setRunning(true);
+            }}
+          >
+            Repair engine
+          </MenuRow>
+        </PanelBody>
+        <PanelFooter>
+          <span className="nk-label">Last result</span>
+          <span data-slot="ring-demo-result" className="ml-auto text-sm">
+            {last}
+          </span>
+        </PanelFooter>
+      </Panel>
+      {running && (
+        <ProgressRing
+          key={run}
+          className="nk-anchor-b nk-enter"
+          duration={4000}
+          label="Repairing engine"
+          cancelKey="X"
+          onCancel={() => {
+            setRunning(false);
+            setLast("Cancelled");
+          }}
+          onComplete={() => {
+            setRunning(false);
+            setLast("Repaired");
+          }}
+        />
+      )}
     </>
   );
 }
