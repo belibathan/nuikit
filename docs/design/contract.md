@@ -141,3 +141,22 @@ The site's `/components` page shows the status and `since` next to each componen
 
 Deprecated now: `key-hint` (→ `key-prompt`), `task-progress` (→ `meter` timed mode, `progress-ring`),
 `nui-toaster` (→ `notice`), all deprecated in 0.6.0 and removable in 0.8.0.
+
+## Follow-up: visual baselines (not enforced yet)
+
+Item 23 is a review item until CI compares screenshots. A spike on `feat/hardening` (commit 1553c7f, reverted
+before merge; recover it with `git show 1553c7f`) built the harness and showed:
+
+- **What it shot:** every registry section on `/components` (19) in Graphite, Signal, Velvet, Vector and Daylight
+  at 1920×1080, via a `?identity=` param on the page: 95 PNGs, ~9 MB, Playwright 1.56.0.
+- **Deterministic locally, by construction:** Playwright's clock paused before the first script and moved by a fixed
+  `runFor` (countdowns, timed meters, enter timers land on the same frame), animations off, the stage photo hidden,
+  bundled fonts. Two full runs matched; a 2px change to `nk-chip`'s padding failed `hud-chip` (4,454 px).
+- **Why it isn't shipped:** baselines made outside CI's image may not match CI's renders (font rasterisation per
+  environment), so the job could only run non-blocking; and every motion/identity change in flight would need new
+  baselines each time.
+
+To ship it: generate the baselines inside `mcr.microsoft.com/playwright:<version>-noble` (a CI run by hand that
+uploads them), commit them, run the job blocking from then on. Then add Chromium 103 (puppeteer-core 15 path),
+1280×720 and 2560×1440 for the canonical state, and axe (WCAG 2.1 AA tags) in the same harness. With baselines in
+place, revisit the two `cn()` merges held back (shape/elevation, the leading rule): each would show as a diff.
