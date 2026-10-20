@@ -11,19 +11,6 @@ body {
   white-space: nowrap;
 }
 
-/* After a click Lua drops focus and CEF never sends the mouse-leave, so :hover can stay matched on
-   the clicked row. While the list is inert, a hovered row looks exactly like a resting one. Plain
-   (unlayered) rules, so they win over MenuRow's hover utilities. */
-[data-inert] [data-slot="menu-row"]:hover {
-  background-color: transparent;
-  color: var(--popover-foreground);
-}
-[data-inert] [data-slot="menu-row"][data-back]:hover,
-[data-inert] [data-slot="menu-row"]:hover [data-slot="menu-row-icon"],
-[data-inert] [data-slot="menu-row"]:hover > svg {
-  color: var(--muted-foreground);
-}
-
 /* The idle eye: a HUD mark on the game (rule 8), same surface as nk-chip. */
 .tgt-hud {
   background-color: var(--hud);

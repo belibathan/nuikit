@@ -1,23 +1,22 @@
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
-import { CalendarIcon, XIcon } from "lucide-react";
-import { useRef, useState, type FormEvent, type ReactNode } from "react";
-import type { DateRange } from "react-day-picker";
+import { XIcon } from "lucide-react";
+import { useRef, useState, type FormEvent } from "react";
 import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
 import { DatePicker } from "@/features/date-picker";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import {
   CheckboxField,
   ColorField,
+  DateRangeField,
   FormField,
   NumberField,
   SelectField,
   SliderField,
   TextField,
+  TimeField,
+  type DateOrder,
 } from "@/components/ui/form-field";
-import { Input } from "@/components/ui/input";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Icon } from "@/lib/icon";
 import { useLocale } from "@/lib/locale";
 import { post, useOx } from "@/lib/nui";
@@ -157,6 +156,15 @@ function problem(row: Row, v: any): string | undefined {
     const hi = toDate(row.max);
     if ((lo && day.isBefore(dayjs(lo).startOf("day"))) || (hi && day.isAfter(dayjs(hi).startOf("day")))) return "Pick a date in the allowed range.";
   }
+  if (row.type === "date-range" && v) {
+    // ox's range calendar can't pick these; typed dates can, so they're checked here.
+    const [a, b] = v as [Date | null, Date | null];
+    const lo = toDate(row.min);
+    const hi = toDate(row.max);
+    const out = (d: Date | null) => !!d && ((lo && dayjs(d).isBefore(dayjs(lo).startOf("day"))) || (hi && dayjs(d).isAfter(dayjs(hi).startOf("day"))));
+    if (out(a) || out(b)) return "Pick dates in the allowed range.";
+    if (a && b && dayjs(b).isBefore(dayjs(a), "day")) return "Pick an end date on or after the start.";
+  }
   return undefined;
 }
 
@@ -255,7 +263,6 @@ export function InputDialog() {
 /**
  * One dialog row as the kit's form-field preset for its type (the `input` intent's renderer).
  * Values stay in this file's shapes (initial/output above), so what Lua receives is unchanged.
- * date-range and time have no preset yet and keep their own controls inside a FormField row.
  */
 function RowField({ row, value, error, onChange }: { row: Row; value: any; error?: string; onChange: (v: any) => void }) {
   const icon = row.icon ? <Icon icon={row.icon} className="size-4" /> : undefined;
@@ -355,81 +362,56 @@ function RowField({ row, value, error, onChange }: { row: Row; value: any; error
           />
         </FormField>
       );
-    case "date-range":
+    case "date-range": {
+      // DateRangeField holds epoch ms of local midnight; this file keeps Dates (output() formats them).
+      const [from, to] = (value ?? [null, null]) as [Date | null, Date | null];
+      const day = (d: Date | null) => (d ? dayjs(d).startOf("day").valueOf() : null);
       return (
-        <FormField {...base}>
-          <DateRangeControl row={row} value={value} invalid={Boolean(error)} onChange={onChange} />
-        </FormField>
+        <DateRangeField
+          {...base}
+          value={[day(from), day(to)]}
+          onValueChange={([a, b]) => onChange([a === null ? null : new Date(a), b === null ? null : new Date(b)])}
+          min={isoDay(row.min)}
+          max={isoDay(row.max)}
+          order={dateOrder(row.format)}
+          onReset={row.clearable && (from || to) ? () => onChange([null, null]) : undefined}
+        />
       );
-    case "time":
+    }
+    case "time": {
+      // TimeField holds epoch ms of today at the picked time, as ox returns it. An untouched default
+      // keeps its own Date. Emptying a field that isn't clearable keeps the last time.
+      const d = value as Date | null;
       return (
-        <FormField {...base}>
-          <TimeControl row={row} value={value} icon={icon} invalid={Boolean(error)} onChange={onChange} />
-        </FormField>
+        <TimeField
+          {...base}
+          value={d ? d.getTime() : null}
+          onValueChange={(ms) => (ms === null ? row.clearable && onChange(null) : onChange(new Date(ms)))}
+          format={String(row.format) === "24" ? "24" : "12"}
+          onReset={row.clearable && d ? () => onChange(null) : undefined}
+        />
       );
+    }
     default:
       return null;
   }
 }
 
-/** date-range: no form-field preset yet, so a calendar popover for the two days. */
-function DateRangeControl({ row, value, invalid, onChange }: { row: Row; value: any; invalid: boolean; onChange: (v: any) => void }) {
-  const fmt = row.format ?? "DD/MM/YYYY";
-  const minD = toDate(row.min);
-  const maxD = toDate(row.max);
-  const disabled = [...(minD ? [{ before: minD }] : []), ...(maxD ? [{ after: maxD }] : [])];
-  const text = value?.[0] ? `${dayjs(value[0]).format(fmt)} – ${value[1] ? dayjs(value[1]).format(fmt) : ""}` : "";
-  return (
-    <div className="flex gap-1.5">
-      <Popover>
-        <PopoverTrigger asChild>
-          <Button type="button" variant="outline" disabled={row.disabled} aria-invalid={invalid || undefined} className={cn("w-full justify-start font-normal", !text && "text-muted-foreground")}>
-            <CalendarIcon />
-            {text || fmt}
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent className="w-auto p-0">
-          <Calendar
-            mode="range"
-            selected={{ from: value?.[0] ?? undefined, to: value?.[1] ?? undefined }}
-            onSelect={(r: DateRange | undefined) => onChange([r?.from ?? null, r?.to ?? null])}
-            disabled={disabled}
-          />
-        </PopoverContent>
-      </Popover>
-      {row.clearable && value?.[0] && (
-        <Button type="button" variant="ghost" size="icon" onClick={() => onChange([null, null])} aria-label="Clear">
-          <XIcon />
-        </Button>
-      )}
-    </div>
-  );
-}
+/** A row's min/max (any date ox accepts) as form-field's "YYYY-MM-DD". */
+const isoDay = (v: unknown) => {
+  const d = toDate(v);
+  return d ? dayjs(d).format("YYYY-MM-DD") : undefined;
+};
 
-/** time: no form-field preset yet, so the time input (hours and minutes on today's date). */
-function TimeControl({ row, value, icon, invalid, onChange }: { row: Row; value: any; icon?: ReactNode; invalid: boolean; onChange: (v: any) => void }) {
-  const d = value as Date | null;
-  const hhmm = d ? `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}` : "";
-  return (
-    <div className="relative">
-      {icon && <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-muted-foreground">{icon}</span>}
-      <Input
-        disabled={row.disabled}
-        aria-invalid={invalid || undefined}
-        type="time"
-        value={hhmm}
-        onChange={(e) => {
-          if (!e.target.value) return onChange(row.clearable ? null : value);
-          const [h, m] = e.target.value.split(":").map(Number);
-          const next = new Date();
-          next.setHours(h ?? 0, m ?? 0, 0, 0);
-          onChange(next);
-        }}
-        className={cn(icon && "pl-9")}
-      />
-    </div>
-  );
-}
+/** Which part a dayjs format puts first: "YYYY-MM-DD" → ymd, "MM/DD/YYYY" → mdy, else day first. */
+const dateOrder = (format?: string): DateOrder => {
+  const f = (format ?? "DD/MM/YYYY").toUpperCase();
+  const y = f.indexOf("Y");
+  const m = f.indexOf("M");
+  const d = f.indexOf("D");
+  if (y >= 0 && (m < 0 || y < m) && (d < 0 || y < d)) return "ymd";
+  return m >= 0 && d >= 0 && m < d ? "mdy" : "dmy";
+};
 
 // ───────────────────────────── colour formats ('hex' default, 'hexa', 'rgb', 'rgba', 'hsl', 'hsla')
 

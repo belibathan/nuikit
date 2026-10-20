@@ -84,13 +84,12 @@ export default function App() {
 
       {active && (
         // The `target` intent's renderer: a Panel of MenuRows beside the eye (16px gap), its first
-        // row centred on it (nk-first-row). data-inert switches every hover style off (app.css):
-        // CEF can keep :hover matching after a click drops focus.
+        // row centred on it (nk-first-row). While inert, the rows' own `inert` switches every hover
+        // style off: CEF can keep :hover matching after a click drops focus.
         <Panel
           key={session}
           size="auto"
           role="menu"
-          data-inert={inert || undefined}
           className={cn("nk-first-row absolute top-1/2 left-1/2 ml-8 max-w-80 min-w-56", inert ? "pointer-events-none" : "pointer-events-auto")}
         >
           <PanelBody className="gap-0">
@@ -101,7 +100,7 @@ export default function App() {
                   <MenuRow
                     key={row.key}
                     role="menuitem"
-                    data-back={row.back || undefined}
+                    inert={inert}
                     className={cn(row.back && "text-muted-foreground")}
                     // Always an icon slot, so labels stay aligned when an option has no (or an unknown) icon.
                     icon={
