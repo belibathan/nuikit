@@ -301,7 +301,7 @@ export function ComponentsPage() {
         <Section
           name="countdown"
           title="Countdown"
-          text="A timer that matters: until you can respawn, until the alarm, until the restart. Tabular mm:ss (h:mm:ss past an hour), a label, a line that drains, a warning threshold, a dimmed done state. From Lua's seconds, or running on its own with onComplete from a timer."
+          text="A timer that matters: until you can respawn, until the alarm, until the restart. Tabular mm:ss (h:mm:ss past an hour), a label, a line that drains (in a theme tone from the start with lineTone), a warning threshold, a dimmed done state. From Lua's seconds, or running on its own with onComplete from a timer."
           stageClassName="min-h-[36rem] items-center"
         >
           <Countdown surface="game" size="hero" seconds={154} total={300} label="Until you can respawn" />
@@ -1312,6 +1312,8 @@ function MeterTimed() {
 function CountdownStates() {
   return (
     <div className="flex flex-col items-center gap-8">
+      {/* lineTone: a last stand drains in destructive from the start, not only from warnAt */}
+      <Countdown surface="game" seconds={42} total={60} warnAt={10} lineTone="destructive" label="Last stand" />
       <Countdown surface="game" seconds={8} total={60} warnAt={30} label="Until you bleed out" />
       <Countdown surface="game" seconds={0} total={300} label="You can respawn" />
       <Countdown surface="game" size="sm" seconds={3723} label="Until the server restarts" />
