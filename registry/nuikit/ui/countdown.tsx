@@ -19,14 +19,17 @@ import { Progress } from "@/components/ui/progress"
  * event), so it still fires with motion off. Restart a run with a new `key`.
  */
 
-const countdownVariants = cva("nk-num leading-none font-semibold tracking-tight", {
+// The line-height lives in each size, after its text-*: tailwind-merge treats a font size as
+// overriding an earlier leading-*, so a base leading-none would be dropped (the hero clock then
+// got a tall line box and pushed its label down).
+const countdownVariants = cva("nk-num font-semibold tracking-tight", {
   variants: {
     size: {
-      sm: "text-xl",
+      sm: "text-xl leading-none",
       /** nk-display: 32px, a number that is the point of a panel. */
-      default: "text-[2rem]",
+      default: "text-[2rem] leading-none",
       /** The full-screen clock (death, loading): 128px at 1080p. */
-      hero: "text-[8rem]",
+      hero: "text-[8rem] leading-none",
     },
   },
   defaultVariants: {
