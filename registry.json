@@ -25,7 +25,7 @@
       "name": "menu-row",
       "type": "registry:ui",
       "title": "Menu Row",
-      "description": "The 40px action row: icon, label, description and a trailing meta, chevron, Kbd, checkbox or value stepper. Active, disabled and destructive.",
+      "description": "The 40px action row: icon or image, label, description, a progress line, and a trailing meta, chevron, Kbd, checkbox or value stepper. Active, disabled, destructive, read-only and inert (hover changes nothing). With MenuRowDetails, the image-and-metadata card beside a hovered row.",
       "files": [
         {
           "path": "registry/nuikit/ui/menu-row.tsx",
@@ -39,7 +39,8 @@
       ],
       "registryDependencies": [
         "checkbox",
-        "kbd"
+        "kbd",
+        "progress"
       ]
     },
     {

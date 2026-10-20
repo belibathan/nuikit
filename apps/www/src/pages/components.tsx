@@ -40,7 +40,7 @@ import { Footer, Nav, SITE, ThemePicker } from "@/components/site";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { HudChip } from "@/components/ui/hud-chip";
-import { MenuRow } from "@/components/ui/menu-row";
+import { MenuRow, MenuRowDetails, menuMetadata } from "@/components/ui/menu-row";
 import { Meter } from "@/components/ui/meter";
 import { Panel, PanelBody, PanelFooter, PanelHeader } from "@/components/ui/panel";
 import { Separator } from "@/components/ui/separator";
@@ -113,6 +113,17 @@ export function ComponentsPage() {
           text="The 40px action row: icon, label, description, and one trailing thing: meta, a chevron, a key, a checkbox or a stepper. Active, disabled, destructive."
         >
           <RowsPanel />
+        </Section>
+
+        <Section
+          name="menu-row"
+          title="Menu row: items"
+          text="What the menu intent's items carry: an image, a progress line, read-only rows, the details card beside the hovered row, quiet stepper values, and inert rows that ignore hover (CEF keeps :hover after Lua takes focus)."
+          install={false}
+          stageClassName="min-h-[28rem]"
+        >
+          <ContextMenuDemo />
+          <InertListDemo />
         </Section>
 
         <Section
@@ -921,6 +932,110 @@ function ProgressRingDemo() {
         />
       )}
     </>
+  );
+}
+
+// ox_lib metadata, in two of its shapes (menuMetadata reads all three).
+const VEHICLES = [
+  {
+    name: "Pegassi Zentorno",
+    image: "/bg/garage.jpg",
+    fuel: 92,
+    metadata: [
+      { label: "Plate", value: "ZEN 01" },
+      { label: "Engine", value: "98%", progress: 98 },
+      { label: "Body", value: "71%", progress: 71 },
+    ],
+  },
+  { name: "Karin Sultan", image: "/bg/street.jpg", fuel: 23, metadata: { Plate: "SUL 07", Garage: "Impound", Fee: "$250" } },
+];
+
+/** A context menu: image rows with a fuel line, a read-only row, the details card beside the hovered row. */
+function ContextMenuDemo() {
+  const [hovered, setHovered] = useState<number | null>(0);
+  const v = hovered === null ? undefined : VEHICLES[hovered];
+  return (
+    <div className="flex items-start gap-3">
+      <Panel>
+        <PanelHeader icon={<WarehouseIcon />} title="Garage" description="Hover a car" />
+        <PanelBody>
+          {VEHICLES.map((c, i) => (
+            <MenuRow
+              key={c.name}
+              image={c.image}
+              description="Fuel"
+              progress={c.fuel}
+              meta={`${c.fuel}%`}
+              chevron
+              active={hovered === i}
+              onMouseEnter={() => setHovered(i)}
+            >
+              {c.name}
+            </MenuRow>
+          ))}
+          <Separator className="my-1" />
+          <MenuRow readOnly icon={<UsersIcon />} description="Set by your job" meta="2 of 4">
+            Garage slots
+          </MenuRow>
+        </PanelBody>
+      </Panel>
+      {v && <MenuRowDetails key={v.name} image={v.image} title={v.name} items={menuMetadata(v.metadata)} />}
+    </div>
+  );
+}
+
+const SETTINGS = [
+  { label: "Voice range", values: ["Whisper", "Normal", "Shouting"] },
+  { label: "Radio volume", values: ["20%", "40%", "60%", "80%"] },
+  { label: "Minimap", values: ["Off", "In vehicles", "Always"] },
+];
+
+/**
+ * A keyboard-driven list (ox_lib's list menu): arrows move the highlight, values are quiet until
+ * their row is highlighted. Inert on: the pointer's hover changes nothing.
+ */
+function InertListDemo() {
+  const [index, setIndex] = useState(0);
+  const [inert, setInert] = useState(true);
+  const [picked, setPicked] = useState([1, 2, 1]);
+  return (
+    <Panel
+      size="sm"
+      tabIndex={0}
+      className="outline-none"
+      onKeyDown={(e) => {
+        if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+          e.preventDefault();
+          setIndex((i) => (i + (e.key === "ArrowDown" ? 1 : -1) + SETTINGS.length) % SETTINGS.length);
+        } else if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+          e.preventDefault();
+          const d = e.key === "ArrowRight" ? 1 : -1;
+          setPicked((all) => all.map((p, j) => (j === index ? (p + d + SETTINGS[j]!.values.length) % SETTINGS[j]!.values.length : p)));
+        }
+      }}
+    >
+      <PanelHeader title="Settings" description="Click here, then use the arrows" />
+      <PanelBody>
+        {SETTINGS.map((s, i) => (
+          <MenuRow
+            key={s.label}
+            inert={inert}
+            active={index === i}
+            value={s.values[picked[i]!]}
+            valueTone="muted"
+            onStep={(d) => setPicked((all) => all.map((p, j) => (j === i ? (p + d + s.values.length) % s.values.length : p)))}
+            tabIndex={-1}
+          >
+            {s.label}
+          </MenuRow>
+        ))}
+        <Separator className="my-1" />
+        {/* A library-supplied icon colour (ox iconColor) set inline: it survives hover and highlight. */}
+        <MenuRow icon={<EyeIcon style={{ color: "#4dabf7" }} />} checked={inert} onCheckedChange={setInert} tabIndex={-1}>
+          Inert (ignore hover)
+        </MenuRow>
+      </PanelBody>
+    </Panel>
   );
 }
 
