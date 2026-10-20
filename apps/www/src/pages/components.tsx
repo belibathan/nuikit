@@ -1,4 +1,12 @@
 import {
+  ArrowDownIcon,
+  ArrowDownLeftIcon,
+  ArrowDownRightIcon,
+  ArrowLeftIcon,
+  ArrowRightIcon,
+  ArrowUpIcon,
+  ArrowUpLeftIcon,
+  ArrowUpRightIcon,
   BackpackIcon,
   CarIcon,
   CarFrontIcon,
@@ -23,7 +31,8 @@ import {
   WarehouseIcon,
   WrenchIcon,
 } from "lucide-react";
-import { useState, type ReactNode } from "react";
+import { applyTheme, clearTheme } from "nuikit-core/react";
+import { useEffect, useState, type ReactNode } from "react";
 import { Command } from "@/components/code";
 import { Scene } from "@/components/scene";
 import { Footer, Nav, SITE, ThemePicker } from "@/components/site";
@@ -37,8 +46,28 @@ import { Separator } from "@/components/ui/separator";
 import { Slider } from "@/components/ui/slider";
 import { Stat } from "@/components/ui/stat";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Notice, Notices, useNotices, type NoticePosition, type NoticeStatus } from "@/components/ui/notice";
+import {
+  CheckboxField,
+  ColorField,
+  DateField,
+  NumberField,
+  SelectField,
+  SliderField,
+  TextField,
+  validateField,
+  type FieldRule,
+} from "@/components/ui/form-field";
+import { cn } from "@/lib/utils";
+import { themes } from "@/themes";
 
 export function ComponentsPage() {
+  // Start on the compiled default theme, so the nuikit tokens shadcn doesn't have (success,
+  // warning, info, hud, scrim, vitals) have values before anyone touches the picker.
+  useEffect(() => {
+    const vars = applyTheme(themes[0]!.css, document.documentElement, "dark");
+    return () => clearTheme(vars);
+  }, []);
   return (
     <div className="min-h-screen">
       <Nav />
@@ -164,25 +193,68 @@ export function ComponentsPage() {
             </div>
           </div>
         </Section>
+
+        <Section
+          name="notice"
+          title="Notice"
+          text="A notification on the game: status icon, title, description, and a line that empties as its time runs out (it pauses while hovered). A stack pins them to any corner or edge; the newest sits nearest the edge."
+        >
+          <NoticeStates />
+        </Section>
+
+        <Section
+          name="notice"
+          title="Notice stack"
+          text="useNotices() is the queue: notify() shows one, the same id updates it in place, and each goes when its time is up. Pick a status, then a position."
+          install={false}
+          stageClassName="min-h-[40rem] items-center"
+        >
+          <NoticeDemo />
+        </Section>
+
+        <Section
+          name="form-field"
+          title="Form field"
+          text="One row of a game form, and a preset for each kind of value: text, number, select, checkbox or switch, slider, date, colour. Label, hint, description, error, required, min and max, an inline value and a reset. validateField() decides what's wrong; the form decides when to say it."
+        >
+          <TransferForm />
+          <CharacterForm />
+          <FieldStates />
+        </Section>
       </main>
       <Footer />
     </div>
   );
 }
 
-function Section({ name, title, text, children }: { name: string; title: string; text: string; children: ReactNode }) {
+function Section({
+  name,
+  title,
+  text,
+  install = true,
+  stageClassName,
+  children,
+}: {
+  name: string;
+  title: string;
+  text: string;
+  /** false for a second section of the same item (one id, one install command). */
+  install?: boolean;
+  stageClassName?: string;
+  children: ReactNode;
+}) {
   return (
-    <section id={name} className="mt-20 scroll-mt-20">
+    <section id={install ? name : undefined} className="mt-20 scroll-mt-20">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div className="max-w-2xl">
           <h2 className="text-2xl font-semibold tracking-tight">{title}</h2>
           <p className="mt-2 text-muted-foreground text-pretty">{text}</p>
         </div>
-        <Command className="h-10 w-full max-w-md text-xs">{`npx shadcn add ${SITE}/r/${name}.json`}</Command>
+        {install && <Command className="h-10 w-full max-w-md text-xs">{`npx shadcn add ${SITE}/r/${name}.json`}</Command>}
       </div>
       <div className="relative isolate mt-6 overflow-hidden rounded-xl border bg-black">
         <Scene />
-        <div className="relative flex min-h-80 flex-wrap items-start justify-center gap-8 p-10">{children}</div>
+        <div className={cn("relative flex min-h-80 flex-wrap items-start justify-center gap-8 p-10", stageClassName)}>{children}</div>
       </div>
     </section>
   );
@@ -331,6 +403,261 @@ function RowsPanel() {
         </PanelBody>
       </Panel>
     </>
+  );
+}
+
+/** Every state, frozen part-way through its time (`elapsed` + `paused`) so the line shows. */
+function NoticeStates() {
+  return (
+    <>
+      <div className="flex flex-col gap-2">
+        <Notice status="success" title="Paid" description="$500 from Lester" elapsed={900} paused />
+        <Notice status="info" title="Vehicle stored" description="Your Karin Sultan is in the Legion Square garage." elapsed={2200} paused />
+        <Notice status="warning" title="Low fuel" description={"8% left. The nearest station is 400 m away."} elapsed={3400} paused />
+        <Notice status="error" title="Couldn't lock it" description="You don't have the keys to this vehicle." elapsed={4500} paused />
+      </div>
+      <div className="flex flex-col gap-2">
+        <Notice status="success" title="Seatbelt on" duration={3000} elapsed={600} paused />
+        <Notice status="error" description="You can't do that while handcuffed." elapsed={1800} paused />
+        <Notice icon={<LandmarkIcon />} title="Fleeca" description="Transfer received: $1,200 from Lamar Davis" elapsed={3000} paused />
+        <Notice status="warning" title="Server restart in 10 minutes" description="Finish what you're doing and park somewhere safe." duration={0} onDismiss={() => {}} />
+        <Notice icon={null} title="Welcome to Los Santos" description="Your apartment key is in your pockets." showDuration={false} />
+      </div>
+    </>
+  );
+}
+
+const SAMPLES: Record<NoticeStatus, { title: string; description: string }[]> = {
+  info: [
+    { title: "Vehicle stored", description: "Your Bravado Buffalo is in the Pillbox garage." },
+    { title: "New message", description: "Lester: I have a job for you." },
+  ],
+  success: [
+    { title: "Paid", description: "$500 from Lester" },
+    { title: "Repaired", description: "Engine back to 100%." },
+  ],
+  warning: [
+    { title: "Hungry", description: "Eat something soon." },
+    { title: "Wanted", description: "Two stars. Lose the police." },
+  ],
+  error: [
+    { title: "Couldn't lock it", description: "You don't have the keys." },
+    { title: "Not enough cash", description: "You need $250 more." },
+  ],
+};
+
+const STATUSES: { value: NoticeStatus; label: string }[] = [
+  { value: "info", label: "Info" },
+  { value: "success", label: "Success" },
+  { value: "warning", label: "Warning" },
+  { value: "error", label: "Error" },
+];
+
+const GRID: { position: NoticePosition | null; icon?: ReactNode; label?: string }[] = [
+  { position: "top-left", icon: <ArrowUpLeftIcon />, label: "Top left" },
+  { position: "top-center", icon: <ArrowUpIcon />, label: "Top" },
+  { position: "top-right", icon: <ArrowUpRightIcon />, label: "Top right" },
+  { position: "center-left", icon: <ArrowLeftIcon />, label: "Left" },
+  { position: null },
+  { position: "center-right", icon: <ArrowRightIcon />, label: "Right" },
+  { position: "bottom-left", icon: <ArrowDownLeftIcon />, label: "Bottom left" },
+  { position: "bottom-center", icon: <ArrowDownIcon />, label: "Bottom" },
+  { position: "bottom-right", icon: <ArrowDownRightIcon />, label: "Bottom right" },
+];
+
+function NoticeDemo() {
+  const { notices, notify, dismiss, clear } = useNotices();
+  const [status, setStatus] = useState<NoticeStatus>("success");
+  const [count, setCount] = useState(0);
+  const [fuel, setFuel] = useState(12);
+  const fire = (position: NoticePosition) => {
+    const list = SAMPLES[status];
+    notify({ ...list[count % list.length]!, status, position });
+    setCount((c) => c + 1);
+  };
+  const updateFuel = () => {
+    const next = fuel > 1 ? fuel - 3 : 12;
+    setFuel(next);
+    notify({ id: "fuel", status: next <= 3 ? "error" : "warning", title: "Low fuel", description: `${next}% left.`, position: "top-right" });
+  };
+  return (
+    <>
+      <Panel size="sm" className="relative z-10">
+        <PanelHeader title="Notify" description="Pick a status, then a position" />
+        <PanelBody variant="form">
+          <Tabs value={status} onValueChange={(v) => setStatus(v as NoticeStatus)}>
+            <TabsList className="w-full">
+              {STATUSES.map((s) => (
+                <TabsTrigger key={s.value} value={s.value}>
+                  {s.label}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </Tabs>
+          <div className="grid grid-cols-3 gap-2" role="group" aria-label="Position">
+            {GRID.map((cell, i) =>
+              cell.position ? (
+                <Button key={cell.position} variant="outline" size="sm" aria-label={cell.label} title={cell.label} onClick={() => fire(cell.position!)}>
+                  {cell.icon}
+                </Button>
+              ) : (
+                <span key={i} aria-hidden />
+              ),
+            )}
+          </div>
+        </PanelBody>
+        <PanelFooter>
+          <Button variant="ghost" size="sm" onClick={clear}>
+            Clear
+          </Button>
+          <Button size="sm" className="ml-auto" onClick={updateFuel}>
+            Update fuel
+          </Button>
+        </PanelFooter>
+      </Panel>
+      <Notices notices={notices} onDismiss={dismiss} closable />
+    </>
+  );
+}
+
+const ACCOUNTS = [
+  { value: "lamar", label: "Lamar Davis, 4410" },
+  { value: "franklin", label: "Franklin Clinton, 2207" },
+  { value: "lester", label: "Lester Crest, 0913" },
+];
+
+const TRANSFER: Record<string, FieldRule> = {
+  to: { kind: "select", required: true },
+  amount: { kind: "number", required: true, min: 1, max: 5000 },
+  reference: { kind: "text", maxLength: 60 },
+  confirm: { kind: "checkbox", required: true },
+};
+
+/** A real form: errors appear when you press Send, and clear as you fix them. */
+function TransferForm() {
+  const [values, setValues] = useState<Record<string, unknown>>({ to: null, amount: null, reference: "", confirm: false });
+  const [tried, setTried] = useState(false);
+  const errors = Object.fromEntries(Object.entries(TRANSFER).map(([k, rule]) => [k, tried ? validateField(rule, values[k])?.message : undefined]));
+  const set = (k: string) => (v: unknown) => setValues((all) => ({ ...all, [k]: v }));
+  return (
+    <Panel>
+      <PanelHeader icon={<LandmarkIcon />} title="Transfer" description="Fleeca, balance $4,210" />
+      <PanelBody variant="form">
+        <SelectField
+          label="To"
+          required
+          options={ACCOUNTS}
+          placeholder="Pick an account"
+          value={values.to as string | null}
+          onValueChange={set("to")}
+          error={errors.to}
+        />
+        <NumberField
+          label="Amount"
+          hint="Up to $5,000 a day"
+          required
+          min={1}
+          max={5000}
+          step={50}
+          placeholder="500"
+          value={values.amount as number | null}
+          onValueChange={set("amount")}
+          error={errors.amount}
+        />
+        <TextField
+          label="Reference"
+          hint="Optional"
+          multiline
+          rows={2}
+          maxLength={60}
+          placeholder="What it's for"
+          value={values.reference as string}
+          onValueChange={set("reference")}
+          error={errors.reference}
+        />
+        <CheckboxField
+          label="I've checked the account"
+          required
+          checked={values.confirm as boolean}
+          onCheckedChange={set("confirm")}
+          error={errors.confirm}
+        />
+      </PanelBody>
+      <PanelFooter>
+        <Button variant="ghost" size="sm" onClick={() => (setTried(false), setValues({ to: null, amount: null, reference: "", confirm: false }))}>
+          Cancel
+        </Button>
+        <Button size="sm" className="ml-auto" onClick={() => setTried(true)}>
+          Send
+        </Button>
+      </PanelFooter>
+    </Panel>
+  );
+}
+
+// GTA paint colours: a game palette the theme can't know.
+const PAINT = ["#0d1116", "#c2c4c6", "#9c1016", "#ff5c00", "#ffcf20", "#3a8f3a", "#2354a1", "#6b1f7b"];
+
+function CharacterForm() {
+  const [nose, setNose] = useState(0.15);
+  return (
+    <Panel>
+      <PanelHeader title="New character" description="Step 1 of 3" />
+      <PanelBody variant="form">
+        <TextField label="First name" required defaultValue="Niko" />
+        <DateField label="Date of birth" hint="Day, month, year" required min="1920-01-01" max="2008-12-31" defaultValue="1990-02-01" />
+        <SelectField
+          label="Nationality"
+          options={[
+            { value: "us", label: "American" },
+            { value: "rs", label: "Serbian" },
+            { value: "mx", label: "Mexican" },
+          ]}
+          defaultValue="rs"
+        />
+        <SliderField label="Nose width" hint="Bone width" min={-1} max={1} step={0.01} value={nose} onValueChange={setNose} resetTo={0} />
+        <ColorField label="Hair colour" swatches={PAINT} defaultValue="#0d1116" />
+      </PanelBody>
+      <PanelFooter>
+        <Button variant="ghost" size="sm">
+          Back
+        </Button>
+        <Button size="sm" className="ml-auto">
+          Next
+        </Button>
+      </PanelFooter>
+    </Panel>
+  );
+}
+
+/** Errors, disabled, password, switch, multi-select: states straight from props. */
+function FieldStates() {
+  return (
+    <Panel>
+      <PanelHeader title="States" description="Every one from props" />
+      <PanelBody variant="form">
+        <TextField label="Plate" hint="2 to 8 characters" required maxLength={8} defaultValue="Z" error="At least 2 characters" />
+        <TextField label="PIN" password defaultValue="4410" description="Four digits, never shared." />
+        <NumberField label="Seats" min={1} max={4} defaultValue={0} error="At least 1" />
+        <DateField label="Licence issued" max="2026-10-19" defaultValue="2027-01-01" error="On or before 19/10/2026" />
+        <SelectField
+          label="Licences"
+          multiple
+          maxSelected={3}
+          clearable
+          placeholder="None"
+          options={[
+            { value: "car", label: "Car" },
+            { value: "bike", label: "Bike" },
+            { value: "truck", label: "Truck" },
+            { value: "pilot", label: "Pilot", disabled: true },
+          ]}
+          defaultValue={["car", "bike"]}
+        />
+        <CheckboxField variant="switch" label="Show HUD" description="Health, armor and the minimap." defaultChecked />
+        <TextField label="Citizen ID" disabled defaultValue="NKT-48210" />
+      </PanelBody>
+    </Panel>
   );
 }
 
