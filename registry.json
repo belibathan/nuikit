@@ -63,7 +63,7 @@
       "name": "meter",
       "type": "registry:ui",
       "title": "Meter",
-      "description": "A slim bar on a theme or game track, with a label and value, low/high thresholds that turn it destructive, and optional segments.",
+      "description": "A slim bar on a theme or game track, with a label and value, low/high thresholds that turn it destructive, optional segments, status tones, a library's colour through meterColor(), and a timed mode whose onComplete fires from a timer.",
       "files": [
         {
           "path": "registry/nuikit/ui/meter.tsx",
