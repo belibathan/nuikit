@@ -60,8 +60,50 @@ end)
 
 local actions = {}
 
---- Lock or unlock a vehicle (the example lets anyone; check ownership here on a real server).
+-- ───────────────────────────────── keys: who may lock which vehicle
+
+-- Keys by plate, per player (license; kept on the server, never sent to a client). Your garage or
+-- dealership hands them out when it gives a player a car:
+--   exports['{{name}}']:giveKeys(src, plate)      exports['{{name}}']:removeKeys(src, plate)
+-- and an admin can from the console: {{name}}_givekeys <server id> <plate>
+local keys = {}
+local function license(src) return GetPlayerIdentifierByType(src, 'license') or ('src:' .. src) end
+local function plateOf(text)
+  if type(text) ~= 'string' then return nil end
+  text = text:gsub('^%s+', ''):gsub('%s+$', ''):upper()
+  if #text < 1 or #text > 8 then return nil end
+  return text
+end
+local function hasKeys(src, plate) return plate ~= nil and (keys[license(src)] or {})[plate] == true end
+
+exports('giveKeys', function(src, plate)
+  plate = plateOf(plate)
+  if not plate or not GetPlayerName(src) then return false end
+  local id = license(src)
+  keys[id] = keys[id] or {}
+  keys[id][plate] = true
+  return true
+end)
+exports('removeKeys', function(src, plate)
+  plate = plateOf(plate)
+  local mine = plate and keys[license(src)]
+  if mine then mine[plate] = nil end
+  return mine ~= nil
+end)
+RegisterCommand('{{name}}_givekeys', function(_, args)
+  local target, plate = tonumber(args[1]), plateOf(args[2])
+  if not target or not GetPlayerName(target) or not plate then
+    print('Usage: {{name}}_givekeys <server id> <plate>')
+    return
+  end
+  keys[license(target)] = keys[license(target)] or {}
+  keys[license(target)][plate] = true
+  print(('[{{name}}] %s has the keys to %s'):format(GetPlayerName(target), plate))
+end, true)
+
+--- Lock or unlock a vehicle: only with its keys (checked here, by the plate the server reads).
 actions.lock = function(src, vehicle)
+  if not hasKeys(src, plateOf(GetVehicleNumberPlateText(vehicle))) then return { ok = false, error = "You don't have the keys." } end
   local locked = not Entity(vehicle).state.locked
   Entity(vehicle).state:set('locked', locked, true)
   SetVehicleDoorsLocked(vehicle, locked and 2 or 1)

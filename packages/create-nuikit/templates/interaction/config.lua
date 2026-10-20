@@ -21,7 +21,7 @@ Config = {
       type = 'vehicle',
       options = {
         { id = 'trunk', label = 'Open the trunk', icon = 'box', event = '{{name}}:trunk' },
-        { id = 'lock', label = 'Lock or unlock', icon = 'lock', server = true },
+        { id = 'lock', label = 'Lock or unlock', icon = 'lock', server = true }, -- needs the keys (server/main.lua: giveKeys)
       },
     },
     {

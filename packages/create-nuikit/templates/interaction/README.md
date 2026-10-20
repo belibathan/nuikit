@@ -34,8 +34,12 @@ Lua does everything the page draws: the raycast, which options apply, the keys, 
 | `server = true` | The client asks `server/main.lua`, which checks it again before anything happens: the option must exist for the kind of entity aimed at, the point must be one of the server's own, the player must be within reach (the server's own position for them, not the client's), and not too often (`cooldown`). Then the matching function in `actions` runs |
 
 Put anything that gives money or items, opens doors for other players, or changes what others see behind
-`server = true`, and add your own checks (job, ownership) in its `actions` function. The example's lock lets
-anyone lock any car; a real server checks the keys there.
+`server = true`, and add your own checks (job, ownership) in its `actions` function.
+
+**Keys:** "Lock or unlock" only works with the vehicle's keys, checked on the server against the plate it reads
+from the car. Keys are kept on the server per player and never sent to a client. Your garage or dealership hands
+them out when it gives someone a car: `exports['{{name}}']:giveKeys(src, plate)` (and `removeKeys`). To try it,
+from the server console: `{{name}}_givekeys <your id> <plate>`.
 
 **OneSync:** the server's distance checks need it. Without it the resource prints a red error at start and every
 `server = true` option and point is refused ("This needs OneSync on the server."); the client-only ones still work.
