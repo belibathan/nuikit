@@ -49,6 +49,12 @@
       "lucide-react": [
         "./node_modules/lucide-react"
       ],
+      "clsx": [
+        "./node_modules/clsx"
+      ],
+      "tailwind-merge": [
+        "./node_modules/tailwind-merge"
+      ],
       "vitest": [
         "./node_modules/vitest"
       ]

@@ -9,6 +9,11 @@
  * component tokens; each component token is a formula over identity + semantic, and any of them can be
  * overridden in theme.css for a detail. Every var() carries the Graphite default as its fallback, so a
  * page whose theme predates 1.1 still renders.
+ *
+ * cn() knows these utilities: `pnpm sync` generates lib/utils.ts from this file (scripts/kit-merge.mjs).
+ * A utility removes the earlier stock classes that set what it paints (colour and type),
+ * never layout or shape. `@merge <family>` in the comment above a utility means one member per element: a later
+ * one removes an earlier one.
  */
 
 :root {
@@ -195,7 +200,7 @@
   --nk-slab-band-title-size: var(--nk-text-section);
 }
 
-/* Floating panel: menus, inventories, dialogs, cards on top of the game. */
+/* Floating panel: menus, inventories, dialogs, cards on top of the game. @merge nk-surface */
 @utility nk-panel {
   /* !important so it wins over a shadcn primitive's own surface (DialogContent's bg-background) */
   background-color: var(--nk-panel-bg) !important;
@@ -225,7 +230,7 @@
   box-shadow: var(--nk-panel-edge), var(--nk-panel-shadow);
   clip-path: var(--nk-panel-clip);
 }
-/* Panel header: one line, title left, meta/actions right. */
+/* Panel header: one line, title left, meta/actions right. @merge nk-panel-header */
 @utility nk-panel-header {
   display: flex;
   text-align: left;
@@ -245,7 +250,7 @@
   padding: var(--nk-panel-header-padding);
   border-top: var(--nk-panel-divider);
 }
-/* Two-row panel header: a title row (nk-panel-title-row) above tabs, a search or a meter. */
+/* Two-row panel header: a title row (nk-panel-title-row) above tabs, a search or a meter. @merge nk-panel-header */
 @utility nk-panel-header-stack {
   display: flex;
   flex-direction: column;
@@ -284,7 +289,7 @@
   text-transform: var(--nk-caption-transform);
   letter-spacing: var(--nk-caption-tracking);
 }
-/* Title inside a panel header. */
+/* Title inside a panel header. @merge nk-type */
 @utility nk-title {
   font-family: var(--nk-heading-font);
   /* !important: shadcn titles carry text-lg, which would otherwise win */
@@ -294,7 +299,7 @@
   letter-spacing: var(--nk-heading-tracking);
   text-transform: var(--nk-heading-case);
 }
-/* Small secondary label, as written (descriptions, meta lines). */
+/* Small secondary label, as written (descriptions, meta lines). @merge nk-type */
 @utility nk-label {
   font-family: var(--nk-label-font);
   font-size: var(--nk-label-size) !important;
@@ -303,7 +308,8 @@
   color: var(--muted-foreground);
 }
 /* The short name of a value (Fuel, Balance, Voice): the identity's label case and tracking
-   (--nk-label-case: uppercase in Signal and Vector). One to three words; sentences use nk-label. */
+   (--nk-label-case: uppercase in Signal and Vector). One to three words; sentences use nk-label.
+   @merge nk-type */
 @utility nk-caption {
   font-family: var(--nk-caption-font);
   font-size: var(--nk-caption-size) !important;
@@ -363,7 +369,7 @@
   font-variant-numeric: tabular-nums;
   letter-spacing: var(--nk-num-tracking);
 }
-/* HUD chip: always-on, no border, sits on the game. */
+/* HUD chip: always-on, no border, sits on the game. @merge nk-surface */
 @utility nk-chip {
   display: inline-flex;
   align-items: center;
@@ -383,7 +389,7 @@
   color: var(--nk-chip-active-fg);
   box-shadow: var(--nk-chip-glow);
 }
-/* Square HUD tile on the game (hotbar slots, the target eye): the chip's surface, any size. */
+/* Square HUD tile on the game (hotbar slots, the target eye): the chip's surface, any size. @merge nk-surface */
 @utility nk-hud {
   border-radius: var(--nk-hud-radius);
   background-color: var(--nk-chip-bg);
@@ -431,7 +437,7 @@
     text-shadow: none;
   }
 }
-/* Full-screen title (pause, loading, death): 32px at 1080p (Graphite). */
+/* Full-screen title (pause, loading, death): 32px at 1080p (Graphite). @merge nk-type */
 @utility nk-display {
   font-family: var(--nk-heading-font);
   font-size: var(--nk-display-size);
@@ -447,6 +453,7 @@
  *   progress: <div class="nk-slab-stack"><div class="nk-slab-stack-row"><span class="nk-caption">Repairing</span>
  *               <kbd class="nk-slab-key">Esc</kbd>Cancel</div><div class="nk-slab-line" style="--nk-slab-progress: .4"></div></div>
  *   band:     <div class="nk-slab-band"><p class="nk-slab-band-title">You are incapacitated</p><p class="nk-caption">…</p></div>
+ * @merge nk-surface
  */
 @utility nk-slab {
   display: inline-flex;
@@ -602,26 +609,31 @@
  * ancestor sets it). Absolute, so put them inside the full-screen root. The edge-centred ones
  * centre with auto margins, not a transform, so nk-enter and dialogs never fight over it.
  */
+/* @merge nk-anchor */
 @utility nk-anchor-tl {
   position: absolute;
   top: var(--nk-edge, 1.5rem);
   left: var(--nk-edge, 1.5rem);
 }
+/* @merge nk-anchor */
 @utility nk-anchor-tr {
   position: absolute;
   top: var(--nk-edge, 1.5rem);
   right: var(--nk-edge, 1.5rem);
 }
+/* @merge nk-anchor */
 @utility nk-anchor-bl {
   position: absolute;
   bottom: var(--nk-edge, 1.5rem);
   left: var(--nk-edge, 1.5rem);
 }
+/* @merge nk-anchor */
 @utility nk-anchor-br {
   position: absolute;
   bottom: var(--nk-edge, 1.5rem);
   right: var(--nk-edge, 1.5rem);
 }
+/* @merge nk-anchor */
 @utility nk-anchor-t {
   position: absolute;
   top: var(--nk-edge, 1.5rem);
@@ -630,6 +642,7 @@
   width: max-content;
   margin-inline: auto;
 }
+/* @merge nk-anchor */
 @utility nk-anchor-b {
   position: absolute;
   bottom: var(--nk-edge, 1.5rem);
@@ -638,6 +651,7 @@
   width: max-content;
   margin-inline: auto;
 }
+/* @merge nk-anchor */
 @utility nk-anchor-l {
   position: absolute;
   left: var(--nk-edge, 1.5rem);
@@ -646,6 +660,7 @@
   height: max-content;
   margin-block: auto;
 }
+/* @merge nk-anchor */
 @utility nk-anchor-r {
   position: absolute;
   right: var(--nk-edge, 1.5rem);

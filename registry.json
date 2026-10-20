@@ -226,6 +226,22 @@
       ]
     },
     {
+      "name": "utils",
+      "type": "registry:lib",
+      "title": "cn (kit-aware)",
+      "description": "lib/utils.ts with a cn() that knows the nk-* kit: a kit utility removes the earlier stock classes that set its colour or type (nk-chip-active after text-hud-foreground), and one type style, surface or anchor wins per element. Generated from kit.css; replaces shadcn's lib/utils.ts.",
+      "files": [
+        {
+          "path": "registry/nuikit/lib/utils.ts",
+          "type": "registry:lib"
+        }
+      ],
+      "dependencies": [
+        "clsx",
+        "tailwind-merge"
+      ]
+    },
+    {
       "name": "notice",
       "type": "registry:ui",
       "title": "Notice",

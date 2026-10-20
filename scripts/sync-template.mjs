@@ -5,7 +5,9 @@
 //   registry/nuikit/*                 → web/src/components/ui, web/src/hooks
 //   vendor/shadcn/colors/neutral.json → web/src/index.css (stock shadcn neutral theme)
 //   nuikit-core compileTheme()        → web/src/index.css (nuikit token defaults; build core first)
-//   packages/create-nuikit/kit.css    → web/src/index.css (the nk-* kit utilities)
+//   packages/create-nuikit/kit.css    → web/src/index.css (the nk-* kit utilities), and through
+//                                       scripts/kit-merge.mjs → registry/nuikit/lib/utils.ts (the kit-aware
+//                                       cn()) → web/src/lib/utils.ts, apps/www/src/lib/utils.ts
 //   packages/core/themes/*.css        → the nuikit resource's themes/ (the four identities)
 //   packages/core/fonts/*             → web/src/index.css @font-face (bundled from nuikit-core, or served
 //                                       by the nuikit resource: nuikit.json "fonts" / NUIKIT_FONTS), the
@@ -21,6 +23,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { kitMergeSource } from "./kit-merge.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -146,6 +149,14 @@ const cssFor = (mode, surface) =>
     .replace("/* {{fonts}} */", mode && FONT_SRC[mode] ? fontFaces(mode) : "/* (fonts off for this UI) */")
     .replace("/* {{surface}} */", SURFACES[surface] ?? "/* (surface: panels, the default) */");
 
+// The kit-aware cn(): generated from kit.css into the registry's lib/utils.ts (the `utils` registry item),
+// then copied like any source. The site resolves @/lib/utils to its own copy.
+const UTILS = "registry/nuikit/lib/utils.ts";
+const kitCss = fs.readFileSync(path.join(root, "packages/create-nuikit/kit.css"), "utf8");
+fs.mkdirSync(path.join(root, path.dirname(UTILS)), { recursive: true });
+fs.writeFileSync(path.join(root, UTILS), kitMergeSource(kitCss));
+fs.copyFileSync(path.join(root, UTILS), path.join(root, "apps/www/src/lib/utils.ts"));
+
 const MANIFEST = path.join(root, "scripts/sync-manifest.json");
 const previous = fs.existsSync(MANIFEST) ? (JSON.parse(fs.readFileSync(MANIFEST, "utf8")).targets ?? {}) : {};
 const manifest = {};
@@ -191,6 +202,8 @@ for (const t of targets) {
   }
   for (const c of withDeps(t.components)) copy(source(c), `web/src/components/ui/${c}.tsx`);
   for (const h of t.hooks) copy(`registry/nuikit/hooks/${h}.ts`, `web/src/hooks/${h}.ts`);
+  // every UI with components (they all import cn from @/lib/utils)
+  if (t.components.length || fs.existsSync(path.join(root, t.dir, "web/src/lib/utils.ts"))) copy(UTILS, "web/src/lib/utils.ts");
   if (t.compiler) copy("packages/core/dist/fxserver-compiler.js", "server/compiler.js");
   if (t.css !== false) {
     fs.writeFileSync(path.join(root, t.dir, "web/src/index.css"), cssFor(fontMode, t.surface));

@@ -75,8 +75,9 @@ function EmptyState({
             {iconEl}
           </EmptyMedia>
         )}
-        {/* font-semibold spelled out: EmptyTitle's font-medium would beat nk-title's 600. */}
-        <EmptyTitle className={cn("font-semibold tracking-normal", size === "screen" ? "text-xl leading-7" : "nk-title")}>{title}</EmptyTitle>
+        {/* font-semibold spelled out, after the size: EmptyTitle's font-medium would beat nk-title's 600, and
+            cn() drops a weight that comes before nk-title. */}
+        <EmptyTitle className={cn(size === "screen" ? "text-xl leading-7" : "nk-title", "font-semibold tracking-normal")}>{title}</EmptyTitle>
         {description && <EmptyDescription className="text-sm leading-5 text-pretty">{description}</EmptyDescription>}
       </EmptyHeader>
       {(action || children) && (
