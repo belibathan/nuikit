@@ -66,6 +66,7 @@ import { Speedometer } from "@/components/ui/speedometer";
 import { Countdown } from "@/components/ui/countdown";
 import { Money } from "@/components/ui/money";
 import { ItemSlot } from "@/components/ui/item-slot";
+import { PlayerCard } from "@/components/ui/player-card";
 import { cn } from "@/lib/utils";
 
 export function ComponentsPage() {
@@ -321,6 +322,58 @@ export function ComponentsPage() {
           stageClassName="min-h-[34rem] items-center"
         >
           <ItemSlotStates />
+        </Section>
+
+        <Section
+          name="player-card"
+          title="Player card"
+          text="Who someone is at a glance: avatar or initials, name, job and grade with an on or off duty dot (and the words), a few stats, actions. For a scoreboard's detail, a profile, an ID check."
+          stageClassName="items-start"
+        >
+          <PlayerCard
+            name="Niko Bellic"
+            avatar="/screens/appearance.jpg"
+            job="LSPD"
+            grade="Sergeant"
+            onDuty
+            stats={[
+              { label: "Citizen ID", value: "NKT-48210", mono: true },
+              { label: "Callsign", value: "1-ADAM-12", mono: true },
+              { icon: <WalletIcon />, label: "Cash", value: <Money amount={1520} /> },
+              { icon: <LandmarkIcon />, label: "Bank", value: <Money amount={48210} /> },
+            ]}
+            actions={
+              <>
+                <Button variant="outline" size="sm">
+                  Fine
+                </Button>
+                <Button size="sm" className="ml-auto">
+                  Message
+                </Button>
+              </>
+            }
+          />
+          <PlayerCard
+            name="Lamar Davis"
+            job="Grove Street"
+            stats={[
+              { label: "Citizen ID", value: "LMR-00731", mono: true },
+              { label: "Phone", value: "555-0142", mono: true },
+            ]}
+          />
+          <PlayerCard
+            name="Dr. Imani Okafor"
+            job="EMS"
+            grade="Paramedic"
+            onDuty={false}
+            selected
+            columns={3}
+            stats={[
+              { label: "Revives", value: 128 },
+              { label: "Hours", value: 41 },
+              { label: "Rank", value: 3 },
+            ]}
+          />
         </Section>
       </main>
       <Footer />
