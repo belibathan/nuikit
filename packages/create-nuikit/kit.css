@@ -3,36 +3,191 @@
  * Colours always come from the theme; this only fixes proportions so every screen on the server
  * feels like one product. Single source: `pnpm sync` inlines it into every index.css, and the site
  * imports it directly. Never redefine an nk-* name in a UI.
+ *
+ * Three tiers (docs/tokens.md, tokens 1.1): identity tokens (theme.css: type, shape, surface, density,
+ * motion, HUD style) → semantic tokens (colours) → the component tokens below. Utilities read only
+ * component tokens; each component token is a formula over identity + semantic, and any of them can be
+ * overridden in theme.css for a detail. Every var() carries the Graphite default as its fallback, so a
+ * page whose theme predates 1.1 still renders.
  */
+
+:root {
+  /* ── scale: the kit's spacing step × --nk-density, type sizes from one base × --nk-type-ratio */
+  --nk-space: calc(0.25rem * var(--nk-density, 1));
+  --nk-ratio: var(--nk-type-ratio, 1.2);
+  /* research §3: 16px body, 13–14px labels, 18px+ for HUD values read in motion */
+  --nk-text-base: 1rem;
+  --nk-text-label: max(0.8125rem, calc(var(--nk-text-base) / var(--nk-ratio)));
+  --nk-hud-value-size: max(1.125rem, calc(var(--nk-text-base) * var(--nk-ratio)));
+  /* ≈ base × √ratio (no pow() in Chromium 103) */
+  --nk-text-title: calc(var(--nk-text-base) * (1 + (var(--nk-ratio) - 1) / 2));
+  --nk-text-section: calc(var(--nk-text-base) * var(--nk-ratio) * var(--nk-ratio));
+  --nk-text-display: calc(var(--nk-text-base) * var(--nk-ratio) * var(--nk-ratio) * var(--nk-ratio) * var(--nk-ratio) * 1.1);
+  --nk-border: var(--nk-border-width, 1px);
+  --nk-ease-out: var(--nk-ease, cubic-bezier(0.2, 0.8, 0.2, 1));
+  --nk-time: calc(var(--nk-duration, 160ms) * var(--nk-motion, 1));
+
+  /* ── panel: every floating surface */
+  --nk-panel-bg: rgba(var(--surface-rgb, var(--popover-rgb)), calc(var(--surface-a, var(--popover-a, 1)) * var(--nk-surface-opacity, 0.96)));
+  --nk-panel-fg: var(--popover-foreground);
+  --nk-panel-border: var(--border);
+  --nk-panel-radius: calc(var(--radius) + 4px);
+  --nk-panel-cut: var(--nk-cut, 0px);
+  --nk-panel-clip: var(--nk-clip, none);
+  --nk-panel-gradient: linear-gradient(
+    180deg,
+    rgba(var(--popover-foreground-rgb), var(--nk-surface-gradient, 0.04)),
+    rgba(var(--popover-foreground-rgb), 0) 60%
+  );
+  --nk-panel-edge: inset 0 1px 0 0 rgba(var(--popover-foreground-rgb), var(--nk-surface-edge, 0.06));
+  --nk-panel-shadow: var(--nk-elevation-shadow, 0 0 0 1px rgba(var(--scrim-rgb), 0.25), 0 24px 64px -24px rgba(var(--scrim-rgb), 0.7));
+  --nk-panel-header-height: calc(3.25rem * var(--nk-density, 1));
+  --nk-panel-header-padding: calc(var(--nk-space) * 3) calc(var(--nk-space) * 4);
+  --nk-panel-body-padding: calc(var(--nk-space) * 2);
+  --nk-panel-divider: var(--nk-border) solid var(--nk-panel-border);
+  /* corner brackets (Vector): L-shaped brand marks at the four corners; 0 = off */
+  --nk-panel-bracket: 0px;
+  --nk-panel-bracket-width: calc(var(--nk-border) * 2);
+  --nk-panel-bracket-color: var(--brand, var(--primary));
+
+  /* ── heading: panel titles (nk-title) and full-screen titles (nk-display) */
+  --nk-heading-font: var(--font-display, var(--font-sans));
+  --nk-heading-size: var(--nk-text-title);
+  --nk-heading-weight: var(--nk-weight-strong, 600);
+  --nk-heading-tracking: calc(var(--nk-tracking-display, -0.02em) / 2);
+  --nk-heading-case: none;
+  --nk-display-size: var(--nk-text-display);
+  --nk-display-weight: var(--nk-weight-display, 700);
+  --nk-display-tracking: var(--nk-tracking-display, -0.02em);
+  --nk-display-case: var(--nk-heading-case);
+
+  /* ── label: small secondary text (nk-label, always as written: it often carries a sentence) */
+  --nk-label-font: var(--font-sans);
+  --nk-label-size: var(--nk-text-label);
+  --nk-label-weight: 500;
+  /* ── caption: short names of things (nk-caption, nk-field-label, chips): the identity's label case */
+  --nk-caption-font: var(--font-sans);
+  --nk-caption-size: var(--nk-text-label);
+  --nk-caption-weight: 500;
+  --nk-caption-transform: var(--nk-label-case, none);
+  --nk-caption-tracking: var(--nk-tracking-label, 0em);
+  --nk-num-font: var(--font-numeric, var(--font-sans));
+  --nk-num-tracking: -0.02em;
+
+  /* ── row: the 40px list row. Active = [data-active], :focus-visible or [data-highlighted] */
+  --nk-row-height: calc(2.75rem * var(--nk-density, 1));
+  --nk-row-radius: calc(var(--radius) - 2px);
+  --nk-row-clip: var(--nk-clip-sm, none);
+  --nk-row-padding: calc(var(--nk-space) * 1.5) calc(var(--nk-space) * 3);
+  --nk-row-font-size: var(--nk-text-base);
+  --nk-row-indicator-color: var(--brand, var(--primary));
+  /* bar: a pill at the row's leading edge */
+  --nk-row-bar-width: calc(0.1875rem * var(--nk-row-bar, 1));
+  --nk-row-bar-inset: calc(var(--nk-space) * 2.5);
+  /* fill: the row in solid brand, its text in brand-foreground (html[data-nk-row="fill"], set by applyTheme) */
+  --nk-row-fill-color: var(--brand, var(--primary));
+  --nk-row-fill-foreground: var(--brand-foreground, var(--primary-foreground));
+  /* outline: a brand hairline */
+  --nk-row-outline-width: calc(var(--nk-border) * var(--nk-row-outline, 0));
+  --nk-row-outline-color: rgba(var(--brand-rgb, var(--primary-rgb)), 0.7);
+  --nk-row-glow: 0 0 1rem rgba(var(--brand-rgb, var(--primary-rgb)), calc(var(--nk-glow, 0) * 0.5));
+
+  /* ── key: shadcn's Kbd, as a keycap */
+  --nk-key-bg: var(--muted);
+  --nk-key-fg: var(--popover-foreground);
+  --nk-key-border: var(--border);
+  --nk-key-radius: max(0.25rem, calc(var(--radius) - 4px));
+  --nk-key-font: var(--font-numeric, var(--font-sans));
+  --nk-key-weight: var(--nk-weight-strong, 600);
+  --nk-key-shadow: inset 0 -1px 0 0 rgba(var(--scrim-rgb), 0.35), inset 0 1px 0 0 rgba(var(--popover-foreground-rgb), calc(var(--nk-surface-edge, 0.06) * 1.5));
+  --nk-key-clip: var(--nk-clip-sm, none);
+
+  /* ── chip: always-on HUD chips (nk-chip) and tiles (nk-hud) on the game */
+  --nk-chip-height: calc(2rem * var(--nk-density, 1));
+  --nk-chip-padding: calc(var(--nk-space) * 2.5);
+  --nk-chip-radius: 9999px;
+  --nk-chip-bg: rgba(var(--hud-rgb), max(var(--hud-a, 0.45), var(--nk-hud-opacity, 0.55)));
+  --nk-chip-fg: var(--hud-foreground);
+  --nk-chip-font-size: 0.875rem;
+  --nk-chip-weight: 500;
+  --nk-chip-active-bg: var(--brand, var(--primary));
+  --nk-chip-active-fg: var(--brand-foreground, var(--primary-foreground));
+  --nk-chip-glow: 0 0 0.75rem rgba(var(--brand-rgb, var(--primary-rgb)), var(--nk-glow, 0));
+  --nk-chip-clip: var(--nk-clip-sm, none);
+  --nk-hud-radius: calc(var(--radius) + 2px);
+  --nk-hud-text-shadow: var(--nk-hud-shadow, 0 1px 2px rgba(var(--scrim-rgb), 0.6));
+
+  /* ── meter: bars (shadcn Progress, nk-track); segmented when --nk-meter-segments is 1 */
+  --nk-meter-height: max(0.375rem, var(--nk-gauge-track, 0.375rem));
+  --nk-meter-radius: 9999px;
+  --nk-meter-track: rgba(var(--scrim-rgb), 0.35);
+  --nk-meter-glow: 0 0 0.625rem rgba(var(--brand-rgb, var(--primary-rgb)), var(--nk-glow, 0));
+  --nk-meter-segments: 0;
+  --nk-meter-segment: 0.5rem;
+  --nk-meter-gap: rgba(var(--popover-rgb), calc(0.85 * var(--nk-meter-segments)));
+
+  /* ── gauge: speedometer, RPM, fuel (the HUD reads --nk-gauge-style: arc | bar | digital) */
+  --nk-gauge-width: var(--nk-gauge-track, 0.375rem);
+  --nk-gauge-sweep: 270deg;
+  --nk-gauge-track-color: rgba(var(--hud-foreground-rgb), 0.16);
+  --nk-gauge-fill: var(--brand, var(--primary));
+  --nk-gauge-needle: var(--brand, var(--primary));
+  --nk-gauge-redline: var(--destructive);
+  --nk-gauge-tick: rgba(var(--hud-foreground-rgb), calc(0.55 * var(--nk-gauge-ticks, 1)));
+  --nk-gauge-tick-major: rgba(var(--hud-foreground-rgb), calc(0.9 * var(--nk-gauge-ticks, 1)));
+  --nk-gauge-font: var(--font-numeric, var(--font-sans));
+  --nk-gauge-glow: rgba(var(--brand-rgb, var(--primary-rgb)), var(--nk-glow, 0));
+}
 
 /* Floating panel: menus, inventories, dialogs, cards on top of the game. */
 @utility nk-panel {
   /* !important so it wins over a shadcn primitive's own surface (DialogContent's bg-background) */
-  background-color: var(--popover) !important;
-  color: var(--popover-foreground) !important;
-  border: 1px solid var(--border);
-  border-radius: calc(var(--radius) + 4px) !important;
-  box-shadow: 0 0 0 1px rgb(0 0 0 / 0.25), 0 24px 64px -24px rgb(0 0 0 / 0.7);
+  background-color: var(--nk-panel-bg) !important;
+  color: var(--nk-panel-fg) !important;
+  border: var(--nk-border) solid var(--nk-panel-border);
+  border-radius: var(--nk-panel-radius) !important;
+  /* chamfer hairlines (only when --nk-cut > 0: a 0-size image isn't drawn), then the light falloff */
+  background-image:
+    linear-gradient(135deg, transparent calc(50% - var(--nk-border)), var(--nk-panel-border) calc(50% - var(--nk-border)), var(--nk-panel-border) 50%, transparent 50%),
+    linear-gradient(315deg, transparent calc(50% - var(--nk-border)), var(--nk-panel-border) calc(50% - var(--nk-border)), var(--nk-panel-border) 50%, transparent 50%),
+    linear-gradient(var(--nk-panel-bracket-color), var(--nk-panel-bracket-color)), linear-gradient(var(--nk-panel-bracket-color), var(--nk-panel-bracket-color)), linear-gradient(var(--nk-panel-bracket-color), var(--nk-panel-bracket-color)), linear-gradient(var(--nk-panel-bracket-color), var(--nk-panel-bracket-color)),
+    linear-gradient(var(--nk-panel-bracket-color), var(--nk-panel-bracket-color)), linear-gradient(var(--nk-panel-bracket-color), var(--nk-panel-bracket-color)), linear-gradient(var(--nk-panel-bracket-color), var(--nk-panel-bracket-color)), linear-gradient(var(--nk-panel-bracket-color), var(--nk-panel-bracket-color)),
+    var(--nk-panel-gradient);
+  background-position:
+    top left, bottom right,
+    top left, top left, top right, top right, bottom left, bottom left, bottom right, bottom right,
+    0 0;
+  background-size:
+    var(--nk-panel-cut) var(--nk-panel-cut), var(--nk-panel-cut) var(--nk-panel-cut),
+    var(--nk-panel-bracket) var(--nk-panel-bracket-width), var(--nk-panel-bracket-width) var(--nk-panel-bracket),
+    var(--nk-panel-bracket) var(--nk-panel-bracket-width), var(--nk-panel-bracket-width) var(--nk-panel-bracket),
+    var(--nk-panel-bracket) var(--nk-panel-bracket-width), var(--nk-panel-bracket-width) var(--nk-panel-bracket),
+    var(--nk-panel-bracket) var(--nk-panel-bracket-width), var(--nk-panel-bracket-width) var(--nk-panel-bracket),
+    100% 100%;
+  background-repeat: no-repeat;
+  background-origin: border-box;
+  box-shadow: var(--nk-panel-edge), var(--nk-panel-shadow);
+  clip-path: var(--nk-panel-clip);
 }
 /* Panel header: one line, title left, meta/actions right. */
 @utility nk-panel-header {
   display: flex;
   text-align: left;
   align-items: center;
-  gap: 0.75rem;
-  min-height: 3.25rem;
-  padding: 0.75rem 1rem;
-  border-bottom: 1px solid var(--border);
+  gap: calc(var(--nk-space) * 3);
+  min-height: var(--nk-panel-header-height);
+  padding: var(--nk-panel-header-padding);
+  border-bottom: var(--nk-panel-divider);
 }
 @utility nk-panel-body {
-  padding: 0.5rem;
+  padding: var(--nk-panel-body-padding);
 }
 @utility nk-panel-footer {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1rem;
-  border-top: 1px solid var(--border);
+  gap: calc(var(--nk-space) * 2);
+  padding: var(--nk-panel-header-padding);
+  border-top: var(--nk-panel-divider);
 }
 /* Two-row panel header: a title row (nk-panel-title-row) above tabs, a search or a meter. */
 @utility nk-panel-header-stack {
@@ -40,23 +195,23 @@
   flex-direction: column;
   align-items: stretch;
   text-align: left;
-  gap: 0.75rem;
-  padding: 0.75rem 1rem;
-  border-bottom: 1px solid var(--border);
+  gap: calc(var(--nk-space) * 3);
+  padding: var(--nk-panel-header-padding);
+  border-bottom: var(--nk-panel-divider);
 }
 /* The title row of a header: icon, title, then meta and actions pushed right. 28px tall so a
    ghost icon button fits without changing the header's height. */
 @utility nk-panel-title-row {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: calc(var(--nk-space) * 3);
   min-height: 1.75rem;
 }
 /* Form field inside a panel: a label row above its control (slider, stepper, input, swatches). */
 @utility nk-field {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: calc(var(--nk-space) * 2);
 }
 /* The field's label row: name, an optional hint, then the value and a reset button on the right
    (give that group ml-auto). 24px tall, so an icon-xs reset button never moves it. */
@@ -66,80 +221,136 @@
   gap: 0.5rem;
   min-width: 0;
   min-height: 1.5rem;
-  font-size: 0.75rem;
+  font-family: var(--nk-caption-font);
+  font-size: var(--nk-caption-size);
   line-height: 1rem;
-  font-weight: 500;
+  font-weight: var(--nk-caption-weight);
+  text-transform: var(--nk-caption-transform);
+  letter-spacing: var(--nk-caption-tracking);
 }
 /* Title inside a panel header. */
 @utility nk-title {
+  font-family: var(--nk-heading-font);
   /* !important: shadcn titles carry text-lg, which would otherwise win */
-  font-size: 0.9375rem !important;
-  font-weight: 600;
-  line-height: 1.25rem !important;
-  letter-spacing: -0.01em;
+  font-size: var(--nk-heading-size) !important;
+  font-weight: var(--nk-heading-weight);
+  line-height: 1.3 !important;
+  letter-spacing: var(--nk-heading-tracking);
+  text-transform: var(--nk-heading-case);
 }
-/* Small secondary label, sentence case. */
+/* Small secondary label, as written (descriptions, meta lines). */
 @utility nk-label {
-  font-size: 0.75rem !important;
+  font-family: var(--nk-label-font);
+  font-size: var(--nk-label-size) !important;
   line-height: 1rem !important;
-  font-weight: 500;
+  font-weight: var(--nk-label-weight);
   color: var(--muted-foreground);
 }
-/* Interactive row in a list: 40px tall at 1080p. */
+/* The short name of a value (Fuel, Balance, Voice): the identity's label case and tracking
+   (--nk-label-case: uppercase in Signal and Vector). One to three words; sentences use nk-label. */
+@utility nk-caption {
+  font-family: var(--nk-caption-font);
+  font-size: var(--nk-caption-size) !important;
+  line-height: 1rem !important;
+  font-weight: var(--nk-caption-weight);
+  text-transform: var(--nk-caption-transform);
+  letter-spacing: var(--nk-caption-tracking);
+  color: var(--muted-foreground);
+}
+/* Interactive row in a list: 44px tall at 1080p (× density). The active row ([data-active],
+   :focus-visible, [data-highlighted]) carries the identity's indicator: bar, fill or outline. */
 @utility nk-row {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  min-height: 2.5rem;
-  padding: 0.375rem 0.75rem;
-  border-radius: calc(var(--radius) - 2px);
-  font-size: 0.875rem;
+  gap: calc(var(--nk-space) * 3);
+  min-height: var(--nk-row-height);
+  padding: var(--nk-row-padding);
+  border-radius: var(--nk-row-radius);
+  clip-path: var(--nk-row-clip);
+  font-size: var(--nk-row-font-size);
   line-height: 1.25rem;
+  transition-property: background-color, color, box-shadow;
+  transition-duration: var(--nk-time);
+  transition-timing-function: var(--nk-ease-out);
+  &::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: var(--nk-row-bar-inset);
+    bottom: var(--nk-row-bar-inset);
+    width: var(--nk-row-bar-width);
+    border-radius: 9999px;
+    background-color: var(--nk-row-indicator-color);
+    opacity: 0;
+    transition: opacity var(--nk-time) var(--nk-ease-out);
+    pointer-events: none;
+  }
+  /* hover counts only on rows that highlight on hover (menu-row's hover variant): in game CEF can keep
+     :hover matched after focus moves, so rows driven by Lua opt out (menu-row inert) */
+  &[data-active],
+  &[data-highlighted],
+  &:focus-visible,
+  &[class*="hover:bg-accent"]:hover {
+    box-shadow: inset 0 0 0 var(--nk-row-outline-width) var(--nk-row-outline-color), var(--nk-row-glow);
+  }
+  &[data-active]::before,
+  &[data-highlighted]::before,
+  &:focus-visible::before,
+  &[class*="hover:bg-accent"]:hover::before {
+    opacity: 1;
+  }
 }
 /* Numbers: money, timers, counts. */
 @utility nk-num {
+  font-family: var(--nk-num-font);
   font-variant-numeric: tabular-nums;
-  letter-spacing: -0.02em;
+  letter-spacing: var(--nk-num-tracking);
 }
 /* HUD chip: always-on, no border, sits on the game. */
 @utility nk-chip {
   display: inline-flex;
   align-items: center;
-  gap: 0.375rem;
-  height: 1.75rem;
-  padding: 0 0.625rem;
-  border-radius: 9999px;
-  background-color: var(--hud);
-  color: var(--hud-foreground);
-  font-size: 0.75rem;
-  font-weight: 500;
+  gap: calc(var(--nk-space) * 1.5);
+  height: var(--nk-chip-height);
+  padding: 0 var(--nk-chip-padding);
+  border-radius: var(--nk-chip-radius);
+  background-color: var(--nk-chip-bg);
+  color: var(--nk-chip-fg);
+  font-size: var(--nk-chip-font-size);
+  font-weight: var(--nk-chip-weight);
+  clip-path: var(--nk-chip-clip);
 }
-/* Active chip (talking, selected). */
+/* Active chip (talking, selected): the brand. */
 @utility nk-chip-active {
-  background-color: var(--primary);
-  color: var(--primary-foreground);
+  background-color: var(--nk-chip-active-bg);
+  color: var(--nk-chip-active-fg);
+  box-shadow: var(--nk-chip-glow);
 }
 /* Square HUD tile on the game (hotbar slots, the target eye): the chip's surface, any size. */
 @utility nk-hud {
-  border-radius: calc(var(--radius) + 2px);
-  background-color: var(--hud);
-  color: var(--hud-foreground);
+  border-radius: var(--nk-hud-radius);
+  background-color: var(--nk-chip-bg);
+  color: var(--nk-chip-fg);
+  clip-path: var(--nk-chip-clip);
 }
 /* Bar track on the game world: theme-tinted tracks vanish over a bright sky. */
 @utility nk-track {
-  background-color: color-mix(in oklab, var(--scrim) 35%, transparent);
+  background-color: var(--nk-meter-track);
 }
 /* Text and marks drawn straight on the game. */
 @utility nk-shadow {
-  text-shadow: 0 1px 2px color-mix(in oklab, var(--scrim) 60%, transparent);
+  text-shadow: var(--nk-hud-text-shadow);
   filter: drop-shadow(0 1px 1px color-mix(in oklab, var(--scrim) 35%, transparent));
 }
-/* Full-screen title (pause, loading, death): 32px at 1080p. */
+/* Full-screen title (pause, loading, death): 32px at 1080p (Graphite). */
 @utility nk-display {
-  font-size: 2rem;
-  line-height: 2.5rem;
-  font-weight: 600;
-  letter-spacing: -0.025em;
+  font-family: var(--nk-heading-font);
+  font-size: var(--nk-display-size);
+  line-height: 1.2;
+  font-weight: var(--nk-display-weight);
+  letter-spacing: var(--nk-display-tracking);
+  text-transform: var(--nk-display-case);
 }
 /* Scrolling list inside a panel. */
 @utility nk-scroll {
@@ -210,15 +421,15 @@
 }
 /*
  * A floating menu that opens beside a point (the target eye, the cursor, a row) lines its first
- * row up with that point: place the panel's top on the point, then pull it up by the 1px border,
- * the 8px nk-panel-body padding and half a 40px nk-row.
+ * row up with that point: place the panel's top on the point, then pull it up by the border,
+ * the nk-panel-body padding and half an nk-row (1px, 8px and 22px in Graphite).
  */
 @utility nk-first-row {
-  margin-top: calc(-1px - 0.5rem - 1.25rem);
+  margin-top: calc(-1 * var(--nk-border) - var(--nk-space) * 2 - var(--nk-row-height) / 2);
 }
 /* The one open animation. --nk-motion: 0 (theme or the player's reduced-motion pref) skips it. */
 @utility nk-enter {
-  animation: nk-enter calc(160ms * var(--nk-motion, 1)) cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  animation: nk-enter var(--nk-time) var(--nk-ease-out) both;
 }
 /* Opacity only: a transform here would override the translate that centres dialogs, and
    Chromium 103 has no separate `scale` property. */
@@ -229,6 +440,56 @@
 @media (prefers-reduced-motion: reduce) {
   .nk-enter { animation: none; }
 }
+
+/*
+ * Stock shadcn parts, dressed by component tokens (vendor/ is never edited). In the utilities layer
+ * after Tailwind's own, so they beat a component's base classes (bg-muted) but lose to anything more
+ * specific a UI adds (group-data-[active]:bg-background/60).
+ */
+@layer utilities {
+  [data-slot="kbd"] {
+    background-color: var(--nk-key-bg);
+    color: var(--nk-key-fg);
+    border-radius: var(--nk-key-radius);
+    box-shadow: var(--nk-key-shadow), inset 0 0 0 var(--nk-border) var(--nk-key-border);
+    font-family: var(--nk-key-font);
+    font-weight: var(--nk-key-weight);
+    clip-path: var(--nk-key-clip);
+  }
+  [data-slot="button"] {
+    clip-path: var(--nk-chip-clip);
+  }
+  [data-slot="progress"] {
+    border-radius: var(--nk-meter-radius);
+  }
+  [data-slot="progress"]::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: repeating-linear-gradient(90deg, transparent 0 calc(var(--nk-meter-segment) - 0.125rem), var(--nk-meter-gap) calc(var(--nk-meter-segment) - 0.125rem) var(--nk-meter-segment));
+  }
+  [data-slot="progress-indicator"] {
+    box-shadow: var(--nk-meter-glow);
+  }
+}
+
+/*
+ * Row indicator "fill" (Signal): the active row in solid brand. A colour swap CSS can't do from a number,
+ * so it keys off the attribute applyTheme paints from --nk-row-indicator. Unlayered on purpose: it must
+ * beat the row's and its children's own text colours. Destructive rows keep their colour.
+ */
+html[data-nk-row="fill"] .nk-row:is([data-active], [data-highlighted], :focus-visible, [class*="hover:bg-accent"]:hover):not([class*="text-destructive"]) {
+  background-color: var(--nk-row-fill-color);
+  color: var(--nk-row-fill-foreground);
+}
+html[data-nk-row="fill"] .nk-row:is([data-active], [data-highlighted], :focus-visible, [class*="hover:bg-accent"]:hover):not([class*="text-destructive"]) :not([data-slot="kbd"], [data-slot="kbd"] *, [data-slot="progress"], [data-slot="progress"] *) {
+  color: inherit;
+}
+html[data-nk-row="fill"] .nk-row::before {
+  display: none;
+}
+
 /* Reduced motion (applyTheme sets data-nk-motion="off" when --nk-motion is 0): no animations or
    transitions anywhere, shadcn's included. */
 html[data-nk-motion="off"] *,

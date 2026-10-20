@@ -13,6 +13,7 @@
  */
 import {
   compileTheme,
+  IDENTITY_TOKENS,
   DEFAULT_PREFS,
   importUrls,
   normalizePrefs,
@@ -36,6 +37,14 @@ interface Painted {
 }
 
 const painted = new Map<HTMLElement, Painted>();
+/** Identity keywords painted as attributes on the themed element: data-nk-row="fill", data-nk-gauge="digital"… */
+export const KEYWORD_ATTRS: readonly (readonly [string, string])[] = [
+  ["data-nk-row", "nk-row-indicator"],
+  ["data-nk-gauge", "nk-gauge-style"],
+  ["data-nk-elevation", "nk-elevation"],
+  ["data-nk-label-case", "nk-label-case"],
+];
+const DERIVED = new Set(IDENTITY_TOKENS.filter((t) => t.group === "derived").map((t) => t.name));
 let prefs: NuiPrefs = { ...DEFAULT_PREFS };
 const themeListeners = new Set<(theme: CompiledTheme) => void>();
 
@@ -55,7 +64,11 @@ export function applyTheme(theme: ThemeInput, target?: HTMLElement, mode?: Theme
     for (const [k, v] of Object.entries(theme)) patch[k.replace(/^--/, "")] = String(v);
     const p = painted.get(el);
     const prev = p && !p.placeholder ? p.theme : undefined;
-    compiled = prev ? compileTheme({ ...prev, vars: { ...prev.vars, ...patch } }, { mode }) : compileTheme(patch, { partial: true, mode });
+    // derived tokens (surface, shadows from keywords…) are re-derived from the patched values
+    const base: ThemeVars = {};
+    if (prev) for (const [k, v] of Object.entries(prev.vars)) if (!DERIVED.has(k) || k in patch) base[k] = v;
+    if ("brand" in patch && !("brand-foreground" in patch)) delete base["brand-foreground"];
+    compiled = prev ? compileTheme({ ...prev, vars: { ...base, ...patch } }, { mode }) : compileTheme(patch, { partial: true, mode });
   } else {
     compiled = compileTheme(theme, { mode });
   }
@@ -72,6 +85,11 @@ function paint(el: HTMLElement, theme: CompiledTheme, placeholder = false): Them
   if (prev) for (const k of prev.keys) if (!(k in all)) el.style.removeProperty(`--${k}`);
   for (const [k, v] of Object.entries(all)) el.style.setProperty(`--${k}`, v);
   el.setAttribute("data-nk-motion", vars["nk-motion"] === "0" ? "off" : "on");
+  // identity keywords CSS can't branch on (tokens 1.1): kit.css and UIs select on these
+  for (const [attr, token] of KEYWORD_ATTRS) {
+    if (vars[token]) el.setAttribute(attr, vars[token]!);
+    else el.removeAttribute(attr);
+  }
   if (prefs.highContrast) el.setAttribute("data-nk-contrast", "high");
   else el.removeAttribute("data-nk-contrast");
   painted.set(el, { theme, keys: new Set(Object.keys(all)), placeholder });
@@ -140,6 +158,7 @@ export function clearTheme(vars?: ThemeVars, target?: HTMLElement) {
   }
   for (const k of keys) el.style.removeProperty(`--${k}`);
   el.removeAttribute("data-nk-motion");
+  for (const [attr] of KEYWORD_ATTRS) el.removeAttribute(attr);
   el.removeAttribute("data-nk-contrast");
   painted.delete(el);
 }

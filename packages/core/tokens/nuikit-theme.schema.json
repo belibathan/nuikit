@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://nuikit.vercel.app/schema/theme.v1.json",
-  "title": "nuikit compiled theme (tokens v1)",
+  "title": "nuikit compiled theme (tokens v1, revision 1.1)",
   "description": "What compileTheme() returns and the nuikit resource publishes: every token, lowered so FiveM's browser can read it.",
   "type": "object",
   "required": [
@@ -11,6 +11,10 @@
   "properties": {
     "version": {
       "const": 1
+    },
+    "revision": {
+      "type": "string",
+      "description": "Contract revision; \"1.1\" adds the identity tokens (optional in vars, so themes compiled by older nuikit stay valid)"
     },
     "mode": {
       "enum": [
@@ -286,13 +290,230 @@
         },
         "nk-scale": {
           "type": "string",
-          "pattern": "^\\d+(\\.\\d+)?$",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
           "description": "UI size multiplier (unitless). Players can scale further (0.85–1.25)."
         },
         "nk-motion": {
           "type": "string",
-          "pattern": "^\\d+(\\.\\d+)?$",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
           "description": "1 = animations on, 0 = off. Players can turn motion off."
+        },
+        "brand": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "The server's signature colour: active indicators, gauge needles, focus, logos (not the action: that's primary)",
+          "$comment": "tokens 1.1"
+        },
+        "brand-foreground": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "Text on brand",
+          "$comment": "tokens 1.1"
+        },
+        "font-display": {
+          "type": "string",
+          "description": "Headings and big moments (titles, timers, the balance)",
+          "$comment": "tokens 1.1"
+        },
+        "font-numeric": {
+          "type": "string",
+          "description": "Every number on a gauge, money or timer (always tabular)",
+          "$comment": "tokens 1.1"
+        },
+        "nk-type-ratio": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "Step between type sizes: 1.125 calm … 1.333 dramatic",
+          "$comment": "tokens 1.1"
+        },
+        "nk-weight-body": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "Body text weight",
+          "$comment": "tokens 1.1"
+        },
+        "nk-weight-strong": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "Titles, key numbers, active rows",
+          "$comment": "tokens 1.1"
+        },
+        "nk-weight-display": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "Display type (full-screen titles, big numbers)",
+          "$comment": "tokens 1.1"
+        },
+        "nk-tracking-display": {
+          "type": "string",
+          "description": "Letter-spacing of display type",
+          "$comment": "tokens 1.1"
+        },
+        "nk-label-case": {
+          "enum": [
+            "none",
+            "uppercase"
+          ],
+          "description": "Labels in uppercase or as written",
+          "$comment": "tokens 1.1"
+        },
+        "nk-tracking-label": {
+          "type": "string",
+          "description": "Letter-spacing of labels (uppercase wants 0.06–0.12em)",
+          "$comment": "tokens 1.1"
+        },
+        "nk-border-width": {
+          "type": "string",
+          "description": "Hairline weight of panels, rows and fields",
+          "$comment": "tokens 1.1"
+        },
+        "nk-cut": {
+          "type": "string",
+          "description": "Chamfered corners (top left, bottom right), drawn with clip-path; 0 = off",
+          "$comment": "tokens 1.1"
+        },
+        "nk-surface-opacity": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "Panel opacity over the game (floor 0.92 for text panels)",
+          "$comment": "tokens 1.1"
+        },
+        "nk-surface-tint": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "How much brand tints neutral surfaces (0–0.12)",
+          "$comment": "tokens 1.1"
+        },
+        "nk-surface-gradient": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "Top-to-bottom light falloff on panels (0 = flat)",
+          "$comment": "tokens 1.1"
+        },
+        "nk-surface-edge": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "Inner top highlight, the machined edge (alpha)",
+          "$comment": "tokens 1.1"
+        },
+        "nk-elevation": {
+          "enum": [
+            "none",
+            "soft",
+            "deep"
+          ],
+          "description": "Shadow recipe of floating panels",
+          "$comment": "tokens 1.1"
+        },
+        "nk-glow": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "Brand glow on active parts and HUD fills (alpha, 0 = off)",
+          "$comment": "tokens 1.1"
+        },
+        "nk-density": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "Multiplies the kit's spacing scale: 0.85 compact … 1.15 roomy",
+          "$comment": "tokens 1.1"
+        },
+        "nk-ease": {
+          "type": "string",
+          "description": "The one easing curve",
+          "$comment": "tokens 1.1"
+        },
+        "nk-duration": {
+          "type": "string",
+          "description": "Base duration (panel enter, transitions); × nk-motion",
+          "$comment": "tokens 1.1"
+        },
+        "nk-hud-opacity": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "Minimum backplate opacity of HUD chips and tiles",
+          "$comment": "tokens 1.1"
+        },
+        "nk-hud-text-shadow": {
+          "enum": [
+            "none",
+            "soft",
+            "strong"
+          ],
+          "description": "Shadow under text drawn on the game",
+          "$comment": "tokens 1.1"
+        },
+        "nk-gauge-style": {
+          "enum": [
+            "arc",
+            "bar",
+            "digital"
+          ],
+          "description": "How gauges are drawn",
+          "$comment": "tokens 1.1"
+        },
+        "nk-gauge-track": {
+          "type": "string",
+          "description": "Gauge and meter track thickness",
+          "$comment": "tokens 1.1"
+        },
+        "nk-gauge-ticks": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "Tick marks on gauges: 1 on, 0 off",
+          "$comment": "tokens 1.1"
+        },
+        "nk-row-indicator": {
+          "enum": [
+            "bar",
+            "fill",
+            "outline"
+          ],
+          "description": "How the active row is marked",
+          "$comment": "tokens 1.1"
+        },
+        "surface": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "Floating panel surface: popover tinted by brand (× nk-surface-tint); drawn at nk-surface-opacity",
+          "$comment": "tokens 1.1"
+        },
+        "nk-elevation-shadow": {
+          "type": "string",
+          "description": "The box-shadow nk-elevation names, in scrim colour",
+          "$comment": "tokens 1.1"
+        },
+        "nk-hud-shadow": {
+          "type": "string",
+          "description": "The text-shadow nk-hud-text-shadow names, in scrim colour",
+          "$comment": "tokens 1.1"
+        },
+        "nk-row-bar": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "1 when nk-row-indicator is bar",
+          "$comment": "tokens 1.1"
+        },
+        "nk-row-fill": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "1 when nk-row-indicator is fill",
+          "$comment": "tokens 1.1"
+        },
+        "nk-row-outline": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "1 when nk-row-indicator is outline",
+          "$comment": "tokens 1.1"
+        },
+        "nk-clip": {
+          "type": "string",
+          "description": "clip-path of panels: the nk-cut chamfer, or none when nk-cut is 0 (a clip-path would also clip the shadow)",
+          "$comment": "tokens 1.1"
+        },
+        "nk-clip-sm": {
+          "type": "string",
+          "description": "clip-path of chips, tiles and buttons: half the panel chamfer",
+          "$comment": "tokens 1.1"
         }
       },
       "additionalProperties": {

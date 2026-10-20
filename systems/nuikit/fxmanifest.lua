@@ -28,6 +28,8 @@ files {
   'lib/nuikit.lua',
   'lib/bridge.lua',
   'theme.css',
+  -- identity fonts, served to every UI that loads them from here (docs/tokens.md#fonts)
+  'fonts/*.woff2',
   'web/dist/index.html',
   'web/dist/**/*',
 }

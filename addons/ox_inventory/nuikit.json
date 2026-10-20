@@ -3,6 +3,7 @@
     "resource": "ox_inventory",
     "path": "web/build"
   },
+  "fonts": "graphite",
   "lua": [],
   "components": [
     "badge",
