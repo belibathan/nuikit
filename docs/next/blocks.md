@@ -1,4 +1,7 @@
-# Next: premium components and starter blocks (0.5)
+# Premium components and starter blocks (0.5 kit work, continuing in 0.5.x)
+
+*Status Oct 19: Part 0 and Part A shipped in 0.5.0, and 5 of 14 components. What's left is tracked in
+[`docs/roadmap.md`](../roadmap.md) and dispatched per [`docs/next/dispatch.md`](dispatch.md).*
 
 **Goal.** 0.4.0 shipped the whole kit as finished resources. 0.5 ships the *standard* those resources are
 made of, so anyone (a server owner, a developer, a Tebex seller) can build new FiveM UI that looks as good
@@ -12,7 +15,7 @@ and matches the server theme without designing anything:
 
 Read `CLAUDE.md` and `docs/design.md` first. Reference implementation: `systems/nuikit_pause`.
 
-## Part 0: the theme engine (before components)
+## Part 0: the theme engine (before components) — shipped in 0.5.0 except items 5 (theme studio) and 6 (CI contrast screenshots)
 
 Status: 1–4 done (tokens v1 in [`docs/tokens.md`](../tokens.md), `compileTheme` in nuikit-core, the
 `nuikit` resource compiles and publishes, `nuikit theme reload`, player prefs); 5 (theme studio) and 6 (CI
@@ -45,21 +48,21 @@ editor; the standard is ours.
 6. **CI:** render the key screens with 4 reference themes (stock neutral, a high-chroma one, a light-mode
    paste, a low-contrast one) and fail on contrast regressions.
 
-## Part A: finalize 0.4 (small, first)
+## Part A: finalize 0.4 (small, first) — shipped in 0.5.0
 
-- [ ] `create-nuikit` template: rebuild its demo UI (`packages/create-nuikit/template/web/src/App.tsx`) on the
+- [x] `create-nuikit` template: rebuild its demo UI (`packages/create-nuikit/template/web/src/App.tsx`) on the
       kit (panel, rows, Kbd, HUD chips) so a new project starts premium. Keep the surfaces demo (HUD + menu +
       confirm).
-- [ ] Turn the remaining hand-rolled patterns from the restyle into kit utilities or components (each was
+- [x] Turn the remaining hand-rolled patterns from the restyle into kit utilities or components (each was
       flagged by more than one UI):
       a field row (label/value/reset + control), a two-row panel header (title row + tabs), anchoring helpers
       for `--nk-edge`, and a documented first-row alignment for floating menus.
-- [ ] `apps/www`: pages for `docs/design.md` (the kit language) and `docs/coverage.md`; update the landing
+- [x] `apps/www`: pages for `docs/design.md` (the kit language) and `docs/coverage.md`; update the landing
       copy to "One design system for your whole FiveM server"; screenshots of 0.4.0 screens.
-- [ ] README: a short "Use the standard in your own resource" section (registry + kit + theme) linking the
+- [x] README: a short "Use the standard in your own resource" section (registry + kit + theme) linking the
       blocks page.
 
-## Part B: components (`registry/nuikit/ui`)
+## Part B: components (`registry/nuikit/ui`) — done: `panel`, `menu-row`, `stat`, `meter`, `hud-chip`
 
 Each is a registry item with `registryDependencies` on stock shadcn, `data-slot` attributes, `React.ComponentProps`
 props, `cva` variants where there are variants, and a docs entry on the site with a live preview over a game
@@ -86,7 +89,7 @@ scene. Existing items (`vital`, `speedometer`, `key-hint`, `nui-menu`, `radial-m
 Rules: no new colours, no px sizes, every state reachable from props (so blocks can be screenshotted),
 keyboard + mouse, and tests where there's logic (countdown, money formatting, meter thresholds).
 
-## Part C: blocks (`registry/nuikit/blocks`, type `registry:block`)
+## Part C: blocks (`registry/nuikit/blocks`, type `registry:block`) — not started
 
 A block is a full screen wired to typed NUI messages (`nui.d.ts`) with `dev.tsx` fixtures, built only from
 Part B components. Each also becomes a `create-nuikit` template (`npm create nuikit -- -t <block>`) that
@@ -109,7 +112,7 @@ includes the Lua side (`client/main.lua` with `NUI.surface` and example events).
 | `settings` | Server-side player settings: toggles, sliders, keybind hints. |
 | `scoreboard` | Players, activities, ping. |
 
-## Part D: site (`apps/www`)
+## Part D: site (`apps/www`) — done: `/components` (5 components), `/design`, `/coverage`; open: `/blocks`, theme switcher
 
 - `/blocks`: every block as a live preview over a blurred game scene, with a theme switcher (a few TweakCN
   presets + paste your own) and the install command.

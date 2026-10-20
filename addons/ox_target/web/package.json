@@ -1,7 +1,7 @@
 {
   "name": "nuikit-ox-target-ui",
   "private": true,
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "A drop-in replacement for ox_target's web UI, built from stock shadcn/ui and themed by nuikit/theme.css.",
   "type": "module",
   "scripts": {

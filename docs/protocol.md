@@ -528,7 +528,7 @@ Exceptions are marked in source with `nuikit-ignore [rule …]` (same line, or a
 
 ## 11. Changes needed in the runtime
 
-None: every change this spec asked of 0.4.0 shipped on `feat/platform` (versioned manifests, the versioned
+None: every change this spec asked of 0.4.0 shipped in 0.5.0 (versioned manifests, the versioned
 handshake with capabilities, compiled themes with live reload, player prefs, `downed` kept internal, one Escape
 path for simple mode, `input = 'cursor'` documented as an alias). Open questions for v2: `locale` (§7.2) and a
 real mouse-only `input = 'cursor'`.

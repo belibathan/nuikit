@@ -1,7 +1,7 @@
 {
   "name": "nuikit-qbx-vehiclesales-ui",
   "private": true,
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "A drop-in replacement for qbx_vehiclesales' sale contract, built from stock shadcn/ui and themed by nuikit/theme.css.",
   "type": "module",
   "scripts": {
