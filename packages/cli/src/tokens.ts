@@ -75,6 +75,7 @@ export const DEFAULT_TOKENS: Token[] = [
   c("surface", "base", "Floating panel surface: popover tinted by brand"),
   { name: "nk-elevation-shadow", group: "kit", type: "dimension", description: "The panel shadow --nk-elevation names" },
   { name: "nk-hud-shadow", group: "kit", type: "dimension", description: "The text shadow --nk-hud-text-shadow names" },
+  { name: "world-shadow", group: "kit", type: "dimension", description: "The text shadow that keeps text on the game legible" },
 ];
 
 /** The DTCG file wins per name (type, description); tokens it doesn't list keep their embedded entry. */

@@ -229,6 +229,9 @@
   --nk-motion: 1;
   --brand: rgb(212, 212, 212);
   --brand-foreground: rgb(0, 0, 0);
+  --world-foreground: rgb(255, 255, 255);
+  --world-foreground-muted: rgba(255, 255, 255, 0.8);
+  --world-shadow: 0 1px 2px rgba(0, 0, 0, 0.65), 0 0 0.5rem rgba(0, 0, 0, 0.35);
   --font-display: "Inter Tight", Inter, ui-sans-serif, system-ui, sans-serif;
   --font-numeric: Inter, ui-sans-serif, system-ui, sans-serif;
   --nk-type-ratio: 1.2;
@@ -287,6 +290,9 @@
   --nk-motion: 1;
   --brand: rgb(212, 212, 212);
   --brand-foreground: rgb(0, 0, 0);
+  --world-foreground: rgb(255, 255, 255);
+  --world-foreground-muted: rgba(255, 255, 255, 0.8);
+  --world-shadow: 0 1px 2px rgba(0, 0, 0, 0.65), 0 0 0.5rem rgba(0, 0, 0, 0.35);
   --font-display: "Inter Tight", Inter, ui-sans-serif, system-ui, sans-serif;
   --font-numeric: Inter, ui-sans-serif, system-ui, sans-serif;
   --nk-type-ratio: 1.2;
@@ -370,6 +376,8 @@
   --color-hud: var(--hud);
   --color-hud-foreground: var(--hud-foreground);
   --color-scrim: var(--scrim);
+  --color-world-foreground: var(--world-foreground);
+  --color-world-foreground-muted: var(--world-foreground-muted);
   --color-vital-health: var(--vital-health);
   --color-vital-armor: var(--vital-armor);
   --color-vital-hunger: var(--vital-hunger);
@@ -399,6 +407,10 @@
     @apply select-text;
   }
 }
+
+/* The page's surface (nuikit.json "surface"): "world" draws the whole page straight on the game, so
+   its text reads --world-foreground (light in every theme). Panels inside keep the theme's colours. */
+/* (surface: panels, the default) */
 
 /* NUI scale: the kit is designed at 1080p and grows with the game's resolution (docs/design.md). */
 @layer base {
@@ -438,6 +450,13 @@
   --nk-text-section: calc(var(--nk-text-base) * var(--nk-ratio) * var(--nk-ratio));
   --nk-text-display: calc(var(--nk-text-base) * var(--nk-ratio) * var(--nk-ratio) * var(--nk-ratio) * var(--nk-ratio) * 1.1);
   --nk-border: var(--nk-border-width, 1px);
+  /* the theme's own colours, resolved here, so a panel inside nk-on-game can restore them */
+  --nk-theme-muted-foreground: var(--muted-foreground);
+  --nk-theme-muted-foreground-rgb: var(--muted-foreground-rgb);
+  --nk-theme-muted-foreground-a: var(--muted-foreground-a);
+  --nk-theme-background: var(--background);
+  --nk-theme-background-rgb: var(--background-rgb);
+  --nk-theme-background-a: var(--background-a);
   --nk-ease-out: var(--nk-ease, cubic-bezier(0.2, 0.8, 0.2, 1));
   --nk-time: calc(var(--nk-duration, 140ms) * var(--nk-motion, 1));
 
@@ -805,6 +824,38 @@
 @utility nk-shadow {
   text-shadow: var(--nk-hud-text-shadow);
   filter: drop-shadow(0 1px 1px color-mix(in oklab, var(--scrim) 35%, transparent));
+}
+/*
+ * On the game: a subtree drawn straight on the world, no panel (death text, unplated HUD values, labels
+ * over the scene). Inside it, foreground and muted-foreground are the world's (--world-foreground: light
+ * in every theme, light or dark), background is the game (the scrim colour, for text on foreground keycaps),
+ * and text carries --world-shadow. Panels inside (nk-panel) keep the theme's own colours. A page that is all
+ * on the game opts in as a whole with "surface": "world" in nuikit.json (pnpm sync applies it to body).
+ */
+@utility nk-on-game {
+  --foreground: var(--world-foreground);
+  --foreground-rgb: var(--world-foreground-rgb);
+  --foreground-a: var(--world-foreground-a);
+  --muted-foreground: var(--world-foreground-muted);
+  --muted-foreground-rgb: var(--world-foreground-muted-rgb);
+  --muted-foreground-a: var(--world-foreground-muted-a);
+  --background: rgb(var(--scrim-rgb));
+  --background-rgb: var(--scrim-rgb);
+  --background-a: 1;
+  color: var(--world-foreground);
+  text-shadow: var(--world-shadow);
+  & .nk-panel {
+    --foreground: var(--popover-foreground);
+    --foreground-rgb: var(--popover-foreground-rgb);
+    --foreground-a: var(--popover-foreground-a);
+    --muted-foreground: var(--nk-theme-muted-foreground);
+    --muted-foreground-rgb: var(--nk-theme-muted-foreground-rgb);
+    --muted-foreground-a: var(--nk-theme-muted-foreground-a);
+    --background: var(--nk-theme-background);
+    --background-rgb: var(--nk-theme-background-rgb);
+    --background-a: var(--nk-theme-background-a);
+    text-shadow: none;
+  }
 }
 /* Full-screen title (pause, loading, death): 32px at 1080p (Graphite). */
 @utility nk-display {

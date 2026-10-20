@@ -1,4 +1,5 @@
 {
   "lua": [],
+  "surface": "world",
   "components": ["hud-chip"]
 }

@@ -70,6 +70,8 @@
   --color-hud: var(--hud);
   --color-hud-foreground: var(--hud-foreground);
   --color-scrim: var(--scrim);
+  --color-world-foreground: var(--world-foreground);
+  --color-world-foreground-muted: var(--world-foreground-muted);
   --color-vital-health: var(--vital-health);
   --color-vital-armor: var(--vital-armor);
   --color-vital-hunger: var(--vital-hunger);
@@ -99,6 +101,10 @@
     @apply select-text;
   }
 }
+
+/* The page's surface (nuikit.json "surface"): "world" draws the whole page straight on the game, so
+   its text reads --world-foreground (light in every theme). Panels inside keep the theme's colours. */
+/* {{surface}} */
 
 /* NUI scale: the kit is designed at 1080p and grows with the game's resolution (docs/design.md). */
 @layer base {

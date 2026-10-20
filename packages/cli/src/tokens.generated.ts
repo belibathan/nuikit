@@ -241,6 +241,18 @@ export const GENERATED: { name: string; group: string; type: string; description
     "description": "Text on brand"
   },
   {
+    "name": "world-foreground",
+    "group": "base",
+    "type": "color",
+    "description": "Text and icons drawn straight on the game, no panel (death text, unplated HUD values, nk-on-game). Light in every theme, light or dark"
+  },
+  {
+    "name": "world-foreground-muted",
+    "group": "base",
+    "type": "color",
+    "description": "Secondary text on the game"
+  },
+  {
     "name": "radius",
     "group": "shape",
     "type": "dimension",

@@ -107,6 +107,9 @@ const dv = (name: string, type: TokenType, description: string, fallback: string
 export const IDENTITY_TOKENS: readonly TokenSpec[] = [
   id("brand", "color", "The server's signature colour: active indicators, gauge needles, focus, logos (not the action: that's primary)", "primary if chromatic (OKLCH C ≥ 0.06), else chart-1"),
   id("brand-foreground", "color", "Text on brand", "foreground or background, whichever contrasts more"),
+  id("world-foreground", "color", "Text and icons drawn straight on the game, no panel (death text, unplated HUD values, nk-on-game). Light in every theme, light or dark", "rgb(255, 255, 255)"),
+  id("world-foreground-muted", "color", "Secondary text on the game", "world-foreground at 80% (3:1 on a mid-grey frame)"),
+  id("world-shadow", "shadow", "Text-shadow that keeps world-foreground legible over any frame", "0 1px 2px rgba(0, 0, 0, 0.65), 0 0 0.5rem rgba(0, 0, 0, 0.35)"),
   id("font-display", "fontFamily", "Headings and big moments (titles, timers, the balance)", "font-sans; Inter Tight when font-sans is the default Inter"),
   id("font-numeric", "fontFamily", "Every number on a gauge, money or timer (always tabular)", "font-sans"),
   id("nk-type-ratio", "number", "Step between type sizes: 1.125 calm … 1.333 dramatic", "1.2", { range: [1, 1.6] }),
@@ -508,8 +511,9 @@ export function compileTheme(input: ThemeInput, opts: CompileOptions = {}): Comp
   }
 
   if (!opts.partial) {
+    const given = new Set(Object.keys(resolved));
     derive(resolved, mode, warnings);
-    deriveIdentity(resolved, warnings);
+    deriveIdentity(resolved, warnings, given);
   }
   else if (resolved["nk-scale"] !== undefined || resolved["nk-motion"] !== undefined) derive(resolved, mode, warnings, true);
   if (opts.highContrast) highContrast(resolved);
@@ -555,6 +559,10 @@ const fmtOklch = (L: number, C: number, H: number): string => formatRgba([...okl
 const clamp = (x: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, x));
 const WHITE: RGBA = [255, 255, 255, 1];
 const BLACK: RGBA = [0, 0, 0, 1];
+/** Legibility of text drawn straight on the game: a tight dark edge plus a soft halo, in black (the game, not the theme). */
+export const WORLD_SHADOW = "0 1px 2px rgba(0, 0, 0, 0.65), 0 0 0.5rem rgba(0, 0, 0, 0.35)";
+/** Mid-grey: the game's average frame. Text on the game must be lighter than it and clear it by 3:1. */
+const MID_GREY: RGBA = [128, 128, 128, 1];
 
 /** Of the theme's foreground and background (one light, one dark), the one that reads best on `bg`. */
 function bestText(vars: ThemeVars, bg: RGBA): string {
@@ -624,7 +632,12 @@ function derive(vars: ThemeVars, mode: ThemeMode, warnings: string[], onlyNumber
   if (vars.info === undefined) vars.info = vars.primary!;
   if (vars["info-foreground"] === undefined) vars["info-foreground"] = vars["primary-foreground"]!;
   if (vars.hud === undefined) vars.hud = "rgba(0, 0, 0, 0.45)";
-  if (vars["hud-foreground"] === undefined) vars["hud-foreground"] = "rgb(255, 255, 255)";
+  // on the game (1.1): light in every theme, light or dark, unless the theme says otherwise
+  const world = rgba(vars, "world-foreground") ?? WHITE;
+  if (vars["world-foreground"] === undefined) vars["world-foreground"] = formatRgba(world);
+  if (vars["world-foreground-muted"] === undefined) vars["world-foreground-muted"] = formatRgba([world[0], world[1], world[2], 0.8]);
+  if (vars["world-shadow"] === undefined) vars["world-shadow"] = WORLD_SHADOW;
+  if (vars["hud-foreground"] === undefined) vars["hud-foreground"] = vars["world-foreground"]!;
   if (vars.scrim === undefined) vars.scrim = "rgb(0, 0, 0)";
 
   const used = new Set<number>();
@@ -725,7 +738,7 @@ function hudPlateOverWhite(vars: ThemeVars): RGBA | null {
   return composite([hud[0], hud[1], hud[2], a], WHITE);
 }
 
-function deriveIdentity(vars: ThemeVars, warnings: string[]) {
+function deriveIdentity(vars: ThemeVars, warnings: string[], given: ReadonlySet<string> = new Set()) {
   // validate what the theme set; anything invalid falls back to the default, with a warning
   for (const spec of IDENTITY_TOKENS) {
     if (spec.type === "color" || spec.type === "fontFamily" || spec.type === "shadow" || spec.group === "derived") continue;
@@ -786,6 +799,17 @@ function deriveIdentity(vars: ThemeVars, warnings: string[]) {
     if (ratio < 4.5)
       warnings.push(`hud-foreground on the HUD backplate over a white sky is ${ratio.toFixed(1)}:1 (needs 4.5:1); raise --nk-hud-opacity or darken --hud so HUD text reads over snow and midday sky.`);
   }
+  // text on the game: it must be lighter than the game's average frame (its shadow is dark) and clear it by 3:1
+  for (const name of ["world-foreground", "world-foreground-muted"]) {
+    if (!given.has(name)) continue;
+    const c = rgba(vars, name);
+    if (!c) continue;
+    const onGrey = composite(c, MID_GREY);
+    const ratio = contrastRatio(onGrey, MID_GREY);
+    const lighter = contrastRatio(onGrey, BLACK) > contrastRatio(MID_GREY, BLACK);
+    if (!lighter || ratio < 3)
+      warnings.push(`--${name} is ${lighter ? `${ratio.toFixed(1)}:1 against a mid-grey frame (needs 3:1)` : "darker than a mid-grey frame"}; text drawn straight on the game (death text, unplated HUD values) will be hard to read. Keep it light, whatever the theme's mode.`);
+  }
 }
 
 /** Player preference: maximum-contrast text, stronger borders, a darker HUD surface. Pure on lowered vars. */
@@ -819,6 +843,8 @@ export function highContrast(vars: ThemeVars): ThemeVars {
   }
   vars.hud = "rgba(0, 0, 0, 0.72)";
   vars["hud-foreground"] = "rgb(255, 255, 255)";
+  vars["world-foreground"] = "rgb(255, 255, 255)";
+  vars["world-foreground-muted"] = "rgba(255, 255, 255, 0.85)";
   // identity (1.1): opaque panels, a solid HUD plate
   if (vars["nk-surface-opacity"] !== undefined) vars["nk-surface-opacity"] = "1";
   if (vars["nk-hud-opacity"] !== undefined) vars["nk-hud-opacity"] = "0.72";

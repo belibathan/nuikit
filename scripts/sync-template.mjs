@@ -81,7 +81,7 @@ for (const group of ["systems", "addons"]) {
     const manifest = path.join(base, name, "nuikit.json");
     if (!fs.existsSync(manifest)) continue;
     const m = JSON.parse(fs.readFileSync(manifest, "utf8"));
-    targets.push({ dir: `${group}/${name}`, lua: m.lua ?? [], components: m.components ?? [], hooks: m.hooks ?? [], css: m.css !== false, compiler: m.compiler === true, runtime: m.runtime === true, fonts: m.fonts });
+    targets.push({ dir: `${group}/${name}`, lua: m.lua ?? [], components: m.components ?? [], hooks: m.hooks ?? [], css: m.css !== false, compiler: m.compiler === true, runtime: m.runtime === true, fonts: m.fonts, surface: m.surface });
   }
 }
 
@@ -139,7 +139,12 @@ const template = fs
   .replace("/* {{theme}} */", [block(":root", cssVars.light), block(".dark", cssVars.dark)].join("\n\n"))
   .replace("/* {{tokens}} */", [block(":root", nuikitTokens("light")), block(".dark", nuikitTokens("dark"))].join("\n\n"))
   .replace("/* {{kit}} */", fs.readFileSync(path.join(root, "packages/create-nuikit/kit.css"), "utf8").trimEnd());
-const cssFor = (mode) => template.replace("/* {{fonts}} */", mode && FONT_SRC[mode] ? fontFaces(mode) : "/* (fonts off for this UI) */");
+// nuikit.json "surface": "world" for a page drawn straight on the game (death, HUD): body is nk-on-game
+const SURFACES = { world: "@layer base {\n  body {\n    @apply nk-on-game;\n  }\n}" };
+const cssFor = (mode, surface) =>
+  template
+    .replace("/* {{fonts}} */", mode && FONT_SRC[mode] ? fontFaces(mode) : "/* (fonts off for this UI) */")
+    .replace("/* {{surface}} */", SURFACES[surface] ?? "/* (surface: panels, the default) */");
 
 const MANIFEST = path.join(root, "scripts/sync-manifest.json");
 const previous = fs.existsSync(MANIFEST) ? (JSON.parse(fs.readFileSync(MANIFEST, "utf8")).targets ?? {}) : {};
@@ -188,7 +193,7 @@ for (const t of targets) {
   for (const h of t.hooks) copy(`registry/nuikit/hooks/${h}.ts`, `web/src/hooks/${h}.ts`);
   if (t.compiler) copy("packages/core/dist/fxserver-compiler.js", "server/compiler.js");
   if (t.css !== false) {
-    fs.writeFileSync(path.join(root, t.dir, "web/src/index.css"), cssFor(fontMode));
+    fs.writeFileSync(path.join(root, t.dir, "web/src/index.css"), cssFor(fontMode, t.surface));
     written.add("web/src/index.css");
   }
   // prune: what sync wrote last time and no longer writes (never a file sync didn't write)

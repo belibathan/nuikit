@@ -131,6 +131,17 @@ describe("validation and floors", () => {
     expect(t.warnings.some((w) => /nk-surface-opacity is 0.8 \(floor 0.92\)/.test(w))).toBe(true);
   });
 
+  it("warns when text on the game is set dark or too close to a mid-grey frame", () => {
+    const dark = compileTheme(`.dark { --world-foreground: oklch(0.3 0.02 260); }`);
+    expect(dark.warnings.join("\n")).toMatch(/--world-foreground is darker than a mid-grey frame/);
+    expect(dark.vars["hud-foreground"]).toBe(dark.vars["world-foreground"]);
+    const grey = compileTheme(`.dark { --world-foreground: #b0b0b0; }`);
+    expect(grey.warnings.join("\n")).toMatch(/--world-foreground is 1\.\d:1 against a mid-grey frame \(needs 3:1\)/);
+    const cream = compileTheme(`.dark { --world-foreground: #fff8e8; }`);
+    expect(cream.warnings.join("\n")).not.toMatch(/world-foreground/);
+    expect(cream.vars["world-foreground-muted"]).toBe("rgba(255, 248, 232, 0.8)");
+  });
+
   it("warns when HUD text won't read over a white sky", () => {
     const t = compileTheme(`.dark { --hud: rgba(0, 0, 0, 0.2); --nk-hud-opacity: 0.3; }`);
     expect(t.warnings.some((w) => /HUD backplate over a white sky/.test(w))).toBe(true);
@@ -229,7 +240,6 @@ describe("flexibility", () => {
     expect(daylight.mode).toBe("light");
     const qualities = [
       "background", // light
-      "hud",
       "nk-density", // roomy
       "radius", // round
       "nk-elevation",
@@ -248,6 +258,24 @@ describe("flexibility", () => {
     // component tokens a theme sets pass through (the detail tier; references to theme vars resolved)
     expect(daylight.vars["nk-chip-radius"]).toBe("9999px");
     expect(daylight.vars["nk-panel-radius"]).toBe("calc(1.25rem + 0.25rem)");
+  });
+
+  it("text on the game stays light in a light theme: world-foreground, and hud-foreground with it", () => {
+    expect(daylight.vars["world-foreground"]).toBe("rgb(255, 255, 255)");
+    expect(daylight.vars["world-foreground-muted"]).toBe("rgba(255, 255, 255, 0.8)");
+    expect(daylight.vars["world-shadow"]).toMatch(/^0 1px 2px rgba\(0, 0, 0/);
+    expect(daylight.vars["hud-foreground"]).toBe(daylight.vars["world-foreground"]);
+    expect(daylight.vars.foreground).not.toBe(daylight.vars["world-foreground"]); // the theme's own text is dark
+  });
+
+  it("the kit wires it: nk-on-game re-scopes foreground to the world, panels inside restore the theme", () => {
+    const util = kit.slice(kit.indexOf("@utility nk-on-game"));
+    expect(util).toMatch(/--foreground: var\(--world-foreground\)/);
+    expect(util).toMatch(/--foreground-rgb: var\(--world-foreground-rgb\)/);
+    expect(util).toMatch(/text-shadow: var\(--world-shadow\)/);
+    expect(util).toMatch(/& \.nk-panel \{\s*--foreground: var\(--popover-foreground\)/);
+    for (const s of ["nuikit_death", "nuikit_hud"]) expect(JSON.parse(read(`systems/${s}/nuikit.json`)).surface, s).toBe("world");
+    expect(read("systems/nuikit_death/web/src/index.css")).toMatch(/body \{\s*@apply nk-on-game;/);
   });
 
   it("the kit reads identity tokens only through var(), each with the Graphite default as its fallback", () => {
