@@ -119,7 +119,7 @@ export function ComponentsPage() {
         <Section
           name="menu-row"
           title="Menu row: items"
-          text="What the menu intent's items carry: an image, a progress line, read-only rows, the details card beside the hovered row, quiet stepper values, and inert rows that ignore hover (CEF keeps :hover after Lua takes focus)."
+          text="What the menu intent's items carry: an image, a progress line in any tone or colour, read-only rows, the details card beside the hovered row (each metadata bar in its own colour), quiet stepper values, and inert rows that ignore hover (CEF keeps :hover after Lua takes focus)."
           install={false}
           stageClassName="min-h-[28rem]"
         >
@@ -1137,19 +1137,29 @@ function ProgressRingDemo() {
   );
 }
 
-// ox_lib metadata, in two of its shapes (menuMetadata reads all three).
+// ox_lib metadata, in two of its shapes (menuMetadata reads all three). Each bar keeps its own
+// colorScheme, as ox passes it (Mantine names); the fuel line takes a tone.
 const VEHICLES = [
   {
     name: "Pegassi Zentorno",
     image: "/bg/garage.jpg",
     fuel: 92,
+    fuelColor: "success",
     metadata: [
       { label: "Plate", value: "ZEN 01" },
-      { label: "Engine", value: "98%", progress: 98 },
-      { label: "Body", value: "71%", progress: 71 },
+      { label: "Engine", value: "98%", progress: 98, colorScheme: "green" },
+      { label: "Body", value: "41%", progress: 41, colorScheme: "yellow.6" },
+      { label: "Tyres", value: "12%", progress: 12, colorScheme: "red" },
+      { label: "Clutch", value: "80%", progress: 80 },
     ],
   },
-  { name: "Karin Sultan", image: "/bg/street.jpg", fuel: 23, metadata: { Plate: "SUL 07", Garage: "Impound", Fee: "$250" } },
+  {
+    name: "Karin Sultan",
+    image: "/bg/street.jpg",
+    fuel: 23,
+    fuelColor: "destructive",
+    metadata: { Plate: "SUL 07", Garage: "Impound", Fee: "$250" },
+  },
 ];
 
 /** A context menu: image rows with a fuel line, a read-only row, the details card beside the hovered row. */
@@ -1167,6 +1177,7 @@ function ContextMenuDemo() {
               image={c.image}
               description="Fuel"
               progress={c.fuel}
+              progressColor={c.fuelColor}
               meta={`${c.fuel}%`}
               chevron
               active={hovered === i}
