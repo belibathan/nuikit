@@ -33,7 +33,7 @@ import {
   WrenchIcon,
 } from "lucide-react";
 import { closeSurface, openSurface, Surface } from "nuikit-core/react";
-import { cloneElement, useState, type ReactElement, type ReactNode } from "react";
+import { cloneElement, useRef, useState, type ReactElement, type ReactNode } from "react";
 import { Command } from "@/components/code";
 import { Scene } from "@/components/scene";
 import { Footer, Nav, SITE, ThemePicker } from "@/components/site";
@@ -1259,11 +1259,15 @@ function MeterTones() {
   );
 }
 
-/** A timed bar (ox progressBar): fills over its duration; onComplete from a timer. */
+/**
+ * A timed bar (ox progressBar): fills over its duration, full exactly at the end; onComplete from
+ * a timer. Like ox, the full bar stays a moment before it goes.
+ */
 function MeterTimed() {
   const [run, setRun] = useState(0);
   const [running, setRunning] = useState(false);
   const [last, setLast] = useState("Nothing yet");
+  const current = useRef(0);
   return (
     <div className="flex w-80 flex-col gap-4">
       <Panel size="default">
@@ -1272,6 +1276,7 @@ function MeterTimed() {
           <MenuRow
             icon={<BackpackIcon />}
             onClick={() => {
+              current.current = run + 1;
               setRun((r) => r + 1);
               setRunning(true);
             }}
@@ -1294,8 +1299,9 @@ function MeterTimed() {
               label="Searching the glovebox"
               duration={3000}
               onComplete={() => {
-                setRunning(false);
                 setLast("Found $120");
+                const done = run;
+                setTimeout(() => current.current === done && setRunning(false), 500);
               }}
             />
           </PanelBody>
