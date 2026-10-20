@@ -25,7 +25,7 @@
       "name": "menu-row",
       "type": "registry:ui",
       "title": "Menu Row",
-      "description": "The 40px action row: icon, label, description and a trailing meta, chevron, Kbd, checkbox or value stepper. Active, disabled and destructive.",
+      "description": "The 40px action row: icon or image, label, description, a progress line, and a trailing meta, chevron, Kbd, checkbox or value stepper. Active, disabled, destructive, read-only and inert (hover changes nothing). With MenuRowDetails, the image-and-metadata card beside a hovered row.",
       "files": [
         {
           "path": "registry/nuikit/ui/menu-row.tsx",
@@ -39,7 +39,8 @@
       ],
       "registryDependencies": [
         "checkbox",
-        "kbd"
+        "kbd",
+        "progress"
       ]
     },
     {
@@ -62,7 +63,7 @@
       "name": "meter",
       "type": "registry:ui",
       "title": "Meter",
-      "description": "A slim bar on a theme or game track, with a label and value, low/high thresholds that turn it destructive, and optional segments.",
+      "description": "A slim bar on a theme or game track, with a label and value, low/high thresholds that turn it destructive, optional segments, status tones, a library's colour through meterColor(), and a timed mode whose onComplete fires from a timer.",
       "files": [
         {
           "path": "registry/nuikit/ui/meter.tsx",
@@ -165,19 +166,22 @@
       "name": "radial-menu",
       "type": "registry:ui",
       "title": "Radial Menu",
-      "description": "Action wheel in SVG (shadcn has no radial), styled like shadcn menus: popover, border, accent.",
+      "description": "The action wheel (the radial intent): SVG wedges styled like shadcn menus, icons and labels, a centre with the highlighted item's description, submenus with Back, keyboard while focused (arrows, Enter, 1-9, Backspace), laid out in rem.",
       "files": [
         {
           "path": "registry/nuikit/ui/radial-menu.tsx",
           "type": "registry:ui"
         }
+      ],
+      "dependencies": [
+        "lucide-react"
       ]
     },
     {
       "name": "speedometer",
       "type": "registry:ui",
       "title": "Speedometer",
-      "description": "Vehicle gauge: SVG arc in primary/destructive, gear as a Badge, fuel as a Progress.",
+      "description": "Vehicle gauge on the HUD tokens: SVG arc in primary/destructive over a scrim track, gear as a Badge on the HUD surface, fuel as a Progress that turns destructive when low; surface=theme for panels.",
       "files": [
         {
           "path": "registry/nuikit/ui/speedometer.tsx",
@@ -360,6 +364,145 @@
         "button",
         "spinner",
         "https://nuikit.vercel.app/r/panel.json"
+      ]
+    },
+    {
+      "name": "key-prompt",
+      "type": "registry:ui",
+      "title": "Key prompt",
+      "description": "\"[E] Open garage\": keys (one or a combination), label, description, icon; hold-to-confirm with a filling line, driven by Lua (progress) or by pointer and key when the page has focus; active and disabled; on a panel or the HUD; a stack for any edge. The default look of the prompt intent; supersedes key-hint.",
+      "files": [
+        {
+          "path": "registry/nuikit/ui/key-prompt.tsx",
+          "type": "registry:ui"
+        }
+      ],
+      "dependencies": [
+        "class-variance-authority"
+      ],
+      "registryDependencies": [
+        "kbd"
+      ]
+    },
+    {
+      "name": "progress-ring",
+      "type": "registry:ui",
+      "title": "Progress ring",
+      "description": "A circle that fills: a level, or a timed run whose onComplete fires from a timer (never an animation event, so it works with motion off). Label, percentage or any centre, tones, a game or theme track, three sizes, a cancel hint. The round half of the progress intent; meter is the bar.",
+      "files": [
+        {
+          "path": "registry/nuikit/ui/progress-ring.tsx",
+          "type": "registry:ui"
+        }
+      ],
+      "dependencies": [
+        "class-variance-authority"
+      ],
+      "registryDependencies": [
+        "kbd"
+      ]
+    },
+    {
+      "name": "countdown",
+      "type": "registry:ui",
+      "title": "Countdown",
+      "description": "A timer that matters: tabular mm:ss (h:mm:ss past an hour), a label, a line that drains, a warning threshold, a done state, sizes up to a full-screen clock, theme or game surface. From Lua's seconds, or running on its own with onComplete from a timer.",
+      "files": [
+        {
+          "path": "registry/nuikit/ui/countdown.tsx",
+          "type": "registry:ui"
+        }
+      ],
+      "dependencies": [
+        "class-variance-authority"
+      ],
+      "registryDependencies": [
+        "progress"
+      ]
+    },
+    {
+      "name": "money",
+      "type": "registry:ui",
+      "title": "Money",
+      "description": "Every amount formatted one way: tabular figures, the server's currency and locale (Intl), whole units by default, sign auto/always/never, a direction tone for gains and losses, compact ($1.3M), or a plain number with a prefix or suffix. Inline, with formatMoney() for text.",
+      "files": [
+        {
+          "path": "registry/nuikit/ui/money.tsx",
+          "type": "registry:ui"
+        }
+      ],
+      "dependencies": [
+        "class-variance-authority"
+      ]
+    },
+    {
+      "name": "item-slot",
+      "type": "registry:ui",
+      "title": "Item slot",
+      "description": "One square of an inventory, shop, hotbar or crafting grid: image, name, count, hotkey or stock, price, a durability line, and the drag-and-drop states (empty, active, drop target, dragging, locked). Wells on a panel or the HUD surface for a hotbar.",
+      "files": [
+        {
+          "path": "registry/nuikit/ui/item-slot.tsx",
+          "type": "registry:ui"
+        }
+      ],
+      "dependencies": [
+        "class-variance-authority",
+        "lucide-react"
+      ]
+    },
+    {
+      "name": "player-card",
+      "type": "registry:ui",
+      "title": "Player card",
+      "description": "Who someone is at a glance: avatar or initials, name, job and grade with an on/off duty dot and the words, a grid of stats (mono for codes), and footer actions. On the panel recipe.",
+      "files": [
+        {
+          "path": "registry/nuikit/ui/player-card.tsx",
+          "type": "registry:ui"
+        }
+      ],
+      "registryDependencies": [
+        "avatar",
+        "https://nuikit.vercel.app/r/panel.json",
+        "https://nuikit.vercel.app/r/stat.json"
+      ]
+    },
+    {
+      "name": "empty-state",
+      "type": "registry:ui",
+      "title": "Empty state",
+      "description": "When there's nothing to show or something went wrong: an icon, a short title, one sentence on what to do next, optional actions. Stock shadcn Empty on the kit's scale; empty or error tone; panel or screen size.",
+      "files": [
+        {
+          "path": "registry/nuikit/ui/empty-state.tsx",
+          "type": "registry:ui"
+        }
+      ],
+      "dependencies": [
+        "class-variance-authority",
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "empty"
+      ]
+    },
+    {
+      "name": "skill-check",
+      "type": "registry:ui",
+      "title": "Skill check",
+      "description": "Press the key while the needle is in the zone: zone start and size (wrapping past 360°), speed, the key, a success or fail outcome. Runs itself (needle drawn per frame without re-rendering, a full turn is a miss) and reads the key, or takes the angle from outside. The default look of the challenge intent.",
+      "files": [
+        {
+          "path": "registry/nuikit/ui/skill-check.tsx",
+          "type": "registry:ui"
+        }
+      ],
+      "dependencies": [
+        "class-variance-authority"
+      ],
+      "registryDependencies": [
+        "kbd"
       ]
     }
   ]

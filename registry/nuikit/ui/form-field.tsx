@@ -848,13 +848,23 @@ function SliderControl({
   step: number
 }) {
   const f = useFormField()
+  const box = React.useRef<HTMLDivElement>(null)
+  // shadcn's Slider puts props on its root and renders the thumbs itself, but the thumb
+  // (role="slider") is what takes focus: name and describe it from here (vendor/ stays stock).
+  React.useEffect(() => {
+    box.current?.querySelectorAll<HTMLElement>('[role="slider"]').forEach((thumb) => {
+      const set = (name: string, v: string | undefined) => (v ? thumb.setAttribute(name, v) : thumb.removeAttribute(name))
+      set("aria-labelledby", document.getElementById(f.labelId) ? f.labelId : undefined)
+      set("aria-describedby", f.describedBy)
+      set("aria-invalid", f.invalid ? "true" : undefined)
+      set("aria-required", f.required ? "true" : undefined)
+    })
+  })
   return (
-    <div className="flex h-5 items-center">
+    <div ref={box} className="flex h-5 items-center">
       <Slider
         data-slot="form-field-control"
         id={f.id}
-        aria-describedby={f.describedBy}
-        aria-invalid={f.invalid || undefined}
         disabled={f.disabled}
         min={min}
         max={max}
