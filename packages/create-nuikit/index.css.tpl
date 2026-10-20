@@ -82,7 +82,7 @@
   --color-surface: var(--surface);
   --font-display: var(--font-display);
   --font-numeric: var(--font-numeric);
-  --default-transition-duration: var(--nk-duration);
+  --default-transition-duration: var(--nk-time-base, var(--nk-duration));
   --default-transition-timing-function: var(--nk-ease);
 }
 
@@ -97,8 +97,45 @@
     @apply text-foreground select-none;
   }
   input,
-  textarea {
+  textarea,
+  [contenteditable="true"],
+  .nk-selectable {
     @apply select-text;
+  }
+  /* Kit base hardening (design v2 §5A): nothing of the web page leaks through. No image drag ghosts,
+     themed selection, caret, placeholder and scrollbars (the -webkit- ones: Chromium 103 has no
+     scrollbar-color). Text selection is off above, except fields and .nk-selectable values. */
+  img,
+  svg,
+  a {
+    -webkit-user-drag: none;
+  }
+  ::selection {
+    background-color: rgba(var(--brand-rgb, var(--primary-rgb)), 0.35);
+    color: inherit;
+  }
+  input,
+  textarea {
+    caret-color: var(--brand, var(--primary));
+  }
+  ::placeholder {
+    color: var(--muted-foreground);
+    opacity: 1;
+  }
+  ::-webkit-scrollbar {
+    width: 0.375rem;
+    height: 0.375rem;
+  }
+  ::-webkit-scrollbar-track,
+  ::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    border-radius: 9999px;
+    background-color: rgba(var(--foreground-rgb), 0.18);
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(var(--foreground-rgb), 0.3);
   }
 }
 

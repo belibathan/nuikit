@@ -163,7 +163,7 @@ var NuikitTheme = (() => {
 
   // src/tokens.ts
   var TOKENS_VERSION = 1;
-  var TOKENS_REVISION = "1.1";
+  var TOKENS_REVISION = "1.2";
   var DEFAULT_FONT_SANS = "Inter, ui-sans-serif, system-ui, sans-serif";
   var DEFAULT_FONT_DISPLAY = `"Inter Tight", ${DEFAULT_FONT_SANS}`;
   var DEFAULT_FONT_MONO = `"Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace`;
@@ -212,11 +212,73 @@ var NuikitTheme = (() => {
     n("vital-thirst", "color", "Thirst bar", "chart-4 if cyan/blue, else another one, else oklch(0.76 0.13 215)"),
     n("vital-stress", "color", "Stress bar", "chart-5 if purple/magenta, else another one, else oklch(0.68 0.2 320)"),
     n("nk-scale", "number", "UI size multiplier (unitless). Players can scale further (0.85\u20131.25).", "1"),
-    n("nk-motion", "number", "1 = animations on, 0 = off. Players can turn motion off.", "1")
+    n("nk-motion", "number", "1 = animations on, 0 = off. Painted as 0 when the theme or the player's reduced-motion pref turns motion down.", "1")
   ];
   var TOKEN_NAMES = TOKENS.map((t) => t.name);
   var id = (name, type, description, fallback, extra = {}) => ({ name, type, group: "identity", description, fallback, since: "1.1", ...extra });
   var dv = (name, type, description, fallback) => ({ name, type, group: "derived", description, fallback, since: "1.1" });
+  var MOTION_FEELS = ["crisp", "snap", "smooth", "stepped"];
+  var SPRING_PRESETS = ["snap", "move", "soft", "pop"];
+  var mt = (name, type, description, fallback) => ({ name, type, group: "derived", description, fallback, since: "1.2" });
+  var MOTION_TOKENS = [
+    { name: "nk-motion-feel", type: "keyword", group: "identity", description: "How the identity moves: crisp (Graphite), snap (Signal: no glide on selection, flash instead of press scale), smooth (Velvet: longer springs, a hint of bounce), stepped (Vector: values tick in steps)", fallback: "crisp", values: MOTION_FEELS, since: "1.2" },
+    { name: "nk-spring-bounce", type: "number", group: "identity", description: "Bounce folded into the snap, move and soft springs (0 = critically damped; 0.3 is the most the kit allows)", fallback: "0", range: [0, 0.3], since: "1.2" },
+    mt("nk-motion-move", "number", "1 = things may move (translate, scale, rotate, FLIP, stagger); 0 under reduced motion or off, where only fades of at most 100ms are kept", "1"),
+    mt("nk-time-instant", "duration", "State that must be immediate: keyboard and controller selection, held key-repeat", "0ms"),
+    mt("nk-time-press", "duration", "Press, toggle, key-chip flash: 0.5 \xD7 d, 50\u2013100ms", "70ms"),
+    mt("nk-time-hover", "duration", "Pointer hover colour and row background: 0.75 \xD7 d", "105ms"),
+    mt("nk-time-base", "duration", "Panel and menu enter, the selection indicator, tab switch: d (kit.css --nk-time)", "140ms"),
+    mt("nk-time-exit", "duration", "Every exit (panel, toast, menu, modal): 0.7 \xD7 d", "98ms"),
+    mt("nk-time-move", "duration", "Toasts entering, FLIP moves, meters gaining: 1.5 \xD7 d, at most 300ms", "210ms"),
+    mt("nk-time-modal", "duration", "Dialog enter (on an inner wrapper): 1.25 \xD7 d", "175ms"),
+    mt("nk-time-screen", "duration", "Full-screen enter (pause, death, loading): 2.5 \xD7 d, at most 400ms", "350ms"),
+    mt("nk-time-ambient", "duration", "HUD show-on-change fades and the damage trail; not scaled by the identity", "400ms"),
+    mt("nk-stagger", "duration", "Delay per item on a list's first open: 0.15 \xD7 d (snap and smooth 0.125 \xD7 d), at most 20ms (smooth 30ms)", "20ms"),
+    mt("nk-stagger-max", "duration", "Total stagger cap: items past the fifth enter together", "100ms"),
+    mt("nk-ease-out", "cubicBezier", "Enter, hover, anything arriving: the identity's --nk-ease", "nk-ease"),
+    mt("nk-ease-in", "cubicBezier", "Exits (speeds up as it leaves)", "cubic-bezier(0.4, 0, 1, 1)"),
+    mt("nk-ease-in-out", "cubicBezier", "On-screen moves (indicator, FLIP, tab underline) when not a spring", "cubic-bezier(0.2, 0, 0, 1)"),
+    mt("nk-ease-emphasized", "cubicBezier", "Full-screen enter, big moments", "cubic-bezier(0.05, 0.7, 0.1, 1)"),
+    mt("nk-ease-linear", "keyword", "Progress, countdowns, streamed values, needles", "linear"),
+    mt("nk-spring-snap", "keyword", "Spring (duration, bounce): selection indicator, tab underline, needle catch-up", "160ms 0"),
+    mt("nk-spring-move", "keyword", "Spring (duration, bounce): toasts in, FLIP reflow, drawers, digit roll", "240ms 0.1"),
+    mt("nk-spring-soft", "keyword", "Spring (duration, bounce): full-screen content, large frame changes", "360ms 0"),
+    mt("nk-spring-pop", "keyword", "Spring (duration, bounce): rewards only (item added, level-up, a \xD73 badge)", "260ms 0.3")
+  ];
+  var SPRING_RATIO = {
+    crisp: [1.15, 1.7, 2.55, 1.85],
+    snap: [1.1, 1.65, 2.5, 1.8],
+    smooth: [1.08, 1.42, 1.75, 1.5],
+    stepped: [1, 1.43, 2.15, 1.7]
+  };
+  var SPRING_MAX = [400, 400, 450, 400];
+  var MAX_DURATION_MS = 260;
+  function motionTokens(d, feel = "crisp", bounce = 0) {
+    var _a;
+    const ms = (x) => `${Math.round(x)}ms`;
+    const b = Math.max(0, Math.min(0.3, bounce));
+    const r = (_a = SPRING_RATIO[feel]) != null ? _a : SPRING_RATIO.crisp;
+    const bounces = [b, Math.max(0.1, b), b, Math.max(0.3, b)];
+    const out = {
+      "nk-motion-move": "1",
+      "nk-time-instant": "0ms",
+      "nk-time-press": ms(Math.max(50, Math.min(100, d * 0.5))),
+      "nk-time-hover": ms(d * 0.75),
+      "nk-time-base": ms(d),
+      "nk-time-exit": ms(d * 0.7),
+      "nk-time-move": ms(Math.min(300, d * 1.5)),
+      "nk-time-modal": ms(d * 1.25),
+      "nk-time-screen": ms(Math.min(400, d * 2.5)),
+      "nk-time-ambient": "400ms",
+      "nk-stagger": ms(feel === "smooth" ? Math.min(30, d * 0.125) : Math.min(20, d * (feel === "snap" ? 0.125 : 0.15))),
+      "nk-stagger-max": "100ms"
+    };
+    SPRING_PRESETS.forEach((name, i) => {
+      const t = Math.min(SPRING_MAX[i], Math.round(d * r[i] / 10) * 10);
+      out[`nk-spring-${name}`] = `${t}ms ${Math.round(bounces[i] * 1e3) / 1e3}`;
+    });
+    return out;
+  }
   var IDENTITY_TOKENS = [
     id("brand", "color", "The server's signature colour: active indicators, gauge needles, focus, logos (not the action: that's primary)", "primary if chromatic (OKLCH C \u2265 0.06), else chart-1"),
     id("brand-foreground", "color", "Text on brand", "foreground or background, whichever contrasts more"),
@@ -256,7 +318,8 @@ var NuikitTheme = (() => {
     dv("nk-row-fill", "number", "1 when nk-row-indicator is fill", "from nk-row-indicator"),
     dv("nk-row-outline", "number", "1 when nk-row-indicator is outline", "from nk-row-indicator"),
     dv("nk-clip", "keyword", "clip-path of panels: the nk-cut chamfer, or none when nk-cut is 0 (a clip-path would also clip the shadow)", "from nk-cut"),
-    dv("nk-clip-sm", "keyword", "clip-path of chips, tiles and buttons: half the panel chamfer", "from nk-cut")
+    dv("nk-clip-sm", "keyword", "clip-path of chips, tiles and buttons: half the panel chamfer", "from nk-cut"),
+    ...MOTION_TOKENS
   ];
   var chamferClip = (cut) => `polygon(${cut} 0, 100% 0, 100% calc(100% - ${cut}), calc(100% - ${cut}) 100%, 0 100%, 0 ${cut})`;
   var ALL_TOKENS = [...TOKENS, ...IDENTITY_TOKENS];
@@ -754,6 +817,15 @@ var NuikitTheme = (() => {
     if (vars["nk-clip-sm"] === void 0) vars["nk-clip-sm"] = cut > 0 ? chamferClip("calc(var(--nk-cut) / 2)") : "none";
     const ind = vars["nk-row-indicator"];
     for (const k of ["bar", "fill", "outline"]) if (vars[`nk-row-${k}`] === void 0) vars[`nk-row-${k}`] = ind === k ? "1" : "0";
+    const d = parseFloat(vars["nk-duration"]);
+    const motion = motionTokens(d, vars["nk-motion-feel"], parseFloat(vars["nk-spring-bounce"]));
+    motion["nk-ease-out"] = vars["nk-ease"];
+    motion["nk-ease-in"] = "cubic-bezier(0.4, 0, 1, 1)";
+    motion["nk-ease-in-out"] = "cubic-bezier(0.2, 0, 0, 1)";
+    motion["nk-ease-emphasized"] = "cubic-bezier(0.05, 0.7, 0.1, 1)";
+    motion["nk-ease-linear"] = "linear";
+    for (const [k, v] of Object.entries(motion)) if (vars[k] === void 0) vars[k] = v;
+    if (d > MAX_DURATION_MS) warnings.push(`--nk-duration is ${d}ms (the kit's ceiling is ${MAX_DURATION_MS}ms); panels and menus will feel slow to a player who opens them hundreds of times.`);
     const op = parseFloat(vars["nk-surface-opacity"]);
     if (op < 0.92) warnings.push(`--nk-surface-opacity is ${op} (floor 0.92); the game will show through text in panels, and a bright sky will wash it out.`);
     const plate = hudPlateOverWhite(vars);

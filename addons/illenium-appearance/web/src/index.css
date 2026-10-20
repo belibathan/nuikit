@@ -266,6 +266,29 @@
   --nk-row-outline: 0;
   --nk-clip: none;
   --nk-clip-sm: none;
+  --nk-motion-feel: crisp;
+  --nk-spring-bounce: 0;
+  --nk-motion-move: 1;
+  --nk-time-instant: 0ms;
+  --nk-time-press: 70ms;
+  --nk-time-hover: 105ms;
+  --nk-time-base: 140ms;
+  --nk-time-exit: 98ms;
+  --nk-time-move: 210ms;
+  --nk-time-modal: 175ms;
+  --nk-time-screen: 350ms;
+  --nk-time-ambient: 400ms;
+  --nk-stagger: 20ms;
+  --nk-stagger-max: 100ms;
+  --nk-ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --nk-ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --nk-ease-in-out: cubic-bezier(0.2, 0, 0, 1);
+  --nk-ease-emphasized: cubic-bezier(0.05, 0.7, 0.1, 1);
+  --nk-ease-linear: linear;
+  --nk-spring-snap: 160ms 0;
+  --nk-spring-move: 240ms 0.1;
+  --nk-spring-soft: 360ms 0;
+  --nk-spring-pop: 260ms 0.3;
 }
 
 .dark {
@@ -327,6 +350,29 @@
   --nk-row-outline: 0;
   --nk-clip: none;
   --nk-clip-sm: none;
+  --nk-motion-feel: crisp;
+  --nk-spring-bounce: 0;
+  --nk-motion-move: 1;
+  --nk-time-instant: 0ms;
+  --nk-time-press: 70ms;
+  --nk-time-hover: 105ms;
+  --nk-time-base: 140ms;
+  --nk-time-exit: 98ms;
+  --nk-time-move: 210ms;
+  --nk-time-modal: 175ms;
+  --nk-time-screen: 350ms;
+  --nk-time-ambient: 400ms;
+  --nk-stagger: 20ms;
+  --nk-stagger-max: 100ms;
+  --nk-ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --nk-ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --nk-ease-in-out: cubic-bezier(0.2, 0, 0, 1);
+  --nk-ease-emphasized: cubic-bezier(0.05, 0.7, 0.1, 1);
+  --nk-ease-linear: linear;
+  --nk-spring-snap: 160ms 0;
+  --nk-spring-move: 240ms 0.1;
+  --nk-spring-soft: 360ms 0;
+  --nk-spring-pop: 260ms 0.3;
 }
 
 /* Readability at 1080p (docs/design/research.md §3): small text one step up from Tailwind's defaults,
@@ -388,7 +434,7 @@
   --color-surface: var(--surface);
   --font-display: var(--font-display);
   --font-numeric: var(--font-numeric);
-  --default-transition-duration: var(--nk-duration);
+  --default-transition-duration: var(--nk-time-base, var(--nk-duration));
   --default-transition-timing-function: var(--nk-ease);
 }
 
@@ -403,8 +449,45 @@
     @apply text-foreground select-none;
   }
   input,
-  textarea {
+  textarea,
+  [contenteditable="true"],
+  .nk-selectable {
     @apply select-text;
+  }
+  /* Kit base hardening (design v2 §5A): nothing of the web page leaks through. No image drag ghosts,
+     themed selection, caret, placeholder and scrollbars (the -webkit- ones: Chromium 103 has no
+     scrollbar-color). Text selection is off above, except fields and .nk-selectable values. */
+  img,
+  svg,
+  a {
+    -webkit-user-drag: none;
+  }
+  ::selection {
+    background-color: rgba(var(--brand-rgb, var(--primary-rgb)), 0.35);
+    color: inherit;
+  }
+  input,
+  textarea {
+    caret-color: var(--brand, var(--primary));
+  }
+  ::placeholder {
+    color: var(--muted-foreground);
+    opacity: 1;
+  }
+  ::-webkit-scrollbar {
+    width: 0.375rem;
+    height: 0.375rem;
+  }
+  ::-webkit-scrollbar-track,
+  ::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    border-radius: 9999px;
+    background-color: rgba(var(--foreground-rgb), 0.18);
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(var(--foreground-rgb), 0.3);
   }
 }
 
@@ -457,8 +540,14 @@
   --nk-theme-background: var(--background);
   --nk-theme-background-rgb: var(--background-rgb);
   --nk-theme-background-a: var(--background-a);
+  /* ── motion (tokens 1.2, docs/tokens.md#motion): the compiler writes the ladder as literals and the
+     player's prefs clamp it (reduced: ≤ 100ms, no movement; off: 0ms). --nk-time is the base step. */
   --nk-ease-out: var(--nk-ease, cubic-bezier(0.2, 0.8, 0.2, 1));
-  --nk-time: calc(var(--nk-duration, 140ms) * var(--nk-motion, 1));
+  --nk-time: var(--nk-time-base, calc(var(--nk-duration, 140ms) * var(--nk-motion, 1)));
+  --nk-press-scale: 0.97;
+  /* the selection indicator: one element per list that slides to the active row (nk-indicator) */
+  --nk-indicator-time: var(--nk-time);
+  --nk-indicator-ease: var(--nk-ease-in-out, cubic-bezier(0.2, 0, 0, 1));
 
   /* ── panel: every floating surface */
   --nk-panel-bg: rgba(var(--surface-rgb, var(--popover-rgb)), calc(var(--surface-a, var(--popover-a, 1)) * var(--nk-surface-opacity, 0.96)));
@@ -752,8 +841,10 @@
   clip-path: var(--nk-row-clip);
   font-size: var(--nk-row-font-size);
   line-height: 1.25rem;
+  /* instant state (design v2 §5A): keyboard and controller selection never transitions; only pointer
+     hover eases, over --nk-time-hover */
   transition-property: background-color, color, box-shadow;
-  transition-duration: var(--nk-time);
+  transition-duration: 0s;
   transition-timing-function: var(--nk-ease-out);
   &::before {
     content: "";
@@ -765,8 +856,12 @@
     border-radius: 9999px;
     background-color: var(--nk-row-indicator-color);
     opacity: 0;
-    transition: opacity var(--nk-time) var(--nk-ease-out);
+    transition: opacity 0s var(--nk-ease-out);
     pointer-events: none;
+  }
+  &[class*="hover:bg-accent"]:hover,
+  &[class*="hover:bg-accent"]:hover::before {
+    transition-duration: var(--nk-time-hover, var(--nk-time));
   }
   /* hover counts only on rows that highlight on hover (menu-row's hover variant): in game CEF can keep
      :hover matched after focus moves, so rows driven by Lua opt out (menu-row inert) */
@@ -1103,6 +1198,154 @@
 }
 
 /*
+ * Motion utilities (design v2 §5A, docs/design.md#motion). Transform and opacity only, cubic-bezier only
+ * (no linear(), @starting-style, individual translate/scale or :has() in Chromium 103). Under reduced
+ * motion (html[data-nk-motion="reduced"]) each falls back to its fade, at most 100ms.
+ */
+/* A floating panel opening from its trigger: popovers, menus, tooltips, the target eye. Scale 0.96 → 1
+   and fade over --nk-time, from Radix's trigger-side origin. Never on a centred dialog (its transform
+   centres it): put nk-pop on an inner wrapper there. */
+@utility nk-pop {
+  transform-origin: var(--radix-popper-transform-origin, center);
+  animation: nk-pop var(--nk-time) var(--nk-ease-out) both;
+  &[data-state="closed"] {
+    animation: nk-fade-out var(--nk-time-exit, var(--nk-time)) var(--nk-ease-in, ease-in) both;
+  }
+  html[data-nk-motion="reduced"] &:not([data-state="closed"]) {
+    animation-name: nk-enter;
+  }
+}
+@keyframes nk-pop {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes nk-fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+/* An entrance with a short rise (4px), for lists, toasts and panel contents: an inner wrapper, never a
+   centred dialog. Reduced motion keeps the fade. */
+@utility nk-rise {
+  animation: nk-rise var(--nk-time) var(--nk-ease-out) both;
+  html[data-nk-motion="reduced"] & {
+    animation-name: nk-enter;
+  }
+}
+@keyframes nk-rise {
+  from { opacity: 0; transform: translateY(0.25rem); }
+  to { opacity: 1; transform: none; }
+}
+/* First-open stagger: set --i (the item's index) inline next to nk-rise or nk-enter. --nk-stagger per
+   item, capped at --nk-stagger-max (items past the fifth enter together). First open only: never on
+   updates, filtering or keyboard navigation. */
+@utility nk-stagger {
+  animation-delay: min(calc(var(--i, 0) * var(--nk-stagger, 20ms)), var(--nk-stagger-max, 100ms));
+}
+/* Tactile press: scale(--nk-press-scale) while held, over --nk-time-press. On buttons, rows and tiles,
+   never on a centred dialog. Signal (snap) and Vector (stepped) answer with their background instead,
+   and reduced motion or off doesn't scale. */
+@utility nk-press {
+  transition: transform var(--nk-time-press, 70ms) var(--nk-ease-out);
+  &:active {
+    transform: scale(var(--nk-press-scale));
+  }
+  html[data-nk-motion="reduced"] &:active,
+  html[data-nk-motion="off"] &:active,
+  html[data-nk-feel="snap"] &:active,
+  html[data-nk-feel="stepped"] &:active {
+    transform: none;
+  }
+}
+/* A loading placeholder in the content's exact box: a muted block, and a shimmer only while motion is
+   on. Delay it ~200ms and keep it ≥ 400ms (no flicker); never on an always-on surface. */
+@utility nk-skeleton {
+  position: relative;
+  overflow: hidden;
+  border-radius: max(0.25rem, calc(var(--radius) - 4px));
+  background-color: rgba(var(--foreground-rgb), 0.08);
+  color: transparent !important;
+  pointer-events: none;
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: linear-gradient(90deg, transparent, rgba(var(--foreground-rgb), 0.08), transparent);
+    transform: translateX(-100%);
+    animation: nk-shimmer 1.4s linear infinite;
+  }
+  html[data-nk-motion="reduced"] &::after,
+  html[data-nk-motion="off"] &::after {
+    animation: none;
+    display: none;
+  }
+}
+@keyframes nk-shimmer {
+  to { transform: translateX(100%); }
+}
+/* One attention cue when a value crosses a threshold, then steady: two opacity blinks (no infinite
+   pulse on the HUD: every animated frame is a frame the game composites). Kept under reduced motion. */
+@utility nk-blink {
+  animation: nk-blink 300ms ease-in-out 2;
+}
+@keyframes nk-blink {
+  50% { opacity: 0.4; }
+}
+/*
+ * The selection indicator: ONE element per list, behind the rows, that slides to the active row with a
+ * transform (the rows don't animate; they change state instantly). Position it from code: useIndicator()
+ * in nuikit-core/react, or indicator() in nuikit-core/motion, which also apply the key-repeat rule.
+ *   <div class="relative" ref={list}><div class="nk-indicator" ref={ind} />{rows}</div>
+ * data-repeat="fast" (moves sooner than --nk-time apart) glides in --nk-time-press; "jump" (the third
+ * such move in a row) doesn't glide, so it never trails a held d-pad. Signal (snap) and reduced motion
+ * jump on every move. It draws the identity's indicator: bar, fill or outline.
+ */
+@utility nk-indicator {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--nk-row-height);
+  border-radius: var(--nk-row-radius);
+  pointer-events: none;
+  transform-origin: 0 0;
+  will-change: transform;
+  background-color: rgba(var(--brand-rgb, var(--primary-rgb)), calc(var(--nk-row-fill, 0)));
+  box-shadow: inset 0 0 0 var(--nk-row-outline-width) var(--nk-row-outline-color), var(--nk-row-glow);
+  transition: transform var(--nk-indicator-time) var(--nk-indicator-ease);
+  &::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: var(--nk-row-bar-inset);
+    bottom: var(--nk-row-bar-inset);
+    width: var(--nk-row-bar-width);
+    border-radius: 9999px;
+    background-color: var(--nk-row-indicator-color);
+  }
+  &[data-repeat="fast"] {
+    transition-duration: var(--nk-time-press, 70ms);
+  }
+  &[data-repeat="jump"],
+  html[data-nk-motion="reduced"] &,
+  html[data-nk-feel="snap"] & {
+    transition-duration: 0s;
+  }
+  &[data-hidden] {
+    opacity: 0;
+  }
+}
+/* Rows after an indicator leave the active marking to it (their text colour still changes, instantly). */
+.nk-indicator ~ .nk-row::before {
+  display: none;
+}
+.nk-indicator ~ .nk-row {
+  box-shadow: none;
+}
+html[data-nk-row="fill"] .nk-indicator ~ .nk-row.nk-row:is([data-active], [data-highlighted], :focus-visible, [class*="hover:bg-accent"]:hover) {
+  background-color: transparent;
+}
+
+/*
  * Stock shadcn parts, dressed by component tokens (vendor/ is never edited). In the utilities layer
  * after Tailwind's own, so they beat a component's base classes (bg-muted) but lose to anything more
  * specific a UI adds (group-data-[active]:bg-background/60).
@@ -1151,8 +1394,46 @@ html[data-nk-row="fill"] .nk-row::before {
   display: none;
 }
 
-/* Reduced motion (applyTheme sets data-nk-motion="off" when --nk-motion is 0): no animations or
-   transitions anywhere, shadcn's included. */
+/*
+ * Instant state (design v2 §5A, premium-qualities §1): selection, tabs, toggles and focus driven by the
+ * keyboard or a controller change with no transition; only pointer hover may ease. shadcn's parts carry
+ * transition classes, so the kit zeroes them here (vendor/ is never edited).
+ */
+html :is([data-slot="tabs-trigger"], [data-slot="toggle"], [data-slot="toggle-group-item"], [data-slot="checkbox"], [data-slot="checkbox-indicator"], [data-slot="switch"], [data-slot="switch-thumb"], [data-slot="radio-group-item"], [data-slot="select-item"], [data-slot="dropdown-menu-item"], [data-slot="context-menu-item"], [data-slot="menubar-item"], [data-slot="command-item"], [data-slot="navigation-menu-link"]):not(:hover),
+html :focus-visible {
+  transition-duration: 0s;
+}
+
+/* Vector (stepped): bar fills tick in steps instead of gliding. */
+html[data-nk-feel="stepped"] :is([data-slot="progress-indicator"], [data-slot="meter-fill"]) {
+  transition-timing-function: steps(4, end) !important;
+}
+
+/* Reduced motion (the player's pref, html[data-nk-motion="reduced"]): no movement, fades kept at
+   ≤ 100ms. shadcn's enter/exit animations (tw-animate-css) keep their fade and lose their slide, zoom
+   and spin. Loading spinners still turn: they're information. */
+html[data-nk-motion="reduced"] * {
+  --tw-enter-scale: 1 !important;
+  --tw-exit-scale: 1 !important;
+  --tw-enter-translate-x: 0 !important;
+  --tw-enter-translate-y: 0 !important;
+  --tw-exit-translate-x: 0 !important;
+  --tw-exit-translate-y: 0 !important;
+  --tw-enter-rotate: 0 !important;
+  --tw-exit-rotate: 0 !important;
+}
+html[data-nk-motion="reduced"] :is([class*="animate-in"], [class*="animate-out"]) {
+  animation-duration: 100ms !important;
+}
+html[data-nk-motion="reduced"] *,
+html[data-nk-motion="reduced"] *::before,
+html[data-nk-motion="reduced"] *::after {
+  animation-delay: 0s !important;
+  transition-delay: 0s !important;
+}
+
+/* Motion off (the theme's --nk-motion: 0, data-nk-motion="off"): no animations or transitions anywhere,
+   shadcn's included. */
 html[data-nk-motion="off"] *,
 html[data-nk-motion="off"] *::before,
 html[data-nk-motion="off"] *::after {

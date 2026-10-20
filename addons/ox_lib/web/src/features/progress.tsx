@@ -54,9 +54,9 @@ export function ProgressBar() {
   useOx("progressCancel", stop);
 
   if (!presence.mounted || !run) return null;
-  // The kit's Meter in its timed mode: it fills over `duration` in 100 ms steps (still right with
-  // motion off). That is only the picture; useRun's timer decides when the run ends, and Meter's
-  // onComplete is not used.
+  // The kit's Meter in its timed mode: it fills over `duration` as one compositor animation (at
+  // every motion level). That is only the picture; useRun's timer decides when the run ends, and
+  // Meter's onComplete is not used.
   return (
     <div className="pointer-events-none fixed inset-x-0 bottom-0 z-20 flex h-[20%] items-center justify-center">
       <Panel animate={false} data-state={presence.state} className={cn("gap-2 px-4 py-3", presenceMotion)}>
@@ -71,28 +71,37 @@ export function ProgressBar() {
 /** lib.progressCircle */
 export function ProgressCircle() {
   const { run, open, start, stop, presence } = useRun();
-  const [pct, setPct] = useState(0);
+  // ox's counter, written straight to the text node: it ticks every duration/100 ms, and a React
+  // render per tick would cost more than the ring itself (one compositor animation).
+  const pct = useRef(0);
+  const counter = useRef<HTMLSpanElement>(null);
+  const show = (p: number) => {
+    pct.current = p;
+    // the text node React made, so a later render finds its own node (and the same text)
+    const text = counter.current?.firstChild;
+    if (text) text.nodeValue = `${p}%`;
+  };
 
   useOx<{ duration: number; position?: "middle" | "bottom"; label?: string }>("circleProgress", (d) => {
     if (open) return; // ox ignores a new circle while one is showing
-    setPct(0);
+    pct.current = 0;
     start(d.duration, d.label, d.position);
   });
   useOx("progressCancel", () => {
-    setPct(99);
+    show(99);
     stop();
   });
 
   useEffect(() => {
     if (!open || !run) return;
     const step = Math.max(1, run.duration / 100);
-    const t = setInterval(() => setPct((p) => (p < 100 ? p + 1 : p)), step);
+    const t = setInterval(() => show(pct.current < 100 ? pct.current + 1 : pct.current), step);
     return () => clearInterval(t);
   }, [open, run]);
 
   if (!presence.mounted || !run) return null;
   // The kit's ProgressRing on the world (size lg, ox's ring is 90px). Its own `duration` run is
-  // only the picture (100 ms steps); useRun's timer decides when the run ends, and its onComplete
+  // only the picture (two compositor rotations); useRun's timer decides when the run ends, and its onComplete
   // is not used. The centre is ox's counter: +1 every duration/100 ms, 99 on a cancel (§9.1).
   return (
     <div className={cn("pointer-events-none fixed inset-x-0 z-20 flex justify-center", run.position === "bottom" ? "bottom-0 h-[20%] items-center" : "inset-y-0 items-center")}>
@@ -102,7 +111,7 @@ export function ProgressCircle() {
         duration={run.duration}
         label={run.label}
         aria-label={run.label || "Progress"}
-        center={`${pct}%`}
+        center={<span ref={counter}>{`${pct.current}%`}</span>}
         data-state={presence.state}
         className={presenceMotion}
       />
