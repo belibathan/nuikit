@@ -214,6 +214,7 @@ describe("systems/nuikit_pause: the bigger menu", () => {
     await pause.call("pause:map:zoom", { delta: 0.5 });
     for (let i = 0; i < 40; i++) await pause.call("pause:map:zoom", { delta: 0.5 });
     await pause.call("pause:map:rotate", { dx: 0, dy: 5 });
+    await pause.run(`Map3D.step(1)`); // the turn lands
     const goal = await pause.run<{ d: number; pitch: number }>(`local _, g = Map3D.state() return { d = g.d, pitch = g.pitch }`);
     expect(goal.d).toBe(6000);
     expect(goal.pitch).toBe(-89);
@@ -245,16 +246,27 @@ describe("systems/nuikit_pause: the bigger menu", () => {
     expect(await pause.run(`return Map3D.project({ x = 0, y = 0, z = 0, d = 100, pitch = -30, heading = 0 }, 16 / 9, 0, -5000, 0)`)).toBeFalsy();
   });
 
-  it("a drag moves the live camera at once (the ground sticks to the cursor); zoom still eases", async () => {
+  it("a drag lands on the live camera within a 60 Hz interval (the ground follows the cursor); zoom still eases", async () => {
     client = await createClient();
     const pause = await client.start("nuikit_pause", { before: natives, scripts });
     await pause.run(press);
     await pause.call("pause:view", { view: "map" });
     await pause.run(`for _ = 1, 300 do Map3D.step(0.05) end`);
+    const x = () => pause.run<number>(`local c = Map3D.state() return c.x`);
     const before = await pause.run<{ x: number; d: number }>(`local c = Map3D.state() return { x = c.x, d = c.d }`);
     await pause.call("pause:map:pan", { dx: -0.1, dy: 0 });
-    const after = await pause.run<{ x: number; d: number }>(`local c = Map3D.state() return { x = c.x, d = c.d }`);
-    expect(after.x).toBeGreaterThan(before.x + 50); // dragged left at heading 0: the view moves east now
+    expect(await x()).toBeCloseTo(before.x, 6); // nothing moves until the next frame
+    await pause.run(`Map3D.step(1 / 60)`);
+    const one = (await x()) - before.x;
+    for (let i = 0; i < 20; i++) await pause.run(`Map3D.step(1 / 60)`);
+    const all = (await x()) - before.x;
+    expect(all).toBeGreaterThan(50); // dragged left at heading 0: the view moves east
+    expect(one / all).toBeGreaterThan(0.7); // most of it in the first frame, not eased
+    expect(one / all).toBeLessThan(0.8);
+    // a turn lands the same way, and the pitch never leaves its limits
+    await pause.call("pause:map:rotate", { dx: 0, dy: -5 });
+    for (let i = 0; i < 20; i++) await pause.run(`Map3D.step(1 / 60)`);
+    expect(await pause.run<number>(`local _, g = Map3D.state() return g.pitch`)).toBeCloseTo(-25, 3);
     await pause.call("pause:map:zoom", { delta: 0.5 });
     expect((await pause.run<{ d: number }>(`local c = Map3D.state() return { d = c.d }`)).d).toBeCloseTo(before.d, 3);
   });

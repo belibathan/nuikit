@@ -10,10 +10,15 @@ local MIN_D, MAX_D = 80.0, 6000.0
 local MIN_PITCH, MAX_PITCH = -89.0, -25.0
 local EASE = 7.0            -- per second; higher = snappier
 local INFO_MS = 200         -- area and street to the UI at most this often
+-- Drags arrive at most 60 times a second (each NUI callback costs a frame ~0.5 ms at 180/s); each
+-- step lands over the next few frames with this time constant (75% within one 60 Hz interval), so
+-- the ground still follows the cursor and the motion stays smooth at any frame rate.
+local DRAG_TAU = 0.012     -- seconds
 
 local cam
 local active = false
 local cur, goal
+local drag = { x = 0.0, y = 0.0, heading = 0.0, pitch = 0.0 } -- dragged but not landed yet
 local lastPins, lastInfo, lastInfoAt = '', '', 0
 local timecycle = false
 
@@ -145,7 +150,21 @@ end
 
 -- ---------------------------------------------------------------- the loop
 
+--- Land part of the pending drag on both the live camera and the goal (what a drag did at once
+--- before it was rate-limited).
+local function land(dt)
+  local k = dt > 0 and 1.0 - math.exp(-dt / DRAG_TAU) or 0.0
+  local x, y, h, p = drag.x * k, drag.y * k, drag.heading * k, drag.pitch * k
+  drag.x, drag.y, drag.heading, drag.pitch = drag.x - x, drag.y - y, drag.heading - h, drag.pitch - p
+  cur.x, cur.y = cur.x + x, cur.y + y
+  goal.x, goal.y = goal.x + x, goal.y + y
+  cur.heading, goal.heading = (cur.heading + h) % 360.0, (goal.heading + h) % 360.0
+  cur.pitch = clamp(cur.pitch + p, -89.0, 10.0)
+  goal.pitch = clamp(goal.pitch + p, MIN_PITCH, MAX_PITCH)
+end
+
 local function step(dt)
+  land(dt)
   local k = 1.0 - math.exp(-EASE * dt)
   cur.x = cur.x + (goal.x - cur.x) * k
   cur.y = cur.y + (goal.y - cur.y) * k
@@ -238,6 +257,7 @@ function Map3D.start()
     timecycle = true
   end
   active = true
+  drag = { x = 0.0, y = 0.0, heading = 0.0, pitch = 0.0 }
   lastPins, lastInfo, lastInfoAt = '', '', 0
   CreateThread(loop)
   return true
@@ -273,20 +293,16 @@ function Map3D.pan(dx, dy)
   local fx, fy = -math.sin(h), math.cos(h)    -- screen up (away from the camera), on the ground
   local mx = -rx * dx * across + fx * dy * along
   local my = -ry * dx * across + fy * dy * along
-  -- a drag moves the camera now (no easing: the ground has to stick to the cursor)
-  cur.x, cur.y = cur.x + mx, cur.y + my
-  goal.x, goal.y = goal.x + mx, goal.y + my
-  goal.z = groundZ(goal.x, goal.y, goal.z)
+  -- lands over the next few frames (land()), not eased: the ground has to follow the cursor
+  drag.x, drag.y = drag.x + mx, drag.y + my
+  goal.z = groundZ(goal.x + drag.x, goal.y + drag.y, goal.z)
 end
 
 function Map3D.rotate(dx, dy)
   if not active then return end
-  local dh, dp = -dx * 180.0, -dy * 90.0
-  goal.heading = (goal.heading + dh) % 360.0
-  cur.heading = (cur.heading + dh) % 360.0
-  local pitch = clamp(goal.pitch + dp, MIN_PITCH, MAX_PITCH)
-  cur.pitch = clamp(cur.pitch + (pitch - goal.pitch), -89.0, 10.0)
-  goal.pitch = pitch
+  local from = goal.pitch + drag.pitch
+  drag.heading = drag.heading - dx * 180.0
+  drag.pitch = drag.pitch + (clamp(from - dy * 90.0, MIN_PITCH, MAX_PITCH) - from)
 end
 
 function Map3D.zoom(delta)
