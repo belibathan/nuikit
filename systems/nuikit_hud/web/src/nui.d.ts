@@ -1,10 +1,12 @@
 // The contract between client/main.lua (+ bridge.lua, minimap.lua) and this UI.
 import "nuikit-core";
 
+/** Sent when it changes (gear, fuel, damage, seatbelt), not as the car speeds up. */
 export interface HudVehicle {
+  /** where the gauge starts when it appears; then it follows `hud:vehicle:speed` */
   speed: number;
   units: "mph" | "kmh";
-  /** 0–1 */
+  /** 0–1, where the gauge starts; then it follows `hud:vehicle:rpm` */
   rpm: number;
   gear: number | "R" | "N";
   /** 0–100 */
@@ -12,6 +14,8 @@ export interface HudVehicle {
   /** 0–100 */
   engine: number;
   seatbelt: boolean;
+  /** faster than 10 (units): the seatbelt warning shows */
+  moving?: boolean;
 }
 
 /** Where minimap.lua put GTA's radar: the frame's rectangle as 0–1 screen fractions. */
@@ -43,9 +47,13 @@ declare module "nuikit-core" {
   interface NuiEvents {
     /** false when the player leaves the vehicle */
     "hud:vehicle": HudVehicle | false;
+    /** live (NUI.stream): speed in the vehicle's units, whole numbers, ≤30 a second while it changes */
+    "hud:vehicle:speed": number;
+    /** live (NUI.stream): rpm 0–1 to 0.01, ≤30 a second while it changes */
+    "hud:vehicle:rpm": number;
     "hud:minimap:frame": MinimapFrame;
     "hud:minimap": MinimapState;
-    /** the camera heading (0.1°), about 30 times a second while it turns */
+    /** live (NUI.stream): the camera heading (0.1°), ≤30 a second while it turns */
     "hud:minimap:heading": number;
   }
   interface NuiCallbacks {

@@ -1,4 +1,4 @@
-import { Surface, useNuiState, usePlayer, type NuiPlayer } from "nuikit-core/react";
+import { emit, onNui, Surface, useFollow, useNuiState, usePlayer, type NuiPlayer } from "nuikit-core/react";
 import {
   CarFrontIcon,
   DropletIcon,
@@ -12,12 +12,12 @@ import {
   UtensilsIcon,
   WalletIcon,
 } from "lucide-react";
-import type { CSSProperties } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { Minimap, useMinimapFrame } from "./minimap";
 import type { HudVehicle, MinimapFrame, MinimapState } from "./nui";
 import { HudChip } from "@/components/ui/hud-chip";
 import { Meter } from "@/components/ui/meter";
-import { Speedometer } from "@/components/ui/speedometer";
+import { SPEEDOMETER_REDLINE, Speedometer, speedometerDash } from "@/components/ui/speedometer";
 import { Stat } from "@/components/ui/stat";
 import { cn } from "@/lib/utils";
 
@@ -111,19 +111,83 @@ function Wallet({ player }: { player: NuiPlayer }) {
   );
 }
 
-/** Bottom right while driving: speed, rpm, gear, fuel, seatbelt and engine warnings. */
+const GAUGE = 176;
+
+// main.lua's live channels have spoken (always, in game). Our own echoes below don't count.
+let live = false;
+let echoing = false;
+onNui("hud:vehicle:rpm", () => {
+  if (!echoing) live = true;
+});
+function echo(speed: number, rpm: number) {
+  echoing = true;
+  try {
+    emit("hud:vehicle:speed", speed);
+    emit("hud:vehicle:rpm", rpm);
+  } finally {
+    echoing = false;
+  }
+}
+
+/**
+ * Bottom right while driving: speed, rpm, gear, fuel, seatbelt and engine warnings. Speed and rpm are
+ * live values (main.lua streams them): they glide at the game's frame rate, written straight to the
+ * gauge without a React render. React renders on gear, fuel, damage or seatbelt, and on the redline.
+ */
 function Vehicle({ vehicle }: { vehicle: HudVehicle }) {
-  const unbuckled = !vehicle.seatbelt && vehicle.speed > 10;
+  const gauge = useRef<HTMLDivElement>(null);
+  // the gauge's speed and rpm props stay where it started, so React never overwrites the live values
+  const [start] = useState(() => ({ speed: vehicle.speed, rpm: vehicle.rpm }));
+  const [redline, setRedline] = useState(vehicle.rpm > SPEEDOMETER_REDLINE);
+  const red = useRef(redline);
+
+  useFollow(
+    "hud:vehicle:rpm",
+    (rpm) => {
+      const arc = gauge.current?.querySelector<SVGElement>('[data-slot="speedometer-rpm"]');
+      if (arc) {
+        arc.style.transition = "none";
+        arc.style.strokeDasharray = speedometerDash(rpm, GAUGE);
+      }
+      const over = rpm > SPEEDOMETER_REDLINE;
+      if (over !== red.current) setRedline((red.current = over));
+    },
+    { start: start.rpm },
+  );
+  useFollow(
+    "hud:vehicle:speed",
+    (speed) => {
+      // React's own text node, so a later render finds it in place
+      const text = gauge.current?.querySelector('[data-slot="speedometer-speed"]')?.firstChild;
+      const shown = String(Math.round(speed));
+      if (text && text.nodeValue !== shown) text.nodeValue = shown;
+    },
+    { start: start.speed, epsilon: 0.05 },
+  );
+  // Without the live channels (the dev mocks, the bench), a fresh hud:vehicle moves the gauge. In
+  // game the streams are newer than the speed and rpm it carries, so it never does.
+  const seen = useRef(false);
+  useEffect(() => {
+    if (!seen.current) {
+      seen.current = true;
+      return;
+    }
+    if (!live) echo(vehicle.speed, vehicle.rpm);
+  }, [vehicle.speed, vehicle.rpm]);
+
+  const unbuckled = !vehicle.seatbelt && (vehicle.moving ?? vehicle.speed > 10);
   const engine = vehicle.engine < 35;
   return (
     <div className="nk-anchor-br flex flex-col items-center gap-3">
       <Speedometer
-        speed={vehicle.speed}
-        rpm={vehicle.rpm}
+        ref={gauge}
+        speed={start.speed}
+        rpm={start.rpm}
+        redline={redline}
         gear={vehicle.gear}
         fuel={vehicle.fuel}
         unit={vehicle.units === "kmh" ? "km/h" : "mph"}
-        size={176}
+        size={GAUGE}
         className={onGameMarks}
       />
       {(unbuckled || engine) && (

@@ -59,6 +59,9 @@ const mocks = defineMocks({
       { speed: 118, units: "mph", rpm: 0.94, gear: 6, fuel: 12, engine: 28, seatbelt: false },
       false,
     ],
+    // live values (main.lua streams them, ~30 a second while they change; the gauge glides between)
+    "hud:vehicle:speed": [64, 88, 118, 12],
+    "hud:vehicle:rpm": [0.62, 0.8, 0.94, 0.25],
     "hud:minimap": [street, { ...street, heading: 120 }, { ...street, visible: false }],
   },
   callbacks: {

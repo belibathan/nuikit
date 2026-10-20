@@ -181,21 +181,20 @@ function Minimap.tick(radarOn)
   end
 end
 
-local lastHeading
---- The compass: the heading alone, sent only when it changed (to the tenth of a degree). The page
---- eases toward it and predicts between messages on every browser frame (minimap.tsx), so the
---- compass turns at the game's full frame rate from about 30 small messages a second.
+--- The compass: the heading alone on its own channel, a live value (NUI.stream): sent only when it
+--- changed to the tenth of a degree, at most 30 times a second. The page glides between messages on
+--- every browser frame (nuikit-core follow, minimap.tsx), so the compass turns at the game's full
+--- frame rate from about 30 small messages a second.
+local heading = NUI.stream('hud:minimap:heading', { rate = 30, precision = 0.1, kind = 'angle' })
 function Minimap.compass()
-  local h = Minimap.cameraHeading()
-  if h == lastHeading then return end
-  lastHeading = h
-  NUI.send('hud:minimap:heading', h)
+  heading:push(Minimap.cameraHeading())
 end
 
 --- The page asks for the frame when it (re)loads.
 function Minimap.resend()
   if placed then NUI.send('hud:minimap:frame', placed) end
-  lastKey, lastHeading = '', nil
+  lastKey = ''
+  heading:reset()
 end
 
 Minimap.radarOn = false -- set by main.lua

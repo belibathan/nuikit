@@ -33,8 +33,27 @@ local function gear(vehicle, speed)
   return g
 end
 
+-- Speed and rpm move every frame: live values on their own channels (NUI.stream), at most 30 times a
+-- second and only when they changed. The page glides between messages at the game's frame rate
+-- (useFollow, App.tsx), so the gauge never steps. hud:vehicle carries the rest, sent on change.
+local speedLive = NUI.stream('hud:vehicle:speed', { rate = 30, precision = 1 })
+local rpmLive = NUI.stream('hud:vehicle:rpm', { rate = 30, precision = 0.01 })
+local current = 0 -- the vehicle being driven, or 0
+
 CreateThread(function()
-  local last, paused, inVehicle = nil, nil, false
+  while true do
+    if current ~= 0 then
+      speedLive:push(GetEntitySpeed(current) * SPEED)
+      rpmLive:push(GetVehicleCurrentRpm(current))
+      Wait(33)
+    else
+      Wait(100)
+    end
+  end
+end)
+
+CreateThread(function()
+  local last, paused = nil, nil
   while true do
     local ped = PlayerPedId()
     local vehicle = GetVehiclePedIsIn(ped, false)
@@ -50,25 +69,29 @@ CreateThread(function()
     if driving then
       local speed = GetEntitySpeed(vehicle) * SPEED
       local v = {
-        speed = math.floor(speed + 0.5),
         units = units,
-        rpm = math.floor(GetVehicleCurrentRpm(vehicle) * 100) / 100,
         gear = gear(vehicle, speed),
         fuel = fuel(vehicle),
         engine = math.floor(GetVehicleEngineHealth(vehicle) / 10),
         seatbelt = LocalPlayer.state.seatbelt == true,
+        moving = speed > 10, -- for the seatbelt warning
       }
       local encoded = json.encode(v)
-      if encoded ~= last then
+      if encoded ~= last or vehicle ~= current then
         last = encoded
+        -- where the gauge starts when it appears; the streams move it from there
+        v.speed = math.floor(speed + 0.5)
+        v.rpm = math.floor(GetVehicleCurrentRpm(vehicle) * 100 + 0.5) / 100
         NUI.send('hud:vehicle', v)
       end
-      inVehicle = true
+      current = vehicle
       Wait(100)
     else
-      if inVehicle then
+      if current ~= 0 then
+        current, last = 0, nil
         NUI.send('hud:vehicle', false)
-        inVehicle, last = false, nil
+        speedLive:reset()
+        rpmLive:reset()
       end
       Wait(400)
     end

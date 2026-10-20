@@ -54,6 +54,28 @@ describe("hosted module", () => {
     expect(host.posts.map((p) => p.name)).toContain("nuikit:ready");
   });
 
+  it("follows a live value the host delivers (follow, §5.7)", async () => {
+    const host = fakeHost();
+    const frames: FrameRequestCallback[] = [];
+    vi.stubGlobal("requestAnimationFrame", (fn: FrameRequestCallback) => frames.push(fn));
+    vi.stubGlobal("cancelAnimationFrame", () => {});
+    const now = vi.spyOn(performance, "now").mockReturnValue(1000);
+    try {
+      const core = await loadAsModule(host.ctx);
+      const seen: number[] = [];
+      core.follow("shop:progress", (v) => seen.push(v), { start: 0 });
+      host.send("shop:progress", 1);
+      now.mockReturnValue(1100);
+      frames.splice(0).forEach((f) => f(1100)); // past the glide: lands
+      expect(seen).toEqual([0, 1]);
+      window.postMessage({ action: "shop:progress", data: 5 }, "*"); // not through the host: ignored
+      await new Promise((r) => setTimeout(r, 0));
+      expect(core.followed("shop:progress")).toBe(1);
+    } finally {
+      vi.unstubAllGlobals();
+    }
+  });
+
   it("receives only the host's messages, not window messages", async () => {
     const host = fakeHost();
     const core = await loadAsModule(host.ctx);

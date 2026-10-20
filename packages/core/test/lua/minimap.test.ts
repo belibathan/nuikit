@@ -27,6 +27,9 @@ const natives = `
   PIXELS, REPLACED = 0, nil
   CAMZ = 0.0
   function GetGameplayCamRot() return { x = 0.0, y = 0.0, z = CAMZ } end
+  -- the compass thread's pace: 33 ms between calls (its stream sends at most 30 a second)
+  NOW = 0
+  function GetGameTimer() NOW = NOW + 33 return NOW end
   function CreateRuntimeTxd(n) return n end
   function CreateRuntimeTexture(_, n) return n end
   function SetRuntimeTexturePixel() PIXELS = PIXELS + 1 end
@@ -127,5 +130,9 @@ describe("systems/nuikit_hud: the minimap", () => {
     expect(sent()).toEqual([270]);
     await hud.run(`CAMZ = -89.5 Minimap.compass() CAMZ = 179.96 Minimap.compass() CAMZ = -179.96 Minimap.compass()`);
     expect(sent()).toEqual([270, 270.5, 180]); // 179.96 and -179.96 are the same heading: sent once
+    // the page reloads: the heading goes out again even though it didn't change
+    await hud.call("hud:minimap:ready");
+    await hud.run(`Minimap.compass()`);
+    expect(sent()).toEqual([270, 270.5, 180, 180]);
   });
 });
