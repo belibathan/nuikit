@@ -73,6 +73,8 @@ Defined once in `packages/create-nuikit/kit.css` and inlined into every synced `
 `nk-*` name locally. `nk-panel`'s depth is a `box-shadow`, so mark a selected panel with `outline`, not `ring-*`.
 
 Sizes are in rem (Tailwind's scale), never px, so they follow the resolution scale.
+Building or changing a registry component? The **[component contract](design/contract.md)** is the merge checklist:
+tokens, states, motion, controller focus, identity screenshots, registry metadata, and which items CI checks.
 Reference implementation: `systems/nuikit_pause`. The registry components (`panel`, `menu-row`, `stat`,
 `meter`, `hud-chip`, …) are these utilities with props; prefer them over the raw classes.
 

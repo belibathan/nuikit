@@ -75,7 +75,8 @@ already carry every field the intent needs:
 Also from Part B: `item-slot`, `money`, `countdown`, `player-card`, `empty`. Supersede `key-hint`, `nui-toaster`,
 `task-progress` (keep them working, mark deprecated).
 
-Bar: built from stock shadcn + kit utilities only; tokens only; rem not px; every state reachable from props
+Bar: the **[component contract](../design/contract.md)** is the merge checklist (it marks what CI checks). In short:
+built from stock shadcn + kit utilities only; tokens only; rem not px; every state reachable from props
 (for screenshots and the site); keyboard and mouse; motion through `--nk-motion` (none when reduced); `data-slot`
 attributes; `cva` variants; tests where there's logic (countdown, money, skill-check timing, meter thresholds);
 each one on `/components` with all its states over a game scene. Premium, minimal, consistent with
