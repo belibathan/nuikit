@@ -1,0 +1,6 @@
+{
+  "block": "garage",
+  "title": "Garage",
+  "description": "Your vehicles with fuel, engine and body; take out, store, release from the impound",
+  "next": ["stand at a garage in config.lua and press F6 (or /{{name}}); drive in and Store to add a vehicle"]
+}

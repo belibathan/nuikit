@@ -453,6 +453,46 @@
         "screens"
       ],
       "docs": "Mount <ScoreboardSurface /> in App.tsx. In Lua, open nk.surface(\"scoreboard\", { layer = \"panel\", exclusive = true }) with a ScoreboardData table ({ players = { { id, name, job, ping, you } }, max, activities }) and :update it while it's open. A whole resource with the Lua: npm create nuikit@latest my-scoreboard -- -t scoreboard"
+    },
+    {
+      "name": "garage",
+      "type": "registry:block",
+      "title": "Garage",
+      "description": "Your vehicles at a garage, filtered by stored, out and impounded, with the selected one's fuel, engine and body. Take out, store the one you're driving, release from the impound; Lua answers each and its errors show on the panel.",
+      "files": [
+        {
+          "path": "registry/nuikit/blocks/garage/garage.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/garage/garage.tsx"
+        },
+        {
+          "path": "registry/nuikit/blocks/garage/nui.ts",
+          "type": "registry:lib",
+          "target": "components/blocks/garage/nui.ts"
+        },
+        {
+          "path": "registry/nuikit/blocks/garage/fixtures.ts",
+          "type": "registry:lib",
+          "target": "components/blocks/garage/fixtures.ts"
+        }
+      ],
+      "dependencies": [
+        "lucide-react",
+        "nuikit-core"
+      ],
+      "registryDependencies": [
+        "button",
+        "kbd",
+        "spinner",
+        "tabs",
+        "https://nuikit.vercel.app/r/panel.json",
+        "https://nuikit.vercel.app/r/menu-row.json",
+        "https://nuikit.vercel.app/r/meter.json"
+      ],
+      "categories": [
+        "screens"
+      ],
+      "docs": "Mount <GarageSurface /> in App.tsx. In Lua, open nk.surface(\"garage\", { layer = \"panel\", exclusive = true }) with a GarageData table and answer nk.on(\"garage:takeOut\"), nk.on(\"garage:store\") and nk.on(\"garage:release\") with { ok, error }. A whole resource with the Lua: npm create nuikit@latest my-garage -- -t garage"
     }
   ]
 }

@@ -34,6 +34,7 @@ npm create nuikit@latest my-death -- -t death-screen
 | `loading-screen` | The real load progress, tips, links, backgrounds and music, in the server theme |
 | `settings` | Player settings: toggles, choices, sliders, key hints, and nuikit's accessibility prefs |
 | `scoreboard` | Who's online with IDs, jobs and ping, a search, and which activities can start |
+| `garage` | Your vehicles with fuel, engine and body; take out, store, release from the impound |
 
 Without `-t` you get the demo (a HUD, a menu and a confirm dialog), or pick from a list.
 

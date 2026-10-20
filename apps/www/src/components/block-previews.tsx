@@ -1,5 +1,7 @@
 import type { ReactNode } from "react";
 import { DeathScreen } from "@/blocks/death-screen/death-screen";
+import { garageFixtures } from "@/blocks/garage/fixtures";
+import { Garage } from "@/blocks/garage/garage";
 import { deathScreenFixtures } from "@/blocks/death-screen/fixtures";
 import { HudMinimal } from "@/blocks/hud-minimal/hud-minimal";
 import { hudMinimalFixtures } from "@/blocks/hud-minimal/fixtures";
@@ -88,6 +90,17 @@ export const BLOCKS: BlockPreview[] = [
       Full: () => <ScoreboardStill data={scoreboardFixtures.full} />,
       Search: () => <ScoreboardStill data={scoreboardFixtures.full} query="lspd" />,
       Standalone: () => <ScoreboardStill data={scoreboardFixtures.standalone} />,
+    },
+  },
+  {
+    name: "garage",
+    title: "Garage",
+    description: "Your vehicles at a garage with fuel, engine and body: take one out, store the one you're driving, or pay to release one from the impound. Lua answers every button.",
+    states: {
+      Garage: () => <Garage data={garageFixtures.full} autoFocus={false} onAction={async () => ({ ok: true })} />,
+      Impound: () => <Garage data={garageFixtures.impounded} autoFocus={false} onAction={async () => ({ ok: true })} />,
+      "On foot, refused": () => <Garage data={garageFixtures["on-foot"]} autoFocus={false} onAction={async () => ({ ok: false, error: "Something is parked in the way." })} />,
+      Empty: () => <Garage data={garageFixtures.empty} autoFocus={false} />,
     },
   },
 ];
