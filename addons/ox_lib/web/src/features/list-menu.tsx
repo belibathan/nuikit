@@ -2,7 +2,7 @@ import { ChevronDownIcon } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { MenuRow } from "@/components/ui/menu-row";
 import { Panel, PanelBody, PanelHeader } from "@/components/ui/panel";
-import { Bar } from "@/lib/bar";
+import { Meter, meterColor } from "@/components/ui/meter";
 import { Icon } from "@/lib/icon";
 import { debounce, post, useOx } from "@/lib/nui";
 import { cn } from "@/lib/utils";
@@ -194,7 +194,7 @@ function Row({ index, item, active, scroll, checked }: { index: number; item: Me
     : isCheck(item)
       ? { checked }
       : item.progress !== undefined
-        ? { meta: <Bar value={item.progress} scheme={item.colorScheme} className="w-24" /> }
+        ? { meta: <Meter {...meterColor(item.colorScheme)} value={item.progress} size="sm" aria-label={item.label} className="w-24" /> }
         : {};
   return (
     <MenuRow

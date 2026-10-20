@@ -54,20 +54,15 @@ export function ProgressBar() {
   useOx("progressCancel", stop);
 
   if (!presence.mounted || !run) return null;
-  // The kit's Meter, filled by a CSS animation over `duration` rather than by `value` (no per-frame
-  // renders). The animation is only the picture; useRun's timer decides when the run ends.
+  // The kit's Meter in its timed mode: it fills over `duration` in 100 ms steps (still right with
+  // motion off). That is only the picture; useRun's timer decides when the run ends, and Meter's
+  // onComplete is not used.
   return (
     <div className="pointer-events-none fixed inset-x-0 bottom-0 z-20 flex h-[20%] items-center justify-center">
       <Panel animate={false} data-state={presence.state} className={cn("gap-2 px-4 py-3", presenceMotion)}>
         {/* The label is the surface's only text, so it reads as body text, not as Meter's 12px label row. */}
         {run.label && <span className="truncate text-sm leading-5 font-medium">{run.label}</span>}
-        <Meter
-          key={run.id}
-          value={0}
-          aria-label={run.label || "Progress"}
-          className="[&_[data-slot=progress-indicator]]:animate-[ox-fill_var(--ox-duration)_linear_forwards]"
-          style={{ ["--ox-duration" as string]: `${run.duration}ms` }}
-        />
+        <Meter key={run.id} duration={run.duration} aria-label={run.label || "Progress"} />
       </Panel>
     </div>
   );
