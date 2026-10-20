@@ -64,6 +64,7 @@ import { KeyPrompt, KeyPromptStack } from "@/components/ui/key-prompt";
 import { ProgressRing } from "@/components/ui/progress-ring";
 import { Speedometer } from "@/components/ui/speedometer";
 import { Countdown } from "@/components/ui/countdown";
+import { Money } from "@/components/ui/money";
 import { cn } from "@/lib/utils";
 
 export function ComponentsPage() {
@@ -301,6 +302,15 @@ export function ComponentsPage() {
           <Countdown surface="game" size="hero" seconds={154} total={300} label="Until you can respawn" />
           <CountdownStates />
           <CountdownDemo />
+        </Section>
+
+        <Section
+          name="money"
+          title="Money"
+          text="Every amount formatted one way: tabular figures, the server's currency and locale, whole units by default, a sign and a direction colour for changes, and a compact form for tight spots. Inline, so it goes in a stat, a row, a chip."
+          stageClassName="items-center"
+        >
+          <MoneyStates />
         </Section>
       </main>
       <Footer />
@@ -1178,6 +1188,62 @@ function CountdownDemo() {
         </Button>
       </PanelFooter>
     </Panel>
+  );
+}
+
+const TRANSACTIONS = [
+  { label: "Paycheck", note: "LSPD, Tuesday", amount: 1850 },
+  { label: "Impound fee", note: "Mission Row", amount: -250 },
+  { label: "Transfer from Lamar", note: "Fleeca", amount: 1200 },
+  { label: "Fuel", note: "Ron, Grove Street", amount: -84 },
+];
+
+/** Money in a stat, in rows (signed, direction tones), on the HUD (compact), other locales, chips. */
+function MoneyStates() {
+  return (
+    <>
+      <Panel>
+        <PanelHeader icon={<LandmarkIcon />} title="Fleeca" description="Personal account" />
+        <PanelBody variant="form" className="gap-3">
+          <Stat label="Balance" value={<Money amount={48210} />} size="display" />
+        </PanelBody>
+        <Separator />
+        <PanelBody>
+          {TRANSACTIONS.map((t) => (
+            <MenuRow key={t.label} description={t.note} meta={<Money amount={t.amount} sign="always" tone="direction" className="text-sm" />} readOnly>
+              {t.label}
+            </MenuRow>
+          ))}
+        </PanelBody>
+      </Panel>
+      <div className="flex flex-col items-start gap-6">
+        <div className="flex flex-col items-end gap-1">
+          <Stat surface="game" align="end" icon={<WalletIcon />} label="Cash" value={<Money amount={1520} />} />
+          <Stat surface="game" align="end" icon={<LandmarkIcon />} label="Bank" value={<Money amount={1250000} compact />} size="sm" />
+        </div>
+        <Panel size="sm">
+          <PanelHeader title="Other servers" description="Currency, locale, decimals" />
+          <PanelBody variant="form" className="gap-3">
+            <div className="flex items-baseline justify-between gap-4 text-sm">
+              <span className="nk-label">de-DE, EUR</span>
+              <Money amount={1234.5} currency="EUR" locale="de-DE" fractionDigits={2} size="sm" />
+            </div>
+            <div className="flex items-baseline justify-between gap-4 text-sm">
+              <span className="nk-label">en-GB, GBP</span>
+              <Money amount={1234.5} currency="GBP" locale="en-GB" fractionDigits={2} size="sm" />
+            </div>
+            <div className="flex items-baseline justify-between gap-4 text-sm">
+              <span className="nk-label">Casino chips</span>
+              <Money amount={2500} currency={null} suffix=" chips" size="sm" />
+            </div>
+            <div className="flex items-baseline justify-between gap-4 text-sm">
+              <span className="nk-label">A loss, muted</span>
+              <Money amount={-3.5} fractionDigits={2} tone="muted" size="sm" />
+            </div>
+          </PanelBody>
+        </Panel>
+      </div>
+    </>
   );
 }
 
