@@ -98,9 +98,9 @@ protocol carries the platform.
   resource; every nuikit page is at level 3 and CI keeps it there.
 - **Tokens v1:** `docs/tokens.md`, a DTCG file and JSON Schema, `compileTheme` with contrast checks, one
   distribution path (`nuikit theme reload` repaints every UI live).
-- **Host:** prototype works end to end (`docs/host.md`); benchmark in `bench/host/results.md`. The gain depends
-  on whether FiveM gives each NUI frame its own process: up to −44% memory and −51% main-thread work at 20 UIs
-  if so, about −5% memory (but half the JS heap) if not. Stays opt-in until that is measured in game.
+- **Host:** prototype works end to end (`docs/host.md`). Measured in game: FiveM shares one browser process
+  across all NUI frames, so hosting saves ~5 MB. It stays an opt-in convenience; its module loader carries the
+  renderers.
 
 ## Risks, plainly
 
