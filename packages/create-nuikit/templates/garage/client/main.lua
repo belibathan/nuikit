@@ -80,50 +80,43 @@ local CLASSES = { [0] = 'Compact', 'Sedan', 'SUV', 'Coupe', 'Muscle', 'Sports Cl
 
 local function pct(n) return math.floor(math.max(0, math.min(100, n)) + 0.5) end
 
+-- The server reads the vehicle itself (plate, model, health) and deletes it once you're out; the
+-- client only names it and adds the label and class for the list.
 nk.on('garage:store', function()
   local veh = driving()
   if not veh or not here then return { ok = false, error = 'Drive the vehicle into the garage first.' } end
   local model = GetEntityModel(veh)
   local res = request('store', {
     garage = here.id,
-    model = model,
+    net = VehToNet(veh),
     label = GetLabelText(GetDisplayNameFromVehicleModel(model)),
-    plate = (GetVehicleNumberPlateText(veh):gsub('^%s+', ''):gsub('%s+$', '')),
     class = CLASSES[GetVehicleClass(veh)],
-    fuel = pct(Entity(veh).state.fuel or GetVehicleFuelLevel(veh)),
-    engine = pct(GetVehicleEngineHealth(veh) / 10),
-    body = pct(GetVehicleBodyHealth(veh) / 10),
+    fuel = pct(GetVehicleFuelLevel(veh)), -- used when no fuel resource sets the `fuel` state bag
   })
   if not res or not res.ok then return { ok = false, error = res and res.error or "The garage didn't answer." } end
   TaskLeaveVehicle(PlayerPedId(), veh, 0)
-  SetTimeout(1500, function()
-    SetEntityAsMissionEntity(veh, true, true)
-    DeleteVehicle(veh)
-    refresh()
-  end)
+  SetTimeout(1600, refresh)
   return { ok = true }
 end)
 
+-- The server spawns it (so it can't come out twice) and sends its network id; the client waits for
+-- it to arrive, applies the health the server can't set, and puts you in the driver's seat.
 nk.on('garage:takeOut', function(data)
   if not here then return { ok = false } end
   local s = here.spawn
   if IsAnyVehicleNearPoint(s.x, s.y, s.z, 3.0) then return { ok = false, error = 'Something is parked in the way.' } end
-  local res = request('take', { id = data.id })
+  local res = request('take', { id = data.id, garage = here.id })
   if not res or not res.ok then return { ok = false, error = res and res.error or "The garage didn't answer." } end
-  local v = res.vehicle
-  RequestModel(v.model)
   local deadline = GetGameTimer() + 5000
-  while not HasModelLoaded(v.model) and GetGameTimer() < deadline do Wait(50) end
-  if not HasModelLoaded(v.model) then return { ok = false, error = "That vehicle's model didn't load." } end
-  local veh = CreateVehicle(v.model, s.x, s.y, s.z, s.w, true, false)
-  SetModelAsNoLongerNeeded(v.model)
-  SetVehicleNumberPlateText(veh, v.plate)
+  while not NetworkDoesNetworkIdExist(res.net) and GetGameTimer() < deadline do Wait(50) end
+  local veh = NetworkDoesNetworkIdExist(res.net) and NetToVeh(res.net) or 0
+  panel:close()
+  if veh == 0 then return { ok = true } end -- it's out at the spawn point, just not streamed in yet
+  local v = res.vehicle
   SetVehicleFuelLevel(veh, v.fuel + 0.0)
-  Entity(veh).state:set('fuel', v.fuel, true)
   SetVehicleEngineHealth(veh, v.engine * 10.0)
   SetVehicleBodyHealth(veh, v.body * 10.0)
   TaskWarpPedIntoVehicle(PlayerPedId(), veh, -1)
-  panel:close()
   return { ok = true }
 end)
 
