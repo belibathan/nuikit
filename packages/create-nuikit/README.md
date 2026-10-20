@@ -37,6 +37,7 @@ npm create nuikit@latest my-death -- -t death-screen
 | `garage` | Your vehicles with fuel, engine and body; take out, store, release from the impound. Needs OneSync |
 | `bank` | Accounts, balance, transactions; deposit, withdraw and transfer, checked by the server |
 | `job-menu` | Duty toggle and job actions; for bosses, staff with promote, demote, fire and hire, checked by the server |
+| `character-select` | Character slots, a player card, create with validation, delete with a confirm, and where to spawn; checked by the server |
 
 Without `-t` you get the demo (a HUD, a menu and a confirm dialog), or pick from a list.
 

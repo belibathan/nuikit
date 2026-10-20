@@ -1,0 +1,9 @@
+{
+  "block": "character-select",
+  "title": "Character select",
+  "description": "Character slots, a player card, create with validation, delete with a confirm, and where to spawn; every choice checked by the server",
+  "next": [
+    "join the server: the screen shows before you spawn; /{{name}} brings it back",
+    "on Qbox or QBCore their multicharacter does this: use one or the other (see the README)"
+  ]
+}

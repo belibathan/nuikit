@@ -8,6 +8,8 @@ import { deathScreenFixtures } from "@/blocks/death-screen/fixtures";
 import { HudMinimal } from "@/blocks/hud-minimal/hud-minimal";
 import { jobMenuFixtures } from "@/blocks/job-menu/fixtures";
 import { JobMenu } from "@/blocks/job-menu/job-menu";
+import { characterSelectFixtures } from "@/blocks/character-select/fixtures";
+import { CharacterSelect } from "@/blocks/character-select/character-select";
 import { hudMinimalFixtures } from "@/blocks/hud-minimal/fixtures";
 import { LoadingScreen } from "@/blocks/loading-screen/loading-screen";
 import { loadingHandovers, loadStateAt } from "@/blocks/loading-screen/fixtures";
@@ -127,6 +129,17 @@ export const BLOCKS: BlockPreview[] = [
       Actions: () => <JobMenu data={jobMenuFixtures.boss} autoFocus={false} onRequest={async () => ({ ok: true })} />,
       "Off duty": () => <JobMenu data={jobMenuFixtures["off-duty"]} autoFocus={false} onRequest={async () => ({ ok: true })} />,
       Refused: () => <JobMenu data={jobMenuFixtures.boss} defaultTab="staff" autoFocus={false} onRequest={async () => ({ ok: false, error: "Only the boss can do that." })} />,
+    },
+  },
+  {
+    name: "character-select",
+    title: "Character select",
+    description: "Character slots, the chosen one as a player card with Play and Delete (behind a confirm), where to spawn, and a create form. The server checks every choice: whose character it is, which spawn points exist, what a valid new character is.",
+    states: {
+      Characters: () => <CharacterSelect data={characterSelectFixtures.three} autoFocus={false} />,
+      Spawn: () => <CharacterSelect data={characterSelectFixtures.three} defaultStep="spawn" autoFocus={false} />,
+      Create: () => <CharacterSelect data={characterSelectFixtures.first} defaultStep="create" autoFocus={false} />,
+      Delete: () => <CharacterSelect data={characterSelectFixtures.three} defaultSelected="RCH20811" confirming autoFocus={false} />,
     },
   },
 ];
