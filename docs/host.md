@@ -1,6 +1,6 @@
 # The nuikit host (prototype)
 
-*Status: prototype on `feat/platform`, off the critical path. It works end to end in the browser harness
+*Status: prototype, opt-in. The in-game measurement is in [Decision](#decision-measured-in-game-oct-19-2026). It works end to end in the browser harness
 (`bench/host/e2e.mjs`, 19/19), and `nuikit_hud` ships as a module. Whether it becomes a promise depends on one
 in-game measurement; see [Decision](#decision).*
 
@@ -85,19 +85,21 @@ From `bench/host/results.md` (desktop Chromium, 20 UIs):
 Open latency and message latency are the same in every model. The gain depends on FiveM's process model, and
 keeping one `ui_page` per resource gives the memory gain back when frames get their own processes.
 
-## Decision
+## Decision (measured in game, Oct 19 2026)
 
-The host stays an **opt-in prototype**; the protocol carries the platform (as `docs/vision.md` planned).
-One in-game check decides whether to go further:
+**FiveM puts every NUI frame in one shared renderer process.** With the kit running, total FiveM browser memory
+was 333 MB with the host on and 338 MB with it off (148 vs 153 MB private, 4 FiveM_ChromeBrowser processes, same
+scene, 30 s settle): about 5 MB, within noise. That is the "one process" column above, so the host saves a frame
+and a JS heap, not a process.
 
-- Count FiveM's CEF renderer processes with the kit running, with `setr nuikit_host 1` and `0`. If every NUI frame
-  gets its own process, the host is worth up to ~44% of NUI memory and half the main-thread work at 20 UIs, and
-  the next step is **module-only resources** (no `ui_page`, the host required), since an empty boot page still
-  costs a process. If all frames share one process, the gain is a smaller JS heap and faster load: keep the host
-  as a convenience (one theme, one focus owner, real z-order) and don't push resources to adopt it.
+So, as planned for this outcome:
 
-Also needs the game: frame time with the host on and off; Radix focus inside a shadow root under FiveM's CEF;
-`:host-context()` on Chromium 103; DUI (rendering the host's surfaces in the world) is not built.
+- **Hosting whole screens stays an opt-in convenience** (one theme application, one focus owner, real z-order),
+  not something resources are pushed to adopt. No module-only resources.
+- **The module loader is core infrastructure anyway:** renderers (docs/architecture.md §4) are modules mounted in
+  nuikit's frame, and intents render there.
+- Still unmeasured: frame time with the host on and off. Radix focus inside a shadow root and `:host-context()`
+  worked in the browser checks; DUI (rendering surfaces in the world) is not built.
 
 ## Files
 

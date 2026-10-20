@@ -4,6 +4,94 @@
   "homepage": "https://nuikit.vercel.app",
   "items": [
     {
+      "name": "panel",
+      "type": "registry:ui",
+      "title": "Panel",
+      "description": "The one floating surface: nk-panel with a header (title, description, actions, optional tabs row), a scrolling body and a footer.",
+      "files": [
+        {
+          "path": "registry/nuikit/ui/panel.tsx",
+          "type": "registry:ui"
+        }
+      ],
+      "dependencies": [
+        "class-variance-authority"
+      ],
+      "registryDependencies": [
+        "scroll-area"
+      ]
+    },
+    {
+      "name": "menu-row",
+      "type": "registry:ui",
+      "title": "Menu Row",
+      "description": "The 40px action row: icon, label, description and a trailing meta, chevron, Kbd, checkbox or value stepper. Active, disabled and destructive.",
+      "files": [
+        {
+          "path": "registry/nuikit/ui/menu-row.tsx",
+          "type": "registry:ui"
+        }
+      ],
+      "dependencies": [
+        "class-variance-authority",
+        "lucide-react",
+        "radix-ui"
+      ],
+      "registryDependencies": [
+        "checkbox",
+        "kbd"
+      ]
+    },
+    {
+      "name": "stat",
+      "type": "registry:ui",
+      "title": "Stat",
+      "description": "A label over a tabular number that matters (cash, players, a timer), in three sizes, with meta and a delta. On a panel or on the game.",
+      "files": [
+        {
+          "path": "registry/nuikit/ui/stat.tsx",
+          "type": "registry:ui"
+        }
+      ],
+      "dependencies": [
+        "class-variance-authority",
+        "lucide-react"
+      ]
+    },
+    {
+      "name": "meter",
+      "type": "registry:ui",
+      "title": "Meter",
+      "description": "A slim bar on a theme or game track, with a label and value, low/high thresholds that turn it destructive, and optional segments.",
+      "files": [
+        {
+          "path": "registry/nuikit/ui/meter.tsx",
+          "type": "registry:ui"
+        }
+      ],
+      "dependencies": [
+        "class-variance-authority"
+      ],
+      "registryDependencies": [
+        "progress"
+      ]
+    },
+    {
+      "name": "hud-chip",
+      "type": "registry:ui",
+      "title": "HUD Chip",
+      "description": "An always-on pill or tile on the game world: icon and text; active (talking, selected) or warning.",
+      "files": [
+        {
+          "path": "registry/nuikit/ui/hud-chip.tsx",
+          "type": "registry:ui"
+        }
+      ],
+      "dependencies": [
+        "class-variance-authority"
+      ]
+    },
+    {
       "name": "vital",
       "type": "registry:ui",
       "title": "Vital",

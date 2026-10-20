@@ -373,6 +373,7 @@ export function __reset(): void {
   __resetTheme();
   __resetSurfaces();
   __resetPlayer();
+  __resetFollow();
 }
 
 export { hostedContext, type HostedContext, type HostedMessage } from "./hosted";
@@ -432,3 +433,5 @@ export {
 import { __resetSurfaces } from "./surfaces";
 export { DEFAULT_PLAYER, getPlayer, onPlayer, type NuiPlayer, type NuiPlayerJob } from "./player";
 import { __resetPlayer } from "./player";
+export { follow, followed, type FollowKind, type FollowOptions } from "./follow";
+import { __resetFollow } from "./follow";

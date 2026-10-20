@@ -127,7 +127,8 @@ resource that declares `nuikit_renderer 'notify'` and ships a module replaces th
 still themed by the tokens and stacked by the runtime. Renderer packs and themes are what sellers build and sell.
 
 This makes the host's module loader core infrastructure, used for every renderer. Hosting whole screens in
-nuikit's frame stays opt-in until the in-game process measurement (`docs/host.md`).
+nuikit's frame stays opt-in: measured in game, FiveM already shares one browser process across every NUI frame,
+so hosting saves ~5 MB, not a process (`docs/host.md`).
 
 ### 5. Screens: the protocol
 

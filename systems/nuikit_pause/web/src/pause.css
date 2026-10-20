@@ -48,3 +48,57 @@
 @media (prefers-reduced-motion: reduce) {
   .pause-scrim, .pause-rail > header, .pause-nav, .pause-card { animation: none; }
 }
+
+/*
+ * The bigger menu (docs/pause-3d.md).
+ * Home with the stand-in: no blur and a clear middle, so the character the game camera frames there
+ * is seen as it is. The rail keeps its gradient; the cards on the right get a soft shade.
+ */
+.pause-scrim[data-stage] {
+  background: transparent;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+.pause-scrim[data-stage]::after {
+  background:
+    linear-gradient(270deg, color-mix(in oklab, var(--scrim) 55%, transparent) 0%, color-mix(in oklab, var(--scrim) 25%, transparent) 24%, transparent 40%),
+    linear-gradient(0deg, color-mix(in oklab, var(--scrim) 35%, transparent) 0%, transparent 22%);
+}
+
+/* The map: the world stays sharp; a light shade at the edges keeps the panels readable. */
+.pause-map-shade {
+  background:
+    linear-gradient(90deg, color-mix(in oklab, var(--scrim) 45%, transparent) 0%, transparent 30%),
+    linear-gradient(0deg, color-mix(in oklab, var(--scrim) 35%, transparent) 0%, transparent 20%);
+  animation: pause-fade 240ms ease-out both;
+}
+
+/* Pins and the player dot sit on the world, so they get the game-text shadow treatment. */
+.pause-pin,
+.pause-you {
+  box-shadow: 0 0 0 1px color-mix(in oklab, var(--hud-foreground) 18%, transparent), 0 2px 8px color-mix(in oklab, var(--scrim) 45%, transparent);
+}
+.pause-you {
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--hud-foreground) 90%, transparent), 0 2px 10px color-mix(in oklab, var(--scrim) 50%, transparent);
+}
+
+/* Map pins: the anchor is moved with a transform every frame (no layout); the child centres it. */
+.pause-pin-anchor {
+  position: absolute;
+  left: 0;
+  top: 0;
+  will-change: transform;
+}
+.pause-pin-center {
+  display: block;
+  transform: translate(-50%, -50%);
+}
+.pause-pin-above {
+  display: block;
+  transform: translate(-50%, calc(-100% - 0.75rem));
+}
+
+/* With the stand-in, the rail's gradient stops well before the middle of the screen. */
+.pause-scrim[data-stage]::before {
+  background: linear-gradient(90deg, var(--background) 0%, var(--background) 13%, transparent 28%);
+}

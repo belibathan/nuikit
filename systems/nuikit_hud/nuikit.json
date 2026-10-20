@@ -1,9 +1,4 @@
 {
   "lua": [],
-  "components": [
-    "badge",
-    "progress",
-    "vital",
-    "speedometer"
-  ]
+  "components": ["badge", "progress", "speedometer", "meter", "stat", "hud-chip"]
 }

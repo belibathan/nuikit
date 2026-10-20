@@ -33,6 +33,10 @@ const mocks = defineMocks({
 export default function Dev() {
   useEffect(() => {
     openSurface("hud"); // in game, client/main.lua does this
+    // ?open=menu or ?open=menu,confirm starts with those open (handy for screenshots)
+    const open = new URLSearchParams(location.search).get("open")?.split(",") ?? [];
+    if (open.includes("menu")) openSurface("menu");
+    if (open.includes("confirm")) openSurface("confirm", { id: "armor", title: "Buy body armor?", price: 500 });
   }, []);
   return <NuiDevtools {...mocks} states={["dead"]} />;
 }

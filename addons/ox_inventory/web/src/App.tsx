@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { Controls } from "@/components/controls";
-import { InventoryPanel, PANEL_WIDTH } from "@/components/inventory-panel";
+import { InventoryPanel } from "@/components/inventory-panel";
 import { ItemMenu } from "@/components/item-menu";
 import { ItemTooltip } from "@/components/item-tooltip";
 import { DragPreview, Hotbar, ItemNotifications } from "@/components/overlays";
@@ -76,11 +76,19 @@ export default function App() {
   return (
     <>
       {visible && (
-        <div className="fixed inset-0 grid place-items-center px-6" onContextMenu={(e) => e.preventDefault()}>
-          <div className="flex items-start gap-4">
+        // The panels sit on the screen edges and the actions along the bottom, leaving the middle
+        // of the screen to the player: nuikit_pause frames them there with its focus camera.
+        <div className="fixed inset-0 [--nk-edge:3rem]" onContextMenu={(e) => e.preventDefault()}>
+          <div className="nk-anchor-l">
             <InventoryPanel side="left" />
+          </div>
+          {hasRight && (
+            <div className="nk-anchor-r">
+              <InventoryPanel side="right" />
+            </div>
+          )}
+          <div className="nk-anchor-b">
             <Controls />
-            {hasRight ? <InventoryPanel side="right" /> : <div className={PANEL_WIDTH} />}
           </div>
           <ItemTooltip />
           <ItemMenu />

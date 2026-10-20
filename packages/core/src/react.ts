@@ -1,4 +1,4 @@
-import { createElement, useCallback, useEffect, useRef, useState, useSyncExternalStore, type CSSProperties, type ReactElement, type ReactNode } from "react";
+import { createElement, useCallback, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore, type CSSProperties, type ReactElement, type ReactNode } from "react";
 import {
   closeSurface,
   defineSurface,
@@ -16,6 +16,8 @@ import {
   onPlayer,
   type NuiPlayer,
   fetchNui,
+  follow,
+  type FollowOptions,
   isBrowser,
   getVisible,
   onNui,
@@ -50,6 +52,26 @@ export function useNuiState<K extends EventName>(action: K, initial: EventData<K
   const [state, setState] = useState(initial);
   useNuiEvent(action, setState);
   return state;
+}
+
+/**
+ * Follow a live value Lua streams (`NUI.stream`, docs/protocol.md §5.7) at the page's frame rate,
+ * without rendering: `paint` writes straight to the DOM through your refs. It can change every
+ * render; the glide doesn't restart. `start` is read when it mounts.
+ *
+ *   const bar = useRef<HTMLDivElement>(null);
+ *   useFollow("hud:vehicle:rpm", (rpm) => { if (bar.current) bar.current.style.transform = `scaleX(${rpm})` }, { start: 0 });
+ */
+export function useFollow<K extends EventName>(action: K, paint: (value: number) => void, options: FollowOptions = {}): void {
+  const ref = useRef(paint);
+  ref.current = paint;
+  const start = useRef(options.start);
+  // a layout effect: the first paint lands before the browser draws
+  useLayoutEffect(
+    () => follow(action, (v) => ref.current(v), { ...options, start: start.current }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [action, options.kind, options.epsilon, options.maxSpan],
+  );
 }
 
 /**

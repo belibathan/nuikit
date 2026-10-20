@@ -341,6 +341,37 @@ and a runtime MUST then send no `nuikit:*` callback. Such a page receives the th
 `https://cfx-nui-nuikit/theme.css` (with `nui://nuikit/theme.css` as a fallback) and speaks the overridden
 resource's own wire format, documented in `docs/<name>-protocol.md`.
 
+### 5.7 Live values
+
+A value that changes every frame (a compass, a speedometer, a progress ring) MUST NOT be sent every frame:
+each Lua → page message costs the game frame it lands in (measured ~0.3 ms a frame at the game's frame
+rate), and each page → Lua callback more (~0.5 ms). Instead:
+
+- **Lua** streams it on its own channel, at most ~30 times a second and only when it changed by a precision
+  step: `NUI.stream(action, { rate = 30, precision = 0.01, kind = 'linear'|'angle' })` → `:push(value)`
+  (call it from any loop; it decides), `:reset()` (the next push sends, e.g. when the page reloads),
+  `:value()`. The data is the bare number. `kind = 'angle'` keeps degrees in 0–360.
+- **The page** follows it at its own frame rate without rendering: `follow(action, paint, { kind, start,
+  epsilon, maxSpan })` (non-React, returns a stop function) or `useFollow(action, paint, options)`, whose
+  `paint` writes straight to the DOM through refs. Each message starts a straight glide from what is shown to
+  the new value, lasting the gap since the previous message (16–60 ms), so a steady change is one even
+  motion one message behind and never overshoots. Angles turn the short way. `paint` runs only while the
+  value moves, and a still value asks for no frames. A component that remounts starts from the latest value
+  received. Works in a hosted module (the host delivers the messages).
+- Slower state that goes with it (gear, fuel, damage) stays on an ordinary message, sent on change, which
+  can carry the live value's starting point (`hud:vehicle` carries `speed`/`rpm` for the gauge to start at).
+
+In FiveM `requestAnimationFrame` fires at the game's frame rate (140–300 a second), not at 60. That is what
+makes the glide smooth, and why it is not a throttle: never send a message, a callback or a React state
+update per animation frame. Page → Lua streams (mouse drags) use a timed cap instead, e.g. at most 60 a
+second (`systems/nuikit_pause/web/src/lib/batch.ts`), and Lua lands each step over its next frames.
+
+The exception is a value that must lock to the game's own picture every frame (3D pins tracking the camera):
+it pays per-frame messages on purpose, while it is on screen.
+
+Reference: the minimap compass (`hud:minimap:heading`, 0.1°) and the speedometer (`hud:vehicle:speed`,
+whole units, and `hud:vehicle:rpm`, 0.01) in `systems/nuikit_hud`.
+
 ## 6. Theme
 
 The token names, types and defaults are **tokens v1**, defined in [`docs/tokens.md`](tokens.md) (and as a W3C
@@ -435,6 +466,7 @@ running `nuikit` resource (`nk` and `NUI` are the same table; the framework brid
 `nk.player`). A copy of `lib/nuikit.lua` as a client script also works, without the nuikit resource.
 
 `NUI.send(action, data)` · `NUI.on(name, handler)` (pcall, `{ error }` on failure) · `NUI.notify(n)` ·
+`NUI.stream(action, opts)` → `:push(value)` `:reset()` `:value()` (§5.7) ·
 `NUI.surface(name, opts)` → `:open(data)` `:close()` `:update(data)` `:toggle(data)` `:isOpen()` ·
 `NUI.state(name, value)` · `NUI.getState(name)` · `NUI.surfaces()` (stack, bottom → top) · `NUI.open(opts)`
 `NUI.close()` `NUI.toggle(opts)` `NUI.isOpen()` · `NUI.theme()` · `NUI.prefs.get()` `NUI.prefs.set(patch)` ·
@@ -483,7 +515,8 @@ Level 2, and:
 ### Performance advisories (all levels)
 
 Not level-gating, but reported: remote fonts and assets (every UI pays a network fetch and a separate font load;
-ship them in the resource), and NUI messages sent from a `Wait(0)` loop (send on change, or batch, at ≤ 10 Hz).
+ship them in the resource), and NUI messages sent from a `Wait(0)` loop (send on change, or batch, at ≤ 10 Hz;
+a value that moves every frame is a live value, §5.7).
 
 Overrides (§5.6) are measured on the rules that apply to a page whose Lua is not nuikit's: Level 1 and the
 page-side Level 3 rules (`nuikit-core`, components). Their Escape handling is dictated by the overridden

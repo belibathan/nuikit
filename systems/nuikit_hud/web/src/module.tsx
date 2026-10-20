@@ -4,5 +4,6 @@ import css from "virtual:nuikit-module-css";
 import { defineReactModule } from "nuikit-core/module";
 import App from "./App";
 import "./index.css";
+import "./hud.css";
 
 export default defineReactModule({ App, css });

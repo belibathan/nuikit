@@ -9,26 +9,9 @@
     "baseUrl": ".",
     "noUncheckedIndexedAccess": false,
     "paths": {
-      "@/components/ui/vital": [
-        "../../registry/nuikit/ui/vital.tsx"
-      ],
-      "@/components/ui/key-hint": [
-        "../../registry/nuikit/ui/key-hint.tsx"
-      ],
-      "@/components/ui/task-progress": [
-        "../../registry/nuikit/ui/task-progress.tsx"
-      ],
-      "@/components/ui/nui-menu": [
-        "../../registry/nuikit/ui/nui-menu.tsx"
-      ],
-      "@/components/ui/radial-menu": [
-        "../../registry/nuikit/ui/radial-menu.tsx"
-      ],
-      "@/components/ui/speedometer": [
-        "../../registry/nuikit/ui/speedometer.tsx"
-      ],
-      "@/components/ui/nui-toaster": [
-        "../../registry/nuikit/ui/nui-toaster.tsx"
+      "@/components/ui/*": [
+        "../../registry/nuikit/ui/*",
+        "../../vendor/shadcn/ui/*"
       ],
       "@/hooks/use-nui-store": [
         "../../registry/nuikit/hooks/use-nui-store.ts"
@@ -51,33 +34,6 @@
       "sonner": [
         "./node_modules/sonner/dist/index.d.ts"
       ],
-      "@/components/ui/badge": [
-        "../../vendor/shadcn/ui/badge.tsx"
-      ],
-      "@/components/ui/button": [
-        "../../vendor/shadcn/ui/button.tsx"
-      ],
-      "@/components/ui/card": [
-        "../../vendor/shadcn/ui/card.tsx"
-      ],
-      "@/components/ui/item": [
-        "../../vendor/shadcn/ui/item.tsx"
-      ],
-      "@/components/ui/kbd": [
-        "../../vendor/shadcn/ui/kbd.tsx"
-      ],
-      "@/components/ui/progress": [
-        "../../vendor/shadcn/ui/progress.tsx"
-      ],
-      "@/components/ui/separator": [
-        "../../vendor/shadcn/ui/separator.tsx"
-      ],
-      "@/components/ui/sonner": [
-        "../../vendor/shadcn/ui/sonner.tsx"
-      ],
-      "@/components/ui/textarea": [
-        "../../vendor/shadcn/ui/textarea.tsx"
-      ],
       "radix-ui": [
         "./node_modules/radix-ui"
       ],
@@ -89,6 +45,9 @@
       ],
       "lucide-react": [
         "./node_modules/lucide-react"
+      ],
+      "vitest": [
+        "./node_modules/vitest"
       ]
     }
   },

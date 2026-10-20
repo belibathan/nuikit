@@ -3,7 +3,7 @@ game 'gta5'
 lua54 'yes'
 
 name 'nuikit_pause'
-description 'nuikit: pause menu. Esc opens it in place of GTA\'s; Map, Settings and P still open the game\'s own.'
+description 'nuikit: pause menu. Esc opens it in place of GTA\'s; a focus camera on the player, a 3D map, live key bindings and info pages.'
 repository 'https://github.com/belibathan/nuikit'
 version '0.4.0'
 
@@ -23,7 +23,12 @@ shared_scripts {
 }
 
 client_scripts {
+  'client/camera.lua',
+  'client/map3d.lua',
+  'client/focus.lua',
+  'client/keys.lua',
   'client/main.lua',
+  'client/inventory.lua',
 }
 
 server_script 'server/main.lua'
