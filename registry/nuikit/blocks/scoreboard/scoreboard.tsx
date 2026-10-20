@@ -48,12 +48,15 @@ const list = <T,>(v: T[] | undefined): T[] => (Array.isArray(v) ? v : [])
 function Scoreboard({
   data,
   query: initialQuery = "",
+  autoFocus = true,
   className,
   ...props
 }: Omit<React.ComponentProps<"div">, "children"> & {
   data: ScoreboardData
   /** Start with this search (for previews). */
   query?: string
+  /** Focus the search when it opens (off for stills next to other content). */
+  autoFocus?: boolean
 }) {
   const [query, setQuery] = React.useState(initialQuery)
   const players = list(data.players)
@@ -78,7 +81,7 @@ function Scoreboard({
               <div className="relative">
                 <SearchIcon className="pointer-events-none absolute inset-y-0 left-2.5 my-auto size-4 text-muted-foreground" />
                 <Input
-                  autoFocus
+                  autoFocus={autoFocus}
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder="Search by name, ID or job"

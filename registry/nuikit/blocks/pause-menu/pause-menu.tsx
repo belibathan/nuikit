@@ -89,12 +89,15 @@ function PauseMenu({
   data,
   player,
   onAction,
+  autoFocus = true,
   className,
   ...props
 }: Omit<React.ComponentProps<"div">, "children"> & {
   data: PauseMenuData
   player: NuiPlayer
   onAction?: (action: PauseMenuAction) => void
+  /** Focus Resume when it opens (off for stills next to other content). */
+  autoFocus?: boolean
 }) {
   const actions = list(data?.actions)
   const server = data?.server ?? {}
@@ -139,7 +142,7 @@ function PauseMenu({
               const item = ACTIONS[a]
               if (!item) return null
               return (
-                <MenuRow key={a} autoFocus={i === 0} icon={<item.icon />} kbd={item.kbd} onClick={() => onAction?.(a)}>
+                <MenuRow key={a} autoFocus={autoFocus && i === 0} icon={<item.icon />} kbd={item.kbd} onClick={() => onAction?.(a)}>
                   {item.label}
                 </MenuRow>
               )
