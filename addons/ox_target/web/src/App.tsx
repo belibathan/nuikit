@@ -1,5 +1,7 @@
-import { ChevronRight, Eye } from "lucide-react";
+import { Eye } from "lucide-react";
 import { Fragment, useEffect, useRef, useState } from "react";
+import { MenuRow } from "@/components/ui/menu-row";
+import { Panel, PanelBody } from "@/components/ui/panel";
 import { Separator } from "@/components/ui/separator";
 import { Icon } from "@/lib/icon";
 import { post, useTargetMessages } from "@/lib/nui";
@@ -81,42 +83,42 @@ export default function App() {
       </div>
 
       {active && (
-        <div
+        // The `target` intent's renderer: a Panel of MenuRows beside the eye (16px gap), its first
+        // row centred on it (nk-first-row). data-inert switches every hover style off (app.css):
+        // CEF can keep :hover matching after a click drops focus.
+        <Panel
           key={session}
+          size="auto"
           role="menu"
-          // Beside the eye (16px gap), first row centred on it: 1px border + 8px padding + 20px.
-          className={cn(
-            "nk-panel nk-enter absolute top-1/2 left-1/2 ml-8 -mt-7 flex w-max max-w-80 min-w-56 flex-col p-2",
-            inert ? "pointer-events-none" : "pointer-events-auto",
-          )}
+          data-inert={inert || undefined}
+          className={cn("nk-first-row absolute top-1/2 left-1/2 ml-8 max-w-80 min-w-56", inert ? "pointer-events-none" : "pointer-events-auto")}
         >
-          {groups.map((group, gi) => (
-            <Fragment key={group.key}>
-              {gi > 0 && <Separator className="my-1" />}
-              {group.rows.map((row) => (
-                <button
-                  key={row.key}
-                  type="button"
-                  role="menuitem"
-                  // While inert, hover styles are switched off outright: CEF can keep :hover matching
-                  // after focus is gone.
-                  className={cn(
-                    "group/row nk-row w-full text-left font-medium outline-none",
-                    !inert && "hover:bg-accent hover:text-accent-foreground focus-visible:bg-accent",
-                    row.back && "text-muted-foreground",
-                  )}
-                  onClick={() => select(row)}
-                >
-                  <span className={cn("flex w-4 shrink-0 justify-center text-muted-foreground", !inert && "group-hover/row:text-accent-foreground")}>
-                    <Icon icon={row.option.icon} color={row.option.iconColor} />
-                  </span>
-                  <span className="min-w-0 flex-1 truncate">{String(row.option.label ?? "")}</span>
-                  {row.submenu && <ChevronRight className="size-4 shrink-0 text-muted-foreground" />}
-                </button>
-              ))}
-            </Fragment>
-          ))}
-        </div>
+          <PanelBody className="gap-0">
+            {groups.map((group, gi) => (
+              <Fragment key={group.key}>
+                {gi > 0 && <Separator className="my-1" />}
+                {group.rows.map((row) => (
+                  <MenuRow
+                    key={row.key}
+                    role="menuitem"
+                    data-back={row.back || undefined}
+                    className={cn(row.back && "text-muted-foreground")}
+                    // Always an icon slot, so labels stay aligned when an option has no (or an unknown) icon.
+                    icon={
+                      <span className="flex w-4 justify-center">
+                        <Icon icon={row.option.icon} color={row.option.iconColor} />
+                      </span>
+                    }
+                    chevron={row.submenu}
+                    onClick={() => select(row)}
+                  >
+                    {String(row.option.label ?? "")}
+                  </MenuRow>
+                ))}
+              </Fragment>
+            ))}
+          </PanelBody>
+        </Panel>
       )}
     </div>
   );
