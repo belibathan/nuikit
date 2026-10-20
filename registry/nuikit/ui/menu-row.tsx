@@ -154,7 +154,7 @@ function MenuRow({
 
   const lead =
     image !== undefined && image !== null ? (
-      <span data-slot="menu-row-image" className="flex size-8 shrink-0 overflow-hidden rounded-md bg-muted">
+      <span data-slot="menu-row-image" className="flex size-8 shrink-0 overflow-hidden rounded-(--nk-key-radius) bg-muted">
         {typeof image === "string" ? <img src={image} alt="" className="size-full object-cover" /> : image}
       </span>
     ) : (
@@ -399,7 +399,7 @@ function MenuRowDetails({
               {items.map((m, i) => (
                 <div key={i} data-slot="menu-row-details-item" className="flex flex-col gap-1">
                   <div className="flex min-w-0 items-center gap-2">
-                    {m.label !== undefined && <dt className="truncate font-medium text-muted-foreground">{m.label}</dt>}
+                    {m.label !== undefined && <dt className="nk-caption truncate">{m.label}</dt>}
                     {m.value !== undefined && <dd className={cn("nk-num truncate", m.label !== undefined && "ml-auto")}>{m.value}</dd>}
                   </div>
                   {m.progress !== undefined && (

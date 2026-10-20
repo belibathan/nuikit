@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import { speedometerDash } from "@/components/ui/speedometer"
+import { gaugeStroke, speedometerDash } from "@/components/ui/speedometer"
 
 describe("speedometer", () => {
   const parts = (s: string) => s.split(" ").map(Number)
@@ -16,5 +16,14 @@ describe("speedometer", () => {
     expect(parts(speedometerDash(-1))[0]).toBe(0)
     expect(parts(speedometerDash(Number.NaN))[0]).toBe(0)
     expect(speedometerDash(2)).toBe(speedometerDash(1))
+  })
+
+  it("reads the track thickness from --nk-gauge-width in the SVG's units", () => {
+    expect(gaugeStroke("0.25rem")).toBe(4)
+    expect(gaugeStroke(" 0.375rem ")).toBe(6)
+    expect(gaugeStroke("5px")).toBe(5)
+    expect(gaugeStroke("")).toBe(3)
+    expect(gaugeStroke("calc(1px + 1rem)")).toBe(3)
+    expect(gaugeStroke("4rem")).toBe(12)
   })
 })

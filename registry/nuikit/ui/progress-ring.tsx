@@ -36,7 +36,7 @@ type ProgressRingTone = "primary" | "success" | "warning" | "info" | "destructiv
 
 /** Literal class names, so Tailwind finds them; tokens read as variables (docs/tokens.md). */
 const TONE: Record<ProgressRingTone, string> = {
-  primary: "stroke-(--primary)",
+  primary: "stroke-(--nk-gauge-fill)",
   success: "stroke-(--success)",
   warning: "stroke-(--warning)",
   info: "stroke-(--info)",

@@ -23,7 +23,7 @@ const keyHintVariants = cva(
     variants: {
       variant: {
         default: "",
-        outline: "rounded-md border bg-background/80 px-2 py-1 shadow-xs",
+        outline: "nk-slab",
       },
     },
     defaultVariants: {

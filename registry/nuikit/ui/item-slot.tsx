@@ -23,7 +23,7 @@ import { cn } from "@/lib/utils"
  */
 
 const itemSlotVariants = cva(
-  "group/item-slot relative flex aspect-square min-w-0 flex-col rounded-md p-2 text-left outline-none transition-[background-color,box-shadow,opacity] select-none",
+  "group/item-slot relative flex aspect-square min-w-0 flex-col rounded-(--nk-row-radius) p-[calc(var(--nk-space)*2)] text-left outline-none transition-[background-color,box-shadow,opacity] select-none",
   {
     variants: {
       surface: {
@@ -31,7 +31,7 @@ const itemSlotVariants = cva(
         panel: "",
         /** The game's HUD surface (a hotbar on the world). */
         // The surface itself (nk-hud, or primary when active) is picked in the component.
-        hud: "nk-shadow rounded-[calc(var(--radius)+2px)]",
+        hud: "nk-shadow rounded-(--nk-hud-radius) [clip-path:var(--nk-chip-clip)]",
       },
       size: {
         fill: "w-full",
@@ -147,9 +147,9 @@ function ItemSlot({
         // A ring, not an outline: the base outline-none would win over outline-2.
         // On the HUD: the HUD surface, or primary with primary-foreground content when active
         // (never both: nk-hud sets its own background and colour).
-        hud && (hudActive ? "bg-primary text-primary-foreground" : "nk-hud"),
-        state === "active" && !hud && "ring-2 ring-primary ring-inset",
-        state === "drop-target" && "bg-accent ring-2 ring-primary ring-inset",
+        hud && (hudActive ? "bg-(--nk-chip-active-bg) text-(--nk-chip-active-fg) [box-shadow:var(--nk-chip-glow)]" : "nk-hud"),
+        state === "active" && !hud && "ring-2 ring-(--nk-row-indicator-color) ring-inset",
+        state === "drop-target" && "bg-accent ring-2 ring-(--nk-row-indicator-color) ring-inset",
         state === "dragging" && "opacity-40",
         state === "locked" && "opacity-50 grayscale",
         className
@@ -204,13 +204,13 @@ function ItemSlot({
           aria-valuenow={Math.round(dur.value)}
           className={cn(
             "absolute inset-x-2 bottom-1 h-0.5 overflow-hidden rounded-full",
-            hudActive ? "bg-primary-foreground/25" : hud ? "bg-scrim/35" : "bg-foreground/15"
+            hud ? "nk-track" : "bg-foreground/15"
           )}
         >
           <div
             className={cn(
               "h-full rounded-full",
-              dur.low ? "bg-destructive" : hudActive ? "bg-primary-foreground" : hud ? "bg-hud-foreground" : "bg-foreground"
+              dur.low ? "bg-destructive" : hudActive ? "bg-(--nk-chip-active-fg)" : hud ? "bg-hud-foreground" : "bg-foreground"
             )}
             style={{ width: `${dur.value}%` }}
           />
