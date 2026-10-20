@@ -43,6 +43,7 @@
   --nk-weight-display: 500;
   --nk-tracking-display: -0.01em;
   --nk-label-case: none;
+  --nk-tracking-label: 0em;
   --nk-border-width: 1px;
   --nk-cut: 0px;
   --nk-surface-opacity: 0.96;
@@ -65,6 +66,9 @@
   --nk-heading-weight: 500;
   --nk-heading-tracking: 0;
   --nk-row-radius: 9999px;
+  --nk-panel-radius: calc(var(--radius) + 4px);
+  --nk-chip-radius: 9999px;
+  --nk-hud-radius: calc(var(--radius) + 2px);
   --nk-key-font: var(--font-sans);
   --nk-num-tracking: 0;
 }

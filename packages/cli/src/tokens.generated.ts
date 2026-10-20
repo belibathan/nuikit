@@ -316,13 +316,13 @@ export const GENERATED: { name: string; group: string; type: string; description
     "name": "nk-label-case",
     "group": "kit",
     "type": "number",
-    "description": "Labels in uppercase or as written"
+    "description": "Captions (the short names of values) in uppercase or as written"
   },
   {
     "name": "nk-tracking-label",
     "group": "kit",
     "type": "dimension",
-    "description": "Letter-spacing of labels (uppercase wants 0.06–0.12em)"
+    "description": "Letter-spacing of captions (uppercase wants 0.06–0.12em)"
   },
   {
     "name": "nk-border-width",
@@ -376,7 +376,7 @@ export const GENERATED: { name: string; group: string; type: string; description
     "name": "nk-density",
     "group": "kit",
     "type": "number",
-    "description": "Multiplies the kit's spacing scale: 0.85 compact … 1.15 roomy"
+    "description": "Multiplies the kit's spacing scale: 0.875 compact (Graphite) … 1.15 roomy"
   },
   {
     "name": "nk-ease",

@@ -136,11 +136,14 @@ The owner, on a Qbox server with the prerelease:
 ## Proof: the same screens in four identities
 
 `node bench/identity/shots.mjs`: ox_lib (context menu, notices, progress, text UI), pause, death, HUD,
-Renewed-Banking, each at 1280×720, 1920×1080 and 2560×1440, over game scenes, from each web app's dev
+Renewed-Banking and the slab specimen (`specimen/`: the four slab anatomies and a small panel, kit
+utilities only), each at 1280×720, 1920×1080 and 2560×1440, over game scenes, from each web app's dev
 server with its own fixtures; the identity arrives as `nuikit:theme`, as in game. Contact sheets (screens ×
-resolutions): [`shots/graphite.jpg`](shots/graphite.jpg), [`shots/signal.jpg`](shots/signal.jpg),
-[`shots/velvet.jpg`](shots/velvet.jpg), [`shots/vector.jpg`](shots/vector.jpg). Full-size PNGs are written
-next to them and not committed.
+resolutions): [`shots/graphite.jpg`](shots/graphite.jpg) (the utilitarian baseline),
+[`shots/signal.jpg`](shots/signal.jpg), [`shots/velvet.jpg`](shots/velvet.jpg),
+[`shots/vector.jpg`](shots/vector.jpg), and [`shots/daylight.jpg`](shots/daylight.jpg): the flexibility
+check (`packages/core/test/themes/daylight.css`, light, roomy and round, no kit changes;
+`docs/tokens.md#flexibility`). Full-size PNGs are written next to them and not committed.
 
 Known gaps the tokens can't close (other lanes' files, step 3): the death title and bank balance use their
 own type classes, not `nk-display`, so their fonts follow `--font-sans` / `--font-numeric` rather than

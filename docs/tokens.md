@@ -107,22 +107,22 @@ warning naming what's allowed. Three tiers: identity → semantic (the colours a
 | | `--nk-type-ratio` | Step between type sizes, 1–1.6 (1.125 calm … 1.333 dramatic) | `1.2` |
 | | `--nk-weight-body` / `-strong` / `-display` | Weight personality, 100–900 | `400` / `600` / `700` |
 | | `--nk-tracking-display` | Letter-spacing of display type (px, rem, em) | `-0.02em` |
-| | `--nk-label-case`, `--nk-tracking-label` | Captions (`nk-caption`, field labels) in `uppercase` or `none`, and their tracking | `none`, `0em` |
+| | `--nk-label-case`, `--nk-tracking-label` | Captions (`nk-caption`, field labels) in `uppercase` or `none`, and their tracking | `uppercase`, `0.06em` |
 | Shape | `--nk-border-width` | Hairline weight of panels, rows, fields | `1px` |
 | | `--nk-cut` | Chamfered corners (top left, bottom right) by `clip-path`; `0` = off. A clip-path also clips the shadow, so cut panels draw depth with their edge | `0px` |
 | Surface | `--nk-surface-opacity` | Panel opacity over the game, 0–1. **Floor 0.92** (warning below) | `0.96` |
 | | `--nk-surface-tint` | How much `--brand` tints the panel surface, 0–0.12 | `0.02` |
-| | `--nk-surface-gradient` | Top-to-bottom light falloff on panels, 0–0.2 (0 = flat) | `0.04` |
+| | `--nk-surface-gradient` | Top-to-bottom light falloff on panels, 0–0.2 (0 = flat) | `0` |
 | | `--nk-surface-edge` | Inner top highlight, the machined edge (alpha), 0–0.3 | `0.06` |
-| | `--nk-elevation` | `none` / `soft` / `deep` shadow recipe | `soft` (the v1 panel shadow) |
+| | `--nk-elevation` | `none` / `soft` / `deep` shadow recipe | `soft` (a hairline and a short, tight drop) |
 | | `--nk-glow` | Brand glow on active rows, active chips and meter fills (alpha, 0 = off) | `0` |
-| Density | `--nk-density` | Multiplies the kit's spacing step and its row, chip and header heights, 0.75–1.3 | `1` |
+| Density | `--nk-density` | Multiplies the kit's spacing step and its row, chip, slab and header heights, 0.75–1.3. Never text size: reading text stays 16px | `0.875` (compact) |
 | Motion | `--nk-ease` | The one easing curve: `cubic-bezier()` or `ease` / `ease-out` / … (not `linear()`: Chromium 113) | `cubic-bezier(0.2, 0.8, 0.2, 1)` |
-| | `--nk-duration` | Base duration (panel enter, transitions), up to 2000ms; × `--nk-motion` | `160ms` |
+| | `--nk-duration` | Base duration (panel enter, transitions), up to 2000ms; × `--nk-motion` | `140ms` |
 | HUD | `--nk-hud-opacity` | Minimum backplate opacity of HUD chips and tiles (`--hud` keeps its own alpha; the plate uses the larger) | `0.55` |
 | | `--nk-hud-text-shadow` | `none` / `soft` / `strong` shadow under text on the game | `soft` |
 | | `--nk-gauge-style` | `arc` / `bar` / `digital` (read by the HUD) | `arc` |
-| | `--nk-gauge-track` | Gauge and meter track thickness | `0.375rem` |
+| | `--nk-gauge-track` | Gauge and meter track thickness | `0.25rem` |
 | | `--nk-gauge-ticks` | Tick marks: `1` on, `0` off | `1` |
 | Rows | `--nk-row-indicator` | How the active row is marked: `bar` (a brand pill), `fill` (solid brand, brand-foreground text), `outline` (a brand hairline) | `bar` |
 
@@ -132,7 +132,7 @@ derives them again from the patched values.
 | Token | From |
 |---|---|
 | `--surface` | `--popover` mixed toward `--brand` by `--nk-surface-tint` (drawn at `--nk-surface-opacity`) |
-| `--nk-elevation-shadow` | The `--nk-elevation` recipe in `--scrim`: none `0 0 0 0`; soft `0 0 0 1px` at .25 + `0 24px 64px -24px` at .7; deep `0 0 0 1px` .3, `0 2px 4px` .2, `0 18px 40px -10px` .55, `0 44px 96px -28px` .75 |
+| `--nk-elevation-shadow` | The `--nk-elevation` recipe in `--scrim`: none `0 0 0 0`; soft `0 0 0 1px` at .25 + `0 12px 32px -16px` at .6; deep `0 0 0 1px` .3, `0 2px 4px` .2, `0 18px 40px -10px` .55, `0 44px 96px -28px` .75 |
 | `--nk-hud-shadow` | The `--nk-hud-text-shadow` recipe in `--scrim` |
 | `--nk-clip`, `--nk-clip-sm` | The `polygon()` chamfer of `--nk-cut` (and of half of it), or `none` when the cut is 0 |
 | `--nk-row-bar` / `-fill` / `-outline` | `1` for the chosen `--nk-row-indicator`, else `0` |
@@ -244,19 +244,95 @@ page whose theme predates 1.1 still renders.
 | Part | Tokens (formula) |
 |---|---|
 | Scale | `--nk-space` (`0.25rem × density`, the kit's spacing step; Tailwind's own spacing isn't scaled, so layouts keep their size) · `--nk-text-base` (`1rem`: 16px body, research §3) · `--nk-text-label` (`max(0.8125rem, base ÷ ratio)`: 13px+) · `--nk-hud-value-size` (`max(1.125rem, base × ratio)`: 18px+ for HUD values) · `--nk-text-title` (`base × (1 + (ratio − 1) ÷ 2)`, ≈ base × √ratio) · `--nk-text-section` (`base × ratio²`) · `--nk-text-display` (`base × ratio⁴ × 1.1`: 36px in Graphite) · `--nk-time` (`duration × motion`) · `--nk-ease-out` |
-| Panel | `--nk-panel-bg` (`--surface` channels at `alpha × --nk-surface-opacity`) · `-fg` · `-border` · `-radius` (`radius + 4px`) · `-cut` · `-clip` · `-gradient` (`--popover-foreground` at `--nk-surface-gradient`, fading out by 60%) · `-edge` (`inset 0 1px 0` at `--nk-surface-edge`) · `-shadow` (`--nk-elevation-shadow`) · `-header-height` (`3.25rem × density`) · `-header-padding` · `-body-padding` · `-divider` · `-bracket` (corner brackets, `0px` = off; Vector `0.875rem`) / `-bracket-width` / `-bracket-color` (`--brand`) |
+| Panel | `--nk-panel-bg` (`--surface` channels at `alpha × --nk-surface-opacity`) · `-fg` · `-border` · `-radius` (`--radius`; Velvet `radius + 4px`) · `-cut` · `-clip` · `-gradient` (`--popover-foreground` at `--nk-surface-gradient`, fading out by 60%) · `-edge` (`inset 0 1px 0` at `--nk-surface-edge`) · `-shadow` (`--nk-elevation-shadow`) · `-header-height` (`3.25rem × density`) · `-header-padding` · `-body-padding` · `-divider` · `-bracket` (corner brackets, `0px` = off; Vector `0.875rem`) / `-bracket-width` / `-bracket-color` (`--brand`) |
 | Heading | `--nk-heading-font` (`--font-display`) · `-size` · `-weight` (`--nk-weight-strong`) · `-tracking` (display tracking ÷ 2) · `-case` (`none`) · `--nk-display-size` / `-weight` / `-tracking` / `-case` |
 | Label, caption, numbers | `--nk-label-font` / `-size` / `-weight` (`nk-label`, always as written: it often carries a sentence) · `--nk-caption-font` / `-size` / `-weight` / `-transform` (`--nk-label-case`) / `-tracking` · `--nk-num-font` (`--font-numeric`) / `-tracking` |
 | Row | `--nk-row-height` (`2.75rem × density`) · `-radius` · `-clip` (`--nk-clip-sm`) · `-padding` · `-font-size` · `-indicator-color` (`--brand`) · `-bar-width` (`3px × --nk-row-bar`) · `-bar-inset` · `-fill-color` (`--brand`) / `-fill-foreground` · `-outline-width` (`border × --nk-row-outline`) / `-outline-color` · `-glow` |
 | Key (Kbd) | `--nk-key-bg` · `-fg` · `-border` · `-radius` · `-font` (`--font-numeric`) · `-weight` · `-shadow` (a keycap: dark bottom edge, light top edge) · `-clip` |
-| Chip, HUD tile | `--nk-chip-height` (`2rem × density`) · `-padding` · `-radius` (pill) · `-bg` (`--hud` at `max(hud alpha, --nk-hud-opacity)`) · `-fg` · `-font-size` · `-weight` · `-active-bg` / `-active-fg` (`--brand`) · `-glow` · `-clip` · `--nk-hud-radius` · `--nk-hud-text-shadow` |
-| Meter | `--nk-meter-height` · `-radius` · `-track` (`--scrim` at 35%) · `-glow` · `-segments` (`0` / `1`) · `-segment` (`0.5rem`) · `-gap` |
+| Chip, HUD tile | `--nk-chip-height` (`2rem × density`) · `-padding` · `-radius` (`max(4px, radius − 4px)`, a small rounded rect; Velvet sets a pill) · `-bg` (`--hud` at `max(hud alpha, --nk-hud-opacity)`) · `-fg` · `-font-size` · `-weight` · `-active-bg` / `-active-fg` (`--brand`) · `-glow` · `-clip` · `--nk-hud-radius` (`max(4px, radius − 2px)`) · `--nk-hud-text-shadow` |
+| Meter | `--nk-meter-height` (`--nk-gauge-track`) · `-radius` · `-track` (`--scrim` at 35%) · `-glow` · `-segments` (`0` / `1`) · `-segment` (`0.5rem`) · `-gap` |
 | Gauge | `--nk-gauge-width` (`--nk-gauge-track`) · `-sweep` (`270deg`) · `-track-color` · `-fill` / `-needle` (`--brand`) · `-redline` (`--destructive`) · `-tick` / `-tick-major` (× `--nk-gauge-ticks`) · `-font` (`--font-numeric`) · `-glow` |
+| Slab | See [slabs](#slabs) |
 
 The active row (`nk-row` with `[data-active]`, `:focus-visible`, `[data-highlighted]`, or hover on rows that
 highlight on hover) carries the indicator. `fill` keys off `html[data-nk-row="fill"]`, because a colour
-swap can't be computed from a number in CSS. New utility: `nk-caption`, the short name of a value (Fuel,
-Balance), in the identity's label case. `nk-label` stays as written.
+swap can't be computed from a number in CSS.
+
+### Display and caption
+
+Two utilities for the type at the ends of the scale. Lanes adopt them so the identity shows where it matters:
+
+| Utility | What it's for | Reads | Graphite |
+|---|---|---|---|
+| `nk-display` | One big moment per screen: the death title and timer, the bank balance, the pause title, the loading server name | `--nk-heading-font` (`--font-display`), `--nk-display-size` (`base × ratio⁴ × 1.1`), `-weight` (`--nk-weight-display`), `-tracking` (`--nk-tracking-display`), `-case` (`--nk-heading-case`) | Inter Tight 700, 36px, −0.02em |
+| `nk-caption` | The short name of a value, one to three words: stat and meter labels (Fuel, Cash, Voice), table headings, "Balance" over `nk-display` | `--nk-caption-font` / `-size` (`max(13px, base ÷ ratio)`) / `-weight` / `-transform` (`--nk-label-case`) / `-tracking` (`--nk-tracking-label`), `--muted-foreground` | Inter 500, 13px, uppercase, 0.06em |
+
+`nk-label` is the other small style: secondary text **as written** (descriptions, meta lines, sentences),
+never uppercased. Reading text (rows, slab text, body) stays at 16px in every identity; compactness comes
+from `--nk-density` (spacing, row and header heights) and grouping, never from smaller text.
+
+### Slabs
+
+Transient feedback on the game ([design v2 §4.5](design/v2.md)): one anatomy for every script, so a new
+script looks native. Slabs sit on the game, so by default they wear the HUD plate (`--nk-chip-bg`) and
+the chip's radius and clip. Components (`notice`, `key-prompt`, `task-progress`, the death band) build on
+these; a UI can also use the utilities directly.
+
+| Anatomy | Markup |
+|---|---|
+| Item add/remove: icon tile + name + delta | `<div class="nk-slab"><span class="nk-slab-tile"><Icon/></span>Water bottle<span class="nk-slab-delta">+2</span></div>` (`data-delta="down"` for a loss) |
+| Prompt: key chip + verb | `<div class="nk-slab"><kbd class="nk-slab-key">E</kbd>Clean dishes</div>` |
+| Progress: label + thin line + cancel key | `<div class="nk-slab-stack"><div class="nk-slab-stack-row"><span class="nk-caption">Repairing</span><kbd class="nk-slab-key">Esc</kbd>Cancel</div><div class="nk-slab-line" style="--nk-slab-progress: 0.4"></div></div>` |
+| Full-width band | `<div class="nk-slab-band" style="--nk-slab-tone-rgb: var(--destructive-rgb)"><p class="nk-slab-band-title">You are incapacitated</p><p class="nk-caption">Wait for EMS</p></div>` |
+
+| Part | Tokens (formula) |
+|---|---|
+| Slab | `--nk-slab-height` (`2.5rem × density`: 35px in Graphite) · `-padding` · `-gap` · `-radius` (`--nk-chip-radius`) · `-clip` (`--nk-chip-clip`) · `-bg` (`--nk-chip-bg`) · `-fg` (`--hud-foreground`) · `-border` (a `--hud-foreground` hairline at 8%) · `-font-size` (`--nk-text-base`, 16px) · `-weight` (`--nk-weight-strong`) · `-text-shadow` (`none`) |
+| Tone | `--nk-slab-tone-rgb` (channels; `--brand-rgb`): the line's fill, the band's tint and edges. Set it on any ancestor per state; the utilities resolve it where they draw, so the override reaches them |
+| Tile | `--nk-slab-tile-size` (slab height − 2 spacing steps) · `-bg` (`--hud-foreground` at 10%) · `-fg` · `-radius` |
+| Delta | `--nk-slab-delta-font` (`--nk-num-font`, tabular) · `-up` (`--success`) · `-down` (`--destructive`) |
+| Key | `--nk-slab-key-size` (`1.5rem`) · `-font-size` (`13px`); colours, radius, shadow and font from the [key tokens](#component-tokens-11) |
+| Line | `--nk-slab-line-height` (`3px`) · `-radius` (`--nk-meter-radius`) · `-track` · `-fill` (unset: the tone) · `--nk-slab-stack-width` (`20rem`) · `-stack-gap`; the fill moves by `transform: scaleX(--nk-slab-progress)`, so it never repaints the slab |
+| Band | `--nk-slab-band-padding` · `-gap` · `-bg` (`--scrim` at 62%) · `-tint` (tone alpha, `0.3`) · `-edge` (tone alpha of the top and bottom hairlines, `0.6`) · `-fg` (`--hud-foreground`) · `-title-size` (`--nk-text-section`); the title is `nk-slab-band-title` (display face, weight, tracking and case) |
+
+The specimen (`bench/identity/specimen/`, the `slabs` row of every contact sheet) shows all four in each
+identity.
+
+### Flexibility
+
+Tokens encode qualities (density, shape, surface, type, motion), never one server's look, and nothing
+in the kit hardcodes Graphite: every utility reads a component token, and every identity token it reads
+carries the Graphite default only as a fallback. So one `theme.css` can take the kit somewhere Graphite
+isn't, with no kit or component code changes. The check is
+[`packages/core/test/themes/daylight.css`](../packages/core/test/themes/daylight.css), light, roomy and
+round:
+
+```css
+:root {
+  --background: oklch(0.985 0.004 85);   /* light colours, a blue brand … */
+  --primary: oklch(0.52 0.19 262);
+  --radius: 1.25rem;                      /* round */
+  --hud: oklch(0.99 0.003 85 / 88%);      /* a light HUD plate, dark text */
+  --hud-foreground: oklch(0.24 0.02 260);
+  --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  --nk-density: 1.25;                     /* roomy */
+  --nk-label-case: none;                  /* captions as written */
+  --nk-elevation: deep;
+  --nk-row-indicator: fill;
+  --nk-chip-radius: 9999px;               /* a component detail: pills */
+}
+```
+
+`identity.test.ts` ("flexibility") compiles it with no warnings and asserts that every quality differs
+from Graphite, and that every identity fallback in `kit.css` equals the compiled Graphite default. The
+`daylight` contact sheet (`bench/identity/shots/daylight.jpg`) shows the same shipped screens in it.
+
+**What it found.** Panels, rows, notices, the bank, pause cards and slabs all follow. Two places don't,
+because text drawn straight on the game shares a token with text on a surface: the death screen writes
+its title and timer in `--foreground` over `--scrim`, and the HUD draws its speed and street in
+`--hud-foreground` with no plate. In a light theme both turn dark on a dark game. The fix is a semantic
+token for text on the game (on `--scrim` and unplated HUD; light by default, independent of the theme's
+mode) that those screens read. It's proposed, not built: it touches the death and HUD screens (other lanes).
 
 Text size outside the kit: synced `index.css` raises Tailwind's two small steps (`text-xs` 13px,
 `text-sm` 15px) for readability at 1080p; `text-base` and up are Tailwind's.
@@ -269,7 +345,7 @@ Four complete `theme.css` files, each a finished identity on its own: `packages/
 
 | Identity | Character | What sets it apart |
 |---|---|---|
-| **Graphite** (default) | Precise, calm, neutral | Stock neutral colours; Inter, Inter Tight, Geist Mono; soft elevation with a machined edge; a brand pill on the active row; arc gauges. Exactly what a plain paste compiles to |
+| **Graphite** (default) | Utilitarian: minimal, neat, compact; every element earns its place ([design v2 §4](design/v2.md)) | Stock neutral colours; Inter, Inter Tight, Geist Mono; flat panels with a crisp hairline, a machined edge and a short soft drop; compact rhythm (density 0.875) with 16px reading text; small uppercase captions (13px, 0.06em); panels at `--radius`, chips and slabs as small rounded rects; thin meters (4px); a brand bar on the active row; arc gauges; 140ms. Exactly what a plain paste compiles to |
 | **Signal** | Bold and street | Signal yellow on warm black; Barlow, with Barlow Condensed for display and numbers; ratio 1.333; uppercase captions and headings; 0.75rem chamfers on panels, rows, chips and buttons; flat and opaque, with a 3px brand edge on top (`--nk-panel-edge`); solid square `fill` rows; density 0.95; a strong HUD shadow; bar gauges; 120ms snap |
 | **Velvet** | Soft, warm, luxury | Champagne on aubergine; DM Sans, with Fraunces for display and numbers; 1rem radius; strong gradient and edge, deep elevation, a hint of glow; roomy (density 1.15); a solid champagne pill on the active row (`fill`, `--nk-row-radius: 9999px`); 240ms smooth ease |
 | **Vector** | Tactical instrument | Cyan on blue-black; IBM Plex Sans, Chakra Petch display, JetBrains Mono numbers and captions; cyan hairlines and corner brackets (`--nk-panel-bracket`); flat, with a cyan halo instead of a shadow; `outline` rows; segmented meters; glow 0.35; compact (0.85); digital gauges |

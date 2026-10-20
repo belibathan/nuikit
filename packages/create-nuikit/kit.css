@@ -13,7 +13,7 @@
 
 :root {
   /* ── scale: the kit's spacing step × --nk-density, type sizes from one base × --nk-type-ratio */
-  --nk-space: calc(0.25rem * var(--nk-density, 1));
+  --nk-space: calc(0.25rem * var(--nk-density, 0.875));
   --nk-ratio: var(--nk-type-ratio, 1.2);
   /* research §3: 16px body, 13–14px labels, 18px+ for HUD values read in motion */
   --nk-text-base: 1rem;
@@ -25,23 +25,24 @@
   --nk-text-display: calc(var(--nk-text-base) * var(--nk-ratio) * var(--nk-ratio) * var(--nk-ratio) * var(--nk-ratio) * 1.1);
   --nk-border: var(--nk-border-width, 1px);
   --nk-ease-out: var(--nk-ease, cubic-bezier(0.2, 0.8, 0.2, 1));
-  --nk-time: calc(var(--nk-duration, 160ms) * var(--nk-motion, 1));
+  --nk-time: calc(var(--nk-duration, 140ms) * var(--nk-motion, 1));
 
   /* ── panel: every floating surface */
   --nk-panel-bg: rgba(var(--surface-rgb, var(--popover-rgb)), calc(var(--surface-a, var(--popover-a, 1)) * var(--nk-surface-opacity, 0.96)));
   --nk-panel-fg: var(--popover-foreground);
   --nk-panel-border: var(--border);
-  --nk-panel-radius: calc(var(--radius) + 4px);
+  /* the theme's radius as is (10px in Graphite): compact panels read crisper than rounded ones */
+  --nk-panel-radius: var(--radius);
   --nk-panel-cut: var(--nk-cut, 0px);
   --nk-panel-clip: var(--nk-clip, none);
   --nk-panel-gradient: linear-gradient(
     180deg,
-    rgba(var(--popover-foreground-rgb), var(--nk-surface-gradient, 0.04)),
+    rgba(var(--popover-foreground-rgb), var(--nk-surface-gradient, 0)),
     rgba(var(--popover-foreground-rgb), 0) 60%
   );
   --nk-panel-edge: inset 0 1px 0 0 rgba(var(--popover-foreground-rgb), var(--nk-surface-edge, 0.06));
-  --nk-panel-shadow: var(--nk-elevation-shadow, 0 0 0 1px rgba(var(--scrim-rgb), 0.25), 0 24px 64px -24px rgba(var(--scrim-rgb), 0.7));
-  --nk-panel-header-height: calc(3.25rem * var(--nk-density, 1));
+  --nk-panel-shadow: var(--nk-elevation-shadow, 0 0 0 1px rgba(var(--scrim-rgb), 0.25), 0 12px 32px -16px rgba(var(--scrim-rgb), 0.6));
+  --nk-panel-header-height: calc(3.25rem * var(--nk-density, 0.875));
   --nk-panel-header-padding: calc(var(--nk-space) * 3) calc(var(--nk-space) * 4);
   --nk-panel-body-padding: calc(var(--nk-space) * 2);
   --nk-panel-divider: var(--nk-border) solid var(--nk-panel-border);
@@ -69,13 +70,13 @@
   --nk-caption-font: var(--font-sans);
   --nk-caption-size: var(--nk-text-label);
   --nk-caption-weight: 500;
-  --nk-caption-transform: var(--nk-label-case, none);
-  --nk-caption-tracking: var(--nk-tracking-label, 0em);
+  --nk-caption-transform: var(--nk-label-case, uppercase);
+  --nk-caption-tracking: var(--nk-tracking-label, 0.06em);
   --nk-num-font: var(--font-numeric, var(--font-sans));
   --nk-num-tracking: -0.02em;
 
   /* ── row: the 40px list row. Active = [data-active], :focus-visible or [data-highlighted] */
-  --nk-row-height: calc(2.75rem * var(--nk-density, 1));
+  --nk-row-height: calc(2.75rem * var(--nk-density, 0.875));
   --nk-row-radius: calc(var(--radius) - 2px);
   --nk-row-clip: var(--nk-clip-sm, none);
   --nk-row-padding: calc(var(--nk-space) * 1.5) calc(var(--nk-space) * 3);
@@ -103,9 +104,10 @@
   --nk-key-clip: var(--nk-clip-sm, none);
 
   /* ── chip: always-on HUD chips (nk-chip) and tiles (nk-hud) on the game */
-  --nk-chip-height: calc(2rem * var(--nk-density, 1));
+  --nk-chip-height: calc(2rem * var(--nk-density, 0.875));
   --nk-chip-padding: calc(var(--nk-space) * 2.5);
-  --nk-chip-radius: 9999px;
+  /* a small rounded rect (6px in Graphite); Velvet sets 9999px for pills */
+  --nk-chip-radius: max(0.25rem, calc(var(--radius) - 4px));
   --nk-chip-bg: rgba(var(--hud-rgb), max(var(--hud-a, 0.45), var(--nk-hud-opacity, 0.55)));
   --nk-chip-fg: var(--hud-foreground);
   --nk-chip-font-size: 0.875rem;
@@ -114,11 +116,11 @@
   --nk-chip-active-fg: var(--brand-foreground, var(--primary-foreground));
   --nk-chip-glow: 0 0 0.75rem rgba(var(--brand-rgb, var(--primary-rgb)), var(--nk-glow, 0));
   --nk-chip-clip: var(--nk-clip-sm, none);
-  --nk-hud-radius: calc(var(--radius) + 2px);
+  --nk-hud-radius: max(0.25rem, calc(var(--radius) - 2px));
   --nk-hud-text-shadow: var(--nk-hud-shadow, 0 1px 2px rgba(var(--scrim-rgb), 0.6));
 
   /* ── meter: bars (shadcn Progress, nk-track); segmented when --nk-meter-segments is 1 */
-  --nk-meter-height: max(0.375rem, var(--nk-gauge-track, 0.375rem));
+  --nk-meter-height: var(--nk-gauge-track, 0.25rem);
   --nk-meter-radius: 9999px;
   --nk-meter-track: rgba(var(--scrim-rgb), 0.35);
   --nk-meter-glow: 0 0 0.625rem rgba(var(--brand-rgb, var(--primary-rgb)), var(--nk-glow, 0));
@@ -127,7 +129,7 @@
   --nk-meter-gap: rgba(var(--popover-rgb), calc(0.85 * var(--nk-meter-segments)));
 
   /* ── gauge: speedometer, RPM, fuel (the HUD reads --nk-gauge-style: arc | bar | digital) */
-  --nk-gauge-width: var(--nk-gauge-track, 0.375rem);
+  --nk-gauge-width: var(--nk-gauge-track, 0.25rem);
   --nk-gauge-sweep: 270deg;
   --nk-gauge-track-color: rgba(var(--hud-foreground-rgb), 0.16);
   --nk-gauge-fill: var(--brand, var(--primary));
@@ -137,6 +139,53 @@
   --nk-gauge-tick-major: rgba(var(--hud-foreground-rgb), calc(0.9 * var(--nk-gauge-ticks, 1)));
   --nk-gauge-font: var(--font-numeric, var(--font-sans));
   --nk-gauge-glow: rgba(var(--brand-rgb, var(--primary-rgb)), var(--nk-glow, 0));
+
+  /* ── slab: transient feedback on the game (design v2 §4.5). One anatomy for every script, so new
+     scripts look native: item added (tile + name + delta), prompt (key + verb), progress (label + thin
+     line + cancel key), incapacitated (a full-width band). Sits on the game, so it wears the HUD plate. */
+  --nk-slab-height: calc(2.5rem * var(--nk-density, 0.875));
+  --nk-slab-padding: 0 calc(var(--nk-space) * 3);
+  --nk-slab-gap: calc(var(--nk-space) * 2.5);
+  --nk-slab-radius: var(--nk-chip-radius);
+  --nk-slab-clip: var(--nk-chip-clip);
+  --nk-slab-bg: var(--nk-chip-bg);
+  --nk-slab-fg: var(--nk-chip-fg);
+  --nk-slab-border: rgba(var(--hud-foreground-rgb), 0.08);
+  --nk-slab-font-size: var(--nk-text-base);
+  --nk-slab-weight: var(--nk-weight-strong, 600);
+  --nk-slab-text-shadow: none;
+  /* the slab's accent, as channels: the line's fill, the band's tint and edges. A screen sets it per
+     state on any ancestor (--nk-slab-tone-rgb: var(--destructive-rgb) on the death band). Everything
+     drawn in the tone is resolved in the utility, not here, so that override reaches it; --nk-slab-line-fill
+     is unset (the tone) unless a theme sets it. */
+  --nk-slab-tone-rgb: var(--brand-rgb, var(--primary-rgb));
+  /* icon tile: a square inset by one spacing step */
+  --nk-slab-tile-size: calc(var(--nk-slab-height) - var(--nk-space) * 2);
+  --nk-slab-tile-bg: rgba(var(--hud-foreground-rgb), 0.1);
+  --nk-slab-tile-fg: var(--nk-slab-fg);
+  --nk-slab-tile-radius: max(0.125rem, calc(var(--nk-slab-radius) - var(--nk-space)));
+  /* delta: +1, −2, $250 */
+  --nk-slab-delta-font: var(--nk-num-font);
+  --nk-slab-delta-up: var(--success);
+  --nk-slab-delta-down: var(--destructive);
+  /* key chip: the key tokens, at a fixed slab size */
+  --nk-slab-key-size: 1.5rem;
+  --nk-slab-key-font-size: 0.8125rem;
+  /* thin line (progress): drawn with a transform, so it never repaints the slab */
+  --nk-slab-line-height: 0.1875rem;
+  --nk-slab-line-radius: var(--nk-meter-radius);
+  --nk-slab-line-track: rgba(var(--hud-foreground-rgb), 0.18);
+  --nk-slab-stack-width: 20rem;
+  --nk-slab-stack-gap: calc(var(--nk-space) * 2);
+  /* full-width band */
+  --nk-slab-band-padding: calc(var(--nk-space) * 3) calc(var(--nk-space) * 6);
+  --nk-slab-band-gap: var(--nk-space);
+  --nk-slab-band-bg: rgba(var(--scrim-rgb), 0.62);
+  /* alphas of the tone over the band and on its edges */
+  --nk-slab-band-tint: 0.3;
+  --nk-slab-band-edge: 0.6;
+  --nk-slab-band-fg: var(--hud-foreground);
+  --nk-slab-band-title-size: var(--nk-text-section);
 }
 
 /* Floating panel: menus, inventories, dialogs, cards on top of the game. */
@@ -351,6 +400,153 @@
   font-weight: var(--nk-display-weight);
   letter-spacing: var(--nk-display-tracking);
   text-transform: var(--nk-display-case);
+}
+/*
+ * Slabs: transient feedback on the game, one anatomy everywhere (design v2 §4.5, docs/tokens.md#slabs).
+ *   item:     <div class="nk-slab"><span class="nk-slab-tile"><Icon/></span>Water bottle<span class="nk-slab-delta">+2</span></div>
+ *   prompt:   <div class="nk-slab"><kbd class="nk-slab-key">E</kbd>Clean dishes</div>
+ *   progress: <div class="nk-slab-stack"><div class="nk-slab-stack-row"><span class="nk-caption">Repairing</span>
+ *               <kbd class="nk-slab-key">Esc</kbd>Cancel</div><div class="nk-slab-line" style="--nk-slab-progress: .4"></div></div>
+ *   band:     <div class="nk-slab-band"><p class="nk-slab-band-title">You are incapacitated</p><p class="nk-caption">…</p></div>
+ */
+@utility nk-slab {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--nk-slab-gap);
+  min-height: var(--nk-slab-height);
+  padding: var(--nk-slab-padding);
+  border-radius: var(--nk-slab-radius);
+  clip-path: var(--nk-slab-clip);
+  background-color: var(--nk-slab-bg);
+  color: var(--nk-slab-fg);
+  box-shadow: inset 0 0 0 var(--nk-border) var(--nk-slab-border);
+  font-size: var(--nk-slab-font-size);
+  font-weight: var(--nk-slab-weight);
+  line-height: 1.25rem;
+  text-shadow: var(--nk-slab-text-shadow);
+  white-space: nowrap;
+}
+/* The icon tile at the slab's leading edge, inset by one spacing step. */
+@utility nk-slab-tile {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: var(--nk-slab-tile-size);
+  height: var(--nk-slab-tile-size);
+  margin-left: calc(var(--nk-space) * -2);
+  border-radius: var(--nk-slab-tile-radius);
+  background-color: var(--nk-slab-tile-bg);
+  color: var(--nk-slab-tile-fg);
+  & svg {
+    width: 1rem;
+    height: 1rem;
+  }
+}
+/* The change a slab reports (+2, −1, $250), pushed to the trailing edge. [data-delta="down"] for a loss. */
+@utility nk-slab-delta {
+  margin-left: auto;
+  padding-left: var(--nk-slab-gap);
+  font-family: var(--nk-slab-delta-font);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: var(--nk-num-tracking);
+  color: var(--nk-slab-delta-up);
+  &[data-delta="down"] {
+    color: var(--nk-slab-delta-down);
+  }
+}
+/* A key chip (E, Esc, Shift) in a slab: the key tokens at the slab's size. */
+@utility nk-slab-key {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--nk-slab-key-size);
+  height: var(--nk-slab-key-size);
+  padding: 0 0.375rem;
+  border-radius: var(--nk-key-radius);
+  clip-path: var(--nk-key-clip);
+  background-color: var(--nk-key-bg);
+  color: var(--nk-key-fg);
+  box-shadow: var(--nk-key-shadow), inset 0 0 0 var(--nk-border) var(--nk-key-border);
+  font-family: var(--nk-key-font);
+  font-size: var(--nk-slab-key-font-size);
+  font-weight: var(--nk-key-weight);
+  line-height: 1;
+  text-shadow: none;
+}
+/* Progress: a label row above a thin line, no plate (it sits low on the game, text shadowed). */
+@utility nk-slab-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--nk-slab-stack-gap);
+  width: var(--nk-slab-stack-width);
+  color: var(--nk-slab-fg);
+  text-shadow: var(--nk-hud-text-shadow);
+}
+/* The stack's label row: label left, then the cancel key and its verb pushed right. */
+@utility nk-slab-stack-row {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--nk-space) * 2);
+  font-size: var(--nk-slab-font-size);
+  font-weight: var(--nk-slab-weight);
+  line-height: 1.25rem;
+  & > :first-child {
+    margin-right: auto;
+  }
+  & .nk-caption {
+    color: inherit;
+  }
+}
+/* The thin line: set --nk-slab-progress (0–1) inline; the fill scales, so nothing repaints. */
+@utility nk-slab-line {
+  position: relative;
+  height: var(--nk-slab-line-height);
+  border-radius: var(--nk-slab-line-radius);
+  background-color: var(--nk-slab-line-track);
+  overflow: hidden;
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-color: var(--nk-slab-line-fill, rgb(var(--nk-slab-tone-rgb)));
+    box-shadow: 0 0 0.5rem rgba(var(--nk-slab-tone-rgb), var(--nk-glow, 0));
+    transform-origin: left center;
+    transform: scaleX(var(--nk-slab-progress, 0));
+    transition: transform var(--nk-time) linear;
+  }
+}
+/* A full-width band at the bottom of the screen (incapacitated, arrested, spectating): the game
+   darkened, tinted by the tone, with tone hairlines above and below. */
+@utility nk-slab-band {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--nk-slab-band-gap);
+  width: 100%;
+  padding: var(--nk-slab-band-padding);
+  background-color: var(--nk-slab-band-bg);
+  background-image: linear-gradient(rgba(var(--nk-slab-tone-rgb), var(--nk-slab-band-tint)), rgba(var(--nk-slab-tone-rgb), var(--nk-slab-band-tint)));
+  border-top: var(--nk-border) solid rgba(var(--nk-slab-tone-rgb), var(--nk-slab-band-edge));
+  border-bottom: var(--nk-border) solid rgba(var(--nk-slab-tone-rgb), var(--nk-slab-band-edge));
+  color: var(--nk-slab-band-fg);
+  text-align: center;
+  text-shadow: var(--nk-hud-text-shadow);
+  & .nk-caption {
+    color: inherit;
+    opacity: 0.85;
+  }
+}
+/* The band's one line: the display face at section size. */
+@utility nk-slab-band-title {
+  font-family: var(--nk-heading-font);
+  font-size: var(--nk-slab-band-title-size);
+  font-weight: var(--nk-display-weight);
+  letter-spacing: var(--nk-display-tracking);
+  text-transform: var(--nk-display-case);
+  line-height: 1.2;
 }
 /* Scrolling list inside a panel. */
 @utility nk-scroll {
