@@ -70,6 +70,9 @@ const ON_HOVER = "group-hover/menu-row:text-accent-foreground"
 const KBD_ON_HIGHLIGHT = "group-focus-visible/menu-row:bg-background/60 group-data-[active]/menu-row:bg-background/60"
 const KBD_ON_HOVER = "group-hover/menu-row:bg-background/60"
 
+/** 0–100, NaN → 0. */
+const clampPercent = (n: number) => Math.max(0, Math.min(100, Number.isFinite(n) ? n : 0))
+
 type MenuRowProps = Omit<React.ComponentProps<"button">, "value" | "inert"> &
   VariantProps<typeof menuRowVariants> & {
     icon?: React.ReactNode
@@ -166,7 +169,9 @@ function MenuRow({
         {progress !== undefined && (
           <Progress
             data-slot="menu-row-progress"
-            value={Math.max(0, Math.min(100, Number.isFinite(progress) ? progress : 0))}
+            value={clampPercent(progress)}
+            // shadcn's Progress never hands `value` to Radix's root: give the root its aria-valuenow.
+            aria-valuenow={Math.round(clampPercent(progress))}
             aria-label={typeof children === "string" ? children : undefined}
             className="mt-1.5 mb-0.5 h-1"
           />
@@ -314,7 +319,14 @@ function MenuRowDetails({
                     {m.label !== undefined && <dt className="truncate font-medium text-muted-foreground">{m.label}</dt>}
                     {m.value !== undefined && <dd className={cn("nk-num truncate", m.label !== undefined && "ml-auto")}>{m.value}</dd>}
                   </div>
-                  {m.progress !== undefined && <Progress value={Math.max(0, Math.min(100, m.progress))} className="h-1" />}
+                  {m.progress !== undefined && (
+                    <Progress
+                      value={clampPercent(m.progress)}
+                      aria-valuenow={Math.round(clampPercent(m.progress))}
+                      aria-label={typeof m.label === "string" ? m.label : undefined}
+                      className="h-1"
+                    />
+                  )}
                 </div>
               ))}
             </dl>
