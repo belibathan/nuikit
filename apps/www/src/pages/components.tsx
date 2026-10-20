@@ -75,6 +75,7 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { SKILL_CHECK_PRESETS, SkillCheck, skillCheckZone } from "@/components/ui/skill-check";
 import { RadialMenu, type RadialMenuItem } from "@/components/ui/radial-menu";
 import { cn } from "@/lib/utils";
+import registry from "../../../../registry.json";
 
 export function ComponentsPage() {
   return (
@@ -481,6 +482,28 @@ export function ComponentsPage() {
   );
 }
 
+// registry.json meta (docs/design/contract.md, "Registry metadata"): status and the release it shipped in
+type ItemMeta = { since: string; status: string; replaces: string[]; removeIn: string | null; replacedBy?: string[] };
+const META = new Map((registry.items as { name: string; meta?: ItemMeta }[]).flatMap((i) => (i.meta ? [[i.name, i.meta] as const] : [])));
+
+function MetaBadges({ meta }: { meta: ItemMeta }) {
+  return (
+    <>
+      {meta.status === "deprecated" ? (
+        <Badge variant="destructive">
+          Deprecated{meta.replacedBy?.length ? `: use ${meta.replacedBy.join(" or ")}` : ""}
+          {meta.removeIn ? `, removed in ${meta.removeIn}` : ""}
+        </Badge>
+      ) : meta.status === "experimental" ? (
+        <Badge variant="secondary">Experimental</Badge>
+      ) : null}
+      <Badge variant="outline" className="text-muted-foreground">
+        {meta.since === "unreleased" ? "Unreleased" : `Since ${meta.since}`}
+      </Badge>
+    </>
+  );
+}
+
 function Section({
   name,
   title,
@@ -497,11 +520,15 @@ function Section({
   stageClassName?: string;
   children: ReactNode;
 }) {
+  const meta = install ? META.get(name) : undefined;
   return (
     <section id={install ? name : undefined} className="mt-20 scroll-mt-20">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div className="max-w-2xl">
-          <h2 className="text-2xl font-semibold tracking-tight">{title}</h2>
+          <div className="flex flex-wrap items-center gap-3">
+            <h2 className="text-2xl font-semibold tracking-tight">{title}</h2>
+            {meta && <MetaBadges meta={meta} />}
+          </div>
           <p className="mt-2 text-muted-foreground text-pretty">{text}</p>
         </div>
         {install && <Command className="h-10 w-full max-w-md text-xs">{`npx shadcn add ${SITE}/r/${name}.json`}</Command>}

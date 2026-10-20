@@ -98,9 +98,46 @@ doesn't fail. Everything else is a review item: the reviewer checks it against t
 ## Shipping
 
 24. **A `registry.json` entry** with accurate `dependencies` and `registryDependencies` (**CI**: `pnpm sync`
-    fails on an undeclared `@/components/ui/*` import).
+    fails on an undeclared `@/components/ui/*` import) and `meta` (below; **CI**: `registry-meta.test.ts`).
 25. **A test file for any logic** (timing, formatting, thresholds, state precedence) in `registry/nuikit/test/`.
     **CI**: `pnpm test`.
 26. **On `/components`** with all its states over a game scene.
 27. **A changeset** naming the component when it changes for users. Copies in systems and overrides are
     `pnpm sync`ed, never edited. **CI**: the sync drift step.
+
+## Registry metadata
+
+Every `registry.json` item carries:
+
+```json
+"meta": { "since": "0.6.0", "status": "stable", "replaces": [], "removeIn": null }
+```
+
+| Field | Meaning |
+|---|---|
+| `since` | The release it first shipped in (`docs/releases/`), or `"unreleased"` until the release commit sets it |
+| `status` | `stable`, `experimental` (API may change in a minor), or `deprecated` |
+| `replaces` | Items this one supersedes (`notice` replaces `nui-toaster`) |
+| `removeIn` | For a deprecated item, the release that may remove it; `null` otherwise |
+| `replacedBy` | Deprecated items only: what to use instead |
+
+The site's `/components` page shows the status and `since` next to each component. **CI**:
+`registry/nuikit/test/registry-meta.test.ts` (every item has `meta`; a deprecated one has `replacedBy` and
+`removeIn`; every `replaces` and `replacedBy` names a real item).
+
+## Deprecation policy
+
+1. **Deprecate, don't break.** A replaced component gets `status: "deprecated"`, `replacedBy`, `@deprecated`
+   JSDoc naming the replacement (editors strike it through), and "Deprecated: use X. Still works." at the start of
+   its registry description. It keeps working and keeps its tests.
+2. **Two minor releases at least.** `removeIn` is at least two minors after the release that first ships the
+   deprecation (deprecated in 0.6.0 → removable in 0.8.0). Nothing is removed in a patch.
+3. **Say how to move.** The replacement's docs or the release notes show before/after markup; a mechanical
+   change (a prop rename) gets a codemod or a find-and-replace line.
+4. **Removal is announced.** The release that removes an item names it in `docs/releases/v<version>.md`, with the
+   command to see what a copy differs by: `npx shadcn@latest add https://nuikit.vercel.app/r/<name>.json --diff`.
+5. **Tokens are additive.** Renaming or removing a token is a tokens v2 change (`docs/tokens.md`), not a
+   component deprecation.
+
+Deprecated now: `key-hint` (→ `key-prompt`), `task-progress` (→ `meter` timed mode, `progress-ring`),
+`nui-toaster` (→ `notice`), all deprecated in 0.6.0 and removable in 0.8.0.
