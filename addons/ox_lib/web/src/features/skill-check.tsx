@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from "react";
-import { Kbd } from "@/components/ui/kbd";
+import { SkillCheck as SkillCheckRing } from "@/components/ui/skill-check";
 import { post, useOx } from "@/lib/nui";
 import { presenceMotion } from "@/lib/motion";
 import { usePresence } from "@/lib/presence";
-import { cn } from "@/lib/utils";
+
 
 type Difficulty = "easy" | "medium" | "hard" | { areaSize: number; speedMultiplier: number };
 
@@ -49,6 +49,7 @@ export function SkillCheck() {
   const [open, setOpen] = useState(false);
   const [check, setCheck] = useState<Check | null>(null);
   const [angle, setAngle] = useState(0);
+  const [result, setResult] = useState<"success" | "fail" | undefined>(undefined);
   const queue = useRef<{ list: Difficulty[]; i: number; inputs?: string[] }>({ list: [], i: 0 });
   const live = useRef<{ check: Check | null; t0: number; angle: number; done: boolean }>({ check: null, t0: 0, angle: 0, done: true });
   const presence = usePresence(open, 100);
@@ -56,6 +57,7 @@ export function SkillCheck() {
   const finish = (ok: boolean) => {
     if (live.current.done) return;
     live.current.done = true;
+    setResult(ok ? "success" : "fail"); // shown on the zone while it fades out
     setOpen(false);
     void post("skillCheckOver", ok);
   };
@@ -64,6 +66,7 @@ export function SkillCheck() {
     live.current = { check: c, t0: performance.now(), angle: 0, done: false };
     setCheck(c);
     setAngle(0);
+    setResult(undefined);
   };
 
   useOx<{ difficulty: Difficulty | Difficulty[]; inputs?: string[] }>("startSkillCheck", (d) => {
@@ -114,28 +117,12 @@ export function SkillCheck() {
   }, [open]);
 
   if (!presence.mounted || !check) return null;
-  const r = 52;
-  const C = 2 * Math.PI * r;
-  const arc = (from: number, len: number) => ({
-    strokeDasharray: `${(len / 360) * C} ${C}`,
-    transform: `rotate(${from - 90}deg)`,
-    transformOrigin: "60px 60px",
-  });
-
+  // The kit's SkillCheck, driven from here: this file keeps ox's clock and key rules (§10.2) and
+  // hands it the needle's angle each frame; while hiding it shows the outcome.
   return (
     <div className="pointer-events-none fixed inset-0 z-40 grid place-items-center">
-      <div data-state={presence.state} className={cn("relative size-40", presenceMotion)}>
-        <svg viewBox="0 0 120 120" className="size-full overflow-visible drop-shadow-[0_8px_24px_rgb(0_0_0/0.45)]">
-          {/* track, target zone (the one primary), needle */}
-          <circle cx="60" cy="60" r={r} fill="none" strokeWidth="6" className="stroke-popover" />
-          <circle cx="60" cy="60" r={r + 3} fill="none" strokeWidth="1" className="stroke-border" />
-          <circle cx="60" cy="60" r={r - 3} fill="none" strokeWidth="1" className="stroke-border" />
-          <circle cx="60" cy="60" r={r} fill="none" strokeWidth="6" className="stroke-primary" style={arc(check.start, check.size)} />
-          <circle cx="60" cy="60" r={r} fill="none" strokeWidth="12" className="stroke-foreground" style={arc(angle - 1, 2)} />
-        </svg>
-        <div className="absolute inset-0 grid place-items-center">
-          <Kbd className="h-8 min-w-8 rounded-md bg-popover px-2 text-sm font-semibold text-popover-foreground uppercase shadow-sm ring-1 ring-border">{check.key}</Kbd>
-        </div>
+      <div data-state={presence.state} className={presenceMotion}>
+        <SkillCheckRing zoneStart={check.start} zoneSize={check.size} keyLabel={check.key} speed={check.speed} angle={angle} result={result} />
       </div>
     </div>
   );
