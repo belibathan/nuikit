@@ -28,6 +28,7 @@
     "textarea",
     "panel",
     "menu-row",
-    "meter"
+    "meter",
+    "key-prompt"
   ]
 }
