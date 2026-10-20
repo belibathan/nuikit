@@ -8,6 +8,8 @@ import { deathScreenFixtures } from "@/blocks/death-screen/fixtures";
 import { HudMinimal } from "@/blocks/hud-minimal/hud-minimal";
 import { jobMenuFixtures } from "@/blocks/job-menu/fixtures";
 import { JobMenu } from "@/blocks/job-menu/job-menu";
+import { shopCarts, shopFixtures } from "@/blocks/shop/fixtures";
+import { Shop } from "@/blocks/shop/shop";
 import { hudMinimalFixtures } from "@/blocks/hud-minimal/fixtures";
 import { LoadingScreen } from "@/blocks/loading-screen/loading-screen";
 import { loadingHandovers, loadStateAt } from "@/blocks/loading-screen/fixtures";
@@ -127,6 +129,17 @@ export const BLOCKS: BlockPreview[] = [
       Actions: () => <JobMenu data={jobMenuFixtures.boss} autoFocus={false} onRequest={async () => ({ ok: true })} />,
       "Off duty": () => <JobMenu data={jobMenuFixtures["off-duty"]} autoFocus={false} onRequest={async () => ({ ok: true })} />,
       Refused: () => <JobMenu data={jobMenuFixtures.boss} defaultTab="staff" autoFocus={false} onRequest={async () => ({ ok: false, error: "Only the boss can do that." })} />,
+    },
+  },
+  {
+    name: "shop",
+    title: "Shop",
+    description: "A catalogue grid by category with price and stock, a cart with steppers, cash or bank, and checkout with a confirm. The page checks the cart before asking; the server's prices and stock decide, and money and items move all or nothing.",
+    states: {
+      Cart: () => <Shop data={shopFixtures.store} defaultCart={shopCarts.lunch} autoFocus={false} onBuy={async () => ({ ok: true })} />,
+      Confirm: () => <Shop data={shopFixtures.store} defaultCart={shopCarts.lunch} confirming autoFocus={false} onBuy={async () => ({ ok: true })} />,
+      "Not enough": () => <Shop data={shopFixtures.broke} defaultCart={shopCarts.big} autoFocus={false} />,
+      Empty: () => <Shop data={shopFixtures.vending} autoFocus={false} />,
     },
   },
 ];

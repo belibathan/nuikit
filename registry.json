@@ -780,6 +780,48 @@
         "screens"
       ],
       "docs": "Mount <JobMenuSurface /> in App.tsx. In Lua, open nk.surface(\"job\", { layer = \"panel\", exclusive = true }) with a JobMenuData table, answer nk.on(\"job:duty\"), nk.on(\"job:action\"), nk.on(\"job:hire\"), nk.on(\"job:fire\") and nk.on(\"job:grade\") with { ok, error }, and :update it after a change. Check every boss action on the server against the caller's own job and grade. A whole resource with the Lua: npm create nuikit@latest my-jobs -- -t job-menu"
+    },
+    {
+      "name": "shop",
+      "type": "registry:block",
+      "title": "Shop",
+      "description": "A catalogue grid by category with price and stock, a cart with steppers, cash or bank, and checkout with a confirm. The page checks the cart before asking; the server decides. Protocol-agnostic.",
+      "files": [
+        {
+          "path": "registry/nuikit/blocks/shop/shop.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/shop/shop.tsx"
+        },
+        {
+          "path": "registry/nuikit/blocks/shop/nui.ts",
+          "type": "registry:lib",
+          "target": "components/blocks/shop/nui.ts"
+        },
+        {
+          "path": "registry/nuikit/blocks/shop/fixtures.ts",
+          "type": "registry:lib",
+          "target": "components/blocks/shop/fixtures.ts"
+        }
+      ],
+      "dependencies": [
+        "lucide-react",
+        "nuikit-core"
+      ],
+      "registryDependencies": [
+        "button",
+        "spinner",
+        "tabs",
+        "https://nuikit.vercel.app/r/panel.json",
+        "https://nuikit.vercel.app/r/item-slot.json",
+        "https://nuikit.vercel.app/r/money.json",
+        "https://nuikit.vercel.app/r/menu-row.json",
+        "https://nuikit.vercel.app/r/confirm.json",
+        "https://nuikit.vercel.app/r/empty-state.json"
+      ],
+      "categories": [
+        "screens"
+      ],
+      "docs": "Mount <ShopSurface /> in App.tsx. In Lua, open nk.surface(\"shop\", { layer = \"panel\", exclusive = true, escape = \"back\" }) with a ShopData table, answer nk.on(\"shop:buy\") with { ok, error } and :update it with fresh stock and money. On the server, use your own prices and stock, check every line, and move money and items all or nothing. A whole resource with the Lua: npm create nuikit@latest my-shop -- -t shop"
     }
   ]
 }
