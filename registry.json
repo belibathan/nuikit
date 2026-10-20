@@ -343,6 +343,21 @@
       "registryDependencies": [
         "progress"
       ]
+    },
+    {
+      "name": "money",
+      "type": "registry:ui",
+      "title": "Money",
+      "description": "Every amount formatted one way: tabular figures, the server's currency and locale (Intl), whole units by default, sign auto/always/never, a direction tone for gains and losses, compact ($1.3M), or a plain number with a prefix or suffix. Inline, with formatMoney() for text.",
+      "files": [
+        {
+          "path": "registry/nuikit/ui/money.tsx",
+          "type": "registry:ui"
+        }
+      ],
+      "dependencies": [
+        "class-variance-authority"
+      ]
     }
   ]
 }
