@@ -166,12 +166,15 @@
       "name": "radial-menu",
       "type": "registry:ui",
       "title": "Radial Menu",
-      "description": "Action wheel in SVG (shadcn has no radial), styled like shadcn menus: popover, border, accent.",
+      "description": "The action wheel (the radial intent): SVG wedges styled like shadcn menus, icons and labels, a centre with the highlighted item's description, submenus with Back, keyboard while focused (arrows, Enter, 1-9, Backspace), laid out in rem.",
       "files": [
         {
           "path": "registry/nuikit/ui/radial-menu.tsx",
           "type": "registry:ui"
         }
+      ],
+      "dependencies": [
+        "lucide-react"
       ]
     },
     {
