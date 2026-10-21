@@ -1,5 +1,18 @@
 # nuikit-loading-web
 
+## 0.3.5
+
+### Patch Changes
+
+- 7b82767: nuikit_loading on the v2 type tokens: the server name is `nk-display` (the identity's display face), the tagline, welcome line and phase use `nk-label` / `nk-title`, the tip fade and dots use the motion tokens, and the screen's own classes are `ld-*` (no local `nk-*` names). Same layout, same handover.
+- Updated dependencies [30d20ea]
+- Updated dependencies [71e9442]
+- Updated dependencies [bc127c3]
+- Updated dependencies [20f7092]
+- Updated dependencies [22148ce]
+- Updated dependencies [f510c7d]
+  - nuikit-core@0.8.0
+
 ## 0.3.4
 
 ### Patch Changes

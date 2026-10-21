@@ -1,5 +1,17 @@
 # nuikit-host-web
 
+## 0.5.1
+
+### Patch Changes
+
+- Updated dependencies [30d20ea]
+- Updated dependencies [71e9442]
+- Updated dependencies [bc127c3]
+- Updated dependencies [20f7092]
+- Updated dependencies [22148ce]
+- Updated dependencies [f510c7d]
+  - nuikit-core@0.8.0
+
 ## 0.4.3
 
 ### Patch Changes

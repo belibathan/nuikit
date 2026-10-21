@@ -5,7 +5,7 @@ lua54 'yes'
 name 'nuikit_hud'
 description 'nuikit HUD: vitals, voice, money, a vehicle, aircraft and boat cluster, a framed minimap and location, on Qbox, QBCore, ESX or standalone.'
 repository 'https://github.com/belibathan/nuikit'
-version '0.7.0'
+version '0.8.0'
 
 dependency 'nuikit'
 

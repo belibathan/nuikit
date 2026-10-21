@@ -1,5 +1,21 @@
 # nuikit-core
 
+## 0.8.0
+
+### Minor Changes
+
+- 71e9442: Intents (docs/intents.md): the nine intent schemas (`packages/core/intents/*.json`) generate the TypeScript types and a Lua schema with LuaLS annotations. `nuikit-core/intents` exports `validateIntent`, the frame's `createIntentStore`, the wire types and the renderer module contract (`defineRenderer`, `rendererContext`); `nuikit-core/intents-react` exports `defineReactRenderer`. `@nuikit/init.lua` now loads `lib/intents.lua`: `nk.notify`, `nk.menu`, `nk.input`, `nk.confirm`, `nk.progress`, `nk.prompt`, `nk.target`, `nk.radial`, `nk.challenge`, validated at the call, yielding like `lib.*` or taking `{ cb = fn }`.
+- bc127c3: - `compileTheme` warns on an empty token (`--primary: ;`) and on an alias that resolves to nothing (`var(--nope)`, or an alias to an empty token); the stock value is used (or the token is left out of a patch), and `var(--x, fallback)` pointing at such a token takes its fallback, as in CSS.
+  - Runtime context: the server's currency and locale (`nuikit_currency`, `nuikit_locale` convars) reach every page that uses the bridge as `nuikit:context`; `getContext()` / `onContext()` and `useNuiContext()` expose `{ currency, locale }`, and `Money` formats with them by default.
+  - Host: a module's queued messages are delivered only once its listeners are attached (`defineReactModule` signals after the first commit's effects), so nothing sent between mount and the first `onNui` is dropped.
+- 20f7092: `<Surface>` keeps a closing surface drawn for its exit (up to 250 ms, none under reduced motion) so a Sheet or Dialog inside can slide out; `useSurfaceOpen()` returns false while the surrounding surface is closing, to pass as the Sheet's `open`.
+- 22148ce: Renderer packs (docs/intents.md §9). A resource that declares `nuikit_renderer 'notify'` (one line per intent) and ships a module built with `nuikitModule()` whose default export is a renderer (`defineReactRenderer`) or a record of them replaces nuikit's default renderer for that intent, still themed by the server's tokens and stacked by the runtime; the newest started pack wins a kind, a stopped one hands back, and a pack that fails to load falls back to the default with an F8 line. `nuikit-core/host`: `host.fetchModule()` loads a module script for its exports without mounting it, `hoist()` is exported. `npm create nuikit -- -t renderer-pack` scaffolds a pack with a notify renderer on `notice`, a browser preview and `/<name>_test`.
+- f510c7d: Services: `nk.camera` and `nk.controls` (`docs/services.md`), the runtime's shared camera and controls next to surfaces. `nk.camera.claim(opts)` takes the screen with a scripted camera started on the current view (or placed around a target entity or point with `offset`, `look`, `fov`, `duration`, `lockHeading`); claims stack client-wide, a claim on top suspends the one below, `release` resumes it or blends back to the gameplay camera, and a resource stopping or the player going down releases everything. `nk.controls.disable(set)` disables presets (`'all'`, `'movement'`, `'look'`, `'weapons'`, `'vehicle'`, `'frontend'`) and control ids as a union across sets, with one per-frame loop only while something is disabled; a surface can declare `controls` in its options and hold them while open. Both load with `@nuikit/init.lua`; the pause menu's camera module is now a thin shim over `nk.camera`.
+
+### Patch Changes
+
+- 30d20ea: `nuikit doctor`: `nuikit_loading` (a loadscreen) and `nuikit_chat` (a chat theme, no page) are listed as on nuikit; a failed contrast pair prints once; new `manifest-changed` finding says `refresh`, then `restart`, when a started resource's fxmanifest.lua changed on disk.
+
 ## 0.7.0
 
 ### Minor Changes

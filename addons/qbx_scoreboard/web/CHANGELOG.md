@@ -1,5 +1,18 @@
 # qbx-scoreboard-web
 
+## 0.3.5
+
+### Patch Changes
+
+- 9d2f6be: qbx_scoreboard override rebuilt on the kit's components: a `panel` with a thin `meter` of players against slots under the title, and each activity as a read-only `menu-row` with a state dot (green available, amber in progress, hollow unavailable) and the word beside it. Opens and closes with the kit's pop (exit in `--nk-time-exit`). The page still posts nothing to qbx_scoreboard (`bench/screens/qbx_scoreboard`).
+- Updated dependencies [30d20ea]
+- Updated dependencies [71e9442]
+- Updated dependencies [bc127c3]
+- Updated dependencies [20f7092]
+- Updated dependencies [22148ce]
+- Updated dependencies [f510c7d]
+  - nuikit-core@0.8.0
+
 ## 0.3.4
 
 ### Patch Changes

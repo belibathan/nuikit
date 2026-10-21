@@ -1,7 +1,7 @@
 {
   "name": "nuikit",
   "private": true,
-  "version": "0.7.0",
+  "version": "0.8.0",
   "description": "The nuikit command line: `nuikit check` audits a FiveM resource against the nuikit protocol's conformance levels (themed, well-behaved, native), `nuikit tokens` lists the theme tokens.",
   "author": "belibathan (https://github.com/belibathan)",
   "license": "MIT",

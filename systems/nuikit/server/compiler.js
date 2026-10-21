@@ -1014,7 +1014,6 @@ ${lines.join("\n")}
   }
   var started = (r) => r.state === "started" || r.state === "starting";
   var isNuikit = (r) => r.name === "nuikit";
-  var isNuikitFamily = (r) => /^nuikit_/i.test(r.name);
   function pageHash(text) {
     const s = text.replace(/\r\n/g, "\n");
     let h = 2166136261;
@@ -1063,13 +1062,10 @@ ${lines.join("\n")}
     const adaptedBy = /* @__PURE__ */ new Map();
     for (const r of running) for (const lib of meta(r, "nuikit_adapter")) adaptedBy.set(lib, r.name);
     const reports = [];
-    const chatThemes = running.filter((r) => meta(r, "chat_theme").length > 0);
     for (const r of running) {
       const page = (_c = (_b = first(r, "ui_page")) != null ? _b : first(r, "loadscreen")) != null ? _c : null;
       const hosted = first(r, "nuikit_ui");
-      const loadscreen = first(r, "ui_page") === void 0 && first(r, "loadscreen") !== void 0;
-      const chatTheme = meta(r, "chat_theme").length > 0;
-      if (!page && !hosted && !chatTheme && !isNuikit(r)) continue;
+      if (!page && !hosted && !isNuikit(r)) continue;
       const rep = { name: r.name, status: "untouched", page };
       const proto = first(r, "nuikit_protocol");
       const level = first(r, "nuikit_level");
@@ -1079,16 +1075,7 @@ ${lines.join("\n")}
         rep.protocol = Number(proto);
         if (level !== void 0) rep.level = Number(level);
       } else if (hosted) rep.status = "hosted";
-      else if (isNuikitFamily(r) && loadscreen) {
-        rep.status = "nuikit";
-        rep.via = "loadscreen";
-      } else if (isNuikitFamily(r) && chatTheme) {
-        rep.status = "nuikit";
-        rep.via = "theme";
-      } else if (chatTheme && !page) {
-        const ours = chatThemes.find((t) => t !== r && isNuikitFamily(t));
-        rep.next = ours ? `a chat theme next to ${ours.name}: chat takes one of them, so \`stop ${r.name}\`` : "a chat theme; nuikit_chat replaces it";
-      } else if (adaptedBy.has(r.name)) {
+      else if (adaptedBy.has(r.name)) {
         rep.status = "adapted";
         rep.via = adaptedBy.get(r.name);
       } else if (page && snap.readFile) {
@@ -1098,13 +1085,11 @@ ${lines.join("\n")}
           rep.via = "override page";
         }
       }
-      if (rep.status === "untouched" && loadscreen) {
-        rep.next = running.some((t) => t !== r && isNuikitFamily(t) && first(t, "loadscreen") !== void 0) ? `a loading screen next to nuikit_loading: the game shows one of them, so \`stop ${r.name}\`` : "a loading screen; nuikit_loading replaces it";
-      } else if (rep.status === "untouched" && !rep.next) {
+      if (rep.status === "untouched") {
         const pack = packs.find((p) => p.fits && p.library === r.name);
         rep.next = pack ? pack.shipped ? `install ${pack.name} to draw ${r.name}'s UI with nuikit` : `${pack.name} will adapt it (not shipped yet)` : `its UI is its own; add nuikit_protocol to join (docs/protocol.md) or wait for an override`;
       }
-      if (rep.status === "nuikit" && rep.protocol !== void 0 && rep.level === void 0) rep.next = "declare nuikit_level '<1-3>' from `nuikit check` so the doctor can show it";
+      if (rep.status === "nuikit" && rep.level === void 0) rep.next = "declare nuikit_level '<1-3>' from `nuikit check` so the doctor can show it";
       reports.push(rep);
     }
     for (const r of running) {
@@ -1176,15 +1161,6 @@ ${lines.join("\n")}
           next: `add \`dependency 'nuikit'\` to its fxmanifest.lua so FiveM starts nuikit first`
         });
       }
-      if (r.manifestChanged) {
-        findings.push({
-          code: "manifest-changed",
-          severity: "warn",
-          resource: r.name,
-          message: `${r.name}: fxmanifest.lua changed on disk after it started (a new \`files\` entry isn't served until the server re-reads it)`,
-          next: `\`refresh\`, then \`restart ${r.name}\``
-        });
-      }
       if ((imports || depends) && r.startedBeforeRuntime) {
         findings.push({
           code: "start-order",
@@ -1196,10 +1172,8 @@ ${lines.join("\n")}
       }
     }
     if (snap.theme) {
-      const pairs = /* @__PURE__ */ new Set();
       for (const c2 of snap.theme.contrast) {
         if (c2.ok) continue;
-        pairs.add(`${c2.fg} on ${c2.bg}`);
         findings.push({
           code: "theme-contrast",
           severity: "warn",
@@ -1208,8 +1182,6 @@ ${lines.join("\n")}
         });
       }
       for (const w of snap.theme.warnings) {
-        const pair = /^([\w-]+) on ([\w-]+) is [\d.]+:1/.exec(w);
-        if (pair && pairs.has(`${pair[1]} on ${pair[2]}`)) continue;
         if (/contrast/i.test(w)) continue;
         findings.push({ code: "theme-warning", severity: "info", message: `theme: ${w}`, next: `fix it in nuikit/theme.css, then \`nuikit theme reload\`` });
       }
@@ -1229,16 +1201,6 @@ ${lines.join("\n")}
       message: frameworkResource ? `${framework} detected (${frameworkResource} is running)` : "no framework detected: standalone",
       next: packs.some((p) => p.fits && !p.running) ? `adapter packs that fit: ${packs.filter((p) => p.fits && !p.running).map((p) => `${p.name}${p.shipped ? "" : " (not shipped yet)"}`).join(", ")}` : packs.some((p) => p.running) ? "every fitting adapter pack is running" : "no adapter pack fits; nuikit's own screens and overrides still apply"
     });
-    const seen = /* @__PURE__ */ new Set();
-    const unique = findings.filter((f) => {
-      var _a2;
-      const key = `${f.code}|${(_a2 = f.resource) != null ? _a2 : ""}|${f.message}`;
-      if (seen.has(key)) return false;
-      seen.add(key);
-      return true;
-    });
-    findings.length = 0;
-    findings.push(...unique);
     const rank = { error: 0, warn: 1, info: 2 };
     findings.sort((a, b) => rank[a.severity] - rank[b.severity]);
     const intents = Object.entries((_e = snap.intents) != null ? _e : {}).map(([source, byIntent]) => ({ source, byIntent, total: Object.values(byIntent).reduce((a, b) => a + b, 0) })).sort((a, b) => b.total - a.total);
@@ -1275,7 +1237,7 @@ ${lines.join("\n")}
     for (const r of rep.resources) {
       if (r.status === "runtime") continue;
       let label = STATUS_LABEL[r.status];
-      if (r.status === "nuikit" && r.protocol !== void 0) label += ` v${r.protocol}${r.level !== void 0 ? ` level ${r.level}` : ""}`;
+      if (r.status === "nuikit") label += ` v${r.protocol}${r.level !== void 0 ? ` level ${r.level}` : ""}`;
       if (r.via) label += ` (${r.via})`;
       out.push(`  ${r.name.padEnd(24)} ${label}`);
       if (r.next) out.push(`  ${"".padEnd(24)}   \u2192 ${r.next}`);

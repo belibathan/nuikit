@@ -1,5 +1,18 @@
 # qbx-idcard-web
 
+## 0.3.5
+
+### Patch Changes
+
+- b326cc5: qbx_idcard override rebuilt on the kit's components: the card is a `player-card` (mugshot, name, the card type and the issuing place, then citizen ID, date of birth, sex and nationality as stats), the close key is a `key-prompt` under it, and the job grade beside the badge is a `hud-chip`. The card type's colour from `config/shared.lua` still marks the top edge. The flag image is no longer drawn. What the page posts (`closeIdCard` on the close key, even with no card showing, and after `autoClose`) is unchanged (`bench/screens/qbx_idcard`).
+- Updated dependencies [30d20ea]
+- Updated dependencies [71e9442]
+- Updated dependencies [bc127c3]
+- Updated dependencies [20f7092]
+- Updated dependencies [22148ce]
+- Updated dependencies [f510c7d]
+  - nuikit-core@0.8.0
+
 ## 0.3.4
 
 ### Patch Changes

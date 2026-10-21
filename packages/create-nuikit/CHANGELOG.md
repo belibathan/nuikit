@@ -1,5 +1,15 @@
 # create-nuikit
 
+## 0.8.0
+
+### Minor Changes
+
+- 22148ce: Renderer packs (docs/intents.md §9). A resource that declares `nuikit_renderer 'notify'` (one line per intent) and ships a module built with `nuikitModule()` whose default export is a renderer (`defineReactRenderer`) or a record of them replaces nuikit's default renderer for that intent, still themed by the server's tokens and stacked by the runtime; the newest started pack wins a kind, a stopped one hands back, and a pack that fails to load falls back to the default with an F8 line. `nuikit-core/host`: `host.fetchModule()` loads a module script for its exports without mounting it, `hoist()` is exported. `npm create nuikit -- -t renderer-pack` scaffolds a pack with a notify renderer on `notice`, a browser preview and `/<name>_test`.
+
+### Patch Changes
+
+- eec33f8: Every block template on the v2 components and component tokens: money through `Money` / `formatMoney`, empty states through `EmptyState`, read-only rows (settings key hints, scoreboard activities, bank transactions) through `MenuRow readOnly`, the pause player card through `PlayerCard`, the pause and loading titles and the loading percent on the identity's display face (`nk-display`, `Stat size="display"`), captions on `nk-caption`, the death screen as text on the game (`nk-on-game`, no infinite pulse), the interaction options in a `Panel` with the hint as a `HudChip`, no width animations or raw durations. What each block sends to Lua is unchanged; the templates' server rules still pass their Lua 5.4 specs. Stills: `bank` takes `dialog`, `job-menu` takes `firing`.
+
 ## 0.7.0
 
 ### Minor Changes
