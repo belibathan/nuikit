@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils";
 /** Camera distance (m) beyond which short-range blips become dots. */
 export const FAR = 1600;
 /** Markers closer than this (px at 1080p, scaled with the screen) merge. */
-const CELL_1080 = 30;
+const CELL_1080 = 32;
 
 export interface BlipChoice {
   blip: MapBlip;
@@ -53,22 +53,32 @@ export const Blips = memo(function Blips({
       const cell = (CELL_1080 * h) / 1080;
       // leaders first: long-range blips, then short-range; a merged marker is led by the first in
       const order = blips.map((_, i) => i).sort((a, c) => Number(blips[a]!.sr) - Number(blips[c]!.sr));
-      const lead = new Map<string, number>();
+      // greedy: each marker joins the nearest leader closer than a cell, or leads its own group
+      const leaders: { i: number; x: number; y: number; r: number }[] = [];
       const n = new Array<number>(blips.length).fill(0);
       const shownAt = new Array<number>(blips.length).fill(-1);
       for (const i of order) {
         const x = b[i * 2] ?? -1;
         const y = b[i * 2 + 1] ?? -1;
         if (x < 0 || hidden.has(looks[i]!.kind)) continue;
-        // far out, a short-range dot is small: give it a smaller cell so dots don't swallow icons
-        const size = far && blips[i]!.sr ? cell * 0.6 : cell;
-        const key = `${Math.floor((x * w) / size)},${Math.floor((y * h) / size)},${size === cell ? 1 : 0}`;
-        const first = lead.get(key);
-        if (first === undefined) {
-          lead.set(key, i);
+        const px = x * w;
+        const py = y * h;
+        // far out, a short-range dot is small: it only merges with what it would actually touch
+        const r = far && blips[i]!.sr ? cell * 0.45 : cell;
+        let join = -1;
+        for (let k = 0; k < leaders.length; k++) {
+          const l = leaders[k]!;
+          const reach = Math.max(r, l.r);
+          if (Math.abs(l.x - px) < reach && Math.abs(l.y - py) < reach) {
+            join = l.i;
+            break;
+          }
+        }
+        if (join < 0) {
+          leaders.push({ i, x: px, y: py, r });
           shownAt[i] = i;
           n[i] = 1;
-        } else n[first]! += 1;
+        } else n[join]! += 1;
       }
       for (let i = 0; i < blips.length; i++) {
         const node = els.current[i];
@@ -103,7 +113,7 @@ export const Blips = memo(function Blips({
   }, [blips, looks, hidden, far]);
 
   return (
-    <div ref={root} data-far={far || undefined} className="pointer-events-none absolute inset-0">
+    <div ref={root} data-far={far || undefined} className="pointer-events-none absolute inset-0 z-0">
       {blips.map((b, i) => {
         const look = looks[i]!;
         const Icon = look.icon;
@@ -133,8 +143,8 @@ export const Blips = memo(function Blips({
             <span className="pause-pin-center">
               <span className={cn("pause-blip", accent && "pause-blip-accent")} style={accent ? ({ "--blip": accent } as CSSProperties) : undefined}>
                 <Icon className="pause-blip-icon" aria-hidden />
-                <span data-slot="blip-count" className="pause-blip-count nk-num" hidden />
               </span>
+              <span data-slot="blip-count" className="pause-blip-count nk-num" hidden />
               <span className="pause-blip-label" aria-hidden={!open}>
                 <span className="truncate">{look.label}</span>
                 <span className="pause-blip-kind">{look.kindLabel}</span>

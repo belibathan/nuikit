@@ -346,7 +346,7 @@ const Pins = memo(function Pins({
   );
 
   return (
-    <div ref={root} className="pointer-events-none absolute inset-0">
+    <div ref={root} className="pointer-events-none absolute inset-0 z-0">
       {places.map((p, i) => {
         const Icon = icon(p.icon);
         const selected = p.id === selectedId;
