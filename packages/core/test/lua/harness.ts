@@ -5,13 +5,13 @@
  * from inside another). That is the stricter case for nuikit: it must not rely on TriggerEvent
  * being synchronous across resources.
  */
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { isAbsolute } from "node:path";
 import { fileURLToPath } from "node:url";
 import { LuaFactory, type LuaEngine } from "wasmoon";
 
-const lua_ = (file: string) =>
-  readFileSync(isAbsolute(file) ? file : fileURLToPath(new URL(`../../lua/${file}`, import.meta.url)), "utf8");
+const luaPath = (file: string) => (isAbsolute(file) ? file : fileURLToPath(new URL(`../../lua/${file}`, import.meta.url)));
+const lua_ = (file: string) => readFileSync(luaPath(file), "utf8");
 const SOURCE = lua_("nuikit.lua");
 
 export interface StartOptions {
@@ -54,6 +54,8 @@ export interface Resource {
   serverEvents: { event: string; args: unknown[] }[];
   /** Like call, for callbacks that answer later: `done`/`result` fill in when cb runs. */
   callPending(name: string, data?: unknown): { done: boolean; result: any };
+  /** Functions this resource registered with exports('name', fn). */
+  exports: Map<string, (...args: unknown[]) => unknown>;
   /** Latest `nuikit:surfaces` payload. */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   surfaces(): any;
@@ -144,6 +146,7 @@ export async function createClient(options: { syncEvents?: boolean; onNuiMessage
       kvp: new Map(),
       commands: new Map(),
       serverEvents: [],
+      exports: new Map(),
       callPending: (cbName, data = {}) => {
         const fn = callbacks.get(cbName);
         if (!fn) throw new Error(`no NUI callback "${cbName}" in ${name}`);
@@ -220,27 +223,52 @@ export async function createClient(options: { syncEvents?: boolean; onNuiMessage
       handlers.set(event, list);
     });
     resources.set(name, res);
+    // exports('name', fn) registers; exports.<resource>:<name>(...) calls another resource's export
+    // (the callee sees GetInvokingResource() == the caller, as in FiveM).
+    g.set("__exportCall", (target: string, exportName: string, ...args: unknown[]) => {
+      const fn = resources.get(target)?.exports.get(exportName);
+      if (!fn) throw new Error(`no export "${exportName}" in ${target}`);
+      const outer = invoker;
+      invoker = name;
+      try {
+        // Functions (callbacks) cross as references, as FiveM passes them between resources.
+        return clone(fn(...args.map((a) => (typeof a === "function" ? (...x: unknown[]) => void a(...x.map(clone)) : clone(a)))));
+      } finally {
+        invoker = outer;
+      }
+    });
+    g.set("__exportSet", (exportName: string, fn: (...a: unknown[]) => unknown) => {
+      res.exports.set(exportName, fn);
+    });
     await lua.doString(`
       GlobalState = setmetatable({}, { __index = function(_, k) return __globalState(k) end })
-      exports = setmetatable({}, { __call = function() end })
+      exports = setmetatable({}, {
+        __call = function(_, name, fn) __exportSet(name, fn) end,
+        __index = function(_, target)
+          return setmetatable({}, { __index = function(_, name)
+            return function(_, ...) return __exportCall(target, name, ...) end
+          end })
+        end,
+      })
     `);
     if (startOptions.before) await lua.doString(startOptions.before);
+    // The nuikit resource's lib/ (packages/core/lua), for @nuikit/init.lua and intents.lua's schema.
+    g.set("__nuikitLib", (file: string) => {
+      if (startOptions.runtimeMissing) return undefined;
+      const m = /^lib\/([\w.-]+)\.lua$/.exec(file);
+      return m && m[1] !== "init" && existsSync(luaPath(`${m[1]}.lua`)) ? lua_(`${m[1]}.lua`) : undefined;
+    });
+    await lua.doString(`
+      local prev = LoadResourceFile
+      LoadResourceFile = function(r, f)
+        if r == 'nuikit' and f:sub(1, 4) == 'lib/' then return __nuikitLib(f) end
+        if prev then return prev(r, f) end
+      end
+      IsDuplicityVersion = IsDuplicityVersion or function() return false end
+    `);
     const runtime = startOptions.runtime ?? "vendored";
     if (runtime === "vendored") await lua.doString(SOURCE);
     else if (runtime === "import") {
-      g.set("__nuikitLib", (file: string) => {
-        if (startOptions.runtimeMissing) return undefined;
-        const m = /^lib\/(nuikit|bridge|host|camera|controls)\.lua$/.exec(file);
-        return m ? lua_(`${m[1]}.lua`) : undefined;
-      });
-      await lua.doString(`
-        local prev = LoadResourceFile
-        LoadResourceFile = function(r, f)
-          if r == 'nuikit' and f:sub(1, 4) == 'lib/' then return __nuikitLib(f) end
-          if prev then return prev(r, f) end
-        end
-        IsDuplicityVersion = IsDuplicityVersion or function() return false end
-      `);
       g.set("__nuikitInit", lua_("init.lua"));
       await lua.doString(lua_("init.lua"));
     }

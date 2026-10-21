@@ -1,0 +1,65 @@
+/* The frame's own CSS, after the synced index.css: icon animations a script can ask for (ox
+   iconAnimation), and the hosted-module containers. Everything else is the kit. */
+
+[data-nk-frame] {
+  font-family: var(--font-sans);
+}
+
+/* Font Awesome's animation names, on any icon element (lucide or FA). Off with --nk-motion 0. */
+@keyframes nk-fa-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes nk-fa-beat {
+  50% {
+    transform: scale(1.25);
+  }
+}
+@keyframes nk-fa-fade {
+  50% {
+    opacity: 0.4;
+  }
+}
+@keyframes nk-fa-bounce {
+  50% {
+    transform: translateY(-0.2em);
+  }
+}
+@keyframes nk-fa-shake {
+  25% {
+    transform: rotate(-12deg);
+  }
+  75% {
+    transform: rotate(12deg);
+  }
+}
+.nk-fa-spin {
+  animation: nk-fa-spin 2s linear infinite;
+}
+.nk-fa-spinReverse {
+  animation: nk-fa-spin 2s linear infinite reverse;
+}
+.nk-fa-spinPulse {
+  animation: nk-fa-spin 1s steps(8) infinite;
+}
+.nk-fa-pulse {
+  animation: nk-fa-spin 1s steps(8) infinite;
+}
+.nk-fa-beat {
+  animation: nk-fa-beat 1s ease-in-out infinite;
+}
+.nk-fa-fade,
+.nk-fa-beatFade {
+  animation: nk-fa-fade 1s ease-in-out infinite;
+}
+.nk-fa-bounce {
+  animation: nk-fa-bounce 1s ease-in-out infinite;
+}
+.nk-fa-shake {
+  animation: nk-fa-shake 1s ease-in-out infinite;
+}
+html[data-nk-motion="off"] [class*="nk-fa-"],
+html[data-nk-motion="reduced"] [class*="nk-fa-"] {
+  animation: none;
+}

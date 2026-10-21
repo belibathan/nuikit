@@ -69,7 +69,7 @@ After the retest: merge to `main`, release 0.7.0, close the remaining PRs, clean
 | # | Step | Status |
 |---|---|---|
 | 1 | `@nuikit/init.lua` + `nk` (import like ox_lib) | **Done** (0.5.0) |
-| 2 | Intent schemas from one source; default renderers in nuikit's frame | Next |
+| 2 | Intent schemas from one source; default renderers in nuikit's frame | **Built** on `feat/intents` ([`intents.md`](intents.md)): 9 schemas + generator, `nk.*` + runtime + `https://nuikit/intent`, 9 renderers in the frame (level 3), 41 tests, screenshots at 3 resolutions. Unproven in game (intents.md §8) |
 | 3 | Services: camera (seed: `nuikit_pause/client/camera.lua`), controls | **PR open** (`feat/services`): `nk.camera` (client-wide stack, suspend/resume, targeted placement, restore on release / resource stop / death) and `nk.controls` (presets + ids, union, surface `controls` option), [`services.md`](services.md); 27 Lua tests; the pause menu's camera module is a shim over `nk.camera`. **Needs:** the in-game checklist in `services.md` |
 | 4 | In-game spike: adapter mechanisms (stand-in, listener, ox_lib page routing) | **Ready for the owner** (`feat/adapter-spike`): spike resources + 12-step checklist in `bench/adapters/`, 15 clean-room specs in `docs/adapters/`, replay harness with a worked example. Not run in game; result tables empty |
 | 5 | `[nuikit-ox]` adapter | Planned |

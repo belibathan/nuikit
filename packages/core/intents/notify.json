@@ -1,0 +1,116 @@
+{
+  "name": "notify",
+  "version": 1,
+  "doc": "A toast. Superset of ox lib.notify, QBCore:Notify, ESX.ShowNotification, okokNotify and mythic_notify. Drawn by `notice` in a stack per position.",
+  "yields": false,
+  "update": true,
+  "props": {
+    "id": {
+      "type": "string",
+      "doc": "Re-sending with the same id updates the toast in place and restarts its timer."
+    },
+    "title": {
+      "type": "string",
+      "doc": "Plain text. A toast with neither title nor description is dropped."
+    },
+    "description": {
+      "type": "string",
+      "doc": "Second line. ox markdown (bold, italic, inline code) is rendered; nothing else."
+    },
+    "status": {
+      "type": "ref",
+      "ref": "status",
+      "default": "info",
+      "doc": "Picks the icon and its colour; the surface stays neutral. The Lua API also accepts ox/qb words: inform, primary, default → info; danger → error."
+    },
+    "icon": {
+      "type": "ref",
+      "ref": "icon",
+      "doc": "Replaces the status icon."
+    },
+    "iconColor": {
+      "type": "ref",
+      "ref": "color"
+    },
+    "iconAnimation": {
+      "type": "ref",
+      "ref": "iconAnimation"
+    },
+    "alignIcon": {
+      "type": "enum",
+      "values": [
+        "top",
+        "center"
+      ],
+      "doc": "Where the icon sits when there are two lines. Default: top with two lines, center with one."
+    },
+    "duration": {
+      "type": "integer",
+      "min": 0,
+      "doc": "ms on screen. Missing: 5000. 0: stays until the script cancels it (give it an `id`)."
+    },
+    "showDuration": {
+      "type": "boolean",
+      "default": true,
+      "doc": "A line under the toast drains over `duration`."
+    },
+    "position": {
+      "type": "ref",
+      "ref": "anchor",
+      "default": "top-right"
+    },
+    "item": {
+      "type": "object",
+      "props": {
+        "name": {
+          "type": "string",
+          "required": true
+        },
+        "count": {
+          "type": "integer",
+          "required": true,
+          "doc": "Positive for added, negative for removed."
+        },
+        "icon": {
+          "type": "ref",
+          "ref": "icon"
+        },
+        "image": {
+          "type": "string"
+        }
+      },
+      "doc": "An item added or removed: draws the item slab (tile + name + change) instead of a panel, and merges with the same item's recent change."
+    },
+    "sound": {
+      "type": "oneOf",
+      "of": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "string"
+        },
+        {
+          "type": "object",
+          "props": {},
+          "open": true
+        }
+      ],
+      "doc": "Play a sound: true for the kit's, a name, or a library's table. The caller's Lua plays it; it never reaches the page (ox strips it the same way)."
+    },
+    "style": {
+      "type": "object",
+      "props": {},
+      "open": true,
+      "doc": "Inline CSS (camelCase) merged over the toast. Escape hatch for adapters; themed UIs don't need it."
+    },
+    "meta": {
+      "type": "object",
+      "props": {},
+      "open": true,
+      "doc": "Library-specific extras an adapter carries through and a renderer may honour (okok `kind`, mythic `style`, an esx picture…). Never validated."
+    }
+  },
+  "result": null,
+  "events": {}
+}

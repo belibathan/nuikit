@@ -1,0 +1,146 @@
+{
+  "name": "radial",
+  "version": 1,
+  "doc": "A radial menu with submenus. Superset of ox registerRadial / addRadialItem and qb-radialmenu. Drawn by `radial-menu`. Resolves with the chosen item (and the path to it), or nil when closed.",
+  "yields": true,
+  "update": true,
+  "props": {
+    "id": {
+      "type": "string"
+    },
+    "label": {
+      "type": "string",
+      "doc": "The centre's title when nothing is highlighted."
+    },
+    "size": {
+      "type": "integer",
+      "min": 160,
+      "max": 640,
+      "doc": "Diameter in px at 1080p. Default 320."
+    },
+    "items": {
+      "type": "array",
+      "required": true,
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "props": {
+          "id": {
+            "type": "string",
+            "doc": "Returned in the result. Default: the 1-based index as a string."
+          },
+          "label": {
+            "type": "string",
+            "required": true
+          },
+          "description": {
+            "type": "string"
+          },
+          "icon": {
+            "type": "ref",
+            "ref": "icon"
+          },
+          "iconColor": {
+            "type": "ref",
+            "ref": "color"
+          },
+          "iconWidth": {
+            "type": "number",
+            "min": 0,
+            "max": 100,
+            "doc": "Image icons only, % of the wedge."
+          },
+          "iconHeight": {
+            "type": "number",
+            "min": 0,
+            "max": 100
+          },
+          "disabled": {
+            "type": "boolean"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "self"
+            },
+            "doc": "An inline submenu."
+          },
+          "menu": {
+            "type": "string",
+            "doc": "ox-style submenu by id: selecting resolves with reason 'submenu' and this id, and the script opens it."
+          },
+          "keepOpen": {
+            "type": "boolean",
+            "doc": "Selecting emits 'select' and keeps the menu open."
+          },
+          "args": {
+            "type": "any"
+          }
+        }
+      }
+    },
+    "sub": {
+      "type": "boolean",
+      "doc": "This is a submenu (the centre shows back instead of close)."
+    },
+    "option": {
+      "type": "string",
+      "doc": "The id of the submenu just left, so the page it lives on opens first (ox)."
+    },
+    "meta": {
+      "type": "object",
+      "props": {},
+      "open": true,
+      "doc": "Library-specific extras an adapter carries through and a renderer may honour (okok `kind`, mythic `style`, an esx picture…). Never validated."
+    }
+  },
+  "result": {
+    "type": "object",
+    "props": {
+      "index": {
+        "type": "integer"
+      },
+      "id": {
+        "type": "string"
+      },
+      "path": {
+        "type": "array",
+        "items": {
+          "type": "integer"
+        }
+      },
+      "args": {
+        "type": "any"
+      }
+    }
+  },
+  "events": {
+    "select": {
+      "doc": "An item with keepOpen was chosen.",
+      "data": {
+        "type": "object",
+        "props": {
+          "index": {
+            "type": "integer"
+          },
+          "id": {
+            "type": "string"
+          },
+          "path": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            }
+          }
+        }
+      }
+    },
+    "back": {
+      "doc": "The centre was pressed on a submenu opened by id (`sub`): the script shows the parent.",
+      "data": {
+        "type": "object",
+        "props": {}
+      }
+    }
+  }
+}

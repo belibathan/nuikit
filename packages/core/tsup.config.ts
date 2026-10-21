@@ -15,6 +15,9 @@ export default defineConfig([
       module: "src/module.ts",
       boot: "src/boot.ts",
       host: "src/host.ts",
+      // Intents (docs/intents.md): validation, store and renderer contract; React renderers.
+      intents: "src/intents.ts",
+      "intents-react": "src/intents-react.ts",
     },
     format: ["esm"],
     dts: true,
