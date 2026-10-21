@@ -10,7 +10,7 @@
 // --nk-vital-icon) and a player's override (/hudstyle, kept in KVP by client/style.lua and sent as
 // `hud:style`). Icon + level + the critical state, never colour alone; the value is in aria-valuenow.
 import { onNui } from "nuikit-core";
-import { fetchNui, type NuiPlayer } from "nuikit-core/react";
+import { fetchNui, Stagger, useStaggerItem, type NuiPlayer } from "nuikit-core/react";
 import { MicIcon, RadioIcon } from "lucide-react";
 import { useCallback, useEffect, useState, type CSSProperties } from "react";
 import type { HudSettings, VitalMode } from "../nui";
@@ -39,8 +39,10 @@ export function VitalItem({ tone, value, mode, low, high, linger, pop, force }: 
   const [popping, setPopping] = useState(false);
   const onShow = useCallback((s: boolean) => setPopping(s), []);
   const shown = (shownByRule || popping) && mode !== false && value !== undefined;
+  // in sequence with the vitals that come or go with it (the row is a <Stagger>)
+  const stagger = useStaggerItem<HTMLDivElement>(shown);
   return (
-    <div data-slot="hud-vital" data-tone={tone} data-shown={shown || undefined} data-critical={critical || undefined} className="hud-vchip" aria-hidden={!shown}>
+    <div ref={stagger} data-slot="hud-vital" data-tone={tone} data-shown={shown || undefined} data-critical={critical || undefined} className="hud-vchip" aria-hidden={!shown}>
       <VitalChip.Root value={v} tone={tone} role="meter" aria-label={`${LABELS[tone]} ${v}%`} aria-valuemin={0} aria-valuemax={100} aria-valuenow={v}>
         <VitalChip.Shape>
           <VitalChip.Icon>{ICONS[tone]}</VitalChip.Icon>
@@ -138,6 +140,7 @@ export function VitalsRow({ player, settings, layout }: { player: NuiPlayer; set
     <VitalItem tone={tone} value={value} mode={mode(m)} {...common} force={force[tone] ?? null} {...extra} />
   );
   return (
+    <Stagger step={45} budget={300}>
     <div data-slot="hud-vitals" data-layout={layout} className="hud-vitals-row" style={{} as CSSProperties}>
       {voice && <VoiceChip voice={voice} linger={linger} />}
       {item("health", player.health, cfg.health)}
@@ -147,6 +150,7 @@ export function VitalsRow({ player, settings, layout }: { player: NuiPlayer; set
       {needs && item("stress", player.stress, cfg.stress)}
       {voice?.radio !== undefined && <RadioChip radio={voice.radio} />}
     </div>
+    </Stagger>
   );
 }
 

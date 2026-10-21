@@ -133,6 +133,8 @@ export interface HudSettings {
     handbrake?: boolean;
     seatbelt?: "auto" | boolean;
     cruise?: "auto" | boolean;
+    /** how many times a second the speed number may change (default 10; the value is smoothed too) */
+    speedRate?: number;
   };
   location?: boolean;
   compass?: { enabled?: boolean; onFoot?: boolean; /** compact: cardinals and heading on the map ring (Config.minimap.compass) */ ring?: boolean };

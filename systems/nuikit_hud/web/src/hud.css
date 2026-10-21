@@ -137,23 +137,40 @@
   --hud-vchip-gap: 0.5rem;
 }
 .hud-vchip {
+  position: relative;
   flex: none;
   display: flex;
+  transform: none;
   max-width: 24rem;
   opacity: 1;
   transition:
     opacity var(--hud-ms) ease-out,
     max-width var(--hud-ms) ease-out,
-    margin var(--hud-ms) ease-out;
+    margin var(--hud-ms) ease-out,
+    transform var(--hud-ms) cubic-bezier(0.2, 0.8, 0.2, 1);
 }
-/* hidden: fade and fold away so the row closes up (the gap goes with it) */
+/* each chip sits over the one to its right, so a chip that folds away slides under its left neighbour */
+.hud-vitals-row > .hud-vchip:nth-child(1) { z-index: 9; }
+.hud-vitals-row > .hud-vchip:nth-child(2) { z-index: 8; }
+.hud-vitals-row > .hud-vchip:nth-child(3) { z-index: 7; }
+.hud-vitals-row > .hud-vchip:nth-child(4) { z-index: 6; }
+.hud-vitals-row > .hud-vchip:nth-child(5) { z-index: 5; }
+.hud-vitals-row > .hud-vchip:nth-child(6) { z-index: 4; }
+.hud-vitals-row > .hud-vchip:nth-child(7) { z-index: 3; }
+/* hidden: it folds into its neighbour (slides left, shrinks, tucks under it) and the row closes up with
+   it; vitals that go together go in sequence, the last first (<Stagger>), so nothing just vanishes */
 .hud-vchip:not([data-shown]) {
   overflow: hidden;
   opacity: 0;
   max-width: 0;
   margin-left: calc(var(--hud-vchip-gap) * -1);
-  transition-duration: calc(320ms * var(--nk-motion, 1));
-  transition-timing-function: ease-in;
+  transform: translateX(-45%) scale(0.82);
+  transition-duration: calc(300ms * var(--nk-motion, 1));
+  transition-timing-function: cubic-bezier(0.4, 0, 0.6, 1);
+}
+:is(html, *)[data-nk-motion="reduced"] .hud-vchip {
+  transform: none;
+  transition-property: opacity, max-width, margin;
 }
 .hud-vchip[data-active] {
   --nk-chip-bg: var(--hud-accent);
@@ -1062,6 +1079,8 @@
 }
 .hud-map-heading {
   position: absolute;
+  display: flex;
+  white-space: pre;
   transform: translateX(-50%);
   font-size: 0.875rem;
   line-height: 1;
@@ -1105,13 +1124,19 @@
   color: var(--hud-solid);
   isolation: isolate;
 }
+/* N as a compass needle: a slim diamond on the ring, its outer point aiming out from the centre */
 :is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"]) .hud-map-cardinal[data-north]::after {
   content: "";
   position: absolute;
-  inset: -0.0625rem -0.125rem;
+  left: 50%;
+  top: 50%;
+  width: 0.875rem;
+  height: 0.875rem;
+  margin: -0.4375rem 0 0 -0.4375rem;
   z-index: -1;
   background-color: var(--nk-ring-stroke, var(--hud-fg));
-  transform: skewX(var(--nk-skew));
+  box-shadow: 0 0 0 1px rgba(var(--scrim-rgb), 0.35);
+  transform: rotate(var(--hud-at, 0deg)) translateY(-0.125rem) scale(0.8, 1.45) rotate(45deg);
 }
 .hud-map-tag {
   position: absolute;
@@ -1414,7 +1439,8 @@
 /* a digit reel: glyphs stacked, the window clips the roll (vertical only) */
 .hud-reel {
   display: inline-grid;
-  overflow: hidden;
+  /* clip y only: italic glyphs overhang their box sideways */
+  clip-path: inset(0 -0.5em);
   padding: 0.08em 0;
   margin: -0.08em 0;
   transition: opacity calc(160ms * var(--nk-motion, 1)) ease-out;

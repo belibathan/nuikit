@@ -10,12 +10,13 @@
 // (cluster.tsx): a tick toggles only when the lit count changes, a digit only when it changes, the
 // arc's dash only when the rpm moved.
 import { FuelIcon } from "lucide-react";
-import { motionLevel } from "nuikit-core/motion";
 import { useRef, type ReactNode } from "react";
+import { Stagger, useStaggerItem } from "nuikit-core/react";
 import { TextRoll } from "@/components/ui/text-roll";
 import type { HudSettings, HudVehicle } from "../nui";
 import { Signal, type Painter, type Tell } from "./cluster";
 import type { GaugeStyle, HudLook } from "./look";
+import { calm, rollDigit } from "./reel";
 import { cardinal, setText, UNIT_LABEL } from "./util";
 
 const clamp01 = (v: number) => Math.max(0, Math.min(1, Number.isFinite(v) ? v : 0));
@@ -67,51 +68,6 @@ const FUEL_ARC = (() => {
   return `M ${x0.toFixed(2)} ${y0.toFixed(2)} A ${FUEL_R} ${FUEL_R} 0 0 0 ${x1.toFixed(2)} ${y1.toFixed(2)}`;
 })();
 const FUEL_ICON_AT = polar(FUEL_EMPTY + 14, FUEL_R);
-
-// the speed's digit reels, painted without React (speed arrives ~30 times a second)
-const ROLL_MS = 170;
-const reels = new WeakMap<HTMLElement, { ch: string; at: number; busy: Animation[] }>();
-/**
- * Roll one digit to `ch`: the old glyph leaves vertically, the new one arrives (up when the speed grows).
- * Nothing queues: a new value finishes the roll in flight and starts from there, in at most the time
- * since the last change, so a digit that changes faster than it can roll (the units at speed) snaps.
- */
-function rollDigit(el: HTMLElement | null, ch: string, dir: 1 | -1) {
-  if (!el) return;
-  const now = performance.now();
-  let st = reels.get(el);
-  if (!st) {
-    st = { ch: el.textContent ?? "", at: 0, busy: [] };
-    reels.set(el, st);
-  }
-  if (st.ch === ch) return;
-  const gap = now - st.at;
-  st.at = now;
-  st.ch = ch;
-  for (const a of st.busy) a.finish();
-  st.busy = [];
-  while (el.childNodes.length > 1) el.removeChild(el.firstChild!);
-  let glyph = el.firstElementChild as HTMLElement | null;
-  if (!glyph) {
-    el.textContent = "";
-    glyph = document.createElement("span");
-    el.appendChild(glyph);
-  }
-  const ms = Math.min(ROLL_MS, gap - 10);
-  if (motionLevel() !== "on" || ms < 60 || typeof glyph.animate !== "function") {
-    glyph.textContent = ch;
-    return;
-  }
-  const next = document.createElement("span");
-  next.textContent = ch;
-  el.appendChild(next);
-  const opts: KeyframeAnimationOptions = { duration: ms, easing: "cubic-bezier(0.2, 0.8, 0.2, 1)" };
-  const out = glyph.animate([{ transform: "translateY(0)" }, { transform: `translateY(${-dir * 100}%)` }], { ...opts, fill: "forwards" });
-  const into = next.animate([{ transform: `translateY(${dir * 100}%)` }, { transform: "translateY(0)" }], opts);
-  const old = glyph;
-  out.onfinish = () => old.remove();
-  st.busy = [out, into];
-}
 
 /** Gears in order, for the roll direction: R, N, 1 to 8. */
 const GEAR_ORDER = (g: string) => (g === "R" ? -1 : g === "N" ? 0 : Number(g) || 0);
@@ -201,9 +157,14 @@ function FuelLine({ fuel }: { fuel: number }) {
 }
 
 /** A painter that keeps the speed digits, the redline flag and the shared state. */
-function useSpeedPainter(root: { current: HTMLDivElement | null }, digits: { current: (HTMLSpanElement | null)[] }, heading: { current: HTMLSpanElement | null }) {
+function useSpeedPainter(
+  root: { current: HTMLDivElement | null },
+  digits: { current: (HTMLSpanElement | null)[] },
+  heading: { current: HTMLSpanElement | null },
+  hz = 10,
+) {
   const state = useRef({ lit: -1, red: false, speed: "", lead: -1, dash: "" });
-  const speed = (s: number) => {
+  const paintSpeed = (s: number) => {
     const { digits: d, lead } = speedDigits(s);
     if (d === state.current.speed) return;
     const els = digits.current;
@@ -222,6 +183,11 @@ function useSpeedPainter(root: { current: HTMLDivElement | null }, digits: { cur
     }
   };
   const head = (h: number) => setText(heading.current, `${Math.round(h) % 360}° ${cardinal(h)}`);
+  // what the number shows is calm: smoothed (~120 ms), at most `hz` changes a second, and a ±1 jitter at a
+  // steady speed never rolls (vehicle.speedRate)
+  const gate = useRef<ReturnType<typeof calm> | null>(null);
+  if (!gate.current) gate.current = calm({ hz, tau: 120, step: 1 }, (v) => paintSpeed(v));
+  const speed = (s: number) => gate.current!.feed(s);
   return { state, speed, redline, head };
 }
 
@@ -236,7 +202,7 @@ function CompactArc({ v, look, settings, paint, center, style }: CompactProps) {
   const fill = useRef<SVGPathElement>(null);
   const digits = useRef<(HTMLSpanElement | null)[]>([]);
   const heading = useRef<HTMLSpanElement>(null);
-  const p = useSpeedPainter(root, digits, heading);
+  const p = useSpeedPainter(root, digits, heading, settings.speedRate);
   const redline = v.redline;
   const showRpm = settings.rpm !== false;
   const digital = style === "digital";
@@ -332,7 +298,7 @@ function CompactBar({ v, settings, paint, center }: CompactProps) {
   const segs = useRef<HTMLSpanElement>(null);
   const digits = useRef<(HTMLSpanElement | null)[]>([]);
   const heading = useRef<HTMLSpanElement>(null);
-  const p = useSpeedPainter(root, digits, heading);
+  const p = useSpeedPainter(root, digits, heading, settings.speedRate);
   const redline = v.redline;
   const showRpm = settings.rpm !== false;
   const fuel = settings.fuel !== false && v.fuel !== undefined ? Math.max(0, Math.min(100, Math.round(v.fuel))) : undefined;
@@ -390,13 +356,22 @@ function CompactBar({ v, settings, paint, center }: CompactProps) {
 /** The telltales as a narrow column, stacked from the bottom: the lit ones show, easing in and out. */
 export function TelltaleColumn({ items }: { items: Tell[] }) {
   return (
-    <div data-slot="hud-telltales" className="hud-c-tells">
-      {items.map((t) => (
-        <span key={t.key} data-slot="hud-telltale" data-key={t.key} data-on={t.on || undefined} data-tone={t.tone} className="hud-c-tell" aria-label={t.label} aria-hidden={!t.on}>
-          {t.icon}
-          {t.text && <span className="hud-num hud-c-tell-text">{t.text}</span>}
-        </span>
-      ))}
-    </div>
+    <Stagger step={35} budget={200}>
+      <div data-slot="hud-telltales" className="hud-c-tells">
+        {items.map((t) => (
+          <Telltale key={t.key} t={t} />
+        ))}
+      </div>
+    </Stagger>
+  );
+}
+
+function Telltale({ t }: { t: Tell }) {
+  const stagger = useStaggerItem<HTMLSpanElement>(!!t.on);
+  return (
+    <span ref={stagger} data-slot="hud-telltale" data-key={t.key} data-on={t.on || undefined} data-tone={t.tone} className="hud-c-tell" aria-label={t.label} aria-hidden={!t.on}>
+      {t.icon}
+      {t.text && <span className="hud-num hud-c-tell-text">{t.text}</span>}
+    </span>
   );
 }

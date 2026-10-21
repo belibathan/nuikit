@@ -380,3 +380,99 @@ export function useIndicator(
     move.current(at[0], at[1] / base);
   }, [active, epoch, indicatorRef, listRef, rows, read]);
 }
+
+// ───────────────────────────────── choreography (groups move in sequence, layered)
+
+export interface StaggerOptions {
+  /** delay between neighbours (ms); default from the identity: --nk-stagger, else 40 */
+  step?: number;
+  /** no group takes longer than this to start its last member (ms); default 300 */
+  budget?: number;
+  /** enter: first child first (default) or from the end */
+  from?: "start" | "end";
+}
+
+interface StaggerRequest {
+  el: HTMLElement;
+  on: boolean;
+}
+
+/**
+ * A group's choreographer: children that change state in the same frame are given delays in DOM order
+ * (entering) or reverse order (leaving: the last in leaves first), within the budget. The delay is set on
+ * the element before the browser starts the transition, so CSS does the moving (transform / opacity,
+ * interruptible: a group that comes back mid-exit reverses from where it is).
+ */
+export class StaggerGroup {
+  private pending: StaggerRequest[] = [];
+  private queued = false;
+  constructor(public opts: StaggerOptions = {}) {}
+  request(r: StaggerRequest) {
+    this.pending.push(r);
+    if (this.queued) return;
+    this.queued = true;
+    queueMicrotask(() => this.flush());
+  }
+  private flush() {
+    this.queued = false;
+    const batch = this.pending;
+    this.pending = [];
+    const level = motionLevel();
+    const order = (list: StaggerRequest[]) =>
+      list.sort((a, b) => (a.el.compareDocumentPosition(b.el) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1));
+    const enter = order(batch.filter((r) => r.on));
+    const exit = order(batch.filter((r) => !r.on)).reverse();
+    if (this.opts.from === "end") enter.reverse();
+    const stepOf = (n: number) => {
+      const token = typeof document === "undefined" ? "" : getComputedStyle(document.documentElement).getPropertyValue("--nk-stagger").trim();
+      const base = this.opts.step ?? (parseFloat(token) || 40);
+      const budget = this.opts.budget ?? 300;
+      return n > 1 ? Math.min(base, budget / (n - 1)) : 0;
+    };
+    for (const list of [enter, exit]) {
+      const step = level === "on" ? stepOf(list.length) : 0;
+      list.forEach((r, i) => {
+        const ms = `${Math.round(i * step)}ms`;
+        r.el.style.transitionDelay = ms;
+        r.el.style.animationDelay = ms;
+        r.el.style.setProperty("--nk-stagger-delay", ms);
+      });
+    }
+  }
+}
+
+const StaggerCtx = createContext<StaggerGroup | null>(null);
+
+/**
+ * A group whose children enter and leave in sequence (see useStaggerItem). Renders its children only;
+ * wrap the list:
+ *
+ *   <Stagger step={40}>{vitals.map((v) => <Vital key={v.id} … />)}</Stagger>
+ */
+export function Stagger({ children, step, budget, from }: StaggerOptions & { children: ReactNode }): ReactElement {
+  const group = useRef<StaggerGroup | null>(null);
+  if (!group.current) group.current = new StaggerGroup({ step, budget, from });
+  group.current.opts = { step, budget, from };
+  return createElement(StaggerCtx.Provider, { value: group.current }, children);
+}
+
+/**
+ * One member of a <Stagger> group: when `on` changes, the element gets its delay in the group's sequence
+ * (transition-delay, animation-delay and --nk-stagger-delay), so its own CSS transition plays in turn.
+ * Returns the ref to put on the element. Outside a group it does nothing.
+ */
+export function useStaggerItem<T extends HTMLElement>(on: boolean): (el: T | null) => void {
+  const group = useContext(StaggerCtx);
+  const el = useRef<T | null>(null);
+  const first = useRef(true);
+  useLayoutEffect(() => {
+    if (first.current) {
+      first.current = false;
+      return;
+    }
+    if (group && el.current) group.request({ el: el.current, on });
+  }, [on, group]);
+  return useCallback((node: T | null) => {
+    el.current = node;
+  }, []);
+}
