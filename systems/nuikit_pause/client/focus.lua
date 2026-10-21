@@ -238,6 +238,27 @@ function Focus.setFrame(f)
   debug('frame from the UI %.2f %.2f %.2f %.2f', frame.x, frame.y, frame.w, frame.h)
 end
 
+--- Frame into a new screen rectangle during a run that isn't Home's (the inventory's, when its page
+--- reports it): the camera glides to the new framing instead of jumping.
+function Focus.reframe(f)
+  if usingHome or type(f) ~= 'table' then return end
+  if not active then
+    frame = f
+    return
+  end
+  local before = target(0.0)
+  frame = f
+  local after = target(0.0)
+  if residual then
+    residual.x = residual.x + before.x - after.x
+    residual.y = residual.y + before.y - after.y
+    residual.z = residual.z + before.z - after.z
+    residual.pitch = residual.pitch + before.pitch - after.pitch
+    residual.yaw = residual.yaw + Map3D.turn(after.yaw, before.yaw)
+  end
+  debug('reframed %.2f %.2f %.2f %.2f', f.x, f.y, f.w, f.h)
+end
+
 --- Drag to look around: dx is a fraction of the screen width; a full width is one turn.
 function Focus.rotate(dx)
   goalAngle = goalAngle + (tonumber(dx) or 0) * 360.0

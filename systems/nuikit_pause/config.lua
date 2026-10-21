@@ -52,6 +52,7 @@ Config = {
   -- ox_inventory override, and setr inventory:screenblur false in ox.cfg).
   inventory = {
     focus = true,
+    sheet = 34.75,           -- the override's edge sheet width (rem), used until its page reports its open area
   },
 
   preview = {

@@ -350,9 +350,9 @@ describe("systems/nuikit_pause: the bigger menu", () => {
   it("frames the player between the inventory panels while ox_inventory is open", async () => {
     client = await createClient();
     const pause = await client.start("nuikit_pause", { before: natives, scripts });
-    // the override's middle gap at 1080p: 36rem edge sheets plus 1.5rem of air on each side
+    // the override's middle gap at 1080p: 34.75rem edge sheets plus 1.5rem of air on each side
     const f = await pause.run<{ x: number; w: number; y: number; h: number }>(`return Inventory.frame(1920, 1080)`);
-    expect(f.x).toBeCloseTo((37.5 * 16) / 1920, 3);
+    expect(f.x).toBeCloseTo((36.25 * 16) / 1920, 3);
     expect(f.x + f.w).toBeCloseTo(1 - f.x, 6);
     expect(f.y + f.h).toBeLessThan(0.96);
 
@@ -366,6 +366,39 @@ describe("systems/nuikit_pause: the bigger menu", () => {
     expect(await pause.run(`return RENDER[#RENDER]`)).toBe(false); // glided back to the game
 
     // the pause menu's own framing is untouched by the inventory's
+    await pause.run(press);
+    expect(await pause.run(`return Focus.state().frame.x`)).toBeCloseTo(0.325, 6);
+  });
+
+  it("frames the inventory camera in the area the inventory page reports, gliding when it changes", async () => {
+    client = await createClient();
+    const pause = await client.start("nuikit_pause", { before: natives, scripts });
+    // the fallback until the page reports: 34.75rem edge sheets plus air
+    expect(await pause.run<number>(`return Inventory.currentFrame().x`)).toBeCloseTo(((34.75 + 1.5) * 16) / 1920, 4);
+    // the page reports before the camera starts (on open): it frames there
+    expect(await pause.call("inventory:frame", { x: 0.3021, y: 0.0444, w: 0.3958, h: 0.8667 })).toEqual({});
+    await pause.run(`LocalPlayer.state.invOpen = true Inventory.tick()`);
+    expect(await pause.run(`return Focus.isActive()`)).toBe(true);
+    expect(await pause.run(`return Focus.state().frame.x`)).toBeCloseTo(0.3021, 6);
+    await pause.run(`for _ = 1, 120 do Focus.step(0.05) end`);
+    const settled = await pause.run<number[]>(`return CAMPOS`);
+    // the right sheet closes: a wider area; the camera glides there, no jump
+    await pause.call("inventory:frame", { x: 0.3021, y: 0.0444, w: 0.6979, h: 0.8667 });
+    expect(await pause.run(`return Focus.state().frame.w`)).toBeCloseTo(0.6979, 6);
+    const next = await pause.run<number[]>(`Focus.step(0.0) return CAMPOS`);
+    expect(Math.hypot(next[0]! - settled[0]!, next[1]! - settled[1]!, next[2]! - settled[2]!)).toBeLessThan(0.01);
+    const moved = await pause.run<number[]>(`for _ = 1, 120 do Focus.step(0.05) end return CAMPOS`);
+    expect(Math.hypot(moved[0]! - settled[0]!, moved[1]! - settled[1]!)).toBeGreaterThan(0.05);
+    // junk is refused and clamped; the callback still answers
+    expect(await pause.call("inventory:frame", { x: "nope" })).toEqual({});
+    expect(await pause.run(`return Focus.state().frame.w`)).toBeCloseTo(0.6979, 6);
+    await pause.call("inventory:frame", { x: -1, y: 0.5, w: 4, h: 0.9 });
+    const f = await pause.run<{ x: number; w: number; y: number; h: number }>(`return Focus.state().frame`);
+    expect(f.x).toBe(0);
+    expect(f.w).toBe(1);
+    expect(f.y + f.h).toBeLessThanOrEqual(1);
+    // the pause menu's own framing is untouched
+    await pause.run(`LocalPlayer.state.invOpen = false Inventory.tick()`);
     await pause.run(press);
     expect(await pause.run(`return Focus.state().frame.x`)).toBeCloseTo(0.325, 6);
   });
