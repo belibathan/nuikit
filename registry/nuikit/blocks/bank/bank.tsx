@@ -17,8 +17,10 @@ import {
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Confirm } from "@/components/ui/confirm"
+import { EmptyState } from "@/components/ui/empty-state"
 import { TextField } from "@/components/ui/form-field"
 import { MenuRow } from "@/components/ui/menu-row"
+import { Money, formatMoney } from "@/components/ui/money"
 import { Panel, PanelBody, PanelHeader } from "@/components/ui/panel"
 import { Spinner } from "@/components/ui/spinner"
 import { Stat } from "@/components/ui/stat"
@@ -30,7 +32,7 @@ import type { BankAccount, BankAccountKind, BankAnswer, BankData, BankMoneyActio
  * right; deposit, withdraw and transfer in a dialog that checks the amount before Lua does. Lua
  * answers every move, and its error stays in the dialog. At an ATM there are no transfers.
  * Protocol-agnostic: fill BankData from any banking resource. Built from the kit: Panel, MenuRow,
- * Stat, Confirm and TextField (form-field), with stock shadcn Button and Spinner.
+ * Stat, Money, EmptyState, Confirm and TextField (form-field), with stock shadcn Button and Spinner.
  *
  *   <BankSurface />                                   // wired: nk.surface('bank', …) in Lua opens it
  *   <Bank data={data} onMoney={…} />                  // a still, or your own wiring
@@ -58,9 +60,6 @@ function BankSurface() {
     </Surface>
   )
 }
-
-const money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 })
-const signed = (n: number) => `${n > 0 ? "+" : n < 0 ? "−" : ""}${money.format(Math.abs(n))}`
 
 const ACCOUNT_ICON: Record<BankAccountKind, LucideIcon> = {
   personal: WalletIcon,
@@ -99,6 +98,7 @@ function Bank({
   onBack,
   onClose,
   autoFocus = true,
+  dialog: dialogProp = null,
   className,
   ...props
 }: Omit<React.ComponentProps<"div">, "children"> & {
@@ -110,11 +110,13 @@ function Bank({
   onMoney?: (action: BankMoneyAction, req: { account: string; amount: number; to?: string; note?: string }) => Promise<BankAnswer> | void
   /** Focus the selected account when it opens (off for stills next to other content). */
   autoFocus?: boolean
+  /** Start with a money dialog open (stills). */
+  dialog?: BankMoneyAction | null
 }) {
   const accounts = list(data.accounts)
   const [selectedId, setSelectedId] = React.useState(accounts[0]?.id)
   const account = accounts.find((a) => a.id === selectedId) ?? accounts[0]
-  const [dialog, setDialog] = React.useState<BankMoneyAction | null>(null)
+  const [dialog, setDialog] = React.useState<BankMoneyAction | null>(dialogProp)
   const transactions = list(data.transactions).filter((t) => t.account === account?.id)
   const busy = React.useRef(false)
 
@@ -131,7 +133,7 @@ function Bank({
     <div data-slot="bank" className={cn("nk-edge absolute inset-0", className)} {...props}>
       <div className="absolute inset-0 m-auto flex h-max w-max items-start gap-4">
         <Panel>
-          <PanelHeader icon={<LandmarkIcon />} title={data.title ?? "Bank"} description={`Cash on hand ${money.format(data.cash)}`} />
+          <PanelHeader icon={<LandmarkIcon />} title={data.title ?? "Bank"} description={`Cash on hand ${formatMoney(data.cash)}`} />
           <PanelBody>
             {accounts.length ? (
               accounts.map((a, i) => {
@@ -142,7 +144,7 @@ function Bank({
                     autoFocus={autoFocus && i === 0}
                     icon={<Icon />}
                     description={a.frozen ? "Frozen" : [a.role, a.number].filter(Boolean).join(", ") || undefined}
-                    meta={money.format(a.balance)}
+                    meta={<Money amount={a.balance} />}
                     active={a.id === account?.id}
                     className={cn(a.frozen && "[&_[data-slot=menu-row-description]]:text-destructive")}
                     onClick={() => setSelectedId(a.id)}
@@ -152,7 +154,7 @@ function Bank({
                 )
               })
             ) : (
-              <p className="nk-row text-muted-foreground">You have no accounts here yet. Ask a teller to open one.</p>
+              <EmptyState icon={<LandmarkIcon />} title="No accounts yet" description="Ask a teller to open one." />
             )}
           </PanelBody>
         </Panel>
@@ -198,7 +200,7 @@ function BankAccountPanel({
     <Panel className="w-[34rem]">
       <PanelHeader icon={<Icon />} title={a.label} description={[a.role, a.number].filter(Boolean).join(", ") || undefined} />
       <PanelBody variant="form">
-        <Stat size="display" label="Balance" value={money.format(a.balance)} />
+        <Stat size="display" label="Balance" value={<Money amount={a.balance} />} />
         {a.frozen && (
           <p className="flex items-center gap-2 text-sm text-destructive">
             <SnowflakeIcon className="size-4" />
@@ -220,25 +222,28 @@ function BankAccountPanel({
         </div>
       </PanelBody>
       <div className="nk-panel-header border-t border-b-0 py-2">
-        <span className="nk-label">Recent</span>
+        <span className="nk-caption">Recent</span>
       </div>
       <PanelBody scroll className="max-h-[18rem]">
         {transactions.length ? (
           transactions.map((t) => {
             const TxIcon = TX_ICON[t.kind] ?? ArrowLeftRightIcon
             return (
-              <div key={t.id} data-slot="bank-transaction" className="nk-row">
-                <TxIcon className="size-4 shrink-0 text-muted-foreground" />
-                <span className="flex min-w-0 flex-1 flex-col">
-                  <span className="truncate font-medium">{t.title}</span>
-                  <span className="truncate text-xs text-muted-foreground">{[t.time, t.note].filter(Boolean).join(", ")}</span>
-                </span>
-                <span className={cn("nk-num shrink-0 text-sm font-medium", t.amount > 0 ? "text-success" : "text-foreground")}>{signed(t.amount)}</span>
-              </div>
+              // read-only rows: money in is success, money out stays in the text colour (not an error)
+              <MenuRow
+                key={t.id}
+                data-bank-transaction
+                readOnly
+                icon={<TxIcon />}
+                description={[t.time, t.note].filter(Boolean).join(", ") || undefined}
+                meta={<Money amount={t.amount} sign="always" className={cn("text-sm", t.amount > 0 ? "text-success" : "text-foreground")} />}
+              >
+                {t.title}
+              </MenuRow>
             )
           })
         ) : (
-          <p className="nk-row text-muted-foreground">No transactions yet. Deposits and transfers show up here.</p>
+          <EmptyState icon={<ReceiptIcon />} title="No transactions yet" description="Deposits and transfers show up here." />
         )}
       </PanelBody>
     </Panel>
@@ -308,11 +313,11 @@ function BankMoneyDialog({
       tone="primary"
       size="sm"
       title={`${ACTION_LABEL[action]} ${action === "deposit" ? "to" : "from"} ${account.label}`}
-      description={action === "deposit" ? `Cash on hand: ${money.format(cash)}` : `Available: ${money.format(account.balance)}`}
+      description={action === "deposit" ? `Cash on hand: ${formatMoney(cash)}` : `Available: ${formatMoney(account.balance)}`}
       cancelLabel="Cancel"
       // The amount field takes the keyboard (autoFocus below), not the action.
       initialFocus="none"
-      confirmLabel={`${ACTION_LABEL[action]}${!check && amount ? ` ${money.format(Number(amount))}` : ""}`}
+      confirmLabel={`${ACTION_LABEL[action]}${!check && amount ? ` ${formatMoney(Number(amount))}` : ""}`}
       loading={busy}
       onCancel={() => !busy && onClose()}
       onConfirm={submit}
@@ -338,7 +343,7 @@ function BankMoneyDialog({
           label="Amount"
           hint={
             <Button type="button" variant="ghost" size="sm" className="h-6 px-2 text-xs" onClick={() => setAmount(String(Math.floor(available)))}>
-              All {money.format(available)}
+              All {formatMoney(available)}
             </Button>
           }
           placeholder="$0"
