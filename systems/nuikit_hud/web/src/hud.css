@@ -1374,6 +1374,8 @@
 }
 .hud-c-arc-fill {
   stroke: var(--hud-fill);
+  /* the shift light eases in and out (the dash itself follows the rpm frame by frame) */
+  transition: stroke calc(140ms * var(--nk-motion, 1)) ease-out;
 }
 .hud-c-gauge[data-redline] .hud-c-arc-fill {
   stroke: var(--hud-redline);
@@ -1408,6 +1410,54 @@
 }
 .hud-c-speed > [data-dim] {
   opacity: 0.26;
+}
+/* a digit reel: glyphs stacked, the window clips the roll (vertical only) */
+.hud-reel {
+  display: inline-grid;
+  overflow: hidden;
+  padding: 0.08em 0;
+  margin: -0.08em 0;
+  transition: opacity calc(160ms * var(--nk-motion, 1)) ease-out;
+}
+.hud-reel > span {
+  grid-area: 1 / 1;
+}
+/* fuel on the dial's right-hand curve */
+.hud-c-fuelarc-track,
+.hud-c-fuelarc-fill {
+  fill: none;
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+.hud-c-fuelarc-track {
+  stroke: var(--hud-track);
+}
+.hud-c-fuelarc-fill {
+  stroke: var(--hud-fg);
+  stroke-opacity: 0.9;
+  transition:
+    stroke-dasharray calc(400ms * var(--nk-motion, 1)) ease-out,
+    stroke calc(200ms * var(--nk-motion, 1)) ease-out;
+}
+.hud-c-fuelarc[data-low] .hud-c-fuelarc-fill {
+  stroke: var(--warning);
+  stroke-opacity: 1;
+}
+.hud-c-fuelarc-icon {
+  position: absolute;
+  display: flex;
+  color: var(--hud-fg);
+  opacity: 0.7;
+  transform: translate(-50%, -50%);
+  transition: color calc(200ms * var(--nk-motion, 1)) ease-out;
+}
+.hud-c-fuelarc-icon svg {
+  width: 0.75rem;
+  height: 0.75rem;
+}
+.hud-c-fuelarc-icon[data-low] {
+  color: var(--warning);
+  opacity: 1;
 }
 .hud-c-unit {
   margin-top: 0.1875rem;
@@ -1606,6 +1656,15 @@
   width: 1.75rem;
 }
 .hud-c-tell {
+  overflow: hidden;
+  max-height: 3rem;
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity calc(180ms * var(--nk-motion, 1)) ease-out,
+    transform calc(180ms * var(--nk-motion, 1)) ease-out,
+    max-height calc(180ms * var(--nk-motion, 1)) ease-out,
+    margin calc(180ms * var(--nk-motion, 1)) ease-out;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1618,6 +1677,14 @@
   background-color: var(--hud-chip-bg);
   box-shadow: inset 0 0 0 1px var(--hud-hairline);
   text-shadow: none;
+}
+.hud-c-tell:not([data-on]) {
+  max-height: 0;
+  min-height: 0;
+  padding: 0;
+  margin-top: -0.3125rem;
+  opacity: 0;
+  transform: scale(0.8);
 }
 .hud-c-tell svg {
   width: 0.9375rem;
