@@ -221,7 +221,7 @@ function VehicleShop({
               description={vehicle.brand}
               actions={<Money amount={vehicle.price} size="md" />}
             />
-            <PanelBody className="flex flex-col gap-4 p-4">
+            <PanelBody variant="form">
               <div className="flex flex-col gap-2.5">
                 {STATS.map(([key, label]) =>
                   vehicle.stats?.[key] !== undefined ? <Meter key={key} label={label} value={vehicle.stats[key]} valueText={`${Math.round(vehicle.stats[key]!)}`} /> : null
@@ -263,7 +263,7 @@ function VehicleShop({
                     onClick={() => choice && onTestDrive && ask("test", onTestDrive(choice))}
                   >
                     {busy === "test" ? <Spinner /> : <TimerIcon />}
-                    Test drive · {data.testDrive}s
+                    Test drive ({data.testDrive} s)
                   </Button>
                 ) : null}
                 <Button className="flex-1" disabled={!choice || !!problem || !!busy} onClick={() => setConfirming(true)}>

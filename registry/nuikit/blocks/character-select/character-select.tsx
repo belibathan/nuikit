@@ -19,6 +19,7 @@ import {
 } from "lucide-react"
 
 import { cn } from "@/lib/utils"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Confirm } from "@/components/ui/confirm"
 import { DateField, SelectField, TextField } from "@/components/ui/form-field"
@@ -35,7 +36,7 @@ import type { CharacterAnswer, CharacterSelectData, CharacterSummary, NewCharact
  * Create), the chosen one as a PlayerCard with Play and Delete (behind a destructive Confirm), the
  * spawn points after Play, and a create form. Lua and the server decide every step. Built from
  * the kit: Panel, MenuRow, PlayerCard, Money, Confirm, TextField / DateField / SelectField (from
- * form-field), with stock Button and Spinner.
+ * form-field), with stock Avatar, Button and Spinner.
  *
  *   <CharacterSelectSurface />                          // wired: nk.surface('character-select', …)
  *   <CharacterSelect data={data} onPlay={…} />          // a still, or your own wiring
@@ -235,12 +236,13 @@ function CharacterSelect({
             {characters.map((c) => (
               <MenuRow
                 key={c.id}
-                icon={
-                  <span aria-hidden className="flex size-7 items-center justify-center rounded-full bg-muted text-xs font-semibold text-foreground">
-                    {initials(fullName(c))}
-                  </span>
+                image={
+                  <Avatar aria-hidden className="size-full rounded-none">
+                    {c.avatar && <AvatarImage src={c.avatar} alt="" className="object-cover" />}
+                    <AvatarFallback className="rounded-none text-xs font-medium">{initials(fullName(c))}</AvatarFallback>
+                  </Avatar>
                 }
-                description={[c.job, c.lastPlayed].filter(Boolean).join(" · ") || undefined}
+                description={[c.job, c.lastPlayed].filter(Boolean).join(", ") || undefined}
                 active={c.id === selectedId}
                 disabled={!!busy}
                 onClick={() => {
@@ -361,7 +363,7 @@ function CharacterSelect({
         {step === "create" && (
           <Panel size="auto" className="nk-enter w-96" data-step="">
             <PanelHeader icon={<PlusIcon />} title="New character" description="You can't change the name or date of birth later." />
-            <PanelBody className="flex flex-col gap-4 p-4">
+            <PanelBody variant="form">
               <div className="grid grid-cols-2 gap-3">
                 <TextField
                   label="First name"
