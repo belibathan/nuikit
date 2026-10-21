@@ -404,7 +404,8 @@
       "registryDependencies": [
         "https://nuikit.vercel.app/r/countdown.json",
         "https://nuikit.vercel.app/r/key-prompt.json",
-        "https://nuikit.vercel.app/r/hud-chip.json"
+        "https://nuikit.vercel.app/r/hud-chip.json",
+        "https://nuikit.vercel.app/r/money.json"
       ],
       "categories": [
         "screens"
@@ -447,7 +448,8 @@
         "https://nuikit.vercel.app/r/meter.json",
         "https://nuikit.vercel.app/r/stat.json",
         "https://nuikit.vercel.app/r/hud-chip.json",
-        "https://nuikit.vercel.app/r/speedometer.json"
+        "https://nuikit.vercel.app/r/speedometer.json",
+        "https://nuikit.vercel.app/r/money.json"
       ],
       "categories": [
         "screens"
@@ -726,13 +728,14 @@
         "nuikit-core"
       ],
       "registryDependencies": [
-        "avatar",
         "separator",
         "https://nuikit.vercel.app/r/menu-row.json",
         "https://nuikit.vercel.app/r/panel.json",
         "https://nuikit.vercel.app/r/stat.json",
         "https://nuikit.vercel.app/r/meter.json",
-        "https://nuikit.vercel.app/r/confirm.json"
+        "https://nuikit.vercel.app/r/confirm.json",
+        "https://nuikit.vercel.app/r/money.json",
+        "https://nuikit.vercel.app/r/player-card.json"
       ],
       "categories": [
         "screens"
@@ -780,12 +783,13 @@
         "button",
         "separator",
         "spinner",
-        "https://nuikit.vercel.app/r/meter.json"
+        "https://nuikit.vercel.app/r/meter.json",
+        "https://nuikit.vercel.app/r/stat.json"
       ],
       "categories": [
         "screens"
       ],
-      "docs": "Mount <LoadingScreenPage /> in App.tsx of a resource whose fxmanifest has loadscreen 'web/dist/index.html' and loadscreen_manual_shutdown 'yes'. Hand it data from the server with deferrals.handover({ nuikit = { serverName, tips, theme = GlobalState.nuikitTheme, \u2026 } }). A whole resource with the Lua: npm create nuikit@latest my-loading -- -t loading-screen",
+      "docs": "Mount <LoadingScreenPage /> in App.tsx of a resource whose fxmanifest has loadscreen 'web/dist/index.html' and loadscreen_manual_shutdown 'yes'. Hand it data from the server with deferrals.handover({ nuikit = { serverName, tips, theme = GlobalState.nuikitTheme, … } }). A whole resource with the Lua: npm create nuikit@latest my-loading -- -t loading-screen",
       "meta": {
         "since": "0.6.0",
         "status": "stable",
@@ -825,7 +829,8 @@
         "tabs",
         "https://nuikit.vercel.app/r/panel.json",
         "https://nuikit.vercel.app/r/menu-row.json",
-        "https://nuikit.vercel.app/r/form-field.json"
+        "https://nuikit.vercel.app/r/form-field.json",
+        "https://nuikit.vercel.app/r/empty-state.json"
       ],
       "categories": [
         "screens"
@@ -868,7 +873,9 @@
         "badge",
         "input",
         "https://nuikit.vercel.app/r/panel.json",
-        "https://nuikit.vercel.app/r/meter.json"
+        "https://nuikit.vercel.app/r/meter.json",
+        "https://nuikit.vercel.app/r/menu-row.json",
+        "https://nuikit.vercel.app/r/empty-state.json"
       ],
       "categories": [
         "screens"
@@ -914,7 +921,9 @@
         "tabs",
         "https://nuikit.vercel.app/r/panel.json",
         "https://nuikit.vercel.app/r/menu-row.json",
-        "https://nuikit.vercel.app/r/meter.json"
+        "https://nuikit.vercel.app/r/meter.json",
+        "https://nuikit.vercel.app/r/money.json",
+        "https://nuikit.vercel.app/r/empty-state.json"
       ],
       "categories": [
         "screens"
@@ -960,7 +969,9 @@
         "https://nuikit.vercel.app/r/menu-row.json",
         "https://nuikit.vercel.app/r/stat.json",
         "https://nuikit.vercel.app/r/confirm.json",
-        "https://nuikit.vercel.app/r/form-field.json"
+        "https://nuikit.vercel.app/r/form-field.json",
+        "https://nuikit.vercel.app/r/money.json",
+        "https://nuikit.vercel.app/r/empty-state.json"
       ],
       "categories": [
         "screens"
@@ -1006,7 +1017,9 @@
         "https://nuikit.vercel.app/r/panel.json",
         "https://nuikit.vercel.app/r/menu-row.json",
         "https://nuikit.vercel.app/r/stat.json",
-        "https://nuikit.vercel.app/r/confirm.json"
+        "https://nuikit.vercel.app/r/confirm.json",
+        "https://nuikit.vercel.app/r/money.json",
+        "https://nuikit.vercel.app/r/empty-state.json"
       ],
       "categories": [
         "screens"
@@ -1048,7 +1061,9 @@
       "registryDependencies": [
         "spinner",
         "https://nuikit.vercel.app/r/key-prompt.json",
-        "https://nuikit.vercel.app/r/menu-row.json"
+        "https://nuikit.vercel.app/r/menu-row.json",
+        "https://nuikit.vercel.app/r/panel.json",
+        "https://nuikit.vercel.app/r/hud-chip.json"
       ],
       "categories": [
         "screens"
@@ -1235,7 +1250,8 @@
         "https://nuikit.vercel.app/r/player-card.json",
         "https://nuikit.vercel.app/r/money.json",
         "https://nuikit.vercel.app/r/confirm.json",
-        "https://nuikit.vercel.app/r/form-field.json"
+        "https://nuikit.vercel.app/r/form-field.json",
+        "avatar"
       ],
       "categories": [
         "screens"
