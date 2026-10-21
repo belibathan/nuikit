@@ -32,7 +32,8 @@ const SIZE = { xs: "sm:max-w-80", sm: "sm:max-w-96", md: "sm:max-w-md", lg: "sm:
  * out), dressed as an nk-panel. ox_lib's rules stay here (docs/ox-lib-protocol.md §8): Escape always
  * cancels, even without a Cancel button; the first button has focus, so Enter presses Cancel when it's
  * shown and Confirm otherwise; closeAlertDialog closes without a post. Radix's own Escape is off: the
- * window listener below posts the one closeAlert.
+ * window listener below posts the one closeAlert. Hovering a button focuses it, so the focus ring and
+ * the hover are always on the same button (and Enter presses the one you point at).
  */
 export function AlertDialog() {
   const locale = useLocale();
@@ -91,11 +92,11 @@ export function AlertDialog() {
         </AlertDialogDescription>
         <AlertDialogFooter className="nk-panel-footer justify-end">
           {data.cancel && (
-            <AlertDialogCancel ref={cancel} onClick={() => close("cancel")}>
+            <AlertDialogCancel ref={cancel} onPointerEnter={(e) => e.currentTarget.focus()} onClick={() => close("cancel")}>
               {data.labels?.cancel ?? locale.cancel}
             </AlertDialogCancel>
           )}
-          <AlertDialogAction ref={confirm} onClick={() => close("confirm")}>
+          <AlertDialogAction ref={confirm} onPointerEnter={(e) => e.currentTarget.focus()} onClick={() => close("confirm")}>
             {data.labels?.confirm ?? locale.confirm}
           </AlertDialogAction>
         </AlertDialogFooter>

@@ -253,6 +253,7 @@
       "web/src/components/ui/switch.tsx",
       "web/src/components/ui/text-roll.tsx",
       "web/src/components/ui/textarea.tsx",
+      "web/src/components/ui/tooltip.tsx",
       "web/src/index.css",
       "web/src/lib/utils.ts"
     ],
