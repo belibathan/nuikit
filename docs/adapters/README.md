@@ -32,7 +32,7 @@ why, and what the spike decides), **Replay test** (recorded calls → what the c
 | | esx_textui | `prompt` | stand-in | [`esx-textui.md`](esx-textui.md) |
 | `[nuikit-standalone]` | okokNotify | `notify` | stand-in | [`okok-notify.md`](okok-notify.md) |
 | | mythic_notify | `notify` | stand-in | [`mythic-notify.md`](mythic-notify.md) |
-| `[nuikit-ox]` | ox_lib (notify, context, input, alert, progress, textUI, skillCheck) | all | page override, routed (step 5) | [`../ox-lib-protocol.md`](../ox-lib-protocol.md) (the existing protocol doc; routing is decided by the spike) |
+| `[nuikit-ox]` | ox_lib (notify, context, input, alert, progress, textUI, skillCheck) | all | page override, routed (step 5): **built**, unproven in game | [`ox-lib.md`](ox-lib.md) (mechanism, field mapping, fallback); protocol in [`../ox-lib-protocol.md`](../ox-lib-protocol.md) |
 
 ## `[nuikit-qb]`: status and the owner's in-game checklist
 

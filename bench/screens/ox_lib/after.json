@@ -5,115 +5,115 @@
     "step": "load",
     "name": "init",
     "body": null,
-    "ms": 460
+    "ms": 554
    },
    {
     "step": "load",
     "name": "getConfig",
     "body": null,
-    "ms": 505
+    "ms": 598
    },
    {
     "step": "context-click",
     "name": "clickContext",
     "body": "\"0\"",
-    "ms": 409
+    "ms": 159
    },
    {
     "step": "context-submenu",
     "name": "openContext",
     "body": "{\"id\":\"depot\",\"back\":false}",
-    "ms": 109
+    "ms": 144
    },
    {
     "step": "context-back",
     "name": "openContext",
     "body": "{\"id\":\"garage\",\"back\":true}",
-    "ms": 111
+    "ms": 72
    },
    {
     "step": "context-escape",
     "name": "closeContext",
     "body": null,
-    "ms": 12
+    "ms": 42
    },
    {
     "step": "setMenu",
     "name": "changeSelected",
     "body": "[0,true,\"isCheck\"]",
-    "ms": 167
+    "ms": 207
    },
    {
     "step": "list-down",
     "name": "changeSelected",
     "body": "[1,null,null]",
-    "ms": 108
+    "ms": 107
    },
    {
     "step": "list-enter",
     "name": "confirmSelected",
     "body": "[1,null]",
-    "ms": 8
+    "ms": 9
    },
    {
     "step": "setMenu-2",
     "name": "changeSelected",
     "body": "[0,true,\"isCheck\"]",
-    "ms": 128
+    "ms": 110
    },
    {
     "step": "list-right",
     "name": "changeSelected",
     "body": "[1,null,null]",
-    "ms": 115
+    "ms": 107
    },
    {
     "step": "list-right",
     "name": "changeSelected",
     "body": "[2,0,\"isScroll\"]",
-    "ms": 340
+    "ms": 317
    },
    {
     "step": "list-right",
     "name": "changeIndex",
     "body": "[2,1]",
-    "ms": 542
+    "ms": 525
    },
    {
     "step": "list-escape",
     "name": "closeMenu",
     "body": "\"Escape\"",
-    "ms": 16
+    "ms": 8
    },
    {
     "step": "input-submit",
     "name": "inputData",
     "body": "[\"Niko\",5,true,\"sports\",\"rgb(255, 0, 0)\"]",
-    "ms": 335
+    "ms": 366
    },
    {
     "step": "input-escape",
     "name": "inputData",
     "body": null,
-    "ms": 283
+    "ms": 214
    },
    {
     "step": "alert-confirm",
     "name": "closeAlert",
     "body": "\"confirm\"",
-    "ms": 22
+    "ms": 30
    },
    {
     "step": "alert-escape",
     "name": "closeAlert",
     "body": "\"cancel\"",
-    "ms": 10
+    "ms": 19
    },
    {
     "step": "progress",
     "name": "progressComplete",
     "body": null,
-    "ms": 612
+    "ms": 617
    },
    {
     "step": "progressCancel",
@@ -131,7 +131,7 @@
     "step": "nuikit-stop",
     "name": "closeContext",
     "body": null,
-    "ms": 19
+    "ms": 76
    }
   ],
   "themeRequests": 14
