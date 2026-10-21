@@ -1,0 +1,17 @@
+{
+  "library": "qb-core (QBCore:Notify + DrawText events)",
+  "source": "hand-written from qbcore.org/docs/qb-core (client-event-reference, drawtext)",
+  "expects": ["QBCore:Notify"],
+  "calls": [
+    { "kind": "event", "name": "QBCore:Notify", "args": ["Paid $500", "success", 3000] },
+    { "kind": "serverEvent", "name": "QBCore:Notify", "args": [{ "text": "Unit 12", "caption": "Dispatch" }, "police"] },
+    { "kind": "event", "name": "QBCore:Notify", "args": ["Plain"] },
+    { "kind": "event", "name": "QBCore:Notify", "args": [null] },
+
+    { "kind": "event", "name": "qb-core:client:DrawText", "args": ["[E] Open garage", "left"] },
+    { "kind": "event", "name": "qb-core:client:ChangeText", "args": ["[E] Close", "right"] },
+    { "kind": "event", "name": "qb-core:client:KeyPressed", "args": [] },
+    { "kind": "wait", "ms": 600 },
+    { "kind": "event", "name": "qb-core:client:HideText", "args": [] }
+  ]
+}

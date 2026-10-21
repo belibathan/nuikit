@@ -132,8 +132,10 @@ const RUNTIME_LUA = `
       end
     end
     if OPEN[id] then push({ op = 'replace', id = id }) end
-    OPEN[id] = { kind = kind, props = props, resource = from }
     push({ op = 'open', id = id, kind = kind, props = props, resource = from })
+    local copy = {}
+    for k, v in pairs(props) do copy[k] = v end
+    OPEN[id] = { kind = kind, props = copy, resource = from }
   end)
   AddEventHandler('nuikit:intent:update', function(id, patch)
     local it = OPEN[id]
