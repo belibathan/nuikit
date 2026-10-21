@@ -129,7 +129,7 @@ export function ComponentsPage() {
         <Section
           name="menu-row"
           title="Menu row: items"
-          text="What the menu intent's items carry: an image, a progress line in any tone or colour, read-only rows, the details card beside the hovered row (each metadata bar in its own colour), quiet stepper values, and inert rows that ignore hover (CEF keeps :hover after Lua takes focus)."
+          text="What the menu intent's items carry: an image, a progress line in any tone or colour, read-only rows, trailing actions (promote, fire) a list reaches with Tab, the details card beside the hovered row (each metadata bar in its own colour), quiet stepper values, and inert rows that ignore hover (CEF keeps :hover after Lua takes focus)."
           install={false}
           stageClassName="min-h-[28rem]"
         >
@@ -1328,6 +1328,26 @@ function ContextMenuDemo() {
           <Separator className="my-1" />
           <MenuRow readOnly icon={<UsersIcon />} description="Set by your job" meta="2 of 4">
             Garage slots
+          </MenuRow>
+          <MenuRow
+            readOnly
+            icon={<span className="size-1.5 rounded-full bg-success" />}
+            description="Mechanic, on duty"
+            actions={
+              <>
+                <Button variant="ghost" size="icon-sm" aria-label="Promote Lee">
+                  <ArrowUpIcon />
+                </Button>
+                <Button variant="ghost" size="icon-sm" aria-label="Demote Lee">
+                  <ArrowDownIcon />
+                </Button>
+                <Button variant="ghost" size="icon-sm" aria-label="Fire Lee" className="text-destructive hover:text-destructive">
+                  <LogOutIcon />
+                </Button>
+              </>
+            }
+          >
+            Lee
           </MenuRow>
         </PanelBody>
       </Panel>
