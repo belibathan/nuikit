@@ -91,9 +91,16 @@ After the retest: merge to `main`, release 0.7.0, close the remaining PRs, clean
 
 ### Lead backlog (requests from the lanes)
 
-- Host: a module reports `mounted` one frame before its `onNui` listeners attach, so a message sent in that gap is dropped (seen in `bench/host/e2e.mjs`, fixed there by waiting two frames). If `host.lua` flushes queued messages at mount, buffer them until the module's first listener subscribes.
-- `compileTheme`: warn on an empty token value.
-- Runtime context: server currency and locale (part of 0.7 context; `money` and blocks read it).
+- ~~Host: a module reports `mounted` before its `onNui` listeners attach~~ **In review** (`feat/lead-backlog`): the
+  host holds a module's messages until it says it is listening (`defineReactModule` signals after the App's effects;
+  status `mounted` means listening); the e2e's two-frame wait is gone (21/21). Not yet in game.
+- ~~`compileTheme`: warn on an empty token value~~ **In review** (`feat/lead-backlog`): empty tokens and aliases that
+  resolve to nothing get the stock value with a warning; `var(--x, fallback)` takes its fallback as in CSS.
+- ~~Runtime context: server currency and locale~~ **In review** (`feat/lead-backlog`): convars `nuikit_currency` /
+  `nuikit_locale` → `GlobalState.nuikitContext` → `nuikit:context` (bridge.lua) → `useNuiContext()`; `money` formats
+  with them (protocol §7.2). Not yet in game. Blocks and the HUD's own `money.format` still to adopt it.
+- Also there: harness `stop()` runs the stopping resource's own stop handler; `docs/tokens.md` says `theme.css` is a
+  stand-in for `loadServerTheme`; `info` grey vs blue sheets in `bench/visual/info-tone/` for the owner.
 - ~~`cn()` / tailwind-merge: teach it the `nk-*` utilities~~ **In review** (`feat/hardening`, design v2 §5B): kit-aware
   `cn()` generated from `kit.css` (colour and type; shape and the leading rule wait for baselines), CI sync-drift gate
   with headers on synced copies, class lint (`pnpm lint:classes`, warnings), the
