@@ -42,6 +42,7 @@ Resource statuses:
 | `override-missing` | warn | `overrides.json` lists a page for a started resource and the file has no marker (a library update put the stock UI back) | copy the override again |
 | `override-drifted` | warn | the page has the marker but its hash isn't the shipped one | copy the override again unless you edited it |
 | `missing-dependency` | warn | imports `@nuikit/init.lua` without `dependency 'nuikit'` | add the line |
+| `renderer-failed` | warn | a client posted `nuikit:renderer:failed` (a renderer pack's module didn't load, threw, or has no renderer for a kind it claims; the default drew instead) | rebuild the pack (`pnpm build` in its web/), check `files { 'web/dist/renderers.js' }`, `restart <pack>`. **Not wired on the server yet:** the client event exists (`systems/nuikit/client/renderers.lua`); `server/doctor.js` must count it (lead) |
 | `theme-contrast` | warn | one of the compiled theme's contrast checks fails (the same checks `nuikit theme` prints) | which two tokens to change, then `nuikit theme reload` |
 | `theme-warning` | info | other compiler warnings (missing dark set, values FiveM can't read) | fix in theme.css |
 | `update-available` | info | `nuikit_latest` is newer than the running version | the release URL |

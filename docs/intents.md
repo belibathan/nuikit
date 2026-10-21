@@ -136,10 +136,7 @@ of that kind. The defaults live in `systems/nuikit/web/src/renderers/<kind>.tsx`
 components and kit utilities, tokens only, rem only (`docs/design.md`); the frame itself is `nuikit check`
 level 3.
 
-Replacing one: a resource that declares `nuikit_renderer 'notify'` and ships a module built with
-`nuikitModule()` whose default export is a renderer will be loaded by the host and used instead of the
-default, still themed and stacked by the runtime. The contract is in place (`RendererDefinition`,
-`rendererContext()`); the fxmanifest discovery is step 9 (renderer packs) and is not built yet.
+Replacing one: a renderer pack, §9.
 
 What the defaults do, beyond the schema docs:
 
@@ -165,6 +162,39 @@ What the defaults do, beyond the schema docs:
 - `challenge`: one round per difficulty, `keys` picked at random per round; other keys fail the round
   (or are ignored when a `keys` list is given and they aren't in it), as ox does.
 
+## 9. Renderer packs
+
+*Built (plan step 9), browser-checked, **not yet in game**.* A resource replaces the default renderer of an
+intent for the whole server, still themed by the tokens and stacked by the runtime:
+
+```lua
+-- fxmanifest.lua of the pack (no ui_page)
+dependency 'nuikit'
+nuikit_renderer 'notify'                        -- one line per intent it draws
+nuikit_renderer_module 'web/dist/renderers.js'  -- optional; this is the default
+files { 'web/dist/renderers.js' }
+```
+
+The module is built with `nuikitModule()` (one classic script, React from the frame, CSS inlined) and its
+default export is a renderer (`defineReactRenderer({ kind, Component, css })`) or a record of them by kind.
+`npm create nuikit -- -t renderer-pack` scaffolds one (a notify renderer on `notice`, a browser preview,
+`/<name>_test` in game).
+
+How it works: `systems/nuikit/client/renderers.lua` scans started resources' metadata (and follows
+start/stop) and sends the frame `nuikit:renderer { op = 'state', active = { [kind] = { resource, url, gen } } }`
+(resent on `nuikit:renderer:sync` when the page reloads). The frame (`web/src/packs.ts`) loads the script
+through `host.fetchModule()` (`nuikit-core/host`: the host's loader, exports only, nothing mounted), gives the
+pack a closed shadow root with its CSS scoped (`:root` tokens the document defines are dropped, so the
+server theme wins; portals go to the pack's own portal element) and mounts the renderer for each kind like
+a default. Several packs claiming one kind: the newest started draws it; when it stops, the previous one
+or the default. Anything that fails (script missing, throws, no renderer for the kind) keeps the default,
+prints one F8 line and posts `nuikit:renderer:failed` → `TriggerServerEvent('nuikit:renderer:failed')`
+for the doctor (`docs/doctor.md` §2, `renderer-failed`, not wired on the server yet).
+
+Unproven in game: `https://cfx-nui-<pack>/web/dist/renderers.js` loading as a classic script into
+nuikit's frame (the host's `nuikit_ui` path uses the same URL form); a pack restarting live (`gen` cache-busts
+the URL); the fonts a pack's CSS points at `https://cfx-nui-nuikit/fonts/`.
+
 ## 6. In the browser
 
 `pnpm --filter nuikit-host-web dev`, then `?fixture=<name>` (`notify`, `menu`, `menu-keyboard`, `menu-cursor`,
@@ -179,9 +209,10 @@ through each renderer, and writes the screenshots and `posts.json`.
 `packages/core/intents/*.json` (schemas) · `packages/core/scripts/gen-intents.mjs` · `packages/core/src/intents.ts`
 (validator, store, wire types, renderer contract) · `src/intents-react.ts` · `src/intents.generated.ts` ·
 `packages/core/lua/intents.lua` (the API, loaded by `init.lua`) · `lua/intents.schema.lua` ·
-`systems/nuikit/client/intents.lua` (the runtime) · `systems/nuikit/web/src/{frame.tsx,renderers/,dev.tsx}` ·
+`systems/nuikit/client/intents.lua` (the runtime) · `client/renderers.lua` (renderer packs) ·
+`systems/nuikit/web/src/{frame.tsx,packs.ts,renderers/,dev.tsx}` ·
 `systems/nuikit/web/scripts/screenshots.mjs` · tests: `packages/core/test/intents.test.ts`,
-`packages/core/test/lua/intents.test.ts`.
+`packages/core/test/lua/intents.test.ts`, `lua/renderers.test.ts`, `renderer-packs.test.ts`.
 
 ## 8. Unproven in game
 

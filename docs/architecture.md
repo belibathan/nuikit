@@ -209,10 +209,14 @@ recipes, from a scripted session (join, spawn, menus, a job, inventory, death). 
 5. **`[nuikit-ox]`** on the shared renderers, every ox POST re-verified against `docs/ox-lib-protocol.md`.
 6. **`[nuikit-qb]`**: qb-menu, qb-input, qb-target options, `QBCore:Notify`, progressbar, DrawText, qb-radialmenu.
 7. **`[nuikit-esx]`**: esx_notify, esx_context, esx_menu_default/dialog, esx_progressbar, esx_textui.
-8. **Doctor and coverage harness** on the three reference servers.
+8. **Doctor and coverage harness** on the three reference servers. *Doctor built (`doctor.md`); the coverage
+   harness replays the scripted session under the Lua harness (`bench/coverage/run.mjs`, "replayed, not in
+   game") and counts misses for adapters that don't exist yet.*
 9. **Packaging**: per-framework zips, `nuikit.cfg`, txAdmin recipe; renderer packs via `nuikit_renderer`.
    *Zips, `nuikit.cfg` and the Qbox recipe exist (`scripts/pack-systems.mjs`, `systems/nuikit/nuikit.cfg`,
-   `install/`); the recipe is unproven on a real txAdmin; renderer packs wait on step 2.*
+   `install/`); the recipe is unproven on a real txAdmin. Renderer packs: built (`feat/renderer-packs`,
+   [`intents.md`](intents.md) §9): `nuikit_renderer` discovery in the runtime, the frame's loader with fallback
+   to the default, `npm create nuikit -t renderer-pack`; not yet in game.*
 
 The owner tests each step in game through a `next/*` prerelease.
 
