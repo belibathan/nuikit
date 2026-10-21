@@ -92,6 +92,28 @@ describe("resource status", () => {
     const r = doctor(snap([res("nuikit_loading", { loadscreen: ["web/dist/index.html"], nuikit_protocol: ["1"] })]));
     expect(r.resources.find((x) => x.name === "nuikit_loading")).toMatchObject({ status: "nuikit", page: "web/dist/index.html" });
   });
+  it("nuikit_loading (no handshake: it runs before the runtime) is on nuikit, and another loading screen is told so", () => {
+    const r = doctor(snap([res("nuikit_loading", { loadscreen: ["web/dist/index.html"] }), res("loadscreen", { loadscreen: ["index.html"] })]));
+    const ours = r.resources.find((x) => x.name === "nuikit_loading")!;
+    expect(ours).toMatchObject({ status: "nuikit", via: "loadscreen", page: "web/dist/index.html" });
+    expect(ours.next).toBeUndefined();
+    expect(r.resources.find((x) => x.name === "loadscreen")).toMatchObject({ status: "untouched", next: expect.stringContaining("stop loadscreen") });
+    expect(formatDoctor(r).join("\n")).toContain("nuikit_loading           on nuikit (loadscreen)");
+    expect(r.summary).toMatchObject({ nuikit: 1, untouched: 1 });
+  });
+  it("nuikit_chat (a chat_theme, no page) is on nuikit (theme); a second chat theme is told to stop", () => {
+    const r = doctor(snap([res("nuikit_chat", { chat_theme: ["nuikit"] }), res("qbx_chat_theme", { chat_theme: ["qbx"] }), res("chat", { ui_page: ["html/index.html"] })]));
+    expect(r.resources.find((x) => x.name === "nuikit_chat")).toMatchObject({ status: "nuikit", via: "theme", page: null });
+    expect(r.resources.find((x) => x.name === "qbx_chat_theme")!.next).toContain("stop qbx_chat_theme");
+    expect(formatDoctor(r).join("\n")).toContain("nuikit_chat              on nuikit (theme)");
+    expect(formatDoctor(r).join("\n")).not.toMatch(/nuikit_chat.*v1/);
+  });
+  it("a changed fxmanifest since start says refresh", () => {
+    const r = doctor(snap([res("qbx_hud", { ui_page: ["html/index.html"] }, { manifestChanged: true })]));
+    const f = r.findings.find((x) => x.code === "manifest-changed")!;
+    expect(f).toMatchObject({ severity: "warn", resource: "qbx_hud" });
+    expect(f.next).toBe("`refresh`, then `restart qbx_hud`");
+  });
 });
 
 describe("conflicts", () => {
@@ -173,6 +195,25 @@ describe("conflicts", () => {
     expect(contrast[0]!.message).toContain("2.10:1");
     expect(contrast[0]!.next).toContain("nuikit theme reload");
     expect(r.findings.filter((x) => x.code === "theme-warning").map((x) => x.message)).toEqual(["theme: no dark set; using light"]);
+  });
+
+  it("a failed contrast pair prints once, not as a warning and again as the compiler's info line (0.7.0 baseline)", () => {
+    const r = doctor(
+      snap([], {
+        theme: {
+          contrast: [{ fg: "primary-foreground", bg: "primary", ratio: 3.54, min: 4.5, ok: false }],
+          warnings: ["primary-foreground on primary is 3.5:1 (needs 4.5:1); text on buttons will be hard to read."],
+        },
+      }),
+    );
+    const theme = r.findings.filter((x) => x.code.startsWith("theme-"));
+    expect(theme).toHaveLength(1);
+    expect(theme[0]!.code).toBe("theme-contrast");
+  });
+
+  it("identical findings are printed once", () => {
+    const r = doctor(snap([res("a", { provide: ["ox_lib", "ox_lib"] }), res("ox_lib")]));
+    expect(r.findings.filter((x) => x.code === "provide-conflict")).toHaveLength(1);
   });
 
   it("update available, only when latest is newer", () => {

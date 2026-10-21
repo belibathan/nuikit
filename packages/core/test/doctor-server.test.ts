@@ -101,6 +101,28 @@ describe("nuikit doctor (server glue)", () => {
     expect(bad.run("doctor").join("\n")).toContain("overrides.json is not valid JSON");
   });
 
+  it("lists nuikit_chat (chat_theme) and nuikit_loading (loadscreen) as on nuikit", () => {
+    const s = boot({
+      ...QBOX,
+      nuikit_chat: { state: "started", metadata: { chat_theme: ["nuikit"] } },
+      nuikit_loading: { state: "started", metadata: { loadscreen: ["web/dist/index.html"] } },
+    });
+    const out = s.run("doctor").join("\n");
+    expect(out).toContain("nuikit_chat              on nuikit (theme)");
+    expect(out).toContain("nuikit_loading           on nuikit (loadscreen)");
+  });
+
+  it("an fxmanifest edited after start says refresh", () => {
+    const resources = { ...QBOX, qbx_hud: { state: "started", metadata: { ui_page: ["html/index.html"] }, files: { "fxmanifest.lua": "files { 'a' }" } } };
+    const s = boot(resources);
+    expect(s.run("doctor").join("\n")).not.toContain("fxmanifest.lua changed");
+    resources.qbx_hud.files["fxmanifest.lua"] = "files { 'a', 'b' }";
+    expect(s.run("doctor").join("\n")).toContain("WARN  qbx_hud: fxmanifest.lua changed on disk after it started");
+    // a restart re-reads it
+    s.handlers.get("onResourceStart")!("qbx_hud");
+    expect(s.run("doctor").join("\n")).not.toContain("fxmanifest.lua changed");
+  });
+
   it("counts nuikit:intent by source (server and net events)", () => {
     const s = boot(QBOX);
     s.handlers.get("nuikit:intent")!({ source: "ox_lib", intent: "notify" });
