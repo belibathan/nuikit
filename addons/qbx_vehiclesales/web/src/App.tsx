@@ -3,7 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Kbd } from "@/components/ui/kbd";
-import { Panel, PanelFooter, PanelHeader } from "@/components/ui/panel";
+import { formatMoney } from "@/components/ui/money";
+import { EdgeSheet, EdgeSheetBody, EdgeSheetFooter } from "@/components/ui/edge-sheet";
 import { Stat } from "@/components/ui/stat";
 import { Textarea } from "@/components/ui/textarea";
 import { post, useMessages, type Callback } from "@/lib/nui";
@@ -26,7 +27,8 @@ interface Contract {
 
 /** `price` is an int(11) column. */
 const MAX_PRICE = 2_147_483_647;
-const money = (n: number) => "$" + Math.max(0, Math.round(n)).toLocaleString("en-US");
+/** The kit's money format (registry money): whole dollars, en-US, as the stock contract shows them. */
+const money = (n: number) => formatMoney(Math.max(0, Math.round(n)));
 const str = (v: unknown) => (v === undefined || v === null ? "" : String(v));
 /** "12,500" / "$12500" → 12500; anything else → NaN */
 const parsePrice = (s: string) => {
@@ -135,38 +137,47 @@ export default function App() {
     if (c?.mode === "sellVehicle") priceRef.current?.focus();
   }, [c]);
 
-  if (!c) return null;
-  const selling = c.mode === "sellVehicle";
+  // the last contract stays drawn while the sheet slides out
+  const last = useRef<Contract | null>(null);
+  if (c) last.current = c;
+  const shown = c ?? last.current;
+  if (!shown) return null;
+  const selling = shown.mode === "sellVehicle";
   const typed = parsePrice(priceText);
 
   return (
-    <div className="contract-backdrop fixed inset-0 flex items-center justify-center bg-black/40 p-6">
-      <Panel className="w-full max-w-md" role="dialog" aria-labelledby="contract-title">
-        <PanelHeader
-          icon={<img src="./logo.svg" alt="" className="size-8 rounded-md" draggable={false} />}
+    // A floating edge sheet on the right (the pause menu's backdrop, registry edge-sheet), the
+    // contract top to bottom: who sells, the vehicle, the price, then the one action.
+    <EdgeSheet
+      open={!!c}
+      side="right"
+      width="34rem"
+      fit
+      aria-labelledby="contract-title"
+          icon={<img src="./logo.svg" alt="" className="size-7 rounded-(--nk-key-radius)" draggable={false} />}
           // "Vehicle Sales Contract - Larry's Vehicle Sales" → the business is the title
           title={
-            <span id="contract-title" title={c.bizName}>
-              {c.bizName.split(" - ").slice(1).join(" - ").trim() || c.bizName || "Vehicle sale contract"}
+            <span id="contract-title" title={shown.bizName}>
+              {shown.bizName.split(" - ").slice(1).join(" - ").trim() || shown.bizName || "Vehicle sale contract"}
             </span>
           }
-          description={selling ? "List your vehicle for sale" : c.takeBack ? "Your listing" : "Vehicle for sale"}
+          description={selling ? "List your vehicle for sale" : shown.takeBack ? "Your listing" : "Vehicle for sale"}
           actions={
-            c.plate && (
-              <span className="rounded-md border bg-muted px-2 py-1 font-mono text-xs leading-4 font-medium uppercase" title="Plate">
-                {c.plate}
-              </span>
+            shown.plate && (
+              <Kbd className="h-7 px-2 font-mono text-sm uppercase" title="Plate">
+                {shown.plate}
+              </Kbd>
             )
           }
-        />
-
-        <dl className="grid grid-cols-3 gap-4 border-b px-4 py-3">
-          <Detail label="Seller" value={c.seller} />
-          <Detail label="Bank account" value={c.account} mono />
-          <Detail label="Phone" value={c.phone} mono />
+        >
+        <EdgeSheetBody scroll>
+        <dl className="grid grid-cols-3 gap-4 border-b pb-4">
+          <Detail label="Seller" value={shown.seller} />
+          <Detail label="Bank account" value={shown.account} mono />
+          <Detail label="Phone" value={shown.phone} mono />
         </dl>
 
-        <div className="flex flex-col gap-4 p-4">
+        <div className="flex flex-col gap-6 pt-6">
           {selling ? (
             <FieldGroup className="gap-4">
               <Field className="gap-2">
@@ -210,41 +221,41 @@ export default function App() {
             <>
               <div className="flex flex-col gap-1">
                 <span className="nk-label">Description</span>
-                <p className={cn("text-sm whitespace-pre-line", !c.desc && "text-muted-foreground")}>{c.desc || "No description."}</p>
+                <p className={cn("text-sm whitespace-pre-line", !shown.desc && "text-muted-foreground")}>{shown.desc || "No description."}</p>
               </div>
               <div className="flex items-end justify-between gap-3">
-                <Stat size="display" label="Price" value={money(c.price)} />
+                <Stat size="display" label="Price" value={money(shown.price)} />
                 <span className="nk-label pb-1.5 font-normal">Paid from your bank</span>
               </div>
-              {c.takeBack && (
+              {shown.takeBack && (
                 <div className="border-t pt-4">
-                  <Breakdown price={c.price} />
+                  <Breakdown price={shown.price} />
                 </div>
               )}
             </>
           )}
         </div>
 
-        <PanelFooter className="justify-between">
-          <Button variant="ghost" className="text-muted-foreground -ml-2" onClick={() => finish()}>
+        </EdgeSheetBody>
+        <EdgeSheetFooter className="justify-between">
+          <Button variant="ghost" size="lg" className="-ml-3 text-muted-foreground" onClick={() => finish()}>
             Cancel
             <Kbd>Esc</Kbd>
           </Button>
           <div className="flex items-center gap-2">
             {selling ? (
-              <Button onClick={sell}>List for {Number.isFinite(typed) && typed > 0 ? money(typed) : "sale"}</Button>
+              <Button size="lg" onClick={sell}>List for {Number.isFinite(typed) && typed > 0 ? money(typed) : "sale"}</Button>
             ) : (
               <>
                 {/* The stock page offers both to the seller too; take back is what they'll want. */}
-                <Button variant={c.takeBack ? "outline" : "default"} onClick={() => finish("buyVehicle")}>
-                  Buy for {money(c.price)}
+                <Button size="lg" variant={shown.takeBack ? "outline" : "default"} onClick={() => finish("buyVehicle")}>
+                  Buy for {money(shown.price)}
                 </Button>
-                {c.takeBack && <Button onClick={() => finish("takeVehicleBack")}>Take back</Button>}
+                {shown.takeBack && <Button size="lg" onClick={() => finish("takeVehicleBack")}>Take back</Button>}
               </>
             )}
           </div>
-        </PanelFooter>
-      </Panel>
-    </div>
+        </EdgeSheetFooter>
+    </EdgeSheet>
   );
 }

@@ -10,14 +10,6 @@ body {
   user-select: none;
 }
 
-@keyframes backdrop-in {
-  from {
-    opacity: 0;
-  }
-}
-.contract-backdrop {
-  animation: backdrop-in 150ms ease-out;
-}
 
 /* The price field: no number spinners. */
 .price-input::-webkit-outer-spin-button,
