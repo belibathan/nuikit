@@ -190,6 +190,54 @@ AddEventHandler('nuikit:minimap:placed', function()
   radarOwner = GetInvokingResource()
   radarClaims = radarClaims + 1
 end)
+-- The radar's mask texture lives here, not in the HUD: a runtime txd dies with the resource that made
+-- it, and GTA kept drawing the radar through the dead one after a HUD restart (the ring stayed empty
+-- until the pause map reloaded it; 0.7.0 baseline, A2). This resource keeps running, so the texture
+-- outlives HUD restarts. `kind` is 'circle' or 'square'; `aspect` the radar box's width / height.
+local maskTxd, maskMade, maskApplied = nil, {}, nil
+local function maskPixel(kind, w, h, x, y, aspect)
+  local px = ((x + 0.5) / w - 0.5) * h * aspect
+  local py = (y + 0.5) - h / 2.0
+  local inside = kind == 'circle' and (h / 2.0 - math.sqrt(px * px + py * py)) or (h / 2.0 - math.abs(px))
+  return math.floor(math.max(0.0, math.min(1.0, inside + 0.5)) * 255 + 0.5)
+end
+AddEventHandler('nuikit:minimap:mask', function(kind, aspect)
+  kind = kind == 'circle' and 'circle' or 'square'
+  aspect = tonumber(aspect) or 1.0
+  local name = ('%s_%d'):format(kind, math.floor(aspect * 1000 + 0.5))
+  if not maskMade[name] then
+    maskTxd = maskTxd or CreateRuntimeTxd('nuikit_radarmask')
+    local h = kind == 'circle' and 128 or 32
+    local w = math.floor(h * aspect + 0.5)
+    local tex = CreateRuntimeTexture(maskTxd, name, w, h)
+    for y = 0, h - 1 do
+      for x = 0, w - 1 do
+        local a = maskPixel(kind, w, h, x, y, aspect)
+        SetRuntimeTexturePixel(tex, x, y, a, a, a, a)
+      end
+    end
+    CommitRuntimeTexture(tex)
+    maskMade[name] = true
+  end
+  if maskApplied == name then return end -- already in place: swapping it live blanks the radar
+  RemoveReplaceTexture('platform:/textures/graphics', 'radarmasksm')
+  AddReplaceTexture('platform:/textures/graphics', 'radarmasksm', 'nuikit_radarmask', name)
+  maskApplied = name
+end)
+
+-- GTA's health and armour arcs around the radar. The HUD draws vitals itself and asks for them hidden.
+-- The minimap scaleform handle is held here for the session: a handle requested by the HUD was freed
+-- when the HUD stopped, which unloaded GTA's radar movie (empty ring until the pause map reloaded it;
+-- 0.7.0 baseline A2).
+local radarMovie
+AddEventHandler('nuikit:minimap:bars', function(show)
+  radarMovie = radarMovie or RequestScaleformMovie('minimap')
+  if not HasScaleformMovieLoaded(radarMovie) then return end
+  BeginScaleformMovieMethod(radarMovie, 'SETUP_HEALTH_ARMOUR')
+  ScaleformMovieMethodAddParamInt(show and 1 or 3)
+  EndScaleformMovieMethod()
+end)
+
 AddEventHandler('nuikit:minimap:released', function()
   if GetInvokingResource() == radarOwner then radarOwner = nil end
 end)
@@ -206,6 +254,8 @@ AddEventHandler('onClientResourceStop', function(resource)
     end
     SetMinimapClipType(0)
     RemoveReplaceTexture('platform:/textures/graphics', 'radarmasksm')
+    maskApplied = nil
+    TriggerEvent('nuikit:minimap:bars', true)
     SetBlipAlpha(GetNorthRadarBlip(), 255)
     SetRadarBigmapEnabled(true, false)
     Wait(50)

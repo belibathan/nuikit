@@ -12,6 +12,7 @@ import { useEffect, useRef, type ReactNode } from "react";
 import type { HudLocation, MinimapFrame } from "../nui";
 import { formatDistance } from "./location";
 import { cardinal, setText } from "./util";
+import { TextRoll } from "@/components/ui/text-roll";
 
 const CARDINALS = [
   { label: "N", at: 0 },
@@ -175,8 +176,8 @@ export function MapRing({ frame, start, compass = true, location, units }: MapRi
 export function MapLocation({ location, units, waypoint }: { location: HudLocation; units: "mph" | "kmh"; waypoint: boolean }) {
   if (!location.visible || !location.street) return null;
   const detail: ReactNode[] = [];
-  if (location.crossing) detail.push(<span key="cross" className="hud-loc-clip">{location.crossing}</span>);
-  if (location.zone) detail.push(<span key="zone" className="hud-loc-clip">{location.zone}</span>);
+  if (location.crossing) detail.push(<TextRoll key="cross" className="hud-loc-clip" value={location.crossing} direction="down" />);
+  if (location.zone) detail.push(<TextRoll key="zone" className="hud-loc-clip" value={location.zone} direction="down" />);
   if (location.postal) {
     detail.push(
       <span key="postal" data-slot="hud-postal" className="hud-loc-postal hud-num">
@@ -187,7 +188,7 @@ export function MapLocation({ location, units, waypoint }: { location: HudLocati
   return (
     <div data-slot="hud-location" className="hud-loc">
       <span className="hud-loc-street">
-        <span className="hud-loc-clip">{location.street}</span>
+        <TextRoll className="hud-loc-clip" value={location.street} />
       </span>
       {/* always there, so the money under it never moves when a crossing comes and goes */}
       <span className="hud-loc-detail" aria-hidden={!detail.length}>

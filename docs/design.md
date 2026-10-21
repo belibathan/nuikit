@@ -107,6 +107,35 @@ Design v2 §5A. Tokens and the helper: [`tokens.md#motion-12`](tokens.md#motion-
    colour still carries state. Progress still plays.
 10. **Identity, not code, sets the feel.** Signal snaps, Velvet glides, Vector steps: read the tokens and
     `data-nk-feel`, never branch on the identity's name.
+**Motion components** (registry, `npx shadcn add https://nuikit.vercel.app/r/<name>.json`, or list them in a
+system's `nuikit.json` and `pnpm sync`):
+
+- `text-roll` → `import { TextRoll, NumberRoll } from "@/components/ui/text-roll"`. A short text that changes rolls
+  like a slot reel (`direction`, per-character `stagger`); `NumberRoll` rolls each digit on its own, up when the value
+  grows. For labels that change while you watch (street, zone, status) and live numbers (money, speed, ammo, clocks).
+  Not for text the player reads while it moves (lists, paragraphs).
+- `smooth-input` → `import { SmoothInput, SmoothTextarea } from "@/components/ui/smooth-input"`. Drop-ins for shadcn
+  `Input` / `Textarea` (same props and ref): a caret that glides and breathes in the primary, typed characters that ease
+  in. The real field stays underneath (selection, IME, paste, forms); with a selection, while composing, or with
+  motion off or reduced it is the plain native field.
+
+Both read `html[data-nk-motion]`: off swaps at once, reduced keeps a ≤ 100 ms fade with no movement.
+
+**The text-animation rule:** rolls are vertical only; alignment is resolved per layer; width changes move
+neighbours, never the rolling text. Each layer (the word going out, the word coming in) sits at its own final
+alignment in the reel (start, centre or end: the `align` prop, else read from the layout: text-align or a
+centring flex parent), so a centred word leaves straight up from its centre and the next one arrives straight up
+on the same centre. The reel's width tweens from the old width to the new over the roll, which slides the
+neighbours; the rolling text itself never moves sideways. `NumberRoll` is the same per digit.
+
+**The HUD status row** (`vital-chip`, `import { VitalChip } from "@/components/ui/vital-chip"`): the chip is composable
+(`Root`, `Shape`, `Level`, `Icon`, `Label`, `Pop`) and one SVG path per shape drives its surface, border, level trace,
+liquid fill and anchors. The default is the 0.7 look (the identity's chip, the level traced on its outline). A change
+pops a flag out of the chip's side, in line with the row, so several vitals changing at once sit side by side and
+never overlap. The other variants (`--nk-chip-shape`, `--nk-level-style`, `--nk-label-attach`, `--nk-vital-icon`;
+in game `/hudstyle`) are **experimental**: tried with the owner and shelved for now (too small, weak as an aesthetic);
+the parts structure stays. A comms-first hierarchy (voice and radio larger, first) was tried with it and shelved too.
+
 Reference implementation: `systems/nuikit_pause`. The registry components (`panel`, `menu-row`, `stat`,
 `meter`, `hud-chip`, …) are these utilities with props; prefer them over the raw classes.
 

@@ -136,6 +136,12 @@ local masks = {}
 local function useMask(shape)
   local aspect = Minimap.aspect()
   local kind = shape == 'circle' and 'circle' or 'square'
+  -- the nuikit resource owns the texture so it survives this resource's restarts (0.7.0 test,
+  -- 0.7.0 baseline A2); the code below stays as the fallback for an older nuikit
+  if GetResourceState('nuikit') == 'started' then
+    TriggerEvent('nuikit:minimap:mask', kind, aspect)
+    return
+  end
   local name = ('%s_%d'):format(kind, math.floor(aspect * 1000 + 0.5))
   if not masks[name] then
     local txd = masks.txd or CreateRuntimeTxd(MASK_TXD)
@@ -243,7 +249,10 @@ function Minimap.apply()
   -- a hidden radar (on foot with radar = 'vehicle') may not re-read: do it again when it shows
   stale = IsRadarHidden()
   reread()
-  if not scaleform then scaleform = RequestScaleformMovie('minimap') end
+  -- GTA's health and armour arcs are hidden by the nuikit resource: a scaleform handle requested here
+  -- is freed when this resource stops, and that unloaded GTA's own radar movie (the empty ring after
+  -- a restart, 0.7.0 baseline A2; found by turning the request off).
+  TriggerEvent('nuikit:minimap:bars', false)
   placed = {
     x = frame.x / width, y = frame.y / height, w = frame.w / width, h = frame.h / height,
     band = band / height, shape = o.shape, framed = true, preset = o.preset,
@@ -366,6 +375,10 @@ end)
 
 AddEventHandler('onClientResourceStop', function(resource)
   if resource ~= GetCurrentResourceName() then return end
+  -- With the nuikit resource running, it restores GTA's radar a second after a real stop and does
+  -- nothing on a restart. Resetting here as well swapped the mask and clip out and straight back in
+  -- on every restart, which left the ring empty until the pause map reloaded (0.7.0 test, A2).
+  if placedByUs and GetResourceState('nuikit') == 'started' then return end
   if placedByUs then Minimap.restore(false) placedByUs = false else RemoveReplaceTexture('platform:/textures/graphics', 'radarmasksm') end
 end)
 
@@ -437,11 +450,7 @@ do
   -- nuikit places it: 'stock' leaves GTA's radar as it is).
   CreateThread(function()
     while true do
-      if Minimap.style() == 'ring' and scaleform and HasScaleformMovieLoaded(scaleform) then
-        BeginScaleformMovieMethod(scaleform, 'SETUP_HEALTH_ARMOUR')
-        ScaleformMovieMethodAddParamInt(3)
-        EndScaleformMovieMethod()
-      end
+      if Minimap.style() == 'ring' and placedByUs then TriggerEvent('nuikit:minimap:bars', false) end
       Wait(1000)
     end
   end)
