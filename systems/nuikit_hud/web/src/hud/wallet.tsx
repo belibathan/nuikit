@@ -1,12 +1,13 @@
 // Top right: cash, bank and job. 'change' shows a value when it changes, with the difference, then
 // fades; 'always' keeps it. Money is never coloured, only its difference (success / destructive) is.
-import type { NuiPlayer } from "nuikit-core/react";
+// Amounts are formatted with the server's currency and locale (nuikit:context, protocol §7.2).
+import { useNuiContext, type NuiPlayer } from "nuikit-core/react";
 import { BriefcaseIcon, LandmarkIcon, WalletIcon } from "lucide-react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
+import { formatMoney } from "@/components/ui/money";
 import type { HudSettings, WalletMode } from "../nui";
 import { NumberRoll } from "@/components/ui/text-roll";
 
-const money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
 const LINGER = 5000;
 
 /** The last change of a value: its difference and when it happened (none for the first value). */
@@ -29,6 +30,7 @@ function useDelta(value: number | undefined) {
 
 function Money({ icon, label, value, mode, size }: { icon: ReactNode; label: string; value: number | undefined; mode: WalletMode; size: "lg" | "md" | "sm" }) {
   const delta = useDelta(value);
+  const { currency, locale } = useNuiContext();
   if (value === undefined || mode === false) return null;
   const shown = mode === "always" || !!delta;
   return (
@@ -36,11 +38,11 @@ function Money({ icon, label, value, mode, size }: { icon: ReactNode; label: str
       {delta && (
         <span key={delta.at} data-up={delta.by > 0 || undefined} className="hud-num hud-money-delta">
           {delta.by > 0 ? "+" : "−"}
-          {money.format(Math.abs(delta.by))}
+          {formatMoney(Math.abs(delta.by), { currency, locale })}
         </span>
       )}
       <span className="hud-money-icon">{icon}</span>
-      <NumberRoll className="hud-num hud-money-value" value={value} format={(n) => money.format(n)} />
+      <NumberRoll className="hud-num hud-money-value" value={value} format={(n) => formatMoney(n, { currency, locale })} />
     </div>
   );
 }
