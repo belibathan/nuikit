@@ -88,7 +88,7 @@ export function InventoryPanel({ side, open }: { side: Side; open: boolean }) {
       open={open}
       side={side === "left" ? "left" : "right"}
       delay={side === "left" ? 0 : 60}
-      width="34.75rem"
+      width="33.5rem"
       icon={<Icon />}
       title={label}
       description={caption(inventory.type, used, inventory.slots)}

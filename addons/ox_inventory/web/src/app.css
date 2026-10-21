@@ -194,22 +194,18 @@ body.inv-dragging * {
 
 /* ───────────────────────────── the action tray (stock shadcn Sheet, bottom edge) */
 
-/* Risen from the bottom edge between the sheets: the panel surface, flush to the bottom, a hairline on
-   its open edges. The stock slide (transform); the ladder sets the time, and it rises after the sheets. */
+/* A floating bar between the sheets, --nk-edge off the bottom: the panel recipe (nk-panel: border all
+   round, the identity's corners, the shadow). The stock slide (transform); the ladder sets the time,
+   and it rises after the sheets. */
 .inv-tray.inv-tray {
   left: 0;
   right: 0;
+  bottom: var(--nk-edge, 1.5rem);
   width: max-content;
   height: auto;
   gap: 0;
   margin: 0 auto;
   padding: 0.75rem 1rem;
-  color: var(--nk-panel-fg);
-  background-color: var(--nk-panel-bg);
-  border: var(--nk-border) solid var(--nk-panel-border);
-  border-bottom: 0;
-  border-radius: var(--nk-panel-radius) var(--nk-panel-radius) 0 0;
-  box-shadow: var(--nk-panel-shadow);
 }
 .inv-tray[data-state="open"] {
   animation-duration: min(calc(var(--nk-time) * 2.2), 360ms) !important;

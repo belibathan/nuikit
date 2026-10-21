@@ -121,8 +121,8 @@ function Hint({ keys, children, onClick, label }: { keys: ReactNode; children: R
 }
 
 /**
- * The action tray: a stock shadcn Sheet from the bottom edge (non-modal, so dragging between the side
- * sheets and onto it keeps working), between the sheets: how many to move, the Use and Give drop
+ * The action tray: a stock shadcn Sheet from the bottom (non-modal, so dragging between the side
+ * sheets and onto it keeps working), floating above the bottom edge between the sheets: how many to move, the Use and Give drop
  * zones, then the key hints. (vaul's Drawer was tried: its Radix dialog is always modal, so a drawer
  * opened by prop leaves the page's pointer events off and traps focus.)
  */
@@ -134,7 +134,7 @@ export function Controls({ open }: { open: boolean }) {
       <SheetContent
         side="bottom"
         showCloseButton={false}
-        className="inv-tray"
+        className="nk-panel inv-tray"
         onOpenAutoFocus={keep}
         onCloseAutoFocus={keep}
         onInteractOutside={keep}

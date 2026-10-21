@@ -26,6 +26,11 @@ import { Sheet, SheetContent, SheetDescription, SheetTitle } from "@/components/
  * Motion (docs/design.md, Motion), the ox_lib context sheet's: it slides in from its edge over the
  * panel time × 2.2 (≤ 360ms), `delay` staggers a second sheet, the body fades up after the sheet,
  * and it slides back out faster (× 1.4, ≤ 200ms; Radix keeps it mounted until the exit ends).
+ * `variant="floating"` (the default for menus and inventories) keeps it off the screen edges: inset by
+ * --nk-edge (1.5rem) on the top, bottom and its side, the whole nk-panel recipe (border all round, the
+ * identity's radius or cut on every corner, the panel shadow), and a tighter column. `variant="flush"`
+ * is the pause menu's backdrop: flush to the top, bottom and its edge, a hairline on the open edge only.
+ *
  * Sub-pages swap in place: change `page` and the column fades to the new one inside the open sheet;
  * `onBack` puts a back button before the title, `onClose` a close button after it. Transform and opacity only; reduced motion
  * keeps the fade, `/nuikit motion off` shows and hides it at once.
@@ -41,6 +46,8 @@ const TITLE = { "--nk-heading-size": "var(--nk-text-section)" } as React.CSSProp
 type EdgeSheetProps = Omit<React.ComponentProps<typeof SheetContent>, "title" | "side"> & {
   open: boolean
   side?: "left" | "right"
+  /** floating: inset from the screen edges, a panel on every side (default). flush: the pause menu's backdrop. */
+  variant?: "floating" | "flush"
   /** Rem width of the whole sheet (the column is this minus 4.5rem). Default 36rem, the pause menu's. */
   width?: string
   /** Stagger after another sheet (ms at full motion). */
@@ -67,6 +74,7 @@ type EdgeSheetProps = Omit<React.ComponentProps<typeof SheetContent>, "title" | 
 function EdgeSheet({
   open,
   side = "left",
+  variant = "floating",
   width = "36rem",
   delay = 0,
   modal = false,
@@ -98,12 +106,19 @@ function EdgeSheet({
         onInteractOutside={keep}
         onEscapeKeyDown={modal ? undefined : keep}
         style={{ "--edge-sheet-width": width, "--edge-sheet-delay": `${delay}ms`, animationDelay: "calc(var(--edge-sheet-delay) * var(--nk-motion, 1))", ...style } as React.CSSProperties}
+        data-variant={variant}
         className={cn(
-          // the surface: the theme's panel, flush, a hairline on the open edge only
-          "z-40 w-(--edge-sheet-width) max-w-none gap-0 border-(--nk-panel-border) bg-(--nk-panel-bg) text-(--nk-panel-fg) shadow-(--nk-panel-shadow) sm:max-w-none",
-          left
-            ? "border-r-(length:--nk-border) bg-[linear-gradient(90deg,rgba(var(--scrim-rgb),0.22)_0%,rgba(var(--scrim-rgb),0)_70%)]"
-            : "border-l-(length:--nk-border) bg-[linear-gradient(270deg,rgba(var(--scrim-rgb),0.22)_0%,rgba(var(--scrim-rgb),0)_70%)]",
+          "z-40 w-(--edge-sheet-width) max-w-none gap-0 sm:max-w-none",
+          variant === "floating"
+            ? // the panel recipe, off the edges: --nk-edge from the top, bottom and its side
+              cn("nk-panel h-auto inset-y-(--nk-edge,1.5rem)", left ? "left-(--nk-edge,1.5rem)" : "right-(--nk-edge,1.5rem)")
+            : // the surface: the theme's panel, flush, a hairline on the open edge only
+              cn(
+                "border-(--nk-panel-border) bg-(--nk-panel-bg) text-(--nk-panel-fg) shadow-(--nk-panel-shadow)",
+                left
+                  ? "border-r-(length:--nk-border) bg-[linear-gradient(90deg,rgba(var(--scrim-rgb),0.22)_0%,rgba(var(--scrim-rgb),0)_70%)]"
+                  : "border-l-(length:--nk-border) bg-[linear-gradient(270deg,rgba(var(--scrim-rgb),0.22)_0%,rgba(var(--scrim-rgb),0)_70%)]"
+              ),
           // motion: the ladder, never raw ms; exits faster, eases in
           "data-[state=open]:duration-[min(calc(var(--nk-time)*2.2),360ms)] data-[state=open]:ease-(--nk-ease-out)",
           "data-[state=closed]:duration-[min(calc(var(--nk-time)*1.4),200ms)] data-[state=closed]:ease-(--nk-ease-in,ease-in)",
@@ -114,7 +129,11 @@ function EdgeSheet({
         <div
           key={page}
           data-slot="edge-sheet-column"
-          className={cn("flex h-full min-h-0 w-full flex-col py-12", left ? "pr-6 pl-12" : "pr-12 pl-6", page !== undefined && "nk-enter")}
+          className={cn(
+            "flex h-full min-h-0 w-full flex-col",
+            variant === "floating" ? "p-6" : cn("py-12", left ? "pr-6 pl-12" : "pr-12 pl-6"),
+            page !== undefined && "nk-enter"
+          )}
         >
           {(title || icon || actions || onBack || onClose) && (
             <header data-slot="edge-sheet-header" className="flex flex-col gap-1 pb-4">
