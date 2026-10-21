@@ -6,5 +6,16 @@
     "entry": "meter.html"
   },
   "lua": [],
-  "components": ["badge", "button", "card", "kbd", "separator", "scroll-area", "panel", "stat"]
+  "components": [
+    "badge",
+    "button",
+    "card",
+    "kbd",
+    "separator",
+    "scroll-area",
+    "panel",
+    "stat",
+    "money",
+    "text-roll"
+  ]
 }

@@ -2,13 +2,15 @@ import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Kbd } from "@/components/ui/kbd";
 import { Panel, PanelFooter, PanelHeader } from "@/components/ui/panel";
+import { formatMoney } from "@/components/ui/money";
 import { Stat } from "@/components/ui/stat";
+import { NumberRoll } from "@/components/ui/text-roll";
 import { post, useMessages } from "@/lib/nui";
 import { loadServerTheme } from "@/lib/theme";
 import { cn } from "@/lib/utils";
 
-const money = (n: number, digits = 0) =>
-  "$" + (Number.isFinite(n) ? n : 0).toLocaleString("en-US", { minimumFractionDigits: digits, maximumFractionDigits: digits });
+/** The kit's money format (registry money): tabular, en-US dollars, as qbx_taxijob's own page shows them. */
+const money = (n: number, digits = 0) => formatMoney(Number.isFinite(n) ? n : 0, { fractionDigits: digits });
 const num = (v: unknown) => (typeof v === "number" ? v : Number(v) || 0);
 
 /** qbx_taxijob's fare meter. Protocol: docs/qbx-taxijob-protocol.md */
@@ -93,7 +95,7 @@ export default function App() {
               aria-pressed={running}
               title={running ? "Stop the meter" : "Start the meter"}
             >
-              <span className={cn("size-1.5 rounded-full", running ? "animate-pulse bg-success" : "bg-muted-foreground/60")} />
+              <span className={cn("size-1.5 rounded-full", running ? "bg-success" : "bg-muted-foreground/60")} />
               <span className={cn(running && "text-foreground")}>{running ? "Running" : "Stopped"}</span>
             </button>
           }
@@ -103,11 +105,11 @@ export default function App() {
         <Stat
           size="display"
           label="Fare"
-          value={<span className={cn(!running && fare === 0 && "text-muted-foreground")}>{money(fare)}</span>}
+          value={<NumberRoll value={fare} format={(n) => money(n)} className={cn(!running && fare === 0 && "text-muted-foreground")} />}
           className="p-4"
         />
 
-        <dl className="flex flex-col gap-2 border-t px-4 py-3 text-sm">
+        <dl className="flex flex-col divide-y divide-border border-t px-4 text-sm [&>div]:min-h-10">
           <div className="flex items-center justify-between">
             <dt className="text-muted-foreground">Rate</dt>
             <dd className="nk-num font-medium">
@@ -132,10 +134,10 @@ export default function App() {
 
         {cursor && (
           <PanelFooter>
-            <Button size="sm" variant={running ? "secondary" : "default"} className="flex-1" onClick={toggle}>
+            <Button variant={running ? "secondary" : "default"} className="flex-1" onClick={toggle}>
               {running ? "Stop meter" : "Start meter"}
             </Button>
-            <Button size="sm" variant="ghost" onClick={release} className="text-muted-foreground">
+            <Button variant="ghost" onClick={release} className="text-muted-foreground">
               Done
               <Kbd>Esc</Kbd>
             </Button>
