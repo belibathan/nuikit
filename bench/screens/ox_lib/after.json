@@ -1,0 +1,127 @@
+{
+ "1920x1080": {
+  "posts": [
+   {
+    "step": "load",
+    "name": "init",
+    "body": null,
+    "ms": 789
+   },
+   {
+    "step": "load",
+    "name": "getConfig",
+    "body": null,
+    "ms": 864
+   },
+   {
+    "step": "radial-click-phone",
+    "name": "radialClick",
+    "body": "0",
+    "ms": 416
+   },
+   {
+    "step": "radial-click-vehicle",
+    "name": "radialClick",
+    "body": "2",
+    "ms": 129
+   },
+   {
+    "step": "radial-back",
+    "name": "radialBack",
+    "body": null,
+    "ms": 57
+   },
+   {
+    "step": "context-click-sultan",
+    "name": "clickContext",
+    "body": "\"0\"",
+    "ms": 57
+   },
+   {
+    "step": "context-click-submenu",
+    "name": "openContext",
+    "body": "{\"id\":\"depot\",\"back\":false}",
+    "ms": 70
+   },
+   {
+    "step": "context-escape",
+    "name": "closeContext",
+    "body": null,
+    "ms": 50
+   },
+   {
+    "step": "menu-open",
+    "name": "changeSelected",
+    "body": "[0,true,\"isCheck\"]",
+    "ms": 110
+   },
+   {
+    "step": "menu-toggle-engine",
+    "name": "changeChecked",
+    "body": "[0,false]",
+    "ms": 106
+   },
+   {
+    "step": "menu-down",
+    "name": "changeSelected",
+    "body": "[1,0,\"isScroll\"]",
+    "ms": 115
+   },
+   {
+    "step": "menu-right",
+    "name": "changeIndex",
+    "body": "[1,1]",
+    "ms": 106
+   },
+   {
+    "step": "menu-left",
+    "name": "changeIndex",
+    "body": "[1,0]",
+    "ms": 108
+   },
+   {
+    "step": "menu-down-2",
+    "name": "changeSelected",
+    "body": "[2,null,null]",
+    "ms": 110
+   },
+   {
+    "step": "menu-confirm-lock",
+    "name": "confirmSelected",
+    "body": "[2,null]",
+    "ms": 15
+   },
+   {
+    "step": "menu-open-2",
+    "name": "changeSelected",
+    "body": "[0,true,\"isCheck\"]",
+    "ms": 218
+   },
+   {
+    "step": "menu-escape",
+    "name": "closeMenu",
+    "body": "\"Escape\"",
+    "ms": 43
+   },
+   {
+    "step": "alert-confirm",
+    "name": "closeAlert",
+    "body": "\"confirm\"",
+    "ms": 80
+   },
+   {
+    "step": "alert-cancel",
+    "name": "closeAlert",
+    "body": "\"cancel\"",
+    "ms": 114
+   },
+   {
+    "step": "alert-escape",
+    "name": "closeAlert",
+    "body": "\"cancel\"",
+    "ms": 32
+   }
+  ],
+  "themeRequests": 10
+ }
+}

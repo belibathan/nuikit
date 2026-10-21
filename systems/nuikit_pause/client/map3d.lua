@@ -21,6 +21,7 @@ local cur, goal
 local drag = { x = 0.0, y = 0.0, heading = 0.0, pitch = 0.0 } -- dragged but not landed yet
 local lastPins, lastInfo, lastInfoAt = '', '', 0
 local timecycle = false
+local blipList, blipKey, blipsAt = {}, '', 0 -- the blips last sent to the UI (see refreshBlips)
 
 local function clamp(v, a, b) return math.max(a, math.min(b, v)) end
 
@@ -128,12 +129,19 @@ local function pins(ped, aspect)
     local wx, wy = put(wp.x, wp.y, groundZ(wp.x, wp.y, pc.z))
     if wx >= 0 then wpAt = { wx, wy } end
   end
-  return { at = at, you = you, wp = wpAt, h = math.floor(cur.heading) }
+  -- the blips, in the order of the last list sent (pause:map:blips)
+  local b = {}
+  for _, bl in ipairs(blipList) do
+    local u, v = put(bl.x, bl.y, bl.z)
+    b[#b + 1] = u
+    b[#b + 1] = v
+  end
+  return { at = at, b = b, you = you, wp = wpAt, h = math.floor(cur.heading), d = math.floor(cur.d) }
 end
 Map3D.pins = pins
 
 local function pinsKey(p)
-  local key = table.concat(p.at, ',') .. '|' .. p.h
+  local key = table.concat(p.at, ',') .. '|' .. table.concat(p.b, ',') .. '|' .. p.h .. '|' .. p.d
   if p.you then key = key .. '|' .. p.you[1] .. ',' .. p.you[2] .. ',' .. p.you[3] end
   if p.wp then key = key .. '|' .. p.wp[1] .. ',' .. p.wp[2] end
   return key
@@ -147,6 +155,92 @@ local function info()
   if s2 and s2 ~= 0 then street = street .. ' / ' .. GetStreetNameFromHashKey(s2) end
   return { zone = zone, street = street, topdown = goal.pitch <= MIN_PITCH + 0.5, waypoint = waypoint() ~= nil }
 end
+
+-- ---------------------------------------------------------------- blips: everything GTA's map shows
+
+-- Every blip other resources made (shops, garages, jobs, banks…), read from the game while the map
+-- is open: never while it's closed. The list goes to the UI when the map opens and again when it
+-- changes (checked every BLIP_MS: entity blips move); positions ride along with the pins each frame.
+-- GTA has no native to read a blip's custom name back, so the UI names them by sprite; a resource
+-- that knows the real name can pass it: exports.nuikit_pause:nameBlip(blip, 'Legion Garage').
+local BLIP_MS = 2000
+local MAX_SPRITE = 900
+local WAYPOINT_SPRITE, RADIUS_SPRITE = 8, 9
+-- GetBlipInfoIdDisplay: 0 hidden, 5 minimap only (and 1 'none' on some builds): not on the big map
+local OFF_MAP = { [0] = true, [1] = true, [5] = true }
+local names = {}     -- blip handle → name passed by its owner
+
+--- A name for a blip from the resource that made it (blip handles are shared between resources).
+function Map3D.nameBlip(blip, name)
+  if type(blip) ~= 'number' then return false end
+  names[blip] = type(name) == 'string' and name ~= '' and name or nil
+  return true
+end
+
+local function blipCoords(blip)
+  local c = GetBlipCoords and GetBlipCoords(blip) or GetBlipInfoIdCoord(blip)
+  return c.x, c.y, c.z
+end
+
+--- Every blip on the big map, in a stable order: { id, x, y, z, s(prite), c(olour), sr, a(lpha), … }.
+function Map3D.collectBlips()
+  local out = {}
+  if cfg.blips == false then return out end
+  local total = GetNumberOfActiveBlips and GetNumberOfActiveBlips() or -1
+  local mine = GetMainPlayerBlipId and GetMainPlayerBlipId() or 0
+  local seen = 0
+  for sprite = 0, MAX_SPRITE do
+    local blip = GetFirstBlipInfoId(sprite)
+    while blip ~= 0 and DoesBlipExist(blip) do
+      seen = seen + 1
+      local display = GetBlipInfoIdDisplay and GetBlipInfoIdDisplay(blip) or 2
+      local alpha = GetBlipAlpha and GetBlipAlpha(blip) or 255
+      if sprite ~= WAYPOINT_SPRITE and sprite ~= RADIUS_SPRITE and blip ~= mine and not OFF_MAP[display] and alpha > 0 then
+        local x, y, z = blipCoords(blip)
+        if x ~= 0.0 or y ~= 0.0 then
+          out[#out + 1] = {
+            id = blip,
+            x = math.floor(x * 10 + 0.5) / 10,
+            y = math.floor(y * 10 + 0.5) / 10,
+            z = math.floor(z * 10 + 0.5) / 10,
+            s = sprite,
+            c = GetBlipColour(blip),
+            sr = IsBlipShortRange and IsBlipShortRange(blip) or false,
+            a = alpha,
+            -- 1 vehicle, 2 ped, 3 object, 4 coord, … : entity blips move
+            e = GetBlipInfoIdType and GetBlipInfoIdType(blip) or 4,
+            route = DoesBlipHaveGpsRoute and DoesBlipHaveGpsRoute(blip) or nil,
+            flash = IsBlipFlashing and IsBlipFlashing(blip) or nil,
+            name = names[blip],
+          }
+        end
+      end
+      blip = GetNextBlipInfoId(sprite)
+    end
+    if total >= 0 and seen >= total then break end
+  end
+  return out
+end
+
+local function listKey(list)
+  local parts = {}
+  for i, b in ipairs(list) do
+    parts[i] = ('%d:%d:%d:%s:%s:%s:%s'):format(b.id, b.s, b.c, b.x, b.y, tostring(b.route), b.name or '')
+  end
+  return table.concat(parts, ';')
+end
+
+--- Re-read the blips (at most every BLIP_MS, or now with force) and send the list if it changed.
+local function refreshBlips(now, force)
+  if not force and now - blipsAt < BLIP_MS then return end
+  blipsAt = now
+  local list = Map3D.collectBlips()
+  local key = listKey(list)
+  if key == blipKey then return end
+  blipList, blipKey = list, key
+  NUI.send('pause:map:blips', list)
+end
+Map3D.refreshBlips = refreshBlips
 
 -- ---------------------------------------------------------------- the loop
 
@@ -191,6 +285,7 @@ local function loop()
     Camera.stream(cur.x, cur.y, cur.z)
     local ped = PlayerPedId()
     tidyWorld(ped)
+    refreshBlips(now)
     -- pins every frame they move; the slower panel text a few times a second
     local p = pins(ped, GetAspectRatio(false))
     local key = pinsKey(p)
@@ -259,6 +354,9 @@ function Map3D.start()
   active = true
   drag = { x = 0.0, y = 0.0, heading = 0.0, pitch = 0.0 }
   lastPins, lastInfo, lastInfoAt = '', '', 0
+  -- the blips go first, so the first pins already carry their positions
+  blipKey = ''
+  refreshBlips(GetGameTimer(), true)
   CreateThread(loop)
   return true
 end
@@ -268,6 +366,7 @@ end
 function Map3D.stop(mode)
   if not active then return end
   active = false
+  blipList, blipKey = {}, ''
   if mode == true then mode = 'instant' end
   -- the service clears world streaming with the camera (or when the focus camera takes over)
   if mode ~= 'handover' then Camera.release('map', { instant = mode == 'instant' }) end

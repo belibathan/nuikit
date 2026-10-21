@@ -2,8 +2,8 @@
 
 A drop-in replacement for [ox_target](https://github.com/overextended/ox_target)'s interface (the eye and the interaction list), built from stock shadcn/ui and themed by your server's `nuikit/theme.css`. Every `exports.ox_target:addGlobalVehicle`, `addModel`, `addEntity`, `addBoxZone`, … from every script on your server (Qbox included) gets the new look. **No script changes, and ox_target's Lua is untouched.**
 
-- Idle eye at screen centre while the targeting key is held; it lights up in your theme's primary colour when something has options.
-- The options list sits just right of the eye, where ox_target puts the cursor. Options are grouped by source (global, model, entity, zone) with separators.
+- Idle eye at screen centre while the targeting key is held: a small, dimmed HUD chip. When something has options it locks on: the chip fills with your theme's brand/primary colour and a reticle closes in around it once (a plain fade with `/nuikit motion off`).
+- The options list sits just right of the eye, where ox_target puts the cursor, joined to it by a hairline. Rows are the pause menu's: 48px, hairlines between them, the identity's indicator on the hovered row; groups (global, model, entity, zone) are split by a full rule.
 - Every free Font Awesome icon is bundled (no CDN), `iconColor` is respected, submenus show a chevron and the *Go back* row leads the list.
 
 ## Install

@@ -127,6 +127,7 @@
     ],
     "systems/nuikit_hud": [
       "web/src/components/ui/hud-chip.tsx",
+      "web/src/components/ui/text-roll.tsx",
       "web/src/index.css",
       "web/src/lib/utils.ts"
     ],
@@ -156,8 +157,11 @@
       "web/src/components/ui/progress.tsx",
       "web/src/components/ui/scroll-area.tsx",
       "web/src/components/ui/separator.tsx",
+      "web/src/components/ui/smooth-input.tsx",
       "web/src/components/ui/stat.tsx",
       "web/src/components/ui/tabs.tsx",
+      "web/src/components/ui/text-roll.tsx",
+      "web/src/components/ui/textarea.tsx",
       "web/src/index.css",
       "web/src/lib/utils.ts"
     ],
@@ -277,11 +281,14 @@
       "web/src/components/ui/scroll-area.tsx",
       "web/src/components/ui/select.tsx",
       "web/src/components/ui/separator.tsx",
+      "web/src/components/ui/sheet.tsx",
       "web/src/components/ui/skill-check.tsx",
       "web/src/components/ui/slider.tsx",
       "web/src/components/ui/spinner.tsx",
       "web/src/components/ui/switch.tsx",
+      "web/src/components/ui/text-roll.tsx",
       "web/src/components/ui/textarea.tsx",
+      "web/src/components/ui/tooltip.tsx",
       "web/src/index.css",
       "web/src/lib/utils.ts"
     ],

@@ -126,6 +126,52 @@
       }
     },
     {
+      "name": "text-roll",
+      "type": "registry:ui",
+      "title": "Text Roll",
+      "description": "A short text that changes like a slot reel: the old value rolls out and the new one in, masked to the line, with direction and per-character stagger; NumberRoll rolls each digit on its own (money, speed, ammo, clocks). Swaps at once when motion is off.",
+      "files": [
+        {
+          "path": "registry/nuikit/ui/text-roll.tsx",
+          "type": "registry:ui"
+        }
+      ],
+      "dependencies": [
+        "nuikit-core"
+      ],
+      "meta": {
+        "since": "unreleased",
+        "status": "experimental",
+        "replaces": [],
+        "removeIn": null
+      }
+    },
+    {
+      "name": "smooth-input",
+      "type": "registry:ui",
+      "title": "Smooth Input",
+      "description": "Drop-ins for shadcn Input and Textarea: a caret that glides and breathes in the theme primary, and typed characters that ease in. The real field underneath (selection, IME, paste, forms); the native caret when motion is off.",
+      "files": [
+        {
+          "path": "registry/nuikit/ui/smooth-input.tsx",
+          "type": "registry:ui"
+        }
+      ],
+      "dependencies": [
+        "nuikit-core"
+      ],
+      "registryDependencies": [
+        "input",
+        "textarea"
+      ],
+      "meta": {
+        "since": "unreleased",
+        "status": "experimental",
+        "replaces": [],
+        "removeIn": null
+      }
+    },
+    {
       "name": "vital",
       "type": "registry:ui",
       "title": "Vital",
@@ -681,7 +727,7 @@
       "name": "skill-check",
       "type": "registry:ui",
       "title": "Skill check",
-      "description": "Press the key while the needle is in the zone: zone start and size (wrapping past 360\u00b0), speed, the key, a success or fail outcome. Runs itself (needle drawn per frame without re-rendering, a full turn is a miss) and reads the key, or takes the angle from outside. The default look of the challenge intent.",
+      "description": "Press the key while the needle is in the zone: zone start and size (wrapping past 360°), speed, the key, a success or fail outcome. Runs itself (needle drawn per frame without re-rendering, a full turn is a miss) and reads the key, or takes the angle from outside. The default look of the challenge intent.",
       "files": [
         {
           "path": "registry/nuikit/ui/skill-check.tsx",

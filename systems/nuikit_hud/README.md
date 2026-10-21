@@ -23,11 +23,11 @@ restyle it through tokens, or replace it.
 
 | Part | `compact` (default) | `classic` (0.6) |
 |---|---|---|
-| Map | A 12rem circle top right on the safe area: a thin ring, cardinals and ticks that turn on it, the heading (`NW 300°`) above a lubber mark, the waypoint distance as a tag on the ring's lower outer shoulder (its arrow points at the waypoint) | A framed square bottom left, N on the frame |
-| Location | Under the map: the street, then `cross street · zone postal` smaller | A strip above the map with a heading badge |
+| Map | A 12rem circle top right on the safe area: a thin ring, cardinals and ticks that turn on it, the heading in degrees above a lubber mark, the waypoint distance as a tag on the ring (its arrow points at the waypoint) | A framed square bottom left, N on the frame |
+| Location | Under the map: zone, street, the cross street smaller; postal beside the zone | A strip above the map with a heading badge |
 | Money and job | Under the location | Top right |
-| Vitals | Bottom left: labelled pills with a coloured icon and a thin level line (health, armor, hunger, thirst), a status dot (stress), a mic dot, the radio channel | Rings with values beside the map |
-| Vehicle | Bottom right: the speed with dimmed leading zeros inside a small rpm arc (`arc`: a thin arc over faint ticks; `digital`: segmented ticks; `bar`: a plate with a segmented bar, from the identity's `--nk-gauge-style`), the gear as a brand chip under it, a fuel line (pump, line, %) under the gauge, telltales as a column on the left lit only when on | The large arc / bar / digital gauge, shift lights, telltale row, worded warnings |
+| Vitals | Bottom left: one icon-only chip per vital (health, armor, hunger, thirst, stress), its level traced along the chip outline; a mic chip and the radio channel | The same chips, a size larger, beside the map |
+| Vehicle | Bottom right: segmented rpm ticks with the gear in the centre, speed with dimmed leading zeros, a separate fuel arc, telltales as a column lit only when on | The large arc / bar / digital gauge, shift lights, telltale row, worded warnings |
 | Ammo | Over the vehicle, bottom right | Under the money, top right |
 | Heading strip | None (the ring carries it) | Top centre |
 
@@ -37,7 +37,7 @@ A 0.6 `config.lua` (`layout = { source = … }`) keeps `classic`. Aircraft use t
 
 | Area | What it shows | Where |
 |---|---|---|
-| Vitals | Health, armor, hunger, thirst, stress: a ring with the icon inside and the value beside it. In `auto` each shows when it changes or crosses its threshold (≤ 25 %, stress ≥ 60 %), then fades; critical ones get an outline and a slow pulse. Icon + colour + value, never colour alone. | Beside the map's bottom edge, or bottom left on foot |
+| Vitals | Health, armor, hunger, thirst, stress: the same icon-only chip for every vital, in the identity's chip shape (rounded, pill, Signal's chamfer); the level is drawn along the chip's own outline, clockwise from the top. In `auto` each shows when it changes or crosses its threshold (≤ 25 %, stress ≥ 60 %), then fades; past it the whole outline takes the vital's colour. Icon + level + outline, never colour alone; the value is in the meter's label. | Beside the map's bottom edge, or bottom left on foot |
 | Voice | Range (pma-voice's mode name, or the distance) while talking or when it changes; the radio channel while on one | End of the vitals row |
 | Wallet | Cash (always) and bank (on change) with the difference (+$500 / −$500); job, grade and duty | Top right |
 | Vehicle cluster | Speed (mph / km/h, per player), RPM on an arc with ticks and a redline zone, a needle on the fill, gear (R / N / 1–n), five shift lights that flash at the redline, fuel, turn signals and hazards | Bottom right |

@@ -13,10 +13,11 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
+import { Kbd } from "@/components/ui/kbd";
 import { MenuRow } from "@/components/ui/menu-row";
-import { Separator } from "@/components/ui/separator";
 import { list } from "@/lib/format";
-import { HelpPanel, Home } from "./views/home";
+import { HelpPanel, PlayerSummary, ServerSummary, Stage } from "./views/home";
 import { InfoPanel } from "./views/info";
 import { KeysPanel } from "./views/keys";
 import { MapView } from "./views/map";
@@ -92,54 +93,59 @@ function Pause({ data, player }: { data: PauseData; player: NuiPlayer }) {
       <div className="pause-scrim absolute inset-0" data-stage={standIn || undefined} aria-hidden />
 
       <div className="relative flex h-full">
-        {/* left: who we are and where to go */}
-        <aside className="pause-rail flex h-full w-80 shrink-0 flex-col px-12 py-12">
-          <header className="flex items-center gap-3">
-            {server.logo ? (
-              <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary text-sm font-semibold text-primary-foreground">
-                {server.logo}
+        {/* the backdrop: the theme's surface, flush to the top, left and bottom edges; the menu sits in
+            a column inside it, and the rest of the screen stays open for the game */}
+        <aside className="pause-backdrop flex h-full w-[36rem] shrink-0 justify-end">
+          <div className="pause-column flex h-full w-full max-w-[28rem] flex-col overflow-y-auto py-12 pr-12 pl-6">
+            <header className="flex items-center gap-4">
+              {server.logo ? (
+                <div className="pause-logo flex size-12 shrink-0 items-center justify-center bg-foreground text-base font-semibold text-background">
+                  {server.logo}
+                </div>
+              ) : null}
+              <div className="min-w-0">
+                <h1 className="nk-display truncate">{server.name || "Paused"}</h1>
+                {server.tagline ? <p className="nk-label truncate text-muted-foreground">{server.tagline}</p> : null}
               </div>
-            ) : null}
-            <div className="min-w-0">
-              {/* the server's name in the identity's display face (reference screens), at the title size */}
-              <h1 className="nk-display truncate text-xl leading-6">{server.name || "Paused"}</h1>
-              {server.tagline ? <p className="truncate text-sm text-muted-foreground">{server.tagline}</p> : null}
+            </header>
+
+            <PlayerSummary player={player} data={data} />
+
+            <nav className="flex flex-col" aria-label="Pause menu">
+              {buttons.includes("resume") ? (
+                <Button size="lg" autoFocus className="mb-2 h-12 justify-between px-4 text-base" onClick={() => run("resume")}>
+                  <span className="flex items-center gap-3">
+                    <PlayIcon />
+                    Resume
+                  </span>
+                  <Kbd className="bg-primary-foreground/15 text-primary-foreground">Esc</Kbd>
+                </Button>
+              ) : null}
+              <div className="flex flex-col divide-y divide-border">
+                {buttons.map((b, i) => {
+                  if (b === "disconnect" || b === "resume") return null;
+                  const item = NAV[b];
+                  if (!item) return null;
+                  return (
+                    <MenuRow key={b} autoFocus={i === 0} icon={<item.icon />} kbd={item.kbd} active={active(b)} onClick={() => run(b)} className="min-h-12 text-base">
+                      {item.label}
+                    </MenuRow>
+                  );
+                })}
+                {buttons.includes("disconnect") ? <Disconnect /> : null}
+              </div>
+            </nav>
+
+            <div className="mt-auto pt-6">
+              <ServerSummary data={data} />
             </div>
-          </header>
-
-          <nav className="pause-nav mt-12 flex flex-col gap-0.5" aria-label="Pause menu">
-            {buttons.map((b, i) => {
-              if (b === "disconnect") return null;
-              const item = NAV[b];
-              if (!item) return null;
-              return (
-                <MenuRow key={b} autoFocus={i === 0} icon={<item.icon />} kbd={item.kbd} active={active(b)} onClick={() => run(b)}>
-                  {item.label}
-                </MenuRow>
-              );
-            })}
-            {buttons.includes("disconnect") ? (
-              <>
-                <Separator className="my-3" />
-                <Disconnect />
-              </>
-            ) : null}
-          </nav>
-
-          <dl className="mt-auto flex flex-col gap-2 text-sm">
-            {list(data?.links).map((l) => (
-              <div key={l.label} className="flex items-baseline justify-between gap-4">
-                <dt className="text-muted-foreground">{l.label}</dt>
-                <dd className="truncate font-medium">{l.value}</dd>
-              </div>
-            ))}
-          </dl>
+          </div>
         </aside>
 
         {view === "home" ? (
-          <Home data={data} player={player} standIn={standIn} />
+          <Stage active={standIn} />
         ) : (
-          <main className="flex flex-1 items-center justify-end px-12">
+          <main className="pause-side flex min-w-0 flex-1 items-center px-12">
             {view === "keys" && <KeysPanel onChange={() => void fetchNui("pause:keybinds").catch(() => {})} />}
             {view === "info" && <InfoPanel pages={list(data?.pages)} />}
             {view === "help" && <HelpPanel help={list(data?.help)} />}
@@ -154,7 +160,7 @@ function Disconnect() {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <MenuRow tone="destructive" icon={<LogOutIcon />}>
+        <MenuRow tone="destructive" icon={<LogOutIcon />} className="min-h-12 text-base">
           Disconnect
         </MenuRow>
       </AlertDialogTrigger>
