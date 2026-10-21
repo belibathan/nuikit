@@ -32,6 +32,14 @@ describe("@nuikit/init.lua", () => {
     expect(await ui.call("nuikit:ready", { protocol: 1, client: "test" })).toMatchObject({ ok: true, resource: "shop", protocol: 1 });
   });
 
+  it("imports the services with the runtime: nk.camera and nk.controls (docs/services.md)", async () => {
+    client = await createClient();
+    const ui = await client.start("shop", { runtime: "import", before: natives });
+    expect(await ui.run(`return type(nk.camera.claim) == 'function' and type(nk.controls.disable) == 'function'`)).toBe(true);
+    expect(await ui.run(`return nk.camera.isActive()`)).toBe(false);
+    expect(await ui.run(`return nk.controls.count()`)).toBe(0);
+  });
+
   it("loads the framework bridge only when nk.player is first used", async () => {
     client = await createClient();
     const ui = await client.start("menu", { runtime: "import", before: natives });

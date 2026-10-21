@@ -28,6 +28,8 @@ files {
   'init.lua',
   'lib/nuikit.lua',
   'lib/bridge.lua',
+  'lib/camera.lua',
+  'lib/controls.lua',
   'theme.css',
   -- identity fonts, served to every UI that loads them from here (docs/tokens.md#fonts)
   'fonts/*.woff2',
@@ -38,6 +40,8 @@ files {
 -- client.lua: player UI preferences and the theme for override pages. host.lua: the host.
 client_scripts {
   'lib/nuikit.lua',
+  'lib/camera.lua',
+  'lib/controls.lua',
   'lib/host.lua',
   'client.lua',
 }

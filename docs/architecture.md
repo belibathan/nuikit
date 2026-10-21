@@ -61,8 +61,9 @@ The only thing every server must run. It is three parts:
   restoration on close, resource stop and death:
   - **surfaces**: focus, cursor, Escape, layers, states (built, protocol §3);
   - **camera**: `nk.camera.claim(opts)` / `release()`, so a 3D pause menu, a clothing shop and a garage
-    preview never leave the player looking at the wrong thing;
-  - **controls**: which game controls are disabled while a UI is open, merged across UIs.
+    preview never leave the player looking at the wrong thing (built on `feat/services`, `docs/services.md`;
+    not yet tested in game);
+  - **controls**: which game controls are disabled while a UI is open, merged across UIs (built, same).
 - **Context**: compiled theme and live reload, player prefs (built, `docs/tokens.md`), the player over any
   framework (built, `bridge.lua`), and locale.
 
@@ -198,7 +199,9 @@ recipes, from a scripted session (join, spawn, menus, a job, inventory, death). 
    Lua. *Built on `feat/runtime`: the kit's systems and the template import it; the bridge loads lazily.*
 2. **Intent schemas and generation**, default renderers lifted from the ox_lib override into 0.5 components,
    rendered in nuikit's frame.
-3. **Services**: camera and controls next to surfaces.
+3. **Services**: camera and controls next to surfaces. *Built on `feat/services` (`docs/services.md`): the stack,
+   restore on release, resource stop and death under the Lua harness; the pause menu on `nk.camera`. Needs the
+   in-game checklist there.*
 4. **In-game spike**: stand-in, listener and ox_lib page routing on a real client; choose per library.
 5. **`[nuikit-ox]`** on the shared renderers, every ox POST re-verified against `docs/ox-lib-protocol.md`.
 6. **`[nuikit-qb]`**: qb-menu, qb-input, qb-target options, `QBCore:Notify`, progressbar, DrawText, qb-radialmenu.

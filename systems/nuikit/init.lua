@@ -44,6 +44,10 @@ end
 import('lib/nuikit.lua')
 nk = NUI
 nk.version = version
+-- services (docs/services.md): nk.camera, nk.controls
+import('lib/camera.lua')
+import('lib/controls.lua')
+-- end services
 rawset(nk, '__imported', true)
 
 -- nk.player: the framework bridge, loaded on first use.

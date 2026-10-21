@@ -206,7 +206,7 @@ for (const t of targets) {
   for (const f of t.lua) copy(`packages/core/lua/${f}`, `client/${f}`);
   // The runtime other resources import with shared_script '@nuikit/init.lua'.
   if (t.runtime) {
-    for (const f of ["nuikit.lua", "bridge.lua", "host.lua"]) copy(`packages/core/lua/${f}`, `lib/${f}`);
+    for (const f of ["nuikit.lua", "bridge.lua", "host.lua", "camera.lua", "controls.lua"]) copy(`packages/core/lua/${f}`, `lib/${f}`);
     copy("packages/core/lua/init.lua", "init.lua");
   }
   // the nuikit resource serves the fonts to every UI (FONT_SRC.nuikit); the template ships its own

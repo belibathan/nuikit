@@ -78,6 +78,8 @@
       "fonts/jetbrains-mono.OFL.txt",
       "init.lua",
       "lib/bridge.lua",
+      "lib/camera.lua",
+      "lib/controls.lua",
       "lib/host.lua",
       "lib/nuikit.lua",
       "server/compiler.js",

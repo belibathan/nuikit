@@ -230,7 +230,7 @@ export async function createClient(options: { syncEvents?: boolean; onNuiMessage
     else if (runtime === "import") {
       g.set("__nuikitLib", (file: string) => {
         if (startOptions.runtimeMissing) return undefined;
-        const m = /^lib\/(nuikit|bridge|host)\.lua$/.exec(file);
+        const m = /^lib\/(nuikit|bridge|host|camera|controls)\.lua$/.exec(file);
         return m ? lua_(`${m[1]}.lua`) : undefined;
       });
       await lua.doString(`

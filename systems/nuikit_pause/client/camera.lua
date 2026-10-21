@@ -1,92 +1,60 @@
--- nuikit_pause: the camera service. One scripted camera owner at a time, always given back.
+-- nuikit_pause: a thin shim over the runtime's camera service (nk.camera, docs/services.md).
 --
--- This is the shape of the runtime's shared camera service (docs/architecture.md, "Services: camera";
--- 0.6 step 3): `claim(opts)` / `release(id)`. It is self-contained so it can move into the nuikit
--- resource as `nk.camera` without changing its callers (focus.lua, map3d.lua).
+-- The service used to live here; it moved into the runtime (0.7 step 3). focus.lua and map3d.lua
+-- keep calling this `Camera` API, which keeps the menu's hand-over behaviour exactly as before:
 --
 --   local cam, from = Camera.claim({ id = 'map', onLost = function(reason) ... end })
 --   Camera.stream(x, y, z)                 -- stream the world around a point while the claim lasts
 --   Camera.release('map')                  -- blend back to the gameplay camera (600 ms)
 --   Camera.release('map', { instant = true })
 --
--- Guarantees:
---   * A claim starts exactly where the picture is (GetFinalRenderedCam*), so taking the screen is a
---     cut to the same view: seamless. Claiming while another owner holds the camera hands over: the
---     new camera takes the screen first, then the old one is destroyed, with no blend back to the game
---     in between. The previous owner's onLost('handover') runs.
---   * The gameplay camera comes back on release, when this resource stops, and when the player goes
---     down (onLost('dead') runs): dead to GTA, or down to the death system (Qbox's last stand revives
---     the ped, so IsEntityDead alone turns false again). World streaming (SetFocusPosAndVel) is cleared with the camera.
+-- One owner at a time inside this resource: claiming while another id holds the camera hands over
+-- (the new camera takes the screen first, then the old claim is released with no blend in between,
+-- and its onLost('handover') runs). Death and the resource stopping are the service's job: it
+-- releases the claim, cuts back to the gameplay camera and runs onLost('dead').
 
 Camera = {}
 
-local RESOURCE = GetCurrentResourceName()
-local BLEND_MS = 600
-local WATCH_MS = 250
-
-local cam
-local claim -- { id, onLost, streaming }
-
-local function destroy(handle)
-  if handle and DoesCamExist(handle) then DestroyCam(handle, false) end
-end
+local current -- { id, handle, onLost }
 
 local function lost(c, reason)
   if c and c.onLost then
     local ok, err = pcall(c.onLost, reason)
-    if not ok then print(('[%s] camera: %s onLost failed: %s'):format(RESOURCE, c.id, err)) end
+    if not ok then print(('[%s] camera: %s onLost failed: %s'):format(GetCurrentResourceName(), c.id, err)) end
   end
 end
 
---- The player is down: dead to GTA, or dead / in last stand to the death system (nuikit_death sets
---- the client-wide 'dead' state).
+--- The player is down: dead to GTA, or dead / in last stand to the death system.
 ---@return boolean
-function Camera.down()
-  if IsEntityDead(PlayerPedId()) then return true end
-  return NUI ~= nil and NUI.getState ~= nil and NUI.getState('dead') and true or false
-end
-
---- Watch for the things that must take the camera back without the owner asking.
-local watching = false
-local function watch()
-  if watching then return end
-  watching = true
-  CreateThread(function()
-    while claim do
-      if Camera.down() then
-        local c = claim
-        Camera.release(c.id, { instant = true })
-        lost(c, 'dead')
-        break
-      end
-      Wait(WATCH_MS)
-    end
-    watching = false
-  end)
-end
+function Camera.down() return NUI.camera.down() end
 
 ---@class CameraClaim
 ---@field id string who is claiming ('focus', 'map', …)
 ---@field fov? number the new camera's field of view (default: the current view's)
 ---@field onLost? fun(reason: 'handover'|'dead') the camera was taken away without release()
 
---- Take the screen with a scripted camera.
+--- Take the screen with a scripted camera, started on the current view.
 ---@param opts CameraClaim
 ---@return integer cam, { coord: vector3, rot: vector3, fov: number } from the view it started from
 function Camera.claim(opts)
-  local coord, rot, fov = GetFinalRenderedCamCoord(), GetFinalRenderedCamRot(2), GetFinalRenderedCamFov()
-  local new = CreateCamWithParams('DEFAULT_SCRIPTED_CAMERA', coord.x, coord.y, coord.z, rot.x, 0.0, rot.z, opts.fov or fov, false, 2)
-  SetCamActive(new, true)
-  RenderScriptCams(true, false, 0, true, false) -- a cut to the very same view: nothing moves
-  local previous, old = claim, cam
-  cam, claim = new, { id = opts.id, onLost = opts.onLost }
-  if previous then
-    destroy(old)
-    if previous.streaming then ClearFocus() end
+  local previous = current
+  local c = { id = opts.id, onLost = opts.onLost }
+  local handle, from = NUI.camera.claim({
+    id = opts.id,
+    fov = opts.fov,
+    onLost = function(reason)
+      if current == c then current = nil end
+      lost(c, reason)
+    end,
+  })
+  c.handle = handle
+  current = c
+  if previous and previous ~= c then
+    -- the new camera is on screen already: the old claim leaves without a blend
+    NUI.camera.release(previous.handle, { instant = true })
     if previous.id ~= opts.id then lost(previous, 'handover') end
   end
-  watch()
-  return cam, { coord = coord, rot = rot, fov = fov }
+  return handle.cam, from
 end
 
 --- Give the screen back to the gameplay camera. Only the current owner can release.
@@ -94,35 +62,22 @@ end
 ---@param opts? { instant?: boolean, ms?: number }
 ---@return boolean released
 function Camera.release(id, opts)
-  if not claim or claim.id ~= id then return false end
-  local instant = opts and opts.instant
-  RenderScriptCams(false, not instant, instant and 0 or (opts and opts.ms or BLEND_MS), true, false)
-  destroy(cam)
-  if claim.streaming then ClearFocus() end
-  cam, claim = nil, nil
-  return true
+  if not current or current.id ~= id then return false end
+  local c = current
+  current = nil
+  return NUI.camera.release(c.handle, opts)
 end
 
 --- Stream the world around a point (the map looks far from the player). Cleared on release.
 function Camera.stream(x, y, z)
-  if not claim then return end
-  SetFocusPosAndVel(x + 0.0, y + 0.0, z + 0.0, 0.0, 0.0, 0.0)
-  claim.streaming = true
+  if not current then return end
+  NUI.camera.stream(x, y, z, current.handle)
 end
 
 ---@return integer|nil
-function Camera.handle() return cam end
+function Camera.handle() return current and current.handle.cam end
 
 ---@return string|nil
-function Camera.owner() return claim and claim.id end
+function Camera.owner() return current and current.id end
 
-function Camera.isActive() return claim ~= nil end
-
--- The resource stopping (a restart, a crash) must never leave the player looking through a dead camera.
-AddEventHandler('onClientResourceStop', function(resource)
-  if resource ~= RESOURCE or not claim then return end
-  RenderScriptCams(false, false, 0, true, false)
-  destroy(cam)
-  if claim.streaming then ClearFocus() end
-  cam, claim = nil, nil
-end)
+function Camera.isActive() return current ~= nil end

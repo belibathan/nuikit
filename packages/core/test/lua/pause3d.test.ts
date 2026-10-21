@@ -3,7 +3,7 @@ import { afterEach, describe, expect, it } from "vitest";
 import { createClient } from "./harness";
 
 const PAUSE = fileURLToPath(new URL("../../../../systems/nuikit_pause/", import.meta.url));
-const scripts = [PAUSE + "config.lua", "bridge.lua", PAUSE + "client/camera.lua", PAUSE + "client/map3d.lua", PAUSE + "client/focus.lua", PAUSE + "client/keys.lua", PAUSE + "client/main.lua", PAUSE + "client/inventory.lua"];
+const scripts = [PAUSE + "config.lua", "bridge.lua", "camera.lua", "controls.lua", PAUSE + "client/camera.lua", PAUSE + "client/map3d.lua", PAUSE + "client/focus.lua", PAUSE + "client/keys.lua", PAUSE + "client/main.lua", PAUSE + "client/inventory.lua"];
 let client: Awaited<ReturnType<typeof createClient>>;
 afterEach(() => client?.close());
 

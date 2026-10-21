@@ -181,6 +181,7 @@ end
 ---@field escape? 'close'|'back'|'ignore'  what Escape does while it's on top (default 'close'; 'back' sends nuikit:back to your UI)
 ---@field hides? string[]        surface names or layers (e.g. 'hud') hidden while this is open
 ---@field blockedBy? string[]    states (NUI.state) that stop it from opening, e.g. { 'dead', 'cuffed' }
+---@field controls? string|integer|table  game controls disabled while it is open: presets and ids (nk.controls, docs/services.md)
 
 local LAYERS = { hud = 1, world = 2, panel = 3, modal = 4, system = 5 }
 local EV = { open = 'nuikit:sf:open', close = 'nuikit:sf:close', state = 'nuikit:sf:state', hello = 'nuikit:sf:hello', snapshot = 'nuikit:sf:snapshot' }
@@ -280,6 +281,9 @@ local function apply()
     end
   end
 
+  -- services: an open surface's `controls` set (controls.lua, loaded after this file)
+  local controls = rawget(NUI, 'controls')
+  if controls then controls._surfaces(view, defs) end
   local payload = { surfaces = view, states = states }
   local encoded = json.encode(payload)
   if encoded ~= lastSent then
@@ -306,6 +310,7 @@ local function normalize(name, opts)
     escape = opts.escape or 'close',
     hides = opts.hides,
     blockedBy = opts.blockedBy,
+    controls = opts.controls,
   }
 end
 
