@@ -310,7 +310,6 @@ end
 --- square clip, GTA's own mask and the north blip. In game (Oct 20) a live restart or enabled = false
 --- left nuikit's placement behind. `flick` re-reads the positions (it waits, so not from a stop handler).
 function Minimap.restore(flick)
-  TriggerEvent('nuikit:minimap:released')
   for name, v in pairs(Layout.STOCK) do
     SetMinimapComponentPosition(name, 'L', 'B', v[1], v[2], v[3], v[4])
   end
@@ -334,6 +333,9 @@ function Minimap.applyStock()
   local area = Layout.current
   if not area then return end
   if placedByUs or not Minimap.yielding() then
+    -- put back by this resource (it keeps running): the nuikit resource has nothing to restore on a
+    -- later stop. Not sent from the stop handler, which would cancel that restore.
+    TriggerEvent('nuikit:minimap:released')
     Minimap.restore(true)
     placedByUs = false
   end

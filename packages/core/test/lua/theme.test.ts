@@ -204,6 +204,35 @@ describe("GTA's radar after the HUD that placed it stops (systems/nuikit/client.
     void other;
   });
 
+  it("with the real HUD minimap: its own stop handler doesn't cancel the restore", async () => {
+    const HUD = fileURLToPath(new URL("../../../../systems/nuikit_hud/", import.meta.url));
+    client = await createClient({ syncEvents: true });
+    // the HUD's own stop handler runs first (the order FiveM uses across resources isn't specified)
+    const hud = await client.start("nuikit_hud", {
+      before: started(["nuikit"]) + radar + `
+        function GetActiveScreenResolution() return 1920, 1080 end
+        function GetSafeZoneSize() return 1.0 end
+        function RequestScaleformMovie() return 1 end
+        function IsRadarHidden() return false end
+        function GetGameTimer() return 1 end
+        function CreateRuntimeTxd(n) return n end
+        function CreateRuntimeTexture(_, n) return n end
+        function SetRuntimeTexturePixel() end
+        function CommitRuntimeTexture() end
+        function AddReplaceTexture() end
+        CreateThread = function() end
+      `,
+      scripts: [HUD + "config.lua", HUD + "client/layout.lua", HUD + "client/minimap.lua"],
+    });
+    const nuikit = await client.start("nuikit", { before: started(["nuikit"]) + radar, scripts: [NUIKIT_CLIENT] });
+    await hud.run(`Layout.update() Minimap.apply()`);
+    await nuikit.run(`PLACED, FLICKS = {}, 0`);
+    // what FiveM does on a stop: every handler, the stopping resource's own included
+    await hud.run(`TriggerEvent('onClientResourceStop', 'nuikit_hud')`);
+    expect(await nuikit.run(`return PLACED.minimap`)).toEqual([-0.0045, 0.002, 0.15, 0.188888]);
+    expect(await nuikit.run(`return FLICKS`)).toBe(2);
+  });
+
   it("does nothing when the HUD released the radar itself (style 'stock')", async () => {
     client = await createClient();
     const nuikit = await client.start("nuikit", { before: started(["nuikit"]) + radar, scripts: [NUIKIT_CLIENT] });
