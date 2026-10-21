@@ -28,6 +28,53 @@
       }
     },
     {
+      "name": "edge-sheet",
+      "type": "registry:ui",
+      "title": "Edge Sheet",
+      "description": "A full-height sheet flush to a screen edge, the pause menu backdrop and the ox_lib context sheet as one component: stock Sheet (non-modal) in the panel surface, hairline on the open edge, inner column, section-size title with optional back and close buttons, sub-pages that swap in place, a level traced along the header edge, staggered slide-in and a faster exit.",
+      "files": [
+        {
+          "path": "registry/nuikit/ui/edge-sheet.tsx",
+          "type": "registry:ui"
+        }
+      ],
+      "dependencies": [],
+      "registryDependencies": [
+        "sheet",
+        "scroll-area",
+        "button"
+      ],
+      "meta": {
+        "since": "unreleased",
+        "status": "experimental",
+        "replaces": [],
+        "removeIn": null
+      }
+    },
+    {
+      "name": "nui-image",
+      "type": "registry:ui",
+      "title": "NUI Image",
+      "description": "The picture of an item, clothing, vehicle or weapon by the conventions popular servers use (ox/qb/ps/lj inventories, FiveM docs vehicles, clothing packs by template): candidate URLs from nuikit-core resolveImage, lazy, an onError chain, an icon when none load.",
+      "files": [
+        {
+          "path": "registry/nuikit/ui/nui-image.tsx",
+          "type": "registry:ui"
+        }
+      ],
+      "dependencies": [
+        "nuikit-core",
+        "lucide-react"
+      ],
+      "registryDependencies": [],
+      "meta": {
+        "since": "unreleased",
+        "status": "experimental",
+        "replaces": [],
+        "removeIn": null
+      }
+    },
+    {
       "name": "menu-row",
       "type": "registry:ui",
       "title": "Menu Row",
@@ -121,6 +168,52 @@
       "meta": {
         "since": "0.5.0",
         "status": "stable",
+        "replaces": [],
+        "removeIn": null
+      }
+    },
+    {
+      "name": "text-roll",
+      "type": "registry:ui",
+      "title": "Text Roll",
+      "description": "A short text that changes like a slot reel: the old value rolls out and the new one in, masked to the line, with direction and per-character stagger; NumberRoll rolls each digit on its own (money, speed, ammo, clocks). Swaps at once when motion is off.",
+      "files": [
+        {
+          "path": "registry/nuikit/ui/text-roll.tsx",
+          "type": "registry:ui"
+        }
+      ],
+      "dependencies": [
+        "nuikit-core"
+      ],
+      "meta": {
+        "since": "unreleased",
+        "status": "experimental",
+        "replaces": [],
+        "removeIn": null
+      }
+    },
+    {
+      "name": "smooth-input",
+      "type": "registry:ui",
+      "title": "Smooth Input",
+      "description": "Drop-ins for shadcn Input and Textarea: a caret that glides and breathes in the theme primary, and typed characters that ease in. The real field underneath (selection, IME, paste, forms); the native caret when motion is off.",
+      "files": [
+        {
+          "path": "registry/nuikit/ui/smooth-input.tsx",
+          "type": "registry:ui"
+        }
+      ],
+      "dependencies": [
+        "nuikit-core"
+      ],
+      "registryDependencies": [
+        "input",
+        "textarea"
+      ],
+      "meta": {
+        "since": "unreleased",
+        "status": "experimental",
         "replaces": [],
         "removeIn": null
       }

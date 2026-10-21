@@ -5,22 +5,23 @@ import { Button } from "@/components/ui/button";
 import { ButtonGroup } from "@/components/ui/button-group";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
+import { TextRoll } from "@/components/ui/text-roll";
 import { cn } from "@/lib/utils";
 import type { RGB } from "@/lib/types";
 
 /** Label row: name on the left, value and an optional revert-to-original on the right. */
 export function FieldLabel({ label, value, hint, onReset }: { label: ReactNode; value?: ReactNode; hint?: ReactNode; onReset?: () => void }) {
   return (
-    <div className="flex h-6 min-w-0 items-center gap-2 text-xs leading-4">
-      <span className="truncate font-medium">{label}</span>
-      {hint !== undefined && <span className="truncate text-muted-foreground">{hint}</span>}
+    <div className="nk-field-label">
+      <span className="truncate">{label}</span>
+      {hint !== undefined && <span className="truncate text-muted-foreground normal-case tracking-normal">{hint}</span>}
       <span className="ml-auto flex shrink-0 items-center gap-1">
         {onReset && (
           <Button variant="ghost" size="icon-xs" className="text-muted-foreground hover:text-foreground" onClick={onReset} aria-label="Revert to original">
             <RotateCcw />
           </Button>
         )}
-        {value !== undefined && <span className="nk-num text-muted-foreground">{value}</span>}
+        {value !== undefined && (typeof value === "string" || typeof value === "number" ? <TextRoll value={String(value)} className="nk-num text-muted-foreground" /> : <span className="nk-num text-muted-foreground">{value}</span>)}
       </span>
     </div>
   );

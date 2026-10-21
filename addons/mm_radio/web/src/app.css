@@ -1,5 +1,5 @@
-/* index.css is synced from the nuikit template (stock shadcn neutral theme). This adds shadcn's
-   animation utilities (the synced popover and select use them) and a transparent, unscrollable page. */
+/* index.css is synced from the nuikit template (stock shadcn neutral theme). This file adds what
+   the mm_radio UI needs on top: shadcn's animation utilities and a transparent, unscrollable page. */
 @import "./index.css";
 @import "tw-animate-css";
 
@@ -12,4 +12,29 @@ body {
 
 input {
   user-select: text;
+}
+
+/* The radio's display digits: monospaced figures in the theme's mono font. */
+.radio-lcd {
+  font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+/* The handheld rises from below and drops away: the motion ladder (full-screen step), transform and
+   opacity only; /nuikit motion off makes it instant. */
+.radio-frame {
+  transition: transform min(calc(var(--nk-time) * 2.2), 360ms) var(--nk-ease-out), opacity var(--nk-time) var(--nk-ease-out);
+}
+
+/* channel lists: rows with a hairline between, drawn without taking layout (the pause menu's rows) */
+.radio-rows > .nk-row + .nk-row::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: calc(var(--nk-space) * 2);
+  right: calc(var(--nk-space) * 2);
+  height: var(--nk-border);
+  background-color: var(--border);
+  pointer-events: none;
 }

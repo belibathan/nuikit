@@ -1,6 +1,6 @@
 # nuikit for mm_radio
 
-A drop-in replacement for [mm_radio](https://github.com/Qbox-project/mm_radio)'s interface (Qbox's radio), built from stock shadcn/ui and themed by your server's `nuikit/theme.css`. You get a compact handheld built from the kit's components (a panel with the clock, signal and jammer, battery and street in its header; the frequency as the one big number; channels as rows; a keypad; members with per-player mute; settings as form fields; who's talking as HUD chips), volume and mute, and the draggable overlay. **mm_radio's Lua is untouched.**
+A drop-in replacement for [mm_radio](https://github.com/Qbox-project/mm_radio)'s interface (Qbox's radio), built from stock shadcn/ui and themed by your server's `nuikit/theme.css`. You get a compact handheld with an LCD-style screen (clock, signal and jammer, battery, frequency), volume and mute, favourite and recent channels, a keypad, a member list with per-player mute, settings, and the draggable "who's talking" overlay. **mm_radio's Lua is untouched.**
 
 ## Install
 

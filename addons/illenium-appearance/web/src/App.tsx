@@ -1,5 +1,5 @@
 import { Dna, Glasses, LogOut, PenTool, Save, Scissors, Shirt, Smile, Users } from "lucide-react";
-import { useEffect, useMemo, useRef, useState, type ComponentType } from "react";
+import { useEffect, useMemo, useRef, useState, type ComponentType, type ReactNode } from "react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -12,11 +12,13 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Kbd } from "@/components/ui/kbd";
-import { Panel, PanelFooter, PanelHeader } from "@/components/ui/panel";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { EdgeSheet, EdgeSheetBody } from "@/components/ui/edge-sheet";
+import { MenuRow } from "@/components/ui/menu-row";
+import { Separator } from "@/components/ui/separator";
+import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
+import { GroupNav } from "@/components/group";
 import { Spinner } from "@/components/ui/spinner";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { CameraControls } from "@/features/camera";
 import { ComponentsSection, PropsSection } from "@/features/clothing";
 import { HairSection } from "@/features/hair";
@@ -44,66 +46,107 @@ function useSections(): Section[] {
   }, [config, locale, isFreemode]);
 }
 
-function Editor({ onConfirm }: { onConfirm: (kind: "save" | "exit") => void }) {
-  const { config, current, stored } = useLoaded();
+function Editor({ open }: { open: boolean }) {
+  const { current, stored } = useLoaded();
   const sections = useSections();
-  const [tab, setTab] = useState(sections[0]?.id ?? "");
-  const active = sections.find((s) => s.id === tab) ?? sections[0];
+  const only = sections.length === 1 ? sections[0]!.id : null;
+  // home (null) → a section → one of its groups: each a page swapped in place inside the sheet
+  const [section, setSection] = useState<string | null>(only);
+  const [group, setGroup] = useState<string | null>(null);
+  const [groupTitle, setGroupTitle] = useState<ReactNode>(null);
+  useEffect(() => {
+    if (!open) {
+      setSection(only);
+      setGroup(null);
+    }
+  }, [open, only]);
+  const active = sections.find((s) => s.id === section);
   const dirty = useMemo(() => JSON.stringify(current) !== JSON.stringify(stored), [current, stored]);
+  const nav = useMemo(() => ({ open: group, setOpen: setGroup, setTitle: setGroupTitle }), [group]);
+
+  const back = group ? () => setGroup(null) : section && !only ? () => setSection(null) : undefined;
+  const Icon = active?.icon;
+  const title = group ? groupTitle : active ? active.title : "Appearance";
+  const description = dirty ? "Unsaved changes" : group || active ? "Changes show on your character as you make them." : "Choose what to change.";
 
   return (
-    <Tabs value={active?.id ?? ""} onValueChange={setTab} className="flex h-full min-h-0 flex-col gap-0">
-      {/* The kit's two-row header (docs/design.md recipe): title row, then the section tabs. */}
-      <PanelHeader
-        title={active?.title}
-        actions={
-          dirty && (
-            <span className="nk-label flex items-center gap-1.5">
-              <span className="size-1.5 rounded-full bg-primary" aria-hidden />
-              Unsaved changes
-            </span>
-          )
-        }
-        tabs={
-          sections.length > 1 && (
-            <TabsList className="w-full">
-              {sections.map((s) => (
-                <TabsTrigger key={s.id} value={s.id} className="p-0" aria-label={s.title}>
-                  {/* The tooltip sits inside: its data-state must not replace the tab's active state. */}
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <span className="flex size-full items-center justify-center">
-                        <s.icon className="size-4" />
-                      </span>
-                    </TooltipTrigger>
-                    <TooltipContent side="bottom">{s.title}</TooltipContent>
-                  </Tooltip>
-                </TabsTrigger>
-              ))}
-            </TabsList>
-          )
-        }
-      />
-      {sections.map((s) => (
-        <TabsContent key={s.id} value={s.id} className="min-h-0 flex-1">
-          <ScrollArea className="h-full">
-            <s.body />
-          </ScrollArea>
-        </TabsContent>
-      ))}
-      <PanelFooter>
-        {config.enableExit && (
-          <Button variant="outline" onClick={() => onConfirm("exit")}>
-            <LogOut />
-            Exit
-          </Button>
+    // A floating edge sheet on the left (registry edge-sheet, the inventory's and ox_lib's model): the
+    // sections as rows, a section's groups as rows, a group's controls as its own page, each swapped in
+    // place with a back row. Save and exit sit in the floating tray along the bottom.
+    <EdgeSheet
+      open={open}
+      side="left"
+      width="30rem"
+      page={`${section ?? "home"}:${group ?? ""}`}
+      onBack={back}
+      icon={!group && Icon ? <Icon /> : undefined}
+      title={title}
+      description={description}
+      actions={dirty && <span className="size-2 rounded-full bg-primary" aria-hidden />}
+    >
+      <EdgeSheetBody scroll>
+        {active ? (
+          <GroupNav.Provider value={nav}>
+            <div className="ia-section" data-group-open={group ? "" : undefined}>
+              <active.body />
+            </div>
+          </GroupNav.Provider>
+        ) : (
+          <div className="ia-groups" data-mode="list">
+            {sections.map((s) => (
+              <MenuRow key={s.id} className="min-h-12 text-base" icon={<s.icon className="size-4" />} chevron onClick={() => setSection(s.id)}>
+                {s.title}
+              </MenuRow>
+            ))}
+          </div>
         )}
-        <Button className="flex-1" onClick={() => onConfirm("save")}>
-          <Save />
-          Save
-        </Button>
-      </PanelFooter>
-    </Tabs>
+      </EdgeSheetBody>
+    </EdgeSheet>
+  );
+}
+
+/** The floating tray along the bottom: turn, exit, save (the inventory's tray). */
+function Tray({ open, onConfirm, canExit }: { open: boolean; onConfirm: (kind: "save" | "exit") => void; canExit: boolean }) {
+  const keep = (e: Event) => e.preventDefault();
+  return (
+    <Sheet open={open} modal={false}>
+      <SheetContent
+        side="bottom"
+        showCloseButton={false}
+        className="nk-panel ia-tray"
+        onOpenAutoFocus={keep}
+        onCloseAutoFocus={keep}
+        onInteractOutside={keep}
+        onEscapeKeyDown={keep}
+        aria-describedby={undefined}
+      >
+        <SheetTitle className="sr-only">Save or exit</SheetTitle>
+        <div className="flex items-center gap-4">
+          <span className="ia-hint">
+            <Kbd>A</Kbd>
+            <Kbd>D</Kbd>
+            <span>Turn</span>
+          </span>
+          {canExit && (
+            <span className="ia-hint">
+              <Kbd>Esc</Kbd>
+              <span>Exit</span>
+            </span>
+          )}
+          <Separator orientation="vertical" className="h-6!" />
+          {canExit && (
+            <Button variant="ghost" onClick={() => onConfirm("exit")}>
+              <LogOut />
+              Exit
+            </Button>
+          )}
+          <Button className="min-w-32" onClick={() => onConfirm("save")}>
+            <Save />
+            Save
+          </Button>
+        </div>
+      </SheetContent>
+    </Sheet>
   );
 }
 
@@ -134,45 +177,38 @@ function Shell() {
     return () => window.removeEventListener("keydown", onKey);
   }, [ready, actions, config?.enableExit]);
 
-  if (!open) return null;
-  const modal = confirm ? locale.modal[confirm] : undefined;
+  const modal = confirm ? locale?.modal[confirm] : undefined;
 
   return (
     <TooltipProvider delayDuration={300}>
-      <div className="pointer-events-none fixed inset-0 select-none">
-        <Panel className="pointer-events-auto absolute top-6 bottom-6 left-6 w-96">
-          {ready ? (
-            <Editor onConfirm={setConfirm} />
-          ) : (
-            <div className="flex flex-1 items-center justify-center gap-2 text-sm text-muted-foreground">
+      {ready ? (
+        <Editor open={open} />
+      ) : (
+        open && (
+          <div className="pointer-events-none fixed inset-0 flex items-center justify-center">
+            <div className="nk-panel nk-enter flex items-center gap-2 px-4 py-3 text-sm text-muted-foreground">
               <Spinner />
               Loading
             </div>
-          )}
-        </Panel>
-        {ready && (
-          <div className="absolute top-1/2 right-6 -translate-y-1/2">
+          </div>
+        )
+      )}
+      {open && ready && (
+        <div className="pointer-events-none fixed inset-0 select-none">
+          <div className="pointer-events-auto absolute top-1/2 right-6 -translate-y-1/2">
             <CameraControls />
           </div>
-        )}
-        {ready && (
-          <p className="nk-chip absolute bottom-6 left-1/2 -translate-x-1/2 gap-2 pl-1.5">
-            <span className="flex gap-1">
-              <Kbd>A</Kbd>
-              <Kbd>D</Kbd>
-            </span>
-            Turn your character
-          </p>
-        )}
-      </div>
+        </div>
+      )}
+      <Tray open={open && ready} onConfirm={setConfirm} canExit={!!config?.enableExit} />
       <AlertDialog open={!!confirm} onOpenChange={(o) => !o && setConfirm(null)}>
-        <AlertDialogContent className="nk-panel nk-enter gap-4 p-6 data-[size=default]:sm:max-w-sm">
+        <AlertDialogContent className="nk-panel gap-4 p-6 data-[size=default]:sm:max-w-sm">
           <AlertDialogHeader>
-            <AlertDialogTitle className="nk-title text-[0.9375rem] leading-5">{modal?.title}</AlertDialogTitle>
+            <AlertDialogTitle className="nk-title">{modal?.title}</AlertDialogTitle>
             <AlertDialogDescription>{modal?.description}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>{locale.modal.decline}</AlertDialogCancel>
+            <AlertDialogCancel>{locale?.modal.decline}</AlertDialogCancel>
             <AlertDialogAction
               variant={confirm === "exit" ? "destructive" : "default"}
               onClick={() => {
@@ -180,7 +216,7 @@ function Shell() {
                 else if (confirm === "exit") actions.exit();
               }}
             >
-              {locale.modal.accept}
+              {locale?.modal.accept}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

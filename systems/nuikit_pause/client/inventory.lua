@@ -10,16 +10,18 @@ local cfg = Config.inventory or {}
 local POLL_MS = 50
 local focusing = false
 
--- The override's layout, in rem (1rem = 1.4815% of the screen height, clamped 12–32px):
--- 3rem from the edges, 31.625rem panels, a ~3.75rem action bar along the bottom.
-local EDGE, PANEL, BAR, AIR = 3.0, 31.625, 3.75, 1.0
+-- The override's layout, in rem (1rem = 1.4815% of the screen height, clamped 12–32px): edge sheets
+-- flush to the left and right of the screen, Config.inventory.sheet rem wide (default 36, the pause
+-- menu's), with the middle left clear for the player; some air beside them and room for a key bar.
+local SHEET = tonumber(cfg.sheet) or 36.0
+local AIR, TOP, BOTTOM = 1.5, 2.0, 4.0
 
 --- The empty middle of the inventory screen, as 0–1 screen fractions.
 function Inventory.frame(width, height)
   local rem = math.max(12.0, math.min(32.0, height * 0.014815))
-  local side = (EDGE + PANEL + AIR) * rem / width
-  local top = (EDGE - 1.0) * rem / height
-  local bottom = (EDGE + BAR + AIR) * rem / height
+  local side = (SHEET + AIR) * rem / width
+  local top = TOP * rem / height
+  local bottom = BOTTOM * rem / height
   if side > 0.4 then side = 0.4 end -- narrow screens: keep at least a fifth of the width
   return { x = side, y = top, w = 1.0 - 2.0 * side, h = 1.0 - top - bottom }
 end

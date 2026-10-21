@@ -5,5 +5,12 @@
     "path": "web"
   },
   "lua": [],
-  "components": ["player-card", "key-prompt", "hud-chip"]
+  "components": [
+    "badge",
+    "card",
+    "kbd",
+    "separator",
+    "sheet",
+    "edge-sheet"
+  ]
 }

@@ -1,18 +1,22 @@
 import { Building2, Search, Snowflake, UserRound } from "lucide-react";
-import { useMemo, useState } from "react";
+import { Fragment, useMemo, useState } from "react";
+import { EmptyState } from "@/components/ui/empty-state";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";
 import { MenuRow } from "@/components/ui/menu-row";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
 import { money, t } from "@/lib/locale";
 import { isFrozen, type Account } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 export const accountTitle = (a: Account) => `${a.type ?? ""}${t("account")}/ ${a.id}`.trim();
 
-export function AccountIcon({ personal, className }: { personal: boolean; className?: string }) {
+/** The account's kind: a person or an organisation. `bare` is the icon alone (a sheet header's icon slot). */
+export function AccountIcon({ personal, bare, className }: { personal: boolean; bare?: boolean; className?: string }) {
   const I = personal ? UserRound : Building2;
+  if (bare) return <I className={className} />;
   return (
-    <span className={cn("bg-muted text-muted-foreground flex size-8 shrink-0 items-center justify-center rounded-md", className)}>
+    <span className={cn("flex size-8 shrink-0 items-center justify-center rounded-(--nk-key-radius) bg-muted text-muted-foreground", className)}>
       <I className="size-4" />
     </span>
   );
@@ -25,20 +29,20 @@ function AccountRow({ account, personal, active, onSelect }: { account: Account;
       active={active}
       aria-pressed={active}
       onClick={onSelect}
-      className="px-2"
-      icon={<AccountIcon personal={personal} className={active ? "text-foreground" : undefined} />}
+      className="min-h-14 px-3"
+      icon={personal ? <UserRound /> : <Building2 />}
       description={account.type}
-      meta={money(account.amount, "compact")}
+      meta={<span className="text-sm">{money(account.amount, "compact")}</span>}
     >
       <span className="flex items-center gap-1.5">
         <span className="truncate">{account.name || account.id}</span>
-        {frozen && <Snowflake className="text-muted-foreground size-3.5 shrink-0" aria-label={t("frozen")} />}
+        {frozen && <Snowflake className="size-3.5 shrink-0" aria-label={t("frozen")} />}
       </span>
     </MenuRow>
   );
 }
 
-/** Sidebar list with the stock name search. */
+/** The accounts as the pause menu's rows: 48px+, a hairline between, the chosen one filled. With the stock name search. */
 export function AccountList({ accounts, activeId, onSelect }: { accounts: Account[]; activeId?: string; onSelect: (id: string) => void }) {
   const [q, setQ] = useState("");
   const shown = useMemo(() => {
@@ -47,32 +51,33 @@ export function AccountList({ accounts, activeId, onSelect }: { accounts: Accoun
   }, [accounts, q]);
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col">
-      <div className="flex flex-col gap-3 p-4 pb-2">
-        <div className="flex items-center justify-between">
-          <h2 className="text-sm font-medium">{t("accounts")}</h2>
-          <span className="nk-label nk-num">{accounts.length}</span>
-        </div>
-        <InputGroup>
-          <InputGroupAddon>
-            <Search />
-          </InputGroupAddon>
-          <InputGroupInput value={q} onChange={(e) => setQ(e.target.value)} placeholder={t("account_search")} />
-        </InputGroup>
+    <div className="flex min-h-0 flex-1 flex-col gap-3">
+      <div className="flex items-center justify-between">
+        <h2 className="nk-caption">{t("accounts")}</h2>
+        <span className="nk-label nk-num">{accounts.length}</span>
       </div>
-      <ScrollArea className="min-h-0 flex-1 [&_[data-slot=scroll-area-viewport]>div]:!block">
-        <div className="flex flex-col gap-0.5 p-2">
-          {shown.map(({ a, i }) => (
-            <AccountRow key={`${a.id}:${i}`} account={a} personal={i === 0} active={a.id === activeId} onSelect={() => onSelect(a.id)} />
+      <InputGroup className="h-10">
+        <InputGroupAddon>
+          <Search />
+        </InputGroupAddon>
+        <InputGroupInput value={q} onChange={(e) => setQ(e.target.value)} placeholder={t("account_search")} />
+      </InputGroup>
+      <ScrollArea className="-mr-3 min-h-0 flex-1 pr-3 [&_[data-slot=scroll-area-viewport]>div]:!block">
+        <div className="flex flex-col">
+          {shown.map(({ a, i }, n) => (
+            <Fragment key={`${a.id}:${i}`}>
+              {n > 0 && <Separator />}
+              <AccountRow account={a} personal={i === 0} active={a.id === activeId} onSelect={() => onSelect(a.id)} />
+            </Fragment>
           ))}
-          {shown.length === 0 && <p className="text-muted-foreground px-2 py-6 text-center text-sm">{t("account_not_found")}</p>}
+          {shown.length === 0 && <EmptyState title={t("account_not_found")} description="Check the spelling, or clear the search." />}
         </div>
       </ScrollArea>
     </div>
   );
 }
 
-/** ATM: a strip of account chips. */
+/** ATM: the accounts as a row of chips in the identity's chip shape; the chosen one is the primary. */
 export function AccountChips({ accounts, activeId, onSelect }: { accounts: Account[]; activeId?: string; onSelect: (id: string) => void }) {
   if (accounts.length < 2) return null;
   return (
@@ -85,11 +90,8 @@ export function AccountChips({ accounts, activeId, onSelect }: { accounts: Accou
             type="button"
             onClick={() => onSelect(a.id)}
             aria-pressed={active}
-            className={cn(
-              "inline-flex h-8 max-w-full items-center gap-2 rounded-full border px-3 text-xs font-medium transition-colors outline-none",
-              "focus-visible:ring-ring/50 focus-visible:ring-[3px]",
-              active ? "bg-accent text-accent-foreground border-transparent" : "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
-            )}
+            data-active={active || undefined}
+            className="rb-chip"
           >
             {i === 0 ? <UserRound className="size-4" /> : <Building2 className="size-4" />}
             <span className="truncate">{a.name || a.id}</span>

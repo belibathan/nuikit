@@ -434,6 +434,21 @@ export {
 export { composite, contrastRatio, formatRgba, luminance, oklchToRgb, rgbToOklch, type RGBA } from "./color";
 export { applyServerTheme, loadServerTheme, type ServerThemePayload } from "./remote";
 export {
+  DEFAULT_IMAGES,
+  clothingValues,
+  getImageConfig,
+  hasClothingImages,
+  loadImageConfig,
+  onImageConfig,
+  parseTemplates,
+  resolveImage,
+  setImageConfig,
+  type ClothingKey,
+  type ImageConfig,
+  type ImageKey,
+  type ImageKind,
+} from "./images";
+export {
   closeSurface,
   defineSurface,
   getSurface,

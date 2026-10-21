@@ -10,6 +10,7 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Kbd, KbdGroup } from "@/components/ui/kbd";
 import { useT } from "@/lib/locale";
 import { copyText } from "@/lib/nui";
 import { giveItem, moveItem, removeAmmo, removeComponent, useButton, useItem } from "@/state/actions";
@@ -51,12 +52,16 @@ export function ItemMenu() {
         <span aria-hidden className="pointer-events-none fixed size-0" style={{ left: menu?.x ?? 0, top: menu?.y ?? 0 }} />
       </DropdownMenuTrigger>
       {open && item && (
-        <DropdownMenuContent align="start" side="right" sideOffset={2} className="w-56" onCloseAutoFocus={(e) => e.preventDefault()}>
-          <DropdownMenuLabel className="nk-label truncate">{itemLabel(item)}</DropdownMenuLabel>
+        <DropdownMenuContent align="start" side="right" sideOffset={2} className="w-60" onCloseAutoFocus={(e) => e.preventDefault()}>
+          <DropdownMenuLabel className="nk-title truncate px-2 py-1.5">{itemLabel(item)}</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem onSelect={() => useItem(item.slot)}>
             <SparklesIcon />
             {t("ui_use")}
+            <KbdGroup className="ml-auto">
+              <Kbd>Alt</Kbd>
+              <Kbd>LMB</Kbd>
+            </KbdGroup>
           </DropdownMenuItem>
           <DropdownMenuItem onSelect={() => giveItem(item.slot)}>
             <HandIcon />

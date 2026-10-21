@@ -11,7 +11,7 @@ body {
 
 .meter {
   transform: translateY(-50%);
-  transition: opacity 150ms ease, transform 150ms ease;
+  transition: opacity var(--nk-time) var(--nk-ease-out), transform var(--nk-time) var(--nk-ease-out);
 }
 .meter[data-open="false"] {
   opacity: 0;

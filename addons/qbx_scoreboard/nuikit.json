@@ -5,5 +5,14 @@
     "path": "html"
   },
   "lua": [],
-  "components": ["panel", "meter", "menu-row"]
+  "components": [
+    "badge",
+    "card",
+    "item",
+    "progress",
+    "separator",
+    "sheet",
+    "edge-sheet",
+    "empty-state"
+  ]
 }
