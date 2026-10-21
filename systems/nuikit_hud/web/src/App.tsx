@@ -8,8 +8,7 @@ import { layoutVars, stageLayout, useHudLayout, useViewport } from "./hud/layout
 import { CompassTape, LocationStrip } from "./hud/location";
 import { useHudLook, type HudLook } from "./hud/look";
 import { MapLocation, MapRing } from "./hud/map";
-import { VitalsCompact } from "./hud/pills";
-import { Vitals } from "./hud/vitals";
+import { VitalsCompact, VitalsRow } from "./hud/pills";
 import { Wallet } from "./hud/wallet";
 
 export default function App() {
@@ -124,13 +123,13 @@ function Classic({ settings, vehicle, location, weapon, layout, frame, state, pl
         <>
           {strip && <div className="hud-above-map">{strip}</div>}
           <div className="hud-beside-map">
-            <Vitals player={player} settings={settings} />
+            <VitalsRow player={player} settings={settings} layout="classic" />
           </div>
         </>
       ) : (
         <div className="hud-anchor-bl hud-stack">
           {strip}
-          <Vitals player={player} settings={settings} />
+          <VitalsRow player={player} settings={settings} layout="classic" />
         </div>
       )}
       {tape && <CompassTape start={heading} />}

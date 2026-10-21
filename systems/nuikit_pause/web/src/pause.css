@@ -1,32 +1,33 @@
 /*
- * nuikit_pause: the scrim and motion. In game the blur of the world comes from GTA
+ * nuikit_pause: the sheet, the scrim and motion. In game the blur of the world comes from GTA
  * (TriggerScreenblurFadeIn in client/main.lua): CEF draws over the game, so backdrop-filter only
  * blurs other NUI. It stays here so the browser preview matches. Loaded after index.css; colours are theme tokens only,
  * opacity is applied with `opacity` (not color-mix) so FiveM's Chromium 103 renders it as written.
+ *
+ * The layout: one solid sheet on the left (nk-panel: the theme's surface, border, radius or cut and
+ * elevation), full height inside the 24px edge; everything right of it is left open for the game.
  */
 
+/* Without the focus camera (a sub-view, or the 0.4 menu): an even shade over the world, no side gradient. */
 .pause-scrim {
   inset: -32px; /* past the edges, so the blur has no hard border */
-  background: color-mix(in oklab, var(--scrim) 42%, transparent);
+  background: color-mix(in oklab, var(--scrim) 38%, transparent);
   -webkit-backdrop-filter: blur(16px) saturate(1.15);
   backdrop-filter: blur(16px) saturate(1.15);
 }
 
-/* the rail: the theme's background, solid on the left, fading into the blurred game */
-.pause-scrim::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(90deg, var(--background) 0%, var(--background) 24%, transparent 62%);
-  opacity: 0.92;
+/* The server's name: the sheet's one big line (the section size of the type scale). */
+.pause-brand {
+  font-family: var(--nk-heading-font);
+  font-size: var(--nk-text-section);
+  font-weight: var(--nk-heading-weight);
+  line-height: 1.15;
+  letter-spacing: var(--nk-heading-tracking);
+  text-transform: var(--nk-heading-case);
 }
-
-/* a soft vignette so the card floats */
-.pause-scrim::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(120% 90% at 70% 50%, transparent 45%, color-mix(in oklab, var(--scrim) 55%, transparent) 100%);
+.pause-logo {
+  border-radius: var(--nk-key-radius);
+  clip-path: var(--nk-key-clip);
 }
 
 @keyframes pause-fade {
@@ -34,7 +35,7 @@
   to { opacity: 1; }
 }
 @keyframes pause-slide {
-  from { opacity: 0; transform: translateX(-14px); }
+  from { opacity: 0; transform: translateX(-0.875rem); }
   to { opacity: 1; transform: none; }
 }
 @keyframes pause-rise {
@@ -43,26 +44,22 @@
 }
 
 .pause-scrim { animation: pause-fade 180ms ease-out both; }
-.pause-nav { animation: pause-slide 320ms cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+.pause-sheet { animation: pause-slide calc(320ms * var(--nk-motion, 1)) cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+.pause-side > * { animation: pause-fade calc(180ms * var(--nk-motion, 1)) ease-out both; }
 
 @media (prefers-reduced-motion: reduce) {
-  .pause-scrim, .pause-rail > header, .pause-nav, .pause-card { animation: none; }
+  .pause-scrim, .pause-sheet, .pause-side > * { animation: none; }
 }
 
 /*
  * The bigger menu (docs/pause-3d.md).
- * Home with the stand-in: no blur and a clear middle, so the character the game camera frames there
- * is seen as it is. The rail keeps its gradient; the cards on the right get a soft shade.
+ * Home with the focus camera: nothing over the world at all, so the character the camera frames
+ * right of the sheet is seen as it is.
  */
 .pause-scrim[data-stage] {
   background: transparent;
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
-}
-.pause-scrim[data-stage]::after {
-  background:
-    linear-gradient(270deg, color-mix(in oklab, var(--scrim) 55%, transparent) 0%, color-mix(in oklab, var(--scrim) 25%, transparent) 24%, transparent 40%),
-    linear-gradient(0deg, color-mix(in oklab, var(--scrim) 35%, transparent) 0%, transparent 22%);
 }
 
 /* The map: the world stays sharp; a light shade at the edges keeps the panels readable. */
@@ -96,9 +93,4 @@
 .pause-pin-above {
   display: block;
   transform: translate(-50%, calc(-100% - 0.75rem));
-}
-
-/* With the stand-in, the rail's gradient stops well before the middle of the screen. */
-.pause-scrim[data-stage]::before {
-  background: linear-gradient(90deg, var(--background) 0%, var(--background) 13%, transparent 28%);
 }

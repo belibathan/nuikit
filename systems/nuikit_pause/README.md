@@ -1,6 +1,6 @@
 # nuikit_pause
 
-The pause menu for `[nuikit]`. **Esc** opens it in place of GTA's pause menu: your server's name, Resume, Map, Settings, Key bindings, Help and Disconnect on the left, the player's card (name, job, cash, bank, server ID, players online) on the right. Built from stock shadcn components and themed by `nuikit/theme.css`.
+The pause menu for `[nuikit]`. **Esc** opens it in place of GTA's pause menu: one solid sheet on the left with your server's name, the player (name, job, cash, bank), Resume, Map, Settings, Key bindings, Help and Disconnect, and the server (players online, ping, uptime, restart, server ID, links); the rest of the screen stays open for the game, where the focus camera frames the player. Built from stock shadcn components and themed by `nuikit/theme.css`.
 
 **P** still opens GTA's own pause menu, and **Map** / **Settings** / **Key bindings** open the game's real pages, so nothing the game offers is lost.
 
