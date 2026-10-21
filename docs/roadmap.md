@@ -74,7 +74,7 @@ After the retest: merge to `main`, release 0.7.0, close the remaining PRs, clean
 | 5 | `[nuikit-ox]` adapter | Planned |
 | 6 | `[nuikit-qb]` adapters | Planned |
 | 7 | `[nuikit-esx]` adapters | Planned |
-| 8 | `nuikit doctor` + coverage harness (90%+ Qbox, 75%+ QBCore/ESX) | Planned |
+| 8 | `nuikit doctor` + coverage harness (90%+ Qbox, 75%+ QBCore/ESX) | **Doctor built** (`feat/doctor`, [`doctor.md`](doctor.md)): framework, packs, statuses, conflicts, next steps, `nuikit:intent` counts; unproven in game. Harness: plan only ([`bench/coverage`](../bench/coverage/README.md)); needs the intents event and `overrides.json` from the pack step |
 | 9 | Per-framework zips, `nuikit.cfg`, txAdmin recipe, renderer packs | Planned |
 
 ### Kit (parallel agents) — lanes in [`next/dispatch.md`](next/dispatch.md)
