@@ -40,6 +40,8 @@ local order = {}     -- keys of this resource's claims, oldest first (for stop a
 local camera = {}
 NUI.camera = camera
 
+local suspendOwn, resumeOwn -- below, with the replicated stack
+
 local function key(resource, id) return resource .. ':' .. id end
 
 local function find(resource, id)
@@ -246,7 +248,9 @@ function camera.release(handle, opts)
     local instant = opts and opts.instant
     RenderScriptCams(false, not instant, instant and 0 or math.floor((opts and tonumber(opts.ms)) or BLEND_MS), true, false)
   end
-  -- the copy below resumes its camera on this event; destroy ours after (no frame renders in between)
+  -- off our own stack at once (the next release must see what is left); the other copies follow the event
+  if i then table.remove(stack, i) end
+  if wasTop then resumeOwn(top()) end
   TriggerEvent(EV.release, RESOURCE, c.id)
   destroy(c.cam)
   return true
@@ -312,7 +316,7 @@ end
 
 -- ───────────────────────────────── replicated stack (every copy applies the same change in order)
 
-local function suspendOwn(t)
+function suspendOwn(t)
   -- the previous top was ours: its camera stays, inactive
   local c = t and t.resource == RESOURCE and mine[key(t.resource, t.id)]
   if c and not c.suspended then
@@ -322,7 +326,7 @@ local function suspendOwn(t)
   end
 end
 
-local function resumeOwn(t)
+function resumeOwn(t)
   local c = t and t.resource == RESOURCE and mine[key(t.resource, t.id)]
   if c and c.suspended then
     c.suspended = false
@@ -336,18 +340,25 @@ end
 AddEventHandler(EV.claim, function(e)
   seen = seen + 1
   seq = seq + 1
-  local previous = top()
   local i = find(e.resource, e.id)
-  if i then table.remove(stack, i) end
-  e.seq = seq
-  stack[#stack + 1] = e
-  if previous and not (previous.resource == e.resource and previous.id == e.id) then suspendOwn(previous) end
+  local previous
+  if e.resource == RESOURCE and i then
+    -- our own claim, already on the stack where claim() put it: what sits under it is suspended
+    stack[i].seq = seq
+    previous = stack[i - 1]
+  else
+    if i then table.remove(stack, i) end
+    previous = top()
+    e.seq = seq
+    stack[#stack + 1] = e
+  end
+  if previous then suspendOwn(previous) end
 end)
 
 AddEventHandler(EV.release, function(resource, id)
   seen = seen + 1
   local i = find(resource, id)
-  if not i then return end
+  if not i then return end -- our own release has already applied it
   local wasTop = i == #stack
   table.remove(stack, i)
   if wasTop then resumeOwn(top()) end
