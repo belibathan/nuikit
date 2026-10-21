@@ -4,10 +4,12 @@ import { Button } from "@/components/ui/button";
 import { MenuRow, MenuRowDetails, menuMetadata } from "@/components/ui/menu-row";
 import { Panel, PanelBody, PanelHeader } from "@/components/ui/panel";
 import { Icon } from "@/lib/icon";
+import { contextIntent } from "@/lib/intents";
 import { Markdown } from "@/lib/markdown";
 import { presenceMotion } from "@/lib/motion";
 import { post, useOx } from "@/lib/nui";
 import { usePresence } from "@/lib/presence";
+import { openIntent, type Handle } from "@/lib/route";
 import { cn } from "@/lib/utils";
 
 type Metadata = string[] | Record<string, unknown> | Array<string | { label: string; value?: unknown; progress?: number; colorScheme?: string }>;
@@ -48,7 +50,9 @@ export function ContextMenu() {
   const [hover, setHover] = useState<{ key: string; top: number } | null>(null);
   useEffect(() => setHover(null), [data]);
 
-  useOx<ContextData>("showContext", (next) => {
+  const routed = useRef<Handle | null>(null);
+
+  const showLocal = (next: ContextData) => {
     clearTimeout(swap.current);
     if (open) {
       // Already showing (submenu, back): hide, then swap content after the exit.
@@ -61,8 +65,47 @@ export function ContextMenu() {
       setData(next);
       setOpen(true);
     }
+  };
+
+  // Routed (docs/adapters/ox-lib.md §3): the frame's menu renderer draws it as a cursor menu. Rows keep
+  // ox's keys as ids and `close = false`, so a click is a `select` event → clickContext and the menu
+  // stays until Lua hides it, as ox does. Submenu / back / Escape come back as reasons.
+  useOx<ContextData>("showContext", (next) => {
+    const handle = openIntent("menu", contextIntent(next as unknown as Record<string, unknown>), {
+      key: "context",
+      onEvent: (event, data) => {
+        if (event === "select") void post("clickContext", String((data as { id: string }).id));
+      },
+      onEnd: (a) => {
+        if (routed.current?.id === a.id) routed.current = null;
+        const menu = (a.data as { menu?: string } | undefined)?.menu;
+        switch (a.reason) {
+          case "submenu":
+            return void post("openContext", { id: menu, back: false });
+          case "back":
+            return void post("openContext", { id: menu, back: true });
+          case "escape":
+          case "close":
+          case "stopped": // nuikit stopped under the menu: ox's Lua must release focus
+            return void post("closeContext");
+          default:
+            // a result can't happen (every row has close = false, or is a submenu); cancel/replaced came from here
+            if (a.result && typeof a.result === "object") void post("clickContext", String((a.result as { id: string }).id));
+        }
+      },
+      onLocal: () => showLocal(next),
+    });
+    if (handle) {
+      routed.current = handle;
+      clearTimeout(swap.current);
+      setOpen(false);
+    }
   });
-  useOx("hideContext", () => setOpen(false));
+  useOx("hideContext", () => {
+    routed.current?.cancel();
+    routed.current = null;
+    setOpen(false);
+  });
 
   const close = () => {
     if (data?.canClose === false) return;

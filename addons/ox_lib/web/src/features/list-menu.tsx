@@ -4,7 +4,9 @@ import { MenuRow } from "@/components/ui/menu-row";
 import { Panel, PanelBody, PanelHeader } from "@/components/ui/panel";
 import { Meter, meterColor } from "@/components/ui/meter";
 import { Icon } from "@/lib/icon";
+import { changeSelectedBody, confirmSelectedBody, listIntent } from "@/lib/intents";
 import { debounce, post, useOx } from "@/lib/nui";
+import { openIntent, type Handle } from "@/lib/route";
 import { cn } from "@/lib/utils";
 
 type Value = string | { label: string; description?: string };
@@ -58,7 +60,9 @@ export function ListMenu() {
   const changeIndex = useMemo(() => debounce((body: unknown[]) => void post("changeIndex", body), 100), []);
   const changeChecked = useMemo(() => debounce((body: unknown[]) => void post("changeChecked", body), 100), []);
 
-  useOx<MenuData>("setMenu", (data) => {
+  const routed = useRef<Handle | null>(null);
+
+  const showLocal = (data: MenuData) => {
     const items = data.items ?? [];
     let start = data.startItemIndex || 0;
     if (start < 0) start = 0;
@@ -74,8 +78,40 @@ export function ListMenu() {
     setChecks(chk);
     setSelected(start);
     setMenu(data);
+  };
+
+  // Routed (docs/adapters/ox-lib.md §3): the frame draws it as a keyboard menu and reports every
+  // highlight, step and toggle as events; this page turns them into ox's debounced callbacks.
+  useOx<MenuData>("setMenu", (data) => {
+    const items = (data.items ?? []) as Record<string, unknown>[];
+    const handle = openIntent("menu", listIntent(data as unknown as Record<string, unknown>), {
+      key: "menu",
+      onEvent: (event, raw) => {
+        const d = raw as { index: number; value?: number; checked?: boolean };
+        if (event === "change") changeSelected(changeSelectedBody(items, d));
+        else if (event === "scroll") changeIndex([d.index - 1, (d.value ?? 1) - 1]);
+        else if (event === "check") changeChecked([d.index - 1, d.checked ?? false]);
+        else if (event === "select") void post("confirmSelected", confirmSelectedBody(items, d)); // close = false: stays open
+      },
+      onEnd: (a) => {
+        if (routed.current?.id === a.id) routed.current = null;
+        if (a.result && typeof a.result === "object") return void post("confirmSelected", confirmSelectedBody(items, a.result as { index: number; value?: number }));
+        if (a.reason === "escape" || a.reason === "stopped") void post("closeMenu", "Escape");
+        else if (a.reason === "close") void post("closeMenu", "Backspace"); // the renderer's Backspace
+      },
+      onLocal: () => showLocal(data),
+    });
+    if (handle) {
+      routed.current = handle;
+      setMenu(null);
+    }
   });
-  useOx("closeMenu", () => setMenu(null)); // lib.hideMenu: close even when canClose is false, post nothing
+  // lib.hideMenu: close even when canClose is false, post nothing
+  useOx("closeMenu", () => {
+    routed.current?.cancel();
+    routed.current = null;
+    setMenu(null);
+  });
 
   // changeSelected fires (debounced) on every highlight change, including once when the menu opens.
   useEffect(() => {

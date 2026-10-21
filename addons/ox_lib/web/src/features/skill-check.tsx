@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { SkillCheck as SkillCheckRing, type SkillCheckClock } from "@/components/ui/skill-check";
+import { skillCheckIntent } from "@/lib/intents";
 import { post, useOx } from "@/lib/nui";
+import { openIntent, type Handle } from "@/lib/route";
 import { presenceMotion } from "@/lib/motion";
 import { usePresence } from "@/lib/presence";
 
@@ -79,14 +81,38 @@ export function SkillCheck() {
     return drawn ?? (s.check ? ((performance.now() - s.t0) / (2000 / s.check.speed)) * 360 : 0);
   };
 
+  const routed = useRef<Handle | null>(null);
+
+  // Routed (docs/adapters/ox-lib.md §3): the frame's skill check reads the key (nuikit gives its frame
+  // keyboard focus); the result comes back as a boolean.
   useOx<{ difficulty: Difficulty | Difficulty[]; inputs?: string[] }>("startSkillCheck", (d) => {
-    const list = Array.isArray(d.difficulty) ? d.difficulty : [d.difficulty];
-    const inputs = d.inputs?.map((k) => String(k).toLowerCase());
-    queue.current = { list, i: 0, inputs };
-    begin(roll(list[0] ?? "easy", inputs));
-    setOpen(true);
+    const handle = openIntent("challenge", skillCheckIntent(d as unknown as Record<string, unknown>), {
+      key: "skill",
+      onEnd: (a) => {
+        if (routed.current?.id === a.id) routed.current = null;
+        if (typeof a.result === "boolean") void post("skillCheckOver", a.result);
+        else if (a.reason === "stopped") void post("skillCheckOver", false);
+      },
+      onLocal: () => {
+        const list = Array.isArray(d.difficulty) ? d.difficulty : [d.difficulty];
+        const inputs = d.inputs?.map((k) => String(k).toLowerCase());
+        queue.current = { list, i: 0, inputs };
+        begin(roll(list[0] ?? "easy", inputs));
+        setOpen(true);
+      },
+    });
+    if (handle) routed.current = handle;
   });
-  useOx("skillCheckCancel", () => finish(false)); // Lua's promise only resolves if the UI posts
+  // Lua's promise only resolves if the UI posts
+  useOx("skillCheckCancel", () => {
+    if (routed.current) {
+      routed.current.cancel();
+      routed.current = null;
+      void post("skillCheckOver", false);
+      return;
+    }
+    finish(false);
+  });
 
   // The sweep: one clockwise revolution from 12 o'clock in 2000 ms / speed. The kit draws it on the
   // compositor; a full turn without a press is a miss, from a timer on the same clock (no frame loop).

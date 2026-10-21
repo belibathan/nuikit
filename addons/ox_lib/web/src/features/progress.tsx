@@ -2,7 +2,9 @@ import { useEffect, useRef, useState } from "react";
 import { flushSync } from "react-dom";
 import { Meter } from "@/components/ui/meter";
 import { ProgressRing } from "@/components/ui/progress-ring";
+import { progressIntent } from "@/lib/intents";
 import { post, useOx } from "@/lib/nui";
+import { openIntent, type Handle } from "@/lib/route";
 import { presenceMotion } from "@/lib/motion";
 import { usePresence } from "@/lib/presence";
 import { cn } from "@/lib/utils";
@@ -43,7 +45,30 @@ function useRun() {
     clearTimeout(timer.current);
     setOpen(false);
   };
-  return { run, open, start, stop, presence };
+  // Routed (docs/adapters/ox-lib.md §3): the frame times the run and resolves true at `duration`;
+  // progressComplete follows ~100 ms later, as after the local hide. Cancelling stays with ox's Lua
+  // (progressCancel), after which progressComplete is posted the same way.
+  const routed = useRef<Handle | null>(null);
+  const complete = () => setTimeout(() => void post("progressComplete"), EXIT_MS);
+  const route = (props: ReturnType<typeof progressIntent>, local: () => void) => {
+    const handle = openIntent("progress", props, {
+      key: "progress",
+      onEnd: (a) => {
+        if (routed.current?.id === a.id) routed.current = null;
+        if (a.result === true || a.reason === "stopped") complete();
+      },
+      onLocal: local,
+    });
+    if (handle) routed.current = handle;
+    return handle;
+  };
+  const cancel = (local: () => void) => {
+    if (!routed.current) return local();
+    routed.current.cancel();
+    routed.current = null;
+    complete();
+  };
+  return { run, open, start, stop, presence, routed, route, cancel };
 }
 
 /**
@@ -53,9 +78,9 @@ function useRun() {
  * itself: X cancels through its own key mapping, so the chip only names that key).
  */
 export function ProgressBar() {
-  const { run, open, start, stop, presence } = useRun();
-  useOx<{ label?: string; duration: number; canCancel?: boolean }>("progress", (d) => start(d.duration, d.label, undefined, d.canCancel));
-  useOx("progressCancel", stop);
+  const { run, open, start, stop, presence, route, cancel } = useRun();
+  useOx<{ label?: string; duration: number; canCancel?: boolean }>("progress", (d) => route(progressIntent(d, "bar"), () => start(d.duration, d.label, undefined, d.canCancel)));
+  useOx("progressCancel", () => cancel(stop));
   // The percentage, written straight to its text node (as the circle's counter is): a React render
   // per tick would cost more than the line's own compositor animation.
   const pct = useRef<HTMLSpanElement>(null);
@@ -101,7 +126,7 @@ export function ProgressBar() {
 
 /** lib.progressCircle */
 export function ProgressCircle() {
-  const { run, open, start, stop, presence } = useRun();
+  const { run, open, start, stop, presence, routed, route, cancel } = useRun();
   // ox's counter, written straight to the text node: it ticks every duration/100 ms, and a React
   // render per tick would cost more than the ring itself (one compositor animation).
   const pct = useRef(0);
@@ -114,14 +139,18 @@ export function ProgressCircle() {
   };
 
   useOx<{ duration: number; position?: "middle" | "bottom"; label?: string }>("circleProgress", (d) => {
-    if (open) return; // ox ignores a new circle while one is showing
-    pct.current = 0;
-    start(d.duration, d.label, d.position);
+    if (open || (routed.current && !routed.current.closed)) return; // ox ignores a new circle while one is showing
+    route(progressIntent(d, "ring"), () => {
+      pct.current = 0;
+      start(d.duration, d.label, d.position);
+    });
   });
-  useOx("progressCancel", () => {
-    show(99);
-    stop();
-  });
+  useOx("progressCancel", () =>
+    cancel(() => {
+      show(99);
+      stop();
+    }),
+  );
 
   useEffect(() => {
     if (!open || !run) return;

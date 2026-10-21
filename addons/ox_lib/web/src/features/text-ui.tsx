@@ -1,10 +1,12 @@
-import { useState, type CSSProperties } from "react";
+import { useRef, useState, type CSSProperties } from "react";
 import { KeyPrompt, KeyPromptStack, keyPromptPosition, parseKeyText } from "@/components/ui/key-prompt";
 import { Icon } from "@/lib/icon";
+import { parseStyle, textUiIntent } from "@/lib/intents";
 import { Markdown } from "@/lib/markdown";
 import { useOx } from "@/lib/nui";
 import { presenceMotion } from "@/lib/motion";
 import { usePresence } from "@/lib/presence";
+import { openIntent, type Handle } from "@/lib/route";
 import { cn } from "@/lib/utils";
 
 interface TextUiData {
@@ -15,20 +17,6 @@ interface TextUiData {
   iconAnimation?: string;
   alignIcon?: "top" | "center";
   style?: CSSProperties | string;
-}
-
-/** CSS text ("color: red; font-size: 12px") to a style object. ox_lib's own UI crashes on this. */
-function parseStyle(style: TextUiData["style"]): CSSProperties | undefined {
-  if (!style) return undefined;
-  if (typeof style !== "string") return style;
-  const out: Record<string, string> = {};
-  for (const decl of style.split(";")) {
-    const i = decl.indexOf(":");
-    if (i < 0) continue;
-    const prop = decl.slice(0, i).trim().replace(/-([a-z])/g, (_, c: string) => c.toUpperCase());
-    if (prop) out[prop] = decl.slice(i + 1).trim();
-  }
-  return out;
 }
 
 /**
@@ -43,11 +31,27 @@ export function TextUi() {
   const [open, setOpen] = useState(false);
   const presence = usePresence(open, 100);
 
+  const routed = useRef<Handle | null>(null);
+
+  // Routed (docs/adapters/ox-lib.md §3): the frame's prompt stack; a new text replaces it in place.
   useOx<TextUiData>("textUi", (d) => {
-    setData(d);
-    setOpen(true);
+    const handle = openIntent("prompt", textUiIntent(d as unknown as Record<string, unknown>), {
+      key: "textui",
+      onLocal: () => {
+        setData(d);
+        setOpen(true);
+      },
+    });
+    if (handle) {
+      routed.current = handle;
+      setOpen(false);
+    }
   });
-  useOx("textUiHide", () => setOpen(false));
+  useOx("textUiHide", () => {
+    routed.current?.cancel();
+    routed.current = null;
+    setOpen(false);
+  });
 
   if (!presence.mounted || !data) return null;
   const text = String(data.text ?? "");
@@ -65,7 +69,7 @@ export function TextUi() {
           // the label wraps (a script's text can be long or Markdown); with no leading key, no key chip
           wrap
           label={<Markdown gfm className="leading-5">{label}</Markdown>}
-          style={parseStyle(data.style)}
+          style={parseStyle(data.style) as CSSProperties | undefined}
           className={cn(data.alignIcon === "top" && "items-start")}
         />
       </KeyPromptStack>

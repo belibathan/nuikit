@@ -330,4 +330,58 @@ describe("adapter supersets", () => {
     expect(last(host)).toMatchObject({ op: "cancel", id: "page:ox_lib#p1" });
     expect(await host.call("intent", { source: "ox_lib", intent: "menu", props: {} })).toEqual({ error: "invalid" });
   });
+
+  // ox routing (docs/adapters/ox-lib.md): the door's probe, event long-poll, replace and stop paths.
+  it("https://nuikit/intent probe: answers whether routing is on (convar nuikit_ox_route, default on)", async () => {
+    client = await createClient();
+    const host = await startRuntime();
+    expect(await host.call("intent", { probe: true, source: "ox_lib" })).toEqual({ ok: true, route: true });
+    // the convar off → the page draws locally
+    await host.run(`GetConvarInt = function(k, d) if k == 'nuikit_ox_route' then return 0 end return d end`);
+    expect(await host.call("intent", { probe: true, source: "ox_lib" })).toEqual({ ok: true, route: false });
+  });
+
+  it("https://nuikit/intent listen: a long-poll per intent carries its events, then `ended`", async () => {
+    client = await createClient();
+    const host = await startRuntime();
+    const menu = host.callPending("intent", { source: "ox_lib", intent: "menu", props: { title: "List", input: "keyboard", items: [{ label: "a", values: ["x", "y"] }] }, id: "menu" });
+    const id = "page:ox_lib#menu";
+    // nothing queued: held until an event arrives
+    const l1 = host.callPending("intent", { listen: id });
+    expect(l1.done).toBe(false);
+    await host.call("nuikit:intent:event", { id, event: "change", data: { index: 1, value: 1 } });
+    expect(l1.done).toBe(true);
+    expect(l1.result).toEqual({ id, events: [{ event: "change", data: { index: 1, value: 1 } }] });
+    // events that arrived between polls are queued and answered at once, in order
+    await host.call("nuikit:intent:event", { id, event: "scroll", data: { index: 1, value: 2 } });
+    await host.call("nuikit:intent:event", { id, event: "check", data: { index: 1, checked: true } });
+    expect(await host.call("intent", { listen: id })).toEqual({ id, events: [{ event: "scroll", data: { index: 1, value: 2 } }, { event: "check", data: { index: 1, checked: true } }] });
+    // a quiet poll is answered empty after the timeout so the page asks again
+    const l2 = host.callPending("intent", { listen: id });
+    client.runTimers();
+    expect(l2.result.id).toBe(id);
+    expect(Object.keys(l2.result.events)).toHaveLength(0); // an empty Lua table: {} or [] on the wire, the page accepts both
+    // the intent ends: the open fetch gets the result, a waiting listener hears `ended`, a late one too
+    const l3 = host.callPending("intent", { listen: id });
+    await host.call("nuikit:intent:resolve", { id, result: { index: 1, value: 2 } });
+    expect(menu.result).toEqual({ id, result: { index: 1, value: 2 } });
+    expect(l3.result).toEqual({ id, ended: true });
+    expect(await host.call("intent", { listen: id })).toEqual({ id, ended: true });
+    // a script's intent is never listened to
+    expect(await host.call("intent", { listen: "shop#1" })).toEqual({ id: "shop#1", ended: true });
+  });
+
+  it("https://nuikit/intent: the same page id opened again answers the first fetch `replaced`; nuikit stopping answers `stopped`", async () => {
+    client = await createClient();
+    const host = await startRuntime();
+    const first = host.callPending("intent", { source: "ox_lib", intent: "menu", props: { title: "A", items: [{ label: "a" }] }, id: "context" });
+    const second = host.callPending("intent", { source: "ox_lib", intent: "menu", props: { title: "B", items: [{ label: "b" }] }, id: "context" });
+    expect(first.result).toEqual({ id: "page:ox_lib#context", reason: "replaced" });
+    expect(second.done).toBe(false);
+    expect(last(host).intent.props.title).toBe("B");
+    expect(client.focused()).toBe("nuikit");
+    client.stop("nuikit");
+    expect(second.result).toEqual({ id: "page:ox_lib#context", reason: "stopped" });
+    expect(client.focused()).toBeNull();
+  });
 });
