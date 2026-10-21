@@ -17,13 +17,13 @@ why, and what the spike decides), **Replay test** (recorded calls → what the c
 
 | Pack | Library | Intent(s) | Proposed mechanism | Spec |
 |---|---|---|---|---|
-| `[nuikit-qb]` | qb-menu | `menu` | stand-in | [`qb-menu.md`](qb-menu.md) |
-| | qb-input | `input` | stand-in | [`qb-input.md`](qb-input.md) |
-| | qb-core `QBCore:Notify` / `Functions.Notify` | `notify` | listener + page override of qb-core's page | [`qb-core-notify.md`](qb-core-notify.md) |
-| | progressbar (`QBCore.Functions.Progressbar`) | `progress` | stand-in | [`qb-progressbar.md`](qb-progressbar.md) |
-| | qb-core DrawText | `prompt` | listener + page override of qb-core's page | [`qb-drawtext.md`](qb-drawtext.md) |
-| | qb-radialmenu | `radial` | stand-in | [`qb-radialmenu.md`](qb-radialmenu.md) |
-| | qb-target (options only) | `target` | render only (the existing override pattern) | [`qb-target.md`](qb-target.md) |
+| `[nuikit-qb]` | qb-menu | `menu` | stand-in: **built** (`nuikit_qb_menu`) | [`qb-menu.md`](qb-menu.md) |
+| | qb-input | `input` | stand-in: **built** (`nuikit_qb_input`) | [`qb-input.md`](qb-input.md) |
+| | qb-core `QBCore:Notify` / `Functions.Notify` | `notify` | listener: **built** (`nuikit_qb_notify`); silencer page for qb-core's html, mapping unverified | [`qb-core-notify.md`](qb-core-notify.md) |
+| | progressbar (`QBCore.Functions.Progressbar`) | `progress` | stand-in: **built** (`nuikit_qb_progressbar`) | [`qb-progressbar.md`](qb-progressbar.md) |
+| | qb-core DrawText | `prompt` | listener: **built** (`nuikit_qb_drawtext`); exports via the silencer page, mapping unverified | [`qb-drawtext.md`](qb-drawtext.md) |
+| | qb-radialmenu | `radial` | stand-in: **built, UI only** (`nuikit_qb_radialmenu`; vehicle doors/extras/seats not translated) | [`qb-radialmenu.md`](qb-radialmenu.md) |
+| | qb-target (options only) | `target` | render only: **recorder stage** (`nuikit_qb_target` logs the page messages; no override until a log exists) | [`qb-target.md`](qb-target.md) |
 | `[nuikit-esx]` | esx_notify (`ESX.ShowNotification`) | `notify` | listener + stand-in | [`esx-notify.md`](esx-notify.md) |
 | | esx_context | `menu` (+ inline `input`) | stand-in | [`esx-context.md`](esx-context.md) |
 | | esx_menu_default | `menu` | stand-in (menu type) | [`esx-menu-default.md`](esx-menu-default.md) |
@@ -33,6 +33,27 @@ why, and what the spike decides), **Replay test** (recorded calls → what the c
 | `[nuikit-standalone]` | okokNotify | `notify` | stand-in | [`okok-notify.md`](okok-notify.md) |
 | | mythic_notify | `notify` | stand-in | [`mythic-notify.md`](mythic-notify.md) |
 | `[nuikit-ox]` | ox_lib (notify, context, input, alert, progress, textUI, skillCheck) | all | page override, routed (step 5) | [`../ox-lib-protocol.md`](../ox-lib-protocol.md) (the existing protocol doc; routing is decided by the spike) |
+
+## `[nuikit-qb]`: status and the owner's in-game checklist
+
+Built on `feat/adapter-qb` (`adapters/[nuikit-qb]/`, replay tests in `bench/adapters/replay/qb/`), **not run in
+game**. Install: `ensure [nuikit-qb]` after `exec @nuikit/nuikit.cfg`; `stop qb-menu`, `stop qb-input`,
+`stop progressbar`, `stop qb-radialmenu`. Three steps per adapter:
+
+| Adapter | 1 | 2 | 3 |
+|---|---|---|---|
+| `nuikit_qb_menu` | Open any qb-menu script (a garage, a boss menu): nuikit's menu panel shows with the header as its title | Pick a row: the script does what it did before (vehicle comes out, event fires) | Press Escape, then open again from a second script: only one menu at a time, no stuck cursor |
+| `nuikit_qb_input` | Open a qb-input form (billing, a name prompt): nuikit's form shows with every field type | Submit: the script receives the values (check a number field works in its maths) | Open it again and press Escape: the script treats it as cancelled, no hang |
+| `nuikit_qb_notify` | `/me` or any server notification: one nuikit toast (if two toasts appear, the silencer page isn't copied over qb-core/html) | A `{ text, caption }` notification shows caption as the title | With `nuikit_debug 1`, a direct `QBCore.Functions.Notify` prints a `[nuikit-qb:page]` line (paste it into `qb-core-notify.md`) |
+| `nuikit_qb_drawtext` | Walk to a DrawText spot (a door, a shop): the `[E]` prompt is nuikit's | Press E: the chip lights up and the prompt goes away about half a second later | Walk away: it hides; nothing left on screen |
+| `nuikit_qb_progressbar` | Do anything with a progress bar (eat, repair): nuikit's bar, the animation and the prop play | Press X on a cancellable one: the script's cancel path runs (item not consumed) | Start a second one while one runs: it's refused and the script doesn't hang |
+| `nuikit_qb_radialmenu` | Press F1: the radial shows the config items and your job's items | Pick a submenu item: it dispatches; a `shouldClose = false` item keeps the menu open | `exports['qb-radialmenu']:AddOption` from a script: the item appears on the next open |
+| `nuikit_qb_target` | Copy `override/html/index.html` over qb-target's page for one session | Aim at a ped, a vehicle, a zone; `/nuikit_qb_target dump` | Paste the lines into `qb-target.md`; restore qb-target's page |
+
+Also: `nuikit doctor` says `[nuikit-qb] running` and lists qb-menu, qb-input, progressbar, qb-radialmenu as
+`adapted`. What would change the plan: `provide` not resolving `dependency 'qb-menu'` (checklist step 1 in
+`bench/adapters/checklist.md`) → the stand-ins ship as page overrides instead; a page in qb-core unable to
+fetch `https://nuikit_qb_notify/page` (step 8) → the silencer forwards nothing and direct notify calls stay lost.
 
 ## Coverage targets (from `architecture.md`)
 

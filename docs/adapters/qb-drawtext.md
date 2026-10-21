@@ -3,6 +3,8 @@
 *Clean-room spec. Written from [qbcore.org/docs/qb-core/drawtext](https://qbcore.org/docs/qb-core/drawtext).
 Mechanism proposed; the spike decides.*
 
+**Status (Oct 21):** listener built as `adapters/[nuikit-qb]/nuikit_qb_drawtext` (one prompt, id `drawtext`, replaced on DrawText; `KeyPressed` hides after 500 ms); replay test `bench/adapters/replay/qb/qb-core.test.mjs`. Exports: forwarded by the silencer page in `nuikit_qb_notify/override` as `nuikit_qb:page`; the mapping (`action` containing DRAW/CHANGE/HIDE/KEY, `text`/`message`, `position`) is a guess to replace from a recorded log. Not run in game.
+
 ## Source
 
 Documented: the four exports, the four events, positions `left` / `right` / `top` (lowercase in examples), the
