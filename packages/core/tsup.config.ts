@@ -31,7 +31,7 @@ export default defineConfig([
     target: "es2019",
     platform: "neutral",
     minify: false,
-    banner: { js: `/* nuikit-core theme compiler (tokens v1). MIT, https://github.com/belibathan/nuikit. Generated: do not edit (pnpm sync copies it from packages/core). */` },
+    banner: { js: `/* nuikit-core theme compiler (tokens v1) + doctor. MIT, https://github.com/belibathan/nuikit. Generated: do not edit (pnpm sync copies it from packages/core). */` },
     footer: { js: "globalThis.NuikitTheme = NuikitTheme;" },
     outExtension: () => ({ js: ".js" }),
   },
