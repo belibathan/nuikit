@@ -523,7 +523,7 @@ var NuikitTheme = (() => {
     return null;
   }
   function compileTheme(input, opts = {}) {
-    var _a, _b, _c, _d, _e, _f;
+    var _a, _b, _c, _d, _e, _f, _g;
     const warnings = [];
     const requested = (_a = opts.mode) != null ? _a : "dark";
     let mode = requested;
@@ -561,10 +561,13 @@ var NuikitTheme = (() => {
     }
     const resolved = {};
     const base = opts.partial ? raw : { ...NEUTRAL[mode], ...raw };
+    const DANGLING = /^var\(\s*--([\w-]+)\s*\)$/;
+    const nothing = (v) => v.trim() === "" || DANGLING.test(v.trim());
     const lookup = (name, depth) => {
       const v = base[name];
       if (v === void 0 || depth > 8) return void 0;
-      return resolveRefs(v, depth + 1);
+      const r = resolveRefs(v, depth + 1);
+      return nothing(r) ? void 0 : r;
     };
     const resolveRefs = (value, depth) => value.replace(/var\(\s*--([\w-]+)\s*(?:,\s*([^()]*(?:\([^()]*\))?[^()]*))?\)/g, (m, ref, fb) => {
       var _a2, _b2;
@@ -577,6 +580,14 @@ var NuikitTheme = (() => {
     }
     for (const [name, value] of Object.entries(base)) {
       const v = resolveRefs(String(value), 0);
+      if (nothing(v)) {
+        const stock = opts.partial ? void 0 : NEUTRAL[mode][name];
+        const ref = (_e = DANGLING.exec(v.trim())) == null ? void 0 : _e[1];
+        const why = v.trim() === "" ? "is empty" : `is ${v.trim()}, which ${ref !== void 0 && base[ref] !== void 0 ? "resolves to nothing" : "isn't defined"}`;
+        warnings.push(`--${name} ${why}; ${stock ? "the stock value is used" : "it was left out"}.`);
+        if (stock) resolved[name] = lower(stock);
+        continue;
+      }
       const lowered = lower(v);
       if (lowered === null) {
         const stock = opts.partial ? void 0 : NEUTRAL[mode][name];
@@ -597,7 +608,7 @@ var NuikitTheme = (() => {
     const contrast = checkContrast(resolved);
     for (const r of contrast) {
       if (r.ok) continue;
-      const reason = (_f = (_e = CONTRAST_PAIRS.find(([f, b]) => f === r.fg && b === r.bg)) == null ? void 0 : _e[3]) != null ? _f : "it will be hard to read";
+      const reason = (_g = (_f = CONTRAST_PAIRS.find(([f, b]) => f === r.fg && b === r.bg)) == null ? void 0 : _f[3]) != null ? _g : "it will be hard to read";
       warnings.push(`${r.fg} on ${r.bg} is ${r.ratio.toFixed(1)}:1 (needs ${r.min}:1); ${reason}.`);
     }
     const vars = order(resolved);

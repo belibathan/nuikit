@@ -11,7 +11,7 @@
  * isolated container, and a portal element for overlays (dialogs, popovers, toasts).
  * fetchNui/onNui inside it need no changes: nuikit-core detects the host's context.
  */
-import { Component, StrictMode, createElement, type ComponentType, type ErrorInfo, type ReactNode } from "react";
+import { Component, StrictMode, createElement, useEffect, type ComponentType, type ErrorInfo, type ReactNode } from "react";
 import { createRoot, type Root } from "react-dom/client";
 
 export interface ModuleContext {
@@ -23,6 +23,12 @@ export interface ModuleContext {
   portal: HTMLElement;
   /** Tell the host (and the server console) that the module failed. */
   reportError(error: unknown): void;
+  /**
+   * The module's listeners (onNui) are attached: deliver the messages the host held back. Only
+   * modules that declare `ready: "signal"` call it (defineReactModule does, after the first
+   * commit's effects); for the others the host calls it itself when mount() returns.
+   */
+  ready(): void;
 }
 
 export interface ModuleDefinition {
@@ -30,6 +36,13 @@ export interface ModuleDefinition {
   css?: string;
   /** Render into `el`. Return a cleanup function; the host calls it on resource stop. */
   mount(el: HTMLElement, ctx: ModuleContext): void | (() => void);
+  /**
+   * When the module is listening. "mount" (default): as soon as mount() returns (a plain DOM
+   * module subscribes synchronously). "signal": the module calls ctx.ready() itself, for
+   * frameworks that attach listeners later (React effects run a tick after render); until then the
+   * host holds its messages, so nothing sent in that gap is lost.
+   */
+  ready?: "mount" | "signal";
 }
 
 /** Declare a framework-agnostic module (Vue, Svelte or plain DOM mount the same way). */
@@ -59,13 +72,26 @@ export interface ReactModuleOptions {
   strict?: boolean;
 }
 
+/**
+ * Runs `onReady` once the first commit's effects have run. React fires effects children first, so
+ * by the time this parent's effect runs every onNui() in the App's own effects is attached.
+ */
+function Ready({ onReady, children }: { onReady: () => void; children: ReactNode }) {
+  useEffect(() => {
+    onReady();
+  }, [onReady]);
+  return children;
+}
+
 /** A React module: one root per module, wrapped in an error boundary. */
 export function defineReactModule({ App, css, strict = true }: ReactModuleOptions): ModuleDefinition {
   return defineModule({
     css,
+    ready: "signal",
     mount(el, ctx) {
       const root: Root = createRoot(el);
-      const tree = createElement(ModuleBoundary, { onError: ctx.reportError, children: createElement(App) });
+      const boundary = createElement(ModuleBoundary, { onError: ctx.reportError, children: createElement(App) });
+      const tree = createElement(Ready, { onReady: ctx.ready, children: boundary });
       root.render(strict ? createElement(StrictMode, null, tree) : tree);
       return () => root.unmount();
     },
@@ -79,6 +105,7 @@ export function mountStandalone(def: ModuleDefinition, el: HTMLElement = documen
     hosted: false,
     portal: document.body,
     reportError: (e) => console.error("[nuikit]", e),
+    ready: () => {},
   });
   return typeof cleanup === "function" ? cleanup : () => {};
 }

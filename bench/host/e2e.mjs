@@ -12,11 +12,11 @@ import fs from "node:fs";
 import { createRequire } from "node:module";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
-import { OUT, REPO } from "./lib/apps.mjs";
+import { OUT, REPO, playwrightCore } from "./lib/apps.mjs";
 import { ROOT_URL, installNui } from "./lib/nui.mjs";
 
 const require = createRequire(import.meta.url);
-const { chromium } = require("/home/claude/nuikit/node_modules/.pnpm/playwright-core@1.56.0/node_modules/playwright-core");
+const { chromium } = playwrightCore(require);
 const { createClient } = await import(pathToFileURL(path.join(REPO, "packages/core/test/lua/harness.ts")).href);
 
 const shots = path.join(OUT, "e2e");
@@ -146,7 +146,7 @@ check("nuikit_hud's Lua is in hosted mode", (await hud.run("return NUI.hosted"))
 client.event("QBCore:Player:SetPlayerData", player);
 await chain;
 const inShadow = (sel) => hostFrame().evaluate((s) => !!document.querySelector('nk-module[data-resource="nuikit_hud"]')?.shadowRoot?.querySelector(s), sel);
-check("Lua → module: player + surface reach the HUD module", !!(await until(() => inShadow('[data-surface="hud"] [aria-label="Cash"]'))));
+check("Lua → module: player + surface reach the HUD module", !!(await until(() => inShadow('[data-surface="hud"] [aria-label="Hunger"]'))));
 
 await hud.run(`NUI.send('hud:vehicle', { kind = 'car', speed = 87, units = 'mph', engineOn = true, redline = 0.9, rpm = 0.62, gear = 4, fuel = 64, engine = 92, body = 100, moving = true, seatbelt = false })`);
 await chain;
@@ -185,14 +185,9 @@ await page.setViewportSize({ width: 1920, height: 1080 });
 // ── Radix in a shadow root: ox_lib's input dialog (portal, focus trap, select popover).
 // ox_lib's Lua can't route through the host (it isn't nuikit.lua), so this only checks rendering
 // and input: the test posts its message as host.lua would, and its posts go nowhere.
+// The message goes out the moment the load starts, as a resource's Lua would send it: the host
+// holds it until the module's listeners are attached (nothing is lost in the mount gap).
 await hostFrame().evaluate(() => window.__nuikitHost.load({ resource: "ox_lib", url: "https://cfx-nui-ox_lib/module.js" }));
-const oxStart = Date.now();
-const oxMounted = await until(() => hostFrame().evaluate(() => window.__nuikitHost.modules().find((m) => m.resource === "ox_lib")?.status === "mounted"), 20000);
-console.log(`  ox_lib module mounted in ${Date.now() - oxStart} ms`);
-if (!oxMounted) check("ox_lib module mounts", false, "not mounted after 20 s");
-// "mounted" is set when the module's root renders; its message listeners attach in effects right after.
-// In game ox_lib's first message comes from a player action, long after; here, wait two frames first.
-await hostFrame().evaluate(() => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r))));
 forcedFocus = "nuikit";
 await page.evaluate(() => window.focusFrame("nuikit"));
 await page.evaluate(() =>
@@ -222,8 +217,11 @@ const ox = () => hostFrame().evaluate(() => {
     value: root.querySelector('input[placeholder="ABC 123"]')?.value,
   };
 });
+const oxMounted = await until(() => hostFrame().evaluate(() => window.__nuikitHost.modules().find((m) => m.resource === "ox_lib")?.status === "mounted"));
+check("ox_lib module mounts (status means listening)", !!oxMounted);
 await until(async () => (await ox()).dialogInShadow);
 let s = await ox();
+check("a message sent while the module was loading is delivered once it listens (openDialog → dialog)", s.dialogInShadow, JSON.stringify(s));
 check("Radix Dialog portals into the module's shadow root, styled", s.dialogInShadow && !s.dialogInBody && s.styled, JSON.stringify(s));
 if (!s.dialogInShadow) {
   console.log(await hostFrame().evaluate(() => JSON.stringify(window.__nuikitHost.modules())), consoleErrors.slice(-5));
@@ -275,7 +273,7 @@ frames.delete("nuikit");
 await page.evaluate(() => window.removeFrame("nuikit"));
 await chain;
 check("nuikit_hud leaves hosted mode when nuikit stops", (await hud.run("return NUI.hosted")) === false);
-const fallback = await until(() => hudFrame().evaluate(() => !!document.querySelector('[data-surface="hud"] [aria-label="Cash"]')), 8000);
+const fallback = await until(() => hudFrame().evaluate(() => !!document.querySelector('[data-surface="hud"] [aria-label="Hunger"]')), 8000);
 check("fallback: the HUD renders on its own ui_page (boot loaded standalone + handshake resent state)", !!fallback);
 await page.screenshot({ path: path.join(shots, "hud-fallback-ui-page.png") });
 

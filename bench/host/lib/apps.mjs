@@ -6,6 +6,28 @@ import { fileURLToPath } from "node:url";
 export const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../..");
 export const OUT = path.join(REPO, "bench/host/.out");
 
+/**
+ * playwright-core, wherever this machine has it: PLAYWRIGHT_CORE, this checkout's pnpm store (any
+ * worktree), a resolvable install, or the Claude cloud image's tools. Browsers: /opt/pw-browsers/chromium.
+ */
+export function playwrightCore(require) {
+  const candidates = [
+    process.env.PLAYWRIGHT_CORE,
+    path.join(REPO, "node_modules/.pnpm/playwright-core@1.56.0/node_modules/playwright-core"),
+    "playwright-core",
+    "/opt/npm-tools/node_modules/playwright-core",
+    "/opt/node-tools/node_modules/playwright-core",
+  ].filter(Boolean);
+  for (const c of candidates) {
+    try {
+      return require(c);
+    } catch {
+      /* next */
+    }
+  }
+  throw new Error("playwright-core not found: set PLAYWRIGHT_CORE to its directory");
+}
+
 /** web: the Vite root; page: its ui_page build, relative to web. */
 export const APPS = [
   { name: "nuikit_hud", web: "systems/nuikit_hud/web", page: "dist/index.html" },
