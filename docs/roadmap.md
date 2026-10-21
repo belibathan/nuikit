@@ -70,7 +70,7 @@ After the retest: merge to `main`, release 0.7.0, close the remaining PRs, clean
 | 1 | `@nuikit/init.lua` + `nk` (import like ox_lib) | **Done** (0.5.0) |
 | 2 | Intent schemas from one source; default renderers in nuikit's frame | Next |
 | 3 | Services: camera (seed: `nuikit_pause/client/camera.lua`), controls | Planned |
-| 4 | In-game spike: adapter mechanisms (stand-in, listener, ox_lib page routing) | Planned |
+| 4 | In-game spike: adapter mechanisms (stand-in, listener, ox_lib page routing) | **Ready for the owner** (`feat/adapter-spike`): spike resources + 12-step checklist in `bench/adapters/`, 15 clean-room specs in `docs/adapters/`, replay harness with a worked example. Not run in game; result tables empty |
 | 5 | `[nuikit-ox]` adapter | Planned |
 | 6 | `[nuikit-qb]` adapters | Planned |
 | 7 | `[nuikit-esx]` adapters | Planned |
