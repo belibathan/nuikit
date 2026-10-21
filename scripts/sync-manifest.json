@@ -129,6 +129,7 @@
       "web/src/components/ui/progress.tsx",
       "web/src/components/ui/scroll-area.tsx",
       "web/src/components/ui/separator.tsx",
+      "web/src/components/ui/sheet.tsx",
       "web/src/components/ui/smooth-input.tsx",
       "web/src/components/ui/stat.tsx",
       "web/src/components/ui/tabs.tsx",

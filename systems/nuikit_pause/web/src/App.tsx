@@ -1,6 +1,6 @@
 import { fetchNui, Surface, usePlayer, type NuiPlayer } from "nuikit-core/react";
 import { CircleHelpIcon, InfoIcon, KeyboardIcon, LogOutIcon, MapIcon, PlayIcon, SettingsIcon, type LucideIcon } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import type { PauseButton, PauseData, PauseView } from "./nui";
 import {
   AlertDialog,
@@ -16,11 +16,14 @@ import {
 import { Button } from "@/components/ui/button";
 import { Kbd } from "@/components/ui/kbd";
 import { MenuRow } from "@/components/ui/menu-row";
+import { SheetTitle } from "@/components/ui/sheet";
 import { list } from "@/lib/format";
-import { HelpPanel, PlayerSummary, ServerSummary, Stage } from "./views/home";
-import { InfoPanel } from "./views/info";
-import { KeysPanel } from "./views/keys";
-import { MapView } from "./views/map";
+import { cn } from "@/lib/utils";
+import { HelpPage, PlayerSummary, ServerSummary, Stage } from "./views/home";
+import { InfoPage } from "./views/info";
+import { KeysPage } from "./views/keys";
+import { MapSheetPage, MapStage, useMapModel } from "./views/map";
+import { PauseSheet, rise, SHEET_W } from "./views/sheet";
 
 export default function App() {
   // Subscribed here, not in <Pause>: bridge.lua only sends the player when it changes, so a
@@ -81,86 +84,97 @@ function Pause({ data, player }: { data: PauseData; player: NuiPlayer }) {
     if (b !== "disconnect") void fetchNui(`pause:${b}`).catch(() => {});
   };
 
-  if (view === "map") return <MapView data={data} onBack={() => go("home")} />;
+  const map = useMapModel(data, view === "map");
+  // the sheet slides in once; the first page's rows rise in only then, never on navigation
+  const navigated = useRef(false);
+  if (view !== (data?.view ?? "home")) navigated.current = true;
+  const first = !navigated.current;
 
   const buttons = list(data?.buttons).filter((b) => b !== "info" || (views?.info && list(data?.pages).length > 0));
   const server = data?.server ?? {};
-  const active = (b: PauseButton) =>
-    (b === "keybinds" && view === "keys") || (b === "info" && view === "info") || (b === "help" && view === "help");
+  const home = () => go("home");
+
+  let page: ReactNode;
+  if (view === "map") page = <MapSheetPage model={map} onBack={home} />;
+  else if (view === "keys") page = <KeysPage onBack={home} onChange={() => void fetchNui("pause:keybinds").catch(() => {})} />;
+  else if (view === "info") page = <InfoPage pages={list(data?.pages)} onBack={home} />;
+  else if (view === "help") page = <HelpPage help={list(data?.help)} onBack={home} />;
+  else
+    page = (
+      <div className="flex h-full min-h-0 justify-end">
+        <div className="flex h-full w-full max-w-[28rem] flex-col overflow-y-auto py-12 pr-12 pl-6">
+          <header className="flex items-center gap-4">
+            {server.logo ? (
+              <div className="pause-logo flex size-12 shrink-0 items-center justify-center bg-foreground text-base font-semibold text-background">
+                {server.logo}
+              </div>
+            ) : null}
+            <div className="min-w-0">
+              <SheetTitle asChild>
+                <h1 className="nk-display truncate">{server.name || "Paused"}</h1>
+              </SheetTitle>
+              {server.tagline ? <p className="nk-label truncate text-muted-foreground">{server.tagline}</p> : null}
+            </div>
+          </header>
+
+          <PlayerSummary player={player} data={data} />
+
+          <nav className="flex flex-col" aria-label="Pause menu">
+            {buttons.includes("resume") ? (
+              <Button size="lg" autoFocus style={rise(first ? 0 : undefined).style} className={cn("mb-2 h-12 justify-between px-4 text-base", rise(first ? 0 : undefined).className)} onClick={() => run("resume")}>
+                <span className="flex items-center gap-3">
+                  <PlayIcon />
+                  Resume
+                </span>
+                <Kbd className="bg-primary-foreground/15 text-primary-foreground">Esc</Kbd>
+              </Button>
+            ) : null}
+            <div className="flex flex-col divide-y divide-border">
+              {buttons.map((b, i) => {
+                if (b === "disconnect" || b === "resume") return null;
+                const item = NAV[b];
+                if (!item) return null;
+                const r = rise(first ? i + 1 : undefined);
+                return (
+                  <MenuRow key={b} autoFocus={i === 0} icon={<item.icon />} kbd={item.kbd} onClick={() => run(b)} className={cn("min-h-12 text-base", r.className)} style={r.style}>
+                    {item.label}
+                  </MenuRow>
+                );
+              })}
+              {buttons.includes("disconnect") ? <Disconnect rise={rise(first ? buttons.length : undefined)} /> : null}
+            </div>
+          </nav>
+
+          <div className="mt-auto pt-6">
+            <ServerSummary data={data} />
+          </div>
+        </div>
+      </div>
+    );
 
   return (
     <div className="pause-root absolute inset-0 overflow-hidden">
-      <div className="pause-scrim absolute inset-0" data-stage={standIn || undefined} aria-hidden />
-
-      <div className="relative flex h-full">
-        {/* the backdrop: the theme's surface, flush to the top, left and bottom edges; the menu sits in
-            a column inside it, and the rest of the screen stays open for the game */}
-        <aside className="pause-backdrop flex h-full w-[36rem] shrink-0 justify-end">
-          <div className="pause-column flex h-full w-full max-w-[28rem] flex-col overflow-y-auto py-12 pr-12 pl-6">
-            <header className="flex items-center gap-4">
-              {server.logo ? (
-                <div className="pause-logo flex size-12 shrink-0 items-center justify-center bg-foreground text-base font-semibold text-background">
-                  {server.logo}
-                </div>
-              ) : null}
-              <div className="min-w-0">
-                <h1 className="nk-display truncate">{server.name || "Paused"}</h1>
-                {server.tagline ? <p className="nk-label truncate text-muted-foreground">{server.tagline}</p> : null}
-              </div>
-            </header>
-
-            <PlayerSummary player={player} data={data} />
-
-            <nav className="flex flex-col" aria-label="Pause menu">
-              {buttons.includes("resume") ? (
-                <Button size="lg" autoFocus className="mb-2 h-12 justify-between px-4 text-base" onClick={() => run("resume")}>
-                  <span className="flex items-center gap-3">
-                    <PlayIcon />
-                    Resume
-                  </span>
-                  <Kbd className="bg-primary-foreground/15 text-primary-foreground">Esc</Kbd>
-                </Button>
-              ) : null}
-              <div className="flex flex-col divide-y divide-border">
-                {buttons.map((b, i) => {
-                  if (b === "disconnect" || b === "resume") return null;
-                  const item = NAV[b];
-                  if (!item) return null;
-                  return (
-                    <MenuRow key={b} autoFocus={i === 0} icon={<item.icon />} kbd={item.kbd} active={active(b)} onClick={() => run(b)} className="min-h-12 text-base">
-                      {item.label}
-                    </MenuRow>
-                  );
-                })}
-                {buttons.includes("disconnect") ? <Disconnect /> : null}
-              </div>
-            </nav>
-
-            <div className="mt-auto pt-6">
-              <ServerSummary data={data} />
-            </div>
-          </div>
-        </aside>
-
-        {view === "home" ? (
-          <Stage active={standIn} />
-        ) : (
-          <main className="pause-side flex min-w-0 flex-1 items-center px-12">
-            {view === "keys" && <KeysPanel onChange={() => void fetchNui("pause:keybinds").catch(() => {})} />}
-            {view === "info" && <InfoPanel pages={list(data?.pages)} />}
-            {view === "help" && <HelpPanel help={list(data?.help)} />}
-          </main>
-        )}
-      </div>
+      <div className="pause-scrim absolute inset-0" data-stage={standIn || view === "map" || undefined} aria-hidden />
+      {/* the world: the map's glass, or the open stage the focus camera frames the player in */}
+      {view === "map" ? (
+        <MapStage model={map} left={SHEET_W} />
+      ) : (
+        <div className="absolute inset-y-0 right-0 flex" style={{ left: SHEET_W }}>
+          <Stage active={standIn} back={view !== "home"} />
+        </div>
+      )}
+      <PauseSheet page={view} first={first}>
+        {page}
+      </PauseSheet>
     </div>
   );
 }
 
-function Disconnect() {
+function Disconnect({ rise: r }: { rise: ReturnType<typeof rise> }) {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <MenuRow tone="destructive" icon={<LogOutIcon />} className="min-h-12 text-base">
+        <MenuRow tone="destructive" icon={<LogOutIcon />} className={cn("min-h-12 text-base", r.className)} style={r.style}>
           Disconnect
         </MenuRow>
       </AlertDialogTrigger>
