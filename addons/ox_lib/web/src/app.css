@@ -263,3 +263,8 @@ html[data-nk-motion="reduced"] .ox-radial[data-state="open"] .ox-radial-svg {
 .ox-alert {
   box-shadow: var(--nk-panel-edge), var(--nk-panel-shadow) !important;
 }
+
+/* Reduced motion (the player's /nuikit motion off): the wheel and its hints fade in ≤ 100ms, no movement. */
+html[data-nk-motion="reduced"] .ox-radial[data-state="open"] :is(.ox-radial-svg, [data-slot="radial-hints"]) {
+  animation-duration: 100ms;
+}

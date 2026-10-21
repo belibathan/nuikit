@@ -113,3 +113,6 @@ html[data-nk-motion="reduced"] .tgt-reticle {
   margin: calc(var(--nk-space) * 2) calc(var(--nk-space) * -2);
   width: auto !important;
 }
+html[data-nk-motion="reduced"] .tgt-reticle {
+  animation-duration: 100ms;
+}
