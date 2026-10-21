@@ -251,7 +251,7 @@ body.inv-dragging * {
 }
 /* a player item is being dragged: the zones show they take it */
 .inv-zone[data-armed] {
-  box-shadow: inset 0 0 0 0.125rem color-mix(in oklab, var(--brand, var(--primary)) 55%, transparent);
+  box-shadow: inset 0 0 0 0.125rem rgba(var(--brand-rgb, var(--primary-rgb)), 0.55);
 }
 /* over it: the selected row's fill */
 .inv-zone[data-over] {
