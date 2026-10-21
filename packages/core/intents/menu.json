@@ -5,15 +5,61 @@
   "yields": true,
   "update": true,
   "props": {
-    "id": { "type": "string", "doc": "Your own id for the menu (ox menu ids). Submenus reference it with `menu`." },
-    "title": { "type": "string", "required": true },
-    "description": { "type": "string", "doc": "A quieter line under the title." },
-    "icon": { "type": "ref", "ref": "icon" },
-    "position": { "type": "ref", "ref": "anchor", "doc": "Default: top-right band for cursor menus (ox context), top-left for keyboard menus (ox list)." },
-    "input": { "type": "enum", "values": ["cursor", "keyboard", "full"], "default": "full", "doc": "cursor: mouse only (ox context). keyboard: arrows + Enter, no cursor, the player keeps moving (ox list menu). full: both." },
-    "canClose": { "type": "boolean", "default": true, "doc": "false: Escape and the close button do nothing; only the script can close it." },
-    "menu": { "type": "string", "doc": "The parent menu's id: shows a back button that resolves with reason 'back'." },
-    "startIndex": { "type": "integer", "min": 1, "doc": "1-based row highlighted first (keyboard menus)." },
+    "id": {
+      "type": "string",
+      "doc": "Your own id for the menu (ox menu ids). Submenus reference it with `menu`."
+    },
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "description": {
+      "type": "string",
+      "doc": "A quieter line under the title."
+    },
+    "icon": {
+      "type": "ref",
+      "ref": "icon"
+    },
+    "position": {
+      "type": "ref",
+      "ref": "anchor",
+      "doc": "Default: top-right band for cursor menus (ox context), top-left for keyboard menus (ox list)."
+    },
+    "input": {
+      "type": "enum",
+      "values": [
+        "cursor",
+        "keyboard",
+        "full"
+      ],
+      "default": "full",
+      "doc": "cursor: mouse only (ox context). keyboard: arrows + Enter, no cursor, the player keeps moving (ox list menu). full: both."
+    },
+    "focus": {
+      "type": "boolean",
+      "default": true,
+      "doc": "false: drawn without taking the cursor or keys (a preview, esx_context `focus = false`); nothing can be picked until an update sets it true."
+    },
+    "canClose": {
+      "type": "boolean",
+      "default": true,
+      "doc": "false: Escape and the close button do nothing; only the script can close it."
+    },
+    "dismissable": {
+      "type": "boolean",
+      "default": true,
+      "doc": "false: Escape does nothing (esx_context). canClose = false also hides the close button."
+    },
+    "menu": {
+      "type": "string",
+      "doc": "The parent menu's id: shows a back button that resolves with reason 'back'."
+    },
+    "startIndex": {
+      "type": "integer",
+      "min": 1,
+      "doc": "1-based row highlighted first (keyboard menus)."
+    },
     "items": {
       "type": "array",
       "required": true,
@@ -21,47 +67,313 @@
       "items": {
         "type": "object",
         "props": {
-          "id": { "type": "string", "doc": "Returned in the result. Default: the 1-based index as a string." },
-          "label": { "type": "string", "doc": "ox `title`. A row with no label is skipped visually but keeps its index (ox quirk)." },
-          "description": { "type": "string" },
-          "icon": { "type": "ref", "ref": "icon" },
-          "iconColor": { "type": "ref", "ref": "color" },
-          "iconAnimation": { "type": "ref", "ref": "iconAnimation" },
-          "image": { "type": "string", "doc": "Shown beside the row when highlighted (ox hover card)." },
-          "progress": { "type": "number", "min": 0, "max": 100, "doc": "A bar under the row." },
-          "colorScheme": { "type": "string", "doc": "The bar's tone: a status word or ox colour name." },
-          "metadata": { "type": "ref", "ref": "metadata" },
-          "meta": { "type": "string", "doc": "Trailing text on the row (a price, a count)." },
-          "kbd": { "type": "string", "doc": "A key shown on the row." },
-          "arrow": { "type": "boolean", "doc": "A chevron, as for a submenu. Default: true when `menu` or `items` is set." },
-          "menu": { "type": "string", "doc": "Selecting resolves with reason 'submenu' and this id: the script opens that menu (ox)." },
-          "items": { "type": "array", "items": { "type": "self" }, "doc": "An inline submenu: selecting opens it in place (resolves with the path)." },
-          "disabled": { "type": "boolean" },
-          "readOnly": { "type": "boolean", "doc": "Looks normal, never highlights or selects (a heading, a note)." },
-          "checked": { "type": "boolean", "doc": "Present (even false): a checkbox row. Enter toggles it and emits 'check'; the menu stays open." },
-          "values": { "type": "array", "items": { "type": "oneOf", "of": [{ "type": "string" }, { "type": "object", "props": { "label": { "type": "string", "required": true }, "description": { "type": "string" } } }] }, "doc": "A stepper row: left/right cycle these; Enter resolves with the current index." },
-          "defaultIndex": { "type": "integer", "min": 1, "doc": "1-based starting value of a stepper row." },
-          "close": { "type": "boolean", "default": true, "doc": "false: selecting emits 'select' and keeps the menu open instead of resolving." },
-          "args": { "type": "any", "doc": "Returned untouched in the result." }
+          "id": {
+            "type": "string",
+            "doc": "Returned in the result. Default: the 1-based index as a string."
+          },
+          "kind": {
+            "type": "enum",
+            "values": [
+              "item",
+              "header"
+            ],
+            "default": "item",
+            "doc": "header: a section label (qb-menu headers): never selectable, keeps its index."
+          },
+          "label": {
+            "type": "string",
+            "doc": "ox `title`. A row with no label is skipped visually but keeps its index (ox quirk)."
+          },
+          "description": {
+            "type": "string"
+          },
+          "icon": {
+            "type": "ref",
+            "ref": "icon"
+          },
+          "iconColor": {
+            "type": "ref",
+            "ref": "color"
+          },
+          "iconAnimation": {
+            "type": "ref",
+            "ref": "iconAnimation"
+          },
+          "image": {
+            "type": "string",
+            "doc": "Shown beside the row when highlighted (ox hover card)."
+          },
+          "progress": {
+            "type": "number",
+            "min": 0,
+            "max": 100,
+            "doc": "A bar under the row."
+          },
+          "colorScheme": {
+            "type": "string",
+            "doc": "The bar's tone: a status word or ox colour name."
+          },
+          "metadata": {
+            "type": "ref",
+            "ref": "metadata"
+          },
+          "meta": {
+            "type": "string",
+            "doc": "Trailing text on the row (a price, a count)."
+          },
+          "kbd": {
+            "type": "string",
+            "doc": "A key shown on the row."
+          },
+          "arrow": {
+            "type": "boolean",
+            "doc": "A chevron, as for a submenu. Default: true when `menu` or `items` is set."
+          },
+          "menu": {
+            "type": "string",
+            "doc": "Selecting resolves with reason 'submenu' and this id: the script opens that menu (ox)."
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "self"
+            },
+            "doc": "An inline submenu: selecting opens it in place (resolves with the path)."
+          },
+          "disabled": {
+            "type": "boolean"
+          },
+          "readOnly": {
+            "type": "boolean",
+            "doc": "Looks normal, never highlights or selects (a heading, a note)."
+          },
+          "checked": {
+            "type": "boolean",
+            "doc": "Present (even false): a checkbox row. Enter toggles it and emits 'check'; the menu stays open."
+          },
+          "values": {
+            "type": "array",
+            "items": {
+              "type": "oneOf",
+              "of": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "object",
+                  "props": {
+                    "label": {
+                      "type": "string",
+                      "required": true
+                    },
+                    "description": {
+                      "type": "string"
+                    }
+                  }
+                }
+              ]
+            },
+            "doc": "A stepper row: left/right cycle these; Enter resolves with the current index."
+          },
+          "defaultIndex": {
+            "type": "integer",
+            "min": 1,
+            "doc": "1-based starting value of a stepper row."
+          },
+          "field": {
+            "type": "object",
+            "props": {
+              "type": {
+                "type": "enum",
+                "values": [
+                  "text",
+                  "number",
+                  "select",
+                  "slider",
+                  "checkbox"
+                ],
+                "required": true
+              },
+              "default": {
+                "type": "any"
+              },
+              "placeholder": {
+                "type": "string"
+              },
+              "min": {
+                "type": "number"
+              },
+              "max": {
+                "type": "number"
+              },
+              "step": {
+                "type": "number",
+                "min": 0
+              },
+              "options": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "props": {
+                    "value": {
+                      "type": "string",
+                      "required": true
+                    },
+                    "label": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "doc": "An inline control in the row (esx_context input rows, esx_menu_default slider/select): its value is reported in `change` and `select` events and in the result's `fields` (by item id)."
+          },
+          "close": {
+            "type": "boolean",
+            "default": true,
+            "doc": "false: selecting emits 'select' and keeps the menu open instead of resolving."
+          },
+          "args": {
+            "type": "any",
+            "doc": "Returned untouched in the result."
+          }
         }
       }
+    },
+    "meta": {
+      "type": "object",
+      "props": {},
+      "open": true,
+      "doc": "Library-specific extras an adapter carries through and a renderer may honour (okok `kind`, mythic `style`, an esx picture…). Never validated."
     }
   },
   "result": {
     "type": "object",
     "props": {
-      "index": { "type": "integer", "doc": "1-based index of the chosen row." },
-      "id": { "type": "string" },
-      "value": { "type": "integer", "doc": "1-based value index of a stepper row." },
-      "checked": { "type": "boolean" },
-      "path": { "type": "array", "items": { "type": "integer" }, "doc": "Indexes into nested `items`, outermost first." },
-      "args": { "type": "any" }
+      "index": {
+        "type": "integer",
+        "doc": "1-based index of the chosen row."
+      },
+      "id": {
+        "type": "string"
+      },
+      "value": {
+        "type": "integer",
+        "doc": "1-based value index of a stepper row."
+      },
+      "checked": {
+        "type": "boolean"
+      },
+      "fields": {
+        "type": "object",
+        "props": {},
+        "open": true,
+        "doc": "Every inline field's value, by item id."
+      },
+      "path": {
+        "type": "array",
+        "items": {
+          "type": "integer"
+        },
+        "doc": "Indexes into nested `items`, outermost first."
+      },
+      "args": {
+        "type": "any"
+      }
     }
   },
   "events": {
-    "change": { "doc": "The highlighted row changed (keyboard menus).", "data": { "type": "object", "props": { "index": { "type": "integer" }, "id": { "type": "string" }, "value": { "type": "integer" }, "checked": { "type": "boolean" } } } },
-    "scroll": { "doc": "A stepper row moved.", "data": { "type": "object", "props": { "index": { "type": "integer" }, "value": { "type": "integer" } } } },
-    "check": { "doc": "A checkbox row toggled.", "data": { "type": "object", "props": { "index": { "type": "integer" }, "checked": { "type": "boolean" } } } },
-    "select": { "doc": "A row with close = false was chosen; the menu stays open.", "data": { "type": "object", "props": { "index": { "type": "integer" }, "id": { "type": "string" }, "value": { "type": "integer" } } } }
+    "change": {
+      "doc": "The highlighted row changed (keyboard menus).",
+      "data": {
+        "type": "object",
+        "props": {
+          "index": {
+            "type": "integer"
+          },
+          "id": {
+            "type": "string"
+          },
+          "value": {
+            "type": "integer"
+          },
+          "checked": {
+            "type": "boolean"
+          },
+          "fields": {
+            "type": "object",
+            "props": {},
+            "open": true
+          }
+        }
+      }
+    },
+    "scroll": {
+      "doc": "A stepper row moved.",
+      "data": {
+        "type": "object",
+        "props": {
+          "index": {
+            "type": "integer"
+          },
+          "value": {
+            "type": "integer"
+          }
+        }
+      }
+    },
+    "check": {
+      "doc": "A checkbox row toggled.",
+      "data": {
+        "type": "object",
+        "props": {
+          "index": {
+            "type": "integer"
+          },
+          "checked": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "select": {
+      "doc": "A row with close = false was chosen; the menu stays open.",
+      "data": {
+        "type": "object",
+        "props": {
+          "index": {
+            "type": "integer"
+          },
+          "id": {
+            "type": "string"
+          },
+          "value": {
+            "type": "integer"
+          },
+          "fields": {
+            "type": "object",
+            "props": {},
+            "open": true
+          }
+        }
+      }
+    },
+    "field": {
+      "doc": "An inline field's value changed.",
+      "data": {
+        "type": "object",
+        "props": {
+          "index": {
+            "type": "integer"
+          },
+          "id": {
+            "type": "string"
+          },
+          "value": {
+            "type": "any"
+          }
+        }
+      }
+    }
   }
 }

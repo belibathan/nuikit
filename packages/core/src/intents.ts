@@ -197,8 +197,8 @@ export interface IntentStore {
   subscribe(kind: IntentKind, listener: () => void): () => void;
   /** End an intent with a result (the Lua call returns it). */
   resolve<K extends IntentKind>(id: string, result: IntentResults[K], data?: unknown): void;
-  /** End an intent without a result. */
-  cancel(id: string, reason?: IntentReason): void;
+  /** End an intent without a result: a reason, and what it needs (the submenu id for "submenu"). */
+  cancel(id: string, reason?: IntentReason, data?: unknown): void;
   /** Tell the caller something happened; the intent stays open. */
   emit(id: string, event: string, data?: unknown): void;
   /** Apply a message as Lua would send it (dev fixtures, tests). */
@@ -261,9 +261,9 @@ export function createIntentStore(): IntentStore {
       if (!drop(id)) return;
       post("nuikit:intent:resolve", { id, result: result as unknown, data });
     },
-    cancel(id, reason = "close") {
+    cancel(id, reason = "close", data) {
       if (!drop(id)) return;
-      post("nuikit:intent:resolve", { id, reason });
+      post("nuikit:intent:resolve", { id, reason, data });
     },
     emit(id, event, data) {
       if (!open.has(id)) return;
@@ -337,7 +337,7 @@ export interface RendererContext<K extends IntentKind = IntentKind> extends Modu
   intents(): IntentInstance<K>[];
   subscribe(listener: () => void): () => void;
   resolve(id: string, result: IntentResults[K], data?: unknown): void;
-  cancel(id: string, reason?: IntentReason): void;
+  cancel(id: string, reason?: IntentReason, data?: unknown): void;
   emit(id: string, event: string, data?: unknown): void;
   /** Escape on this kind's surface. Register to decide (a menu with canClose = false ignores it). */
   onBack(handler: () => void): () => void;
@@ -366,7 +366,7 @@ export function rendererContext<K extends IntentKind>(kind: K, s: IntentStore, b
     intents: () => s.list(kind),
     subscribe: (l) => s.subscribe(kind, l),
     resolve: (id, result, data) => s.resolve(id, result, data),
-    cancel: (id, reason) => s.cancel(id, reason),
+    cancel: (id, reason, data) => s.cancel(id, reason, data),
     emit: (id, event, data) => s.emit(id, event, data),
     onBack: (h) => s.onBack(kind, h),
   };

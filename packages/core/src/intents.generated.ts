@@ -53,15 +53,25 @@ export interface NotifyProps {
   iconAnimation?: IntentIconAnimation;
   /** Where the icon sits when there are two lines. Default: top with two lines, center with one. */
   alignIcon?: "top" | "center";
-  /** ms on screen. 0 or missing: 5000. */
+  /** ms on screen. Missing: 5000. 0: stays until the script cancels it (give it an `id`). */
   duration?: number;
   /** A line under the toast drains over `duration`. */
   showDuration?: boolean;
   position?: IntentAnchor;
-  /** Never reaches the page: the caller's Lua plays it (ox strips it the same way). */
-  sound?: unknown;
+  /** An item added or removed: draws the item slab (tile + name + change) instead of a panel, and merges with the same item's recent change. */
+  item?: {
+  name: string;
+  /** Positive for added, negative for removed. */
+  count: number;
+  icon?: IntentIcon;
+  image?: string;
+};
+  /** Play a sound: true for the kit's, a name, or a library's table. The caller's Lua plays it; it never reaches the page (ox strips it the same way). */
+  sound?: boolean | string | Record<string, unknown>;
   /** Inline CSS (camelCase) merged over the toast. Escape hatch for adapters; themed UIs don't need it. */
   style?: Record<string, unknown>;
+  /** Library-specific extras an adapter carries through and a renderer may honour (okok `kind`, mythic `style`, an esx picture…). Never validated. */
+  meta?: Record<string, unknown>;
 }
 
 export type NotifyResult = void;
@@ -71,6 +81,8 @@ export interface NotifyEvents {}
 export interface MenuItem {
   /** Returned in the result. Default: the 1-based index as a string. */
   id?: string;
+  /** header: a section label (qb-menu headers): never selectable, keeps its index. */
+  kind?: "item" | "header";
   /** ox `title`. A row with no label is skipped visually but keeps its index (ox quirk). */
   label?: string;
   description?: string;
@@ -106,10 +118,25 @@ export interface MenuItem {
 })[];
   /** 1-based starting value of a stepper row. */
   defaultIndex?: number;
+  /** An inline control in the row (esx_context input rows, esx_menu_default slider/select): its value is reported in `change` and `select` events and in the result's `fields` (by item id). */
+  field?: {
+  type: "text" | "number" | "select" | "slider" | "checkbox";
+  default?: unknown;
+  placeholder?: string;
+  min?: number;
+  max?: number;
+  step?: number;
+  options?: MenuOption[];
+};
   /** false: selecting emits 'select' and keeps the menu open instead of resolving. */
   close?: boolean;
   /** Returned untouched in the result. */
   args?: unknown;
+}
+
+export interface MenuOption {
+  value: string;
+  label?: string;
 }
 
 /** A context or list menu: a panel of rows. Superset of ox registerContext / registerMenu, qb-menu, esx_context and esx_menu_default. Drawn by `panel` + `menu-row`. Resolves with the chosen item, or nil when closed. (v1) */
@@ -124,13 +151,19 @@ export interface MenuProps {
   position?: IntentAnchor;
   /** cursor: mouse only (ox context). keyboard: arrows + Enter, no cursor, the player keeps moving (ox list menu). full: both. */
   input?: "cursor" | "keyboard" | "full";
+  /** false: drawn without taking the cursor or keys (a preview, esx_context `focus = false`); nothing can be picked until an update sets it true. */
+  focus?: boolean;
   /** false: Escape and the close button do nothing; only the script can close it. */
   canClose?: boolean;
+  /** false: Escape does nothing (esx_context). canClose = false also hides the close button. */
+  dismissable?: boolean;
   /** The parent menu's id: shows a back button that resolves with reason 'back'. */
   menu?: string;
   /** 1-based row highlighted first (keyboard menus). */
   startIndex?: number;
   items: MenuItem[];
+  /** Library-specific extras an adapter carries through and a renderer may honour (okok `kind`, mythic `style`, an esx picture…). Never validated. */
+  meta?: Record<string, unknown>;
 }
 
 export type MenuResult = {
@@ -140,6 +173,8 @@ export type MenuResult = {
   /** 1-based value index of a stepper row. */
   value?: number;
   checked?: boolean;
+  /** Every inline field's value, by item id. */
+  fields?: Record<string, unknown>;
   /** Indexes into nested `items`, outermost first. */
   path?: number[];
   args?: unknown;
@@ -152,6 +187,7 @@ export interface MenuEvents {
   id?: string;
   value?: number;
   checked?: boolean;
+  fields?: Record<string, unknown>;
 };
   /** A stepper row moved. */
   scroll: {
@@ -168,14 +204,21 @@ export interface MenuEvents {
   index?: number;
   id?: string;
   value?: number;
+  fields?: Record<string, unknown>;
+};
+  /** An inline field's value changed. */
+  field: {
+  index?: number;
+  id?: string;
+  value?: unknown;
 };
 }
 
 export interface InputField {
   /** Key in the result's `byId`. Default: the 1-based index as a string. */
   id?: string;
-  /** ox `input` is `text`. */
-  type?: "text" | "textarea" | "number" | "checkbox" | "select" | "multi-select" | "slider" | "color" | "date" | "date-range" | "time";
+  /** ox `input` is `text`. password: a masked text field. checkbox-group: several options under one field (qb-input), returns the checked values. radio: a select drawn as radios. */
+  type?: "text" | "password" | "textarea" | "number" | "checkbox" | "checkbox-group" | "radio" | "select" | "multi-select" | "slider" | "color" | "date" | "date-range" | "time";
   label?: string;
   /** Helper text under the field. */
   description?: string;
@@ -184,7 +227,7 @@ export interface InputField {
   disabled?: boolean;
   /** Submit is blocked while empty (a checkbox must be ticked). */
   required?: boolean;
-  /** Initial value, in the field's result type (date: true means today). */
+  /** Initial value, in the field's result type (date: true means today; checkbox-group: the checked values). */
   default?: unknown;
   /** text: masked with an eye toggle. */
   password?: boolean;
@@ -199,7 +242,7 @@ export interface InputField {
   maxLength?: number;
   /** textarea grows with its content. */
   autosize?: boolean;
-  /** select / multi-select choices. */
+  /** select / multi-select / radio / checkbox-group choices. */
   options?: InputOption[];
   clearable?: boolean;
   searchable?: boolean;
@@ -231,6 +274,8 @@ export interface InputProps {
   submitLabel?: string;
   cancelLabel?: string;
   fields: InputField[];
+  /** Library-specific extras an adapter carries through and a renderer may honour (okok `kind`, mythic `style`, an esx picture…). Never validated. */
+  meta?: Record<string, unknown>;
 }
 
 export type InputResult = {
@@ -269,13 +314,15 @@ export interface ConfirmProps {
 };
   /** ms until it resolves 'cancel' by itself (reason 'timeout'). */
   timeout?: number;
+  /** Library-specific extras an adapter carries through and a renderer may honour (okok `kind`, mythic `style`, an esx picture…). Never validated. */
+  meta?: Record<string, unknown>;
 }
 
 export type ConfirmResult = "confirm" | "cancel";
 
 export interface ConfirmEvents {}
 
-/** A timed bar or ring. Superset of ox progressBar / progressCircle, QBCore Progressbar and esx_progressbar. Animation, props and interruptions (death, ragdoll, cuffs) stay with the caller's Lua: it cancels. Drawn by `meter` or `progress-ring`. Resolves true when it ran out, false when cancelled. (v1) */
+/** A timed bar or ring. Superset of ox progressBar / progressCircle, QBCore Progressbar and esx_progressbar. Animation, props and interruptions (death, ragdoll, cuffs) stay with the caller's Lua: it cancels. Drawn by `meter` or `progress-ring`. Resolves true when it ran out, false when cancelled. One at a time: a second one is refused (nil, 'busy') while one runs. (v1) */
 export interface ProgressProps {
   id?: string;
   label?: string;
@@ -284,7 +331,7 @@ export interface ProgressProps {
   style?: "bar" | "ring";
   /** bottom: the bottom band. center: the middle of the screen. */
   position?: "bottom" | "center";
-  /** The player may cancel with `cancelKey`; the caller's Lua reads the key and calls cancel (the page can't read keys without focus). */
+  /** The player may cancel with `cancelKey` (the runtime reads the key: the page has no focus). false: nothing dismisses it, Escape included; it resolves true at `duration`. */
   cancel?: boolean;
   /** Shown next to the bar when `cancel` is true. */
   cancelKey?: string;
@@ -293,6 +340,8 @@ export interface ProgressProps {
   value?: number;
   /** Default: true for ring, false for bar. */
   showPercent?: boolean;
+  /** Library-specific extras an adapter carries through and a renderer may honour (okok `kind`, mythic `style`, an esx picture…). Never validated. */
+  meta?: Record<string, unknown>;
 }
 
 export type ProgressResult = boolean;
@@ -312,16 +361,23 @@ export interface PromptProps {
   iconColor?: IntentColor;
   iconAnimation?: IntentIconAnimation;
   position?: IntentAnchor;
-  surface?: "panel" | "hud";
+  /** slab: the prompt slab on the game (key chip + verb). panel: a small floating panel. hud: the dark HUD surface. */
+  surface?: "slab" | "panel" | "hud";
   /** ms the key must be held. The caller updates `progress` (0–1) from the game, or the page reads the key when it has focus. */
   hold?: number;
   /** Hold progress from the game. */
   progress?: number;
   /** The one the key acts on now, among several prompts. */
   active?: boolean;
+  /** The key is held right now (qb DrawText `KeyPressed`): the chip lights up. */
+  pressed?: boolean;
+  /** A tone on the prompt (esx_textui colours the box by type). */
+  status?: IntentStatus;
   disabled?: boolean;
   /** Inline CSS (camelCase). Escape hatch for adapters. */
   style?: Record<string, unknown>;
+  /** Library-specific extras an adapter carries through and a renderer may honour (okok `kind`, mythic `style`, an esx picture…). Never validated. */
+  meta?: Record<string, unknown>;
 }
 
 export type PromptResult = boolean;
@@ -339,6 +395,8 @@ export interface TargetOption {
   icon?: IntentIcon;
   iconColor?: IntentColor;
   disabled?: boolean;
+  /** Highlighted now (the library's own hover). */
+  active?: boolean;
   /** A nested group (ox_target option groups). */
   items?: TargetOption[];
   args?: unknown;
@@ -353,9 +411,13 @@ export interface TargetProps {
   eye?: boolean;
   /** Something is under the crosshair: the eye lights up. */
   active?: boolean;
+  /** An option was just chosen: the eye flashes success (qb-target). */
+  success?: boolean;
   /** The list is shown (the player pressed the key). */
   open?: boolean;
   options?: TargetOption[];
+  /** Library-specific extras an adapter carries through and a renderer may honour (okok `kind`, mythic `style`, an esx picture…). Never validated. */
+  meta?: Record<string, unknown>;
 }
 
 export type TargetResult = {
@@ -405,6 +467,8 @@ export interface RadialProps {
   sub?: boolean;
   /** The id of the submenu just left, so the page it lives on opens first (ox). */
   option?: string;
+  /** Library-specific extras an adapter carries through and a renderer may honour (okok `kind`, mythic `style`, an esx picture…). Never validated. */
+  meta?: Record<string, unknown>;
 }
 
 export type RadialResult = {
@@ -435,6 +499,8 @@ export interface ChallengeProps {
   /** Under the ring. */
   label?: string;
   size?: "sm" | "default" | "lg";
+  /** Library-specific extras an adapter carries through and a renderer may honour (okok `kind`, mythic `style`, an esx picture…). Never validated. */
+  meta?: Record<string, unknown>;
 }
 
 export type ChallengeResult = boolean;
@@ -709,7 +775,7 @@ export const INTENT_SCHEMAS = {
       "duration": {
         "type": "integer",
         "min": 0,
-        "doc": "ms on screen. 0 or missing: 5000."
+        "doc": "ms on screen. Missing: 5000. 0: stays until the script cancels it (give it an `id`)."
       },
       "showDuration": {
         "type": "boolean",
@@ -721,15 +787,56 @@ export const INTENT_SCHEMAS = {
         "ref": "anchor",
         "default": "top-right"
       },
+      "item": {
+        "type": "object",
+        "props": {
+          "name": {
+            "type": "string",
+            "required": true
+          },
+          "count": {
+            "type": "integer",
+            "required": true,
+            "doc": "Positive for added, negative for removed."
+          },
+          "icon": {
+            "type": "ref",
+            "ref": "icon"
+          },
+          "image": {
+            "type": "string"
+          }
+        },
+        "doc": "An item added or removed: draws the item slab (tile + name + change) instead of a panel, and merges with the same item's recent change."
+      },
       "sound": {
-        "type": "any",
-        "doc": "Never reaches the page: the caller's Lua plays it (ox strips it the same way)."
+        "type": "oneOf",
+        "of": [
+          {
+            "type": "boolean"
+          },
+          {
+            "type": "string"
+          },
+          {
+            "type": "object",
+            "props": {},
+            "open": true
+          }
+        ],
+        "doc": "Play a sound: true for the kit's, a name, or a library's table. The caller's Lua plays it; it never reaches the page (ox strips it the same way)."
       },
       "style": {
         "type": "object",
         "props": {},
         "open": true,
         "doc": "Inline CSS (camelCase) merged over the toast. Escape hatch for adapters; themed UIs don't need it."
+      },
+      "meta": {
+        "type": "object",
+        "props": {},
+        "open": true,
+        "doc": "Library-specific extras an adapter carries through and a renderer may honour (okok `kind`, mythic `style`, an esx picture…). Never validated."
       }
     },
     "result": null,
@@ -772,10 +879,20 @@ export const INTENT_SCHEMAS = {
         "default": "full",
         "doc": "cursor: mouse only (ox context). keyboard: arrows + Enter, no cursor, the player keeps moving (ox list menu). full: both."
       },
+      "focus": {
+        "type": "boolean",
+        "default": true,
+        "doc": "false: drawn without taking the cursor or keys (a preview, esx_context `focus = false`); nothing can be picked until an update sets it true."
+      },
       "canClose": {
         "type": "boolean",
         "default": true,
         "doc": "false: Escape and the close button do nothing; only the script can close it."
+      },
+      "dismissable": {
+        "type": "boolean",
+        "default": true,
+        "doc": "false: Escape does nothing (esx_context). canClose = false also hides the close button."
       },
       "menu": {
         "type": "string",
@@ -796,6 +913,15 @@ export const INTENT_SCHEMAS = {
             "id": {
               "type": "string",
               "doc": "Returned in the result. Default: the 1-based index as a string."
+            },
+            "kind": {
+              "type": "enum",
+              "values": [
+                "item",
+                "header"
+              ],
+              "default": "item",
+              "doc": "header: a section label (qb-menu headers): never selectable, keeps its index."
             },
             "label": {
               "type": "string",
@@ -897,6 +1023,54 @@ export const INTENT_SCHEMAS = {
               "min": 1,
               "doc": "1-based starting value of a stepper row."
             },
+            "field": {
+              "type": "object",
+              "props": {
+                "type": {
+                  "type": "enum",
+                  "values": [
+                    "text",
+                    "number",
+                    "select",
+                    "slider",
+                    "checkbox"
+                  ],
+                  "required": true
+                },
+                "default": {
+                  "type": "any"
+                },
+                "placeholder": {
+                  "type": "string"
+                },
+                "min": {
+                  "type": "number"
+                },
+                "max": {
+                  "type": "number"
+                },
+                "step": {
+                  "type": "number",
+                  "min": 0
+                },
+                "options": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "props": {
+                      "value": {
+                        "type": "string",
+                        "required": true
+                      },
+                      "label": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              },
+              "doc": "An inline control in the row (esx_context input rows, esx_menu_default slider/select): its value is reported in `change` and `select` events and in the result's `fields` (by item id)."
+            },
             "close": {
               "type": "boolean",
               "default": true,
@@ -908,6 +1082,12 @@ export const INTENT_SCHEMAS = {
             }
           }
         }
+      },
+      "meta": {
+        "type": "object",
+        "props": {},
+        "open": true,
+        "doc": "Library-specific extras an adapter carries through and a renderer may honour (okok `kind`, mythic `style`, an esx picture…). Never validated."
       }
     },
     "result": {
@@ -926,6 +1106,12 @@ export const INTENT_SCHEMAS = {
         },
         "checked": {
           "type": "boolean"
+        },
+        "fields": {
+          "type": "object",
+          "props": {},
+          "open": true,
+          "doc": "Every inline field's value, by item id."
         },
         "path": {
           "type": "array",
@@ -956,6 +1142,11 @@ export const INTENT_SCHEMAS = {
             },
             "checked": {
               "type": "boolean"
+            },
+            "fields": {
+              "type": "object",
+              "props": {},
+              "open": true
             }
           }
         }
@@ -1001,6 +1192,28 @@ export const INTENT_SCHEMAS = {
             },
             "value": {
               "type": "integer"
+            },
+            "fields": {
+              "type": "object",
+              "props": {},
+              "open": true
+            }
+          }
+        }
+      },
+      "field": {
+        "doc": "An inline field's value changed.",
+        "data": {
+          "type": "object",
+          "props": {
+            "index": {
+              "type": "integer"
+            },
+            "id": {
+              "type": "string"
+            },
+            "value": {
+              "type": "any"
             }
           }
         }
@@ -1061,9 +1274,12 @@ export const INTENT_SCHEMAS = {
               "type": "enum",
               "values": [
                 "text",
+                "password",
                 "textarea",
                 "number",
                 "checkbox",
+                "checkbox-group",
+                "radio",
                 "select",
                 "multi-select",
                 "slider",
@@ -1073,7 +1289,7 @@ export const INTENT_SCHEMAS = {
                 "time"
               ],
               "default": "text",
-              "doc": "ox `input` is `text`."
+              "doc": "ox `input` is `text`. password: a masked text field. checkbox-group: several options under one field (qb-input), returns the checked values. radio: a select drawn as radios."
             },
             "label": {
               "type": "string"
@@ -1098,7 +1314,7 @@ export const INTENT_SCHEMAS = {
             },
             "default": {
               "type": "any",
-              "doc": "Initial value, in the field's result type (date: true means today)."
+              "doc": "Initial value, in the field's result type (date: true means today; checkbox-group: the checked values)."
             },
             "password": {
               "type": "boolean",
@@ -1163,7 +1379,7 @@ export const INTENT_SCHEMAS = {
                   }
                 }
               },
-              "doc": "select / multi-select choices."
+              "doc": "select / multi-select / radio / checkbox-group choices."
             },
             "clearable": {
               "type": "boolean"
@@ -1190,6 +1406,12 @@ export const INTENT_SCHEMAS = {
             }
           }
         }
+      },
+      "meta": {
+        "type": "object",
+        "props": {},
+        "open": true,
+        "doc": "Library-specific extras an adapter carries through and a renderer may honour (okok `kind`, mythic `style`, an esx picture…). Never validated."
       }
     },
     "result": {
@@ -1290,6 +1512,12 @@ export const INTENT_SCHEMAS = {
         "type": "integer",
         "min": 0,
         "doc": "ms until it resolves 'cancel' by itself (reason 'timeout')."
+      },
+      "meta": {
+        "type": "object",
+        "props": {},
+        "open": true,
+        "doc": "Library-specific extras an adapter carries through and a renderer may honour (okok `kind`, mythic `style`, an esx picture…). Never validated."
       }
     },
     "result": {
@@ -1339,7 +1567,7 @@ export const INTENT_SCHEMAS = {
       "cancel": {
         "type": "boolean",
         "default": false,
-        "doc": "The player may cancel with `cancelKey`; the caller's Lua reads the key and calls cancel (the page can't read keys without focus)."
+        "doc": "The player may cancel with `cancelKey` (the runtime reads the key: the page has no focus). false: nothing dismisses it, Escape included; it resolves true at `duration`."
       },
       "cancelKey": {
         "type": "string",
@@ -1366,6 +1594,12 @@ export const INTENT_SCHEMAS = {
       "showPercent": {
         "type": "boolean",
         "doc": "Default: true for ring, false for bar."
+      },
+      "meta": {
+        "type": "object",
+        "props": {},
+        "open": true,
+        "doc": "Library-specific extras an adapter carries through and a renderer may honour (okok `kind`, mythic `style`, an esx picture…). Never validated."
       }
     },
     "result": {
@@ -1418,10 +1652,12 @@ export const INTENT_SCHEMAS = {
       "surface": {
         "type": "enum",
         "values": [
+          "slab",
           "panel",
           "hud"
         ],
-        "default": "panel"
+        "default": "slab",
+        "doc": "slab: the prompt slab on the game (key chip + verb). panel: a small floating panel. hud: the dark HUD surface."
       },
       "hold": {
         "type": "integer",
@@ -1438,6 +1674,15 @@ export const INTENT_SCHEMAS = {
         "type": "boolean",
         "doc": "The one the key acts on now, among several prompts."
       },
+      "pressed": {
+        "type": "boolean",
+        "doc": "The key is held right now (qb DrawText `KeyPressed`): the chip lights up."
+      },
+      "status": {
+        "type": "ref",
+        "ref": "status",
+        "doc": "A tone on the prompt (esx_textui colours the box by type)."
+      },
       "disabled": {
         "type": "boolean"
       },
@@ -1446,6 +1691,12 @@ export const INTENT_SCHEMAS = {
         "props": {},
         "open": true,
         "doc": "Inline CSS (camelCase). Escape hatch for adapters."
+      },
+      "meta": {
+        "type": "object",
+        "props": {},
+        "open": true,
+        "doc": "Library-specific extras an adapter carries through and a renderer may honour (okok `kind`, mythic `style`, an esx picture…). Never validated."
       }
     },
     "result": {
@@ -1484,6 +1735,11 @@ export const INTENT_SCHEMAS = {
         "default": false,
         "doc": "Something is under the crosshair: the eye lights up."
       },
+      "success": {
+        "type": "boolean",
+        "default": false,
+        "doc": "An option was just chosen: the eye flashes success (qb-target)."
+      },
       "open": {
         "type": "boolean",
         "default": false,
@@ -1516,6 +1772,10 @@ export const INTENT_SCHEMAS = {
             "disabled": {
               "type": "boolean"
             },
+            "active": {
+              "type": "boolean",
+              "doc": "Highlighted now (the library's own hover)."
+            },
             "items": {
               "type": "array",
               "items": {
@@ -1528,6 +1788,12 @@ export const INTENT_SCHEMAS = {
             }
           }
         }
+      },
+      "meta": {
+        "type": "object",
+        "props": {},
+        "open": true,
+        "doc": "Library-specific extras an adapter carries through and a renderer may honour (okok `kind`, mythic `style`, an esx picture…). Never validated."
       }
     },
     "result": {
@@ -1654,6 +1920,12 @@ export const INTENT_SCHEMAS = {
       "option": {
         "type": "string",
         "doc": "The id of the submenu just left, so the page it lives on opens first (ox)."
+      },
+      "meta": {
+        "type": "object",
+        "props": {},
+        "open": true,
+        "doc": "Library-specific extras an adapter carries through and a renderer may honour (okok `kind`, mythic `style`, an esx picture…). Never validated."
       }
     },
     "result": {
@@ -1753,6 +2025,12 @@ export const INTENT_SCHEMAS = {
           "lg"
         ],
         "default": "default"
+      },
+      "meta": {
+        "type": "object",
+        "props": {},
+        "open": true,
+        "doc": "Library-specific extras an adapter carries through and a renderer may honour (okok `kind`, mythic `style`, an esx picture…). Never validated."
       }
     },
     "result": {

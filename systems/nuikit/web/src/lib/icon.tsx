@@ -114,7 +114,7 @@ const LUCIDE: Record<string, LucideIcon> = {
 };
 
 /** ox_lib's rule: a string is an image if it contains "://", ".png" or ".webp". */
-export function isImageIcon(icon: IntentIcon | null | undefined): icon is string {
+export function isImageIcon(icon: IntentIcon | null | undefined): boolean {
   return typeof icon === "string" && (icon.includes("://") || icon.includes(".png") || icon.includes(".webp") || icon.includes(".jpg") || icon.includes(".svg"));
 }
 
@@ -189,7 +189,7 @@ export function Icon({
   const s = color ? { ...style, color } : style;
   if (isImageIcon(icon)) {
     if (!allowImage) return <>{fallback}</>;
-    return <img src={icon} alt="" className={cn("size-4 shrink-0 object-contain", className)} style={s} />;
+    return <img src={icon as string} alt="" className={cn("size-4 shrink-0 object-contain", className)} style={s} />;
   }
   if (typeof icon === "string") {
     const L = LUCIDE[icon.toLowerCase().replace(/^lucide:/, "")];

@@ -44,11 +44,16 @@ export function Frame({ store }: { store: IntentStore }) {
 
 /** Mounts a renderer module into its own element with the frame's context. */
 function RendererMount({ kind, store, renderer }: { kind: IntentKind; store: IntentStore; renderer: RendererDefinition }) {
-  const el = useRef<HTMLDivElement>(null);
+  const host = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    if (!el.current) return;
+    if (!host.current) return;
+    // A fresh element per mount: React's StrictMode mounts twice, and a root must not be created
+    // twice on one container.
+    const el = document.createElement("div");
+    el.className = "pointer-events-none absolute inset-0";
+    host.current.appendChild(el);
     const cleanup = renderer.mount(
-      el.current,
+      el,
       rendererContext(kind, store, {
         resource: "nuikit",
         hosted: false,
@@ -58,7 +63,8 @@ function RendererMount({ kind, store, renderer }: { kind: IntentKind; store: Int
     );
     return () => {
       if (typeof cleanup === "function") cleanup();
+      el.remove();
     };
   }, [kind, store, renderer]);
-  return <div ref={el} data-renderer={kind} className="pointer-events-none absolute inset-0" />;
+  return <div ref={host} data-renderer={kind} className="pointer-events-none absolute inset-0" />;
 }

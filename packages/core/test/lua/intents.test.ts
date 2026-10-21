@@ -58,7 +58,7 @@ describe("nk.* validation (lua/intents.lua)", () => {
     await shop.run(`nk.notify({ title = 'Oops', type = 'inform' })`);
     expect(last(host).intent.props).toEqual({ title: "Oops", status: "info" });
     await shop.run(`nk.notify({ title = 'No', type = 'danger', duration = 0 })`);
-    expect(last(host).intent.props).toEqual({ title: "No", status: "error" });
+    expect(last(host).intent.props).toEqual({ title: "No", status: "error", duration: 0 });
     await shop.run(`nk.prompt('[E] Open garage')`);
     expect(last(host).intent.props).toEqual({ label: "Open garage", keys: ["E"] });
     await shop.run(`nk.prompt({ text = 'Talk', position = 'left-center' })`);
@@ -192,18 +192,17 @@ describe("the runtime (systems/nuikit/client/intents.lua)", () => {
     await shop.run(`nk.prompt()`);
   });
 
-  it("the X key cancels the newest cancellable progress only", async () => {
+  it("the X key cancels a cancellable progress only", async () => {
     client = await createClient();
     const host = await startRuntime();
     const shop = await startScript("shop");
-    await shop.run(`
-      A = nk.progress({ label = 'a', duration = 100, cancel = true }, function(r) RA = r end)
-      B = nk.progress({ label = 'b', duration = 100 }, function(r) RB = r end)
-    `);
+    await shop.run(`B = nk.progress({ label = 'b', duration = 100 }, function(r) RB = r end)`);
     await host.run(`COMMANDS.nuikit_cancel()`);
-    expect(last(host)).toEqual({ op: "cancel", id: "shop#1", reason: "cancel" });
-    expect(await shop.run(`return A:isOpen(), B:isOpen()`)).toBe(false);
     expect(await shop.run(`return B:isOpen()`)).toBe(true);
+    await shop.run(`B:cancel() A = nk.progress({ label = 'a', duration = 100, cancel = true }, function(r) RA = r end)`);
+    await host.run(`COMMANDS.nuikit_cancel()`);
+    expect(last(host)).toEqual({ op: "cancel", id: "shop#2", reason: "cancel" });
+    expect(await shop.run(`return A:isOpen()`)).toBe(false);
   });
 
   it("page reload: nuikit:intent:sync returns the whole stack in order", async () => {
@@ -272,5 +271,63 @@ describe("exports.nuikit:* (other languages)", () => {
     expect(await js.run(`return exports.nuikit:intent('notify', { title = 5 })`)).toBeFalsy();
     await js.run(`local i = exports.nuikit:intent('notify', { title = 'ok' }) exports.nuikit:intentCancel(i)`);
     expect(last(host)).toMatchObject({ op: "cancel", id: "jsscript#x3" });
+  });
+});
+
+describe("adapter supersets", () => {
+  it("one progress at a time: a second is refused with 'busy'", async () => {
+    client = await createClient();
+    const host = await startRuntime();
+    const shop = await startScript("shop");
+    await shop.run(`
+      A = nk.progress({ label = 'a', duration = 100 }, function(r, reason) RA = reason end)
+      B = nk.progress({ label = 'b', duration = 100 }, function(r, reason) RB = reason end)
+    `);
+    expect(await shop.run(`return RB`)).toBe("busy");
+    expect(await shop.run(`return A:isOpen()`)).toBe(true);
+    expect(frame(host).filter((m) => m.op === "open").length).toBe(1);
+    expect(await host.run(`local b = exports.nuikit:progress({ duration = 5 }) return b`)).toBeFalsy();
+  });
+
+  it("emits nuikit:intent { source, intent } once per drawn intent, for the doctor", async () => {
+    client = await createClient();
+    const host = await startRuntime();
+    await host.run(`COUNTS = {} AddEventHandler('nuikit:intent', function(e) COUNTS[#COUNTS + 1] = e.source .. ':' .. e.intent end)`);
+    const shop = await startScript("shop");
+    await shop.run(`nk.notify('a') nk.prompt('b')`);
+    await shop.run(`TriggerEvent('nuikit:intent:open', 'shop#9', 'menu', { title = 'x' })`); // invalid: not counted
+    expect(await host.run(`return COUNTS`)).toEqual(["shop:notify", "shop:prompt"]);
+  });
+
+  it("a menu with focus = false is drawn without a surface; notify duration 0 is kept", async () => {
+    client = await createClient();
+    const host = await startRuntime();
+    const shop = await startScript("shop");
+    await shop.run(`nk.menu({ title = 'Preview', focus = false, items = { { label = 'a' } } }, { async = true })`);
+    expect(client.focused()).toBeNull();
+    await shop.run(`nk.notify({ id = 'p', title = 'Persistent', duration = 0 })`);
+    expect(last(host).intent.props.duration).toBe(0);
+  });
+
+  it("https://nuikit/intent: an override page opens an intent and is answered when it ends", async () => {
+    client = await createClient();
+    const host = await startRuntime();
+    // fire-and-forget: answered at once
+    expect(await host.call("intent", { source: "ox_lib", intent: "notify", props: { title: "hi" } })).toEqual({ id: "page:ox_lib#p1" });
+    expect(last(host).intent).toMatchObject({ id: "page:ox_lib#p1", resource: "page:ox_lib", kind: "notify" });
+    // yielding: answered on resolve
+    const pending = host.callPending("intent", { source: "ox_lib", intent: "confirm", props: { title: "Sure?" }, id: "alert" });
+    expect(pending.done).toBe(false);
+    expect(client.focused()).toBe("nuikit");
+    await host.call("nuikit:intent:resolve", { id: "page:ox_lib#alert", result: "confirm" });
+    expect(pending.done).toBe(true);
+    expect(pending.result).toEqual({ id: "page:ox_lib#alert", result: "confirm" });
+    expect(client.focused()).toBeNull();
+    // update and cancel by id; a bad payload is an error
+    await host.call("intent", { update: "page:ox_lib#p1", props: { title: "changed" } });
+    expect(last(host)).toEqual({ op: "update", id: "page:ox_lib#p1", props: { title: "changed" } });
+    await host.call("intent", { cancel: "page:ox_lib#p1" });
+    expect(last(host)).toMatchObject({ op: "cancel", id: "page:ox_lib#p1" });
+    expect(await host.call("intent", { source: "ox_lib", intent: "menu", props: {} })).toEqual({ error: "invalid" });
   });
 });

@@ -5,30 +5,118 @@
   "yields": true,
   "update": true,
   "props": {
-    "id": { "type": "string" },
-    "title": { "type": "string", "doc": "The target's name, above the list." },
-    "eye": { "type": "boolean", "default": true, "doc": "Show the eye at the centre of the screen." },
-    "active": { "type": "boolean", "default": false, "doc": "Something is under the crosshair: the eye lights up." },
-    "open": { "type": "boolean", "default": false, "doc": "The list is shown (the player pressed the key)." },
+    "id": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string",
+      "doc": "The target's name, above the list."
+    },
+    "eye": {
+      "type": "boolean",
+      "default": true,
+      "doc": "Show the eye at the centre of the screen."
+    },
+    "active": {
+      "type": "boolean",
+      "default": false,
+      "doc": "Something is under the crosshair: the eye lights up."
+    },
+    "success": {
+      "type": "boolean",
+      "default": false,
+      "doc": "An option was just chosen: the eye flashes success (qb-target)."
+    },
+    "open": {
+      "type": "boolean",
+      "default": false,
+      "doc": "The list is shown (the player pressed the key)."
+    },
     "options": {
       "type": "array",
       "items": {
         "type": "object",
         "props": {
-          "id": { "type": "string", "doc": "Returned in the result. Default: the 1-based index as a string." },
-          "label": { "type": "string", "required": true },
-          "description": { "type": "string" },
-          "icon": { "type": "ref", "ref": "icon" },
-          "iconColor": { "type": "ref", "ref": "color" },
-          "disabled": { "type": "boolean" },
-          "items": { "type": "array", "items": { "type": "self" }, "doc": "A nested group (ox_target option groups)." },
-          "args": { "type": "any" }
+          "id": {
+            "type": "string",
+            "doc": "Returned in the result. Default: the 1-based index as a string."
+          },
+          "label": {
+            "type": "string",
+            "required": true
+          },
+          "description": {
+            "type": "string"
+          },
+          "icon": {
+            "type": "ref",
+            "ref": "icon"
+          },
+          "iconColor": {
+            "type": "ref",
+            "ref": "color"
+          },
+          "disabled": {
+            "type": "boolean"
+          },
+          "active": {
+            "type": "boolean",
+            "doc": "Highlighted now (the library's own hover)."
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "self"
+            },
+            "doc": "A nested group (ox_target option groups)."
+          },
+          "args": {
+            "type": "any"
+          }
         }
+      }
+    },
+    "meta": {
+      "type": "object",
+      "props": {},
+      "open": true,
+      "doc": "Library-specific extras an adapter carries through and a renderer may honour (okok `kind`, mythic `style`, an esx picture…). Never validated."
+    }
+  },
+  "result": {
+    "type": "object",
+    "props": {
+      "index": {
+        "type": "integer"
+      },
+      "id": {
+        "type": "string"
+      },
+      "path": {
+        "type": "array",
+        "items": {
+          "type": "integer"
+        }
+      },
+      "args": {
+        "type": "any"
       }
     }
   },
-  "result": { "type": "object", "props": { "index": { "type": "integer" }, "id": { "type": "string" }, "path": { "type": "array", "items": { "type": "integer" } }, "args": { "type": "any" } } },
   "events": {
-    "hover": { "doc": "The highlighted option changed.", "data": { "type": "object", "props": { "index": { "type": "integer" }, "id": { "type": "string" } } } }
+    "hover": {
+      "doc": "The highlighted option changed.",
+      "data": {
+        "type": "object",
+        "props": {
+          "index": {
+            "type": "integer"
+          },
+          "id": {
+            "type": "string"
+          }
+        }
+      }
+    }
   }
 }

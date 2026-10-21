@@ -167,7 +167,6 @@ local function normalize(kind, props)
       local s = props.status or props.type
       if type(s) == 'string' and STATUS[s:lower()] then props.status = STATUS[s:lower()] end
       props.type = nil
-      if props.duration == 0 then props.duration = nil end
     end
   elseif kind == 'prompt' then
     if type(props) == 'string' then props = { label = props } end
@@ -279,6 +278,8 @@ nk.intents = {}
 
 --- Validate without opening. Returns the issues (empty when valid).
 nk.intents.validate = validate
+--- The loaded schema table (lib/intents.schema.lua), or nil without the nuikit resource.
+nk.intents.schema = schema
 
 --- Open an intent. Returns the handle; `opts` as described at the top of this file.
 ---@param kind string

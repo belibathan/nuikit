@@ -21,8 +21,9 @@ local function log(...)
   if debug then print('^5[nuikit:intents]^7', ...) end
 end
 
-local open = {}   -- id → { id, kind, resource, props, seq, at, surface }
+local open = {}   -- id → { id, kind, resource, props, seq, at, surface, cb?, page? }
 local seq = 0
+local exportSeq = 0 -- ids for intents opened through exports or the page callback
 local count = {}  -- surface name → open intents using it
 
 -- ───────────────────────────────── surfaces (what takes input)
@@ -45,6 +46,7 @@ for name, opts in pairs(SURFACES) do surfaces[name] = NUI.surface(name, opts) en
 --- The surface an intent needs, or nil (notify, prompt, progress draw over the game without focus).
 local function surfaceFor(kind, props)
   if kind == 'menu' then
+    if props.focus == false then return nil end -- a preview: drawn, never focused
     local input = props.input
     if input == 'cursor' then return 'intent:menu:cursor' end
     if input == 'keyboard' then return 'intent:menu:keyboard' end
@@ -84,26 +86,33 @@ local function caller()
   return GetInvokingResource() or RESOURCE
 end
 
+--- Open an intent. Returns the id, or nil and a reason ('invalid', 'busy').
 local function openIntent(resource, id, kind, props)
-  if type(id) ~= 'string' or type(kind) ~= 'string' or type(props) ~= 'table' then return nil end
+  if type(id) ~= 'string' or type(kind) ~= 'string' or type(props) ~= 'table' then return nil, 'invalid' end
   local issues = NUI.intents.validate(kind, props)
   if #issues > 0 then
     print(('^1[nuikit] %s asked for an invalid %s: %s %s^7'):format(resource, kind, issues[1].path, issues[1].message))
-    return nil
+    return nil, 'invalid'
   end
   local prev = open[id]
+  if kind == 'progress' and not prev then
+    -- One progress at a time (every library's rule): a second one is refused, not queued.
+    for _, other in pairs(open) do
+      if other.kind == 'progress' then return nil, 'busy' end
+    end
+  end
   if prev then
     -- Same id again (a de-duped toast, a menu re-shown): replace in place, keep its place in the stack.
     release(prev.surface)
-    seq = seq + 1
-  else
-    seq = seq + 1
   end
+  seq = seq + 1
   local it = { id = id, kind = kind, resource = resource, props = props, seq = seq, at = GetGameTimer(), surface = surfaceFor(kind, props) }
   open[id] = it
   take(it.surface)
   log('open', id, kind)
   send({ op = 'open', intent = entry(it) })
+  -- One event per drawn intent: the doctor counts them by source (docs/architecture.md §6).
+  TriggerEvent('nuikit:intent', { source = resource, intent = kind, id = id })
   return id
 end
 
@@ -139,7 +148,9 @@ end
 -- ───────────────────────────────── from other resources (nk.*)
 
 AddEventHandler('nuikit:intent:open', function(id, kind, props)
-  openIntent(caller(), id, kind, props)
+  local ok, reason = openIntent(caller(), id, kind, props)
+  -- Refused: answer at once so a waiting script gets nil + the reason instead of hanging.
+  if not ok and type(id) == 'string' then TriggerEvent('nuikit:intent:resolved', id, { reason = reason }) end
 end)
 
 AddEventHandler('nuikit:intent:update', function(id, patch)
@@ -193,6 +204,56 @@ NUI.on('nuikit:intent:sync', function()
   return { ok = true, count = #list }
 end)
 
+-- ───────────────────────────────── from another resource's page (override routing, architecture §3.3)
+--
+-- An override page (ox_lib's, qb-core's) that lives in another resource posts its intents here:
+--   POST https://nuikit/intent  { intent = 'notify', props = {…}, source = 'ox_lib', id? }
+--     → { id } at once for fire-and-forget kinds; for yielding kinds the fetch is answered when the
+--       intent ends: { id, result?, reason?, data? }  (the page relays it to its own Lua)
+--   POST https://nuikit/intent  { update = '<id>', props = {…} } · { cancel = '<id>', reason? }
+-- The page cannot be trusted for `source`: it is recorded as 'page:<source>' for the doctor and
+-- never grants the rights of that resource (its own Lua can't update or cancel these ids).
+-- Unproven in game: whether a page may fetch another resource's callback (spike checklist step 8).
+
+local pagePending = {} -- id → { cb, at }
+local PAGE_TIMEOUT = 120000
+
+RegisterNUICallback('intent', function(data, cb)
+  data = type(data) == 'table' and data or {}
+  if type(data.cancel) == 'string' then
+    local it = open[data.cancel]
+    if it and it.page then cancelIntent(it, data.reason) end
+    return cb({ ok = it ~= nil })
+  end
+  if type(data.update) == 'string' then
+    local it = open[data.update]
+    if it and it.page then updateIntent(it, data.props) end
+    return cb({ ok = it ~= nil })
+  end
+  local source = ('page:%s'):format(type(data.source) == 'string' and data.source or 'unknown')
+  exportSeq = exportSeq + 1
+  local id = type(data.id) == 'string' and ('%s#%s'):format(source, data.id) or ('%s#p%d'):format(source, exportSeq)
+  local ok, reason = openIntent(source, id, data.intent, data.props)
+  if not ok then return cb({ error = reason }) end
+  open[id].page = true
+  local def = NUI.intents.schema and NUI.intents.schema.intents[data.intent]
+  if not (def and def.yields) then return cb({ id = id }) end
+  local now = GetGameTimer()
+  for pid, p in pairs(pagePending) do
+    if now - p.at > PAGE_TIMEOUT then
+      pagePending[pid] = nil
+      p.cb({ id = pid, error = 'timed out' })
+    end
+  end
+  pagePending[id] = { cb = cb, at = now }
+  open[id].cb = function(result, why, extra)
+    local p = pagePending[id]
+    if not p then return end
+    pagePending[id] = nil
+    p.cb({ id = id, result = result, reason = why, data = extra })
+  end
+end)
+
 -- ───────────────────────────────── cancel key (progress with cancel = true)
 
 -- The page has no keyboard focus during a progress bar, so the runtime reads the key (ox_lib binds
@@ -213,13 +274,13 @@ if RegisterKeyMapping then RegisterKeyMapping('nuikit_cancel', 'Cancel the curre
 ---@param props table
 ---@param cb? fun(result: any, reason: string|nil, data: any)
 ---@return string|nil id
-local exportSeq = 0
 local function exportOpen(kind, props, cb)
   local resource = caller()
   exportSeq = exportSeq + 1
   local id = ('%s#x%d'):format(resource, exportSeq)
   if type(props) == 'table' and type(props.id) == 'string' then id = ('%s#%s'):format(resource, props.id) end
-  if not openIntent(resource, id, kind, props) then return nil end
+  local ok, reason = openIntent(resource, id, kind, props)
+  if not ok then return nil, reason end
   if type(cb) == 'function' then open[id].cb = cb end
   return id
 end

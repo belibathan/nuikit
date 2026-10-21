@@ -5,23 +5,102 @@
   "yields": false,
   "update": true,
   "props": {
-    "id": { "type": "string" },
-    "label": { "type": "string", "required": true, "doc": "ox `text`. A leading [E] is lifted into `keys` by the Lua API." },
-    "keys": { "type": "array", "items": { "type": "string" }, "doc": "What's printed on the key(s): {'E'}, {'Shift', 'E'}." },
-    "description": { "type": "string", "doc": "A second, quieter line." },
-    "icon": { "type": "ref", "ref": "icon" },
-    "iconColor": { "type": "ref", "ref": "color" },
-    "iconAnimation": { "type": "ref", "ref": "iconAnimation" },
-    "position": { "type": "ref", "ref": "anchor", "default": "center-right" },
-    "surface": { "type": "enum", "values": ["panel", "hud"], "default": "panel" },
-    "hold": { "type": "integer", "min": 1, "doc": "ms the key must be held. The caller updates `progress` (0–1) from the game, or the page reads the key when it has focus." },
-    "progress": { "type": "number", "min": 0, "max": 1, "doc": "Hold progress from the game." },
-    "active": { "type": "boolean", "doc": "The one the key acts on now, among several prompts." },
-    "disabled": { "type": "boolean" },
-    "style": { "type": "object", "props": {}, "open": true, "doc": "Inline CSS (camelCase). Escape hatch for adapters." }
+    "id": {
+      "type": "string"
+    },
+    "label": {
+      "type": "string",
+      "required": true,
+      "doc": "ox `text`. A leading [E] is lifted into `keys` by the Lua API."
+    },
+    "keys": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "doc": "What's printed on the key(s): {'E'}, {'Shift', 'E'}."
+    },
+    "description": {
+      "type": "string",
+      "doc": "A second, quieter line."
+    },
+    "icon": {
+      "type": "ref",
+      "ref": "icon"
+    },
+    "iconColor": {
+      "type": "ref",
+      "ref": "color"
+    },
+    "iconAnimation": {
+      "type": "ref",
+      "ref": "iconAnimation"
+    },
+    "position": {
+      "type": "ref",
+      "ref": "anchor",
+      "default": "center-right"
+    },
+    "surface": {
+      "type": "enum",
+      "values": [
+        "slab",
+        "panel",
+        "hud"
+      ],
+      "default": "slab",
+      "doc": "slab: the prompt slab on the game (key chip + verb). panel: a small floating panel. hud: the dark HUD surface."
+    },
+    "hold": {
+      "type": "integer",
+      "min": 1,
+      "doc": "ms the key must be held. The caller updates `progress` (0–1) from the game, or the page reads the key when it has focus."
+    },
+    "progress": {
+      "type": "number",
+      "min": 0,
+      "max": 1,
+      "doc": "Hold progress from the game."
+    },
+    "active": {
+      "type": "boolean",
+      "doc": "The one the key acts on now, among several prompts."
+    },
+    "pressed": {
+      "type": "boolean",
+      "doc": "The key is held right now (qb DrawText `KeyPressed`): the chip lights up."
+    },
+    "status": {
+      "type": "ref",
+      "ref": "status",
+      "doc": "A tone on the prompt (esx_textui colours the box by type)."
+    },
+    "disabled": {
+      "type": "boolean"
+    },
+    "style": {
+      "type": "object",
+      "props": {},
+      "open": true,
+      "doc": "Inline CSS (camelCase). Escape hatch for adapters."
+    },
+    "meta": {
+      "type": "object",
+      "props": {},
+      "open": true,
+      "doc": "Library-specific extras an adapter carries through and a renderer may honour (okok `kind`, mythic `style`, an esx picture…). Never validated."
+    }
   },
-  "result": { "type": "boolean" },
+  "result": {
+    "type": "boolean"
+  },
   "events": {
-    "confirm": { "doc": "Pressed or held (only when the page reads keys).", "data": { "type": "object", "props": {} } }
+    "confirm": {
+      "doc": "Pressed or held (only when the page reads keys).",
+      "data": {
+        "type": "object",
+        "props": {}
+      }
+    }
   }
 }

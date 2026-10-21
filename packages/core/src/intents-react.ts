@@ -36,7 +36,9 @@ export function defineReactRenderer<K extends IntentKind>({
       render();
       return () => {
         off();
-        root.unmount();
+        // The frame unmounts renderers from its own effects: unmounting a root while React renders
+        // is not allowed, so let the current render finish first.
+        setTimeout(() => root.unmount(), 0);
       };
     },
   });

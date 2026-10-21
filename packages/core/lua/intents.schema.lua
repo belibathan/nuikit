@@ -37,16 +37,19 @@
 ---@field iconColor? NkColor
 ---@field iconAnimation? NkIconAnimation
 ---@field alignIcon? 'top'|'center'  Where the icon sits when there are two lines. Default: top with two lines, center with one.
----@field duration? integer  ms on screen. 0 or missing: 5000.
+---@field duration? integer  ms on screen. Missing: 5000. 0: stays until the script cancels it (give it an `id`).
 ---@field showDuration? boolean  A line under the toast drains over `duration`.
 ---@field position? NkAnchor
----@field sound? any  Never reaches the page: the caller's Lua plays it (ox strips it the same way).
+---@field item? { name: string, count: integer, icon?: NkIcon, image?: string }  An item added or removed: draws the item slab (tile + name + change) instead of a panel, and merges with the same item's recent change.
+---@field sound? boolean|string|table<string, any>  Play a sound: true for the kit's, a name, or a library's table. The caller's Lua plays it; it never reaches the page (ox strips it the same way).
 ---@field style? table<string, any>  Inline CSS (camelCase) merged over the toast. Escape hatch for adapters; themed UIs don't need it.
+---@field meta? table<string, any>  Library-specific extras an adapter carries through and a renderer may honour (okok `kind`, mythic `style`, an esx picture…). Never validated.
 
 ---@alias NkNotifyResult nil
 
 ---@class NkMenuItem
 ---@field id? string  Returned in the result. Default: the 1-based index as a string.
+---@field kind? 'item'|'header'  header: a section label (qb-menu headers): never selectable, keeps its index.
 ---@field label? string  ox `title`. A row with no label is skipped visually but keeps its index (ox quirk).
 ---@field description? string
 ---@field icon? NkIcon
@@ -66,6 +69,7 @@
 ---@field checked? boolean  Present (even false): a checkbox row. Enter toggles it and emits 'check'; the menu stays open.
 ---@field values? (string|{ label: string, description?: string })[]  A stepper row: left/right cycle these; Enter resolves with the current index.
 ---@field defaultIndex? integer  1-based starting value of a stepper row.
+---@field field? { type: 'text'|'number'|'select'|'slider'|'checkbox', default?: any, placeholder?: string, min?: number, max?: number, step?: number, options?: { value: string, label?: string }[] }  An inline control in the row (esx_context input rows, esx_menu_default slider/select): its value is reported in `change` and `select` events and in the result's `fields` (by item id).
 ---@field close? boolean  false: selecting emits 'select' and keeps the menu open instead of resolving.
 ---@field args? any  Returned untouched in the result.
 
@@ -77,28 +81,31 @@
 ---@field icon? NkIcon
 ---@field position? NkAnchor  Default: top-right band for cursor menus (ox context), top-left for keyboard menus (ox list).
 ---@field input? 'cursor'|'keyboard'|'full'  cursor: mouse only (ox context). keyboard: arrows + Enter, no cursor, the player keeps moving (ox list menu). full: both.
+---@field focus? boolean  false: drawn without taking the cursor or keys (a preview, esx_context `focus = false`); nothing can be picked until an update sets it true.
 ---@field canClose? boolean  false: Escape and the close button do nothing; only the script can close it.
+---@field dismissable? boolean  false: Escape does nothing (esx_context). canClose = false also hides the close button.
 ---@field menu? string  The parent menu's id: shows a back button that resolves with reason 'back'.
 ---@field startIndex? integer  1-based row highlighted first (keyboard menus).
 ---@field items NkMenuItem[]
+---@field meta? table<string, any>  Library-specific extras an adapter carries through and a renderer may honour (okok `kind`, mythic `style`, an esx picture…). Never validated.
 
----@alias NkMenuResult { index?: integer, id?: string, value?: integer, checked?: boolean, path?: integer[], args?: any }
+---@alias NkMenuResult { index?: integer, id?: string, value?: integer, checked?: boolean, fields?: table<string, any>, path?: integer[], args?: any }
 
---- select / multi-select choices.
+--- select / multi-select / radio / checkbox-group choices.
 ---@class NkInputOption
 ---@field value string
 ---@field label? string
 
 ---@class NkInputField
 ---@field id? string  Key in the result's `byId`. Default: the 1-based index as a string.
----@field type? 'text'|'textarea'|'number'|'checkbox'|'select'|'multi-select'|'slider'|'color'|'date'|'date-range'|'time'  ox `input` is `text`.
+---@field type? 'text'|'password'|'textarea'|'number'|'checkbox'|'checkbox-group'|'radio'|'select'|'multi-select'|'slider'|'color'|'date'|'date-range'|'time'  ox `input` is `text`. password: a masked text field. checkbox-group: several options under one field (qb-input), returns the checked values. radio: a select drawn as radios.
 ---@field label? string
 ---@field description? string  Helper text under the field.
 ---@field placeholder? string
 ---@field icon? NkIcon
 ---@field disabled? boolean
 ---@field required? boolean  Submit is blocked while empty (a checkbox must be ticked).
----@field default? any  Initial value, in the field's result type (date: true means today).
+---@field default? any  Initial value, in the field's result type (date: true means today; checkbox-group: the checked values).
 ---@field password? boolean  text: masked with an eye toggle.
 ---@field min? number|string  number/slider: value. text: length. textarea: rows. date: earliest (ISO string).
 ---@field max? number|string
@@ -107,7 +114,7 @@
 ---@field minLength? integer
 ---@field maxLength? integer
 ---@field autosize? boolean  textarea grows with its content.
----@field options? NkInputOption[]  select / multi-select choices.
+---@field options? NkInputOption[]  select / multi-select / radio / checkbox-group choices.
 ---@field clearable? boolean
 ---@field searchable? boolean
 ---@field maxSelected? integer  multi-select: at most this many (ox maxSelectedValues).
@@ -126,6 +133,7 @@
 ---@field submitLabel? string
 ---@field cancelLabel? string
 ---@field fields NkInputField[]
+---@field meta? table<string, any>  Library-specific extras an adapter carries through and a renderer may honour (okok `kind`, mythic `style`, an esx picture…). Never validated.
 
 ---@alias NkInputResult { values?: any[], byId?: table<string, any> }
 
@@ -141,21 +149,23 @@
 ---@field cancel? boolean  Show a cancel button. Escape always resolves 'cancel'.
 ---@field labels? { confirm?: string, cancel?: string }
 ---@field timeout? integer  ms until it resolves 'cancel' by itself (reason 'timeout').
+---@field meta? table<string, any>  Library-specific extras an adapter carries through and a renderer may honour (okok `kind`, mythic `style`, an esx picture…). Never validated.
 
 ---@alias NkConfirmResult 'confirm'|'cancel'
 
---- A timed bar or ring. Superset of ox progressBar / progressCircle, QBCore Progressbar and esx_progressbar. Animation, props and interruptions (death, ragdoll, cuffs) stay with the caller's Lua: it cancels. Drawn by `meter` or `progress-ring`. Resolves true when it ran out, false when cancelled. (v1)
+--- A timed bar or ring. Superset of ox progressBar / progressCircle, QBCore Progressbar and esx_progressbar. Animation, props and interruptions (death, ragdoll, cuffs) stay with the caller's Lua: it cancels. Drawn by `meter` or `progress-ring`. Resolves true when it ran out, false when cancelled. One at a time: a second one is refused (nil, 'busy') while one runs. (v1)
 ---@class NkProgressProps
 ---@field id? string
 ---@field label? string
 ---@field duration integer  ms from 0 to 100%.
 ---@field style? 'bar'|'ring'
 ---@field position? 'bottom'|'center'  bottom: the bottom band. center: the middle of the screen.
----@field cancel? boolean  The player may cancel with `cancelKey`; the caller's Lua reads the key and calls cancel (the page can't read keys without focus).
+---@field cancel? boolean  The player may cancel with `cancelKey` (the runtime reads the key: the page has no focus). false: nothing dismisses it, Escape included; it resolves true at `duration`.
 ---@field cancelKey? string  Shown next to the bar when `cancel` is true.
 ---@field tone? 'primary'|'success'|'warning'|'info'|'destructive'
 ---@field value? number  Drive it yourself (update) instead of `duration`'s clock. The clock stops once a value is given.
 ---@field showPercent? boolean  Default: true for ring, false for bar.
+---@field meta? table<string, any>  Library-specific extras an adapter carries through and a renderer may honour (okok `kind`, mythic `style`, an esx picture…). Never validated.
 
 ---@alias NkProgressResult boolean
 
@@ -169,12 +179,15 @@
 ---@field iconColor? NkColor
 ---@field iconAnimation? NkIconAnimation
 ---@field position? NkAnchor
----@field surface? 'panel'|'hud'
+---@field surface? 'slab'|'panel'|'hud'  slab: the prompt slab on the game (key chip + verb). panel: a small floating panel. hud: the dark HUD surface.
 ---@field hold? integer  ms the key must be held. The caller updates `progress` (0–1) from the game, or the page reads the key when it has focus.
 ---@field progress? number  Hold progress from the game.
 ---@field active? boolean  The one the key acts on now, among several prompts.
+---@field pressed? boolean  The key is held right now (qb DrawText `KeyPressed`): the chip lights up.
+---@field status? NkStatus  A tone on the prompt (esx_textui colours the box by type).
 ---@field disabled? boolean
 ---@field style? table<string, any>  Inline CSS (camelCase). Escape hatch for adapters.
+---@field meta? table<string, any>  Library-specific extras an adapter carries through and a renderer may honour (okok `kind`, mythic `style`, an esx picture…). Never validated.
 
 ---@alias NkPromptResult boolean
 
@@ -185,6 +198,7 @@
 ---@field icon? NkIcon
 ---@field iconColor? NkColor
 ---@field disabled? boolean
+---@field active? boolean  Highlighted now (the library's own hover).
 ---@field items? NkTargetOption[]  A nested group (ox_target option groups).
 ---@field args? any
 
@@ -194,8 +208,10 @@
 ---@field title? string  The target's name, above the list.
 ---@field eye? boolean  Show the eye at the centre of the screen.
 ---@field active? boolean  Something is under the crosshair: the eye lights up.
+---@field success? boolean  An option was just chosen: the eye flashes success (qb-target).
 ---@field open? boolean  The list is shown (the player pressed the key).
 ---@field options? NkTargetOption[]
+---@field meta? table<string, any>  Library-specific extras an adapter carries through and a renderer may honour (okok `kind`, mythic `style`, an esx picture…). Never validated.
 
 ---@alias NkTargetResult { index?: integer, id?: string, path?: integer[], args?: any }
 
@@ -221,6 +237,7 @@
 ---@field items NkRadialItem[]
 ---@field sub? boolean  This is a submenu (the centre shows back instead of close).
 ---@field option? string  The id of the submenu just left, so the page it lives on opens first (ox).
+---@field meta? table<string, any>  Library-specific extras an adapter carries through and a renderer may honour (okok `kind`, mythic `style`, an esx picture…). Never validated.
 
 ---@alias NkRadialResult { index?: integer, id?: string, path?: integer[], args?: any }
 
@@ -231,6 +248,7 @@
 ---@field keys? string[]  Allowed keys; each round picks one at random. Default {'E'}. Other keys are ignored when given, fail the round otherwise (ox).
 ---@field label? string  Under the ring.
 ---@field size? 'sm'|'default'|'lg'
+---@field meta? table<string, any>  Library-specific extras an adapter carries through and a renderer may honour (okok `kind`, mythic `style`, an esx picture…). Never validated.
 
 ---@alias NkChallengeResult boolean
 
@@ -391,7 +409,7 @@ return {
         duration = {
           type = 'integer',
           min = 0,
-          doc = 'ms on screen. 0 or missing: 5000.',
+          doc = 'ms on screen. Missing: 5000. 0: stays until the script cancels it (give it an `id`).',
         },
         showDuration = {
           type = 'boolean',
@@ -403,15 +421,52 @@ return {
           ref = 'anchor',
           default = 'top-right',
         },
+        item = {
+          type = 'object',
+          props = {
+            name = {
+              type = 'string',
+              required = true,
+            },
+            count = {
+              type = 'integer',
+              required = true,
+              doc = 'Positive for added, negative for removed.',
+            },
+            icon = {
+              type = 'ref',
+              ref = 'icon',
+            },
+            image = {
+              type = 'string',
+            },
+          },
+          doc = 'An item added or removed: draws the item slab (tile + name + change) instead of a panel, and merges with the same item\'s recent change.',
+        },
         sound = {
-          type = 'any',
-          doc = 'Never reaches the page: the caller\'s Lua plays it (ox strips it the same way).',
+          type = 'oneOf',
+          of = { {
+            type = 'boolean',
+          }, {
+            type = 'string',
+          }, {
+            type = 'object',
+            props = {},
+            open = true,
+          } },
+          doc = 'Play a sound: true for the kit\'s, a name, or a library\'s table. The caller\'s Lua plays it; it never reaches the page (ox strips it the same way).',
         },
         style = {
           type = 'object',
           props = {},
           open = true,
           doc = 'Inline CSS (camelCase) merged over the toast. Escape hatch for adapters; themed UIs don\'t need it.',
+        },
+        meta = {
+          type = 'object',
+          props = {},
+          open = true,
+          doc = 'Library-specific extras an adapter carries through and a renderer may honour (okok `kind`, mythic `style`, an esx picture…). Never validated.',
         },
       },
       result = nil,
@@ -450,10 +505,20 @@ return {
           default = 'full',
           doc = 'cursor: mouse only (ox context). keyboard: arrows + Enter, no cursor, the player keeps moving (ox list menu). full: both.',
         },
+        focus = {
+          type = 'boolean',
+          default = true,
+          doc = 'false: drawn without taking the cursor or keys (a preview, esx_context `focus = false`); nothing can be picked until an update sets it true.',
+        },
         canClose = {
           type = 'boolean',
           default = true,
           doc = 'false: Escape and the close button do nothing; only the script can close it.',
+        },
+        dismissable = {
+          type = 'boolean',
+          default = true,
+          doc = 'false: Escape does nothing (esx_context). canClose = false also hides the close button.',
         },
         menu = {
           type = 'string',
@@ -474,6 +539,12 @@ return {
               id = {
                 type = 'string',
                 doc = 'Returned in the result. Default: the 1-based index as a string.',
+              },
+              kind = {
+                type = 'enum',
+                values = { 'item', 'header' },
+                default = 'item',
+                doc = 'header: a section label (qb-menu headers): never selectable, keeps its index.',
               },
               label = {
                 type = 'string',
@@ -572,6 +643,48 @@ return {
                 min = 1,
                 doc = '1-based starting value of a stepper row.',
               },
+              field = {
+                type = 'object',
+                props = {
+                  type = {
+                    type = 'enum',
+                    values = { 'text', 'number', 'select', 'slider', 'checkbox' },
+                    required = true,
+                  },
+                  default = {
+                    type = 'any',
+                  },
+                  placeholder = {
+                    type = 'string',
+                  },
+                  min = {
+                    type = 'number',
+                  },
+                  max = {
+                    type = 'number',
+                  },
+                  step = {
+                    type = 'number',
+                    min = 0,
+                  },
+                  options = {
+                    type = 'array',
+                    items = {
+                      type = 'object',
+                      props = {
+                        value = {
+                          type = 'string',
+                          required = true,
+                        },
+                        label = {
+                          type = 'string',
+                        },
+                      },
+                    },
+                  },
+                },
+                doc = 'An inline control in the row (esx_context input rows, esx_menu_default slider/select): its value is reported in `change` and `select` events and in the result\'s `fields` (by item id).',
+              },
               close = {
                 type = 'boolean',
                 default = true,
@@ -583,6 +696,12 @@ return {
               },
             },
           },
+        },
+        meta = {
+          type = 'object',
+          props = {},
+          open = true,
+          doc = 'Library-specific extras an adapter carries through and a renderer may honour (okok `kind`, mythic `style`, an esx picture…). Never validated.',
         },
       },
       result = {
@@ -601,6 +720,12 @@ return {
           },
           checked = {
             type = 'boolean',
+          },
+          fields = {
+            type = 'object',
+            props = {},
+            open = true,
+            doc = 'Every inline field\'s value, by item id.',
           },
           path = {
             type = 'array',
@@ -631,6 +756,11 @@ return {
               },
               checked = {
                 type = 'boolean',
+              },
+              fields = {
+                type = 'object',
+                props = {},
+                open = true,
               },
             },
           },
@@ -676,6 +806,28 @@ return {
               },
               value = {
                 type = 'integer',
+              },
+              fields = {
+                type = 'object',
+                props = {},
+                open = true,
+              },
+            },
+          },
+        },
+        field = {
+          doc = 'An inline field\'s value changed.',
+          data = {
+            type = 'object',
+            props = {
+              index = {
+                type = 'integer',
+              },
+              id = {
+                type = 'string',
+              },
+              value = {
+                type = 'any',
               },
             },
           },
@@ -734,9 +886,9 @@ return {
               },
               type = {
                 type = 'enum',
-                values = { 'text', 'textarea', 'number', 'checkbox', 'select', 'multi-select', 'slider', 'color', 'date', 'date-range', 'time' },
+                values = { 'text', 'password', 'textarea', 'number', 'checkbox', 'checkbox-group', 'radio', 'select', 'multi-select', 'slider', 'color', 'date', 'date-range', 'time' },
                 default = 'text',
-                doc = 'ox `input` is `text`.',
+                doc = 'ox `input` is `text`. password: a masked text field. checkbox-group: several options under one field (qb-input), returns the checked values. radio: a select drawn as radios.',
               },
               label = {
                 type = 'string',
@@ -761,7 +913,7 @@ return {
               },
               default = {
                 type = 'any',
-                doc = 'Initial value, in the field\'s result type (date: true means today).',
+                doc = 'Initial value, in the field\'s result type (date: true means today; checkbox-group: the checked values).',
               },
               password = {
                 type = 'boolean',
@@ -820,7 +972,7 @@ return {
                     },
                   },
                 },
-                doc = 'select / multi-select choices.',
+                doc = 'select / multi-select / radio / checkbox-group choices.',
               },
               clearable = {
                 type = 'boolean',
@@ -847,6 +999,12 @@ return {
               },
             },
           },
+        },
+        meta = {
+          type = 'object',
+          props = {},
+          open = true,
+          doc = 'Library-specific extras an adapter carries through and a renderer may honour (okok `kind`, mythic `style`, an esx picture…). Never validated.',
         },
       },
       result = {
@@ -945,6 +1103,12 @@ return {
           min = 0,
           doc = 'ms until it resolves \'cancel\' by itself (reason \'timeout\').',
         },
+        meta = {
+          type = 'object',
+          props = {},
+          open = true,
+          doc = 'Library-specific extras an adapter carries through and a renderer may honour (okok `kind`, mythic `style`, an esx picture…). Never validated.',
+        },
       },
       result = {
         type = 'enum',
@@ -984,7 +1148,7 @@ return {
         cancel = {
           type = 'boolean',
           default = false,
-          doc = 'The player may cancel with `cancelKey`; the caller\'s Lua reads the key and calls cancel (the page can\'t read keys without focus).',
+          doc = 'The player may cancel with `cancelKey` (the runtime reads the key: the page has no focus). false: nothing dismisses it, Escape included; it resolves true at `duration`.',
         },
         cancelKey = {
           type = 'string',
@@ -1005,6 +1169,12 @@ return {
         showPercent = {
           type = 'boolean',
           doc = 'Default: true for ring, false for bar.',
+        },
+        meta = {
+          type = 'object',
+          props = {},
+          open = true,
+          doc = 'Library-specific extras an adapter carries through and a renderer may honour (okok `kind`, mythic `style`, an esx picture…). Never validated.',
         },
       },
       result = {
@@ -1056,8 +1226,9 @@ return {
         },
         surface = {
           type = 'enum',
-          values = { 'panel', 'hud' },
-          default = 'panel',
+          values = { 'slab', 'panel', 'hud' },
+          default = 'slab',
+          doc = 'slab: the prompt slab on the game (key chip + verb). panel: a small floating panel. hud: the dark HUD surface.',
         },
         hold = {
           type = 'integer',
@@ -1074,6 +1245,15 @@ return {
           type = 'boolean',
           doc = 'The one the key acts on now, among several prompts.',
         },
+        pressed = {
+          type = 'boolean',
+          doc = 'The key is held right now (qb DrawText `KeyPressed`): the chip lights up.',
+        },
+        status = {
+          type = 'ref',
+          ref = 'status',
+          doc = 'A tone on the prompt (esx_textui colours the box by type).',
+        },
         disabled = {
           type = 'boolean',
         },
@@ -1082,6 +1262,12 @@ return {
           props = {},
           open = true,
           doc = 'Inline CSS (camelCase). Escape hatch for adapters.',
+        },
+        meta = {
+          type = 'object',
+          props = {},
+          open = true,
+          doc = 'Library-specific extras an adapter carries through and a renderer may honour (okok `kind`, mythic `style`, an esx picture…). Never validated.',
         },
       },
       result = {
@@ -1120,6 +1306,11 @@ return {
           default = false,
           doc = 'Something is under the crosshair: the eye lights up.',
         },
+        success = {
+          type = 'boolean',
+          default = false,
+          doc = 'An option was just chosen: the eye flashes success (qb-target).',
+        },
         open = {
           type = 'boolean',
           default = false,
@@ -1152,6 +1343,10 @@ return {
               disabled = {
                 type = 'boolean',
               },
+              active = {
+                type = 'boolean',
+                doc = 'Highlighted now (the library\'s own hover).',
+              },
               items = {
                 type = 'array',
                 items = {
@@ -1164,6 +1359,12 @@ return {
               },
             },
           },
+        },
+        meta = {
+          type = 'object',
+          props = {},
+          open = true,
+          doc = 'Library-specific extras an adapter carries through and a renderer may honour (okok `kind`, mythic `style`, an esx picture…). Never validated.',
         },
       },
       result = {
@@ -1291,6 +1492,12 @@ return {
           type = 'string',
           doc = 'The id of the submenu just left, so the page it lives on opens first (ox).',
         },
+        meta = {
+          type = 'object',
+          props = {},
+          open = true,
+          doc = 'Library-specific extras an adapter carries through and a renderer may honour (okok `kind`, mythic `style`, an esx picture…). Never validated.',
+        },
       },
       result = {
         type = 'object',
@@ -1382,6 +1589,12 @@ return {
           type = 'enum',
           values = { 'sm', 'default', 'lg' },
           default = 'default',
+        },
+        meta = {
+          type = 'object',
+          props = {},
+          open = true,
+          doc = 'Library-specific extras an adapter carries through and a renderer may honour (okok `kind`, mythic `style`, an esx picture…). Never validated.',
         },
       },
       result = {

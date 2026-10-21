@@ -96,7 +96,7 @@ describe("validateIntent", () => {
     ];
     expect(validateIntent("input", { title: "Form", fields, size: "md", allowCancel: false })).toEqual([]);
     expect(messages(validateIntent("input", { title: "Form", fields: [{ type: "image" }] }))).toEqual([
-      "fields[1].type: expected one of text, textarea, number, checkbox, select, multi-select, slider, color, date, date-range, time, got \"image\"",
+      "fields[1].type: expected one of text, password, textarea, number, checkbox, checkbox-group, radio, select, multi-select, slider, color, date, date-range, time, got \"image\"",
     ]);
   });
 
@@ -166,7 +166,7 @@ describe("intent store", () => {
     open("shop#1", "confirm", { title: "a" });
     open("shop#2", "confirm", { title: "b" });
     s.back("confirm");
-    expect(posts).toEqual([{ id: "shop#2", reason: "escape" }]);
+    expect(posts).toEqual([{ id: "shop#2", reason: "escape", data: undefined }]);
     let decided = 0;
     s.onBack("confirm", () => decided++);
     s.back("confirm");
