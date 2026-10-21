@@ -214,7 +214,9 @@ recipes, from a scripted session (join, spawn, menus, a job, inventory, death). 
 8. **Doctor and coverage harness** on the three reference servers.
 9. **Packaging**: per-framework zips, `nuikit.cfg`, txAdmin recipe; renderer packs via `nuikit_renderer`.
    *Zips, `nuikit.cfg` and the Qbox recipe exist (`scripts/pack-systems.mjs`, `systems/nuikit/nuikit.cfg`,
-   `install/`); the recipe is unproven on a real txAdmin; renderer packs wait on step 2.*
+   `install/`); the recipe is unproven on a real txAdmin. Renderer packs: built (`feat/renderer-packs`,
+   [`intents.md`](intents.md) §9): `nuikit_renderer` discovery in the runtime, the frame's loader with fallback
+   to the default, `npm create nuikit -t renderer-pack`; not yet in game.*
 
 The owner tests each step in game through a `next/*` prerelease.
 
