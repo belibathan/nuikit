@@ -14,8 +14,10 @@ import { meterColor, type MeterTone } from "@/components/ui/meter"
 /**
  * MenuRow — the 40px action row every list is made of (docs/design.md, rule 5): an icon or an
  * image, a label, an optional description and progress, and one trailing thing: meta text, a
- * chevron, a Kbd, a checkbox or a value stepper. Highlight is the theme's accent, like shadcn's
- * menus. The default look of the `menu` intent's items (docs/architecture.md §2).
+ * chevron, a Kbd, a checkbox or a value stepper. Keyboard focus and the list's active row draw the
+ * identity's indicator (`nk-row`: bar, outline or fill; one sliding `nk-indicator` when the list
+ * drives it); the pointer's hover is the theme's accent, like shadcn's menus. The default look of
+ * the `menu` intent's items (docs/architecture.md §2).
  *
  *   <MenuRow icon={<MapIcon />} kbd="P" onClick={openMap}>Map</MenuRow>
  *   <MenuRow icon={<CarIcon />} description="Stored, 98% condition" meta="ZEN 01" chevron>Zentorno</MenuRow>
@@ -24,9 +26,12 @@ import { meterColor, type MeterTone } from "@/components/ui/meter"
  *   <MenuRow value="Medium" valueTone="muted" onStep={(d) => cycle(d)}>Voice range</MenuRow>
  *   <MenuRow readOnly description="Set by your job">Callsign</MenuRow>
  *   <MenuRow tone="destructive" icon={<LogOutIcon />}>Disconnect</MenuRow>
+ *   <MenuRow readOnly description="Officer, on duty" actions={<Button size="icon-sm" variant="ghost" aria-label="Promote" …/>}>Lee</MenuRow>
  *
  * A checkbox or stepper row is a focusable div (a button can't hold one): Enter / Space toggle
- * it, Left / Right step it.
+ * it, Left / Right step it. `actions` are trailing controls that act on the row (promote, fire,
+ * track): the row is a div too, the controls are reached with Tab, and a click or key on one
+ * never fires the row's own click, toggle or step.
  *
  * `inert` (not the HTML attribute: the row stays clickable and focusable) turns hover off: in
  * game CEF keeps :hover matched after Lua takes focus away, so a UI that drives the highlight
@@ -41,8 +46,8 @@ import { meterColor, type MeterTone } from "@/components/ui/meter"
 const menuRowVariants = cva(
   [
     "group/menu-row nk-row w-full cursor-default text-left font-medium outline-none select-none",
-    "focus-visible:bg-accent focus-visible:text-accent-foreground",
-    "data-[active]:bg-accent data-[active]:text-accent-foreground",
+    // focus and active: the identity indicator (nk-row); the text brightens to the foreground
+    "focus-visible:text-foreground data-[active]:text-foreground",
     "disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50",
     "[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
   ],
@@ -66,11 +71,10 @@ const menuRowVariants = cva(
 )
 
 /** Icons and secondary text follow the row into its highlight (keyboard and active always; hover unless inert). */
-const ON_HIGHLIGHT = "group-focus-visible/menu-row:text-accent-foreground group-data-[active]/menu-row:text-accent-foreground"
+const ON_HIGHLIGHT = "group-focus-visible/menu-row:text-foreground group-data-[active]/menu-row:text-foreground"
 const ON_HOVER = "group-hover/menu-row:text-accent-foreground"
 
-/** In many themes muted = accent, so a Kbd would vanish into the highlight: lift it off it. */
-const KBD_ON_HIGHLIGHT = "group-focus-visible/menu-row:bg-background/60 group-data-[active]/menu-row:bg-background/60"
+/** In many themes muted = accent, so a Kbd would vanish into the hover highlight: lift it off it. */
 const KBD_ON_HOVER = "group-hover/menu-row:bg-background/60"
 
 /** 0–100, NaN → 0. */
@@ -109,6 +113,8 @@ type MenuRowProps = Omit<React.ComponentProps<"button">, "value" | "inert"> &
     readOnly?: boolean
     /** Hover changes nothing; the row is still clickable and focusable (see above). */
     inert?: boolean
+    /** Trailing controls that act on the row (icon buttons). Keyboard-reachable; their events stay theirs. */
+    actions?: React.ReactNode
     /** Render your own element (a link) with the row's styles. */
     asChild?: boolean
   }
@@ -132,6 +138,7 @@ function MenuRow({
   valueTone = "default",
   readOnly = false,
   inert = false,
+  actions,
   disabled,
   asChild = false,
   hover,
@@ -142,11 +149,12 @@ function MenuRow({
 }: MenuRowProps) {
   const isCheck = checked !== undefined
   const isStepper = onStep !== undefined
-  const asDiv = isCheck || isStepper || readOnly
+  const hasActions = actions !== undefined && actions !== null && actions !== false
+  const asDiv = isCheck || isStepper || readOnly || hasActions
   const hovers = hover ?? !(inert || readOnly)
   // readOnly rows never highlight, not even when told to.
   const lit = readOnly ? "" : cn(ON_HIGHLIGHT, hovers && ON_HOVER)
-  const kbdLit = readOnly ? "" : cn(KBD_ON_HIGHLIGHT, hovers && KBD_ON_HOVER)
+  const kbdLit = readOnly ? "" : (hovers ? KBD_ON_HOVER : "")
   const quiet = cn("text-muted-foreground", lit)
 
   const step = (dir: -1 | 1) => !disabled && !readOnly && onStep?.(dir)
@@ -213,6 +221,16 @@ function MenuRow({
           </span>
         </span>
       )}
+      {hasActions && (
+        <span
+          data-slot="menu-row-actions"
+          // a control on a highlighted row would vanish into the accent: lift its hover off it
+          className="flex shrink-0 items-center gap-1 [&>button:hover]:bg-background/50 [&>button:hover]:text-foreground"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {actions}
+        </span>
+      )}
       {chevron && <ChevronRightIcon data-slot="menu-row-chevron" className={quiet} />}
     </>
   )
@@ -242,7 +260,8 @@ function MenuRow({
           if (isCheck) toggle()
         }}
         onKeyDown={(e) => {
-          if (readOnly) return
+          // keys on an action control are its own (the event still bubbles to a list's navigation)
+          if (readOnly || e.target !== e.currentTarget) return
           onKeyDown?.(e as unknown as React.KeyboardEvent<HTMLButtonElement>)
           if (e.defaultPrevented) return
           if (isCheck && (e.key === "Enter" || e.key === " ")) (e.preventDefault(), toggle())

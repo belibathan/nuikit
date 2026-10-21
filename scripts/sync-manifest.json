@@ -127,6 +127,7 @@
     ],
     "systems/nuikit_hud": [
       "web/src/components/ui/hud-chip.tsx",
+      "web/src/components/ui/money.tsx",
       "web/src/components/ui/text-roll.tsx",
       "web/src/components/ui/vital-chip.tsx",
       "web/src/index.css",

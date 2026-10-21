@@ -79,6 +79,11 @@ function skillCheckZone(zoneSize: number, { min = 120, random = Math.random }: {
 }
 
 const R = 52
+/** 24 ticks (every 15°) on the circle at R + 6: one dash of 1 unit per step, the first centred on 12 o'clock. */
+const TICKS = (() => {
+  const step = (2 * Math.PI * (R + 6)) / 24
+  return { dash: `1 ${(step - 1).toFixed(3)}`, offset: 0.5 }
+})()
 const C = 2 * Math.PI * R
 
 /** stroke-dasharray + rotation drawing an arc of `len` degrees from `from` (clockwise from 12). */
@@ -233,6 +238,18 @@ function SkillCheck({
         <circle cx="60" cy="60" r={R} fill="none" strokeWidth="6" className="stroke-popover" />
         <circle cx="60" cy="60" r={R + 3} fill="none" strokeWidth="1" className="stroke-border" />
         <circle cx="60" cy="60" r={R - 3} fill="none" strokeWidth="1" className="stroke-border" />
+        {/* tick marks every 15° outside the ring, on the gauge tick token (× --nk-gauge-ticks: none when the identity turns them off) */}
+        <circle
+          data-slot="skill-check-ticks"
+          cx="60"
+          cy="60"
+          r={R + 6}
+          fill="none"
+          strokeWidth="2.5"
+          strokeDasharray={TICKS.dash}
+          strokeDashoffset={TICKS.offset}
+          className="stroke-(--nk-gauge-tick)"
+        />
         <circle
           data-slot="skill-check-zone"
           cx="60"

@@ -54,10 +54,8 @@ Background work that needs no in-game test to start. Lanes and file ownership: `
 
 ## Open decisions for the owner
 
-- **Note B:** should nuikit draw weapon glyphs, or reuse the inventory's item image (ox_inventory's images)?
-- In the default identity the HUD vitals dots are now rounded squares (they follow the chip radius, like the pills).
-  Keep them, or keep the dots round?
-- From the roadmap: `info` follows `primary` or a fixed blue; claim the npm name `nuikit`; check the kit on Chromium 144.
+All in [`decisions.md`](decisions.md): two options and a recommendation each. Also from the roadmap: claim the
+npm name `nuikit`; check the kit on Chromium 144.
 
 ## Owner's server (as left by the test)
 
