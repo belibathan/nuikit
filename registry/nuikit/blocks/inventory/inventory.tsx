@@ -308,9 +308,11 @@ function Inventory({
                   onPointerEnter={(e) => {
                     if (!item || dragging.current) return
                     const r = e.currentTarget.getBoundingClientRect()
-                    // Right of the slot, or left of it near the screen's right edge (the tooltip is 15rem).
-                    const width = 15 * parseFloat(getComputedStyle(document.documentElement).fontSize) + 8
-                    setHover({ item, left: r.right + width > window.innerWidth ? r.left - width : r.right + 8, top: Math.min(r.top, window.innerHeight - 220) })
+                    // Right of the slot, or left of it near the screen's right edge (the tooltip is 15rem
+                    // wide and at most about 14rem tall), in page px from the root rem.
+                    const rem = parseFloat(getComputedStyle(document.documentElement).fontSize)
+                    const width = 15 * rem + 8
+                    setHover({ item, left: r.right + width > window.innerWidth ? r.left - width : r.right + 8, top: Math.min(r.top, window.innerHeight - 14 * rem) })
                   }}
                   onPointerLeave={() => setHover(null)}
                   onClick={() => {
@@ -366,33 +368,35 @@ function Inventory({
 }
 
 /** The details of an item, next to its slot. */
-function ItemTooltip({ item, className, ...props }: React.ComponentProps<"div"> & { item: InventoryItem }) {
+function ItemTooltip({ item, className, ...props }: React.ComponentProps<"section"> & { item: InventoryItem }) {
   const info = Object.entries(item.info ?? {})
   return (
-    <div role="tooltip" data-slot="inventory-tooltip" className={cn("nk-panel pointer-events-none fixed z-40 flex w-60 flex-col gap-2 p-3", className)} {...props}>
-      <div className="flex items-baseline justify-between gap-3">
-        <span className="truncate font-medium">{item.label}</span>
-        {item.count > 1 && <span className="nk-num text-sm text-muted-foreground">× {item.count}</span>}
-      </div>
-      {item.description && <p className="text-xs leading-4 text-muted-foreground">{item.description}</p>}
-      {(item.weight !== undefined || info.length > 0) && (
-        <dl className="flex flex-col gap-1 text-xs leading-4">
-          {item.weight !== undefined && (
-            <div className="flex justify-between gap-3">
-              <dt className="text-muted-foreground">Weight</dt>
-              <dd className="nk-num">{formatWeight(item.weight * item.count)}</dd>
-            </div>
-          )}
-          {info.map(([k, v]) => (
-            <div key={k} className="flex justify-between gap-3">
-              <dt className="text-muted-foreground">{k}</dt>
-              <dd className="nk-num truncate">{v}</dd>
-            </div>
-          ))}
-        </dl>
-      )}
-      {item.durability !== undefined && <Meter label="Condition" value={item.durability} low={20} valueText={`${Math.round(item.durability)}%`} />}
-    </div>
+    <Panel role="tooltip" data-inventory-tooltip animate={false} size="sm" className={cn("pointer-events-none fixed z-40 w-60", className)} {...props}>
+      <PanelBody variant="form" className="gap-2 p-3">
+        <div className="flex items-baseline justify-between gap-3">
+          <span className="truncate font-medium">{item.label}</span>
+          {item.count > 1 && <span className="nk-num text-sm text-muted-foreground">× {item.count}</span>}
+        </div>
+        {item.description && <p className="nk-label">{item.description}</p>}
+        {(item.weight !== undefined || info.length > 0) && (
+          <dl className="nk-label flex flex-col gap-1">
+            {item.weight !== undefined && (
+              <div className="flex justify-between gap-3">
+                <dt>Weight</dt>
+                <dd className="nk-num text-foreground">{formatWeight(item.weight * item.count)}</dd>
+              </div>
+            )}
+            {info.map(([k, v]) => (
+              <div key={k} className="flex justify-between gap-3">
+                <dt>{k}</dt>
+                <dd className="nk-num truncate text-foreground">{v}</dd>
+              </div>
+            ))}
+          </dl>
+        )}
+        {item.durability !== undefined && <Meter label="Condition" value={item.durability} low={20} valueText={`${Math.round(item.durability)}%`} />}
+      </PanelBody>
+    </Panel>
   )
 }
 
