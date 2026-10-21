@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { __reset, emit } from "../src/index";
-import { applyServerTheme, loadServerTheme } from "../src/remote";
+import { __resetServerTheme, applyServerTheme, loadServerTheme, retryDelay } from "../src/remote";
 import { applyTheme, clearTheme, getPrefs, getTheme, onTheme, parseTheme, setPrefs, toRgba } from "../src/theme";
 import { compileTheme } from "../src/tokens";
 
@@ -134,6 +134,7 @@ describe("applyTheme (compiled tokens)", () => {
 
 describe("loadServerTheme (override pages)", () => {
   afterEach(() => {
+    __resetServerTheme();
     clearTheme();
     __reset();
     vi.unstubAllGlobals();
@@ -185,6 +186,29 @@ describe("loadServerTheme (override pages)", () => {
     );
     expect(await loadServerTheme({ live: false })).toBe(true);
     expect(document.documentElement.style.getPropertyValue("--primary")).toBe("rgb(0, 0, 255)");
+  });
+
+  it("keeps asking when nuikit starts after the page, and the server's theme replaces the stale file (0.7.0 F4)", async () => {
+    window.GetParentResourceName = () => "ox_lib";
+    const bodies: unknown[] = [];
+    let asks = 0;
+    vi.stubGlobal(
+      "fetch",
+      vi.fn((url: string, init?: RequestInit) => {
+        if (url.endsWith("theme.css")) return Promise.resolve(new Response(".dark { --primary: #8000ff; }")); // the old violet copy
+        bodies.push(JSON.parse(String(init?.body)));
+        // nuikit isn't started for the first ask; then it answers, then holds the long-poll
+        if (++asks === 1) return Promise.resolve(new Response("", { status: 404 }));
+        if (asks === 2) return Promise.resolve(new Response(JSON.stringify({ hash: "s", theme: compileTheme(".dark { --primary: #00ff00; }") })));
+        return new Promise<Response>(() => {});
+      }),
+    );
+    expect(await loadServerTheme()).toBe(true);
+    for (let i = 0; i < 4; i++) await new Promise((r) => setTimeout(r, 0));
+    expect(document.documentElement.style.getPropertyValue("--primary")).toBe("rgb(0, 255, 0)");
+    expect(bodies).toEqual([{ hash: null }, { hash: null, wait: true }, { hash: "s", wait: true }]);
+    expect(retryDelay(1)).toBe(2_000);
+    expect(retryDelay(31)).toBe(30_000);
   });
 
   it("applyServerTheme takes raw CSS when the server couldn't compile", () => {

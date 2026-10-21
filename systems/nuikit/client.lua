@@ -42,21 +42,33 @@ local function load()
 end
 
 local prefs = load()
-local theme = GlobalState.nuikitTheme
+local theme = nil -- the last GlobalState.nuikitTheme seen (state bag handler, or read when asked)
+
+--- The server's compiled theme, read when a page asks: at this script's start GlobalState may not
+--- have replicated yet, and the change handler only fires for later changes (0.7.0 test, F4).
+local function compiled()
+  if type(theme) == 'table' and theme.vars then return theme end
+  local value = GlobalState.nuikitTheme
+  if type(value) == 'table' and value.vars then theme = value end
+  return type(theme) == 'table' and theme.vars and theme or nil
+end
 
 -- ───────────────────────────────── theme for override pages (long-poll)
 
 local function hash()
-  local t = type(theme) == 'table' and theme.hash or 'css'
+  local c = compiled()
+  local t = c and c.hash or 'css'
   return ('%s:%s:%s:%s'):format(t, prefs.scale, prefs.reducedMotion and 1 or 0, prefs.highContrast and 1 or 0)
 end
 
 local function payload()
   local p = { hash = hash(), prefs = prefs }
-  if type(theme) == 'table' and theme.vars then
-    p.theme = theme
+  local c = compiled()
+  if c then
+    p.theme = c
   else
-    -- server couldn't compile (or an older server script): the page compiles theme.css itself
+    -- server couldn't compile (or an older server script): the page compiles theme.css itself.
+    -- This is the client's copy from when nuikit started, so it can be older than the server's file.
     p.css = LoadResourceFile(GetCurrentResourceName(), 'theme.css')
   end
   return p
