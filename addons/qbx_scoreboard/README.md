@@ -22,6 +22,6 @@ pnpm --filter qbx-scoreboard-web dev     # open /ui.html; press ` to fire setup,
 pnpm --filter qbx-scoreboard-web build   # writes web/build: ui.html, app.js, style.css
 ```
 
-`?state=open|busy|nocops|full|nosetup|closed` jumps to a state. The build is flat and keeps the original file names because the fxmanifest serves `html/*`; it fails if anything else would be emitted.
+`?state=open|busy|nocops|full|nosetup|noactivities|closed` jumps to a state. The build is flat and keeps the original file names because the fxmanifest serves `html/*`; it fails if anything else would be emitted.
 
 qbx_scoreboard is GPL-3.0 © Qbox-project. This is a separate implementation of its UI protocol, MIT licensed by [@belibathan](https://github.com/belibathan), and contains none of its code, markup or styles.

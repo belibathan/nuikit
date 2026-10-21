@@ -1,7 +1,7 @@
 // qbx_scoreboard's traffic, faked for browser development. Press ` for the devtools.
 // Each preset is a payload qbx_scoreboard's Lua really sends (docs/qbx-scoreboard-protocol.md).
 // The game sends them flat ({ action, ...fields }); devtools wraps them as { action, data }, which
-// the page accepts too. Jump straight to a state with ?state=open|busy|nocops|nosetup|full|closed.
+// the page accepts too. Jump straight to a state with ?state=open|busy|nocops|nosetup|full|noactivities|closed.
 import { NuiDevtools, defineMocks } from "nuikit-core/devtools";
 import { useEffect } from "react";
 
@@ -26,6 +26,7 @@ const OPEN = {
   nocops: { players: 9, maxPlayers: 48, requiredCops: cops(), currentCops: 0 },
   full: { players: 128, maxPlayers: 128, requiredCops: cops(["paleto"]), currentCops: 12 },
   nosetup: { players: 21, maxPlayers: 64, requiredCops: cops(), currentCops: 2 },
+  noactivities: { players: 3, maxPlayers: 32, requiredCops: {}, currentCops: 0 },
 };
 
 const mocks = defineMocks({
