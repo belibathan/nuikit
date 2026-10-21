@@ -1,7 +1,9 @@
 // The theme studio's model: a pasted theme (TweakCN / shadcn CSS variables) plus token tweaks,
 // compiled exactly as the nuikit resource compiles nuikit/theme.css, and exported back as a
 // theme.css that compiles to the same tokens. Shared by /theme and the /blocks theme switcher.
-import { compileTheme, toRgba, type CompiledTheme, type ThemeVars } from "nuikit-core";
+import { IDENTITY_TOKENS, compileTheme, toRgba, type CompiledTheme, type ThemeVars } from "nuikit-core";
+
+const DERIVED = new Set(IDENTITY_TOKENS.filter((t) => t.group === "derived").map((t) => t.name));
 
 /** Tokens the studio lets you tweak directly, grouped as the page shows them. */
 export const TWEAKS: { group: string; tokens: { name: string; label: string }[] }[] = [
@@ -41,6 +43,107 @@ export const TWEAKS: { group: string; tokens: { name: string; label: string }[] 
   },
 ];
 
+/** A control on the identity tier (tokens 1.1 / 1.2): a slider over a range, a choice, or a font. */
+export type IdentityControl =
+  | { name: string; label: string; kind: "range"; min: number; max: number; step: number; unit?: "" | "rem" | "px" | "ms" | "em"; hint?: string }
+  | { name: string; label: string; kind: "choice"; options: readonly { value: string; label: string }[]; hint?: string }
+  | { name: string; label: string; kind: "font"; hint?: string };
+
+/** The bundled identity families (docs/tokens.md#fonts), as a theme would name them with their stacks. */
+export const FONT_CHOICES: readonly { label: string; value: string }[] = [
+  { label: "Inter", value: "Inter, ui-sans-serif, system-ui, sans-serif" },
+  { label: "Inter Tight", value: '"Inter Tight", Inter, ui-sans-serif, system-ui, sans-serif' },
+  { label: "Barlow", value: "Barlow, ui-sans-serif, system-ui, sans-serif" },
+  { label: "Barlow Condensed", value: '"Barlow Condensed", Barlow, ui-sans-serif, system-ui, sans-serif' },
+  { label: "DM Sans", value: '"DM Sans", ui-sans-serif, system-ui, sans-serif' },
+  { label: "Fraunces", value: "Fraunces, Georgia, ui-serif, serif" },
+  { label: "IBM Plex Sans", value: '"IBM Plex Sans", ui-sans-serif, system-ui, sans-serif' },
+  { label: "Chakra Petch", value: '"Chakra Petch", "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif' },
+  { label: "Geist Mono", value: '"Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace' },
+  { label: "JetBrains Mono", value: '"JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace' },
+];
+
+/**
+ * The identity tier as the studio shows it (docs/design/v2.md §1): type, shape, surface, density,
+ * motion, HUD. Every control writes one token; the compiler derives the rest and warns on the floors.
+ */
+export const IDENTITY: { group: string; controls: IdentityControl[] }[] = [
+  {
+    group: "Type",
+    controls: [
+      { name: "font-sans", label: "Text", kind: "font" },
+      { name: "font-display", label: "Display", kind: "font", hint: "Titles, timers, the balance" },
+      { name: "font-numeric", label: "Numbers", kind: "font", hint: "Gauges, money, timers (tabular)" },
+      { name: "nk-type-ratio", label: "Type ratio", kind: "range", min: 1.125, max: 1.4, step: 0.025, hint: "1.125 calm … 1.333 dramatic" },
+      { name: "nk-weight-display", label: "Display weight", kind: "range", min: 300, max: 900, step: 100 },
+      { name: "nk-label-case", label: "Captions", kind: "choice", options: [{ value: "uppercase", label: "Uppercase" }, { value: "none", label: "As written" }] },
+    ],
+  },
+  {
+    group: "Shape",
+    controls: [
+      { name: "radius", label: "Corner radius", kind: "range", min: 0, max: 1.5, step: 0.125, unit: "rem" },
+      { name: "nk-cut", label: "Chamfer", kind: "range", min: 0, max: 1, step: 0.125, unit: "rem", hint: "Cut corners, 0 = off" },
+      { name: "nk-border-width", label: "Hairline", kind: "range", min: 0, max: 3, step: 1, unit: "px" },
+    ],
+  },
+  {
+    group: "Surface",
+    controls: [
+      { name: "nk-surface-opacity", label: "Panel opacity", kind: "range", min: 0.8, max: 1, step: 0.01, hint: "Floor 0.92 for text panels" },
+      { name: "nk-surface-tint", label: "Brand tint", kind: "range", min: 0, max: 0.12, step: 0.01 },
+      { name: "nk-surface-gradient", label: "Gradient", kind: "range", min: 0, max: 0.2, step: 0.01 },
+      { name: "nk-surface-edge", label: "Machined edge", kind: "range", min: 0, max: 0.3, step: 0.01 },
+      { name: "nk-elevation", label: "Elevation", kind: "choice", options: [{ value: "none", label: "None" }, { value: "soft", label: "Soft" }, { value: "deep", label: "Deep" }] },
+      { name: "nk-glow", label: "Glow", kind: "range", min: 0, max: 0.6, step: 0.05, hint: "Brand glow on active parts" },
+      { name: "nk-row-indicator", label: "Active row", kind: "choice", options: [{ value: "bar", label: "Bar" }, { value: "fill", label: "Fill" }, { value: "outline", label: "Outline" }] },
+    ],
+  },
+  {
+    group: "Density",
+    controls: [{ name: "nk-density", label: "Density", kind: "range", min: 0.75, max: 1.3, step: 0.025, hint: "Spacing and row heights; text stays 16px" }],
+  },
+  {
+    group: "Motion",
+    controls: [
+      { name: "nk-motion-feel", label: "Feel", kind: "choice", options: [{ value: "crisp", label: "Crisp" }, { value: "snap", label: "Snap" }, { value: "smooth", label: "Smooth" }, { value: "stepped", label: "Stepped" }] },
+      { name: "nk-duration", label: "Duration", kind: "range", min: 60, max: 400, step: 10, unit: "ms", hint: "Warns above 260ms" },
+      { name: "nk-spring-bounce", label: "Bounce", kind: "range", min: 0, max: 0.3, step: 0.05 },
+      { name: "nk-motion", label: "Animations", kind: "choice", options: [{ value: "1", label: "On" }, { value: "0", label: "Off" }] },
+    ],
+  },
+  {
+    group: "HUD",
+    controls: [
+      { name: "nk-hud-opacity", label: "Backplate", kind: "range", min: 0.3, max: 1, step: 0.01, hint: "HUD text is checked over a white sky" },
+      { name: "nk-hud-text-shadow", label: "Text shadow", kind: "choice", options: [{ value: "none", label: "None" }, { value: "soft", label: "Soft" }, { value: "strong", label: "Strong" }] },
+      { name: "nk-gauge-style", label: "Gauges", kind: "choice", options: [{ value: "arc", label: "Arc" }, { value: "bar", label: "Bar" }, { value: "digital", label: "Digital" }] },
+      { name: "nk-gauge-track", label: "Track", kind: "range", min: 0.125, max: 0.625, step: 0.0625, unit: "rem", hint: "Gauge and meter thickness" },
+      { name: "nk-gauge-ticks", label: "Ticks", kind: "choice", options: [{ value: "1", label: "On" }, { value: "0", label: "Off" }] },
+    ],
+  },
+];
+
+/** The number in a token value for a range control ("0.75rem" → 0.75, "140ms" → 140, "0.96" → 0.96). */
+export function identityNumber(value: string | undefined, fallback = 0): number {
+  const n = parseFloat(value ?? "");
+  return Number.isFinite(n) ? n : fallback;
+}
+
+/** A range control's number as the token's value, with its unit ("0.75" + "rem" → "0.75rem"). */
+export function identityValue(control: Extract<IdentityControl, { kind: "range" }>, n: number): string {
+  const decimals = String(control.step).split(".")[1]?.length ?? 0;
+  const text = decimals ? n.toFixed(decimals).replace(/\.?0+$/, "") : String(Math.round(n));
+  return `${text || "0"}${control.unit ?? ""}`;
+}
+
+/** The FONT_CHOICES entry whose family leads a token value, or null for a stack the studio doesn't bundle. */
+export function fontChoice(value: string | undefined): string | null {
+  if (!value) return null;
+  const family = value.split(",")[0]!.trim().replace(/^["']|["']$/g, "").toLowerCase();
+  return FONT_CHOICES.find((f) => f.label.toLowerCase() === family)?.value ?? null;
+}
+
 /**
  * The pasted theme with the tweaks on top, compiled for the game (dark set, colours lowered,
  * nuikit tokens derived, contrast checked). A tweak is an explicit token, so it wins and is no
@@ -53,7 +156,12 @@ export function studioTheme(css: string, tweaks: ThemeVars = {}): CompiledTheme 
     ? { ...compiled, warnings: [`${empty.map((n) => `--${n}`).join(", ")} ${empty.length > 1 ? "have" : "has"} no value; the stock value is used.`, ...compiled.warnings] }
     : compiled;
   if (!Object.keys(tweaks).length) return base;
-  const tweaked = compileTheme({ ...base, vars: { ...base.vars, ...tweaks } }, { mode: base.mode });
+  // derived identity tokens (surface, shadows, clip paths, the motion ladder…) come from the tweaked
+  // values again, as applyTheme's patch does; everything else the paste set stays explicit
+  const vars: ThemeVars = {};
+  for (const [k, v] of Object.entries(base.vars)) if (!DERIVED.has(k) || k in tweaks) vars[k] = v;
+  if ("brand" in tweaks && !("brand-foreground" in tweaks)) delete vars["brand-foreground"];
+  const tweaked = compileTheme({ ...base, vars: { ...vars, ...tweaks } }, { mode: base.mode });
   // keep what the paste said about itself (missing dark set, unreadable values); contrast is re-checked
   const pasteNotes = base.warnings.filter((w) => !/ is [\d.]+:1 \(needs /.test(w));
   return { ...tweaked, warnings: [...pasteNotes, ...tweaked.warnings.filter((w) => !pasteNotes.includes(w))] };
@@ -74,10 +182,14 @@ function dropEmptyValues(css: string): { css: string; empty: string[] } {
 
 /**
  * theme.css for nuikit/theme.css (or any TweakCN slot): every compiled token in a `.dark` block, the
- * set nuikit reads in game, with the font @imports first. Compiling it again gives the same tokens.
+ * set nuikit reads in game, with the font @imports first. Derived tokens (surface, shadows, clip
+ * paths, the motion ladder) are left out, as toDtcg leaves them out: compiling the file derives them
+ * again, so it gives the same tokens, and a hand edit to `--nk-cut` or `--nk-duration` still takes.
  */
 export function exportThemeCss(theme: CompiledTheme): string {
-  const lines = Object.entries(theme.vars).map(([k, v]) => `  --${k}: ${v};`)
+  const lines = Object.entries(theme.vars)
+    .filter(([k]) => !DERIVED.has(k))
+    .map(([k, v]) => `  --${k}: ${v};`)
   return [
     "/* nuikit theme (tokens v1), made in the theme studio: https://nuikit.vercel.app/theme",
     "   Drop it in nuikit/theme.css and run `nuikit theme reload`. */",
