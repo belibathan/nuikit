@@ -118,6 +118,12 @@ Adapters are **clean-room** like overrides: written from the library's public AP
 `docs/adapters/<library>.md`, never from its code, and tested by replaying recorded calls and checking what the
 calling script gets back.
 
+*Status (Oct 2026): specs for the 15 libraries of steps 5–7 are in [`adapters/`](adapters/README.md); the spike
+resources, the owner's checklist and the replay harness are in `bench/adapters/`. Nothing has run in game yet.
+Two things the spike must settle before a mechanism is final: Cfx staff state `provide` resolves dependencies
+but does **not** redirect `exports[...]`, so a stand-in registers the `__cfx_export_<library>_<name>` events
+itself; and page routing relies on an override page posting to another resource's NUI callback.*
+
 ### 4. Renderers: how it looks
 
 A renderer draws one intent. It is a **module** in the same format the host prototype already loads
