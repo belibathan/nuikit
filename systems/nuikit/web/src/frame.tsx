@@ -59,6 +59,8 @@ function RendererMount({ kind, store, renderer }: { kind: IntentKind; store: Int
         hosted: false,
         portal: document.body,
         reportError: (e) => console.error(`[nuikit] renderer ${kind}:`, e),
+        // Renderers get their intents from the store, not from queued host messages: nothing waits on ready.
+        ready: () => {},
       }),
     );
     return () => {
