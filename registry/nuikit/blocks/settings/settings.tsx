@@ -3,6 +3,7 @@ import { fetchNui, Surface } from "nuikit-core/react"
 import { RotateCcwIcon, SettingsIcon } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
+import { EmptyState } from "@/components/ui/empty-state"
 import { Kbd } from "@/components/ui/kbd"
 import { MenuRow } from "@/components/ui/menu-row"
 import { Panel, PanelBody, PanelFooter, PanelHeader } from "@/components/ui/panel"
@@ -15,8 +16,8 @@ import type { SettingsData, SettingsItem, SettingsSection, SettingsSlider, Setti
  * Settings — the player's settings for your server in one panel: toggles, choices, sliders and key
  * hints, grouped in sections (tabs). Every change goes to Lua (`settings:change`) and the row shows
  * what Lua answers, so Lua can clamp or refuse a value. Sliders send once, when let go. Built from the
- * kit: Panel, MenuRow (checkbox and stepper rows), SliderField (form-field), with stock shadcn Tabs
- * and Kbd.
+ * kit: Panel, MenuRow (checkbox, stepper and read-only key rows), SliderField (form-field), EmptyState,
+ * with stock shadcn Tabs and Kbd.
  *
  *   <SettingsSurface />                                    // wired: nk.surface('settings', …) in Lua opens it
  *   <Settings data={data} onChange={…} />                  // a still, or your own wiring
@@ -151,7 +152,7 @@ function Settings({
           {current ? (
             list(current.items).map((item) => <SettingsRow key={item.id} item={item} value={values[item.id]} onValue={set} />)
           ) : (
-            <p className="nk-row text-muted-foreground">This server hasn't added any settings yet.</p>
+            <EmptyState icon={<SettingsIcon />} title="No settings yet" description="This server hasn't added any. Check back after the next update." />
           )}
         </div>
       </PanelBody>
@@ -225,14 +226,11 @@ function SettingsRow({
     case "slider":
       return <SettingsSliderRow item={item} value={typeof value === "number" ? value : item.value} onValue={onValue} />
     case "key":
+      // shown, not used: the key is bound in game (Settings > Key bindings), so the row is read-only
       return (
-        <div data-slot="settings-key" className="nk-row justify-between font-medium">
-          <span className="flex min-w-0 flex-col">
-            <span className="truncate">{item.label}</span>
-            {item.description && <span className="truncate text-xs leading-4 font-normal text-muted-foreground">{item.description}</span>}
-          </span>
-          <Kbd className="min-w-8">{item.key}</Kbd>
-        </div>
+        <MenuRow data-settings-key readOnly description={item.description} kbd={item.key}>
+          {item.label}
+        </MenuRow>
       )
   }
 }
