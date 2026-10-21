@@ -75,7 +75,7 @@ After the retest: merge to `main`, release 0.7.0, close the remaining PRs, clean
 | 6 | `[nuikit-qb]` adapters | Planned |
 | 7 | `[nuikit-esx]` adapters | Planned |
 | 8 | `nuikit doctor` + coverage harness (90%+ Qbox, 75%+ QBCore/ESX) | **Doctor built** (`feat/doctor`, [`doctor.md`](doctor.md)): framework, packs, statuses, conflicts, next steps, `nuikit:intent` counts; unproven in game. Harness: plan only ([`bench/coverage`](../bench/coverage/README.md)); needs the intents event and `overrides.json` from the pack step |
-| 9 | Per-framework zips, `nuikit.cfg`, txAdmin recipe, renderer packs | Planned |
+| 9 | Per-framework zips, `nuikit.cfg`, txAdmin recipe, renderer packs | **Partial** (`feat/packaging`): `nuikit.cfg` (`exec @nuikit/nuikit.cfg`: start order, convars, ace), `nuikit-{qbox,qbcore,esx,standalone}.zip` with a `server.cfg.snippet` each (adapter packs join when they exist), `install/recipe-qbox.yaml` (txAdmin, unproven), `overrides.json` page hashes for the doctor. Renderer packs wait on intents |
 
 ### Kit (parallel agents) — lanes in [`next/dispatch.md`](next/dispatch.md)
 

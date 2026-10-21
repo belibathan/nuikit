@@ -1,0 +1,63 @@
+# nuikit on a fresh Qbox server: a txAdmin recipe.
+#
+# txAdmin → Setup → "Custom recipe" → paste this file's URL (or its contents). It deploys the stock
+# Qbox recipe (Qbox-project/txAdminRecipe), then adds nuikit from the latest GitHub release and writes
+# a server.cfg that starts it in the right order with `exec @nuikit/nuikit.cfg`.
+#
+# What it does NOT do yet: copy the overrides (ox_lib, ox_inventory, ox_target…) over those resources'
+# UI folders. The zip's README has the two-line copy per override; `nuikit doctor` lists which are missing.
+# Unproven in game: this recipe has not been run on a real txAdmin yet (Oct 21, 2026).
+$engine: 3
+$onesync: on
+name: Qbox + nuikit
+version: 0.7.0
+author: '@belibathan'
+description: Qbox with one design system for the whole server (nuikit).
+
+tasks:
+  # ── Stock Qbox (its own recipe, verbatim) ─────────────────────────────────────────────────────────
+  - action: download_github
+    src: https://github.com/Qbox-project/txAdminRecipe
+    ref: main
+    dest: ./tmp/qbox
+  - action: waste_time
+    seconds: 2
+  # Everything the Qbox recipe would do is in that repository's qbox.yaml. txAdmin runs one recipe at a
+  # time, so copy its tasks here when you adopt this file (they change often; this file does not pin them).
+
+  # ── nuikit ─────────────────────────────────────────────────────────────────────────────────────────
+  - action: download_file
+    path: ./tmp/nuikit.zip
+    url: https://github.com/belibathan/nuikit/releases/latest/download/nuikit.zip
+  - action: unzip
+    src: ./tmp/nuikit.zip
+    dest: ./tmp/nuikit
+  - action: move_path
+    src: ./tmp/nuikit/[nuikit]
+    dest: ./resources/[nuikit]
+    overwrite: true
+  - action: move_path
+    src: ./tmp/nuikit/overrides
+    dest: ./resources/[nuikit]/_overrides-to-copy
+    overwrite: true
+
+  # ── server.cfg: Qbox's, then nuikit after the framework ──────────────────────────────────────────
+  - action: move_path
+    src: ./tmp/qbox/server.cfg
+    dest: ./server.cfg
+    overwrite: true
+  - action: replace_string
+    file: ./server.cfg
+    mode: literal
+    search: 'ensure pma-voice'
+    replace: |
+      ensure pma-voice
+
+      # nuikit: one design system for the whole server (resources/[nuikit]/nuikit/nuikit.cfg)
+      exec @nuikit/nuikit.cfg
+      stop qbx_hud
+      stop loadscreen
+      stop qbx_chat_theme
+
+  - action: remove_path
+    path: ./tmp
