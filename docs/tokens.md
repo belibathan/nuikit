@@ -159,7 +159,10 @@ FXServer JS runtime.
 
 1. **Pick the set.** Dark by default (nuikit UIs are drawn over the game): `:root` + `.dark` on top. A paste
    with no dark colours uses its light set and says so. `{ mode: "light" }` reads `:root` only.
-2. **Resolve** `var(--x)` references between variables (TweakCN's `--sidebar-primary: var(--primary)`).
+2. **Resolve** `var(--x)` references between variables (TweakCN's `--sidebar-primary: var(--primary)`). A token
+   that is empty (`--primary: ;`) or an alias that leads nowhere (`var(--nope)`, or to an empty token) would
+   paint nothing: it gets the stock value with a warning (`--primary is empty; the stock value is used.`), and a
+   `var(--x, fallback)` pointing at it takes its fallback, as in CSS. In a patch (`partial`) it is left out.
 3. **Lower** every colour, including colours inside compound values (shadows), to `rgb()` / `rgba()`.
    Values Chromium 103 can't read and that can't be lowered (`color-mix()`, `lab()`) are replaced by the
    stock value, with a warning.

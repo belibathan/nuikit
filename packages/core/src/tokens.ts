@@ -568,10 +568,15 @@ export function compileTheme(input: ThemeInput, opts: CompileOptions = {}): Comp
   // contrast checks need the colour itself).
   const resolved: ThemeVars = {};
   const base = opts.partial ? raw : { ...NEUTRAL[mode], ...raw };
+  // A token that is empty or an unresolvable alias is invalid at computed time, as in CSS: a var()
+  // pointing at it takes its fallback, and the token itself is reported below.
+  const DANGLING = /^var\(\s*--([\w-]+)\s*\)$/;
+  const nothing = (v: string) => v.trim() === "" || DANGLING.test(v.trim());
   const lookup = (name: string, depth: number): string | undefined => {
     const v = base[name];
     if (v === undefined || depth > 8) return undefined;
-    return resolveRefs(v, depth + 1);
+    const r = resolveRefs(v, depth + 1);
+    return nothing(r) ? undefined : r;
   };
   const resolveRefs = (value: string, depth: number): string =>
     value.replace(/var\(\s*--([\w-]+)\s*(?:,\s*([^()]*(?:\([^()]*\))?[^()]*))?\)/g, (m, ref: string, fb?: string) => lookup(ref, depth) ?? fb?.trim() ?? m);
@@ -584,6 +589,16 @@ export function compileTheme(input: ThemeInput, opts: CompileOptions = {}): Comp
 
   for (const [name, value] of Object.entries(base)) {
     const v = resolveRefs(String(value), 0);
+    // Empty (`--primary: ;`), or an alias that leads nowhere (`var(--nope)`, or to an empty token):
+    // the token would paint nothing. Use the stock value, or leave it out of a patch.
+    if (nothing(v)) {
+      const stock = opts.partial ? undefined : NEUTRAL[mode][name];
+      const ref = DANGLING.exec(v.trim())?.[1];
+      const why = v.trim() === "" ? "is empty" : `is ${v.trim()}, which ${ref !== undefined && base[ref] !== undefined ? "resolves to nothing" : "isn't defined"}`;
+      warnings.push(`--${name} ${why}; ${stock ? "the stock value is used" : "it was left out"}.`);
+      if (stock) resolved[name] = lower(stock)!;
+      continue;
+    }
     const lowered = lower(v);
     if (lowered === null) {
       const stock = opts.partial ? undefined : NEUTRAL[mode][name];
