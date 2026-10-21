@@ -80,3 +80,30 @@ The misses become the backlog; the doctor reports the same on any live server.
 - **Doctor-visible.** Each adapter declares the library it replaces (`provide`), what it listens to, and what it
   can't catch (direct calls, undocumented events), so `nuikit doctor` can say what's left.
 - Credit `@belibathan` only; never a library's code, markup or styles (LGPL/GPL).
+
+## `[nuikit-esx]` and `[nuikit-standalone]`: built (step 7)
+
+*Oct 2026, `feat/adapter-esx`. Eight stand-in resources under `adapters/[nuikit-esx]/` and
+`adapters/[nuikit-standalone]/`, each with a README, `nuikit_adapter '<library>'` + `provide '<library>'`, and a
+replay test (`node --test "bench/adapters/replay/esx/*.test.mjs" "bench/adapters/replay/standalone/*.test.mjs"`:
+main flow + one failure path each, against a stand-in of the intent runtime and an `ESX.UI.Menu` mock).
+**Nothing has run in game.** Install: `nuikit-esx.zip` ships `[nuikit-esx]` (`ensure [nuikit-esx]` after
+`es_extended`), then `stop` each replaced resource; `nuikit-standalone.zip` ships `[nuikit-standalone]` the same way
+(`ensure [nuikit-standalone]`).*
+
+What the in-game run must settle, per adapter (3 steps each; F8 shows `[nuikit]` lines, the doctor shows `adapted`):
+
+| Adapter | 1 | 2 | 3 |
+|---|---|---|---|
+| `nuikit_esx_notify` | `stop esx_notify`, `/notify`-style script call (`ESX.ShowNotification('Hi', 'success')`): one nuikit toast, none from esx | server-sent `esx:showNotification`: still **one** toast (the listener + export de-dup) | `exports.esx_notify:Notify(...)` from a script: argument order lands title/message right (else the swap heuristic is wrong: note it) |
+| `nuikit_esx_textui` | `stop esx_textui`; a script that polls `ESX.TextUI('[E] Open', 'info')`: one prompt, no flicker | change the text: it updates in place | `ESX.HideUI()`: gone |
+| `nuikit_esx_progressbar` | `stop esx_progressbar`; `ESX.Progressbar('Repair', 5000, { FreezePlayer = true, animation = { type = 'anim', dict = 'mini@repair', lib = 'fixing_a_ped' }, onFinish = … })`: bar, frozen, anim, `onFinish` once | `ESX.CancelProgressbar()` at 2 s: bar gone, unfrozen, `onCancel` once | start two: the second's `onCancel` runs at once |
+| `nuikit_esx_context` | `stop esx_context`; `ESX.OpenContext('right', {…header, text input, number input, button…}, true, onSelect, onClose)`: menu with fields; type, click the button: `onSelect` has `menu.eles[i].inputValue` | `ESX.RefreshContext` keeps typed values; `ESX.CloseContext()` runs `onClose` once | `canClose = false` + Escape: stays; `PreviewContext`: drawn, no cursor |
+| `nuikit_esx_menu_default` | `stop esx_menu_default`; open any esx menu (job menu, shop): drawn by nuikit, arrows + Enter work, `submit` gets `data.current` | a slider element: ←/→ change it and run `change`; Enter submits the value | Backspace/Escape runs `cancel`; `menu.close()` closes; `ESX.UI.Menu.CloseAll()` clears |
+| `nuikit_esx_menu_dialog` | `stop esx_menu_dialog`; a shop's "amount" dialog over its menu: form drawn, the menu stays under it | type `42`, Enter: `submit` gets `data.value == '42'` | Escape: `cancel`, no submit; the menu under it still focused |
+| `nuikit_okok_notify` | `stop okokNotify`; `exports.okokNotify:Alert('T', 'M', 3000, 'success')`: one toast | server `okokNotify:Alert`: one toast | type `phone`: info toast (no error in F8) |
+| `nuikit_mythic_notify` | `stop mythic_notify`; `exports.mythic_notify:DoHudText('inform', 'Hi')`: toast, 2.5 s | `PersistentAlert{ action = 'start', id = 'x', … }` then `end`: stays, then goes | `SendAlert` from the server: one toast |
+
+If `provide` does not resolve a `dependency 'esx_x'` (spike step 1) or `ESX.UI.Menu.RegisterType` from another
+resource does not reach `ESX.UI.Menu.Open` callers, the type adapters move to page overrides of
+`esx_menu_default/html` and `esx_menu_dialog/html`; everything else here is unaffected.

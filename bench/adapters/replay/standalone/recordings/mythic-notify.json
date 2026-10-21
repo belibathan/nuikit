@@ -1,0 +1,16 @@
+{
+  "library": "mythic_notify",
+  "expects": [],
+  "calls": [
+    { "kind": "export", "resource": "mythic_notify", "name": "DoHudText", "args": ["inform", "Hello"] },
+    { "kind": "export", "resource": "mythic_notify", "name": "DoLongHudText", "args": ["error", "Long", 6000] },
+    { "kind": "export", "resource": "mythic_notify", "name": "DoCustomHudText", "args": ["success", "Styled", 1500, { "background-color": "#333", "color": "#fff" }] },
+    { "kind": "export", "resource": "mythic_notify", "name": "SendAlert", "args": [{ "type": "inform", "text": "Alert" }] },
+    { "kind": "serverEvent", "name": "mythic_notify:client:SendAlert", "args": [{ "type": "error", "text": "From server", "length": 1000 }] },
+    { "kind": "export", "resource": "mythic_notify", "name": "PersistentAlert", "args": [{ "action": "start", "id": "fuel", "type": "inform", "text": "Refuelling" }] },
+    { "kind": "wait", "ms": 10000 },
+    { "kind": "serverEvent", "name": "mythic_notify:client:PersistentAlert", "args": [{ "action": "end", "id": "fuel" }] },
+    { "kind": "export", "resource": "mythic_notify", "name": "PersistentAlert", "args": [{ "action": "end", "id": "fuel" }] },
+    { "kind": "export", "resource": "mythic_notify", "name": "SendAlert", "args": ["not a table"] }
+  ]
+}

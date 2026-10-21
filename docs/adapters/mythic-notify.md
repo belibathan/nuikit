@@ -50,6 +50,10 @@ Nothing returns.
 handled). What the spike decides: stand-in rules. Low priority: an unmaintained library; kept because old
 scripts still call it.
 
+## Status
+
+**Built** (`adapters/[nuikit-standalone]/nuikit_mythic_notify`, replay test `mythic-notify.test.mjs`). Unproven in game.
+
 ## Replay test
 
 Recording: each export once; `PersistentAlert start` then `end`; the events.

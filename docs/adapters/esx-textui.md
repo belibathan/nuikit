@@ -40,6 +40,10 @@ Nothing comes back.
 **Stand-in** (`nuikit_esx_textui`, `provide 'esx_textui'`, both exports under its name; `ESX.TextUI` / `HideUI`
 defined the documented way). What the spike decides: stand-in rules.
 
+## Status
+
+**Built** (`adapters/[nuikit-esx]/nuikit_esx_textui`, replay test `esx-textui.test.mjs`). Unproven in game.
+
 ## Replay test
 
 Recording: `TextUI('[E] Open', 'info')` ×3 at 500 ms, `TextUI('[E] Close', 'error')`, `HideUI()`, `HideUI()`.

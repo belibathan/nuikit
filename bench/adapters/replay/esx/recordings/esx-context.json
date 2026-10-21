@@ -1,0 +1,25 @@
+{
+  "library": "esx_context",
+  "expects": [],
+  "calls": [
+    { "kind": "export", "resource": "esx_context", "name": "Open", "args": ["right", [
+      { "unselectable": true, "icon": "fas fa-car", "title": "Garage" },
+      { "input": true, "inputType": "text", "inputPlaceholder": "Plate", "name": "plate", "title": "Plate" },
+      { "input": true, "inputType": "number", "inputMin": 1, "inputMax": 10, "inputValue": 2, "name": "count", "title": "Count" },
+      { "icon": "fas fa-check", "title": "Confirm", "name": "confirm", "value": 7 }
+    ], true, { "$fn": "onSelect" }, { "$fn": "onClose" }] },
+    { "kind": "export", "resource": "nuikit", "name": "emit", "args": ["menu", "field", { "index": 1, "id": "plate", "value": "ABC123" }] },
+    { "kind": "export", "resource": "nuikit", "name": "emit", "args": ["menu", "select", { "index": 3, "id": "confirm", "fields": { "plate": "ABC123", "count": 5 } }] },
+    { "kind": "export", "resource": "esx_context", "name": "Refresh", "args": ["right", [
+      { "unselectable": true, "title": "Garage" },
+      { "input": true, "inputType": "text", "name": "plate", "title": "Plate" },
+      { "title": "Confirm", "name": "confirm" }
+    ]] },
+    { "kind": "export", "resource": "esx_context", "name": "Close" },
+    { "kind": "export", "resource": "esx_context", "name": "Close" },
+    { "kind": "export", "resource": "esx_context", "name": "Preview", "args": ["left", [ { "title": "Preview" } ], true, { "$fn": "onSelect2" }, { "$fn": "onClose2" }] },
+    { "kind": "export", "resource": "esx_context", "name": "Open", "args": ["center", [ { "title": "Locked" } ], false, { "$fn": "onSelect3" }, { "$fn": "onClose3" }] },
+    { "kind": "export", "resource": "nuikit", "name": "escape", "args": ["menu"] },
+    { "kind": "export", "resource": "nuikit", "name": "count", "args": ["menu"] }
+  ]
+}
