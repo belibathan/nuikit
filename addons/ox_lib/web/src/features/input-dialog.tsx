@@ -19,8 +19,10 @@ import {
   type DateOrder,
 } from "@/components/ui/form-field";
 import { Icon } from "@/lib/icon";
+import { inputIntent, inputValues, normalizeRows } from "@/lib/intents";
 import { useLocale } from "@/lib/locale";
 import { post, useOx } from "@/lib/nui";
+import { openIntent, type Handle } from "@/lib/route";
 import { cn } from "@/lib/utils";
 
 dayjs.extend(customParseFormat);
@@ -137,6 +139,23 @@ function output(row: Row, v: any): unknown {
   }
 }
 
+/** A routed value as ox posts it: the frame returns hex colours and epoch ms; ox's format/returnString apply here. */
+function routedOutput(row: Row, v: unknown): unknown {
+  switch (row.type) {
+    case "color":
+      return typeof v === "string" ? formatColor(v, row.format) : null;
+    case "date":
+      return typeof v === "number" && row.returnString ? dayjs(v).format(row.format ?? "DD/MM/YYYY") : (v ?? null);
+    case "date-range": {
+      const [a, b] = (Array.isArray(v) ? v : [null, null]) as [unknown, unknown];
+      const one = (x: unknown) => (typeof x === "number" ? (row.returnString ? dayjs(x).format(row.format ?? "DD/MM/YYYY") : x) : null);
+      return [one(a), one(b)];
+    }
+    default:
+      return v ?? null;
+  }
+}
+
 const empty = (row: Row, v: any) =>
   row.type === "checkbox" ? !v : row.type === "date-range" ? !v?.[0] || !v?.[1] : v === null || v === undefined || v === "" || (Array.isArray(v) && v.length === 0);
 
@@ -179,21 +198,50 @@ export function InputDialog() {
   const [errors, setErrors] = useState<Record<number, string>>({});
   const pending = useRef<ReturnType<typeof setTimeout>>(undefined);
 
-  useOx<DialogData>("openDialog", (d) => {
-    clearTimeout(pending.current); // a new dialog drops the previous one's pending answer
-    const normalized = (d.rows ?? []).map((r) => (typeof r === "string" ? ({ type: "input", label: r } as Row) : r));
+  const routed = useRef<Handle | null>(null);
+
+  const showLocal = (d: DialogData, normalized: Row[]) => {
     setRows(normalized);
     setValues(normalized.map(initial));
     setErrors({});
     setData(d);
     setOpen(true);
+  };
+
+  // Routed (docs/adapters/ox-lib.md §3): the frame's form; its values come back as ox returns them,
+  // except colours and dates, which this page formats (ox's `format` / `returnString`).
+  useOx<DialogData>("openDialog", (d) => {
+    clearTimeout(pending.current); // a new dialog drops the previous one's pending answer
+    const normalized = normalizeRows(d.rows) as Row[];
+    const handle = openIntent("input", inputIntent(d as unknown as Record<string, unknown>, normalized), {
+      key: "input",
+      onEnd: (a) => {
+        if (routed.current?.id === a.id) routed.current = null;
+        if (a.result !== undefined && a.result !== null) answer(inputValues(a, normalized).map((v, i) => routedOutput(normalized[i]!, v)));
+        else if (a.reason === "escape" || a.reason === "cancel" || a.reason === "stopped") answer(undefined);
+      },
+      onLocal: () => showLocal(d, normalized),
+    });
+    if (handle) {
+      routed.current = handle;
+      setOpen(false);
+    }
   });
-  useOx("closeInputDialog", () => setOpen(false));
+  useOx("closeInputDialog", () => {
+    routed.current?.cancel();
+    routed.current = null;
+    setOpen(false);
+  });
+
+  /** inputData, 200 ms later as ox does it (a new dialog within that window drops it). */
+  const answer = (body: unknown[] | undefined) => {
+    clearTimeout(pending.current);
+    pending.current = setTimeout(() => void post("inputData", body), 200);
+  };
 
   const finish = (body: unknown[] | undefined) => {
     setOpen(false);
-    clearTimeout(pending.current);
-    pending.current = setTimeout(() => void post("inputData", body), 200);
+    answer(body);
   };
 
   const cancel = () => {
@@ -304,6 +352,7 @@ function RowField({ row, value, error, onChange }: { row: Row; value: any; error
         <NumberField
           {...base}
           icon={icon}
+          stepper="inline"
           placeholder={row.placeholder}
           min={row.min as number | undefined}
           max={row.max as number | undefined}

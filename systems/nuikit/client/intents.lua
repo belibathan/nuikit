@@ -25,6 +25,7 @@ local open = {}   -- id → { id, kind, resource, props, seq, at, surface, cb?, 
 local seq = 0
 local exportSeq = 0 -- ids for intents opened through exports or the page callback
 local count = {}  -- surface name → open intents using it
+local pageEvent, pageClosed -- ox routing additions (defined with the page door below)
 
 -- ───────────────────────────────── surfaces (what takes input)
 
@@ -120,6 +121,7 @@ local function closeIntent(it, result, reason, data, notify)
   open[it.id] = nil
   release(it.surface)
   log('close', it.id, reason or 'resolved')
+  if it.page and pageClosed then pageClosed(it.id) end -- ox routing: a listening page hears `ended`
   if notify == false then return end
   TriggerEvent('nuikit:intent:resolved', it.id, { result = result, reason = reason, data = data })
   if it.cb then -- opened through an export: its callback instead of the event path
@@ -193,6 +195,7 @@ NUI.on('nuikit:intent:event', function(req)
   local it = type(req) == 'table' and open[req.id]
   if not it then return { ok = false } end
   TriggerEvent('nuikit:intent:event', it.id, req.event, req.data)
+  if it.page and pageEvent then pageEvent(it, req.event, req.data) end -- ox routing: queued for the page
   return { ok = true }
 end)
 
@@ -218,8 +221,96 @@ end)
 local pagePending = {} -- id → { cb, at }
 local PAGE_TIMEOUT = 120000
 
+-- ── ox routing additions (docs/adapters/ox-lib.md §2; feat/ox-routing) ───────────────────────────
+--   POST { probe = true, source = 'ox_lib' } → { ok = true, route = <bool> }: is routing on for that
+--     page? Convar `nuikit_ox_route` (default 1) for ox_lib, `nuikit_route_<source>` for any other.
+--     An older runtime answers { error = 'invalid' }, which the page reads as "unknown": draw locally.
+--   POST { listen = '<id>' } → a long-poll for the intent's events (menu change / scroll / check /
+--     select…): answered with { id, events = { { event, data }, … } } as soon as one is queued, with
+--     { id, ended = true } when the intent has closed, or with { id, events = {} } after ≤ 25 s so the
+--     page asks again. One listener per id; the page keeps one open while its intent is.
+--   A page id opened again while its fetch is pending answers that fetch { id, reason = 'replaced' }.
+--   The sweep answers only pending fetches whose intent is already gone (a menu may stay open for
+--   longer than PAGE_TIMEOUT). When this resource stops, every pending fetch gets reason 'stopped'.
+local pageEvents = {}   -- id → { queue = { {event, data}, … }, cb?, token }
+local LISTEN_TIMEOUT = 25000
+
+local function routeEnabled(source)
+  local convar = source == 'ox_lib' and 'nuikit_ox_route' or ('nuikit_route_%s'):format(tostring(source))
+  return GetConvarInt(convar, 1) == 1
+end
+
+local function answerListener(id, payload)
+  local l = pageEvents[id]
+  if not (l and l.cb) then return false end
+  local cb = l.cb
+  l.cb = nil
+  l.token = (l.token or 0) + 1
+  cb(payload)
+  return true
+end
+
+--- A page intent emitted an event: queue it, and answer a waiting listener.
+function pageEvent(it, event, data)
+  local l = pageEvents[it.id]
+  if not l then
+    l = { queue = {}, token = 0 }
+    pageEvents[it.id] = l
+  end
+  l.queue[#l.queue + 1] = { event = event, data = data }
+  if l.cb then
+    local events = l.queue
+    l.queue = {}
+    answerListener(it.id, { id = it.id, events = events })
+  end
+end
+
+--- A page intent closed: its listener (now or when it next asks) hears `ended`.
+function pageClosed(id)
+  answerListener(id, { id = id, ended = true })
+  pageEvents[id] = nil
+end
+
+local function answerPending(id, payload)
+  local p = pagePending[id]
+  if not p then return end
+  pagePending[id] = nil
+  p.cb(payload)
+end
+
+local function listen(id, cb)
+  if not open[id] or not open[id].page then return cb({ id = id, ended = true }) end
+  local l = pageEvents[id]
+  if not l then
+    l = { queue = {}, token = 0 }
+    pageEvents[id] = l
+  end
+  if #l.queue > 0 then
+    local events = l.queue
+    l.queue = {}
+    return cb({ id = id, events = events })
+  end
+  -- a second listener replaces the first (the page reloaded): the first is answered empty
+  answerListener(id, { id = id, events = {} })
+  l.cb = cb
+  local token = l.token
+  SetTimeout(LISTEN_TIMEOUT, function()
+    local cur = pageEvents[id]
+    if cur and cur.cb == cb and cur.token == token then answerListener(id, { id = id, events = {} }) end
+  end)
+end
+
+AddEventHandler('onClientResourceStop', function(resource)
+  if resource ~= RESOURCE then return end
+  for id in pairs(pagePending) do answerPending(id, { id = id, reason = 'stopped' }) end
+  for id in pairs(pageEvents) do pageClosed(id) end
+end)
+-- ── end of the ox routing additions (the handler below uses them where marked) ──────────────────
+
 RegisterNUICallback('intent', function(data, cb)
   data = type(data) == 'table' and data or {}
+  if data.probe then return cb({ ok = true, route = routeEnabled(data.source) }) end            -- ox routing
+  if type(data.listen) == 'string' then return listen(data.listen, cb) end                     -- ox routing
   if type(data.cancel) == 'string' then
     local it = open[data.cancel]
     if it and it.page then cancelIntent(it, data.reason) end
@@ -233,6 +324,7 @@ RegisterNUICallback('intent', function(data, cb)
   local source = ('page:%s'):format(type(data.source) == 'string' and data.source or 'unknown')
   exportSeq = exportSeq + 1
   local id = type(data.id) == 'string' and ('%s#%s'):format(source, data.id) or ('%s#p%d'):format(source, exportSeq)
+  if open[id] and open[id].page then answerPending(id, { id = id, reason = 'replaced' }) end  -- ox routing
   local ok, reason = openIntent(source, id, data.intent, data.props)
   if not ok then return cb({ error = reason }) end
   open[id].page = true
@@ -240,7 +332,7 @@ RegisterNUICallback('intent', function(data, cb)
   if not (def and def.yields) then return cb({ id = id }) end
   local now = GetGameTimer()
   for pid, p in pairs(pagePending) do
-    if now - p.at > PAGE_TIMEOUT then
+    if now - p.at > PAGE_TIMEOUT and not open[pid] then                                       -- ox routing: only when the intent is gone
       pagePending[pid] = nil
       p.cb({ id = pid, error = 'timed out' })
     end

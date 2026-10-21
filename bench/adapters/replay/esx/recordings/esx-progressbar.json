@@ -1,0 +1,13 @@
+{
+  "library": "esx_progressbar",
+  "expects": [],
+  "calls": [
+    { "kind": "export", "resource": "esx_progressbar", "name": "Progressbar", "args": ["Repairing", 5000, { "FreezePlayer": true, "animation": { "type": "anim", "dict": "mini@repair", "lib": "fixing_a_ped" }, "onFinish": { "$fn": "finish1" }, "onCancel": { "$fn": "cancel1" } }] },
+    { "kind": "export", "resource": "esx_progressbar", "name": "Progressbar", "args": ["Again", 1000, { "onFinish": { "$fn": "finish3" }, "onCancel": { "$fn": "cancel3" } }] },
+    { "kind": "wait", "ms": 5000 },
+    { "kind": "export", "resource": "esx_progressbar", "name": "Progressbar", "args": ["Searching", 3000, { "onFinish": { "$fn": "finish2" }, "onCancel": { "$fn": "cancel2" } }] },
+    { "kind": "wait", "ms": 1000 },
+    { "kind": "export", "resource": "esx_progressbar", "name": "CancelProgressbar" },
+    { "kind": "wait", "ms": 3000 }
+  ]
+}

@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
-import { CalendarIcon, ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon, ClockIcon, EyeIcon, EyeOffIcon, MinusIcon, PlusIcon, RotateCcwIcon, XIcon } from "lucide-react"
+import { CalendarIcon, ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon, ChevronUpIcon, ClockIcon, EyeIcon, EyeOffIcon, MinusIcon, PlusIcon, RotateCcwIcon, XIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -175,7 +175,7 @@ function FormField({
         </Button>
       )}
       {valueText !== undefined && valueText !== null && (
-        <span data-slot="form-field-value" className="nk-num text-xs leading-4 font-medium text-muted-foreground">
+        <span data-slot="form-field-value" className="nk-num text-xs leading-4 font-medium normal-case text-muted-foreground">
           {valueText}
         </span>
       )}
@@ -535,8 +535,8 @@ type NumberFieldProps = RowProps & {
   /** Decimals kept (default: as many as `step` has). */
   precision?: number
   placeholder?: string
-  /** − and + buttons beside the input (default true). */
-  stepper?: boolean
+  /** − and + buttons beside the input (default true); "inline": ‹ › ghost buttons inside the input's right edge. false: none. */
+  stepper?: boolean | "inline"
   icon?: React.ReactNode
 }
 
@@ -569,6 +569,9 @@ function NumberControl({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value])
   const press = (dir: 1 | -1) => onValueChange(stepNumber(value, dir, { min, max, step, precision }))
+  const atMin = f.disabled || (min !== undefined && value !== null && value <= min)
+  const atMax = f.disabled || (max !== undefined && value !== null && value >= max)
+  const inline = stepper === "inline"
   return (
     <div className="flex items-center gap-1.5">
       <div className="relative min-w-0 flex-1">
@@ -592,29 +595,25 @@ function NumberControl({
             setText(e.target.value)
             onValueChange(parseNumber(e.target.value, precision))
           }}
-          className={cn("nk-num [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none", icon && "pl-9")}
+          className={cn("nk-num [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none", icon && "pl-9", inline && "pr-14")}
         />
+        {inline && (
+          <span data-slot="form-field-stepper" className="absolute inset-y-0 right-1 flex items-center gap-0.5">
+            <Button type="button" variant="ghost" size="icon-xs" aria-label="Decrease" className="text-muted-foreground" disabled={atMin} onClick={() => press(-1)}>
+              <ChevronDownIcon />
+            </Button>
+            <Button type="button" variant="ghost" size="icon-xs" aria-label="Increase" className="text-muted-foreground" disabled={atMax} onClick={() => press(1)}>
+              <ChevronUpIcon />
+            </Button>
+          </span>
+        )}
       </div>
-      {stepper && (
+      {stepper === true && (
         <>
-          <Button
-            type="button"
-            variant="outline"
-            size="icon"
-            aria-label="Decrease"
-            disabled={f.disabled || (min !== undefined && value !== null && value <= min)}
-            onClick={() => press(-1)}
-          >
+          <Button type="button" variant="outline" size="icon" aria-label="Decrease" disabled={atMin} onClick={() => press(-1)}>
             <MinusIcon />
           </Button>
-          <Button
-            type="button"
-            variant="outline"
-            size="icon"
-            aria-label="Increase"
-            disabled={f.disabled || (max !== undefined && value !== null && value >= max)}
-            onClick={() => press(1)}
-          >
+          <Button type="button" variant="outline" size="icon" aria-label="Increase" disabled={atMax} onClick={() => press(1)}>
             <PlusIcon />
           </Button>
         </>
@@ -837,6 +836,8 @@ type SliderFieldProps = RowProps & {
   value?: number
   defaultValue?: number
   onValueChange?: (value: number) => void
+  /** Fires when the thumb is let go (pointer up; once per key step), not on every pointer move: for a value that posts to Lua. */
+  onCommit?: (value: number) => void
   min?: number
   max?: number
   step?: number
@@ -847,17 +848,18 @@ type SliderFieldProps = RowProps & {
 }
 
 function SliderField(props: SliderFieldProps) {
-  const [row, { value, defaultValue, onValueChange, min = 0, max = 100, step = 1, resetTo, format }] = rowProps(props)
+  const [row, { value, defaultValue, onValueChange, onCommit, min = 0, max = 100, step = 1, resetTo, format }] = rowProps(props)
   const [v, setV] = useControllable(value, defaultValue ?? min, onValueChange)
   const shown = format === false ? undefined : format ? format(v) : String(roundTo(v, decimals(step)))
+  const reset = resetTo !== undefined ? () => (setV(resetTo), onCommit?.(resetTo)) : undefined
   return (
     <FormField
       {...row}
       valueText={row.valueText ?? shown}
-      onReset={row.onReset ?? (resetTo !== undefined ? () => setV(resetTo) : undefined)}
+      onReset={row.onReset ?? reset}
       resetDisabled={resetTo !== undefined && v === resetTo}
     >
-      <SliderControl value={v} onValueChange={setV} min={min} max={max} step={step} />
+      <SliderControl value={v} onValueChange={setV} onCommit={onCommit} min={min} max={max} step={step} />
     </FormField>
   )
 }
@@ -865,12 +867,14 @@ function SliderField(props: SliderFieldProps) {
 function SliderControl({
   value,
   onValueChange,
+  onCommit,
   min,
   max,
   step,
 }: {
   value: number
   onValueChange: (v: number) => void
+  onCommit?: (v: number) => void
   min: number
   max: number
   step: number
@@ -899,6 +903,7 @@ function SliderControl({
         step={step}
         value={[value]}
         onValueChange={([n]) => onValueChange(n ?? min)}
+        onValueCommit={onCommit ? ([n]) => onCommit(n ?? min) : undefined}
       />
     </div>
   )

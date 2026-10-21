@@ -68,6 +68,10 @@ the one `ESX.UI.Menu` builds; the stand-in implements `open(namespace, name, dat
 the menu's `submit`/`cancel`/`change` through it. What the spike decides: stand-in rules; `RegisterType` is
 public API so this is the lowest-risk adapter of the ESX pack.
 
+## Status
+
+**Built** (`adapters/[nuikit-esx]/nuikit_esx_menu_default`, replay test `esx-menu-default.test.mjs` against an `ESX.UI.Menu` mock written from the docs). Sliders and option lists are stepper rows (`values`), so ←/→ run `change` and Enter submits the value; an option list whose `value` starts at 0 is reported 0-based. `change` also runs on highlight change (esx_vehicleshop-style previews). The menu object's methods reach the adapter only if `refresh()` re-calls the type's `open` (assumed); Escape runs `cancel` and the menu is redrawn when the script does not close it. Unproven in game.
+
 ## Replay test
 
 Recording: `Open` with a title, three elements, a slider; `change` by moving the slider; `submit` on element 2;

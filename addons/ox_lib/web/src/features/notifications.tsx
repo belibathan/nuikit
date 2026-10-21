@@ -2,7 +2,9 @@ import React, { useEffect, useRef, useState, type CSSProperties } from "react";
 import { Notice, NoticeStack, noticePosition, type NoticePosition, type NoticeStatus } from "@/components/ui/notice";
 import { Icon } from "@/lib/icon";
 import { Markdown } from "@/lib/markdown";
+import { notifyIntent } from "@/lib/intents";
 import { useOx } from "@/lib/nui";
+import { openIntent } from "@/lib/route";
 import { cn } from "@/lib/utils";
 
 /** lib.notify payload (see docs/ox-lib-protocol.md §3). */
@@ -109,8 +111,7 @@ export function Notifications() {
     );
   };
 
-  useOx<NotifyData>("notify", (data) => {
-    if (!data || (!data.title && !data.description && !data.item)) return; // ox drops empty toasts
+  const showLocal = (data: NotifyData) => {
     const duration = data.duration || DEFAULT_MS;
     const own = data.id !== undefined && data.id !== null;
     // The same toast again, still on screen: count it on the first one and restart its time.
@@ -125,6 +126,13 @@ export function Notifications() {
       return list.slice(-MAX);
     });
     schedule(key, duration);
+  };
+
+  // Routed: the nuikit frame draws it (docs/adapters/ox-lib.md); an ox `id` replaces in place there too.
+  useOx<NotifyData>("notify", (data) => {
+    const props = notifyIntent(data as Record<string, unknown>);
+    if (!props) return; // ox drops empty toasts
+    openIntent("notify", props, { key: props.id ?? `n${++seq}`, onLocal: () => showLocal(data) });
   });
 
   useEffect(() => () => timers.current.forEach(clearTimeout), []);

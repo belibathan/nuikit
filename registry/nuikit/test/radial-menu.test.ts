@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import { radialIndex, radialStep, wedgePath } from "@/components/ui/radial-menu"
+import { radialCenterAction, radialIndex, radialStep, wedgePath } from "@/components/ui/radial-menu"
 
 describe("radial-menu", () => {
   it("picks the wedge under the pointer, clockwise from 12 o'clock", () => {
@@ -35,5 +35,12 @@ describe("radial-menu", () => {
     const d = wedgePath(50, 50, 20, 50, -Math.PI / 2, 0)
     expect(d.startsWith("M 50.00 0.00 A 50 50 0 0 1 100.00 50.00")).toBe(true)
     expect(d.endsWith("Z")).toBe(true)
+  })
+
+  it("makes the centre Back in a submenu and Close at the root when the wheel can close", () => {
+    expect(radialCenterAction(1, false)).toBe("back")
+    expect(radialCenterAction(2, true)).toBe("back")
+    expect(radialCenterAction(0, true)).toBe("close")
+    expect(radialCenterAction(0, false)).toBeNull()
   })
 })

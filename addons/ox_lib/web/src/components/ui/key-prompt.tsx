@@ -24,7 +24,8 @@ import { Kbd, KbdGroup } from "@/components/ui/kbd"
  * By default it is the prompt slab (design v2 §4.5): a key chip and a verb on the HUD plate, the
  * same anatomy as every other slab (`nk-slab`, docs/tokens.md#slabs). `surface="panel"` and
  * `surface="hud"` keep the earlier looks. `keys={[]}` draws no key chip (a script's text with no
- * key); `wrap` lets a long label run onto more lines instead of truncating.
+ * key); `wrap` lets a long label run onto more lines instead of truncating. A prompt with a
+ * `description` is two lines tall: the slab grows to fit (the key stays on the first line).
  */
 
 const keyPromptVariants = cva(
@@ -190,6 +191,8 @@ function KeyPrompt({
   const holding = controlled ? p > 0 : internal.holding
   const interactive = !!onConfirm && !disabled
   const bind = typeof listen === "string" ? listen : listen ? list[0] : undefined
+  // more than one line of text: the slab grows downwards, the key stays on the first line
+  const tall = wrap || !!description
 
   React.useEffect(() => {
     if (!bind || !interactive) return
@@ -240,9 +243,9 @@ function KeyPrompt({
       data-wrap={wrap || undefined}
       className={cn(
         keyPromptVariants({ surface, size }),
-        // wrapping: the slab grows downwards, the key stays on the first line
-        wrap && "items-start whitespace-normal [&>[data-slot=key-prompt-keys]]:mt-[calc((1.25rem-var(--nk-slab-key-size))/2)]",
-        wrap && slab && "py-[calc((var(--nk-slab-height)-1.25rem)/2)]",
+        tall && "items-start [&>[data-slot=key-prompt-keys]]:mt-[calc((1.25rem-var(--nk-slab-key-size))/2)]",
+        tall && slab && "py-[calc((var(--nk-slab-height)-1.25rem)/2)]",
+        wrap && "whitespace-normal",
         active && "outline-2 -outline-offset-1 outline-(--nk-row-indicator-color)",
         disabled && "opacity-50",
         interactive && "cursor-pointer outline-none select-none focus-visible:ring-[3px] focus-visible:ring-ring/50",
@@ -289,7 +292,7 @@ function KeyPrompt({
       {icon && (
         <span
           data-slot="key-prompt-icon"
-          className={cn("flex", wrap && "h-5 items-center", surface === "panel" ? "text-muted-foreground" : "opacity-75")}
+          className={cn("flex", tall && "h-5 items-center", surface === "panel" ? "text-muted-foreground" : "opacity-75")}
         >
           {icon}
         </span>

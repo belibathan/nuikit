@@ -320,7 +320,7 @@ export interface Handshake {
   resource?: string;
   /** Lua's protocol version; absent means 0 (a 0.4.0 nuikit.lua). */
   protocol?: number;
-  /** Optional parts Lua provides: surfaces, states, theme, player, notify, prefs. */
+  /** Optional parts Lua provides: surfaces, states, theme, player, context, notify, prefs. */
   capabilities?: string[];
 }
 let handshake: Handshake | null = null;
@@ -383,7 +383,7 @@ export function __reset(): void {
 
 export { hostedContext, type HostedContext, type HostedMessage } from "./hosted";
 import { hostedContext } from "./hosted";
-export { applyTheme, clearTheme, getPrefs, getTheme, loadImports, onTheme, parseTheme, setPrefs, toRgba, type ThemeVars } from "./theme";
+export { KEYWORD_ATTRS, applyTheme, clearTheme, getPrefs, getTheme, loadImports, onTheme, parseTheme, setPrefs, toRgba, type ThemeVars } from "./theme";
 import { __resetTheme, applyTheme, setPrefs } from "./theme";
 export {
   checkContrast,
