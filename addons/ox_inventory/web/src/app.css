@@ -1,6 +1,7 @@
 /* index.css is synced from the nuikit template (theme tokens + the kit layer, including the
-   resolution-scaled html font-size: 1rem = 16px at 1080p). This file adds only what the inventory
-   needs on top: animation utilities, a transparent unscrollable page, scrollbars and item art. */
+   resolution-scaled html font-size: 1rem = 16px at 1080p). This file adds what the inventory needs
+   on top: the sheets, the slot tiles, the drop zones, scrollbars and item art. Colours are theme
+   tokens only (color-mix is lowered to rgba for Chromium 103 by vite-plugin-nuikit). */
 @import "./index.css";
 @import "tw-animate-css";
 
@@ -14,6 +15,302 @@ body {
 body.inv-dragging,
 body.inv-dragging * {
   cursor: grabbing !important;
+}
+
+/* ───────────────────────────── the slot grid inside an edge sheet (registry edge-sheet) */
+
+.inv-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 5.5rem);
+  gap: 0.5rem;
+}
+
+/* ───────────────────────────── slots: the vitals' chip family, as wells in the sheet */
+
+.inv-slot {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  aspect-ratio: 1 / 1;
+  padding: 0.5rem;
+  border-radius: var(--nk-chip-radius);
+  clip-path: var(--nk-chip-clip, none);
+  background-color: color-mix(in oklab, var(--muted) 30%, transparent);
+  transition: background-color 0s, opacity 0s;
+}
+.inv-slot[data-filled] {
+  background-color: color-mix(in oklab, var(--muted) 70%, transparent);
+}
+.inv-slot[data-filled]:not([data-locked]):not([data-display]) {
+  cursor: grab;
+}
+.inv-slot[data-filled]:not([data-locked]):not([data-display]):hover {
+  background-color: var(--accent);
+  transition-duration: var(--nk-time-hover, var(--nk-time));
+}
+/* the drop target: the selection's colour along the inside of the tile */
+.inv-slot[data-over] {
+  background-color: var(--accent);
+  box-shadow: inset 0 0 0 0.125rem var(--brand, var(--primary));
+}
+.inv-slot[data-source] {
+  opacity: 0.4;
+}
+.inv-slot[data-locked] {
+  opacity: 0.4;
+  filter: grayscale(1);
+}
+/* on the game (the hotbar): the chip surface */
+.inv-slot.nk-hud {
+  background-color: var(--nk-chip-bg);
+  color: var(--nk-chip-fg);
+}
+
+.inv-slot-top {
+  position: relative;
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.25rem;
+  height: 1.125rem;
+  font-size: 0.75rem;
+  line-height: 1;
+  color: var(--muted-foreground);
+}
+.inv-slot.nk-hud .inv-slot-top {
+  color: var(--nk-chip-fg);
+}
+/* the hotbar key, as a key cap */
+.inv-key {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.125rem;
+  height: 1.125rem;
+  padding: 0 0.25rem;
+  border-radius: var(--nk-key-radius);
+  clip-path: var(--nk-key-clip);
+  background-color: var(--nk-key-bg);
+  color: var(--nk-key-fg);
+  box-shadow: var(--nk-key-shadow), inset 0 0 0 var(--nk-border) var(--nk-key-border);
+  font-family: var(--nk-key-font);
+  font-weight: var(--nk-key-weight);
+  font-size: 0.6875rem;
+}
+.inv-count {
+  font-family: var(--nk-num-font);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: var(--nk-num-tracking);
+  font-weight: var(--nk-weight-strong, 600);
+  font-size: 0.8125rem;
+  color: var(--foreground);
+}
+.inv-slot.nk-hud .inv-count {
+  color: var(--nk-chip-fg);
+}
+.inv-price {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-family: var(--nk-num-font);
+  font-variant-numeric: tabular-nums;
+  font-weight: var(--nk-weight-strong, 600);
+  font-size: 0.8125rem;
+  color: var(--foreground);
+}
+.inv-price.text-destructive {
+  color: var(--destructive);
+}
+.inv-slot-label {
+  position: relative;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  text-align: center;
+  font-size: 0.75rem;
+  line-height: 1rem;
+  font-weight: 500;
+}
+
+/* durability, traced along the tile's outline (components/outline.tsx) */
+.inv-outline {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+.inv-outline-track,
+.inv-outline-fill {
+  fill: none;
+  stroke-linejoin: round;
+}
+.inv-outline-track {
+  stroke: color-mix(in oklab, var(--foreground) 8%, transparent);
+}
+.inv-outline-fill {
+  stroke: var(--muted-foreground);
+  stroke-opacity: 0.7;
+  stroke-linecap: round;
+}
+.inv-slot.nk-hud .inv-outline-track {
+  stroke: color-mix(in oklab, var(--hud-foreground) 14%, transparent);
+}
+.inv-slot.nk-hud .inv-outline-fill {
+  stroke: var(--hud-foreground);
+}
+.inv-slot[data-worn] .inv-outline-fill {
+  stroke: var(--destructive);
+  stroke-opacity: 1;
+}
+.inv-slot[data-worn] .inv-outline-track {
+  stroke: color-mix(in oklab, var(--destructive) 30%, transparent);
+}
+.inv-outline-probe {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: calc(var(--nk-cut, 0px) / 2);
+  height: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* the item under the cursor while dragging: a lifted tile */
+.inv-drag {
+  border-radius: var(--nk-chip-radius);
+  clip-path: var(--nk-chip-clip, none);
+  background-color: var(--accent);
+  box-shadow: inset 0 0 0 0.125rem var(--brand, var(--primary)), var(--nk-panel-shadow);
+}
+.inv-drag-count {
+  border-radius: var(--nk-chip-radius);
+  background-color: var(--brand, var(--primary));
+  color: var(--brand-foreground, var(--primary-foreground));
+}
+
+/* ───────────────────────────── the bottom bar: chips in the pause menu's key-hint style */
+
+.inv-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  animation: nk-rise var(--nk-time) var(--nk-ease-out) both;
+  animation-delay: calc(var(--nk-time) * 2 * var(--nk-motion, 1));
+}
+.inv-bar[data-closing] {
+  pointer-events: none;
+  animation: inv-out calc(var(--nk-time-exit, var(--nk-time)) * 1.5) var(--nk-ease-in, ease-in) both;
+}
+html[data-nk-motion="reduced"] .inv-bar:not([data-closing]) {
+  animation-name: inv-fade;
+}
+@keyframes inv-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes inv-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+.inv-bar-gap {
+  width: 0.5rem;
+}
+
+/* chips a bit taller than a hint: they are drop targets and a field */
+.inv-zone,
+.inv-amount {
+  height: 2.5rem;
+  border-radius: var(--nk-chip-radius);
+  clip-path: var(--nk-chip-clip, none);
+  background-color: var(--nk-chip-bg);
+  color: var(--nk-chip-fg);
+}
+.inv-zone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-width: 8rem;
+  padding: 0 1rem;
+  box-shadow: inset 0 0 0 var(--nk-border) transparent;
+  font-size: 0.9375rem;
+  font-weight: 500;
+}
+.inv-zone-icon {
+  display: flex;
+  opacity: 0.75;
+}
+.inv-zone-icon svg {
+  width: 1rem;
+  height: 1rem;
+}
+/* a player item is being dragged: the zones show they take it */
+.inv-zone[data-armed] {
+  box-shadow: inset 0 0 0 0.125rem color-mix(in oklab, var(--brand, var(--primary)) 60%, transparent);
+}
+/* over it: the active chip */
+.inv-zone[data-over] {
+  background-color: var(--nk-chip-active-bg);
+  color: var(--nk-chip-active-fg);
+  box-shadow: var(--nk-chip-glow);
+}
+.inv-zone[data-over] .inv-zone-icon {
+  opacity: 1;
+}
+.inv-amount.inv-amount {
+  width: 7rem;
+  border: 0;
+  text-align: center;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  box-shadow: none;
+}
+.inv-amount::placeholder {
+  color: var(--nk-chip-fg);
+  opacity: 0.6;
+}
+.inv-amount:focus-visible {
+  box-shadow: inset 0 0 0 0.125rem var(--ring);
+}
+
+/* key hints that are buttons (Controls, Close): the chip lights like an active chip */
+.inv-hint-button {
+  display: inline-flex;
+  border-radius: var(--nk-chip-radius);
+}
+.inv-hint-button:hover [data-slot="hud-chip"],
+.inv-hint-button:focus-visible [data-slot="hud-chip"] {
+  background-color: var(--nk-chip-active-bg);
+  color: var(--nk-chip-active-fg);
+}
+
+/* ───────────────────────────── meters (tooltip durability) */
+
+.inv-meter {
+  position: relative;
+  height: 0.25rem;
+  width: 100%;
+  overflow: hidden;
+  border-radius: var(--nk-meter-radius);
+  background-color: color-mix(in oklab, var(--foreground) 10%, transparent);
+}
+.inv-meter-fill {
+  position: absolute;
+  inset: 0;
+  background-color: var(--muted-foreground);
+  transform-origin: left center;
+  transform: scaleX(var(--v, 0));
+  transition: transform calc(300ms * var(--nk-motion, 1)) var(--nk-ease-out);
+}
+.inv-meter[data-tone="weight"] .inv-meter-fill {
+  background-color: var(--brand, var(--primary));
+}
+.inv-meter[data-danger] .inv-meter-fill {
+  background-color: var(--destructive);
 }
 
 /* Thin themed scrollbars for the slot grids (Chromium 103 supports ::-webkit-scrollbar). */
@@ -42,12 +339,6 @@ body.inv-dragging * {
   -webkit-user-drag: none;
   pointer-events: none;
   filter: drop-shadow(0 0.125rem 0.25rem rgb(0 0 0 / 0.35));
-}
-
-/* Hotbar tile: a HUD element on the game (rule 8), same surface as nk-chip. */
-.inv-hud {
-  background-color: var(--hud);
-  color: var(--hud-foreground);
 }
 
 /* Markdown descriptions */

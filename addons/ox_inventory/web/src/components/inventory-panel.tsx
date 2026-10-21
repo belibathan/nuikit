@@ -12,9 +12,9 @@ import {
   WarehouseIcon,
   type LucideIcon,
 } from "lucide-react";
-import { useEffect, useMemo, useState, type UIEvent } from "react";
-import { Meter } from "@/components/item-image";
+import { useEffect, useMemo, useState } from "react";
 import { SlotTile } from "@/components/slot-tile";
+import { EdgeSheet, EdgeSheetBody } from "@/components/ui/edge-sheet";
 import type { Side } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { canCraft, canPurchase, formatKg, inv, totalWeight } from "@/state/inventory";
@@ -37,10 +37,22 @@ const KINDS: Record<string, { icon: LucideIcon; name: string }> = {
 
 const PAGE = 60;
 
-/** Panel width (5 × 5.5rem slots, 0.5rem gaps, 1rem padding, hairline border), for the empty right-hand placeholder. */
-export const PANEL_WIDTH = "w-[31.625rem]";
+/** What this inventory holds and, for the empty or catalogue ones, what to do with it (rule 9). */
+function caption(type: string, used: number, slots: number): string {
+  const count = `${used} / ${slots} slots`;
+  if (type === "shop") return `${used} ${used === 1 ? "item" : "items"}. Drag one to your inventory to buy it.`;
+  if (type === "crafting") return `${used} ${used === 1 ? "recipe" : "recipes"}. Drag one to your inventory to craft it.`;
+  if (type === "newdrop" && !used) return "Drag items here to drop them.";
+  if (!used && type !== "player") return `${count}. Drag items here to store them.`;
+  return count;
+}
 
-export function InventoryPanel({ side }: { side: Side }) {
+/**
+ * One side of the inventory: a full-height edge sheet (the pause menu's backdrop, shared as
+ * registry `edge-sheet`), the weight traced along its header's edge, and the slots below. The
+ * secondary inventory slides in just after the player's.
+ */
+export function InventoryPanel({ side, open }: { side: Side; open: boolean }) {
   const inventory = inv.use((s) => (side === "left" ? s.left : s.right));
   const imagepath = inv.use((s) => s.imagepath);
   const busy = inv.use((s) => s.busy);
@@ -64,39 +76,32 @@ export function InventoryPanel({ side }: { side: Side }) {
   const max = inventory.maxWeight || 0;
   const percent = max ? (weight / max) * 100 : 0;
   const used = inventory.items.filter((i) => i.name).length;
-  const catalogue = inventory.type === "shop" || inventory.type === "crafting";
 
-  const onScroll = (e: UIEvent<HTMLDivElement>) => {
-    const el = e.currentTarget;
+  // Page in more slots as the grid scrolls (the stock ScrollArea's viewport).
+  const onScroll = (el: HTMLDivElement) => {
     if (limit < inventory.items.length && el.scrollTop + el.clientHeight > el.scrollHeight - el.clientHeight * 0.5) setLimit((l) => l + PAGE);
   };
 
   return (
-    <section className="nk-panel nk-enter w-max overflow-hidden">
-      <header className="nk-panel-header flex-col items-stretch gap-3">
-        <div className="flex items-center gap-3">
-          <Icon className="size-4 shrink-0 text-muted-foreground" />
-          <h2 className="nk-title min-w-0 flex-1 truncate">{label}</h2>
-          {catalogue ? (
-            <span className="nk-label nk-num shrink-0">
-              {used} {inventory.type === "shop" ? (used === 1 ? "item" : "items") : used === 1 ? "recipe" : "recipes"}
-            </span>
-          ) : (
-            <span className="nk-label nk-num shrink-0">
-              {used} / {inventory.slots} slots
-            </span>
-          )}
-          {max > 0 && (
-            <span className="nk-label nk-num shrink-0">
-              <span className={cn(percent >= 90 ? "text-destructive" : "text-foreground")}>{formatKg(weight)}</span> / {formatKg(max)} kg
-            </span>
-          )}
-        </div>
-        {max > 0 && <Meter value={percent} tone="weight" />}
-      </header>
-
-      <div className={cn("inv-scroll max-h-[37rem] py-4 pr-2.5 pl-4", busy && "pointer-events-none")} onScroll={onScroll}>
-        <div className="grid grid-cols-[repeat(5,5.5rem)] gap-2">
+    <EdgeSheet
+      open={open}
+      side={side === "left" ? "left" : "right"}
+      delay={side === "left" ? 0 : 60}
+      width="34.75rem"
+      icon={<Icon />}
+      title={label}
+      description={caption(inventory.type, used, inventory.slots)}
+      meter={max > 0 ? percent : undefined}
+      actions={
+        max > 0 && (
+          <span className="nk-num text-sm text-muted-foreground">
+            <span className={cn("font-semibold", percent >= 90 ? "text-destructive" : "text-foreground")}>{formatKg(weight)}</span> / {formatKg(max)} kg
+          </span>
+        )
+      }
+    >
+      <EdgeSheetBody scroll onViewportScroll={onScroll}className={cn(busy && "pointer-events-none")}>
+        <div className="inv-grid">
           {inventory.items.slice(0, limit).map((item, i) => (
             <SlotTile
               key={`${inventory.type}-${inventory.id}-${item.slot}`}
@@ -109,7 +114,7 @@ export function InventoryPanel({ side }: { side: Side }) {
             />
           ))}
         </div>
-      </div>
-    </section>
+      </EdgeSheetBody>
+    </EdgeSheet>
   );
 }

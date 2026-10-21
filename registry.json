@@ -28,6 +28,29 @@
       }
     },
     {
+      "name": "edge-sheet",
+      "type": "registry:ui",
+      "title": "Edge Sheet",
+      "description": "A full-height sheet flush to a screen edge (the pause menu backdrop): stock Sheet in the panel surface, hairline on the open edge, inner column, display title, a level traced along the header edge, staggered slide-in and exit. Non-modal so two can share the screen.",
+      "files": [
+        {
+          "path": "registry/nuikit/ui/edge-sheet.tsx",
+          "type": "registry:ui"
+        }
+      ],
+      "dependencies": [],
+      "registryDependencies": [
+        "sheet",
+        "scroll-area"
+      ],
+      "meta": {
+        "since": "0.8.0",
+        "status": "experimental",
+        "replaces": [],
+        "removeIn": null
+      }
+    },
+    {
       "name": "menu-row",
       "type": "registry:ui",
       "title": "Menu Row",

@@ -28,10 +28,10 @@ export function DragPreview() {
   const moving = shift && count > 1 ? Math.floor(count / 2) : amount === 0 || amount > count ? count : amount;
   return (
     <div ref={ref} className="pointer-events-none fixed top-0 left-0 z-[70]">
-      <div className="nk-panel relative grid size-16 place-items-center">
-        <ItemImage src={itemImage(drag.item)} className="size-11" />
+      <div className="inv-drag relative grid size-[5.5rem] place-items-center">
+        <ItemImage src={itemImage(drag.item)} className="size-12" />
         {count > 1 && (
-          <span className="nk-num absolute -top-2 -right-2 grid h-5 min-w-5 place-items-center rounded-full bg-primary px-1.5 text-xs leading-none font-medium text-primary-foreground">
+          <span className="inv-drag-count nk-num absolute -top-2 -right-2 grid h-6 min-w-6 place-items-center px-1.5 text-sm leading-none font-semibold">
             {moving.toLocaleString("en-US")}
           </span>
         )}
@@ -62,7 +62,7 @@ export function Hotbar() {
     <div className="nk-edge pointer-events-none fixed inset-x-0 bottom-[var(--nk-edge)] flex justify-center">
       <div className="nk-enter flex gap-2">
         {slots.map((s) => (
-          <div key={s.slot} className="w-16">
+          <div key={s.slot} className="w-[4.5rem]">
             <SlotTile side="left" item={s} invType="player" display imagepath={imagepath} rev={rev} />
           </div>
         ))}
@@ -89,8 +89,8 @@ export function ItemNotifications() {
 
   if (!notes.length) return null;
   return (
-    // Above the hotbar's row (edge + 4rem tile + 0.75rem), newest at the bottom.
-    <div className="nk-edge pointer-events-none fixed inset-x-0 bottom-[calc(var(--nk-edge)+4.75rem)] flex flex-col items-center gap-2">
+    // Above the hotbar's row (edge + 4.5rem tile + 0.75rem), newest at the bottom.
+    <div className="nk-edge pointer-events-none fixed inset-x-0 bottom-[calc(var(--nk-edge)+5.25rem)] flex flex-col items-center gap-2">
       {notes.map((n) => (
         <div key={n.id} className="nk-chip nk-enter max-w-80 pl-1.5">
           <ItemImage src={itemImage(n.item)} className="size-5 shrink-0" />

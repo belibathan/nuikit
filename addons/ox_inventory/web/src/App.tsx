@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Controls } from "@/components/controls";
 import { InventoryPanel } from "@/components/inventory-panel";
 import { ItemMenu } from "@/components/item-menu";
@@ -49,6 +49,18 @@ function useKeyboard() {
   }, []);
 }
 
+/** Mounted while open and for one exit after it closes (the motion ladder's exit time). */
+function useExit(open: boolean) {
+  const [mounted, setMounted] = useState(open);
+  useEffect(() => {
+    if (open) return setMounted(true);
+    const ms = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--nk-time")) || 140;
+    const id = setTimeout(() => setMounted(false), ms * 1.5);
+    return () => clearTimeout(id);
+  }, [open]);
+  return { mounted: open || mounted, closing: !open && mounted };
+}
+
 export default function App() {
   const visible = inv.use((s) => s.visible);
   const hasRight = inv.use((s) => s.right.slots > 0);
@@ -73,26 +85,28 @@ export default function App() {
     void loadServerTheme();
   }, []);
 
+  // The bar outlives `visible` by its exit, so it leaves with the sheets (Radix keeps those mounted itself).
+  const bar = useExit(visible);
+
   return (
     <>
-      {visible && (
-        // The panels sit on the screen edges and the actions along the bottom, leaving the middle
-        // of the screen to the player: nuikit_pause frames them there with its focus camera.
-        <div className="fixed inset-0 [--nk-edge:3rem]" onContextMenu={(e) => e.preventDefault()}>
-          <div className="nk-anchor-l">
-            <InventoryPanel side="left" />
+      {/* Two full-height edge sheets (the pause menu's backdrop): the player's on the left, the other
+          inventory on the right, sliding in from their edges. The middle stays the player's. */}
+      <InventoryPanel side="left" open={visible} />
+      <InventoryPanel side="right" open={visible && hasRight} />
+      {bar.mounted && (
+        // above the sheets (z-40), letting the pointer through to them: the tooltip and the dragged item draw on top
+        <div className="pointer-events-none fixed inset-0 z-50" onContextMenu={(e) => e.preventDefault()} data-closing={bar.closing || undefined}>
+          <div className="nk-anchor-b pointer-events-auto">
+            <Controls closing={bar.closing} />
           </div>
-          {hasRight && (
-            <div className="nk-anchor-r">
-              <InventoryPanel side="right" />
-            </div>
+          {visible && (
+            <>
+              <ItemTooltip />
+              <ItemMenu />
+              <DragPreview />
+            </>
           )}
-          <div className="nk-anchor-b">
-            <Controls />
-          </div>
-          <ItemTooltip />
-          <ItemMenu />
-          <DragPreview />
         </div>
       )}
       <Hotbar />

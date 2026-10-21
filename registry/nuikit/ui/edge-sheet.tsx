@@ -1,0 +1,195 @@
+"use client"
+
+import * as React from "react"
+
+import { cn } from "@/lib/utils"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { Sheet, SheetContent, SheetDescription, SheetTitle } from "@/components/ui/sheet"
+
+/**
+ * EdgeSheet — a full-height sheet flush to a screen edge: the pause menu's backdrop as a component.
+ * Stock shadcn Sheet (Radix Dialog, tw-animate-css slide) in the theme's panel surface, no radius
+ * or cut on the edges it touches, a hairline on its open edge, a token-only scrim falloff from the
+ * screen edge, and the content in an inner column (48px from the screen edge, 24px from the open
+ * edge). Several can be open at once (an inventory's two sides): it is non-modal by default and
+ * never closes itself on an outside click, focus or Escape: the owner decides (`open`).
+ *
+ *   <EdgeSheet open={open} side="left" title="John Doe" description="17 / 50 slots" meter={52}>
+ *     <EdgeSheetBody scroll>{slots}</EdgeSheetBody>
+ *     <EdgeSheetFooter>{actions}</EdgeSheetFooter>
+ *   </EdgeSheet>
+ *
+ * Motion (docs/design.md, Motion): it slides in from its edge over the panel time × 2.5 (≤ 400ms),
+ * `delay` staggers a second sheet, the body fades in after the sheet, and it slides back out faster
+ * on close (Radix keeps it mounted until the exit ends). Transform and opacity only; reduced motion
+ * keeps the fade, `/nuikit motion off` shows and hides it at once.
+ *
+ * `meter` (0–100) traces a level along the header's bottom edge (a weight, a capacity), like a
+ * vital along its chip: the hairline is the track, the fill is the brand, destructive from
+ * `meterDanger` (default 90).
+ */
+
+const TITLE: React.CSSProperties = {
+  fontFamily: "var(--nk-heading-font)",
+  fontSize: "var(--nk-text-section)",
+  lineHeight: 1.2,
+  fontWeight: "var(--nk-display-weight)" as React.CSSProperties["fontWeight"],
+  letterSpacing: "var(--nk-display-tracking)",
+  textTransform: "var(--nk-display-case)" as React.CSSProperties["textTransform"],
+}
+
+type EdgeSheetProps = Omit<React.ComponentProps<typeof SheetContent>, "title" | "side"> & {
+  open: boolean
+  side?: "left" | "right"
+  /** Rem width of the whole sheet (the column is this minus 4.5rem). Default 36rem, the pause menu's. */
+  width?: string
+  /** Stagger after another sheet (ms at full motion). */
+  delay?: number
+  /** Trap focus and block the page behind (a sheet that is the only thing on screen). Default false. */
+  modal?: boolean
+  icon?: React.ReactNode
+  title?: React.ReactNode
+  description?: React.ReactNode
+  /** Right of the title: a count, a weight, a close button. */
+  actions?: React.ReactNode
+  meter?: number
+  meterDanger?: number
+  /** Called when Radix would close it (it never closes itself): wire Escape here if you want it. */
+  onOpenChange?: (open: boolean) => void
+}
+
+function EdgeSheet({
+  open,
+  side = "left",
+  width = "36rem",
+  delay = 0,
+  modal = false,
+  icon,
+  title,
+  description,
+  actions,
+  meter,
+  meterDanger = 90,
+  onOpenChange,
+  className,
+  style,
+  children,
+  ...props
+}: EdgeSheetProps) {
+  const left = side === "left"
+  const keep = (e: Event) => e.preventDefault()
+  return (
+    <Sheet open={open} modal={modal} onOpenChange={onOpenChange}>
+      <SheetContent
+        data-slot="edge-sheet"
+        side={side}
+        showCloseButton={false}
+        onOpenAutoFocus={keep}
+        onCloseAutoFocus={keep}
+        onInteractOutside={keep}
+        onEscapeKeyDown={modal ? undefined : keep}
+        style={{ "--edge-sheet-width": width, "--edge-sheet-delay": `${delay}ms`, animationDelay: "calc(var(--edge-sheet-delay) * var(--nk-motion, 1))", ...style } as React.CSSProperties}
+        className={cn(
+          // the surface: the theme's panel, flush, a hairline on the open edge only
+          "z-40 w-(--edge-sheet-width) max-w-none gap-0 border-(--nk-panel-border) bg-(--nk-panel-bg) text-(--nk-panel-fg) shadow-(--nk-panel-shadow) sm:max-w-none",
+          left
+            ? "border-r-(length:--nk-border) bg-[linear-gradient(90deg,rgba(var(--scrim-rgb),0.22)_0%,rgba(var(--scrim-rgb),0)_70%)]"
+            : "border-l-(length:--nk-border) bg-[linear-gradient(270deg,rgba(var(--scrim-rgb),0.22)_0%,rgba(var(--scrim-rgb),0)_70%)]",
+          // motion: the ladder, never raw ms; exits faster, eases in
+          "data-[state=open]:duration-[calc(var(--nk-time)*2.5)] data-[state=open]:ease-(--nk-ease-out)",
+          "data-[state=closed]:duration-[calc(var(--nk-time-exit,var(--nk-time))*1.5)] data-[state=closed]:ease-(--nk-ease-in,ease-in)",
+          className
+        )}
+        {...props}
+      >
+        <div
+          data-slot="edge-sheet-column"
+          className={cn("flex h-full min-h-0 w-full flex-col py-12", left ? "pr-6 pl-12" : "pr-12 pl-6")}
+        >
+          {(title || icon || actions) && (
+            <header data-slot="edge-sheet-header" className="flex flex-col gap-1 pb-4">
+              <div className="flex min-h-8 items-center gap-3">
+                {icon && <span className="flex shrink-0 text-muted-foreground [&_svg:not([class*='size-'])]:size-5">{icon}</span>}
+                {/* the display face at section size (the pause menu's server name is the display size);
+                    inline, so it wins over the stock title's own weight without fighting class order */}
+                <SheetTitle className="min-w-0 flex-1 truncate" style={TITLE}>
+                  {title}
+                </SheetTitle>
+                {actions && <div data-slot="edge-sheet-actions" className="ml-auto flex shrink-0 items-center gap-2">{actions}</div>}
+              </div>
+              {description ? (
+                <SheetDescription className="nk-label truncate">{description}</SheetDescription>
+              ) : (
+                <SheetDescription className="sr-only">{typeof title === "string" ? title : ""}</SheetDescription>
+              )}
+            </header>
+          )}
+          <EdgeSheetEdge value={meter} danger={meterDanger} />
+          {children}
+        </div>
+      </SheetContent>
+    </Sheet>
+  )
+}
+
+/** The header's bottom edge: the hairline, with a level traced along it (scaleX: nothing repaints). */
+function EdgeSheetEdge({ value, danger = 90, className }: { value?: number; danger?: number; className?: string }) {
+  const v = value === undefined || !Number.isFinite(value) ? undefined : Math.max(0, Math.min(100, value))
+  return (
+    <div data-slot="edge-sheet-edge" aria-hidden className={cn("relative h-0.5 shrink-0 overflow-hidden bg-(--nk-panel-border)", className)}>
+      {v !== undefined && (
+        <div
+          data-slot="edge-sheet-edge-fill"
+          data-danger={v >= danger || undefined}
+          className="absolute inset-0 origin-left bg-(--brand,var(--primary)) transition-transform duration-[calc(var(--nk-time)*2)] ease-(--nk-ease-out) data-[danger]:bg-destructive"
+          style={{ transform: `scaleX(${v / 100})` }}
+        />
+      )}
+    </div>
+  )
+}
+
+/**
+ * The sheet's content: fills the column and fades up after the sheet has slid in. `scroll` wraps it
+ * in a stock ScrollArea (`onViewportScroll` gets its viewport on every scroll, for paging).
+ */
+function EdgeSheetBody({
+  className,
+  scroll = false,
+  onViewportScroll,
+  style,
+  children,
+  ...props
+}: React.ComponentProps<"div"> & { scroll?: boolean; onViewportScroll?: (viewport: HTMLDivElement) => void }) {
+  const ref = React.useRef<HTMLDivElement>(null)
+  const onScroll = React.useRef(onViewportScroll)
+  onScroll.current = onViewportScroll
+  React.useEffect(() => {
+    const el = ref.current?.querySelector<HTMLDivElement>("[data-slot=scroll-area-viewport]")
+    if (!el) return
+    const on = () => onScroll.current?.(el)
+    el.addEventListener("scroll", on, { passive: true })
+    return () => el.removeEventListener("scroll", on)
+  }, [scroll])
+  const enter = { animationDelay: "calc((var(--edge-sheet-delay, 0ms) + var(--nk-time) * 1.5) * var(--nk-motion, 1))", ...style }
+  if (!scroll) {
+    return (
+      <div data-slot="edge-sheet-body" className={cn("nk-rise min-h-0 flex-1 pt-4", className)} style={enter} {...props}>
+        {children}
+      </div>
+    )
+  }
+  return (
+    <div ref={ref} data-slot="edge-sheet-body" className={cn("nk-rise -mr-3 flex min-h-0 flex-1 flex-col", className)} style={enter} {...props}>
+      <ScrollArea className="min-h-0 flex-1 [&>[data-slot=scroll-area-viewport]]:pt-4 [&>[data-slot=scroll-area-viewport]]:pr-3 [&>[data-slot=scroll-area-viewport]]:pb-4">
+        {children}
+      </ScrollArea>
+    </div>
+  )
+}
+
+function EdgeSheetFooter({ className, ...props }: React.ComponentProps<"footer">) {
+  return <footer data-slot="edge-sheet-footer" className={cn("flex shrink-0 items-center gap-2 border-t border-(--nk-panel-border) pt-4", className)} {...props} />
+}
+
+export { EdgeSheet, EdgeSheetBody, EdgeSheetEdge, EdgeSheetFooter, type EdgeSheetProps }

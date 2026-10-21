@@ -14,6 +14,11 @@
     "input",
     "kbd",
     "separator",
-    "tooltip"
+    "tooltip",
+    "sheet",
+    "scroll-area",
+    "hud-chip",
+    "money",
+    "edge-sheet"
   ]
 }
