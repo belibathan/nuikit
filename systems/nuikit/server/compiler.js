@@ -1,4 +1,4 @@
-/* nuikit-core theme compiler (tokens v1). MIT, https://github.com/belibathan/nuikit. Generated: do not edit (pnpm sync copies it from packages/core). */
+/* nuikit-core theme compiler (tokens v1) + doctor. MIT, https://github.com/belibathan/nuikit. Generated: do not edit (pnpm sync copies it from packages/core). */
 "use strict";
 var NuikitTheme = (() => {
   var __defProp = Object.defineProperty;
@@ -22,10 +22,16 @@ var NuikitTheme = (() => {
   // src/fxserver.ts
   var fxserver_exports = {};
   __export(fxserver_exports, {
+    ADAPTER_PACKS: () => ADAPTER_PACKS,
     TOKENS_VERSION: () => TOKENS_VERSION,
     TOKEN_NAMES: () => TOKEN_NAMES,
     checkContrast: () => checkContrast,
+    compareVersions: () => compareVersions,
     compileTheme: () => compileTheme,
+    detectFramework: () => detectFramework,
+    doctor: () => doctor,
+    formatDoctor: () => formatDoctor,
+    pageHash: () => pageHash,
     themeToCss: () => themeToCss,
     toDtcg: () => toDtcg
   });
@@ -974,6 +980,273 @@ ${lines.join("\n")}
     if (dur) return { $type: "duration", $value: { value: parseFloat(dur[1]), unit: dur[2] }, ...desc };
     if (bez) return { $type: "cubicBezier", $value: bez.slice(1).map(Number), ...desc };
     return { $value: value, ...desc, $extensions: { "dev.nuikit": { type: (_b = spec == null ? void 0 : spec.type) != null ? _b : "keyword" } } };
+  }
+
+  // src/doctor.ts
+  var ADAPTER_PACKS = [
+    { name: "[nuikit-ox]", library: "ox_lib", frameworks: ["any"], shipped: false },
+    { name: "[nuikit-qb]", library: "qb-core", frameworks: ["qbcore", "qbox"], shipped: false },
+    { name: "[nuikit-esx]", library: "es_extended", frameworks: ["esx"], shipped: false }
+  ];
+  var FRAMEWORKS = [
+    { resource: "qbx_core", framework: "qbox" },
+    { resource: "qb-core", framework: "qbcore" },
+    { resource: "es_extended", framework: "esx" }
+  ];
+  var OVERRIDE_MARKER = /<meta\s+name=["']nuikit-handshake["']\s+content=["']off["']/i;
+  function meta(r, key) {
+    var _a;
+    return (_a = r.metadata[key]) != null ? _a : [];
+  }
+  function first(r, key) {
+    return meta(r, key)[0];
+  }
+  var started = (r) => r.state === "started" || r.state === "starting";
+  var isNuikit = (r) => r.name === "nuikit";
+  function pageHash(text) {
+    const s = text.replace(/\r\n/g, "\n");
+    let h = 2166136261;
+    for (let i = 0; i < s.length; i++) {
+      h ^= s.charCodeAt(i);
+      h = Math.imul(h, 16777619);
+    }
+    return (h >>> 0).toString(16).padStart(8, "0");
+  }
+  function compareVersions(a, b) {
+    var _a, _b;
+    const pa = a.replace(/^v/, "").split(/[.-]/);
+    const pb = b.replace(/^v/, "").split(/[.-]/);
+    for (let i = 0; i < Math.max(pa.length, pb.length); i++) {
+      const x = (_a = pa[i]) != null ? _a : "0";
+      const y = (_b = pb[i]) != null ? _b : "0";
+      const nx = Number(x);
+      const ny = Number(y);
+      if (!Number.isNaN(nx) && !Number.isNaN(ny)) {
+        if (nx !== ny) return nx - ny;
+      } else if (x !== y) return x < y ? -1 : 1;
+    }
+    return 0;
+  }
+  function detectFramework(resources) {
+    for (const f of FRAMEWORKS) {
+      const r = resources.find((x) => x.name === f.resource && started(x));
+      if (r) return { framework: f.framework, resource: r.name };
+    }
+    return { framework: "standalone", resource: null };
+  }
+  function doctor(snap) {
+    var _a, _b, _c, _d, _e;
+    const resources = snap.resources;
+    const running = resources.filter(started);
+    const byName = new Map(resources.map((r) => [r.name, r]));
+    const findings = [];
+    const { framework, resource: frameworkResource } = detectFramework(resources);
+    const packs = ((_a = snap.packs) != null ? _a : ADAPTER_PACKS).map((p) => {
+      const lib = byName.get(p.library);
+      const libraryRunning = !!lib && started(lib);
+      const fits = libraryRunning && (p.frameworks.includes("any") || p.frameworks.includes(framework));
+      const packRunning = running.some((r) => meta(r, "nuikit_adapter").includes(p.library));
+      return { name: p.name, fits, shipped: p.shipped, running: packRunning, library: p.library, libraryRunning };
+    });
+    const adaptedBy = /* @__PURE__ */ new Map();
+    for (const r of running) for (const lib of meta(r, "nuikit_adapter")) adaptedBy.set(lib, r.name);
+    const reports = [];
+    for (const r of running) {
+      const page = (_c = (_b = first(r, "ui_page")) != null ? _b : first(r, "loadscreen")) != null ? _c : null;
+      const hosted = first(r, "nuikit_ui");
+      if (!page && !hosted && !isNuikit(r)) continue;
+      const rep = { name: r.name, status: "untouched", page };
+      const proto = first(r, "nuikit_protocol");
+      const level = first(r, "nuikit_level");
+      if (isNuikit(r)) rep.status = "runtime";
+      else if (proto !== void 0) {
+        rep.status = "nuikit";
+        rep.protocol = Number(proto);
+        if (level !== void 0) rep.level = Number(level);
+      } else if (hosted) rep.status = "hosted";
+      else if (adaptedBy.has(r.name)) {
+        rep.status = "adapted";
+        rep.via = adaptedBy.get(r.name);
+      } else if (page && snap.readFile) {
+        const html = snap.readFile(r.name, page);
+        if (html && OVERRIDE_MARKER.test(html)) {
+          rep.status = "override";
+          rep.via = "override page";
+        }
+      }
+      if (rep.status === "untouched") {
+        const pack = packs.find((p) => p.fits && p.library === r.name);
+        rep.next = pack ? pack.shipped ? `install ${pack.name} to draw ${r.name}'s UI with nuikit` : `${pack.name} will adapt it (not shipped yet)` : `its UI is its own; add nuikit_protocol to join (docs/protocol.md) or wait for an override`;
+      }
+      if (rep.status === "nuikit" && rep.level === void 0) rep.next = "declare nuikit_level '<1-3>' from `nuikit check` so the doctor can show it";
+      reports.push(rep);
+    }
+    for (const r of running) {
+      for (const provided of meta(r, "provide")) {
+        const real = byName.get(provided);
+        if (real && real !== r && started(real)) {
+          findings.push({
+            code: "provide-conflict",
+            severity: "error",
+            resource: r.name,
+            message: `${r.name} provides ${provided}, and ${provided} itself is running`,
+            next: `stop one of them: \`ensure ${r.name}\` replaces ${provided}, so remove \`ensure ${provided}\` (or the other way round)`
+          });
+        }
+      }
+    }
+    if (snap.overrides && snap.readFile) {
+      for (const [res, o] of Object.entries(snap.overrides.overrides)) {
+        const r = byName.get(res);
+        if (!r || !started(r)) continue;
+        const html = snap.readFile(res, o.path);
+        const rep = reports.find((x) => x.name === res);
+        if (!html || !OVERRIDE_MARKER.test(html)) {
+          findings.push({
+            code: "override-missing",
+            severity: "warn",
+            resource: res,
+            message: `${res}: the nuikit override page isn't at ${o.path} (a library update replaced it, or it was never copied)`,
+            next: `copy overrides/${res}/ from nuikit.zip over resources/${res}/ again and \`restart ${res}\``
+          });
+          if (rep) {
+            rep.via = "override missing";
+            rep.next = `copy overrides/${res}/ from nuikit.zip back over resources/${res}/`;
+          }
+        } else if (pageHash(html) !== o.hash) {
+          findings.push({
+            code: "override-drifted",
+            severity: "warn",
+            resource: res,
+            message: `${res}: the override page at ${o.path} isn't the one nuikit ${snap.overrides.version} shipped (edited, or from another release)`,
+            next: `if you didn't edit it, copy overrides/${res}/ from nuikit.zip over resources/${res}/ and \`restart ${res}\``
+          });
+          if (rep) rep.via = "override changed";
+        }
+      }
+    }
+    for (const rep of reports) {
+      if (rep.protocol !== void 0 && rep.protocol > snap.runtime.protocol) {
+        findings.push({
+          code: "protocol-newer",
+          severity: "error",
+          resource: rep.name,
+          message: `${rep.name} speaks protocol ${rep.protocol}; this nuikit speaks ${snap.runtime.protocol}`,
+          next: `update nuikit (the runtime supports the previous protocol, not a newer one)`
+        });
+      }
+    }
+    for (const r of running) {
+      if (isNuikit(r)) continue;
+      const scripts = ["shared_script", "client_script", "server_script", "shared_scripts", "client_scripts", "server_scripts"].flatMap((k) => meta(r, k));
+      const imports = scripts.some((s) => s.startsWith("@nuikit/"));
+      const depends = meta(r, "dependency").includes("nuikit") || meta(r, "dependencies").includes("nuikit");
+      if (imports && !depends) {
+        findings.push({
+          code: "missing-dependency",
+          severity: "warn",
+          resource: r.name,
+          message: `${r.name} imports @nuikit/init.lua but doesn't declare \`dependency 'nuikit'\``,
+          next: `add \`dependency 'nuikit'\` to its fxmanifest.lua so FiveM starts nuikit first`
+        });
+      }
+      if ((imports || depends) && r.startedBeforeRuntime) {
+        findings.push({
+          code: "start-order",
+          severity: "error",
+          resource: r.name,
+          message: `${r.name} started before nuikit; its @nuikit import failed on that start`,
+          next: `put \`ensure nuikit\` before \`ensure ${r.name}\` in server.cfg, then \`restart ${r.name}\``
+        });
+      }
+    }
+    if (snap.theme) {
+      for (const c2 of snap.theme.contrast) {
+        if (c2.ok) continue;
+        findings.push({
+          code: "theme-contrast",
+          severity: "warn",
+          message: `theme: ${c2.fg} on ${c2.bg} is ${c2.ratio.toFixed(2)}:1 (min ${c2.min}:1)`,
+          next: `lighten or darken \`--${c2.fg}\` or \`--${c2.bg}\` in nuikit/theme.css, then \`nuikit theme reload\``
+        });
+      }
+      for (const w of snap.theme.warnings) {
+        if (/contrast/i.test(w)) continue;
+        findings.push({ code: "theme-warning", severity: "info", message: `theme: ${w}`, next: `fix it in nuikit/theme.css, then \`nuikit theme reload\`` });
+      }
+    }
+    const latest = (_d = snap.runtime.latest) != null ? _d : null;
+    if (latest && compareVersions(latest, snap.runtime.version) > 0) {
+      findings.push({
+        code: "update-available",
+        severity: "info",
+        message: `nuikit ${snap.runtime.version} is running; ${latest} is out`,
+        next: `download nuikit.zip from github.com/belibathan/nuikit/releases/tag/v${latest.replace(/^v/, "")} and replace [nuikit]/ and overrides/`
+      });
+    }
+    findings.push({
+      code: "framework",
+      severity: "info",
+      message: frameworkResource ? `${framework} detected (${frameworkResource} is running)` : "no framework detected: standalone",
+      next: packs.some((p) => p.fits && !p.running) ? `adapter packs that fit: ${packs.filter((p) => p.fits && !p.running).map((p) => `${p.name}${p.shipped ? "" : " (not shipped yet)"}`).join(", ")}` : packs.some((p) => p.running) ? "every fitting adapter pack is running" : "no adapter pack fits; nuikit's own screens and overrides still apply"
+    });
+    const rank = { error: 0, warn: 1, info: 2 };
+    findings.sort((a, b) => rank[a.severity] - rank[b.severity]);
+    const intents = Object.entries((_e = snap.intents) != null ? _e : {}).map(([source, byIntent]) => ({ source, byIntent, total: Object.values(byIntent).reduce((a, b) => a + b, 0) })).sort((a, b) => b.total - a.total);
+    const count = (s) => reports.filter((r) => r.status === s).length;
+    const summary = {
+      ui: reports.filter((r) => r.status !== "runtime").length,
+      nuikit: count("nuikit") + count("hosted"),
+      adapted: count("adapted"),
+      override: count("override"),
+      untouched: count("untouched"),
+      errors: findings.filter((f) => f.severity === "error").length,
+      warnings: findings.filter((f) => f.severity === "warn").length
+    };
+    return { framework, frameworkResource, runtime: { version: snap.runtime.version, protocol: snap.runtime.protocol, latest }, packs, resources: reports, findings, intents, summary };
+  }
+  var STATUS_LABEL = {
+    runtime: "runtime",
+    nuikit: "on nuikit",
+    hosted: "on nuikit (hosted)",
+    adapted: "adapted",
+    override: "override",
+    untouched: "untouched"
+  };
+  function formatDoctor(rep) {
+    const out = [];
+    out.push(`nuikit ${rep.runtime.version} (protocol ${rep.runtime.protocol})${rep.runtime.latest ? `, latest ${rep.runtime.latest}` : ""}`);
+    out.push(`framework: ${rep.framework}${rep.frameworkResource ? ` (${rep.frameworkResource})` : ""}`);
+    out.push("adapter packs:");
+    for (const p of rep.packs) {
+      const state = p.running ? "running" : p.fits ? p.shipped ? "fits, not installed" : "fits, not shipped yet" : `not needed (${p.library} isn't running)`;
+      out.push(`  ${p.name.padEnd(14)} ${state}`);
+    }
+    out.push(`resources with a UI (${rep.summary.ui}): ${rep.summary.nuikit} on nuikit, ${rep.summary.adapted} adapted, ${rep.summary.override} override, ${rep.summary.untouched} untouched`);
+    for (const r of rep.resources) {
+      if (r.status === "runtime") continue;
+      let label = STATUS_LABEL[r.status];
+      if (r.status === "nuikit") label += ` v${r.protocol}${r.level !== void 0 ? ` level ${r.level}` : ""}`;
+      if (r.via) label += ` (${r.via})`;
+      out.push(`  ${r.name.padEnd(24)} ${label}`);
+      if (r.next) out.push(`  ${"".padEnd(24)}   \u2192 ${r.next}`);
+    }
+    const problems = rep.findings.filter((f) => f.code !== "framework");
+    out.push(`findings: ${rep.summary.errors} error${rep.summary.errors === 1 ? "" : "s"}, ${rep.summary.warnings} warning${rep.summary.warnings === 1 ? "" : "s"}`);
+    for (const f of problems) {
+      out.push(`  ${f.severity.toUpperCase().padEnd(5)} ${f.message}`);
+      out.push(`        \u2192 ${f.next}`);
+    }
+    const fw = rep.findings.find((f) => f.code === "framework");
+    if (fw) out.push(`  \u2192 ${fw.next}`);
+    if (rep.intents.length) {
+      out.push("intents drawn since start (by source):");
+      for (const i of rep.intents) {
+        const parts = Object.entries(i.byIntent).sort((a, b) => b[1] - a[1]).map(([k, v]) => `${k} ${v}`).join(", ");
+        out.push(`  ${i.source.padEnd(24)} ${i.total}  (${parts})`);
+      }
+    } else out.push("intents: none counted yet (the intents runtime emits nuikit:intent; play a bit, then run again)");
+    return out;
   }
   return __toCommonJS(fxserver_exports);
 })();
