@@ -171,3 +171,33 @@ body {
 html[data-nk-motion="reduced"] .ox-radial[data-state="open"] .ox-radial-svg {
   animation-name: nk-enter;
 }
+
+/*
+ * Edge sheets (shadcn Sheet, features/context-menu.tsx): the pause menu's backdrop mirrored to the
+ * right edge. The panel surface flush to the edges (no radius or cut: they would only show on the
+ * open edge), a hairline on the open edge, the panel depth. Slides in over --nk-time × 2.2 (capped,
+ * full-screen rule ≤ 400ms) and out faster; reduced motion keeps the fade only (kit.css zeroes the
+ * slide), motion off zeroes both.
+ */
+.ox-sheet {
+  color: var(--nk-panel-fg) !important;
+  background-color: var(--nk-panel-bg) !important;
+  background-image: linear-gradient(270deg, rgba(var(--scrim-rgb), 0.22) 0%, rgba(var(--scrim-rgb), 0) 70%);
+  border-left: var(--nk-border) solid var(--nk-panel-border) !important;
+  box-shadow: var(--nk-panel-shadow) !important;
+}
+.ox-sheet[data-state="open"] {
+  animation-duration: min(calc(var(--nk-time) * 2.2), 360ms) !important;
+  animation-timing-function: var(--nk-ease-out) !important;
+}
+.ox-sheet[data-state="closed"] {
+  animation-duration: min(calc(var(--nk-time) * 1.4), 200ms) !important;
+  animation-timing-function: var(--nk-ease-in, ease-in) !important;
+}
+/* the sheet title: the heading face at section size (the pause title's family, one step down) */
+.ox-sheet-title {
+  --nk-heading-size: var(--nk-text-section);
+}
+.ox-sheet-title p {
+  margin: 0;
+}

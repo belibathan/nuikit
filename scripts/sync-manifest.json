@@ -242,6 +242,7 @@
       "web/src/components/ui/scroll-area.tsx",
       "web/src/components/ui/select.tsx",
       "web/src/components/ui/separator.tsx",
+      "web/src/components/ui/sheet.tsx",
       "web/src/components/ui/skill-check.tsx",
       "web/src/components/ui/slider.tsx",
       "web/src/components/ui/spinner.tsx",
