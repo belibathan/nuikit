@@ -285,6 +285,38 @@ describe("nuikit_hud: the waypoint bearing and the weapon (client/location.lua, 
     await hud.run(`GROUP = -728555052 Weapon.tick()`);
     expect(sent().at(-1)).toBe(false);
   });
+  it("reads the reserve from ox_inventory's ammo items, where the ped holds only the clip (0.7.0 F1)", async () => {
+    client = await createClient();
+    const hud = await client.start("nuikit_hud", {
+      before: natives + `
+        WEAPON, GROUP, TOTAL, CLIP = 453432689, 416676503, 12, 12
+        function GetSelectedPedWeapon() return WEAPON end
+        function GetWeapontypeGroup() return GROUP end
+        function GetAmmoInPedWeapon() return TOTAL end
+        function GetAmmoInClip() return true, CLIP end
+      `,
+      scripts: [...scripts, HUD + "client/weapon.lua"],
+    });
+    const sent = () => hud.messages.filter((m) => m.action === "hud:weapon").map((m) => m.data);
+    await hud.run(`STARTED.ox_inventory = true COUNT = 48 SEARCHES = 0
+      exports = { ox_inventory = {
+        getCurrentWeapon = function() return { name = 'WEAPON_PISTOL', ammo = 'ammo-9' } end,
+        Search = function(_, how, item) SEARCHES = SEARCHES + 1 if how == 'count' and item == 'ammo-9' then return COUNT end end,
+      } }`);
+    await hud.run(`Weapon.tick()`);
+    expect(sent().at(-1)).toEqual({ clip: 12, reserve: 48, kind: "pistol" });
+    // the count is read again when the clip changes, not on every tick
+    await hud.run(`Weapon.tick() Weapon.tick()`);
+    expect(await hud.run(`return SEARCHES`)).toBe(1);
+    await hud.run(`CLIP, TOTAL, COUNT = 11, 11, 47 Weapon.tick()`);
+    expect(sent().at(-1)).toEqual({ clip: 11, reserve: 47, kind: "pistol" });
+    // a weapon ox_inventory doesn't describe: no reserve rather than a wrong one
+    await hud.run(`exports.ox_inventory.getCurrentWeapon = function() return nil end CLIP, TOTAL = 10, 10 Weapon.tick()`);
+    expect(sent().at(-1)).toEqual({ clip: 10, kind: "pistol" });
+    // Config.ammoReserve = 'ped': GTA's own count
+    await hud.run(`Config.ammoReserve = 'ped' TOTAL = 70 Weapon.tick()`);
+    expect(sent().at(-1)).toEqual({ clip: 10, reserve: 60, kind: "pistol" });
+  });
 });
 
 describe("nuikit_hud: in-game fixes (Oct 20)", () => {

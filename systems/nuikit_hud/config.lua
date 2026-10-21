@@ -105,6 +105,9 @@ Config = {
 
   -- The weapon's ammo, `12 / 48` with a glyph, only while armed with a gun or a throwable.
   ammo = true,
+  -- Where the reserve (the 48) comes from: 'auto' (ox_inventory's ammo items when it's started, else
+  -- GTA's ammo), 'ped', 'ox_inventory', or false to show the clip only.
+  ammoReserve = 'auto',
 
   compass = {
     enabled = true,    -- classic: the heading strip at the top of the screen (compact: on the map ring)
