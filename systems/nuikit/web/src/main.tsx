@@ -6,6 +6,7 @@ import { createIntentStore } from "nuikit-core/intents";
 import { StrictMode, Suspense, lazy } from "react";
 import { createRoot } from "react-dom/client";
 import { Frame } from "./frame";
+import { rendererPacks } from "./packs";
 import "./index.css";
 import "./frame.css";
 
@@ -23,13 +24,15 @@ const host = createHost({
 if (params.has("debug")) (window as unknown as { __nuikitHost: typeof host }).__nuikitHost = host;
 
 const store = createIntentStore();
+// Renderer packs (docs/intents.md §9): client/renderers.lua tells the page which pack draws each kind.
+const packs = rendererPacks(host, { shadowMode: params.get("shadow") === "open" ? "open" : "closed" });
 
 // Browser-only devtools and fixtures (press `). Not bundled into the build the game loads.
 const Dev = import.meta.env.DEV ? lazy(() => import("./dev")) : () => null;
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <Frame store={store} />
+    <Frame store={store} packs={packs} />
     <Suspense>
       <Dev />
     </Suspense>

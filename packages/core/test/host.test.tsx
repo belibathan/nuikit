@@ -145,3 +145,70 @@ describe("defineReactModule signals ready after the App's effects", () => {
     for (let i = 0; i < log.length; i++) if (log[i] === "ready") expect(log.slice(0, i)).toContain("app-effect");
   });
 });
+
+describe("host.fetchModule: renderer packs get their exports without a mount", () => {
+  /** Run the pack's script the way the browser would once it loads: define() from its <script>. */
+  const runPack = (factory: (deps: unknown) => unknown) => {
+    const script = [...document.head.querySelectorAll("script[data-nk-pack]")].at(-1) as HTMLScriptElement;
+    currentScript = script;
+    try {
+      window.__nuikit!.define(factory as never);
+    } finally {
+      currentScript = null;
+    }
+  };
+
+  it("resolves with the default export and the host's React; nothing is mounted or recorded", async () => {
+    const p = host.fetchModule({ resource: "pack", url: "https://cfx-nui-pack/renderers.js" });
+    let seen: { react: unknown } | undefined;
+    runPack((deps) => {
+      seen = deps as { react: unknown };
+      return { default: { kind: "notify", mount: () => {} } };
+    });
+    const exports = (await p) as { kind: string };
+    expect(exports.kind).toBe("notify");
+    expect(seen?.react).toBeDefined();
+    expect(host.modules().some((m) => m.resource === "pack")).toBe(false);
+    expect(document.head.querySelector("script[data-nk-pack]")).toBeNull(); // the <script> is gone once it ran
+    expect(events).toEqual([]);
+  });
+
+  it("redirects portals aimed at document.body to the pack's portal", async () => {
+    const portal = document.createElement("div");
+    const p = host.fetchModule({ resource: "pack", url: "https://cfx-nui-pack/renderers.js", portal: () => portal });
+    let dom: { createPortal: (c: unknown, t: Element) => { containerInfo: Element } } | undefined;
+    runPack((deps) => {
+      dom = (deps as { reactDom: typeof dom }).reactDom;
+      return { x: 1 };
+    });
+    expect(await p).toEqual({ x: 1 }); // no default export: the exports object itself
+    expect(dom!.createPortal(null, document.body).containerInfo).toBe(portal);
+    expect(dom!.createPortal(null, portal).containerInfo).toBe(portal);
+  });
+
+  it("rejects when the script fails to load, throws, or never defines", async () => {
+    vi.useFakeTimers();
+    const failing = host.fetchModule({ resource: "pack", url: "https://cfx-nui-pack/missing.js" });
+    const script = [...document.head.querySelectorAll("script[data-nk-pack]")].at(-1) as HTMLScriptElement;
+    script.onerror!(new Event("error"));
+    await expect(failing).rejects.toThrow(/could not load https:\/\/cfx-nui-pack\/missing.js/);
+
+    const throwing = host.fetchModule({ resource: "pack", url: "https://cfx-nui-pack/renderers.js" });
+    runPack(() => {
+      throw new Error("boom");
+    });
+    await expect(throwing).rejects.toThrow("boom");
+
+    const silent = host.fetchModule({ resource: "pack", url: "https://cfx-nui-pack/silent.js", timeoutMs: 50 });
+    vi.advanceTimersByTime(60);
+    await expect(silent).rejects.toThrow(/defined no module within 50 ms/);
+    vi.useRealTimers();
+  });
+
+  it("cache-busts a URL fetched again (a restarted pack loads its new build)", () => {
+    void host.fetchModule({ resource: "again", url: "https://cfx-nui-again/renderers.js" });
+    void host.fetchModule({ resource: "again", url: "https://cfx-nui-again/renderers.js" });
+    const srcs = [...document.head.querySelectorAll("script[data-nk-pack='again']")].map((s) => (s as HTMLScriptElement).src);
+    expect(srcs).toEqual(["https://cfx-nui-again/renderers.js", "https://cfx-nui-again/renderers.js?v=2"]);
+  });
+});
