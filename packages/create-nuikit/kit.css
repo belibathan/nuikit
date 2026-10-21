@@ -344,11 +344,18 @@
   clip-path: var(--nk-row-clip);
   font-size: var(--nk-row-font-size);
   line-height: 1.25rem;
-  /* instant state (design v2 §5A): keyboard and controller selection never transitions; only pointer
-     hover eases, over --nk-time-hover */
-  transition-property: background-color, color, box-shadow;
-  transition-duration: 0s;
-  transition-timing-function: var(--nk-ease-out);
+  /* interaction (0.8.1): a state fills with movement. The highlight is a sweep from the leading edge
+     (--nk-sweep, drawn as a background layer so the row's own surface classes don't flash it), the bar
+     grows from its middle, text eases with the fill; a press dips and springs back (--nk-motion-feel).
+     Motion off: instant; reduced: no movement. */
+  --nk-sweep: var(--accent);
+  background-image: linear-gradient(var(--nk-sweep), var(--nk-sweep));
+  background-repeat: no-repeat;
+  background-position: left center;
+  background-size: 0% 100%;
+  transition-property: background-size, color, box-shadow, transform;
+  transition-duration: var(--nk-time), var(--nk-time), var(--nk-time), var(--nk-time-press, 120ms);
+  transition-timing-function: var(--nk-ease-out), var(--nk-ease-out), var(--nk-ease-out), var(--nk-ease-spring, cubic-bezier(0.34, 1.56, 0.64, 1));
   &::before {
     content: "";
     position: absolute;
@@ -359,11 +366,33 @@
     border-radius: 9999px;
     background-color: var(--nk-row-indicator-color);
     opacity: 0;
-    transition: opacity 0s var(--nk-ease-out);
+    transform: scaleY(0);
+    transition:
+      opacity var(--nk-time) var(--nk-ease-out),
+      transform var(--nk-time) var(--nk-ease-out);
     pointer-events: none;
   }
-  &[class*="hover:bg-accent"]:hover {
-    transition-duration: var(--nk-time-hover, var(--nk-time));
+  &:is(:hover, [data-active], [data-highlighted], :focus-visible) {
+    background-color: transparent !important;
+    background-size: 100% 100%;
+  }
+  &[class*="text-destructive"] {
+    --nk-sweep: rgba(var(--destructive-rgb), 0.12);
+  }
+  &:not([aria-disabled="true"], [data-disabled], :disabled):active {
+    transform: scale(var(--nk-press-scale, 0.97));
+    transition-duration: var(--nk-time), var(--nk-time), var(--nk-time), var(--nk-time-press, 70ms);
+    transition-timing-function: var(--nk-ease-out);
+  }
+  :is(html, *)[data-nk-feel="snap"] &,
+  :is(html, *)[data-nk-feel="stepped"] & {
+    transition-timing-function: var(--nk-ease-out);
+  }
+  :is(html, *)[data-nk-motion="reduced"] & {
+    transition-property: color;
+  }
+  :is(html, *)[data-nk-motion="reduced"] &:active {
+    transform: none;
   }
   /* the identity indicator marks keyboard, controller and script selection; the pointer's hover is the
      accent surface the row's own hover: classes paint (menu-row's hover variant), never the indicator */
@@ -376,6 +405,7 @@
   &[data-highlighted]::before,
   &:focus-visible::before {
     opacity: 1;
+    transform: none;
   }
 }
 /* Numbers: money, timers, counts. */
@@ -398,10 +428,19 @@
   font-size: var(--nk-chip-font-size);
   font-weight: var(--nk-chip-weight);
   clip-path: var(--nk-chip-clip);
+  /* the active fill rises from the bottom (a background layer), the ink eases with it */
+  background-image: linear-gradient(var(--nk-chip-active-bg), var(--nk-chip-active-bg));
+  background-repeat: no-repeat;
+  background-position: center bottom;
+  background-size: 100% 0%;
+  transition:
+    background-size var(--nk-time) var(--nk-ease-out),
+    color var(--nk-time) var(--nk-ease-out);
 }
-/* Active chip (talking, selected): the brand. */
+/* Active chip (talking, selected): the brand, filling up from the bottom. */
 @utility nk-chip-active {
   background-color: var(--nk-chip-active-bg);
+  background-size: 100% 100%;
   color: var(--nk-chip-active-fg);
   box-shadow: var(--nk-chip-glow);
 }
@@ -875,6 +914,24 @@
   [data-slot="button"] {
     clip-path: var(--nk-chip-clip);
   }
+  /* the primary button: a light sweep across on hover (shadcn's transition-all eases it) */
+  [data-slot="button"][data-variant="default"] {
+    background-image: linear-gradient(rgba(var(--primary-foreground-rgb), 0.14), rgba(var(--primary-foreground-rgb), 0.14));
+    background-repeat: no-repeat;
+    background-position: left center;
+    background-size: 0% 100%;
+  }
+  [data-slot="button"][data-variant="default"]:hover {
+    background-size: 100% 100%;
+  }
+  /* a press dips and springs back */
+  [data-slot="button"]:not([class*="translate"], :disabled):active {
+    transform: scale(var(--nk-press-scale, 0.97));
+  }
+  :is(html, *)[data-nk-motion="reduced"] [data-slot="button"]:active,
+  :is(html, *)[data-nk-motion="off"] [data-slot="button"]:active {
+    transform: none;
+  }
   [data-slot="progress"] {
     border-radius: var(--nk-meter-radius);
   }
@@ -896,14 +953,23 @@
  * beat the row's and its children's own text colours. Destructive rows keep their colour.
  */
 :is(html, *)[data-nk-row="fill"] .nk-row:is([data-active], [data-highlighted], :focus-visible):not([class*="text-destructive"]) {
-  background-color: var(--nk-row-fill-color);
+  --nk-sweep: var(--nk-row-fill-color);
   color: var(--nk-row-fill-foreground);
+}
+/* rows after an indicator: the indicator carries the selection; the row only sweeps for the pointer */
+.nk-indicator ~ .nk-row:is([data-active], [data-highlighted], :focus-visible):not(:hover) {
+  background-size: 0% 100%;
 }
 :is(html, *)[data-nk-row="fill"] .nk-row:is([data-active], [data-highlighted], :focus-visible):not([class*="text-destructive"]) :not([data-slot="kbd"], [data-slot="kbd"] *, [data-slot="progress"], [data-slot="progress"] *) {
   color: inherit;
 }
 :is(html, *)[data-nk-row="fill"] .nk-row::before {
   display: none;
+}
+
+/* a chip keeps its own surface under the rising active fill (tiles, nk-hud, take the brand at once) */
+.nk-chip.nk-chip-active {
+  background-color: var(--nk-chip-bg);
 }
 
 /*
@@ -1009,7 +1075,10 @@
   isolation: isolate;
   background-color: transparent;
 }
-:is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"])[data-nk-row="fill"] .nk-row:is([data-active], [data-highlighted], :focus-visible):not([class*="text-destructive"])::before {
+:is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"])[data-nk-row="fill"] .nk-row {
+  isolation: isolate;
+}
+:is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"])[data-nk-row="fill"] .nk-row::before {
   content: "";
   display: block;
   position: absolute;
@@ -1018,8 +1087,17 @@
   z-index: -1;
   border-radius: 0;
   pointer-events: none;
+  opacity: 1;
   background-color: var(--nk-row-fill-color);
-  transform: skewX(var(--nk-skew));
+  transform-origin: left center;
+  transform: skewX(var(--nk-skew)) scaleX(0);
+  transition: transform var(--nk-time) var(--nk-ease-out);
+}
+:is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"])[data-nk-row="fill"] .nk-row:is([data-active], [data-highlighted], :focus-visible):not([class*="text-destructive"]) {
+  background-size: 0% 100%;
+}
+:is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"])[data-nk-row="fill"] .nk-row:is([data-active], [data-highlighted], :focus-visible):not([class*="text-destructive"])::before {
+  transform: skewX(var(--nk-skew)) scaleX(1);
 }
 :is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"])[data-nk-row="fill"] .nk-indicator ~ .nk-row:is([data-active], [data-highlighted], :focus-visible)::before {
   display: none;

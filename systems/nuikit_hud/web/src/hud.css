@@ -172,10 +172,28 @@
   transform: none;
   transition-property: opacity, max-width, margin;
 }
+/* talking: the accent fills the chip from the bottom up, the ink eases with it */
+.hud-vchip {
+  --nk-chip-active-fill: var(--hud-accent);
+}
+.hud-vchip [data-slot="vital-chip-activefill"] {
+  transform-box: fill-box;
+  transform-origin: center bottom;
+  transform: scaleY(0);
+  transition: transform calc(220ms * var(--nk-motion, 1)) cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.hud-vchip [data-slot="vital-chip-shape"] {
+  transition: color calc(220ms * var(--nk-motion, 1)) ease-out;
+}
+.hud-vchip[data-active] [data-slot="vital-chip-activefill"] {
+  transform: scaleY(1);
+}
 .hud-vchip[data-active] {
-  --nk-chip-bg: var(--hud-accent);
   --nk-chip-fg: var(--hud-accent-foreground);
   --nk-chip-track: transparent;
+}
+:is(html, *)[data-nk-motion="reduced"] .hud-vchip [data-slot="vital-chip-activefill"] {
+  transition: none;
 }
 /* past its threshold: the whole outline takes the vital's colour (outline level) */
 .hud-vchip[data-critical] {

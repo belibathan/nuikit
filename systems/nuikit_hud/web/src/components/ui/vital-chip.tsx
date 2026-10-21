@@ -320,6 +320,11 @@ function Shape({ className, children, ...props }: React.ComponentProps<"span">) 
             </defs>
             {/* the surface */}
             <path d={body} style={{ fill: "var(--nk-chip-bg)" }} />
+            {/* the active fill (talking, selected): rises from the bottom inside the shape; a parent marks it
+                active with [data-active] and styles [data-slot=vital-chip-activefill] */}
+            <g clipPath={`url(#vc-${id})`}>
+              <rect data-slot="vital-chip-activefill" x={0} y={0} width={geo.w} height={geo.h} style={{ fill: "var(--nk-chip-active-fill, transparent)" }} />
+            </g>
             {/* liquid: rises inside the shape, a brighter line on its surface */}
             {level === "fill" && (
               <g clipPath={`url(#vc-${id})`}>
