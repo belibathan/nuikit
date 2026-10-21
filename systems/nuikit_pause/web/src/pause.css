@@ -97,3 +97,115 @@
   display: block;
   transform: translate(-50%, calc(-100% - 0.75rem));
 }
+
+/*
+ * Blips: every marker GTA's own map shows (views/blips.tsx). The identity's chip (its surface, shape
+ * and clip), the kind's icon, and the blip's GTA colour as a thin accent along its foot. The hit
+ * target is larger than the mark.
+ */
+.pause-blip-hit .pause-pin-center {
+  position: relative;
+}
+.pause-blip {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: var(--nk-chip-radius);
+  clip-path: var(--nk-chip-clip, none);
+  background-color: var(--nk-chip-bg);
+  color: var(--nk-chip-fg);
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--hud-foreground) 14%, transparent);
+  transition: transform var(--nk-time-hover, 120ms) ease-out;
+}
+.pause-blip-accent {
+  box-shadow:
+    inset 0 -0.1875rem 0 0 var(--blip),
+    inset 0 0 0 1px color-mix(in oklab, var(--hud-foreground) 14%, transparent);
+}
+.pause-blip-accent .pause-blip-icon {
+  color: var(--blip);
+}
+.pause-blip::before {
+  content: "";
+  position: absolute;
+  inset: -0.375rem;
+}
+.pause-blip-icon {
+  width: 0.875rem;
+  height: 0.875rem;
+}
+/* a merged marker: how many it stands for */
+.pause-blip-count {
+  position: absolute;
+  top: -0.375rem;
+  right: -0.5rem;
+  min-width: 1rem;
+  height: 1rem;
+  padding: 0 0.25rem;
+  border-radius: 9999px;
+  background-color: var(--hud-foreground);
+  color: var(--hud);
+  font-size: 0.6875rem;
+  line-height: 1rem;
+  font-weight: 600;
+  text-align: center;
+}
+.pause-blip-label {
+  position: absolute;
+  left: calc(100% + 0.375rem);
+  top: 50%;
+  display: none;
+  flex-direction: column;
+  max-width: 14rem;
+  padding: 0.25rem 0.625rem;
+  border-radius: var(--nk-chip-radius);
+  clip-path: var(--nk-chip-clip, none);
+  background-color: var(--nk-chip-bg);
+  color: var(--nk-chip-fg);
+  white-space: nowrap;
+  font-size: 0.8125rem;
+  line-height: 1.125rem;
+  font-weight: 600;
+  transform: translateY(-50%);
+}
+.pause-blip-kind {
+  font-size: 0.6875rem;
+  line-height: 0.875rem;
+  font-weight: 500;
+  opacity: 0.7;
+}
+[data-open] > .pause-pin-center > .pause-blip-label {
+  display: flex;
+}
+[data-open] > .pause-pin-center > .pause-blip {
+  transform: scale(1.12);
+}
+[data-selected] > .pause-pin-center > .pause-blip {
+  outline: 2px solid var(--brand, var(--primary));
+  outline-offset: 1px;
+}
+.pause-blip-hit:focus-visible > .pause-pin-center > .pause-blip {
+  outline: 2px solid var(--ring);
+  outline-offset: 1px;
+}
+/* a blip its owner flashes: a ring in its colour (static: nothing runs while the map idles) */
+[data-flash] > .pause-pin-center > .pause-blip {
+  outline: 2px solid var(--blip, var(--hud-foreground));
+  outline-offset: 1px;
+}
+/* far out: short-range blips become dots in their colour */
+[data-far] [data-short]:not([data-open]) > .pause-pin-center > .pause-blip {
+  width: 0.625rem;
+  height: 0.625rem;
+  border-radius: 9999px;
+  clip-path: none;
+  background-color: var(--blip, var(--hud-foreground));
+  box-shadow: 0 0 0 1px color-mix(in oklab, var(--hud) 70%, transparent);
+  opacity: 0.85;
+}
+[data-far] [data-short]:not([data-open]) > .pause-pin-center > .pause-blip > * {
+  display: none;
+}

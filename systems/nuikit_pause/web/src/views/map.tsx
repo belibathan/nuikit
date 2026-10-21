@@ -14,7 +14,9 @@ import {
   XIcon,
 } from "lucide-react";
 import { memo, useEffect, useMemo, useRef, useState, type ReactNode, type RefObject } from "react";
-import type { MapInfo, MapPick, PauseData, PausePlace } from "../nui";
+import type { MapBlip, MapInfo, MapPick, PauseData, PausePlace } from "../nui";
+import { Blips, type BlipChoice } from "./blips";
+import { blipLook, KINDS, type BlipKind } from "@/lib/blips";
 import { Button } from "@/components/ui/button";
 import { HudChip } from "@/components/ui/hud-chip";
 import { Input } from "@/components/ui/input";
@@ -27,7 +29,8 @@ import { distance, list } from "@/lib/format";
 import { icon } from "@/lib/icons";
 import { cn } from "@/lib/utils";
 
-type Selection = { kind: "place"; place: PausePlace } | { kind: "point"; pick: MapPick };
+type Selection = { kind: "place"; place: PausePlace } | { kind: "point"; pick: MapPick } | { kind: "blip"; choice: BlipChoice; waypoint: boolean };
+const NO_BLIPS: MapBlip[] = [];
 
 const DRAG_PX = 4; // less than this between down and up is a click
 const NO_INFO: MapInfo = { zone: "", street: "", topdown: false, waypoint: false };
@@ -44,6 +47,41 @@ export function MapView({ data, onBack }: { data: PauseData; onBack: () => void 
   const [selection, setSelection] = useState<Selection | null>(null);
   const [query, setQuery] = useState("");
   const compass = useRef<SVGSVGElement>(null);
+  const raw = useNuiState("pause:map:blips", NO_BLIPS);
+  const blips = useMemo(() => (Array.isArray(raw) ? raw : []), [raw]);
+  const [hidden, setHidden] = useState<ReadonlySet<BlipKind>>(() => new Set());
+  const toggle = (k: BlipKind) =>
+    setHidden((h) => {
+      const next = new Set(h);
+      if (next.has(k)) next.delete(k);
+      else next.add(k);
+      return next;
+    });
+  // a marker: one blip sets the waypoint there; a merged group flies in so it comes apart
+  const chooseBlip = (c: BlipChoice) => {
+    if (c.count > 1) {
+      void fetchNui("pause:map:fly", { x: c.blip.x, y: c.blip.y }).catch(() => {});
+      return;
+    }
+    setSelection({ kind: "blip", choice: c, waypoint: true });
+    void fetchNui("pause:map:waypoint", { x: c.blip.x, y: c.blip.y }).catch(() => {});
+  };
+  const legend = useMemo(() => {
+    const n = new Map<BlipKind, number>();
+    for (const b of blips) {
+      const k = blipLook(b).kind;
+      n.set(k, (n.get(k) ?? 0) + 1);
+    }
+    return KINDS.filter((k) => n.has(k.kind)).map((k) => ({ ...k, count: n.get(k.kind)! }));
+  }, [blips]);
+  const blipHits = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return [];
+    return blips
+      .map((b) => ({ blip: b, look: blipLook(b), count: 1 }))
+      .filter((c) => c.look.label.toLowerCase().includes(q) || c.look.kindLabel.toLowerCase().includes(q))
+      .slice(0, 30);
+  }, [blips, query]);
 
   const pan = useFrameBatch((dx, dy) => void fetchNui("pause:map:pan", { dx, dy }).catch(() => {}));
   const rotate = useFrameBatch((dx, dy) => void fetchNui("pause:map:rotate", { dx, dy }).catch(() => {}));
@@ -90,11 +128,13 @@ export function MapView({ data, onBack }: { data: PauseData; onBack: () => void 
   }, [shown]);
 
   const selectedId = selection?.kind === "place" ? selection.place.id : undefined;
+  const selectedBlip = selection?.kind === "blip" ? selection.choice.blip.id : undefined;
 
   return (
     <div className="absolute inset-0 overflow-hidden select-none [--nk-edge:3rem]">
       <div className="pause-map-shade pointer-events-none absolute inset-0" aria-hidden />
       <InputLayer pan={pan} rotate={rotate} zoom={zoom} pick={pick} />
+      <Blips blips={blips} hidden={hidden} selectedId={selectedBlip} onChoose={chooseBlip} />
       <Pins places={places} selectedId={selectedId} onChoose={choose} compass={compass} />
 
       {/* top left: where we're looking, and the way back */}
@@ -114,20 +154,20 @@ export function MapView({ data, onBack }: { data: PauseData; onBack: () => void 
           />
         </Panel>
 
-        {places.length > 0 && (
+        {(places.length > 0 || blips.length > 0) && (
           <Panel size="auto" className="w-full">
             <PanelHeader
               tabs={
                 <label className="relative">
                   <SearchIcon className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground" />
-                  <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search places" className="h-8 pl-8" />
+                  <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search places and blips" className="h-8 pl-8" />
                 </label>
               }
               title="Places"
-              actions={<span className="nk-label nk-num">{shown.length}</span>}
+              actions={<span className="nk-label nk-num">{shown.length + blipHits.length}</span>}
             />
-            <PanelBody scroll className="max-h-[22rem]">
-              {groups.length === 0 ? (
+            <PanelBody scroll className="max-h-[18rem]">
+              {groups.length === 0 && blipHits.length === 0 ? (
                 <p className="nk-row text-muted-foreground">Nothing matches. Try another name.</p>
               ) : (
                 groups.map(([category, rows]) => (
@@ -144,6 +184,38 @@ export function MapView({ data, onBack }: { data: PauseData; onBack: () => void 
                   </div>
                 ))
               )}
+              {blipHits.length > 0 && (
+                <div className="flex flex-col gap-0.5">
+                  <p className="nk-label px-3 pt-2 pb-1">On the map</p>
+                  {blipHits.map((c) => (
+                    <MenuRow
+                      key={c.blip.id}
+                      icon={<c.look.icon />}
+                      meta={c.look.kindLabel}
+                      active={c.blip.id === selectedBlip}
+                      onClick={() => {
+                        setSelection({ kind: "blip", choice: c, waypoint: false });
+                        void fetchNui("pause:map:fly", { x: c.blip.x, y: c.blip.y }).catch(() => {});
+                      }}
+                    >
+                      {c.look.label}
+                    </MenuRow>
+                  ))}
+                </div>
+              )}
+            </PanelBody>
+          </Panel>
+        )}
+
+        {legend.length > 0 && (
+          <Panel size="auto" className="w-full">
+            <PanelHeader title="On the map" description="What GTA's map shows, by kind" actions={<span className="nk-label nk-num">{blips.length}</span>} />
+            <PanelBody scroll className="max-h-[16rem]">
+              {legend.map((k) => (
+                <MenuRow key={k.kind} icon={<k.icon />} checked={!hidden.has(k.kind)} onCheckedChange={() => toggle(k.kind)} meta={String(k.count)}>
+                  {k.label}
+                </MenuRow>
+              ))}
             </PanelBody>
           </Panel>
         )}
@@ -165,7 +237,7 @@ export function MapView({ data, onBack }: { data: PauseData; onBack: () => void 
       {selection && (
         <div className="nk-anchor-b">
           <SelectionCard
-            key={selection.kind === "place" ? selection.place.id : `${selection.pick.point?.x},${selection.pick.point?.y}`}
+            key={selection.kind === "place" ? selection.place.id : selection.kind === "blip" ? `blip-${selection.choice.blip.id}` : `${selection.pick.point?.x},${selection.pick.point?.y}`}
             selection={selection}
             hasWaypoint={info.waypoint}
             onClose={() => setSelection(null)}
@@ -341,13 +413,15 @@ function Controls({ topdown, zoom, compass }: { topdown: boolean; zoom: (d: numb
 }
 
 function SelectionCard({ selection, hasWaypoint, onClose }: { selection: Selection; hasWaypoint: boolean; onClose: () => void }) {
-  const [set, setSet] = useState(false);
+  const blip = selection.kind === "blip" ? selection.choice : undefined;
+  // a blip sets the waypoint when it's clicked
+  const [set, setSet] = useState(selection.kind === "blip" && selection.waypoint);
   const place = selection.kind === "place" ? selection.place : undefined;
   const pick = selection.kind === "point" ? selection.pick : undefined;
-  const Icon = place ? icon(place.icon) : MapPinIcon;
-  const target = place ? { x: place.x, y: place.y } : pick?.point;
-  const title = place?.label ?? pick?.street ?? "Unknown road";
-  const description = place ? place.category : [pick?.crossing && `Near ${pick.crossing}`, pick?.zone].filter(Boolean).join(", ");
+  const Icon = place ? icon(place.icon) : blip ? blip.look.icon : MapPinIcon;
+  const target = place ? { x: place.x, y: place.y } : blip ? { x: blip.blip.x, y: blip.blip.y } : pick?.point;
+  const title = place?.label ?? blip?.look.label ?? pick?.street ?? "Unknown road";
+  const description = place ? place.category : blip ? blip.look.kindLabel : [pick?.crossing && `Near ${pick.crossing}`, pick?.zone].filter(Boolean).join(", ");
 
   return (
     <Panel size="lg">
