@@ -26,6 +26,42 @@ import { cn } from "@/lib/utils"
  */
 
 type Direction = "up" | "down"
+type Align = "start" | "center" | "end"
+
+/**
+ * Where the text sits in its line, from the layout around it: the inherited text-align, or a flex
+ * parent that centres or end-aligns its items. Each layer of a reel is aligned on its own this way,
+ * so a centred word rolls straight up and the next one comes straight up on the same centre.
+ */
+function resolveAlign(el: HTMLElement): Align {
+  const parent = el.parentElement
+  if (parent) {
+    const ps = getComputedStyle(parent)
+    if (ps.display.includes("flex")) {
+      const column = ps.flexDirection.startsWith("column")
+      const along = column ? ps.alignItems : ps.justifyContent
+      if (along === "center") return "center"
+      if (along === "flex-end" || along === "end" || along === "right") return "end"
+      if (along === "flex-start" || along === "start" || along === "left") return "start"
+    }
+  }
+  const ta = getComputedStyle(el).textAlign
+  if (ta === "center" || ta === "-webkit-center") return "center"
+  const rtl = getComputedStyle(el).direction === "rtl"
+  if (ta === "right") return rtl ? "start" : "end"
+  if (ta === "end") return "end"
+  return "start"
+}
+
+/** The alignment to use: the prop, else resolved from the layout once mounted (and on resize). */
+function useAlign(root: React.RefObject<HTMLElement | null>, align?: Align): Align {
+  const [auto, setAuto] = React.useState<Align>("start")
+  React.useLayoutEffect(() => {
+    if (align || !root.current) return
+    setAuto(resolveAlign(root.current))
+  })
+  return align ?? auto
+}
 
 const EASE = "cubic-bezier(0.2, 0.8, 0.2, 1)"
 /** One roll's duration: about 1.6 panel steps (the identity's --nk-duration), at most 420 ms. */
@@ -48,7 +84,7 @@ interface Layer {
 }
 
 /** One reel: a string that rolls to its next value. The building block of both components. */
-function Reel({ text, dir, delay = 0, align = "start", appear = false }: { text: string; dir: Direction; delay?: number; align?: "start" | "end" | "center"; appear?: boolean }) {
+function Reel({ text, dir, delay = 0, align = "start", appear = false }: { text: string; dir: Direction; delay?: number; align?: Align; appear?: boolean }) {
   const seq = React.useRef(0)
   // appear: mounted after its parent's first value (a new digit): start empty and roll in, width and all
   const start = appear && motionLevel() !== "off" ? "" : text
@@ -187,6 +223,8 @@ type RollProps = Omit<React.ComponentProps<"span">, "children"> & {
   direction?: Direction
   /** Per-character ripple in ms (0: the whole text as one reel). Default 0. */
   stagger?: number
+  /** Where the text sits in its line; default: read from the layout (text-align, a centring flex parent). */
+  align?: Align
 }
 
 /** Positions that just went away stay a roll longer (empty), so their width closes smoothly. */
@@ -211,18 +249,20 @@ function useLinger(length: number): [number, boolean] {
   return [Math.max(length, shown), mounted.current]
 }
 
-function TextRoll({ value, direction = "up", stagger = 0, className, ...props }: RollProps) {
+function TextRoll({ value, direction = "up", stagger = 0, align, className, ...props }: RollProps) {
+  const root = React.useRef<HTMLSpanElement>(null)
+  const at = useAlign(root, align)
   const text = value ?? ""
   const chars = [...text]
   const [slots, live] = useLinger(stagger > 0 ? chars.length : 0)
   return (
-    <span data-slot="text-roll" className={cn("inline-flex max-w-full", className)} {...props}>
+    <span ref={root} data-slot="text-roll" data-align={at} className={cn("inline-flex max-w-full", className)} {...props}>
       <span className="sr-only">{text}</span>
       <span aria-hidden className="inline-flex min-w-0">
         {stagger > 0 ? (
-          Array.from({ length: slots }, (_, i) => <Reel key={i} text={chars[i] ?? ""} dir={direction} delay={i * stagger} appear={live} />)
+          Array.from({ length: slots }, (_, i) => <Reel key={i} text={chars[i] ?? ""} dir={direction} delay={i * stagger} appear={live} align="center" />)
         ) : (
-          <Reel text={text} dir={direction} />
+          <Reel text={text} dir={direction} align={at} />
         )}
       </span>
     </span>

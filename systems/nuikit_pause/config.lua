@@ -59,7 +59,8 @@ Config = {
     facing = 'current',      -- 'current': keep your view, just move in; 'front': face the player; 'behind': the 0.7.0 framing
     angle = -20.0,           -- the stand-in starts turned this many degrees
     blendMs = 450,           -- camera blend in and out
-    light = 3.0,             -- studio light on the character (only you see it); 0 = off
+    light = false,           -- false, or 'studio': a soft light on the character (only you see it)
+    lightIntensity = 3.0,    -- for a light preset
   },
 
   -- Places on the 3D map: a pin each, listed and searchable. icon is a lucide icon name

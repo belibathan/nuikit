@@ -121,6 +121,13 @@ system's `nuikit.json` and `pnpm sync`):
 
 Both read `html[data-nk-motion]`: off swaps at once, reduced keeps a ≤ 100 ms fade with no movement.
 
+**The text-animation rule:** rolls are vertical only; alignment is resolved per layer; width changes move
+neighbours, never the rolling text. Each layer (the word going out, the word coming in) sits at its own final
+alignment in the reel (start, centre or end: the `align` prop, else read from the layout: text-align or a
+centring flex parent), so a centred word leaves straight up from its centre and the next one arrives straight up
+on the same centre. The reel's width tweens from the old width to the new over the roll, which slides the
+neighbours; the rolling text itself never moves sideways. `NumberRoll` is the same per digit.
+
 Reference implementation: `systems/nuikit_pause`. The registry components (`panel`, `menu-row`, `stat`,
 `meter`, `hud-chip`, …) are these utilities with props; prefer them over the raw classes.
 

@@ -403,6 +403,18 @@ describe("systems/nuikit_pause: the bigger menu", () => {
     expect(await pause.run(`return Focus.state().frame.x`)).toBeCloseTo(0.325, 6);
   });
 
+  it("no light on the player by default; Config.preview.light = 'studio' turns the preset on", async () => {
+    client = await createClient();
+    const pause = await client.start("nuikit_pause", { before: natives, scripts });
+    await pause.run(press);
+    await pause.run(`for _ = 1, 10 do Focus.step(0.05) end`);
+    expect(await pause.run(`return LIGHTS`)).toBe(0);
+    await pause.run(`Config.preview.light = 3.0 Focus.step(0.05)`); // the 0.7 number: still off
+    expect(await pause.run(`return LIGHTS`)).toBe(0);
+    await pause.run(`Config.preview.light = 'studio' Focus.step(0.05)`);
+    expect(await pause.run(`return LIGHTS`)).toBe(2); // key and rim
+  });
+
   it("by default it keeps the view: same heading and pitch, it only moves in (no swing, no turn)", async () => {
     client = await createClient();
     const pause = await client.start("nuikit_pause", { before: natives, scripts });

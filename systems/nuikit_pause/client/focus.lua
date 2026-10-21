@@ -103,18 +103,28 @@ local function clear(entity, center, x, y, z, d)
   return d
 end
 
---- A soft studio light on the subject for this client only, so it reads at night and in shade: a
---- warm key light from the camera side and a cool rim light behind.
+--- Lighting presets for the subject, this client only. Off by default (0.8): Config.preview.light =
+--- 'studio' turns on a soft studio light so the player reads at night and in shade (a warm key light from
+--- the camera side, a cool rim light behind), at Config.preview.lightIntensity (default 3.0). A bare
+--- number (the 0.7 setting, e.g. 3.0) no longer turns it on.
+local LIGHTS = {
+  studio = function(center, d, span, yaw, key)
+    local h = math.rad(yaw)
+    local fx, fy = -math.sin(h), math.cos(h)
+    local rx, ry = math.cos(h), math.sin(h)
+    local k = math.min(d * 0.45, 3.0)
+    DrawLightWithRange(center.x - fx * k - rx * 0.6, center.y - fy * k - ry * 0.6, center.z + 0.6, 255, 238, 220, d + 2.0, key)
+    local b = span * 0.5 + 0.6
+    DrawLightWithRange(center.x + fx * b + rx * 0.5, center.y + fy * b + ry * 0.5, center.z + 0.9, 200, 215, 255, span + 2.0, key * 0.6)
+  end,
+}
+
 local function light(center, d, span, yaw)
-  local key = cfg.light or 3.0
+  local preset = type(cfg.light) == 'string' and LIGHTS[cfg.light] or nil
+  if not preset then return end
+  local key = tonumber(cfg.lightIntensity) or 3.0
   if key <= 0 then return end
-  local h = math.rad(yaw)
-  local fx, fy = -math.sin(h), math.cos(h)
-  local rx, ry = math.cos(h), math.sin(h)
-  local k = math.min(d * 0.45, 3.0)
-  DrawLightWithRange(center.x - fx * k - rx * 0.6, center.y - fy * k - ry * 0.6, center.z + 0.6, 255, 238, 220, d + 2.0, key)
-  local b = span * 0.5 + 0.6
-  DrawLightWithRange(center.x + fx * b + rx * 0.5, center.y + fy * b + ry * 0.5, center.z + 0.9, 200, 215, 255, span + 2.0, key * 0.6)
+  preset(center, d, span, yaw, key)
 end
 
 --- Where the camera should be this frame (before the glide-in), and the subject it frames.
