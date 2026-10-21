@@ -1,0 +1,23 @@
+{
+  "name": "challenge",
+  "version": 1,
+  "doc": "A skill check: press the key while the needle is in the zone. Superset of ox skillCheck. Drawn by `skill-check`. Resolves true when every round passed, false otherwise.",
+  "yields": true,
+  "update": false,
+  "props": {
+    "id": { "type": "string" },
+    "difficulty": {
+      "type": "oneOf",
+      "of": [{ "type": "ref", "ref": "difficulty" }, { "type": "array", "items": { "type": "ref", "ref": "difficulty" }, "minItems": 1 }],
+      "default": "easy",
+      "doc": "One round, or a sequence that must all pass."
+    },
+    "keys": { "type": "array", "items": { "type": "string" }, "doc": "Allowed keys; each round picks one at random. Default {'E'}. Other keys are ignored when given, fail the round otherwise (ox)." },
+    "label": { "type": "string", "doc": "Under the ring." },
+    "size": { "type": "enum", "values": ["sm", "default", "lg"], "default": "default" }
+  },
+  "result": { "type": "boolean" },
+  "events": {
+    "round": { "doc": "A round ended.", "data": { "type": "object", "props": { "index": { "type": "integer" }, "hit": { "type": "boolean" } } } }
+  }
+}

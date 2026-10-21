@@ -1,0 +1,21 @@
+{
+  "name": "progress",
+  "version": 1,
+  "doc": "A timed bar or ring. Superset of ox progressBar / progressCircle, QBCore Progressbar and esx_progressbar. Animation, props and interruptions (death, ragdoll, cuffs) stay with the caller's Lua: it cancels. Drawn by `meter` or `progress-ring`. Resolves true when it ran out, false when cancelled.",
+  "yields": true,
+  "update": true,
+  "props": {
+    "id": { "type": "string" },
+    "label": { "type": "string" },
+    "duration": { "type": "integer", "min": 1, "required": true, "doc": "ms from 0 to 100%." },
+    "style": { "type": "enum", "values": ["bar", "ring"], "default": "bar" },
+    "position": { "type": "enum", "values": ["bottom", "center"], "default": "bottom", "doc": "bottom: the bottom band. center: the middle of the screen." },
+    "cancel": { "type": "boolean", "default": false, "doc": "The player may cancel with `cancelKey`; the caller's Lua reads the key and calls cancel (the page can't read keys without focus)." },
+    "cancelKey": { "type": "string", "default": "X", "doc": "Shown next to the bar when `cancel` is true." },
+    "tone": { "type": "enum", "values": ["primary", "success", "warning", "info", "destructive"], "default": "primary" },
+    "value": { "type": "number", "min": 0, "max": 100, "doc": "Drive it yourself (update) instead of `duration`'s clock. The clock stops once a value is given." },
+    "showPercent": { "type": "boolean", "doc": "Default: true for ring, false for bar." }
+  },
+  "result": { "type": "boolean" },
+  "events": {}
+}

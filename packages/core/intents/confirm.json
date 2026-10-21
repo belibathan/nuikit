@@ -1,0 +1,21 @@
+{
+  "name": "confirm",
+  "version": 1,
+  "doc": "An alert with confirm and (optionally) cancel. Superset of ox alertDialog. Drawn by `confirm`. Resolves 'confirm' or 'cancel'.",
+  "yields": true,
+  "update": false,
+  "props": {
+    "id": { "type": "string" },
+    "title": { "type": "string", "required": true, "doc": "ox `header`." },
+    "description": { "type": "string", "doc": "ox `content`. Markdown (bold, italic, code, lists) is rendered." },
+    "icon": { "type": "ref", "ref": "icon" },
+    "tone": { "type": "enum", "values": ["primary", "destructive"], "default": "primary", "doc": "destructive paints the confirm button with --destructive." },
+    "size": { "type": "ref", "ref": "size", "default": "md" },
+    "centered": { "type": "boolean", "default": true, "doc": "false: sits in the top third (ox default)." },
+    "cancel": { "type": "boolean", "default": true, "doc": "Show a cancel button. Escape always resolves 'cancel'." },
+    "labels": { "type": "object", "props": { "confirm": { "type": "string" }, "cancel": { "type": "string" } } },
+    "timeout": { "type": "integer", "min": 0, "doc": "ms until it resolves 'cancel' by itself (reason 'timeout')." }
+  },
+  "result": { "type": "enum", "values": ["confirm", "cancel"] },
+  "events": {}
+}

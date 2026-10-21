@@ -1,0 +1,34 @@
+{
+  "name": "target",
+  "version": 1,
+  "doc": "Options on the thing under the crosshair. The raycast, zones and models stay with the targeting library (ox_target, qb-target): it opens this with the options it found and updates them as the target changes. Drawn by an eye at the centre and a `menu-row` list beside it. Resolves with the chosen option, or nil when targeting stops.",
+  "yields": true,
+  "update": true,
+  "props": {
+    "id": { "type": "string" },
+    "title": { "type": "string", "doc": "The target's name, above the list." },
+    "eye": { "type": "boolean", "default": true, "doc": "Show the eye at the centre of the screen." },
+    "active": { "type": "boolean", "default": false, "doc": "Something is under the crosshair: the eye lights up." },
+    "open": { "type": "boolean", "default": false, "doc": "The list is shown (the player pressed the key)." },
+    "options": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "props": {
+          "id": { "type": "string", "doc": "Returned in the result. Default: the 1-based index as a string." },
+          "label": { "type": "string", "required": true },
+          "description": { "type": "string" },
+          "icon": { "type": "ref", "ref": "icon" },
+          "iconColor": { "type": "ref", "ref": "color" },
+          "disabled": { "type": "boolean" },
+          "items": { "type": "array", "items": { "type": "self" }, "doc": "A nested group (ox_target option groups)." },
+          "args": { "type": "any" }
+        }
+      }
+    }
+  },
+  "result": { "type": "object", "props": { "index": { "type": "integer" }, "id": { "type": "string" }, "path": { "type": "array", "items": { "type": "integer" } }, "args": { "type": "any" } } },
+  "events": {
+    "hover": { "doc": "The highlighted option changed.", "data": { "type": "object", "props": { "index": { "type": "integer" }, "id": { "type": "string" } } } }
+  }
+}

@@ -28,6 +28,7 @@
   "files": [
     "dist",
     "lua",
+    "intents",
     "tokens",
     "fonts",
     "themes",
@@ -65,10 +66,19 @@
     "./host": {
       "types": "./dist/host.d.ts",
       "import": "./dist/host.js"
+    },
+    "./intents": {
+      "types": "./dist/intents.d.ts",
+      "import": "./dist/intents.js"
+    },
+    "./intents-react": {
+      "types": "./dist/intents-react.d.ts",
+      "import": "./dist/intents-react.js"
     }
   },
   "scripts": {
-    "build": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\" && tsup && node scripts/export-tokens.mjs",
+    "intents": "node scripts/gen-intents.mjs",
+    "build": "node scripts/gen-intents.mjs && node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\" && tsup && node scripts/export-tokens.mjs",
     "test": "vitest run",
     "typecheck": "tsc --noEmit"
   },

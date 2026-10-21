@@ -1,0 +1,48 @@
+{
+  "$comment": "Shared types every intent schema can reference with { \"type\": \"ref\", \"ref\": \"<name>\" }. Format: docs/intents.md §2.",
+  "defs": {
+    "icon": {
+      "doc": "A Font Awesome name ('car', 'fas fa-car', ['fab', 'discord']), a lucide name, or an image URL ('nui://…', 'https://…', anything with .png/.webp).",
+      "type": "oneOf",
+      "of": [
+        { "type": "string" },
+        { "type": "array", "items": { "type": "string" }, "minItems": 2, "maxItems": 2 },
+        { "type": "object", "props": { "prefix": { "type": "string", "required": true }, "iconName": { "type": "string", "required": true } } }
+      ]
+    },
+    "color": { "doc": "Any CSS colour. Prefer a theme token (var(--success)); fixed colours are for things the theme can't know.", "type": "string" },
+    "iconAnimation": { "doc": "Font Awesome animation.", "type": "enum", "values": ["spin", "spinPulse", "spinReverse", "pulse", "beat", "fade", "beatFade", "bounce", "shake"] },
+    "status": { "doc": "Semantic tone, drawn with the theme's status tokens.", "type": "enum", "values": ["info", "success", "warning", "error"] },
+    "anchor": {
+      "doc": "Where on the screen, --nk-edge from the edge. 'top'/'bottom'/'left'/'right' and ox's 'right-center' are accepted aliases.",
+      "type": "enum",
+      "values": ["top-left", "top-center", "top-right", "center-left", "center-right", "bottom-left", "bottom-center", "bottom-right", "center", "top", "bottom", "left", "right", "left-center", "right-center"]
+    },
+    "size": { "doc": "Panel width step.", "type": "enum", "values": ["xs", "sm", "md", "lg", "xl"] },
+    "metadata": {
+      "doc": "Detail rows shown beside an item: strings, { label, value, progress } rows, or a { key: value } map.",
+      "type": "oneOf",
+      "of": [
+        {
+          "type": "array",
+          "items": {
+            "type": "oneOf",
+            "of": [
+              { "type": "string" },
+              { "type": "object", "props": { "label": { "type": "string" }, "value": { "type": "any" }, "progress": { "type": "number", "min": 0, "max": 100 }, "colorScheme": { "type": "string" } } }
+            ]
+          }
+        },
+        { "type": "object", "props": {}, "open": true }
+      ]
+    },
+    "difficulty": {
+      "doc": "A preset, or a custom zone: areaSize in degrees and speedMultiplier (1 = one turn in 2 s).",
+      "type": "oneOf",
+      "of": [
+        { "type": "enum", "values": ["easy", "medium", "hard"] },
+        { "type": "object", "props": { "areaSize": { "type": "number", "min": 1, "max": 360, "required": true }, "speedMultiplier": { "type": "number", "min": 0.0001, "required": true } } }
+      ]
+    }
+  }
+}

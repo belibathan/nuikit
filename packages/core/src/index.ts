@@ -473,3 +473,6 @@ export {
   type OverrideManifest,
   type ResourceReport,
 } from "./doctor";
+// Intents (docs/intents.md): the generated types, for scripts' pages and adapters. The validator,
+// the store and the renderer contract live in nuikit-core/intents (nuikit-core/intents-react for React).
+export { INTENT_KINDS, INTENT_VERSIONS, type IntentKind, type IntentProps, type IntentResults, type IntentEvents } from "./intents.generated";

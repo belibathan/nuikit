@@ -1,0 +1,61 @@
+{
+  "name": "input",
+  "version": 1,
+  "doc": "A form in a centred panel. Superset of ox inputDialog, qb-input and esx_menu_dialog. Drawn by `form-field`. Resolves with the values in field order (and by id), or nil on cancel.",
+  "yields": true,
+  "update": false,
+  "props": {
+    "id": { "type": "string" },
+    "title": { "type": "string", "required": true, "doc": "ox `heading`." },
+    "description": { "type": "string" },
+    "icon": { "type": "ref", "ref": "icon" },
+    "size": { "type": "ref", "ref": "size", "default": "sm" },
+    "allowCancel": { "type": "boolean", "default": true, "doc": "false: no cancel button and Escape does nothing." },
+    "submitLabel": { "type": "string", "default": "Confirm" },
+    "cancelLabel": { "type": "string", "default": "Cancel" },
+    "fields": {
+      "type": "array",
+      "required": true,
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "props": {
+          "id": { "type": "string", "doc": "Key in the result's `byId`. Default: the 1-based index as a string." },
+          "type": { "type": "enum", "values": ["text", "textarea", "number", "checkbox", "select", "multi-select", "slider", "color", "date", "date-range", "time"], "default": "text", "doc": "ox `input` is `text`." },
+          "label": { "type": "string" },
+          "description": { "type": "string", "doc": "Helper text under the field." },
+          "placeholder": { "type": "string" },
+          "icon": { "type": "ref", "ref": "icon" },
+          "disabled": { "type": "boolean" },
+          "required": { "type": "boolean", "doc": "Submit is blocked while empty (a checkbox must be ticked)." },
+          "default": { "type": "any", "doc": "Initial value, in the field's result type (date: true means today)." },
+          "password": { "type": "boolean", "doc": "text: masked with an eye toggle." },
+          "min": { "type": "oneOf", "of": [{ "type": "number" }, { "type": "string" }], "doc": "number/slider: value. text: length. textarea: rows. date: earliest (ISO string)." },
+          "max": { "type": "oneOf", "of": [{ "type": "number" }, { "type": "string" }] },
+          "step": { "type": "number", "min": 0, "doc": "number/slider. Default 1." },
+          "precision": { "type": "integer", "min": 0, "doc": "number: decimals kept. Default 0." },
+          "minLength": { "type": "integer", "min": 0 },
+          "maxLength": { "type": "integer", "min": 0 },
+          "autosize": { "type": "boolean", "doc": "textarea grows with its content." },
+          "options": { "type": "array", "items": { "type": "object", "props": { "value": { "type": "string", "required": true }, "label": { "type": "string" } } }, "doc": "select / multi-select choices." },
+          "clearable": { "type": "boolean" },
+          "searchable": { "type": "boolean" },
+          "maxSelected": { "type": "integer", "min": 1, "doc": "multi-select: at most this many (ox maxSelectedValues)." },
+          "checked": { "type": "boolean", "doc": "checkbox: initial state." },
+          "format": { "type": "string", "doc": "color: hex | hexa | rgb | rgba | hsl | hsla. date: a display format. time: '12' | '24'." },
+          "returnString": { "type": "boolean", "doc": "date: return the formatted string instead of epoch ms." }
+        }
+      }
+    }
+  },
+  "result": {
+    "type": "object",
+    "props": {
+      "values": { "type": "array", "items": { "type": "any" }, "doc": "One entry per field, in order (ox inputData)." },
+      "byId": { "type": "object", "props": {}, "open": true }
+    }
+  },
+  "events": {
+    "change": { "doc": "A field's value changed.", "data": { "type": "object", "props": { "index": { "type": "integer" }, "id": { "type": "string" }, "value": { "type": "any" } } } }
+  }
+}

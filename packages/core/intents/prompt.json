@@ -1,0 +1,27 @@
+{
+  "name": "prompt",
+  "version": 1,
+  "doc": "A persistent key hint: \"[E] Open garage\". Superset of ox showTextUI, qb DrawText and esx_textui. Drawn by `key-prompt` in a stack per position. Stays until cancelled; with `hold` it resolves true when the hold fills (the caller's Lua feeds `progress`, the page has no keyboard focus).",
+  "yields": false,
+  "update": true,
+  "props": {
+    "id": { "type": "string" },
+    "label": { "type": "string", "required": true, "doc": "ox `text`. A leading [E] is lifted into `keys` by the Lua API." },
+    "keys": { "type": "array", "items": { "type": "string" }, "doc": "What's printed on the key(s): {'E'}, {'Shift', 'E'}." },
+    "description": { "type": "string", "doc": "A second, quieter line." },
+    "icon": { "type": "ref", "ref": "icon" },
+    "iconColor": { "type": "ref", "ref": "color" },
+    "iconAnimation": { "type": "ref", "ref": "iconAnimation" },
+    "position": { "type": "ref", "ref": "anchor", "default": "center-right" },
+    "surface": { "type": "enum", "values": ["panel", "hud"], "default": "panel" },
+    "hold": { "type": "integer", "min": 1, "doc": "ms the key must be held. The caller updates `progress` (0–1) from the game, or the page reads the key when it has focus." },
+    "progress": { "type": "number", "min": 0, "max": 1, "doc": "Hold progress from the game." },
+    "active": { "type": "boolean", "doc": "The one the key acts on now, among several prompts." },
+    "disabled": { "type": "boolean" },
+    "style": { "type": "object", "props": {}, "open": true, "doc": "Inline CSS (camelCase). Escape hatch for adapters." }
+  },
+  "result": { "type": "boolean" },
+  "events": {
+    "confirm": { "doc": "Pressed or held (only when the page reads keys).", "data": { "type": "object", "props": {} } }
+  }
+}
