@@ -259,6 +259,69 @@ describe("systems/nuikit_pause: the bigger menu", () => {
     expect(await pause.run(`return Map3D.project({ x = 0, y = 0, z = 0, d = 100, pitch = -30, heading = 0 }, 16 / 9, 0, -5000, 0)`)).toBeFalsy();
   });
 
+  it("sends every blip on GTA's big map while the map is open, and their positions with the pins", async () => {
+    client = await createClient();
+    const pause = await client.start("nuikit_pause", { before: natives, scripts });
+    // sprite → handles; 8 is the waypoint, 9 a radius, 6 the player's own blip, 31 shown on the minimap only
+    await pause.run(`
+      BLIPS = { [52] = { 101, 102 }, [357] = { 103 }, [8] = { 104 }, [9] = { 105 }, [6] = { 106 }, [61] = { 107 } }
+      INFO = {
+        [101] = { x = 110.0, y = 200.0, z = 30.0, display = 4, colour = 2, short = true, type = 4 },
+        [102] = { x = 0.0, y = 0.0, z = 0.0, display = 4, colour = 2, short = true, type = 4 },
+        [103] = { x = 120.0, y = 210.0, z = 30.0, display = 2, colour = 3, short = false, type = 4 },
+        [104] = { x = 1.0, y = 1.0, z = 0.0, display = 4, colour = 0, type = 4 },
+        [105] = { x = 1.0, y = 1.0, z = 0.0, display = 4, colour = 0, type = 4 },
+        [106] = { x = 100.0, y = 200.0, z = 30.0, display = 4, colour = 0, type = 2 },
+        [107] = { x = 130.0, y = 220.0, z = 30.0, display = 5, colour = 1, type = 4 },
+      }
+      local walk = {}
+      function GetNumberOfActiveBlips() local n = 0 for _, l in pairs(BLIPS) do n = n + #l end return n end
+      function GetFirstBlipInfoId(s) walk[s] = 1 return BLIPS[s] and BLIPS[s][1] or 0 end
+      function GetNextBlipInfoId(s) walk[s] = (walk[s] or 1) + 1 return BLIPS[s] and BLIPS[s][walk[s]] or 0 end
+      function DoesBlipExist(b) return INFO[b] ~= nil end
+      function GetBlipInfoIdCoord(b) return vec3(INFO[b].x, INFO[b].y, INFO[b].z) end
+      function GetBlipCoords(b) return vec3(INFO[b].x, INFO[b].y, INFO[b].z) end
+      function GetBlipInfoIdDisplay(b) return INFO[b].display end
+      function GetBlipAlpha() return 255 end
+      function GetBlipColour(b) return INFO[b].colour end
+      function IsBlipShortRange(b) return INFO[b].short == true end
+      function GetBlipInfoIdType(b) return INFO[b].type end
+      function GetMainPlayerBlipId() return 106 end
+      CALLS = 0
+      local first = GetFirstBlipInfoId
+      function GetFirstBlipInfoId(s) CALLS = CALLS + 1 return first(s) end
+    `);
+    await pause.run(press);
+    expect(await pause.run(`return CALLS`)).toBe(0); // nothing read while the map is closed
+    await pause.call("pause:view", { view: "map" });
+    const sent = pause.messages.filter((m) => m.action === "pause:map:blips");
+    expect(sent).toHaveLength(1);
+    const list = sent[0]!.data as { id: number; s: number; c: number; sr: boolean; x: number }[];
+    expect(list.map((b) => b.id)).toEqual([101, 103]); // no waypoint, radius, own blip, minimap-only or (0, 0) blips
+    expect(list[0]).toMatchObject({ s: 52, c: 2, sr: true, x: 110 });
+    expect(list[1]).toMatchObject({ s: 357, c: 3, sr: false });
+    // stopped early: the walk ends once every active blip was seen
+    expect(await pause.run(`return CALLS`)).toBeLessThan(400);
+
+    // the pins carry one position per listed blip
+    await pause.run(`NOW = NOW + 16 for _, t in ipairs(THREADS) do end`);
+    await pause.run(`Map3D.step(0.016)`);
+    const pins = await pause.run<{ b: number[] }>(`return Map3D.pins(1, 16 / 9)`);
+    expect(pins.b).toHaveLength(4);
+
+    // unchanged: not sent again; a name from the blip's owner: sent
+    await pause.run(`Map3D.refreshBlips(NOW + 5000)`);
+    expect(pause.messages.filter((m) => m.action === "pause:map:blips")).toHaveLength(1);
+    await pause.run(`Map3D.nameBlip(103, 'Legion Square garage') Map3D.refreshBlips(NOW + 10000)`);
+    const named = pause.messages.filter((m) => m.action === "pause:map:blips").at(-1)!.data as { id: number; name?: string }[];
+    expect(named.find((b) => b.id === 103)!.name).toBe("Legion Square garage");
+
+    // closed: nothing is read any more
+    await pause.run(`Pause.close() CALLS = 0`);
+    expect(await pause.run(`return CALLS`)).toBe(0);
+  });
+
+
   it("a drag lands on the live camera within a 60 Hz interval (the ground follows the cursor); zoom still eases", async () => {
     client = await createClient();
     const pause = await client.start("nuikit_pause", { before: natives, scripts });

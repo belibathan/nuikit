@@ -302,6 +302,9 @@ end)
 exports('open', Pause.open)
 exports('close', Pause.close)
 exports('isOpen', Pause.isOpen)
+-- A resource that made a blip can give the map its real name (GTA can't read it back):
+--   exports.nuikit_pause:nameBlip(blip, 'Legion Square garage')
+exports('nameBlip', Map3D.nameBlip)
 
 CreateThread(function()
   while true do
