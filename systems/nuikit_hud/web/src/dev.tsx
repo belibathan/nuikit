@@ -11,6 +11,7 @@
 // &layout=classic   the 0.6 layout (default: compact)
 // &weapon=<kind>|none  the weapon in hand: pistol (default on foot), smg, rifle, shotgun, sniper, heavy, thrown
 // &radar=off        hide the radar (compact on foot with Config.radar = 'vehicle')
+// &style=stock      Config.minimap.style = 'stock': GTA's own radar box bottom left, no frame
 import { applyTheme, emit, openSurface } from "nuikit-core";
 import { NuiDevtools, defineMocks } from "nuikit-core/devtools";
 import { useEffect, useState } from "react";
@@ -102,6 +103,18 @@ function frameFor(layout: HudLayout, shape: MinimapFrame["shape"], preset: HudPr
   const x = layout.l * w + 1.5 * rem;
   const y = h - layout.b * h - 1.5 * rem - size;
   return { x: x / w, y: y / h, w: size / w, h: size / h, band: (0.375 * rem) / h, shape, framed: true, preset };
+}
+
+/** Minimap.applyStock: GTA's stock box (Layout.stockMinimap), unframed. */
+function stockFrame(layout: HudLayout, preset: HudPreset): MinimapFrame {
+  const w = innerWidth;
+  const h = innerHeight;
+  const unit = (h * 16) / 9;
+  const left = layout.l * w;
+  const bottom = h - layout.b * h + 0.002 * h;
+  const bw = 0.15 * unit;
+  const bh = 0.188888 * h;
+  return { x: (left - 0.0045 * unit) / w, y: (bottom - bh) / h, w: bw / w, h: bh / h, band: 0, shape: "square", framed: false, preset };
 }
 
 const WEAPONS: Record<string, HudWeapon> = {
@@ -200,7 +213,7 @@ export default function Dev() {
     const layout = layoutFor();
     emit("hud:layout", layout);
     const v = f.vehicle;
-    const mf = frameFor(layout, q.get("shape") === "circle" ? "circle" : "square", preset);
+    const mf = q.get("style") === "stock" ? stockFrame(layout, preset) : frameFor(layout, q.get("shape") === "circle" ? "circle" : "square", preset);
     emit("hud:minimap:frame", mf);
     const heading = Number(q.get("heading") ?? 32);
     emit("hud:minimap:heading", heading);

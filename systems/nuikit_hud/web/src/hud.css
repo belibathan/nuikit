@@ -1380,7 +1380,8 @@
   position: relative;
   width: 1.875rem;
   height: 1.875rem;
-  border-radius: 9999px;
+  /* the identity's chip shape, like the pills (Signal's chamfered chips; 0.7.0 test #11) */
+  border-radius: var(--hud-chip-radius);
   overflow: hidden;
   transition:
     opacity var(--hud-ms) ease-out,
@@ -1445,7 +1446,7 @@
   align-items: center;
   height: 1.875rem;
   padding: 0 0.53125rem;
-  border-radius: 9999px;
+  border-radius: var(--hud-chip-radius);
   white-space: nowrap;
 }
 .hud-mic-icon {

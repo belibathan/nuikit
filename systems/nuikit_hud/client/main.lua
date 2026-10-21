@@ -152,6 +152,23 @@ CreateThread(function()
   end
 end)
 
+-- GTA's vehicle name, class, area and street text draw bottom right, over the cluster (0.7.0 test,
+-- note C); the HUD shows its own location. They can only be hidden frame by frame, so this runs
+-- only while the cluster is up.
+CreateThread(function()
+  while true do
+    if current ~= 0 and (Config.vehicle or {}).enabled ~= false and (Config.vehicle or {}).gameText ~= true then
+      HideHudComponentThisFrame(6) -- vehicle name
+      HideHudComponentThisFrame(7) -- area name
+      HideHudComponentThisFrame(8) -- vehicle class
+      HideHudComponentThisFrame(9) -- street name
+      Wait(0)
+    else
+      Wait(400)
+    end
+  end
+end)
+
 -- ───────────────────────────────── radar, pause, compass, location
 
 CreateThread(function()

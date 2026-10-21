@@ -85,6 +85,7 @@ Config = {
     seatbelt = 'auto',
     cruise = 'auto',
     bicycles = false,  -- show the cluster on bicycles
+    gameText = false,  -- true keeps GTA's vehicle name and street text (bottom right, over the cluster)
     airUnits = 'kts',  -- aircraft airspeed: 'kts' or 'units' (Config.units); altitude is ft with mph, m with km/h
     boatUnits = 'kts', -- boats: 'kts' or 'units'
   },
