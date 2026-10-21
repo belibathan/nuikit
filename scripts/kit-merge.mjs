@@ -35,6 +35,7 @@ const PAINT = {
   "font-size": ["font-size"],
   "line-height": ["leading"],
   "font-weight": ["font-weight"],
+  "font-style": ["font-style"],
   "letter-spacing": ["tracking"],
   "text-transform": ["text-transform"],
   "font-variant-numeric": ["fvn-spacing"],

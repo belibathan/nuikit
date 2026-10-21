@@ -389,6 +389,19 @@
           "description": "Chamfered corners (top left, bottom right), drawn with clip-path; 0 = off",
           "$comment": "tokens 1.1"
         },
+        "nk-display-style": {
+          "enum": [
+            "normal",
+            "italic"
+          ],
+          "description": "Display, heading, title and numeric text upright or italic (a real italic face where the font has one)",
+          "$comment": "tokens 1.3"
+        },
+        "nk-skew": {
+          "type": "string",
+          "description": "Badges, chips, key caps, tags and the primary / selected bar drawn skewed (their text stays upright); 0deg = off, at most ±20deg",
+          "$comment": "tokens 1.3"
+        },
         "nk-surface-opacity": {
           "type": "string",
           "pattern": "^-?\\d+(\\.\\d+)?$",

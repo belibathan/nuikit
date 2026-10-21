@@ -14,7 +14,7 @@ export type ThemeMode = "dark" | "light";
 /** The token contract version. Bumped only for breaking renames/removals; additions keep v1. */
 export const TOKENS_VERSION = 1 as const;
 /** The contract revision: 1.1 added the identity tokens (IDENTITY_TOKENS), 1.2 the motion tokens (MOTION_TOKENS). Additive, so still v1. */
-export const TOKENS_REVISION = "1.2" as const;
+export const TOKENS_REVISION = "1.3" as const;
 
 export type TokenType = "color" | "dimension" | "fontFamily" | "number" | "keyword" | "duration" | "cubicBezier" | "shadow";
 
@@ -36,7 +36,7 @@ export interface TokenSpec {
   /** Numbers: accepted range. */
   range?: readonly [number, number];
   /** The revision that added it. */
-  since?: "1.1" | "1.2";
+  since?: "1.1" | "1.2" | "1.3";
 }
 
 /** The default sans stack (Graphite): Inter, bundled with every nuikit UI (docs/tokens.md#fonts). */
@@ -206,6 +206,8 @@ export const IDENTITY_TOKENS: readonly TokenSpec[] = [
   id("nk-tracking-label", "dimension", "Letter-spacing of captions (uppercase wants 0.06–0.12em)", "0.06em"),
   id("nk-border-width", "dimension", "Hairline weight of panels, rows and fields", "1px"),
   id("nk-cut", "dimension", "Chamfered corners (top left, bottom right), drawn with clip-path; 0 = off", "0px"),
+  id("nk-display-style", "keyword", "Display, heading, title and numeric text upright or italic (a real italic face where the font has one)", "normal", { values: ["normal", "italic"], since: "1.3" }),
+  id("nk-skew", "dimension", "Badges, chips, key caps, tags and the primary / selected bar drawn skewed (their text stays upright); 0deg = off, at most ±20deg", "0deg", { since: "1.3" }),
   id("nk-surface-opacity", "number", "Panel opacity over the game (floor 0.92 for text panels)", "0.96", { range: [0, 1] }),
   id("nk-surface-tint", "number", "How much brand tints neutral surfaces (0–0.12)", "0.02", { range: [0, 0.12] }),
   id("nk-surface-gradient", "number", "Top-to-bottom light falloff on panels (0 = flat)", "0", { range: [0, 0.2] }),
@@ -779,6 +781,14 @@ const trimNum = (n: number) => String(Math.round(n * 10000) / 10000);
 /** Normalise one identity value; null if it isn't valid for its type. */
 function identityValue(spec: TokenSpec, raw: string): string | null {
   const v = raw.trim();
+  // an angle, not a length (tokens 1.3)
+  if (spec.name === "nk-skew") {
+    if (v === "0") return "0deg";
+    const m = /^(-?\d*\.?\d+)deg$/.exec(v);
+    if (!m) return null;
+    const n = parseFloat(m[1]!);
+    return Math.abs(n) <= 20 ? `${trimNum(n)}deg` : null;
+  }
   switch (spec.type) {
     case "number": {
       if (!NUM.test(v)) return null;

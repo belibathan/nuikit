@@ -1,9 +1,9 @@
 {
-  "$description": "nuikit default theme (stock shadcn neutral) (nuikit tokens v1.2, dark)",
+  "$description": "nuikit default theme (stock shadcn neutral) (nuikit tokens v1.3, dark)",
   "$extensions": {
     "dev.nuikit": {
       "tokens": 1,
-      "revision": "1.2",
+      "revision": "1.3",
       "mode": "dark"
     }
   },
@@ -676,6 +676,24 @@
         "unit": "px"
       },
       "$description": "Chamfered corners (top left, bottom right), drawn with clip-path; 0 = off"
+    },
+    "display-style": {
+      "$value": "normal",
+      "$description": "Display, heading, title and numeric text upright or italic (a real italic face where the font has one)",
+      "$extensions": {
+        "dev.nuikit": {
+          "type": "keyword"
+        }
+      }
+    },
+    "skew": {
+      "$value": "0deg",
+      "$description": "Badges, chips, key caps, tags and the primary / selected bar drawn skewed (their text stays upright); 0deg = off, at most ±20deg",
+      "$extensions": {
+        "dev.nuikit": {
+          "type": "dimension"
+        }
+      }
     },
     "surface-opacity": {
       "$type": "number",

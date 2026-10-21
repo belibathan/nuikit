@@ -349,6 +349,18 @@ export const GENERATED: { name: string; group: string; type: string; description
     "description": "Chamfered corners (top left, bottom right), drawn with clip-path; 0 = off"
   },
   {
+    "name": "nk-display-style",
+    "group": "kit",
+    "type": "number",
+    "description": "Display, heading, title and numeric text upright or italic (a real italic face where the font has one)"
+  },
+  {
+    "name": "nk-skew",
+    "group": "kit",
+    "type": "number",
+    "description": "Badges, chips, key caps, tags and the primary / selected bar drawn skewed (their text stays upright); 0deg = off, at most ±20deg"
+  },
+  {
     "name": "nk-surface-opacity",
     "group": "kit",
     "type": "number",

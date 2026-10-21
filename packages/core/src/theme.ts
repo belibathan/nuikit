@@ -45,6 +45,8 @@ export const KEYWORD_ATTRS: readonly (readonly [string, string])[] = [
   ["data-nk-elevation", "nk-elevation"],
   ["data-nk-label-case", "nk-label-case"],
   ["data-nk-feel", "nk-motion-feel"],
+  ["data-nk-display-style", "nk-display-style"],
+  ["data-nk-skew", "nk-skew"],
 ];
 const DERIVED = new Set(IDENTITY_TOKENS.filter((t) => t.group === "derived").map((t) => t.name));
 let prefs: NuiPrefs = { ...DEFAULT_PREFS };

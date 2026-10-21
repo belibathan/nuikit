@@ -111,6 +111,8 @@ warning naming what's allowed. Three tiers: identity → semantic (the colours a
 | | `--nk-label-case`, `--nk-tracking-label` | Captions (`nk-caption`, field labels) in `uppercase` or `none`, and their tracking | `uppercase`, `0.06em` |
 | Shape | `--nk-border-width` | Hairline weight of panels, rows, fields | `1px` |
 | | `--nk-cut` | Chamfered corners (top left, bottom right) by `clip-path`; `0` = off. A clip-path also clips the shadow, so cut panels draw depth with their edge | `0px` |
+| | `--nk-display-style` | `normal` or `italic` (tokens 1.3): display, heading, title, numeric and key-cap text (`nk-display`, `nk-title`, `nk-num`, `Kbd`, HUD numerics). A real italic face where one ships (Barlow Condensed 700–900 italic) | `normal` |
+| | `--nk-skew` | An angle, at most ±20deg (tokens 1.3): chips, badges, key caps, the primary button and the selected row are drawn as skewed slabs (a skewed `::after` behind upright text; painted as `html[data-nk-skew]`), and the HUD vital chips skew their whole drawing so the traced level stays on the edge. `0deg` = off | `0deg` |
 | Surface | `--nk-surface-opacity` | Panel opacity over the game, 0–1. **Floor 0.92** (warning below) | `0.96` |
 | | `--nk-surface-tint` | How much `--brand` tints the panel surface, 0–0.12 | `0.02` |
 | | `--nk-surface-gradient` | Top-to-bottom light falloff on panels, 0–0.2 (0 = flat) | `0` |

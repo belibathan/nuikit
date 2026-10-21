@@ -53,6 +53,7 @@
 
 .hud-num {
   font-family: var(--hud-font-num);
+  font-style: var(--nk-display-style, normal);
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.02em;
 }
