@@ -1,3 +1,4 @@
+// synced by pnpm sync: don't edit here. Change vendor/shadcn/ui/spinner.tsx, then run pnpm sync.
 import { cn } from "@/lib/utils"
 import { Loader2Icon } from "lucide-react"
 

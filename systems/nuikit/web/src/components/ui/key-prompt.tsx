@@ -1,3 +1,4 @@
+// synced by pnpm sync: don't edit here. Change registry/nuikit/ui/key-prompt.tsx, then run pnpm sync.
 "use client"
 
 import * as React from "react"
@@ -19,25 +20,38 @@ import { Kbd, KbdGroup } from "@/components/ui/kbd"
  * In game a prompt shows while the page has no focus, so the key is read in Lua: send the hold
  * as `progress` (0–1). With focus (or in the browser) it can run the hold itself: press and hold
  * with the pointer, or `listen` for the key, and `onConfirm` fires when it fills.
+ *
+ * By default it is the prompt slab (design v2 §4.5): a key chip and a verb on the HUD plate, the
+ * same anatomy as every other slab (`nk-slab`, docs/tokens.md#slabs). `surface="panel"` and
+ * `surface="hud"` keep the earlier looks. `keys={[]}` draws no key chip (a script's text with no
+ * key); `wrap` lets a long label run onto more lines instead of truncating.
  */
 
 const keyPromptVariants = cva(
-  "relative inline-flex max-w-80 items-center gap-2.5 overflow-hidden text-left text-sm leading-5 font-medium [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+  "relative max-w-80 overflow-hidden text-left [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
   {
     variants: {
       surface: {
+        /** The prompt slab on the game: key chip + verb, the HUD plate (nk-slab). */
+        slab: "nk-slab",
         /** A small floating panel, like the rest of the kit's floating UI. */
-        panel: "nk-panel",
+        panel: "nk-panel inline-flex items-center gap-2.5 text-sm leading-5 font-medium",
         /** The game's dark HUD surface, for prompts that sit on the world (nk-hud). */
-        hud: "nk-hud nk-shadow",
+        hud: "nk-hud nk-shadow inline-flex items-center gap-2.5 text-sm leading-5 font-medium",
       },
       size: {
-        sm: "min-h-8 py-1 pr-2.5 pl-1.5",
-        default: "min-h-10 py-1.5 pr-3 pl-2",
+        sm: "",
+        default: "",
       },
     },
+    compoundVariants: [
+      { surface: ["panel", "hud"], size: "sm", className: "min-h-8 py-1 pr-2.5 pl-1.5" },
+      { surface: ["panel", "hud"], size: "default", className: "min-h-10 py-1.5 pr-3 pl-2" },
+      // the slab's own height and padding (--nk-slab-*); sm is a step tighter
+      { surface: "slab", size: "sm", className: "[--nk-slab-height:calc(2rem*var(--nk-density,0.875))]" },
+    ],
     defaultVariants: {
-      surface: "panel",
+      surface: "slab",
       size: "default",
     },
   }
@@ -121,13 +135,15 @@ function isTyping(e: KeyboardEvent) {
 
 type KeyPromptProps = Omit<React.ComponentProps<"div">, "children"> &
   VariantProps<typeof keyPromptVariants> & {
-    /** What's printed on the key(s): "E", or ["Shift", "E"] for a combination. */
-    keys: string | readonly string[]
+    /** What's printed on the key(s): "E", or ["Shift", "E"] for a combination. Empty: no key chip. */
+    keys?: string | readonly string[]
     /** Between keys of a combination. Default "+". */
     separator?: React.ReactNode
     label: React.ReactNode
     /** A second, quieter line: why it's locked, what it costs. */
     description?: React.ReactNode
+    /** Let the label (and description) wrap onto more lines instead of truncating to one. */
+    wrap?: boolean
     icon?: React.ReactNode
     /** Hold for this many ms to confirm (a line fills under the prompt). */
     hold?: number
@@ -149,10 +165,11 @@ function KeyPrompt({
   className,
   surface,
   size,
-  keys,
+  keys = [],
   separator = "+",
   label,
   description,
+  wrap = false,
   icon,
   hold,
   progress,
@@ -162,7 +179,8 @@ function KeyPrompt({
   onConfirm,
   ...props
 }: KeyPromptProps) {
-  const list = typeof keys === "string" ? [keys] : [...keys]
+  const list = (typeof keys === "string" ? [keys] : [...keys]).filter((k) => k !== "")
+  const slab = (surface ?? "slab") === "slab"
   const line = React.useRef<HTMLSpanElement>(null)
   const internal = useHold(hold, onConfirm, (n) => {
     if (line.current) line.current.style.transform = `scaleX(${n})`
@@ -213,14 +231,19 @@ function KeyPrompt({
       role={interactive ? "button" : "group"}
       tabIndex={interactive ? 0 : undefined}
       aria-disabled={disabled || undefined}
-      aria-keyshortcuts={list.join("+")}
+      aria-keyshortcuts={list.length ? list.join("+") : undefined}
       data-slot="key-prompt"
+      data-surface-variant={surface ?? "slab"}
       data-active={active || undefined}
       data-disabled={disabled || undefined}
       data-holding={holding || undefined}
+      data-wrap={wrap || undefined}
       className={cn(
         keyPromptVariants({ surface, size }),
-        active && "outline-2 -outline-offset-1 outline-primary",
+        // wrapping: the slab grows downwards, the key stays on the first line
+        wrap && "items-start whitespace-normal [&>[data-slot=key-prompt-keys]]:mt-[calc((1.25rem-var(--nk-slab-key-size))/2)]",
+        wrap && slab && "py-[calc((var(--nk-slab-height)-1.25rem)/2)]",
+        active && "outline-2 -outline-offset-1 outline-(--nk-row-indicator-color)",
         disabled && "opacity-50",
         interactive && "cursor-pointer outline-none select-none focus-visible:ring-[3px] focus-visible:ring-ring/50",
         className
@@ -228,35 +251,61 @@ function KeyPrompt({
       {...pointer}
       {...props}
     >
-      <KbdGroup data-slot="key-prompt-keys" className="shrink-0">
-        {list.map((k, i) => (
-          <React.Fragment key={`${k}-${i}`}>
-            {i > 0 && (
-              <span aria-hidden className="text-xs text-muted-foreground">
-                {separator}
-              </span>
-            )}
-            <Kbd
-              className={cn("h-6 min-w-6 px-1.5 text-xs", active && "bg-primary text-primary-foreground")}
-            >
-              {k}
-            </Kbd>
-          </React.Fragment>
+      {list.length > 0 &&
+        (slab ? (
+          <span data-slot="key-prompt-keys" className="flex shrink-0 items-center gap-1">
+            {list.map((k, i) => (
+              <React.Fragment key={`${k}-${i}`}>
+                {i > 0 && (
+                  <span aria-hidden className="text-(length:--nk-slab-key-font-size) opacity-60">
+                    {separator}
+                  </span>
+                )}
+                <kbd
+                  data-slot="key-prompt-key"
+                  className={cn("nk-slab-key", active && "bg-(--nk-chip-active-bg) text-(--nk-chip-active-fg)")}
+                >
+                  {k}
+                </kbd>
+              </React.Fragment>
+            ))}
+          </span>
+        ) : (
+          <KbdGroup data-slot="key-prompt-keys" className="shrink-0">
+            {list.map((k, i) => (
+              <React.Fragment key={`${k}-${i}`}>
+                {i > 0 && (
+                  <span aria-hidden className="text-xs text-muted-foreground">
+                    {separator}
+                  </span>
+                )}
+                <Kbd className={cn("h-6 min-w-6 px-1.5 text-xs", active && "bg-(--nk-chip-active-bg) text-(--nk-chip-active-fg)")}>
+                  {k}
+                </Kbd>
+              </React.Fragment>
+            ))}
+          </KbdGroup>
         ))}
-      </KbdGroup>
       {icon && (
-        <span data-slot="key-prompt-icon" className={cn("flex", surface === "hud" ? "opacity-75" : "text-muted-foreground")}>
+        <span
+          data-slot="key-prompt-icon"
+          className={cn("flex", wrap && "h-5 items-center", surface === "panel" ? "text-muted-foreground" : "opacity-75")}
+        >
           {icon}
         </span>
       )}
       <span className="flex min-w-0 flex-col">
-        <span data-slot="key-prompt-label" className="truncate">
+        <span data-slot="key-prompt-label" className={wrap ? "text-pretty break-words" : "truncate"}>
           {label}
         </span>
         {description && (
           <span
             data-slot="key-prompt-description"
-            className={cn("truncate text-xs leading-4 font-normal", surface === "hud" ? "opacity-75" : "text-muted-foreground")}
+            className={cn(
+              wrap ? "text-pretty break-words" : "truncate",
+              slab ? "nk-label [color:inherit]! opacity-75" : "text-xs leading-4 font-normal",
+              surface === "panel" ? "text-muted-foreground" : !slab && "opacity-75"
+            )}
           >
             {description}
           </span>
@@ -267,7 +316,10 @@ function KeyPrompt({
           ref={line}
           aria-hidden
           data-slot="key-prompt-hold"
-          className="absolute inset-x-0 bottom-0 h-0.5 origin-left bg-primary"
+          className={cn(
+            "absolute inset-x-0 bottom-0 origin-left",
+            slab ? "h-(--nk-slab-line-height) bg-[rgb(var(--nk-slab-tone-rgb))]" : "h-0.5 bg-(--nk-row-indicator-color)"
+          )}
           // Controlled: from props. Internal: the hold draws on this element each frame; the
           // constant here never changes, so React leaves that drawing alone.
           style={{ transform: `scaleX(${p})` }}
