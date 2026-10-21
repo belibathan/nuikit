@@ -30,6 +30,19 @@ Known issues in 0.6.0:
   callback ~0.5 ms per frame they land in. Hence live values (protocol §5.7) and capped drags.
 - FiveM starts a dependency (`nuikit`) automatically when a dependent starts.
 
+## Checkpoint 0.7.0 (frozen, awaiting the owner's in-game test)
+
+Integration branch `lead/next` (prerelease `next/combined`), tested by [`releases/v0.7.0-test.md`](releases/v0.7.0-test.md).
+It contains:
+- 0.6.1 fixes (#46, #54, #56);
+- batch 2 (#42–#71 except #61, which is superseded by #73);
+- design v2: identities and tokens 1.2 (#67), compact HUD (#65), motion (#74), components on component tokens and slabs (#76);
+- hardening (#75): kit-aware `cn()`, the sync-drift gate, the contract, registry meta;
+- Screens fixes (#73) and the new README (#72).
+
+All browser and CI gates pass. Nothing past 0.6.0 is tested in game yet. After the test: merge to `main`, release 0.7.0,
+close the remaining PRs, clean up branches.
+
 ## In progress and next
 
 ### Platform (lead) — 0.7 universal, [`architecture.md`](architecture.md)

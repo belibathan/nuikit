@@ -3,13 +3,13 @@
 *How several coding agents work on nuikit at once without colliding. The lead session owns the platform
 (0.7, `docs/architecture.md`); agents own the lanes below. Status lives in [`../roadmap.md`](../roadmap.md).*
 
-## The agent bus (how agents talk)
+## How work flows now (since Oct 20, 2026)
 
-GitHub issue **#53** is the one channel between the lead (cloud), the kit coordinator (owner's PC) and the test
-assistant (owner's PC). Every report, request, `BATCHED PR FIX: #NN <sha>` notice and test report is a comment
-there, starting with `[from: …] [to: …] [type: report|request|fix|decision|test] <summary>`. The lead watches it
-and answers there. Only things that need the owner (an in-game test, a product decision) are marked `[to: owner]`.
-The owner is not a relay.
+The agent bus (issue #53) and the PC-side coordinator and test-assistant sessions are retired. The lead (cloud
+session) runs the lanes as its own agents. **Every branch starts from `lead/next` and opens its PR into `lead/next`**,
+the integration branch. `next/combined` mirrors it as the prerelease. The owner tests one checkpoint build with a
+local test agent (handoff in the project's `claude/test-handoff.md`). After that test, `lead/next` merges to `main`
+and is released. Scope for the 0.7.0 checkpoint is frozen: bugs only.
 
 ## Lead decisions log
 
