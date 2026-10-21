@@ -1,6 +1,8 @@
 import { UsersIcon } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Progress } from "@/components/ui/progress";
+import { EdgeSheet, EdgeSheetBody } from "@/components/ui/edge-sheet";
+import { EmptyState } from "@/components/ui/empty-state";
+import { Separator } from "@/components/ui/separator";
 import { loadServerTheme } from "@/lib/theme";
 import { cn } from "@/lib/utils";
 
@@ -56,43 +58,51 @@ export default function App() {
   const max = Number(data.maxPlayers) || 0;
 
   return (
-    <div
-      aria-hidden={!open}
-      className={cn(
-        "fixed top-[30vh] right-6 w-80 transition-[opacity,transform] duration-150 ease-out",
-        open ? "opacity-100" : "pointer-events-none translate-x-2 opacity-0",
-      )}
+    // A floating edge sheet on the right (the pause menu's backdrop, registry edge-sheet): who's
+    // online traced along the header's edge, then the activities as the pause menu's rows.
+    <EdgeSheet
+      open={open}
+      side="right"
+      width="26rem"
+      fit
+      // below the HUD's top-right block (the minimap, location and cash), where the stock board sits
+      className="top-[30vh]"
+      icon={<UsersIcon />}
+      title="Players online"
+      description={max > 0 ? `${players} of ${max} slots taken` : undefined}
+      meter={max > 0 ? Math.min(100, (players / max) * 100) : undefined}
+      meterDanger={101}
+      actions={
+        <span className="nk-num text-base font-semibold">
+          {players}
+          {max > 0 && <span className="font-normal text-muted-foreground"> / {max}</span>}
+        </span>
+      }
     >
-      <section className="nk-panel overflow-hidden">
-        <header className="nk-panel-header border-b-0">
-          <UsersIcon className="size-4 text-muted-foreground" />
-          <h2 className="nk-title flex-1">Players online</h2>
-          <span className="nk-num text-sm font-medium">
-            {players}
-            {max > 0 && <span className="text-muted-foreground"> / {max}</span>}
-          </span>
-        </header>
-        {max > 0 ? (
-          <Progress value={Math.min(100, (players / max) * 100)} className="h-px rounded-none" />
+      <EdgeSheetBody>
+        {keys.length > 0 ? (
+          <>
+            <h3 className="nk-caption pb-2">Activities</h3>
+            <ul className="flex flex-col">
+              {keys.map((key, i) => {
+                const a = activities[key];
+                return (
+                  <li key={key}>
+                    {i > 0 && <Separator />}
+                    <div className="flex min-h-12 items-center justify-between gap-3 text-base font-medium">
+                      <span className="truncate">{labels[key] ?? a?.label ?? key}</span>
+                      {a && <Status activity={a} cops={Number(data.currentCops) || 0} />}
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          </>
         ) : (
-          <div className="border-t" />
+          <EmptyState title="No activities" description="This server hasn't listed any police-gated activities." />
         )}
-
-        {keys.length > 0 && (
-          <ul className="nk-panel-body">
-            {keys.map((key) => {
-              const a = activities[key];
-              return (
-                <li key={key} className="nk-row justify-between">
-                  <span className="truncate">{labels[key] ?? a?.label ?? key}</span>
-                  {a && <Status activity={a} cops={Number(data.currentCops) || 0} />}
-                </li>
-              );
-            })}
-          </ul>
-        )}
-      </section>
-    </div>
+      </EdgeSheetBody>
+    </EdgeSheet>
   );
 }
 
@@ -100,11 +110,11 @@ export default function App() {
 function Status({ activity, cops }: { activity: Activity; cops: number }) {
   const state = activity.busy ? "busy" : cops >= (Number(activity.minimumPolice) || 0) ? "available" : "unavailable";
   return (
-    <span className={cn("nk-label flex shrink-0 items-center gap-2", state === "available" && "text-foreground")}>
+    <span className={cn("nk-label flex shrink-0 items-center gap-2 text-sm!", state === "available" && "text-foreground")}>
       <span
         aria-hidden
         className={cn(
-          "size-1.5 rounded-full",
+          "size-2 rounded-full",
           state === "available" ? "bg-primary" : state === "busy" ? "bg-muted-foreground" : "border border-muted-foreground/60",
         )}
       />

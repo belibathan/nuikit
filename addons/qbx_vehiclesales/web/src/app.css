@@ -1,6 +1,7 @@
 /* index.css is synced from the nuikit template (stock shadcn neutral theme). This adds a
    transparent, unscrollable page and the scrim's fade (the contract opens with the kit's nk-enter). */
 @import "./index.css";
+@import "tw-animate-css";
 
 html,
 body {

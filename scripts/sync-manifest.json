@@ -289,10 +289,16 @@
     ],
     "addons/qbx_scoreboard": [
       "web/src/components/ui/badge.tsx",
+      "web/src/components/ui/button.tsx",
       "web/src/components/ui/card.tsx",
+      "web/src/components/ui/edge-sheet.tsx",
+      "web/src/components/ui/empty-state.tsx",
+      "web/src/components/ui/empty.tsx",
       "web/src/components/ui/item.tsx",
       "web/src/components/ui/progress.tsx",
+      "web/src/components/ui/scroll-area.tsx",
       "web/src/components/ui/separator.tsx",
+      "web/src/components/ui/sheet.tsx",
       "web/src/index.css",
       "web/src/lib/utils.ts"
     ],

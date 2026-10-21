@@ -47,6 +47,8 @@ type EdgeSheetProps = Omit<React.ComponentProps<typeof SheetContent>, "title" | 
   side?: "left" | "right"
   /** floating: inset from the screen edges, a panel on every side (default). flush: the pause menu's backdrop. */
   variant?: "floating" | "flush"
+  /** floating only: as tall as its content (from the top edge down) instead of the full height. */
+  fit?: boolean
   /** Rem width of the whole sheet (the column is this minus 4.5rem). Default 36rem, the pause menu's. */
   width?: string
   /** Stagger after another sheet (ms at full motion). */
@@ -74,6 +76,7 @@ function EdgeSheet({
   open,
   side = "left",
   variant = "floating",
+  fit = false,
   width = "36rem",
   delay = 0,
   modal = false,
@@ -110,7 +113,7 @@ function EdgeSheet({
           "z-40 w-(--edge-sheet-width) max-w-none gap-0 sm:max-w-none",
           variant === "floating"
             ? // the panel recipe, off the edges: --nk-edge from the top, bottom and its side
-              cn("nk-panel h-auto inset-y-(--nk-edge,1.5rem)", left ? "left-(--nk-edge,1.5rem)" : "right-(--nk-edge,1.5rem)")
+              cn("nk-panel h-auto", fit ? "top-(--nk-edge,1.5rem) bottom-auto max-h-[calc(100%-var(--nk-edge,1.5rem)*2)]" : "inset-y-(--nk-edge,1.5rem)", left ? "left-(--nk-edge,1.5rem)" : "right-(--nk-edge,1.5rem)")
             : // the surface: the theme's panel, flush, a hairline on the open edge only
               cn(
                 "border-(--nk-panel-border) bg-(--nk-panel-bg) text-(--nk-panel-fg) shadow-(--nk-panel-shadow)",

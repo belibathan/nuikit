@@ -5,5 +5,14 @@
     "path": "html"
   },
   "lua": [],
-  "components": ["badge", "card", "item", "progress", "separator"]
+  "components": [
+    "badge",
+    "card",
+    "item",
+    "progress",
+    "separator",
+    "sheet",
+    "edge-sheet",
+    "empty-state"
+  ]
 }
