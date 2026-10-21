@@ -30,6 +30,8 @@ files {
   'lib/bridge.lua',
   'lib/camera.lua',
   'lib/controls.lua',
+  'lib/intents.lua',
+  'lib/intents.schema.lua',
   'theme.css',
   -- identity fonts, served to every UI that loads them from here (docs/tokens.md#fonts)
   'fonts/*.woff2',
@@ -38,10 +40,14 @@ files {
 }
 
 -- client.lua: player UI preferences and the theme for override pages. host.lua: the host.
+-- client/intents.lua: the intent runtime (docs/intents.md): nk.notify, nk.menu… from every resource
+-- land here and are drawn in this frame by the renderers in web/.
 client_scripts {
   'lib/nuikit.lua',
   'lib/camera.lua',
   'lib/controls.lua',
   'lib/host.lua',
+  'lib/intents.lua',
   'client.lua',
+  'client/intents.lua',
 }
