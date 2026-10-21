@@ -115,11 +115,10 @@ body {
   text-align: center;
 }
 .ox-radial-hub-title {
-  display: -webkit-box;
+  display: flex;
   max-width: 100%;
-  overflow: hidden;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 3;
+  flex-direction: column;
+  align-items: center;
   font-family: var(--nk-heading-font);
   font-size: 17px;
   line-height: 20px;
@@ -224,6 +223,8 @@ html[data-nk-motion="reduced"] .ox-radial[data-state="open"] .ox-radial-svg {
 }
 /* Key hints: the pause menu's small key caps, each beside the verb it triggers. */
 .ox-hints {
+  flex-wrap: wrap;
+  row-gap: calc(var(--nk-space) * 2);
   gap: calc(var(--nk-space) * 3);
   font-size: var(--nk-text-label);
   line-height: 1rem;

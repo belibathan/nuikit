@@ -1,6 +1,7 @@
 import { onTheme } from "nuikit-core";
 import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
 import { Kbd } from "@/components/ui/kbd";
+import { TextRoll } from "@/components/ui/text-roll";
 import { Icon, isImage } from "@/lib/icon";
 import { useLocale } from "@/lib/locale";
 import { post, useOx } from "@/lib/nui";
@@ -120,6 +121,11 @@ export function RadialMenu() {
   // Which way the wheel arrives: deeper (a submenu, the next page) or back out (a parent, the previous page).
   const [dir, setDir] = useState<"in" | "out">("in");
   const svg = useRef<SVGSVGElement>(null);
+  // the last lit segment, so the hub label rolls the way the pointer turned
+  const lastLit = useRef<number | null>(null);
+  useEffect(() => {
+    if (typeof hover === "number") lastLit.current = hover;
+  }, [hover]);
   const presence = usePresence(open, 100);
 
   useOx<RadialData | false>("openRadialMenu", (data) => {
@@ -195,6 +201,7 @@ export function RadialMenu() {
   };
 
   const lit = typeof hover === "number" ? slots[hover] : undefined;
+  const rollDir = typeof hover === "number" && typeof lastLit.current === "number" && hover < lastLit.current ? "down" : "up";
   const hubCaption = lit ? (lit.more ? "Next page" : lit.menu ? "Opens menu" : undefined) : canBack ? "Back" : "Close";
 
   return (
@@ -260,7 +267,13 @@ export function RadialMenu() {
             <foreignObject x={C - HUB + 10} y={C - HUB + 10} width={(HUB - 10) * 2} height={(HUB - 10) * 2} className="pointer-events-none">
               <div className="ox-radial-hub-content">
                 {lit ? (
-                  <span className="ox-radial-hub-title">{lit.label}</span>
+                  // the name rolls like a slot reel as the pointer moves between segments (kit TextRoll; a fade
+                  // under reduced motion, a plain swap with motion off), one reel per line
+                  <span className="ox-radial-hub-title">
+                    {hubLines(lit.label).map((line, i) => (
+                      <TextRoll key={i} value={line} direction={rollDir} className="justify-center" />
+                    ))}
+                  </span>
                 ) : (
                   <Icon icon={canBack ? "arrow-left" : "xmark"} className="ox-radial-hub-icon" />
                 )}
@@ -287,6 +300,22 @@ export function RadialMenu() {
       </div>
     </div>
   );
+}
+
+/** The hub label in at most three lines of about 12 characters, on word boundaries (the last one ellipsed). */
+function hubLines(label: string): string[] {
+  const words = String(label ?? "").split(/\s+/).filter(Boolean);
+  const lines: string[] = [];
+  let line = "";
+  for (const w of words) {
+    if (line && (line + " " + w).length > 12) {
+      lines.push(line);
+      line = w;
+    } else line = line ? `${line} ${w}` : w;
+  }
+  if (line) lines.push(line);
+  if (lines.length > 3) lines.splice(2, lines.length - 2, lines.slice(2).join(" "));
+  return lines;
 }
 
 const clamp = (n?: number) => Math.max(0, Math.min(100, n ?? 50));

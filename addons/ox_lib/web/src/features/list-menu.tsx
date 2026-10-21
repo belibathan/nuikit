@@ -154,7 +154,7 @@ export function ListMenu() {
 
   return (
     <div className={cn("pointer-events-none fixed z-30 flex items-start gap-2", CORNER[menu.position ?? "top-left"], menu.position?.endsWith("right") && "flex-row-reverse")}>
-      <Panel className="ox-list w-[24rem]">
+      <Panel className="ox-list w-[25rem]">
         <PanelHeader title={menu.title} className="ox-list-header" />
         <PanelBody>
           {/* The scrolling box sits inside the body padding and is exactly 7 rows tall (7 × 48px), so
