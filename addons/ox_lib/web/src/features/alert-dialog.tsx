@@ -1,9 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Confirm } from "@/components/ui/confirm";
+import { alertIntent } from "@/lib/intents";
 import { EnterKey } from "@/lib/keys";
 import { useLocale } from "@/lib/locale";
 import { Markdown } from "@/lib/markdown";
 import { post, useOx } from "@/lib/nui";
+import { openIntent, type Handle } from "@/lib/route";
 import { cn } from "@/lib/utils";
 
 interface AlertData {
@@ -32,12 +34,33 @@ export function AlertDialog() {
   // A fresh Confirm per alert, so its focus starts on the right button every time.
   const [seq, setSeq] = useState(0);
 
+  const routed = useRef<Handle | null>(null);
+
+  // Routed (docs/adapters/ox-lib.md §3): the frame's confirm; Escape there resolves cancel, as ox does.
   useOx<AlertData>("sendAlert", (d) => {
-    setData(d);
-    setSeq((n) => n + 1);
-    setOpen(true);
+    const handle = openIntent("confirm", alertIntent(d as unknown as Record<string, unknown>), {
+      key: "alert",
+      onEnd: (a) => {
+        if (routed.current?.id === a.id) routed.current = null;
+        if (a.result === "confirm" || a.result === "cancel") void post("closeAlert", a.result);
+        else if (a.reason === "stopped") void post("closeAlert", "cancel");
+      },
+      onLocal: () => {
+        setData(d);
+        setSeq((n) => n + 1);
+        setOpen(true);
+      },
+    });
+    if (handle) {
+      routed.current = handle;
+      setOpen(false);
+    }
   });
-  useOx("closeAlertDialog", () => setOpen(false));
+  useOx("closeAlertDialog", () => {
+    routed.current?.cancel();
+    routed.current = null;
+    setOpen(false);
+  });
 
   const close = (reason: "confirm" | "cancel") => {
     setOpen(false);
