@@ -71,10 +71,14 @@ export function SheetPage({
 }) {
   const back = useRef<HTMLButtonElement>(null);
   // keyboard and controller land on the way back first
-  useEffect(() => back.current?.focus({ preventScroll: true }), []);
+  useEffect(() => {
+    back.current?.focus({ preventScroll: true });
+  }, []);
+  // the same column as Home: 28rem, right-aligned in the sheet, so every page lines up
   return (
-    <>
-      <header className="flex flex-col gap-4 px-12 pt-12 pb-6">
+    <div className="flex h-full min-h-0 justify-end">
+      <div className="flex h-full min-h-0 w-full max-w-[28rem] flex-col">
+      <header className="flex flex-col gap-4 pt-12 pr-12 pb-6 pl-6">
         <Button ref={back} variant="ghost" size="sm" className="-ml-3 w-fit text-muted-foreground" onClick={onBack}>
           <ChevronLeftIcon />
           Back
@@ -90,11 +94,12 @@ export function SheetPage({
           {actions}
         </div>
       </header>
-      <ScrollArea className="min-h-0 flex-1 border-t border-border">
-        <div className="flex flex-col px-12 py-6">{children}</div>
+      <ScrollArea className="mr-12 ml-6 min-h-0 flex-1 border-t border-border">
+        <div className="flex flex-col py-6">{children}</div>
       </ScrollArea>
-      {footer ? <footer className="border-t border-border px-12 py-6">{footer}</footer> : null}
-    </>
+      {footer ? <footer className="border-t border-border py-6 pr-12 pl-6">{footer}</footer> : null}
+      </div>
+    </div>
   );
 }
 

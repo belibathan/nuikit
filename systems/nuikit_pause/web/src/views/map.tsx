@@ -444,9 +444,14 @@ function SelectionSection({ selection, hasWaypoint, onClose }: { selection: Sele
   const title = place?.label ?? blip?.look.label ?? pick?.street ?? "Unknown road";
   const description = place ? place.category : blip ? blip.look.kindLabel : [pick?.crossing && `Near ${pick.crossing}`, pick?.zone].filter(Boolean).join(", ");
 
+  // a new pick scrolls the sheet back up to it
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    ref.current?.scrollIntoView({ block: "nearest" });
+  }, []);
   return (
-    <SheetSection label="Selected" className="nk-enter">
-      <div data-slot="map-selection" className="flex flex-col gap-4">
+    <SheetSection label="Selected" className="nk-enter scroll-mt-6">
+      <div ref={ref} data-slot="map-selection" className="flex flex-col gap-4">
         <div className="flex items-center gap-3">
           <span className="flex size-10 shrink-0 items-center justify-center rounded-(--nk-chip-radius) bg-muted text-foreground [&_svg]:size-4">
             <Icon />
