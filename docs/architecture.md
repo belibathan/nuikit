@@ -98,6 +98,9 @@ drops information.
 
 **One source of truth.** Each schema is written once (`packages/core/intents/`) and generates the TypeScript
 types, LuaLS annotations for `nk`, runtime validation, browser mocks, docs and `nuikit check` rules.
+*Built (`feat/intents`, browser + Lua harness, not yet in game): the nine schemas with the adapter supersets,
+the generator, validation at the call, `nk.*` with yields and events, the runtime in the `nuikit` resource and
+the default renderers in its frame. The contract and what is unproven: [`intents.md`](intents.md).*
 
 ### 3. Adapters: how existing scripts get in
 
@@ -198,7 +201,7 @@ recipes, from a scripted session (join, spawn, menus, a job, inventory, death). 
 1. **`@nuikit/init.lua` and `nk`**: the runtime as an importable library; the kit's systems move off vendored
    Lua. *Built on `feat/runtime`: the kit's systems and the template import it; the bridge loads lazily.*
 2. **Intent schemas and generation**, default renderers lifted from the ox_lib override into 0.5 components,
-   rendered in nuikit's frame.
+   rendered in nuikit's frame. *Built on `feat/intents` (`docs/intents.md`); awaiting the in-game test.*
 3. **Services**: camera and controls next to surfaces. *Built on `feat/services` (`docs/services.md`): the stack,
    restore on release, resource stop and death under the Lua harness; the pause menu on `nk.camera`. Needs the
    in-game checklist there.*
