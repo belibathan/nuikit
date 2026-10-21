@@ -21,3 +21,36 @@ textarea {
   -webkit-appearance: none;
   margin: 0;
 }
+
+/* ATM account chips: the identity's chip shape; the chosen one is the selection's fill. */
+.rb-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  height: 2.25rem;
+  max-width: 100%;
+  padding: 0 0.75rem;
+  border-radius: var(--nk-chip-radius);
+  clip-path: var(--nk-chip-clip, none);
+  background-color: var(--muted);
+  color: var(--muted-foreground);
+  font-size: 0.875rem;
+  font-weight: 500;
+  outline: none;
+}
+.rb-chip:hover {
+  color: var(--foreground);
+}
+.rb-chip[data-active] {
+  background-color: var(--nk-row-fill-color);
+  color: var(--nk-row-fill-foreground);
+}
+.rb-chip:focus-visible {
+  box-shadow: inset 0 0 0 0.125rem var(--ring);
+}
+/* the Close hint is a button: it lights like an active chip */
+.rb-hint:hover [data-slot="hud-chip"],
+.rb-hint:focus-visible [data-slot="hud-chip"] {
+  background-color: var(--nk-chip-active-bg);
+  color: var(--nk-chip-active-fg);
+}

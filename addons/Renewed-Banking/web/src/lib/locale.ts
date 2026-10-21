@@ -1,3 +1,4 @@
+import { formatMoney } from "@/components/ui/money";
 import { useSyncExternalStore } from "react";
 
 /** English fallbacks (the values in Renewed-Banking's locales/en.json for the keys the page uses). */
@@ -75,28 +76,27 @@ export function t(key: string, n?: number | string): string {
 export const cashLabel = () => (strings.nuikit_cash ?? t("cash").replace(/[:\s$]+$/, "")) || "Cash";
 
 type Style = "full" | "whole" | "compact";
-const formatters = new Map<string, Intl.NumberFormat>();
-function formatterFor(style: Style) {
-  const key = `${currency}:${style}`;
-  let f = formatters.get(key);
-  if (!f) {
-    const opts: Intl.NumberFormatOptions =
-      style === "whole" ? { maximumFractionDigits: 0 } : style === "compact" ? { notation: "compact", maximumFractionDigits: 2 } : {};
-    try {
-      f = new Intl.NumberFormat("en-US", { style: "currency", currency, ...opts });
-    } catch {
-      f = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", ...opts }); // invalid Config.currency
-    }
-    formatters.set(key, f);
+
+/** A valid ISO 4217 code, or USD (an invalid Config.currency would throw in Intl). */
+function validCurrency(code: string) {
+  try {
+    new Intl.NumberFormat("en-US", { style: "currency", currency: code });
+    return code;
+  } catch {
+    return "USD";
   }
-  return f;
 }
 
-/** Currency, like the stock page (en-US, Config.currency). "compact" only kicks in from 100k. */
+/**
+ * Currency, like the stock page (en-US, Config.currency), through the kit's money format (registry
+ * money: tabular, narrow symbol). Cents in full, none in whole; "compact" only kicks in from 100k.
+ */
 export function money(n: number | undefined | null, style: Style = "full"): string {
   const value = Number(n) || 0;
   if (style === "compact" && Math.abs(value) < 100000) style = "full";
-  return formatterFor(style).format(value);
+  const cur = validCurrency(currency);
+  if (style === "compact") return formatMoney(value, { currency: cur, compact: true, fractionDigits: 2 });
+  return formatMoney(value, { currency: cur, fractionDigits: style === "whole" ? 0 : 2 });
 }
 
 /** The original's relative-time rule: largest whole unit, singular wording for exactly 1. */

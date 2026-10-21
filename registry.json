@@ -28,6 +28,53 @@
       }
     },
     {
+      "name": "edge-sheet",
+      "type": "registry:ui",
+      "title": "Edge Sheet",
+      "description": "A full-height sheet flush to a screen edge, the pause menu backdrop and the ox_lib context sheet as one component: stock Sheet (non-modal) in the panel surface, hairline on the open edge, inner column, section-size title with optional back and close buttons, sub-pages that swap in place, a level traced along the header edge, staggered slide-in and a faster exit.",
+      "files": [
+        {
+          "path": "registry/nuikit/ui/edge-sheet.tsx",
+          "type": "registry:ui"
+        }
+      ],
+      "dependencies": [],
+      "registryDependencies": [
+        "sheet",
+        "scroll-area",
+        "button"
+      ],
+      "meta": {
+        "since": "unreleased",
+        "status": "experimental",
+        "replaces": [],
+        "removeIn": null
+      }
+    },
+    {
+      "name": "nui-image",
+      "type": "registry:ui",
+      "title": "NUI Image",
+      "description": "The picture of an item, clothing, vehicle or weapon by the conventions popular servers use (ox/qb/ps/lj inventories, FiveM docs vehicles, clothing packs by template): candidate URLs from nuikit-core resolveImage, lazy, an onError chain, an icon when none load.",
+      "files": [
+        {
+          "path": "registry/nuikit/ui/nui-image.tsx",
+          "type": "registry:ui"
+        }
+      ],
+      "dependencies": [
+        "nuikit-core",
+        "lucide-react"
+      ],
+      "registryDependencies": [],
+      "meta": {
+        "since": "unreleased",
+        "status": "experimental",
+        "replaces": [],
+        "removeIn": null
+      }
+    },
+    {
       "name": "menu-row",
       "type": "registry:ui",
       "title": "Menu Row",
@@ -751,7 +798,7 @@
       "name": "skill-check",
       "type": "registry:ui",
       "title": "Skill check",
-      "description": "Press the key while the needle is in the zone: zone start and size (wrapping past 360°), speed, the key, a success or fail outcome. Runs itself (needle drawn per frame without re-rendering, a full turn is a miss) and reads the key, or takes the angle from outside. The default look of the challenge intent.",
+      "description": "Press the key while the needle is in the zone: zone start and size (wrapping past 360\u00b0), speed, the key, a success or fail outcome. Runs itself (needle drawn per frame without re-rendering, a full turn is a miss) and reads the key, or takes the angle from outside. The default look of the challenge intent.",
       "files": [
         {
           "path": "registry/nuikit/ui/skill-check.tsx",

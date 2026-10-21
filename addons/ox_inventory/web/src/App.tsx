@@ -1,3 +1,4 @@
+import { isBrowser } from "nuikit-core";
 import { useEffect } from "react";
 import { Controls } from "@/components/controls";
 import { InventoryPanel } from "@/components/inventory-panel";
@@ -49,6 +50,46 @@ function useKeyboard() {
   }, []);
 }
 
+/**
+ * The open area between the sheets, for nuikit_pause's inventory focus camera: posted to
+ * nuikit_pause's own NUI callback (not ox_inventory's, so ox_inventory's protocol is unchanged) as
+ * 0–1 screen fractions, the shape of pause:preview:frame. Measured from the sheets' layout boxes (a
+ * transform doesn't move offsetLeft), on open, when the right sheet comes or goes, and on resize.
+ * Nothing happens without nuikit_pause or in the browser.
+ */
+function useCameraFrame(visible: boolean, hasRight: boolean) {
+  useEffect(() => {
+    if (!visible || isBrowser()) return;
+    const report = () => {
+      const W = window.innerWidth;
+      const H = window.innerHeight;
+      const rem = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+      let left = 0;
+      let right = W;
+      for (const el of document.querySelectorAll<HTMLElement>("[data-slot=edge-sheet]")) {
+        if (el.dataset.state !== "open") continue;
+        if (el.offsetLeft < W / 2) left = Math.max(left, el.offsetLeft + el.offsetWidth);
+        else right = Math.min(right, el.offsetLeft);
+      }
+      const gap = 1.5 * rem;
+      const top = 3 * rem;
+      const bottom = 6 * rem; // the bar along the bottom
+      const frame = { x: (left + gap) / W, y: top / H, w: Math.max(0, right - left - 2 * gap) / W, h: Math.max(0, H - top - bottom) / H };
+      void fetch("https://nuikit_pause/inventory:frame", {
+        method: "POST",
+        headers: { "Content-Type": "application/json; charset=UTF-8" },
+        body: JSON.stringify(frame),
+      }).catch(() => {});
+    };
+    const id = requestAnimationFrame(report);
+    window.addEventListener("resize", report);
+    return () => {
+      cancelAnimationFrame(id);
+      window.removeEventListener("resize", report);
+    };
+  }, [visible, hasRight]);
+}
+
 export default function App() {
   const visible = inv.use((s) => s.visible);
   const hasRight = inv.use((s) => s.right.slots > 0);
@@ -67,29 +108,25 @@ export default function App() {
   useOx<boolean>("setInventoryVisible", (v) => (v ? inv.set({ visible: true }) : closeLocal()));
   useOx("displayMetadata", (data) => addExtraMeta(data));
   useKeyboard();
+  useCameraFrame(visible, hasRight);
 
   useEffect(() => {
     send("uiLoaded", {});
     void loadServerTheme();
   }, []);
 
+
   return (
     <>
+      {/* Two full-height edge sheets (the pause menu's backdrop): the player's on the left, the other
+          inventory on the right, sliding in from their edges. The middle stays the player's. */}
+      <InventoryPanel side="left" open={visible} />
+      <InventoryPanel side="right" open={visible && hasRight} />
+      {/* the action tray: a non-modal drawer risen from the bottom edge, between the sheets */}
+      <Controls open={visible} />
       {visible && (
-        // The panels sit on the screen edges and the actions along the bottom, leaving the middle
-        // of the screen to the player: nuikit_pause frames them there with its focus camera.
-        <div className="fixed inset-0 [--nk-edge:3rem]" onContextMenu={(e) => e.preventDefault()}>
-          <div className="nk-anchor-l">
-            <InventoryPanel side="left" />
-          </div>
-          {hasRight && (
-            <div className="nk-anchor-r">
-              <InventoryPanel side="right" />
-            </div>
-          )}
-          <div className="nk-anchor-b">
-            <Controls />
-          </div>
+        // above the sheets and the tray, letting the pointer through: the tooltip and the dragged item draw on top
+        <div className="pointer-events-none fixed inset-0 z-[60]" onContextMenu={(e) => e.preventDefault()}>
           <ItemTooltip />
           <ItemMenu />
           <DragPreview />

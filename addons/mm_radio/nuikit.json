@@ -4,5 +4,20 @@
     "path": "build"
   },
   "lua": [],
-  "components": ["panel", "menu-row", "stat", "empty-state", "hud-chip", "form-field", "tabs", "scroll-area", "slider", "button"]
+  "components": [
+    "badge",
+    "button",
+    "card",
+    "empty",
+    "input",
+    "kbd",
+    "label",
+    "scroll-area",
+    "separator",
+    "slider",
+    "switch",
+    "tabs",
+    "toggle",
+    "toggle-group"
+  ]
 }

@@ -1,5 +1,7 @@
 import { memo, type MouseEvent } from "react";
-import { ItemImage, Meter } from "@/components/item-image";
+import { ItemImage } from "@/components/item-image";
+import { SlotOutline } from "@/components/outline";
+import { formatMoney } from "@/components/ui/money";
 import { useT } from "@/lib/locale";
 import type { Side, Slot } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -20,27 +22,36 @@ type Props = {
   rev?: number;
 };
 
-/** Shop price (§5): cash plain, dirty money destructive, any other currency shows that item's image. */
+/** Whole prices show no decimals; a fractional one keeps two. */
+const digits = (n: number) => (Number.isInteger(n) ? 0 : 2);
+
+/**
+ * Shop price (§5): cash in the kit's money format with ox's own symbol (locale `$`), dirty money
+ * destructive, any other currency shows that item's image before the amount.
+ */
 function Price({ item }: { item: Slot }) {
   const t = useT();
   if (!item.price || item.price <= 0) return null;
-  const amount = item.price.toLocaleString("en-US");
   if (item.currency && item.currency !== "money" && item.currency !== "black_money") {
     return (
-      <span className="inline-flex items-center gap-1 font-medium text-foreground">
+      <span className="inv-price">
         <ItemImage src={itemImage(item.currency)} className="size-3" />
-        {amount}
+        {formatMoney(item.price, { currency: null, fractionDigits: digits(item.price) })}
       </span>
     );
   }
   return (
-    <span className={cn("font-medium", item.currency === "black_money" ? "text-destructive" : "text-foreground")}>
-      {t("$")}
-      {amount}
+    <span className={cn("inv-price", item.currency === "black_money" && "text-destructive")}>
+      {formatMoney(item.price, { currency: null, prefix: t("$"), fractionDigits: digits(item.price) })}
     </span>
   );
 }
 
+/**
+ * One slot: a tile in the identity's chip shape (the vitals' family). The hotbar key sits in a key
+ * cap, the count top right, the label along the foot; durability is traced along the tile's own
+ * outline, like a vital's level on its chip.
+ */
 export const SlotTile = memo(function SlotTile({ side, item, invType, locked, display, imagepath }: Props) {
   const key = dropKey(side, item.slot);
   const isOver = ui.use((s) => !display && s.over === key);
@@ -66,27 +77,28 @@ export const SlotTile = memo(function SlotTile({ side, item, invType, locked, di
   // Top row: hotbar key and count, or in a shop the stock and the price. A count of 1 is implied.
   const count = filled && item.count && item.count > 1 ? item.count.toLocaleString("en-US") : null;
   const stock = shop && filled && item.count !== undefined ? item.count.toLocaleString("en-US") : null;
+  const durability = !shop && filled && item.durability !== undefined ? Math.max(0, Math.min(100, item.durability)) : undefined;
 
   return (
     <div
       data-drop={display ? undefined : key}
+      data-filled={filled || undefined}
+      data-over={isOver || undefined}
+      data-source={isSource || undefined}
+      data-locked={locked || undefined}
+      data-display={display || undefined}
+      data-worn={durability !== undefined && durability <= 20 ? "" : undefined}
       onPointerDown={display ? undefined : (e) => filled && !locked && pressSlot(e, { side, slot: item.slot })}
       onPointerEnter={display || !filled ? undefined : () => hoverSlot({ side, slot: item.slot })}
       onPointerLeave={display || !filled ? undefined : () => hoverSlot(null)}
       onClick={onClick}
       onContextMenu={onContextMenu}
-      className={cn(
-        "relative flex aspect-square flex-col rounded-md p-2 transition-[background-color,box-shadow,opacity] duration-150",
-        display ? "inv-hud" : filled ? "bg-muted/60" : "bg-muted/25",
-        !display && filled && !locked && "cursor-grab hover:bg-accent",
-        isOver && "bg-accent ring-2 ring-primary ring-inset",
-        isSource && "opacity-40",
-        locked && "opacity-40 grayscale",
-      )}
+      className={cn("inv-slot", display && "nk-hud")}
     >
-      <div className={cn("nk-num flex h-3 shrink-0 items-center justify-between gap-1 text-xs leading-none", display ? "text-hud-foreground/70" : "text-muted-foreground")}>
-        <span>{hot ? item.slot : stock}</span>
-        {shop ? <Price item={item} /> : count && <span className={cn("font-medium", display ? "text-hud-foreground" : "text-foreground")}>{count}</span>}
+      {durability !== undefined && <SlotOutline value={durability} />}
+      <div className="inv-slot-top">
+        {hot ? <span className="inv-key">{item.slot}</span> : <span className="nk-num">{stock}</span>}
+        {shop ? <Price item={item} /> : count && <span className="inv-count">{count}</span>}
       </div>
 
       {filled && (
@@ -94,10 +106,7 @@ export const SlotTile = memo(function SlotTile({ side, item, invType, locked, di
           <div className="grid min-h-0 flex-1 place-items-center">
             <ItemImage src={itemImage(item, imagepath)} className={display ? "size-9" : "size-10"} />
           </div>
-          {!display && <div className="truncate text-center text-xs leading-4 font-medium">{itemLabel(item)}</div>}
-          {!shop && item.durability !== undefined && (
-            <Meter value={item.durability} tone="durability" className={cn("absolute inset-x-2 bottom-1 h-0.5 w-auto", display && "bg-white/20")} />
-          )}
+          {!display && <div className="inv-slot-label">{itemLabel(item)}</div>}
         </>
       )}
     </div>
