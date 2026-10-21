@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { flushSync } from "react-dom";
 import { Meter } from "@/components/ui/meter";
-import { Panel } from "@/components/ui/panel";
 import { ProgressRing } from "@/components/ui/progress-ring";
 import { post, useOx } from "@/lib/nui";
 import { presenceMotion } from "@/lib/motion";
@@ -20,13 +19,13 @@ const EXIT_MS = 100;
  * animation to 0s, so an animationend clock would post at once and Lua would fail the run.
  */
 function useRun() {
-  const [run, setRun] = useState<{ id: number; duration: number; label?: string; position?: string } | null>(null);
+  const [run, setRun] = useState<{ id: number; duration: number; label?: string; position?: string; canCancel?: boolean } | null>(null);
   const [open, setOpen] = useState(false);
   const id = useRef(0);
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
   const presence = usePresence(open, EXIT_MS, () => void post("progressComplete"));
   useEffect(() => () => clearTimeout(timer.current), []);
-  const start = (duration: number, label?: string, position?: string) => {
+  const start = (duration: number, label?: string, position?: string, canCancel?: boolean) => {
     const ms = Math.max(0, Number(duration) || 0);
     clearTimeout(timer.current);
     // Commit "open" now. The message that starts a run isn't a React event, so React would render
@@ -35,7 +34,7 @@ function useRun() {
     // progressComplete is never posted (Lua waits for a cancel). flushSync makes every run, 0 ms
     // included, open for at least one commit before it can close.
     flushSync(() => {
-      setRun({ id: ++id.current, duration: ms, label, position });
+      setRun({ id: ++id.current, duration: ms, label, position, canCancel });
       setOpen(true);
     });
     timer.current = setTimeout(() => setOpen(false), ms);
@@ -47,11 +46,30 @@ function useRun() {
   return { run, open, start, stop, presence };
 }
 
-/** lib.progressBar */
+/**
+ * lib.progressBar: the progress slab (design v2 §4.5, reference screens): the label, the percentage
+ * and, when the run can be cancelled, the cancel key chip over a thin line. ox_lib's `progress`
+ * carries only `label` and `duration`; `canCancel` is a nuikit extension (ox_lib's Lua keeps it to
+ * itself: X cancels through its own key mapping, so the chip only names that key).
+ */
 export function ProgressBar() {
-  const { run, start, stop, presence } = useRun();
-  useOx<{ label?: string; duration: number }>("progress", (d) => start(d.duration, d.label));
+  const { run, open, start, stop, presence } = useRun();
+  useOx<{ label?: string; duration: number; canCancel?: boolean }>("progress", (d) => start(d.duration, d.label, undefined, d.canCancel));
   useOx("progressCancel", stop);
+  // The percentage, written straight to its text node (as the circle's counter is): a React render
+  // per tick would cost more than the line's own compositor animation.
+  const pct = useRef<HTMLSpanElement>(null);
+  useEffect(() => {
+    if (!open || !run) return;
+    const at = Date.now();
+    const show = (p: number) => {
+      const text = pct.current?.firstChild;
+      if (text) text.nodeValue = `${p}%`;
+    };
+    show(0);
+    const t = setInterval(() => show(Math.min(100, Math.floor(((Date.now() - at) / Math.max(1, run.duration)) * 100))), Math.max(16, run.duration / 100));
+    return () => clearInterval(t);
+  }, [open, run]);
 
   if (!presence.mounted || !run) return null;
   // The kit's Meter in its timed mode: it fills over `duration` as one compositor animation (at
@@ -59,11 +77,24 @@ export function ProgressBar() {
   // Meter's onComplete is not used.
   return (
     <div className="pointer-events-none fixed inset-x-0 bottom-0 z-20 flex h-[20%] items-center justify-center">
-      <Panel animate={false} data-state={presence.state} className={cn("gap-2 px-4 py-3", presenceMotion)}>
-        {/* The label is the surface's only text, so it reads as body text, not as Meter's 12px label row. */}
-        {run.label && <span className="truncate text-sm leading-5 font-medium">{run.label}</span>}
-        <Meter key={run.id} duration={run.duration} aria-label={run.label || "Progress"} />
-      </Panel>
+      <div
+        data-slot="progress-slab"
+        data-state={presence.state}
+        className={cn("nk-slab-stack rounded-(--nk-slab-radius) bg-(--nk-slab-bg) px-4 py-2.5 text-(--nk-slab-fg) shadow-[inset_0_0_0_var(--nk-border)_var(--nk-slab-border)]", presenceMotion)}
+      >
+        <div className="nk-slab-stack-row">
+          <span className="truncate">{run.label}</span>
+          <span ref={pct} className="nk-num text-xs opacity-70" aria-hidden>
+            0%
+          </span>
+          {run.canCancel && (
+            <kbd className="nk-slab-key" aria-label="Press X to cancel">
+              X
+            </kbd>
+          )}
+        </div>
+        <Meter key={run.id} size="sm" track="game" duration={run.duration} aria-label={run.label || "Progress"} />
+      </div>
     </div>
   );
 }

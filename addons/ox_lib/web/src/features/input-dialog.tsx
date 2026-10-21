@@ -3,6 +3,7 @@ import customParseFormat from "dayjs/plugin/customParseFormat";
 import { XIcon } from "lucide-react";
 import { useRef, useState, type FormEvent } from "react";
 import { Button } from "@/components/ui/button";
+import { EnterKey } from "@/lib/keys";
 import { DatePicker } from "@/features/date-picker";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import {
@@ -252,7 +253,10 @@ export function InputDialog() {
             <Button type="button" variant="outline" disabled={!allowCancel} onClick={cancel}>
               {locale.cancel}
             </Button>
-            <Button type="submit">{locale.confirm}</Button>
+            <Button type="submit">
+              {locale.confirm}
+              <EnterKey />
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>

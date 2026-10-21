@@ -11,6 +11,17 @@ A drop-in replacement for [ox_lib](https://github.com/overextended/ox_lib)'s int
 
 Updating ox_lib replaces `web/build`, so re-copy it after each ox_lib update. Each nuikit release lists the ox_lib versions it was tested against.
 
+## What nuikit adds
+
+Everything ox_lib's Lua sends is drawn as it asks. On top, with no script changes:
+
+- **Notify dedupe.** A toast that arrives again while it is still on screen (same title, description, type and position, no `id`) restarts the first one and counts `×2`, `×3`… beside its title instead of stacking a copy.
+- **Item slab.** A `notify` with `item = { name, count, icon?, image? }` (a nuikit extension; ox_lib's Lua never sends it) draws the kit's item slab (tile, name, `+2` / `−1`) instead of a panel.
+- **Progress slab.** `lib.progressBar` is the label, a live percentage and a thin line; a `canCancel = true` in the `progress` message (nuikit extension) adds the `X` key chip. ox_lib's own cancel key keeps working either way.
+- **Enter chip** on the dialog's Confirm button where Enter submits.
+
+Every payload posted back to ox_lib is unchanged (`bench/polish/ox_lib/{before,after}.json`).
+
 ## Edit it
 
 `web/` is a normal Vite + React + shadcn app: one file per ox_lib feature in `web/src/features`, stock shadcn components in `web/src/components/ui`. The full message protocol it implements is in [`docs/ox-lib-protocol.md`](../../docs/ox-lib-protocol.md).

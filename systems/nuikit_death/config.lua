@@ -22,6 +22,11 @@ Config = {
     dead = 'DeathFailMPIn',
   },
 
+  -- The full-width band along the bottom edge (design v2 §4.5): the state on the left, the phase and
+  -- the clock on the right. It sits on the last 2.5rem of the screen, under where the medical
+  -- resources draw their own text; set to false to leave the whole bottom clear.
+  band = true,
+
   -- Text on the screen. The keys shown are the ones the medical resource listens for.
   text = {
     laststand = { title = 'You are down', subtitle = 'Stay with us. Help may be on the way.' },
