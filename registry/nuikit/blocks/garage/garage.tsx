@@ -4,9 +4,11 @@ import { CarIcon, FuelIcon, ShieldIcon, WarehouseIcon, WrenchIcon } from "lucide
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
+import { EmptyState } from "@/components/ui/empty-state"
 import { Kbd } from "@/components/ui/kbd"
 import { MenuRow } from "@/components/ui/menu-row"
 import { Meter } from "@/components/ui/meter"
+import { formatMoney } from "@/components/ui/money"
 import { Panel, PanelBody, PanelFooter, PanelHeader } from "@/components/ui/panel"
 import { Spinner } from "@/components/ui/spinner"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -17,7 +19,7 @@ import type { GarageAnswer, GarageData, GarageVehicle, GarageVehicleState } from
  * Garage — your vehicles at one garage: a list you can filter by where they are, and the selected
  * one's fuel, engine and body. Take one out, store the one you're driving, or pay to release one from
  * the impound; Lua decides, and an error it answers stays on the panel. Built from the kit: Panel,
- * MenuRow, Meter, with stock shadcn Tabs, Button, Kbd and Spinner.
+ * MenuRow, Meter, Money, EmptyState, with stock shadcn Tabs, Button, Kbd and Spinner.
  *
  *   <GarageSurface />                                   // wired: nk.surface('garage', …) in Lua opens it
  *   <Garage data={data} onAction={…} />                 // a still, or your own wiring
@@ -46,8 +48,6 @@ function GarageSurface() {
 
 export type GarageAction = "takeOut" | "store" | "release"
 
-const money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 })
-
 const FILTERS: { value: "all" | GarageVehicleState; label: string }[] = [
   { value: "all", label: "All" },
   { value: "stored", label: "Stored" },
@@ -59,7 +59,7 @@ const FILTERS: { value: "all" | GarageVehicleState; label: string }[] = [
 function garageWhere(v: GarageVehicle) {
   if (v.state === "stored") return v.location ?? "Stored here"
   if (v.state === "out") return v.location ?? "Out"
-  return v.fee ? `Impounded, ${money.format(v.fee)} to release` : (v.location ?? "Impounded")
+  return v.fee ? `Impounded, ${formatMoney(v.fee)} to release` : (v.location ?? "Impounded")
 }
 
 // Lua turns an empty table into {} instead of [].
@@ -165,10 +165,10 @@ function Garage({
                     {v.label}
                   </MenuRow>
                 ))
+              ) : vehicles.length ? (
+                <EmptyState icon={<CarIcon />} title="Nothing in this list" description="Pick another tab." />
               ) : (
-                <p className="nk-row text-muted-foreground">
-                  {vehicles.length ? "Nothing here in this list. Pick another tab." : "You have no vehicles here yet. Drive one in and store it."}
-                </p>
+                <EmptyState icon={<CarIcon />} title="No vehicles here yet" description="Drive one in and store it." />
               )}
             </div>
           </PanelBody>
@@ -222,7 +222,7 @@ function GarageDetail({
         {action ? (
           <Button className="flex-1" disabled={!!busy} onClick={onPrimary}>
             {busy === action && <Spinner />}
-            {action === "takeOut" ? "Take out" : `Release${v.fee ? ` for ${money.format(v.fee)}` : ""}`}
+            {action === "takeOut" ? "Take out" : `Release${v.fee ? ` for ${formatMoney(v.fee)}` : ""}`}
           </Button>
         ) : (
           <Button className="flex-1" variant="outline" disabled>
