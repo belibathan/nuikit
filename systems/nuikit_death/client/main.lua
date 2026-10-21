@@ -310,6 +310,7 @@ function Death.update()
     local text = Config.text[snap.phase] or {}
     snap.title, snap.subtitle = text.title, text.subtitle
     snap.medical = Death.medical
+    if Config.band == false then snap.band = false end
   end
   local was = current and current.phase
   current = snap

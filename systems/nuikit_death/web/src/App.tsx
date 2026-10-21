@@ -1,5 +1,5 @@
 import { Surface, useFollow } from "nuikit-core/react";
-import { CheckIcon, HeartPulseIcon } from "lucide-react";
+import { CheckIcon, HeartCrackIcon, HeartPulseIcon } from "lucide-react";
 import { useRef, type ReactNode } from "react";
 import type { DeathData } from "./nui";
 import { Countdown } from "@/components/ui/countdown";
@@ -64,6 +64,44 @@ function Death({ data }: { data: DeathData }) {
 
         <Hints data={data} />
       </div>
+
+      {data.band !== false && <Band data={data} laststand={laststand} seconds={hasTimer ? seconds : undefined} />}
+    </div>
+  );
+}
+
+const pad = (n: number) => String(Math.max(0, Math.floor(n))).padStart(2, "0");
+
+/**
+ * The incapacitated band (design v2 §4.5, reference screens): one line along the bottom edge in the
+ * kit's band slab, destructive-toned. Left the state, right the phase and the clock in the numeric
+ * face. It keeps to the last 2.5rem, under the medical resources' own text (README).
+ */
+function Band({ data, laststand, seconds }: { data: DeathData; laststand: boolean; seconds?: number }) {
+  const state = laststand ? "Incapacitated" : "Unconscious";
+  const detail = data.estimated ? "Estimated" : laststand ? "Bleeding out" : seconds !== undefined && seconds > 0 ? "Respawn in" : data.respawn?.available ? "Respawn available" : "Waiting for EMS";
+  return (
+    <div
+      data-slot="death-band"
+      className="nk-slab-band death-band absolute inset-x-0 bottom-0 flex-row justify-between [--nk-slab-tone-rgb:var(--destructive-rgb)]"
+      style={{ animationDelay: "240ms" }}
+      aria-live="off"
+    >
+      <span className="flex items-center gap-2 text-sm font-medium">
+        <HeartCrackIcon className="size-4 text-destructive" />
+        {state}
+      </span>
+      <span className="nk-caption flex items-center gap-2">
+        {detail}
+        {seconds !== undefined && (
+          <>
+            <span aria-hidden className="opacity-50">
+              ·
+            </span>
+            <span className="nk-num [font-family:var(--nk-num-font)]">{`${pad(seconds / 60)}:${pad(seconds % 60)}`}</span>
+          </>
+        )}
+      </span>
     </div>
   );
 }

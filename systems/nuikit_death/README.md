@@ -48,6 +48,7 @@ nuikit keeps the bottom of the screen clear so the original text doesn't overlap
 - While you're down it sets the client-wide nuikit state `dead` (`'laststand'` or `'dead'`), so surfaces declared with `blockedBy = { 'dead' }` refuse to open, `nuikit_pause` included. It hides the nuikit HUD.
 - `Config.effects` plays a GTA screen effect while downed (`DeathFailMPIn` once unconscious by default, nothing in last stand). CEF draws over the game, so CSS can't desaturate the world; GTA's effect does. Set to `false` to turn off.
 - `Config.text` changes the titles. `exports.nuikit_death:isDown()` for other resources.
+- `Config.band` (default `true`) draws the incapacitated band along the bottom edge: the state on the left, the phase and the clock on the right. It takes only the last 2.5rem of the screen, under the medical resources' own text; `false` leaves the whole bottom clear.
 
 ## Verified
 
