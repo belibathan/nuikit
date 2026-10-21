@@ -89,7 +89,7 @@ function ChannelList({ channels }: { channels: number[] }) {
   if (channels.length === 0) return <p className="text-muted-foreground px-4 py-8 text-center text-xs">{t("nuikit_no_channels")}</p>;
   return (
     <ScrollArea className="h-full [&_[data-slot=scroll-area-viewport]>div]:!block">
-      <div className="flex flex-col gap-0.5">
+      <div className="radio-rows flex flex-col">
         {channels.map((ch, i) => {
           const { label } = channelLabel(ch, data.channelName);
           const current = data.onRadio && data.channel === ch;

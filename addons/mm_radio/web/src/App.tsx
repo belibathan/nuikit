@@ -112,7 +112,7 @@ function RadioFrame({ shown }: { shown: boolean }) {
 
   return (
     <div
-      className={cn("pointer-events-auto absolute transition-[transform,opacity] duration-300 ease-out", !shown && "pointer-events-none opacity-0")}
+      className={cn("radio-frame pointer-events-auto absolute", !shown && "pointer-events-none opacity-0")}
       style={{
         right: pos.x,
         bottom: pos.y,
@@ -148,12 +148,12 @@ function Overlay({ forced, draggable }: { forced: boolean; draggable: boolean })
       {forced && <div className="nk-chip radio-lcd opacity-70">{data.channel} MHz</div>}
       {rows.map(([id, m]) =>
         m.isTalking ? (
-          <div key={id} className="bg-primary text-primary-foreground flex h-7 max-w-full items-center gap-1.5 rounded-full px-2.5 text-xs font-medium">
+          <div key={id} className="nk-chip nk-chip-active nk-rise max-w-full">
             <Mic className="size-3.5 shrink-0" />
             <span className="truncate">{m.name}</span>
           </div>
         ) : (
-          <div key={id} className="nk-chip max-w-full">
+          <div key={id} className="nk-chip nk-rise max-w-full">
             <span className="truncate opacity-70">{m.name}</span>
           </div>
         ),
