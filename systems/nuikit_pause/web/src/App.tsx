@@ -1,6 +1,6 @@
 import { fetchNui, Surface, usePlayer, type NuiPlayer } from "nuikit-core/react";
 import { CircleHelpIcon, InfoIcon, KeyboardIcon, LogOutIcon, MapIcon, PlayIcon, SettingsIcon, type LucideIcon } from "lucide-react";
-import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import type { PauseButton, PauseData, PauseView } from "./nui";
 import {
   AlertDialog,
@@ -111,7 +111,13 @@ function Pause({ data, player }: { data: PauseData; player: NuiPlayer }) {
             ) : null}
             <div className="min-w-0">
               <SheetTitle asChild>
-                <h1 className="nk-display truncate">{server.name || "Paused"}</h1>
+                {/* up to two lines, a step smaller when long; an ellipsis only past that */}
+                <h1
+                  className="nk-display line-clamp-2 break-words"
+                  style={(server.name ?? "").length > 14 ? ({ "--nk-display-size": "var(--nk-text-section)" } as CSSProperties) : undefined}
+                >
+                  {server.name || "Paused"}
+                </h1>
               </SheetTitle>
               {server.tagline ? <p className="nk-label truncate text-muted-foreground">{server.tagline}</p> : null}
             </div>
