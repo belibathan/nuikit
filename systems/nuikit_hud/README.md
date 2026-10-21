@@ -23,11 +23,11 @@ restyle it through tokens, or replace it.
 
 | Part | `compact` (default) | `classic` (0.6) |
 |---|---|---|
-| Map | A 12rem circle top right on the safe area: a thin ring, cardinals and ticks that turn on it, the heading in degrees above a lubber mark, the waypoint distance as a tag on the ring (its arrow points at the waypoint) | A framed square bottom left, N on the frame |
-| Location | Under the map: zone, street, the cross street smaller; postal beside the zone | A strip above the map with a heading badge |
+| Map | A 12rem circle top right on the safe area: a thin ring, cardinals and ticks that turn on it, the heading (`NW 300°`) above a lubber mark, the waypoint distance as a tag on the ring's lower outer shoulder (its arrow points at the waypoint) | A framed square bottom left, N on the frame |
+| Location | Under the map: the street, then `cross street · zone postal` smaller | A strip above the map with a heading badge |
 | Money and job | Under the location | Top right |
-| Vitals | Bottom left: labelled pills with a thin level line (health, armor), status dots (hunger, thirst, stress), a mic dot, the radio channel | Rings with values beside the map |
-| Vehicle | Bottom right: segmented rpm ticks with the gear in the centre, speed with dimmed leading zeros, a separate fuel arc, telltales as a column lit only when on | The large arc / bar / digital gauge, shift lights, telltale row, worded warnings |
+| Vitals | Bottom left: labelled pills with a coloured icon and a thin level line (health, armor, hunger, thirst), a status dot (stress), a mic dot, the radio channel | Rings with values beside the map |
+| Vehicle | Bottom right: the speed with dimmed leading zeros inside a small rpm arc (`arc`: a thin arc over faint ticks; `digital`: segmented ticks; `bar`: a plate with a segmented bar, from the identity's `--nk-gauge-style`), the gear as a brand chip under it, a fuel line (pump, line, %) under the gauge, telltales as a column on the left lit only when on | The large arc / bar / digital gauge, shift lights, telltale row, worded warnings |
 | Ammo | Over the vehicle, bottom right | Under the money, top right |
 | Heading strip | None (the ring carries it) | Top centre |
 

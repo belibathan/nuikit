@@ -415,8 +415,8 @@ interface GaugeProps {
 const GAUGES: Record<GaugeStyle, (p: GaugeProps) => ReactNode> = { arc: ArcGauge, bar: BarGauge, digital: DigitalGauge };
 
 /**
- * Bottom right while in a vehicle. `compact` (the default layout) draws the small segmented gauge and
- * a telltale column; `classic` the large arc, bar or digital gauge from the identity.
+ * Bottom right while in a vehicle. `compact` (the default layout) draws the small gauge (arc, bar or
+ * digital from the identity) with a telltale column on its left; `classic` the large gauges.
  */
 export function Cluster({ vehicle, settings, look, compact = false, anchored = true }: { vehicle: HudVehicle; settings: HudSettings; look: HudLook; compact?: boolean; anchored?: boolean }) {
   const s = settings.vehicle ?? {};
@@ -445,8 +445,8 @@ export function Cluster({ vehicle, settings, look, compact = false, anchored = t
   if (compact) {
     return (
       <div data-slot="hud-cluster" data-kind={vehicle.kind} data-layout="compact" className={cn("hud-c-cluster", anchored && "hud-anchor-br")}>
-        <CompactGauge v={shown} look={look} paint={paint} settings={s} center={boat ? "heading" : "gear"} />
         <TelltaleColumn items={telltales(vehicle, s)} />
+        <CompactGauge v={shown} look={look} paint={paint} settings={s} center={boat ? "heading" : "gear"} style={style} />
       </div>
     );
   }

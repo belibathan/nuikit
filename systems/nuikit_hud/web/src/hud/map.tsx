@@ -2,16 +2,16 @@
 // it and sends the rectangle), a thin ring around it with the compass integrated: cardinal marks and
 // ticks that turn on the ring with the camera, a lubber mark at the top with the heading in degrees
 // above it, and the waypoint distance as a tag on the ring whose arrow points at the waypoint. Under it
-// the location: zone, then street with the cross street smaller.
+// the location: the street, then cross street · zone postal.
 //
 // The heading is a live value (`hud:minimap:heading`, ≤30 messages a second, followed at the browser's
 // frame rate) written straight into the DOM: a transform per mark and one text node, no React render.
 import { follow } from "nuikit-core/react";
-import { FlagIcon, MapPinIcon, NavigationIcon } from "lucide-react";
+import { FlagIcon, NavigationIcon } from "lucide-react";
 import { useEffect, useRef, type ReactNode } from "react";
 import type { HudLocation, MinimapFrame } from "../nui";
 import { formatDistance } from "./location";
-import { setText } from "./util";
+import { cardinal, setText } from "./util";
 
 const CARDINALS = [
   { label: "N", at: 0 },
@@ -29,12 +29,16 @@ export function onRing(deg: number, c: number, r: number) {
 }
 
 /**
- * Where the waypoint tag sits on the ring: on the side facing the screen's middle, a little below
- * the equator (a right-hand map puts it at 8 o'clock, a left-hand map at 4), clear of the heading.
+ * Where the waypoint tag sits on the ring (reference screens): on its lower outer shoulder, towards the
+ * screen edge (a right-hand map puts it at about 5 o'clock, a left-hand map at 7), clear of the heading
+ * above and the location under it.
  */
 export function tagAngle(frame: MinimapFrame) {
-  return frame.x + frame.w / 2 > 0.5 ? 240 : 120;
+  return frame.x + frame.w / 2 > 0.5 ? 145 : 215;
 }
+
+/** The heading readout over the ring: the compass point, then the degrees. */
+export const headingText = (deg: number) => `${cardinal(deg)} ${Math.round(deg) % 360}°`;
 
 export interface MapRingProps {
   frame: MinimapFrame;
@@ -65,7 +69,7 @@ export function MapRing({ frame, start, compass = true, location, units }: MapRi
 
   const tagAt = tagAngle(frame);
   const tag = onRing(tagAt, c, r);
-  const right = tagAt > 180;
+  const right = tagAt < 180;
   const waypoint = location?.visible && location.waypoint !== undefined;
 
   useEffect(
@@ -82,7 +86,7 @@ export function MapRing({ frame, start, compass = true, location, units }: MapRi
               el.style.transform = `translate3d(${p.x.toFixed(2)}px, ${p.y.toFixed(2)}px, 0) translate(-50%, -50%)`;
             });
             ticks.current?.setAttribute("transform", `rotate(${(-deg).toFixed(2)} ${c} ${c})`);
-            setText(readout.current, `${Math.round(deg) % 360}°`);
+            setText(readout.current, headingText(deg));
           }
           if (arrow.current && bearing.current !== undefined) {
             arrow.current.style.transform = `rotate(${(bearing.current - deg).toFixed(1)}deg)`;
@@ -128,7 +132,7 @@ export function MapRing({ frame, start, compass = true, location, units }: MapRi
       {compass && (
         <>
           <span ref={readout} data-slot="hud-heading" className="hud-num hud-map-heading" style={{ left: c, bottom: size + 0.5 * rem }}>
-            {`${Math.round(start) % 360}°`}
+            {headingText(start)}
           </span>
           {CARDINALS.map((m, i) => {
             const p = onRing(m.at - start, c, r);
@@ -152,7 +156,7 @@ export function MapRing({ frame, start, compass = true, location, units }: MapRi
       {waypoint && (
         <span
           data-slot="hud-waypoint"
-          data-side={right ? "left" : "right"}
+          data-side={right ? "right" : "left"}
           className="hud-map-tag"
           style={{ left: tag.x, top: tag.y }}
           aria-label="Waypoint"
@@ -167,32 +171,27 @@ export function MapRing({ frame, start, compass = true, location, units }: MapRi
   );
 }
 
-/** Zone, then street with the cross street smaller; the postal as a small tag on the zone's line. */
+/** The street in the display face, then the detail line: cross street · zone postal (reference screens). */
 export function MapLocation({ location, units, waypoint }: { location: HudLocation; units: "mph" | "kmh"; waypoint: boolean }) {
   if (!location.visible || !location.street) return null;
-  const tags: ReactNode[] = [];
+  const detail: ReactNode[] = [];
+  if (location.crossing) detail.push(<span key="cross" className="hud-loc-clip">{location.crossing}</span>);
+  if (location.zone) detail.push(<span key="zone" className="hud-loc-clip">{location.zone}</span>);
   if (location.postal) {
-    tags.push(
+    detail.push(
       <span key="postal" data-slot="hud-postal" className="hud-loc-postal hud-num">
-        <MapPinIcon />
         {location.postal}
       </span>,
     );
   }
   return (
     <div data-slot="hud-location" className="hud-loc">
-      {(location.zone || tags.length > 0) && (
-        <span className="hud-loc-zone">
-          {location.zone && <span className="hud-loc-clip">{location.zone}</span>}
-          {tags}
-        </span>
-      )}
       <span className="hud-loc-street">
         <span className="hud-loc-clip">{location.street}</span>
       </span>
       {/* always there, so the money under it never moves when a crossing comes and goes */}
-      <span className="hud-loc-cross" aria-hidden={!location.crossing}>
-        <span className="hud-loc-clip">{location.crossing ?? "\u00a0"}</span>
+      <span className="hud-loc-detail" aria-hidden={!detail.length}>
+        {detail.length ? detail : <span className="hud-loc-clip">{"\u00a0"}</span>}
       </span>
       {/* without the ring (radar off), the waypoint distance reads here (no arrow: no heading is streamed) */}
       {waypoint && location.waypoint !== undefined && (
