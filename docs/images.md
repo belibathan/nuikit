@@ -43,6 +43,10 @@ setr nuikit_images_clothing "https://cdn.example.com/clothing/{gender}_{prefix}{
 
 The nuikit resource serves them to every page through the NUI callback `https://nuikit/images`.
 
+> **Not landed yet:** the nuikit resource's `images` and `vehicle` callbacks (and these convars) ship in a
+> separate lane. Until then pages use the defaults above (items and weapons work, no clothing thumbnails,
+> no car picture in qbx_vehiclesales) and fall back silently.
+
 | Placeholder | Kinds | Value |
 |---|---|---|
 | `{name}` / `{lower}` | item, weapon | the item name / lower case |

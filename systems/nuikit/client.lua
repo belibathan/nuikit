@@ -108,52 +108,6 @@ RegisterNUICallback('theme', function(data, cb)
   end)
 end)
 
--- ───────────────────────────────── image templates (docs/images.md)
-
---[[
-  NUI callback https://nuikit/images (any page may call it) → { item, weapon, clothing, vehicle, replace }
-  Each is a `;`-separated list of URL templates from `setr nuikit_images_<kind> "…"`; pages put them
-  ahead of the built-in conventions (nuikit-core resolveImage). ox_inventory's own image folder
-  (`inventory:imagepath`) is added to the item list when it's set.
-]]
-RegisterNUICallback('images', function(_, cb)
-  local function get(name) return GetConvar(name, '') end
-  local item = get('nuikit_images_item')
-  local oxPath = get('inventory:imagepath')
-  if oxPath ~= '' then item = (item ~= '' and (item .. ';') or '') .. oxPath .. '/{name}.png' end
-  cb({
-    item = item,
-    weapon = get('nuikit_images_weapon'),
-    clothing = get('nuikit_images_clothing'),
-    vehicle = get('nuikit_images_vehicle'),
-    replace = get('nuikit_images_replace') == '1',
-  })
-end)
-
---[[
-  NUI callback https://nuikit/vehicle → { model, hash } of the vehicle the player sits in, else the
-  closest one within 6 m (a dealer's display car), else {}. For pages whose own resource doesn't send
-  the model (a vehicle image in qbx_vehiclesales' contract). Read only.
-]]
-RegisterNUICallback('vehicle', function(_, cb)
-  local ped = PlayerPedId()
-  local veh = GetVehiclePedIsIn(ped, false)
-  if veh == 0 then
-    local pos = GetEntityCoords(ped)
-    local best, bestDist = 0, 6.0
-    for _, v in ipairs(GetGamePool('CVehicle')) do
-      local d = #(GetEntityCoords(v) - pos)
-      if d < bestDist then best, bestDist = v, d end
-    end
-    veh = best
-  end
-  if veh == 0 then return cb({}) end
-  local hash = GetEntityModel(veh)
-  local ok, name = pcall(GetEntityArchetypeName, veh)
-  if not ok or not name or name == '' then name = GetDisplayNameFromVehicleModel(hash) end
-  cb({ model = name and name:lower() or nil, hash = hash })
-end)
-
 -- `nuikit theme reload` on the server: GlobalState replicates, every waiting page repaints.
 AddStateBagChangeHandler('nuikitTheme', 'global', function(_, _, value)
   theme = value

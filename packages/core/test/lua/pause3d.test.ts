@@ -287,11 +287,11 @@ describe("systems/nuikit_pause: the bigger menu", () => {
   it("frames the player between the inventory panels while ox_inventory is open", async () => {
     client = await createClient();
     const pause = await client.start("nuikit_pause", { before: natives, scripts });
-    // the override's middle gap at 1080p: 35.6rem in from each side, between the bar and the top
+    // the override's middle gap at 1080p: 37.5rem in from each side (36rem sheets + 1.5rem air), between the bar and the top
     const f = await pause.run<{ x: number; w: number; y: number; h: number }>(`return Inventory.frame(1920, 1080)`);
-    expect(f.x).toBeCloseTo((35.625 * 16) / 1920, 3);
+    expect(f.x).toBeCloseTo((37.5 * 16) / 1920, 3);
     expect(f.x + f.w).toBeCloseTo(1 - f.x, 6);
-    expect(f.y + f.h).toBeLessThan(0.9);
+    expect(f.y + f.h).toBeCloseTo(1 - (4 * 16) / 1080, 4); // room for the key bar
 
     await pause.run(`LocalPlayer.state.invOpen = true Inventory.tick()`);
     expect(await pause.run(`return Focus.isActive() and Inventory.isFocusing()`)).toBe(true);

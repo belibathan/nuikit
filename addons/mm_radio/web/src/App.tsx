@@ -112,6 +112,7 @@ function RadioFrame({ shown }: { shown: boolean }) {
 
   return (
     <div
+      data-radio=""
       className={cn("radio-frame pointer-events-auto absolute", !shown && "pointer-events-none opacity-0")}
       style={{
         right: pos.x,
@@ -141,6 +142,7 @@ function Overlay({ forced, draggable }: { forced: boolean; draggable: boolean })
 
   return (
     <div
+      data-overlay=""
       className={cn("absolute flex max-w-[15vw] min-w-40 flex-col items-end gap-1", draggable ? "pointer-events-auto cursor-move" : "pointer-events-none")}
       style={{ right: pos.x, top: pos.y, transform: `scale(${scaleOf(data.userData?.overlaySizeMultiplier)})`, transformOrigin: "top right" }}
       onMouseDown={onMouseDown}
