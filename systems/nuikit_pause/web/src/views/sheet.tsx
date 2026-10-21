@@ -97,7 +97,8 @@ export function SheetPage({
         </div>
       </header>
       <ScrollArea className="mr-12 ml-6 min-h-0 flex-1 border-t border-border">
-        <div className="flex flex-col py-6">{children}</div>
+        {/* pr-4: a gutter for the scrollbar, so it never sits over counts or row ends */}
+          <div className="flex flex-col py-6 pr-4">{children}</div>
       </ScrollArea>
       {footer ? <footer className="border-t border-border py-6 pr-12 pl-6">{footer}</footer> : null}
       </div>

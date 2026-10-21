@@ -56,7 +56,7 @@ Config = {
   },
 
   preview = {
-    facing = 'front',        -- 'front': face the player (head and upper body); 'behind': the 0.7.0 framing
+    facing = 'current',      -- 'current': keep your view, just move in; 'front': face the player; 'behind': the 0.7.0 framing
     angle = -20.0,           -- the stand-in starts turned this many degrees
     blendMs = 450,           -- camera blend in and out
     light = 3.0,             -- studio light on the character (only you see it); 0 = off

@@ -403,9 +403,27 @@ describe("systems/nuikit_pause: the bigger menu", () => {
     expect(await pause.run(`return Focus.state().frame.x`)).toBeCloseTo(0.325, 6);
   });
 
-  it("faces the player by default: it swings round them (never through them) to the front, at chest height", async () => {
+  it("by default it keeps the view: same heading and pitch, it only moves in (no swing, no turn)", async () => {
     client = await createClient();
     const pause = await client.start("nuikit_pause", { before: natives, scripts });
+    // the gameplay camera looks north (heading 0) and 10 degrees down, from the south of the player
+    await pause.run(press);
+    expect(await pause.run<number>(`return Focus.state().residual.orbit`)).toBeCloseTo(0, 6);
+    const yaws = await pause.run<number[]>(`
+      local out = {}
+      for _ = 1, 120 do local p = Focus.step(0.05) out[#out + 1] = p.yaw end
+      return { math.min(table.unpack(out)), math.max(table.unpack(out)), Focus.step(0.05).pitch }`);
+    expect(yaws[0]).toBeCloseTo(0, 3); // never turns
+    expect(yaws[1]).toBeCloseTo(0, 3);
+    expect(yaws[2]).toBeCloseTo(-10, 3); // the gameplay camera's pitch
+    const p = await pause.run<number[]>(`return CAMPOS`);
+    expect(p[1]).toBeLessThan(200); // still on the side it was on (south)
+  });
+
+  it("facing = 'front': it swings round them (never through them) to the front, at chest height", async () => {
+    client = await createClient();
+    const pause = await client.start("nuikit_pause", { before: natives, scripts });
+    await pause.run(`Config.preview.facing = 'front'`);
     // the player stands at (100, 200) facing heading 90 (west, -x); the gameplay camera is behind-ish, to the south
     await pause.run(press);
     const closest = await pause.run<number>(`

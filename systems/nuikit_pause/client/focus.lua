@@ -22,9 +22,16 @@ local startHeading = 0.0   -- the player's heading when it started (on foot the 
 local angle, goalAngle = 0.0, 0.0
 local reach                -- current camera distance after wall checks (eased)
 local residual             -- start pose minus framed pose: decays to zero, so the camera glides in
--- How it looks at the player: 'front' (default) faces them, eye-to-chest height, head and upper body;
--- 'behind' is the 0.7.0 framing (whole body, from where the gameplay camera was).
-local function facing() return cfg.facing == 'behind' and 'behind' or 'front' end
+-- How it looks at the player:
+--   'current' (default): the gameplay camera's own heading and pitch, only moved in to frame them (a
+--     dolly, no swing: nothing turns the view, so nothing to get motion sick from);
+--   'front': faces them, chest height, head and upper body (swings round them to get there);
+--   'behind': the 0.7.0 framing (whole body, from the gameplay camera's side, turned by preview.angle).
+local function facing()
+  if cfg.facing == 'front' or cfg.facing == 'behind' then return cfg.facing end
+  return 'current'
+end
+local startPitch = -4.0    -- 'current': the gameplay camera's pitch when it started
 local last                 -- the subject and pose from the last frame (debug and handover)
 
 local function clamp(v, a, b) return math.max(a, math.min(b, v)) end
@@ -113,6 +120,7 @@ end
 --- Where the camera should be this frame (before the glide-in), and the subject it frames.
 local function target(dt)
   local entity, center, height, span, pitch, kind = Focus.subject()
+  if facing() == 'current' then pitch = startPitch end
   local aspect = GetAspectRatio(false)
   local d = Focus.fit(frame, aspect, height, span)
   -- On foot the yaw comes from the heading at the start, not the live one: in first person GTA turns
@@ -191,7 +199,9 @@ function Focus.start(opts)
   startHeading = GetEntityHeading(entity)
   -- front: a camera looking along heading + 180 faces the player; behind: keep the current view's side
   rel = facing() == 'front' and 180.0 or (fromRot.z - startHeading) % 360.0
-  angle, goalAngle = 0.0, cfg.angle or 0.0
+  -- 'current' keeps the view as it is: no turn on open (preview.angle is for 'front' / 'behind')
+  angle, goalAngle = 0.0, facing() == 'current' and 0.0 or (cfg.angle or 0.0)
+  startPitch = clamp(fromRot.x, -35.0, 10.0)
   reach = nil
   -- start the orbit where the current view is, so the glide swings round the player to the front
   residual = { x = 0.0, y = 0.0, z = 0.0, pitch = 0.0, yaw = 0.0, fov = 0.0, orbit = 0.0 }

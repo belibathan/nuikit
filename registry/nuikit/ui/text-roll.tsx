@@ -48,10 +48,12 @@ interface Layer {
 }
 
 /** One reel: a string that rolls to its next value. The building block of both components. */
-function Reel({ text, dir, delay = 0, align = "start" }: { text: string; dir: Direction; delay?: number; align?: "start" | "end" | "center" }) {
+function Reel({ text, dir, delay = 0, align = "start", appear = false }: { text: string; dir: Direction; delay?: number; align?: "start" | "end" | "center"; appear?: boolean }) {
   const seq = React.useRef(0)
-  const [layers, setLayers] = React.useState<Layer[]>(() => [{ key: 0, text, out: false, enter: false, dir }])
-  const current = React.useRef(text)
+  // appear: mounted after its parent's first value (a new digit): start empty and roll in, width and all
+  const start = appear && motionLevel() !== "off" ? "" : text
+  const [layers, setLayers] = React.useState<Layer[]>(() => [{ key: 0, text: start, out: false, enter: false, dir }])
+  const current = React.useRef(start)
 
   React.useLayoutEffect(() => {
     if (text === current.current) return
@@ -67,8 +69,44 @@ function Reel({ text, dir, delay = 0, align = "start" }: { text: string; dir: Di
   const done = React.useCallback((key: number) => setLayers((ls) => ls.filter((l) => l.key !== key)), [])
   const rolling = layers.length > 1
 
+  // The width moves with the roll: from the old text's width to the new one's, over the same time and
+  // easing, so centred or right-aligned neighbours slide with it instead of jumping when it ends.
+  const box = React.useRef<HTMLSpanElement>(null)
+  const settled = React.useRef<number | null>(null)
+  const widthAnim = React.useRef<Animation | null>(null)
+  const lastKey = layers[layers.length - 1]!.key
+  React.useLayoutEffect(() => {
+    const el = box.current
+    if (!el) return
+    if (!rolling) {
+      // at rest: auto width, remembered as the start of the next roll
+      widthAnim.current?.cancel()
+      widthAnim.current = null
+      el.style.width = ""
+      el.style.gridTemplateColumns = ""
+      settled.current = el.getBoundingClientRect().width
+      return
+    }
+    const level = motionLevel()
+    const incoming = el.lastElementChild as HTMLElement | null
+    if (level !== "on" || !incoming || typeof el.animate !== "function") return
+    // from where it is now (mid-roll, if one is running), to the incoming text's own width
+    const from = widthAnim.current ? el.getBoundingClientRect().width : (settled.current ?? el.getBoundingClientRect().width)
+    const to = incoming.getBoundingClientRect().width
+    widthAnim.current?.cancel()
+    // the column follows the box while it moves, so text aligns in what you see, not the widest layer
+    el.style.gridTemplateColumns = "100%"
+    el.style.width = `${to}px`
+    if (Math.abs(to - from) < 0.5) {
+      widthAnim.current = null
+      return
+    }
+    widthAnim.current = el.animate([{ width: `${from}px` }, { width: `${to}px` }], { duration: rollMs(), delay, easing: EASE, fill: "backwards" })
+  }, [rolling, lastKey, delay])
+
   return (
     <span
+      ref={box}
       data-slot="text-roll-reel"
       data-rolling={rolling || undefined}
       className={cn(
@@ -151,14 +189,38 @@ type RollProps = Omit<React.ComponentProps<"span">, "children"> & {
   stagger?: number
 }
 
+/** Positions that just went away stay a roll longer (empty), so their width closes smoothly. */
+function useLinger(length: number): [number, boolean] {
+  const [shown, setShown] = React.useState(length)
+  const mounted = React.useRef(false)
+  React.useEffect(() => {
+    mounted.current = true
+  }, [])
+  React.useEffect(() => {
+    if (length >= shown) {
+      setShown(length)
+      return
+    }
+    if (motionLevel() === "off") {
+      setShown(length)
+      return
+    }
+    const t = setTimeout(() => setShown(length), rollMs() + 60)
+    return () => clearTimeout(t)
+  }, [length, shown])
+  return [Math.max(length, shown), mounted.current]
+}
+
 function TextRoll({ value, direction = "up", stagger = 0, className, ...props }: RollProps) {
   const text = value ?? ""
+  const chars = [...text]
+  const [slots, live] = useLinger(stagger > 0 ? chars.length : 0)
   return (
     <span data-slot="text-roll" className={cn("inline-flex max-w-full", className)} {...props}>
       <span className="sr-only">{text}</span>
       <span aria-hidden className="inline-flex min-w-0">
         {stagger > 0 ? (
-          [...text].map((ch, i) => <Reel key={i} text={ch} dir={direction} delay={i * stagger} />)
+          Array.from({ length: slots }, (_, i) => <Reel key={i} text={chars[i] ?? ""} dir={direction} delay={i * stagger} appear={live} />)
         ) : (
           <Reel text={text} dir={direction} />
         )}
@@ -190,14 +252,17 @@ function NumberRoll({ value, format = plain, direction, stagger = 24, className,
   const dir = direction ?? way.current
   const text = format(Number.isFinite(value) ? value : 0)
   const chars = [...text]
-  // keyed from the right, so units, tens and hundreds keep their reel when the length changes
+  const [slots, live] = useLinger(chars.length)
+  // keyed from the right, so units, tens and hundreds keep their reel when the length changes; a
+  // digit that comes rolls in from nothing, one that goes rolls out and closes its width
   return (
     <span data-slot="number-roll" className={cn("nk-num inline-flex", className)} {...props}>
       <span className="sr-only">{text}</span>
       <span aria-hidden className="inline-flex">
-        {chars.map((ch, i) => {
-          const fromRight = chars.length - 1 - i
-          return <Reel key={fromRight} text={ch} dir={dir} delay={fromRight * stagger} align="center" />
+        {Array.from({ length: slots }, (_, i) => {
+          const fromRight = slots - 1 - i
+          const ch = chars[chars.length - 1 - fromRight] ?? ""
+          return <Reel key={fromRight} text={ch} dir={dir} delay={fromRight * stagger} align="center" appear={live} />
         })}
       </span>
     </span>
