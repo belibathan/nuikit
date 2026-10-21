@@ -70,7 +70,8 @@ and Lua answers with its own:
 - A request without `protocol` is from a 0.4.0 page and MUST be treated as version `0`, which is v1 without
   capabilities (every 0.4.0 message keeps its v1 meaning). A response without `protocol` likewise means `0`.
 - `capabilities` lists the optional parts Lua provides. v1 defines `surfaces` (§3), `states` (§3.7), `theme`
-  (§6), `player` (§7.1, present when `bridge.lua` is loaded), `notify` (§5.4) and `prefs` (§7.3). A page MUST
+  (§6), `player` (§7.1, present when `bridge.lua` is loaded), `context` (§7.2, with `player`), `notify` (§5.4)
+  and `prefs` (§7.3). A page MUST
   treat an absent capability as "not provided" and SHOULD degrade (for example, keep its compiled-in theme).
 
 In the reference implementation: `nuikit-core` sends `{ protocol: 1, client }` and exposes the reply as

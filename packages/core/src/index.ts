@@ -320,7 +320,7 @@ export interface Handshake {
   resource?: string;
   /** Lua's protocol version; absent means 0 (a 0.4.0 nuikit.lua). */
   protocol?: number;
-  /** Optional parts Lua provides: surfaces, states, theme, player, notify, prefs. */
+  /** Optional parts Lua provides: surfaces, states, theme, player, context, notify, prefs. */
   capabilities?: string[];
 }
 let handshake: Handshake | null = null;
