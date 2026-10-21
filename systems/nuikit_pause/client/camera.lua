@@ -31,6 +31,8 @@ function Camera.down() return NUI.camera.down() end
 ---@class CameraClaim
 ---@field id string who is claiming ('focus', 'map', …)
 ---@field fov? number the new camera's field of view (default: the current view's)
+---@field lockHeading? boolean keep the heading from claim time (nk.camera default: true; never a spin on open)
+---@field duration? number ms to blend in (default 0: the claim starts on the current view, seamless)
 ---@field onLost? fun(reason: 'handover'|'dead') the camera was taken away without release()
 
 --- Take the screen with a scripted camera, started on the current view.
@@ -42,6 +44,8 @@ function Camera.claim(opts)
   local handle, from = NUI.camera.claim({
     id = opts.id,
     fov = opts.fov,
+    lockHeading = opts.lockHeading,
+    duration = opts.duration,
     onLost = function(reason)
       if current == c then current = nil end
       lost(c, reason)

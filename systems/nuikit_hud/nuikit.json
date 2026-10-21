@@ -1,5 +1,9 @@
 {
   "lua": [],
   "surface": "world",
-  "components": ["hud-chip"]
+  "components": [
+    "hud-chip",
+    "text-roll",
+    "vital-chip"
+  ]
 }

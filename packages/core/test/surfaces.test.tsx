@@ -10,7 +10,7 @@ import {
   openSurface,
   setSurfaceState,
 } from "../src/index";
-import { Surface, useNuiStates, useSurface } from "../src/react";
+import { Surface, useNuiStates, useSurface, useSurfaceOpen } from "../src/react";
 
 afterEach(() => {
   __reset();
@@ -107,10 +107,31 @@ describe("React", () => {
     await act(() => openSurface("hud"));
     expect(screen.getByText("hud")).toBeTruthy();
     await act(() => openSurface("inventory", { items: [1, 2] }));
+    // hidden: drawn a moment longer for its exit, taking no input, then gone
+    expect(screen.getByText("hud").getAttribute("data-closing")).toBe("true");
+    await act(() => new Promise((r) => setTimeout(r, 320)));
     expect(screen.queryByText("hud")).toBeNull();
     const inv = screen.getByText("items:2");
     expect(inv.getAttribute("data-layer")).toBe("panel");
     expect(Number(inv.style.zIndex)).toBeGreaterThan(30);
+  });
+
+  it("a closing surface keeps its last content for the exit, with useSurfaceOpen false; none with motion off", async () => {
+    function Body({ data }: { data: any }) {
+      return <span>{`${data?.label ?? "none"}:${useSurfaceOpen() ? "open" : "closing"}`}</span>;
+    }
+    render(<Surface name="sheetly">{(data: any) => <Body data={data} />}</Surface>);
+    await act(() => openSurface("sheetly", { label: "menu" }));
+    expect(screen.getByText("menu:open")).toBeTruthy();
+    await act(() => closeSurface("sheetly"));
+    expect(screen.getByText("menu:closing")).toBeTruthy();
+    await act(() => new Promise((r) => setTimeout(r, 320)));
+    expect(screen.queryByText(/menu:/)).toBeNull();
+    document.documentElement.setAttribute("data-nk-motion", "off");
+    await act(() => openSurface("sheetly", { label: "again" }));
+    await act(() => closeSurface("sheetly"));
+    expect(screen.queryByText(/again:/)).toBeNull();
+    document.documentElement.removeAttribute("data-nk-motion");
   });
 
   it("useSurface and useNuiStates follow Lua's messages", () => {

@@ -6,6 +6,7 @@ import { FlagIcon, MapPinIcon } from "lucide-react";
 import { useRef, type ReactNode } from "react";
 import type { HudLocation } from "../nui";
 import { cardinal, setText } from "./util";
+import { TextRoll } from "@/components/ui/text-roll";
 
 /** A waypoint distance (metres, already rounded by Lua) in the HUD's units. */
 export function formatDistance(meters: number, units: "mph" | "kmh") {
@@ -59,9 +60,9 @@ export function LocationStrip({ location, units, heading, start }: { location: H
         </span>
       )}
       <div className="hud-location-text">
-        <span className="hud-street">{location.street}</span>
+        <TextRoll className="hud-street" value={location.street} />
         {second.length > 0 && (
-          <span className="hud-area">{second.join(", ")}</span>
+          <TextRoll className="hud-area" value={second.join(", ")} direction="down" />
         )}
         {extra.length > 0 && <span className="hud-tags">{extra}</span>}
       </div>
