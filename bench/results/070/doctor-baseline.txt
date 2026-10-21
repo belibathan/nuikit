@@ -1,0 +1,65 @@
+[22:15:12][tx:Logger:Admin] [DeezPistachioz] executed  nuikit doctor 
+[       script:nuikit] [nuikit] nuikit 0.7.0 (protocol 1)
+[       script:nuikit] [nuikit] framework: qbox (qbx_core)
+[       script:nuikit] [nuikit] adapter packs:
+[       script:nuikit] [nuikit]   [nuikit-ox]    fits, not shipped yet
+[       script:nuikit] [nuikit]   [nuikit-qb]    not needed (qb-core isn't running)
+[       script:nuikit] [nuikit]   [nuikit-esx]   not needed (es_extended isn't running)
+[       script:nuikit] [nuikit] resources with a UI (30): 3 on nuikit, 0 adapted, 10 override, 17 untouched
+[       script:nuikit] [nuikit]   npwd_qbx_garages         untouched
+[       script:nuikit] [nuikit]                              → its UI is its own; add nuikit_protocol to join (docs/protocol.md) or wait for an override
+[       script:nuikit] [nuikit]   npwd_qbx_mail            untouched
+[       script:nuikit] [nuikit]                              → its UI is its own; add nuikit_protocol to join (docs/protocol.md) or wait for an override
+[       script:nuikit] [nuikit]   Renewed-Banking          override (override page)
+[       script:nuikit] [nuikit]   qbx_bankrobbery          untouched
+[       script:nuikit] [nuikit]                              → its UI is its own; add nuikit_protocol to join (docs/protocol.md) or wait for an override
+[       script:nuikit] [nuikit]   npwd                     untouched
+[       script:nuikit] [nuikit]                              → its UI is its own; add nuikit_protocol to join (docs/protocol.md) or wait for an override
+[       script:nuikit] [nuikit]   nuikit_death             on nuikit v1
+[       script:nuikit] [nuikit]                              → declare nuikit_level '<1-3>' from `nuikit check` so the doctor can show it
+[       script:nuikit] [nuikit]   nuikit_hud               on nuikit v1
+[       script:nuikit] [nuikit]                              → declare nuikit_level '<1-3>' from `nuikit check` so the doctor can show it
+[       script:nuikit] [nuikit]   qbx_taxijob              override (override page)
+[       script:nuikit] [nuikit]   ox_lib                   override (override page)
+[       script:nuikit] [nuikit]   nuikit_loading           untouched
+[       script:nuikit] [nuikit]                              → its UI is its own; add nuikit_protocol to join (docs/protocol.md) or wait for an override
+[       script:nuikit] [nuikit]   nuikit_pause             on nuikit v1
+[       script:nuikit] [nuikit]                              → declare nuikit_level '<1-3>' from `nuikit check` so the doctor can show it
+[       script:nuikit] [nuikit]   oxmysql                  untouched
+[       script:nuikit] [nuikit]                              → its UI is its own; add nuikit_protocol to join (docs/protocol.md) or wait for an override
+[       script:nuikit] [nuikit]   ox_doorlock              untouched
+[       script:nuikit] [nuikit]                              → its UI is its own; add nuikit_protocol to join (docs/protocol.md) or wait for an override
+[       script:nuikit] [nuikit]   ox_inventory             override (override page)
+[       script:nuikit] [nuikit]   ox_target                override (override page)
+[       script:nuikit] [nuikit]   qbx_scoreboard           override (override page)
+[       script:nuikit] [nuikit]   qbx_idcard               override (override page)
+[       script:nuikit] [nuikit]   qbx_police               untouched
+[       script:nuikit] [nuikit]                              → its UI is its own; add nuikit_protocol to join (docs/protocol.md) or wait for an override
+[       script:nuikit] [nuikit]   qbx_lapraces             untouched
+[       script:nuikit] [nuikit]                              → its UI is its own; add nuikit_protocol to join (docs/protocol.md) or wait for an override
+[       script:nuikit] [nuikit]   qbx_storerobbery         untouched
+[       script:nuikit] [nuikit]                              → its UI is its own; add nuikit_protocol to join (docs/protocol.md) or wait for an override
+[       script:nuikit] [nuikit]   qbx_vehiclesales         override (override page)
+[       script:nuikit] [nuikit]   illenium-appearance      override (override page)
+[       script:nuikit] [nuikit]   mhacking                 untouched
+[       script:nuikit] [nuikit]                              → its UI is its own; add nuikit_protocol to join (docs/protocol.md) or wait for an override
+[       script:nuikit] [nuikit]   MugShotBase64            untouched
+[       script:nuikit] [nuikit]                              → its UI is its own; add nuikit_protocol to join (docs/protocol.md) or wait for an override
+[       script:nuikit] [nuikit]   screencapture            untouched
+[       script:nuikit] [nuikit]                              → its UI is its own; add nuikit_protocol to join (docs/protocol.md) or wait for an override
+[       script:nuikit] [nuikit]   ultra-voltlab            untouched
+[       script:nuikit] [nuikit]                              → its UI is its own; add nuikit_protocol to join (docs/protocol.md) or wait for an override
+[       script:nuikit] [nuikit]   mm_radio                 override (override page)
+[       script:nuikit] [nuikit]   pma-voice                untouched
+[       script:nuikit] [nuikit]                              → its UI is its own; add nuikit_protocol to join (docs/protocol.md) or wait for an override
+[       script:nuikit] [nuikit]   chat                     untouched
+[       script:nuikit] [nuikit]                              → its UI is its own; add nuikit_protocol to join (docs/protocol.md) or wait for an override
+[       script:nuikit] [nuikit]   monitor                  untouched
+[       script:nuikit] [nuikit]                              → its UI is its own; add nuikit_protocol to join (docs/protocol.md) or wait for an override
+[       script:nuikit] [nuikit] findings: 0 errors, 1 warning
+[       script:nuikit] [nuikit]   WARN  theme: primary-foreground on primary is 3.54:1 (min 4.5:1)
+[       script:nuikit] [nuikit]         → lighten or darken `--primary-foreground` or `--primary` in nuikit/theme.css, then `nuikit theme reload`
+[       script:nuikit] [nuikit]   INFO  theme: primary-foreground on primary is 3.5:1 (needs 4.5:1); text on buttons will be hard to read.
+[       script:nuikit] [nuikit]         → fix it in nuikit/theme.css, then `nuikit theme reload`
+[       script:nuikit] [nuikit]   → adapter packs that fit: [nuikit-ox] (not shipped yet)
+[       script:nuikit] [nuikit] intents: none counted yet (the intents runtime emits nuikit:intent; play a bit, then run again)
