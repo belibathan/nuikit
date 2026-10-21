@@ -4,7 +4,9 @@ import { SearchIcon, UsersIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
+import { EmptyState } from "@/components/ui/empty-state"
 import { Input } from "@/components/ui/input"
+import { MenuRow } from "@/components/ui/menu-row"
 import { Meter } from "@/components/ui/meter"
 import { Panel, PanelBody, PanelFooter, PanelHeader } from "@/components/ui/panel"
 
@@ -13,7 +15,8 @@ import type { ScoreboardActivity, ScoreboardData, ScoreboardPlayer } from "./nui
 /**
  * Scoreboard — who's online, with server IDs, jobs and ping, a search, and what can be done right
  * now (activities and the jobs they need). Read only: nothing goes back to Lua. Built from the kit:
- * Panel (a search under the title), Meter, Badge and stock shadcn Input.
+ * Panel (a search under the title), Meter, MenuRow (read-only activity rows), EmptyState, Badge and
+ * stock shadcn Input.
  *
  *   <ScoreboardSurface />                         // wired: nk.surface('scoreboard', …) in Lua opens it
  *   <Scoreboard data={data} />                    // a still, for previews
@@ -96,10 +99,10 @@ function Scoreboard({
           <div role="table" aria-label="Players">
             {shown.length ? (
               shown.map((p) => <ScoreboardRow key={p.id} player={p} />)
+            ) : players.length ? (
+              <EmptyState icon={<SearchIcon />} title={`No one matches "${query.trim()}"`} description="Try a name, a server ID or a job." />
             ) : (
-              <p className="nk-row text-muted-foreground">
-                {players.length ? `No one matches "${query.trim()}". Try a name, a server ID or a job.` : "No one else is online yet."}
-              </p>
+              <EmptyState icon={<UsersIcon />} title="No one else is online yet" description="You'll see players here as they join." />
             )}
           </div>
         </PanelBody>
@@ -160,16 +163,21 @@ function ScoreboardActivities({ activities }: { activities: ScoreboardActivity[]
       <PanelHeader title="Activities" description={`${activities.filter((a) => a.available).length} of ${activities.length} available`} />
       <PanelBody>
         {activities.map((a) => (
-          <div key={a.id} data-slot="scoreboard-activity" className={cn("nk-row", !a.available && "text-muted-foreground")}>
-            <span
-              className={cn("size-2 shrink-0 rounded-full", a.available ? "bg-success" : "bg-muted-foreground/40")}
-              aria-label={a.available ? "Available" : "Not available"}
-            />
-            <span className="flex min-w-0 flex-1 flex-col">
-              <span className="truncate font-medium">{a.label}</span>
-              {a.detail && <span className="truncate text-xs leading-4 text-muted-foreground">{a.detail}</span>}
-            </span>
-          </div>
+          <MenuRow
+            key={a.id}
+            data-scoreboard-activity
+            readOnly
+            icon={
+              <span
+                className={cn("size-2 rounded-full", a.available ? "bg-success" : "bg-muted-foreground/40")}
+                aria-label={a.available ? "Available" : "Not available"}
+              />
+            }
+            description={a.detail}
+            className={cn(!a.available && "text-muted-foreground")}
+          >
+            {a.label}
+          </MenuRow>
         ))}
       </PanelBody>
     </Panel>
