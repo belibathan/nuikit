@@ -518,6 +518,35 @@ export function installPressFeel(): void {
   if (pressInstalled || typeof window === "undefined") return;
   pressInstalled = true;
   const release = (el: Element) => setTimeout(() => el.removeAttribute("data-nk-press"), 110);
+  // A controller: nuikit's controls service doesn't turn a gamepad's confirm into a key, so the page
+  // watches the Gamepad API itself while one is connected: A (button 0) dips the focused control.
+  let polling = false;
+  const poll = () => {
+    const pads = typeof navigator.getGamepads === "function" ? Array.from(navigator.getGamepads()).filter(Boolean) : [];
+    if (!pads.length) {
+      polling = false;
+      return;
+    }
+    for (const pad of pads) {
+      const down = !!pad!.buttons[0]?.pressed;
+      const was = padDown.get(pad!.index) ?? false;
+      padDown.set(pad!.index, down);
+      if (down && !was) {
+        const el = document.activeElement?.closest?.(PRESSABLE);
+        if (el && !el.matches("input, textarea")) {
+          el.setAttribute("data-nk-press", "");
+          release(el);
+        }
+      }
+    }
+    requestAnimationFrame(poll);
+  };
+  const padDown = new Map<number, boolean>();
+  window.addEventListener("gamepadconnected", () => {
+    if (polling) return;
+    polling = true;
+    requestAnimationFrame(poll);
+  });
   window.addEventListener(
     "keydown",
     (e) => {

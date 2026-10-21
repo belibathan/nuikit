@@ -5,6 +5,7 @@ import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
 import { CircleCheckIcon, CircleXIcon, InfoIcon, PackageIcon, TriangleAlertIcon, XIcon } from "lucide-react"
 
+import { flipFrom } from "nuikit-core/motion"
 import { Stagger, useStaggerGroup, useStaggerItem } from "nuikit-core/react"
 
 import { cn } from "@/lib/utils"
@@ -392,8 +393,25 @@ function NoticeStack({
   children,
   ...props
 }: React.ComponentProps<"div"> & { position?: NoticePosition }) {
+  // when a notice leaves (or arrives), the others slide into their new places instead of jumping:
+  // a spring per notice (nuikit-core flip), staggered from the gap outward
+  const stack = React.useRef<HTMLDivElement>(null)
+  const places = React.useRef(new WeakMap<Element, [number, number]>())
+  React.useLayoutEffect(() => {
+    const el = stack.current
+    if (!el) return
+    const kids = Array.from(el.children) as HTMLElement[]
+    const before = new Set(kids.flatMap((k) => k.getAnimations?.() ?? []))
+    flipFrom(kids, places.current, "move")
+    let k = 0
+    for (const kid of kids) {
+      const slide = kid.getAnimations?.().find((a) => !before.has(a) && !(a instanceof CSSAnimation))
+      if (slide) slide.effect?.updateTiming({ delay: k++ * 35, fill: "backwards" })
+    }
+  })
   return (
     <div
+      ref={stack}
       data-slot="notice-stack"
       data-position={position}
       aria-label="Notifications"
