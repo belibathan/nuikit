@@ -47,6 +47,7 @@ const SCREENS = {
         { title: "Speed camera", description: "Flashed at 92 mph on Great Ocean Hwy", type: "warning", position: "top-right", duration: 60000 },
         { title: "Speed camera", description: "Flashed at 92 mph on Great Ocean Hwy", type: "warning", position: "top-right", duration: 60000 },
         { title: "New message", description: "From **Lester**", type: "inform", position: "top-right", duration: 60000 },
+        { item: { name: "Water bottle", count: 2, icon: "bottle-water" }, position: "top-right", duration: 60000 },
       ]) {
         await post(page, nui("notify", n));
         await sleep(80);
