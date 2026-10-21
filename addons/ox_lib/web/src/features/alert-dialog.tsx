@@ -1,5 +1,14 @@
-import { useEffect, useState } from "react";
-import { Confirm } from "@/components/ui/confirm";
+import { useEffect, useRef, useState } from "react";
+import {
+  AlertDialog as Dialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { useLocale } from "@/lib/locale";
 import { Markdown } from "@/lib/markdown";
 import { post, useOx } from "@/lib/nui";
@@ -16,24 +25,24 @@ interface AlertData {
 }
 
 /** ox_lib's modal sizes (xs 320 … xl 780 px), on the kit's width scale. */
-const SIZE = { xs: "w-full max-w-80", sm: "w-full max-w-96", md: "w-full max-w-md", lg: "w-full max-w-2xl", xl: "w-full max-w-3xl" };
+const SIZE = { xs: "sm:max-w-80", sm: "sm:max-w-96", md: "sm:max-w-md", lg: "sm:max-w-2xl", xl: "sm:max-w-3xl" };
 
 /**
- * ox_lib's alert dialog (lib.alertDialog), drawn with the kit's Confirm, the `confirm` intent's
- * renderer. ox_lib's rules stay here (docs/ox-lib-protocol.md §8): Escape always cancels, even
- * without a Cancel button; the first button has focus, so Enter presses Cancel when it's shown and
- * Confirm otherwise; closeAlertDialog closes without a post.
+ * ox_lib's alert dialog (lib.alertDialog) as shadcn's AlertDialog (Radix, its own fade and zoom in and
+ * out), dressed as an nk-panel. ox_lib's rules stay here (docs/ox-lib-protocol.md §8): Escape always
+ * cancels, even without a Cancel button; the first button has focus, so Enter presses Cancel when it's
+ * shown and Confirm otherwise; closeAlertDialog closes without a post. Radix's own Escape is off: the
+ * window listener below posts the one closeAlert.
  */
 export function AlertDialog() {
   const locale = useLocale();
   const [data, setData] = useState<AlertData | null>(null);
   const [open, setOpen] = useState(false);
-  // A fresh Confirm per alert, so its focus starts on the right button every time.
-  const [seq, setSeq] = useState(0);
+  const confirm = useRef<HTMLButtonElement>(null);
+  const cancel = useRef<HTMLButtonElement>(null);
 
   useOx<AlertData>("sendAlert", (d) => {
     setData(d);
-    setSeq((n) => n + 1);
     setOpen(true);
   });
   useOx("closeAlertDialog", () => setOpen(false));
@@ -43,7 +52,6 @@ export function AlertDialog() {
     void post("closeAlert", reason);
   };
 
-  // Confirm leaves Escape to nuikit surfaces; ox_lib's page owns it: always "cancel".
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
@@ -55,26 +63,43 @@ export function AlertDialog() {
     return () => window.removeEventListener("keydown", onKey);
   });
 
-  if (!open || !data) return null;
+  if (!data) return null;
   return (
-    <div className="fixed inset-0 z-50">
-      <Confirm
-        key={seq}
-        title={<Markdown>{data.header}</Markdown>}
-        description={
-          <div className={cn("leading-6", data.overflow && "max-h-[60vh] overflow-y-auto")}>
-            <Markdown gfm>{data.content}</Markdown>
-          </div>
-        }
-        showCancel={Boolean(data.cancel)}
-        cancelLabel={data.labels?.cancel ?? locale.cancel}
-        confirmLabel={data.labels?.confirm ?? locale.confirm}
-        initialFocus={data.cancel ? "cancel" : "confirm"}
-        onCancel={() => close("cancel")}
-        onConfirm={() => close("confirm")}
+    <Dialog open={open}>
+      <AlertDialogContent
+        onEscapeKeyDown={(e) => e.preventDefault()}
+        onOpenAutoFocus={(e) => {
+          e.preventDefault();
+          (data.cancel ? cancel.current : confirm.current)?.focus();
+        }}
         // Not centred (the default): near the top, as ox_lib draws it.
-        className={cn(SIZE[data.size ?? "md"], !data.centered && "mt-[12vh] self-start")}
-      />
-    </div>
+        className={cn("nk-panel ox-alert gap-0 p-0", SIZE[data.size ?? "md"], !data.centered && "top-[12vh] translate-y-0")}
+      >
+        <AlertDialogHeader className="nk-panel-header place-items-start text-left">
+          <AlertDialogTitle asChild>
+            <div className="nk-title ox-md">
+              <Markdown>{data.header}</Markdown>
+            </div>
+          </AlertDialogTitle>
+        </AlertDialogHeader>
+        <AlertDialogDescription asChild>
+          <div className={cn("p-[calc(var(--nk-space)*4)] text-base leading-6 text-muted-foreground", data.overflow && "max-h-[60vh] overflow-y-auto")}>
+            <Markdown gfm className="ox-md">
+              {data.content}
+            </Markdown>
+          </div>
+        </AlertDialogDescription>
+        <AlertDialogFooter className="nk-panel-footer justify-end">
+          {data.cancel && (
+            <AlertDialogCancel ref={cancel} onClick={() => close("cancel")}>
+              {data.labels?.cancel ?? locale.cancel}
+            </AlertDialogCancel>
+          )}
+          <AlertDialogAction ref={confirm} onClick={() => close("confirm")}>
+            {data.labels?.confirm ?? locale.confirm}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </Dialog>
   );
 }

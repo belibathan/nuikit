@@ -51,6 +51,18 @@ const EXIT: Record<NoticePosition, string> = {
   "bottom-center": "slide-out-to-bottom-2",
 };
 
+/** ox_lib's enter: a 0.2 s slide of about 30px plus a fade, from above for top positions, from below for bottom ones. */
+const ENTER: Record<NoticePosition, string> = {
+  "top-left": "slide-in-from-top-8",
+  "top-center": "slide-in-from-top-8",
+  "top-right": "slide-in-from-top-8",
+  "center-left": "slide-in-from-left-8",
+  "center-right": "slide-in-from-right-8",
+  "bottom-left": "slide-in-from-bottom-8",
+  "bottom-center": "slide-in-from-bottom-8",
+  "bottom-right": "slide-in-from-bottom-8",
+};
+
 let seq = 0;
 
 /**
@@ -105,7 +117,8 @@ export function Notifications() {
   return (
     <>
       {[...groups].map(([position, list]) => (
-        <NoticeStack key={position} position={position}>
+        // top-right clears the HUD block (map, location, cash: app.css --ox-notify-top-right)
+        <NoticeStack key={position} position={position} className="ox-notify-stack">
           {list.map((t) => (
             // Keyed on `at` too: an update in place restarts the time line, as ox_lib does.
             <Notice
@@ -125,7 +138,10 @@ export function Notifications() {
               pauseOnHover={false}
               iconAlign={t.alignIcon === "top" ? "start" : t.alignIcon === "center" ? "center" : undefined}
               data-state={t.leaving ? "closed" : "open"}
-              className={cn(t.leaving && "animate-out fade-out-0 duration-400 fill-mode-forwards", t.leaving && EXIT[position])}
+              animate={false}
+              className={cn(
+                t.leaving ? cn("animate-out fade-out-0 duration-400 fill-mode-forwards", EXIT[position]) : cn("animate-in fade-in-0 duration-200 ease-out", ENTER[position]),
+              )}
               style={t.style}
             />
           ))}

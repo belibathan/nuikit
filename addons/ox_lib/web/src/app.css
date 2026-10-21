@@ -201,3 +201,65 @@ html[data-nk-motion="reduced"] .ox-radial[data-state="open"] .ox-radial-svg {
 .ox-sheet-title p {
   margin: 0;
 }
+
+/*
+ * Rows, the pause menu's way (list menu, context sheet): 48px, a hairline between rows drawn without
+ * taking layout (so a fixed number of rows fits a scroll box exactly).
+ */
+.ox-list {
+  --nk-row-height: 3rem;
+}
+.ox-list-header {
+  --nk-heading-size: calc(var(--nk-text-title) * 1.1);
+}
+.ox-rows > .nk-row + .nk-row::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: calc(var(--nk-space) * 3);
+  right: calc(var(--nk-space) * 3);
+  height: var(--nk-border);
+  background-color: var(--border);
+  pointer-events: none;
+}
+/* Key hints: the pause menu's small key caps, each beside the verb it triggers. */
+.ox-hints {
+  gap: calc(var(--nk-space) * 3);
+  font-size: var(--nk-text-label);
+  line-height: 1rem;
+  color: var(--muted-foreground);
+  white-space: nowrap;
+}
+.ox-hints > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+.ox-hints [data-slot="kbd"] + :not([data-slot="kbd"]),
+.ox-hints [data-slot="kbd"]:last-of-type {
+  margin-right: 0.125rem;
+}
+
+/* Modal dialogs (shadcn AlertDialog / Dialog): the game darkened with the theme's scrim, not black. */
+[data-slot="alert-dialog-overlay"],
+[data-slot="dialog-overlay"] {
+  background-color: rgba(var(--scrim-rgb), 0.45) !important;
+}
+
+/*
+ * Notifications at top-right start below the HUD's top-right block (nuikit_hud compact: the map, the
+ * location and the cash stack take about the top 26rem of the right edge), so a toast never draws over
+ * them. A server without that HUD, or with a different map size, sets --ox-notify-top-right on :root
+ * (for example in nuikit/theme.css) to move them; 1.5rem puts them back in the corner.
+ */
+:root {
+  --ox-notify-top-right: 27rem;
+}
+.ox-notify-stack[data-position="top-right"] {
+  top: var(--ox-notify-top-right);
+}
+
+/* the alert keeps the panel edge and depth (shadcn's shadow-lg would replace them) */
+.ox-alert {
+  box-shadow: var(--nk-panel-edge), var(--nk-panel-shadow) !important;
+}

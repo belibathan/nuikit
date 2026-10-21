@@ -1,6 +1,8 @@
 import { ChevronDownIcon } from "lucide-react";
+import { useIndicator } from "nuikit-core/react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { MenuRow } from "@/components/ui/menu-row";
+import { Kbd } from "@/components/ui/kbd";
 import { Panel, PanelBody, PanelHeader } from "@/components/ui/panel";
 import { Meter, meterColor } from "@/components/ui/meter";
 import { Icon } from "@/lib/icon";
@@ -53,6 +55,7 @@ export function ListMenu() {
   const [checks, setChecks] = useState<Record<number, boolean>>({});
   const touched = useRef(false); // changeIndex/changeChecked stay quiet until the first key press
   const list = useRef<HTMLDivElement>(null);
+  const indicator = useRef<HTMLDivElement>(null);
 
   const changeSelected = useMemo(() => debounce((body: unknown[]) => void post("changeSelected", body), 100), []);
   const changeIndex = useMemo(() => debounce((body: unknown[]) => void post("changeIndex", body), 100), []);
@@ -139,6 +142,10 @@ export function ListMenu() {
     return () => window.removeEventListener("keydown", onKey);
   }, [menu, selected, indexes, checks, changeIndex, changeChecked]);
 
+  // the indicator glides over the visible rows only (items without a label are skipped)
+  const visibleIndex = menu ? (menu.items ?? []).slice(0, selected).filter((it) => it.label).length : null;
+  useIndicator(list, indicator, visibleIndex);
+
   if (!menu) return null;
   const items = menu.items ?? [];
   const current = items[selected];
@@ -147,13 +154,14 @@ export function ListMenu() {
 
   return (
     <div className={cn("pointer-events-none fixed z-30 flex items-start gap-2", CORNER[menu.position ?? "top-left"], menu.position?.endsWith("right") && "flex-row-reverse")}>
-      <Panel>
-        <PanelHeader title={menu.title} />
+      <Panel className="ox-list w-[24rem]">
+        <PanelHeader title={menu.title} className="ox-list-header" />
         <PanelBody>
-          {/* The scrolling box sits inside the body's padding and is exactly 7 rows tall
-              (7 × 40px + 6 × 2px gaps = 18.25rem), so scrollIntoView({ block: "nearest" }) always
-              lands on a whole row: no half row peeking out under the header. */}
-          <div ref={list} className="flex max-h-[18.25rem] flex-col gap-0.5 overflow-y-hidden">
+          {/* The scrolling box sits inside the body padding and is exactly 7 rows tall (7 × 48px), so
+              scrollIntoView({ block: "nearest" }) always lands on a whole row. One indicator glides
+              behind the rows (nk-indicator, docs/design.md motion 2); the rows change state instantly. */}
+          <div ref={list} className="ox-rows relative flex max-h-[21rem] flex-col overflow-y-hidden">
+            <div ref={indicator} className="nk-indicator" />
             {items.map((item, i) =>
               item.label ? (
                 <Row key={i} index={i} item={item} active={i === selected} scroll={indexes[i] ?? 0} checked={checks[i] ?? false} />
@@ -163,11 +171,17 @@ export function ListMenu() {
             )}
           </div>
         </PanelBody>
-        {items.length > 6 && selected !== items.length - 1 && (
+        {items.length > 7 && selected !== items.length - 1 && (
           <div className="-mt-1 flex justify-center pb-1 text-muted-foreground">
             <ChevronDownIcon className="size-4" />
           </div>
         )}
+        <footer className="nk-panel-footer ox-hints">
+          <span><Kbd>↑</Kbd><Kbd>↓</Kbd>Move</span>
+          {current && isValues(current) && <span><Kbd>←</Kbd><Kbd>→</Kbd>Change</span>}
+          <span><Kbd>Enter</Kbd>{current && isCheck(current) ? "Toggle" : "Select"}</span>
+          {menu.canClose !== false && <span className="ml-auto"><Kbd>Esc</Kbd>Close</span>}
+        </footer>
       </Panel>
       {tooltip && (
         <Panel size="auto" className="max-w-64 px-3 py-2 text-sm text-muted-foreground">
@@ -201,7 +215,7 @@ function Row({ index, item, active, scroll, checked }: { index: number; item: Me
       data-index={index}
       tabIndex={-1}
       active={active}
-      className="shrink-0"
+      className="shrink-0 text-base"
       icon={item.icon ? <Icon icon={item.icon} color={item.iconColor} animation={item.iconAnimation} allowImage className="size-4" /> : undefined}
       {...kind}
     >
