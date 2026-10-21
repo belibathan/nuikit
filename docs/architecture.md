@@ -199,6 +199,8 @@ recipes, from a scripted session (join, spawn, menus, a job, inventory, death). 
 7. **`[nuikit-esx]`**: esx_notify, esx_context, esx_menu_default/dialog, esx_progressbar, esx_textui.
 8. **Doctor and coverage harness** on the three reference servers.
 9. **Packaging**: per-framework zips, `nuikit.cfg`, txAdmin recipe; renderer packs via `nuikit_renderer`.
+   *Zips, `nuikit.cfg` and the Qbox recipe exist (`scripts/pack-systems.mjs`, `systems/nuikit/nuikit.cfg`,
+   `install/`); the recipe is unproven on a real txAdmin; renderer packs wait on step 2.*
 
 The owner tests each step in game through a `next/*` prerelease.
 

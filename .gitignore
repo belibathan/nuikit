@@ -17,3 +17,4 @@ bench/components/.out
 .claude/
 bench/identity/shots/*/
 bench/motion/.out
+!bench/coverage/

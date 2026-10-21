@@ -78,13 +78,16 @@ draw them, and **adapters** bring ox, QBCore and ESX scripts in without rewrites
 
 ## Quick start
 
-**Install on a server.** Download [`nuikit.zip`](https://github.com/belibathan/nuikit/releases/latest), put
-`[nuikit]` in `resources/` and start the runtime first:
+**Install on a server.** Download the zip for your framework (`nuikit-qbox.zip`, `-qbcore`, `-esx`,
+`-standalone`) from the [latest release](https://github.com/belibathan/nuikit/releases/latest), put `[nuikit]`
+in `resources/` and add one line to `server.cfg`, after your framework:
 
 ```cfg
-ensure nuikit
-ensure [nuikit]
+exec @nuikit/nuikit.cfg
 ```
+
+`[nuikit]/nuikit/nuikit.cfg` starts everything in order and holds the settings; `server.cfg.snippet` in the zip
+has the `stop` lines for your framework. New Qbox server: the txAdmin recipe in `install/recipe-qbox.yaml`.
 
 For each folder in `overrides/`, back up the real resource, then copy ours over it (merge, don't replace).
 The zip's README covers start order and what each screen replaces.

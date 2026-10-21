@@ -5,6 +5,8 @@
 //     overrides/<resource>/  UI replacements that merge into resources you already run
 //                            (e.g. overrides/ox_lib/web/build → resources/[ox]/ox_lib/web/build)
 //   nuikit-<addon>.zip       one override on its own, shaped like the resource it replaces
+//   nuikit-<framework>.zip   qbox | qbcore | esx | standalone: nuikit.zip plus that framework's server.cfg
+//                            snippet (and, once they ship, only the adapter pack that fits it)
 //
 // Only what the game needs ships: manifests, Lua, config, theme, READMEs and built web output.
 import { execFileSync } from "node:child_process";
@@ -60,6 +62,30 @@ for (const name of fs.existsSync(path.join(root, "addons")) ? fs.readdirSync(pat
   console.log(`✓ overrides/${rel}`);
 }
 
+// overrides.json: what the pack shipped for each overridden resource and the page's hash, so `nuikit doctor`
+// (docs/doctor.md) can tell an override that a library update wiped from one that is in place. Same FNV-1a as
+// nuikit-core's pageHash (kept inline so packing never depends on the core build).
+const pageHash = (text) => {
+  const s = text.replace(/\r\n/g, "\n");
+  let h = 0x811c9dc5;
+  for (let i = 0; i < s.length; i++) {
+    h ^= s.charCodeAt(i);
+    h = Math.imul(h, 0x01000193);
+  }
+  return (h >>> 0).toString(16).padStart(8, "0");
+};
+const overridesJson = { version, overrides: {} };
+for (const o of overrides) {
+  const build = path.join(root, "addons", o.name, "web", "build");
+  const page = fs.readdirSync(build).find((f) => f.endsWith(".html"));
+  const target = JSON.parse(fs.readFileSync(path.join(root, "addons", o.name, "nuikit.json"), "utf8")).target;
+  overridesJson.overrides[o.resource] = {
+    path: [target.path, page].join("/").replace(/\\/g, "/"),
+    hash: pageHash(fs.readFileSync(path.join(build, page), "utf8")),
+  };
+}
+fs.writeFileSync(path.join(stage, "[nuikit]", "nuikit", "overrides.json"), JSON.stringify(overridesJson, null, 2) + "\n");
+
 const list = (items) => items.map((s) => `- ${s}`).join("\n");
 fs.writeFileSync(
   path.join(stage, "README.md"),
@@ -69,12 +95,15 @@ One design system for your whole FiveM server: https://github.com/belibathan/nui
 
 ## 1. Systems: \`[nuikit]/\`
 
-Put the \`[nuikit]\` folder in \`resources/\` and add to server.cfg, after ox_lib and your framework:
+Put the \`[nuikit]\` folder in \`resources/\` and add ONE line to server.cfg, after ox_lib and your framework:
 
 \`\`\`cfg
-ensure nuikit
-ensure [nuikit]
+exec @nuikit/nuikit.cfg
 \`\`\`
+
+That file (\`[nuikit]/nuikit/nuikit.cfg\`) starts \`nuikit\` and \`[nuikit]\` in order and holds the settings
+(currency, locale, the host); edit it there. \`nuikit-<framework>.zip\` adds a \`server.cfg.snippet\` with the
+\`stop\` lines for that framework, and \`install/recipe-qbox.yaml\` is a txAdmin recipe for a new Qbox server.
 
 ${list(systems.map((s) => `\`${s}\``))}
 
@@ -107,6 +136,36 @@ Updating that resource restores its stock UI; copy the override again afterwards
 Paste any TweakCN theme into \`[nuikit]/nuikit/theme.css\`. Every system and override uses it.
 `,
 );
+// install/: the txAdmin recipe travels with the zip; nuikit.cfg already sits in [nuikit]/nuikit.
+fs.cpSync(path.join(root, "install"), path.join(stage, "install"), { recursive: true });
 execFileSync("zip", ["-qr", path.join(out, "nuikit.zip"), "."], { cwd: stage });
 console.log(`→ out/nuikit.zip`);
+
+// ── per-framework zips: the same stage plus a server.cfg snippet for that framework (and, when adapter
+// packs exist under adapters/[nuikit-<x>], only the one that fits: docs/architecture.md §3).
+const frameworks = {
+  qbox: { start: "ensure ox_lib\nensure [qbx]\nensure pma-voice", stop: ["qbx_hud", "loadscreen", "qbx_chat_theme"], adapter: "ox" },
+  qbcore: { start: "ensure ox_lib\nensure qb-core\nensure pma-voice", stop: ["qb-hud", "qb-loading"], adapter: "qb" },
+  esx: { start: "ensure ox_lib\nensure es_extended\nensure pma-voice", stop: ["esx_hud", "esx_loadingscreen"], adapter: "esx" },
+  standalone: { start: "ensure ox_lib", stop: [], adapter: null },
+};
+for (const [fw, f] of Object.entries(frameworks)) {
+  const dir = path.join(out, "fw", fw);
+  fs.cpSync(stage, dir, { recursive: true });
+  const pack = f.adapter && path.join(root, "adapters", `[nuikit-${f.adapter}]`);
+  const hasPack = pack && fs.existsSync(pack);
+  if (hasPack) fs.cpSync(pack, path.join(dir, `[nuikit-${f.adapter}]`), { recursive: true });
+  fs.writeFileSync(
+    path.join(dir, "server.cfg.snippet"),
+    `# nuikit ${version} on ${fw}: paste after your framework's lines in server.cfg
+${f.start}
+exec @nuikit/nuikit.cfg
+${f.stop.map((r) => `stop ${r}`).join("\n")}
+${hasPack ? `ensure [nuikit-${f.adapter}]` : f.adapter ? `# [nuikit-${f.adapter}] adapter pack: not shipped yet; the overrides/ folder covers ox_lib and friends` : ""}
+`.replace(/\n{3,}/g, "\n\n"),
+  );
+  execFileSync("zip", ["-qr", path.join(out, `nuikit-${fw}.zip`), "."], { cwd: dir });
+  console.log(`→ out/nuikit-${fw}.zip${hasPack ? " (+ adapter pack)" : ""}`);
+}
+fs.rmSync(path.join(out, "fw"), { recursive: true, force: true });
 for (const o of overrides) console.log(`→ out/nuikit-${o.name}.zip`);
