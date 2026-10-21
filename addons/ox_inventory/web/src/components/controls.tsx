@@ -1,16 +1,16 @@
-import { CircleHelpIcon, HandIcon, SparklesIcon } from "lucide-react";
+import { HandIcon, SparklesIcon } from "lucide-react";
 import type { ReactNode } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
-import { HudChip } from "@/components/ui/hud-chip";
 import { Input } from "@/components/ui/input";
 import { Kbd, KbdGroup } from "@/components/ui/kbd";
 import { Separator } from "@/components/ui/separator";
+import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { useT } from "@/lib/locale";
 import { exit } from "@/state/actions";
 import { inv } from "@/state/inventory";
 import { ui } from "@/state/ui";
 
-/** A Use / Give drop zone: drag a player item onto it. A chip of the hint row, lit while it can take the item. */
+/** A Use / Give drop zone: drag a player item onto it. A well in the tray, lit while it can take the item. */
 function DropZone({ id, icon, children }: { id: "use" | "give"; icon: ReactNode; children: ReactNode }) {
   const over = ui.use((s) => s.over === id);
   const armed = ui.use((s) => s.drag?.from.side === "left");
@@ -104,38 +104,64 @@ function UsefulControls() {
   );
 }
 
-/** A hint chip that is also a button (Close, Controls): it lights like an active chip on hover. */
-function HintButton({ keys, children, onClick, label }: { keys: ReactNode; children: ReactNode; onClick: () => void; label?: string }) {
+/** A key hint, the pause menu's way: key caps beside the verb. `onClick` makes it a button. */
+function Hint({ keys, children, onClick, label }: { keys: ReactNode; children: ReactNode; onClick?: () => void; label?: string }) {
+  const body = (
+    <>
+      {keys}
+      <span>{children}</span>
+    </>
+  );
+  if (!onClick) return <span className="inv-hint">{body}</span>;
   return (
-    <button type="button" onClick={onClick} aria-label={label} className="inv-hint-button outline-none">
-      <HudChip icon={keys}>{children}</HudChip>
+    <button type="button" onClick={onClick} aria-label={label} className="inv-hint inv-hint-button">
+      {body}
     </button>
   );
 }
 
 /**
- * The slim bar centred along the bottom, between the sheets, in the pause menu's key-hint style:
- * how many to move, the Use and Give drop zones, then Controls and Close. `closing` plays its exit.
+ * The action tray: a stock shadcn Sheet from the bottom edge (non-modal, so dragging between the side
+ * sheets and onto it keeps working), between the sheets: how many to move, the Use and Give drop
+ * zones, then the key hints. (vaul's Drawer was tried: its Radix dialog is always modal, so a drawer
+ * opened by prop leaves the page's pointer events off and traps focus.)
  */
-export function Controls({ closing }: { closing?: boolean }) {
+export function Controls({ open }: { open: boolean }) {
   const t = useT();
+  const keep = (e: Event) => e.preventDefault();
   return (
-    <div className="inv-bar" data-closing={closing || undefined}>
-      <AmountInput />
-      <DropZone id="use" icon={<SparklesIcon />}>
-        {t("ui_use")}
-      </DropZone>
-      <DropZone id="give" icon={<HandIcon />}>
-        {t("ui_give")}
-      </DropZone>
-      <span className="inv-bar-gap" aria-hidden />
-      <HintButton keys={<CircleHelpIcon />} onClick={() => ui.set({ help: true })} label={t("ui_usefulcontrols")}>
-        {t("ui_usefulcontrols")}
-      </HintButton>
-      <HintButton keys={<Kbd>Esc</Kbd>} onClick={exit}>
-        {t("ui_close")}
-      </HintButton>
+    <Sheet open={open} modal={false}>
+      <SheetContent
+        side="bottom"
+        showCloseButton={false}
+        className="inv-tray"
+        onOpenAutoFocus={keep}
+        onCloseAutoFocus={keep}
+        onInteractOutside={keep}
+        onEscapeKeyDown={keep}
+        aria-describedby={undefined}
+      >
+        <SheetTitle className="sr-only">{t("ui_usefulcontrols")}</SheetTitle>
+        <div className="flex items-center gap-2">
+          <AmountInput />
+          <DropZone id="use" icon={<SparklesIcon />}>
+            {t("ui_use")}
+          </DropZone>
+          <DropZone id="give" icon={<HandIcon />}>
+            {t("ui_give")}
+          </DropZone>
+          <Separator orientation="vertical" className="mx-2 h-6!" />
+          <div className="flex items-center gap-4">
+            <Hint keys={<Kbd>?</Kbd>} onClick={() => ui.set({ help: true })} label={t("ui_usefulcontrols")}>
+              {t("ui_usefulcontrols")}
+            </Hint>
+            <Hint keys={<Kbd>Esc</Kbd>} onClick={exit}>
+              {t("ui_close")}
+            </Hint>
+          </div>
+        </div>
+      </SheetContent>
       <UsefulControls />
-    </div>
+    </Sheet>
   );
 }

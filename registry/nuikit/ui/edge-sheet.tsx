@@ -2,7 +2,10 @@
 
 import * as React from "react"
 
+import { ChevronLeftIcon, XIcon } from "lucide-react"
+
 import { cn } from "@/lib/utils"
+import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Sheet, SheetContent, SheetDescription, SheetTitle } from "@/components/ui/sheet"
 
@@ -19,9 +22,11 @@ import { Sheet, SheetContent, SheetDescription, SheetTitle } from "@/components/
  *     <EdgeSheetFooter>{actions}</EdgeSheetFooter>
  *   </EdgeSheet>
  *
- * Motion (docs/design.md, Motion): it slides in from its edge over the panel time × 2.5 (≤ 400ms),
- * `delay` staggers a second sheet, the body fades in after the sheet, and it slides back out faster
- * on close (Radix keeps it mounted until the exit ends). Transform and opacity only; reduced motion
+ * Motion (docs/design.md, Motion), the ox_lib context sheet's: it slides in from its edge over the
+ * panel time × 2.2 (≤ 360ms), `delay` staggers a second sheet, the body fades up after the sheet,
+ * and it slides back out faster (× 1.4, ≤ 200ms; Radix keeps it mounted until the exit ends).
+ * Sub-pages swap in place: change `page` and the column fades to the new one inside the open sheet;
+ * `onBack` puts a back button before the title, `onClose` a close button after it. Transform and opacity only; reduced motion
  * keeps the fade, `/nuikit motion off` shows and hides it at once.
  *
  * `meter` (0–100) traces a level along the header's bottom edge (a weight, a capacity), like a
@@ -29,14 +34,8 @@ import { Sheet, SheetContent, SheetDescription, SheetTitle } from "@/components/
  * `meterDanger` (default 90).
  */
 
-const TITLE: React.CSSProperties = {
-  fontFamily: "var(--nk-heading-font)",
-  fontSize: "var(--nk-text-section)",
-  lineHeight: 1.2,
-  fontWeight: "var(--nk-display-weight)" as React.CSSProperties["fontWeight"],
-  letterSpacing: "var(--nk-display-tracking)",
-  textTransform: "var(--nk-display-case)" as React.CSSProperties["textTransform"],
-}
+/** nk-title one step up: the heading face at section size (the pause title's family, one step down). */
+const TITLE = { "--nk-heading-size": "var(--nk-text-section)" } as React.CSSProperties
 
 type EdgeSheetProps = Omit<React.ComponentProps<typeof SheetContent>, "title" | "side"> & {
   open: boolean
@@ -56,6 +55,12 @@ type EdgeSheetProps = Omit<React.ComponentProps<typeof SheetContent>, "title" | 
   meterDanger?: number
   /** Called when Radix would close it (it never closes itself): wire Escape here if you want it. */
   onOpenChange?: (open: boolean) => void
+  /** Sub-page key: a new value swaps the column in place (a short fade), the sheet stays. */
+  page?: React.Key
+  /** A back button before the title (a sub-page). */
+  onBack?: () => void
+  /** A close button after the title. */
+  onClose?: () => void
 }
 
 function EdgeSheet({
@@ -71,6 +76,9 @@ function EdgeSheet({
   meter,
   meterDanger = 90,
   onOpenChange,
+  page,
+  onBack,
+  onClose,
   className,
   style,
   children,
@@ -96,26 +104,35 @@ function EdgeSheet({
             ? "border-r-(length:--nk-border) bg-[linear-gradient(90deg,rgba(var(--scrim-rgb),0.22)_0%,rgba(var(--scrim-rgb),0)_70%)]"
             : "border-l-(length:--nk-border) bg-[linear-gradient(270deg,rgba(var(--scrim-rgb),0.22)_0%,rgba(var(--scrim-rgb),0)_70%)]",
           // motion: the ladder, never raw ms; exits faster, eases in
-          "data-[state=open]:duration-[calc(var(--nk-time)*2.5)] data-[state=open]:ease-(--nk-ease-out)",
-          "data-[state=closed]:duration-[calc(var(--nk-time-exit,var(--nk-time))*1.5)] data-[state=closed]:ease-(--nk-ease-in,ease-in)",
+          "data-[state=open]:duration-[min(calc(var(--nk-time)*2.2),360ms)] data-[state=open]:ease-(--nk-ease-out)",
+          "data-[state=closed]:duration-[min(calc(var(--nk-time)*1.4),200ms)] data-[state=closed]:ease-(--nk-ease-in,ease-in)",
           className
         )}
         {...props}
       >
         <div
+          key={page}
           data-slot="edge-sheet-column"
-          className={cn("flex h-full min-h-0 w-full flex-col py-12", left ? "pr-6 pl-12" : "pr-12 pl-6")}
+          className={cn("flex h-full min-h-0 w-full flex-col py-12", left ? "pr-6 pl-12" : "pr-12 pl-6", page !== undefined && "nk-enter")}
         >
-          {(title || icon || actions) && (
+          {(title || icon || actions || onBack || onClose) && (
             <header data-slot="edge-sheet-header" className="flex flex-col gap-1 pb-4">
               <div className="flex min-h-8 items-center gap-3">
-                {icon && <span className="flex shrink-0 text-muted-foreground [&_svg:not([class*='size-'])]:size-5">{icon}</span>}
-                {/* the display face at section size (the pause menu's server name is the display size);
-                    inline, so it wins over the stock title's own weight without fighting class order */}
-                <SheetTitle className="min-w-0 flex-1 truncate" style={TITLE}>
+                {onBack && (
+                  <Button variant="ghost" size="icon-sm" className="-ml-2 shrink-0 text-muted-foreground" onClick={onBack} aria-label="Back">
+                    <ChevronLeftIcon />
+                  </Button>
+                )}
+                {icon && !onBack && <span className="flex shrink-0 text-muted-foreground [&_svg:not([class*='size-'])]:size-5">{icon}</span>}
+                <SheetTitle className="nk-title min-w-0 flex-1 truncate" style={TITLE}>
                   {title}
                 </SheetTitle>
                 {actions && <div data-slot="edge-sheet-actions" className="ml-auto flex shrink-0 items-center gap-2">{actions}</div>}
+                {onClose && (
+                  <Button variant="ghost" size="icon-sm" className="-mr-2 shrink-0 text-muted-foreground" onClick={onClose} aria-label="Close">
+                    <XIcon />
+                  </Button>
+                )}
               </div>
               {description ? (
                 <SheetDescription className="nk-label truncate">{description}</SheetDescription>

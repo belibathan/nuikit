@@ -15,6 +15,7 @@ import {
 import { useEffect, useMemo, useState } from "react";
 import { SlotTile } from "@/components/slot-tile";
 import { EdgeSheet, EdgeSheetBody } from "@/components/ui/edge-sheet";
+import { NumberRoll } from "@/components/ui/text-roll";
 import type { Side } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { canCraft, canPurchase, formatKg, inv, totalWeight } from "@/state/inventory";
@@ -95,7 +96,7 @@ export function InventoryPanel({ side, open }: { side: Side; open: boolean }) {
       actions={
         max > 0 && (
           <span className="nk-num text-sm text-muted-foreground">
-            <span className={cn("font-semibold", percent >= 90 ? "text-destructive" : "text-foreground")}>{formatKg(weight)}</span> / {formatKg(max)} kg
+            <NumberRoll value={weight} format={formatKg} className={cn("font-semibold", percent >= 90 ? "text-destructive" : "text-foreground")} /> / {formatKg(max)} kg
           </span>
         )
       }
