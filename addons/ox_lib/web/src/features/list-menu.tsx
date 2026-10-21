@@ -204,7 +204,9 @@ export function ListMenu() {
             {/* Exactly 7 rows tall (7 × 48px), so scrollIntoView({ block: "nearest" }) always lands on a
                 whole row. The rows change state instantly; only the indicator moves. */}
             <div ref={list} className="ox-rows relative flex max-h-[21rem] flex-col overflow-y-hidden border-t border-border">
-              <div ref={indicator} className="nk-indicator" />
+              {/* hairlines between rows, drawn under the indicator so they never cut through it */}
+              <div aria-hidden className="ox-rules" style={{ "--rows": items.filter((it) => it.label).length } as CSSProperties} />
+              <div ref={indicator} className="nk-indicator ox-indicator" />
               {items.map((item, i) =>
                 item.label ? (
                   <Tooltip key={i} open={i === selected && !!tooltip && !!menu}>

@@ -211,15 +211,40 @@ html[data-nk-motion="reduced"] .ox-radial[data-state="open"] .ox-radial-svg {
 .ox-list-header {
   --nk-heading-size: calc(var(--nk-text-title) * 1.1);
 }
-.ox-rows > .nk-row + .nk-row::after {
-  content: "";
+/*
+ * The list menu's selection is ONE gliding element (.ox-indicator, the kit's nk-indicator): the fill and
+ * its ring move together, same transform, same timing. The rows never paint a selected background,
+ * bar or outline of their own, and the hairlines between rows are drawn on a layer under the
+ * indicator, so nothing snaps, trims or cuts through it. The selected row's text eases to the fill's
+ * foreground over the same time as the glide.
+ */
+.ox-rows > .nk-row,
+.ox-rows > .nk-row.nk-row {
+  background-color: transparent !important;
+  box-shadow: none !important;
+  transition: color var(--nk-indicator-time) var(--nk-indicator-ease);
+}
+.ox-rows > .nk-row::before,
+.ox-rows > .nk-row::after {
+  display: none !important;
+}
+.ox-rules {
   position: absolute;
   top: 0;
   left: calc(var(--nk-space) * 3);
   right: calc(var(--nk-space) * 3);
-  height: var(--nk-border);
-  background-color: var(--border);
+  height: calc(var(--rows, 0) * var(--nk-row-height) - var(--nk-border));
+  background-image: repeating-linear-gradient(to bottom, transparent 0, transparent calc(var(--nk-row-height) - var(--nk-border)), var(--border) calc(var(--nk-row-height) - var(--nk-border)), var(--border) var(--nk-row-height));
   pointer-events: none;
+}
+.ox-indicator {
+  z-index: 0;
+  /* fill identities (Signal, Velvet): the row fill; the others: the hover surface, with their bar or outline */
+  background-color: var(--accent);
+  box-shadow: inset 0 0 0 calc(var(--nk-border) * 1.5) rgba(var(--brand-rgb, var(--primary-rgb)), 0.85), var(--nk-row-glow);
+}
+html[data-nk-row="fill"] .ox-indicator {
+  background-color: var(--nk-row-fill-color);
 }
 /* Key hints: the pause menu's small key caps, each beside the verb it triggers. */
 .ox-hints {
@@ -283,4 +308,15 @@ html[data-nk-motion="reduced"] .ox-radial[data-state="open"] :is(.ox-radial-svg,
 .ox-tip > svg,
 .ox-tip > span[style*="position: absolute"] {
   display: none;
+}
+/* The list menu's indicator glides in every identity (Signal's snap included), as the owner asked;
+   key-repeat still jumps (data-repeat), reduced motion and motion off never glide. */
+html[data-nk-feel="snap"] .ox-indicator:not([data-repeat="jump"]) {
+  transition-duration: var(--nk-indicator-time);
+}
+html[data-nk-feel="snap"] .ox-indicator[data-repeat="fast"] {
+  transition-duration: var(--nk-time-press, 70ms);
+}
+html[data-nk-motion="reduced"] .ox-indicator {
+  transition-duration: 0s !important;
 }
