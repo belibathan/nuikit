@@ -347,7 +347,8 @@ function Shape({ className, children, ...props }: React.ComponentProps<"span">) 
                 strokeLinejoin="round"
                 strokeLinecap="round"
                 pathLength={100}
-                strokeDasharray={`${v} 100`}
+                // full: a plain closed stroke (its corners joined), no dash, so start and end meet with no gap
+                strokeDasharray={v! >= 99.5 ? undefined : `${v} 100`}
                 style={{ fill: "none", stroke: "var(--vital, var(--primary))", transition: "stroke-dasharray calc(300ms * var(--nk-motion, 1)) ease-out" }}
               />
             )}
