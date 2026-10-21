@@ -361,22 +361,19 @@
     transition: opacity 0s var(--nk-ease-out);
     pointer-events: none;
   }
-  &[class*="hover:bg-accent"]:hover,
-  &[class*="hover:bg-accent"]:hover::before {
+  &[class*="hover:bg-accent"]:hover {
     transition-duration: var(--nk-time-hover, var(--nk-time));
   }
-  /* hover counts only on rows that highlight on hover (menu-row's hover variant): in game CEF can keep
-     :hover matched after focus moves, so rows driven by Lua opt out (menu-row inert) */
+  /* the identity indicator marks keyboard, controller and script selection; the pointer's hover is the
+     accent surface the row's own hover: classes paint (menu-row's hover variant), never the indicator */
   &[data-active],
   &[data-highlighted],
-  &:focus-visible,
-  &[class*="hover:bg-accent"]:hover {
+  &:focus-visible {
     box-shadow: inset 0 0 0 var(--nk-row-outline-width) var(--nk-row-outline-color), var(--nk-row-glow);
   }
   &[data-active]::before,
   &[data-highlighted]::before,
-  &:focus-visible::before,
-  &[class*="hover:bg-accent"]:hover::before {
+  &:focus-visible::before {
     opacity: 1;
   }
 }
@@ -852,7 +849,7 @@
 .nk-indicator ~ .nk-row {
   box-shadow: none;
 }
-:is(html, *)[data-nk-row="fill"] .nk-indicator ~ .nk-row.nk-row:is([data-active], [data-highlighted], :focus-visible, [class*="hover:bg-accent"]:hover) {
+:is(html, *)[data-nk-row="fill"] .nk-indicator ~ .nk-row.nk-row:is([data-active], [data-highlighted], :focus-visible) {
   background-color: transparent;
 }
 
@@ -894,11 +891,11 @@
  * so it keys off the attribute applyTheme paints from --nk-row-indicator. Unlayered on purpose: it must
  * beat the row's and its children's own text colours. Destructive rows keep their colour.
  */
-:is(html, *)[data-nk-row="fill"] .nk-row:is([data-active], [data-highlighted], :focus-visible, [class*="hover:bg-accent"]:hover):not([class*="text-destructive"]) {
+:is(html, *)[data-nk-row="fill"] .nk-row:is([data-active], [data-highlighted], :focus-visible):not([class*="text-destructive"]) {
   background-color: var(--nk-row-fill-color);
   color: var(--nk-row-fill-foreground);
 }
-:is(html, *)[data-nk-row="fill"] .nk-row:is([data-active], [data-highlighted], :focus-visible, [class*="hover:bg-accent"]:hover):not([class*="text-destructive"]) :not([data-slot="kbd"], [data-slot="kbd"] *, [data-slot="progress"], [data-slot="progress"] *) {
+:is(html, *)[data-nk-row="fill"] .nk-row:is([data-active], [data-highlighted], :focus-visible):not([class*="text-destructive"]) :not([data-slot="kbd"], [data-slot="kbd"] *, [data-slot="progress"], [data-slot="progress"] *) {
   color: inherit;
 }
 :is(html, *)[data-nk-row="fill"] .nk-row::before {

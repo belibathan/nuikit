@@ -15,8 +15,10 @@ import { meterColor, type MeterTone } from "@/components/ui/meter"
 /**
  * MenuRow — the 40px action row every list is made of (docs/design.md, rule 5): an icon or an
  * image, a label, an optional description and progress, and one trailing thing: meta text, a
- * chevron, a Kbd, a checkbox or a value stepper. Highlight is the theme's accent, like shadcn's
- * menus. The default look of the `menu` intent's items (docs/architecture.md §2).
+ * chevron, a Kbd, a checkbox or a value stepper. Keyboard focus and the list's active row draw the
+ * identity's indicator (`nk-row`: bar, outline or fill; one sliding `nk-indicator` when the list
+ * drives it); the pointer's hover is the theme's accent, like shadcn's menus. The default look of
+ * the `menu` intent's items (docs/architecture.md §2).
  *
  *   <MenuRow icon={<MapIcon />} kbd="P" onClick={openMap}>Map</MenuRow>
  *   <MenuRow icon={<CarIcon />} description="Stored, 98% condition" meta="ZEN 01" chevron>Zentorno</MenuRow>
@@ -45,8 +47,8 @@ import { meterColor, type MeterTone } from "@/components/ui/meter"
 const menuRowVariants = cva(
   [
     "group/menu-row nk-row w-full cursor-default text-left font-medium outline-none select-none",
-    "focus-visible:bg-accent focus-visible:text-accent-foreground",
-    "data-[active]:bg-accent data-[active]:text-accent-foreground",
+    // focus and active: the identity indicator (nk-row); the text brightens to the foreground
+    "focus-visible:text-foreground data-[active]:text-foreground",
     "disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50",
     "[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
   ],
@@ -70,11 +72,10 @@ const menuRowVariants = cva(
 )
 
 /** Icons and secondary text follow the row into its highlight (keyboard and active always; hover unless inert). */
-const ON_HIGHLIGHT = "group-focus-visible/menu-row:text-accent-foreground group-data-[active]/menu-row:text-accent-foreground"
+const ON_HIGHLIGHT = "group-focus-visible/menu-row:text-foreground group-data-[active]/menu-row:text-foreground"
 const ON_HOVER = "group-hover/menu-row:text-accent-foreground"
 
-/** In many themes muted = accent, so a Kbd would vanish into the highlight: lift it off it. */
-const KBD_ON_HIGHLIGHT = "group-focus-visible/menu-row:bg-background/60 group-data-[active]/menu-row:bg-background/60"
+/** In many themes muted = accent, so a Kbd would vanish into the hover highlight: lift it off it. */
 const KBD_ON_HOVER = "group-hover/menu-row:bg-background/60"
 
 /** 0–100, NaN → 0. */
@@ -154,7 +155,7 @@ function MenuRow({
   const hovers = hover ?? !(inert || readOnly)
   // readOnly rows never highlight, not even when told to.
   const lit = readOnly ? "" : cn(ON_HIGHLIGHT, hovers && ON_HOVER)
-  const kbdLit = readOnly ? "" : cn(KBD_ON_HIGHLIGHT, hovers && KBD_ON_HOVER)
+  const kbdLit = readOnly ? "" : (hovers ? KBD_ON_HOVER : "")
   const quiet = cn("text-muted-foreground", lit)
 
   const step = (dir: -1 | 1) => !disabled && !readOnly && onStep?.(dir)

@@ -88,7 +88,7 @@ reason, so the frame is the one to change. **Open** items wait on another lane o
 - Closed: the progress slab is the label, a live percentage and, with `canCancel = true` in the `progress` message
   (nuikit extension; ox_lib's own payload has no cancel field, X is handled in its Lua), the `X` key chip over a thin
   line. POST payloads and timings unchanged (`bench/polish/ox_lib/{before,after}.json`).
-- Skill check matches shipped; ring ticks for `--nk-gauge-ticks: 1` identities are open (Components lane).
+- Skill check matches shipped; ring ticks follow `--nk-gauge-ticks` (shipped).
 
 **Death screen** (`systems/nuikit_death`)
 - Closed: the full-width band along the bottom edge (state, phase and the clock in the numeric face). It keeps to the
