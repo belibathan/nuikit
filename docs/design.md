@@ -128,16 +128,13 @@ centring flex parent), so a centred word leaves straight up from its centre and 
 on the same centre. The reel's width tweens from the old width to the new over the roll, which slides the
 neighbours; the rolling text itself never moves sideways. `NumberRoll` is the same per digit.
 
-**The HUD status row** (`vital-chip`, `import { VitalChip } from "@/components/ui/vital-chip"`): communication is
-what roleplay is about, so **voice and radio are the primary layer**: always shown, first in the row, a step larger
-and heavier. **Vitals are secondary** self-management: they surface on change or past a threshold, then fold away,
-and a change pops a callout with the name and the signed difference ("Hunger +25", merged while it shows). The chip
-is composable (`Root`, `Shape`, `Level`, `Icon`, `Label`, `Pop`) and one SVG path per shape drives its surface,
-border, level trace, liquid fill and label anchors. Themes pick the variant with `--nk-chip-shape`
-(auto | square | rounded | circle | diamond | hex | chamfer), `--nk-level-style` (outline | fill | bar | none),
-`--nk-label-attach` (inline | tag | flag | none; inline falls back to flag on non-rect shapes) and `--nk-vital-icon`
-(vital | uniform: with a fill the icons share the ink and the liquid carries the colour). The defaults are the
-0.7 look. In game a player can try them: `/hudstyle diamond fill tag uniform`, `/hudstyle reset`, `/hudpop hunger 25`.
+**The HUD status row** (`vital-chip`, `import { VitalChip } from "@/components/ui/vital-chip"`): the chip is composable
+(`Root`, `Shape`, `Level`, `Icon`, `Label`, `Pop`) and one SVG path per shape drives its surface, border, level trace,
+liquid fill and anchors. The default is the 0.7 look (the identity's chip, the level traced on its outline). A change
+pops a flag out of the chip's side, in line with the row, so several vitals changing at once sit side by side and
+never overlap. The other variants (`--nk-chip-shape`, `--nk-level-style`, `--nk-label-attach`, `--nk-vital-icon`;
+in game `/hudstyle`) are **experimental**: tried with the owner and shelved for now (too small, weak as an aesthetic);
+the parts structure stays. A comms-first hierarchy (voice and radio larger, first) was tried with it and shelved too.
 
 Reference implementation: `systems/nuikit_pause`. The registry components (`panel`, `menu-row`, `stat`,
 `meter`, `hud-chip`, …) are these utilities with props; prefer them over the raw classes.

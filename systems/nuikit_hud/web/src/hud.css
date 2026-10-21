@@ -115,12 +115,12 @@
 /* ───────────────────────────── the status row: comms first, then vitals (components/ui/vital-chip)
 
    Every chip is the kit's VitalChip: one shape path (--nk-chip-shape), its level (--nk-level-style),
-   its label attachment (--nk-label-attach). Voice and radio are the primary layer, a step larger and
-   heavier and always there; the vitals are secondary and fold away when they have nothing to say. */
+   its label attachment (--nk-label-attach); the defaults are the 0.7 look, the rest are experimental
+   (/hudstyle). The vitals fold away when they have nothing to say; a change pops a flag from the side. */
 
 .hud-vitals-row {
-  --vital-size: 1.875rem;
-  --vital-icon-size: 0.875rem;
+  --vital-size: 2.125rem;
+  --vital-icon-size: 1rem;
   --hud-vchip-gap: 0.375rem;
   --nk-chip-bg: var(--hud-chip-bg);
   --nk-chip-fg: var(--hud-chip-fg);
@@ -131,14 +131,14 @@
   text-shadow: none;
 }
 .hud-vitals-row[data-layout="classic"] {
-  --vital-size: 2.25rem;
-  --vital-icon-size: 1rem;
+  --vital-size: 2.5rem;
+  --vital-icon-size: 1.0625rem;
   --hud-vchip-gap: 0.5rem;
 }
 .hud-vchip {
   flex: none;
   display: flex;
-  max-width: 10rem;
+  max-width: 24rem;
   opacity: 1;
   transition:
     opacity var(--hud-ms) ease-out,
@@ -153,19 +153,6 @@
   margin-left: calc(var(--hud-vchip-gap) * -1);
   transition-duration: calc(320ms * var(--nk-motion, 1));
   transition-timing-function: ease-in;
-}
-/* the primary layer: voice and radio */
-.hud-comms {
-  --vital-size: calc(1.875rem + 0.25rem);
-  --vital-icon-size: 0.9375rem;
-  font-weight: 600;
-}
-.hud-vitals-row[data-layout="classic"] .hud-comms {
-  --vital-size: calc(2.25rem + 0.25rem);
-  --vital-icon-size: 1.0625rem;
-}
-.hud-comms + .hud-vchip:not(.hud-comms) {
-  margin-left: 0.25rem;
 }
 .hud-vchip[data-active] {
   --nk-chip-bg: var(--hud-accent);

@@ -1,10 +1,10 @@
 // The status row (both layouts), built from the kit's VitalChip anatomy (components/ui/vital-chip):
 // one shape path per chip, its level (outline trace, liquid fill, bar), its label attachment and a pop.
 //
-// Hierarchy (docs/design.md): communication is what roleplay is about, so voice and radio are the
-// primary layer: always there, first in the row, a step larger and heavier. The vitals are secondary
-// self-management: each shows on change or past its threshold, then fades back (vitals.tsx useShown),
-// and a change pops a callout with its name and the difference ("Hunger +25").
+// Voice first, the vitals, the radio channel last (the 0.7 order and look). Each vital shows on change or
+// past its threshold, then fades back (vitals.tsx useShown); a change pops a flag from the chip's side
+// with its name and the difference ("Hunger +25"), so pops of vitals that change together never overlap.
+// (A comms-first hierarchy was tried and shelved, see docs/design.md.)
 //
 // The style comes from the theme tokens (--nk-chip-shape, --nk-level-style, --nk-label-attach,
 // --nk-vital-icon) and a player's override (/hudstyle, kept in KVP by client/style.lua and sent as
@@ -57,7 +57,7 @@ function VoiceChip({ voice, linger }: { voice: NuiPlayer["voice"]; linger: numbe
   const changed = useShown(range, "auto", false, linger);
   if (range === undefined) return null;
   return (
-    <div data-slot="hud-voice" data-active={voice.talking || undefined} data-shown className="hud-vchip hud-comms" aria-label={voice.talking ? `Talking, ${range}` : `Voice range ${range}`}>
+    <div data-slot="hud-voice" data-active={voice.talking || undefined} data-shown className="hud-vchip" aria-label={voice.talking ? `Talking, ${range}` : `Voice range ${range}`}>
       <VitalChip.Root open={changed || voice.talking} icon="uniform">
         <VitalChip.Shape>
           <VitalChip.Icon>
@@ -74,7 +74,7 @@ function VoiceChip({ voice, linger }: { voice: NuiPlayer["voice"]; linger: numbe
 /** The radio channel, while on one: primary, always shown with its channel. */
 function RadioChip({ radio }: { radio: number | string }) {
   return (
-    <div data-slot="hud-radio" data-shown className="hud-vchip hud-comms" aria-label={`Radio ${radio} MHz`}>
+    <div data-slot="hud-radio" data-shown className="hud-vchip" aria-label={`Radio ${radio} MHz`}>
       <VitalChip.Root open icon="uniform">
         <VitalChip.Shape>
           <VitalChip.Icon>
@@ -121,7 +121,7 @@ function useHudStyle() {
   return force;
 }
 
-/** The status row: voice and radio first (primary), then the vitals (secondary). */
+/** The status row: voice, the vitals, the radio channel. */
 export function VitalsRow({ player, settings, layout }: { player: NuiPlayer; settings: HudSettings; layout: "compact" | "classic" }) {
   const force = useHudStyle();
   const cfg = settings.vitals ?? {};
@@ -140,12 +140,12 @@ export function VitalsRow({ player, settings, layout }: { player: NuiPlayer; set
   return (
     <div data-slot="hud-vitals" data-layout={layout} className="hud-vitals-row" style={{} as CSSProperties}>
       {voice && <VoiceChip voice={voice} linger={linger} />}
-      {voice?.radio !== undefined && <RadioChip radio={voice.radio} />}
       {item("health", player.health, cfg.health)}
       {item("armor", player.armor, cfg.armor, { low: -1 })}
       {needs && item("hunger", player.hunger, cfg.hunger)}
       {needs && item("thirst", player.thirst, cfg.thirst)}
       {needs && item("stress", player.stress, cfg.stress)}
+      {voice?.radio !== undefined && <RadioChip radio={voice.radio} />}
     </div>
   );
 }

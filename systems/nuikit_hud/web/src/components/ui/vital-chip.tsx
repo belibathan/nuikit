@@ -2,7 +2,6 @@
 "use client"
 
 import * as React from "react"
-import { motionLevel } from "nuikit-core/motion"
 
 import { cn } from "@/lib/utils"
 import { NumberRoll } from "@/components/ui/text-roll"
@@ -27,7 +26,8 @@ import { NumberRoll } from "@/components/ui/text-roll"
  * Levels: outline (traced along the edge, clockwise from the top) | fill (liquid rising inside the shape,
  * with a surface line) | bar | none. Label attach: inline (grows sideways, rect shapes only; others use
  * flag) | tag (a banner hanging beneath, like a crest's ribbon) | flag (sticks out to the side) | none.
- * Pop: a callout from the chip on a change ("Hunger +25"), merged while it shows, gone after ~1.5 s.
+ * Pop: a flag out of the chip's side on a change ("Hunger +25"), in line with the row (so pops of several
+ * vitals never overlap), merged while it shows, gone after ~1.5 s.
  *
  * Theme tokens choose the defaults: --nk-chip-shape, --nk-level-style, --nk-label-attach and
  * --nk-vital-icon (vital: the icon in the vital's colour; uniform: the chip's ink, the level carries
@@ -419,7 +419,7 @@ function Label({ className, children, ...props }: React.ComponentProps<"span">) 
         data-attach="flag"
         data-open={open || undefined}
         className={cn(
-          "pointer-events-none relative z-0 -ml-[0.375rem] flex h-[calc(var(--vital-size)*0.72)] max-w-0 items-center self-center overflow-hidden rounded-r-(--nk-chip-radius) bg-(--nk-chip-bg) text-[0.8125rem] font-semibold whitespace-nowrap text-(--nk-chip-fg) opacity-0 transition-[max-width,opacity,padding] duration-[calc(220ms*var(--nk-motion,1))] ease-out data-[open]:max-w-28 data-[open]:pr-2 data-[open]:pl-[0.625rem] data-[open]:opacity-100",
+          "pointer-events-none relative z-0 data-[open]:-ml-[0.375rem] flex h-[calc(var(--vital-size)*0.72)] max-w-0 items-center self-center overflow-hidden rounded-r-(--nk-chip-radius) bg-(--nk-chip-bg) text-[0.8125rem] font-semibold whitespace-nowrap text-(--nk-chip-fg) opacity-0 transition-[max-width,opacity,padding,margin] duration-[calc(220ms*var(--nk-motion,1))] ease-out data-[open]:max-w-28 data-[open]:pr-2 data-[open]:pl-[0.625rem] data-[open]:opacity-100",
           className
         )}
         {...props}
@@ -468,9 +468,9 @@ type PopProps = {
 }
 
 /**
- * A callout from the top of the chip when the value changes: the vital's name and the signed change,
- * which rolls (NumberRoll) as further changes merge in. Like a shadcn Tooltip, anchored on the chip;
- * gone ~1.5 s after the last change.
+ * When the value changes, a flag grows out of the chip's side with the vital's name and the signed
+ * change, which rolls (NumberRoll) as further changes merge in; it closes ~1.5 s after the last change.
+ * In line with the row, so pops of vitals that change together sit side by side.
  */
 function Pop({ label, mode = "change", min = 3, critical = false, force = null, ms = 1500, onShow }: PopProps) {
   const { value } = useChip()
@@ -500,31 +500,29 @@ function Pop({ label, mode = "change", min = 3, critical = false, force = null, 
   React.useEffect(() => () => void (timer.current && clearTimeout(timer.current)), [])
   React.useEffect(() => onShow?.(sum !== null), [sum, onShow])
 
-  const ref = React.useRef<HTMLSpanElement>(null)
   const shown = sum !== null
-  React.useLayoutEffect(() => {
-    const el = ref.current
-    if (!el || !shown || motionLevel() === "off" || typeof el.animate !== "function") return
-    const reduced = motionLevel() === "reduced"
-    const a = el.animate(
-      reduced ? [{ opacity: 0 }, { opacity: 1 }] : [{ opacity: 0, transform: "translate(-50%, 0.375rem) scale(0.96)" }, { opacity: 1, transform: "translate(-50%, 0) scale(1)" }],
-      { duration: reduced ? 100 : 180, easing: "cubic-bezier(0.2, 0.8, 0.2, 1)" }
-    )
-    return () => a.cancel()
-  }, [shown])
-  if (!shown) return null
-  const up = (sum ?? 0) > 0
+  // the last change stays written while the flag closes
+  const last = React.useRef(0)
+  if (sum !== null) last.current = sum
+  const total = sum ?? last.current
+  const up = total > 0
   return (
     <span
-      ref={ref}
       role="status"
       data-slot="vital-chip-pop"
-      className="pointer-events-none absolute bottom-[calc(100%+0.375rem)] left-1/2 z-10 flex -translate-x-1/2 items-center gap-1.5 rounded-(--nk-chip-radius) bg-(--nk-chip-bg) px-2 py-1 text-[0.8125rem] leading-none font-semibold whitespace-nowrap text-(--nk-chip-fg)"
+      data-open={shown || undefined}
+      aria-hidden={!shown}
+      className={cn(
+        // a flag out of the chip's side, in line with the row: it takes its own room, so pops of
+        // vitals that change together sit side by side and can never overlap
+        "pointer-events-none relative z-0 data-[open]:-ml-[0.375rem] flex h-[calc(var(--vital-size)*0.8)] max-w-0 items-center gap-1.5 self-center overflow-hidden rounded-r-(--nk-chip-radius) bg-(--nk-chip-bg) text-[0.875rem] leading-none font-semibold whitespace-nowrap text-(--nk-chip-fg) opacity-0",
+        "transition-[max-width,opacity,padding,margin] duration-[calc(240ms*var(--nk-motion,1))] ease-out data-[open]:max-w-48 data-[open]:pr-2.5 data-[open]:pl-[0.75rem] data-[open]:opacity-100"
+      )}
     >
       <span>{label}</span>
       <span className={cn("nk-num", up ? "text-(--vital,currentColor)" : "opacity-80")}>
         {up ? "+" : "−"}
-        <NumberRoll value={Math.abs(sum ?? 0)} />
+        <NumberRoll value={Math.abs(total)} />
       </span>
     </span>
   )
