@@ -17,6 +17,7 @@ import {
 import { cn } from "@/lib/utils"
 import { HudChip } from "@/components/ui/hud-chip"
 import { Meter } from "@/components/ui/meter"
+import { formatMoney } from "@/components/ui/money"
 import { SPEEDOMETER_REDLINE, Speedometer, speedometerDash } from "@/components/ui/speedometer"
 import { Stat } from "@/components/ui/stat"
 
@@ -26,7 +27,7 @@ import type { HudVehicle } from "./nui"
  * HudMinimal — the always-on HUD: vitals and needs with voice bottom left, cash, bank and job top
  * right, and a speedometer bottom right while driving. Drawn straight on the game (docs/design.md
  * rule 8): bare marks with a shadow and HUD chips, no panels. Built from the kit: Meter, Stat,
- * HudChip, Speedometer.
+ * HudChip, Speedometer, Money.
  *
  *   <HudMinimalSurface />                                   // wired: nk.surface('hud') + nk.player in Lua
  *   <HudMinimal player={player} vehicle={vehicle} />        // a still, for previews
@@ -44,8 +45,6 @@ function HudMinimalSurface({ needs = true }: { needs?: boolean }) {
     </Surface>
   )
 }
-
-const money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 })
 
 function HudMinimal({
   player,
@@ -112,15 +111,16 @@ function HudWallet({ player }: { player: NuiPlayer }) {
   if (!player.loaded || (player.cash === undefined && player.bank === undefined && !job)) return null
   return (
     <div className="nk-anchor-tr flex flex-col items-end gap-2">
-      {player.cash !== undefined && <Stat surface="game" align="end" icon={<WalletIcon />} label="Cash" value={money.format(player.cash)} />}
+      {player.cash !== undefined && <Stat surface="game" align="end" icon={<WalletIcon />} label="Cash" value={formatMoney(player.cash)} />}
       {player.bank !== undefined && (
-        <Stat surface="game" align="end" size="sm" icon={<LandmarkIcon />} label="Bank" value={money.format(player.bank)} />
+        <Stat surface="game" align="end" size="sm" icon={<LandmarkIcon />} label="Bank" value={formatMoney(player.bank)} />
       )}
       {job && (
-        <div className="nk-shadow flex items-center gap-1.5 text-xs font-medium">
+        // a caption on the game (the identity's label style); duty is a status dot, never primary
+        <div data-slot="hud-minimal-job" className="nk-caption nk-on-game flex items-center gap-1.5">
           {job.onDuty !== undefined && (
             <span
-              className={cn("size-1.5 rounded-full", job.onDuty ? "bg-primary" : "bg-hud-foreground/40")}
+              className={cn("size-1.5 rounded-full", job.onDuty ? "bg-success" : "bg-muted-foreground/40")}
               aria-label={job.onDuty ? "On duty" : "Off duty"}
             />
           )}

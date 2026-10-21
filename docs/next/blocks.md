@@ -89,7 +89,7 @@ scene. Existing items (`vital`, `speedometer`, `key-hint`, `nui-menu`, `radial-m
 Rules: no new colours, no px sizes, every state reachable from props (so blocks can be screenshotted),
 keyboard + mouse, and tests where there's logic (countdown, money formatting, meter thresholds).
 
-## Part C: blocks (`registry/nuikit/blocks`, type `registry:block`) — not started
+## Part C: blocks (`registry/nuikit/blocks`, type `registry:block`) — all 14 shipped (9 in 0.6.0, 5 in batch 2); on components v2 since `feat/blocks-071` (`bench/blocks/audit.md`)
 
 A block is a full screen wired to typed NUI messages (`nui.d.ts`) with `dev.tsx` fixtures, built only from
 Part B components. Each also becomes a `create-nuikit` template (`npm create nuikit -- -t <block>`) that
@@ -112,7 +112,7 @@ includes the Lua side (`client/main.lua` with `NUI.surface` and example events).
 | `settings` | Server-side player settings: toggles, sliders, keybind hints. |
 | `scoreboard` | Players, activities, ping. |
 
-## Part D: site (`apps/www`) — done: `/components` (5 components), `/design`, `/coverage`; open: `/blocks`, theme switcher
+## Part D: site (`apps/www`) — done: `/components`, `/design`, `/coverage`, `/blocks` (identity switcher: Graphite / Signal / Velvet / Vector + presets + paste), `/theme` (theme studio with the identity tier, tokens 1.2)
 
 - `/blocks`: every block as a live preview over a blurred game scene, with a theme switcher (a few TweakCN
   presets + paste your own) and the install command.

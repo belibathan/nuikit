@@ -60,6 +60,14 @@ export function ThemePreview() {
         </div>
       </div>
 
+      {/* the display face, case and tracking of the identity; a slab prompt (key tokens, chip plate) */}
+      <div className="nk-anchor-t nk-on-game flex flex-col items-center gap-2 text-center">
+        <p className="nk-display">Legion Square</p>
+        <div className="nk-slab">
+          <kbd className="nk-slab-key">E</kbd>Open the garage
+        </div>
+      </div>
+
       <div className="nk-anchor-b flex gap-2">
         <HudChip icon={<Kbd className="h-4 min-w-4 bg-hud-foreground/20 text-hud-foreground">E</Kbd>}>Open garage</HudChip>
         <HudChip icon={<TriangleAlertIcon />} state="warning">

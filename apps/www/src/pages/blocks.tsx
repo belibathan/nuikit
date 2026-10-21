@@ -1,22 +1,25 @@
-import { applyTheme, clearTheme, type CompiledTheme } from "nuikit-core/react";
+import { type CompiledTheme } from "nuikit-core/react";
 import { ArrowRightIcon, CircleAlertIcon } from "lucide-react";
-import { useLayoutEffect, useMemo, useRef, useState } from "react";
+import { Fragment, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { BLOCKS, type BlockPreview } from "@/components/block-previews";
 import { Command } from "@/components/code";
 import { GameStage } from "@/components/game-stage";
 import { Footer, Nav, SITE } from "@/components/site";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { applyStageTheme, clearStageTheme } from "@/lib/stage-theme";
 import { studioTheme } from "@/lib/theme-studio";
 import { cn } from "@/lib/utils";
-import { themes } from "@/themes";
+import { identities, themes } from "@/themes";
+
+const PRESETS = [...identities, ...themes];
 
 /**
  * /blocks: every block as a live preview on a game screen, in whichever theme you pick (a preset or
  * your own paste, compiled like the server compiles it), with the commands that install it.
  */
 export function BlocksPage() {
-  const [css, setCss] = useState(themes[0]!.css);
+  const [css, setCss] = useState(PRESETS[0]!.css);
   const [preset, setPreset] = useState<number | null>(0);
   const [pasting, setPasting] = useState(false);
   const theme = useMemo(() => studioTheme(css), [css]);
@@ -33,17 +36,19 @@ export function BlocksPage() {
             <a href="/components" className="text-foreground underline underline-offset-4">
               components
             </a>
-            , each wired to typed NUI messages with Lua that runs. Add one to your UI with the shadcn CLI, or start a resource from it with{" "}
+            , each wired to typed NUI messages with Lua that runs, shown in any of the four identities (Graphite, Signal, Velvet, Vector) or your own
+            theme. Add one to your UI with the shadcn CLI, or start a resource from it with{" "}
             <code className="font-mono text-foreground">npm create nuikit</code>. Every preview is its real size at 1080p.
           </p>
         </header>
 
         <section aria-label="Theme" className="sticky top-14 z-30 -mx-6 mt-8 border-b bg-background/90 px-6 py-3 backdrop-blur">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="mr-1 text-sm text-muted-foreground">Theme</span>
-            {themes.map((t, i) => (
+            <span className="mr-1 text-sm text-muted-foreground">Identity</span>
+            {PRESETS.map((t, i) => (
+              <Fragment key={t.name}>
+              {i === identities.length && <span className="mx-1 h-5 w-px bg-border" aria-hidden />}
               <Button
-                key={t.name}
                 variant={preset === i ? "secondary" : "outline"}
                 size="sm"
                 onClick={() => {
@@ -59,6 +64,7 @@ export function BlocksPage() {
                 </span>
                 {t.name}
               </Button>
+              </Fragment>
             ))}
             <Button variant={preset === null ? "secondary" : "outline"} size="sm" onClick={() => setPasting((p) => !p)}>
               Paste your own
@@ -111,11 +117,11 @@ function Block({ block, theme }: { block: BlockPreview; theme: CompiledTheme }) 
   // The theme paints the game screen only; the page around it keeps the site's own.
   const stage = useRef<HTMLDivElement>(null);
   useLayoutEffect(() => {
-    if (stage.current) applyTheme(theme, stage.current, "dark");
+    if (stage.current) applyStageTheme(theme, stage.current);
   }, [theme]);
   useLayoutEffect(() => {
     const el = stage.current;
-    return () => void (el && clearTheme(undefined, el));
+    return () => void (el && clearStageTheme(el));
   }, []);
   return (
     <section id={block.name} className="mt-20 scroll-mt-32">

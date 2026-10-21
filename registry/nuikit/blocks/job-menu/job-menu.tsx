@@ -5,7 +5,9 @@ import { BriefcaseIcon, ChevronDownIcon, ChevronUpIcon, UserMinusIcon, UserPlusI
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Confirm } from "@/components/ui/confirm"
+import { EmptyState } from "@/components/ui/empty-state"
 import { MenuRow } from "@/components/ui/menu-row"
+import { Money } from "@/components/ui/money"
 import { Panel, PanelBody, PanelHeader } from "@/components/ui/panel"
 import { Spinner } from "@/components/ui/spinner"
 import { Stat } from "@/components/ui/stat"
@@ -17,8 +19,8 @@ import type { JobAnswer, JobEmployee, JobGrade, JobMenuData } from "./nui"
  * JobMenu — your job in one panel: go on or off duty and run the job's actions; a boss also gets
  * the staff (promote, demote, fire, with a confirm) and whoever is nearby to hire. Lua answers every
  * button and its error shows at the top of the panel. Built from the kit: Panel (with a tabs
- * header), MenuRow, Stat, Confirm (for firing), with stock shadcn Tabs, Button and Spinner. Escape
- * goes through the surface (escape = 'back'): the confirm first, then the menu.
+ * header), MenuRow, Stat, Money, EmptyState, Confirm (for firing), with stock shadcn Tabs, Button and
+ * Spinner. Escape goes through the surface (escape = 'back'): the confirm first, then the menu.
  *
  *   <JobMenuSurface />                                // wired: nk.surface('job', …) in Lua opens it
  *   <JobMenu data={data} onRequest={…} />             // a still, or your own wiring
@@ -61,8 +63,6 @@ export type JobRequest =
   | { kind: "fire"; id: string }
   | { kind: "grade"; id: string; grade: number }
 
-const money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 })
-
 // Lua turns an empty table into {} instead of [].
 const list = <T,>(v: T[] | undefined): T[] => (Array.isArray(v) ? v : [])
 
@@ -81,6 +81,7 @@ function JobMenu({
   onClose,
   autoFocus = true,
   defaultTab = "actions",
+  firing: firingProp,
   className,
   ...props
 }: Omit<React.ComponentProps<"div">, "children"> & {
@@ -94,11 +95,13 @@ function JobMenu({
   onClose?: () => void
   /** Focus the first row when it opens (off for stills next to other content). */
   autoFocus?: boolean
+  /** Start with the fire confirm open for this employee id (stills). */
+  firing?: string
 }) {
   const [tab, setTab] = React.useState<"actions" | "staff">(defaultTab)
   const [busy, setBusy] = React.useState<string | null>(null)
   const [error, setError] = React.useState<string | null>(null)
-  const [firing, setFiring] = React.useState<JobEmployee | null>(null)
+  const [firing, setFiring] = React.useState<JobEmployee | null>(() => list(data.boss?.employees).find((e) => e.id === firingProp) ?? null)
 
   // Escape: the fire confirm first, then the menu.
   React.useEffect(() => {
@@ -259,7 +262,7 @@ function JobStaff({
     <PanelBody scroll className="max-h-[32rem]">
       {boss.balance !== undefined && (
         <div className="px-3 pt-1 pb-3">
-          <Stat size="sm" label="Job account" value={money.format(boss.balance)} />
+          <Stat size="sm" label="Job account" value={<Money amount={boss.balance} />} />
         </div>
       )}
       {employees.map((e) => {
@@ -300,7 +303,7 @@ function JobStaff({
         )
       })}
 
-      <p className="nk-label px-3 pt-4 pb-1">Hire someone nearby</p>
+      <p className="nk-caption px-3 pt-4 pb-1">Hire someone nearby</p>
       {nearby.length ? (
         nearby.map((p) => (
           <MenuRow
@@ -315,7 +318,7 @@ function JobStaff({
           </MenuRow>
         ))
       ) : (
-        <p className="nk-row text-muted-foreground">No one is close enough. Stand next to them and open this again.</p>
+        <EmptyState icon={<UserPlusIcon />} title="No one is close enough" description="Stand next to them and open this again." />
       )}
     </PanelBody>
   )

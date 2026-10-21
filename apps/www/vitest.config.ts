@@ -10,6 +10,8 @@ export default mergeConfig(
     test: {
       dir: path.resolve(__dirname, "../.."),
       include: ["registry/**/*.test.{ts,tsx}", "apps/www/src/**/*.test.{ts,tsx}"],
+      // the identity presets are read as text (themes.ts: `?raw`); without this vitest hands back an empty string for any .css
+      css: true,
     },
   }),
 );

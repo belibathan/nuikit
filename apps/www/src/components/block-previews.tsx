@@ -51,6 +51,7 @@ export const BLOCKS: BlockPreview[] = [
     states: {
       Driving: () => <HudMinimal player={hudMinimalFixtures.driving.player} vehicle={hudMinimalFixtures.driving.vehicle} />,
       Warnings: () => <HudMinimal player={hudMinimalFixtures.warnings.player} vehicle={hudMinimalFixtures.warnings.vehicle} />,
+      Redline: () => <HudMinimal player={hudMinimalFixtures.redline.player} vehicle={hudMinimalFixtures.redline.vehicle} />,
       "On foot": () => <HudMinimal player={hudMinimalFixtures.talking.player} vehicle={false} />,
       Standalone: () => <HudMinimal player={hudMinimalFixtures.standalone.player} vehicle={false} />,
     },
@@ -74,6 +75,7 @@ export const BLOCKS: BlockPreview[] = [
       Menu: () => <PauseMenu data={pauseMenuFixtures.full.data} player={pauseMenuFixtures.full.player} autoFocus={false} />,
       Opening: () => <PauseMenu data={pauseMenuFixtures.opening.data} player={pauseMenuFixtures.opening.player} autoFocus={false} />,
       "No character": () => <PauseMenu data={pauseMenuFixtures["no-character"].data} player={pauseMenuFixtures["no-character"].player} autoFocus={false} />,
+      "Disconnect?": () => <PauseMenu data={pauseMenuFixtures.full.data} player={pauseMenuFixtures.full.player} autoFocus={false} confirming />,
     },
   },
   {
@@ -94,6 +96,7 @@ export const BLOCKS: BlockPreview[] = [
       Interface: () => <SettingsStill data={settingsFixtures.full} />,
       Accessibility: () => <SettingsStill data={settingsFixtures.single} />,
       Disabled: () => <SettingsStill data={settingsFixtures.disabled} />,
+      Empty: () => <SettingsStill data={settingsFixtures.empty} />,
     },
   },
   {
@@ -104,6 +107,8 @@ export const BLOCKS: BlockPreview[] = [
       Full: () => <ScoreboardStill data={scoreboardFixtures.full} />,
       Search: () => <ScoreboardStill data={scoreboardFixtures.full} query="lspd" />,
       Standalone: () => <ScoreboardStill data={scoreboardFixtures.standalone} />,
+      "No match": () => <ScoreboardStill data={scoreboardFixtures.full} query="zzz" />,
+      Alone: () => <ScoreboardStill data={scoreboardFixtures.alone} />,
     },
   },
   {
@@ -126,6 +131,7 @@ export const BLOCKS: BlockPreview[] = [
       ATM: () => <Bank data={bankFixtures.atm} autoFocus={false} onMoney={async () => ({ ok: true })} />,
       Frozen: () => <Bank data={bankFixtures.frozen} autoFocus={false} />,
       "New account": () => <Bank data={bankFixtures.new} autoFocus={false} />,
+      Transfer: () => <Bank data={bankFixtures.full} autoFocus={false} dialog="transfer" onMoney={async () => ({ ok: true })} />,
     },
   },
   {
@@ -137,6 +143,7 @@ export const BLOCKS: BlockPreview[] = [
       Actions: () => <JobMenu data={jobMenuFixtures.boss} autoFocus={false} onRequest={async () => ({ ok: true })} />,
       "Off duty": () => <JobMenu data={jobMenuFixtures["off-duty"]} autoFocus={false} onRequest={async () => ({ ok: true })} />,
       Refused: () => <JobMenu data={jobMenuFixtures.boss} defaultTab="staff" autoFocus={false} onRequest={async () => ({ ok: false, error: "Only the boss can do that." })} />,
+      "Fire?": () => <JobMenu data={jobMenuFixtures.boss} defaultTab="staff" autoFocus={false} firing={jobMenuFixtures.boss.boss!.employees[1]!.id} onRequest={async () => ({ ok: true })} />,
     },
   },
   {
@@ -169,6 +176,7 @@ export const BLOCKS: BlockPreview[] = [
       Stash: () => <Inventory data={inventoryFixtures.locker} defaultSelected={2} autoFocus={false} onMove={async () => ({ ok: true })} onUse={async () => ({ ok: true })} />,
       Pockets: () => <Inventory data={inventoryFixtures.pockets} autoFocus={false} onMove={async () => ({ ok: true })} onUse={async () => ({ ok: true })} />,
       Heavy: () => <Inventory data={inventoryFixtures.heavy} autoFocus={false} />,
+      Empty: () => <Inventory data={inventoryFixtures.empty} autoFocus={false} />,
       Hotbar: () => <Hotbar data={hotbarFixtures.hotbar} />,
     },
   },

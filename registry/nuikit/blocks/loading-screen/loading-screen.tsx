@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Meter } from "@/components/ui/meter"
 import { Separator } from "@/components/ui/separator"
 import { Spinner } from "@/components/ui/spinner"
+import { Stat } from "@/components/ui/stat"
 
 import { useHandover, type LoadingHandover, type LoadingLink, type LoadingTip } from "./handover"
 import { LOAD_PHASES, useLoadProgress, type LoadState } from "./progress"
@@ -15,7 +16,7 @@ import { LOAD_PHASES, useLoadProgress, type LoadState } from "./progress"
  * LoadingScreen — what players look at while the game loads: the server's name, tips, links, the
  * real load progress (the game's own load events, phase by phase), backgrounds and music. Opaque,
  * themed by the server's nuikit theme, which arrives with the connection handover because a loading
- * screen starts before any resource. Built from the kit: Meter, plus stock shadcn Spinner,
+ * screen starts before any resource. Built from the kit: Meter, Stat, plus stock shadcn Spinner,
  * Separator and Button.
  *
  *   <LoadingScreenPage />                                 // wired: the handover and the game's load events
@@ -44,8 +45,9 @@ function LoadingScreen({
       <header className="absolute top-12 left-12 flex items-center gap-4">
         {h.logo && <img src={h.logo} alt="" className="size-12 rounded-lg object-contain" />}
         <div className="flex flex-col gap-1">
-          <h1 className="text-2xl leading-8 font-semibold tracking-tight">{h.serverName || "Welcome"}</h1>
-          {h.tagline && <p className="text-sm text-muted-foreground">{h.tagline}</p>}
+          {/* the server name: the screen's display moment (the identity's display face) */}
+          <h1 className="nk-display [--nk-display-size:var(--nk-text-section)]">{h.serverName || "Welcome"}</h1>
+          {h.tagline && <p className="nk-label">{h.tagline}</p>}
         </div>
       </header>
 
@@ -84,7 +86,8 @@ function LoadingBackdrop({ images, interval = 9000 }: { images: string[]; interv
       {images.map((src, n) => (
         <div
           key={src + n}
-          className={cn("absolute inset-0 bg-cover bg-center transition-opacity duration-[1600ms]", n === i ? "opacity-100" : "opacity-0")}
+          // a slow image cross-fade (opacity only); zero under the theme's motion off
+          className={cn("absolute inset-0 bg-cover bg-center transition-opacity [transition-duration:calc(1600ms*var(--nk-motion,1))]", n === i ? "opacity-100" : "opacity-0")}
           style={{ backgroundImage: `url("${src}")` }}
         />
       ))}
@@ -113,10 +116,11 @@ function LoadingTips({ tips, interval = 8000 }: { tips: LoadingTip[]; interval?:
       </div>
       {tips.length > 1 && (
         <div className="flex items-center gap-1" aria-hidden>
+          {/* the current tip's dot is long and solid; the change is instant (no width animation, motion rule 4) */}
           {tips.map((_, n) => (
             <span
               key={n}
-              className={cn("h-0.5 rounded-full transition-all duration-500", n === i % tips.length ? "w-6 bg-foreground" : "w-3 bg-foreground/25")}
+              className={cn("h-0.5 rounded-full bg-foreground", n === i % tips.length ? "w-6" : "w-3 opacity-25")}
             />
           ))}
         </div>
@@ -150,16 +154,14 @@ function LoadingStatus({ load, player }: { load: LoadState; player?: string }) {
     <section className="flex flex-col gap-3" aria-live="off">
       <div className="flex items-end justify-between gap-6">
         <div className="flex flex-col gap-1">
-          {player && <p className="text-sm text-muted-foreground">Welcome, {player}</p>}
-          <p className="flex items-center gap-2 text-xl leading-7 font-semibold tracking-tight">
+          {player && <p className="nk-label">Welcome, {player}</p>}
+          <p className="nk-title flex items-center gap-2">
             {ready ? <CheckIcon className="size-4" /> : <Spinner className="size-4 text-muted-foreground" />}
             {ready ? "Ready. Hang tight…" : LOAD_PHASES[load.phase]}
           </p>
         </div>
-        <p className="nk-display nk-num leading-none">
-          {pct}
-          <span className="text-xl text-muted-foreground">%</span>
-        </p>
+        {/* the number is the point: display size in the identity's numeric face */}
+        <Stat size="display" align="end" label="Loaded" value={pct} meta="%" />
       </div>
       <Meter aria-label="Loading" value={pct} tone="foreground" size="sm" />
       <div className="nk-label flex h-4 items-center justify-between gap-6 font-normal">

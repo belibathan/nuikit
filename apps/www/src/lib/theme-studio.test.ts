@@ -1,7 +1,7 @@
 import { compileTheme } from "nuikit-core";
 import { describe, expect, it } from "vitest";
-import { themes } from "@/themes";
-import { exportThemeCss, studioTheme, toHex, withAlpha } from "./theme-studio";
+import { identities, themes } from "@/themes";
+import { exportThemeCss, fontChoice, identityValue, IDENTITY, studioTheme, toHex, withAlpha } from "./theme-studio";
 
 /** Warnings about contrast and about the paste itself, minus wording that depends on the input form. */
 const roundTrip = (css: string) => {
@@ -67,6 +67,61 @@ describe("theme studio: tweaks", () => {
     expect(withAlpha("#ff0000", "rgb(0, 0, 0)")).toBe("#ff0000");
     expect(toHex("rgb(229, 229, 229)")).toBe("#e5e5e5");
     expect(toHex(undefined)).toBe("#000000");
+  });
+});
+
+describe("theme studio: identities (tokens 1.2)", () => {
+  it("reads the four identities with no warnings, each a different identity", () => {
+    const seen = new Set<string>();
+    for (const t of identities) {
+      const theme = studioTheme(t.css);
+      expect(theme.warnings, t.name).toEqual([]);
+      const key = [theme.vars["font-display"], theme.vars["nk-cut"], theme.vars["nk-row-indicator"], theme.vars["nk-motion-feel"], theme.vars["nk-density"]].join("|");
+      expect(seen.has(key), t.name).toBe(false);
+      seen.add(key);
+    }
+  });
+
+  it("round-trips every identity through theme.css: same tokens (identity, derived and motion), no new warnings", () => {
+    for (const t of identities) {
+      const { first, again } = roundTrip(t.css);
+      expect(again.vars, t.name).toEqual(first.vars);
+      expect(again.warnings, t.name).toEqual([]);
+      expect(again.revision, t.name).toBe(first.revision);
+    }
+  });
+
+  it("an identity tweak re-derives what hangs off it (the motion ladder, the clip path, the row flags)", () => {
+    const base = studioTheme(identities[0]!.css);
+    const t = studioTheme(identities[0]!.css, { "nk-duration": "240ms", "nk-cut": "0.5rem", "nk-row-indicator": "fill", "nk-elevation": "deep" });
+    expect(t.vars["nk-time-base"]).toBe("240ms");
+    expect(t.vars["nk-time-base"]).not.toBe(base.vars["nk-time-base"]);
+    expect(t.vars["nk-clip"]).not.toBe("none");
+    expect(base.vars["nk-clip"]).toBe("none");
+    expect(t.vars["nk-row-fill"]).toBe("1");
+    expect(t.vars["nk-row-bar"]).toBe("0");
+    expect(t.vars["nk-elevation-shadow"]).not.toBe(base.vars["nk-elevation-shadow"]);
+    // and the file compiles back to the same thing
+    expect(compileTheme(exportThemeCss(t), { mode: "dark" }).vars).toEqual(t.vars);
+  });
+
+  it("warns on the floors a control can cross (surface opacity, duration)", () => {
+    const t = studioTheme(identities[0]!.css, { "nk-surface-opacity": "0.8", "nk-duration": "400ms" });
+    expect(t.warnings.some((w) => w.includes("nk-surface-opacity"))).toBe(true);
+    expect(t.warnings.some((w) => w.includes("nk-duration"))).toBe(true);
+  });
+
+  it("every identity control names a real token with a value in every identity", () => {
+    const compiled = identities.map((i) => studioTheme(i.css));
+    for (const g of IDENTITY) for (const c of g.controls) for (const t of compiled) expect(t.vars[c.name], `${c.name} in ${t.hash}`).toBeDefined();
+  });
+
+  it("formats range values with their unit and finds the bundled font behind a stack", () => {
+    expect(identityValue({ name: "nk-cut", label: "", kind: "range", min: 0, max: 1, step: 0.125, unit: "rem" }, 0.75)).toBe("0.75rem");
+    expect(identityValue({ name: "nk-duration", label: "", kind: "range", min: 60, max: 400, step: 10, unit: "ms" }, 140)).toBe("140ms");
+    expect(identityValue({ name: "nk-density", label: "", kind: "range", min: 0.75, max: 1.3, step: 0.025 }, 1)).toBe("1");
+    expect(fontChoice('"Barlow Condensed", Barlow, sans-serif')).toContain("Barlow Condensed");
+    expect(fontChoice("Comic Sans, cursive")).toBeNull();
   });
 });
 

@@ -15,11 +15,12 @@ import {
 } from "lucide-react"
 
 import { cn } from "@/lib/utils"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Confirm } from "@/components/ui/confirm"
 import { MenuRow } from "@/components/ui/menu-row"
 import { Meter } from "@/components/ui/meter"
-import { Panel, PanelBody, PanelFooter, PanelHeader } from "@/components/ui/panel"
+import { Money } from "@/components/ui/money"
+import { Panel, PanelBody } from "@/components/ui/panel"
+import { PlayerCard, initials } from "@/components/ui/player-card"
 import { Separator } from "@/components/ui/separator"
 import { Stat } from "@/components/ui/stat"
 
@@ -29,7 +30,7 @@ import type { PauseMenuAction, PauseMenuData } from "./nui"
  * PauseMenu — Esc opens this in place of GTA's pause menu: the server and the actions on a rail at
  * the left, the player and the server on cards at the right, the game blurred behind. Map, Settings
  * and Key bindings hand over to the game's own pages; Disconnect asks first. Built from the kit:
- * MenuRow, Panel, Stat, Meter, Confirm, with stock shadcn Avatar and Separator.
+ * MenuRow, PlayerCard, Panel, Stat, Money, Meter, Confirm, with stock shadcn Separator.
  *
  *   <PauseMenuSurface />                                  // wired: nk.surface('pause', …) in Lua opens it
  *   <PauseMenu data={data} player={player} />             // a still, for previews
@@ -65,8 +66,6 @@ const ACTIONS: Record<Exclude<PauseMenuAction, "disconnect">, { label: string; i
   keybinds: { label: "Key bindings", icon: KeyboardIcon },
 }
 
-const money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 })
-
 /** 45 min, 3 h 12 min, 2 d 4 h */
 function pauseDuration(seconds: number | undefined) {
   if (seconds === undefined || !Number.isFinite(seconds) || seconds < 0) return "—"
@@ -77,11 +76,8 @@ function pauseDuration(seconds: number | undefined) {
   return `${Math.floor(h / 24)} d ${h % 24} h`
 }
 
-/** "Alex Mercer" → "AM" */
-function pauseInitials(name: string) {
-  const parts = name.trim().split(/\s+/).filter(Boolean)
-  return ((parts[0]?.[0] ?? "?") + (parts.length > 1 ? parts[parts.length - 1]![0] : "")).toUpperCase()
-}
+/** "Alex Mercer" → "AM". The kit's player-card `initials`, kept under its old name. */
+const pauseInitials = initials
 
 // Lua turns an empty table into {} instead of [].
 const list = <T,>(v: T[] | undefined): T[] => (Array.isArray(v) ? v : [])
@@ -146,8 +142,9 @@ function PauseMenu({
               </div>
             ) : null}
             <div className="min-w-0">
-              <h1 className="truncate text-xl leading-7 font-semibold tracking-tight">{server.name || "Paused"}</h1>
-              {server.tagline ? <p className="truncate text-sm text-muted-foreground">{server.tagline}</p> : null}
+              {/* the pause title: one of the screen's display moments (the identity's display face) */}
+              <h1 className="nk-display truncate [--nk-display-size:var(--nk-text-section)]">{server.name || "Paused"}</h1>
+              {server.tagline ? <p className="nk-label truncate">{server.tagline}</p> : null}
             </div>
           </header>
 
@@ -172,11 +169,11 @@ function PauseMenu({
             )}
           </nav>
 
-          <dl className="mt-auto flex flex-col gap-2 text-sm">
+          <dl className="mt-auto flex flex-col gap-2">
             {list(data?.links).map((l) => (
               <div key={l.label} className="flex items-baseline justify-between gap-4">
-                <dt className="text-muted-foreground">{l.label}</dt>
-                <dd className="truncate font-medium">{l.value}</dd>
+                <dt className="nk-caption">{l.label}</dt>
+                <dd className="truncate text-sm font-medium">{l.value}</dd>
               </div>
             ))}
           </dl>
@@ -215,49 +212,36 @@ function PausePlayerCard({ player, data }: { player: NuiPlayer; data: PauseMenuD
   const showMoney = player.loaded && (player.cash !== undefined || player.bank !== undefined)
   const { players, maxPlayers: max } = data ?? {}
 
+  // The kit's PlayerCard: avatar or initials, name, job and grade, the duty dot and words, and the
+  // money as stats. The server's numbers (players online, your server ID) go under them.
   return (
-    <Panel>
-      <PanelHeader
-        icon={
-          <Avatar className="size-10">
-            <AvatarFallback className="bg-muted text-sm font-semibold text-foreground">{pauseInitials(name)}</AvatarFallback>
-          </Avatar>
-        }
-        title={name}
-        description={
-          <span className="flex items-center gap-1.5">
-            <span className="truncate">{role}</span>
-            {job?.onDuty !== undefined && (
-              <span
-                className={cn("size-1.5 shrink-0 rounded-full", job.onDuty ? "bg-primary" : "bg-muted-foreground/50")}
-                aria-label={job.onDuty ? "On duty" : "Off duty"}
-              />
-            )}
-          </span>
-        }
-      />
-      {showMoney && (
-        <PanelBody variant="form" className="grid grid-cols-2">
-          <Stat icon={<WalletIcon />} label="Cash" value={player.cash !== undefined ? money.format(player.cash) : "—"} />
-          <Stat icon={<LandmarkIcon />} label="Bank" value={player.bank !== undefined ? money.format(player.bank) : "—"} />
-        </PanelBody>
-      )}
-      <PanelFooter className="flex-col items-stretch gap-3">
-        {players !== undefined && max ? (
-          <Meter icon={<UsersIcon />} label="Players online" value={players} max={max} valueText={`${players} / ${max}`} size="sm" />
-        ) : (
-          <div className="flex items-center gap-1.5">
-            <UsersIcon className="size-4 text-muted-foreground" />
-            <span className="nk-label flex-1">Players online</span>
-            <span className="nk-num text-xs font-medium">{players ?? "—"}</span>
+    <PlayerCard
+      name={name}
+      job={job ? (job.label ?? job.name) : role}
+      grade={job?.gradeLabel}
+      onDuty={job?.onDuty}
+      stats={
+        showMoney
+          ? [
+              { label: "Cash", icon: <WalletIcon />, value: player.cash !== undefined ? <Money amount={player.cash} /> : "—" },
+              { label: "Bank", icon: <LandmarkIcon />, value: player.bank !== undefined ? <Money amount={player.bank} /> : "—" },
+            ]
+          : []
+      }
+      actions={
+        <div className="flex w-full flex-col gap-3">
+          {players !== undefined && max ? (
+            <Meter icon={<UsersIcon />} label="Players online" value={players} max={max} valueText={`${players} / ${max}`} size="sm" />
+          ) : (
+            <Stat size="sm" icon={<UsersIcon />} label="Players online" value={players ?? "—"} />
+          )}
+          <div className="flex items-center justify-between">
+            <span className="nk-caption">Server ID</span>
+            <span className="nk-num text-sm font-medium">{data?.serverId ?? "—"}</span>
           </div>
-        )}
-        <div className="flex items-center justify-between">
-          <span className="nk-label">Server ID</span>
-          <span className="nk-num text-xs font-medium">{data?.serverId ?? "—"}</span>
         </div>
-      </PanelFooter>
-    </Panel>
+      }
+    />
   )
 }
 

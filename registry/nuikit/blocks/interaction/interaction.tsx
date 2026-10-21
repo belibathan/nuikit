@@ -24,8 +24,10 @@ import {
 } from "lucide-react"
 
 import { cn } from "@/lib/utils"
+import { HudChip } from "@/components/ui/hud-chip"
 import { KeyPrompt, KeyPromptStack, keyPromptPosition } from "@/components/ui/key-prompt"
 import { MenuRow } from "@/components/ui/menu-row"
+import { Panel, PanelBody } from "@/components/ui/panel"
 import { Spinner } from "@/components/ui/spinner"
 
 import type { InteractionAnswer, InteractionIcon, PromptsData, TargetData } from "./nui"
@@ -33,8 +35,8 @@ import type { InteractionAnswer, InteractionIcon, PromptsData, TargetData } from
 /**
  * Interaction — how the player uses the world: the target eye at the centre of the screen with
  * the options of whatever they aim at, and "[E] Open the fridge" key prompts near things. Lua does
- * the raycast, reads the keys and decides; the page draws. Built from the kit: MenuRow, KeyPrompt
- * (and its stack), Spinner.
+ * the raycast, reads the keys and decides; the page draws. Built from the kit: Panel, MenuRow,
+ * KeyPrompt (and its stack), HudChip, Spinner.
  *
  *   <InteractionSurface />                          // wired: nk.surface('target' | 'prompts', …) in Lua
  *   <Target data={data} onSelect={…} />             // stills, or your own wiring
@@ -160,7 +162,8 @@ function Target({
         data-slot="interaction-eye"
         aria-hidden
         className={cn(
-          "nk-hud nk-shadow flex size-10 items-center justify-center rounded-full transition-colors [&_svg]:size-5",
+          // a Lua-driven state (live): it changes on the kit's base time, never Tailwind's default
+          "nk-hud nk-shadow flex size-10 items-center justify-center rounded-full transition-colors duration-(--nk-time) [&_svg]:size-5",
           live ? "text-primary" : "opacity-60"
         )}
       >
@@ -168,14 +171,9 @@ function Target({
       </div>
       {live ? (
         <div className="justify-self-start pl-4">
-          <div
-            ref={rows}
-            role="menu"
-            aria-label={data.label ?? "Options"}
-            onKeyDown={onKeyDown}
-            className={cn("nk-panel nk-enter w-72 p-1.5", !data.picking && "pointer-events-none")}
-          >
-            {data.label && <p className="nk-label truncate px-2.5 pt-1 pb-1.5">{data.label}</p>}
+          <Panel size="sm" className={cn(!data.picking && "pointer-events-none")}>
+            <PanelBody ref={rows} role="menu" aria-label={data.label ?? "Options"} onKeyDown={onKeyDown}>
+            {data.label && <p className="nk-caption truncate px-2.5 pt-1 pb-1.5">{data.label}</p>}
             {options.map((o, i) => (
               <MenuRow
                 key={o.id}
@@ -191,12 +189,13 @@ function Target({
               </MenuRow>
             ))}
             {error && (
-              <p role="alert" className="px-2.5 pt-1.5 pb-1 text-xs text-destructive">
+              <p role="alert" className="nk-label px-2.5 pt-1.5 pb-1 text-destructive">
                 {error}
               </p>
             )}
-          </div>
-          {data.hint && <p className="nk-hud mt-2 inline-block rounded-md px-2 py-1 text-xs opacity-80">{data.hint}</p>}
+            </PanelBody>
+          </Panel>
+          {data.hint && <HudChip className="mt-2 opacity-80">{data.hint}</HudChip>}
         </div>
       ) : (
         <div />
