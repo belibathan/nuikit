@@ -111,10 +111,12 @@ export function calm(opts: CalmOptions, show: (value: number, dir: 1 | -1) => vo
     if (smooth === null) return;
     settle(performance.now());
     // still catching up with the last value: look again in a moment
-    if (tau > 0 && Math.abs(diff(lastRaw, smooth)) > 0.3) timer = setTimeout(flush, every);
+    const settled = tau <= 0 || Math.abs(diff(lastRaw, smooth)) <= 0.3;
+    if (!settled) timer = setTimeout(flush, every);
     const v = Math.round(angle ? ((smooth % 360) + 360) % 360 : smooth);
-    // hysteresis: the smoothed value must have moved most of a step past what is shown
-    if (shown !== null && (v === shown || Math.abs(diff(smooth, shown)) < step * 0.9)) return;
+    // hysteresis while it moves: the smoothed value must have moved most of a step past what is shown;
+    // at rest the true value shows
+    if (shown !== null && (v === shown || (!settled && Math.abs(diff(smooth, shown)) < step * 0.9))) return;
     const dir: 1 | -1 = shown === null || diff(v, shown) >= 0 ? 1 : -1;
     shown = v;
     lastAt = performance.now();
