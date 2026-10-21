@@ -41,7 +41,7 @@ export function Stage({ active }: { active: boolean }) {
   return (
     <div
       ref={ref}
-      className={cn("relative my-6 min-w-0 flex-1", active && "cursor-grab active:cursor-grabbing")}
+      className={cn("relative mx-12 my-12 min-w-0 flex-1", active && "cursor-grab active:cursor-grabbing")}
       onPointerDown={(e) => {
         if (!active || e.button !== 0) return;
         drag.current = e.clientX;
@@ -55,11 +55,12 @@ export function Stage({ active }: { active: boolean }) {
       onPointerUp={() => (drag.current = null)}
       onPointerCancel={() => (drag.current = null)}
     >
-      {active && (
-        <div className="nk-anchor-b [--nk-edge:0rem]">
-          <HudChip icon={<MoveHorizontalIcon />}>Drag to look around</HudChip>
-        </div>
-      )}
+      <div data-slot="pause-hints" className="nk-anchor-b flex items-center gap-2 [--nk-edge:0rem]">
+        <HudChip icon={<Kbd>Tab</Kbd>}>Choose</HudChip>
+        <HudChip icon={<Kbd>Enter</Kbd>}>Confirm</HudChip>
+        <HudChip icon={<Kbd>Esc</Kbd>}>Resume</HudChip>
+        {active && <HudChip icon={<MoveHorizontalIcon />}>Drag to look around</HudChip>}
+      </div>
     </div>
   );
 }
@@ -72,7 +73,7 @@ export function PlayerSummary({ player, data }: { player: NuiPlayer; data: Pause
   const showMoney = player.loaded && (player.cash !== undefined || player.bank !== undefined);
 
   return (
-    <section data-slot="pause-player" aria-label="Your character" className="flex flex-col gap-4 px-4 py-4">
+    <section data-slot="pause-player" aria-label="Your character" className="my-8 flex flex-col gap-4 border-y border-border py-6">
       <div className="flex items-center gap-3">
         <Avatar className="size-10">
           <AvatarFallback className="bg-muted text-sm font-semibold text-foreground">{initials(name)}</AvatarFallback>
@@ -113,7 +114,7 @@ export function ServerSummary({ data }: { data: PauseData }) {
   const links = list(data?.links);
 
   return (
-    <section data-slot="pause-server" aria-label="Server" className="nk-panel-footer flex-col items-stretch gap-4 py-4">
+    <section data-slot="pause-server" aria-label="Server" className="flex flex-col gap-4 border-t border-border pt-6">
       {players !== undefined && max ? (
         <Meter icon={<UsersIcon />} label="Players online" value={players} max={max} valueText={`${players} / ${max}`} size="sm" tone="foreground" />
       ) : (

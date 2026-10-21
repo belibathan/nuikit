@@ -4,8 +4,9 @@
  * blurs other NUI. It stays here so the browser preview matches. Loaded after index.css; colours are theme tokens only,
  * opacity is applied with `opacity` (not color-mix) so FiveM's Chromium 103 renders it as written.
  *
- * The layout: one solid sheet on the left (nk-panel: the theme's surface, border, radius or cut and
- * elevation), full height inside the 24px edge; everything right of it is left open for the game.
+ * The layout: one backdrop on the left in the theme's surface, flush to the top, left and bottom
+ * edges (no radius or cut there: they would only show on the open edge), a crisp hairline on its
+ * right edge; the menu sits in a column inside it. Everything right of it is left open for the game.
  */
 
 /* Without the focus camera (a sub-view, or the 0.4 menu): an even shade over the world, no side gradient. */
@@ -16,14 +17,14 @@
   backdrop-filter: blur(16px) saturate(1.15);
 }
 
-/* The server's name: the sheet's one big line (the section size of the type scale). */
-.pause-brand {
-  font-family: var(--nk-heading-font);
-  font-size: var(--nk-text-section);
-  font-weight: var(--nk-heading-weight);
-  line-height: 1.15;
-  letter-spacing: var(--nk-heading-tracking);
-  text-transform: var(--nk-heading-case);
+/* The backdrop: the panel surface, a touch deeper at the screen edge (tokens only), and its right edge. */
+.pause-backdrop {
+  position: relative;
+  color: var(--nk-panel-fg);
+  background-color: var(--nk-panel-bg);
+  background-image: linear-gradient(90deg, rgba(var(--scrim-rgb), 0.22) 0%, rgba(var(--scrim-rgb), 0) 70%);
+  border-right: var(--nk-border) solid var(--nk-panel-border);
+  box-shadow: var(--nk-panel-shadow);
 }
 .pause-logo {
   border-radius: var(--nk-key-radius);
@@ -44,11 +45,13 @@
 }
 
 .pause-scrim { animation: pause-fade 180ms ease-out both; }
-.pause-sheet { animation: pause-slide calc(320ms * var(--nk-motion, 1)) cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+/* the surface fades; only the content moves */
+.pause-backdrop { animation: pause-fade calc(220ms * var(--nk-motion, 1)) ease-out both; }
+.pause-column { animation: pause-slide calc(320ms * var(--nk-motion, 1)) cubic-bezier(0.2, 0.8, 0.2, 1) both; }
 .pause-side > * { animation: pause-fade calc(180ms * var(--nk-motion, 1)) ease-out both; }
 
 @media (prefers-reduced-motion: reduce) {
-  .pause-scrim, .pause-sheet, .pause-side > * { animation: none; }
+  .pause-scrim, .pause-backdrop, .pause-column, .pause-side > * { animation: none; }
 }
 
 /*
