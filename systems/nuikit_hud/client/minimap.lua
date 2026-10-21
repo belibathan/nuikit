@@ -14,9 +14,17 @@
 -- about two thirds of the frame. nuikit draws its own once (a runtime texture: fully opaque for the
 -- square, an antialiased disc for the circle) and puts it in place of GTA's with AddReplaceTexture.
 -- Every pixel has the same value in all four channels, so the channel order SetRuntimeTexturePixel
--- uses can't matter. Calibrated in game (b3258, 2558x1360): the texture alone shapes the radar
--- (SetMinimapClipType 1 with an opaque texture is still square), and the minimap_mask component's
--- placement has no visible effect. A disc on a box that is square in pixels is round on every screen.
+-- uses can't matter. Calibrated in game (b3258, 2558x1360): the texture alone shapes the radar's
+-- tiles (SetMinimapClipType 1 with an opaque texture is still square).
+--
+-- The box keeps GTA's own aspect. GTA draws the same view of the world into whatever box it gets, so a
+-- square box squeezed the map about 29% sideways (0.7.0 test, design note A). The radar's box is
+-- GTA's stock 1.41:1 (Minimap.ASPECT) with its height the hole's, and the mask draws the disc or the
+-- square only in its middle: the sides are transparent, so what shows is exactly the hole.
+--
+-- minimap_mask is placed in absolute component units over the hole, like the radar (as minimap
+-- scripts do: they offset all three components alike). At (0, 0) it sat in the screen's bottom-left
+-- corner, away from a top-right ring, and the GPS route wasn't drawn inside the ring (0.7.0 test, 7b).
 
 Minimap = {}
 
@@ -50,7 +58,19 @@ function Minimap.options()
   return o
 end
 
-local MASK_TXD = 'nuikit_minimap'
+-- A new name on every start: after a live restart a txd with the old name could still be held by
+-- GTA, and the mask resolved to nothing (an empty ring until the pause map was opened; 0.7.0 test, F2).
+local MASK_TXD = ('nuikit_minimap_%d'):format(GetGameTimer())
+
+--- GTA's stock radar box, width over height on screen: 0.150 of a 16:9 width by 0.188888 of the
+--- height (frontend.xml), about 1.41. GTA draws the same view into any box, so the box keeps it.
+Minimap.ASPECT = (Layout.STOCK.minimap[3] * 16.0 / 9.0) / Layout.STOCK.minimap[4]
+
+--- The box's aspect: GTA's (Config.minimap.aspect overrides it; 1 is the square box of 0.7.0-next).
+function Minimap.aspect()
+  local a = tonumber(cfg.aspect)
+  return (a and a >= 1.0 and a <= 3.0) and a or Minimap.ASPECT
+end
 local tune = {}            -- debug overrides (Config.debug only): raw mask placement
 
 -- ───────────────────────────────── style: nuikit places the radar ('ring'), or leaves it ('stock')
@@ -94,27 +114,38 @@ function Minimap.style()
   return 'ring'
 end
 
---- The mask's opacity (0-255) at pixel x, y of a size x size texture: opaque for the square, a disc
---- with a one-pixel soft edge for the circle. Pure, so it can be tested.
-function Minimap.maskPixel(shape, size, x, y)
-  if shape ~= 'circle' then return 255 end
-  local c = (size - 1) / 2.0
-  local d = math.sqrt((x - c) ^ 2 + (y - c) ^ 2)
-  return math.floor(clamp(size / 2.0 - d, 0.0, 1.0) * 255 + 0.5)
+--- The mask's opacity (0-255) at pixel x, y of a w x h texture stretched over a box `aspect` times
+--- wider than it is high: the middle h x h square on screen is the hole (a disc for the circle, all of
+--- it for the square), with a one-pixel soft edge; the sides are transparent. Pure, so it can be tested.
+function Minimap.maskPixel(shape, w, h, x, y, aspect)
+  aspect = aspect or Minimap.ASPECT
+  -- the pixel's centre from the hole's centre, in the hole's pixels (a texel spans about one)
+  local px = ((x + 0.5) / w - 0.5) * h * aspect
+  local py = (y + 0.5) - h / 2.0
+  local inside
+  if shape == 'circle' then
+    inside = h / 2.0 - math.sqrt(px * px + py * py)
+  else
+    inside = h / 2.0 - math.abs(px)
+  end
+  return math.floor(clamp(inside + 0.5, 0.0, 1.0) * 255 + 0.5)
 end
 
 local masks = {}
---- Draw the mask for a shape once, and put it in place of GTA's radarmasksm.
+--- Draw the mask for a shape once (per aspect), and put it in place of GTA's radarmasksm.
 local function useMask(shape)
-  local name = shape == 'circle' and 'circle' or 'square'
+  local aspect = Minimap.aspect()
+  local kind = shape == 'circle' and 'circle' or 'square'
+  local name = ('%s_%d'):format(kind, math.floor(aspect * 1000 + 0.5))
   if not masks[name] then
     local txd = masks.txd or CreateRuntimeTxd(MASK_TXD)
     masks.txd = txd
-    local size = name == 'circle' and 128 or 8
-    local tex = CreateRuntimeTexture(txd, name, size, size)
-    for y = 0, size - 1 do
-      for x = 0, size - 1 do
-        local a = Minimap.maskPixel(name, size, x, y)
+    local h = kind == 'circle' and 128 or 32
+    local w = math.floor(h * aspect + 0.5)
+    local tex = CreateRuntimeTexture(txd, name, w, h)
+    for y = 0, h - 1 do
+      for x = 0, w - 1 do
+        local a = Minimap.maskPixel(kind, w, h, x, y, aspect)
         SetRuntimeTexturePixel(tex, x, y, a, a, a, a)
       end
     end
@@ -125,18 +156,18 @@ local function useMask(shape)
   AddReplaceTexture('platform:/textures/graphics', 'radarmasksm', MASK_TXD, name)
 end
 
---- Where minimap_mask goes for a radar placed at x, y, w, h (component units): relative to the
---- radar, at its size. In game its placement made no visible difference (see the top of this file);
---- it is set anyway so the stock values never apply.
+--- Where minimap_mask goes (component units): over the hole, in the same absolute units as the radar.
+--- `hole` is the hole's x, y, w, h from Minimap.component.
 function Minimap.maskComponent(x, y, w, h)
   if tune.mask then return table.unpack(tune.mask) end
-  return 0.0, 0.0, w, h
+  return x, y, w, h
 end
 
 --- The kit's rem in pixels for a screen height (1rem = 1.4815% of the height, 12–32px).
 local function rem(height) return clamp(height * 0.014815, 12.0, 32.0) end
 
---- The frame's rectangle in screen pixels, its band width, and the radar box inside it.
+--- The frame's rectangle in screen pixels, its band width, the hole (where the radar shows) and the
+--- radar's box: the hole's height, Minimap.aspect() times as wide, centred on it.
 --- Pure maths, so it can be tested: width, height and safe zone (0.8–1.0) in, numbers out. `area` is
 --- the HUD area (Layout.measure); without it, the 0.5.0 rule (Layout.stage).
 function Minimap.layout(width, height, safezone, area)
@@ -155,7 +186,9 @@ function Minimap.layout(width, height, safezone, area)
   -- game's rounding never leaves a gap
   local inset = (o.shape == 'circle') and band * 0.5 or band - 0.5
   local radar = { x = x + inset, y = y + inset, w = size - 2.0 * inset, h = size - 2.0 * inset }
-  return frame, band, radar
+  local bw = radar.h * Minimap.aspect()
+  local box = { x = radar.x - (bw - radar.w) / 2.0, y = radar.y, w = bw, h = radar.h }
+  return frame, band, radar, box
 end
 
 --- GTA's rule for SetMinimapComponentPosition('L', 'B', x, y, w, h): x and w from the HUD area's
@@ -169,14 +202,25 @@ function Minimap.component(box, width, height, safezone, area)
   return (box.x - area.left) / unitW, (box.y + box.h - area.bottom) / area.unitH, box.w / unitW, box.h / area.unitH
 end
 
-local function place(box, width, height, safezone, area)
+local function place(box, hole, width, height, safezone, area)
   local x, y, w, h = Minimap.component(box, width, height, safezone, area)
   SetMinimapComponentPosition('minimap', 'L', 'B', x, y, w, h)
   SetMinimapComponentPosition('minimap_blur', 'L', 'B', x, y, w, h)
-  local mx, my, mw, mh = Minimap.maskComponent(x, y, w, h)
+  local mx, my, mw, mh = Minimap.maskComponent(Minimap.component(hole, width, height, safezone, area))
   SetMinimapComponentPosition('minimap_mask', 'L', 'B', mx, my, mw, mh)
   return x, y, w, h, mx, my, mw, mh
 end
+
+--- GTA re-reads the component positions when the radar changes mode: flick the big map, and make
+--- sure it ends off (one left on hides the frame and fills the corner with the big radar).
+local function reread()
+  SetRadarBigmapEnabled(true, false)
+  Wait(50)
+  SetRadarBigmapEnabled(false, false)
+  Wait(250)
+  if IsBigmapActive() then SetRadarBigmapEnabled(false, false) end
+end
+local stale = false -- placed while the radar was hidden: re-read once it shows
 
 --- Put the radar where the frame is and tell the page. Runs at start and whenever the screen size
 --- or safe zone changes.
@@ -185,21 +229,20 @@ function Minimap.apply()
   if not width or width <= 0 or height <= 0 then return end
   local safezone = GetSafeZoneSize()
   local area = Layout.measure(width, height, safezone)
-  local frame, band, radar = Minimap.layout(width, height, safezone, area)
+  local frame, band, radar, box = Minimap.layout(width, height, safezone, area)
   local o = Minimap.options()
   -- the texture shapes the radar; the round clip type keeps edge blips on the circle
   SetMinimapClipType(tune.clip or (o.shape == 'circle' and 1 or 0))
   useMask(tune.texture or o.shape)
-  local x, y, w, h, mx, my, mw, mh = place(radar, width, height, safezone, area)
+  local x, y, w, h, mx, my, mw, mh = place(box, radar, width, height, safezone, area)
   placedByUs = true
+  -- the nuikit resource puts GTA's radar back if this one stops (it can wait for the re-read; a
+  -- stopping resource can't, so its own restore never took: 0.7.0 test, F3)
+  TriggerEvent('nuikit:minimap:placed')
   if cfg.compass ~= false then SetBlipAlpha(GetNorthRadarBlip(), 0) end
-  -- GTA only re-reads component positions when the radar changes mode: flick the big map. Make
-  -- sure it ends off: one left on hides the frame and fills the corner with the big radar.
-  SetRadarBigmapEnabled(true, false)
-  Wait(50)
-  SetRadarBigmapEnabled(false, false)
-  Wait(250)
-  if IsBigmapActive() then SetRadarBigmapEnabled(false, false) end
+  -- a hidden radar (on foot with radar = 'vehicle') may not re-read: do it again when it shows
+  stale = IsRadarHidden()
+  reread()
   if not scaleform then scaleform = RequestScaleformMovie('minimap') end
   placed = {
     x = frame.x / width, y = frame.y / height, w = frame.w / width, h = frame.h / height,
@@ -207,13 +250,13 @@ function Minimap.apply()
   }
   NUI.send('hud:minimap:frame', placed)
   if Config.debug then
-    print(('[nuikit_hud] minimap: %dx%d safezone %.2f, frame %.0f,%.0f %.0fpx, radar %.0f,%.0f %.0fx%.0fpx'):format(
-      width, height, safezone, frame.x, frame.y, frame.w, radar.x, radar.y, radar.w, radar.h))
+    print(('[nuikit_hud] minimap: %dx%d safezone %.2f, frame %.0f,%.0f %.0fpx, hole %.0f,%.0f %.0fx%.0fpx, radar box %.0fx%.0fpx (%.3f:1)'):format(
+      width, height, safezone, frame.x, frame.y, frame.w, radar.x, radar.y, radar.w, radar.h, box.w, box.h, box.w / box.h))
     print(('[nuikit_hud] minimap: radar %.4f %.4f %.4f %.4f, mask %.4f %.4f %.4f %.4f (%s)'):format(
       x, y, w, h, mx, my, mw, mh, o.shape))
-    -- the check from the in-game test: the radar's width on screen must equal the hole's
-    print(('[nuikit_hud] minimap: %.2f:1, radar %.4f x %.0f (16:9 unit) = %.1f px for a %.1f px hole'):format(
-      width / height, w, Layout.unit16(height), w * Layout.unit16(height), radar.w))
+    -- the check from the in-game test: the radar's visible middle on screen must equal the hole
+    print(('[nuikit_hud] minimap: %.2f:1, radar %.4f x %.0f (16:9 unit) / %.3f = %.1f px for a %.1f px hole'):format(
+      width / height, w, Layout.unit16(height), Minimap.aspect(), w * Layout.unit16(height) / Minimap.aspect(), radar.w))
   end
 end
 
@@ -245,6 +288,10 @@ function Minimap.tick(radarOn)
   local key = tostring(visible)
   if key ~= lastKey then
     lastKey = key
+    if visible and stale then
+      stale = false
+      CreateThread(reread)
+    end
     -- `heading` is where the compass starts; then it follows hud:minimap:heading
     NUI.send('hud:minimap', { visible = visible, heading = Minimap.cameraHeading() })
   end
@@ -286,6 +333,9 @@ function Minimap.applyStock()
   local area = Layout.current
   if not area then return end
   if placedByUs or not Minimap.yielding() then
+    -- put back by this resource (it keeps running): the nuikit resource has nothing to restore on a
+    -- later stop. Not sent from the stop handler, which would cancel that restore.
+    TriggerEvent('nuikit:minimap:released')
     Minimap.restore(true)
     placedByUs = false
   end

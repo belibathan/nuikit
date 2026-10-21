@@ -42,21 +42,33 @@ local function load()
 end
 
 local prefs = load()
-local theme = GlobalState.nuikitTheme
+local theme = nil -- the last GlobalState.nuikitTheme seen (state bag handler, or read when asked)
+
+--- The server's compiled theme, read when a page asks: at this script's start GlobalState may not
+--- have replicated yet, and the change handler only fires for later changes (0.7.0 test, F4).
+local function compiled()
+  if type(theme) == 'table' and theme.vars then return theme end
+  local value = GlobalState.nuikitTheme
+  if type(value) == 'table' and value.vars then theme = value end
+  return type(theme) == 'table' and theme.vars and theme or nil
+end
 
 -- ───────────────────────────────── theme for override pages (long-poll)
 
 local function hash()
-  local t = type(theme) == 'table' and theme.hash or 'css'
+  local c = compiled()
+  local t = c and c.hash or 'css'
   return ('%s:%s:%s:%s'):format(t, prefs.scale, prefs.reducedMotion and 1 or 0, prefs.highContrast and 1 or 0)
 end
 
 local function payload()
   local p = { hash = hash(), prefs = prefs }
-  if type(theme) == 'table' and theme.vars then
-    p.theme = theme
+  local c = compiled()
+  if c then
+    p.theme = c
   else
-    -- server couldn't compile (or an older server script): the page compiles theme.css itself
+    -- server couldn't compile (or an older server script): the page compiles theme.css itself.
+    -- This is the client's copy from when nuikit started, so it can be older than the server's file.
     p.css = LoadResourceFile(GetCurrentResourceName(), 'theme.css')
   end
   return p
@@ -160,6 +172,48 @@ RegisterCommand('nuikit', function(_, args)
     say('/nuikit scale 0.85–1.25 · /nuikit motion on|off · /nuikit contrast on|off · /nuikit reset')
   end
 end, false)
+
+-- ───────────────────────────────── GTA's radar, after the HUD that placed it stops
+
+-- A HUD that moves GTA's radar (nuikit_hud's ring) says so with `nuikit:minimap:placed`. When it
+-- stops, this resource puts the radar back: a stopping resource can't wait for GTA to re-read the
+-- positions, so its own restore never took (0.7.0 test, F3: the radar stayed round, top right).
+-- A restart places it again within the wait, and then nothing is done here.
+local STOCK_RADAR = {
+  minimap = { -0.0045, 0.002, 0.150, 0.188888 },
+  minimap_mask = { 0.020, 0.032, 0.111, 0.159 },
+  minimap_blur = { -0.03, 0.022, 0.266, 0.237 },
+}
+local radarOwner, radarClaims = nil, 0
+
+AddEventHandler('nuikit:minimap:placed', function()
+  radarOwner = GetInvokingResource()
+  radarClaims = radarClaims + 1
+end)
+AddEventHandler('nuikit:minimap:released', function()
+  if GetInvokingResource() == radarOwner then radarOwner = nil end
+end)
+
+AddEventHandler('onClientResourceStop', function(resource)
+  if not radarOwner or resource ~= radarOwner then return end
+  radarOwner = nil
+  local claim = radarClaims
+  CreateThread(function()
+    Wait(1000)
+    if radarClaims ~= claim then return end -- restarted: it placed the radar again
+    for name, v in pairs(STOCK_RADAR) do
+      SetMinimapComponentPosition(name, 'L', 'B', v[1], v[2], v[3], v[4])
+    end
+    SetMinimapClipType(0)
+    RemoveReplaceTexture('platform:/textures/graphics', 'radarmasksm')
+    SetBlipAlpha(GetNorthRadarBlip(), 255)
+    SetRadarBigmapEnabled(true, false)
+    Wait(50)
+    SetRadarBigmapEnabled(false, false)
+    Wait(250)
+    if IsBigmapActive() then SetRadarBigmapEnabled(false, false) end
+  end)
+end)
 
 -- Resources that started before this one asked already; answer them now.
 broadcast()

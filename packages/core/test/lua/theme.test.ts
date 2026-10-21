@@ -173,3 +173,72 @@ describe("theme callback for override pages (systems/nuikit/client.lua)", () => 
     expect(r.css).toBe(".dark { --primary: #ff0000; }");
   });
 });
+
+describe("GTA's radar after the HUD that placed it stops (systems/nuikit/client.lua, 0.7.0 F3)", () => {
+  const radar = `
+    PLACED, CLIP, REPLACED, FLICKS = {}, nil, true, 0
+    function SetMinimapComponentPosition(name, _, _, x, y, w, h) PLACED[name] = { x, y, w, h } end
+    function SetMinimapClipType(t) CLIP = t end
+    function RemoveReplaceTexture() REPLACED = nil end
+    function GetNorthRadarBlip() return 1 end
+    function SetBlipAlpha() end
+    function SetRadarBigmapEnabled() FLICKS = FLICKS + 1 end
+    function IsBigmapActive() return false end
+    function CreateThread(f) f() end
+    function Wait() end
+  `;
+
+  it("puts the stock radar back (with the re-read flick) when the placing resource stops, and only then", async () => {
+    client = await createClient();
+    const nuikit = await client.start("nuikit", { before: started(["nuikit"]) + radar, scripts: [NUIKIT_CLIENT] });
+    const hud = await client.start("nuikit_hud", { before: started(["nuikit"]) });
+    const other = await client.start("other", { before: started(["nuikit"]) });
+    await hud.run(`TriggerEvent('nuikit:minimap:placed')`);
+    client.stop("other");
+    expect(await nuikit.run(`return PLACED.minimap`)).toBe(null);
+    client.stop("nuikit_hud");
+    expect(await nuikit.run(`return PLACED.minimap`)).toEqual([-0.0045, 0.002, 0.15, 0.188888]);
+    expect(await nuikit.run(`return CLIP`)).toBe(0);
+    expect(await nuikit.run(`return REPLACED`)).toBe(null);
+    expect(await nuikit.run(`return FLICKS`)).toBe(2);
+    void other;
+  });
+
+  it("with the real HUD minimap: its own stop handler doesn't cancel the restore", async () => {
+    const HUD = fileURLToPath(new URL("../../../../systems/nuikit_hud/", import.meta.url));
+    client = await createClient({ syncEvents: true });
+    // the HUD's own stop handler runs first (the order FiveM uses across resources isn't specified)
+    const hud = await client.start("nuikit_hud", {
+      before: started(["nuikit"]) + radar + `
+        function GetActiveScreenResolution() return 1920, 1080 end
+        function GetSafeZoneSize() return 1.0 end
+        function RequestScaleformMovie() return 1 end
+        function IsRadarHidden() return false end
+        function GetGameTimer() return 1 end
+        function CreateRuntimeTxd(n) return n end
+        function CreateRuntimeTexture(_, n) return n end
+        function SetRuntimeTexturePixel() end
+        function CommitRuntimeTexture() end
+        function AddReplaceTexture() end
+        CreateThread = function() end
+      `,
+      scripts: [HUD + "config.lua", HUD + "client/layout.lua", HUD + "client/minimap.lua"],
+    });
+    const nuikit = await client.start("nuikit", { before: started(["nuikit"]) + radar, scripts: [NUIKIT_CLIENT] });
+    await hud.run(`Layout.update() Minimap.apply()`);
+    await nuikit.run(`PLACED, FLICKS = {}, 0`);
+    // what FiveM does on a stop: every handler, the stopping resource's own included
+    await hud.run(`TriggerEvent('onClientResourceStop', 'nuikit_hud')`);
+    expect(await nuikit.run(`return PLACED.minimap`)).toEqual([-0.0045, 0.002, 0.15, 0.188888]);
+    expect(await nuikit.run(`return FLICKS`)).toBe(2);
+  });
+
+  it("does nothing when the HUD released the radar itself (style 'stock')", async () => {
+    client = await createClient();
+    const nuikit = await client.start("nuikit", { before: started(["nuikit"]) + radar, scripts: [NUIKIT_CLIENT] });
+    const hud = await client.start("nuikit_hud", { before: started(["nuikit"]) });
+    await hud.run(`TriggerEvent('nuikit:minimap:placed') TriggerEvent('nuikit:minimap:released')`);
+    client.stop("nuikit_hud");
+    expect(await nuikit.run(`return FLICKS`)).toBe(0);
+  });
+});

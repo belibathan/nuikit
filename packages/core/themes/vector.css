@@ -72,5 +72,5 @@
   --nk-meter-radius: 0;
   --nk-chip-radius: 0.125rem;
   --nk-panel-bracket: 0.875rem;
-  --nk-panel-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35), 0 0 2rem -0.75rem oklch(0.86 0.13 190 / 45%);
+  --nk-panel-shadow: 0 0 0 1px rgba(var(--scrim-rgb), 0.35), 0 0 2rem -0.75rem rgba(var(--primary-rgb), 0.45);
 }

@@ -18,6 +18,7 @@ local home = { x = 0.36, y = 0.08, w = 0.28, h = 0.84 } -- what the pause menu l
 local frame = home                                       -- what this run frames into
 local usingHome = true
 local rel = 0.0            -- camera yaw relative to the subject's heading, set when it starts
+local startHeading = 0.0   -- the player's heading when it started (on foot the camera keeps it)
 local angle, goalAngle = 0.0, 0.0
 local reach                -- current camera distance after wall checks (eased)
 local residual             -- start pose minus framed pose: decays to zero, so the camera glides in
@@ -106,7 +107,11 @@ local function target(dt)
   local entity, center, height, span, pitch, kind = Focus.subject()
   local aspect = GetAspectRatio(false)
   local d = Focus.fit(frame, aspect, height, span)
-  local yaw = (GetEntityHeading(entity) + rel + angle) % 360.0
+  -- On foot the yaw comes from the heading at the start, not the live one: in first person GTA turns
+  -- the ped toward the camera, which turned the camera again, and it spun while the menu was open
+  -- (0.7.0 test, F5). A vehicle keeps following (a passenger in a car that turns).
+  local heading = kind == 'vehicle' and GetEntityHeading(entity) or startHeading
+  local yaw = (heading + rel + angle) % 360.0
   local x, y, z = Focus.pose(frame, aspect, center, d, pitch, yaw)
   -- walls: come in at once, go back out gently
   local want = clear(entity, center, x, y, z, d)
@@ -173,7 +178,8 @@ function Focus.start(opts)
   end
   local from, fromRot = GetFinalRenderedCamCoord(), GetFinalRenderedCamRot(2)
   local entity = Focus.subject()
-  rel = (fromRot.z - GetEntityHeading(entity)) % 360.0
+  startHeading = GetEntityHeading(entity)
+  rel = (fromRot.z - startHeading) % 360.0
   angle, goalAngle = 0.0, cfg.angle or 0.0
   reach = nil
   local t = target(0.0)

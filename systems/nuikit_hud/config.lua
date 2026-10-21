@@ -35,6 +35,9 @@ Config = {
     size = nil,              -- the frame, in rem (1rem = 16px at 1080p)
     band = nil,              -- frame thickness, in rem
     anchor = nil,            -- bottom-left, bottom-right, top-left, top-right
+    -- The radar's box, width over height. nil keeps GTA's own (about 1.41), so the map isn't squeezed;
+    -- the mask shows only the middle. 1 is the square box of the 0.7.0 checkpoint (a squeezed map).
+    aspect = nil,
     compass = true,          -- cardinals on the ring (square: N on the frame), heading above (compact)
     location = true,         -- the location under (compact) or above (classic) the map
   },
@@ -82,6 +85,7 @@ Config = {
     seatbelt = 'auto',
     cruise = 'auto',
     bicycles = false,  -- show the cluster on bicycles
+    gameText = false,  -- true keeps GTA's vehicle name and street text (bottom right, over the cluster)
     airUnits = 'kts',  -- aircraft airspeed: 'kts' or 'units' (Config.units); altitude is ft with mph, m with km/h
     boatUnits = 'kts', -- boats: 'kts' or 'units'
   },
@@ -102,6 +106,9 @@ Config = {
 
   -- The weapon's ammo, `12 / 48` with a glyph, only while armed with a gun or a throwable.
   ammo = true,
+  -- Where the reserve (the 48) comes from: 'auto' (ox_inventory's ammo items when it's started, else
+  -- GTA's ammo), 'ped', 'ox_inventory', or false to show the clip only.
+  ammoReserve = 'auto',
 
   compass = {
     enabled = true,    -- classic: the heading strip at the top of the screen (compact: on the map ring)

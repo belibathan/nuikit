@@ -33,6 +33,8 @@ const natives = `
   function NetworkIsPlayerActive() return ACTIVE end
   function PlayerId() return 0 end
   function IsBigmapActive() return BIG end
+  HIDDEN = false
+  function IsRadarHidden() return HIDDEN end
   function GetGameplayCamRot() return { x = 0.0, y = 0.0, z = CAMZ } end
   -- the compass thread's pace: 33 ms between calls (its stream sends at most 30 a second)
   NOW = 0
@@ -106,30 +108,76 @@ describe("systems/nuikit_hud: the minimap", () => {
     expect(sent.x).toBeCloseTo((1.5 * 1080 * 0.014815) / 1920, 6);
     expect(sent.w).toBeCloseTo((15 * 1080 * 0.014815) / 1920, 6);
 
-    // nuikit's own mask over GTA's: opaque for the square, so the radar fills its box
-    expect(await hud.run(`return REPLACED`)).toBe("radarmasksm>nuikit_minimap/square");
+    // nuikit's own mask over GTA's: the square opaque in the middle of the 1.41:1 box; the txd has a
+    // new name on every start (a restart could hit the stopped one's: F2)
+    expect(await hud.run(`return REPLACED`)).toMatch(/^radarmasksm>nuikit_minimap_\d+\/square_1412$/);
 
     await hud.run(`Config.minimap.shape = 'circle' Minimap.apply()`);
     expect(await hud.run(`return CLIP`)).toBe(1);
-    expect(await hud.run(`return REPLACED`)).toBe("radarmasksm>nuikit_minimap/circle");
-    // each mask is drawn once (8x8 square + 128x128 circle)
+    expect(await hud.run(`return REPLACED`)).toMatch(/\/circle_1412$/);
+    // each mask is drawn once (45x32 square + 181x128 circle)
     await hud.run(`Minimap.apply()`);
-    expect(await hud.run(`return PIXELS`)).toBe(64 + 128 * 128);
+    expect(await hud.run(`return PIXELS`)).toBe(45 * 32 + 181 * 128);
   });
 
-  it("draws the circle mask as a disc with a soft one-pixel edge, and the square fully opaque", async () => {
+  it("draws the mask for GTA's 1.41:1 box: the disc or square in the middle, transparent sides (design note A)", async () => {
     client = await createClient();
     const hud = await client.start("nuikit_hud", { before: natives, scripts });
-    await hud.run(`Config.layout = 'classic'`); // these pin the classic geometry; compact is below
-    const px = (shape: string, x: number, y: number) => hud.run<number>(`return Minimap.maskPixel('${shape}', 128, ${x}, ${y})`);
-    expect(await px("square", 0, 0)).toBe(255);
-    expect(await px("circle", 64, 64)).toBe(255); // middle
-    expect(await px("circle", 0, 0)).toBe(0); // corner
-    expect(await px("circle", 0, 64)).toBe(127); // the leftmost pixel, mid-height: half on the rim
-    expect(await px("circle", 1, 64)).toBe(255); // one in: inside
-    const edge = await px("circle", 108, 109); // 63.6 px from the centre: on the rim
-    expect(edge).toBeGreaterThan(0);
-    expect(edge).toBeLessThan(255);
+    expect(await hud.run(`return Minimap.ASPECT`)).toBeCloseTo((0.15 * 16) / 9 / 0.188888, 6);
+    // a square texture over a square box (aspect 1): the 0.7.0-next disc
+    const sq = (shape: string, x: number, y: number) => hud.run<number>(`return Minimap.maskPixel('${shape}', 128, 128, ${x}, ${y}, 1.0)`);
+    expect(await sq("square", 0, 0)).toBe(255);
+    expect(await sq("circle", 64, 64)).toBe(255); // middle
+    expect(await sq("circle", 0, 0)).toBe(0); // corner
+    const rim = await sq("circle", 0, 64); // the leftmost pixel, mid-height: on the rim
+    expect(rim).toBeGreaterThan(0);
+    expect(rim).toBeLessThan(255);
+    expect(await sq("circle", 2, 64)).toBe(255); // two in: inside
+    // GTA's box: 181x128, stretched over a box 1.41 times wider than high
+    const px = (shape: string, x: number, y: number) => hud.run<number>(`return Minimap.maskPixel('${shape}', 181, 128, ${x}, ${y})`);
+    expect(await px("circle", 90, 64)).toBe(255);
+    expect(await px("circle", 10, 64)).toBe(0); // the side: outside the hole
+    expect(await px("square", 10, 0)).toBe(0);
+    expect(await px("square", 45, 0)).toBe(255); // inside the middle square
+    // on screen the disc is round: as far across (in hole pixels) as it is high
+    const across = await hud.run<number>(`local n = 0 for x = 0, 180 do n = n + Minimap.maskPixel('circle', 181, 128, x, 64) / 255 end return n * 128 * Minimap.ASPECT / 181`);
+    expect(across).toBeCloseTo(128, 0);
+  });
+
+  it("puts the box at GTA's aspect over the hole, and minimap_mask over the hole in absolute units (7b)", async () => {
+    client = await createClient();
+    const hud = await client.start("nuikit_hud", { before: natives, scripts });
+    const [, , hole, box] = await hud.run<[any, number, any, any]>(`return { Minimap.layout(1920, 1080, 1.0) }`);
+    expect(box.h).toBeCloseTo(hole.h, 6);
+    expect(box.w / box.h).toBeCloseTo((0.15 * 16) / 9 / 0.188888, 6);
+    expect(box.x + box.w / 2).toBeCloseTo(hole.x + hole.w / 2, 6); // centred
+    await hud.run(`Layout.update() Minimap.apply()`);
+    const map = await hud.run<number[]>(`return PLACED.minimap`);
+    const mask = await hud.run<number[]>(`return PLACED.minimap_mask`);
+    const unit = (1080 * 16) / 9;
+    expect(map[2]! * unit).toBeCloseTo(box.w, 3);
+    // the mask is the hole, where the radar is (top right), not at the area's corner
+    expect(mask[0]! * unit).toBeCloseTo(hole.x, 3);
+    expect(mask[2]! * unit).toBeCloseTo(hole.w, 3);
+    expect(mask[1]!).toBeCloseTo(map[1]!, 6);
+    // Config.minimap.aspect = 1: the square box of 0.7.0-next
+    await hud.run(`Config.minimap.aspect = 1`);
+    const [, , h1, b1] = await hud.run<[any, number, any, any]>(`return { Minimap.layout(1920, 1080, 1.0) }`);
+    expect(b1.w).toBeCloseTo(h1.w, 6);
+  });
+
+  it("asks the nuikit resource to put the radar back when it stops; a hidden radar re-reads when it shows", async () => {
+    client = await createClient();
+    const hud = await client.start("nuikit_hud", { before: natives, scripts });
+    await hud.run(`EVENTS = {} AddEventHandler('nuikit:minimap:placed', function() EVENTS[#EVENTS + 1] = 'placed' end)
+      AddEventHandler('nuikit:minimap:released', function() EVENTS[#EVENTS + 1] = 'released' end)`);
+    await hud.run(`HIDDEN = true Layout.update() Minimap.apply()`);
+    await hud.run(`Config.minimap.style = 'stock' Minimap.applyStock()`);
+    expect(await hud.run(`return table.concat(EVENTS, ',')`)).toBe("placed,released");
+    // placed while hidden: one more flick the first time the radar shows
+    await hud.run(`Config.minimap.style = 'ring' Minimap.apply() CALLS = 0 SetRadarBigmapEnabled = function() CALLS = CALLS + 1 end CreateThread = function(f) f() end`);
+    await hud.run(`Minimap.tick(false) HIDDEN = false Minimap.tick(true) Minimap.tick(false) Minimap.tick(true)`);
+    expect(await hud.run(`return CALLS`)).toBe(2);
   });
 
   it("sends the compass heading on its own channel, to 0.1°, only when that changed", async () => {
@@ -175,7 +223,7 @@ describe("systems/nuikit_hud: the minimap", () => {
     expect(radar.x).toBeCloseTo(frame.x + band / 2, 6);
     await hud.run(`Minimap.apply()`);
     expect(await hud.run(`return CLIP`)).toBe(1);
-    expect(await hud.run(`return REPLACED`)).toBe("radarmasksm>nuikit_minimap/circle");
+    expect(await hud.run(`return REPLACED`)).toMatch(/^radarmasksm>nuikit_minimap_\d+\/circle_1412$/);
     const sent = hud.messages.filter((m) => m.action === "hud:minimap:frame").at(-1)!.data;
     expect(sent).toMatchObject({ shape: "circle", preset: "compact", framed: true });
     // a server's own values win over the preset; a square map needs no heading room
@@ -207,7 +255,7 @@ describe("systems/nuikit_hud: the minimap", () => {
       const unit = (h * 16) / 9;
       expect(c[2]! * unit).toBeCloseTo(radar.w, 3); // on screen the radar is exactly the hole
       expect(c[3]! * h).toBeCloseTo(radar.h, 3);
-      expect(radar.w).toBeCloseTo(radar.h, 3); // round stays round
+      expect(radar.w).toBeCloseTo(radar.h, 3); // the hole is round
       expect(frame.x + frame.w).toBeLessThanOrEqual(w);
     }
     // the stock rectangle uses the same unit: 0.150 of a 16:9 width

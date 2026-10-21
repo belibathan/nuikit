@@ -69,14 +69,16 @@ function Compact({ settings, vehicle, location, weapon, layout, frame, state, pl
   // vitals sit beside its bottom edge instead of under it
   const besideMap = !!frame && mapShown && frame.x < 0.5 && frame.y > 0.5;
   const vars = layoutVars(layout ?? stageLayout(w, h), besideMap ? frame : null, w, h) as Record<string, string>;
-  // the column (location, money) hangs under the map, or stands over it when the map is in a bottom corner
+  // the column (location, money) hangs under the map, or stands over it when the map is in a bottom
+  // corner. There it stays over the map's box even while the map is hidden: dropping into the box put
+  // it on the vitals (bottom left) or the ammo and cluster (bottom right) (0.7.0 test, F6)
   let column: CSSProperties = {};
   if (frame) {
     const cx = (frame.x + frame.w / 2) * w;
     const below = frame.y + frame.h / 2 < 0.5;
     column = below
       ? { left: cx, top: mapShown ? (frame.y + frame.h) * h : frame.y * h, transform: "translateX(-50%)" }
-      : { left: cx, bottom: mapShown ? (1 - frame.y) * h : (1 - frame.y - frame.h) * h, transform: "translateX(-50%)" };
+      : { left: cx, bottom: (1 - frame.y) * h, transform: "translateX(-50%)" };
     vars["--hud-col-w"] = `${(frame.w * w).toFixed(1)}px`;
   }
   const heading = state?.heading ?? 0;

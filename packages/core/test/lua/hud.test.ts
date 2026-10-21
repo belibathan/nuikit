@@ -32,6 +32,8 @@ const natives = `
   -- the vehicle and the street (vehicle.lua, location.lua, adapters.lua)
   VEH, SPEED_MS, RPM, CLASS = 0, 0.0, 0.2, 0
   function DisplayRadar() end
+  HIDDEN_HUD = {}
+  function HideHudComponentThisFrame(c) HIDDEN_HUD[c] = true end
   function GetVehiclePedIsIn() return VEH end
   function GetVehicleClass() return CLASS end
   function GetEntitySpeed() return SPEED_MS end
