@@ -35,6 +35,7 @@ const natives = `
   HIDDEN_HUD = {}
   function HideHudComponentThisFrame(c) HIDDEN_HUD[c] = true end
   function GetVehiclePedIsIn() return VEH end
+  function IsPedInAnyVehicle() return VEH ~= 0 end
   function GetVehicleClass() return CLASS end
   function GetEntitySpeed() return SPEED_MS end
   function GetEntitySpeedVector() return { x = 0.0, y = SPEED_MS, z = 0.0 } end

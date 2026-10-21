@@ -5,6 +5,8 @@ and [client-event-reference](https://qbcore.org/docs/qb-core/client-event-refere
 `exports.qbx_core:Notify` is documented at [docs.qbox.re](https://docs.qbox.re/resources/qbx_core/exports/client) and lands in
 ox_lib: on Qbox no adapter is needed, the ox_lib override draws it. Mechanism proposed; the spike decides.*
 
+**Status (Oct 21):** listener built as `adapters/[nuikit-qb]/nuikit_qb_notify` (never cancels the event); replay test `bench/adapters/replay/qb/qb-core.test.mjs`. The page override is a **silencer** (`override/html/index.html`: draws nothing, forwards every message to `https://nuikit_qb_notify/page`); the adapter draws a forwarded message as a notify when it has a string `text` (guess) and prints every message with `nuikit_debug 1` so the real shape can be recorded here. Unproven: the shape, cross-resource fetch (spike step 8).
+
 ## Source
 
 Documented: `QBCore.Functions.Notify(text, textype, length)`, the `QBCore:Notify` event (client and server),

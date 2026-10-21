@@ -207,11 +207,11 @@ recipes, from a scripted session (join, spawn, menus, a job, inventory, death). 
    in-game checklist there.*
 4. **In-game spike**: stand-in, listener and ox_lib page routing on a real client; choose per library.
 5. **`[nuikit-ox]`** on the shared renderers, every ox POST re-verified against `docs/ox-lib-protocol.md`.
-6. **`[nuikit-qb]`**: qb-menu, qb-input, qb-target options, `QBCore:Notify`, progressbar, DrawText, qb-radialmenu.
-7. **`[nuikit-esx]`**: esx_notify, esx_context, esx_menu_default/dialog, esx_progressbar, esx_textui.
-8. **Doctor and coverage harness** on the three reference servers. *Doctor built (`doctor.md`); the coverage
-   harness replays the scripted session under the Lua harness (`bench/coverage/run.mjs`, "replayed, not in
-   game") and counts misses for adapters that don't exist yet.*
+6. **`[nuikit-qb]`**: qb-menu, qb-input, qb-target options, `QBCore:Notify`, progressbar, DrawText, qb-radialmenu. *Built on `feat/adapter-qb` (`adapters/[nuikit-qb]/`, `docs/adapters/README.md`): six adapters + a qb-target recorder; replay-tested, not in game.*
+7. **`[nuikit-esx]`**: esx_notify, esx_context, esx_menu_default/dialog, esx_progressbar, esx_textui. *Built on
+   `feat/adapter-esx` with `[nuikit-standalone]` (okokNotify, mythic_notify): stand-ins with replay tests
+   (`docs/adapters/README.md`); unproven in game.*
+8. **Doctor and coverage harness** on the three reference servers.
 9. **Packaging**: per-framework zips, `nuikit.cfg`, txAdmin recipe; renderer packs via `nuikit_renderer`.
    *Zips, `nuikit.cfg` and the Qbox recipe exist (`scripts/pack-systems.mjs`, `systems/nuikit/nuikit.cfg`,
    `install/`); the recipe is unproven on a real txAdmin. Renderer packs: built (`feat/renderer-packs`,

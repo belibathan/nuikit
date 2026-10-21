@@ -52,6 +52,10 @@ Resolve at `duration` → `onFinish()`.
 is documented as esx_progressbar's own function; the stand-in defines it the same documented way. What the spike
 decides: stand-in rules.
 
+## Status
+
+**Built** (`adapters/[nuikit-esx]/nuikit_esx_progressbar`, replay test `esx-progressbar.test.mjs`). FreezePlayer and `animation` (`anim`: dict + lib; `scenario`: `scenario` or `lib`) run in the adapter's Lua for the bar's lifetime. A second bar while one runs is refused and its `onCancel` runs (decision to confirm against the library). Unproven in game.
+
 ## Replay test
 
 Recording: `Progressbar('Repairing', 5000, { FreezePlayer = true, animation = …, onFinish, onCancel })`,

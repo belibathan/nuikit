@@ -1,0 +1,15 @@
+{
+  "library": "esx_textui",
+  "expects": [],
+  "calls": [
+    { "kind": "export", "resource": "esx_textui", "name": "TextUI", "args": ["[E] Open", "info"] },
+    { "kind": "wait", "ms": 500 },
+    { "kind": "export", "resource": "esx_textui", "name": "TextUI", "args": ["[E] Open", "info"] },
+    { "kind": "wait", "ms": 500 },
+    { "kind": "export", "resource": "esx_textui", "name": "TextUI", "args": ["[E] Open", "info"] },
+    { "kind": "export", "resource": "esx_textui", "name": "TextUI", "args": ["[E] Close", "error"] },
+    { "kind": "export", "resource": "esx_textui", "name": "HideUI" },
+    { "kind": "export", "resource": "esx_textui", "name": "HideUI" },
+    { "kind": "export", "resource": "esx_textui", "name": "TextUI", "args": [""] }
+  ]
+}

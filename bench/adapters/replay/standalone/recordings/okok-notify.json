@@ -1,0 +1,10 @@
+{
+  "library": "okokNotify",
+  "expects": [],
+  "calls": [
+    { "kind": "export", "resource": "okokNotify", "name": "Alert", "args": ["Bank", "Paid $500", 5000, "success", true] },
+    { "kind": "serverEvent", "name": "okokNotify:Alert", "args": ["Phone", "New message", 3000, "phone"] },
+    { "kind": "export", "resource": "okokNotify", "name": "Alert", "args": ["", "", 1000, "info"] },
+    { "kind": "wait", "ms": 5000 }
+  ]
+}

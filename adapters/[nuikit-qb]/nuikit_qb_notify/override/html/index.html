@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="nuikit-handshake" content="off" />
+    <title>nuikit silencer for qb-core</title>
+    <!--
+      nuikit [nuikit-qb]: a page for qb-core that draws nothing. Copy this file over qb-core/html/index.html
+      (the file qb-core's fxmanifest names as ui_page) so qb-core's own notifications and text UI stop
+      drawing; every message qb-core sends to its page is forwarded to nuikit_qb_notify, which draws the
+      notifications with nuikit and hands the rest (DrawText) to nuikit_qb_drawtext. Clean-room: nothing of
+      qb-core's page is in here. Credit @belibathan.
+    -->
+    <style>html, body { margin: 0; background: transparent; }</style>
+  </head>
+  <body>
+    <script>
+      window.addEventListener('message', function (e) {
+        var data = e.data;
+        if (!data || typeof data !== 'object') return;
+        try {
+          fetch('https://nuikit_qb_notify/page', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json; charset=UTF-8' },
+            body: JSON.stringify(data),
+          }).catch(function () {});
+        } catch (err) {}
+      });
+    </script>
+  </body>
+</html>

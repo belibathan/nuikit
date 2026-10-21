@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="nuikit-handshake" content="off" />
+    <title>nuikit recorder for qb-target</title>
+    <!--
+      nuikit [nuikit-qb]: a recording page for qb-target. For one session, copy it over the page qb-target's
+      fxmanifest names as ui_page; every message qb-target sends is forwarded to nuikit_qb_target
+      (/nuikit_qb_target dump prints them). It draws nothing and answers nothing: targeting is blind while it
+      is in. Put the original page back afterwards. Clean-room; credit @belibathan.
+    -->
+    <style>html, body { margin: 0; background: transparent; }</style>
+  </head>
+  <body>
+    <script>
+      window.addEventListener('message', function (e) {
+        var data = e.data;
+        if (!data || typeof data !== 'object') return;
+        try {
+          fetch('https://nuikit_qb_target/page', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json; charset=UTF-8' },
+            body: JSON.stringify(data),
+          }).catch(function () {});
+        } catch (err) {}
+      });
+    </script>
+  </body>
+</html>

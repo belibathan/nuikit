@@ -147,7 +147,7 @@ const frameworks = {
   qbox: { start: "ensure ox_lib\nensure [qbx]\nensure pma-voice", stop: ["qbx_hud", "loadscreen", "qbx_chat_theme"], adapter: "ox" },
   qbcore: { start: "ensure ox_lib\nensure qb-core\nensure pma-voice", stop: ["qb-hud", "qb-loading"], adapter: "qb" },
   esx: { start: "ensure ox_lib\nensure es_extended\nensure pma-voice", stop: ["esx_hud", "esx_loadingscreen"], adapter: "esx" },
-  standalone: { start: "ensure ox_lib", stop: [], adapter: null },
+  standalone: { start: "ensure ox_lib", stop: [], adapter: "standalone" },
 };
 for (const [fw, f] of Object.entries(frameworks)) {
   const dir = path.join(out, "fw", fw);

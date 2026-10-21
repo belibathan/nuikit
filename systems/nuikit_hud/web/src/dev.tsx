@@ -12,6 +12,8 @@
 // &weapon=<kind>|none  the weapon in hand: pistol (default on foot), smg, rifle, shotgun, sniper, heavy, thrown
 // &radar=off        hide the radar (compact on foot with Config.radar = 'vehicle')
 // &style=stock      Config.minimap.style = 'stock': GTA's own radar box bottom left, no frame
+// &chip=diamond,fill,tag,uniform   a /hudstyle override (shape, level, label, icon)
+// &pop=hunger:25     fire a vital pop after load (/hudpop)
 import { applyTheme, emit, openSurface } from "nuikit-core";
 import { NuiDevtools, defineMocks } from "nuikit-core/devtools";
 import { useEffect, useState } from "react";
@@ -188,6 +190,10 @@ const mocks = defineMocks({
   callbacks: {
     "hud:ready": () => ({ ok: true }),
     "hud:minimap:ready": () => ({ ok: true }),
+    "hud:style:get": () => {
+      const [shape, level, attach, icon] = (q.get("chip") ?? "").split(",");
+      return { ok: true, style: q.get("chip") ? { shape, level, attach, icon } : null };
+    },
   },
 });
 
@@ -232,6 +238,11 @@ export default function Dev() {
     }
     if (radar) setFrame(mf);
     openSurface("hud", settings);
+    const pop = q.get("pop");
+    if (pop) {
+      const [tone, by] = pop.split(":");
+      setTimeout(() => emit("hud:pop" as never, { tone, by: Number(by ?? 10) } as never), 900);
+    }
     if (f.changes) {
       const t = setTimeout(() => emit("nuikit:player", f.changes as never), 400);
       return () => clearTimeout(t);

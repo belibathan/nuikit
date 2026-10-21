@@ -182,6 +182,17 @@ describe("GTA's radar after the HUD that placed it stops (systems/nuikit/client.
     function RemoveReplaceTexture() REPLACED = nil end
     function GetNorthRadarBlip() return 1 end
     function SetBlipAlpha() end
+    -- nuikit holds the minimap scaleform and builds the radar mask (systems/nuikit/client.lua)
+    function RequestScaleformMovie() return 1 end
+    function HasScaleformMovieLoaded() return true end
+    function BeginScaleformMovieMethod() end
+    function ScaleformMovieMethodAddParamInt() end
+    function EndScaleformMovieMethod() end
+    function CreateRuntimeTxd(n) return n end
+    function CreateRuntimeTexture(_, n) return n end
+    function SetRuntimeTexturePixel() end
+    function CommitRuntimeTexture() end
+    function AddReplaceTexture() end
     function SetRadarBigmapEnabled() FLICKS = FLICKS + 1 end
     function IsBigmapActive() return false end
     function CreateThread(f) f() end

@@ -18,7 +18,7 @@ scripts get the report as an object from `exports.nuikit:doctor()`.
 | Runtime | nuikit's version and protocol; the newest release when known | `nuikit`'s fxmanifest; convar `nuikit_latest` |
 | Framework | Qbox, QBCore, ESX or standalone | `qbx_core`, `qb-core`, `es_extended` started (`GetResourceState`), in that order |
 | Adapter packs | for each of `[nuikit-ox]`, `[nuikit-qb]`, `[nuikit-esx]`: running, fits (not installed), fits but **not shipped yet**, or not needed | a table in `packages/core/src/doctor.ts`; "running" when a started resource declares `nuikit_adapter '<library>'` |
-| Resources with a UI | every started resource with `ui_page`, `loadscreen` or `nuikit_ui`, with its status and a next step | fxmanifest metadata; the page file for overrides |
+| Resources with a UI | every started resource with `ui_page`, `loadscreen`, `nuikit_ui` or `chat_theme`, with its status and a next step | fxmanifest metadata; the page file for overrides |
 | Findings | conflicts and problems, each with a next step in plain words | §2 |
 | Intents | how many intents each resource drew since start, by intent | the `nuikit:intent` event, §4 |
 
@@ -28,6 +28,7 @@ Resource statuses:
 |---|---|---|
 | `on nuikit v<p> level <l>` | speaks the protocol | `nuikit_protocol '<p>'`; `nuikit_level '<l>'` (new, optional: the level `nuikit check` gave the page) |
 | `on nuikit (hosted)` | a module in nuikit's frame | `nuikit_ui` |
+| `on nuikit (loadscreen)`, `on nuikit (theme)` | nuikit's own loading screen (it runs before the runtime, so no handshake) and chat theme (no page: `chat_theme`) | a `nuikit_*` resource with `loadscreen` or `chat_theme` and no `nuikit_protocol`. Another loading screen or chat theme next to them is `untouched` with "stop it" as the next step |
 | `adapted (<resource>)` | a running adapter draws its UI calls | another started resource declares `nuikit_adapter '<this resource>'` (reserved for the packs) |
 | `override` | its page is one of ours | the page at `ui_page` carries `<meta name="nuikit-handshake" content="off">` (protocol §5.6). `(override changed)` / `(override missing)` when `overrides.json` disagrees, §3 |
 | `untouched` | its own UI, nothing of nuikit in it | none of the above |
@@ -41,6 +42,7 @@ Resource statuses:
 | `protocol-newer` | error | `nuikit_protocol` higher than the runtime's | update nuikit |
 | `override-missing` | warn | `overrides.json` lists a page for a started resource and the file has no marker (a library update put the stock UI back) | copy the override again |
 | `override-drifted` | warn | the page has the marker but its hash isn't the shipped one | copy the override again unless you edited it |
+| `manifest-changed` | warn | a started resource's `fxmanifest.lua` on disk differs from when it started (hash on `onResourceStart`); a new `files` entry isn't served until then | `refresh`, then `restart <resource>` |
 | `missing-dependency` | warn | imports `@nuikit/init.lua` without `dependency 'nuikit'` | add the line |
 | `renderer-failed` | warn | a client posted `nuikit:renderer:failed` (a renderer pack's module didn't load, threw, or has no renderer for a kind it claims; the default drew instead) | rebuild the pack (`pnpm build` in its web/), check `files { 'web/dist/renderers.js' }`, `restart <pack>`. **Not wired on the server yet:** the client event exists (`systems/nuikit/client/renderers.lua`); `server/doctor.js` must count it (lead) |
 | `theme-contrast` | warn | one of the compiled theme's contrast checks fails (the same checks `nuikit theme` prints) | which two tokens to change, then `nuikit theme reload` |
@@ -48,7 +50,7 @@ Resource statuses:
 | `update-available` | info | `nuikit_latest` is newer than the running version | the release URL |
 | `framework` | info | always: what was detected and which packs fit | the packs that fit |
 
-Errors first, then warnings, then info. The start-order check only sees resources that were started
+Errors first, then warnings, then info; the same finding never prints twice (a failed contrast pair is one `theme-contrast`, not that plus the compiler's own warning line). The start-order check only sees resources that were started
 *before* nuikit's server script ran; once a resource restarts (`onResourceStart`) it is cleared.
 
 ## 3. Extension points

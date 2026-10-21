@@ -14,7 +14,7 @@ local MARGIN = 1.08        -- a little air around the subject
 
 local cam
 local active = false
-local home = { x = 0.36, y = 0.08, w = 0.28, h = 0.84 } -- what the pause menu last reported
+local home = { x = 0.325, y = 0.044, w = 0.65, h = 0.911 } -- what the pause menu last reported (default: right of the sheet)
 local frame = home                                       -- what this run frames into
 local usingHome = true
 local rel = 0.0            -- camera yaw relative to the subject's heading, set when it starts
@@ -22,6 +22,16 @@ local startHeading = 0.0   -- the player's heading when it started (on foot the 
 local angle, goalAngle = 0.0, 0.0
 local reach                -- current camera distance after wall checks (eased)
 local residual             -- start pose minus framed pose: decays to zero, so the camera glides in
+-- How it looks at the player:
+--   'current' (default): the gameplay camera's own heading and pitch, only moved in to frame them (a
+--     dolly, no swing: nothing turns the view, so nothing to get motion sick from);
+--   'front': faces them, chest height, head and upper body (swings round them to get there);
+--   'behind': the 0.7.0 framing (whole body, from the gameplay camera's side, turned by preview.angle).
+local function facing()
+  if cfg.facing == 'front' or cfg.facing == 'behind' then return cfg.facing end
+  return 'current'
+end
+local startPitch = -4.0    -- 'current': the gameplay camera's pitch when it started
 local last                 -- the subject and pose from the last frame (debug and handover)
 
 local function clamp(v, a, b) return math.max(a, math.min(b, v)) end
@@ -51,6 +61,11 @@ function Focus.subject()
     return veh, { x = c.x, y = c.y, z = c.z }, mx.z - mn.z, math.sqrt(dx * dx + dy * dy), -12.0, 'vehicle'
   end
   local c = GetEntityCoords(ped)
+  if facing() == 'front' then
+    -- head to mid-thigh, centred on the chest (the ped's origin is at the hips): the camera ends up
+    -- level with the chest, looking a touch down at the face
+    return ped, { x = c.x, y = c.y, z = c.z + 0.2 }, 1.45, 0.8, -5.0, 'on foot'
+  end
   return ped, { x = c.x, y = c.y, z = c.z - 0.05 }, 1.95, 0.9, -4.0, 'on foot'
 end
 
@@ -88,30 +103,41 @@ local function clear(entity, center, x, y, z, d)
   return d
 end
 
---- A soft studio light on the subject for this client only, so it reads at night and in shade: a
---- warm key light from the camera side and a cool rim light behind.
+--- Lighting presets for the subject, this client only. Off by default (0.8): Config.preview.light =
+--- 'studio' turns on a soft studio light so the player reads at night and in shade (a warm key light from
+--- the camera side, a cool rim light behind), at Config.preview.lightIntensity (default 3.0). A bare
+--- number (the 0.7 setting, e.g. 3.0) no longer turns it on.
+local LIGHTS = {
+  studio = function(center, d, span, yaw, key)
+    local h = math.rad(yaw)
+    local fx, fy = -math.sin(h), math.cos(h)
+    local rx, ry = math.cos(h), math.sin(h)
+    local k = math.min(d * 0.45, 3.0)
+    DrawLightWithRange(center.x - fx * k - rx * 0.6, center.y - fy * k - ry * 0.6, center.z + 0.6, 255, 238, 220, d + 2.0, key)
+    local b = span * 0.5 + 0.6
+    DrawLightWithRange(center.x + fx * b + rx * 0.5, center.y + fy * b + ry * 0.5, center.z + 0.9, 200, 215, 255, span + 2.0, key * 0.6)
+  end,
+}
+
 local function light(center, d, span, yaw)
-  local key = cfg.light or 3.0
+  local preset = type(cfg.light) == 'string' and LIGHTS[cfg.light] or nil
+  if not preset then return end
+  local key = tonumber(cfg.lightIntensity) or 3.0
   if key <= 0 then return end
-  local h = math.rad(yaw)
-  local fx, fy = -math.sin(h), math.cos(h)
-  local rx, ry = math.cos(h), math.sin(h)
-  local k = math.min(d * 0.45, 3.0)
-  DrawLightWithRange(center.x - fx * k - rx * 0.6, center.y - fy * k - ry * 0.6, center.z + 0.6, 255, 238, 220, d + 2.0, key)
-  local b = span * 0.5 + 0.6
-  DrawLightWithRange(center.x + fx * b + rx * 0.5, center.y + fy * b + ry * 0.5, center.z + 0.9, 200, 215, 255, span + 2.0, key * 0.6)
+  preset(center, d, span, yaw, key)
 end
 
 --- Where the camera should be this frame (before the glide-in), and the subject it frames.
 local function target(dt)
   local entity, center, height, span, pitch, kind = Focus.subject()
+  if facing() == 'current' then pitch = startPitch end
   local aspect = GetAspectRatio(false)
   local d = Focus.fit(frame, aspect, height, span)
   -- On foot the yaw comes from the heading at the start, not the live one: in first person GTA turns
   -- the ped toward the camera, which turned the camera again, and it spun while the menu was open
   -- (0.7.0 test, F5). A vehicle keeps following (a passenger in a car that turns).
   local heading = kind == 'vehicle' and GetEntityHeading(entity) or startHeading
-  local yaw = (heading + rel + angle) % 360.0
+  local yaw = (heading + rel + angle + (residual and residual.orbit or 0.0)) % 360.0
   local x, y, z = Focus.pose(frame, aspect, center, d, pitch, yaw)
   -- walls: come in at once, go back out gently
   local want = clear(entity, center, x, y, z, d)
@@ -130,11 +156,13 @@ end
 --- One frame: follow the subject, decay the glide-in, light it.
 function Focus.step(dt)
   angle = angle + Map3D.turn(angle, goalAngle) * (1.0 - math.exp(-TURN_EASE * dt))
-  local t, entity, center, d, span, kind = target(dt)
   if not residual then
-    residual = { x = 0.0, y = 0.0, z = 0.0, pitch = 0.0, yaw = 0.0, fov = 0.0 }
+    residual = { x = 0.0, y = 0.0, z = 0.0, pitch = 0.0, yaw = 0.0, fov = 0.0, orbit = 0.0 }
   end
   local k = math.exp(-ARRIVE * dt)
+  -- the orbit swings the camera around the subject (never through it) to the front
+  residual.orbit = (residual.orbit or 0.0) * k
+  local t, entity, center, d, span, kind = target(dt)
   for _, f in ipairs({ 'x', 'y', 'z', 'pitch', 'yaw', 'fov' }) do residual[f] = residual[f] * k end
   local p = { x = t.x + residual.x, y = t.y + residual.y, z = t.z + residual.z, pitch = t.pitch + residual.pitch, yaw = t.yaw + residual.yaw, fov = FOV + residual.fov }
   apply(p)
@@ -179,18 +207,25 @@ function Focus.start(opts)
   local from, fromRot = GetFinalRenderedCamCoord(), GetFinalRenderedCamRot(2)
   local entity = Focus.subject()
   startHeading = GetEntityHeading(entity)
-  rel = (fromRot.z - startHeading) % 360.0
-  angle, goalAngle = 0.0, cfg.angle or 0.0
+  -- front: a camera looking along heading + 180 faces the player; behind: keep the current view's side
+  rel = facing() == 'front' and 180.0 or (fromRot.z - startHeading) % 360.0
+  -- 'current' keeps the view as it is: no turn on open (preview.angle is for 'front' / 'behind')
+  angle, goalAngle = 0.0, facing() == 'current' and 0.0 or (cfg.angle or 0.0)
+  startPitch = clamp(fromRot.x, -35.0, 10.0)
   reach = nil
+  -- start the orbit where the current view is, so the glide swings round the player to the front
+  residual = { x = 0.0, y = 0.0, z = 0.0, pitch = 0.0, yaw = 0.0, fov = 0.0, orbit = 0.0 }
+  residual.orbit = Map3D.turn((startHeading + rel) % 360.0, fromRot.z % 360.0)
   local t = target(0.0)
-  residual = {
-    x = from.x - t.x, y = from.y - t.y, z = from.z - t.z,
-    pitch = fromRot.x - t.pitch, yaw = Map3D.turn(t.yaw, fromRot.z),
-    fov = GetFinalRenderedCamFov() - FOV,
-  }
-  -- the camera service starts it on the current view (seamless) and takes it back on death
+  residual.x, residual.y, residual.z = from.x - t.x, from.y - t.y, from.z - t.z
+  residual.pitch, residual.yaw = fromRot.x - t.pitch, Map3D.turn(t.yaw, fromRot.z)
+  residual.fov = GetFinalRenderedCamFov() - FOV
+  -- the camera service starts it on the current view (seamless: no blend, the heading it has) and
+  -- takes it back on death; from there the loop only moves in ('current': a dolly, never a spin)
   cam = Camera.claim({
     id = 'focus',
+    lockHeading = true,
+    duration = 0,
     onLost = function(reason)
       active, cam, residual = false, nil, nil
       if reason == 'dead' and Focus.onLost then Focus.onLost() end
@@ -224,6 +259,27 @@ function Focus.setFrame(f)
   home = { x = clamp(x, 0, 1), y = clamp(y, 0, 1), w = clamp(w, 0.05, 1), h = clamp(h, 0.05, 1) }
   if usingHome then frame = home end
   debug('frame from the UI %.2f %.2f %.2f %.2f', frame.x, frame.y, frame.w, frame.h)
+end
+
+--- Frame into a new screen rectangle during a run that isn't Home's (the inventory's, when its page
+--- reports it): the camera glides to the new framing instead of jumping.
+function Focus.reframe(f)
+  if usingHome or type(f) ~= 'table' then return end
+  if not active then
+    frame = f
+    return
+  end
+  local before = target(0.0)
+  frame = f
+  local after = target(0.0)
+  if residual then
+    residual.x = residual.x + before.x - after.x
+    residual.y = residual.y + before.y - after.y
+    residual.z = residual.z + before.z - after.z
+    residual.pitch = residual.pitch + before.pitch - after.pitch
+    residual.yaw = residual.yaw + Map3D.turn(after.yaw, before.yaw)
+  end
+  debug('reframed %.2f %.2f %.2f %.2f', f.x, f.y, f.w, f.h)
 end
 
 --- Drag to look around: dx is a fraction of the screen width; a full width is one turn.
