@@ -1,3 +1,4 @@
+import { setImageConfig } from "nuikit-core";
 // illenium-appearance's Lua, faked for browser development. Every callback answers with the shape the
 // real handlers return (docs/illenium-appearance-protocol.md §2–4), so every control works in a browser.
 // Pick a shop in the bar at the top; press ` for the nuikit devtools. URL: ?shop=barber&tab=hair
@@ -290,6 +291,9 @@ export default function Dev() {
       setCurrent(id);
       open(id);
     };
+    // ?images=1: a public clothing pack (docs/images.md), so the preview tiles show in the browser
+    if (new URLSearchParams(location.search).has("images"))
+      setImageConfig({ clothing: "https://raw.githubusercontent.com/Colbss/FiveM-ClothingData/refs/heads/master/images/{model}/{collection}/{kind}_{id}_{drawable}_{texture}.webp" });
     if (!started) {
       started = true; // StrictMode mounts effects twice; open once
       window.__openShop(new URLSearchParams(location.search).get("shop") ?? "pedmenu");

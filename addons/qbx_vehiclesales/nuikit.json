@@ -20,6 +20,7 @@
     "stat",
     "sheet",
     "edge-sheet",
-    "money"
+    "money",
+    "nui-image"
   ]
 }

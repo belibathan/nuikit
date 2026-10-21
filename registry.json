@@ -52,6 +52,29 @@
       }
     },
     {
+      "name": "nui-image",
+      "type": "registry:ui",
+      "title": "NUI Image",
+      "description": "The picture of an item, clothing, vehicle or weapon by the conventions popular servers use (ox/qb/ps/lj inventories, FiveM docs vehicles, clothing packs by template): candidate URLs from nuikit-core resolveImage, lazy, an onError chain, an icon when none load.",
+      "files": [
+        {
+          "path": "registry/nuikit/ui/nui-image.tsx",
+          "type": "registry:ui"
+        }
+      ],
+      "dependencies": [
+        "nuikit-core",
+        "lucide-react"
+      ],
+      "registryDependencies": [],
+      "meta": {
+        "since": "unreleased",
+        "status": "experimental",
+        "replaces": [],
+        "removeIn": null
+      }
+    },
+    {
       "name": "menu-row",
       "type": "registry:ui",
       "title": "Menu Row",

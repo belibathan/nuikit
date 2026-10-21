@@ -1,3 +1,4 @@
+import { ClothingGrid } from "@/components/clothing-grid";
 import { Fields, Stepper } from "@/components/controls";
 import { Group, Groups } from "@/components/group";
 import { useLoaded } from "@/lib/store";
@@ -65,6 +66,8 @@ export function ComponentsSection() {
                 onChange={(x) => void actions.component(c.id, "texture", x)}
               />
             </Fields>
+            <ClothingGrid mode="drawables" model={current.model} type="component" id={c.id} drawable={v.drawable} texture={v.texture} min={s.drawable.min} max={s.drawable.max} blacklist={s.blacklist?.drawables} onPick={(x) => void actions.component(c.id, "drawable", x)} />
+            <ClothingGrid mode="textures" model={current.model} type="component" id={c.id} drawable={v.drawable} texture={v.texture} min={s.texture.min} max={s.texture.max} blacklist={s.blacklist?.textures} onPick={(x) => void actions.component(c.id, "texture", x)} />
           </Group>
         );
       })}
@@ -113,6 +116,8 @@ export function PropsSection() {
                 onChange={(x) => void actions.prop(p.id, "texture", x)}
               />
             </Fields>
+            <ClothingGrid mode="drawables" model={current.model} type="prop" id={p.id} drawable={v.drawable} texture={v.texture} min={Math.max(0, s.drawable.min)} max={s.drawable.max} blacklist={s.blacklist?.drawables} onPick={(x) => void actions.prop(p.id, "drawable", x)} />
+            {!none && <ClothingGrid mode="textures" model={current.model} type="prop" id={p.id} drawable={v.drawable} texture={v.texture} min={Math.max(0, s.texture.min)} max={s.texture.max} blacklist={s.blacklist?.textures} onPick={(x) => void actions.prop(p.id, "texture", x)} />}
           </Group>
         );
       })}

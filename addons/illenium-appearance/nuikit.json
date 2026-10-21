@@ -25,6 +25,7 @@
     "menu-row",
     "sheet",
     "edge-sheet",
-    "text-roll"
+    "text-roll",
+    "nui-image"
   ]
 }

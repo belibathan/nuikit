@@ -1,8 +1,10 @@
+import { isBrowser } from "nuikit-core";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Kbd } from "@/components/ui/kbd";
+import { NuiImage } from "@/components/ui/nui-image";
 import { formatMoney } from "@/components/ui/money";
 import { EdgeSheet, EdgeSheetBody, EdgeSheetFooter } from "@/components/ui/edge-sheet";
 import { Stat } from "@/components/ui/stat";
@@ -74,6 +76,22 @@ function Detail({ label, value, mono }: { label: string; value: string; mono?: b
   );
 }
 
+/**
+ * The car on the contract: qbx_vehiclesales doesn't send its model, so ask the nuikit resource for the
+ * vehicle the player sits in or stands at (https://nuikit/vehicle, read only). Not a qbx_vehiclesales
+ * callback: its protocol is unchanged. In the browser, ?model= stands in. No nuikit: no picture.
+ */
+async function vehicleModel(): Promise<string | null> {
+  if (isBrowser()) return new URLSearchParams(location.search).get("model");
+  try {
+    const res = await fetch("https://nuikit/vehicle", { method: "POST", headers: { "Content-Type": "application/json; charset=UTF-8" }, body: "{}" });
+    const data = (await res.json()) as { model?: string };
+    return typeof data?.model === "string" && data.model ? data.model : null;
+  } catch {
+    return null;
+  }
+}
+
 /** qbx_vehiclesales' sale contract. Protocol: docs/qbx-vehiclesales-protocol.md */
 export default function App() {
   const [c, setC] = useState<Contract | null>(null);
@@ -82,6 +100,8 @@ export default function App() {
   const [error, setError] = useState<string | null>(null);
   const priceRef = useRef<HTMLInputElement>(null);
   const busy = useRef(false);
+
+  const [model, setModel] = useState<string | null>(null);
 
   useMessages((m) => {
     if (m.action !== "sellVehicle" && m.action !== "buyVehicle") return;
@@ -100,6 +120,7 @@ export default function App() {
     };
     busy.current = false;
     setC(contract);
+    void vehicleModel().then(setModel);
     setDesc(contract.desc);
     setPriceText("");
     setError(null);
@@ -171,6 +192,11 @@ export default function App() {
           }
         >
         <EdgeSheetBody scroll>
+        {model && (
+          <div className="mb-4 flex aspect-[16/7] items-center justify-center overflow-hidden rounded-(--nk-row-radius) bg-muted/60">
+            <NuiImage kind="vehicle" imageKey={model} alt={model} className="h-full w-auto" fallback={null} />
+          </div>
+        )}
         <dl className="grid grid-cols-3 gap-4 border-b pb-4">
           <Detail label="Seller" value={shown.seller} />
           <Detail label="Bank account" value={shown.account} mono />
