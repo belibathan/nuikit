@@ -88,8 +88,8 @@ The misses become the backlog; the doctor reports the same on any live server.
 replay test (`node --test "bench/adapters/replay/esx/*.test.mjs" "bench/adapters/replay/standalone/*.test.mjs"`:
 main flow + one failure path each, against a stand-in of the intent runtime and an `ESX.UI.Menu` mock).
 **Nothing has run in game.** Install: `nuikit-esx.zip` ships `[nuikit-esx]` (`ensure [nuikit-esx]` after
-`es_extended`), then `stop` each replaced resource; the standalone pack joins `nuikit-standalone.zip` once
-`scripts/pack-systems.mjs` maps it.*
+`es_extended`), then `stop` each replaced resource; `nuikit-standalone.zip` ships `[nuikit-standalone]` the same way
+(`ensure [nuikit-standalone]`).*
 
 What the in-game run must settle, per adapter (3 steps each; F8 shows `[nuikit]` lines, the doctor shows `adapted`):
 
