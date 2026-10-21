@@ -118,6 +118,8 @@ export interface HudSettings {
     low?: number;
     high?: number;
     linger?: number;
+    /** a callout with the name and the change: on every change (default), only past a threshold, or never */
+    pop?: false | "change" | "threshold";
   };
   wallet?: { cash?: WalletMode; bank?: WalletMode; job?: boolean };
   vehicle?: {

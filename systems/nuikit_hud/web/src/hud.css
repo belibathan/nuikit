@@ -112,110 +112,62 @@
   box-shadow: inset 0 0 0 1px var(--hud-hairline);
 }
 
-/* ───────────────────────────── vitals */
+/* ───────────────────────────── the status row: comms first, then vitals (components/ui/vital-chip)
 
-.hud-vitals {
+   Every chip is the kit's VitalChip: one shape path (--nk-chip-shape), its level (--nk-level-style),
+   its label attachment (--nk-label-attach); the defaults are the 0.7 look, the rest are experimental
+   (/hudstyle). The vitals fold away when they have nothing to say; a change pops a flag from the side. */
+
+.hud-vitals-row {
+  --vital-size: 2.125rem;
+  --vital-icon-size: 1rem;
+  --hud-vchip-gap: 0.375rem;
+  --nk-chip-bg: var(--hud-chip-bg);
+  --nk-chip-fg: var(--hud-chip-fg);
+  --nk-chip-track: var(--hud-track);
   display: flex;
   align-items: center;
+  gap: var(--hud-vchip-gap);
+  text-shadow: none;
 }
-.hud-vital {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.375rem;
-  height: 2.25rem;
-  max-width: 10rem;
-  margin-right: 0.5rem;
-  padding: 0 0.75rem 0 0.25rem;
-  overflow: hidden;
-  white-space: nowrap;
+.hud-vitals-row[data-layout="classic"] {
+  --vital-size: 2.5rem;
+  --vital-icon-size: 1.0625rem;
+  --hud-vchip-gap: 0.5rem;
+}
+.hud-vchip {
+  flex: none;
+  display: flex;
+  max-width: 24rem;
   opacity: 1;
   transition:
     opacity var(--hud-ms) ease-out,
     max-width var(--hud-ms) ease-out,
-    margin var(--hud-ms) ease-out,
-    padding var(--hud-ms) ease-out;
+    margin var(--hud-ms) ease-out;
 }
-.hud-vital:not([data-shown]) {
+/* hidden: fade and fold away so the row closes up (the gap goes with it) */
+.hud-vchip:not([data-shown]) {
+  overflow: hidden;
   opacity: 0;
   max-width: 0;
-  margin-right: 0;
-  padding-left: 0;
-  padding-right: 0;
+  margin-left: calc(var(--hud-vchip-gap) * -1);
   transition-duration: calc(320ms * var(--nk-motion, 1));
   transition-timing-function: ease-in;
 }
-.hud-vital[data-tone="health"] { --vital: var(--vital-health); }
-.hud-vital[data-tone="armor"] { --vital: var(--vital-armor); }
-.hud-vital[data-tone="hunger"] { --vital: var(--vital-hunger); }
-.hud-vital[data-tone="thirst"] { --vital: var(--vital-thirst); }
-.hud-vital[data-tone="stress"] { --vital: var(--vital-stress); }
-.hud-vital-ring {
-  position: relative;
-  flex: none;
-  width: 1.75rem;
-  height: 1.75rem;
+.hud-vchip[data-active] {
+  --nk-chip-bg: var(--hud-accent);
+  --nk-chip-fg: var(--hud-accent-foreground);
+  --nk-chip-track: transparent;
 }
-.hud-vital-ring > svg {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
+/* past its threshold: the whole outline takes the vital's colour (outline level) */
+.hud-vchip[data-critical] {
+  --nk-chip-track: color-mix(in oklab, var(--vital) 40%, transparent);
 }
-.hud-vital-track {
-  fill: none;
-  stroke: var(--hud-track);
-  stroke-width: 2.5;
-}
-.hud-vital-fill {
-  fill: none;
-  stroke: var(--vital);
-  stroke-width: 2.5;
-  stroke-linecap: round;
-  transition: stroke-dasharray calc(300ms * var(--nk-motion, 1)) ease-out;
-}
-.hud-vital-icon {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--vital);
-}
-.hud-vital-icon svg {
-  width: 0.875rem;
-  height: 0.875rem;
-}
-.hud-vital-value {
-  font-size: 1rem;
-  line-height: 1;
-  font-weight: 600;
-}
-.hud-vital[data-critical] {
-  box-shadow: inset 0 0 0 1.5px var(--vital);
-}
-.hud-vital[data-critical] .hud-vital-icon {
-  animation: hud-pulse calc(1.4s * var(--nk-motion, 1)) ease-in-out infinite;
-}
-/* voice and radio ride the same row */
-.hud-voice {
-  padding-left: 0.625rem;
-}
-.hud-voice-icon {
-  display: flex;
-  opacity: 0.8;
-}
-.hud-voice-icon svg {
-  width: 0.9375rem;
-  height: 0.9375rem;
-}
-.hud-voice .hud-vital-value {
-  font-size: 0.875rem;
-}
-.hud-voice[data-active] {
-  background-color: var(--hud-accent);
-  color: var(--hud-accent-foreground);
-  text-shadow: none;
-}
+.hud-vchip[data-tone="health"] { --vital: var(--vital-health); }
+.hud-vchip[data-tone="armor"] { --vital: var(--vital-armor); }
+.hud-vchip[data-tone="hunger"] { --vital: var(--vital-hunger); }
+.hud-vchip[data-tone="thirst"] { --vital: var(--vital-thirst); }
+.hud-vchip[data-tone="stress"] { --vital: var(--vital-stress); }
 
 /* ───────────────────────────── location */
 
@@ -1281,205 +1233,6 @@
   opacity: 0.8;
 }
 
-/* ───────────────────────────── vitals: pills, status dots, mic */
-
-.hud-vitals-c {
-  display: flex;
-  align-items: center;
-  gap: 0.375rem;
-}
-.hud-pill,
-.hud-dot,
-.hud-mic {
-  flex: none;
-  background-color: var(--hud-chip-bg);
-  color: var(--hud-chip-fg);
-  text-shadow: none;
-  box-shadow: inset 0 0 0 1px var(--hud-hairline);
-}
-.hud-pill[data-tone="health"],
-.hud-dot[data-tone="health"] { --vital: var(--vital-health); }
-.hud-pill[data-tone="armor"],
-.hud-dot[data-tone="armor"] { --vital: var(--vital-armor); }
-.hud-pill[data-tone="hunger"],
-.hud-dot[data-tone="hunger"] { --vital: var(--vital-hunger); }
-.hud-pill[data-tone="thirst"],
-.hud-dot[data-tone="thirst"] { --vital: var(--vital-thirst); }
-.hud-pill[data-tone="stress"],
-.hud-dot[data-tone="stress"] { --vital: var(--vital-stress); }
-.hud-pill {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.375rem;
-  height: 1.875rem;
-  max-width: 10rem;
-  padding: 0 0.6875rem 0.0625rem 0.5625rem;
-  overflow: hidden;
-  border-radius: var(--hud-chip-radius);
-  white-space: nowrap;
-  transition:
-    opacity var(--hud-ms) ease-out,
-    max-width var(--hud-ms) ease-out,
-    padding var(--hud-ms) ease-out,
-    margin var(--hud-ms) ease-out;
-}
-.hud-pill-icon {
-  display: flex;
-  color: var(--vital, currentColor);
-}
-.hud-pill-icon svg {
-  width: 0.875rem;
-  height: 0.875rem;
-}
-.hud-pill-label {
-  font-family: var(--hud-caption-font);
-  font-size: 0.8125rem;
-  line-height: 1;
-  font-weight: 600;
-  text-transform: var(--hud-caption-case);
-  letter-spacing: var(--hud-caption-tracking);
-}
-.hud-pill-value {
-  min-width: 1.25rem;
-  font-size: 0.8125rem;
-  line-height: 1;
-  font-weight: 600;
-  text-align: right;
-  opacity: 0.62;
-}
-/* the level line runs under the whole pill (reference screens), the chip's own shape clips its ends */
-.hud-pill-level {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 0.125rem;
-  overflow: hidden;
-  background-color: var(--hud-track);
-}
-.hud-pill-level > span {
-  display: block;
-  height: 100%;
-  background-color: var(--vital);
-  transform-origin: left center;
-  transition: transform calc(300ms * var(--nk-motion, 1)) ease-out;
-}
-.hud-pill[data-critical] {
-  box-shadow: inset 0 0 0 1.5px var(--vital);
-}
-.hud-pill[data-critical] .hud-pill-value {
-  opacity: 1;
-  color: var(--vital);
-}
-.hud-pill-radio {
-  padding-bottom: 0;
-}
-.hud-dot {
-  position: relative;
-  width: 1.875rem;
-  height: 1.875rem;
-  /* the identity's chip shape, like the pills (Signal's chamfered chips; 0.7.0 test #11) */
-  border-radius: var(--hud-chip-radius);
-  overflow: hidden;
-  transition:
-    opacity var(--hud-ms) ease-out,
-    width var(--hud-ms) ease-out,
-    margin var(--hud-ms) ease-out;
-}
-.hud-dot > svg {
-  position: absolute;
-  inset: 0;
-  width: 1.875rem;
-  height: 1.875rem;
-}
-.hud-dot-track,
-.hud-dot-fill {
-  fill: none;
-  stroke-width: 2.25;
-}
-.hud-dot-track {
-  stroke: var(--hud-track);
-}
-.hud-dot-fill {
-  stroke: var(--vital);
-  stroke-linecap: round;
-  transition: stroke-dasharray calc(300ms * var(--nk-motion, 1)) ease-out;
-}
-.hud-dot-icon {
-  position: absolute;
-  left: 0;
-  top: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 1.875rem;
-  height: 1.875rem;
-  color: var(--vital);
-}
-.hud-dot-icon svg {
-  width: 0.8125rem;
-  height: 0.8125rem;
-}
-.hud-dot[data-critical] {
-  box-shadow: inset 0 0 0 1px var(--vital);
-}
-/* hidden: fade and fold away so the row closes up (the gap goes with it) */
-.hud-pill:not([data-shown]),
-.hud-dot:not([data-shown]) {
-  opacity: 0;
-  margin-left: -0.375rem;
-  transition-duration: calc(320ms * var(--nk-motion, 1));
-  transition-timing-function: ease-in;
-}
-.hud-pill:not([data-shown]) {
-  max-width: 0;
-  padding-left: 0;
-  padding-right: 0;
-}
-.hud-dot:not([data-shown]) {
-  width: 0;
-}
-.hud-mic {
-  display: inline-flex;
-  align-items: center;
-  height: 1.875rem;
-  padding: 0 0.53125rem;
-  border-radius: var(--hud-chip-radius);
-  white-space: nowrap;
-}
-.hud-mic-icon {
-  display: flex;
-  opacity: 0.85;
-}
-.hud-mic-icon svg {
-  width: 0.8125rem;
-  height: 0.8125rem;
-}
-.hud-mic-range {
-  max-width: 0;
-  overflow: hidden;
-  opacity: 0;
-  font-size: 0.8125rem;
-  line-height: 1;
-  font-weight: 600;
-  transition:
-    max-width var(--hud-ms) ease-out,
-    opacity var(--hud-ms) ease-out,
-    margin var(--hud-ms) ease-out;
-}
-.hud-mic[data-open] .hud-mic-range {
-  max-width: 6rem;
-  margin: 0 0.125rem 0 0.3125rem;
-  opacity: 1;
-}
-.hud-mic[data-active] {
-  background-color: var(--hud-accent);
-  color: var(--hud-accent-foreground);
-  box-shadow: none;
-  text-shadow: none;
-}
-
 /* ───────────────────────────── ammo */
 
 .hud-br-stack,
@@ -1862,11 +1615,6 @@
 @keyframes hud-blink {
   50% {
     opacity: 0.15;
-  }
-}
-@keyframes hud-pulse {
-  50% {
-    opacity: 0.45;
   }
 }
 @keyframes hud-rise {

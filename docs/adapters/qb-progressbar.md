@@ -4,6 +4,8 @@
 [qbcore.org/docs/qb-core/client-function-reference](https://qbcore.org/docs/qb-core/client-function-reference)
 (`QBCore.Functions.Progressbar`). Mechanism proposed; the spike decides.*
 
+**Status (Oct 21):** built as `adapters/[nuikit-qb]/nuikit_qb_progressbar` (stand-in; `client/effects.lua` plays animation/scenario, props and `controlDisables` through `nk.controls`); replay test `bench/adapters/replay/qb/progressbar.test.mjs`. Decision: a second bar while one runs gets `finish(true)` at once (`REFUSE_CALLS_FINISH`); not `useWhileDead` + dead → refused the same way. Not run in game.
+
 ## Source
 
 Documented: `Progress`, `ProgressWithStartEvent`, `ProgressWithTickEvent` (two arities), `isDoingSomething`, the

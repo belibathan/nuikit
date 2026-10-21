@@ -3,7 +3,6 @@
    on top: the sheets, the slot tiles, the drop zones, scrollbars and item art. Colours are theme
    tokens only (color-mix is lowered to rgba for Chromium 103 by vite-plugin-nuikit). */
 @import "./index.css";
-@import "tw-animate-css";
 
 html,
 body {

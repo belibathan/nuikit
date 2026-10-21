@@ -1,68 +1,84 @@
+@import "./index.css";
+/* shadcn's enter/exit animations (the Sheet slides in and out); kit.css keeps them to the motion rules */
+@import "tw-animate-css";
+
 /*
- * nuikit_pause: the scrim and motion. In game the blur of the world comes from GTA
+ * nuikit_pause: the sheet, the scrim and motion. In game the blur of the world comes from GTA
  * (TriggerScreenblurFadeIn in client/main.lua): CEF draws over the game, so backdrop-filter only
  * blurs other NUI. It stays here so the browser preview matches. Loaded after index.css; colours are theme tokens only,
  * opacity is applied with `opacity` (not color-mix) so FiveM's Chromium 103 renders it as written.
+ *
+ * The layout: one backdrop on the left in the theme's surface, flush to the top, left and bottom
+ * edges (no radius or cut there: they would only show on the open edge), a crisp hairline on its
+ * right edge; the menu sits in a column inside it. Everything right of it is left open for the game.
  */
 
+/* Without the focus camera (a sub-view, or the 0.4 menu): an even shade over the world, no side gradient. */
 .pause-scrim {
   inset: -32px; /* past the edges, so the blur has no hard border */
-  background: color-mix(in oklab, var(--scrim) 42%, transparent);
+  background: color-mix(in oklab, var(--scrim) 38%, transparent);
   -webkit-backdrop-filter: blur(16px) saturate(1.15);
   backdrop-filter: blur(16px) saturate(1.15);
 }
 
-/* the rail: the theme's background, solid on the left, fading into the blurred game */
-.pause-scrim::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(90deg, var(--background) 0%, var(--background) 24%, transparent 62%);
-  opacity: 0.92;
+/*
+ * The sheet (shadcn Sheet on the left, views/sheet.tsx): the panel surface flush to the top, left and
+ * bottom (no radius or cut: they would only show on the open edge), a touch deeper at the screen edge
+ * (tokens only), a hairline on its open edge, the panel depth. The Sheet slides it in over --nk-time x 2.2
+ * (capped: the full-screen rule, 400ms or less) and out faster; reduced motion keeps the fade only (kit.css
+ * zeroes the slide), motion off zeroes both. The same model as the ox_lib context sheet.
+ */
+.pause-sheet {
+  color: var(--nk-panel-fg) !important;
+  background-color: var(--nk-panel-bg) !important;
+  background-image: linear-gradient(90deg, rgba(var(--scrim-rgb), 0.22) 0%, rgba(var(--scrim-rgb), 0) 70%);
+  border-right: var(--nk-border) solid var(--nk-panel-border) !important;
+  box-shadow: var(--nk-panel-shadow) !important;
 }
-
-/* a soft vignette so the card floats */
-.pause-scrim::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(120% 90% at 70% 50%, transparent 45%, color-mix(in oklab, var(--scrim) 55%, transparent) 100%);
+.pause-sheet[data-state="open"] {
+  animation-duration: min(calc(var(--nk-time) * 2.2), 360ms) !important;
+  animation-timing-function: var(--nk-ease-out) !important;
+}
+.pause-sheet[data-state="closed"] {
+  animation-duration: min(calc(var(--nk-time) * 1.4), 200ms) !important;
+  animation-timing-function: var(--nk-ease-in, ease-in) !important;
+}
+/* a sub-page title: the heading face at section size, one step under Home's display title */
+.pause-page-title {
+  --nk-heading-size: var(--nk-text-section);
+}
+/* the map's camera buttons: a slim strip of the game chip surface on the open area's right edge */
+.pause-controls {
+  border-radius: var(--nk-chip-radius);
+  clip-path: var(--nk-chip-clip, none);
+  background-color: var(--nk-chip-bg);
+  color: var(--nk-chip-fg);
+}
+.pause-logo {
+  border-radius: var(--nk-key-radius);
+  clip-path: var(--nk-key-clip);
 }
 
 @keyframes pause-fade {
   from { opacity: 0; }
   to { opacity: 1; }
 }
-@keyframes pause-slide {
-  from { opacity: 0; transform: translateX(-14px); }
-  to { opacity: 1; transform: none; }
-}
-@keyframes pause-rise {
-  from { opacity: 0; transform: translateY(14px) scale(0.985); }
-  to { opacity: 1; transform: none; }
-}
 
 .pause-scrim { animation: pause-fade 180ms ease-out both; }
-.pause-nav { animation: pause-slide 320ms cubic-bezier(0.2, 0.8, 0.2, 1) both; }
 
 @media (prefers-reduced-motion: reduce) {
-  .pause-scrim, .pause-rail > header, .pause-nav, .pause-card { animation: none; }
+  .pause-scrim { animation: none; }
 }
 
 /*
  * The bigger menu (docs/pause-3d.md).
- * Home with the stand-in: no blur and a clear middle, so the character the game camera frames there
- * is seen as it is. The rail keeps its gradient; the cards on the right get a soft shade.
+ * Home with the focus camera: nothing over the world at all, so the character the camera frames
+ * right of the sheet is seen as it is.
  */
 .pause-scrim[data-stage] {
   background: transparent;
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
-}
-.pause-scrim[data-stage]::after {
-  background:
-    linear-gradient(270deg, color-mix(in oklab, var(--scrim) 55%, transparent) 0%, color-mix(in oklab, var(--scrim) 25%, transparent) 24%, transparent 40%),
-    linear-gradient(0deg, color-mix(in oklab, var(--scrim) 35%, transparent) 0%, transparent 22%);
 }
 
 /* The map: the world stays sharp; a light shade at the edges keeps the panels readable. */
@@ -98,7 +114,122 @@
   transform: translate(-50%, calc(-100% - 0.75rem));
 }
 
-/* With the stand-in, the rail's gradient stops well before the middle of the screen. */
-.pause-scrim[data-stage]::before {
-  background: linear-gradient(90deg, var(--background) 0%, var(--background) 13%, transparent 28%);
+/*
+ * Blips: every marker GTA's own map shows (views/blips.tsx). The identity's chip (its surface, shape
+ * and clip), the kind's icon, and the blip's GTA colour as a thin accent along its foot. The hit
+ * target is larger than the mark.
+ */
+.pause-blip-hit .pause-pin-center {
+  position: relative;
+}
+.pause-blip {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: var(--nk-chip-radius);
+  clip-path: var(--nk-chip-clip, none);
+  background-color: var(--nk-chip-bg);
+  color: var(--nk-chip-fg);
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--hud-foreground) 14%, transparent);
+  transition: transform var(--nk-time-hover, 120ms) ease-out;
+}
+.pause-blip-accent {
+  box-shadow:
+    inset 0 -0.1875rem 0 0 var(--blip),
+    inset 0 0 0 1px color-mix(in oklab, var(--hud-foreground) 14%, transparent);
+}
+.pause-blip-accent .pause-blip-icon {
+  color: var(--blip);
+}
+.pause-blip::before {
+  content: "";
+  position: absolute;
+  inset: -0.375rem;
+}
+.pause-blip-icon {
+  width: 0.875rem;
+  height: 0.875rem;
+}
+/* a merged marker: how many it stands for */
+.pause-blip-count {
+  position: absolute;
+  z-index: 1;
+  top: -0.375rem;
+  right: -0.5rem;
+  min-width: 1rem;
+  height: 1rem;
+  padding: 0 0.25rem;
+  border-radius: 9999px;
+  background-color: var(--hud-foreground);
+  color: var(--hud);
+  font-size: 0.6875rem;
+  line-height: 1rem;
+  font-weight: 600;
+  text-align: center;
+}
+.pause-blip-label {
+  position: absolute;
+  left: calc(100% + 0.375rem);
+  top: 50%;
+  display: none;
+  flex-direction: column;
+  max-width: 14rem;
+  padding: 0.25rem 0.625rem;
+  border-radius: var(--nk-chip-radius);
+  clip-path: var(--nk-chip-clip, none);
+  background-color: var(--nk-chip-bg);
+  color: var(--nk-chip-fg);
+  white-space: nowrap;
+  font-size: 0.8125rem;
+  line-height: 1.125rem;
+  font-weight: 600;
+  transform: translateY(-50%);
+}
+.pause-blip-kind {
+  font-size: 0.6875rem;
+  line-height: 0.875rem;
+  font-weight: 500;
+  opacity: 0.7;
+}
+[data-open] > .pause-pin-center > .pause-blip-label {
+  display: flex;
+}
+[data-open] > .pause-pin-center > .pause-blip {
+  transform: scale(1.12);
+}
+[data-selected] > .pause-pin-center > .pause-blip {
+  outline: 2px solid var(--brand, var(--primary));
+  outline-offset: 1px;
+}
+.pause-blip-hit:focus-visible > .pause-pin-center > .pause-blip {
+  outline: 2px solid var(--ring);
+  outline-offset: 1px;
+}
+/* a blip its owner flashes: a ring in its colour (static: nothing runs while the map idles) */
+[data-flash] > .pause-pin-center > .pause-blip {
+  outline: 2px solid var(--blip, var(--hud-foreground));
+  outline-offset: 1px;
+}
+/* far out: short-range blips become dots in their colour */
+[data-far] [data-short]:not([data-open]) > .pause-pin-center > .pause-blip {
+  width: 0.625rem;
+  height: 0.625rem;
+  border-radius: 9999px;
+  clip-path: none;
+  background-color: var(--blip, var(--hud-foreground));
+  box-shadow: 0 0 0 1px color-mix(in oklab, var(--hud) 70%, transparent);
+  opacity: 0.85;
+}
+[data-far] [data-short]:not([data-open]) > .pause-pin-center > .pause-blip > *,
+[data-far] [data-short]:not([data-open]) > .pause-pin-center > .pause-blip-count {
+  display: none;
+}
+
+/* closing: the menu is already closed in the game; the sheet slides out and the rest fades with it */
+[data-surface][data-closing] .pause-root {
+  opacity: 0;
+  transition: opacity calc(160ms * var(--nk-motion, 1)) ease-in;
 }

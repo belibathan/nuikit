@@ -4,6 +4,12 @@
 nuikit never owns the raycast, zones or distance checks: only the option list drawn at the target. Mechanism:
 render only (what the ox_target override already does).*
 
+**Status (Oct 21):** recorder stage only. `adapters/[nuikit-qb]/nuikit_qb_target` ships a recording page (`override/html/index.html`, forwards every qb-target page message to the resource; `/nuikit_qb_target dump`) and no override: the render-only override needs the recorded log below, which the owner produces in one session. It does not declare `nuikit_adapter`. Paste the log here:
+
+```
+(no recording yet)
+```
+
 ## Source
 
 Documented: the zone, entity, model, bone and global exports with their argument order, the `options` entry

@@ -1,0 +1,19 @@
+{
+  "library": "qb-radialmenu",
+  "source": "hand-written from qbcore.org/docs/qbcore-resources/qb-radialmenu; the shipped config.lua",
+  "expects": ["qb-idcard:client:showId", "police:client:openStash", "my_script:added"],
+  "calls": [
+    { "kind": "export", "resource": "qb-radialmenu", "name": "AddOption", "args": [ { "title": "Added", "icon": "plus", "type": "client", "event": "my_script:added", "shouldClose": false }, "extra" ] },
+    { "kind": "command", "resource": "nuikit_qb_radialmenu", "name": "nuikit_radial", "args": [] },
+    { "kind": "intentEvent", "intent": "radial", "event": "select", "data": { "index": 4, "id": "extra", "path": [4] } },
+    { "kind": "resolve", "intent": "radial", "result": { "index": 1, "id": "id", "path": [1, 1] } },
+
+    { "kind": "command", "resource": "nuikit_qb_radialmenu", "name": "nuikit_radial", "args": [] },
+    { "kind": "resolve", "intent": "radial", "result": { "index": 3, "id": "police-stash", "path": [3] } },
+
+    { "kind": "export", "resource": "qb-radialmenu", "name": "RemoveOption", "args": ["extra"] },
+    { "kind": "command", "resource": "nuikit_qb_radialmenu", "name": "nuikit_radial", "args": [] },
+    { "kind": "dismiss", "intent": "radial", "reason": "escape" },
+    { "kind": "export", "resource": "qb-radialmenu", "name": "RemoveOption", "args": ["nope"] }
+  ]
+}

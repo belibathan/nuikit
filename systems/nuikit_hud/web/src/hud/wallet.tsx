@@ -4,6 +4,7 @@ import type { NuiPlayer } from "nuikit-core/react";
 import { BriefcaseIcon, LandmarkIcon, WalletIcon } from "lucide-react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import type { HudSettings, WalletMode } from "../nui";
+import { NumberRoll } from "@/components/ui/text-roll";
 
 const money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
 const LINGER = 5000;
@@ -39,7 +40,7 @@ function Money({ icon, label, value, mode, size }: { icon: ReactNode; label: str
         </span>
       )}
       <span className="hud-money-icon">{icon}</span>
-      <span className="hud-num hud-money-value">{money.format(value)}</span>
+      <NumberRoll className="hud-num hud-money-value" value={value} format={(n) => money.format(n)} />
     </div>
   );
 }

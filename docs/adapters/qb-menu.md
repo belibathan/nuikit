@@ -3,6 +3,8 @@
 *Clean-room spec. Written from [qbcore.org/docs/qbcore-resources/qb-menu](https://qbcore.org/docs/qbcore-resources/qb-menu)
 and the repository README. Mechanism proposed; the spike decides (see Mechanism).*
 
+**Status (Oct 21):** built as `adapters/[nuikit-qb]/nuikit_qb_menu` (stand-in); replay test `bench/adapters/replay/qb/menu.test.mjs` passes all six points. Decisions: `sort` is by `header`, stable; `skipFirst` keeps row 1 in place; an image path goes through `items[].icon` (the icon type accepts URLs); a header-only menu keeps its header as a `kind = 'header'` row with an empty title. Not run in game.
+
 ## Source
 
 Documented: `openMenu`, `closeMenu`, the item fields, `params`. **Not documented** (used by scripts in the

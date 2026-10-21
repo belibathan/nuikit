@@ -565,6 +565,9 @@ importers:
       tailwind-merge:
         specifier: ^3.0.0
         version: 3.7.0
+      tw-animate-css:
+        specifier: ^1.4.0
+        version: 1.4.0
     devDependencies:
       '@tailwindcss/vite':
         specifier: ^4.1.0
@@ -899,6 +902,9 @@ importers:
       tailwind-merge:
         specifier: ^3.0.0
         version: 3.7.0
+      tw-animate-css:
+        specifier: ^1.4.0
+        version: 1.4.0
     devDependencies:
       '@tailwindcss/vite':
         specifier: ^4.1.0
@@ -954,6 +960,9 @@ importers:
       tailwind-merge:
         specifier: ^3.0.0
         version: 3.7.0
+      tw-animate-css:
+        specifier: ^1.4.0
+        version: 1.4.0
     devDependencies:
       '@tailwindcss/vite':
         specifier: ^4.1.0
@@ -1009,6 +1018,9 @@ importers:
       tailwind-merge:
         specifier: ^3.0.0
         version: 3.7.0
+      tw-animate-css:
+        specifier: ^1.4.0
+        version: 1.4.0
     devDependencies:
       '@tailwindcss/vite':
         specifier: ^4.1.0
@@ -1064,6 +1076,9 @@ importers:
       tailwind-merge:
         specifier: ^3.0.0
         version: 3.7.0
+      tw-animate-css:
+        specifier: ^1.4.0
+        version: 1.4.0
     devDependencies:
       '@tailwindcss/vite':
         specifier: ^4.1.0
@@ -1119,6 +1134,9 @@ importers:
       tailwind-merge:
         specifier: ^3.0.0
         version: 3.7.0
+      tw-animate-css:
+        specifier: ^1.4.0
+        version: 1.4.0
     devDependencies:
       '@tailwindcss/vite':
         specifier: ^4.1.0

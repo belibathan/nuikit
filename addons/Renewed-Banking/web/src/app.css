@@ -1,8 +1,7 @@
 /* index.css is synced from the nuikit template (stock shadcn neutral theme + the kit layer). This file
-   adds what the Renewed-Banking UI needs on top: shadcn's animation utilities and a transparent,
+   adds what the Renewed-Banking UI needs on top: a transparent,
    unscrollable page. Numbers use the kit's nk-num; panels and toasts open with nk-enter. */
 @import "./index.css";
-@import "tw-animate-css";
 
 html,
 body {

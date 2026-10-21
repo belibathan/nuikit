@@ -259,6 +259,69 @@ describe("systems/nuikit_pause: the bigger menu", () => {
     expect(await pause.run(`return Map3D.project({ x = 0, y = 0, z = 0, d = 100, pitch = -30, heading = 0 }, 16 / 9, 0, -5000, 0)`)).toBeFalsy();
   });
 
+  it("sends every blip on GTA's big map while the map is open, and their positions with the pins", async () => {
+    client = await createClient();
+    const pause = await client.start("nuikit_pause", { before: natives, scripts });
+    // sprite → handles; 8 is the waypoint, 9 a radius, 6 the player's own blip, 31 shown on the minimap only
+    await pause.run(`
+      BLIPS = { [52] = { 101, 102 }, [357] = { 103 }, [8] = { 104 }, [9] = { 105 }, [6] = { 106 }, [61] = { 107 } }
+      INFO = {
+        [101] = { x = 110.0, y = 200.0, z = 30.0, display = 4, colour = 2, short = true, type = 4 },
+        [102] = { x = 0.0, y = 0.0, z = 0.0, display = 4, colour = 2, short = true, type = 4 },
+        [103] = { x = 120.0, y = 210.0, z = 30.0, display = 2, colour = 3, short = false, type = 4 },
+        [104] = { x = 1.0, y = 1.0, z = 0.0, display = 4, colour = 0, type = 4 },
+        [105] = { x = 1.0, y = 1.0, z = 0.0, display = 4, colour = 0, type = 4 },
+        [106] = { x = 100.0, y = 200.0, z = 30.0, display = 4, colour = 0, type = 2 },
+        [107] = { x = 130.0, y = 220.0, z = 30.0, display = 5, colour = 1, type = 4 },
+      }
+      local walk = {}
+      function GetNumberOfActiveBlips() local n = 0 for _, l in pairs(BLIPS) do n = n + #l end return n end
+      function GetFirstBlipInfoId(s) walk[s] = 1 return BLIPS[s] and BLIPS[s][1] or 0 end
+      function GetNextBlipInfoId(s) walk[s] = (walk[s] or 1) + 1 return BLIPS[s] and BLIPS[s][walk[s]] or 0 end
+      function DoesBlipExist(b) return INFO[b] ~= nil end
+      function GetBlipInfoIdCoord(b) return vec3(INFO[b].x, INFO[b].y, INFO[b].z) end
+      function GetBlipCoords(b) return vec3(INFO[b].x, INFO[b].y, INFO[b].z) end
+      function GetBlipInfoIdDisplay(b) return INFO[b].display end
+      function GetBlipAlpha() return 255 end
+      function GetBlipColour(b) return INFO[b].colour end
+      function IsBlipShortRange(b) return INFO[b].short == true end
+      function GetBlipInfoIdType(b) return INFO[b].type end
+      function GetMainPlayerBlipId() return 106 end
+      CALLS = 0
+      local first = GetFirstBlipInfoId
+      function GetFirstBlipInfoId(s) CALLS = CALLS + 1 return first(s) end
+    `);
+    await pause.run(press);
+    expect(await pause.run(`return CALLS`)).toBe(0); // nothing read while the map is closed
+    await pause.call("pause:view", { view: "map" });
+    const sent = pause.messages.filter((m) => m.action === "pause:map:blips");
+    expect(sent).toHaveLength(1);
+    const list = sent[0]!.data as { id: number; s: number; c: number; sr: boolean; x: number }[];
+    expect(list.map((b) => b.id)).toEqual([101, 103]); // no waypoint, radius, own blip, minimap-only or (0, 0) blips
+    expect(list[0]).toMatchObject({ s: 52, c: 2, sr: true, x: 110 });
+    expect(list[1]).toMatchObject({ s: 357, c: 3, sr: false });
+    // stopped early: the walk ends once every active blip was seen
+    expect(await pause.run(`return CALLS`)).toBeLessThan(400);
+
+    // the pins carry one position per listed blip
+    await pause.run(`NOW = NOW + 16 for _, t in ipairs(THREADS) do end`);
+    await pause.run(`Map3D.step(0.016)`);
+    const pins = await pause.run<{ b: number[] }>(`return Map3D.pins(1, 16 / 9)`);
+    expect(pins.b).toHaveLength(4);
+
+    // unchanged: not sent again; a name from the blip's owner: sent
+    await pause.run(`Map3D.refreshBlips(NOW + 5000)`);
+    expect(pause.messages.filter((m) => m.action === "pause:map:blips")).toHaveLength(1);
+    await pause.run(`Map3D.nameBlip(103, 'Legion Square garage') Map3D.refreshBlips(NOW + 10000)`);
+    const named = pause.messages.filter((m) => m.action === "pause:map:blips").at(-1)!.data as { id: number; name?: string }[];
+    expect(named.find((b) => b.id === 103)!.name).toBe("Legion Square garage");
+
+    // closed: nothing is read any more
+    await pause.run(`Pause.close() CALLS = 0`);
+    expect(await pause.run(`return CALLS`)).toBe(0);
+  });
+
+
   it("a drag lands on the live camera within a 60 Hz interval (the ground follows the cursor); zoom still eases", async () => {
     client = await createClient();
     const pause = await client.start("nuikit_pause", { before: natives, scripts });
@@ -287,11 +350,11 @@ describe("systems/nuikit_pause: the bigger menu", () => {
   it("frames the player between the inventory panels while ox_inventory is open", async () => {
     client = await createClient();
     const pause = await client.start("nuikit_pause", { before: natives, scripts });
-    // the override's middle gap at 1080p: 37.5rem in from each side (36rem sheets + 1.5rem air), between the bar and the top
+    // the override's middle gap at 1080p: 34.75rem edge sheets plus 1.5rem of air on each side
     const f = await pause.run<{ x: number; w: number; y: number; h: number }>(`return Inventory.frame(1920, 1080)`);
-    expect(f.x).toBeCloseTo((37.5 * 16) / 1920, 3);
+    expect(f.x).toBeCloseTo((36.25 * 16) / 1920, 3);
     expect(f.x + f.w).toBeCloseTo(1 - f.x, 6);
-    expect(f.y + f.h).toBeCloseTo(1 - (4 * 16) / 1080, 4); // room for the key bar
+    expect(f.y + f.h).toBeLessThan(0.96);
 
     await pause.run(`LocalPlayer.state.invOpen = true Inventory.tick()`);
     expect(await pause.run(`return Focus.isActive() and Inventory.isFocusing()`)).toBe(true);
@@ -304,7 +367,97 @@ describe("systems/nuikit_pause: the bigger menu", () => {
 
     // the pause menu's own framing is untouched by the inventory's
     await pause.run(press);
-    expect(await pause.run(`return Focus.state().frame.x`)).toBeCloseTo(0.36, 6);
+    expect(await pause.run(`return Focus.state().frame.x`)).toBeCloseTo(0.325, 6);
+  });
+
+  it("frames the inventory camera in the area the inventory page reports, gliding when it changes", async () => {
+    client = await createClient();
+    const pause = await client.start("nuikit_pause", { before: natives, scripts });
+    // the fallback until the page reports: 34.75rem edge sheets plus air
+    expect(await pause.run<number>(`return Inventory.currentFrame().x`)).toBeCloseTo(((34.75 + 1.5) * 16) / 1920, 4);
+    // the page reports before the camera starts (on open): it frames there
+    expect(await pause.call("inventory:frame", { x: 0.3021, y: 0.0444, w: 0.3958, h: 0.8667 })).toEqual({});
+    await pause.run(`LocalPlayer.state.invOpen = true Inventory.tick()`);
+    expect(await pause.run(`return Focus.isActive()`)).toBe(true);
+    expect(await pause.run(`return Focus.state().frame.x`)).toBeCloseTo(0.3021, 6);
+    await pause.run(`for _ = 1, 120 do Focus.step(0.05) end`);
+    const settled = await pause.run<number[]>(`return CAMPOS`);
+    // the right sheet closes: a wider area; the camera glides there, no jump
+    await pause.call("inventory:frame", { x: 0.3021, y: 0.0444, w: 0.6979, h: 0.8667 });
+    expect(await pause.run(`return Focus.state().frame.w`)).toBeCloseTo(0.6979, 6);
+    const next = await pause.run<number[]>(`Focus.step(0.0) return CAMPOS`);
+    expect(Math.hypot(next[0]! - settled[0]!, next[1]! - settled[1]!, next[2]! - settled[2]!)).toBeLessThan(0.01);
+    const moved = await pause.run<number[]>(`for _ = 1, 120 do Focus.step(0.05) end return CAMPOS`);
+    expect(Math.hypot(moved[0]! - settled[0]!, moved[1]! - settled[1]!)).toBeGreaterThan(0.05);
+    // junk is refused and clamped; the callback still answers
+    expect(await pause.call("inventory:frame", { x: "nope" })).toEqual({});
+    expect(await pause.run(`return Focus.state().frame.w`)).toBeCloseTo(0.6979, 6);
+    await pause.call("inventory:frame", { x: -1, y: 0.5, w: 4, h: 0.9 });
+    const f = await pause.run<{ x: number; w: number; y: number; h: number }>(`return Focus.state().frame`);
+    expect(f.x).toBe(0);
+    expect(f.w).toBe(1);
+    expect(f.y + f.h).toBeLessThanOrEqual(1);
+    // the pause menu's own framing is untouched
+    await pause.run(`LocalPlayer.state.invOpen = false Inventory.tick()`);
+    await pause.run(press);
+    expect(await pause.run(`return Focus.state().frame.x`)).toBeCloseTo(0.325, 6);
+  });
+
+  it("no light on the player by default; Config.preview.light = 'studio' turns the preset on", async () => {
+    client = await createClient();
+    const pause = await client.start("nuikit_pause", { before: natives, scripts });
+    await pause.run(press);
+    await pause.run(`for _ = 1, 10 do Focus.step(0.05) end`);
+    expect(await pause.run(`return LIGHTS`)).toBe(0);
+    await pause.run(`Config.preview.light = 3.0 Focus.step(0.05)`); // the 0.7 number: still off
+    expect(await pause.run(`return LIGHTS`)).toBe(0);
+    await pause.run(`Config.preview.light = 'studio' Focus.step(0.05)`);
+    expect(await pause.run(`return LIGHTS`)).toBe(2); // key and rim
+  });
+
+  it("by default it keeps the view: same heading and pitch, it only moves in (no swing, no turn)", async () => {
+    client = await createClient();
+    const pause = await client.start("nuikit_pause", { before: natives, scripts });
+    // the gameplay camera looks north (heading 0) and 10 degrees down, from the south of the player
+    await pause.run(press);
+    expect(await pause.run<number>(`return Focus.state().residual.orbit`)).toBeCloseTo(0, 6);
+    const yaws = await pause.run<number[]>(`
+      local out = {}
+      for _ = 1, 120 do local p = Focus.step(0.05) out[#out + 1] = p.yaw end
+      return { math.min(table.unpack(out)), math.max(table.unpack(out)), Focus.step(0.05).pitch }`);
+    expect(yaws[0]).toBeCloseTo(0, 3); // never turns
+    expect(yaws[1]).toBeCloseTo(0, 3);
+    expect(yaws[2]).toBeCloseTo(-10, 3); // the gameplay camera's pitch
+    const p = await pause.run<number[]>(`return CAMPOS`);
+    expect(p[1]).toBeLessThan(200); // still on the side it was on (south)
+  });
+
+  it("facing = 'front': it swings round them (never through them) to the front, at chest height", async () => {
+    client = await createClient();
+    const pause = await client.start("nuikit_pause", { before: natives, scripts });
+    await pause.run(`Config.preview.facing = 'front'`);
+    // the player stands at (100, 200) facing heading 90 (west, -x); the gameplay camera is behind-ish, to the south
+    await pause.run(press);
+    const closest = await pause.run<number>(`
+      local m = math.huge
+      for _ = 1, 120 do
+        Focus.step(0.05)
+        m = math.min(m, math.sqrt((CAMPOS[1] - 100) ^ 2 + (CAMPOS[2] - 200) ^ 2))
+      end
+      return m`);
+    const p = await pause.run<number[]>(`return CAMPOS`);
+    expect(p[0]).toBeLessThan(100 - 1); // in front of them (west), not behind
+    expect(closest).toBeGreaterThan(1); // the glide orbits; it never cuts through the player
+    expect(p[2]).toBeGreaterThan(30.2); // above the hips: chest height
+    expect(p[2]).toBeLessThan(31.2);
+    await pause.run(`Pause.close()`);
+
+    // Config.preview.facing = 'behind': the 0.7.0 framing, from the side the gameplay camera was on
+    await pause.run(`Config.preview.facing = 'behind' NOW = NOW + 1000`);
+    await pause.run(press);
+    await pause.run(`for _ = 1, 120 do Focus.step(0.05) end`);
+    const b = await pause.run<number[]>(`return CAMPOS`);
+    expect(b[1]).toBeLessThan(200); // south, where the gameplay camera was
   });
 
   it("the camera service hands over between owners, streams with the claim and always gives the camera back", async () => {

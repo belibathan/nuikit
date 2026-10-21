@@ -25,6 +25,8 @@ export interface DoctorResource {
   metadata: Record<string, string[]>;
   /** The resource was already started when nuikit's server script ran (nuikit started after it). */
   startedBeforeRuntime?: boolean;
+  /** Its fxmanifest.lua on disk differs from the one read when it started (edited since; needs `refresh`). */
+  manifestChanged?: boolean;
 }
 
 export interface DoctorSnapshot {
@@ -76,11 +78,14 @@ export type ResourceStatus = "runtime" | "nuikit" | "hosted" | "adapted" | "over
 export interface ResourceReport {
   name: string;
   status: ResourceStatus;
-  /** What makes it a UI: `ui_page` or `loadscreen`. */
+  /** What makes it a UI: `ui_page` or `loadscreen` (null for a chat theme, which has no page of its own). */
   page: string | null;
   protocol?: number;
   level?: number;
-  /** For `adapted`: the adapter resource. For `override`: the override's status. */
+  /**
+   * For `adapted`: the adapter resource. For `override`: the override's status. For a `nuikit`
+   * resource without the handshake: `loadscreen` (runs before the runtime) or `theme` (a chat theme).
+   */
   via?: string;
   /** Plain-words next step, when there is one. */
   next?: string;
@@ -95,6 +100,7 @@ export interface Finding {
     | "override-missing"
     | "protocol-newer"
     | "start-order"
+    | "manifest-changed"
     | "missing-dependency"
     | "theme-contrast"
     | "theme-warning"
@@ -147,6 +153,8 @@ function first(r: DoctorResource, key: string): string | undefined {
 }
 const started = (r: DoctorResource) => r.state === "started" || r.state === "starting";
 const isNuikit = (r: DoctorResource) => r.name === "nuikit";
+/** One of nuikit's own `[nuikit]` resources (nuikit_hud, nuikit_loading, nuikit_chat…). */
+const isNuikitFamily = (r: DoctorResource) => /^nuikit_/i.test(r.name);
 
 /** FNV-1a, 32 bit, hex: the hash overrides.json carries (line endings normalised). */
 export function pageHash(text: string): string {
@@ -205,12 +213,15 @@ export function doctor(snap: DoctorSnapshot): DoctorReport {
   const adaptedBy = new Map<string, string>();
   for (const r of running) for (const lib of meta(r, "nuikit_adapter")) adaptedBy.set(lib, r.name);
 
-  // Every running resource with a page.
+  // Every running resource with a page (or a chat theme: no page, but it is the chat's UI).
   const reports: ResourceReport[] = [];
+  const chatThemes = running.filter((r) => meta(r, "chat_theme").length > 0);
   for (const r of running) {
     const page = first(r, "ui_page") ?? first(r, "loadscreen") ?? null;
     const hosted = first(r, "nuikit_ui");
-    if (!page && !hosted && !isNuikit(r)) continue;
+    const loadscreen = first(r, "ui_page") === undefined && first(r, "loadscreen") !== undefined;
+    const chatTheme = meta(r, "chat_theme").length > 0;
+    if (!page && !hosted && !chatTheme && !isNuikit(r)) continue;
     const rep: ResourceReport = { name: r.name, status: "untouched", page };
     const proto = first(r, "nuikit_protocol");
     const level = first(r, "nuikit_level");
@@ -220,7 +231,19 @@ export function doctor(snap: DoctorSnapshot): DoctorReport {
       rep.protocol = Number(proto);
       if (level !== undefined) rep.level = Number(level);
     } else if (hosted) rep.status = "hosted";
-    else if (adaptedBy.has(r.name)) {
+    else if (isNuikitFamily(r) && loadscreen) {
+      // nuikit_loading runs before the runtime, so it can't speak the handshake: themed by the handover
+      rep.status = "nuikit";
+      rep.via = "loadscreen";
+    } else if (isNuikitFamily(r) && chatTheme) {
+      // nuikit_chat is a chat_theme for the cfx chat resource: no page of its own
+      rep.status = "nuikit";
+      rep.via = "theme";
+    } else if (chatTheme && !page) {
+      // another chat theme (qbx_chat_theme…): the chat resource takes the last one it loads
+      const ours = chatThemes.find((t) => t !== r && isNuikitFamily(t));
+      rep.next = ours ? `a chat theme next to ${ours.name}: chat takes one of them, so \`stop ${r.name}\`` : "a chat theme; nuikit_chat replaces it";
+    } else if (adaptedBy.has(r.name)) {
       rep.status = "adapted";
       rep.via = adaptedBy.get(r.name);
     } else if (page && snap.readFile) {
@@ -230,7 +253,11 @@ export function doctor(snap: DoctorSnapshot): DoctorReport {
         rep.via = "override page";
       }
     }
-    if (rep.status === "untouched") {
+    if (rep.status === "untouched" && loadscreen) {
+      rep.next = running.some((t) => t !== r && isNuikitFamily(t) && first(t, "loadscreen") !== undefined)
+        ? `a loading screen next to nuikit_loading: the game shows one of them, so \`stop ${r.name}\``
+        : "a loading screen; nuikit_loading replaces it";
+    } else if (rep.status === "untouched" && !rep.next) {
       const pack = packs.find((p) => p.fits && p.library === r.name);
       rep.next = pack
         ? pack.shipped
@@ -238,7 +265,7 @@ export function doctor(snap: DoctorSnapshot): DoctorReport {
           : `${pack.name} will adapt it (not shipped yet)`
         : `its UI is its own; add nuikit_protocol to join (docs/protocol.md) or wait for an override`;
     }
-    if (rep.status === "nuikit" && rep.level === undefined) rep.next = "declare nuikit_level '<1-3>' from `nuikit check` so the doctor can show it";
+    if (rep.status === "nuikit" && rep.protocol !== undefined && rep.level === undefined) rep.next = "declare nuikit_level '<1-3>' from `nuikit check` so the doctor can show it";
     reports.push(rep);
   }
 
@@ -318,6 +345,15 @@ export function doctor(snap: DoctorSnapshot): DoctorReport {
         next: `add \`dependency 'nuikit'\` to its fxmanifest.lua so FiveM starts nuikit first`,
       });
     }
+    if (r.manifestChanged) {
+      findings.push({
+        code: "manifest-changed",
+        severity: "warn",
+        resource: r.name,
+        message: `${r.name}: fxmanifest.lua changed on disk after it started (a new \`files\` entry isn't served until the server re-reads it)`,
+        next: `\`refresh\`, then \`restart ${r.name}\``,
+      });
+    }
     if ((imports || depends) && r.startedBeforeRuntime) {
       findings.push({
         code: "start-order",
@@ -329,10 +365,13 @@ export function doctor(snap: DoctorSnapshot): DoctorReport {
     }
   }
 
-  // Theme.
+  // Theme. The compiler reports a failed pair twice (a ContrastResult and a plain warning "<fg> on
+  // <bg> is 3.5:1 (needs 4.5:1); …"), and the doctor printed both (0.7.0 baseline): one per pair.
   if (snap.theme) {
+    const pairs = new Set<string>();
     for (const c of snap.theme.contrast) {
       if (c.ok) continue;
+      pairs.add(`${c.fg} on ${c.bg}`);
       findings.push({
         code: "theme-contrast",
         severity: "warn",
@@ -341,7 +380,9 @@ export function doctor(snap: DoctorSnapshot): DoctorReport {
       });
     }
     for (const w of snap.theme.warnings) {
-      if (/contrast/i.test(w)) continue; // already covered per pair
+      const pair = /^([\w-]+) on ([\w-]+) is [\d.]+:1/.exec(w);
+      if (pair && pairs.has(`${pair[1]} on ${pair[2]}`)) continue; // already covered per pair
+      if (/contrast/i.test(w)) continue;
       findings.push({ code: "theme-warning", severity: "info", message: `theme: ${w}`, next: `fix it in nuikit/theme.css, then \`nuikit theme reload\`` });
     }
   }
@@ -372,6 +413,16 @@ export function doctor(snap: DoctorSnapshot): DoctorReport {
         : "no adapter pack fits; nuikit's own screens and overrides still apply",
   });
 
+  // One line per thing: the same code + resource + message never prints twice.
+  const seen = new Set<string>();
+  const unique = findings.filter((f) => {
+    const key = `${f.code}|${f.resource ?? ""}|${f.message}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+  findings.length = 0;
+  findings.push(...unique);
   const rank: Record<Severity, number> = { error: 0, warn: 1, info: 2 };
   findings.sort((a, b) => rank[a.severity] - rank[b.severity]);
 
@@ -418,7 +469,7 @@ export function formatDoctor(rep: DoctorReport): string[] {
   for (const r of rep.resources) {
     if (r.status === "runtime") continue;
     let label = STATUS_LABEL[r.status];
-    if (r.status === "nuikit") label += ` v${r.protocol}${r.level !== undefined ? ` level ${r.level}` : ""}`;
+    if (r.status === "nuikit" && r.protocol !== undefined) label += ` v${r.protocol}${r.level !== undefined ? ` level ${r.level}` : ""}`;
     if (r.via) label += ` (${r.via})`;
     out.push(`  ${r.name.padEnd(24)} ${label}`);
     if (r.next) out.push(`  ${"".padEnd(24)}   → ${r.next}`);
