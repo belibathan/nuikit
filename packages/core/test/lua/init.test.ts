@@ -47,10 +47,14 @@ describe("@nuikit/init.lua", () => {
     expect(await ui.run(`return rawget(nk, 'player') == nil`)).toBe(true);
     expect(ui.messages.some((m) => m.action === "nuikit:player")).toBe(false);
     expect((await ui.call("nuikit:ready", {})).capabilities).not.toContain("player");
+    expect((await ui.call("nuikit:ready", {})).capabilities).not.toContain("context");
 
     expect(await ui.run(`return nk.player.framework`)).toBe("standalone");
     expect(await ui.run(`return nk.player.get().health`)).toBe(100);
-    expect((await ui.call("nuikit:ready", {})).capabilities).toContain("player");
+    const caps = (await ui.call("nuikit:ready", {})).capabilities;
+    expect(caps).toContain("player");
+    // the server context (§7.2) comes with the bridge, so a page can hasCapability("context")
+    expect(caps).toContain("context");
   });
 
   it("importing twice keeps the first runtime and its state", async () => {

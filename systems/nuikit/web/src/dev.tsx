@@ -6,6 +6,7 @@ import { emit, openSurface } from "nuikit-core";
 import { NuiDevtools, defineMocks } from "nuikit-core/devtools";
 import { createIntentStore, type IntentKind, type IntentMessage, type IntentProps } from "nuikit-core/intents";
 import { useEffect } from "react";
+import { rendererPacks } from "./packs";
 
 const store = createIntentStore();
 let seq = 0;
@@ -174,12 +175,14 @@ const mocks = defineMocks({
     "nuikit:intent:resolve": { ok: true },
     "nuikit:intent:event": { ok: true },
     "nuikit:intent:sync": { ok: true, count: 0 },
+    "nuikit:renderer:sync": { ok: true },
+    "nuikit:renderer:failed": { ok: true },
   },
 });
 
 declare global {
   interface Window {
-    nk?: { open: typeof open; fixture: (name: string) => void; store: typeof store; posts: { name: string; body: unknown }[] };
+    nk?: { open: typeof open; fixture: (name: string) => void; store: typeof store; posts: { name: string; body: unknown }[]; packs: ReturnType<typeof rendererPacks> };
   }
 }
 
@@ -190,7 +193,13 @@ export default function Dev() {
       posts.push({ name, body });
       console.debug("[nuikit →lua]", name, body);
     });
-    window.nk = { open, fixture: (name) => FIXTURES[name]?.(), store, posts };
+    window.nk = { open, fixture: (name) => FIXTURES[name]?.(), store, posts, packs: rendererPacks() };
+    // ?pack=<url>[&kind=notify]: load a renderer pack's built module.js as client/renderers.lua would.
+    const packUrl = new URLSearchParams(location.search).get("pack");
+    if (packUrl && !ran) {
+      const kind = (new URLSearchParams(location.search).get("kind") ?? "notify") as IntentKind;
+      void rendererPacks().apply({ [kind]: { resource: "pack", url: packUrl, gen: 1 } });
+    }
     // StrictMode runs effects twice in dev: open the URL's fixture once.
     const fixture = new URLSearchParams(location.search).get("fixture");
     if (fixture && !ran) {

@@ -56,6 +56,10 @@ as esx_notify's function, so replacing the resource replaces the drawing. If a b
 draws natively instead, the doctor reports it. What the spike decides: as for qb-menu (stand-in rules); the
 listener alone is enough only if step 7 shows `CancelEvent()` silences esx_notify.
 
+## Status
+
+**Built** (`adapters/[nuikit-esx]/nuikit_esx_notify`, replay test `bench/adapters/replay/esx/esx-notify.test.mjs`). The listener and the export are both in; a repeat of the same text within 250 ms reuses the toast id, so a server event that es_extended turns into the export draws once. The export's argument order follows the docs example, with a swap when (type, length, message) arrives. `ShowAdvancedNotification` has no export to stand in for: it stays native (optional listener on `esx:showAdvancedNotification` behind `nuikit_esx_notify_advanced`). Unproven in game.
+
 ## Replay test
 
 Recording: `ShowNotification` with every type and position, with and without `title` / `length`; the export form;

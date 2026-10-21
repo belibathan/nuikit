@@ -74,6 +74,10 @@ the public `ESX` registration path the docs show for menu types; to confirm from
 What the spike decides: stand-in rules (checklist step 12). Risk: if `ESX.OpenContext` is bound inside
 es_extended rather than esx_context, the stand-in still works for `exports`, and the doctor flags it.
 
+## Status
+
+**Built** (`adapters/[nuikit-esx]/nuikit_esx_context`, replay test `esx-context.test.mjs`). The exports are `Open` / `Preview` / `Close` / `Refresh` under `esx_context` (names from public usage; to confirm). Rows use `close = false` so the menu stays open through `onSelect` until `ESX.CloseContext()`, as scripts expect; `value` round-trips because the adapter keeps the element table itself (the menu item `meta` field is a string in the schema, not a table). Unproven in game.
+
 ## Replay test
 
 Recording: `OpenContext` with a header, a text input, a number input with min/max, a button; type values;

@@ -91,6 +91,13 @@ export interface Host {
   /** Deliver a message to one module, as nuikit's Lua does with { nkm = resource }. */
   send(resource: string, action: string, data?: unknown): void;
   modules(): ModuleInfo[];
+  /**
+   * Renderer packs (docs/intents.md §9): load a module script from another resource and hand
+   * back what it exported (its default export), without mounting it; the frame mounts renderers
+   * itself. `portal` is where the module's React portals aimed at document.body go (the pack's
+   * own portal element). Rejects when the script can't load, throws, or defines nothing in time.
+   */
+  fetchModule(spec: { resource: string; url: string; portal?: () => Element; timeoutMs?: number }): Promise<unknown>;
 }
 
 /** Surfaces fill the screen; only their content takes clicks (mirrors SURFACE_CSS in react.ts). */
@@ -198,6 +205,19 @@ export function createHost(options: HostOptions = {}): Host {
 
   const define = (factory: (deps: ModuleDeps) => unknown) => {
     const script = document.currentScript;
+    // ── renderer packs: a script loaded by fetchModule() hands its exports back, nothing is mounted.
+    const fetched = script ? fetches.get(script as HTMLScriptElement) : undefined;
+    if (fetched) {
+      fetches.delete(script as HTMLScriptElement);
+      try {
+        const exports = factory(depsWith(fetched.portal ?? (() => document.body)));
+        fetched.resolve((exports as { default?: unknown })?.default ?? exports);
+      } catch (error) {
+        fetched.reject(error instanceof Error ? error : new Error(String(error)));
+      }
+      return;
+    }
+    // ── end renderer packs
     const rec = script ? [...records.values()].find((r) => r.script === script) : undefined;
     if (!rec || rec.defined) {
       console.warn("[nuikit host] define() ignored: not called by a module script the host loaded");
@@ -242,15 +262,46 @@ export function createHost(options: HostOptions = {}): Host {
 
   // Every module gets the host's React. Its react-dom is a copy whose createPortal sends
   // portals aimed at document.body (Radix, shadcn) into the module's own portal container.
-  const depsFor = (rec: Record_): ModuleDeps => {
+  const depsWith = (portal: () => Element): ModuleDeps => {
     const reactDom = {
       ...ReactDOM,
       createPortal: (children: React.ReactNode, target: Element | DocumentFragment, key?: string | null) =>
-        ReactDOM.createPortal(children, target === document.body ? rec.portal! : target, key),
+        ReactDOM.createPortal(children, target === document.body ? portal() : target, key),
     } as typeof ReactDOM & { default?: unknown };
     reactDom.default = reactDom;
     return { react: React, reactDom, reactDomClient: ReactDOMClient, jsxRuntime: JSXRuntime };
   };
+  const depsFor = (rec: Record_): ModuleDeps => depsWith(() => rec.portal!);
+
+  // ── renderer packs: scripts loaded for their exports (fetchModule), keyed by their <script>.
+  const fetches = new Map<HTMLScriptElement, { portal?: () => Element; resolve: (exports: unknown) => void; reject: (error: Error) => void }>();
+  const fetchCounts = new Map<string, number>();
+  const FETCH_TIMEOUT_MS = 15_000;
+  const fetchModule: Host["fetchModule"] = ({ resource, url, portal, timeoutMs = FETCH_TIMEOUT_MS }) =>
+    new Promise<unknown>((resolve, reject) => {
+      const script = document.createElement("script");
+      const n = (fetchCounts.get(url) ?? 0) + 1;
+      fetchCounts.set(url, n);
+      // A restarted pack must load its new build, not the cached one.
+      script.src = n > 1 ? `${url}${url.includes("?") ? "&" : "?"}v=${n}` : url;
+      script.async = true;
+      script.dataset.nkPack = resource;
+      let done = false;
+      const finish = (ok: boolean, value: unknown) => {
+        if (done) return;
+        done = true;
+        clearTimeout(timer);
+        fetches.delete(script);
+        script.remove();
+        if (ok) resolve(value);
+        else reject(value as Error);
+      };
+      const timer = setTimeout(() => finish(false, new Error(`${url} loaded but defined no module within ${timeoutMs} ms (built with nuikitModule()?)`)), timeoutMs);
+      fetches.set(script, { portal, resolve: (v) => finish(true, v), reject: (e) => finish(false, e) });
+      script.onerror = () => finish(false, new Error(`could not load ${url}`));
+      document.head.appendChild(script);
+    });
+  // ── end renderer packs
 
   const createContainers = (rec: Record_) => {
     const root = document.createElement("div");
@@ -412,6 +463,7 @@ export function createHost(options: HostOptions = {}): Host {
         calls,
         messages,
       })),
+    fetchModule,
   };
   created = host;
 
@@ -432,8 +484,11 @@ function surfaceSheet(): CSSStyleSheet {
 
 const hoistedSeen = new Set<string>();
 let hoistSheet: CSSStyleSheet | null = null;
-/** @property and @font-face are ignored inside shadow roots: register them on the document. */
-function hoist(rules: string[]) {
+/**
+ * @property and @font-face are ignored inside shadow roots: register them on the document. Exported
+ * for the frame, which gives renderer packs a shadow root of their own (docs/intents.md §9).
+ */
+export function hoist(rules: string[]) {
   if (!hoistSheet) {
     hoistSheet = new CSSStyleSheet();
     document.adoptedStyleSheets = [...document.adoptedStyleSheets, hoistSheet];

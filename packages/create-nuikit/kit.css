@@ -10,6 +10,11 @@
  * overridden in theme.css for a detail. Every var() carries the Graphite default as its fallback, so a
  * page whose theme predates 1.1 still renders.
  *
+ * Identity keywords are attributes applyTheme paints on the themed element (data-nk-row, data-nk-feel,
+ * data-nk-motion…): <html> in a UI, a subtree when a theme is painted on one (the site's stages, host
+ * modules). Rules keyed on them use `:is(html, *)[data-nk-…]`: any ancestor, at the specificity
+ * `html[data-nk-…]` had.
+ *
  * cn() knows these utilities: `pnpm sync` generates lib/utils.ts from this file (scripts/kit-merge.mjs).
  * A utility removes the earlier stock classes that set what it paints (colour and type),
  * never layout or shape. `@merge <family>` in the comment above a utility means one member per element: a later
@@ -103,7 +108,7 @@
   /* bar: a pill at the row's leading edge */
   --nk-row-bar-width: calc(0.1875rem * var(--nk-row-bar, 1));
   --nk-row-bar-inset: calc(var(--nk-space) * 2.5);
-  /* fill: the row in solid brand, its text in brand-foreground (html[data-nk-row="fill"], set by applyTheme) */
+  /* fill: the row in solid brand, its text in brand-foreground ([data-nk-row="fill"] on an ancestor, set by applyTheme) */
   --nk-row-fill-color: var(--brand, var(--primary));
   --nk-row-fill-foreground: var(--brand-foreground, var(--primary-foreground));
   /* outline: a brand hairline */
@@ -356,22 +361,19 @@
     transition: opacity 0s var(--nk-ease-out);
     pointer-events: none;
   }
-  &[class*="hover:bg-accent"]:hover,
-  &[class*="hover:bg-accent"]:hover::before {
+  &[class*="hover:bg-accent"]:hover {
     transition-duration: var(--nk-time-hover, var(--nk-time));
   }
-  /* hover counts only on rows that highlight on hover (menu-row's hover variant): in game CEF can keep
-     :hover matched after focus moves, so rows driven by Lua opt out (menu-row inert) */
+  /* the identity indicator marks keyboard, controller and script selection; the pointer's hover is the
+     accent surface the row's own hover: classes paint (menu-row's hover variant), never the indicator */
   &[data-active],
   &[data-highlighted],
-  &:focus-visible,
-  &[class*="hover:bg-accent"]:hover {
+  &:focus-visible {
     box-shadow: inset 0 0 0 var(--nk-row-outline-width) var(--nk-row-outline-color), var(--nk-row-glow);
   }
   &[data-active]::before,
   &[data-highlighted]::before,
-  &:focus-visible::before,
-  &[class*="hover:bg-accent"]:hover::before {
+  &:focus-visible::before {
     opacity: 1;
   }
 }
@@ -706,7 +708,7 @@
 /*
  * Motion utilities (design v2 §5A, docs/design.md#motion). Transform and opacity only, cubic-bezier only
  * (no linear(), @starting-style, individual translate/scale or :has() in Chromium 103). Under reduced
- * motion (html[data-nk-motion="reduced"]) each falls back to its fade, at most 100ms.
+ * motion ([data-nk-motion="reduced"] on an ancestor) each falls back to its fade, at most 100ms.
  */
 /* A floating panel opening from its trigger: popovers, menus, tooltips, the target eye. Scale 0.96 → 1
    and fade over --nk-time, from Radix's trigger-side origin. Never on a centred dialog (its transform
@@ -717,7 +719,7 @@
   &[data-state="closed"] {
     animation: nk-fade-out var(--nk-time-exit, var(--nk-time)) var(--nk-ease-in, ease-in) both;
   }
-  html[data-nk-motion="reduced"] &:not([data-state="closed"]) {
+  :is(html, *)[data-nk-motion="reduced"] &:not([data-state="closed"]) {
     animation-name: nk-enter;
   }
 }
@@ -733,7 +735,7 @@
    centred dialog. Reduced motion keeps the fade. */
 @utility nk-rise {
   animation: nk-rise var(--nk-time) var(--nk-ease-out) both;
-  html[data-nk-motion="reduced"] & {
+  :is(html, *)[data-nk-motion="reduced"] & {
     animation-name: nk-enter;
   }
 }
@@ -755,10 +757,10 @@
   &:active {
     transform: scale(var(--nk-press-scale));
   }
-  html[data-nk-motion="reduced"] &:active,
-  html[data-nk-motion="off"] &:active,
-  html[data-nk-feel="snap"] &:active,
-  html[data-nk-feel="stepped"] &:active {
+  :is(html, *)[data-nk-motion="reduced"] &:active,
+  :is(html, *)[data-nk-motion="off"] &:active,
+  :is(html, *)[data-nk-feel="snap"] &:active,
+  :is(html, *)[data-nk-feel="stepped"] &:active {
     transform: none;
   }
 }
@@ -779,8 +781,8 @@
     transform: translateX(-100%);
     animation: nk-shimmer 1.4s linear infinite;
   }
-  html[data-nk-motion="reduced"] &::after,
-  html[data-nk-motion="off"] &::after {
+  :is(html, *)[data-nk-motion="reduced"] &::after,
+  :is(html, *)[data-nk-motion="off"] &::after {
     animation: none;
     display: none;
   }
@@ -832,8 +834,8 @@
     transition-duration: var(--nk-time-press, 70ms);
   }
   &[data-repeat="jump"],
-  html[data-nk-motion="reduced"] &,
-  html[data-nk-feel="snap"] & {
+  :is(html, *)[data-nk-motion="reduced"] &,
+  :is(html, *)[data-nk-feel="snap"] & {
     transition-duration: 0s;
   }
   &[data-hidden] {
@@ -847,7 +849,7 @@
 .nk-indicator ~ .nk-row {
   box-shadow: none;
 }
-html[data-nk-row="fill"] .nk-indicator ~ .nk-row.nk-row:is([data-active], [data-highlighted], :focus-visible, [class*="hover:bg-accent"]:hover) {
+:is(html, *)[data-nk-row="fill"] .nk-indicator ~ .nk-row.nk-row:is([data-active], [data-highlighted], :focus-visible) {
   background-color: transparent;
 }
 
@@ -889,14 +891,14 @@ html[data-nk-row="fill"] .nk-indicator ~ .nk-row.nk-row:is([data-active], [data-
  * so it keys off the attribute applyTheme paints from --nk-row-indicator. Unlayered on purpose: it must
  * beat the row's and its children's own text colours. Destructive rows keep their colour.
  */
-html[data-nk-row="fill"] .nk-row:is([data-active], [data-highlighted], :focus-visible, [class*="hover:bg-accent"]:hover):not([class*="text-destructive"]) {
+:is(html, *)[data-nk-row="fill"] .nk-row:is([data-active], [data-highlighted], :focus-visible):not([class*="text-destructive"]) {
   background-color: var(--nk-row-fill-color);
   color: var(--nk-row-fill-foreground);
 }
-html[data-nk-row="fill"] .nk-row:is([data-active], [data-highlighted], :focus-visible, [class*="hover:bg-accent"]:hover):not([class*="text-destructive"]) :not([data-slot="kbd"], [data-slot="kbd"] *, [data-slot="progress"], [data-slot="progress"] *) {
+:is(html, *)[data-nk-row="fill"] .nk-row:is([data-active], [data-highlighted], :focus-visible):not([class*="text-destructive"]) :not([data-slot="kbd"], [data-slot="kbd"] *, [data-slot="progress"], [data-slot="progress"] *) {
   color: inherit;
 }
-html[data-nk-row="fill"] .nk-row::before {
+:is(html, *)[data-nk-row="fill"] .nk-row::before {
   display: none;
 }
 
@@ -911,14 +913,14 @@ html :focus-visible {
 }
 
 /* Vector (stepped): bar fills tick in steps instead of gliding. */
-html[data-nk-feel="stepped"] :is([data-slot="progress-indicator"], [data-slot="meter-fill"]) {
+:is(html, *)[data-nk-feel="stepped"] :is([data-slot="progress-indicator"], [data-slot="meter-fill"]) {
   transition-timing-function: steps(4, end) !important;
 }
 
-/* Reduced motion (the player's pref, html[data-nk-motion="reduced"]): no movement, fades kept at
+/* Reduced motion (the player's pref, [data-nk-motion="reduced"] on an ancestor): no movement, fades kept at
    ≤ 100ms. shadcn's enter/exit animations (tw-animate-css) keep their fade and lose their slide, zoom
    and spin. Loading spinners still turn: they're information. */
-html[data-nk-motion="reduced"] * {
+:is(html, *)[data-nk-motion="reduced"] * {
   --tw-enter-scale: 1 !important;
   --tw-exit-scale: 1 !important;
   --tw-enter-translate-x: 0 !important;
@@ -928,21 +930,21 @@ html[data-nk-motion="reduced"] * {
   --tw-enter-rotate: 0 !important;
   --tw-exit-rotate: 0 !important;
 }
-html[data-nk-motion="reduced"] :is([class*="animate-in"], [class*="animate-out"]) {
+:is(html, *)[data-nk-motion="reduced"] :is([class*="animate-in"], [class*="animate-out"]) {
   animation-duration: 100ms !important;
 }
-html[data-nk-motion="reduced"] *,
-html[data-nk-motion="reduced"] *::before,
-html[data-nk-motion="reduced"] *::after {
+:is(html, *)[data-nk-motion="reduced"] *,
+:is(html, *)[data-nk-motion="reduced"] *::before,
+:is(html, *)[data-nk-motion="reduced"] *::after {
   animation-delay: 0s !important;
   transition-delay: 0s !important;
 }
 
 /* Motion off (the theme's --nk-motion: 0, data-nk-motion="off"): no animations or transitions anywhere,
    shadcn's included. */
-html[data-nk-motion="off"] *,
-html[data-nk-motion="off"] *::before,
-html[data-nk-motion="off"] *::after {
+:is(html, *)[data-nk-motion="off"] *,
+:is(html, *)[data-nk-motion="off"] *::before,
+:is(html, *)[data-nk-motion="off"] *::after {
   animation-duration: 0s !important;
   animation-delay: 0s !important;
   transition-duration: 0s !important;

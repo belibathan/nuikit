@@ -1,0 +1,13 @@
+{
+  "library": "esx_notify",
+  "expects": [],
+  "calls": [
+    { "kind": "export", "resource": "esx_notify", "name": "Notify", "args": ["success", "Paid $500", 3000, "Bank", "top-middle"] },
+    { "kind": "serverEvent", "name": "esx:showNotification", "args": ["You are wanted", "error", 4000, null, "middle-left"] },
+    { "kind": "wait", "ms": 100 },
+    { "kind": "export", "resource": "esx_notify", "name": "Notify", "args": ["error", "You are wanted", 4000, null, "middle-left"] },
+    { "kind": "export", "resource": "esx_notify", "name": "Notify", "args": ["info", 2500, "Swapped order"] },
+    { "kind": "export", "resource": "esx_notify", "name": "Notify", "args": ["info", ""] },
+    { "kind": "wait", "ms": 5000 }
+  ]
+}

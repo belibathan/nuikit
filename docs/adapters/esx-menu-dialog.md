@@ -41,6 +41,10 @@ opened on top of a `default` menu and closed by the caller in `submit`.
 **Stand-in as a menu type** (`nuikit_esx_menu_dialog`, `provide 'esx_menu_dialog'`,
 `ESX.UI.Menu.RegisterType('dialog', open, close)`), same as esx_menu_default. What the spike decides: stand-in rules.
 
+## Status
+
+**Built** (`adapters/[nuikit-esx]/nuikit_esx_menu_dialog`, replay test `esx-menu-dialog.test.mjs`). Unproven in game.
+
 ## Replay test
 
 Recording: `Open('dialog', …)` over a `default` menu; type `42`; submit; a second dialog cancelled by Escape;

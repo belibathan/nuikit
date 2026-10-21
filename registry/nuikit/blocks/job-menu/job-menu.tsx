@@ -271,35 +271,35 @@ function JobStaff({
         const locked = e.you || isBoss(e.grade)
         const working = busy === `grade:${e.id}` || busy === `fire:${e.id}`
         return (
-          <div key={e.id} data-slot="job-employee" className="nk-row">
-            <span className={cn("size-1.5 shrink-0 rounded-full", e.onDuty ? "bg-success" : e.online ? "bg-muted-foreground" : "bg-muted-foreground/30")} />
-            <span className="flex min-w-0 flex-1 flex-col">
-              <span className="truncate font-medium">
-                {e.name}
-                {e.you && <span className="font-normal text-muted-foreground"> (you)</span>}
-              </span>
-              <span className="truncate text-xs text-muted-foreground">
-                {[label(e.grade), e.onDuty ? "On duty" : e.online ? "Online" : "Offline"].join(", ")}
-              </span>
-            </span>
-            {working ? (
-              <Spinner className="text-muted-foreground" />
-            ) : (
-              !locked && (
-                <span className="flex shrink-0 items-center gap-1">
-                  <Button data-nav variant="ghost" size="icon-sm" aria-label={`Promote ${e.name}`} disabled={up === null || !!busy} onClick={() => up !== null && onGrade(e, up)}>
-                    <ChevronUpIcon />
-                  </Button>
-                  <Button data-nav variant="ghost" size="icon-sm" aria-label={`Demote ${e.name}`} disabled={down === null || !!busy} onClick={() => down !== null && onGrade(e, down)}>
-                    <ChevronDownIcon />
-                  </Button>
-                  <Button data-nav variant="ghost" size="icon-sm" aria-label={`Fire ${e.name}`} className="text-destructive hover:text-destructive" disabled={!!busy} onClick={() => onFire(e)}>
-                    <UserMinusIcon />
-                  </Button>
-                </span>
+          <MenuRow
+            key={e.id}
+            data-slot="job-employee"
+            readOnly
+            icon={<span className={cn("size-1.5 rounded-full", e.onDuty ? "bg-success" : e.online ? "bg-muted-foreground" : "bg-muted-foreground/30")} />}
+            description={[label(e.grade), e.onDuty ? "On duty" : e.online ? "Online" : "Offline"].join(", ")}
+            actions={
+              working ? (
+                <Spinner className="text-muted-foreground" />
+              ) : (
+                !locked && (
+                  <>
+                    <Button data-nav variant="ghost" size="icon-sm" aria-label={`Promote ${e.name}`} disabled={up === null || !!busy} onClick={() => up !== null && onGrade(e, up)}>
+                      <ChevronUpIcon />
+                    </Button>
+                    <Button data-nav variant="ghost" size="icon-sm" aria-label={`Demote ${e.name}`} disabled={down === null || !!busy} onClick={() => down !== null && onGrade(e, down)}>
+                      <ChevronDownIcon />
+                    </Button>
+                    <Button data-nav variant="ghost" size="icon-sm" aria-label={`Fire ${e.name}`} className="text-destructive hover:text-destructive" disabled={!!busy} onClick={() => onFire(e)}>
+                      <UserMinusIcon />
+                    </Button>
+                  </>
+                )
               )
-            )}
-          </div>
+            }
+          >
+            {e.name}
+            {e.you && <span className="font-normal text-muted-foreground"> (you)</span>}
+          </MenuRow>
         )
       })}
 

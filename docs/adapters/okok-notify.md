@@ -46,6 +46,10 @@ okokNotify is only UI. A listener alone would double-draw (no silence flag known
 stand-in rules; case-sensitivity of the resource name in `provide` and the export (the real folder is
 `okokNotify`) is worth a line in results.
 
+## Status
+
+**Built** (`adapters/[nuikit-standalone]/nuikit_okok_notify`, replay test `bench/adapters/replay/standalone/okok-notify.test.mjs`). `provide 'okokNotify'` keeps the real folder's case. Unproven in game.
+
 ## Replay test
 
 Recording: `Alert` with each type, with/without `playSound`; the server event.

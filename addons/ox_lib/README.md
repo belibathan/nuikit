@@ -27,6 +27,7 @@ Everything ox_lib's Lua sends is drawn as it asks. On top, with no script change
 - **Item slab.** A `notify` with `item = { name, count, icon?, image? }` (a nuikit extension; ox_lib's Lua never sends it) draws the kit's item slab (tile, name, `+2` / `−1`) instead of a panel.
 - **Progress slab.** `lib.progressBar` is the label, a live percentage and a thin line; a `canCancel = true` in the `progress` message (nuikit extension) adds the `X` key chip. ox_lib's own cancel key keeps working either way.
 - **Enter chip** on the dialog's Confirm button where Enter submits.
+- **One stack with nuikit (0.7).** With the `nuikit` resource running, notify, context and list menus, the input dialog, the alert, progress, text UI and the skill check are drawn by nuikit's own frame (the shared, themed renderers), so they stack, take focus and handle Escape like every other nuikit UI and a renderer pack restyles ox_lib too. `setr nuikit_ox_route 0` turns this off; without nuikit the page draws them itself. Details and what's unproven: [`docs/adapters/ox-lib.md`](../../docs/adapters/ox-lib.md).
 
 Every payload posted back to ox_lib is unchanged (`bench/polish/ox_lib/{before,after}.json`).
 

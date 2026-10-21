@@ -6,9 +6,11 @@ describe("menu-row", () => {
   it("only hovers when hover is on (inert and readOnly turn it off)", () => {
     expect(menuRowVariants()).toContain("hover:bg-accent")
     expect(menuRowVariants({ hover: false })).not.toContain("hover:")
-    // keyboard selection and active still highlight
-    expect(menuRowVariants({ hover: false })).toContain("data-[active]:bg-accent")
-    expect(menuRowVariants({ hover: false })).toContain("focus-visible:bg-accent")
+    // keyboard selection and active draw the identity indicator (nk-row), never the hover accent
+    expect(menuRowVariants({ hover: false })).toContain("nk-row")
+    expect(menuRowVariants({ hover: false })).toContain("data-[active]:text-foreground")
+    expect(menuRowVariants()).not.toContain("focus-visible:bg-accent")
+    expect(menuRowVariants()).not.toContain("data-[active]:bg-accent")
     expect(menuRowVariants({ tone: "destructive" })).toContain("hover:text-destructive")
     expect(menuRowVariants({ tone: "destructive", hover: false })).not.toContain("hover:")
   })

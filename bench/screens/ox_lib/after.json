@@ -5,123 +5,135 @@
     "step": "load",
     "name": "init",
     "body": null,
-    "ms": 789
+    "ms": 262
    },
    {
     "step": "load",
     "name": "getConfig",
     "body": null,
-    "ms": 864
+    "ms": 288
    },
    {
-    "step": "radial-click-phone",
-    "name": "radialClick",
-    "body": "0",
-    "ms": 416
-   },
-   {
-    "step": "radial-click-vehicle",
-    "name": "radialClick",
-    "body": "2",
-    "ms": 129
-   },
-   {
-    "step": "radial-back",
-    "name": "radialBack",
-    "body": null,
-    "ms": 57
-   },
-   {
-    "step": "context-click-sultan",
+    "step": "context-click",
     "name": "clickContext",
     "body": "\"0\"",
-    "ms": 57
+    "ms": 119
    },
    {
-    "step": "context-click-submenu",
+    "step": "context-submenu",
     "name": "openContext",
     "body": "{\"id\":\"depot\",\"back\":false}",
-    "ms": 70
+    "ms": 63
+   },
+   {
+    "step": "context-back",
+    "name": "openContext",
+    "body": "{\"id\":\"garage\",\"back\":true}",
+    "ms": 56
    },
    {
     "step": "context-escape",
     "name": "closeContext",
     "body": null,
-    "ms": 50
+    "ms": 16
    },
    {
-    "step": "menu-open",
+    "step": "setMenu",
     "name": "changeSelected",
     "body": "[0,true,\"isCheck\"]",
-    "ms": 110
+    "ms": 113
    },
    {
-    "step": "menu-toggle-engine",
-    "name": "changeChecked",
-    "body": "[0,false]",
-    "ms": 106
-   },
-   {
-    "step": "menu-down",
+    "step": "list-down",
     "name": "changeSelected",
-    "body": "[1,0,\"isScroll\"]",
+    "body": "[1,null,null]",
     "ms": 115
    },
    {
-    "step": "menu-right",
-    "name": "changeIndex",
-    "body": "[1,1]",
-    "ms": 106
+    "step": "list-enter",
+    "name": "confirmSelected",
+    "body": "[1,null]",
+    "ms": 13
    },
    {
-    "step": "menu-left",
-    "name": "changeIndex",
-    "body": "[1,0]",
-    "ms": 108
-   },
-   {
-    "step": "menu-down-2",
+    "step": "setMenu-2",
     "name": "changeSelected",
-    "body": "[2,null,null]",
+    "body": "[0,true,\"isCheck\"]",
+    "ms": 131
+   },
+   {
+    "step": "list-right",
+    "name": "changeSelected",
+    "body": "[1,null,null]",
     "ms": 110
    },
    {
-    "step": "menu-confirm-lock",
-    "name": "confirmSelected",
-    "body": "[2,null]",
-    "ms": 15
-   },
-   {
-    "step": "menu-open-2",
+    "step": "list-right",
     "name": "changeSelected",
-    "body": "[0,true,\"isCheck\"]",
-    "ms": 218
+    "body": "[2,0,\"isScroll\"]",
+    "ms": 321
    },
    {
-    "step": "menu-escape",
+    "step": "list-right",
+    "name": "changeIndex",
+    "body": "[2,1]",
+    "ms": 526
+   },
+   {
+    "step": "list-escape",
     "name": "closeMenu",
     "body": "\"Escape\"",
-    "ms": 43
+    "ms": 8
+   },
+   {
+    "step": "input-submit",
+    "name": "inputData",
+    "body": "[\"Niko\",5,true,\"sports\",\"rgb(255, 0, 0)\"]",
+    "ms": 227
+   },
+   {
+    "step": "input-escape",
+    "name": "inputData",
+    "body": null,
+    "ms": 210
    },
    {
     "step": "alert-confirm",
     "name": "closeAlert",
     "body": "\"confirm\"",
-    "ms": 80
-   },
-   {
-    "step": "alert-cancel",
-    "name": "closeAlert",
-    "body": "\"cancel\"",
-    "ms": 114
+    "ms": 44
    },
    {
     "step": "alert-escape",
     "name": "closeAlert",
     "body": "\"cancel\"",
-    "ms": 32
+    "ms": 22
+   },
+   {
+    "step": "progress",
+    "name": "progressComplete",
+    "body": null,
+    "ms": 610
+   },
+   {
+    "step": "progressCancel",
+    "name": "progressComplete",
+    "body": null,
+    "ms": 107
+   },
+   {
+    "step": "skillCheckCancel",
+    "name": "skillCheckOver",
+    "body": "false",
+    "ms": 7
+   },
+   {
+    "step": "nuikit-stop",
+    "name": "closeContext",
+    "body": null,
+    "ms": 18
    }
   ],
-  "themeRequests": 10
+  "themeRequests": 14
  }
 }

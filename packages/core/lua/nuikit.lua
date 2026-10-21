@@ -646,7 +646,11 @@ NUI.on('nuikit:ready', function(req)
   -- §2.2: a 0.4.0 page sends no protocol (version 0); it ignores the extra fields.
   local capabilities = { 'surfaces', 'states', 'notify', 'prefs' }
   if theme then capabilities[#capabilities + 1] = 'theme' end
-  if hasPlayer then capabilities[#capabilities + 1] = 'player' end
+  if hasPlayer then
+    capabilities[#capabilities + 1] = 'player'
+    -- the server context (§7.2: currency, locale) rides with the bridge
+    capabilities[#capabilities + 1] = 'context'
+  end
   return { ok = true, resource = RESOURCE, protocol = NUI.PROTOCOL, capabilities = capabilities }
 end)
 

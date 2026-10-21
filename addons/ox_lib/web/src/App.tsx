@@ -12,6 +12,7 @@ import { TextUi } from "@/features/text-ui";
 import { applyOxConfig } from "@/lib/config";
 import { setLocale } from "@/lib/locale";
 import { post, useOx } from "@/lib/nui";
+import { startRouting } from "@/lib/route";
 import { loadServerTheme } from "@/lib/theme";
 
 /** Copy without the async Clipboard API, which CEF NUI doesn't reliably allow. */
@@ -34,6 +35,7 @@ export default function App() {
   useOx<string>("setClipboard", (text) => copy(String(text ?? "")));
 
   useEffect(() => {
+    startRouting(); // is the nuikit runtime there to draw this page's intents? (lib/route.ts)
     void post("init"); // Lua answers with setLocale
     void (async () => {
       const themed = await loadServerTheme();

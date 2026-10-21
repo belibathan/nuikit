@@ -48,7 +48,7 @@ const SECTIONS = [
   "Radial menu",
 ].filter((s) => !ONLY || ONLY.split(",").includes(s));
 
-const { compileTheme, themeChannels } = await import(pathToFileURL(path.join(repo, "packages/core/dist/index.js")).href);
+const { compileTheme, themeChannels, KEYWORD_ATTRS } = await import(pathToFileURL(path.join(repo, "packages/core/dist/index.js")).href);
 const themeFor = (id) => {
   const shipped = path.join(repo, "packages/core/themes", `${id}.css`);
   if (fs.existsSync(shipped)) return compileTheme(fs.readFileSync(shipped, "utf8"));
@@ -56,8 +56,6 @@ const themeFor = (id) => {
   return compileTheme(fs.readFileSync(path.join(repo, "packages/core/test/themes", `${id}.css`), "utf8"), { mode: "light" });
 };
 
-// what applyTheme paints from identity keywords (packages/core/src/theme.ts KEYWORD_ATTRS)
-const KEYWORD_ATTRS = [["data-nk-row", "nk-row-indicator"], ["data-nk-gauge", "nk-gauge-style"], ["data-nk-elevation", "nk-elevation"], ["data-nk-label-case", "nk-label-case"]];
 const fontsDir = path.join(repo, "packages/core/fonts");
 const fontsJson = JSON.parse(fs.readFileSync(path.join(fontsDir, "fonts.json"), "utf8"));
 const fontFaces = fontsJson.fonts
