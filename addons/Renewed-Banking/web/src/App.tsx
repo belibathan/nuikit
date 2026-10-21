@@ -1,12 +1,14 @@
-import { ArrowDownLeft, ArrowLeftRight, ArrowUpRight, Info, Landmark, Snowflake, Wallet, X } from "lucide-react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { ArrowDownLeft, ArrowLeftRight, ArrowUpRight, Info, Landmark, Snowflake, Wallet } from "lucide-react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { Button } from "@/components/ui/button";
+import { EdgeSheet, EdgeSheetBody } from "@/components/ui/edge-sheet";
+import { HudChip } from "@/components/ui/hud-chip";
 import { Kbd } from "@/components/ui/kbd";
-import { Panel, PanelFooter, PanelHeader } from "@/components/ui/panel";
+import { Separator } from "@/components/ui/separator";
 import { Spinner } from "@/components/ui/spinner";
 import { Stat } from "@/components/ui/stat";
 import { AccountChips, AccountIcon, AccountList, accountTitle } from "@/features/accounts";
-import { MoneyDialog, type MoneyRequest } from "@/features/money-dialog";
+import { MONEY_ICON, MONEY_LABEL, MoneyForm, type MoneyRequest } from "@/features/money-dialog";
 import { RecentList, TransactionsPanel, isOut } from "@/features/transactions";
 import { copyText, toCsv } from "@/lib/export";
 import { cashLabel, money, setLocale, t, useLocale } from "@/lib/locale";
@@ -33,8 +35,8 @@ export default function App() {
   const [request, setRequest] = useState<MoneyRequest | null>(null);
   const [busy, setBusy] = useState(false);
   const [toasts, setToasts] = useState<Toast[]>([]);
-  const dialogOpen = useRef(false);
-  dialogOpen.current = !!request;
+  const formOpen = useRef(false);
+  formOpen.current = !!request;
 
   useEffect(() => {
     void loadServerTheme();
@@ -78,10 +80,10 @@ export default function App() {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.code !== "Escape" || !visible) return;
-      if (dialogOpen.current) return; // the dialog closes itself first
+      // a deposit / withdraw / transfer page goes back to the account first
+      if (formOpen.current) return void (!busy && setRequest(null));
       close();
     };
-    // Capture phase: runs before the dialog's own Escape handling, so an open dialog is still seen as open.
     window.addEventListener("keydown", onKey, true);
     return () => window.removeEventListener("keydown", onKey, true);
   });
@@ -89,8 +91,9 @@ export default function App() {
   const active = useMemo(() => accounts.find((a) => a.id === activeId), [accounts, activeId]);
   const cash = Number(accounts[0]?.cash) || 0;
   const txs = useMemo(() => transactionsOf(active), [active]);
+  const open = visible && accounts.length > 0;
 
-  const open = (action: MoneyAction, account: Account) => setRequest({ action, account });
+  const action = (kind: MoneyAction, account: Account) => setRequest({ action: kind, account });
 
   const submit = async (body: { fromAccount: string; amount: number; comment: string; stateid: string }) => {
     if (!request) return;
@@ -114,24 +117,27 @@ export default function App() {
     toast("Data copied to clipboard!");
   };
 
+  const form = request && <MoneyForm request={request} cash={cash} busy={busy} onCancel={() => setRequest(null)} onSubmit={submit} />;
+  const props: ViewProps = { open, accounts, active, cash, onSelect: setActiveId, onAction: action, onClose: close, request, form, onBack: () => !busy && setRequest(null) };
+
   return (
     <>
-      {visible && accounts.length > 0 && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/40 p-12">
-          {atm ? (
-            <AtmView accounts={accounts} active={active} cash={cash} onSelect={setActiveId} onAction={open} onClose={close} />
-          ) : (
-            <BankView accounts={accounts} active={active} cash={cash} onSelect={setActiveId} onAction={open} onClose={close} onExport={exportCsv} />
-          )}
+      {/* The bank: two edge sheets, the accounts on the left and the chosen account on the right
+          (the inventory's split, registry edge-sheet). The ATM is the one sheet on the left. */}
+      <BankView {...props} open={open && !atm} onExport={exportCsv} />
+      <AtmView {...props} open={open && atm} />
+      {open && (
+        <div className="nk-anchor-b">
+          <button type="button" onClick={close} aria-label={t("nuikit_close")} className="rb-hint outline-none">
+            <HudChip icon={<Kbd>Esc</Kbd>}>{t("nuikit_close")}</HudChip>
+          </button>
         </div>
       )}
-
-      <MoneyDialog request={request} cash={cash} busy={busy} onCancel={() => setRequest(null)} onSubmit={submit} />
 
       {loading && !visible && (
         <div className="fixed inset-0 flex items-center justify-center">
           <div className="nk-panel nk-enter flex items-center gap-3 px-4 py-3">
-            <Spinner className="text-muted-foreground size-4" />
+            <Spinner className="size-4 text-muted-foreground" />
             <div>
               <div className="nk-title">{t("bank_name")}</div>
               <div className="nk-label">{t("nuikit_loading")}</div>
@@ -142,8 +148,8 @@ export default function App() {
 
       <div className="pointer-events-none fixed inset-x-0 top-6 z-[60] flex flex-col items-center gap-2">
         {toasts.map((n) => (
-          <div key={n.id} className="nk-panel nk-enter flex min-h-10 items-center gap-3 px-4 py-2 text-sm font-medium">
-            <Info className="text-muted-foreground size-4 shrink-0" />
+          <div key={n.id} className="nk-panel nk-rise flex min-h-12 items-center gap-3 px-4 py-2 text-sm font-medium">
+            <Info className="size-4 shrink-0 text-muted-foreground" />
             {n.text}
           </div>
         ))}
@@ -153,37 +159,48 @@ export default function App() {
 }
 
 interface ViewProps {
+  open: boolean;
   accounts: Account[];
   active?: Account;
   cash: number;
   onSelect: (id: string) => void;
   onAction: (action: MoneyAction, account: Account) => void;
   onClose: () => void;
+  /** A deposit / withdraw / transfer page, swapped in place of the account. */
+  request: MoneyRequest | null;
+  form: ReactNode;
+  onBack: () => void;
+}
+
+/** The sheet header for a money page: the action as the title, the account under it. */
+function formHeader(request: MoneyRequest) {
+  const Icon = MONEY_ICON[request.action];
+  return { icon: <Icon />, title: t(MONEY_LABEL[request.action]), description: accountTitle(request.account) };
 }
 
 /** One loud action per surface: deposit at the bank, withdraw at the ATM; the rest stay outlined. */
 function Actions({ account, atm, onAction, className }: { account: Account; atm: boolean; onAction: ViewProps["onAction"]; className?: string }) {
   if (isFrozen(account)) {
     return (
-      <div className={cn("text-muted-foreground flex h-9 items-center gap-2 rounded-md border px-3 text-sm", className)}>
+      <div className={cn("flex h-10 items-center gap-2 rounded-(--nk-row-radius) border px-3 text-sm text-muted-foreground", className)}>
         <Snowflake className="size-4 shrink-0" />
         {t("frozen")}
       </div>
     );
   }
   return (
-    <div className={cn("flex gap-2", className)}>
+    <div className={cn("grid auto-cols-fr grid-flow-col gap-2", className)}>
       {!atm && (
-        <Button onClick={() => onAction("deposit", account)}>
+        <Button size="lg" onClick={() => onAction("deposit", account)}>
           <ArrowDownLeft />
           {t("deposit_but")}
         </Button>
       )}
-      <Button variant={atm ? "default" : "outline"} onClick={() => onAction("withdraw", account)}>
+      <Button size="lg" variant={atm ? "default" : "outline"} onClick={() => onAction("withdraw", account)}>
         <ArrowUpRight />
         {t("withdraw_but")}
       </Button>
-      <Button variant="outline" onClick={() => onAction("transfer", account)}>
+      <Button size="lg" variant="outline" onClick={() => onAction("transfer", account)}>
         <ArrowLeftRight />
         {t("transfer_but")}
       </Button>
@@ -191,40 +208,14 @@ function Actions({ account, atm, onAction, className }: { account: Account; atm:
   );
 }
 
-function Brand({ atm }: { atm: boolean }) {
+/** Cash on hand, under the bank's name. */
+function CashLine({ cash }: { cash: number }) {
   return (
-    <div className="flex min-w-0 items-center gap-3">
-      <span className="bg-muted text-muted-foreground flex size-8 shrink-0 items-center justify-center rounded-md">
-        <Landmark className="size-4" />
-      </span>
-      <h1 className="nk-title truncate">{t("bank_name")}</h1>
-      {atm && <span className="nk-label">{t("nuikit_atm")}</span>}
-    </div>
-  );
-}
-
-function Cash({ cash }: { cash: number }) {
-  return (
-    <span className="flex items-center gap-2 text-sm">
-      <Wallet className="text-muted-foreground size-4" />
-      <span className="text-muted-foreground">{cashLabel()}</span>
-      <span className="nk-num font-medium">{money(cash)}</span>
+    <span className="flex items-center gap-1.5">
+      <Wallet className="size-3.5" />
+      {cashLabel()} <span className="nk-num font-medium text-foreground">{money(cash)}</span>
     </span>
   );
-}
-
-function CloseButton({ onClose }: { onClose: () => void }) {
-  return (
-    <Button variant="ghost" size="sm" onClick={onClose} className="text-muted-foreground gap-2" aria-label={t("nuikit_close")}>
-      <Kbd>Esc</Kbd>
-      <X />
-    </Button>
-  );
-}
-
-/** The number that is the point: a display Stat (32px), label above. */
-function Balance({ account, label = t("balance") }: { account: Account; label?: string }) {
-  return <Stat size="display" label={label} value={money(account.amount)} />;
 }
 
 /** A money-in / money-out total; zero reads muted. */
@@ -232,7 +223,6 @@ function Total({ label, sign, value }: { label: string; sign: string; value: num
   return (
     <Stat
       size="sm"
-      align="end"
       label={label}
       value={
         <span className={cn(!value && "text-muted-foreground")}>
@@ -244,89 +234,80 @@ function Total({ label, sign, value }: { label: string; sign: string; value: num
   );
 }
 
-function BankView({ accounts, active, cash, onSelect, onAction, onClose, onExport }: ViewProps & { onExport: () => void }) {
+function BankView({ open, accounts, active, cash, onSelect, onAction, onExport, request, form, onBack }: ViewProps & { onExport: () => void }) {
   const txs = transactionsOf(active);
   const totals = txs.reduce((s, tx) => (isOut(tx) ? { ...s, out: s.out + (Number(tx.amount) || 0) } : { ...s, in: s.in + (Number(tx.amount) || 0) }), { in: 0, out: 0 });
   const personal = active?.id === accounts[0]?.id;
 
   return (
-    <Panel size="auto" className="h-[46rem] max-h-full w-[72rem] max-w-full">
-      <PanelHeader
-        actions={
-          <div className="flex items-center gap-4">
-            <Cash cash={cash} />
-            <CloseButton onClose={onClose} />
-          </div>
-        }
-      >
-        <Brand atm={false} />
-      </PanelHeader>
-
-      <div className="flex min-h-0 flex-1">
-        <aside className="flex w-72 shrink-0 flex-col border-r">
+    <>
+      <EdgeSheet open={open} side="left" width="30rem" icon={<Landmark />} title={t("bank_name")} description={<CashLine cash={cash} />}>
+        <EdgeSheetBody className="flex flex-col">
           <AccountList accounts={accounts} activeId={active?.id} onSelect={onSelect} />
-        </aside>
+        </EdgeSheetBody>
+      </EdgeSheet>
 
-        <main className="flex min-w-0 flex-1 flex-col">
-          {active ? (
-            <>
-              <section className="flex flex-wrap items-end gap-x-6 gap-y-4 border-b p-6">
-                <div className="flex min-w-0 flex-1 flex-col gap-6">
-                  <div className="flex min-w-0 items-center gap-3">
-                    <AccountIcon personal={personal} />
-                    <div className="min-w-0">
-                      <div className="truncate text-sm font-medium">{active.name}</div>
-                      <div className="nk-label truncate">{accountTitle(active)}</div>
-                    </div>
-                  </div>
-                  <Balance account={active} />
-                </div>
-                <div className="flex flex-col items-end gap-4">
-                  <div className="flex gap-6">
-                    <Total label={t("nuikit_total_in")} sign="+" value={totals.in} />
-                    <Total label={t("nuikit_total_out")} sign="−" value={totals.out} />
-                  </div>
-                  <Actions account={active} atm={false} onAction={onAction} />
-                </div>
-              </section>
-              <TransactionsPanel key={active.id} transactions={txs} onExport={onExport} canExport />
-            </>
-          ) : (
-            <p className="text-muted-foreground m-auto text-sm">{t("select_account")}</p>
-          )}
-        </main>
-      </div>
-    </Panel>
+      <EdgeSheet
+        open={open}
+        side="right"
+        width="40rem"
+        delay={60}
+        page={request ? request.action : "account"}
+        onBack={request ? onBack : undefined}
+        {...(request
+          ? formHeader(request)
+          : { icon: active ? <AccountIcon personal={personal} bare /> : undefined, title: active ? active.name || active.id : t("select_account"), description: active ? accountTitle(active) : undefined })}
+      >
+        {request ? form : active && (
+          <EdgeSheetBody className="flex flex-col gap-6">
+            <div className="flex flex-col gap-4">
+              <Stat size="display" label={t("balance")} value={money(active.amount)} />
+              <div className="flex gap-8">
+                <Total label={t("nuikit_total_in")} sign="+" value={totals.in} />
+                <Total label={t("nuikit_total_out")} sign="−" value={totals.out} />
+              </div>
+              <Actions account={active} atm={false} onAction={onAction} />
+            </div>
+            <Separator />
+            <TransactionsPanel key={active.id} transactions={txs} onExport={onExport} canExport />
+          </EdgeSheetBody>
+        )}
+      </EdgeSheet>
+    </>
   );
 }
 
-function AtmView({ accounts, active, cash, onSelect, onAction, onClose }: ViewProps) {
+function AtmView({ open, accounts, active, cash, onSelect, onAction, request, form, onBack }: ViewProps) {
   return (
-    <Panel size="auto" className="w-[26rem] max-w-full">
-      <PanelHeader actions={<CloseButton onClose={onClose} />}>
-        <Brand atm />
-      </PanelHeader>
-      <div className="flex flex-col gap-6 p-4">
-        <AccountChips accounts={accounts} activeId={active?.id} onSelect={onSelect} />
-        {active ? (
-          <>
-            <div className="flex flex-col gap-4">
-              {/* the account is the label of its balance here (one card, one account at a time) */}
-              <Balance account={active} label={accountTitle(active)} />
-              <Actions account={active} atm onAction={onAction} className="[&>button]:flex-1" />
-            </div>
-            <div className="flex flex-col gap-1">
-              <h2 className="text-sm font-medium">{t("nuikit_recent")}</h2>
-              <RecentList transactions={transactionsOf(active)} />
-            </div>
-          </>
-        ) : (
-          <p className="text-muted-foreground py-6 text-center text-sm">{t("select_account")}</p>
-        )}
-      </div>
-      <PanelFooter>
-        <Cash cash={cash} />
-      </PanelFooter>
-    </Panel>
+    <EdgeSheet
+      open={open}
+      side="left"
+      width="30rem"
+      page={request ? request.action : "atm"}
+      onBack={request ? onBack : undefined}
+      actions={!request && <span className="nk-label">{t("nuikit_atm")}</span>}
+      {...(request ? formHeader(request) : { icon: <Landmark />, title: t("bank_name"), description: <CashLine cash={cash} /> })}
+    >
+      {request ? form : <EdgeSheetBody scroll>
+        <div className="flex flex-col gap-6">
+          <AccountChips accounts={accounts} activeId={active?.id} onSelect={onSelect} />
+          {active ? (
+            <>
+              <div className="flex flex-col gap-4">
+                {/* the account is the label of its balance here (one account at a time) */}
+                <Stat size="display" label={accountTitle(active)} value={money(active.amount)} />
+                <Actions account={active} atm onAction={onAction} />
+              </div>
+              <div className="flex flex-col gap-1">
+                <h2 className="nk-caption">{t("nuikit_recent")}</h2>
+                <RecentList transactions={transactionsOf(active)} />
+              </div>
+            </>
+          ) : (
+            <p className="py-6 text-center text-sm text-muted-foreground">{t("select_account")}</p>
+          )}
+        </div>
+      </EdgeSheetBody>}
+    </EdgeSheet>
   );
 }

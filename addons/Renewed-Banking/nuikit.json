@@ -26,6 +26,11 @@
     "checkbox",
     "panel",
     "menu-row",
-    "stat"
+    "stat",
+    "sheet",
+    "edge-sheet",
+    "hud-chip",
+    "money",
+    "empty-state"
   ]
 }
