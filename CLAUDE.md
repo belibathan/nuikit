@@ -6,12 +6,18 @@ intents (notify, menu, input…) and swappable, themed renderers draw them; adap
 scripts in without rewrites; bespoke screens join through the protocol. The kit (stock shadcn/ui, one
 TweakCN theme) is the default look and the showcase, not the product. Design: `docs/architecture.md`.
 
-**How we work:**
-- Every step ships something useful on its own. If work stopped after any step, what's there must
-  already be better than what servers have today.
-- Test a mechanism before committing to it: spike it on a real client, measure it, then build on it
-  (the host benchmark and the adapter spike are the model).
-- Be honest about what's unproven, in docs and in replies; say what would change the plan.
+**How we work (Oct 21, 2026: speed first):**
+- Every step ships something useful on its own. Small commits, so a cut-off loses little.
+- **Ship, then iterate.** The owner judges in game and spots defects faster than any review. No screenshot
+  sweeps, no identity × resolution matrices, no before/after sheets, no visual "proof" passes. Don't ask
+  permission for anything a backup covers.
+- **The only gate:** `pnpm typecheck`, the build, `pnpm sync` clean, and a POST-log diff for an override's
+  main flow (its protocol must not break). Tests where there is real logic. Nothing else gates shipping.
+- Test a mechanism before building on it only when it's genuinely unknown (a native's behaviour, a
+  process model); then one quick spike, not a study.
+- Be honest about what's unproven, in one line, and move on.
+- Premium means subtle: motion, rows not cards, sheets, text that rolls, cameras that don't spin. See
+  `docs/design.md` and `docs/releases/v0.7.0-handoff.md` §2–§4.
 
 Read this before changing anything, then `docs/design.md`.
 
@@ -79,18 +85,17 @@ New system or override: `node scripts/new-system.mjs systems/nuikit_x "Title"` o
   resource's fxmanifest `ui_page`/`files`. Add `<meta name="nuikit-handshake" content="off">` to the page.
 - **Presentation only.** nuikit doesn't own gameplay (only exception: `nuikit_stress`). Read framework data
   through `bridge.lua`; never call focus natives from a UI (surfaces / the owning resource do).
-- **Nothing ships untested in game.** Browser checks first, then the owner tests on a Qbox server via a
-  prerelease (push to `next/<name>` → npm `next` + GitHub prerelease `next-<sha>` with the zips).
+- **The owner tests in game, after the merge.** Everything lands on `main` fast; releases are cut often;
+  in-game findings come back as the next commits. (`next/<name>` still builds a prerelease when wanted.)
 - **Credit** is `@belibathan` only (GitHub avatar + handle). Never a real name in UI, docs, badges or credits.
 - **Secrets.** The npm token lives only in the `NPM_TOKEN` GitHub secret. Never print or commit tokens or
   passwords.
 
 ## Verifying UI work
 
-Run the web app's dev server and drive it with Playwright (Chromium is at `/opt/pw-browsers/chromium` in
-Claude cloud sessions; locally use any Chromium). Fire messages with `window.postMessage({ action, data })`
-(some overrides use other envelopes; see their protocol doc), screenshot every state, and log every POST.
-Look at the screenshots. A change isn't done until it looks right at all three resolutions.
+Typecheck, build, sync. For an override, replay its main flow once with Playwright and diff the POST log
+(`bench/screens/run.mjs` / `diff.mjs`); the protocol must not change. One screenshot of the main state is
+fine when you need to see something; never a sweep. The owner tests in game and reports; fix fast.
 
 ## Releasing
 
