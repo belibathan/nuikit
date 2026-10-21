@@ -1155,12 +1155,12 @@
   white-space: nowrap;
   text-shadow: none;
 }
-/* on the ring: tucked onto the line from the side that faces the screen's middle */
+/* on the ring's lower shoulder, overlapping the line, nudged towards the screen edge */
 .hud-map-tag[data-side="left"] {
-  transform: translate(calc(-100% - 0.875rem), -50%);
+  transform: translate(calc(-50% - 0.5rem), -50%);
 }
 .hud-map-tag[data-side="right"] {
-  transform: translate(0.875rem, -50%);
+  transform: translate(calc(-50% + 0.5rem), -50%);
 }
 .hud-map-arrow {
   display: flex;
@@ -1196,9 +1196,8 @@
   align-items: inherit;
   max-width: 100%;
 }
-.hud-loc-zone,
+.hud-loc-detail,
 .hud-loc-street,
-.hud-loc-cross,
 .hud-loc-waypoint {
   display: flex;
   align-items: center;
@@ -1209,15 +1208,6 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.hud-loc-zone {
-  font-family: var(--hud-caption-font);
-  font-size: 0.8125rem;
-  line-height: 1rem;
-  font-weight: 600;
-  text-transform: var(--hud-caption-case);
-  letter-spacing: var(--hud-caption-tracking);
-  opacity: 0.78;
-}
 .hud-loc-street {
   font-family: var(--hud-font-display);
   font-size: 1.0625rem;
@@ -1225,21 +1215,30 @@
   font-weight: var(--nk-weight-strong, 600);
   letter-spacing: calc(var(--nk-tracking-display, -0.02em) / 2);
 }
-.hud-loc-cross {
-  font-size: 0.8125rem;
+/* cross street · zone postal: one muted line, a dot between the parts */
+.hud-loc-detail {
+  max-width: none;
+  font-size: 0.75rem;
   line-height: 1.125rem;
   font-weight: 500;
+  white-space: nowrap;
   opacity: 0.72;
 }
+.hud-loc-detail .hud-loc-clip {
+  overflow: visible;
+}
+.hud-loc-detail > * + *::before {
+  content: "·";
+  margin: 0 0.375rem;
+  opacity: 0.7;
+}
 .hud-loc-postal {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.1875rem;
-  margin-left: 0.4375rem;
-  padding-left: 0.4375rem;
-  border-left: 1px solid var(--hud-faint);
   letter-spacing: 0;
-  text-transform: none;
+}
+/* the postal follows the zone with a space, not a dot */
+.hud-loc-detail > .hud-loc-postal::before {
+  content: "";
+  margin: 0 0.1875rem;
 }
 .hud-loc-postal svg,
 .hud-loc-waypoint svg {
@@ -1315,7 +1314,7 @@
   gap: 0.375rem;
   height: 1.875rem;
   max-width: 10rem;
-  padding: 0 0.6875rem 0.125rem 0.5625rem;
+  padding: 0 0.6875rem 0.0625rem 0.5625rem;
   overflow: hidden;
   border-radius: var(--hud-chip-radius);
   white-space: nowrap;
@@ -1349,14 +1348,14 @@
   text-align: right;
   opacity: 0.62;
 }
+/* the level line runs under the whole pill (reference screens), the chip's own shape clips its ends */
 .hud-pill-level {
   position: absolute;
-  left: 0.625rem;
-  right: 0.625rem;
-  bottom: 0.25rem;
-  height: 2px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 0.125rem;
   overflow: hidden;
-  border-radius: 9999px;
   background-color: var(--hud-track);
 }
 .hud-pill-level > span {
@@ -1536,17 +1535,24 @@
   position: relative;
   display: flex;
   align-items: flex-end;
-  /* the telltale column's lane, reserved: lighting one never moves anything */
-  padding-right: 1.875rem;
+  /* the telltale column's lane on the left, reserved: lighting one never moves anything */
+  padding-left: 2.25rem;
 }
 .hud-c-gauge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.375rem;
+}
+.hud-c-dial {
+  position: relative;
   width: 9.75rem;
-  height: 9.25rem;
+  height: 9.75rem;
 }
 .hud-c-plate {
   inset: auto;
-  left: -1.125rem;
-  top: -1.125rem;
+  left: -0.875rem;
+  top: -0.875rem;
   width: 11.5rem;
   height: 11.5rem;
 }
@@ -1557,77 +1563,120 @@
   height: 100%;
   overflow: visible;
 }
+/* the scale: faint ticks inside the arc, the lit ones a touch brighter */
 .hud-c-ticks line {
   stroke: var(--hud-fg);
-  stroke-opacity: 0.16;
-  stroke-width: 2.5;
+  stroke-opacity: 0.18;
+  stroke-width: 1.5;
   stroke-linecap: butt;
 }
 .hud-c-ticks line[data-red] {
   stroke: var(--hud-redline);
-  stroke-opacity: 0.4;
+  stroke-opacity: 0.45;
 }
 .hud-c-ticks line[data-on] {
+  stroke-opacity: 0.5;
+}
+.hud-c-ticks line[data-on][data-red] {
+  stroke-opacity: 0.9;
+}
+/* the rpm: a thin arc that fills from the left over a faint track, red past the redline */
+.hud-c-arc-track,
+.hud-c-arc-fill,
+.hud-c-arc-red {
+  fill: none;
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+.hud-c-arc-track {
+  stroke: var(--hud-fg);
+  stroke-opacity: 0.16;
+}
+.hud-c-arc-red {
+  stroke: var(--hud-redline);
+  stroke-opacity: 0.55;
+}
+.hud-c-arc-fill {
+  stroke: var(--hud-fill);
+}
+.hud-c-gauge[data-redline] .hud-c-arc-fill {
+  stroke: var(--hud-redline);
+}
+/* digital: segmented ticks only, lit in the fill colour with the identity's glow */
+.hud-c-gauge[data-style="digital"] .hud-c-ticks line {
+  stroke-width: 3.5;
+  stroke-opacity: 0.14;
+}
+.hud-c-gauge[data-style="digital"] .hud-c-ticks line[data-on] {
   stroke: var(--hud-fill);
   stroke-opacity: 1;
 }
-.hud-c-ticks line[data-on][data-red] {
+.hud-c-gauge[data-style="digital"] .hud-c-ticks line[data-on][data-red] {
   stroke: var(--hud-redline);
 }
-.hud-c-fuel-track,
-.hud-c-fuel-fill {
-  fill: none;
-  stroke-width: 2.5;
-  stroke-linecap: round;
-}
-.hud-c-fuel-track {
-  stroke: var(--hud-fg);
-  stroke-opacity: 0.18;
-}
-.hud-c-fuel-fill {
-  stroke: var(--hud-fg);
-  stroke-opacity: 0.85;
-  transition: stroke-dasharray calc(300ms * var(--nk-motion, 1)) ease-out;
-}
-.hud-c-fuel[data-low] .hud-c-fuel-fill {
-  stroke: var(--warning);
-  stroke-opacity: 1;
-}
-.hud-c-fuel-icon {
+.hud-c-readout {
   position: absolute;
-  left: 6.1rem;
-  top: 8.85rem;
+  left: 50%;
+  top: 4.25rem;
   display: flex;
+  flex-direction: column;
+  align-items: center;
   transform: translate(-50%, -50%);
-  opacity: 0.7;
 }
-.hud-c-fuel-icon svg {
-  width: 0.75rem;
-  height: 0.75rem;
+.hud-c-speed {
+  display: flex;
+  font-size: 2.875rem;
+  line-height: 1;
+  font-weight: var(--nk-weight-display, 700);
+  letter-spacing: -0.03em;
 }
-.hud-c-fuel-icon[data-low] {
-  color: var(--warning);
-  opacity: 1;
+.hud-c-speed > [data-dim] {
+  opacity: 0.26;
 }
+.hud-c-unit {
+  margin-top: 0.1875rem;
+  font-family: var(--hud-caption-font);
+  font-size: 0.6875rem;
+  line-height: 1;
+  font-weight: 600;
+  text-transform: var(--hud-caption-case);
+  letter-spacing: var(--hud-caption-tracking);
+}
+/* the gear chip sits in the arc's opening at the bottom */
 .hud-c-center {
   position: absolute;
-  left: 4.625rem;
-  top: 3.5rem;
+  left: 50%;
+  top: 7.875rem;
   transform: translate(-50%, -50%);
 }
 .hud-c-gear {
-  font-size: 1.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.75rem;
+  height: 1.75rem;
+  padding: 0 0.375rem;
+  border-radius: calc(var(--radius) - 2px);
+  background-color: var(--hud-accent);
+  color: var(--hud-accent-foreground);
+  font-size: 1rem;
   line-height: 1;
   font-weight: var(--nk-weight-display, 700);
+  text-shadow: none;
+  transition: background-color calc(120ms * var(--nk-motion, 1)), color calc(120ms * var(--nk-motion, 1));
 }
 .hud-c-gear[data-gear="R"] {
-  color: var(--hud-redline);
+  background-color: var(--warning);
+  color: var(--warning-foreground);
 }
 .hud-c-gear[data-gear="N"] {
-  opacity: 0.6;
+  background-color: color-mix(in oklab, var(--hud-fg) 22%, transparent);
+  color: var(--hud-fg);
+  box-shadow: inset 0 0 0 1px var(--hud-faint);
 }
 .hud-c-gauge[data-redline] .hud-c-gear {
-  color: var(--hud-redline);
+  background-color: var(--hud-redline);
+  color: var(--destructive-foreground);
 }
 .hud-c-heading {
   font-size: 0.875rem;
@@ -1637,14 +1686,14 @@
 }
 .hud-c-signal {
   position: absolute;
-  top: 3.5rem;
+  top: 1.625rem;
   transform: translate(-50%, -50%);
 }
 .hud-c-signal[data-side="left"] {
-  left: 2.375rem;
+  left: 2.75rem;
 }
 .hud-c-signal[data-side="right"] {
-  left: 6.875rem;
+  left: 7rem;
 }
 .hud-c-signal .hud-signal svg {
   width: 0.875rem;
@@ -1653,49 +1702,132 @@
 .hud-c-signal .hud-signal:not([data-on]) {
   opacity: 0;
 }
-.hud-c-readout {
-  position: absolute;
-  left: 4.625rem;
-  top: 6.5rem;
+/* fuel: the pump, a thin line and the percentage, under the gauge */
+.hud-c-fuel {
+  position: relative;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  transform: translate(-50%, -50%);
+  gap: 0.5rem;
+  height: 1.25rem;
+  opacity: 0.85;
 }
-.hud-c-speed {
-  display: flex;
-  font-size: 2.625rem;
-  line-height: 1;
-  font-weight: var(--nk-weight-display, 700);
-  letter-spacing: -0.03em;
+.hud-c-fuel svg {
+  width: 0.875rem;
+  height: 0.875rem;
 }
-.hud-c-speed > [data-dim] {
-  opacity: 0.26;
+.hud-c-fuel-track {
+  width: 2.25rem;
+  height: 0.125rem;
+  overflow: hidden;
+  border-radius: 9999px;
+  background-color: var(--hud-track);
 }
-.hud-c-unit {
-  margin-top: 0.125rem;
-  font-family: var(--hud-caption-font);
-  font-size: 0.6875rem;
+.hud-c-fuel-fill {
+  display: block;
+  height: 100%;
+  background-color: var(--hud-fg);
+  transform-origin: left center;
+  transition: transform calc(300ms * var(--nk-motion, 1)) ease-out;
+}
+.hud-c-fuel-value {
+  font-size: 0.8125rem;
   line-height: 1;
   font-weight: 600;
-  text-transform: var(--hud-caption-case);
-  letter-spacing: var(--hud-caption-tracking);
+}
+.hud-c-fuel[data-low] {
+  color: var(--warning);
+  opacity: 1;
+}
+.hud-c-fuel[data-low] .hud-c-fuel-fill {
+  background-color: var(--warning);
 }
 .hud-c-gauge[data-off] .hud-c-svg,
 .hud-c-gauge[data-off] .hud-c-center,
-.hud-c-gauge[data-off] .hud-c-readout {
+.hud-c-gauge[data-off] .hud-c-readout,
+.hud-c-gauge[data-off] .hud-c-bar-rpm {
   opacity: 0.45;
+}
+/* bar: a rectangular plate, speed and gear side by side, the segmented rpm under them */
+.hud-c-bar {
+  align-items: stretch;
+  gap: 0;
+  width: 13.5rem;
+  padding: 0.75rem 1rem 0;
+}
+/* the plate covers the speed and the rpm bar; the fuel line hangs under it, as under the arc */
+.hud-c-plate-rect {
+  inset: 0 0 1.5rem;
+  border-radius: var(--nk-panel-radius, calc(var(--radius) + 4px));
+  background: var(--scrim);
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--hud-fg) 16%, transparent);
+  opacity: calc(var(--hud-plate-opacity) * 1.2);
+  clip-path: var(--nk-panel-clip, none);
+}
+.hud-c-bar > :not(.hud-plate) {
+  position: relative;
+}
+.hud-c-bar-main {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  height: 3rem;
+}
+.hud-c-bar .hud-c-readout {
+  position: static;
+  flex-direction: row;
+  align-items: baseline;
+  gap: 0.375rem;
+  margin-right: auto;
+  transform: none;
+}
+.hud-c-bar .hud-c-unit {
+  margin-top: 0;
+}
+.hud-c-bar .hud-c-center {
+  position: static;
+  transform: none;
+}
+.hud-c-bar .hud-c-gear {
+  min-width: 2rem;
+  height: 2rem;
+  font-size: 1.125rem;
+}
+.hud-c-bar .hud-c-signal {
+  position: static;
+  transform: none;
+}
+.hud-c-bar-rpm {
+  display: flex;
+  gap: 0.1875rem;
+  height: 0.5rem;
+  margin: 0.5rem 0 0.875rem;
+}
+.hud-c-bar-rpm > span {
+  flex: 1;
+  background-color: var(--hud-track);
+}
+.hud-c-bar-rpm > span[data-on] {
+  background-color: var(--hud-fill);
+}
+.hud-c-bar-rpm > span[data-red] {
+  background-color: color-mix(in oklab, var(--hud-redline) 35%, transparent);
+}
+.hud-c-bar-rpm > span[data-on][data-red] {
+  background-color: var(--hud-redline);
+}
+.hud-c-bar .hud-c-fuel {
+  justify-content: center;
+  margin-top: 0.25rem;
 }
 .hud-c-tells {
   position: absolute;
-  right: 0;
-  bottom: 0;
+  left: 0;
+  bottom: 1.625rem;
   display: flex;
   flex-direction: column-reverse;
   align-items: center;
   gap: 0.3125rem;
   width: 1.75rem;
-  padding-bottom: 0.5rem;
 }
 .hud-c-tell {
   display: flex;

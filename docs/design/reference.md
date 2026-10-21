@@ -41,71 +41,65 @@ with Fraunces for display and numerals, Graphite is Inter throughout (Inter Tigh
 
 ## Gaps: reference vs what ships today
 
-Per screen, what the frame shows that the shipped UI on `base/071` does not (or does differently). Each is a
-decision for the lane that owns the screen; nothing here is implemented by this lane.
+Per screen, what the frame shows against what ships. **Closed** items landed on `feat/reference-polish`
+(screenshots next to the frames in `bench/polish/<screen>/compare.jpg`, per identity, HUD at three resolutions;
+`node bench/polish/shots.mjs` remakes them). **Kept** items are deliberate: the shipped behaviour has a functional
+reason, so the frame is the one to change. **Open** items wait on another lane or the owner.
 
 **HUD on foot** (`systems/nuikit_hud`, compact layout)
-- Vitals pills carry a coloured 14px icon, the label and the value, with the level line under the whole pill;
-  shipped pills are caption + value with a thinner line and no icon colour. Hunger and thirst are shown in the
-  frame (as if changed / below threshold); shipped shows them only in `auto` mode on change, which is the rule.
-- Street and the "cross street · zone postal" line sit under the ring as two lines; shipped puts zone + postal on a
-  caption line *above* the street. Pick one (the frame's order reads top-down: where, then detail).
-- The waypoint tag sits on the ring's bottom-right; shipped places it on the left of the ring (8 o'clock).
-- Ammo shows the weapon name as a caption over `12 / 48`; shipped shows a weapon icon beside the numbers.
-- Money column: identical (deltas, cash, bank, job with the duty dot).
+- Closed: health, armor, hunger and thirst are labelled pills (coloured icon, label, value) with the level line under
+  the whole pill; stress stays a status dot. They still show only on change or past a threshold in `auto` mode.
+- Closed: the street, then `cross street · zone postal` under it; the heading reads `NW 300°`; the waypoint tag sits
+  on the ring's lower outer shoulder (5 o'clock on a right-hand map).
+- Open (owner, 0.7.0 note B): ammo shows a weapon glyph beside `12 / 48`; the frame shows the weapon's name as a
+  caption instead. Whether nuikit draws glyphs or reuses the inventory's item image decides which.
+- Money column: identical.
 
 **HUD in vehicle**
-- Gear is a brand chip under the speed; shipped draws the gear in the arc's top centre. Fuel is a line under the
-  gauge with a percentage; shipped draws fuel as an inner arc. Both are a choice, the frame's reads at a glance.
-- Signal uses its own `--nk-gauge-style: bar` (speed + segmented rpm bar + gear) in the compact layout; shipped
-  compact keeps the arc for every identity and only classic uses the bar. The identity should win.
-- Seatbelt / engine warning chips sit left of the cluster, telltale column on the gauge's left: as shipped.
-- Vector's gauge is segmented (`digital`) with glow; shipped Vector shows the arc.
+- Closed: the speed sits inside a small rpm arc, the gear is a brand chip under it, fuel is a line (pump, line, %)
+  under the gauge, the telltale column is on the gauge's left. The identity's `--nk-gauge-style` picks the drawing in
+  the compact layout too: Signal gets its plate with a segmented bar, Vector segmented ticks, the others the arc.
+- Kept: seatbelt is a destructive telltale in the column, not a worded chip left of the cluster; the compact layout
+  has no worded warnings (v2 §4: show on need, no floating chips). Reconsider if the in-game test says the icon is
+  missed.
 
 **Pause menu** (`systems/nuikit_pause`)
-- Server name is set in the identity's display font; shipped uses the body font at `text-xl`.
-- Rail footer is a three-line `dl` (players, server ID, ping); shipped shows whatever `data.lines` carries.
-- The player card is the shipped Home panel (avatar, role with duty dot, 2-column stats, footer with players online
-  and server ID). The frame leaves the centre to the 3D camera with a faint brand glow on the stage.
-- Row indicator follows the identity (`bar` / `fill` / `outline`); shipped `MenuRow` has the v2 token hook from the
-  identity PR but the pause rail should be checked in all four.
+- Closed: the server name in the identity's display face; the row indicator checked in all four identities.
+- Kept: the rail footer shows `data.lines` (whatever the server sends), not a fixed players / id / ping `dl`; the
+  Home panel (player card) stays, the frame leaves the centre to the camera. Both are content the server controls.
 
 **Notifications** (`addons/ox_lib` notify + the item slab)
-- Duration line is drawn in the kind's colour (success / info / warning); shipped uses `muted-foreground` at 40%.
-- Dedupe count `×2` on the right of the title; shipped has no dedupe (that is the 0.7 notification service).
-- The item delta slab (tile + name + `+2`) is in the stack as its own transient (v2 §4.5); shipped has no slab in
-  the ox_lib lane (the `nk-slab` utilities exist since the identity PR; nothing emits one yet).
+- Already shipped: the duration line in the kind's colour.
+- Closed: `×N` beside the title when the same toast arrives again while it is on screen (same title, description,
+  type and position, no `id`); the item slab from a `notify` with `item = { name, count, icon?, image? }` (a nuikit
+  extension: ox_lib's Lua never sends it). The 0.7 notification service takes both over when it lands.
+- Kept: the kit's item slab is one line (tile, name, delta), not the frame's two-line panel.
 
 **Context menu** (`addons/ox_lib`)
-- Rows can carry a key chip (`L`); ox_lib options have no key field, so this is a nuikit-menu-only affordance.
-- The active row uses the identity indicator; shipped hover uses `--accent`. Keyboard focus should show the
-  indicator, hover may stay accent.
-- Metadata panel beside the hovered row, mono for the plate: as shipped (`right-full mr-2 w-64`).
+- Open (Components lane): keyboard focus on the identity indicator, hover on `--accent`; the key chip on a row is a
+  nuikit-menu-only affordance (ox_lib options have no key field).
 
 **Input dialog** (`addons/ox_lib`)
-- Number field shows `‹ ›` steppers inside the field; shipped uses `+ / −` buttons. Primary button carries the
-  `Enter` key chip; shipped has no key chip on dialog actions.
+- Closed: the `Enter` chip on the dialog's Confirm button (and the alert's, when Enter is Confirm).
+- Open (Components lane, `form-field`): `‹ ›` steppers inside the number field; shipped keeps the `+ / −` buttons
+  beside it (the field is a registry component).
 
 **Progress + skill check** (`addons/ox_lib`)
-- Progress slab is label + percentage + cancel key chip over a thin line (v2 §4.5); shipped is label + bar, no
-  percentage, no key chip.
-- Skill check matches shipped (popover track, border rings, brand zone, foreground needle, key in the centre) and
-  adds ring ticks for identities with `--nk-gauge-ticks: 1`.
+- Closed: the progress slab is the label, a live percentage and, with `canCancel = true` in the `progress` message
+  (nuikit extension; ox_lib's own payload has no cancel field, X is handled in its Lua), the `X` key chip over a thin
+  line. POST payloads and timings unchanged (`bench/polish/ox_lib/{before,after}.json`).
+- Skill check matches shipped; ring ticks for `--nk-gauge-ticks: 1` identities are open (Components lane).
 
 **Death screen** (`systems/nuikit_death`)
-- Adds the full-width "Incapacitated" band at the bottom (v2 §4.5 band slab: icon, state, where and when);
-  shipped has no band.
-- Clock in `--font-numeric` (Fraunces in Velvet, JetBrains Mono in Vector); shipped uses the body font with
-  `nk-num`.
+- Closed: the full-width band along the bottom edge (state, phase and the clock in the numeric face). It keeps to the
+  last 2.5rem of the screen so the medical resources' own text above it stays clear; `Config.band = false` removes
+  it. Unproven in game: that qbx / qb's text really sits above it.
+- Already shipped: the clock in `--font-numeric` (Countdown uses `--nk-num-font`).
 
-**Inventory** (`addons/ox_inventory`)
-- Slots are 72px with a line icon, count top-right, name under, durability line; shipped uses the item images
-  (game assets, not drawable here) at ox_inventory's own slot size. Hot slot has a brand outline.
-- Hint row (`Tab` close, `Drag` move, `Ctrl` split) under the hotbar; shipped shows no hint row.
+**Inventory** (`addons/ox_inventory`): open (Screens lane). The frame's 72px line-icon slots stand in for the item
+images the game provides; the hint row (`Tab` close, `Drag` move, `Ctrl` split) is the part to take.
 
-**Loading screen** (`systems/nuikit_loading`)
-- Adds a players-online chip top right and a stage line ("Loading world / Streaming Vinewood") over the progress
-  line's right end; shipped has the header, tips with dots and the progress line.
+**Loading screen** (`systems/nuikit_loading`): open (Screens lane): the players-online chip and the stage line.
 
 ## Unproven
 

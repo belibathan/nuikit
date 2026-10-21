@@ -1,0 +1,302 @@
+{
+ "oxlib 1280x720": [
+  {
+   "step": "load",
+   "name": "init",
+   "body": null,
+   "ms": 277
+  },
+  {
+   "step": "load",
+   "name": "getConfig",
+   "body": null,
+   "ms": 813
+  },
+  {
+   "step": "progress",
+   "name": "progressComplete",
+   "body": null,
+   "ms": 920
+  },
+  {
+   "step": "progressCancel",
+   "name": "progressComplete",
+   "body": null,
+   "ms": 109
+  },
+  {
+   "step": "circleProgress",
+   "name": "progressComplete",
+   "body": null,
+   "ms": 918
+  },
+  {
+   "step": "submit-enter",
+   "name": "inputData",
+   "body": "[\"Niko\",12.35,true,\"rs\",4,632383200000,[1772344800000,1772690400000],1767324600000,\"#e11d48\"]",
+   "ms": 244
+  },
+  {
+   "step": "escape",
+   "name": "inputData",
+   "body": null,
+   "ms": 205
+  },
+  {
+   "step": "click-context",
+   "name": "clickContext",
+   "body": "\"0\"",
+   "ms": 68
+  },
+  {
+   "step": "setMenu",
+   "name": "changeSelected",
+   "body": "[0,0,\"isScroll\"]",
+   "ms": 109
+  },
+  {
+   "step": "menu-keys",
+   "name": "changeIndex",
+   "body": "[0,1]",
+   "ms": 107
+  },
+  {
+   "step": "menu-keys",
+   "name": "changeSelected",
+   "body": "[1,null,null]",
+   "ms": 215
+  },
+  {
+   "step": "menu-keys",
+   "name": "clickContext",
+   "body": "\"0\"",
+   "ms": 221
+  },
+  {
+   "step": "menu-keys",
+   "name": "changeChecked",
+   "body": "[1,true]",
+   "ms": 318
+  },
+  {
+   "step": "menu-keys",
+   "name": "closeContext",
+   "body": null,
+   "ms": 330
+  },
+  {
+   "step": "menu-keys",
+   "name": "closeMenu",
+   "body": "\"Escape\"",
+   "ms": 331
+  },
+  {
+   "step": "alert-confirm",
+   "name": "closeAlert",
+   "body": "\"confirm\"",
+   "ms": 53
+  }
+ ],
+ "oxlib 1920x1080": [
+  {
+   "step": "load",
+   "name": "init",
+   "body": null,
+   "ms": 261
+  },
+  {
+   "step": "load",
+   "name": "getConfig",
+   "body": null,
+   "ms": 791
+  },
+  {
+   "step": "progress",
+   "name": "progressComplete",
+   "body": null,
+   "ms": 912
+  },
+  {
+   "step": "progressCancel",
+   "name": "progressComplete",
+   "body": null,
+   "ms": 106
+  },
+  {
+   "step": "circleProgress",
+   "name": "progressComplete",
+   "body": null,
+   "ms": 909
+  },
+  {
+   "step": "submit-enter",
+   "name": "inputData",
+   "body": "[\"Niko\",12.35,true,\"rs\",4,632383200000,[1772344800000,1772690400000],1767324600000,\"#e11d48\"]",
+   "ms": 245
+  },
+  {
+   "step": "escape",
+   "name": "inputData",
+   "body": null,
+   "ms": 205
+  },
+  {
+   "step": "click-context",
+   "name": "clickContext",
+   "body": "\"0\"",
+   "ms": 45
+  },
+  {
+   "step": "setMenu",
+   "name": "changeSelected",
+   "body": "[0,0,\"isScroll\"]",
+   "ms": 110
+  },
+  {
+   "step": "menu-keys",
+   "name": "changeIndex",
+   "body": "[0,1]",
+   "ms": 106
+  },
+  {
+   "step": "menu-keys",
+   "name": "changeSelected",
+   "body": "[1,null,null]",
+   "ms": 222
+  },
+  {
+   "step": "menu-keys",
+   "name": "clickContext",
+   "body": "\"0\"",
+   "ms": 229
+  },
+  {
+   "step": "menu-keys",
+   "name": "changeChecked",
+   "body": "[1,true]",
+   "ms": 327
+  },
+  {
+   "step": "menu-keys",
+   "name": "closeContext",
+   "body": null,
+   "ms": 340
+  },
+  {
+   "step": "menu-keys",
+   "name": "closeMenu",
+   "body": "\"Escape\"",
+   "ms": 341
+  },
+  {
+   "step": "alert-confirm",
+   "name": "closeAlert",
+   "body": "\"confirm\"",
+   "ms": 46
+  }
+ ],
+ "oxlib 2560x1440": [
+  {
+   "step": "load",
+   "name": "init",
+   "body": null,
+   "ms": 281
+  },
+  {
+   "step": "load",
+   "name": "getConfig",
+   "body": null,
+   "ms": 715
+  },
+  {
+   "step": "progress",
+   "name": "progressComplete",
+   "body": null,
+   "ms": 912
+  },
+  {
+   "step": "progressCancel",
+   "name": "progressComplete",
+   "body": null,
+   "ms": 108
+  },
+  {
+   "step": "circleProgress",
+   "name": "progressComplete",
+   "body": null,
+   "ms": 912
+  },
+  {
+   "step": "submit-enter",
+   "name": "inputData",
+   "body": "[\"Niko\",12.35,true,\"rs\",4,632383200000,[1772344800000,1772690400000],1767324600000,\"#e11d48\"]",
+   "ms": 275
+  },
+  {
+   "step": "escape",
+   "name": "inputData",
+   "body": null,
+   "ms": 209
+  },
+  {
+   "step": "click-context",
+   "name": "clickContext",
+   "body": "\"0\"",
+   "ms": 51
+  },
+  {
+   "step": "setMenu",
+   "name": "changeSelected",
+   "body": "[0,0,\"isScroll\"]",
+   "ms": 110
+  },
+  {
+   "step": "menu-keys",
+   "name": "changeIndex",
+   "body": "[0,1]",
+   "ms": 106
+  },
+  {
+   "step": "menu-keys",
+   "name": "changeSelected",
+   "body": "[1,null,null]",
+   "ms": 215
+  },
+  {
+   "step": "menu-keys",
+   "name": "clickContext",
+   "body": "\"0\"",
+   "ms": 222
+  },
+  {
+   "step": "menu-keys",
+   "name": "changeChecked",
+   "body": "[1,true]",
+   "ms": 321
+  },
+  {
+   "step": "menu-keys",
+   "name": "closeContext",
+   "body": null,
+   "ms": 329
+  },
+  {
+   "step": "menu-keys",
+   "name": "closeMenu",
+   "body": "\"Escape\"",
+   "ms": 340
+  },
+  {
+   "step": "alert-confirm",
+   "name": "closeAlert",
+   "body": "\"confirm\"",
+   "ms": 53
+  }
+ ],
+ "death qbx-dead 1280x720": [],
+ "death qbx-dead 1920x1080": [],
+ "death qbx-dead 2560x1440": [],
+ "death qbx-laststand-help 1280x720": [],
+ "death qbx-laststand-help 1920x1080": [],
+ "death qbx-laststand-help 2560x1440": []
+}

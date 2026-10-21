@@ -55,9 +55,16 @@
   to { opacity: 1; }
 }
 .death-in { animation: death-in 700ms cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+/* the band: a thin line along the bottom edge, no top padding to waste; fades in with the text */
+.death-band {
+  min-height: 2.5rem;
+  padding-top: 0;
+  padding-bottom: 0;
+  animation: death-fade 600ms ease-out both;
+}
 .death-text { text-shadow: 0 1px 8px color-mix(in oklab, var(--scrim) 60%, transparent); }
 .death-text [data-slot="countdown-clock"] { text-shadow: 0 4px 32px color-mix(in oklab, var(--scrim) 50%, transparent); }
 
 @media (prefers-reduced-motion: reduce) {
-  .death-tint, .death-vignette, .death-in, .death-laststand .death-vignette::before { animation: none; }
+  .death-tint, .death-vignette, .death-in, .death-band, .death-laststand .death-vignette::before { animation: none; }
 }

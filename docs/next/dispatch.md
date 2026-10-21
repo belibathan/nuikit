@@ -3,13 +3,15 @@
 *How several coding agents work on nuikit at once without colliding. The lead session owns the platform
 (0.7, `docs/architecture.md`); agents own the lanes below. Status lives in [`../roadmap.md`](../roadmap.md).*
 
-## How work flows now (since Oct 20, 2026)
+## How work flows now (since Oct 21, 2026)
 
-The agent bus (issue #53) and the PC-side coordinator and test-assistant sessions are retired. The lead (cloud
-session) runs the lanes as its own agents. **Every branch starts from `lead/next` and opens its PR into `lead/next`**,
-the integration branch. `next/combined` mirrors it as the prerelease. The owner tests one checkpoint build with a
-local test agent (handoff in the project's `claude/test-handoff.md`). After that test, `lead/next` merges to `main`
-and is released. Scope for the 0.7.0 checkpoint is frozen: bugs only.
+The lead (cloud session) runs the lanes as its own parallel agents. **Every branch starts from `main` and opens
+its PR into `main`**; the lead rebases, runs the gate and merges the same hour. The owner tests on his Qbox server
+from `main` (release zips or a `next/*` prerelease) and his findings come back as the next lane. There is no
+integration branch and no checkpoint freeze any more; `lead/next` and `next/combined` only mirror `main`.
+
+**Speed rules (CLAUDE.md "How we work"):** ship then iterate; no screenshot sweeps or matrices; the gate is
+typecheck + build + sync + a POST diff for overrides; small commits; one line on what's unproven.
 
 ## Lead decisions log
 
@@ -25,16 +27,13 @@ and is released. Scope for the 0.7.0 checkpoint is frozen: bugs only.
 2. nuikit is **the shared layer between scripts and screens on any FiveM server**. The kit is the default look
    and the showcase. Rules: every step ships something useful on its own; test mechanisms before building on
    them; be honest about what's unproven.
-3. Branch from `main` as `feat/<lane>`. Small PRs into `main`, often. Rebase on `main` daily. Never push to
-   `main`; the lead reviews and merges.
+3. Branch from `main` as `feat/<lane>`. Small PRs into `main`, often. Never push to `main`; the lead merges.
 4. Only touch the files your lane owns (table below). Need a change elsewhere (a token, a kit utility, Lua, a
    shared component another lane owns)? Write it in your PR description under "Requests"; don't make it.
-5. Every PR: `pnpm typecheck && pnpm test && pnpm build:systems`, the conformance gate
-   (`node packages/cli/dist/cli.js check systems/nuikit_death systems/nuikit_hud systems/nuikit_loading systems/nuikit_pause addons packages/create-nuikit/template --level 3`),
-   Playwright screenshots at 1920×1080, 2560×1440 and 1280×720 (look at them), POST logs for anything that
-   talks to Lua.
-6. In-game test: push `next/<lane>` for a prerelease and give the owner a short checklist. Nothing merges
-   untested in game.
+5. Every PR: `pnpm typecheck && pnpm build:systems`, `pnpm sync` clean, the conformance gate
+   (`node packages/cli/dist/cli.js check … --level 3`, it's CI), tests where there's logic, and a POST-log diff
+   for an override's main flow. No screenshot sweeps.
+6. The owner tests in game from `main`; give him a 3-line checklist in the PR, nothing longer.
 7. Update your lane's row in `docs/roadmap.md` in each PR. Credit is `@belibathan` only. Never print or commit
    secrets.
 

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Confirm } from "@/components/ui/confirm";
+import { EnterKey } from "@/lib/keys";
 import { useLocale } from "@/lib/locale";
 import { Markdown } from "@/lib/markdown";
 import { post, useOx } from "@/lib/nui";
@@ -68,7 +69,12 @@ export function AlertDialog() {
         }
         showCancel={Boolean(data.cancel)}
         cancelLabel={data.labels?.cancel ?? locale.cancel}
-        confirmLabel={data.labels?.confirm ?? locale.confirm}
+        confirmLabel={
+          <>
+            {data.labels?.confirm ?? locale.confirm}
+            {!data.cancel && <EnterKey />}
+          </>
+        }
         initialFocus={data.cancel ? "cancel" : "confirm"}
         onCancel={() => close("cancel")}
         onConfirm={() => close("confirm")}

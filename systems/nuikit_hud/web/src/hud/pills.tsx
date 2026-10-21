@@ -1,5 +1,5 @@
-// Compact vitals (design v2 §4): health and armor as labelled pills with a thin level line, hunger,
-// thirst and stress as status dots, voice as a mic dot. Each shows on change or past its threshold,
+// Compact vitals (design v2 §4, reference screens): health, armor, hunger and thirst as labelled pills
+// with a coloured icon and a thin level line along the foot, stress as a status dot, voice as a mic dot. Each shows on change or past its threshold,
 // then fades back (the same rule as the classic rings: vitals.tsx useShown). Icon + label or icon +
 // level ring, never colour alone.
 import type { NuiPlayer } from "nuikit-core/react";
@@ -100,8 +100,8 @@ function VoiceDot({ voice, linger }: { voice: NuiPlayer["voice"]; linger: number
 }
 
 /**
- * The compact vitals row, bottom left: the mic dot, health and armor pills, the status dots, and the
- * radio channel while on one.
+ * The compact vitals row, bottom left: the mic dot, the vitals pills, the stress dot, and the radio
+ * channel while on one.
  */
 export function VitalsCompact({ player, settings }: { player: NuiPlayer; settings: HudSettings }) {
   const cfg = settings.vitals ?? {};
@@ -118,8 +118,8 @@ export function VitalsCompact({ player, settings }: { player: NuiPlayer; setting
       {voice && <VoiceDot voice={voice} linger={linger} />}
       <VitalPill tone="health" value={player.health} mode={mode(cfg.health)} {...common} />
       <VitalPill tone="armor" value={player.armor} mode={mode(cfg.armor)} {...common} low={-1} />
-      {needs && <VitalDot tone="hunger" value={player.hunger} mode={mode(cfg.hunger)} {...common} />}
-      {needs && <VitalDot tone="thirst" value={player.thirst} mode={mode(cfg.thirst)} {...common} />}
+      {needs && <VitalPill tone="hunger" value={player.hunger} mode={mode(cfg.hunger)} {...common} />}
+      {needs && <VitalPill tone="thirst" value={player.thirst} mode={mode(cfg.thirst)} {...common} />}
       {needs && <VitalDot tone="stress" value={player.stress} mode={mode(cfg.stress)} {...common} />}
       {voice?.radio !== undefined && (
         <div data-slot="hud-radio" data-shown className="hud-pill hud-pill-radio" aria-label={`Radio ${voice.radio} MHz`}>

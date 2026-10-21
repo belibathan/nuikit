@@ -28,6 +28,8 @@ export interface DeathData {
     state: "available" | "requested" | "cooldown";
     seconds?: number;
   };
+  /** Config.band = false: no band along the bottom edge. */
+  band?: false;
 }
 
 declare module "nuikit-core" {
