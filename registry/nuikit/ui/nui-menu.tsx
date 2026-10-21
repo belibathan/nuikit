@@ -87,14 +87,14 @@ function NuiMenu<T extends NuiMenuItem>({
   return (
     <Card
       data-slot="nui-menu"
-      className={cn("w-80 gap-0 overflow-hidden py-0", className)}
+      className={cn("nk-panel w-80 gap-0 overflow-hidden py-0", className)}
       onKeyDown={global ? undefined : onKey}
       tabIndex={global ? undefined : 0}
       {...props}
     >
       {(title || description) && (
         <CardHeader className="border-b px-4 py-3 [.border-b]:pb-3">
-          {title && <CardTitle className="text-sm">{title}</CardTitle>}
+          {title && <CardTitle className="nk-title">{title}</CardTitle>}
           {description && <CardDescription className="text-xs">{description}</CardDescription>}
         </CardHeader>
       )}
@@ -106,7 +106,8 @@ function NuiMenu<T extends NuiMenuItem>({
             size="sm"
             data-index={i}
             data-selected={i === active || undefined}
-            className="px-3 text-left data-[selected]:bg-accent data-[selected]:text-accent-foreground aria-disabled:opacity-50"
+            data-active={i === active || undefined}
+            className="nk-row text-left data-[selected]:bg-accent data-[selected]:text-accent-foreground aria-disabled:opacity-50"
           >
             <button
               type="button"

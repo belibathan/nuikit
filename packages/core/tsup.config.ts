@@ -8,6 +8,8 @@ export default defineConfig([
     entry: {
       index: "src/index.ts",
       react: "src/react.ts",
+      // springs, FLIP and timed runs on WAAPI (docs/tokens.md#motion): dependency-free, imports nothing
+      motion: "src/motion.ts",
       devtools: "src/devtools.tsx",
       // The host (docs/host.md): module side, ui_page boot, and the host page runtime.
       module: "src/module.ts",
@@ -29,7 +31,7 @@ export default defineConfig([
     target: "es2019",
     platform: "neutral",
     minify: false,
-    banner: { js: `/* nuikit-core theme compiler (tokens v1). MIT, https://github.com/belibathan/nuikit. Generated: do not edit (pnpm sync copies it from packages/core). */` },
+    banner: { js: `/* nuikit-core theme compiler (tokens v1) + doctor. MIT, https://github.com/belibathan/nuikit. Generated: do not edit (pnpm sync copies it from packages/core). */` },
     footer: { js: "globalThis.NuikitTheme = NuikitTheme;" },
     outExtension: () => ({ js: ".js" }),
   },

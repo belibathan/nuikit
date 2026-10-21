@@ -15,8 +15,9 @@ import { Kbd } from "@/components/ui/kbd"
  *
  * With `duration` it runs on its own and `onComplete` fires from a timer when the time is up
  * (never from an animation event, so it still fires with motion off). Restart it with a new `key`.
- * The ring moves in 100ms steps with a matching linear transition: smooth, and still correct when
- * transitions are off.
+ * The timed ring is drawn on the compositor: two half-rings, each rotated by one linear Web Animation
+ * (transform only) on one start time, so it closes exactly at `duration` with no React render and no
+ * repaint while it runs (ringHalfKeyframes()). It plays at every motion level: progress is information.
  */
 
 const progressRingVariants = cva("relative shrink-0", {
@@ -36,7 +37,7 @@ type ProgressRingTone = "primary" | "success" | "warning" | "info" | "destructiv
 
 /** Literal class names, so Tailwind finds them; tokens read as variables (docs/tokens.md). */
 const TONE: Record<ProgressRingTone, string> = {
-  primary: "stroke-(--primary)",
+  primary: "stroke-(--nk-gauge-fill)",
   success: "stroke-(--success)",
   warning: "stroke-(--warning)",
   info: "stroke-(--info)",
@@ -59,31 +60,59 @@ function ringOffset(percent: number, circumference = CIRCUMFERENCE) {
 }
 
 /**
- * Elapsed ms of a timed run, ticking every STEP_MS from mount (or a new `duration`), and
- * `onComplete` once from its own timer at `duration`.
+ * The rotation of each half of a timed ring. The right half's rotor turns 0 → 180° over the first half
+ * of the run and holds; the left half's waits, then turns over the second half. Linear over one
+ * duration, so the ring closes exactly at the end.
  */
-function useTimedRun(duration: number | undefined, onComplete?: () => void) {
-  const [elapsed, setElapsed] = React.useState(0)
-  const done = React.useRef(onComplete)
+function ringHalfKeyframes(half: "right" | "left"): Keyframe[] {
+  return half === "right"
+    ? [{ transform: "rotate(0deg)", offset: 0 }, { transform: "rotate(180deg)", offset: 0.5 }, { transform: "rotate(180deg)", offset: 1 }]
+    : [{ transform: "rotate(0deg)", offset: 0 }, { transform: "rotate(0deg)", offset: 0.5 }, { transform: "rotate(180deg)", offset: 1 }]
+}
+
+/**
+ * A timed run from mount (or a new `duration`): the two half-ring rotors in `root` animate on one start
+ * time; the default centre text is written straight to the DOM every STEP_MS (no React render).
+ * React renders at the start and at the end, when `onComplete` fires from its own timer.
+ */
+function useTimedRun(root: React.RefObject<HTMLElement | null>, duration: number | undefined, onComplete?: () => void) {
+  const [done, setDone] = React.useState(false)
+  const complete = React.useRef(onComplete)
   React.useEffect(() => {
-    done.current = onComplete
+    complete.current = onComplete
   })
-  React.useEffect(() => {
+  React.useLayoutEffect(() => {
     if (!duration || duration <= 0) return
-    const start = Date.now()
-    setElapsed(0)
-    const tick = setInterval(() => {
-      const e = Math.min(duration, Date.now() - start)
-      setElapsed(e)
-      if (e >= duration) clearInterval(tick)
-    }, STEP_MS)
-    const end = setTimeout(() => done.current?.(), duration)
+    setDone(false)
+    const t0 = performance.now()
+    const el = root.current
+    const anims: Animation[] = []
+    for (const half of ["right", "left"] as const) {
+      const rotor = el?.querySelector<HTMLElement>(`[data-slot=progress-ring-rotor][data-half=${half}]`)
+      if (!rotor?.animate) continue
+      const a = rotor.animate(ringHalfKeyframes(half), { duration, easing: "linear", fill: "both" })
+      a.startTime = t0 // the document timeline's clock: closed exactly at t0 + duration
+      anims.push(a)
+    }
+    const text = el?.querySelector<HTMLElement>("[data-slot=progress-ring-center][data-auto]")
+    const tick = text
+      ? setInterval(() => {
+          text.textContent = `${Math.round(ringPercent(performance.now() - t0, duration))}%`
+        }, STEP_MS)
+      : undefined
+    const end = setTimeout(() => {
+      clearInterval(tick)
+      setDone(true)
+      complete.current?.()
+    }, duration)
     return () => {
       clearInterval(tick)
       clearTimeout(end)
+      anims.forEach((a) => a.cancel())
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [duration])
-  return elapsed
+  return done
 }
 
 type ProgressRingProps = Omit<React.ComponentProps<"div">, "children"> &
@@ -123,11 +152,15 @@ function ProgressRing({
   onCancel,
   ...props
 }: ProgressRingProps) {
-  const elapsed = useTimedRun(duration, onComplete)
+  const box = React.useRef<HTMLDivElement>(null)
+  const done = useTimedRun(box, duration, onComplete)
   const timed = duration !== undefined && duration > 0
-  const percent = timed ? ringPercent(elapsed, duration) : ringPercent(value, max)
+  const running = timed && !done
+  const percent = timed ? (done ? 100 : 0) : ringPercent(value, max)
+  const drawn = percent
   const game = track === "game"
   const inside = center === undefined ? `${Math.round(percent)}%` : center
+  const toneClass = TONE[tone] ?? TONE.primary
 
   const cancel = (cancelKey || onCancel) && (
     <span className="flex items-center gap-1.5 text-xs leading-4 font-medium">
@@ -149,7 +182,7 @@ function ProgressRing({
       className={cn("inline-flex flex-col items-center gap-2", game && "text-(color:--hud-foreground)", className)}
       {...props}
     >
-      <div className={cn(progressRingVariants({ size }), game && "nk-shadow")}>
+      <div ref={box} className={cn(progressRingVariants({ size }), game && "nk-shadow")}>
         <svg viewBox="0 0 100 100" aria-hidden className="size-full">
           <circle
             cx="50"
@@ -160,22 +193,54 @@ function ProgressRing({
             className={game ? "stroke-(--scrim)" : "stroke-(--muted)"}
             strokeOpacity={game ? 0.35 : 1}
           />
-          <circle
-            data-slot="progress-ring-fill"
-            cx="50"
-            cy="50"
-            r={RADIUS}
-            fill="none"
-            strokeWidth="8"
-            strokeLinecap="round"
-            transform="rotate(-90 50 50)"
-            strokeDasharray={CIRCUMFERENCE}
-            strokeDashoffset={ringOffset(percent)}
-            className={cn(TONE[tone] ?? TONE.primary, "transition-[stroke-dashoffset] ease-linear", timed ? "duration-100" : "duration-200")}
-          />
+          {!running && (
+            <circle
+              data-slot="progress-ring-fill"
+              cx="50"
+              cy="50"
+              r={RADIUS}
+              fill="none"
+              strokeWidth="8"
+              strokeLinecap={timed ? "butt" : "round"}
+              transform="rotate(-90 50 50)"
+              strokeDasharray={CIRCUMFERENCE}
+              strokeDashoffset={ringOffset(drawn)}
+              className={cn(toneClass, "transition-[stroke-dashoffset] duration-200 ease-linear")}
+            />
+          )}
         </svg>
+        {running &&
+          // Timed: each half of the box clips a rotor carrying the opposite half-ring; rotating the rotor
+          // sweeps its arc into view (right half first, from 12 o'clock clockwise). Transform only.
+          (["right", "left"] as const).map((half) => (
+            <div
+              key={half}
+              aria-hidden
+              className={cn("absolute inset-y-0 w-1/2 overflow-hidden", half === "right" ? "right-0" : "left-0")}
+            >
+              <div
+                data-slot="progress-ring-rotor"
+                data-half={half}
+                className={cn("absolute inset-y-0 w-[200%]", half === "right" ? "right-0" : "left-0")}
+              >
+                <svg viewBox="0 0 100 100" className="size-full">
+                  <path
+                    d={half === "right" ? `M50 ${50 + RADIUS} A${RADIUS} ${RADIUS} 0 0 1 50 ${50 - RADIUS}` : `M50 ${50 - RADIUS} A${RADIUS} ${RADIUS} 0 0 1 50 ${50 + RADIUS}`}
+                    fill="none"
+                    strokeWidth="8"
+                    className={toneClass}
+                  />
+                </svg>
+              </div>
+            </div>
+          ))}
         {inside !== false && inside !== null && (
-          <span data-slot="progress-ring-center" className="absolute inset-0 grid place-items-center nk-num font-semibold">
+          <span
+            data-slot="progress-ring-center"
+            data-auto={(running && center === undefined) || undefined}
+            // While running, a ticking counter repaints only itself: its own layer, its own layout
+            className={cn("absolute inset-0 grid place-items-center nk-num font-semibold", running && "[contain:strict] will-change-transform")}
+          >
             {inside}
           </span>
         )}
@@ -202,4 +267,4 @@ function ProgressRing({
   )
 }
 
-export { ProgressRing, progressRingVariants, ringPercent, ringOffset, type ProgressRingTone, type ProgressRingProps }
+export { ProgressRing, progressRingVariants, ringPercent, ringOffset, ringHalfKeyframes, type ProgressRingTone, type ProgressRingProps }

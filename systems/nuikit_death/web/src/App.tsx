@@ -1,7 +1,8 @@
-import { Surface } from "nuikit-core/react";
+import { Surface, useFollow } from "nuikit-core/react";
 import { CheckIcon, HeartPulseIcon } from "lucide-react";
-import type { ReactNode } from "react";
+import { useRef, type ReactNode } from "react";
 import type { DeathData } from "./nui";
+import { Countdown } from "@/components/ui/countdown";
 import { Kbd } from "@/components/ui/kbd";
 import { Meter } from "@/components/ui/meter";
 import { cn } from "@/lib/utils";
@@ -17,18 +18,11 @@ export default function App() {
   );
 }
 
-function clock(s: number) {
-  const t = Math.max(0, Math.ceil(s));
-  const m = Math.floor(t / 60);
-  return `${String(m).padStart(2, "0")}:${String(t % 60).padStart(2, "0")}`;
-}
-
 function Death({ data }: { data: DeathData }) {
   const laststand = data.phase === "laststand";
   const hasTimer = typeof data.seconds === "number";
   const seconds = data.seconds ?? 0;
   const total = data.total && data.total > 0 ? data.total : undefined;
-  const urgent = hasTimer && seconds <= 30;
   const bleeding = laststand || data.medical === "esx_death" || data.medical === "esx";
   const label = bleeding ? "Until you bleed out" : seconds > 0 ? "Until you can respawn" : "You can respawn";
 
@@ -49,30 +43,19 @@ function Death({ data }: { data: DeathData }) {
         ) : null}
 
         {hasTimer ? (
-          <div className="death-in mt-12 flex flex-col items-center" style={{ animationDelay: "120ms" }}>
-            <div
-              className={cn(
-                "death-clock nk-num text-[8rem] leading-none font-semibold",
-                urgent && laststand ? "death-urgent text-destructive" : "text-foreground",
-                !laststand && seconds <= 0 && "text-foreground/40",
-              )}
-              role="timer"
-              aria-live="off"
-            >
-              {clock(seconds)}
-            </div>
-            <div className="mt-4 text-sm font-medium text-foreground/75">{label}</div>
-            {total ? (
-              <Meter
-                value={seconds}
-                max={total}
-                size="sm"
-                tone={laststand ? "destructive" : "foreground"}
-                aria-label={label}
-                className="mt-6 w-80"
-              />
-            ) : null}
-          </div>
+          // The kit's Countdown: mm:ss at the hero size, the label, the line that drains (with a
+          // total), dimmed at 00:00. In last stand the line drains red throughout (as in 0.6.0) and
+          // the clock turns red and pulses in the last 30 s.
+          <Countdown
+            seconds={seconds}
+            total={total}
+            label={label}
+            size="hero"
+            warnAt={laststand ? 30 : undefined}
+            lineTone={laststand ? "destructive" : "neutral"}
+            className="death-in mt-12"
+            style={{ animationDelay: "120ms" }}
+          />
         ) : (
           <div className="death-in mt-12 text-sm font-medium text-foreground/75" style={{ animationDelay: "120ms" }}>
             Waiting to respawn
@@ -104,10 +87,7 @@ function Hints({ data }: { data: DeathData }) {
 
       {respawn ? (
         respawn.available ? (
-          <div className="flex flex-col gap-2">
-            <Hint kbd={respawn.key} label="Hold to respawn" meta={respawn.cost ? money.format(respawn.cost) : undefined} />
-            <Meter value={respawn.progress ?? 0} max={1} size="sm" tone="foreground" aria-label="Respawn hold" className="w-full" />
-          </div>
+          <HoldToRespawn kbd={respawn.key} cost={respawn.cost} />
         ) : (
           <Hint
             kbd={respawn.key}
@@ -117,6 +97,35 @@ function Hints({ data }: { data: DeathData }) {
           />
         )
       ) : null}
+    </div>
+  );
+}
+
+/**
+ * "Hold E to respawn" and its bar. The bar follows death:hold, a live value (NUI.stream) of how long
+ * E has been held against how long the medical resource needs: painted on animation frames between
+ * messages, without a React render, so it moves smoothly. React keeps the Meter at 0 and never
+ * overwrites the painted width.
+ */
+function HoldToRespawn({ kbd, cost }: { kbd: string; cost?: number }) {
+  const root = useRef<HTMLDivElement>(null);
+  useFollow(
+    "death:hold",
+    (v) => {
+      const p = Math.max(0, Math.min(1, v)) * 100;
+      const bar = root.current?.querySelector<HTMLElement>('[data-slot="progress-indicator"]');
+      if (bar) {
+        bar.style.transition = "none";
+        bar.style.transform = `translateX(-${100 - p}%)`;
+      }
+      root.current?.querySelector('[role="progressbar"]')?.setAttribute("aria-valuenow", String(Math.round(p)));
+    },
+    { start: 0 },
+  );
+  return (
+    <div ref={root} className="flex flex-col gap-2">
+      <Hint kbd={kbd} label="Hold to respawn" meta={cost ? money.format(cost) : undefined} />
+      <Meter value={0} max={1} size="sm" tone="foreground" aria-label="Respawn hold" className="w-full" />
     </div>
   );
 }

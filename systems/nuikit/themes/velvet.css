@@ -1,0 +1,76 @@
+/*
+ * Velvet (docs/design/v2.md): soft and warm, luxury. Rounded, gradient surfaces with a deep shadow,
+ * a serif display face, champagne on aubergine (a gold pill marks the active row), unhurried motion,
+ * a roomy rhythm.
+ *
+ * Use it: copy this file over nuikit/theme.css, then `nuikit theme reload`. Tokens: docs/tokens.md.
+ */
+.dark {
+  --background: oklch(0.155 0.022 345);
+  --foreground: oklch(0.96 0.014 75);
+  --card: oklch(0.2 0.028 345);
+  --card-foreground: oklch(0.96 0.014 75);
+  --popover: oklch(0.195 0.028 345);
+  --popover-foreground: oklch(0.96 0.014 75);
+  --primary: oklch(0.83 0.085 78);
+  --primary-foreground: oklch(0.2 0.03 345);
+  --secondary: oklch(0.27 0.03 345);
+  --secondary-foreground: oklch(0.96 0.014 75);
+  --muted: oklch(0.265 0.03 345);
+  --muted-foreground: oklch(0.76 0.028 50);
+  --accent: oklch(0.29 0.038 345);
+  --accent-foreground: oklch(0.97 0.014 75);
+  --destructive: oklch(0.69 0.18 18);
+  --border: oklch(0.95 0.03 70 / 11%);
+  --input: oklch(0.95 0.03 70 / 16%);
+  --ring: oklch(0.83 0.085 78);
+  --chart-1: oklch(0.69 0.18 18);
+  --chart-2: oklch(0.72 0.12 250);
+  --chart-3: oklch(0.82 0.12 75);
+  --chart-4: oklch(0.78 0.1 200);
+  --chart-5: oklch(0.72 0.15 330);
+  --radius: 1rem;
+  --brand: oklch(0.83 0.085 78);
+
+  /* identity (tokens 1.1) */
+  --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-display: Fraunces, Georgia, ui-serif, serif;
+  --font-numeric: Fraunces, Georgia, ui-serif, serif;
+  --font-mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --nk-type-ratio: 1.25;
+  --nk-weight-body: 400;
+  --nk-weight-strong: 600;
+  --nk-weight-display: 500;
+  --nk-tracking-display: -0.01em;
+  --nk-label-case: none;
+  --nk-tracking-label: 0em;
+  --nk-border-width: 1px;
+  --nk-cut: 0px;
+  --nk-surface-opacity: 0.96;
+  --nk-surface-tint: 0.06;
+  --nk-surface-gradient: 0.1;
+  --nk-surface-edge: 0.12;
+  --nk-elevation: deep;
+  --nk-glow: 0.12;
+  --nk-density: 1.15;
+  --nk-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --nk-duration: 240ms;
+  --nk-motion-feel: smooth;
+  --nk-spring-bounce: 0.1;
+  --nk-hud-opacity: 0.6;
+  --nk-hud-text-shadow: soft;
+  --nk-gauge-style: arc;
+  --nk-gauge-track: 0.3125rem;
+  --nk-gauge-ticks: 0;
+  --nk-row-indicator: fill;
+
+  /* component details */
+  --nk-heading-weight: 500;
+  --nk-heading-tracking: 0;
+  --nk-row-radius: 9999px;
+  --nk-panel-radius: calc(var(--radius) + 4px);
+  --nk-chip-radius: 9999px;
+  --nk-hud-radius: calc(var(--radius) + 2px);
+  --nk-key-font: var(--font-sans);
+  --nk-num-tracking: 0;
+}

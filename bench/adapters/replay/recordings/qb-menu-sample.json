@@ -1,0 +1,41 @@
+{
+  "library": "qb-menu",
+  "source": "hand-written from qb-menu's documented API (qbcore.org/docs/qbcore-resources/qb-menu); replace with a log recorded in game",
+  "expects": ["my_script:openGarage", "my_script:closed"],
+  "calls": [
+    {
+      "kind": "export", "resource": "qb-menu", "name": "openMenu",
+      "args": [
+        [
+          { "header": "Garage", "isMenuHeader": true },
+          { "header": "Take out", "txt": "Sultan RS", "icon": "fas fa-car",
+            "params": { "event": "my_script:openGarage", "args": { "plate": "ABC123" } } },
+          { "header": "Pay fee", "txt": "$250", "params": { "event": "my_script:payFee", "isServer": true, "args": { "amount": 250 } } },
+          { "header": "Close", "action": { "$fn": "closeAction" } },
+          { "header": "Locked", "txt": "Not yours", "disabled": true }
+        ],
+        true,
+        false
+      ]
+    },
+    { "kind": "command", "resource": "nuikit_spike_standin", "name": "spike_standin", "args": ["pick", "2"] },
+
+    { "kind": "export", "resource": "qb-menu", "name": "openMenu",
+      "args": [[ { "header": "Pay fee", "params": { "event": "my_script:payFee", "isServer": true, "args": { "amount": 250 } } } ]] },
+    { "kind": "command", "resource": "nuikit_spike_standin", "name": "spike_standin", "args": ["pick", "1"] },
+
+    { "kind": "export", "resource": "qb-menu", "name": "openMenu",
+      "args": [[ { "header": "Close", "action": { "$fn": "closeAction" } } ]] },
+    { "kind": "command", "resource": "nuikit_spike_standin", "name": "spike_standin", "args": ["pick", "1"] },
+
+    { "kind": "export", "resource": "qb-menu", "name": "openMenu",
+      "args": [[ { "header": "Locked", "disabled": true } ]] },
+    { "kind": "command", "resource": "nuikit_spike_standin", "name": "spike_standin", "args": ["pick", "1"] },
+
+    { "kind": "event", "name": "qb-menu:client:openMenu",
+      "args": [[ { "header": "Via event", "params": { "event": "my_script:closed" } } ]] },
+    { "kind": "command", "resource": "nuikit_spike_standin", "name": "spike_standin", "args": ["pick", "1"] },
+
+    { "kind": "export", "resource": "qb-menu", "name": "closeMenu", "args": [] }
+  ]
+}

@@ -19,13 +19,19 @@
       ],
       "registryDependencies": [
         "scroll-area"
-      ]
+      ],
+      "meta": {
+        "since": "0.5.0",
+        "status": "stable",
+        "replaces": [],
+        "removeIn": null
+      }
     },
     {
       "name": "menu-row",
       "type": "registry:ui",
       "title": "Menu Row",
-      "description": "The 40px action row: icon, label, description and a trailing meta, chevron, Kbd, checkbox or value stepper. Active, disabled and destructive.",
+      "description": "The 40px action row: icon, label, description, a progress bar in any tone or colour, and a trailing meta, chevron, Kbd, checkbox or value stepper. Active, disabled and destructive. MenuRowDetails shows metadata with per-item bar colours.",
       "files": [
         {
           "path": "registry/nuikit/ui/menu-row.tsx",
@@ -40,8 +46,15 @@
       "registryDependencies": [
         "checkbox",
         "kbd",
-        "progress"
-      ]
+        "progress",
+        "https://nuikit.vercel.app/r/meter.json"
+      ],
+      "meta": {
+        "since": "0.5.0",
+        "status": "stable",
+        "replaces": [],
+        "removeIn": null
+      }
     },
     {
       "name": "stat",
@@ -57,13 +70,19 @@
       "dependencies": [
         "class-variance-authority",
         "lucide-react"
-      ]
+      ],
+      "meta": {
+        "since": "0.5.0",
+        "status": "stable",
+        "replaces": [],
+        "removeIn": null
+      }
     },
     {
       "name": "meter",
       "type": "registry:ui",
       "title": "Meter",
-      "description": "A slim bar on a theme or game track, with a label and value, low/high thresholds that turn it destructive, and optional segments.",
+      "description": "A slim bar on a theme or game track, with a caption and value, low/high thresholds that turn it destructive, and optional segments; timed runs; and the timed-progress slab (variant=\"slab\": label, thin line, cancel key), the successor of task-progress.",
       "files": [
         {
           "path": "registry/nuikit/ui/meter.tsx",
@@ -75,7 +94,15 @@
       ],
       "registryDependencies": [
         "progress"
-      ]
+      ],
+      "meta": {
+        "since": "0.5.0",
+        "status": "stable",
+        "replaces": [
+          "task-progress"
+        ],
+        "removeIn": null
+      }
     },
     {
       "name": "hud-chip",
@@ -90,7 +117,13 @@
       ],
       "dependencies": [
         "class-variance-authority"
-      ]
+      ],
+      "meta": {
+        "since": "0.5.0",
+        "status": "stable",
+        "replaces": [],
+        "removeIn": null
+      }
     },
     {
       "name": "vital",
@@ -108,7 +141,13 @@
       ],
       "registryDependencies": [
         "progress"
-      ]
+      ],
+      "meta": {
+        "since": "0.3.0",
+        "status": "stable",
+        "replaces": [],
+        "removeIn": null
+      }
     },
     {
       "name": "key-hint",
@@ -127,7 +166,16 @@
       "registryDependencies": [
         "kbd",
         "progress"
-      ]
+      ],
+      "meta": {
+        "since": "0.3.0",
+        "status": "deprecated",
+        "replaces": [],
+        "removeIn": "0.8.0",
+        "replacedBy": [
+          "key-prompt"
+        ]
+      }
     },
     {
       "name": "task-progress",
@@ -144,7 +192,17 @@
         "card",
         "kbd",
         "progress"
-      ]
+      ],
+      "meta": {
+        "since": "0.3.0",
+        "status": "deprecated",
+        "replaces": [],
+        "removeIn": "0.8.0",
+        "replacedBy": [
+          "meter",
+          "progress-ring"
+        ]
+      }
     },
     {
       "name": "nui-menu",
@@ -160,7 +218,13 @@
       "registryDependencies": [
         "card",
         "item"
-      ]
+      ],
+      "meta": {
+        "since": "0.3.0",
+        "status": "stable",
+        "replaces": [],
+        "removeIn": null
+      }
     },
     {
       "name": "radial-menu",
@@ -172,7 +236,13 @@
           "path": "registry/nuikit/ui/radial-menu.tsx",
           "type": "registry:ui"
         }
-      ]
+      ],
+      "meta": {
+        "since": "0.3.0",
+        "status": "stable",
+        "replaces": [],
+        "removeIn": null
+      }
     },
     {
       "name": "speedometer",
@@ -188,7 +258,13 @@
       "registryDependencies": [
         "badge",
         "progress"
-      ]
+      ],
+      "meta": {
+        "since": "0.3.0",
+        "status": "stable",
+        "replaces": [],
+        "removeIn": null
+      }
     },
     {
       "name": "nui-toaster",
@@ -207,7 +283,16 @@
       ],
       "registryDependencies": [
         "sonner"
-      ]
+      ],
+      "meta": {
+        "since": "0.3.0",
+        "status": "deprecated",
+        "replaces": [],
+        "removeIn": "0.8.0",
+        "replacedBy": [
+          "notice"
+        ]
+      }
     },
     {
       "name": "use-nui-store",
@@ -222,13 +307,19 @@
       ],
       "dependencies": [
         "nuikit-core"
-      ]
+      ],
+      "meta": {
+        "since": "0.3.0",
+        "status": "stable",
+        "replaces": [],
+        "removeIn": null
+      }
     },
     {
       "name": "notice",
       "type": "registry:ui",
       "title": "Notice",
-      "description": "A notification on the game (status icon, title, description, a time-left line that pauses on hover) and the stack that pins them to any of eight positions, with a useNotices() queue. The default look of the notify intent.",
+      "description": "A notification on the game (status icon, title, description, a time-left line that pauses on hover) and the stack that pins them to any of eight positions, with a useNotices() queue; an item add/remove slab (icon tile, name, delta) whose changes merge within 1.5 s. The default look of the notify intent.",
       "files": [
         {
           "path": "registry/nuikit/ui/notice.tsx",
@@ -241,13 +332,21 @@
       ],
       "registryDependencies": [
         "button"
-      ]
+      ],
+      "meta": {
+        "since": "0.6.0",
+        "status": "stable",
+        "replaces": [
+          "nui-toaster"
+        ],
+        "removeIn": null
+      }
     },
     {
       "name": "form-field",
       "type": "registry:ui",
       "title": "Form field",
-      "description": "One row of a game form (label, hint, description, error, required, inline value, reset) and a preset per value: text, number with stepper, select and multi-select, checkbox or switch, slider, date, colour. validateField() for required, min/max and length. The default look of the input intent; nothing relies on :has() or native pickers.",
+      "description": "One row of a game form (label, hint, description, error, required, inline value, reset) and a preset per value: text, number with stepper, select and multi-select, checkbox or switch, slider, date (typed, or a picker that steps up to years and decades), date range, time (12 or 24h), colour. Date range and time values in ox_lib's shapes (epoch ms). validateField() for required, min/max, length and order. The default look of the input intent; nothing relies on :has() or native pickers.",
       "files": [
         {
           "path": "registry/nuikit/ui/form-field.tsx",
@@ -268,7 +367,13 @@
         "slider",
         "switch",
         "textarea"
-      ]
+      ],
+      "meta": {
+        "since": "0.6.0",
+        "status": "stable",
+        "replaces": [],
+        "removeIn": null
+      }
     },
     {
       "name": "death-screen",
@@ -297,14 +402,20 @@
         "nuikit-core"
       ],
       "registryDependencies": [
-        "kbd",
-        "https://nuikit.vercel.app/r/meter.json",
+        "https://nuikit.vercel.app/r/countdown.json",
+        "https://nuikit.vercel.app/r/key-prompt.json",
         "https://nuikit.vercel.app/r/hud-chip.json"
       ],
       "categories": [
         "screens"
       ],
-      "docs": "Mount <DeathScreenSurface /> in App.tsx and open it from Lua: nk.surface(\"death\", { layer = \"system\", input = \"none\", hides = { \"hud\" } }):open(data). Stream the respawn hold with nk.stream(\"death:hold\"). A whole resource with the Lua: npm create nuikit@latest my-death -- -t death-screen"
+      "docs": "Mount <DeathScreenSurface /> in App.tsx and open it from Lua: nk.surface(\"death\", { layer = \"system\", input = \"none\", hides = { \"hud\" } }):open(data). Stream the respawn hold with nk.stream(\"death:hold\"). A whole resource with the Lua: npm create nuikit@latest my-death -- -t death-screen",
+      "meta": {
+        "since": "0.6.0",
+        "status": "stable",
+        "replaces": [],
+        "removeIn": null
+      }
     },
     {
       "name": "hud-minimal",
@@ -341,7 +452,13 @@
       "categories": [
         "screens"
       ],
-      "docs": "Mount <HudMinimalSurface /> in App.tsx. In Lua, open nk.surface(\"hud\", { layer = \"hud\" }) once nk.player.get().loaded, send hud:vehicle on change and stream hud:vehicle:speed and hud:vehicle:rpm with nk.stream. A whole resource with the Lua: npm create nuikit@latest my-hud -- -t hud-minimal"
+      "docs": "Mount <HudMinimalSurface /> in App.tsx. In Lua, open nk.surface(\"hud\", { layer = \"hud\" }) once nk.player.get().loaded, send hud:vehicle on change and stream hud:vehicle:speed and hud:vehicle:rpm with nk.stream. A whole resource with the Lua: npm create nuikit@latest my-hud -- -t hud-minimal",
+      "meta": {
+        "since": "0.6.0",
+        "status": "stable",
+        "replaces": [],
+        "removeIn": null
+      }
     },
     {
       "name": "confirm",
@@ -361,13 +478,19 @@
         "button",
         "spinner",
         "https://nuikit.vercel.app/r/panel.json"
-      ]
+      ],
+      "meta": {
+        "since": "0.6.0",
+        "status": "stable",
+        "replaces": [],
+        "removeIn": null
+      }
     },
     {
       "name": "key-prompt",
       "type": "registry:ui",
       "title": "Key prompt",
-      "description": "\"[E] Open garage\": keys (one or a combination), label, description, icon; hold-to-confirm with a filling line, driven by Lua (progress) or by pointer and key when the page has focus; active and disabled; on a panel or the HUD; a stack for any edge. The default look of the prompt intent; supersedes key-hint.",
+      "description": "\"[E] Open garage\": the prompt slab (key chip + verb) by default, or a panel or HUD surface; keys (none, one or a combination), label that truncates or wraps, description, icon; hold-to-confirm with a filling line, driven by Lua (progress) or by pointer and key when the page has focus; active and disabled; a stack for any edge. The default look of the prompt intent; supersedes key-hint.",
       "files": [
         {
           "path": "registry/nuikit/ui/key-prompt.tsx",
@@ -379,7 +502,15 @@
       ],
       "registryDependencies": [
         "kbd"
-      ]
+      ],
+      "meta": {
+        "since": "0.6.0",
+        "status": "stable",
+        "replaces": [
+          "key-hint"
+        ],
+        "removeIn": null
+      }
     },
     {
       "name": "progress-ring",
@@ -397,13 +528,21 @@
       ],
       "registryDependencies": [
         "kbd"
-      ]
+      ],
+      "meta": {
+        "since": "0.6.0",
+        "status": "stable",
+        "replaces": [
+          "task-progress"
+        ],
+        "removeIn": null
+      }
     },
     {
       "name": "countdown",
       "type": "registry:ui",
       "title": "Countdown",
-      "description": "A timer that matters: tabular mm:ss (h:mm:ss past an hour), a label, a line that drains, a warning threshold, a done state, sizes up to a full-screen clock, theme or game surface. From Lua's seconds, or running on its own with onComplete from a timer.",
+      "description": "A timer that matters: tabular mm:ss (h:mm:ss past an hour) in the identity's display type, a caption, a line that drains on its own between updates, a warning threshold, a done state, sizes up to a full-screen clock, theme or game surface. From Lua's seconds, or running on its own with onComplete from a timer.",
       "files": [
         {
           "path": "registry/nuikit/ui/countdown.tsx",
@@ -413,9 +552,36 @@
       "dependencies": [
         "class-variance-authority"
       ],
+      "meta": {
+        "since": "0.6.0",
+        "status": "stable",
+        "replaces": [],
+        "removeIn": null
+      },
       "registryDependencies": [
         "progress"
       ]
+    },
+    {
+      "name": "band",
+      "type": "registry:ui",
+      "title": "Band",
+      "description": "A full-width band for a state the player is in (incapacitated, cuffed, spectating): the game darkened and tinted by a tone, tone hairlines above and below, a display title and a caption. The band slab of design v2, pinned to the bottom or top edge or in the flow.",
+      "files": [
+        {
+          "path": "registry/nuikit/ui/band.tsx",
+          "type": "registry:ui"
+        }
+      ],
+      "dependencies": [
+        "class-variance-authority"
+      ],
+      "meta": {
+        "since": "unreleased",
+        "status": "stable",
+        "replaces": [],
+        "removeIn": null
+      }
     },
     {
       "name": "money",
@@ -430,7 +596,13 @@
       ],
       "dependencies": [
         "class-variance-authority"
-      ]
+      ],
+      "meta": {
+        "since": "0.6.0",
+        "status": "stable",
+        "replaces": [],
+        "removeIn": null
+      }
     },
     {
       "name": "item-slot",
@@ -446,7 +618,13 @@
       "dependencies": [
         "class-variance-authority",
         "lucide-react"
-      ]
+      ],
+      "meta": {
+        "since": "0.6.0",
+        "status": "stable",
+        "replaces": [],
+        "removeIn": null
+      }
     },
     {
       "name": "player-card",
@@ -463,7 +641,13 @@
         "avatar",
         "https://nuikit.vercel.app/r/panel.json",
         "https://nuikit.vercel.app/r/stat.json"
-      ]
+      ],
+      "meta": {
+        "since": "0.6.0",
+        "status": "stable",
+        "replaces": [],
+        "removeIn": null
+      }
     },
     {
       "name": "empty-state",
@@ -482,13 +666,19 @@
       ],
       "registryDependencies": [
         "empty"
-      ]
+      ],
+      "meta": {
+        "since": "0.6.0",
+        "status": "stable",
+        "replaces": [],
+        "removeIn": null
+      }
     },
     {
       "name": "skill-check",
       "type": "registry:ui",
       "title": "Skill check",
-      "description": "Press the key while the needle is in the zone: zone start and size (wrapping past 360°), speed, the key, a success or fail outcome. Runs itself (needle drawn per frame without re-rendering, a full turn is a miss) and reads the key, or takes the angle from outside. The default look of the challenge intent.",
+      "description": "Press the key while the needle is in the zone: zone start and size (wrapping past 360\u00b0), speed, the key, a success or fail outcome. Runs itself (needle drawn per frame without re-rendering, a full turn is a miss) and reads the key, or takes the angle from outside. The default look of the challenge intent.",
       "files": [
         {
           "path": "registry/nuikit/ui/skill-check.tsx",
@@ -500,7 +690,13 @@
       ],
       "registryDependencies": [
         "kbd"
-      ]
+      ],
+      "meta": {
+        "since": "0.6.0",
+        "status": "stable",
+        "replaces": [],
+        "removeIn": null
+      }
     },
     {
       "name": "pause-menu",
@@ -529,18 +725,24 @@
         "nuikit-core"
       ],
       "registryDependencies": [
-        "alert-dialog",
         "avatar",
         "separator",
         "https://nuikit.vercel.app/r/menu-row.json",
         "https://nuikit.vercel.app/r/panel.json",
         "https://nuikit.vercel.app/r/stat.json",
-        "https://nuikit.vercel.app/r/meter.json"
+        "https://nuikit.vercel.app/r/meter.json",
+        "https://nuikit.vercel.app/r/confirm.json"
       ],
       "categories": [
         "screens"
       ],
-      "docs": "Mount <PauseMenuSurface /> in App.tsx. In Lua, catch Esc (control 200), open nk.surface(\"pause\", { layer = \"modal\", input = \"full\", exclusive = true, hides = { \"hud\" }, blockedBy = { \"dead\" } }) with a PauseMenuData table, and answer nk.on(\"pause:action\"). A whole resource with the Lua: npm create nuikit@latest my-pause -- -t pause-menu"
+      "docs": "Mount <PauseMenuSurface /> in App.tsx. In Lua, catch Esc (control 200), open nk.surface(\"pause\", { layer = \"modal\", input = \"full\", exclusive = true, hides = { \"hud\" }, blockedBy = { \"dead\" } }) with a PauseMenuData table, and answer nk.on(\"pause:action\"). A whole resource with the Lua: npm create nuikit@latest my-pause -- -t pause-menu",
+      "meta": {
+        "since": "0.6.0",
+        "status": "stable",
+        "replaces": [],
+        "removeIn": null
+      }
     },
     {
       "name": "loading-screen",
@@ -582,7 +784,13 @@
       "categories": [
         "screens"
       ],
-      "docs": "Mount <LoadingScreenPage /> in App.tsx of a resource whose fxmanifest has loadscreen 'web/dist/index.html' and loadscreen_manual_shutdown 'yes'. Hand it data from the server with deferrals.handover({ nuikit = { serverName, tips, theme = GlobalState.nuikitTheme, … } }). A whole resource with the Lua: npm create nuikit@latest my-loading -- -t loading-screen"
+      "docs": "Mount <LoadingScreenPage /> in App.tsx of a resource whose fxmanifest has loadscreen 'web/dist/index.html' and loadscreen_manual_shutdown 'yes'. Hand it data from the server with deferrals.handover({ nuikit = { serverName, tips, theme = GlobalState.nuikitTheme, \u2026 } }). A whole resource with the Lua: npm create nuikit@latest my-loading -- -t loading-screen",
+      "meta": {
+        "since": "0.6.0",
+        "status": "stable",
+        "replaces": [],
+        "removeIn": null
+      }
     },
     {
       "name": "settings",
@@ -613,15 +821,21 @@
       "registryDependencies": [
         "button",
         "kbd",
-        "slider",
         "tabs",
         "https://nuikit.vercel.app/r/panel.json",
-        "https://nuikit.vercel.app/r/menu-row.json"
+        "https://nuikit.vercel.app/r/menu-row.json",
+        "https://nuikit.vercel.app/r/form-field.json"
       ],
       "categories": [
         "screens"
       ],
-      "docs": "Mount <SettingsSurface /> in App.tsx. In Lua, open nk.surface(\"settings\", { layer = \"panel\", exclusive = true }) with a SettingsData table and answer nk.on(\"settings:change\") with the value to show (and nk.on(\"settings:reset\")). nk.prefs gives you UI size, reduced motion and high contrast for free. A whole resource with the Lua: npm create nuikit@latest my-settings -- -t settings"
+      "docs": "Mount <SettingsSurface /> in App.tsx. In Lua, open nk.surface(\"settings\", { layer = \"panel\", exclusive = true }) with a SettingsData table and answer nk.on(\"settings:change\") with the value to show (and nk.on(\"settings:reset\")). nk.prefs gives you UI size, reduced motion and high contrast for free. A whole resource with the Lua: npm create nuikit@latest my-settings -- -t settings",
+      "meta": {
+        "since": "0.6.0",
+        "status": "stable",
+        "replaces": [],
+        "removeIn": null
+      }
     },
     {
       "name": "scoreboard",
@@ -658,7 +872,13 @@
       "categories": [
         "screens"
       ],
-      "docs": "Mount <ScoreboardSurface /> in App.tsx. In Lua, open nk.surface(\"scoreboard\", { layer = \"panel\", exclusive = true }) with a ScoreboardData table ({ players = { { id, name, job, ping, you } }, max, activities }) and :update it while it's open. A whole resource with the Lua: npm create nuikit@latest my-scoreboard -- -t scoreboard"
+      "docs": "Mount <ScoreboardSurface /> in App.tsx. In Lua, open nk.surface(\"scoreboard\", { layer = \"panel\", exclusive = true }) with a ScoreboardData table ({ players = { { id, name, job, ping, you } }, max, activities }) and :update it while it's open. A whole resource with the Lua: npm create nuikit@latest my-scoreboard -- -t scoreboard",
+      "meta": {
+        "since": "0.6.0",
+        "status": "stable",
+        "replaces": [],
+        "removeIn": null
+      }
     },
     {
       "name": "garage",
@@ -698,7 +918,13 @@
       "categories": [
         "screens"
       ],
-      "docs": "Mount <GarageSurface /> in App.tsx. In Lua, open nk.surface(\"garage\", { layer = \"panel\", exclusive = true }) with a GarageData table and answer nk.on(\"garage:takeOut\"), nk.on(\"garage:store\") and nk.on(\"garage:release\") with { ok, error }. A whole resource with the Lua: npm create nuikit@latest my-garage -- -t garage"
+      "docs": "Mount <GarageSurface /> in App.tsx. In Lua, open nk.surface(\"garage\", { layer = \"panel\", exclusive = true }) with a GarageData table and answer nk.on(\"garage:takeOut\"), nk.on(\"garage:store\") and nk.on(\"garage:release\") with { ok, error }. A whole resource with the Lua: npm create nuikit@latest my-garage -- -t garage",
+      "meta": {
+        "since": "0.6.0",
+        "status": "stable",
+        "replaces": [],
+        "removeIn": null
+      }
     },
     {
       "name": "bank",
@@ -728,18 +954,23 @@
       ],
       "registryDependencies": [
         "button",
-        "dialog",
-        "input",
-        "label",
         "spinner",
         "https://nuikit.vercel.app/r/panel.json",
         "https://nuikit.vercel.app/r/menu-row.json",
-        "https://nuikit.vercel.app/r/stat.json"
+        "https://nuikit.vercel.app/r/stat.json",
+        "https://nuikit.vercel.app/r/confirm.json",
+        "https://nuikit.vercel.app/r/form-field.json"
       ],
       "categories": [
         "screens"
       ],
-      "docs": "Mount <BankSurface /> in App.tsx. In Lua, open nk.surface(\"bank\", { layer = \"panel\", exclusive = true }) with a BankData table, answer nk.on(\"bank:deposit\"), nk.on(\"bank:withdraw\") and nk.on(\"bank:transfer\") with { ok, error }, and :update it with fresh balances. Check every amount on the server. A whole resource with the Lua: npm create nuikit@latest my-bank -- -t bank"
+      "docs": "Mount <BankSurface /> in App.tsx. In Lua, open nk.surface(\"bank\", { layer = \"panel\", exclusive = true }) with a BankData table, answer nk.on(\"bank:deposit\"), nk.on(\"bank:withdraw\") and nk.on(\"bank:transfer\") with { ok, error }, and :update it with fresh balances. Check every amount on the server. A whole resource with the Lua: npm create nuikit@latest my-bank -- -t bank",
+      "meta": {
+        "since": "0.6.0",
+        "status": "stable",
+        "replaces": [],
+        "removeIn": null
+      }
     },
     {
       "name": "job-menu",
@@ -768,18 +999,275 @@
         "nuikit-core"
       ],
       "registryDependencies": [
-        "alert-dialog",
         "button",
         "spinner",
         "tabs",
         "https://nuikit.vercel.app/r/panel.json",
         "https://nuikit.vercel.app/r/menu-row.json",
-        "https://nuikit.vercel.app/r/stat.json"
+        "https://nuikit.vercel.app/r/stat.json",
+        "https://nuikit.vercel.app/r/confirm.json"
       ],
       "categories": [
         "screens"
       ],
-      "docs": "Mount <JobMenuSurface /> in App.tsx. In Lua, open nk.surface(\"job\", { layer = \"panel\", exclusive = true }) with a JobMenuData table, answer nk.on(\"job:duty\"), nk.on(\"job:action\"), nk.on(\"job:hire\"), nk.on(\"job:fire\") and nk.on(\"job:grade\") with { ok, error }, and :update it after a change. Check every boss action on the server against the caller's own job and grade. A whole resource with the Lua: npm create nuikit@latest my-jobs -- -t job-menu"
+      "docs": "Mount <JobMenuSurface /> in App.tsx. In Lua, open nk.surface(\"job\", { layer = \"panel\", exclusive = true }) with a JobMenuData table, answer nk.on(\"job:duty\"), nk.on(\"job:action\"), nk.on(\"job:hire\"), nk.on(\"job:fire\") and nk.on(\"job:grade\") with { ok, error }, and :update it after a change. Check every boss action on the server against the caller's own job and grade. A whole resource with the Lua: npm create nuikit@latest my-jobs -- -t job-menu",
+      "meta": {
+        "since": "0.6.0",
+        "status": "stable",
+        "replaces": [],
+        "removeIn": null
+      }
+    },
+    {
+      "name": "interaction",
+      "type": "registry:block",
+      "title": "Interaction",
+      "description": "How the player uses the world: a target eye at the centre of the screen with the options of what they aim at (chosen with the cursor or the scroll wheel), and key prompts near places with press or hold. Protocol-agnostic; Lua does the raycast and reads the keys.",
+      "files": [
+        {
+          "path": "registry/nuikit/blocks/interaction/interaction.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/interaction/interaction.tsx"
+        },
+        {
+          "path": "registry/nuikit/blocks/interaction/nui.ts",
+          "type": "registry:lib",
+          "target": "components/blocks/interaction/nui.ts"
+        },
+        {
+          "path": "registry/nuikit/blocks/interaction/fixtures.ts",
+          "type": "registry:lib",
+          "target": "components/blocks/interaction/fixtures.ts"
+        }
+      ],
+      "dependencies": [
+        "lucide-react",
+        "nuikit-core"
+      ],
+      "registryDependencies": [
+        "spinner",
+        "https://nuikit.vercel.app/r/key-prompt.json",
+        "https://nuikit.vercel.app/r/menu-row.json"
+      ],
+      "categories": [
+        "screens"
+      ],
+      "docs": "Mount <InteractionSurface /> in App.tsx. In Lua, open nk.surface(\"target\", { layer = \"world\", input = \"none\" }) with a TargetData table while the target key is held and :update it as the aim changes; open nk.surface(\"prompts\", { layer = \"hud\", input = \"none\" }) with a PromptsData table near places and send hold progress. To choose with the mouse, open a cursor surface of your own, set picking = true and answer nk.on(\"interaction:select\") with { ok, error }. Check anything that matters on the server. A whole resource with the Lua: npm create nuikit@latest my-interaction -- -t interaction",
+      "meta": {
+        "since": "unreleased",
+        "status": "stable",
+        "replaces": [],
+        "removeIn": null
+      }
+    },
+    {
+      "name": "shop",
+      "type": "registry:block",
+      "title": "Shop",
+      "description": "A catalogue grid by category with price and stock, a cart with steppers, cash or bank, and checkout with a confirm. The page checks the cart before asking; the server decides. Protocol-agnostic.",
+      "files": [
+        {
+          "path": "registry/nuikit/blocks/shop/shop.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/shop/shop.tsx"
+        },
+        {
+          "path": "registry/nuikit/blocks/shop/nui.ts",
+          "type": "registry:lib",
+          "target": "components/blocks/shop/nui.ts"
+        },
+        {
+          "path": "registry/nuikit/blocks/shop/fixtures.ts",
+          "type": "registry:lib",
+          "target": "components/blocks/shop/fixtures.ts"
+        }
+      ],
+      "dependencies": [
+        "lucide-react",
+        "nuikit-core"
+      ],
+      "registryDependencies": [
+        "button",
+        "spinner",
+        "tabs",
+        "https://nuikit.vercel.app/r/panel.json",
+        "https://nuikit.vercel.app/r/item-slot.json",
+        "https://nuikit.vercel.app/r/money.json",
+        "https://nuikit.vercel.app/r/menu-row.json",
+        "https://nuikit.vercel.app/r/confirm.json",
+        "https://nuikit.vercel.app/r/empty-state.json"
+      ],
+      "categories": [
+        "screens"
+      ],
+      "docs": "Mount <ShopSurface /> in App.tsx. In Lua, open nk.surface(\"shop\", { layer = \"panel\", exclusive = true, escape = \"back\" }) with a ShopData table, answer nk.on(\"shop:buy\") with { ok, error } and :update it with fresh stock and money. On the server, use your own prices and stock, check every line, and move money and items all or nothing. A whole resource with the Lua: npm create nuikit@latest my-shop -- -t shop",
+      "meta": {
+        "since": "unreleased",
+        "status": "stable",
+        "replaces": [],
+        "removeIn": null
+      }
+    },
+    {
+      "name": "inventory",
+      "type": "registry:block",
+      "title": "Inventory",
+      "description": "The player's items and a second container side by side: pointer-driven drag and drop (Shift half, Ctrl one), stack and swap, a tooltip, weight meters, use, and a hotbar with a HUD strip. Protocol-agnostic; Lua decides every move.",
+      "files": [
+        {
+          "path": "registry/nuikit/blocks/inventory/inventory.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/inventory/inventory.tsx"
+        },
+        {
+          "path": "registry/nuikit/blocks/inventory/nui.ts",
+          "type": "registry:lib",
+          "target": "components/blocks/inventory/nui.ts"
+        },
+        {
+          "path": "registry/nuikit/blocks/inventory/fixtures.ts",
+          "type": "registry:lib",
+          "target": "components/blocks/inventory/fixtures.ts"
+        }
+      ],
+      "dependencies": [
+        "lucide-react",
+        "nuikit-core"
+      ],
+      "registryDependencies": [
+        "button",
+        "spinner",
+        "https://nuikit.vercel.app/r/panel.json",
+        "https://nuikit.vercel.app/r/item-slot.json",
+        "https://nuikit.vercel.app/r/meter.json"
+      ],
+      "categories": [
+        "screens"
+      ],
+      "docs": "Mount <InventorySurface /> in App.tsx. In Lua, open nk.surface(\"inventory\", { layer = \"panel\", exclusive = true, hides = { \"hotbar\" } }) with an InventoryData table, answer nk.on(\"inventory:move\") and nk.on(\"inventory:use\") with { ok, error }, and :update it after each; open nk.surface(\"hotbar\", { layer = \"hud\", input = \"none\" }) for a moment when a hotbar key is used. Check every move on the server. A whole resource with the Lua: npm create nuikit@latest my-inventory -- -t inventory",
+      "meta": {
+        "since": "unreleased",
+        "status": "stable",
+        "replaces": [],
+        "removeIn": null
+      }
+    },
+    {
+      "name": "vehicle-shop",
+      "type": "registry:block",
+      "title": "Vehicle shop",
+      "description": "A showroom: vehicles by category on the left edge (the real car stands behind), stats, a paint colour from swatches or any hex, cash or bank, a test drive, and buy with a confirm. Protocol-agnostic.",
+      "files": [
+        {
+          "path": "registry/nuikit/blocks/vehicle-shop/vehicle-shop.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/vehicle-shop/vehicle-shop.tsx"
+        },
+        {
+          "path": "registry/nuikit/blocks/vehicle-shop/nui.ts",
+          "type": "registry:lib",
+          "target": "components/blocks/vehicle-shop/nui.ts"
+        },
+        {
+          "path": "registry/nuikit/blocks/vehicle-shop/fixtures.ts",
+          "type": "registry:lib",
+          "target": "components/blocks/vehicle-shop/fixtures.ts"
+        }
+      ],
+      "dependencies": [
+        "lucide-react",
+        "nuikit-core"
+      ],
+      "registryDependencies": [
+        "button",
+        "spinner",
+        "tabs",
+        "https://nuikit.vercel.app/r/panel.json",
+        "https://nuikit.vercel.app/r/menu-row.json",
+        "https://nuikit.vercel.app/r/meter.json",
+        "https://nuikit.vercel.app/r/money.json",
+        "https://nuikit.vercel.app/r/form-field.json",
+        "https://nuikit.vercel.app/r/confirm.json"
+      ],
+      "categories": [
+        "screens"
+      ],
+      "docs": "Mount <VehicleShopSurface /> in App.tsx. In Lua, open nk.surface(\"vehicle-shop\", { layer = \"panel\", exclusive = true, escape = \"back\" }) with a VehicleShopData table; answer nk.on(\"vehicle-shop:preview\") by showing that model and colour (a local car), and nk.on(\"vehicle-shop:test-drive\") and nk.on(\"vehicle-shop:buy\") with { ok, error }. On the server, use your own prices, spawn the car yourself and refund if it can't be delivered. A whole resource with the Lua: npm create nuikit@latest my-dealership -- -t vehicle-shop",
+      "meta": {
+        "since": "unreleased",
+        "status": "stable",
+        "replaces": [],
+        "removeIn": null
+      }
+    },
+    {
+      "name": "character-select",
+      "type": "registry:block",
+      "title": "Character select",
+      "description": "Who to play: character slots, the chosen one as a PlayerCard with Play and Delete (behind a destructive confirm), spawn points after Play, and a create form with the same rules the server checks. Protocol-agnostic.",
+      "files": [
+        {
+          "path": "registry/nuikit/blocks/character-select/character-select.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/character-select/character-select.tsx"
+        },
+        {
+          "path": "registry/nuikit/blocks/character-select/nui.ts",
+          "type": "registry:lib",
+          "target": "components/blocks/character-select/nui.ts"
+        },
+        {
+          "path": "registry/nuikit/blocks/character-select/fixtures.ts",
+          "type": "registry:lib",
+          "target": "components/blocks/character-select/fixtures.ts"
+        }
+      ],
+      "dependencies": [
+        "lucide-react",
+        "nuikit-core"
+      ],
+      "registryDependencies": [
+        "button",
+        "spinner",
+        "https://nuikit.vercel.app/r/panel.json",
+        "https://nuikit.vercel.app/r/menu-row.json",
+        "https://nuikit.vercel.app/r/player-card.json",
+        "https://nuikit.vercel.app/r/money.json",
+        "https://nuikit.vercel.app/r/confirm.json",
+        "https://nuikit.vercel.app/r/form-field.json"
+      ],
+      "categories": [
+        "screens"
+      ],
+      "docs": "Mount <CharacterSelectSurface /> in App.tsx. In Lua, open nk.surface(\"character-select\", { layer = \"modal\", exclusive = true, escape = \"back\" }) with a CharacterSelectData table when the player joins; answer nk.on(\"character:play\"), nk.on(\"character:create\") and nk.on(\"character:delete\") with { ok, error }. On the server, check that the character is the caller's, that the spawn point is yours (send its coordinates), and that a new character is valid. A whole resource with the Lua: npm create nuikit@latest my-characters -- -t character-select",
+      "meta": {
+        "since": "unreleased",
+        "status": "stable",
+        "replaces": [],
+        "removeIn": null
+      }
+    },
+    {
+      "name": "utils",
+      "type": "registry:lib",
+      "title": "cn (kit-aware)",
+      "description": "lib/utils.ts with a cn() that knows the nk-* kit: a kit utility removes the earlier stock classes that set its colour or type (nk-chip-active after text-hud-foreground), and one type style, surface or anchor wins per element. Generated from kit.css; replaces shadcn's lib/utils.ts.",
+      "files": [
+        {
+          "path": "registry/nuikit/lib/utils.ts",
+          "type": "registry:lib"
+        }
+      ],
+      "dependencies": [
+        "clsx",
+        "tailwind-merge"
+      ],
+      "meta": {
+        "since": "unreleased",
+        "status": "stable",
+        "replaces": [],
+        "removeIn": null
+      }
     }
   ]
 }

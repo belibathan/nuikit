@@ -1,3 +1,4 @@
+// synced by pnpm sync: don't edit here. Change registry/nuikit/ui/stat.tsx, then run pnpm sync.
 import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
 import { ArrowDownRightIcon, ArrowUpRightIcon } from "lucide-react"
@@ -6,8 +7,9 @@ import { cn } from "@/lib/utils"
 
 /**
  * Stat — a label over a number that matters: cash, bank, players online, a fine, a timer.
- * Tabular figures (nk-num); the label is sentence case (nk-label). Three sizes on the kit's type
- * scale: sm (14px), md (20px, the default) and display (32px, the number is the point).
+ * Tabular figures in the identity's numeric face (nk-num); the label is a caption (nk-caption: the
+ * identity's label case and tracking). Three sizes on the kit's type scale: sm (the body size),
+ * md (the HUD value size, 18px+, the default) and display (nk-display: the number is the point).
  *
  *   <Stat icon={<WalletIcon />} label="Cash" value="$1,520" />
  *   <Stat label="Players online" value={42} meta="/ 128" size="sm" />
@@ -29,7 +31,7 @@ const statVariants = cva("flex min-w-0 flex-col", {
     },
     surface: {
       panel: "",
-      game: "nk-shadow text-hud-foreground",
+      game: "nk-on-game",
     },
   },
   defaultVariants: {
@@ -42,9 +44,10 @@ const statVariants = cva("flex min-w-0 flex-col", {
 const statValueVariants = cva("nk-num flex min-w-0 items-baseline gap-1.5", {
   variants: {
     size: {
-      sm: "text-sm leading-5 font-semibold",
-      md: "text-xl leading-7 font-semibold",
-      display: "nk-display",
+      sm: "text-(length:--nk-text-base) leading-5 [font-weight:var(--nk-weight-strong,600)]",
+      md: "text-(length:--nk-hud-value-size) leading-7 [font-weight:var(--nk-weight-strong,600)]",
+      // display type in the numeric face (nk-display sets the heading font; numbers keep theirs)
+      display: "nk-display [font-family:var(--nk-num-font)]!",
     },
   },
   defaultVariants: {
@@ -83,8 +86,8 @@ function Stat({
       <span
         data-slot="stat-label"
         className={cn(
-          "nk-label flex min-w-0 items-center gap-1.5 [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-3.5",
-          game && "text-hud-foreground/80",
+          "nk-caption flex min-w-0 items-center gap-1.5 [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-3.5",
+          game && "text-world-foreground-muted",
           align === "end" && "flex-row-reverse"
         )}
       >
@@ -98,7 +101,7 @@ function Stat({
             data-slot="stat-meta"
             className={cn(
               "shrink-0 text-xs font-medium",
-              game ? "text-hud-foreground/80" : "text-muted-foreground",
+              "text-muted-foreground",
               size === "display" && "text-sm"
             )}
           >
@@ -112,7 +115,7 @@ function Stat({
           data-trend={trend}
           className={cn(
             "nk-num flex items-center gap-1 text-xs font-medium [&_svg]:size-3.5",
-            trend === "down" ? "text-destructive" : game ? "text-hud-foreground/80" : "text-muted-foreground"
+            trend === "down" ? "text-destructive" : "text-muted-foreground"
           )}
         >
           {trend === "up" && <ArrowUpRightIcon aria-hidden />}

@@ -118,6 +118,12 @@ Adapters are **clean-room** like overrides: written from the library's public AP
 `docs/adapters/<library>.md`, never from its code, and tested by replaying recorded calls and checking what the
 calling script gets back.
 
+*Status (Oct 2026): specs for the 15 libraries of steps 5–7 are in [`adapters/`](adapters/README.md); the spike
+resources, the owner's checklist and the replay harness are in `bench/adapters/`. Nothing has run in game yet.
+Two things the spike must settle before a mechanism is final: Cfx staff state `provide` resolves dependencies
+but does **not** redirect `exports[...]`, so a stand-in registers the `__cfx_export_<library>_<name>` events
+itself; and page routing relies on an override page posting to another resource's NUI callback.*
+
 ### 4. Renderers: how it looks
 
 A renderer draws one intent. It is a **module** in the same format the host prototype already loads
@@ -145,6 +151,11 @@ inventory) are built from the same components as the renderers. They are the sho
 - conflicts: a library and its stand-in both running, an override wiped by a library update, an adapter
   starting after its consumers;
 - theme contrast warnings and live intent counts by source.
+
+*Built (`docs/doctor.md`, `feat/doctor`): framework, packs (table-driven, "not shipped yet" until they are),
+resource statuses, every conflict above plus start order, missing `dependency 'nuikit'`, a newer protocol and
+a newer release (convar; no network), and `nuikit:intent` counts. Adapters register with `nuikit_adapter`,
+UIs with `nuikit_level`, the pack with `overrides.json`. Unproven in game.*
 
 "Universal" stops being a claim: every server can see its own coverage, and owners get the next step instead of
 a support question.
@@ -194,6 +205,8 @@ recipes, from a scripted session (join, spawn, menus, a job, inventory, death). 
 7. **`[nuikit-esx]`**: esx_notify, esx_context, esx_menu_default/dialog, esx_progressbar, esx_textui.
 8. **Doctor and coverage harness** on the three reference servers.
 9. **Packaging**: per-framework zips, `nuikit.cfg`, txAdmin recipe; renderer packs via `nuikit_renderer`.
+   *Zips, `nuikit.cfg` and the Qbox recipe exist (`scripts/pack-systems.mjs`, `systems/nuikit/nuikit.cfg`,
+   `install/`); the recipe is unproven on a real txAdmin; renderer packs wait on step 2.*
 
 The owner tests each step in game through a `next/*` prerelease.
 

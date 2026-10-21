@@ -1,10 +1,12 @@
 {
   "lua": [],
+  "surface": "world",
   "components": [
     "badge",
     "kbd",
     "progress",
     "separator",
-    "meter"
+    "meter",
+    "countdown"
   ]
 }

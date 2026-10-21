@@ -13,8 +13,9 @@ import { Progress } from "@/components/ui/progress"
  *
  *   <TaskProgress label="Repairing engine" duration={5000} onComplete={done} cancelKey="X" onCancel={cancel} />
  *
- * @deprecated Use `meter` in timed mode (`duration` + `onComplete`, on a panel) for a bar, or
- * `progress-ring` (`duration`, `cancelKey`, `onCancel`) for a circle: both complete from a timer,
+ * @deprecated Use `meter` with `variant="slab"` (`label`, `duration`, `onComplete`, `cancelKey`,
+ * `onCancel`): the timed-progress slab, label + thin line + cancel key, on the game. Or
+ * `progress-ring` (`duration`, `cancelKey`, `onCancel`) for a circle. Both complete from a timer,
  * so they finish with motion off. TaskProgress keeps working.
  */
 function TaskProgress({
@@ -62,10 +63,10 @@ function TaskProgress({
   }, [duration, cancelKey])
 
   return (
-    <Card data-slot="task-progress" className={cn("w-80 gap-3 py-4", className)} {...props}>
+    <Card data-slot="task-progress" className={cn("nk-panel w-80 gap-3 py-4", className)} {...props}>
       <CardHeader className="flex items-baseline justify-between px-4">
-        <CardTitle className="text-sm">{label}</CardTitle>
-        <CardDescription className="tabular-nums">{Math.ceil((duration - elapsed) / 1000)}s</CardDescription>
+        <CardTitle className="nk-title">{label}</CardTitle>
+        <CardDescription className="nk-num">{Math.ceil((duration - elapsed) / 1000)}s</CardDescription>
       </CardHeader>
       <CardContent className="px-4">
         <Progress value={(elapsed / duration) * 100} />

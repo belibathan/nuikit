@@ -18,8 +18,6 @@ export interface DeathData {
     key: string;
     /** The medical resource accepts the key now. */
     available: boolean;
-    /** 0–1 while the key is held. */
-    progress?: number;
     /** Hospital bill, when the resource charges one. */
     cost?: number;
     /** Seconds until the key is accepted (ESX early-respawn timer). */
@@ -35,5 +33,9 @@ export interface DeathData {
 declare module "nuikit-core" {
   interface NuiSurfaces {
     death: DeathData;
+  }
+  interface NuiEvents {
+    /** live (NUI.stream): how far E is held, 0–1 to 0.01, ≤30 a second while it moves; 0 when released */
+    "death:hold": number;
   }
 }

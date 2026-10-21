@@ -229,6 +229,30 @@ export const GENERATED: { name: string; group: string; type: string; description
     "description": "Stress bar"
   },
   {
+    "name": "brand",
+    "group": "base",
+    "type": "color",
+    "description": "The server's signature colour: active indicators, gauge needles, focus, logos (not the action: that's primary)"
+  },
+  {
+    "name": "brand-foreground",
+    "group": "base",
+    "type": "color",
+    "description": "Text on brand"
+  },
+  {
+    "name": "world-foreground",
+    "group": "base",
+    "type": "color",
+    "description": "Text and icons drawn straight on the game, no panel (death text, unplated HUD values, nk-on-game). Light in every theme, light or dark"
+  },
+  {
+    "name": "world-foreground-muted",
+    "group": "base",
+    "type": "color",
+    "description": "Secondary text on the game"
+  },
+  {
     "name": "radius",
     "group": "shape",
     "type": "dimension",
@@ -247,6 +271,18 @@ export const GENERATED: { name: string; group: string; type: string; description
     "description": "Codes and IDs a player might type"
   },
   {
+    "name": "display",
+    "group": "base",
+    "type": "fontFamily",
+    "description": "Headings and big moments (titles, timers, the balance)"
+  },
+  {
+    "name": "numeric",
+    "group": "base",
+    "type": "fontFamily",
+    "description": "Every number on a gauge, money or timer (always tabular)"
+  },
+  {
     "name": "nk-scale",
     "group": "kit",
     "type": "number",
@@ -256,6 +292,162 @@ export const GENERATED: { name: string; group: string; type: string; description
     "name": "nk-motion",
     "group": "kit",
     "type": "number",
-    "description": "1 = animations on, 0 = off. Players can turn motion off."
+    "description": "1 = animations on, 0 = off. Painted as 0 when the theme or the player's reduced-motion pref turns motion down."
+  },
+  {
+    "name": "nk-type-ratio",
+    "group": "kit",
+    "type": "number",
+    "description": "Step between type sizes: 1.125 calm … 1.333 dramatic"
+  },
+  {
+    "name": "nk-weight-body",
+    "group": "kit",
+    "type": "number",
+    "description": "Body text weight"
+  },
+  {
+    "name": "nk-weight-strong",
+    "group": "kit",
+    "type": "number",
+    "description": "Titles, key numbers, active rows"
+  },
+  {
+    "name": "nk-weight-display",
+    "group": "kit",
+    "type": "number",
+    "description": "Display type (full-screen titles, big numbers)"
+  },
+  {
+    "name": "nk-tracking-display",
+    "group": "kit",
+    "type": "dimension",
+    "description": "Letter-spacing of display type"
+  },
+  {
+    "name": "nk-label-case",
+    "group": "kit",
+    "type": "number",
+    "description": "Captions (the short names of values) in uppercase or as written"
+  },
+  {
+    "name": "nk-tracking-label",
+    "group": "kit",
+    "type": "dimension",
+    "description": "Letter-spacing of captions (uppercase wants 0.06–0.12em)"
+  },
+  {
+    "name": "nk-border-width",
+    "group": "kit",
+    "type": "dimension",
+    "description": "Hairline weight of panels, rows and fields"
+  },
+  {
+    "name": "nk-cut",
+    "group": "kit",
+    "type": "dimension",
+    "description": "Chamfered corners (top left, bottom right), drawn with clip-path; 0 = off"
+  },
+  {
+    "name": "nk-surface-opacity",
+    "group": "kit",
+    "type": "number",
+    "description": "Panel opacity over the game (floor 0.92 for text panels)"
+  },
+  {
+    "name": "nk-surface-tint",
+    "group": "kit",
+    "type": "number",
+    "description": "How much brand tints neutral surfaces (0–0.12)"
+  },
+  {
+    "name": "nk-surface-gradient",
+    "group": "kit",
+    "type": "number",
+    "description": "Top-to-bottom light falloff on panels (0 = flat)"
+  },
+  {
+    "name": "nk-surface-edge",
+    "group": "kit",
+    "type": "number",
+    "description": "Inner top highlight, the machined edge (alpha)"
+  },
+  {
+    "name": "nk-elevation",
+    "group": "kit",
+    "type": "number",
+    "description": "Shadow recipe of floating panels"
+  },
+  {
+    "name": "nk-glow",
+    "group": "kit",
+    "type": "number",
+    "description": "Brand glow on active parts and HUD fills (alpha, 0 = off)"
+  },
+  {
+    "name": "nk-density",
+    "group": "kit",
+    "type": "number",
+    "description": "Multiplies the kit's spacing scale: 0.875 compact (Graphite) … 1.15 roomy"
+  },
+  {
+    "name": "nk-ease",
+    "group": "kit",
+    "type": "number",
+    "description": "The one easing curve"
+  },
+  {
+    "name": "nk-duration",
+    "group": "kit",
+    "type": "number",
+    "description": "Base duration (panel enter, transitions); × nk-motion"
+  },
+  {
+    "name": "nk-hud-opacity",
+    "group": "kit",
+    "type": "number",
+    "description": "Minimum backplate opacity of HUD chips and tiles"
+  },
+  {
+    "name": "nk-hud-text-shadow",
+    "group": "kit",
+    "type": "number",
+    "description": "Shadow under text drawn on the game"
+  },
+  {
+    "name": "nk-gauge-style",
+    "group": "kit",
+    "type": "number",
+    "description": "How gauges are drawn"
+  },
+  {
+    "name": "nk-gauge-track",
+    "group": "kit",
+    "type": "dimension",
+    "description": "Gauge and meter track thickness"
+  },
+  {
+    "name": "nk-gauge-ticks",
+    "group": "kit",
+    "type": "number",
+    "description": "Tick marks on gauges: 1 on, 0 off"
+  },
+  {
+    "name": "nk-row-indicator",
+    "group": "kit",
+    "type": "number",
+    "description": "How the active row is marked"
+  },
+  {
+    "name": "nk-motion-feel",
+    "group": "kit",
+    "type": "number",
+    "description": "How the identity moves: crisp (Graphite), snap (Signal: no glide on selection, flash instead of press scale), smooth (Velvet: longer springs, a hint of bounce), stepped (Vector: values tick in steps)"
+  },
+  {
+    "name": "nk-spring-bounce",
+    "group": "kit",
+    "type": "number",
+    "description": "Bounce folded into the snap, move and soft springs (0 = critically damped; 0.3 is the most the kit allows)"
   }
 ];

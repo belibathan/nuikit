@@ -9,9 +9,10 @@ local QUIET_MS = 400  -- ignore Esc this long after a menu closes, so one press 
 local BLUR_MS = 200.0
 
 -- Modal layer, full input. exclusive: it closes other modals; hides: nuikit HUDs step aside;
--- blockedBy: it won't open while the player is dead (a death screen owns the screen then).
+-- blockedBy: it won't open while the player is dead (a death screen owns the screen then);
+-- escape = 'back': Esc goes to the page, which closes the Disconnect confirm first, then the menu.
 local pause = nk.surface('pause', {
-  layer = 'modal', input = 'full', exclusive = true, hides = { 'hud' }, blockedBy = { 'dead' },
+  layer = 'modal', input = 'full', exclusive = true, escape = 'back', hides = { 'hud' }, blockedBy = { 'dead' },
 })
 
 local info = {}        -- the server's answer: { name, players, max, ping, uptime }

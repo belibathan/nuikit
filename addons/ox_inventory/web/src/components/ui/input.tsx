@@ -1,3 +1,4 @@
+// synced by pnpm sync: don't edit here. Change vendor/shadcn/ui/input.tsx, then run pnpm sync.
 import * as React from "react"
 import { cn } from "@/lib/utils"
 

@@ -12,5 +12,9 @@ apps/www/public/r
 out
 addons/*/web/build
 bench/host/.out
+bench/components/.out
 *.tsbuildinfo
 .claude/
+bench/identity/shots/*/
+bench/motion/.out
+!bench/coverage/

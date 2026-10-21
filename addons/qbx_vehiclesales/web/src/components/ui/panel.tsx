@@ -1,3 +1,4 @@
+// synced by pnpm sync: don't edit here. Change registry/nuikit/ui/panel.tsx, then run pnpm sync.
 "use client"
 
 import * as React from "react"
@@ -52,7 +53,7 @@ function Panel({
       className={cn(
         panelVariants({ size }),
         animate && "nk-enter",
-        selected && "outline-2 -outline-offset-1 outline-primary",
+        selected && "outline-2 -outline-offset-1 outline-(--nk-row-indicator-color)",
         className
       )}
       {...props}
@@ -132,7 +133,7 @@ const panelBodyVariants = cva("", {
       /** Rows: 8px around 40px rows. */
       list: "nk-panel-body flex flex-col gap-0.5",
       /** Fields and text: 16px, 16px between groups. */
-      form: "flex flex-col gap-4 p-4",
+      form: "flex flex-col gap-[calc(var(--nk-space)*4)] p-[calc(var(--nk-space)*4)]",
     },
   },
   defaultVariants: {

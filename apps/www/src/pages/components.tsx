@@ -1,4 +1,5 @@
 import {
+  AnchorIcon,
   ArrowDownIcon,
   ArrowDownLeftIcon,
   ArrowDownRightIcon,
@@ -8,9 +9,12 @@ import {
   ArrowUpLeftIcon,
   ArrowUpRightIcon,
   BackpackIcon,
+  BandageIcon,
   CarIcon,
   CarFrontIcon,
+  CupSodaIcon,
   DropletIcon,
+  KeyRoundIcon,
   EyeIcon,
   FlameIcon,
   FuelIcon,
@@ -33,7 +37,7 @@ import {
   WrenchIcon,
 } from "lucide-react";
 import { closeSurface, openSurface, Surface } from "nuikit-core/react";
-import { cloneElement, useState, type ReactElement, type ReactNode } from "react";
+import { cloneElement, useRef, useState, type ReactElement, type ReactNode } from "react";
 import { Command } from "@/components/code";
 import { Scene } from "@/components/scene";
 import { Footer, Nav, SITE, ThemePicker } from "@/components/site";
@@ -47,11 +51,15 @@ import { Separator } from "@/components/ui/separator";
 import { Slider } from "@/components/ui/slider";
 import { Stat } from "@/components/ui/stat";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Notice, Notices, useNotices, type NoticePosition, type NoticeStatus } from "@/components/ui/notice";
+import { Notice, NoticeStack, Notices, useNotices, type NoticePosition, type NoticeStatus } from "@/components/ui/notice";
 import {
   CheckboxField,
   ColorField,
   DateField,
+  DateRangeField,
+  TimeField,
+  dateToEpoch,
+  timeToEpoch,
   NumberField,
   SelectField,
   SliderField,
@@ -64,6 +72,7 @@ import { KeyPrompt, KeyPromptStack } from "@/components/ui/key-prompt";
 import { ProgressRing } from "@/components/ui/progress-ring";
 import { Speedometer } from "@/components/ui/speedometer";
 import { Countdown } from "@/components/ui/countdown";
+import { Band } from "@/components/ui/band";
 import { Money } from "@/components/ui/money";
 import { ItemSlot } from "@/components/ui/item-slot";
 import { PlayerCard } from "@/components/ui/player-card";
@@ -71,6 +80,7 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { SKILL_CHECK_PRESETS, SkillCheck, skillCheckZone } from "@/components/ui/skill-check";
 import { RadialMenu, type RadialMenuItem } from "@/components/ui/radial-menu";
 import { cn } from "@/lib/utils";
+import registry from "../../../../registry.json";
 
 export function ComponentsPage() {
   return (
@@ -119,7 +129,7 @@ export function ComponentsPage() {
         <Section
           name="menu-row"
           title="Menu row: items"
-          text="What the menu intent's items carry: an image, a progress line, read-only rows, the details card beside the hovered row, quiet stepper values, and inert rows that ignore hover (CEF keeps :hover after Lua takes focus)."
+          text="What the menu intent's items carry: an image, a progress line in any tone or colour, read-only rows, the details card beside the hovered row (each metadata bar in its own colour), quiet stepper values, and inert rows that ignore hover (CEF keeps :hover after Lua takes focus)."
           install={false}
           stageClassName="min-h-[28rem]"
         >
@@ -240,6 +250,29 @@ export function ComponentsPage() {
         </Section>
 
         <Section
+          name="notice"
+          title="Slabs"
+          text="Transient feedback on the game, one anatomy for every script: an item added or removed (icon tile, name, change; changes to the same item within 1.5 s merge), a prompt (key chip, verb), a timed progress (label, thin line, cancel key), and a full-width band for a state. notice, key-prompt, meter and band draw them."
+          install={false}
+          stageClassName="min-h-[36rem] [--nk-edge:2.5rem]"
+        >
+          <SlabStates />
+        </Section>
+
+        <Section
+          name="band"
+          title="Band"
+          text="A full-width band for a state the player is in: incapacitated, cuffed, spectating. The game darkened and tinted by the tone, hairlines above and below, a title in the display face and a caption. Pinned to the bottom or top, or in the flow."
+          stageClassName="min-h-[30rem] flex-col items-stretch justify-center gap-6 px-0"
+        >
+          <Band position="inline" title="You are incapacitated" subtitle="Wait for EMS" />
+          <Band position="inline" tone="warning" title="Cuffed" subtitle="Officer Vale has you in custody" />
+          <Band position="inline" tone="neutral" title="Spectating" subtitle="Niko Bellic">
+            <Countdown surface="game" size="sm" seconds={42} label="Back in" className="mt-2" />
+          </Band>
+        </Section>
+
+        <Section
           name="form-field"
           title="Form field"
           text="One row of a game form, and a preset for each kind of value: text, number, select, checkbox or switch, slider, date, colour. Label, hint, description, error, required, min and max, an inline value and a reset. validateField() decides what's wrong; the form decides when to say it."
@@ -247,6 +280,7 @@ export function ComponentsPage() {
           <TransferForm />
           <CharacterForm />
           <FieldStates />
+          <ScheduleForm />
         </Section>
 
         <Section
@@ -301,7 +335,7 @@ export function ComponentsPage() {
         <Section
           name="countdown"
           title="Countdown"
-          text="A timer that matters: until you can respawn, until the alarm, until the restart. Tabular mm:ss (h:mm:ss past an hour), a label, a line that drains, a warning threshold, a dimmed done state. From Lua's seconds, or running on its own with onComplete from a timer."
+          text="A timer that matters: until you can respawn, until the alarm, until the restart. Tabular mm:ss (h:mm:ss past an hour), a label, a line that drains (in a theme tone from the start with lineTone), a warning threshold, a dimmed done state. From Lua's seconds, or running on its own with onComplete from a timer."
           stageClassName="min-h-[36rem] items-center"
         >
           <Countdown surface="game" size="hero" seconds={154} total={300} label="Until you can respawn" />
@@ -476,6 +510,28 @@ export function ComponentsPage() {
   );
 }
 
+// registry.json meta (docs/design/contract.md, "Registry metadata"): status and the release it shipped in
+type ItemMeta = { since: string; status: string; replaces: string[]; removeIn: string | null; replacedBy?: string[] };
+const META = new Map((registry.items as { name: string; meta?: ItemMeta }[]).flatMap((i) => (i.meta ? [[i.name, i.meta] as const] : [])));
+
+function MetaBadges({ meta }: { meta: ItemMeta }) {
+  return (
+    <>
+      {meta.status === "deprecated" ? (
+        <Badge variant="destructive">
+          Deprecated{meta.replacedBy?.length ? `: use ${meta.replacedBy.join(" or ")}` : ""}
+          {meta.removeIn ? `, removed in ${meta.removeIn}` : ""}
+        </Badge>
+      ) : meta.status === "experimental" ? (
+        <Badge variant="secondary">Experimental</Badge>
+      ) : null}
+      <Badge variant="outline" className="text-muted-foreground">
+        {meta.since === "unreleased" ? "Unreleased" : `Since ${meta.since}`}
+      </Badge>
+    </>
+  );
+}
+
 function Section({
   name,
   title,
@@ -492,11 +548,15 @@ function Section({
   stageClassName?: string;
   children: ReactNode;
 }) {
+  const meta = install ? META.get(name) : undefined;
   return (
     <section id={install ? name : undefined} className="mt-20 scroll-mt-20">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div className="max-w-2xl">
-          <h2 className="text-2xl font-semibold tracking-tight">{title}</h2>
+          <div className="flex flex-wrap items-center gap-3">
+            <h2 className="text-2xl font-semibold tracking-tight">{title}</h2>
+            {meta && <MetaBadges meta={meta} />}
+          </div>
           <p className="mt-2 text-muted-foreground text-pretty">{text}</p>
         </div>
         {install && <Command className="h-10 w-full max-w-md text-xs">{`npx shadcn add ${SITE}/r/${name}.json`}</Command>}
@@ -880,6 +940,35 @@ function CharacterForm() {
 }
 
 /** Errors, disabled, password, switch, multi-select: states straight from props. */
+/**
+ * ox_lib's date-range and time rows: values in its shapes (epoch ms), typed boxes, no native
+ * picker. The "Value" line shows what Lua would get back.
+ */
+function ScheduleForm() {
+  const [lease, setLease] = useState<[number | null, number | null]>([dateToEpoch("2026-10-24"), dateToEpoch("2026-10-31")]);
+  const [meet, setMeet] = useState<number | null>(timeToEpoch("21:30"));
+  const leaseError = validateField({ kind: "date-range", required: true, min: "2026-10-20" }, lease)?.message;
+  return (
+    <Panel>
+      <PanelHeader title="Schedule" description="Date ranges and times" />
+      <PanelBody variant="form">
+        <DateRangeField label="Apartment lease" hint="From, to" required min="2026-10-20" value={lease} onValueChange={setLease} error={leaseError} />
+        <TimeField label="Meet at the docks" format="12" value={meet} onValueChange={setMeet} clearable icon={<AnchorIcon />} description="12-hour, with AM and PM; clears without a reset." />
+        <DateRangeField label="Empty range" />
+        <TimeField label="Shift starts" min="08:00" max="18:00" minuteStep={15} defaultValue={timeToEpoch("06:45")} error="At 08:00 or later" />
+        <DateRangeField
+          label="Vacation"
+          defaultValue={[dateToEpoch("2026-12-28"), dateToEpoch("2026-12-20")]}
+          error="The end can't be before the start"
+        />
+        <p data-slot="schedule-demo-value" className="nk-label font-normal break-all">
+          Value: lease {JSON.stringify(lease)}, meet {JSON.stringify(meet)}
+        </p>
+      </PanelBody>
+    </Panel>
+  );
+}
+
 function FieldStates() {
   return (
     <Panel>
@@ -1031,9 +1120,59 @@ function KeyPromptStates() {
       </KeyPromptStack>
       <KeyPromptStack position="bottom-center" className="flex-row">
         <KeyPrompt surface="hud" size="sm" keys="F" label="Enter vehicle" />
-        <KeyPrompt surface="hud" size="sm" keys="Y" label="Talk" active />
-        <KeyPrompt surface="hud" size="sm" keys="X" label="Hands up" hold={800} progress={0.3} />
+        <KeyPrompt surface="panel" size="sm" keys="Y" label="Talk" active />
+        <KeyPrompt size="sm" keys="X" label="Hands up" hold={800} progress={0.3} />
       </KeyPromptStack>
+      <KeyPromptStack position="top-center" className="flex-row items-start">
+        <KeyPrompt keys={[]} label="Searching the glovebox" />
+        <KeyPrompt keys="E" wrap className="max-w-64" label="Talk to the bartender about the job at the Vanilla Unicorn" />
+      </KeyPromptStack>
+    </>
+  );
+}
+
+/** The four slabs, every state from props, plus a live item queue that merges. */
+function SlabStates() {
+  const { notices, notify, dismiss } = useNotices();
+  const [run, setRun] = useState(0);
+  return (
+    <>
+      <NoticeStack position="center-left">
+        <Notice animate={false} duration={0} item={{ name: "Water bottle", count: 2, icon: <CupSodaIcon /> }} />
+        <Notice animate={false} duration={0} item={{ name: "Bandage", count: 1, icon: <BandageIcon /> }} />
+        <Notice animate={false} duration={0} item={{ name: "Lockpick", count: -1, icon: <KeyRoundIcon /> }} />
+      </NoticeStack>
+      <Notices notices={notices} onDismiss={dismiss} />
+      <KeyPromptStack position="center-right">
+        <KeyPrompt keys="E" label="Clean dishes" />
+        <KeyPrompt keys="G" label="Search the counter" hold={1200} progress={0.45} />
+      </KeyPromptStack>
+      <div className="nk-anchor-b bottom-[9rem]!">
+        <Meter
+          key={run}
+          variant="slab"
+          label="Raw crystals"
+          duration={run ? 6000 : undefined}
+          value={run ? undefined : 45}
+          cancelKey="Esc"
+          onCancel={() => setRun(0)}
+        />
+      </div>
+      <Band title="You are incapacitated" subtitle="Wait for EMS" />
+      <Panel size="sm" className="self-start">
+        <PanelHeader title="Try it" description="Quick presses merge" />
+        <PanelBody variant="form" className="flex-row flex-wrap">
+          <Button size="sm" onClick={() => notify({ item: { name: "Water bottle", count: 1, icon: <CupSodaIcon /> }, position: "top-right", duration: 3000 })}>
+            Add water
+          </Button>
+          <Button size="sm" variant="outline" onClick={() => notify({ item: { name: "Water bottle", count: -1, icon: <CupSodaIcon /> }, position: "top-right", duration: 3000 })}>
+            Drink one
+          </Button>
+          <Button size="sm" variant="outline" onClick={() => setRun((n) => n + 1)}>
+            Start progress
+          </Button>
+        </PanelBody>
+      </Panel>
     </>
   );
 }
@@ -1137,19 +1276,29 @@ function ProgressRingDemo() {
   );
 }
 
-// ox_lib metadata, in two of its shapes (menuMetadata reads all three).
+// ox_lib metadata, in two of its shapes (menuMetadata reads all three). Each bar keeps its own
+// colorScheme, as ox passes it (Mantine names); the fuel line takes a tone.
 const VEHICLES = [
   {
     name: "Pegassi Zentorno",
     image: "/bg/garage.jpg",
     fuel: 92,
+    fuelColor: "success",
     metadata: [
       { label: "Plate", value: "ZEN 01" },
-      { label: "Engine", value: "98%", progress: 98 },
-      { label: "Body", value: "71%", progress: 71 },
+      { label: "Engine", value: "98%", progress: 98, colorScheme: "green" },
+      { label: "Body", value: "41%", progress: 41, colorScheme: "yellow.6" },
+      { label: "Tyres", value: "12%", progress: 12, colorScheme: "red" },
+      { label: "Clutch", value: "80%", progress: 80 },
     ],
   },
-  { name: "Karin Sultan", image: "/bg/street.jpg", fuel: 23, metadata: { Plate: "SUL 07", Garage: "Impound", Fee: "$250" } },
+  {
+    name: "Karin Sultan",
+    image: "/bg/street.jpg",
+    fuel: 23,
+    fuelColor: "destructive",
+    metadata: { Plate: "SUL 07", Garage: "Impound", Fee: "$250" },
+  },
 ];
 
 /** A context menu: image rows with a fuel line, a read-only row, the details card beside the hovered row. */
@@ -1167,6 +1316,7 @@ function ContextMenuDemo() {
               image={c.image}
               description="Fuel"
               progress={c.fuel}
+              progressColor={c.fuelColor}
               meta={`${c.fuel}%`}
               chevron
               active={hovered === i}
@@ -1259,11 +1409,15 @@ function MeterTones() {
   );
 }
 
-/** A timed bar (ox progressBar): fills over its duration; onComplete from a timer. */
+/**
+ * A timed bar (ox progressBar): fills over its duration, full exactly at the end; onComplete from
+ * a timer. Like ox, the full bar stays a moment before it goes.
+ */
 function MeterTimed() {
   const [run, setRun] = useState(0);
   const [running, setRunning] = useState(false);
   const [last, setLast] = useState("Nothing yet");
+  const current = useRef(0);
   return (
     <div className="flex w-80 flex-col gap-4">
       <Panel size="default">
@@ -1272,6 +1426,7 @@ function MeterTimed() {
           <MenuRow
             icon={<BackpackIcon />}
             onClick={() => {
+              current.current = run + 1;
               setRun((r) => r + 1);
               setRunning(true);
             }}
@@ -1294,8 +1449,9 @@ function MeterTimed() {
               label="Searching the glovebox"
               duration={3000}
               onComplete={() => {
-                setRunning(false);
                 setLast("Found $120");
+                const done = run;
+                setTimeout(() => current.current === done && setRunning(false), 500);
               }}
             />
           </PanelBody>
@@ -1312,6 +1468,8 @@ function MeterTimed() {
 function CountdownStates() {
   return (
     <div className="flex flex-col items-center gap-8">
+      {/* lineTone: a last stand drains in destructive from the start, not only from warnAt */}
+      <Countdown surface="game" seconds={42} total={60} warnAt={10} lineTone="destructive" label="Last stand" />
       <Countdown surface="game" seconds={8} total={60} warnAt={30} label="Until you bleed out" />
       <Countdown surface="game" seconds={0} total={300} label="You can respawn" />
       <Countdown surface="game" size="sm" seconds={3723} label="Until the server restarts" />
@@ -1571,7 +1729,7 @@ function RadialDemo() {
 
 const DEPRECATED: { name: string; what: string; use: string[]; how?: string }[] = [
   { name: "nui-toaster", what: "Sonner toasts wired to NUI.notify()", use: ["notice"], how: "useNotices() + <Notices>" },
-  { name: "task-progress", what: "A timed action in a Card", use: ["meter", "progress-ring"], how: "duration + onComplete" },
+  { name: "task-progress", what: "A timed action in a Card", use: ["meter", "progress-ring"], how: 'variant="slab" + duration, cancelKey, onCancel' },
   { name: "key-hint", what: '"[E] Talk" with hold-to-confirm', use: ["key-prompt"] },
 ];
 

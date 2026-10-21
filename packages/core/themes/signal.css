@@ -1,0 +1,74 @@
+/*
+ * Signal (docs/design/v2.md): bold and street. Big condensed display type, chamfered corners,
+ * uppercase labels, a high-visibility yellow on warm black, filled active rows, bar gauges.
+ *
+ * Use it: copy this file over nuikit/theme.css, then `nuikit theme reload`. Tokens: docs/tokens.md.
+ */
+.dark {
+  --background: oklch(0.13 0.004 95);
+  --foreground: oklch(0.97 0.008 100);
+  --card: oklch(0.175 0.005 95);
+  --card-foreground: oklch(0.97 0.008 100);
+  --popover: oklch(0.165 0.005 95);
+  --popover-foreground: oklch(0.97 0.008 100);
+  --primary: oklch(0.9 0.185 103);
+  --primary-foreground: oklch(0.16 0.01 100);
+  --secondary: oklch(0.25 0.006 95);
+  --secondary-foreground: oklch(0.97 0.008 100);
+  --muted: oklch(0.235 0.006 95);
+  --muted-foreground: oklch(0.74 0.012 95);
+  --accent: oklch(0.255 0.01 100);
+  --accent-foreground: oklch(0.98 0.01 100);
+  --destructive: oklch(0.66 0.215 28);
+  --border: oklch(1 0 0 / 11%);
+  --input: oklch(1 0 0 / 16%);
+  --ring: oklch(0.9 0.185 103);
+  --chart-1: oklch(0.66 0.215 28);
+  --chart-2: oklch(0.7 0.15 245);
+  --chart-3: oklch(0.82 0.16 80);
+  --chart-4: oklch(0.8 0.12 205);
+  --chart-5: oklch(0.7 0.2 325);
+  --radius: 0.125rem;
+  --brand: oklch(0.9 0.185 103);
+
+  /* identity (tokens 1.1) */
+  --font-sans: Barlow, ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Barlow Condensed", Barlow, ui-sans-serif, system-ui, sans-serif;
+  --font-numeric: "Barlow Condensed", Barlow, ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --nk-type-ratio: 1.333;
+  --nk-weight-body: 400;
+  --nk-weight-strong: 600;
+  --nk-weight-display: 700;
+  --nk-tracking-display: 0.01em;
+  --nk-label-case: uppercase;
+  --nk-tracking-label: 0.08em;
+  --nk-border-width: 1px;
+  --nk-cut: 0.75rem;
+  --nk-surface-opacity: 0.98;
+  --nk-surface-tint: 0;
+  --nk-surface-gradient: 0;
+  --nk-surface-edge: 0.05;
+  --nk-elevation: none;
+  --nk-glow: 0;
+  --nk-density: 0.95;
+  --nk-ease: cubic-bezier(0.3, 0, 0, 1);
+  --nk-duration: 120ms;
+  --nk-motion-feel: snap;
+  --nk-spring-bounce: 0;
+  --nk-hud-opacity: 0.72;
+  --nk-hud-text-shadow: strong;
+  --nk-gauge-style: bar;
+  --nk-gauge-track: 0.5rem;
+  --nk-gauge-ticks: 1;
+  --nk-row-indicator: fill;
+
+  /* component details */
+  --nk-heading-case: uppercase;
+  --nk-heading-tracking: 0.04em;
+  --nk-chip-radius: 0.125rem;
+  --nk-meter-radius: 0;
+  --nk-row-radius: 0;
+  --nk-panel-edge: inset 0 0.1875rem 0 0 var(--brand);
+  --nk-num-tracking: 0;
+}

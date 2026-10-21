@@ -10,7 +10,43 @@ import {
   stepDatePart,
   stepNumber,
   validateField,
+  dateToEpoch,
+  epochToDate,
+  timeFromParts,
+  timeToEpoch,
+  epochToTime,
+  stepTimePart,
+  pickerOpening,
+  yearPageStart,
+  decadePageStart,
+  monthGrid,
 } from "@/components/ui/form-field"
+
+describe("form-field date picker", () => {
+  it("opens on the value, else max in the past (a birth date), else min in the future, else today", () => {
+    const today = "2026-10-20"
+    expect(pickerOpening("1990-06-15", "1900-01-01", "2006-12-31", today)).toEqual({ year: 1990, month: 6 })
+    expect(pickerOpening(null, "1900-01-01", "2006-12-31", today)).toEqual({ year: 2006, month: 12 })
+    expect(pickerOpening(null, "2027-03-01", undefined, today)).toEqual({ year: 2027, month: 3 })
+    expect(pickerOpening(null, undefined, undefined, today)).toEqual({ year: 2026, month: 10 })
+    expect(pickerOpening("1990-13-40", undefined, undefined, today)).toEqual({ year: 2026, month: 10 })
+  })
+
+  it("steps up to a page of 24 years, then 12 decades, as ox_lib's picker does", () => {
+    // Qbox's birth date, opened on December 2006: "1986 – 2009", then "1900 – 2019"
+    expect(yearPageStart(2006)).toBe(1986)
+    expect(decadePageStart(1986)).toBe(1900)
+    expect(decadePageStart(1966)).toBe(1880)
+  })
+
+  it("lays a month out from its first weekday", () => {
+    const oct = monthGrid(2026, 10) // 1 October 2026 is a Thursday
+    expect(oct.slice(0, 4)).toEqual([null, null, null, null])
+    expect(oct[4]).toBe("2026-10-01")
+    expect(oct.filter(Boolean)).toHaveLength(31)
+    expect(monthGrid(2024, 2).filter(Boolean)).toHaveLength(29)
+  })
+})
 
 describe("form-field numbers", () => {
   it("parses text to a number or null, rounding to precision", () => {
@@ -118,5 +154,78 @@ describe("validateField", () => {
   it("checks colours", () => {
     expect(validateField({ kind: "color" }, "#c8102e")).toBeNull()
     expect(validateField({ kind: "color" }, "#zz0000")?.code).toBe("invalid")
+  })
+})
+
+describe("form-field date range and time (ox_lib's value shapes)", () => {
+  it("converts dates to and from epoch ms of local midnight", () => {
+    const ms = dateToEpoch("1990-02-01")!
+    const d = new Date(ms)
+    expect([d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes()]).toEqual([1990, 1, 1, 0, 0])
+    expect(epochToDate(ms)).toBe("1990-02-01")
+    // any time of the day maps back to that day
+    expect(epochToDate(ms + 15 * 3600_000)).toBe("1990-02-01")
+    expect(dateToEpoch("1990-02-30")).toBeNull()
+    expect(dateToEpoch(null)).toBeNull()
+    expect(epochToDate(Number.NaN)).toBeNull()
+    expect(epochToDate(null)).toBeNull()
+  })
+
+  it("builds HH:MM only from a real time", () => {
+    expect(timeFromParts("9", "5")).toBe("09:05")
+    expect(timeFromParts(23, 59)).toBe("23:59")
+    expect(timeFromParts(24, 0)).toBeNull()
+    expect(timeFromParts(12, 60)).toBeNull()
+    expect(timeFromParts("", "30")).toBeNull()
+  })
+
+  it("converts times to epoch ms of today (or a given day) and back", () => {
+    const base = new Date(2026, 9, 20, 15, 42, 11)
+    const ms = timeToEpoch("08:30", base)!
+    const d = new Date(ms)
+    expect([d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds()]).toEqual([2026, 9, 20, 8, 30, 0])
+    expect(epochToTime(ms)).toBe("08:30")
+    const today = new Date(timeToEpoch("08:30")!)
+    expect(today.toDateString()).toBe(new Date().toDateString())
+    expect(timeToEpoch("25:00")).toBeNull()
+    expect(timeToEpoch("8:30")).toBeNull()
+    expect(epochToTime(null)).toBeNull()
+  })
+
+  it("steps hours and minutes with the arrow keys, wrapping", () => {
+    expect(stepTimePart("hour", "23", 1)).toBe("00")
+    expect(stepTimePart("hour", "00", -1)).toBe("23")
+    expect(stepTimePart("hour", "", 1)).toBe("00")
+    expect(stepTimePart("hour", "12", 1, { twelve: true })).toBe("01")
+    expect(stepTimePart("hour", "01", -1, { twelve: true })).toBe("12")
+    expect(stepTimePart("hour", "", 1, { twelve: true })).toBe("01")
+    expect(stepTimePart("minute", "59", 1)).toBe("00")
+    expect(stepTimePart("minute", "00", -1)).toBe("59")
+    expect(stepTimePart("minute", "10", 1, { minuteStep: 15 })).toBe("30")
+    expect(stepTimePart("minute", "45", 1, { minuteStep: 15 })).toBe("00")
+    expect(stepTimePart("minute", "", 1, { minuteStep: 15 })).toBe("00")
+  })
+
+  it("validates a date range: both ends, order, bounds", () => {
+    const a = dateToEpoch("2026-10-01")!
+    const b = dateToEpoch("2026-10-07")!
+    const rule = { kind: "date-range" as const, min: "2026-01-01", max: "2026-12-31" }
+    expect(validateField(rule, [a, b])).toBeNull()
+    expect(validateField(rule, [a, a])).toBeNull()
+    expect(validateField(rule, [null, null])).toBeNull()
+    expect(validateField({ ...rule, required: true }, [null, null])?.code).toBe("required")
+    expect(validateField(rule, [a, null])).toEqual({ code: "incomplete", message: "Pick both dates" })
+    expect(validateField(rule, [b, a])?.code).toBe("order")
+    expect(validateField(rule, [dateToEpoch("2025-12-31"), b])?.code).toBe("min")
+    expect(validateField(rule, [a, dateToEpoch("2027-01-01")])?.message).toBe("On or before 31/12/2026")
+  })
+
+  it("validates a time by its clock time", () => {
+    const rule = { kind: "time" as const, min: "08:00", max: "18:00" }
+    expect(validateField(rule, timeToEpoch("12:00"))).toBeNull()
+    expect(validateField(rule, timeToEpoch("07:59"))).toEqual({ code: "min", message: "At 08:00 or later" })
+    expect(validateField(rule, timeToEpoch("18:01"))?.code).toBe("max")
+    expect(validateField({ kind: "time", required: true }, null)?.code).toBe("required")
+    expect(validateField({ kind: "time" }, null)).toBeNull()
   })
 })

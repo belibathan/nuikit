@@ -5,8 +5,11 @@
  * 1. Ask the `nuikit` resource for the compiled theme + player prefs (NUI callback
  *    https://nuikit/theme, any page may call it), then keep a long-poll open: the callback answers as
  *    soon as `nuikit theme reload` or a pref changes, so overrides repaint live too.
- * 2. Older nuikit resource (no callback): fetch nuikit/theme.css and compile it in the page.
- * 3. No nuikit resource: the page's built-in stock theme stays.
+ * 2. No answer yet: fetch nuikit/theme.css and compile it in the page, and keep asking the callback.
+ *    Resources such as ox_lib start before `nuikit`, so the first ask often fails; and the file is the
+ *    client's copy from when `nuikit` last started (editing theme.css and running `nuikit theme
+ *    reload` doesn't change it), so it is only a stand-in until the callback answers (0.7.0 test, F4).
+ * 3. No nuikit resource: the page's built-in stock theme stays (it keeps asking, rarely).
  */
 import { isBrowser } from "./index";
 import { applyTheme, setPrefs } from "./theme";
@@ -25,6 +28,7 @@ export interface ServerThemePayload {
 const CALLBACK = "https://nuikit/theme";
 const SOURCES = ["https://cfx-nui-nuikit/theme.css", "nui://nuikit/theme.css"];
 let polling = false;
+let generation = 0;
 
 async function post(body: unknown, timeout: number): Promise<ServerThemePayload | null> {
   const controller = new AbortController();
@@ -63,18 +67,33 @@ export function applyServerTheme(p: ServerThemePayload): boolean {
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
-async function poll(hash: string) {
+/** How long to wait after a failed ask: every 2 s for the first minute (nuikit is starting), then 30 s. */
+export const retryDelay = (misses: number) => (misses <= 30 ? 2_000 : 30_000);
+
+async function poll(hash: string | null) {
   if (polling) return;
   polling = true;
+  const gen = generation;
+  let misses = 0;
   for (;;) {
+    // with hash null (never answered) the callback replies at once with the theme
     const next = await post({ hash, wait: true }, 40_000);
+    if (gen !== generation) return;
     if (!next) {
-      await sleep(30_000); // the nuikit resource is restarting (or gone): try again later
+      // the nuikit resource hasn't started yet, is restarting, or is gone: try again
+      await sleep(retryDelay(++misses));
       continue;
     }
+    misses = 0;
     if (!next.unchanged && next.hash !== hash) applyServerTheme(next);
     hash = next.hash;
   }
+}
+
+/** Tests: forget the running long-poll (it stops at its next answer). */
+export function __resetServerTheme() {
+  polling = false;
+  generation++;
 }
 
 /**
@@ -83,12 +102,14 @@ async function poll(hash: string) {
  */
 export async function loadServerTheme(options: { live?: boolean } = {}): Promise<boolean> {
   if (isBrowser()) return false;
+  const live = options.live !== false;
   const first = await post({ hash: null }, 4_000);
   if (first) {
     const themed = applyServerTheme(first);
-    if (options.live !== false) void poll(first.hash);
+    if (live) void poll(first.hash);
     if (themed) return true;
   }
+  let themed = false;
   for (const url of SOURCES) {
     try {
       const res = await fetch(url);
@@ -96,11 +117,14 @@ export async function loadServerTheme(options: { live?: boolean } = {}): Promise
       const css = await res.text();
       if (css.includes("--")) {
         applyTheme(css);
-        return true;
+        themed = true;
+        break;
       }
     } catch {
       /* try the next form; without the nuikit resource the built-in theme stays */
     }
   }
-  return false;
+  // no answer from the callback: keep asking, so the server's theme replaces the file when it comes
+  if (live && !first) void poll(null);
+  return themed;
 }

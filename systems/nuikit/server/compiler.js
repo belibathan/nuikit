@@ -1,4 +1,4 @@
-/* nuikit-core theme compiler (tokens v1). MIT, https://github.com/belibathan/nuikit. Generated: do not edit (pnpm sync copies it from packages/core). */
+/* nuikit-core theme compiler (tokens v1) + doctor. MIT, https://github.com/belibathan/nuikit. Generated: do not edit (pnpm sync copies it from packages/core). */
 "use strict";
 var NuikitTheme = (() => {
   var __defProp = Object.defineProperty;
@@ -22,10 +22,16 @@ var NuikitTheme = (() => {
   // src/fxserver.ts
   var fxserver_exports = {};
   __export(fxserver_exports, {
+    ADAPTER_PACKS: () => ADAPTER_PACKS,
     TOKENS_VERSION: () => TOKENS_VERSION,
     TOKEN_NAMES: () => TOKEN_NAMES,
     checkContrast: () => checkContrast,
+    compareVersions: () => compareVersions,
     compileTheme: () => compileTheme,
+    detectFramework: () => detectFramework,
+    doctor: () => doctor,
+    formatDoctor: () => formatDoctor,
+    pageHash: () => pageHash,
     themeToCss: () => themeToCss,
     toDtcg: () => toDtcg
   });
@@ -163,6 +169,10 @@ var NuikitTheme = (() => {
 
   // src/tokens.ts
   var TOKENS_VERSION = 1;
+  var TOKENS_REVISION = "1.2";
+  var DEFAULT_FONT_SANS = "Inter, ui-sans-serif, system-ui, sans-serif";
+  var DEFAULT_FONT_DISPLAY = `"Inter Tight", ${DEFAULT_FONT_SANS}`;
+  var DEFAULT_FONT_MONO = `"Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace`;
   var c = (name, description, fallback = "stock shadcn neutral") => ({ name, type: "color", group: "shadcn", description, fallback });
   var n = (name, type, description, fallback) => ({ name, type, group: "nuikit", description, fallback });
   var TOKENS = [
@@ -191,8 +201,8 @@ var NuikitTheme = (() => {
     c("chart-4", "Categorical colour 4"),
     c("chart-5", "Categorical colour 5"),
     { name: "radius", type: "dimension", group: "shadcn", description: "Corner radius (panels radius + 4px, controls radius \u2212 2px)", fallback: "0.625rem" },
-    { name: "font-sans", type: "fontFamily", group: "shadcn", description: "Text", fallback: "ui-sans-serif, system-ui, sans-serif" },
-    { name: "font-mono", type: "fontFamily", group: "shadcn", description: "Codes and IDs a player might type", fallback: "ui-monospace, SFMono-Regular, Menlo, monospace" },
+    { name: "font-sans", type: "fontFamily", group: "shadcn", description: "Text", fallback: DEFAULT_FONT_SANS },
+    { name: "font-mono", type: "fontFamily", group: "shadcn", description: "Codes and IDs a player might type", fallback: DEFAULT_FONT_MONO },
     n("success", "color", "Positive status: done, paid, online", "oklch(L, C, 150): green at the lightness/chroma of destructive"),
     n("success-foreground", "color", "Text on success", "foreground or background, whichever contrasts more"),
     n("warning", "color", "Caution status: low fuel, about to expire", "oklch(L + 0.08, C, 75): amber at the lightness/chroma of destructive"),
@@ -208,10 +218,119 @@ var NuikitTheme = (() => {
     n("vital-thirst", "color", "Thirst bar", "chart-4 if cyan/blue, else another one, else oklch(0.76 0.13 215)"),
     n("vital-stress", "color", "Stress bar", "chart-5 if purple/magenta, else another one, else oklch(0.68 0.2 320)"),
     n("nk-scale", "number", "UI size multiplier (unitless). Players can scale further (0.85\u20131.25).", "1"),
-    n("nk-motion", "number", "1 = animations on, 0 = off. Players can turn motion off.", "1")
+    n("nk-motion", "number", "1 = animations on, 0 = off. Painted as 0 when the theme or the player's reduced-motion pref turns motion down.", "1")
   ];
   var TOKEN_NAMES = TOKENS.map((t) => t.name);
-  var SPEC = new Map(TOKENS.map((t) => [t.name, t]));
+  var id = (name, type, description, fallback, extra = {}) => ({ name, type, group: "identity", description, fallback, since: "1.1", ...extra });
+  var dv = (name, type, description, fallback) => ({ name, type, group: "derived", description, fallback, since: "1.1" });
+  var MOTION_FEELS = ["crisp", "snap", "smooth", "stepped"];
+  var SPRING_PRESETS = ["snap", "move", "soft", "pop"];
+  var mt = (name, type, description, fallback) => ({ name, type, group: "derived", description, fallback, since: "1.2" });
+  var MOTION_TOKENS = [
+    { name: "nk-motion-feel", type: "keyword", group: "identity", description: "How the identity moves: crisp (Graphite), snap (Signal: no glide on selection, flash instead of press scale), smooth (Velvet: longer springs, a hint of bounce), stepped (Vector: values tick in steps)", fallback: "crisp", values: MOTION_FEELS, since: "1.2" },
+    { name: "nk-spring-bounce", type: "number", group: "identity", description: "Bounce folded into the snap, move and soft springs (0 = critically damped; 0.3 is the most the kit allows)", fallback: "0", range: [0, 0.3], since: "1.2" },
+    mt("nk-motion-move", "number", "1 = things may move (translate, scale, rotate, FLIP, stagger); 0 under reduced motion or off, where only fades of at most 100ms are kept", "1"),
+    mt("nk-time-instant", "duration", "State that must be immediate: keyboard and controller selection, held key-repeat", "0ms"),
+    mt("nk-time-press", "duration", "Press, toggle, key-chip flash: 0.5 \xD7 d, 50\u2013100ms", "70ms"),
+    mt("nk-time-hover", "duration", "Pointer hover colour and row background: 0.75 \xD7 d", "105ms"),
+    mt("nk-time-base", "duration", "Panel and menu enter, the selection indicator, tab switch: d (kit.css --nk-time)", "140ms"),
+    mt("nk-time-exit", "duration", "Every exit (panel, toast, menu, modal): 0.7 \xD7 d", "98ms"),
+    mt("nk-time-move", "duration", "Toasts entering, FLIP moves, meters gaining: 1.5 \xD7 d, at most 300ms", "210ms"),
+    mt("nk-time-modal", "duration", "Dialog enter (on an inner wrapper): 1.25 \xD7 d", "175ms"),
+    mt("nk-time-screen", "duration", "Full-screen enter (pause, death, loading): 2.5 \xD7 d, at most 400ms", "350ms"),
+    mt("nk-time-ambient", "duration", "HUD show-on-change fades and the damage trail; not scaled by the identity", "400ms"),
+    mt("nk-stagger", "duration", "Delay per item on a list's first open: 0.15 \xD7 d (snap and smooth 0.125 \xD7 d), at most 20ms (smooth 30ms)", "20ms"),
+    mt("nk-stagger-max", "duration", "Total stagger cap: items past the fifth enter together", "100ms"),
+    mt("nk-ease-out", "cubicBezier", "Enter, hover, anything arriving: the identity's --nk-ease", "nk-ease"),
+    mt("nk-ease-in", "cubicBezier", "Exits (speeds up as it leaves)", "cubic-bezier(0.4, 0, 1, 1)"),
+    mt("nk-ease-in-out", "cubicBezier", "On-screen moves (indicator, FLIP, tab underline) when not a spring", "cubic-bezier(0.2, 0, 0, 1)"),
+    mt("nk-ease-emphasized", "cubicBezier", "Full-screen enter, big moments", "cubic-bezier(0.05, 0.7, 0.1, 1)"),
+    mt("nk-ease-linear", "keyword", "Progress, countdowns, streamed values, needles", "linear"),
+    mt("nk-spring-snap", "keyword", "Spring (duration, bounce): selection indicator, tab underline, needle catch-up", "160ms 0"),
+    mt("nk-spring-move", "keyword", "Spring (duration, bounce): toasts in, FLIP reflow, drawers, digit roll", "240ms 0.1"),
+    mt("nk-spring-soft", "keyword", "Spring (duration, bounce): full-screen content, large frame changes", "360ms 0"),
+    mt("nk-spring-pop", "keyword", "Spring (duration, bounce): rewards only (item added, level-up, a \xD73 badge)", "260ms 0.3")
+  ];
+  var SPRING_RATIO = {
+    crisp: [1.15, 1.7, 2.55, 1.85],
+    snap: [1.1, 1.65, 2.5, 1.8],
+    smooth: [1.08, 1.42, 1.75, 1.5],
+    stepped: [1, 1.43, 2.15, 1.7]
+  };
+  var SPRING_MAX = [400, 400, 450, 400];
+  var MAX_DURATION_MS = 260;
+  function motionTokens(d, feel = "crisp", bounce = 0) {
+    var _a;
+    const ms = (x) => `${Math.round(x)}ms`;
+    const b = Math.max(0, Math.min(0.3, bounce));
+    const r = (_a = SPRING_RATIO[feel]) != null ? _a : SPRING_RATIO.crisp;
+    const bounces = [b, Math.max(0.1, b), b, Math.max(0.3, b)];
+    const out = {
+      "nk-motion-move": "1",
+      "nk-time-instant": "0ms",
+      "nk-time-press": ms(Math.max(50, Math.min(100, d * 0.5))),
+      "nk-time-hover": ms(d * 0.75),
+      "nk-time-base": ms(d),
+      "nk-time-exit": ms(d * 0.7),
+      "nk-time-move": ms(Math.min(300, d * 1.5)),
+      "nk-time-modal": ms(d * 1.25),
+      "nk-time-screen": ms(Math.min(400, d * 2.5)),
+      "nk-time-ambient": "400ms",
+      "nk-stagger": ms(feel === "smooth" ? Math.min(30, d * 0.125) : Math.min(20, d * (feel === "snap" ? 0.125 : 0.15))),
+      "nk-stagger-max": "100ms"
+    };
+    SPRING_PRESETS.forEach((name, i) => {
+      const t = Math.min(SPRING_MAX[i], Math.round(d * r[i] / 10) * 10);
+      out[`nk-spring-${name}`] = `${t}ms ${Math.round(bounces[i] * 1e3) / 1e3}`;
+    });
+    return out;
+  }
+  var IDENTITY_TOKENS = [
+    id("brand", "color", "The server's signature colour: active indicators, gauge needles, focus, logos (not the action: that's primary)", "primary if chromatic (OKLCH C \u2265 0.06), else chart-1"),
+    id("brand-foreground", "color", "Text on brand", "foreground or background, whichever contrasts more"),
+    id("world-foreground", "color", "Text and icons drawn straight on the game, no panel (death text, unplated HUD values, nk-on-game). Light in every theme, light or dark", "rgb(255, 255, 255)"),
+    id("world-foreground-muted", "color", "Secondary text on the game", "world-foreground at 80% (3:1 on a mid-grey frame)"),
+    id("world-shadow", "shadow", "Text-shadow that keeps world-foreground legible over any frame", "0 1px 2px rgba(0, 0, 0, 0.65), 0 0 0.5rem rgba(0, 0, 0, 0.35)"),
+    id("font-display", "fontFamily", "Headings and big moments (titles, timers, the balance)", "font-sans; Inter Tight when font-sans is the default Inter"),
+    id("font-numeric", "fontFamily", "Every number on a gauge, money or timer (always tabular)", "font-sans"),
+    id("nk-type-ratio", "number", "Step between type sizes: 1.125 calm \u2026 1.333 dramatic", "1.2", { range: [1, 1.6] }),
+    id("nk-weight-body", "number", "Body text weight", "400", { range: [100, 900] }),
+    id("nk-weight-strong", "number", "Titles, key numbers, active rows", "600", { range: [100, 900] }),
+    id("nk-weight-display", "number", "Display type (full-screen titles, big numbers)", "700", { range: [100, 900] }),
+    id("nk-tracking-display", "dimension", "Letter-spacing of display type", "-0.02em"),
+    id("nk-label-case", "keyword", "Captions (the short names of values) in uppercase or as written", "uppercase", { values: ["none", "uppercase"] }),
+    id("nk-tracking-label", "dimension", "Letter-spacing of captions (uppercase wants 0.06\u20130.12em)", "0.06em"),
+    id("nk-border-width", "dimension", "Hairline weight of panels, rows and fields", "1px"),
+    id("nk-cut", "dimension", "Chamfered corners (top left, bottom right), drawn with clip-path; 0 = off", "0px"),
+    id("nk-surface-opacity", "number", "Panel opacity over the game (floor 0.92 for text panels)", "0.96", { range: [0, 1] }),
+    id("nk-surface-tint", "number", "How much brand tints neutral surfaces (0\u20130.12)", "0.02", { range: [0, 0.12] }),
+    id("nk-surface-gradient", "number", "Top-to-bottom light falloff on panels (0 = flat)", "0", { range: [0, 0.2] }),
+    id("nk-surface-edge", "number", "Inner top highlight, the machined edge (alpha)", "0.06", { range: [0, 0.3] }),
+    id("nk-elevation", "keyword", "Shadow recipe of floating panels", "soft", { values: ["none", "soft", "deep"] }),
+    id("nk-glow", "number", "Brand glow on active parts and HUD fills (alpha, 0 = off)", "0", { range: [0, 1] }),
+    id("nk-density", "number", "Multiplies the kit's spacing scale: 0.875 compact (Graphite) \u2026 1.15 roomy", "0.875", { range: [0.75, 1.3] }),
+    id("nk-ease", "cubicBezier", "The one easing curve", "cubic-bezier(0.2, 0.8, 0.2, 1)"),
+    id("nk-duration", "duration", "Base duration (panel enter, transitions); \xD7 nk-motion", "140ms"),
+    id("nk-hud-opacity", "number", "Minimum backplate opacity of HUD chips and tiles", "0.55", { range: [0, 1] }),
+    id("nk-hud-text-shadow", "keyword", "Shadow under text drawn on the game", "soft", { values: ["none", "soft", "strong"] }),
+    id("nk-gauge-style", "keyword", "How gauges are drawn", "arc", { values: ["arc", "bar", "digital"] }),
+    id("nk-gauge-track", "dimension", "Gauge and meter track thickness", "0.25rem"),
+    id("nk-gauge-ticks", "number", "Tick marks on gauges: 1 on, 0 off", "1", { range: [0, 1] }),
+    id("nk-row-indicator", "keyword", "How the active row is marked", "bar", { values: ["bar", "fill", "outline"] }),
+    dv("surface", "color", "Floating panel surface: popover tinted by brand (\xD7 nk-surface-tint); drawn at nk-surface-opacity", "mix(popover, brand, nk-surface-tint)"),
+    dv("nk-elevation-shadow", "shadow", "The box-shadow nk-elevation names, in scrim colour", "from nk-elevation"),
+    dv("nk-hud-shadow", "shadow", "The text-shadow nk-hud-text-shadow names, in scrim colour", "from nk-hud-text-shadow"),
+    dv("nk-row-bar", "number", "1 when nk-row-indicator is bar", "from nk-row-indicator"),
+    dv("nk-row-fill", "number", "1 when nk-row-indicator is fill", "from nk-row-indicator"),
+    dv("nk-row-outline", "number", "1 when nk-row-indicator is outline", "from nk-row-indicator"),
+    dv("nk-clip", "keyword", "clip-path of panels: the nk-cut chamfer, or none when nk-cut is 0 (a clip-path would also clip the shadow)", "from nk-cut"),
+    dv("nk-clip-sm", "keyword", "clip-path of chips, tiles and buttons: half the panel chamfer", "from nk-cut"),
+    ...MOTION_TOKENS
+  ];
+  var chamferClip = (cut) => `polygon(${cut} 0, 100% 0, 100% calc(100% - ${cut}), calc(100% - ${cut}) 100%, 0 100%, 0 ${cut})`;
+  var ALL_TOKENS = [...TOKENS, ...IDENTITY_TOKENS];
+  var ALL_TOKEN_NAMES = ALL_TOKENS.map((t) => t.name);
+  var SPEC = new Map(ALL_TOKENS.map((t) => [t.name, t]));
   var NEUTRAL = {
     light: {
       background: "oklch(1 0 0)",
@@ -388,6 +507,7 @@ var NuikitTheme = (() => {
     if (value === void 0 || value === null) return null;
     if (typeof value === "number") return String(value);
     if (typeof value === "string") return value;
+    if (Array.isArray(value) && type === "cubicBezier" && value.length === 4) return `cubic-bezier(${value.join(", ")})`;
     if (Array.isArray(value)) return value.map((f) => /[\s"']/.test(String(f)) && !/^["']/.test(String(f)) ? `"${f}"` : String(f)).join(", ");
     if (typeof value === "object") {
       const o = value;
@@ -474,8 +594,11 @@ var NuikitTheme = (() => {
       }
       resolved[name] = lowered;
     }
-    if (!opts.partial) derive(resolved, mode, warnings);
-    else if (resolved["nk-scale"] !== void 0 || resolved["nk-motion"] !== void 0) derive(resolved, mode, warnings, true);
+    if (!opts.partial) {
+      const given = new Set(Object.keys(resolved));
+      derive(resolved, mode, warnings);
+      deriveIdentity(resolved, warnings, given);
+    } else if (resolved["nk-scale"] !== void 0 || resolved["nk-motion"] !== void 0) derive(resolved, mode, warnings, true);
     if (opts.highContrast) highContrast(resolved);
     const contrast = checkContrast(resolved);
     for (const r of contrast) {
@@ -484,7 +607,7 @@ var NuikitTheme = (() => {
       warnings.push(`${r.fg} on ${r.bg} is ${r.ratio.toFixed(1)}:1 (needs ${r.min}:1); ${reason}.`);
     }
     const vars = order(resolved);
-    return { version: TOKENS_VERSION, mode, vars, imports, warnings, contrast, hash: hash(JSON.stringify([vars, imports])) };
+    return { version: TOKENS_VERSION, revision: TOKENS_REVISION, mode, vars, imports, warnings, contrast, hash: hash(JSON.stringify([vars, imports])) };
   }
   function lower(value) {
     const v = value.trim();
@@ -507,6 +630,8 @@ var NuikitTheme = (() => {
   var clamp = (x, lo, hi) => Math.max(lo, Math.min(hi, x));
   var WHITE = [255, 255, 255, 1];
   var BLACK = [0, 0, 0, 1];
+  var WORLD_SHADOW = "0 1px 2px rgba(0, 0, 0, 0.65), 0 0 0.5rem rgba(0, 0, 0, 0.35)";
+  var MID_GREY = [128, 128, 128, 1];
   function bestText(vars, bg) {
     const solid = opaque(bg, vars);
     const candidates = [rgba(vars, "foreground"), rgba(vars, "background"), WHITE, BLACK].filter((x) => !!x && x[3] === 1);
@@ -539,7 +664,7 @@ var NuikitTheme = (() => {
     return o.c >= 0.06 && o.l >= 0.45 && o.l <= 0.93 && inHue(o.h, ranges);
   }
   function derive(vars, mode, warnings, onlyNumbers = false) {
-    var _a;
+    var _a, _b;
     const scale = vars["nk-scale"] === void 0 ? 1 : parseFloat(vars["nk-scale"]);
     if (Number.isNaN(scale) || scale < 0.5 || scale > 2) {
       warnings.push(`--nk-scale must be a number between 0.5 and 2 (got ${vars["nk-scale"]}); 1 is used.`);
@@ -564,7 +689,11 @@ var NuikitTheme = (() => {
     if (vars.info === void 0) vars.info = vars.primary;
     if (vars["info-foreground"] === void 0) vars["info-foreground"] = vars["primary-foreground"];
     if (vars.hud === void 0) vars.hud = "rgba(0, 0, 0, 0.45)";
-    if (vars["hud-foreground"] === void 0) vars["hud-foreground"] = "rgb(255, 255, 255)";
+    const world = (_b = rgba(vars, "world-foreground")) != null ? _b : WHITE;
+    if (vars["world-foreground"] === void 0) vars["world-foreground"] = formatRgba(world);
+    if (vars["world-foreground-muted"] === void 0) vars["world-foreground-muted"] = formatRgba([world[0], world[1], world[2], 0.8]);
+    if (vars["world-shadow"] === void 0) vars["world-shadow"] = WORLD_SHADOW;
+    if (vars["hud-foreground"] === void 0) vars["hud-foreground"] = vars["world-foreground"];
     if (vars.scrim === void 0) vars.scrim = "rgb(0, 0, 0)";
     const used = /* @__PURE__ */ new Set();
     for (const v of VITALS) {
@@ -583,6 +712,144 @@ var NuikitTheme = (() => {
       }
       if (!pick && "theme" in v && vitalFit(rgba(vars, v.theme), v.hues)) pick = vars[v.theme];
       vars[v.name] = pick != null ? pick : fmtOklch(v.fallback[0], v.fallback[1], v.fallback[2]);
+    }
+  }
+  var NUM = /^-?(?:\d+\.?\d*|\.\d+)$/;
+  var DIM = /^(-?(?:\d+\.?\d*|\.\d+))(px|rem|em)$/;
+  var DUR = /^(\d+\.?\d*|\.\d+)(ms|s)$/;
+  var BEZIER = /^cubic-bezier\(\s*(-?[\d.]+)\s*,\s*(-?[\d.]+)\s*,\s*(-?[\d.]+)\s*,\s*(-?[\d.]+)\s*\)$/;
+  var EASE_KEYWORDS = {
+    linear: "cubic-bezier(0, 0, 1, 1)",
+    ease: "cubic-bezier(0.25, 0.1, 0.25, 1)",
+    "ease-in": "cubic-bezier(0.42, 0, 1, 1)",
+    "ease-out": "cubic-bezier(0, 0, 0.58, 1)",
+    "ease-in-out": "cubic-bezier(0.42, 0, 0.58, 1)"
+  };
+  var trimNum = (n2) => String(Math.round(n2 * 1e4) / 1e4);
+  function identityValue(spec, raw) {
+    var _a;
+    const v = raw.trim();
+    switch (spec.type) {
+      case "number": {
+        if (!NUM.test(v)) return null;
+        const n2 = parseFloat(v);
+        if (spec.range && (n2 < spec.range[0] || n2 > spec.range[1])) return null;
+        return trimNum(n2);
+      }
+      case "dimension": {
+        if (v === "0") return "0px";
+        const m = DIM.exec(v);
+        return m ? `${trimNum(parseFloat(m[1]))}${m[2]}` : null;
+      }
+      case "duration": {
+        const m = DUR.exec(v);
+        if (!m) return null;
+        const ms = parseFloat(m[1]) * (m[2] === "s" ? 1e3 : 1);
+        return ms <= 2e3 ? `${trimNum(ms)}ms` : null;
+      }
+      case "cubicBezier": {
+        const k = EASE_KEYWORDS[v];
+        if (k) return k;
+        const m = BEZIER.exec(v);
+        if (!m) return null;
+        const [x1, y1, x2, y2] = m.slice(1).map(Number);
+        if (x1 < 0 || x1 > 1 || x2 < 0 || x2 > 1) return null;
+        return `cubic-bezier(${[x1, y1, x2, y2].map(trimNum).join(", ")})`;
+      }
+      case "keyword":
+        return ((_a = spec.values) == null ? void 0 : _a.includes(v)) ? v : null;
+      default:
+        return v || null;
+    }
+  }
+  var chromatic = (c2) => !!c2 && c2[3] > 0 && rgbToOklch(c2).c >= 0.06;
+  function elevationShadow(level, s) {
+    if (level === "none") return `0 0 0 0 rgba(${s}, 0)`;
+    if (level === "deep")
+      return `0 0 0 1px rgba(${s}, 0.3), 0 2px 4px rgba(${s}, 0.2), 0 18px 40px -10px rgba(${s}, 0.55), 0 44px 96px -28px rgba(${s}, 0.75)`;
+    return `0 0 0 1px rgba(${s}, 0.25), 0 12px 32px -16px rgba(${s}, 0.6)`;
+  }
+  function hudTextShadow(level, s) {
+    if (level === "none") return "none";
+    if (level === "strong") return `0 0 2px rgba(${s}, 0.9), 0 1px 3px rgba(${s}, 0.8)`;
+    return `0 1px 2px rgba(${s}, 0.6)`;
+  }
+  function hudPlateOverWhite(vars) {
+    var _a;
+    const hud = rgba(vars, "hud");
+    if (!hud) return null;
+    const a = Math.max(hud[3], parseFloat((_a = vars["nk-hud-opacity"]) != null ? _a : "0") || 0);
+    return composite([hud[0], hud[1], hud[2], a], WHITE);
+  }
+  function deriveIdentity(vars, warnings, given = /* @__PURE__ */ new Set()) {
+    var _a, _b, _c;
+    for (const spec of IDENTITY_TOKENS) {
+      if (spec.type === "color" || spec.type === "fontFamily" || spec.type === "shadow" || spec.group === "derived") continue;
+      const given2 = vars[spec.name];
+      if (given2 === void 0) {
+        vars[spec.name] = spec.fallback;
+        continue;
+      }
+      const v = identityValue(spec, given2);
+      if (v === null) {
+        const want = spec.values ? spec.values.join(", ") : spec.range ? `a number from ${spec.range[0]} to ${spec.range[1]}` : spec.type === "dimension" ? "a length in px, rem or em" : spec.type === "duration" ? "a duration up to 2000ms" : "cubic-bezier(x1, y1, x2, y2)";
+        warnings.push(`--${spec.name} must be ${want} (got ${given2}); ${spec.fallback} is used.`);
+        vars[spec.name] = spec.fallback;
+      } else vars[spec.name] = v;
+    }
+    if (vars.brand === void 0) {
+      const primary = rgba(vars, "primary");
+      vars.brand = chromatic(primary) || !vars["chart-1"] ? vars.primary : vars["chart-1"];
+    }
+    const brand = (_a = rgba(vars, "brand")) != null ? _a : rgba(vars, "primary");
+    if (vars["brand-foreground"] === void 0) vars["brand-foreground"] = bestText(vars, brand);
+    const sans = (_b = vars["font-sans"]) != null ? _b : DEFAULT_FONT_SANS;
+    if (vars["font-display"] === void 0) vars["font-display"] = sans === DEFAULT_FONT_SANS ? DEFAULT_FONT_DISPLAY : sans;
+    if (vars["font-numeric"] === void 0) vars["font-numeric"] = sans;
+    if (vars.surface === void 0) {
+      const pop = rgba(vars, "popover");
+      if (pop) {
+        const t = parseFloat(vars["nk-surface-tint"]);
+        const m = mix(pop, [brand[0], brand[1], brand[2], pop[3]], t);
+        vars.surface = formatRgba(m);
+      }
+    }
+    const scrim = (_c = rgba(vars, "scrim")) != null ? _c : BLACK;
+    const s = `${scrim[0]}, ${scrim[1]}, ${scrim[2]}`;
+    if (vars["nk-elevation-shadow"] === void 0) vars["nk-elevation-shadow"] = elevationShadow(vars["nk-elevation"], s);
+    if (vars["nk-hud-shadow"] === void 0) vars["nk-hud-shadow"] = hudTextShadow(vars["nk-hud-text-shadow"], s);
+    const cut = parseFloat(vars["nk-cut"]);
+    if (vars["nk-clip"] === void 0) vars["nk-clip"] = cut > 0 ? chamferClip("var(--nk-cut)") : "none";
+    if (vars["nk-clip-sm"] === void 0) vars["nk-clip-sm"] = cut > 0 ? chamferClip("calc(var(--nk-cut) / 2)") : "none";
+    const ind = vars["nk-row-indicator"];
+    for (const k of ["bar", "fill", "outline"]) if (vars[`nk-row-${k}`] === void 0) vars[`nk-row-${k}`] = ind === k ? "1" : "0";
+    const d = parseFloat(vars["nk-duration"]);
+    const motion = motionTokens(d, vars["nk-motion-feel"], parseFloat(vars["nk-spring-bounce"]));
+    motion["nk-ease-out"] = vars["nk-ease"];
+    motion["nk-ease-in"] = "cubic-bezier(0.4, 0, 1, 1)";
+    motion["nk-ease-in-out"] = "cubic-bezier(0.2, 0, 0, 1)";
+    motion["nk-ease-emphasized"] = "cubic-bezier(0.05, 0.7, 0.1, 1)";
+    motion["nk-ease-linear"] = "linear";
+    for (const [k, v] of Object.entries(motion)) if (vars[k] === void 0) vars[k] = v;
+    if (d > MAX_DURATION_MS) warnings.push(`--nk-duration is ${d}ms (the kit's ceiling is ${MAX_DURATION_MS}ms); panels and menus will feel slow to a player who opens them hundreds of times.`);
+    const op = parseFloat(vars["nk-surface-opacity"]);
+    if (op < 0.92) warnings.push(`--nk-surface-opacity is ${op} (floor 0.92); the game will show through text in panels, and a bright sky will wash it out.`);
+    const plate = hudPlateOverWhite(vars);
+    const hudFg = rgba(vars, "hud-foreground");
+    if (plate && hudFg) {
+      const ratio = contrastRatio(composite(hudFg, plate), plate);
+      if (ratio < 4.5)
+        warnings.push(`hud-foreground on the HUD backplate over a white sky is ${ratio.toFixed(1)}:1 (needs 4.5:1); raise --nk-hud-opacity or darken --hud so HUD text reads over snow and midday sky.`);
+    }
+    for (const name of ["world-foreground", "world-foreground-muted"]) {
+      if (!given.has(name)) continue;
+      const c2 = rgba(vars, name);
+      if (!c2) continue;
+      const onGrey = composite(c2, MID_GREY);
+      const ratio = contrastRatio(onGrey, MID_GREY);
+      const lighter = contrastRatio(onGrey, BLACK) > contrastRatio(MID_GREY, BLACK);
+      if (!lighter || ratio < 3)
+        warnings.push(`--${name} is ${lighter ? `${ratio.toFixed(1)}:1 against a mid-grey frame (needs 3:1)` : "darker than a mid-grey frame"}; text drawn straight on the game (death text, unplated HUD values) will be hard to read. Keep it light, whatever the theme's mode.`);
     }
   }
   function highContrast(vars) {
@@ -615,6 +882,10 @@ var NuikitTheme = (() => {
     }
     vars.hud = "rgba(0, 0, 0, 0.72)";
     vars["hud-foreground"] = "rgb(255, 255, 255)";
+    vars["world-foreground"] = "rgb(255, 255, 255)";
+    vars["world-foreground-muted"] = "rgba(255, 255, 255, 0.85)";
+    if (vars["nk-surface-opacity"] !== void 0) vars["nk-surface-opacity"] = "1";
+    if (vars["nk-hud-opacity"] !== void 0) vars["nk-hud-opacity"] = "0.72";
     return vars;
   }
   function checkContrast(vars) {
@@ -632,7 +903,7 @@ var NuikitTheme = (() => {
   }
   function order(vars) {
     const out = {};
-    for (const name of TOKEN_NAMES) if (vars[name] !== void 0) out[name] = vars[name];
+    for (const name of ALL_TOKEN_NAMES) if (vars[name] !== void 0) out[name] = vars[name];
     for (const name of Object.keys(vars).sort()) if (!(name in out)) out[name] = vars[name];
     return out;
   }
@@ -669,14 +940,15 @@ ${lines.join("\n")}
     var _a;
     const color = { $type: "color" };
     const doc = {
-      $description: `${description} (nuikit tokens v${TOKENS_VERSION}, ${theme.mode})`,
-      $extensions: { "dev.nuikit": { tokens: TOKENS_VERSION, mode: theme.mode, ...theme.imports.length ? { imports: theme.imports } : {} } },
+      $description: `${description} (nuikit tokens v${TOKENS_REVISION}, ${theme.mode})`,
+      $extensions: { "dev.nuikit": { tokens: TOKENS_VERSION, revision: TOKENS_REVISION, mode: theme.mode, ...theme.imports.length ? { imports: theme.imports } : {} } },
       color
     };
     const font = { $type: "fontFamily" };
-    const nk = { $type: "number" };
+    const nk = {};
     for (const [name, value] of Object.entries(theme.vars)) {
       const spec = SPEC.get(name);
+      if ((spec == null ? void 0 : spec.group) === "derived") continue;
       const desc = spec ? { $description: spec.description } : {};
       const col = toRgba(value);
       if (col && ((_a = spec == null ? void 0 : spec.type) != null ? _a : "color") === "color") {
@@ -691,12 +963,290 @@ ${lines.join("\n")}
       } else if (name.startsWith("font-")) {
         font[name.slice(5)] = { $value: value.split(",").map((f) => f.trim().replace(/^["']|["']$/g, "")), ...desc };
       } else if (name.startsWith("nk-")) {
-        nk[name.slice(3)] = { $value: Number(value), ...desc };
+        nk[name.slice(3)] = dtcgNk(spec, value, desc);
       }
     }
     if (Object.keys(font).length > 1) doc.font = font;
     if (Object.keys(nk).length > 1) doc.nk = nk;
     return doc;
+  }
+  function dtcgNk(spec, value, desc) {
+    var _a, _b;
+    const dim = DIM.exec(value);
+    const dur = DUR.exec(value);
+    const bez = BEZIER.exec(value);
+    if (NUM.test(value) && ((_a = spec == null ? void 0 : spec.type) != null ? _a : "number") === "number") return { $type: "number", $value: Number(value), ...desc };
+    if (dim) return { $type: "dimension", $value: { value: parseFloat(dim[1]), unit: dim[2] }, ...desc };
+    if (dur) return { $type: "duration", $value: { value: parseFloat(dur[1]), unit: dur[2] }, ...desc };
+    if (bez) return { $type: "cubicBezier", $value: bez.slice(1).map(Number), ...desc };
+    return { $value: value, ...desc, $extensions: { "dev.nuikit": { type: (_b = spec == null ? void 0 : spec.type) != null ? _b : "keyword" } } };
+  }
+
+  // src/doctor.ts
+  var ADAPTER_PACKS = [
+    { name: "[nuikit-ox]", library: "ox_lib", frameworks: ["any"], shipped: false },
+    { name: "[nuikit-qb]", library: "qb-core", frameworks: ["qbcore", "qbox"], shipped: false },
+    { name: "[nuikit-esx]", library: "es_extended", frameworks: ["esx"], shipped: false }
+  ];
+  var FRAMEWORKS = [
+    { resource: "qbx_core", framework: "qbox" },
+    { resource: "qb-core", framework: "qbcore" },
+    { resource: "es_extended", framework: "esx" }
+  ];
+  var OVERRIDE_MARKER = /<meta\s+name=["']nuikit-handshake["']\s+content=["']off["']/i;
+  function meta(r, key) {
+    var _a;
+    return (_a = r.metadata[key]) != null ? _a : [];
+  }
+  function first(r, key) {
+    return meta(r, key)[0];
+  }
+  var started = (r) => r.state === "started" || r.state === "starting";
+  var isNuikit = (r) => r.name === "nuikit";
+  function pageHash(text) {
+    const s = text.replace(/\r\n/g, "\n");
+    let h = 2166136261;
+    for (let i = 0; i < s.length; i++) {
+      h ^= s.charCodeAt(i);
+      h = Math.imul(h, 16777619);
+    }
+    return (h >>> 0).toString(16).padStart(8, "0");
+  }
+  function compareVersions(a, b) {
+    var _a, _b;
+    const pa = a.replace(/^v/, "").split(/[.-]/);
+    const pb = b.replace(/^v/, "").split(/[.-]/);
+    for (let i = 0; i < Math.max(pa.length, pb.length); i++) {
+      const x = (_a = pa[i]) != null ? _a : "0";
+      const y = (_b = pb[i]) != null ? _b : "0";
+      const nx = Number(x);
+      const ny = Number(y);
+      if (!Number.isNaN(nx) && !Number.isNaN(ny)) {
+        if (nx !== ny) return nx - ny;
+      } else if (x !== y) return x < y ? -1 : 1;
+    }
+    return 0;
+  }
+  function detectFramework(resources) {
+    for (const f of FRAMEWORKS) {
+      const r = resources.find((x) => x.name === f.resource && started(x));
+      if (r) return { framework: f.framework, resource: r.name };
+    }
+    return { framework: "standalone", resource: null };
+  }
+  function doctor(snap) {
+    var _a, _b, _c, _d, _e;
+    const resources = snap.resources;
+    const running = resources.filter(started);
+    const byName = new Map(resources.map((r) => [r.name, r]));
+    const findings = [];
+    const { framework, resource: frameworkResource } = detectFramework(resources);
+    const packs = ((_a = snap.packs) != null ? _a : ADAPTER_PACKS).map((p) => {
+      const lib = byName.get(p.library);
+      const libraryRunning = !!lib && started(lib);
+      const fits = libraryRunning && (p.frameworks.includes("any") || p.frameworks.includes(framework));
+      const packRunning = running.some((r) => meta(r, "nuikit_adapter").includes(p.library));
+      return { name: p.name, fits, shipped: p.shipped, running: packRunning, library: p.library, libraryRunning };
+    });
+    const adaptedBy = /* @__PURE__ */ new Map();
+    for (const r of running) for (const lib of meta(r, "nuikit_adapter")) adaptedBy.set(lib, r.name);
+    const reports = [];
+    for (const r of running) {
+      const page = (_c = (_b = first(r, "ui_page")) != null ? _b : first(r, "loadscreen")) != null ? _c : null;
+      const hosted = first(r, "nuikit_ui");
+      if (!page && !hosted && !isNuikit(r)) continue;
+      const rep = { name: r.name, status: "untouched", page };
+      const proto = first(r, "nuikit_protocol");
+      const level = first(r, "nuikit_level");
+      if (isNuikit(r)) rep.status = "runtime";
+      else if (proto !== void 0) {
+        rep.status = "nuikit";
+        rep.protocol = Number(proto);
+        if (level !== void 0) rep.level = Number(level);
+      } else if (hosted) rep.status = "hosted";
+      else if (adaptedBy.has(r.name)) {
+        rep.status = "adapted";
+        rep.via = adaptedBy.get(r.name);
+      } else if (page && snap.readFile) {
+        const html = snap.readFile(r.name, page);
+        if (html && OVERRIDE_MARKER.test(html)) {
+          rep.status = "override";
+          rep.via = "override page";
+        }
+      }
+      if (rep.status === "untouched") {
+        const pack = packs.find((p) => p.fits && p.library === r.name);
+        rep.next = pack ? pack.shipped ? `install ${pack.name} to draw ${r.name}'s UI with nuikit` : `${pack.name} will adapt it (not shipped yet)` : `its UI is its own; add nuikit_protocol to join (docs/protocol.md) or wait for an override`;
+      }
+      if (rep.status === "nuikit" && rep.level === void 0) rep.next = "declare nuikit_level '<1-3>' from `nuikit check` so the doctor can show it";
+      reports.push(rep);
+    }
+    for (const r of running) {
+      for (const provided of meta(r, "provide")) {
+        const real = byName.get(provided);
+        if (real && real !== r && started(real)) {
+          findings.push({
+            code: "provide-conflict",
+            severity: "error",
+            resource: r.name,
+            message: `${r.name} provides ${provided}, and ${provided} itself is running`,
+            next: `stop one of them: \`ensure ${r.name}\` replaces ${provided}, so remove \`ensure ${provided}\` (or the other way round)`
+          });
+        }
+      }
+    }
+    if (snap.overrides && snap.readFile) {
+      for (const [res, o] of Object.entries(snap.overrides.overrides)) {
+        const r = byName.get(res);
+        if (!r || !started(r)) continue;
+        const html = snap.readFile(res, o.path);
+        const rep = reports.find((x) => x.name === res);
+        if (!html || !OVERRIDE_MARKER.test(html)) {
+          findings.push({
+            code: "override-missing",
+            severity: "warn",
+            resource: res,
+            message: `${res}: the nuikit override page isn't at ${o.path} (a library update replaced it, or it was never copied)`,
+            next: `copy overrides/${res}/ from nuikit.zip over resources/${res}/ again and \`restart ${res}\``
+          });
+          if (rep) {
+            rep.via = "override missing";
+            rep.next = `copy overrides/${res}/ from nuikit.zip back over resources/${res}/`;
+          }
+        } else if (pageHash(html) !== o.hash) {
+          findings.push({
+            code: "override-drifted",
+            severity: "warn",
+            resource: res,
+            message: `${res}: the override page at ${o.path} isn't the one nuikit ${snap.overrides.version} shipped (edited, or from another release)`,
+            next: `if you didn't edit it, copy overrides/${res}/ from nuikit.zip over resources/${res}/ and \`restart ${res}\``
+          });
+          if (rep) rep.via = "override changed";
+        }
+      }
+    }
+    for (const rep of reports) {
+      if (rep.protocol !== void 0 && rep.protocol > snap.runtime.protocol) {
+        findings.push({
+          code: "protocol-newer",
+          severity: "error",
+          resource: rep.name,
+          message: `${rep.name} speaks protocol ${rep.protocol}; this nuikit speaks ${snap.runtime.protocol}`,
+          next: `update nuikit (the runtime supports the previous protocol, not a newer one)`
+        });
+      }
+    }
+    for (const r of running) {
+      if (isNuikit(r)) continue;
+      const scripts = ["shared_script", "client_script", "server_script", "shared_scripts", "client_scripts", "server_scripts"].flatMap((k) => meta(r, k));
+      const imports = scripts.some((s) => s.startsWith("@nuikit/"));
+      const depends = meta(r, "dependency").includes("nuikit") || meta(r, "dependencies").includes("nuikit");
+      if (imports && !depends) {
+        findings.push({
+          code: "missing-dependency",
+          severity: "warn",
+          resource: r.name,
+          message: `${r.name} imports @nuikit/init.lua but doesn't declare \`dependency 'nuikit'\``,
+          next: `add \`dependency 'nuikit'\` to its fxmanifest.lua so FiveM starts nuikit first`
+        });
+      }
+      if ((imports || depends) && r.startedBeforeRuntime) {
+        findings.push({
+          code: "start-order",
+          severity: "error",
+          resource: r.name,
+          message: `${r.name} started before nuikit; its @nuikit import failed on that start`,
+          next: `put \`ensure nuikit\` before \`ensure ${r.name}\` in server.cfg, then \`restart ${r.name}\``
+        });
+      }
+    }
+    if (snap.theme) {
+      for (const c2 of snap.theme.contrast) {
+        if (c2.ok) continue;
+        findings.push({
+          code: "theme-contrast",
+          severity: "warn",
+          message: `theme: ${c2.fg} on ${c2.bg} is ${c2.ratio.toFixed(2)}:1 (min ${c2.min}:1)`,
+          next: `lighten or darken \`--${c2.fg}\` or \`--${c2.bg}\` in nuikit/theme.css, then \`nuikit theme reload\``
+        });
+      }
+      for (const w of snap.theme.warnings) {
+        if (/contrast/i.test(w)) continue;
+        findings.push({ code: "theme-warning", severity: "info", message: `theme: ${w}`, next: `fix it in nuikit/theme.css, then \`nuikit theme reload\`` });
+      }
+    }
+    const latest = (_d = snap.runtime.latest) != null ? _d : null;
+    if (latest && compareVersions(latest, snap.runtime.version) > 0) {
+      findings.push({
+        code: "update-available",
+        severity: "info",
+        message: `nuikit ${snap.runtime.version} is running; ${latest} is out`,
+        next: `download nuikit.zip from github.com/belibathan/nuikit/releases/tag/v${latest.replace(/^v/, "")} and replace [nuikit]/ and overrides/`
+      });
+    }
+    findings.push({
+      code: "framework",
+      severity: "info",
+      message: frameworkResource ? `${framework} detected (${frameworkResource} is running)` : "no framework detected: standalone",
+      next: packs.some((p) => p.fits && !p.running) ? `adapter packs that fit: ${packs.filter((p) => p.fits && !p.running).map((p) => `${p.name}${p.shipped ? "" : " (not shipped yet)"}`).join(", ")}` : packs.some((p) => p.running) ? "every fitting adapter pack is running" : "no adapter pack fits; nuikit's own screens and overrides still apply"
+    });
+    const rank = { error: 0, warn: 1, info: 2 };
+    findings.sort((a, b) => rank[a.severity] - rank[b.severity]);
+    const intents = Object.entries((_e = snap.intents) != null ? _e : {}).map(([source, byIntent]) => ({ source, byIntent, total: Object.values(byIntent).reduce((a, b) => a + b, 0) })).sort((a, b) => b.total - a.total);
+    const count = (s) => reports.filter((r) => r.status === s).length;
+    const summary = {
+      ui: reports.filter((r) => r.status !== "runtime").length,
+      nuikit: count("nuikit") + count("hosted"),
+      adapted: count("adapted"),
+      override: count("override"),
+      untouched: count("untouched"),
+      errors: findings.filter((f) => f.severity === "error").length,
+      warnings: findings.filter((f) => f.severity === "warn").length
+    };
+    return { framework, frameworkResource, runtime: { version: snap.runtime.version, protocol: snap.runtime.protocol, latest }, packs, resources: reports, findings, intents, summary };
+  }
+  var STATUS_LABEL = {
+    runtime: "runtime",
+    nuikit: "on nuikit",
+    hosted: "on nuikit (hosted)",
+    adapted: "adapted",
+    override: "override",
+    untouched: "untouched"
+  };
+  function formatDoctor(rep) {
+    const out = [];
+    out.push(`nuikit ${rep.runtime.version} (protocol ${rep.runtime.protocol})${rep.runtime.latest ? `, latest ${rep.runtime.latest}` : ""}`);
+    out.push(`framework: ${rep.framework}${rep.frameworkResource ? ` (${rep.frameworkResource})` : ""}`);
+    out.push("adapter packs:");
+    for (const p of rep.packs) {
+      const state = p.running ? "running" : p.fits ? p.shipped ? "fits, not installed" : "fits, not shipped yet" : `not needed (${p.library} isn't running)`;
+      out.push(`  ${p.name.padEnd(14)} ${state}`);
+    }
+    out.push(`resources with a UI (${rep.summary.ui}): ${rep.summary.nuikit} on nuikit, ${rep.summary.adapted} adapted, ${rep.summary.override} override, ${rep.summary.untouched} untouched`);
+    for (const r of rep.resources) {
+      if (r.status === "runtime") continue;
+      let label = STATUS_LABEL[r.status];
+      if (r.status === "nuikit") label += ` v${r.protocol}${r.level !== void 0 ? ` level ${r.level}` : ""}`;
+      if (r.via) label += ` (${r.via})`;
+      out.push(`  ${r.name.padEnd(24)} ${label}`);
+      if (r.next) out.push(`  ${"".padEnd(24)}   \u2192 ${r.next}`);
+    }
+    const problems = rep.findings.filter((f) => f.code !== "framework");
+    out.push(`findings: ${rep.summary.errors} error${rep.summary.errors === 1 ? "" : "s"}, ${rep.summary.warnings} warning${rep.summary.warnings === 1 ? "" : "s"}`);
+    for (const f of problems) {
+      out.push(`  ${f.severity.toUpperCase().padEnd(5)} ${f.message}`);
+      out.push(`        \u2192 ${f.next}`);
+    }
+    const fw = rep.findings.find((f) => f.code === "framework");
+    if (fw) out.push(`  \u2192 ${fw.next}`);
+    if (rep.intents.length) {
+      out.push("intents drawn since start (by source):");
+      for (const i of rep.intents) {
+        const parts = Object.entries(i.byIntent).sort((a, b) => b[1] - a[1]).map(([k, v]) => `${k} ${v}`).join(", ");
+        out.push(`  ${i.source.padEnd(24)} ${i.total}  (${parts})`);
+      }
+    } else out.push("intents: none counted yet (the intents runtime emits nuikit:intent; play a bit, then run again)");
+    return out;
   }
   return __toCommonJS(fxserver_exports);
 })();

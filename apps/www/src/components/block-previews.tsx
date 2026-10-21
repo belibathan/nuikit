@@ -8,6 +8,16 @@ import { deathScreenFixtures } from "@/blocks/death-screen/fixtures";
 import { HudMinimal } from "@/blocks/hud-minimal/hud-minimal";
 import { jobMenuFixtures } from "@/blocks/job-menu/fixtures";
 import { JobMenu } from "@/blocks/job-menu/job-menu";
+import { interactionFixtures, type InteractionScene } from "@/blocks/interaction/fixtures";
+import { Prompts, Target } from "@/blocks/interaction/interaction";
+import { shopCarts, shopFixtures } from "@/blocks/shop/fixtures";
+import { Shop } from "@/blocks/shop/shop";
+import { hotbarFixtures, inventoryFixtures } from "@/blocks/inventory/fixtures";
+import { Hotbar, Inventory } from "@/blocks/inventory/inventory";
+import { vehicleShopFixtures } from "@/blocks/vehicle-shop/fixtures";
+import { VehicleShop } from "@/blocks/vehicle-shop/vehicle-shop";
+import { characterSelectFixtures } from "@/blocks/character-select/fixtures";
+import { CharacterSelect } from "@/blocks/character-select/character-select";
 import { hudMinimalFixtures } from "@/blocks/hud-minimal/fixtures";
 import { LoadingScreen } from "@/blocks/loading-screen/loading-screen";
 import { loadingHandovers, loadStateAt } from "@/blocks/loading-screen/fixtures";
@@ -129,7 +139,71 @@ export const BLOCKS: BlockPreview[] = [
       Refused: () => <JobMenu data={jobMenuFixtures.boss} defaultTab="staff" autoFocus={false} onRequest={async () => ({ ok: false, error: "Only the boss can do that." })} />,
     },
   },
+  {
+    name: "interaction",
+    title: "Interaction",
+    description: "The target eye with the options of what the player aims at, chosen with the cursor or the scroll wheel, and key prompts near places with press or hold. Lua does the raycast and reads the keys; the server checks anything that matters.",
+    states: {
+      Vehicle: () => <InteractionStill scene={interactionFixtures.vehicle} />,
+      Choosing: () => <InteractionStill scene={interactionFixtures.picking} />,
+      "Hold a key": () => <InteractionStill scene={interactionFixtures.hold} />,
+      Idle: () => <InteractionStill scene={interactionFixtures.idle} />,
+    },
+  },
+  {
+    name: "shop",
+    title: "Shop",
+    description: "A catalogue grid by category with price and stock, a cart with steppers, cash or bank, and checkout with a confirm. The page checks the cart before asking; the server's prices and stock decide, and money and items move all or nothing.",
+    states: {
+      Cart: () => <Shop data={shopFixtures.store} defaultCart={shopCarts.lunch} autoFocus={false} onBuy={async () => ({ ok: true })} />,
+      Confirm: () => <Shop data={shopFixtures.store} defaultCart={shopCarts.lunch} confirming autoFocus={false} onBuy={async () => ({ ok: true })} />,
+      "Not enough": () => <Shop data={shopFixtures.broke} defaultCart={shopCarts.big} autoFocus={false} />,
+      Empty: () => <Shop data={shopFixtures.vending} autoFocus={false} />,
+    },
+  },
+  {
+    name: "inventory",
+    title: "Inventory",
+    description: "Your pockets and a second container side by side: drag to move (Shift half, Ctrl one), stack and swap, a tooltip, weight meters, use, and a hotbar. Lua and the server decide every move.",
+    states: {
+      Stash: () => <Inventory data={inventoryFixtures.locker} defaultSelected={2} autoFocus={false} onMove={async () => ({ ok: true })} onUse={async () => ({ ok: true })} />,
+      Pockets: () => <Inventory data={inventoryFixtures.pockets} autoFocus={false} onMove={async () => ({ ok: true })} onUse={async () => ({ ok: true })} />,
+      Heavy: () => <Inventory data={inventoryFixtures.heavy} autoFocus={false} />,
+      Hotbar: () => <Hotbar data={hotbarFixtures.hotbar} />,
+    },
+  },
+  {
+    name: "vehicle-shop",
+    title: "Vehicle shop",
+    description: "A showroom: vehicles by category, stats, paint from swatches or any hex, cash or bank, a test drive, and buy with a confirm. The car stands behind the panels; the server spawns it and refunds if it can't be delivered.",
+    states: {
+      Showroom: () => <VehicleShop data={vehicleShopFixtures.pdm} autoFocus={false} onBuy={async () => ({ ok: true })} onTestDrive={async () => ({ ok: true })} />,
+      Confirm: () => <VehicleShop data={vehicleShopFixtures.pdm} defaultSelected="banshee" confirming autoFocus={false} onBuy={async () => ({ ok: true })} />,
+      Locked: () => <VehicleShop data={vehicleShopFixtures.pdm} defaultSelected="policeb" autoFocus={false} />,
+      "Not enough": () => <VehicleShop data={vehicleShopFixtures.budget} defaultSelected="banshee" autoFocus={false} />,
+    },
+  },
+  {
+    name: "character-select",
+    title: "Character select",
+    description: "Character slots, the chosen one as a player card with Play and Delete (behind a confirm), where to spawn, and a create form. The server checks every choice: whose character it is, which spawn points exist, what a valid new character is.",
+    states: {
+      Characters: () => <CharacterSelect data={characterSelectFixtures.three} autoFocus={false} />,
+      Spawn: () => <CharacterSelect data={characterSelectFixtures.three} defaultStep="spawn" autoFocus={false} />,
+      Create: () => <CharacterSelect data={characterSelectFixtures.first} defaultStep="create" autoFocus={false} />,
+      Delete: () => <CharacterSelect data={characterSelectFixtures.three} defaultSelected="RCH20811" confirming autoFocus={false} />,
+    },
+  },
 ];
+
+function InteractionStill({ scene }: { scene: InteractionScene }) {
+  return (
+    <>
+      {scene.prompts && <Prompts data={scene.prompts} />}
+      {scene.target && <Target data={scene.target} autoFocus={false} onSelect={async () => ({ ok: true })} />}
+    </>
+  );
+}
 
 function SettingsStill({ data }: { data: (typeof settingsFixtures)[keyof typeof settingsFixtures] }) {
   return (

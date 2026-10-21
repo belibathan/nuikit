@@ -75,8 +75,13 @@ function EmptyState({
             {iconEl}
           </EmptyMedia>
         )}
-        {/* font-semibold spelled out: EmptyTitle's font-medium would beat nk-title's 600. */}
-        <EmptyTitle className={cn("font-semibold tracking-normal", size === "screen" ? "text-xl leading-7" : "nk-title")}>{title}</EmptyTitle>
+        {/* The weight spelled out (important): EmptyTitle's font-medium would beat nk-title's. A
+            screen-size empty state titles at the section size. */}
+        <EmptyTitle
+          className={cn("nk-title [font-weight:var(--nk-heading-weight,600)]!", size === "screen" && "[--nk-heading-size:var(--nk-text-section)]")}
+        >
+          {title}
+        </EmptyTitle>
         {description && <EmptyDescription className="text-sm leading-5 text-pretty">{description}</EmptyDescription>}
       </EmptyHeader>
       {(action || children) && (

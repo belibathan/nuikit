@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import { meterColor, meterLevel, segmentFills } from "@/components/ui/meter"
+import { meterColor, meterLevel, segmentFills, segmentKeyframes } from "@/components/ui/meter"
 
 describe("meter", () => {
   it("turns a value into a clamped percentage of max", () => {
@@ -46,4 +46,27 @@ describe("meter", () => {
     expect(meterColor("")).toEqual({})
     expect(meterColor(undefined)).toEqual({})
   })
+
+  // A timed run is one linear animation over the whole duration (design v2 §5A): each segment owns its
+  // share of the run, so the bar is full exactly at duration and segments hand over with no gap.
+  it("splits a timed run across segments, back to back, full at the end", () => {
+    expect(segmentKeyframes(0, 1)).toEqual([
+      { transform: "scaleX(0)", offset: 0 },
+      { transform: "scaleX(0)", offset: 0 },
+      { transform: "scaleX(1)", offset: 1 },
+      { transform: "scaleX(1)", offset: 1 },
+    ])
+    const four = [0, 1, 2, 3].map((i) => segmentKeyframes(i, 4))
+    expect(four.map((k) => [k[1]!.offset, k[2]!.offset])).toEqual([
+      [0, 0.25],
+      [0.25, 0.5],
+      [0.5, 0.75],
+      [0.75, 1],
+    ])
+    for (const k of four) {
+      expect(k.at(-1)).toEqual({ transform: "scaleX(1)", offset: 1 })
+      for (const f of k) expect(Object.keys(f).sort()).toEqual(["offset", "transform"]) // transform only
+    }
+  })
+
 })

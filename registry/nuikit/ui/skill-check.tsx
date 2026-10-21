@@ -13,11 +13,17 @@ import { Kbd } from "@/components/ui/kbd"
  *   <SkillCheck key={round} zoneStart={zone.start} zoneSize={zone.size} keyLabel="E" speed={1.5}
  *     running listen onResult={(hit) => next(hit)} />
  *
- * Two ways to drive it:
+ * Three ways to drive it:
  * - It runs itself (`running`): the needle sweeps once, clockwise from 12 o'clock, in
- *   2000ms / speed, drawn straight onto the SVG each frame (no re-render). With `listen` the
- *   page reads the key; a full turn without a press is a miss. `onResult(hit)` fires once.
+ *   2000ms / speed. With `listen` the page reads the key; a full turn without a press is a miss
+ *   (from a timer). `onResult(hit)` fires once.
+ * - On a clock kept elsewhere (`startedAt`, a performance.now() reading): the needle sweeps from
+ *   then, and `clock.current.angle()` says where it is drawn. The caller judges the press.
  * - From outside: pass `angle` (Lua, a replay, a preview) and `result` to show the outcome.
+ *
+ * The sweep is one linear Web Animation rotating the needle's layer (transform only, on the
+ * compositor): no requestAnimationFrame, no React render per frame. The hit test reads the
+ * animation's currentTime, so the angle judged is the angle drawn. It plays at every motion level.
  *
  * One check per mount: a sequence of checks is a sequence of `key`s. skillCheckZone() places a
  * zone, skillCheckHit() is the rule, SKILL_CHECK_PRESETS has easy / medium / hard.
@@ -90,6 +96,15 @@ function keyOf(e: KeyboardEvent) {
   return k
 }
 
+/** Where a sweep is drawn now, for a caller that keeps the clock (`startedAt`) and judges the press itself. */
+interface SkillCheckClock {
+  /** The needle's angle as drawn (0–360, clockwise from 12). */
+  angle(): number
+}
+
+/** The needle's sweep: one turn, linear, as a rotation of its layer. */
+const SWEEP: Keyframe[] = [{ transform: "rotate(0deg)" }, { transform: "rotate(360deg)" }]
+
 function SkillCheck({
   className,
   size,
@@ -99,6 +114,8 @@ function SkillCheck({
   speed = 1,
   angle: angleProp,
   running = false,
+  startedAt,
+  clock,
   listen = false,
   result,
   onResult,
@@ -113,93 +130,106 @@ function SkillCheck({
     keyLabel?: string
     /** Turns per 2 seconds (1 = one turn in 2000ms). */
     speed?: number
-    /** The needle, from outside (0–360). Ignored while `running`. */
+    /** The needle, from outside (0–360). Ignored while it sweeps. */
     angle?: number
-    /** Run the sweep here. */
+    /** Run the sweep here and judge it (a full turn without a press is a miss). */
     running?: boolean
+    /** Sweep from this performance.now() reading, on a clock kept elsewhere (the caller judges). */
+    startedAt?: number
+    /** Filled while it sweeps: `clock.current.angle()` is the angle drawn now. */
+    clock?: { current: SkillCheckClock | null }
     /** Read the key in the page (true: `keyLabel`; a string: that KeyboardEvent.key). */
     listen?: boolean | string
-    /** Show an outcome: the zone turns success or destructive. */
+    /** Show an outcome: the zone turns success or destructive, and the needle stops. */
     result?: "success" | "fail"
     /** Once per run: a press in the zone (true), elsewhere or a full turn without one (false). */
     onResult?: (hit: boolean, angle: number) => void
   }) {
-  const needle = React.useRef<SVGCircleElement>(null)
-  const live = React.useRef({ angle: angleProp ?? 0, done: false })
+  const rotor = React.useRef<HTMLDivElement>(null)
+  const sweep = React.useRef<{ anim: Animation | null; t0: number; turn: number; done: boolean }>({ anim: null, t0: 0, turn: 2000, done: true })
   const report = React.useRef(onResult)
   const [outcome, setOutcome] = React.useState<"success" | "fail" | undefined>(undefined)
   React.useEffect(() => {
     report.current = onResult
   })
 
-  const finish = React.useCallback((hit: boolean) => {
-    if (live.current.done) return
-    live.current.done = true
-    setOutcome(hit ? "success" : "fail")
-    report.current?.(hit, live.current.angle)
+  // The angle drawn: the animation's own clock (the frame on screen), else the wall clock since t0.
+  const angleNow = React.useCallback(() => {
+    const s = sweep.current
+    const ms = s.anim && s.anim.currentTime !== null ? Number(s.anim.currentTime) : performance.now() - s.t0
+    return Math.min(360, skillCheckAngle(ms, s.turn))
   }, [])
 
-  const draw = (a: number) => {
-    const n = needle.current
-    if (n) n.setAttribute("transform", arc(a - 1, 2).rotate)
-  }
+  const finish = React.useCallback(
+    (hit: boolean) => {
+      const s = sweep.current
+      if (s.done) return
+      const a = angleNow()
+      s.done = true
+      s.anim?.pause()
+      setOutcome(hit ? "success" : "fail")
+      report.current?.(hit, a)
+    },
+    [angleNow]
+  )
 
-  // The sweep: drawn straight onto the needle, no React render per frame.
-  React.useEffect(() => {
-    if (!running) return
-    live.current = { angle: 0, done: false }
-    setOutcome(undefined)
+  // The sweep: one compositor animation, started on the given clock (or now).
+  const sweeping = running || startedAt !== undefined
+  React.useLayoutEffect(() => {
+    if (!sweeping) return
+    const t0 = startedAt ?? performance.now()
     const turn = skillCheckTurnMs(speed)
-    const t0 = performance.now()
-    let raf = 0
-    const tick = (now: number) => {
-      if (live.current.done) return
-      const a = skillCheckAngle(now - t0, turn)
-      if (a >= 360) {
-        live.current.angle = 360
-        draw(360)
-        return finish(false)
-      }
-      live.current.angle = a
-      draw(a)
-      raf = requestAnimationFrame(tick)
+    const anim = rotor.current?.animate?.(SWEEP, { duration: turn, easing: "linear", fill: "both" }) ?? null
+    if (anim) anim.startTime = t0
+    sweep.current = { anim, t0, turn, done: false }
+    setOutcome(undefined)
+    if (clock) clock.current = { angle: angleNow }
+    // Running here: a full turn without a press is a miss, from a timer (never an animation event).
+    const miss = running ? setTimeout(() => finish(false), Math.max(0, t0 + turn - performance.now())) : undefined
+    return () => {
+      clearTimeout(miss)
+      anim?.cancel()
+      sweep.current = { ...sweep.current, anim: null, done: true }
+      if (clock) clock.current = null
     }
-    raf = requestAnimationFrame(tick)
-    return () => cancelAnimationFrame(raf)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [running, speed])
+  }, [sweeping, running, speed, startedAt])
+
+  // An outcome from outside stops the needle where it is.
+  React.useEffect(() => {
+    if (result) sweep.current.anim?.pause()
+  }, [result])
 
   // The key, read in the page when asked to.
   React.useEffect(() => {
     if (!running || !listen) return
     const want = (typeof listen === "string" ? listen : keyLabel).toLowerCase()
     const onKey = (e: KeyboardEvent) => {
-      if (e.repeat || live.current.done) return
+      if (e.repeat || sweep.current.done) return
       const k = keyOf(e)
       if (k !== want) return
       e.preventDefault()
-      finish(skillCheckHit(live.current.angle, zoneStart, zoneSize))
+      finish(skillCheckHit(angleNow(), zoneStart, zoneSize))
     }
     window.addEventListener("keydown", onKey)
     return () => window.removeEventListener("keydown", onKey)
-  }, [running, listen, keyLabel, zoneStart, zoneSize, finish])
+  }, [running, listen, keyLabel, zoneStart, zoneSize, finish, angleNow])
 
   const shown = result ?? outcome
-  const a = running ? live.current.angle : (angleProp ?? 0)
   const zone = arc(zoneStart, zoneSize)
-  const hand = arc(a - 1, 2)
+  const hand = arc(-1, 2)
 
   return (
     <div
       role="group"
       aria-label={`Press ${keyLabel} in the zone`}
       data-slot="skill-check"
-      data-state={shown ?? (running ? "running" : "idle")}
+      data-state={shown ?? (sweeping ? "running" : "idle")}
       className={cn(skillCheckVariants({ size }), className)}
       {...props}
     >
       <svg viewBox="0 0 120 120" aria-hidden className="size-full overflow-visible nk-shadow">
-        {/* track and its hairlines, the zone (the one primary), the needle */}
+        {/* track and its hairlines, the zone (the one primary) */}
         <circle cx="60" cy="60" r={R} fill="none" strokeWidth="6" className="stroke-popover" />
         <circle cx="60" cy="60" r={R + 3} fill="none" strokeWidth="1" className="stroke-border" />
         <circle cx="60" cy="60" r={R - 3} fill="none" strokeWidth="1" className="stroke-border" />
@@ -212,21 +242,31 @@ function SkillCheck({
           strokeWidth="6"
           strokeDasharray={zone.dash}
           transform={zone.rotate}
-          className={shown === "success" ? "stroke-success" : shown === "fail" ? "stroke-destructive" : "stroke-primary"}
-        />
-        <circle
-          ref={needle}
-          data-slot="skill-check-needle"
-          cx="60"
-          cy="60"
-          r={R}
-          fill="none"
-          strokeWidth="12"
-          strokeDasharray={hand.dash}
-          transform={hand.rotate}
-          className="stroke-foreground"
+          className={shown === "success" ? "stroke-success" : shown === "fail" ? "stroke-destructive" : "stroke-(--nk-gauge-fill)"}
         />
       </svg>
+      {/* the needle, drawn at 12 o'clock on its own layer; the layer turns (transform only) */}
+      <div
+        ref={rotor}
+        data-slot="skill-check-rotor"
+        aria-hidden
+        className="absolute inset-0"
+        style={sweeping ? undefined : { transform: `rotate(${angleProp ?? 0}deg)` }}
+      >
+        <svg viewBox="0 0 120 120" className="size-full overflow-visible nk-shadow">
+          <circle
+            data-slot="skill-check-needle"
+            cx="60"
+            cy="60"
+            r={R}
+            fill="none"
+            strokeWidth="12"
+            strokeDasharray={hand.dash}
+            transform={hand.rotate}
+            className="stroke-foreground"
+          />
+        </svg>
+      </div>
       <div className="absolute inset-0 grid place-items-center">
         <Kbd
           data-slot="skill-check-key"
@@ -251,4 +291,6 @@ export {
   skillCheckTurnMs,
   skillCheckZone,
   SKILL_CHECK_PRESETS,
+  SWEEP as SKILL_CHECK_SWEEP,
+  type SkillCheckClock,
 }

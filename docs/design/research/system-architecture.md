@@ -432,6 +432,28 @@ Each step ships on its own:
   import only colours, numbers and dimensions, and keep keywords as Figma string variables set by a plugin
   script.
 
+**Spike results (Oct 20, `feat/hardening`)**
+- **Kit `cn()` (3.1), narrower than proposed.** [V] An audit swapped every UI's `cn()` for one that rendered with
+  the old merge but recorded where the kit config would differ, then loaded the site and every system and
+  override fixture (~60 states). Merging radius, shadow and border under kit utilities changed shipped screens:
+  shadcn bases carry `rounded-lg border shadow-lg` under a `nk-panel` className, and those stock classes win in
+  the CSS today (Tailwind sorts utilities by property, so a later-sorted stock property beats an `nk-*` one
+  whatever the class order). Turning off tailwind-merge's `font-size → leading` rule (correct for Tailwind v4,
+  where `leading-*` wins in any order) changed shadcn `CardTitle` line heights. So the shipped config merges
+  only colour and type, plus families (one type style, surface, panel header or anchor). The two remaining
+  diffs were kept as shipped by reordering (empty-state, Renewed-Banking table heads). Shape and elevation
+  merging, and the leading rule, wait for visual baselines (3.3) to show each change.
+- **`better-tailwindcss` (3.6) works, as a warning gate.** [V] 4.8.0 reads the synced `index.css` (`@theme inline`,
+  `@utility nk-*`, the lowered tokens) as its `entryPoint`, so kit and token classes are known; registry lint is
+  clean, and the whole repo lints in ~10 s. Limits found: (a) `no-conflicting-classes` only compares classes in
+  one string, so it would have caught **neither** merge bug (item-slot's classes came from a cva variant and a
+  state, countdown's from a base and a size); the kit `cn()` and its tests are the guard for those. (b) Plain
+  classes from a UI's own CSS (`hud.css`) are unknown to it: the config reads them from the UI's CSS files and
+  ignores them. (c) String literals used as lookup keys inside `cn()` (`SIZE["md"]`) are reported as unknown
+  classes, and marker classes with no CSS (`pause-root`) too. (d) `scale-*`/`translate-*` aren't banned:
+  `vite-plugin-nuikit` lowers the individual transform properties Tailwind emits; the CLAUDE.md ban is on
+  custom CSS. Kept as warnings for that noise; promote to errors once (c) is handled (an ignore list per UI).
+
 ---
 
 Sources:

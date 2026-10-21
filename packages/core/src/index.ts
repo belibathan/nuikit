@@ -398,6 +398,22 @@ export {
   TOKEN_NAMES,
   TOKENS,
   TOKENS_VERSION,
+  TOKENS_REVISION,
+  IDENTITY_TOKENS,
+  MOTION_TOKENS,
+  MOTION_FEELS,
+  SPRING_PRESETS,
+  motionTokens,
+  themeMotionLevel,
+  type MotionFeel,
+  type SpringPresetName,
+  ALL_TOKENS,
+  ALL_TOKEN_NAMES,
+  DEFAULT_FONT_SANS,
+  DEFAULT_FONT_DISPLAY,
+  DEFAULT_FONT_MONO,
+  elevationShadow,
+  hudTextShadow,
   VITALS,
   withPrefs,
   type CompileOptions,
@@ -435,3 +451,20 @@ export { DEFAULT_PLAYER, getPlayer, onPlayer, type NuiPlayer, type NuiPlayerJob 
 import { __resetPlayer } from "./player";
 export { follow, followed, type FollowKind, type FollowOptions } from "./follow";
 import { __resetFollow } from "./follow";
+
+export {
+  ADAPTER_PACKS,
+  compareVersions,
+  detectFramework,
+  doctor,
+  formatDoctor,
+  pageHash,
+  type AdapterPack,
+  type DoctorReport,
+  type DoctorResource,
+  type DoctorSnapshot,
+  type Finding,
+  type Framework,
+  type OverrideManifest,
+  type ResourceReport,
+} from "./doctor";

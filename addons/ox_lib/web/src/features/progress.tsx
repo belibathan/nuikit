@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { flushSync } from "react-dom";
 import { Meter } from "@/components/ui/meter";
 import { Panel } from "@/components/ui/panel";
+import { ProgressRing } from "@/components/ui/progress-ring";
 import { post, useOx } from "@/lib/nui";
 import { presenceMotion } from "@/lib/motion";
 import { usePresence } from "@/lib/presence";
@@ -53,20 +54,15 @@ export function ProgressBar() {
   useOx("progressCancel", stop);
 
   if (!presence.mounted || !run) return null;
-  // The kit's Meter, filled by a CSS animation over `duration` rather than by `value` (no per-frame
-  // renders). The animation is only the picture; useRun's timer decides when the run ends.
+  // The kit's Meter in its timed mode: it fills over `duration` as one compositor animation (at
+  // every motion level). That is only the picture; useRun's timer decides when the run ends, and
+  // Meter's onComplete is not used.
   return (
     <div className="pointer-events-none fixed inset-x-0 bottom-0 z-20 flex h-[20%] items-center justify-center">
       <Panel animate={false} data-state={presence.state} className={cn("gap-2 px-4 py-3", presenceMotion)}>
         {/* The label is the surface's only text, so it reads as body text, not as Meter's 12px label row. */}
         {run.label && <span className="truncate text-sm leading-5 font-medium">{run.label}</span>}
-        <Meter
-          key={run.id}
-          value={0}
-          aria-label={run.label || "Progress"}
-          className="[&_[data-slot=progress-indicator]]:animate-[ox-fill_var(--ox-duration)_linear_forwards]"
-          style={{ ["--ox-duration" as string]: `${run.duration}ms` }}
-        />
+        <Meter key={run.id} duration={run.duration} aria-label={run.label || "Progress"} />
       </Panel>
     </div>
   );
@@ -75,52 +71,50 @@ export function ProgressBar() {
 /** lib.progressCircle */
 export function ProgressCircle() {
   const { run, open, start, stop, presence } = useRun();
-  const [pct, setPct] = useState(0);
+  // ox's counter, written straight to the text node: it ticks every duration/100 ms, and a React
+  // render per tick would cost more than the ring itself (one compositor animation).
+  const pct = useRef(0);
+  const counter = useRef<HTMLSpanElement>(null);
+  const show = (p: number) => {
+    pct.current = p;
+    // the text node React made, so a later render finds its own node (and the same text)
+    const text = counter.current?.firstChild;
+    if (text) text.nodeValue = `${p}%`;
+  };
 
   useOx<{ duration: number; position?: "middle" | "bottom"; label?: string }>("circleProgress", (d) => {
     if (open) return; // ox ignores a new circle while one is showing
-    setPct(0);
+    pct.current = 0;
     start(d.duration, d.label, d.position);
   });
   useOx("progressCancel", () => {
-    setPct(99);
+    show(99);
     stop();
   });
 
   useEffect(() => {
     if (!open || !run) return;
     const step = Math.max(1, run.duration / 100);
-    const t = setInterval(() => setPct((p) => (p < 100 ? p + 1 : p)), step);
+    const t = setInterval(() => show(pct.current < 100 ? pct.current + 1 : pct.current), step);
     return () => clearInterval(t);
   }, [open, run]);
 
   if (!presence.mounted || !run) return null;
-  const r = 34; // 80 box, 4 stroke, 2 inset
-  const C = 2 * Math.PI * r;
+  // The kit's ProgressRing on the world (size lg, ox's ring is 90px). Its own `duration` run is
+  // only the picture (two compositor rotations); useRun's timer decides when the run ends, and its onComplete
+  // is not used. The centre is ox's counter: +1 every duration/100 ms, 99 on a cancel (§9.1).
   return (
     <div className={cn("pointer-events-none fixed inset-x-0 z-20 flex justify-center", run.position === "bottom" ? "bottom-0 h-[20%] items-center" : "inset-y-0 items-center")}>
-      <div data-state={presence.state} className={cn("flex flex-col items-center gap-3", presenceMotion)}>
-        <div className="relative size-20">
-          <svg viewBox="0 0 80 80" className="size-full -rotate-90 drop-shadow-[0_8px_24px_rgb(0_0_0/0.45)]">
-            <circle cx="40" cy="40" r={r + 4} className="fill-popover stroke-border" strokeWidth="1" />
-            <circle cx="40" cy="40" r={r} fill="none" strokeWidth="4" className="stroke-muted" />
-            <circle
-              key={run.id}
-              cx="40"
-              cy="40"
-              r={r}
-              fill="none"
-              strokeWidth="4"
-              strokeLinecap="round"
-              className="stroke-primary"
-              strokeDasharray={C}
-              style={{ strokeDashoffset: C, animation: `ox-ring ${run.duration}ms linear forwards`, ["--ox-c" as string]: C }}
-            />
-          </svg>
-          <div className="nk-num absolute inset-0 grid place-items-center text-sm font-semibold text-popover-foreground">{pct}%</div>
-        </div>
-        {run.label && <div className="nk-chip">{run.label}</div>}
-      </div>
+      <ProgressRing
+        key={run.id}
+        size="lg"
+        duration={run.duration}
+        label={run.label}
+        aria-label={run.label || "Progress"}
+        center={<span ref={counter}>{`${pct.current}%`}</span>}
+        data-state={presence.state}
+        className={presenceMotion}
+      />
     </div>
   );
 }

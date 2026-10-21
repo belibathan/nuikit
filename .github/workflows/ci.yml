@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, "lead/**"]
   pull_request:
 
 jobs:
@@ -21,6 +21,17 @@ jobs:
         run: |
           set -o pipefail
           pnpm build 2>&1 | tee build.log || { grep -iE "error|cannot|failed|not found" build.log | tail -20 | sed 's/^/::error::/'; exit 1; }
+      # Synced copies (web/src/components/ui, hooks, lib/utils.ts, index.css, client/*.lua, the nuikit
+      # resource's lib/ and themes/) are generated: a hand edit or a source change without `pnpm sync` fails here.
+      - name: Synced copies match their sources (pnpm sync)
+        run: |
+          pnpm sync > /dev/null
+          if [ -n "$(git status --porcelain)" ]; then
+            git status --short | sed 's/^/  /'
+            echo "::error title=Synced copies drifted::pnpm sync changed the files above. Synced copies are never edited by hand: edit the source each file's first line names (registry/nuikit/ui, vendor/shadcn/ui, registry/nuikit/hooks, packages/core/lua, packages/create-nuikit/kit.css or index.css.tpl), run pnpm sync, and commit the result."
+            git diff --stat | tail -1
+            exit 1
+          fi
       - run: pnpm typecheck
       - run: pnpm test
       # Protocol conformance (docs/protocol.md §10): every page is native (level 3); the theme
@@ -29,6 +40,9 @@ jobs:
         run: |
           node packages/cli/dist/cli.js check systems/nuikit_death systems/nuikit_hud systems/nuikit_loading systems/nuikit_pause addons packages/create-nuikit/template --level 3
           node packages/cli/dist/cli.js check systems --level 1
+      # Class strings (eslint.config.js): conflicting, unknown and forbidden classes. Warnings, never a failure.
+      - name: Class lint (warnings)
+        run: pnpm lint:classes
 
   chromium-103:
     name: Render in Chromium 103 (FiveM CEF)

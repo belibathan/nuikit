@@ -1,0 +1,9 @@
+{
+  "block": "shop",
+  "title": "Shop",
+  "description": "A catalogue by category, a cart and checkout with a confirm; prices, stock and money checked by the server (needs OneSync)",
+  "next": [
+    "walk into the 24/7 on Innocence Blvd and press E (or /{{name}})",
+    "fill in Config.money and Config.items for your framework; needs OneSync"
+  ]
+}

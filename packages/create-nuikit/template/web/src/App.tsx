@@ -2,7 +2,7 @@ import { fetchNui, Surface, useSurface } from "nuikit-core/react";
 import { HeartPulseIcon, ShieldIcon, SparklesIcon, SyringeIcon, type LucideIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { HudChip } from "@/components/ui/hud-chip";
+import { KeyPrompt } from "@/components/ui/key-prompt";
 import { Kbd } from "@/components/ui/kbd";
 import { MenuRow } from "@/components/ui/menu-row";
 import { Meter } from "@/components/ui/meter";
@@ -21,7 +21,7 @@ const actions: Action[] = [
 
 // Three surfaces, declared in client/main.lua: a HUD (no input), a menu (panel) and a confirm
 // dialog (modal). nuikit decides which one has focus; Escape closes top-down. Everything is built
-// from the kit (docs/design.md): Panel, MenuRow, Meter, HudChip. Colours come from the theme.
+// from the kit (docs/design.md): Panel, MenuRow, Meter, KeyPrompt. Colours come from the theme.
 export default function App() {
   const vitals = useNuiStore("hud:vitals", { health: 100, armor: 0 });
   const menu = useSurface("menu");
@@ -35,7 +35,7 @@ export default function App() {
         </div>
         {!menu.open && (
           <div className="nk-anchor-b">
-            <HudChip icon={<Kbd className="h-4 min-w-4 bg-white/20 text-white">F7</Kbd>}>Open menu</HudChip>
+            <KeyPrompt surface="hud" size="sm" keys="F7" label="Open menu" />
           </div>
         )}
       </Surface>

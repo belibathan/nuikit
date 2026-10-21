@@ -4,7 +4,8 @@
 -- job:grade). The server checks every request; an error goes back to the panel.
 -- Lua → UI: surfaces nk.surface(name, opts) · UI → Lua: nk.on(callback, fn) ↔ fetchNui()
 
-local panel = nk.surface('job', { layer = 'panel', exclusive = true })
+-- escape = 'back': Esc goes to the page, which closes the fire confirm first, then the menu.
+local panel = nk.surface('job', { layer = 'panel', exclusive = true, escape = 'back' })
 
 -- ───────────────────────────────── asking the server
 

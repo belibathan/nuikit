@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { __reset, emit } from "../src/index";
-import { applyServerTheme, loadServerTheme } from "../src/remote";
+import { __resetServerTheme, applyServerTheme, loadServerTheme, retryDelay } from "../src/remote";
 import { applyTheme, clearTheme, getPrefs, getTheme, onTheme, parseTheme, setPrefs, toRgba } from "../src/theme";
 import { compileTheme } from "../src/tokens";
 
@@ -104,12 +104,16 @@ describe("applyTheme (compiled tokens)", () => {
     expect(css("primary")).toBe("rgb(0, 255, 0)");
   });
 
-  it("player prefs repaint: scale multiplies, motion off, high contrast", () => {
+  it("player prefs repaint: scale multiplies, motion reduced, high contrast", () => {
     applyTheme(".dark { --nk-scale: 1.1; }");
     emit("nuikit:prefs", { scale: 1.2, reducedMotion: true });
     expect(css("nk-scale")).toBe("1.32");
     expect(css("nk-motion")).toBe("0");
-    expect(html().getAttribute("data-nk-motion")).toBe("off");
+    // tokens 1.2: the pref is "reduced" (no movement, fades ≤ 100ms); "off" is the theme's --nk-motion: 0
+    expect(html().getAttribute("data-nk-motion")).toBe("reduced");
+    expect(css("nk-motion-move")).toBe("0");
+    expect(css("nk-time-base")).toBe("100ms");
+    expect(css("nk-time-press")).toBe("70ms");
     setPrefs({ highContrast: true });
     expect(html().getAttribute("data-nk-contrast")).toBe("high");
     expect(css("hud")).toBe("rgba(0, 0, 0, 0.72)");
@@ -130,6 +134,7 @@ describe("applyTheme (compiled tokens)", () => {
 
 describe("loadServerTheme (override pages)", () => {
   afterEach(() => {
+    __resetServerTheme();
     clearTheme();
     __reset();
     vi.unstubAllGlobals();
@@ -181,6 +186,29 @@ describe("loadServerTheme (override pages)", () => {
     );
     expect(await loadServerTheme({ live: false })).toBe(true);
     expect(document.documentElement.style.getPropertyValue("--primary")).toBe("rgb(0, 0, 255)");
+  });
+
+  it("keeps asking when nuikit starts after the page, and the server's theme replaces the stale file (0.7.0 F4)", async () => {
+    window.GetParentResourceName = () => "ox_lib";
+    const bodies: unknown[] = [];
+    let asks = 0;
+    vi.stubGlobal(
+      "fetch",
+      vi.fn((url: string, init?: RequestInit) => {
+        if (url.endsWith("theme.css")) return Promise.resolve(new Response(".dark { --primary: #8000ff; }")); // the old violet copy
+        bodies.push(JSON.parse(String(init?.body)));
+        // nuikit isn't started for the first ask; then it answers, then holds the long-poll
+        if (++asks === 1) return Promise.resolve(new Response("", { status: 404 }));
+        if (asks === 2) return Promise.resolve(new Response(JSON.stringify({ hash: "s", theme: compileTheme(".dark { --primary: #00ff00; }") })));
+        return new Promise<Response>(() => {});
+      }),
+    );
+    expect(await loadServerTheme()).toBe(true);
+    for (let i = 0; i < 4; i++) await new Promise((r) => setTimeout(r, 0));
+    expect(document.documentElement.style.getPropertyValue("--primary")).toBe("rgb(0, 255, 0)");
+    expect(bodies).toEqual([{ hash: null }, { hash: null, wait: true }, { hash: "s", wait: true }]);
+    expect(retryDelay(1)).toBe(2_000);
+    expect(retryDelay(31)).toBe(30_000);
   });
 
   it("applyServerTheme takes raw CSS when the server couldn't compile", () => {

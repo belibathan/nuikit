@@ -97,12 +97,13 @@ export function TransactionsPanel({ transactions, onExport, canExport }: { trans
             <Table className="table-fixed">
               <TableHeader>
                 <TableRow className="hover:bg-transparent">
-                  <TableHead className="nk-label h-8 pl-6">{t("message")}</TableHead>
-                  <TableHead className="nk-label h-8 w-[30%]">
+                  {/* nk-label's size, the table head's own weight and colour (as shipped; the kit cn() would drop them before nk-label) */}
+                  <TableHead className="nk-label font-medium text-foreground h-8 pl-6">{t("message")}</TableHead>
+                  <TableHead className="nk-label font-medium text-foreground h-8 w-[30%]">
                     {t("nuikit_from")} → {t("nuikit_to")}
                   </TableHead>
-                  <TableHead className="nk-label h-8 w-24">ID</TableHead>
-                  <TableHead className="nk-label h-8 w-36 pr-6 text-right">{t("amount")}</TableHead>
+                  <TableHead className="nk-label font-medium text-foreground h-8 w-24">ID</TableHead>
+                  <TableHead className="nk-label font-medium text-foreground h-8 w-36 pr-6 text-right">{t("amount")}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>

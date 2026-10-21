@@ -48,6 +48,7 @@ const hudNatives = `
   function GetConvar(_, d) return d end
   function PlayerPedId() return 1 end
   function PlayerId() return 0 end
+  function GetPlayerServerId() return 7 end
   function GetEntityHealth() return 170 end
   function GetEntityMaxHealth() return 200 end
   function GetPedArmour() return 40 end
@@ -131,7 +132,7 @@ const host = await startResource(
 const hud = await startResource(
   "nuikit_hud",
   // As shipped: the HUD imports the runtime (shared_script '@nuikit/init.lua'); the bridge loads on first nk.player use.
-  { runtime: "import", before: `THEME = [[${THEME}]]` + hudNatives, scripts: [HUD + "config.lua", HUD + "client/main.lua"], metadata: { nuikit_ui: ["web/dist/module.js"] } },
+  { runtime: "import", before: `THEME = [[${THEME}]]` + hudNatives, scripts: ["config.lua", "client/layout.lua", "client/adapters.lua", "client/location.lua", "client/vehicle.lua", "client/main.lua"].map((f) => HUD + f), metadata: { nuikit_ui: ["web/dist/module.js"] } },
   "https://cfx-nui-nuikit_hud/web/dist/index.html",
 );
 const hostFrame = () => page.frames().find((f) => f.url().startsWith("https://cfx-nui-nuikit/"));
@@ -147,7 +148,7 @@ await chain;
 const inShadow = (sel) => hostFrame().evaluate((s) => !!document.querySelector('nk-module[data-resource="nuikit_hud"]')?.shadowRoot?.querySelector(s), sel);
 check("Lua → module: player + surface reach the HUD module", !!(await until(() => inShadow('[data-surface="hud"] [aria-label="Cash"]'))));
 
-await hud.run(`NUI.send('hud:vehicle', { speed = 87, units = 'mph', rpm = 0.62, gear = 4, fuel = 64, engine = 92, seatbelt = false })`);
+await hud.run(`NUI.send('hud:vehicle', { kind = 'car', speed = 87, units = 'mph', engineOn = true, redline = 0.9, rpm = 0.62, gear = 4, fuel = 64, engine = 92, body = 100, moving = true, seatbelt = false })`);
 await chain;
 check("Lua → module: hud:vehicle renders the speedometer", !!(await until(() => inShadow("svg"))));
 
@@ -185,7 +186,13 @@ await page.setViewportSize({ width: 1920, height: 1080 });
 // ox_lib's Lua can't route through the host (it isn't nuikit.lua), so this only checks rendering
 // and input: the test posts its message as host.lua would, and its posts go nowhere.
 await hostFrame().evaluate(() => window.__nuikitHost.load({ resource: "ox_lib", url: "https://cfx-nui-ox_lib/module.js" }));
-await until(() => hostFrame().evaluate(() => window.__nuikitHost.modules().find((m) => m.resource === "ox_lib")?.status === "mounted"));
+const oxStart = Date.now();
+const oxMounted = await until(() => hostFrame().evaluate(() => window.__nuikitHost.modules().find((m) => m.resource === "ox_lib")?.status === "mounted"), 20000);
+console.log(`  ox_lib module mounted in ${Date.now() - oxStart} ms`);
+if (!oxMounted) check("ox_lib module mounts", false, "not mounted after 20 s");
+// "mounted" is set when the module's root renders; its message listeners attach in effects right after.
+// In game ox_lib's first message comes from a player action, long after; here, wait two frames first.
+await hostFrame().evaluate(() => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r))));
 forcedFocus = "nuikit";
 await page.evaluate(() => window.focusFrame("nuikit"));
 await page.evaluate(() =>

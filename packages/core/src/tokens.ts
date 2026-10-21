@@ -13,18 +13,36 @@ export type ThemeMode = "dark" | "light";
 
 /** The token contract version. Bumped only for breaking renames/removals; additions keep v1. */
 export const TOKENS_VERSION = 1 as const;
+/** The contract revision: 1.1 added the identity tokens (IDENTITY_TOKENS), 1.2 the motion tokens (MOTION_TOKENS). Additive, so still v1. */
+export const TOKENS_REVISION = "1.2" as const;
 
-export type TokenType = "color" | "dimension" | "fontFamily" | "number";
+export type TokenType = "color" | "dimension" | "fontFamily" | "number" | "keyword" | "duration" | "cubicBezier" | "shadow";
 
 export interface TokenSpec {
   name: string;
   type: TokenType;
-  /** shadcn: what every shadcn/TweakCN theme has. nuikit: game semantics, derived when absent. */
-  group: "shadcn" | "nuikit";
+  /**
+   * shadcn: what every shadcn/TweakCN theme has. nuikit: game semantics, derived when absent.
+   * identity (1.1): type, shape, surface, density, motion, brand and HUD style, derived when absent.
+   * derived (1.1): computed from identity tokens so CSS needn't branch (a theme may still set them).
+   * Motion tokens (1.2) are identity (nk-motion-feel, nk-spring-bounce) and derived (the ladder, easings, springs).
+   */
+  group: "shadcn" | "nuikit" | "identity" | "derived";
   description: string;
   /** How the value is derived when the theme doesn't set it. */
   fallback: string;
+  /** Keyword tokens: the values accepted. */
+  values?: readonly string[];
+  /** Numbers: accepted range. */
+  range?: readonly [number, number];
+  /** The revision that added it. */
+  since?: "1.1" | "1.2";
 }
+
+/** The default sans stack (Graphite): Inter, bundled with every nuikit UI (docs/tokens.md#fonts). */
+export const DEFAULT_FONT_SANS = "Inter, ui-sans-serif, system-ui, sans-serif";
+export const DEFAULT_FONT_DISPLAY = `"Inter Tight", ${DEFAULT_FONT_SANS}`;
+export const DEFAULT_FONT_MONO = `"Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace`;
 
 const c = (name: string, description: string, fallback = "stock shadcn neutral"): TokenSpec => ({ name, type: "color", group: "shadcn", description, fallback });
 const n = (name: string, type: TokenType, description: string, fallback: string): TokenSpec => ({ name, type, group: "nuikit", description, fallback });
@@ -56,8 +74,8 @@ export const TOKENS: readonly TokenSpec[] = [
   c("chart-4", "Categorical colour 4"),
   c("chart-5", "Categorical colour 5"),
   { name: "radius", type: "dimension", group: "shadcn", description: "Corner radius (panels radius + 4px, controls radius − 2px)", fallback: "0.625rem" },
-  { name: "font-sans", type: "fontFamily", group: "shadcn", description: "Text", fallback: "ui-sans-serif, system-ui, sans-serif" },
-  { name: "font-mono", type: "fontFamily", group: "shadcn", description: "Codes and IDs a player might type", fallback: "ui-monospace, SFMono-Regular, Menlo, monospace" },
+  { name: "font-sans", type: "fontFamily", group: "shadcn", description: "Text", fallback: DEFAULT_FONT_SANS },
+  { name: "font-mono", type: "fontFamily", group: "shadcn", description: "Codes and IDs a player might type", fallback: DEFAULT_FONT_MONO },
   n("success", "color", "Positive status: done, paid, online", "oklch(L, C, 150): green at the lightness/chroma of destructive"),
   n("success-foreground", "color", "Text on success", "foreground or background, whichever contrasts more"),
   n("warning", "color", "Caution status: low fuel, about to expire", "oklch(L + 0.08, C, 75): amber at the lightness/chroma of destructive"),
@@ -73,11 +91,155 @@ export const TOKENS: readonly TokenSpec[] = [
   n("vital-thirst", "color", "Thirst bar", "chart-4 if cyan/blue, else another one, else oklch(0.76 0.13 215)"),
   n("vital-stress", "color", "Stress bar", "chart-5 if purple/magenta, else another one, else oklch(0.68 0.2 320)"),
   n("nk-scale", "number", "UI size multiplier (unitless). Players can scale further (0.85–1.25).", "1"),
-  n("nk-motion", "number", "1 = animations on, 0 = off. Players can turn motion off.", "1"),
+  n("nk-motion", "number", "1 = animations on, 0 = off. Painted as 0 when the theme or the player's reduced-motion pref turns motion down.", "1"),
 ];
 
+/** The v1 names (unchanged since 1.0). Every compiled theme carries them. */
 export const TOKEN_NAMES: readonly string[] = TOKENS.map((t) => t.name);
-const SPEC = new Map(TOKENS.map((t) => [t.name, t]));
+
+const id = (name: string, type: TokenType, description: string, fallback: string, extra: Partial<TokenSpec> = {}): TokenSpec => ({ name, type, group: "identity", description, fallback, since: "1.1", ...extra });
+const dv = (name: string, type: TokenType, description: string, fallback: string): TokenSpec => ({ name, type, group: "derived", description, fallback, since: "1.1" });
+
+/** Motion feels (tokens 1.2): how an identity moves. Painted as html[data-nk-feel]. */
+export const MOTION_FEELS = ["crisp", "snap", "smooth", "stepped"] as const;
+export type MotionFeel = (typeof MOTION_FEELS)[number];
+/** The four spring presets (docs/tokens.md#motion), run by nuikit-core/motion as sampled WAAPI keyframes. */
+export const SPRING_PRESETS = ["snap", "move", "soft", "pop"] as const;
+export type SpringPresetName = (typeof SPRING_PRESETS)[number];
+
+const mt = (name: string, type: TokenType, description: string, fallback: string): TokenSpec => ({ name, type, group: "derived", description, fallback, since: "1.2" });
+
+/**
+ * Motion tokens (tokens 1.2, docs/design/research/motion.md §2.2). Two identity inputs; everything else is
+ * derived from --nk-duration (d), --nk-ease, the feel and the bounce. The compiler writes literal values (no
+ * calc() on <time> inside animation shorthands in Chromium 103), and the player's prefs clamp them
+ * (withPrefs): off = 0ms; reduced = at most 100ms and no movement (--nk-motion-move: 0).
+ */
+export const MOTION_TOKENS: readonly TokenSpec[] = [
+  { name: "nk-motion-feel", type: "keyword", group: "identity", description: "How the identity moves: crisp (Graphite), snap (Signal: no glide on selection, flash instead of press scale), smooth (Velvet: longer springs, a hint of bounce), stepped (Vector: values tick in steps)", fallback: "crisp", values: MOTION_FEELS, since: "1.2" },
+  { name: "nk-spring-bounce", type: "number", group: "identity", description: "Bounce folded into the snap, move and soft springs (0 = critically damped; 0.3 is the most the kit allows)", fallback: "0", range: [0, 0.3], since: "1.2" },
+  mt("nk-motion-move", "number", "1 = things may move (translate, scale, rotate, FLIP, stagger); 0 under reduced motion or off, where only fades of at most 100ms are kept", "1"),
+  mt("nk-time-instant", "duration", "State that must be immediate: keyboard and controller selection, held key-repeat", "0ms"),
+  mt("nk-time-press", "duration", "Press, toggle, key-chip flash: 0.5 × d, 50–100ms", "70ms"),
+  mt("nk-time-hover", "duration", "Pointer hover colour and row background: 0.75 × d", "105ms"),
+  mt("nk-time-base", "duration", "Panel and menu enter, the selection indicator, tab switch: d (kit.css --nk-time)", "140ms"),
+  mt("nk-time-exit", "duration", "Every exit (panel, toast, menu, modal): 0.7 × d", "98ms"),
+  mt("nk-time-move", "duration", "Toasts entering, FLIP moves, meters gaining: 1.5 × d, at most 300ms", "210ms"),
+  mt("nk-time-modal", "duration", "Dialog enter (on an inner wrapper): 1.25 × d", "175ms"),
+  mt("nk-time-screen", "duration", "Full-screen enter (pause, death, loading): 2.5 × d, at most 400ms", "350ms"),
+  mt("nk-time-ambient", "duration", "HUD show-on-change fades and the damage trail; not scaled by the identity", "400ms"),
+  mt("nk-stagger", "duration", "Delay per item on a list's first open: 0.15 × d (snap and smooth 0.125 × d), at most 20ms (smooth 30ms)", "20ms"),
+  mt("nk-stagger-max", "duration", "Total stagger cap: items past the fifth enter together", "100ms"),
+  mt("nk-ease-out", "cubicBezier", "Enter, hover, anything arriving: the identity's --nk-ease", "nk-ease"),
+  mt("nk-ease-in", "cubicBezier", "Exits (speeds up as it leaves)", "cubic-bezier(0.4, 0, 1, 1)"),
+  mt("nk-ease-in-out", "cubicBezier", "On-screen moves (indicator, FLIP, tab underline) when not a spring", "cubic-bezier(0.2, 0, 0, 1)"),
+  mt("nk-ease-emphasized", "cubicBezier", "Full-screen enter, big moments", "cubic-bezier(0.05, 0.7, 0.1, 1)"),
+  mt("nk-ease-linear", "keyword", "Progress, countdowns, streamed values, needles", "linear"),
+  mt("nk-spring-snap", "keyword", "Spring (duration, bounce): selection indicator, tab underline, needle catch-up", "160ms 0"),
+  mt("nk-spring-move", "keyword", "Spring (duration, bounce): toasts in, FLIP reflow, drawers, digit roll", "240ms 0.1"),
+  mt("nk-spring-soft", "keyword", "Spring (duration, bounce): full-screen content, large frame changes", "360ms 0"),
+  mt("nk-spring-pop", "keyword", "Spring (duration, bounce): rewards only (item added, level-up, a ×3 badge)", "260ms 0.3"),
+];
+
+/** Spring period per preset (snap, move, soft, pop) as a multiple of d, per feel (motion.md §2.4). */
+const SPRING_RATIO: Record<MotionFeel, readonly [number, number, number, number]> = {
+  crisp: [1.15, 1.7, 2.55, 1.85],
+  snap: [1.1, 1.65, 2.5, 1.8],
+  smooth: [1.08, 1.42, 1.75, 1.5],
+  stepped: [1, 1.43, 2.15, 1.7],
+};
+/** Each preset's ceiling (ms). */
+const SPRING_MAX = [400, 400, 450, 400] as const;
+/** The slowest base duration the kit allows; the compiler warns above it (motion.md §2.4). */
+export const MAX_DURATION_MS = 260;
+
+/** The derived motion tokens for a base duration (ms), feel and bounce, as literals. Graphite is (140, crisp, 0). */
+export function motionTokens(d: number, feel: MotionFeel = "crisp", bounce = 0): ThemeVars {
+  const ms = (x: number) => `${Math.round(x)}ms`;
+  const b = Math.max(0, Math.min(0.3, bounce));
+  const r = SPRING_RATIO[feel] ?? SPRING_RATIO.crisp;
+  const bounces = [b, Math.max(0.1, b), b, Math.max(0.3, b)];
+  const out: ThemeVars = {
+    "nk-motion-move": "1",
+    "nk-time-instant": "0ms",
+    "nk-time-press": ms(Math.max(50, Math.min(100, d * 0.5))),
+    "nk-time-hover": ms(d * 0.75),
+    "nk-time-base": ms(d),
+    "nk-time-exit": ms(d * 0.7),
+    "nk-time-move": ms(Math.min(300, d * 1.5)),
+    "nk-time-modal": ms(d * 1.25),
+    "nk-time-screen": ms(Math.min(400, d * 2.5)),
+    "nk-time-ambient": "400ms",
+    "nk-stagger": ms(feel === "smooth" ? Math.min(30, d * 0.125) : Math.min(20, d * (feel === "snap" ? 0.125 : 0.15))),
+    "nk-stagger-max": "100ms",
+  };
+  SPRING_PRESETS.forEach((name, i) => {
+    const t = Math.min(SPRING_MAX[i]!, Math.round((d * r[i]!) / 10) * 10);
+    out[`nk-spring-${name}`] = `${t}ms ${Math.round(bounces[i]! * 1000) / 1000}`;
+  });
+  return out;
+}
+
+/** The time tokens the player's prefs clamp (the whole ladder except instant and the stagger cap). */
+export const MOTION_TIME_TOKENS: readonly string[] = ["nk-time-press", "nk-time-hover", "nk-time-base", "nk-time-exit", "nk-time-move", "nk-time-modal", "nk-time-screen", "nk-time-ambient", "nk-stagger"];
+/** Under reduced motion fades are kept, but no longer than this (WCAG 2.3.3 counts opacity and colour changes as non-motion). */
+export const REDUCED_FADE_MS = 100;
+
+/**
+ * Identity tokens (tokens 1.1, docs/design/v2.md): what makes a UI recognisable besides colour. A server
+ * sets a handful in theme.css; everything left out is derived, so a plain TweakCN paste is Graphite.
+ */
+export const IDENTITY_TOKENS: readonly TokenSpec[] = [
+  id("brand", "color", "The server's signature colour: active indicators, gauge needles, focus, logos (not the action: that's primary)", "primary if chromatic (OKLCH C ≥ 0.06), else chart-1"),
+  id("brand-foreground", "color", "Text on brand", "foreground or background, whichever contrasts more"),
+  id("world-foreground", "color", "Text and icons drawn straight on the game, no panel (death text, unplated HUD values, nk-on-game). Light in every theme, light or dark", "rgb(255, 255, 255)"),
+  id("world-foreground-muted", "color", "Secondary text on the game", "world-foreground at 80% (3:1 on a mid-grey frame)"),
+  id("world-shadow", "shadow", "Text-shadow that keeps world-foreground legible over any frame", "0 1px 2px rgba(0, 0, 0, 0.65), 0 0 0.5rem rgba(0, 0, 0, 0.35)"),
+  id("font-display", "fontFamily", "Headings and big moments (titles, timers, the balance)", "font-sans; Inter Tight when font-sans is the default Inter"),
+  id("font-numeric", "fontFamily", "Every number on a gauge, money or timer (always tabular)", "font-sans"),
+  id("nk-type-ratio", "number", "Step between type sizes: 1.125 calm … 1.333 dramatic", "1.2", { range: [1, 1.6] }),
+  id("nk-weight-body", "number", "Body text weight", "400", { range: [100, 900] }),
+  id("nk-weight-strong", "number", "Titles, key numbers, active rows", "600", { range: [100, 900] }),
+  id("nk-weight-display", "number", "Display type (full-screen titles, big numbers)", "700", { range: [100, 900] }),
+  id("nk-tracking-display", "dimension", "Letter-spacing of display type", "-0.02em"),
+  id("nk-label-case", "keyword", "Captions (the short names of values) in uppercase or as written", "uppercase", { values: ["none", "uppercase"] }),
+  id("nk-tracking-label", "dimension", "Letter-spacing of captions (uppercase wants 0.06–0.12em)", "0.06em"),
+  id("nk-border-width", "dimension", "Hairline weight of panels, rows and fields", "1px"),
+  id("nk-cut", "dimension", "Chamfered corners (top left, bottom right), drawn with clip-path; 0 = off", "0px"),
+  id("nk-surface-opacity", "number", "Panel opacity over the game (floor 0.92 for text panels)", "0.96", { range: [0, 1] }),
+  id("nk-surface-tint", "number", "How much brand tints neutral surfaces (0–0.12)", "0.02", { range: [0, 0.12] }),
+  id("nk-surface-gradient", "number", "Top-to-bottom light falloff on panels (0 = flat)", "0", { range: [0, 0.2] }),
+  id("nk-surface-edge", "number", "Inner top highlight, the machined edge (alpha)", "0.06", { range: [0, 0.3] }),
+  id("nk-elevation", "keyword", "Shadow recipe of floating panels", "soft", { values: ["none", "soft", "deep"] }),
+  id("nk-glow", "number", "Brand glow on active parts and HUD fills (alpha, 0 = off)", "0", { range: [0, 1] }),
+  id("nk-density", "number", "Multiplies the kit's spacing scale: 0.875 compact (Graphite) … 1.15 roomy", "0.875", { range: [0.75, 1.3] }),
+  id("nk-ease", "cubicBezier", "The one easing curve", "cubic-bezier(0.2, 0.8, 0.2, 1)"),
+  id("nk-duration", "duration", "Base duration (panel enter, transitions); × nk-motion", "140ms"),
+  id("nk-hud-opacity", "number", "Minimum backplate opacity of HUD chips and tiles", "0.55", { range: [0, 1] }),
+  id("nk-hud-text-shadow", "keyword", "Shadow under text drawn on the game", "soft", { values: ["none", "soft", "strong"] }),
+  id("nk-gauge-style", "keyword", "How gauges are drawn", "arc", { values: ["arc", "bar", "digital"] }),
+  id("nk-gauge-track", "dimension", "Gauge and meter track thickness", "0.25rem"),
+  id("nk-gauge-ticks", "number", "Tick marks on gauges: 1 on, 0 off", "1", { range: [0, 1] }),
+  id("nk-row-indicator", "keyword", "How the active row is marked", "bar", { values: ["bar", "fill", "outline"] }),
+  dv("surface", "color", "Floating panel surface: popover tinted by brand (× nk-surface-tint); drawn at nk-surface-opacity", "mix(popover, brand, nk-surface-tint)"),
+  dv("nk-elevation-shadow", "shadow", "The box-shadow nk-elevation names, in scrim colour", "from nk-elevation"),
+  dv("nk-hud-shadow", "shadow", "The text-shadow nk-hud-text-shadow names, in scrim colour", "from nk-hud-text-shadow"),
+  dv("nk-row-bar", "number", "1 when nk-row-indicator is bar", "from nk-row-indicator"),
+  dv("nk-row-fill", "number", "1 when nk-row-indicator is fill", "from nk-row-indicator"),
+  dv("nk-row-outline", "number", "1 when nk-row-indicator is outline", "from nk-row-indicator"),
+  dv("nk-clip", "keyword", "clip-path of panels: the nk-cut chamfer, or none when nk-cut is 0 (a clip-path would also clip the shadow)", "from nk-cut"),
+  dv("nk-clip-sm", "keyword", "clip-path of chips, tiles and buttons: half the panel chamfer", "from nk-cut"),
+  ...MOTION_TOKENS,
+];
+
+/** The chamfer (top left and bottom right) as a clip-path of a cut size. */
+export const chamferClip = (cut: string) =>
+  `polygon(${cut} 0, 100% 0, 100% calc(100% - ${cut}), calc(100% - ${cut}) 100%, 0 100%, 0 ${cut})`;
+
+/** Every token: v1 then the 1.1 identity tokens. */
+export const ALL_TOKENS: readonly TokenSpec[] = [...TOKENS, ...IDENTITY_TOKENS];
+export const ALL_TOKEN_NAMES: readonly string[] = ALL_TOKENS.map((t) => t.name);
+const SPEC = new Map(ALL_TOKENS.map((t) => [t.name, t]));
 
 /** Stock shadcn neutral (vendor/shadcn/colors/neutral.json): what missing shadcn tokens fall back to. */
 export const NEUTRAL: Record<ThemeMode, ThemeVars> = {
@@ -181,6 +343,8 @@ export interface ContrastResult {
 export interface CompiledTheme {
   /** Token contract version (1). */
   version: typeof TOKENS_VERSION;
+  /** Contract revision ("1.1": identity tokens). Absent from themes compiled by nuikit-core ≤ 0.6. */
+  revision?: string;
   /** The set that was used ("light" when a paste has no dark colours). */
   mode: ThemeMode;
   /** Token → value any Chromium reads (colours as rgb()/rgba()). Names have no leading `--`. */
@@ -331,6 +495,7 @@ function dtcgValue(value: unknown, type?: string): string | null {
   if (value === undefined || value === null) return null;
   if (typeof value === "number") return String(value);
   if (typeof value === "string") return value;
+  if (Array.isArray(value) && type === "cubicBezier" && value.length === 4) return `cubic-bezier(${value.join(", ")})`;
   if (Array.isArray(value)) return value.map((f) => (/[\s"']/.test(String(f)) && !/^["']/.test(String(f)) ? `"${f}"` : String(f))).join(", ");
   if (typeof value === "object") {
     const o = value as Record<string, unknown>;
@@ -431,7 +596,11 @@ export function compileTheme(input: ThemeInput, opts: CompileOptions = {}): Comp
     resolved[name] = lowered;
   }
 
-  if (!opts.partial) derive(resolved, mode, warnings);
+  if (!opts.partial) {
+    const given = new Set(Object.keys(resolved));
+    derive(resolved, mode, warnings);
+    deriveIdentity(resolved, warnings, given);
+  }
   else if (resolved["nk-scale"] !== undefined || resolved["nk-motion"] !== undefined) derive(resolved, mode, warnings, true);
   if (opts.highContrast) highContrast(resolved);
 
@@ -443,7 +612,7 @@ export function compileTheme(input: ThemeInput, opts: CompileOptions = {}): Comp
   }
 
   const vars = order(resolved);
-  return { version: TOKENS_VERSION, mode, vars, imports, warnings, contrast, hash: hash(JSON.stringify([vars, imports])) };
+  return { version: TOKENS_VERSION, revision: TOKENS_REVISION, mode, vars, imports, warnings, contrast, hash: hash(JSON.stringify([vars, imports])) };
 }
 
 /** A value FiveM's Chromium 103 reads: colours → rgb()/rgba(), colours inside compound values (shadows) too. null if it can't be lowered. */
@@ -476,6 +645,10 @@ const fmtOklch = (L: number, C: number, H: number): string => formatRgba([...okl
 const clamp = (x: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, x));
 const WHITE: RGBA = [255, 255, 255, 1];
 const BLACK: RGBA = [0, 0, 0, 1];
+/** Legibility of text drawn straight on the game: a tight dark edge plus a soft halo, in black (the game, not the theme). */
+export const WORLD_SHADOW = "0 1px 2px rgba(0, 0, 0, 0.65), 0 0 0.5rem rgba(0, 0, 0, 0.35)";
+/** Mid-grey: the game's average frame. Text on the game must be lighter than it and clear it by 3:1. */
+const MID_GREY: RGBA = [128, 128, 128, 1];
 
 /** Of the theme's foreground and background (one light, one dark), the one that reads best on `bg`. */
 function bestText(vars: ThemeVars, bg: RGBA): string {
@@ -545,7 +718,12 @@ function derive(vars: ThemeVars, mode: ThemeMode, warnings: string[], onlyNumber
   if (vars.info === undefined) vars.info = vars.primary!;
   if (vars["info-foreground"] === undefined) vars["info-foreground"] = vars["primary-foreground"]!;
   if (vars.hud === undefined) vars.hud = "rgba(0, 0, 0, 0.45)";
-  if (vars["hud-foreground"] === undefined) vars["hud-foreground"] = "rgb(255, 255, 255)";
+  // on the game (1.1): light in every theme, light or dark, unless the theme says otherwise
+  const world = rgba(vars, "world-foreground") ?? WHITE;
+  if (vars["world-foreground"] === undefined) vars["world-foreground"] = formatRgba(world);
+  if (vars["world-foreground-muted"] === undefined) vars["world-foreground-muted"] = formatRgba([world[0], world[1], world[2], 0.8]);
+  if (vars["world-shadow"] === undefined) vars["world-shadow"] = WORLD_SHADOW;
+  if (vars["hud-foreground"] === undefined) vars["hud-foreground"] = vars["world-foreground"]!;
   if (vars.scrim === undefined) vars.scrim = "rgb(0, 0, 0)";
 
   const used = new Set<number>();
@@ -565,6 +743,169 @@ function derive(vars: ThemeVars, mode: ThemeMode, warnings: string[], onlyNumber
     }
     if (!pick && "theme" in v && vitalFit(rgba(vars, v.theme), v.hues)) pick = vars[v.theme];
     vars[v.name] = pick ?? fmtOklch(v.fallback[0], v.fallback[1], v.fallback[2]);
+  }
+}
+
+// ─────────────────────────────────────────── identity tokens (1.1)
+
+const NUM = /^-?(?:\d+\.?\d*|\.\d+)$/;
+const DIM = /^(-?(?:\d+\.?\d*|\.\d+))(px|rem|em)$/;
+const DUR = /^(\d+\.?\d*|\.\d+)(ms|s)$/;
+const BEZIER = /^cubic-bezier\(\s*(-?[\d.]+)\s*,\s*(-?[\d.]+)\s*,\s*(-?[\d.]+)\s*,\s*(-?[\d.]+)\s*\)$/;
+const EASE_KEYWORDS: Record<string, string> = {
+  linear: "cubic-bezier(0, 0, 1, 1)",
+  ease: "cubic-bezier(0.25, 0.1, 0.25, 1)",
+  "ease-in": "cubic-bezier(0.42, 0, 1, 1)",
+  "ease-out": "cubic-bezier(0, 0, 0.58, 1)",
+  "ease-in-out": "cubic-bezier(0.42, 0, 0.58, 1)",
+};
+const trimNum = (n: number) => String(Math.round(n * 10000) / 10000);
+
+/** Normalise one identity value; null if it isn't valid for its type. */
+function identityValue(spec: TokenSpec, raw: string): string | null {
+  const v = raw.trim();
+  switch (spec.type) {
+    case "number": {
+      if (!NUM.test(v)) return null;
+      const n = parseFloat(v);
+      if (spec.range && (n < spec.range[0] || n > spec.range[1])) return null;
+      return trimNum(n);
+    }
+    case "dimension": {
+      if (v === "0") return "0px";
+      const m = DIM.exec(v);
+      return m ? `${trimNum(parseFloat(m[1]!))}${m[2]}` : null;
+    }
+    case "duration": {
+      const m = DUR.exec(v);
+      if (!m) return null;
+      const ms = parseFloat(m[1]!) * (m[2] === "s" ? 1000 : 1);
+      return ms <= 2000 ? `${trimNum(ms)}ms` : null;
+    }
+    case "cubicBezier": {
+      const k = EASE_KEYWORDS[v];
+      if (k) return k;
+      const m = BEZIER.exec(v);
+      if (!m) return null;
+      const [x1, y1, x2, y2] = m.slice(1).map(Number) as [number, number, number, number];
+      if (x1 < 0 || x1 > 1 || x2 < 0 || x2 > 1) return null;
+      return `cubic-bezier(${[x1, y1, x2, y2].map(trimNum).join(", ")})`;
+    }
+    case "keyword":
+      return spec.values?.includes(v) ? v : null;
+    default:
+      return v || null;
+  }
+}
+
+const chromatic = (c: RGBA | null) => !!c && c[3] > 0 && rgbToOklch(c).c >= 0.06;
+
+/** The box-shadow behind each nk-elevation, in the theme's scrim colour (s = "r, g, b"). */
+export function elevationShadow(level: string, s: string): string {
+  if (level === "none") return `0 0 0 0 rgba(${s}, 0)`;
+  if (level === "deep")
+    return `0 0 0 1px rgba(${s}, 0.3), 0 2px 4px rgba(${s}, 0.2), 0 18px 40px -10px rgba(${s}, 0.55), 0 44px 96px -28px rgba(${s}, 0.75)`;
+  // soft (Graphite): a hairline and a short, tight drop; no halo
+  return `0 0 0 1px rgba(${s}, 0.25), 0 12px 32px -16px rgba(${s}, 0.6)`;
+}
+
+/** The text-shadow behind each nk-hud-text-shadow, in the theme's scrim colour. */
+export function hudTextShadow(level: string, s: string): string {
+  if (level === "none") return "none";
+  if (level === "strong") return `0 0 2px rgba(${s}, 0.9), 0 1px 3px rgba(${s}, 0.8)`;
+  return `0 1px 2px rgba(${s}, 0.6)`;
+}
+
+/** The HUD backplate (hud at no less than nk-hud-opacity) over a white sky: what HUD text is judged against. */
+function hudPlateOverWhite(vars: ThemeVars): RGBA | null {
+  const hud = rgba(vars, "hud");
+  if (!hud) return null;
+  const a = Math.max(hud[3], parseFloat(vars["nk-hud-opacity"] ?? "0") || 0);
+  return composite([hud[0], hud[1], hud[2], a], WHITE);
+}
+
+function deriveIdentity(vars: ThemeVars, warnings: string[], given: ReadonlySet<string> = new Set()) {
+  // validate what the theme set; anything invalid falls back to the default, with a warning
+  for (const spec of IDENTITY_TOKENS) {
+    if (spec.type === "color" || spec.type === "fontFamily" || spec.type === "shadow" || spec.group === "derived") continue;
+    const given = vars[spec.name];
+    if (given === undefined) {
+      vars[spec.name] = spec.fallback;
+      continue;
+    }
+    const v = identityValue(spec, given);
+    if (v === null) {
+      const want = spec.values ? spec.values.join(", ") : spec.range ? `a number from ${spec.range[0]} to ${spec.range[1]}` : spec.type === "dimension" ? "a length in px, rem or em" : spec.type === "duration" ? "a duration up to 2000ms" : "cubic-bezier(x1, y1, x2, y2)";
+      warnings.push(`--${spec.name} must be ${want} (got ${given}); ${spec.fallback} is used.`);
+      vars[spec.name] = spec.fallback;
+    } else vars[spec.name] = v;
+  }
+
+  // brand: the primary when it has colour, else the first chart colour
+  if (vars.brand === undefined) {
+    const primary = rgba(vars, "primary");
+    vars.brand = chromatic(primary) || !vars["chart-1"] ? vars.primary! : vars["chart-1"]!;
+  }
+  const brand = rgba(vars, "brand") ?? rgba(vars, "primary")!;
+  if (vars["brand-foreground"] === undefined) vars["brand-foreground"] = bestText(vars, brand);
+
+  // fonts: display and numbers follow the body font unless the theme picks its own
+  const sans = vars["font-sans"] ?? DEFAULT_FONT_SANS;
+  if (vars["font-display"] === undefined) vars["font-display"] = sans === DEFAULT_FONT_SANS ? DEFAULT_FONT_DISPLAY : sans;
+  if (vars["font-numeric"] === undefined) vars["font-numeric"] = sans;
+
+  // surface: the panel colour, tinted toward the brand
+  if (vars.surface === undefined) {
+    const pop = rgba(vars, "popover");
+    if (pop) {
+      const t = parseFloat(vars["nk-surface-tint"]!);
+      const m = mix(pop, [brand[0], brand[1], brand[2], pop[3]], t);
+      vars.surface = formatRgba(m);
+    }
+  }
+
+  // keywords → values CSS can use without branching
+  const scrim = rgba(vars, "scrim") ?? BLACK;
+  const s = `${scrim[0]}, ${scrim[1]}, ${scrim[2]}`;
+  if (vars["nk-elevation-shadow"] === undefined) vars["nk-elevation-shadow"] = elevationShadow(vars["nk-elevation"]!, s);
+  if (vars["nk-hud-shadow"] === undefined) vars["nk-hud-shadow"] = hudTextShadow(vars["nk-hud-text-shadow"]!, s);
+  const cut = parseFloat(vars["nk-cut"]!);
+  if (vars["nk-clip"] === undefined) vars["nk-clip"] = cut > 0 ? chamferClip("var(--nk-cut)") : "none";
+  if (vars["nk-clip-sm"] === undefined) vars["nk-clip-sm"] = cut > 0 ? chamferClip("calc(var(--nk-cut) / 2)") : "none";
+  const ind = vars["nk-row-indicator"]!;
+  for (const k of ["bar", "fill", "outline"]) if (vars[`nk-row-${k}`] === undefined) vars[`nk-row-${k}`] = ind === k ? "1" : "0";
+
+  // motion (1.2): the duration ladder, easings and springs, as literals, from d, the ease, the feel and the bounce
+  const d = parseFloat(vars["nk-duration"]!);
+  const motion = motionTokens(d, vars["nk-motion-feel"] as MotionFeel, parseFloat(vars["nk-spring-bounce"]!));
+  motion["nk-ease-out"] = vars["nk-ease"]!;
+  motion["nk-ease-in"] = "cubic-bezier(0.4, 0, 1, 1)";
+  motion["nk-ease-in-out"] = "cubic-bezier(0.2, 0, 0, 1)";
+  motion["nk-ease-emphasized"] = "cubic-bezier(0.05, 0.7, 0.1, 1)";
+  motion["nk-ease-linear"] = "linear";
+  for (const [k, v] of Object.entries(motion)) if (vars[k] === undefined) vars[k] = v;
+  if (d > MAX_DURATION_MS) warnings.push(`--nk-duration is ${d}ms (the kit's ceiling is ${MAX_DURATION_MS}ms); panels and menus will feel slow to a player who opens them hundreds of times.`);
+
+  // floors (docs/design/research.md §3): warn, never block
+  const op = parseFloat(vars["nk-surface-opacity"]!);
+  if (op < 0.92) warnings.push(`--nk-surface-opacity is ${op} (floor 0.92); the game will show through text in panels, and a bright sky will wash it out.`);
+  const plate = hudPlateOverWhite(vars);
+  const hudFg = rgba(vars, "hud-foreground");
+  if (plate && hudFg) {
+    const ratio = contrastRatio(composite(hudFg, plate), plate);
+    if (ratio < 4.5)
+      warnings.push(`hud-foreground on the HUD backplate over a white sky is ${ratio.toFixed(1)}:1 (needs 4.5:1); raise --nk-hud-opacity or darken --hud so HUD text reads over snow and midday sky.`);
+  }
+  // text on the game: it must be lighter than the game's average frame (its shadow is dark) and clear it by 3:1
+  for (const name of ["world-foreground", "world-foreground-muted"]) {
+    if (!given.has(name)) continue;
+    const c = rgba(vars, name);
+    if (!c) continue;
+    const onGrey = composite(c, MID_GREY);
+    const ratio = contrastRatio(onGrey, MID_GREY);
+    const lighter = contrastRatio(onGrey, BLACK) > contrastRatio(MID_GREY, BLACK);
+    if (!lighter || ratio < 3)
+      warnings.push(`--${name} is ${lighter ? `${ratio.toFixed(1)}:1 against a mid-grey frame (needs 3:1)` : "darker than a mid-grey frame"}; text drawn straight on the game (death text, unplated HUD values) will be hard to read. Keep it light, whatever the theme's mode.`);
   }
 }
 
@@ -599,6 +940,11 @@ export function highContrast(vars: ThemeVars): ThemeVars {
   }
   vars.hud = "rgba(0, 0, 0, 0.72)";
   vars["hud-foreground"] = "rgb(255, 255, 255)";
+  vars["world-foreground"] = "rgb(255, 255, 255)";
+  vars["world-foreground-muted"] = "rgba(255, 255, 255, 0.85)";
+  // identity (1.1): opaque panels, a solid HUD plate
+  if (vars["nk-surface-opacity"] !== undefined) vars["nk-surface-opacity"] = "1";
+  if (vars["nk-hud-opacity"] !== undefined) vars["nk-hud-opacity"] = "0.72";
   return vars;
 }
 
@@ -620,7 +966,7 @@ export function checkContrast(vars: ThemeVars): ContrastResult[] {
 
 function order(vars: ThemeVars): ThemeVars {
   const out: ThemeVars = {};
-  for (const name of TOKEN_NAMES) if (vars[name] !== undefined) out[name] = vars[name]!;
+  for (const name of ALL_TOKEN_NAMES) if (vars[name] !== undefined) out[name] = vars[name]!;
   for (const name of Object.keys(vars).sort()) if (!(name in out)) out[name] = vars[name]!;
   return out;
 }
@@ -662,14 +1008,16 @@ export function themeToCss(theme: CompiledTheme | ThemeVars, selector = ":root")
 export function toDtcg(theme: CompiledTheme, description = "nuikit theme"): DtcgDocument {
   const color: Record<string, unknown> = { $type: "color" };
   const doc: DtcgDocument = {
-    $description: `${description} (nuikit tokens v${TOKENS_VERSION}, ${theme.mode})`,
-    $extensions: { "dev.nuikit": { tokens: TOKENS_VERSION, mode: theme.mode, ...(theme.imports.length ? { imports: theme.imports } : {}) } },
+    $description: `${description} (nuikit tokens v${TOKENS_REVISION}, ${theme.mode})`,
+    $extensions: { "dev.nuikit": { tokens: TOKENS_VERSION, revision: TOKENS_REVISION, mode: theme.mode, ...(theme.imports.length ? { imports: theme.imports } : {}) } },
     color,
   };
   const font: Record<string, unknown> = { $type: "fontFamily" };
-  const nk: Record<string, unknown> = { $type: "number" };
+  const nk: Record<string, unknown> = {};
   for (const [name, value] of Object.entries(theme.vars)) {
     const spec = SPEC.get(name);
+    // derived tokens are outputs: compiling the file derives them again
+    if (spec?.group === "derived") continue;
     const desc = spec ? { $description: spec.description } : {};
     const col = toRgba(value);
     if (col && (spec?.type ?? "color") === "color") {
@@ -684,7 +1032,7 @@ export function toDtcg(theme: CompiledTheme, description = "nuikit theme"): Dtcg
     } else if (name.startsWith("font-")) {
       font[name.slice(5)] = { $value: value.split(",").map((f) => f.trim().replace(/^["']|["']$/g, "")), ...desc };
     } else if (name.startsWith("nk-")) {
-      nk[name.slice(3)] = { $value: Number(value), ...desc };
+      nk[name.slice(3)] = dtcgNk(spec, value, desc);
     }
   }
   if (Object.keys(font).length > 1) doc.font = font;
@@ -692,26 +1040,42 @@ export function toDtcg(theme: CompiledTheme, description = "nuikit theme"): Dtcg
   return doc;
 }
 
+/** One nk-* token as DTCG: number, dimension, duration, cubicBezier, or a keyword (string, no standard type). */
+function dtcgNk(spec: TokenSpec | undefined, value: string, desc: Record<string, unknown>): Record<string, unknown> {
+  const dim = DIM.exec(value);
+  const dur = DUR.exec(value);
+  const bez = BEZIER.exec(value);
+  if (NUM.test(value) && (spec?.type ?? "number") === "number") return { $type: "number", $value: Number(value), ...desc };
+  if (dim) return { $type: "dimension", $value: { value: parseFloat(dim[1]!), unit: dim[2] }, ...desc };
+  if (dur) return { $type: "duration", $value: { value: parseFloat(dur[1]!), unit: dur[2] }, ...desc };
+  if (bez) return { $type: "cubicBezier", $value: bez.slice(1).map(Number), ...desc };
+  return { $value: value, ...desc, $extensions: { "dev.nuikit": { type: spec?.type ?? "keyword" } } };
+}
+
 /** JSON Schema (2020-12) for a compiled theme (theme.json, GlobalState.nuikitTheme). */
 export function themeJsonSchema(): Record<string, unknown> {
   const properties: Record<string, unknown> = {};
-  for (const t of TOKENS) {
+  for (const t of ALL_TOKENS) {
+    const since = t.since ? { $comment: `tokens ${t.since}` } : {};
     properties[t.name] =
       t.type === "color"
-        ? { type: "string", pattern: "^rgba?\\(", description: t.description }
+        ? { type: "string", pattern: "^rgba?\\(", description: t.description, ...since }
         : t.type === "number"
-          ? { type: "string", pattern: "^\\d+(\\.\\d+)?$", description: t.description }
-          : { type: "string", description: t.description };
+          ? { type: "string", pattern: "^-?\\d+(\\.\\d+)?$", description: t.description, ...since }
+          : t.type === "keyword" && t.values
+            ? { enum: [...(t.values ?? [])], description: t.description, ...since }
+            : { type: "string", description: t.description, ...since };
   }
   return {
     $schema: "https://json-schema.org/draft/2020-12/schema",
     $id: "https://nuikit.vercel.app/schema/theme.v1.json",
-    title: "nuikit compiled theme (tokens v1)",
+    title: "nuikit compiled theme (tokens v1, revision 1.1)",
     description: "What compileTheme() returns and the nuikit resource publishes: every token, lowered so FiveM's browser can read it.",
     type: "object",
     required: ["version", "vars"],
     properties: {
       version: { const: TOKENS_VERSION },
+      revision: { type: "string", description: "Contract revision; \"1.1\" adds the identity tokens (optional in vars, so themes compiled by older nuikit stay valid)" },
       mode: { enum: ["dark", "light"] },
       hash: { type: "string" },
       imports: { type: "array", items: { type: "string", format: "uri" } },
@@ -753,6 +1117,26 @@ export function withPrefs(vars: ThemeVars, prefs: Partial<NuiPrefs> = DEFAULT_PR
   if (p.highContrast) highContrast(out);
   const scale = (parseFloat(out["nk-scale"] ?? "1") || 1) * p.scale;
   out["nk-scale"] = String(Math.round(scale * 1000) / 1000);
-  out["nk-motion"] = p.reducedMotion || out["nk-motion"] === "0" ? "0" : "1";
+  const level = themeMotionLevel(vars, p);
+  out["nk-motion"] = level === "on" ? "1" : "0";
+  if (level !== "on") {
+    // off: nothing animates. reduced: no movement, fades kept but at most REDUCED_FADE_MS (tokens 1.2).
+    if (out["nk-motion-move"] !== undefined || out["nk-time-base"] !== undefined) out["nk-motion-move"] = "0";
+    for (const name of MOTION_TIME_TOKENS) {
+      const v = out[name];
+      if (v === undefined) continue;
+      const ms = parseFloat(v) * (/\ds$/.test(v) && !/ms$/.test(v) ? 1000 : 1);
+      out[name] = level === "off" || name === "nk-stagger" ? "0ms" : `${Math.min(Number.isFinite(ms) ? ms : 0, REDUCED_FADE_MS)}ms`;
+    }
+  }
   return out;
+}
+
+/**
+ * The motion level for a theme and a player's prefs: "off" when the theme sets --nk-motion: 0, "reduced" when
+ * the player asked for reduced motion, else "on". applyTheme paints it as html[data-nk-motion].
+ */
+export function themeMotionLevel(vars: ThemeVars, prefs: Partial<NuiPrefs> = DEFAULT_PREFS): "on" | "reduced" | "off" {
+  if (vars["nk-motion"] === "0") return "off";
+  return prefs.reducedMotion === true ? "reduced" : "on";
 }

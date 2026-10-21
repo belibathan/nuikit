@@ -175,7 +175,7 @@ const RadialMenu = React.forwardRef<
               data-active={i === active || undefined}
               d={wedgePath(r, r, inner, r - 0.3, a0, a1)}
               strokeWidth={0.3}
-              className={cn("fill-popover stroke-border transition-colors", i === active && "fill-accent", item.disabled && "opacity-50")}
+              className={cn("fill-(--nk-panel-bg) stroke-(--nk-panel-border) transition-colors", i === active && "fill-accent stroke-(--nk-row-indicator-color)", item.disabled && "opacity-50")}
               onClick={() => choose(i)}
             />
           )
@@ -215,7 +215,7 @@ const RadialMenu = React.forwardRef<
         aria-label={path.length ? "Back" : undefined}
         onClick={() => back()}
         className={cn(
-          "absolute top-1/2 left-1/2 grid aspect-square w-[34%] place-items-center rounded-full border bg-popover p-2 text-center text-popover-foreground shadow-md",
+          "absolute top-1/2 left-1/2 grid aspect-square w-[34%] place-items-center rounded-full border border-(--nk-panel-border) bg-(--nk-panel-bg) p-2 text-center text-(--nk-panel-fg) [box-shadow:var(--nk-panel-edge),var(--nk-panel-shadow)]",
           path.length ? "cursor-pointer hover:bg-accent hover:text-accent-foreground" : "pointer-events-none"
         )}
         style={{ transform: "translate(-50%, -50%)" }}

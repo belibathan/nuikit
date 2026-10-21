@@ -1,7 +1,5 @@
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { DIALOG_HEADER, DIALOG_PANEL, WIDTH } from "@/features/input-dialog";
+import { useEffect, useState } from "react";
+import { Confirm } from "@/components/ui/confirm";
 import { useLocale } from "@/lib/locale";
 import { Markdown } from "@/lib/markdown";
 import { post, useOx } from "@/lib/nui";
@@ -17,15 +15,25 @@ interface AlertData {
   labels?: { cancel?: string; confirm?: string };
 }
 
+/** ox_lib's modal sizes (xs 320 … xl 780 px), on the kit's width scale. */
+const SIZE = { xs: "w-full max-w-80", sm: "w-full max-w-96", md: "w-full max-w-md", lg: "w-full max-w-2xl", xl: "w-full max-w-3xl" };
 
-/** ox_lib's alert dialog (lib.alertDialog). Protocol: docs/ox-lib-protocol.md §8. */
+/**
+ * ox_lib's alert dialog (lib.alertDialog), drawn with the kit's Confirm, the `confirm` intent's
+ * renderer. ox_lib's rules stay here (docs/ox-lib-protocol.md §8): Escape always cancels, even
+ * without a Cancel button; the first button has focus, so Enter presses Cancel when it's shown and
+ * Confirm otherwise; closeAlertDialog closes without a post.
+ */
 export function AlertDialog() {
   const locale = useLocale();
   const [data, setData] = useState<AlertData | null>(null);
   const [open, setOpen] = useState(false);
+  // A fresh Confirm per alert, so its focus starts on the right button every time.
+  const [seq, setSeq] = useState(0);
 
   useOx<AlertData>("sendAlert", (d) => {
     setData(d);
+    setSeq((n) => n + 1);
     setOpen(true);
   });
   useOx("closeAlertDialog", () => setOpen(false));
@@ -35,42 +43,38 @@ export function AlertDialog() {
     void post("closeAlert", reason);
   };
 
-  if (!data) return null;
+  // Confirm leaves Escape to nuikit surfaces; ox_lib's page owns it: always "cancel".
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.code !== "Escape") return;
+      e.preventDefault();
+      close("cancel");
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  });
+
+  if (!open || !data) return null;
   return (
-    <Dialog open={open}>
-      <DialogContent
-        showCloseButton={false}
-        className={cn(
-          DIALOG_PANEL,
-          WIDTH[data.size ?? "md"],
-          !data.centered && "top-[12%] translate-y-0",
-          data.overflow && "max-h-[80vh] grid-rows-[auto_minmax(0,1fr)_auto]",
-        )}
-        onEscapeKeyDown={(e) => {
-          e.preventDefault();
-          close("cancel"); // Escape always cancels, even without a Cancel button
-        }}
-        onInteractOutside={(e) => e.preventDefault()}
-      >
-        <DialogHeader className={DIALOG_HEADER}>
-          <DialogTitle asChild>
-            <div className="nk-title min-w-0">
-              <Markdown>{data.header}</Markdown>
-            </div>
-          </DialogTitle>
-        </DialogHeader>
-        <div className={cn("p-4 text-sm leading-6 text-muted-foreground", data.overflow && "min-h-0 overflow-y-auto")}>
-          <Markdown gfm>{data.content}</Markdown>
-        </div>
-        <DialogFooter className="nk-panel-footer">
-          {data.cancel && (
-            <Button variant="outline" onClick={() => close("cancel")}>
-              {data.labels?.cancel ?? locale.cancel}
-            </Button>
-          )}
-          <Button onClick={() => close("confirm")}>{data.labels?.confirm ?? locale.confirm}</Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+    <div className="fixed inset-0 z-50">
+      <Confirm
+        key={seq}
+        title={<Markdown>{data.header}</Markdown>}
+        description={
+          <div className={cn("leading-6", data.overflow && "max-h-[60vh] overflow-y-auto")}>
+            <Markdown gfm>{data.content}</Markdown>
+          </div>
+        }
+        showCancel={Boolean(data.cancel)}
+        cancelLabel={data.labels?.cancel ?? locale.cancel}
+        confirmLabel={data.labels?.confirm ?? locale.confirm}
+        initialFocus={data.cancel ? "cancel" : "confirm"}
+        onCancel={() => close("cancel")}
+        onConfirm={() => close("confirm")}
+        // Not centred (the default): near the top, as ox_lib draws it.
+        className={cn(SIZE[data.size ?? "md"], !data.centered && "mt-[12vh] self-start")}
+      />
+    </div>
   );
 }

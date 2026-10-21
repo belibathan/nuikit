@@ -1,8 +1,29 @@
 import { describe, expect, it } from "vitest"
 
-import { countdownState, formatCountdown, spokenCountdown } from "@/components/ui/countdown"
+import { countdownDrain, countdownState, countdownVariants, formatCountdown, spokenCountdown } from "@/components/ui/countdown"
+import { cn } from "@/lib/utils"
 
 describe("countdown", () => {
+  it("keeps leading-none at every size after tailwind-merge (a font size used to drop it)", () => {
+    for (const size of ["sm", "default", "hero"] as const) {
+      // the component merges exactly like this: cn(countdownVariants({ size }), …)
+      const classes = cn(countdownVariants({ size }), "text-destructive opacity-40").split(" ")
+      expect(classes, size).toContain("leading-none")
+      // the size is the identity's display size (nk-display), never a fixed text-* class
+      expect(classes, size).toContain("nk-display")
+      expect(classes.filter((c) => c.startsWith("text-[") || c === "text-xl"), size).toHaveLength(0)
+    }
+  })
+
+  it("glides the line one second at a time from Lua's value, or all the way on its own run", () => {
+    expect(countdownDrain(30, 60)).toEqual({ from: 0.5, to: 29 / 60, ms: 1000 })
+    expect(countdownDrain(0.5, 60)).toEqual({ from: 0.5 / 60, to: 0, ms: 500 })
+    expect(countdownDrain(0, 60)).toEqual({ from: 0, to: 0, ms: 0 })
+    expect(countdownDrain(90, 60).from).toBe(1)
+    expect(countdownDrain(10, 0)).toEqual({ from: 0, to: 0, ms: 0 })
+    expect(countdownDrain(90, 90, true)).toEqual({ from: 1, to: 0, ms: 90000 })
+  })
+
   it("formats as mm:ss, h:mm:ss past an hour, rounding up", () => {
     expect(formatCountdown(0)).toBe("00:00")
     expect(formatCountdown(0.2)).toBe("00:01")

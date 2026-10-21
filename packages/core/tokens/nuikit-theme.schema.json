@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://nuikit.vercel.app/schema/theme.v1.json",
-  "title": "nuikit compiled theme (tokens v1)",
+  "title": "nuikit compiled theme (tokens v1, revision 1.1)",
   "description": "What compileTheme() returns and the nuikit resource publishes: every token, lowered so FiveM's browser can read it.",
   "type": "object",
   "required": [
@@ -11,6 +11,10 @@
   "properties": {
     "version": {
       "const": 1
+    },
+    "revision": {
+      "type": "string",
+      "description": "Contract revision; \"1.1\" adds the identity tokens (optional in vars, so themes compiled by older nuikit stay valid)"
     },
     "mode": {
       "enum": [
@@ -286,13 +290,369 @@
         },
         "nk-scale": {
           "type": "string",
-          "pattern": "^\\d+(\\.\\d+)?$",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
           "description": "UI size multiplier (unitless). Players can scale further (0.85–1.25)."
         },
         "nk-motion": {
           "type": "string",
-          "pattern": "^\\d+(\\.\\d+)?$",
-          "description": "1 = animations on, 0 = off. Players can turn motion off."
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "1 = animations on, 0 = off. Painted as 0 when the theme or the player's reduced-motion pref turns motion down."
+        },
+        "brand": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "The server's signature colour: active indicators, gauge needles, focus, logos (not the action: that's primary)",
+          "$comment": "tokens 1.1"
+        },
+        "brand-foreground": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "Text on brand",
+          "$comment": "tokens 1.1"
+        },
+        "world-foreground": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "Text and icons drawn straight on the game, no panel (death text, unplated HUD values, nk-on-game). Light in every theme, light or dark",
+          "$comment": "tokens 1.1"
+        },
+        "world-foreground-muted": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "Secondary text on the game",
+          "$comment": "tokens 1.1"
+        },
+        "world-shadow": {
+          "type": "string",
+          "description": "Text-shadow that keeps world-foreground legible over any frame",
+          "$comment": "tokens 1.1"
+        },
+        "font-display": {
+          "type": "string",
+          "description": "Headings and big moments (titles, timers, the balance)",
+          "$comment": "tokens 1.1"
+        },
+        "font-numeric": {
+          "type": "string",
+          "description": "Every number on a gauge, money or timer (always tabular)",
+          "$comment": "tokens 1.1"
+        },
+        "nk-type-ratio": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "Step between type sizes: 1.125 calm … 1.333 dramatic",
+          "$comment": "tokens 1.1"
+        },
+        "nk-weight-body": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "Body text weight",
+          "$comment": "tokens 1.1"
+        },
+        "nk-weight-strong": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "Titles, key numbers, active rows",
+          "$comment": "tokens 1.1"
+        },
+        "nk-weight-display": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "Display type (full-screen titles, big numbers)",
+          "$comment": "tokens 1.1"
+        },
+        "nk-tracking-display": {
+          "type": "string",
+          "description": "Letter-spacing of display type",
+          "$comment": "tokens 1.1"
+        },
+        "nk-label-case": {
+          "enum": [
+            "none",
+            "uppercase"
+          ],
+          "description": "Captions (the short names of values) in uppercase or as written",
+          "$comment": "tokens 1.1"
+        },
+        "nk-tracking-label": {
+          "type": "string",
+          "description": "Letter-spacing of captions (uppercase wants 0.06–0.12em)",
+          "$comment": "tokens 1.1"
+        },
+        "nk-border-width": {
+          "type": "string",
+          "description": "Hairline weight of panels, rows and fields",
+          "$comment": "tokens 1.1"
+        },
+        "nk-cut": {
+          "type": "string",
+          "description": "Chamfered corners (top left, bottom right), drawn with clip-path; 0 = off",
+          "$comment": "tokens 1.1"
+        },
+        "nk-surface-opacity": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "Panel opacity over the game (floor 0.92 for text panels)",
+          "$comment": "tokens 1.1"
+        },
+        "nk-surface-tint": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "How much brand tints neutral surfaces (0–0.12)",
+          "$comment": "tokens 1.1"
+        },
+        "nk-surface-gradient": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "Top-to-bottom light falloff on panels (0 = flat)",
+          "$comment": "tokens 1.1"
+        },
+        "nk-surface-edge": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "Inner top highlight, the machined edge (alpha)",
+          "$comment": "tokens 1.1"
+        },
+        "nk-elevation": {
+          "enum": [
+            "none",
+            "soft",
+            "deep"
+          ],
+          "description": "Shadow recipe of floating panels",
+          "$comment": "tokens 1.1"
+        },
+        "nk-glow": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "Brand glow on active parts and HUD fills (alpha, 0 = off)",
+          "$comment": "tokens 1.1"
+        },
+        "nk-density": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "Multiplies the kit's spacing scale: 0.875 compact (Graphite) … 1.15 roomy",
+          "$comment": "tokens 1.1"
+        },
+        "nk-ease": {
+          "type": "string",
+          "description": "The one easing curve",
+          "$comment": "tokens 1.1"
+        },
+        "nk-duration": {
+          "type": "string",
+          "description": "Base duration (panel enter, transitions); × nk-motion",
+          "$comment": "tokens 1.1"
+        },
+        "nk-hud-opacity": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "Minimum backplate opacity of HUD chips and tiles",
+          "$comment": "tokens 1.1"
+        },
+        "nk-hud-text-shadow": {
+          "enum": [
+            "none",
+            "soft",
+            "strong"
+          ],
+          "description": "Shadow under text drawn on the game",
+          "$comment": "tokens 1.1"
+        },
+        "nk-gauge-style": {
+          "enum": [
+            "arc",
+            "bar",
+            "digital"
+          ],
+          "description": "How gauges are drawn",
+          "$comment": "tokens 1.1"
+        },
+        "nk-gauge-track": {
+          "type": "string",
+          "description": "Gauge and meter track thickness",
+          "$comment": "tokens 1.1"
+        },
+        "nk-gauge-ticks": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "Tick marks on gauges: 1 on, 0 off",
+          "$comment": "tokens 1.1"
+        },
+        "nk-row-indicator": {
+          "enum": [
+            "bar",
+            "fill",
+            "outline"
+          ],
+          "description": "How the active row is marked",
+          "$comment": "tokens 1.1"
+        },
+        "surface": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "Floating panel surface: popover tinted by brand (× nk-surface-tint); drawn at nk-surface-opacity",
+          "$comment": "tokens 1.1"
+        },
+        "nk-elevation-shadow": {
+          "type": "string",
+          "description": "The box-shadow nk-elevation names, in scrim colour",
+          "$comment": "tokens 1.1"
+        },
+        "nk-hud-shadow": {
+          "type": "string",
+          "description": "The text-shadow nk-hud-text-shadow names, in scrim colour",
+          "$comment": "tokens 1.1"
+        },
+        "nk-row-bar": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "1 when nk-row-indicator is bar",
+          "$comment": "tokens 1.1"
+        },
+        "nk-row-fill": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "1 when nk-row-indicator is fill",
+          "$comment": "tokens 1.1"
+        },
+        "nk-row-outline": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "1 when nk-row-indicator is outline",
+          "$comment": "tokens 1.1"
+        },
+        "nk-clip": {
+          "type": "string",
+          "description": "clip-path of panels: the nk-cut chamfer, or none when nk-cut is 0 (a clip-path would also clip the shadow)",
+          "$comment": "tokens 1.1"
+        },
+        "nk-clip-sm": {
+          "type": "string",
+          "description": "clip-path of chips, tiles and buttons: half the panel chamfer",
+          "$comment": "tokens 1.1"
+        },
+        "nk-motion-feel": {
+          "enum": [
+            "crisp",
+            "snap",
+            "smooth",
+            "stepped"
+          ],
+          "description": "How the identity moves: crisp (Graphite), snap (Signal: no glide on selection, flash instead of press scale), smooth (Velvet: longer springs, a hint of bounce), stepped (Vector: values tick in steps)",
+          "$comment": "tokens 1.2"
+        },
+        "nk-spring-bounce": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "Bounce folded into the snap, move and soft springs (0 = critically damped; 0.3 is the most the kit allows)",
+          "$comment": "tokens 1.2"
+        },
+        "nk-motion-move": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "1 = things may move (translate, scale, rotate, FLIP, stagger); 0 under reduced motion or off, where only fades of at most 100ms are kept",
+          "$comment": "tokens 1.2"
+        },
+        "nk-time-instant": {
+          "type": "string",
+          "description": "State that must be immediate: keyboard and controller selection, held key-repeat",
+          "$comment": "tokens 1.2"
+        },
+        "nk-time-press": {
+          "type": "string",
+          "description": "Press, toggle, key-chip flash: 0.5 × d, 50–100ms",
+          "$comment": "tokens 1.2"
+        },
+        "nk-time-hover": {
+          "type": "string",
+          "description": "Pointer hover colour and row background: 0.75 × d",
+          "$comment": "tokens 1.2"
+        },
+        "nk-time-base": {
+          "type": "string",
+          "description": "Panel and menu enter, the selection indicator, tab switch: d (kit.css --nk-time)",
+          "$comment": "tokens 1.2"
+        },
+        "nk-time-exit": {
+          "type": "string",
+          "description": "Every exit (panel, toast, menu, modal): 0.7 × d",
+          "$comment": "tokens 1.2"
+        },
+        "nk-time-move": {
+          "type": "string",
+          "description": "Toasts entering, FLIP moves, meters gaining: 1.5 × d, at most 300ms",
+          "$comment": "tokens 1.2"
+        },
+        "nk-time-modal": {
+          "type": "string",
+          "description": "Dialog enter (on an inner wrapper): 1.25 × d",
+          "$comment": "tokens 1.2"
+        },
+        "nk-time-screen": {
+          "type": "string",
+          "description": "Full-screen enter (pause, death, loading): 2.5 × d, at most 400ms",
+          "$comment": "tokens 1.2"
+        },
+        "nk-time-ambient": {
+          "type": "string",
+          "description": "HUD show-on-change fades and the damage trail; not scaled by the identity",
+          "$comment": "tokens 1.2"
+        },
+        "nk-stagger": {
+          "type": "string",
+          "description": "Delay per item on a list's first open: 0.15 × d (snap and smooth 0.125 × d), at most 20ms (smooth 30ms)",
+          "$comment": "tokens 1.2"
+        },
+        "nk-stagger-max": {
+          "type": "string",
+          "description": "Total stagger cap: items past the fifth enter together",
+          "$comment": "tokens 1.2"
+        },
+        "nk-ease-out": {
+          "type": "string",
+          "description": "Enter, hover, anything arriving: the identity's --nk-ease",
+          "$comment": "tokens 1.2"
+        },
+        "nk-ease-in": {
+          "type": "string",
+          "description": "Exits (speeds up as it leaves)",
+          "$comment": "tokens 1.2"
+        },
+        "nk-ease-in-out": {
+          "type": "string",
+          "description": "On-screen moves (indicator, FLIP, tab underline) when not a spring",
+          "$comment": "tokens 1.2"
+        },
+        "nk-ease-emphasized": {
+          "type": "string",
+          "description": "Full-screen enter, big moments",
+          "$comment": "tokens 1.2"
+        },
+        "nk-ease-linear": {
+          "type": "string",
+          "description": "Progress, countdowns, streamed values, needles",
+          "$comment": "tokens 1.2"
+        },
+        "nk-spring-snap": {
+          "type": "string",
+          "description": "Spring (duration, bounce): selection indicator, tab underline, needle catch-up",
+          "$comment": "tokens 1.2"
+        },
+        "nk-spring-move": {
+          "type": "string",
+          "description": "Spring (duration, bounce): toasts in, FLIP reflow, drawers, digit roll",
+          "$comment": "tokens 1.2"
+        },
+        "nk-spring-soft": {
+          "type": "string",
+          "description": "Spring (duration, bounce): full-screen content, large frame changes",
+          "$comment": "tokens 1.2"
+        },
+        "nk-spring-pop": {
+          "type": "string",
+          "description": "Spring (duration, bounce): rewards only (item added, level-up, a ×3 badge)",
+          "$comment": "tokens 1.2"
         }
       },
       "additionalProperties": {

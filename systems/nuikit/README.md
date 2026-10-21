@@ -20,11 +20,10 @@ add_ace group.admin command.nuikit allow
 
 What the theme controls: every colour, `radius`, shadows and fonts. nuikit adds what game UIs need on top (success/warning/info colours, the dark surface behind HUD chips, the HUD vitals' colours, a UI scale) and derives them from your theme when it doesn't set them: see [tokens v1](../../docs/tokens.md). To pick them yourself, add e.g. `--vital-health: oklch(0.65 0.22 25);` or `--nk-scale: 1.1;` to the `.dark` block.
 
-**Fonts.** nuikit doesn't bundle fonts (the stock ox_lib UI shipped Roboto; the nuikit replacement doesn't). The theme's `--font-sans` is used if the player's machine can load it; otherwise the system sans-serif is used. To guarantee a font, put an `@import` from Google Fonts as the first line of `theme.css`:
-
-```css
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap");
-```
+**Fonts.** The four identities' fonts ship with nuikit: open-licence (SIL OFL) woff2 files such as Inter,
+Geist Mono and Fraunces, bundled into each UI, so a theme that names them works offline. Any other font in
+`--font-sans` / `--font-display` / `--font-numeric` is used if the player's machine has it; to guarantee one,
+put an `@import` as the first line of `theme.css`. Details: [tokens, fonts](../../docs/tokens.md#fonts).
 
 ## Player preferences
 
@@ -38,8 +37,7 @@ Each player can set, for every nuikit UI at once: `/nuikit scale 1.1` (0.85–1.
 ensure ox_lib
 ensure [qbx]        # qbx_core and friends (without qbx_hud if you use nuikit_hud)
 ensure pma-voice
-ensure nuikit
-ensure [nuikit]
+exec @nuikit/nuikit.cfg   # = ensure nuikit + ensure [nuikit], plus the settings (nuikit.cfg in this folder)
 ```
 
 QBCore and ESX are the same with `qb-core` / `es_extended` in place of `[qbx]`.

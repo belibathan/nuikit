@@ -26,9 +26,9 @@ export function onBand(deg: number, shape: MinimapFrame["shape"], half: number, 
 /**
  * The frame around GTA's radar. minimap.lua places the radar and sends this rectangle, so the frame
  * lands exactly on it at any resolution. The band is the panel surface (it also hides the radar's
- * square corners), the compass turns with the camera, and north is the theme's primary.
+ * square corners); the cardinals ride the band, turning with the camera; north is the brand colour.
  */
-export function MinimapFrameView({ frame, state }: { frame: MinimapFrame; state: MinimapState }) {
+export function MinimapFrameView({ frame, state, compass = true }: { frame: MinimapFrame; state: MinimapState; compass?: boolean }) {
   const h = window.innerHeight;
   const size = frame.w * window.innerWidth;
   const band = Math.max(2, frame.band * h);
@@ -46,11 +46,11 @@ export function MinimapFrameView({ frame, state }: { frame: MinimapFrame; state:
     borderWidth: band,
   };
 
-  // the square only shows north; on the circle all four ride the ring
-  const shown = round ? CARDINALS : CARDINALS.slice(0, 1);
+  // the circle carries all four, turning; the square only north (it slides along the edge)
+  const shown = !compass ? [] : round ? CARDINALS : CARDINALS.slice(0, 1);
 
   // Every browser frame while it turns, straight onto the marks' transforms: no React render, no
-  // layout. minimap.lua streams the heading (NUI.stream: 0.1°, ≤30 a second); follow glides between.
+  // layout. minimap.lua streams the bearing (NUI.stream: 0.1°, ≤30 a second); follow glides between.
   useEffect(
     () =>
       follow(
@@ -68,74 +68,34 @@ export function MinimapFrameView({ frame, state }: { frame: MinimapFrame; state:
         { kind: "angle", start: heading.current ?? 0, epsilon: 0.01 },
       ),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [frame.shape, half, band],
+    [frame.shape, half, band, compass],
   );
 
   return (
-    <div
-      data-slot="minimap-frame"
-      data-shape={frame.shape}
-      className={cn("hud-minimap absolute border-solid", round ? "rounded-full" : "hud-minimap-square")}
-      style={style}
-      aria-hidden
-    >
-      {shown.map((c, i) => {
-        const north = c.label === "N";
-        return (
-          <span
-            key={c.label}
-            ref={(el) => {
-              marks.current[i] = el;
-            }}
-            className={cn(
-              "absolute top-0 left-0 flex items-center justify-center rounded-full text-[0.625rem] leading-none font-semibold will-change-transform",
-              north ? "size-4 bg-primary text-primary-foreground" : "size-3.5 text-muted-foreground",
-            )}
-          >
-            {c.label}
-          </span>
-        );
-      })}
+    <div data-slot="minimap-frame" data-shape={frame.shape} className={cn("hud-minimap", round ? "hud-minimap-circle" : "hud-minimap-square")} style={style} aria-hidden>
+      <span className="hud-minimap-inner" />
+      {shown.map((c, i) => (
+        <span
+          key={c.label}
+          ref={(el) => {
+            marks.current[i] = el;
+          }}
+          data-north={c.label === "N" || undefined}
+          className="hud-cardinal"
+        >
+          {c.label}
+        </span>
+      ))}
     </div>
   );
 }
 
-/** Street and area, bare on the game above the map (kit rule 8). */
-function Location({ frame, state }: { frame: MinimapFrame; state: MinimapState }) {
-  const below = frame.y < 0.5; // a map at the top gets its text underneath
-  const style: CSSProperties = below
-    ? { left: `${frame.x * 100}%`, top: `calc(${(frame.y + frame.h) * 100}% + 0.5rem)` }
-    : { left: `${frame.x * 100}%`, bottom: `calc(${(1 - frame.y) * 100}% + 0.5rem)` };
-  if (frame.x > 0.5) {
-    delete style.left;
-    style.right = `${(1 - frame.x - frame.w) * 100}%`;
-  }
-  return (
-    <div className={cn("nk-shadow absolute flex max-w-80 flex-col text-hud-foreground", frame.x > 0.5 && "items-end text-right")} style={style}>
-      <span className="truncate text-sm leading-5 font-semibold">{state.street}</span>
-      <span className="truncate text-xs leading-4 font-medium text-hud-foreground/80">
-        {state.crossing ? `Near ${state.crossing}, ${state.zone}` : state.zone}
-      </span>
-    </div>
-  );
-}
-
-/** The minimap layer: the frame and the location text, shown only while the radar is. */
-export function Minimap({ frame, state, location = true }: { frame: MinimapFrame; state: MinimapState; location?: boolean }) {
-  if (!state.visible) return null;
-  return (
-    <>
-      <MinimapFrameView frame={frame} state={state} />
-      {location && state.street && <Location frame={frame} state={state} />}
-    </>
-  );
-}
-
-/** The frame's rectangle, asked for once when the page loads (Lua also sends it on every change). */
-export function useMinimapFrame() {
+/** The frame's rectangle and whether the radar shows; asks Lua for everything once when the page loads. */
+export function useMinimap() {
   const frame = useNuiState("hud:minimap:frame", null as unknown as MinimapFrame) as MinimapFrame | null;
+  const state = useNuiState("hud:minimap", null as unknown as MinimapState) as MinimapState | null;
   useEffect(() => {
-    void fetchNui("hud:minimap:ready", {}).catch(() => {});
+    void fetchNui("hud:ready", {}).catch(() => {});
   }, []);
-  return frame;
+  return { frame, state };
 }
