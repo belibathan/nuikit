@@ -304,6 +304,7 @@ function RowField({ row, value, error, onChange }: { row: Row; value: any; error
         <NumberField
           {...base}
           icon={icon}
+          stepper="inline"
           placeholder={row.placeholder}
           min={row.min as number | undefined}
           max={row.max as number | undefined}
