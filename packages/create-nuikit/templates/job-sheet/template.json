@@ -1,0 +1,9 @@
+{
+  "block": "job-sheet",
+  "title": "Job sheet",
+  "description": "The one frame for a job's menu: a floating sheet of rows with sub-pages in place and an actions row; the server checks every row against the caller's job, grade and duty",
+  "next": [
+    "give yourself a job from the server console: {{name}}_setjob <your id> police 1",
+    "press F5 (or /{{name}}); the pages are in config.lua"
+  ]
+}
