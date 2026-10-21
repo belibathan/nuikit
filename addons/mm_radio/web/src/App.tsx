@@ -1,5 +1,6 @@
-import { Mic } from "lucide-react";
+import { Mic, Radio as RadioIcon } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { HudChip } from "@/components/ui/hud-chip";
 import { Ctx, useCtx, type RadioCtx, type Tab } from "@/features/context";
 import { Handheld } from "@/features/radio";
 import { useAnchoredDrag, type Pos } from "@/lib/drag";
@@ -112,6 +113,7 @@ function RadioFrame({ shown }: { shown: boolean }) {
 
   return (
     <div
+      data-radio=""
       className={cn("pointer-events-auto absolute transition-[transform,opacity] duration-300 ease-out", !shown && "pointer-events-none opacity-0")}
       style={{
         right: pos.x,
@@ -141,23 +143,21 @@ function Overlay({ forced, draggable }: { forced: boolean; draggable: boolean })
 
   return (
     <div
+      data-overlay=""
       className={cn("absolute flex max-w-[15vw] min-w-40 flex-col items-end gap-1", draggable ? "pointer-events-auto cursor-move" : "pointer-events-none")}
       style={{ right: pos.x, top: pos.y, transform: `scale(${scaleOf(data.userData?.overlaySizeMultiplier)})`, transformOrigin: "top right" }}
       onMouseDown={onMouseDown}
     >
-      {forced && <div className="nk-chip radio-lcd opacity-70">{data.channel} MHz</div>}
-      {rows.map(([id, m]) =>
-        m.isTalking ? (
-          <div key={id} className="bg-primary text-primary-foreground flex h-7 max-w-full items-center gap-1.5 rounded-full px-2.5 text-xs font-medium">
-            <Mic className="size-3.5 shrink-0" />
-            <span className="truncate">{m.name}</span>
-          </div>
-        ) : (
-          <div key={id} className="nk-chip max-w-full">
-            <span className="truncate opacity-70">{m.name}</span>
-          </div>
-        ),
+      {forced && (
+        <HudChip icon={<RadioIcon />} className="opacity-70">
+          {data.channel} MHz
+        </HudChip>
       )}
+      {rows.map(([id, m]) => (
+        <HudChip key={id} icon={<Mic />} active={m.isTalking} data-talking={m.isTalking || undefined} className={cn("max-w-full", !m.isTalking && "opacity-70")}>
+          <span className="truncate">{m.name}</span>
+        </HudChip>
+      ))}
     </div>
   );
 }

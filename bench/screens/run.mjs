@@ -113,7 +113,12 @@ try {
         await page.screenshot({ path: path.join(SHOTS, `${name}-${key}.jpg`), type: "jpeg", quality: 80 });
       },
     };
-    await scenario.run(api);
+    try {
+      await scenario.run(api);
+    } catch (e) {
+      console.error(`✗ ${NAME} ${key} failed at step "${step}"`);
+      throw e;
+    }
     result[key] = { posts: log, themeRequests: theme.length };
     await ctx.close();
     console.log(`✓ ${NAME} ${key}: ${log.length} posts, ${theme.length} theme requests`);

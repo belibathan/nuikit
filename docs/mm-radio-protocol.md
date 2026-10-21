@@ -120,7 +120,7 @@ From `data.locale` (flattened by ox_lib; we also read a nested `locale.ui.<key>`
 
 `ui.header` (IN RADIO), `ui.frequency`, `ui.disconnect`, `ui.notconnected`, `ui.settings`, `ui.channels`, `ui.radio`, `ui.members`, `ui.favorites`, `ui.recommended`, `ui.clear`, `ui.hide_overlay`, `ui.show_overlay`, `ui.save`, `ui.radio_settings`, `ui.move_radio`, `ui.allow_move`, `ui.overlay_settings`, `ui.enableClicks`.
 
-Labels nuikit adds use `ui.nuikit_*` keys with English fallbacks (`ui.nuikit_name` "Call sign", `ui.nuikit_size` "Size", `ui.nuikit_overlay_size` "Overlay size", `ui.nuikit_volume` "Volume", `ui.nuikit_no_charge` "No charge", `ui.nuikit_empty` "Nothing here yet", `ui.nuikit_no_channels` "No channels here yet. Dial one on the keypad.", `ui.nuikit_no_members` "No one else is on this channel yet.", `ui.nuikit_offline_hint` "Pick a channel or dial a frequency.", `ui.nuikit_jammed` "Jammed", `ui.nuikit_back` "Back", `ui.nuikit_join` "Join").
+Labels nuikit adds use `ui.nuikit_*` keys with English fallbacks (`ui.nuikit_name` "Call sign", `ui.nuikit_size` "Size", `ui.nuikit_overlay_size` "Overlay size", `ui.nuikit_volume` "Volume", `ui.nuikit_no_charge` "No charge", `ui.nuikit_no_charge_hint` "Put a battery in to use it.", `ui.nuikit_empty` "Nothing here yet", `ui.nuikit_no_channels` "No channels here yet. Dial one on the keypad.", `ui.nuikit_no_members` "No one else is on this channel yet.", `ui.nuikit_offline_hint` "Pick a channel or dial a frequency.", `ui.nuikit_jammed` "Jammed", `ui.nuikit_back` "Back", `ui.nuikit_join` "Join").
 
 ## 6. Quirks
 

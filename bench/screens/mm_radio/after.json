@@ -1,0 +1,431 @@
+{
+ "1280x720": {
+  "posts": [
+   {
+    "step": "mute",
+    "name": "toggleMute",
+    "body": "0",
+    "ms": 129
+   },
+   {
+    "step": "unmute",
+    "name": "toggleMute",
+    "body": "30",
+    "ms": 54
+   },
+   {
+    "step": "volume-key",
+    "name": "volumeChange",
+    "body": "31",
+    "ms": 24
+   },
+   {
+    "step": "join-click",
+    "name": "join",
+    "body": "12.5",
+    "ms": 62
+   },
+   {
+    "step": "fav-add",
+    "name": "addFav",
+    "body": "12.5",
+    "ms": 34
+   },
+   {
+    "step": "fav-remove",
+    "name": "removeFav",
+    "body": "12.5",
+    "ms": 57
+   },
+   {
+    "step": "join-keypad",
+    "name": "join",
+    "body": "\"420\"",
+    "ms": 84
+   },
+   {
+    "step": "keypad-typed",
+    "name": "join",
+    "body": "\"88.55\"",
+    "ms": 34
+   },
+   {
+    "step": "nav-members",
+    "name": "getMutedList",
+    "body": "{}",
+    "ms": 40
+   },
+   {
+    "step": "mute-member",
+    "name": "togglemutePlayer",
+    "body": "7",
+    "ms": 51
+   },
+   {
+    "step": "mute-self",
+    "name": "togglemutePlayer",
+    "body": "1",
+    "ms": 67
+   },
+   {
+    "step": "overlay-hide",
+    "name": "showPlayerList",
+    "body": "false",
+    "ms": 42
+   },
+   {
+    "step": "overlay-show",
+    "name": "showPlayerList",
+    "body": "true",
+    "ms": 64
+   },
+   {
+    "step": "allow-move-on",
+    "name": "allowMovement",
+    "body": "true",
+    "ms": 66
+   },
+   {
+    "step": "clicks-off",
+    "name": "enableClicks",
+    "body": "false",
+    "ms": 38
+   },
+   {
+    "step": "radio-size",
+    "name": "updateRadioSize",
+    "body": "{\"radio\":51,\"overlay\":50}",
+    "ms": 30
+   },
+   {
+    "step": "overlay-size",
+    "name": "updateRadioSize",
+    "body": "{\"radio\":51,\"overlay\":49}",
+    "ms": 15
+   },
+   {
+    "step": "save",
+    "name": "saveData",
+    "body": "{\"name\":\"Vale 2\",\"radioId\":\"PERSONAL\"}",
+    "ms": 91
+   },
+   {
+    "step": "save",
+    "name": "getMutedList",
+    "body": "{}",
+    "ms": 92
+   },
+   {
+    "step": "drag-radio",
+    "name": "updateRadioPosition",
+    "body": "{\"x\":80,\"y\":60}",
+    "ms": 282
+   },
+   {
+    "step": "drag-overlay",
+    "name": "updatePlayerListPosition",
+    "body": "{\"x\":45,\"y\":80}",
+    "ms": 161
+   },
+   {
+    "step": "leave",
+    "name": "leave",
+    "body": "{}",
+    "ms": 53
+   },
+   {
+    "step": "escape",
+    "name": "hideUI",
+    "body": "{}",
+    "ms": 6
+   }
+  ],
+  "themeRequests": 10
+ },
+ "1920x1080": {
+  "posts": [
+   {
+    "step": "mute",
+    "name": "toggleMute",
+    "body": "0",
+    "ms": 145
+   },
+   {
+    "step": "unmute",
+    "name": "toggleMute",
+    "body": "30",
+    "ms": 74
+   },
+   {
+    "step": "volume-key",
+    "name": "volumeChange",
+    "body": "31",
+    "ms": 15
+   },
+   {
+    "step": "join-click",
+    "name": "join",
+    "body": "12.5",
+    "ms": 31
+   },
+   {
+    "step": "fav-add",
+    "name": "addFav",
+    "body": "12.5",
+    "ms": 43
+   },
+   {
+    "step": "fav-remove",
+    "name": "removeFav",
+    "body": "12.5",
+    "ms": 48
+   },
+   {
+    "step": "join-keypad",
+    "name": "join",
+    "body": "\"420\"",
+    "ms": 35
+   },
+   {
+    "step": "keypad-typed",
+    "name": "join",
+    "body": "\"88.55\"",
+    "ms": 37
+   },
+   {
+    "step": "nav-members",
+    "name": "getMutedList",
+    "body": "{}",
+    "ms": 58
+   },
+   {
+    "step": "mute-member",
+    "name": "togglemutePlayer",
+    "body": "7",
+    "ms": 43
+   },
+   {
+    "step": "mute-self",
+    "name": "togglemutePlayer",
+    "body": "1",
+    "ms": 56
+   },
+   {
+    "step": "overlay-hide",
+    "name": "showPlayerList",
+    "body": "false",
+    "ms": 63
+   },
+   {
+    "step": "overlay-show",
+    "name": "showPlayerList",
+    "body": "true",
+    "ms": 101
+   },
+   {
+    "step": "allow-move-on",
+    "name": "allowMovement",
+    "body": "true",
+    "ms": 82
+   },
+   {
+    "step": "clicks-off",
+    "name": "enableClicks",
+    "body": "false",
+    "ms": 95
+   },
+   {
+    "step": "radio-size",
+    "name": "updateRadioSize",
+    "body": "{\"radio\":51,\"overlay\":50}",
+    "ms": 41
+   },
+   {
+    "step": "overlay-size",
+    "name": "updateRadioSize",
+    "body": "{\"radio\":51,\"overlay\":49}",
+    "ms": 28
+   },
+   {
+    "step": "save",
+    "name": "saveData",
+    "body": "{\"name\":\"Vale 2\",\"radioId\":\"PERSONAL\"}",
+    "ms": 87
+   },
+   {
+    "step": "save",
+    "name": "getMutedList",
+    "body": "{}",
+    "ms": 92
+   },
+   {
+    "step": "drag-radio",
+    "name": "updateRadioPosition",
+    "body": "{\"x\":80,\"y\":60}",
+    "ms": 524
+   },
+   {
+    "step": "drag-overlay",
+    "name": "updatePlayerListPosition",
+    "body": "{\"x\":45,\"y\":80}",
+    "ms": 295
+   },
+   {
+    "step": "leave",
+    "name": "leave",
+    "body": "{}",
+    "ms": 49
+   },
+   {
+    "step": "escape",
+    "name": "hideUI",
+    "body": "{}",
+    "ms": 9
+   }
+  ],
+  "themeRequests": 11
+ },
+ "2560x1440": {
+  "posts": [
+   {
+    "step": "mute",
+    "name": "toggleMute",
+    "body": "0",
+    "ms": 123
+   },
+   {
+    "step": "unmute",
+    "name": "toggleMute",
+    "body": "30",
+    "ms": 73
+   },
+   {
+    "step": "volume-key",
+    "name": "volumeChange",
+    "body": "31",
+    "ms": 21
+   },
+   {
+    "step": "join-click",
+    "name": "join",
+    "body": "12.5",
+    "ms": 30
+   },
+   {
+    "step": "fav-add",
+    "name": "addFav",
+    "body": "12.5",
+    "ms": 44
+   },
+   {
+    "step": "fav-remove",
+    "name": "removeFav",
+    "body": "12.5",
+    "ms": 86
+   },
+   {
+    "step": "join-keypad",
+    "name": "join",
+    "body": "\"420\"",
+    "ms": 39
+   },
+   {
+    "step": "keypad-typed",
+    "name": "join",
+    "body": "\"88.55\"",
+    "ms": 15
+   },
+   {
+    "step": "nav-members",
+    "name": "getMutedList",
+    "body": "{}",
+    "ms": 54
+   },
+   {
+    "step": "mute-member",
+    "name": "togglemutePlayer",
+    "body": "7",
+    "ms": 36
+   },
+   {
+    "step": "mute-self",
+    "name": "togglemutePlayer",
+    "body": "1",
+    "ms": 48
+   },
+   {
+    "step": "overlay-hide",
+    "name": "showPlayerList",
+    "body": "false",
+    "ms": 54
+   },
+   {
+    "step": "overlay-show",
+    "name": "showPlayerList",
+    "body": "true",
+    "ms": 55
+   },
+   {
+    "step": "allow-move-on",
+    "name": "allowMovement",
+    "body": "true",
+    "ms": 52
+   },
+   {
+    "step": "clicks-off",
+    "name": "enableClicks",
+    "body": "false",
+    "ms": 57
+   },
+   {
+    "step": "radio-size",
+    "name": "updateRadioSize",
+    "body": "{\"radio\":51,\"overlay\":50}",
+    "ms": 26
+   },
+   {
+    "step": "overlay-size",
+    "name": "updateRadioSize",
+    "body": "{\"radio\":51,\"overlay\":49}",
+    "ms": 87
+   },
+   {
+    "step": "save",
+    "name": "saveData",
+    "body": "{\"name\":\"Vale 2\",\"radioId\":\"PERSONAL\"}",
+    "ms": 84
+   },
+   {
+    "step": "save",
+    "name": "getMutedList",
+    "body": "{}",
+    "ms": 84
+   },
+   {
+    "step": "drag-radio",
+    "name": "updateRadioPosition",
+    "body": "{\"x\":80,\"y\":60}",
+    "ms": 268
+   },
+   {
+    "step": "drag-overlay",
+    "name": "updatePlayerListPosition",
+    "body": "{\"x\":45,\"y\":80}",
+    "ms": 213
+   },
+   {
+    "step": "leave",
+    "name": "leave",
+    "body": "{}",
+    "ms": 53
+   },
+   {
+    "step": "escape",
+    "name": "hideUI",
+    "body": "{}",
+    "ms": 30
+   }
+  ],
+  "themeRequests": 11
+ }
+}
