@@ -1,20 +1,20 @@
-import { ArrowRight, Delete, Lock, MicOff, Radio as RadioIcon, Settings, Star, Unplug } from "lucide-react";
-import { useEffect, useState, type ReactNode } from "react";
+import { ArrowRight, Delete, Lock, Mic, MicOff, Radio as RadioIcon, Settings, Star, Unplug } from "lucide-react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { EmptyState } from "@/components/ui/empty-state";
+import { CheckboxField, TextField } from "@/components/ui/form-field";
+import { MenuRow } from "@/components/ui/menu-row";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Separator } from "@/components/ui/separator";
-import { Slider } from "@/components/ui/slider";
-import { Switch } from "@/components/ui/switch";
+import { Stat } from "@/components/ui/stat";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { channelLabel, soft } from "@/lib/locale";
 import { post } from "@/lib/nui";
 import { isMuted, nums, type MutedList } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { useCtx } from "./context";
+import { CommitSlider } from "./radio";
 
-/** Joined channel as the big LCD readout. */
+/** The joined channel as the one big number (Stat, display size); off-channel, what to do next. */
 export function Home() {
   const { data, t, update } = useCtx();
   const on = !!data.onRadio;
@@ -37,23 +37,17 @@ export function Home() {
 
   if (!on) {
     return (
-      <div className="flex h-full flex-col items-center justify-center gap-3 px-4 text-center">
-        <span className="bg-muted text-muted-foreground flex size-10 items-center justify-center rounded-full">
-          <RadioIcon className="size-4" />
-        </span>
-        <div className="flex flex-col gap-1">
-          <div className="text-sm font-medium">{soft(t("notconnected"))}</div>
-          <div className="text-muted-foreground text-xs">{t("nuikit_offline_hint")}</div>
-        </div>
+      <div className="flex flex-1 flex-col justify-center">
+        <EmptyState icon={<RadioIcon />} title={soft(t("notconnected"))} description={t("nuikit_offline_hint")} />
       </div>
     );
   }
 
   return (
-    <div className="flex h-full flex-col">
-      <div className="flex h-8 items-center justify-between">
-        <span className="nk-label text-foreground flex items-center gap-2">
-          <span className="bg-primary size-1.5 rounded-full" />
+    <div className="flex min-h-0 flex-1 flex-col">
+      <div className="flex items-center justify-between">
+        <span className="nk-label flex items-center gap-2 text-foreground">
+          <span aria-hidden className="size-1.5 rounded-full bg-success" />
           {soft(t("header"))}
         </span>
         <Button
@@ -63,17 +57,13 @@ export function Home() {
           disabled={isFav && !removable}
           aria-pressed={isFav}
           aria-label={t("favorites")}
-          className={cn("-mr-1.5 disabled:opacity-100", !isFav && "text-muted-foreground")}
+          className={cn("-mr-2 disabled:opacity-100", !isFav && "text-muted-foreground")}
         >
           {isFav && !removable ? <Lock className="text-muted-foreground" /> : <Star className={cn(isFav && "fill-current")} />}
         </Button>
       </div>
-      <div className="flex min-w-0 flex-1 flex-col justify-center gap-2">
-        <span className="nk-label">{soft(t("frequency"))}</span>
-        <div className="flex items-baseline gap-2">
-          <span className="radio-lcd text-5xl leading-none font-semibold">{String(ch)}</span>
-          <span className="text-muted-foreground text-sm">MHz</span>
-        </div>
+      <div className="flex flex-1 flex-col justify-center gap-1">
+        <Stat size="display" label={soft(t("frequency"))} value={String(ch)} meta="MHz" />
         {label && <span className="truncate text-sm font-medium">{label}</span>}
       </div>
       <Button variant="outline" size="sm" className="text-destructive hover:text-destructive" onClick={() => void post("leave")}>
@@ -86,27 +76,25 @@ export function Home() {
 
 function ChannelList({ channels }: { channels: number[] }) {
   const { data, t } = useCtx();
-  if (channels.length === 0) return <p className="text-muted-foreground px-4 py-8 text-center text-xs">{t("nuikit_no_channels")}</p>;
+  if (channels.length === 0) return <EmptyState title={t("nuikit_empty")} description={t("nuikit_no_channels")} />;
   return (
-    <ScrollArea className="h-full [&_[data-slot=scroll-area-viewport]>div]:!block">
-      <div className="flex flex-col gap-0.5">
+    <ScrollArea className="max-h-[14rem] [&_[data-slot=scroll-area-viewport]>div]:!block">
+      <div className="-mx-2 flex flex-col gap-0.5">
         {channels.map((ch, i) => {
           const { label } = channelLabel(ch, data.channelName);
-          const current = data.onRadio && data.channel === ch;
+          const current = !!data.onRadio && data.channel === ch;
           return (
-            <button
+            <MenuRow
               key={`${ch}:${i}`}
-              type="button"
               onClick={() => void post("join", ch)}
-              className="nk-row hover:bg-accent focus-visible:bg-accent px-2 text-left outline-none"
+              description={label}
+              active={current}
               aria-current={current || undefined}
+              icon={current ? <span aria-hidden className="size-1.5 rounded-full bg-success" /> : undefined}
+              chevron={!current}
             >
-              <span className="min-w-0 flex-1">
-                <span className="radio-lcd block text-sm font-medium">{ch} MHz</span>
-                {label && <span className="text-muted-foreground block truncate text-xs">{label}</span>}
-              </span>
-              {current ? <span className="bg-primary mr-1.5 size-1.5 shrink-0 rounded-full" aria-label="Joined" /> : <ArrowRight className="text-muted-foreground size-4 shrink-0" />}
-            </button>
+              <span className="nk-num">{ch} MHz</span>
+            </MenuRow>
           );
         })}
       </div>
@@ -117,10 +105,10 @@ function ChannelList({ channels }: { channels: number[] }) {
 export function Channels() {
   const { data, t } = useCtx();
   return (
-    <Tabs defaultValue="favourite" className="h-full gap-2">
-      <TabsList className="h-8 w-full">
-        <TabsTrigger value="favourite" className="text-xs">{soft(t("favorites"))}</TabsTrigger>
-        <TabsTrigger value="recomended" className="text-xs">{soft(t("recommended"))}</TabsTrigger>
+    <Tabs defaultValue="favourite" className="h-full min-h-0 gap-2">
+      <TabsList className="w-full">
+        <TabsTrigger value="favourite">{soft(t("favorites"))}</TabsTrigger>
+        <TabsTrigger value="recomended">{soft(t("recommended"))}</TabsTrigger>
       </TabsList>
       <TabsContent value="favourite" className="min-h-0">
         <ChannelList channels={nums(data.favourite)} />
@@ -149,8 +137,9 @@ export function pressKey(text: string, key: string, max: number | undefined): st
 export function Keypad() {
   const { data, t } = useCtx();
   const [text, setText] = useState("");
+  const valid = !!text && parseFloat(text) > 0;
   const join = () => {
-    if (!text || !(parseFloat(text) > 0)) return;
+    if (!valid) return;
     void post("join", text.replace(/\.$/, ""));
   };
 
@@ -167,25 +156,21 @@ export function Keypad() {
 
   const keys = ["1", "2", "3", "4", "5", "6", "7", "8", "9", ".", "0", "back"];
   return (
-    <div className="flex h-full flex-col gap-2">
-      <div className="flex h-10 shrink-0 items-baseline gap-2 border-b px-1 pt-1">
-        <span className={cn("radio-lcd flex-1 truncate text-2xl leading-8 font-semibold", !text && "text-muted-foreground/60")}>{text || "000.00"}</span>
-        <span className="text-muted-foreground text-xs">MHz</span>
+    <div className="flex min-h-0 flex-1 flex-col gap-2">
+      <div className="flex items-baseline gap-2 border-b pb-1">
+        <span className={cn("nk-num flex-1 truncate text-2xl leading-8 font-semibold", !text && "text-muted-foreground/60")} aria-live="polite">
+          {text || "000.00"}
+        </span>
+        <span className="nk-caption">MHz</span>
       </div>
       <div className="grid min-h-0 flex-1 grid-cols-3 grid-rows-4 gap-1">
         {keys.map((k) => (
-          <Button
-            key={k}
-            variant="ghost"
-            className="radio-lcd hover:bg-accent h-full min-h-0 py-0 text-base font-medium"
-            onClick={() => setText((s) => pressKey(s, k, data.maxChannel))}
-            aria-label={k === "back" ? "Backspace" : k}
-          >
+          <Button key={k} variant="ghost" className="nk-num h-full min-h-0 py-0 text-base font-medium" onClick={() => setText((s) => pressKey(s, k, data.maxChannel))} aria-label={k === "back" ? "Backspace" : k}>
             {k === "back" ? <Delete /> : k}
           </Button>
         ))}
       </div>
-      <Button size="sm" onClick={join} disabled={!text || !(parseFloat(text) > 0)}>
+      <Button size="sm" onClick={join} disabled={!valid}>
         {t("nuikit_join")}
         <ArrowRight />
       </Button>
@@ -212,36 +197,36 @@ export function Members() {
   };
 
   return (
-    <div className="flex h-full flex-col gap-2">
-      <div className="flex h-6 shrink-0 items-center justify-between px-2">
-        <span className="text-sm font-medium">{soft(t("members"))}</span>
-        <span className="nk-label nk-num" aria-label={`${entries.length} on ${data.channel} MHz`}>
+    <div className="flex min-h-0 flex-1 flex-col gap-2">
+      <div className="flex items-center justify-between">
+        <span className="nk-caption">{soft(t("members"))}</span>
+        <span className="nk-num text-xs text-muted-foreground" aria-label={`${entries.length} on ${data.channel} MHz`}>
           {entries.length}
         </span>
       </div>
       <div className="min-h-0 flex-1">
         {entries.length === 0 ? (
-          <p className="text-muted-foreground px-4 py-8 text-center text-xs">{t("nuikit_no_members")}</p>
+          <EmptyState title={t("nuikit_empty")} description={t("nuikit_no_members")} />
         ) : (
-          <ScrollArea className="h-full [&_[data-slot=scroll-area-viewport]>div]:!block">
-            <div className="flex flex-col">
+          <ScrollArea className="max-h-[14rem] [&_[data-slot=scroll-area-viewport]>div]:!block">
+            <div className="-mx-2 flex flex-col gap-0.5">
               {entries.map(([id, m]) => {
                 const isOff = isMuted(muted, id);
                 return (
-                  <div key={id} className="flex h-9 items-center gap-2 rounded-md pr-0.5 pl-2">
-                    <span className={cn("size-1.5 shrink-0 rounded-full", m.isTalking ? "bg-primary" : "bg-muted-foreground/30")} />
-                    <span className={cn("min-w-0 flex-1 truncate text-sm", m.isTalking ? "font-medium" : "text-muted-foreground")}>{m.name}</span>
-                    <Button
-                      variant={isOff ? "secondary" : "ghost"}
-                      size="icon-sm"
-                      aria-label={isOff ? "Unmute" : "Mute"}
-                      onClick={() => void toggleMute(id)}
-                      aria-pressed={isOff}
-                      className={cn(!isOff && "text-muted-foreground")}
-                    >
-                      <MicOff />
-                    </Button>
-                  </div>
+                  <MenuRow
+                    key={id}
+                    readOnly
+                    data-talking={m.isTalking || undefined}
+                    icon={m.isTalking ? <Mic className="text-success" aria-label="Talking" /> : <span aria-hidden className="mx-auto size-1.5 rounded-full bg-muted-foreground/40" />}
+                    className={cn(!m.isTalking && "text-muted-foreground", "pr-1")}
+                    meta={
+                      <Button variant={isOff ? "secondary" : "ghost"} size="icon-sm" aria-label={isOff ? "Unmute" : "Mute"} aria-pressed={isOff} onClick={() => void toggleMute(id)} className={cn(!isOff && "text-muted-foreground")}>
+                        <MicOff />
+                      </Button>
+                    }
+                  >
+                    {m.name}
+                  </MenuRow>
                 );
               })}
             </div>
@@ -260,15 +245,6 @@ export function Members() {
   );
 }
 
-function Row({ label, children }: { label: string; children: ReactNode }) {
-  return (
-    <div className="flex items-center justify-between gap-3">
-      <Label className="text-sm font-normal">{label}</Label>
-      {children}
-    </div>
-  );
-}
-
 export function SettingsScreen() {
   const { data, t, update, moveMode, setMoveMode, setTab } = useCtx();
   const u = data.userData ?? {};
@@ -281,75 +257,59 @@ export function SettingsScreen() {
   const setUser = (patch: Partial<typeof u>) => update((d) => ({ ...d, userData: { ...d.userData, ...patch } }));
 
   return (
-    <div className="flex h-full flex-col gap-2">
-      <ScrollArea className="min-h-0 flex-1 [&_[data-slot=scroll-area-viewport]>div]:!block">
-        <div className="flex flex-col gap-3 pr-3 pb-1">
-          <div className="nk-label">{soft(t("radio_settings"))}</div>
-          <div className="flex flex-col gap-2">
-            <Label className="text-sm font-normal">{t("nuikit_size")}</Label>
-            <Slider
-              min={25}
-              max={75}
-              step={1}
-              value={[radioSize]}
-              disabled={moveMode}
-              onValueChange={([v]) => {
-                setRadioSize(v);
-                setUser({ radioSizeMultiplier: v });
-              }}
-              onValueCommit={([v]) => commitSize(v, overlaySize)}
-            />
-          </div>
-          <Row label={t("move_radio")}>
-            <Switch checked={moveMode} onCheckedChange={setMoveMode} />
-          </Row>
-          <Row label={t("allow_move")}>
-            <Switch
-              checked={!!u.allowMovement}
-              onCheckedChange={(v) => {
-                setUser({ allowMovement: v });
-                void post("allowMovement", v);
-              }}
-            />
-          </Row>
-          <Row label={t("enableClicks")}>
-            <Switch
-              checked={!!u.enableClicks}
-              onCheckedChange={(v) => {
-                setUser({ enableClicks: v });
-                void post("enableClicks", v);
-              }}
-            />
-          </Row>
+    <div className="flex min-h-0 flex-1 flex-col gap-2">
+      <div className="flex flex-col gap-[calc(var(--nk-space)*3)] pb-1">
+          <span className="nk-caption">{soft(t("radio_settings"))}</span>
+          <CommitSlider
+            label={t("nuikit_size")}
+            min={25}
+            max={75}
+            value={radioSize}
+            disabled={moveMode}
+            onValueChange={(v) => {
+              setRadioSize(v);
+              setUser({ radioSizeMultiplier: v });
+            }}
+            onValueCommit={(v) => commitSize(v, overlaySize)}
+          />
+          <CheckboxField variant="switch" label={t("move_radio")} checked={moveMode} onCheckedChange={setMoveMode} />
+          <CheckboxField
+            variant="switch"
+            label={t("allow_move")}
+            checked={!!u.allowMovement}
+            onCheckedChange={(v) => {
+              setUser({ allowMovement: v });
+              void post("allowMovement", v);
+            }}
+          />
+          <CheckboxField
+            variant="switch"
+            label={t("enableClicks")}
+            checked={!!u.enableClicks}
+            onCheckedChange={(v) => {
+              setUser({ enableClicks: v });
+              void post("enableClicks", v);
+            }}
+          />
           {withOverlay && (
             <>
-              <Separator />
-              <div className="nk-label">{soft(t("overlay_settings"))}</div>
-              <div className="flex flex-col gap-2">
-                <Label htmlFor="radio-name" className="text-sm font-normal">
-                  {t("nuikit_name")}
-                </Label>
-                <Input id="radio-name" value={name} maxLength={64} onChange={(e) => setName(e.target.value)} className="h-8 text-sm" />
-              </div>
-              <div className="flex flex-col gap-2">
-                <Label className="text-sm font-normal">{t("nuikit_overlay_size")}</Label>
-                <Slider
-                  min={25}
-                  max={75}
-                  step={1}
-                  value={[overlaySize]}
-                  disabled={moveMode}
-                  onValueChange={([v]) => {
-                    setOverlaySize(v);
-                    setUser({ overlaySizeMultiplier: v });
-                  }}
-                  onValueCommit={([v]) => commitSize(radioSize, v)}
-                />
-              </div>
+              <span className="nk-caption mt-1 border-t pt-[calc(var(--nk-space)*3)]">{soft(t("overlay_settings"))}</span>
+              <TextField label={t("nuikit_name")} value={name} maxLength={64} showCount={false} onValueChange={setName} />
+              <CommitSlider
+                label={t("nuikit_overlay_size")}
+                min={25}
+                max={75}
+                value={overlaySize}
+                disabled={moveMode}
+                onValueChange={(v) => {
+                  setOverlaySize(v);
+                  setUser({ overlaySizeMultiplier: v });
+                }}
+                onValueCommit={(v) => commitSize(radioSize, v)}
+              />
             </>
           )}
-        </div>
-      </ScrollArea>
+      </div>
       <Button
         size="sm"
         onClick={() => {

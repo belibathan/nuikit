@@ -7,7 +7,7 @@ import {
   Grid3x3,
   ListMusic,
   MapPin,
-  Move,
+  Radio as RadioIcon,
   Settings,
   Signal,
   SignalZero,
@@ -19,6 +19,9 @@ import {
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { EmptyState } from "@/components/ui/empty-state";
+import { FormField, useFormField } from "@/components/ui/form-field";
+import { Panel, PanelBody, PanelFooter, PanelHeader } from "@/components/ui/panel";
 import { Slider } from "@/components/ui/slider";
 import { soft } from "@/lib/locale";
 import { post } from "@/lib/nui";
@@ -31,37 +34,26 @@ function BatteryIcon({ level }: { level: number }) {
   return <I className={cn("size-4", level < 20 && "text-destructive")} />;
 }
 
-/** Status bar: clock, signal, battery; a notify message takes it over for its duration. */
-function StatusBar({ message }: { message: string | null }) {
+/** The header's right side: clock, signal (or jammed), battery. */
+function Status() {
   const { data, t } = useCtx();
   const battery = Math.round(Number(data.battery ?? 100));
-  if (message) {
-    return (
-      <div className="bg-accent text-accent-foreground -mx-3 -mt-3 mb-3 flex h-8 shrink-0 items-center overflow-hidden px-3">
-        <span className="truncate text-xs font-medium" title={message}>
-          {message}
-        </span>
-      </div>
-    );
-  }
   return (
-    <div className="text-muted-foreground -mx-3 -mt-3 mb-3 flex h-8 shrink-0 items-center gap-3 border-b px-3 text-xs">
-      <span className="nk-num text-foreground font-semibold">{data.time ?? "--:--"}</span>
-      <span className="ml-auto flex items-center gap-1.5">
-        {data.insideJammerZone ? (
-          <>
-            <SignalZero className="text-destructive size-4" />
-            <span className="text-destructive font-medium">{t("nuikit_jammed")}</span>
-          </>
-        ) : (
-          <Signal className={cn("size-4", data.onRadio && "text-foreground")} />
-        )}
-      </span>
-      <span className="flex items-center gap-1">
+    <>
+      <span className="nk-num text-sm font-medium">{data.time ?? "--:--"}</span>
+      {data.insideJammerZone ? (
+        <span className="flex items-center gap-1 text-destructive" title={t("nuikit_jammed")}>
+          <SignalZero className="size-4" />
+          <span className="nk-label text-destructive">{t("nuikit_jammed")}</span>
+        </span>
+      ) : (
+        <Signal className={cn("size-4", data.onRadio ? "text-foreground" : "text-muted-foreground")} aria-label={data.onRadio ? "On a channel" : "Off"} />
+      )}
+      <span className={cn("flex items-center gap-1 text-muted-foreground", battery < 20 && "text-destructive")}>
         <BatteryIcon level={battery} />
-        <span className="nk-num">{battery}%</span>
+        <span className="nk-num text-xs">{battery}%</span>
       </span>
-    </div>
+    </>
   );
 }
 
@@ -71,17 +63,63 @@ function NavKey({ icon: Icon, label, tab, disabled }: { icon: LucideIcon; label:
   return (
     <Button
       variant="ghost"
+      size="sm"
       disabled={disabled}
       onClick={() => setTab(active ? "home" : tab)}
-      className={cn("text-muted-foreground h-12 min-w-0 flex-1 flex-col gap-1 px-1 text-xs font-medium", active && "bg-accent text-accent-foreground")}
+      className={cn("h-11 min-w-0 flex-1 flex-col gap-0.5 px-1 text-xs text-muted-foreground", active && "bg-accent text-accent-foreground")}
       aria-pressed={active}
     >
-      <Icon className="size-4" />
-      <span className="max-w-full truncate">{label}</span>
+      <Icon />
+      <span className="truncate">{label}</span>
     </Button>
   );
 }
 
+/**
+ * A slider that posts once, when let go (mm_radio quirk 8), inside a kit FormField row. form-field's
+ * SliderField has no commit callback, so the control is wired here with the field's ids.
+ */
+export function CommitSlider({
+  label,
+  value,
+  min,
+  max,
+  disabled,
+  onValueChange,
+  onValueCommit,
+  className,
+}: {
+  label: string;
+  value: number;
+  min: number;
+  max: number;
+  disabled?: boolean;
+  onValueChange: (v: number) => void;
+  onValueCommit: (v: number) => void;
+  className?: string;
+}) {
+  return (
+    <FormField label={label} valueText={<span className="nk-num">{value}</span>} disabled={disabled} className={className}>
+      <SliderControl value={value} min={min} max={max} onValueChange={onValueChange} onValueCommit={onValueCommit} />
+    </FormField>
+  );
+}
+
+function SliderControl({ value, min, max, onValueChange, onValueCommit }: { value: number; min: number; max: number; onValueChange: (v: number) => void; onValueCommit: (v: number) => void }) {
+  const f = useFormField();
+  const box = useRef<HTMLDivElement>(null);
+  // the thumb (role=slider) takes focus: name it from the field's label (vendor/ stays stock)
+  useEffect(() => {
+    box.current?.querySelectorAll<HTMLElement>('[role="slider"]').forEach((thumb) => thumb.setAttribute("aria-labelledby", f.labelId));
+  });
+  return (
+    <div ref={box} className="flex h-5 items-center">
+      <Slider id={f.id} disabled={f.disabled} min={min} max={max} step={1} value={[value]} onValueChange={([v]) => onValueChange(v ?? min)} onValueCommit={([v]) => onValueCommit(v ?? min)} />
+    </div>
+  );
+}
+
+/** Volume and mute, under the screen: disabled off-channel, posts on release. */
 function Volume() {
   const { data, update, t } = useCtx();
   const on = !!data.onRadio;
@@ -98,38 +136,19 @@ function Volume() {
   };
 
   return (
-    <div className="flex items-center gap-2">
-      <Button
-        variant="ghost"
-        size="icon-sm"
-        onClick={toggleMute}
-        disabled={!on}
-        aria-label={t("nuikit_volume")}
-        aria-pressed={volume === 0}
-        className="text-muted-foreground"
-      >
+    <div className="flex items-center gap-2 border-t px-[calc(var(--nk-space)*4)] py-[calc(var(--nk-space)*2)]">
+      <Button variant="ghost" size="icon-sm" onClick={toggleMute} disabled={!on} aria-label={t("nuikit_volume")} aria-pressed={volume === 0} className="-ml-2 text-muted-foreground">
         <Icon />
       </Button>
-      <Slider
-        className="flex-1"
-        min={0}
-        max={100}
-        step={1}
-        value={[volume]}
-        disabled={!on}
-        onValueChange={([v]) => update((d) => ({ ...d, volume: v }))}
-        onValueCommit={([v]) => void post("volumeChange", v)}
-        aria-label={t("nuikit_volume")}
-      />
-      <span className="nk-num text-muted-foreground w-8 text-right text-xs">{volume}</span>
+      <Slider className="flex-1" min={0} max={100} step={1} value={[volume]} disabled={!on} onValueChange={([v]) => update((d) => ({ ...d, volume: v }))} onValueCommit={([v]) => void post("volumeChange", v)} aria-label={t("nuikit_volume")} />
+      <span className="nk-num w-7 text-right text-xs text-muted-foreground">{volume}</span>
     </div>
   );
 }
 
-/** The handheld. Positioned by the caller. */
+/** The handheld: a kit Panel. Positioned and scaled by the caller. */
 export function Handheld() {
-  const ctx = useCtx();
-  const { data, t, tab, setTab, moveMode } = ctx;
+  const { data, t, tab, setTab, moveMode } = useCtx();
   const [message, setMessage] = useState<string | null>(null);
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
 
@@ -150,64 +169,48 @@ export function Handheld() {
   const screen = { home: <Home />, channels: <Channels />, keypad: <Keypad />, members: <Members />, settings: <SettingsScreen /> }[tab];
 
   return (
-    <div className="relative pt-10">
-      {/* antenna */}
-      <div className="bg-muted absolute top-0 left-8 h-14 w-5 rounded-t-md border border-b-0" />
-      <section
-        className={cn(
-          "nk-panel relative flex w-72 flex-col gap-3 rounded-[1.75rem] p-3",
-          moveMode && "outline-primary cursor-move outline-2 outline-offset-2",
-        )}
-      >
-        {/* speaker slot */}
-        <div className="relative flex h-3 items-center justify-center">
-          <div className="bg-muted h-1 w-12 rounded-full" />
-          {moveMode && <Move className="text-primary absolute right-2 size-4" />}
-        </div>
-
-        <div className="bg-background relative h-[18.75rem] overflow-hidden rounded-2xl border p-3">
-          {charged ? (
-            <div className="flex h-full flex-col">
-              <StatusBar message={message} />
-              {tab !== "home" && (
-                <button
-                  type="button"
-                  onClick={() => setTab("home")}
-                  className="text-muted-foreground hover:text-foreground -mt-1 mb-2 flex h-6 shrink-0 items-center gap-1 self-start text-xs font-medium outline-none"
-                >
-                  <ChevronLeft className="-ml-1 size-4" />
-                  {t("nuikit_back")}
-                </button>
-              )}
-              <div className="min-h-0 flex-1">{screen}</div>
-            </div>
+    <Panel size="sm" animate={false} selected={moveMode} className={cn("w-80", moveMode && "cursor-move")}>
+      <PanelHeader
+        icon={<RadioIcon />}
+        title={soft(t("radio"))}
+        description={
+          message ? (
+            <span role="status" className="text-foreground">
+              {message}
+            </span>
           ) : (
-            <div className="flex h-full flex-col items-center justify-center gap-3">
-              <BatteryWarning className="text-destructive size-6" />
-              <span className="text-destructive text-sm font-medium">{soft(t("nuikit_no_charge"))}</span>
-            </div>
-          )}
-        </div>
-
-        {charged && (
-          <>
-            <Volume />
-            <div className="flex gap-1">
-              <NavKey icon={ListMusic} label={soft(t("channels"))} tab="channels" />
-              <NavKey icon={Grid3x3} label={soft(t("radio"))} tab="keypad" />
-              {never ? (
-                <NavKey icon={Settings} label={soft(t("settings"))} tab="settings" />
-              ) : (
-                <NavKey icon={UsersRound} label={soft(t("members"))} tab="members" disabled={!data.onRadio} />
-              )}
-            </div>
-            <div className="text-muted-foreground flex h-5 items-center justify-center gap-1.5 text-xs">
-              <MapPin className="size-3.5 shrink-0" />
+            <span className="flex items-center gap-1">
+              <MapPin className="size-3 shrink-0" />
               <span className="truncate">{data.street || "—"}</span>
-            </div>
-          </>
-        )}
-      </section>
-    </div>
+            </span>
+          )
+        }
+        actions={<Status />}
+        className="[&_[data-slot=panel-actions]]:gap-1.5"
+      />
+      {charged ? (
+        <>
+          <PanelBody variant="form" className="min-h-[19rem] gap-[calc(var(--nk-space)*3)]">
+            {tab !== "home" && (
+              <Button variant="ghost" size="xs" onClick={() => setTab("home")} className="-mt-1 -ml-2 self-start text-muted-foreground">
+                <ChevronLeft />
+                {t("nuikit_back")}
+              </Button>
+            )}
+            <div className="flex min-h-0 flex-1 flex-col">{screen}</div>
+          </PanelBody>
+          <Volume />
+          <PanelFooter className="gap-1 p-[calc(var(--nk-space)*2)]">
+            <NavKey icon={ListMusic} label={soft(t("channels"))} tab="channels" />
+            <NavKey icon={Grid3x3} label={soft(t("radio"))} tab="keypad" />
+            {never ? <NavKey icon={Settings} label={soft(t("settings"))} tab="settings" /> : <NavKey icon={UsersRound} label={soft(t("members"))} tab="members" disabled={!data.onRadio} />}
+          </PanelFooter>
+        </>
+      ) : (
+        <PanelBody variant="form" className="min-h-[19rem] justify-center">
+          <EmptyState tone="error" icon={<BatteryWarning />} title={soft(t("nuikit_no_charge"))} description={t("nuikit_no_charge_hint")} />
+        </PanelBody>
+      )}
+    </Panel>
   );
 }

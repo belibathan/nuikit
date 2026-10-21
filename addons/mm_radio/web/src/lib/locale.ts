@@ -24,6 +24,7 @@ const FALLBACK: Record<string, string> = {
   nuikit_overlay_size: "Overlay size",
   nuikit_volume: "Volume",
   nuikit_no_charge: "No charge",
+  nuikit_no_charge_hint: "Put a battery in to use it.",
   nuikit_empty: "Nothing here yet",
   nuikit_no_channels: "No channels here yet. Dial one on the keypad.",
   nuikit_no_members: "No one else is on this channel yet.",

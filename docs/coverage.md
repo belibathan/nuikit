@@ -15,3 +15,27 @@ text prompts, skill checks, radial), so **the ox_lib override themes all of them
 
 Frameworks: the systems read player data through `bridge.lua`, so they also run on QBCore, ESX and
 standalone. The ox_lib override works on any server that runs ox_lib.
+
+## In-game checklists (0.7.1 Screens rebuilds, unproven in game)
+
+Browser-checked only (`bench/screens/<name>`: POST logs identical before and after, screenshots at 1280×720, 1920×1080, 2560×1440). Verify on a Qbox server:
+
+**qbx_scoreboard**
+1. Press the scoreboard key: a panel at the right shows players / slots with a thin bar and every activity with a dot and a word (Available, In progress, Unavailable).
+2. Set an activity busy (`exports.qbx_scoreboard:SetActivityBusy('bankrobbery', true)`) and open again: amber dot, "In progress".
+3. With no police on duty, every activity reads Unavailable (hollow dot); with enough, green and Available.
+4. Release the key (or press again in toggle mode): the panel fades out in about 100 ms; no cursor appears at any point.
+
+**qbx_idcard**
+1. Use an ID card item: the card shows beside the right edge with the mugshot, name, card type and place, citizen ID, date of birth, sex and nationality; a "Backspace · Put it away" prompt under it.
+2. Show it to a nearby player: they see the same card; a job badge (if configured) shows left of it with the grade as a chip.
+3. Press Backspace: the card closes and the game gets its keys back (walk, open the pause menu).
+4. With `autoClose.status = true` in `config/shared.lua`, the card closes on its own after `time` ms.
+5. Driver, weapon and lawyer cards each keep their configured colour as a line on the card's top edge.
+
+**mm_radio**
+1. Use the radio item: the panel slides in at its saved spot; header shows the clock, signal, battery and street; the joined frequency is the big number; the member overlay shows who's talking.
+2. Channels → Recommended → pick one: it joins (notify on the header's second line); Radio → type `88.5` on the keypad or keys, Join; dial above `Shared.MaxFrequency` is refused.
+3. Members: mute a player (icon fills), Hide/Show overlay, Settings → switch Move radio, drag the panel, Save: the position and call sign survive a reopen.
+4. Volume: drag the slider and let go (one "Volume set to N%" notify), mute toggles; the keypad still ignores keys while typing the call sign.
+5. Esc puts the radio away; walking in a jammer zone shows "Jammed"; a flat battery shows the no-charge screen.

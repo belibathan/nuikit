@@ -1,0 +1,197 @@
+{
+ "1280x720": {
+  "posts": [
+   {
+    "step": "key-nothing-shown",
+    "name": "closeIdCard",
+    "body": null,
+    "ms": 71
+   },
+   {
+    "step": "close-id",
+    "name": "closeIdCard",
+    "body": null,
+    "ms": 8
+   },
+   {
+    "step": "close-driver",
+    "name": "closeIdCard",
+    "body": null,
+    "ms": 6
+   },
+   {
+    "step": "close-weapon",
+    "name": "closeIdCard",
+    "body": null,
+    "ms": 6
+   },
+   {
+    "step": "close-lawyer",
+    "name": "closeIdCard",
+    "body": null,
+    "ms": 7
+   },
+   {
+    "step": "close-badge",
+    "name": "closeIdCard",
+    "body": null,
+    "ms": 7
+   },
+   {
+    "step": "close-nomugshot",
+    "name": "closeIdCard",
+    "body": null,
+    "ms": 7
+   },
+   {
+    "step": "close-unknown",
+    "name": "closeIdCard",
+    "body": null,
+    "ms": 6
+   },
+   {
+    "step": "close-recolored",
+    "name": "closeIdCard",
+    "body": null,
+    "ms": 6
+   },
+   {
+    "step": "card-autoclose",
+    "name": "closeIdCard",
+    "body": null,
+    "ms": 1507
+   }
+  ],
+  "themeRequests": 7
+ },
+ "1920x1080": {
+  "posts": [
+   {
+    "step": "key-nothing-shown",
+    "name": "closeIdCard",
+    "body": null,
+    "ms": 39
+   },
+   {
+    "step": "close-id",
+    "name": "closeIdCard",
+    "body": null,
+    "ms": 10
+   },
+   {
+    "step": "close-driver",
+    "name": "closeIdCard",
+    "body": null,
+    "ms": 10
+   },
+   {
+    "step": "close-weapon",
+    "name": "closeIdCard",
+    "body": null,
+    "ms": 7
+   },
+   {
+    "step": "close-lawyer",
+    "name": "closeIdCard",
+    "body": null,
+    "ms": 5
+   },
+   {
+    "step": "close-badge",
+    "name": "closeIdCard",
+    "body": null,
+    "ms": 9
+   },
+   {
+    "step": "close-nomugshot",
+    "name": "closeIdCard",
+    "body": null,
+    "ms": 9
+   },
+   {
+    "step": "close-unknown",
+    "name": "closeIdCard",
+    "body": null,
+    "ms": 8
+   },
+   {
+    "step": "close-recolored",
+    "name": "closeIdCard",
+    "body": null,
+    "ms": 5
+   },
+   {
+    "step": "card-autoclose",
+    "name": "closeIdCard",
+    "body": null,
+    "ms": 1510
+   }
+  ],
+  "themeRequests": 7
+ },
+ "2560x1440": {
+  "posts": [
+   {
+    "step": "key-nothing-shown",
+    "name": "closeIdCard",
+    "body": null,
+    "ms": 31
+   },
+   {
+    "step": "close-id",
+    "name": "closeIdCard",
+    "body": null,
+    "ms": 15
+   },
+   {
+    "step": "close-driver",
+    "name": "closeIdCard",
+    "body": null,
+    "ms": 14
+   },
+   {
+    "step": "close-weapon",
+    "name": "closeIdCard",
+    "body": null,
+    "ms": 9
+   },
+   {
+    "step": "close-lawyer",
+    "name": "closeIdCard",
+    "body": null,
+    "ms": 7
+   },
+   {
+    "step": "close-badge",
+    "name": "closeIdCard",
+    "body": null,
+    "ms": 9
+   },
+   {
+    "step": "close-nomugshot",
+    "name": "closeIdCard",
+    "body": null,
+    "ms": 10
+   },
+   {
+    "step": "close-unknown",
+    "name": "closeIdCard",
+    "body": null,
+    "ms": 10
+   },
+   {
+    "step": "close-recolored",
+    "name": "closeIdCard",
+    "body": null,
+    "ms": 14
+   },
+   {
+    "step": "card-autoclose",
+    "name": "closeIdCard",
+    "body": null,
+    "ms": 1508
+   }
+  ],
+  "themeRequests": 8
+ }
+}

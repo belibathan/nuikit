@@ -13,7 +13,7 @@ Scope: everything that crosses the boundary between qbx_idcard's client Lua and 
 |---|---|
 | Entry | `ui_page 'web/index.html'` |
 | Served files | A fixed list: `web/index.html`, `web/css/style.css`, `web/js/*.js`, `web/flags/*.png`, `web/badges/*.png`, `lang/global.js`. Anything else is **not served**. |
-| Our build | `index.html`, `css/style.css`, `js/main.js` (one bundle, no chunks, no other assets; the Vite config fails the build otherwise). Copied over `web/`, it replaces the stock page, stylesheet and entry script. The stock `js/config.js` and `js/fetchNui.js` stay but are no longer loaded. `flags/` and `badges/` are kept and used. |
+| Our build | `index.html`, `css/style.css`, `js/main.js` (one bundle, no chunks, no other assets; the Vite config fails the build otherwise). Copied over `web/`, it replaces the stock page, stylesheet and entry script. The stock `js/config.js` and `js/fetchNui.js` stay but are no longer loaded. `badges/` is kept and used (the job badge); `flags/` is kept but not drawn since the card moved to the kit's `player-card`. |
 | Labels | `lang/global.js` (resource root) is an ES module exporting `Global` with keys `lang_header`, `lang_lastname`, `lang_firstname`, `lang_citizenid`, `lang_dob`, `lang_sex`, `lang_nat`. From `web/js/main.js` it's `../../lang/global.js`. nuikit imports it at runtime when present and falls back to English. |
 | Focus | Lua sets `SetNuiFocus(true, false)` + `SetNuiFocusKeepInput(true)` when a card arrives: keyboard reaches the page, no cursor, the player can still move. |
 | Transparency | `html`/`body` transparent, no scrollbars. |
