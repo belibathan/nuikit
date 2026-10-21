@@ -6,7 +6,6 @@
   "fonts": "graphite",
   "lua": [],
   "components": [
-    "accordion",
     "alert-dialog",
     "badge",
     "button",
@@ -23,6 +22,9 @@
     "tooltip",
     "checkbox",
     "panel",
-    "menu-row"
+    "menu-row",
+    "sheet",
+    "edge-sheet",
+    "text-roll"
   ]
 }
