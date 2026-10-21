@@ -8,7 +8,7 @@ A drop-in replacement for [ox_lib](https://github.com/overextended/ox_lib)'s int
 - **Context menu**: a shadcn Sheet on the right edge in the pause menu's backdrop style (48px rows with hairlines, the title in the display face).
 - **List menu**: 48px rows, one gliding selection indicator, key-cap hints in the footer.
 - **Alert**: shadcn's AlertDialog; **input dialog**: shadcn's Dialog.
-- **Notifications** at top-right start below the nuikit HUD's top-right block (map, location, cash; about the top 26rem). Without that HUD, or with a different map, set `--ox-notify-top-right` on `:root` in a stylesheet the page loads (`1.5rem` = the corner).
+- **Notifications** at top-right start below the nuikit HUD's top-right block (map, location, cash; about the top 26rem). Without that HUD, or with a different map, set `--ox-notify-top-right` in `nuikit/theme.css` (it passes through the theme compiler; `1.5rem` puts them back in the corner).
 
 ## Install
 
