@@ -5,7 +5,7 @@ A drop-in replacement for [qbx_idcard](https://github.com/Qbox-project/qbx_idcar
 ## Install
 
 1. Download `nuikit-qbx_idcard.zip` from the latest nuikit release (or take `overrides/qbx_idcard` from `nuikit.zip`).
-2. Back up `qbx_idcard/web` **by copying it** (keep the original in place), then copy the zip's `web` folder over it so the files merge. Don't swap the whole folder: the card loads `qbx_idcard/web/flags/` and `badges/` images that only the original ships. It replaces `index.html`, `css/style.css` and adds `js/main.js`, all names qbx_idcard's fxmanifest already serves; `badges/` and `flags/` stay.
+2. Back up `qbx_idcard/web` **by copying it** (keep the original in place), then copy the zip's `web` folder over it so the files merge. Don't swap the whole folder: the job badge loads `qbx_idcard/web/badges/` images that only the original ships. It replaces `index.html`, `css/style.css` and adds `js/main.js`, all names qbx_idcard's fxmanifest already serves; `badges/` and `flags/` stay (the flag is no longer drawn).
 3. Optional: add the `nuikit` resource (from `[nuikit]`) and paste any [TweakCN](https://tweakcn.com) theme into `nuikit/theme.css`. Without it, the stock shadcn theme is used.
 4. `restart qbx_idcard`.
 
