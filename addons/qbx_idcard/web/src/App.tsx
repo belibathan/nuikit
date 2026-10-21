@@ -1,6 +1,7 @@
 import { toRgba } from "nuikit-core";
 import { IdCardIcon, UserIcon } from "lucide-react";
 import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
+import { EdgeSheet } from "@/components/ui/edge-sheet";
 import { Kbd } from "@/components/ui/kbd";
 import { DEFAULT_CONFIG, DEFAULT_LABELS, loadLabels, post, type IdConfig, type Labels, type PlayerData } from "@/lib/nui";
 import { loadServerTheme } from "@/lib/theme";
@@ -61,24 +62,15 @@ export default function App() {
     };
   }, [close]);
 
-  if (!card) return null;
-  return (
-    <div className="fixed inset-y-0 right-6 flex items-center">
-      <div key={shown} className="nk-enter flex items-center gap-6">
-        <JobBadge badge={card.badge} />
-        <div className="flex flex-col items-end gap-3">
-          <IdCard data={card} config={config} labels={labels} />
-          <p className="nk-chip pl-1">
-            <Kbd className="rounded-full px-2">{config.idCardSettings?.closeKey ?? "Backspace"}</Kbd>
-            to put it away
-          </p>
-        </div>
-      </div>
-    </div>
-  );
+  // the last card stays drawn while the sheet slides out
+  const last = useRef<PlayerData | null>(null);
+  if (card) last.current = card;
+  const data = card ?? last.current;
+  if (!data) return null;
+  return <IdCard key={shown} open={!!card} data={data} config={config} labels={labels} />;
 }
 
-function IdCard({ data, config, labels }: { data: PlayerData; config: IdConfig; labels: Labels }) {
+function IdCard({ open, data, config, labels }: { open: boolean; data: PlayerData; config: IdConfig; labels: Labels }) {
   const type = data.cardtype ?? "";
   const license = config.licenses?.[type] ?? {};
   const title = license.header ?? (type ? sentence(type.replace(/[_-]+/g, " ")) : "Identity");
@@ -87,24 +79,25 @@ function IdCard({ data, config, labels }: { data: PlayerData; config: IdConfig; 
   const accent = c ? `${c[0]}, ${c[1]}, ${c[2]}` : null;
   const name = [data.firstname, data.lastname].filter(Boolean).join(" ");
 
+  const badge = data.badge && data.badge !== "none" && typeof data.badge === "object" ? data.badge : null;
+
   return (
-    <section
-      className="nk-panel relative w-[30rem] overflow-hidden"
+    // A floating edge sheet on the right, sized to the card (registry edge-sheet): the card type's
+    // colour as a hairline and a faint wash, the holder's details, the signature, the close key.
+    <EdgeSheet
+      open={open}
+      side="right"
+      width="30rem"
+      fit
+      className="top-[28vh]"
       style={accent ? ({ "--idc-accent": accent } as CSSProperties) : undefined}
+      icon={<IdCardIcon className={cn(accent && "idc-icon")} />}
+      title={title}
+      description={titleCase(labels.lang_header)}
+      actions={badge?.grade && <span className="nk-label">{badge.grade}</span>}
     >
       {accent && <div aria-hidden className="idc-tint pointer-events-none absolute inset-0" />}
-
-      <header className="nk-panel-header relative">
-        <div className={cn("flex size-8 shrink-0 items-center justify-center rounded-md", accent ? "idc-mark" : "bg-muted text-muted-foreground")}>
-          <IdCardIcon className="size-4" />
-        </div>
-        <div className="min-w-0 flex-1">
-          <h2 className="nk-title truncate">{title}</h2>
-          <p className="nk-label truncate">{titleCase(labels.lang_header)}</p>
-        </div>
-      </header>
-
-      <div className="relative flex gap-4 p-4">
+      <div className="relative flex gap-4 pt-4">
         <Portrait src={data.mugShot} className="w-28" />
         <dl className="grid flex-1 grid-cols-2 content-start gap-x-4 gap-y-3">
           <Field label={labels.lang_firstname} value={data.firstname} strong />
@@ -114,16 +107,20 @@ function IdCard({ data, config, labels }: { data: PlayerData; config: IdConfig; 
           <Field label={labels.lang_sex} value={data.sex} />
           <Field label={labels.lang_nat} value={data.nationality} className="col-span-2" />
         </dl>
+        <JobBadge badge={data.badge} />
       </div>
 
-      <footer className="nk-panel-footer relative justify-between gap-4">
+      <footer className="relative mt-4 flex items-center justify-between gap-4 border-t border-border pt-4">
         <span className="idc-signature truncate text-xl leading-7 text-foreground/80">{name}</span>
         <div className="flex shrink-0 items-center gap-3">
           <img src="flags/32.png" alt="" className="h-4 rounded-[2px]" onError={(e) => (e.currentTarget.style.display = "none")} />
-          <Portrait src={data.mugShot} ghost className="w-6" />
+          <span className="nk-label flex items-center gap-1.5">
+            <Kbd>{config.idCardSettings?.closeKey ?? "Backspace"}</Kbd>
+            Put away
+          </span>
         </div>
       </footer>
-    </section>
+    </EdgeSheet>
   );
 }
 
@@ -180,9 +177,8 @@ function JobBadge({ badge }: { badge: PlayerData["badge"] }) {
   const [failed, setFailed] = useState(false);
   if (!badge || badge === "none" || typeof badge !== "object") return null;
   return (
-    <div className="flex flex-col items-center gap-3">
-      {badge.img && !failed && <img src={`badges/${badge.img}.png`} alt="" className="h-32 drop-shadow-xl" onError={() => setFailed(true)} />}
-      {badge.grade && <span className="nk-chip">{badge.grade}</span>}
+    <div className="flex shrink-0 flex-col items-center">
+      {badge.img && !failed && <img src={`badges/${badge.img}.png`} alt="" className="h-20 drop-shadow-lg" onError={() => setFailed(true)} />}
     </div>
   );
 }

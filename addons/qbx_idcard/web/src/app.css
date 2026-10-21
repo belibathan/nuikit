@@ -1,6 +1,7 @@
 /* index.css is synced from the nuikit template (stock shadcn theme); it also scales 1rem with the
    game's resolution. This adds a transparent, unscrollable page and the card's identity marks. */
 @import "./index.css";
+@import "tw-animate-css";
 
 html,
 body {
@@ -17,8 +18,7 @@ body {
     linear-gradient(rgba(var(--idc-accent), 0.9), rgba(var(--idc-accent), 0.9)) top / 100% 2px no-repeat,
     radial-gradient(90% 70% at 100% 0%, rgba(var(--idc-accent), 0.1) 0%, transparent 70%);
 }
-.idc-mark {
-  background: rgba(var(--idc-accent), 0.14);
+.idc-icon {
   color: rgb(var(--idc-accent));
 }
 

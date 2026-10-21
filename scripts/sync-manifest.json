@@ -281,9 +281,13 @@
     ],
     "addons/qbx_idcard": [
       "web/src/components/ui/badge.tsx",
+      "web/src/components/ui/button.tsx",
       "web/src/components/ui/card.tsx",
+      "web/src/components/ui/edge-sheet.tsx",
       "web/src/components/ui/kbd.tsx",
+      "web/src/components/ui/scroll-area.tsx",
       "web/src/components/ui/separator.tsx",
+      "web/src/components/ui/sheet.tsx",
       "web/src/index.css",
       "web/src/lib/utils.ts"
     ],
