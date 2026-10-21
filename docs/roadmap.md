@@ -30,7 +30,7 @@ Known issues in 0.6.0:
   callback ~0.5 ms per frame they land in. Hence live values (protocol §5.7) and capped drags.
 - FiveM starts a dependency (`nuikit`) automatically when a dependent starts.
 
-## Checkpoint 0.7.0 (frozen, awaiting the owner's in-game test)
+## Checkpoint 0.7.0 (tested Oct 21 on next-2c22598; fixes awaiting a retest)
 
 Integration branch `lead/next` (prerelease `next/combined`), tested by [`releases/v0.7.0-test.md`](releases/v0.7.0-test.md).
 It contains:
@@ -40,8 +40,26 @@ It contains:
 - hardening (#75): kit-aware `cn()`, the sync-drift gate, the contract, registry meta;
 - Screens fixes (#73) and the new README (#72).
 
-All browser and CI gates pass. Nothing past 0.6.0 is tested in game yet. After the test: merge to `main`, release 0.7.0,
-close the remaining PRs, clean up branches.
+In-game test (Oct 21, next-2c22598, Qbox b3258, 2558×1360): Must #1–8 pass (#7 without the GPS route line), #9 and #12
+partial, #10 and #11 fail, plus two new bugs. Results and the retest list: [`releases/v0.7.0-test.md`](releases/v0.7.0-test.md#results-next-2c22598).
+Fixes on `claude/nuikit-0-7-0-test-report-ncbaqu` (into `lead/next`), all browser/CI-checked, none yet in game:
+
+| Finding | Fix |
+|---|---|
+| F4 overrides keep the old theme (#11, the biggest) | `loadServerTheme` keeps asking `https://nuikit/theme` when the first ask fails (ox_lib starts before nuikit); the stale `theme.css` copy is only a stand-in. `client.lua` reads `GlobalState` when asked |
+| F2 empty ring after a live restart | mask txd gets a new name per start; a radar placed while hidden re-reads when it shows |
+| F3 `stop nuikit_hud` leaves the radar round | the `nuikit` resource restores GTA's radar (with waits) when the HUD that placed it stops |
+| 7b no GPS route in the ring | `minimap_mask` placed over the hole in absolute units (it sat at the screen's bottom-left corner) |
+| Note A map squashed in the ring | radar box at GTA's 1.41:1, mask shows only the middle; `Config.minimap.aspect = 1` is the old box |
+| F1 ammo reserve 0 with ox_inventory | reserve = count of the weapon's ammo item; hidden when unknown (`Config.ammoReserve`) |
+| F5 camera spins in first person | on foot the focus camera keeps the heading it started with |
+| F6 armour pill over the wallet (stock) | the column stands over a bottom-corner map's box even while it's hidden |
+| #12 `nuikit_pause` 0.05 ms closed | down state read every 250 ms, not every frame |
+| #11 Signal: dots and voice stay round | they take the chip radius |
+| Note C GTA vehicle name over the cluster | hidden while the cluster shows (`Config.vehicle.gameText`) |
+
+Open: note B (should nuikit draw weapon glyphs or use the inventory's item image) is a design question for the owner.
+After the retest: merge to `main`, release 0.7.0, close the remaining PRs, clean up branches.
 
 ## In progress and next
 
