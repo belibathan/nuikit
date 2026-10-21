@@ -25,9 +25,12 @@ import { meterColor, type MeterTone } from "@/components/ui/meter"
  *   <MenuRow value="Medium" valueTone="muted" onStep={(d) => cycle(d)}>Voice range</MenuRow>
  *   <MenuRow readOnly description="Set by your job">Callsign</MenuRow>
  *   <MenuRow tone="destructive" icon={<LogOutIcon />}>Disconnect</MenuRow>
+ *   <MenuRow readOnly description="Officer, on duty" actions={<Button size="icon-sm" variant="ghost" aria-label="Promote" …/>}>Lee</MenuRow>
  *
  * A checkbox or stepper row is a focusable div (a button can't hold one): Enter / Space toggle
- * it, Left / Right step it.
+ * it, Left / Right step it. `actions` are trailing controls that act on the row (promote, fire,
+ * track): the row is a div too, the controls are reached with Tab, and a click or key on one
+ * never fires the row's own click, toggle or step.
  *
  * `inert` (not the HTML attribute: the row stays clickable and focusable) turns hover off: in
  * game CEF keeps :hover matched after Lua takes focus away, so a UI that drives the highlight
@@ -110,6 +113,8 @@ type MenuRowProps = Omit<React.ComponentProps<"button">, "value" | "inert"> &
     readOnly?: boolean
     /** Hover changes nothing; the row is still clickable and focusable (see above). */
     inert?: boolean
+    /** Trailing controls that act on the row (icon buttons). Keyboard-reachable; their events stay theirs. */
+    actions?: React.ReactNode
     /** Render your own element (a link) with the row's styles. */
     asChild?: boolean
   }
@@ -133,6 +138,7 @@ function MenuRow({
   valueTone = "default",
   readOnly = false,
   inert = false,
+  actions,
   disabled,
   asChild = false,
   hover,
@@ -143,7 +149,8 @@ function MenuRow({
 }: MenuRowProps) {
   const isCheck = checked !== undefined
   const isStepper = onStep !== undefined
-  const asDiv = isCheck || isStepper || readOnly
+  const hasActions = actions !== undefined && actions !== null && actions !== false
+  const asDiv = isCheck || isStepper || readOnly || hasActions
   const hovers = hover ?? !(inert || readOnly)
   // readOnly rows never highlight, not even when told to.
   const lit = readOnly ? "" : cn(ON_HIGHLIGHT, hovers && ON_HOVER)
@@ -214,6 +221,16 @@ function MenuRow({
           </span>
         </span>
       )}
+      {hasActions && (
+        <span
+          data-slot="menu-row-actions"
+          // a control on a highlighted row would vanish into the accent: lift its hover off it
+          className="flex shrink-0 items-center gap-1 [&>button:hover]:bg-background/50 [&>button:hover]:text-foreground"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {actions}
+        </span>
+      )}
       {chevron && <ChevronRightIcon data-slot="menu-row-chevron" className={quiet} />}
     </>
   )
@@ -243,7 +260,8 @@ function MenuRow({
           if (isCheck) toggle()
         }}
         onKeyDown={(e) => {
-          if (readOnly) return
+          // keys on an action control are its own (the event still bubbles to a list's navigation)
+          if (readOnly || e.target !== e.currentTarget) return
           onKeyDown?.(e as unknown as React.KeyboardEvent<HTMLButtonElement>)
           if (e.defaultPrevented) return
           if (isCheck && (e.key === "Enter" || e.key === " ")) (e.preventDefault(), toggle())
