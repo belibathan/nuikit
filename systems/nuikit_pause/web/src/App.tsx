@@ -101,7 +101,8 @@ function Pause({ data, player }: { data: PauseData; player: NuiPlayer }) {
               </div>
             ) : null}
             <div className="min-w-0">
-              <h1 className="truncate text-xl leading-6 font-semibold tracking-tight">{server.name || "Paused"}</h1>
+              {/* the server's name in the identity's display face (reference screens), at the title size */}
+              <h1 className="nk-display truncate text-xl leading-6">{server.name || "Paused"}</h1>
               {server.tagline ? <p className="truncate text-sm text-muted-foreground">{server.tagline}</p> : null}
             </div>
           </header>
