@@ -1,6 +1,6 @@
 {
   "lua": [],
-  "components": [],
+  "components": ["notice", "panel", "menu-row", "form-field", "confirm", "meter", "progress-ring", "key-prompt", "radial-menu", "skill-check", "button", "kbd", "scroll-area"],
   "compiler": true,
   "runtime": true
 }
