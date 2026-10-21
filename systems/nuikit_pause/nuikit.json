@@ -17,6 +17,7 @@
     "meter",
     "hud-chip",
     "text-roll",
-    "smooth-input"
+    "smooth-input",
+    "sheet"
   ]
 }

@@ -35,7 +35,7 @@ Current release: **0.7.0** (npm `nuikit-core`, `vite-plugin-nuikit`, `create-nui
 | `packages/cli` | `nuikit` CLI: `nuikit check` (conformance audit against `docs/protocol.md`), `nuikit tokens`. |
 | `packages/create-nuikit` | `npm create nuikit`. `index.css.tpl` (theme, tokens, NUI scale) and `kit.css` (the `nk-*` utilities) are the **single sources** of every UI's `index.css`; the site imports `kit.css` directly. |
 | `registry/nuikit/{ui,hooks}` + `registry.json` | shadcn registry items (`npx shadcn add https://nuikit.vercel.app/r/<name>.json`). Compositions of stock shadcn. |
-| `vendor/shadcn/ui` | Unmodified shadcn new-york-v4 components (only the `cn` import path changed). Never edit; re-copy from upstream. |
+| `vendor/shadcn/{ui,hooks}` | Every shadcn new-york-v4 component and its `use-mobile` hook, unmodified (only the `cn` / sibling import paths changed). The foundation every page composes from (`docs/design.md` rule 10); `pnpm sync` follows their imports. Never edit; re-copy from upstream (`scripts/vendor-shadcn.mjs`). |
 | `systems/<name>` | `[nuikit]` resources (fxmanifest, Lua, `web/`). Reference UI: `systems/nuikit_pause`. |
 | `addons/<name>` | Overrides: new web UIs for other resources (ox_lib, ox_inventory…), built into that resource's UI folder. Clean-room from `docs/<name>-protocol.md`. |
 | `apps/www` | The site + registry host (Vercel, deploys from `main`). |

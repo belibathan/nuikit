@@ -1,8 +1,7 @@
 /* index.css is synced from the nuikit template (theme tokens + the kit layer, including the
    resolution-scaled html font-size: 1rem = 16px at 1080p). This file adds only what the inventory
-   needs on top: animation utilities, a transparent unscrollable page, scrollbars and item art. */
+   needs on top: a transparent unscrollable page, scrollbars and item art. */
 @import "./index.css";
-@import "tw-animate-css";
 
 html,
 body {

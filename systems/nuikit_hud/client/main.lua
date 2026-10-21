@@ -157,14 +157,17 @@ end)
 -- only while the cluster is up.
 CreateThread(function()
   while true do
-    if current ~= 0 and (Config.vehicle or {}).enabled ~= false and (Config.vehicle or {}).gameText ~= true then
+    -- IsPedInAnyVehicle as well as `current`: GTA starts the name the moment you sit, before the
+    -- vehicle loop (400 ms on foot) has picked the car up.
+    local seated = current ~= 0 or IsPedInAnyVehicle(PlayerPedId(), false)
+    if seated and (Config.vehicle or {}).enabled ~= false and (Config.vehicle or {}).gameText ~= true then
       HideHudComponentThisFrame(6) -- vehicle name
       HideHudComponentThisFrame(7) -- area name
       HideHudComponentThisFrame(8) -- vehicle class
       HideHudComponentThisFrame(9) -- street name
       Wait(0)
     else
-      Wait(400)
+      Wait(50)
     end
   end
 end)

@@ -18,11 +18,12 @@
 // One scope: FXServer runs every server_script of a resource in the same context (main.js has its own RESOURCE).
 (() => {
 const RESOURCE = GetCurrentResourceName();
-const { doctor, formatDoctor } = globalThis.NuikitTheme;
+const { doctor, formatDoctor, pageHash } = globalThis.NuikitTheme;
 
 // Metadata keys the doctor reads. GetResourceMetadata only answers for keys asked by name.
+// chat_theme is what the cfx chat resource looks for (nuikit_chat has no page of its own).
 const KEYS = [
-  "ui_page", "loadscreen", "version", "provide", "dependency", "dependencies",
+  "ui_page", "loadscreen", "chat_theme", "version", "provide", "dependency", "dependencies",
   "nuikit_protocol", "nuikit_ui", "nuikit_renderer", "nuikit_level", "nuikit_adapter",
   "shared_script", "client_script", "server_script", "shared_scripts", "client_scripts", "server_scripts",
 ];
@@ -33,7 +34,22 @@ for (let i = 0; i < GetNumResources(); i++) {
   const name = GetResourceByFindIndex(i);
   if (name && name !== RESOURCE && GetResourceState(name) === "started") startedBefore.add(name);
 }
-on("onResourceStart", (name) => startedBefore.delete(name));
+// Each started resource's fxmanifest.lua as it was when it started (a hash). An edit on disk after that
+// (a new `files` entry, say) isn't seen until `refresh`: bit the owner once (0.7.0 handoff §6).
+// LoadResourceFile reads the disk, so the doctor can compare. Null when the manifest can't be read.
+const manifestAtStart = new Map();
+function manifestHash(name) {
+  const text = LoadResourceFile(name, "fxmanifest.lua") || LoadResourceFile(name, "__resource.lua");
+  return text ? pageHash(text) : null;
+}
+for (let i = 0; i < GetNumResources(); i++) {
+  const name = GetResourceByFindIndex(i);
+  if (name && GetResourceState(name) === "started") manifestAtStart.set(name, manifestHash(name));
+}
+on("onResourceStart", (name) => {
+  startedBefore.delete(name);
+  manifestAtStart.set(name, manifestHash(name));
+});
 
 // Intent counts by source (nuikit:intent { source, intent }).
 const intents = {};
@@ -63,7 +79,10 @@ function snapshot() {
   for (let i = 0; i < GetNumResources(); i++) {
     const name = GetResourceByFindIndex(i);
     if (!name) continue;
-    resources.push({ name, state: GetResourceState(name), metadata: metadata(name), startedBeforeRuntime: startedBefore.has(name) });
+    const state = GetResourceState(name);
+    const was = manifestAtStart.get(name);
+    const manifestChanged = state === "started" && was != null && manifestHash(name) !== was;
+    resources.push({ name, state, metadata: metadata(name), startedBeforeRuntime: startedBefore.has(name), manifestChanged });
   }
   let overrides = null;
   const raw = LoadResourceFile(RESOURCE, "overrides.json");

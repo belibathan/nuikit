@@ -3,6 +3,8 @@
 *Clean-room spec. Written from [qbcore.org/docs/qbcore-resources/qb-radialmenu](https://qbcore.org/docs/qbcore-resources/qb-radialmenu).
 Mechanism proposed; the spike decides.*
 
+**Status (Oct 21):** built as `adapters/[nuikit-qb]/nuikit_qb_radialmenu` (stand-in; ships `config.lua` in qb-radialmenu's shape; `AddOption` / `RemoveOption`; F1 via `RegisterKeyMapping('nuikit_radial')`); replay test `bench/adapters/replay/qb/radialmenu.test.mjs`. **UI only:** vehicle doors, extras, seats and trunk classes are not translated (owner's call). Selection passes the item table as the event's first argument (guess). Not run in game.
+
 ## Source
 
 Documented: the config shape (`Config.MenuItems`, `Config.JobInteractions`, vehicle seats / extras / doors,

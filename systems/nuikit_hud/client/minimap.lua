@@ -66,12 +66,25 @@ local MASK_TXD = ('nuikit_minimap_%d'):format(GetGameTimer())
 --- height (frontend.xml), about 1.41. GTA draws the same view into any box, so the box keeps it.
 Minimap.ASPECT = (Layout.STOCK.minimap[3] * 16.0 / 9.0) / Layout.STOCK.minimap[4]
 
---- The box's aspect: GTA's (Config.minimap.aspect overrides it; 1 is the square box of 0.7.0-next).
+local tune = {}            -- debug overrides (Config.debug only): raw mask placement, route candidate
+
+--- How the GPS route is kept inside the map (Config.minimap.routeClip; the comment there lists the
+--- candidates). GTA draws the route across the whole radar box and through none of the masks nuikit
+--- knows (0.7.0 test, A4); none of these is proven, which is why it's a setting and an F8 command.
+function Minimap.routeClip()
+  local v = tune.route or cfg.routeClip
+  if v == 'inset' or v == 'texture' or v == 'stock' or v == 'box' then return v end
+  return 'mask'
+end
+
+--- The box's aspect: GTA's (Config.minimap.aspect overrides it; 1 is the square box of 0.7.0-next,
+--- which routeClip = 'box' also picks).
 function Minimap.aspect()
   local a = tonumber(cfg.aspect)
-  return (a and a >= 1.0 and a <= 3.0) and a or Minimap.ASPECT
+  if a and a >= 1.0 and a <= 3.0 then return a end
+  if Minimap.routeClip() == 'box' then return 1.0 end
+  return Minimap.ASPECT
 end
-local tune = {}            -- debug overrides (Config.debug only): raw mask placement
 
 -- ───────────────────────────────── style: nuikit places the radar ('ring'), or leaves it ('stock')
 
@@ -136,6 +149,12 @@ local masks = {}
 local function useMask(shape)
   local aspect = Minimap.aspect()
   local kind = shape == 'circle' and 'circle' or 'square'
+  -- the nuikit resource owns the texture so it survives this resource's restarts (0.7.0 test,
+  -- 0.7.0 baseline A2); the code below stays as the fallback for an older nuikit
+  if GetResourceState('nuikit') == 'started' then
+    TriggerEvent('nuikit:minimap:mask', kind, aspect)
+    return
+  end
   local name = ('%s_%d'):format(kind, math.floor(aspect * 1000 + 0.5))
   if not masks[name] then
     local txd = masks.txd or CreateRuntimeTxd(MASK_TXD)
@@ -154,13 +173,34 @@ local function useMask(shape)
   end
   RemoveReplaceTexture('platform:/textures/graphics', 'radarmasksm')
   AddReplaceTexture('platform:/textures/graphics', 'radarmasksm', MASK_TXD, name)
+  return MASK_TXD, name
 end
 
---- Where minimap_mask goes (component units): over the hole, in the same absolute units as the radar.
---- `hole` is the hole's x, y, w, h from Minimap.component.
-function Minimap.maskComponent(x, y, w, h)
+--- Where minimap_mask goes (component units): over the hole, in the same absolute units as the radar
+--- ('mask'); on the square inside the disc ('inset': side = hole / √2, centred); or GTA's own place
+--- ('stock'). `hole` is the hole's x, y, w, h from Minimap.component; `clip` is Minimap.routeClip().
+function Minimap.maskComponent(x, y, w, h, clip)
   if tune.mask then return table.unpack(tune.mask) end
+  clip = clip or Minimap.routeClip()
+  if clip == 'stock' then return table.unpack(Layout.STOCK.minimap_mask) end
+  if clip == 'inset' then
+    local k = 1.0 - 1.0 / math.sqrt(2.0)
+    return x + w * k / 2.0, y + h * k / 2.0, w * (1.0 - k), h * (1.0 - k)
+  end
   return x, y, w, h
+end
+
+--- routeClip = 'texture': GTA's second radar mask (radarmask1g, the one next to radarmasksm in
+--- platform:/textures/graphics) gets our disc too, in case the route layer reads that one. Put back
+--- by Minimap.restore and on every other candidate.
+local routeTextured = false
+local function useRouteTexture(on, txd, name)
+  if routeTextured then RemoveReplaceTexture('platform:/textures/graphics', 'radarmask1g') end
+  routeTextured = false
+  if on and txd and name then
+    AddReplaceTexture('platform:/textures/graphics', 'radarmask1g', txd, name)
+    routeTextured = true
+  end
 end
 
 --- The kit's rem in pixels for a screen height (1rem = 1.4815% of the height, 12–32px).
@@ -233,7 +273,8 @@ function Minimap.apply()
   local o = Minimap.options()
   -- the texture shapes the radar; the round clip type keeps edge blips on the circle
   SetMinimapClipType(tune.clip or (o.shape == 'circle' and 1 or 0))
-  useMask(tune.texture or o.shape)
+  local txd, name = useMask(tune.texture or o.shape)
+  useRouteTexture(Minimap.routeClip() == 'texture', txd, name)
   local x, y, w, h, mx, my, mw, mh = place(box, radar, width, height, safezone, area)
   placedByUs = true
   -- the nuikit resource puts GTA's radar back if this one stops (it can wait for the re-read; a
@@ -243,7 +284,10 @@ function Minimap.apply()
   -- a hidden radar (on foot with radar = 'vehicle') may not re-read: do it again when it shows
   stale = IsRadarHidden()
   reread()
-  if not scaleform then scaleform = RequestScaleformMovie('minimap') end
+  -- GTA's health and armour arcs are hidden by the nuikit resource: a scaleform handle requested here
+  -- is freed when this resource stops, and that unloaded GTA's own radar movie (the empty ring after
+  -- a restart, 0.7.0 baseline A2; found by turning the request off).
+  TriggerEvent('nuikit:minimap:bars', false)
   placed = {
     x = frame.x / width, y = frame.y / height, w = frame.w / width, h = frame.h / height,
     band = band / height, shape = o.shape, framed = true, preset = o.preset,
@@ -252,8 +296,8 @@ function Minimap.apply()
   if Config.debug then
     print(('[nuikit_hud] minimap: %dx%d safezone %.2f, frame %.0f,%.0f %.0fpx, hole %.0f,%.0f %.0fx%.0fpx, radar box %.0fx%.0fpx (%.3f:1)'):format(
       width, height, safezone, frame.x, frame.y, frame.w, radar.x, radar.y, radar.w, radar.h, box.w, box.h, box.w / box.h))
-    print(('[nuikit_hud] minimap: radar %.4f %.4f %.4f %.4f, mask %.4f %.4f %.4f %.4f (%s)'):format(
-      x, y, w, h, mx, my, mw, mh, o.shape))
+    print(('[nuikit_hud] minimap: radar %.4f %.4f %.4f %.4f, mask %.4f %.4f %.4f %.4f (%s, routeClip %s)'):format(
+      x, y, w, h, mx, my, mw, mh, o.shape, Minimap.routeClip()))
     -- the check from the in-game test: the radar's visible middle on screen must equal the hole
     print(('[nuikit_hud] minimap: %.2f:1, radar %.4f x %.0f (16:9 unit) / %.3f = %.1f px for a %.1f px hole'):format(
       width / height, w, Layout.unit16(height), Minimap.aspect(), w * Layout.unit16(height) / Minimap.aspect(), radar.w))
@@ -315,6 +359,7 @@ function Minimap.restore(flick)
   end
   SetMinimapClipType(0)
   RemoveReplaceTexture('platform:/textures/graphics', 'radarmasksm')
+  useRouteTexture(false)
   SetBlipAlpha(GetNorthRadarBlip(), 255)
   if flick then
     SetRadarBigmapEnabled(true, false)
@@ -366,14 +411,19 @@ end)
 
 AddEventHandler('onClientResourceStop', function(resource)
   if resource ~= GetCurrentResourceName() then return end
+  -- With the nuikit resource running, it restores GTA's radar a second after a real stop and does
+  -- nothing on a restart. Resetting here as well swapped the mask and clip out and straight back in
+  -- on every restart, which left the ring empty until the pause map reloaded (0.7.0 test, A2).
+  if placedByUs and GetResourceState('nuikit') == 'started' then return end
   if placedByUs then Minimap.restore(false) placedByUs = false else RemoveReplaceTexture('platform:/textures/graphics', 'radarmasksm') end
 end)
 
--- Calibration (Config.debug only): the server sends raw minimap_mask numbers or a shape, and the
--- radar is re-placed at once. Only the server can trigger a client event.
---   mask x y w h | shape square|circle | texture square|circle | clip 0|1 | reset
+-- Calibration (Config.debug only): raw minimap_mask numbers, a shape or a route candidate, and the
+-- radar is re-placed at once. From F8 (`nuikit_minimap route inset`) or the server event.
+--   mask x y w h | shape square|circle | texture square|circle | clip 0|1
+--   route mask|inset|texture|stock|box (Config.minimap.routeClip, live) | reset
 if Config.debug then
-  RegisterNetEvent('nuikit_hud:minimap:tune', function(what, a, b, c, d)
+  local function tuneMinimap(what, a, b, c, d)
     if what == 'mask' then
       tune.mask = { tonumber(a) or 0.0, tonumber(b) or 0.0, tonumber(c) or 0.1, tonumber(d) or 0.1 }
     elseif what == 'shape' then
@@ -382,11 +432,19 @@ if Config.debug then
       tune.texture = a
     elseif what == 'clip' then
       tune.clip = tonumber(a)
+    elseif what == 'route' then
+      tune.route = a
+      print(('[nuikit_hud] minimap: routeClip %s'):format(Minimap.routeClip()))
     elseif what == 'reset' then
       tune = {}
+    else
+      print('[nuikit_hud] nuikit_minimap mask x y w h | shape square|circle | texture square|circle | clip 0|1 | route mask|inset|texture|stock|box | reset')
+      return
     end
     CreateThread(Minimap.apply)
-  end)
+  end
+  RegisterNetEvent('nuikit_hud:minimap:tune', tuneMinimap)
+  RegisterCommand('nuikit_minimap', function(_, args) tuneMinimap(table.unpack(args)) end, false)
 end
 
 -- Whether the radar shows: a few times a second (cheap: three natives, a message only on change).
@@ -437,11 +495,7 @@ do
   -- nuikit places it: 'stock' leaves GTA's radar as it is).
   CreateThread(function()
     while true do
-      if Minimap.style() == 'ring' and scaleform and HasScaleformMovieLoaded(scaleform) then
-        BeginScaleformMovieMethod(scaleform, 'SETUP_HEALTH_ARMOUR')
-        ScaleformMovieMethodAddParamInt(3)
-        EndScaleformMovieMethod()
-      end
+      if Minimap.style() == 'ring' and placedByUs then TriggerEvent('nuikit:minimap:bars', false) end
       Wait(1000)
     end
   end)

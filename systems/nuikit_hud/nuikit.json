@@ -3,6 +3,7 @@
   "surface": "world",
   "components": [
     "hud-chip",
-    "text-roll"
+    "text-roll",
+    "vital-chip"
   ]
 }

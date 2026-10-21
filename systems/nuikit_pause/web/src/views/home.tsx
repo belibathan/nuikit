@@ -6,18 +6,18 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { HudChip } from "@/components/ui/hud-chip";
 import { Kbd } from "@/components/ui/kbd";
 import { Meter } from "@/components/ui/meter";
-import { Panel, PanelBody, PanelHeader } from "@/components/ui/panel";
 import { Stat } from "@/components/ui/stat";
 import { useFrameBatch } from "@/lib/batch";
 import { duration, initials, list, money } from "@/lib/format";
 import { cn } from "@/lib/utils";
+import { SheetPage } from "./sheet";
 
 /**
  * The open stage: everything right of the sheet. In game the focus camera frames the player inside
  * it, so it reports its rectangle to Lua (`pause:preview:frame`, 0–1 screen fractions); dragging
  * across it turns the character.
  */
-export function Stage({ active }: { active: boolean }) {
+export function Stage({ active, back = false }: { active: boolean; back?: boolean }) {
   const ref = useRef<HTMLDivElement>(null);
   const turn = useFrameBatch((dx) => void fetchNui("pause:preview:rotate", { dx }).catch(() => {}));
   const drag = useRef<number | null>(null);
@@ -58,7 +58,7 @@ export function Stage({ active }: { active: boolean }) {
       <div data-slot="pause-hints" className="nk-anchor-b flex items-center gap-2 [--nk-edge:0rem]">
         <HudChip icon={<Kbd>Tab</Kbd>}>Choose</HudChip>
         <HudChip icon={<Kbd>Enter</Kbd>}>Confirm</HudChip>
-        <HudChip icon={<Kbd>Esc</Kbd>}>Resume</HudChip>
+        <HudChip icon={<Kbd>Esc</Kbd>}>{back ? "Back" : "Resume"}</HudChip>
         {active && <HudChip icon={<MoveHorizontalIcon />}>Drag to look around</HudChip>}
       </div>
     </div>
@@ -146,22 +146,22 @@ export function ServerSummary({ data }: { data: PauseData }) {
   );
 }
 
-export function HelpPanel({ help }: { help: PauseData["help"] }) {
+/** Help: the server's controls (Config.help), as rows in the sheet. */
+export function HelpPage({ help, onBack }: { help: PauseData["help"]; onBack: () => void }) {
   return (
-    <Panel>
-      <PanelHeader title="Controls" description="Change yours in Key bindings." />
-      <PanelBody>
-        {help.length ? (
-          help.map((h) => (
-            <div key={h.key + h.label} className="nk-row justify-between">
+    <SheetPage title="Controls" description="Change yours in Key bindings." onBack={onBack}>
+      {help.length ? (
+        <div className="flex flex-col divide-y divide-border">
+          {help.map((h) => (
+            <div key={h.key + h.label} className="nk-row min-h-12 justify-between px-0 text-base">
               <span>{h.label}</span>
               <Kbd className="min-w-8">{h.key}</Kbd>
             </div>
-          ))
-        ) : (
-          <p className="nk-row text-muted-foreground">This server hasn't listed its controls.</p>
-        )}
-      </PanelBody>
-    </Panel>
+          ))}
+        </div>
+      ) : (
+        <p className="nk-row px-0 text-muted-foreground">This server hasn't listed its controls.</p>
+      )}
+    </SheetPage>
   );
 }

@@ -8,7 +8,7 @@ import { layoutVars, stageLayout, useHudLayout, useViewport } from "./hud/layout
 import { CompassTape, LocationStrip } from "./hud/location";
 import { useHudLook, type HudLook } from "./hud/look";
 import { MapLocation, MapRing } from "./hud/map";
-import { VitalsCompact, VitalsRow } from "./hud/pills";
+import { VitalsRow } from "./hud/pills";
 import { Wallet } from "./hud/wallet";
 
 export default function App() {
@@ -89,7 +89,7 @@ function Compact({ settings, vehicle, location, weapon, layout, frame, state, pl
         <Wallet player={player} settings={settings} inline compact />
       </div>
       <div className={besideMap ? "hud-beside-map" : "hud-anchor-bl"}>
-        <VitalsCompact player={player} settings={settings} />
+        <VitalsRow player={player} settings={settings} layout="compact" />
       </div>
       <div className="hud-anchor-br hud-br-stack">
         {settings.ammo !== false && <Ammo weapon={weapon} />}

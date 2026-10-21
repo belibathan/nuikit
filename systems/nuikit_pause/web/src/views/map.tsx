@@ -1,7 +1,6 @@
 import { onNui } from "nuikit-core";
 import { fetchNui, useNuiState } from "nuikit-core/react";
 import {
-  ArrowLeftIcon,
   FlagIcon,
   LayersIcon,
   LocateFixedIcon,
@@ -22,7 +21,8 @@ import { HudChip } from "@/components/ui/hud-chip";
 import { SmoothInput } from "@/components/ui/smooth-input";
 import { Kbd } from "@/components/ui/kbd";
 import { MenuRow } from "@/components/ui/menu-row";
-import { Panel, PanelBody, PanelFooter, PanelHeader } from "@/components/ui/panel";
+import { TextRoll } from "@/components/ui/text-roll";
+import { SheetPage, SheetSection } from "./sheet";
 import { Stat } from "@/components/ui/stat";
 import { useFrameBatch } from "@/lib/batch";
 import { distance, list } from "@/lib/format";
@@ -36,12 +36,13 @@ const DRAG_PX = 4; // less than this between down and up is a click
 const NO_INFO: MapInfo = { zone: "", street: "", topdown: false, waypoint: false };
 
 /**
- * The 3D map (docs/pause-3d.md). The game camera hangs over the real world; this is only the glass
- * on top: an input layer for drag / rotate / zoom / click, the pins Lua projects, and panels.
- * Pins move every frame, so they bypass React (see <Pins>); the panels only re-render when the
- * area or street under the view changes.
+ * The 3D map (docs/pause-3d.md). The game camera hangs over the real world; the UI is the glass on
+ * top (MapStage: drag / rotate / zoom / click, the pins and blips Lua projects, the camera buttons,
+ * the picked spot) and a page of the pause sheet (MapSheetPage: where you're looking, search, places,
+ * the blip legend). Both read one model, so the sheet and the glass always agree.
+ * Pins move every frame, so they bypass React (see <Pins>, <Blips>).
  */
-export function MapView({ data, onBack }: { data: PauseData; onBack: () => void }) {
+export function useMapModel(data: PauseData, open: boolean) {
   const info = useNuiState("pause:map:info", NO_INFO);
   const places = useMemo(() => list(data?.places), [data?.places]);
   const [selection, setSelection] = useState<Selection | null>(null);
@@ -50,6 +51,12 @@ export function MapView({ data, onBack }: { data: PauseData; onBack: () => void 
   const raw = useNuiState("pause:map:blips", NO_BLIPS);
   const blips = useMemo(() => (Array.isArray(raw) ? raw : []), [raw]);
   const [hidden, setHidden] = useState<ReadonlySet<BlipKind>>(() => new Set());
+  // a fresh map each time it opens: nothing picked, no search
+  useEffect(() => {
+    if (!open) return;
+    setSelection(null);
+    setQuery("");
+  }, [open]);
   const toggle = (k: BlipKind) =>
     setHidden((h) => {
       const next = new Set(h);
@@ -65,6 +72,11 @@ export function MapView({ data, onBack }: { data: PauseData; onBack: () => void 
     }
     setSelection({ kind: "blip", choice: c, waypoint: true });
     void fetchNui("pause:map:waypoint", { x: c.blip.x, y: c.blip.y }).catch(() => {});
+  };
+  // a search result: fly there and show it; the waypoint is one press away
+  const findBlip = (c: BlipChoice) => {
+    setSelection({ kind: "blip", choice: c, waypoint: false });
+    void fetchNui("pause:map:fly", { x: c.blip.x, y: c.blip.y }).catch(() => {});
   };
   const legend = useMemo(() => {
     const n = new Map<BlipKind, number>();
@@ -96,6 +108,49 @@ export function MapView({ data, onBack }: { data: PauseData; onBack: () => void 
     void fetchNui("pause:map:focus", { id: place.id }).catch(() => {});
   };
 
+  const shown = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return q ? places.filter((p) => p.label.toLowerCase().includes(q) || p.category?.toLowerCase().includes(q)) : places;
+  }, [places, query]);
+  const groups = useMemo(() => {
+    const g = new Map<string, PausePlace[]>();
+    for (const p of shown) g.set(p.category ?? "Places", [...(g.get(p.category ?? "Places") ?? []), p]);
+    return [...g];
+  }, [shown]);
+
+  const selectedId = selection?.kind === "place" ? selection.place.id : undefined;
+  const selectedBlip = selection?.kind === "blip" ? selection.choice.blip.id : undefined;
+  return {
+    info,
+    places,
+    blips,
+    hidden,
+    toggle,
+    legend,
+    blipHits,
+    shown,
+    groups,
+    query,
+    setQuery,
+    selection,
+    setSelection,
+    selectedId,
+    selectedBlip,
+    choose,
+    chooseBlip,
+    findBlip,
+    pick,
+    pan,
+    rotate,
+    zoom,
+    compass,
+  };
+}
+export type MapModel = ReturnType<typeof useMapModel>;
+
+/** The glass over the world: input, blips, pins, the camera buttons and the picked spot. */
+export function MapStage({ model: m, left }: { model: MapModel; left: string }) {
+  const { pan, rotate, zoom } = m;
   // Keyboard: arrows / WASD pan, Q E rotate, + - zoom. Not while typing in the search.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -116,135 +171,99 @@ export function MapView({ data, onBack }: { data: PauseData; onBack: () => void 
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   });
-
-  const shown = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    return q ? places.filter((p) => p.label.toLowerCase().includes(q) || p.category?.toLowerCase().includes(q)) : places;
-  }, [places, query]);
-  const groups = useMemo(() => {
-    const g = new Map<string, PausePlace[]>();
-    for (const p of shown) g.set(p.category ?? "Places", [...(g.get(p.category ?? "Places") ?? []), p]);
-    return [...g];
-  }, [shown]);
-
-  const selectedId = selection?.kind === "place" ? selection.place.id : undefined;
-  const selectedBlip = selection?.kind === "blip" ? selection.choice.blip.id : undefined;
-
   return (
-    <div className="absolute inset-0 overflow-hidden select-none [--nk-edge:3rem]">
+    <div className="absolute inset-0 overflow-hidden select-none">
       <div className="pause-map-shade pointer-events-none absolute inset-0" aria-hidden />
-      <InputLayer pan={pan} rotate={rotate} zoom={zoom} pick={pick} />
-      <Blips blips={blips} hidden={hidden} selectedId={selectedBlip} onChoose={chooseBlip} />
-      <Pins places={places} selectedId={selectedId} onChoose={choose} compass={compass} />
-
-      {/* top left: where we're looking, and the way back */}
-      <div className="nk-anchor-tl flex w-80 flex-col gap-3">
-        <Panel size="auto" className="w-full">
-          <PanelHeader
-            icon={<MapIcon />}
-            title={info.zone || "Map"}
-            description={info.street || "Drag to move, right-drag to turn, scroll to zoom"}
-            actions={
-              <Button variant="ghost" size="sm" onClick={onBack} aria-label="Back">
-                <ArrowLeftIcon />
-                Back
-                <Kbd className="ml-1">Esc</Kbd>
-              </Button>
-            }
-          />
-        </Panel>
-
-        {(places.length > 0 || blips.length > 0) && (
-          <Panel size="auto" className="w-full">
-            <PanelHeader
-              tabs={
-                <label className="relative">
-                  <SearchIcon className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground" />
-                  <SmoothInput value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search places and blips" className="h-8 pl-8" />
-                </label>
-              }
-              title="Places"
-              actions={<span className="nk-label nk-num">{shown.length + blipHits.length}</span>}
-            />
-            <PanelBody scroll className="max-h-[18rem]">
-              {groups.length === 0 && blipHits.length === 0 ? (
-                <p className="nk-row text-muted-foreground">Nothing matches. Try another name.</p>
-              ) : (
-                groups.map(([category, rows]) => (
-                  <div key={category} className="flex flex-col gap-0.5">
-                    <p className="nk-label px-3 pt-2 pb-1">{category}</p>
-                    {rows.map((p) => {
-                      const Icon = icon(p.icon);
-                      return (
-                        <MenuRow key={p.id} icon={<Icon />} active={p.id === selectedId} onClick={() => choose(p)}>
-                          {p.label}
-                        </MenuRow>
-                      );
-                    })}
-                  </div>
-                ))
-              )}
-              {blipHits.length > 0 && (
-                <div className="flex flex-col gap-0.5">
-                  <p className="nk-label px-3 pt-2 pb-1">On the map</p>
-                  {blipHits.map((c) => (
-                    <MenuRow
-                      key={c.blip.id}
-                      icon={<c.look.icon />}
-                      meta={c.look.kindLabel}
-                      active={c.blip.id === selectedBlip}
-                      onClick={() => {
-                        setSelection({ kind: "blip", choice: c, waypoint: false });
-                        void fetchNui("pause:map:fly", { x: c.blip.x, y: c.blip.y }).catch(() => {});
-                      }}
-                    >
-                      {c.look.label}
-                    </MenuRow>
-                  ))}
-                </div>
-              )}
-            </PanelBody>
-          </Panel>
-        )}
-
-        {legend.length > 0 && (
-          <Panel size="auto" className="w-full">
-            <PanelHeader title="On the map" description="What GTA's map shows, by kind" actions={<span className="nk-label nk-num">{blips.length}</span>} />
-            <PanelBody scroll className="max-h-[16rem]">
-              {legend.map((k) => (
-                <MenuRow key={k.kind} icon={<k.icon />} checked={!hidden.has(k.kind)} onCheckedChange={() => toggle(k.kind)} meta={String(k.count)}>
-                  {k.label}
-                </MenuRow>
-              ))}
-            </PanelBody>
-          </Panel>
-        )}
+      <InputLayer pan={pan} rotate={rotate} zoom={zoom} pick={m.pick} />
+      <Blips blips={m.blips} hidden={m.hidden} selectedId={m.selectedBlip} onChoose={m.chooseBlip} />
+      <Pins places={m.places} selectedId={m.selectedId} onChoose={m.choose} compass={m.compass} />
+      {/* the open area, right of the sheet: the camera buttons on its edge */}
+      <div className="pointer-events-none absolute inset-y-0 right-0 [--nk-edge:1.5rem] [&>*]:pointer-events-auto" style={{ left }}>
+        <Controls topdown={m.info.topdown} zoom={zoom} compass={m.compass} />
       </div>
+    </div>
+  );
+}
 
-      {/* top right: GTA's own map is one press away */}
-      <div className="nk-anchor-tr">
-        <Button variant="outline" className="nk-panel h-9" onClick={() => void fetchNui("pause:gamemap").catch(() => {})}>
+/** The map's page in the pause sheet: where you're looking, search, places and the legend, as sections. */
+export function MapSheetPage({ model: m, onBack }: { model: MapModel; onBack: () => void }) {
+  const searching = m.query.trim() !== "";
+  return (
+    <SheetPage
+      title={<TextRoll value={m.info.zone || "Map"} />}
+      description={<TextRoll value={m.info.street || "Drag to move, right-drag to turn, scroll to zoom"} direction="down" />}
+      onBack={onBack}
+      actions={
+        <Button variant="outline" size="sm" onClick={() => void fetchNui("pause:gamemap").catch(() => {})}>
           <MapIcon />
           Game map
           <Kbd className="ml-1">P</Kbd>
         </Button>
-      </div>
-
-      {/* bottom right: the camera */}
-      <Controls topdown={info.topdown} zoom={zoom} compass={compass} />
-
-      {/* bottom middle: what's picked */}
-      {selection && (
-        <div className="nk-anchor-b">
-          <SelectionCard
-            key={selection.kind === "place" ? selection.place.id : selection.kind === "blip" ? `blip-${selection.choice.blip.id}` : `${selection.pick.point?.x},${selection.pick.point?.y}`}
-            selection={selection}
-            hasWaypoint={info.waypoint}
-            onClose={() => setSelection(null)}
-          />
-        </div>
+      }
+    >
+      {m.selection && (
+        <SelectionSection
+          key={m.selection.kind === "place" ? m.selection.place.id : m.selection.kind === "blip" ? `blip-${m.selection.choice.blip.id}` : `${m.selection.pick.point?.x},${m.selection.pick.point?.y}`}
+          selection={m.selection}
+          hasWaypoint={m.info.waypoint}
+          onClose={() => m.setSelection(null)}
+        />
       )}
-    </div>
+
+      {(m.places.length > 0 || m.blips.length > 0) && (
+        <SheetSection>
+          <label className="relative block">
+            <SearchIcon className="pointer-events-none absolute top-1/2 left-3 z-10 size-4 -translate-y-1/2 text-muted-foreground" />
+            <SmoothInput value={m.query} onChange={(e) => m.setQuery(e.target.value)} placeholder="Search places and blips" className="h-10 pl-9 text-base" />
+          </label>
+        </SheetSection>
+      )}
+
+      {searching && m.groups.length === 0 && m.blipHits.length === 0 && (
+        <SheetSection>
+          <p className="nk-row px-0 text-muted-foreground">Nothing matches. Try another name.</p>
+        </SheetSection>
+      )}
+
+      {m.groups.map(([category, rows]) => (
+        <SheetSection key={category} label={category} meta={rows.length}>
+          <div className="flex flex-col divide-y divide-border">
+            {rows.map((p) => {
+              const Icon = icon(p.icon);
+              return (
+                <MenuRow key={p.id} icon={<Icon />} active={p.id === m.selectedId} onClick={() => m.choose(p)} className="min-h-11">
+                  {p.label}
+                </MenuRow>
+              );
+            })}
+          </div>
+        </SheetSection>
+      ))}
+
+      {m.blipHits.length > 0 && (
+        <SheetSection label="On the map" meta={m.blipHits.length}>
+          <div className="flex flex-col divide-y divide-border">
+            {m.blipHits.map((c) => (
+              <MenuRow key={c.blip.id} icon={<c.look.icon />} meta={c.look.kindLabel} active={c.blip.id === m.selectedBlip} onClick={() => m.findBlip(c)} className="min-h-11">
+                {c.look.label}
+              </MenuRow>
+            ))}
+          </div>
+        </SheetSection>
+      )}
+
+      {!searching && m.legend.length > 0 && (
+        <SheetSection label="Show on the map" meta={m.blips.length}>
+          <div className="flex flex-col divide-y divide-border">
+            {m.legend.map((k) => (
+              <MenuRow key={k.kind} icon={<k.icon />} checked={!m.hidden.has(k.kind)} onCheckedChange={() => m.toggle(k.kind)} meta={String(k.count)} className="min-h-11">
+                {k.label}
+              </MenuRow>
+            ))}
+          </div>
+        </SheetSection>
+      )}
+    </SheetPage>
   );
 }
 
@@ -346,7 +365,7 @@ const Pins = memo(function Pins({
   );
 
   return (
-    <div ref={root} className="pointer-events-none absolute inset-0">
+    <div ref={root} className="pointer-events-none absolute inset-0 z-0">
       {places.map((p, i) => {
         const Icon = icon(p.icon);
         const selected = p.id === selectedId;
@@ -393,14 +412,15 @@ const Pins = memo(function Pins({
 
 function Controls({ topdown, zoom, compass }: { topdown: boolean; zoom: (d: number) => void; compass: RefObject<SVGSVGElement | null> }) {
   const btn = (label: string, child: ReactNode, onClick: () => void, pressed?: boolean) => (
-    <Button variant={pressed ? "secondary" : "ghost"} size="icon" aria-label={label} title={label} aria-pressed={pressed} onClick={onClick}>
+    <Button variant={pressed ? "secondary" : "ghost"} size="icon-sm" aria-label={label} title={label} aria-pressed={pressed} onClick={onClick}>
       {child}
     </Button>
   );
   return (
-    <div className="nk-anchor-br">
-      <div className="nk-panel flex flex-col items-center gap-1 p-1.5">
-        <span className="flex size-9 items-center justify-center text-muted-foreground" aria-label="North">
+    <div className="nk-anchor-r">
+      {/* a slim strip of the game's chip surface, not a card */}
+      <div className="pause-controls flex flex-col items-center gap-0.5 p-1">
+        <span className="flex size-8 items-center justify-center opacity-70" aria-label="North">
           <NavigationIcon ref={compass} className="size-4" />
         </span>
         {btn("Zoom in", <PlusIcon />, () => zoom(-0.3))}
@@ -412,7 +432,8 @@ function Controls({ topdown, zoom, compass }: { topdown: boolean; zoom: (d: numb
   );
 }
 
-function SelectionCard({ selection, hasWaypoint, onClose }: { selection: Selection; hasWaypoint: boolean; onClose: () => void }) {
+/** The picked spot, as the first section of the map page: what it is, how far, and the waypoint. */
+function SelectionSection({ selection, hasWaypoint, onClose }: { selection: Selection; hasWaypoint: boolean; onClose: () => void }) {
   const blip = selection.kind === "blip" ? selection.choice : undefined;
   // a blip sets the waypoint when it's clicked
   const [set, setSet] = useState(selection.kind === "blip" && selection.waypoint);
@@ -423,44 +444,53 @@ function SelectionCard({ selection, hasWaypoint, onClose }: { selection: Selecti
   const title = place?.label ?? blip?.look.label ?? pick?.street ?? "Unknown road";
   const description = place ? place.category : blip ? blip.look.kindLabel : [pick?.crossing && `Near ${pick.crossing}`, pick?.zone].filter(Boolean).join(", ");
 
+  // a new pick scrolls the sheet back up to it
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    ref.current?.scrollIntoView({ block: "nearest" });
+  }, []);
   return (
-    <Panel size="lg">
-      <PanelHeader
-        icon={<Icon />}
-        title={title}
-        description={description || undefined}
-        actions={
-          <Button variant="ghost" size="icon-sm" onClick={onClose} aria-label="Close">
+    <SheetSection label="Selected" className="nk-enter scroll-mt-6">
+      <div ref={ref} data-slot="map-selection" className="flex flex-col gap-4">
+        <div className="flex items-center gap-3">
+          <span className="flex size-10 shrink-0 items-center justify-center rounded-(--nk-chip-radius) bg-muted text-foreground [&_svg]:size-4">
+            <Icon />
+          </span>
+          <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+            <p className="nk-title truncate">{title}</p>
+            {description ? <p className="nk-label truncate text-muted-foreground">{description}</p> : null}
+          </div>
+          <Button variant="ghost" size="icon-sm" onClick={onClose} aria-label="Clear selection">
             <XIcon />
           </Button>
-        }
-      />
-      {pick && (
-        <PanelBody variant="form" className="grid grid-cols-2">
-          <Stat size="sm" label="Distance" value={distance(pick.distance)} />
-          <Stat size="sm" label="Area" value={pick.zone || "—"} />
-        </PanelBody>
-      )}
-      <PanelFooter>
-        {hasWaypoint && (
-          <Button variant="ghost" size="sm" onClick={() => void fetchNui("pause:map:waypoint", { clear: true }).catch(() => {})}>
-            Clear waypoint
-          </Button>
+        </div>
+        {pick && (
+          <div className="grid grid-cols-2 gap-4">
+            <Stat size="sm" label="Distance" value={distance(pick.distance)} />
+            <Stat size="sm" label="Area" value={pick.zone || "—"} />
+          </div>
         )}
-        <Button
-          size="sm"
-          className="ml-auto"
-          disabled={!target}
-          onClick={() => {
-            if (!target) return;
-            setSet(true);
-            void fetchNui("pause:map:waypoint", { x: target.x, y: target.y }).catch(() => {});
-          }}
-        >
-          <FlagIcon />
-          {set ? "Waypoint set" : "Set waypoint"}
-        </Button>
-      </PanelFooter>
-    </Panel>
+        <div className="flex items-center gap-2">
+          {hasWaypoint && (
+            <Button variant="ghost" size="sm" onClick={() => void fetchNui("pause:map:waypoint", { clear: true }).catch(() => {})}>
+              Clear waypoint
+            </Button>
+          )}
+          <Button
+            size="sm"
+            className="ml-auto"
+            disabled={!target}
+            onClick={() => {
+              if (!target) return;
+              setSet(true);
+              void fetchNui("pause:map:waypoint", { x: target.x, y: target.y }).catch(() => {});
+            }}
+          >
+            <FlagIcon />
+            {set ? "Waypoint set" : "Set waypoint"}
+          </Button>
+        </div>
+      </div>
+    </SheetSection>
   );
 }

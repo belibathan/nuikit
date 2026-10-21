@@ -3,6 +3,8 @@
 *Clean-room spec. Written from [qbcore.org/docs/qbcore-resources/qb-input](https://qbcore.org/docs/qbcore-resources/qb-input).
 Mechanism proposed; the spike decides.*
 
+**Status (Oct 21):** built as `adapters/[nuikit-qb]/nuikit_qb_input` (stand-in, blocking `ShowInput` through `handle:await()`); replay test `bench/adapters/replay/qb/input.test.mjs` (yield across the export modelled with coroutines). Decisions until a recording: `number` → number (`Config.numbersAsStrings`), checkbox group → list of checked values, `radio` → the `radio` field type. Not run in game; the yielding export is the first thing to watch.
+
 ## Source
 
 Documented: `ShowInput(data)`, `CloseMenu()`, the field types and their fields. **Not documented**: the exact

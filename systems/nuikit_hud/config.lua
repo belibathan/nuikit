@@ -38,6 +38,17 @@ Config = {
     -- The radar's box, width over height. nil keeps GTA's own (about 1.41), so the map isn't squeezed;
     -- the mask shows only the middle. 1 is the square box of the 0.7.0 checkpoint (a squeezed map).
     aspect = nil,
+    -- The GPS route. GTA draws it across the whole radar box, not through the mask that shapes the
+    -- map, so on a round map it ran out of the ring's sides (0.7.0 test, A4). What clips it is not
+    -- known yet; this picks a candidate to try in game (with Config.debug, F8: `nuikit_minimap route <x>`):
+    --   'mask'     minimap_mask over the hole: the 0.7.0 placement (the route still overhangs)
+    --   'inset'    minimap_mask on the square inside the disc: if the route is cut to that component,
+    --              nothing leaves the ring (the route then stops a little short of it at N/E/S/W)
+    --   'texture'  our disc also replaces GTA's second radar mask texture (radarmask1g)
+    --   'stock'    minimap_mask left where GTA has it: the control (does the component matter at all)
+    --   'box'      the radar box becomes the hole's square (aspect 1): the route can't leave that
+    --              square, only its corners; the map is squeezed about 29% (the 0.7.0-next look)
+    routeClip = 'mask',
     compass = true,          -- cardinals on the ring (square: N on the frame), heading above (compact)
     location = true,         -- the location under (compact) or above (classic) the map
   },

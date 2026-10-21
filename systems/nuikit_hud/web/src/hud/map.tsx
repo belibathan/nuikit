@@ -177,7 +177,7 @@ export function MapLocation({ location, units, waypoint }: { location: HudLocati
   if (!location.visible || !location.street) return null;
   const detail: ReactNode[] = [];
   if (location.crossing) detail.push(<TextRoll key="cross" className="hud-loc-clip" value={location.crossing} direction="down" />);
-  if (location.zone) detail.push(<TextRoll key="zone" className="hud-loc-clip" value={location.zone} />);
+  if (location.zone) detail.push(<TextRoll key="zone" className="hud-loc-clip" value={location.zone} direction="down" />);
   if (location.postal) {
     detail.push(
       <span key="postal" data-slot="hud-postal" className="hud-loc-postal hud-num">

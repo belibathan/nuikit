@@ -128,6 +128,7 @@
     "systems/nuikit_hud": [
       "web/src/components/ui/hud-chip.tsx",
       "web/src/components/ui/text-roll.tsx",
+      "web/src/components/ui/vital-chip.tsx",
       "web/src/index.css",
       "web/src/lib/utils.ts"
     ],
@@ -157,6 +158,7 @@
       "web/src/components/ui/progress.tsx",
       "web/src/components/ui/scroll-area.tsx",
       "web/src/components/ui/separator.tsx",
+      "web/src/components/ui/sheet.tsx",
       "web/src/components/ui/smooth-input.tsx",
       "web/src/components/ui/stat.tsx",
       "web/src/components/ui/tabs.tsx",

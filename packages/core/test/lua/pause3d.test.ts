@@ -350,11 +350,11 @@ describe("systems/nuikit_pause: the bigger menu", () => {
   it("frames the player between the inventory panels while ox_inventory is open", async () => {
     client = await createClient();
     const pause = await client.start("nuikit_pause", { before: natives, scripts });
-    // the override's middle gap at 1080p: 35.6rem in from each side, between the bar and the top
+    // the override's middle gap at 1080p: 34.75rem edge sheets plus 1.5rem of air on each side
     const f = await pause.run<{ x: number; w: number; y: number; h: number }>(`return Inventory.frame(1920, 1080)`);
-    expect(f.x).toBeCloseTo((35.625 * 16) / 1920, 3);
+    expect(f.x).toBeCloseTo((36.25 * 16) / 1920, 3);
     expect(f.x + f.w).toBeCloseTo(1 - f.x, 6);
-    expect(f.y + f.h).toBeLessThan(0.9);
+    expect(f.y + f.h).toBeLessThan(0.96);
 
     await pause.run(`LocalPlayer.state.invOpen = true Inventory.tick()`);
     expect(await pause.run(`return Focus.isActive() and Inventory.isFocusing()`)).toBe(true);
@@ -367,7 +367,97 @@ describe("systems/nuikit_pause: the bigger menu", () => {
 
     // the pause menu's own framing is untouched by the inventory's
     await pause.run(press);
-    expect(await pause.run(`return Focus.state().frame.x`)).toBeCloseTo(0.36, 6);
+    expect(await pause.run(`return Focus.state().frame.x`)).toBeCloseTo(0.325, 6);
+  });
+
+  it("frames the inventory camera in the area the inventory page reports, gliding when it changes", async () => {
+    client = await createClient();
+    const pause = await client.start("nuikit_pause", { before: natives, scripts });
+    // the fallback until the page reports: 34.75rem edge sheets plus air
+    expect(await pause.run<number>(`return Inventory.currentFrame().x`)).toBeCloseTo(((34.75 + 1.5) * 16) / 1920, 4);
+    // the page reports before the camera starts (on open): it frames there
+    expect(await pause.call("inventory:frame", { x: 0.3021, y: 0.0444, w: 0.3958, h: 0.8667 })).toEqual({});
+    await pause.run(`LocalPlayer.state.invOpen = true Inventory.tick()`);
+    expect(await pause.run(`return Focus.isActive()`)).toBe(true);
+    expect(await pause.run(`return Focus.state().frame.x`)).toBeCloseTo(0.3021, 6);
+    await pause.run(`for _ = 1, 120 do Focus.step(0.05) end`);
+    const settled = await pause.run<number[]>(`return CAMPOS`);
+    // the right sheet closes: a wider area; the camera glides there, no jump
+    await pause.call("inventory:frame", { x: 0.3021, y: 0.0444, w: 0.6979, h: 0.8667 });
+    expect(await pause.run(`return Focus.state().frame.w`)).toBeCloseTo(0.6979, 6);
+    const next = await pause.run<number[]>(`Focus.step(0.0) return CAMPOS`);
+    expect(Math.hypot(next[0]! - settled[0]!, next[1]! - settled[1]!, next[2]! - settled[2]!)).toBeLessThan(0.01);
+    const moved = await pause.run<number[]>(`for _ = 1, 120 do Focus.step(0.05) end return CAMPOS`);
+    expect(Math.hypot(moved[0]! - settled[0]!, moved[1]! - settled[1]!)).toBeGreaterThan(0.05);
+    // junk is refused and clamped; the callback still answers
+    expect(await pause.call("inventory:frame", { x: "nope" })).toEqual({});
+    expect(await pause.run(`return Focus.state().frame.w`)).toBeCloseTo(0.6979, 6);
+    await pause.call("inventory:frame", { x: -1, y: 0.5, w: 4, h: 0.9 });
+    const f = await pause.run<{ x: number; w: number; y: number; h: number }>(`return Focus.state().frame`);
+    expect(f.x).toBe(0);
+    expect(f.w).toBe(1);
+    expect(f.y + f.h).toBeLessThanOrEqual(1);
+    // the pause menu's own framing is untouched
+    await pause.run(`LocalPlayer.state.invOpen = false Inventory.tick()`);
+    await pause.run(press);
+    expect(await pause.run(`return Focus.state().frame.x`)).toBeCloseTo(0.325, 6);
+  });
+
+  it("no light on the player by default; Config.preview.light = 'studio' turns the preset on", async () => {
+    client = await createClient();
+    const pause = await client.start("nuikit_pause", { before: natives, scripts });
+    await pause.run(press);
+    await pause.run(`for _ = 1, 10 do Focus.step(0.05) end`);
+    expect(await pause.run(`return LIGHTS`)).toBe(0);
+    await pause.run(`Config.preview.light = 3.0 Focus.step(0.05)`); // the 0.7 number: still off
+    expect(await pause.run(`return LIGHTS`)).toBe(0);
+    await pause.run(`Config.preview.light = 'studio' Focus.step(0.05)`);
+    expect(await pause.run(`return LIGHTS`)).toBe(2); // key and rim
+  });
+
+  it("by default it keeps the view: same heading and pitch, it only moves in (no swing, no turn)", async () => {
+    client = await createClient();
+    const pause = await client.start("nuikit_pause", { before: natives, scripts });
+    // the gameplay camera looks north (heading 0) and 10 degrees down, from the south of the player
+    await pause.run(press);
+    expect(await pause.run<number>(`return Focus.state().residual.orbit`)).toBeCloseTo(0, 6);
+    const yaws = await pause.run<number[]>(`
+      local out = {}
+      for _ = 1, 120 do local p = Focus.step(0.05) out[#out + 1] = p.yaw end
+      return { math.min(table.unpack(out)), math.max(table.unpack(out)), Focus.step(0.05).pitch }`);
+    expect(yaws[0]).toBeCloseTo(0, 3); // never turns
+    expect(yaws[1]).toBeCloseTo(0, 3);
+    expect(yaws[2]).toBeCloseTo(-10, 3); // the gameplay camera's pitch
+    const p = await pause.run<number[]>(`return CAMPOS`);
+    expect(p[1]).toBeLessThan(200); // still on the side it was on (south)
+  });
+
+  it("facing = 'front': it swings round them (never through them) to the front, at chest height", async () => {
+    client = await createClient();
+    const pause = await client.start("nuikit_pause", { before: natives, scripts });
+    await pause.run(`Config.preview.facing = 'front'`);
+    // the player stands at (100, 200) facing heading 90 (west, -x); the gameplay camera is behind-ish, to the south
+    await pause.run(press);
+    const closest = await pause.run<number>(`
+      local m = math.huge
+      for _ = 1, 120 do
+        Focus.step(0.05)
+        m = math.min(m, math.sqrt((CAMPOS[1] - 100) ^ 2 + (CAMPOS[2] - 200) ^ 2))
+      end
+      return m`);
+    const p = await pause.run<number[]>(`return CAMPOS`);
+    expect(p[0]).toBeLessThan(100 - 1); // in front of them (west), not behind
+    expect(closest).toBeGreaterThan(1); // the glide orbits; it never cuts through the player
+    expect(p[2]).toBeGreaterThan(30.2); // above the hips: chest height
+    expect(p[2]).toBeLessThan(31.2);
+    await pause.run(`Pause.close()`);
+
+    // Config.preview.facing = 'behind': the 0.7.0 framing, from the side the gameplay camera was on
+    await pause.run(`Config.preview.facing = 'behind' NOW = NOW + 1000`);
+    await pause.run(press);
+    await pause.run(`for _ = 1, 120 do Focus.step(0.05) end`);
+    const b = await pause.run<number[]>(`return CAMPOS`);
+    expect(b[1]).toBeLessThan(200); // south, where the gameplay camera was
   });
 
   it("the camera service hands over between owners, streams with the claim and always gives the camera back", async () => {

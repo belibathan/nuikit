@@ -166,6 +166,33 @@ describe("systems/nuikit_hud: the minimap", () => {
     expect(b1.w).toBeCloseTo(h1.w, 6);
   });
 
+  it("routeClip (A4, unproven): 'inset' puts minimap_mask on the disc's inner square, 'stock' leaves it, 'box' squares the box, 'texture' masks radarmask1g", async () => {
+    client = await createClient();
+    const hud = await client.start("nuikit_hud", { before: natives + ` ROUTE = nil function AddReplaceTexture(_, from, txd, tex) if from == 'radarmask1g' then ROUTE = txd .. '/' .. tex else REPLACED = from .. '>' .. txd .. '/' .. tex end end function RemoveReplaceTexture(_, from) if from == 'radarmask1g' then ROUTE = nil else REPLACED = nil end end`, scripts });
+    expect(await hud.run(`return Minimap.routeClip()`)).toBe("mask"); // the default: 0.7.0's placement
+    const [, , hole] = await hud.run<[any, number, any]>(`return { Minimap.layout(1920, 1080, 1.0) }`);
+    await hud.run(`Layout.update() Minimap.apply()`);
+    const over = await hud.run<number[]>(`return PLACED.minimap_mask`);
+    await hud.run(`Config.minimap.routeClip = 'inset' Minimap.apply()`);
+    const inset = await hud.run<number[]>(`return PLACED.minimap_mask`);
+    const unit = (1080 * 16) / 9;
+    expect(inset[2]! * unit).toBeCloseTo(hole.w / Math.SQRT2, 3); // the square inside the disc
+    expect(inset[0]! + inset[2]! / 2).toBeCloseTo(over[0]! + over[2]! / 2, 6); // centred on the hole
+    expect(inset[1]! + inset[3]! / 2).toBeCloseTo(over[1]! + over[3]! / 2, 6);
+    expect(await hud.run(`return ROUTE`)).toBeNull();
+    await hud.run(`Config.minimap.routeClip = 'stock' Minimap.apply()`);
+    expect(await hud.run<number[]>(`return PLACED.minimap_mask`)).toEqual([0.02, 0.032, 0.111, 0.159]);
+    await hud.run(`Config.minimap.routeClip = 'box'`);
+    expect(await hud.run(`return Minimap.aspect()`)).toBe(1);
+    await hud.run(`Config.minimap.routeClip = 'texture' Minimap.apply()`);
+    expect(await hud.run(`return ROUTE`)).toMatch(/\/circle_/);
+    await hud.run(`Config.minimap.routeClip = 'mask' Minimap.apply()`);
+    expect(await hud.run(`return ROUTE`)).toBeNull(); // put back on any other candidate
+    expect(await hud.run<number[]>(`return PLACED.minimap_mask`)).toEqual(over);
+    await hud.run(`Config.minimap.routeClip = 'nope'`);
+    expect(await hud.run(`return Minimap.routeClip()`)).toBe("mask");
+  });
+
   it("asks the nuikit resource to put the radar back when it stops; a hidden radar re-reads when it shows", async () => {
     client = await createClient();
     const hud = await client.start("nuikit_hud", { before: natives, scripts });

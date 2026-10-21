@@ -1,3 +1,7 @@
+@import "./index.css";
+/* shadcn's enter/exit animations (the Sheet slides in and out); kit.css keeps them to the motion rules */
+@import "tw-animate-css";
+
 /*
  * nuikit_pause: the sheet, the scrim and motion. In game the blur of the world comes from GTA
  * (TriggerScreenblurFadeIn in client/main.lua): CEF draws over the game, so backdrop-filter only
@@ -17,14 +21,38 @@
   backdrop-filter: blur(16px) saturate(1.15);
 }
 
-/* The backdrop: the panel surface, a touch deeper at the screen edge (tokens only), and its right edge. */
-.pause-backdrop {
-  position: relative;
-  color: var(--nk-panel-fg);
-  background-color: var(--nk-panel-bg);
+/*
+ * The sheet (shadcn Sheet on the left, views/sheet.tsx): the panel surface flush to the top, left and
+ * bottom (no radius or cut: they would only show on the open edge), a touch deeper at the screen edge
+ * (tokens only), a hairline on its open edge, the panel depth. The Sheet slides it in over --nk-time x 2.2
+ * (capped: the full-screen rule, 400ms or less) and out faster; reduced motion keeps the fade only (kit.css
+ * zeroes the slide), motion off zeroes both. The same model as the ox_lib context sheet.
+ */
+.pause-sheet {
+  color: var(--nk-panel-fg) !important;
+  background-color: var(--nk-panel-bg) !important;
   background-image: linear-gradient(90deg, rgba(var(--scrim-rgb), 0.22) 0%, rgba(var(--scrim-rgb), 0) 70%);
-  border-right: var(--nk-border) solid var(--nk-panel-border);
-  box-shadow: var(--nk-panel-shadow);
+  border-right: var(--nk-border) solid var(--nk-panel-border) !important;
+  box-shadow: var(--nk-panel-shadow) !important;
+}
+.pause-sheet[data-state="open"] {
+  animation-duration: min(calc(var(--nk-time) * 2.2), 360ms) !important;
+  animation-timing-function: var(--nk-ease-out) !important;
+}
+.pause-sheet[data-state="closed"] {
+  animation-duration: min(calc(var(--nk-time) * 1.4), 200ms) !important;
+  animation-timing-function: var(--nk-ease-in, ease-in) !important;
+}
+/* a sub-page title: the heading face at section size, one step under Home's display title */
+.pause-page-title {
+  --nk-heading-size: var(--nk-text-section);
+}
+/* the map's camera buttons: a slim strip of the game chip surface on the open area's right edge */
+.pause-controls {
+  border-radius: var(--nk-chip-radius);
+  clip-path: var(--nk-chip-clip, none);
+  background-color: var(--nk-chip-bg);
+  color: var(--nk-chip-fg);
 }
 .pause-logo {
   border-radius: var(--nk-key-radius);
@@ -35,23 +63,11 @@
   from { opacity: 0; }
   to { opacity: 1; }
 }
-@keyframes pause-slide {
-  from { opacity: 0; transform: translateX(-0.875rem); }
-  to { opacity: 1; transform: none; }
-}
-@keyframes pause-rise {
-  from { opacity: 0; transform: translateY(14px) scale(0.985); }
-  to { opacity: 1; transform: none; }
-}
 
 .pause-scrim { animation: pause-fade 180ms ease-out both; }
-/* the surface fades; only the content moves */
-.pause-backdrop { animation: pause-fade calc(220ms * var(--nk-motion, 1)) ease-out both; }
-.pause-column { animation: pause-slide calc(320ms * var(--nk-motion, 1)) cubic-bezier(0.2, 0.8, 0.2, 1) both; }
-.pause-side > * { animation: pause-fade calc(180ms * var(--nk-motion, 1)) ease-out both; }
 
 @media (prefers-reduced-motion: reduce) {
-  .pause-scrim, .pause-backdrop, .pause-column, .pause-side > * { animation: none; }
+  .pause-scrim { animation: none; }
 }
 
 /*
@@ -140,6 +156,7 @@
 /* a merged marker: how many it stands for */
 .pause-blip-count {
   position: absolute;
+  z-index: 1;
   top: -0.375rem;
   right: -0.5rem;
   min-width: 1rem;
@@ -206,6 +223,13 @@
   box-shadow: 0 0 0 1px color-mix(in oklab, var(--hud) 70%, transparent);
   opacity: 0.85;
 }
-[data-far] [data-short]:not([data-open]) > .pause-pin-center > .pause-blip > * {
+[data-far] [data-short]:not([data-open]) > .pause-pin-center > .pause-blip > *,
+[data-far] [data-short]:not([data-open]) > .pause-pin-center > .pause-blip-count {
   display: none;
+}
+
+/* closing: the menu is already closed in the game; the sheet slides out and the rest fades with it */
+[data-surface][data-closing] .pause-root {
+  opacity: 0;
+  transition: opacity calc(160ms * var(--nk-motion, 1)) ease-in;
 }

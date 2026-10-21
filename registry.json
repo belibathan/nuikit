@@ -196,6 +196,30 @@
       }
     },
     {
+      "name": "vital-chip",
+      "type": "registry:ui",
+      "title": "Vital Chip",
+      "description": "The HUD status chip as composable parts (Root, Shape, Level, Icon, Label, Pop): one SVG path per shape (auto, square, rounded, circle, diamond, hex, chamfer) drives the surface, border, level trace, liquid fill and label anchors; level outline/fill/bar/none; label inline/tag/flag; a pop with the signed change. Themed by --nk-chip-shape, --nk-level-style, --nk-label-attach, --nk-vital-icon.",
+      "files": [
+        {
+          "path": "registry/nuikit/ui/vital-chip.tsx",
+          "type": "registry:ui"
+        }
+      ],
+      "dependencies": [
+        "nuikit-core"
+      ],
+      "registryDependencies": [
+        "text-roll"
+      ],
+      "meta": {
+        "since": "unreleased",
+        "status": "experimental",
+        "replaces": [],
+        "removeIn": null
+      }
+    },
+    {
       "name": "key-hint",
       "type": "registry:ui",
       "title": "Key Hint",
@@ -835,7 +859,7 @@
       "categories": [
         "screens"
       ],
-      "docs": "Mount <LoadingScreenPage /> in App.tsx of a resource whose fxmanifest has loadscreen 'web/dist/index.html' and loadscreen_manual_shutdown 'yes'. Hand it data from the server with deferrals.handover({ nuikit = { serverName, tips, theme = GlobalState.nuikitTheme, … } }). A whole resource with the Lua: npm create nuikit@latest my-loading -- -t loading-screen",
+      "docs": "Mount <LoadingScreenPage /> in App.tsx of a resource whose fxmanifest has loadscreen 'web/dist/index.html' and loadscreen_manual_shutdown 'yes'. Hand it data from the server with deferrals.handover({ nuikit = { serverName, tips, theme = GlobalState.nuikitTheme, \u2026 } }). A whole resource with the Lua: npm create nuikit@latest my-loading -- -t loading-screen",
       "meta": {
         "since": "0.6.0",
         "status": "stable",
@@ -1073,6 +1097,57 @@
       "docs": "Mount <JobMenuSurface /> in App.tsx. In Lua, open nk.surface(\"job\", { layer = \"panel\", exclusive = true }) with a JobMenuData table, answer nk.on(\"job:duty\"), nk.on(\"job:action\"), nk.on(\"job:hire\"), nk.on(\"job:fire\") and nk.on(\"job:grade\") with { ok, error }, and :update it after a change. Check every boss action on the server against the caller's own job and grade. A whole resource with the Lua: npm create nuikit@latest my-jobs -- -t job-menu",
       "meta": {
         "since": "0.6.0",
+        "status": "stable",
+        "replaces": [],
+        "removeIn": null
+      }
+    },
+    {
+      "name": "job-sheet",
+      "type": "registry:block",
+      "title": "Job sheet",
+      "description": "The one frame for a resource's menu: a floating sheet (docs/design.md, Surfaces) with a header row, sections of 48px rows, sub-pages that swap in place with a back row, and one actions row with a single primary. Lua fills the pages; the server checks every row against the caller's own job, grade and duty. Protocol-agnostic.",
+      "files": [
+        {
+          "path": "registry/nuikit/blocks/job-sheet/job-sheet.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/job-sheet/job-sheet.tsx"
+        },
+        {
+          "path": "registry/nuikit/blocks/job-sheet/edge-sheet.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/job-sheet/edge-sheet.tsx"
+        },
+        {
+          "path": "registry/nuikit/blocks/job-sheet/nui.ts",
+          "type": "registry:lib",
+          "target": "components/blocks/job-sheet/nui.ts"
+        },
+        {
+          "path": "registry/nuikit/blocks/job-sheet/fixtures.ts",
+          "type": "registry:lib",
+          "target": "components/blocks/job-sheet/fixtures.ts"
+        }
+      ],
+      "dependencies": [
+        "lucide-react",
+        "nuikit-core"
+      ],
+      "registryDependencies": [
+        "button",
+        "kbd",
+        "separator",
+        "sheet",
+        "scroll-area",
+        "spinner",
+        "https://nuikit.vercel.app/r/menu-row.json"
+      ],
+      "categories": [
+        "screens"
+      ],
+      "docs": "Mount <JobSheetSurface /> in App.tsx. In Lua, open nk.surface(\"jobsheet\", { layer = \"panel\", exclusive = true, escape = \"back\" }) with a JobSheetData table (the job and its pages), answer nk.on(\"jobsheet:duty\") and nk.on(\"jobsheet:row\") with { ok, error }, and :update it after a change. Check every row on the server against the caller's own job, grade and duty. A whole resource with the Lua: npm create nuikit@latest my-job -- -t job-sheet",
+      "meta": {
+        "since": "unreleased",
         "status": "stable",
         "replaces": [],
         "removeIn": null

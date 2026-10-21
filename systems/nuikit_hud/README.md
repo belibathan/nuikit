@@ -23,11 +23,11 @@ restyle it through tokens, or replace it.
 
 | Part | `compact` (default) | `classic` (0.6) |
 |---|---|---|
-| Map | A 12rem circle top right on the safe area: a thin ring, cardinals and ticks that turn on it, the heading in degrees above a lubber mark, the waypoint distance as a tag on the ring (its arrow points at the waypoint) | A framed square bottom left, N on the frame |
-| Location | Under the map: zone, street, the cross street smaller; postal beside the zone | A strip above the map with a heading badge |
+| Map | A 12rem circle top right on the safe area: a thin ring, cardinals and ticks that turn on it, the heading (`NW 300°`) above a lubber mark, the waypoint distance as a tag on the ring's lower outer shoulder (its arrow points at the waypoint) | A framed square bottom left, N on the frame |
+| Location | Under the map: the street, then `cross street · zone postal` smaller | A strip above the map with a heading badge |
 | Money and job | Under the location | Top right |
 | Vitals | Bottom left: one icon-only chip per vital (health, armor, hunger, thirst, stress), its level traced along the chip outline; a mic chip and the radio channel | The same chips, a size larger, beside the map |
-| Vehicle | Bottom right: segmented rpm ticks with the gear in the centre, speed with dimmed leading zeros, a separate fuel arc, telltales as a column lit only when on | The large arc / bar / digital gauge, shift lights, telltale row, worded warnings |
+| Vehicle | Bottom right: the speed with dimmed leading zeros inside a small rpm arc (`arc`: a thin arc over faint ticks; `digital`: segmented ticks; `bar`: a plate with a segmented bar, from the identity's `--nk-gauge-style`), the gear as a brand chip under it, a fuel line (pump, line, %) under the gauge, telltales as a column on the left lit only when on | The large arc / bar / digital gauge, shift lights, telltale row, worded warnings |
 | Ammo | Over the vehicle, bottom right | Under the money, top right |
 | Heading strip | None (the ring carries it) | Top centre |
 
@@ -67,6 +67,8 @@ Everything is in `config.lua` with a comment on each line. The main switches:
 | `minimap.yieldTo` | Minimap resources nuikit gives way to: when one is started the style becomes `'stock'` and F8 says so once. `nil` = the built-in list (`circleminimap`, `squaremap`, `minimap`, `jg-hud`, `ps-hud`, `qb-hud`, `qbx_hud`), `{}` = never |
 | `minimap.shape`, `size`, `band`, `anchor` | `nil` takes the layout's value (compact: circle, 12rem, 0.125rem, top-right; classic: square, 15rem, 0.375rem, bottom-left) |
 | `minimap.compass`, `location` | cardinals and heading on the ring / frame; the location next to the map |
+| `minimap.aspect` | the radar box's width over height; `nil` keeps GTA's 1.41 (the map isn't squeezed; the mask shows the middle), `1` is a square box |
+| `minimap.routeClip` | how the GPS route is kept in the map, **unproven** (0.7.0 A4: GTA draws it across the whole box, through no mask nuikit knows): `'mask'` (default, minimap_mask over the hole), `'inset'` (minimap_mask on the disc's inner square), `'texture'` (our disc on `radarmask1g` too), `'stock'` (minimap_mask untouched), `'box'` (aspect 1). With `Config.debug`, F8 `nuikit_minimap route <x>` switches live |
 | `ammo` | `false` hides the ammo |
 | `vitals.enabled`, `vitals.health` … `vitals.stress` | `'auto'`, `'always'`, `false`; `low`, `high`, `linger` (ms) |
 | `needs`, `voice` | hide hunger/thirst/stress, hide voice |
