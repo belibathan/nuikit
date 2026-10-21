@@ -22,14 +22,14 @@ export default function App() {
   const name = h.serverName || "Welcome";
 
   return (
-    <div className="nk-loading relative h-screen w-screen overflow-hidden bg-background text-foreground">
+    <div className="ld-root relative h-screen w-screen overflow-hidden bg-background text-foreground">
       <Backdrop images={h.backgrounds ?? []} interval={h.backgroundInterval} />
 
       <header className="absolute top-12 left-12 flex items-center gap-4">
         {h.logo && <img src={h.logo} alt="" className="size-12 rounded-lg object-contain" />}
         <div className="flex flex-col gap-1">
-          <h1 className="text-2xl leading-8 font-semibold tracking-tight">{name}</h1>
-          {h.tagline && <p className="text-sm text-muted-foreground">{h.tagline}</p>}
+          <h1 className="nk-display">{name}</h1>
+          {h.tagline && <p className="nk-label">{h.tagline}</p>}
         </div>
       </header>
 
@@ -59,15 +59,15 @@ function Backdrop({ images, interval = 9000 }: { images: string[]; interval?: nu
 
   return (
     <div className="absolute inset-0" aria-hidden>
-      {images.length === 0 && <div className="nk-glow absolute inset-0" />}
+      {images.length === 0 && <div className="ld-glow absolute inset-0" />}
       {images.map((src, n) => (
         <div
           key={src + n}
-          className={cn("nk-slide absolute inset-0 bg-cover bg-center", n === i && "nk-slide-on")}
+          className={cn("ld-slide absolute inset-0 bg-cover bg-center", n === i && "ld-slide-on")}
           style={{ backgroundImage: `url("${src}")` }}
         />
       ))}
-      <div className="nk-scrim absolute inset-0" />
+      <div className="ld-scrim absolute inset-0" />
     </div>
   );
 }
@@ -86,7 +86,7 @@ function Tips({ tips, interval = 8000 }: { tips: Tip[]; interval?: number }) {
 
   return (
     <section className="flex w-96 flex-col gap-3" aria-label="Tip">
-      <div key={i} className="nk-fade flex min-h-16 flex-col justify-end gap-1">
+      <div key={i} className="ld-fade flex min-h-16 flex-col justify-end gap-1">
         {title && <h2 className="nk-title">{title}</h2>}
         <p className="text-sm leading-relaxed text-muted-foreground">{text}</p>
       </div>
@@ -95,7 +95,7 @@ function Tips({ tips, interval = 8000 }: { tips: Tip[]; interval?: number }) {
           {tips.map((_, n) => (
             <span
               key={n}
-              className={cn("h-0.5 rounded-full transition-all duration-500", n === i % tips.length ? "w-6 bg-foreground" : "w-3 bg-foreground/25")}
+              className={cn("h-0.5 rounded-full transition-[background-color] duration-(--nk-time)", n === i % tips.length ? "w-6 bg-foreground" : "w-3 bg-foreground/25")}
             />
           ))}
         </div>
@@ -127,8 +127,8 @@ function Status({ load, player }: { load: LoadState; player?: string }) {
     <section className="flex flex-col gap-3">
       <div className="flex items-end justify-between gap-6">
         <div className="flex flex-col gap-1">
-          {player && <p className="text-sm text-muted-foreground">Welcome, {player}</p>}
-          <p className="flex items-center gap-2 text-xl leading-7 font-semibold tracking-tight">
+          {player && <p className="nk-label">Welcome, {player}</p>}
+          <p className="nk-title flex items-center gap-2 text-(length:--nk-text-section)">
             {ready ? <CheckIcon className="size-4" /> : <Spinner className="size-4 text-muted-foreground" />}
             {ready ? "Ready. Hang tight…" : PHASES[load.phase]}
           </p>
