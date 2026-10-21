@@ -1,3 +1,7 @@
+@import "./index.css";
+/* shadcn's enter/exit animations (the Sheet slides in and out); kit.css keeps them to the motion rules */
+@import "tw-animate-css";
+
 /*
  * nuikit_pause: the sheet, the scrim and motion. In game the blur of the world comes from GTA
  * (TriggerScreenblurFadeIn in client/main.lua): CEF draws over the game, so backdrop-filter only
@@ -222,4 +226,10 @@
 [data-far] [data-short]:not([data-open]) > .pause-pin-center > .pause-blip > *,
 [data-far] [data-short]:not([data-open]) > .pause-pin-center > .pause-blip-count {
   display: none;
+}
+
+/* closing: the menu is already closed in the game; the sheet slides out and the rest fades with it */
+[data-surface][data-closing] .pause-root {
+  opacity: 0;
+  transition: opacity calc(160ms * var(--nk-motion, 1)) ease-in;
 }

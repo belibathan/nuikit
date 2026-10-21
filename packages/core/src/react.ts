@@ -1,4 +1,4 @@
-import { createElement, useCallback, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore, type CSSProperties, type ReactElement, type ReactNode } from "react";
+import { createContext, createElement, useCallback, useContext, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore, type CSSProperties, type ReactElement, type ReactNode } from "react";
 import {
   closeSurface,
   defineSurface,
@@ -28,7 +28,7 @@ import {
   type EventData,
   type EventName,
 } from "./index";
-import { flipFrom, indicator, spring, type Channel, type SpringName } from "./motion";
+import { flipFrom, indicator, motionLevel, spring, type Channel, type SpringName } from "./motion";
 
 export * from "./index";
 
@@ -148,7 +148,7 @@ const Z: Record<string, number> = { hud: 10, world: 20, panel: 30, modal: 40, sy
 // so a HUD never blocks a panel and a panel never blocks the HUD's neighbours.
 // fixed, not absolute: a Radix modal locks scroll by making <body> position:relative, and an
 // absolute surface would then collapse to the body's zero height.
-const SURFACE_CSS = "[data-surface]{position:fixed;inset:0;pointer-events:none}[data-surface]>*{pointer-events:auto}";
+const SURFACE_CSS = "[data-surface]{position:fixed;inset:0;pointer-events:none}[data-surface]>*{pointer-events:auto}[data-surface][data-closing],[data-surface][data-closing] *{pointer-events:none!important}";
 let surfaceCssInjected = false;
 function injectSurfaceCss() {
   if (surfaceCssInjected || typeof document === "undefined") return;
@@ -197,8 +197,28 @@ export interface SurfaceProps<K extends SurfaceName> extends SurfaceOptions {
   style?: CSSProperties;
 }
 
+/** How long a closed surface stays drawn so its children can play their exit (a Sheet sliding out). */
+const EXIT_MS = 250;
+function exitMs(): number {
+  const level = motionLevel();
+  return level === "off" ? 0 : level === "reduced" ? 120 : EXIT_MS;
+}
+
+const SurfaceOpen = createContext(true);
 /**
- * Renders its children while the surface is open and visible, stacked by layer. It fills the
+ * false while the surrounding <Surface> is closing: it stays drawn for its exit (at most 250 ms, none
+ * with motion off) but is already closed in the game (focus and cursor released at once). Feed it to a
+ * Sheet or Dialog's `open` so it plays its own exit:
+ *
+ *   <Sheet open={useSurfaceOpen()} modal={false}>…</Sheet>
+ */
+export function useSurfaceOpen(): boolean {
+  return useContext(SurfaceOpen);
+}
+
+/**
+ * Renders its children while the surface is open and visible, stacked by layer. When it closes, its
+ * last content stays drawn for the exit (see useSurfaceOpen), takes no pointer events, then unmounts. It fills the
  * screen (position: absolute; inset: 0) so children position like the game frame; only the
  * children take pointer events.
  * Props mirror NUI.surface() in Lua; in the browser they drive the local manager,
@@ -224,22 +244,41 @@ export function Surface<K extends SurfaceName>(props: SurfaceProps<K>): ReactEle
   useEffect(() => onSurfaceBack(name, () => back.current?.()), [name]);
 
   const shown = state.open && state.visible;
-  if (!shown && !keepMounted) return null;
-  const content = typeof children === "function" ? children(state.data as SurfaceData<K>, state) : children;
+  // closing: decided during render (not in an effect), so the content never unmounts for a frame
+  const [prevShown, setPrevShown] = useState(shown);
+  const [closing, setClosing] = useState(false);
+  if (prevShown !== shown) {
+    setPrevShown(shown);
+    setClosing(!shown && exitMs() > 0);
+  }
+  useEffect(() => {
+    if (!closing) return;
+    const t = setTimeout(() => setClosing(false), exitMs());
+    return () => clearTimeout(t);
+  }, [closing]);
+  // what was last on screen, drawn again while it closes (the data may already be gone)
+  const last = useRef<{ data: unknown; state: SurfaceState<SurfaceData<K>> } | null>(null);
+  if (shown) last.current = { data: state.data, state };
+
+  const drawn = shown || closing;
+  if (!drawn && !keepMounted) return null;
+  const view = closing && last.current ? last.current : { data: state.data, state };
+  const content = typeof children === "function" ? children(view.data as SurfaceData<K>, view.state) : children;
   return createElement(
     "div",
     {
       "data-surface": name,
       "data-layer": state.layer,
       "data-state": shown ? "open" : "closed",
+      "data-closing": closing || undefined,
       className,
       style: {
         zIndex: (Z[state.layer] ?? 30) + (state.z ?? 0),
-        display: shown ? undefined : "none",
+        display: drawn ? undefined : "none",
         ...style,
       },
     },
-    content,
+    createElement(SurfaceOpen.Provider, { value: shown }, content),
   );
 }
 

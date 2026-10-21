@@ -3,6 +3,7 @@
 // opens; going to a sub-page (Map, Key bindings, Info, Help) or back swaps the column inside it with a
 // short fade instead of closing and reopening it. The rows of the first page rise in one after another.
 import { ChevronLeftIcon } from "lucide-react";
+import { useSurfaceOpen } from "nuikit-core/react";
 import { useEffect, useRef, type CSSProperties, type ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { Kbd } from "@/components/ui/kbd";
@@ -29,7 +30,8 @@ function passEscape(e: KeyboardEvent) {
 
 export function PauseSheet({ page, first, children }: { page: string; first: boolean; children: ReactNode }) {
   return (
-    <Sheet open modal={false}>
+    // closes with the surface: nuikit keeps it drawn for the slide-out (useSurfaceOpen)
+    <Sheet open={useSurfaceOpen()} modal={false}>
       <SheetContent
         side="left"
         showCloseButton={false}
