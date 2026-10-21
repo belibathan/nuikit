@@ -174,6 +174,18 @@ function Pause.isOpen()
 end
 
 --- One frame of the Esc watcher. Cheap: a few natives, no allocations.
+-- Whether the player is down, read at most every 250 ms: this runs every frame while the menu is
+-- closed, and NUI.player.get() builds a new table each call (resmon showed 0.05 ms closed; 0.7.0
+-- test #12). Only DisableControlAction has to run every frame, to keep GTA's pause menu off Esc.
+local downAt, downNow = 0, false
+local function downCached(now)
+  if now >= downAt then
+    downAt = now + 250
+    downNow = NUI.player.get().dead == true or NUI.getState('dead') and true or false
+  end
+  return downNow
+end
+
 function Pause.tick()
   local now = GetGameTimer()
   if pause:isOpen() then
@@ -206,8 +218,7 @@ function Pause.tick()
     end
   end
   if IsNuiFocused() then return end
-  local player = NUI.player.get()
-  if player.dead or NUI.getState('dead') then return end
+  if downCached(now) then return end
 
   DisableControlAction(0, ESC, true)
   if now >= quietUntil and IsDisabledControlJustPressed(0, ESC) then
