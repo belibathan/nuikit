@@ -1,7 +1,9 @@
 import { ChevronDownIcon } from "lucide-react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ComponentProps, type CSSProperties } from "react";
 import { MenuRow } from "@/components/ui/menu-row";
-import { Panel, PanelBody, PanelHeader } from "@/components/ui/panel";
+import { Kbd } from "@/components/ui/kbd";
+import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Meter, meterColor } from "@/components/ui/meter";
 import { Icon } from "@/lib/icon";
 import { changeSelectedBody, confirmSelectedBody, listIntent } from "@/lib/intents";
@@ -33,14 +35,6 @@ interface MenuData {
   startItemIndex?: number;
 }
 
-// --nk-edge (1.5rem) from the corner.
-const CORNER = {
-  "top-left": "top-6 left-6",
-  "top-right": "top-6 right-6",
-  "bottom-left": "bottom-6 left-6 items-end",
-  "bottom-right": "bottom-6 right-6 items-end",
-} as const;
-
 const isValues = (i: MenuItem) => Array.isArray(i.values);
 const isCheck = (i: MenuItem) => !isValues(i) && i.checked !== undefined;
 
@@ -55,6 +49,7 @@ export function ListMenu() {
   const [checks, setChecks] = useState<Record<number, boolean>>({});
   const touched = useRef(false); // changeIndex/changeChecked stay quiet until the first key press
   const list = useRef<HTMLDivElement>(null);
+  const indicator = useRef<HTMLDivElement>(null);
 
   const changeSelected = useMemo(() => debounce((body: unknown[]) => void post("changeSelected", body), 100), []);
   const changeIndex = useMemo(() => debounce((body: unknown[]) => void post("changeIndex", body), 100), []);
@@ -175,42 +170,118 @@ export function ListMenu() {
     return () => window.removeEventListener("keydown", onKey);
   }, [menu, selected, indexes, checks, changeIndex, changeChecked]);
 
-  if (!menu) return null;
-  const items = menu.items ?? [];
+  // The last menu stays drawn while the sheet slides out (closing sets `menu` to null at once, so the
+  // keys stop at once, as before).
+  const last = useRef<MenuData | null>(null);
+  if (menu) last.current = menu;
+  const view = menu ?? last.current;
+
+  // One indicator glides behind the rows to the selected one (nk-indicator, docs/design.md motion 2): placed
+  // from the selected row's own box every time, so it can never be left on a stale row. Moves sooner than
+  // the panel time apart glide fast; the third in a row jumps (it never trails a held key).
+  const lastMove = useRef({ at: 0, streak: 0 });
+  useLayoutEffect(() => {
+    const el = indicator.current;
+    const row = list.current?.querySelector<HTMLElement>(`.nk-row[data-index="${selected}"]`);
+    if (!el) return;
+    el.toggleAttribute("data-hidden", !row);
+    if (!row) return;
+    const now = performance.now();
+    const m = lastMove.current;
+    m.streak = now - m.at < 140 ? m.streak + 1 : 0;
+    m.at = now;
+    if (m.streak >= 2) el.setAttribute("data-repeat", "jump");
+    else if (m.streak === 1) el.setAttribute("data-repeat", "fast");
+    else el.removeAttribute("data-repeat");
+    el.style.transform = `translateY(${row.offsetTop}px)`;
+    el.style.height = `${row.offsetHeight}px`;
+  });
+
+  // Hover moves the selection, exactly as the arrow keys do (the same changeSelected), so only one row
+  // is ever lit. Pointer movement only: a row scrolling under a still cursor doesn't steal it.
+  const hoverTo = (i: number) => {
+    if (!menu || i === selected) return;
+    touched.current = true;
+    setSelected(i);
+  };
+
+  if (!view) return null;
+  const items = view.items ?? [];
   const current = items[selected];
   const currentValue = current && isValues(current) ? current.values![indexes[selected] ?? 0] : undefined;
   const tooltip = (typeof currentValue === "object" && currentValue?.description) || current?.description;
+  const position = view.position ?? "top-left";
+  const right = position.endsWith("right");
+  const bottom = position.startsWith("bottom");
 
   return (
-    <div className={cn("pointer-events-none fixed z-30 flex items-start gap-2", CORNER[menu.position ?? "top-left"], menu.position?.endsWith("right") && "flex-row-reverse")}>
-      <Panel>
-        <PanelHeader title={menu.title} />
-        <PanelBody>
-          {/* The scrolling box sits inside the body's padding and is exactly 7 rows tall
-              (7 × 40px + 6 × 2px gaps = 18.25rem), so scrollIntoView({ block: "nearest" }) always
-              lands on a whole row: no half row peeking out under the header. */}
-          <div ref={list} className="flex max-h-[18.25rem] flex-col gap-0.5 overflow-y-hidden">
-            {items.map((item, i) =>
-              item.label ? (
-                <Row key={i} index={i} item={item} active={i === selected} scroll={indexes[i] ?? 0} checked={checks[i] ?? false} />
-              ) : (
-                <span key={i} data-index={i} hidden />
-              ),
+    <Sheet open={!!menu} modal={false}>
+      <SheetContent
+        side={right ? "right" : "left"}
+        showCloseButton={false}
+        aria-describedby={undefined}
+        // keys are the window listener above; Radix never closes, focuses or traps anything here
+        onEscapeKeyDown={(e) => e.preventDefault()}
+        onInteractOutside={(e) => e.preventDefault()}
+        onOpenAutoFocus={(e) => e.preventDefault()}
+        onCloseAutoFocus={(e) => e.preventDefault()}
+        className={cn(
+          // a floating sheet: the panel recipe, --nk-edge off the screen edges, as tall as its content
+          "ox-sheet-float ox-list nk-panel z-30 h-auto w-[25rem] gap-0 sm:max-w-[25rem]",
+          bottom ? "top-auto bottom-(--nk-edge,1.5rem)" : "top-(--nk-edge,1.5rem) bottom-auto",
+          right ? "right-(--nk-edge,1.5rem) left-auto" : "left-(--nk-edge,1.5rem) right-auto",
+        )}
+      >
+        <TooltipProvider delayDuration={0}>
+          <div className="flex min-h-0 flex-col p-6 pb-0">
+            <header className="pb-4">
+              <SheetTitle className="ox-sheet-title nk-title truncate">{view.title}</SheetTitle>
+            </header>
+            {/* Exactly 7 rows tall (7 × 48px), so scrollIntoView({ block: "nearest" }) always lands on a
+                whole row. The rows change state instantly; only the indicator moves. */}
+            <div ref={list} className="ox-rows relative flex max-h-[21rem] flex-col overflow-y-hidden border-t border-border">
+              {/* hairlines between rows, drawn under the indicator so they never cut through it */}
+              <div aria-hidden className="ox-rules" style={{ "--rows": items.filter((it) => it.label).length } as CSSProperties} />
+              <div ref={indicator} className="nk-indicator ox-indicator" />
+              {items.map((item, i) =>
+                item.label ? (
+                  <Tooltip key={i} open={i === selected && !!tooltip && !!menu}>
+                    <TooltipTrigger asChild>
+                      <Row
+                        index={i}
+                        item={item}
+                        active={i === selected}
+                        scroll={indexes[i] ?? 0}
+                        checked={checks[i] ?? false}
+                        // rows rise in, staggered, when the sheet opens (they stay mounted while menus swap)
+                        stagger={Math.min(i, 5)}
+                        onPointerMove={() => hoverTo(i)}
+                      />
+                    </TooltipTrigger>
+                    <TooltipContent side={right ? "left" : "right"} align="center" sideOffset={rem() * 2.25} className="ox-tip nk-panel max-w-64 px-3 py-2 text-sm text-muted-foreground">
+                      {tooltip}
+                    </TooltipContent>
+                  </Tooltip>
+                ) : (
+                  <span key={i} data-index={i} hidden />
+                ),
+              )}
+            </div>
+            {items.length > 7 && selected !== items.length - 1 && (
+              <div className="flex justify-center pt-1 text-muted-foreground">
+                <ChevronDownIcon className="size-4" />
+              </div>
             )}
           </div>
-        </PanelBody>
-        {items.length > 6 && selected !== items.length - 1 && (
-          <div className="-mt-1 flex justify-center pb-1 text-muted-foreground">
-            <ChevronDownIcon className="size-4" />
-          </div>
-        )}
-      </Panel>
-      {tooltip && (
-        <Panel size="auto" className="max-w-64 px-3 py-2 text-sm text-muted-foreground">
-          {tooltip}
-        </Panel>
-      )}
-    </div>
+          <footer className="nk-panel-footer ox-hints mt-4">
+            <span><Kbd>↑</Kbd><Kbd>↓</Kbd>Move</span>
+            {current && isValues(current) && <span><Kbd>←</Kbd><Kbd>→</Kbd>Change</span>}
+            <span><Kbd>Enter</Kbd>{current && isCheck(current) ? "Toggle" : "Select"}</span>
+            {view.canClose !== false && <span className="ml-auto"><Kbd>Esc</Kbd>Close</span>}
+          </footer>
+        </TooltipProvider>
+      </SheetContent>
+    </Sheet>
   );
 }
 
@@ -221,7 +292,17 @@ const noStep = () => {};
  * The rows only show state; every key is handled by the window listener above (the cursor is off
  * and the container ignores the pointer), so the rows' own handlers never post anything.
  */
-function Row({ index, item, active, scroll, checked }: { index: number; item: MenuItem; active: boolean; scroll: number; checked: boolean }) {
+function Row({
+  index,
+  item,
+  active,
+  scroll,
+  checked,
+  stagger,
+  className,
+  style,
+  ...rest
+}: { index: number; item: MenuItem; active: boolean; scroll: number; checked: boolean; stagger?: number } & Omit<ComponentProps<"div">, "children">) {
   const value = isValues(item) ? item.values![scroll] : undefined;
   // Only the highlighted row's value is bright; the others stay muted, as on the rest of the kit.
   const valueLabel = typeof value === "object" ? value?.label : value;
@@ -234,10 +315,14 @@ function Row({ index, item, active, scroll, checked }: { index: number; item: Me
         : {};
   return (
     <MenuRow
+      {...(rest as object)}
       data-index={index}
       tabIndex={-1}
       active={active}
-      className="shrink-0"
+      // no hover look of its own: hover moves the selection (ListMenu), so the selected row is the only lit one
+      hover={false}
+      className={cn("shrink-0 text-base", stagger !== undefined && "nk-rise nk-stagger", className)}
+      style={stagger !== undefined ? ({ "--i": stagger, ...style } as CSSProperties) : style}
       icon={item.icon ? <Icon icon={item.icon} color={item.iconColor} animation={item.iconAnimation} allowImage className="size-4" /> : undefined}
       {...kind}
     >
@@ -245,3 +330,6 @@ function Row({ index, item, active, scroll, checked }: { index: number; item: Me
     </MenuRow>
   );
 }
+
+/** 1rem in px now (the NUI scale follows the resolution); Radix offsets are in px. */
+const rem = () => parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;

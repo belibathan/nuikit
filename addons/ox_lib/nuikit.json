@@ -6,6 +6,9 @@
   "lua": [],
   "components": [
     "alert-dialog",
+    "sheet",
+    "text-roll",
+    "tooltip",
     "badge",
     "button",
     "calendar",

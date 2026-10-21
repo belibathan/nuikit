@@ -71,53 +71,68 @@ export default function App() {
 
   return (
     <div className="pointer-events-none fixed inset-0 select-none">
-      {/* The eye: a HUD mark on the game (rule 8). Turns primary while something is targetable. */}
-      <div
-        aria-hidden
-        className={cn(
-          "absolute top-1/2 left-1/2 flex size-8 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full transition-colors duration-150",
-          active ? "bg-primary text-primary-foreground" : "tgt-hud",
+      {/* The eye: a HUD mark on the game (rule 8). Idle it's a small, quiet chip; when something is
+          targetable it locks on: the chip fills with the brand and a reticle closes in around it. */}
+      <div aria-hidden data-slot="target-eye" data-lock={active || undefined} className="tgt-eye">
+        <span className="tgt-eye-chip">
+          <Eye />
+        </span>
+        {active && (
+          <span key={session} className="tgt-reticle">
+            <span />
+            <span />
+            <span />
+            <span />
+          </span>
         )}
-      >
-        <Eye className="size-4" />
       </div>
 
       {active && (
         // The `target` intent's renderer: a Panel of MenuRows beside the eye (16px gap), its first
-        // row centred on it (nk-first-row). While inert, the rows' own `inert` switches every hover
-        // style off: CEF can keep :hover matching after a click drops focus.
-        <Panel
-          key={session}
-          size="auto"
-          role="menu"
-          className={cn("nk-first-row absolute top-1/2 left-1/2 ml-8 max-w-80 min-w-56", inert ? "pointer-events-none" : "pointer-events-auto")}
-        >
-          <PanelBody className="gap-0">
-            {groups.map((group, gi) => (
-              <Fragment key={group.key}>
-                {gi > 0 && <Separator className="my-1" />}
-                {group.rows.map((row) => (
-                  <MenuRow
-                    key={row.key}
-                    role="menuitem"
-                    inert={inert}
-                    className={cn(row.back && "text-muted-foreground")}
-                    // Always an icon slot, so labels stay aligned when an option has no (or an unknown) icon.
-                    icon={
-                      <span className="flex w-4 justify-center">
-                        <Icon icon={row.option.icon} color={row.option.iconColor} />
-                      </span>
-                    }
-                    chevron={row.submenu}
-                    onClick={() => select(row)}
-                  >
-                    {String(row.option.label ?? "")}
-                  </MenuRow>
-                ))}
-              </Fragment>
-            ))}
-          </PanelBody>
-        </Panel>
+        // row centred on it (nk-first-row). Rows are the pause menu's: 48px, hairlines between them,
+        // the identity's indicator on the lit row. While inert, the rows' own `inert` switches every
+        // hover style off: CEF can keep :hover matching after a click drops focus.
+        <>
+          <span aria-hidden className="tgt-leader" />
+          <Panel
+            key={session}
+            size="auto"
+            role="menu"
+            className={cn(
+              "tgt-panel nk-first-row absolute top-1/2 left-1/2 ml-8 max-w-96 min-w-64",
+              inert ? "pointer-events-none" : "pointer-events-auto",
+            )}
+          >
+            <PanelBody className="gap-0">
+              {groups.map((group, gi) => (
+                <Fragment key={group.key}>
+                  {gi > 0 && <Separator className="tgt-group-rule" />}
+                  <div className="tgt-group flex flex-col">
+                    {group.rows.map((row) => (
+                      <MenuRow
+                        key={row.key}
+                        role="menuitem"
+                        inert={inert}
+                        data-back={row.back || undefined}
+                        className={cn("text-base", row.back && "text-muted-foreground")}
+                        // Always an icon slot, so labels stay aligned when an option has no (or an unknown) icon.
+                        icon={
+                          <span className="flex w-5 justify-center">
+                            <Icon icon={row.option.icon} color={row.option.iconColor} />
+                          </span>
+                        }
+                        chevron={row.submenu}
+                        onClick={() => select(row)}
+                      >
+                        {String(row.option.label ?? "")}
+                      </MenuRow>
+                    ))}
+                  </div>
+                </Fragment>
+              ))}
+            </PanelBody>
+          </Panel>
+        </>
       )}
     </div>
   );

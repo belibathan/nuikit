@@ -10,8 +10,108 @@ body {
   white-space: nowrap;
 }
 
-/* The idle eye: a HUD mark on the game (rule 8), same surface as nk-chip. */
-.tgt-hud {
-  background-color: var(--hud);
-  color: var(--hud-foreground);
+/*
+ * The eye (rule 8: a HUD mark on the game). Idle: a small chip in the HUD plate, its icon dimmed, so
+ * it marks the centre without shouting. Locked on (something has options): the chip takes the row
+ * fill colour (brand, else primary) and four reticle corners close in around it, once. Shapes are the
+ * chip tokens (--nk-chip-radius, --nk-chip-clip), so Signal chamfers and Velvet rounds.
+ */
+.tgt-eye {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 2rem;
+  height: 2rem;
+  margin: -1rem 0 0 -1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.tgt-eye-chip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: var(--nk-chip-radius);
+  clip-path: var(--nk-chip-clip);
+  background-color: var(--nk-chip-bg);
+  color: var(--nk-chip-fg);
+  box-shadow: inset 0 0 0 var(--nk-border) rgba(var(--hud-foreground-rgb), 0.12);
+}
+.tgt-eye-chip svg {
+  width: 0.875rem;
+  height: 0.875rem;
+  opacity: 0.7;
+}
+[data-lock] > .tgt-eye-chip {
+  width: 2rem;
+  height: 2rem;
+  background-color: var(--nk-row-fill-color);
+  color: var(--nk-row-fill-foreground);
+  box-shadow: var(--nk-chip-glow);
+}
+[data-lock] > .tgt-eye-chip svg {
+  width: 1rem;
+  height: 1rem;
+  opacity: 1;
+}
+
+/* The reticle: four corner marks just outside the chip, in the brand. Closes in once per lock-on. */
+.tgt-reticle {
+  position: absolute;
+  inset: -0.5rem;
+  pointer-events: none;
+  animation: tgt-lock calc(var(--nk-time) * 1.5) var(--nk-ease-out) both;
+}
+.tgt-reticle > span {
+  position: absolute;
+  width: 0.5rem;
+  height: 0.5rem;
+  border: 0 solid var(--nk-row-fill-color);
+}
+.tgt-reticle > span:nth-child(1) { top: 0; left: 0; border-top-width: 0.125rem; border-left-width: 0.125rem; border-top-left-radius: var(--nk-chip-radius); }
+.tgt-reticle > span:nth-child(2) { top: 0; right: 0; border-top-width: 0.125rem; border-right-width: 0.125rem; border-top-right-radius: var(--nk-chip-radius); }
+.tgt-reticle > span:nth-child(3) { bottom: 0; right: 0; border-bottom-width: 0.125rem; border-right-width: 0.125rem; border-bottom-right-radius: var(--nk-chip-radius); }
+.tgt-reticle > span:nth-child(4) { bottom: 0; left: 0; border-bottom-width: 0.125rem; border-left-width: 0.125rem; border-bottom-left-radius: var(--nk-chip-radius); }
+@keyframes tgt-lock {
+  from { opacity: 0; transform: scale(1.6); }
+  to { opacity: 1; transform: none; }
+}
+html[data-nk-motion="reduced"] .tgt-reticle {
+  animation-name: nk-enter;
+}
+
+/* A hairline from the eye to the list, so the list reads as belonging to what you aim at. */
+.tgt-leader {
+  position: absolute;
+  top: 50%;
+  left: calc(50% + 1.25rem);
+  width: 0.75rem;
+  height: var(--nk-border);
+  background-color: var(--nk-row-fill-color);
+  opacity: 0.7;
+  animation: nk-enter var(--nk-time) var(--nk-ease-out) both;
+}
+
+/* The list: the pause menu rows (48px, a hairline between rows, a full rule between groups). */
+.tgt-panel {
+  --nk-row-height: 3rem;
+}
+.tgt-group > .nk-row + .nk-row::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: calc(var(--nk-space) * 3);
+  right: calc(var(--nk-space) * 3);
+  height: var(--nk-border);
+  background-color: var(--border);
+  pointer-events: none;
+}
+.tgt-group-rule {
+  margin: calc(var(--nk-space) * 2) calc(var(--nk-space) * -2);
+  width: auto !important;
+}
+html[data-nk-motion="reduced"] .tgt-reticle {
+  animation-duration: 100ms;
 }
