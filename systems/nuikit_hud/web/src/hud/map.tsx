@@ -12,6 +12,7 @@ import { useEffect, useRef, type ReactNode } from "react";
 import type { HudLocation, MinimapFrame } from "../nui";
 import { formatDistance } from "./location";
 import { setText } from "./util";
+import { TextRoll } from "@/components/ui/text-roll";
 
 const CARDINALS = [
   { label: "N", at: 0 },
@@ -183,16 +184,16 @@ export function MapLocation({ location, units, waypoint }: { location: HudLocati
     <div data-slot="hud-location" className="hud-loc">
       {(location.zone || tags.length > 0) && (
         <span className="hud-loc-zone">
-          {location.zone && <span className="hud-loc-clip">{location.zone}</span>}
+          {location.zone && <TextRoll className="hud-loc-clip" value={location.zone} />}
           {tags}
         </span>
       )}
       <span className="hud-loc-street">
-        <span className="hud-loc-clip">{location.street}</span>
+        <TextRoll className="hud-loc-clip" value={location.street} />
       </span>
       {/* always there, so the money under it never moves when a crossing comes and goes */}
       <span className="hud-loc-cross" aria-hidden={!location.crossing}>
-        <span className="hud-loc-clip">{location.crossing ?? "\u00a0"}</span>
+        <TextRoll className="hud-loc-clip" value={location.crossing ?? "\u00a0"} direction="down" />
       </span>
       {/* without the ring (radar off), the waypoint distance reads here (no arrow: no heading is streamed) */}
       {waypoint && location.waypoint !== undefined && (
