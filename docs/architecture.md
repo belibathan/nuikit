@@ -146,6 +146,11 @@ inventory) are built from the same components as the renderers. They are the sho
   starting after its consumers;
 - theme contrast warnings and live intent counts by source.
 
+*Built (`docs/doctor.md`, `feat/doctor`): framework, packs (table-driven, "not shipped yet" until they are),
+resource statuses, every conflict above plus start order, missing `dependency 'nuikit'`, a newer protocol and
+a newer release (convar; no network), and `nuikit:intent` counts. Adapters register with `nuikit_adapter`,
+UIs with `nuikit_level`, the pack with `overrides.json`. Unproven in game.*
+
 "Universal" stops being a claim: every server can see its own coverage, and owners get the next step instead of
 a support question.
 

@@ -451,3 +451,20 @@ export { DEFAULT_PLAYER, getPlayer, onPlayer, type NuiPlayer, type NuiPlayerJob 
 import { __resetPlayer } from "./player";
 export { follow, followed, type FollowKind, type FollowOptions } from "./follow";
 import { __resetFollow } from "./follow";
+
+export {
+  ADAPTER_PACKS,
+  compareVersions,
+  detectFramework,
+  doctor,
+  formatDoctor,
+  pageHash,
+  type AdapterPack,
+  type DoctorReport,
+  type DoctorResource,
+  type DoctorSnapshot,
+  type Finding,
+  type Framework,
+  type OverrideManifest,
+  type ResourceReport,
+} from "./doctor";

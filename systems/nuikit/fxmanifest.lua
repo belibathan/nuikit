@@ -9,10 +9,11 @@ version '0.6.0'
 
 -- The server compiles theme.css into the nuikit tokens (docs/tokens.md) at start and on
 -- `nuikit theme reload`, logs contrast warnings, and publishes GlobalState.nuikitTheme.
--- compiler.js is nuikit-core's compiler, copied by `pnpm sync`.
+-- compiler.js is nuikit-core's compiler and doctor, copied by `pnpm sync`. doctor.js: `nuikit doctor`.
 server_scripts {
   'server/compiler.js',
   'server/main.js',
+  'server/doctor.js',
 }
 
 -- The host (docs/host.md, prototype): renders the UI modules of resources that declare
