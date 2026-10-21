@@ -379,7 +379,7 @@
   &[class*="text-destructive"] {
     --nk-sweep: rgba(var(--destructive-rgb), 0.12);
   }
-  &:not([aria-disabled="true"], [data-disabled], :disabled):active {
+  &:not([aria-disabled="true"], [data-disabled], :disabled):is(:active, [data-nk-press]) {
     transform: scale(var(--nk-press-scale, 0.97));
     transition-duration: var(--nk-time), var(--nk-time), var(--nk-time), var(--nk-time-press, 70ms);
     transition-timing-function: var(--nk-ease-out);
@@ -735,7 +735,7 @@
 }
 /* The one open animation. --nk-motion: 0 (theme or the player's reduced-motion pref) skips it. */
 @utility nk-enter {
-  animation: nk-enter var(--nk-time) var(--nk-ease-out) both;
+  animation: nk-enter var(--nk-time) var(--nk-ease-out) backwards;
 }
 /* Opacity only: a transform here would override the translate that centres dialogs, and
    Chromium 103 has no separate `scale` property. */
@@ -772,6 +772,42 @@
 @keyframes nk-fade-out {
   from { opacity: 1; }
   to { opacity: 0; }
+}
+@keyframes nk-fold-out {
+  from { opacity: 1; transform: none; }
+  to { opacity: 0; transform: translateY(-0.25rem) scale(0.97); }
+}
+@keyframes nk-pop-out {
+  from { opacity: 1; transform: none; }
+  to { opacity: 0; transform: scale(0.9); }
+}
+/* Choreography (nuikit-core <Stagger>, useStaggerItem(on, { animate })): members enter and leave in
+   sequence; the group sets each one's delay and data-nk-stagger. Entering fills backwards only (hidden
+   while it waits, then the element's own transforms, a press dip, are free again); leaving holds the
+   end. Reduced motion: fades; off: instant. */
+[data-nk-stagger="in"][data-nk-stagger-kind="rise"] {
+  animation: nk-rise var(--nk-time) var(--nk-ease-out) backwards;
+}
+[data-nk-stagger="in"][data-nk-stagger-kind="pop"] {
+  animation: nk-pop var(--nk-time) var(--nk-ease-out) backwards;
+}
+[data-nk-stagger="in"][data-nk-stagger-kind="fade"] {
+  animation: nk-enter var(--nk-time) var(--nk-ease-out) backwards;
+}
+[data-nk-stagger="out"][data-nk-stagger-kind="rise"] {
+  animation: nk-fold-out var(--nk-time-exit, var(--nk-time)) var(--nk-ease-in, ease-in) both;
+}
+[data-nk-stagger="out"][data-nk-stagger-kind="pop"] {
+  animation: nk-pop-out var(--nk-time-exit, var(--nk-time)) var(--nk-ease-in, ease-in) both;
+}
+[data-nk-stagger="out"][data-nk-stagger-kind="fade"] {
+  animation: nk-fade-out var(--nk-time-exit, var(--nk-time)) var(--nk-ease-in, ease-in) both;
+}
+:is(html, *)[data-nk-motion="reduced"] [data-nk-stagger="in"] {
+  animation-name: nk-enter;
+}
+:is(html, *)[data-nk-motion="reduced"] [data-nk-stagger="out"] {
+  animation-name: nk-fade-out;
 }
 /* An entrance with a short rise (4px), for lists, toasts and panel contents: an inner wrapper, never a
    centred dialog. Reduced motion keeps the fade. */
@@ -925,7 +961,7 @@
     background-size: 100% 100%;
   }
   /* a press dips and springs back */
-  [data-slot="button"]:not([class*="translate"], :disabled):active {
+  [data-slot="button"]:not([class*="translate"], :disabled):is(:active, [data-nk-press]) {
     transform: scale(var(--nk-press-scale, 0.97));
   }
   :is(html, *)[data-nk-motion="reduced"] [data-slot="button"]:active,

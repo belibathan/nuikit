@@ -1,3 +1,4 @@
+import { useStaggerItem } from "nuikit-core/react";
 import { memo, type MouseEvent } from "react";
 import { ItemImage } from "@/components/item-image";
 import { SlotOutline } from "@/components/outline";
@@ -79,8 +80,11 @@ export const SlotTile = memo(function SlotTile({ side, item, invType, locked, di
   const stock = shop && filled && item.count !== undefined ? item.count.toLocaleString("en-US") : null;
   const durability = !shop && filled && item.durability !== undefined ? Math.max(0, Math.min(100, item.durability)) : undefined;
 
+  // in the sheet's <Stagger>: slots pop in one after another when it opens, and fold out when it closes
+  const stagger = useStaggerItem<HTMLDivElement>(undefined, { appear: !display, animate: display ? false : "pop" });
   return (
     <div
+      ref={stagger}
       data-drop={display ? undefined : key}
       data-filled={filled || undefined}
       data-over={isOver || undefined}

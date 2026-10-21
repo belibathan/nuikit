@@ -38,7 +38,9 @@
           "type": "registry:ui"
         }
       ],
-      "dependencies": [],
+      "dependencies": [
+        "nuikit-core"
+      ],
       "registryDependencies": [
         "sheet",
         "scroll-area",
@@ -88,7 +90,8 @@
       "dependencies": [
         "class-variance-authority",
         "lucide-react",
-        "radix-ui"
+        "radix-ui",
+        "nuikit-core"
       ],
       "registryDependencies": [
         "checkbox",
@@ -445,7 +448,8 @@
       ],
       "dependencies": [
         "class-variance-authority",
-        "lucide-react"
+        "lucide-react",
+        "nuikit-core"
       ],
       "registryDependencies": [
         "button"
@@ -798,7 +802,7 @@
       "name": "skill-check",
       "type": "registry:ui",
       "title": "Skill check",
-      "description": "Press the key while the needle is in the zone: zone start and size (wrapping past 360\u00b0), speed, the key, a success or fail outcome. Runs itself (needle drawn per frame without re-rendering, a full turn is a miss) and reads the key, or takes the angle from outside. The default look of the challenge intent.",
+      "description": "Press the key while the needle is in the zone: zone start and size (wrapping past 360°), speed, the key, a success or fail outcome. Runs itself (needle drawn per frame without re-rendering, a full turn is a miss) and reads the key, or takes the angle from outside. The default look of the challenge intent.",
       "files": [
         {
           "path": "registry/nuikit/ui/skill-check.tsx",
@@ -906,7 +910,7 @@
       "categories": [
         "screens"
       ],
-      "docs": "Mount <LoadingScreenPage /> in App.tsx of a resource whose fxmanifest has loadscreen 'web/dist/index.html' and loadscreen_manual_shutdown 'yes'. Hand it data from the server with deferrals.handover({ nuikit = { serverName, tips, theme = GlobalState.nuikitTheme, \u2026 } }). A whole resource with the Lua: npm create nuikit@latest my-loading -- -t loading-screen",
+      "docs": "Mount <LoadingScreenPage /> in App.tsx of a resource whose fxmanifest has loadscreen 'web/dist/index.html' and loadscreen_manual_shutdown 'yes'. Hand it data from the server with deferrals.handover({ nuikit = { serverName, tips, theme = GlobalState.nuikitTheme, … } }). A whole resource with the Lua: npm create nuikit@latest my-loading -- -t loading-screen",
       "meta": {
         "since": "0.6.0",
         "status": "stable",

@@ -1,5 +1,6 @@
 import { Eye } from "lucide-react";
 import { Fragment, useEffect, useRef, useState } from "react";
+import { Stagger } from "nuikit-core/react";
 import { MenuRow } from "@/components/ui/menu-row";
 import { Panel, PanelBody } from "@/components/ui/panel";
 import { Separator } from "@/components/ui/separator";
@@ -104,6 +105,7 @@ export default function App() {
             )}
           >
             <PanelBody className="gap-0">
+              <Stagger budget={200}>
               {groups.map((group, gi) => (
                 <Fragment key={group.key}>
                   {gi > 0 && <Separator className="tgt-group-rule" />}
@@ -130,6 +132,7 @@ export default function App() {
                   </div>
                 </Fragment>
               ))}
+              </Stagger>
             </PanelBody>
           </Panel>
         </>
