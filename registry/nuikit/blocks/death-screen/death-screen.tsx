@@ -6,13 +6,15 @@ import { cn } from "@/lib/utils"
 import { Countdown, formatCountdown } from "@/components/ui/countdown"
 import { HudChip } from "@/components/ui/hud-chip"
 import { KeyPrompt } from "@/components/ui/key-prompt"
+import { formatMoney } from "@/components/ui/money"
 
 import type { DeathScreenData } from "./nui"
 
 /**
  * DeathScreen — last stand and death, over the game: a countdown, a bar, and the keys your Lua
  * listens for (respawn, call EMS). Presentation only: your medical script owns the rules and sends
- * a DeathScreenData snapshot; this draws it. Built from the kit: Countdown, KeyPrompt, HudChip.
+ * a DeathScreenData snapshot; this draws it. Built from the kit: Countdown, KeyPrompt, HudChip,
+ * Money. Text on the game (nk-on-game): light in every theme, with the world shadow.
  *
  *   <DeathScreenSurface />                      // wired: nk.surface('death', …) in Lua opens it
  *   <DeathScreen data={{ phase: "dead", seconds: 42, total: 60 }} />   // a still, for previews
@@ -27,8 +29,6 @@ function DeathScreenSurface() {
     </Surface>
   )
 }
-
-const money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 })
 
 /** 125 → "02:05". @deprecated The clock is the kit's Countdown now; use formatCountdown. */
 const deathClock = (seconds: number) => formatCountdown(seconds)
@@ -52,13 +52,14 @@ function DeathScreen({
     <div
       data-slot="death-screen"
       data-phase={data.phase}
-      className={cn("absolute inset-0 overflow-hidden text-foreground", className)}
+      className={cn("nk-on-game absolute inset-0 overflow-hidden text-foreground", className)}
       {...props}
     >
-      {/* the game behind, darkened; red bleeding in from the edges (pulsing while down) */}
+      {/* the game behind, darkened; red bleeding in from the edges, stronger while down. Steady: nothing
+          animates on its own (docs/design.md motion rule 8); the last 30 s are the Countdown's warnAt. */}
       <div className={cn("nk-enter absolute inset-0", down ? "bg-scrim/40" : "bg-scrim/60")} aria-hidden />
       <div
-        className={cn("absolute inset-0", down ? "animate-pulse opacity-70" : "opacity-30")}
+        className={cn("absolute inset-0", down ? "opacity-70" : "opacity-30")}
         style={{ background: "radial-gradient(ellipse 72% 68% at 50% 45%, transparent 38%, var(--destructive) 100%)" }}
         aria-hidden
       />
@@ -69,9 +70,9 @@ function DeathScreen({
       />
 
       {/* above centre: the bottom of the screen stays clear for the game's own prompts */}
-      <div className="nk-enter nk-shadow absolute inset-x-0 top-[20%] flex flex-col items-center px-12 text-center">
+      <div className="nk-enter absolute inset-x-0 top-[20%] flex flex-col items-center px-12 text-center">
         <h1 className="nk-display">{data.title ?? (down ? "You are down" : "You are unconscious")}</h1>
-        {data.subtitle && <p className="mt-2 max-w-xl text-base text-foreground/75">{data.subtitle}</p>}
+        {data.subtitle && <p className="mt-2 max-w-xl text-base text-muted-foreground">{data.subtitle}</p>}
 
         {timed ? (
           <Countdown
@@ -84,7 +85,7 @@ function DeathScreen({
             warnAt={down ? 30 : undefined}
           />
         ) : (
-          <div className="mt-12 text-sm font-medium text-foreground/75">Waiting for help</div>
+          <div className="nk-label mt-12">Waiting for help</div>
         )}
 
         <DeathScreenKeys data={data} hold={hold} />
@@ -159,7 +160,7 @@ function RespawnPrompt({ keyName, cost, hold = 0 }: { keyName: string; cost?: nu
       size="sm"
       keys={keyName}
       label="Hold to respawn"
-      description={cost ? money.format(cost) : undefined}
+      description={cost ? formatMoney(cost) : undefined}
       hold={0}
       progress={hold}
     />
