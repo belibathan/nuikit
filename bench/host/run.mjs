@@ -10,12 +10,12 @@
 import fs from "node:fs";
 import { createRequire } from "node:module";
 import path from "node:path";
-import { APPS, OUT, REPO, appOf, server } from "./lib/apps.mjs";
+import { APPS, OUT, REPO, appOf, playwrightCore, server } from "./lib/apps.mjs";
 import { domNodes, jsHeap, median, parseTrace, percentile, processMemory } from "./lib/measure.mjs";
 import { ROOT_URL, installNui } from "./lib/nui.mjs";
 
 const require = createRequire(import.meta.url);
-const { chromium } = require("/home/claude/nuikit/node_modules/.pnpm/playwright-core@1.56.0/node_modules/playwright-core");
+const { chromium } = playwrightCore(require);
 
 const arg = (name, def) => process.argv.find((a) => a.startsWith(`--${name}=`))?.split("=")[1] ?? def;
 const NS = arg("n", "1,5,10,20").split(",").map(Number);

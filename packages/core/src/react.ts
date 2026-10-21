@@ -12,7 +12,10 @@ import {
   type SurfaceOptions,
   type SurfaceState,
   closeNui,
+  getContext,
   getPlayer,
+  onContext,
+  type NuiContext,
   onPlayer,
   type NuiPlayer,
   fetchNui,
@@ -252,6 +255,16 @@ export function Surface<K extends SurfaceName>(props: SurfaceProps<K>): ReactEle
  */
 export function usePlayer(): NuiPlayer {
   return useSyncExternalStore(onPlayer, getPlayer, getPlayer);
+}
+
+/**
+ * The server's currency and locale (`nuikit:context`, protocol §7.2), for Intl formatting.
+ * `{ currency: "USD", locale: "en-US" }` until Lua sends them.
+ *
+ *   const { currency, locale } = useNuiContext();
+ */
+export function useNuiContext(): NuiContext {
+  return useSyncExternalStore(onContext, getContext, getContext);
 }
 
 // ───────────────────────────────── motion (nuikit-core/motion)

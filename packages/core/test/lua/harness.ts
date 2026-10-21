@@ -73,6 +73,8 @@ export async function createClient(options: { syncEvents?: boolean; onNuiMessage
   // SetTimeout callbacks, run by runTimers().
   const timers: { resource: string; ms: number; fn: () => void }[] = [];
   const metadata = new Map<string, Record<string, string[]>>();
+  /** The resource an onClientResourceStop is being delivered for (GetResourceState → "stopping"). */
+  let stopping: string | undefined;
 
   const queue: { event: string; args: unknown[]; from?: string }[] = [];
   /** The resource that triggered the event being delivered (FiveM's GetInvokingResource()). */
@@ -204,7 +206,7 @@ export async function createClient(options: { syncEvents?: boolean; onNuiMessage
     });
     g.set("GetInvokingResource", () => invoker);
     // Resource natives over the resources started in this client (tests can override in `before`).
-    g.set("GetResourceState", (r: string) => (resources.has(r) ? "started" : "missing"));
+    g.set("GetResourceState", (r: string) => (r === stopping ? "stopping" : resources.has(r) ? "started" : "missing"));
     g.set("GetNumResources", () => resources.size);
     g.set("GetResourceByFindIndex", (i: number) => [...resources.keys()][i]);
     g.set("GetNumResourceMetadata", (r: string, key: string) => metadata.get(r)?.[key]?.length ?? 0);
@@ -249,13 +251,23 @@ export async function createClient(options: { syncEvents?: boolean; onNuiMessage
     return res;
   }
 
+  /**
+   * Stop a resource as FiveM does: onClientResourceStop reaches every handler, the stopping
+   * resource's own included (it releases focus, closes its surfaces), and only then is its script
+   * unloaded, so nothing it registered runs afterwards.
+   */
   function stop(name: string) {
     metadata.delete(name);
+    stopping = name;
+    try {
+      trigger("onClientResourceStop", name);
+      flush();
+    } finally {
+      stopping = undefined;
+    }
     for (const [event, list] of handlers) handlers.set(event, list.filter((h) => h.resource !== name));
     for (let i = bagHandlers.length - 1; i >= 0; i--) if (bagHandlers[i]!.resource === name) bagHandlers.splice(i, 1);
     for (let i = timers.length - 1; i >= 0; i--) if (timers[i]!.resource === name) timers.splice(i, 1);
-    trigger("onClientResourceStop", name);
-    flush();
     resources.get(name)?.lua.global.close();
     resources.delete(name);
   }

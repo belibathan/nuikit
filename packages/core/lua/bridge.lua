@@ -13,6 +13,13 @@
     NUI.player.framework       -- 'qbox' | 'qbcore' | 'esx' | 'standalone'
 
   Health and armor are 0–100. Hunger, thirst and stress are 0–100 when the framework has them, nil otherwise.
+
+  It also carries the server context (protocol §7.2): the currency and locale the nuikit resource
+  publishes as GlobalState.nuikitContext (convars nuikit_currency / nuikit_locale), sent to the UI as
+  `nuikit:context` { currency, locale } (useNuiContext() in React) on load, with every resend, and
+  live when it changes. Without the nuikit resource it is { currency = 'USD', locale = 'en-US' }.
+
+    NUI.player.context()       -- { currency, locale }
 ]]
 
 NUI = NUI or {}
@@ -56,8 +63,51 @@ function NUI.player.set(fields)
   flush()
 end
 
---- Send the current player again (the UI just loaded).
+-- ───────────────────────────────── server context (currency, locale)
+
+local DEFAULT_CONTEXT = { currency = 'USD', locale = 'en-US' }
+local lastContext = nil
+
+local function readContext()
+  local c = GlobalState and GlobalState.nuikitContext
+  if type(c) ~= 'table' then return { currency = DEFAULT_CONTEXT.currency, locale = DEFAULT_CONTEXT.locale } end
+  return {
+    currency = type(c.currency) == 'string' and c.currency ~= '' and c.currency or DEFAULT_CONTEXT.currency,
+    locale = type(c.locale) == 'string' and c.locale ~= '' and c.locale or DEFAULT_CONTEXT.locale,
+  }
+end
+
+local function sendContext(force)
+  local c = readContext()
+  local encoded = json.encode(c)
+  if not force and encoded == lastContext then return end
+  lastContext = encoded
+  NUI.send('nuikit:context', c)
+end
+
+--- The server's currency (ISO 4217) and locale (BCP 47), as the nuikit resource publishes them.
+---@return { currency: string, locale: string }
+function NUI.player.context()
+  return readContext()
+end
+
+if AddStateBagChangeHandler then
+  AddStateBagChangeHandler('nuikitContext', 'global', function(_, _, value)
+    if type(value) ~= 'table' then return end
+    local c = {
+      currency = type(value.currency) == 'string' and value.currency ~= '' and value.currency or DEFAULT_CONTEXT.currency,
+      locale = type(value.locale) == 'string' and value.locale ~= '' and value.locale or DEFAULT_CONTEXT.locale,
+    }
+    local encoded = json.encode(c)
+    if encoded == lastContext then return end
+    lastContext = encoded
+    NUI.send('nuikit:context', c)
+  end)
+end
+
+--- Send the current player (and the server context) again (the UI just loaded).
 function NUI.player.resend()
+  sendContext(true)
   lastSent = nil
   flush()
 end
@@ -195,6 +245,8 @@ local function detect()
   return 'standalone'
 end
 
+-- The context goes before the first player message, so a page can format cash as soon as it has it.
+sendContext(true)
 NUI.player.framework = GetConvar('nuikit_framework', '') ~= '' and GetConvar('nuikit_framework', '') or detect()
 local frameworkPoll = adapters[NUI.player.framework]()
 

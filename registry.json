@@ -595,7 +595,8 @@
         }
       ],
       "dependencies": [
-        "class-variance-authority"
+        "class-variance-authority",
+        "nuikit-core"
       ],
       "meta": {
         "since": "0.6.0",

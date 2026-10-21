@@ -1,6 +1,12 @@
-import { describe, expect, it } from "vitest"
+import { __reset, emit } from "nuikit-core"
+import { afterEach, describe, expect, it } from "vitest"
 
 import { formatMoney, moneyDirection } from "@/components/ui/money"
+
+afterEach(() => __reset())
+
+/** Intl separates with a no-break space (U+00A0); compare on plain spaces. */
+const plain = (s: string) => s.replace(/\u00a0/g, " ")
 
 describe("money", () => {
   it("formats whole dollars by default", () => {
@@ -44,5 +50,35 @@ describe("money", () => {
     expect(moneyDirection(-5)).toBe(-1)
     expect(moneyDirection(0)).toBe(0)
     expect(moneyDirection(Number.NaN)).toBe(0)
+  })
+})
+
+describe("money follows the server context (nuikit:context)", () => {
+  it("defaults to USD / en-US until Lua sends the context", () => {
+    expect(plain(formatMoney(1520))).toBe("$1,520")
+  })
+
+  it("formats with the server's currency and locale once they arrive", () => {
+    emit("nuikit:context", { currency: "EUR", locale: "de-DE" })
+    expect(plain(formatMoney(1520))).toBe("1.520 €")
+    expect(plain(formatMoney(9.99, { fractionDigits: 2 }))).toBe("9,99 €")
+    emit("nuikit:context", { currency: "JPY", locale: "ja-JP" })
+    expect(plain(formatMoney(1520))).toBe("￥1,520")
+    emit("nuikit:context", { currency: "USD", locale: "en-US" })
+    expect(plain(formatMoney(1520))).toBe("$1,520")
+  })
+
+  it("explicit currency and locale win over the context", () => {
+    emit("nuikit:context", { currency: "EUR", locale: "de-DE" })
+    expect(plain(formatMoney(1520, { currency: "GBP", locale: "en-GB" }))).toBe("£1,520")
+    expect(plain(formatMoney(120, { currency: null, suffix: " chips" }))).toBe("120 chips")
+    expect(plain(formatMoney(1520, { currency: "USD" }))).toBe("1.520 $") // locale still the server's
+  })
+
+  it("a malformed context falls back field by field, and an unknown currency never throws", () => {
+    emit("nuikit:context", { currency: "", locale: "de-DE" } as never)
+    expect(plain(formatMoney(1520))).toBe("1.520 $")
+    emit("nuikit:context", { currency: "NOPE", locale: "xx-INVALID-TAG-@" } as never)
+    expect(plain(formatMoney(1520))).toBe("1,520")
   })
 })

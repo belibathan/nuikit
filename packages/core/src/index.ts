@@ -27,6 +27,8 @@ export interface BuiltinEvents {
   "nuikit:surfaces": import("./surfaces").SurfacesSnapshot;
   "nuikit:back": string;
   "nuikit:player": import("./player").NuiPlayer;
+  /** The server's currency and locale (bridge.lua, protocol §7.2). */
+  "nuikit:context": import("./player").NuiContext;
   /** The server theme: compiled tokens from the nuikit resource (or a raw theme.css from an older one). */
   "nuikit:theme": string | import("./tokens").CompiledTheme;
   /** The player's UI preferences (scale, reduced motion, high contrast). */
@@ -298,6 +300,8 @@ function builtinTheme() {
   });
 }
 builtinTheme();
+// The server context (currency, locale) is kept from the first message on, even before any UI reads it.
+subscribeContext();
 
 // In game, tell Lua the page is listening so it resends surfaces, player, theme: messages sent
 // before the page loaded are lost otherwise.
@@ -373,6 +377,7 @@ export function __reset(): void {
   __resetTheme();
   __resetSurfaces();
   __resetPlayer();
+  subscribeContext();
   __resetFollow();
 }
 
@@ -447,8 +452,8 @@ export {
   type SurfacesSnapshot,
 } from "./surfaces";
 import { __resetSurfaces } from "./surfaces";
-export { DEFAULT_PLAYER, getPlayer, onPlayer, type NuiPlayer, type NuiPlayerJob } from "./player";
-import { __resetPlayer } from "./player";
+export { DEFAULT_CONTEXT, DEFAULT_PLAYER, getContext, getPlayer, onContext, onPlayer, type NuiContext, type NuiPlayer, type NuiPlayerJob } from "./player";
+import { __resetPlayer, subscribeContext } from "./player";
 export { follow, followed, type FollowKind, type FollowOptions } from "./follow";
 import { __resetFollow } from "./follow";
 

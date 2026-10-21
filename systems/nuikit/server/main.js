@@ -104,3 +104,34 @@ exports("getTheme", () => last && { version: last.version, mode: last.mode, hash
 exports("reloadTheme", () => !!publish("reloaded"));
 
 publish("compiled");
+
+// ───────────────────────────────── server context (currency, locale)
+// What every UI formats money and numbers with (docs/protocol.md §7.2): published next to the
+// theme, read by bridge.lua and sent to pages as `nuikit:context`.
+//
+//   setr nuikit_currency EUR      ISO 4217 code, default USD
+//   setr nuikit_locale de-DE      BCP 47 tag, default en-US
+{
+  const CONTEXT_KEY = "nuikitContext";
+  const convar = (name, fallback) => (typeof GetConvar === "function" ? String(GetConvar(name, fallback) || fallback) : fallback).trim();
+
+  let currency = convar("nuikit_currency", "USD").toUpperCase();
+  if (!/^[A-Z]{3}$/.test(currency)) {
+    log(`^3nuikit_currency "${currency}" is not an ISO 4217 code (three letters, e.g. EUR); USD is used.^7`);
+    currency = "USD";
+  }
+  let locale = convar("nuikit_locale", "en-US");
+  try {
+    // Canonical form (en_us → en-US); throws on a malformed tag.
+    locale = Intl.getCanonicalLocales(locale.replace(/_/g, "-"))[0] || "en-US";
+  } catch {
+    log(`^3nuikit_locale "${locale}" is not a BCP 47 tag (e.g. de-DE); en-US is used.^7`);
+    locale = "en-US";
+  }
+
+  const context = { currency, locale };
+  if (typeof GlobalState.set === "function") GlobalState.set(CONTEXT_KEY, context, true);
+  else GlobalState[CONTEXT_KEY] = context;
+  log(`context: currency ${currency}, locale ${locale}`);
+  exports("getContext", () => ({ currency, locale }));
+}

@@ -159,7 +159,10 @@ FXServer JS runtime.
 
 1. **Pick the set.** Dark by default (nuikit UIs are drawn over the game): `:root` + `.dark` on top. A paste
    with no dark colours uses its light set and says so. `{ mode: "light" }` reads `:root` only.
-2. **Resolve** `var(--x)` references between variables (TweakCN's `--sidebar-primary: var(--primary)`).
+2. **Resolve** `var(--x)` references between variables (TweakCN's `--sidebar-primary: var(--primary)`). A token
+   that is empty (`--primary: ;`) or an alias that leads nowhere (`var(--nope)`, or to an empty token) would
+   paint nothing: it gets the stock value with a warning (`--primary is empty; the stock value is used.`), and a
+   `var(--x, fallback)` pointing at it takes its fallback, as in CSS. In a patch (`partial`) it is left out.
 3. **Lower** every colour, including colours inside compound values (shadows), to `rgb()` / `rgba()`.
    Values Chromium 103 can't read and that can't be lowered (`color-mix()`, `lab()`) are replaced by the
    stock value, with a warning.
@@ -214,7 +217,12 @@ nuikit/theme.css ──(server/main.js: compileTheme, warnings → server consol
 - Fallbacks: if the server couldn't compile (or runs an older nuikit resource), UIs get the raw
   `theme.css` and compile it themselves with the same compiler. Without the `nuikit` resource, every UI keeps
   its built-in stock theme (`index.css`, which carries the same defaults as above).
-- Server exports: `exports.nuikit:getTheme()`, `exports.nuikit:reloadTheme()`.
+- `loadServerTheme` (override pages) reads `nuikit/theme.css` only as a **stand-in** while the `https://nuikit/theme`
+  callback hasn't answered (ox_lib starts before `nuikit`). That file is the client's copy from when `nuikit` last
+  started: editing it and running `nuikit theme reload` changes GlobalState, not the copy, so it refreshes only when
+  `nuikit` restarts. GlobalState through the callback is the live path; the page keeps asking until it answers.
+- Server exports: `exports.nuikit:getTheme()`, `exports.nuikit:reloadTheme()`, `exports.nuikit:getContext()`
+  (`{ currency, locale }`, see `protocol.md` §7.2).
 
 ## Player preferences
 

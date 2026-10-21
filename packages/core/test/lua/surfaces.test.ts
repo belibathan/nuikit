@@ -124,6 +124,25 @@ describe.each([
     expect(await inv.run(`return #NUI.surfaces()`)).toBe(1);
   });
 
+  it("a stopping resource's own stop handler runs: it releases its focus and sees itself as stopping", async () => {
+    client = await createClient();
+    const bank = await client.start("bank");
+    await bank.run(`
+      B = NUI.surface('bank', { layer = 'modal' }) B:open()
+      STATE_AT_STOP = nil
+      AddEventHandler('onClientResourceStop', function(r) if r == 'bank' then STATE_AT_STOP = GetResourceState('bank') end end)
+    `);
+    expect(bank.focus).toMatchObject({ focus: true, cursor: true });
+    const state = { seen: undefined as unknown };
+    bank.lua.global.set("__report", (s: unknown) => (state.seen = s));
+    await bank.run(`AddEventHandler('onClientResourceStop', function(r) if r == 'bank' then __report(STATE_AT_STOP) end end)`);
+    client.stop("bank");
+    // nuikit.lua's own handler (`resource == RESOURCE`) released the focus before the script unloaded
+    expect(bank.focus).toMatchObject({ focus: false, cursor: false, keepInput: false });
+    expect(state.seen).toBe("stopping");
+    expect(client.focused()).toBeNull();
+  });
+
   it("the UI can open and close declared surfaces, never undeclared ones", async () => {
     client = await createClient();
     const ui = await client.start("ui");

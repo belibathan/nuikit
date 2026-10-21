@@ -75,7 +75,10 @@ interface Record_ extends ModuleInfo {
   portal?: HTMLElement;
   sheet?: CSSStyleSheet;
   listeners: Set<(msg: HostedMessage) => void>;
+  /** Held until the module is listening (status "mounted"): script loading, then its listeners attaching. */
   queue: HostedMessage[];
+  /** The module said its listeners are attached (ctx.ready(), or mount() returned for a "mount" module). */
+  ready: boolean;
   defined: boolean;
   cleanup?: () => void;
   started: number;
@@ -105,6 +108,11 @@ export interface ModuleDeps {
   reactDomClient: typeof ReactDOMClient;
   jsxRuntime: typeof JSXRuntime;
 }
+
+/** Messages held per module while it is not listening yet. */
+const QUEUE_MAX = 200;
+/** How long a "signal" module may take to call ready() before its messages are delivered anyway. */
+const READY_GRACE_MS = 10_000;
 
 let created: Host | null = null;
 
@@ -210,10 +218,6 @@ export function createHost(options: HostOptions = {}): Host {
       },
       listen: (handler) => {
         rec.listeners.add(handler);
-        if (rec.queue.length) {
-          const queued = rec.queue.splice(0);
-          queueMicrotask(() => queued.forEach((m) => rec.listeners.forEach((h) => h(m))));
-        }
         return () => {
           rec.listeners.delete(handler);
         };
@@ -294,14 +298,50 @@ export function createHost(options: HostOptions = {}): Host {
         hosted: true,
         portal: rec.portal!,
         reportError: (e) => report(rec, e),
+        ready: () => markReady(rec),
       });
       rec.cleanup = typeof cleanup === "function" ? cleanup : undefined;
-      rec.status = "mounted";
       rec.mountMs = performance.now() - t;
-      emitEvent({ type: "mount", resource: rec.resource, ms: performance.now() - rec.started });
+      if (def.ready === "signal") {
+        // The module calls ctx.ready() once its listeners are attached. A module that never does
+        // would hold its messages forever: after a long grace period, deliver anyway and say so.
+        setTimeout(() => {
+          if (rec.ready || rec.status !== "loading") return;
+          console.warn(`[nuikit host] ${rec.resource}: ready() was never called ${READY_GRACE_MS} ms after mount; delivering its messages anyway`);
+          markReady(rec);
+        }, READY_GRACE_MS);
+      } else {
+        markReady(rec);
+      }
     } catch (error) {
       fail(rec, error);
     }
+  };
+
+  /**
+   * The module is listening: report it mounted and deliver, in order, everything held back since
+   * the load started. From here on send() delivers straight away.
+   */
+  const markReady = (rec: Record_) => {
+    if (rec.ready || rec.status !== "loading") return;
+    rec.ready = true;
+    rec.status = "mounted";
+    emitEvent({ type: "mount", resource: rec.resource, ms: performance.now() - rec.started });
+    flushQueue(rec);
+  };
+
+  const flushQueue = (rec: Record_) => {
+    while (rec.queue.length && rec.status === "mounted" && rec.listeners.size) deliver(rec, rec.queue.shift()!);
+  };
+
+  const deliver = (rec: Record_, msg: HostedMessage) => {
+    rec.listeners.forEach((h) => {
+      try {
+        h(msg);
+      } catch (error) {
+        report(rec, error);
+      }
+    });
   };
 
   const host: Host = {
@@ -314,6 +354,7 @@ export function createHost(options: HostOptions = {}): Host {
         status: "loading",
         listeners: new Set(),
         queue: [],
+        ready: false,
         defined: false,
         started: performance.now(),
         calls: 0,
@@ -352,18 +393,13 @@ export function createHost(options: HostOptions = {}): Host {
       if (!rec || rec.status === "failed") return;
       rec.messages++;
       const msg = { action, data };
-      if (!rec.listeners.size) {
-        // Not listening yet (script still loading): keep the latest few; the handshake resends state.
-        if (rec.queue.push(msg) > 200) rec.queue.shift();
+      if (rec.status !== "mounted" || !rec.listeners.size || rec.queue.length) {
+        // Not listening yet (script loading, or listeners still attaching): hold it, in order,
+        // bounded; the handshake resends state anyway.
+        if (rec.queue.push(msg) > QUEUE_MAX) rec.queue.shift();
         return;
       }
-      rec.listeners.forEach((h) => {
-        try {
-          h(msg);
-        } catch (error) {
-          report(rec, error);
-        }
-      });
+      deliver(rec, msg);
     },
     modules: () =>
       [...records.values()].map(({ resource, url, status, error, loadMs, mountMs, calls, messages }) => ({

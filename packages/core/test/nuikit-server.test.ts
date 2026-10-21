@@ -9,7 +9,7 @@ import { compileTheme } from "../src/tokens";
 const dir = fileURLToPath(new URL("../../../systems/nuikit/", import.meta.url));
 const scripts = ["server/compiler.js", "server/main.js"].map((f) => [f, readFileSync(dir + f, "utf8")] as const);
 
-function boot(files: Record<string, string>, aces: Record<string, boolean> = {}) {
+function boot(files: Record<string, string>, aces: Record<string, boolean> = {}, convars: Record<string, string> = {}) {
   const state: Record<string, unknown> = {};
   const logs: string[] = [];
   const net: { event: string; target: number; data: unknown }[] = [];
@@ -19,6 +19,7 @@ function boot(files: Record<string, string>, aces: Record<string, boolean> = {})
   const ctx: Record<string, unknown> = {
     console: { log: (m: string) => logs.push(m.replace(/\^\d/g, "")) },
     GetCurrentResourceName: () => "nuikit",
+    GetConvar: (name: string, fallback: string) => convars[name] ?? fallback,
     LoadResourceFile: (_r: string, f: string) => files[f] ?? null,
     GlobalState: { set: (k: string, v: unknown) => (state[k] = v) },
     RegisterCommand: (name: string, fn: (src: number, args: string[]) => void, restricted: boolean) => commands.set(name, { fn, restricted }),
@@ -95,5 +96,20 @@ describe("the nuikit resource's server script", () => {
     const s = boot({ "theme.css": THEME });
     expect((s.exported.get("getTheme")!() as { version: number }).version).toBe(1);
     expect(s.exported.get("reloadTheme")!()).toBe(true);
+  });
+
+  it("publishes the server context (nuikit_currency, nuikit_locale) next to the theme", () => {
+    const s = boot({ "theme.css": THEME });
+    expect(s.state.nuikitContext).toEqual({ currency: "USD", locale: "en-US" });
+    expect(s.logs.some((l) => /context: currency USD, locale en-US$/.test(l))).toBe(true);
+
+    const de = boot({ "theme.css": THEME }, {}, { nuikit_currency: "eur", nuikit_locale: "de_de" });
+    expect(de.state.nuikitContext).toEqual({ currency: "EUR", locale: "de-DE" }); // canonical forms
+    expect(de.exported.get("getContext")!()).toEqual({ currency: "EUR", locale: "de-DE" });
+
+    const bad = boot({ "theme.css": THEME }, {}, { nuikit_currency: "dollars", nuikit_locale: "not a tag" });
+    expect(bad.state.nuikitContext).toEqual({ currency: "USD", locale: "en-US" });
+    expect(bad.logs.some((l) => /nuikit_currency "DOLLARS" is not an ISO 4217 code/.test(l))).toBe(true);
+    expect(bad.logs.some((l) => /nuikit_locale "not a tag" is not a BCP 47 tag/.test(l))).toBe(true);
   });
 });

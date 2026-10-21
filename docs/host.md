@@ -1,7 +1,7 @@
 # The nuikit host (prototype)
 
 *Status: prototype, opt-in. The in-game measurement is in [Decision](#decision-measured-in-game-oct-19-2026). It works end to end in the browser harness
-(`bench/host/e2e.mjs`, 19/19), and `nuikit_hud` ships as a module. Whether it becomes a promise depends on one
+(`bench/host/e2e.mjs`, 21/21), and `nuikit_hud` ships as a module. Whether it becomes a promise depends on one
 in-game measurement; see [Decision](#decision).*
 
 FiveM gives every resource with a `ui_page` its own iframe, its own copy of React, fonts and styles, and its own
@@ -46,7 +46,13 @@ Chromium 103 like any nuikit stylesheet and inlined.
    is hosted, and loads nothing.
 3. **Lua → module.** `NUI.send` becomes `TriggerEvent('nuikit:host:send')`. `host.lua` stamps the message with
    `GetInvokingResource()`, the resource that really sent it, never a name from the payload, and the page
-   delivers it to that module only.
+   delivers it to that module only. Until the module is **listening**, the page holds its messages (the latest
+   200, in order): while the script loads, and then until the module says its listeners are attached.
+   `defineReactModule` says so (`ctx.ready()`) from an effect above the App, which React runs after every
+   effect inside the App, so an `onNui` in the App's own effects is always there first; a plain `defineModule`
+   counts as listening when `mount()` returns, or declares `ready: "signal"` and calls `ctx.ready()` itself
+   (after 10 s without it, the messages are delivered anyway, with a console warning). A module's status is
+   `mounted` only from that point.
 4. **Module → Lua.** The module posts `nuikit:host:call { t, n, d }`. The **token** picks the resource, never
    the page; the call is forwarded to that resource's callback and only that resource may answer. Requests
    time out after 30 s.

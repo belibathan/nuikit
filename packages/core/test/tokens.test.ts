@@ -255,6 +255,25 @@ describe("compileTheme inputs", () => {
     expect(t.warnings.join("\n")).toMatch(/--primary uses a colour format/);
   });
 
+  it("warns on an empty token and on an alias that resolves to nothing", () => {
+    const t = compileTheme(".dark { --primary: ; --accent: var(--nope); --ring: var(--primary); --card: var(--accent, #112233); }");
+    const w = t.warnings.join("\n");
+    expect(w).toMatch(/--primary is empty; the stock value is used\./);
+    expect(w).toMatch(/--accent is var\(--nope\), which isn't defined; the stock value is used\./);
+    expect(w).toMatch(/--ring is var\(--primary\), which resolves to nothing; the stock value is used\./);
+    const stock = compileTheme("").vars;
+    expect(t.vars.primary).toBe(stock.primary);
+    expect(t.vars.accent).toBe(stock.accent);
+    expect(t.vars.ring).toBe(stock.ring);
+    // a var() with a fallback is fine
+    expect(t.vars.card).toBe("rgb(17, 34, 51)");
+    expect(w).not.toMatch(/--card is/);
+    // a patch has no stock to fall back on: the token is left out
+    const p = compileTheme({ primary: "", accent: "var(--zzz)" }, { partial: true });
+    expect(p.vars).toEqual({});
+    expect(p.warnings).toEqual(["--primary is empty; it was left out.", "--accent is var(--zzz), which isn't defined; it was left out."]);
+  });
+
   it("validates --nk-scale and --nk-motion", () => {
     expect(compileTheme(".dark { --nk-scale: 1.15; --nk-motion: 0; }").vars).toMatchObject({ "nk-scale": "1.15", "nk-motion": "0" });
     const bad = compileTheme(".dark { --nk-scale: big; --nk-motion: maybe; }");
