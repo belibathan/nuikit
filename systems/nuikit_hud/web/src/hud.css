@@ -112,148 +112,75 @@
   box-shadow: inset 0 0 0 1px var(--hud-hairline);
 }
 
-/* ───────────────────────────── vitals: one chip family (both layouts)
+/* ───────────────────────────── the status row: comms first, then vitals (components/ui/vital-chip)
 
-   Every vital is the same icon-only chip in the identity's chip shape (--nk-chip-radius, and
-   --nk-chip-clip: Signal's chamfer). Its level is traced along that same outline (hud/outline.tsx),
-   clockwise from the top, so a pill fills like a pill and a chamfered chip like a chamfered chip.
-   Voice and radio are chips of the same family that open to show their text. */
+   Every chip is the kit's VitalChip: one shape path (--nk-chip-shape), its level (--nk-level-style),
+   its label attachment (--nk-label-attach). Voice and radio are the primary layer, a step larger and
+   heavier and always there; the vitals are secondary and fold away when they have nothing to say. */
 
 .hud-vitals-row {
-  --hud-vchip: 1.875rem;
-  --hud-vchip-icon: 0.875rem;
+  --vital-size: 1.875rem;
+  --vital-icon-size: 0.875rem;
   --hud-vchip-gap: 0.375rem;
+  --nk-chip-bg: var(--hud-chip-bg);
+  --nk-chip-fg: var(--hud-chip-fg);
+  --nk-chip-track: var(--hud-track);
   display: flex;
   align-items: center;
   gap: var(--hud-vchip-gap);
+  text-shadow: none;
 }
 .hud-vitals-row[data-layout="classic"] {
-  --hud-vchip: 2.25rem;
-  --hud-vchip-icon: 1rem;
+  --vital-size: 2.25rem;
+  --vital-icon-size: 1rem;
   --hud-vchip-gap: 0.5rem;
 }
 .hud-vchip {
   flex: none;
   display: flex;
-  max-width: 8rem;
-  overflow: hidden;
+  max-width: 10rem;
   opacity: 1;
   transition:
     opacity var(--hud-ms) ease-out,
     max-width var(--hud-ms) ease-out,
     margin var(--hud-ms) ease-out;
 }
-.hud-vchip[data-tone="health"] { --vital: var(--vital-health); }
-.hud-vchip[data-tone="armor"] { --vital: var(--vital-armor); }
-.hud-vchip[data-tone="hunger"] { --vital: var(--vital-hunger); }
-.hud-vchip[data-tone="thirst"] { --vital: var(--vital-thirst); }
-.hud-vchip[data-tone="stress"] { --vital: var(--vital-stress); }
 /* hidden: fade and fold away so the row closes up (the gap goes with it) */
 .hud-vchip:not([data-shown]) {
+  overflow: hidden;
   opacity: 0;
   max-width: 0;
   margin-left: calc(var(--hud-vchip-gap) * -1);
   transition-duration: calc(320ms * var(--nk-motion, 1));
   transition-timing-function: ease-in;
 }
-.hud-vchip-face {
-  position: relative;
-  flex: none;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: var(--hud-vchip);
-  height: var(--hud-vchip);
-  border-radius: var(--hud-chip-radius);
-  clip-path: var(--nk-chip-clip, none);
-  background-color: var(--hud-chip-bg);
-  color: var(--hud-chip-fg);
-  text-shadow: none;
-  white-space: nowrap;
-}
-.hud-vchip-wide .hud-vchip-face {
-  width: auto;
-  min-width: var(--hud-vchip);
-  padding: 0 calc((var(--hud-vchip) - var(--hud-vchip-icon)) / 2);
-}
-.hud-vchip-icon {
-  position: relative;
-  display: flex;
-  color: var(--vital, currentColor);
-}
-.hud-vchip-icon svg {
-  width: var(--hud-vchip-icon);
-  height: var(--hud-vchip-icon);
-}
-.hud-vchip-wide .hud-vchip-icon {
-  opacity: 0.85;
-}
-.hud-vchip-text {
-  position: relative;
-  max-width: 0;
-  overflow: hidden;
-  opacity: 0;
-  font-size: 0.8125rem;
-  line-height: 1;
+/* the primary layer: voice and radio */
+.hud-comms {
+  --vital-size: calc(1.875rem + 0.25rem);
+  --vital-icon-size: 0.9375rem;
   font-weight: 600;
-  transition:
-    max-width var(--hud-ms) ease-out,
-    opacity var(--hud-ms) ease-out,
-    margin var(--hud-ms) ease-out;
 }
-.hud-vchip[data-open] .hud-vchip-text {
-  max-width: 6rem;
-  margin-left: 0.3125rem;
-  opacity: 1;
+.hud-vitals-row[data-layout="classic"] .hud-comms {
+  --vital-size: calc(2.25rem + 0.25rem);
+  --vital-icon-size: 1.0625rem;
 }
-.hud-vchip[data-active] .hud-vchip-face {
-  background-color: var(--hud-accent);
-  color: var(--hud-accent-foreground);
+.hud-comms + .hud-vchip:not(.hud-comms) {
+  margin-left: 0.25rem;
 }
-.hud-vchip[data-active] .hud-vchip-icon {
-  opacity: 1;
+.hud-vchip[data-active] {
+  --nk-chip-bg: var(--hud-accent);
+  --nk-chip-fg: var(--hud-accent-foreground);
+  --nk-chip-track: transparent;
 }
-/* the outline: track and level, inside the chip's edge */
-.hud-outline {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  overflow: visible;
-  pointer-events: none;
+/* past its threshold: the whole outline takes the vital's colour (outline level) */
+.hud-vchip[data-critical] {
+  --nk-chip-track: color-mix(in oklab, var(--vital) 40%, transparent);
 }
-.hud-outline-track,
-.hud-outline-fill {
-  fill: none;
-  stroke-linejoin: round;
-}
-.hud-outline-track {
-  stroke: var(--hud-track);
-}
-.hud-outline-fill {
-  stroke: var(--vital);
-  stroke-linecap: round;
-  transition: stroke-dasharray calc(300ms * var(--nk-motion, 1)) ease-out;
-}
-.hud-vchip[data-active] .hud-outline-track {
-  stroke: none;
-}
-/* past its threshold: the whole outline takes the vital's colour, the level stays brighter */
-.hud-vchip[data-critical] .hud-outline-track {
-  stroke: var(--vital);
-  stroke-opacity: 0.35;
-}
-/* half the identity's chamfer: what the kit's chip clip cuts (measured by hud/outline.tsx) */
-.hud-outline-probe {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: calc(var(--nk-cut, 0px) / 2);
-  height: 0;
-  visibility: hidden;
-  pointer-events: none;
-}
+.hud-vchip[data-tone="health"] { --vital: var(--vital-health); }
+.hud-vchip[data-tone="armor"] { --vital: var(--vital-armor); }
+.hud-vchip[data-tone="hunger"] { --vital: var(--vital-hunger); }
+.hud-vchip[data-tone="thirst"] { --vital: var(--vital-thirst); }
+.hud-vchip[data-tone="stress"] { --vital: var(--vital-stress); }
 
 /* ───────────────────────────── location */
 

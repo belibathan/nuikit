@@ -33,4 +33,5 @@ client_scripts {
   'client/vehicle.lua',
   'client/weapon.lua',
   'client/main.lua',
+  'client/style.lua',
 }

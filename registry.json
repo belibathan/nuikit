@@ -196,6 +196,30 @@
       }
     },
     {
+      "name": "vital-chip",
+      "type": "registry:ui",
+      "title": "Vital Chip",
+      "description": "The HUD status chip as composable parts (Root, Shape, Level, Icon, Label, Pop): one SVG path per shape (auto, square, rounded, circle, diamond, hex, chamfer) drives the surface, border, level trace, liquid fill and label anchors; level outline/fill/bar/none; label inline/tag/flag; a pop with the signed change. Themed by --nk-chip-shape, --nk-level-style, --nk-label-attach, --nk-vital-icon.",
+      "files": [
+        {
+          "path": "registry/nuikit/ui/vital-chip.tsx",
+          "type": "registry:ui"
+        }
+      ],
+      "dependencies": [
+        "nuikit-core"
+      ],
+      "registryDependencies": [
+        "text-roll"
+      ],
+      "meta": {
+        "since": "unreleased",
+        "status": "experimental",
+        "replaces": [],
+        "removeIn": null
+      }
+    },
+    {
       "name": "key-hint",
       "type": "registry:ui",
       "title": "Key Hint",
