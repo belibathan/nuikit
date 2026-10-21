@@ -1,5 +1,24 @@
 # nuikit-core
 
+## 0.7.0
+
+### Minor Changes
+
+- a73299a: `nuikit doctor` (docs/doctor.md): the server tells you what's left. `doctor(snapshot)` and `formatDoctor` in nuikit-core (pure, bundled into the nuikit resource's `server/compiler.js`); `systems/nuikit/server/doctor.js` builds the snapshot from FXServer natives. Reports the framework, which adapter packs fit, every UI resource's status (on nuikit, hosted, adapted, override, untouched), conflicts (provide vs library, override missing or changed, newer protocol, start order, missing `dependency 'nuikit'`, theme contrast, newer release via `nuikit_latest`) with a next step each, and live `nuikit:intent` counts by source. `nuikit doctor json` for machines; `exports.nuikit:doctor()`.
+- 682de8e: Identity tokens (tokens 1.1): type, shape, surface, density, motion and HUD style are tokens now, not just colour. `compileTheme` reads and derives `--brand`, `--font-display`, `--font-numeric`, `--nk-type-ratio`, the weights and tracking, `--nk-label-case`, `--nk-border-width`, `--nk-cut` (chamfered corners), `--nk-surface-opacity` / `-tint` / `-gradient` / `-edge`, `--nk-elevation`, `--nk-glow`, `--nk-density`, `--nk-ease`, `--nk-duration`, the HUD tokens and `--nk-row-indicator`, fills anything a theme leaves out (a plain TweakCN paste is the Graphite identity), and warns on floor violations (panel opacity under 0.92, HUD text over a white sky). Additive: every v1 name is unchanged. The kit utilities now read component tokens (`--nk-panel-*`, `--nk-row-*`, `--nk-key-*`, `--nk-chip-*`, `--nk-meter-*`, `--nk-gauge-*`, `--nk-heading-*`), each overridable in `theme.css`; new `nk-caption` utility. Four identities ship in `nuikit-core/themes` and the nuikit resource's `themes/`: Graphite (default), Signal, Velvet and Vector. Identity fonts (OFL, woff2) are bundled with every UI and served by the nuikit resource (`fonts/`).
+- 677ab7e: Motion system (design v2 §5A, tokens 1.2). `compileTheme` derives a motion ladder from `--nk-duration` (`--nk-time-press` / `-hover` / `-base` / `-exit` / `-move` / `-modal` / `-screen` / `-ambient`, `--nk-stagger` and its cap), five easings and four springs (`--nk-spring-snap` / `-move` / `-soft` / `-pop`), from two new identity inputs, `--nk-motion-feel` (crisp, snap, smooth, stepped) and `--nk-spring-bounce`. Graphite is crisp, Signal snaps, Velvet glides with a slight bounce, Vector steps. Additive.
+
+  Reduced motion now has two levels: a theme's `--nk-motion: 0` is off (as before), and the player's `reducedMotion` pref is "reduced" (`data-nk-motion="reduced"`): no movement, fades kept at most 100 ms. New `--nk-motion-move`. The prefs message is unchanged.
+
+  New `nuikit-core/motion` entry (no dependencies, about 2 kB): springs sampled into Web Animations keyframes, retargeting with velocity, FLIP, timed runs, the selection indicator's key-repeat rule; `useSpring`, `useFlip` and `useIndicator` in `nuikit-core/react`.
+
+  Kit: no text selection or image drag outside fields, themed scrollbars, selection, caret and placeholder; `nk-pop`, `nk-rise`, `nk-press`, `nk-stagger`, `nk-skeleton`, `nk-blink` and `nk-indicator`; keyboard and controller state (rows, tabs, toggles, focus) changes instantly. Components: `meter` and `progress-ring` timed runs and the `skill-check` needle are each one compositor animation (no per-frame JS or React renders); meter segments scale instead of resizing, and a critical meter blinks twice instead of pulsing forever. ox_lib's progress and skill check keep every request and timing.
+
+### Patch Changes
+
+- 90c84b7: Install: `exec @nuikit/nuikit.cfg` starts nuikit in order and holds its settings (`nuikit_currency`, `nuikit_locale`, `nuikit_host`); per-framework zips with a `server.cfg.snippet`; a txAdmin recipe for Qbox; `overrides.json` page hashes for `nuikit doctor`.
+- fcaec05: `loadServerTheme` keeps asking the `nuikit` resource for the server theme when its first ask fails (override pages such as ox_lib start before `nuikit`), and the server's theme replaces the `nuikit/theme.css` stand-in when it answers. Before, such a page kept the client's cached `theme.css` (the theme from when `nuikit` last started) and never repainted on `nuikit theme reload`.
+
 ## 0.6.0
 
 ## 0.5.0

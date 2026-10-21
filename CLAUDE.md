@@ -15,8 +15,8 @@ TweakCN theme) is the default look and the showcase, not the product. Design: `d
 
 Read this before changing anything, then `docs/design.md`.
 
-Current release: **0.6.0** (npm `nuikit-core`, `vite-plugin-nuikit`, `create-nuikit`; GitHub release
-`v0.6.0` with `nuikit.zip`). Direction: `docs/vision.md` (read first), then `docs/architecture.md`.
+Current release: **0.7.0** (npm `nuikit-core`, `vite-plugin-nuikit`, `create-nuikit`; GitHub release
+`v0.7.0` with `nuikit.zip` and the per-framework zips). Direction: `docs/vision.md` (read first), then `docs/architecture.md`.
 **Status and what's next: `docs/roadmap.md`** (update your rows in every PR). Parallel agents: `docs/next/dispatch.md`
 (lanes, file ownership, rules).
 

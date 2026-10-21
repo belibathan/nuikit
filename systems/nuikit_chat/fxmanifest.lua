@@ -4,7 +4,7 @@ game 'common'
 name 'nuikit_chat'
 description 'nuikit: a theme for the cfx chat resource, coloured by nuikit/theme.css'
 repository 'https://github.com/belibathan/nuikit'
-version '0.6.0'
+version '0.7.0'
 
 files {
   'theme/style.css',

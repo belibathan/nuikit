@@ -1,7 +1,7 @@
 {
   "name": "nuikit-illenium-appearance-ui",
   "private": true,
-  "version": "0.3.3",
+  "version": "0.3.4",
   "description": "A drop-in replacement for illenium-appearance's web UI, built from stock shadcn/ui and themed by nuikit/theme.css.",
   "type": "module",
   "scripts": {

@@ -1,5 +1,16 @@
 # nuikit-ox-inventory-ui
 
+## 0.1.4
+
+### Patch Changes
+
+- Updated dependencies [a73299a]
+- Updated dependencies [90c84b7]
+- Updated dependencies [682de8e]
+- Updated dependencies [677ab7e]
+- Updated dependencies [fcaec05]
+  - nuikit-core@0.7.0
+
 ## 0.1.3
 
 ### Patch Changes

@@ -4,7 +4,7 @@
 PR. Design: [`architecture.md`](architecture.md). Kit brief: [`next/blocks.md`](next/blocks.md). Lanes and
 rules for parallel agents: [`next/dispatch.md`](next/dispatch.md).*
 
-Last updated: Oct 20 2026, after the 0.6.0 release (batch 1).
+Last updated: Oct 21 2026, after the 0.7.0 release (one checkpoint, untested in game).
 
 ## Released
 
@@ -13,6 +13,7 @@ Last updated: Oct 20 2026, after the 0.6.0 release (batch 1).
 | 0.4.0 | The full kit: HUD, pause, death, loading, chat, stress, 10 overrides | Yes |
 | **0.5.0** | Tokens v1 + theme engine (live reload, contrast checks, player prefs); protocol v1 (versioned handshake, one Escape path, live values §5.7); `nuikit check` (every screen level 3, CI-enforced); Lua runtime imported like ox_lib (`@nuikit/init.lua`, `nk`); showcase pause (focus camera, 3D map), inventory and minimap; components `panel` `menu-row` `stat` `meter` `hud-chip`; site `/components` `/design` `/coverage`; host prototype (opt-in) | Yes (next-7679bf9, next-4447310 + fix ea7ac52) |
 | **0.6.0** | Batch 1: 15 components (Part B complete), 7 screens rebuilt on them (ox_lib menus + progress, ox_target, Renewed-Banking, illenium-appearance, qbx_taxijob, qbx_vehiclesales, death + loading), 9 blocks with `npm create nuikit -t`, `/blocks`, theme studio `/theme`; fixes the 0.5.0 reduced-motion progress bug | Yes (next-9d1784f: 7 of 8; respawn issue predates it) |
+| **0.7.0** | Identities + tokens 1.2, motion, HUD v2 compact, components v2 on component tokens, hardening, 5 more blocks, ox_lib intents on components, `nuikit doctor`, `exec @nuikit/nuikit.cfg` + per-framework zips + txAdmin recipe, adapter specs/spike/replay, Figma design system + reference screens | **No** (released as one checkpoint so everyone works from one point; retest list in [`releases/v0.7.0-test.md`](releases/v0.7.0-test.md#retest)) |
 
 Known issues in 0.6.0:
 - Death screen with qbx_medical + qbx_ambulancejob: hold-to-respawn bar moves in 1 s steps (draw it from the
