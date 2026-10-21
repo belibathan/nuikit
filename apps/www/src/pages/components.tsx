@@ -466,7 +466,7 @@ export function ComponentsPage() {
         <Section
           name="radial-menu"
           title="Radial menu"
-          text="The action wheel: icons and labels in wedges, the highlighted one in accent, its description in the centre. Items can open a submenu (the centre becomes Back). Point, or focus it and use the arrows, Enter, 1–9 and Backspace."
+          text="The action wheel: icons and labels in wedges, the highlighted one in accent, its description in the centre. Items can open a submenu (the centre becomes Back); with onClose the centre closes the wheel at the root, as ox_lib's does. Point, or focus it and use the arrows, Enter, 1–9 and Backspace."
           stageClassName="min-h-[30rem] items-center"
         >
           <RadialDemo />
@@ -1711,7 +1711,7 @@ function RadialDemo() {
   const [last, setLast] = useState("Nothing yet");
   return (
     <>
-      <RadialMenu label="Actions" items={WHEEL} onSelect={(item, path) => setLast([...path.map((p) => p.label), item.label].join(" › "))} />
+      <RadialMenu label="Actions" items={WHEEL} onSelect={(item, path) => setLast([...path.map((p) => p.label), item.label].join(" › "))} onClose={() => setLast("Closed")} />
       <div className="flex flex-col items-center gap-6">
         <RadialMenu label="Emotes" items={BIG_WHEEL} defaultActive="slot-3" size={240} onSelect={(item) => setLast(item.label)} />
         <Panel size="sm">
