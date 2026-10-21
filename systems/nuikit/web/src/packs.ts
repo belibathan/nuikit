@@ -144,7 +144,7 @@ export function createRendererPacks(host: Pick<Host, "fetchModule">, options: Re
     const message = error instanceof Error ? error.message : String(error);
     console.error(`[nuikit] renderer pack ${entry.resource} failed for ${kind}, using the default:`, message);
     state.set(kind, { resource: entry.resource, status: "failed", error: message });
-    if (active.get(kind)?.resource === entry.resource) active.delete(kind);
+    active.delete(kind);
     options.onFailed?.({ kind, resource: entry.resource, url: entry.url, message });
   };
 
@@ -162,6 +162,8 @@ export function createRendererPacks(host: Pick<Host, "fetchModule">, options: Re
       pack = createPack(entry);
       packs.set(entry.resource, pack);
     }
+    // Another pack owned this kind: the default draws while the new one loads.
+    if (active.get(kind)?.resource !== entry.resource) active.delete(kind);
     state.set(kind, { resource: entry.resource, status: "loading" });
     notify();
     try {
