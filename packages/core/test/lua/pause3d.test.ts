@@ -141,6 +141,19 @@ describe("systems/nuikit_pause: the bigger menu", () => {
     expect(await pause.run(`return BLUR`)).toBe(0);
   });
 
+  it("on foot the camera keeps the heading it started with: a ped that turns toward it can't spin it (0.7.0 F5)", async () => {
+    client = await createClient();
+    const pause = await client.start("nuikit_pause", { before: natives, scripts });
+    await pause.run(press);
+    await pause.run(`for _ = 1, 120 do Focus.step(0.05) end`);
+    const before = await pause.run<number[]>(`return CAMPOS`);
+    // first person: GTA turns the ped toward the camera, every frame
+    await pause.run(`HEADING = 90.0 GetEntityHeading = function() HEADING = HEADING + 15.0 return HEADING end`);
+    await pause.run(`for _ = 1, 60 do Focus.step(0.05) end`);
+    const after = await pause.run<number[]>(`return CAMPOS`);
+    expect(Math.hypot(after[0]! - before[0]!, after[1]! - before[1]!)).toBeLessThan(0.01);
+  });
+
   it("the focus camera glides in from the current view, and never sits behind a wall", async () => {
     client = await createClient();
     const pause = await client.start("nuikit_pause", { before: natives, scripts });
