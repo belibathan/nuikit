@@ -67,6 +67,8 @@ Everything is in `config.lua` with a comment on each line. The main switches:
 | `minimap.yieldTo` | Minimap resources nuikit gives way to: when one is started the style becomes `'stock'` and F8 says so once. `nil` = the built-in list (`circleminimap`, `squaremap`, `minimap`, `jg-hud`, `ps-hud`, `qb-hud`, `qbx_hud`), `{}` = never |
 | `minimap.shape`, `size`, `band`, `anchor` | `nil` takes the layout's value (compact: circle, 12rem, 0.125rem, top-right; classic: square, 15rem, 0.375rem, bottom-left) |
 | `minimap.compass`, `location` | cardinals and heading on the ring / frame; the location next to the map |
+| `minimap.aspect` | the radar box's width over height; `nil` keeps GTA's 1.41 (the map isn't squeezed; the mask shows the middle), `1` is a square box |
+| `minimap.routeClip` | how the GPS route is kept in the map, **unproven** (0.7.0 A4: GTA draws it across the whole box, through no mask nuikit knows): `'mask'` (default, minimap_mask over the hole), `'inset'` (minimap_mask on the disc's inner square), `'texture'` (our disc on `radarmask1g` too), `'stock'` (minimap_mask untouched), `'box'` (aspect 1). With `Config.debug`, F8 `nuikit_minimap route <x>` switches live |
 | `ammo` | `false` hides the ammo |
 | `vitals.enabled`, `vitals.health` … `vitals.stress` | `'auto'`, `'always'`, `false`; `low`, `high`, `linger` (ms) |
 | `needs`, `voice` | hide hunger/thirst/stress, hide voice |
