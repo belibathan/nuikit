@@ -1,14 +1,17 @@
 import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
+import { getContext, useNuiContext } from "nuikit-core/react"
 
 import { cn } from "@/lib/utils"
 
 /**
  * Money — an amount of money, formatted the same way everywhere: tabular figures (nk-num), the
- * currency and locale you pass (Intl), whole units by default (game cash), an optional sign and
- * direction colour for changes, and a compact form for tight spots ("$1.2M").
+ * server's currency and locale (`nuikit:context`, from the `nuikit_currency` / `nuikit_locale`
+ * convars; USD and en-US until it arrives) unless you pass your own (Intl), whole units by default
+ * (game cash), an optional sign and direction colour for changes, and a compact form for tight
+ * spots ("$1.2M").
  *
- *   <Money amount={48210} />                                  → $48,210
+ *   <Money amount={48210} />                                  → $48,210 (48.210 € on a de-DE/EUR server)
  *   <Money amount={-250} sign="always" tone="direction" />    → −$250 in destructive
  *   <Money amount={1250000} compact />                        → $1.3M
  *   <Money amount={9.99} currency="EUR" locale="de-DE" fractionDigits={2} /> → 9,99 €
@@ -36,8 +39,9 @@ const moneyVariants = cva("nk-num whitespace-nowrap", {
 type MoneySign = "auto" | "always" | "never"
 
 type MoneyFormat = {
-  /** ISO 4217 code ("USD", "EUR"); null for a plain number (chips, points, crypto with a suffix). */
+  /** ISO 4217 code ("USD", "EUR"); null for a plain number (chips, points, crypto with a suffix). Default: the server's. */
   currency?: string | null
+  /** BCP 47 tag ("en-US", "de-DE"). Default: the server's. */
   locale?: string
   /** Decimals shown. Default 0 (game cash); compact uses up to 1. */
   fractionDigits?: number
@@ -49,10 +53,10 @@ type MoneyFormat = {
   suffix?: string
 }
 
-/** The amount as text, by the same rules as <Money>. NaN or Infinity → 0. */
+/** The amount as text, by the same rules as <Money>. NaN or Infinity → 0. Currency and locale default to the server's (getContext()). */
 function formatMoney(
   amount: number,
-  { currency = "USD", locale = "en-US", fractionDigits, sign = "auto", compact = false, prefix = "", suffix = "" }: MoneyFormat = {}
+  { currency = getContext().currency, locale = getContext().locale, fractionDigits, sign = "auto", compact = false, prefix = "", suffix = "" }: MoneyFormat = {}
 ) {
   const value = Number.isFinite(amount) ? amount : 0
   const digits = fractionDigits ?? (compact ? undefined : 0)
@@ -97,9 +101,12 @@ function Money({
     /** direction: gains in success, losses in destructive (transactions, a delta). */
     tone?: "default" | "direction" | "muted"
   }) {
+  // The server's context, live: explicit props win.
+  const ctx = useNuiContext()
   const dir = moneyDirection(amount)
-  const text = formatMoney(amount, { currency, locale, fractionDigits, sign, compact, prefix, suffix })
-  const full = compact ? formatMoney(amount, { currency, locale, fractionDigits, sign, prefix, suffix }) : undefined
+  const fmt = { currency: currency === undefined ? ctx.currency : currency, locale: locale ?? ctx.locale, fractionDigits, sign, prefix, suffix }
+  const text = formatMoney(amount, { ...fmt, compact })
+  const full = compact ? formatMoney(amount, fmt) : undefined
   return (
     <span
       data-slot="money"

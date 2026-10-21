@@ -72,9 +72,63 @@ export function onPlayer(listener: () => void): () => void {
   };
 }
 
+// ───────────────────────────────── server context (currency, locale)
+
+/** What the server formats money and numbers with (protocol §7.2). */
+export interface NuiContext {
+  /** ISO 4217 code: "USD", "EUR". */
+  currency: string;
+  /** BCP 47 tag: "en-US", "de-DE". */
+  locale: string;
+}
+
+/** Before Lua's first `nuikit:context` (and in the browser): US dollars, US English. */
+export const DEFAULT_CONTEXT: NuiContext = { currency: "USD", locale: "en-US" };
+
+let context: NuiContext = DEFAULT_CONTEXT;
+const contextListeners = new Set<() => void>();
+let contextSubscribed = false;
+
+/**
+ * Listen for `nuikit:context`. nuikit-core calls it at load, so the context is kept from the first
+ * message on, even when no UI has read it yet (a Money that renders later still gets the server's).
+ */
+export function subscribeContext(): void {
+  ensureContext();
+}
+
+function ensureContext() {
+  if (contextSubscribed) return;
+  contextSubscribed = true;
+  onNui("nuikit:context" as never, (next: Partial<NuiContext> | null) => {
+    const currency = typeof next?.currency === "string" && next.currency ? next.currency : DEFAULT_CONTEXT.currency;
+    const locale = typeof next?.locale === "string" && next.locale ? next.locale : DEFAULT_CONTEXT.locale;
+    if (currency === context.currency && locale === context.locale) return;
+    context = { currency, locale };
+    contextListeners.forEach((l) => l());
+  });
+}
+
+/** The server's currency and locale (defaults until Lua sends them). Stable between changes. */
+export function getContext(): NuiContext {
+  ensureContext();
+  return context;
+}
+
+export function onContext(listener: () => void): () => void {
+  ensureContext();
+  contextListeners.add(listener);
+  return () => {
+    contextListeners.delete(listener);
+  };
+}
+
 /** For tests. */
 export function __resetPlayer(): void {
   player = DEFAULT_PLAYER;
   listeners.clear();
   subscribed = false;
+  context = DEFAULT_CONTEXT;
+  contextListeners.clear();
+  contextSubscribed = false;
 }

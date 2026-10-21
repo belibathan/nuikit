@@ -217,7 +217,12 @@ nuikit/theme.css ──(server/main.js: compileTheme, warnings → server consol
 - Fallbacks: if the server couldn't compile (or runs an older nuikit resource), UIs get the raw
   `theme.css` and compile it themselves with the same compiler. Without the `nuikit` resource, every UI keeps
   its built-in stock theme (`index.css`, which carries the same defaults as above).
-- Server exports: `exports.nuikit:getTheme()`, `exports.nuikit:reloadTheme()`.
+- `loadServerTheme` (override pages) reads `nuikit/theme.css` only as a **stand-in** while the `https://nuikit/theme`
+  callback hasn't answered (ox_lib starts before `nuikit`). That file is the client's copy from when `nuikit` last
+  started: editing it and running `nuikit theme reload` changes GlobalState, not the copy, so it refreshes only when
+  `nuikit` restarts. GlobalState through the callback is the live path; the page keeps asking until it answers.
+- Server exports: `exports.nuikit:getTheme()`, `exports.nuikit:reloadTheme()`, `exports.nuikit:getContext()`
+  (`{ currency, locale }`, see `protocol.md` §7.2).
 
 ## Player preferences
 

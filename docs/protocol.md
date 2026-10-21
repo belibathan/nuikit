@@ -309,6 +309,7 @@ Application names SHOULD be `<feature>:<verb or noun>` in lower case (`hud:vital
 | message | `nuikit:visible` | boolean | simple mode only |
 | message | `nuikit:back` | surface name (string) | Escape on an `escape = 'back'` surface |
 | message | `nuikit:player` | §7.1 | requires `bridge.lua` |
+| message | `nuikit:context` | §7.2 | requires `bridge.lua` |
 | message | `nuikit:theme` | CSS text (§6) | |
 | message | `nuikit:notify` | `{ title, description?, type?: 'default'\|'success'\|'info'\|'warning'\|'error', duration? (ms) }` | a toast |
 | callback | `nuikit:ready` | `{ protocol, client }` | `{ ok, resource, protocol, capabilities }` (§2.2) |
@@ -439,10 +440,26 @@ interface NuiPlayer {
 - The bridge also keeps a `downed` field internally to compute `dead`; it is not part of the contract and is
   never sent (`NUI.player.get()` leaves it out too).
 
-### 7.2 Locale
+### 7.2 Server context (`nuikit:context`)
 
-Not in v1. Pages SHOULD use the game's language (`GetCurrentLanguage`) via their own Lua until a `locale`
-capability is added.
+What every UI formats money and numbers with, set once per server:
+
+```jsonc
+{ "action": "nuikit:context", "data": { "currency": "USD", "locale": "en-US" } }
+```
+
+- `currency` is an ISO 4217 code, `locale` a BCP 47 tag. The `nuikit` resource reads the convars
+  `nuikit_currency` (default `USD`) and `nuikit_locale` (default `en-US`), validates them (a bad value falls
+  back, with a server-console warning), and publishes `GlobalState.nuikitContext` next to the theme; server
+  export `exports.nuikit:getContext()`.
+- `bridge.lua` sends it on load, before the first `nuikit:player`, again on every `NUI.player.resend()` (so
+  the ready handshake carries it), and live when the state bag changes (de-duplicated). Lua: `NUI.player.context()`.
+  Without the `nuikit` resource (or an older one) it sends the defaults.
+- Pages MUST merge onto `{ currency: "USD", locale: "en-US" }` and MUST NOT throw on a value `Intl` rejects
+  (format as a plain number instead). nuikit-core: `getContext()`, `onContext()`, `useNuiContext()`; the
+  `money` component formats with them unless given explicit props.
+- This is the server's convention, not the player's language. The game's language (`GetCurrentLanguage`) and
+  per-player translation stay with each resource's own Lua; a `language` field here is open for v2.
 
 ### 7.3 Preferences (`nuikit:prefs`, capability `prefs`)
 
@@ -531,5 +548,5 @@ Exceptions are marked in source with `nuikit-ignore [rule …]` (same line, or a
 
 None: every change this spec asked of 0.4.0 shipped in 0.5.0 (versioned manifests, the versioned
 handshake with capabilities, compiled themes with live reload, player prefs, `downed` kept internal, one Escape
-path for simple mode, `input = 'cursor'` documented as an alias). Open questions for v2: `locale` (§7.2) and a
+path for simple mode, `input = 'cursor'` documented as an alias). Open questions for v2: a per-player `language` (§7.2) and a
 real mouse-only `input = 'cursor'`.

@@ -160,6 +160,37 @@ describe("bridge.lua", () => {
     expect(latest(hud).cash).toBeUndefined();
   });
 
+  it("server context (§7.2): defaults without the nuikit resource, GlobalState on load, live changes, resend", async () => {
+    client = await createClient();
+    const ctx = (r: { messages: { action: string; data: any }[] }) => r.messages.filter((m) => m.action === "nuikit:context").map((m) => m.data);
+    // No GlobalState.nuikitContext (older or missing nuikit resource): the defaults, once.
+    const hud = await client.start("hud", { before: natives(), scripts: ["bridge.lua"] });
+    expect(ctx(hud)).toEqual([{ currency: "USD", locale: "en-US" }]);
+    expect(await hud.run(`return NUI.player.context()`)).toEqual({ currency: "USD", locale: "en-US" });
+
+    // The nuikit resource published it: a resource starting later reads it at load.
+    client.setGlobal("nuikitContext", { currency: "EUR", locale: "de-DE" });
+    expect(ctx(hud)).toEqual([
+      { currency: "USD", locale: "en-US" },
+      { currency: "EUR", locale: "de-DE" }, // the state bag change, live
+    ]);
+    const bank = await client.start("bank", { before: natives(), scripts: ["bridge.lua"] });
+    expect(ctx(bank)).toEqual([{ currency: "EUR", locale: "de-DE" }]);
+    expect(await bank.run(`return NUI.player.context()`)).toEqual({ currency: "EUR", locale: "de-DE" });
+
+    // Same value again: nothing sent. A bad value: the field falls back.
+    client.setGlobal("nuikitContext", { currency: "EUR", locale: "de-DE" });
+    expect(ctx(hud)).toHaveLength(2);
+    client.setGlobal("nuikitContext", { currency: "", locale: "ja-JP" });
+    expect(ctx(hud).at(-1)).toEqual({ currency: "USD", locale: "ja-JP" });
+
+    // The UI's handshake resends the player: the context goes first, so a page can format cash at once.
+    bank.messages.length = 0;
+    await bank.run(`NUI.player.resend()`);
+    expect(bank.messages.map((m) => m.action)).toEqual(["nuikit:context", "nuikit:player"]);
+    expect(bank.messages[0]!.data).toEqual({ currency: "USD", locale: "ja-JP" });
+  });
+
   it("pma-voice: Mumble talking (returns 1) and the proximity mode label", async () => {
     client = await createClient();
     const hud = await client.start("hud", {
