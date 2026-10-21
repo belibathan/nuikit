@@ -1,0 +1,62 @@
+{
+  "library": "qb-menu",
+  "source": "hand-written from qb-menu's documented API (qbcore.org/docs/qbcore-resources/qb-menu); replace with a log recorded in game",
+  "expects": ["my_script:openGarage", "my_script:closed", "my_script:viaEvent"],
+  "calls": [
+    {
+      "kind": "export", "resource": "qb-menu", "name": "openMenu",
+      "args": [
+        [
+          { "header": "Garage", "txt": "Pillbox", "isMenuHeader": true },
+          { "header": "Take out", "txt": "Sultan RS", "icon": "fas fa-car",
+            "params": { "event": "my_script:openGarage", "args": { "plate": "ABC123" } } },
+          { "header": "Pay fee", "txt": "$250", "params": { "event": "my_script:payFee", "isServer": true, "args": { "amount": 250 } } },
+          { "header": "Hidden one", "hidden": true, "params": { "event": "my_script:never" } },
+          { "header": "Staff", "isMenuHeader": true },
+          { "header": "Close", "action": { "$fn": "closeAction" } },
+          { "header": "Locked", "txt": "Not yours", "disabled": true, "params": { "event": "my_script:never" } }
+        ]
+      ]
+    },
+    { "kind": "resolve", "intent": "menu", "result": { "index": 1, "id": "2", "path": [1] } },
+
+    { "kind": "export", "resource": "qb-menu", "name": "openMenu",
+      "args": [[ { "header": "Pay fee", "params": { "event": "my_script:payFee", "isServer": true, "args": { "amount": 250 } } } ]] },
+    { "kind": "resolve", "intent": "menu", "result": { "index": 1, "id": "1" } },
+
+    { "kind": "export", "resource": "qb-menu", "name": "openMenu",
+      "args": [[ { "header": "Close", "action": { "$fn": "closeAction" } } ]] },
+    { "kind": "resolve", "intent": "menu", "result": { "index": 1, "id": "1" } },
+
+    { "kind": "export", "resource": "qb-menu", "name": "openMenu",
+      "args": [[ { "header": "Repair", "params": { "event": "repairkit", "isCommand": true } } ]] },
+    { "kind": "resolve", "intent": "menu", "result": { "index": 1, "id": "1" } },
+
+    { "kind": "export", "resource": "qb-menu", "name": "openMenu",
+      "args": [[ { "header": "Duty", "params": { "event": "duty", "isQBCommand": true, "args": { "x": 1 } } } ]] },
+    { "kind": "resolve", "intent": "menu", "result": { "index": 1, "id": "1" } },
+
+    { "kind": "export", "resource": "qb-menu", "name": "openMenu",
+      "args": [[ { "header": "Fn", "params": { "event": { "$fn": "paramsFn" }, "isAction": true, "args": "hello" } } ]] },
+    { "kind": "resolve", "intent": "menu", "result": { "index": 1, "id": "1" } },
+
+    { "kind": "export", "resource": "qb-menu", "name": "openMenu",
+      "args": [[ { "header": "Zulu" }, { "header": "Alpha", "params": { "event": "my_script:closed" } }, { "header": "Mike" } ], true, true] },
+    { "kind": "dismiss", "intent": "menu", "reason": "escape" },
+
+    { "kind": "export", "resource": "qb-menu", "name": "openMenu",
+      "args": [[ { "header": "First" } ]] },
+    { "kind": "export", "resource": "qb-menu", "name": "openMenu",
+      "args": [[ { "header": "Second", "params": { "event": "my_script:closed" } } ]] },
+    { "kind": "export", "resource": "qb-menu", "name": "closeMenu", "args": [] },
+    { "kind": "export", "resource": "qb-menu", "name": "closeMenu", "args": [] },
+
+    { "kind": "event", "name": "qb-menu:client:openMenu",
+      "args": [[ { "header": "Via event", "params": { "event": "my_script:viaEvent", "args": [1, 2] } } ]] },
+    { "kind": "resolve", "intent": "menu", "result": { "index": 1, "id": "1" } },
+
+    { "kind": "export", "resource": "qb-menu", "name": "showHeader",
+      "args": [[ { "header": "Boss menu", "isMenuHeader": true }, { "header": "Not shown", "params": { "event": "my_script:never" } } ]] },
+    { "kind": "event", "name": "qb-menu:client:closeMenu", "args": [] }
+  ]
+}

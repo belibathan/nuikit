@@ -1,0 +1,24 @@
+{
+  "library": "progressbar",
+  "source": "hand-written from the progressbar README and QBCore.Functions.Progressbar docs",
+  "calls": [
+    { "kind": "export", "resource": "progressbar", "name": "Progress", "args": [
+      { "name": "repair", "duration": 5000, "label": "Repairing", "useWhileDead": false, "canCancel": true,
+        "controlDisables": { "disableMovement": true, "disableCombat": true },
+        "animation": { "animDict": "mini@repair", "anim": "fixing_a_ped", "flags": 49 },
+        "prop": { "model": "prop_tool_wrench", "bone": 57005, "coords": { "x": 0.1, "y": 0, "z": 0 }, "rotation": { "x": 0, "y": 0, "z": 0 } } },
+      { "$fn": "repairDone" } ] },
+    { "kind": "export", "resource": "progressbar", "name": "isDoingSomething", "args": [] },
+    { "kind": "export", "resource": "progressbar", "name": "Progress", "args": [ { "name": "second", "duration": 1000, "label": "Busy" }, { "$fn": "secondDone" } ] },
+    { "kind": "resolve", "intent": "progress", "result": true },
+    { "kind": "export", "resource": "progressbar", "name": "isDoingSomething", "args": [] },
+
+    { "kind": "export", "resource": "progressbar", "name": "Progress", "args": [ { "name": "lockpick", "duration": 3000, "label": "Lockpicking", "canCancel": true }, { "$fn": "lockpickDone" } ] },
+    { "kind": "dismiss", "intent": "progress", "reason": "cancel" },
+
+    { "kind": "export", "resource": "progressbar", "name": "ProgressWithTickEvent", "args": [ { "name": "tick", "duration": 100 }, { "$fn": "start" }, { "$fn": "tick" }, { "$fn": "tickDone" } ] },
+    { "kind": "frames", "n": 3 },
+    { "kind": "resolve", "intent": "progress", "result": true },
+    { "kind": "frames", "n": 2 }
+  ]
+}

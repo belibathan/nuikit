@@ -207,7 +207,7 @@ recipes, from a scripted session (join, spawn, menus, a job, inventory, death). 
    in-game checklist there.*
 4. **In-game spike**: stand-in, listener and ox_lib page routing on a real client; choose per library.
 5. **`[nuikit-ox]`** on the shared renderers, every ox POST re-verified against `docs/ox-lib-protocol.md`.
-6. **`[nuikit-qb]`**: qb-menu, qb-input, qb-target options, `QBCore:Notify`, progressbar, DrawText, qb-radialmenu.
+6. **`[nuikit-qb]`**: qb-menu, qb-input, qb-target options, `QBCore:Notify`, progressbar, DrawText, qb-radialmenu. *Built on `feat/adapter-qb` (`adapters/[nuikit-qb]/`, `docs/adapters/README.md`): six adapters + a qb-target recorder; replay-tested, not in game.*
 7. **`[nuikit-esx]`**: esx_notify, esx_context, esx_menu_default/dialog, esx_progressbar, esx_textui.
 8. **Doctor and coverage harness** on the three reference servers.
 9. **Packaging**: per-framework zips, `nuikit.cfg`, txAdmin recipe; renderer packs via `nuikit_renderer`.

@@ -1,0 +1,24 @@
+{
+  "library": "qb-input",
+  "source": "hand-written from qb-input's documented API (qbcore.org/docs/qbcore-resources/qb-input)",
+  "calls": [
+    { "kind": "thread", "adapter": "nuikit_qb_input", "name": "ShowInput", "label": "first",
+      "args": [{ "header": "Bill", "submitText": "Send", "inputs": [
+        { "type": "text", "name": "reason", "text": "Reason", "isRequired": true },
+        { "type": "password", "name": "pin", "text": "PIN" },
+        { "type": "number", "name": "amount", "text": "Amount", "default": 100 },
+        { "type": "radio", "name": "kind", "text": "Kind", "options": [ { "value": "cash", "text": "Cash", "checked": true }, { "value": "bank", "text": "Bank" } ] },
+        { "type": "select", "name": "account", "text": "Account", "options": [ { "value": "a", "text": "A" }, { "value": "b", "text": "B" } ] },
+        { "type": "checkbox", "name": "perms", "text": "Perms", "options": [ { "value": "read", "text": "Read", "checked": true }, { "value": "write", "text": "Write" } ] },
+        { "type": "color", "name": "tint", "text": "Tint", "default": "#ff0000" }
+      ] }] },
+    { "kind": "resolve", "intent": "input", "result": { "values": ["late", "1234", "250", "bank", "a", ["read", "write"], "#00ff00"],
+      "byId": { "reason": "late", "pin": "1234", "amount": "250", "kind": "bank", "account": "a", "perms": ["read", "write"], "tint": "#00ff00" } } },
+
+    { "kind": "thread", "adapter": "nuikit_qb_input", "name": "ShowInput", "label": "closed",
+      "args": [{ "header": "Name", "inputs": [ { "type": "text", "name": "name", "text": "Name" } ] }] },
+    { "kind": "export", "resource": "qb-input", "name": "CloseMenu", "args": [] },
+
+    { "kind": "export", "resource": "qb-input", "name": "CloseMenu", "args": [] }
+  ]
+}
