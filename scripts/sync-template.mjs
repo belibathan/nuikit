@@ -1,7 +1,8 @@
 // Single sources of truth, copied into the create-nuikit template and every [nuikit] system:
 //   packages/core/lua/*.lua           → client/ (vendored, nuikit.json "lua"), or the nuikit resource's
 //                                       lib/ + init.lua (nuikit.json "runtime": true; others import it)
-//   vendor/shadcn/ui/*                → web/src/components/ui (stock shadcn, unmodified)
+//   vendor/shadcn/ui/*                → web/src/components/ui (stock shadcn, unmodified; their imports pull
+//                                       in sibling components and vendor/shadcn/hooks/* → web/src/hooks)
 //   registry/nuikit/*                 → web/src/components/ui, web/src/hooks
 //   vendor/shadcn/colors/neutral.json → web/src/index.css (stock shadcn neutral theme)
 //   nuikit-core compileTheme()        → web/src/index.css (nuikit token defaults; build core first)
@@ -30,15 +31,33 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const SHADCN = new Set(
   fs.readdirSync(path.join(root, "vendor/shadcn/ui")).filter((f) => f.endsWith(".tsx")).map((f) => f.replace(/\.tsx$/, "")),
 );
+const SHADCN_HOOKS = new Set(
+  fs.readdirSync(path.join(root, "vendor/shadcn/hooks")).filter((f) => f.endsWith(".ts")).map((f) => f.replace(/\.ts$/, "")),
+);
 
-/** Where each component comes from. */
+/** Where each component / hook comes from. */
 const source = (c) => (SHADCN.has(c) ? `vendor/shadcn/ui/${c}.tsx` : `registry/nuikit/ui/${c}.tsx`);
+const hookSource = (h) => (SHADCN_HOOKS.has(h) ? `vendor/shadcn/hooks/${h}.ts` : `registry/nuikit/hooks/${h}.ts`);
 
 // Components a component needs (registry.json registryDependencies), so a target that lists `menu-row` also
 // gets the stock `progress` it imports. Transitive; only names this repo can supply (stock shadcn or registry).
 const REGISTRY = JSON.parse(fs.readFileSync(path.join(root, "registry.json"), "utf8"));
 const DEPS = new Map(REGISTRY.items.filter((i) => i.type === "registry:ui").map((i) => [i.name, i.registryDependencies ?? []]));
 const available = (c) => SHADCN.has(c) || fs.existsSync(path.join(root, `registry/nuikit/ui/${c}.tsx`));
+// Stock shadcn components declare nothing here: their deps are read off their imports (`@/components/ui/<x>`,
+// `@/hooks/<x>`), so a target that lists `sidebar` also gets sheet, tooltip, … and the use-mobile hook.
+const IMPORTS = new Map();
+const importsOf = (c) => {
+  if (!IMPORTS.has(c)) {
+    const text = fs.readFileSync(path.join(root, source(c)), "utf8");
+    IMPORTS.set(c, {
+      components: [...text.matchAll(/from\s+["']@\/components\/ui\/([\w-]+)["']/g)].map((m) => m[1]).filter((x) => x !== c),
+      hooks: [...text.matchAll(/from\s+["']@\/hooks\/([\w-]+)["']/g)].map((m) => m[1]),
+      packages: [...new Set([...text.matchAll(/from\s+["']((?:@[\w.-]+\/)?[\w.-]+)(?:\/[^"']*)?["']/g)].map((m) => m[1]))].filter((p) => p !== "react"),
+    });
+  }
+  return IMPORTS.get(c);
+};
 // Guard: every "@/components/ui/<x>" a registry component imports must be in its registryDependencies, or
 // `npx shadcn add` installs it broken (and targets here would miss the file).
 const undeclared = [];
@@ -55,16 +74,32 @@ if (undeclared.length) {
   process.exit(1);
 }
 
-function withDeps(list) {
+/** Every component the list needs (transitively), and every hook those components import. */
+function withDeps(list, hooks = []) {
   const out = new Set();
+  const outHooks = new Set(hooks);
   const visit = (c) => {
     const name = String(c).replace(/^@nuikit\//, "").replace(/^https?:.*\/r\/([\w-]+)\.json$/, "$1");
     if (out.has(name) || !available(name)) return;
     out.add(name);
     for (const d of DEPS.get(name) ?? []) visit(d);
+    const imp = importsOf(name);
+    imp.components.forEach(visit);
+    imp.hooks.forEach((h) => outHooks.add(h));
   };
   list.forEach(visit);
-  return [...out];
+  return { components: [...out], hooks: [...outHooks] };
+}
+
+/** npm packages the components import that the target's web/package.json doesn't list (a build would fail). */
+function missingPackages(dir, components) {
+  const pkgPath = path.join(root, dir, "web/package.json");
+  if (!fs.existsSync(pkgPath)) return [];
+  const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf8"));
+  const have = new Set([...Object.keys(pkg.dependencies ?? {}), ...Object.keys(pkg.devDependencies ?? {})]);
+  const missing = new Set();
+  for (const c of components) for (const p of importsOf(c).packages) if (!have.has(p)) missing.add(`${p} (${c})`);
+  return [...missing];
 }
 
 // The create-nuikit template, plus every system/addon that declares what it needs in nuikit.json:
@@ -188,7 +223,7 @@ function adoptExactCopies(dir) {
     }
   };
   scan("web/src/components/ui", (f) => (f.endsWith(".tsx") ? source(f.slice(0, -4)) : null));
-  scan("web/src/hooks", (f) => (f.endsWith(".ts") ? `registry/nuikit/hooks/${f}` : null));
+  scan("web/src/hooks", (f) => (f.endsWith(".ts") ? hookSource(f.slice(0, -3)) : null));
   return found;
 }
 
@@ -218,8 +253,11 @@ for (const t of targets) {
     const into = t.runtime ? "fonts" : "web/src/fonts";
     for (const f of fs.readdirSync(FONTS_DIR)) if (/\.(woff2|txt)$/.test(f)) copy(`packages/core/fonts/${f}`, `${into}/${f}`);
   }
-  for (const c of withDeps(t.components)) copy(source(c), `web/src/components/ui/${c}.tsx`);
-  for (const h of t.hooks) copy(`registry/nuikit/hooks/${h}.ts`, `web/src/hooks/${h}.ts`);
+  const need = withDeps(t.components, t.hooks);
+  for (const c of need.components) copy(source(c), `web/src/components/ui/${c}.tsx`);
+  for (const h of need.hooks) copy(hookSource(h), `web/src/hooks/${h}.ts`);
+  const missing = missingPackages(t.dir, need.components);
+  if (missing.length) console.warn(`  ! ${t.dir}/web/package.json is missing: ${missing.join(", ")}`);
   // every UI with components (they all import cn from @/lib/utils)
   if (t.components.length || fs.existsSync(path.join(root, t.dir, "web/src/lib/utils.ts"))) copy(UTILS, "web/src/lib/utils.ts");
   if (t.compiler) copy("packages/core/dist/fxserver-compiler.js", "server/compiler.js");

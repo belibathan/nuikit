@@ -64,6 +64,20 @@ screen is the same size relative to the game at every resolution. Design at 1080
 9. **Empty and error states** say what to do next in one sentence.
 10. **Stock components.** Compose shadcn; never fork its files. If shadcn has it, use it.
 
+**shadcn is the foundation.** Every new-york-v4 component is vendored in `vendor/shadcn/ui` (plus its
+`use-mobile` hook), and `pnpm sync` follows their imports, so listing `sidebar` in a `nuikit.json` brings
+`sheet`, `tooltip`, … and the hook along; `tw-animate-css` is in every page's `index.css`, so shadcn's
+enter/exit animations always work. Compose from it first: Sheet (side panels and trays), Dialog and
+AlertDialog (confirms), ScrollArea, Separator, Item (rows with media, title, description and actions), Kbd,
+Tooltip, Progress, Slider, ToggleGroup, Tabs, Command (searchable lists), Table, Skeleton, Empty — and
+nuikit's layer on top only for what the game needs (`panel`, `menu-row`, `meter`, `stat`, `hud-chip`,
+`key-prompt`, the toaster). Do not reach for vaul's `Drawer` for a tray: it is modal even with
+`modal={false}` (it leaves `body { pointer-events: none }` behind, which breaks drag and drop and anything
+else on the page), so a bottom tray is a `Sheet` with `side="bottom"`. Components that bring a heavy or
+unproven runtime (`chart`/recharts, `form`/react-hook-form, `combobox` on `@base-ui/react`,
+`message-scroller` on `@shadcn/react`, `carousel`/embla) are vendored but no page uses them yet; sync warns
+when a page lists a component whose npm packages its `web/package.json` lacks.
+
 ## Kit utilities
 
 `nk-panel` `nk-panel-header` `nk-panel-header-stack` `nk-panel-title-row` `nk-panel-body` `nk-panel-footer` ·
