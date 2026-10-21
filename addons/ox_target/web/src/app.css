@@ -1,7 +1,6 @@
 /* index.css is synced from the nuikit template (stock shadcn neutral theme). This file adds what
-   the ox_target UI needs on top: shadcn's animation utilities and a transparent, unscrollable page. */
+   the ox_target UI needs on top: a transparent, unscrollable page. */
 @import "./index.css";
-@import "tw-animate-css";
 
 html,
 body {

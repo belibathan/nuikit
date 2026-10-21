@@ -1,4 +1,6 @@
 @import "tailwindcss";
+/* shadcn's enter/exit animations (data-[state=open]:animate-in …): every page ships them. */
+@import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
 
