@@ -19,7 +19,7 @@ import { Blips, type BlipChoice } from "./blips";
 import { blipLook, KINDS, type BlipKind } from "@/lib/blips";
 import { Button } from "@/components/ui/button";
 import { HudChip } from "@/components/ui/hud-chip";
-import { Input } from "@/components/ui/input";
+import { SmoothInput } from "@/components/ui/smooth-input";
 import { Kbd } from "@/components/ui/kbd";
 import { MenuRow } from "@/components/ui/menu-row";
 import { Panel, PanelBody, PanelFooter, PanelHeader } from "@/components/ui/panel";
@@ -160,7 +160,7 @@ export function MapView({ data, onBack }: { data: PauseData; onBack: () => void 
               tabs={
                 <label className="relative">
                   <SearchIcon className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground" />
-                  <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search places and blips" className="h-8 pl-8" />
+                  <SmoothInput value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search places and blips" className="h-8 pl-8" />
                 </label>
               }
               title="Places"
@@ -346,7 +346,7 @@ const Pins = memo(function Pins({
   );
 
   return (
-    <div ref={root} className="pointer-events-none absolute inset-0">
+    <div ref={root} className="pointer-events-none absolute inset-0 z-0">
       {places.map((p, i) => {
         const Icon = icon(p.icon);
         const selected = p.id === selectedId;

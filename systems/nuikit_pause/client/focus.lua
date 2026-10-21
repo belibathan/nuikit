@@ -14,7 +14,7 @@ local MARGIN = 1.08        -- a little air around the subject
 
 local cam
 local active = false
-local home = { x = 0.36, y = 0.08, w = 0.28, h = 0.84 } -- what the pause menu last reported
+local home = { x = 0.325, y = 0.044, w = 0.65, h = 0.911 } -- what the pause menu last reported (default: right of the sheet)
 local frame = home                                       -- what this run frames into
 local usingHome = true
 local rel = 0.0            -- camera yaw relative to the subject's heading, set when it starts
@@ -22,6 +22,9 @@ local startHeading = 0.0   -- the player's heading when it started (on foot the 
 local angle, goalAngle = 0.0, 0.0
 local reach                -- current camera distance after wall checks (eased)
 local residual             -- start pose minus framed pose: decays to zero, so the camera glides in
+-- How it looks at the player: 'front' (default) faces them, eye-to-chest height, head and upper body;
+-- 'behind' is the 0.7.0 framing (whole body, from where the gameplay camera was).
+local function facing() return cfg.facing == 'behind' and 'behind' or 'front' end
 local last                 -- the subject and pose from the last frame (debug and handover)
 
 local function clamp(v, a, b) return math.max(a, math.min(b, v)) end
@@ -51,6 +54,11 @@ function Focus.subject()
     return veh, { x = c.x, y = c.y, z = c.z }, mx.z - mn.z, math.sqrt(dx * dx + dy * dy), -12.0, 'vehicle'
   end
   local c = GetEntityCoords(ped)
+  if facing() == 'front' then
+    -- head to mid-thigh, centred on the chest (the ped's origin is at the hips): the camera ends up
+    -- level with the chest, looking a touch down at the face
+    return ped, { x = c.x, y = c.y, z = c.z + 0.2 }, 1.45, 0.8, -5.0, 'on foot'
+  end
   return ped, { x = c.x, y = c.y, z = c.z - 0.05 }, 1.95, 0.9, -4.0, 'on foot'
 end
 
@@ -111,7 +119,7 @@ local function target(dt)
   -- the ped toward the camera, which turned the camera again, and it spun while the menu was open
   -- (0.7.0 test, F5). A vehicle keeps following (a passenger in a car that turns).
   local heading = kind == 'vehicle' and GetEntityHeading(entity) or startHeading
-  local yaw = (heading + rel + angle) % 360.0
+  local yaw = (heading + rel + angle + (residual and residual.orbit or 0.0)) % 360.0
   local x, y, z = Focus.pose(frame, aspect, center, d, pitch, yaw)
   -- walls: come in at once, go back out gently
   local want = clear(entity, center, x, y, z, d)
@@ -130,11 +138,13 @@ end
 --- One frame: follow the subject, decay the glide-in, light it.
 function Focus.step(dt)
   angle = angle + Map3D.turn(angle, goalAngle) * (1.0 - math.exp(-TURN_EASE * dt))
-  local t, entity, center, d, span, kind = target(dt)
   if not residual then
-    residual = { x = 0.0, y = 0.0, z = 0.0, pitch = 0.0, yaw = 0.0, fov = 0.0 }
+    residual = { x = 0.0, y = 0.0, z = 0.0, pitch = 0.0, yaw = 0.0, fov = 0.0, orbit = 0.0 }
   end
   local k = math.exp(-ARRIVE * dt)
+  -- the orbit swings the camera around the subject (never through it) to the front
+  residual.orbit = (residual.orbit or 0.0) * k
+  local t, entity, center, d, span, kind = target(dt)
   for _, f in ipairs({ 'x', 'y', 'z', 'pitch', 'yaw', 'fov' }) do residual[f] = residual[f] * k end
   local p = { x = t.x + residual.x, y = t.y + residual.y, z = t.z + residual.z, pitch = t.pitch + residual.pitch, yaw = t.yaw + residual.yaw, fov = FOV + residual.fov }
   apply(p)
@@ -179,15 +189,17 @@ function Focus.start(opts)
   local from, fromRot = GetFinalRenderedCamCoord(), GetFinalRenderedCamRot(2)
   local entity = Focus.subject()
   startHeading = GetEntityHeading(entity)
-  rel = (fromRot.z - startHeading) % 360.0
+  -- front: a camera looking along heading + 180 faces the player; behind: keep the current view's side
+  rel = facing() == 'front' and 180.0 or (fromRot.z - startHeading) % 360.0
   angle, goalAngle = 0.0, cfg.angle or 0.0
   reach = nil
+  -- start the orbit where the current view is, so the glide swings round the player to the front
+  residual = { x = 0.0, y = 0.0, z = 0.0, pitch = 0.0, yaw = 0.0, fov = 0.0, orbit = 0.0 }
+  residual.orbit = Map3D.turn((startHeading + rel) % 360.0, fromRot.z % 360.0)
   local t = target(0.0)
-  residual = {
-    x = from.x - t.x, y = from.y - t.y, z = from.z - t.z,
-    pitch = fromRot.x - t.pitch, yaw = Map3D.turn(t.yaw, fromRot.z),
-    fov = GetFinalRenderedCamFov() - FOV,
-  }
+  residual.x, residual.y, residual.z = from.x - t.x, from.y - t.y, from.z - t.z
+  residual.pitch, residual.yaw = fromRot.x - t.pitch, Map3D.turn(t.yaw, fromRot.z)
+  residual.fov = GetFinalRenderedCamFov() - FOV
   -- the camera service starts it on the current view (seamless) and takes it back on death
   cam = Camera.claim({
     id = 'focus',

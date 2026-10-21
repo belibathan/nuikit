@@ -350,11 +350,11 @@ describe("systems/nuikit_pause: the bigger menu", () => {
   it("frames the player between the inventory panels while ox_inventory is open", async () => {
     client = await createClient();
     const pause = await client.start("nuikit_pause", { before: natives, scripts });
-    // the override's middle gap at 1080p: 35.6rem in from each side, between the bar and the top
+    // the override's middle gap at 1080p: 36rem edge sheets plus 1.5rem of air on each side
     const f = await pause.run<{ x: number; w: number; y: number; h: number }>(`return Inventory.frame(1920, 1080)`);
-    expect(f.x).toBeCloseTo((35.625 * 16) / 1920, 3);
+    expect(f.x).toBeCloseTo((37.5 * 16) / 1920, 3);
     expect(f.x + f.w).toBeCloseTo(1 - f.x, 6);
-    expect(f.y + f.h).toBeLessThan(0.9);
+    expect(f.y + f.h).toBeLessThan(0.96);
 
     await pause.run(`LocalPlayer.state.invOpen = true Inventory.tick()`);
     expect(await pause.run(`return Focus.isActive() and Inventory.isFocusing()`)).toBe(true);
@@ -367,7 +367,34 @@ describe("systems/nuikit_pause: the bigger menu", () => {
 
     // the pause menu's own framing is untouched by the inventory's
     await pause.run(press);
-    expect(await pause.run(`return Focus.state().frame.x`)).toBeCloseTo(0.36, 6);
+    expect(await pause.run(`return Focus.state().frame.x`)).toBeCloseTo(0.325, 6);
+  });
+
+  it("faces the player by default: it swings round them (never through them) to the front, at chest height", async () => {
+    client = await createClient();
+    const pause = await client.start("nuikit_pause", { before: natives, scripts });
+    // the player stands at (100, 200) facing heading 90 (west, -x); the gameplay camera is behind-ish, to the south
+    await pause.run(press);
+    const closest = await pause.run<number>(`
+      local m = math.huge
+      for _ = 1, 120 do
+        Focus.step(0.05)
+        m = math.min(m, math.sqrt((CAMPOS[1] - 100) ^ 2 + (CAMPOS[2] - 200) ^ 2))
+      end
+      return m`);
+    const p = await pause.run<number[]>(`return CAMPOS`);
+    expect(p[0]).toBeLessThan(100 - 1); // in front of them (west), not behind
+    expect(closest).toBeGreaterThan(1); // the glide orbits; it never cuts through the player
+    expect(p[2]).toBeGreaterThan(30.2); // above the hips: chest height
+    expect(p[2]).toBeLessThan(31.2);
+    await pause.run(`Pause.close()`);
+
+    // Config.preview.facing = 'behind': the 0.7.0 framing, from the side the gameplay camera was on
+    await pause.run(`Config.preview.facing = 'behind' NOW = NOW + 1000`);
+    await pause.run(press);
+    await pause.run(`for _ = 1, 120 do Focus.step(0.05) end`);
+    const b = await pause.run<number[]>(`return CAMPOS`);
+    expect(b[1]).toBeLessThan(200); // south, where the gameplay camera was
   });
 
   it("the camera service hands over between owners, streams with the claim and always gives the camera back", async () => {
