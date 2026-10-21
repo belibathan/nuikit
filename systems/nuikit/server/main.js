@@ -9,6 +9,7 @@
  *
  *   nuikit theme reload   re-read theme.css and repaint every open UI (console, or ace command.nuikit)
  *   nuikit theme          show the current theme's warnings and contrast
+ *   nuikit doctor [json]  server/doctor.js: framework, UI resources, conflicts, next steps
  *
  * compiler.js is nuikit-core's compiler (copied by `pnpm sync`). MIT, https://github.com/belibathan/nuikit
  */
@@ -75,7 +76,10 @@ function command(source, args) {
     const t = publish("reloaded");
     reply(t ? `theme reloaded (${t.warnings.length} warning${t.warnings.length === 1 ? "" : "s"})` : "theme reload failed; see the server console");
   } else if (sub === "theme") report(reply);
-  else reply("usage: nuikit theme [reload]");
+  // ── doctor (server/doctor.js, docs/doctor.md) ──
+  else if (sub === "doctor" && globalThis.NuikitDoctor) globalThis.NuikitDoctor.run(reply, action === "json");
+  // ── end doctor ──
+  else reply("usage: nuikit theme [reload] | nuikit doctor [json]");
 }
 
 // Console, or players with the ace `command.nuikit` (add_ace group.admin command.nuikit allow).
@@ -91,6 +95,10 @@ onNet("nuikit:command", (args) => {
   }
   command(src, args.map(String));
 });
+
+// ── doctor: the compiled theme's checks (server/doctor.js reads them) ──
+globalThis.__nuikitTheme = () => last;
+// ── end doctor ──
 
 exports("getTheme", () => last && { version: last.version, mode: last.mode, hash: last.hash, vars: last.vars, imports: last.imports, warnings: last.warnings });
 exports("reloadTheme", () => !!publish("reloaded"));
