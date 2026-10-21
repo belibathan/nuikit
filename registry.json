@@ -140,8 +140,8 @@
         "nuikit-core"
       ],
       "meta": {
-        "since": "0.8.0",
-        "status": "beta",
+        "since": "unreleased",
+        "status": "experimental",
         "replaces": [],
         "removeIn": null
       }
@@ -165,8 +165,8 @@
         "textarea"
       ],
       "meta": {
-        "since": "0.8.0",
-        "status": "beta",
+        "since": "unreleased",
+        "status": "experimental",
         "replaces": [],
         "removeIn": null
       }
