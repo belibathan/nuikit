@@ -27,3 +27,147 @@ body {
 /* input dialog colour row: the native picker as a plain swatch */
 .ox-swatch::-webkit-color-swatch-wrapper { padding: 0; }
 .ox-swatch::-webkit-color-swatch { border: none; border-radius: calc(var(--radius) - 6px); }
+
+/*
+ * Radial menu (features/radial-menu.tsx). A ring of segments in the panel surface with the panel's
+ * hairline, the lit segment in the row fill colour (brand, else primary), the centre hub saying what a
+ * click does. Shapes come from the theme's tokens in code (cut or rounded corners). Inside the SVG one
+ * unit is 1px at 1080p and the whole wheel scales with the resolution, so the type below is in px on
+ * purpose: rem would scale twice inside a foreignObject.
+ */
+.ox-radial {
+  /* the game darkened behind the wheel only (tokens: --scrim), so the ring reads over a bright sky */
+  background-image: radial-gradient(circle at 50% 50%, rgba(var(--scrim-rgb), 0.5) 0, rgba(var(--scrim-rgb), 0.28) 13rem, rgba(var(--scrim-rgb), 0) 24rem);
+}
+.ox-radial-svg {
+  filter: drop-shadow(0 0.75rem 1.5rem rgba(var(--scrim-rgb), 0.45));
+}
+.ox-radial-seg {
+  fill: var(--nk-panel-bg);
+  stroke: var(--nk-panel-border);
+  stroke-width: 1;
+  /* pointer hover eases; everything else is instant (docs/design.md, motion 1) */
+  transition: fill var(--nk-time-hover, var(--nk-time)) var(--nk-ease-out);
+}
+[data-slot="radial-segment"][data-active] .ox-radial-seg {
+  fill: var(--nk-row-fill-color);
+  stroke: var(--nk-row-fill-color);
+  filter: drop-shadow(0 0 0.75rem rgba(var(--brand-rgb, var(--primary-rgb)), calc(var(--nk-glow, 0) * 0.8)));
+}
+[data-slot="radial-segment"][data-empty] .ox-radial-seg {
+  fill: rgba(var(--scrim-rgb), 0.35);
+}
+.ox-radial-item {
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: var(--nk-panel-fg);
+  text-align: center;
+}
+.ox-radial-icon {
+  width: 22px !important;
+  height: 22px;
+  color: var(--muted-foreground);
+}
+.ox-radial-label {
+  display: -webkit-box;
+  max-width: 100%;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 18px;
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+.ox-radial-label[data-long="1"] { font-size: 14px; line-height: 17px; }
+.ox-radial-label[data-long="2"] { font-size: 13px; line-height: 16px; -webkit-line-clamp: 3; }
+[data-slot="radial-segment"][data-active] :is(.ox-radial-item, .ox-radial-icon) {
+  color: var(--nk-row-fill-foreground);
+}
+[data-slot="radial-segment"][data-active] .ox-radial-label {
+  font-weight: var(--nk-weight-strong, 600);
+}
+
+/* The hub: the panel surface, the brand hairline; lit (pointer over it) in the hover colour. */
+.ox-radial-hub {
+  fill: var(--nk-panel-bg);
+  stroke: var(--nk-panel-border);
+  stroke-width: 1;
+  transition: fill var(--nk-time-hover, var(--nk-time)) var(--nk-ease-out);
+}
+[data-slot="radial-hub"][data-active] .ox-radial-hub {
+  fill: var(--accent);
+  stroke: var(--ring);
+}
+.ox-radial-hub-content {
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  color: var(--nk-panel-fg);
+  text-align: center;
+}
+.ox-radial-hub-title {
+  display: -webkit-box;
+  max-width: 100%;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  font-family: var(--nk-heading-font);
+  font-size: 17px;
+  line-height: 20px;
+  font-weight: var(--nk-heading-weight);
+  letter-spacing: var(--nk-heading-tracking);
+  text-transform: var(--nk-heading-case);
+  overflow-wrap: anywhere;
+}
+.ox-radial-hub-icon {
+  width: 20px !important;
+  height: 20px;
+}
+.ox-radial-hub-caption,
+.ox-radial-hub-page {
+  font-family: var(--nk-caption-font);
+  font-size: 12px;
+  line-height: 14px;
+  font-weight: var(--nk-caption-weight);
+  text-transform: var(--nk-caption-transform);
+  letter-spacing: var(--nk-caption-tracking);
+  color: var(--muted-foreground);
+}
+[data-slot="radial-hub"][data-active] :is(.ox-radial-hub-content, .ox-radial-hub-caption) {
+  color: var(--accent-foreground);
+}
+
+/*
+ * Opening: the wheel scales up into place (a submenu or the next page), or settles down from a touch
+ * larger (back to a parent, the previous page). Under reduced motion it only fades (nk-enter); with
+ * motion off kit.css zeroes it. The exit is the shared 100 ms fade: Lua waits ~100 ms between menus.
+ */
+@keyframes ox-radial-in {
+  from { opacity: 0; transform: scale(0.92) rotate(-6deg); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes ox-radial-out {
+  from { opacity: 0; transform: scale(1.06) rotate(6deg); }
+  to { opacity: 1; transform: none; }
+}
+.ox-radial[data-state="open"] .ox-radial-svg {
+  animation: ox-radial-in calc(var(--nk-time) * 1.6) var(--nk-ease-out) both;
+}
+.ox-radial[data-state="open"] .ox-radial-wheel[data-dir="out"] .ox-radial-svg {
+  animation-name: ox-radial-out;
+}
+.ox-radial[data-state="open"] [data-slot="radial-hints"] {
+  animation: nk-enter calc(var(--nk-time) * 1.6) var(--nk-ease-out) both;
+}
+html[data-nk-motion="reduced"] .ox-radial[data-state="open"] .ox-radial-svg {
+  animation-name: nk-enter;
+}
