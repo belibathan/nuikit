@@ -173,5 +173,47 @@ RegisterCommand('nuikit', function(_, args)
   end
 end, false)
 
+-- ───────────────────────────────── GTA's radar, after the HUD that placed it stops
+
+-- A HUD that moves GTA's radar (nuikit_hud's ring) says so with `nuikit:minimap:placed`. When it
+-- stops, this resource puts the radar back: a stopping resource can't wait for GTA to re-read the
+-- positions, so its own restore never took (0.7.0 test, F3: the radar stayed round, top right).
+-- A restart places it again within the wait, and then nothing is done here.
+local STOCK_RADAR = {
+  minimap = { -0.0045, 0.002, 0.150, 0.188888 },
+  minimap_mask = { 0.020, 0.032, 0.111, 0.159 },
+  minimap_blur = { -0.03, 0.022, 0.266, 0.237 },
+}
+local radarOwner, radarClaims = nil, 0
+
+AddEventHandler('nuikit:minimap:placed', function()
+  radarOwner = GetInvokingResource()
+  radarClaims = radarClaims + 1
+end)
+AddEventHandler('nuikit:minimap:released', function()
+  if GetInvokingResource() == radarOwner then radarOwner = nil end
+end)
+
+AddEventHandler('onClientResourceStop', function(resource)
+  if not radarOwner or resource ~= radarOwner then return end
+  radarOwner = nil
+  local claim = radarClaims
+  CreateThread(function()
+    Wait(1000)
+    if radarClaims ~= claim then return end -- restarted: it placed the radar again
+    for name, v in pairs(STOCK_RADAR) do
+      SetMinimapComponentPosition(name, 'L', 'B', v[1], v[2], v[3], v[4])
+    end
+    SetMinimapClipType(0)
+    RemoveReplaceTexture('platform:/textures/graphics', 'radarmasksm')
+    SetBlipAlpha(GetNorthRadarBlip(), 255)
+    SetRadarBigmapEnabled(true, false)
+    Wait(50)
+    SetRadarBigmapEnabled(false, false)
+    Wait(250)
+    if IsBigmapActive() then SetRadarBigmapEnabled(false, false) end
+  end)
+end)
+
 -- Resources that started before this one asked already; answer them now.
 broadcast()

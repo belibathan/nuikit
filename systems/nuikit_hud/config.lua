@@ -35,6 +35,9 @@ Config = {
     size = nil,              -- the frame, in rem (1rem = 16px at 1080p)
     band = nil,              -- frame thickness, in rem
     anchor = nil,            -- bottom-left, bottom-right, top-left, top-right
+    -- The radar's box, width over height. nil keeps GTA's own (about 1.41), so the map isn't squeezed;
+    -- the mask shows only the middle. 1 is the square box of the 0.7.0 checkpoint (a squeezed map).
+    aspect = nil,
     compass = true,          -- cardinals on the ring (square: N on the frame), heading above (compact)
     location = true,         -- the location under (compact) or above (classic) the map
   },

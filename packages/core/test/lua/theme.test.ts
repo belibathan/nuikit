@@ -173,3 +173,43 @@ describe("theme callback for override pages (systems/nuikit/client.lua)", () => 
     expect(r.css).toBe(".dark { --primary: #ff0000; }");
   });
 });
+
+describe("GTA's radar after the HUD that placed it stops (systems/nuikit/client.lua, 0.7.0 F3)", () => {
+  const radar = `
+    PLACED, CLIP, REPLACED, FLICKS = {}, nil, true, 0
+    function SetMinimapComponentPosition(name, _, _, x, y, w, h) PLACED[name] = { x, y, w, h } end
+    function SetMinimapClipType(t) CLIP = t end
+    function RemoveReplaceTexture() REPLACED = nil end
+    function GetNorthRadarBlip() return 1 end
+    function SetBlipAlpha() end
+    function SetRadarBigmapEnabled() FLICKS = FLICKS + 1 end
+    function IsBigmapActive() return false end
+    function CreateThread(f) f() end
+    function Wait() end
+  `;
+
+  it("puts the stock radar back (with the re-read flick) when the placing resource stops, and only then", async () => {
+    client = await createClient();
+    const nuikit = await client.start("nuikit", { before: started(["nuikit"]) + radar, scripts: [NUIKIT_CLIENT] });
+    const hud = await client.start("nuikit_hud", { before: started(["nuikit"]) });
+    const other = await client.start("other", { before: started(["nuikit"]) });
+    await hud.run(`TriggerEvent('nuikit:minimap:placed')`);
+    client.stop("other");
+    expect(await nuikit.run(`return PLACED.minimap`)).toBe(null);
+    client.stop("nuikit_hud");
+    expect(await nuikit.run(`return PLACED.minimap`)).toEqual([-0.0045, 0.002, 0.15, 0.188888]);
+    expect(await nuikit.run(`return CLIP`)).toBe(0);
+    expect(await nuikit.run(`return REPLACED`)).toBe(null);
+    expect(await nuikit.run(`return FLICKS`)).toBe(2);
+    void other;
+  });
+
+  it("does nothing when the HUD released the radar itself (style 'stock')", async () => {
+    client = await createClient();
+    const nuikit = await client.start("nuikit", { before: started(["nuikit"]) + radar, scripts: [NUIKIT_CLIENT] });
+    const hud = await client.start("nuikit_hud", { before: started(["nuikit"]) });
+    await hud.run(`TriggerEvent('nuikit:minimap:placed') TriggerEvent('nuikit:minimap:released')`);
+    client.stop("nuikit_hud");
+    expect(await nuikit.run(`return FLICKS`)).toBe(0);
+  });
+});
