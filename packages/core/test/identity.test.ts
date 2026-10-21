@@ -21,7 +21,7 @@ import {
 
 const root = path.resolve(__dirname, "../../..") + "/";
 const read = (p: string) => readFileSync(root + p, "utf8");
-const IDENTITIES = ["graphite", "signal", "velvet", "vector", "arcade"] as const;
+const IDENTITIES = ["graphite", "signal", "velvet", "vector", "arcade", "street"] as const;
 const identity = (n: (typeof IDENTITIES)[number]) => read(`packages/core/themes/${n}.css`);
 const GRAPHITE = {
   "nk-type-ratio": "1.2",
@@ -63,7 +63,7 @@ describe("tokens 1.1", () => {
     const schema = themeJsonSchema() as any;
     expect(schema.properties.vars.required).toEqual([...TOKEN_NAMES]);
     for (const t of IDENTITY_TOKENS) expect(schema.properties.vars.properties[t.name], t.name).toBeTruthy();
-    expect(schema.properties.vars.properties["nk-elevation"].enum).toEqual(["none", "soft", "deep"]);
+    expect(schema.properties.vars.properties["nk-elevation"].enum).toEqual(["none", "soft", "deep", "hard"]);
   });
 });
 
@@ -120,7 +120,7 @@ describe("validation and floors", () => {
     expect(t.vars["nk-density"]).toBe("0.875");
     expect(t.vars["nk-cut"]).toBe("0px");
     expect(t.vars["nk-ease"]).toBe("cubic-bezier(0.2, 0.8, 0.2, 1)");
-    expect(t.warnings.join("\n")).toMatch(/--nk-elevation must be none, soft, deep \(got huge\)/);
+    expect(t.warnings.join("\n")).toMatch(/--nk-elevation must be none, soft, deep, hard \(got huge\)/);
     expect(t.warnings.join("\n")).toMatch(/--nk-density must be a number from 0.75 to 1.3/);
     expect(t.warnings.join("\n")).toMatch(/--nk-ease must be cubic-bezier/);
   });

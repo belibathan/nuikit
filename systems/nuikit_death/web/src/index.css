@@ -303,6 +303,9 @@
   --nk-border-width: 1px;
   --nk-cut: 0px;
   --nk-display-style: normal;
+  --nk-pause-style: sheet;
+  --nk-pause-surface: undefined;
+  --nk-pause-ink: undefined;
   --nk-skew: 0deg;
   --nk-surface-opacity: 0.96;
   --nk-surface-tint: 0.02;
@@ -389,6 +392,9 @@
   --nk-border-width: 1px;
   --nk-cut: 0px;
   --nk-display-style: normal;
+  --nk-pause-style: sheet;
+  --nk-pause-surface: undefined;
+  --nk-pause-ink: undefined;
   --nk-skew: 0deg;
   --nk-surface-opacity: 0.96;
   --nk-surface-tint: 0.02;
@@ -1537,6 +1543,49 @@
 :is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"]) [data-slot="button"][data-variant="default"] {
   --nk-slab-fill: var(--primary);
 }
+/* key caps: a skewed parallelogram with the stroke, on an offset back plate */
+:is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"]) [data-slot="kbd"] {
+  --nk-slab-stroke: inset 0 0 0 var(--nk-border) var(--nk-key-border);
+  overflow: visible;
+}
+:is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"]) [data-slot="kbd"]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  background-color: var(--nk-key-plate, var(--border));
+  transform: translate(0.1875rem, 0.1875rem) skewX(var(--nk-skew));
+}
+/* notification type badges: a small skewed slab in the type's colour, the glyph dark on it */
+:is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"]) [data-slot="notice-icon"] {
+  position: relative;
+  isolation: isolate;
+  justify-content: center;
+  width: 1.375rem;
+  height: 1.25rem;
+}
+:is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"]) [data-slot="notice-icon"]::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-color: currentColor;
+  box-shadow: 0.125rem 0.125rem 0 0 rgba(var(--scrim-rgb), 0.6);
+  transform: skewX(var(--nk-skew));
+}
+:is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"]) [data-slot="notice-icon"] svg {
+  color: var(--background);
+  width: 0.75rem;
+  height: 0.75rem;
+}
+/* tabs: the active one a solid light slab with dark text */
+:is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"]) [data-slot="tabs-trigger"][data-state="active"] {
+  background-color: var(--foreground);
+  color: var(--background);
+}
+
 /* the selected row (fill indicator) and the gliding indicator: a skewed bar, a little in from the sides */
 :is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"])[data-nk-row="fill"] .nk-row:is([data-active], [data-highlighted], :focus-visible):not([class*="text-destructive"]) {
   isolation: isolate;

@@ -1038,18 +1038,19 @@
   inset: 0;
   overflow: visible;
 }
+/* --nk-ring-band (the dark outer band) and --nk-ring-stroke (the inner ring) are optional theme tokens */
 .hud-map-halo {
   fill: none;
-  stroke: var(--scrim);
-  stroke-opacity: calc(var(--hud-plate-opacity) * 0.6);
+  stroke: var(--nk-ring-band, var(--scrim));
+  stroke-opacity: var(--nk-ring-band-opacity, calc(var(--hud-plate-opacity) * 0.6));
 }
 .hud-map-ring {
   fill: none;
-  stroke: var(--hud-fg);
+  stroke: var(--nk-ring-stroke, var(--hud-fg));
   stroke-opacity: 0.88;
 }
 .hud-map-tick {
-  stroke: var(--hud-fg);
+  stroke: var(--nk-ring-stroke, var(--hud-fg));
   stroke-width: 1.25;
   stroke-linecap: round;
   stroke-opacity: 0.6;
@@ -1090,6 +1091,27 @@
   background-color: var(--hud-accent);
   color: var(--hud-accent-foreground);
   box-shadow: none;
+}
+/* skewed identities: cardinals as small skewed tags, N a light one (the band carries them) */
+:is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"]) .hud-map-cardinal {
+  border-radius: 0;
+  background-color: transparent;
+  box-shadow: none;
+  font-style: var(--nk-display-style, normal);
+  font-size: 0.75rem;
+}
+:is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"]) .hud-map-cardinal[data-north] {
+  background-color: transparent;
+  color: var(--hud-solid);
+  isolation: isolate;
+}
+:is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"]) .hud-map-cardinal[data-north]::after {
+  content: "";
+  position: absolute;
+  inset: -0.0625rem -0.125rem;
+  z-index: -1;
+  background-color: var(--nk-ring-stroke, var(--hud-fg));
+  transform: skewX(var(--nk-skew));
 }
 .hud-map-tag {
   position: absolute;

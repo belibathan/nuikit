@@ -397,6 +397,26 @@
           "description": "Display, heading, title and numeric text upright or italic (a real italic face where the font has one)",
           "$comment": "tokens 1.3"
         },
+        "nk-pause-style": {
+          "enum": [
+            "sheet",
+            "slash"
+          ],
+          "description": "The pause menu: a full-height sheet, or a light slash panel with a diagonal edge into the scene",
+          "$comment": "tokens 1.3"
+        },
+        "nk-pause-surface": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "The slash pause panel's light surface",
+          "$comment": "tokens 1.3"
+        },
+        "nk-pause-ink": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "Text on the slash pause panel",
+          "$comment": "tokens 1.3"
+        },
         "nk-skew": {
           "type": "string",
           "description": "Badges, chips, key caps, tags and the primary / selected bar drawn skewed (their text stays upright); 0deg = off, at most ±20deg",
@@ -430,9 +450,10 @@
           "enum": [
             "none",
             "soft",
-            "deep"
+            "deep",
+            "hard"
           ],
-          "description": "Shadow recipe of floating panels",
+          "description": "Shadow recipe of floating panels: none, soft, deep, or hard (a solid offset drop, no blur; tokens 1.3)",
           "$comment": "tokens 1.1"
         },
         "nk-glow": {

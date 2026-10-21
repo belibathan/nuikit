@@ -113,11 +113,14 @@ warning naming what's allowed. Three tiers: identity → semantic (the colours a
 | | `--nk-cut` | Chamfered corners (top left, bottom right) by `clip-path`; `0` = off. A clip-path also clips the shadow, so cut panels draw depth with their edge | `0px` |
 | | `--nk-display-style` | `normal` or `italic` (tokens 1.3): display, heading, title, numeric and key-cap text (`nk-display`, `nk-title`, `nk-num`, `Kbd`, HUD numerics). A real italic face where one ships (Barlow Condensed 700–900 italic) | `normal` |
 | | `--nk-skew` | An angle, at most ±20deg (tokens 1.3): chips, badges, key caps, the primary button and the selected row are drawn as skewed slabs (a skewed `::after` behind upright text; painted as `html[data-nk-skew]`), and the HUD vital chips skew their whole drawing so the traced level stays on the edge. `0deg` = off | `0deg` |
+| | `--nk-pause-style` | `sheet` or `slash` (tokens 1.3): the pause menu as the full-height sheet, or a light panel with a diagonal edge into the scene (Street); painted as `html[data-nk-pause]` | `sheet` |
+| | `--nk-pause-surface`, `--nk-pause-ink` | The slash panel's light surface and its text | `rgb(246, 247, 249)`, `rgb(14, 16, 20)` |
+| | `--nk-ring-stroke`, `--nk-ring-band`, `--nk-ring-band-opacity` | Optional HUD tokens: the minimap ring's inner stroke and its outer band (with skew, cardinals become skewed tags and N a light slab) | the HUD's ink, the scrim |
 | Surface | `--nk-surface-opacity` | Panel opacity over the game, 0–1. **Floor 0.92** (warning below) | `0.96` |
 | | `--nk-surface-tint` | How much `--brand` tints the panel surface, 0–0.12 | `0.02` |
 | | `--nk-surface-gradient` | Top-to-bottom light falloff on panels, 0–0.2 (0 = flat) | `0` |
 | | `--nk-surface-edge` | Inner top highlight, the machined edge (alpha), 0–0.3 | `0.06` |
-| | `--nk-elevation` | `none` / `soft` / `deep` shadow recipe | `soft` (a hairline and a short, tight drop) |
+| | `--nk-elevation` | `none` / `soft` / `deep`, `hard` (a solid offset drop, no blur; tokens 1.3) shadow recipe | `soft` (a hairline and a short, tight drop) |
 | | `--nk-glow` | Brand glow on active rows, active chips and meter fills (alpha, 0 = off) | `0` |
 | Density | `--nk-density` | Multiplies the kit's spacing step and its row, chip, slab and header heights, 0.75–1.3. Never text size: reading text stays 16px | `0.875` (compact) |
 | Motion | `--nk-ease` | The one easing curve: `cubic-bezier()` or `ease` / `ease-out` / … (not `linear()`: Chromium 113) | `cubic-bezier(0.2, 0.8, 0.2, 1)` |

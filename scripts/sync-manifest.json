@@ -102,6 +102,7 @@
       "themes/arcade.css",
       "themes/graphite.css",
       "themes/signal.css",
+      "themes/street.css",
       "themes/vector.css",
       "themes/velvet.css",
       "web/src/components/ui/button.tsx",
