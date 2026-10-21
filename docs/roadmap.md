@@ -59,6 +59,14 @@ Fixes on `claude/nuikit-0-7-0-test-report-ncbaqu` (into `lead/next`), all browse
 | #11 Signal: dots and voice stay round | they take the chip radius |
 | Note C GTA vehicle name over the cluster | hidden while the cluster shows (`Config.vehicle.gameText`) |
 
+0.7.0 in game ([`releases/v0.7.0-results.md`](releases/v0.7.0-results.md)): A4, the GPS route runs out of the ring's sides.
+GTA draws it across the whole radar box, through neither `radarmasksm` nor the `minimap_mask` component, and clip
+type 1 clips blips, not the route (a known, unanswered FiveM question). `fix/070-findings` ships
+`Config.minimap.routeClip` with five candidates (`mask` default, `inset`, `texture`, `stock`, `box`) and the F8
+command `nuikit_minimap route <x>` (`Config.debug`) so the owner can try each in game; **none is proven**. If none
+clips it, the honest answer is `aspect = 1` (a square box, 29% squeeze) or a square map. The same branch fixes the
+doctor's three nits and adds a `manifest-changed` finding (`refresh`, then `restart`, after an fxmanifest edit).
+
 Open: note B (should nuikit draw weapon glyphs or use the inventory's item image) is a design question for the owner.
 After the retest: merge to `main`, release 0.7.0, close the remaining PRs, clean up branches.
 
