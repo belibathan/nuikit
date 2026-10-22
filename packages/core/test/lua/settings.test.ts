@@ -52,6 +52,17 @@ describe("nk.settings", () => {
     expect(JSON.parse(nuikit.kvp.get("nuikit:settings:hud")!)).toEqual({ v: 1, values: { layout: "classic" } });
   });
 
+  it("an option whose value is false can be picked, saved and read back (lane B, 86c8875)", async () => {
+    const { nuikit, hud } = await setup();
+    await hud.run(`B = NUI.settings.define({ label = 'B', rows = { { key = 'ring', options = { { value = true, label = 'On' }, { value = false, label = 'Off' } }, default = true } } })`);
+    // a second define in the same resource replaces its section
+    await hud.run(`B.draft({ ring = false })`);
+    expect(await hud.run(`return B.get('ring')`)).toBe(false);
+    await hud.run(`B.save()`);
+    expect(JSON.parse(nuikit.kvp.get("nuikit:settings:hud")!).values).toEqual({ ring: false });
+    expect(await hud.run(`return NUI.settings.normalize({ options = { { value = false } } }, false)`)).toBe(false);
+  });
+
   it("invalid values are refused; ranges clamp and snap", async () => {
     const { hud } = await setup();
     await hud.run(`S.draft({ layout = 'huge', scale = 9, minimap = 'yes' })`);
