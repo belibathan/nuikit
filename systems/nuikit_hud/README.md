@@ -23,7 +23,7 @@ restyle it through tokens, or replace it.
 
 | Part | `compact` (default) | `classic` (0.6) |
 |---|---|---|
-| Map | A 15rem circle top right on the safe area: a thin ring, cardinals and ticks that turn on it, the heading (`NW 300°`) above a lubber mark, the waypoint distance as a tag on the ring's lower outer shoulder (its arrow points at the waypoint) | A framed square bottom left, N on the frame |
+| Map | A 15rem circle top right on the safe area: a thin ring, cardinals and ticks that turn on it, the heading (`NW 300°`) above a lubber mark; with `minimap.waypointTag = true`, the waypoint distance as a tag on the ring's lower outer shoulder (its arrow points at the waypoint) | A framed square bottom left, N on the frame |
 | Location | Under the map: the street, then `cross street · zone postal` smaller | A strip above the map with a heading badge |
 | Money and job | Under the location | Top right |
 | Vitals | Bottom left: one icon-only chip per vital (health, armor, hunger, thirst, stress), its level traced along the chip outline; a mic chip and the radio channel | The same chips, a size larger, beside the map |
@@ -72,6 +72,8 @@ Everything is in `config.lua` with a comment on each line. The main switches:
 | `minimap.routeClip` | how the GPS route is kept in the map (0.7.0 A4: GTA draws it across the whole box, through no mask nuikit knows): `'box'` (default: a square radar box, so the route can only reach past the ring at its corners; the map is squeezed about 29%), `'mask'` (minimap_mask over the hole at GTA's aspect: the map unsqueezed, the route overhangs the sides), `'inset'` (minimap_mask on the disc's inner square), `'texture'` (our disc on `radarmask1g` too), `'stock'` (minimap_mask untouched); all but the box are unproven. With `Config.debug`, F8 `nuikit_minimap route <x>` switches live |
 | `minimap.slide` | `false`. A spike, not seen in game: `true` slides GTA's radar and its ring 2.5rem toward their edge with the HUD's exit and entrance (per-frame component placement) instead of cutting them. If the radar doesn't move in game, leave it off |
 | `minimap.halo` | `true`. A soft dark plate behind the round ring, the one the compact speedometer sits on: same strength (`--nk-hud-opacity`), fading out over `--nk-map-halo-size` (2.5rem; `--nk-map-halo-opacity` overrides the strength). It never covers the map inside the ring |
+| `minimap.waypointTag` | `false`. `true` puts nuikit's waypoint tag on the round ring (an arrow toward the waypoint and the distance). With the radar off the distance reads under the location either way |
+| `minimap.gameDistance` | `false` hides GTA's own GPS distance readout inside the radar (the satnav: the `nuikit` resource sends the minimap movie `HIDE_SATNAV` every frame while the HUD runs). `true` leaves it. Not seen in game |
 | `ammo` | `false` hides the ammo |
 | `vitals.enabled`, `vitals.health` … `vitals.stress` | `'auto'`, `'always'`, `false`; `low`, `high`, `linger` (ms) |
 | `needs`, `voice` | hide hunger/thirst/stress, hide voice |

@@ -78,6 +78,13 @@ Config = {
     -- ring reads over a bright sky (an experiment, on). Its strength is the theme's HUD plate
     -- (--nk-hud-opacity, shared with the speedometer); --nk-map-halo-size (2.5rem) is how far it fades out.
     halo = true,
+    -- nuikit's waypoint tag on the ring (an arrow and the distance on its lower shoulder). Off: GTA
+    -- already shows the waypoint on the radar. With the radar off the distance still reads under
+    -- the location (Config.location.waypoint).
+    waypointTag = false,
+    -- GTA's own GPS distance readout inside the radar (its satnav). false hides it (the nuikit
+    -- resource tells the minimap movie HIDE_SATNAV every frame; not seen in game); true leaves it.
+    gameDistance = false,
     compass = true,          -- cardinals on the ring (square: N on the frame), heading above (compact)
     location = true,         -- the location under (compact) or above (classic) the map
   },

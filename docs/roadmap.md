@@ -48,7 +48,9 @@ and target motion; `edge-sheet` first-frame fix; `nuikit.cfg` comments without s
 | Item | State |
 |---|---|
 | GPS route clip (A4): `routeClip = 'box'` (a square radar box, the one bound seen in game) is the default, on purpose (the map is squeezed ~29%); `'mask'` keeps GTA's aspect (unsqueezed, route overhangs) | #110; not seen in game |
+| GTA's own GPS distance in the radar hidden (`Config.minimap.gameDistance = false`; the satnav, `HIDE_SATNAV` every frame from the `nuikit` resource) | PR open; not seen in game |
 | HUD layout config: `Config.parts` places each part (corner + order, or on the map); `compact` and `classic` are presets of it; default unchanged | #104; not seen in game |
+| Waypoint tag on the ring off by default (`Config.minimap.waypointTag = false`; `true` brings it back): GTA already marks the waypoint | PR open; not seen in game |
 | Minimap slide spike: `Config.minimap.slide` (off) moves the three components 2.5rem toward the edge per frame over the exit/entrance (no big-map flick); the ring slides with it unfaded | #116; not seen in game: whether GTA takes positions without a flick is the open question |
 | Compact ring 15rem (was 12rem; v0.7.0 Polish 7), on purpose; `Config.minimap.size = 12` keeps the old ring. The HUD wallet already formats with `useNuiContext` (9f9d5c9) | #118; not seen in game |
 | Map halo: `Config.minimap.halo` (on, an experiment) puts the speedometer's plate behind the round ring, same strength token (`--nk-hud-opacity`), `--nk-map-halo-size` for its fade | PR open; not seen in game |

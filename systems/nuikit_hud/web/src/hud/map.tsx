@@ -52,10 +52,12 @@ export interface MapRingProps {
   units: "mph" | "kmh";
   /** a soft plate behind a round ring (Config.minimap.halo) */
   halo?: boolean;
+  /** the waypoint tag on the ring (Config.minimap.waypointTag) */
+  tag?: boolean;
 }
 
 /** The ring, the compass on it, the heading above it and the waypoint tag. */
-export function MapRing({ frame, start, compass = true, location, units, halo = true }: MapRingProps) {
+export function MapRing({ frame, start, compass = true, location, units, halo = true, tag: showTag = false }: MapRingProps) {
   const W = window.innerWidth;
   const H = window.innerHeight;
   const size = frame.w * W;
@@ -77,7 +79,7 @@ export function MapRing({ frame, start, compass = true, location, units, halo = 
   const tagAt = tagAngle(frame);
   const tag = onRing(tagAt, c, r);
   const right = tagAt < 180;
-  const waypoint = location?.visible && location.waypoint !== undefined;
+  const waypoint = showTag && location?.visible && location.waypoint !== undefined;
 
   useEffect(
     () =>

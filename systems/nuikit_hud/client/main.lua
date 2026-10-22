@@ -51,6 +51,8 @@ local function settings()
     slide = (Config.minimap or {}).slide == true,
     -- the speedometer's plate behind the round map ring (Config.minimap.halo)
     halo = (Config.minimap or {}).halo ~= false,
+    -- nuikit's own waypoint tag on the ring (Config.minimap.waypointTag)
+    waypointTag = (Config.minimap or {}).waypointTag == true,
   }
 end
 

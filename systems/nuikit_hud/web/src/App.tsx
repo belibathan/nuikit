@@ -187,7 +187,7 @@ function Compact({ settings, vehicle, location, weapon, layout, frame, state, pl
   const bl = besideMap ? "hud-beside-map hud-stack" : undefined;
   return (
     <div data-slot="hud" data-layout="compact" className="hud-root" data-shadow={look.shadow} style={vars as CSSProperties}>
-      <Side side="map" slide={settings.slide && frame ? mapEdge(frame) : undefined}>{ring && <MapRing frame={frame!} start={heading} compass={settings.compass?.ring !== false} location={location} units={units} halo={settings.halo !== false} />}</Side>
+      <Side side="map" slide={settings.slide && frame ? mapEdge(frame) : undefined}>{ring && <MapRing frame={frame!} start={heading} compass={settings.compass?.ring !== false} location={location} units={units} halo={settings.halo !== false} tag={settings.waypointTag === true} />}</Side>
       <Side side="left">
         {columnSide === "left" && columnEl}
         {corners(groups, "left", bl)}

@@ -162,6 +162,8 @@ export interface HudSettings {
   slide?: boolean;
   /** the speedometer's plate behind the round ring (Config.minimap.halo); absent: on */
   halo?: boolean;
+  /** nuikit's waypoint tag on the round ring (Config.minimap.waypointTag); absent: off */
+  waypointTag?: boolean;
 }
 
 declare module "nuikit-core" {

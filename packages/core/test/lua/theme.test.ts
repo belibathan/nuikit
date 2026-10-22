@@ -269,6 +269,30 @@ describe("GTA's radar after the HUD that placed it stops (systems/nuikit/client.
     expect(await nuikit.run(`return FLICKS`)).toBe(2);
   });
 
+  it("hides GTA's satnav distance every frame while the asking HUD runs (Config.minimap.gameDistance)", async () => {
+    client = await createClient();
+    const nuikit = await client.start("nuikit", {
+      before:
+        started(["nuikit", "nuikit_hud"]) +
+        radar +
+        ` HIDES = 0 CO = nil
+          function BeginScaleformMovieMethod(_, m) if m == 'HIDE_SATNAV' then HIDES = HIDES + 1 end end
+          function CreateThread(f) CO = coroutine.create(f) coroutine.resume(CO) end
+          function Wait() coroutine.yield() end
+          function FRAME() if CO and coroutine.status(CO) == 'suspended' then coroutine.resume(CO) end end`,
+      scripts: [NUIKIT_CLIENT],
+    });
+    const hud = await client.start("nuikit_hud", { before: started(["nuikit"]) });
+    await hud.run(`TriggerEvent('nuikit:minimap:satnav', false)`);
+    await hud.run(`TriggerEvent('nuikit:minimap:satnav', false)`); // a repeat starts no second loop
+    await nuikit.run(`FRAME() FRAME()`);
+    expect(await nuikit.run(`return HIDES`)).toBe(3);
+    await hud.run(`TriggerEvent('nuikit:minimap:satnav', true)`); // shown again: the loop ends
+    await nuikit.run(`FRAME() FRAME()`);
+    expect(await nuikit.run(`return HIDES`)).toBe(3);
+    expect(await nuikit.run(`return coroutine.status(CO)`)).toBe("dead");
+  });
+
   it("does nothing when the HUD released the radar itself (style 'stock')", async () => {
     client = await createClient();
     const nuikit = await client.start("nuikit", { before: started(["nuikit"]) + radar, scripts: [NUIKIT_CLIENT] });

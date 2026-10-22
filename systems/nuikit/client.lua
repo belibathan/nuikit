@@ -265,6 +265,33 @@ AddEventHandler('nuikit:minimap:bars', function(show)
   EndScaleformMovieMethod()
 end)
 
+-- GTA's satnav readout inside the radar (the GPS distance to the waypoint). A HUD that shows its own
+-- asks for it hidden with `nuikit:minimap:satnav` (false); the movie only keeps it hidden while it is
+-- told every frame (HIDE_SATNAV), so a frame loop runs here while the asking resource is started.
+-- Hidden ends when it asks for `true` or stops. Not seen in game (cfx.re forum, "remove GPS
+-- destination distance").
+local satnavBy
+AddEventHandler('nuikit:minimap:satnav', function(show)
+  local by = GetInvokingResource()
+  if show then
+    if satnavBy == by then satnavBy = nil end
+    return
+  end
+  if satnavBy then satnavBy = by return end
+  satnavBy = by
+  CreateThread(function()
+    radarMovie = radarMovie or RequestScaleformMovie('minimap')
+    while satnavBy and GetResourceState(satnavBy) == 'started' do
+      if HasScaleformMovieLoaded(radarMovie) then
+        BeginScaleformMovieMethod(radarMovie, 'HIDE_SATNAV')
+        EndScaleformMovieMethod()
+      end
+      Wait(0)
+    end
+    satnavBy = nil
+  end)
+end)
+
 AddEventHandler('nuikit:minimap:released', function()
   if GetInvokingResource() == radarOwner then radarOwner = nil end
 end)
