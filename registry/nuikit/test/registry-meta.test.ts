@@ -9,6 +9,8 @@ const registry = JSON.parse(fs.readFileSync(path.join(root, "registry.json"), "u
   items: { name: string; description?: string; files: { path: string }[]; meta?: Meta }[]
 }
 const names = new Set(registry.items.map((i) => i.name))
+// removed after their deprecation; `replaces` still names them (history)
+const REMOVED = ["key-hint", "task-progress", "nui-toaster"]
 const releases = fs
   .readdirSync(path.join(root, "docs/releases"))
   .map((f) => f.match(/^v(\d+\.\d+\.\d+)\.md$/)?.[1])
@@ -22,7 +24,7 @@ describe("registry meta", () => {
       expect(m.since === "unreleased" || releases.includes(m.since), `${item.name}: since ${m.since} has no docs/releases entry`).toBe(true)
       expect(["stable", "experimental", "deprecated"], item.name).toContain(m.status)
       expect(Array.isArray(m.replaces), item.name).toBe(true)
-      for (const r of m.replaces) expect(names, `${item.name} replaces ${r}`).toContain(r)
+      for (const r of m.replaces) expect(names.has(r) || REMOVED.includes(r), `${item.name} replaces ${r}`).toBe(true)
     }
   })
 
@@ -46,9 +48,11 @@ describe("registry meta", () => {
     }
   })
 
-  it("nui-toaster and task-progress are deprecated for notice and meter / progress-ring", () => {
-    const meta = (n: string) => registry.items.find((i) => i.name === n)!.meta!
-    expect(meta("nui-toaster")).toMatchObject({ status: "deprecated", replacedBy: ["notice"] })
-    expect(meta("task-progress")).toMatchObject({ status: "deprecated", replacedBy: ["meter", "progress-ring"] })
+  it("key-hint, task-progress and nui-toaster are gone in 0.9.0; their successors stay", () => {
+    for (const n of REMOVED) {
+      expect(names.has(n), n).toBe(false)
+      expect(fs.existsSync(path.join(root, `registry/nuikit/ui/${n}.tsx`)), n).toBe(false)
+    }
+    for (const n of ["key-prompt", "meter", "progress-ring", "notice"]) expect(names.has(n), n).toBe(true)
   })
 })

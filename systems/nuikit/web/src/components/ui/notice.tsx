@@ -6,7 +6,7 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { CircleCheckIcon, CircleXIcon, InfoIcon, PackageIcon, TriangleAlertIcon, XIcon } from "lucide-react"
 
 import { flipFrom } from "nuikit-core/motion"
-import { Stagger, useStaggerGroup, useStaggerItem } from "nuikit-core/react"
+import { Stagger, useNuiEvent, useStaggerGroup, useStaggerItem } from "nuikit-core/react"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -19,6 +19,10 @@ import { Button } from "@/components/ui/button"
  *   const { notices, notify, dismiss } = useNotices()
  *   notify({ title: "Paid", description: "$500 from Lester", status: "success", position: "top-right" })
  *   <Notices notices={notices} onDismiss={dismiss} />
+ *
+ * Or wired to Lua's NUI.notify() (the `nuikit:notify` message), mounted once:
+ *
+ *   <NuiNotices />
  *
  * Or by hand, every state from props (previews, screenshots, your own queue):
  *
@@ -570,10 +574,29 @@ function Notices({
   )
 }
 
+/** What Lua's NUI.notify() sends. `type` is the older name of `status` ("default" is info). */
+type NuiNotify = NoticeData & { type?: NoticeStatus | "default" }
+
+declare module "nuikit-core" {
+  interface NuiEvents {
+    "nuikit:notify": NuiNotify
+  }
+}
+
+/** A notice queue wired to Lua's NUI.notify() (`nuikit:notify`). Mount it once. */
+function NuiNotices({ max, ...props }: Omit<React.ComponentProps<typeof Notices>, "notices" | "onDismiss"> & { max?: number }) {
+  const { notices, notify, dismiss } = useNotices({ max })
+  useNuiEvent("nuikit:notify", ({ type, status, ...n }) => {
+    notify({ ...n, status: status ?? (type === "default" ? undefined : type) })
+  })
+  return <Notices notices={notices} onDismiss={dismiss} {...props} />
+}
+
 export {
   Notice,
   NoticeStack,
   Notices,
+  NuiNotices,
   useNotices,
   noticeVariants,
   noticeReducer,
@@ -592,4 +615,5 @@ export {
   type NoticeData,
   type NoticeEntry,
   type NoticeAction,
+  type NuiNotify,
 }

@@ -74,7 +74,7 @@ and target motion; `edge-sheet` first-frame fix; `nuikit.cfg` comments without s
 
 | Item | State |
 |---|---|
-| Remove `key-hint`, `task-progress`, `nui-toaster` (moved to 0.9.0); move the site's demos to `key-prompt`, `meter`/`progress-ring`, `notice` first | Open |
+| Remove `key-hint`, `task-progress`, `nui-toaster` (moved to 0.9.0); move the site's demos to `key-prompt`, `meter`/`progress-ring`, `notice` first | **PR #108**: site moved; the three removed; `<NuiNotices />` (notice wired to `NUI.notify()`) replaces `NuiToaster` in the template and blocks |
 
 ## Lane F: Showcase
 

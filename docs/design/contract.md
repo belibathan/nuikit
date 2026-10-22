@@ -139,8 +139,8 @@ The site's `/components` page shows the status and `since` next to each componen
 5. **Tokens are additive.** Renaming or removing a token is a tokens v2 change (`docs/tokens.md`), not a
    component deprecation.
 
-Deprecated now: `key-hint` (→ `key-prompt`), `task-progress` (→ `meter` timed mode, `progress-ring`),
-`nui-toaster` (→ `notice`), all deprecated in 0.6.0 and removable in 0.8.0.
+Removed in 0.9.0: `key-hint` (→ `key-prompt`), `task-progress` (→ `meter` timed mode, `progress-ring`),
+`nui-toaster` (→ `notice`, `<NuiNotices />` for NUI.notify()), all deprecated in 0.6.0.
 
 ## Follow-up: visual baselines (not enforced yet)
 

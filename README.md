@@ -173,8 +173,8 @@ Players get their own accessibility preferences on top: `/nuikit scale 1.1`, `/n
 | Things and people | `item-slot`, `player-card` |
 | Hooks | `use-nui-store` |
 
-Deprecated but still working: `key-hint` (use `key-prompt`), `task-progress` (use `meter` or `progress-ring`),
-`nui-toaster` (use `notice`).
+Removed in 0.9.0: `key-hint` (use `key-prompt`), `task-progress` (use `meter` or `progress-ring`),
+`nui-toaster` (use `notice`: `<NuiNotices />`).
 
 **Blocks** (`npm create nuikit my-ui -- -t <block>`, previews on [/blocks](https://nuikit.vercel.app/blocks))
 

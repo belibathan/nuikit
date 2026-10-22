@@ -270,61 +270,6 @@
       }
     },
     {
-      "name": "key-hint",
-      "type": "registry:ui",
-      "title": "Key Hint",
-      "description": "Deprecated: use key-prompt. \"[E] Talk\" prompts built on shadcn Kbd, with hold-to-confirm on Progress. Still works.",
-      "files": [
-        {
-          "path": "registry/nuikit/ui/key-hint.tsx",
-          "type": "registry:ui"
-        }
-      ],
-      "dependencies": [
-        "class-variance-authority"
-      ],
-      "registryDependencies": [
-        "kbd",
-        "progress"
-      ],
-      "meta": {
-        "since": "0.3.0",
-        "status": "deprecated",
-        "replaces": [],
-        "removeIn": "0.9.0",
-        "replacedBy": [
-          "key-prompt"
-        ]
-      }
-    },
-    {
-      "name": "task-progress",
-      "type": "registry:ui",
-      "title": "Task Progress",
-      "description": "Deprecated: use meter (timed mode) or progress-ring. Timed action (lockpicking, repairing) in a shadcn Card with Progress and a cancel Kbd. Still works.",
-      "files": [
-        {
-          "path": "registry/nuikit/ui/task-progress.tsx",
-          "type": "registry:ui"
-        }
-      ],
-      "registryDependencies": [
-        "card",
-        "kbd",
-        "progress"
-      ],
-      "meta": {
-        "since": "0.3.0",
-        "status": "deprecated",
-        "replaces": [],
-        "removeIn": "0.9.0",
-        "replacedBy": [
-          "meter",
-          "progress-ring"
-        ]
-      }
-    },
-    {
       "name": "nui-menu",
       "type": "registry:ui",
       "title": "NUI Menu",
@@ -384,34 +329,6 @@
         "status": "stable",
         "replaces": [],
         "removeIn": null
-      }
-    },
-    {
-      "name": "nui-toaster",
-      "type": "registry:ui",
-      "title": "NUI Toaster",
-      "description": "Deprecated: use notice (useNotices() + <Notices>). The stock shadcn Sonner Toaster, wired to Lua's NUI.notify(). Still works.",
-      "files": [
-        {
-          "path": "registry/nuikit/ui/nui-toaster.tsx",
-          "type": "registry:ui"
-        }
-      ],
-      "dependencies": [
-        "nuikit-core",
-        "sonner"
-      ],
-      "registryDependencies": [
-        "sonner"
-      ],
-      "meta": {
-        "since": "0.3.0",
-        "status": "deprecated",
-        "replaces": [],
-        "removeIn": "0.9.0",
-        "replacedBy": [
-          "notice"
-        ]
       }
     },
     {
