@@ -8,7 +8,7 @@ import { Confirm } from "@/components/ui/confirm"
 import { ColorField } from "@/components/ui/form-field"
 import { MenuRow } from "@/components/ui/menu-row"
 import { Meter } from "@/components/ui/meter"
-import { Money, formatMoney } from "@/components/ui/money"
+import { Money, useFormatMoney } from "@/components/ui/money"
 import { Panel, PanelBody, PanelFooter, PanelHeader } from "@/components/ui/panel"
 import { Spinner } from "@/components/ui/spinner"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -100,6 +100,7 @@ function VehicleShop({
   /** Start with the confirm open (stills). */
   confirming?: boolean
 }) {
+  const fmt = useFormatMoney()
   const vehicles = list(data.vehicles)
   const categories = list(data.categories)
   const colours = list(data.colours)
@@ -279,7 +280,7 @@ function VehicleShop({
       {confirming && vehicle && choice && (
         <Confirm
           tone="primary"
-          title={`Buy the ${vehicle.label} for ${formatMoney(vehicle.price)}?`}
+          title={`Buy the ${vehicle.label} for ${fmt(vehicle.price)}?`}
           description={`Paid ${payment === "cash" ? "in cash" : "from your bank"}, in the colour you picked. It's waiting outside with your keys.`}
           confirmLabel="Buy"
           loading={busy === "buy"}

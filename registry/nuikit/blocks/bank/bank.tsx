@@ -20,7 +20,7 @@ import { Confirm } from "@/components/ui/confirm"
 import { EmptyState } from "@/components/ui/empty-state"
 import { TextField } from "@/components/ui/form-field"
 import { MenuRow } from "@/components/ui/menu-row"
-import { Money, formatMoney } from "@/components/ui/money"
+import { Money, useFormatMoney } from "@/components/ui/money"
 import { Panel, PanelBody, PanelHeader } from "@/components/ui/panel"
 import { Spinner } from "@/components/ui/spinner"
 import { Stat } from "@/components/ui/stat"
@@ -113,6 +113,7 @@ function Bank({
   /** Start with a money dialog open (stills). */
   dialog?: BankMoneyAction | null
 }) {
+  const fmt = useFormatMoney()
   const accounts = list(data.accounts)
   const [selectedId, setSelectedId] = React.useState(accounts[0]?.id)
   const account = accounts.find((a) => a.id === selectedId) ?? accounts[0]
@@ -133,7 +134,7 @@ function Bank({
     <div data-slot="bank" className={cn("nk-edge absolute inset-0", className)} {...props}>
       <div className="absolute inset-0 m-auto flex h-max w-max items-start gap-4">
         <Panel>
-          <PanelHeader icon={<LandmarkIcon />} title={data.title ?? "Bank"} description={`Cash on hand ${formatMoney(data.cash)}`} />
+          <PanelHeader icon={<LandmarkIcon />} title={data.title ?? "Bank"} description={`Cash on hand ${fmt(data.cash)}`} />
           <PanelBody>
             {accounts.length ? (
               accounts.map((a, i) => {
@@ -271,6 +272,7 @@ function BankMoneyDialog({
   onClose: () => void
   onSubmit: (action: BankMoneyAction, req: { amount: number; to?: string; note?: string }) => Promise<BankAnswer> | void
 }) {
+  const fmt = useFormatMoney()
   const [amount, setAmount] = React.useState("")
   const [to, setTo] = React.useState("")
   const [note, setNote] = React.useState("")
@@ -313,11 +315,11 @@ function BankMoneyDialog({
       tone="primary"
       size="sm"
       title={`${ACTION_LABEL[action]} ${action === "deposit" ? "to" : "from"} ${account.label}`}
-      description={action === "deposit" ? `Cash on hand: ${formatMoney(cash)}` : `Available: ${formatMoney(account.balance)}`}
+      description={action === "deposit" ? `Cash on hand: ${fmt(cash)}` : `Available: ${fmt(account.balance)}`}
       cancelLabel="Cancel"
       // The amount field takes the keyboard (autoFocus below), not the action.
       initialFocus="none"
-      confirmLabel={`${ACTION_LABEL[action]}${!check && amount ? ` ${formatMoney(Number(amount))}` : ""}`}
+      confirmLabel={`${ACTION_LABEL[action]}${!check && amount ? ` ${fmt(Number(amount))}` : ""}`}
       loading={busy}
       onCancel={() => !busy && onClose()}
       onConfirm={submit}
@@ -343,7 +345,7 @@ function BankMoneyDialog({
           label="Amount"
           hint={
             <Button type="button" variant="ghost" size="sm" className="h-6 px-2 text-xs" onClick={() => setAmount(String(Math.floor(available)))}>
-              All {formatMoney(available)}
+              All {fmt(available)}
             </Button>
           }
           placeholder="$0"

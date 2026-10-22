@@ -76,6 +76,18 @@ function formatMoney(
   return `${prefix}${text}${suffix}`
 }
 
+/**
+ * formatMoney bound to the server's live context (useNuiContext): a component that formats text with
+ * it re-renders when `nuikit:context` arrives or changes. Options passed to a call still win.
+ *
+ *   const fmt = useFormatMoney()
+ *   <p>Cash on hand {fmt(cash)}</p>
+ */
+function useFormatMoney() {
+  const { currency, locale } = useNuiContext()
+  return React.useCallback((amount: number, options: MoneyFormat = {}) => formatMoney(amount, { currency, locale, ...options }), [currency, locale])
+}
+
 /** -1, 0 or 1: which way the amount goes (for the direction tone). */
 function moneyDirection(amount: number): -1 | 0 | 1 {
   if (!Number.isFinite(amount) || amount === 0) return 0
@@ -127,4 +139,4 @@ function Money({
   )
 }
 
-export { Money, moneyVariants, formatMoney, moneyDirection, type MoneyFormat, type MoneySign }
+export { Money, moneyVariants, formatMoney, useFormatMoney, moneyDirection, type MoneyFormat, type MoneySign }

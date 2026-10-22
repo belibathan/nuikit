@@ -17,7 +17,7 @@ import {
 import { cn } from "@/lib/utils"
 import { HudChip } from "@/components/ui/hud-chip"
 import { Meter } from "@/components/ui/meter"
-import { formatMoney } from "@/components/ui/money"
+import { useFormatMoney } from "@/components/ui/money"
 import { SPEEDOMETER_REDLINE, Speedometer, speedometerDash } from "@/components/ui/speedometer"
 import { Stat } from "@/components/ui/stat"
 
@@ -107,13 +107,14 @@ function HudVoice({ voice }: { voice: NuiPlayer["voice"] }) {
 
 /** Top right: cash, bank and job, once a character is loaded. */
 function HudWallet({ player }: { player: NuiPlayer }) {
+  const fmt = useFormatMoney()
   const job = player.job
   if (!player.loaded || (player.cash === undefined && player.bank === undefined && !job)) return null
   return (
     <div className="nk-anchor-tr flex flex-col items-end gap-2">
-      {player.cash !== undefined && <Stat surface="game" align="end" icon={<WalletIcon />} label="Cash" value={formatMoney(player.cash)} />}
+      {player.cash !== undefined && <Stat surface="game" align="end" icon={<WalletIcon />} label="Cash" value={fmt(player.cash)} />}
       {player.bank !== undefined && (
-        <Stat surface="game" align="end" size="sm" icon={<LandmarkIcon />} label="Bank" value={formatMoney(player.bank)} />
+        <Stat surface="game" align="end" size="sm" icon={<LandmarkIcon />} label="Bank" value={fmt(player.bank)} />
       )}
       {job && (
         // a caption on the game (the identity's label style); duty is a status dot, never primary

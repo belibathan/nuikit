@@ -8,7 +8,7 @@ import { EmptyState } from "@/components/ui/empty-state"
 import { Kbd } from "@/components/ui/kbd"
 import { MenuRow } from "@/components/ui/menu-row"
 import { Meter } from "@/components/ui/meter"
-import { formatMoney } from "@/components/ui/money"
+import { formatMoney, useFormatMoney } from "@/components/ui/money"
 import { Panel, PanelBody, PanelFooter, PanelHeader } from "@/components/ui/panel"
 import { Spinner } from "@/components/ui/spinner"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -56,10 +56,10 @@ const FILTERS: { value: "all" | GarageVehicleState; label: string }[] = [
 ]
 
 /** What the row says about where a vehicle is. */
-function garageWhere(v: GarageVehicle) {
+function garageWhere(v: GarageVehicle, fmt: (amount: number) => string = formatMoney) {
   if (v.state === "stored") return v.location ?? "Stored here"
   if (v.state === "out") return v.location ?? "Out"
-  return v.fee ? `Impounded, ${formatMoney(v.fee)} to release` : (v.location ?? "Impounded")
+  return v.fee ? `Impounded, ${fmt(v.fee)} to release` : (v.location ?? "Impounded")
 }
 
 // Lua turns an empty table into {} instead of [].
@@ -78,6 +78,7 @@ function Garage({
   /** Focus the list when it opens (off for stills next to other content). */
   autoFocus?: boolean
 }) {
+  const fmt = useFormatMoney()
   const vehicles = list(data.vehicles)
   const [filter, setFilter] = React.useState<"all" | GarageVehicleState>("all")
   const shown = filter === "all" ? vehicles : vehicles.filter((v) => v.state === filter)
@@ -156,7 +157,7 @@ function Garage({
                     key={v.id}
                     data-id={v.id}
                     icon={<CarIcon />}
-                    description={garageWhere(v)}
+                    description={garageWhere(v, fmt)}
                     meta={<span className="font-mono">{v.plate}</span>}
                     active={v.id === selected?.id}
                     className={cn(v.state !== "stored" && "[&_[data-slot=menu-row-description]]:text-muted-foreground", v.state === "impounded" && "[&_[data-slot=menu-row-description]]:text-warning")}
@@ -203,6 +204,7 @@ function GarageDetail({
   error: string | null
   onPrimary: () => void
 }) {
+  const fmt = useFormatMoney()
   const action = v.state === "stored" ? "takeOut" : v.state === "impounded" ? "release" : null
   return (
     <Panel size="sm" key={v.id}>
@@ -211,7 +213,7 @@ function GarageDetail({
         <Meter icon={<FuelIcon />} label="Fuel" value={v.fuel} valueText={`${Math.round(v.fuel)}%`} low={15} tone="foreground" />
         <Meter icon={<WrenchIcon />} label="Engine" value={v.engine} valueText={`${Math.round(v.engine)}%`} low={30} tone="foreground" />
         <Meter icon={<ShieldIcon />} label="Body" value={v.body} valueText={`${Math.round(v.body)}%`} low={30} tone="foreground" />
-        <p className={cn("text-sm", v.state === "impounded" ? "text-warning" : "text-muted-foreground")}>{garageWhere(v)}</p>
+        <p className={cn("text-sm", v.state === "impounded" ? "text-warning" : "text-muted-foreground")}>{garageWhere(v, fmt)}</p>
         {error && (
           <p role="alert" className="text-sm text-destructive">
             {error}
@@ -222,7 +224,7 @@ function GarageDetail({
         {action ? (
           <Button className="flex-1" disabled={!!busy} onClick={onPrimary}>
             {busy === action && <Spinner />}
-            {action === "takeOut" ? "Take out" : `Release${v.fee ? ` for ${formatMoney(v.fee)}` : ""}`}
+            {action === "takeOut" ? "Take out" : `Release${v.fee ? ` for ${fmt(v.fee)}` : ""}`}
           </Button>
         ) : (
           <Button className="flex-1" variant="outline" disabled>

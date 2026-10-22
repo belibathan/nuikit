@@ -28,7 +28,7 @@ import { Confirm } from "@/components/ui/confirm"
 import { EmptyState } from "@/components/ui/empty-state"
 import { ItemSlot } from "@/components/ui/item-slot"
 import { MenuRow } from "@/components/ui/menu-row"
-import { Money, formatMoney } from "@/components/ui/money"
+import { Money, useFormatMoney } from "@/components/ui/money"
 import { Panel, PanelBody, PanelFooter, PanelHeader } from "@/components/ui/panel"
 import { Spinner } from "@/components/ui/spinner"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -154,6 +154,7 @@ function Shop({
   /** Start with the confirm open (stills). */
   confirming?: boolean
 }) {
+  const fmt = useFormatMoney()
   const items = list(data.items)
   const categories = list(data.categories)
   const payments = list(data.payment).length ? list(data.payment) : (["cash"] as ShopPayment[])
@@ -318,7 +319,7 @@ function Shop({
       {confirming && (
         <Confirm
           tone="primary"
-          title={`Buy ${count} ${count === 1 ? "item" : "items"} for ${formatMoney(total)}?`}
+          title={`Buy ${count} ${count === 1 ? "item" : "items"} for ${fmt(total)}?`}
           description={`Paid ${payment === "cash" ? "in cash" : "from your bank"}. ${lines
             .map((l) => `${l.count} × ${items.find((i) => i.id === l.id)!.label}`)
             .join(", ")}.`}
