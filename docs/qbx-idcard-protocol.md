@@ -30,6 +30,8 @@ Sent ~2 s after the resource starts and on `QBCore:Client:OnPlayerLoaded`.
 |---|---|
 | `configData` | `config/shared.lua`: `{ idCardSettings: { closeKey: string, autoClose: { status: boolean, time: number } }, licenses: Record<cardtype, { header: string, background: string, backgroundImage?: string, prop?: string, badge?: string }> }` |
 
+nuikit also reads an optional `photo` (`"avatar"` for the small round photo; default the full-height portrait), top-level or under `idCardSettings`. Stock qbx_idcard never sends it.
+
 Shallow-merged over the page's defaults (`closeKey` "Backspace", autoClose off, the four stock card
 types `id_card`, `driver_license`, `weaponlicense`, `lawyerpass`).
 

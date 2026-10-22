@@ -9,7 +9,7 @@ A drop-in replacement for [qbx_idcard](https://github.com/Qbox-project/qbx_idcar
 3. Optional: add the `nuikit` resource (from `[nuikit]`) and paste any [TweakCN](https://tweakcn.com) theme into `nuikit/theme.css`. Without it, the stock shadcn theme is used.
 4. `restart qbx_idcard`.
 
-Card titles and colours come from `qbx_idcard/config/shared.lua` (`header`, `background`); field labels from `qbx_idcard/lang/global.js`. Updating qbx_idcard restores its stock UI; copy the folder again afterwards.
+Card titles and colours come from `qbx_idcard/config/shared.lua` (`header`, `background`); field labels from `qbx_idcard/lang/global.js`. The holder's photo is a full-height portrait down the card's left side; add `photo = 'avatar'` to the table in `qbx_idcard/config/shared.lua` for a small round one instead. Updating qbx_idcard restores its stock UI; copy the folder again afterwards.
 
 ## Edit it
 
