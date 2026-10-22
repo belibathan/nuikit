@@ -118,6 +118,7 @@ export function ContextMenu() {
   if (!data) return null;
   // Same order as ox_lib: Object.entries (integer-like keys first, then the rest as received).
   const entries = Object.entries(data.options ?? {});
+  const iconColumn = entries.some(([, o]) => !!o.icon);
   const hovered = hover ? (data.options as Record<string, Option>)[hover.key] : undefined;
 
   const enter = (key: string, e: MouseEvent<HTMLElement>) => {
@@ -141,7 +142,7 @@ export function ContextMenu() {
       <EdgeSheetBody scroll onViewportScroll={() => setHover(null)}>
         <div className="flex flex-col divide-y divide-border">
           {entries.map(([key, option]) => (
-            <ContextOption key={key} id={key} option={option} onEnter={(e) => enter(key, e)} onLeave={() => setHover((h) => (h?.key === key ? null : h))} />
+            <ContextOption key={key} id={key} option={option} iconColumn={iconColumn} onEnter={(e) => enter(key, e)} onLeave={() => setHover((h) => (h?.key === key ? null : h))} />
           ))}
         </div>
       </EdgeSheetBody>
@@ -153,7 +154,7 @@ export function ContextMenu() {
 /** ox's default colorScheme for context bars (protocol §4). menu-row reads Mantine names through meterColor(). */
 const OX_BAR = "dark.3";
 
-function ContextOption({ id, option, onEnter, onLeave }: { id: string; option: Option; onEnter: (e: MouseEvent<HTMLElement>) => void; onLeave: () => void }) {
+function ContextOption({ id, option, iconColumn, onEnter, onLeave }: { id: string; option: Option; iconColumn: boolean; onEnter: (e: MouseEvent<HTMLElement>) => void; onLeave: () => void }) {
   // A missing title on a keyed option shows the key itself (ox_lib does this).
   const title = option.title ?? (Number.isNaN(Number(id)) ? id : undefined);
   const arrow = Boolean(option.menu || option.arrow) && option.arrow !== false;
@@ -173,7 +174,8 @@ function ContextOption({ id, option, onEnter, onLeave }: { id: string; option: O
       onMouseEnter={onEnter}
       onMouseLeave={onLeave}
       className="min-h-12 text-base"
-      icon={option.icon ? <Icon icon={option.icon} color={option.iconColor} animation={option.iconAnimation} allowImage className="size-4" /> : undefined}
+      // when any row has an icon, the others keep an empty slot so every title starts on one column
+      icon={option.icon ? <Icon icon={option.icon} color={option.iconColor} animation={option.iconAnimation} allowImage className="size-4" /> : iconColumn ? <span aria-hidden className="block h-4 w-[1.25em]" /> : undefined}
       description={option.description ? <Markdown>{option.description}</Markdown> : undefined}
       // ox shows the bar whenever `progress` is present, 0 included
       progress={hasProgress ? Number(option.progress) : undefined}
