@@ -37,7 +37,8 @@ export type RuleId =
   | "native/runtime"
   | "native/components"
   | "perf/remote-asset"
-  | "perf/frame-send";
+  | "perf/frame-send"
+  | "attention/glow";
 
 export const RULES: Record<RuleId, { level: Level; description: string }> = {
   "color/hardcoded": { level: 1, description: "Hex, rgb(), hsl(), oklch()… or named colour literal instead of a theme token" },
@@ -52,6 +53,7 @@ export const RULES: Record<RuleId, { level: Level; description: string }> = {
   "native/components": { level: 3, description: "Doesn't build on shadcn/ui or nuikit registry components" },
   "perf/remote-asset": { level: 0, description: "Font or asset loaded from the network instead of the resource" },
   "perf/frame-send": { level: 0, description: "NUI message sent from a Wait(0) loop (every frame)" },
+  "attention/glow": { level: 0, description: "More than one part marked data-nk-glow: the runtime lets --nk-glow-budget (1) glow, so rank them or drop the extra marks" },
 };
 
 export const LEVEL_NAMES: Record<Level, string> = { 0: "not conformant", 1: "themed", 2: "well-behaved", 3: "native" };
@@ -272,6 +274,16 @@ interface FileContext {
   usesComponents: boolean;
   handshakeOff: boolean;
   hasScript: boolean;
+  /** data-nk-glow marks seen across the resource's UI files (tokens 1.4 glow budget). */
+  glowMarks: number;
+}
+
+const GLOW_MARK = /\bdata-nk-glow(?![-\w])/g;
+/** The glow budget: a page whose source marks more than one part as glowing gets one warning. */
+function scanGlow(text: string, base: number, report: Report, ctx: FileContext) {
+  for (const m of text.matchAll(GLOW_MARK)) {
+    if (++ctx.glowMarks === 2) report("attention/glow", base + m.index!, "a second part is marked data-nk-glow; only --nk-glow-budget (1) glows at a time, the focused one first: give each a rank (data-nk-glow=\"2\") or keep one");
+  }
 }
 
 const REMOTE_EXT = /^https?:\/\/[^\s"'`]+\.(woff2?|ttf|otf|eot|css|png|jpe?g|webp|gif|svg|mp3|ogg|wav|mp4|webm|js)(\?[^\s"'`]*)?$/i;
@@ -349,6 +361,7 @@ function scanScript(src: string, base: number, report: Report, ctx: FileContext)
   if (/from\s+["']nuikit-core(\/[\w-]+)?["']|import\(\s*["']nuikit-core|require\(\s*["']nuikit-core/.test(code)) ctx.importsCore = true;
   if (/from\s+["'][^"']*components\/ui\/[^"']+["']/.test(code)) ctx.usesComponents = true;
   scanEscape(code, rep, ctx, ctx.handshakeOff ? "warning" : "error");
+  scanGlow(code, base, report, ctx);
 }
 
 function scanHtml(src: string, report: Report, ctx: FileContext) {
@@ -356,6 +369,7 @@ function scanHtml(src: string, report: Report, ctx: FileContext) {
   if (/<meta[^>]+name=["']nuikit-handshake["'][^>]+content=["']off["']/i.test(markup)) ctx.handshakeOff = true;
   for (const s of styles) scanCss(src.slice(s.start, s.end), s.start, report, ctx);
   for (const s of scripts) scanScript(src.slice(s.start, s.end), s.start, report, ctx);
+  scanGlow(markup, 0, report, ctx);
   // attributes: class, style, fill…
   for (const m of markup.matchAll(/\s([\w:@.-]+)\s*=\s*("([^"]*)"|'([^']*)')/g)) {
     const attr = m[1]!.toLowerCase();
@@ -467,7 +481,7 @@ export function checkResource(root: string, options: CheckOptions = {}): CheckRe
   const uiFiles = options.includeBuilt || sources.length === 0 ? ui.filter((f) => !f.built || !/\.(m?js|cjs)$/.test(f.rel) || options.includeBuilt) : sources;
   const luaFiles = all.filter((f) => /\.lua$/.test(f.rel) && f.rel !== manifest?.file && !SKIP_DIR_IN_PATH.test(f.rel));
 
-  const ctx: FileContext = { tokenRefs: 0, importsCore: false, usesComponents: false, handshakeOff: false, hasScript: false };
+  const ctx: FileContext = { tokenRefs: 0, importsCore: false, usesComponents: false, handshakeOff: false, hasScript: false, glowMarks: 0 };
   // HTML first so the handshake-off meta is known before scripts are graded.
   const ordered = [...uiFiles].sort((a, b) => Number(/\.html?$/.test(b.rel)) - Number(/\.html?$/.test(a.rel)));
   for (const f of ordered) {

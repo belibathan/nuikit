@@ -11,6 +11,7 @@
  *   applyTheme({ primary: "#22c55e" })                           // patch the current theme
  *   setPrefs({ scale: 1.1, reducedMotion: true })                // player accessibility prefs
  */
+import { startGlowBudget } from "./glow";
 import {
   compileTheme,
   IDENTITY_TOKENS,
@@ -48,6 +49,17 @@ export const KEYWORD_ATTRS: readonly (readonly [string, string])[] = [
   ["data-nk-display-style", "nk-display-style"],
   ["data-nk-skew", "nk-skew"],
   ["data-nk-pause", "nk-pause-style"],
+  // tokens 1.4
+  ["data-nk-treatment", "nk-treatment"],
+  ["data-nk-focus", "nk-focus-style"],
+  ["data-nk-hold", "nk-hold-style"],
+  ["data-nk-level", "nk-level-style"],
+  ["data-nk-legibility", "nk-legibility"],
+  ["data-nk-profile", "nk-motion-profile"],
+  ["data-nk-slash", "nk-slash"],
+  ["data-nk-texture-hud", "nk-material-hud-texture"],
+  ["data-nk-texture-menu", "nk-material-menu-texture"],
+  ["data-nk-texture-overlay", "nk-material-overlay-texture"],
 ];
 const DERIVED = new Set(IDENTITY_TOKENS.filter((t) => t.group === "derived").map((t) => t.name));
 let prefs: NuiPrefs = { ...DEFAULT_PREFS };
@@ -79,7 +91,11 @@ export function applyTheme(theme: ThemeInput, target?: HTMLElement, mode?: Theme
   }
   if (typeof document !== "undefined" && compiled.imports.length) loadImports(compiled.imports);
   const vars = paint(el, compiled);
-  if (el === document.documentElement) themeListeners.forEach((l) => l(compiled));
+  if (el === document.documentElement) {
+    // the glow budget (tokens 1.4) follows the theme on the page's root
+    startGlowBudget(compiled.vars["nk-glow-budget"] ?? 1);
+    themeListeners.forEach((l) => l(compiled));
+  }
   return vars;
 }
 
