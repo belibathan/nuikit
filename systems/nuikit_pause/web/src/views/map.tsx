@@ -29,11 +29,22 @@ import { distance, list } from "@/lib/format";
 import { icon } from "@/lib/icons";
 import { cn } from "@/lib/utils";
 
-type Selection = { kind: "place"; place: PausePlace } | { kind: "point"; pick: MapPick } | { kind: "blip"; choice: BlipChoice; waypoint: boolean };
+type Selection = { kind: "place"; place: PausePlace } | { kind: "point"; pick: MapPick; waypoint?: boolean } | { kind: "blip"; choice: BlipChoice; waypoint: boolean };
 const NO_BLIPS: MapBlip[] = [];
 
 const DRAG_PX = 4; // less than this between down and up is a click
 const NO_INFO: MapInfo = { zone: "", street: "", topdown: false, waypoint: false };
+const HIDDEN_KEY = "nuikit_pause:map:hidden";
+
+/** The legend categories this player turned off, kept between opens (and sessions, where CEF keeps storage). */
+function loadHidden(): Set<BlipKind> {
+  try {
+    const v: unknown = JSON.parse(localStorage.getItem(HIDDEN_KEY) ?? "[]");
+    return new Set(Array.isArray(v) ? v.filter((k): k is BlipKind => KINDS.some((x) => x.kind === k)) : []);
+  } catch {
+    return new Set();
+  }
+}
 
 /**
  * The 3D map (docs/pause-3d.md). The game camera hangs over the real world; the UI is the glass on
@@ -50,7 +61,7 @@ export function useMapModel(data: PauseData, open: boolean) {
   const compass = useRef<SVGSVGElement>(null);
   const raw = useNuiState("pause:map:blips", NO_BLIPS);
   const blips = useMemo(() => (Array.isArray(raw) ? raw : []), [raw]);
-  const [hidden, setHidden] = useState<ReadonlySet<BlipKind>>(() => new Set());
+  const [hidden, setHidden] = useState<ReadonlySet<BlipKind>>(loadHidden);
   // a fresh map each time it opens: nothing picked, no search
   useEffect(() => {
     if (!open) return;
@@ -62,6 +73,11 @@ export function useMapModel(data: PauseData, open: boolean) {
       const next = new Set(h);
       if (next.has(k)) next.delete(k);
       else next.add(k);
+      try {
+        localStorage.setItem(HIDDEN_KEY, JSON.stringify([...next]));
+      } catch {
+        // no storage: the choice lasts until the page reloads
+      }
       return next;
     });
   // a marker: one blip sets the waypoint there; a merged group flies in so it comes apart
@@ -103,6 +119,15 @@ export function useMapModel(data: PauseData, open: boolean) {
     const hit = await fetchNui("pause:map:pick", { u, v }).catch(() => null);
     if (hit?.ok) setSelection({ kind: "point", pick: hit });
   };
+  // a double-click on the ground: the waypoint goes straight there, like GTA's map
+  const dropWaypoint = async (u: number, v: number) => {
+    const hit = await fetchNui("pause:map:pick", { u, v }).catch(() => null);
+    if (!hit?.ok || !hit.point) return;
+    setSelection({ kind: "point", pick: hit, waypoint: true });
+    void fetchNui("pause:map:waypoint", { x: hit.point.x, y: hit.point.y }).catch(() => {});
+  };
+  // Find me recentres and keeps following; pressed again (or a drag) lets go
+  const follow = (on: boolean) => void (on ? fetchNui("pause:map:recenter") : fetchNui("pause:map:follow", { on: false })).catch(() => {});
   const choose = (place: PausePlace) => {
     setSelection({ kind: "place", place });
     void fetchNui("pause:map:focus", { id: place.id }).catch(() => {});
@@ -140,6 +165,8 @@ export function useMapModel(data: PauseData, open: boolean) {
     chooseBlip,
     findBlip,
     pick,
+    dropWaypoint,
+    follow,
     pan,
     rotate,
     zoom,
@@ -165,6 +192,7 @@ export function MapStage({ model: m, left }: { model: MapModel; left: string }) 
       else if (k === "e") rotate(0.05, 0);
       else if (k === "+" || k === "=") zoom(-0.2);
       else if (k === "-") zoom(0.25);
+      else if (k === "f") m.follow(!m.info.follow);
       else return;
       e.preventDefault();
     };
@@ -174,12 +202,12 @@ export function MapStage({ model: m, left }: { model: MapModel; left: string }) 
   return (
     <div className="absolute inset-0 overflow-hidden select-none">
       <div className="pause-map-shade pointer-events-none absolute inset-0" aria-hidden />
-      <InputLayer pan={pan} rotate={rotate} zoom={zoom} pick={m.pick} />
+      <InputLayer pan={pan} rotate={rotate} zoom={zoom} pick={m.pick} dropWaypoint={m.dropWaypoint} />
       <Blips blips={m.blips} hidden={m.hidden} selectedId={m.selectedBlip} onChoose={m.chooseBlip} />
       <Pins places={m.places} selectedId={m.selectedId} onChoose={m.choose} compass={m.compass} />
       {/* the open area, right of the sheet: the camera buttons on its edge */}
       <div className="pointer-events-none absolute inset-y-0 right-0 [--nk-edge:1.5rem] [&>*]:pointer-events-auto" style={{ left }}>
-        <Controls topdown={m.info.topdown} zoom={zoom} compass={m.compass} />
+        <Controls topdown={m.info.topdown} following={m.info.follow === true} follow={m.follow} zoom={zoom} compass={m.compass} />
       </div>
     </div>
   );
@@ -191,7 +219,7 @@ export function MapSheetPage({ model: m, onBack }: { model: MapModel; onBack: ()
   return (
     <SheetPage
       title={<TextRoll value={m.info.zone || "Map"} />}
-      description={<TextRoll value={m.info.street || "Drag to move, right-drag to turn, scroll to zoom"} direction="down" />}
+      description={<TextRoll value={m.info.street || "Drag to move, right-drag to turn, double-click to set a waypoint"} direction="down" />}
       onBack={onBack}
       actions={
         <Button variant="outline" size="sm" onClick={() => void fetchNui("pause:gamemap").catch(() => {})}>
@@ -273,11 +301,13 @@ function InputLayer({
   rotate,
   zoom,
   pick,
+  dropWaypoint,
 }: {
   pan: (dx: number, dy: number) => void;
   rotate: (dx: number, dy: number) => void;
   zoom: (delta: number) => void;
   pick: (u: number, v: number) => void;
+  dropWaypoint: (u: number, v: number) => void;
 }) {
   const drag = useRef<{ button: number; x: number; y: number; sx: number; sy: number; moved: boolean } | null>(null);
   return (
@@ -306,6 +336,7 @@ function InputLayer({
         if (d && !d.moved && d.button === 0) pick(e.clientX / window.innerWidth, e.clientY / window.innerHeight);
       }}
       onPointerCancel={() => (drag.current = null)}
+      onDoubleClick={(e) => e.button === 0 && dropWaypoint(e.clientX / window.innerWidth, e.clientY / window.innerHeight)}
       onWheel={(e) => zoom(e.deltaY > 0 ? 0.18 : -0.15)}
     />
   );
@@ -410,7 +441,19 @@ const Pins = memo(function Pins({
   );
 });
 
-function Controls({ topdown, zoom, compass }: { topdown: boolean; zoom: (d: number) => void; compass: RefObject<SVGSVGElement | null> }) {
+function Controls({
+  topdown,
+  following,
+  follow,
+  zoom,
+  compass,
+}: {
+  topdown: boolean;
+  following: boolean;
+  follow: (on: boolean) => void;
+  zoom: (d: number) => void;
+  compass: RefObject<SVGSVGElement | null>;
+}) {
   const btn = (label: string, child: ReactNode, onClick: () => void, pressed?: boolean) => (
     <Button variant={pressed ? "secondary" : "ghost"} size="icon-sm" aria-label={label} title={label} aria-pressed={pressed} onClick={onClick}>
       {child}
@@ -426,7 +469,7 @@ function Controls({ topdown, zoom, compass }: { topdown: boolean; zoom: (d: numb
         {btn("Zoom in", <PlusIcon />, () => zoom(-0.3))}
         {btn("Zoom out", <MinusIcon />, () => zoom(0.4))}
         {btn("Top-down", <LayersIcon />, () => void fetchNui("pause:map:topdown", { on: !topdown }).catch(() => {}), topdown)}
-        {btn("Find me", <LocateFixedIcon />, () => void fetchNui("pause:map:recenter").catch(() => {}))}
+        {btn(following ? "Following you" : "Find me", <LocateFixedIcon />, () => follow(!following), following)}
       </div>
     </div>
   );
@@ -436,7 +479,7 @@ function Controls({ topdown, zoom, compass }: { topdown: boolean; zoom: (d: numb
 function SelectionSection({ selection, hasWaypoint, onClose }: { selection: Selection; hasWaypoint: boolean; onClose: () => void }) {
   const blip = selection.kind === "blip" ? selection.choice : undefined;
   // a blip sets the waypoint when it's clicked
-  const [set, setSet] = useState(selection.kind === "blip" && selection.waypoint);
+  const [set, setSet] = useState(selection.kind !== "place" && selection.waypoint === true);
   const place = selection.kind === "place" ? selection.place : undefined;
   const pick = selection.kind === "point" ? selection.pick : undefined;
   const Icon = place ? icon(place.icon) : blip ? blip.look.icon : MapPinIcon;

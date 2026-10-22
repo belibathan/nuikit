@@ -97,6 +97,8 @@ export interface MapInfo {
   street: string;
   topdown: boolean;
   waypoint: boolean;
+  /** the camera follows the player (Find me) */
+  follow?: boolean;
 }
 
 export interface MapPick {
@@ -145,6 +147,7 @@ declare module "nuikit-core" {
     "pause:map:pick": { req: { u: number; v: number }; res: MapPick };
     "pause:map:focus": With<{ id: string }>;
     "pause:map:recenter": Ok;
+    "pause:map:follow": With<{ on: boolean }>;
     "pause:map:fly": With<{ x: number; y: number }>;
     "pause:map:topdown": With<{ on: boolean }>;
     "pause:map:waypoint": With<{ x: number; y: number } | { clear: true }>;

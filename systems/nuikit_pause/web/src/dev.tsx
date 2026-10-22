@@ -216,6 +216,16 @@ const mocks = defineMocks({
       sendMap();
       return ok;
     },
+    "pause:map:recenter": () => {
+      mapInfo = { ...mapInfo, follow: true };
+      sendMap();
+      return ok;
+    },
+    "pause:map:follow": ({ on }: { on: boolean }) => {
+      mapInfo = { ...mapInfo, follow: on };
+      sendMap();
+      return ok;
+    },
   },
 });
 

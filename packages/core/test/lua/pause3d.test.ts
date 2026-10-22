@@ -277,6 +277,34 @@ describe("systems/nuikit_pause: the bigger menu", () => {
     expect(await count()).toBe(base + 2);
   });
 
+  it("Find me follows the player until a drag or a fly; Config.map.follow = false only recentres", async () => {
+    client = await createClient();
+    const pause = await client.start("nuikit_pause", { before: natives, scripts });
+    await pause.run(press);
+    await pause.call("pause:view", { view: "map" });
+    expect(await pause.run(`return Map3D.isFollowing()`)).toBe(false);
+    await pause.call("pause:map:recenter");
+    expect(await pause.run(`return Map3D.isFollowing()`)).toBe(true);
+    const goal = await pause.run<number[]>(`
+      function GetEntityCoords() return vec3(400.0, 500.0, 40.0) end
+      Map3D.track()
+      local _, g = Map3D.state()
+      return { g.x, g.y }`);
+    expect(goal).toEqual([400, 500]);
+    await pause.call("pause:map:pan", { dx: 0.1, dy: 0 });
+    expect(await pause.run(`return Map3D.isFollowing()`)).toBe(false);
+    await pause.call("pause:map:recenter");
+    await pause.call("pause:map:fly", { x: 0, y: 0 });
+    expect(await pause.run(`return Map3D.isFollowing()`)).toBe(false);
+    await pause.call("pause:map:follow", { on: true });
+    expect(await pause.run(`return Map3D.isFollowing()`)).toBe(true);
+    await pause.call("pause:map:follow", { on: false });
+    expect(await pause.run(`return Map3D.isFollowing()`)).toBe(false);
+    await pause.run(`Config.map.follow = false`);
+    await pause.call("pause:map:recenter");
+    expect(await pause.run(`return Map3D.isFollowing()`)).toBe(false);
+  });
+
   it("sends every blip on GTA's big map while the map is open, and their positions with the pins", async () => {
     client = await createClient();
     const pause = await client.start("nuikit_pause", { before: natives, scripts });

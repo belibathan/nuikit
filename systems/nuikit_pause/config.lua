@@ -44,6 +44,8 @@ Config = {
     focusHeight = 350.0,     -- after picking a place or recentering
     startPitch = -60.0,      -- -89 is straight down
     startAtWaypoint = true,  -- open above the waypoint when one is set
+    follow = true,           -- Find me keeps following the player until you drag (false: only recentre)
+    followOnOpen = false,    -- open already following the player (when not opening at the waypoint)
     hidePeds = true,         -- hide crowds, traffic and players while looking (this player only)
     timecycle = '',          -- optional timecycle modifier while the map is open ('' = none)
     pinsHz = 0,              -- cap marker updates per second while the camera moves (0 = every frame)
