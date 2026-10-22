@@ -97,11 +97,15 @@ export default function App() {
   return (
     // A floating edge sheet on the left, as tall as the meter (registry edge-sheet): it slides in
     // on openMeter and back out, faster, on hide; its rows rise in after it. Drawn without focus.
+    // It sits from 34% down, where the stock meter was (centred left): clear of GTA's help text and
+    // anything in the top-left corner. Override pages get no screen zones (nuikit:zones goes to
+    // nuikit.lua pages only), so this is a fixed place, not useClearOf.
     <EdgeSheet
       open={open}
       side="left"
       width="18rem"
       fit
+      className="top-[34vh]"
       title="Taxi meter"
       actions={
         <button
