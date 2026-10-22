@@ -44,6 +44,9 @@ Config = {
     focusHeight = 350.0,     -- after picking a place or recentering
     startPitch = -60.0,      -- -89 is straight down
     startAtWaypoint = true,  -- open above the waypoint when one is set
+    key = '',                -- default key for 'Open the map' (players rebind it in FiveM's settings; '' = none)
+    takeP = false,           -- P opens this map instead of GTA's pause map (full replacement; GTA's stays one
+                             -- press away on the map page)
     follow = true,           -- Find me keeps following the player until you drag (false: only recentre)
     followOnOpen = false,    -- open already following the player (when not opening at the waypoint)
     hidePeds = true,         -- hide crowds, traffic and players while looking (this player only)

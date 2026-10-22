@@ -68,18 +68,22 @@ export function useMapModel(data: PauseData, open: boolean) {
     setSelection(null);
     setQuery("");
   }, [open]);
+  const keep = (next: Set<BlipKind>) => {
+    try {
+      localStorage.setItem(HIDDEN_KEY, JSON.stringify([...next]));
+    } catch {
+      // no storage: the choice lasts until the page reloads
+    }
+    return next;
+  };
   const toggle = (k: BlipKind) =>
     setHidden((h) => {
       const next = new Set(h);
       if (next.has(k)) next.delete(k);
       else next.add(k);
-      try {
-        localStorage.setItem(HIDDEN_KEY, JSON.stringify([...next]));
-      } catch {
-        // no storage: the choice lasts until the page reloads
-      }
-      return next;
+      return keep(next);
     });
+  const showAll = () => setHidden(keep(new Set()));
   // a marker: one blip sets the waypoint there; a merged group flies in so it comes apart
   const chooseBlip = (c: BlipChoice) => {
     if (c.count > 1) {
@@ -146,11 +150,13 @@ export function useMapModel(data: PauseData, open: boolean) {
   const selectedId = selection?.kind === "place" ? selection.place.id : undefined;
   const selectedBlip = selection?.kind === "blip" ? selection.choice.blip.id : undefined;
   return {
+    takeP: data?.takeP === true,
     info,
     places,
     blips,
     hidden,
     toggle,
+    showAll,
     legend,
     blipHits,
     shown,
@@ -225,7 +231,8 @@ export function MapSheetPage({ model: m, onBack }: { model: MapModel; onBack: ()
         <Button variant="outline" size="sm" onClick={() => void fetchNui("pause:gamemap").catch(() => {})}>
           <MapIcon />
           Game map
-          <Kbd className="ml-1">P</Kbd>
+          {/* P is GTA's map key unless the server gave it to this map */}
+          {!m.takeP && <Kbd className="ml-1">P</Kbd>}
         </Button>
       }
     >
@@ -281,7 +288,18 @@ export function MapSheetPage({ model: m, onBack }: { model: MapModel; onBack: ()
       )}
 
       {!searching && m.legend.length > 0 && (
-        <SheetSection label="Show on the map" meta={m.blips.length}>
+        <SheetSection
+          label="Show on the map"
+          meta={
+            m.hidden.size > 0 ? (
+              <Button variant="ghost" size="xs" className="-my-1 font-sans" onClick={m.showAll}>
+                Show all
+              </Button>
+            ) : (
+              m.blips.length
+            )
+          }
+        >
           <div className="flex flex-col divide-y divide-border">
             {m.legend.map((k, i) => (
               <MenuRow key={k.kind} icon={<k.icon />} checked={!m.hidden.has(k.kind)} onCheckedChange={() => m.toggle(k.kind)} meta={String(k.count)} className={cn("min-h-11", rise(i).className)} style={rise(i).style}>

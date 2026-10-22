@@ -277,6 +277,25 @@ describe("systems/nuikit_pause: the bigger menu", () => {
     expect(await count()).toBe(base + 2);
   });
 
+  it("opens straight on the map (export, key mapping, P with Config.map.takeP); P stays GTA's by default", async () => {
+    client = await createClient();
+    const pause = await client.start("nuikit_pause", { before: natives + `\n  EXPORTS = {}\n  exports = setmetatable({}, { __call = function(_, name, fn) EXPORTS[name] = fn end })\n  P = false\n  local justPressed = IsDisabledControlJustPressed\n  function IsDisabledControlJustPressed(g, c) if c == 199 then return P end return justPressed(g, c) end`, scripts });
+    // P untouched by default
+    await pause.run(`P = true Pause.tick() P = false`);
+    expect(await pause.run(`return Pause.isOpen()`)).toBe(false);
+    // takeP: P opens the menu on the map, with the map's camera running
+    await pause.run(`Config.map.takeP = true P = true Pause.tick() P = false`);
+    expect(await pause.run(`return Pause.isOpen()`)).toBe(true);
+    expect(pause.surfaces().pause.data.view).toBe("map");
+    expect(pause.surfaces().pause.data.takeP).toBe(true);
+    expect(await pause.run(`return Map3D.isActive()`)).toBe(true);
+    await pause.run(`Pause.close(true)`);
+    // the export does the same without takeP
+    await pause.run(`Config.map.takeP = false NOW = NOW + 1000`);
+    expect(await pause.run(`return EXPORTS.openMap()`)).toBe(true);
+    expect(await pause.run(`return Map3D.isActive()`)).toBe(true);
+  });
+
   it("Find me follows the player until a drag or a fly; Config.map.follow = false only recentres", async () => {
     client = await createClient();
     const pause = await client.start("nuikit_pause", { before: natives, scripts });
