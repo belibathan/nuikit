@@ -3,7 +3,7 @@ import { afterEach, describe, expect, it } from "vitest";
 import { createClient } from "./harness";
 
 const PAUSE = fileURLToPath(new URL("../../../../systems/nuikit_pause/", import.meta.url));
-const scripts = [PAUSE + "config.lua", "bridge.lua", "camera.lua", "controls.lua", PAUSE + "client/camera.lua", PAUSE + "client/map3d.lua", PAUSE + "client/focus.lua", PAUSE + "client/keys.lua", PAUSE + "client/main.lua", PAUSE + "client/inventory.lua"];
+const scripts = [PAUSE + "config.lua", "bridge.lua", "camera.lua", "controls.lua", PAUSE + "client/camera.lua", PAUSE + "client/map3d.lua", PAUSE + "client/focus.lua", PAUSE + "client/keys.lua", PAUSE + "client/settings.lua", PAUSE + "client/main.lua", PAUSE + "client/inventory.lua"];
 let client: Awaited<ReturnType<typeof createClient>>;
 afterEach(() => client?.close());
 
@@ -275,6 +275,37 @@ describe("systems/nuikit_pause: the bigger menu", () => {
     expect(await count()).toBe(base + 1); // capped: 48 ms since the last
     await pause.run(`Map3D.publish(50102, 1)`);
     expect(await count()).toBe(base + 2);
+  });
+
+  it("settings: rows and presets, prefs through NUI.prefs, the rest saved per player and published as states", async () => {
+    client = await createClient();
+    const pause = await client.start("nuikit_pause", { before: natives, scripts });
+    await pause.run(press);
+    await pause.call("pause:view", { view: "settings" });
+    const snap = pause.messages.filter((m) => m.action === "pause:settings").at(-1)!.data as { rows: { key: string }[]; presets: { id: string }[]; values: Record<string, unknown> };
+    expect(snap.rows.map((r) => r.key)).toEqual(["textSize", "contrast", "reducedMotion", "streamer", "hud"]);
+    expect(snap.presets.map((p) => p.id)).toEqual(["standard", "streamer", "performance", "cinema"]);
+    expect(snap.values.streamer).toBe(false);
+    // a pref row goes to NUI.prefs; an own row is saved and published
+    let r = await pause.call<{ values: Record<string, unknown> }>("pause:settings:set", { patch: { textSize: 1.1, streamer: true } });
+    expect(r.values.textSize).toBe(1.1);
+    expect(r.values.streamer).toBe(true);
+    expect(await pause.run(`return NUI.prefs.get().scale`)).toBe(1.1);
+    expect(await pause.run(`return NUI.getState('streamer')`)).toBe(true);
+    expect(JSON.parse(await pause.run<string>(`return GetResourceKvpString('nuikit_pause:settings')`))).toEqual({ version: 1, values: { streamer: true, hud: true } });
+    // a wrong type is refused; a preset is a patch; reset goes back to the defaults
+    r = await pause.call("pause:settings:set", { patch: { hud: "no" } });
+    expect(r.values.hud).toBe(true);
+    r = await pause.call("pause:settings:preset", { id: "cinema" });
+    expect(r.values.hud).toBe(false);
+    expect(await pause.run(`return NUI.getState('hud:hidden')`)).toBe(true);
+    r = await pause.call("pause:settings:reset", {});
+    expect(r.values).toMatchObject({ textSize: 1, contrast: false, reducedMotion: false, streamer: false, hud: true });
+    // Home hides names and money in streamer mode (the payload carries it)
+    await pause.call("pause:settings:set", { patch: { streamer: true } });
+    await pause.run(`Pause.close(true) NOW = NOW + 1000`);
+    await pause.run(press);
+    expect(pause.surfaces().pause.data.streamer).toBe(true);
   });
 
   it("opens straight on the map (export, key mapping, P with Config.map.takeP); P stays GTA's by default", async () => {

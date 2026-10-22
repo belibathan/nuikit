@@ -36,7 +36,16 @@ Config = {
   --   keys: Key bindings shows the player's current keys, read live from the game
   --   info: the Info pages below
   --   preview: your character stands in the middle of the Home screen (on foot only)
-  views = { map = true, keys = true, info = true, preview = true },
+  --   settings: Settings opens nuikit's page (text size, contrast, motion, streamer mode, HUD; GTA's own
+  --     settings one press away); false opens GTA's settings directly
+  views = { map = true, keys = true, info = true, preview = true, settings = true },
+
+  -- The Settings page (client/settings.lua). Saved per player. Leave out what you don't change.
+  settings = {
+    -- hide = { 'streamer' },          -- rows to leave out
+    -- defaults = { hud = true },      -- starting values for new players
+    -- presets = { { id = 'standard', label = 'Standard', patch = { textSize = 1, hud = true } } },
+  },
 
   -- The 3D map's camera. Heights are metres above the ground.
   map = {
