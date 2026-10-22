@@ -513,15 +513,16 @@ function SelectionSection({ selection, hasWaypoint, onClose }: { selection: Sele
             <Stat size="sm" label="Area" value={pick.zone || "—"} />
           </div>
         )}
-        <div className="flex items-center gap-2">
+        {/* wraps rather than squeezing a button (a skewed or wide identity), and leaves the skewed slab room */}
+        <div className="flex flex-wrap items-center justify-end gap-2 pr-1">
           {hasWaypoint && (
-            <Button variant="ghost" size="sm" onClick={() => void fetchNui("pause:map:waypoint", { clear: true }).catch(() => {})}>
+            <Button variant="ghost" size="sm" className="mr-auto shrink-0" onClick={() => void fetchNui("pause:map:waypoint", { clear: true }).catch(() => {})}>
               Clear waypoint
             </Button>
           )}
           <Button
             size="sm"
-            className="ml-auto"
+            className="shrink-0"
             disabled={!target}
             onClick={() => {
               if (!target) return;

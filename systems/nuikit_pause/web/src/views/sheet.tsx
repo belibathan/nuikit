@@ -81,22 +81,27 @@ export function SheetPage({
     <div className="flex h-full min-h-0 justify-end">
       <div className="flex h-full min-h-0 w-full max-w-[28rem] flex-col">
       <header className="flex flex-col gap-4 pt-12 pr-12 pb-6 pl-6">
-        <Button ref={back} variant="ghost" size="sm" className="-ml-3 w-fit text-muted-foreground" onClick={onBack}>
-          <ChevronLeftIcon />
-          Back
-          <Kbd className="ml-1">Esc</Kbd>
-        </Button>
-        <div className="flex items-end gap-3">
-          <div className="flex min-w-0 flex-1 flex-col gap-1">
-            <SheetTitle asChild>
-              <h1 className="pause-page-title nk-title truncate">{title}</h1>
-            </SheetTitle>
-            {description ? <p className="nk-label truncate text-muted-foreground">{description}</p> : null}
-          </div>
-          {actions}
+        {/* Back and the page's actions share the top row, so the title below gets the column's full width
+            (a long name in an italic display face never runs under a button) */}
+        <div className="flex items-center justify-between gap-3">
+          <Button ref={back} variant="ghost" size="sm" className="-ml-3 w-fit shrink-0 text-muted-foreground" onClick={onBack}>
+            <ChevronLeftIcon />
+            Back
+            <Kbd className="ml-1">Esc</Kbd>
+          </Button>
+          {actions ? <div className="flex shrink-0 items-center gap-2">{actions}</div> : null}
+        </div>
+        <div className="flex min-w-0 flex-col gap-1">
+          <SheetTitle asChild>
+            {/* pr: room for an italic face's last glyph */}
+            <h1 className="pause-page-title nk-title truncate pr-[0.2em]">{title}</h1>
+          </SheetTitle>
+          {description ? <p className="nk-label truncate text-muted-foreground">{description}</p> : null}
         </div>
       </header>
-      <ScrollArea className="mr-12 ml-6 min-h-0 flex-1 border-t border-border">
+      {/* Radix wraps the content in a display: table box that grows with its widest child; block keeps
+          every row (search, hairlines, buttons) inside the column */}
+      <ScrollArea className="mr-12 ml-6 min-h-0 flex-1 border-t border-border [&>[data-slot=scroll-area-viewport]>div]:!block">
         {/* pr-4: a gutter for the scrollbar, so it never sits over counts or row ends */}
           <div className="flex flex-col py-6 pr-4">{children}</div>
       </ScrollArea>
