@@ -206,6 +206,39 @@ describe("systems/nuikit_hud", () => {
     expect(hud.surfaces().hud.data.situations).toMatchObject({ retract: false, rest: ["map", "vehicle"] });
   });
 
+  it("styles: server defaults and allow-lists, the player's picks previewed, saved and reset", async () => {
+    client = await createClient();
+    const hud = await client.start("nuikit_hud", { before: natives + ` PD = {} function DeleteResourceKvp(k) DELETED = k end`, scripts: HUD_SCRIPTS });
+    await hud.run(`Config.styles.allow = { ['map.size'] = { 15, 18 } } Config.vehicle.gauge = 'bar' Minimap.options = function() return { shape = 'circle', size = 15 } end`); // the stub's preset
+    client.event("QBCore:Player:SetPlayerData", { citizenid: "ABC", charinfo: { firstname: "Niko" }, money: { cash: 5, bank: 0 }, metadata: {} });
+    // defaults equal today's settings
+    expect(hud.surfaces().hud.data).toMatchObject({ vehicle: { gauge: "bar" }, wallet: { cash: "always", bank: "change", job: true }, halo: true, mapColumn: "auto", compass: { ring: true } });
+    expect(hud.surfaces().hud.data.styles).toMatchObject({ "vitals.display": "icons", "vitals.voice": "beside", "column.align": "center" });
+
+    hud.commands.get("hud")!(0, ["edit"]);
+    await hud.run(`return 1`);
+    const size = hud.surfaces()["hud-edit"].data.styles.find((s: any) => s.key === "map.size");
+    expect(size).toMatchObject({ options: [15, 18], value: 15, default: 15 });
+
+    // a draft shows at once; junk and what the server doesn't allow are dropped
+    await hud.call("hud:styles:preview", { styles: { "vitals.display": "pill", "column.money": false, "map.size": 12, "vehicle.gauge": "nope" } });
+    expect(hud.surfaces().hud.data).toMatchObject({ styles: { "vitals.display": "pill" }, wallet: { cash: false, bank: false, job: true }, vehicle: { gauge: "bar" } });
+    expect(hud.surfaces().hud.data.styles["map.size"]).toBeUndefined(); // 12 isn't allowed: the preset's
+    await hud.call("hud:styles:preview", {}); // dropped (Escape, Cancel)
+    expect(hud.surfaces().hud.data.styles["vitals.display"]).toBe("icons");
+
+    expect(await hud.call("hud:styles:save", { styles: { "vehicle.gauge": "digital", "map.size": 18 } })).toEqual({ ok: true });
+    expect(JSON.parse(hud.kvp.get("nuikit_hud:styles")!)).toEqual({ "vehicle.gauge": "digital", "map.size": 18 });
+    expect(hud.surfaces().hud.data.vehicle.gauge).toBe("digital");
+    expect(await hud.run(`Layout.playerStyles = nil Layout.loadStyles() return Layout.styles()['map.size']`)).toBe(18);
+    // the server narrows what's allowed later: the old pick falls back to the default
+    expect(await hud.run(`Config.styles.allow['vehicle.gauge'] = { 'arc' } return Layout.styles()['vehicle.gauge']`)).toBe("bar");
+    await hud.call("hud:styles:reset");
+    expect(await hud.run(`return DELETED`)).toBe("nuikit_hud:styles");
+    // players = false: the defaults for everyone
+    expect(await hud.run(`Config.styles.players = false return Layout.saveStyles({ ['vitals.display'] = 'pill' }) and Layout.styles()['vitals.display']`)).toBe("icons");
+  });
+
   it("never takes focus, so it can't block other UIs", async () => {
     client = await createClient();
     const hud = await client.start("nuikit_hud", { before: natives, scripts: HUD_SCRIPTS });

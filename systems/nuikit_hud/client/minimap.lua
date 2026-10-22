@@ -53,9 +53,14 @@ function Minimap.options()
   for _, k in ipairs({ 'shape', 'size', 'band', 'anchor' }) do
     if cfg[k] ~= nil then o[k] = cfg[k] end
   end
+  -- the player's map style (/hud edit, Style; Config.styles), over the server's
+  local st = Layout.styles and Layout.styles() or {}
+  if st['map.shape'] ~= nil then o.shape = st['map.shape'] end
+  if tonumber(st['map.size']) then o.size = tonumber(st['map.size']) end
+  o.compass = st['map.compass'] ~= false -- its default is Config.minimap.compass
   o.shape = o.shape == 'circle' and 'circle' or 'square'
   -- the heading reads above the ring only on a round compact map
-  if o.shape ~= 'circle' or cfg.compass == false then o.headroom = 0 end
+  if o.shape ~= 'circle' or not o.compass then o.headroom = 0 end
   return o
 end
 
@@ -284,7 +289,7 @@ function Minimap.apply()
   -- the nuikit resource puts GTA's radar back if this one stops (it can wait for the re-read; a
   -- stopping resource can't, so its own restore never took: 0.7.0 test, F3)
   TriggerEvent('nuikit:minimap:placed')
-  if cfg.compass ~= false then SetBlipAlpha(GetNorthRadarBlip(), 0) end
+  SetBlipAlpha(GetNorthRadarBlip(), o.compass and 0 or 255)
   -- a hidden radar (on foot with radar = 'vehicle') may not re-read: do it again when it shows
   stale = IsRadarHidden()
   reread()

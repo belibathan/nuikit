@@ -38,6 +38,29 @@ Config = {
   },
   playerLayout = true,
 
+  -- Styles: how each part draws. The values here are the server's defaults (nil keeps the setting
+  -- they come from: the map's shape and size from the layout preset, the gauge from vehicle.gauge,
+  -- halo / compass / column from minimap). Players pick their own in /hud edit, Style (kept on their
+  -- machine), within `allow` (nil: every option; players = false: none, the defaults for everyone).
+  styles = {
+    players = true,
+    vitals = {
+      display = 'icons', -- 'icons' (pops on change), 'value' (icon + value), 'pill' (icon, label,
+                         -- value), 'expand' (icons that open label and value on a change, then settle)
+      voice = 'beside',  -- 'beside' (the voice chip never hides the vitals) or 'collapse' (they tuck
+                         -- behind it while talking)
+    },
+    vehicle = { gauge = nil },                 -- 'theme', 'arc', 'bar', 'digital'
+    map = { shape = nil, size = nil,           -- 'circle' / 'square'; 12, 15, 18 (rem)
+            halo = nil, compass = nil,         -- true / false
+            column = nil },                    -- 'auto', 'below', 'above'
+    column = { street = true, area = true, money = true, job = true, align = 'center' }, -- align: 'center', 'start', 'end'
+    allow = {
+      -- ['map.size'] = { 15, 18 },
+      -- ['vitals.display'] = { 'icons', 'expand' },
+    },
+  },
+
   -- Named zones (Foundation 2): status, map, vitals, vehicle (the HUD's parts, measured on screen
   -- once it shows) and prompts, interaction, toasts (boxes for the resources that draw them).
   -- exports.nuikit_hud:zones() returns them all. A box here replaces a default: x, y from the safe
