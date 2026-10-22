@@ -291,6 +291,8 @@ var NuikitTheme = (() => {
     id("world-foreground", "color", "Text and icons drawn straight on the game, no panel (death text, unplated HUD values, nk-on-game). Light in every theme, light or dark", "rgb(255, 255, 255)"),
     id("world-foreground-muted", "color", "Secondary text on the game", "world-foreground at 80% (3:1 on a mid-grey frame)"),
     id("world-shadow", "shadow", "Text-shadow that keeps world-foreground legible over any frame", "0 1px 2px rgba(0, 0, 0, 0.65), 0 0 0.5rem rgba(0, 0, 0, 0.35)"),
+    id("world-success", "color", "A gain drawn on the game or the HUD plate (slab deltas: +2, $250). Reads on the dark plate in every theme, light or dark", "success, OKLCH lightness at least 0.7", { since: "1.3" }),
+    id("world-destructive", "color", "A loss drawn on the game or the HUD plate (slab deltas: \u22121)", "destructive, OKLCH lightness at least 0.7", { since: "1.3" }),
     id("font-display", "fontFamily", "Headings and big moments (titles, timers, the balance)", "font-sans; Inter Tight when font-sans is the default Inter"),
     id("font-numeric", "fontFamily", "Every number on a gauge, money or timer (always tabular)", "font-sans"),
     id("nk-type-ratio", "number", "Step between type sizes: 1.125 calm \u2026 1.333 dramatic", "1.2", { range: [1, 1.6] }),
@@ -709,6 +711,12 @@ var NuikitTheme = (() => {
     if (vars["world-foreground"] === void 0) vars["world-foreground"] = formatRgba(world);
     if (vars["world-foreground-muted"] === void 0) vars["world-foreground-muted"] = formatRgba([world[0], world[1], world[2], 0.8]);
     if (vars["world-shadow"] === void 0) vars["world-shadow"] = WORLD_SHADOW;
+    for (const [world2, status] of [["world-success", "success"], ["world-destructive", "destructive"]]) {
+      const c2 = vars[world2] === void 0 ? rgba(vars, status) : null;
+      if (!c2) continue;
+      const o = rgbToOklch(c2);
+      vars[world2] = fmtOklch(Math.max(o.l, 0.7), o.c, o.h);
+    }
     if (vars["hud-foreground"] === void 0) vars["hud-foreground"] = vars["world-foreground"];
     if (vars.scrim === void 0) vars.scrim = "rgb(0, 0, 0)";
     const used = /* @__PURE__ */ new Set();

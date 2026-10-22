@@ -327,6 +327,18 @@
           "description": "Text-shadow that keeps world-foreground legible over any frame",
           "$comment": "tokens 1.1"
         },
+        "world-success": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "A gain drawn on the game or the HUD plate (slab deltas: +2, $250). Reads on the dark plate in every theme, light or dark",
+          "$comment": "tokens 1.3"
+        },
+        "world-destructive": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "A loss drawn on the game or the HUD plate (slab deltas: −1)",
+          "$comment": "tokens 1.3"
+        },
         "font-display": {
           "type": "string",
           "description": "Headings and big moments (titles, timers, the balance)",
