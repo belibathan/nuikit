@@ -1,0 +1,19 @@
+{
+ "1920x1080": {
+  "posts": [
+   {
+    "step": "escape",
+    "name": "closeInterface",
+    "body": "{}",
+    "ms": 15
+   },
+   {
+    "step": "escape-atm",
+    "name": "closeInterface",
+    "body": "{}",
+    "ms": 9
+   }
+  ],
+  "themeRequests": 4
+ }
+}

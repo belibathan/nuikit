@@ -294,6 +294,8 @@ function AtmView({ open, accounts, active, cash, onSelect, onAction, request, fo
       open={open}
       side={near}
       width="30rem"
+      // as tall as the ATM's content (one account, its actions, a few recent rows), like the context menu
+      fit
       page={request ? request.action : "atm"}
       onBack={request ? onBack : undefined}
       actions={!request && <span className="nk-label">{t("nuikit_atm")}</span>}

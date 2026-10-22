@@ -78,7 +78,8 @@ try {
       const req = route.request();
       const u = new URL(req.url());
       const name = u.pathname.slice(1);
-      if (u.hostname === resource) {
+      // URL hosts are lower case: Renewed-Banking posts to https://renewed-banking/
+      if (u.hostname === resource.toLowerCase()) {
         log.push({ step, name, body: req.postData() ?? null, ms: Date.now() - mark });
         const reply = replies[name] ? await replies[name](req.postData()) : 1;
         if (reply === undefined) return route.abort("failed"); // "no reply at all"

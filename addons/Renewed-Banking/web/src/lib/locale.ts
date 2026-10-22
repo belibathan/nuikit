@@ -67,8 +67,23 @@ export function setLocale(translations: Record<string, unknown> | undefined, cur
   listeners.forEach((l) => l());
 }
 
+/**
+ * Renewed-Banking's stock English, reworded in the kit's voice (sentence case, short, no trailing dots).
+ * Only an exact stock string is replaced, so a server's own translation always shows as written.
+ */
+const REWORD: Record<string, string> = {
+  "Account Search...": "Search accounts",
+  "Transaction Search (Message, TransID, Receiver)...": "Search transactions",
+  "Select any Account": "Select an account",
+  "Export Transaction Data": "Export transactions",
+  "Account Status: Frozen": "Account frozen",
+  "Business or Citizen ID": "Account or citizen ID",
+  "A hour ago": "An hour ago",
+};
+
 export function t(key: string, n?: number | string): string {
-  const s = strings[key] ?? FALLBACK[key] ?? key;
+  const raw = strings[key] ?? FALLBACK[key] ?? key;
+  const s = REWORD[raw] ?? raw;
   return n === undefined ? s : s.replace("%s", String(n));
 }
 
