@@ -1,0 +1,8 @@
+{
+  "lua": [],
+  "components": [
+    "button",
+    "menu-row",
+    "text-roll"
+  ]
+}
