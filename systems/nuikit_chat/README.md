@@ -34,6 +34,8 @@ The chat page belongs to the `chat` resource, so nuikit can't build it. The `cha
 - `theme/style.css` styles chat's DOM (`.chat-window`, `.msg`, `.chat-input`, `.suggestions`) using only `--nk-*` variables, with the stock neutral values built in.
 - `theme/theme.js` fetches `https://cfx-nui-nuikit/theme.css`, takes its `:root` and `.dark` variables, converts every colour to `rgb()` (FiveM's Chromium 103 can't read `oklch()`) and sets them as `--nk-*` on the page. Edit `theme.css` and restart `nuikit_chat` (or reconnect) to see a new theme.
 
+theme.js also gives the input the kit's smooth caret and typing (the caret glides and breathes in the primary, typed characters ease in). It only draws over chat's own textarea, so keys, history and sending are chat's; reduced motion (the OS setting or the player's nuikit pref) leaves the plain field.
+
 No build step: edit the two files directly. The conversion is tested against nuikit-core in `packages/core/test/chat-theme.test.ts`.
 
 ## License

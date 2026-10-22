@@ -17,10 +17,20 @@ const chat = (() => {
     themeDecls(css: string): Record<string, string>;
     varsDecls(vars: Record<string, string>): Record<string, string>;
     importUrls(css: string): string[];
+    inserted(before: string, after: string): [number, number] | null;
   };
 })();
 
 describe("nuikit_chat theme.js", () => {
+  it("finds what was typed for the smooth caret (a keystroke, a paste, a deletion, a recall)", () => {
+    expect(chat.inserted("/car ad", "/car add")).toEqual([7, 8]);
+    expect(chat.inserted("/car", "/c ar")).toEqual([2, 3]);
+    expect(chat.inserted("", "/car adder")).toEqual([0, 10]);
+    expect(chat.inserted("/car adder", "/car adde")).toBeNull();
+    expect(chat.inserted("same", "same")).toBeNull();
+    expect(chat.inserted("aaa", "aaaa")).toEqual([3, 4]);
+  });
+
   it("converts colours exactly like nuikit-core", () => {
     const colours = [
       "oklch(0.145 0 0)",

@@ -334,3 +334,45 @@
   font-weight: 500;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
 }
+
+/* ── smooth caret and typing (theme.js smoothField: the kit's smooth-input) ─────────────────────── */
+
+/* while the mirror draws, the field's own glyphs and caret are transparent (selection stays its own) */
+.chat-input textarea.nk-smooth {
+  caret-color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+.chat-input textarea.nk-smooth::placeholder {
+  -webkit-text-fill-color: var(--nk-muted-foreground);
+}
+.nk-smooth-mirror {
+  position: absolute;
+  box-sizing: border-box;
+  overflow: hidden;
+  pointer-events: none;
+  border-style: solid;
+  border-color: transparent;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+.nk-smooth-content {
+  position: relative;
+}
+.nk-smooth-typed {
+  display: inline-block;
+  white-space: pre-wrap;
+}
+.nk-smooth-marker {
+  display: inline-block;
+  width: 0;
+  height: 1.15em;
+  vertical-align: -0.2em;
+}
+.nk-smooth-caret {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: calc(var(--nk-px) * 2);
+  border-radius: 9999px;
+  background: var(--nk-primary);
+}
