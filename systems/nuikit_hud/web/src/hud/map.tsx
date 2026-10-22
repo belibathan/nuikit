@@ -50,10 +50,12 @@ export interface MapRingProps {
   compass?: boolean;
   location?: HudLocation | null;
   units: "mph" | "kmh";
+  /** a soft plate behind a round ring (Config.minimap.halo) */
+  halo?: boolean;
 }
 
 /** The ring, the compass on it, the heading above it and the waypoint tag. */
-export function MapRing({ frame, start, compass = true, location, units }: MapRingProps) {
+export function MapRing({ frame, start, compass = true, location, units, halo = true }: MapRingProps) {
   const W = window.innerWidth;
   const H = window.innerHeight;
   const size = frame.w * W;
@@ -119,6 +121,7 @@ export function MapRing({ frame, start, compass = true, location, units }: MapRi
       className="hud-map"
       style={{ left: `${frame.x * 100}%`, top: `${frame.y * 100}%`, width: size, height: size }}
     >
+      {halo && frame.shape === "circle" && <div className="hud-map-plate" style={{ "--hud-ring-r": `${(r + band / 2).toFixed(1)}px` } as CSSProperties} aria-hidden />}
       <svg className="hud-map-svg" width={size} height={size} viewBox={`0 0 ${size} ${size}`} aria-hidden>
         <circle className="hud-map-halo" cx={c} cy={c} r={r} strokeWidth={band + 3} />
         <circle className="hud-map-ring" cx={c} cy={c} r={r} strokeWidth={band} />

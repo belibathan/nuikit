@@ -21,5 +21,6 @@ Only money, accounts, publishing and secrets go to the owner.
 | 12 | HUD part placement (`nuikit_hud` `Config.parts`) | The preset's (compact: map top-right, location + wallet under it, vitals bottom-left, ammo over the cluster bottom-right) | A corner, `'map'`, `false` or `{ at, order }` per part |
 | 13 | GPS route on the compact ring (changes the default look on purpose; A4, `nuikit_hud` `Config.minimap.routeClip`) | `'box'`: a square radar box (the route reaches past the ring only at its corners; the map is squeezed ~29%) | `'mask'` for GTA's aspect (unsqueezed, the route overhangs), or `aspect` to force one |
 | 14 | Compact map size (changes the default look on purpose; `nuikit_hud` `Config.minimap.size`) | 15rem | `size = 12` (the 0.7 ring) or any rem |
+| 15 | Map halo (`nuikit_hud` `Config.minimap.halo`) | On (an experiment): the speedometer's plate behind the round ring | `halo = false`; strength from `--nk-hud-opacity` (shared), `--nk-map-halo-size` / `--nk-map-halo-opacity` |
 
 Implementation of rows 2, 5, 7, 8 and 10 goes to the lane that owns the files (`dispatch.md`).

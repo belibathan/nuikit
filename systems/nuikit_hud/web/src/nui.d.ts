@@ -160,6 +160,8 @@ export interface HudSettings {
   frame?: boolean;
   /** GTA's radar slides with the HUD's exit and entrance (Config.minimap.slide): the ring slides with it */
   slide?: boolean;
+  /** the speedometer's plate behind the round ring (Config.minimap.halo); absent: on */
+  halo?: boolean;
 }
 
 declare module "nuikit-core" {
