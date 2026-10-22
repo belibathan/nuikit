@@ -3,7 +3,7 @@
 import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
 
-import { cn } from "@/lib/utils"
+import { cn, nkVariant, type NkVariantProps } from "@/lib/utils"
 import { ScrollArea } from "@/components/ui/scroll-area"
 
 /**
@@ -37,8 +37,11 @@ function Panel({
   size,
   selected = false,
   animate = true,
+  density,
+  shape,
+  motion,
   ...props
-}: React.ComponentProps<"section"> &
+}: NkVariantProps & React.ComponentProps<"section"> &
   VariantProps<typeof panelVariants> & {
     /** Mark it as the chosen one of several (an outline: nk-panel's depth is a box-shadow). */
     selected?: boolean
@@ -47,6 +50,7 @@ function Panel({
   }) {
   return (
     <section
+      {...nkVariant({ density, shape, motion })}
       data-slot="panel"
       data-selected={selected || undefined}
       className={cn(

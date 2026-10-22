@@ -6,7 +6,7 @@ import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react"
 import { installPressFeel, useIndicator, useStaggerGroup, useStaggerItem } from "nuikit-core/react"
 import { Slot } from "radix-ui"
 
-import { cn } from "@/lib/utils"
+import { cn, nkVariant, type NkVariantProps } from "@/lib/utils"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Kbd } from "@/components/ui/kbd"
 import { Progress } from "@/components/ui/progress"
@@ -151,8 +151,11 @@ function MenuRow({
   children,
   onClick,
   onKeyDown,
+  density,
+  shape,
+  motion,
   ...props
-}: MenuRowProps) {
+}: NkVariantProps & MenuRowProps) {
   // inside a <Stagger> (a sheet, a list) the row rises in with the others and folds out with them
   const inGroup = useStaggerGroup() !== null
   const staggerRef = useStaggerItem<HTMLElement>(undefined, { appear: true, animate: inGroup ? "rise" : false })
@@ -255,6 +258,7 @@ function MenuRow({
   )
 
   const shared = {
+    ...nkVariant({ density, shape, motion }),
     "data-slot": "menu-row",
     "data-active": (active && !readOnly) || undefined,
     "data-inert": inert || undefined,
@@ -477,13 +481,16 @@ function MenuRowList({
   indicator = true,
   className,
   children,
+  density,
+  shape,
+  motion,
   ...props
-}: React.ComponentProps<"div"> & { active?: number | null; indicator?: boolean }) {
+}: NkVariantProps & React.ComponentProps<"div"> & { active?: number | null; indicator?: boolean }) {
   const list = React.useRef<HTMLDivElement>(null)
   const marker = React.useRef<HTMLDivElement>(null)
   useIndicator(list, marker, indicator ? active : null, "[data-slot=menu-row]")
   return (
-    <div ref={list} data-slot="menu-row-list" className={cn("relative flex flex-col gap-0.5", className)} {...props}>
+    <div ref={list} {...nkVariant({ density, shape, motion })} data-slot="menu-row-list" className={cn("relative flex flex-col gap-0.5", className)} {...props}>
       {indicator && <div ref={marker} aria-hidden data-slot="menu-row-indicator" className="nk-indicator" />}
       {children}
     </div>

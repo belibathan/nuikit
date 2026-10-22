@@ -148,3 +148,22 @@ const twMerge = extendTailwindMerge<KitClassGroup>({
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
+
+/**
+ * The knobs every kit component takes for itself and what's inside it (kit.css "Variants"): density,
+ * shape, and motion (false: still, "reduced": fades only). "default" or undefined: the theme's.
+ */
+export type NkVariantProps = {
+  density?: "compact" | "default" | "comfortable"
+  shape?: "square" | "default" | "round"
+  motion?: boolean | "reduced"
+}
+
+/** NkVariantProps as the attributes kit.css and nuikit-core/motion read: spread them on the root. */
+export function nkVariant({ density, shape, motion }: NkVariantProps) {
+  return {
+    "data-nk-density": density === "default" ? undefined : density,
+    "data-nk-shape": shape === "default" ? undefined : shape,
+    "data-nk-motion": motion === false ? "off" : motion === "reduced" ? "reduced" : undefined,
+  }
+}
