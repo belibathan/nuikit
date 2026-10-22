@@ -42,3 +42,16 @@ export function installLevers(prefix: string): () => void {
   apply();
   return onTheme(apply);
 }
+
+/**
+ * A duration token in ms (`--nk-notify-ms-info: 4000`, `4s` or `4000ms`) from the page's computed
+ * style, so the kit's defaults and the server theme both count; `fallback` when it isn't set.
+ */
+export function tokenMs(name: string, fallback: number): number {
+  if (typeof document === "undefined") return fallback;
+  const raw = getComputedStyle(document.documentElement).getPropertyValue(`--${name}`).trim();
+  const m = /^(-?[\d.]+)\s*(ms|s)?$/.exec(raw);
+  if (!m) return fallback;
+  const n = Number(m[1]) * (m[2] === "s" ? 1000 : 1);
+  return Number.isFinite(n) && n > 0 ? n : fallback;
+}
