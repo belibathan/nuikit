@@ -7,6 +7,10 @@ Config = {
   -- Where the camera looks while choosing (x, y, z, heading).
   camera = vector4(-1355.0, -1487.0, 30.0, 300.0),
 
+  -- While choosing where to start, the camera glides over the highlighted spawn point (false: it stays
+  -- on the city view). offset is from the spawn point in its own frame (y forward, z up).
+  preview = { offset = { y = -38.0, z = 24.0 }, fov = 45.0, duration = 1100 },
+
   -- Where a character can start. 'last' (where they left off) is added for characters that have
   -- one; the server only ever teleports to these.
   spawns = {

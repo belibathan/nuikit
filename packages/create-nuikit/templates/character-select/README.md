@@ -3,7 +3,8 @@
 A character select made with [nuikit](https://github.com/belibathan/nuikit), from the `character-select` block.
 - **The screen at join:** the player's characters in their slots (empty slots offer Create), the chosen one as a
   player card (job, money, date of birth, citizen ID), Play and Delete (with a confirm).
-- **Where to start:** after Play, a list of spawn points, with "Last location" for characters that have one.
+- **Where to start:** after Play, a list of spawn points, with "Last location" for characters that have one. The camera
+  glides over the highlighted one (nuikit's camera service; `Config.preview = false` keeps the city view).
 - **Create:** first and last name, date of birth (18 to 100), gender; checked on the page and again on the server.
 
 It's built from the kit (Panel, MenuRow, PlayerCard, Money, Confirm, the form fields) and follows the server's nuikit

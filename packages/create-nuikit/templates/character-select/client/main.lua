@@ -6,7 +6,8 @@
 
 -- modal, escape = 'back': Escape steps back inside the screen; there's nothing behind it to go to.
 local screen = nk.surface('character-select', { layer = 'modal', exclusive = true, escape = 'back' })
-local cam = nil
+local cam = nil        -- the city view while choosing (an nk.camera claim)
+local previewing = nil -- the spawn point preview on top of it
 
 -- ───────────────────────────────── asking the server
 
@@ -37,13 +38,16 @@ local function hold(on)
   SetEntityVisible(ped, not on, false)
   SetEntityInvincible(ped, on)
   if on then
+    -- nuikit's camera service: one stack of cameras for every resource, given back on death and stop
     local c = Config.camera
-    cam = cam or CreateCamWithParams('DEFAULT_SCRIPTED_CAMERA', c.x, c.y, c.z, -10.0, 0.0, c.w, 60.0, false, 0)
-    SetCamActive(cam, true)
-    RenderScriptCams(true, false, 0, true, true)
+    cam = nk.camera.claim({ id = 'select', fov = 60.0 })
+    SetCamCoord(cam.cam, c.x, c.y, c.z)
+    SetCamRot(cam.cam, -10.0, 0.0, c.w, 2)
+    nk.camera.stream(c.x, c.y, c.z, cam)
   elseif cam then
-    RenderScriptCams(false, true, 800, true, true)
-    DestroyCam(cam, false)
+    if previewing then nk.camera.release(previewing, { instant = true }) end
+    previewing = nil
+    nk.camera.release(cam, { ms = 800 })
     cam = nil
   end
 end
@@ -100,6 +104,35 @@ nk.on('character:play', function(data)
     nk.notify({ title = ('Welcome, %s'):format(res.name) })
     TriggerEvent('{{name}}:playing', data.id) -- your scripts: the character is in
   end)
+  return { ok = true }
+end)
+
+-- The spawn point the player is looking at: the camera glides over it (only where to look; the
+-- server still decides where they land). Config.preview = false keeps the city view.
+nk.on('character:preview', function(data)
+  if Config.preview == false or not cam then return { ok = true } end
+  local spawn
+  for _, s in ipairs(Config.spawns or {}) do
+    if s.id == data.spawn then spawn = s end
+  end
+  if not spawn then
+    if previewing then nk.camera.release(previewing, { ms = 700 }) end
+    previewing = nil
+    return { ok = true }
+  end
+  local p = Config.preview or {}
+  local c = spawn.coords
+  -- re-claiming the same id starts from the view on screen: one glide from spawn to spawn
+  previewing = nk.camera.claim({
+    id = 'spawn',
+    target = { x = c.x, y = c.y, z = c.z },
+    heading = c.w or 0.0,
+    offset = p.offset or { y = -38.0, z = 24.0 },
+    look = { z = 1.0 },
+    fov = p.fov or 45.0,
+    duration = p.duration or 1100,
+  })
+  nk.camera.stream(c.x, c.y, c.z, previewing)
   return { ok = true }
 end)
 

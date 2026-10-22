@@ -47,6 +47,8 @@ import type { CharacterAnswer, CharacterSelectData, CharacterSummary, NewCharact
 function CharacterSelectSurface() {
   const fail = (): CharacterAnswer => ({ ok: false, error: "The server didn't answer. Try again." })
   const back = React.useRef<() => void>(() => {})
+  // stable, so the preview effect only runs when the step or the spawn changes
+  const preview = React.useCallback((spawn: string | undefined) => void fetchNui("character:preview", { spawn }).catch(() => {}), [])
   return (
     <Surface name="character-select" layer="modal" exclusive escape="back" onBack={() => back.current()}>
       {(data) =>
@@ -57,6 +59,7 @@ function CharacterSelectSurface() {
             onPlay={(id, spawn) => fetchNui("character:play", { id, spawn }).catch(fail)}
             onCreate={(c) => fetchNui("character:create", c).catch(fail)}
             onDelete={(id) => fetchNui("character:delete", { id }).catch(fail)}
+            onPreview={preview}
           />
         ) : null
       }
@@ -118,6 +121,7 @@ function CharacterSelect({
   onPlay,
   onCreate,
   onDelete,
+  onPreview,
   onBack,
   autoFocus = true,
   defaultSelected,
@@ -131,6 +135,8 @@ function CharacterSelect({
   onPlay?: (id: string, spawn?: string) => Promise<CharacterAnswer> | void
   onCreate?: (character: NewCharacter) => Promise<CharacterAnswer> | void
   onDelete?: (id: string) => Promise<CharacterAnswer> | void
+  /** The spawn point to show while choosing (the camera goes there), or undefined to leave it. */
+  onPreview?: (spawn: string | undefined) => void
   /** Gives the surface what Escape should do now (step back inside the screen). */
   onBack?: (fn: () => void) => void
   /** Focus the first character when it opens (off for stills next to other content). */
@@ -162,6 +168,11 @@ function CharacterSelect({
   React.useEffect(() => {
     if (selectedId && !characters.some((c) => c.id === selectedId)) setSelectedId(characters[0]?.id)
   }, [characters, selectedId])
+
+  // While choosing where to start, the camera shows the highlighted spawn point (Lua moves it).
+  React.useEffect(() => {
+    onPreview?.(step === "spawn" ? spawn : undefined)
+  }, [step, spawn, onPreview])
 
   // Escape steps back inside the screen.
   React.useEffect(() => {
