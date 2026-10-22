@@ -70,6 +70,12 @@ nuikit doctor json > doctor.json     # in the server console after the session; 
 node bench/coverage/run.mjs qbox session.jsonl doctor.json   # exit 1 below target (qbox 0.90, qbcore 0.75, esx 0.75)
 ```
 
+**Qbox, ready to run:** `session.qbox.jsonl` lists the intent calls of steps 5 to 9 on the stock Qbox recipe
+(one line per source and intent). Play those steps once, save `nuikit doctor json`, run the line above with it. Edit a
+line to `expected:false` when the recipe on the day lacks that resource. The full screens (loading, HUD, pause, inventory,
+bank, death) aren't intents, so they're checked by hand, not counted. Expected misses today: ox_target (an override page,
+not routed through intents) and the ox radial (not routed); they are the backlog. QBCore and ESX logs come with their recipes.
+
 Session lines are JSON: `{framework, step, source, intent, expected}`. Pairing is per (source, intent): drawn is
 the doctor's count capped at what the session asked; `expected:false` lines are ignored. The maths is
 `nuikit-core/coverage` (tested in `packages/core/test/coverage.test.ts`).
