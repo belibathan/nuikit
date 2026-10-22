@@ -77,6 +77,8 @@ function Editor({ open }: { open: boolean }) {
       open={open}
       side="left"
       width="30rem"
+      // as tall as the page: two rows on a landing, the full column once a section's controls open
+      fit
       page={`${section ?? "home"}:${group ?? ""}`}
       onBack={back}
       icon={!group && Icon ? <Icon /> : undefined}
