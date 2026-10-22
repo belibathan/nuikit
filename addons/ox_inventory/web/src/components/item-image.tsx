@@ -1,6 +1,7 @@
 import { PackageIcon } from "lucide-react";
 import { memo, useState, type CSSProperties } from "react";
 import { NuiImage } from "@/components/ui/nui-image";
+import { alertThreshold } from "@/lib/level";
 import { cn } from "@/lib/utils";
 
 /**
@@ -21,15 +22,17 @@ export const ItemImage = memo(function ItemImage({ src, name, className }: { src
 const clamp = (v: number) => Math.max(0, Math.min(100, v || 0));
 
 /**
- * Slim bar. Quiet by default; `destructive` only when the value means trouble:
- * durability ≤ 20 (high = good) or weight ≥ 90% (high = bad). The fill moves by scaleX.
+ * Slim bar. Quiet by default; `destructive` only when the value means trouble: durability at or under
+ * the theme's alert threshold (high = good) or weight ≥ 90% (high = bad). The level contract: the value
+ * is --level (0–1) on the bar, the fill scales by it.
  */
 export function Meter({ value, tone, className }: { value: number; tone: "durability" | "weight"; className?: string }) {
   const v = clamp(value);
-  const danger = tone === "durability" ? v <= 20 : v >= 90;
+  const level = v / 100;
+  const danger = tone === "durability" ? level <= alertThreshold() : level >= 0.9;
   return (
-    <div className={cn("inv-meter", className)} data-tone={tone} data-danger={danger || undefined}>
-      <div className="inv-meter-fill" style={{ "--v": v / 100 } as CSSProperties} />
+    <div className={cn("inv-meter", className)} data-tone={tone} data-danger={danger || undefined} style={{ "--level": level } as CSSProperties}>
+      <div className="inv-meter-fill" />
     </div>
   );
 }

@@ -47,6 +47,8 @@ export type ItemData = {
   buttons?: { label: string; group?: string }[];
   ammoName?: string;
   image?: string;
+  /** a rarity role (common, uncommon, rare, epic, legendary) when the server's item definition has one */
+  rarity?: string;
 };
 
 export type Side = "left" | "right";

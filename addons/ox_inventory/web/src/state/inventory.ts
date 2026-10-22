@@ -260,3 +260,13 @@ export function canCraft(item: Slot, inventory: Inventory): boolean {
 }
 
 export const sideInventory = (side: Side, s = inv.get()) => (side === "left" ? s.left : s.right);
+
+const RARITIES = new Set(["common", "uncommon", "rare", "epic", "legendary"]);
+/**
+ * The rarity role an item draws in (data-hue): the item's own metadata.rarity first, then its
+ * definition's rarity field (servers add it in ox_inventory's data/items.lua). None: no hue.
+ */
+export function rarityOf(item: Slot): string | undefined {
+  const r = String(item.metadata?.rarity ?? (item.name ? Items[item.name]?.rarity : undefined) ?? "").toLowerCase();
+  return RARITIES.has(r) ? r : undefined;
+}

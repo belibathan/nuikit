@@ -55,6 +55,12 @@ body.inv-dragging * {
 .inv-slot[data-source] {
   opacity: 0.4;
 }
+/* rarity roles (tokens 1.4: data-hue → the role's --hue-* ramp from the theme): a hairline in the
+   role's line colour and a tint rising from the bottom. Without the ramp (or a rarity) nothing changes. */
+.inv-slot[data-hue]:not([data-over]) {
+  box-shadow: inset 0 0 0 var(--nk-border) var(--hue-line, transparent);
+  background-image: linear-gradient(to top, var(--hue-tint, transparent), transparent 70%);
+}
 .inv-slot[data-locked] {
   opacity: 0.4;
   filter: grayscale(1);
@@ -303,7 +309,7 @@ body.inv-dragging * {
   inset: 0;
   background-color: var(--muted-foreground);
   transform-origin: left center;
-  transform: scaleX(var(--v, 0));
+  transform: scaleX(var(--level, 0));
   transition: transform calc(300ms * var(--nk-motion, 1)) var(--nk-ease-out);
 }
 .inv-meter[data-tone="weight"] .inv-meter-fill {
