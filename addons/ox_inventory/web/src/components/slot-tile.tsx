@@ -1,5 +1,5 @@
 import { useStaggerItem } from "nuikit-core/react";
-import { memo, type MouseEvent } from "react";
+import { memo, type CSSProperties, type MouseEvent } from "react";
 import { ItemImage } from "@/components/item-image";
 import { SlotOutline } from "@/components/outline";
 import { formatMoney } from "@/components/ui/money";
@@ -7,7 +7,8 @@ import { useT } from "@/lib/locale";
 import type { Side, Slot } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { moveItem, useItem } from "@/state/actions";
-import { hasItem, itemImage, itemLabel } from "@/state/inventory";
+import { alertThreshold } from "@/lib/level";
+import { hasItem, itemImage, itemLabel, rarityOf } from "@/state/inventory";
 import { clickSuppressed, closeTooltip, dropKey, hoverSlot, pressSlot, ui } from "@/state/ui";
 
 type Props = {
@@ -79,6 +80,9 @@ export const SlotTile = memo(function SlotTile({ side, item, invType, locked, di
   const count = filled && item.count && item.count > 1 ? item.count.toLocaleString("en-US") : null;
   const stock = shop && filled && item.count !== undefined ? item.count.toLocaleString("en-US") : null;
   const durability = !shop && filled && item.durability !== undefined ? Math.max(0, Math.min(100, item.durability)) : undefined;
+  // the level contract: durability as --level (0–1); worn at the theme's alert threshold
+  const level = durability !== undefined ? durability / 100 : undefined;
+  const rarity = filled ? rarityOf(item) : undefined;
 
   // in the sheet's <Stagger>: slots pop in one after another when it opens, and fold out when it closes
   const stagger = useStaggerItem<HTMLDivElement>(undefined, { appear: !display, animate: display ? false : "pop" });
@@ -91,7 +95,9 @@ export const SlotTile = memo(function SlotTile({ side, item, invType, locked, di
       data-source={isSource || undefined}
       data-locked={locked || undefined}
       data-display={display || undefined}
-      data-worn={durability !== undefined && durability <= 20 ? "" : undefined}
+      data-worn={level !== undefined && level <= alertThreshold() ? "" : undefined}
+      data-hue={rarity}
+      style={level !== undefined ? ({ "--level": level } as CSSProperties) : undefined}
       onPointerDown={display ? undefined : (e) => filled && !locked && pressSlot(e, { side, slot: item.slot })}
       onPointerEnter={display || !filled ? undefined : () => hoverSlot({ side, slot: item.slot })}
       onPointerLeave={display || !filled ? undefined : () => hoverSlot(null)}
