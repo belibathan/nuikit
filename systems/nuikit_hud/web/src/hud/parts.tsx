@@ -2,6 +2,7 @@
 // and sends it in the settings; this mirror covers a client that doesn't).
 import type { ReactNode } from "react";
 import type { HudCorner, HudPart, HudParts, HudPreset } from "../nui";
+import { useZoneShown } from "./situation";
 
 export const PRESET_PARTS: Record<HudPreset, HudParts> = {
   compact: {
@@ -74,8 +75,10 @@ export const PART_ZONE: Record<PartName | "map", ZoneName> = {
 
 /** A part as it is placed: a flex item that passes its place's alignment on, tagged with its zone. */
 export function Part({ name, children }: { name: PartName; children: ReactNode }) {
+  // a zone the situation leaves out slides away (situation.ts; Config.situations.retract)
+  const shown = useZoneShown(PART_ZONE[name]);
   return (
-    <div data-slot="hud-part" data-part={name} data-zone={PART_ZONE[name]} className="hud-part">
+    <div data-slot="hud-part" data-part={name} data-zone={PART_ZONE[name]} data-retracted={!shown || undefined} aria-hidden={!shown || undefined} className="hud-part">
       {children}
     </div>
   );

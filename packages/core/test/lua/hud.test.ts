@@ -191,6 +191,21 @@ describe("systems/nuikit_hud", () => {
     expect(Object.keys(z).sort()).toEqual(["interaction", "map", "prompts", "status", "toasts", "vehicle", "vitals"]);
   });
 
+  it("situations (Foundation 2): rest, interaction from other resources, sent only when they change", async () => {
+    client = await createClient();
+    const hud = await client.start("nuikit_hud", { before: natives, scripts: HUD_SCRIPTS });
+    const sent = () => hud.messages.filter((m) => m.action === "hud:situation").map((m) => m.data.name);
+    await hud.call("hud:ready");
+    expect(sent()).toEqual(["rest"]);
+    await hud.run(`TriggerEvent('nuikit_hud:interaction', true)`);
+    await hud.run(`TriggerEvent('nuikit_hud:interaction', true)`);
+    await hud.run(`TriggerEvent('nuikit_hud:interaction', false)`);
+    expect(sent()).toEqual(["rest", "interaction", "rest"]);
+    // the page gets the lists and the lever (off by default)
+    client.event("QBCore:Player:SetPlayerData", { citizenid: "ABC", charinfo: { firstname: "Niko" }, money: { cash: 5, bank: 0 }, metadata: {} });
+    expect(hud.surfaces().hud.data.situations).toMatchObject({ retract: false, rest: ["map", "vehicle"] });
+  });
+
   it("never takes focus, so it can't block other UIs", async () => {
     client = await createClient();
     const hud = await client.start("nuikit_hud", { before: natives, scripts: HUD_SCRIPTS });

@@ -46,6 +46,19 @@ Config = {
     -- prompts = { x = 0.35, y = 0.80, w = 0.30, h = 0.10 },
   },
 
+  -- Situations (Foundation 2): which zones show while the player is at rest, in a moment (something
+  -- just changed: a vital, money, the street, a weapon), driving, or interacting (a resource sends
+  -- TriggerEvent('nuikit_hud:interaction', true/false)). retract is the lever, off: everything
+  -- shows as it always has. On, a zone not listed for the situation slides away, at rest only after
+  -- the theme's --nk-rest-delay (8s) without a moment. The map stays (GTA's radar can't retract).
+  situations = {
+    retract = false,
+    rest = { 'map', 'vehicle' },
+    moment = { 'status', 'map', 'vitals', 'vehicle' },
+    driving = { 'status', 'map', 'vitals', 'vehicle' },
+    interaction = { 'map', 'vitals' },
+  },
+
   -- Where the HUD's edges are. 'game' reads GTA's own HUD alignment for this screen and safe zone
   -- (16:9, 21:9, 32:9), falling back to 'stage' if the game's answer looks wrong. 'stage' is the
   -- 0.5.0 rule: the middle 16:9 of the screen, inset by the safe zone.

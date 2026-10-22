@@ -51,6 +51,8 @@ local function settings()
     slide = (Config.minimap or {}).slide == true,
     -- the speedometer's plate behind the round map ring (Config.minimap.halo)
     halo = (Config.minimap or {}).halo ~= false,
+    -- which zones show in each situation, and whether the rest retract (Config.situations)
+    situations = Config.situations,
     -- nuikit's own waypoint tag on the ring (Config.minimap.waypointTag)
     waypointTag = (Config.minimap or {}).waypointTag == true,
   }
@@ -109,11 +111,31 @@ local function driving(ped)
   return vehicle, k
 end
 
+
+-- ───────────────────────────────── situations (Foundation 2)
+
+-- What the player is doing, for which zones show (Config.situations): 'interaction' while another
+-- resource says so (TriggerEvent('nuikit_hud:interaction', true/false), e.g. a target or a prompt),
+-- 'driving' in a vehicle, else 'rest' (the page tells a 'moment' from rest: something just changed).
+-- Menus hide the whole HUD as before. Sent as hud:situation only when it changes.
+local interacting, situation = false, nil
+local function pushSituation(force)
+  local now = interacting and 'interaction' or (current ~= 0 and 'driving') or 'rest'
+  if now == situation and not force then return end
+  situation = now
+  NUI.send('hud:situation', { name = now })
+end
+AddEventHandler('nuikit_hud:interaction', function(on)
+  interacting = on == true
+  pushSituation()
+end)
+
 local function enter(vehicle, k)
   current, kind, last = vehicle, k, nil
   factor = Vehicle.FACTOR[Vehicle.speedUnits(k, units)] or Vehicle.FACTOR.mph
   resetLive()
   readVehicle(true)
+  pushSituation()
 end
 
 local function leave()
@@ -121,6 +143,7 @@ local function leave()
   Adapters.leftVehicle()
   NUI.send('hud:vehicle', false)
   resetLive()
+  pushSituation()
 end
 
 -- The vehicle loop: live values every 33 ms, the rest every 150 ms, nothing on foot (400 ms check).
@@ -270,6 +293,7 @@ end)
 
 NUI.on('hud:ready', function()
   legibility = nil -- a reloaded page hears it again
+  pushSituation(true)
   if Config.legibility ~= false then pushLegibility() end
   Location.resend()
   Minimap.resend()

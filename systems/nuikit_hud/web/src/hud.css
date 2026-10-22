@@ -1955,3 +1955,15 @@ html[data-nk-legibility="day"] .hud-root {
   flex-direction: column;
   align-items: inherit;
 }
+
+/* Foundation 2 situations (Config.situations.retract): a zone the situation leaves out slides toward
+   its side's edge and fades, and comes back the same way */
+.hud-part {
+  transition:
+    opacity calc(var(--nk-time-retract, 320ms) * var(--nk-motion, 1)) var(--nk-ease-retract, var(--nk-ease-out, ease-out)),
+    transform calc(var(--nk-time-retract, 320ms) * var(--nk-motion, 1)) var(--nk-ease-retract, var(--nk-ease-out, ease-out));
+}
+.hud-part[data-retracted] {
+  opacity: 0;
+  transform: translate3d(var(--hud-side-x, 0), var(--hud-side-y, 0), 0);
+}

@@ -6,6 +6,7 @@ import { Ammo } from "./hud/ammo";
 import { Cluster } from "./hud/cluster";
 import { LayoutEditor } from "./hud/editor";
 import { useLegibility } from "./hud/legibility";
+import { ShownZones, shownZones, useSituation, type Situation } from "./hud/situation";
 import { layoutVars, stageLayout, useHudLayout, useViewport } from "./hud/layout";
 import { CompassTape, LocationStrip } from "./hud/location";
 import { useHudLook, type HudLook } from "./hud/look";
@@ -66,7 +67,16 @@ function Hud(props: { settings: HudSettings } & HudData) {
     void fetchNui("hud:shown", { shown: open }).catch(() => {});
   }, [open]);
   usePublishZones(open);
-  return props.settings.layout === "compact" ? <Compact {...props} player={player} look={look} w={w} h={h} /> : <Classic {...props} player={player} look={look} w={w} h={h} />;
+  // Foundation 2 situations: a moment is any change to what the HUD shows (situation.ts)
+  const lua: Situation = useNuiState("hud:situation", { name: "rest" }).name;
+  const p = player;
+  const key = [p.health, p.armor, p.hunger, p.thirst, p.stress, p.cash, p.bank, props.location?.street, props.weapon ? props.weapon.kind : ""].join("|");
+  const zones = shownZones(props.settings.situations, useSituation(lua, key));
+  return (
+    <ShownZones value={zones}>
+      {props.settings.layout === "compact" ? <Compact {...props} player={player} look={look} w={w} h={h} /> : <Classic {...props} player={player} look={look} w={w} h={h} />}
+    </ShownZones>
+  );
 }
 
 interface Placed {
@@ -114,7 +124,10 @@ function usePublishZones(open: boolean) {
         if (r.width < 1 || r.height < 1) continue;
         const round = (n: number) => Math.round(n * 1000) / 1000;
         const zone = (el as HTMLElement).dataset.zone ?? "map";
-        rects.push({ x: round((r.left - m.m41) / W), y: round((r.top - m.m42) / H), w: round(r.width / W), h: round(r.height / H), zone });
+        // a retracted part (situations) is published where it rests, so notices don't move in under it
+        const t = getComputedStyle(el).transform;
+        const own = t && t !== "none" ? new DOMMatrixReadOnly(t) : { m41: 0, m42: 0 };
+        rects.push({ x: round((r.left - m.m41 - own.m41) / W), y: round((r.top - m.m42 - own.m42) / H), w: round(r.width / W), h: round(r.height / H), zone });
       }
     });
     const key = JSON.stringify(rects);
