@@ -56,6 +56,14 @@ export const CORNER_CLASS: Record<HudCorner, string> = {
   "bottom-right": "hud-anchor-br hud-br-stack",
 };
 
+/** The classes of a corner's stack when the map is in that corner: beside it (hud.css). */
+export const BESIDE_CLASS: Record<HudCorner, string> = {
+  "top-left": "hud-beside hud-stack",
+  "top-right": "hud-beside hud-tr-stack",
+  "bottom-left": "hud-beside-map hud-stack",
+  "bottom-right": "hud-beside hud-br-stack",
+};
+
 export const cornerSide = (c: HudCorner) => (c.endsWith("left") ? "left" : "right");
 
 /**

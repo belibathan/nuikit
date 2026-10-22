@@ -51,6 +51,8 @@ local function settings()
     slide = (Config.minimap or {}).slide == true,
     -- the speedometer's plate behind the round map ring (Config.minimap.halo)
     halo = (Config.minimap or {}).halo ~= false,
+    -- where the location and money column stands: 'auto', 'below' or 'above' the map
+    mapColumn = (Config.minimap or {}).column or 'auto',
     -- which zones show in each situation, and whether the rest retract (Config.situations)
     situations = Config.situations,
     -- nuikit's own waypoint tag on the ring (Config.minimap.waypointTag)

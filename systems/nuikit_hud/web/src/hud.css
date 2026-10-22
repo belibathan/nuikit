@@ -1967,3 +1967,94 @@ html[data-nk-legibility="day"] .hud-root {
   opacity: 0;
   transform: translate3d(var(--hud-side-x, 0), var(--hud-side-y, 0), 0);
 }
+.hud-editor {
+  user-select: none;
+}
+.hud-editor-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+.hud-editor-place[data-place$="right"] .hud-editor-row {
+  flex-direction: row-reverse;
+}
+.hud-editor-row[data-held] .hud-editor-part {
+  box-shadow: 0 0 0 2px var(--primary);
+}
+.hud-editor-steps {
+  display: flex;
+  opacity: 0.6;
+}
+.hud-editor-row:hover .hud-editor-steps,
+.hud-editor-steps:focus-within {
+  opacity: 1;
+}
+.hud-editor-steps button {
+  display: flex;
+  padding: 0.125rem;
+  border-radius: calc(var(--radius) - 4px);
+  color: var(--muted-foreground);
+}
+.hud-editor-steps button:hover:not(:disabled) {
+  color: var(--foreground);
+  background-color: var(--accent);
+}
+.hud-editor-steps button:disabled {
+  opacity: 0.3;
+}
+.hud-editor-steps svg {
+  width: 0.875rem;
+  height: 0.875rem;
+}
+/* where a dragged part will land: a line above the part it goes before, or under the last */
+.hud-editor-row[data-drop-before]::before,
+.hud-editor-place[data-drop-end]::after {
+  content: "";
+  display: block;
+  height: 2px;
+  border-radius: 1px;
+  background-color: var(--primary);
+}
+.hud-editor-row[data-drop-before]::before {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -0.25rem;
+}
+.hud-editor-place[data-drop-end]::after {
+  align-self: stretch;
+}
+.hud-editor-place[data-over] {
+  border-color: var(--primary);
+}
+.hud-editor-ghost {
+  position: fixed;
+  margin: 0.5rem 0 0 0.75rem;
+  padding: 0.25rem 0.625rem;
+  border-radius: calc(var(--radius) - 2px);
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  pointer-events: none;
+  box-shadow: 0 0.5rem 1.5rem -0.5rem rgba(var(--scrim-rgb), 0.6);
+}
+
+/* the stack in the map's own corner sits beside the map, level with its outer edge (bottom-left is
+   .hud-beside-map, as before) */
+.hud-beside {
+  position: absolute;
+}
+.hud-beside[data-corner="top-left"] {
+  left: calc(var(--hud-map-end) + 0.75rem);
+  top: var(--hud-map-y);
+}
+.hud-beside[data-corner="top-right"] {
+  right: calc(var(--hud-map-start-r) + 0.75rem);
+  top: var(--hud-map-y);
+}
+.hud-beside[data-corner="bottom-right"] {
+  right: calc(var(--hud-map-start-r) + 0.75rem);
+  bottom: var(--hud-map-bottom);
+}
