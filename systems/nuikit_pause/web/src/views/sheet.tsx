@@ -43,8 +43,9 @@ export function PauseSheet({ page, first, children }: { page: string; first: boo
         className="pause-sheet z-50 gap-0 p-0 sm:max-w-none"
         style={{ width: SHEET_W }}
       >
-        {/* each page is its own column: a new one fades in (the sheet itself only slides on open) */}
-        <div key={page} className={cn("flex h-full min-h-0 flex-col", !first && "nk-enter")}>
+        {/* each page is its own column: going deeper it slides in from the right, back Home from the left (the
+            sheet itself only slides on open) */}
+        <div key={page} data-dir={page === "home" ? "back" : "in"} className={cn("flex h-full min-h-0 flex-col", !first && "pause-page")}>
           {children}
         </div>
       </SheetContent>
