@@ -17,6 +17,15 @@ things **configurable** (see "The design rule") and move on. A wrong default cos
   (PRs, required CI and reviews come back once real servers run nuikit.)
 - **Say what's unproven in one line** (usually "not seen in game") and move on.
 
+## Order of work (the owner, Oct 22)
+
+1. **The product, in game, as good as it can be.** Only work that makes the screens on a real server better.
+2. Then conventions, performance, code hierarchy.
+3. Then presentation: the site, the registry pages, `npm create` blocks, the GitHub README.
+
+Until step 1 is done, don't spend tokens on 2 or 3: no site or theme-studio work, no blocks, no docs beyond one line
+a feature needs.
+
 ## The design rule (settles design questions)
 
 nuikit is a universal, open-source framework: great conventions, shortcuts and presets on top of a system where
