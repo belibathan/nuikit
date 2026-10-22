@@ -56,7 +56,7 @@ await new Promise((r) => server.listen(0, "127.0.0.1", r));
 const url = `http://127.0.0.1:${server.address().port}/${scenario.entry ?? "index.html"}`;
 
 const scene = scenario.scene ? `data:image/jpeg;base64,${fs.readFileSync(path.join(repo, "apps/www/public/bg", scenario.scene)).toString("base64")}` : null;
-const browser = await chromium.launch({ executablePath: "/opt/pw-browsers/chromium-1194/chrome-linux/chrome" });
+const browser = await chromium.launch({ executablePath: process.env.CHROMIUM ?? "/opt/pw-browsers/chromium-1194/chrome-linux/chrome" });
 const result = {};
 if (WANT_SHOTS) fs.mkdirSync(SHOTS, { recursive: true });
 
