@@ -10,11 +10,11 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Kbd } from "@/components/ui/kbd";
-import { KeyHint } from "@/components/ui/key-hint";
+import { KeyPrompt } from "@/components/ui/key-prompt";
+import { Meter } from "@/components/ui/meter";
 import { NuiMenu } from "@/components/ui/nui-menu";
 import { RadialMenu } from "@/components/ui/radial-menu";
 import { Speedometer } from "@/components/ui/speedometer";
-import { TaskProgress } from "@/components/ui/task-progress";
 import { Textarea } from "@/components/ui/textarea";
 import { Vital } from "@/components/ui/vital";
 import { cn } from "@/lib/utils";
@@ -289,14 +289,10 @@ function Gallery() {
             <Vital value={88} tone="chart-2" icon={<ZapIcon />} label="Stamina" />
           </div>
         </Showcase>
-        <Showcase name="key-hint" title="Key Hint" description="Kbd + label, with hold-to-confirm on Progress.">
+        <Showcase name="key-prompt" title="Key Prompt" description="Key chip + verb, with hold-to-confirm on a filling line.">
           <div className="flex flex-col items-center gap-3">
-            <KeyHint keys="E" hold={900} onConfirm={() => emit("nuikit:notify", { title: "Confirmed", type: "success" })}>
-              Hold to rob register
-            </KeyHint>
-            <KeyHint keys="G" variant="default">
-              Enter vehicle
-            </KeyHint>
+            <KeyPrompt keys="E" label="Hold to rob register" hold={900} onConfirm={() => emit("nuikit:notify", { title: "Confirmed", status: "success" })} />
+            <KeyPrompt keys="G" label="Enter vehicle" />
           </div>
         </Showcase>
         <Showcase name="speedometer" title="Speedometer" description="SVG arc in primary/destructive; gear is a Badge, fuel a Progress.">
@@ -319,12 +315,12 @@ function Gallery() {
         <Showcase name="radial-menu" title="Radial Menu" description="The action wheel. SVG, styled like shadcn's menus." className="md:row-span-2">
           <RadialMenu items={radialItems} size={280} onSelect={(i) => emit("nuikit:notify", { title: i.label })} />
         </Showcase>
-        <Showcase name="task-progress" title="Task Progress" description="Card + Progress + Kbd. Timed actions with a cancel key.">
-          <TaskProgress key={run} label="Picking lock" duration={2800} cancelKey="X" onComplete={() => setTimeout(() => setRun((r) => r + 1), 900)} />
+        <Showcase name="meter" title="Meter" description="The timed-progress slab: label, a thin line, a cancel key.">
+          <Meter variant="slab" key={run} label="Picking lock" duration={2800} cancelKey="X" onComplete={() => setTimeout(() => setRun((r) => r + 1), 900)} />
         </Showcase>
       </div>
       <div className="mt-5 grid gap-4 md:grid-cols-2">
-        <MiniCard name="nui-toaster" text="The stock shadcn Sonner Toaster, wired to NUI.notify() in Lua." />
+        <MiniCard name="notice" text="Notices on top of the game, wired to NUI.notify() in Lua with <NuiNotices />." />
         <MiniCard name="use-nui-store" text="Merge partial updates from Lua into one object." />
       </div>
       </div>

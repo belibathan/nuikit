@@ -10,7 +10,7 @@
     NUI.on('inventory:use', function(data)             -- UI → Lua  (fetchNui)
       return { ok = UseItem(data.slot) }               --   whatever you return is the response
     end)
-    NUI.notify({ title = 'Paid', type = 'success' })   -- toast (with <NuiToaster />)
+    NUI.notify({ title = 'Paid', type = 'success' })   -- notice (with <NuiNotices />)
     local rpm = NUI.stream('hud:rpm', { rate = 30 })   -- a live value: ≤30/s, only on change
     rpm:push(GetVehicleCurrentRpm(veh))                --   the page glides: follow / useFollow
 
@@ -157,7 +157,7 @@ end
 ---@field type? 'default'|'success'|'info'|'warning'|'error'
 ---@field duration? integer ms
 
---- Show a toast (needs the NuiToaster component: npx shadcn add @nuikit/nui-toaster).
+--- Show a notice (needs <NuiNotices /> from the notice component: npx shadcn add @nuikit/notice).
 ---@param n NuiNotify|string
 function NUI.notify(n)
   if type(n) == 'string' then n = { title = n } end

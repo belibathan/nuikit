@@ -472,18 +472,18 @@ export function ComponentsPage() {
           <RadialDemo />
         </Section>
 
-        <section id="deprecated" className="mt-20 scroll-mt-20">
-          <h2 className="text-2xl font-semibold tracking-tight">Deprecated</h2>
+        <section id="removed" className="mt-20 scroll-mt-20">
+          <h2 className="text-2xl font-semibold tracking-tight">Removed</h2>
           <p className="mt-2 max-w-2xl text-muted-foreground text-pretty">
-            Still in the registry and still working, so nothing breaks; new UI should use the component that replaced them.
+            Deprecated in 0.6.0 and removed from the registry in 0.9.0. Copies already in a project keep working; new UI uses the component that replaced them.
           </p>
           <div className="mt-6 divide-y rounded-xl border">
-            {DEPRECATED.map((d) => (
-              <div key={d.name} data-slot="deprecated-item" className="flex flex-wrap items-center gap-x-6 gap-y-2 px-5 py-4">
+            {REMOVED.map((d) => (
+              <div key={d.name} data-slot="removed-item" className="flex flex-wrap items-center gap-x-6 gap-y-2 px-5 py-4">
                 <div className="min-w-48">
                   <div className="flex items-center gap-2">
                     <code className="font-mono text-sm">{d.name}</code>
-                    <Badge variant="outline">Deprecated</Badge>
+                    <Badge variant="outline">Removed</Badge>
                   </div>
                   <p className="mt-1 text-sm text-muted-foreground">{d.what}</p>
                 </div>
@@ -499,7 +499,6 @@ export function ComponentsPage() {
                   ))}
                   {d.how && <span className="text-muted-foreground"> ({d.how})</span>}
                 </p>
-                <Command className="h-9 w-full max-w-xs text-xs">{`npx shadcn add ${SITE}/r/${d.name}.json`}</Command>
               </div>
             ))}
           </div>
@@ -1749,8 +1748,8 @@ function RadialDemo() {
   );
 }
 
-const DEPRECATED: { name: string; what: string; use: string[]; how?: string }[] = [
-  { name: "nui-toaster", what: "Sonner toasts wired to NUI.notify()", use: ["notice"], how: "useNotices() + <Notices>" },
+const REMOVED: { name: string; what: string; use: string[]; how?: string }[] = [
+  { name: "nui-toaster", what: "Sonner toasts wired to NUI.notify()", use: ["notice"], how: "<NuiNotices />, or useNotices() + <Notices>" },
   { name: "task-progress", what: "A timed action in a Card", use: ["meter", "progress-ring"], how: 'variant="slab" + duration, cancelKey, onCancel' },
   { name: "key-hint", what: '"[E] Talk" with hold-to-confirm', use: ["key-prompt"] },
 ];

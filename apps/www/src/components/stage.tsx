@@ -1,11 +1,11 @@
 import { emit, useNuiEvent } from "nuikit-core/react";
 import { Beer, Car, Droplet, Fuel, HeartPulse, Key, Phone, Shield, Shirt, Sandwich, Wrench } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { KeyHint } from "@/components/ui/key-hint";
 import { NuiMenu } from "@/components/ui/nui-menu";
-import { NuiToaster } from "@/components/ui/nui-toaster";
+import { KeyPrompt } from "@/components/ui/key-prompt";
+import { Meter } from "@/components/ui/meter";
+import { NuiNotices } from "@/components/ui/notice";
 import { Speedometer } from "@/components/ui/speedometer";
-import { TaskProgress } from "@/components/ui/task-progress";
 import { Vital } from "@/components/ui/vital";
 import { useNuiStore } from "@/hooks/use-nui-store";
 import { cn } from "@/lib/utils";
@@ -50,10 +50,13 @@ export function Stage({ className, menu = true, scene = "dusk" }: { className?: 
 
         {/* zone E: prompt + progress */}
         <div className="absolute bottom-12 left-1/2 flex -translate-x-1/2 flex-col items-center gap-3">
-          {task && <TaskProgress key={task.key} label={task.label} duration={task.duration} onComplete={() => setTask(null)} />}
-          <KeyHint keys="E" hold={900} onConfirm={() => emit("nuikit:notify", { title: "Simeon", description: "\"Get in. We've got cars to sell.\"" })}>
-            Hold to talk to Simeon
-          </KeyHint>
+          {task && <Meter variant="slab" key={task.key} label={task.label} duration={task.duration} onComplete={() => setTask(null)} />}
+          <KeyPrompt
+            keys="E"
+            label="Hold to talk to Simeon"
+            hold={900}
+            onConfirm={() => emit("nuikit:notify", { title: "Simeon", description: "\"Get in. We've got cars to sell.\"" })}
+          />
         </div>
 
         {menu && (
@@ -77,7 +80,7 @@ export function Stage({ className, menu = true, scene = "dusk" }: { className?: 
             />
           </div>
         )}
-        <NuiToaster position="top-right" style={{ position: "absolute" }} offset={24} />
+        <NuiNotices />
       </div>
     </div>
   );

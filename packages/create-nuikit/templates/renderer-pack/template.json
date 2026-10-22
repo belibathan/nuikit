@@ -2,6 +2,6 @@
   "block": false,
   "title": "Renderer pack",
   "description": "Replace nuikit's notifications (or any intent) with your own renderer, themed by the server",
-  "remove": ["web/src/hooks", "web/src/App.tsx", "web/src/components/ui/nui-toaster.tsx", "web/src/components/ui/sonner.tsx"],
+  "remove": ["web/src/hooks", "web/src/App.tsx"],
   "next": ["/{{name}}_test in game fires notifications through your renderer; a pack that fails to load falls back to the default (F8 says why)"]
 }
