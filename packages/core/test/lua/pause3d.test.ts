@@ -287,7 +287,7 @@ describe("systems/nuikit_pause: the bigger menu", () => {
     expect(snap.presets.map((p) => p.id)).toEqual(["standard", "streamer", "performance", "cinema"]);
     expect(snap.values.streamer).toBe(false);
     // a pref row goes to NUI.prefs; an own row is saved and published
-    let r = await pause.call<{ values: Record<string, unknown> }>("pause:settings:set", { patch: { textSize: 1.1, streamer: true } });
+    let r: { values: Record<string, unknown> } = await pause.call("pause:settings:set", { patch: { textSize: 1.1, streamer: true } });
     expect(r.values.textSize).toBe(1.1);
     expect(r.values.streamer).toBe(true);
     expect(await pause.run(`return NUI.prefs.get().scale`)).toBe(1.1);

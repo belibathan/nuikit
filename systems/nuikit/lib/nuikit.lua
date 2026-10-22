@@ -675,6 +675,88 @@ AddEventHandler('onClientResourceStop', function(resource)
   bag:set(ZONES, all, false)
 end)
 
+-- ───────────────────────────────── cluster slots
+
+-- A cluster (the HUD's vitals row) shows slots other resources join (voice, radio, a job), so independent
+-- resources read as one cluster (docs/slots.md). The same local state bag channel as zones: every nuikit
+-- page gets the set as `nuikit:slots` { [cluster] = { [`resource:key`] = slot } }; nuikit-core sorts them.
+local SLOTS = 'nuikitSlots'
+
+--- Every joined slot: cluster → `resource:key` → { key, resource, order, … }.
+function NUI.slots()
+  local bag = ownBag()
+  return (bag and bag[SLOTS]) or {}
+end
+
+local function writeSlot(cluster, id, slot)
+  local bag = ownBag()
+  if not bag then return end
+  local all = {}
+  for c, list in pairs(bag[SLOTS] or {}) do
+    local copy = {}
+    for k, v in pairs(list) do copy[k] = v end
+    all[c] = copy
+  end
+  all[cluster] = all[cluster] or {}
+  all[cluster][id] = slot
+  if next(all[cluster]) == nil then all[cluster] = nil end
+  bag:set(SLOTS, all, false)
+end
+
+--- Join a cluster with a slot. opts: order (lower first, default 100), and anything the cluster draws
+--- (label, icon, hue, level 0–1, value, alert, hidden). Returns a handle: set(patch) updates it, remove() leaves.
+---@param cluster string
+---@param key string
+---@param opts? table
+function NUI.slot(cluster, key, opts)
+  assert(type(cluster) == 'string' and type(key) == 'string', 'NUI.slot(cluster, key, opts)')
+  local id = RESOURCE .. ':' .. key
+  local slot = { key = key, resource = RESOURCE, order = 100 }
+  for k, v in pairs(type(opts) == 'table' and opts or {}) do slot[k] = v end
+  slot.key, slot.resource = key, RESOURCE
+  writeSlot(cluster, id, slot)
+  local handle = {}
+  function handle.set(patch)
+    local changed = false
+    for k, v in pairs(type(patch) == 'table' and patch or {}) do
+      if k ~= 'key' and k ~= 'resource' and slot[k] ~= v then slot[k] = v changed = true end
+    end
+    -- change-only writes: a voice slot updates on every talk state, not every frame
+    if changed then writeSlot(cluster, id, slot) end
+    return handle
+  end
+  function handle.remove() writeSlot(cluster, id, nil) end
+  return handle
+end
+
+--- Leave a cluster without the handle (the same as handle.remove()).
+---@param cluster string
+---@param key string
+function NUI.unslot(cluster, key)
+  writeSlot(cluster, RESOURCE .. ':' .. key, nil)
+end
+
+if AddStateBagChangeHandler then
+  AddStateBagChangeHandler(SLOTS, nil, function(bagName, _, value)
+    if not bagName:find('^player:') then return end
+    NUI.send('nuikit:slots', value or {})
+  end)
+end
+
+-- a stopped resource leaves every cluster it joined
+AddEventHandler('onClientResourceStop', function(resource)
+  if resource ~= RESOURCE then return end
+  local bag = ownBag()
+  if not bag or not bag[SLOTS] then return end
+  local all, mine = {}, ('^' .. RESOURCE:gsub('%p', '%%%0') .. ':')
+  for c, list in pairs(bag[SLOTS]) do
+    local keep = {}
+    for k, v in pairs(list) do if not k:find(mine) then keep[k] = v end end
+    if next(keep) ~= nil then all[c] = keep end
+  end
+  bag:set(SLOTS, all, false)
+end)
+
 -- ───────────────────────────────── handshake
 
 -- The page loads after this script runs, so anything sent before it is lost. The UI calls
@@ -689,6 +771,7 @@ NUI.on('nuikit:ready', function(req)
   if theme then NUI.send('nuikit:theme', theme) end
   NUI.send('nuikit:prefs', NUI.prefs.get())
   NUI.send('nuikit:zones', NUI.zones())
+  NUI.send('nuikit:slots', NUI.slots())
   -- rawget: with @nuikit/init.lua, reading NUI.player would load the bridge into every resource
   local player = rawget(NUI, 'player')
   local hasPlayer = player ~= nil and player.resend ~= nil
