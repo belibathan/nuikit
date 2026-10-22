@@ -292,7 +292,7 @@ export function InputDialog() {
             silently blocked the submit. ox_lib rounds to `precision` and checks only required and
             min/max (§7.3), which problem() does. */}
         <form noValidate onSubmit={submit} className="flex min-h-0 flex-col">
-          <div className="flex max-h-[70vh] flex-col gap-4 overflow-y-auto p-4">
+          <div className="ox-dialog-body flex max-h-[70vh] flex-col gap-4 overflow-y-auto">
             {rows.map((row, i) => (
               <RowField key={i} row={row} value={values[i]} error={errors[i]} onChange={(v) => set(i, v)} />
             ))}
