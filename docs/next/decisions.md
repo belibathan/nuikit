@@ -19,5 +19,6 @@ Only money, accounts, publishing and secrets go to the owner.
 | 10 | Death band (`nuikit_death` `Config.band`) | On | `Config.band = false` |
 | 11 | ox_lib notify `×N` (the same toast again) | Re-enters in place: a short half-distance slide, the count rises in | `--ox-notify-bump: 0` on `:root` in `nuikit/theme.css` (0–1 scales it) |
 | 12 | HUD part placement (`nuikit_hud` `Config.parts`) | The preset's (compact: map top-right, location + wallet under it, vitals bottom-left, ammo over the cluster bottom-right) | A corner, `'map'`, `false` or `{ at, order }` per part |
+| 13 | GPS route on the compact ring (changes the default look on purpose; A4, `nuikit_hud` `Config.minimap.routeClip`) | `'box'`: a square radar box (the route reaches past the ring only at its corners; the map is squeezed ~29%) | `'mask'` for GTA's aspect (unsqueezed, the route overhangs), or `aspect` to force one |
 
 Implementation of rows 2, 5, 7, 8 and 10 goes to the lane that owns the files (`dispatch.md`).

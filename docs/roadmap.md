@@ -46,7 +46,7 @@ and target motion; `edge-sheet` first-frame fix; `nuikit.cfg` comments without s
 
 | Item | State |
 |---|---|
-| GPS route clip: pick the `routeClip` candidate that works, or `aspect = 1` | Needs the owner in game |
+| GPS route clip (A4): `routeClip = 'box'` (a square radar box, the one bound seen in game) is the default, on purpose (the map is squeezed ~29%); `'mask'` keeps GTA's aspect (unsqueezed, route overhangs) | #110; not seen in game |
 | HUD layout config: `Config.parts` places each part (corner + order, or on the map); `compact` and `classic` are presets of it; default unchanged | #104; not seen in game |
 
 ## Lane C: Platform + docs

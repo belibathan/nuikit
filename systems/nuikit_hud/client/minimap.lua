@@ -71,11 +71,12 @@ local tune = {}            -- debug overrides (Config.debug only): raw mask plac
 
 --- How the GPS route is kept inside the map (Config.minimap.routeClip; the comment there lists the
 --- candidates). GTA draws the route across the whole radar box and through none of the masks nuikit
---- knows (0.7.0 test, A4); none of these is proven, which is why it's a setting and an F8 command.
+--- knows (0.7.0 test, A4). The box is the one bound seen in game, so 'box' (a square box) is the
+--- default; the others stay a setting and an F8 command.
 function Minimap.routeClip()
   local v = tune.route or cfg.routeClip
-  if v == 'inset' or v == 'texture' or v == 'stock' or v == 'box' then return v end
-  return 'mask'
+  if v == 'mask' or v == 'inset' or v == 'texture' or v == 'stock' then return v end
+  return 'box'
 end
 
 --- The box's aspect: GTA's (Config.minimap.aspect overrides it; 1 is the square box of 0.7.0-next,
