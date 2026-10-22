@@ -197,6 +197,8 @@ const DEV_STYLES: StyleChoice[] = (
     ["column.money", true, [true, false]],
     ["column.job", true, [true, false]],
     ["column.align", "center", ["center", "start", "end"]],
+    ["map.radar", "always", ["always", "vehicle", "never"]],
+    ...(["scale.top-left", "scale.top-right", "scale.bottom-left", "scale.bottom-right", "scale.map"] as StyleKey[]).map((k) => [k, 1, [0.8, 0.9, 1, 1.1, 1.25, 1.5]]),
   ] as [StyleKey, StyleValue, StyleValue[]][]
 ).map(([key, d, options]) => ({ key, value: d, default: d, options }));
 let devSettings: HudSettings | null = null;
@@ -272,6 +274,20 @@ export default function Dev() {
     if (q.has("retract")) document.documentElement.style.setProperty("--nk-rest-delay", "8s");
     if (q.has("retract")) settings.situations = { retract: true, rest: ["map", "vehicle"], moment: ["status", "map", "vitals", "vehicle"], driving: ["status", "map", "vitals", "vehicle"], interaction: ["map", "vitals"] };
     devSettings = settings;
+    // ?slots: other resources in the vitals cluster (nuikit_voice's range and radio, a job's indicator)
+    if (q.has("slots")) {
+      setTimeout(
+        () =>
+          emit("nuikit:slots" as never, {
+            vitals: {
+              "nuikit_voice:range": { key: "range", resource: "nuikit_voice", order: 10, icon: "mic", label: "Voice", value: "Normal", hue: "neutral" },
+              "nuikit_voice:radio": { key: "radio", resource: "nuikit_voice", order: 20, icon: "radio", label: "Radio", value: "3 MHz", hue: "info" },
+              "police_job:duty": { key: "duty", resource: "police_job", order: 200, icon: "shield", label: "On duty", value: "Unit 12", hue: "police", level: 0.6 },
+            },
+          } as never),
+        300,
+      );
+    }
     openSurface("hud", settings);
     // ?edit: the layout editor (/hud edit) over the HUD
     if (q.has("edit")) {

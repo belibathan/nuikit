@@ -17,12 +17,14 @@ local PLACE_LABEL = {
   ['top-left'] = 'Top left', ['top-right'] = 'Top right', ['bottom-left'] = 'Bottom left',
   ['bottom-right'] = 'Bottom right', map = 'With the map', hidden = 'Hidden',
 }
-local STYLE_GROUP = { vitals = 'Vitals', vehicle = 'Speedometer', map = 'Map', column = 'Location and money' }
+local STYLE_GROUP = { vitals = 'Vitals', vehicle = 'Speedometer', map = 'Map', column = 'Location and money', scale = 'Size' }
 local STYLE_LABEL = {
   ['vitals.display'] = 'Vitals', ['vitals.voice'] = 'While talking', ['vehicle.gauge'] = 'Gauge',
   ['map.radar'] = 'Radar', ['map.shape'] = 'Shape', ['map.size'] = 'Size', ['map.halo'] = 'Halo',
   ['map.compass'] = 'Compass ring', ['map.column'] = 'Info', ['column.street'] = 'Street',
   ['column.area'] = 'Area', ['column.money'] = 'Money', ['column.job'] = 'Job', ['column.align'] = 'Alignment',
+  ['scale.top-left'] = 'Top left', ['scale.top-right'] = 'Top right', ['scale.bottom-left'] = 'Bottom left',
+  ['scale.bottom-right'] = 'Bottom right', ['scale.map'] = 'By the map',
 }
 local OPTION_LABEL = {
   icons = 'Icons', value = 'Icon and value', pill = 'Label and value', expand = 'Expand on change',
@@ -39,6 +41,7 @@ end
 
 local function option(v)
   local label = OPTION_LABEL[v]
+  if label == nil and type(v) == 'number' and v < 2 then label = ('%d%%'):format(math.floor(v * 100 + 0.5)) end
   if label == nil then label = v == true and 'On' or v == false and 'Off' or tostring(v) end
   return { value = v, label = label }
 end

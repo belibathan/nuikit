@@ -2061,7 +2061,8 @@ html[data-nk-motion="off"] .hud-root * {
 /* vitals.voice = collapse: while talking the vitals fold into the voice chip as a hidden chip does,
    and unfold after */
 .hud-vitals-row[data-collapsed] > [data-slot="hud-vital"],
-.hud-vitals-row[data-collapsed] > [data-slot="hud-radio"] {
+.hud-vitals-row[data-collapsed] > [data-slot="hud-radio"],
+.hud-vitals-row[data-collapsed] > [data-slot="hud-slot"]:not([data-voice]) {
   overflow: hidden;
   opacity: 0;
   max-width: 0;
@@ -2130,4 +2131,21 @@ html[data-nk-motion="off"] .hud-root * {
   flex-wrap: wrap;
   justify-content: flex-end;
   gap: 0.125rem;
+}
+
+/* each cluster scaled from its own corner (styles scale.<corner>), so its anchor never moves */
+[data-slot="hud-corner"][data-scaled] {
+  transform: scale(var(--hud-cluster-scale, 1));
+}
+[data-slot="hud-corner"][data-scaled][data-corner="top-left"] {
+  transform-origin: top left;
+}
+[data-slot="hud-corner"][data-scaled][data-corner="top-right"] {
+  transform-origin: top right;
+}
+[data-slot="hud-corner"][data-scaled][data-corner="bottom-left"] {
+  transform-origin: bottom left;
+}
+[data-slot="hud-corner"][data-scaled][data-corner="bottom-right"] {
+  transform-origin: bottom right;
 }
