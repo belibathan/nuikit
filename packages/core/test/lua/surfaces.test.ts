@@ -180,7 +180,7 @@ describe.each([
     await ui.run(`H = NUI.surface('hud', { layer = 'hud' }) H:open()`);
     ui.messages.length = 0; // the page wasn't listening yet
     expect(await ui.call("nuikit:ready")).toMatchObject({ ok: true, resource: "ui" });
-    expect(ui.messages.map((m) => m.action)).toEqual(["nuikit:surfaces", "nuikit:theme", "nuikit:prefs", "nuikit:zones"]);
+    expect(ui.messages.map((m) => m.action)).toEqual(["nuikit:surfaces", "nuikit:theme", "nuikit:prefs", "nuikit:zones", "nuikit:slots"]);
     expect(ui.surfaces().hud.open).toBe(true);
   });
 
