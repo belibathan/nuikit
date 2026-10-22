@@ -1,15 +1,17 @@
 import { fetchNui, Surface, useNuiState, usePlayer, useSurfaceOpen } from "nuikit-core/react";
 import { MinimapFrameView, useMinimap } from "./minimap";
-import { Fragment, useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
+import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import type { HudLayout, HudParts, HudLocation, HudSettings, HudVehicle, HudWeapon, MinimapFrame, MinimapState } from "./nui";
 import { Ammo } from "./hud/ammo";
 import { Cluster } from "./hud/cluster";
 import { LayoutEditor } from "./hud/editor";
+import { useLegibility } from "./hud/legibility";
+import { ShownZones, shownZones, useSituation, type Situation } from "./hud/situation";
 import { layoutVars, stageLayout, useHudLayout, useViewport } from "./hud/layout";
 import { CompassTape, LocationStrip } from "./hud/location";
 import { useHudLook, type HudLook } from "./hud/look";
 import { MapLocation, MapRing } from "./hud/map";
-import { CORNER_CLASS, CORNERS, cornerSide, placeParts, resolveParts } from "./hud/parts";
+import { CORNER_CLASS, CORNERS, cornerSide, Part, placeParts, resolveParts } from "./hud/parts";
 import { VitalsRow } from "./hud/pills";
 import { Wallet } from "./hud/wallet";
 
@@ -17,6 +19,7 @@ export default function App() {
   // Subscribed for the page's whole life, not only while the HUD shows: Lua sends the layout, the
   // frame and the vehicle whenever they change, which can be before the surface opens.
   usePlayer(); // the player store listens from here on, so a player sent before the HUD opens isn't missed
+  useLegibility();
   const data: HudData = {
     vehicle: useNuiState("hud:vehicle", false),
     location: useNuiState("hud:location", null as unknown as HudLocation) as HudLocation | null,
@@ -64,7 +67,16 @@ function Hud(props: { settings: HudSettings } & HudData) {
     void fetchNui("hud:shown", { shown: open }).catch(() => {});
   }, [open]);
   usePublishZones(open);
-  return props.settings.layout === "compact" ? <Compact {...props} player={player} look={look} w={w} h={h} /> : <Classic {...props} player={player} look={look} w={w} h={h} />;
+  // Foundation 2 situations: a moment is any change to what the HUD shows (situation.ts)
+  const lua: Situation = useNuiState("hud:situation", { name: "rest" }).name;
+  const p = player;
+  const key = [p.health, p.armor, p.hunger, p.thirst, p.stress, p.cash, p.bank, props.location?.street, props.weapon ? props.weapon.kind : ""].join("|");
+  const zones = shownZones(props.settings.situations, useSituation(lua, key));
+  return (
+    <ShownZones value={zones}>
+      {props.settings.layout === "compact" ? <Compact {...props} player={player} look={look} w={w} h={h} /> : <Classic {...props} player={player} look={look} w={w} h={h} />}
+    </ShownZones>
+  );
 }
 
 interface Placed {
@@ -102,14 +114,20 @@ function usePublishZones(open: boolean) {
     if (!open) return;
     const W = window.innerWidth;
     const H = window.innerHeight;
-    const rects: { x: number; y: number; w: number; h: number }[] = [];
+    // one rect per part, named by its Foundation 2 zone (parts.tsx PART_ZONE); the map layer is "map"
+    const rects: { x: number; y: number; w: number; h: number; zone: string }[] = [];
     document.querySelectorAll<HTMLElement>('[data-slot="hud-side"]').forEach((side) => {
       const m = new DOMMatrixReadOnly(getComputedStyle(side).transform === "none" ? undefined : getComputedStyle(side).transform);
-      for (const el of Array.from(side.children)) {
+      const parts = side.dataset.side === "map" ? Array.from(side.children) : Array.from(side.querySelectorAll<HTMLElement>("[data-zone]"));
+      for (const el of parts) {
         const r = el.getBoundingClientRect();
         if (r.width < 1 || r.height < 1) continue;
         const round = (n: number) => Math.round(n * 1000) / 1000;
-        rects.push({ x: round((r.left - m.m41) / W), y: round((r.top - m.m42) / H), w: round(r.width / W), h: round(r.height / H) });
+        const zone = (el as HTMLElement).dataset.zone ?? "map";
+        // a retracted part (situations) is published where it rests, so notices don't move in under it
+        const t = getComputedStyle(el).transform;
+        const own = t && t !== "none" ? new DOMMatrixReadOnly(t) : { m41: 0, m42: 0 };
+        rects.push({ x: round((r.left - m.m41 - own.m41) / W), y: round((r.top - m.m42 - own.m42) / H), w: round(r.width / W), h: round(r.height / H), zone });
       }
     });
     const key = JSON.stringify(rects);
@@ -126,7 +144,7 @@ function usePublishZones(open: boolean) {
     window.addEventListener("resize", on);
     // a part that grows or shrinks without a render (a roll, an image)
     const ro = new ResizeObserver(on);
-    document.querySelectorAll('[data-slot="hud-side"] > *').forEach((el) => ro.observe(el));
+    document.querySelectorAll('[data-slot="hud-side"] [data-zone], [data-slot="hud-side"][data-side="map"] > *').forEach((el) => ro.observe(el));
     return () => {
       window.removeEventListener("resize", on);
       ro.disconnect();
@@ -144,7 +162,9 @@ function corners(groups: ReturnType<typeof placeParts>, side: "left" | "right", 
   return CORNERS.filter((c) => cornerSide(c) === side && groups[c].length > 0).map((c) => (
     <div key={c} data-slot="hud-corner" data-corner={c} className={c === "bottom-left" && bl ? bl : CORNER_CLASS[c]}>
       {groups[c].map((p) => (
-        <Fragment key={p.name}>{p.el}</Fragment>
+        <Part key={p.name} name={p.name}>
+          {p.el}
+        </Part>
       ))}
     </div>
   ));
@@ -191,7 +211,9 @@ function Compact({ settings, vehicle, location, weapon, layout, frame, state, pl
   const columnEl = groups.map.length > 0 && (
     <div data-slot="hud-map-column" data-placed={!!frame || undefined} data-map={mapPlaced || undefined} className="hud-column" style={column}>
       {groups.map.map((p) => (
-        <Fragment key={p.name}>{p.el}</Fragment>
+        <Part key={p.name} name={p.name}>
+          {p.el}
+        </Part>
       ))}
     </div>
   );
@@ -246,11 +268,17 @@ function Classic({ settings, vehicle, location, weapon, layout, frame, state, pl
     <div data-slot="hud" data-layout="classic" className="hud-root" data-shadow={look.shadow} style={vars}>
       <Side side="map" slide={settings.slide && frame ? mapEdge(frame) : undefined}>{mapShown && frame!.framed !== false && settings.frame !== false && <MinimapFrameView frame={frame!} state={state!} />}</Side>
       <Side side="left">
-        {above.length > 0 && <div className="hud-above-map">{above[0].el}</div>}
+        {above.length > 0 && (
+          <div className="hud-above-map">
+            <Part name="location">{above[0].el}</Part>
+          </div>
+        )}
         {besideEls.length > 0 && (
           <div className="hud-beside-map hud-stack">
             {besideEls.map((p) => (
-              <Fragment key={p.name}>{p.el}</Fragment>
+              <Part key={p.name} name={p.name}>
+          {p.el}
+        </Part>
             ))}
           </div>
         )}

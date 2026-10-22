@@ -2,6 +2,7 @@
 // and sends it in the settings; this mirror covers a client that doesn't).
 import type { ReactNode } from "react";
 import type { HudCorner, HudPart, HudParts, HudPreset } from "../nui";
+import { useZoneShown } from "./situation";
 
 export const PRESET_PARTS: Record<HudPreset, HudParts> = {
   compact: {
@@ -56,3 +57,29 @@ export const CORNER_CLASS: Record<HudCorner, string> = {
 };
 
 export const cornerSide = (c: HudCorner) => (c.endsWith("left") ? "left" : "right");
+
+/**
+ * Foundation 2 zone names: every part belongs to one, wherever Config.parts or /hud edit put it.
+ * The HUD publishes its screen zones by these names (hud:zones → NUI.zone), and client/layout.lua
+ * keeps a default box for each name, the HUD's and the rest (prompts, interaction, toasts).
+ */
+export type ZoneName = "status" | "map" | "vitals" | "vehicle" | "prompts" | "interaction" | "toasts";
+export const PART_ZONE: Record<PartName | "map", ZoneName> = {
+  map: "map",
+  location: "status",
+  wallet: "status",
+  vitals: "vitals",
+  ammo: "vehicle",
+  vehicle: "vehicle",
+};
+
+/** A part as it is placed: a flex item that passes its place's alignment on, tagged with its zone. */
+export function Part({ name, children }: { name: PartName; children: ReactNode }) {
+  // a zone the situation leaves out slides away (situation.ts; Config.situations.retract)
+  const shown = useZoneShown(PART_ZONE[name]);
+  return (
+    <div data-slot="hud-part" data-part={name} data-zone={PART_ZONE[name]} data-retracted={!shown || undefined} aria-hidden={!shown || undefined} className="hud-part">
+      {children}
+    </div>
+  );
+}

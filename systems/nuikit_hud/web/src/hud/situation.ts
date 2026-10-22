@@ -1,0 +1,50 @@
+// Foundation 2 situations: which zones show while the player is at rest, in a moment, driving or
+// interacting (Config.situations). Lua sends the situation it can see (hud:situation: rest, driving,
+// interaction); a moment is told apart from rest here, on the page: anything the HUD shows changed
+// within the theme's --nk-rest-delay. With retract off (the default) every zone shows, as always.
+import { createContext, useContext, useEffect, useState } from "react";
+import type { ZoneName } from "./parts";
+
+export type Situation = "rest" | "moment" | "driving" | "interaction";
+export interface HudSituations {
+  retract?: boolean;
+  rest?: ZoneName[];
+  moment?: ZoneName[];
+  driving?: ZoneName[];
+  interaction?: ZoneName[];
+}
+
+/** --nk-rest-delay as ms ("8s", "8000ms" or "8000"); 8s when the theme doesn't set it. */
+export function restDelay(value = getComputedStyle(document.documentElement).getPropertyValue("--nk-rest-delay")): number {
+  const v = value.trim();
+  const n = parseFloat(v);
+  if (!Number.isFinite(n) || n < 0) return 8000;
+  return v.endsWith("ms") ? n : v.endsWith("s") ? n * 1000 : n;
+}
+
+/** The situation now: Lua's, with rest split into a moment for --nk-rest-delay after `key` changes. */
+export function useSituation(lua: Situation, key: string): Situation {
+  const [moment, setMoment] = useState(true); // the HUD comes in as a moment, then settles
+  useEffect(() => {
+    setMoment(true);
+    const t = setTimeout(() => setMoment(false), restDelay());
+    return () => clearTimeout(t);
+  }, [key]);
+  if (lua === "driving" || lua === "interaction") return lua;
+  return moment ? "moment" : "rest";
+}
+
+/** The zones that show, or null for all of them (retract off). */
+export function shownZones(cfg: HudSituations | undefined, now: Situation): Set<ZoneName> | null {
+  if (!cfg?.retract) return null;
+  return new Set(cfg[now] ?? []);
+}
+
+const Shown = createContext<Set<ZoneName> | null>(null);
+export const ShownZones = Shown.Provider;
+
+/** Whether a zone shows in this situation. The map always does: GTA's radar can't retract. */
+export function useZoneShown(zone: ZoneName): boolean {
+  const shown = useContext(Shown);
+  return !shown || zone === "map" || shown.has(zone);
+}

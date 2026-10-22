@@ -51,6 +51,8 @@ local function settings()
     slide = (Config.minimap or {}).slide == true,
     -- the speedometer's plate behind the round map ring (Config.minimap.halo)
     halo = (Config.minimap or {}).halo ~= false,
+    -- which zones show in each situation, and whether the rest retract (Config.situations)
+    situations = Config.situations,
     -- nuikit's own waypoint tag on the ring (Config.minimap.waypointTag)
     waypointTag = (Config.minimap or {}).waypointTag == true,
   }
@@ -109,11 +111,31 @@ local function driving(ped)
   return vehicle, k
 end
 
+
+-- ───────────────────────────────── situations (Foundation 2)
+
+-- What the player is doing, for which zones show (Config.situations): 'interaction' while another
+-- resource says so (TriggerEvent('nuikit_hud:interaction', true/false), e.g. a target or a prompt),
+-- 'driving' in a vehicle, else 'rest' (the page tells a 'moment' from rest: something just changed).
+-- Menus hide the whole HUD as before. Sent as hud:situation only when it changes.
+local interacting, situation = false, nil
+local function pushSituation(force)
+  local now = interacting and 'interaction' or (current ~= 0 and 'driving') or 'rest'
+  if now == situation and not force then return end
+  situation = now
+  NUI.send('hud:situation', { name = now })
+end
+AddEventHandler('nuikit_hud:interaction', function(on)
+  interacting = on == true
+  pushSituation()
+end)
+
 local function enter(vehicle, k)
   current, kind, last = vehicle, k, nil
   factor = Vehicle.FACTOR[Vehicle.speedUnits(k, units)] or Vehicle.FACTOR.mph
   resetLive()
   readVehicle(true)
+  pushSituation()
 end
 
 local function leave()
@@ -121,6 +143,7 @@ local function leave()
   Adapters.leftVehicle()
   NUI.send('hud:vehicle', false)
   resetLive()
+  pushSituation()
 end
 
 -- The vehicle loop: live values every 33 ms, the rest every 150 ms, nothing on foot (400 ms check).
@@ -198,6 +221,7 @@ local function applyRadar()
 end
 -- What the HUD covers (the page measures its parts): notices and prompts start clear of them.
 NUI.on('hud:zones', function(body)
+  Layout.setMeasured(body and body.rects)
   NUI.zone('hud', body and body.rects or nil)
   return { ok = true }
 end)
@@ -239,7 +263,38 @@ end)
 
 -- ───────────────────────────────── the page (re)loaded, units changed
 
+
+-- ───────────────────────────────── legibility (Foundation 2: --nk-legibility auto)
+
+-- 'day' or 'night' from the game clock, for --nk-legibility: auto (the theme's token, or
+-- Config.legibility to force one here). Day raises the HUD's plates and hairlines over a bright
+-- world; it is not a light theme. Sent to this page (hud:legibility) and as a client event other
+-- resources can follow (nuikit:legibility), only when it changes.
+local legibility
+function LegibilityOf(hour)
+  local cfg = Config.legibility or {}
+  local from, to = cfg.dayFrom or 7, cfg.dayTo or 19
+  return (hour >= from and hour < to) and 'day' or 'night'
+end
+local function pushLegibility()
+  if not GetClockHours then return end
+  local mode = LegibilityOf(GetClockHours())
+  if mode == legibility then return end
+  legibility = mode
+  NUI.send('hud:legibility', { mode = mode, force = type(Config.legibility) == 'table' and Config.legibility.mode or nil })
+  TriggerEvent('nuikit:legibility', mode)
+end
+CreateThread(function()
+  while true do
+    if Config.legibility ~= false then pushLegibility() end
+    Wait(10000)
+  end
+end)
+
 NUI.on('hud:ready', function()
+  legibility = nil -- a reloaded page hears it again
+  pushSituation(true)
+  if Config.legibility ~= false then pushLegibility() end
   Location.resend()
   Minimap.resend()
   if Weapon then Weapon.resend() end
@@ -249,6 +304,10 @@ NUI.on('hud:ready', function()
   end
   return { ok = true }
 end)
+
+-- Every named zone (Foundation 2) as a box in screen fractions: the HUD's as measured, the rest
+-- (prompts, interaction, toasts) from Config.zones or their defaults. For the resources that draw them.
+pcall(exports, 'zones', function() return Layout.zones() end)
 
 -- ───────────────────────────────── the player's layout (/hud edit)
 

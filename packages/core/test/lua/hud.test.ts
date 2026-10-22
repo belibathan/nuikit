@@ -159,6 +159,53 @@ describe("systems/nuikit_hud", () => {
     expect(hud.surfaces()["hud-edit"].open).toBe(false);
   });
 
+  it("legibility (Foundation 2): day or night from the game clock, sent on hud:ready and when it changes", async () => {
+    client = await createClient();
+    const hud = await client.start("nuikit_hud", { before: natives + ` HOUR = 12 function GetClockHours() return HOUR end`, scripts: HUD_SCRIPTS });
+    expect(await hud.run(`return { LegibilityOf(6), LegibilityOf(7), LegibilityOf(18), LegibilityOf(19) }`)).toEqual(["night", "day", "day", "night"]);
+    await hud.call("hud:ready");
+    expect(hud.messages.filter((m) => m.action === "hud:legibility").at(-1)!.data).toEqual({ mode: "day" });
+    await hud.run(`Config.legibility.dayTo = 11`);
+    await hud.call("hud:ready");
+    expect(hud.messages.filter((m) => m.action === "hud:legibility").at(-1)!.data).toEqual({ mode: "night" });
+  });
+
+  it("named zones (Foundation 2): measured parts by zone, defaults and Config.zones for the rest", async () => {
+    client = await createClient();
+    const hud = await client.start("nuikit_hud", { before: natives, scripts: HUD_SCRIPTS });
+    await hud.run(`Config.zones = { prompts = { x = 0.5, y = 0.5, w = 0.1, h = 0.1 }, toasts = 'junk' }`);
+    await hud.call("hud:zones", {
+      rects: [
+        { x: 0.8, y: 0.3, w: 0.1, h: 0.02, zone: "status" },
+        { x: 0.79, y: 0.32, w: 0.12, h: 0.03, zone: "status" },
+        { x: 0.02, y: 0.9, w: 0.2, h: 0.05, zone: "vitals" },
+      ],
+    });
+    const z = await hud.run<any>(`return Layout.zones()`);
+    expect(z.status).toMatchObject({ x: 0.79, y: 0.3, source: "hud" });
+    expect(z.status.w).toBeCloseTo(0.12, 6);
+    expect(z.status.h).toBeCloseTo(0.05, 6);
+    expect(z.vitals).toMatchObject({ x: 0.02, y: 0.9, w: 0.2, h: 0.05, source: "hud" });
+    expect(z.prompts).toMatchObject({ x: 0.5, y: 0.5, w: 0.1, h: 0.1, source: "config" }); // no safe area measured: the whole screen
+    expect(z.toasts).toMatchObject({ x: 0, y: 0, source: "default" });
+    expect(Object.keys(z).sort()).toEqual(["interaction", "map", "prompts", "status", "toasts", "vehicle", "vitals"]);
+  });
+
+  it("situations (Foundation 2): rest, interaction from other resources, sent only when they change", async () => {
+    client = await createClient();
+    const hud = await client.start("nuikit_hud", { before: natives, scripts: HUD_SCRIPTS });
+    const sent = () => hud.messages.filter((m) => m.action === "hud:situation").map((m) => m.data.name);
+    await hud.call("hud:ready");
+    expect(sent()).toEqual(["rest"]);
+    await hud.run(`TriggerEvent('nuikit_hud:interaction', true)`);
+    await hud.run(`TriggerEvent('nuikit_hud:interaction', true)`);
+    await hud.run(`TriggerEvent('nuikit_hud:interaction', false)`);
+    expect(sent()).toEqual(["rest", "interaction", "rest"]);
+    // the page gets the lists and the lever (off by default)
+    client.event("QBCore:Player:SetPlayerData", { citizenid: "ABC", charinfo: { firstname: "Niko" }, money: { cash: 5, bank: 0 }, metadata: {} });
+    expect(hud.surfaces().hud.data.situations).toMatchObject({ retract: false, rest: ["map", "vehicle"] });
+  });
+
   it("never takes focus, so it can't block other UIs", async () => {
     client = await createClient();
     const hud = await client.start("nuikit_hud", { before: natives, scripts: HUD_SCRIPTS });

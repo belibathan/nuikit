@@ -240,6 +240,8 @@ export default function Dev() {
       if (v.altitude !== undefined) emit("hud:vehicle:altitude", v.altitude);
     }
     if (radar) setFrame(mf);
+    // ?retract: Foundation 2 situations with the lever on (status and vitals slide away after --nk-rest-delay)
+    if (q.has("retract")) settings.situations = { retract: true, rest: ["map", "vehicle"], moment: ["status", "map", "vitals", "vehicle"], driving: ["status", "map", "vitals", "vehicle"], interaction: ["map", "vitals"] };
     openSurface("hud", settings);
     // ?edit: the layout editor (/hud edit) over the HUD
     if (q.has("edit")) {
