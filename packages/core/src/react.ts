@@ -33,6 +33,8 @@ import {
 } from "./index";
 import { flipFrom, indicator, motionLevel, spring, type Channel, type SpringName } from "./motion";
 import { clearOf, getZones, onZones, type ClearOptions, type ZonePosition, type Zones } from "./zones";
+import { getTheme } from "./theme";
+import type { CompiledTheme } from "./tokens";
 
 export * from "./index";
 export { clearOf, getZones, onZones, type ClearOptions, type ZonePosition, type ZoneRect, type Zones } from "./zones";
@@ -430,6 +432,17 @@ interface StaggerRequest {
 }
 export type StaggerAnimation = "rise" | "pop" | "fade";
 
+// --nk-stagger (ms between items), read once per theme: getComputedStyle on <html> forces a style
+// recalc (~10 ms on an ox_inventory open, every flush). A new compiled theme reads it again.
+let stagger: { theme: CompiledTheme | null; ms: number } | null = null;
+function staggerToken(): number {
+  const theme = getTheme();
+  if (stagger && stagger.theme === theme) return stagger.ms;
+  const token = typeof document === "undefined" ? "" : getComputedStyle(document.documentElement).getPropertyValue("--nk-stagger").trim();
+  stagger = { theme, ms: parseFloat(token) || 40 };
+  return stagger.ms;
+}
+
 /**
  * A group's choreographer: children that change state in the same frame are given delays in DOM order
  * (entering) or reverse order (leaving: the last in leaves first), within the budget. The delay is set on
@@ -459,8 +472,7 @@ export class StaggerGroup {
     const exit = order(batch.filter((r) => !r.on)).reverse();
     if (this.opts.from === "end") enter.reverse();
     const stepOf = (n: number) => {
-      const token = typeof document === "undefined" ? "" : getComputedStyle(document.documentElement).getPropertyValue("--nk-stagger").trim();
-      const base = this.opts.step ?? (parseFloat(token) || 40);
+      const base = this.opts.step ?? staggerToken();
       const budget = this.opts.budget ?? 300;
       return n > 1 ? Math.min(base, budget / (n - 1)) : 0;
     };

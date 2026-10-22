@@ -73,6 +73,14 @@ end
 
 -- ───────────────────────────────── placing a targeted camera
 
+--- A targeted camera's default offset by what it targets (decisions #8): peds and coords close in front,
+--- vehicles further out and higher. A call's `offset` wins (missing fields fall back to these); a resource
+--- may change them for all its claims (`nk.camera.defaults.vehicle.offset = { y = 6.0, z = 1.6 }`).
+camera.defaults = {
+  ped = { offset = { x = 0.0, y = 2.2, z = 0.6 } },
+  vehicle = { offset = { x = 0.0, y = 5.5, z = 1.4 } },
+}
+
 local function vec(v, dx, dy, dz)
   if type(v) ~= 'table' then return { x = dx, y = dy, z = dz } end
   return { x = tonumber(v.x) or dx, y = tonumber(v.y) or dy, z = tonumber(v.z) or dz }
@@ -151,7 +159,7 @@ end
 ---@class NuiCameraOptions
 ---@field id? string            a name for the claim; defaults to a counter. Re-claiming an id replaces it
 ---@field target? integer|table  an entity, or { x, y, z }: the service places the camera around it. Without one, you drive the camera
----@field offset? table          camera position relative to the target, in its frame (x right, y forward, z up); default { y = 2.2, z = 0.6 }
+---@field offset? table          camera position relative to the target, in its frame (x right, y forward, z up); default per kind (camera.defaults): ped { y = 2.2, z = 0.6 }, vehicle { y = 5.5, z = 1.4 }
 ---@field look? table            what the camera points at, relative to the target; default { z = 0.4 }
 ---@field fov? number            field of view; default: the view it starts from (manual) or 50 (targeted)
 ---@field duration? number       ms to blend in from the gameplay camera (0 = cut, the default)
@@ -189,7 +197,9 @@ function camera.claim(opts)
   local c = { id = id, opts = opts, active = true, suspended = false }
   if targeted then
     if type(opts.target) == 'table' then c.coords = vec(opts.target, 0.0, 0.0, 0.0) else c.entity = opts.target end
-    c.offset = vec(opts.offset, 0.0, 2.2, 0.6)
+    local kind = c.entity and IsEntityAVehicle and IsEntityAVehicle(c.entity) and 'vehicle' or 'ped'
+    local d = (camera.defaults[kind] or camera.defaults.ped).offset
+    c.offset = vec(opts.offset, d.x, d.y, d.z)
     c.look = vec(opts.look, 0.0, 0.0, 0.4)
     c.lockHeading = opts.lockHeading ~= false
     c.follow = c.entity ~= nil and opts.follow ~= false

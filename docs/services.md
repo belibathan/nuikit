@@ -37,7 +37,7 @@ cam:release({ instant = true })
 |---|---|
 | `id` | A name for the claim (default: a counter). Claiming an id you already hold replaces that claim. |
 | `target` | An entity, or `{ x, y, z }`. With a target the service places the camera; without one you drive it. |
-| `offset` | Camera position relative to the target, in its frame: `x` right, `y` forward, `z` up. Default `{ y = 2.2, z = 0.6 }`. |
+| `offset` | Camera position relative to the target, in its frame: `x` right, `y` forward, `z` up. Default per kind: peds and coords `{ y = 2.2, z = 0.6 }`, vehicles `{ y = 5.5, z = 1.4 }`; missing fields take the kind's default. `nk.camera.defaults.<ped|vehicle>.offset` changes them for a resource. |
 | `look` | What it points at, relative to the target. Default `{ z = 0.4 }`. |
 | `fov` | Default: the view it starts from (no target) or 50 (target). |
 | `duration` | ms to blend in from the gameplay camera (target only; default 0, a cut). On top of another claim it is always a cut. |
