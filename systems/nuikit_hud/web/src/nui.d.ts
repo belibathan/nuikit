@@ -79,6 +79,31 @@ export interface HudEditData {
   parts: HudParts;
   preset: HudPreset;
   base: HudParts;
+  /** each style: its value now, the server's default and what players may pick */
+  styles?: StyleChoice[];
+}
+
+export type StyleValue = string | number | boolean;
+export type HudStyles = Partial<Record<StyleKey, StyleValue>>;
+export type StyleKey =
+  | "vitals.display"
+  | "vitals.voice"
+  | "vehicle.gauge"
+  | "map.shape"
+  | "map.size"
+  | "map.halo"
+  | "map.compass"
+  | "map.column"
+  | "column.street"
+  | "column.area"
+  | "column.money"
+  | "column.job"
+  | "column.align";
+export interface StyleChoice {
+  key: StyleKey;
+  value?: StyleValue;
+  default?: StyleValue;
+  options: StyleValue[];
 }
 
 /** The weapon in hand (client/weapon.lua); false when unarmed or holding something without ammo. */
@@ -165,6 +190,8 @@ export interface HudSettings {
   location?: boolean;
   compass?: { enabled?: boolean; onFoot?: boolean; /** compact: cardinals and heading on the map ring (Config.minimap.compass) */ ring?: boolean };
   frame?: boolean;
+  /** each part's style as it applies (client/layout.lua Layout.styles: the player's pick or the server's) */
+  styles?: HudStyles;
   /** where the location and money column stands: under the map, over it, or auto (Config.minimap.column) */
   mapColumn?: "auto" | "below" | "above";
   /** GTA's radar slides with the HUD's exit and entrance (Config.minimap.slide): the ring slides with it */
@@ -204,6 +231,9 @@ declare module "nuikit-core" {
     "hud:ready": { req: Record<string, never>; res: { ok: boolean } };
     "hud:parts:save": { req: { parts: HudParts }; res: { ok: boolean } };
     "hud:parts:reset": { req: Record<string, never>; res: { ok: boolean } };
+    "hud:styles:preview": { req: { styles?: HudStyles }; res: { ok: boolean } };
+    "hud:styles:save": { req: { styles: HudStyles }; res: { ok: boolean } };
+    "hud:styles:reset": { req: Record<string, never>; res: { ok: boolean } };
   }
   interface NuiSurfaces {
     hud: HudSettings;

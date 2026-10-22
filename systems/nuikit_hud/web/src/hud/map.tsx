@@ -182,8 +182,9 @@ export function MapRing({ frame, start, compass = true, location, units, halo = 
 }
 
 /** The street in the display face, then the detail line: cross street · zone postal (reference screens). */
-export function MapLocation({ location, units, waypoint }: { location: HudLocation; units: "mph" | "kmh"; waypoint: boolean }) {
-  if (!location.visible || !location.street) return null;
+export function MapLocation({ location, units, waypoint, street = true, area = true }: { location: HudLocation; units: "mph" | "kmh"; waypoint: boolean; street?: boolean; area?: boolean }) {
+  // street and area (the crossing, zone and postal): the column's lines (styles column.street, column.area)
+  if (!location.visible || !location.street || (!street && !area)) return null;
   const detail: ReactNode[] = [];
   if (location.crossing) detail.push(<TextRoll key="cross" className="hud-loc-clip" value={location.crossing} direction="down" />);
   if (location.zone) detail.push(<TextRoll key="zone" className="hud-loc-clip" value={location.zone} direction="down" />);

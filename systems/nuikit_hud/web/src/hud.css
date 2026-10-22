@@ -2051,3 +2051,83 @@ html[data-nk-motion="off"] .hud-root * {
   right: calc(var(--hud-map-start-r) + 0.75rem);
   bottom: var(--hud-map-bottom);
 }
+
+/* vitals.display (styles): pill and expand read "Health 82" in the chip's label, value just "82" */
+.hud-vlabel {
+  margin-right: 0.3125rem;
+  font-weight: 500;
+  opacity: 0.75;
+}
+/* vitals.voice = collapse: while talking the vitals fold into the voice chip as a hidden chip does,
+   and unfold after */
+.hud-vitals-row[data-collapsed] > [data-slot="hud-vital"],
+.hud-vitals-row[data-collapsed] > [data-slot="hud-radio"] {
+  overflow: hidden;
+  opacity: 0;
+  max-width: 0;
+  margin-left: calc(var(--hud-vchip-gap) * -1);
+  transform: translateX(-45%) scale(0.82);
+}
+/* column.align (styles): the column's lines to the map's left or right edge instead of its middle */
+.hud-column[data-placed][data-align="start"] {
+  align-items: flex-start;
+  text-align: left;
+}
+.hud-column[data-placed][data-align="end"] {
+  align-items: flex-end;
+  text-align: right;
+}
+
+/* /hud edit: the Layout / Style tabs and the Style rows */
+.hud-editor-tabs {
+  display: flex;
+  gap: 0.25rem;
+}
+.hud-editor-tabs button,
+.hud-styles-options button {
+  padding: 0.25rem 0.625rem;
+  border-radius: calc(var(--radius) - 2px);
+  color: var(--muted-foreground);
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+.hud-editor-tabs button:hover,
+.hud-styles-options button:hover {
+  color: var(--foreground);
+}
+.hud-editor-tabs button[data-active],
+.hud-styles-options button[data-active] {
+  background-color: var(--secondary);
+  color: var(--secondary-foreground);
+}
+.hud-editor-hint {
+  grid-column: 1 / -1;
+}
+.hud-styles {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-height: min(32rem, 60vh);
+  overflow-y: auto;
+}
+.hud-styles-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+.hud-styles-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 2rem;
+}
+.hud-styles-name {
+  font-size: 0.875rem;
+}
+.hud-styles-options {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.125rem;
+}

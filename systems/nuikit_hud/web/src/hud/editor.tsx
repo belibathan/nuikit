@@ -7,7 +7,8 @@ import { fetchNui, useSurface } from "nuikit-core/react";
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
 import { useEffect, useRef, useState, type MouseEvent as ReactMouseEvent } from "react";
 import { Button } from "@/components/ui/button";
-import type { HudCorner, HudEditData, HudParts } from "../nui";
+import type { HudCorner, HudEditData, HudParts, HudStyles } from "../nui";
+import { StyleTab } from "./styles";
 import type { PartName } from "./parts";
 
 type Place = HudCorner | "map" | "hidden";
@@ -135,16 +136,41 @@ export function LayoutEditor({ data, onDraft }: { data: HudEditData; onDraft: (p
     window.addEventListener("mouseup", onUp);
   };
 
+  // the Style tab's draft: Lua previews it live (it re-places the map when that changed) and drops it
+  // when the editor goes without a save
+  const [tab, setTab] = useState<"layout" | "style">("layout");
+  const [styles, setStyles] = useState<HudStyles>(() => Object.fromEntries((data.styles ?? []).map((c) => [c.key, c.value])));
+  const kept = useRef(false);
+  useEffect(
+    () => () => {
+      if (!kept.current) void fetchNui("hud:styles:preview", {}).catch(() => {});
+    },
+    [],
+  );
+  const setStyle = (next: HudStyles) => {
+    setStyles(next);
+    void fetchNui("hud:styles:preview", { styles: next }).catch(() => {});
+  };
+
   const save = async () => {
     setBusy(true);
-    // Lua closes the panel once it is kept; a refused layout leaves it open
+    kept.current = true;
+    // Lua closes the panel once the layout is kept; a refused one leaves it open
+    await fetchNui("hud:styles:save", { styles }).catch(() => {});
     await fetchNui("hud:parts:save", { parts }).catch(() => {});
     setBusy(false);
   };
   const reset = async () => {
     setBusy(true);
+    kept.current = true;
+    await fetchNui("hud:styles:reset", {}).catch(() => {});
     await fetchNui("hud:parts:reset", {}).catch(() => {});
     setBusy(false);
+  };
+  // the preset's placement, and the server's default styles
+  const preset = () => {
+    if (tab === "layout") setParts(data.base);
+    else setStyle(Object.fromEntries((data.styles ?? []).map((c) => [c.key, c.default])));
   };
 
   const moving = drag?.name ?? held;
@@ -152,10 +178,21 @@ export function LayoutEditor({ data, onDraft }: { data: HudEditData; onDraft: (p
     <div className="hud-editor-wrap">
       <div data-slot="hud-editor" data-dragging={drag ? true : undefined} className="hud-editor nk-panel">
         <div className="nk-panel-header">
-          <span className="nk-title">HUD layout</span>
-          <span className="nk-label">Drag a part, or click it and then a place</span>
+          <span className="nk-title">HUD</span>
+          <span className="hud-editor-tabs" role="tablist">
+            <button type="button" role="tab" aria-selected={tab === "layout"} data-active={tab === "layout" || undefined} onClick={() => setTab("layout")}>
+              Layout
+            </button>
+            <button type="button" role="tab" aria-selected={tab === "style"} data-active={tab === "style" || undefined} onClick={() => setTab("style")}>
+              Style
+            </button>
+          </span>
         </div>
+        {tab === "style" ? (
+          <StyleTab choices={data.styles ?? []} styles={styles} onChange={setStyle} />
+        ) : (
         <div className="nk-panel-body hud-editor-grid">
+          <span className="nk-label hud-editor-hint">Drag a part, or click it and then a place</span>
           {PLACES.map(({ place, label }) => {
             const ok = canGo(moving, place);
             const over = drag?.target?.place === place && ok;
@@ -215,8 +252,9 @@ export function LayoutEditor({ data, onDraft }: { data: HudEditData; onDraft: (p
             );
           })}
         </div>
+        )}
         <div className="hud-editor-actions">
-          <Button variant="ghost" disabled={busy} onClick={() => setParts(data.base)}>
+          <Button variant="ghost" disabled={busy} onClick={preset}>
             Preset
           </Button>
           <Button variant="ghost" disabled={busy} onClick={reset}>

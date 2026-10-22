@@ -12,10 +12,11 @@
 import { onNui } from "nuikit-core";
 import { fetchNui, Stagger, useStaggerItem, type NuiPlayer } from "nuikit-core/react";
 import { MicIcon, RadioIcon } from "lucide-react";
-import { useCallback, useEffect, useState, type CSSProperties } from "react";
+import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
 import type { HudSettings, VitalMode } from "../nui";
 import { VitalChip } from "@/components/ui/vital-chip";
 import { ICONS, LABELS, useShown, vitalCritical, type Tone } from "./vitals";
+import { restDelay } from "./situation";
 
 type PopMode = false | "change" | "threshold";
 
@@ -28,15 +29,31 @@ interface VitalProps {
   linger: number;
   pop: PopMode;
   force: { by: number; nonce: number } | null;
+  /** how the chip draws (Config.styles vitals.display): icons, value, pill (label + value) or expand */
+  display?: VitalDisplay;
 }
+
+export type VitalDisplay = "icons" | "value" | "pill" | "expand";
 
 // Roles (tokens 1.4): the wrapper carries data-hue="<vital>", and kit.css gives it --hue-solid from
 // --role-<vital>; --vital-<tone> only for a page without the 1.4 kit.
 const roleColour = (tone: Tone) => ({ "--vital": `var(--hue-solid, var(--vital-${tone}))` }) as CSSProperties;
 
 /** One vital: the icon in a chip whose level shows the value; a pop when it changes. */
-export function VitalItem({ tone, value, mode, low, high, linger, pop, force }: VitalProps) {
+export function VitalItem({ tone, value, mode, low, high, linger, pop, force, display = "icons" }: VitalProps) {
   const v = Math.max(0, Math.min(100, Math.round(value ?? 0)));
+  // value and pill keep their label open; expand opens it on a change and settles after the theme's
+  // --nk-rest-delay (the vitals' linger when that is 0); those three show the change there, not as a pop
+  const expanded = useExpanded(display === "expand" ? v : undefined, linger);
+  const open = display === "value" || display === "pill" || (display === "expand" && expanded);
+  if (display !== "icons") pop = false;
+  // written inside and outside the shape: the kit renders the one that fits the chip's attachment
+  const label = display !== "icons" && (
+    <VitalChip.Label>
+      {display !== "value" && <span className="hud-vlabel">{LABELS[tone]}</span>}
+      <span className="hud-num">{v}</span>
+    </VitalChip.Label>
+  );
   const critical = value !== undefined && vitalCritical(tone, v, low, high);
   const shownByRule = useShown(value === undefined ? undefined : v, mode, critical, linger);
   // a pop keeps the chip on screen while it shows (a test pop on a hidden vital included)
@@ -47,10 +64,12 @@ export function VitalItem({ tone, value, mode, low, high, linger, pop, force }: 
   const stagger = useStaggerItem<HTMLDivElement>(shown);
   return (
     <div ref={stagger} data-slot="hud-vital" data-tone={tone} data-hue={tone} data-shown={shown || undefined} data-critical={critical || undefined} className="hud-vchip" aria-hidden={!shown}>
-      <VitalChip.Root value={v} tone={tone} style={roleColour(tone)} role="meter" aria-label={`${LABELS[tone]} ${v}%`} aria-valuemin={0} aria-valuemax={100} aria-valuenow={v}>
+      <VitalChip.Root value={v} tone={tone} open={open} style={roleColour(tone)} role="meter" aria-label={`${LABELS[tone]} ${v}%`} aria-valuemin={0} aria-valuemax={100} aria-valuenow={v}>
         <VitalChip.Shape>
           <VitalChip.Icon>{ICONS[tone]}</VitalChip.Icon>
+          {label}
         </VitalChip.Shape>
+        {label}
         <VitalChip.Pop label={LABELS[tone]} mode={pop} critical={critical} force={force} onShow={onShow} />
       </VitalChip.Root>
     </div>
@@ -139,13 +158,16 @@ export function VitalsRow({ player, settings, layout }: { player: NuiPlayer; set
   const needs = settings.needs !== false;
   const mode = (m: VitalMode | undefined): VitalMode => (m === undefined ? "auto" : m);
   const voice = settings.voice !== false ? player.voice : undefined;
+  // styles (Config.styles, /hud edit): how the chips draw, and whether they tuck behind voice while talking
+  const display = (settings.styles?.["vitals.display"] as VitalDisplay | undefined) ?? "icons";
+  const collapse = settings.styles?.["vitals.voice"] === "collapse" && voice?.talking === true;
   const common = { low, high, linger, pop };
   const item = (tone: Tone, value: number | undefined, m: VitalMode | undefined, extra?: Partial<VitalProps>) => (
-    <VitalItem tone={tone} value={value} mode={mode(m)} {...common} force={force[tone] ?? null} {...extra} />
+    <VitalItem tone={tone} value={value} mode={mode(m)} {...common} force={force[tone] ?? null} display={display} {...extra} />
   );
   return (
     <Stagger step={45} budget={300}>
-    <div data-slot="hud-vitals" data-layout={layout} className="hud-vitals-row" style={{} as CSSProperties}>
+    <div data-slot="hud-vitals" data-layout={layout} data-display={display} data-collapsed={collapse || undefined} className="hud-vitals-row" style={{} as CSSProperties}>
       {voice && <VoiceChip voice={voice} linger={linger} />}
       {item("health", player.health, cfg.health)}
       {item("armor", player.armor, cfg.armor, { low: -1 })}
@@ -161,4 +183,22 @@ export function VitalsRow({ player, settings, layout }: { player: NuiPlayer; set
 /** The compact preset's vitals (bottom left, or beside a map in that corner). */
 export function VitalsCompact({ player, settings }: { player: NuiPlayer; settings: HudSettings }) {
   return <VitalsRow player={player} settings={settings} layout="compact" />;
+}
+
+/** expand: true for a while after the value changes (not on the first value). */
+function useExpanded(value: number | undefined, linger: number) {
+  const [on, setOn] = useState(false);
+  const first = useRef(true);
+  useEffect(() => {
+    if (value === undefined) return;
+    if (first.current) {
+      first.current = false;
+      return;
+    }
+    setOn(true);
+    const ms = restDelay();
+    const t = setTimeout(() => setOn(false), Number.isFinite(ms) ? ms : linger);
+    return () => clearTimeout(t);
+  }, [value, linger]);
+  return on;
 }
