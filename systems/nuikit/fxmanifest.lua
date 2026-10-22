@@ -20,6 +20,7 @@ server_scripts {
 -- `nuikit_ui` in this one frame. `setr nuikit_host 0` turns it off; they use their ui_page.
 ui_page 'web/dist/index.html'
 nuikit_protocol '1'
+nuikit_level '3'
 
 -- init.lua + lib/: the runtime other resources import (shared_script '@nuikit/init.lua'), loaded into
 -- each of them from here. theme.css is still served: older nuikit UIs (and the fallback path of new ones)
