@@ -1788,6 +1788,32 @@ html[data-nk-motion="reduced"] .hud-side {
   animation: none;
   opacity: 0;
 }
+/* Config.minimap.slide: Lua moves GTA's radar 2.5rem toward its edge on the same curves, so the ring
+   slides with it and doesn't fade (the radar can't) */
+.hud-side[data-side="map"][data-slide] {
+  --hud-side-x: 2.5rem;
+  animation: hud-map-slide-in calc(280ms * var(--nk-motion, 1)) var(--nk-ease-out, cubic-bezier(0.16, 1, 0.3, 1)) both;
+}
+.hud-side[data-side="map"][data-slide="left"] {
+  --hud-side-x: -2.5rem;
+}
+.hud-side[data-side="map"][data-slide] > * {
+  animation: none;
+}
+[data-surface="hud"][data-closing] .hud-side[data-side="map"][data-slide] {
+  opacity: 1;
+  animation: hud-map-slide-out calc(200ms * var(--nk-motion, 1)) var(--nk-ease-in, cubic-bezier(0.4, 0, 1, 1)) both;
+}
+@keyframes hud-map-slide-in {
+  from {
+    transform: translate3d(var(--hud-side-x), 0, 0);
+  }
+}
+@keyframes hud-map-slide-out {
+  to {
+    transform: translate3d(var(--hud-side-x), 0, 0);
+  }
+}
 @keyframes hud-side-in {
   from {
     opacity: 0;

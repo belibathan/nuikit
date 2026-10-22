@@ -47,6 +47,8 @@ local function settings()
       ring = (Config.minimap or {}).compass ~= false,
     },
     frame = not (Minimap and Minimap.style) or Minimap.style() == 'ring',
+    -- GTA's radar slides with the HUD (Config.minimap.slide): the ring slides with it, unfaded
+    slide = (Config.minimap or {}).slide == true,
   }
 end
 
@@ -183,7 +185,8 @@ local function radarWanted()
   return Config.radar == 'always' or (Config.radar == 'vehicle' and current ~= 0)
 end
 local function applyRadar()
-  local on = radarWanted() and shown
+  -- through a slide-out (Config.minimap.slide) the radar stays drawn until it is off to the side
+  local on = radarWanted() and (shown or Minimap.sliding == true)
   DisplayRadar(on)
   Minimap.wanted = radarWanted()
   Minimap.radarOn = on
@@ -197,6 +200,7 @@ end)
 
 NUI.on('hud:shown', function(body)
   shown = body and body.shown == true
+  if Minimap.slide then Minimap.slide(shown) end
   applyRadar()
   return { ok = true }
 end)
@@ -212,9 +216,10 @@ CreateThread(function()
 
     local inVehicle = current ~= 0
     local radarOn = radarWanted()
-    DisplayRadar(radarOn and shown)
+    local drawn = radarOn and (shown or Minimap.sliding == true)
+    DisplayRadar(drawn)
     Minimap.wanted = radarOn
-    Minimap.radarOn = radarOn and shown
+    Minimap.radarOn = drawn
 
     local locationOn = locationCfg.enabled ~= false and mapCfg.location ~= false and (inVehicle or radarOn or locationCfg.onFoot ~= false)
     -- the heading streams while anything shows it: the frame's N, the strip, the location badge

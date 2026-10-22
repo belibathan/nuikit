@@ -70,6 +70,10 @@ Config = {
     --   'texture'  our disc also replaces GTA's second radar mask texture (radarmask1g)
     --   'stock'    minimap_mask left where GTA has it: the control (does the component matter at all)
     routeClip = 'box',
+    -- A spike, not seen in game: true slides GTA's radar (and its ring) 2.5rem toward its edge with
+    -- the rest of the HUD when a menu hides it, frame by frame, instead of cutting it. If the radar
+    -- doesn't move in game, GTA only takes new positions on a big-map flick: leave it false.
+    slide = false,
     compass = true,          -- cardinals on the ring (square: N on the frame), heading above (compact)
     location = true,         -- the location under (compact) or above (classic) the map
   },
