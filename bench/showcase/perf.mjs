@@ -12,7 +12,7 @@ const { chromium } = createRequire(import.meta.url)(process.env.PLAYWRIGHT_CORE 
 const CHROME = process.env.CHROME ?? "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe";
 const TYPES = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".woff2": "font/woff2", ".svg": "image/svg+xml", ".png": "image/png", ".json": "application/json" };
 
-async function open(browser, resource, build) {
+async function open(browser, resource, build, query = "") {
   const context = await browser.newContext({ viewport: { width: 1920, height: 1080 } });
   await context.addInitScript((res) => {
     Object.defineProperty(window, "GetParentResourceName", { value: () => res });
@@ -29,7 +29,7 @@ async function open(browser, resource, build) {
   });
   const page = await context.newPage();
   page.on("pageerror", (e) => console.log("  pageerror:", e.message));
-  await page.goto(`https://cfx-nui-${resource}/index.html`);
+  await page.goto(`https://cfx-nui-${resource}/index.html${query}`);
   await page.waitForTimeout(800);
   return { context, page };
 }
@@ -93,6 +93,24 @@ async function ox(browser, name, mode) {
   return [name, r];
 }
 
+// ---- nuikit_screen: the page a world screen shows in its DUI (?screen=1), at the DUI's 1920x1080
+async function screen(browser, name, mode) {
+  const { context, page } = await open(browser, "nuikit_screen", path.join(REPO, "systems/nuikit_screen/web/dist"), "?screen=1");
+  await page.waitForTimeout(1000);
+  const r = await trace(page, async () => {
+    if (mode === "hover") {
+      // what SendDuiMouseMove does while a player aims across the rows: a move every frame
+      for (let i = 0; i < 120; i++) await page.mouse.move(200 + i * 12, 180 + (i % 30) * 12);
+    } else if (mode === "click") {
+      await page.mouse.click(600, 230);
+      await page.waitForTimeout(600);
+    } else await page.waitForTimeout(2000);
+  });
+  r.anims = r.frames > 0 && mode === "idle" ? await animations(page) : [];
+  await context.close();
+  return [name, r];
+}
+
 const browser = await chromium.launch({ executablePath: CHROME, headless: true });
 const version = browser.version();
 const mapSetup = (p) => openPause(p, "map").then(() => send(p, "pause:map:blips", blips));
@@ -104,6 +122,9 @@ const rows = [
   await ox(browser, "ox_inventory: closed", "closed"),
   await ox(browser, "ox_inventory: open, idle", "idle"),
   await ox(browser, "ox_inventory: open transition (600 ms)", "transition"),
+  await screen(browser, "nuikit_screen: terminal idle", "idle"),
+  await screen(browser, "nuikit_screen: cursor moving over rows", "hover"),
+  await screen(browser, "nuikit_screen: click a row (600 ms)", "click"),
 ];
 await browser.close();
 

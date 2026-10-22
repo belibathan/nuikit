@@ -128,27 +128,34 @@ end
 
 
 
-CreateThread(function()
-  while true do
-    local near = false
-    local pc = GetEntityCoords(PlayerPedId())
-    for _, s in pairs(screens) do
-      local d = dist(pc, s.coords)
-      if d < DRAW_DISTANCE then
-        near = true
-        draw(s)
-        if using == s then
-          drive(s)
-        elseif not using and d < USE_DISTANCE then
-          BeginTextCommandDisplayHelp('STRING')
-          AddTextComponentSubstringPlayerName(('~INPUT_PICKUP~ %s'):format(s.label))
-          EndTextCommandDisplayHelp(0, false, false, -1)
-          if IsControlJustPressed(0, USE_KEY) then use(s) end
-        end
+--- One frame: draw the screens in range, drive the one in use, offer E near one. Answers whether
+--- any screen is in range (the loop runs every frame only then).
+local function frame()
+  local near = false
+  local pc = GetEntityCoords(PlayerPedId())
+  for _, s in pairs(screens) do
+    local d = dist(pc, s.coords)
+    if d < DRAW_DISTANCE then
+      near = true
+      draw(s)
+      if using == s then
+        drive(s)
+      elseif not using and d < USE_DISTANCE then
+        BeginTextCommandDisplayHelp('STRING')
+        AddTextComponentSubstringPlayerName(('~INPUT_PICKUP~ %s'):format(s.label))
+        EndTextCommandDisplayHelp(0, false, false, -1)
+        if IsControlJustPressed(0, USE_KEY) then use(s) end
       end
     end
-    if using and dist(pc, using.coords) > USE_DISTANCE * 2 then release() end
-    Wait(near and 0 or 500)
+  end
+  if using and dist(pc, using.coords) > USE_DISTANCE * 2 then release() end
+  return near
+end
+Screens = { frame = frame, create = create, remove = remove }
+
+CreateThread(function()
+  while true do
+    Wait(frame() and 0 or 500)
   end
 end)
 
