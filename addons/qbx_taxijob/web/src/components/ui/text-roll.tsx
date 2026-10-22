@@ -109,26 +109,27 @@ function Reel({ text, dir, delay = 0, align = "start", appear = false }: { text:
   // The width moves with the roll: from the old text's width to the new one's, over the same time and
   // easing, so centred or right-aligned neighbours slide with it instead of jumping when it ends.
   const box = React.useRef<HTMLSpanElement>(null)
-  const settled = React.useRef<number | null>(null)
   const widthAnim = React.useRef<Animation | null>(null)
   const lastKey = layers[layers.length - 1]!.key
   React.useLayoutEffect(() => {
     const el = box.current
     if (!el) return
     if (!rolling) {
-      // at rest: auto width, remembered as the start of the next roll
+      // at rest: auto width
       widthAnim.current?.cancel()
       widthAnim.current = null
       el.style.width = ""
       el.style.gridTemplateColumns = ""
-      settled.current = el.getBoundingClientRect().width
+      // nothing measured at rest: a page full of rolls would force a layout per mount
       return
     }
     const level = motionLevel()
     const incoming = el.lastElementChild as HTMLElement | null
     if (level !== "on" || !incoming || typeof el.animate !== "function") return
-    // from where it is now (mid-roll, if one is running), to the incoming text's own width
-    const from = widthAnim.current ? el.getBoundingClientRect().width : (settled.current ?? el.getBoundingClientRect().width)
+    // from where it is now (mid-roll, if one is running) or the outgoing text's width, to the incoming
+    // text's own width (both layers measured the same way)
+    const outgoing = incoming.previousElementSibling as HTMLElement | null
+    const from = widthAnim.current || !outgoing ? el.getBoundingClientRect().width : outgoing.getBoundingClientRect().width
     const to = incoming.getBoundingClientRect().width
     widthAnim.current?.cancel()
     // the column follows the box while it moves, so text aligns in what you see, not the widest layer
