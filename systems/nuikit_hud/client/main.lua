@@ -184,6 +184,7 @@ end
 local function applyRadar()
   local on = radarWanted() and shown
   DisplayRadar(on)
+  Minimap.wanted = radarWanted()
   Minimap.radarOn = on
   Minimap.tick(on)
 end
@@ -205,6 +206,7 @@ CreateThread(function()
     local inVehicle = current ~= 0
     local radarOn = radarWanted()
     DisplayRadar(radarOn and shown)
+    Minimap.wanted = radarOn
     Minimap.radarOn = radarOn and shown
 
     local locationOn = locationCfg.enabled ~= false and mapCfg.location ~= false and (inVehicle or radarOn or locationCfg.onFoot ~= false)

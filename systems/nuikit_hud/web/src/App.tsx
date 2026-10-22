@@ -87,10 +87,13 @@ function mapEdge(frame: MinimapFrame | null): "left" | "right" {
 function Compact({ settings, vehicle, location, weapon, layout, frame, state, player, look, w, h }: { settings: HudSettings } & HudData & Placed) {
   const units = settings.units === "kmh" ? "kmh" : "mph";
   const mapShown = !!frame && !!state?.visible;
+  // the layout follows where the map belongs, not its blink: the radar cuts the moment a menu opens,
+  // and the column under it must slide away from where it stood, not jump into the map's place first
+  const mapPlaced = !!frame && (state?.wanted ?? mapShown);
   const ring = mapShown && frame!.framed !== false && settings.frame !== false;
   // a map in the bottom-left corner (Config.minimap.style = 'stock', or a ring anchored there): the
   // vitals sit beside its bottom edge instead of under it
-  const besideMap = !!frame && mapShown && frame.x < 0.5 && frame.y > 0.5;
+  const besideMap = !!frame && mapPlaced && frame.x < 0.5 && frame.y > 0.5;
   const vars = layoutVars(layout ?? stageLayout(w, h), besideMap ? frame : null, w, h) as Record<string, string>;
   // the column (location, money) hangs under the map, or stands over it when the map is in a bottom
   // corner. There it stays over the map's box even while the map is hidden: dropping into the box put
@@ -100,7 +103,7 @@ function Compact({ settings, vehicle, location, weapon, layout, frame, state, pl
     const cx = (frame.x + frame.w / 2) * w;
     const below = frame.y + frame.h / 2 < 0.5;
     column = below
-      ? { left: cx, top: mapShown ? (frame.y + frame.h) * h : frame.y * h, transform: "translateX(-50%)" }
+      ? { left: cx, top: mapPlaced ? (frame.y + frame.h) * h : frame.y * h, transform: "translateX(-50%)" }
       : { left: cx, bottom: (1 - frame.y) * h, transform: "translateX(-50%)" };
     vars["--hud-col-w"] = `${(frame.w * w).toFixed(1)}px`;
   }
@@ -108,7 +111,7 @@ function Compact({ settings, vehicle, location, weapon, layout, frame, state, pl
   // the column leaves with the map's edge; unplaced, it stands top right
   const columnSide = frame ? mapEdge(frame) : "right";
   const columnEl = (
-    <div data-slot="hud-map-column" data-placed={!!frame || undefined} data-map={mapShown || undefined} className="hud-column" style={column}>
+    <div data-slot="hud-map-column" data-placed={!!frame || undefined} data-map={mapPlaced || undefined} className="hud-column" style={column}>
       {settings.location !== false && location && <MapLocation location={location} units={units} waypoint={!ring} />}
       <Wallet player={player} settings={settings} inline compact />
     </div>
@@ -140,8 +143,9 @@ function Compact({ settings, vehicle, location, weapon, layout, frame, state, pl
  */
 function Classic({ settings, vehicle, location, weapon, layout, frame, state, player, look, w, h }: { settings: HudSettings } & HudData & Placed) {
   const mapShown = !!frame && !!state?.visible;
-  // the vitals and location line up with a map in the bottom-left corner
-  const beside = mapShown && frame!.x < 0.5 && frame!.y > 0.5;
+  // the vitals and location line up with a map in the bottom-left corner (where it belongs, so a menu
+  // cutting the radar doesn't move them mid-exit)
+  const beside = !!frame && (state?.wanted ?? mapShown) && frame.x < 0.5 && frame.y > 0.5;
   const vars = layoutVars(layout ?? stageLayout(w, h), beside ? frame : null, w, h);
   const heading = state?.heading ?? 0;
   const units = settings.units === "kmh" ? "kmh" : "mph";

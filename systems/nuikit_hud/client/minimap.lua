@@ -329,7 +329,10 @@ end
 ---@param radarOn boolean
 function Minimap.tick(radarOn)
   local visible = Minimap.visible(radarOn)
-  local key = tostring(visible)
+  -- `wanted`: the radar belongs on screen (Config.radar), whether or not it shows this moment. The
+  -- page lays the column out on it, so a menu cutting the radar doesn't shift the column mid-exit.
+  local wanted = Minimap.wanted ~= false
+  local key = tostring(visible) .. tostring(wanted)
   if key ~= lastKey then
     lastKey = key
     if visible and stale then
@@ -337,7 +340,7 @@ function Minimap.tick(radarOn)
       CreateThread(reread)
     end
     -- `heading` is where the compass starts; then it follows hud:minimap:heading
-    NUI.send('hud:minimap', { visible = visible, heading = Minimap.cameraHeading() })
+    NUI.send('hud:minimap', { visible = visible, wanted = wanted, heading = Minimap.cameraHeading() })
   end
 end
 
@@ -402,6 +405,7 @@ function Minimap.resend()
 end
 
 Minimap.radarOn = false -- set by main.lua
+Minimap.wanted = false -- set by main.lua: Config.radar wants it now (shown or not)
 
 -- The page asks for the frame when it loads (after a resource restart, say).
 NUI.on('hud:minimap:ready', function()

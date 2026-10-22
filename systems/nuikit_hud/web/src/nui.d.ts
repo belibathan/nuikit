@@ -71,6 +71,8 @@ export interface HudWeapon {
 /** Whether GTA's radar is on screen. */
 export interface MinimapState {
   visible: boolean;
+  /** Config.radar wants the radar now, shown or not (a menu can cut it): what the layout follows */
+  wanted?: boolean;
   /** compass bearing when this was sent (0 north, 90 east); then it follows `hud:minimap:heading` */
   heading: number;
 }
