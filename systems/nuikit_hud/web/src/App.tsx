@@ -206,7 +206,9 @@ function Compact({ settings, vehicle, location, weapon, layout, frame, state, pl
   }
   const heading = state?.heading ?? 0;
   const groups = placeParts(resolveParts("compact", settings.parts), {
-    location: settings.location !== false && location && <MapLocation location={location} units={units} waypoint={!ring} />,
+    location: settings.location !== false && location && (
+      <MapLocation location={location} units={units} waypoint={!ring} street={settings.styles?.["column.street"] !== false} area={settings.styles?.["column.area"] !== false} />
+    ),
     wallet: <Wallet player={player} settings={settings} inline compact />,
     vitals: <VitalsRow player={player} settings={settings} layout="compact" />,
     ammo: settings.ammo !== false && <Ammo weapon={weapon} />,
@@ -215,7 +217,7 @@ function Compact({ settings, vehicle, location, weapon, layout, frame, state, pl
   // the column leaves with the map's edge; unplaced, it stands top right
   const columnSide = frame ? mapEdge(frame) : "right";
   const columnEl = groups.map.length > 0 && (
-    <div data-slot="hud-map-column" data-placed={!!frame || undefined} data-map={mapPlaced || undefined} className="hud-column" style={column}>
+    <div data-slot="hud-map-column" data-placed={!!frame || undefined} data-map={mapPlaced || undefined} data-align={settings.styles?.["column.align"] ?? "center"} className="hud-column" style={column}>
       {groups.map.map((p) => (
         <Part key={p.name} name={p.name}>
           {p.el}

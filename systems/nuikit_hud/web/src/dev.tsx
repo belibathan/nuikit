@@ -18,7 +18,7 @@ import { applyTheme, emit, openSurface } from "nuikit-core";
 import { PRESET_PARTS } from "./hud/parts";
 import { NuiDevtools, defineMocks } from "nuikit-core/devtools";
 import { useEffect, useState } from "react";
-import type { HudLayout, HudLocation, HudPreset, HudSettings, HudVehicle, HudWeapon, MinimapFrame } from "./nui";
+import type { HudLayout, HudLocation, HudPreset, HudSettings, HudStyles, HudVehicle, HudWeapon, MinimapFrame, StyleChoice, StyleKey, StyleValue } from "./nui";
 
 const q = new URLSearchParams(location.search);
 
@@ -181,6 +181,26 @@ function FakeRadar({ frame }: { frame: MinimapFrame }) {
   );
 }
 
+// ?edit: the Style tab's choices as client/layout.lua sends them (every option allowed), and the HUD it previews
+const DEV_STYLES: StyleChoice[] = (
+  [
+    ["vitals.display", "icons", ["icons", "value", "pill", "expand"]],
+    ["vitals.voice", "beside", ["beside", "collapse"]],
+    ["vehicle.gauge", "theme", ["theme", "arc", "bar", "digital"]],
+    ["map.shape", "circle", ["circle", "square"]],
+    ["map.size", 15, [12, 15, 18]],
+    ["map.halo", true, [true, false]],
+    ["map.compass", true, [true, false]],
+    ["map.column", "auto", ["auto", "below", "above"]],
+    ["column.street", true, [true, false]],
+    ["column.area", true, [true, false]],
+    ["column.money", true, [true, false]],
+    ["column.job", true, [true, false]],
+    ["column.align", "center", ["center", "start", "end"]],
+  ] as [StyleKey, StyleValue, StyleValue[]][]
+).map(([key, d, options]) => ({ key, value: d, default: d, options }));
+let devSettings: HudSettings | null = null;
+
 const mocks = defineMocks({
   events: {
     "nuikit:player": [full, low, { ...full, cash: 2020 }, { ...full, loaded: false }],
@@ -194,6 +214,12 @@ const mocks = defineMocks({
     "hud:ready": () => ({ ok: true }),
     "hud:minimap:ready": () => ({ ok: true }),
     "hud:parts:save": () => ({ ok: true }),
+    "hud:styles:preview": ({ styles }: { styles?: HudStyles }) => {
+      if (devSettings) openSurface("hud", { ...devSettings, styles: { ...devSettings.styles, ...styles } });
+      return { ok: true };
+    },
+    "hud:styles:save": () => ({ ok: true }),
+    "hud:styles:reset": () => ({ ok: true }),
     "hud:parts:reset": () => ({ ok: true }),
     "hud:style:get": () => {
       const [shape, level, attach, icon] = (q.get("chip") ?? "").split(",");
@@ -245,11 +271,12 @@ export default function Dev() {
     // ?retract: Foundation 2 situations with the lever on (status and vitals slide away after --nk-rest-delay)
     if (q.has("retract")) document.documentElement.style.setProperty("--nk-rest-delay", "8s");
     if (q.has("retract")) settings.situations = { retract: true, rest: ["map", "vehicle"], moment: ["status", "map", "vitals", "vehicle"], driving: ["status", "map", "vitals", "vehicle"], interaction: ["map", "vitals"] };
+    devSettings = settings;
     openSurface("hud", settings);
     // ?edit: the layout editor (/hud edit) over the HUD
     if (q.has("edit")) {
       const parts = { ...PRESET_PARTS[settings.layout ?? "compact"], ...settings.parts };
-      openSurface("hud-edit", { parts, preset: settings.layout ?? "compact", base: PRESET_PARTS[settings.layout ?? "compact"] });
+      openSurface("hud-edit", { parts, preset: settings.layout ?? "compact", base: PRESET_PARTS[settings.layout ?? "compact"], styles: DEV_STYLES });
     }
     const pop = q.get("pop");
     if (pop) {

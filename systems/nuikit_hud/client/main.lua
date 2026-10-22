@@ -24,17 +24,24 @@ local units = pickUnits()
 local function settings()
   local v, w = Config.vehicle or {}, Config.wallet or {}
   local preset = Layout.preset()
+  -- the player's styles (/hud edit, Style) on the server's defaults, within what it allows
+  local st = Layout.styles()
   return {
     layout = preset,
+    styles = st,
     parts = Layout.parts(),
     ammo = Config.ammo ~= false,
     units = units,
     needs = Config.needs ~= false,
     voice = Config.voice ~= false,
     vitals = Config.vitals,
-    wallet = { cash = w.cash == nil and 'always' or w.cash, bank = w.bank == nil and 'change' or w.bank, job = w.job ~= false },
+    wallet = {
+      cash = st['column.money'] ~= false and (w.cash == nil and 'always' or w.cash),
+      bank = st['column.money'] ~= false and (w.bank == nil and 'change' or w.bank),
+      job = st['column.job'] ~= false and w.job ~= false,
+    },
     vehicle = {
-      gauge = v.gauge or 'theme', shiftLight = v.shiftLight ~= false, rpm = v.rpm ~= false,
+      gauge = st['vehicle.gauge'] or v.gauge or 'theme', shiftLight = v.shiftLight ~= false, rpm = v.rpm ~= false,
       fuel = v.fuel ~= false and Config.fuel ~= false, damage = v.damage ~= false, lights = v.lights ~= false,
       indicators = v.indicators ~= false, handbrake = v.handbrake ~= false,
       seatbelt = v.seatbelt == nil and 'auto' or v.seatbelt, cruise = v.cruise == nil and 'auto' or v.cruise,
@@ -44,15 +51,15 @@ local function settings()
     compass = {
       enabled = preset == 'classic' and (Config.compass or {}).enabled ~= false,
       onFoot = (Config.compass or {}).onFoot == true,
-      ring = (Config.minimap or {}).compass ~= false,
+      ring = st['map.compass'] ~= false,
     },
     frame = not (Minimap and Minimap.style) or Minimap.style() == 'ring',
     -- GTA's radar slides with the HUD (Config.minimap.slide): the ring slides with it, unfaded
     slide = (Config.minimap or {}).slide == true,
     -- the speedometer's plate behind the round map ring (Config.minimap.halo)
-    halo = (Config.minimap or {}).halo ~= false,
+    halo = st['map.halo'] ~= false,
     -- where the location and money column stands: 'auto', 'below' or 'above' the map
-    mapColumn = (Config.minimap or {}).column or 'auto',
+    mapColumn = st['map.column'] or 'auto',
     -- which zones show in each situation, and whether the rest retract (Config.situations)
     situations = Config.situations,
     -- nuikit's own waypoint tag on the ring (Config.minimap.waypointTag)
@@ -319,6 +326,7 @@ pcall(exports, 'zones', function() return Layout.zones() end)
 -- the editor and the saved layouts off.
 local editor = NUI.surface('hud-edit', { layer = 'panel', input = 'full' })
 Layout.loadPlayer()
+Layout.loadStyles()
 
 --- After the placement changed: the radar to its corner (when the map moved), the page's settings.
 local function relayout()
@@ -341,6 +349,56 @@ NUI.on('hud:parts:reset', function()
   return { ok = true }
 end)
 
+
+-- Styles (/hud edit, Style): the editor previews a draft live (the map re-placed only when its shape,
+-- size or compass changed), saves it on the player's machine, or drops it (a draft of nil).
+local mapKey
+local function restyle()
+  local st = Layout.styles()
+  local key = ('%s|%s|%s'):format(st['map.shape'], st['map.size'], st['map.compass'])
+  if key ~= mapKey then
+    mapKey = key
+    if Minimap and Minimap.relayout then Minimap.relayout() end
+  end
+  sync()
+end
+
+NUI.on('hud:styles:preview', function(body)
+  Layout.stylePreview = body and Layout.cleanStyles(body.styles) or nil
+  restyle()
+  return { ok = true }
+end)
+
+NUI.on('hud:styles:save', function(body)
+  if not Layout.saveStyles(body and body.styles) then return { ok = false } end
+  Layout.stylePreview = nil
+  restyle()
+  return { ok = true }
+end)
+
+NUI.on('hud:styles:reset', function()
+  Layout.resetStyles()
+  Layout.stylePreview = nil
+  restyle()
+  return { ok = true }
+end)
+
+--- Each style for the editor: its value now, the server's default and the options players may pick
+--- (the map's shape and size default to the layout preset's).
+local function styleChoices()
+  local st, out = Layout.styles(), {}
+  local mo = Minimap and Minimap.options and Minimap.options() or {}
+  for _, key in ipairs(Layout.STYLE_KEYS) do
+    local d = Layout.styleDefault(key)
+    if d == nil and key == 'map.shape' then d = mo.shape end
+    if d == nil and key == 'map.size' then d = mo.size end
+    local v = st[key]
+    if v == nil then v = d end
+    out[#out + 1] = { key = key, value = v, default = d, options = Layout.styleAllowed(key) }
+  end
+  return out
+end
+
 -- /hud units mph|kmh (Config.playerUnits) · /hud edit · /hud reset (Config.playerLayout) ·
 -- /hud export: the layout on screen as the `parts = { … }` block of config.lua, in F8
 RegisterCommand('hud', function(_, args)
@@ -352,7 +410,7 @@ RegisterCommand('hud', function(_, args)
     Location.resend()
     sync()
   elseif cmd == 'edit' and Config.playerLayout ~= false then
-    editor:open({ parts = Layout.parts(), preset = Layout.preset(), base = Layout.PARTS[Layout.preset()] })
+    editor:open({ parts = Layout.parts(), preset = Layout.preset(), base = Layout.PARTS[Layout.preset()], styles = styleChoices() })
   elseif cmd == 'reset' and Config.playerLayout ~= false then
     Layout.resetPlayer()
     relayout()
