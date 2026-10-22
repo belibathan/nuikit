@@ -43,9 +43,18 @@ setr nuikit_images_clothing "https://cdn.example.com/clothing/{gender}_{prefix}{
 
 The nuikit resource serves them to every page through the NUI callback `https://nuikit/images`.
 
-> **Not landed yet:** the nuikit resource's `images` and `vehicle` callbacks (and these convars) ship in a
-> separate lane. Until then pages use the defaults above (items and weapons work, no clothing thumbnails,
-> no car picture in qbx_vehiclesales) and fall back silently.
+Separate several templates with `|` as well as `;` (cfg files split lines on semicolons, so `|` is the safe
+one there). ox_inventory's `inventory:imagepath`, when set, joins the item list after `nuikit_images_item`.
+
+### The callbacks (`systems/nuikit/client/images.lua`)
+
+Any page may POST `{}` to these; both answer at once and never fail (no nuikit resource: the fetch fails and
+the page keeps the defaults).
+
+| Callback | Answers |
+|---|---|
+| `https://nuikit/images` | `{ item, weapon, vehicle, clothing, replace }`: each kind's templates as one `;`-separated string (`""` when unset), `replace` true when `nuikit_images_replace` is `1`. `loadImageConfig()` reads it. |
+| `https://nuikit/vehicle` | `{ model, hash }` for the vehicle the player sits in, else the closest one within 4 m; `{}` when none. `model` is the spawn name, lower case: qbx_core's `GetVehiclesByHash`, then QBCore's `Shared.VehicleHashes`, then GTA's display name. Read only. |
 
 | Placeholder | Kinds | Value |
 |---|---|---|
