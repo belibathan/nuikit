@@ -1,0 +1,61 @@
+{
+ "1920x1080": {
+  "posts": [
+   {
+    "step": "copy",
+    "name": "notify",
+    "body": "\"Settings copied\"",
+    "ms": 35
+   },
+   {
+    "step": "delete-row-2",
+    "name": "deleteDoor",
+    "body": "5",
+    "ms": 347
+   },
+   {
+    "step": "save",
+    "name": "createDoor",
+    "body": "{\"id\":3,\"name\":\"Vault gate\",\"zone\":\"Pillbox Hill\",\"state\":false,\"coords\":{\"x\":255.2,\"y\":223.9,\"z\":106.4},\"model\":961976194,\"heading\":160,\"hash\":4,\"passcode\":\"4471\",\"autolock\":300,\"maxDistance\":2.5,\"doorRate\":1.5,\"auto\":true,\"lockpick\":true,\"hideUi\":true,\"holdOpen\":true,\"lockSound\":\"metal-locker\",\"unlockSound\":\"button-remote\",\"characters\":[\"ABC12345\",42],\"groups\":{\"police\":3,\"ambulance\":1},\"items\":[{\"name\":\"vault_card\",\"metadata\":\"pacific\",\"remove\":true},{\"name\":\"thermite\",\"remove\":null}],\"lockpickDifficulty\":[\"easy\",\"medium\",{\"areaSize\":40,\"speedMultiplier\":1.5}],\"distance\":6.1}",
+    "ms": 29
+   },
+   {
+    "step": "closest-escape",
+    "name": "exit",
+    "body": null,
+    "ms": 8
+   },
+   {
+    "step": "place",
+    "name": "createDoor",
+    "body": "{\"name\":\"Bank side door\",\"passcode\":null,\"autolock\":null,\"items\":[],\"characters\":[],\"groups\":{},\"lockpickDifficulty\":[],\"maxDistance\":2,\"doorRate\":null,\"lockSound\":null,\"unlockSound\":null,\"auto\":null,\"state\":false,\"lockpick\":null,\"hideUi\":null,\"doors\":true,\"holdOpen\":null}",
+    "ms": 31
+   },
+   {
+    "step": "paste",
+    "name": "notify",
+    "body": "\"Settings applied\"",
+    "ms": 467
+   },
+   {
+    "step": "place-pasted",
+    "name": "createDoor",
+    "body": "{\"name\":null,\"passcode\":\"4471\",\"autolock\":300,\"items\":[{\"name\":\"vault_card\",\"metadata\":\"pacific\",\"remove\":true},{\"name\":\"thermite\",\"remove\":null}],\"characters\":[\"ABC12345\",42],\"groups\":{\"police\":3,\"ambulance\":1},\"maxDistance\":2.5,\"doorRate\":1.5,\"lockSound\":\"metal-locker\",\"unlockSound\":\"button-remote\",\"auto\":true,\"state\":1,\"lockpick\":true,\"hideUi\":true,\"lockpickDifficulty\":[\"easy\",\"medium\",{\"areaSize\":40,\"speedMultiplier\":1.5}],\"holdOpen\":true}",
+    "ms": 39
+   },
+   {
+    "step": "teleport",
+    "name": "teleportToDoor",
+    "body": "2",
+    "ms": 27
+   },
+   {
+    "step": "close",
+    "name": "exit",
+    "body": null,
+    "ms": 23
+   }
+  ],
+  "themeRequests": 8
+ }
+}

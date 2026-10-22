@@ -1,0 +1,2159 @@
+/* synced by pnpm sync: don't edit here. Change packages/create-nuikit/index.css.tpl or kit.css, then run pnpm sync. */
+@import "tailwindcss";
+/* shadcn's enter/exit animations (data-[state=open]:animate-in …): every page ships them. */
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * Identity fonts (docs/tokens.md#fonts): open (OFL) woff2 files, latin subset. Bundled into this UI,
+ * or served once by the nuikit resource (nui://nuikit/fonts/…), depending on how pnpm sync ran.
+ */
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("../node_modules/nuikit-core/fonts/inter-latin-wght-normal.woff2") format("woff2");
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+@font-face {
+  font-family: "Inter Tight";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("../node_modules/nuikit-core/fonts/inter-tight-latin-wght-normal.woff2") format("woff2");
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+@font-face {
+  font-family: "Geist Mono";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("../node_modules/nuikit-core/fonts/geist-mono-latin-wght-normal.woff2") format("woff2");
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+@font-face {
+  font-family: "Barlow";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("https://cfx-nui-nuikit/fonts/barlow-latin-400-normal.woff2") format("woff2"), url("nui://nuikit/fonts/barlow-latin-400-normal.woff2") format("woff2");
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+@font-face {
+  font-family: "Barlow";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("https://cfx-nui-nuikit/fonts/barlow-latin-500-normal.woff2") format("woff2"), url("nui://nuikit/fonts/barlow-latin-500-normal.woff2") format("woff2");
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+@font-face {
+  font-family: "Barlow";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("https://cfx-nui-nuikit/fonts/barlow-latin-600-normal.woff2") format("woff2"), url("nui://nuikit/fonts/barlow-latin-600-normal.woff2") format("woff2");
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+@font-face {
+  font-family: "Barlow Condensed";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("https://cfx-nui-nuikit/fonts/barlow-condensed-latin-600-normal.woff2") format("woff2"), url("nui://nuikit/fonts/barlow-condensed-latin-600-normal.woff2") format("woff2");
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+@font-face {
+  font-family: "Barlow Condensed";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("https://cfx-nui-nuikit/fonts/barlow-condensed-latin-700-normal.woff2") format("woff2"), url("nui://nuikit/fonts/barlow-condensed-latin-700-normal.woff2") format("woff2");
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+@font-face {
+  font-family: "Barlow";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("https://cfx-nui-nuikit/fonts/barlow-latin-700-normal.woff2") format("woff2"), url("nui://nuikit/fonts/barlow-latin-700-normal.woff2") format("woff2");
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+@font-face {
+  font-family: "Barlow";
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url("https://cfx-nui-nuikit/fonts/barlow-latin-800-normal.woff2") format("woff2"), url("nui://nuikit/fonts/barlow-latin-800-normal.woff2") format("woff2");
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+@font-face {
+  font-family: "Barlow Condensed";
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url("https://cfx-nui-nuikit/fonts/barlow-condensed-latin-800-normal.woff2") format("woff2"), url("nui://nuikit/fonts/barlow-condensed-latin-800-normal.woff2") format("woff2");
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+@font-face {
+  font-family: "Barlow Condensed";
+  font-style: normal;
+  font-weight: 900;
+  font-display: swap;
+  src: url("https://cfx-nui-nuikit/fonts/barlow-condensed-latin-900-normal.woff2") format("woff2"), url("nui://nuikit/fonts/barlow-condensed-latin-900-normal.woff2") format("woff2");
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+@font-face {
+  font-family: "Barlow Condensed";
+  font-style: italic;
+  font-weight: 700;
+  font-display: swap;
+  src: url("https://cfx-nui-nuikit/fonts/barlow-condensed-latin-700-italic.woff2") format("woff2"), url("nui://nuikit/fonts/barlow-condensed-latin-700-italic.woff2") format("woff2");
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+@font-face {
+  font-family: "Barlow Condensed";
+  font-style: italic;
+  font-weight: 800;
+  font-display: swap;
+  src: url("https://cfx-nui-nuikit/fonts/barlow-condensed-latin-800-italic.woff2") format("woff2"), url("nui://nuikit/fonts/barlow-condensed-latin-800-italic.woff2") format("woff2");
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+@font-face {
+  font-family: "Barlow Condensed";
+  font-style: italic;
+  font-weight: 900;
+  font-display: swap;
+  src: url("https://cfx-nui-nuikit/fonts/barlow-condensed-latin-900-italic.woff2") format("woff2"), url("nui://nuikit/fonts/barlow-condensed-latin-900-italic.woff2") format("woff2");
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+@font-face {
+  font-family: "Fraunces";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("https://cfx-nui-nuikit/fonts/fraunces-latin-wght-normal.woff2") format("woff2"), url("nui://nuikit/fonts/fraunces-latin-wght-normal.woff2") format("woff2");
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+@font-face {
+  font-family: "DM Sans";
+  font-style: normal;
+  font-weight: 100 1000;
+  font-display: swap;
+  src: url("https://cfx-nui-nuikit/fonts/dm-sans-latin-wght-normal.woff2") format("woff2"), url("nui://nuikit/fonts/dm-sans-latin-wght-normal.woff2") format("woff2");
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+@font-face {
+  font-family: "IBM Plex Sans";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("https://cfx-nui-nuikit/fonts/ibm-plex-sans-latin-400-normal.woff2") format("woff2"), url("nui://nuikit/fonts/ibm-plex-sans-latin-400-normal.woff2") format("woff2");
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+@font-face {
+  font-family: "IBM Plex Sans";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("https://cfx-nui-nuikit/fonts/ibm-plex-sans-latin-500-normal.woff2") format("woff2"), url("nui://nuikit/fonts/ibm-plex-sans-latin-500-normal.woff2") format("woff2");
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+@font-face {
+  font-family: "IBM Plex Sans";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("https://cfx-nui-nuikit/fonts/ibm-plex-sans-latin-600-normal.woff2") format("woff2"), url("nui://nuikit/fonts/ibm-plex-sans-latin-600-normal.woff2") format("woff2");
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+@font-face {
+  font-family: "Chakra Petch";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("https://cfx-nui-nuikit/fonts/chakra-petch-latin-500-normal.woff2") format("woff2"), url("nui://nuikit/fonts/chakra-petch-latin-500-normal.woff2") format("woff2");
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+@font-face {
+  font-family: "Chakra Petch";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("https://cfx-nui-nuikit/fonts/chakra-petch-latin-600-normal.woff2") format("woff2"), url("nui://nuikit/fonts/chakra-petch-latin-600-normal.woff2") format("woff2");
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+@font-face {
+  font-family: "Chakra Petch";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("https://cfx-nui-nuikit/fonts/chakra-petch-latin-700-normal.woff2") format("woff2"), url("nui://nuikit/fonts/chakra-petch-latin-700-normal.woff2") format("woff2");
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+@font-face {
+  font-family: "JetBrains Mono";
+  font-style: normal;
+  font-weight: 100 800;
+  font-display: swap;
+  src: url("https://cfx-nui-nuikit/fonts/jetbrains-mono-latin-wght-normal.woff2") format("woff2"), url("nui://nuikit/fonts/jetbrains-mono-latin-wght-normal.woff2") format("woff2");
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+
+/*
+ * Theme: stock shadcn tokens. Paste any TweakCN / shadcn theme over the :root and .dark
+ * blocks and every component (yours, shadcn's, nuikit's) follows. oklch is fine —
+ * vite-plugin-nuikit lowers it for FiveM's Chromium 103 at build time.
+ * In game the server theme (nuikit/theme.css, compiled by the nuikit resource) replaces these.
+ */
+:root {
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.87 0 0);
+  --chart-2: oklch(0.556 0 0);
+  --chart-3: oklch(0.439 0 0);
+  --chart-4: oklch(0.371 0 0);
+  --chart-5: oklch(0.269 0 0);
+  --radius: 0.625rem;
+}
+
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.922 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+  --chart-1: oklch(0.87 0 0);
+  --chart-2: oklch(0.556 0 0);
+  --chart-3: oklch(0.439 0 0);
+  --chart-4: oklch(0.371 0 0);
+  --chart-5: oklch(0.269 0 0);
+}
+
+/*
+ * nuikit tokens v1.1 (docs/tokens.md): game semantics and the identity tokens (type, shape, surface,
+ * density, motion, HUD style) on top of shadcn's. These are the defaults compileTheme() derives from
+ * the stock theme above (the Graphite identity); info follows primary.
+ */
+:root {
+  --destructive-foreground: rgb(255, 255, 255);
+  --font-sans: Inter, ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --success: rgb(0, 146, 66);
+  --success-foreground: rgb(10, 10, 10);
+  --warning: rgb(194, 131, 0);
+  --warning-foreground: rgb(10, 10, 10);
+  --info: var(--primary);
+  --info-foreground: var(--primary-foreground);
+  --hud: rgba(0, 0, 0, 0.45);
+  --hud-foreground: rgb(255, 255, 255);
+  --scrim: rgb(0, 0, 0);
+  --vital-health: rgb(228, 0, 21);
+  --vital-armor: rgb(59, 156, 246);
+  --vital-hunger: rgb(247, 162, 36);
+  --vital-thirst: rgb(30, 197, 228);
+  --vital-stress: rgb(204, 103, 227);
+  --nk-scale: 1;
+  --nk-motion: 1;
+  --brand: rgb(212, 212, 212);
+  --brand-foreground: rgb(0, 0, 0);
+  --world-foreground: rgb(255, 255, 255);
+  --world-foreground-muted: rgba(255, 255, 255, 0.8);
+  --world-shadow: 0 1px 2px rgba(0, 0, 0, 0.65), 0 0 0.5rem rgba(0, 0, 0, 0.35);
+  --world-success: rgb(68, 185, 103);
+  --world-destructive: rgb(255, 96, 85);
+  --font-display: "Inter Tight", Inter, ui-sans-serif, system-ui, sans-serif;
+  --font-numeric: Inter, ui-sans-serif, system-ui, sans-serif;
+  --nk-type-ratio: 1.2;
+  --nk-weight-body: 400;
+  --nk-weight-strong: 600;
+  --nk-weight-display: 700;
+  --nk-tracking-display: -0.02em;
+  --nk-label-case: uppercase;
+  --nk-tracking-label: 0.06em;
+  --nk-border-width: 1px;
+  --nk-cut: 0px;
+  --nk-display-style: normal;
+  --nk-pause-style: sheet;
+  --nk-pause-surface: undefined;
+  --nk-pause-ink: undefined;
+  --nk-skew: 0deg;
+  --nk-surface-opacity: 0.96;
+  --nk-surface-tint: 0.02;
+  --nk-surface-gradient: 0;
+  --nk-surface-edge: 0.06;
+  --nk-elevation: soft;
+  --nk-glow: 0;
+  --nk-density: 0.875;
+  --nk-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --nk-duration: 140ms;
+  --nk-hud-opacity: 0.55;
+  --nk-hud-text-shadow: soft;
+  --nk-gauge-style: arc;
+  --nk-gauge-track: 0.25rem;
+  --nk-gauge-ticks: 1;
+  --nk-row-indicator: bar;
+  --surface: rgb(254, 254, 254);
+  --nk-elevation-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25), 0 12px 32px -16px rgba(0, 0, 0, 0.6);
+  --nk-hud-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+  --nk-row-bar: 1;
+  --nk-row-fill: 0;
+  --nk-row-outline: 0;
+  --nk-clip: none;
+  --nk-clip-sm: none;
+  --nk-motion-feel: crisp;
+  --nk-spring-bounce: 0;
+  --nk-motion-move: 1;
+  --nk-time-instant: 0ms;
+  --nk-time-press: 70ms;
+  --nk-time-hover: 105ms;
+  --nk-time-base: 140ms;
+  --nk-time-exit: 98ms;
+  --nk-time-move: 210ms;
+  --nk-time-modal: 175ms;
+  --nk-time-screen: 350ms;
+  --nk-time-ambient: 400ms;
+  --nk-stagger: 20ms;
+  --nk-stagger-max: 100ms;
+  --nk-ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --nk-ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --nk-ease-in-out: cubic-bezier(0.2, 0, 0, 1);
+  --nk-ease-emphasized: cubic-bezier(0.05, 0.7, 0.1, 1);
+  --nk-ease-linear: linear;
+  --nk-spring-snap: 160ms 0;
+  --nk-spring-move: 240ms 0.1;
+  --nk-spring-soft: 360ms 0;
+  --nk-spring-pop: 260ms 0.3;
+  --nk-treatment: soft;
+  --nk-focus-style: ring;
+  --nk-hold-style: bar;
+  --nk-confirm-scale: 1.04;
+  --nk-level-style: bar;
+  --role-health: rgb(228, 0, 21);
+  --role-armor: rgb(59, 156, 246);
+  --role-hunger: rgb(247, 162, 36);
+  --role-thirst: rgb(30, 197, 228);
+  --role-stress: rgb(204, 103, 227);
+  --role-stamina: rgb(0, 146, 66);
+  --role-oxygen: rgb(23, 23, 23);
+  --role-info: rgb(23, 23, 23);
+  --role-success: rgb(0, 146, 66);
+  --role-warning: rgb(194, 131, 0);
+  --role-danger: rgb(228, 0, 21);
+  --role-police: rgb(49, 134, 233);
+  --role-ems: rgb(237, 74, 73);
+  --role-mech: rgb(238, 145, 56);
+  --role-gang: rgb(157, 87, 222);
+  --role-civ: rgb(115, 115, 115);
+  --role-staff: rgb(212, 212, 212);
+  --role-common: rgb(115, 115, 115);
+  --role-uncommon: rgb(84, 191, 92);
+  --role-rare: rgb(52, 150, 239);
+  --role-epic: rgb(166, 87, 237);
+  --role-legendary: rgb(242, 166, 24);
+  --role-brand: rgb(212, 212, 212);
+  --role-neutral: rgb(115, 115, 115);
+  --role-health-deep: rgb(168, 0, 10);
+  --role-health-light: rgb(251, 88, 77);
+  --role-armor-deep: rgb(30, 119, 197);
+  --role-armor-light: rgb(122, 188, 255);
+  --role-hunger-deep: rgb(201, 127, 0);
+  --role-hunger-light: rgb(255, 204, 140);
+  --role-thirst-deep: rgb(0, 157, 183);
+  --role-thirst-light: rgb(112, 227, 254);
+  --role-stress-deep: rgb(160, 72, 180);
+  --role-stress-light: rgb(230, 144, 250);
+  --role-stamina-deep: rgb(0, 106, 45);
+  --role-stamina-light: rgb(81, 174, 105);
+  --role-oxygen-deep: rgb(22, 22, 22);
+  --role-oxygen-light: rgb(47, 47, 47);
+  --role-info-deep: rgb(22, 22, 22);
+  --role-info-light: rgb(47, 47, 47);
+  --role-success-deep: rgb(0, 106, 45);
+  --role-success-light: rgb(81, 174, 105);
+  --role-warning-deep: rgb(148, 99, 0);
+  --role-warning-light: rgb(220, 165, 84);
+  --role-danger-deep: rgb(168, 0, 10);
+  --role-danger-light: rgb(251, 88, 77);
+  --role-police-deep: rgb(19, 98, 183);
+  --role-police-light: rgb(98, 167, 253);
+  --role-ems-deep: rgb(186, 43, 46);
+  --role-ems-light: rgb(255, 126, 118);
+  --role-mech-deep: rgb(192, 111, 28);
+  --role-mech-light: rgb(255, 185, 126);
+  --role-gang-deep: rgb(118, 55, 173);
+  --role-gang-light: rgb(184, 127, 242);
+  --role-civ-deep: rgb(81, 81, 81);
+  --role-civ-light: rgb(145, 145, 145);
+  --role-staff-deep: rgb(174, 174, 174);
+  --role-staff-light: rgb(238, 238, 238);
+  --role-common-deep: rgb(81, 81, 81);
+  --role-common-light: rgb(145, 145, 145);
+  --role-uncommon-deep: rgb(56, 151, 64);
+  --role-uncommon-light: rgb(133, 220, 136);
+  --role-rare-deep: rgb(21, 113, 190);
+  --role-rare-light: rgb(108, 182, 255);
+  --role-epic-deep: rgb(127, 55, 187);
+  --role-epic-light: rgb(192, 130, 255);
+  --role-legendary-deep: rgb(195, 131, 0);
+  --role-legendary-light: rgb(255, 205, 130);
+  --role-brand-deep: rgb(174, 174, 174);
+  --role-brand-light: rgb(238, 238, 238);
+  --role-neutral-deep: rgb(81, 81, 81);
+  --role-neutral-light: rgb(145, 145, 145);
+  --nk-hue-line: 0.5;
+  --nk-hue-tint: 0.14;
+  --nk-hue-glow: 0.45;
+  --nk-hue-alert: 0.24;
+  --nk-material-hud-opacity: 0.55;
+  --nk-material-hud-blur: 0px;
+  --nk-material-hud-radius: 0.625rem;
+  --nk-material-hud-edge: 0.06;
+  --nk-material-hud-texture: none;
+  --nk-material-menu-opacity: 0.96;
+  --nk-material-menu-blur: 0px;
+  --nk-material-menu-radius: 0.625rem;
+  --nk-material-menu-edge: 0.06;
+  --nk-material-menu-texture: none;
+  --nk-material-overlay-opacity: 0.96;
+  --nk-material-overlay-blur: 0px;
+  --nk-material-overlay-radius: 0.625rem;
+  --nk-material-overlay-edge: 0.06;
+  --nk-material-overlay-texture: none;
+  --nk-slash: none;
+  --nk-legibility: auto;
+  --nk-legibility-lift: 0.5;
+  --nk-alert-threshold: 0.2;
+  --nk-fuel-threshold: 0.15;
+  --nk-notify-ms-info: 5000ms;
+  --nk-notify-ms-success: 5000ms;
+  --nk-notify-ms-warning: 5000ms;
+  --nk-notify-ms-danger: 5000ms;
+  --nk-hold-ms: 800ms;
+  --nk-cooldown-ms: 0ms;
+  --nk-rest-delay: 0ms;
+  --nk-motion-profile: full;
+  --nk-ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --nk-ease-expand: cubic-bezier(0.05, 0.7, 0.1, 1);
+  --nk-ease-retract: cubic-bezier(0.4, 0, 1, 1);
+  --nk-ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --nk-ease-breathe: cubic-bezier(0.37, 0, 0.63, 1);
+  --nk-time-confirm: 91ms;
+  --nk-time-retract: 217ms;
+  --nk-time-fill: 420ms;
+  --nk-time-pulse: 1000ms;
+  --nk-z-world: 10;
+  --nk-z-hud: 20;
+  --nk-z-scrim: 30;
+  --nk-z-surface: 40;
+  --nk-z-dim: 50;
+  --nk-z-dialog: 60;
+  --nk-z-system: 70;
+  --nk-hang-md: 0.375rem;
+  --nk-hang-lg: 0.75rem;
+  --nk-focus-shift: 0rem;
+  --nk-glow-budget: 1;
+}
+
+.dark {
+  --destructive-foreground: rgb(10, 10, 10);
+  --font-sans: Inter, ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --success: rgb(20, 190, 90);
+  --success-foreground: rgb(10, 10, 10);
+  --warning: rgb(245, 166, 0);
+  --warning-foreground: rgb(0, 0, 0);
+  --info: var(--primary);
+  --info-foreground: var(--primary-foreground);
+  --hud: rgba(0, 0, 0, 0.45);
+  --hud-foreground: rgb(255, 255, 255);
+  --scrim: rgb(0, 0, 0);
+  --vital-health: rgb(255, 100, 103);
+  --vital-armor: rgb(59, 156, 246);
+  --vital-hunger: rgb(247, 162, 36);
+  --vital-thirst: rgb(30, 197, 228);
+  --vital-stress: rgb(204, 103, 227);
+  --nk-scale: 1;
+  --nk-motion: 1;
+  --brand: rgb(212, 212, 212);
+  --brand-foreground: rgb(0, 0, 0);
+  --world-foreground: rgb(255, 255, 255);
+  --world-foreground-muted: rgba(255, 255, 255, 0.8);
+  --world-shadow: 0 1px 2px rgba(0, 0, 0, 0.65), 0 0 0.5rem rgba(0, 0, 0, 0.35);
+  --world-success: rgb(20, 190, 90);
+  --world-destructive: rgb(255, 100, 103);
+  --font-display: "Inter Tight", Inter, ui-sans-serif, system-ui, sans-serif;
+  --font-numeric: Inter, ui-sans-serif, system-ui, sans-serif;
+  --nk-type-ratio: 1.2;
+  --nk-weight-body: 400;
+  --nk-weight-strong: 600;
+  --nk-weight-display: 700;
+  --nk-tracking-display: -0.02em;
+  --nk-label-case: uppercase;
+  --nk-tracking-label: 0.06em;
+  --nk-border-width: 1px;
+  --nk-cut: 0px;
+  --nk-display-style: normal;
+  --nk-pause-style: sheet;
+  --nk-pause-surface: undefined;
+  --nk-pause-ink: undefined;
+  --nk-skew: 0deg;
+  --nk-surface-opacity: 0.96;
+  --nk-surface-tint: 0.02;
+  --nk-surface-gradient: 0;
+  --nk-surface-edge: 0.06;
+  --nk-elevation: soft;
+  --nk-glow: 0;
+  --nk-density: 0.875;
+  --nk-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --nk-duration: 140ms;
+  --nk-hud-opacity: 0.55;
+  --nk-hud-text-shadow: soft;
+  --nk-gauge-style: arc;
+  --nk-gauge-track: 0.25rem;
+  --nk-gauge-ticks: 1;
+  --nk-row-indicator: bar;
+  --surface: rgb(27, 27, 27);
+  --nk-elevation-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25), 0 12px 32px -16px rgba(0, 0, 0, 0.6);
+  --nk-hud-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+  --nk-row-bar: 1;
+  --nk-row-fill: 0;
+  --nk-row-outline: 0;
+  --nk-clip: none;
+  --nk-clip-sm: none;
+  --nk-motion-feel: crisp;
+  --nk-spring-bounce: 0;
+  --nk-motion-move: 1;
+  --nk-time-instant: 0ms;
+  --nk-time-press: 70ms;
+  --nk-time-hover: 105ms;
+  --nk-time-base: 140ms;
+  --nk-time-exit: 98ms;
+  --nk-time-move: 210ms;
+  --nk-time-modal: 175ms;
+  --nk-time-screen: 350ms;
+  --nk-time-ambient: 400ms;
+  --nk-stagger: 20ms;
+  --nk-stagger-max: 100ms;
+  --nk-ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --nk-ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --nk-ease-in-out: cubic-bezier(0.2, 0, 0, 1);
+  --nk-ease-emphasized: cubic-bezier(0.05, 0.7, 0.1, 1);
+  --nk-ease-linear: linear;
+  --nk-spring-snap: 160ms 0;
+  --nk-spring-move: 240ms 0.1;
+  --nk-spring-soft: 360ms 0;
+  --nk-spring-pop: 260ms 0.3;
+  --nk-treatment: soft;
+  --nk-focus-style: ring;
+  --nk-hold-style: bar;
+  --nk-confirm-scale: 1.04;
+  --nk-level-style: bar;
+  --role-health: rgb(255, 100, 103);
+  --role-armor: rgb(59, 156, 246);
+  --role-hunger: rgb(247, 162, 36);
+  --role-thirst: rgb(30, 197, 228);
+  --role-stress: rgb(204, 103, 227);
+  --role-stamina: rgb(20, 190, 90);
+  --role-oxygen: rgb(229, 229, 229);
+  --role-info: rgb(229, 229, 229);
+  --role-success: rgb(20, 190, 90);
+  --role-warning: rgb(245, 166, 0);
+  --role-danger: rgb(255, 100, 103);
+  --role-police: rgb(49, 134, 233);
+  --role-ems: rgb(237, 74, 73);
+  --role-mech: rgb(238, 145, 56);
+  --role-gang: rgb(157, 87, 222);
+  --role-civ: rgb(161, 161, 161);
+  --role-staff: rgb(212, 212, 212);
+  --role-common: rgb(161, 161, 161);
+  --role-uncommon: rgb(84, 191, 92);
+  --role-rare: rgb(52, 150, 239);
+  --role-epic: rgb(166, 87, 237);
+  --role-legendary: rgb(242, 166, 24);
+  --role-brand: rgb(212, 212, 212);
+  --role-neutral: rgb(161, 161, 161);
+  --role-health-deep: rgb(204, 70, 74);
+  --role-health-light: rgb(255, 158, 155);
+  --role-armor-deep: rgb(30, 119, 197);
+  --role-armor-light: rgb(122, 188, 255);
+  --role-hunger-deep: rgb(201, 127, 0);
+  --role-hunger-light: rgb(255, 204, 140);
+  --role-thirst-deep: rgb(0, 157, 183);
+  --role-thirst-light: rgb(112, 227, 254);
+  --role-stress-deep: rgb(160, 72, 180);
+  --role-stress-light: rgb(230, 144, 250);
+  --role-stamina-deep: rgb(0, 148, 66);
+  --role-stamina-light: rgb(102, 219, 133);
+  --role-oxygen-deep: rgb(190, 190, 190);
+  --role-oxygen-light: rgb(238, 238, 238);
+  --role-info-deep: rgb(190, 190, 190);
+  --role-info-light: rgb(238, 238, 238);
+  --role-success-deep: rgb(0, 148, 66);
+  --role-success-light: rgb(102, 219, 133);
+  --role-warning-deep: rgb(197, 132, 0);
+  --role-warning-light: rgb(255, 207, 136);
+  --role-danger-deep: rgb(204, 70, 74);
+  --role-danger-light: rgb(255, 158, 155);
+  --role-police-deep: rgb(19, 98, 183);
+  --role-police-light: rgb(98, 167, 253);
+  --role-ems-deep: rgb(186, 43, 46);
+  --role-ems-light: rgb(255, 126, 118);
+  --role-mech-deep: rgb(192, 111, 28);
+  --role-mech-light: rgb(255, 185, 126);
+  --role-gang-deep: rgb(118, 55, 173);
+  --role-gang-light: rgb(184, 127, 242);
+  --role-civ-deep: rgb(125, 125, 125);
+  --role-civ-light: rgb(192, 192, 192);
+  --role-staff-deep: rgb(174, 174, 174);
+  --role-staff-light: rgb(238, 238, 238);
+  --role-common-deep: rgb(125, 125, 125);
+  --role-common-light: rgb(192, 192, 192);
+  --role-uncommon-deep: rgb(56, 151, 64);
+  --role-uncommon-light: rgb(133, 220, 136);
+  --role-rare-deep: rgb(21, 113, 190);
+  --role-rare-light: rgb(108, 182, 255);
+  --role-epic-deep: rgb(127, 55, 187);
+  --role-epic-light: rgb(192, 130, 255);
+  --role-legendary-deep: rgb(195, 131, 0);
+  --role-legendary-light: rgb(255, 205, 130);
+  --role-brand-deep: rgb(174, 174, 174);
+  --role-brand-light: rgb(238, 238, 238);
+  --role-neutral-deep: rgb(125, 125, 125);
+  --role-neutral-light: rgb(192, 192, 192);
+  --nk-hue-line: 0.5;
+  --nk-hue-tint: 0.14;
+  --nk-hue-glow: 0.45;
+  --nk-hue-alert: 0.24;
+  --nk-material-hud-opacity: 0.55;
+  --nk-material-hud-blur: 0px;
+  --nk-material-hud-radius: 0.625rem;
+  --nk-material-hud-edge: 0.06;
+  --nk-material-hud-texture: none;
+  --nk-material-menu-opacity: 0.96;
+  --nk-material-menu-blur: 0px;
+  --nk-material-menu-radius: 0.625rem;
+  --nk-material-menu-edge: 0.06;
+  --nk-material-menu-texture: none;
+  --nk-material-overlay-opacity: 0.96;
+  --nk-material-overlay-blur: 0px;
+  --nk-material-overlay-radius: 0.625rem;
+  --nk-material-overlay-edge: 0.06;
+  --nk-material-overlay-texture: none;
+  --nk-slash: none;
+  --nk-legibility: auto;
+  --nk-legibility-lift: 0.5;
+  --nk-alert-threshold: 0.2;
+  --nk-fuel-threshold: 0.15;
+  --nk-notify-ms-info: 5000ms;
+  --nk-notify-ms-success: 5000ms;
+  --nk-notify-ms-warning: 5000ms;
+  --nk-notify-ms-danger: 5000ms;
+  --nk-hold-ms: 800ms;
+  --nk-cooldown-ms: 0ms;
+  --nk-rest-delay: 0ms;
+  --nk-motion-profile: full;
+  --nk-ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --nk-ease-expand: cubic-bezier(0.05, 0.7, 0.1, 1);
+  --nk-ease-retract: cubic-bezier(0.4, 0, 1, 1);
+  --nk-ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --nk-ease-breathe: cubic-bezier(0.37, 0, 0.63, 1);
+  --nk-time-confirm: 91ms;
+  --nk-time-retract: 217ms;
+  --nk-time-fill: 420ms;
+  --nk-time-pulse: 1000ms;
+  --nk-z-world: 10;
+  --nk-z-hud: 20;
+  --nk-z-scrim: 30;
+  --nk-z-surface: 40;
+  --nk-z-dim: 50;
+  --nk-z-dialog: 60;
+  --nk-z-system: 70;
+  --nk-hang-md: 0.375rem;
+  --nk-hang-lg: 0.75rem;
+  --nk-focus-shift: 0rem;
+  --nk-glow-budget: 1;
+}
+
+/* Readability at 1080p (docs/design/research.md §3): small text one step up from Tailwind's defaults,
+   13px captions and 15px secondary text; kit body text is 16px (--nk-text-base). */
+@theme {
+  --text-xs: 0.8125rem;
+  --text-xs--line-height: calc(1.125 / 0.8125);
+  --text-sm: 0.9375rem;
+  --text-sm--line-height: calc(1.375 / 0.9375);
+}
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
+  --color-hud: var(--hud);
+  --color-hud-foreground: var(--hud-foreground);
+  --color-scrim: var(--scrim);
+  --color-world-foreground: var(--world-foreground);
+  --color-world-foreground-muted: var(--world-foreground-muted);
+  --color-vital-health: var(--vital-health);
+  --color-vital-armor: var(--vital-armor);
+  --color-vital-hunger: var(--vital-hunger);
+  --color-vital-thirst: var(--vital-thirst);
+  --color-vital-stress: var(--vital-stress);
+  --color-brand: var(--brand);
+  --color-brand-foreground: var(--brand-foreground);
+  --color-surface: var(--surface);
+  --font-display: var(--font-display);
+  --font-numeric: var(--font-numeric);
+  --default-transition-duration: var(--nk-time-base, var(--nk-duration));
+  --default-transition-timing-function: var(--nk-ease);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  /* NUI draws over the game: the page itself must stay transparent. */
+  html,
+  body {
+    background: transparent;
+    @apply text-foreground select-none;
+  }
+  input,
+  textarea,
+  [contenteditable="true"],
+  .nk-selectable {
+    @apply select-text;
+  }
+  /* Kit base hardening (design v2 §5A): nothing of the web page leaks through. No image drag ghosts,
+     themed selection, caret, placeholder and scrollbars (the -webkit- ones: Chromium 103 has no
+     scrollbar-color). Text selection is off above, except fields and .nk-selectable values. */
+  img,
+  svg,
+  a {
+    -webkit-user-drag: none;
+  }
+  ::selection {
+    background-color: rgba(var(--brand-rgb, var(--primary-rgb)), 0.35);
+    color: inherit;
+  }
+  input,
+  textarea {
+    caret-color: var(--brand, var(--primary));
+  }
+  ::placeholder {
+    color: var(--muted-foreground);
+    opacity: 1;
+  }
+  ::-webkit-scrollbar {
+    width: 0.375rem;
+    height: 0.375rem;
+  }
+  ::-webkit-scrollbar-track,
+  ::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    border-radius: 9999px;
+    background-color: rgba(var(--foreground-rgb), 0.18);
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(var(--foreground-rgb), 0.3);
+  }
+}
+
+/* The page's surface (nuikit.json "surface"): "world" draws the whole page straight on the game, so
+   its text reads --world-foreground (light in every theme). Panels inside keep the theme's colours. */
+/* (surface: panels, the default) */
+
+/* NUI scale: the kit is designed at 1080p and grows with the game's resolution (docs/design.md). */
+@layer base {
+  /* 1rem = 16px at 1080p, scaling with the game's resolution (21px at 1440p, 32px at 4K),
+     times --nk-scale (the theme's UI size × the player's UI scale preference). */
+  html {
+    font-size: calc(clamp(12px, 1.4815vh, 32px) * var(--nk-scale, 1));
+    font-family: var(--font-sans, ui-sans-serif, system-ui, sans-serif);
+    font-weight: var(--nk-weight-body, 400);
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+/*
+ * nuikit kit utilities: the sizing, spacing and surface rules every nuikit UI shares (docs/design.md).
+ * Colours always come from the theme; this only fixes proportions so every screen on the server
+ * feels like one product. Single source: `pnpm sync` inlines it into every index.css, and the site
+ * imports it directly. Never redefine an nk-* name in a UI.
+ *
+ * Three tiers (docs/tokens.md, tokens 1.1): identity tokens (theme.css: type, shape, surface, density,
+ * motion, HUD style) → semantic tokens (colours) → the component tokens below. Utilities read only
+ * component tokens; each component token is a formula over identity + semantic, and any of them can be
+ * overridden in theme.css for a detail. Every var() carries the Graphite default as its fallback, so a
+ * page whose theme predates 1.1 still renders.
+ *
+ * Identity keywords are attributes applyTheme paints on the themed element (data-nk-row, data-nk-feel,
+ * data-nk-motion…): <html> in a UI, a subtree when a theme is painted on one (the site's stages, host
+ * modules). Rules keyed on them use `:is(html, *)[data-nk-…]`: any ancestor, at the specificity
+ * `html[data-nk-…]` had.
+ *
+ * cn() knows these utilities: `pnpm sync` generates lib/utils.ts from this file (scripts/kit-merge.mjs).
+ * A utility removes the earlier stock classes that set what it paints (colour and type),
+ * never layout or shape. `@merge <family>` in the comment above a utility means one member per element: a later
+ * one removes an earlier one.
+ */
+
+:root {
+  /* ── scale: the kit's spacing step × --nk-density, type sizes from one base × --nk-type-ratio */
+  --nk-space: calc(0.25rem * var(--nk-density, 0.875));
+  --nk-ratio: var(--nk-type-ratio, 1.2);
+  /* research §3: 16px body, 13–14px labels, 18px+ for HUD values read in motion */
+  --nk-text-base: 1rem;
+  --nk-text-label: max(0.8125rem, calc(var(--nk-text-base) / var(--nk-ratio)));
+  --nk-hud-value-size: max(1.125rem, calc(var(--nk-text-base) * var(--nk-ratio)));
+  /* ≈ base × √ratio (no pow() in Chromium 103) */
+  --nk-text-title: calc(var(--nk-text-base) * (1 + (var(--nk-ratio) - 1) / 2));
+  --nk-text-section: calc(var(--nk-text-base) * var(--nk-ratio) * var(--nk-ratio));
+  --nk-text-display: calc(var(--nk-text-base) * var(--nk-ratio) * var(--nk-ratio) * var(--nk-ratio) * var(--nk-ratio) * 1.1);
+  --nk-border: var(--nk-border-width, 1px);
+  /* the theme's own colours, resolved here, so a panel inside nk-on-game can restore them */
+  --nk-theme-muted-foreground: var(--muted-foreground);
+  --nk-theme-muted-foreground-rgb: var(--muted-foreground-rgb);
+  --nk-theme-muted-foreground-a: var(--muted-foreground-a);
+  --nk-theme-background: var(--background);
+  --nk-theme-background-rgb: var(--background-rgb);
+  --nk-theme-background-a: var(--background-a);
+  /* ── motion (tokens 1.2, docs/tokens.md#motion): the compiler writes the ladder as literals and the
+     player's prefs clamp it (reduced: ≤ 100ms, no movement; off: 0ms). --nk-time is the base step. */
+  --nk-ease-out: var(--nk-ease, cubic-bezier(0.2, 0.8, 0.2, 1));
+  --nk-time: var(--nk-time-base, calc(var(--nk-duration, 140ms) * var(--nk-motion, 1)));
+  --nk-press-scale: 0.97;
+  /* the selection indicator: one element per list that slides to the active row (nk-indicator) */
+  --nk-indicator-time: var(--nk-time);
+  --nk-indicator-ease: var(--nk-ease-in-out, cubic-bezier(0.2, 0, 0, 1));
+
+  /* ── panel: every floating surface */
+  /* panels draw the menu material (tokens 1.4): opacity (lifted by day legibility), radius, edge, blur */
+  --nk-panel-bg: rgba(var(--surface-rgb, var(--popover-rgb)), calc(var(--surface-a, var(--popover-a, 1)) * var(--nk-menu-alpha, var(--nk-surface-opacity, 0.96))));
+  --nk-panel-fg: var(--popover-foreground);
+  --nk-panel-border: var(--border);
+  /* the theme's radius as is (10px in Graphite): compact panels read crisper than rounded ones */
+  --nk-panel-radius: var(--nk-material-menu-radius, var(--radius));
+  /* the menu material's backdrop blur (0px by default); a surface that wants it applies backdrop-filter */
+  --nk-panel-blur: var(--nk-material-menu-blur, 0px);
+  --nk-panel-cut: var(--nk-cut, 0px);
+  --nk-panel-clip: var(--nk-clip, none);
+  --nk-panel-gradient: linear-gradient(
+    180deg,
+    rgba(var(--popover-foreground-rgb), var(--nk-surface-gradient, 0)),
+    rgba(var(--popover-foreground-rgb), 0) 60%
+  );
+  --nk-panel-edge: inset 0 1px 0 0 rgba(var(--popover-foreground-rgb), var(--nk-material-menu-edge, var(--nk-surface-edge, 0.06)));
+  --nk-panel-shadow: var(--nk-elevation-shadow, 0 0 0 1px rgba(var(--scrim-rgb), 0.25), 0 12px 32px -16px rgba(var(--scrim-rgb), 0.6));
+  --nk-panel-header-height: calc(3.25rem * var(--nk-density, 0.875));
+  --nk-panel-header-padding: calc(var(--nk-space) * 3) calc(var(--nk-space) * 4);
+  --nk-panel-body-padding: calc(var(--nk-space) * 2);
+  --nk-panel-divider: var(--nk-border) solid var(--nk-panel-border);
+  /* corner brackets (Vector): L-shaped brand marks at the four corners; 0 = off */
+  --nk-panel-bracket: 0px;
+  --nk-panel-bracket-width: calc(var(--nk-border) * 2);
+  --nk-panel-bracket-color: var(--brand, var(--primary));
+
+  /* ── heading: panel titles (nk-title) and full-screen titles (nk-display) */
+  --nk-heading-font: var(--font-display, var(--font-sans));
+  --nk-heading-size: var(--nk-text-title);
+  --nk-heading-weight: var(--nk-weight-strong, 600);
+  --nk-heading-tracking: calc(var(--nk-tracking-display, -0.02em) / 2);
+  --nk-heading-case: none;
+  --nk-display-size: var(--nk-text-display);
+  --nk-display-weight: var(--nk-weight-display, 700);
+  --nk-display-tracking: var(--nk-tracking-display, -0.02em);
+  --nk-display-case: var(--nk-heading-case);
+
+  /* ── label: small secondary text (nk-label, always as written: it often carries a sentence) */
+  --nk-label-font: var(--font-sans);
+  --nk-label-size: var(--nk-text-label);
+  --nk-label-weight: 500;
+  /* ── caption: short names of things (nk-caption, nk-field-label, chips): the identity's label case */
+  --nk-caption-font: var(--font-sans);
+  --nk-caption-size: var(--nk-text-label);
+  --nk-caption-weight: 500;
+  --nk-caption-transform: var(--nk-label-case, uppercase);
+  --nk-caption-tracking: var(--nk-tracking-label, 0.06em);
+  --nk-num-font: var(--font-numeric, var(--font-sans));
+  --nk-num-tracking: -0.02em;
+
+  /* ── row: the 40px list row. Active = [data-active], :focus-visible or [data-highlighted] */
+  --nk-row-height: calc(2.75rem * var(--nk-density, 0.875));
+  --nk-row-radius: calc(var(--radius) - 2px);
+  --nk-row-clip: var(--nk-clip-sm, none);
+  --nk-row-padding: calc(var(--nk-space) * 1.5) calc(var(--nk-space) * 3);
+  --nk-row-font-size: var(--nk-text-base);
+  --nk-row-indicator-color: var(--brand, var(--primary));
+  /* bar: a pill at the row's leading edge */
+  --nk-row-bar-width: calc(0.1875rem * var(--nk-row-bar, 1));
+  --nk-row-bar-inset: calc(var(--nk-space) * 2.5);
+  /* fill: the row in solid brand, its text in brand-foreground ([data-nk-row="fill"] on an ancestor, set by applyTheme) */
+  --nk-row-fill-color: var(--brand, var(--primary));
+  --nk-row-fill-foreground: var(--brand-foreground, var(--primary-foreground));
+  /* outline: a brand hairline */
+  --nk-row-outline-width: calc(var(--nk-border) * var(--nk-row-outline, 0));
+  --nk-row-outline-color: rgba(var(--brand-rgb, var(--primary-rgb)), 0.7);
+  --nk-row-glow: 0 0 1rem rgba(var(--brand-rgb, var(--primary-rgb)), calc(var(--nk-glow, 0) * 0.5));
+
+  /* ── key: shadcn's Kbd, as a keycap */
+  --nk-key-bg: var(--muted);
+  --nk-key-fg: var(--popover-foreground);
+  --nk-key-border: var(--border);
+  --nk-key-radius: max(0.25rem, calc(var(--radius) - 4px));
+  --nk-key-font: var(--font-numeric, var(--font-sans));
+  --nk-key-weight: var(--nk-weight-strong, 600);
+  --nk-key-shadow: inset 0 -1px 0 0 rgba(var(--scrim-rgb), 0.35), inset 0 1px 0 0 rgba(var(--popover-foreground-rgb), calc(var(--nk-surface-edge, 0.06) * 1.5));
+  --nk-key-clip: var(--nk-clip-sm, none);
+
+  /* ── chip: always-on HUD chips (nk-chip) and tiles (nk-hud) on the game */
+  --nk-chip-height: calc(2rem * var(--nk-density, 0.875));
+  --nk-chip-padding: calc(var(--nk-space) * 2.5);
+  /* a small rounded rect (6px in Graphite); Velvet sets 9999px for pills */
+  --nk-chip-radius: max(0.25rem, calc(var(--radius) - 4px));
+  --nk-chip-bg: rgba(var(--hud-rgb), max(var(--hud-a, 0.45), var(--nk-hud-alpha, var(--nk-hud-opacity, 0.55))));
+  --nk-chip-fg: var(--hud-foreground);
+  --nk-chip-font-size: 0.875rem;
+  --nk-chip-weight: 500;
+  --nk-chip-active-bg: var(--brand, var(--primary));
+  --nk-chip-active-fg: var(--brand-foreground, var(--primary-foreground));
+  --nk-chip-glow: 0 0 0.75rem rgba(var(--brand-rgb, var(--primary-rgb)), var(--nk-glow, 0));
+  --nk-chip-clip: var(--nk-clip-sm, none);
+  --nk-hud-radius: max(0.25rem, calc(var(--radius) - 2px));
+  --nk-hud-text-shadow: var(--nk-hud-shadow, 0 1px 2px rgba(var(--scrim-rgb), 0.6));
+
+  /* ── meter: bars (shadcn Progress, nk-track); segmented when --nk-meter-segments is 1 */
+  --nk-meter-height: var(--nk-gauge-track, 0.25rem);
+  --nk-meter-radius: 9999px;
+  --nk-meter-track: rgba(var(--scrim-rgb), 0.35);
+  --nk-meter-glow: 0 0 0.625rem rgba(var(--brand-rgb, var(--primary-rgb)), var(--nk-glow, 0));
+  --nk-meter-segments: 0;
+  --nk-meter-segment: 0.5rem;
+  --nk-meter-gap: rgba(var(--popover-rgb), calc(0.85 * var(--nk-meter-segments)));
+
+  /* ── gauge: speedometer, RPM, fuel (the HUD reads --nk-gauge-style: arc | bar | digital) */
+  --nk-gauge-width: var(--nk-gauge-track, 0.25rem);
+  --nk-gauge-sweep: 270deg;
+  --nk-gauge-track-color: rgba(var(--hud-foreground-rgb), 0.16);
+  --nk-gauge-fill: var(--brand, var(--primary));
+  --nk-gauge-needle: var(--brand, var(--primary));
+  --nk-gauge-redline: var(--destructive);
+  --nk-gauge-tick: rgba(var(--hud-foreground-rgb), calc(0.55 * var(--nk-gauge-ticks, 1)));
+  --nk-gauge-tick-major: rgba(var(--hud-foreground-rgb), calc(0.9 * var(--nk-gauge-ticks, 1)));
+  --nk-gauge-font: var(--font-numeric, var(--font-sans));
+  --nk-gauge-glow: rgba(var(--brand-rgb, var(--primary-rgb)), var(--nk-glow, 0));
+
+  /* ── slab: transient feedback on the game (design v2 §4.5). One anatomy for every script, so new
+     scripts look native: item added (tile + name + delta), prompt (key + verb), progress (label + thin
+     line + cancel key), incapacitated (a full-width band). Sits on the game, so it wears the HUD plate. */
+  --nk-slab-height: calc(2.5rem * var(--nk-density, 0.875));
+  --nk-slab-padding: 0 calc(var(--nk-space) * 3);
+  --nk-slab-gap: calc(var(--nk-space) * 2.5);
+  --nk-slab-radius: var(--nk-chip-radius);
+  --nk-slab-clip: var(--nk-chip-clip);
+  --nk-slab-bg: var(--nk-chip-bg);
+  --nk-slab-fg: var(--nk-chip-fg);
+  --nk-slab-border: rgba(var(--hud-foreground-rgb), 0.08);
+  --nk-slab-font-size: var(--nk-text-base);
+  --nk-slab-weight: var(--nk-weight-strong, 600);
+  --nk-slab-text-shadow: none;
+  /* the slab's accent, as channels: the line's fill, the band's tint and edges. A screen sets it per
+     state on any ancestor (--nk-slab-tone-rgb: var(--destructive-rgb) on the death band). Everything
+     drawn in the tone is resolved in the utility, not here, so that override reaches it; --nk-slab-line-fill
+     is unset (the tone) unless a theme sets it. */
+  --nk-slab-tone-rgb: var(--brand-rgb, var(--primary-rgb));
+  /* icon tile: a square inset by one spacing step */
+  --nk-slab-tile-size: calc(var(--nk-slab-height) - var(--nk-space) * 2);
+  --nk-slab-tile-bg: rgba(var(--hud-foreground-rgb), 0.1);
+  --nk-slab-tile-fg: var(--nk-slab-fg);
+  --nk-slab-tile-radius: max(0.125rem, calc(var(--nk-slab-radius) - var(--nk-space)));
+  /* delta: +1, −2, $250 */
+  --nk-slab-delta-font: var(--nk-num-font);
+  --nk-slab-delta-up: var(--world-success, var(--success));
+  --nk-slab-delta-down: var(--world-destructive, var(--destructive));
+  /* key chip: the key tokens, at a fixed slab size */
+  --nk-slab-key-size: 1.5rem;
+  --nk-slab-key-font-size: 0.8125rem;
+  /* thin line (progress): drawn with a transform, so it never repaints the slab */
+  --nk-slab-line-height: 0.1875rem;
+  --nk-slab-line-radius: var(--nk-meter-radius);
+  --nk-slab-line-track: rgba(var(--hud-foreground-rgb), 0.18);
+  --nk-slab-stack-width: 20rem;
+  --nk-slab-stack-gap: calc(var(--nk-space) * 2);
+  /* full-width band */
+  --nk-slab-band-padding: calc(var(--nk-space) * 3) calc(var(--nk-space) * 6);
+  --nk-slab-band-gap: var(--nk-space);
+  --nk-slab-band-bg: rgba(var(--scrim-rgb), 0.62);
+  /* alphas of the tone over the band and on its edges */
+  --nk-slab-band-tint: 0.3;
+  --nk-slab-band-edge: 0.6;
+  --nk-slab-band-fg: var(--hud-foreground);
+  --nk-slab-band-title-size: var(--nk-text-section);
+}
+
+/*
+ * Variants: density and shape for one subtree (a component's `density` / `shape` prop paints these
+ * attributes; any element can carry them). The component tokens above resolve where they're declared,
+ * so a subtree that changes --nk-density or --radius re-declares the ones that depend on them (every
+ * token whose formula reaches --nk-density, or --radius). What a variant asks for wins over the
+ * theme's value for those tokens inside it; everything else keeps the theme's. Motion is
+ * [data-nk-motion="off" | "reduced"] on any ancestor (rules below use :is(html, *)).
+ */
+[data-nk-density="compact"] {
+  --nk-density: 0.75;
+}
+[data-nk-density="comfortable"] {
+  --nk-density: 1.15;
+}
+[data-nk-density] {
+  --nk-space: calc(0.25rem * var(--nk-density, 0.875));
+  --nk-panel-header-height: calc(3.25rem * var(--nk-density, 0.875));
+  --nk-panel-header-padding: calc(var(--nk-space) * 3) calc(var(--nk-space) * 4);
+  --nk-panel-body-padding: calc(var(--nk-space) * 2);
+  --nk-row-height: calc(2.75rem * var(--nk-density, 0.875));
+  --nk-row-padding: calc(var(--nk-space) * 1.5) calc(var(--nk-space) * 3);
+  --nk-row-bar-inset: calc(var(--nk-space) * 2.5);
+  --nk-chip-height: calc(2rem * var(--nk-density, 0.875));
+  --nk-chip-padding: calc(var(--nk-space) * 2.5);
+  --nk-slab-height: calc(2.5rem * var(--nk-density, 0.875));
+  --nk-slab-padding: 0 calc(var(--nk-space) * 3);
+  --nk-slab-gap: calc(var(--nk-space) * 2.5);
+  --nk-slab-tile-size: calc(var(--nk-slab-height) - var(--nk-space) * 2);
+  --nk-slab-tile-radius: max(0.125rem, calc(var(--nk-slab-radius) - var(--nk-space)));
+  --nk-slab-stack-gap: calc(var(--nk-space) * 2);
+  --nk-slab-band-padding: calc(var(--nk-space) * 3) calc(var(--nk-space) * 6);
+  --nk-slab-band-gap: var(--nk-space);
+}
+[data-nk-shape] {
+  --nk-chip-radius: max(0.25rem, calc(var(--radius) - 4px));
+  --nk-key-radius: max(0.25rem, calc(var(--radius) - 4px));
+  --nk-panel-radius: var(--radius);
+  --nk-row-radius: calc(var(--radius) - 2px);
+  --nk-hud-radius: max(0.25rem, calc(var(--radius) - 2px));
+  --nk-slab-radius: var(--nk-chip-radius);
+  --nk-slab-tile-radius: max(0.125rem, calc(var(--nk-slab-radius) - var(--nk-space)));
+}
+[data-nk-shape="square"] {
+  --radius: 0.125rem;
+  --nk-chip-radius: 0.125rem;
+  --nk-key-radius: 0.125rem;
+  --nk-meter-radius: 0.0625rem;
+}
+[data-nk-shape="round"] {
+  --radius: 1rem;
+  --nk-chip-radius: 9999px;
+}
+
+/* Floating panel: menus, inventories, dialogs, cards on top of the game. @merge nk-surface */
+@utility nk-panel {
+  /* !important so it wins over a shadcn primitive's own surface (DialogContent's bg-background) */
+  background-color: var(--nk-panel-bg) !important;
+  color: var(--nk-panel-fg) !important;
+  border: var(--nk-border) solid var(--nk-panel-border);
+  border-radius: var(--nk-panel-radius) !important;
+  /* chamfer hairlines (only when --nk-cut > 0: a 0-size image isn't drawn), then the light falloff */
+  background-image:
+    linear-gradient(135deg, transparent calc(50% - var(--nk-border)), var(--nk-panel-border) calc(50% - var(--nk-border)), var(--nk-panel-border) 50%, transparent 50%),
+    linear-gradient(315deg, transparent calc(50% - var(--nk-border)), var(--nk-panel-border) calc(50% - var(--nk-border)), var(--nk-panel-border) 50%, transparent 50%),
+    linear-gradient(var(--nk-panel-bracket-color), var(--nk-panel-bracket-color)), linear-gradient(var(--nk-panel-bracket-color), var(--nk-panel-bracket-color)), linear-gradient(var(--nk-panel-bracket-color), var(--nk-panel-bracket-color)), linear-gradient(var(--nk-panel-bracket-color), var(--nk-panel-bracket-color)),
+    linear-gradient(var(--nk-panel-bracket-color), var(--nk-panel-bracket-color)), linear-gradient(var(--nk-panel-bracket-color), var(--nk-panel-bracket-color)), linear-gradient(var(--nk-panel-bracket-color), var(--nk-panel-bracket-color)), linear-gradient(var(--nk-panel-bracket-color), var(--nk-panel-bracket-color)),
+    var(--nk-panel-gradient);
+  background-position:
+    top left, bottom right,
+    top left, top left, top right, top right, bottom left, bottom left, bottom right, bottom right,
+    0 0;
+  background-size:
+    var(--nk-panel-cut) var(--nk-panel-cut), var(--nk-panel-cut) var(--nk-panel-cut),
+    var(--nk-panel-bracket) var(--nk-panel-bracket-width), var(--nk-panel-bracket-width) var(--nk-panel-bracket),
+    var(--nk-panel-bracket) var(--nk-panel-bracket-width), var(--nk-panel-bracket-width) var(--nk-panel-bracket),
+    var(--nk-panel-bracket) var(--nk-panel-bracket-width), var(--nk-panel-bracket-width) var(--nk-panel-bracket),
+    var(--nk-panel-bracket) var(--nk-panel-bracket-width), var(--nk-panel-bracket-width) var(--nk-panel-bracket),
+    100% 100%;
+  background-repeat: no-repeat;
+  background-origin: border-box;
+  box-shadow: var(--nk-panel-edge), var(--nk-panel-shadow);
+  clip-path: var(--nk-panel-clip);
+}
+/* Panel header: one line, title left, meta/actions right. @merge nk-panel-header */
+@utility nk-panel-header {
+  display: flex;
+  text-align: left;
+  align-items: center;
+  gap: calc(var(--nk-space) * 3);
+  min-height: var(--nk-panel-header-height);
+  padding: var(--nk-panel-header-padding);
+  border-bottom: var(--nk-panel-divider);
+}
+@utility nk-panel-body {
+  padding: var(--nk-panel-body-padding);
+}
+@utility nk-panel-footer {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--nk-space) * 2);
+  padding: var(--nk-panel-header-padding);
+  border-top: var(--nk-panel-divider);
+}
+/* Two-row panel header: a title row (nk-panel-title-row) above tabs, a search or a meter. @merge nk-panel-header */
+@utility nk-panel-header-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  text-align: left;
+  gap: calc(var(--nk-space) * 3);
+  padding: var(--nk-panel-header-padding);
+  border-bottom: var(--nk-panel-divider);
+}
+/* The title row of a header: icon, title, then meta and actions pushed right. 28px tall so a
+   ghost icon button fits without changing the header's height. */
+@utility nk-panel-title-row {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--nk-space) * 3);
+  min-height: 1.75rem;
+}
+/* Form field inside a panel: a label row above its control (slider, stepper, input, swatches). */
+@utility nk-field {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--nk-space) * 2);
+}
+/* The field's label row: name, an optional hint, then the value and a reset button on the right
+   (give that group ml-auto). 24px tall, so an icon-xs reset button never moves it. */
+@utility nk-field-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+  min-height: 1.5rem;
+  font-family: var(--nk-caption-font);
+  font-size: var(--nk-caption-size);
+  line-height: 1rem;
+  font-weight: var(--nk-caption-weight);
+  text-transform: var(--nk-caption-transform);
+  letter-spacing: var(--nk-caption-tracking);
+}
+/* Title inside a panel header. @merge nk-type */
+@utility nk-title {
+  font-family: var(--nk-heading-font);
+  font-style: var(--nk-display-style, normal);
+  /* !important: shadcn titles carry text-lg, which would otherwise win */
+  font-size: var(--nk-heading-size) !important;
+  font-weight: var(--nk-heading-weight);
+  line-height: 1.3 !important;
+  letter-spacing: var(--nk-heading-tracking);
+  text-transform: var(--nk-heading-case);
+}
+/* Small secondary label, as written (descriptions, meta lines). @merge nk-type */
+@utility nk-label {
+  font-family: var(--nk-label-font);
+  font-size: var(--nk-label-size) !important;
+  line-height: 1rem !important;
+  font-weight: var(--nk-label-weight);
+  color: var(--muted-foreground);
+}
+/* The short name of a value (Fuel, Balance, Voice): the identity's label case and tracking
+   (--nk-label-case: uppercase in Signal and Vector). One to three words; sentences use nk-label.
+   @merge nk-type */
+@utility nk-caption {
+  font-family: var(--nk-caption-font);
+  font-size: var(--nk-caption-size) !important;
+  line-height: 1rem !important;
+  font-weight: var(--nk-caption-weight);
+  text-transform: var(--nk-caption-transform);
+  letter-spacing: var(--nk-caption-tracking);
+  color: var(--muted-foreground);
+}
+/* Interactive row in a list: 44px tall at 1080p (× density). The active row ([data-active],
+   :focus-visible, [data-highlighted]) carries the identity's indicator: bar, fill or outline. */
+@utility nk-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: calc(var(--nk-space) * 3);
+  min-height: var(--nk-row-height);
+  padding: var(--nk-row-padding);
+  border-radius: var(--nk-row-radius);
+  clip-path: var(--nk-row-clip);
+  font-size: var(--nk-row-font-size);
+  line-height: 1.25rem;
+  /* interaction (0.8.1): a state fills with movement. The highlight is a sweep from the leading edge
+     (--nk-sweep, drawn as a background layer so the row's own surface classes don't flash it), the bar
+     grows from its middle, text eases with the fill; a press dips and springs back (--nk-motion-feel).
+     Motion off: instant; reduced: no movement. */
+  --nk-sweep: var(--accent);
+  background-image: linear-gradient(var(--nk-sweep), var(--nk-sweep));
+  background-repeat: no-repeat;
+  background-position: left center;
+  background-size: 0% 100%;
+  transition-property: background-size, color, box-shadow, transform;
+  transition-duration: var(--nk-time), var(--nk-time), var(--nk-time), var(--nk-time-press, 120ms);
+  transition-timing-function: var(--nk-ease-out), var(--nk-ease-out), var(--nk-ease-out), var(--nk-ease-spring, cubic-bezier(0.34, 1.56, 0.64, 1));
+  &::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: var(--nk-row-bar-inset);
+    bottom: var(--nk-row-bar-inset);
+    width: var(--nk-row-bar-width);
+    border-radius: 9999px;
+    background-color: var(--nk-row-indicator-color);
+    opacity: 0;
+    transform: scaleY(0);
+    transition:
+      opacity var(--nk-time) var(--nk-ease-out),
+      transform var(--nk-time) var(--nk-ease-out);
+    pointer-events: none;
+  }
+  &:is(:hover, [data-active], [data-highlighted], :focus-visible) {
+    background-color: transparent !important;
+    background-size: 100% 100%;
+  }
+  &[class*="text-destructive"] {
+    --nk-sweep: rgba(var(--destructive-rgb), 0.12);
+  }
+  &:not([aria-disabled="true"], [data-disabled], :disabled):is(:active, [data-nk-press]) {
+    transform: scale(var(--nk-press-scale, 0.97));
+    transition-duration: var(--nk-time), var(--nk-time), var(--nk-time), var(--nk-time-press, 70ms);
+    transition-timing-function: var(--nk-ease-out);
+  }
+  :is(html, *)[data-nk-feel="snap"] &,
+  :is(html, *)[data-nk-feel="stepped"] & {
+    transition-timing-function: var(--nk-ease-out);
+  }
+  :is(html, *)[data-nk-motion="reduced"] & {
+    transition-property: color;
+  }
+  :is(html, *)[data-nk-motion="reduced"] &:active {
+    transform: none;
+  }
+  /* the identity indicator marks keyboard, controller and script selection; the pointer's hover is the
+     accent surface the row's own hover: classes paint (menu-row's hover variant), never the indicator */
+  &[data-active],
+  &[data-highlighted],
+  &:focus-visible {
+    box-shadow: inset 0 0 0 var(--nk-row-outline-width) var(--nk-row-outline-color), var(--nk-row-glow);
+  }
+  &[data-active]::before,
+  &[data-highlighted]::before,
+  &:focus-visible::before {
+    opacity: 1;
+    transform: none;
+  }
+}
+/* Numbers: money, timers, counts. */
+@utility nk-num {
+  font-family: var(--nk-num-font);
+  font-style: var(--nk-display-style, normal);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: var(--nk-num-tracking);
+}
+/* HUD chip: always-on, no border, sits on the game. @merge nk-surface */
+@utility nk-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: calc(var(--nk-space) * 1.5);
+  height: var(--nk-chip-height);
+  padding: 0 var(--nk-chip-padding);
+  border-radius: var(--nk-chip-radius);
+  background-color: var(--nk-chip-bg);
+  color: var(--nk-chip-fg);
+  font-size: var(--nk-chip-font-size);
+  font-weight: var(--nk-chip-weight);
+  clip-path: var(--nk-chip-clip);
+  /* the active fill rises from the bottom (a background layer), the ink eases with it */
+  background-image: linear-gradient(var(--nk-chip-active-bg), var(--nk-chip-active-bg));
+  background-repeat: no-repeat;
+  background-position: center bottom;
+  background-size: 100% 0%;
+  transition:
+    background-size var(--nk-time) var(--nk-ease-out),
+    color var(--nk-time) var(--nk-ease-out);
+}
+/* Active chip (talking, selected): the brand, filling up from the bottom. */
+@utility nk-chip-active {
+  background-color: var(--nk-chip-active-bg);
+  background-size: 100% 100%;
+  color: var(--nk-chip-active-fg);
+  box-shadow: var(--nk-chip-glow);
+}
+/* Square HUD tile on the game (hotbar slots, the target eye): the chip's surface, any size. @merge nk-surface */
+@utility nk-hud {
+  border-radius: var(--nk-hud-radius);
+  background-color: var(--nk-chip-bg);
+  color: var(--nk-chip-fg);
+  clip-path: var(--nk-chip-clip);
+}
+/* Bar track on the game world: theme-tinted tracks vanish over a bright sky. */
+@utility nk-track {
+  background-color: var(--nk-meter-track);
+}
+/* Text and marks drawn straight on the game. */
+@utility nk-shadow {
+  text-shadow: var(--nk-hud-text-shadow);
+  filter: drop-shadow(0 1px 1px color-mix(in oklab, var(--scrim) 35%, transparent));
+}
+/*
+ * On the game: a subtree drawn straight on the world, no panel (death text, unplated HUD values, labels
+ * over the scene). Inside it, foreground and muted-foreground are the world's (--world-foreground: light
+ * in every theme, light or dark), background is the game (the scrim colour, for text on foreground keycaps),
+ * and text carries --world-shadow. Panels inside (nk-panel) keep the theme's own colours. A page that is all
+ * on the game opts in as a whole with "surface": "world" in nuikit.json (pnpm sync applies it to body).
+ */
+@utility nk-on-game {
+  --foreground: var(--world-foreground);
+  --foreground-rgb: var(--world-foreground-rgb);
+  --foreground-a: var(--world-foreground-a);
+  --muted-foreground: var(--world-foreground-muted);
+  --muted-foreground-rgb: var(--world-foreground-muted-rgb);
+  --muted-foreground-a: var(--world-foreground-muted-a);
+  --background: rgb(var(--scrim-rgb));
+  --background-rgb: var(--scrim-rgb);
+  --background-a: 1;
+  color: var(--world-foreground);
+  text-shadow: var(--world-shadow);
+  & .nk-panel {
+    --foreground: var(--popover-foreground);
+    --foreground-rgb: var(--popover-foreground-rgb);
+    --foreground-a: var(--popover-foreground-a);
+    --muted-foreground: var(--nk-theme-muted-foreground);
+    --muted-foreground-rgb: var(--nk-theme-muted-foreground-rgb);
+    --muted-foreground-a: var(--nk-theme-muted-foreground-a);
+    --background: var(--nk-theme-background);
+    --background-rgb: var(--nk-theme-background-rgb);
+    --background-a: var(--nk-theme-background-a);
+    text-shadow: none;
+  }
+}
+/* Full-screen title (pause, loading, death): 32px at 1080p (Graphite). @merge nk-type */
+@utility nk-display {
+  font-family: var(--nk-heading-font);
+  font-style: var(--nk-display-style, normal);
+  font-size: var(--nk-display-size);
+  line-height: 1.2;
+  font-weight: var(--nk-display-weight);
+  letter-spacing: var(--nk-display-tracking);
+  text-transform: var(--nk-display-case);
+}
+/*
+ * Slabs: transient feedback on the game, one anatomy everywhere (design v2 §4.5, docs/tokens.md#slabs).
+ *   item:     <div class="nk-slab"><span class="nk-slab-tile"><Icon/></span>Water bottle<span class="nk-slab-delta">+2</span></div>
+ *   prompt:   <div class="nk-slab"><kbd class="nk-slab-key">E</kbd>Clean dishes</div>
+ *   progress: <div class="nk-slab-stack"><div class="nk-slab-stack-row"><span class="nk-caption">Repairing</span>
+ *               <kbd class="nk-slab-key">Esc</kbd>Cancel</div><div class="nk-slab-line" style="--nk-slab-progress: .4"></div></div>
+ *   band:     <div class="nk-slab-band"><p class="nk-slab-band-title">You are incapacitated</p><p class="nk-caption">…</p></div>
+ * @merge nk-surface
+ */
+@utility nk-slab {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--nk-slab-gap);
+  min-height: var(--nk-slab-height);
+  padding: var(--nk-slab-padding);
+  border-radius: var(--nk-slab-radius);
+  clip-path: var(--nk-slab-clip);
+  background-color: var(--nk-slab-bg);
+  color: var(--nk-slab-fg);
+  box-shadow: inset 0 0 0 var(--nk-border) var(--nk-slab-border);
+  font-size: var(--nk-slab-font-size);
+  font-weight: var(--nk-slab-weight);
+  line-height: 1.25rem;
+  text-shadow: var(--nk-slab-text-shadow);
+  white-space: nowrap;
+}
+/* The icon tile at the slab's leading edge, inset by one spacing step. */
+@utility nk-slab-tile {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: var(--nk-slab-tile-size);
+  height: var(--nk-slab-tile-size);
+  margin-left: calc(var(--nk-space) * -2);
+  border-radius: var(--nk-slab-tile-radius);
+  background-color: var(--nk-slab-tile-bg);
+  color: var(--nk-slab-tile-fg);
+  & svg {
+    width: 1rem;
+    height: 1rem;
+  }
+}
+/* The change a slab reports (+2, −1, $250), pushed to the trailing edge. [data-delta="down"] for a loss. */
+@utility nk-slab-delta {
+  margin-left: auto;
+  padding-left: var(--nk-slab-gap);
+  font-family: var(--nk-slab-delta-font);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: var(--nk-num-tracking);
+  color: var(--nk-slab-delta-up);
+  &[data-delta="down"] {
+    color: var(--nk-slab-delta-down);
+  }
+}
+/* A key chip (E, Esc, Shift) in a slab: the key tokens at the slab's size. */
+@utility nk-slab-key {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--nk-slab-key-size);
+  height: var(--nk-slab-key-size);
+  padding: 0 0.375rem;
+  border-radius: var(--nk-key-radius);
+  clip-path: var(--nk-key-clip);
+  background-color: var(--nk-key-bg);
+  color: var(--nk-key-fg);
+  box-shadow: var(--nk-key-shadow), inset 0 0 0 var(--nk-border) var(--nk-key-border);
+  font-family: var(--nk-key-font);
+  font-size: var(--nk-slab-key-font-size);
+  font-weight: var(--nk-key-weight);
+  line-height: 1;
+  text-shadow: none;
+}
+/* Progress: a label row above a thin line, no plate (it sits low on the game, text shadowed). */
+@utility nk-slab-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--nk-slab-stack-gap);
+  width: var(--nk-slab-stack-width);
+  color: var(--nk-slab-fg);
+  text-shadow: var(--nk-hud-text-shadow);
+}
+/* The stack's label row: label left, then the cancel key and its verb pushed right. */
+@utility nk-slab-stack-row {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--nk-space) * 2);
+  font-size: var(--nk-slab-font-size);
+  font-weight: var(--nk-slab-weight);
+  line-height: 1.25rem;
+  & > :first-child {
+    margin-right: auto;
+  }
+  & .nk-caption {
+    color: inherit;
+  }
+}
+/* The thin line: set --nk-slab-progress (0–1) inline; the fill scales, so nothing repaints. */
+@utility nk-slab-line {
+  position: relative;
+  height: var(--nk-slab-line-height);
+  border-radius: var(--nk-slab-line-radius);
+  background-color: var(--nk-slab-line-track);
+  overflow: hidden;
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-color: var(--nk-slab-line-fill, rgb(var(--nk-slab-tone-rgb)));
+    box-shadow: 0 0 0.5rem rgba(var(--nk-slab-tone-rgb), var(--nk-glow, 0));
+    transform-origin: left center;
+    transform: scaleX(var(--nk-slab-progress, 0));
+    transition: transform var(--nk-time) linear;
+  }
+}
+/* A full-width band at the bottom of the screen (incapacitated, arrested, spectating): the game
+   darkened, tinted by the tone, with tone hairlines above and below. */
+@utility nk-slab-band {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--nk-slab-band-gap);
+  width: 100%;
+  padding: var(--nk-slab-band-padding);
+  background-color: var(--nk-slab-band-bg);
+  background-image: linear-gradient(rgba(var(--nk-slab-tone-rgb), var(--nk-slab-band-tint)), rgba(var(--nk-slab-tone-rgb), var(--nk-slab-band-tint)));
+  border-top: var(--nk-border) solid rgba(var(--nk-slab-tone-rgb), var(--nk-slab-band-edge));
+  border-bottom: var(--nk-border) solid rgba(var(--nk-slab-tone-rgb), var(--nk-slab-band-edge));
+  color: var(--nk-slab-band-fg);
+  text-align: center;
+  text-shadow: var(--nk-hud-text-shadow);
+  & .nk-caption {
+    color: inherit;
+    opacity: 0.85;
+  }
+}
+/* The band's one line: the display face at section size. */
+@utility nk-slab-band-title {
+  font-family: var(--nk-heading-font);
+  font-size: var(--nk-slab-band-title-size);
+  font-weight: var(--nk-display-weight);
+  letter-spacing: var(--nk-display-tracking);
+  text-transform: var(--nk-display-case);
+  line-height: 1.2;
+}
+/* Scrolling list inside a panel. */
+@utility nk-scroll {
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-gutter: stable;
+}
+/* Distance from the screen edge for anything anchored to it. */
+@utility nk-edge {
+  --nk-edge: 1.5rem;
+}
+/*
+ * Anchors: pin an element to a corner or edge of the screen, --nk-edge in (1.5rem unless an
+ * ancestor sets it). Absolute, so put them inside the full-screen root. The edge-centred ones
+ * centre with auto margins, not a transform, so nk-enter and dialogs never fight over it.
+ */
+/* @merge nk-anchor */
+@utility nk-anchor-tl {
+  position: absolute;
+  top: var(--nk-edge, 1.5rem);
+  left: var(--nk-edge, 1.5rem);
+}
+/* @merge nk-anchor */
+@utility nk-anchor-tr {
+  position: absolute;
+  top: var(--nk-edge, 1.5rem);
+  right: var(--nk-edge, 1.5rem);
+}
+/* @merge nk-anchor */
+@utility nk-anchor-bl {
+  position: absolute;
+  bottom: var(--nk-edge, 1.5rem);
+  left: var(--nk-edge, 1.5rem);
+}
+/* @merge nk-anchor */
+@utility nk-anchor-br {
+  position: absolute;
+  bottom: var(--nk-edge, 1.5rem);
+  right: var(--nk-edge, 1.5rem);
+}
+/* @merge nk-anchor */
+@utility nk-anchor-t {
+  position: absolute;
+  top: var(--nk-edge, 1.5rem);
+  left: 0;
+  right: 0;
+  width: max-content;
+  margin-inline: auto;
+}
+/* @merge nk-anchor */
+@utility nk-anchor-b {
+  position: absolute;
+  bottom: var(--nk-edge, 1.5rem);
+  left: 0;
+  right: 0;
+  width: max-content;
+  margin-inline: auto;
+}
+/* @merge nk-anchor */
+@utility nk-anchor-l {
+  position: absolute;
+  left: var(--nk-edge, 1.5rem);
+  top: 0;
+  bottom: 0;
+  height: max-content;
+  margin-block: auto;
+}
+/* @merge nk-anchor */
+@utility nk-anchor-r {
+  position: absolute;
+  right: var(--nk-edge, 1.5rem);
+  top: 0;
+  bottom: 0;
+  height: max-content;
+  margin-block: auto;
+}
+/*
+ * A floating menu that opens beside a point (the target eye, the cursor, a row) lines its first
+ * row up with that point: place the panel's top on the point, then pull it up by the border,
+ * the nk-panel-body padding and half an nk-row (1px, 8px and 22px in Graphite).
+ */
+@utility nk-first-row {
+  margin-top: calc(-1 * var(--nk-border) - var(--nk-space) * 2 - var(--nk-row-height) / 2);
+}
+/* The one open animation. --nk-motion: 0 (theme or the player's reduced-motion pref) skips it. */
+@utility nk-enter {
+  animation: nk-enter var(--nk-time) var(--nk-ease-out) backwards;
+}
+/* Opacity only: a transform here would override the translate that centres dialogs, and
+   Chromium 103 has no separate `scale` property. */
+@keyframes nk-enter {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .nk-enter { animation: none; }
+}
+
+/*
+ * Motion utilities (design v2 §5A, docs/design.md#motion). Transform and opacity only, cubic-bezier only
+ * (no linear(), @starting-style, individual translate/scale or :has() in Chromium 103). Under reduced
+ * motion ([data-nk-motion="reduced"] on an ancestor) each falls back to its fade, at most 100ms.
+ */
+/* A floating panel opening from its trigger: popovers, menus, tooltips, the target eye. Scale 0.96 → 1
+   and fade over --nk-time, from Radix's trigger-side origin. Never on a centred dialog (its transform
+   centres it): put nk-pop on an inner wrapper there. */
+@utility nk-pop {
+  transform-origin: var(--radix-popper-transform-origin, center);
+  animation: nk-pop var(--nk-time) var(--nk-ease-out) both;
+  &[data-state="closed"] {
+    animation: nk-fade-out var(--nk-time-exit, var(--nk-time)) var(--nk-ease-in, ease-in) both;
+  }
+  :is(html, *)[data-nk-motion="reduced"] &:not([data-state="closed"]) {
+    animation-name: nk-enter;
+  }
+}
+@keyframes nk-pop {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes nk-fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+@keyframes nk-fold-out {
+  from { opacity: 1; transform: none; }
+  to { opacity: 0; transform: translateY(-0.25rem) scale(0.97); }
+}
+@keyframes nk-pop-out {
+  from { opacity: 1; transform: none; }
+  to { opacity: 0; transform: scale(0.9); }
+}
+/* Choreography (nuikit-core <Stagger>, useStaggerItem(on, { animate })): members enter and leave in
+   sequence; the group sets each one's delay and data-nk-stagger. Entering fills backwards only (hidden
+   while it waits, then the element's own transforms, a press dip, are free again); leaving holds the
+   end. Reduced motion: fades; off: instant. */
+[data-nk-stagger="in"][data-nk-stagger-kind="rise"] {
+  animation: nk-rise var(--nk-time) var(--nk-ease-out) backwards;
+}
+[data-nk-stagger="in"][data-nk-stagger-kind="pop"] {
+  animation: nk-pop var(--nk-time) var(--nk-ease-out) backwards;
+}
+[data-nk-stagger="in"][data-nk-stagger-kind="fade"] {
+  animation: nk-enter var(--nk-time) var(--nk-ease-out) backwards;
+}
+[data-nk-stagger="out"][data-nk-stagger-kind="rise"] {
+  animation: nk-fold-out var(--nk-time-exit, var(--nk-time)) var(--nk-ease-in, ease-in) both;
+}
+[data-nk-stagger="out"][data-nk-stagger-kind="pop"] {
+  animation: nk-pop-out var(--nk-time-exit, var(--nk-time)) var(--nk-ease-in, ease-in) both;
+}
+[data-nk-stagger="out"][data-nk-stagger-kind="fade"] {
+  animation: nk-fade-out var(--nk-time-exit, var(--nk-time)) var(--nk-ease-in, ease-in) both;
+}
+:is(html, *)[data-nk-motion="reduced"] [data-nk-stagger="in"] {
+  animation-name: nk-enter;
+}
+:is(html, *)[data-nk-motion="reduced"] [data-nk-stagger="out"] {
+  animation-name: nk-fade-out;
+}
+/* An entrance with a short rise (4px), for lists, toasts and panel contents: an inner wrapper, never a
+   centred dialog. Reduced motion keeps the fade. */
+@utility nk-rise {
+  animation: nk-rise var(--nk-time) var(--nk-ease-out) both;
+  :is(html, *)[data-nk-motion="reduced"] & {
+    animation-name: nk-enter;
+  }
+}
+@keyframes nk-rise {
+  from { opacity: 0; transform: translateY(0.25rem); }
+  to { opacity: 1; transform: none; }
+}
+/* First-open stagger: set --i (the item's index) inline next to nk-rise or nk-enter. --nk-stagger per
+   item, capped at --nk-stagger-max (items past the fifth enter together). First open only: never on
+   updates, filtering or keyboard navigation. */
+@utility nk-stagger {
+  animation-delay: min(calc(var(--i, 0) * var(--nk-stagger, 20ms)), var(--nk-stagger-max, 100ms));
+}
+/* Tactile press: scale(--nk-press-scale) while held, over --nk-time-press. On buttons, rows and tiles,
+   never on a centred dialog. Signal (snap) and Vector (stepped) answer with their background instead,
+   and reduced motion or off doesn't scale. */
+@utility nk-press {
+  transition: transform var(--nk-time-press, 70ms) var(--nk-ease-out);
+  &:active {
+    transform: scale(var(--nk-press-scale));
+  }
+  :is(html, *)[data-nk-motion="reduced"] &:active,
+  :is(html, *)[data-nk-motion="off"] &:active,
+  :is(html, *)[data-nk-feel="snap"] &:active,
+  :is(html, *)[data-nk-feel="stepped"] &:active {
+    transform: none;
+  }
+}
+/* A loading placeholder in the content's exact box: a muted block, and a shimmer only while motion is
+   on. Delay it ~200ms and keep it ≥ 400ms (no flicker); never on an always-on surface. */
+@utility nk-skeleton {
+  position: relative;
+  overflow: hidden;
+  border-radius: max(0.25rem, calc(var(--radius) - 4px));
+  background-color: rgba(var(--foreground-rgb), 0.08);
+  color: transparent !important;
+  pointer-events: none;
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: linear-gradient(90deg, transparent, rgba(var(--foreground-rgb), 0.08), transparent);
+    transform: translateX(-100%);
+    animation: nk-shimmer 1.4s linear infinite;
+  }
+  :is(html, *)[data-nk-motion="reduced"] &::after,
+  :is(html, *)[data-nk-motion="off"] &::after {
+    animation: none;
+    display: none;
+  }
+}
+@keyframes nk-shimmer {
+  to { transform: translateX(100%); }
+}
+/* One attention cue when a value crosses a threshold, then steady: two opacity blinks (no infinite
+   pulse on the HUD: every animated frame is a frame the game composites). Kept under reduced motion. */
+@utility nk-blink {
+  animation: nk-blink 300ms ease-in-out 2;
+}
+@keyframes nk-blink {
+  50% { opacity: 0.4; }
+}
+/*
+ * The selection indicator: ONE element per list, behind the rows, that slides to the active row with a
+ * transform (the rows don't animate; they change state instantly). Position it from code: useIndicator()
+ * in nuikit-core/react, or indicator() in nuikit-core/motion, which also apply the key-repeat rule.
+ *   <div class="relative" ref={list}><div class="nk-indicator" ref={ind} />{rows}</div>
+ * data-repeat="fast" (moves sooner than --nk-time apart) glides in --nk-time-press; "jump" (the third
+ * such move in a row) doesn't glide, so it never trails a held d-pad. Signal (snap) and reduced motion
+ * jump on every move. It draws the identity's indicator: bar, fill or outline.
+ */
+@utility nk-indicator {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--nk-row-height);
+  border-radius: var(--nk-row-radius);
+  pointer-events: none;
+  transform-origin: 0 0;
+  will-change: transform;
+  background-color: rgba(var(--brand-rgb, var(--primary-rgb)), calc(var(--nk-row-fill, 0)));
+  box-shadow: inset 0 0 0 var(--nk-row-outline-width) var(--nk-row-outline-color), var(--nk-row-glow);
+  transition: transform var(--nk-indicator-time) var(--nk-indicator-ease);
+  &::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: var(--nk-row-bar-inset);
+    bottom: var(--nk-row-bar-inset);
+    width: var(--nk-row-bar-width);
+    border-radius: 9999px;
+    background-color: var(--nk-row-indicator-color);
+  }
+  &[data-repeat="fast"] {
+    transition-duration: var(--nk-time-press, 70ms);
+  }
+  &[data-repeat="jump"],
+  :is(html, *)[data-nk-motion="reduced"] &,
+  :is(html, *)[data-nk-feel="snap"] & {
+    transition-duration: 0s;
+  }
+  &[data-hidden] {
+    opacity: 0;
+  }
+}
+/* Rows after an indicator leave the active marking to it (their text colour still changes, instantly). */
+.nk-indicator ~ .nk-row::before {
+  display: none;
+}
+.nk-indicator ~ .nk-row {
+  box-shadow: none;
+}
+:is(html, *)[data-nk-row="fill"] .nk-indicator ~ .nk-row.nk-row:is([data-active], [data-highlighted], :focus-visible) {
+  background-color: transparent;
+}
+
+/*
+ * Stock shadcn parts, dressed by component tokens (vendor/ is never edited). In the utilities layer
+ * after Tailwind's own, so they beat a component's base classes (bg-muted) but lose to anything more
+ * specific a UI adds (group-data-[active]:bg-background/60).
+ */
+@layer utilities {
+  [data-slot="kbd"] {
+    background-color: var(--nk-key-bg);
+    color: var(--nk-key-fg);
+    border-radius: var(--nk-key-radius);
+    box-shadow: var(--nk-key-shadow), inset 0 0 0 var(--nk-border) var(--nk-key-border);
+    font-family: var(--nk-key-font);
+    font-weight: var(--nk-key-weight);
+    font-style: var(--nk-display-style, normal);
+    clip-path: var(--nk-key-clip);
+  }
+  [data-slot="button"] {
+    clip-path: var(--nk-chip-clip);
+  }
+  /* the primary button: a light sweep across on hover (shadcn's transition-all eases it) */
+  [data-slot="button"][data-variant="default"] {
+    background-image: linear-gradient(rgba(var(--primary-foreground-rgb), 0.14), rgba(var(--primary-foreground-rgb), 0.14));
+    background-repeat: no-repeat;
+    background-position: left center;
+    background-size: 0% 100%;
+  }
+  [data-slot="button"][data-variant="default"]:hover {
+    background-size: 100% 100%;
+  }
+  /* a press dips and springs back */
+  [data-slot="button"]:not([class*="translate"], :disabled):is(:active, [data-nk-press]) {
+    transform: scale(var(--nk-press-scale, 0.97));
+  }
+  :is(html, *)[data-nk-motion="reduced"] [data-slot="button"]:active,
+  :is(html, *)[data-nk-motion="off"] [data-slot="button"]:active {
+    transform: none;
+  }
+  [data-slot="progress"] {
+    border-radius: var(--nk-meter-radius);
+  }
+  [data-slot="progress"]::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: repeating-linear-gradient(90deg, transparent 0 calc(var(--nk-meter-segment) - 0.125rem), var(--nk-meter-gap) calc(var(--nk-meter-segment) - 0.125rem) var(--nk-meter-segment));
+  }
+  [data-slot="progress-indicator"] {
+    box-shadow: var(--nk-meter-glow);
+  }
+}
+
+/*
+ * Row indicator "fill" (Signal): the active row in solid brand. A colour swap CSS can't do from a number,
+ * so it keys off the attribute applyTheme paints from --nk-row-indicator. Unlayered on purpose: it must
+ * beat the row's and its children's own text colours. Destructive rows keep their colour.
+ */
+:is(html, *)[data-nk-row="fill"] .nk-row:is([data-active], [data-highlighted], :focus-visible):not([class*="text-destructive"]) {
+  --nk-sweep: var(--nk-row-fill-color);
+  color: var(--nk-row-fill-foreground);
+}
+/* rows after an indicator: the indicator carries the selection; the row only sweeps for the pointer */
+.nk-indicator ~ .nk-row:is([data-active], [data-highlighted], :focus-visible):not(:hover) {
+  background-size: 0% 100%;
+}
+:is(html, *)[data-nk-row="fill"] .nk-row:is([data-active], [data-highlighted], :focus-visible):not([class*="text-destructive"]) :not([data-slot="kbd"], [data-slot="kbd"] *, [data-slot="progress"], [data-slot="progress"] *) {
+  color: inherit;
+}
+:is(html, *)[data-nk-row="fill"] .nk-row::before {
+  display: none;
+}
+
+/* a chip keeps its own surface under the rising active fill (tiles, nk-hud, take the brand at once) */
+.nk-chip.nk-chip-active {
+  background-color: var(--nk-chip-bg);
+}
+
+/*
+ * Skew (tokens 1.3: --nk-skew, painted as html[data-nk-skew] by applyTheme). Badges, chips, key caps,
+ * tags, the primary button and the selected row are drawn as skewed slabs, Valorant / Fortnite style: the
+ * slab is a ::after behind the content, skewed with transform (Chromium 103); the content itself stays
+ * upright (or italic, with --nk-display-style). Nothing here applies at 0deg, so the other identities are
+ * untouched. Each part names its fill (--nk-slab-fill) and stroke (--nk-slab-stroke).
+ */
+:is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"]) :is(.nk-chip, [data-slot="kbd"], [data-slot="badge"], [data-slot="button"][data-variant="default"]) {
+  position: relative;
+  isolation: isolate;
+  clip-path: none !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+  border-color: transparent !important;
+}
+:is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"]) :is(.nk-chip, [data-slot="kbd"], [data-slot="badge"], [data-slot="button"][data-variant="default"])::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-color: var(--nk-slab-fill, transparent);
+  box-shadow: var(--nk-slab-stroke, none);
+  transform: skewX(var(--nk-skew));
+}
+:is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"]) .nk-chip {
+  --nk-slab-fill: var(--nk-chip-bg);
+}
+:is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"]) .nk-chip:is(.nk-chip-active, [data-state="active"]) {
+  --nk-slab-fill: var(--nk-chip-active-bg);
+}
+:is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"]) .nk-chip[class*="bg-destructive"] {
+  --nk-slab-fill: var(--destructive);
+}
+:is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"]) [data-slot="kbd"] {
+  --nk-slab-fill: var(--nk-key-bg);
+  --nk-slab-stroke: inset 0 0 0 var(--nk-border) var(--nk-key-border);
+}
+:is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"]) [data-slot="badge"] {
+  --nk-slab-fill: var(--primary);
+}
+:is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"]) [data-slot="badge"][data-variant="secondary"] {
+  --nk-slab-fill: var(--secondary);
+}
+:is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"]) [data-slot="badge"][data-variant="destructive"] {
+  --nk-slab-fill: var(--destructive);
+}
+:is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"]) [data-slot="badge"][data-variant="outline"] {
+  --nk-slab-fill: transparent;
+  --nk-slab-stroke: inset 0 0 0 var(--nk-border) var(--border);
+}
+:is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"]) [data-slot="button"][data-variant="default"] {
+  --nk-slab-fill: var(--primary);
+}
+/* key caps: a skewed parallelogram with the stroke, on an offset back plate */
+:is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"]) [data-slot="kbd"] {
+  --nk-slab-stroke: inset 0 0 0 var(--nk-border) var(--nk-key-border);
+  overflow: visible;
+}
+:is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"]) [data-slot="kbd"]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  background-color: var(--nk-key-plate, var(--border));
+  transform: translate(0.1875rem, 0.1875rem) skewX(var(--nk-skew));
+}
+/* notification type badges: a small skewed slab in the type's colour, the glyph dark on it */
+:is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"]) [data-slot="notice-icon"] {
+  position: relative;
+  isolation: isolate;
+  justify-content: center;
+  width: 1.375rem;
+  height: 1.25rem;
+}
+:is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"]) [data-slot="notice-icon"]::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-color: currentColor;
+  box-shadow: 0.125rem 0.125rem 0 0 rgba(var(--scrim-rgb), 0.6);
+  transform: skewX(var(--nk-skew));
+}
+:is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"]) [data-slot="notice-icon"] svg {
+  color: var(--background);
+  width: 0.75rem;
+  height: 0.75rem;
+}
+/* tabs: the active one a solid light slab with dark text */
+:is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"]) [data-slot="tabs-trigger"][data-state="active"] {
+  background-color: var(--foreground);
+  color: var(--background);
+}
+
+/* the selected row (fill indicator) and the gliding indicator: a skewed bar, a little in from the sides */
+:is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"])[data-nk-row="fill"] .nk-row:is([data-active], [data-highlighted], :focus-visible):not([class*="text-destructive"]) {
+  isolation: isolate;
+  background-color: transparent;
+}
+:is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"])[data-nk-row="fill"] .nk-row {
+  isolation: isolate;
+}
+:is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"])[data-nk-row="fill"] .nk-row::before {
+  content: "";
+  display: block;
+  position: absolute;
+  inset: 0 0.375rem;
+  width: auto;
+  z-index: -1;
+  border-radius: 0;
+  pointer-events: none;
+  opacity: 1;
+  background-color: var(--nk-row-fill-color);
+  transform-origin: left center;
+  transform: skewX(var(--nk-skew)) scaleX(0);
+  transition: transform var(--nk-time) var(--nk-ease-out);
+}
+:is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"])[data-nk-row="fill"] .nk-row:is([data-active], [data-highlighted], :focus-visible):not([class*="text-destructive"]) {
+  background-size: 0% 100%;
+}
+:is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"])[data-nk-row="fill"] .nk-row:is([data-active], [data-highlighted], :focus-visible):not([class*="text-destructive"])::before {
+  transform: skewX(var(--nk-skew)) scaleX(1);
+}
+:is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"])[data-nk-row="fill"] .nk-indicator ~ .nk-row:is([data-active], [data-highlighted], :focus-visible)::before {
+  display: none;
+}
+:is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"]) .nk-indicator {
+  background-color: transparent;
+  box-shadow: none;
+}
+:is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"]) .nk-indicator::after {
+  content: "";
+  position: absolute;
+  inset: 0 0.375rem;
+  pointer-events: none;
+  background-color: rgba(var(--brand-rgb, var(--primary-rgb)), calc(var(--nk-row-fill, 0)));
+  box-shadow: inset 0 0 0 var(--nk-row-outline-width) var(--nk-row-outline-color), var(--nk-row-glow);
+  transform: skewX(var(--nk-skew));
+}
+
+/*
+ * Instant state (design v2 §5A, premium-qualities §1): selection, tabs, toggles and focus driven by the
+ * keyboard or a controller change with no transition; only pointer hover may ease. shadcn's parts carry
+ * transition classes, so the kit zeroes them here (vendor/ is never edited).
+ */
+html :is([data-slot="tabs-trigger"], [data-slot="toggle"], [data-slot="toggle-group-item"], [data-slot="checkbox"], [data-slot="checkbox-indicator"], [data-slot="switch"], [data-slot="switch-thumb"], [data-slot="radio-group-item"], [data-slot="select-item"], [data-slot="dropdown-menu-item"], [data-slot="context-menu-item"], [data-slot="menubar-item"], [data-slot="command-item"], [data-slot="navigation-menu-link"]):not(:hover),
+html :focus-visible {
+  transition-duration: 0s;
+}
+
+/* Vector (stepped): bar fills tick in steps instead of gliding. */
+:is(html, *)[data-nk-feel="stepped"] :is([data-slot="progress-indicator"], [data-slot="meter-fill"]) {
+  transition-timing-function: steps(4, end) !important;
+}
+
+/* Reduced motion (the player's pref, [data-nk-motion="reduced"] on an ancestor): no movement, fades kept at
+   ≤ 100ms. shadcn's enter/exit animations (tw-animate-css) keep their fade and lose their slide, zoom
+   and spin. Loading spinners still turn: they're information. */
+:is(html, *)[data-nk-motion="reduced"] * {
+  --tw-enter-scale: 1 !important;
+  --tw-exit-scale: 1 !important;
+  --tw-enter-translate-x: 0 !important;
+  --tw-enter-translate-y: 0 !important;
+  --tw-exit-translate-x: 0 !important;
+  --tw-exit-translate-y: 0 !important;
+  --tw-enter-rotate: 0 !important;
+  --tw-exit-rotate: 0 !important;
+}
+:is(html, *)[data-nk-motion="reduced"] :is([class*="animate-in"], [class*="animate-out"]) {
+  animation-duration: 100ms !important;
+}
+:is(html, *)[data-nk-motion="reduced"] *,
+:is(html, *)[data-nk-motion="reduced"] *::before,
+:is(html, *)[data-nk-motion="reduced"] *::after {
+  animation-delay: 0s !important;
+  transition-delay: 0s !important;
+}
+
+/* Motion off (the theme's --nk-motion: 0, data-nk-motion="off"): no animations or transitions anywhere,
+   shadcn's included. */
+:is(html, *)[data-nk-motion="off"] *,
+:is(html, *)[data-nk-motion="off"] *::before,
+:is(html, *)[data-nk-motion="off"] *::after {
+  animation-duration: 0s !important;
+  animation-delay: 0s !important;
+  transition-duration: 0s !important;
+  transition-delay: 0s !important;
+}
+
+
+/* ───────────────────────────── tokens 1.4: roles, legibility, glow budget (docs/tokens.md#roles)
+   Roles: a frame sets data-hue="<role>" and everything inside reads one ramp, never a colour. The
+   compiler gives each role its colour and deep / light steps (--role-<name>, -deep, -light); the alphas
+   are tokens (--nk-hue-line, -tint, -glow, -alert). Status and vital roles alias by default. */
+[data-hue="health"] { --hue: var(--role-health-rgb); --hue-deep-rgb: var(--role-health-deep-rgb); --hue-light-rgb: var(--role-health-light-rgb); }
+[data-hue="armor"] { --hue: var(--role-armor-rgb); --hue-deep-rgb: var(--role-armor-deep-rgb); --hue-light-rgb: var(--role-armor-light-rgb); }
+[data-hue="hunger"] { --hue: var(--role-hunger-rgb); --hue-deep-rgb: var(--role-hunger-deep-rgb); --hue-light-rgb: var(--role-hunger-light-rgb); }
+[data-hue="thirst"] { --hue: var(--role-thirst-rgb); --hue-deep-rgb: var(--role-thirst-deep-rgb); --hue-light-rgb: var(--role-thirst-light-rgb); }
+[data-hue="stress"] { --hue: var(--role-stress-rgb); --hue-deep-rgb: var(--role-stress-deep-rgb); --hue-light-rgb: var(--role-stress-light-rgb); }
+[data-hue="stamina"] { --hue: var(--role-stamina-rgb); --hue-deep-rgb: var(--role-stamina-deep-rgb); --hue-light-rgb: var(--role-stamina-light-rgb); }
+[data-hue="oxygen"] { --hue: var(--role-oxygen-rgb); --hue-deep-rgb: var(--role-oxygen-deep-rgb); --hue-light-rgb: var(--role-oxygen-light-rgb); }
+[data-hue="info"] { --hue: var(--role-info-rgb); --hue-deep-rgb: var(--role-info-deep-rgb); --hue-light-rgb: var(--role-info-light-rgb); }
+[data-hue="success"] { --hue: var(--role-success-rgb); --hue-deep-rgb: var(--role-success-deep-rgb); --hue-light-rgb: var(--role-success-light-rgb); }
+[data-hue="warning"] { --hue: var(--role-warning-rgb); --hue-deep-rgb: var(--role-warning-deep-rgb); --hue-light-rgb: var(--role-warning-light-rgb); }
+[data-hue="danger"] { --hue: var(--role-danger-rgb); --hue-deep-rgb: var(--role-danger-deep-rgb); --hue-light-rgb: var(--role-danger-light-rgb); }
+[data-hue="police"] { --hue: var(--role-police-rgb); --hue-deep-rgb: var(--role-police-deep-rgb); --hue-light-rgb: var(--role-police-light-rgb); }
+[data-hue="ems"] { --hue: var(--role-ems-rgb); --hue-deep-rgb: var(--role-ems-deep-rgb); --hue-light-rgb: var(--role-ems-light-rgb); }
+[data-hue="mech"] { --hue: var(--role-mech-rgb); --hue-deep-rgb: var(--role-mech-deep-rgb); --hue-light-rgb: var(--role-mech-light-rgb); }
+[data-hue="gang"] { --hue: var(--role-gang-rgb); --hue-deep-rgb: var(--role-gang-deep-rgb); --hue-light-rgb: var(--role-gang-light-rgb); }
+[data-hue="civ"] { --hue: var(--role-civ-rgb); --hue-deep-rgb: var(--role-civ-deep-rgb); --hue-light-rgb: var(--role-civ-light-rgb); }
+[data-hue="staff"] { --hue: var(--role-staff-rgb); --hue-deep-rgb: var(--role-staff-deep-rgb); --hue-light-rgb: var(--role-staff-light-rgb); }
+[data-hue="common"] { --hue: var(--role-common-rgb); --hue-deep-rgb: var(--role-common-deep-rgb); --hue-light-rgb: var(--role-common-light-rgb); }
+[data-hue="uncommon"] { --hue: var(--role-uncommon-rgb); --hue-deep-rgb: var(--role-uncommon-deep-rgb); --hue-light-rgb: var(--role-uncommon-light-rgb); }
+[data-hue="rare"] { --hue: var(--role-rare-rgb); --hue-deep-rgb: var(--role-rare-deep-rgb); --hue-light-rgb: var(--role-rare-light-rgb); }
+[data-hue="epic"] { --hue: var(--role-epic-rgb); --hue-deep-rgb: var(--role-epic-deep-rgb); --hue-light-rgb: var(--role-epic-light-rgb); }
+[data-hue="legendary"] { --hue: var(--role-legendary-rgb); --hue-deep-rgb: var(--role-legendary-deep-rgb); --hue-light-rgb: var(--role-legendary-light-rgb); }
+[data-hue="brand"] { --hue: var(--role-brand-rgb); --hue-deep-rgb: var(--role-brand-deep-rgb); --hue-light-rgb: var(--role-brand-light-rgb); }
+[data-hue="neutral"] { --hue: var(--role-neutral-rgb); --hue-deep-rgb: var(--role-neutral-deep-rgb); --hue-light-rgb: var(--role-neutral-light-rgb); }
+[data-hue] {
+  --hue-solid: rgb(var(--hue));
+  --hue-deep: rgb(var(--hue-deep-rgb));
+  --hue-line: rgba(var(--hue), var(--nk-hue-line, 0.5));
+  --hue-tint: rgba(var(--hue), var(--nk-hue-tint, 0.14));
+  --hue-glow: rgba(var(--hue), var(--nk-hue-glow, 0.45));
+  --hue-alert: rgba(var(--hue), var(--nk-hue-alert, 0.24));
+  --hue-grad-a: rgb(var(--hue-light-rgb));
+  --hue-grad-b: rgb(var(--hue-deep-rgb));
+}
+
+/* Legibility: day lifts each material's opacity toward opaque by --nk-legibility-lift (not a light
+   theme). The theme's day applies always; auto applies while the HUD marks html[data-nk-daytime]. Surfaces
+   read --nk-{hud,menu,overlay}-alpha, never the raw material opacity. */
+:root {
+  --nk-day: 0;
+  --nk-hud-alpha: calc(var(--nk-material-hud-opacity, 0.55) + (1 - var(--nk-material-hud-opacity, 0.55)) * var(--nk-legibility-lift, 0.5) * var(--nk-day));
+  --nk-menu-alpha: calc(var(--nk-material-menu-opacity, 0.96) + (1 - var(--nk-material-menu-opacity, 0.96)) * var(--nk-legibility-lift, 0.5) * var(--nk-day));
+  --nk-overlay-alpha: calc(var(--nk-material-overlay-opacity, 0.96) + (1 - var(--nk-material-overlay-opacity, 0.96)) * var(--nk-legibility-lift, 0.5) * var(--nk-day));
+}
+html[data-nk-legibility="day"],
+html[data-nk-legibility="auto"][data-nk-daytime] {
+  --nk-day: 1;
+}
+
+/* Glow budget: a part that may glow says so with data-nk-glow; the runtime (nuikit-core glow.ts) marks at
+   most --nk-glow-budget of them data-nk-glow-on, the top surface's focused one first. The rest don't glow. */
+[data-nk-glow]:not([data-nk-glow-on]) {
+  --nk-glow: 0;
+  --nk-hue-glow: 0;
+}
