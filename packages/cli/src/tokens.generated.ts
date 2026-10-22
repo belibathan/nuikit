@@ -772,7 +772,7 @@ export const GENERATED: { name: string; group: string; type: string; description
     "name": "nk-backdrop",
     "group": "kit",
     "type": "number",
-    "description": "Backdrop filters (blur behind materials, the death screen's desaturation): off by default, because NUI's Chromium draws them as black boxes over the game on many clients. on applies each surface's --nk-backdrop-filter"
+    "description": "Backdrop filters (blur behind materials, the death screen's desaturation): on applies each surface's --nk-backdrop-filter (seen right in game). off for clients whose NUI draws them as black boxes over the game"
   },
   {
     "name": "nk-slash",
