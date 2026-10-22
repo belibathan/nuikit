@@ -10,6 +10,10 @@
  * 2. Older nuikit resource: fetch nuikit/theme.css and convert it here.
  * 3. No nuikit resource: nothing is set and style.css's built-in values stay.
  *
+ * It also gives chat's input the kit's smooth caret and typing (registry smooth-input, in plain JS
+ * since the page is chat's): see smoothField below. Purely visual: chat's keys, history and posts are
+ * untouched.
+ *
  * Plain ES2017, no build step. MIT, https://github.com/belibathan/nuikit
  */
 (function () {
@@ -210,6 +214,11 @@
 
   /** A payload from the nuikit resource: { hash, theme: { vars, imports }, css?, prefs? }. */
   function applyPayload(p) {
+    // the player's reduced-motion pref turns the smooth caret off, as on every nuikit page
+    if (p && p.prefs && typeof document !== "undefined") {
+      if (p.prefs.reducedMotion) document.documentElement.setAttribute("data-nk-motion", "reduced");
+      else if (document.documentElement.getAttribute("data-nk-motion") === "reduced") document.documentElement.removeAttribute("data-nk-motion");
+    }
     if (p && p.theme && p.theme.vars) {
       applyDecls(varsDecls(p.theme.vars), p.theme.imports || []);
       return true;
@@ -280,7 +289,172 @@
       });
   }
 
-  var api = { parseTheme: parseTheme, toRgba: toRgba, themeDecls: themeDecls, varsDecls: varsDecls, importUrls: importUrls, apply: apply, applyPayload: applyPayload };
+
+  // ── smooth caret and typing ─────────────────────────────────────────────────────────────────────
+  //
+  // The kit's SmoothInput for chat's <textarea>: the field's own glyphs and caret go transparent and
+  // a mirror of its text is drawn over it (same font, padding and scroll), the newly typed characters
+  // easing up and a caret that glides between positions and breathes in the theme's primary. While
+  // an IME composes, while there is a selection range, and when motion is off or reduced, it is the
+  // plain native field. Focus, keys, history (up/down), selection and paste stay the browser's and
+  // chat's own; nothing here posts or handles a key.
+
+  var MIRRORED = ["fontFamily", "fontSize", "fontWeight", "fontStyle", "letterSpacing", "wordSpacing", "textTransform", "textIndent", "textAlign", "lineHeight", "paddingTop", "paddingRight", "paddingBottom", "paddingLeft", "borderTopWidth", "borderRightWidth", "borderBottomWidth", "borderLeftWidth", "color"];
+  var TYPE_MS = 140;
+  var CARET_MS = 90;
+
+  /** What was inserted going from `before` to `after`: [from, to) in `after`, or null. */
+  function inserted(before, after) {
+    if (before === after) return null;
+    var p = 0;
+    while (p < after.length && p < before.length && after[p] === before[p]) p++;
+    var s = 0;
+    while (s < after.length - p && s < before.length - p && after[after.length - 1 - s] === before[before.length - 1 - s]) s++;
+    var to = after.length - s;
+    return to > p ? [p, to] : null;
+  }
+
+  function motionOn() {
+    var a = document.documentElement.getAttribute("data-nk-motion");
+    if (a === "off" || a === "reduced") return false;
+    return !(typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches);
+  }
+
+  function smoothField(el) {
+    var row = el.parentElement;
+    if (!row || el.hasAttribute("data-nk-smooth")) return;
+    el.setAttribute("data-nk-smooth", "");
+    var overlay = document.createElement("div");
+    overlay.className = "nk-smooth-mirror";
+    overlay.setAttribute("aria-hidden", "true");
+    var content = document.createElement("div");
+    content.className = "nk-smooth-content";
+    var caret = document.createElement("span");
+    caret.className = "nk-smooth-caret";
+    caret.style.transition = "transform " + CARET_MS + "ms cubic-bezier(0.2, 0.8, 0.2, 1)";
+    overlay.appendChild(content);
+    row.appendChild(overlay);
+    var last = el.value;
+    var composing = false;
+    var frame = 0;
+    var breath = null;
+
+    function hide() {
+      overlay.style.visibility = "hidden";
+      el.classList.remove("nk-smooth");
+      if (breath) breath.cancel();
+      breath = null;
+    }
+
+    function draw() {
+      frame = 0;
+      var value = el.value;
+      var ins = inserted(last, value);
+      last = value;
+      var a = el.selectionStart == null ? value.length : el.selectionStart;
+      var b = el.selectionEnd == null ? a : el.selectionEnd;
+      if (!motionOn() || composing || a !== b || document.activeElement !== el || !el.isConnected) return hide();
+
+      // the mirror sits exactly on the field (the row holds the mode prefix too)
+      var cs = getComputedStyle(el);
+      for (var i = 0; i < MIRRORED.length; i++) overlay.style[MIRRORED[i]] = cs[MIRRORED[i]];
+      overlay.style.left = el.offsetLeft + "px";
+      overlay.style.top = el.offsetTop + "px";
+      overlay.style.width = el.offsetWidth + "px";
+      overlay.style.height = el.offsetHeight + "px";
+
+      // the text as before / typed / after, with a zero-width marker at the caret
+      while (content.firstChild) content.removeChild(content.firstChild);
+      var cuts = [0, value.length, a];
+      if (ins) cuts.push(ins[0], ins[1]);
+      cuts = cuts
+        .filter(function (c, j) {
+          return cuts.indexOf(c) === j;
+        })
+        .sort(function (x, y) {
+          return x - y;
+        });
+      var marker = null;
+      for (var k = 0; k < cuts.length; k++) {
+        var at = cuts[k];
+        if (at === a) {
+          marker = document.createElement("span");
+          marker.className = "nk-smooth-marker";
+          content.appendChild(marker);
+        }
+        var next = cuts[k + 1];
+        if (next === undefined || next <= at) continue;
+        var span = document.createElement("span");
+        span.textContent = value.slice(at, next);
+        if (ins && at >= ins[0] && next <= ins[1] && typeof span.animate === "function") {
+          span.className = "nk-smooth-typed";
+          span.animate([{ opacity: 0, transform: "translateY(0.25em)" }, { opacity: 1, transform: "translateY(0)" }], {
+            duration: next - at > 12 ? TYPE_MS * 1.5 : TYPE_MS,
+            easing: "cubic-bezier(0.2, 0.8, 0.2, 1)",
+          });
+        }
+        content.appendChild(span);
+      }
+      // an empty last line still has a height
+      if (value.charAt(value.length - 1) === "\n") content.appendChild(document.createTextNode("​"));
+      content.appendChild(caret);
+      content.style.transform = "translate(" + -el.scrollLeft + "px, " + -el.scrollTop + "px)";
+
+      caret.style.height = marker.offsetHeight + "px";
+      caret.style.transform = "translate(" + marker.offsetLeft + "px, " + marker.offsetTop + "px)";
+      el.classList.add("nk-smooth");
+      overlay.style.visibility = "";
+      // moving or typing restarts the breath, so the caret is solid while it moves
+      if (breath) breath.cancel();
+      breath =
+        typeof caret.animate === "function"
+          ? caret.animate([{ opacity: 1 }, { opacity: 1, offset: 0.45 }, { opacity: 0.15, offset: 0.7 }, { opacity: 1 }], {
+              duration: 1100,
+              delay: 500,
+              iterations: Infinity,
+              easing: "ease-in-out",
+            })
+          : null;
+    }
+
+    function later() {
+      if (!frame) frame = requestAnimationFrame(draw);
+    }
+    ["input", "keyup", "keydown", "mouseup", "focus", "blur", "select", "scroll"].forEach(function (e) {
+      el.addEventListener(e, later);
+    });
+    el.addEventListener("compositionstart", function () {
+      composing = true;
+      later();
+    });
+    el.addEventListener("compositionend", function () {
+      composing = false;
+      later();
+    });
+    document.addEventListener("selectionchange", function () {
+      if (document.activeElement === el) later();
+    });
+    hide();
+    later();
+  }
+
+  /** Chat's input exists once its page has mounted: attach when it appears (and if it is replaced). */
+  function watchInput() {
+    if (typeof document === "undefined" || typeof MutationObserver !== "function") return;
+    var current = null;
+    var find = function () {
+      if (current && current.isConnected) return;
+      current = document.querySelector(".chat-input textarea");
+      if (current) smoothField(current);
+    };
+    find();
+    new MutationObserver(find).observe(document.documentElement, { childList: true, subtree: true });
+  }
+
+  var api = { inserted: inserted, parseTheme: parseTheme, toRgba: toRgba, themeDecls: themeDecls, varsDecls: varsDecls, importUrls: importUrls, apply: apply, applyPayload: applyPayload };
   if (typeof module === "object" && module.exports) module.exports = api;
-  else start();
+  else {
+    start();
+    watchInput();
+  }
 })();
