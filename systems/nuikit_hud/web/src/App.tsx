@@ -1,6 +1,6 @@
-import { Surface, useNuiState, usePlayer } from "nuikit-core/react";
+import { fetchNui, Surface, useNuiState, usePlayer, useSurfaceOpen } from "nuikit-core/react";
 import { MinimapFrameView, useMinimap } from "./minimap";
-import type { CSSProperties } from "react";
+import { useEffect, type CSSProperties, type ReactNode } from "react";
 import type { HudLayout, HudLocation, HudSettings, HudVehicle, HudWeapon, MinimapFrame, MinimapState } from "./nui";
 import { Ammo } from "./hud/ammo";
 import { Cluster } from "./hud/cluster";
@@ -45,6 +45,12 @@ function Hud(props: { settings: HudSettings } & HudData) {
   const player = usePlayer();
   const { w, h } = useViewport();
   const look = useHudLook();
+  // Lua shows GTA's radar only while the HUD is shown, told the moment the exit or entrance starts, so
+  // the radar and its ring go and come with the rest of the HUD (hud.css: the sides)
+  const open = useSurfaceOpen();
+  useEffect(() => {
+    void fetchNui("hud:shown", { shown: open }).catch(() => {});
+  }, [open]);
   return props.settings.layout === "compact" ? <Compact {...props} player={player} look={look} w={w} h={h} /> : <Classic {...props} player={player} look={look} w={w} h={h} />;
 }
 
@@ -53,6 +59,24 @@ interface Placed {
   look: HudLook;
   w: number;
   h: number;
+}
+
+/**
+ * One full-screen layer per screen edge. When the HUD opens or closes (a menu hides it), every layer
+ * slides off toward its own edge and fades, all on the same frame and the same curve, and comes back
+ * the same way. The map layer cuts with GTA's radar instead (a game layer can't slide).
+ */
+function Side({ side, children }: { side: "left" | "right" | "top" | "map"; children: ReactNode }) {
+  return (
+    <div data-slot="hud-side" data-side={side} className="hud-side">
+      {children}
+    </div>
+  );
+}
+
+/** Which edge a map at this rectangle belongs to. */
+function mapEdge(frame: MinimapFrame | null): "left" | "right" {
+  return frame && frame.x + frame.w / 2 < 0.5 ? "left" : "right";
 }
 
 /**
@@ -81,20 +105,30 @@ function Compact({ settings, vehicle, location, weapon, layout, frame, state, pl
     vars["--hud-col-w"] = `${(frame.w * w).toFixed(1)}px`;
   }
   const heading = state?.heading ?? 0;
+  // the column leaves with the map's edge; unplaced, it stands top right
+  const columnSide = frame ? mapEdge(frame) : "right";
+  const columnEl = (
+    <div data-slot="hud-map-column" data-placed={!!frame || undefined} data-map={mapShown || undefined} className="hud-column" style={column}>
+      {settings.location !== false && location && <MapLocation location={location} units={units} waypoint={!ring} />}
+      <Wallet player={player} settings={settings} inline compact />
+    </div>
+  );
   return (
     <div data-slot="hud" data-layout="compact" className="hud-root" data-shadow={look.shadow} style={vars as CSSProperties}>
-      {ring && <MapRing frame={frame!} start={heading} compass={settings.compass?.ring !== false} location={location} units={units} />}
-      <div data-slot="hud-map-column" data-placed={!!frame || undefined} data-map={mapShown || undefined} className="hud-column" style={column}>
-        {settings.location !== false && location && <MapLocation location={location} units={units} waypoint={!ring} />}
-        <Wallet player={player} settings={settings} inline compact />
-      </div>
-      <div className={besideMap ? "hud-beside-map" : "hud-anchor-bl"}>
-        <VitalsRow player={player} settings={settings} layout="compact" />
-      </div>
-      <div className="hud-anchor-br hud-br-stack">
-        {settings.ammo !== false && <Ammo weapon={weapon} />}
-        {vehicle && <Cluster key={vehicle.kind ?? "car"} vehicle={{ ...OLD_SHAPE, ...vehicle }} settings={settings} look={look} compact anchored={false} />}
-      </div>
+      <Side side="map">{ring && <MapRing frame={frame!} start={heading} compass={settings.compass?.ring !== false} location={location} units={units} />}</Side>
+      <Side side="left">
+        {columnSide === "left" && columnEl}
+        <div className={besideMap ? "hud-beside-map" : "hud-anchor-bl"}>
+          <VitalsRow player={player} settings={settings} layout="compact" />
+        </div>
+      </Side>
+      <Side side="right">
+        {columnSide === "right" && columnEl}
+        <div className="hud-anchor-br hud-br-stack">
+          {settings.ammo !== false && <Ammo weapon={weapon} />}
+          {vehicle && <Cluster key={vehicle.kind ?? "car"} vehicle={{ ...OLD_SHAPE, ...vehicle }} settings={settings} look={look} compact anchored={false} />}
+        </div>
+      </Side>
     </div>
   );
 }
@@ -118,29 +152,33 @@ function Classic({ settings, vehicle, location, weapon, layout, frame, state, pl
 
   return (
     <div data-slot="hud" data-layout="classic" className="hud-root" data-shadow={look.shadow} style={vars}>
-      {mapShown && frame!.framed !== false && settings.frame !== false && <MinimapFrameView frame={frame!} state={state!} />}
-      {beside ? (
-        <>
-          {strip && <div className="hud-above-map">{strip}</div>}
-          <div className="hud-beside-map">
+      <Side side="map">{mapShown && frame!.framed !== false && settings.frame !== false && <MinimapFrameView frame={frame!} state={state!} />}</Side>
+      <Side side="left">
+        {beside ? (
+          <>
+            {strip && <div className="hud-above-map">{strip}</div>}
+            <div className="hud-beside-map">
+              <VitalsRow player={player} settings={settings} layout="classic" />
+            </div>
+          </>
+        ) : (
+          <div className="hud-anchor-bl hud-stack">
+            {strip}
             <VitalsRow player={player} settings={settings} layout="classic" />
           </div>
-        </>
-      ) : (
-        <div className="hud-anchor-bl hud-stack">
-          {strip}
-          <VitalsRow player={player} settings={settings} layout="classic" />
+        )}
+      </Side>
+      <Side side="top">{tape && <CompassTape start={heading} />}</Side>
+      <Side side="right">
+        <div className="hud-anchor-tr hud-tr-stack">
+          <Wallet player={player} settings={settings} inline />
+          {settings.ammo !== false && <Ammo weapon={weapon} />}
         </div>
-      )}
-      {tape && <CompassTape start={heading} />}
-      <div className="hud-anchor-tr hud-tr-stack">
-        <Wallet player={player} settings={settings} inline />
-        {settings.ammo !== false && <Ammo weapon={weapon} />}
-      </div>
-      {vehicle && (
-        // defaults for a client that sends the 0.6 shape (speed, rpm, gear, fuel, engine, seatbelt)
-        <Cluster key={vehicle.kind ?? "car"} vehicle={{ ...OLD_SHAPE, ...vehicle }} settings={settings} look={look} />
-      )}
+        {vehicle && (
+          // defaults for a client that sends the 0.6 shape (speed, rpm, gear, fuel, engine, seatbelt)
+          <Cluster key={vehicle.kind ?? "car"} vehicle={{ ...OLD_SHAPE, ...vehicle }} settings={settings} look={look} />
+        )}
+      </Side>
     </div>
   );
 }

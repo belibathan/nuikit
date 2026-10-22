@@ -60,7 +60,7 @@ Everything is in `config.lua` with a comment on each line. The main switches:
 | Key | Values |
 |---|---|
 | `units`, `playerUnits` | `'mph'` / `'kmh'`; let players choose |
-| `radar` | `'vehicle'`, `'always'`, `'never'` |
+| `radar` | `'always'` (default, on foot too), `'vehicle'`, `'never'`. Whichever, it leaves with the HUD when a menu hides it |
 | `layout` | `'compact'` (default) or `'classic'` (see Layouts) |
 | `area` | `'game'` (read GTA's HUD alignment, fall back when it looks wrong) or `'stage'` (the 0.5.0 rule); was `layout.source` |
 | `minimap.style` | `'ring'` (default: nuikit places GTA's radar and draws the ring or frame) or `'stock'` (GTA's radar untouched, put back to GTA's own placement; the HUD lays out around it). `enabled = false` is the 0.6 spelling of `'stock'` |

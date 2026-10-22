@@ -1612,6 +1612,61 @@
 
 /* ───────────────────────────── motion */
 
+/* Entrance and exit (App.tsx, Side): the HUD moves as one. Each edge's layer slides toward its edge and
+   fades, all from the same frame on the same curve: in when the HUD opens or a menu over it closes, out
+   the moment it closes or a menu hides it (the surface keeps it drawn 250ms for this). The map layer
+   only fades in and cuts out, with GTA's radar, which can't slide (main.lua hides it on the same beat). */
+.hud-side {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  animation: hud-side-in calc(280ms * var(--nk-motion, 1)) var(--nk-ease-out, cubic-bezier(0.16, 1, 0.3, 1)) both;
+}
+.hud-side[data-side="left"] {
+  --hud-side-x: -2.5rem;
+}
+.hud-side[data-side="right"] {
+  --hud-side-x: 2.5rem;
+}
+.hud-side[data-side="top"] {
+  --hud-side-y: -1.5rem;
+}
+html[data-nk-motion="reduced"] .hud-side {
+  --hud-side-x: 0;
+  --hud-side-y: 0;
+}
+[data-surface="hud"][data-closing] .hud-side {
+  animation: hud-side-out calc(200ms * var(--nk-motion, 1)) var(--nk-ease-in, cubic-bezier(0.4, 0, 1, 1)) both;
+}
+.hud-side[data-side="map"] {
+  animation: none;
+}
+/* the ring mounts when the radar shows (Lua's hud:minimap), so it fades in on its own mount */
+.hud-side[data-side="map"] > * {
+  animation: hud-map-in calc(200ms * var(--nk-motion, 1)) var(--nk-ease-out, ease-out) both;
+}
+[data-surface="hud"][data-closing] .hud-side[data-side="map"] {
+  animation: none;
+  opacity: 0;
+}
+@keyframes hud-side-in {
+  from {
+    opacity: 0;
+    transform: translate3d(var(--hud-side-x, 0), var(--hud-side-y, 0), 0);
+  }
+}
+@keyframes hud-side-out {
+  to {
+    opacity: 0;
+    transform: translate3d(var(--hud-side-x, 0), var(--hud-side-y, 0), 0);
+  }
+}
+@keyframes hud-map-in {
+  from {
+    opacity: 0;
+  }
+}
+
 @keyframes hud-blink {
   50% {
     opacity: 0.15;

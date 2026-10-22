@@ -174,6 +174,25 @@ end)
 
 -- ───────────────────────────────── radar, pause, compass, location
 
+-- GTA's radar leaves and comes back with the HUD. The page says when its exit or entrance starts (the
+-- HUD closing, or hidden by a surface with `hides = { 'hud' }`), so the radar and the ring around it
+-- go on the same frame as the rest of the HUD starts sliding, not on this loop's next pass.
+local shown = false
+local function radarWanted()
+  return Config.radar == 'always' or (Config.radar == 'vehicle' and current ~= 0)
+end
+local function applyRadar()
+  local on = radarWanted() and shown
+  DisplayRadar(on)
+  Minimap.radarOn = on
+  Minimap.tick(on)
+end
+NUI.on('hud:shown', function(body)
+  shown = body and body.shown == true
+  applyRadar()
+  return { ok = true }
+end)
+
 CreateThread(function()
   local paused = nil
   local locationCfg = Config.location or {}
@@ -184,9 +203,9 @@ CreateThread(function()
     if isPaused ~= paused then paused = isPaused; sync() end
 
     local inVehicle = current ~= 0
-    local radarOn = Config.radar == 'always' or (Config.radar == 'vehicle' and inVehicle)
-    DisplayRadar(radarOn)
-    Minimap.radarOn = radarOn
+    local radarOn = radarWanted()
+    DisplayRadar(radarOn and shown)
+    Minimap.radarOn = radarOn and shown
 
     local locationOn = locationCfg.enabled ~= false and mapCfg.location ~= false and (inVehicle or radarOn or locationCfg.onFoot ~= false)
     -- the heading streams while anything shows it: the frame's N, the strip, the location badge
