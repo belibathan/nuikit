@@ -12,6 +12,7 @@ import { MONEY_ICON, MONEY_LABEL, MoneyForm, type MoneyRequest } from "@/feature
 import { RecentList, TransactionsPanel, isOut } from "@/features/transactions";
 import { copyText, toCsv } from "@/lib/export";
 import { cashLabel, money, setLocale, t, useLocale } from "@/lib/locale";
+import { useLever } from "@/lib/levers";
 import { post, useBank } from "@/lib/nui";
 import { loadServerTheme } from "@/lib/theme";
 import { isFrozen, transactionsOf, type Account, type MoneyAction } from "@/lib/types";
@@ -234,14 +235,23 @@ function Total({ label, sign, value }: { label: string; sign: string; value: num
   );
 }
 
+/**
+ * Lever (README): the accounts sheet's edge, left by default; `--banking-side: right` mirrors the bank
+ * (accounts right, the account's details left) and puts the ATM on the right.
+ */
+function useSides(): ["left" | "right", "left" | "right"] {
+  return useLever("banking-side", "left") === "right" ? ["right", "left"] : ["left", "right"];
+}
+
 function BankView({ open, accounts, active, cash, onSelect, onAction, onExport, request, form, onBack }: ViewProps & { onExport: () => void }) {
   const txs = transactionsOf(active);
   const totals = txs.reduce((s, tx) => (isOut(tx) ? { ...s, out: s.out + (Number(tx.amount) || 0) } : { ...s, in: s.in + (Number(tx.amount) || 0) }), { in: 0, out: 0 });
   const personal = active?.id === accounts[0]?.id;
+  const [near, far] = useSides();
 
   return (
     <>
-      <EdgeSheet open={open} side="left" width="30rem" icon={<Landmark />} title={t("bank_name")} description={<CashLine cash={cash} />}>
+      <EdgeSheet open={open} side={near} width="30rem" icon={<Landmark />} title={t("bank_name")} description={<CashLine cash={cash} />}>
         <EdgeSheetBody className="flex flex-col">
           <AccountList accounts={accounts} activeId={active?.id} onSelect={onSelect} />
         </EdgeSheetBody>
@@ -249,7 +259,7 @@ function BankView({ open, accounts, active, cash, onSelect, onAction, onExport, 
 
       <EdgeSheet
         open={open}
-        side="right"
+        side={far}
         width="40rem"
         delay={60}
         page={request ? request.action : "account"}
@@ -278,10 +288,11 @@ function BankView({ open, accounts, active, cash, onSelect, onAction, onExport, 
 }
 
 function AtmView({ open, accounts, active, cash, onSelect, onAction, request, form, onBack }: ViewProps) {
+  const [near] = useSides();
   return (
     <EdgeSheet
       open={open}
-      side="left"
+      side={near}
       width="30rem"
       page={request ? request.action : "atm"}
       onBack={request ? onBack : undefined}

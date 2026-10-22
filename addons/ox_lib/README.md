@@ -31,6 +31,22 @@ Everything ox_lib's Lua sends is drawn as it asks. On top, with no script change
 
 Every payload posted back to ox_lib is unchanged (`bench/polish/ox_lib/{before,after}.json`).
 
+## Levers
+
+Set these on `:root` in `nuikit/theme.css` (every override reads the server theme; `nuikit theme reload`
+applies them live). Unset, each is the stock nuikit look.
+
+```css
+:root {
+  --ox-notify-position: top-right; /* where a notify without a position goes: top-left/-center/-right, center-left/-right, bottom-… */
+  --ox-clear-zones: 1; /* 1: notify stacks move clear of other UIs' screen zones (the HUD) instead of the fixed --ox-notify-top-right */
+  --ox-context-side: left; /* the context menu's screen edge (right by default) */
+  --ox-textui-position: left-center; /* where a text UI without a position goes (right-center by default) */
+  --ox-density: 1;   /* this screen's density (the identity's --nk-density otherwise; 0.875 stock) */
+  --ox-motion: 0;    /* 0 turns this screen's motion off; another number scales it */
+}
+```
+
 ## Edit it
 
 `web/` is a normal Vite + React + shadcn app: one file per ox_lib feature in `web/src/features`, stock shadcn components in `web/src/components/ui`. The full message protocol it implements is in [`docs/ox-lib-protocol.md`](../../docs/ox-lib-protocol.md).

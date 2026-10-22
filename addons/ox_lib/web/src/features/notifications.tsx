@@ -1,8 +1,10 @@
 import React, { useEffect, useRef, useState, type CSSProperties } from "react";
+import { useClearOf } from "nuikit-core/react";
 import { Notice, NoticeStack, noticePosition, type NoticePosition, type NoticeStatus } from "@/components/ui/notice";
 import { Icon } from "@/lib/icon";
 import { Markdown } from "@/lib/markdown";
 import { notifyIntent } from "@/lib/intents";
+import { useLever } from "@/lib/levers";
 import { useOx } from "@/lib/nui";
 import { openIntent } from "@/lib/route";
 import { cn } from "@/lib/utils";
@@ -113,6 +115,16 @@ function Counted({ children, count }: { children: React.ReactNode; count: number
  * it is still on screen (same title, description, type and position, no id) restarts the first one
  * and counts `×N` beside its title instead of stacking; and an `item` payload draws the item slab.
  */
+/** One position's stack; with the ox-clear-zones lever it moves clear of other UIs' screen zones. */
+function Stack({ position, clearZones, children }: { position: NoticePosition; clearZones: boolean; children: React.ReactNode }) {
+  const clear = useClearOf(position);
+  return (
+    <NoticeStack position={position} className="ox-notify-stack" style={clearZones ? clear : undefined}>
+      {children}
+    </NoticeStack>
+  );
+}
+
 export function Notifications() {
   const [toasts, setToasts] = useState<Toast[]>([]);
   const timers = useRef(new Map<string, ReturnType<typeof setTimeout>>());
@@ -162,10 +174,15 @@ export function Notifications() {
 
   useEffect(() => () => timers.current.forEach(clearTimeout), []);
 
+  // levers (README): where a toast without a position goes (ox's default top-right), and whether the
+  // stacks move clear of other UIs' screen zones instead of the fixed --ox-notify-top-right
+  const fallback = useLever("ox-notify-position", "top-right");
+  const clearZones = useLever("ox-clear-zones", "0") === "1";
+
   // One stack per position, newest first (NoticeStack puts the newest nearest the edge).
   const groups = new Map<NoticePosition, Toast[]>();
   for (const t of toasts) {
-    const p = noticePosition(t.position);
+    const p = noticePosition(t.position || fallback);
     groups.set(p, [t, ...(groups.get(p) ?? [])]);
   }
 
@@ -173,7 +190,7 @@ export function Notifications() {
     <>
       {[...groups].map(([position, list]) => (
         // top-right clears the HUD block (map, location, cash: app.css --ox-notify-top-right)
-        <NoticeStack key={position} position={position} className="ox-notify-stack">
+        <Stack key={position} position={position} clearZones={clearZones}>
           {list.map((t) => (
             // Keyed on `at` too: an update in place restarts the time line, as ox_lib does.
             <Notice
@@ -207,7 +224,7 @@ export function Notifications() {
               style={t.count < 2 ? t.style : ({ "--ox-bump-x": BUMP[position][0], "--ox-bump-y": BUMP[position][1], ...t.style } as CSSProperties)}
             />
           ))}
-        </NoticeStack>
+        </Stack>
       ))}
     </>
   );
