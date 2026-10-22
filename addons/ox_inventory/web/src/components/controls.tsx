@@ -88,7 +88,7 @@ function UsefulControls() {
           <DialogTitle className="nk-title">{t("ui_usefulcontrols")}</DialogTitle>
           <DialogDescription className="sr-only">{t("ui_usefulcontrols")}</DialogDescription>
         </header>
-        <div className="flex flex-col px-4 py-2">
+        <div className="flex flex-col px-6 pt-2 pb-4">
           {rows.map(([keys, text], i) => (
             <div key={i}>
               {i > 0 && <Separator />}

@@ -53,7 +53,7 @@ export function ItemMenu() {
         <span aria-hidden className="pointer-events-none fixed size-0" style={{ left: menu?.x ?? 0, top: menu?.y ?? 0 }} />
       </DropdownMenuTrigger>
       {open && item && (
-        <DropdownMenuContent align="start" side="right" sideOffset={2} className="w-60" onCloseAutoFocus={(e) => e.preventDefault()}>
+        <DropdownMenuContent align="start" side="right" sideOffset={2} className="inv-menu w-64" onCloseAutoFocus={(e) => e.preventDefault()}>
           <DropdownMenuLabel className="flex items-center gap-2.5 px-2 py-1.5">
             <ItemImage src={itemImage(item)} name={item.name} className="size-8 shrink-0" />
             <span className="flex min-w-0 flex-col">
