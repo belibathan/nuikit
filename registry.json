@@ -288,11 +288,13 @@
             "active",
             "icon",
             "density",
-            "motion"
+            "motion",
+            "hue"
           ],
           "rules": [
             "Its shape prop is the form (pill, tile); corners follow data-nk-shape on an ancestor.",
-            "warning is the theme's destructive; active is primary."
+            "warning is the theme's destructive; active is primary.",
+            "data-hue carries its role; the theme colours it."
           ]
         }
       }

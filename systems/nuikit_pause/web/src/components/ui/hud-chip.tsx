@@ -47,12 +47,15 @@ function HudChip({
   active,
   icon,
   children,
+  hue,
   density,
   motion,
   ...props
 }: Omit<NkVariantProps, "shape"> & React.ComponentProps<"span"> &
   VariantProps<typeof hudChipVariants> & {
     icon?: React.ReactNode
+    /** The role it shows (police, ems, health, rare…): data-hue, which the theme's role ramps colour (tokens 1.4). */
+    hue?: string
     /** Shorthand for state="active" (talking, selected). */
     active?: boolean
   }) {
@@ -61,6 +64,7 @@ function HudChip({
     <span
       {...nkVariant({ density, motion })}
       data-slot="hud-chip"
+      data-hue={hue}
       data-state={s}
       className={cn(hudChipVariants({ shape, state: s }), className)}
       {...props}
