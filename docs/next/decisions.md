@@ -19,6 +19,7 @@ Only money, accounts, publishing and secrets go to the owner.
 | 10 | Death band (`nuikit_death` `Config.band`) | On | `Config.band = false` |
 | 11 | ox_lib notify `×N` (the same toast again) | Re-enters in place: a short half-distance slide, the count rises in | `--ox-notify-bump: 0` on `:root` in `nuikit/theme.css` (0–1 scales it) |
 | 12 | HUD part placement (`nuikit_hud` `Config.parts`) | The preset's (compact: map top-right, location + wallet under it, vitals bottom-left, ammo over the cluster bottom-right) | A corner, `'map'`, `false` or `{ at, order }` per part |
+| 17 | GTA's GPS distance in the radar (`nuikit_hud` `Config.minimap.gameDistance`) | Hidden (`HIDE_SATNAV` each frame) | `gameDistance = true` |
 | 13 | GPS route on the compact ring (changes the default look on purpose; A4, `nuikit_hud` `Config.minimap.routeClip`) | `'box'`: a square radar box (the route reaches past the ring only at its corners; the map is squeezed ~29%) | `'mask'` for GTA's aspect (unsqueezed, the route overhangs), or `aspect` to force one |
 | 16 | nuikit's waypoint tag on the ring (`nuikit_hud` `Config.minimap.waypointTag`) | Off (the owner, in game) | `waypointTag = true` |
 | 14 | Compact map size (changes the default look on purpose; `nuikit_hud` `Config.minimap.size`) | 15rem | `size = 12` (the 0.7 ring) or any rem |

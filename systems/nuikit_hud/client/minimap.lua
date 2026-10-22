@@ -550,6 +550,9 @@ do
   CreateThread(function()
     while true do
       if Minimap.style() == 'ring' and placedByUs then TriggerEvent('nuikit:minimap:bars', false) end
+      -- GTA's own GPS distance inside the radar (Config.minimap.gameDistance): hidden by the nuikit
+      -- resource, which holds the minimap movie; asked again every second (it ignores repeats)
+      TriggerEvent('nuikit:minimap:satnav', cfg.gameDistance == true)
       Wait(1000)
     end
   end)

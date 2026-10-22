@@ -73,6 +73,7 @@ Everything is in `config.lua` with a comment on each line. The main switches:
 | `minimap.slide` | `false`. A spike, not seen in game: `true` slides GTA's radar and its ring 2.5rem toward their edge with the HUD's exit and entrance (per-frame component placement) instead of cutting them. If the radar doesn't move in game, leave it off |
 | `minimap.halo` | `true`. A soft dark plate behind the round ring, the one the compact speedometer sits on: same strength (`--nk-hud-opacity`), fading out over `--nk-map-halo-size` (2.5rem; `--nk-map-halo-opacity` overrides the strength). It never covers the map inside the ring |
 | `minimap.waypointTag` | `false`. `true` puts nuikit's waypoint tag on the round ring (an arrow toward the waypoint and the distance). With the radar off the distance reads under the location either way |
+| `minimap.gameDistance` | `false` hides GTA's own GPS distance readout inside the radar (the satnav: the `nuikit` resource sends the minimap movie `HIDE_SATNAV` every frame while the HUD runs). `true` leaves it. Not seen in game |
 | `ammo` | `false` hides the ammo |
 | `vitals.enabled`, `vitals.health` … `vitals.stress` | `'auto'`, `'always'`, `false`; `low`, `high`, `linger` (ms) |
 | `needs`, `voice` | hide hunger/thirst/stress, hide voice |
