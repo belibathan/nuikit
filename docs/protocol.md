@@ -542,7 +542,7 @@ a value that moves every frame is a live value, §5.7).
 ### Old-CEF profile (advisory)
 
 FiveM's NUI runs Chromium 103, so `nuikit check` also warns (rules `cef/*`, never level-gating) on what that engine
-drops or draws wrong: `backdrop-filter` (a black box over the game; mark a deliberate use `nuikit-ignore cef/backdrop-filter`),
+drops or draws wrong: a raw `backdrop-filter` (a black box over the game on some clients; set `--nk-backdrop-filter`, which `--nk-backdrop: off` turns off),
 `:has()`, `@container` / `container-type`, the individual `scale` / `translate` / `rotate` properties (Chromium 104+, and they
 clobber `transform` animations), and `color-mix()` / `oklch()` in inline styles (`vite-plugin-nuikit` lowers
 stylesheets only). Source files are checked; build output is skipped.

@@ -769,6 +769,12 @@ export const GENERATED: { name: string; group: string; type: string; description
     "description": "Texture over full-screen overlays (pause, death, loading)"
   },
   {
+    "name": "nk-backdrop",
+    "group": "kit",
+    "type": "number",
+    "description": "Backdrop filters (blur behind materials, the death screen's desaturation): off by default, because NUI's Chromium draws them as black boxes over the game on many clients. on applies each surface's --nk-backdrop-filter"
+  },
+  {
     "name": "nk-slash",
     "group": "kit",
     "type": "number",

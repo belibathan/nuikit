@@ -2,4 +2,4 @@
 "nuikit-core": patch
 ---
 
-`--nk-backdrop: off | on` (default off): backdrop filters draw black boxes in NUI on many clients, so surfaces set `--nk-backdrop-filter` and kit.css applies it only under `on`.
+Backdrop filters go through one switch, `--nk-backdrop: on | off` (default on): surfaces set `--nk-backdrop-filter` and kit.css applies it unless `off`, so a server whose clients draw backdrop filters as black boxes turns them all off with one token.

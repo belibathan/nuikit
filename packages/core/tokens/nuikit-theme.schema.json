@@ -1296,10 +1296,10 @@
         },
         "nk-backdrop": {
           "enum": [
-            "off",
-            "on"
+            "on",
+            "off"
           ],
-          "description": "Backdrop filters (blur behind materials, the death screen's desaturation): off by default, because NUI's Chromium draws them as black boxes over the game on many clients. on applies each surface's --nk-backdrop-filter",
+          "description": "Backdrop filters (blur behind materials, the death screen's desaturation): on applies each surface's --nk-backdrop-filter (seen right in game). off for clients whose NUI draws them as black boxes over the game",
           "$comment": "tokens 1.4"
         },
         "nk-slash": {

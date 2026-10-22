@@ -59,7 +59,7 @@ export const RULES: Record<RuleId, { level: Level; description: string }> = {
   "perf/remote-asset": { level: 0, description: "Font or asset loaded from the network instead of the resource" },
   "perf/frame-send": { level: 0, description: "NUI message sent from a Wait(0) loop (every frame)" },
   "attention/glow": { level: 0, description: "More than one part marked data-nk-glow: the runtime lets --nk-glow-budget (1) glow, so rank them or drop the extra marks" },
-  "cef/backdrop-filter": { level: 0, description: "backdrop-filter draws a black box over the game in NUI (Chromium 103); silence a deliberate use with nuikit-ignore" },
+  "cef/backdrop-filter": { level: 0, description: "Raw backdrop-filter: go through --nk-backdrop-filter, so --nk-backdrop: off can turn it off where NUI draws it as a black box" },
   "cef/has": { level: 0, description: ":has() is unsupported in Chromium 103 (the build polyfills some uses); don't rely on it for anything essential" },
   "cef/container": { level: 0, description: "@container queries and container-type are unsupported in Chromium 103; use media queries" },
   "cef/individual-transform": { level: 0, description: "Individual scale/translate/rotate properties are Chromium 104+ and clobber transform animations; use transform" },
@@ -209,7 +209,7 @@ function scanCss(css: string, base: number, report: Report, ctx: FileContext) {
     const value = t.slice(colon + 1);
     remoteInCss(value, base + valueOffset, report);
     if (!ctx.built) {
-      if (/^backdrop-filter$/i.test(prop)) report("cef/backdrop-filter", base + lead, "backdrop-filter draws a black box over the game in NUI; use a --scrim or a solid surface, or nuikit-ignore cef/backdrop-filter if it's deliberate");
+      if (/^backdrop-filter$/i.test(prop)) report("cef/backdrop-filter", base + lead, "backdrop-filter draws a black box over the game in NUI; set --nk-backdrop-filter instead (kit.css applies it behind --nk-backdrop, which a server turns off)");
       else if (/^container(-type|-name)?$/i.test(prop)) report("cef/container", base + lead, `${prop} is unsupported in Chromium 103`);
       else if (/^(scale|translate|rotate)$/i.test(prop)) report("cef/individual-transform", base + lead, `${prop}: is Chromium 104+ and clobbers transform animations; use transform: ${prop}(…)`);
       if (ctx.inlineStyle) for (const m of value.matchAll(/\b(color-mix|oklch|oklab)\(/gi)) report("cef/color-mix-inline", base + valueOffset + m.index!, `${m[1]}() in an inline style isn't lowered (the plugin only rewrites stylesheets); use a token class or rgb()`);
@@ -391,7 +391,7 @@ function scanScript(src: string, base: number, report: Report, ctx: FileContext)
   if (!ctx.built) scanOldCefScript(src, code, strings, rep);
 }
 
-const BACKDROP_MSG = "backdrop-filter draws a black box over the game in NUI; use a --scrim or a solid surface, or nuikit-ignore cef/backdrop-filter if it's deliberate";
+const BACKDROP_MSG = "backdrop-filter draws a black box over the game in NUI; set --nk-backdrop-filter instead (kit.css applies it behind --nk-backdrop, which a server turns off)";
 /** Inline styles in script: backdropFilter keys, and colour functions the plugin can't lower (it only rewrites stylesheets). */
 function scanOldCefScript(src: string, code: string, strings: Span[], report: Report) {
   for (const m of code.matchAll(/\b(?:Webkit)?[bB]ackdropFilter\b/g)) report("cef/backdrop-filter", m.index!, BACKDROP_MSG);

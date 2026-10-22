@@ -264,7 +264,7 @@ describe("cef/* (old-CEF profile, advisory)", () => {
 
   it("fires on each bad CSS sample, as warnings that keep the level", () => {
     const { r, base } = run({
-      "web/src/bad.css": `.a { backdrop-filter: blur(4px); }\n.b:has(> img) { color: var(--primary); }\n@container (min-width: 10px) { .c { color: var(--primary); } }\n.d { container-type: inline-size; scale: 1.1; translate: 0 4px; rotate: 3deg; }\n`,
+      "web/src/bad.css": `.a { backdrop-filter: blur(4px); }\n.b:has(> img) { color: var(--primary); }\n@container (min-width: 10px) { .c { color: var(--primary); } }\n.d { container-type: inline-size; scale: 1.1; translate: 0 4px; rotate: 3deg; }\n.ok { --nk-backdrop-filter: blur(4px); }\n`,
     });
     expect(cef(r)).toEqual([
       "cef/backdrop-filter@web/src/bad.css:1",
