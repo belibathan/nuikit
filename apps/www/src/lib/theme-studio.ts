@@ -45,7 +45,7 @@ export const TWEAKS: { group: string; tokens: { name: string; label: string }[] 
 
 /** A control on the identity tier (tokens 1.1 / 1.2): a slider over a range, a choice, or a font. */
 export type IdentityControl =
-  | { name: string; label: string; kind: "range"; min: number; max: number; step: number; unit?: "" | "rem" | "px" | "ms" | "em"; hint?: string }
+  | { name: string; label: string; kind: "range"; min: number; max: number; step: number; unit?: "" | "rem" | "px" | "ms" | "em"; hint?: string; def?: number }
   | { name: string; label: string; kind: "choice"; options: readonly { value: string; label: string }[]; hint?: string }
   | { name: string; label: string; kind: "font"; hint?: string };
 
@@ -120,6 +120,31 @@ export const IDENTITY: { group: string; controls: IdentityControl[] }[] = [
       { name: "nk-gauge-style", label: "Gauges", kind: "choice", options: [{ value: "arc", label: "Arc" }, { value: "bar", label: "Bar" }, { value: "digital", label: "Digital" }] },
       { name: "nk-gauge-track", label: "Track", kind: "range", min: 0.125, max: 0.625, step: 0.0625, unit: "rem", hint: "Gauge and meter thickness" },
       { name: "nk-gauge-ticks", label: "Ticks", kind: "choice", options: [{ value: "1", label: "On" }, { value: "0", label: "Off" }] },
+    ],
+  },
+];
+
+/**
+ * The component tier (kit.css component tokens): one part of the kit, set outright over what the identity
+ * derives for it. Left alone, each follows the identity (density, radius, gauges); `def` is where the
+ * slider sits then (the Graphite value), since the derived value is a formula.
+ */
+export const COMPONENTS: { group: string; controls: IdentityControl[] }[] = [
+  {
+    group: "Panels and rows",
+    controls: [
+      { name: "nk-panel-radius", label: "Panel corners", kind: "range", min: 0, max: 1.5, step: 0.0625, unit: "rem", def: 0.625 },
+      { name: "nk-row-height", label: "Row height", kind: "range", min: 2, max: 3.5, step: 0.125, unit: "rem", def: 2.375, hint: "Menu rows, list items" },
+      { name: "nk-row-radius", label: "Row corners", kind: "range", min: 0, max: 1, step: 0.0625, unit: "rem", def: 0.5 },
+    ],
+  },
+  {
+    group: "On the game",
+    controls: [
+      { name: "nk-chip-radius", label: "Chip corners", kind: "range", min: 0, max: 1.25, step: 0.0625, unit: "rem", def: 0.375, hint: "HUD chips, slabs, notices on the game" },
+      { name: "nk-slab-height", label: "Slab height", kind: "range", min: 1.75, max: 3.25, step: 0.125, unit: "rem", def: 2.25, hint: "Prompts, item notices, timed progress" },
+      { name: "nk-key-radius", label: "Key corners", kind: "range", min: 0, max: 0.75, step: 0.0625, unit: "rem", def: 0.375 },
+      { name: "nk-meter-height", label: "Meter thickness", kind: "range", min: 0.125, max: 0.625, step: 0.0625, unit: "rem", def: 0.25 },
     ],
   },
 ];

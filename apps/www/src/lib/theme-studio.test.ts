@@ -71,12 +71,13 @@ describe("theme studio: tweaks", () => {
 });
 
 describe("theme studio: identities (tokens 1.2)", () => {
-  it("reads the four identities with no warnings, each a different identity", () => {
+  it("reads every identity (all of packages/core/themes) with no warnings, each a different identity", () => {
+    expect(identities.map((t) => t.name).slice(0, 7)).toEqual(["Graphite", "Signal", "Velvet", "Vector", "Arcade", "Street", "Studio"]);
     const seen = new Set<string>();
     for (const t of identities) {
       const theme = studioTheme(t.css);
       expect(theme.warnings, t.name).toEqual([]);
-      const key = [theme.vars["font-display"], theme.vars["nk-cut"], theme.vars["nk-row-indicator"], theme.vars["nk-motion-feel"], theme.vars["nk-density"]].join("|");
+      const key = [theme.vars["font-display"], theme.vars["nk-cut"], theme.vars["nk-row-indicator"], theme.vars["nk-motion-feel"], theme.vars["nk-density"], theme.vars.primary, theme.vars["nk-skew"], theme.vars["nk-display-style"]].join("|");
       expect(seen.has(key), t.name).toBe(false);
       seen.add(key);
     }
