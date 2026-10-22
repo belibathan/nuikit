@@ -11,6 +11,19 @@ A drop-in replacement for [qbx_scoreboard](https://github.com/Qbox-project/qbx_s
 
 Updating qbx_scoreboard restores its stock UI; copy the folder again afterwards.
 
+## Levers
+
+Set these on `:root` in `nuikit/theme.css` (every override reads the server theme; `nuikit theme reload`
+applies them live). Unset, each is the stock nuikit look.
+
+```css
+:root {
+  --scoreboard-side: left; /* the screen edge (right by default) */
+  --scoreboard-density: 1;   /* this screen's density (the identity's --nk-density otherwise; 0.875 stock) */
+  --scoreboard-motion: 0;    /* 0 turns this screen's motion off; another number scales it */
+}
+```
+
 ## Edit it
 
 `web/` is a normal Vite + React + shadcn app. The protocol it implements is in [`docs/qbx-scoreboard-protocol.md`](../../docs/qbx-scoreboard-protocol.md).

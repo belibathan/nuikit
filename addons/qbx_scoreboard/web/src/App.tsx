@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { EdgeSheet, EdgeSheetBody } from "@/components/ui/edge-sheet";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Separator } from "@/components/ui/separator";
+import { useLever } from "@/lib/levers";
 import { loadServerTheme } from "@/lib/theme";
 import { cn } from "@/lib/utils";
 
@@ -56,13 +57,15 @@ export default function App() {
   const keys = [...Object.keys(labels), ...Object.keys(activities).filter((k) => !(k in labels))];
   const players = Number(data.players) || 0;
   const max = Number(data.maxPlayers) || 0;
+  // lever (README): the screen edge, right by default
+  const side = useLever("scoreboard-side", "right") === "left" ? "left" : "right";
 
   return (
-    // A floating edge sheet on the right (the pause menu's backdrop, registry edge-sheet): who's
+    // A floating edge sheet on the right by default (the pause menu's backdrop, registry edge-sheet): who's
     // online traced along the header's edge, then the activities as the pause menu's rows.
     <EdgeSheet
       open={open}
-      side="right"
+      side={side}
       width="26rem"
       fit
       // below the HUD's top-right block (the minimap, location and cash), where the stock board sits

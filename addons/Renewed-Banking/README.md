@@ -19,6 +19,19 @@ Keep the resource named `Renewed-Banking`; its server refuses to run under any o
 - Frozen accounts show their frozen status instead of action buttons. The stock UI never did, because of a field-name mismatch (see the spec, §6).
 - Labels nuikit adds (All / In / Out, Money in / out, …) can be translated by adding `nuikit_*` keys to Renewed-Banking's `locales/*.json` (list in the spec, §5).
 
+## Levers
+
+Set these on `:root` in `nuikit/theme.css` (every override reads the server theme; `nuikit theme reload`
+applies them live). Unset, each is the stock nuikit look.
+
+```css
+:root {
+  --banking-side: right; /* mirror the bank: accounts on the right, the account's details on the left, the ATM on the right */
+  --banking-density: 1;   /* this screen's density (the identity's --nk-density otherwise; 0.875 stock) */
+  --banking-motion: 0;    /* 0 turns this screen's motion off; another number scales it */
+}
+```
+
 ## Edit it
 
 `web/` is a normal Vite + React + shadcn app: `web/src/App.tsx` (layouts), `web/src/features` (accounts, transactions, money dialog), stock shadcn components in `web/src/components/ui`. The full message protocol it implements is in [`docs/renewed-banking-protocol.md`](../../docs/renewed-banking-protocol.md).
