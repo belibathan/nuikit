@@ -1006,6 +1006,9 @@ ${lines.join("\n")}
     return { $value: value, ...desc, $extensions: { "dev.nuikit": { type: (_b = spec == null ? void 0 : spec.type) != null ? _b : "keyword" } } };
   }
 
+  // src/coverage.ts
+  var COVERAGE_TARGETS = { qbox: 0.9, qbcore: 0.75, esx: 0.75 };
+
   // src/doctor.ts
   var ADAPTER_PACKS = [
     { name: "[nuikit-ox]", library: "ox_lib", frameworks: ["any"], shipped: false },
@@ -1308,6 +1311,9 @@ ${lines.join("\n")}
         out.push(`  ${i.source.padEnd(24)} ${i.total}  (${parts})`);
       }
     } else out.push("intents: none counted yet (the intents runtime emits nuikit:intent; play a bit, then run again)");
+    const target = COVERAGE_TARGETS[rep.framework];
+    const drawn = rep.intents.reduce((a, i) => a + i.total, 0);
+    out.push(`coverage: ${drawn} drawn from ${rep.intents.length} source${rep.intents.length === 1 ? "" : "s"}${target ? `; target ${Math.round(target * 100)}% on ${rep.framework}` : ""} (bench/coverage/run.mjs)`);
     return out;
   }
   return __toCommonJS(fxserver_exports);

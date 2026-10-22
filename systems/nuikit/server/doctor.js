@@ -53,11 +53,15 @@ on("onResourceStart", (name) => {
 
 // Intent counts by source (nuikit:intent { source, intent }).
 const intents = {};
+// Client-sent (onNet), so: strings only, capped lengths, capped distinct keys.
 function countIntent(payload) {
   if (!payload || typeof payload !== "object") return;
-  const source = String(payload.source || "unknown");
-  const intent = String(payload.intent || "unknown");
+  if (typeof payload.source !== "string" || typeof payload.intent !== "string") return;
+  const source = payload.source.slice(0, 64) || "unknown";
+  const intent = payload.intent.slice(0, 32) || "unknown";
+  if (!intents[source] && Object.keys(intents).length >= 256) return;
   const bySource = (intents[source] = intents[source] || {});
+  if (!(intent in bySource) && Object.keys(bySource).length >= 64) return;
   bySource[intent] = (bySource[intent] || 0) + 1;
 }
 on("nuikit:intent", countIntent);

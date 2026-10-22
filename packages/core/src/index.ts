@@ -472,6 +472,7 @@ import { __resetPlayer, subscribeContext } from "./player";
 export { follow, followed, type FollowKind, type FollowOptions } from "./follow";
 import { __resetFollow } from "./follow";
 
+export { COVERAGE_TARGETS, computeCoverage, formatCoverage, parseSessionLog, type CoverageResult, type SessionStep } from "./coverage";
 export {
   ADAPTER_PACKS,
   compareVersions,

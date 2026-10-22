@@ -67,6 +67,10 @@
       "types": "./dist/host.d.ts",
       "import": "./dist/host.js"
     },
+    "./coverage": {
+      "types": "./dist/coverage.d.ts",
+      "import": "./dist/coverage.js"
+    },
     "./intents": {
       "types": "./dist/intents.d.ts",
       "import": "./dist/intents.js"
