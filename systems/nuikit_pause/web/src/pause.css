@@ -1,6 +1,4 @@
-@import "./index.css";
-/* shadcn's enter/exit animations (the Sheet slides in and out); kit.css keeps them to the motion rules */
-@import "tw-animate-css";
+@import "./index.css"; /* tw-animate-css comes with it, before kit.css (whose enter / exit keyframes win) */
 
 /*
  * nuikit_pause: the sheet, the scrim and motion. In game the blur of the world comes from GTA

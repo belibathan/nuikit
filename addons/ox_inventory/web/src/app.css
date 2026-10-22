@@ -47,7 +47,20 @@ body.inv-dragging * {
   border-radius: var(--nk-chip-radius);
   clip-path: var(--nk-chip-clip, none);
   background-color: color-mix(in oklab, var(--muted) 30%, transparent);
-  transition: background-color 0s, opacity 0s;
+  transition: opacity 0s;
+  isolation: isolate; /* the hover wash (::before) sits between the well and the content */
+}
+/* hover: an accent wash that fades in with opacity (compositor only), not a background-color repaint */
+.inv-slot::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background-color: var(--accent);
+  opacity: 0;
+  transition: opacity var(--nk-time-hover, var(--nk-time)) var(--nk-ease-out, ease-out);
+  pointer-events: none;
 }
 .inv-slot[data-filled] {
   background-color: color-mix(in oklab, var(--muted) 70%, transparent);
@@ -55,9 +68,8 @@ body.inv-dragging * {
 .inv-slot[data-filled]:not([data-locked]):not([data-display]) {
   cursor: grab;
 }
-.inv-slot[data-filled]:not([data-locked]):not([data-display]):hover {
-  background-color: var(--accent);
-  transition-duration: var(--nk-time-hover, var(--nk-time));
+.inv-slot[data-filled]:not([data-locked]):not([data-display]):hover::before {
+  opacity: 1;
 }
 /* the drop target: the selection's colour along the inside of the tile */
 .inv-slot[data-over] {
