@@ -1,0 +1,26 @@
+{
+  "fonts": "graphite",
+  "target": {
+    "resource": "ox_doorlock",
+    "path": "web/build"
+  },
+  "lua": [],
+  "components": [
+    "badge",
+    "button",
+    "input",
+    "kbd",
+    "label",
+    "separator",
+    "scroll-area",
+    "select",
+    "switch",
+    "tabs",
+    "sheet",
+    "edge-sheet",
+    "menu-row",
+    "form-field",
+    "confirm",
+    "empty-state"
+  ]
+}
