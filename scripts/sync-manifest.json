@@ -185,6 +185,17 @@
       "web/src/index.css",
       "web/src/lib/utils.ts"
     ],
+    "systems/nuikit_screen": [
+      "web/src/components/ui/button.tsx",
+      "web/src/components/ui/checkbox.tsx",
+      "web/src/components/ui/kbd.tsx",
+      "web/src/components/ui/menu-row.tsx",
+      "web/src/components/ui/meter.tsx",
+      "web/src/components/ui/progress.tsx",
+      "web/src/components/ui/text-roll.tsx",
+      "web/src/index.css",
+      "web/src/lib/utils.ts"
+    ],
     "addons/Renewed-Banking": [
       "web/src/components/ui/badge.tsx",
       "web/src/components/ui/button.tsx",
