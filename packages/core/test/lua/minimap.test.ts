@@ -108,16 +108,16 @@ describe("systems/nuikit_hud: the minimap", () => {
     expect(sent.x).toBeCloseTo((1.5 * 1080 * 0.014815) / 1920, 6);
     expect(sent.w).toBeCloseTo((15 * 1080 * 0.014815) / 1920, 6);
 
-    // nuikit's own mask over GTA's: the square opaque in the middle of the 1.41:1 box; the txd has a
+    // nuikit's own mask over GTA's: the square box by default (routeClip = 'box', A4); the txd has a
     // new name on every start (a restart could hit the stopped one's: F2)
-    expect(await hud.run(`return REPLACED`)).toMatch(/^radarmasksm>nuikit_minimap_\d+\/square_1412$/);
+    expect(await hud.run(`return REPLACED`)).toMatch(/^radarmasksm>nuikit_minimap_\d+\/square_1000$/);
 
     await hud.run(`Config.minimap.shape = 'circle' Minimap.apply()`);
     expect(await hud.run(`return CLIP`)).toBe(1);
-    expect(await hud.run(`return REPLACED`)).toMatch(/\/circle_1412$/);
-    // each mask is drawn once (45x32 square + 181x128 circle)
+    expect(await hud.run(`return REPLACED`)).toMatch(/\/circle_1000$/);
+    // each mask is drawn once (32x32 square + 128x128 circle)
     await hud.run(`Minimap.apply()`);
-    expect(await hud.run(`return PIXELS`)).toBe(45 * 32 + 181 * 128);
+    expect(await hud.run(`return PIXELS`)).toBe(32 * 32 + 128 * 128);
   });
 
   it("draws the mask for GTA's 1.41:1 box: the disc or square in the middle, transparent sides (design note A)", async () => {
@@ -147,6 +147,7 @@ describe("systems/nuikit_hud: the minimap", () => {
   it("puts the box at GTA's aspect over the hole, and minimap_mask over the hole in absolute units (7b)", async () => {
     client = await createClient();
     const hud = await client.start("nuikit_hud", { before: natives, scripts });
+    await hud.run(`Config.minimap.routeClip = 'mask'`); // GTA's aspect (the default 'box' squares it)
     const [, , hole, box] = await hud.run<[any, number, any, any]>(`return { Minimap.layout(1920, 1080, 1.0) }`);
     expect(box.h).toBeCloseTo(hole.h, 6);
     expect(box.w / box.h).toBeCloseTo((0.15 * 16) / 9 / 0.188888, 6);
@@ -169,7 +170,7 @@ describe("systems/nuikit_hud: the minimap", () => {
   it("routeClip (A4, unproven): 'inset' puts minimap_mask on the disc's inner square, 'stock' leaves it, 'box' squares the box, 'texture' masks radarmask1g", async () => {
     client = await createClient();
     const hud = await client.start("nuikit_hud", { before: natives + ` ROUTE = nil function AddReplaceTexture(_, from, txd, tex) if from == 'radarmask1g' then ROUTE = txd .. '/' .. tex else REPLACED = from .. '>' .. txd .. '/' .. tex end end function RemoveReplaceTexture(_, from) if from == 'radarmask1g' then ROUTE = nil else REPLACED = nil end end`, scripts });
-    expect(await hud.run(`return Minimap.routeClip()`)).toBe("mask"); // the default: 0.7.0's placement
+    expect(await hud.run(`return Minimap.routeClip()`)).toBe("box"); // the default: the square box (A4)
     const [, , hole] = await hud.run<[any, number, any]>(`return { Minimap.layout(1920, 1080, 1.0) }`);
     await hud.run(`Layout.update() Minimap.apply()`);
     const over = await hud.run<number[]>(`return PLACED.minimap_mask`);
@@ -190,7 +191,7 @@ describe("systems/nuikit_hud: the minimap", () => {
     expect(await hud.run(`return ROUTE`)).toBeNull(); // put back on any other candidate
     expect(await hud.run<number[]>(`return PLACED.minimap_mask`)).toEqual(over);
     await hud.run(`Config.minimap.routeClip = 'nope'`);
-    expect(await hud.run(`return Minimap.routeClip()`)).toBe("mask");
+    expect(await hud.run(`return Minimap.routeClip()`)).toBe("box");
   });
 
   it("asks the nuikit resource to put the radar back when it stops; a hidden radar re-reads when it shows", async () => {
@@ -250,7 +251,7 @@ describe("systems/nuikit_hud: the minimap", () => {
     expect(radar.x).toBeCloseTo(frame.x + band / 2, 6);
     await hud.run(`Minimap.apply()`);
     expect(await hud.run(`return CLIP`)).toBe(1);
-    expect(await hud.run(`return REPLACED`)).toMatch(/^radarmasksm>nuikit_minimap_\d+\/circle_1412$/);
+    expect(await hud.run(`return REPLACED`)).toMatch(/^radarmasksm>nuikit_minimap_\d+\/circle_1000$/); // a square box (routeClip = 'box', A4)
     const sent = hud.messages.filter((m) => m.action === "hud:minimap:frame").at(-1)!.data;
     expect(sent).toMatchObject({ shape: "circle", preset: "compact", framed: true });
     // a server's own values win over the preset; a square map needs no heading room

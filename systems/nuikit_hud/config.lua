@@ -54,20 +54,22 @@ Config = {
     size = nil,              -- the frame, in rem (1rem = 16px at 1080p)
     band = nil,              -- frame thickness, in rem
     anchor = nil,            -- bottom-left, bottom-right, top-left, top-right
-    -- The radar's box, width over height. nil keeps GTA's own (about 1.41), so the map isn't squeezed;
-    -- the mask shows only the middle. 1 is the square box of the 0.7.0 checkpoint (a squeezed map).
+    -- The radar's box, width over height. nil follows routeClip: a square box ('box', the default) or
+    -- GTA's own (about 1.41, the map unsqueezed; every other candidate). Set it to force either.
     aspect = nil,
     -- The GPS route. GTA draws it across the whole radar box, not through the mask that shapes the
     -- map, so on a round map it ran out of the ring's sides (0.7.0 test, A4). What clips it is not
-    -- known yet; this picks a candidate to try in game (with Config.debug, F8: `nuikit_minimap route <x>`):
-    --   'mask'     minimap_mask over the hole: the 0.7.0 placement (the route still overhangs)
+    -- known beyond the radar box itself, so the default squares the box; the rest are candidates
+    -- to try in game (with Config.debug, F8: `nuikit_minimap route <x>`):
+    --   'box'      the default: the radar box becomes the hole's square (aspect 1): the route can't leave
+    --              that square, only its corners; the map is squeezed about 29% (the 0.7.0-next look)
+    --   'mask'     minimap_mask over the hole, GTA's aspect: the 0.7.0 placement (the map unsqueezed,
+    --              the route overhangs the ring's sides)
     --   'inset'    minimap_mask on the square inside the disc: if the route is cut to that component,
     --              nothing leaves the ring (the route then stops a little short of it at N/E/S/W)
     --   'texture'  our disc also replaces GTA's second radar mask texture (radarmask1g)
     --   'stock'    minimap_mask left where GTA has it: the control (does the component matter at all)
-    --   'box'      the radar box becomes the hole's square (aspect 1): the route can't leave that
-    --              square, only its corners; the map is squeezed about 29% (the 0.7.0-next look)
-    routeClip = 'mask',
+    routeClip = 'box',
     compass = true,          -- cardinals on the ring (square: N on the frame), heading above (compact)
     location = true,         -- the location under (compact) or above (classic) the map
   },
