@@ -239,7 +239,37 @@ end)
 
 -- ───────────────────────────────── the page (re)loaded, units changed
 
+
+-- ───────────────────────────────── legibility (Foundation 2: --nk-legibility auto)
+
+-- 'day' or 'night' from the game clock, for --nk-legibility: auto (the theme's token, or
+-- Config.legibility to force one here). Day raises the HUD's plates and hairlines over a bright
+-- world; it is not a light theme. Sent to this page (hud:legibility) and as a client event other
+-- resources can follow (nuikit:legibility), only when it changes.
+local legibility
+function LegibilityOf(hour)
+  local cfg = Config.legibility or {}
+  local from, to = cfg.dayFrom or 7, cfg.dayTo or 19
+  return (hour >= from and hour < to) and 'day' or 'night'
+end
+local function pushLegibility()
+  if not GetClockHours then return end
+  local mode = LegibilityOf(GetClockHours())
+  if mode == legibility then return end
+  legibility = mode
+  NUI.send('hud:legibility', { mode = mode, force = type(Config.legibility) == 'table' and Config.legibility.mode or nil })
+  TriggerEvent('nuikit:legibility', mode)
+end
+CreateThread(function()
+  while true do
+    if Config.legibility ~= false then pushLegibility() end
+    Wait(10000)
+  end
+end)
+
 NUI.on('hud:ready', function()
+  legibility = nil -- a reloaded page hears it again
+  if Config.legibility ~= false then pushLegibility() end
   Location.resend()
   Minimap.resend()
   if Weapon then Weapon.resend() end

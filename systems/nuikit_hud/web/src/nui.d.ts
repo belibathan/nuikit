@@ -190,6 +190,7 @@ declare module "nuikit-core" {
     /** live: the camera's compass bearing (0.1°) */
     "hud:minimap:heading": number;
     "hud:layout": HudLayout;
+    "hud:legibility": { mode: "day" | "night"; force?: "day" | "night" };
     "hud:location": HudLocation;
     "hud:weapon": HudWeapon | false;
   }

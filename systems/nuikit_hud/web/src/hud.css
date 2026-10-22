@@ -1934,3 +1934,11 @@ html[data-nk-motion="off"] .hud-root * {
   gap: 0.5rem;
   padding: 0 0.5rem 0.5rem;
 }
+
+/* Foundation 2 legibility: by day (--nk-legibility auto from the game clock, or day) the plates and
+   hairlines firm up over a bright world. Not a light theme. */
+html[data-nk-legibility="day"] .hud-root {
+  --hud-plate-opacity: min(0.9, calc(var(--nk-hud-opacity, 0.55) * 1.35));
+  --hud-hairline: color-mix(in oklab, var(--hud-fg) 18%, transparent);
+  --hud-track: var(--nk-meter-track, color-mix(in oklab, var(--hud-fg) 24%, transparent));
+}

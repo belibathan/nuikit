@@ -165,6 +165,11 @@ Config = {
     onFoot = false,
   },
 
+  -- Legibility (Foundation 2): the theme's --nk-legibility 'auto' follows the game clock, day from
+  -- dayFrom to dayTo (game hours). mode forces 'day' or 'night' for this HUD whatever the theme says;
+  -- false stops sending it (the theme's value stands).
+  legibility = { dayFrom = 7, dayTo = 19, mode = nil },
+
   -- Print where the minimap and the HUD's edges went to the F8 console.
   debug = false,
 }

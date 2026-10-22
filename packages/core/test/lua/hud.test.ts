@@ -159,6 +159,17 @@ describe("systems/nuikit_hud", () => {
     expect(hud.surfaces()["hud-edit"].open).toBe(false);
   });
 
+  it("legibility (Foundation 2): day or night from the game clock, sent on hud:ready and when it changes", async () => {
+    client = await createClient();
+    const hud = await client.start("nuikit_hud", { before: natives + ` HOUR = 12 function GetClockHours() return HOUR end`, scripts: HUD_SCRIPTS });
+    expect(await hud.run(`return { LegibilityOf(6), LegibilityOf(7), LegibilityOf(18), LegibilityOf(19) }`)).toEqual(["night", "day", "day", "night"]);
+    await hud.call("hud:ready");
+    expect(hud.messages.filter((m) => m.action === "hud:legibility").at(-1)!.data).toEqual({ mode: "day" });
+    await hud.run(`Config.legibility.dayTo = 11`);
+    await hud.call("hud:ready");
+    expect(hud.messages.filter((m) => m.action === "hud:legibility").at(-1)!.data).toEqual({ mode: "night" });
+  });
+
   it("never takes focus, so it can't block other UIs", async () => {
     client = await createClient();
     const hud = await client.start("nuikit_hud", { before: natives, scripts: HUD_SCRIPTS });

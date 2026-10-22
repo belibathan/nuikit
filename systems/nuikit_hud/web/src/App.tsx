@@ -5,6 +5,7 @@ import type { HudLayout, HudParts, HudLocation, HudSettings, HudVehicle, HudWeap
 import { Ammo } from "./hud/ammo";
 import { Cluster } from "./hud/cluster";
 import { LayoutEditor } from "./hud/editor";
+import { useLegibility } from "./hud/legibility";
 import { layoutVars, stageLayout, useHudLayout, useViewport } from "./hud/layout";
 import { CompassTape, LocationStrip } from "./hud/location";
 import { useHudLook, type HudLook } from "./hud/look";
@@ -17,6 +18,7 @@ export default function App() {
   // Subscribed for the page's whole life, not only while the HUD shows: Lua sends the layout, the
   // frame and the vehicle whenever they change, which can be before the surface opens.
   usePlayer(); // the player store listens from here on, so a player sent before the HUD opens isn't missed
+  useLegibility();
   const data: HudData = {
     vehicle: useNuiState("hud:vehicle", false),
     location: useNuiState("hud:location", null as unknown as HudLocation) as HudLocation | null,
