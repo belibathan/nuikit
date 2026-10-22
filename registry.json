@@ -291,7 +291,7 @@
         "since": "0.3.0",
         "status": "deprecated",
         "replaces": [],
-        "removeIn": "0.8.0",
+        "removeIn": "0.9.0",
         "replacedBy": [
           "key-prompt"
         ]
@@ -317,7 +317,7 @@
         "since": "0.3.0",
         "status": "deprecated",
         "replaces": [],
-        "removeIn": "0.8.0",
+        "removeIn": "0.9.0",
         "replacedBy": [
           "meter",
           "progress-ring"
@@ -408,7 +408,7 @@
         "since": "0.3.0",
         "status": "deprecated",
         "replaces": [],
-        "removeIn": "0.8.0",
+        "removeIn": "0.9.0",
         "replacedBy": [
           "notice"
         ]
