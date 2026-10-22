@@ -23,3 +23,8 @@ body {
   --nk-panel-edge: inset 0 1px 0 0 rgba(var(--popover-foreground-rgb), var(--nk-material-menu-edge, var(--nk-surface-edge, 0.06)));
   --nk-backdrop-filter: blur(var(--nk-material-menu-blur, 0px));
 }
+/* A sheet's drop shadow, tighter than the panel's (16px blur, not 32px): a large blur over a full-height
+   sheet is the slowest thing to paint on open (Renewed-Banking at 4x CPU: 392 to 121 ms for the first frame). */
+[data-slot="edge-sheet"] {
+  --nk-panel-shadow: 0 0 0 1px rgba(var(--scrim-rgb), 0.25), 0 8px 16px -10px rgba(var(--scrim-rgb), 0.55);
+}
