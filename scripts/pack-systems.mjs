@@ -22,7 +22,8 @@ fs.mkdirSync(path.join(stage, "[nuikit]"), { recursive: true });
 const version = JSON.parse(fs.readFileSync(path.join(root, "packages/core/package.json"), "utf8")).version;
 
 // ── systems → [nuikit]/
-const systems = fs.readdirSync(path.join(root, "systems")).filter((d) => fs.existsSync(path.join(root, "systems", d, "fxmanifest.lua")));
+// nuikit_dev (test commands, needs ox_lib) is copied by hand, never packed or started by [nuikit].
+const systems = fs.readdirSync(path.join(root, "systems")).filter((d) => d !== "nuikit_dev" && fs.existsSync(path.join(root, "systems", d, "fxmanifest.lua")));
 for (const name of systems) {
   const from = path.join(root, "systems", name);
   const to = path.join(stage, "[nuikit]", name);
