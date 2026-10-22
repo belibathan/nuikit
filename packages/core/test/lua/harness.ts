@@ -162,6 +162,7 @@ export async function createClient(options: { syncEvents?: boolean; onNuiMessage
     };
     const g = lua.global;
     g.set("GetCurrentResourceName", () => name);
+    g.set("GetConvar", (_k: string, d: string) => d);
     g.set("GetConvarInt", (_k: string, d: number) => d);
     g.set("print", (...a: unknown[]) => { if (process.env.LUADBG) console.log(name, ...a); });
     // Natives return nothing (wasmoon can't push some JS values back into Lua).

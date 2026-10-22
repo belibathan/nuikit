@@ -106,7 +106,8 @@ The runtime trusts `GetInvokingResource()`, never a name in the payload: only th
 intent can update or cancel it; a stopped resource's intents are cancelled in the frame and its focus
 released; when `nuikit` itself stops, every waiting script gets `nil, 'stopped'`. One progress runs at a time
 (a second is refused with `busy`, as every library does). The runtime binds **X** (`nuikit_cancel`) to cancel
-a `cancel = true` progress, since the page has no keyboard focus during one. `GetGameTimer()` is stamped on
+a `cancel = true` progress, since the page has no keyboard focus during one (convar `nuikit_cancel_key` picks
+another default key, empty for none; players rebind it in the FiveM key settings). `GetGameTimer()` is stamped on
 each intent (`at`) for timers that must survive a page reload (unproven, §8).
 
 **Focus** goes through one surface per kind in the `nuikit` resource (`intent:menu` full · `intent:menu:cursor`

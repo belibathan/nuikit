@@ -11,7 +11,7 @@ afterEach(() => client?.close());
 const RUNTIME = fileURLToPath(new URL("../../../../systems/nuikit/client/intents.lua", import.meta.url));
 const natives = `
   function RegisterCommand(name, fn) COMMANDS = COMMANDS or {} COMMANDS[name] = fn end
-  function RegisterKeyMapping() end
+  function RegisterKeyMapping(cmd, _, _, key) KEYMAPS = KEYMAPS or {} KEYMAPS[cmd] = key end
 `;
 
 const startRuntime = () => client.start("nuikit", { before: natives, scripts: ["intents.lua", RUNTIME] });
@@ -190,6 +190,16 @@ describe("the runtime (systems/nuikit/client/intents.lua)", () => {
     expect(await host.run(`local n = 0 for _, i in ipairs(NUI.intents.stack()) do if i.kind == 'prompt' then n = n + 1 end end return n`)).toBe(0);
     expect(await host.run(`return #NUI.intents.stack()`)).toBe(1);
     await shop.run(`nk.prompt()`);
+  });
+
+  it("binds nuikit_cancel to X, or to the key in convar nuikit_cancel_key (empty: none)", async () => {
+    client = await createClient();
+    expect(await (await startRuntime()).run(`return KEYMAPS.nuikit_cancel`)).toBe("x");
+    client.close();
+    client = await createClient();
+    const unbound = `GetConvar = function(k, d) if k == 'nuikit_cancel_key' then return '' end return d end`;
+    const host = await client.start("nuikit", { before: natives + unbound, scripts: ["intents.lua", RUNTIME] });
+    expect(await host.run(`return KEYMAPS.nuikit_cancel`)).toBe("");
   });
 
   it("the X key cancels a cancellable progress only", async () => {
