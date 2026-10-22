@@ -50,7 +50,7 @@ Config = {
   -- just changed: a vital, money, the street, a weapon), driving, or interacting (a resource sends
   -- TriggerEvent('nuikit_hud:interaction', true/false)). retract is the lever, off: everything
   -- shows as it always has. On, a zone not listed for the situation slides away, at rest only after
-  -- the theme's --nk-rest-delay (8s) without a moment. The map stays (GTA's radar can't retract).
+  -- the theme's --nk-rest-delay without a moment (0ms, its default, never: set e.g. 8s in theme.css). The map stays (GTA's radar can't retract).
   situations = {
     retract = false,
     rest = { 'map', 'vehicle' },
@@ -190,8 +190,8 @@ Config = {
   },
 
   -- Legibility (Foundation 2): the theme's --nk-legibility 'auto' follows the game clock, day from
-  -- dayFrom to dayTo (game hours). mode forces 'day' or 'night' for this HUD whatever the theme says;
-  -- false stops sending it (the theme's value stands).
+  -- dayFrom to dayTo (game hours): the HUD marks html[data-nk-daytime] and the kit lifts every surface.
+  -- mode forces the clock's answer ('day' or 'night'); false stops sending it.
   legibility = { dayFrom = 7, dayTo = 19, mode = nil },
 
   -- Print where the minimap and the HUD's edges went to the F8 console.

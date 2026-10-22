@@ -1,7 +1,8 @@
 // Foundation 2 situations: which zones show while the player is at rest, in a moment, driving or
 // interacting (Config.situations). Lua sends the situation it can see (hud:situation: rest, driving,
 // interaction); a moment is told apart from rest here, on the page: anything the HUD shows changed
-// within the theme's --nk-rest-delay. With retract off (the default) every zone shows, as always.
+// within the theme's --nk-rest-delay (0, the default: never at rest). With retract off (the default)
+// every zone shows, as always.
 import { createContext, useContext, useEffect, useState } from "react";
 import type { ZoneName } from "./parts";
 
@@ -14,11 +15,11 @@ export interface HudSituations {
   interaction?: ZoneName[];
 }
 
-/** --nk-rest-delay as ms ("8s", "8000ms" or "8000"); 8s when the theme doesn't set it. */
+/** The theme's --nk-rest-delay (tokens 1.4) as ms ("8s", "8000ms"); 0, its default, or unset: never. */
 export function restDelay(value = getComputedStyle(document.documentElement).getPropertyValue("--nk-rest-delay")): number {
   const v = value.trim();
   const n = parseFloat(v);
-  if (!Number.isFinite(n) || n < 0) return 8000;
+  if (!Number.isFinite(n) || n <= 0) return Infinity;
   return v.endsWith("ms") ? n : v.endsWith("s") ? n * 1000 : n;
 }
 
@@ -27,7 +28,9 @@ export function useSituation(lua: Situation, key: string): Situation {
   const [moment, setMoment] = useState(true); // the HUD comes in as a moment, then settles
   useEffect(() => {
     setMoment(true);
-    const t = setTimeout(() => setMoment(false), restDelay());
+    const ms = restDelay();
+    if (ms === Infinity) return;
+    const t = setTimeout(() => setMoment(false), ms);
     return () => clearTimeout(t);
   }, [key]);
   if (lua === "driving" || lua === "interaction") return lua;

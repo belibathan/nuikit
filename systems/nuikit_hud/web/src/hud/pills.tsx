@@ -30,8 +30,8 @@ interface VitalProps {
   force: { by: number; nonce: number } | null;
 }
 
-// Foundation 2 roles: the wrapper carries data-hue="<vital>", whose ramp (tokens 1.4) colours the chip;
-// before those tokens, --hue-solid is unset and the vital keeps its --vital-<tone>.
+// Roles (tokens 1.4): the wrapper carries data-hue="<vital>", and kit.css gives it --hue-solid from
+// --role-<vital>; --vital-<tone> only for a page without the 1.4 kit.
 const roleColour = (tone: Tone) => ({ "--vital": `var(--hue-solid, var(--vital-${tone}))` }) as CSSProperties;
 
 /** One vital: the icon in a chip whose level shows the value; a pop when it changes. */
