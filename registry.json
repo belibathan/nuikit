@@ -645,13 +645,17 @@
             "leaving",
             "density",
             "shape",
-            "motion"
+            "motion",
+            "policy",
+            "queue",
+            "hurry"
           ],
           "level": "the time left, 1 → 0 over duration.",
           "rules": [
             "Newest nearest the edge; at most five per position.",
             "Slides in from its stack's edge, out toward it.",
-            "error is data-state alert."
+            "error is data-state alert.",
+            "Queue policy (useNotices / NuiNotices): stack or one at a time, a capped queue (the oldest waiting goes), shown ones hurry (dwell x hurry) while others wait."
           ]
         }
       }

@@ -1015,7 +1015,8 @@ const GRID: { position: NoticePosition | null; icon?: ReactNode; label?: string 
 ];
 
 function NoticeDemo() {
-  const { notices, notify, dismiss, clear } = useNotices();
+  const [policy, setPolicy] = useState<"stack" | "one">("stack");
+  const { notices, notify, dismiss, clear, waiting } = useNotices({ policy });
   const [status, setStatus] = useState<NoticeStatus>("success");
   const [count, setCount] = useState(0);
   const [fuel, setFuel] = useState(12);
@@ -1034,6 +1035,14 @@ function NoticeDemo() {
       <Panel size="sm" className="relative z-10">
         <PanelHeader title="Notify" description="Pick a status, then a position" />
         <PanelBody variant="form">
+          <div className="flex items-center gap-2" role="radiogroup" aria-label="Queue policy">
+            {(["stack", "one"] as const).map((p) => (
+              <Button key={p} role="radio" aria-checked={policy === p} size="sm" variant={policy === p ? "secondary" : "ghost"} onClick={() => setPolicy(p)}>
+                {p === "stack" ? "Stacked" : "One at a time"}
+              </Button>
+            ))}
+            {waiting > 0 && <span className="nk-num ml-auto text-sm text-muted-foreground">{waiting} waiting</span>}
+          </div>
           <Tabs value={status} onValueChange={(v) => setStatus(v as NoticeStatus)}>
             <TabsList className="w-full">
               {STATUSES.map((s) => (

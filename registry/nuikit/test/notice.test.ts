@@ -4,6 +4,7 @@ import {
   groupNotices,
   noticePosition,
   noticeReducer,
+  noticeShown,
   noticeStatus,
   noticeTimeLeft,
   NOTICE_DURATION,
@@ -139,5 +140,40 @@ describe("notice items", () => {
     expect(formatItemDelta(-1)).toBe("−1")
     expect(formatItemDelta(1200)).toBe("+1,200")
     expect(formatItemDelta(0)).toBe("0")
+  })
+})
+
+// The queue policy (wave 3): one at a time or stacked, a capped queue, a shorter dwell while others wait.
+describe("notice queue policy", () => {
+  const queued = (keys: string[], max: number, queue: number, position?: NoticeData["position"]) =>
+    keys.reduce<NoticeEntry[]>((s, k, i) => noticeReducer(s, { type: "show", key: k, at: i, notice: { title: k, position }, max, queue }), [])
+
+  it("one at a time: the first shows, the rest wait, and they hurry it", () => {
+    const all = queued(["a", "b", "c"], 1, 5)
+    expect(all.map((n) => n.key)).toEqual(["a", "b", "c"])
+    const shown = noticeShown(all, 1, 0.5)
+    expect(shown.map((n) => [n.key, n.dwell])).toEqual([["a", 0.5]])
+  })
+
+  it("the next waiting one shows when the shown one goes, at full time when nobody else waits", () => {
+    const all = noticeReducer(queued(["a", "b"], 1, 5), { type: "dismiss", key: "a" })
+    expect(noticeShown(all, 1, 0.5).map((n) => [n.key, n.dwell])).toEqual([["b", undefined]])
+  })
+
+  it("past the queue, the oldest waiting goes; the shown one stays", () => {
+    const all = queued(["a", "b", "c", "d"], 1, 2)
+    expect(all.map((n) => n.key)).toEqual(["a", "c", "d"])
+  })
+
+  it("stacked with no queue: as before, the oldest shown goes and nothing waits", () => {
+    const all = queued(["a", "b", "c", "d"], 3, 0)
+    expect(all.map((n) => n.key)).toEqual(["b", "c", "d"])
+    expect(noticeShown(all, 3, 0.5).every((n) => n.dwell === undefined)).toBe(true)
+  })
+
+  it("each position queues on its own", () => {
+    const left = queued(["l1", "l2"], 1, 5, "top-left")
+    const all = noticeReducer(left, { type: "show", key: "r1", at: 9, notice: { title: "r1", position: "top-right" }, max: 1, queue: 5 })
+    expect(noticeShown(all, 1, 0.5).map((n) => [n.key, n.dwell])).toEqual([["l1", 0.5], ["r1", undefined]])
   })
 })

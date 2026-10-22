@@ -537,10 +537,12 @@ type NoticeEntry = NoticeData & {
   at: number
   /** How many later changes were merged into it (item notices). */
   merged?: number
+  /** shown with its time scaled by this (the queue policy's hurry while others wait) */
+  dwell?: number
 }
 
 type NoticeAction =
-  | { type: "show"; key: string; at: number; notice: NoticeData; max?: number }
+  | { type: "show"; key: string; at: number; notice: NoticeData; max?: number; queue?: number }
   | { type: "dismiss"; key: string }
   | { type: "clear" }
 
@@ -554,7 +556,7 @@ type NoticeAction =
 function noticeReducer(state: NoticeEntry[], action: NoticeAction): NoticeEntry[] {
   switch (action.type) {
     case "show": {
-      const { notice, key, at, max = 5 } = action
+      const { notice, key, at, max = 5, queue = 0 } = action
       if (!notice.title && !notice.description && !notice.item) return state
       const itemKey = notice.id === undefined || notice.id === null ? noticeItemKey(notice.item) : undefined
       if (itemKey && notice.item) {
@@ -587,7 +589,10 @@ function noticeReducer(state: NoticeEntry[], action: NoticeAction): NoticeEntry[
       if (i >= 0) return state.map((n, j) => (j === i ? next : n))
       const position = noticePosition(next.position)
       const there = state.filter((n) => noticePosition(n.position) === position)
-      const drop = new Set(there.slice(0, Math.max(0, there.length + 1 - Math.max(1, max))))
+      // past the shown (max) and the waiting (queue): the oldest waiting goes, or with no queue the oldest shown
+      const shown = Math.max(1, max)
+      const overflow = Math.max(0, there.length + 1 - shown - Math.max(0, queue))
+      const drop = new Set((queue > 0 ? there.slice(shown) : there).slice(0, overflow))
       return [...state.filter((n) => !drop.has(n)), next]
     }
     case "dismiss":
@@ -609,20 +614,56 @@ function groupNotices(notices: readonly NoticeEntry[]) {
 
 let seq = 0
 
-/** A notice queue (at most `max` per position): `notify` returns the notice's key, for `dismiss`. */
-function useNotices({ max = 5 }: { max?: number } = {}) {
-  const [notices, dispatch] = React.useReducer(noticeReducer, [])
+/**
+ * The queue policy (wave 3): stack (several per position, the default) or one (one at a time); how many may
+ * wait (`queue`; the oldest waiting goes past it); and `hurry`, the time a shown notice keeps while others
+ * wait (0.5: half).
+ */
+type NoticeQueuePolicy = {
+  policy?: "stack" | "one"
+  /** shown per position (stack); one shows 1. Default 5. */
+  max?: number
+  /** how many may wait per position beyond those shown. Default: 0 for stack (the oldest shown goes), 5 for one. */
+  queue?: number
+  /** the shown notices' time while others wait, as a fraction. Default 0.5. */
+  hurry?: number
+}
+
+/**
+ * The notices shown now (arrival order: the first ones stay, the rest wait), each with its `dwell`: `hurry`
+ * when others wait in its position, else 1.
+ */
+function noticeShown(entries: readonly NoticeEntry[], shown: number, hurry: number): NoticeEntry[] {
+  const count = new Map<NoticePosition, number>()
+  const waiting = new Set<NoticePosition>()
+  const out: NoticeEntry[] = []
+  for (const n of entries) {
+    const p = noticePosition(n.position)
+    const c = count.get(p) ?? 0
+    count.set(p, c + 1)
+    if (c < shown) out.push(n)
+    else waiting.add(p)
+  }
+  return out.map((n) => (waiting.has(noticePosition(n.position)) ? { ...n, dwell: hurry } : n))
+}
+
+/** A notice queue, by its policy: `notify` returns the notice's key, for `dismiss`; `waiting` counts the queued. */
+function useNotices({ policy = "stack", max = 5, queue, hurry = 0.5 }: NoticeQueuePolicy = {}) {
+  const [all, dispatch] = React.useReducer(noticeReducer, [])
+  const shown = policy === "one" ? 1 : Math.max(1, max)
+  const waitFor = queue ?? (policy === "one" ? 5 : 0)
   const notify = React.useCallback(
     (notice: NoticeData) => {
       const key = notice.id !== undefined && notice.id !== null ? `id:${notice.id}` : `n:${++seq}`
-      dispatch({ type: "show", key, at: Date.now(), notice, max })
+      dispatch({ type: "show", key, at: Date.now(), notice, max: shown, queue: waitFor })
       return key
     },
-    [max]
+    [shown, waitFor]
   )
   const dismiss = React.useCallback((key: string) => dispatch({ type: "dismiss", key }), [])
   const clear = React.useCallback(() => dispatch({ type: "clear" }), [])
-  return { notices, notify, dismiss, clear }
+  const notices = React.useMemo(() => noticeShown(all, shown, hurry), [all, shown, hurry])
+  return { notices, notify, dismiss, clear, waiting: all.length - notices.length }
 }
 
 /**
@@ -664,7 +705,7 @@ function Notices({
     <>
       {groupNotices(all).map(([position, list]) => (
         <NoticeStack key={position} position={position} className={className} {...variant}>
-          {list.map(({ key, at, id: _id, position: _position, merged, ...n }, i) => (
+          {list.map(({ key, at, id: _id, position: _position, merged, dwell, ...n }, i) => (
             // The wrapper is what the stack's flip moves; the notice inside slides in and out. Keyed on
             // `at` too: an update restarts the time (and comes in again, unless it is a merged item
             // change: that one just updates its count).
@@ -672,6 +713,7 @@ function Notices({
               <Notice
                 key={`${key}:${at}`}
                 {...n}
+                duration={dwell && dwell !== 1 ? Math.round((n.duration ?? NOTICE_DURATION) * dwell) : n.duration}
                 animate={!merged}
                 leaving={out.has(list[i]!)}
                 onExpire={() => onDismiss(key)}
@@ -695,8 +737,8 @@ declare module "nuikit-core" {
 }
 
 /** A notice queue wired to Lua's NUI.notify() (`nuikit:notify`). Mount it once. */
-function NuiNotices({ max, ...props }: Omit<React.ComponentProps<typeof Notices>, "notices" | "onDismiss"> & { max?: number }) {
-  const { notices, notify, dismiss } = useNotices({ max })
+function NuiNotices({ max, policy, queue, hurry, ...props }: Omit<React.ComponentProps<typeof Notices>, "notices" | "onDismiss"> & NoticeQueuePolicy) {
+  const { notices, notify, dismiss } = useNotices({ max, policy, queue, hurry })
   useNuiEvent("nuikit:notify", ({ type, status, ...n }) => {
     notify({ ...n, status: status ?? (type === "default" ? undefined : type) })
   })
@@ -711,6 +753,7 @@ export {
   useNotices,
   noticeVariants,
   noticeReducer,
+  noticeShown,
   noticeStatus,
   noticePosition,
   noticeTimeLeft,
@@ -727,5 +770,6 @@ export {
   type NoticeData,
   type NoticeEntry,
   type NoticeAction,
+  type NoticeQueuePolicy,
   type NuiNotify,
 }
