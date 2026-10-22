@@ -4,24 +4,6 @@ import "nuikit-core";
 export type PauseButton = "resume" | "map" | "settings" | "keybinds" | "info" | "help" | "disconnect";
 export type PauseView = "home" | "map" | "keys" | "info" | "settings";
 
-/** A setting as a row (client/settings.lua): the page draws it without knowing what it does. */
-export interface SettingRow {
-  key: string;
-  label: string;
-  kind: "toggle" | "choice" | "range";
-  group?: string;
-  description?: string;
-  options?: { value: number | string | boolean; label: string }[];
-  min?: number;
-  max?: number;
-  step?: number;
-}
-export type SettingValues = Record<string, number | string | boolean | undefined>;
-export interface SettingsSnapshot {
-  rows: SettingRow[];
-  presets: { id: string; label: string }[];
-  values: SettingValues;
-}
 
 export interface PausePlace {
   id: string;
@@ -153,16 +135,12 @@ declare module "nuikit-core" {
     "pause:map:info": MapInfo;
     "pause:map:blips": MapBlip[];
     "pause:keys": KeyBinding[];
-    "pause:settings": SettingsSnapshot;
   }
   interface NuiCallbacks {
     "pause:resume": Ok;
     "pause:map": Ok;
     "pause:settings": Ok;
     "pause:keybinds": Ok;
-    "pause:settings:set": { req: { patch: SettingValues }; res: { ok: boolean; values?: SettingValues } };
-    "pause:settings:preset": { req: { id: string }; res: { ok: boolean; values?: SettingValues } };
-    "pause:settings:reset": { req: Record<string, never>; res: { ok: boolean; values?: SettingValues } };
     "pause:disconnect": Ok;
     "pause:gamemap": Ok;
     "pause:view": { req: { view: PauseView }; res: { ok: boolean; preview?: boolean } };

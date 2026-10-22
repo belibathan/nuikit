@@ -40,8 +40,10 @@ Config = {
   --     settings one press away); false opens GTA's settings directly
   views = { map = true, keys = true, info = true, preview = true, settings = true },
 
-  -- The Settings page (client/settings.lua). Saved per player. Leave out what you don't change.
+  -- The display settings (client/settings.lua, on nuikit's settings service: saved per player). The Settings
+  -- page shows them and every other resource's settings. setr nuikit_flag_streamer_mode 0 hides streamer mode.
   settings = {
+    -- label = 'Display',               -- the section's heading
     -- hide = { 'streamer' },          -- rows to leave out
     -- defaults = { hud = true },      -- starting values for new players
     -- presets = { { id = 'standard', label = 'Standard', patch = { textSize = 1, hud = true } } },

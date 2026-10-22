@@ -1,7 +1,7 @@
 // The game, faked for browser development. Press ` for the devtools.
 // ?fixture=<name> picks a starting state (used for screenshots):
 //   default, civilian, nocharacter, minimal, loading, simple, map, map-picked, keys, info
-import { closeSurface, emit, openSurface } from "nuikit-core";
+import { closeSurface, emit, mockSettings, openSurface } from "nuikit-core";
 import { NuiDevtools, defineMocks } from "nuikit-core/devtools";
 import { useEffect } from "react";
 import type { KeyBinding, MapBlip, MapInfo, MapPins, PauseData, PauseView } from "./nui";
@@ -79,23 +79,38 @@ Questions? Ask staff in Discord.`,
   ],
 };
 
-// the rows client/settings.lua sends
-const settingsRows = {
-  rows: [
-    { key: "textSize", label: "Text size", kind: "choice" as const, group: "Display", options: [{ value: 0.9, label: "Small" }, { value: 1, label: "Standard" }, { value: 1.1, label: "Large" }, { value: 1.2, label: "Larger" }] },
-    { key: "contrast", label: "High contrast", kind: "toggle" as const, group: "Display" },
-    { key: "reducedMotion", label: "Reduced motion", kind: "toggle" as const, group: "Display", description: "Fades instead of slides, no camera moves" },
-    { key: "streamer", label: "Streamer mode", kind: "toggle" as const, group: "Privacy", description: "Hides names and money on screen" },
-    { key: "hud", label: "Show the HUD", kind: "toggle" as const, group: "HUD" },
-  ],
-  presets: [
-    { id: "standard", label: "Standard" },
-    { id: "streamer", label: "Streamer" },
-    { id: "performance", label: "Performance" },
-    { id: "cinema", label: "Cinema" },
-  ],
-};
-let settingValues: Record<string, number | boolean> = { textSize: 1, contrast: false, reducedMotion: false, streamer: false, hud: true };
+// The settings service in the browser: this menu's section (client/settings.lua) and a HUD's, the way the
+// Settings page lists every resource's.
+mockSettings([
+  {
+    resource: "nuikit_pause",
+    label: "Display",
+    version: 1,
+    rows: [
+      { key: "textSize", label: "Text size", group: "Display", default: 1, options: [{ value: 0.9, label: "Small" }, { value: 1, label: "Standard" }, { value: 1.1, label: "Large" }, { value: 1.2, label: "Larger" }] },
+      { key: "contrast", label: "High contrast", group: "Display", toggle: true, default: false },
+      { key: "reducedMotion", label: "Reduced motion", group: "Display", toggle: true, default: false, description: "Fades instead of slides, no camera moves" },
+      { key: "streamer", label: "Streamer mode", group: "Privacy", toggle: true, default: false, description: "Hides names and money on screen" },
+      { key: "hud", label: "Show the HUD", group: "HUD", toggle: true, default: true },
+    ],
+    presets: [
+      { id: "standard", label: "Standard", patch: { textSize: 1, contrast: false, reducedMotion: false, streamer: false, hud: true } },
+      { id: "streamer", label: "Streamer", patch: { streamer: true } },
+      { id: "performance", label: "Performance", patch: { reducedMotion: true } },
+      { id: "cinema", label: "Cinema", patch: { hud: false } },
+    ],
+  },
+  {
+    resource: "nuikit_hud",
+    label: "HUD",
+    version: 1,
+    rows: [
+      { key: "layout", label: "Layout", default: "compact", options: [{ value: "compact", label: "Compact" }, { value: "classic", label: "Classic" }] },
+      { key: "scale", label: "Size", range: [0.8, 1.2, 0.05], default: 1 },
+      { key: "minimap", label: "Minimap", toggle: true, default: true, group: "Map" },
+    ],
+  },
+]);
 
 const keys: KeyBinding[] = [
   { group: "Menus", label: "Radial menu", key: "Z" },
@@ -210,21 +225,7 @@ const mocks = defineMocks({
     "pause:view": ({ view }: { view: PauseView }) => {
       if (view === "keys") setTimeout(() => emit("pause:keys", keys), 120);
       if (view === "map") setTimeout(sendMap, 60);
-      if (view === "settings") setTimeout(() => emit("pause:settings", { ...settingsRows, values: settingValues }), 120);
       return { ok: true, preview: view === "home" };
-    },
-    "pause:settings:set": ({ patch }: { patch: Record<string, unknown> }) => {
-      settingValues = { ...settingValues, ...patch } as typeof settingValues;
-      return { ok: true, values: settingValues };
-    },
-    "pause:settings:preset": ({ id }: { id: string }) => {
-      const patch: Record<string, Record<string, unknown>> = { standard: { textSize: 1, contrast: false, reducedMotion: false, streamer: false, hud: true }, streamer: { streamer: true }, performance: { reducedMotion: true }, cinema: { hud: false } };
-      settingValues = { ...settingValues, ...patch[id] } as typeof settingValues;
-      return { ok: true, values: settingValues };
-    },
-    "pause:settings:reset": () => {
-      settingValues = { textSize: 1, contrast: false, reducedMotion: false, streamer: false, hud: true };
-      return { ok: true, values: settingValues };
     },
     "pause:map:fly": () => ok,
     "pause:map:pick": () => ({

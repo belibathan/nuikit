@@ -22,7 +22,7 @@ import { cn } from "@/lib/utils";
 import { HelpPage, PlayerSummary, ServerSummary, Stage } from "./views/home";
 import { InfoPage } from "./views/info";
 import { KeysPage } from "./views/keys";
-import { SettingsPage } from "./views/settings";
+import { SELF as SETTINGS_SELF, SettingsPage } from "./views/settings";
 import { MapSheetPage, MapStage, useMapModel } from "./views/map";
 import { PauseSheet, rise, SHEET_W } from "./views/sheet";
 
@@ -106,7 +106,7 @@ function Pause({ data, player }: { data: PauseData; player: NuiPlayer }) {
     page = (
       <SettingsPage
         onBack={home}
-        onValues={(v) => setStreamer(v.streamer === true)}
+        onValues={(resource, v) => resource === SETTINGS_SELF && setStreamer(v.streamer === true)}
         onGame={() => void fetchNui("pause:settings").catch(() => {})}
       />
     );

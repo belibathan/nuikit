@@ -20,7 +20,7 @@ Works on **Qbox**, **QBCore**, **ESX** or **standalone**: the player card comes 
 | P | GTA's pause menu, untouched (`Config.map.takeP = true`: P opens the 3D map instead). |
 | Open the map | A key players bind in FiveM's key settings (default `Config.map.key`, none); `exports.nuikit_pause:openMap()` from a radial menu or phone. |
 | Map | Opens GTA's map. Closing it brings this menu back (`returnToMenu`). |
-| Settings | nuikit's settings: text size, contrast, reduced motion, streamer mode (hides names and money), the HUD, and presets (Standard, Streamer, Performance, Cinema), saved per player. **Game settings** opens GTA's page. `views.settings = false`: straight to GTA's. Other resources read `NUI.getState('streamer')` and `NUI.getState('hud:hidden')`. |
+| Settings | Every resource's settings on nuikit's settings service (`nk.settings`, docs/settings.md): this menu's Display section (text size, contrast, reduced motion, streamer mode, the HUD; presets Standard, Streamer, Performance, Cinema), then the HUD's and any other resource's. Changes preview live; Save keeps them, Cancel or leaving drops them. **Game settings** opens GTA's page. `views.settings = false`: straight to GTA's. Other resources read `NUI.getState('streamer')` and `NUI.getState('hud:hidden')`. |
 | Key bindings | FiveM's key bindings page; closing it returns here. |
 | Help | A list of your server's keys (from `config.lua`). |
 | Disconnect | Asks first, then the server drops the player with your message. A player can only ever disconnect themselves. |
