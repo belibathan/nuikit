@@ -33,11 +33,19 @@ import {
 } from "./index";
 import { flipFrom, indicator, motionLevel, spring, type Channel, type SpringName } from "./motion";
 import { clearOf, getZones, onZones, type ClearOptions, type ZonePosition, type Zones } from "./zones";
+import { getSlots, onSlots, type Slot } from "./slots";
 import { getTheme } from "./theme";
 import type { CompiledTheme } from "./tokens";
 
 export * from "./index";
 export { clearOf, getZones, onZones, type ClearOptions, type ZonePosition, type ZoneRect, type Zones } from "./zones";
+export { getAllSlots, getSlots, onSlots, setSlots, type Slot, type Slots } from "./slots";
+
+/** A cluster's slots, joined by any resource with NUI.slot(cluster, key, opts), ordered (docs/slots.md). */
+export function useSlots(cluster: string): Slot[] {
+  const get = useCallback(() => getSlots(cluster), [cluster]);
+  return useSyncExternalStore(onSlots, get, get);
+}
 
 /** Every UI's published screen zones (NUI.zone in Lua, src/zones.ts); re-renders when they change. */
 export function useZones(): Zones {
