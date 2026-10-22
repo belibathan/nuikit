@@ -2061,7 +2061,8 @@ html[data-nk-motion="off"] .hud-root * {
 /* vitals.voice = collapse: while talking the vitals fold into the voice chip as a hidden chip does,
    and unfold after */
 .hud-vitals-row[data-collapsed] > [data-slot="hud-vital"],
-.hud-vitals-row[data-collapsed] > [data-slot="hud-radio"] {
+.hud-vitals-row[data-collapsed] > [data-slot="hud-radio"],
+.hud-vitals-row[data-collapsed] > [data-slot="hud-slot"]:not([data-voice]) {
   overflow: hidden;
   opacity: 0;
   max-width: 0;
