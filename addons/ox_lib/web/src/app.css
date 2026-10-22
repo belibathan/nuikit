@@ -348,3 +348,29 @@ html[data-nk-motion="reduced"] .ox-indicator {
 [data-slot="alert-dialog-content"] {
   z-index: var(--nk-z-dialog, 60) !important;
 }
+
+/*
+ * Dialogs (input, alert) read like the floating sheets they open over: the sheet's column rhythm
+ * (1.5rem from every edge), the title one step up at section size, a plain hairline under it instead
+ * of a filled header bar, and the actions on the panel's own surface.
+ */
+[data-slot="dialog-content"],
+[data-slot="alert-dialog-content"] {
+  --ox-dialog-pad: 1.5rem;
+  --nk-panel-divider: var(--nk-border) solid var(--nk-panel-border);
+}
+:is([data-slot="dialog-content"], [data-slot="alert-dialog-content"]) .nk-panel-header {
+  min-height: 0;
+  padding: var(--ox-dialog-pad) var(--ox-dialog-pad) 1rem;
+  background: none;
+}
+:is([data-slot="dialog-content"], [data-slot="alert-dialog-content"]) .nk-panel-header .nk-title {
+  --nk-heading-size: var(--nk-text-section);
+}
+:is([data-slot="dialog-content"], [data-slot="alert-dialog-content"]) .ox-dialog-body {
+  padding: 1.25rem var(--ox-dialog-pad);
+}
+:is([data-slot="dialog-content"], [data-slot="alert-dialog-content"]) .nk-panel-footer {
+  padding: 1rem var(--ox-dialog-pad) var(--ox-dialog-pad);
+  background: none;
+}
