@@ -194,6 +194,36 @@ describe("systems/nuikit_hud: the minimap", () => {
     expect(await hud.run(`return Minimap.routeClip()`)).toBe("box");
   });
 
+  it("slide (a spike, off by default): the radar steps toward its edge and back without a big-map flick", async () => {
+    client = await createClient();
+    const hud = await client.start("nuikit_hud", { before: natives, scripts });
+    await hud.run(`Layout.update() Minimap.apply()`);
+    expect(await hud.run(`return Minimap.slide(false)`)).toBe(false); // Config.minimap.slide = false
+    const rest = await hud.run<number[]>(`return PLACED.minimap`);
+    await hud.run(`Config.minimap.slide = true XS = {} FLICKS = 0
+      SetRadarBigmapEnabled = function() FLICKS = FLICKS + 1 end
+      local set = SetMinimapComponentPosition
+      SetMinimapComponentPosition = function(name, ...) if name == 'minimap' then XS[#XS + 1] = select(3, ...) end set(name, ...) end
+      DisplayRadar = function(on) HIDDEN_AT = not on and #XS or HIDDEN_AT end
+      CreateThread = function(f) f() end`);
+    expect(await hud.run(`return Minimap.slide(false)`)).toBe(true);
+    const out = await hud.run<number[]>(`return XS`);
+    // compact: top right, so it moves right, further each frame, then back in place while hidden
+    expect(out.length).toBeGreaterThan(3);
+    for (let i = 1; i < out.length - 1; i++) expect(out[i]!).toBeGreaterThanOrEqual(out[i - 1]!);
+    expect(out.at(-2)! - rest[0]!).toBeCloseTo((2.5 * 1080 * 0.014815) / ((1080 * 16) / 9), 4); // 2.5rem
+    expect(out.at(-1)).toBeCloseTo(rest[0]!, 6);
+    expect(await hud.run(`return HIDDEN_AT`)).toBe(out.length - 1); // hidden before it goes back, so it never jumps home on screen
+    expect(await hud.run(`return Minimap.sliding`)).toBe(false);
+    // in: starts 2.5rem out, ends in place
+    await hud.run(`XS = {}`);
+    await hud.run(`Minimap.slide(true)`);
+    const back = await hud.run<number[]>(`return XS`);
+    expect(back[0]! - rest[0]!).toBeCloseTo((2.5 * 1080 * 0.014815) / ((1080 * 16) / 9), 4);
+    expect(back.at(-1)).toBeCloseTo(rest[0]!, 6);
+    expect(await hud.run(`return FLICKS`)).toBe(0);
+  });
+
   it("asks the nuikit resource to put the radar back when it stops; a hidden radar re-reads when it shows", async () => {
     client = await createClient();
     const hud = await client.start("nuikit_hud", { before: natives, scripts });

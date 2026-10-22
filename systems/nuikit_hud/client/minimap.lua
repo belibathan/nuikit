@@ -263,6 +263,7 @@ local function reread()
   if IsBigmapActive() then SetRadarBigmapEnabled(false, false) end
 end
 local stale = false -- placed while the radar was hidden: re-read once it shows
+local last                 -- the last placement (Minimap.slide moves it)
 
 --- Put the radar where the frame is and tell the page. Runs at start and whenever the screen size
 --- or safe zone changes.
@@ -278,6 +279,7 @@ function Minimap.apply()
   local txd, name = useMask(tune.texture or o.shape)
   useRouteTexture(Minimap.routeClip() == 'texture', txd, name)
   local x, y, w, h, mx, my, mw, mh = place(box, radar, width, height, safezone, area)
+  last = { box = box, hole = radar, width = width, height = height, safezone = safezone, area = area }
   placedByUs = true
   -- the nuikit resource puts GTA's radar back if this one stops (it can wait for the re-read; a
   -- stopping resource can't, so its own restore never took: 0.7.0 test, F3)
@@ -304,6 +306,52 @@ function Minimap.apply()
     print(('[nuikit_hud] minimap: %.2f:1, radar %.4f x %.0f (16:9 unit) / %.3f = %.1f px for a %.1f px hole'):format(
       width / height, w, Layout.unit16(height), Minimap.aspect(), w * Layout.unit16(height) / Minimap.aspect(), radar.w))
   end
+end
+
+-- ───────────────────────────────── slide: the radar leaves and comes back with the HUD (a spike)
+
+--- Config.minimap.slide (a spike, not seen in game): when the HUD's exit or entrance starts, move
+--- the three components 2.5rem toward the map's edge and back, frame by frame, on the page's curves
+--- (hud.css: out 200ms ease-in, in 280ms ease-out), with no big-map flick in between. If GTA only
+--- re-reads the positions on a flick, the radar just stays put for the 200ms and then cuts as before.
+--- `Minimap.sliding` keeps the radar drawn through the exit (main.lua). Returns whether it slides.
+Minimap.sliding = false
+local slideId = 0
+function Minimap.slide(show)
+  if cfg.slide ~= true or not last or not placedByUs or Minimap.style() ~= 'ring' then return false end
+  slideId = slideId + 1
+  local id, l = slideId, last
+  local duration = show and 280 or 200
+  local edge = (l.box.x + l.box.w / 2 < l.width / 2) and -1 or 1
+  local distance = 2.5 * rem(l.height) * edge
+  local function at(offset)
+    local box = { x = l.box.x + offset, y = l.box.y, w = l.box.w, h = l.box.h }
+    local hole = { x = l.hole.x + offset, y = l.hole.y, w = l.hole.w, h = l.hole.h }
+    place(box, hole, l.width, l.height, l.safezone, l.area)
+  end
+  if show then at(distance) end -- off to the side before the radar shows
+  Minimap.sliding = not show
+  CreateThread(function()
+    local start = GetGameTimer()
+    while id == slideId do
+      local t = math.min(1.0, (GetGameTimer() - start) / duration)
+      -- near enough to cubic-bezier(0.16, 1, 0.3, 1) in and (0.4, 0, 1, 1) out
+      local away = show and (1.0 - t) ^ 4 or t * t
+      at(distance * away)
+      if t >= 1.0 then break end
+      Wait(0)
+    end
+    if id ~= slideId then return end
+    Minimap.sliding = false
+    if not show then
+      -- hidden first, then back in place for the next entrance: put back while drawn, it jumped home
+      -- until main.lua's next pass hid it
+      DisplayRadar(false)
+      Minimap.radarOn = false
+      at(0)
+    end
+  end)
+  return true
 end
 
 --- The player is in the world: no loading screen, the network session running and the character

@@ -66,11 +66,12 @@ interface Placed {
 /**
  * One full-screen layer per screen edge. When the HUD opens or closes (a menu hides it), every layer
  * slides off toward its own edge and fades, all on the same frame and the same curve, and comes back
- * the same way. The map layer cuts with GTA's radar instead (a game layer can't slide).
+ * the same way. The map layer cuts with GTA's radar instead, or slides with it toward `slide`, its edge
+ * (Config.minimap.slide: Lua moves the radar on the same curve).
  */
-function Side({ side, children }: { side: "left" | "right" | "top" | "map"; children: ReactNode }) {
+function Side({ side, slide, children }: { side: "left" | "right" | "top" | "map"; slide?: "left" | "right"; children: ReactNode }) {
   return (
-    <div data-slot="hud-side" data-side={side} className="hud-side">
+    <div data-slot="hud-side" data-side={side} data-slide={slide} className="hud-side">
       {children}
     </div>
   );
@@ -186,7 +187,7 @@ function Compact({ settings, vehicle, location, weapon, layout, frame, state, pl
   const bl = besideMap ? "hud-beside-map hud-stack" : undefined;
   return (
     <div data-slot="hud" data-layout="compact" className="hud-root" data-shadow={look.shadow} style={vars as CSSProperties}>
-      <Side side="map">{ring && <MapRing frame={frame!} start={heading} compass={settings.compass?.ring !== false} location={location} units={units} />}</Side>
+      <Side side="map" slide={settings.slide && frame ? mapEdge(frame) : undefined}>{ring && <MapRing frame={frame!} start={heading} compass={settings.compass?.ring !== false} location={location} units={units} />}</Side>
       <Side side="left">
         {columnSide === "left" && columnEl}
         {corners(groups, "left", bl)}
@@ -232,7 +233,7 @@ function Classic({ settings, vehicle, location, weapon, layout, frame, state, pl
 
   return (
     <div data-slot="hud" data-layout="classic" className="hud-root" data-shadow={look.shadow} style={vars}>
-      <Side side="map">{mapShown && frame!.framed !== false && settings.frame !== false && <MinimapFrameView frame={frame!} state={state!} />}</Side>
+      <Side side="map" slide={settings.slide && frame ? mapEdge(frame) : undefined}>{mapShown && frame!.framed !== false && settings.frame !== false && <MinimapFrameView frame={frame!} state={state!} />}</Side>
       <Side side="left">
         {above.length > 0 && <div className="hud-above-map">{above[0].el}</div>}
         {besideEls.length > 0 && (

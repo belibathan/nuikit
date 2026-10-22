@@ -158,6 +158,8 @@ export interface HudSettings {
   location?: boolean;
   compass?: { enabled?: boolean; onFoot?: boolean; /** compact: cardinals and heading on the map ring (Config.minimap.compass) */ ring?: boolean };
   frame?: boolean;
+  /** GTA's radar slides with the HUD's exit and entrance (Config.minimap.slide): the ring slides with it */
+  slide?: boolean;
 }
 
 declare module "nuikit-core" {
