@@ -301,3 +301,34 @@ describe("flexibility", () => {
     expect(checked).toBeGreaterThan(10);
   });
 });
+
+// kit.css variants: a subtree with [data-nk-density] / [data-nk-shape] re-declares every component token
+// whose formula reaches --nk-density / --radius, or it would keep the value resolved at :root.
+describe("kit variants re-derive what depends on density and radius", () => {
+  const kit = read("packages/create-nuikit/kit.css");
+  const root = kit.slice(kit.indexOf(":root {"), kit.indexOf("\n}\n", kit.indexOf(":root {")));
+  const decls = [...root.matchAll(/^\s*(--[\w-]+):\s*([^;]+);/gm)].map((m) => [m[1]!, m[2]!] as const);
+  const reaching = (seed: string) => {
+    const set = new Set([seed]);
+    for (let changed = true; changed; ) {
+      changed = false;
+      for (const [n, v] of decls)
+        if (!set.has(n) && [...set].some((x) => v.includes(`var(${x})`) || v.includes(`var(${x},`))) (set.add(n), (changed = true));
+    }
+    set.delete(seed);
+    return [...set];
+  };
+  const block = (selector: string) => {
+    const at = kit.indexOf(`\n${selector} {`);
+    return at < 0 ? "" : kit.slice(at, kit.indexOf("\n}", at + 1));
+  };
+
+  it.each([
+    ["[data-nk-density]", "--nk-density"],
+    ["[data-nk-shape]", "--radius"],
+  ])("%s declares every token that depends on %s", (selector, seed) => {
+    const body = block(selector);
+    const missing = reaching(seed).filter((n) => !body.includes(`${n}:`));
+    expect(missing).toEqual([]);
+  });
+});

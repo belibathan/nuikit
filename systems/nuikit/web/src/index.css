@@ -793,6 +793,59 @@
   --nk-slab-band-title-size: var(--nk-text-section);
 }
 
+/*
+ * Variants: density and shape for one subtree (a component's `density` / `shape` prop paints these
+ * attributes; any element can carry them). The component tokens above resolve where they're declared,
+ * so a subtree that changes --nk-density or --radius re-declares the ones that depend on them (every
+ * token whose formula reaches --nk-density, or --radius). What a variant asks for wins over the
+ * theme's value for those tokens inside it; everything else keeps the theme's. Motion is
+ * [data-nk-motion="off" | "reduced"] on any ancestor (rules below use :is(html, *)).
+ */
+[data-nk-density="compact"] {
+  --nk-density: 0.75;
+}
+[data-nk-density="comfortable"] {
+  --nk-density: 1.15;
+}
+[data-nk-density] {
+  --nk-space: calc(0.25rem * var(--nk-density, 0.875));
+  --nk-panel-header-height: calc(3.25rem * var(--nk-density, 0.875));
+  --nk-panel-header-padding: calc(var(--nk-space) * 3) calc(var(--nk-space) * 4);
+  --nk-panel-body-padding: calc(var(--nk-space) * 2);
+  --nk-row-height: calc(2.75rem * var(--nk-density, 0.875));
+  --nk-row-padding: calc(var(--nk-space) * 1.5) calc(var(--nk-space) * 3);
+  --nk-row-bar-inset: calc(var(--nk-space) * 2.5);
+  --nk-chip-height: calc(2rem * var(--nk-density, 0.875));
+  --nk-chip-padding: calc(var(--nk-space) * 2.5);
+  --nk-slab-height: calc(2.5rem * var(--nk-density, 0.875));
+  --nk-slab-padding: 0 calc(var(--nk-space) * 3);
+  --nk-slab-gap: calc(var(--nk-space) * 2.5);
+  --nk-slab-tile-size: calc(var(--nk-slab-height) - var(--nk-space) * 2);
+  --nk-slab-tile-radius: max(0.125rem, calc(var(--nk-slab-radius) - var(--nk-space)));
+  --nk-slab-stack-gap: calc(var(--nk-space) * 2);
+  --nk-slab-band-padding: calc(var(--nk-space) * 3) calc(var(--nk-space) * 6);
+  --nk-slab-band-gap: var(--nk-space);
+}
+[data-nk-shape] {
+  --nk-chip-radius: max(0.25rem, calc(var(--radius) - 4px));
+  --nk-key-radius: max(0.25rem, calc(var(--radius) - 4px));
+  --nk-panel-radius: var(--radius);
+  --nk-row-radius: calc(var(--radius) - 2px);
+  --nk-hud-radius: max(0.25rem, calc(var(--radius) - 2px));
+  --nk-slab-radius: var(--nk-chip-radius);
+  --nk-slab-tile-radius: max(0.125rem, calc(var(--nk-slab-radius) - var(--nk-space)));
+}
+[data-nk-shape="square"] {
+  --radius: 0.125rem;
+  --nk-chip-radius: 0.125rem;
+  --nk-key-radius: 0.125rem;
+  --nk-meter-radius: 0.0625rem;
+}
+[data-nk-shape="round"] {
+  --radius: 1rem;
+  --nk-chip-radius: 9999px;
+}
+
 /* Floating panel: menus, inventories, dialogs, cards on top of the game. @merge nk-surface */
 @utility nk-panel {
   /* !important so it wins over a shadcn primitive's own surface (DialogContent's bg-background) */

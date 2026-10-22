@@ -1,7 +1,7 @@
 import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
 
-import { cn } from "@/lib/utils"
+import { cn, nkVariant, type NkVariantProps } from "@/lib/utils"
 import { Progress } from "@/components/ui/progress"
 
 /**
@@ -292,8 +292,11 @@ function Meter({
   cancelLabel = "Cancel",
   onCancel,
   style,
+  density,
+  shape,
+  motion,
   ...props
-}: Omit<React.ComponentProps<"div">, "children"> &
+}: NkVariantProps & Omit<React.ComponentProps<"div">, "children"> &
   VariantProps<typeof meterVariants> & {
     /** The level, 0–max. Ignored when `duration` is set. */
     value?: number
@@ -370,6 +373,7 @@ function Meter({
     const toneVar = custom ? undefined : (TONE_VAR[critical ? "destructive" : tone] ?? TONE_VAR.primary)
     return (
       <div
+        {...nkVariant({ density, shape, motion })}
         data-slot="meter"
         data-variant="slab"
         data-level={level}
@@ -473,6 +477,7 @@ function Meter({
 
   return (
     <div
+      {...nkVariant({ density, shape, motion })}
       data-slot="meter"
       data-level={level}
       data-complete={(timed && percent >= 100) || undefined}
