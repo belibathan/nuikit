@@ -351,17 +351,20 @@ end)
 
 -- The page has no keyboard focus during a progress bar, so the runtime reads the key (ox_lib binds
 -- X the same way). Cancels the newest cancellable progress; the caller's call returns false.
-RegisterCommand('nuikit_cancel', function()
-  local top
-  for _, it in pairs(open) do
-    if it.kind == 'progress' and it.props.cancel == true and (not top or it.seq > top.seq) then top = it end
-  end
-  if top then cancelIntent(top, 'cancel') end
-end, false)
 -- The default key is X (decisions #2): convar nuikit_cancel_key picks another, empty leaves it unbound.
--- Either way players rebind it in GTA's key settings (FiveM).
-local cancelKey = GetConvar('nuikit_cancel_key', 'x')
-if RegisterKeyMapping then RegisterKeyMapping('nuikit_cancel', 'Cancel the current action', 'keyboard', cancelKey) end
+-- Either way players rebind it in GTA's key settings (FiveM). Declared through nk.keys so Settings lists it;
+-- `command` keeps the name players already bound.
+NUI.keys.define({
+  id = 'cancel', command = 'nuikit_cancel', label = 'Cancel the current action', mapper = 'keyboard',
+  key = GetConvar('nuikit_cancel_key', 'x'),
+  onPress = function()
+    local top
+    for _, it in pairs(open) do
+      if it.kind == 'progress' and it.props.cancel == true and (not top or it.seq > top.seq) then top = it end
+    end
+    if top then cancelIntent(top, 'cancel') end
+  end,
+})
 
 -- ───────────────────────────────── exports (any language)
 

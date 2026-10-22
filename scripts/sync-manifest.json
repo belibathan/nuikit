@@ -96,6 +96,7 @@
       "lib/host.lua",
       "lib/intents.lua",
       "lib/intents.schema.lua",
+      "lib/keys.lua",
       "lib/nuikit.lua",
       "lib/settings.lua",
       "server/compiler.js",

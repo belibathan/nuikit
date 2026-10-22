@@ -14,7 +14,7 @@ const natives = `
   function RegisterKeyMapping(cmd, _, _, key) KEYMAPS = KEYMAPS or {} KEYMAPS[cmd] = key end
 `;
 
-const startRuntime = () => client.start("nuikit", { before: natives, scripts: ["intents.lua", RUNTIME] });
+const startRuntime = () => client.start("nuikit", { before: natives, scripts: ["keys.lua", "intents.lua", RUNTIME] });
 /** A script resource importing @nuikit/init.lua (nk.* with intents). */
 const startScript = (name: string) => client.start(name, { runtime: "import" });
 
@@ -198,7 +198,7 @@ describe("the runtime (systems/nuikit/client/intents.lua)", () => {
     client.close();
     client = await createClient();
     const unbound = `GetConvar = function(k, d) if k == 'nuikit_cancel_key' then return '' end return d end`;
-    const host = await client.start("nuikit", { before: natives + unbound, scripts: ["intents.lua", RUNTIME] });
+    const host = await client.start("nuikit", { before: natives + unbound, scripts: ["keys.lua", "intents.lua", RUNTIME] });
     expect(await host.run(`return KEYMAPS.nuikit_cancel`)).toBe("");
   });
 
