@@ -55,6 +55,8 @@ export type ChipNeighbours = "push" | "collapse" | "overlay"
 const SHAPES: ChipShape[] = ["auto", "square", "rounded", "circle", "diamond", "hex", "chamfer"]
 const LEVELS: LevelStyle[] = ["outline", "fill", "bar", "none"]
 const ATTACH: LabelAttach[] = ["inline", "tag", "flag", "none"]
+/** tokens 1.4's --nk-level-style names, as the chip's drawings */
+const LEVEL_14: Record<string, LevelStyle> = { ring: "outline", liquid: "fill", bar: "bar", slab: "bar", pips: "bar" }
 const DISPLAYS: ChipDisplay[] = ["auto", "pill", "value", "icon", "expand"]
 const NEIGHBOURS: ChipNeighbours[] = ["push", "collapse", "overlay"]
 
@@ -77,7 +79,7 @@ function pickOf<T extends string>(list: readonly T[], v: string, d: T): T {
 export function readChipStyle(get: (name: string) => string): ChipStyle {
   return {
     shape: pickOf(SHAPES, get("--nk-chip-shape"), DEFAULT_STYLE.shape),
-    level: pickOf(LEVELS, get("--nk-level-style"), DEFAULT_STYLE.level),
+    level: pickOf(LEVELS, LEVEL_14[get("--nk-level-style").trim()] ?? get("--nk-level-style"), DEFAULT_STYLE.level),
     attach: pickOf(ATTACH, get("--nk-label-attach"), DEFAULT_STYLE.attach),
     icon: pickOf(["vital", "uniform"] as const, get("--nk-vital-icon"), DEFAULT_STYLE.icon),
     display: pickOf(DISPLAYS, get("--nk-vital-display"), DEFAULT_STYLE.display),
@@ -326,7 +328,7 @@ function Root({ value, tone, shape, level, attach, icon, open = false, display, 
         data-yielded={yielded || undefined}
         // overlay: an open chip's floating label sits above the chips after it
         className={cn("relative isolate inline-flex shrink-0", isOpen && chip.neighbours === "overlay" && "z-10", className)}
-        style={{ ...nkLevel(value === undefined ? undefined : value / 100), ...(tone ? ({ "--vital": `var(--vital-${tone})` } as React.CSSProperties) : null), ...style }}
+        style={{ ...nkLevel(value === undefined ? undefined : value / 100), ...(tone ? ({ "--vital": `var(--hue-solid, var(--vital-${tone}))` } as React.CSSProperties) : null), ...style }}
         {...props}
       >
         {children}

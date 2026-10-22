@@ -2192,7 +2192,7 @@ html:not([data-nk-backdrop="off"]) * {
 }
 @keyframes nk-confirm {
   40% {
-    transform: scale(var(--nk-confirm-scale, 1.03));
+    transform: scale(var(--nk-confirm-scale, 1.04));
   }
 }
 :is(html, *)[data-nk-motion="reduced"] [data-state="confirm"],
@@ -2200,4 +2200,65 @@ html:not([data-nk-backdrop="off"]) * {
 [data-nk-motion="reduced"][data-state="confirm"],
 [data-nk-motion="off"][data-state="confirm"] {
   animation: none;
+}
+
+/*
+ * Focus (tokens 1.4: --nk-focus-style, painted as data-nk-focus): how every kit component's focus state
+ * draws. ring is each component's own look (the default); the others replace it. Rows keep the identity
+ * indicator (--nk-row-indicator), which a treatment sets alongside.
+ */
+:is(html, *)[data-nk-focus]:not([data-nk-focus="ring"]) [data-state="focus"]:not(.nk-row) {
+  outline: none;
+}
+:is(html, *)[data-nk-focus="halo"] [data-state="focus"]:not(.nk-row) {
+  box-shadow:
+    0 0 0 2px rgba(var(--brand-rgb, var(--primary-rgb)), 0.9),
+    0 0 1rem rgba(var(--brand-rgb, var(--primary-rgb)), var(--nk-hue-glow, 0.45));
+}
+:is(html, *)[data-nk-focus="tint"] [data-state="focus"]:not(.nk-row) {
+  background-color: rgba(var(--brand-rgb, var(--primary-rgb)), var(--nk-hue-tint, 0.14));
+}
+:is(html, *)[data-nk-focus="fill"] [data-state="focus"]:not(.nk-row) {
+  background-color: var(--brand, var(--primary));
+  color: var(--brand-foreground, var(--primary-foreground));
+}
+:is(html, *)[data-nk-focus="invert"] [data-state="focus"]:not(.nk-row) {
+  background-color: var(--foreground);
+  color: var(--background);
+}
+:is(html, *)[data-nk-focus="bar"] [data-state="focus"]:not(.nk-row) {
+  box-shadow: inset var(--nk-row-bar-width, 3px) 0 0 var(--brand, var(--primary));
+}
+
+/*
+ * Hold (tokens 1.4: --nk-hold-style, data-nk-hold): how a press-and-hold shows its progress, from the
+ * prompt's --level. bar is the line under the prompt (the default); ring fills around the key chips;
+ * fill sweeps the prompt's background.
+ */
+:is(html, *)[data-nk-hold="ring"] [data-slot="key-prompt-hold"],
+:is(html, *)[data-nk-hold="fill"] [data-slot="key-prompt-hold"] {
+  display: none;
+}
+:is(html, *)[data-nk-hold="ring"] [data-slot="key-prompt"][data-state="hold"] > [data-slot="key-prompt-keys"] {
+  padding: 2px;
+  border-radius: calc(var(--nk-key-radius, 0.375rem) + 2px);
+  background: conic-gradient(var(--brand, var(--primary)) calc(var(--level, 0) * 360deg), rgba(var(--hud-foreground-rgb, 255, 255, 255), 0.16) 0);
+}
+:is(html, *)[data-nk-hold="fill"] [data-slot="key-prompt"][data-state="hold"] {
+  background-image: linear-gradient(to right, rgba(var(--brand-rgb, var(--primary-rgb)), 0.32) calc(var(--level, 0) * 100%), transparent 0);
+}
+
+/*
+ * Level (tokens 1.4: --nk-level-style, data-nk-level): how a level reads. bar is the default; pips cuts a
+ * meter's bar into ten plates (a meter with its own segments keeps them). vital-chip maps it to its
+ * drawings (ring → outline, liquid → fill, bar / slab / pips → bar).
+ */
+:is(html, *)[data-nk-level="pips"] [data-slot="meter"] [data-slot="progress"] {
+  -webkit-mask-image: repeating-linear-gradient(to right, #000 0 calc(10% - 2px), transparent calc(10% - 2px) 10%);
+  mask-image: repeating-linear-gradient(to right, #000 0 calc(10% - 2px), transparent calc(10% - 2px) 10%);
+}
+
+/* Roles on chips: a chip with data-hue draws its icon in the role's colour. */
+[data-slot="hud-chip"][data-hue] [data-slot="hud-chip-icon"] {
+  color: var(--hue-solid, currentColor);
 }
