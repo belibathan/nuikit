@@ -189,8 +189,8 @@
   --nk-slab-tile-radius: max(0.125rem, calc(var(--nk-slab-radius) - var(--nk-space)));
   /* delta: +1, −2, $250 */
   --nk-slab-delta-font: var(--nk-num-font);
-  --nk-slab-delta-up: var(--success);
-  --nk-slab-delta-down: var(--destructive);
+  --nk-slab-delta-up: var(--world-success, var(--success));
+  --nk-slab-delta-down: var(--world-destructive, var(--destructive));
   /* key chip: the key tokens, at a fixed slab size */
   --nk-slab-key-size: 1.5rem;
   --nk-slab-key-font-size: 0.8125rem;

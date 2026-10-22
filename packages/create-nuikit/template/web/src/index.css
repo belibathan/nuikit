@@ -290,6 +290,8 @@
   --world-foreground: rgb(255, 255, 255);
   --world-foreground-muted: rgba(255, 255, 255, 0.8);
   --world-shadow: 0 1px 2px rgba(0, 0, 0, 0.65), 0 0 0.5rem rgba(0, 0, 0, 0.35);
+  --world-success: rgb(68, 185, 103);
+  --world-destructive: rgb(255, 96, 85);
   --font-display: "Inter Tight", Inter, ui-sans-serif, system-ui, sans-serif;
   --font-numeric: Inter, ui-sans-serif, system-ui, sans-serif;
   --nk-type-ratio: 1.2;
@@ -379,6 +381,8 @@
   --world-foreground: rgb(255, 255, 255);
   --world-foreground-muted: rgba(255, 255, 255, 0.8);
   --world-shadow: 0 1px 2px rgba(0, 0, 0, 0.65), 0 0 0.5rem rgba(0, 0, 0, 0.35);
+  --world-success: rgb(20, 190, 90);
+  --world-destructive: rgb(255, 100, 103);
   --font-display: "Inter Tight", Inter, ui-sans-serif, system-ui, sans-serif;
   --font-numeric: Inter, ui-sans-serif, system-ui, sans-serif;
   --nk-type-ratio: 1.2;
@@ -766,8 +770,8 @@
   --nk-slab-tile-radius: max(0.125rem, calc(var(--nk-slab-radius) - var(--nk-space)));
   /* delta: +1, −2, $250 */
   --nk-slab-delta-font: var(--nk-num-font);
-  --nk-slab-delta-up: var(--success);
-  --nk-slab-delta-down: var(--destructive);
+  --nk-slab-delta-up: var(--world-success, var(--success));
+  --nk-slab-delta-down: var(--world-destructive, var(--destructive));
   /* key chip: the key tokens, at a fixed slab size */
   --nk-slab-key-size: 1.5rem;
   --nk-slab-key-font-size: 0.8125rem;
