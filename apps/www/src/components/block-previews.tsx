@@ -29,6 +29,8 @@ import { Settings } from "@/blocks/settings/settings";
 import { settingsFixtures } from "@/blocks/settings/fixtures";
 import { dialogueFixtures } from "@/blocks/npc-dialogue/fixtures";
 import { NpcDialogue } from "@/blocks/npc-dialogue/npc-dialogue";
+import { jobTrackerFixtures } from "@/blocks/job-tracker/fixtures";
+import { JobTracker } from "@/blocks/job-tracker/job-tracker";
 
 export interface BlockPreview {
   name: string;
@@ -212,6 +214,17 @@ export const BLOCKS: BlockPreview[] = [
       Greeting: () => <NpcDialogue data={dialogueFixtures.bartender} onChoose={async () => ({ ok: true })} />,
       Locked: () => <NpcDialogue data={dialogueFixtures.desk} onChoose={async () => ({ ok: true })} />,
       "Long line": () => <NpcDialogue data={dialogueFixtures.long} onChoose={async () => ({ ok: true })} />,
+    },
+  },
+  {
+    name: "job-tracker",
+    title: "Job tracker",
+    description: "The task panel a job shows while you work it: the steps as rows (done, current, locked), the current step as a meter (a count or the distance), a key prompt for its action, and Abandon job behind a confirm. The server owns the job and pays once.",
+    states: {
+      Counting: () => <JobTracker data={jobTrackerFixtures.loading} />,
+      "On the road": () => <JobTracker data={jobTrackerFixtures.driving} />,
+      Manage: () => <JobTracker data={jobTrackerFixtures.loading} manage />,
+      Abandon: () => <JobTracker data={jobTrackerFixtures.loading} manage abandoning />,
     },
   },
 ];

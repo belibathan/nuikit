@@ -1807,6 +1807,53 @@
       }
     },
     {
+      "name": "job-tracker",
+      "type": "registry:block",
+      "title": "Job tracker",
+      "description": "The task panel a job shows while you work it: name and pay, the steps as rows (done, current, locked), the current step as a meter (a count or the distance), a key prompt for its action, and Abandon job behind a confirm. Docked at the right edge, compact. The server owns the job, the progress and the pay. Protocol-agnostic.",
+      "files": [
+        {
+          "path": "registry/nuikit/blocks/job-tracker/job-tracker.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/job-tracker/job-tracker.tsx"
+        },
+        {
+          "path": "registry/nuikit/blocks/job-tracker/nui.ts",
+          "type": "registry:lib",
+          "target": "components/blocks/job-tracker/nui.ts"
+        },
+        {
+          "path": "registry/nuikit/blocks/job-tracker/fixtures.ts",
+          "type": "registry:lib",
+          "target": "components/blocks/job-tracker/fixtures.ts"
+        }
+      ],
+      "dependencies": [
+        "lucide-react",
+        "nuikit-core"
+      ],
+      "registryDependencies": [
+        "button",
+        "spinner",
+        "https://nuikit.vercel.app/r/panel.json",
+        "https://nuikit.vercel.app/r/menu-row.json",
+        "https://nuikit.vercel.app/r/meter.json",
+        "https://nuikit.vercel.app/r/key-prompt.json",
+        "https://nuikit.vercel.app/r/money.json",
+        "https://nuikit.vercel.app/r/confirm.json"
+      ],
+      "categories": [
+        "screens"
+      ],
+      "docs": "Mount <JobTrackerSurface /> in App.tsx. In Lua, show nk.surface(\"jobtracker\", { layer = \"hud\" }) with a JobTrackerData table while the player has a job, and nk.surface(\"jobtracker-manage\", { layer = \"panel\", input = \"full\", keepInput = true, escape = \"back\", hides = { \"jobtracker\" } }) for the focused panel; answer nk.on(\"jobtracker:step\") and nk.on(\"jobtracker:abandon\") with { ok, error } and :update both with the fresh snapshot. On the server, own the jobs, the steps' places and the pay: check the job, the order, the distance and the items, and pay once. A whole resource with the Lua: npm create nuikit@latest my-jobs -- -t job-tracker",
+      "meta": {
+        "since": "unreleased",
+        "status": "experimental",
+        "replaces": [],
+        "removeIn": null
+      }
+    },
+    {
       "name": "utils",
       "type": "registry:lib",
       "title": "cn (kit-aware)",
