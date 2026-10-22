@@ -2261,3 +2261,22 @@ html:not([data-nk-backdrop="off"]) * {
 [data-slot="hud-chip"][data-hue] [data-slot="hud-chip-icon"] {
   color: var(--hue-solid, currentColor);
 }
+
+/*
+ * The interaction ladder (wave 3) on a key prompt's data-ladder: dormant (the thing is near: the key chip
+ * alone, quiet) → aware (in reach: the whole prompt, a step back) → focus (the key acts on it) → hold →
+ * confirm (data-state, the pop). Each step eases in over --nk-time.
+ */
+[data-slot="key-prompt"][data-ladder] {
+  transition: opacity var(--nk-time, 160ms) var(--nk-ease-standard, ease-out);
+}
+[data-slot="key-prompt"][data-ladder="dormant"] {
+  opacity: 0.6;
+}
+[data-slot="key-prompt"][data-ladder="dormant"] > [data-slot="key-prompt-text"],
+[data-slot="key-prompt"][data-ladder="dormant"] > [data-slot="key-prompt-icon"] {
+  display: none;
+}
+[data-slot="key-prompt"][data-ladder="aware"] {
+  opacity: 0.85;
+}

@@ -141,6 +141,18 @@ export function ComponentsPage() {
         </Section>
 
         <Section
+          name="key-prompt"
+          title="Key prompt: the interaction ladder"
+          text="A prompt climbs as the player does: dormant (near: the key alone, quiet), aware (in reach), focus (the key acts on it), hold (the line fills, by --nk-hold-style) and confirm (a short pop, --nk-confirm-scale). Hold E on the last one."
+          install={false}
+          stageClassName="items-center"
+        >
+          <KeyPrompt stage="dormant" keys="E" label="Open garage" />
+          <KeyPrompt stage="aware" keys="E" label="Open garage" />
+          <KeyPrompt stage="focus" keys="E" label="Open garage" hold={900} listen onConfirm={() => {}} />
+        </Section>
+
+        <Section
           name="panel"
           title="Panel"
           text="The one floating surface: a header with title, description and actions (and an optional second row for tabs), a scrolling body, a footer."

@@ -873,13 +873,15 @@
             "size",
             "density",
             "shape",
-            "motion"
+            "motion",
+            "stage"
           ],
           "level": "the hold progress, 0 → 1 (Lua's progress, or the pointer/key hold).",
           "rules": [
             "States: rest, focus (active), hold, confirm (when the hold fills), disabled.",
             "In game Lua reads the key and sends progress; the page draws it.",
-            "One prompt per action; a stack for several."
+            "One prompt per action; a stack for several.",
+            "The interaction ladder (stage): dormant (the key chip alone, quiet) → aware → focus → hold → confirm, on data-ladder; without stage, today's prompt."
           ]
         }
       }
