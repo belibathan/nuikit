@@ -72,6 +72,9 @@ export async function createClient(options: { syncEvents?: boolean; onNuiMessage
   // Replicated state (GlobalState) and its change handlers, shared by every resource on the client.
   const globalState = new Map<string, unknown>();
   const bagHandlers: { resource: string; key: string; fn: (bag: string, key: string, value: unknown) => void }[] = [];
+  // The local player's state bag (LocalPlayer.state, bag "player:1") and its handlers (bag filter nil).
+  const playerState = new Map<string, unknown>();
+  const playerHandlers: { resource: string; key: string; fn: (bag: string, key: string, value: unknown) => void }[] = [];
   // SetTimeout callbacks, run by runTimers().
   const timers: { resource: string; ms: number; fn: () => void }[] = [];
   const metadata = new Map<string, Record<string, string[]>>();
@@ -205,8 +208,15 @@ export async function createClient(options: { syncEvents?: boolean; onNuiMessage
       res.serverEvents.push({ event, args: args.map(clone) });
     });
     g.set("__globalState", (k: string) => clone(globalState.get(k)));
+    g.set("__playerGet", (k: string) => clone(playerState.get(k)));
+    // bag:set runs the change handlers (before the value lands, as in FiveM), then stores it
+    g.set("__playerSet", (k: string, v: unknown) => {
+      for (const h of [...playerHandlers]) if (h.key === k && resources.has(h.resource)) h.fn("player:1", k, clone(v));
+      playerState.set(k, clone(v));
+    });
     g.set("AddStateBagChangeHandler", (key: string, bag: string, fn: any) => {
       if (bag === "global") bagHandlers.push({ resource: name, key, fn });
+      else if (bag == null || bag === "player:1") playerHandlers.push({ resource: name, key, fn });
     });
     g.set("GetInvokingResource", () => invoker);
     // Resource natives over the resources started in this client (tests can override in `before`).
@@ -243,6 +253,7 @@ export async function createClient(options: { syncEvents?: boolean; onNuiMessage
     });
     await lua.doString(`
       GlobalState = setmetatable({}, { __index = function(_, k) return __globalState(k) end })
+      LocalPlayer = { state = setmetatable({ set = function(_, k, v) __playerSet(k, v) end }, { __index = function(_, k) return __playerGet(k) end }) }
       exports = setmetatable({}, {
         __call = function(_, name, fn) __exportSet(name, fn) end,
         __index = function(_, target)

@@ -403,6 +403,8 @@ prints the list.
 - **Pages that can't receive messages** (handshake-off overrides, §5.6, and the chat theme) call the NUI
   callback `https://nuikit/theme`, then keep a request open that answers when the theme or the player's prefs
   change (or "unchanged" after 25 s). If that callback doesn't answer they fetch `theme.css` and compile it.
+  The same answers carry `themeHash` (theme + prefs only: repaint when it changes) and `zones`, every UI's
+  screen zones (`NUI.zone`), so a stack on an override page clears the HUD like any nuikit page (`useClearOf`).
   The loading screen receives the compiled theme in the connection handover
   (`deferrals.handover({ nuikit = { theme = … } })`).
 - A page MUST render correctly with its compiled-in defaults when no theme arrives.

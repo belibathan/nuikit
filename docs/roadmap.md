@@ -63,6 +63,7 @@ and target motion; `edge-sheet` first-frame fix; `nuikit.cfg` comments without s
 | Coverage harness (`bench/coverage`): 90% Qbox, 75% QBCore/ESX, reported by `nuikit doctor` | In progress |
 | `nuikit-standalone.zip` mapping; systems declare `nuikit_level`; Lua harness `stop()` runs the stopping resource's own handler | In progress |
 | Visual baselines in CI, cheap set ([contract](design/contract.md)) | In progress |
+| Screen zones on override pages (`https://nuikit/theme` carries `zones`; for #126) | PR open |
 
 ## Lane D: Screens + overrides
 

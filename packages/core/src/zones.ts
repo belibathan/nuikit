@@ -27,14 +27,21 @@ let listening = false;
 function listen() {
   if (listening || typeof window === "undefined") return;
   listening = true;
-  onNui("nuikit:zones", (data) => {
-    // an empty Lua table arrives as [] (json.encode can't tell): no zones
-    zones = data && typeof data === "object" && !Array.isArray(data) ? (data as Zones) : {};
-    listeners.forEach((l) => l());
-  });
+  onNui("nuikit:zones", setZones);
 }
-// subscribed from the first import, so a set sent before any stack mounts isn't missed
-listen();
+
+/**
+ * Replace the zones (what `nuikit:zones` does). Override pages get them through the theme long-poll
+ * (`loadServerTheme`, remote.ts), since nuikit.lua can't message them.
+ */
+export function setZones(data: unknown): void {
+  // an empty Lua table arrives as [] (json.encode can't tell): no zones
+  zones = data && typeof data === "object" && !Array.isArray(data) ? (data as Zones) : {};
+  listeners.forEach((l) => l());
+}
+// subscribed right after the first import (a microtask: index → remote → zones is a cycle, so onNui's
+// module may still be loading), before any message arrives, so a set sent before a stack mounts isn't missed
+void Promise.resolve().then(listen);
 
 /** The current zones (the latest `nuikit:zones`). */
 export function getZones(): Zones {

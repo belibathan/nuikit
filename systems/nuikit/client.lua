@@ -16,8 +16,10 @@
     nuikit:prefs:set (patch)       change prefs (what NUI.prefs.set does)
 
   NUI callback https://nuikit/theme (any page may call it)
-    { hash = nil }                 → { hash, theme, prefs } now
-    { hash = <last>, wait = true } → answers when the theme or prefs change (long-poll, ≤ 25 s)
+    { hash = nil }                 → { hash, themeHash, theme, prefs, zones } now
+    { hash = <last>, wait = true } → answers when the theme, prefs or screen zones change (long-poll, ≤ 25 s)
+  `themeHash` covers theme + prefs only, so a page repaints only when it changed; `zones` is every UI's
+  screen zones (NUI.zone, LocalPlayer.state.nuikitZones), for pages nuikit.lua can't message.
 ]]
 
 local KVP = 'nuikit:prefs'
@@ -55,14 +57,30 @@ end
 
 -- ───────────────────────────────── theme for override pages (long-poll)
 
-local function hash()
+local function themeHash()
   local c = compiled()
   local t = c and c.hash or 'css'
   return ('%s:%s:%s:%s'):format(t, prefs.scale, prefs.reducedMotion and 1 or 0, prefs.highContrast and 1 or 0)
 end
 
+-- Screen zones (nuikit.lua's NUI.zone): the local player's bag, counted so a change answers the long-poll.
+local ZONES = 'nuikitZones'
+local zones, zonesGen = nil, 0
+
+local function currentZones()
+  if zones == nil then
+    local state = LocalPlayer and LocalPlayer.state
+    zones = state and state[ZONES] or {}
+  end
+  return zones
+end
+
+local function hash()
+  return ('%s:z%d'):format(themeHash(), zonesGen)
+end
+
 local function payload()
-  local p = { hash = hash(), prefs = prefs }
+  local p = { hash = hash(), themeHash = themeHash(), prefs = prefs, zones = currentZones() }
   local c = compiled()
   if c then
     p.theme = c
@@ -111,6 +129,15 @@ end)
 -- `nuikit theme reload` on the server: GlobalState replicates, every waiting page repaints.
 AddStateBagChangeHandler('nuikitTheme', 'global', function(_, _, value)
   theme = value
+  flush()
+end)
+
+-- A UI published or dropped a zone: waiting override pages get the new set. The handler runs before
+-- the value lands in the bag, so keep the value it was given.
+AddStateBagChangeHandler(ZONES, nil, function(bagName, _, value)
+  if not bagName:find('^player:') then return end
+  zones = value or {}
+  zonesGen = zonesGen + 1
   flush()
 end)
 

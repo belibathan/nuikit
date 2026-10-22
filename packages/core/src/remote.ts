@@ -9,15 +9,21 @@
  *    Resources such as ox_lib start before `nuikit`, so the first ask often fails; and the file is the
  *    client's copy from when `nuikit` last started (editing theme.css and running `nuikit theme
  *    reload` doesn't change it), so it is only a stand-in until the callback answers (0.7.0 test, F4).
+ * The same answers carry every UI's screen zones (`zones`), so `useClearOf` works on override pages too.
  * 3. No nuikit resource: the page's built-in stock theme stays (it keeps asking, rarely).
  */
 import { isBrowser } from "./index";
 import { applyTheme, setPrefs } from "./theme";
 import type { CompiledTheme, NuiPrefs } from "./tokens";
+import { setZones } from "./zones";
 
 export interface ServerThemePayload {
-  /** Changes whenever the theme or the player's prefs change. */
+  /** Changes whenever the theme, the player's prefs or the screen zones change. */
   hash: string;
+  /** Changes only with the theme or prefs (older nuikit resources don't send it). */
+  themeHash?: string;
+  /** Every UI's screen zones (`resource:name` → rects); [] when there are none. */
+  zones?: unknown;
   theme?: CompiledTheme | null;
   /** Raw theme.css, when the server couldn't compile. */
   css?: string | null;
@@ -70,7 +76,7 @@ const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 /** How long to wait after a failed ask: every 2 s for the first minute (nuikit is starting), then 30 s. */
 export const retryDelay = (misses: number) => (misses <= 30 ? 2_000 : 30_000);
 
-async function poll(hash: string | null) {
+async function poll(hash: string | null, themeHash?: string) {
   if (polling) return;
   polling = true;
   const gen = generation;
@@ -85,7 +91,12 @@ async function poll(hash: string | null) {
       continue;
     }
     misses = 0;
-    if (!next.unchanged && next.hash !== hash) applyServerTheme(next);
+    if (!next.unchanged && next.hash !== hash) {
+      if (next.zones !== undefined) setZones(next.zones);
+      // a zone change alone doesn't repaint the page
+      if (next.themeHash === undefined || next.themeHash !== themeHash) applyServerTheme(next);
+      themeHash = next.themeHash;
+    }
     hash = next.hash;
   }
 }
@@ -106,7 +117,8 @@ export async function loadServerTheme(options: { live?: boolean } = {}): Promise
   const first = await post({ hash: null }, 4_000);
   if (first) {
     const themed = applyServerTheme(first);
-    if (live) void poll(first.hash);
+    if (first.zones !== undefined) setZones(first.zones);
+    if (live) void poll(first.hash, first.themeHash);
     if (themed) return true;
   }
   let themed = false;
