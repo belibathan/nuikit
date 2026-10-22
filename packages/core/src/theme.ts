@@ -108,6 +108,9 @@ function paint(el: HTMLElement, theme: CompiledTheme, placeholder = false): Them
   for (const [k, v] of Object.entries(all)) el.style.setProperty(`--${k}`, v);
   // on | reduced (the player's pref: no movement, short fades) | off (the theme's --nk-motion: 0)
   el.setAttribute("data-nk-motion", themeMotionLevel(theme.vars, prefs));
+  // a themed subtree: kit.css re-declares its component tokens there, so they derive from this theme's
+  // identity tokens (density, radius, HUD…) and not from what <html> resolved
+  if (el !== document.documentElement) el.setAttribute("data-nk-theme", "");
   // identity keywords CSS can't branch on (tokens 1.1): kit.css and UIs select on these
   for (const [attr, token] of KEYWORD_ATTRS) {
     if (vars[token]) el.setAttribute(attr, vars[token]!);
@@ -183,6 +186,7 @@ export function clearTheme(vars?: ThemeVars, target?: HTMLElement) {
   el.removeAttribute("data-nk-motion");
   for (const [attr] of KEYWORD_ATTRS) el.removeAttribute(attr);
   el.removeAttribute("data-nk-contrast");
+  el.removeAttribute("data-nk-theme");
   painted.delete(el);
 }
 
