@@ -1854,6 +1854,54 @@
       }
     },
     {
+      "name": "storefront",
+      "type": "registry:block",
+      "title": "Storefront",
+      "description": "The counter of a player-run business: its name and open or closed state, products at the price and stock the business set, a cart with cash or bank checkout, and a Manage tab for its employees (open or close, set a price within a range, switch a product on or off, restock). The page checks the cart; the server prices and decides.",
+      "files": [
+        {
+          "path": "registry/nuikit/blocks/storefront/storefront.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/storefront/storefront.tsx"
+        },
+        {
+          "path": "registry/nuikit/blocks/storefront/nui.ts",
+          "type": "registry:lib",
+          "target": "components/blocks/storefront/nui.ts"
+        },
+        {
+          "path": "registry/nuikit/blocks/storefront/fixtures.ts",
+          "type": "registry:lib",
+          "target": "components/blocks/storefront/fixtures.ts"
+        }
+      ],
+      "dependencies": [
+        "lucide-react",
+        "nuikit-core"
+      ],
+      "registryDependencies": [
+        "button",
+        "spinner",
+        "tabs",
+        "https://nuikit.vercel.app/r/panel.json",
+        "https://nuikit.vercel.app/r/item-slot.json",
+        "https://nuikit.vercel.app/r/money.json",
+        "https://nuikit.vercel.app/r/menu-row.json",
+        "https://nuikit.vercel.app/r/confirm.json",
+        "https://nuikit.vercel.app/r/empty-state.json"
+      ],
+      "categories": [
+        "screens"
+      ],
+      "docs": "Mount <StorefrontSurface /> in App.tsx. In Lua, open nk.surface(\"storefront\", { layer = \"panel\", exclusive = true, escape = \"back\" }) with a StorefrontData table (set staff = true for the business's employees), answer nk.on(\"storefront:buy\") and nk.on(\"storefront:manage\") with { ok, error } and :update it with fresh prices, stock and money. On the server, use your own prices and stock, check every line and the player's job and grade, and move money and items all or nothing. A whole resource with the Lua: npm create nuikit@latest my-storefront -- -t storefront",
+      "meta": {
+        "since": "unreleased",
+        "status": "experimental",
+        "replaces": [],
+        "removeIn": null
+      }
+    },
+    {
       "name": "utils",
       "type": "registry:lib",
       "title": "cn (kit-aware)",

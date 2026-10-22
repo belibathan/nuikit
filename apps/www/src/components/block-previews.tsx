@@ -31,6 +31,8 @@ import { dialogueFixtures } from "@/blocks/npc-dialogue/fixtures";
 import { NpcDialogue } from "@/blocks/npc-dialogue/npc-dialogue";
 import { jobTrackerFixtures } from "@/blocks/job-tracker/fixtures";
 import { JobTracker } from "@/blocks/job-tracker/job-tracker";
+import { storefrontCarts, storefrontFixtures } from "@/blocks/storefront/fixtures";
+import { Storefront } from "@/blocks/storefront/storefront";
 
 export interface BlockPreview {
   name: string;
@@ -225,6 +227,17 @@ export const BLOCKS: BlockPreview[] = [
       "On the road": () => <JobTracker data={jobTrackerFixtures.driving} />,
       Manage: () => <JobTracker data={jobTrackerFixtures.loading} manage />,
       Abandon: () => <JobTracker data={jobTrackerFixtures.loading} manage abandoning />,
+    },
+  },
+  {
+    name: "storefront",
+    title: "Storefront",
+    description: "The counter of a player-run business: products at the price and stock it set, a cart with cash or bank, and a Manage tab for its employees. The server prices every line, checks stock and money, and moves them all or nothing.",
+    states: {
+      Cart: () => <Storefront data={storefrontFixtures.burgers} defaultCart={storefrontCarts.lunch} autoFocus={false} onBuy={async () => ({ ok: true })} />,
+      Confirm: () => <Storefront data={storefrontFixtures.burgers} defaultCart={storefrontCarts.lunch} confirming autoFocus={false} onBuy={async () => ({ ok: true })} />,
+      Closed: () => <Storefront data={storefrontFixtures.closed} defaultCart={storefrontCarts.lunch} autoFocus={false} />,
+      Manage: () => <Storefront data={storefrontFixtures.staff} defaultTab="manage" autoFocus={false} onManage={async () => ({ ok: true })} />,
     },
   },
 ];
