@@ -202,6 +202,37 @@ body.inv-dragging * {
   clip-path: var(--nk-chip-clip, none);
   background-color: var(--accent);
   box-shadow: inset 0 0 0 0.125rem var(--brand, var(--primary)), var(--nk-panel-shadow);
+  /* picked up: it lifts off the slot (a quick swell past full size, then settles), tilted a touch */
+  animation: inv-lift min(calc(var(--nk-time) * 1.6), 220ms) var(--nk-ease-out, cubic-bezier(0.16, 1, 0.3, 1)) both;
+  transform: rotate(-3deg);
+}
+@keyframes inv-lift {
+  0% {
+    transform: scale(0.86) rotate(0deg);
+    opacity: 0.6;
+  }
+  60% {
+    transform: scale(1.06) rotate(-3deg);
+    opacity: 1;
+  }
+}
+/* landed: the item settles into the slot that took it (slot-tile.tsx sets data-landed) */
+.inv-slot[data-landed] .inv-img {
+  animation: inv-land min(calc(var(--nk-time) * 1.6), 220ms) var(--nk-ease-out, cubic-bezier(0.16, 1, 0.3, 1));
+}
+@keyframes inv-land {
+  0% {
+    transform: scale(0.82);
+    opacity: 0.4;
+  }
+}
+html[data-nk-motion="reduced"] .inv-drag,
+html[data-nk-motion="off"] .inv-drag {
+  animation: none;
+  transform: none;
+}
+html:is([data-nk-motion="reduced"], [data-nk-motion="off"]) .inv-slot[data-landed] .inv-img {
+  animation: none;
 }
 .inv-drag-count {
   border-radius: var(--nk-chip-radius);

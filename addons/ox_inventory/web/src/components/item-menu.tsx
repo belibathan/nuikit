@@ -14,7 +14,8 @@ import { Kbd, KbdGroup } from "@/components/ui/kbd";
 import { useT } from "@/lib/locale";
 import { copyText } from "@/lib/nui";
 import { giveItem, moveItem, removeAmmo, removeComponent, useButton, useItem } from "@/state/actions";
-import { Items, hasItem, inv, itemLabel } from "@/state/inventory";
+import { ItemImage } from "@/components/item-image";
+import { Items, hasItem, inv, itemImage, itemLabel } from "@/state/inventory";
 import { ui } from "@/state/ui";
 
 type Group = { name: string | null; buttons: { label: string; index: number }[] };
@@ -53,7 +54,13 @@ export function ItemMenu() {
       </DropdownMenuTrigger>
       {open && item && (
         <DropdownMenuContent align="start" side="right" sideOffset={2} className="w-60" onCloseAutoFocus={(e) => e.preventDefault()}>
-          <DropdownMenuLabel className="nk-title truncate px-2 py-1.5">{itemLabel(item)}</DropdownMenuLabel>
+          <DropdownMenuLabel className="flex items-center gap-2.5 px-2 py-1.5">
+            <ItemImage src={itemImage(item)} name={item.name} className="size-8 shrink-0" />
+            <span className="flex min-w-0 flex-col">
+              <span className="nk-title truncate">{itemLabel(item)}</span>
+              {item.count && item.count > 1 ? <span className="nk-label nk-num font-normal text-muted-foreground">×{item.count.toLocaleString("en-US")}</span> : null}
+            </span>
+          </DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem onSelect={() => useItem(item.slot)}>
             <SparklesIcon />
