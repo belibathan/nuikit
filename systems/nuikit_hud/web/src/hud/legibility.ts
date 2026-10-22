@@ -1,21 +1,17 @@
-// Foundation 2 legibility: the theme's --nk-legibility is 'night', 'day' or 'auto'. With 'auto' the
-// HUD's Lua sends 'day' or 'night' from the game clock (hud:legibility), and this sets
-// html[data-nk-legibility] for every rule that reads it (hud.css; the kit once tokens 1.4 land).
-// Config.legibility.mode forces one. Before the token exists nothing is set: today's look.
+// Foundation 2 legibility (tokens 1.4): the theme's --nk-legibility is 'night', 'day' or 'auto', and
+// kit.css lifts every material toward opaque by day. With 'auto', "day" means the game's daytime: the
+// HUD's Lua sends it from the game clock (hud:legibility) and this marks html[data-nk-daytime] for the
+// kit to read. Config.legibility.mode forces the clock's answer.
 import { useNuiEvent } from "nuikit-core/react";
 
-export function pickLegibility(token: string, mode: "day" | "night", force?: "day" | "night"): "day" | "night" | null {
-  if (force === "day" || force === "night") return force;
-  if (token === "day" || token === "night") return token;
-  return token === "auto" ? mode : null;
+export function isDaytime(mode: "day" | "night", force?: "day" | "night"): boolean {
+  return (force ?? mode) === "day";
 }
 
 export function useLegibility() {
   useNuiEvent("hud:legibility", ({ mode, force }) => {
     const html = document.documentElement;
-    const token = getComputedStyle(html).getPropertyValue("--nk-legibility").trim();
-    const want = pickLegibility(token, mode, force);
-    if (want) html.dataset.nkLegibility = want;
-    else delete html.dataset.nkLegibility;
+    if (isDaytime(mode, force)) html.dataset.nkDaytime = "";
+    else delete html.dataset.nkDaytime;
   });
 }

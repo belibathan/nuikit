@@ -241,6 +241,7 @@ export default function Dev() {
     }
     if (radar) setFrame(mf);
     // ?retract: Foundation 2 situations with the lever on (status and vitals slide away after --nk-rest-delay)
+    if (q.has("retract")) document.documentElement.style.setProperty("--nk-rest-delay", "8s");
     if (q.has("retract")) settings.situations = { retract: true, rest: ["map", "vehicle"], moment: ["status", "map", "vitals", "vehicle"], driving: ["status", "map", "vitals", "vehicle"], interaction: ["map", "vitals"] };
     openSurface("hud", settings);
     // ?edit: the layout editor (/hud edit) over the HUD
