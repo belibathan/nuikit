@@ -288,8 +288,8 @@ export async function createClient(options: { syncEvents?: boolean; onNuiMessage
     metadata.delete(name);
     stopping = name;
     try {
-      // onResourceStop is local to the stopping resource: its own handlers only, with its own name.
-      for (const h of [...(handlers.get("onResourceStop") ?? [])]) if (h.resource === name) h.fn(name);
+      // onResourceStop reaches every resource (the stopping one included), with the stopping name.
+      for (const h of [...(handlers.get("onResourceStop") ?? [])]) h.fn(name);
       trigger("onClientResourceStop", name);
       flush();
     } finally {

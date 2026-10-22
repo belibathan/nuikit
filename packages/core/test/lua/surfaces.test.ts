@@ -227,7 +227,7 @@ describe.each([
 });
 
 describe("harness stop()", () => {
-  it("fires onResourceStop in the stopping resource only, with its own name", async () => {
+  it("fires onResourceStop in every resource, the stopping one included, with the stopping name", async () => {
     client = await create();
     const shop = await client.start("shop");
     const hud = await client.start("hud");
@@ -236,6 +236,6 @@ describe("harness stop()", () => {
     }
     client.stop("shop");
     expect(shop.messages.filter((m) => m.action === "stopped").map((m) => m.data)).toEqual(["shop"]);
-    expect(hud.messages.filter((m) => m.action === "stopped")).toEqual([]);
+    expect(hud.messages.filter((m) => m.action === "stopped").map((m) => m.data)).toEqual(["shop"]);
   });
 });
