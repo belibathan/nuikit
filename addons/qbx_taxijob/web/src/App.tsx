@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { useStaggerItem } from "nuikit-core/react";
+import { useClearOf, useStaggerItem } from "nuikit-core/react";
 import { Button } from "@/components/ui/button";
 import { Kbd } from "@/components/ui/kbd";
 import { EdgeSheet, EdgeSheetBody, EdgeSheetFooter } from "@/components/ui/edge-sheet";
@@ -13,6 +13,9 @@ import { cn } from "@/lib/utils";
 /** The kit's money format (registry money): tabular, en-US dollars, as qbx_taxijob's own page shows them. */
 const money = (n: number, digits = 0) => formatMoney(Number.isFinite(n) ? n : 0, { fractionDigits: digits });
 const num = (v: unknown) => (typeof v === "number" ? v : Number(v) || 0);
+
+/** rem in px (1rem follows the game's resolution). */
+const rem = (n: number) => n * (parseFloat(getComputedStyle(document.documentElement).fontSize) || 16);
 
 /** One label/value row: rises in with the sheet's other rows (the group is the sheet's Stagger). */
 function Row({ label, children }: { label: string; children: ReactNode }) {
@@ -94,18 +97,21 @@ export default function App() {
     };
   }, []);
 
+  const clear = useClearOf("top-left", { width: rem(18) });
+
   return (
     // A floating edge sheet on the left, as tall as the meter (registry edge-sheet): it slides in
     // on openMeter and back out, faster, on hide; its rows rise in after it. Drawn without focus.
-    // It sits from 34% down, where the stock meter was (centred left): clear of GTA's help text and
-    // anything in the top-left corner. Override pages get no screen zones (nuikit:zones goes to
-    // nuikit.lua pages only), so this is a fixed place, not useClearOf.
+    // It sits from 34% down, where the stock meter was (centred left), clear of GTA's help text; a
+    // UI that publishes a screen zone reaching lower on the left (the theme long-poll brings zones
+    // to override pages) pushes it down further.
     <EdgeSheet
       open={open}
       side="left"
       width="18rem"
       fit
       className="top-[34vh]"
+      style={clear.top !== undefined ? { top: `max(34vh, ${clear.top}px)` } : undefined}
       title="Taxi meter"
       actions={
         <button
