@@ -2,7 +2,7 @@
 "use client"
 
 import * as React from "react"
-import { tokenMs } from "nuikit-core/motion"
+import { token, tokenMs } from "nuikit-core/motion"
 
 import { cn, nkLevel } from "@/lib/utils"
 import { NumberRoll } from "@/components/ui/text-roll"
@@ -91,22 +91,43 @@ export function readChipStyle(get: (name: string) => string): ChipStyle {
 }
 
 /** The chip style tokens, live: re-read when <html>'s style or class changes (a theme, a player override). */
-export function useChipStyle(): ChipStyle {
-  const read = () => (typeof document === "undefined" ? DEFAULT_STYLE : readChipStyle((n) => getComputedStyle(document.documentElement).getPropertyValue(n)))
-  const [style, setStyle] = React.useState<ChipStyle>(read)
-  React.useEffect(() => {
-    const update = () =>
-      setStyle((prev) => {
-        const next = read()
-        return (Object.keys(next) as (keyof ChipStyle)[]).every((k) => prev[k] === next[k]) ? prev : next
+// One store for every chip: <html>'s style is read once per change (coalesced to a frame), not once per chip.
+let chipStyle: ChipStyle = DEFAULT_STYLE
+const chipListeners = new Set<() => void>()
+let chipObserver: MutationObserver | null = null
+let chipPending = false
+function readChipStyleNow() {
+  const cs = getComputedStyle(document.documentElement)
+  const next = readChipStyle((n) => cs.getPropertyValue(n))
+  if ((Object.keys(next) as (keyof ChipStyle)[]).every((k) => chipStyle[k] === next[k])) return
+  chipStyle = next
+  chipListeners.forEach((l) => l())
+}
+function subscribeChipStyle(listener: () => void) {
+  chipListeners.add(listener)
+  if (!chipObserver && typeof MutationObserver !== "undefined") {
+    readChipStyleNow()
+    chipObserver = new MutationObserver(() => {
+      if (chipPending) return
+      chipPending = true
+      requestAnimationFrame(() => {
+        chipPending = false
+        readChipStyleNow()
       })
-    update()
-    const mo = new MutationObserver(update)
-    mo.observe(document.documentElement, { attributes: true, attributeFilter: ["style", "class"] })
-    return () => mo.disconnect()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-  return style
+    })
+    chipObserver.observe(document.documentElement, { attributes: true, attributeFilter: ["style", "class"] })
+  }
+  return () => {
+    chipListeners.delete(listener)
+    if (!chipListeners.size) {
+      chipObserver?.disconnect()
+      chipObserver = null
+    }
+  }
+}
+
+export function useChipStyle(): ChipStyle {
+  return React.useSyncExternalStore(subscribeChipStyle, () => chipStyle, () => DEFAULT_STYLE)
 }
 
 // ───────────────────────────────── geometry: one path per shape
@@ -206,7 +227,7 @@ interface Ctx {
   tone?: string
   style: ChipStyle
   geo: Geometry | null
-  setGeo: (g: Geometry | null) => void
+  setGeo: React.Dispatch<React.SetStateAction<Geometry | null>>
   open: boolean
   /** the label floats over the row (neighbours: overlay) */
   float: boolean
@@ -253,8 +274,7 @@ function Row({ className, children, max, batchMs, restDelay, optOut, ...props }:
 
 /** --nk-alert-threshold (tokens 1.4: 0.2): a vital at or under it is critical. */
 function alertThreshold() {
-  if (typeof document === "undefined") return 0.2
-  const n = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--nk-alert-threshold"))
+  const n = parseFloat(token("--nk-alert-threshold"))
   return Number.isFinite(n) ? n : 0.2
 }
 /** true inside Shape: an inline Label renders there, a tag or flag outside it */
@@ -399,12 +419,20 @@ function Shape({ className, children, ...props }: React.ComponentProps<"span">) 
         r = Math.min(parseFloat(cs.borderTopRightRadius) || 0, w / 2, h / 2)
         if (cs.clipPath && cs.clipPath !== "none") cut = p.getBoundingClientRect().width
       }
-      setGeo({ w, h, r, cut })
+      setGeo((g) => (g && g.w === w && g.h === h && g.r === r && g.cut === cut ? g : { w, h, r, cut }))
     }
     measure()
     const ro = new ResizeObserver(measure)
     ro.observe(el)
-    const mo = new MutationObserver(() => requestAnimationFrame(measure))
+    let pending = false
+    const mo = new MutationObserver(() => {
+      if (pending) return
+      pending = true
+      requestAnimationFrame(() => {
+        pending = false
+        measure()
+      })
+    })
     mo.observe(document.documentElement, { attributes: true, attributeFilter: ["style", "class"] })
     return () => {
       ro.disconnect()
@@ -489,7 +517,7 @@ function Shape({ className, children, ...props }: React.ComponentProps<"span">) 
                 pathLength={100}
                 // full: a plain closed stroke (its corners joined), no dash, so start and end meet with no gap
                 strokeDasharray={v! >= 99.5 ? undefined : `${v} 100`}
-                style={{ fill: "none", stroke: "var(--vital, var(--primary))", transition: "stroke-dasharray calc(300ms * var(--nk-motion, 1)) ease-out" }}
+                style={{ fill: "none", stroke: "var(--vital, var(--primary))" }}
               />
             )}
           </>
@@ -555,7 +583,7 @@ function Label({ className, children: name, ...props }: React.ComponentProps<"sp
         data-slot="vital-chip-label"
         data-open={open || undefined}
         className={cn(
-          "pointer-events-none order-last max-w-0 overflow-hidden text-[0.8125rem] leading-none font-semibold opacity-0 transition-[max-width,opacity,margin] duration-[calc(220ms*var(--nk-motion,1))] ease-out data-[open]:ml-[0.3125rem] data-[open]:max-w-24 data-[open]:opacity-100",
+          "pointer-events-none order-last max-w-0 overflow-hidden text-[0.8125rem] leading-none font-semibold opacity-0 -translate-x-1 transition-[opacity,transform] duration-[calc(220ms*var(--nk-motion,1))] ease-out data-[open]:ml-[0.3125rem] data-[open]:max-w-24 data-[open]:translate-x-0 data-[open]:opacity-100",
           className
         )}
         {...props}
@@ -573,7 +601,7 @@ function Label({ className, children: name, ...props }: React.ComponentProps<"sp
         data-attach="flag"
         data-open={open || undefined}
         className={cn(
-          "pointer-events-none relative z-0 data-[open]:-ml-[0.375rem] flex h-[calc(var(--vital-size)*0.72)] max-w-0 items-center self-center overflow-hidden rounded-r-(--nk-chip-radius) bg-(--nk-chip-bg) text-[0.8125rem] font-semibold whitespace-nowrap text-(--nk-chip-fg) opacity-0 transition-[max-width,opacity,padding,margin] duration-[calc(220ms*var(--nk-motion,1))] ease-out data-[open]:max-w-28 data-[open]:pr-2 data-[open]:pl-[0.625rem] data-[open]:opacity-100",
+          "pointer-events-none relative z-0 data-[open]:-ml-[0.375rem] flex h-[calc(var(--vital-size)*0.72)] max-w-0 items-center self-center overflow-hidden rounded-r-(--nk-chip-radius) bg-(--nk-chip-bg) text-[0.8125rem] font-semibold whitespace-nowrap text-(--nk-chip-fg) opacity-0 -translate-x-1 transition-[opacity,transform] duration-[calc(220ms*var(--nk-motion,1))] ease-out data-[open]:max-w-28 data-[open]:translate-x-0 data-[open]:pr-2 data-[open]:pl-[0.625rem] data-[open]:opacity-100",
           className
         )}
         {...props}
@@ -670,7 +698,7 @@ function Pop({ label, mode = "change", min = 3, critical = false, force = null, 
         // a flag out of the chip's side, in line with the row: it takes its own room, so pops of
         // vitals that change together sit side by side and can never overlap
         "pointer-events-none relative z-0 data-[open]:-ml-[0.375rem] flex h-[calc(var(--vital-size)*0.8)] max-w-0 items-center gap-1.5 self-center overflow-hidden rounded-r-(--nk-chip-radius) bg-(--nk-chip-bg) text-[0.875rem] leading-none font-semibold whitespace-nowrap text-(--nk-chip-fg) opacity-0",
-        "transition-[max-width,opacity,padding,margin] duration-[calc(240ms*var(--nk-motion,1))] ease-out data-[open]:max-w-48 data-[open]:pr-2.5 data-[open]:pl-[0.75rem] data-[open]:opacity-100"
+        "-translate-x-1 transition-[opacity,transform] duration-[calc(240ms*var(--nk-motion,1))] ease-out data-[open]:max-w-48 data-[open]:translate-x-0 data-[open]:pr-2.5 data-[open]:pl-[0.75rem] data-[open]:opacity-100"
       )}
     >
       <span>{label}</span>

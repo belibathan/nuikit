@@ -99,34 +99,45 @@ export type UseCollapseOptions = Partial<CollapseOptions> & {
 
 /** The engine with timers: reports, the ordered open keys, and the overflow count. */
 export function useCollapse({ max = 3, restDelay, batchMs = COLLAPSE_BATCH_MS, min = 0, optOut }: UseCollapseOptions = {}) {
-  const [state, setState] = React.useState(collapseInit)
+  // the last values live in a ref: a report that opens nothing (most ticks) re-renders nothing; only a change
+  // of the open set does
+  const state = React.useRef(collapseInit())
+  const [open, setOpen] = React.useState<CollapseEntry[]>([])
+  const commit = React.useCallback((next: CollapseState) => {
+    const was = state.current.open
+    state.current = next
+    if (next.open !== was) setOpen(next.open)
+  }, [])
   const opts = React.useRef<CollapseOptions>({ restDelay: 2500, batchMs, min, optOut })
   // --nk-rest-delay is 0 (never) by default: a chip that opens on a change still closes, after 2.5 s
   opts.current = { restDelay: restDelay ?? (tokenMs("--nk-rest-delay", 0) || 2500), batchMs, min, optOut }
 
   const report = React.useCallback((key: string, value: number, o: { critical?: boolean } = {}) => {
-    setState((s) => collapseReport(s, key, value, Date.now(), opts.current, !!o.critical))
-  }, [])
+    commit(collapseReport(state.current, key, value, Date.now(), opts.current, !!o.critical))
+  }, [commit])
 
   // close the next one when it's due
-  const next = state.open.length ? Math.min(...state.open.map((e) => e.until)) : null
+  const next = open.length ? Math.min(...open.map((e) => e.until)) : null
   React.useEffect(() => {
     if (next === null) return
-    const t = setTimeout(() => setState((s) => collapseExpire(s, Date.now())), Math.max(0, next - Date.now()))
+    const t = setTimeout(() => commit(collapseExpire(state.current, Date.now())), Math.max(0, next - Date.now()))
     return () => clearTimeout(t)
-  }, [next])
+  }, [next, commit])
 
-  const { shown, overflow } = React.useMemo(() => collapseOrder(state.open, max), [state.open, max])
-  const order = React.useMemo(() => shown.map((e) => e.key), [shown])
-  return {
-    report,
-    /** the open keys, in order */
-    open: order,
-    overflow,
-    isOpen: (key: string) => order.includes(key),
-    /** a key's place in the stack (0 first), or -1 at rest */
-    rank: (key: string) => order.indexOf(key),
-    /** the change a key's chip shows */
-    delta: (key: string) => shown.find((e) => e.key === key)?.delta ?? 0,
-  }
+  // one object per open-set change, so consumers that memo on it re-render only then
+  return React.useMemo(() => {
+    const { shown, overflow } = collapseOrder(open, max)
+    const order = shown.map((e) => e.key)
+    return {
+      report,
+      /** the open keys, in order */
+      open: order,
+      overflow,
+      isOpen: (key: string) => order.includes(key),
+      /** a key's place in the stack (0 first), or -1 at rest */
+      rank: (key: string) => order.indexOf(key),
+      /** the change a key's chip shows */
+      delta: (key: string) => shown.find((e) => e.key === key)?.delta ?? 0,
+    }
+  }, [open, max, report])
 }
