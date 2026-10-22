@@ -146,3 +146,30 @@ describe("React", () => {
     expect(screen.getByText("true:true")).toBeTruthy();
   });
 });
+
+describe("Stagger", () => {
+  it("delays members that change together in turn: entering in order, leaving in reverse, within the budget", async () => {
+    const { Stagger, useStaggerItem } = await import("../src/react");
+    function Item({ on, id }: { on: boolean; id: string }) {
+      const ref = useStaggerItem<HTMLSpanElement>(on);
+      return <span ref={ref} data-testid={id} />;
+    }
+    function Row({ on }: { on: boolean }) {
+      return (
+        <Stagger step={40} budget={60}>
+          {["a", "b", "c"].map((id) => (
+            <Item key={id} id={id} on={on} />
+          ))}
+        </Stagger>
+      );
+    }
+    const view = render(<Row on={false} />);
+    await act(async () => view.rerender(<Row on={true} />));
+    await act(() => Promise.resolve());
+    const d = (id: string) => screen.getByTestId(id).style.transitionDelay;
+    expect([d("a"), d("b"), d("c")]).toEqual(["0ms", "30ms", "60ms"]); // 40 ms steps, capped to a 60 ms budget
+    await act(async () => view.rerender(<Row on={false} />));
+    await act(() => Promise.resolve());
+    expect([d("a"), d("b"), d("c")]).toEqual(["60ms", "30ms", "0ms"]); // the last in leaves first
+  });
+});

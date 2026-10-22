@@ -148,7 +148,8 @@ function Reel({ text, dir, delay = 0, align = "start", appear = false }: { text:
       data-rolling={rolling || undefined}
       className={cn(
         // a little room above and below, so text shadows and descenders aren't cut by the window
-        "-my-[0.12em] inline-grid max-w-full grid-cols-[minmax(0,auto)] overflow-hidden py-[0.12em] align-bottom whitespace-pre",
+        // the window clips y only (clip-path), never x: italic glyphs overhang their box sideways
+        "-my-[0.12em] inline-grid max-w-full grid-cols-[minmax(0,auto)] py-[0.12em] align-bottom whitespace-pre [clip-path:inset(0_-0.5em)]",
         // the slot window: a soft fade at the top and bottom edges while it turns
         rolling && "[mask-image:linear-gradient(to_bottom,transparent,currentColor_22%,currentColor_78%,transparent)] [-webkit-mask-image:linear-gradient(to_bottom,transparent,currentColor_22%,currentColor_78%,transparent)]"
       )}
@@ -211,7 +212,7 @@ function ReelLayer({ layer, delay, onDone }: { layer: Layer; delay: number; onDo
   }, [out, enter, dir, delay, key, onDone])
 
   return (
-    <span ref={ref} data-out={out || undefined} className="min-w-0 overflow-hidden text-ellipsis [grid-area:1/1]" aria-hidden={out || undefined}>
+    <span ref={ref} data-out={out || undefined} className="-mx-[0.15em] min-w-0 overflow-hidden px-[0.15em] text-ellipsis [grid-area:1/1]" aria-hidden={out || undefined}>
       {text}
     </span>
   )

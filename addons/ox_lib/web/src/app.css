@@ -319,3 +319,9 @@ html[data-nk-feel="snap"] .ox-indicator[data-repeat="fast"] {
 html[data-nk-motion="reduced"] .ox-indicator {
   transition-duration: 0s !important;
 }
+
+/* radial segments fan in and out from the hub (kit choreography) */
+[data-slot="radial-segment"] {
+  transform-box: view-box;
+  transform-origin: center;
+}

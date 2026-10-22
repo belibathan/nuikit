@@ -307,7 +307,9 @@ function Shape({ className, children, ...props }: React.ComponentProps<"span">) 
         className="pointer-events-none invisible absolute top-0 left-0 h-0 rounded-(--nk-chip-radius) [clip-path:var(--nk-chip-clip,none)]"
         style={{ width: "calc(var(--nk-cut, 0px) / 2)" }}
       />
-      <svg aria-hidden className="pointer-events-none absolute inset-0 size-full overflow-visible" viewBox={geo ? `0 0 ${geo.w} ${geo.h}` : "0 0 1 1"}>
+      {/* --nk-skew: the whole drawing (surface, border, level) is skewed together, so the trace stays on the
+          edge; the icon and label stay upright */}
+      <svg aria-hidden className="pointer-events-none absolute inset-0 size-full overflow-visible [transform:skewX(var(--nk-skew,0deg))]" viewBox={geo ? `0 0 ${geo.w} ${geo.h}` : "0 0 1 1"}>
         {geo && (
           <>
             <defs>
@@ -317,6 +319,11 @@ function Shape({ className, children, ...props }: React.ComponentProps<"span">) 
             </defs>
             {/* the surface */}
             <path d={body} style={{ fill: "var(--nk-chip-bg)" }} />
+            {/* the active fill (talking, selected): rises from the bottom inside the shape; a parent marks it
+                active with [data-active] and styles [data-slot=vital-chip-activefill] */}
+            <g clipPath={`url(#vc-${id})`}>
+              <rect data-slot="vital-chip-activefill" x={0} y={0} width={geo.w} height={geo.h} style={{ fill: "var(--nk-chip-active-fill, transparent)" }} />
+            </g>
             {/* liquid: rises inside the shape, a brighter line on its surface */}
             {level === "fill" && (
               <g clipPath={`url(#vc-${id})`}>

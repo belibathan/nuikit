@@ -5,6 +5,9 @@ import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
 import { CircleCheckIcon, CircleXIcon, InfoIcon, PackageIcon, TriangleAlertIcon, XIcon } from "lucide-react"
 
+import { flipFrom } from "nuikit-core/motion"
+import { Stagger, useStaggerGroup, useStaggerItem } from "nuikit-core/react"
+
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 
@@ -257,6 +260,8 @@ function Notice({
   const line = React.useRef<HTMLDivElement>(null)
   const s = STATUS[status] ?? STATUS.info
   const timed = Number.isFinite(noticeTimeLeft(duration, elapsed))
+  const inGroup = useStaggerGroup() !== null
+  const staggerRef = useStaggerItem<HTMLDivElement>(undefined, { appear: true, animate: inGroup && animate ? "rise" : false })
   const frozen = paused || (pauseOnHover && held)
   const iconEl = icon === undefined ? s.icon : icon
 
@@ -290,6 +295,7 @@ function Notice({
 
   return (
     <div
+      ref={staggerRef}
       data-slot="notice"
       data-status={status}
       data-paused={frozen || undefined}
@@ -297,7 +303,7 @@ function Notice({
       className={cn(
         noticeVariants({ iconAlign: iconAlign ?? (title && description ? "start" : "center") }),
         "gap-[calc(var(--nk-space)*3)]",
-        animate && "nk-enter",
+        animate && !inGroup && "nk-enter",
         className
       )}
       onMouseEnter={(e) => {
@@ -384,16 +390,37 @@ const STACK: Record<NoticePosition, string> = {
 function NoticeStack({
   className,
   position = "top-right",
+  children,
   ...props
 }: React.ComponentProps<"div"> & { position?: NoticePosition }) {
+  // when a notice leaves (or arrives), the others slide into their new places instead of jumping:
+  // a spring per notice (nuikit-core flip), staggered from the gap outward
+  const stack = React.useRef<HTMLDivElement>(null)
+  const places = React.useRef(new WeakMap<Element, [number, number]>())
+  React.useLayoutEffect(() => {
+    const el = stack.current
+    if (!el) return
+    const kids = Array.from(el.children) as HTMLElement[]
+    const before = new Set(kids.flatMap((k) => k.getAnimations?.() ?? []))
+    flipFrom(kids, places.current, "move")
+    let k = 0
+    for (const kid of kids) {
+      const slide = kid.getAnimations?.().find((a) => !before.has(a) && !(a instanceof CSSAnimation))
+      if (slide) slide.effect?.updateTiming({ delay: k++ * 35, fill: "backwards" })
+    }
+  })
   return (
     <div
+      ref={stack}
       data-slot="notice-stack"
       data-position={position}
       aria-label="Notifications"
       className={cn("pointer-events-none z-50 flex flex-col gap-2", STACK[position] ?? STACK["top-right"], className)}
       {...props}
-    />
+    >
+      {/* notices that arrive together come in one after another */}
+      <Stagger budget={240}>{children}</Stagger>
+    </div>
   )
 }
 

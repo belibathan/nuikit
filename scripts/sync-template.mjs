@@ -168,7 +168,7 @@ const fontFaces = (mode) =>
   FONTS.fonts
     .map(
       (f) =>
-        `@font-face {\n  font-family: "${f.family}";\n  font-style: normal;\n  font-weight: ${f.weight};\n  font-display: swap;\n  src: ${FONT_SRC[mode](f)(f.file)};\n  unicode-range: ${FONTS.unicodeRange};\n}`,
+        `@font-face {\n  font-family: "${f.family}";\n  font-style: ${f.style ?? "normal"};\n  font-weight: ${f.weight};\n  font-display: swap;\n  src: ${FONT_SRC[mode](f)(f.file)};\n  unicode-range: ${FONTS.unicodeRange};\n}`,
     )
     .join("\n");
 

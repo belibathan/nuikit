@@ -21,7 +21,7 @@ import {
 
 const root = path.resolve(__dirname, "../../..") + "/";
 const read = (p: string) => readFileSync(root + p, "utf8");
-const IDENTITIES = ["graphite", "signal", "velvet", "vector"] as const;
+const IDENTITIES = ["graphite", "signal", "velvet", "vector", "arcade", "street"] as const;
 const identity = (n: (typeof IDENTITIES)[number]) => read(`packages/core/themes/${n}.css`);
 const GRAPHITE = {
   "nk-type-ratio": "1.2",
@@ -54,7 +54,7 @@ afterEach(() => __resetTheme());
 
 describe("tokens 1.1", () => {
   it("is additive: the v1 names are unchanged and come first", () => {
-    expect(TOKENS_REVISION).toBe("1.2");
+    expect(TOKENS_REVISION).toBe("1.3");
     expect(ALL_TOKEN_NAMES.slice(0, TOKEN_NAMES.length)).toEqual([...TOKEN_NAMES]);
     for (const t of IDENTITY_TOKENS) expect(TOKEN_NAMES, t.name).not.toContain(t.name);
   });
@@ -63,7 +63,7 @@ describe("tokens 1.1", () => {
     const schema = themeJsonSchema() as any;
     expect(schema.properties.vars.required).toEqual([...TOKEN_NAMES]);
     for (const t of IDENTITY_TOKENS) expect(schema.properties.vars.properties[t.name], t.name).toBeTruthy();
-    expect(schema.properties.vars.properties["nk-elevation"].enum).toEqual(["none", "soft", "deep"]);
+    expect(schema.properties.vars.properties["nk-elevation"].enum).toEqual(["none", "soft", "deep", "hard"]);
   });
 });
 
@@ -75,7 +75,7 @@ describe("a plain TweakCN paste is Graphite", () => {
     expect(t.vars["font-sans"]).toBe(DEFAULT_FONT_SANS);
     expect(t.vars["font-display"]).toBe(DEFAULT_FONT_DISPLAY);
     expect(t.vars["font-numeric"]).toBe(DEFAULT_FONT_SANS);
-    expect(t.revision).toBe("1.2");
+    expect(t.revision).toBe("1.3");
   });
 
   it("brand is the primary when it has colour, else chart-1", () => {
@@ -120,7 +120,7 @@ describe("validation and floors", () => {
     expect(t.vars["nk-density"]).toBe("0.875");
     expect(t.vars["nk-cut"]).toBe("0px");
     expect(t.vars["nk-ease"]).toBe("cubic-bezier(0.2, 0.8, 0.2, 1)");
-    expect(t.warnings.join("\n")).toMatch(/--nk-elevation must be none, soft, deep \(got huge\)/);
+    expect(t.warnings.join("\n")).toMatch(/--nk-elevation must be none, soft, deep, hard \(got huge\)/);
     expect(t.warnings.join("\n")).toMatch(/--nk-density must be a number from 0.75 to 1.3/);
     expect(t.warnings.join("\n")).toMatch(/--nk-ease must be cubic-bezier/);
   });
@@ -177,7 +177,7 @@ describe("the four identities", () => {
       const v = compileTheme(identity(n)).vars;
       return [v["font-display"], v["nk-row-indicator"], v["nk-elevation"], v["nk-cut"], v["nk-gauge-style"], v.radius].join("|");
     };
-    expect(new Set(IDENTITIES.map(sig)).size).toBe(4);
+    expect(new Set(IDENTITIES.map(sig)).size).toBe(IDENTITIES.length);
   });
 
   it("Graphite is exactly the default: stock neutral plus every identity default", () => {

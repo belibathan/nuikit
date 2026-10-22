@@ -1,4 +1,4 @@
-import { createContext, createElement, useCallback, useContext, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore, type CSSProperties, type ReactElement, type ReactNode } from "react";
+import { createContext, createElement, useCallback, useContext, useMemo, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore, type CSSProperties, type ReactElement, type ReactNode } from "react";
 import {
   closeSurface,
   defineSurface,
@@ -237,6 +237,7 @@ export function Surface<K extends SurfaceName>(props: SurfaceProps<K>): ReactEle
   const key = JSON.stringify([layer, input, keepInput, exclusive, escape, hides, blockedBy]);
 
   injectSurfaceCss();
+  installPressFeel();
   useEffect(() => {
     defineSurface(name, { layer, input, keepInput, exclusive, escape, hides, blockedBy });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -379,4 +380,183 @@ export function useIndicator(
     el.style.height = `${base}px`;
     move.current(at[0], at[1] / base);
   }, [active, epoch, indicatorRef, listRef, rows, read]);
+}
+
+// ───────────────────────────────── choreography (groups move in sequence, layered)
+
+export interface StaggerOptions {
+  /** delay between neighbours (ms); default from the identity: --nk-stagger, else 40 */
+  step?: number;
+  /** no group takes longer than this to start its last member (ms); default 300 */
+  budget?: number;
+  /** enter: first child first (default) or from the end */
+  from?: "start" | "end";
+}
+
+interface StaggerRequest {
+  el: HTMLElement | SVGElement;
+  on: boolean;
+  /** draw it with the kit's stagger animation (data-nk-stagger): rise, pop or fade; false = the element's own CSS */
+  animate?: StaggerAnimation | false;
+}
+export type StaggerAnimation = "rise" | "pop" | "fade";
+
+/**
+ * A group's choreographer: children that change state in the same frame are given delays in DOM order
+ * (entering) or reverse order (leaving: the last in leaves first), within the budget. The delay is set on
+ * the element before the browser starts the transition, so CSS does the moving (transform / opacity,
+ * interruptible: a group that comes back mid-exit reverses from where it is).
+ */
+export class StaggerGroup {
+  private pending: StaggerRequest[] = [];
+  private queued = false;
+  /** the group's own state (a sheet's open): members that follow it enter and leave with it */
+  on = true;
+  constructor(public opts: StaggerOptions = {}) {}
+  request(r: StaggerRequest) {
+    this.pending.push(r);
+    if (this.queued) return;
+    this.queued = true;
+    queueMicrotask(() => this.flush());
+  }
+  private flush() {
+    this.queued = false;
+    const batch = this.pending;
+    this.pending = [];
+    const level = motionLevel();
+    const order = (list: StaggerRequest[]) =>
+      list.sort((a, b) => (a.el.compareDocumentPosition(b.el) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1));
+    const enter = order(batch.filter((r) => r.on));
+    const exit = order(batch.filter((r) => !r.on)).reverse();
+    if (this.opts.from === "end") enter.reverse();
+    const stepOf = (n: number) => {
+      const token = typeof document === "undefined" ? "" : getComputedStyle(document.documentElement).getPropertyValue("--nk-stagger").trim();
+      const base = this.opts.step ?? (parseFloat(token) || 40);
+      const budget = this.opts.budget ?? 300;
+      return n > 1 ? Math.min(base, budget / (n - 1)) : 0;
+    };
+    for (const list of [enter, exit]) {
+      const step = level === "on" ? stepOf(list.length) : 0;
+      list.forEach((r, i) => {
+        const ms = `${Math.round(i * step)}ms`;
+        r.el.style.transitionDelay = ms;
+        r.el.style.animationDelay = ms;
+        r.el.style.setProperty("--nk-stagger-delay", ms);
+        if (r.animate) {
+          r.el.setAttribute("data-nk-stagger", r.on ? "in" : "out");
+          r.el.setAttribute("data-nk-stagger-kind", r.animate);
+        }
+      });
+    }
+  }
+}
+
+const StaggerCtx = createContext<{ group: StaggerGroup; on: boolean } | null>(null);
+
+/**
+ * A group whose children enter and leave in sequence (see useStaggerItem). Renders its children only;
+ * wrap the list:
+ *
+ *   <Stagger step={40}>{vitals.map((v) => <Vital key={v.id} … />)}</Stagger>
+ */
+export function Stagger({ children, step, budget, from, on = true }: StaggerOptions & { children: ReactNode; on?: boolean }): ReactElement {
+  installPressFeel();
+  const group = useRef<StaggerGroup | null>(null);
+  if (!group.current) group.current = new StaggerGroup({ step, budget, from });
+  group.current.opts = { step, budget, from };
+  group.current.on = on;
+  // members that follow the group re-render with it (the context value changes with `on`)
+  const value = useMemo(() => ({ group: group.current!, on }), [on]);
+  return createElement(StaggerCtx.Provider, { value }, children);
+}
+
+/** The surrounding <Stagger> group and its state, or null outside one. */
+export function useStaggerGroup(): { group: StaggerGroup; on: boolean } | null {
+  return useContext(StaggerCtx);
+}
+
+/**
+ * One member of a <Stagger> group: when `on` changes, the element gets its delay in the group's sequence
+ * (transition-delay, animation-delay and --nk-stagger-delay), so its own CSS transition plays in turn.
+ * Returns the ref to put on the element. Outside a group it does nothing.
+ */
+export function useStaggerItem<T extends HTMLElement | SVGElement>(
+  on?: boolean,
+  opts: { appear?: boolean; animate?: StaggerAnimation | false } = {},
+): (el: T | null) => void {
+  const ctx = useContext(StaggerCtx);
+  const group = ctx?.group ?? null;
+  // no state of its own: it follows the group (enters with it, leaves with it)
+  const state = on ?? ctx?.on ?? true;
+  const el = useRef<T | null>(null);
+  const first = useRef(true);
+  useLayoutEffect(() => {
+    if (first.current) {
+      first.current = false;
+      // mounted inside a group: enter in sequence with the others mounting now
+      if (opts.appear && state && group && el.current) group.request({ el: el.current, on: true, animate: opts.animate });
+      return;
+    }
+    if (group && el.current) group.request({ el: el.current, on: state, animate: opts.animate });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state, group]);
+  return useCallback((node: T | null) => {
+    el.current = node;
+  }, []);
+}
+
+// ───────────────────────────────── press feel for the keyboard and controller
+
+let pressInstalled = false;
+const PRESSABLE = '[data-slot="button"], .nk-row, [data-slot="menu-row"], [data-slot="tabs-trigger"], .nk-press, [data-nk-pressable]';
+/**
+ * The kit's press dip (kit.css: :active, [data-nk-press]) for Enter and Space, and for a controller's
+ * confirm (which nuikit's controls deliver as Enter): the focused control is marked pressed for a moment,
+ * so it dips and springs back like a click. Installed once per page by <Stagger>, <Surface> and MenuRow.
+ */
+export function installPressFeel(): void {
+  if (pressInstalled || typeof window === "undefined") return;
+  pressInstalled = true;
+  const release = (el: Element) => setTimeout(() => el.removeAttribute("data-nk-press"), 110);
+  // A controller: nuikit's controls service doesn't turn a gamepad's confirm into a key, so the page
+  // watches the Gamepad API itself while one is connected: A (button 0) dips the focused control.
+  let polling = false;
+  const poll = () => {
+    const pads = typeof navigator.getGamepads === "function" ? Array.from(navigator.getGamepads()).filter(Boolean) : [];
+    if (!pads.length) {
+      polling = false;
+      return;
+    }
+    for (const pad of pads) {
+      const down = !!pad!.buttons[0]?.pressed;
+      const was = padDown.get(pad!.index) ?? false;
+      padDown.set(pad!.index, down);
+      if (down && !was) {
+        const el = document.activeElement?.closest?.(PRESSABLE);
+        if (el && !el.matches("input, textarea")) {
+          el.setAttribute("data-nk-press", "");
+          release(el);
+        }
+      }
+    }
+    requestAnimationFrame(poll);
+  };
+  const padDown = new Map<number, boolean>();
+  window.addEventListener("gamepadconnected", () => {
+    if (polling) return;
+    polling = true;
+    requestAnimationFrame(poll);
+  });
+  window.addEventListener(
+    "keydown",
+    (e) => {
+      if (e.repeat || (e.key !== "Enter" && e.key !== " ")) return;
+      const t = (e.composedPath?.()[0] as Element | undefined) ?? (e.target as Element | null);
+      const el = t instanceof Element ? t.closest(PRESSABLE) : null;
+      if (!el || el.matches("input, textarea")) return;
+      el.setAttribute("data-nk-press", "");
+      release(el);
+    },
+    true,
+  );
 }

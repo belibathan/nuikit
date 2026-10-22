@@ -3,6 +3,7 @@
 import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react"
+import { installPressFeel, useStaggerGroup, useStaggerItem } from "nuikit-core/react"
 import { Slot } from "radix-ui"
 
 import { cn } from "@/lib/utils"
@@ -147,6 +148,19 @@ function MenuRow({
   onKeyDown,
   ...props
 }: MenuRowProps) {
+  // inside a <Stagger> (a sheet, a list) the row rises in with the others and folds out with them
+  const inGroup = useStaggerGroup() !== null
+  const staggerRef = useStaggerItem<HTMLElement>(undefined, { appear: true, animate: inGroup ? "rise" : false })
+  const userRef = (props as { ref?: React.Ref<HTMLElement> }).ref
+  const ref = React.useCallback(
+    (el: HTMLElement | null) => {
+      staggerRef(el)
+      if (typeof userRef === "function") userRef(el)
+      else if (userRef) (userRef as React.MutableRefObject<HTMLElement | null>).current = el
+    },
+    [staggerRef, userRef]
+  )
+  React.useEffect(() => installPressFeel(), [])
   const isCheck = checked !== undefined
   const isStepper = onStep !== undefined
   const hasActions = actions !== undefined && actions !== null && actions !== false
@@ -248,6 +262,7 @@ function MenuRow({
       <div
         {...shared}
         {...(props as React.ComponentProps<"div">)}
+        ref={ref as React.Ref<HTMLDivElement>}
         role={isCheck ? "menuitemcheckbox" : "menuitem"}
         aria-checked={isCheck ? checked : undefined}
         aria-valuetext={isStepper && (typeof value === "string" || typeof value === "number") ? String(value) : undefined}
@@ -276,14 +291,14 @@ function MenuRow({
 
   if (asChild) {
     return (
-      <Slot.Root {...shared} aria-disabled={disabled || undefined} onClick={onClick} onKeyDown={onKeyDown} {...props}>
+      <Slot.Root {...shared} aria-disabled={disabled || undefined} onClick={onClick} onKeyDown={onKeyDown} {...props} ref={ref}>
         {children}
       </Slot.Root>
     )
   }
 
   return (
-    <button type="button" {...shared} disabled={disabled} onClick={onClick} onKeyDown={onKeyDown} {...props}>
+    <button type="button" {...shared} disabled={disabled} onClick={onClick} onKeyDown={onKeyDown} {...props} ref={ref as React.Ref<HTMLButtonElement>}>
       {label}
     </button>
   )

@@ -1,5 +1,6 @@
 import { onTheme } from "nuikit-core";
-import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
+import { Stagger, useStaggerItem } from "nuikit-core/react";
+import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
 import { Kbd } from "@/components/ui/kbd";
 import { TextRoll } from "@/components/ui/text-roll";
 import { Icon, isImage } from "@/lib/icon";
@@ -223,6 +224,7 @@ export function RadialMenu() {
     >
       <div key={`${page}:${presence.state === "open"}`} data-dir={dir} className="ox-radial-wheel relative">
         <svg ref={svg} viewBox={`0 0 ${SIZE} ${SIZE}`} className={cn("ox-radial-svg block size-[27rem] overflow-visible", hover !== null && "cursor-pointer")}>
+          <Stagger on={open} budget={200}>
           {Array.from({ length: sectors }, (_, i) => {
             const item = slots[i];
             const a0 = start(i);
@@ -236,7 +238,7 @@ export function RadialMenu() {
             const h = R - RI - 20;
             const label = item?.label ?? "";
             return (
-              <g key={i} data-slot="radial-segment" data-active={active || undefined} data-empty={!item || undefined}>
+              <RadialSegment key={i} active={active} empty={!item}>
                 <path d={segmentPath(a0, a1, shape)} className="ox-radial-seg" />
                 {item && (
                   <foreignObject x={lx - w / 2} y={ly - h / 2} width={w} height={h} className="pointer-events-none">
@@ -257,9 +259,10 @@ export function RadialMenu() {
                     </div>
                   </foreignObject>
                 )}
-              </g>
+              </RadialSegment>
             );
           })}
+          </Stagger>
 
           {/* the hub: the lit item's name, or what a click here does (close, back) */}
           <g data-slot="radial-hub" data-active={hover === "hub" || undefined}>
@@ -319,3 +322,13 @@ function hubLines(label: string): string[] {
 }
 
 const clamp = (n?: number) => Math.max(0, Math.min(100, n ?? 50));
+
+/** One segment: inside the wheel's <Stagger> it fans out from the hub in turn, and back in on close. */
+function RadialSegment({ active, empty, children }: { active: boolean; empty: boolean; children: ReactNode }) {
+  const ref = useStaggerItem<SVGGElement>(undefined, { appear: true, animate: "pop" });
+  return (
+    <g ref={ref} data-slot="radial-segment" data-active={active || undefined} data-empty={empty || undefined}>
+      {children}
+    </g>
+  );
+}

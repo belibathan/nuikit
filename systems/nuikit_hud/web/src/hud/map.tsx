@@ -8,11 +8,12 @@
 // frame rate) written straight into the DOM: a transform per mark and one text node, no React render.
 import { follow } from "nuikit-core/react";
 import { FlagIcon, NavigationIcon } from "lucide-react";
-import { useEffect, useRef, type ReactNode } from "react";
+import { useEffect, useRef, type ReactNode, type CSSProperties } from "react";
 import type { HudLocation, MinimapFrame } from "../nui";
 import { formatDistance } from "./location";
 import { cardinal, setText } from "./util";
 import { TextRoll } from "@/components/ui/text-roll";
+import { calm, rollText } from "./reel";
 
 const CARDINALS = [
   { label: "N", at: 0 },
@@ -67,6 +68,9 @@ export function MapRing({ frame, start, compass = true, location, units }: MapRi
   const bearing = useRef<number | undefined>(location?.bearing);
   bearing.current = location?.bearing;
   const heading = useRef(start);
+  // the readout rolls, calmly: whole degrees, at most 8 changes a second
+  const headGate = useRef<ReturnType<typeof calm> | null>(null);
+  if (!headGate.current) headGate.current = calm({ hz: 8, step: 1, angle: true }, (v, dir) => rollText(readout.current, headingText(v), dir));
 
   const tagAt = tagAngle(frame);
   const tag = onRing(tagAt, c, r);
@@ -85,9 +89,11 @@ export function MapRing({ frame, start, compass = true, location, units }: MapRi
               if (!el) return;
               const p = onRing(m.at - deg, c, r);
               el.style.transform = `translate3d(${p.x.toFixed(2)}px, ${p.y.toFixed(2)}px, 0) translate(-50%, -50%)`;
+              // the needle (skewed themes) points out from the centre
+              if (m.label === "N") el.style.setProperty("--hud-at", `${(m.at - deg).toFixed(1)}deg`);
             });
             ticks.current?.setAttribute("transform", `rotate(${(-deg).toFixed(2)} ${c} ${c})`);
-            setText(readout.current, headingText(deg));
+            headGate.current!.feed(deg);
           }
           if (arrow.current && bearing.current !== undefined) {
             arrow.current.style.transform = `rotate(${(bearing.current - deg).toFixed(1)}deg)`;
@@ -132,9 +138,7 @@ export function MapRing({ frame, start, compass = true, location, units }: MapRi
       </svg>
       {compass && (
         <>
-          <span ref={readout} data-slot="hud-heading" className="hud-num hud-map-heading" style={{ left: c, bottom: size + 0.5 * rem }}>
-            {headingText(start)}
-          </span>
+          <span ref={readout} data-slot="hud-heading" className="hud-num hud-map-heading" style={{ left: c, bottom: size + 0.875 * rem }} aria-label={headingText(start)} />
           {CARDINALS.map((m, i) => {
             const p = onRing(m.at - start, c, r);
             return (
@@ -145,7 +149,7 @@ export function MapRing({ frame, start, compass = true, location, units }: MapRi
                 }}
                 data-north={m.label === "N" || undefined}
                 className="hud-map-cardinal"
-                style={{ transform: `translate3d(${p.x.toFixed(2)}px, ${p.y.toFixed(2)}px, 0) translate(-50%, -50%)` }}
+                style={{ transform: `translate3d(${p.x.toFixed(2)}px, ${p.y.toFixed(2)}px, 0) translate(-50%, -50%)`, ...(m.label === "N" ? ({ "--hud-at": `${m.at - start}deg` } as CSSProperties) : null) }}
                 aria-hidden
               >
                 {m.label}

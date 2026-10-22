@@ -5,6 +5,8 @@ import * as React from "react"
 
 import { ChevronLeftIcon, XIcon } from "lucide-react"
 
+import { Stagger } from "nuikit-core/react"
+
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
@@ -132,6 +134,8 @@ function EdgeSheet({
         )}
         {...props}
       >
+        {/* its rows, slots and cards enter in sequence when it opens and fold out (last first) when it closes */}
+        <Stagger on={open !== false} budget={300}>
         <div
           key={page}
           data-slot="edge-sheet-column"
@@ -170,6 +174,7 @@ function EdgeSheet({
           <EdgeSheetEdge value={meter} danger={meterDanger} />
           {children}
         </div>
+        </Stagger>
       </SheetContent>
     </Sheet>
   )
