@@ -37,7 +37,7 @@ import {
   WrenchIcon,
 } from "lucide-react";
 import { closeSurface, openSurface, Surface } from "nuikit-core/react";
-import { cloneElement, useRef, useState, type ReactElement, type ReactNode } from "react";
+import { cloneElement, useLayoutEffect, useRef, useState, type ReactElement, type ReactNode } from "react";
 import { Command } from "@/components/code";
 import { Scene } from "@/components/scene";
 import { Footer, Nav, SITE, ThemePicker } from "@/components/site";
@@ -69,6 +69,7 @@ import {
 } from "@/components/ui/form-field";
 import { Confirm, ConfirmPanel, type ConfirmTone } from "@/components/ui/confirm";
 import { KeyPrompt, KeyPromptStack } from "@/components/ui/key-prompt";
+import { VariantsDemo } from "@/components/variants-demo";
 import { ProgressRing } from "@/components/ui/progress-ring";
 import { Speedometer } from "@/components/ui/speedometer";
 import { Countdown } from "@/components/ui/countdown";
@@ -79,10 +80,14 @@ import { PlayerCard } from "@/components/ui/player-card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { SKILL_CHECK_PRESETS, SkillCheck, skillCheckZone } from "@/components/ui/skill-check";
 import { RadialMenu, type RadialMenuItem } from "@/components/ui/radial-menu";
+import { applyStageTheme, clearStageTheme } from "@/lib/stage-theme";
+import { studioTheme } from "@/lib/theme-studio";
 import { cn } from "@/lib/utils";
+import { identities } from "@/themes";
 import registry from "../../../../registry.json";
 
 export function ComponentsPage() {
+  const preview = useRef<HTMLDivElement>(null);
   return (
     <div className="min-h-screen">
       <Nav />
@@ -98,7 +103,10 @@ export function ComponentsPage() {
             its own.
           </p>
           <ThemePicker className="mt-6" />
+          <IdentityPicker target={preview} className="mt-3" />
         </header>
+
+        <div ref={preview}>
 
         <Section
           name="variants"
@@ -513,6 +521,7 @@ export function ComponentsPage() {
             ))}
           </div>
         </section>
+        </div>
       </main>
       <Footer />
     </div>
@@ -578,69 +587,39 @@ function Section({
   );
 }
 
-type Knob<T extends string> = { label: string; value: T; options: readonly T[]; set: (v: T) => void };
-
-function KnobTabs<T extends string>({ label, value, options, set }: Knob<T>) {
+/**
+ * Every component under one identity (all of packages/core/themes): its type, shape, surface, density,
+ * motion and HUD, painted on the previews only, so the page around them stays the site's. "Site": none.
+ */
+function IdentityPicker({ target, className }: { target: React.RefObject<HTMLDivElement | null>; className?: string }) {
+  const [active, setActive] = useState(-1);
+  useLayoutEffect(() => {
+    const el = target.current;
+    const id = identities[active];
+    if (!el || !id) return;
+    applyStageTheme(studioTheme(id.css), el);
+    // the site's font-sans is a literal (@theme inline): read the identity's own
+    el.style.fontFamily = "var(--font-sans)";
+    return () => {
+      clearStageTheme(el);
+      el.style.removeProperty("font-family");
+    };
+  }, [active, target]);
   return (
-    <div className="flex flex-col gap-1.5">
-      <span className="nk-label text-muted-foreground">{label}</span>
-      <Tabs value={value} onValueChange={(v) => set(v as T)}>
-        <TabsList>
-          {options.map((o) => (
-            <TabsTrigger key={o} value={o} className="capitalize">
-              {o}
-            </TabsTrigger>
-          ))}
-        </TabsList>
-      </Tabs>
-    </div>
-  );
-}
-
-/** One set of knobs, five components: every variant the registry's most-seen components take. */
-function VariantsDemo() {
-  const [size, setSize] = useState<"sm" | "default" | "lg">("default");
-  const [density, setDensity] = useState<"compact" | "default" | "comfortable">("default");
-  const [shape, setShape] = useState<"square" | "default" | "round">("default");
-  const [motion, setMotion] = useState<"on" | "reduced" | "off">("on");
-  const [active, setActive] = useState(0);
-  const [run, setRun] = useState(0);
-  const v = { density, shape, motion: motion === "on" ? undefined : motion === "off" ? false : ("reduced" as const) };
-  return (
-    <div className="flex w-full flex-col gap-6">
-      <div className="flex flex-wrap gap-4">
-        <KnobTabs label="Size" value={size} options={["sm", "default", "lg"] as const} set={setSize} />
-        <KnobTabs label="Density" value={density} options={["compact", "default", "comfortable"] as const} set={setDensity} />
-        <KnobTabs label="Shape" value={shape} options={["square", "default", "round"] as const} set={setShape} />
-        <KnobTabs label="Motion" value={motion} options={["on", "reduced", "off"] as const} set={(m) => (setMotion(m), setRun((r) => r + 1))} />
-      </div>
-      <div className="flex flex-wrap items-start gap-6">
-        <Panel size={size} {...v}>
-          <PanelHeader icon={<CarIcon />} title="Garage" description="Legion Square" />
-          <PanelBody>
-            <MenuRowList active={active} {...v}>
-              {CARS.slice(0, 4).map((c, i) => (
-                <MenuRow key={c.plate} icon={<CarIcon />} description={c.note} meta={c.plate} active={i === active} onMouseEnter={() => setActive(i)} {...v}>
-                  {c.name}
-                </MenuRow>
+    <div className={cn("flex flex-wrap items-center gap-2", className)} role="radiogroup" aria-label="Identity">
+      <span className="mr-1 text-sm text-muted-foreground">Identity</span>
+      {[{ name: "Site", swatch: [] as string[] }, ...identities].map((t, i) => (
+        <Button key={t.name} role="radio" aria-checked={active === i - 1} variant={active === i - 1 ? "secondary" : "ghost"} size="sm" onClick={() => setActive(i - 1)}>
+          {t.swatch.length > 0 && (
+            <span className="flex -space-x-1">
+              {t.swatch.map((c) => (
+                <span key={c} className="size-3 rounded-full ring-2 ring-background" style={{ background: c }} />
               ))}
-            </MenuRowList>
-          </PanelBody>
-        </Panel>
-        <div className="flex flex-col items-start gap-4">
-          <div className="relative h-48 w-[26rem] [--nk-edge:0rem]">
-            <NoticeStack position="top-right" key={`n${run}`} {...v}>
-              <Notice size={size} status="success" title="Paid" description="$500 from Lester" duration={0} />
-              <Notice item={{ name: "Water bottle", count: 2, icon: <CupSodaIcon /> }} duration={0} />
-            </NoticeStack>
-          </div>
-          <KeyPrompt keys="E" label="Open garage" size={size === "lg" ? "default" : size} {...v} />
-          <div className="flex w-72 flex-col gap-3">
-            <Meter label="Fuel" value={64} valueText="64%" size={size} {...v} />
-            <Meter key={`m${run}`} variant="slab" label="Repairing" duration={4000} cancelKey="X" onComplete={() => setTimeout(() => setRun((r) => r + 1), 800)} {...v} />
-          </div>
-        </div>
-      </div>
+            </span>
+          )}
+          {t.name}
+        </Button>
+      ))}
     </div>
   );
 }

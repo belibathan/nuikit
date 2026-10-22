@@ -1,16 +1,16 @@
 import { type ThemeVars } from "nuikit-core/react";
-import { CheckIcon, CircleAlertIcon, DownloadIcon, RotateCcwIcon } from "lucide-react";
+import { CheckIcon, CircleAlertIcon, CopyIcon, DownloadIcon, RotateCcwIcon } from "lucide-react";
 import { Fragment, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { CopyButton } from "@/components/code";
 import { GameStage } from "@/components/game-stage";
 import { Footer, Nav } from "@/components/site";
 import { ThemePreview } from "@/components/theme-preview";
+import { VariantsDemo } from "@/components/variants-demo";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { SelectField, SliderField } from "@/components/ui/form-field";
 import { Textarea } from "@/components/ui/textarea";
 import { applyStageTheme, clearStageTheme } from "@/lib/stage-theme";
-import { exportThemeCss, fontChoice, FONT_CHOICES, IDENTITY, identityNumber, identityValue, studioTheme, toHex, TWEAKS, withAlpha, type IdentityControl } from "@/lib/theme-studio";
+import { COMPONENTS, exportThemeCss, fontChoice, FONT_CHOICES, IDENTITY, identityNumber, identityValue, studioTheme, toHex, TWEAKS, withAlpha, type IdentityControl } from "@/lib/theme-studio";
 import { cn } from "@/lib/utils";
 import { identities, themes } from "@/themes";
 
@@ -29,12 +29,20 @@ export function ThemePage() {
   const file = useMemo(() => exportThemeCss(theme), [theme]);
 
   const stage = useRef<HTMLDivElement>(null);
+  const variants = useRef<HTMLDivElement>(null);
   useLayoutEffect(() => {
     const el = stage.current;
     if (!el) return;
     applyStageTheme(theme, el);
+    if (variants.current) applyStageTheme(theme, variants.current);
   }, [theme]);
-  useLayoutEffect(() => () => void (stage.current && clearStageTheme(stage.current)), []);
+  useLayoutEffect(
+    () => () => {
+      if (stage.current) clearStageTheme(stage.current);
+      if (variants.current) clearStageTheme(variants.current);
+    },
+    []
+  );
   const tweak = (name: string, value: string) => setTweaks((prev) => ({ ...prev, [name]: value }));
 
   const contrastIssues = theme.contrast.filter((c) => !c.ok).length;
@@ -56,7 +64,7 @@ export function ThemePage() {
         <header className="max-w-3xl">
           <h1 className="text-4xl font-semibold tracking-tight">Theme studio</h1>
           <p className="mt-4 text-lg text-muted-foreground text-pretty">
-            Start from one of the four identities or paste a{" "}
+            Start from one of the identities or paste a{" "}
             <a href="https://tweakcn.com" className="text-foreground underline underline-offset-4">
               TweakCN
             </a>{" "}
@@ -71,6 +79,17 @@ export function ThemePage() {
             <GameStage stageRef={stage}>
               <ThemePreview />
             </GameStage>
+            <Card className="gap-4 py-5">
+              <CardHeader className="px-5">
+                <CardTitle>Variants on this theme</CardTitle>
+                <CardDescription>What a UI can still pick per component over the theme: size, density, shape, motion.</CardDescription>
+              </CardHeader>
+              <CardContent className="px-5">
+                <div ref={variants} className="rounded-lg bg-background p-5 font-(family-name:--font-sans) text-foreground">
+                  <VariantsDemo />
+                </div>
+              </CardContent>
+            </Card>
             <Card className="gap-4 py-5">
               <CardHeader className="px-5">
                 <CardTitle className="flex items-center gap-2">
@@ -121,7 +140,7 @@ export function ThemePage() {
             <Card className="gap-4 py-5">
               <CardHeader className="px-5">
                 <CardTitle>Start from</CardTitle>
-                <CardDescription>The four identities (tokens 1.1: type, shape, surface, density, motion and HUD, not just colour), then colour-only presets.</CardDescription>
+                <CardDescription>Every nuikit identity (type, shape, surface, density, motion and HUD, not just colour), then colour-only presets. One click loads it; tweaks start from there.</CardDescription>
               </CardHeader>
               <CardContent className="flex flex-wrap gap-2 px-5">
                 {PRESETS.map((t, i) => (
@@ -170,15 +189,34 @@ export function ThemePage() {
 
             <Card className="gap-4 py-5">
               <CardHeader className="px-5">
+                <CardTitle>1 · Identity</CardTitle>
+                <CardDescription>
+                  What makes the UI yours besides colour: type, shape, surface, density, motion and the HUD. Each control sets one token; the compiler derives
+                  the rest and warns when a floor is crossed.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="flex flex-col gap-6 px-5">
+                {IDENTITY.map((g) => (
+                  <div key={g.group} className="flex flex-col gap-3">
+                    <p className="text-xs font-medium text-muted-foreground">{g.group}</p>
+                    {g.controls.map((c) => (
+                      <IdentityField key={c.name} control={c} value={theme.vars[c.name]} tweaked={c.name in tweaks} onChange={(v) => tweak(c.name, v)} />
+                    ))}
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+            <Card className="gap-4 py-5">
+              <CardHeader className="px-5">
                 <CardTitle className="flex items-center justify-between">
-                  Tweak tokens
+                  2 · Colours
                   {Object.keys(tweaks).length > 0 && (
                     <Button variant="ghost" size="sm" onClick={() => setTweaks({})}>
                       <RotateCcwIcon /> Undo tweaks
                     </Button>
                   )}
                 </CardTitle>
-                <CardDescription>A tweak sets the token outright, on top of the paste.</CardDescription>
+                <CardDescription>The semantic tokens: what each colour means (surfaces, actions, status, the game). A tweak sets the token outright, on top of the paste.</CardDescription>
               </CardHeader>
               <CardContent className="flex flex-col gap-5 px-5">
                 {TWEAKS.map((g) => (
@@ -203,17 +241,16 @@ export function ThemePage() {
                 ))}
               </CardContent>
             </Card>
-
             <Card className="gap-4 py-5">
               <CardHeader className="px-5">
-                <CardTitle>Identity</CardTitle>
+                <CardTitle>3 · Components</CardTitle>
                 <CardDescription>
-                  What makes the UI yours besides colour: type, shape, surface, density, motion and the HUD. Each control sets one token; the compiler derives
-                  the rest and warns when a floor is crossed.
+                  One part of the kit, set outright. Left alone, each follows the identity above (density, radius, gauges); a UI can still pick a
+                  variant per component (density, shape, motion) on top.
                 </CardDescription>
               </CardHeader>
               <CardContent className="flex flex-col gap-6 px-5">
-                {IDENTITY.map((g) => (
+                {COMPONENTS.map((g) => (
                   <div key={g.group} className="flex flex-col gap-3">
                     <p className="text-xs font-medium text-muted-foreground">{g.group}</p>
                     {g.controls.map((c) => (
@@ -223,6 +260,7 @@ export function ThemePage() {
                 ))}
               </CardContent>
             </Card>
+
 
             <Card className="gap-4 py-5">
               <CardHeader className="px-5">
@@ -236,7 +274,7 @@ export function ThemePage() {
                 <Button className="flex-1" onClick={download}>
                   <DownloadIcon /> Download theme.css
                 </Button>
-                <CopyButton text={file} className="size-9 border" />
+                <CopyThemeButton text={file} />
               </CardContent>
             </Card>
           </div>
@@ -263,7 +301,7 @@ function IdentityField({ control: c, value, tweaked, onChange }: { control: Iden
         min={c.min}
         max={c.max}
         step={c.step}
-        value={identityNumber(value, c.min)}
+        value={identityNumber(value, c.def ?? c.min)}
         format={(n) => identityValue(c, n)}
         onValueChange={(n) => onChange(identityValue(c, n))}
       />
@@ -301,5 +339,23 @@ function IdentityField({ control: c, value, tweaked, onChange }: { control: Iden
       value={current}
       onValueChange={(v) => v && onChange(v)}
     />
+  );
+}
+
+/** Copies theme.css, and says so for a moment. */
+function CopyThemeButton({ text }: { text: string }) {
+  const [done, setDone] = useState(false);
+  return (
+    <Button
+      variant="outline"
+      onClick={() => {
+        void navigator.clipboard?.writeText(text);
+        setDone(true);
+        setTimeout(() => setDone(false), 1400);
+      }}
+    >
+      {done ? <CheckIcon /> : <CopyIcon />}
+      {done ? "Copied" : "Copy theme.css"}
+    </Button>
   );
 }

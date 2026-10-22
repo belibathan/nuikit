@@ -1,21 +1,32 @@
 // Theme presets, written exactly like a TweakCN / shadcn export (.dark block, oklch).
 // "Neutral" is the stock `shadcn init` theme and the default; the rest are examples.
 // The playground feeds them through applyTheme() from nuikit.
-import graphite from "../../../packages/core/themes/graphite.css?raw";
-import signal from "../../../packages/core/themes/signal.css?raw";
-import velvet from "../../../packages/core/themes/velvet.css?raw";
-import vector from "../../../packages/core/themes/vector.css?raw";
+import { compileTheme, toRgba } from "nuikit-core";
+
+// Every identity in packages/core/themes (nuikit-core/themes/*.css; read relatively so vitest sees the
+// files too). A new file there shows up in the pickers on its own.
+const files = import.meta.glob("../../../packages/core/themes/*.css", { query: "?raw", import: "default", eager: true }) as Record<string, string>;
+
+/** The identities first in the pickers; any other file there follows in name order. */
+const ORDER = ["graphite", "signal", "velvet", "vector", "arcade", "street", "studio"];
+
+const hex = (v: string | undefined) => {
+  const c = v ? toRgba(v) : null;
+  return c ? `#${c.slice(0, 3).map((n) => Math.round(n).toString(16).padStart(2, "0")).join("")}` : "#000000";
+};
 
 /**
- * The four nuikit identities (tokens 1.1, docs/tokens.md#identities): colour plus type, shape, surface,
- * density, motion and HUD style. Single source: packages/core/themes (nuikit-core/themes/*.css; read relatively so vitest sees the file too). First in the pickers on /blocks and /theme.
+ * The nuikit identities (tokens 1.1+, docs/tokens.md#identities): colour plus type, shape, surface,
+ * density, motion and HUD style. First in the pickers on /blocks and /theme; the swatch is the
+ * compiled brand, foreground and background.
  */
-export const identities: { name: string; swatch: string[]; css: string }[] = [
-  { name: "Graphite", swatch: ["#e5e5e5", "#d4d4d4", "#171717"], css: graphite },
-  { name: "Signal", swatch: ["#f5e21c", "#f4f3ee", "#0f0e0c"], css: signal },
-  { name: "Velvet", swatch: ["#e6c188", "#f6efe6", "#281a1e"], css: velvet },
-  { name: "Vector", swatch: ["#4dece4", "#eef6f7", "#0a191d"], css: vector },
-];
+export const identities: { name: string; swatch: string[]; css: string }[] = Object.entries(files)
+  .map(([path, css]) => ({ id: path.split("/").pop()!.replace(/.css$/, ""), css }))
+  .sort((x, y) => (ORDER.indexOf(x.id) + 1 || 99) - (ORDER.indexOf(y.id) + 1 || 99) || x.id.localeCompare(y.id))
+  .map(({ id, css }) => {
+    const v = compileTheme(css, { mode: "dark" }).vars;
+    return { name: id[0]!.toUpperCase() + id.slice(1), swatch: [hex(v.brand ?? v.primary), hex(v.foreground), hex(v.background)], css };
+  });
 
 export const themes: { name: string; swatch: string[]; css: string }[] = [
   {
