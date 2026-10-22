@@ -74,6 +74,62 @@
   unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
 }
 @font-face {
+  font-family: "Barlow";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("../node_modules/nuikit-core/fonts/barlow-latin-700-normal.woff2") format("woff2");
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+@font-face {
+  font-family: "Barlow";
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url("../node_modules/nuikit-core/fonts/barlow-latin-800-normal.woff2") format("woff2");
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+@font-face {
+  font-family: "Barlow Condensed";
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url("../node_modules/nuikit-core/fonts/barlow-condensed-latin-800-normal.woff2") format("woff2");
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+@font-face {
+  font-family: "Barlow Condensed";
+  font-style: normal;
+  font-weight: 900;
+  font-display: swap;
+  src: url("../node_modules/nuikit-core/fonts/barlow-condensed-latin-900-normal.woff2") format("woff2");
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+@font-face {
+  font-family: "Barlow Condensed";
+  font-style: italic;
+  font-weight: 700;
+  font-display: swap;
+  src: url("../node_modules/nuikit-core/fonts/barlow-condensed-latin-700-italic.woff2") format("woff2");
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+@font-face {
+  font-family: "Barlow Condensed";
+  font-style: italic;
+  font-weight: 800;
+  font-display: swap;
+  src: url("../node_modules/nuikit-core/fonts/barlow-condensed-latin-800-italic.woff2") format("woff2");
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+@font-face {
+  font-family: "Barlow Condensed";
+  font-style: italic;
+  font-weight: 900;
+  font-display: swap;
+  src: url("../node_modules/nuikit-core/fonts/barlow-condensed-latin-900-italic.woff2") format("woff2");
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+@font-face {
   font-family: "Fraunces";
   font-style: normal;
   font-weight: 100 900;
@@ -246,6 +302,11 @@
   --nk-tracking-label: 0.06em;
   --nk-border-width: 1px;
   --nk-cut: 0px;
+  --nk-display-style: normal;
+  --nk-pause-style: sheet;
+  --nk-pause-surface: undefined;
+  --nk-pause-ink: undefined;
+  --nk-skew: 0deg;
   --nk-surface-opacity: 0.96;
   --nk-surface-tint: 0.02;
   --nk-surface-gradient: 0;
@@ -330,6 +391,11 @@
   --nk-tracking-label: 0.06em;
   --nk-border-width: 1px;
   --nk-cut: 0px;
+  --nk-display-style: normal;
+  --nk-pause-style: sheet;
+  --nk-pause-surface: undefined;
+  --nk-pause-ink: undefined;
+  --nk-skew: 0deg;
   --nk-surface-opacity: 0.96;
   --nk-surface-tint: 0.02;
   --nk-surface-gradient: 0;
@@ -815,6 +881,7 @@
 /* Title inside a panel header. @merge nk-type */
 @utility nk-title {
   font-family: var(--nk-heading-font);
+  font-style: var(--nk-display-style, normal);
   /* !important: shadcn titles carry text-lg, which would otherwise win */
   font-size: var(--nk-heading-size) !important;
   font-weight: var(--nk-heading-weight);
@@ -855,11 +922,18 @@
   clip-path: var(--nk-row-clip);
   font-size: var(--nk-row-font-size);
   line-height: 1.25rem;
-  /* instant state (design v2 §5A): keyboard and controller selection never transitions; only pointer
-     hover eases, over --nk-time-hover */
-  transition-property: background-color, color, box-shadow;
-  transition-duration: 0s;
-  transition-timing-function: var(--nk-ease-out);
+  /* interaction (0.8.1): a state fills with movement. The highlight is a sweep from the leading edge
+     (--nk-sweep, drawn as a background layer so the row's own surface classes don't flash it), the bar
+     grows from its middle, text eases with the fill; a press dips and springs back (--nk-motion-feel).
+     Motion off: instant; reduced: no movement. */
+  --nk-sweep: var(--accent);
+  background-image: linear-gradient(var(--nk-sweep), var(--nk-sweep));
+  background-repeat: no-repeat;
+  background-position: left center;
+  background-size: 0% 100%;
+  transition-property: background-size, color, box-shadow, transform;
+  transition-duration: var(--nk-time), var(--nk-time), var(--nk-time), var(--nk-time-press, 120ms);
+  transition-timing-function: var(--nk-ease-out), var(--nk-ease-out), var(--nk-ease-out), var(--nk-ease-spring, cubic-bezier(0.34, 1.56, 0.64, 1));
   &::before {
     content: "";
     position: absolute;
@@ -870,11 +944,33 @@
     border-radius: 9999px;
     background-color: var(--nk-row-indicator-color);
     opacity: 0;
-    transition: opacity 0s var(--nk-ease-out);
+    transform: scaleY(0);
+    transition:
+      opacity var(--nk-time) var(--nk-ease-out),
+      transform var(--nk-time) var(--nk-ease-out);
     pointer-events: none;
   }
-  &[class*="hover:bg-accent"]:hover {
-    transition-duration: var(--nk-time-hover, var(--nk-time));
+  &:is(:hover, [data-active], [data-highlighted], :focus-visible) {
+    background-color: transparent !important;
+    background-size: 100% 100%;
+  }
+  &[class*="text-destructive"] {
+    --nk-sweep: rgba(var(--destructive-rgb), 0.12);
+  }
+  &:not([aria-disabled="true"], [data-disabled], :disabled):is(:active, [data-nk-press]) {
+    transform: scale(var(--nk-press-scale, 0.97));
+    transition-duration: var(--nk-time), var(--nk-time), var(--nk-time), var(--nk-time-press, 70ms);
+    transition-timing-function: var(--nk-ease-out);
+  }
+  :is(html, *)[data-nk-feel="snap"] &,
+  :is(html, *)[data-nk-feel="stepped"] & {
+    transition-timing-function: var(--nk-ease-out);
+  }
+  :is(html, *)[data-nk-motion="reduced"] & {
+    transition-property: color;
+  }
+  :is(html, *)[data-nk-motion="reduced"] &:active {
+    transform: none;
   }
   /* the identity indicator marks keyboard, controller and script selection; the pointer's hover is the
      accent surface the row's own hover: classes paint (menu-row's hover variant), never the indicator */
@@ -887,11 +983,13 @@
   &[data-highlighted]::before,
   &:focus-visible::before {
     opacity: 1;
+    transform: none;
   }
 }
 /* Numbers: money, timers, counts. */
 @utility nk-num {
   font-family: var(--nk-num-font);
+  font-style: var(--nk-display-style, normal);
   font-variant-numeric: tabular-nums;
   letter-spacing: var(--nk-num-tracking);
 }
@@ -908,10 +1006,19 @@
   font-size: var(--nk-chip-font-size);
   font-weight: var(--nk-chip-weight);
   clip-path: var(--nk-chip-clip);
+  /* the active fill rises from the bottom (a background layer), the ink eases with it */
+  background-image: linear-gradient(var(--nk-chip-active-bg), var(--nk-chip-active-bg));
+  background-repeat: no-repeat;
+  background-position: center bottom;
+  background-size: 100% 0%;
+  transition:
+    background-size var(--nk-time) var(--nk-ease-out),
+    color var(--nk-time) var(--nk-ease-out);
 }
-/* Active chip (talking, selected): the brand. */
+/* Active chip (talking, selected): the brand, filling up from the bottom. */
 @utility nk-chip-active {
   background-color: var(--nk-chip-active-bg);
+  background-size: 100% 100%;
   color: var(--nk-chip-active-fg);
   box-shadow: var(--nk-chip-glow);
 }
@@ -966,6 +1073,7 @@
 /* Full-screen title (pause, loading, death): 32px at 1080p (Graphite). @merge nk-type */
 @utility nk-display {
   font-family: var(--nk-heading-font);
+  font-style: var(--nk-display-style, normal);
   font-size: var(--nk-display-size);
   line-height: 1.2;
   font-weight: var(--nk-display-weight);
@@ -1205,7 +1313,7 @@
 }
 /* The one open animation. --nk-motion: 0 (theme or the player's reduced-motion pref) skips it. */
 @utility nk-enter {
-  animation: nk-enter var(--nk-time) var(--nk-ease-out) both;
+  animation: nk-enter var(--nk-time) var(--nk-ease-out) backwards;
 }
 /* Opacity only: a transform here would override the translate that centres dialogs, and
    Chromium 103 has no separate `scale` property. */
@@ -1242,6 +1350,42 @@
 @keyframes nk-fade-out {
   from { opacity: 1; }
   to { opacity: 0; }
+}
+@keyframes nk-fold-out {
+  from { opacity: 1; transform: none; }
+  to { opacity: 0; transform: translateY(-0.25rem) scale(0.97); }
+}
+@keyframes nk-pop-out {
+  from { opacity: 1; transform: none; }
+  to { opacity: 0; transform: scale(0.9); }
+}
+/* Choreography (nuikit-core <Stagger>, useStaggerItem(on, { animate })): members enter and leave in
+   sequence; the group sets each one's delay and data-nk-stagger. Entering fills backwards only (hidden
+   while it waits, then the element's own transforms, a press dip, are free again); leaving holds the
+   end. Reduced motion: fades; off: instant. */
+[data-nk-stagger="in"][data-nk-stagger-kind="rise"] {
+  animation: nk-rise var(--nk-time) var(--nk-ease-out) backwards;
+}
+[data-nk-stagger="in"][data-nk-stagger-kind="pop"] {
+  animation: nk-pop var(--nk-time) var(--nk-ease-out) backwards;
+}
+[data-nk-stagger="in"][data-nk-stagger-kind="fade"] {
+  animation: nk-enter var(--nk-time) var(--nk-ease-out) backwards;
+}
+[data-nk-stagger="out"][data-nk-stagger-kind="rise"] {
+  animation: nk-fold-out var(--nk-time-exit, var(--nk-time)) var(--nk-ease-in, ease-in) both;
+}
+[data-nk-stagger="out"][data-nk-stagger-kind="pop"] {
+  animation: nk-pop-out var(--nk-time-exit, var(--nk-time)) var(--nk-ease-in, ease-in) both;
+}
+[data-nk-stagger="out"][data-nk-stagger-kind="fade"] {
+  animation: nk-fade-out var(--nk-time-exit, var(--nk-time)) var(--nk-ease-in, ease-in) both;
+}
+:is(html, *)[data-nk-motion="reduced"] [data-nk-stagger="in"] {
+  animation-name: nk-enter;
+}
+:is(html, *)[data-nk-motion="reduced"] [data-nk-stagger="out"] {
+  animation-name: nk-fade-out;
 }
 /* An entrance with a short rise (4px), for lists, toasts and panel contents: an inner wrapper, never a
    centred dialog. Reduced motion keeps the fade. */
@@ -1378,10 +1522,29 @@
     box-shadow: var(--nk-key-shadow), inset 0 0 0 var(--nk-border) var(--nk-key-border);
     font-family: var(--nk-key-font);
     font-weight: var(--nk-key-weight);
+    font-style: var(--nk-display-style, normal);
     clip-path: var(--nk-key-clip);
   }
   [data-slot="button"] {
     clip-path: var(--nk-chip-clip);
+  }
+  /* the primary button: a light sweep across on hover (shadcn's transition-all eases it) */
+  [data-slot="button"][data-variant="default"] {
+    background-image: linear-gradient(rgba(var(--primary-foreground-rgb), 0.14), rgba(var(--primary-foreground-rgb), 0.14));
+    background-repeat: no-repeat;
+    background-position: left center;
+    background-size: 0% 100%;
+  }
+  [data-slot="button"][data-variant="default"]:hover {
+    background-size: 100% 100%;
+  }
+  /* a press dips and springs back */
+  [data-slot="button"]:not([class*="translate"], :disabled):is(:active, [data-nk-press]) {
+    transform: scale(var(--nk-press-scale, 0.97));
+  }
+  :is(html, *)[data-nk-motion="reduced"] [data-slot="button"]:active,
+  :is(html, *)[data-nk-motion="off"] [data-slot="button"]:active {
+    transform: none;
   }
   [data-slot="progress"] {
     border-radius: var(--nk-meter-radius);
@@ -1404,14 +1567,167 @@
  * beat the row's and its children's own text colours. Destructive rows keep their colour.
  */
 :is(html, *)[data-nk-row="fill"] .nk-row:is([data-active], [data-highlighted], :focus-visible):not([class*="text-destructive"]) {
-  background-color: var(--nk-row-fill-color);
+  --nk-sweep: var(--nk-row-fill-color);
   color: var(--nk-row-fill-foreground);
+}
+/* rows after an indicator: the indicator carries the selection; the row only sweeps for the pointer */
+.nk-indicator ~ .nk-row:is([data-active], [data-highlighted], :focus-visible):not(:hover) {
+  background-size: 0% 100%;
 }
 :is(html, *)[data-nk-row="fill"] .nk-row:is([data-active], [data-highlighted], :focus-visible):not([class*="text-destructive"]) :not([data-slot="kbd"], [data-slot="kbd"] *, [data-slot="progress"], [data-slot="progress"] *) {
   color: inherit;
 }
 :is(html, *)[data-nk-row="fill"] .nk-row::before {
   display: none;
+}
+
+/* a chip keeps its own surface under the rising active fill (tiles, nk-hud, take the brand at once) */
+.nk-chip.nk-chip-active {
+  background-color: var(--nk-chip-bg);
+}
+
+/*
+ * Skew (tokens 1.3: --nk-skew, painted as html[data-nk-skew] by applyTheme). Badges, chips, key caps,
+ * tags, the primary button and the selected row are drawn as skewed slabs, Valorant / Fortnite style: the
+ * slab is a ::after behind the content, skewed with transform (Chromium 103); the content itself stays
+ * upright (or italic, with --nk-display-style). Nothing here applies at 0deg, so the other identities are
+ * untouched. Each part names its fill (--nk-slab-fill) and stroke (--nk-slab-stroke).
+ */
+:is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"]) :is(.nk-chip, [data-slot="kbd"], [data-slot="badge"], [data-slot="button"][data-variant="default"]) {
+  position: relative;
+  isolation: isolate;
+  clip-path: none !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+  border-color: transparent !important;
+}
+:is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"]) :is(.nk-chip, [data-slot="kbd"], [data-slot="badge"], [data-slot="button"][data-variant="default"])::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-color: var(--nk-slab-fill, transparent);
+  box-shadow: var(--nk-slab-stroke, none);
+  transform: skewX(var(--nk-skew));
+}
+:is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"]) .nk-chip {
+  --nk-slab-fill: var(--nk-chip-bg);
+}
+:is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"]) .nk-chip:is(.nk-chip-active, [data-state="active"]) {
+  --nk-slab-fill: var(--nk-chip-active-bg);
+}
+:is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"]) .nk-chip[class*="bg-destructive"] {
+  --nk-slab-fill: var(--destructive);
+}
+:is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"]) [data-slot="kbd"] {
+  --nk-slab-fill: var(--nk-key-bg);
+  --nk-slab-stroke: inset 0 0 0 var(--nk-border) var(--nk-key-border);
+}
+:is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"]) [data-slot="badge"] {
+  --nk-slab-fill: var(--primary);
+}
+:is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"]) [data-slot="badge"][data-variant="secondary"] {
+  --nk-slab-fill: var(--secondary);
+}
+:is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"]) [data-slot="badge"][data-variant="destructive"] {
+  --nk-slab-fill: var(--destructive);
+}
+:is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"]) [data-slot="badge"][data-variant="outline"] {
+  --nk-slab-fill: transparent;
+  --nk-slab-stroke: inset 0 0 0 var(--nk-border) var(--border);
+}
+:is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"]) [data-slot="button"][data-variant="default"] {
+  --nk-slab-fill: var(--primary);
+}
+/* key caps: a skewed parallelogram with the stroke, on an offset back plate */
+:is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"]) [data-slot="kbd"] {
+  --nk-slab-stroke: inset 0 0 0 var(--nk-border) var(--nk-key-border);
+  overflow: visible;
+}
+:is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"]) [data-slot="kbd"]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  background-color: var(--nk-key-plate, var(--border));
+  transform: translate(0.1875rem, 0.1875rem) skewX(var(--nk-skew));
+}
+/* notification type badges: a small skewed slab in the type's colour, the glyph dark on it */
+:is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"]) [data-slot="notice-icon"] {
+  position: relative;
+  isolation: isolate;
+  justify-content: center;
+  width: 1.375rem;
+  height: 1.25rem;
+}
+:is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"]) [data-slot="notice-icon"]::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-color: currentColor;
+  box-shadow: 0.125rem 0.125rem 0 0 rgba(var(--scrim-rgb), 0.6);
+  transform: skewX(var(--nk-skew));
+}
+:is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"]) [data-slot="notice-icon"] svg {
+  color: var(--background);
+  width: 0.75rem;
+  height: 0.75rem;
+}
+/* tabs: the active one a solid light slab with dark text */
+:is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"]) [data-slot="tabs-trigger"][data-state="active"] {
+  background-color: var(--foreground);
+  color: var(--background);
+}
+
+/* the selected row (fill indicator) and the gliding indicator: a skewed bar, a little in from the sides */
+:is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"])[data-nk-row="fill"] .nk-row:is([data-active], [data-highlighted], :focus-visible):not([class*="text-destructive"]) {
+  isolation: isolate;
+  background-color: transparent;
+}
+:is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"])[data-nk-row="fill"] .nk-row {
+  isolation: isolate;
+}
+:is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"])[data-nk-row="fill"] .nk-row::before {
+  content: "";
+  display: block;
+  position: absolute;
+  inset: 0 0.375rem;
+  width: auto;
+  z-index: -1;
+  border-radius: 0;
+  pointer-events: none;
+  opacity: 1;
+  background-color: var(--nk-row-fill-color);
+  transform-origin: left center;
+  transform: skewX(var(--nk-skew)) scaleX(0);
+  transition: transform var(--nk-time) var(--nk-ease-out);
+}
+:is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"])[data-nk-row="fill"] .nk-row:is([data-active], [data-highlighted], :focus-visible):not([class*="text-destructive"]) {
+  background-size: 0% 100%;
+}
+:is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"])[data-nk-row="fill"] .nk-row:is([data-active], [data-highlighted], :focus-visible):not([class*="text-destructive"])::before {
+  transform: skewX(var(--nk-skew)) scaleX(1);
+}
+:is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"])[data-nk-row="fill"] .nk-indicator ~ .nk-row:is([data-active], [data-highlighted], :focus-visible)::before {
+  display: none;
+}
+:is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"]) .nk-indicator {
+  background-color: transparent;
+  box-shadow: none;
+}
+:is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"]) .nk-indicator::after {
+  content: "";
+  position: absolute;
+  inset: 0 0.375rem;
+  pointer-events: none;
+  background-color: rgba(var(--brand-rgb, var(--primary-rgb)), calc(var(--nk-row-fill, 0)));
+  box-shadow: inset 0 0 0 var(--nk-row-outline-width) var(--nk-row-outline-color), var(--nk-row-glow);
+  transform: skewX(var(--nk-skew));
 }
 
 /*

@@ -1,13 +1,16 @@
 // notify → `notice`: one stack per position, newest nearest the edge. A notice ends itself when its
 // time runs out (the runtime is told, so the stack stays small); the same id updates in place.
 import { defineReactRenderer, type RendererProps } from "nuikit-core/intents-react";
-import { useEffect, useRef } from "react";
+import { useClearOf } from "nuikit-core/react";
+import { useEffect, useRef, useState } from "react";
 import { Notice, NoticeStack, noticePosition, type NoticePosition } from "@/components/ui/notice";
 import { Icon } from "@/lib/icon";
 import { Text } from "@/lib/text";
 import { anchor } from "@/lib/anchor";
 
 const DEFAULT_MS = 5000;
+/** How long an ended notice stays drawn for its exit (frame.css .ntf-item[data-leaving], ≤ 200ms). */
+const EXIT_MS = 220;
 
 function NotifyRenderer({ intents, ctx }: RendererProps<"notify">) {
   // Timers live here, not in the Notice (which restarts on every re-render of a changed prop):
@@ -33,8 +36,24 @@ function NotifyRenderer({ intents, ctx }: RendererProps<"notify">) {
   }, [intents, ctx]);
   useEffect(() => () => timers.current.forEach(({ t }) => clearTimeout(t)), []);
 
-  const groups = new Map<NoticePosition, typeof intents>();
-  for (const it of intents) {
+  // A notice that ended stays drawn for its exit (it slides back out toward its edge, frame.css), then
+  // goes; the stack's others then glide into the gap (NoticeStack's flip).
+  type Shown = (typeof intents)[number] & { leaving?: boolean };
+  const [leaving, setLeaving] = useState<Shown[]>([]);
+  const prev = useRef<typeof intents>([]);
+  useEffect(() => {
+    const live = new Set(intents.map((it) => it.id));
+    const gone = prev.current.filter((it) => !live.has(it.id));
+    prev.current = intents;
+    if (!gone.length) return;
+    setLeaving((l) => [...l.filter((x) => !live.has(x.id)), ...gone.map((it) => ({ ...it, leaving: true }))]);
+    // not cleared when intents change again: each exit always ends
+    setTimeout(() => setLeaving((l) => l.filter((x) => !gone.some((g) => g.id === x.id))), EXIT_MS);
+  }, [intents]);
+
+  const groups = new Map<NoticePosition, Shown[]>();
+  const all: Shown[] = [...intents, ...leaving.filter((x) => !intents.some((it) => it.id === x.id))].sort((a, b) => a.seq - b.seq);
+  for (const it of all) {
     const p = noticePosition(anchor(it.props.position, "top-right"));
     groups.set(p, [it, ...(groups.get(p) ?? [])]);
   }
@@ -42,16 +61,18 @@ function NotifyRenderer({ intents, ctx }: RendererProps<"notify">) {
   return (
     <>
       {[...groups].map(([position, list]) => (
-        <NoticeStack key={position} position={position}>
+        <ClearStack key={position} position={position}>
           {list.map((it) => {
             const p = it.props;
             if (!p.title && !p.description && !p.item) return null;
             const ms = p.duration && p.duration > 0 ? p.duration : DEFAULT_MS;
             const icon = p.icon ? <Icon icon={p.icon} color={p.iconColor} animation={p.iconAnimation} allowImage={false} /> : p.iconColor ? <Icon icon={statusIcon(p.status)} color={p.iconColor} /> : undefined;
             return (
+              <div key={it.id} data-slot="notify-item" data-leaving={it.leaving || undefined} className="ntf-item">
               <Notice
                 key={`${it.id}:${it.at ?? it.seq}`}
-                className="pointer-events-auto"
+                animate={false}
+                className={it.leaving ? "pointer-events-none" : "pointer-events-auto"}
                 status={p.status ?? "info"}
                 title={<Text>{p.title}</Text>}
                 description={p.description ? <Text>{p.description}</Text> : undefined}
@@ -62,11 +83,22 @@ function NotifyRenderer({ intents, ctx }: RendererProps<"notify">) {
                 item={p.item ? { name: p.item.name, count: p.item.count, image: p.item.image, icon: p.item.icon ? <Icon icon={p.item.icon} /> : undefined } : undefined}
                 style={p.style as React.CSSProperties | undefined}
               />
+              </div>
             );
           })}
-        </NoticeStack>
+        </ClearStack>
       ))}
     </>
+  );
+}
+
+/** A notice stack that starts clear of what other UIs cover in its corner (screen zones: the HUD's map). */
+function ClearStack({ position, children }: { position: NoticePosition; children: React.ReactNode }) {
+  const clear = useClearOf(position);
+  return (
+    <NoticeStack position={position} style={clear}>
+      {children}
+    </NoticeStack>
   );
 }
 

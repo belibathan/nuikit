@@ -22,7 +22,7 @@ import { SmoothInput } from "@/components/ui/smooth-input";
 import { Kbd } from "@/components/ui/kbd";
 import { MenuRow } from "@/components/ui/menu-row";
 import { TextRoll } from "@/components/ui/text-roll";
-import { SheetPage, SheetSection } from "./sheet";
+import { rise, SheetPage, SheetSection } from "./sheet";
 import { Stat } from "@/components/ui/stat";
 import { useFrameBatch } from "@/lib/batch";
 import { distance, list } from "@/lib/format";
@@ -255,8 +255,8 @@ export function MapSheetPage({ model: m, onBack }: { model: MapModel; onBack: ()
       {!searching && m.legend.length > 0 && (
         <SheetSection label="Show on the map" meta={m.blips.length}>
           <div className="flex flex-col divide-y divide-border">
-            {m.legend.map((k) => (
-              <MenuRow key={k.kind} icon={<k.icon />} checked={!m.hidden.has(k.kind)} onCheckedChange={() => m.toggle(k.kind)} meta={String(k.count)} className="min-h-11">
+            {m.legend.map((k, i) => (
+              <MenuRow key={k.kind} icon={<k.icon />} checked={!m.hidden.has(k.kind)} onCheckedChange={() => m.toggle(k.kind)} meta={String(k.count)} className={cn("min-h-11", rise(i).className)} style={rise(i).style}>
                 {k.label}
               </MenuRow>
             ))}

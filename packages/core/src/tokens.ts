@@ -14,7 +14,7 @@ export type ThemeMode = "dark" | "light";
 /** The token contract version. Bumped only for breaking renames/removals; additions keep v1. */
 export const TOKENS_VERSION = 1 as const;
 /** The contract revision: 1.1 added the identity tokens (IDENTITY_TOKENS), 1.2 the motion tokens (MOTION_TOKENS). Additive, so still v1. */
-export const TOKENS_REVISION = "1.2" as const;
+export const TOKENS_REVISION = "1.3" as const;
 
 export type TokenType = "color" | "dimension" | "fontFamily" | "number" | "keyword" | "duration" | "cubicBezier" | "shadow";
 
@@ -36,7 +36,7 @@ export interface TokenSpec {
   /** Numbers: accepted range. */
   range?: readonly [number, number];
   /** The revision that added it. */
-  since?: "1.1" | "1.2";
+  since?: "1.1" | "1.2" | "1.3";
 }
 
 /** The default sans stack (Graphite): Inter, bundled with every nuikit UI (docs/tokens.md#fonts). */
@@ -206,11 +206,16 @@ export const IDENTITY_TOKENS: readonly TokenSpec[] = [
   id("nk-tracking-label", "dimension", "Letter-spacing of captions (uppercase wants 0.06–0.12em)", "0.06em"),
   id("nk-border-width", "dimension", "Hairline weight of panels, rows and fields", "1px"),
   id("nk-cut", "dimension", "Chamfered corners (top left, bottom right), drawn with clip-path; 0 = off", "0px"),
+  id("nk-display-style", "keyword", "Display, heading, title and numeric text upright or italic (a real italic face where the font has one)", "normal", { values: ["normal", "italic"], since: "1.3" }),
+  id("nk-pause-style", "keyword", "The pause menu: a full-height sheet, or a light slash panel with a diagonal edge into the scene", "sheet", { values: ["sheet", "slash"], since: "1.3" }),
+  id("nk-pause-surface", "color", "The slash pause panel's light surface", "rgb(246, 247, 249)", { since: "1.3" }),
+  id("nk-pause-ink", "color", "Text on the slash pause panel", "rgb(14, 16, 20)", { since: "1.3" }),
+  id("nk-skew", "dimension", "Badges, chips, key caps, tags and the primary / selected bar drawn skewed (their text stays upright); 0deg = off, at most ±20deg", "0deg", { since: "1.3" }),
   id("nk-surface-opacity", "number", "Panel opacity over the game (floor 0.92 for text panels)", "0.96", { range: [0, 1] }),
   id("nk-surface-tint", "number", "How much brand tints neutral surfaces (0–0.12)", "0.02", { range: [0, 0.12] }),
   id("nk-surface-gradient", "number", "Top-to-bottom light falloff on panels (0 = flat)", "0", { range: [0, 0.2] }),
   id("nk-surface-edge", "number", "Inner top highlight, the machined edge (alpha)", "0.06", { range: [0, 0.3] }),
-  id("nk-elevation", "keyword", "Shadow recipe of floating panels", "soft", { values: ["none", "soft", "deep"] }),
+  id("nk-elevation", "keyword", "Shadow recipe of floating panels: none, soft, deep, or hard (a solid offset drop, no blur; tokens 1.3)", "soft", { values: ["none", "soft", "deep", "hard"] }),
   id("nk-glow", "number", "Brand glow on active parts and HUD fills (alpha, 0 = off)", "0", { range: [0, 1] }),
   id("nk-density", "number", "Multiplies the kit's spacing scale: 0.875 compact (Graphite) … 1.15 roomy", "0.875", { range: [0.75, 1.3] }),
   id("nk-ease", "cubicBezier", "The one easing curve", "cubic-bezier(0.2, 0.8, 0.2, 1)"),
@@ -779,6 +784,14 @@ const trimNum = (n: number) => String(Math.round(n * 10000) / 10000);
 /** Normalise one identity value; null if it isn't valid for its type. */
 function identityValue(spec: TokenSpec, raw: string): string | null {
   const v = raw.trim();
+  // an angle, not a length (tokens 1.3)
+  if (spec.name === "nk-skew") {
+    if (v === "0") return "0deg";
+    const m = /^(-?\d*\.?\d+)deg$/.exec(v);
+    if (!m) return null;
+    const n = parseFloat(m[1]!);
+    return Math.abs(n) <= 20 ? `${trimNum(n)}deg` : null;
+  }
   switch (spec.type) {
     case "number": {
       if (!NUM.test(v)) return null;
@@ -818,6 +831,8 @@ const chromatic = (c: RGBA | null) => !!c && c[3] > 0 && rgbToOklch(c).c >= 0.06
 /** The box-shadow behind each nk-elevation, in the theme's scrim colour (s = "r, g, b"). */
 export function elevationShadow(level: string, s: string): string {
   if (level === "none") return `0 0 0 0 rgba(${s}, 0)`;
+  // hard (Street, Arcade): a solid offset drop under the slab, no blur
+  if (level === "hard") return `0 0.25rem 0 0 rgba(${s}, 0.5)`;
   if (level === "deep")
     return `0 0 0 1px rgba(${s}, 0.3), 0 2px 4px rgba(${s}, 0.2), 0 18px 40px -10px rgba(${s}, 0.55), 0 44px 96px -28px rgba(${s}, 0.75)`;
   // soft (Graphite): a hairline and a short, tight drop; no halo

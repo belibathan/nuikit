@@ -71,6 +71,8 @@ export interface HudWeapon {
 /** Whether GTA's radar is on screen. */
 export interface MinimapState {
   visible: boolean;
+  /** Config.radar wants the radar now, shown or not (a menu can cut it): what the layout follows */
+  wanted?: boolean;
   /** compass bearing when this was sent (0 north, 90 east); then it follows `hud:minimap:heading` */
   heading: number;
 }
@@ -133,6 +135,8 @@ export interface HudSettings {
     handbrake?: boolean;
     seatbelt?: "auto" | boolean;
     cruise?: "auto" | boolean;
+    /** how many times a second the speed number may change (default 10; the value is smoothed too) */
+    speedRate?: number;
   };
   location?: boolean;
   compass?: { enabled?: boolean; onFoot?: boolean; /** compact: cardinals and heading on the map ring (Config.minimap.compass) */ ring?: boolean };

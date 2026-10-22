@@ -169,7 +169,7 @@ var NuikitTheme = (() => {
 
   // src/tokens.ts
   var TOKENS_VERSION = 1;
-  var TOKENS_REVISION = "1.2";
+  var TOKENS_REVISION = "1.3";
   var DEFAULT_FONT_SANS = "Inter, ui-sans-serif, system-ui, sans-serif";
   var DEFAULT_FONT_DISPLAY = `"Inter Tight", ${DEFAULT_FONT_SANS}`;
   var DEFAULT_FONT_MONO = `"Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace`;
@@ -302,11 +302,16 @@ var NuikitTheme = (() => {
     id("nk-tracking-label", "dimension", "Letter-spacing of captions (uppercase wants 0.06\u20130.12em)", "0.06em"),
     id("nk-border-width", "dimension", "Hairline weight of panels, rows and fields", "1px"),
     id("nk-cut", "dimension", "Chamfered corners (top left, bottom right), drawn with clip-path; 0 = off", "0px"),
+    id("nk-display-style", "keyword", "Display, heading, title and numeric text upright or italic (a real italic face where the font has one)", "normal", { values: ["normal", "italic"], since: "1.3" }),
+    id("nk-pause-style", "keyword", "The pause menu: a full-height sheet, or a light slash panel with a diagonal edge into the scene", "sheet", { values: ["sheet", "slash"], since: "1.3" }),
+    id("nk-pause-surface", "color", "The slash pause panel's light surface", "rgb(246, 247, 249)", { since: "1.3" }),
+    id("nk-pause-ink", "color", "Text on the slash pause panel", "rgb(14, 16, 20)", { since: "1.3" }),
+    id("nk-skew", "dimension", "Badges, chips, key caps, tags and the primary / selected bar drawn skewed (their text stays upright); 0deg = off, at most \xB120deg", "0deg", { since: "1.3" }),
     id("nk-surface-opacity", "number", "Panel opacity over the game (floor 0.92 for text panels)", "0.96", { range: [0, 1] }),
     id("nk-surface-tint", "number", "How much brand tints neutral surfaces (0\u20130.12)", "0.02", { range: [0, 0.12] }),
     id("nk-surface-gradient", "number", "Top-to-bottom light falloff on panels (0 = flat)", "0", { range: [0, 0.2] }),
     id("nk-surface-edge", "number", "Inner top highlight, the machined edge (alpha)", "0.06", { range: [0, 0.3] }),
-    id("nk-elevation", "keyword", "Shadow recipe of floating panels", "soft", { values: ["none", "soft", "deep"] }),
+    id("nk-elevation", "keyword", "Shadow recipe of floating panels: none, soft, deep, or hard (a solid offset drop, no blur; tokens 1.3)", "soft", { values: ["none", "soft", "deep", "hard"] }),
     id("nk-glow", "number", "Brand glow on active parts and HUD fills (alpha, 0 = off)", "0", { range: [0, 1] }),
     id("nk-density", "number", "Multiplies the kit's spacing scale: 0.875 compact (Graphite) \u2026 1.15 roomy", "0.875", { range: [0.75, 1.3] }),
     id("nk-ease", "cubicBezier", "The one easing curve", "cubic-bezier(0.2, 0.8, 0.2, 1)"),
@@ -740,6 +745,13 @@ var NuikitTheme = (() => {
   function identityValue(spec, raw) {
     var _a;
     const v = raw.trim();
+    if (spec.name === "nk-skew") {
+      if (v === "0") return "0deg";
+      const m = /^(-?\d*\.?\d+)deg$/.exec(v);
+      if (!m) return null;
+      const n2 = parseFloat(m[1]);
+      return Math.abs(n2) <= 20 ? `${trimNum(n2)}deg` : null;
+    }
     switch (spec.type) {
       case "number": {
         if (!NUM.test(v)) return null;
@@ -776,6 +788,7 @@ var NuikitTheme = (() => {
   var chromatic = (c2) => !!c2 && c2[3] > 0 && rgbToOklch(c2).c >= 0.06;
   function elevationShadow(level, s) {
     if (level === "none") return `0 0 0 0 rgba(${s}, 0)`;
+    if (level === "hard") return `0 0.25rem 0 0 rgba(${s}, 0.5)`;
     if (level === "deep")
       return `0 0 0 1px rgba(${s}, 0.3), 0 2px 4px rgba(${s}, 0.2), 0 18px 40px -10px rgba(${s}, 0.55), 0 44px 96px -28px rgba(${s}, 0.75)`;
     return `0 0 0 1px rgba(${s}, 0.25), 0 12px 32px -16px rgba(${s}, 0.6)`;

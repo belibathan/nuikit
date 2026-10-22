@@ -169,7 +169,7 @@ describe.each([
     expect(await ui.run(`return NUI.isOpen()`)).toBe(false);
   });
 
-  it("nuikit:ready resends state the page missed, plus the server theme", async () => {
+  it("nuikit:ready resends state the page missed, plus the server theme and the screen zones", async () => {
     client = await createClient();
     const ui = await client.start("ui", {
       before: `
@@ -180,7 +180,7 @@ describe.each([
     await ui.run(`H = NUI.surface('hud', { layer = 'hud' }) H:open()`);
     ui.messages.length = 0; // the page wasn't listening yet
     expect(await ui.call("nuikit:ready")).toMatchObject({ ok: true, resource: "ui" });
-    expect(ui.messages.map((m) => m.action)).toEqual(["nuikit:surfaces", "nuikit:theme", "nuikit:prefs"]);
+    expect(ui.messages.map((m) => m.action)).toEqual(["nuikit:surfaces", "nuikit:theme", "nuikit:prefs", "nuikit:zones"]);
     expect(ui.surfaces().hud.open).toBe(true);
   });
 

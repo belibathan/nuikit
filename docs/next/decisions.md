@@ -1,17 +1,21 @@
-# Owner decisions
+# Decisions
 
-Every open call that waits on the owner, with two options and a recommendation. Decided rows stay for the record.
-When one is decided, mark it, say where it landed, and remove it from `handoff.md`'s list.
+Design calls don't wait on the owner. Since Oct 22, 2026 they are settled by **the design rule**
+([`dispatch.md`](dispatch.md#the-design-rule-settles-design-questions)): hierarchical, the best option as the default,
+the alternative behind a config key, token or prop. Agents decide new ones the same way and log them here in one row.
+Only money, accounts, publishing and secrets go to the owner.
 
-| # | Decision | Option A | Option B | Recommendation | Status |
-|---|---|---|---|---|---|
-| 1 | `info` tone (sheets: `bench/visual/info-tone/`) | Follows `primary` (grey in the stock theme) | A fixed blue | A: one less colour to theme; identities that want blue set `--info` | Open |
-| 2 | Cancelling a progress from the keyboard | `nuikit_cancel` bound to **X** by default (`RegisterKeyMapping`, players can rebind) | No default key; a convar names it | A: matches ox_lib's habit; players can still rebind in settings | Open |
-| 3 | Weapon readout on the HUD | nuikit draws weapon glyphs | The inventory's item image through the resolver | B | **Decided: B** (item images via the resolver) |
-| 4 | HUD vitals shape | Rounded squares that follow the chip radius | Round dots | One vital-chip family that follows the identity | **Decided:** one vital-chip family |
-| 5 | ID card photo (`qbx_idcard`) | Small round avatar beside the fields | Full-height portrait, like a real licence | B: reads as a card at a glance; `nomugshot` keeps the silhouette | Open |
-| 6 | Reference exports (`bench/figma/reference/`) | JPEG q88 (~13 MB) | PNG (lossless, several times larger) | A: the Figma frames are the lossless source | Open |
-| 7 | qb-radialmenu adapter: vehicle doors, extras, seats | The adapter keeps them (its own clean implementation) | Dropped, with a doctor note | A: servers expect them from the menu; dropping them reads as a regression | Open |
-| 8 | Default targeted camera offset (`nk.camera`) | `{ y = 2.2, z = 0.6 }` for every target | Per kind: peds as now, vehicles further out (≈ `{ y = 5.5, z = 1.4 }`) | B, after the in-game look in `services.md` | Open |
-| 9 | Resume between claims of two resources | A cut (as now) | A blend (`duration` on resume) | A until the blend is spiked in game; a cut is honest and never shows a broken path | Open |
-| 10 | Death band (`nuikit_death` `Config.band`) | On by default | Off by default, opt-in | A: it is the reference look and keeps clear of qbx's own text; one line turns it off | Open |
+| # | Decision | Default (shipped) | Switch (the alternative) |
+|---|---|---|---|
+| 1 | `info` tone | Follows `primary` (grey in the stock theme) | `--info` in the identity/theme for a fixed colour |
+| 2 | Cancel a progress from the keyboard | `nuikit_cancel` on **X** (`RegisterKeyMapping`, players rebind) | convar `nuikit_cancel_key` (empty = no default key) |
+| 3 | Weapon readout on the HUD | The inventory's item image through the resolver | (decided earlier) |
+| 4 | HUD vitals shape | One vital-chip family that follows the identity | identity tokens |
+| 5 | ID card photo (`qbx_idcard`) | Full-height portrait | `Config.photo = 'avatar'` for the small round one |
+| 6 | Reference exports (`bench/figma/reference/`) | JPEG q88 | PNG when lossless is needed (Figma frames are the lossless source) |
+| 7 | qb-radialmenu adapter: vehicle doors, extras, seats | Kept (clean implementation) | adapter config to drop them, with a doctor note |
+| 8 | Targeted camera offset (`nk.camera`) | Per kind: peds as now, vehicles further out (≈ `{ y = 5.5, z = 1.4 }`) | `offset` per call, or one global offset in config |
+| 9 | Resume between two resources' camera claims | A cut | `duration` on resume for a blend, once spiked |
+| 10 | Death band (`nuikit_death` `Config.band`) | On | `Config.band = false` |
+
+Implementation of rows 2, 5, 7, 8 and 10 goes to the lane that owns the files (`dispatch.md`).

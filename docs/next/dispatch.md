@@ -1,153 +1,77 @@
-# Dispatch: parallel agents on the kit
+# Dispatch: many agents, one direction
 
-*How several coding agents work on nuikit at once without colliding. The lead session owns the platform
-(0.7, `docs/architecture.md`); agents own the lanes below. Status lives in [`../roadmap.md`](../roadmap.md).*
+*How the agents work on nuikit at once. Status: [`../roadmap.md`](../roadmap.md). Direction: [`../vision.md`](../vision.md).*
 
-## How work flows now (since Oct 21, 2026)
+## The stance (Oct 22, 2026)
 
-The lead (cloud session) runs the lanes as its own parallel agents. **Every branch starts from `main` and opens
-its PR into `main`**; the lead rebases, runs the gate and merges the same hour. The owner tests on his Qbox server
-from `main` (release zips or a `next/*` prerelease) and his findings come back as the next lane. There is no
-integration branch and no checkpoint freeze any more; `lead/next` and `next/combined` only mirror `main`.
+Nobody runs nuikit in production yet. **Speed beats polish.** Ship, break, fix. Many small agents moving the same
+direction produce the right whole; one agent deliberating produces nothing. When unsure, pick the option that keeps
+things **configurable** (see "The design rule") and move on. A wrong default costs one commit to change.
 
-**Speed rules (CLAUDE.md "How we work"):** ship then iterate; no screenshot sweeps or matrices; the gate is
-typecheck + build + sync + a POST diff for overrides; small commits; one line on what's unproven.
+- **Act, don't ask.** No owner questions for design calls: apply the design rule, ship the default, make it a setting.
+  Ask the owner only for money, accounts, publishing, secrets, or anything that touches a real server.
+- **Spend few tokens.** Read only the files your task touches; don't re-read the whole docs set per task. No
+  screenshot sweeps, matrices, long reports or speculative refactors. Grep before reading; read ranges, not files.
+- **Small PRs, many of them.** One item per PR; open it and start the next item. A broken `main` is fixed by the
+  next PR, not prevented by a slower one.
+- **Say what's unproven in one line** (usually "not seen in game") and move on.
 
-## Lead decisions log
+## The design rule (settles design questions)
 
-- Oct 20: `form-field` naming accepted; Blocks owns `create-nuikit/src` for `-t <block>`; `nuikit check` accepts
-  `nk.surface` / `nk.open`. Component requests (menu-row muted stepper tone, meter additions, speedometer on HUD
-  tokens, `countdown`) belong to the Components lane; site requests (`@theme` tokens, ThemePicker applying the
-  preset on load, `react-day-picker` if a calendar is wanted) to Blocks + site. One session per lane: a second
-  session on the same branch must stop.
+nuikit is a universal, open-source framework: great conventions, shortcuts and presets on top of a system where
+**everything can be configured and connected**. So every design question resolves the same way:
 
-## Every agent, before anything
+1. **Hierarchical:** identity → semantic tokens → component tokens → per-resource config → per-player prefs. A
+   value is set at the highest level that makes sense, and every lower level can override it.
+2. **Default + switch:** ship the best default (the recommended option), and put the alternative behind a config
+   key, a token or a prop. Never hard-code a choice a server might want different.
+3. **Conventions over options in the common path:** zero config gives the premium look; config is for the 20%.
 
-1. Read `CLAUDE.md`, then `docs/vision.md`, `docs/architecture.md`, `docs/design.md`, `docs/tokens.md`, and this file.
-2. nuikit is **the shared layer between scripts and screens on any FiveM server**. The kit is the default look
-   and the showcase. Rules: every step ships something useful on its own; test mechanisms before building on
-   them; be honest about what's unproven.
-3. Branch from `main` as `feat/<lane>`. Small PRs into `main`, often. Never push to `main`; the lead merges.
-4. Only touch the files your lane owns (table below). Need a change elsewhere (a token, a kit utility, Lua, a
-   shared component another lane owns)? Write it in your PR description under "Requests"; don't make it.
-5. Every PR: `pnpm typecheck && pnpm build:systems`, `pnpm sync` clean, the conformance gate
-   (`node packages/cli/dist/cli.js check … --level 3`, it's CI), tests where there's logic, and a POST-log diff
-   for an override's main flow. No screenshot sweeps.
-6. The owner tests in game from `main`; give him a 3-line checklist in the PR, nothing longer.
-7. Update your lane's row in `docs/roadmap.md` in each PR. Credit is `@belibathan` only. Never print or commit
-   secrets.
+## Roles
 
-## File ownership
-
-| Lane | Owns | Branch |
+| Role | Who | Does |
 |---|---|---|
-| Lead (platform) | `packages/core` (src, lua, intents, tokens), `packages/cli`, `packages/vite`, `systems/nuikit` (the runtime resource), `scripts/`, `docs/architecture.md` `protocol.md` `tokens.md` `host.md` | `feat/intents`, … |
-| Components | `registry/nuikit/ui/*`, `registry/nuikit/hooks/*`, `registry.json`, `apps/www/src/components.tsx` and component previews | `feat/components` |
-| Screens | `systems/nuikit_death`, `nuikit_loading`, `nuikit_chat`, `addons/*` **except** `addons/ox_inventory` | `feat/screens` |
-| Blocks + site | `registry/nuikit/blocks/*`, `packages/create-nuikit` (templates, `src/` for `-t <block>`, its build script; not `kit.css` / `index.css.tpl`), `apps/www` (except the components page) | `feat/blocks` |
-| Design (lead-run) | `docs/design/**`, `docs/design.md` (with the lead), the Figma design system ("nuikit — design system v2"); implementation of v2 goes through Components | `feat/design-*` |
-| Showcase | `systems/nuikit_pause`, `systems/nuikit_stress`, `addons/ox_inventory` | `feat/showcase` |
-| Design (lead) | `docs/design/`, identity tokens in `packages/core` compiler + `tokens/`, `index.css.tpl`, `kit.css`, `systems/nuikit_hud` | `feat/identity`, `feat/hud-v2` |
+| Lead | the session on the owner's PC | Direction, the lane list, reviews and merges every PR, deploys to the owner's server, the in-game loop |
+| Lane sessions | one per lane (below), each in its own worktree | Execute their list, open PRs, never merge |
+| Thinkers | subagents a lane spawns (`Plan`, `architect`, `Explore`) | Design or research one question, return a short answer; never edit |
+| Executors | subagents a lane spawns for independent pieces | Implement one piece in the lane's files |
 
-Shared and append-only: `registry.json` entries, `.changeset/*.md` (one file per PR). `packages/create-nuikit/kit.css`
-and `index.css.tpl` belong to the lead: propose new `nk-*` utilities under "Requests". Synced copies
-(`web/src/index.css`, `web/src/components/ui/*`, `lib/`) are never edited by hand: `pnpm sync`.
+The lane session is the integrator of its own subagents. Thinkers are for real unknowns only (a native's behaviour, an
+API shape); a spike beats a study.
 
-## Lane: Components (`feat/components`)
+## Every lane
 
-Finish and redesign the component set (`docs/next/blocks.md` Part B) **as the default renderers for the
-intents** (`docs/architecture.md` §2). In 0.7 each intent is drawn by these components, so their props should
-already carry every field the intent needs:
+1. `CLAUDE.md`, then only the docs your item needs.
+2. Branch from `main` (or your previous unmerged PR's branch, said in the PR body). PR into `main`. Never push to
+   `main` or `next/*`; never merge, release or publish. Never touch the FiveM server.
+3. Stay in your files (table). A change elsewhere goes under "Requests" in your PR body; small, obviously safe edits
+   to shared files (a token, a kit utility) are fine when the item can't ship without them: say so in the PR.
+4. Gate: `pnpm typecheck`, the build of what you touched, `pnpm sync` clean, `nuikit check` (CI), tests where there's
+   logic, a POST-log diff for an override's main flow. Changeset for user-facing package changes.
+5. PR body: what changed (bullets), what needs an in-game check (3 lines max), Requests.
+6. Update only your lane's rows in `docs/roadmap.md`. Credit `@belibathan` only. Never print or commit secrets.
+7. Done or blocked: end your turn with PR links, the in-game checks, what's blocked. The lead picks it up.
 
-| Intent | Component(s) | Props must cover |
-|---|---|---|
-| `notify` | `notice` (+ stack) | title, description, status (info/success/warning/error), icon, duration with a time-left line, position |
-| `menu` | `panel` + `menu-row` (shipped; extend) | items: icon, label, description, metadata rows, image, progress, disabled, submenu arrow, active |
-| `input` | `form-field` (not `field`: shadcn's `field` exists and a registry item of that name would overwrite it) | text, number, select, checkbox, slider, date, colour; label, hint, error, required, min/max |
-| `confirm` | `confirm` | title, body, cancel and confirm labels, destructive or primary |
-| `progress` | `meter` (shipped), `progress-ring` (new) | label, value or duration, cancellable, bar or circle |
-| `prompt` | `key-prompt` | keys, label, hold-to-confirm with progress, multiple prompts |
-| `target` | `menu-row` list near a point | options with icon, label, disabled |
-| `radial` | `radial-menu` (exists; redesign) | items, submenus, centre label |
-| `challenge` | `skill-check` (new) | zone size and position, speed, key, result |
+## Lanes and files
 
-Also from Part B: `item-slot`, `money`, `countdown`, `player-card`, `empty`. Supersede `key-hint`, `nui-toaster`,
-`task-progress` (keep them working, mark deprecated).
+| Lane | Owns |
+|---|---|
+| Lead / A (in-game) | merges, the owner's server, `docs/releases/*-test.md`, this file, `CLAUDE.md` |
+| B HUD | `systems/nuikit_hud`, the minimap part of `systems/nuikit/client.lua` |
+| C Platform + docs | `packages/core`, `packages/cli`, `packages/vite`, `systems/nuikit` (rest), `scripts/`, `bench/`, `docs/` (architecture, protocol, tokens, host, roadmap rewrite), `packages/create-nuikit/kit.css` + `index.css.tpl` |
+| D Screens + overrides | `systems/nuikit_death`, `nuikit_loading`, `nuikit_chat`, `addons/*` except `ox_inventory` |
+| E Kit + site | `registry/**`, `registry.json`, `packages/create-nuikit` (except kit.css/index.css.tpl), `apps/www` |
+| F Showcase | `systems/nuikit_pause`, `systems/nuikit_stress`, `addons/ox_inventory` |
 
-Bar: the **[component contract](../design/contract.md)** is the merge checklist (it marks what CI checks). In short:
-built from stock shadcn + kit utilities only; tokens only; rem not px; every state reachable from props
-(for screenshots and the site); keyboard and mouse; motion through `--nk-motion` (none when reduced); `data-slot`
-attributes; `cva` variants; tests where there's logic (countdown, money, skill-check timing, meter thresholds);
-each one on `/components` with all its states over a game scene. Premium, minimal, consistent with
-`systems/nuikit_pause` and `docs/design.md`.
+Append-only and shared: `registry.json` entries, `.changeset/*.md` (one file per PR). Synced copies (`web/src/index.css`,
+`web/src/components/ui/*`, `lib/`, `client/*.lua` copies) are never edited by hand: change the source, `pnpm sync`.
 
-Order: `notice`, `form-field`, `confirm`, `key-prompt`, `progress-ring` first (the intents need them), then the rest.
+## Hard rules that stay (they protect players and licences)
 
-## Lane: Screens (`feat/screens`)
-
-Rebuild the remaining screens on the shared components, where it simplifies them: `nuikit_death`,
-`nuikit_loading`, `nuikit_chat`, then the overrides in this order: **ox_lib** (it themes 40+ Qbox scripts),
-ox_target, Renewed-Banking, illenium-appearance, qbx_scoreboard, qbx_idcard, qbx_taxijob, qbx_vehiclesales,
-mm_radio.
-
-- Overrides are **clean-room** and **protocol-exact**: every POST payload and timing must match
-  `docs/<name>-protocol.md`, verified with Playwright POST logs before and after. Never copy upstream code,
-  markup or styles.
-- Use the components as Lane Components ships them (rebase on `main` after each merge); until a component
-  exists, keep the screen's current markup rather than building a private copy.
-- The ox_lib override's notify, menu, input, alert, progress, text UI and skill check are the first users of
-  the intent renderers: keep their structure close to the component props above so 0.7 can route ox_lib calls to
-  the shared renderers.
-
-## Lane: Blocks + site (`feat/blocks`)
-
-`docs/next/blocks.md` Parts C and D, plus the theme studio (Part 0 item 5):
-
-- Blocks (`registry/nuikit/blocks`, `registry:block`), each a full screen wired to typed NUI messages with
-  `dev.tsx` fixtures, built only from registry components, each also a `create-nuikit` template
-  (`npm create nuikit -- -t <block>`, with Lua using `@nuikit/init.lua` and `nk.surface`). Start with the blocks
-  the shipped components cover: `hud-minimal`, `pause-menu`, `death-screen`, `loading-screen`, `settings`,
-  `scoreboard`. Then the rest as components land.
-- Site: `/blocks` with live previews over a game scene, a theme switcher (TweakCN presets + paste your own),
-  the install command per block; theme studio (paste a theme or tweak tokens, see the kit update live, read the
-  contrast warnings from `compileTheme`, download `theme.css`).
-
-## Lane: Design (lead-run, with the owner as design lead)
-
-**The brief is [`docs/design/v2.md`](../design/v2.md)**: premium by default, unique by design. Identity tokens over three
-tiers (identity → semantic → component), four identities, and the flagship HUD/vehicle/map. Until step 3, other lanes
-keep building on the current kit and must not add new hard-coded looks: anything a server might want different goes
-through a token.
-
-Audit everything shipped (`docs/design/audit/`), research the quality bar of top FiveM servers by principle (never
-copy proprietary looks), define design language v2 in `docs/design.md`, and keep a Figma design system whose
-variables mirror `nuikit.tokens.json` 1:1. Reference screens for the flagships (HUD, pause, inventory, notifications,
-menus, death) become the target for every lane. Until v2 lands, Blocks does functional work and keeps visuals on the
-current kit; Components implements v2 when it's approved.
-
-## Server-authoritative checklist (every block or template with server Lua)
-
-A template is copied into real servers, so its example code must be safe as shipped:
-1. Never trust the page: prices, amounts, targets, grades, item names and IDs are looked up or recomputed on the
-   server; page-sent values are inputs to validate, never facts.
-2. Validate types and ranges (numbers are numbers, not "100"; integers where money is integer; hex colours,
-   enum values, string lengths).
-3. Check identity and permission on the server for every action (owner of the job, of the vehicle, the account).
-4. Check presence and distance on the server (OneSync coords) where the action is local; fail loudly at start if
-   OneSync is required and missing.
-5. Money and items move atomically: take, act, and roll back (refund, remove the spawned entity) on any failure.
-6. Rate-limit or serialize actions per player (one purchase at a time).
-7. Never send licenses or other identifiers to the page; use opaque IDs.
-8. Lua tests for each rule (wasmoon harness), including the failure paths.
-
-## Lane: Showcase (`feat/showcase`, the owner's existing agent)
-
-Pause, HUD and inventory: fix the 0.5.0 minimap restart quirk; keep the FPS budget (report numbers in PRs);
-move to the shared components as they land. The camera module stays self-contained: the lead moves it into the
-runtime as `nk.camera` (0.7 step 3), and the pause menu then calls that.
-
-## How the lead integrates
-
-Reviews each PR against this file and `CLAUDE.md`, merges into `main` in small batches, cuts one combined
-prerelease per batch for the owner's in-game test, and keeps `docs/roadmap.md` current. Conflicts outside a
-lane's files mean a rule was broken: the lane rebases and moves the change into "Requests".
+- Overrides are **clean-room** and **protocol-exact**: implement from `docs/<name>-protocol.md`, never copy upstream
+  code, markup or styles; POST payloads and timings match.
+- Chromium 103 rules in `CLAUDE.md`. Presentation only (no gameplay).
+- **Server-authoritative templates** (any block or template with server Lua is copied into real servers): never trust
+  the page (look up prices, amounts, targets, item names on the server); validate types and ranges; check identity,
+  permission, presence and distance on the server; move money and items atomically with rollback; rate-limit per
+  player; never send licenses or identifiers to the page; Lua tests for each rule including failure paths.

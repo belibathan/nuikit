@@ -1,6 +1,6 @@
 // The compact vehicle cluster (design v2 §4, reference screens): the speed big in the middle of a
 // small rpm arc with dimmed leading zeros (`0`40) and the unit under it, the gear as a chip under the
-// arc, a fuel line (icon, thin line, percentage) under the gauge, and the telltales as a narrow column
+// arc, fuel draining along the dial's right-hand curve (arc; digital and bar keep a fuel line), and the telltales as a narrow column
 // beside it, lit only when on. The identity's gauge style picks the drawing: `arc` (a thin arc that
 // fills with the rpm over faint ticks, red past the redline), `digital` (segmented ticks only, no
 // line) and `bar` (a rectangular plate: speed and unit, the gear chip beside them, a segmented rpm
@@ -11,9 +11,12 @@
 // arc's dash only when the rpm moved.
 import { FuelIcon } from "lucide-react";
 import { useRef, type ReactNode } from "react";
+import { Stagger, useStaggerItem } from "nuikit-core/react";
+import { TextRoll } from "@/components/ui/text-roll";
 import type { HudSettings, HudVehicle } from "../nui";
 import { Signal, type Painter, type Tell } from "./cluster";
 import type { GaugeStyle, HudLook } from "./look";
+import { calm, rollDigit } from "./reel";
 import { cardinal, setText, UNIT_LABEL } from "./util";
 
 const clamp01 = (v: number) => Math.max(0, Math.min(1, Number.isFinite(v) ? v : 0));
@@ -55,6 +58,19 @@ function arc(a0: number, a1: number, r: number) {
   return `M ${x0.toFixed(2)} ${y0.toFixed(2)} A ${r} ${r} 0 ${a1 - a0 > 180 ? 1 : 0} 1 ${x1.toFixed(2)} ${y1.toFixed(2)}`;
 }
 const ARC = arc(START, START + SWEEP, ARC_R);
+/** Fuel on the right-hand curve, just outside the rpm arc: drawn from empty (lower right) up to full. */
+const FUEL_R = ARC_R + 8;
+const FUEL_EMPTY = 128;
+const FUEL_FULL = 44;
+const FUEL_ARC = (() => {
+  const [x0, y0] = polar(FUEL_EMPTY, FUEL_R);
+  const [x1, y1] = polar(FUEL_FULL, FUEL_R);
+  return `M ${x0.toFixed(2)} ${y0.toFixed(2)} A ${FUEL_R} ${FUEL_R} 0 0 0 ${x1.toFixed(2)} ${y1.toFixed(2)}`;
+})();
+const FUEL_ICON_AT = polar(FUEL_EMPTY + 14, FUEL_R);
+
+/** Gears in order, for the roll direction: R, N, 1 to 8. */
+const GEAR_ORDER = (g: string) => (g === "R" ? -1 : g === "N" ? 0 : Number(g) || 0);
 
 export interface CompactProps {
   v: HudVehicle;
@@ -78,8 +94,9 @@ function Speed({ refs, start }: { refs: { current: (HTMLSpanElement | null)[] };
             refs.current[i] = el;
           }}
           data-dim={i < lead || undefined}
+          className="hud-reel"
         >
-          {digits[i]}
+          <span>{digits[i]}</span>
         </span>
       ))}
     </span>
@@ -95,11 +112,33 @@ function Center({ v, center, heading }: { v: HudVehicle; center: "gear" | "headi
       </span>
     );
   }
-  if (v.gear === undefined) return null;
+  return <Gear gear={v.gear} />;
+}
+
+/** The gear chip; the gear rolls up when shifting up and down when shifting down. */
+function Gear({ gear }: { gear: HudVehicle["gear"] }) {
+  const prev = useRef(gear);
+  const dir = useRef<"up" | "down">("up");
+  if (gear !== prev.current) {
+    dir.current = GEAR_ORDER(String(gear)) >= GEAR_ORDER(String(prev.current)) ? "up" : "down";
+    prev.current = gear;
+  }
+  if (gear === undefined) return null;
   return (
-    <span data-slot="hud-gear" data-gear={String(v.gear)} className="hud-num hud-c-gear" aria-label="Gear">
-      {v.gear}
+    <span data-slot="hud-gear" data-gear={String(gear)} className="hud-num hud-c-gear" aria-label="Gear">
+      <TextRoll value={String(gear)} direction={dir.current} align="center" />
     </span>
+  );
+}
+
+/** Fuel on the dial's right-hand curve: drains down along it, warning below the threshold. */
+function FuelArc({ fuel }: { fuel: number }) {
+  const low = fuel <= 15;
+  return (
+    <g data-slot="hud-fuel" data-low={low || undefined} className="hud-c-fuelarc" role="meter" aria-label="Fuel" aria-valuemin={0} aria-valuemax={100} aria-valuenow={fuel}>
+      <path d={FUEL_ARC} className="hud-c-fuelarc-track" />
+      <path d={FUEL_ARC} pathLength={100} strokeDasharray={`${fuel} 100`} className="hud-c-fuelarc-fill" />
+    </g>
   );
 }
 
@@ -118,14 +157,20 @@ function FuelLine({ fuel }: { fuel: number }) {
 }
 
 /** A painter that keeps the speed digits, the redline flag and the shared state. */
-function useSpeedPainter(root: { current: HTMLDivElement | null }, digits: { current: (HTMLSpanElement | null)[] }, heading: { current: HTMLSpanElement | null }) {
+function useSpeedPainter(
+  root: { current: HTMLDivElement | null },
+  digits: { current: (HTMLSpanElement | null)[] },
+  heading: { current: HTMLSpanElement | null },
+  hz = 10,
+) {
   const state = useRef({ lit: -1, red: false, speed: "", lead: -1, dash: "" });
-  const speed = (s: number) => {
+  const paintSpeed = (s: number) => {
     const { digits: d, lead } = speedDigits(s);
     if (d === state.current.speed) return;
-    state.current.speed = d;
     const els = digits.current;
-    for (let i = 0; i < 3; i++) setText(els[i], d[i]!);
+    const dir: 1 | -1 = Number(d) >= Number(state.current.speed || 0) ? 1 : -1;
+    for (let i = 0; i < 3; i++) rollDigit(els[i] ?? null, d[i]!, dir);
+    state.current.speed = d;
     if (lead !== state.current.lead) {
       state.current.lead = lead;
       for (let i = 0; i < 3; i++) els[i]?.toggleAttribute("data-dim", i < lead);
@@ -138,6 +183,11 @@ function useSpeedPainter(root: { current: HTMLDivElement | null }, digits: { cur
     }
   };
   const head = (h: number) => setText(heading.current, `${Math.round(h) % 360}° ${cardinal(h)}`);
+  // what the number shows is calm: smoothed (~120 ms), at most `hz` changes a second, and a ±1 jitter at a
+  // steady speed never rolls (vehicle.speedRate)
+  const gate = useRef<ReturnType<typeof calm> | null>(null);
+  if (!gate.current) gate.current = calm({ hz, tau: 120, step: 1 }, (v) => paintSpeed(v));
+  const speed = (s: number) => gate.current!.feed(s);
   return { state, speed, redline, head };
 }
 
@@ -152,7 +202,7 @@ function CompactArc({ v, look, settings, paint, center, style }: CompactProps) {
   const fill = useRef<SVGPathElement>(null);
   const digits = useRef<(HTMLSpanElement | null)[]>([]);
   const heading = useRef<HTMLSpanElement>(null);
-  const p = useSpeedPainter(root, digits, heading);
+  const p = useSpeedPainter(root, digits, heading, settings.speedRate);
   const redline = v.redline;
   const showRpm = settings.rpm !== false;
   const digital = style === "digital";
@@ -210,7 +260,13 @@ function CompactArc({ v, look, settings, paint, center, style }: CompactProps) {
           <g ref={ticks} className="hud-c-ticks">
             {marks}
           </g>
+          {fuel !== undefined && !digital && <FuelArc fuel={fuel} />}
         </svg>
+        {fuel !== undefined && !digital && (
+          <span className="hud-c-fuelarc-icon" data-low={fuel <= 15 || undefined} style={{ left: `${(FUEL_ICON_AT[0] / VB) * 100}%`, top: `${(FUEL_ICON_AT[1] / VB) * 100}%` }} aria-hidden>
+            <FuelIcon />
+          </span>
+        )}
         {signals && (
           <>
             <span className="hud-c-signal" data-side="left">
@@ -223,13 +279,13 @@ function CompactArc({ v, look, settings, paint, center, style }: CompactProps) {
         )}
         <div className="hud-c-readout">
           <Speed refs={digits} start={v.speed} />
-          <span className="hud-unit hud-c-unit">{UNIT_LABEL[v.units]}</span>
+          <TextRoll className="hud-unit hud-c-unit" value={UNIT_LABEL[v.units]} align="center" />
         </div>
         <div className="hud-c-center">
           <Center v={v} center={center} heading={heading} />
         </div>
       </div>
-      {fuel !== undefined && <FuelLine fuel={fuel} />}
+      {fuel !== undefined && digital && <FuelLine fuel={fuel} />}
     </div>
   );
 }
@@ -242,7 +298,7 @@ function CompactBar({ v, settings, paint, center }: CompactProps) {
   const segs = useRef<HTMLSpanElement>(null);
   const digits = useRef<(HTMLSpanElement | null)[]>([]);
   const heading = useRef<HTMLSpanElement>(null);
-  const p = useSpeedPainter(root, digits, heading);
+  const p = useSpeedPainter(root, digits, heading, settings.speedRate);
   const redline = v.redline;
   const showRpm = settings.rpm !== false;
   const fuel = settings.fuel !== false && v.fuel !== undefined ? Math.max(0, Math.min(100, Math.round(v.fuel))) : undefined;
@@ -274,7 +330,7 @@ function CompactBar({ v, settings, paint, center }: CompactProps) {
         )}
         <div className="hud-c-readout">
           <Speed refs={digits} start={v.speed} />
-          <span className="hud-unit hud-c-unit">{UNIT_LABEL[v.units]}</span>
+          <TextRoll className="hud-unit hud-c-unit" value={UNIT_LABEL[v.units]} align="center" />
         </div>
         <div className="hud-c-center">
           <Center v={v} center={center} heading={heading} />
@@ -297,17 +353,25 @@ function CompactBar({ v, settings, paint, center }: CompactProps) {
   );
 }
 
-/** The telltales as a narrow column: only the lit ones, stacked from the bottom. */
+/** The telltales as a narrow column, stacked from the bottom: the lit ones show, easing in and out. */
 export function TelltaleColumn({ items }: { items: Tell[] }) {
-  const lit = items.filter((t) => t.on);
   return (
-    <div data-slot="hud-telltales" className="hud-c-tells">
-      {lit.map((t) => (
-        <span key={t.key} data-slot="hud-telltale" data-key={t.key} data-on data-tone={t.tone} className="hud-c-tell" aria-label={t.label}>
-          {t.icon}
-          {t.text && <span className="hud-num hud-c-tell-text">{t.text}</span>}
-        </span>
-      ))}
-    </div>
+    <Stagger step={35} budget={200}>
+      <div data-slot="hud-telltales" className="hud-c-tells">
+        {items.map((t) => (
+          <Telltale key={t.key} t={t} />
+        ))}
+      </div>
+    </Stagger>
+  );
+}
+
+function Telltale({ t }: { t: Tell }) {
+  const stagger = useStaggerItem<HTMLSpanElement>(!!t.on);
+  return (
+    <span ref={stagger} data-slot="hud-telltale" data-key={t.key} data-on={t.on || undefined} data-tone={t.tone} className="hud-c-tell" aria-label={t.label} aria-hidden={!t.on}>
+      {t.icon}
+      {t.text && <span className="hud-num hud-c-tell-text">{t.text}</span>}
+    </span>
   );
 }

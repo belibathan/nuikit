@@ -63,3 +63,36 @@ html[data-nk-motion="off"] [class*="nk-fa-"],
 html[data-nk-motion="reduced"] [class*="nk-fa-"] {
   animation: none;
 }
+
+/* ───────────────────────────── notices (renderers/notify.tsx)
+   Each notice slides in from its stack's edge and fades, on the sheets' ladder (panel time x 2.2, at
+   most 360ms, ease-out), and slides back out toward that edge when it ends (x 1.4, at most 200ms,
+   ease-in) before it is removed; the stack's flip then glides the others into the gap. The motion is
+   on the notice, the flip on its wrapper, so the two transforms never fight. */
+[data-slot="notice-stack"][data-position$="right"] { --ntf-x: 1.5rem; }
+[data-slot="notice-stack"][data-position$="left"] { --ntf-x: -1.5rem; }
+[data-slot="notice-stack"][data-position="top-center"] { --ntf-y: -0.75rem; }
+[data-slot="notice-stack"][data-position="bottom-center"] { --ntf-y: 0.75rem; }
+.ntf-item > [data-slot="notice"] {
+  animation: ntf-in min(calc(var(--nk-time) * 2.2), 360ms) var(--nk-ease-out, cubic-bezier(0.16, 1, 0.3, 1)) both;
+  animation-delay: var(--nk-stagger-delay, 0ms);
+}
+.ntf-item[data-leaving] > [data-slot="notice"] {
+  animation: ntf-out min(calc(var(--nk-time) * 1.4), 200ms) var(--nk-ease-in, cubic-bezier(0.4, 0, 1, 1)) both;
+}
+html[data-nk-motion="reduced"] [data-slot="notice-stack"] {
+  --ntf-x: 0rem;
+  --ntf-y: 0rem;
+}
+@keyframes ntf-in {
+  from {
+    opacity: 0;
+    transform: translate3d(var(--ntf-x, 0rem), var(--ntf-y, 0rem), 0) scale(0.98);
+  }
+}
+@keyframes ntf-out {
+  to {
+    opacity: 0;
+    transform: translate3d(var(--ntf-x, 0rem), var(--ntf-y, 0rem), 0) scale(0.98);
+  }
+}

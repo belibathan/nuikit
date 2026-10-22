@@ -1,5 +1,6 @@
 import { Eye } from "lucide-react";
 import { Fragment, useEffect, useRef, useState } from "react";
+import { Stagger } from "nuikit-core/react";
 import { MenuRow } from "@/components/ui/menu-row";
 import { Panel, PanelBody } from "@/components/ui/panel";
 import { Separator } from "@/components/ui/separator";
@@ -8,6 +9,24 @@ import { post, useTargetMessages } from "@/lib/nui";
 import { selectPayload, toGroups, type Group, type Row } from "@/lib/options";
 import { loadServerTheme } from "@/lib/theme";
 import { cn } from "@/lib/utils";
+
+/** How long the eye and the list stay drawn for their exits (app.css: tgt-eye-out, tgt-panel-out). */
+const EYE_EXIT_MS = 160;
+const LIST_EXIT_MS = 160;
+
+/** true while `on`, and for `ms` after it turns off (so the leaving element can play its exit). */
+function useLinger(on: boolean, ms: number): boolean {
+  const [drawn, setDrawn] = useState(on);
+  useEffect(() => {
+    if (on) {
+      setDrawn(true);
+      return;
+    }
+    const t = setTimeout(() => setDrawn(false), ms);
+    return () => clearTimeout(t);
+  }, [on, ms]);
+  return on || drawn;
+}
 
 /** Rows by content, so an identical `setTarget` (Lua resends on every hide flip) changes nothing. */
 const signature = (groups: Group[]) => JSON.stringify(groups.map((g) => g.rows.map((r) => [r.key, r.option.label, r.option.icon, r.option.iconColor])));
@@ -66,14 +85,22 @@ export default function App() {
     void post("select", selectPayload(row));
   };
 
-  if (!visible) return null;
+  // Exits (app.css): the eye stays drawn for its shrink when targeting stops, and the last list for
+  // its tuck back into the eye when the aim leaves a target. Nothing takes clicks while it leaves.
+  const eyeDrawn = useLinger(visible, EYE_EXIT_MS);
   const active = groups.length > 0;
+  const lastGroups = useRef<Group[]>([]);
+  if (active) lastGroups.current = groups;
+  const listDrawn = useLinger(active && visible, LIST_EXIT_MS);
+  if (!eyeDrawn) return null;
+  const shownGroups = active ? groups : lastGroups.current;
+  const listLeaving = !active || !visible;
 
   return (
     <div className="pointer-events-none fixed inset-0 select-none">
       {/* The eye: a HUD mark on the game (rule 8). Idle it's a small, quiet chip; when something is
           targetable it locks on: the chip fills with the brand and a reticle closes in around it. */}
-      <div aria-hidden data-slot="target-eye" data-lock={active || undefined} className="tgt-eye">
+      <div aria-hidden data-slot="target-eye" data-lock={(active && visible) || undefined} data-leaving={!visible || undefined} className="tgt-eye">
         <span className="tgt-eye-chip">
           <Eye />
         </span>
@@ -87,24 +114,27 @@ export default function App() {
         )}
       </div>
 
-      {active && (
+      {listDrawn && (
         // The `target` intent's renderer: a Panel of MenuRows beside the eye (16px gap), its first
         // row centred on it (nk-first-row). Rows are the pause menu's: 48px, hairlines between them,
         // the identity's indicator on the lit row. While inert, the rows' own `inert` switches every
         // hover style off: CEF can keep :hover matching after a click drops focus.
         <>
-          <span aria-hidden className="tgt-leader" />
+          <span aria-hidden data-leaving={listLeaving || undefined} className="tgt-leader" />
           <Panel
             key={session}
             size="auto"
             role="menu"
+            animate={false}
+            data-leaving={listLeaving || undefined}
             className={cn(
               "tgt-panel nk-first-row absolute top-1/2 left-1/2 ml-8 max-w-96 min-w-64",
-              inert ? "pointer-events-none" : "pointer-events-auto",
+              inert || listLeaving ? "pointer-events-none" : "pointer-events-auto",
             )}
           >
             <PanelBody className="gap-0">
-              {groups.map((group, gi) => (
+              <Stagger budget={200}>
+              {shownGroups.map((group, gi) => (
                 <Fragment key={group.key}>
                   {gi > 0 && <Separator className="tgt-group-rule" />}
                   <div className="tgt-group flex flex-col">
@@ -130,6 +160,7 @@ export default function App() {
                   </div>
                 </Fragment>
               ))}
+              </Stagger>
             </PanelBody>
           </Panel>
         </>

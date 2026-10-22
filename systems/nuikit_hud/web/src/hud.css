@@ -53,6 +53,7 @@
 
 .hud-num {
   font-family: var(--hud-font-num);
+  font-style: var(--nk-display-style, normal);
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.02em;
 }
@@ -136,28 +137,63 @@
   --hud-vchip-gap: 0.5rem;
 }
 .hud-vchip {
+  position: relative;
   flex: none;
   display: flex;
+  transform: none;
   max-width: 24rem;
   opacity: 1;
   transition:
     opacity var(--hud-ms) ease-out,
     max-width var(--hud-ms) ease-out,
-    margin var(--hud-ms) ease-out;
+    margin var(--hud-ms) ease-out,
+    transform var(--hud-ms) cubic-bezier(0.2, 0.8, 0.2, 1);
 }
-/* hidden: fade and fold away so the row closes up (the gap goes with it) */
+/* each chip sits over the one to its right, so a chip that folds away slides under its left neighbour */
+.hud-vitals-row > .hud-vchip:nth-child(1) { z-index: 9; }
+.hud-vitals-row > .hud-vchip:nth-child(2) { z-index: 8; }
+.hud-vitals-row > .hud-vchip:nth-child(3) { z-index: 7; }
+.hud-vitals-row > .hud-vchip:nth-child(4) { z-index: 6; }
+.hud-vitals-row > .hud-vchip:nth-child(5) { z-index: 5; }
+.hud-vitals-row > .hud-vchip:nth-child(6) { z-index: 4; }
+.hud-vitals-row > .hud-vchip:nth-child(7) { z-index: 3; }
+/* hidden: it folds into its neighbour (slides left, shrinks, tucks under it) and the row closes up with
+   it; vitals that go together go in sequence, the last first (<Stagger>), so nothing just vanishes */
 .hud-vchip:not([data-shown]) {
   overflow: hidden;
   opacity: 0;
   max-width: 0;
   margin-left: calc(var(--hud-vchip-gap) * -1);
-  transition-duration: calc(320ms * var(--nk-motion, 1));
-  transition-timing-function: ease-in;
+  transform: translateX(-45%) scale(0.82);
+  transition-duration: calc(300ms * var(--nk-motion, 1));
+  transition-timing-function: cubic-bezier(0.4, 0, 0.6, 1);
+}
+:is(html, *)[data-nk-motion="reduced"] .hud-vchip {
+  transform: none;
+  transition-property: opacity, max-width, margin;
+}
+/* talking: the accent fills the chip from the bottom up, the ink eases with it */
+.hud-vchip {
+  --nk-chip-active-fill: var(--hud-accent);
+}
+.hud-vchip [data-slot="vital-chip-activefill"] {
+  transform-box: fill-box;
+  transform-origin: center bottom;
+  transform: scaleY(0);
+  transition: transform calc(220ms * var(--nk-motion, 1)) cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.hud-vchip [data-slot="vital-chip-shape"] {
+  transition: color calc(220ms * var(--nk-motion, 1)) ease-out;
+}
+.hud-vchip[data-active] [data-slot="vital-chip-activefill"] {
+  transform: scaleY(1);
 }
 .hud-vchip[data-active] {
-  --nk-chip-bg: var(--hud-accent);
   --nk-chip-fg: var(--hud-accent-foreground);
   --nk-chip-track: transparent;
+}
+:is(html, *)[data-nk-motion="reduced"] .hud-vchip [data-slot="vital-chip-activefill"] {
+  transition: none;
 }
 /* past its threshold: the whole outline takes the vital's colour (outline level) */
 .hud-vchip[data-critical] {
@@ -1037,18 +1073,19 @@
   inset: 0;
   overflow: visible;
 }
+/* --nk-ring-band (the dark outer band) and --nk-ring-stroke (the inner ring) are optional theme tokens */
 .hud-map-halo {
   fill: none;
-  stroke: var(--scrim);
-  stroke-opacity: calc(var(--hud-plate-opacity) * 0.6);
+  stroke: var(--nk-ring-band, var(--scrim));
+  stroke-opacity: var(--nk-ring-band-opacity, calc(var(--hud-plate-opacity) * 0.6));
 }
 .hud-map-ring {
   fill: none;
-  stroke: var(--hud-fg);
+  stroke: var(--nk-ring-stroke, var(--hud-fg));
   stroke-opacity: 0.88;
 }
 .hud-map-tick {
-  stroke: var(--hud-fg);
+  stroke: var(--nk-ring-stroke, var(--hud-fg));
   stroke-width: 1.25;
   stroke-linecap: round;
   stroke-opacity: 0.6;
@@ -1060,6 +1097,8 @@
 }
 .hud-map-heading {
   position: absolute;
+  display: flex;
+  white-space: pre;
   transform: translateX(-50%);
   font-size: 0.875rem;
   line-height: 1;
@@ -1089,6 +1128,33 @@
   background-color: var(--hud-accent);
   color: var(--hud-accent-foreground);
   box-shadow: none;
+}
+/* skewed identities: cardinals as small skewed tags, N a light one (the band carries them) */
+:is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"]) .hud-map-cardinal {
+  border-radius: 0;
+  background-color: transparent;
+  box-shadow: none;
+  font-style: var(--nk-display-style, normal);
+  font-size: 0.75rem;
+}
+:is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"]) .hud-map-cardinal[data-north] {
+  background-color: transparent;
+  color: var(--hud-solid);
+  isolation: isolate;
+}
+/* N as a compass needle: a slim diamond on the ring, its outer point aiming out from the centre */
+:is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"]) .hud-map-cardinal[data-north]::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 0.875rem;
+  height: 0.875rem;
+  margin: -0.4375rem 0 0 -0.4375rem;
+  z-index: -1;
+  background-color: var(--nk-ring-stroke, var(--hud-fg));
+  box-shadow: 0 0 0 1px rgba(var(--scrim-rgb), 0.35);
+  transform: rotate(var(--hud-at, 0deg)) translateY(-0.125rem) scale(0.8, 1.45) rotate(45deg);
 }
 .hud-map-tag {
   position: absolute;
@@ -1351,6 +1417,8 @@
 }
 .hud-c-arc-fill {
   stroke: var(--hud-fill);
+  /* the shift light eases in and out (the dash itself follows the rpm frame by frame) */
+  transition: stroke calc(140ms * var(--nk-motion, 1)) ease-out;
 }
 .hud-c-gauge[data-redline] .hud-c-arc-fill {
   stroke: var(--hud-redline);
@@ -1385,6 +1453,55 @@
 }
 .hud-c-speed > [data-dim] {
   opacity: 0.26;
+}
+/* a digit reel: glyphs stacked, the window clips the roll (vertical only) */
+.hud-reel {
+  display: inline-grid;
+  /* clip y only: italic glyphs overhang their box sideways */
+  clip-path: inset(0 -0.5em);
+  padding: 0.08em 0;
+  margin: -0.08em 0;
+  transition: opacity calc(160ms * var(--nk-motion, 1)) ease-out;
+}
+.hud-reel > span {
+  grid-area: 1 / 1;
+}
+/* fuel on the dial's right-hand curve */
+.hud-c-fuelarc-track,
+.hud-c-fuelarc-fill {
+  fill: none;
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+.hud-c-fuelarc-track {
+  stroke: var(--hud-track);
+}
+.hud-c-fuelarc-fill {
+  stroke: var(--hud-fg);
+  stroke-opacity: 0.9;
+  transition:
+    stroke-dasharray calc(400ms * var(--nk-motion, 1)) ease-out,
+    stroke calc(200ms * var(--nk-motion, 1)) ease-out;
+}
+.hud-c-fuelarc[data-low] .hud-c-fuelarc-fill {
+  stroke: var(--warning);
+  stroke-opacity: 1;
+}
+.hud-c-fuelarc-icon {
+  position: absolute;
+  display: flex;
+  color: var(--hud-fg);
+  opacity: 0.7;
+  transform: translate(-50%, -50%);
+  transition: color calc(200ms * var(--nk-motion, 1)) ease-out;
+}
+.hud-c-fuelarc-icon svg {
+  width: 0.75rem;
+  height: 0.75rem;
+}
+.hud-c-fuelarc-icon[data-low] {
+  color: var(--warning);
+  opacity: 1;
 }
 .hud-c-unit {
   margin-top: 0.1875rem;
@@ -1583,6 +1700,15 @@
   width: 1.75rem;
 }
 .hud-c-tell {
+  overflow: hidden;
+  max-height: 3rem;
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity calc(180ms * var(--nk-motion, 1)) ease-out,
+    transform calc(180ms * var(--nk-motion, 1)) ease-out,
+    max-height calc(180ms * var(--nk-motion, 1)) ease-out,
+    margin calc(180ms * var(--nk-motion, 1)) ease-out;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1595,6 +1721,14 @@
   background-color: var(--hud-chip-bg);
   box-shadow: inset 0 0 0 1px var(--hud-hairline);
   text-shadow: none;
+}
+.hud-c-tell:not([data-on]) {
+  max-height: 0;
+  min-height: 0;
+  padding: 0;
+  margin-top: -0.3125rem;
+  opacity: 0;
+  transform: scale(0.8);
 }
 .hud-c-tell svg {
   width: 0.9375rem;
@@ -1611,6 +1745,61 @@
 .hud-c-tell[data-tone="destructive"] { color: var(--destructive); }
 
 /* ───────────────────────────── motion */
+
+/* Entrance and exit (App.tsx, Side): the HUD moves as one. Each edge's layer slides toward its edge and
+   fades, all from the same frame on the same curve: in when the HUD opens or a menu over it closes, out
+   the moment it closes or a menu hides it (the surface keeps it drawn 250ms for this). The map layer
+   only fades in and cuts out, with GTA's radar, which can't slide (main.lua hides it on the same beat). */
+.hud-side {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  animation: hud-side-in calc(280ms * var(--nk-motion, 1)) var(--nk-ease-out, cubic-bezier(0.16, 1, 0.3, 1)) both;
+}
+.hud-side[data-side="left"] {
+  --hud-side-x: -2.5rem;
+}
+.hud-side[data-side="right"] {
+  --hud-side-x: 2.5rem;
+}
+.hud-side[data-side="top"] {
+  --hud-side-y: -1.5rem;
+}
+html[data-nk-motion="reduced"] .hud-side {
+  --hud-side-x: 0;
+  --hud-side-y: 0;
+}
+[data-surface="hud"][data-closing] .hud-side {
+  animation: hud-side-out calc(200ms * var(--nk-motion, 1)) var(--nk-ease-in, cubic-bezier(0.4, 0, 1, 1)) both;
+}
+.hud-side[data-side="map"] {
+  animation: none;
+}
+/* the ring mounts when the radar shows (Lua's hud:minimap), so it fades in on its own mount */
+.hud-side[data-side="map"] > * {
+  animation: hud-map-in calc(200ms * var(--nk-motion, 1)) var(--nk-ease-out, ease-out) both;
+}
+[data-surface="hud"][data-closing] .hud-side[data-side="map"] {
+  animation: none;
+  opacity: 0;
+}
+@keyframes hud-side-in {
+  from {
+    opacity: 0;
+    transform: translate3d(var(--hud-side-x, 0), var(--hud-side-y, 0), 0);
+  }
+}
+@keyframes hud-side-out {
+  to {
+    opacity: 0;
+    transform: translate3d(var(--hud-side-x, 0), var(--hud-side-y, 0), 0);
+  }
+}
+@keyframes hud-map-in {
+  from {
+    opacity: 0;
+  }
+}
 
 @keyframes hud-blink {
   50% {

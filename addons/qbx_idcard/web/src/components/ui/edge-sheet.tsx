@@ -5,6 +5,8 @@ import * as React from "react"
 
 import { ChevronLeftIcon, XIcon } from "lucide-react"
 
+import { Stagger } from "nuikit-core/react"
+
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
@@ -108,7 +110,7 @@ function EdgeSheet({
         onCloseAutoFocus={keep}
         onInteractOutside={keep}
         onEscapeKeyDown={modal ? undefined : keep}
-        style={{ "--edge-sheet-width": width, "--edge-sheet-delay": `${delay}ms`, animationDelay: "calc(var(--edge-sheet-delay) * var(--nk-motion, 1))", ...style } as React.CSSProperties}
+        style={{ "--edge-sheet-width": width, "--edge-sheet-delay": `${delay}ms`, ...style } as React.CSSProperties}
         data-variant={variant}
         className={cn(
           "z-40 w-(--edge-sheet-width) max-w-none gap-0 sm:max-w-none",
@@ -122,13 +124,18 @@ function EdgeSheet({
                   ? "border-r-(length:--nk-border) bg-[linear-gradient(90deg,rgba(var(--scrim-rgb),0.22)_0%,rgba(var(--scrim-rgb),0)_70%)]"
                   : "border-l-(length:--nk-border) bg-[linear-gradient(270deg,rgba(var(--scrim-rgb),0.22)_0%,rgba(var(--scrim-rgb),0)_70%)]"
               ),
-          // motion: the ladder, never raw ms; exits faster, eases in
+          // motion: the ladder, never raw ms; exits faster, eases in. A staggered sheet holds its first
+          // frame (off-screen) through the delay: without the fill it drew in place for the delay, then
+          // jumped out and slid in (a blink, then a second entrance). The exit never waits.
           "data-[state=open]:duration-[min(calc(var(--nk-time)*2.2),360ms)] data-[state=open]:ease-(--nk-ease-out)",
+          "data-[state=open]:[animation-delay:calc(var(--edge-sheet-delay)*var(--nk-motion,1))] data-[state=open]:[animation-fill-mode:both]",
           "data-[state=closed]:duration-[min(calc(var(--nk-time)*1.4),200ms)] data-[state=closed]:ease-(--nk-ease-in,ease-in)",
           className
         )}
         {...props}
       >
+        {/* its rows, slots and cards enter in sequence when it opens and fold out (last first) when it closes */}
+        <Stagger on={open !== false} budget={300}>
         <div
           key={page}
           data-slot="edge-sheet-column"
@@ -167,6 +174,7 @@ function EdgeSheet({
           <EdgeSheetEdge value={meter} danger={meterDanger} />
           {children}
         </div>
+        </Stagger>
       </SheetContent>
     </Sheet>
   )

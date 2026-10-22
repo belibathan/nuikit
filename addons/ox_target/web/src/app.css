@@ -26,35 +26,56 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  /* holding the eye key: it springs in from the centre; letting go: it shrinks away */
+  animation: tgt-eye-in calc(var(--nk-time) * 1.8) var(--tgt-spring) both;
 }
+.tgt-eye[data-leaving] {
+  animation: tgt-eye-out min(calc(var(--nk-time) * 1.1), 160ms) var(--nk-ease-in, cubic-bezier(0.4, 0, 1, 1)) both;
+}
+/* One size, scaled: idle is the small quiet chip, lock-on springs it to full size and fills it with
+   the brand (a size change can't ease smoothly, a scale can). */
 .tgt-eye-chip {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 1.5rem;
-  height: 1.5rem;
+  width: 2rem;
+  height: 2rem;
   border-radius: var(--nk-chip-radius);
   clip-path: var(--nk-chip-clip);
   background-color: var(--nk-chip-bg);
   color: var(--nk-chip-fg);
   box-shadow: inset 0 0 0 var(--nk-border) rgba(var(--hud-foreground-rgb), 0.12);
+  transform: scale(0.75);
+  transition:
+    transform calc(var(--nk-time) * 1.6) var(--tgt-spring),
+    background-color var(--nk-time) var(--nk-ease-out),
+    color var(--nk-time) var(--nk-ease-out),
+    box-shadow var(--nk-time) var(--nk-ease-out);
 }
 .tgt-eye-chip svg {
-  width: 0.875rem;
-  height: 0.875rem;
+  width: 1.125rem;
+  height: 1.125rem;
   opacity: 0.7;
+  transition: opacity var(--nk-time) var(--nk-ease-out);
 }
 [data-lock] > .tgt-eye-chip {
-  width: 2rem;
-  height: 2rem;
+  transform: none;
   background-color: var(--nk-row-fill-color);
   color: var(--nk-row-fill-foreground);
   box-shadow: var(--nk-chip-glow);
 }
 [data-lock] > .tgt-eye-chip svg {
-  width: 1rem;
-  height: 1rem;
   opacity: 1;
+}
+:root {
+  /* a short overshoot: the eye and the lock-on settle like a spring (cubic-bezier only, Chromium 103) */
+  --tgt-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes tgt-eye-in {
+  from { opacity: 0; transform: scale(0.4); }
+}
+@keyframes tgt-eye-out {
+  to { opacity: 0; transform: scale(0.6); }
 }
 
 /* The reticle: four corner marks just outside the chip, in the brand. Closes in once per lock-on. */
@@ -91,7 +112,48 @@ html[data-nk-motion="reduced"] .tgt-reticle {
   height: var(--nk-border);
   background-color: var(--nk-row-fill-color);
   opacity: 0.7;
-  animation: nk-enter var(--nk-time) var(--nk-ease-out) both;
+  /* drawn out of the eye, then the list slides out along it */
+  transform-origin: left center;
+  animation: tgt-leader-in var(--nk-time) var(--nk-ease-out) both;
+}
+.tgt-leader[data-leaving] {
+  animation: tgt-leader-out min(var(--nk-time), 120ms) var(--nk-ease-in, ease-in) both;
+}
+@keyframes tgt-leader-in {
+  from { opacity: 0; transform: scaleX(0); }
+}
+@keyframes tgt-leader-out {
+  to { opacity: 0; transform: scaleX(0); }
+}
+
+/* The list slides out of the eye (from its left, a little scaled) once the leader has reached it, and
+   tucks back toward the eye when the aim leaves the target. Its rows still stagger in (<Stagger>). */
+.tgt-panel {
+  transform-origin: left center;
+  animation: tgt-panel-in min(calc(var(--nk-time) * 2.2), 320ms) var(--nk-ease-out, cubic-bezier(0.16, 1, 0.3, 1)) both;
+  animation-delay: calc(var(--nk-time) * 0.5 * var(--nk-motion, 1));
+}
+.tgt-panel[data-leaving] {
+  animation: tgt-panel-out min(calc(var(--nk-time) * 1.1), 160ms) var(--nk-ease-in, cubic-bezier(0.4, 0, 1, 1)) both;
+}
+@keyframes tgt-panel-in {
+  from { opacity: 0; transform: translate3d(-0.75rem, 0, 0) scale(0.97); }
+}
+@keyframes tgt-panel-out {
+  to { opacity: 0; transform: translate3d(-0.5rem, 0, 0) scale(0.98); }
+}
+html[data-nk-motion="reduced"] .tgt-eye,
+html[data-nk-motion="reduced"] .tgt-panel,
+html[data-nk-motion="reduced"] .tgt-leader {
+  animation-name: nk-enter;
+}
+html[data-nk-motion="reduced"] .tgt-eye[data-leaving],
+html[data-nk-motion="reduced"] .tgt-panel[data-leaving],
+html[data-nk-motion="reduced"] .tgt-leader[data-leaving] {
+  animation-name: nk-fade-out;
+}
+html[data-nk-motion="reduced"] .tgt-eye-chip {
+  transition-property: background-color, color, box-shadow;
 }
 
 /* The list: the pause menu rows (48px, a hairline between rows, a full rule between groups). */

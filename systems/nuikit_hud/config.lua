@@ -5,8 +5,8 @@ Config = {
   units = 'mph',
   playerUnits = true,
 
-  -- Show GTA's radar: 'vehicle' (only while in a vehicle), 'always' or 'never'.
-  radar = 'vehicle',
+  -- Show GTA's radar: 'always' (on foot too), 'vehicle' (only while in a vehicle) or 'never'.
+  radar = 'always',
 
   -- Where the parts go. Both presets use the same parts (map, location, vitals, wallet, ammo,
   -- vehicle), placed differently:
