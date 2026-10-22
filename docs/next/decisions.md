@@ -26,5 +26,6 @@ Only money, accounts, publishing and secrets go to the owner.
 | 15 | Map halo (`nuikit_hud` `Config.minimap.halo`) | On (an experiment): the speedometer's plate behind the round ring | `halo = false`; strength from `--nk-hud-opacity` (shared), `--nk-map-halo-size` / `--nk-map-halo-opacity` |
 | 16 | mm_radio device shape (`addons/mm_radio`) | nuikit's own drawn handheld silhouette (`radio-shape.svg`, inlined in the CSS) as a mask, filled with the panel surface, hairline and drop in the theme's tokens | `--mm-radio-shape: url(...)` on `:root` in `nuikit/theme.css` (any image; its alpha is the shape, stretched to 18 × 34rem) |
 | 18 | Per-override levers (position/side, density, motion, zone clearing) | Theme tokens on `:root` in `nuikit/theme.css` (`--<override>-*`, read from the applied theme by `lib/levers.ts`); unset = today's look. ox_lib, Renewed-Banking, qbx_scoreboard first | A `nuikit` config block per override, if tokens turn out too limited |
+| 19 | ox_inventory size (`addons/ox_inventory`) | Today's: 5 columns of 5.5rem slots, 0.5rem gap, the sheet follows the grid (33.5rem) | `--inv-slot-size`, `--inv-columns`, `--inv-gap`, `--inv-sheet-width` on `:root` in `nuikit/theme.css` |
 
 Implementation of rows 2, 5, 7, 8 and 10 goes to the lane that owns the files (`dispatch.md`).

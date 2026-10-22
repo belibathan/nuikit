@@ -16,12 +16,24 @@ body.inv-dragging * {
   cursor: grabbing !important;
 }
 
+/* ───────────────────────────── the inventory's size: component tokens a server can set
+   Defaults here; a server overrides any of them in nuikit/theme.css (the theme reaches every page and
+   the compiler passes unknown variables through), e.g. bigger slots: --inv-slot-size: 6.25rem;
+   denser: --inv-gap: 0.25rem; six across: --inv-columns: 6. The sheet follows the grid unless
+   --inv-sheet-width is set. */
+:root {
+  --inv-slot-size: 5.5rem;
+  --inv-columns: 5;
+  --inv-gap: 0.5rem;
+  --inv-sheet-width: calc(var(--inv-columns) * var(--inv-slot-size) + (var(--inv-columns) - 1) * var(--inv-gap) + 4rem);
+}
+
 /* ───────────────────────────── the slot grid inside an edge sheet (registry edge-sheet) */
 
 .inv-grid {
   display: grid;
-  grid-template-columns: repeat(5, 5.5rem);
-  gap: 0.5rem;
+  grid-template-columns: repeat(var(--inv-columns), var(--inv-slot-size));
+  gap: var(--inv-gap);
 }
 
 /* ───────────────────────────── slots: the vitals' chip family, as wells in the sheet */
