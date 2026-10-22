@@ -72,6 +72,8 @@ function Hud(props: { settings: HudSettings } & HudData) {
   const p = player;
   const key = [p.health, p.armor, p.hunger, p.thirst, p.stress, p.cash, p.bank, props.location?.street, props.weapon ? props.weapon.kind : ""].join("|");
   const zones = shownZones(props.settings.situations, useSituation(lua, key));
+  // "Always visible" vitals never retract, whatever the situation
+  if (zones && props.settings.styles?.["vitals.visibility"] === "always") zones.add("vitals");
   return (
     <ShownZones value={zones}>
       {props.settings.layout === "compact" ? <Compact {...props} player={player} look={look} w={w} h={h} /> : <Classic {...props} player={player} look={look} w={w} h={h} />}

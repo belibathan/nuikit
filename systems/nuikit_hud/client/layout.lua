@@ -315,13 +315,15 @@ end
 --- default of each (Config.styles) and may narrow what players can pick (Config.styles.allow);
 --- players pick in /hud edit's Style tab or any settings page (nk.settings, client/prefs.lua).
 Layout.STYLE_KEYS = {
-  'vitals.display', 'vitals.voice', 'vehicle.gauge', 'map.radar', 'map.shape', 'map.size', 'map.halo', 'map.compass',
+  'vitals.visibility', 'vitals.display', 'vehicle.gauge', 'map.radar', 'map.shape', 'map.size', 'map.halo', 'map.compass',
   'map.column', 'column.street', 'column.area', 'column.money', 'column.job', 'column.align',
   'scale.top-left', 'scale.top-right', 'scale.bottom-left', 'scale.bottom-right', 'scale.map',
 }
 Layout.STYLE_OPTIONS = {
   ['vitals.display'] = { 'icons', 'value', 'pill', 'expand' },
-  ['vitals.voice'] = { 'beside', 'collapse' },
+  -- when the vitals show: always, at rest only on a change (each vital's Config.vitals mode), or
+  -- also tucked behind the voice chip while talking. 'always' wins over every other rule.
+  ['vitals.visibility'] = { 'always', 'rest', 'voice' },
   ['vehicle.gauge'] = { 'theme', 'arc', 'bar', 'digital' },
   ['map.radar'] = { 'always', 'vehicle', 'never' },
   ['map.shape'] = { 'circle', 'square' },
@@ -357,7 +359,11 @@ function Layout.styleDefault(key)
   if v ~= nil then return v end
   local mm, veh = Config.minimap or {}, Config.vehicle or {}
   if key == 'vitals.display' then return 'icons' end
-  if key == 'vitals.voice' then return 'beside' end
+  if key == 'vitals.visibility' then
+    -- a 0.8 config's styles.vitals.voice = 'collapse' meant tuck behind voice
+    local vs = type(Config.styles) == 'table' and type(Config.styles.vitals) == 'table' and Config.styles.vitals or {}
+    return vs.voice == 'collapse' and 'voice' or 'rest'
+  end
   if key == 'vehicle.gauge' then return veh.gauge or 'theme' end
   if key == 'map.radar' then return Config.radar or 'always' end
   if key == 'map.shape' then return mm.shape end

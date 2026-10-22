@@ -4,7 +4,7 @@
 import type { HudStyles, StyleChoice, StyleKey, StyleValue } from "../nui";
 
 const GROUPS: { title: string; keys: StyleKey[] }[] = [
-  { title: "Vitals", keys: ["vitals.display", "vitals.voice"] },
+  { title: "Vitals", keys: ["vitals.visibility", "vitals.display"] },
   { title: "Speedometer", keys: ["vehicle.gauge"] },
   { title: "Map", keys: ["map.radar", "map.shape", "map.size", "map.halo", "map.compass", "map.column"] },
   { title: "Location and money", keys: ["column.street", "column.area", "column.money", "column.job", "column.align"] },
@@ -12,8 +12,8 @@ const GROUPS: { title: string; keys: StyleKey[] }[] = [
 ];
 
 const ROW: Record<StyleKey, string> = {
-  "vitals.display": "Display",
-  "vitals.voice": "While talking",
+  "vitals.visibility": "Vitals",
+  "vitals.display": "Vitals style",
   "vehicle.gauge": "Gauge",
   "map.radar": "Radar",
   "map.shape": "Shape",
@@ -38,8 +38,6 @@ const OPTION: Record<string, string> = {
   value: "Icon and value",
   pill: "Label and value",
   expand: "Expand on change",
-  beside: "Keep vitals",
-  collapse: "Tuck behind voice",
   theme: "Theme",
   arc: "Arc",
   bar: "Bar",
@@ -93,7 +91,7 @@ export function StyleTab({ choices, styles, onChange }: { choices: StyleChoice[]
                       data-active={now === o || undefined}
                       onClick={() => onChange({ ...styles, [c.key]: o })}
                     >
-                      {optionLabel(o)}
+                      {optionLabel(o, c.key)}
                     </button>
                   ))}
                 </span>
@@ -107,7 +105,14 @@ export function StyleTab({ choices, styles, onChange }: { choices: StyleChoice[]
 }
 
 /** An option's label: named ones from OPTION, a scale (under 2) as a percentage. */
-function optionLabel(o: StyleValue) {
+/** Options whose plain words depend on the row. */
+const KEY_OPTION: Partial<Record<StyleKey, Record<string, string>>> = {
+  "vitals.visibility": { always: "Always visible", rest: "Hide at rest (show on change)", voice: "Tuck behind voice while talking" },
+};
+
+function optionLabel(o: StyleValue, key: StyleKey) {
+  const own = KEY_OPTION[key]?.[String(o)];
+  if (own) return own;
   if (typeof o === "number" && o < 2) return `${Math.round(o * 100)}%`;
   return OPTION[String(o)] ?? String(o);
 }

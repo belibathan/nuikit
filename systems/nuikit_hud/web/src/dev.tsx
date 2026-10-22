@@ -185,7 +185,7 @@ function FakeRadar({ frame }: { frame: MinimapFrame }) {
 const DEV_STYLES: StyleChoice[] = (
   [
     ["vitals.display", "icons", ["icons", "value", "pill", "expand"]],
-    ["vitals.voice", "beside", ["beside", "collapse"]],
+    ["vitals.visibility", "rest", ["always", "rest", "voice"]],
     ["vehicle.gauge", "theme", ["theme", "arc", "bar", "digital"]],
     ["map.shape", "circle", ["circle", "square"]],
     ["map.size", 15, [12, 15, 18]],
@@ -216,6 +216,7 @@ const mocks = defineMocks({
     "hud:ready": () => ({ ok: true }),
     "hud:minimap:ready": () => ({ ok: true }),
     "hud:parts:save": () => ({ ok: true }),
+    "hud:parts:preview": () => ({ ok: true }),
     "hud:styles:preview": ({ styles }: { styles?: HudStyles }) => {
       if (devSettings) openSurface("hud", { ...devSettings, styles: { ...devSettings.styles, ...styles } });
       return { ok: true };

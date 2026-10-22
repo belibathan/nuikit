@@ -158,14 +158,17 @@ export function VitalsRow({ player, settings, layout }: { player: NuiPlayer; set
   const linger = cfg.linger ?? 5000;
   const pop: PopMode = cfg.pop === undefined ? "change" : cfg.pop;
   const needs = settings.needs !== false;
-  const mode = (m: VitalMode | undefined): VitalMode => (m === undefined ? "auto" : m);
+  // the player's visibility (styles vitals.visibility): "always" wins over every rule that hides a vital (its
+  // auto mode and linger, the voice tuck, a situation's retract); only a vital the server turned off stays off
+  const visibility = (settings.styles?.["vitals.visibility"] as string | undefined) ?? "rest";
+  const mode = (m: VitalMode | undefined): VitalMode => (m === false ? false : visibility === "always" ? "always" : (m ?? "auto"));
   // nuikit_voice draws voice as slots: then the HUD's own voice and radio chips step aside, so voice shows once
   const voiceSlots = slots.some((s) => s.resource === VOICE_RESOURCE);
   const voice = settings.voice !== false && !voiceSlots ? player.voice : undefined;
   const talking = player.voice?.talking === true;
   // styles (Config.styles, /hud edit): how the chips draw, and whether they tuck behind voice while talking
   const display = (settings.styles?.["vitals.display"] as VitalDisplay | undefined) ?? "icons";
-  const collapse = settings.styles?.["vitals.voice"] === "collapse" && talking;
+  const collapse = visibility === "voice" && talking;
   const common = { low, high, linger, pop };
   const item = (tone: Tone, value: number | undefined, m: VitalMode | undefined, extra?: Partial<VitalProps>) => (
     <VitalItem tone={tone} value={value} mode={mode(m)} {...common} force={force[tone] ?? null} display={display} {...extra} />

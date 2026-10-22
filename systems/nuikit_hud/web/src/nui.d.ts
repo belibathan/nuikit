@@ -89,7 +89,7 @@ export type StyleValue = string | number | boolean;
 export type HudStyles = Partial<Record<StyleKey, StyleValue>>;
 export type StyleKey =
   | "vitals.display"
-  | "vitals.voice"
+  | "vitals.visibility"
   | "vehicle.gauge"
   | "map.shape"
   | "map.size"
@@ -239,6 +239,7 @@ declare module "nuikit-core" {
     "hud:ready": { req: Record<string, never>; res: { ok: boolean } };
     "hud:parts:save": { req: { parts: HudParts }; res: { ok: boolean } };
     "hud:parts:reset": { req: Record<string, never>; res: { ok: boolean } };
+    "hud:parts:preview": { req: { parts: HudParts }; res: { ok: boolean } };
     "hud:styles:preview": { req: { styles?: HudStyles }; res: { ok: boolean } };
     "hud:styles:save": { req: { styles: HudStyles }; res: { ok: boolean } };
     "hud:styles:reset": { req: Record<string, never>; res: { ok: boolean } };

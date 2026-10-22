@@ -1,6 +1,6 @@
 // /hud edit: each part of the HUD (Config.parts) dragged to a corner, onto the map or off, and
 // reordered. The panel is a small model of the screen; the HUD behind it follows the draft live (the
-// map moves on save: it is GTA's radar). Clicking a part, then a place, does the same without a drag; the
+// map too: Lua re-places GTA's radar). Clicking a part, then a place, does the same without a drag; the
 // arrows reorder within a place (the keyboard and controller path). Save keeps it for this player
 // (client/main.lua, KVP); Escape or Cancel drops it.
 import { fetchNui, useSurface } from "nuikit-core/react";
@@ -28,7 +28,7 @@ const PLACES: { place: Place; label: string }[] = [
   { place: "top-right", label: "Top right" },
   { place: "bottom-left", label: "Bottom left" },
   { place: "bottom-right", label: "Bottom right" },
-  { place: "map", label: "With the map" },
+  { place: "map", label: "Next to the map" },
   { place: "hidden", label: "Hidden" },
 ];
 
@@ -96,6 +96,15 @@ export function LayoutEditor({ data, onDraft }: { data: HudEditData; onDraft: (p
   const [drag, setDrag] = useState<{ name: Name; x: number; y: number; target: Target | null } | null>(null);
   const [busy, setBusy] = useState(false);
   useEffect(() => onDraft(parts), [parts, onDraft]);
+  // the placement previews on the real HUD too (Lua moves GTA's radar when the map changes corner)
+  const firstParts = useRef(true);
+  useEffect(() => {
+    if (firstParts.current) {
+      firstParts.current = false;
+      return;
+    }
+    void fetchNui("hud:parts:preview", { parts }).catch(() => {});
+  }, [parts]);
   useEffect(() => () => onDraft(null), [onDraft]);
   const latest = useRef(parts);
   latest.current = parts;
@@ -161,17 +170,10 @@ export function LayoutEditor({ data, onDraft }: { data: HudEditData; onDraft: (p
     await fetchNui("hud:parts:save", { parts }).catch(() => {});
     setBusy(false);
   };
-  const reset = async () => {
-    setBusy(true);
-    kept.current = true;
-    await fetchNui("hud:styles:reset", {}).catch(() => {});
-    await fetchNui("hud:parts:reset", {}).catch(() => {});
-    setBusy(false);
-  };
-  // the preset's placement, and the server's default styles
-  const preset = () => {
-    if (tab === "layout") setParts(data.base);
-    else setStyle(Object.fromEntries((data.styles ?? []).map((c) => [c.key, c.default])));
+  // Reset: the server's placement and styles, previewed like any change; Save keeps them, Cancel doesn't
+  const reset = () => {
+    setParts(data.base);
+    setStyle(Object.fromEntries((data.styles ?? []).map((c) => [c.key, c.default])));
   };
 
   const moving = drag?.name ?? held;
@@ -179,7 +181,7 @@ export function LayoutEditor({ data, onDraft }: { data: HudEditData; onDraft: (p
     <div className="hud-editor-wrap">
       <div data-slot="hud-editor" data-dragging={drag ? true : undefined} className="hud-editor nk-panel">
         <div className="nk-panel-header">
-          <span className="nk-title">HUD</span>
+          <span className="nk-title">Edit HUD</span>
           <span className="hud-editor-tabs" role="tablist">
             {layoutOn && (
               <button type="button" role="tab" aria-selected={tab === "layout"} data-active={tab === "layout" || undefined} onClick={() => setTab("layout")}>
@@ -195,7 +197,7 @@ export function LayoutEditor({ data, onDraft }: { data: HudEditData; onDraft: (p
           <StyleTab choices={data.styles ?? []} styles={styles} onChange={setStyle} />
         ) : (
         <div className="nk-panel-body hud-editor-grid">
-          <span className="nk-label hud-editor-hint">Drag a part, or click it and then a place</span>
+          <span className="nk-label hud-editor-hint">Drag a part to a place, or click it and then click the place.</span>
           {PLACES.map(({ place, label }) => {
             const ok = canGo(moving, place);
             const over = drag?.target?.place === place && ok;
@@ -257,11 +259,8 @@ export function LayoutEditor({ data, onDraft }: { data: HudEditData; onDraft: (p
         </div>
         )}
         <div className="hud-editor-actions">
-          <Button variant="ghost" disabled={busy} onClick={preset}>
-            Preset
-          </Button>
           <Button variant="ghost" disabled={busy} onClick={reset}>
-            Reset saved
+            Reset to default
           </Button>
           <span className="flex-1" />
           <Button variant="outline" disabled={busy} onClick={() => close()}>
