@@ -861,13 +861,9 @@
  * A utility removes the earlier stock classes that set what it paints (colour and type),
  * never layout or shape. `@merge <family>` in the comment above a utility means one member per element: a later
  * one removes an earlier one.
- *
- * The component tokens below are declared on :root and on [data-nk-theme]: a subtree applyTheme painted
- * (a stage, a host module) re-derives them from its own identity tokens.
  */
 
-:root,
-[data-nk-theme] {
+:root {
   /* ── scale: the kit's spacing step × --nk-density, type sizes from one base × --nk-type-ratio */
   --nk-space: calc(0.25rem * var(--nk-density, 0.875));
   --nk-ratio: var(--nk-type-ratio, 1.2);
@@ -2164,120 +2160,42 @@ html[data-nk-legibility="auto"][data-nk-daytime] {
   --nk-hue-glow: 0;
 }
 
-/* Backdrop filters (tokens 1.4, --nk-backdrop, default off). In game, FiveM's NUI draws backdrop-filter as a
-   black box over the game (seen on the pause menu, Oct 22), and even blur(0px) costs a filter pass, so it is opt-in:
-   the world blur behind the pause menu is GTA's own (TriggerScreenblurFadeIn). A surface sets --nk-backdrop-filter
-   (never backdrop-filter itself); only html[data-nk-backdrop="on"] applies it (a browser preview, or a client that
-   draws it right). The property doesn't inherit, so it stays on the element that set it. */
+/* Backdrop filters (tokens 1.4, --nk-backdrop, default on: the owner's pause, death and sheet blur, seen right in
+   game). A surface sets --nk-backdrop-filter (never backdrop-filter itself), so a server whose clients draw
+   backdrop-filter as a black box over the game turns every one off with --nk-backdrop: off. The property
+   doesn't inherit, so it stays on the element that set it. Applied unless html[data-nk-backdrop="off"], so a
+   page blurs before its theme arrives too. */
 @property --nk-backdrop-filter {
   syntax: "*";
   inherits: false;
 }
-html[data-nk-backdrop="on"] * {
+html:not([data-nk-backdrop="off"]) * {
   /* nuikit-ignore cef/backdrop-filter: the one place, behind --nk-backdrop */
   -webkit-backdrop-filter: var(--nk-backdrop-filter);
   /* nuikit-ignore cef/backdrop-filter: the one place, behind --nk-backdrop */
   backdrop-filter: var(--nk-backdrop-filter);
 }
 
-/*
- * States (Foundation 2): every interactive kit component draws one of rest / focus / hold / confirm /
- * disabled / alert on data-state (nkState() in lib/utils). Components already style focus (the identity
- * indicator), hold (the filling line) and disabled; here, what is the same for all of them: confirm is a
- * short pop (--nk-confirm-scale over --nk-time-confirm, from nkConfirm()). A theme restyles any state with
- * [data-state="…"]. Only these values: Radix uses data-state for open / closed / checked.
- */
-[data-state="confirm"] {
-  animation: nk-confirm var(--nk-time-confirm, 160ms) var(--nk-ease-spring, cubic-bezier(0.34, 1.56, 0.64, 1));
+/* ───────────────────────────── enter / exit on the compositor
+   tw-animate-css's enter and exit keyframes also animate filter: blur(var(--tw-enter-blur, 0)), which runs on
+   the main thread every frame even at blur 0 (sheets, dialogs, menus: measured on the pause and inventory opens
+   under a 4x CPU throttle). The same keyframes, transform and opacity only, under their own names (the build
+   keeps the first of two same-named keyframes); --animate-in / --animate-out (every animate-in / animate-out,
+   variants included) point at them (Tailwind inlines theme values, so this is a @theme, not :root). A blur-in
+   is dropped. */
+@theme inline {
+  --animate-in: nk-tw-enter var(--tw-animation-duration, var(--tw-duration, 0.15s)) var(--tw-ease, ease) var(--tw-animation-delay, 0s) var(--tw-animation-iteration-count, 1) var(--tw-animation-direction, normal) var(--tw-animation-fill-mode, none);
+  --animate-out: nk-tw-exit var(--tw-animation-duration, var(--tw-duration, 0.15s)) var(--tw-ease, ease) var(--tw-animation-delay, 0s) var(--tw-animation-iteration-count, 1) var(--tw-animation-direction, normal) var(--tw-animation-fill-mode, none);
 }
-@keyframes nk-confirm {
-  40% {
-    transform: scale(var(--nk-confirm-scale, 1.04));
+@keyframes nk-tw-enter {
+  from {
+    opacity: var(--tw-enter-opacity, 1);
+    transform: translate3d(var(--tw-enter-translate-x, 0), var(--tw-enter-translate-y, 0), 0) scale3d(var(--tw-enter-scale, 1), var(--tw-enter-scale, 1), var(--tw-enter-scale, 1)) rotate(var(--tw-enter-rotate, 0));
   }
 }
-:is(html, *)[data-nk-motion="reduced"] [data-state="confirm"],
-:is(html, *)[data-nk-motion="off"] [data-state="confirm"],
-[data-nk-motion="reduced"][data-state="confirm"],
-[data-nk-motion="off"][data-state="confirm"] {
-  animation: none;
-}
-
-/*
- * Focus (tokens 1.4: --nk-focus-style, painted as data-nk-focus): how every kit component's focus state
- * draws. ring is each component's own look (the default); the others replace it. Rows keep the identity
- * indicator (--nk-row-indicator), which a treatment sets alongside.
- */
-:is(html, *)[data-nk-focus]:not([data-nk-focus="ring"]) [data-state="focus"]:not(.nk-row) {
-  outline: none;
-}
-:is(html, *)[data-nk-focus="halo"] [data-state="focus"]:not(.nk-row) {
-  box-shadow:
-    0 0 0 2px rgba(var(--brand-rgb, var(--primary-rgb)), 0.9),
-    0 0 1rem rgba(var(--brand-rgb, var(--primary-rgb)), var(--nk-hue-glow, 0.45));
-}
-:is(html, *)[data-nk-focus="tint"] [data-state="focus"]:not(.nk-row) {
-  background-color: rgba(var(--brand-rgb, var(--primary-rgb)), var(--nk-hue-tint, 0.14));
-}
-:is(html, *)[data-nk-focus="fill"] [data-state="focus"]:not(.nk-row) {
-  background-color: var(--brand, var(--primary));
-  color: var(--brand-foreground, var(--primary-foreground));
-}
-:is(html, *)[data-nk-focus="invert"] [data-state="focus"]:not(.nk-row) {
-  background-color: var(--foreground);
-  color: var(--background);
-}
-:is(html, *)[data-nk-focus="bar"] [data-state="focus"]:not(.nk-row) {
-  box-shadow: inset var(--nk-row-bar-width, 3px) 0 0 var(--brand, var(--primary));
-}
-
-/*
- * Hold (tokens 1.4: --nk-hold-style, data-nk-hold): how a press-and-hold shows its progress, from the
- * prompt's --level. bar is the line under the prompt (the default); ring fills around the key chips;
- * fill sweeps the prompt's background.
- */
-:is(html, *)[data-nk-hold="ring"] [data-slot="key-prompt-hold"],
-:is(html, *)[data-nk-hold="fill"] [data-slot="key-prompt-hold"] {
-  display: none;
-}
-:is(html, *)[data-nk-hold="ring"] [data-slot="key-prompt"][data-state="hold"] > [data-slot="key-prompt-keys"] {
-  padding: 2px;
-  border-radius: calc(var(--nk-key-radius, 0.375rem) + 2px);
-  background: conic-gradient(var(--brand, var(--primary)) calc(var(--level, 0) * 360deg), rgba(var(--hud-foreground-rgb, 255, 255, 255), 0.16) 0);
-}
-:is(html, *)[data-nk-hold="fill"] [data-slot="key-prompt"][data-state="hold"] {
-  background-image: linear-gradient(to right, rgba(var(--brand-rgb, var(--primary-rgb)), 0.32) calc(var(--level, 0) * 100%), transparent 0);
-}
-
-/*
- * Level (tokens 1.4: --nk-level-style, data-nk-level): how a level reads. bar is the default; pips cuts a
- * meter's bar into ten plates (a meter with its own segments keeps them). vital-chip maps it to its
- * drawings (ring → outline, liquid → fill, bar / slab / pips → bar).
- */
-:is(html, *)[data-nk-level="pips"] [data-slot="meter"] [data-slot="progress"] {
-  -webkit-mask-image: repeating-linear-gradient(to right, #000 0 calc(10% - 2px), transparent calc(10% - 2px) 10%);
-  mask-image: repeating-linear-gradient(to right, #000 0 calc(10% - 2px), transparent calc(10% - 2px) 10%);
-}
-
-/* Roles on chips: a chip with data-hue draws its icon in the role's colour. */
-[data-slot="hud-chip"][data-hue] [data-slot="hud-chip-icon"] {
-  color: var(--hue-solid, currentColor);
-}
-
-/*
- * The interaction ladder (wave 3) on a key prompt's data-ladder: dormant (the thing is near: the key chip
- * alone, quiet) → aware (in reach: the whole prompt, a step back) → focus (the key acts on it) → hold →
- * confirm (data-state, the pop). Each step eases in over --nk-time.
- */
-[data-slot="key-prompt"][data-ladder] {
-  transition: opacity var(--nk-time, 160ms) var(--nk-ease-standard, ease-out);
-}
-[data-slot="key-prompt"][data-ladder="dormant"] {
-  opacity: 0.6;
-}
-[data-slot="key-prompt"][data-ladder="dormant"] > [data-slot="key-prompt-text"],
-[data-slot="key-prompt"][data-ladder="dormant"] > [data-slot="key-prompt-icon"] {
-  display: none;
-}
-[data-slot="key-prompt"][data-ladder="aware"] {
-  opacity: 0.85;
+@keyframes nk-tw-exit {
+  to {
+    opacity: var(--tw-exit-opacity, 1);
+    transform: translate3d(var(--tw-exit-translate-x, 0), var(--tw-exit-translate-y, 0), 0) scale3d(var(--tw-exit-scale, 1), var(--tw-exit-scale, 1), var(--tw-exit-scale, 1)) rotate(var(--tw-exit-rotate, 0));
+  }
 }
