@@ -1,5 +1,7 @@
-import { CarIcon, CupSodaIcon } from "lucide-react";
+import { CarIcon, CupSodaIcon, MicIcon, RadioIcon } from "lucide-react";
 import { useState } from "react";
+import { Band } from "@/components/ui/band";
+import { HudChip } from "@/components/ui/hud-chip";
 import { KeyPrompt } from "@/components/ui/key-prompt";
 import { MenuRow, MenuRowList } from "@/components/ui/menu-row";
 import { Meter } from "@/components/ui/meter";
@@ -73,6 +75,15 @@ export function VariantsDemo() {
               <Notice item={{ name: "Water bottle", count: 2, icon: <CupSodaIcon /> }} duration={0} />
             </NoticeStack>
           </div>
+          {/* the attribute on any element: the chips' corners follow it (a chip's own `shape` is pill or tile) */}
+          <div className="flex gap-2" data-nk-shape={shape === "default" ? undefined : shape}>
+            <HudChip icon={<MicIcon />} active density={density} motion={v.motion}>
+              Normal
+            </HudChip>
+            <HudChip icon={<RadioIcon />} density={density} motion={v.motion}>
+              101 MHz
+            </HudChip>
+          </div>
           <KeyPrompt keys="E" label="Open garage" size={size === "lg" ? "default" : size} {...v} />
           <div className="flex w-72 flex-col gap-3">
             <Meter label="Fuel" value={64} valueText="64%" size={size} {...v} />
@@ -80,6 +91,7 @@ export function VariantsDemo() {
           </div>
         </div>
       </div>
+      <Band position="inline" tone="destructive" title="You are incapacitated" subtitle="Hold E to call for help" {...v} />
     </div>
   );
 }

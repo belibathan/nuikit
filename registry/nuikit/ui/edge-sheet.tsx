@@ -6,7 +6,7 @@ import { ChevronLeftIcon, XIcon } from "lucide-react"
 
 import { Stagger } from "nuikit-core/react"
 
-import { cn } from "@/lib/utils"
+import { cn, nkVariant, type NkVariantProps } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Sheet, SheetContent, SheetDescription, SheetTitle } from "@/components/ui/sheet"
@@ -95,13 +95,17 @@ function EdgeSheet({
   className,
   style,
   children,
+  density,
+  shape,
+  motion,
   ...props
-}: EdgeSheetProps) {
+}: NkVariantProps & EdgeSheetProps) {
   const left = side === "left"
   const keep = (e: Event) => e.preventDefault()
   return (
     <Sheet open={open} modal={modal} onOpenChange={onOpenChange}>
       <SheetContent
+        {...nkVariant({ density, shape, motion })}
         data-slot="edge-sheet"
         side={side}
         showCloseButton={false}

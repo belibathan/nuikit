@@ -3,7 +3,7 @@
 import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
 
-import { cn } from "@/lib/utils"
+import { cn, nkVariant, type NkVariantProps } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Panel, PanelBody, PanelFooter, PanelHeader } from "@/components/ui/panel"
 import { Spinner } from "@/components/ui/spinner"
@@ -84,8 +84,11 @@ function ConfirmPanel({
   onCancel,
   initialFocus = "none",
   children,
+  density,
+  shape,
+  motion,
   ...props
-}: ConfirmPanelProps) {
+}: NkVariantProps & ConfirmPanelProps) {
   const id = React.useId()
   const confirmRef = React.useRef<HTMLButtonElement>(null)
   const cancelRef = React.useRef<HTMLButtonElement>(null)
@@ -99,6 +102,7 @@ function ConfirmPanel({
 
   return (
     <Panel
+      {...nkVariant({ density, shape, motion })}
       data-slot="confirm"
       data-tone={tone}
       aria-labelledby={`${id}-title`}
@@ -169,7 +173,7 @@ function Confirm({
   initialFocus = "confirm",
   className,
   ...props
-}: ConfirmPanelProps & {
+}: NkVariantProps & ConfirmPanelProps & {
   /** Darken the game behind it. */
   scrim?: boolean
 }) {

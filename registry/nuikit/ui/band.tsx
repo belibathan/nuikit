@@ -1,7 +1,7 @@
 import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
 
-import { cn } from "@/lib/utils"
+import { cn, nkVariant, type NkVariantProps } from "@/lib/utils"
 
 /**
  * Band — a full-width band across the screen for a state the player is in, not a message they
@@ -55,8 +55,11 @@ function Band({
   subtitle,
   children,
   style,
+  density,
+  shape,
+  motion,
   ...props
-}: Omit<React.ComponentProps<"div">, "title"> &
+}: NkVariantProps & Omit<React.ComponentProps<"div">, "title"> &
   VariantProps<typeof bandVariants> & {
     /** The colour of the state: destructive (default: down, incapacitated), warning, success, info, brand, or neutral. */
     tone?: BandTone
@@ -69,6 +72,7 @@ function Band({
   return (
     <div
       role="status"
+      {...nkVariant({ density, shape, motion })}
       data-slot="band"
       data-tone={tone}
       className={cn(bandVariants({ position }), className)}
