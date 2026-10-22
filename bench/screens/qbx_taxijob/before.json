@@ -1,0 +1,43 @@
+{
+ "1920x1080": {
+  "posts": [
+   {
+    "step": "start",
+    "name": "enableMeter",
+    "body": "{\"enabled\":true}",
+    "ms": 5
+   },
+   {
+    "step": "cursor",
+    "name": "enableMeter",
+    "body": "{\"enabled\":false}",
+    "ms": 334
+   },
+   {
+    "step": "cursor",
+    "name": "enableMeter",
+    "body": "{\"enabled\":true}",
+    "ms": 563
+   },
+   {
+    "step": "escape",
+    "name": "hideMouse",
+    "body": "{}",
+    "ms": 5
+   },
+   {
+    "step": "stop",
+    "name": "enableMeter",
+    "body": "{\"enabled\":false}",
+    "ms": 3
+   },
+   {
+    "step": "toggle-hidden",
+    "name": "enableMeter",
+    "body": "{\"enabled\":true}",
+    "ms": 4
+   }
+  ],
+  "themeRequests": 5
+ }
+}
