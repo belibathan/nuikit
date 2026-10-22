@@ -90,13 +90,13 @@ function layoutFor(): HudLayout {
 }
 
 /** What client/minimap.lua computes (Minimap.layout). Classic: bottom-left, 15rem, 0.375rem band;
- * compact: a 12rem circle top-right with 1.75rem headroom for the heading; 1.5rem in from the edges. */
+ * compact: a 15rem circle top-right with 1.75rem headroom for the heading; 1.5rem in from the edges. */
 function frameFor(layout: HudLayout, shape: MinimapFrame["shape"], preset: HudPreset): MinimapFrame {
   const w = innerWidth;
   const h = innerHeight;
   const rem = Math.min(32, Math.max(12, h * 0.014815));
   if (preset === "compact") {
-    const size = 12 * rem;
+    const size = 15 * rem;
     const x = w - layout.r * w - 1.5 * rem - size;
     const y = layout.t * h + 1.5 * rem + 1.75 * rem;
     return { x: x / w, y: y / h, w: size / w, h: size / h, band: (0.125 * rem) / h, shape: "circle", framed: true, preset };

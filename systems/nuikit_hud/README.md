@@ -23,7 +23,7 @@ restyle it through tokens, or replace it.
 
 | Part | `compact` (default) | `classic` (0.6) |
 |---|---|---|
-| Map | A 12rem circle top right on the safe area: a thin ring, cardinals and ticks that turn on it, the heading (`NW 300°`) above a lubber mark, the waypoint distance as a tag on the ring's lower outer shoulder (its arrow points at the waypoint) | A framed square bottom left, N on the frame |
+| Map | A 15rem circle top right on the safe area: a thin ring, cardinals and ticks that turn on it, the heading (`NW 300°`) above a lubber mark, the waypoint distance as a tag on the ring's lower outer shoulder (its arrow points at the waypoint) | A framed square bottom left, N on the frame |
 | Location | Under the map: the street, then `cross street · zone postal` smaller | A strip above the map with a heading badge |
 | Money and job | Under the location | Top right |
 | Vitals | Bottom left: one icon-only chip per vital (health, armor, hunger, thirst, stress), its level traced along the chip outline; a mic chip and the radio channel | The same chips, a size larger, beside the map |
@@ -66,7 +66,7 @@ Everything is in `config.lua` with a comment on each line. The main switches:
 | `area` | `'game'` (read GTA's HUD alignment, fall back when it looks wrong) or `'stage'` (the 0.5.0 rule); was `layout.source` |
 | `minimap.style` | `'ring'` (default: nuikit places GTA's radar and draws the ring or frame) or `'stock'` (GTA's radar untouched, put back to GTA's own placement; the HUD lays out around it). `enabled = false` is the 0.6 spelling of `'stock'` |
 | `minimap.yieldTo` | Minimap resources nuikit gives way to: when one is started the style becomes `'stock'` and F8 says so once. `nil` = the built-in list (`circleminimap`, `squaremap`, `minimap`, `jg-hud`, `ps-hud`, `qb-hud`, `qbx_hud`), `{}` = never |
-| `minimap.shape`, `size`, `band`, `anchor` | `nil` takes the layout's value (compact: circle, 12rem, 0.125rem, top-right; classic: square, 15rem, 0.375rem, bottom-left) |
+| `minimap.shape`, `size`, `band`, `anchor` | `nil` takes the layout's value (compact: circle, 15rem, 0.125rem, top-right; classic: square, 15rem, 0.375rem, bottom-left) |
 | `minimap.compass`, `location` | cardinals and heading on the ring / frame; the location next to the map |
 | `minimap.aspect` | the radar box's width over height; `nil` follows `routeClip` (square for `'box'`, else GTA's 1.41: the map isn't squeezed, the mask shows the middle); set it to force either |
 | `minimap.routeClip` | how the GPS route is kept in the map (0.7.0 A4: GTA draws it across the whole box, through no mask nuikit knows): `'box'` (default: a square radar box, so the route can only reach past the ring at its corners; the map is squeezed about 29%), `'mask'` (minimap_mask over the hole at GTA's aspect: the map unsqueezed, the route overhangs the sides), `'inset'` (minimap_mask on the disc's inner square), `'texture'` (our disc on `radarmask1g` too), `'stock'` (minimap_mask untouched); all but the box are unproven. With `Config.debug`, F8 `nuikit_minimap route <x>` switches live |

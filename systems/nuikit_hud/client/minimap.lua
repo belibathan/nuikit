@@ -38,7 +38,7 @@ local function clamp(v, a, b) return math.max(a, math.min(b, v)) end
 
 -- What each layout preset puts on the map; Config.minimap overrides any of them.
 local PRESETS = {
-  compact = { shape = 'circle', size = 12.0, band = 0.125, anchor = 'top-right', headroom = 1.75 },
+  compact = { shape = 'circle', size = 15.0, band = 0.125, anchor = 'top-right', headroom = 1.75 },
   classic = { shape = 'square', size = 15.0, band = 0.375, anchor = 'bottom-left', headroom = 0 },
 }
 

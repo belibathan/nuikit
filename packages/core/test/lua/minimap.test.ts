@@ -267,13 +267,13 @@ describe("systems/nuikit_hud: the minimap", () => {
     expect(await hud.run(`return table.concat(CALLS, ",")`)).toBe("true,false,false");
   });
 
-  it("compact (the default): a 12rem circle top right, under the safe area, with room above for the heading", async () => {
+  it("compact (the default): a 15rem circle top right, under the safe area, with room above for the heading", async () => {
     client = await createClient();
     const hud = await client.start("nuikit_hud", { before: natives, scripts });
     expect(await hud.run(`return Layout.preset()`)).toBe("compact");
     const [frame, band, radar] = await hud.run<[any, number, any]>(`return { Minimap.layout(1920, 1080, 1.0) }`);
     const rem = 1080 * 0.014815;
-    expect(frame.w).toBeCloseTo(12 * rem, 6);
+    expect(frame.w).toBeCloseTo(15 * rem, 6);
     expect(frame.x + frame.w).toBeCloseTo(1920 - 1.5 * rem, 6);
     expect(frame.y).toBeCloseTo(1.5 * rem + 1.75 * rem, 6);
     expect(band).toBeCloseTo(0.125 * rem, 6);
