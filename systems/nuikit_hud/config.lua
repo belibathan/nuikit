@@ -42,7 +42,7 @@ Config = {
 
   -- nuikit shapes and frames GTA's minimap. enabled = false leaves GTA's radar alone (the HUD still
   -- lines up beside it). Values left out (nil) come from the layout preset:
-  --   compact: circle, 12rem, a 0.125rem ring, top-right;  classic: square, 15rem, 0.375rem, bottom-left
+  --   compact: circle, 15rem, a 0.125rem ring, top-right;  classic: square, 15rem, 0.375rem, bottom-left
   minimap = {
     enabled = true,
     -- 'ring': nuikit places GTA's radar and draws the ring / frame (default). 'stock': GTA's radar is
