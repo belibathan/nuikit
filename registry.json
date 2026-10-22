@@ -1948,6 +1948,55 @@
       }
     },
     {
+      "name": "mdt",
+      "type": "registry:block",
+      "title": "MDT",
+      "description": "The shell of a police or EMS terminal: a nav (Dashboard, People, Vehicles, Reports), a search with a results list and a record pane, and a short report form behind a confirm. The server checks job and duty on every call, runs every search, limits input and rate, and stamps reports. Protocol-agnostic.",
+      "files": [
+        {
+          "path": "registry/nuikit/blocks/mdt/mdt.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/mdt/mdt.tsx"
+        },
+        {
+          "path": "registry/nuikit/blocks/mdt/nui.ts",
+          "type": "registry:lib",
+          "target": "components/blocks/mdt/nui.ts"
+        },
+        {
+          "path": "registry/nuikit/blocks/mdt/fixtures.ts",
+          "type": "registry:lib",
+          "target": "components/blocks/mdt/fixtures.ts"
+        }
+      ],
+      "dependencies": [
+        "lucide-react",
+        "nuikit-core"
+      ],
+      "registryDependencies": [
+        "badge",
+        "button",
+        "input",
+        "spinner",
+        "https://nuikit.vercel.app/r/panel.json",
+        "https://nuikit.vercel.app/r/menu-row.json",
+        "https://nuikit.vercel.app/r/player-card.json",
+        "https://nuikit.vercel.app/r/form-field.json",
+        "https://nuikit.vercel.app/r/confirm.json",
+        "https://nuikit.vercel.app/r/empty-state.json"
+      ],
+      "categories": [
+        "screens"
+      ],
+      "docs": "Mount <MdtSurface /> in App.tsx. In Lua, open nk.surface(\"mdt\", { layer = \"panel\", exclusive = true, escape = \"back\" }) with an MdtData table, and answer nk.on(\"mdt:search\"), nk.on(\"mdt:record\") and nk.on(\"mdt:report\") with { ok, error, ... }. On the server, allow only your jobs and only on duty, search yourself, send opaque record ids and whitelisted fields, limit input and rate, and stamp the author and time of a report. A whole resource with the Lua: npm create nuikit@latest my-mdt -- -t mdt",
+      "meta": {
+        "since": "unreleased",
+        "status": "experimental",
+        "replaces": [],
+        "removeIn": null
+      }
+    },
+    {
       "name": "utils",
       "type": "registry:lib",
       "title": "cn (kit-aware)",

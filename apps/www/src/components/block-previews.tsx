@@ -35,6 +35,8 @@ import { storefrontCarts, storefrontFixtures } from "@/blocks/storefront/fixture
 import { Storefront } from "@/blocks/storefront/storefront";
 import { phoneFixtures } from "@/blocks/phone/fixtures";
 import { Phone } from "@/blocks/phone/phone";
+import { mdtFixtures, mdtSamples } from "@/blocks/mdt/fixtures";
+import { Mdt } from "@/blocks/mdt/mdt";
 
 export interface BlockPreview {
   name: string;
@@ -251,6 +253,18 @@ export const BLOCKS: BlockPreview[] = [
       Contacts: () => <Phone data={phoneFixtures.full} defaultApp={{ id: "contacts" }} />,
       Messages: () => <Phone data={phoneFixtures.full} defaultApp={{ id: "messages" }} />,
       Thread: () => <Phone data={phoneFixtures.full} defaultApp={{ id: "messages", params: { number: "5550188" } }} onSend={async () => ({ ok: true })} />,
+    },
+  },
+  {
+    name: "mdt",
+    title: "MDT",
+    description: "A police or EMS terminal shell: a nav, a search of people and vehicles with a record pane, and a report form behind a confirm. The server checks job and duty on every call, runs the searches, and stamps the author and time.",
+    states: {
+      Dashboard: () => <Mdt data={mdtFixtures.police} autoFocus={false} />,
+      Person: () => <Mdt data={mdtFixtures.police} defaultSection="people" defaultQuery="ar" defaultResults={mdtSamples.people} defaultRecord={mdtSamples.person} autoFocus={false} />,
+      Vehicle: () => <Mdt data={mdtFixtures.police} defaultSection="vehicles" defaultQuery="klm" defaultResults={mdtSamples.vehicles} defaultRecord={mdtSamples.vehicle} autoFocus={false} />,
+      "New report": () => <Mdt data={mdtFixtures.police} defaultSection="reports" defaultComposing defaultResults={mdtSamples.people} defaultDraft={mdtSamples.draft} autoFocus={false} />,
+      Confirm: () => <Mdt data={mdtFixtures.police} defaultSection="reports" confirming defaultResults={mdtSamples.people} defaultDraft={mdtSamples.draft} autoFocus={false} onReport={async () => ({ ok: true })} />,
     },
   },
 ];
