@@ -162,7 +162,7 @@ local TOUR = {
 }
 
 RegisterNetEvent('nuikit_dev:run', function(what)
-  if source == '' then return end -- only the server sends this, never a local event
+  if GetInvokingResource() then return end -- only the server sends this, never another resource's TriggerEvent
   if running then return note('A test is still running', 'warning') end
   local list = what == 'all' and TOUR or { what }
   CreateThread(function()
@@ -180,6 +180,6 @@ RegisterNetEvent('nuikit_dev:run', function(what)
 end)
 
 RegisterNetEvent('nuikit_dev:notify', function(description, status)
-  if source == '' then return end
+  if GetInvokingResource() then return end
   note(tostring(description), status)
 end)
