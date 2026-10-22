@@ -102,5 +102,8 @@ export function isTokenDefinition(name: string): boolean {
   // pages that can't own :root token names (a theme for another resource's page) prefix them: --nk-primary
   if (name.startsWith("nk-") && !TOKEN_NAMES.has(name) && isTokenDefinition(name.slice(3))) return true;
   if (TOKEN_NAMES.has(name.replace(/-(rgb|a)$/, ""))) return true;
+  // tokens 1.4: a role's derived steps (--role-health-deep, -light) are tokens when the role is
+  const step = /^(role-[\w-]+?)-(deep|light)(-rgb|-a)?$/.exec(name);
+  if (step && TOKEN_NAMES.has(step[1]!)) return true;
   return /^shadow(-|$)/.test(name);
 }

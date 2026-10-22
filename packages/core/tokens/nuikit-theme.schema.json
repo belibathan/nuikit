@@ -699,6 +699,787 @@
           "type": "string",
           "description": "Spring (duration, bounce): rewards only (item added, level-up, a ×3 badge)",
           "$comment": "tokens 1.2"
+        },
+        "nk-treatment": {
+          "enum": [
+            "soft",
+            "glass",
+            "plate",
+            "slab"
+          ],
+          "description": "How the palette is drawn: soft (Graphite), glass, plate or slab. Fills material, stroke, type, focus and motion defaults; any value the theme sets wins",
+          "$comment": "tokens 1.4"
+        },
+        "nk-focus-style": {
+          "enum": [
+            "ring",
+            "halo",
+            "tint",
+            "fill",
+            "invert",
+            "bar"
+          ],
+          "description": "Every component's focus (controller and keyboard highlight)",
+          "$comment": "tokens 1.4"
+        },
+        "nk-hold-style": {
+          "enum": [
+            "bar",
+            "ring",
+            "fill"
+          ],
+          "description": "How a press-and-hold shows its progress",
+          "$comment": "tokens 1.4"
+        },
+        "nk-confirm-scale": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "The short pop of a confirm",
+          "$comment": "tokens 1.4"
+        },
+        "nk-level-style": {
+          "enum": [
+            "bar",
+            "ring",
+            "liquid",
+            "slab",
+            "pips"
+          ],
+          "description": "How a level (--level, 0–1) is drawn by meters, vitals, holds, timers and cooldowns",
+          "$comment": "tokens 1.4"
+        },
+        "role-health": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "Role colour health: the --hue-* ramp under data-hue=\"health\"",
+          "$comment": "tokens 1.4"
+        },
+        "role-armor": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "Role colour armor: the --hue-* ramp under data-hue=\"armor\"",
+          "$comment": "tokens 1.4"
+        },
+        "role-hunger": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "Role colour hunger: the --hue-* ramp under data-hue=\"hunger\"",
+          "$comment": "tokens 1.4"
+        },
+        "role-thirst": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "Role colour thirst: the --hue-* ramp under data-hue=\"thirst\"",
+          "$comment": "tokens 1.4"
+        },
+        "role-stress": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "Role colour stress: the --hue-* ramp under data-hue=\"stress\"",
+          "$comment": "tokens 1.4"
+        },
+        "role-stamina": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "Role colour stamina: the --hue-* ramp under data-hue=\"stamina\"",
+          "$comment": "tokens 1.4"
+        },
+        "role-oxygen": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "Role colour oxygen: the --hue-* ramp under data-hue=\"oxygen\"",
+          "$comment": "tokens 1.4"
+        },
+        "role-info": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "Role colour info: the --hue-* ramp under data-hue=\"info\"",
+          "$comment": "tokens 1.4"
+        },
+        "role-success": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "Role colour success: the --hue-* ramp under data-hue=\"success\"",
+          "$comment": "tokens 1.4"
+        },
+        "role-warning": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "Role colour warning: the --hue-* ramp under data-hue=\"warning\"",
+          "$comment": "tokens 1.4"
+        },
+        "role-danger": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "Role colour danger: the --hue-* ramp under data-hue=\"danger\"",
+          "$comment": "tokens 1.4"
+        },
+        "role-police": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "Role colour police: the --hue-* ramp under data-hue=\"police\"",
+          "$comment": "tokens 1.4"
+        },
+        "role-ems": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "Role colour ems: the --hue-* ramp under data-hue=\"ems\"",
+          "$comment": "tokens 1.4"
+        },
+        "role-mech": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "Role colour mech: the --hue-* ramp under data-hue=\"mech\"",
+          "$comment": "tokens 1.4"
+        },
+        "role-gang": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "Role colour gang: the --hue-* ramp under data-hue=\"gang\"",
+          "$comment": "tokens 1.4"
+        },
+        "role-civ": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "Role colour civ: the --hue-* ramp under data-hue=\"civ\"",
+          "$comment": "tokens 1.4"
+        },
+        "role-staff": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "Role colour staff: the --hue-* ramp under data-hue=\"staff\"",
+          "$comment": "tokens 1.4"
+        },
+        "role-common": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "Role colour common: the --hue-* ramp under data-hue=\"common\"",
+          "$comment": "tokens 1.4"
+        },
+        "role-uncommon": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "Role colour uncommon: the --hue-* ramp under data-hue=\"uncommon\"",
+          "$comment": "tokens 1.4"
+        },
+        "role-rare": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "Role colour rare: the --hue-* ramp under data-hue=\"rare\"",
+          "$comment": "tokens 1.4"
+        },
+        "role-epic": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "Role colour epic: the --hue-* ramp under data-hue=\"epic\"",
+          "$comment": "tokens 1.4"
+        },
+        "role-legendary": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "Role colour legendary: the --hue-* ramp under data-hue=\"legendary\"",
+          "$comment": "tokens 1.4"
+        },
+        "role-brand": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "Role colour brand: the --hue-* ramp under data-hue=\"brand\"",
+          "$comment": "tokens 1.4"
+        },
+        "role-neutral": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "Role colour neutral: the --hue-* ramp under data-hue=\"neutral\"",
+          "$comment": "tokens 1.4"
+        },
+        "role-health-deep": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "health, darker: the ramp's deep step and gradient end",
+          "$comment": "tokens 1.4"
+        },
+        "role-health-light": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "health, lighter: the ramp's gradient start",
+          "$comment": "tokens 1.4"
+        },
+        "role-armor-deep": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "armor, darker: the ramp's deep step and gradient end",
+          "$comment": "tokens 1.4"
+        },
+        "role-armor-light": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "armor, lighter: the ramp's gradient start",
+          "$comment": "tokens 1.4"
+        },
+        "role-hunger-deep": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "hunger, darker: the ramp's deep step and gradient end",
+          "$comment": "tokens 1.4"
+        },
+        "role-hunger-light": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "hunger, lighter: the ramp's gradient start",
+          "$comment": "tokens 1.4"
+        },
+        "role-thirst-deep": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "thirst, darker: the ramp's deep step and gradient end",
+          "$comment": "tokens 1.4"
+        },
+        "role-thirst-light": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "thirst, lighter: the ramp's gradient start",
+          "$comment": "tokens 1.4"
+        },
+        "role-stress-deep": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "stress, darker: the ramp's deep step and gradient end",
+          "$comment": "tokens 1.4"
+        },
+        "role-stress-light": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "stress, lighter: the ramp's gradient start",
+          "$comment": "tokens 1.4"
+        },
+        "role-stamina-deep": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "stamina, darker: the ramp's deep step and gradient end",
+          "$comment": "tokens 1.4"
+        },
+        "role-stamina-light": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "stamina, lighter: the ramp's gradient start",
+          "$comment": "tokens 1.4"
+        },
+        "role-oxygen-deep": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "oxygen, darker: the ramp's deep step and gradient end",
+          "$comment": "tokens 1.4"
+        },
+        "role-oxygen-light": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "oxygen, lighter: the ramp's gradient start",
+          "$comment": "tokens 1.4"
+        },
+        "role-info-deep": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "info, darker: the ramp's deep step and gradient end",
+          "$comment": "tokens 1.4"
+        },
+        "role-info-light": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "info, lighter: the ramp's gradient start",
+          "$comment": "tokens 1.4"
+        },
+        "role-success-deep": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "success, darker: the ramp's deep step and gradient end",
+          "$comment": "tokens 1.4"
+        },
+        "role-success-light": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "success, lighter: the ramp's gradient start",
+          "$comment": "tokens 1.4"
+        },
+        "role-warning-deep": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "warning, darker: the ramp's deep step and gradient end",
+          "$comment": "tokens 1.4"
+        },
+        "role-warning-light": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "warning, lighter: the ramp's gradient start",
+          "$comment": "tokens 1.4"
+        },
+        "role-danger-deep": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "danger, darker: the ramp's deep step and gradient end",
+          "$comment": "tokens 1.4"
+        },
+        "role-danger-light": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "danger, lighter: the ramp's gradient start",
+          "$comment": "tokens 1.4"
+        },
+        "role-police-deep": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "police, darker: the ramp's deep step and gradient end",
+          "$comment": "tokens 1.4"
+        },
+        "role-police-light": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "police, lighter: the ramp's gradient start",
+          "$comment": "tokens 1.4"
+        },
+        "role-ems-deep": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "ems, darker: the ramp's deep step and gradient end",
+          "$comment": "tokens 1.4"
+        },
+        "role-ems-light": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "ems, lighter: the ramp's gradient start",
+          "$comment": "tokens 1.4"
+        },
+        "role-mech-deep": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "mech, darker: the ramp's deep step and gradient end",
+          "$comment": "tokens 1.4"
+        },
+        "role-mech-light": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "mech, lighter: the ramp's gradient start",
+          "$comment": "tokens 1.4"
+        },
+        "role-gang-deep": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "gang, darker: the ramp's deep step and gradient end",
+          "$comment": "tokens 1.4"
+        },
+        "role-gang-light": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "gang, lighter: the ramp's gradient start",
+          "$comment": "tokens 1.4"
+        },
+        "role-civ-deep": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "civ, darker: the ramp's deep step and gradient end",
+          "$comment": "tokens 1.4"
+        },
+        "role-civ-light": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "civ, lighter: the ramp's gradient start",
+          "$comment": "tokens 1.4"
+        },
+        "role-staff-deep": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "staff, darker: the ramp's deep step and gradient end",
+          "$comment": "tokens 1.4"
+        },
+        "role-staff-light": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "staff, lighter: the ramp's gradient start",
+          "$comment": "tokens 1.4"
+        },
+        "role-common-deep": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "common, darker: the ramp's deep step and gradient end",
+          "$comment": "tokens 1.4"
+        },
+        "role-common-light": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "common, lighter: the ramp's gradient start",
+          "$comment": "tokens 1.4"
+        },
+        "role-uncommon-deep": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "uncommon, darker: the ramp's deep step and gradient end",
+          "$comment": "tokens 1.4"
+        },
+        "role-uncommon-light": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "uncommon, lighter: the ramp's gradient start",
+          "$comment": "tokens 1.4"
+        },
+        "role-rare-deep": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "rare, darker: the ramp's deep step and gradient end",
+          "$comment": "tokens 1.4"
+        },
+        "role-rare-light": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "rare, lighter: the ramp's gradient start",
+          "$comment": "tokens 1.4"
+        },
+        "role-epic-deep": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "epic, darker: the ramp's deep step and gradient end",
+          "$comment": "tokens 1.4"
+        },
+        "role-epic-light": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "epic, lighter: the ramp's gradient start",
+          "$comment": "tokens 1.4"
+        },
+        "role-legendary-deep": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "legendary, darker: the ramp's deep step and gradient end",
+          "$comment": "tokens 1.4"
+        },
+        "role-legendary-light": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "legendary, lighter: the ramp's gradient start",
+          "$comment": "tokens 1.4"
+        },
+        "role-brand-deep": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "brand, darker: the ramp's deep step and gradient end",
+          "$comment": "tokens 1.4"
+        },
+        "role-brand-light": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "brand, lighter: the ramp's gradient start",
+          "$comment": "tokens 1.4"
+        },
+        "role-neutral-deep": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "neutral, darker: the ramp's deep step and gradient end",
+          "$comment": "tokens 1.4"
+        },
+        "role-neutral-light": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "neutral, lighter: the ramp's gradient start",
+          "$comment": "tokens 1.4"
+        },
+        "nk-hue-line": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "Alpha of a role's line (borders, tracks)",
+          "$comment": "tokens 1.4"
+        },
+        "nk-hue-tint": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "Alpha of a role's tint (fills behind text)",
+          "$comment": "tokens 1.4"
+        },
+        "nk-hue-glow": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "Alpha of a role's glow (under the glow budget)",
+          "$comment": "tokens 1.4"
+        },
+        "nk-hue-alert": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "Alpha of a role's alert wash (below the alert threshold)",
+          "$comment": "tokens 1.4"
+        },
+        "nk-material-hud-opacity": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "Surface opacity of HUD parts drawn over the game",
+          "$comment": "tokens 1.4"
+        },
+        "nk-material-hud-blur": {
+          "type": "string",
+          "description": "Backdrop blur behind HUD parts drawn over the game",
+          "$comment": "tokens 1.4"
+        },
+        "nk-material-hud-radius": {
+          "type": "string",
+          "description": "Corner radius of HUD parts drawn over the game",
+          "$comment": "tokens 1.4"
+        },
+        "nk-material-hud-edge": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "Inner top highlight of HUD parts drawn over the game (alpha)",
+          "$comment": "tokens 1.4"
+        },
+        "nk-material-hud-texture": {
+          "enum": [
+            "none",
+            "scanlines"
+          ],
+          "description": "Texture over HUD parts drawn over the game",
+          "$comment": "tokens 1.4"
+        },
+        "nk-material-menu-opacity": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "Surface opacity of menus, sheets and dialogs",
+          "$comment": "tokens 1.4"
+        },
+        "nk-material-menu-blur": {
+          "type": "string",
+          "description": "Backdrop blur behind menus, sheets and dialogs",
+          "$comment": "tokens 1.4"
+        },
+        "nk-material-menu-radius": {
+          "type": "string",
+          "description": "Corner radius of menus, sheets and dialogs",
+          "$comment": "tokens 1.4"
+        },
+        "nk-material-menu-edge": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "Inner top highlight of menus, sheets and dialogs (alpha)",
+          "$comment": "tokens 1.4"
+        },
+        "nk-material-menu-texture": {
+          "enum": [
+            "none",
+            "scanlines"
+          ],
+          "description": "Texture over menus, sheets and dialogs",
+          "$comment": "tokens 1.4"
+        },
+        "nk-material-overlay-opacity": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "Surface opacity of full-screen overlays (pause, death, loading)",
+          "$comment": "tokens 1.4"
+        },
+        "nk-material-overlay-blur": {
+          "type": "string",
+          "description": "Backdrop blur behind full-screen overlays (pause, death, loading)",
+          "$comment": "tokens 1.4"
+        },
+        "nk-material-overlay-radius": {
+          "type": "string",
+          "description": "Corner radius of full-screen overlays (pause, death, loading)",
+          "$comment": "tokens 1.4"
+        },
+        "nk-material-overlay-edge": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "Inner top highlight of full-screen overlays (pause, death, loading) (alpha)",
+          "$comment": "tokens 1.4"
+        },
+        "nk-material-overlay-texture": {
+          "enum": [
+            "none",
+            "scanlines"
+          ],
+          "description": "Texture over full-screen overlays (pause, death, loading)",
+          "$comment": "tokens 1.4"
+        },
+        "nk-slash": {
+          "enum": [
+            "none",
+            "cut"
+          ],
+          "description": "A decorative diagonal cut on menus, at most once per full-screen moment",
+          "$comment": "tokens 1.4"
+        },
+        "nk-legibility": {
+          "enum": [
+            "auto",
+            "night",
+            "day"
+          ],
+          "description": "night: as designed. day: surfaces and hairlines lifted for a bright sky (not a light theme). auto: day while the game clock says so (html[data-nk-daytime], set by the HUD)",
+          "$comment": "tokens 1.4"
+        },
+        "nk-legibility-lift": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "How far day closes the gap to opaque (0 none, 1 fully opaque)",
+          "$comment": "tokens 1.4"
+        },
+        "nk-alert-threshold": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "A level at or under this is an alert (vitals, durability)",
+          "$comment": "tokens 1.4"
+        },
+        "nk-fuel-threshold": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "Fuel alert level",
+          "$comment": "tokens 1.4"
+        },
+        "nk-notify-ms-info": {
+          "type": "string",
+          "description": "How long a info notice stays",
+          "$comment": "tokens 1.4"
+        },
+        "nk-notify-ms-success": {
+          "type": "string",
+          "description": "How long a success notice stays",
+          "$comment": "tokens 1.4"
+        },
+        "nk-notify-ms-warning": {
+          "type": "string",
+          "description": "How long a warning notice stays",
+          "$comment": "tokens 1.4"
+        },
+        "nk-notify-ms-danger": {
+          "type": "string",
+          "description": "How long a danger notice stays",
+          "$comment": "tokens 1.4"
+        },
+        "nk-hold-ms": {
+          "type": "string",
+          "description": "Press-and-hold time",
+          "$comment": "tokens 1.4"
+        },
+        "nk-cooldown-ms": {
+          "type": "string",
+          "description": "Default cooldown after an action",
+          "$comment": "tokens 1.4"
+        },
+        "nk-rest-delay": {
+          "type": "string",
+          "description": "How long an idle HUD part waits before it retracts (0 = never)",
+          "$comment": "tokens 1.4"
+        },
+        "nk-motion-profile": {
+          "enum": [
+            "full",
+            "reduced",
+            "instant"
+          ],
+          "description": "full: as designed. reduced: no movement, short fades. instant: nothing animates",
+          "$comment": "tokens 1.4"
+        },
+        "nk-ease-standard": {
+          "type": "string",
+          "description": "On-screen moves",
+          "$comment": "tokens 1.4"
+        },
+        "nk-ease-expand": {
+          "type": "string",
+          "description": "Things opening and growing",
+          "$comment": "tokens 1.4"
+        },
+        "nk-ease-retract": {
+          "type": "string",
+          "description": "Things closing and tucking away",
+          "$comment": "tokens 1.4"
+        },
+        "nk-ease-spring": {
+          "type": "string",
+          "description": "An overshoot without a spring (confirm pops)",
+          "$comment": "tokens 1.4"
+        },
+        "nk-ease-breathe": {
+          "type": "string",
+          "description": "Loops (alerts, pulses)",
+          "$comment": "tokens 1.4"
+        },
+        "nk-time-confirm": {
+          "type": "string",
+          "description": "A confirm pop: 0.65 × d, at least 60ms",
+          "$comment": "tokens 1.4"
+        },
+        "nk-time-retract": {
+          "type": "string",
+          "description": "A HUD part tucking away: 1.55 × d, at most 300ms",
+          "$comment": "tokens 1.4"
+        },
+        "nk-time-fill": {
+          "type": "string",
+          "description": "A level filling or draining: 3 × d",
+          "$comment": "tokens 1.4"
+        },
+        "nk-time-pulse": {
+          "type": "string",
+          "description": "One alert pulse",
+          "$comment": "tokens 1.4"
+        },
+        "nk-z-world": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "Stacking layer: world. A modal is the current surface + dim + dialog",
+          "$comment": "tokens 1.4"
+        },
+        "nk-z-hud": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "Stacking layer: hud. A modal is the current surface + dim + dialog",
+          "$comment": "tokens 1.4"
+        },
+        "nk-z-scrim": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "Stacking layer: scrim. A modal is the current surface + dim + dialog",
+          "$comment": "tokens 1.4"
+        },
+        "nk-z-surface": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "Stacking layer: surface. A modal is the current surface + dim + dialog",
+          "$comment": "tokens 1.4"
+        },
+        "nk-z-dim": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "Stacking layer: dim. A modal is the current surface + dim + dialog",
+          "$comment": "tokens 1.4"
+        },
+        "nk-z-dialog": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "Stacking layer: dialog. A modal is the current surface + dim + dialog",
+          "$comment": "tokens 1.4"
+        },
+        "nk-z-system": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "Stacking layer: system. A modal is the current surface + dim + dialog",
+          "$comment": "tokens 1.4"
+        },
+        "nk-hang-md": {
+          "type": "string",
+          "description": "How far a badge or gem breaks a panel edge",
+          "$comment": "tokens 1.4"
+        },
+        "nk-hang-lg": {
+          "type": "string",
+          "description": "A large hang (a level badge on a card)",
+          "$comment": "tokens 1.4"
+        },
+        "nk-focus-shift": {
+          "type": "string",
+          "description": "The focused row's nudge toward its content",
+          "$comment": "tokens 1.4"
+        },
+        "nk-glow-budget": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "How many elements may glow at once (the top surface's focused one first); 0 = no limit",
+          "$comment": "tokens 1.4"
         }
       },
       "additionalProperties": {

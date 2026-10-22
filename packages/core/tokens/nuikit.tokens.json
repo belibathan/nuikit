@@ -1,9 +1,9 @@
 {
-  "$description": "nuikit default theme (stock shadcn neutral) (nuikit tokens v1.3, dark)",
+  "$description": "nuikit default theme (stock shadcn neutral) (nuikit tokens v1.4, dark)",
   "$extensions": {
     "dev.nuikit": {
       "tokens": 1,
-      "revision": "1.3",
+      "revision": "1.4",
       "mode": "dark"
     }
   },
@@ -580,6 +580,318 @@
         "hex": "#ff6467"
       },
       "$description": "A loss drawn on the game or the HUD plate (slab deltas: −1)"
+    },
+    "role-health": {
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          1,
+          0.3922,
+          0.4039
+        ],
+        "alpha": 1,
+        "hex": "#ff6467"
+      },
+      "$description": "Role colour health: the --hue-* ramp under data-hue=\"health\""
+    },
+    "role-armor": {
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.2314,
+          0.6118,
+          0.9647
+        ],
+        "alpha": 1,
+        "hex": "#3b9cf6"
+      },
+      "$description": "Role colour armor: the --hue-* ramp under data-hue=\"armor\""
+    },
+    "role-hunger": {
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.9686,
+          0.6353,
+          0.1412
+        ],
+        "alpha": 1,
+        "hex": "#f7a224"
+      },
+      "$description": "Role colour hunger: the --hue-* ramp under data-hue=\"hunger\""
+    },
+    "role-thirst": {
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.1176,
+          0.7725,
+          0.8941
+        ],
+        "alpha": 1,
+        "hex": "#1ec5e4"
+      },
+      "$description": "Role colour thirst: the --hue-* ramp under data-hue=\"thirst\""
+    },
+    "role-stress": {
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.8,
+          0.4039,
+          0.8902
+        ],
+        "alpha": 1,
+        "hex": "#cc67e3"
+      },
+      "$description": "Role colour stress: the --hue-* ramp under data-hue=\"stress\""
+    },
+    "role-stamina": {
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.0784,
+          0.7451,
+          0.3529
+        ],
+        "alpha": 1,
+        "hex": "#14be5a"
+      },
+      "$description": "Role colour stamina: the --hue-* ramp under data-hue=\"stamina\""
+    },
+    "role-oxygen": {
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.898,
+          0.898,
+          0.898
+        ],
+        "alpha": 1,
+        "hex": "#e5e5e5"
+      },
+      "$description": "Role colour oxygen: the --hue-* ramp under data-hue=\"oxygen\""
+    },
+    "role-info": {
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.898,
+          0.898,
+          0.898
+        ],
+        "alpha": 1,
+        "hex": "#e5e5e5"
+      },
+      "$description": "Role colour info: the --hue-* ramp under data-hue=\"info\""
+    },
+    "role-success": {
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.0784,
+          0.7451,
+          0.3529
+        ],
+        "alpha": 1,
+        "hex": "#14be5a"
+      },
+      "$description": "Role colour success: the --hue-* ramp under data-hue=\"success\""
+    },
+    "role-warning": {
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.9608,
+          0.651,
+          0
+        ],
+        "alpha": 1,
+        "hex": "#f5a600"
+      },
+      "$description": "Role colour warning: the --hue-* ramp under data-hue=\"warning\""
+    },
+    "role-danger": {
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          1,
+          0.3922,
+          0.4039
+        ],
+        "alpha": 1,
+        "hex": "#ff6467"
+      },
+      "$description": "Role colour danger: the --hue-* ramp under data-hue=\"danger\""
+    },
+    "role-police": {
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.1922,
+          0.5255,
+          0.9137
+        ],
+        "alpha": 1,
+        "hex": "#3186e9"
+      },
+      "$description": "Role colour police: the --hue-* ramp under data-hue=\"police\""
+    },
+    "role-ems": {
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.9294,
+          0.2902,
+          0.2863
+        ],
+        "alpha": 1,
+        "hex": "#ed4a49"
+      },
+      "$description": "Role colour ems: the --hue-* ramp under data-hue=\"ems\""
+    },
+    "role-mech": {
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.9333,
+          0.5686,
+          0.2196
+        ],
+        "alpha": 1,
+        "hex": "#ee9138"
+      },
+      "$description": "Role colour mech: the --hue-* ramp under data-hue=\"mech\""
+    },
+    "role-gang": {
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.6157,
+          0.3412,
+          0.8706
+        ],
+        "alpha": 1,
+        "hex": "#9d57de"
+      },
+      "$description": "Role colour gang: the --hue-* ramp under data-hue=\"gang\""
+    },
+    "role-civ": {
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.6314,
+          0.6314,
+          0.6314
+        ],
+        "alpha": 1,
+        "hex": "#a1a1a1"
+      },
+      "$description": "Role colour civ: the --hue-* ramp under data-hue=\"civ\""
+    },
+    "role-staff": {
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.8314,
+          0.8314,
+          0.8314
+        ],
+        "alpha": 1,
+        "hex": "#d4d4d4"
+      },
+      "$description": "Role colour staff: the --hue-* ramp under data-hue=\"staff\""
+    },
+    "role-common": {
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.6314,
+          0.6314,
+          0.6314
+        ],
+        "alpha": 1,
+        "hex": "#a1a1a1"
+      },
+      "$description": "Role colour common: the --hue-* ramp under data-hue=\"common\""
+    },
+    "role-uncommon": {
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.3294,
+          0.749,
+          0.3608
+        ],
+        "alpha": 1,
+        "hex": "#54bf5c"
+      },
+      "$description": "Role colour uncommon: the --hue-* ramp under data-hue=\"uncommon\""
+    },
+    "role-rare": {
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.2039,
+          0.5882,
+          0.9373
+        ],
+        "alpha": 1,
+        "hex": "#3496ef"
+      },
+      "$description": "Role colour rare: the --hue-* ramp under data-hue=\"rare\""
+    },
+    "role-epic": {
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.651,
+          0.3412,
+          0.9294
+        ],
+        "alpha": 1,
+        "hex": "#a657ed"
+      },
+      "$description": "Role colour epic: the --hue-* ramp under data-hue=\"epic\""
+    },
+    "role-legendary": {
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.949,
+          0.651,
+          0.0941
+        ],
+        "alpha": 1,
+        "hex": "#f2a618"
+      },
+      "$description": "Role colour legendary: the --hue-* ramp under data-hue=\"legendary\""
+    },
+    "role-brand": {
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.8314,
+          0.8314,
+          0.8314
+        ],
+        "alpha": 1,
+        "hex": "#d4d4d4"
+      },
+      "$description": "Role colour brand: the --hue-* ramp under data-hue=\"brand\""
+    },
+    "role-neutral": {
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.6314,
+          0.6314,
+          0.6314
+        ],
+        "alpha": 1,
+        "hex": "#a1a1a1"
+      },
+      "$description": "Role colour neutral: the --hue-* ramp under data-hue=\"neutral\""
     }
   },
   "radius": {
@@ -845,6 +1157,334 @@
       "$type": "number",
       "$value": 0,
       "$description": "Bounce folded into the snap, move and soft springs (0 = critically damped; 0.3 is the most the kit allows)"
+    },
+    "treatment": {
+      "$value": "soft",
+      "$description": "How the palette is drawn: soft (Graphite), glass, plate or slab. Fills material, stroke, type, focus and motion defaults; any value the theme sets wins",
+      "$extensions": {
+        "dev.nuikit": {
+          "type": "keyword"
+        }
+      }
+    },
+    "focus-style": {
+      "$value": "ring",
+      "$description": "Every component's focus (controller and keyboard highlight)",
+      "$extensions": {
+        "dev.nuikit": {
+          "type": "keyword"
+        }
+      }
+    },
+    "hold-style": {
+      "$value": "bar",
+      "$description": "How a press-and-hold shows its progress",
+      "$extensions": {
+        "dev.nuikit": {
+          "type": "keyword"
+        }
+      }
+    },
+    "confirm-scale": {
+      "$type": "number",
+      "$value": 1.04,
+      "$description": "The short pop of a confirm"
+    },
+    "level-style": {
+      "$value": "bar",
+      "$description": "How a level (--level, 0–1) is drawn by meters, vitals, holds, timers and cooldowns",
+      "$extensions": {
+        "dev.nuikit": {
+          "type": "keyword"
+        }
+      }
+    },
+    "hue-line": {
+      "$type": "number",
+      "$value": 0.5,
+      "$description": "Alpha of a role's line (borders, tracks)"
+    },
+    "hue-tint": {
+      "$type": "number",
+      "$value": 0.14,
+      "$description": "Alpha of a role's tint (fills behind text)"
+    },
+    "hue-glow": {
+      "$type": "number",
+      "$value": 0.45,
+      "$description": "Alpha of a role's glow (under the glow budget)"
+    },
+    "hue-alert": {
+      "$type": "number",
+      "$value": 0.24,
+      "$description": "Alpha of a role's alert wash (below the alert threshold)"
+    },
+    "material-hud-opacity": {
+      "$type": "number",
+      "$value": 0.55,
+      "$description": "Surface opacity of HUD parts drawn over the game"
+    },
+    "material-hud-blur": {
+      "$type": "dimension",
+      "$value": {
+        "value": 0,
+        "unit": "px"
+      },
+      "$description": "Backdrop blur behind HUD parts drawn over the game"
+    },
+    "material-hud-radius": {
+      "$type": "dimension",
+      "$value": {
+        "value": 0.625,
+        "unit": "rem"
+      },
+      "$description": "Corner radius of HUD parts drawn over the game"
+    },
+    "material-hud-edge": {
+      "$type": "number",
+      "$value": 0.06,
+      "$description": "Inner top highlight of HUD parts drawn over the game (alpha)"
+    },
+    "material-hud-texture": {
+      "$value": "none",
+      "$description": "Texture over HUD parts drawn over the game",
+      "$extensions": {
+        "dev.nuikit": {
+          "type": "keyword"
+        }
+      }
+    },
+    "material-menu-opacity": {
+      "$type": "number",
+      "$value": 0.96,
+      "$description": "Surface opacity of menus, sheets and dialogs"
+    },
+    "material-menu-blur": {
+      "$type": "dimension",
+      "$value": {
+        "value": 0,
+        "unit": "px"
+      },
+      "$description": "Backdrop blur behind menus, sheets and dialogs"
+    },
+    "material-menu-radius": {
+      "$type": "dimension",
+      "$value": {
+        "value": 0.625,
+        "unit": "rem"
+      },
+      "$description": "Corner radius of menus, sheets and dialogs"
+    },
+    "material-menu-edge": {
+      "$type": "number",
+      "$value": 0.06,
+      "$description": "Inner top highlight of menus, sheets and dialogs (alpha)"
+    },
+    "material-menu-texture": {
+      "$value": "none",
+      "$description": "Texture over menus, sheets and dialogs",
+      "$extensions": {
+        "dev.nuikit": {
+          "type": "keyword"
+        }
+      }
+    },
+    "material-overlay-opacity": {
+      "$type": "number",
+      "$value": 0.96,
+      "$description": "Surface opacity of full-screen overlays (pause, death, loading)"
+    },
+    "material-overlay-blur": {
+      "$type": "dimension",
+      "$value": {
+        "value": 0,
+        "unit": "px"
+      },
+      "$description": "Backdrop blur behind full-screen overlays (pause, death, loading)"
+    },
+    "material-overlay-radius": {
+      "$type": "dimension",
+      "$value": {
+        "value": 0.625,
+        "unit": "rem"
+      },
+      "$description": "Corner radius of full-screen overlays (pause, death, loading)"
+    },
+    "material-overlay-edge": {
+      "$type": "number",
+      "$value": 0.06,
+      "$description": "Inner top highlight of full-screen overlays (pause, death, loading) (alpha)"
+    },
+    "material-overlay-texture": {
+      "$value": "none",
+      "$description": "Texture over full-screen overlays (pause, death, loading)",
+      "$extensions": {
+        "dev.nuikit": {
+          "type": "keyword"
+        }
+      }
+    },
+    "slash": {
+      "$value": "none",
+      "$description": "A decorative diagonal cut on menus, at most once per full-screen moment",
+      "$extensions": {
+        "dev.nuikit": {
+          "type": "keyword"
+        }
+      }
+    },
+    "legibility": {
+      "$value": "auto",
+      "$description": "night: as designed. day: surfaces and hairlines lifted for a bright sky (not a light theme). auto: day while the game clock says so (html[data-nk-daytime], set by the HUD)",
+      "$extensions": {
+        "dev.nuikit": {
+          "type": "keyword"
+        }
+      }
+    },
+    "legibility-lift": {
+      "$type": "number",
+      "$value": 0.5,
+      "$description": "How far day closes the gap to opaque (0 none, 1 fully opaque)"
+    },
+    "alert-threshold": {
+      "$type": "number",
+      "$value": 0.2,
+      "$description": "A level at or under this is an alert (vitals, durability)"
+    },
+    "fuel-threshold": {
+      "$type": "number",
+      "$value": 0.15,
+      "$description": "Fuel alert level"
+    },
+    "notify-ms-info": {
+      "$type": "duration",
+      "$value": {
+        "value": 5000,
+        "unit": "ms"
+      },
+      "$description": "How long a info notice stays"
+    },
+    "notify-ms-success": {
+      "$type": "duration",
+      "$value": {
+        "value": 5000,
+        "unit": "ms"
+      },
+      "$description": "How long a success notice stays"
+    },
+    "notify-ms-warning": {
+      "$type": "duration",
+      "$value": {
+        "value": 5000,
+        "unit": "ms"
+      },
+      "$description": "How long a warning notice stays"
+    },
+    "notify-ms-danger": {
+      "$type": "duration",
+      "$value": {
+        "value": 5000,
+        "unit": "ms"
+      },
+      "$description": "How long a danger notice stays"
+    },
+    "hold-ms": {
+      "$type": "duration",
+      "$value": {
+        "value": 800,
+        "unit": "ms"
+      },
+      "$description": "Press-and-hold time"
+    },
+    "cooldown-ms": {
+      "$type": "duration",
+      "$value": {
+        "value": 0,
+        "unit": "ms"
+      },
+      "$description": "Default cooldown after an action"
+    },
+    "rest-delay": {
+      "$type": "duration",
+      "$value": {
+        "value": 0,
+        "unit": "ms"
+      },
+      "$description": "How long an idle HUD part waits before it retracts (0 = never)"
+    },
+    "motion-profile": {
+      "$value": "full",
+      "$description": "full: as designed. reduced: no movement, short fades. instant: nothing animates",
+      "$extensions": {
+        "dev.nuikit": {
+          "type": "keyword"
+        }
+      }
+    },
+    "z-world": {
+      "$type": "number",
+      "$value": 10,
+      "$description": "Stacking layer: world. A modal is the current surface + dim + dialog"
+    },
+    "z-hud": {
+      "$type": "number",
+      "$value": 20,
+      "$description": "Stacking layer: hud. A modal is the current surface + dim + dialog"
+    },
+    "z-scrim": {
+      "$type": "number",
+      "$value": 30,
+      "$description": "Stacking layer: scrim. A modal is the current surface + dim + dialog"
+    },
+    "z-surface": {
+      "$type": "number",
+      "$value": 40,
+      "$description": "Stacking layer: surface. A modal is the current surface + dim + dialog"
+    },
+    "z-dim": {
+      "$type": "number",
+      "$value": 50,
+      "$description": "Stacking layer: dim. A modal is the current surface + dim + dialog"
+    },
+    "z-dialog": {
+      "$type": "number",
+      "$value": 60,
+      "$description": "Stacking layer: dialog. A modal is the current surface + dim + dialog"
+    },
+    "z-system": {
+      "$type": "number",
+      "$value": 70,
+      "$description": "Stacking layer: system. A modal is the current surface + dim + dialog"
+    },
+    "hang-md": {
+      "$type": "dimension",
+      "$value": {
+        "value": 0.375,
+        "unit": "rem"
+      },
+      "$description": "How far a badge or gem breaks a panel edge"
+    },
+    "hang-lg": {
+      "$type": "dimension",
+      "$value": {
+        "value": 0.75,
+        "unit": "rem"
+      },
+      "$description": "A large hang (a level badge on a card)"
+    },
+    "focus-shift": {
+      "$type": "dimension",
+      "$value": {
+        "value": 0,
+        "unit": "rem"
+      },
+      "$description": "The focused row's nudge toward its content"
+    },
+    "glow-budget": {
+      "$type": "number",
+      "$value": 1,
+      "$description": "How many elements may glow at once (the top surface's focused one first); 0 = no limit"
     }
   }
 }

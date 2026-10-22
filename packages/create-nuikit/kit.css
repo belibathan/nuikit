@@ -51,11 +51,14 @@
   --nk-indicator-ease: var(--nk-ease-in-out, cubic-bezier(0.2, 0, 0, 1));
 
   /* ── panel: every floating surface */
-  --nk-panel-bg: rgba(var(--surface-rgb, var(--popover-rgb)), calc(var(--surface-a, var(--popover-a, 1)) * var(--nk-surface-opacity, 0.96)));
+  /* panels draw the menu material (tokens 1.4): opacity (lifted by day legibility), radius, edge, blur */
+  --nk-panel-bg: rgba(var(--surface-rgb, var(--popover-rgb)), calc(var(--surface-a, var(--popover-a, 1)) * var(--nk-menu-alpha, var(--nk-surface-opacity, 0.96))));
   --nk-panel-fg: var(--popover-foreground);
   --nk-panel-border: var(--border);
   /* the theme's radius as is (10px in Graphite): compact panels read crisper than rounded ones */
-  --nk-panel-radius: var(--radius);
+  --nk-panel-radius: var(--nk-material-menu-radius, var(--radius));
+  /* the menu material's backdrop blur (0px by default); a surface that wants it applies backdrop-filter */
+  --nk-panel-blur: var(--nk-material-menu-blur, 0px);
   --nk-panel-cut: var(--nk-cut, 0px);
   --nk-panel-clip: var(--nk-clip, none);
   --nk-panel-gradient: linear-gradient(
@@ -63,7 +66,7 @@
     rgba(var(--popover-foreground-rgb), var(--nk-surface-gradient, 0)),
     rgba(var(--popover-foreground-rgb), 0) 60%
   );
-  --nk-panel-edge: inset 0 1px 0 0 rgba(var(--popover-foreground-rgb), var(--nk-surface-edge, 0.06));
+  --nk-panel-edge: inset 0 1px 0 0 rgba(var(--popover-foreground-rgb), var(--nk-material-menu-edge, var(--nk-surface-edge, 0.06)));
   --nk-panel-shadow: var(--nk-elevation-shadow, 0 0 0 1px rgba(var(--scrim-rgb), 0.25), 0 12px 32px -16px rgba(var(--scrim-rgb), 0.6));
   --nk-panel-header-height: calc(3.25rem * var(--nk-density, 0.875));
   --nk-panel-header-padding: calc(var(--nk-space) * 3) calc(var(--nk-space) * 4);
@@ -131,7 +134,7 @@
   --nk-chip-padding: calc(var(--nk-space) * 2.5);
   /* a small rounded rect (6px in Graphite); Velvet sets 9999px for pills */
   --nk-chip-radius: max(0.25rem, calc(var(--radius) - 4px));
-  --nk-chip-bg: rgba(var(--hud-rgb), max(var(--hud-a, 0.45), var(--nk-hud-opacity, 0.55)));
+  --nk-chip-bg: rgba(var(--hud-rgb), max(var(--hud-a, 0.45), var(--nk-hud-alpha, var(--nk-hud-opacity, 0.55))));
   --nk-chip-fg: var(--hud-foreground);
   --nk-chip-font-size: 0.875rem;
   --nk-chip-weight: 500;
@@ -1252,4 +1255,65 @@ html :focus-visible {
   animation-delay: 0s !important;
   transition-duration: 0s !important;
   transition-delay: 0s !important;
+}
+
+
+/* ───────────────────────────── tokens 1.4: roles, legibility, glow budget (docs/tokens.md#roles)
+   Roles: a frame sets data-hue="<role>" and everything inside reads one ramp, never a colour. The
+   compiler gives each role its colour and deep / light steps (--role-<name>, -deep, -light); the alphas
+   are tokens (--nk-hue-line, -tint, -glow, -alert). Status and vital roles alias by default. */
+[data-hue="health"] { --hue: var(--role-health-rgb); --hue-deep-rgb: var(--role-health-deep-rgb); --hue-light-rgb: var(--role-health-light-rgb); }
+[data-hue="armor"] { --hue: var(--role-armor-rgb); --hue-deep-rgb: var(--role-armor-deep-rgb); --hue-light-rgb: var(--role-armor-light-rgb); }
+[data-hue="hunger"] { --hue: var(--role-hunger-rgb); --hue-deep-rgb: var(--role-hunger-deep-rgb); --hue-light-rgb: var(--role-hunger-light-rgb); }
+[data-hue="thirst"] { --hue: var(--role-thirst-rgb); --hue-deep-rgb: var(--role-thirst-deep-rgb); --hue-light-rgb: var(--role-thirst-light-rgb); }
+[data-hue="stress"] { --hue: var(--role-stress-rgb); --hue-deep-rgb: var(--role-stress-deep-rgb); --hue-light-rgb: var(--role-stress-light-rgb); }
+[data-hue="stamina"] { --hue: var(--role-stamina-rgb); --hue-deep-rgb: var(--role-stamina-deep-rgb); --hue-light-rgb: var(--role-stamina-light-rgb); }
+[data-hue="oxygen"] { --hue: var(--role-oxygen-rgb); --hue-deep-rgb: var(--role-oxygen-deep-rgb); --hue-light-rgb: var(--role-oxygen-light-rgb); }
+[data-hue="info"] { --hue: var(--role-info-rgb); --hue-deep-rgb: var(--role-info-deep-rgb); --hue-light-rgb: var(--role-info-light-rgb); }
+[data-hue="success"] { --hue: var(--role-success-rgb); --hue-deep-rgb: var(--role-success-deep-rgb); --hue-light-rgb: var(--role-success-light-rgb); }
+[data-hue="warning"] { --hue: var(--role-warning-rgb); --hue-deep-rgb: var(--role-warning-deep-rgb); --hue-light-rgb: var(--role-warning-light-rgb); }
+[data-hue="danger"] { --hue: var(--role-danger-rgb); --hue-deep-rgb: var(--role-danger-deep-rgb); --hue-light-rgb: var(--role-danger-light-rgb); }
+[data-hue="police"] { --hue: var(--role-police-rgb); --hue-deep-rgb: var(--role-police-deep-rgb); --hue-light-rgb: var(--role-police-light-rgb); }
+[data-hue="ems"] { --hue: var(--role-ems-rgb); --hue-deep-rgb: var(--role-ems-deep-rgb); --hue-light-rgb: var(--role-ems-light-rgb); }
+[data-hue="mech"] { --hue: var(--role-mech-rgb); --hue-deep-rgb: var(--role-mech-deep-rgb); --hue-light-rgb: var(--role-mech-light-rgb); }
+[data-hue="gang"] { --hue: var(--role-gang-rgb); --hue-deep-rgb: var(--role-gang-deep-rgb); --hue-light-rgb: var(--role-gang-light-rgb); }
+[data-hue="civ"] { --hue: var(--role-civ-rgb); --hue-deep-rgb: var(--role-civ-deep-rgb); --hue-light-rgb: var(--role-civ-light-rgb); }
+[data-hue="staff"] { --hue: var(--role-staff-rgb); --hue-deep-rgb: var(--role-staff-deep-rgb); --hue-light-rgb: var(--role-staff-light-rgb); }
+[data-hue="common"] { --hue: var(--role-common-rgb); --hue-deep-rgb: var(--role-common-deep-rgb); --hue-light-rgb: var(--role-common-light-rgb); }
+[data-hue="uncommon"] { --hue: var(--role-uncommon-rgb); --hue-deep-rgb: var(--role-uncommon-deep-rgb); --hue-light-rgb: var(--role-uncommon-light-rgb); }
+[data-hue="rare"] { --hue: var(--role-rare-rgb); --hue-deep-rgb: var(--role-rare-deep-rgb); --hue-light-rgb: var(--role-rare-light-rgb); }
+[data-hue="epic"] { --hue: var(--role-epic-rgb); --hue-deep-rgb: var(--role-epic-deep-rgb); --hue-light-rgb: var(--role-epic-light-rgb); }
+[data-hue="legendary"] { --hue: var(--role-legendary-rgb); --hue-deep-rgb: var(--role-legendary-deep-rgb); --hue-light-rgb: var(--role-legendary-light-rgb); }
+[data-hue="brand"] { --hue: var(--role-brand-rgb); --hue-deep-rgb: var(--role-brand-deep-rgb); --hue-light-rgb: var(--role-brand-light-rgb); }
+[data-hue="neutral"] { --hue: var(--role-neutral-rgb); --hue-deep-rgb: var(--role-neutral-deep-rgb); --hue-light-rgb: var(--role-neutral-light-rgb); }
+[data-hue] {
+  --hue-solid: rgb(var(--hue));
+  --hue-deep: rgb(var(--hue-deep-rgb));
+  --hue-line: rgba(var(--hue), var(--nk-hue-line, 0.5));
+  --hue-tint: rgba(var(--hue), var(--nk-hue-tint, 0.14));
+  --hue-glow: rgba(var(--hue), var(--nk-hue-glow, 0.45));
+  --hue-alert: rgba(var(--hue), var(--nk-hue-alert, 0.24));
+  --hue-grad-a: rgb(var(--hue-light-rgb));
+  --hue-grad-b: rgb(var(--hue-deep-rgb));
+}
+
+/* Legibility: day lifts each material's opacity toward opaque by --nk-legibility-lift (not a light
+   theme). The theme's day applies always; auto applies while the HUD marks html[data-nk-daytime]. Surfaces
+   read --nk-{hud,menu,overlay}-alpha, never the raw material opacity. */
+:root {
+  --nk-day: 0;
+  --nk-hud-alpha: calc(var(--nk-material-hud-opacity, 0.55) + (1 - var(--nk-material-hud-opacity, 0.55)) * var(--nk-legibility-lift, 0.5) * var(--nk-day));
+  --nk-menu-alpha: calc(var(--nk-material-menu-opacity, 0.96) + (1 - var(--nk-material-menu-opacity, 0.96)) * var(--nk-legibility-lift, 0.5) * var(--nk-day));
+  --nk-overlay-alpha: calc(var(--nk-material-overlay-opacity, 0.96) + (1 - var(--nk-material-overlay-opacity, 0.96)) * var(--nk-legibility-lift, 0.5) * var(--nk-day));
+}
+html[data-nk-legibility="day"],
+html[data-nk-legibility="auto"][data-nk-daytime] {
+  --nk-day: 1;
+}
+
+/* Glow budget: a part that may glow says so with data-nk-glow; the runtime (nuikit-core glow.ts) marks at
+   most --nk-glow-budget of them data-nk-glow-on, the top surface's focused one first. The rest don't glow. */
+[data-nk-glow]:not([data-nk-glow-on]) {
+  --nk-glow: 0;
+  --nk-hue-glow: 0;
 }

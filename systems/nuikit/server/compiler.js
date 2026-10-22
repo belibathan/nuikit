@@ -169,7 +169,7 @@ var NuikitTheme = (() => {
 
   // src/tokens.ts
   var TOKENS_VERSION = 1;
-  var TOKENS_REVISION = "1.3";
+  var TOKENS_REVISION = "1.4";
   var DEFAULT_FONT_SANS = "Inter, ui-sans-serif, system-ui, sans-serif";
   var DEFAULT_FONT_DISPLAY = `"Inter Tight", ${DEFAULT_FONT_SANS}`;
   var DEFAULT_FONT_MONO = `"Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace`;
@@ -277,7 +277,12 @@ var NuikitTheme = (() => {
       "nk-time-screen": ms(Math.min(400, d * 2.5)),
       "nk-time-ambient": "400ms",
       "nk-stagger": ms(feel === "smooth" ? Math.min(30, d * 0.125) : Math.min(20, d * (feel === "snap" ? 0.125 : 0.15))),
-      "nk-stagger-max": "100ms"
+      "nk-stagger-max": "100ms",
+      // tokens 1.4: the extra rungs (foundation.md §9)
+      "nk-time-confirm": ms(Math.max(60, d * 0.65)),
+      "nk-time-retract": ms(Math.min(300, d * 1.55)),
+      "nk-time-fill": ms(d * 3),
+      "nk-time-pulse": "1000ms"
     };
     SPRING_PRESETS.forEach((name, i) => {
       const t = Math.min(SPRING_MAX[i], Math.round(d * r[i] / 10) * 10);
@@ -285,6 +290,135 @@ var NuikitTheme = (() => {
     });
     return out;
   }
+  var TREATMENTS = ["soft", "glass", "plate", "slab"];
+  var TREATMENT_PRESETS = {
+    soft: {},
+    glass: {
+      "nk-surface-edge": "0.12",
+      "nk-surface-gradient": "0.06",
+      "nk-elevation": "deep",
+      "nk-focus-style": "halo",
+      "nk-motion-feel": "smooth",
+      "nk-material-hud-blur": "1.25rem",
+      "nk-material-menu-blur": "2rem",
+      "nk-material-overlay-blur": "0.5rem"
+    },
+    plate: {
+      "nk-cut": "0.5rem",
+      "nk-surface-edge": "0.1",
+      "nk-label-case": "uppercase",
+      "nk-tracking-label": "0.1em",
+      "nk-row-indicator": "outline",
+      "nk-focus-style": "bar",
+      "nk-motion-feel": "stepped",
+      "nk-material-menu-texture": "scanlines",
+      "nk-material-hud-radius": "0px",
+      "nk-material-menu-radius": "0px"
+    },
+    slab: {
+      "nk-border-width": "2px",
+      "nk-elevation": "hard",
+      "nk-surface-opacity": "1",
+      "nk-surface-tint": "0",
+      "nk-surface-edge": "0",
+      "nk-display-style": "italic",
+      "nk-skew": "-8deg",
+      "nk-weight-display": "900",
+      "nk-motion-feel": "snap",
+      "nk-row-indicator": "fill",
+      "nk-focus-style": "fill",
+      "nk-focus-shift": "0.25rem",
+      "nk-hold-style": "fill",
+      "nk-level-style": "slab",
+      "nk-slash": "cut"
+    }
+  };
+  var ROLE_SETS = {
+    vitals: ["health", "armor", "hunger", "thirst", "stress", "stamina", "oxygen"],
+    status: ["info", "success", "warning", "danger"],
+    faction: ["police", "ems", "mech", "gang", "civ", "staff"],
+    rarity: ["common", "uncommon", "rare", "epic", "legendary"],
+    brand: ["brand"],
+    neutral: ["neutral"]
+  };
+  var ROLES = Object.values(ROLE_SETS).flat();
+  var ROLE_DEFAULTS = {
+    health: "vital-health",
+    armor: "vital-armor",
+    hunger: "vital-hunger",
+    thirst: "vital-thirst",
+    stress: "vital-stress",
+    stamina: "success",
+    oxygen: "info",
+    info: "info",
+    success: "success",
+    warning: "warning",
+    danger: "destructive",
+    police: [0.62, 0.17, 255],
+    ems: [0.64, 0.2, 25],
+    mech: [0.74, 0.15, 60],
+    gang: [0.6, 0.2, 305],
+    civ: "muted-foreground",
+    staff: "brand",
+    common: "muted-foreground",
+    uncommon: [0.72, 0.17, 145],
+    rare: [0.66, 0.16, 250],
+    epic: [0.62, 0.22, 305],
+    legendary: [0.78, 0.16, 75],
+    brand: "brand",
+    neutral: "muted-foreground"
+  };
+  var f14 = (name, type, description, fallback, extra = {}) => ({ name, type, group: "identity", description, fallback, since: "1.4", ...extra });
+  var d14 = (name, type, description, fallback) => ({ name, type, group: "derived", description, fallback, since: "1.4" });
+  var MATERIAL_CONTEXTS = { hud: "HUD parts drawn over the game", menu: "menus, sheets and dialogs", overlay: "full-screen overlays (pause, death, loading)" };
+  var MS = [0, 6e4];
+  var FOUNDATION_TOKENS = [
+    f14("nk-treatment", "keyword", "How the palette is drawn: soft (Graphite), glass, plate or slab. Fills material, stroke, type, focus and motion defaults; any value the theme sets wins", "soft", { values: TREATMENTS }),
+    f14("nk-focus-style", "keyword", "Every component's focus (controller and keyboard highlight)", "ring", { values: ["ring", "halo", "tint", "fill", "invert", "bar"] }),
+    f14("nk-hold-style", "keyword", "How a press-and-hold shows its progress", "bar", { values: ["bar", "ring", "fill"] }),
+    f14("nk-confirm-scale", "number", "The short pop of a confirm", "1.04", { range: [1, 1.2] }),
+    f14("nk-level-style", "keyword", "How a level (--level, 0\u20131) is drawn by meters, vitals, holds, timers and cooldowns", "bar", { values: ["bar", "ring", "liquid", "slab", "pips"] }),
+    ...ROLES.map((r) => f14(`role-${r}`, "color", `Role colour ${r}: the --hue-* ramp under data-hue="${r}"`, typeof ROLE_DEFAULTS[r] === "string" ? String(ROLE_DEFAULTS[r]) : `oklch(${ROLE_DEFAULTS[r].join(" ")})`)),
+    ...ROLES.flatMap((r) => [
+      d14(`role-${r}-deep`, "color", `${r}, darker: the ramp's deep step and gradient end`, `role-${r}, OKLCH lightness \u2212 0.12`),
+      d14(`role-${r}-light`, "color", `${r}, lighter: the ramp's gradient start`, `role-${r}, OKLCH lightness + 0.1`)
+    ]),
+    f14("nk-hue-line", "number", "Alpha of a role's line (borders, tracks)", "0.5", { range: [0, 1] }),
+    f14("nk-hue-tint", "number", "Alpha of a role's tint (fills behind text)", "0.14", { range: [0, 1] }),
+    f14("nk-hue-glow", "number", "Alpha of a role's glow (under the glow budget)", "0.45", { range: [0, 1] }),
+    f14("nk-hue-alert", "number", "Alpha of a role's alert wash (below the alert threshold)", "0.24", { range: [0, 1] }),
+    ...Object.entries(MATERIAL_CONTEXTS).flatMap(([ctx, what]) => [
+      f14(`nk-material-${ctx}-opacity`, "number", `Surface opacity of ${what}`, ctx === "hud" ? "nk-hud-opacity" : "nk-surface-opacity", { range: [0, 1] }),
+      f14(`nk-material-${ctx}-blur`, "dimension", `Backdrop blur behind ${what}`, "0px"),
+      f14(`nk-material-${ctx}-radius`, "dimension", `Corner radius of ${what}`, "radius"),
+      f14(`nk-material-${ctx}-edge`, "number", `Inner top highlight of ${what} (alpha)`, "nk-surface-edge", { range: [0, 0.3] }),
+      f14(`nk-material-${ctx}-texture`, "keyword", `Texture over ${what}`, "none", { values: ["none", "scanlines"] })
+    ]),
+    f14("nk-slash", "keyword", "A decorative diagonal cut on menus, at most once per full-screen moment", "none", { values: ["none", "cut"] }),
+    f14("nk-legibility", "keyword", "night: as designed. day: surfaces and hairlines lifted for a bright sky (not a light theme). auto: day while the game clock says so (html[data-nk-daytime], set by the HUD)", "auto", { values: ["auto", "night", "day"] }),
+    f14("nk-legibility-lift", "number", "How far day closes the gap to opaque (0 none, 1 fully opaque)", "0.5", { range: [0, 1] }),
+    f14("nk-alert-threshold", "number", "A level at or under this is an alert (vitals, durability)", "0.2", { range: [0, 1] }),
+    f14("nk-fuel-threshold", "number", "Fuel alert level", "0.15", { range: [0, 1] }),
+    ...["info", "success", "warning", "danger"].map((s) => f14(`nk-notify-ms-${s}`, "duration", `How long a ${s} notice stays`, "5000ms", { range: MS })),
+    f14("nk-hold-ms", "duration", "Press-and-hold time", "800ms", { range: MS }),
+    f14("nk-cooldown-ms", "duration", "Default cooldown after an action", "0ms", { range: MS }),
+    f14("nk-rest-delay", "duration", "How long an idle HUD part waits before it retracts (0 = never)", "0ms", { range: MS }),
+    f14("nk-motion-profile", "keyword", "full: as designed. reduced: no movement, short fades. instant: nothing animates", "full", { values: ["full", "reduced", "instant"] }),
+    d14("nk-ease-standard", "cubicBezier", "On-screen moves", "nk-ease-in-out"),
+    d14("nk-ease-expand", "cubicBezier", "Things opening and growing", "nk-ease-emphasized"),
+    d14("nk-ease-retract", "cubicBezier", "Things closing and tucking away", "nk-ease-in"),
+    d14("nk-ease-spring", "cubicBezier", "An overshoot without a spring (confirm pops)", "cubic-bezier(0.34, 1.56, 0.64, 1)"),
+    d14("nk-ease-breathe", "cubicBezier", "Loops (alerts, pulses)", "cubic-bezier(0.37, 0, 0.63, 1)"),
+    d14("nk-time-confirm", "duration", "A confirm pop: 0.65 \xD7 d, at least 60ms", "91ms"),
+    d14("nk-time-retract", "duration", "A HUD part tucking away: 1.55 \xD7 d, at most 300ms", "217ms"),
+    d14("nk-time-fill", "duration", "A level filling or draining: 3 \xD7 d", "420ms"),
+    d14("nk-time-pulse", "duration", "One alert pulse", "1000ms"),
+    ...["world", "hud", "scrim", "surface", "dim", "dialog", "system"].map((l, i) => f14(`nk-z-${l}`, "number", `Stacking layer: ${l}. A modal is the current surface + dim + dialog`, String((i + 1) * 10), { range: [0, 1e5] })),
+    f14("nk-hang-md", "dimension", "How far a badge or gem breaks a panel edge", "0.375rem"),
+    f14("nk-hang-lg", "dimension", "A large hang (a level badge on a card)", "0.75rem"),
+    f14("nk-focus-shift", "dimension", "The focused row's nudge toward its content", "0rem"),
+    f14("nk-glow-budget", "number", "How many elements may glow at once (the top surface's focused one first); 0 = no limit", "1", { range: [0, 8] })
+  ];
   var IDENTITY_TOKENS = [
     id("brand", "color", "The server's signature colour: active indicators, gauge needles, focus, logos (not the action: that's primary)", "primary if chromatic (OKLCH C \u2265 0.06), else chart-1"),
     id("brand-foreground", "color", "Text on brand", "foreground or background, whichever contrasts more"),
@@ -332,7 +466,8 @@ var NuikitTheme = (() => {
     dv("nk-row-outline", "number", "1 when nk-row-indicator is outline", "from nk-row-indicator"),
     dv("nk-clip", "keyword", "clip-path of panels: the nk-cut chamfer, or none when nk-cut is 0 (a clip-path would also clip the shadow)", "from nk-cut"),
     dv("nk-clip-sm", "keyword", "clip-path of chips, tiles and buttons: half the panel chamfer", "from nk-cut"),
-    ...MOTION_TOKENS
+    ...MOTION_TOKENS,
+    ...FOUNDATION_TOKENS
   ];
   var chamferClip = (cut) => `polygon(${cut} 0, 100% 0, 100% calc(100% - ${cut}), calc(100% - ${cut}) 100%, 0 100%, 0 ${cut})`;
   var ALL_TOKENS = [...TOKENS, ...IDENTITY_TOKENS];
@@ -751,7 +886,7 @@ var NuikitTheme = (() => {
   };
   var trimNum = (n2) => String(Math.round(n2 * 1e4) / 1e4);
   function identityValue(spec, raw) {
-    var _a;
+    var _a, _b;
     const v = raw.trim();
     if (spec.name === "nk-skew") {
       if (v === "0") return "0deg";
@@ -776,7 +911,8 @@ var NuikitTheme = (() => {
         const m = DUR.exec(v);
         if (!m) return null;
         const ms = parseFloat(m[1]) * (m[2] === "s" ? 1e3 : 1);
-        return ms <= 2e3 ? `${trimNum(ms)}ms` : null;
+        const [lo, hi] = (_a = spec.range) != null ? _a : [0, 2e3];
+        return ms >= lo && ms <= hi ? `${trimNum(ms)}ms` : null;
       }
       case "cubicBezier": {
         const k = EASE_KEYWORDS[v];
@@ -788,7 +924,7 @@ var NuikitTheme = (() => {
         return `cubic-bezier(${[x1, y1, x2, y2].map(trimNum).join(", ")})`;
       }
       case "keyword":
-        return ((_a = spec.values) == null ? void 0 : _a.includes(v)) ? v : null;
+        return ((_b = spec.values) == null ? void 0 : _b.includes(v)) ? v : null;
       default:
         return v || null;
     }
@@ -813,20 +949,54 @@ var NuikitTheme = (() => {
     const a = Math.max(hud[3], parseFloat((_a = vars["nk-hud-opacity"]) != null ? _a : "0") || 0);
     return composite([hud[0], hud[1], hud[2], a], WHITE);
   }
+  var REF_DEFAULTS = new Set(Object.keys(MATERIAL_CONTEXTS).flatMap((c2) => [`nk-material-${c2}-opacity`, `nk-material-${c2}-radius`, `nk-material-${c2}-edge`]));
+  function applyTreatment(vars, warnings) {
+    const raw = vars["nk-treatment"];
+    let t = "soft";
+    if (raw !== void 0) {
+      if (TREATMENTS.includes(raw.trim())) t = raw.trim();
+      else warnings.push(`--nk-treatment must be ${TREATMENTS.join(", ")} (got ${raw}); soft is used.`);
+    }
+    vars["nk-treatment"] = t;
+    for (const [k, v] of Object.entries(TREATMENT_PRESETS[t])) if (vars[k] === void 0) vars[k] = v;
+  }
+  function deriveFoundation(vars) {
+    var _a, _b;
+    for (const role of ROLES) {
+      const name = `role-${role}`;
+      if (vars[name] === void 0) {
+        const d = ROLE_DEFAULTS[role];
+        vars[name] = typeof d === "string" ? (_a = vars[d]) != null ? _a : vars.foreground : fmtOklch(d[0], d[1], d[2]);
+      }
+      const c2 = rgba(vars, name);
+      if (!c2) continue;
+      const { l, c: ch, h } = rgbToOklch(c2);
+      if (vars[`${name}-deep`] === void 0) vars[`${name}-deep`] = fmtOklch(clamp(l - 0.12, 0.2, 1), ch * 0.9, h);
+      if (vars[`${name}-light`] === void 0) vars[`${name}-light`] = fmtOklch(clamp(l + 0.1, 0, 0.95), ch * 0.85, h);
+    }
+    for (const ctx of Object.keys(MATERIAL_CONTEXTS)) {
+      const k = (p) => `nk-material-${ctx}-${p}`;
+      if (vars[k("opacity")] === void 0) vars[k("opacity")] = vars[ctx === "hud" ? "nk-hud-opacity" : "nk-surface-opacity"];
+      if (vars[k("radius")] === void 0) vars[k("radius")] = (_b = vars.radius) != null ? _b : "0.625rem";
+      if (vars[k("edge")] === void 0) vars[k("edge")] = vars["nk-surface-edge"];
+    }
+  }
   function deriveIdentity(vars, warnings, given = /* @__PURE__ */ new Set()) {
     var _a, _b, _c;
+    applyTreatment(vars, warnings);
     for (const spec of IDENTITY_TOKENS) {
       if (spec.type === "color" || spec.type === "fontFamily" || spec.type === "shadow" || spec.group === "derived") continue;
-      const given2 = vars[spec.name];
-      if (given2 === void 0) {
-        vars[spec.name] = spec.fallback;
+      const value = vars[spec.name];
+      if (value === void 0) {
+        if (!REF_DEFAULTS.has(spec.name)) vars[spec.name] = spec.fallback;
         continue;
       }
-      const v = identityValue(spec, given2);
+      const v = identityValue(spec, value);
       if (v === null) {
         const want = spec.values ? spec.values.join(", ") : spec.range ? `a number from ${spec.range[0]} to ${spec.range[1]}` : spec.type === "dimension" ? "a length in px, rem or em" : spec.type === "duration" ? "a duration up to 2000ms" : "cubic-bezier(x1, y1, x2, y2)";
-        warnings.push(`--${spec.name} must be ${want} (got ${given2}); ${spec.fallback} is used.`);
-        vars[spec.name] = spec.fallback;
+        warnings.push(`--${spec.name} must be ${want} (got ${value}); ${spec.fallback} is used.`);
+        if (REF_DEFAULTS.has(spec.name)) delete vars[spec.name];
+        else vars[spec.name] = spec.fallback;
       } else vars[spec.name] = v;
     }
     if (vars.brand === void 0) {
@@ -862,8 +1032,14 @@ var NuikitTheme = (() => {
     motion["nk-ease-in-out"] = "cubic-bezier(0.2, 0, 0, 1)";
     motion["nk-ease-emphasized"] = "cubic-bezier(0.05, 0.7, 0.1, 1)";
     motion["nk-ease-linear"] = "linear";
+    motion["nk-ease-standard"] = motion["nk-ease-in-out"];
+    motion["nk-ease-expand"] = motion["nk-ease-emphasized"];
+    motion["nk-ease-retract"] = motion["nk-ease-in"];
+    motion["nk-ease-spring"] = "cubic-bezier(0.34, 1.56, 0.64, 1)";
+    motion["nk-ease-breathe"] = "cubic-bezier(0.37, 0, 0.63, 1)";
     for (const [k, v] of Object.entries(motion)) if (vars[k] === void 0) vars[k] = v;
     if (d > MAX_DURATION_MS) warnings.push(`--nk-duration is ${d}ms (the kit's ceiling is ${MAX_DURATION_MS}ms); panels and menus will feel slow to a player who opens them hundreds of times.`);
+    deriveFoundation(vars);
     const op = parseFloat(vars["nk-surface-opacity"]);
     if (op < 0.92) warnings.push(`--nk-surface-opacity is ${op} (floor 0.92); the game will show through text in panels, and a bright sky will wash it out.`);
     const plate = hudPlateOverWhite(vars);

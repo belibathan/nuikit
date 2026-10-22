@@ -13,8 +13,8 @@ export type ThemeMode = "dark" | "light";
 
 /** The token contract version. Bumped only for breaking renames/removals; additions keep v1. */
 export const TOKENS_VERSION = 1 as const;
-/** The contract revision: 1.1 added the identity tokens (IDENTITY_TOKENS), 1.2 the motion tokens (MOTION_TOKENS). Additive, so still v1. */
-export const TOKENS_REVISION = "1.3" as const;
+/** The contract revision: 1.1 added the identity tokens (IDENTITY_TOKENS), 1.2 the motion tokens (MOTION_TOKENS), 1.4 the foundation (FOUNDATION_TOKENS). Additive, so still v1. */
+export const TOKENS_REVISION = "1.4" as const;
 
 export type TokenType = "color" | "dimension" | "fontFamily" | "number" | "keyword" | "duration" | "cubicBezier" | "shadow";
 
@@ -36,7 +36,7 @@ export interface TokenSpec {
   /** Numbers: accepted range. */
   range?: readonly [number, number];
   /** The revision that added it. */
-  since?: "1.1" | "1.2" | "1.3";
+  since?: "1.1" | "1.2" | "1.3" | "1.4";
 }
 
 /** The default sans stack (Graphite): Inter, bundled with every nuikit UI (docs/tokens.md#fonts). */
@@ -172,6 +172,11 @@ export function motionTokens(d: number, feel: MotionFeel = "crisp", bounce = 0):
     "nk-time-ambient": "400ms",
     "nk-stagger": ms(feel === "smooth" ? Math.min(30, d * 0.125) : Math.min(20, d * (feel === "snap" ? 0.125 : 0.15))),
     "nk-stagger-max": "100ms",
+    // tokens 1.4: the extra rungs (foundation.md §9)
+    "nk-time-confirm": ms(Math.max(60, d * 0.65)),
+    "nk-time-retract": ms(Math.min(300, d * 1.55)),
+    "nk-time-fill": ms(d * 3),
+    "nk-time-pulse": "1000ms",
   };
   SPRING_PRESETS.forEach((name, i) => {
     const t = Math.min(SPRING_MAX[i]!, Math.round((d * r[i]!) / 10) * 10);
@@ -181,9 +186,158 @@ export function motionTokens(d: number, feel: MotionFeel = "crisp", bounce = 0):
 }
 
 /** The time tokens the player's prefs clamp (the whole ladder except instant and the stagger cap). */
-export const MOTION_TIME_TOKENS: readonly string[] = ["nk-time-press", "nk-time-hover", "nk-time-base", "nk-time-exit", "nk-time-move", "nk-time-modal", "nk-time-screen", "nk-time-ambient", "nk-stagger"];
+export const MOTION_TIME_TOKENS: readonly string[] = ["nk-time-press", "nk-time-hover", "nk-time-base", "nk-time-exit", "nk-time-move", "nk-time-modal", "nk-time-screen", "nk-time-ambient", "nk-stagger", "nk-time-confirm", "nk-time-retract", "nk-time-fill", "nk-time-pulse"];
 /** Under reduced motion fades are kept, but no longer than this (WCAG 2.3.3 counts opacity and colour changes as non-motion). */
 export const REDUCED_FADE_MS = 100;
+
+// ─────────────────────────────────────────── tokens 1.4 (docs/design/foundation.md)
+
+/** Treatments (1.4): how the palette is drawn. Each fills defaults under the theme's own values. */
+export const TREATMENTS = ["soft", "glass", "plate", "slab"] as const;
+export type Treatment = (typeof TREATMENTS)[number];
+
+/**
+ * What each treatment sets when the theme leaves a token out. `soft` is empty: it is today's defaults
+ * (Graphite), so a plain TweakCN paste compiles exactly as before.
+ */
+export const TREATMENT_PRESETS: Record<Treatment, ThemeVars> = {
+  soft: {},
+  glass: {
+    "nk-surface-edge": "0.12",
+    "nk-surface-gradient": "0.06",
+    "nk-elevation": "deep",
+    "nk-focus-style": "halo",
+    "nk-motion-feel": "smooth",
+    "nk-material-hud-blur": "1.25rem",
+    "nk-material-menu-blur": "2rem",
+    "nk-material-overlay-blur": "0.5rem",
+  },
+  plate: {
+    "nk-cut": "0.5rem",
+    "nk-surface-edge": "0.1",
+    "nk-label-case": "uppercase",
+    "nk-tracking-label": "0.1em",
+    "nk-row-indicator": "outline",
+    "nk-focus-style": "bar",
+    "nk-motion-feel": "stepped",
+    "nk-material-menu-texture": "scanlines",
+    "nk-material-hud-radius": "0px",
+    "nk-material-menu-radius": "0px",
+  },
+  slab: {
+    "nk-border-width": "2px",
+    "nk-elevation": "hard",
+    "nk-surface-opacity": "1",
+    "nk-surface-tint": "0",
+    "nk-surface-edge": "0",
+    "nk-display-style": "italic",
+    "nk-skew": "-8deg",
+    "nk-weight-display": "900",
+    "nk-motion-feel": "snap",
+    "nk-row-indicator": "fill",
+    "nk-focus-style": "fill",
+    "nk-focus-shift": "0.25rem",
+    "nk-hold-style": "fill",
+    "nk-level-style": "slab",
+    "nk-slash": "cut",
+  },
+};
+
+/** Role sets (1.4): a frame sets `data-hue="<role>"`, its children read the --hue-* ramp. */
+export const ROLE_SETS = {
+  vitals: ["health", "armor", "hunger", "thirst", "stress", "stamina", "oxygen"],
+  status: ["info", "success", "warning", "danger"],
+  faction: ["police", "ems", "mech", "gang", "civ", "staff"],
+  rarity: ["common", "uncommon", "rare", "epic", "legendary"],
+  brand: ["brand"],
+  neutral: ["neutral"],
+} as const;
+export const ROLES: readonly string[] = Object.values(ROLE_SETS).flat();
+
+/**
+ * Where each role's colour comes from when the theme doesn't set --role-<name>: another token (vitals keep
+ * today's vital colours; stamina and oxygen alias their status), or a fixed OKLCH (factions, rarity).
+ */
+const ROLE_DEFAULTS: Record<string, string | readonly [number, number, number]> = {
+  health: "vital-health",
+  armor: "vital-armor",
+  hunger: "vital-hunger",
+  thirst: "vital-thirst",
+  stress: "vital-stress",
+  stamina: "success",
+  oxygen: "info",
+  info: "info",
+  success: "success",
+  warning: "warning",
+  danger: "destructive",
+  police: [0.62, 0.17, 255],
+  ems: [0.64, 0.2, 25],
+  mech: [0.74, 0.15, 60],
+  gang: [0.6, 0.2, 305],
+  civ: "muted-foreground",
+  staff: "brand",
+  common: "muted-foreground",
+  uncommon: [0.72, 0.17, 145],
+  rare: [0.66, 0.16, 250],
+  epic: [0.62, 0.22, 305],
+  legendary: [0.78, 0.16, 75],
+  brand: "brand",
+  neutral: "muted-foreground",
+};
+
+const f14 = (name: string, type: TokenType, description: string, fallback: string, extra: Partial<TokenSpec> = {}): TokenSpec => ({ name, type, group: "identity", description, fallback, since: "1.4", ...extra });
+const d14 = (name: string, type: TokenType, description: string, fallback: string): TokenSpec => ({ name, type, group: "derived", description, fallback, since: "1.4" });
+const MATERIAL_CONTEXTS = { hud: "HUD parts drawn over the game", menu: "menus, sheets and dialogs", overlay: "full-screen overlays (pause, death, loading)" } as const;
+const MS: [number, number] = [0, 60000];
+
+/** Tokens 1.4: treatment, states, roles, materials, legibility, behaviour, motion steps, layers, offsets, attention. */
+export const FOUNDATION_TOKENS: readonly TokenSpec[] = [
+  f14("nk-treatment", "keyword", "How the palette is drawn: soft (Graphite), glass, plate or slab. Fills material, stroke, type, focus and motion defaults; any value the theme sets wins", "soft", { values: TREATMENTS }),
+  f14("nk-focus-style", "keyword", "Every component's focus (controller and keyboard highlight)", "ring", { values: ["ring", "halo", "tint", "fill", "invert", "bar"] }),
+  f14("nk-hold-style", "keyword", "How a press-and-hold shows its progress", "bar", { values: ["bar", "ring", "fill"] }),
+  f14("nk-confirm-scale", "number", "The short pop of a confirm", "1.04", { range: [1, 1.2] }),
+  f14("nk-level-style", "keyword", "How a level (--level, 0–1) is drawn by meters, vitals, holds, timers and cooldowns", "bar", { values: ["bar", "ring", "liquid", "slab", "pips"] }),
+  ...ROLES.map((r) => f14(`role-${r}`, "color", `Role colour ${r}: the --hue-* ramp under data-hue="${r}"`, typeof ROLE_DEFAULTS[r] === "string" ? String(ROLE_DEFAULTS[r]) : `oklch(${(ROLE_DEFAULTS[r] as readonly number[]).join(" ")})`)),
+  ...ROLES.flatMap((r) => [
+    d14(`role-${r}-deep`, "color", `${r}, darker: the ramp's deep step and gradient end`, `role-${r}, OKLCH lightness − 0.12`),
+    d14(`role-${r}-light`, "color", `${r}, lighter: the ramp's gradient start`, `role-${r}, OKLCH lightness + 0.1`),
+  ]),
+  f14("nk-hue-line", "number", "Alpha of a role's line (borders, tracks)", "0.5", { range: [0, 1] }),
+  f14("nk-hue-tint", "number", "Alpha of a role's tint (fills behind text)", "0.14", { range: [0, 1] }),
+  f14("nk-hue-glow", "number", "Alpha of a role's glow (under the glow budget)", "0.45", { range: [0, 1] }),
+  f14("nk-hue-alert", "number", "Alpha of a role's alert wash (below the alert threshold)", "0.24", { range: [0, 1] }),
+  ...Object.entries(MATERIAL_CONTEXTS).flatMap(([ctx, what]) => [
+    f14(`nk-material-${ctx}-opacity`, "number", `Surface opacity of ${what}`, ctx === "hud" ? "nk-hud-opacity" : "nk-surface-opacity", { range: [0, 1] }),
+    f14(`nk-material-${ctx}-blur`, "dimension", `Backdrop blur behind ${what}`, "0px"),
+    f14(`nk-material-${ctx}-radius`, "dimension", `Corner radius of ${what}`, "radius"),
+    f14(`nk-material-${ctx}-edge`, "number", `Inner top highlight of ${what} (alpha)`, "nk-surface-edge", { range: [0, 0.3] }),
+    f14(`nk-material-${ctx}-texture`, "keyword", `Texture over ${what}`, "none", { values: ["none", "scanlines"] }),
+  ]),
+  f14("nk-slash", "keyword", "A decorative diagonal cut on menus, at most once per full-screen moment", "none", { values: ["none", "cut"] }),
+  f14("nk-legibility", "keyword", "night: as designed. day: surfaces and hairlines lifted for a bright sky (not a light theme). auto: day while the game clock says so (html[data-nk-daytime], set by the HUD)", "auto", { values: ["auto", "night", "day"] }),
+  f14("nk-legibility-lift", "number", "How far day closes the gap to opaque (0 none, 1 fully opaque)", "0.5", { range: [0, 1] }),
+  f14("nk-alert-threshold", "number", "A level at or under this is an alert (vitals, durability)", "0.2", { range: [0, 1] }),
+  f14("nk-fuel-threshold", "number", "Fuel alert level", "0.15", { range: [0, 1] }),
+  ...["info", "success", "warning", "danger"].map((s) => f14(`nk-notify-ms-${s}`, "duration", `How long a ${s} notice stays`, "5000ms", { range: MS })),
+  f14("nk-hold-ms", "duration", "Press-and-hold time", "800ms", { range: MS }),
+  f14("nk-cooldown-ms", "duration", "Default cooldown after an action", "0ms", { range: MS }),
+  f14("nk-rest-delay", "duration", "How long an idle HUD part waits before it retracts (0 = never)", "0ms", { range: MS }),
+  f14("nk-motion-profile", "keyword", "full: as designed. reduced: no movement, short fades. instant: nothing animates", "full", { values: ["full", "reduced", "instant"] }),
+  d14("nk-ease-standard", "cubicBezier", "On-screen moves", "nk-ease-in-out"),
+  d14("nk-ease-expand", "cubicBezier", "Things opening and growing", "nk-ease-emphasized"),
+  d14("nk-ease-retract", "cubicBezier", "Things closing and tucking away", "nk-ease-in"),
+  d14("nk-ease-spring", "cubicBezier", "An overshoot without a spring (confirm pops)", "cubic-bezier(0.34, 1.56, 0.64, 1)"),
+  d14("nk-ease-breathe", "cubicBezier", "Loops (alerts, pulses)", "cubic-bezier(0.37, 0, 0.63, 1)"),
+  d14("nk-time-confirm", "duration", "A confirm pop: 0.65 × d, at least 60ms", "91ms"),
+  d14("nk-time-retract", "duration", "A HUD part tucking away: 1.55 × d, at most 300ms", "217ms"),
+  d14("nk-time-fill", "duration", "A level filling or draining: 3 × d", "420ms"),
+  d14("nk-time-pulse", "duration", "One alert pulse", "1000ms"),
+  ...(["world", "hud", "scrim", "surface", "dim", "dialog", "system"] as const).map((l, i) => f14(`nk-z-${l}`, "number", `Stacking layer: ${l}. A modal is the current surface + dim + dialog`, String((i + 1) * 10), { range: [0, 100000] })),
+  f14("nk-hang-md", "dimension", "How far a badge or gem breaks a panel edge", "0.375rem"),
+  f14("nk-hang-lg", "dimension", "A large hang (a level badge on a card)", "0.75rem"),
+  f14("nk-focus-shift", "dimension", "The focused row's nudge toward its content", "0rem"),
+  f14("nk-glow-budget", "number", "How many elements may glow at once (the top surface's focused one first); 0 = no limit", "1", { range: [0, 8] }),
+];
 
 /**
  * Identity tokens (tokens 1.1, docs/design/v2.md): what makes a UI recognisable besides colour. A server
@@ -237,6 +391,7 @@ export const IDENTITY_TOKENS: readonly TokenSpec[] = [
   dv("nk-clip", "keyword", "clip-path of panels: the nk-cut chamfer, or none when nk-cut is 0 (a clip-path would also clip the shadow)", "from nk-cut"),
   dv("nk-clip-sm", "keyword", "clip-path of chips, tiles and buttons: half the panel chamfer", "from nk-cut"),
   ...MOTION_TOKENS,
+  ...FOUNDATION_TOKENS,
 ];
 
 /** The chamfer (top left and bottom right) as a clip-path of a cut size. */
@@ -818,7 +973,8 @@ function identityValue(spec: TokenSpec, raw: string): string | null {
       const m = DUR.exec(v);
       if (!m) return null;
       const ms = parseFloat(m[1]!) * (m[2] === "s" ? 1000 : 1);
-      return ms <= 2000 ? `${trimNum(ms)}ms` : null;
+      const [lo, hi] = spec.range ?? [0, 2000];
+      return ms >= lo && ms <= hi ? `${trimNum(ms)}ms` : null;
     }
     case "cubicBezier": {
       const k = EASE_KEYWORDS[v];
@@ -864,20 +1020,61 @@ function hudPlateOverWhite(vars: ThemeVars): RGBA | null {
   return composite([hud[0], hud[1], hud[2], a], WHITE);
 }
 
+/** Material tokens whose default is another token's value (1.4), filled by deriveFoundation. */
+const REF_DEFAULTS = new Set(Object.keys(MATERIAL_CONTEXTS).flatMap((c) => [`nk-material-${c}-opacity`, `nk-material-${c}-radius`, `nk-material-${c}-edge`]));
+
+/** --nk-treatment: validate it, then fill its preset under whatever the theme set (tokens 1.4). */
+function applyTreatment(vars: ThemeVars, warnings: string[]) {
+  const raw = vars["nk-treatment"];
+  let t: Treatment = "soft";
+  if (raw !== undefined) {
+    if ((TREATMENTS as readonly string[]).includes(raw.trim())) t = raw.trim() as Treatment;
+    else warnings.push(`--nk-treatment must be ${TREATMENTS.join(", ")} (got ${raw}); soft is used.`);
+  }
+  vars["nk-treatment"] = t;
+  for (const [k, v] of Object.entries(TREATMENT_PRESETS[t])) if (vars[k] === undefined) vars[k] = v;
+}
+
+/** Roles and materials (tokens 1.4): each role's colour and its deep / light steps; material defaults. */
+function deriveFoundation(vars: ThemeVars) {
+  for (const role of ROLES) {
+    const name = `role-${role}`;
+    if (vars[name] === undefined) {
+      const d = ROLE_DEFAULTS[role]!;
+      vars[name] = typeof d === "string" ? (vars[d] ?? vars.foreground!) : fmtOklch(d[0], d[1], d[2]);
+    }
+    const c = rgba(vars, name);
+    if (!c) continue;
+    const { l, c: ch, h } = rgbToOklch(c);
+    if (vars[`${name}-deep`] === undefined) vars[`${name}-deep`] = fmtOklch(clamp(l - 0.12, 0.2, 1), ch * 0.9, h);
+    if (vars[`${name}-light`] === undefined) vars[`${name}-light`] = fmtOklch(clamp(l + 0.1, 0, 0.95), ch * 0.85, h);
+  }
+  for (const ctx of Object.keys(MATERIAL_CONTEXTS)) {
+    const k = (p: string) => `nk-material-${ctx}-${p}`;
+    if (vars[k("opacity")] === undefined) vars[k("opacity")] = vars[ctx === "hud" ? "nk-hud-opacity" : "nk-surface-opacity"]!;
+    if (vars[k("radius")] === undefined) vars[k("radius")] = vars.radius ?? "0.625rem";
+    if (vars[k("edge")] === undefined) vars[k("edge")] = vars["nk-surface-edge"]!;
+  }
+}
+
 function deriveIdentity(vars: ThemeVars, warnings: string[], given: ReadonlySet<string> = new Set()) {
+  // treatment (1.4): its preset fills what the theme left out, before the defaults do
+  applyTreatment(vars, warnings);
   // validate what the theme set; anything invalid falls back to the default, with a warning
   for (const spec of IDENTITY_TOKENS) {
     if (spec.type === "color" || spec.type === "fontFamily" || spec.type === "shadow" || spec.group === "derived") continue;
-    const given = vars[spec.name];
-    if (given === undefined) {
-      vars[spec.name] = spec.fallback;
+    const value = vars[spec.name];
+    if (value === undefined) {
+      // a default that is another token's value (materials): filled once those are known
+      if (!REF_DEFAULTS.has(spec.name)) vars[spec.name] = spec.fallback;
       continue;
     }
-    const v = identityValue(spec, given);
+    const v = identityValue(spec, value);
     if (v === null) {
       const want = spec.values ? spec.values.join(", ") : spec.range ? `a number from ${spec.range[0]} to ${spec.range[1]}` : spec.type === "dimension" ? "a length in px, rem or em" : spec.type === "duration" ? "a duration up to 2000ms" : "cubic-bezier(x1, y1, x2, y2)";
-      warnings.push(`--${spec.name} must be ${want} (got ${given}); ${spec.fallback} is used.`);
-      vars[spec.name] = spec.fallback;
+      warnings.push(`--${spec.name} must be ${want} (got ${value}); ${spec.fallback} is used.`);
+      if (REF_DEFAULTS.has(spec.name)) delete vars[spec.name];
+      else vars[spec.name] = spec.fallback;
     } else vars[spec.name] = v;
   }
 
@@ -923,8 +1120,16 @@ function deriveIdentity(vars: ThemeVars, warnings: string[], given: ReadonlySet<
   motion["nk-ease-in-out"] = "cubic-bezier(0.2, 0, 0, 1)";
   motion["nk-ease-emphasized"] = "cubic-bezier(0.05, 0.7, 0.1, 1)";
   motion["nk-ease-linear"] = "linear";
+  // 1.4 named eases (foundation.md §9): aliases of the ladder's curves, plus a spring and a breathe
+  motion["nk-ease-standard"] = motion["nk-ease-in-out"];
+  motion["nk-ease-expand"] = motion["nk-ease-emphasized"];
+  motion["nk-ease-retract"] = motion["nk-ease-in"];
+  motion["nk-ease-spring"] = "cubic-bezier(0.34, 1.56, 0.64, 1)";
+  motion["nk-ease-breathe"] = "cubic-bezier(0.37, 0, 0.63, 1)";
   for (const [k, v] of Object.entries(motion)) if (vars[k] === undefined) vars[k] = v;
   if (d > MAX_DURATION_MS) warnings.push(`--nk-duration is ${d}ms (the kit's ceiling is ${MAX_DURATION_MS}ms); panels and menus will feel slow to a player who opens them hundreds of times.`);
+
+  deriveFoundation(vars);
 
   // floors (docs/design/research.md §3): warn, never block
   const op = parseFloat(vars["nk-surface-opacity"]!);
@@ -1177,6 +1382,6 @@ export function withPrefs(vars: ThemeVars, prefs: Partial<NuiPrefs> = DEFAULT_PR
  * the player asked for reduced motion, else "on". applyTheme paints it as html[data-nk-motion].
  */
 export function themeMotionLevel(vars: ThemeVars, prefs: Partial<NuiPrefs> = DEFAULT_PREFS): "on" | "reduced" | "off" {
-  if (vars["nk-motion"] === "0") return "off";
-  return prefs.reducedMotion === true ? "reduced" : "on";
+  if (vars["nk-motion"] === "0" || vars["nk-motion-profile"] === "instant") return "off";
+  return prefs.reducedMotion === true || vars["nk-motion-profile"] === "reduced" ? "reduced" : "on";
 }

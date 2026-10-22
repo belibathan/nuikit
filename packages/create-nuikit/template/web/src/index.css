@@ -354,6 +354,135 @@
   --nk-spring-move: 240ms 0.1;
   --nk-spring-soft: 360ms 0;
   --nk-spring-pop: 260ms 0.3;
+  --nk-treatment: soft;
+  --nk-focus-style: ring;
+  --nk-hold-style: bar;
+  --nk-confirm-scale: 1.04;
+  --nk-level-style: bar;
+  --role-health: rgb(228, 0, 21);
+  --role-armor: rgb(59, 156, 246);
+  --role-hunger: rgb(247, 162, 36);
+  --role-thirst: rgb(30, 197, 228);
+  --role-stress: rgb(204, 103, 227);
+  --role-stamina: rgb(0, 146, 66);
+  --role-oxygen: rgb(23, 23, 23);
+  --role-info: rgb(23, 23, 23);
+  --role-success: rgb(0, 146, 66);
+  --role-warning: rgb(194, 131, 0);
+  --role-danger: rgb(228, 0, 21);
+  --role-police: rgb(49, 134, 233);
+  --role-ems: rgb(237, 74, 73);
+  --role-mech: rgb(238, 145, 56);
+  --role-gang: rgb(157, 87, 222);
+  --role-civ: rgb(115, 115, 115);
+  --role-staff: rgb(212, 212, 212);
+  --role-common: rgb(115, 115, 115);
+  --role-uncommon: rgb(84, 191, 92);
+  --role-rare: rgb(52, 150, 239);
+  --role-epic: rgb(166, 87, 237);
+  --role-legendary: rgb(242, 166, 24);
+  --role-brand: rgb(212, 212, 212);
+  --role-neutral: rgb(115, 115, 115);
+  --role-health-deep: rgb(168, 0, 10);
+  --role-health-light: rgb(251, 88, 77);
+  --role-armor-deep: rgb(30, 119, 197);
+  --role-armor-light: rgb(122, 188, 255);
+  --role-hunger-deep: rgb(201, 127, 0);
+  --role-hunger-light: rgb(255, 204, 140);
+  --role-thirst-deep: rgb(0, 157, 183);
+  --role-thirst-light: rgb(112, 227, 254);
+  --role-stress-deep: rgb(160, 72, 180);
+  --role-stress-light: rgb(230, 144, 250);
+  --role-stamina-deep: rgb(0, 106, 45);
+  --role-stamina-light: rgb(81, 174, 105);
+  --role-oxygen-deep: rgb(22, 22, 22);
+  --role-oxygen-light: rgb(47, 47, 47);
+  --role-info-deep: rgb(22, 22, 22);
+  --role-info-light: rgb(47, 47, 47);
+  --role-success-deep: rgb(0, 106, 45);
+  --role-success-light: rgb(81, 174, 105);
+  --role-warning-deep: rgb(148, 99, 0);
+  --role-warning-light: rgb(220, 165, 84);
+  --role-danger-deep: rgb(168, 0, 10);
+  --role-danger-light: rgb(251, 88, 77);
+  --role-police-deep: rgb(19, 98, 183);
+  --role-police-light: rgb(98, 167, 253);
+  --role-ems-deep: rgb(186, 43, 46);
+  --role-ems-light: rgb(255, 126, 118);
+  --role-mech-deep: rgb(192, 111, 28);
+  --role-mech-light: rgb(255, 185, 126);
+  --role-gang-deep: rgb(118, 55, 173);
+  --role-gang-light: rgb(184, 127, 242);
+  --role-civ-deep: rgb(81, 81, 81);
+  --role-civ-light: rgb(145, 145, 145);
+  --role-staff-deep: rgb(174, 174, 174);
+  --role-staff-light: rgb(238, 238, 238);
+  --role-common-deep: rgb(81, 81, 81);
+  --role-common-light: rgb(145, 145, 145);
+  --role-uncommon-deep: rgb(56, 151, 64);
+  --role-uncommon-light: rgb(133, 220, 136);
+  --role-rare-deep: rgb(21, 113, 190);
+  --role-rare-light: rgb(108, 182, 255);
+  --role-epic-deep: rgb(127, 55, 187);
+  --role-epic-light: rgb(192, 130, 255);
+  --role-legendary-deep: rgb(195, 131, 0);
+  --role-legendary-light: rgb(255, 205, 130);
+  --role-brand-deep: rgb(174, 174, 174);
+  --role-brand-light: rgb(238, 238, 238);
+  --role-neutral-deep: rgb(81, 81, 81);
+  --role-neutral-light: rgb(145, 145, 145);
+  --nk-hue-line: 0.5;
+  --nk-hue-tint: 0.14;
+  --nk-hue-glow: 0.45;
+  --nk-hue-alert: 0.24;
+  --nk-material-hud-opacity: 0.55;
+  --nk-material-hud-blur: 0px;
+  --nk-material-hud-radius: 0.625rem;
+  --nk-material-hud-edge: 0.06;
+  --nk-material-hud-texture: none;
+  --nk-material-menu-opacity: 0.96;
+  --nk-material-menu-blur: 0px;
+  --nk-material-menu-radius: 0.625rem;
+  --nk-material-menu-edge: 0.06;
+  --nk-material-menu-texture: none;
+  --nk-material-overlay-opacity: 0.96;
+  --nk-material-overlay-blur: 0px;
+  --nk-material-overlay-radius: 0.625rem;
+  --nk-material-overlay-edge: 0.06;
+  --nk-material-overlay-texture: none;
+  --nk-slash: none;
+  --nk-legibility: auto;
+  --nk-legibility-lift: 0.5;
+  --nk-alert-threshold: 0.2;
+  --nk-fuel-threshold: 0.15;
+  --nk-notify-ms-info: 5000ms;
+  --nk-notify-ms-success: 5000ms;
+  --nk-notify-ms-warning: 5000ms;
+  --nk-notify-ms-danger: 5000ms;
+  --nk-hold-ms: 800ms;
+  --nk-cooldown-ms: 0ms;
+  --nk-rest-delay: 0ms;
+  --nk-motion-profile: full;
+  --nk-ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --nk-ease-expand: cubic-bezier(0.05, 0.7, 0.1, 1);
+  --nk-ease-retract: cubic-bezier(0.4, 0, 1, 1);
+  --nk-ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --nk-ease-breathe: cubic-bezier(0.37, 0, 0.63, 1);
+  --nk-time-confirm: 91ms;
+  --nk-time-retract: 217ms;
+  --nk-time-fill: 420ms;
+  --nk-time-pulse: 1000ms;
+  --nk-z-world: 10;
+  --nk-z-hud: 20;
+  --nk-z-scrim: 30;
+  --nk-z-surface: 40;
+  --nk-z-dim: 50;
+  --nk-z-dialog: 60;
+  --nk-z-system: 70;
+  --nk-hang-md: 0.375rem;
+  --nk-hang-lg: 0.75rem;
+  --nk-focus-shift: 0rem;
+  --nk-glow-budget: 1;
 }
 
 .dark {
@@ -445,6 +574,135 @@
   --nk-spring-move: 240ms 0.1;
   --nk-spring-soft: 360ms 0;
   --nk-spring-pop: 260ms 0.3;
+  --nk-treatment: soft;
+  --nk-focus-style: ring;
+  --nk-hold-style: bar;
+  --nk-confirm-scale: 1.04;
+  --nk-level-style: bar;
+  --role-health: rgb(255, 100, 103);
+  --role-armor: rgb(59, 156, 246);
+  --role-hunger: rgb(247, 162, 36);
+  --role-thirst: rgb(30, 197, 228);
+  --role-stress: rgb(204, 103, 227);
+  --role-stamina: rgb(20, 190, 90);
+  --role-oxygen: rgb(229, 229, 229);
+  --role-info: rgb(229, 229, 229);
+  --role-success: rgb(20, 190, 90);
+  --role-warning: rgb(245, 166, 0);
+  --role-danger: rgb(255, 100, 103);
+  --role-police: rgb(49, 134, 233);
+  --role-ems: rgb(237, 74, 73);
+  --role-mech: rgb(238, 145, 56);
+  --role-gang: rgb(157, 87, 222);
+  --role-civ: rgb(161, 161, 161);
+  --role-staff: rgb(212, 212, 212);
+  --role-common: rgb(161, 161, 161);
+  --role-uncommon: rgb(84, 191, 92);
+  --role-rare: rgb(52, 150, 239);
+  --role-epic: rgb(166, 87, 237);
+  --role-legendary: rgb(242, 166, 24);
+  --role-brand: rgb(212, 212, 212);
+  --role-neutral: rgb(161, 161, 161);
+  --role-health-deep: rgb(204, 70, 74);
+  --role-health-light: rgb(255, 158, 155);
+  --role-armor-deep: rgb(30, 119, 197);
+  --role-armor-light: rgb(122, 188, 255);
+  --role-hunger-deep: rgb(201, 127, 0);
+  --role-hunger-light: rgb(255, 204, 140);
+  --role-thirst-deep: rgb(0, 157, 183);
+  --role-thirst-light: rgb(112, 227, 254);
+  --role-stress-deep: rgb(160, 72, 180);
+  --role-stress-light: rgb(230, 144, 250);
+  --role-stamina-deep: rgb(0, 148, 66);
+  --role-stamina-light: rgb(102, 219, 133);
+  --role-oxygen-deep: rgb(190, 190, 190);
+  --role-oxygen-light: rgb(238, 238, 238);
+  --role-info-deep: rgb(190, 190, 190);
+  --role-info-light: rgb(238, 238, 238);
+  --role-success-deep: rgb(0, 148, 66);
+  --role-success-light: rgb(102, 219, 133);
+  --role-warning-deep: rgb(197, 132, 0);
+  --role-warning-light: rgb(255, 207, 136);
+  --role-danger-deep: rgb(204, 70, 74);
+  --role-danger-light: rgb(255, 158, 155);
+  --role-police-deep: rgb(19, 98, 183);
+  --role-police-light: rgb(98, 167, 253);
+  --role-ems-deep: rgb(186, 43, 46);
+  --role-ems-light: rgb(255, 126, 118);
+  --role-mech-deep: rgb(192, 111, 28);
+  --role-mech-light: rgb(255, 185, 126);
+  --role-gang-deep: rgb(118, 55, 173);
+  --role-gang-light: rgb(184, 127, 242);
+  --role-civ-deep: rgb(125, 125, 125);
+  --role-civ-light: rgb(192, 192, 192);
+  --role-staff-deep: rgb(174, 174, 174);
+  --role-staff-light: rgb(238, 238, 238);
+  --role-common-deep: rgb(125, 125, 125);
+  --role-common-light: rgb(192, 192, 192);
+  --role-uncommon-deep: rgb(56, 151, 64);
+  --role-uncommon-light: rgb(133, 220, 136);
+  --role-rare-deep: rgb(21, 113, 190);
+  --role-rare-light: rgb(108, 182, 255);
+  --role-epic-deep: rgb(127, 55, 187);
+  --role-epic-light: rgb(192, 130, 255);
+  --role-legendary-deep: rgb(195, 131, 0);
+  --role-legendary-light: rgb(255, 205, 130);
+  --role-brand-deep: rgb(174, 174, 174);
+  --role-brand-light: rgb(238, 238, 238);
+  --role-neutral-deep: rgb(125, 125, 125);
+  --role-neutral-light: rgb(192, 192, 192);
+  --nk-hue-line: 0.5;
+  --nk-hue-tint: 0.14;
+  --nk-hue-glow: 0.45;
+  --nk-hue-alert: 0.24;
+  --nk-material-hud-opacity: 0.55;
+  --nk-material-hud-blur: 0px;
+  --nk-material-hud-radius: 0.625rem;
+  --nk-material-hud-edge: 0.06;
+  --nk-material-hud-texture: none;
+  --nk-material-menu-opacity: 0.96;
+  --nk-material-menu-blur: 0px;
+  --nk-material-menu-radius: 0.625rem;
+  --nk-material-menu-edge: 0.06;
+  --nk-material-menu-texture: none;
+  --nk-material-overlay-opacity: 0.96;
+  --nk-material-overlay-blur: 0px;
+  --nk-material-overlay-radius: 0.625rem;
+  --nk-material-overlay-edge: 0.06;
+  --nk-material-overlay-texture: none;
+  --nk-slash: none;
+  --nk-legibility: auto;
+  --nk-legibility-lift: 0.5;
+  --nk-alert-threshold: 0.2;
+  --nk-fuel-threshold: 0.15;
+  --nk-notify-ms-info: 5000ms;
+  --nk-notify-ms-success: 5000ms;
+  --nk-notify-ms-warning: 5000ms;
+  --nk-notify-ms-danger: 5000ms;
+  --nk-hold-ms: 800ms;
+  --nk-cooldown-ms: 0ms;
+  --nk-rest-delay: 0ms;
+  --nk-motion-profile: full;
+  --nk-ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --nk-ease-expand: cubic-bezier(0.05, 0.7, 0.1, 1);
+  --nk-ease-retract: cubic-bezier(0.4, 0, 1, 1);
+  --nk-ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --nk-ease-breathe: cubic-bezier(0.37, 0, 0.63, 1);
+  --nk-time-confirm: 91ms;
+  --nk-time-retract: 217ms;
+  --nk-time-fill: 420ms;
+  --nk-time-pulse: 1000ms;
+  --nk-z-world: 10;
+  --nk-z-hud: 20;
+  --nk-z-scrim: 30;
+  --nk-z-surface: 40;
+  --nk-z-dim: 50;
+  --nk-z-dialog: 60;
+  --nk-z-system: 70;
+  --nk-hang-md: 0.375rem;
+  --nk-hang-lg: 0.75rem;
+  --nk-focus-shift: 0rem;
+  --nk-glow-budget: 1;
 }
 
 /* Readability at 1080p (docs/design/research.md §3): small text one step up from Tailwind's defaults,
@@ -632,11 +890,14 @@
   --nk-indicator-ease: var(--nk-ease-in-out, cubic-bezier(0.2, 0, 0, 1));
 
   /* ── panel: every floating surface */
-  --nk-panel-bg: rgba(var(--surface-rgb, var(--popover-rgb)), calc(var(--surface-a, var(--popover-a, 1)) * var(--nk-surface-opacity, 0.96)));
+  /* panels draw the menu material (tokens 1.4): opacity (lifted by day legibility), radius, edge, blur */
+  --nk-panel-bg: rgba(var(--surface-rgb, var(--popover-rgb)), calc(var(--surface-a, var(--popover-a, 1)) * var(--nk-menu-alpha, var(--nk-surface-opacity, 0.96))));
   --nk-panel-fg: var(--popover-foreground);
   --nk-panel-border: var(--border);
   /* the theme's radius as is (10px in Graphite): compact panels read crisper than rounded ones */
-  --nk-panel-radius: var(--radius);
+  --nk-panel-radius: var(--nk-material-menu-radius, var(--radius));
+  /* the menu material's backdrop blur (0px by default); a surface that wants it applies backdrop-filter */
+  --nk-panel-blur: var(--nk-material-menu-blur, 0px);
   --nk-panel-cut: var(--nk-cut, 0px);
   --nk-panel-clip: var(--nk-clip, none);
   --nk-panel-gradient: linear-gradient(
@@ -644,7 +905,7 @@
     rgba(var(--popover-foreground-rgb), var(--nk-surface-gradient, 0)),
     rgba(var(--popover-foreground-rgb), 0) 60%
   );
-  --nk-panel-edge: inset 0 1px 0 0 rgba(var(--popover-foreground-rgb), var(--nk-surface-edge, 0.06));
+  --nk-panel-edge: inset 0 1px 0 0 rgba(var(--popover-foreground-rgb), var(--nk-material-menu-edge, var(--nk-surface-edge, 0.06)));
   --nk-panel-shadow: var(--nk-elevation-shadow, 0 0 0 1px rgba(var(--scrim-rgb), 0.25), 0 12px 32px -16px rgba(var(--scrim-rgb), 0.6));
   --nk-panel-header-height: calc(3.25rem * var(--nk-density, 0.875));
   --nk-panel-header-padding: calc(var(--nk-space) * 3) calc(var(--nk-space) * 4);
@@ -712,7 +973,7 @@
   --nk-chip-padding: calc(var(--nk-space) * 2.5);
   /* a small rounded rect (6px in Graphite); Velvet sets 9999px for pills */
   --nk-chip-radius: max(0.25rem, calc(var(--radius) - 4px));
-  --nk-chip-bg: rgba(var(--hud-rgb), max(var(--hud-a, 0.45), var(--nk-hud-opacity, 0.55)));
+  --nk-chip-bg: rgba(var(--hud-rgb), max(var(--hud-a, 0.45), var(--nk-hud-alpha, var(--nk-hud-opacity, 0.55))));
   --nk-chip-fg: var(--hud-foreground);
   --nk-chip-font-size: 0.875rem;
   --nk-chip-weight: 500;
@@ -1833,4 +2094,65 @@ html :focus-visible {
   animation-delay: 0s !important;
   transition-duration: 0s !important;
   transition-delay: 0s !important;
+}
+
+
+/* ───────────────────────────── tokens 1.4: roles, legibility, glow budget (docs/tokens.md#roles)
+   Roles: a frame sets data-hue="<role>" and everything inside reads one ramp, never a colour. The
+   compiler gives each role its colour and deep / light steps (--role-<name>, -deep, -light); the alphas
+   are tokens (--nk-hue-line, -tint, -glow, -alert). Status and vital roles alias by default. */
+[data-hue="health"] { --hue: var(--role-health-rgb); --hue-deep-rgb: var(--role-health-deep-rgb); --hue-light-rgb: var(--role-health-light-rgb); }
+[data-hue="armor"] { --hue: var(--role-armor-rgb); --hue-deep-rgb: var(--role-armor-deep-rgb); --hue-light-rgb: var(--role-armor-light-rgb); }
+[data-hue="hunger"] { --hue: var(--role-hunger-rgb); --hue-deep-rgb: var(--role-hunger-deep-rgb); --hue-light-rgb: var(--role-hunger-light-rgb); }
+[data-hue="thirst"] { --hue: var(--role-thirst-rgb); --hue-deep-rgb: var(--role-thirst-deep-rgb); --hue-light-rgb: var(--role-thirst-light-rgb); }
+[data-hue="stress"] { --hue: var(--role-stress-rgb); --hue-deep-rgb: var(--role-stress-deep-rgb); --hue-light-rgb: var(--role-stress-light-rgb); }
+[data-hue="stamina"] { --hue: var(--role-stamina-rgb); --hue-deep-rgb: var(--role-stamina-deep-rgb); --hue-light-rgb: var(--role-stamina-light-rgb); }
+[data-hue="oxygen"] { --hue: var(--role-oxygen-rgb); --hue-deep-rgb: var(--role-oxygen-deep-rgb); --hue-light-rgb: var(--role-oxygen-light-rgb); }
+[data-hue="info"] { --hue: var(--role-info-rgb); --hue-deep-rgb: var(--role-info-deep-rgb); --hue-light-rgb: var(--role-info-light-rgb); }
+[data-hue="success"] { --hue: var(--role-success-rgb); --hue-deep-rgb: var(--role-success-deep-rgb); --hue-light-rgb: var(--role-success-light-rgb); }
+[data-hue="warning"] { --hue: var(--role-warning-rgb); --hue-deep-rgb: var(--role-warning-deep-rgb); --hue-light-rgb: var(--role-warning-light-rgb); }
+[data-hue="danger"] { --hue: var(--role-danger-rgb); --hue-deep-rgb: var(--role-danger-deep-rgb); --hue-light-rgb: var(--role-danger-light-rgb); }
+[data-hue="police"] { --hue: var(--role-police-rgb); --hue-deep-rgb: var(--role-police-deep-rgb); --hue-light-rgb: var(--role-police-light-rgb); }
+[data-hue="ems"] { --hue: var(--role-ems-rgb); --hue-deep-rgb: var(--role-ems-deep-rgb); --hue-light-rgb: var(--role-ems-light-rgb); }
+[data-hue="mech"] { --hue: var(--role-mech-rgb); --hue-deep-rgb: var(--role-mech-deep-rgb); --hue-light-rgb: var(--role-mech-light-rgb); }
+[data-hue="gang"] { --hue: var(--role-gang-rgb); --hue-deep-rgb: var(--role-gang-deep-rgb); --hue-light-rgb: var(--role-gang-light-rgb); }
+[data-hue="civ"] { --hue: var(--role-civ-rgb); --hue-deep-rgb: var(--role-civ-deep-rgb); --hue-light-rgb: var(--role-civ-light-rgb); }
+[data-hue="staff"] { --hue: var(--role-staff-rgb); --hue-deep-rgb: var(--role-staff-deep-rgb); --hue-light-rgb: var(--role-staff-light-rgb); }
+[data-hue="common"] { --hue: var(--role-common-rgb); --hue-deep-rgb: var(--role-common-deep-rgb); --hue-light-rgb: var(--role-common-light-rgb); }
+[data-hue="uncommon"] { --hue: var(--role-uncommon-rgb); --hue-deep-rgb: var(--role-uncommon-deep-rgb); --hue-light-rgb: var(--role-uncommon-light-rgb); }
+[data-hue="rare"] { --hue: var(--role-rare-rgb); --hue-deep-rgb: var(--role-rare-deep-rgb); --hue-light-rgb: var(--role-rare-light-rgb); }
+[data-hue="epic"] { --hue: var(--role-epic-rgb); --hue-deep-rgb: var(--role-epic-deep-rgb); --hue-light-rgb: var(--role-epic-light-rgb); }
+[data-hue="legendary"] { --hue: var(--role-legendary-rgb); --hue-deep-rgb: var(--role-legendary-deep-rgb); --hue-light-rgb: var(--role-legendary-light-rgb); }
+[data-hue="brand"] { --hue: var(--role-brand-rgb); --hue-deep-rgb: var(--role-brand-deep-rgb); --hue-light-rgb: var(--role-brand-light-rgb); }
+[data-hue="neutral"] { --hue: var(--role-neutral-rgb); --hue-deep-rgb: var(--role-neutral-deep-rgb); --hue-light-rgb: var(--role-neutral-light-rgb); }
+[data-hue] {
+  --hue-solid: rgb(var(--hue));
+  --hue-deep: rgb(var(--hue-deep-rgb));
+  --hue-line: rgba(var(--hue), var(--nk-hue-line, 0.5));
+  --hue-tint: rgba(var(--hue), var(--nk-hue-tint, 0.14));
+  --hue-glow: rgba(var(--hue), var(--nk-hue-glow, 0.45));
+  --hue-alert: rgba(var(--hue), var(--nk-hue-alert, 0.24));
+  --hue-grad-a: rgb(var(--hue-light-rgb));
+  --hue-grad-b: rgb(var(--hue-deep-rgb));
+}
+
+/* Legibility: day lifts each material's opacity toward opaque by --nk-legibility-lift (not a light
+   theme). The theme's day applies always; auto applies while the HUD marks html[data-nk-daytime]. Surfaces
+   read --nk-{hud,menu,overlay}-alpha, never the raw material opacity. */
+:root {
+  --nk-day: 0;
+  --nk-hud-alpha: calc(var(--nk-material-hud-opacity, 0.55) + (1 - var(--nk-material-hud-opacity, 0.55)) * var(--nk-legibility-lift, 0.5) * var(--nk-day));
+  --nk-menu-alpha: calc(var(--nk-material-menu-opacity, 0.96) + (1 - var(--nk-material-menu-opacity, 0.96)) * var(--nk-legibility-lift, 0.5) * var(--nk-day));
+  --nk-overlay-alpha: calc(var(--nk-material-overlay-opacity, 0.96) + (1 - var(--nk-material-overlay-opacity, 0.96)) * var(--nk-legibility-lift, 0.5) * var(--nk-day));
+}
+html[data-nk-legibility="day"],
+html[data-nk-legibility="auto"][data-nk-daytime] {
+  --nk-day: 1;
+}
+
+/* Glow budget: a part that may glow says so with data-nk-glow; the runtime (nuikit-core glow.ts) marks at
+   most --nk-glow-budget of them data-nk-glow-on, the top surface's focused one first. The rest don't glow. */
+[data-nk-glow]:not([data-nk-glow-on]) {
+  --nk-glow: 0;
+  --nk-hue-glow: 0;
 }

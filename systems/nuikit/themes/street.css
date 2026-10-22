@@ -37,6 +37,7 @@
   --font-display: "Barlow Condensed", Barlow, ui-sans-serif, system-ui, sans-serif;
   --font-numeric: "Barlow Condensed", Barlow, ui-sans-serif, system-ui, sans-serif;
   --font-mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --nk-treatment: slab;
   --nk-type-ratio: 1.333;
   --nk-weight-body: 400;
   --nk-weight-strong: 800;

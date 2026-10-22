@@ -234,3 +234,18 @@ describe("surfaces declared with nk.*", () => {
     expect(checkResource(tmp).findings.filter((f) => f.rule === "surfaces/none")).toEqual([]);
   });
 });
+
+describe("attention/glow (tokens 1.4 glow budget)", () => {
+  it("warns once on a second data-nk-glow mark; the level stays", () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "nk-glow-"));
+    fs.cpSync(fixture("level3"), dir, { recursive: true });
+    const base = checkResource(dir);
+    const app = path.join(dir, "web/src/glow.tsx");
+    fs.writeFileSync(app, `export const A = () => <div data-nk-glow className="bg-primary" />;\nexport const B = () => <div data-nk-glow="2" />;\nexport const C = () => <div data-nk-glow-on />;\n`);
+    const r = checkResource(dir);
+    expect(at(r, "attention/glow")).toEqual(["web/src/glow.tsx:2"]);
+    expect(r.findings.find((f) => f.rule === "attention/glow")).toMatchObject({ severity: "warning", level: 0 });
+    expect(r.level).toBe(base.level);
+    fs.rmSync(dir, { recursive: true, force: true });
+  });
+});
