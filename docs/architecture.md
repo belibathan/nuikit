@@ -118,6 +118,8 @@ Three mechanisms, chosen per library after an in-game spike:
 3. **Page override.** Replace the library's web page (what 0.4 does). For ox_lib, whose UI functions run
    inside ox_lib itself, this stays the mechanism; the page routes its intents to the shared renderers.
 
+Framework data (player, job, money, needs) is the one adapter surface that is not a library: a server's own framework registers through the [framework SDK](adapters/framework-sdk.md), no edit to `bridge.lua`.
+
 Adapters are **clean-room** like overrides: written from the library's public API and a spec in
 `docs/adapters/<library>.md`, never from its code, and tested by replaying recorded calls and checking what the
 calling script gets back.
