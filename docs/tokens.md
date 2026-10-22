@@ -459,6 +459,22 @@ compiles every 1.3 token to the same value (`test/fixtures/compiled-1.3.json` pi
 | **Offsets** | `--nk-hang-md`, `--nk-hang-lg`, `--nk-focus-shift` | 0.375rem, 0.75rem, 0rem | Badges and gems that break a panel edge; the focused row's nudge |
 | **Attention** | `--nk-glow-budget` | 1 (0 = no limit) | A part that may glow carries `data-nk-glow` (a number ranks it); the runtime marks at most the budget `data-nk-glow-on`, the focused one first, and kit.css zeroes the rest. `nuikit check` warns (`attention/glow`, advisory) on a second mark in a resource |
 
+### Which surface reads which material
+
+Everything below is readable on `<html>` (compiled theme, or kit.css on `:root`).
+
+| Material | Who draws it | Through |
+|---|---|---|
+| `menu` | Every panel: sheets (`edge-sheet`, the pause sheet, the inventory tray), dialogs, menus, notices on a panel | `--nk-panel-bg` (opacity × `--nk-menu-alpha`, which day legibility lifts), `--nk-panel-radius` (`--nk-material-menu-radius`), `--nk-panel-edge` (`--nk-material-menu-edge`), `--nk-panel-blur` (`--nk-material-menu-blur`; the surface applies `backdrop-filter` itself, 0px by default) |
+| `hud` | HUD chips, slabs and tiles drawn over the game | `--nk-chip-bg` (and `--nk-slab-bg`): `--nk-hud-alpha` |
+| `overlay` | Full-screen backdrops behind a moment (death, loading, the dim behind a dialog) | `--nk-overlay-alpha`, `--nk-material-overlay-*` |
+
+The HUD material never affects panels, and the menu material never affects the HUD.
+
+Units: `-opacity` is 0–1, `-blur` and `-radius` are lengths (px, rem or em), `-edge` is a 0–0.3 strength (the
+alpha of the inner top highlight, like `--nk-surface-edge`), `-texture` is `none` or `scanlines`. Layers are plain
+integers (`--nk-z-dim` 50, `--nk-z-dialog` 60). `--nk-alert-threshold` is 0–1.
+
 Each identity names its treatment: Graphite and Studio `soft`, Velvet `glass`, Signal and Vector `plate`,
 Arcade and Street `slab`. A server keeps its palette and borrows another treatment with one line:
 

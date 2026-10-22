@@ -895,11 +895,14 @@
   --nk-indicator-ease: var(--nk-ease-in-out, cubic-bezier(0.2, 0, 0, 1));
 
   /* ── panel: every floating surface */
-  --nk-panel-bg: rgba(var(--surface-rgb, var(--popover-rgb)), calc(var(--surface-a, var(--popover-a, 1)) * var(--nk-surface-opacity, 0.96)));
+  /* panels draw the menu material (tokens 1.4): opacity (lifted by day legibility), radius, edge, blur */
+  --nk-panel-bg: rgba(var(--surface-rgb, var(--popover-rgb)), calc(var(--surface-a, var(--popover-a, 1)) * var(--nk-menu-alpha, var(--nk-surface-opacity, 0.96))));
   --nk-panel-fg: var(--popover-foreground);
   --nk-panel-border: var(--border);
   /* the theme's radius as is (10px in Graphite): compact panels read crisper than rounded ones */
-  --nk-panel-radius: var(--radius);
+  --nk-panel-radius: var(--nk-material-menu-radius, var(--radius));
+  /* the menu material's backdrop blur (0px by default); a surface that wants it applies backdrop-filter */
+  --nk-panel-blur: var(--nk-material-menu-blur, 0px);
   --nk-panel-cut: var(--nk-cut, 0px);
   --nk-panel-clip: var(--nk-clip, none);
   --nk-panel-gradient: linear-gradient(
@@ -907,7 +910,7 @@
     rgba(var(--popover-foreground-rgb), var(--nk-surface-gradient, 0)),
     rgba(var(--popover-foreground-rgb), 0) 60%
   );
-  --nk-panel-edge: inset 0 1px 0 0 rgba(var(--popover-foreground-rgb), var(--nk-surface-edge, 0.06));
+  --nk-panel-edge: inset 0 1px 0 0 rgba(var(--popover-foreground-rgb), var(--nk-material-menu-edge, var(--nk-surface-edge, 0.06)));
   --nk-panel-shadow: var(--nk-elevation-shadow, 0 0 0 1px rgba(var(--scrim-rgb), 0.25), 0 12px 32px -16px rgba(var(--scrim-rgb), 0.6));
   --nk-panel-header-height: calc(3.25rem * var(--nk-density, 0.875));
   --nk-panel-header-padding: calc(var(--nk-space) * 3) calc(var(--nk-space) * 4);
@@ -975,7 +978,7 @@
   --nk-chip-padding: calc(var(--nk-space) * 2.5);
   /* a small rounded rect (6px in Graphite); Velvet sets 9999px for pills */
   --nk-chip-radius: max(0.25rem, calc(var(--radius) - 4px));
-  --nk-chip-bg: rgba(var(--hud-rgb), max(var(--hud-a, 0.45), var(--nk-hud-opacity, 0.55)));
+  --nk-chip-bg: rgba(var(--hud-rgb), max(var(--hud-a, 0.45), var(--nk-hud-alpha, var(--nk-hud-opacity, 0.55))));
   --nk-chip-fg: var(--hud-foreground);
   --nk-chip-font-size: 0.875rem;
   --nk-chip-weight: 500;
