@@ -68,6 +68,36 @@ Rules that come with it:
 - **Component spec template** (registry meta and each file's doc comment): role, anatomy, props, *level means*, rules.
 - **A legibility fixture**: the site and bench render HUD parts over a bright, busy world backdrop.
 
+## What a real server's codebase taught us (wave 3)
+
+From reading a full RP server's own resources (24 of them, a clean-room framework, a design-system resource and
+many reskinned paid scripts), read for patterns only. The design system unified the *look* across resources but
+never the *behaviour*: NUI focus is juggled in 20 resources, Escape in 18, input dialogs in 18, toasts in 11,
+progress in 11, key mappings in 13, script cameras in 10, settings in KVP in 8. That gap is nuikit's market.
+
+Patterns we adopt:
+- **A collapse engine** for clustered indicators (vitals, voice): at rest only the icon; a change opens a chip for
+  `--nk-rest-delay`; changes within a batch window join one stack; critical first, then biggest change; at most N
+  chips, then "+N"; per-key opt-outs. One primitive, used by the HUD and anything that clusters.
+- **Slots that continue across resources**: a cluster (the vitals row) exposes slots another resource (voice, radio,
+  a job) can join, so independent pages read as one cluster.
+- **A settings service**: settings declared as rows (`key`, label, options or range), shown as a live-preview draft
+  → save → reset; saved per player in KVP *merged over defaults with a schema version* (never wiped by an update);
+  **presets** as patch bundles (Standard, Streamer, Performance, Cinema); server **feature flags** that hide UI
+  parts without deleting them. The HUD editor and the pause settings both sit on it.
+- **Per-cluster scale from its own corner** (`transform-origin` at the anchor), so scaling never moves anchors.
+- **Skins**: a migration layer that re-points a third-party page's own CSS variables at nuikit tokens (looks only),
+  for resources nuikit doesn't override yet.
+- **Interaction ladders**: prompts go dormant → aware → focus → hold → confirm; a toast queue policy (one at a time,
+  a capped queue, shorter dwell while others wait); change-only DOM writes.
+- **Compat shims**: a resource can keep calling a server's old export names (`exports['x']:Notify(...)`) and land in
+  nuikit's intents, so adoption is a config change, not a rewrite.
+
+What a serious server needs before adopting: an adapter SDK for its own framework, token import from its Figma
+variables / theme, export shims, a guaranteed old-CEF profile, world-space screens (DUI) and blocks it builds
+in-house today (job tracker / task panel, NPC dialogue, MDT, phone shell, bodycam overlay, radio, storefront, garage
+terminal, bank/ATM, character select and spawn).
+
 ## Who builds what
 
 | Lane | Takes |
