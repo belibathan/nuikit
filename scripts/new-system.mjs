@@ -45,6 +45,9 @@ write("nuikit.json", JSON.stringify(manifest, null, 2) + "\n");
 const pkg = JSON.parse(fs.readFileSync(path.join(hud, "package.json"), "utf8"));
 pkg.name = `${name.replace(/_/g, "-").toLowerCase()}-web`;
 pkg.version = version;
+// A plain page. The HUD's second build (vite.module.config.ts, its host module, docs/host.md) is opt-in: copy
+// that file and append `&& vite build -c vite.module.config.ts` to join the host.
+pkg.scripts = { ...pkg.scripts, build: "tsc -b && vite build" };
 write("web/package.json", JSON.stringify(pkg, null, 2) + "\n");
 fs.mkdirSync(path.join(out, "web/src/lib"), { recursive: true });
 fs.copyFileSync(path.join(hud, "tsconfig.json"), path.join(out, "web/tsconfig.json"));
