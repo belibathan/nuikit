@@ -259,8 +259,13 @@ local function apply()
     SetNuiFocusKeepInput(target.keepInput == true)
     hasFocus = true
   elseif hasFocus then
-    SetNuiFocus(false, false)
-    SetNuiFocusKeepInput(false)
+    -- NUI focus is one global: when another resource's surface is now the target, its copy sets
+    -- the focus, and releasing here (this copy may run after it) would wipe it. Release only when
+    -- nothing takes input any more.
+    if not target then
+      SetNuiFocus(false, false)
+      SetNuiFocusKeepInput(false)
+    end
     hasFocus = false
   end
 
@@ -455,8 +460,15 @@ end)
 AddEventHandler('onClientResourceStop', function(resource)
   if resource == RESOURCE then
     if hasFocus then
-      SetNuiFocus(false, false)
-      SetNuiFocusKeepInput(false)
+      -- hand over, don't wipe: if a surface of another resource is next, its copy sets the focus
+      local next = nil
+      for _, e in ipairs(ordered()) do
+        if e.resource ~= RESOURCE and takesInput(e) then next = e end
+      end
+      if not next then
+        SetNuiFocus(false, false)
+        SetNuiFocusKeepInput(false)
+      end
     end
     return
   end

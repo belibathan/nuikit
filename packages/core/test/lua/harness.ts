@@ -84,6 +84,9 @@ export async function createClient(options: { syncEvents?: boolean; onNuiMessage
   /** The resource an onClientResourceStop is being delivered for (GetResourceState → "stopping"). */
   let stopping: string | undefined;
 
+  /** The real, single, global NUI focus: the last SetNuiFocus call wins, whichever resource made it. */
+  const nui = { focus: false, cursor: false, keepInput: false, owner: null as string | null };
+
   const queue: { event: string; args: unknown[]; from?: string }[] = [];
   /** The resource that triggered the event being delivered (FiveM's GetInvokingResource()). */
   let invoker: string | undefined;
@@ -182,9 +185,11 @@ export async function createClient(options: { syncEvents?: boolean; onNuiMessage
     });
     g.set("SetNuiFocus", (focus: boolean, cursor: boolean) => {
       Object.assign(res.focus, { focus, cursor });
+      Object.assign(nui, { focus, cursor, owner: focus ? name : nui.owner === name ? null : nui.owner });
     });
     g.set("SetNuiFocusKeepInput", (keepInput: boolean) => {
       Object.assign(res.focus, { keepInput });
+      nui.keepInput = keepInput;
     });
     g.set("AddEventHandler", (event: string, fn: any) => {
       const list = handlers.get(event) ?? [];
@@ -327,9 +332,8 @@ export async function createClient(options: { syncEvents?: boolean; onNuiMessage
 
   /** Which resource currently holds NUI focus (exactly one, or none). */
   function focused(): string | null {
-    const owners = [...resources.values()].filter((r) => r.focus.focus).map((r) => r.name);
-    if (owners.length > 1) throw new Error(`focus held by several resources: ${owners.join(", ")}`);
-    return owners[0] ?? null;
+    // NUI focus is one global (last SetNuiFocus wins), as in the game.
+    return nui.focus ? nui.owner : null;
   }
 
   function close() {
@@ -356,5 +360,5 @@ export async function createClient(options: { syncEvents?: boolean; onNuiMessage
     flush();
   }
 
-  return { start, stop, focused, close, event, resources, setGlobal, runTimers };
+  return { start, stop, focused, nui, close, event, resources, setGlobal, runTimers };
 }
