@@ -1324,6 +1324,15 @@
         }
       }
     },
+    "backdrop": {
+      "$value": "off",
+      "$description": "Backdrop filters (blur behind materials, the death screen's desaturation): off by default, because NUI's Chromium draws them as black boxes over the game on many clients. on applies each surface's --nk-backdrop-filter",
+      "$extensions": {
+        "dev.nuikit": {
+          "type": "keyword"
+        }
+      }
+    },
     "slash": {
       "$value": "none",
       "$description": "A decorative diagonal cut on menus, at most once per full-screen moment",

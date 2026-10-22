@@ -1294,6 +1294,14 @@
           "description": "Texture over full-screen overlays (pause, death, loading)",
           "$comment": "tokens 1.4"
         },
+        "nk-backdrop": {
+          "enum": [
+            "off",
+            "on"
+          ],
+          "description": "Backdrop filters (blur behind materials, the death screen's desaturation): off by default, because NUI's Chromium draws them as black boxes over the game on many clients. on applies each surface's --nk-backdrop-filter",
+          "$comment": "tokens 1.4"
+        },
         "nk-slash": {
           "enum": [
             "none",

@@ -20,6 +20,5 @@ body {
   --nk-panel-bg: rgba(var(--surface-rgb, var(--popover-rgb)), calc(var(--surface-a, var(--popover-a, 1)) * var(--nk-menu-alpha, var(--nk-surface-opacity, 0.96))));
   --nk-panel-radius: var(--nk-material-menu-radius, var(--radius));
   --nk-panel-edge: inset 0 1px 0 0 rgba(var(--popover-foreground-rgb), var(--nk-material-menu-edge, var(--nk-surface-edge, 0.06)));
-  -webkit-backdrop-filter: blur(var(--nk-material-menu-blur, 0px));
-  backdrop-filter: blur(var(--nk-material-menu-blur, 0px));
+  --nk-backdrop-filter: blur(var(--nk-material-menu-blur, 0px));
 }
