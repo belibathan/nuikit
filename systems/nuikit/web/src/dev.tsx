@@ -1,5 +1,5 @@
 // The game, faked for browser development. Press ` for the devtools; ?fixture=<name> opens one
-// intent (used by scripts/screenshots.mjs): notify, menu, menu-keyboard, input, confirm, progress,
+// intent (used by scripts/screenshots.mjs): notify, notify-repeat, menu, menu-keyboard, input, confirm, progress,
 // progress-ring, prompt, target, radial, challenge, all.
 // window.nk.open(kind, props) opens any intent from the console or Playwright, the way Lua would.
 import { emit, openSurface } from "nuikit-core";
@@ -91,6 +91,12 @@ const FIXTURES: Record<string, () => void> = {
     open("notify", { description: "A plain line with no title and *no* status", position: "bottom-center" });
     open("notify", { item: { name: "Water", count: 2, icon: "box" }, position: "bottom-right" });
     open("notify", { title: "New message", description: "From Niko", icon: "fas fa-envelope", iconColor: "var(--info)", position: "center-left" });
+  },
+  // /id twice: one notice counting ×2 (renderers/notify-merge.ts), then ×3
+  "notify-repeat"() {
+    open("notify", { title: "ID: 1", status: "info" });
+    setTimeout(() => open("notify", { title: "ID: 1", status: "info" }), 600);
+    setTimeout(() => open("notify", { title: "ID: 1", status: "info" }), 1400);
   },
   menu: () => void open("menu", garage),
   "menu-keyboard": () => void open("menu", listMenu),
