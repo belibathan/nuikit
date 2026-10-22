@@ -138,7 +138,8 @@ export function LayoutEditor({ data, onDraft }: { data: HudEditData; onDraft: (p
 
   // the Style tab's draft: Lua previews it live (it re-places the map when that changed) and drops it
   // when the editor goes without a save
-  const [tab, setTab] = useState<"layout" | "style">("layout");
+  const layoutOn = data.layout !== false;
+  const [tab, setTab] = useState<"layout" | "style">(layoutOn ? "layout" : "style");
   const [styles, setStyles] = useState<HudStyles>(() => Object.fromEntries((data.styles ?? []).map((c) => [c.key, c.value])));
   const kept = useRef(false);
   useEffect(
@@ -180,9 +181,11 @@ export function LayoutEditor({ data, onDraft }: { data: HudEditData; onDraft: (p
         <div className="nk-panel-header">
           <span className="nk-title">HUD</span>
           <span className="hud-editor-tabs" role="tablist">
-            <button type="button" role="tab" aria-selected={tab === "layout"} data-active={tab === "layout" || undefined} onClick={() => setTab("layout")}>
-              Layout
-            </button>
+            {layoutOn && (
+              <button type="button" role="tab" aria-selected={tab === "layout"} data-active={tab === "layout" || undefined} onClick={() => setTab("layout")}>
+                Layout
+              </button>
+            )}
             <button type="button" role="tab" aria-selected={tab === "style"} data-active={tab === "style" || undefined} onClick={() => setTab("style")}>
               Style
             </button>

@@ -26,8 +26,10 @@ Config = {
   --   classic  map bottom-left; location 1, vitals 2 on the map; wallet 1, ammo 2 top-right;
   --            vehicle bottom-right
   -- Notices and prompts follow the parts (the HUD publishes the screen zones it covers).
-  -- Players can move them for themselves with /hud edit (saved on their machine; /hud reset), and
-  -- /hud export prints the layout on screen as this block. playerLayout = false turns that off.
+  -- Players can move them for themselves with /hud edit or any settings page (nk.settings: presets
+  -- Standard, Minimal, Cinema, Streamer; /hud reset), and
+  -- /hud export prints the layout on screen as this block. playerLayout = false (or
+  -- setr nuikit_flag_hud_layout 0) turns that off; setr nuikit_flag_hud_style 0 does the same for styles.
   parts = {
     map = nil,         -- a corner (Config.minimap.anchor, when set, wins)
     location = nil,
@@ -40,8 +42,9 @@ Config = {
 
   -- Styles: how each part draws. The values here are the server's defaults (nil keeps the setting
   -- they come from: the map's shape and size from the layout preset, the gauge from vehicle.gauge,
-  -- halo / compass / column from minimap). Players pick their own in /hud edit, Style (kept on their
-  -- machine), within `allow` (nil: every option; players = false: none, the defaults for everyone).
+  -- halo / compass / column / radar from minimap and radar). Players pick their own in /hud edit, Style
+  -- (nk.settings, kept by the nuikit resource), within `allow` (nil: every option; players = false:
+  -- none, the defaults for everyone).
   styles = {
     players = true,
     vitals = {

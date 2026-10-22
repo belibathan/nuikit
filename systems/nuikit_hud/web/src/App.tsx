@@ -257,7 +257,7 @@ function Classic({ settings, vehicle, location, weapon, layout, frame, state, pl
   const tape = compass.enabled !== false && (!!vehicle || compass.onFoot === true);
 
   const groups = placeParts(resolveParts("classic", settings.parts), {
-    location: settings.location !== false && location && <LocationStrip location={location} units={units} heading start={heading} />,
+    location: settings.location !== false && settings.styles?.["column.street"] !== false && location && <LocationStrip location={location} units={units} heading start={heading} />,
     wallet: <Wallet player={player} settings={settings} inline />,
     vitals: <VitalsRow player={player} settings={settings} layout="classic" />,
     ammo: settings.ammo !== false && <Ammo weapon={weapon} />,

@@ -33,6 +33,7 @@ client_scripts {
   'client/location.lua',
   'client/vehicle.lua',
   'client/weapon.lua',
+  'client/prefs.lua',
   'client/main.lua',
   'client/style.lua',
 }
