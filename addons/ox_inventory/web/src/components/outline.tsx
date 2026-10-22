@@ -100,6 +100,8 @@ export function SlotOutline({ value }: { value?: number }) {
     update();
     const ro = new ResizeObserver(update);
     ro.observe(face);
+    // the probe too: a tile skipped by content-visibility sizes it only once it comes into view
+    if (probe.current) ro.observe(probe.current);
     const off = onTheme(() => requestAnimationFrame(update));
     // a theme applied another way (devtools, the host) lands on <html>'s style or class
     const mo = new MutationObserver(() => requestAnimationFrame(update));
