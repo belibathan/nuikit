@@ -47,30 +47,95 @@ Layout.PARTS = {
 
 local CORNERS = { ['top-left'] = true, ['top-right'] = true, ['bottom-left'] = true, ['bottom-right'] = true }
 
---- The preset's placement with Config.parts on top. A part's value is a corner, 'map', false, or
---- { at = …, order = … } (either key may be left out to keep the preset's).
-function Layout.parts()
-  local base = Layout.PARTS[Layout.preset()]
-  local over = type(Config.parts) == 'table' and Config.parts or {}
-  local out = {}
-  for name, p in pairs(base) do
-    if name == 'map' then
-      local v = over.map
-      out.map = CORNERS[v] and v or p
-    else
+--- The parts in the order they are listed (the editor, the export).
+Layout.PART_NAMES = { 'map', 'location', 'wallet', 'vitals', 'ammo', 'vehicle' }
+
+--- Put an override (Config.parts, or a player's layout) on top of a resolved placement. A part's
+--- value is a corner, 'map', false, or { at = …, order = … } (either key may be left out); anything
+--- else keeps what was there.
+local function overlay(out, over)
+  if type(over) ~= 'table' then return end
+  if CORNERS[over.map] then out.map = over.map end
+  for _, name in ipairs(Layout.PART_NAMES) do
+    if name ~= 'map' then
       local v = over[name]
-      local at, order = p.at, p.order
+      local at, order = out[name].at, out[name].order
       if v == false then at = false
       elseif type(v) == 'string' then at = v
       elseif type(v) == 'table' then
         if v.at ~= nil then at = v.at end
         if type(v.order) == 'number' then order = v.order end
       end
-      if at ~= false and at ~= 'map' and not CORNERS[at] then at = p.at end
+      if at ~= false and at ~= 'map' and not CORNERS[at] then at = out[name].at end
       out[name] = { at = at, order = order }
     end
   end
+end
+
+--- The player's own layout (/hud edit), per preset, kept between sessions. nil: none.
+local PLAYER_KVP = 'nuikit_hud:parts:'
+Layout.player = nil
+
+function Layout.loadPlayer()
+  Layout.player = nil
+  if Config.playerLayout == false or not GetResourceKvpString then return end
+  local s = GetResourceKvpString(PLAYER_KVP .. Layout.preset())
+  local ok, t = pcall(function() return s and json.decode(s) end)
+  if ok then Layout.player = Layout.clean(t) end
+end
+
+--- What a page sends back, made safe: known parts only, a corner / 'map' / false, an order 1-20.
+function Layout.clean(t)
+  if type(t) ~= 'table' then return nil end
+  local out = {}
+  if CORNERS[t.map] then out.map = t.map end
+  for _, name in ipairs(Layout.PART_NAMES) do
+    local v = t[name]
+    if name ~= 'map' and type(v) == 'table' and (v.at == false or v.at == 'map' or CORNERS[v.at]) then
+      local order = tonumber(v.order) or 1
+      out[name] = { at = v.at, order = math.max(1, math.min(20, math.floor(order))) }
+    end
+  end
   return out
+end
+
+function Layout.savePlayer(t)
+  local clean = Layout.clean(t)
+  if not clean then return false end
+  SetResourceKvp(PLAYER_KVP .. Layout.preset(), json.encode(clean))
+  Layout.player = clean
+  return true
+end
+
+function Layout.resetPlayer()
+  DeleteResourceKvp(PLAYER_KVP .. Layout.preset())
+  Layout.player = nil
+end
+
+--- The preset's placement, Config.parts on top, then the player's own layout (Config.playerLayout).
+function Layout.parts()
+  local base = Layout.PARTS[Layout.preset()]
+  local out = { map = base.map }
+  for name, p in pairs(base) do
+    if name ~= 'map' then out[name] = { at = p.at, order = p.order } end
+  end
+  overlay(out, Config.parts)
+  if Config.playerLayout ~= false then overlay(out, Layout.player) end
+  return out
+end
+
+--- A placement as the `parts = { … }` block of config.lua (/hud export).
+function Layout.export(parts)
+  local q = function(v) return v == false and 'false' or ("'%s'"):format(v) end
+  local lines = { '  parts = {', ('    map = %s,'):format(q(parts.map)) }
+  for _, name in ipairs(Layout.PART_NAMES) do
+    local p = parts[name]
+    if name ~= 'map' and p then
+      lines[#lines + 1] = ('    %s = { at = %s, order = %d },'):format(name, q(p.at), p.order)
+    end
+  end
+  lines[#lines + 1] = '  },'
+  return table.concat(lines, '\n')
 end
 
 --- 'game' or 'stage' (Config.area; 0.6 configs: Config.layout.source).

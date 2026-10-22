@@ -26,6 +26,8 @@ Config = {
   --   classic  map bottom-left; location 1, vitals 2 on the map; wallet 1, ammo 2 top-right;
   --            vehicle bottom-right
   -- Notices and prompts follow the parts (the HUD publishes the screen zones it covers).
+  -- Players can move them for themselves with /hud edit (saved on their machine; /hud reset), and
+  -- /hud export prints the layout on screen as this block. playerLayout = false turns that off.
   parts = {
     map = nil,         -- a corner (Config.minimap.anchor, when set, wins)
     location = nil,
@@ -34,6 +36,7 @@ Config = {
     ammo = nil,
     vehicle = nil,
   },
+  playerLayout = true,
 
   -- Where the HUD's edges are. 'game' reads GTA's own HUD alignment for this screen and safe zone
   -- (16:9, 21:9, 32:9), falling back to 'stage' if the game's answer looks wrong. 'stage' is the

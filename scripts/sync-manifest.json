@@ -142,6 +142,7 @@
       "web/src/lib/utils.ts"
     ],
     "systems/nuikit_hud": [
+      "web/src/components/ui/button.tsx",
       "web/src/components/ui/hud-chip.tsx",
       "web/src/components/ui/money.tsx",
       "web/src/components/ui/text-roll.tsx",

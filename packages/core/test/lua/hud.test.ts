@@ -120,6 +120,45 @@ describe("systems/nuikit_hud", () => {
     });
   });
 
+  it("/hud edit: a player's layout goes on top of Config.parts, saved per preset; reset and export", async () => {
+    client = await createClient();
+    const hud = await client.start("nuikit_hud", {
+      before: natives + ` PD = {} function DeleteResourceKvp(k) DELETED = k end PRINTED = {} function print(s) PRINTED[#PRINTED + 1] = s end`,
+      scripts: HUD_SCRIPTS,
+    });
+    await hud.run(`Config.parts = { vitals = 'top-left' }`);
+    client.event("QBCore:Player:SetPlayerData", { citizenid: "ABC", charinfo: { firstname: "Niko" }, money: { cash: 5, bank: 0 }, metadata: {} });
+    hud.commands.get("hud")!(0, ["edit"]);
+    await hud.run(`return 1`); // flush
+    expect(hud.surfaces()["hud-edit"]).toMatchObject({ open: true, focused: true, data: { preset: "compact", parts: { vitals: { at: "top-left" } } } });
+
+    // the page's draft, with junk the server must drop
+    const parts = { map: "bottom-left", vitals: { at: "bottom-right", order: 3 }, ammo: { at: false, order: 1 }, wallet: { at: "nowhere", order: 1 }, money: { at: "map", order: 1 } };
+    expect(await hud.call("hud:parts:save", { parts })).toEqual({ ok: true });
+    expect(hud.surfaces()["hud-edit"].open).toBe(false);
+    expect(JSON.parse(hud.kvp.get("nuikit_hud:parts:compact")!)).toEqual({ map: "bottom-left", vitals: { at: "bottom-right", order: 3 }, ammo: { at: false, order: 1 } });
+    expect(hud.surfaces().hud.data.parts).toMatchObject({ map: "bottom-left", vitals: { at: "bottom-right", order: 3 }, ammo: { at: false }, wallet: { at: "map", order: 2 } });
+    expect(await hud.call("hud:parts:save", { parts: "nope" })).toEqual({ ok: false });
+
+    hud.commands.get("hud")!(0, ["export"]);
+    const printed = await hud.run<string>(`return PRINTED[#PRINTED]`);
+    expect(printed).toContain("    map = 'bottom-left',");
+    expect(printed).toContain("    ammo = { at = false, order = 1 },");
+    expect(printed).toContain("    vitals = { at = 'bottom-right', order = 3 },");
+
+    // a new session reads it back; reset drops it (Config.parts stays)
+    expect(await hud.run(`Layout.player = nil Layout.loadPlayer() return Layout.parts().vitals.at`)).toBe("bottom-right");
+    hud.commands.get("hud")!(0, ["reset"]);
+    await hud.run(`return 1`); // flush
+    expect(await hud.run(`return DELETED`)).toBe("nuikit_hud:parts:compact");
+    expect(hud.surfaces().hud.data.parts.vitals.at).toBe("top-left");
+    // playerLayout = false: no editor, saved layouts ignored
+    await hud.run(`Config.playerLayout = false`);
+    hud.commands.get("hud")!(0, ["edit"]);
+    await hud.run(`return 1`); // flush
+    expect(hud.surfaces()["hud-edit"].open).toBe(false);
+  });
+
   it("never takes focus, so it can't block other UIs", async () => {
     client = await createClient();
     const hud = await client.start("nuikit_hud", { before: natives, scripts: HUD_SCRIPTS });
