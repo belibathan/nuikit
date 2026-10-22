@@ -23,6 +23,20 @@ Known issues in 0.6.0:
   opened and closed (not seen on a fresh join). Showcase lane.
 - `nuikit_loading` ships `externalShutdown = false`; Qbox multicharacter needs `true`. Detect it (Screens lane).
 
+## Owner's local lane (in-game loop on the owner's PC)
+
+`local/*` branches, built and judged live on the owner's Qbox server. Checked in game by the owner on Oct 22.
+
+| Topic | State |
+|---|---|
+| `test/080-arcade-tokens` merged (tokens 1.3, Arcade/Street, rolls, choreography): it was what the owner's server ran | In `local/hud-layers` |
+| HUD: radar on foot by default; every part leaves toward its edge and returns as one when a menu hides it; GTA's radar and its ring cut on the same beat (`hud:shown`); the map column lays out on where the map belongs (`wanted`), not its blink | In game: good |
+| Screen zones (`NUI.zone`, `useClearOf`): the HUD publishes its parts, notices start clear of the map | In game: good |
+| Notices slide in from their edge and out when they end; ox_target eye springs in, scaled lock-on, list slides out of the eye and tucks back | In game: good |
+| `edge-sheet`: a staggered sheet holds its first frame through the delay (the inventory's right sheet blinked and entered twice) | In game: good |
+| `nuikit.cfg` comments without semicolons (FiveM ran the rest as commands) | Done |
+| Next: slide the minimap itself with the HUD (per-frame component placement, a spike); a HUD layout config on top of zones | Open |
+
 ## Decisions settled by measurement
 
 - FiveM shares **one** browser process across all NUI frames (333 vs 338 MB, host on/off): the host saves ~5 MB,
