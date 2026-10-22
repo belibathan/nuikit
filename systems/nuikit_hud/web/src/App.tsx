@@ -1,7 +1,7 @@
 import { fetchNui, Surface, useNuiState, usePlayer, useSurfaceOpen } from "nuikit-core/react";
 import { MinimapFrameView, useMinimap } from "./minimap";
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
-import type { HudLayout, HudParts, HudLocation, HudSettings, HudVehicle, HudWeapon, MinimapFrame, MinimapState } from "./nui";
+import type { HudCorner, HudLayout, HudParts, HudLocation, HudSettings, HudVehicle, HudWeapon, MinimapFrame, MinimapState } from "./nui";
 import { Ammo } from "./hud/ammo";
 import { Cluster } from "./hud/cluster";
 import { LayoutEditor } from "./hud/editor";
@@ -11,7 +11,7 @@ import { layoutVars, stageLayout, useHudLayout, useViewport } from "./hud/layout
 import { CompassTape, LocationStrip } from "./hud/location";
 import { useHudLook, type HudLook } from "./hud/look";
 import { MapLocation, MapRing } from "./hud/map";
-import { CORNER_CLASS, CORNERS, cornerSide, Part, placeParts, resolveParts } from "./hud/parts";
+import { BESIDE_CLASS, CORNER_CLASS, CORNERS, cornerSide, Part, placeParts, resolveParts } from "./hud/parts";
 import { VitalsRow } from "./hud/pills";
 import { Wallet } from "./hud/wallet";
 
@@ -157,10 +157,13 @@ function mapEdge(frame: MinimapFrame | null): "left" | "right" {
   return frame && frame.x + frame.w / 2 < 0.5 ? "left" : "right";
 }
 
-/** One stack per corner (Config.parts), on the side it belongs to; `bl` replaces the bottom-left stack's class. */
-function corners(groups: ReturnType<typeof placeParts>, side: "left" | "right", bl?: string) {
+/**
+ * One stack per corner (Config.parts), on the side it belongs to. The stack in the map's own corner
+ * (`beside`) sits beside the map, level with its outer edge, instead of under or over it.
+ */
+function corners(groups: ReturnType<typeof placeParts>, side: "left" | "right", beside?: HudCorner | null) {
   return CORNERS.filter((c) => cornerSide(c) === side && groups[c].length > 0).map((c) => (
-    <div key={c} data-slot="hud-corner" data-corner={c} className={c === "bottom-left" && bl ? bl : CORNER_CLASS[c]}>
+    <div key={c} data-slot="hud-corner" data-corner={c} data-beside={c === beside || undefined} className={c === beside ? BESIDE_CLASS[c] : CORNER_CLASS[c]}>
       {groups[c].map((p) => (
         <Part key={p.name} name={p.name}>
           {p.el}
@@ -182,20 +185,23 @@ function Compact({ settings, vehicle, location, weapon, layout, frame, state, pl
   // and the column under it must slide away from where it stood, not jump into the map's place first
   const mapPlaced = !!frame && (state?.wanted ?? mapShown);
   const ring = mapShown && frame!.framed !== false && settings.frame !== false;
-  // a map in the bottom-left corner (Config.minimap.style = 'stock', or a ring anchored there): the
-  // bottom-left stack sits beside its bottom edge instead of under it
-  const besideMap = !!frame && mapPlaced && frame.x < 0.5 && frame.y > 0.5;
-  const vars = layoutVars(layout ?? stageLayout(w, h), besideMap ? frame : null, w, h) as Record<string, string>;
-  // the column (location, money) hangs under the map, or stands over it when the map is in a bottom
-  // corner. There it stays over the map's box even while the map is hidden: dropping into the box put
-  // it on the vitals (bottom left) or the ammo and cluster (bottom right) (0.7.0 test, F6)
+  // the corner the map is placed in (where it belongs, not its blink): the stack in that corner sits
+  // beside the map, level with its outer edge, instead of under or over it
+  const mapCorner: HudCorner | null = frame && mapPlaced ? (`${frame.y + frame.h / 2 < 0.5 ? "top" : "bottom"}-${frame.x + frame.w / 2 < 0.5 ? "left" : "right"}` as HudCorner) : null;
+  const vars = layoutVars(layout ?? stageLayout(w, h), mapCorner ? frame : null, w, h) as Record<string, string>;
+  // the column (location, money) hangs under the map or stands over it: Config.minimap.column (or the
+  // player's style) 'below', 'above', or 'auto' (under a map in a top corner, over one in a bottom
+  // corner). Over the ring it clears the heading read above it. It stays over the map's box even
+  // while the map is hidden: dropping into the box put it on the vitals or the cluster (0.7.0, F6)
   let column: CSSProperties = {};
   if (frame) {
     const cx = (frame.x + frame.w / 2) * w;
-    const below = frame.y + frame.h / 2 < 0.5;
+    const pick = settings.mapColumn ?? "auto";
+    const below = pick === "auto" ? frame.y + frame.h / 2 < 0.5 : pick === "below";
+    const clear = ring && settings.compass?.ring !== false ? "2.5rem" : "0px";
     column = below
       ? { left: cx, top: mapPlaced ? (frame.y + frame.h) * h : frame.y * h, transform: "translateX(-50%)" }
-      : { left: cx, bottom: (1 - frame.y) * h, transform: "translateX(-50%)" };
+      : { left: cx, bottom: `calc(${((1 - frame.y) * h).toFixed(1)}px + ${clear})`, transform: "translateX(-50%)" };
     vars["--hud-col-w"] = `${(frame.w * w).toFixed(1)}px`;
   }
   const heading = state?.heading ?? 0;
@@ -217,17 +223,16 @@ function Compact({ settings, vehicle, location, weapon, layout, frame, state, pl
       ))}
     </div>
   );
-  const bl = besideMap ? "hud-beside-map hud-stack" : undefined;
   return (
     <div data-slot="hud" data-layout="compact" className="hud-root" data-shadow={look.shadow} style={vars as CSSProperties}>
       <Side side="map" slide={settings.slide && frame ? mapEdge(frame) : undefined}>{ring && <MapRing frame={frame!} start={heading} compass={settings.compass?.ring !== false} location={location} units={units} halo={settings.halo !== false} tag={settings.waypointTag === true} />}</Side>
       <Side side="left">
         {columnSide === "left" && columnEl}
-        {corners(groups, "left", bl)}
+        {corners(groups, "left", mapCorner)}
       </Side>
       <Side side="right">
         {columnSide === "right" && columnEl}
-        {corners(groups, "right")}
+        {corners(groups, "right", mapCorner)}
       </Side>
     </div>
   );

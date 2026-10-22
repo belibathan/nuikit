@@ -102,6 +102,9 @@ Config = {
     -- ring reads over a bright sky (an experiment, on). Its strength is the theme's HUD plate
     -- (--nk-hud-opacity, shared with the speedometer); --nk-map-halo-size (2.5rem) is how far it fades out.
     halo = true,
+    -- Where the location and money column stands: 'auto' (under a map in a top corner, over one in a
+    -- bottom corner), 'below' or 'above'. Over a round map it clears the heading read above the ring.
+    column = 'auto',
     -- nuikit's waypoint tag on the ring (an arrow and the distance on its lower shoulder). Off: GTA
     -- already shows the waypoint on the radar. With the radar off the distance still reads under
     -- the location (Config.location.waypoint).

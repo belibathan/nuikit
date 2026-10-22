@@ -98,8 +98,10 @@ function frameFor(layout: HudLayout, shape: MinimapFrame["shape"], preset: HudPr
   const rem = Math.min(32, Math.max(12, h * 0.014815));
   if (preset === "compact") {
     const size = 15 * rem;
-    const x = w - layout.r * w - 1.5 * rem - size;
-    const y = layout.t * h + 1.5 * rem + 1.75 * rem;
+    // ?anchor=bottom-left (any corner): Config.parts.map
+    const anchor = new URLSearchParams(location.search).get("anchor") ?? "top-right";
+    const x = anchor.endsWith("left") ? layout.l * w + 1.5 * rem : w - layout.r * w - 1.5 * rem - size;
+    const y = anchor.startsWith("top") ? layout.t * h + 1.5 * rem + 1.75 * rem : h - layout.b * h - 1.5 * rem - size;
     return { x: x / w, y: y / h, w: size / w, h: size / h, band: (0.125 * rem) / h, shape: "circle", framed: true, preset };
   }
   const size = 15 * rem;

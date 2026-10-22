@@ -165,6 +165,8 @@ export interface HudSettings {
   location?: boolean;
   compass?: { enabled?: boolean; onFoot?: boolean; /** compact: cardinals and heading on the map ring (Config.minimap.compass) */ ring?: boolean };
   frame?: boolean;
+  /** where the location and money column stands: under the map, over it, or auto (Config.minimap.column) */
+  mapColumn?: "auto" | "below" | "above";
   /** GTA's radar slides with the HUD's exit and entrance (Config.minimap.slide): the ring slides with it */
   slide?: boolean;
   /** the speedometer's plate behind the round ring (Config.minimap.halo); absent: on */

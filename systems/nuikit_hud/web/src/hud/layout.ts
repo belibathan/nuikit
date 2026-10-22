@@ -31,6 +31,9 @@ export function layoutVars(layout: HudLayout, map: MinimapFrame | null, width: n
     vars["--hud-map-bottom"] = px((1 - map.y - map.h) * height);
     // its right edge, from the screen's left
     vars["--hud-map-end"] = px((map.x + map.w) * width);
+    // its left edge from the screen's right, and its top edge from the screen's top (the other corners)
+    vars["--hud-map-start-r"] = px((1 - map.x) * width);
+    vars["--hud-map-y"] = px(map.y * height);
   }
   return vars as CSSProperties;
 }

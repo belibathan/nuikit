@@ -2040,3 +2040,21 @@ html[data-nk-legibility="day"] .hud-root {
   pointer-events: none;
   box-shadow: 0 0.5rem 1.5rem -0.5rem rgba(var(--scrim-rgb), 0.6);
 }
+
+/* the stack in the map's own corner sits beside the map, level with its outer edge (bottom-left is
+   .hud-beside-map, as before) */
+.hud-beside {
+  position: absolute;
+}
+.hud-beside[data-corner="top-left"] {
+  left: calc(var(--hud-map-end) + 0.75rem);
+  top: var(--hud-map-y);
+}
+.hud-beside[data-corner="top-right"] {
+  right: calc(var(--hud-map-start-r) + 0.75rem);
+  top: var(--hud-map-y);
+}
+.hud-beside[data-corner="bottom-right"] {
+  right: calc(var(--hud-map-start-r) + 0.75rem);
+  bottom: var(--hud-map-bottom);
+}
