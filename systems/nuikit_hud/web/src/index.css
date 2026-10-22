@@ -1,4 +1,7 @@
 /* synced by pnpm sync: don't edit here. Change packages/create-nuikit/index.css.tpl or kit.css, then run pnpm sync. */
+/* Cascade layers (tokens 1.5, docs/design/ink.md §4), declared before Tailwind's own so the kit's sit between
+   them: kit defaults and primitives under the utilities, a theme (nk.theme) and the page (nk.app) over them. */
+@layer theme, base, nk.base, components, nk.kit, utilities, nk.theme, nk.app;
 @import "tailwindcss";
 /* shadcn's enter/exit animations (data-[state=open]:animate-in …): every page ships them. */
 @import "tw-animate-css";
@@ -336,6 +339,9 @@
   --nk-spring-bounce: 0;
   --nk-motion-move: 1;
   --nk-time-instant: 0ms;
+  --nk-time-snap: 70ms;
+  --nk-time-fast: 93ms;
+  --nk-time-slow: 218ms;
   --nk-time-press: 70ms;
   --nk-time-hover: 105ms;
   --nk-time-base: 140ms;
@@ -481,10 +487,10 @@
   --nk-z-dim: 50;
   --nk-z-dialog: 60;
   --nk-z-system: 70;
-  --nk-hang-md: 0.375rem;
-  --nk-hang-lg: 0.75rem;
   --nk-focus-shift: 0rem;
   --nk-glow-budget: 1;
+  --nk-exit-factor: 0.7;
+  --nk-time-reduced: 100ms;
 }
 
 .dark {
@@ -557,6 +563,9 @@
   --nk-spring-bounce: 0;
   --nk-motion-move: 1;
   --nk-time-instant: 0ms;
+  --nk-time-snap: 70ms;
+  --nk-time-fast: 93ms;
+  --nk-time-slow: 218ms;
   --nk-time-press: 70ms;
   --nk-time-hover: 105ms;
   --nk-time-base: 140ms;
@@ -702,10 +711,10 @@
   --nk-z-dim: 50;
   --nk-z-dialog: 60;
   --nk-z-system: 70;
-  --nk-hang-md: 0.375rem;
-  --nk-hang-lg: 0.75rem;
   --nk-focus-shift: 0rem;
   --nk-glow-budget: 1;
+  --nk-exit-factor: 0.7;
+  --nk-time-reduced: 100ms;
 }
 
 /* Readability at 1080p (docs/design/research.md §3): small text one step up from Tailwind's defaults,
@@ -868,12 +877,129 @@
  *
  * The component tokens below are declared on :root and on [data-nk-theme]: a subtree applyTheme painted
  * (a stage, a host module) re-derives them from its own identity tokens.
+ *
+ * Layers (tokens 1.5, docs/design/ink.md §4): nk.base holds the 1.5 lever defaults, nk.kit the primitives
+ * (tile, fill, chip, icon-text, action-bar, plate); a theme writes only into nk.theme (token values and rules
+ * on documented data attributes), a page into nk.app or unlayered. Tailwind's utilities sit between nk.kit and
+ * nk.theme, so a className still restyles a primitive. index.css.tpl declares the order before Tailwind's own.
  */
+@layer theme, base, nk.base, components, nk.kit, utilities, nk.theme, nk.app;
+
+/*
+ * Tokens 1.5 (docs/design/ink.md §2): the Ink levers, every theme gets them. These are the Graphite defaults
+ * (today's proportions); the `tile` treatment and Ink set their own values. The older component tokens below
+ * read these (--nk-key-radius: var(--nk-r-key)…), so a theme may set either name.
+ */
+@layer nk.base {
+  :root,
+  [data-nk-theme] {
+    /* spacing: one step × density, and the semantic gaps */
+    --nk-space-unit: calc(0.25rem * var(--nk-density, 0.875));
+    --nk-space-1: var(--nk-space-unit);
+    --nk-space-2: calc(var(--nk-space-unit) * 2);
+    --nk-space-3: calc(var(--nk-space-unit) * 3);
+    --nk-space-4: calc(var(--nk-space-unit) * 4);
+    --nk-space-6: calc(var(--nk-space-unit) * 6);
+    --nk-space-8: calc(var(--nk-space-unit) * 8);
+    --nk-gap-cluster: var(--nk-space-2);
+    --nk-gap-items: var(--nk-space-1);
+    --nk-pad-x: var(--nk-space-3);
+    --nk-pad-surface: var(--nk-space-6);
+    /* radius: four steps, no pill */
+    --nk-r-key: max(0.25rem, calc(var(--radius) - 4px));
+    --nk-r-chip: max(0.25rem, calc(var(--radius) - 4px));
+    --nk-r-control: calc(var(--radius) - 2px);
+    --nk-r-surface: var(--nk-material-menu-radius, var(--radius));
+    /* heights */
+    --nk-h-key: 1.25rem;
+    --nk-h-chip: calc(2rem * var(--nk-density, 0.875));
+    --nk-h-control: 2.25rem;
+    --nk-h-row: calc(2.75rem * var(--nk-density, 0.875));
+    /* icons */
+    --nk-icon-sm: 0.75rem;
+    --nk-icon-md: 1rem;
+    --nk-icon-lg: 1.25rem;
+    --nk-icon-stroke: 2;
+    /* type roles: scan (keys, buttons, tabs), title, label, num, body */
+    --nk-text-key: 0.8125rem;
+    --nk-text-body: var(--nk-text-base, 1rem);
+    --nk-type-scan-family: var(--font-numeric, var(--font-sans));
+    --nk-type-scan-style: var(--nk-display-style, normal);
+    --nk-type-scan-weight: var(--nk-weight-strong, 600);
+    --nk-type-scan-tracking: 0em;
+    --nk-type-scan-case: none;
+    --nk-type-scan-pad: 0em;
+    --nk-type-title-family: var(--nk-heading-font, var(--font-display, var(--font-sans)));
+    --nk-type-title-style: var(--nk-display-style, normal);
+    --nk-type-title-weight: var(--nk-heading-weight, var(--nk-weight-strong, 600));
+    --nk-type-title-tracking: var(--nk-heading-tracking, -0.01em);
+    --nk-type-title-case: var(--nk-heading-case, none);
+    --nk-type-title-pad: 0em;
+    --nk-type-label-family: var(--nk-label-font, var(--font-sans));
+    --nk-type-label-style: normal;
+    --nk-type-label-weight: var(--nk-label-weight, 500);
+    --nk-type-label-tracking: 0em;
+    --nk-type-label-case: none;
+    --nk-type-label-pad: 0em;
+    --nk-type-num-family: var(--nk-num-font, var(--font-numeric, var(--font-sans)));
+    --nk-type-num-style: var(--nk-display-style, normal);
+    --nk-type-num-weight: inherit;
+    --nk-type-num-tracking: var(--nk-num-tracking, -0.02em);
+    --nk-type-num-case: none;
+    --nk-type-num-pad: 0em;
+    --nk-type-body-family: var(--font-sans);
+    --nk-type-body-style: normal;
+    --nk-type-body-weight: var(--nk-weight-body, 400);
+    --nk-type-body-tracking: 0em;
+    --nk-type-body-case: none;
+    --nk-type-body-pad: 0em;
+    /* tile: Graphite's keycap (no plate, no slant); the tile treatment and --nk-skew add them */
+    --nk-tile-face: var(--muted);
+    --nk-tile-ink: var(--popover-foreground);
+    --nk-tile-light: rgba(var(--popover-foreground-rgb), calc(var(--nk-surface-edge, 0.06) * 1.5));
+    --nk-tile-shade: rgba(var(--scrim-rgb), 0.35);
+    --nk-tile-rim: var(--border);
+    --nk-tile-rim-focus: var(--ring);
+    --nk-tile-plate: var(--border);
+    --nk-tile-plate-dim: var(--nk-tile-plate);
+    --nk-tile-plate-x: 0px;
+    --nk-tile-plate-y: 0px;
+    --nk-tile-press: 1px;
+    --nk-tile-skew: var(--nk-skew, 0deg);
+    --nk-tile-confirm-face: var(--foreground);
+    --nk-tile-confirm-ink: var(--background);
+    --nk-tile-hold: rgba(var(--foreground-rgb), 0.35);
+    --nk-tile-tag-delay: 80ms;
+    /* plate: the one surface recipe (Graphite: the panel's). No color-mix on Chromium 103: channels */
+    --nk-plate-bg: rgba(var(--nk-plate-rgb, var(--surface-rgb, var(--popover-rgb))), var(--nk-menu-alpha, var(--nk-surface-opacity, 0.96)));
+    --nk-plate-hair: var(--border);
+    --nk-plate-drop: var(--nk-elevation-shadow, 0 0 0 1px rgba(var(--scrim-rgb), 0.25), 0 8px 16px -8px rgba(var(--scrim-rgb), 0.6));
+    --nk-plate-radius: var(--nk-r-surface);
+    /* fill: status as a level (--level, 0–1) */
+    --nk-fill-color: var(--brand, var(--primary));
+    --nk-fill-track: rgba(var(--scrim-rgb), 0.35);
+    --nk-fill-tint: var(--accent);
+    --nk-fill-edge: transparent;
+    --nk-fill-alert: var(--destructive);
+    --nk-fill-height: var(--nk-gauge-track, 0.25rem);
+    /* motion distances */
+    --nk-lift: 0rem;
+    --nk-rise: 0.5rem;
+    --nk-land-scale: 1;
+    --nk-deny-x: 0.3125rem;
+  }
+  /* --nk-skew (1.3) keeps its keycap plate: a slanted key sits on an offset plate */
+  :is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"]) {
+    --nk-tile-plate-x: 0.1875rem;
+    --nk-tile-plate-y: 0.1875rem;
+    --nk-tile-plate: var(--nk-key-plate, var(--border));
+  }
+}
 
 :root,
 [data-nk-theme] {
   /* ── scale: the kit's spacing step × --nk-density, type sizes from one base × --nk-type-ratio */
-  --nk-space: calc(0.25rem * var(--nk-density, 0.875));
+  --nk-space: var(--nk-space-unit);
   --nk-ratio: var(--nk-type-ratio, 1.2);
   /* research §3: 16px body, 13–14px labels, 18px+ for HUD values read in motion */
   --nk-text-base: 1rem;
@@ -952,8 +1078,8 @@
   --nk-num-tracking: -0.02em;
 
   /* ── row: the 40px list row. Active = [data-active], :focus-visible or [data-highlighted] */
-  --nk-row-height: calc(2.75rem * var(--nk-density, 0.875));
-  --nk-row-radius: calc(var(--radius) - 2px);
+  --nk-row-height: var(--nk-h-row);
+  --nk-row-radius: var(--nk-r-control);
   --nk-row-clip: var(--nk-clip-sm, none);
   --nk-row-padding: calc(var(--nk-space) * 1.5) calc(var(--nk-space) * 3);
   --nk-row-font-size: var(--nk-text-base);
@@ -970,20 +1096,21 @@
   --nk-row-glow: 0 0 1rem rgba(var(--brand-rgb, var(--primary-rgb)), calc(var(--nk-glow, 0) * 0.5));
 
   /* ── key: shadcn's Kbd, as a keycap */
-  --nk-key-bg: var(--muted);
-  --nk-key-fg: var(--popover-foreground);
-  --nk-key-border: var(--border);
-  --nk-key-radius: max(0.25rem, calc(var(--radius) - 4px));
-  --nk-key-font: var(--font-numeric, var(--font-sans));
-  --nk-key-weight: var(--nk-weight-strong, 600);
-  --nk-key-shadow: inset 0 -1px 0 0 rgba(var(--scrim-rgb), 0.35), inset 0 1px 0 0 rgba(var(--popover-foreground-rgb), calc(var(--nk-surface-edge, 0.06) * 1.5));
+  /* aliases of the 1.5 tile and scan-role levers (a theme may set either name) */
+  --nk-key-bg: var(--nk-tile-face);
+  --nk-key-fg: var(--nk-tile-ink);
+  --nk-key-border: var(--nk-tile-rim);
+  --nk-key-radius: var(--nk-r-key);
+  --nk-key-font: var(--nk-type-scan-family);
+  --nk-key-weight: var(--nk-type-scan-weight);
+  --nk-key-shadow: inset 0 -1px 0 0 var(--nk-tile-shade), inset 0 1px 0 0 var(--nk-tile-light);
   --nk-key-clip: var(--nk-clip-sm, none);
 
   /* ── chip: always-on HUD chips (nk-chip) and tiles (nk-hud) on the game */
-  --nk-chip-height: calc(2rem * var(--nk-density, 0.875));
+  --nk-chip-height: var(--nk-h-chip);
   --nk-chip-padding: calc(var(--nk-space) * 2.5);
   /* a small rounded rect (6px in Graphite); Velvet sets 9999px for pills */
-  --nk-chip-radius: max(0.25rem, calc(var(--radius) - 4px));
+  --nk-chip-radius: var(--nk-r-chip);
   --nk-chip-bg: rgba(var(--hud-rgb), max(var(--hud-a, 0.45), var(--nk-hud-alpha, var(--nk-hud-opacity, 0.55))));
   --nk-chip-fg: var(--hud-foreground);
   --nk-chip-font-size: 0.875rem;
@@ -1079,6 +1206,19 @@
   --nk-density: 1.15;
 }
 [data-nk-density] {
+  --nk-space-unit: calc(0.25rem * var(--nk-density, 0.875));
+  --nk-space-1: var(--nk-space-unit);
+  --nk-space-2: calc(var(--nk-space-unit) * 2);
+  --nk-space-3: calc(var(--nk-space-unit) * 3);
+  --nk-space-4: calc(var(--nk-space-unit) * 4);
+  --nk-space-6: calc(var(--nk-space-unit) * 6);
+  --nk-space-8: calc(var(--nk-space-unit) * 8);
+  --nk-gap-cluster: var(--nk-space-2);
+  --nk-gap-items: var(--nk-space-1);
+  --nk-pad-x: var(--nk-space-3);
+  --nk-pad-surface: var(--nk-space-6);
+  --nk-h-chip: calc(2rem * var(--nk-density, 0.875));
+  --nk-h-row: calc(2.75rem * var(--nk-density, 0.875));
   --nk-space: calc(0.25rem * var(--nk-density, 0.875));
   --nk-panel-header-height: calc(3.25rem * var(--nk-density, 0.875));
   --nk-panel-header-padding: calc(var(--nk-space) * 3) calc(var(--nk-space) * 4);
@@ -1098,6 +1238,9 @@
   --nk-slab-band-gap: var(--nk-space);
 }
 [data-nk-shape] {
+  --nk-r-key: max(0.25rem, calc(var(--radius) - 4px));
+  --nk-r-chip: max(0.25rem, calc(var(--radius) - 4px));
+  --nk-r-control: calc(var(--radius) - 2px);
   --nk-chip-radius: max(0.25rem, calc(var(--radius) - 4px));
   --nk-key-radius: max(0.25rem, calc(var(--radius) - 4px));
   --nk-panel-radius: var(--radius);
@@ -1108,12 +1251,15 @@
 }
 [data-nk-shape="square"] {
   --radius: 0.125rem;
+  --nk-r-key: 0.125rem;
+  --nk-r-chip: 0.125rem;
   --nk-chip-radius: 0.125rem;
   --nk-key-radius: 0.125rem;
   --nk-meter-radius: 0.0625rem;
 }
 [data-nk-shape="round"] {
   --radius: 1rem;
+  --nk-r-chip: 9999px;
   --nk-chip-radius: 9999px;
 }
 
@@ -1208,22 +1354,42 @@
 }
 /* Title inside a panel header. @merge nk-type */
 @utility nk-title {
-  font-family: var(--nk-heading-font);
-  font-style: var(--nk-display-style, normal);
+  /* the title role (1.5): --nk-type-title-*, which default to the heading tokens */
+  font-family: var(--nk-type-title-family);
+  font-style: var(--nk-type-title-style);
   /* !important: shadcn titles carry text-lg, which would otherwise win */
   font-size: var(--nk-heading-size) !important;
-  font-weight: var(--nk-heading-weight);
+  font-weight: var(--nk-type-title-weight);
   line-height: 1.3 !important;
-  letter-spacing: var(--nk-heading-tracking);
-  text-transform: var(--nk-heading-case);
+  letter-spacing: var(--nk-type-title-tracking);
+  text-transform: var(--nk-type-title-case);
 }
 /* Small secondary label, as written (descriptions, meta lines). @merge nk-type */
 @utility nk-label {
-  font-family: var(--nk-label-font);
+  /* the label role (1.5): --nk-type-label-*; its style, tracking and case apply under the tile treatment */
+  font-family: var(--nk-type-label-family);
   font-size: var(--nk-label-size) !important;
   line-height: 1rem !important;
-  font-weight: var(--nk-label-weight);
+  font-weight: var(--nk-type-label-weight);
   color: var(--muted-foreground);
+}
+/* Keys, buttons, tabs, anything scanned (the scan role, 1.5): --nk-type-scan-* at --nk-text-key. @merge nk-type */
+@utility nk-scan {
+  font-family: var(--nk-type-scan-family);
+  font-style: var(--nk-type-scan-style);
+  font-size: var(--nk-text-key);
+  font-weight: var(--nk-type-scan-weight);
+  letter-spacing: var(--nk-type-scan-tracking);
+  text-transform: var(--nk-type-scan-case);
+}
+/* Sentences (the body role, 1.5): --nk-type-body-* at --nk-text-body. @merge nk-type */
+@utility nk-body {
+  font-family: var(--nk-type-body-family);
+  font-style: var(--nk-type-body-style);
+  font-size: var(--nk-text-body);
+  font-weight: var(--nk-type-body-weight);
+  letter-spacing: var(--nk-type-body-tracking);
+  text-transform: var(--nk-type-body-case);
 }
 /* The short name of a value (Fuel, Balance, Voice): the identity's label case and tracking
    (--nk-label-case: uppercase in Signal and Vector). One to three words; sentences use nk-label.
@@ -1253,8 +1419,8 @@
   /* interaction (0.8.1): a state fills with movement. The highlight is a sweep from the leading edge
      (--nk-sweep, drawn as a background layer so the row's own surface classes don't flash it), the bar
      grows from its middle, text eases with the fill; a press dips and springs back (--nk-motion-feel).
-     Motion off: instant; reduced: no movement. */
-  --nk-sweep: var(--accent);
+     Motion off: instant; reduced: no movement. The sweep is a Fill at level 1 in --nk-fill-tint (1.5). */
+  --nk-sweep: var(--nk-fill-tint, var(--accent));
   background-image: linear-gradient(var(--nk-sweep), var(--nk-sweep));
   background-repeat: no-repeat;
   background-position: left center;
@@ -1316,10 +1482,11 @@
 }
 /* Numbers: money, timers, counts. */
 @utility nk-num {
-  font-family: var(--nk-num-font);
-  font-style: var(--nk-display-style, normal);
+  /* the num role (1.5): --nk-type-num-*; its weight, case and pad apply under the tile treatment */
+  font-family: var(--nk-type-num-family);
+  font-style: var(--nk-type-num-style);
   font-variant-numeric: tabular-nums;
-  letter-spacing: var(--nk-num-tracking);
+  letter-spacing: var(--nk-type-num-tracking);
 }
 /* HUD chip: always-on, no border, sits on the game. @merge nk-surface */
 @utility nk-chip {
@@ -1843,15 +2010,17 @@
  * specific a UI adds (group-data-[active]:bg-background/60).
  */
 @layer utilities {
+  /* shadcn's Kbd is a Tile (1.5): its face and plate are drawn by the tile rules in nk.kit, so the stock
+     bg-muted and the element's own shadow and clip give way here; tooltip variants still win (more specific) */
   [data-slot="kbd"] {
-    background-color: var(--nk-key-bg);
+    background-color: transparent;
     color: var(--nk-key-fg);
     border-radius: var(--nk-key-radius);
-    box-shadow: var(--nk-key-shadow), inset 0 0 0 var(--nk-border) var(--nk-key-border);
+    box-shadow: none;
     font-family: var(--nk-key-font);
     font-weight: var(--nk-key-weight);
-    font-style: var(--nk-display-style, normal);
-    clip-path: var(--nk-key-clip);
+    font-style: var(--nk-type-scan-style, var(--nk-display-style, normal));
+    clip-path: none;
   }
   [data-slot="button"] {
     clip-path: var(--nk-chip-clip);
@@ -1921,7 +2090,7 @@
  * upright (or italic, with --nk-display-style). Nothing here applies at 0deg, so the other identities are
  * untouched. Each part names its fill (--nk-slab-fill) and stroke (--nk-slab-stroke).
  */
-:is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"]) :is(.nk-chip, [data-slot="kbd"], [data-slot="badge"], [data-slot="button"][data-variant="default"]) {
+:is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"]) :is(.nk-chip, [data-slot="badge"], [data-slot="button"][data-variant="default"]) {
   position: relative;
   isolation: isolate;
   clip-path: none !important;
@@ -1930,7 +2099,7 @@
   box-shadow: none !important;
   border-color: transparent !important;
 }
-:is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"]) :is(.nk-chip, [data-slot="kbd"], [data-slot="badge"], [data-slot="button"][data-variant="default"])::after {
+:is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"]) :is(.nk-chip, [data-slot="badge"], [data-slot="button"][data-variant="default"])::after {
   content: "";
   position: absolute;
   inset: 0;
@@ -1949,10 +2118,6 @@
 :is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"]) .nk-chip[class*="bg-destructive"] {
   --nk-slab-fill: var(--destructive);
 }
-:is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"]) [data-slot="kbd"] {
-  --nk-slab-fill: var(--nk-key-bg);
-  --nk-slab-stroke: inset 0 0 0 var(--nk-border) var(--nk-key-border);
-}
 :is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"]) [data-slot="badge"] {
   --nk-slab-fill: var(--primary);
 }
@@ -1969,20 +2134,7 @@
 :is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"]) [data-slot="button"][data-variant="default"] {
   --nk-slab-fill: var(--primary);
 }
-/* key caps: a skewed parallelogram with the stroke, on an offset back plate */
-:is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"]) [data-slot="kbd"] {
-  --nk-slab-stroke: inset 0 0 0 var(--nk-border) var(--nk-key-border);
-  overflow: visible;
-}
-:is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"]) [data-slot="kbd"]::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -2;
-  pointer-events: none;
-  background-color: var(--nk-key-plate, var(--border));
-  transform: translate(0.1875rem, 0.1875rem) skewX(var(--nk-skew));
-}
+/* key caps: the Tile (nk.kit, 1.5) draws the slant (--nk-tile-skew = --nk-skew) and the offset plate */
 /* notification type badges: a small skewed slab in the type's colour, the glyph dark on it */
 :is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"]) [data-slot="notice-icon"] {
   position: relative;
@@ -2087,7 +2239,7 @@ html :focus-visible {
   --tw-exit-rotate: 0 !important;
 }
 :is(html, *)[data-nk-motion="reduced"] :is([class*="animate-in"], [class*="animate-out"]) {
-  animation-duration: 100ms !important;
+  animation-duration: var(--nk-time-reduced, 100ms) !important;
 }
 :is(html, *)[data-nk-motion="reduced"] *,
 :is(html, *)[data-nk-motion="reduced"] *::before,
@@ -2308,4 +2460,521 @@ html[data-nk-backdrop="on"] * {
     opacity: var(--tw-exit-opacity, 1);
     transform: translate3d(var(--tw-exit-translate-x, 0), var(--tw-exit-translate-y, 0), 0) scale3d(var(--tw-exit-scale, 1), var(--tw-exit-scale, 1), var(--tw-exit-scale, 1)) rotate(var(--tw-exit-rotate, 0));
   }
+}
+
+/* ───────────────────────────── tokens 1.5: the Ink primitives (docs/design/ink.md §3)
+   Every surface composes these and doesn't restyle them locally; a theme only sets their tokens (nk.theme).
+   They live in nk.kit, under Tailwind's utilities, so a className still wins. Shared attributes:
+   data-state = rest | focus | hold | confirm | alert | disabled; data-active = on, selected or checked;
+   data-tone = neutral | info | success | warning | danger; data-hue = a role; --level = 0–1. */
+@layer nk.kit {
+  /* ── Tile / Keycap: shadcn's Kbd and the registry Tile. Back to front: the plate (::before, offset by
+     --nk-tile-plate-x/y), the face (::after, slanted by --nk-tile-skew while the box stays upright, carrying
+     the rim and the top light), a hold fill (tile-fill, scaleX(--level)), the legend. Graphite: the face is
+     today's keycap, no plate, no slant. */
+  :is([data-slot="tile"], [data-slot="kbd"]) {
+    position: relative;
+    isolation: isolate;
+    overflow: visible;
+    --nk-tile-face-now: var(--nk-key-bg);
+    --nk-tile-ink-now: var(--nk-key-fg);
+    --nk-tile-rim-now: var(--nk-key-border);
+    --nk-tile-plate-now: var(--nk-tile-plate);
+    --nk-tile-x: 0px;
+    --nk-tile-y: 0px;
+  }
+  :is([data-slot="tile"], [data-slot="kbd"])::before,
+  :is([data-slot="tile"], [data-slot="kbd"])::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    border-radius: inherit;
+  }
+  :is([data-slot="tile"], [data-slot="kbd"])::before {
+    z-index: -3;
+    background-color: var(--nk-tile-plate-now);
+    transform: translate(var(--nk-tile-plate-x), var(--nk-tile-plate-y)) skewX(var(--nk-tile-skew));
+  }
+  :is([data-slot="tile"], [data-slot="kbd"])::after {
+    z-index: -2;
+    background-color: var(--nk-tile-face-now);
+    box-shadow: var(--nk-key-shadow), inset 0 0 0 var(--nk-border, 1px) var(--nk-tile-rim-now);
+    clip-path: var(--nk-key-clip, none);
+    transform: translate(var(--nk-tile-x), var(--nk-tile-y)) skewX(var(--nk-tile-skew));
+  }
+  /* a tooltip's own key surface (shadcn's variant on the element) shows through */
+  [data-slot="tooltip-content"] [data-slot="kbd"]::after {
+    background-color: transparent;
+  }
+  /* the registry Tile: sizes, shape, the scan role */
+  [data-slot="tile"] {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    gap: var(--nk-space-1);
+    height: var(--nk-h-key);
+    min-width: var(--nk-h-key);
+    padding-inline: var(--nk-space-1);
+    border-radius: var(--nk-key-radius);
+    color: var(--nk-tile-ink-now);
+    font-family: var(--nk-key-font);
+    font-style: var(--nk-type-scan-style);
+    font-size: var(--nk-text-key);
+    font-weight: var(--nk-key-weight);
+    letter-spacing: var(--nk-type-scan-tracking);
+    text-transform: var(--nk-type-scan-case);
+    line-height: 1;
+    white-space: nowrap;
+    user-select: none;
+    & > :not([data-slot="tile-fill"]) {
+      transform: translate(var(--nk-tile-x), var(--nk-tile-y));
+    }
+    & svg {
+      width: var(--nk-icon-md);
+      height: var(--nk-icon-md);
+      stroke-width: var(--nk-icon-stroke);
+    }
+  }
+  [data-slot="tile"][data-size="md"] {
+    height: var(--nk-h-chip);
+    min-width: var(--nk-h-chip);
+    padding-inline: var(--nk-space-2);
+  }
+  [data-slot="tile"][data-size="lg"] {
+    height: var(--nk-h-control);
+    min-width: var(--nk-h-control);
+    padding-inline: var(--nk-space-3);
+    & svg {
+      width: var(--nk-icon-lg);
+      height: var(--nk-icon-lg);
+    }
+  }
+  [data-slot="tile"][data-size="sm"] svg {
+    width: var(--nk-icon-sm);
+    height: var(--nk-icon-sm);
+  }
+  [data-slot="tile"][data-shape="square"] {
+    padding-inline: 0;
+    width: var(--nk-h-key);
+  }
+  [data-slot="tile"][data-shape="square"][data-size="md"] {
+    width: var(--nk-h-chip);
+  }
+  [data-slot="tile"][data-shape="square"][data-size="lg"] {
+    width: var(--nk-h-control);
+  }
+  /* the legend's italic overhang */
+  [data-slot="tile-legend"] {
+    padding-inline-end: var(--nk-type-scan-pad);
+  }
+  /* the HUD's dimmer plate */
+  [data-slot="tile"][data-plate="dim"] {
+    --nk-tile-plate-now: var(--nk-tile-plate-dim);
+  }
+  /* states. Rims switch, they never tween; the face moves with transform only. */
+  :is([data-slot="tile"], [data-slot="kbd"])[data-state="focus"] {
+    --nk-tile-rim-now: var(--nk-tile-rim-focus);
+  }
+  :is([data-slot="tile"], [data-slot="kbd"])[data-state="hold"] {
+    --nk-tile-x: var(--nk-tile-press);
+    --nk-tile-y: var(--nk-tile-press);
+  }
+  :is([data-slot="tile"], [data-slot="kbd"]):is([data-state="confirm"], [data-active]) {
+    --nk-tile-face-now: var(--nk-tile-confirm-face);
+    --nk-tile-ink-now: var(--nk-tile-confirm-ink);
+    color: var(--nk-tile-confirm-ink);
+  }
+  :is([data-slot="tile"], [data-slot="kbd"])[data-state="confirm"] {
+    animation: nk-confirm var(--nk-time-slow, var(--nk-time-confirm, 160ms)) var(--nk-ease-spring, cubic-bezier(0.34, 1.56, 0.64, 1));
+  }
+  :is([data-slot="tile"], [data-slot="kbd"])[data-state="alert"] {
+    --nk-tile-rim-now: var(--nk-fill-alert);
+    animation: nk-breathe var(--nk-time-pulse, 1000ms) var(--nk-ease-breathe, cubic-bezier(0.37, 0, 0.63, 1)) infinite;
+  }
+  :is([data-slot="tile"], [data-slot="kbd"]):is([data-state="disabled"], [data-disabled]) {
+    opacity: 0.5;
+  }
+  /* tone and hue colour the legend and the rim; a confirmed or active tile keeps its white face */
+  [data-slot="tile"][data-tone="info"] { --nk-tile-tone: var(--info); }
+  [data-slot="tile"][data-tone="success"] { --nk-tile-tone: var(--success); }
+  [data-slot="tile"][data-tone="warning"] { --nk-tile-tone: var(--warning); }
+  [data-slot="tile"][data-tone="danger"] { --nk-tile-tone: var(--destructive); }
+  [data-slot="tile"][data-hue] { --nk-tile-tone: var(--hue-solid); }
+  [data-slot="tile"]:is([data-tone]:not([data-tone="neutral"]), [data-hue]):not([data-state="confirm"], [data-active]) {
+    --nk-tile-ink-now: var(--nk-tile-tone);
+    --nk-tile-rim-now: var(--nk-tile-tone);
+  }
+  /* hold: the face fills left to right */
+  [data-slot="tile-fill"] {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    pointer-events: none;
+    background-color: var(--nk-tile-hold);
+    transform-origin: left center;
+    transform: translate(var(--nk-tile-x), var(--nk-tile-y)) skewX(var(--nk-tile-skew)) scaleX(var(--level, 0));
+  }
+  /* tag: the plate extending right with a label, opening (a reveal on the compositor) after the tile lands */
+  [data-slot="tile-group"] {
+    position: relative;
+    isolation: isolate;
+    display: inline-flex;
+    align-items: center;
+  }
+  [data-slot="tile-tag"] {
+    position: relative;
+    z-index: -1;
+    display: inline-flex;
+    align-items: center;
+    align-self: stretch;
+    margin-left: calc(var(--nk-space-2) * -1);
+    padding-inline: calc(var(--nk-space-2) + var(--nk-space-1)) var(--nk-pad-x);
+    color: var(--nk-tile-ink);
+    font-family: var(--nk-type-label-family);
+    font-style: var(--nk-type-label-style);
+    font-size: var(--nk-text-label);
+    font-weight: var(--nk-type-label-weight);
+    letter-spacing: var(--nk-type-label-tracking);
+    text-transform: var(--nk-type-label-case);
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity var(--nk-time-fast, 93ms) var(--nk-ease-out, ease-out);
+    &::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      border-radius: 0 var(--nk-key-radius) var(--nk-key-radius) 0;
+      background-color: var(--nk-tile-plate);
+      transform-origin: left center;
+      transform: translate(var(--nk-tile-plate-x), var(--nk-tile-plate-y)) skewX(var(--nk-tile-skew)) scaleX(0);
+      transition: transform var(--nk-time-base, 140ms) var(--nk-ease-expand, ease-out) var(--nk-tile-tag-delay);
+    }
+  }
+  [data-slot="tile-group"][data-open] [data-slot="tile-tag"] {
+    opacity: 1;
+    transition-delay: calc(var(--nk-tile-tag-delay) + var(--nk-time-fast, 93ms));
+    &::before {
+      transform: translate(var(--nk-tile-plate-x), var(--nk-tile-plate-y)) skewX(var(--nk-tile-skew)) scaleX(1);
+    }
+  }
+  /* a tile lands: from --nk-land-scale with the spring (opt-in: data-land) */
+  [data-slot="tile"][data-land] {
+    animation: nk-land var(--nk-time-slow, 218ms) var(--nk-ease-spring, cubic-bezier(0.34, 1.56, 0.64, 1)) backwards;
+  }
+
+  /* ── Fill / Level (.nk-fill, data-slot="fill"): a track, a bar scaled from the left, a leading edge.
+     data-hue colours it with the role, data-tone with the status, data-state="alert" with --nk-fill-alert. */
+  :is(.nk-fill, [data-slot="fill"]) {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    height: var(--nk-fill-height);
+    border-radius: var(--nk-meter-radius);
+    background-color: var(--nk-fill-track);
+    --nk-fill-now: var(--nk-fill-color);
+    &::before,
+    &::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      transition: transform var(--nk-time-fill, 420ms) var(--nk-ease-standard, cubic-bezier(0.2, 0, 0, 1));
+    }
+    &::before {
+      background-color: var(--nk-fill-now);
+      transform-origin: left center;
+      transform: scaleX(var(--level, 0));
+    }
+    /* the edge: a full-width layer whose right side is the bar's leading edge */
+    &::after {
+      box-shadow: inset -1px 0 0 0 var(--nk-fill-edge);
+      transform: translateX(calc((var(--level, 0) - 1) * 100%));
+    }
+  }
+  :is(.nk-fill, [data-slot="fill"])[data-tone="info"] { --nk-fill-now: var(--info); }
+  :is(.nk-fill, [data-slot="fill"])[data-tone="success"] { --nk-fill-now: var(--success); }
+  :is(.nk-fill, [data-slot="fill"])[data-tone="warning"] { --nk-fill-now: var(--warning); }
+  :is(.nk-fill, [data-slot="fill"])[data-tone="danger"] { --nk-fill-now: var(--destructive); }
+  :is(.nk-fill, [data-slot="fill"])[data-hue],
+  [data-hue] :is(.nk-fill, [data-slot="fill"]):not([data-tone]) { --nk-fill-now: var(--hue-solid); }
+  :is(.nk-fill, [data-slot="fill"])[data-state="alert"] { --nk-fill-now: var(--nk-fill-alert); }
+  :is(.nk-fill, [data-slot="fill"])[data-variant="edge"] {
+    height: 0.125rem;
+    border-radius: 0;
+  }
+
+  /* ── Chip (data-slot="chip"): h-chip, r-chip, the label role, one line. fill hair | tint | solid. */
+  [data-slot="chip"] {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    gap: var(--nk-gap-cluster);
+    height: var(--nk-h-chip);
+    padding-inline: var(--nk-space-2);
+    border-radius: var(--nk-r-chip);
+    font-family: var(--nk-type-label-family);
+    font-style: var(--nk-type-label-style);
+    font-size: var(--nk-text-label);
+    font-weight: var(--nk-type-label-weight);
+    letter-spacing: var(--nk-type-label-tracking);
+    text-transform: var(--nk-type-label-case);
+    line-height: 1;
+    white-space: nowrap;
+    --nk-chip-tone: var(--muted-foreground);
+    --nk-chip-tone-rgb: var(--muted-foreground-rgb);
+    color: var(--foreground);
+    box-shadow: inset 0 0 0 var(--nk-border, 1px) var(--border);
+    & svg {
+      width: var(--nk-icon-md);
+      height: var(--nk-icon-md);
+      stroke-width: var(--nk-icon-stroke);
+      color: var(--nk-chip-tone);
+    }
+  }
+  [data-slot="chip"][data-tone="info"] { --nk-chip-tone: var(--info); --nk-chip-tone-rgb: var(--info-rgb); }
+  [data-slot="chip"][data-tone="success"] { --nk-chip-tone: var(--success); --nk-chip-tone-rgb: var(--success-rgb); }
+  [data-slot="chip"][data-tone="warning"] { --nk-chip-tone: var(--warning); --nk-chip-tone-rgb: var(--warning-rgb); }
+  [data-slot="chip"][data-tone="danger"] { --nk-chip-tone: var(--destructive); --nk-chip-tone-rgb: var(--destructive-rgb); }
+  [data-slot="chip"][data-hue] { --nk-chip-tone: var(--hue-solid); --nk-chip-tone-rgb: var(--hue); }
+  [data-slot="chip"]:is([data-tone]:not([data-tone="neutral"]), [data-hue]) {
+    box-shadow: inset 0 0 0 var(--nk-border, 1px) rgba(var(--nk-chip-tone-rgb), var(--nk-hue-line, 0.5));
+  }
+  [data-slot="chip"][data-fill="tint"] {
+    background-color: rgba(var(--nk-chip-tone-rgb), var(--nk-hue-tint, 0.14));
+    box-shadow: none;
+  }
+  [data-slot="chip"][data-fill="solid"] {
+    background-color: var(--nk-chip-tone);
+    color: var(--background);
+    box-shadow: none;
+    & svg {
+      color: inherit;
+    }
+  }
+  [data-slot="chip"][data-fill="solid"]:not([data-tone], [data-hue]) {
+    background-color: var(--foreground);
+  }
+  [data-slot="chip"][data-variant="dot"] {
+    width: var(--nk-space-2);
+    height: var(--nk-space-2);
+    padding: 0;
+    border-radius: var(--nk-r-key);
+    background-color: var(--nk-chip-tone);
+    box-shadow: none;
+  }
+  [data-slot="chip-count"] {
+    font-family: var(--nk-type-num-family);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ── IconText (data-slot="icon-text"): an icon and a text role on one centre line. */
+  [data-slot="icon-text"] {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--nk-gap-cluster);
+    min-width: 0;
+    line-height: 1.25rem;
+    & > svg,
+    & > [data-slot="icon-text-icon"] {
+      flex: none;
+      width: var(--nk-icon-md);
+      height: var(--nk-icon-md);
+      stroke-width: var(--nk-icon-stroke);
+    }
+    & > [data-slot="icon-text-icon"] > svg {
+      width: 100%;
+      height: 100%;
+    }
+  }
+  [data-slot="icon-text"][data-size="sm"] {
+    gap: var(--nk-space-1);
+    font-size: var(--nk-text-label);
+    & > :is(svg, [data-slot="icon-text-icon"]) {
+      width: var(--nk-icon-sm);
+      height: var(--nk-icon-sm);
+    }
+  }
+  [data-slot="icon-text"][data-size="lg"] {
+    font-size: var(--nk-text-title);
+    & > :is(svg, [data-slot="icon-text-icon"]) {
+      width: var(--nk-icon-lg);
+      height: var(--nk-icon-lg);
+    }
+  }
+  [data-slot="icon-text"][data-muted] > :is(svg, [data-slot="icon-text-icon"]) {
+    color: var(--muted-foreground);
+  }
+
+  /* ── ActionBar (.nk-action-bar, the registry ActionBar): the one hint, close and back pattern. An optional
+     plate, then items (keys or an icon, plus a label; a <button> when it acts) gap-items apart. */
+  .nk-action-bar {
+    display: flex;
+    align-items: center;
+    gap: var(--nk-gap-items);
+    min-width: 0;
+  }
+  .nk-action-bar[data-plate] {
+    padding: var(--nk-space-1);
+    border-radius: var(--nk-plate-radius);
+    background-color: var(--nk-plate-bg);
+    box-shadow: inset 0 0 0 var(--nk-border, 1px) var(--nk-plate-hair), var(--nk-plate-drop);
+  }
+  .nk-action-bar [data-slot="action-bar-item"] {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--nk-gap-cluster);
+    height: var(--nk-h-control);
+    padding-inline: var(--nk-space-2);
+    border-radius: var(--nk-r-control);
+    color: var(--foreground);
+    white-space: nowrap;
+    & > svg {
+      width: var(--nk-icon-md);
+      height: var(--nk-icon-md);
+      stroke-width: var(--nk-icon-stroke);
+      color: var(--muted-foreground);
+    }
+  }
+  .nk-action-bar button[data-slot="action-bar-item"] {
+    cursor: pointer;
+    background-image: linear-gradient(var(--nk-fill-tint), var(--nk-fill-tint));
+    background-repeat: no-repeat;
+    background-position: left center;
+    background-size: 0% 100%;
+  }
+  .nk-action-bar button[data-slot="action-bar-item"]:is(:hover, :focus-visible, [data-state="focus"]) {
+    background-size: 100% 100%;
+  }
+  .nk-action-bar [data-slot="action-bar-item"][data-state="disabled"] {
+    opacity: 0.5;
+  }
+  .nk-action-bar [data-slot="action-bar-keys"] {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--nk-space-1);
+  }
+  .nk-action-bar [data-slot="action-bar-label"] {
+    font-family: var(--nk-type-label-family);
+    font-style: var(--nk-type-label-style);
+    font-size: var(--nk-text-label);
+    font-weight: var(--nk-type-label-weight);
+    letter-spacing: var(--nk-type-label-tracking);
+    text-transform: var(--nk-type-label-case);
+    padding-inline-end: var(--nk-type-label-pad);
+  }
+  .nk-action-bar [data-slot="action-bar-sep"] {
+    flex: none;
+    width: var(--nk-border, 1px);
+    height: var(--nk-icon-lg);
+    margin-inline: var(--nk-space-1);
+    background-color: var(--nk-plate-hair);
+  }
+  /* a hold item: the item fills under its label (--level) */
+  .nk-action-bar [data-slot="action-bar-item"] > [data-slot="fill"] {
+    position: absolute;
+    left: var(--nk-space-2);
+    right: var(--nk-space-2);
+    bottom: 0;
+    height: 0.125rem;
+  }
+
+  /* ── Plate (.nk-plate): the one surface recipe for sheets, dialogs and notices. Flat (no gradient, no
+     blur), a hairline, a hard drop. Graphite: the panel's surface and shadow. */
+  .nk-plate {
+    border-radius: var(--nk-plate-radius);
+    background-color: var(--nk-plate-bg);
+    box-shadow: inset 0 0 0 var(--nk-border, 1px) var(--nk-plate-hair), var(--nk-plate-drop);
+  }
+
+  /* ── type-role extras under the tile treatment: the role properties Graphite's classes never set (a label's
+     case and tracking, a number's weight, the italic overhang pad), so Graphite's inherited values stand. */
+  :is(html, *)[data-nk-treatment="tile"] {
+    & :is(.nk-label, .nk-caption) {
+      font-style: var(--nk-type-label-style);
+      letter-spacing: var(--nk-type-label-tracking);
+      text-transform: var(--nk-type-label-case);
+      padding-inline-end: var(--nk-type-label-pad);
+    }
+    & .nk-num {
+      font-weight: var(--nk-type-num-weight);
+      text-transform: var(--nk-type-num-case);
+      padding-inline-end: var(--nk-type-num-pad);
+    }
+    & .nk-title {
+      padding-inline-end: var(--nk-type-title-pad);
+    }
+    & :is([data-slot="kbd"], .nk-scan) {
+      letter-spacing: var(--nk-type-scan-tracking);
+      text-transform: var(--nk-type-scan-case);
+    }
+    /* Notice / Toast: the status icon is a square Tile, its face the status colour, the glyph dark on it */
+    & [data-slot="notice-icon"] {
+      position: relative;
+      isolation: isolate;
+      flex: none;
+      justify-content: center;
+      width: var(--nk-h-chip);
+      height: var(--nk-h-chip);
+      &::before,
+      &::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        border-radius: var(--nk-key-radius);
+      }
+      &::before {
+        z-index: -2;
+        background-color: var(--nk-tile-plate);
+        transform: translate(var(--nk-tile-plate-x), var(--nk-tile-plate-y)) skewX(var(--nk-tile-skew));
+      }
+      &::after {
+        z-index: -1;
+        background-color: currentColor;
+        transform: skewX(var(--nk-tile-skew));
+      }
+      & svg {
+        width: var(--nk-icon-md);
+        height: var(--nk-icon-md);
+        color: var(--nk-tile-confirm-ink);
+      }
+    }
+  }
+
+  /* ── Row (MenuRow, .nk-row) under --nk-row-indicator: sweep: no bar, the sweep alone; the focused row's
+     content slides by --nk-lift. */
+  :is(html, *)[data-nk-row="sweep"] .nk-row {
+    & > * {
+      transition: transform var(--nk-time-base, var(--nk-time)) var(--nk-ease-standard, cubic-bezier(0.2, 0, 0, 1));
+    }
+    &:is([data-active], [data-highlighted], :focus-visible) > * {
+      transform: translateX(var(--nk-lift));
+    }
+  }
+}
+
+@keyframes nk-breathe {
+  50% {
+    opacity: 0.55;
+  }
+}
+@keyframes nk-land {
+  from {
+    opacity: 0;
+    transform: scale(var(--nk-land-scale, 0.6));
+  }
+}
+/* Reduced motion (1.5): the primitives keep their fades, no movement */
+:is(html, *)[data-nk-motion="reduced"] :is([data-slot="tile"], [data-slot="kbd"]):is([data-state="confirm"], [data-state="alert"], [data-land]),
+:is(html, *)[data-nk-motion="off"] :is([data-slot="tile"], [data-slot="kbd"]):is([data-state="confirm"], [data-state="alert"], [data-land]) {
+  animation: none;
+}
+:is(html, *)[data-nk-motion="reduced"][data-nk-row="sweep"] .nk-row > * {
+  transform: none;
 }

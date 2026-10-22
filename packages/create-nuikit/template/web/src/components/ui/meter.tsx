@@ -61,8 +61,11 @@ type MeterTone =
   | "thirst"
   | "stress"
 
+/** A tone, or "hue" (tokens 1.5): the role colour of data-hue on the meter (`hue`) or its nearest ancestor; --nk-fill-color without one. */
+type MeterFill = MeterTone | "hue"
+
 /** Literal class names, so Tailwind finds them. */
-const TONES: Record<MeterTone, { text: string; fill: string; track: string }> = {
+const TONES: Record<MeterFill, { text: string; fill: string; track: string }> = {
   primary: { text: "text-primary", fill: "bg-primary", track: "bg-primary/20" },
   foreground: { text: "text-foreground", fill: "bg-foreground", track: "bg-foreground/15" },
   destructive: { text: "text-destructive", fill: "bg-destructive", track: "bg-destructive/20" },
@@ -81,9 +84,10 @@ const TONES: Record<MeterTone, { text: string; fill: string; track: string }> = 
   hunger: { text: "text-vital-hunger", fill: "bg-vital-hunger", track: "bg-vital-hunger/20" },
   thirst: { text: "text-vital-thirst", fill: "bg-vital-thirst", track: "bg-vital-thirst/20" },
   stress: { text: "text-vital-stress", fill: "bg-vital-stress", track: "bg-vital-stress/20" },
+  hue: { text: "text-[var(--hue-solid,var(--nk-fill-color))]", fill: "bg-[var(--hue-solid,var(--nk-fill-color))]", track: "bg-[var(--hue-tint,var(--nk-fill-track))]" },
 }
 
-const FILL: Record<MeterTone, string> = {
+const FILL: Record<MeterFill, string> = {
   primary: "[&_[data-slot=progress-indicator]]:bg-primary",
   foreground: "[&_[data-slot=progress-indicator]]:bg-foreground",
   destructive: "[&_[data-slot=progress-indicator]]:bg-destructive",
@@ -100,6 +104,7 @@ const FILL: Record<MeterTone, string> = {
   hunger: "[&_[data-slot=progress-indicator]]:bg-vital-hunger",
   thirst: "[&_[data-slot=progress-indicator]]:bg-vital-thirst",
   stress: "[&_[data-slot=progress-indicator]]:bg-vital-stress",
+  hue: "[&_[data-slot=progress-indicator]]:bg-[var(--hue-solid,var(--nk-fill-color))]",
 }
 
 /** A library colour (`color`), carried in --meter-fill so no colour is mixed inline. */
@@ -233,7 +238,7 @@ function useTimedFill(root: React.RefObject<HTMLElement | null>, duration: numbe
 }
 
 /** The theme variable behind each tone (its `-rgb` channels colour the slab line). */
-const TONE_VAR: Record<MeterTone, string> = {
+const TONE_VAR: Record<MeterFill, string> = {
   primary: "--brand",
   foreground: "--foreground",
   destructive: "--destructive",
@@ -250,6 +255,7 @@ const TONE_VAR: Record<MeterTone, string> = {
   hunger: "--vital-hunger",
   thirst: "--vital-thirst",
   stress: "--vital-stress",
+  hue: "--hue",
 }
 
 /** Calls `onCancel` when `key` is pressed (any case) while mounted; never while typing in a field. */
@@ -278,7 +284,9 @@ function Meter({
   max: maxProp = 100,
   low,
   high,
-  tone = "primary",
+  tone: toneProp = "primary",
+  hue,
+  threshold,
   color,
   track = "theme",
   label,
@@ -305,7 +313,17 @@ function Meter({
     low?: number
     /** Percentage at or above which the meter turns destructive (stress, weight). */
     high?: number
-    tone?: MeterTone
+    tone?: MeterFill
+    /**
+     * A role (health, armor, police, legendary…; ROLE_SETS): data-hue on the meter, and the fill in its colour.
+     * Wins over `tone`; `color` and thresholds still win over it.
+     */
+    hue?: string
+    /**
+     * The alert threshold as a level (0–1): at or under it the meter is data-state="alert" (destructive).
+     * `true` = the theme's default, 0.2 (--nk-alert-threshold). The same rule as `low`, in the level's units.
+     */
+    threshold?: number | boolean
     /** theme: on a panel. game: a dark track on the game world. */
     track?: "theme" | "game"
     label?: React.ReactNode
@@ -352,7 +370,10 @@ function Meter({
   const max = timed ? duration : maxProp
   const { percent, level } = meterLevel(value, { max, low, high })
   const drawn = percent
-  const critical = level !== "normal"
+  const tone: MeterFill = hue ? "hue" : toneProp
+  // one alert rule (fill.tsx alertAt): a level at or under the threshold; true = the theme's 0.2
+  const t15 = threshold === true ? 0.2 : typeof threshold === "number" ? threshold : undefined
+  const critical = level !== "normal" || (t15 !== undefined && percent / 100 <= t15)
   const custom = !!color && !critical
   const t = custom ? CUSTOM : TONES[critical ? "destructive" : tone] ?? TONES.primary
   const trackClass = track === "game" ? "nk-track" : t.track
@@ -379,6 +400,8 @@ function Meter({
         {...nkVariant({ density, shape, motion })}
         data-slot="meter"
         data-variant="slab"
+        data-hue={hue || undefined}
+        data-state={critical ? "alert" : undefined}
         data-level={level}
         data-complete={(timed && percent >= 100) || undefined}
         className={cn("nk-slab-stack", className)}
@@ -388,7 +411,7 @@ function Meter({
             ...nkLevel(percent / 100),
             ...style,
             ...(toneVar
-              ? { "--nk-slab-tone-rgb": toneVar === "--brand" ? "var(--brand-rgb, var(--primary-rgb))" : `var(${toneVar}-rgb)` }
+              ? { "--nk-slab-tone-rgb": toneVar === "--brand" ? "var(--brand-rgb, var(--primary-rgb))" : toneVar === "--hue" ? "var(--hue, var(--brand-rgb, var(--primary-rgb)))" : `var(${toneVar}-rgb)` }
               : { "--nk-slab-line-fill": color }),
           } as React.CSSProperties
         }
@@ -483,6 +506,8 @@ function Meter({
     <div
       {...nkVariant({ density, shape, motion })}
       data-slot="meter"
+      data-hue={hue || undefined}
+      data-state={critical ? "alert" : undefined}
       data-level={level}
       data-complete={(timed && percent >= 100) || undefined}
       className={cn(meterVariants({ size }), stacked ? "flex flex-col gap-1.5" : "flex items-center gap-2", className)}
@@ -513,4 +538,4 @@ function Meter({
   )
 }
 
-export { Meter, meterVariants, meterLevel, segmentFills, meterColor, segmentKeyframes, type MeterTone, type MeterLevel }
+export { Meter, meterVariants, meterLevel, segmentFills, meterColor, segmentKeyframes, type MeterTone, type MeterFill, type MeterLevel }

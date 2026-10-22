@@ -53,7 +53,7 @@
       "name": "edge-sheet",
       "type": "registry:ui",
       "title": "Edge Sheet",
-      "description": "A full-height sheet flush to a screen edge, the pause menu backdrop and the ox_lib context sheet as one component: stock Sheet (non-modal) in the panel surface, hairline on the open edge, inner column, section-size title with optional back and close buttons, sub-pages that swap in place, a level traced along the header edge, staggered slide-in and a faster exit.",
+      "description": "A full-height sheet flush to a screen edge, the pause menu backdrop and the ox_lib context sheet as one component: stock Sheet (non-modal) in the panel surface, hairline on the open edge, inner column, section-size title with optional back and close buttons, sub-pages that swap in place, a level traced along the header edge, staggered slide-in and a faster exit. back: the back control as an ActionBarItem with Esc; anchor=\"upper\" (tokens 1.5).",
       "files": [
         {
           "path": "registry/nuikit/ui/edge-sheet.tsx",
@@ -66,7 +66,8 @@
       "registryDependencies": [
         "sheet",
         "scroll-area",
-        "button"
+        "button",
+        "https://nuikit.vercel.app/r/action-bar.json"
       ],
       "meta": {
         "since": "unreleased",
@@ -90,7 +91,9 @@
             "actions",
             "density",
             "shape",
-            "motion"
+            "motion",
+            "back",
+            "anchor"
           ],
           "level": "the edge line: a fill such as weight (EdgeSheetEdge value, 0–100).",
           "rules": [
@@ -204,7 +207,7 @@
       "name": "meter",
       "type": "registry:ui",
       "title": "Meter",
-      "description": "A slim bar on a theme or game track, with a caption and value, low/high thresholds that turn it destructive, and optional segments; timed runs; and the timed-progress slab (variant=\"slab\": label, thin line, cancel key), the successor of task-progress.",
+      "description": "A slim bar on a theme or game track, with a caption and value, low/high thresholds that turn it destructive, and optional segments; timed runs; and the timed-progress slab (variant=\"slab\": label, thin line, cancel key), the successor of task-progress. hue (a role, data-hue) and threshold (one alert level, data-state=\"alert\") (tokens 1.5).",
       "files": [
         {
           "path": "registry/nuikit/ui/meter.tsx",
@@ -245,7 +248,9 @@
             "size",
             "density",
             "shape",
-            "motion"
+            "motion",
+            "hue",
+            "threshold"
           ],
           "level": "value / max; a timed run fills 0 → 1 over duration (--level is its end state).",
           "rules": [
@@ -1103,10 +1108,221 @@
       }
     },
     {
+      "name": "fill",
+      "type": "registry:ui",
+      "title": "Fill",
+      "description": "Status as a level filling left to right (tokens 1.5): a track, a bar scaled from the left, a leading edge; hue, tone and one alert threshold (alertAt). Also exports alertAt() and toneVars().",
+      "files": [
+        {
+          "path": "registry/nuikit/ui/fill.tsx",
+          "type": "registry:ui"
+        }
+      ],
+      "dependencies": [],
+      "registryDependencies": [],
+      "meta": {
+        "since": "unreleased",
+        "status": "experimental",
+        "replaces": [],
+        "removeIn": null,
+        "spec": {
+          "role": "A level as a bar that fills: holds, sweeps, meters, timers.",
+          "anatomy": [
+            "track",
+            "bar (::before, scaleX(--level))",
+            "edge (::after)"
+          ],
+          "props": [
+            "level",
+            "tone",
+            "hue",
+            "alertAt",
+            "variant"
+          ],
+          "level": "0–1, set inline as --level.",
+          "rules": [
+            "Transform only: the bar scales, never width.",
+            "Colour: hue, then tone, then --nk-fill-color; alert wins."
+          ]
+        }
+      }
+    },
+    {
+      "name": "tile",
+      "type": "registry:ui",
+      "title": "Tile",
+      "description": "The one key language (tokens 1.5): a face with a rim and top light on a solid plate, slanted by --nk-tile-skew while the box stays upright. Sizes, shapes, states (focus, hold, confirm, alert, disabled), tone and hue, a hold fill and a plate-extension tag. Also exports Kbd (a Tile with data-slot=kbd) and KbdGroup.",
+      "files": [
+        {
+          "path": "registry/nuikit/ui/tile.tsx",
+          "type": "registry:ui"
+        }
+      ],
+      "dependencies": [],
+      "registryDependencies": [],
+      "meta": {
+        "since": "unreleased",
+        "status": "experimental",
+        "replaces": [],
+        "removeIn": null,
+        "spec": {
+          "role": "Keys, notice icons, tab marks, checked boxes, gears and telltales: one tile.",
+          "anatomy": [
+            "plate (::before)",
+            "face (::after: rim, light)",
+            "tile-fill (hold)",
+            "legend",
+            "tile-tag (the plate extending right)"
+          ],
+          "props": [
+            "size",
+            "shape",
+            "state",
+            "active",
+            "level",
+            "tone",
+            "hue",
+            "tag",
+            "tagOpen",
+            "plate",
+            "land"
+          ],
+          "rules": [
+            "Rims switch state, they never tween.",
+            "Hard drops only: the plate is an offset, never a blur.",
+            "A theme sets --nk-tile-* values, never selectors."
+          ]
+        }
+      }
+    },
+    {
+      "name": "chip",
+      "type": "registry:ui",
+      "title": "Chip",
+      "description": "A short status on one line (tokens 1.5): --nk-h-chip tall, --nk-r-chip corners (never a pill), the label role; tone, hue, fill hair|tint|solid, an icon, a count, and a status dot (variant=dot).",
+      "files": [
+        {
+          "path": "registry/nuikit/ui/chip.tsx",
+          "type": "registry:ui"
+        }
+      ],
+      "dependencies": [],
+      "registryDependencies": [
+        "https://nuikit.vercel.app/r/fill.json"
+      ],
+      "meta": {
+        "since": "unreleased",
+        "status": "experimental",
+        "replaces": [],
+        "removeIn": null,
+        "spec": {
+          "role": "A tag, a count, a status dot: one chip.",
+          "anatomy": [
+            "icon",
+            "label",
+            "count"
+          ],
+          "props": [
+            "tone",
+            "hue",
+            "fill",
+            "icon",
+            "count",
+            "variant"
+          ],
+          "rules": [
+            "No pills: r-chip, or the dot at r-key.",
+            "Colour means something: tone or hue only."
+          ]
+        }
+      }
+    },
+    {
+      "name": "icon-text",
+      "type": "registry:ui",
+      "title": "Icon text",
+      "description": "An icon and a text role (label, num or body) on one centre line (tokens 1.5): --nk-gap-cluster apart, --nk-icon-md (sm and lg step it).",
+      "files": [
+        {
+          "path": "registry/nuikit/ui/icon-text.tsx",
+          "type": "registry:ui"
+        }
+      ],
+      "dependencies": [],
+      "registryDependencies": [],
+      "meta": {
+        "since": "unreleased",
+        "status": "experimental",
+        "replaces": [],
+        "removeIn": null,
+        "spec": {
+          "role": "Money, job, fuel, ammo, notes: an icon next to a value.",
+          "anatomy": [
+            "icon",
+            "text"
+          ],
+          "props": [
+            "icon",
+            "text",
+            "size",
+            "muted"
+          ],
+          "rules": [
+            "One gap and one icon size per step.",
+            "A muted icon is --muted-foreground, never an opacity."
+          ]
+        }
+      }
+    },
+    {
+      "name": "action-bar",
+      "type": "registry:ui",
+      "title": "Action bar",
+      "description": "The one hint, close and back pattern (tokens 1.5): an optional plate, items gap-items apart, each keys (Tile sm) or an icon plus a label, a button when it acts, with a hold level.",
+      "files": [
+        {
+          "path": "registry/nuikit/ui/action-bar.tsx",
+          "type": "registry:ui"
+        }
+      ],
+      "dependencies": [],
+      "registryDependencies": [
+        "https://nuikit.vercel.app/r/tile.json",
+        "https://nuikit.vercel.app/r/fill.json"
+      ],
+      "meta": {
+        "since": "unreleased",
+        "status": "experimental",
+        "replaces": [],
+        "removeIn": null,
+        "spec": {
+          "role": "Key hints, back and close: one bar.",
+          "anatomy": [
+            "plate (optional)",
+            "item: keys or icon, label, hold fill",
+            "separator"
+          ],
+          "props": [
+            "plate",
+            "keys",
+            "icon",
+            "label",
+            "onClick",
+            "level",
+            "state"
+          ],
+          "rules": [
+            "An item that acts is a button.",
+            "Keys are Tiles, never a styled span."
+          ]
+        }
+      }
+    },
+    {
       "name": "empty-state",
       "type": "registry:ui",
       "title": "Empty state",
-      "description": "When there's nothing to show or something went wrong: an icon, a short title, one sentence on what to do next, optional actions. Stock shadcn Empty on the kit's scale; empty or error tone; panel or screen size.",
+      "description": "When there's nothing to show or something went wrong: an icon, a short title, one sentence on what to do next, optional actions. Stock shadcn Empty on the kit's scale; empty or error tone; panel or screen size. tile: the icon as a square Tile (tokens 1.5).",
       "files": [
         {
           "path": "registry/nuikit/ui/empty-state.tsx",
@@ -1118,7 +1334,8 @@
         "lucide-react"
       ],
       "registryDependencies": [
-        "empty"
+        "empty",
+        "https://nuikit.vercel.app/r/tile.json"
       ],
       "meta": {
         "since": "0.6.0",

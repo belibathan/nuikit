@@ -1,9 +1,9 @@
 {
-  "$description": "nuikit default theme (stock shadcn neutral) (nuikit tokens v1.4, dark)",
+  "$description": "nuikit default theme (stock shadcn neutral) (nuikit tokens v1.5, dark)",
   "$extensions": {
     "dev.nuikit": {
       "tokens": 1,
-      "revision": "1.4",
+      "revision": "1.5",
       "mode": "dark"
     }
   },
@@ -1137,7 +1137,7 @@
     },
     "row-indicator": {
       "$value": "bar",
-      "$description": "How the active row is marked",
+      "$description": "How the active row is marked: bar, fill, outline, or sweep (1.5: no bar, the row's --nk-fill-tint sweep alone)",
       "$extensions": {
         "dev.nuikit": {
           "type": "keyword"
@@ -1466,22 +1466,6 @@
       "$value": 70,
       "$description": "Stacking layer: system. A modal is the current surface + dim + dialog"
     },
-    "hang-md": {
-      "$type": "dimension",
-      "$value": {
-        "value": 0.375,
-        "unit": "rem"
-      },
-      "$description": "How far a badge or gem breaks a panel edge"
-    },
-    "hang-lg": {
-      "$type": "dimension",
-      "$value": {
-        "value": 0.75,
-        "unit": "rem"
-      },
-      "$description": "A large hang (a level badge on a card)"
-    },
     "focus-shift": {
       "$type": "dimension",
       "$value": {
@@ -1494,6 +1478,19 @@
       "$type": "number",
       "$value": 1,
       "$description": "How many elements may glow at once (the top surface's focused one first); 0 = no limit"
+    },
+    "exit-factor": {
+      "$type": "number",
+      "$value": 0.7,
+      "$description": "Every exit is this × its enter (--nk-time-exit = base × factor)"
+    },
+    "time-reduced": {
+      "$type": "duration",
+      "$value": {
+        "value": 100,
+        "unit": "ms"
+      },
+      "$description": "The one reduced-motion duration: under reduced motion every fade is at most this"
     }
   }
 }

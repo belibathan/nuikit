@@ -7,6 +7,7 @@ import { ChevronLeftIcon, XIcon } from "lucide-react"
 import { Stagger } from "nuikit-core/react"
 
 import { cn, nkVariant, type NkVariantProps } from "@/lib/utils"
+import { ActionBar, ActionBarItem } from "@/components/ui/action-bar"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Sheet, SheetContent, SheetDescription, SheetTitle } from "@/components/ui/sheet"
@@ -51,6 +52,8 @@ type EdgeSheetProps = Omit<React.ComponentProps<typeof SheetContent>, "title" | 
   variant?: "floating" | "flush"
   /** floating only: as tall as its content (from the top edge down) instead of the full height. */
   fit?: boolean
+  /** floating only (1.5): full height (default), or upper: as tall as its content, from the upper third down. */
+  anchor?: "full" | "upper"
   /** Rem width of the whole sheet (the column is this minus 4.5rem). Default 36rem, the pause menu's. */
   width?: string
   /** Stagger after another sheet (ms at full motion). */
@@ -70,6 +73,11 @@ type EdgeSheetProps = Omit<React.ComponentProps<typeof SheetContent>, "title" | 
   page?: React.Key
   /** A back button before the title (a sub-page). */
   onBack?: () => void
+  /**
+   * With `onBack` (1.5): the back control as an ActionBarItem with its key (Esc) instead of the chevron; a
+   * string or node replaces the label ("Back"). The Ink header (docs/design/ink.md §3, Sheet).
+   */
+  back?: boolean | React.ReactNode
   /** A close button after the title. */
   onClose?: () => void
 }
@@ -79,6 +87,7 @@ function EdgeSheet({
   side = "left",
   variant = "floating",
   fit = false,
+  anchor = "full",
   width = "36rem",
   delay = 0,
   modal = false,
@@ -91,6 +100,7 @@ function EdgeSheet({
   onOpenChange,
   page,
   onBack,
+  back,
   onClose,
   className,
   style,
@@ -119,7 +129,7 @@ function EdgeSheet({
           "z-40 w-(--edge-sheet-width) max-w-none gap-0 sm:max-w-none",
           variant === "floating"
             ? // the panel recipe, off the edges: --nk-edge from the top, bottom and its side
-              cn("nk-panel h-auto", fit ? "top-(--nk-edge,1.5rem) bottom-auto max-h-[calc(100%-var(--nk-edge,1.5rem)*2)]" : "inset-y-(--nk-edge,1.5rem)", left ? "left-(--nk-edge,1.5rem)" : "right-(--nk-edge,1.5rem)")
+              cn("nk-panel h-auto", anchor === "upper" ? "top-[28vh] bottom-auto max-h-[calc(72vh-var(--nk-edge,1.5rem))]" : fit ? "top-(--nk-edge,1.5rem) bottom-auto max-h-[calc(100%-var(--nk-edge,1.5rem)*2)]" : "inset-y-(--nk-edge,1.5rem)", left ? "left-(--nk-edge,1.5rem)" : "right-(--nk-edge,1.5rem)")
             : // the surface: the theme's panel, flush, a hairline on the open edge only
               cn(
                 "border-(--nk-panel-border) bg-(--nk-panel-bg) text-(--nk-panel-fg) shadow-(--nk-panel-shadow)",
@@ -151,7 +161,11 @@ function EdgeSheet({
           {(title || icon || actions || onBack || onClose) && (
             <header data-slot="edge-sheet-header" className="flex flex-col gap-1 pb-4">
               <div className="flex min-h-8 items-center gap-3">
-                {onBack && (
+                {onBack && back ? (
+                  <ActionBar className="-ml-2 shrink-0">
+                    <ActionBarItem keys={["Esc"]} label={back === true ? "Back" : back} onClick={onBack} aria-label="Back" />
+                  </ActionBar>
+                ) : onBack && (
                   <Button variant="ghost" size="icon-sm" className="-ml-2 shrink-0 text-muted-foreground" onClick={onBack} aria-label="Back">
                     <ChevronLeftIcon />
                   </Button>

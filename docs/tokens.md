@@ -1,4 +1,4 @@
-# nuikit tokens v1 (revision 1.4)
+# nuikit tokens v1 (revision 1.5)
 
 The theme contract every nuikit UI reads. A server's theme is any shadcn / TweakCN paste in
 `nuikit/theme.css`; the compiler (`compileTheme` in `nuikit-core`) turns it into this exact set of
@@ -448,7 +448,7 @@ compiles every 1.3 token to the same value (`test/fixtures/compiled-1.3.json` pi
 
 | Family | Tokens | Default | Notes |
 |---|---|---|---|
-| **Treatment** | `--nk-treatment: soft \| glass \| plate \| slab` | `soft` | A preset that fills material, stroke, type, focus and motion tokens *under* the theme's own values (`TREATMENT_PRESETS`). `soft` is empty: today's defaults. Painted as `html[data-nk-treatment]` |
+| **Treatment** | `--nk-treatment: soft \| glass \| plate \| slab \| tile` (tile: 1.5, [Ink levers](#ink-levers-15)) | `soft` | A preset that fills material, stroke, type, focus and motion tokens *under* the theme's own values (`TREATMENT_PRESETS`). `soft` is empty: today's defaults. Painted as `html[data-nk-treatment]` |
 | **States** | `--nk-focus-style` (ring, halo, tint, fill, invert, bar), `--nk-hold-style` (bar, ring, fill), `--nk-confirm-scale`, `--nk-level-style` (bar, ring, liquid, slab, pips) | ring, bar, 1.04, bar | One focus style for every component; components draw `data-state="rest\|focus\|hold\|confirm\|disabled\|alert"` and read `--level` (0–1). Painted as `data-nk-focus`, `-hold`, `-level` |
 | **Roles** | `--role-<name>` (+ derived `-deep`, `-light`), `--nk-hue-{line,tint,glow,alert}` alphas | vitals = today's `vital-*`; stamina → success, oxygen → info; status = info, success, warning, destructive; factions and rarity fixed hues; brand; neutral = muted-foreground | `data-hue="<role>"` on any element gives its subtree `--hue-solid`, `-deep`, `-line`, `-tint`, `-glow`, `-alert`, `-grad-a`, `-grad-b` (kit.css). Sets: vitals (health, armor, hunger, thirst, stress, stamina, oxygen), status (info, success, warning, danger), faction (police, ems, mech, gang, civ, staff), rarity (common, uncommon, rare, epic, legendary), brand, neutral |
 | **Materials** | `--nk-material-{hud,menu,overlay}-{opacity,blur,radius,edge,texture}`, `--nk-slash` (none, cut) | hud opacity = `nk-hud-opacity`, menu/overlay = `nk-surface-opacity`, radius = `radius`, edge = `nk-surface-edge`, blur 0, texture none | Surfaces read `--nk-{hud,menu,overlay}-alpha` (kit.css), which legibility lifts. Textures paint as `data-nk-texture-<ctx>` |
@@ -457,7 +457,7 @@ compiles every 1.3 token to the same value (`test/fixtures/compiled-1.3.json` pi
 | **Behaviour** | `--nk-alert-threshold`, `--nk-fuel-threshold`, `--nk-notify-ms-{info,success,warning,danger}`, `--nk-hold-ms`, `--nk-cooldown-ms`, `--nk-rest-delay` | 0.2, 0.15, 5000ms each, 800ms, 0ms, 0ms (never retract) | Durations up to 60 s. Servers tune them in theme.css; resources may override per surface |
 | **Motion steps** | `--nk-ease-{standard,expand,retract,spring,breathe}`, `--nk-time-{confirm,retract,fill,pulse}`, `--nk-motion-profile: full \| reduced \| instant` | eases alias the ladder's curves (+ a spring and a breathe); confirm 0.65 × d, retract 1.55 × d (≤ 300), fill 3 × d, pulse 1000ms; full | The new rungs are clamped by the player's prefs like the rest. `reduced` / `instant` act like the reduced-motion pref / motion off, for the whole server |
 | **Layers** | `--nk-z-{world,hud,scrim,surface,dim,dialog,system}` | 10 … 70 | A modal is the current surface + `dim` + `dialog`, never a new screen |
-| **Offsets** | `--nk-hang-md`, `--nk-hang-lg`, `--nk-focus-shift` | 0.375rem, 0.75rem, 0rem | Badges and gems that break a panel edge; the focused row's nudge |
+| **Offsets** | `--nk-focus-shift` | 0rem | The focused row's nudge (`--nk-hang-*` was removed in 1.5) |
 | **Attention** | `--nk-glow-budget` | 1 (0 = no limit) | A part that may glow carries `data-nk-glow` (a number ranks it); the runtime marks at most the budget `data-nk-glow-on`, the focused one first, and kit.css zeroes the rest. `nuikit check` warns (`attention/glow`, advisory) on a second mark in a resource |
 
 ### Which surface reads which material
@@ -485,6 +485,39 @@ Arcade and Street `slab`. A server keeps its palette and borrows another treatme
   --nk-treatment: slab; /* Arcade's flat, bold, skewed drawing; any token you set still wins */
 }
 ```
+
+## Ink levers (1.5)
+
+Tokens 1.5 ([design/ink.md](design/ink.md) §2) turn the Ink theme into kit levers every theme gets. They are
+**kit levers**: kit.css holds each default (`@layer nk.base`, a formula over the identity, so a subtree's density or
+radius re-derives it); the compiler validates a value a theme or the `tile` treatment sets and never emits a
+default (`KIT_TOKENS` in nuikit-core, flag `css: true`). Graphite compiles exactly as in 1.4. The older component
+tokens read the new ones (`--nk-key-radius: var(--nk-r-key)`, `--nk-row-height: var(--nk-h-row)`,
+`--nk-key-bg: var(--nk-tile-face)`, `--nk-key-font: var(--nk-type-scan-family)`…), so a theme may set either name
+for one revision. `--nk-meter-radius` keeps its own value (Graphite's meters are rounded).
+
+| Group | Tokens | Graphite default | `tile` (Ink) |
+|---|---|---|---|
+| **Spacing** (`SCALE_TOKENS`) | `--nk-space-unit`, `--nk-space-{1,2,3,4,6,8}`, `--nk-gap-cluster`, `--nk-gap-items`, `--nk-pad-x`, `--nk-pad-surface` | 0.25rem × density; cluster space-2, items space-1, pad-x space-3, surface space-6 | density 1 |
+| **Radius** | `--nk-r-key`, `--nk-r-chip`, `--nk-r-control`, `--nk-r-surface` | radius − 4px (≥ 0.25rem), the same, radius − 2px, the menu material's | 0.25, 0.375, 0.5, 0.75rem |
+| **Heights** | `--nk-h-key`, `--nk-h-chip`, `--nk-h-control`, `--nk-h-row` | 1.25rem, 2rem × density, 2.25rem, 2.75rem × density | 1.5, 1.75, 2.25, 3rem |
+| **Icons** | `--nk-icon-{sm,md,lg}`, `--nk-icon-stroke` | 0.75, 1, 1.25rem; 2 | same |
+| **Type roles** (`TYPE_ROLE_TOKENS`) | `--nk-type-{scan,title,label,num,body}-{family,style,weight,tracking,case,pad}`, `--nk-text-key`, `--nk-text-body` | each role reads today's tokens (title = the heading tokens, scan = the key font and weight…); pad 0 | display font, italic, 800 / 700, caps, 0.15em pad (num: no caps) |
+| **Tile** (`TILE_TOKENS`) | `--nk-tile-{face,ink,light,shade,rim,rim-focus,plate,plate-dim,plate-x,plate-y,press,skew,confirm-face,confirm-ink,hold,tag-delay}` | today's keycap: muted face, border rim, no plate (x / y 0; 0.1875rem under `--nk-skew`), skew = `--nk-skew` | #161616 face, white .32 rim, #737373 plate 2px down-right, −12deg |
+| **Plate** (`PLATE_TOKENS`) | `--nk-plate` (its channels, `--nk-plate-rgb`), `--nk-plate-hair`, `--nk-plate-drop`, `--nk-plate-radius`; kit.css derives `--nk-plate-bg` | the panel's surface, border, elevation shadow, `--nk-r-surface` | rgb(10 10 10) at the material opacity, white .12 hair, a hard 0.125rem drop |
+| **Fill** (`FILL_TOKENS`) | `--nk-fill-{color,track,tint,edge,alert}` (and kit.css's `--nk-fill-height`); `--level` inline | brand, scrim .35, accent (the row sweep), no edge, destructive | foreground, white .12, white .12, white .4, destructive |
+| **Motion** | the ladder `--nk-time-{snap,fast,slow}` (.5, .667, 1.556 × d, compiled); `--nk-exit-factor` (0.7), `--nk-time-reduced` (100ms, the reduced-motion cap); distances `--nk-lift`, `--nk-rise`, `--nk-land-scale`, `--nk-deny-x` | the 1.2 rungs keep their formulas; lift 0, rise .5rem, land 1 | d = 180ms: 90 / 120 / 180 / 280 / 420; press → snap, hover → fast, move / modal / confirm / retract / screen → slow, ambient and fill 2.333 × d; stagger 40ms; lift .5rem, land .6 |
+| **Hygiene** (`HYGIENE_TOKENS`) | `--nk-chip-shape`, `--nk-label-attach`, `--nk-vital-{icon,display,neighbours}` (read by vital-chip) | unset: the component's default | — |
+
+`--nk-row-indicator` gains `sweep` (no bar: the row's `--nk-fill-tint` sweep, and the content slides by
+`--nk-lift`). `--nk-treatment: tile` fills all of the above, plus hard elevation, italic display, caps labels, fill
+holds and a 1.08 confirm. Ink is `tile` plus a palette.
+
+**Layers.** Every index.css declares `@layer theme, base, nk.base, components, nk.kit, utilities, nk.theme, nk.app`
+before Tailwind's import. A theme writes token values, and rules on documented data attributes, into
+`@layer nk.theme`; `nuikit check` warns (`theme/unlayered`) on anything else. The primitives (`tile`, `fill`,
+`chip`, `icon-text`, `action-bar`, `.nk-plate`) sit in `nk.kit`, under Tailwind's utilities, so a className still
+restyles them.
 
 ## Identities
 

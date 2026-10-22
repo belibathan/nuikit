@@ -4,12 +4,14 @@ import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
-import { check, checkResource, findResources, type CheckResult, type RuleId } from "../src/check";
+import { check, checkResource, findResources, INK_RULES, type CheckResult, type RuleId } from "../src/check";
 import { DEFAULT_TOKENS, TOKENS } from "../src/tokens";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const fixture = (name: string) => path.join(here, "fixtures", name);
-const rules = (r: CheckResult) => [...new Set(r.findings.map((f) => f.rule))].sort();
+// the Ink rules (warnings) have their own tests below; the conformance tests grade the rest
+const core = (r: CheckResult) => r.findings.filter((f) => !INK_RULES.includes(f.rule));
+const rules = (r: CheckResult) => [...new Set(core(r).map((f) => f.rule))].sort();
 const at = (r: CheckResult, rule: RuleId) => r.findings.filter((f) => f.rule === rule).map((f) => `${f.file}:${f.line}`);
 
 describe("bad resource", () => {
@@ -93,7 +95,7 @@ describe("level 2 resource", () => {
 describe("level 3 resource (built like nuikit_hud)", () => {
   const r = checkResource(fixture("level3"));
   it("is native with no findings", () => {
-    expect(r.findings).toEqual([]);
+    expect(core(r)).toEqual([]);
     expect(r.level).toBe(3);
     expect(r.page).toEqual({ type: "ui_page", path: "web/dist/index.html" });
     expect(r.stats.tokenRefs).toBeGreaterThan(5);
@@ -114,7 +116,7 @@ describe("override and no-UI folders", () => {
   it("doesn't grade a resource without UI, and ignores Wait(0) loops that send nothing", () => {
     const r = checkResource(fixture("no-ui"));
     expect(r.level).toBeNull();
-    expect(r.findings).toEqual([]);
+    expect(core(r)).toEqual([]);
   });
 });
 
@@ -294,5 +296,88 @@ describe("cef/* (old-CEF profile, advisory)", () => {
       "web/src/ignored.css": `/* nuikit-ignore cef/backdrop-filter: deliberate blur */\n.a { backdrop-filter: blur(4px); }\n.b { backdrop-filter: blur(4px); /* nuikit-ignore cef/backdrop-filter */ }\n`,
     });
     expect(cef(r)).toEqual([]);
+  });
+});
+
+// The Ink conventions (docs/design/ink.md §4): warnings until each directory's wave lands.
+describe("ink rules", () => {
+  const run = (files: Record<string, string>) => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "nk-ink-"));
+    fs.cpSync(fixture("level3"), dir, { recursive: true });
+    const base = checkResource(dir);
+    for (const [rel, text] of Object.entries(files)) {
+      fs.mkdirSync(path.dirname(path.join(dir, rel)), { recursive: true });
+      fs.writeFileSync(path.join(dir, rel), text);
+    }
+    const r = checkResource(dir);
+    fs.rmSync(dir, { recursive: true, force: true });
+    const seen = new Set(base.findings.map((f) => `${f.rule}@${f.file}:${f.line}`));
+    return { r, base, ink: r.findings.filter((f) => INK_RULES.includes(f.rule) && !seen.has(`${f.rule}@${f.file}:${f.line}`)).map((f) => `${f.rule}@${f.file}:${f.line}`) };
+  };
+
+  it("flags each CSS sample, as warnings that keep the level", () => {
+    const { r, base, ink } = run({
+      "web/src/ink.css": [
+        ".a { border-radius: 6px; }",
+        ".b { border-radius: 9999px; }",
+        ".c { filter: drop-shadow(0 1px 2px black); }",
+        ".d { background: color-mix(in oklab, var(--primary) 50%, transparent); }",
+        ".e { box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5); }",
+        ".f { transition: transform 150ms ease-out; }",
+        ".g { transition: color var(--nk-time) var(--nk-ease-out); }",
+        ".h { font-size: 13px; font-weight: 600; }",
+        ".i[class*=\"ring-\"] { color: var(--primary); }",
+        ".j[data-critical] { color: var(--destructive); }",
+        ".k { gap: 0.375rem; }",
+      ].join("\n") + "\n",
+    });
+    expect(ink.sort()).toEqual(
+      [
+        "radius/raw@web/src/ink.css:1",
+        "radius/pill@web/src/ink.css:2",
+        "effect/blur@web/src/ink.css:3",
+        "color/mix@web/src/ink.css:4",
+        "shadow/soft@web/src/ink.css:5",
+        "motion/duration@web/src/ink.css:6",
+        "motion/ease@web/src/ink.css:6",
+        "motion/property@web/src/ink.css:7",
+        "type/raw@web/src/ink.css:8",
+        "type/raw@web/src/ink.css:8",
+        "selector/class-substring@web/src/ink.css:9",
+        "state/alert@web/src/ink.css:10",
+        "space/off-scale@web/src/ink.css:11",
+      ].sort(),
+    );
+    expect(r.findings.filter((f) => INK_RULES.includes(f.rule)).every((f) => f.severity === "warning" && f.level === 0)).toBe(true);
+    expect(r.level).toBe(base.level);
+  });
+
+  it("flags class names and alert attributes in script", () => {
+    const { ink } = run({
+      "web/src/ink.tsx": `export const A = () => <div data-low className="rounded-full rounded-md shadow-lg backdrop-blur-md duration-300 ease-out transition-all text-xs font-semibold gap-1.5" style={{ animationDelay: 40 }} />;\n`,
+    });
+    const rulesHit = [...new Set(ink.map((s) => s.split("@")[0]))].sort();
+    expect(rulesHit).toEqual(["effect/blur", "motion/duration", "motion/ease", "motion/property", "radius/pill", "radius/raw", "shadow/soft", "space/off-scale", "state/alert", "type/raw"].sort());
+  });
+
+  it("stays quiet on the token way, and on synced copies", () => {
+    const { ink } = run({
+      "web/src/good.css": [
+        ".a { border-radius: var(--nk-r-chip); box-shadow: 0 0.125rem 0 rgba(0, 0, 0, 0.6), inset 0 0 0 1px var(--border); }",
+        ".b { transition: transform var(--nk-time-base) var(--nk-ease-standard), opacity var(--nk-time-fast) var(--nk-ease-out); }",
+        ".c { gap: var(--nk-gap-cluster); padding: 0.5rem 0.75rem; font-size: var(--nk-text-key); }",
+        ".d[data-state=\"alert\"] { color: var(--destructive); }",
+      ].join("\n") + "\n",
+      "web/src/good.tsx": `export const A = () => <div className="rounded-(--nk-r-chip) gap-(--nk-gap-cluster) transition-transform duration-(--nk-time-fast) ease-(--nk-ease-out) nk-label" />;\n`,
+      "web/src/components/ui/vendored.tsx": `export const B = () => <div className="rounded-md shadow-lg text-sm" />;\n`,
+    });
+    expect(ink).toEqual([]);
+  });
+
+  it("asks a theme to stay in @layer nk.theme", () => {
+    const { ink } = run({
+      "theme.css": [":root { --nk-tile-skew: -12deg; }", "@layer nk.theme {", "  [data-slot=\"tile\"][data-state=\"alert\"] { opacity: 0.8; }", "}", ".inv-key { color: var(--primary) !important; }"].join("\n") + "\n",
+    });
+    expect(ink).toEqual(["theme/unlayered@theme.css:5", "theme/unlayered@theme.css:5"]);
   });
 });

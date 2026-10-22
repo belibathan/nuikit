@@ -13,8 +13,12 @@ export type ThemeMode = "dark" | "light";
 
 /** The token contract version. Bumped only for breaking renames/removals; additions keep v1. */
 export const TOKENS_VERSION = 1 as const;
-/** The contract revision: 1.1 added the identity tokens (IDENTITY_TOKENS), 1.2 the motion tokens (MOTION_TOKENS), 1.4 the foundation (FOUNDATION_TOKENS). Additive, so still v1. */
-export const TOKENS_REVISION = "1.4" as const;
+/**
+ * The contract revision: 1.1 added the identity tokens (IDENTITY_TOKENS), 1.2 the motion tokens (MOTION_TOKENS),
+ * 1.4 the foundation (FOUNDATION_TOKENS), 1.5 the Ink levers (KIT_TOKENS: scales, type roles, tile, plate, fill;
+ * docs/design/ink.md). Additive, so still v1.
+ */
+export const TOKENS_REVISION = "1.5" as const;
 
 export type TokenType = "color" | "dimension" | "fontFamily" | "number" | "keyword" | "duration" | "cubicBezier" | "shadow";
 
@@ -36,7 +40,13 @@ export interface TokenSpec {
   /** Numbers: accepted range. */
   range?: readonly [number, number];
   /** The revision that added it. */
-  since?: "1.1" | "1.2" | "1.3" | "1.4";
+  since?: "1.1" | "1.2" | "1.3" | "1.4" | "1.5";
+  /**
+   * Tokens 1.5 (KIT_TOKENS): the default is a kit.css formula over the identity (so a subtree's density or
+   * radius re-derives it), not a compiled literal. The compiler validates a value a theme or treatment sets and
+   * passes it through; it never emits the default.
+   */
+  css?: boolean;
 }
 
 /** The default sans stack (Graphite): Inter, bundled with every nuikit UI (docs/tokens.md#fonts). */
@@ -120,6 +130,9 @@ export const MOTION_TOKENS: readonly TokenSpec[] = [
   { name: "nk-spring-bounce", type: "number", group: "identity", description: "Bounce folded into the snap, move and soft springs (0 = critically damped; 0.3 is the most the kit allows)", fallback: "0", range: [0, 0.3], since: "1.2" },
   mt("nk-motion-move", "number", "1 = things may move (translate, scale, rotate, FLIP, stagger); 0 under reduced motion or off, where only fades of at most 100ms are kept", "1"),
   mt("nk-time-instant", "duration", "State that must be immediate: keyboard and controller selection, held key-repeat", "0ms"),
+  { ...mt("nk-time-snap", "duration", "The ladder (1.5): snap, 0.5 × d. A press, a rim switching state", "70ms"), since: "1.5" },
+  { ...mt("nk-time-fast", "duration", "The ladder (1.5): fast, 0.667 × d. Hover, a deny beat", "93ms"), since: "1.5" },
+  { ...mt("nk-time-slow", "duration", "The ladder (1.5): slow, 1.556 × d. A sheet or dialog opening, a confirm pop", "218ms"), since: "1.5" },
   mt("nk-time-press", "duration", "Press, toggle, key-chip flash: 0.5 × d, 50–100ms", "70ms"),
   mt("nk-time-hover", "duration", "Pointer hover colour and row background: 0.75 × d", "105ms"),
   mt("nk-time-base", "duration", "Panel and menu enter, the selection indicator, tab switch: d (kit.css --nk-time)", "140ms"),
@@ -154,8 +167,9 @@ const SPRING_MAX = [400, 400, 450, 400] as const;
 export const MAX_DURATION_MS = 260;
 
 /** The derived motion tokens for a base duration (ms), feel and bounce, as literals. Graphite is (140, crisp, 0). */
-export function motionTokens(d: number, feel: MotionFeel = "crisp", bounce = 0): ThemeVars {
+export function motionTokens(d: number, feel: MotionFeel = "crisp", bounce = 0, opts: { exitFactor?: number; ladder?: boolean } = {}): ThemeVars {
   const ms = (x: number) => `${Math.round(x)}ms`;
+  const exit = opts.exitFactor !== undefined && Number.isFinite(opts.exitFactor) ? opts.exitFactor : 0.7;
   const b = Math.max(0, Math.min(0.3, bounce));
   const r = SPRING_RATIO[feel] ?? SPRING_RATIO.crisp;
   const bounces = [b, Math.max(0.1, b), b, Math.max(0.3, b)];
@@ -165,7 +179,7 @@ export function motionTokens(d: number, feel: MotionFeel = "crisp", bounce = 0):
     "nk-time-press": ms(Math.max(50, Math.min(100, d * 0.5))),
     "nk-time-hover": ms(d * 0.75),
     "nk-time-base": ms(d),
-    "nk-time-exit": ms(d * 0.7),
+    "nk-time-exit": ms(d * exit),
     "nk-time-move": ms(Math.min(300, d * 1.5)),
     "nk-time-modal": ms(d * 1.25),
     "nk-time-screen": ms(Math.min(400, d * 2.5)),
@@ -177,7 +191,20 @@ export function motionTokens(d: number, feel: MotionFeel = "crisp", bounce = 0):
     "nk-time-retract": ms(Math.min(300, d * 1.55)),
     "nk-time-fill": ms(d * 3),
     "nk-time-pulse": "1000ms",
+    // tokens 1.5: the ladder (ink.md §2): snap .5, fast .667, base 1, slow 1.556, fill 2.333 × d
+    "nk-time-snap": ms(d * 0.5),
+    "nk-time-fast": ms(d * 0.667),
+    "nk-time-slow": ms(d * 1.556),
   };
+  // ladder (the tile treatment): the 1.2 rungs read the ladder, so one scale moves everything. Other
+  // treatments keep the 1.2 formulas for one revision, so Graphite's look is unchanged.
+  if (opts.ladder) {
+    out["nk-time-fill"] = ms(d * 2.333);
+    out["nk-time-press"] = out["nk-time-snap"]!;
+    out["nk-time-hover"] = out["nk-time-fast"]!;
+    for (const k of ["nk-time-move", "nk-time-modal", "nk-time-confirm", "nk-time-retract", "nk-time-screen"]) out[k] = out["nk-time-slow"]!;
+    out["nk-time-ambient"] = out["nk-time-fill"]!;
+  }
   SPRING_PRESETS.forEach((name, i) => {
     const t = Math.min(SPRING_MAX[i]!, Math.round((d * r[i]!) / 10) * 10);
     out[`nk-spring-${name}`] = `${t}ms ${Math.round(bounces[i]! * 1000) / 1000}`;
@@ -186,14 +213,14 @@ export function motionTokens(d: number, feel: MotionFeel = "crisp", bounce = 0):
 }
 
 /** The time tokens the player's prefs clamp (the whole ladder except instant and the stagger cap). */
-export const MOTION_TIME_TOKENS: readonly string[] = ["nk-time-press", "nk-time-hover", "nk-time-base", "nk-time-exit", "nk-time-move", "nk-time-modal", "nk-time-screen", "nk-time-ambient", "nk-stagger", "nk-time-confirm", "nk-time-retract", "nk-time-fill", "nk-time-pulse"];
-/** Under reduced motion fades are kept, but no longer than this (WCAG 2.3.3 counts opacity and colour changes as non-motion). */
+export const MOTION_TIME_TOKENS: readonly string[] = ["nk-time-press", "nk-time-hover", "nk-time-base", "nk-time-exit", "nk-time-move", "nk-time-modal", "nk-time-screen", "nk-time-ambient", "nk-stagger", "nk-time-confirm", "nk-time-retract", "nk-time-fill", "nk-time-pulse", "nk-time-snap", "nk-time-fast", "nk-time-slow"];
+/** Under reduced motion fades are kept, but no longer than this (WCAG 2.3.3 counts opacity and colour changes as non-motion). A theme's --nk-time-reduced (1.5) replaces it. */
 export const REDUCED_FADE_MS = 100;
 
 // ─────────────────────────────────────────── tokens 1.4 (docs/design/foundation.md)
 
 /** Treatments (1.4): how the palette is drawn. Each fills defaults under the theme's own values. */
-export const TREATMENTS = ["soft", "glass", "plate", "slab"] as const;
+export const TREATMENTS = ["soft", "glass", "plate", "slab", "tile"] as const;
 export type Treatment = (typeof TREATMENTS)[number];
 
 /**
@@ -240,6 +267,71 @@ export const TREATMENT_PRESETS: Record<Treatment, ThemeVars> = {
     "nk-hold-style": "fill",
     "nk-level-style": "slab",
     "nk-slash": "cut",
+  },
+  /**
+   * tile (1.5, docs/design/ink.md): Ink's values, so Ink is `tile` plus a palette. One slanted keycap language
+   * on hard plates, fill-based status, italic caps for anything scanned, the 1.5 motion ladder.
+   */
+  tile: {
+    "nk-density": "1",
+    "nk-duration": "180ms",
+    "nk-elevation": "hard",
+    "nk-display-style": "italic",
+    "nk-label-case": "uppercase",
+    "nk-row-indicator": "sweep",
+    "nk-hold-style": "fill",
+    "nk-confirm-scale": "1.08",
+    "nk-stagger": "40ms",
+    "nk-surface-edge": "0",
+    "nk-surface-gradient": "0",
+    // scales
+    "nk-r-key": "0.25rem",
+    "nk-r-chip": "0.375rem",
+    "nk-r-control": "0.5rem",
+    "nk-r-surface": "0.75rem",
+    "nk-h-key": "1.5rem",
+    "nk-h-chip": "1.75rem",
+    "nk-h-control": "2.25rem",
+    "nk-h-row": "3rem",
+    "nk-text-key": "0.8125rem",
+    // type roles: Barlow italic caps (font-display) for anything scanned, the sans for sentences
+    ...Object.fromEntries(
+      (["scan", "title", "label", "num"] as const).flatMap((r) => [
+        [`nk-type-${r}-family`, "var(--font-display)"],
+        [`nk-type-${r}-style`, "italic"],
+        [`nk-type-${r}-weight`, r === "scan" || r === "title" ? "800" : "700"],
+        [`nk-type-${r}-tracking`, r === "label" ? "0.03em" : r === "num" ? "0.01em" : "0.02em"],
+        [`nk-type-${r}-case`, r === "num" ? "none" : "uppercase"],
+        [`nk-type-${r}-pad`, "0.15em"],
+      ]),
+    ),
+    // tile
+    "nk-tile-face": "rgb(22, 22, 22)",
+    "nk-tile-ink": "rgb(255, 255, 255)",
+    "nk-tile-light": "rgba(255, 255, 255, 0.16)",
+    "nk-tile-shade": "rgba(0, 0, 0, 0)",
+    "nk-tile-rim": "rgba(255, 255, 255, 0.32)",
+    "nk-tile-rim-focus": "rgba(255, 255, 255, 0.4)",
+    "nk-tile-plate": "rgb(115, 115, 115)",
+    "nk-tile-plate-dim": "rgb(38, 38, 38)",
+    "nk-tile-plate-x": "2px",
+    "nk-tile-plate-y": "2px",
+    "nk-tile-press": "1px",
+    "nk-tile-skew": "-12deg",
+    // plate (surface recipe)
+    "nk-plate": "rgb(10, 10, 10)",
+    "nk-plate-hair": "rgba(255, 255, 255, 0.12)",
+    "nk-plate-drop": "0 0.125rem 0 rgba(0, 0, 0, 0.6)",
+    // fill
+    "nk-fill-color": "var(--foreground)",
+    "nk-fill-track": "rgba(255, 255, 255, 0.12)",
+    "nk-fill-tint": "rgba(255, 255, 255, 0.12)",
+    "nk-fill-edge": "rgba(255, 255, 255, 0.4)",
+    // motion distances
+    "nk-lift": "0.5rem",
+    "nk-rise": "0.5rem",
+    "nk-land-scale": "0.6",
+    "nk-deny-x": "0.3125rem",
   },
 };
 
@@ -334,8 +426,6 @@ export const FOUNDATION_TOKENS: readonly TokenSpec[] = [
   d14("nk-time-fill", "duration", "A level filling or draining: 3 × d", "420ms"),
   d14("nk-time-pulse", "duration", "One alert pulse", "1000ms"),
   ...(["world", "hud", "scrim", "surface", "dim", "dialog", "system"] as const).map((l, i) => f14(`nk-z-${l}`, "number", `Stacking layer: ${l}. A modal is the current surface + dim + dialog`, String((i + 1) * 10), { range: [0, 100000] })),
-  f14("nk-hang-md", "dimension", "How far a badge or gem breaks a panel edge", "0.375rem"),
-  f14("nk-hang-lg", "dimension", "A large hang (a level badge on a card)", "0.75rem"),
   f14("nk-focus-shift", "dimension", "The focused row's nudge toward its content", "0rem"),
   f14("nk-glow-budget", "number", "How many elements may glow at once (the top surface's focused one first); 0 = no limit", "1", { range: [0, 8] }),
 ];
@@ -382,7 +472,7 @@ export const IDENTITY_TOKENS: readonly TokenSpec[] = [
   id("nk-gauge-style", "keyword", "How gauges are drawn", "arc", { values: ["arc", "bar", "digital"] }),
   id("nk-gauge-track", "dimension", "Gauge and meter track thickness", "0.25rem"),
   id("nk-gauge-ticks", "number", "Tick marks on gauges: 1 on, 0 off", "1", { range: [0, 1] }),
-  id("nk-row-indicator", "keyword", "How the active row is marked", "bar", { values: ["bar", "fill", "outline"] }),
+  id("nk-row-indicator", "keyword", "How the active row is marked: bar, fill, outline, or sweep (1.5: no bar, the row's --nk-fill-tint sweep alone)", "bar", { values: ["bar", "fill", "outline", "sweep"] }),
   dv("surface", "color", "Floating panel surface: popover tinted by brand (× nk-surface-tint); drawn at nk-surface-opacity", "mix(popover, brand, nk-surface-tint)"),
   dv("nk-elevation-shadow", "shadow", "The box-shadow nk-elevation names, in scrim colour", "from nk-elevation"),
   dv("nk-hud-shadow", "shadow", "The text-shadow nk-hud-text-shadow names, in scrim colour", "from nk-hud-text-shadow"),
@@ -393,14 +483,116 @@ export const IDENTITY_TOKENS: readonly TokenSpec[] = [
   dv("nk-clip-sm", "keyword", "clip-path of chips, tiles and buttons: half the panel chamfer", "from nk-cut"),
   ...MOTION_TOKENS,
   ...FOUNDATION_TOKENS,
+  // tokens 1.5: the motion inputs the compiler needs (the rest of 1.5 is KIT_TOKENS, kit.css defaults)
+  { ...id("nk-exit-factor", "number", "Every exit is this × its enter (--nk-time-exit = base × factor)", "0.7", { range: [0.3, 1] }), since: "1.5" },
+  { ...id("nk-time-reduced", "duration", "The one reduced-motion duration: under reduced motion every fade is at most this", "100ms", { range: [0, 400] }), since: "1.5" },
 ];
+
+// ─────────────────────────────────────────── tokens 1.5 (docs/design/ink.md §2): the Ink levers
+
+const k15 = (name: string, type: TokenType, description: string, fallback: string, extra: Partial<TokenSpec> = {}): TokenSpec => ({ name, type, group: "identity", description, fallback, since: "1.5", css: true, ...extra });
+
+/** Spacing, radius, height and icon scales. Defaults are today's Graphite proportions (kit.css). */
+export const SCALE_TOKENS: readonly TokenSpec[] = [
+  k15("nk-space-unit", "dimension", "The spacing step: 0.25rem × --nk-density (aliases --nk-space)", "calc(0.25rem * nk-density)"),
+  ...[1, 2, 3, 4, 6, 8].map((n) => k15(`nk-space-${n}`, "dimension", `${n} × the spacing step`, `${n} × nk-space-unit`)),
+  k15("nk-gap-cluster", "dimension", "Icon + text, key + label", "nk-space-2"),
+  k15("nk-gap-items", "dimension", "Items in a bar", "nk-space-1"),
+  k15("nk-pad-x", "dimension", "Inline padding of anything labelled", "nk-space-3"),
+  k15("nk-pad-surface", "dimension", "Padding of a surface (dialog body, sheet column)", "nk-space-6"),
+  k15("nk-r-key", "dimension", "Radius of keys and tiles (aliased by --nk-key-radius)", "max(0.25rem, radius − 4px)"),
+  k15("nk-r-chip", "dimension", "Radius of chips and badges (aliased by --nk-chip-radius)", "max(0.25rem, radius − 4px)"),
+  k15("nk-r-control", "dimension", "Radius of buttons, fields and rows (aliased by --nk-row-radius)", "radius − 2px"),
+  k15("nk-r-surface", "dimension", "Radius of panels, sheets and dialogs", "nk-material-menu-radius"),
+  k15("nk-h-key", "dimension", "Height of a key / small tile", "1.25rem"),
+  k15("nk-h-chip", "dimension", "Height of a chip / medium tile (aliased by --nk-chip-height)", "calc(2rem * nk-density)"),
+  k15("nk-h-control", "dimension", "Height of buttons, fields and bar items / large tile", "2.25rem"),
+  k15("nk-h-row", "dimension", "Height of a list row (aliased by --nk-row-height)", "calc(2.75rem * nk-density)"),
+  k15("nk-icon-sm", "dimension", "Small icon", "0.75rem"),
+  k15("nk-icon-md", "dimension", "Icon next to text (the default)", "1rem"),
+  k15("nk-icon-lg", "dimension", "Large icon", "1.25rem"),
+  k15("nk-icon-stroke", "number", "Icon stroke width", "2", { range: [0.5, 4] }),
+];
+
+/** The five type roles. A kit class (.nk-scan, .nk-title, .nk-label, .nk-num, .nk-body) applies one. */
+export const TYPE_ROLES = ["scan", "title", "label", "num", "body"] as const;
+const ROLE_WHAT: Record<(typeof TYPE_ROLES)[number], string> = { scan: "keys, buttons, tabs", title: "titles", label: "labels", num: "numbers", body: "sentences" };
+export const TYPE_ROLE_TOKENS: readonly TokenSpec[] = [
+  k15("nk-text-key", "dimension", "Size of the scan role (keys, buttons, tabs)", "0.8125rem"),
+  k15("nk-text-body", "dimension", "Size of the body role", "nk-text-base"),
+  ...TYPE_ROLES.flatMap((r) => [
+    k15(`nk-type-${r}-family`, "fontFamily", `Font of the ${r} role (${ROLE_WHAT[r]})`, r === "body" ? "font-sans" : r === "scan" ? "nk-key-font" : r === "num" ? "font-numeric" : r === "title" ? "nk-heading-font" : "font-sans"),
+    k15(`nk-type-${r}-style`, "keyword", `normal or italic, for the ${r} role`, r === "title" || r === "num" || r === "scan" ? "nk-display-style" : "normal", { values: ["normal", "italic"] }),
+    k15(`nk-type-${r}-weight`, "number", `Weight of the ${r} role`, r === "scan" ? "nk-weight-strong" : r === "title" ? "nk-heading-weight" : r === "body" ? "nk-weight-body" : r === "label" ? "500" : "inherit", { range: [100, 900] }),
+    k15(`nk-type-${r}-tracking`, "dimension", `Letter-spacing of the ${r} role`, r === "title" ? "nk-heading-tracking" : r === "num" ? "-0.02em" : "0em"),
+    k15(`nk-type-${r}-case`, "keyword", `Case of the ${r} role`, r === "title" ? "nk-heading-case" : "none", { values: ["none", "uppercase"] }),
+    k15(`nk-type-${r}-pad`, "dimension", `Trailing pad of the ${r} role (the italic overhang)`, "0em"),
+  ]),
+];
+
+/** Tile / Keycap: one slanted key language (keys, notice icons, tab marks, checked boxes, telltales). */
+export const TILE_TOKENS: readonly TokenSpec[] = [
+  k15("nk-tile-face", "color", "The tile's face (aliased by --nk-key-bg)", "muted"),
+  k15("nk-tile-ink", "color", "The legend on the face (aliased by --nk-key-fg)", "popover-foreground"),
+  k15("nk-tile-light", "color", "The face's top hairline", "popover-foreground at 1.5 × nk-surface-edge"),
+  k15("nk-tile-shade", "color", "The face's bottom inner shade", "scrim at 0.35"),
+  k15("nk-tile-rim", "color", "The face's 1px rim (aliased by --nk-key-border)", "border"),
+  k15("nk-tile-rim-focus", "color", "The rim while focused", "ring"),
+  k15("nk-tile-plate", "color", "The solid plate behind the face", "border"),
+  k15("nk-tile-plate-dim", "color", "The plate on the HUD", "nk-tile-plate"),
+  k15("nk-tile-plate-x", "dimension", "How far the plate sits right of the face (0 = no plate)", "0px; 0.1875rem under --nk-skew"),
+  k15("nk-tile-plate-y", "dimension", "How far the plate sits below the face", "0px; 0.1875rem under --nk-skew"),
+  k15("nk-tile-press", "dimension", "How far a held tile presses toward its plate", "1px"),
+  k15("nk-tile-skew", "dimension", "The face's slant (the box stays upright); at most ±20deg", "nk-skew"),
+  k15("nk-tile-confirm-face", "color", "The face when confirmed or active", "foreground"),
+  k15("nk-tile-confirm-ink", "color", "The legend when confirmed or active", "background"),
+  k15("nk-tile-hold", "color", "The hold fill over the face", "foreground at 0.35"),
+  k15("nk-tile-tag-delay", "duration", "The tag opens this long after the tile lands", "80ms"),
+];
+
+/** Plate: the one surface recipe (sheets, dialogs, notices), hard drop, no blur. */
+export const PLATE_TOKENS: readonly TokenSpec[] = [
+  k15("nk-plate", "color", "The plate colour (its channels, --nk-plate-rgb, are drawn at the context's material opacity)", "surface"),
+  k15("nk-plate-hair", "color", "The plate's hairline", "nk-panel-border"),
+  k15("nk-plate-drop", "shadow", "The plate's drop: hard, no blur", "nk-panel-shadow"),
+  k15("nk-plate-radius", "dimension", "The plate's radius", "nk-r-surface"),
+];
+
+/** Fill: status as a level filling left to right. --level (0–1) is set inline. */
+export const FILL_TOKENS: readonly TokenSpec[] = [
+  k15("nk-fill-color", "color", "The bar", "brand"),
+  k15("nk-fill-track", "color", "The track behind the bar", "nk-meter-track"),
+  k15("nk-fill-tint", "color", "The row sweep (a fill at level 1)", "accent"),
+  k15("nk-fill-edge", "color", "The bar's leading 1px edge", "transparent"),
+  k15("nk-fill-alert", "color", "The bar at or under the alert threshold", "destructive"),
+];
+
+/** Motion distances (1.5): the ladder itself is in MOTION_TOKENS. */
+export const MOTION_15_TOKENS: readonly TokenSpec[] = [
+  k15("nk-lift", "dimension", "Row slide and slot lift on focus", "0rem"),
+  k15("nk-rise", "dimension", "How far things rise as they enter", "0.5rem"),
+  k15("nk-land-scale", "number", "The scale a tile lands from", "1", { range: [0, 1] }),
+  k15("nk-deny-x", "dimension", "The deny shake's distance (two beats of fast)", "0.3125rem"),
+];
+
+/** Tokens components already read (vital-chip.tsx), moved into the contract (1.5). Unset = the component's default. */
+export const HYGIENE_TOKENS: readonly TokenSpec[] = [
+  k15("nk-chip-shape", "keyword", "Vital chip shape", "auto", { values: ["auto", "square", "rounded", "circle", "diamond", "hex", "chamfer"] }),
+  k15("nk-label-attach", "keyword", "Where a chip's label sits", "inline", { values: ["inline", "tag", "flag", "none"] }),
+  k15("nk-vital-icon", "keyword", "Vital icons: each vital's own, or one uniform glyph", "vital", { values: ["vital", "uniform"] }),
+  k15("nk-vital-display", "keyword", "What a vital chip shows", "auto", { values: ["auto", "pill", "value", "icon", "expand"] }),
+  k15("nk-vital-neighbours", "keyword", "What a growing chip does to its neighbours", "push", { values: ["push", "collapse", "overlay"] }),
+];
+
+/** Every 1.5 lever: kit.css holds the defaults; the compiler validates what a theme or treatment sets. */
+export const KIT_TOKENS: readonly TokenSpec[] = [...SCALE_TOKENS, ...TYPE_ROLE_TOKENS, ...TILE_TOKENS, ...PLATE_TOKENS, ...FILL_TOKENS, ...MOTION_15_TOKENS, ...HYGIENE_TOKENS];
 
 /** The chamfer (top left and bottom right) as a clip-path of a cut size. */
 export const chamferClip = (cut: string) =>
   `polygon(${cut} 0, 100% 0, 100% calc(100% - ${cut}), calc(100% - ${cut}) 100%, 0 100%, 0 ${cut})`;
 
 /** Every token: v1 then the 1.1 identity tokens. */
-export const ALL_TOKENS: readonly TokenSpec[] = [...TOKENS, ...IDENTITY_TOKENS];
+export const ALL_TOKENS: readonly TokenSpec[] = [...TOKENS, ...IDENTITY_TOKENS, ...KIT_TOKENS];
 export const ALL_TOKEN_NAMES: readonly string[] = ALL_TOKENS.map((t) => t.name);
 const SPEC = new Map(ALL_TOKENS.map((t) => [t.name, t]));
 
@@ -951,7 +1143,7 @@ const trimNum = (n: number) => String(Math.round(n * 10000) / 10000);
 function identityValue(spec: TokenSpec, raw: string): string | null {
   const v = raw.trim();
   // an angle, not a length (tokens 1.3)
-  if (spec.name === "nk-skew") {
+  if (spec.name === "nk-skew" || spec.name === "nk-tile-skew") {
     if (v === "0") return "0deg";
     const m = /^(-?\d*\.?\d+)deg$/.exec(v);
     if (!m) return null;
@@ -1078,6 +1270,19 @@ function deriveIdentity(vars: ThemeVars, warnings: string[], given: ReadonlySet<
       else vars[spec.name] = spec.fallback;
     } else vars[spec.name] = v;
   }
+  // 1.5 levers: kit.css holds the defaults, so only a value the theme or treatment set is checked (and kept)
+  for (const spec of KIT_TOKENS) {
+    const value = vars[spec.name];
+    if (value === undefined || spec.type === "color" || spec.type === "fontFamily" || spec.type === "shadow") continue;
+    // a formula (calc(), var()) is the theme's call: CSS resolves it
+    if (/^(calc|var|max|min|clamp)\(/.test(value.trim())) continue;
+    const v = identityValue(spec, value);
+    if (v === null) {
+      const want = spec.values ? spec.values.join(", ") : spec.range ? `a number from ${spec.range[0]} to ${spec.range[1]}` : spec.type === "dimension" ? "a length in px, rem or em" : spec.type === "duration" ? "a duration up to 2000ms" : "a valid value";
+      warnings.push(`--${spec.name} must be ${want} (got ${value}); the kit default is used.`);
+      delete vars[spec.name];
+    } else vars[spec.name] = v;
+  }
 
   // brand: the primary when it has colour, else the first chart colour
   if (vars.brand === undefined) {
@@ -1110,12 +1315,16 @@ function deriveIdentity(vars: ThemeVars, warnings: string[], given: ReadonlySet<
   const cut = parseFloat(vars["nk-cut"]!);
   if (vars["nk-clip"] === undefined) vars["nk-clip"] = cut > 0 ? chamferClip("var(--nk-cut)") : "none";
   if (vars["nk-clip-sm"] === undefined) vars["nk-clip-sm"] = cut > 0 ? chamferClip("calc(var(--nk-cut) / 2)") : "none";
+  // sweep (1.5) is none of the three: no bar, fill or outline, only the row's own sweep
   const ind = vars["nk-row-indicator"]!;
   for (const k of ["bar", "fill", "outline"]) if (vars[`nk-row-${k}`] === undefined) vars[`nk-row-${k}`] = ind === k ? "1" : "0";
 
   // motion (1.2): the duration ladder, easings and springs, as literals, from d, the ease, the feel and the bounce
   const d = parseFloat(vars["nk-duration"]!);
-  const motion = motionTokens(d, vars["nk-motion-feel"] as MotionFeel, parseFloat(vars["nk-spring-bounce"]!));
+  const motion = motionTokens(d, vars["nk-motion-feel"] as MotionFeel, parseFloat(vars["nk-spring-bounce"]!), {
+    exitFactor: parseFloat(vars["nk-exit-factor"] ?? "0.7"),
+    ladder: vars["nk-treatment"] === "tile",
+  });
   motion["nk-ease-out"] = vars["nk-ease"]!;
   motion["nk-ease-in"] = "cubic-bezier(0.4, 0, 1, 1)";
   motion["nk-ease-in-out"] = "cubic-bezier(0.2, 0, 0, 1)";
@@ -1375,13 +1584,14 @@ export function withPrefs(vars: ThemeVars, prefs: Partial<NuiPrefs> = DEFAULT_PR
   const level = themeMotionLevel(vars, p);
   out["nk-motion"] = level === "on" ? "1" : "0";
   if (level !== "on") {
-    // off: nothing animates. reduced: no movement, fades kept but at most REDUCED_FADE_MS (tokens 1.2).
+    // off: nothing animates. reduced: no movement, fades kept but at most --nk-time-reduced (1.5; REDUCED_FADE_MS by default).
+    const cap = parseFloat(out["nk-time-reduced"] ?? "") || REDUCED_FADE_MS;
     if (out["nk-motion-move"] !== undefined || out["nk-time-base"] !== undefined) out["nk-motion-move"] = "0";
     for (const name of MOTION_TIME_TOKENS) {
       const v = out[name];
       if (v === undefined) continue;
       const ms = parseFloat(v) * (/\ds$/.test(v) && !/ms$/.test(v) ? 1000 : 1);
-      out[name] = level === "off" || name === "nk-stagger" ? "0ms" : `${Math.min(Number.isFinite(ms) ? ms : 0, REDUCED_FADE_MS)}ms`;
+      out[name] = level === "off" || name === "nk-stagger" ? "0ms" : `${Math.min(Number.isFinite(ms) ? ms : 0, cap)}ms`;
     }
   }
   return out;

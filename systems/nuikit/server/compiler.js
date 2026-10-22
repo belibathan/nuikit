@@ -169,7 +169,7 @@ var NuikitTheme = (() => {
 
   // src/tokens.ts
   var TOKENS_VERSION = 1;
-  var TOKENS_REVISION = "1.4";
+  var TOKENS_REVISION = "1.5";
   var DEFAULT_FONT_SANS = "Inter, ui-sans-serif, system-ui, sans-serif";
   var DEFAULT_FONT_DISPLAY = `"Inter Tight", ${DEFAULT_FONT_SANS}`;
   var DEFAULT_FONT_MONO = `"Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace`;
@@ -231,6 +231,9 @@ var NuikitTheme = (() => {
     { name: "nk-spring-bounce", type: "number", group: "identity", description: "Bounce folded into the snap, move and soft springs (0 = critically damped; 0.3 is the most the kit allows)", fallback: "0", range: [0, 0.3], since: "1.2" },
     mt("nk-motion-move", "number", "1 = things may move (translate, scale, rotate, FLIP, stagger); 0 under reduced motion or off, where only fades of at most 100ms are kept", "1"),
     mt("nk-time-instant", "duration", "State that must be immediate: keyboard and controller selection, held key-repeat", "0ms"),
+    { ...mt("nk-time-snap", "duration", "The ladder (1.5): snap, 0.5 \xD7 d. A press, a rim switching state", "70ms"), since: "1.5" },
+    { ...mt("nk-time-fast", "duration", "The ladder (1.5): fast, 0.667 \xD7 d. Hover, a deny beat", "93ms"), since: "1.5" },
+    { ...mt("nk-time-slow", "duration", "The ladder (1.5): slow, 1.556 \xD7 d. A sheet or dialog opening, a confirm pop", "218ms"), since: "1.5" },
     mt("nk-time-press", "duration", "Press, toggle, key-chip flash: 0.5 \xD7 d, 50\u2013100ms", "70ms"),
     mt("nk-time-hover", "duration", "Pointer hover colour and row background: 0.75 \xD7 d", "105ms"),
     mt("nk-time-base", "duration", "Panel and menu enter, the selection indicator, tab switch: d (kit.css --nk-time)", "140ms"),
@@ -259,9 +262,10 @@ var NuikitTheme = (() => {
   };
   var SPRING_MAX = [400, 400, 450, 400];
   var MAX_DURATION_MS = 260;
-  function motionTokens(d, feel = "crisp", bounce = 0) {
+  function motionTokens(d, feel = "crisp", bounce = 0, opts = {}) {
     var _a;
     const ms = (x) => `${Math.round(x)}ms`;
+    const exit = opts.exitFactor !== void 0 && Number.isFinite(opts.exitFactor) ? opts.exitFactor : 0.7;
     const b = Math.max(0, Math.min(0.3, bounce));
     const r = (_a = SPRING_RATIO[feel]) != null ? _a : SPRING_RATIO.crisp;
     const bounces = [b, Math.max(0.1, b), b, Math.max(0.3, b)];
@@ -271,7 +275,7 @@ var NuikitTheme = (() => {
       "nk-time-press": ms(Math.max(50, Math.min(100, d * 0.5))),
       "nk-time-hover": ms(d * 0.75),
       "nk-time-base": ms(d),
-      "nk-time-exit": ms(d * 0.7),
+      "nk-time-exit": ms(d * exit),
       "nk-time-move": ms(Math.min(300, d * 1.5)),
       "nk-time-modal": ms(d * 1.25),
       "nk-time-screen": ms(Math.min(400, d * 2.5)),
@@ -282,15 +286,26 @@ var NuikitTheme = (() => {
       "nk-time-confirm": ms(Math.max(60, d * 0.65)),
       "nk-time-retract": ms(Math.min(300, d * 1.55)),
       "nk-time-fill": ms(d * 3),
-      "nk-time-pulse": "1000ms"
+      "nk-time-pulse": "1000ms",
+      // tokens 1.5: the ladder (ink.md §2): snap .5, fast .667, base 1, slow 1.556, fill 2.333 × d
+      "nk-time-snap": ms(d * 0.5),
+      "nk-time-fast": ms(d * 0.667),
+      "nk-time-slow": ms(d * 1.556)
     };
+    if (opts.ladder) {
+      out["nk-time-fill"] = ms(d * 2.333);
+      out["nk-time-press"] = out["nk-time-snap"];
+      out["nk-time-hover"] = out["nk-time-fast"];
+      for (const k of ["nk-time-move", "nk-time-modal", "nk-time-confirm", "nk-time-retract", "nk-time-screen"]) out[k] = out["nk-time-slow"];
+      out["nk-time-ambient"] = out["nk-time-fill"];
+    }
     SPRING_PRESETS.forEach((name, i) => {
       const t = Math.min(SPRING_MAX[i], Math.round(d * r[i] / 10) * 10);
       out[`nk-spring-${name}`] = `${t}ms ${Math.round(bounces[i] * 1e3) / 1e3}`;
     });
     return out;
   }
-  var TREATMENTS = ["soft", "glass", "plate", "slab"];
+  var TREATMENTS = ["soft", "glass", "plate", "slab", "tile"];
   var TREATMENT_PRESETS = {
     soft: {},
     glass: {
@@ -331,6 +346,71 @@ var NuikitTheme = (() => {
       "nk-hold-style": "fill",
       "nk-level-style": "slab",
       "nk-slash": "cut"
+    },
+    /**
+     * tile (1.5, docs/design/ink.md): Ink's values, so Ink is `tile` plus a palette. One slanted keycap language
+     * on hard plates, fill-based status, italic caps for anything scanned, the 1.5 motion ladder.
+     */
+    tile: {
+      "nk-density": "1",
+      "nk-duration": "180ms",
+      "nk-elevation": "hard",
+      "nk-display-style": "italic",
+      "nk-label-case": "uppercase",
+      "nk-row-indicator": "sweep",
+      "nk-hold-style": "fill",
+      "nk-confirm-scale": "1.08",
+      "nk-stagger": "40ms",
+      "nk-surface-edge": "0",
+      "nk-surface-gradient": "0",
+      // scales
+      "nk-r-key": "0.25rem",
+      "nk-r-chip": "0.375rem",
+      "nk-r-control": "0.5rem",
+      "nk-r-surface": "0.75rem",
+      "nk-h-key": "1.5rem",
+      "nk-h-chip": "1.75rem",
+      "nk-h-control": "2.25rem",
+      "nk-h-row": "3rem",
+      "nk-text-key": "0.8125rem",
+      // type roles: Barlow italic caps (font-display) for anything scanned, the sans for sentences
+      ...Object.fromEntries(
+        ["scan", "title", "label", "num"].flatMap((r) => [
+          [`nk-type-${r}-family`, "var(--font-display)"],
+          [`nk-type-${r}-style`, "italic"],
+          [`nk-type-${r}-weight`, r === "scan" || r === "title" ? "800" : "700"],
+          [`nk-type-${r}-tracking`, r === "label" ? "0.03em" : r === "num" ? "0.01em" : "0.02em"],
+          [`nk-type-${r}-case`, r === "num" ? "none" : "uppercase"],
+          [`nk-type-${r}-pad`, "0.15em"]
+        ])
+      ),
+      // tile
+      "nk-tile-face": "rgb(22, 22, 22)",
+      "nk-tile-ink": "rgb(255, 255, 255)",
+      "nk-tile-light": "rgba(255, 255, 255, 0.16)",
+      "nk-tile-shade": "rgba(0, 0, 0, 0)",
+      "nk-tile-rim": "rgba(255, 255, 255, 0.32)",
+      "nk-tile-rim-focus": "rgba(255, 255, 255, 0.4)",
+      "nk-tile-plate": "rgb(115, 115, 115)",
+      "nk-tile-plate-dim": "rgb(38, 38, 38)",
+      "nk-tile-plate-x": "2px",
+      "nk-tile-plate-y": "2px",
+      "nk-tile-press": "1px",
+      "nk-tile-skew": "-12deg",
+      // plate (surface recipe)
+      "nk-plate": "rgb(10, 10, 10)",
+      "nk-plate-hair": "rgba(255, 255, 255, 0.12)",
+      "nk-plate-drop": "0 0.125rem 0 rgba(0, 0, 0, 0.6)",
+      // fill
+      "nk-fill-color": "var(--foreground)",
+      "nk-fill-track": "rgba(255, 255, 255, 0.12)",
+      "nk-fill-tint": "rgba(255, 255, 255, 0.12)",
+      "nk-fill-edge": "rgba(255, 255, 255, 0.4)",
+      // motion distances
+      "nk-lift": "0.5rem",
+      "nk-rise": "0.5rem",
+      "nk-land-scale": "0.6",
+      "nk-deny-x": "0.3125rem"
     }
   };
   var ROLE_SETS = {
@@ -415,8 +495,6 @@ var NuikitTheme = (() => {
     d14("nk-time-fill", "duration", "A level filling or draining: 3 \xD7 d", "420ms"),
     d14("nk-time-pulse", "duration", "One alert pulse", "1000ms"),
     ...["world", "hud", "scrim", "surface", "dim", "dialog", "system"].map((l, i) => f14(`nk-z-${l}`, "number", `Stacking layer: ${l}. A modal is the current surface + dim + dialog`, String((i + 1) * 10), { range: [0, 1e5] })),
-    f14("nk-hang-md", "dimension", "How far a badge or gem breaks a panel edge", "0.375rem"),
-    f14("nk-hang-lg", "dimension", "A large hang (a level badge on a card)", "0.75rem"),
     f14("nk-focus-shift", "dimension", "The focused row's nudge toward its content", "0rem"),
     f14("nk-glow-budget", "number", "How many elements may glow at once (the top surface's focused one first); 0 = no limit", "1", { range: [0, 8] })
   ];
@@ -458,7 +536,7 @@ var NuikitTheme = (() => {
     id("nk-gauge-style", "keyword", "How gauges are drawn", "arc", { values: ["arc", "bar", "digital"] }),
     id("nk-gauge-track", "dimension", "Gauge and meter track thickness", "0.25rem"),
     id("nk-gauge-ticks", "number", "Tick marks on gauges: 1 on, 0 off", "1", { range: [0, 1] }),
-    id("nk-row-indicator", "keyword", "How the active row is marked", "bar", { values: ["bar", "fill", "outline"] }),
+    id("nk-row-indicator", "keyword", "How the active row is marked: bar, fill, outline, or sweep (1.5: no bar, the row's --nk-fill-tint sweep alone)", "bar", { values: ["bar", "fill", "outline", "sweep"] }),
     dv("surface", "color", "Floating panel surface: popover tinted by brand (\xD7 nk-surface-tint); drawn at nk-surface-opacity", "mix(popover, brand, nk-surface-tint)"),
     dv("nk-elevation-shadow", "shadow", "The box-shadow nk-elevation names, in scrim colour", "from nk-elevation"),
     dv("nk-hud-shadow", "shadow", "The text-shadow nk-hud-text-shadow names, in scrim colour", "from nk-hud-text-shadow"),
@@ -468,10 +546,93 @@ var NuikitTheme = (() => {
     dv("nk-clip", "keyword", "clip-path of panels: the nk-cut chamfer, or none when nk-cut is 0 (a clip-path would also clip the shadow)", "from nk-cut"),
     dv("nk-clip-sm", "keyword", "clip-path of chips, tiles and buttons: half the panel chamfer", "from nk-cut"),
     ...MOTION_TOKENS,
-    ...FOUNDATION_TOKENS
+    ...FOUNDATION_TOKENS,
+    // tokens 1.5: the motion inputs the compiler needs (the rest of 1.5 is KIT_TOKENS, kit.css defaults)
+    { ...id("nk-exit-factor", "number", "Every exit is this \xD7 its enter (--nk-time-exit = base \xD7 factor)", "0.7", { range: [0.3, 1] }), since: "1.5" },
+    { ...id("nk-time-reduced", "duration", "The one reduced-motion duration: under reduced motion every fade is at most this", "100ms", { range: [0, 400] }), since: "1.5" }
   ];
+  var k15 = (name, type, description, fallback, extra = {}) => ({ name, type, group: "identity", description, fallback, since: "1.5", css: true, ...extra });
+  var SCALE_TOKENS = [
+    k15("nk-space-unit", "dimension", "The spacing step: 0.25rem \xD7 --nk-density (aliases --nk-space)", "calc(0.25rem * nk-density)"),
+    ...[1, 2, 3, 4, 6, 8].map((n2) => k15(`nk-space-${n2}`, "dimension", `${n2} \xD7 the spacing step`, `${n2} \xD7 nk-space-unit`)),
+    k15("nk-gap-cluster", "dimension", "Icon + text, key + label", "nk-space-2"),
+    k15("nk-gap-items", "dimension", "Items in a bar", "nk-space-1"),
+    k15("nk-pad-x", "dimension", "Inline padding of anything labelled", "nk-space-3"),
+    k15("nk-pad-surface", "dimension", "Padding of a surface (dialog body, sheet column)", "nk-space-6"),
+    k15("nk-r-key", "dimension", "Radius of keys and tiles (aliased by --nk-key-radius)", "max(0.25rem, radius \u2212 4px)"),
+    k15("nk-r-chip", "dimension", "Radius of chips and badges (aliased by --nk-chip-radius)", "max(0.25rem, radius \u2212 4px)"),
+    k15("nk-r-control", "dimension", "Radius of buttons, fields and rows (aliased by --nk-row-radius)", "radius \u2212 2px"),
+    k15("nk-r-surface", "dimension", "Radius of panels, sheets and dialogs", "nk-material-menu-radius"),
+    k15("nk-h-key", "dimension", "Height of a key / small tile", "1.25rem"),
+    k15("nk-h-chip", "dimension", "Height of a chip / medium tile (aliased by --nk-chip-height)", "calc(2rem * nk-density)"),
+    k15("nk-h-control", "dimension", "Height of buttons, fields and bar items / large tile", "2.25rem"),
+    k15("nk-h-row", "dimension", "Height of a list row (aliased by --nk-row-height)", "calc(2.75rem * nk-density)"),
+    k15("nk-icon-sm", "dimension", "Small icon", "0.75rem"),
+    k15("nk-icon-md", "dimension", "Icon next to text (the default)", "1rem"),
+    k15("nk-icon-lg", "dimension", "Large icon", "1.25rem"),
+    k15("nk-icon-stroke", "number", "Icon stroke width", "2", { range: [0.5, 4] })
+  ];
+  var TYPE_ROLES = ["scan", "title", "label", "num", "body"];
+  var ROLE_WHAT = { scan: "keys, buttons, tabs", title: "titles", label: "labels", num: "numbers", body: "sentences" };
+  var TYPE_ROLE_TOKENS = [
+    k15("nk-text-key", "dimension", "Size of the scan role (keys, buttons, tabs)", "0.8125rem"),
+    k15("nk-text-body", "dimension", "Size of the body role", "nk-text-base"),
+    ...TYPE_ROLES.flatMap((r) => [
+      k15(`nk-type-${r}-family`, "fontFamily", `Font of the ${r} role (${ROLE_WHAT[r]})`, r === "body" ? "font-sans" : r === "scan" ? "nk-key-font" : r === "num" ? "font-numeric" : r === "title" ? "nk-heading-font" : "font-sans"),
+      k15(`nk-type-${r}-style`, "keyword", `normal or italic, for the ${r} role`, r === "title" || r === "num" || r === "scan" ? "nk-display-style" : "normal", { values: ["normal", "italic"] }),
+      k15(`nk-type-${r}-weight`, "number", `Weight of the ${r} role`, r === "scan" ? "nk-weight-strong" : r === "title" ? "nk-heading-weight" : r === "body" ? "nk-weight-body" : r === "label" ? "500" : "inherit", { range: [100, 900] }),
+      k15(`nk-type-${r}-tracking`, "dimension", `Letter-spacing of the ${r} role`, r === "title" ? "nk-heading-tracking" : r === "num" ? "-0.02em" : "0em"),
+      k15(`nk-type-${r}-case`, "keyword", `Case of the ${r} role`, r === "title" ? "nk-heading-case" : "none", { values: ["none", "uppercase"] }),
+      k15(`nk-type-${r}-pad`, "dimension", `Trailing pad of the ${r} role (the italic overhang)`, "0em")
+    ])
+  ];
+  var TILE_TOKENS = [
+    k15("nk-tile-face", "color", "The tile's face (aliased by --nk-key-bg)", "muted"),
+    k15("nk-tile-ink", "color", "The legend on the face (aliased by --nk-key-fg)", "popover-foreground"),
+    k15("nk-tile-light", "color", "The face's top hairline", "popover-foreground at 1.5 \xD7 nk-surface-edge"),
+    k15("nk-tile-shade", "color", "The face's bottom inner shade", "scrim at 0.35"),
+    k15("nk-tile-rim", "color", "The face's 1px rim (aliased by --nk-key-border)", "border"),
+    k15("nk-tile-rim-focus", "color", "The rim while focused", "ring"),
+    k15("nk-tile-plate", "color", "The solid plate behind the face", "border"),
+    k15("nk-tile-plate-dim", "color", "The plate on the HUD", "nk-tile-plate"),
+    k15("nk-tile-plate-x", "dimension", "How far the plate sits right of the face (0 = no plate)", "0px; 0.1875rem under --nk-skew"),
+    k15("nk-tile-plate-y", "dimension", "How far the plate sits below the face", "0px; 0.1875rem under --nk-skew"),
+    k15("nk-tile-press", "dimension", "How far a held tile presses toward its plate", "1px"),
+    k15("nk-tile-skew", "dimension", "The face's slant (the box stays upright); at most \xB120deg", "nk-skew"),
+    k15("nk-tile-confirm-face", "color", "The face when confirmed or active", "foreground"),
+    k15("nk-tile-confirm-ink", "color", "The legend when confirmed or active", "background"),
+    k15("nk-tile-hold", "color", "The hold fill over the face", "foreground at 0.35"),
+    k15("nk-tile-tag-delay", "duration", "The tag opens this long after the tile lands", "80ms")
+  ];
+  var PLATE_TOKENS = [
+    k15("nk-plate", "color", "The plate colour (its channels, --nk-plate-rgb, are drawn at the context's material opacity)", "surface"),
+    k15("nk-plate-hair", "color", "The plate's hairline", "nk-panel-border"),
+    k15("nk-plate-drop", "shadow", "The plate's drop: hard, no blur", "nk-panel-shadow"),
+    k15("nk-plate-radius", "dimension", "The plate's radius", "nk-r-surface")
+  ];
+  var FILL_TOKENS = [
+    k15("nk-fill-color", "color", "The bar", "brand"),
+    k15("nk-fill-track", "color", "The track behind the bar", "nk-meter-track"),
+    k15("nk-fill-tint", "color", "The row sweep (a fill at level 1)", "accent"),
+    k15("nk-fill-edge", "color", "The bar's leading 1px edge", "transparent"),
+    k15("nk-fill-alert", "color", "The bar at or under the alert threshold", "destructive")
+  ];
+  var MOTION_15_TOKENS = [
+    k15("nk-lift", "dimension", "Row slide and slot lift on focus", "0rem"),
+    k15("nk-rise", "dimension", "How far things rise as they enter", "0.5rem"),
+    k15("nk-land-scale", "number", "The scale a tile lands from", "1", { range: [0, 1] }),
+    k15("nk-deny-x", "dimension", "The deny shake's distance (two beats of fast)", "0.3125rem")
+  ];
+  var HYGIENE_TOKENS = [
+    k15("nk-chip-shape", "keyword", "Vital chip shape", "auto", { values: ["auto", "square", "rounded", "circle", "diamond", "hex", "chamfer"] }),
+    k15("nk-label-attach", "keyword", "Where a chip's label sits", "inline", { values: ["inline", "tag", "flag", "none"] }),
+    k15("nk-vital-icon", "keyword", "Vital icons: each vital's own, or one uniform glyph", "vital", { values: ["vital", "uniform"] }),
+    k15("nk-vital-display", "keyword", "What a vital chip shows", "auto", { values: ["auto", "pill", "value", "icon", "expand"] }),
+    k15("nk-vital-neighbours", "keyword", "What a growing chip does to its neighbours", "push", { values: ["push", "collapse", "overlay"] })
+  ];
+  var KIT_TOKENS = [...SCALE_TOKENS, ...TYPE_ROLE_TOKENS, ...TILE_TOKENS, ...PLATE_TOKENS, ...FILL_TOKENS, ...MOTION_15_TOKENS, ...HYGIENE_TOKENS];
   var chamferClip = (cut) => `polygon(${cut} 0, 100% 0, 100% calc(100% - ${cut}), calc(100% - ${cut}) 100%, 0 100%, 0 ${cut})`;
-  var ALL_TOKENS = [...TOKENS, ...IDENTITY_TOKENS];
+  var ALL_TOKENS = [...TOKENS, ...IDENTITY_TOKENS, ...KIT_TOKENS];
   var ALL_TOKEN_NAMES = ALL_TOKENS.map((t) => t.name);
   var SPEC = new Map(ALL_TOKENS.map((t) => [t.name, t]));
   var NEUTRAL = {
@@ -889,7 +1050,7 @@ var NuikitTheme = (() => {
   function identityValue(spec, raw) {
     var _a, _b;
     const v = raw.trim();
-    if (spec.name === "nk-skew") {
+    if (spec.name === "nk-skew" || spec.name === "nk-tile-skew") {
       if (v === "0") return "0deg";
       const m = /^(-?\d*\.?\d+)deg$/.exec(v);
       if (!m) return null;
@@ -983,7 +1144,7 @@ var NuikitTheme = (() => {
     }
   }
   function deriveIdentity(vars, warnings, given = /* @__PURE__ */ new Set()) {
-    var _a, _b, _c;
+    var _a, _b, _c, _d;
     applyTreatment(vars, warnings);
     for (const spec of IDENTITY_TOKENS) {
       if (spec.type === "color" || spec.type === "fontFamily" || spec.type === "shadow" || spec.group === "derived") continue;
@@ -998,6 +1159,17 @@ var NuikitTheme = (() => {
         warnings.push(`--${spec.name} must be ${want} (got ${value}); ${spec.fallback} is used.`);
         if (REF_DEFAULTS.has(spec.name)) delete vars[spec.name];
         else vars[spec.name] = spec.fallback;
+      } else vars[spec.name] = v;
+    }
+    for (const spec of KIT_TOKENS) {
+      const value = vars[spec.name];
+      if (value === void 0 || spec.type === "color" || spec.type === "fontFamily" || spec.type === "shadow") continue;
+      if (/^(calc|var|max|min|clamp)\(/.test(value.trim())) continue;
+      const v = identityValue(spec, value);
+      if (v === null) {
+        const want = spec.values ? spec.values.join(", ") : spec.range ? `a number from ${spec.range[0]} to ${spec.range[1]}` : spec.type === "dimension" ? "a length in px, rem or em" : spec.type === "duration" ? "a duration up to 2000ms" : "a valid value";
+        warnings.push(`--${spec.name} must be ${want} (got ${value}); the kit default is used.`);
+        delete vars[spec.name];
       } else vars[spec.name] = v;
     }
     if (vars.brand === void 0) {
@@ -1027,7 +1199,10 @@ var NuikitTheme = (() => {
     const ind = vars["nk-row-indicator"];
     for (const k of ["bar", "fill", "outline"]) if (vars[`nk-row-${k}`] === void 0) vars[`nk-row-${k}`] = ind === k ? "1" : "0";
     const d = parseFloat(vars["nk-duration"]);
-    const motion = motionTokens(d, vars["nk-motion-feel"], parseFloat(vars["nk-spring-bounce"]));
+    const motion = motionTokens(d, vars["nk-motion-feel"], parseFloat(vars["nk-spring-bounce"]), {
+      exitFactor: parseFloat((_d = vars["nk-exit-factor"]) != null ? _d : "0.7"),
+      ladder: vars["nk-treatment"] === "tile"
+    });
     motion["nk-ease-out"] = vars["nk-ease"];
     motion["nk-ease-in"] = "cubic-bezier(0.4, 0, 1, 1)";
     motion["nk-ease-in-out"] = "cubic-bezier(0.2, 0, 0, 1)";

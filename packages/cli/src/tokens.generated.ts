@@ -610,7 +610,7 @@ export const GENERATED: { name: string; group: string; type: string; description
     "name": "nk-row-indicator",
     "group": "kit",
     "type": "number",
-    "description": "How the active row is marked"
+    "description": "How the active row is marked: bar, fill, outline, or sweep (1.5: no bar, the row's --nk-fill-tint sweep alone)"
   },
   {
     "name": "nk-motion-feel",
@@ -895,18 +895,6 @@ export const GENERATED: { name: string; group: string; type: string; description
     "description": "Stacking layer: system. A modal is the current surface + dim + dialog"
   },
   {
-    "name": "nk-hang-md",
-    "group": "kit",
-    "type": "dimension",
-    "description": "How far a badge or gem breaks a panel edge"
-  },
-  {
-    "name": "nk-hang-lg",
-    "group": "kit",
-    "type": "dimension",
-    "description": "A large hang (a level badge on a card)"
-  },
-  {
     "name": "nk-focus-shift",
     "group": "kit",
     "type": "dimension",
@@ -917,5 +905,17 @@ export const GENERATED: { name: string; group: string; type: string; description
     "group": "kit",
     "type": "number",
     "description": "How many elements may glow at once (the top surface's focused one first); 0 = no limit"
+  },
+  {
+    "name": "nk-exit-factor",
+    "group": "kit",
+    "type": "number",
+    "description": "Every exit is this × its enter (--nk-time-exit = base × factor)"
+  },
+  {
+    "name": "nk-time-reduced",
+    "group": "kit",
+    "type": "number",
+    "description": "The one reduced-motion duration: under reduced motion every fade is at most this"
   }
 ];

@@ -15,6 +15,8 @@ type KitClassGroup =
   | "nk-field-label"
   | "nk-title"
   | "nk-label"
+  | "nk-scan"
+  | "nk-body"
   | "nk-caption"
   | "nk-row"
   | "nk-num"
@@ -67,6 +69,8 @@ const twMerge = extendTailwindMerge<KitClassGroup>({
       "nk-field-label": ["nk-field-label"],
       "nk-title": ["nk-title"],
       "nk-label": ["nk-label"],
+      "nk-scan": ["nk-scan"],
+      "nk-body": ["nk-body"],
       "nk-caption": ["nk-caption"],
       "nk-row": ["nk-row"],
       "nk-num": ["nk-num"],
@@ -111,9 +115,11 @@ const twMerge = extendTailwindMerge<KitClassGroup>({
       "nk-panel-header": ["nk-panel-header-stack"],
       "nk-panel-header-stack": ["nk-panel-header"],
       "nk-field-label": ["font-family", "font-size", "font-weight", "leading", "text-transform", "tracking"],
-      "nk-title": ["font-family", "font-size", "font-style", "font-weight", "leading", "nk-caption", "nk-display", "nk-label", "text-transform", "tracking"],
-      "nk-label": ["font-family", "font-size", "font-weight", "leading", "nk-caption", "nk-display", "nk-title", "text-color"],
-      "nk-caption": ["font-family", "font-size", "font-weight", "leading", "nk-display", "nk-label", "nk-title", "text-color", "text-transform", "tracking"],
+      "nk-title": ["font-family", "font-size", "font-style", "font-weight", "leading", "nk-body", "nk-caption", "nk-display", "nk-label", "nk-scan", "text-transform", "tracking"],
+      "nk-label": ["font-family", "font-size", "font-weight", "leading", "nk-body", "nk-caption", "nk-display", "nk-scan", "nk-title", "text-color"],
+      "nk-scan": ["font-family", "font-size", "font-style", "font-weight", "leading", "nk-body", "nk-caption", "nk-display", "nk-label", "nk-title", "text-transform", "tracking"],
+      "nk-body": ["font-family", "font-size", "font-style", "font-weight", "leading", "nk-caption", "nk-display", "nk-label", "nk-scan", "nk-title", "text-transform", "tracking"],
+      "nk-caption": ["font-family", "font-size", "font-weight", "leading", "nk-body", "nk-display", "nk-label", "nk-scan", "nk-title", "text-color", "text-transform", "tracking"],
       "nk-row": ["font-size", "leading"],
       "nk-num": ["font-family", "font-style", "fvn-figure", "fvn-fraction", "fvn-normal", "fvn-ordinal", "fvn-slashed-zero", "fvn-spacing", "tracking"],
       "nk-chip": ["bg-color", "font-size", "font-weight", "leading", "nk-hud", "nk-panel", "nk-slab", "text-color"],
@@ -121,7 +127,7 @@ const twMerge = extendTailwindMerge<KitClassGroup>({
       "nk-hud": ["bg-color", "nk-chip", "nk-panel", "nk-slab", "text-color"],
       "nk-track": ["bg-color"],
       "nk-on-game": ["text-color"],
-      "nk-display": ["font-family", "font-size", "font-style", "font-weight", "leading", "nk-caption", "nk-label", "nk-title", "text-transform", "tracking"],
+      "nk-display": ["font-family", "font-size", "font-style", "font-weight", "leading", "nk-body", "nk-caption", "nk-label", "nk-scan", "nk-title", "text-transform", "tracking"],
       "nk-slab": ["bg-color", "font-size", "font-weight", "leading", "nk-chip", "nk-hud", "nk-panel", "text-color"],
       "nk-slab-tile": ["bg-color", "text-color"],
       "nk-slab-delta": ["font-family", "fvn-figure", "fvn-fraction", "fvn-normal", "fvn-ordinal", "fvn-slashed-zero", "fvn-spacing", "text-color", "tracking"],

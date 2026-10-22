@@ -43,7 +43,21 @@ export type RuleId =
   | "cef/has"
   | "cef/container"
   | "cef/individual-transform"
-  | "cef/color-mix-inline";
+  | "cef/color-mix-inline"
+  // the Ink conventions (tokens 1.5, docs/design/ink.md §4): warnings until each directory's wave lands
+  | "radius/raw"
+  | "radius/pill"
+  | "effect/blur"
+  | "color/mix"
+  | "shadow/soft"
+  | "motion/duration"
+  | "motion/ease"
+  | "motion/property"
+  | "type/raw"
+  | "selector/class-substring"
+  | "state/alert"
+  | "theme/unlayered"
+  | "space/off-scale";
 
 export const RULES: Record<RuleId, { level: Level; description: string }> = {
   "color/hardcoded": { level: 1, description: "Hex, rgb(), hsl(), oklch()… or named colour literal instead of a theme token" },
@@ -64,7 +78,23 @@ export const RULES: Record<RuleId, { level: Level; description: string }> = {
   "cef/container": { level: 0, description: "@container queries and container-type are unsupported in Chromium 103; use media queries" },
   "cef/individual-transform": { level: 0, description: "Individual scale/translate/rotate properties are Chromium 104+ and clobber transform animations; use transform" },
   "cef/color-mix-inline": { level: 0, description: "color-mix()/oklch() in an inline style: the plugin only lowers stylesheets, so Chromium 103 drops it; use a token class or rgb()" },
+  "radius/raw": { level: 0, description: "A radius literal (border-radius: 6px, rounded-md, rounded-[…], calc(var(--radius) - 2px)); use --nk-r-key / -chip / -control / -surface" },
+  "radius/pill": { level: 0, description: "A pill (rounded-full, 9999px, 50%); use --nk-r-chip, or a Chip dot" },
+  "effect/blur": { level: 0, description: "backdrop-filter, backdrop-blur-*, filter: blur / drop-shadow / grayscale, drop-shadow-*; depth is the plate recipe, dimming is opacity" },
+  "color/mix": { level: 0, description: "color-mix() (Chromium 103 lacks it); use rgba(var(--…-rgb), a)" },
+  "shadow/soft": { level: 0, description: "A soft shadow (blur > 0, shadow-sm…2xl); hard drops only: --nk-plate-drop or the tile plate" },
+  "motion/duration": { level: 0, description: "A duration literal (ms / s, duration-*, animationDelay); use --nk-time-* and calc(var(--nk-stagger) * var(--i))" },
+  "motion/ease": { level: 0, description: "A cubic-bezier literal or an ease / ease-in / ease-out keyword; use --nk-ease-*" },
+  "motion/property": { level: 0, description: "A transition on anything but transform and opacity (transition-all, transition-colors…); switch rims, move with transform" },
+  "type/raw": { level: 0, description: "A font-size or font-weight literal, text-[…], text-xs…5xl, font-medium / font-semibold; use .nk-scan / -title / -label / -num / -body and --nk-text-*" },
+  "selector/class-substring": { level: 0, description: "[class*=…], [class^=…], [class$=…] selectors; key on data-state, data-tone or data-hue" },
+  "state/alert": { level: 0, description: "data-critical, data-low, data-redline, data-danger, data-ink-deny; the one alert spelling is data-state=\"alert\" (deny: data-nk-deny)" },
+  "theme/unlayered": { level: 0, description: "Theme CSS outside @layer nk.theme, !important, or app markup (.inv-*, .pause-*) in a theme; a theme sets tokens" },
+  "space/off-scale": { level: 0, description: "A gap, padding or margin off the 0.25rem step (0.375rem, 0.3125rem, gap-1.5…); use --nk-space-* and gap-(--nk-gap-*)" },
 };
+
+/** The Ink rules (docs/design/ink.md §4): all warnings (level 0) for now. */
+export const INK_RULES: readonly RuleId[] = ["radius/raw", "radius/pill", "effect/blur", "color/mix", "shadow/soft", "motion/duration", "motion/ease", "motion/property", "type/raw", "selector/class-substring", "state/alert", "theme/unlayered", "space/off-scale"];
 
 export const LEVEL_NAMES: Record<Level, string> = { 0: "not conformant", 1: "themed", 2: "well-behaved", 3: "native" };
 
@@ -158,6 +188,194 @@ class Collector {
 
 type Report = ReturnType<Collector["file"]>;
 
+// ───────────────────────────────── Ink conventions (docs/design/ink.md §4), all warnings
+
+/** Blank every var(…) (with its fallback): a token reference is never a literal. */
+function blankVars(value: string): string {
+  let out = "";
+  let i = 0;
+  while (i < value.length) {
+    const j = value.indexOf("var(", i);
+    if (j < 0) {
+      out += value.slice(i);
+      break;
+    }
+    out += value.slice(i, j);
+    let depth = 1;
+    let k = j + 4;
+    while (k < value.length && depth > 0) {
+      if (value[k] === "(") depth++;
+      else if (value[k] === ")") depth--;
+      k++;
+    }
+    out += " ".repeat(k - j);
+    i = k;
+  }
+  return out;
+}
+
+/** Split at top-level commas, keeping each part's offset. */
+function layers(value: string): { text: string; at: number }[] {
+  const out: { text: string; at: number }[] = [];
+  let depth = 0;
+  let start = 0;
+  for (let i = 0; i <= value.length; i++) {
+    const ch = value[i];
+    if (ch === "(") depth++;
+    else if (ch === ")") depth--;
+    else if ((ch === "," && depth === 0) || i === value.length) {
+      out.push({ text: value.slice(start, i), at: start });
+      start = i + 1;
+    }
+  }
+  return out;
+}
+
+const LENGTH = /(?<![\w.#-])(-?\d*\.?\d+)(px|rem|em|%)(?![\w-])/g;
+const TIME = /(?<![\w.#-])(\d*\.?\d+)(ms|s)(?![\w-])/g;
+const EASE_WORD = /(?<![\w-])(ease|ease-in|ease-out|ease-in-out)(?![\w-])/g;
+const MOTION_OK = new Set(["transform", "opacity", "none", "-webkit-transform"]);
+const ALERT_ATTR = /\bdata-(critical|low|redline|danger|ink-deny)\b/g;
+
+/** One CSS declaration against the Ink rules. `at` is the declaration's offset, `vat` its value's. */
+function inkDeclaration(prop: string, value: string, at: number, vat: number, report: Report) {
+  const p = prop.toLowerCase();
+  const v = blankVars(value);
+  if (/color-mix\(/i.test(value)) report("color/mix", at, `${prop}: color-mix() isn't in Chromium 103; use rgba(var(--…-rgb), a)`);
+  if (p.startsWith("--")) return;
+  if (/^border(-(top|bottom)-(left|right))?-radius$/.test(p)) {
+    if (/(?<![\w.-])(9999px|999px|50%)/.test(v)) report("radius/pill", at, `${prop}: a pill; use --nk-r-chip (or a Chip dot)`);
+    else if ([...v.matchAll(LENGTH)].some((m) => parseFloat(m[1]!) !== 0)) report("radius/raw", at, `${prop}: a radius literal; use --nk-r-key / -chip / -control / -surface`);
+  }
+  if (/^(-webkit-)?backdrop-filter$/.test(p) || (/^(-webkit-)?filter$/.test(p) && /\b(blur|drop-shadow|grayscale)\(/.test(value)))
+    report("effect/blur", at, `${prop}: blur, drop-shadow and grayscale draw badly over the game; depth is the plate recipe, dimming is opacity`);
+  if (p === "box-shadow") {
+    for (const l of layers(v)) {
+      const nums = l.text
+        .replace(/\binset\b/g, " ")
+        .replace(/\b(rgba?|hsla?|oklch|oklab)\([^)]*\)/g, " ")
+        .trim()
+        .split(/\s+/)
+        .filter((t) => /^-?\d*\.?\d+(px|rem|em)?$/.test(t));
+      if (nums.length >= 3 && parseFloat(nums[2]!) !== 0) {
+        report("shadow/soft", vat + l.at, "a soft shadow (blur > 0); hard drops only: --nk-plate-drop or the tile plate");
+        break;
+      }
+    }
+  }
+  if (/^(transition|animation)(-duration|-delay)?$/.test(p)) {
+    const m = TIME.exec(v);
+    TIME.lastIndex = 0;
+    if (m && parseFloat(m[1]!) !== 0) report("motion/duration", vat + m.index, `${prop}: ${m[0]} is a literal; use --nk-time-* (the ladder) or calc(var(--nk-stagger) * var(--i))`);
+  }
+  if (/^(transition|animation)(-timing-function)?$/.test(p)) {
+    const bez = /cubic-bezier\(/.exec(v);
+    const word = EASE_WORD.exec(v);
+    EASE_WORD.lastIndex = 0;
+    if (bez) report("motion/ease", vat + bez.index, `${prop}: a cubic-bezier literal; use --nk-ease-*`);
+    else if (word) report("motion/ease", vat + word.index, `${prop}: ${word[1]} is a keyword ease; use --nk-ease-*`);
+  }
+  if (p === "transition-property" || p === "transition") {
+    for (const l of layers(value)) {
+      const first = l.text.trim().split(/\s+/)[0] ?? "";
+      if (!first || first.startsWith("var(") || /^\d/.test(first)) continue;
+      if (!MOTION_OK.has(first.toLowerCase())) {
+        report("motion/property", vat + l.at, `a transition on ${first}; only transform and opacity move (switch rims, move with transform)`);
+        break;
+      }
+    }
+  }
+  if (p === "font-size" && [...v.matchAll(LENGTH)].length) report("type/raw", at, `${prop}: a size literal; use a role class (.nk-scan, .nk-title, .nk-label, .nk-num, .nk-body) or --nk-text-*`);
+  if (p === "font-weight" && /^\s*(\d{3}|bold|bolder|lighter)\s*$/.test(v)) report("type/raw", at, `${prop}: a weight literal; use a role class or --nk-type-*-weight`);
+  if (/^(gap|row-gap|column-gap|padding(-(top|right|bottom|left|inline|block)(-start|-end)?)?|margin(-(top|right|bottom|left|inline|block)(-start|-end)?)?)$/.test(p)) {
+    for (const m of v.matchAll(LENGTH)) {
+      const n = Math.abs(parseFloat(m[1]!));
+      const off = m[2] === "rem" ? Math.abs(n * 4 - Math.round(n * 4)) > 1e-6 : m[2] === "px" ? n > 2 && n % 4 !== 0 : false;
+      if (off) {
+        report("space/off-scale", vat + m.index!, `${prop}: ${m[0]} is off the 0.25rem step; use --nk-space-* or gap-(--nk-gap-*)`);
+        break;
+      }
+    }
+  }
+}
+
+/** A rule's selector against the Ink rules. */
+function inkSelector(prelude: string, at: number, report: Report) {
+  const sub = /\[class\s*[*^$]=/.exec(prelude);
+  if (sub) report("selector/class-substring", at + sub.index, "a class-substring selector; key on data-state, data-tone or data-hue");
+  for (const m of prelude.matchAll(ALERT_ATTR)) report("state/alert", at + m.index!, `${m[0]}: the one alert spelling is data-state="alert" (deny: data-nk-deny)`);
+}
+
+// class names in markup and script strings
+const CLASS_RULES: [RegExp, RuleId, string][] = [
+  [/(?<![\w-])rounded(-[trblse]{1,2})?-full(?![\w-])/g, "radius/pill", "a pill; use rounded-(--nk-r-chip) or a Chip dot"],
+  [/(?<![\w-])rounded(-[trblse]{1,2})?-(xs|sm|md|lg|xl|2xl|3xl|\[[^\]]+\])(?![\w-])/g, "radius/raw", "a radius class; use rounded-(--nk-r-key / -chip / -control / -surface)"],
+  [/(?<![\w-])(backdrop-blur(-\w+)?|drop-shadow(-\w+)?|blur-(sm|md|lg|xl|2xl|3xl)|grayscale)(?![\w-])/g, "effect/blur", "blur, drop-shadow and grayscale draw badly over the game; use the plate recipe or opacity"],
+  [/(?<![\w-])shadow-(sm|md|lg|xl|2xl)(?![\w-])/g, "shadow/soft", "a soft shadow; hard drops only (--nk-plate-drop)"],
+  [/(?<![\w-])(duration|delay)-(\d+|\[\d[^\]]*\])(?![\w-])/g, "motion/duration", "a duration literal; use duration-(--nk-time-*)"],
+  [/(?<![\w-])ease-(in|out|in-out|\[cubic-bezier[^\]]*\])(?![\w-])/g, "motion/ease", "a literal ease; use ease-(--nk-ease-*)"],
+  [/(?<![\w-])transition(-all|-colors|-shadow|-\[(?!transform|opacity)[^\]]+\])?(?![\w-])/g, "motion/property", "a transition beyond transform and opacity; use transition-transform or transition-opacity"],
+  [/(?<![\w-])(text-(xs|sm|base|lg|xl|2xl|3xl|4xl|5xl)|text-\[\d[^\]]*\]|font-(medium|semibold))(?![\w-])/g, "type/raw", "a type literal; use a role class (nk-scan, nk-title, nk-label, nk-num, nk-body)"],
+  [/(?<![\w-])-?(gap(-[xy])?|p[xytrblse]?|m[xytrblse]?|space-[xy])-\d+\.5(?![\w-])/g, "space/off-scale", "off the 0.25rem step; use gap-(--nk-gap-*) or --nk-space-*"],
+];
+
+function inkClasses(text: string, base: number, report: Report) {
+  // only things that look like class lists (no sentences): a token with a dash or a colon
+  for (const [re, rule, msg] of CLASS_RULES) {
+    for (const m of text.matchAll(re)) {
+      // `transition` alone is only a class when it sits in a class list
+      if (rule === "motion/property" && m[0] === "transition" && !/(^|\s)transition(\s|$)/.test(text)) continue;
+      report(rule, base + m.index!, `${m[0]}: ${msg}`);
+    }
+  }
+  for (const m of text.matchAll(ALERT_ATTR)) report("state/alert", base + m.index!, `${m[0]}: use data-state="alert" (deny: data-nk-deny)`);
+}
+
+/** Script code (not strings): JSX alert attributes, animationDelay / transitionDuration literals. */
+function inkScript(code: string, report: Report) {
+  for (const m of code.matchAll(ALERT_ATTR)) report("state/alert", m.index!, `${m[0]}: the one alert spelling is data-state="alert" (deny: data-nk-deny)`);
+  for (const m of code.matchAll(/\b(animationDelay|animationDuration|transitionDelay|transitionDuration)\s*:\s*(\d+)/g))
+    report("motion/duration", m.index!, `${m[1]}: ${m[2]} is a literal; use --nk-time-* or calc(var(--nk-stagger) * var(--i))`);
+}
+
+/** A theme stylesheet: token values in @layer nk.theme only (theme/unlayered). */
+function scanThemeCss(css: string, report: Report) {
+  const src = lexCss(css);
+  const stack: string[] = [];
+  let buf = "";
+  let bufStart = 0;
+  let paren = 0;
+  const inTheme = () => stack.some((s) => /^@layer\s+nk\.theme\b/.test(s));
+  for (let i = 0; i < src.length; i++) {
+    const ch = src[i]!;
+    if (ch === "(") paren++;
+    if (ch === ")") paren = Math.max(0, paren - 1);
+    if (paren === 0 && ch === "{") {
+      const prelude = buf.trim();
+      const at = bufStart + buf.indexOf(prelude);
+      if (!prelude.startsWith("@") && /(^|[\s,>+~(])\.(inv|pause|hud|ox|ia)-[\w-]/.test(prelude)) report("theme/unlayered", at, `${prelude.slice(0, 40)}: app markup in a theme; a theme sets tokens and styles documented data attributes`);
+      stack.push(prelude);
+      buf = "";
+      bufStart = i + 1;
+      continue;
+    }
+    if (paren === 0 && (ch === ";" || ch === "}")) {
+      const t = buf.trim();
+      if (t && !t.startsWith("@")) {
+        const lead = bufStart + buf.indexOf(t);
+        if (/!important\s*$/.test(t)) report("theme/unlayered", lead, "!important in a theme; put it in @layer nk.theme and set a token");
+        else if (!t.startsWith("--") && stack.length && !inTheme() && !stack.some((s) => /^@(font-face|keyframes|property)\b/.test(s))) report("theme/unlayered", lead, `${t.split(":")[0]} outside @layer nk.theme; a theme writes into nk.theme (token values and data-attribute rules)`);
+      }
+      buf = "";
+      bufStart = i + 1;
+      if (ch === "}") stack.pop();
+      continue;
+    }
+    if (!buf) bufStart = i;
+    buf += ch;
+  }
+}
+
 // ───────────────────────────────── CSS
 
 const THEME_SELECTOR = /(^|[\s,])(:root|\.dark|html|:host|@theme\b|\[data-theme|\.theme-)/;
@@ -214,6 +432,7 @@ function scanCss(css: string, base: number, report: Report, ctx: FileContext) {
       else if (/^(scale|translate|rotate)$/i.test(prop)) report("cef/individual-transform", base + lead, `${prop}: is Chromium 104+ and clobbers transform animations; use transform: ${prop}(…)`);
       if (ctx.inlineStyle) for (const m of value.matchAll(/\b(color-mix|oklch|oklab)\(/gi)) report("cef/color-mix-inline", base + valueOffset + m.index!, `${m[1]}() in an inline style isn't lowered (the plugin only rewrites stylesheets); use a token class or rgb()`);
     }
+    if (ctx.ink) inkDeclaration(prop, value, base + lead, base + valueOffset, report);
     const inTheme = selectors.some((s) => THEME_SELECTOR.test(s));
     if (prop.startsWith("--")) {
       const name = prop.slice(2);
@@ -260,6 +479,7 @@ function scanCss(css: string, base: number, report: Report, ctx: FileContext) {
         if (/^@container\b/i.test(prelude)) report("cef/container", at, "@container is unsupported in Chromium 103 (ignored); use a media query");
         else if (!prelude.startsWith("@") && /:has\(/i.test(prelude)) report("cef/has", at + prelude.search(/:has\(/i), ":has() is unsupported in Chromium 103; don't depend on it for anything essential");
       }
+      if (ctx.ink && !prelude.startsWith("@")) inkSelector(prelude, base + bufStart + buf.indexOf(prelude), report);
       selectors.push(prelude);
       buf = "";
       bufStart = i + 1;
@@ -302,6 +522,8 @@ interface FileContext {
   inlineStyle?: boolean;
   /** The file is build output (compiled Tailwind legitimately uses these features). */
   built?: boolean;
+  /** Grade it against the Ink rules: the page's own source, not a synced copy (components/ui, lib/utils, the kit layer of index.css). */
+  ink?: boolean;
 }
 
 const GLOW_MARK = /\bdata-nk-glow(?![-\w])/g;
@@ -332,6 +554,7 @@ function scanStrings(src: string, strings: Span[], report: Report, ctx: FileCont
       report("color/hardcoded", s.start + h.index, `${h.text} is a fixed colour; use a theme token (var(--…) or a token class)`);
     }
     for (const h of paletteClasses(text)) report("color/palette-class", s.start + h.index, `${h.text} is a fixed palette colour; use a token class (bg-primary, text-muted-foreground…)`);
+    if (ctx.ink) inkClasses(text, s.start, report);
     const url = text.trim();
     if (isRemoteAsset(url)) {
       report("perf/remote-asset", s.start, `${url} is fetched from the network by every client; ship it in the resource`);
@@ -388,6 +611,7 @@ function scanScript(src: string, base: number, report: Report, ctx: FileContext)
   if (/from\s+["'][^"']*components\/ui\/[^"']+["']/.test(code)) ctx.usesComponents = true;
   scanEscape(code, rep, ctx, ctx.handshakeOff ? "warning" : "error");
   scanGlow(code, base, report, ctx);
+  if (ctx.ink) inkScript(code, rep);
   if (!ctx.built) scanOldCefScript(src, code, strings, rep);
 }
 
@@ -435,7 +659,9 @@ function scanHtml(src: string, report: Report, ctx: FileContext) {
     }
     for (const h of colorLiterals(value)) report("color/hardcoded", start + h.index, `${attr}="${h.text}" is a fixed colour; use a theme token`);
     for (const h of paletteClasses(value)) report("color/palette-class", start + h.index, `${h.text} is a fixed palette colour; use a token class`);
+    if (ctx.ink && (attr === "class" || attr === "classname" || attr === ":class")) inkClasses(value, start, report);
   }
+  if (ctx.ink) for (const m of markup.matchAll(ALERT_ATTR)) report("state/alert", m.index!, `${m[0]}: the one alert spelling is data-state="alert" (deny: data-nk-deny)`);
 }
 
 // ───────────────────────────────── Lua
@@ -533,9 +759,16 @@ export function checkResource(root: string, options: CheckOptions = {}): CheckRe
     const report = collector.file(f.rel, src);
     if (/(^|\/)components\/ui\//.test(f.rel)) ctx.usesComponents = true;
     ctx.built = f.built;
+    ctx.ink = !f.built && !/(^|\/)(components\/ui\/|lib\/utils\.ts$)/.test(f.rel) && !(/(^|\/)index\.css$/.test(f.rel) && /nuikit kit (layer|utilities)/.test(src));
     if (/\.(css|scss|sass|less)$/i.test(f.rel)) scanCss(src, 0, report, ctx);
     else if (/\.(html?|vue|svelte)$/i.test(f.rel)) scanHtml(src, report, ctx);
     else scanScript(src, 0, report, ctx);
+  }
+
+  // theme stylesheets (theme.css, themes/, theme/): token values in @layer nk.theme only
+  for (const f of all.filter((f) => !f.built && /^(theme\.css|themes?\/[^/]+\.css)$/.test(f.rel))) {
+    const src = fs.readFileSync(path.join(abs, f.rel), "utf8");
+    scanThemeCss(src, collector.file(f.rel, src));
   }
 
   const lua: LuaContext = { focusCalls: [], releasesOnStop: false, surfaces: false, usesNuikitLua: false };

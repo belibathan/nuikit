@@ -529,9 +529,10 @@
           "enum": [
             "bar",
             "fill",
-            "outline"
+            "outline",
+            "sweep"
           ],
-          "description": "How the active row is marked",
+          "description": "How the active row is marked: bar, fill, outline, or sweep (1.5: no bar, the row's --nk-fill-tint sweep alone)",
           "$comment": "tokens 1.1"
         },
         "surface": {
@@ -604,6 +605,21 @@
           "type": "string",
           "description": "State that must be immediate: keyboard and controller selection, held key-repeat",
           "$comment": "tokens 1.2"
+        },
+        "nk-time-snap": {
+          "type": "string",
+          "description": "The ladder (1.5): snap, 0.5 × d. A press, a rim switching state",
+          "$comment": "tokens 1.5"
+        },
+        "nk-time-fast": {
+          "type": "string",
+          "description": "The ladder (1.5): fast, 0.667 × d. Hover, a deny beat",
+          "$comment": "tokens 1.5"
+        },
+        "nk-time-slow": {
+          "type": "string",
+          "description": "The ladder (1.5): slow, 1.556 × d. A sheet or dialog opening, a confirm pop",
+          "$comment": "tokens 1.5"
         },
         "nk-time-press": {
           "type": "string",
@@ -705,7 +721,8 @@
             "soft",
             "glass",
             "plate",
-            "slab"
+            "slab",
+            "tile"
           ],
           "description": "How the palette is drawn: soft (Graphite), glass, plate or slab. Fills material, stroke, type, focus and motion defaults; any value the theme sets wins",
           "$comment": "tokens 1.4"
@@ -1468,16 +1485,6 @@
           "description": "Stacking layer: system. A modal is the current surface + dim + dialog",
           "$comment": "tokens 1.4"
         },
-        "nk-hang-md": {
-          "type": "string",
-          "description": "How far a badge or gem breaks a panel edge",
-          "$comment": "tokens 1.4"
-        },
-        "nk-hang-lg": {
-          "type": "string",
-          "description": "A large hang (a level badge on a card)",
-          "$comment": "tokens 1.4"
-        },
         "nk-focus-shift": {
           "type": "string",
           "description": "The focused row's nudge toward its content",
@@ -1488,6 +1495,543 @@
           "pattern": "^-?\\d+(\\.\\d+)?$",
           "description": "How many elements may glow at once (the top surface's focused one first); 0 = no limit",
           "$comment": "tokens 1.4"
+        },
+        "nk-exit-factor": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "Every exit is this × its enter (--nk-time-exit = base × factor)",
+          "$comment": "tokens 1.5"
+        },
+        "nk-time-reduced": {
+          "type": "string",
+          "description": "The one reduced-motion duration: under reduced motion every fade is at most this",
+          "$comment": "tokens 1.5"
+        },
+        "nk-space-unit": {
+          "type": "string",
+          "description": "The spacing step: 0.25rem × --nk-density (aliases --nk-space)",
+          "$comment": "tokens 1.5"
+        },
+        "nk-space-1": {
+          "type": "string",
+          "description": "1 × the spacing step",
+          "$comment": "tokens 1.5"
+        },
+        "nk-space-2": {
+          "type": "string",
+          "description": "2 × the spacing step",
+          "$comment": "tokens 1.5"
+        },
+        "nk-space-3": {
+          "type": "string",
+          "description": "3 × the spacing step",
+          "$comment": "tokens 1.5"
+        },
+        "nk-space-4": {
+          "type": "string",
+          "description": "4 × the spacing step",
+          "$comment": "tokens 1.5"
+        },
+        "nk-space-6": {
+          "type": "string",
+          "description": "6 × the spacing step",
+          "$comment": "tokens 1.5"
+        },
+        "nk-space-8": {
+          "type": "string",
+          "description": "8 × the spacing step",
+          "$comment": "tokens 1.5"
+        },
+        "nk-gap-cluster": {
+          "type": "string",
+          "description": "Icon + text, key + label",
+          "$comment": "tokens 1.5"
+        },
+        "nk-gap-items": {
+          "type": "string",
+          "description": "Items in a bar",
+          "$comment": "tokens 1.5"
+        },
+        "nk-pad-x": {
+          "type": "string",
+          "description": "Inline padding of anything labelled",
+          "$comment": "tokens 1.5"
+        },
+        "nk-pad-surface": {
+          "type": "string",
+          "description": "Padding of a surface (dialog body, sheet column)",
+          "$comment": "tokens 1.5"
+        },
+        "nk-r-key": {
+          "type": "string",
+          "description": "Radius of keys and tiles (aliased by --nk-key-radius)",
+          "$comment": "tokens 1.5"
+        },
+        "nk-r-chip": {
+          "type": "string",
+          "description": "Radius of chips and badges (aliased by --nk-chip-radius)",
+          "$comment": "tokens 1.5"
+        },
+        "nk-r-control": {
+          "type": "string",
+          "description": "Radius of buttons, fields and rows (aliased by --nk-row-radius)",
+          "$comment": "tokens 1.5"
+        },
+        "nk-r-surface": {
+          "type": "string",
+          "description": "Radius of panels, sheets and dialogs",
+          "$comment": "tokens 1.5"
+        },
+        "nk-h-key": {
+          "type": "string",
+          "description": "Height of a key / small tile",
+          "$comment": "tokens 1.5"
+        },
+        "nk-h-chip": {
+          "type": "string",
+          "description": "Height of a chip / medium tile (aliased by --nk-chip-height)",
+          "$comment": "tokens 1.5"
+        },
+        "nk-h-control": {
+          "type": "string",
+          "description": "Height of buttons, fields and bar items / large tile",
+          "$comment": "tokens 1.5"
+        },
+        "nk-h-row": {
+          "type": "string",
+          "description": "Height of a list row (aliased by --nk-row-height)",
+          "$comment": "tokens 1.5"
+        },
+        "nk-icon-sm": {
+          "type": "string",
+          "description": "Small icon",
+          "$comment": "tokens 1.5"
+        },
+        "nk-icon-md": {
+          "type": "string",
+          "description": "Icon next to text (the default)",
+          "$comment": "tokens 1.5"
+        },
+        "nk-icon-lg": {
+          "type": "string",
+          "description": "Large icon",
+          "$comment": "tokens 1.5"
+        },
+        "nk-icon-stroke": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "Icon stroke width",
+          "$comment": "tokens 1.5"
+        },
+        "nk-text-key": {
+          "type": "string",
+          "description": "Size of the scan role (keys, buttons, tabs)",
+          "$comment": "tokens 1.5"
+        },
+        "nk-text-body": {
+          "type": "string",
+          "description": "Size of the body role",
+          "$comment": "tokens 1.5"
+        },
+        "nk-type-scan-family": {
+          "type": "string",
+          "description": "Font of the scan role (keys, buttons, tabs)",
+          "$comment": "tokens 1.5"
+        },
+        "nk-type-scan-style": {
+          "enum": [
+            "normal",
+            "italic"
+          ],
+          "description": "normal or italic, for the scan role",
+          "$comment": "tokens 1.5"
+        },
+        "nk-type-scan-weight": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "Weight of the scan role",
+          "$comment": "tokens 1.5"
+        },
+        "nk-type-scan-tracking": {
+          "type": "string",
+          "description": "Letter-spacing of the scan role",
+          "$comment": "tokens 1.5"
+        },
+        "nk-type-scan-case": {
+          "enum": [
+            "none",
+            "uppercase"
+          ],
+          "description": "Case of the scan role",
+          "$comment": "tokens 1.5"
+        },
+        "nk-type-scan-pad": {
+          "type": "string",
+          "description": "Trailing pad of the scan role (the italic overhang)",
+          "$comment": "tokens 1.5"
+        },
+        "nk-type-title-family": {
+          "type": "string",
+          "description": "Font of the title role (titles)",
+          "$comment": "tokens 1.5"
+        },
+        "nk-type-title-style": {
+          "enum": [
+            "normal",
+            "italic"
+          ],
+          "description": "normal or italic, for the title role",
+          "$comment": "tokens 1.5"
+        },
+        "nk-type-title-weight": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "Weight of the title role",
+          "$comment": "tokens 1.5"
+        },
+        "nk-type-title-tracking": {
+          "type": "string",
+          "description": "Letter-spacing of the title role",
+          "$comment": "tokens 1.5"
+        },
+        "nk-type-title-case": {
+          "enum": [
+            "none",
+            "uppercase"
+          ],
+          "description": "Case of the title role",
+          "$comment": "tokens 1.5"
+        },
+        "nk-type-title-pad": {
+          "type": "string",
+          "description": "Trailing pad of the title role (the italic overhang)",
+          "$comment": "tokens 1.5"
+        },
+        "nk-type-label-family": {
+          "type": "string",
+          "description": "Font of the label role (labels)",
+          "$comment": "tokens 1.5"
+        },
+        "nk-type-label-style": {
+          "enum": [
+            "normal",
+            "italic"
+          ],
+          "description": "normal or italic, for the label role",
+          "$comment": "tokens 1.5"
+        },
+        "nk-type-label-weight": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "Weight of the label role",
+          "$comment": "tokens 1.5"
+        },
+        "nk-type-label-tracking": {
+          "type": "string",
+          "description": "Letter-spacing of the label role",
+          "$comment": "tokens 1.5"
+        },
+        "nk-type-label-case": {
+          "enum": [
+            "none",
+            "uppercase"
+          ],
+          "description": "Case of the label role",
+          "$comment": "tokens 1.5"
+        },
+        "nk-type-label-pad": {
+          "type": "string",
+          "description": "Trailing pad of the label role (the italic overhang)",
+          "$comment": "tokens 1.5"
+        },
+        "nk-type-num-family": {
+          "type": "string",
+          "description": "Font of the num role (numbers)",
+          "$comment": "tokens 1.5"
+        },
+        "nk-type-num-style": {
+          "enum": [
+            "normal",
+            "italic"
+          ],
+          "description": "normal or italic, for the num role",
+          "$comment": "tokens 1.5"
+        },
+        "nk-type-num-weight": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "Weight of the num role",
+          "$comment": "tokens 1.5"
+        },
+        "nk-type-num-tracking": {
+          "type": "string",
+          "description": "Letter-spacing of the num role",
+          "$comment": "tokens 1.5"
+        },
+        "nk-type-num-case": {
+          "enum": [
+            "none",
+            "uppercase"
+          ],
+          "description": "Case of the num role",
+          "$comment": "tokens 1.5"
+        },
+        "nk-type-num-pad": {
+          "type": "string",
+          "description": "Trailing pad of the num role (the italic overhang)",
+          "$comment": "tokens 1.5"
+        },
+        "nk-type-body-family": {
+          "type": "string",
+          "description": "Font of the body role (sentences)",
+          "$comment": "tokens 1.5"
+        },
+        "nk-type-body-style": {
+          "enum": [
+            "normal",
+            "italic"
+          ],
+          "description": "normal or italic, for the body role",
+          "$comment": "tokens 1.5"
+        },
+        "nk-type-body-weight": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "Weight of the body role",
+          "$comment": "tokens 1.5"
+        },
+        "nk-type-body-tracking": {
+          "type": "string",
+          "description": "Letter-spacing of the body role",
+          "$comment": "tokens 1.5"
+        },
+        "nk-type-body-case": {
+          "enum": [
+            "none",
+            "uppercase"
+          ],
+          "description": "Case of the body role",
+          "$comment": "tokens 1.5"
+        },
+        "nk-type-body-pad": {
+          "type": "string",
+          "description": "Trailing pad of the body role (the italic overhang)",
+          "$comment": "tokens 1.5"
+        },
+        "nk-tile-face": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "The tile's face (aliased by --nk-key-bg)",
+          "$comment": "tokens 1.5"
+        },
+        "nk-tile-ink": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "The legend on the face (aliased by --nk-key-fg)",
+          "$comment": "tokens 1.5"
+        },
+        "nk-tile-light": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "The face's top hairline",
+          "$comment": "tokens 1.5"
+        },
+        "nk-tile-shade": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "The face's bottom inner shade",
+          "$comment": "tokens 1.5"
+        },
+        "nk-tile-rim": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "The face's 1px rim (aliased by --nk-key-border)",
+          "$comment": "tokens 1.5"
+        },
+        "nk-tile-rim-focus": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "The rim while focused",
+          "$comment": "tokens 1.5"
+        },
+        "nk-tile-plate": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "The solid plate behind the face",
+          "$comment": "tokens 1.5"
+        },
+        "nk-tile-plate-dim": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "The plate on the HUD",
+          "$comment": "tokens 1.5"
+        },
+        "nk-tile-plate-x": {
+          "type": "string",
+          "description": "How far the plate sits right of the face (0 = no plate)",
+          "$comment": "tokens 1.5"
+        },
+        "nk-tile-plate-y": {
+          "type": "string",
+          "description": "How far the plate sits below the face",
+          "$comment": "tokens 1.5"
+        },
+        "nk-tile-press": {
+          "type": "string",
+          "description": "How far a held tile presses toward its plate",
+          "$comment": "tokens 1.5"
+        },
+        "nk-tile-skew": {
+          "type": "string",
+          "description": "The face's slant (the box stays upright); at most ±20deg",
+          "$comment": "tokens 1.5"
+        },
+        "nk-tile-confirm-face": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "The face when confirmed or active",
+          "$comment": "tokens 1.5"
+        },
+        "nk-tile-confirm-ink": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "The legend when confirmed or active",
+          "$comment": "tokens 1.5"
+        },
+        "nk-tile-hold": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "The hold fill over the face",
+          "$comment": "tokens 1.5"
+        },
+        "nk-tile-tag-delay": {
+          "type": "string",
+          "description": "The tag opens this long after the tile lands",
+          "$comment": "tokens 1.5"
+        },
+        "nk-plate": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "The plate colour (its channels, --nk-plate-rgb, are drawn at the context's material opacity)",
+          "$comment": "tokens 1.5"
+        },
+        "nk-plate-hair": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "The plate's hairline",
+          "$comment": "tokens 1.5"
+        },
+        "nk-plate-drop": {
+          "type": "string",
+          "description": "The plate's drop: hard, no blur",
+          "$comment": "tokens 1.5"
+        },
+        "nk-plate-radius": {
+          "type": "string",
+          "description": "The plate's radius",
+          "$comment": "tokens 1.5"
+        },
+        "nk-fill-color": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "The bar",
+          "$comment": "tokens 1.5"
+        },
+        "nk-fill-track": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "The track behind the bar",
+          "$comment": "tokens 1.5"
+        },
+        "nk-fill-tint": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "The row sweep (a fill at level 1)",
+          "$comment": "tokens 1.5"
+        },
+        "nk-fill-edge": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "The bar's leading 1px edge",
+          "$comment": "tokens 1.5"
+        },
+        "nk-fill-alert": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "The bar at or under the alert threshold",
+          "$comment": "tokens 1.5"
+        },
+        "nk-lift": {
+          "type": "string",
+          "description": "Row slide and slot lift on focus",
+          "$comment": "tokens 1.5"
+        },
+        "nk-rise": {
+          "type": "string",
+          "description": "How far things rise as they enter",
+          "$comment": "tokens 1.5"
+        },
+        "nk-land-scale": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "The scale a tile lands from",
+          "$comment": "tokens 1.5"
+        },
+        "nk-deny-x": {
+          "type": "string",
+          "description": "The deny shake's distance (two beats of fast)",
+          "$comment": "tokens 1.5"
+        },
+        "nk-chip-shape": {
+          "enum": [
+            "auto",
+            "square",
+            "rounded",
+            "circle",
+            "diamond",
+            "hex",
+            "chamfer"
+          ],
+          "description": "Vital chip shape",
+          "$comment": "tokens 1.5"
+        },
+        "nk-label-attach": {
+          "enum": [
+            "inline",
+            "tag",
+            "flag",
+            "none"
+          ],
+          "description": "Where a chip's label sits",
+          "$comment": "tokens 1.5"
+        },
+        "nk-vital-icon": {
+          "enum": [
+            "vital",
+            "uniform"
+          ],
+          "description": "Vital icons: each vital's own, or one uniform glyph",
+          "$comment": "tokens 1.5"
+        },
+        "nk-vital-display": {
+          "enum": [
+            "auto",
+            "pill",
+            "value",
+            "icon",
+            "expand"
+          ],
+          "description": "What a vital chip shows",
+          "$comment": "tokens 1.5"
+        },
+        "nk-vital-neighbours": {
+          "enum": [
+            "push",
+            "collapse",
+            "overlay"
+          ],
+          "description": "What a growing chip does to its neighbours",
+          "$comment": "tokens 1.5"
         }
       },
       "additionalProperties": {

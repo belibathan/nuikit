@@ -20,7 +20,7 @@ describe("motion tokens", () => {
     for (const t of MOTION_TOKENS) {
       expect(TOKEN_NAMES).not.toContain(t.name);
       expect(IDENTITY_TOKENS).toContain(t);
-      expect(t.since).toBe("1.2");
+      expect(["1.2", "1.5"]).toContain(t.since);
     }
     const schema = themeJsonSchema() as any;
     expect(schema.properties.vars.required).toEqual([...TOKEN_NAMES]);

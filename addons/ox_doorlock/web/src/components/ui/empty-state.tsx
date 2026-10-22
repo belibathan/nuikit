@@ -5,6 +5,7 @@ import { CircleAlertIcon, InboxIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty"
+import { Tile } from "@/components/ui/tile"
 
 /**
  * EmptyState — what a list, a search or a screen shows when there's nothing (or something went
@@ -13,6 +14,9 @@ import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTi
  *
  *   <EmptyState title="No cars here" description="Buy one at the dealership or ask a friend for keys." />
  *   <EmptyState tone="error" title="Couldn't load your bank" description="Try again in a moment." action={<Button size="sm">Try again</Button>} />
+ *
+ * `tile` (tokens 1.5, docs/design/ink.md §3) draws the icon as a square Tile at rest (danger on error): the
+ * Ink empty state. Without it the icon sits in shadcn's EmptyMedia, as before.
  *
  * Named empty-state, not empty: stock shadcn already has `empty`, and this is built on it.
  */
@@ -39,6 +43,7 @@ function EmptyState({
   title,
   description,
   action,
+  tile = false,
   children,
   ...props
 }: Omit<React.ComponentProps<"div">, "title"> &
@@ -52,6 +57,8 @@ function EmptyState({
     description?: React.ReactNode
     /** A button or two: try again, buy one, open the map. */
     action?: React.ReactNode
+    /** The icon as a square Tile (1.5). */
+    tile?: boolean
   }) {
   const error = tone === "error"
   const iconEl = icon === undefined ? error ? <CircleAlertIcon /> : <InboxIcon /> : icon
@@ -64,7 +71,12 @@ function EmptyState({
       {...props}
     >
       <EmptyHeader className="gap-1.5">
-        {iconEl !== null && iconEl !== false && (
+        {iconEl !== null && iconEl !== false && tile && (
+          <Tile shape="square" size={size === "screen" ? "lg" : "md"} tone={error ? "danger" : undefined} className="mb-1">
+            {iconEl}
+          </Tile>
+        )}
+        {iconEl !== null && iconEl !== false && !tile && (
           <EmptyMedia
             variant="icon"
             className={cn(
@@ -79,7 +91,7 @@ function EmptyState({
         {/* The weight spelled out (important): EmptyTitle's font-medium would beat nk-title's. A
             screen-size empty state titles at the section size. */}
         <EmptyTitle
-          className={cn("nk-title [font-weight:var(--nk-heading-weight,600)]!", size === "screen" && "[--nk-heading-size:var(--nk-text-section)]")}
+          className={cn("nk-title [font-weight:var(--nk-type-title-weight,var(--nk-heading-weight,600))]!", size === "screen" && "[--nk-heading-size:var(--nk-text-section)]")}
         >
           {title}
         </EmptyTitle>
