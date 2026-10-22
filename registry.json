@@ -394,9 +394,11 @@
         "spec": {
           "role": "One vital on the HUD: health, armor, hunger, thirst, stress.",
           "anatomy": [
+            "vital-chip-row (optional: chips that know each other)",
             "vital-chip (shape)",
             "icon",
             "level drawing (outline | liquid | bar)",
+            "label (name, value)",
             "pop (a change)"
           ],
           "props": [
@@ -406,13 +408,18 @@
             "level",
             "attach",
             "icon",
-            "open"
+            "open",
+            "display",
+            "neighbours",
+            "format"
           ],
           "level": "the vital, 0–100 as 0–1.",
           "rules": [
             "data-hue carries the vital's role (health, armor…).",
             "The level style comes from the theme (outline, liquid, bar); the data never picks it.",
-            "Readable over a bright sky (legibility fixture)."
+            "Readable over a bright sky (legibility fixture).",
+            "display: pill (icon, name, value) | value | icon (level as fill) | expand (opens on a change, settles after --nk-rest-delay); the theme default is --nk-vital-display.",
+            "neighbours (a chip that opens, in a Row): push | collapse | overlay; the theme default is --nk-vital-neighbours."
           ]
         }
       }

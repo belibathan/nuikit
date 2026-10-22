@@ -131,6 +131,16 @@ export function ComponentsPage() {
         </Section>
 
         <Section
+          name="vital-chip"
+          title="Vital chip: display modes"
+          text="What a chip shows, per server or per player: pill (icon, name, value), value (icon and value), icon (the level as fill), expand (the icon opens to the pill on a change and settles after --nk-rest-delay). A chip that opens (voice while talking) pushes its neighbours, collapses them to icons, or floats over them."
+          install={false}
+          stageClassName="flex-col items-center"
+        >
+          <ChipModesDemo />
+        </Section>
+
+        <Section
           name="panel"
           title="Panel"
           text="The one floating surface: a header with title, description and actions (and an optional second row for tabs), a scrolling body, a footer."
@@ -719,6 +729,63 @@ function LegibilityDemo() {
         <Notice item={{ name: "Water bottle", count: 2, icon: <CupSodaIcon /> }} duration={0} />
       </div>
       <Band position="inline" tone="destructive" title="You are incapacitated" subtitle="Hold E to call for help" className="basis-full" />
+    </>
+  );
+}
+
+/** The vital chip's display modes and the voice chip's neighbour option, live. */
+function ChipModesDemo() {
+  const [display, setDisplay] = useState<"pill" | "value" | "icon" | "expand">("expand");
+  const [neighbours, setNeighbours] = useState<"push" | "collapse" | "overlay">("push");
+  const [talking, setTalking] = useState(false);
+  const [vitals, setVitals] = useState({ health: 82, armor: 46, hunger: 38, thirst: 64 });
+  const icons = { health: <HeartPulseIcon />, armor: <ShieldIcon />, hunger: <UtensilsIcon />, thirst: <DropletIcon /> };
+  const names = { health: "Health", armor: "Armor", hunger: "Hunger", thirst: "Thirst" };
+  const eat = () => setVitals((v) => ({ ...v, hunger: v.hunger >= 90 ? 20 : v.hunger + 25 }));
+  return (
+    <>
+      <div className="flex flex-wrap justify-center gap-2">
+        {(["pill", "value", "icon", "expand"] as const).map((d) => (
+          <Button key={d} size="sm" variant={display === d ? "secondary" : "outline"} onClick={() => setDisplay(d)}>
+            {d}
+          </Button>
+        ))}
+        <span className="w-4" />
+        {(["push", "collapse", "overlay"] as const).map((n) => (
+          <Button key={n} size="sm" variant={neighbours === n ? "secondary" : "outline"} onClick={() => setNeighbours(n)}>
+            {n}
+          </Button>
+        ))}
+      </div>
+      <VitalChip.Row>
+        <VitalChip.Root open={talking} neighbours={neighbours}>
+          <VitalChip.Shape>
+            <VitalChip.Icon>
+              <MicIcon />
+            </VitalChip.Icon>
+            <VitalChip.Label>Normal</VitalChip.Label>
+          </VitalChip.Shape>
+          <VitalChip.Label>Normal</VitalChip.Label>
+        </VitalChip.Root>
+        {(Object.keys(vitals) as (keyof typeof vitals)[]).map((k) => (
+          <VitalChip.Root key={k} value={vitals[k]} tone={k} display={display}>
+            <VitalChip.Shape>
+              <VitalChip.Level />
+              <VitalChip.Icon>{icons[k]}</VitalChip.Icon>
+              <VitalChip.Label>{names[k]}</VitalChip.Label>
+            </VitalChip.Shape>
+            <VitalChip.Label>{names[k]}</VitalChip.Label>
+          </VitalChip.Root>
+        ))}
+      </VitalChip.Row>
+      <div className="flex gap-2">
+        <Button size="sm" variant="outline" onClick={eat}>
+          Eat (+25 hunger)
+        </Button>
+        <Button size="sm" variant={talking ? "secondary" : "outline"} onClick={() => setTalking((t) => !t)}>
+          {talking ? "Stop talking" : "Talk"}
+        </Button>
+      </div>
     </>
   );
 }
