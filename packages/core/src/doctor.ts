@@ -103,6 +103,7 @@ export interface Finding {
     | "start-order"
     | "manifest-changed"
     | "missing-dependency"
+    | "systems-stopped"
     | "theme-contrast"
     | "theme-warning"
     | "update-available"
@@ -128,6 +129,9 @@ export interface DoctorReport {
 }
 
 // ─────────────────────────────────────────── tables
+
+/** The systems `[nuikit]` ships and nuikit.cfg ensures by name (nuikit_dev is opt-in, so not here). */
+export const NUIKIT_SYSTEMS = ["nuikit_chat", "nuikit_death", "nuikit_hud", "nuikit_loading", "nuikit_pause", "nuikit_stress"];
 
 export const ADAPTER_PACKS: AdapterPack[] = [
   { name: "[nuikit-ox]", library: "ox_lib", frameworks: ["any"], shipped: false },
@@ -364,6 +368,29 @@ export function doctor(snap: DoctorSnapshot): DoctorReport {
         next: `put \`ensure nuikit\` before \`ensure ${r.name}\` in server.cfg, then \`restart ${r.name}\``,
       });
     }
+  }
+
+  // [nuikit] systems installed but not running: `ensure [nuikit]` starts nothing when the folders are
+  // junctions or symlinks (FiveM doesn't resolve the category), and a server.cfg may miss the exec.
+  const idle = resources
+    .filter((r) => NUIKIT_SYSTEMS.includes(r.name) && r.state !== "started" && r.state !== "starting" && r.state !== "missing")
+    .map((r) => r.name);
+  if (idle.length) {
+    const ensures = idle.map((n) => "`ensure " + n + "`").join(", ");
+    findings.push({
+      code: "systems-stopped",
+      severity: "warn",
+      message: `${idle.length} [nuikit] system${idle.length > 1 ? "s are" : " is"} installed but not running: ${idle.join(", ")}`,
+      next: "`exec @nuikit/nuikit.cfg` in server.cfg (it ensures each system by name), or " + ensures + "; delete a system's folder if you don't want it",
+    });
+  } else if (!resources.some((r) => NUIKIT_SYSTEMS.includes(r.name))) {
+    // none known to the server at all: not copied, or behind a folder FiveM didn't scan
+    findings.push({
+      code: "systems-stopped",
+      severity: "info",
+      message: "no [nuikit] system found (nuikit_hud, nuikit_pause…): only the runtime and overrides are in use",
+      next: "copy the `[nuikit]` folder from the zip into resources/ (real folders, not junctions or symlinks), `refresh`, then `exec @nuikit/nuikit.cfg`",
+    });
   }
 
   // Theme. The compiler reports a failed pair twice (a ContrastResult and a plain warning "<fg> on

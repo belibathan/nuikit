@@ -37,7 +37,7 @@ Each player can set, for every nuikit UI at once: `/nuikit scale 1.1` (0.85–1.
 ensure ox_lib
 ensure [qbx]        # qbx_core and friends (without qbx_hud if you use nuikit_hud)
 ensure pma-voice
-exec @nuikit/nuikit.cfg   # = ensure nuikit + ensure [nuikit], plus the settings (nuikit.cfg in this folder)
+exec @nuikit/nuikit.cfg   # = ensure nuikit + each [nuikit] system by name, plus the settings (nuikit.cfg in this folder)
 ```
 
 QBCore and ESX are the same with `qb-core` / `es_extended` in place of `[qbx]`.

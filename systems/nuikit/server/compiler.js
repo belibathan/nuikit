@@ -1018,6 +1018,7 @@ ${lines.join("\n")}
   var COVERAGE_TARGETS = { qbox: 0.9, qbcore: 0.75, esx: 0.75 };
 
   // src/doctor.ts
+  var NUIKIT_SYSTEMS = ["nuikit_chat", "nuikit_death", "nuikit_hud", "nuikit_loading", "nuikit_pause", "nuikit_stress"];
   var ADAPTER_PACKS = [
     { name: "[nuikit-ox]", library: "ox_lib", frameworks: ["any"], shipped: false },
     { name: "[nuikit-qb]", library: "qb-core", frameworks: ["qbcore", "qbox"], shipped: false },
@@ -1218,6 +1219,23 @@ ${lines.join("\n")}
           next: `put \`ensure nuikit\` before \`ensure ${r.name}\` in server.cfg, then \`restart ${r.name}\``
         });
       }
+    }
+    const idle = resources.filter((r) => NUIKIT_SYSTEMS.includes(r.name) && r.state !== "started" && r.state !== "starting" && r.state !== "missing").map((r) => r.name);
+    if (idle.length) {
+      const ensures = idle.map((n2) => "`ensure " + n2 + "`").join(", ");
+      findings.push({
+        code: "systems-stopped",
+        severity: "warn",
+        message: `${idle.length} [nuikit] system${idle.length > 1 ? "s are" : " is"} installed but not running: ${idle.join(", ")}`,
+        next: "`exec @nuikit/nuikit.cfg` in server.cfg (it ensures each system by name), or " + ensures + "; delete a system's folder if you don't want it"
+      });
+    } else if (!resources.some((r) => NUIKIT_SYSTEMS.includes(r.name))) {
+      findings.push({
+        code: "systems-stopped",
+        severity: "info",
+        message: "no [nuikit] system found (nuikit_hud, nuikit_pause\u2026): only the runtime and overrides are in use",
+        next: "copy the `[nuikit]` folder from the zip into resources/ (real folders, not junctions or symlinks), `refresh`, then `exec @nuikit/nuikit.cfg`"
+      });
     }
     if (snap.theme) {
       const pairs = /* @__PURE__ */ new Set();
