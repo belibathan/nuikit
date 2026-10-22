@@ -1,7 +1,7 @@
 // qbx_idcard's traffic, faked for browser development. Press ` for the devtools.
 // Each preset is a payload qbx_idcard's Lua really sends (docs/qbx-idcard-protocol.md). The game
 // sends { type, playerData | configData }; devtools sends { action, data }, which the page accepts too.
-// Jump to a state with ?state=id|driver|weapon|lawyer|badge|nomugshot|unknown|recolored|closed.
+// Jump to a state with ?state=id|driver|weapon|lawyer|badge|nomugshot|unknown|recolored|avatar|closed.
 import { NuiDevtools, defineMocks } from "nuikit-core/devtools";
 import { useEffect } from "react";
 
@@ -79,8 +79,8 @@ const post = (data: object) => window.dispatchEvent(new MessageEvent("message", 
 export default function Dev() {
   useEffect(() => {
     const state = new URLSearchParams(location.search).get("state") ?? "id";
-    post({ type: "configData", configData: state === "recolored" ? RECOLORED : CONFIG });
-    const card = state === "recolored" || state === "closed" ? CARDS.id : CARDS[state as keyof typeof CARDS] ?? CARDS.id;
+    post({ type: "configData", configData: state === "recolored" ? RECOLORED : state === "avatar" ? { ...CONFIG, photo: "avatar" } : CONFIG });
+    const card = state === "recolored" || state === "closed" || state === "avatar" ? CARDS.id : CARDS[state as keyof typeof CARDS] ?? CARDS.id;
     post({ type: "playerData", playerData: card });
   }, []);
   return <NuiDevtools events={mocks.events} scene="day" />;

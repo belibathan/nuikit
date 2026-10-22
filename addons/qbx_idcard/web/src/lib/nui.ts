@@ -32,8 +32,11 @@ export interface License {
 }
 
 export interface IdConfig {
-  idCardSettings: { closeKey: string; autoClose: { status: boolean; time: number } };
+  idCardSettings: { closeKey: string; autoClose: { status: boolean; time: number }; photo?: "portrait" | "avatar" };
   licenses: Record<string, License>;
+  /** nuikit only: `photo = 'avatar'` in qbx_idcard's config/shared.lua for the small round photo; the
+   *  default is a full-height portrait down the card's left side. */
+  photo?: "portrait" | "avatar";
 }
 
 /** qbx_idcard's defaults, used until Lua sends `configData`. */

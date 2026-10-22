@@ -80,6 +80,8 @@ function IdCard({ open, data, config, labels }: { open: boolean; data: PlayerDat
   const name = [data.firstname, data.lastname].filter(Boolean).join(" ");
 
   const badge = data.badge && data.badge !== "none" && typeof data.badge === "object" ? data.badge : null;
+  // Decisions #5: the full-height portrait by default, the small round one with photo = 'avatar'.
+  const avatar = (config.photo ?? config.idCardSettings?.photo) === "avatar";
 
   return (
     // A floating edge sheet on the right, sized to the card (registry edge-sheet): the card type's
@@ -98,7 +100,7 @@ function IdCard({ open, data, config, labels }: { open: boolean; data: PlayerDat
     >
       {accent && <div aria-hidden className="idc-tint pointer-events-none absolute inset-0" />}
       <div className="relative flex gap-4 pt-4">
-        <Portrait src={data.mugShot} className="w-28" />
+        <Portrait src={data.mugShot} avatar={avatar} />
         <dl className="grid flex-1 grid-cols-2 content-start gap-x-4 gap-y-3">
           <Field label={labels.lang_firstname} value={data.firstname} strong />
           <Field label={labels.lang_lastname} value={data.lastname} strong />
@@ -150,23 +152,24 @@ function Field({ label, value, strong, mono, num, className }: { label: string; 
   );
 }
 
-/** The mugshot qbx_idcard stores in item metadata (a data: URL from MugShotBase64). */
-function Portrait({ src, ghost, className }: { src?: string; ghost?: boolean; className?: string }) {
+/** The mugshot qbx_idcard stores in item metadata (a data: URL from MugShotBase64): a portrait the
+ *  card's full height, or a small round avatar. */
+function Portrait({ src, avatar }: { src?: string; avatar?: boolean }) {
   const [failed, setFailed] = useState(false);
   useEffect(() => setFailed(false), [src]);
   const ok = !!src && !failed;
   return (
     <div
+      data-slot="idc-photo"
       className={cn(
-        "flex aspect-[3/4] shrink-0 items-center justify-center overflow-hidden rounded-md border bg-muted",
-        ghost && "rounded-sm opacity-45 grayscale",
-        className,
+        "flex shrink-0 items-center justify-center overflow-hidden border bg-muted",
+        avatar ? "size-16 self-start rounded-full" : "min-h-36 w-32 self-stretch rounded-md",
       )}
     >
       {ok ? (
-        <img src={src} alt="" className="size-full object-cover" onError={() => setFailed(true)} />
+        <img src={src} alt="" className="size-full object-cover object-top" onError={() => setFailed(true)} />
       ) : (
-        <UserIcon className={cn("text-muted-foreground", ghost ? "size-3" : "size-10")} />
+        <UserIcon className={cn("text-muted-foreground", avatar ? "size-6" : "size-10")} />
       )}
     </div>
   );
