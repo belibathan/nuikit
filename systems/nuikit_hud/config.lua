@@ -74,6 +74,10 @@ Config = {
     -- the rest of the HUD when a menu hides it, frame by frame, instead of cutting it. If the radar
     -- doesn't move in game, GTA only takes new positions on a big-map flick: leave it false.
     slide = false,
+    -- A soft dark plate behind the round ring, the same one the compact speedometer sits on, so the
+    -- ring reads over a bright sky (an experiment, on). Its strength is the theme's HUD plate
+    -- (--nk-hud-opacity, shared with the speedometer); --nk-map-halo-size (2.5rem) is how far it fades out.
+    halo = true,
     compass = true,          -- cardinals on the ring (square: N on the frame), heading above (compact)
     location = true,         -- the location under (compact) or above (classic) the map
   },

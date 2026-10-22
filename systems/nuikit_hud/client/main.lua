@@ -49,6 +49,8 @@ local function settings()
     frame = not (Minimap and Minimap.style) or Minimap.style() == 'ring',
     -- GTA's radar slides with the HUD (Config.minimap.slide): the ring slides with it, unfaded
     slide = (Config.minimap or {}).slide == true,
+    -- the speedometer's plate behind the round map ring (Config.minimap.halo)
+    halo = (Config.minimap or {}).halo ~= false,
   }
 end
 

@@ -1078,6 +1078,16 @@
   inset: 0;
   overflow: visible;
 }
+/* Config.minimap.halo: the speedometer's plate behind the round ring, at the same strength
+   (--hud-plate-opacity, the theme's --nk-hud-opacity). It starts at the ring's outer edge and fades
+   out over --nk-map-halo-size, so it darkens the game around the ring, never the map inside it. */
+.hud-map-plate {
+  position: absolute;
+  inset: calc(var(--nk-map-halo-size, 2.5rem) * -1);
+  border-radius: 9999px;
+  background: radial-gradient(closest-side, transparent calc(var(--hud-ring-r) - 1px), var(--scrim) var(--hud-ring-r), transparent);
+  opacity: var(--nk-map-halo-opacity, var(--hud-plate-opacity));
+}
 /* --nk-ring-band (the dark outer band) and --nk-ring-stroke (the inner ring) are optional theme tokens */
 .hud-map-halo {
   fill: none;
