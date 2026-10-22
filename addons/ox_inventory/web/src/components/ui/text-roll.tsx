@@ -212,7 +212,9 @@ function ReelLayer({ layer, delay, onDone }: { layer: Layer; delay: number; onDo
   }, [out, enter, dir, delay, key, onDone])
 
   return (
-    <span ref={ref} data-out={out || undefined} className="-mx-[0.15em] min-w-0 overflow-hidden px-[0.15em] text-ellipsis [grid-area:1/1]" aria-hidden={out || undefined}>
+    // max-w: a no-wrap layer is never narrower than its text (its min-content), so cap it at the window
+    // (plus its italic padding) or a long value is cut instead of ending in an ellipsis
+    <span ref={ref} data-out={out || undefined} className="-mx-[0.15em] max-w-[calc(100%+0.3em)] min-w-0 overflow-hidden px-[0.15em] text-ellipsis [grid-area:1/1]" aria-hidden={out || undefined}>
       {text}
     </span>
   )
