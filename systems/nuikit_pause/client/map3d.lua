@@ -19,7 +19,7 @@ local cam
 local active = false
 local cur, goal
 local drag = { x = 0.0, y = 0.0, heading = 0.0, pitch = 0.0 } -- dragged but not landed yet
-local lastPins, lastInfo, lastInfoAt = '', '', 0
+local lastPins, lastPinsAt, lastInfo, lastInfoAt = '', 0, '', 0
 local timecycle = false
 local blipList, blipKey, blipsAt = {}, '', 0 -- the blips last sent to the UI (see refreshBlips)
 
@@ -271,6 +271,31 @@ local function step(dt)
 end
 Map3D.step = step
 
+--- What the UI hears, only when it changed: the pins while the picture moves (nothing while it's
+--- still; every frame it moves so they stay locked to the ground, or at most Config.map.pinsHz a
+--- second when a server sets it), and the panel text at most every INFO_MS.
+local function publish(now, ped)
+  local hz = tonumber(cfg.pinsHz) or 0
+  if hz <= 0 or now - lastPinsAt >= 1000.0 / hz then
+    local p = pins(ped, GetAspectRatio(false))
+    local key = pinsKey(p)
+    if key ~= lastPins then
+      lastPins, lastPinsAt = key, now
+      NUI.send('pause:map:pins', p)
+    end
+  end
+  if now - lastInfoAt >= INFO_MS then
+    lastInfoAt = now
+    local i = info()
+    local ikey = ('%s|%s|%s|%s'):format(i.zone, i.street, tostring(i.topdown), tostring(i.waypoint))
+    if ikey ~= lastInfo then
+      lastInfo = ikey
+      NUI.send('pause:map:info', i)
+    end
+  end
+end
+Map3D.publish = publish
+
 local function loop()
   local last = GetGameTimer()
   while active do
@@ -286,22 +311,7 @@ local function loop()
     local ped = PlayerPedId()
     tidyWorld(ped)
     refreshBlips(now)
-    -- pins every frame they move; the slower panel text a few times a second
-    local p = pins(ped, GetAspectRatio(false))
-    local key = pinsKey(p)
-    if key ~= lastPins then
-      lastPins = key
-      NUI.send('pause:map:pins', p)
-    end
-    if now - lastInfoAt >= INFO_MS then
-      lastInfoAt = now
-      local i = info()
-      local ikey = ('%s|%s|%s|%s'):format(i.zone, i.street, tostring(i.topdown), tostring(i.waypoint))
-      if ikey ~= lastInfo then
-        lastInfo = ikey
-        NUI.send('pause:map:info', i)
-      end
-    end
+    publish(now, ped)
     Wait(0)
   end
 end
@@ -353,7 +363,7 @@ function Map3D.start()
   end
   active = true
   drag = { x = 0.0, y = 0.0, heading = 0.0, pitch = 0.0 }
-  lastPins, lastInfo, lastInfoAt = '', '', 0
+  lastPins, lastPinsAt, lastInfo, lastInfoAt = '', 0, '', 0
   -- the blips go first, so the first pins already carry their positions
   blipKey = ''
   refreshBlips(GetGameTimer(), true)
