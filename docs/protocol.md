@@ -539,6 +539,14 @@ Not level-gating, but reported: remote fonts and assets (every UI pays a network
 ship them in the resource), and NUI messages sent from a `Wait(0)` loop (send on change, or batch, at ≤ 10 Hz;
 a value that moves every frame is a live value, §5.7).
 
+### Old-CEF profile (advisory)
+
+FiveM's NUI runs Chromium 103, so `nuikit check` also warns (rules `cef/*`, never level-gating) on what that engine
+drops or draws wrong: `backdrop-filter` (a black box over the game; mark a deliberate use `nuikit-ignore cef/backdrop-filter`),
+`:has()`, `@container` / `container-type`, the individual `scale` / `translate` / `rotate` properties (Chromium 104+, and they
+clobber `transform` animations), and `color-mix()` / `oklch()` in inline styles (`vite-plugin-nuikit` lowers
+stylesheets only). Source files are checked; build output is skipped.
+
 Overrides (§5.6) are measured on the rules that apply to a page whose Lua is not nuikit's: Level 1 and the
 page-side Level 3 rules (`nuikit-core`, components). Their Escape handling is dictated by the overridden
 resource's protocol, so ad-hoc Escape is reported as advisory for them, not as a Level 2 failure. A resource

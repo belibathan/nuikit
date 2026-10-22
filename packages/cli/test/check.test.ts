@@ -249,3 +249,50 @@ describe("attention/glow (tokens 1.4 glow budget)", () => {
     fs.rmSync(dir, { recursive: true, force: true });
   });
 });
+
+describe("cef/* (old-CEF profile, advisory)", () => {
+  const run = (files: Record<string, string>) => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "nk-cef-"));
+    fs.cpSync(fixture("level3"), dir, { recursive: true });
+    const base = checkResource(dir);
+    for (const [rel, text] of Object.entries(files)) fs.writeFileSync(path.join(dir, rel), text);
+    const r = checkResource(dir);
+    fs.rmSync(dir, { recursive: true, force: true });
+    return { r, base };
+  };
+  const cef = (r: ReturnType<typeof checkResource>) => r.findings.filter((f) => f.rule.startsWith("cef/")).map((f) => `${f.rule}@${f.file}:${f.line}`);
+
+  it("fires on each bad CSS sample, as warnings that keep the level", () => {
+    const { r, base } = run({
+      "web/src/bad.css": `.a { backdrop-filter: blur(4px); }\n.b:has(> img) { color: var(--primary); }\n@container (min-width: 10px) { .c { color: var(--primary); } }\n.d { container-type: inline-size; scale: 1.1; translate: 0 4px; rotate: 3deg; }\n`,
+    });
+    expect(cef(r)).toEqual([
+      "cef/backdrop-filter@web/src/bad.css:1",
+      "cef/has@web/src/bad.css:2",
+      "cef/container@web/src/bad.css:3",
+      "cef/container@web/src/bad.css:4",
+      "cef/individual-transform@web/src/bad.css:4",
+      "cef/individual-transform@web/src/bad.css:4",
+      "cef/individual-transform@web/src/bad.css:4",
+    ]);
+    expect(r.findings.filter((f) => f.rule.startsWith("cef/")).every((f) => f.severity === "warning" && f.level === 0)).toBe(true);
+    expect(r.level).toBe(base.level);
+  });
+
+  it("flags inline color-mix/oklch and backdropFilter, not class strings or stylesheets", () => {
+    const { r } = run({
+      "web/src/bad.tsx": `export const A = () => <div style={{ background: "color-mix(in oklab, var(--primary) 50%, transparent)", backdropFilter: "blur(2px)" }} className="bg-[color-mix(in_oklab,red,blue)]" />;\n`,
+      "web/src/ok.css": `.x { background: color-mix(in oklab, var(--primary) 50%, transparent); background: oklch(0.5 0.1 20); transform: scale(1.1); }\n`,
+      "web/inline.html": `<div style="background: oklch(0.5 0.1 20)"></div>\n`,
+    });
+    expect(cef(r).sort()).toEqual(["cef/backdrop-filter@web/src/bad.tsx:1", "cef/color-mix-inline@web/inline.html:1", "cef/color-mix-inline@web/src/bad.tsx:1"]);
+  });
+
+  it("stays quiet on good samples and respects nuikit-ignore", () => {
+    const { r } = run({
+      "web/src/good.css": `.a { transform: scale(1.1) translate(0, 4px); color: var(--primary); }\n@media (min-width: 10px) { .b { color: var(--primary); } }\n.c { --my-scale: 2; }\n`,
+      "web/src/ignored.css": `/* nuikit-ignore cef/backdrop-filter: deliberate blur */\n.a { backdrop-filter: blur(4px); }\n.b { backdrop-filter: blur(4px); /* nuikit-ignore cef/backdrop-filter */ }\n`,
+    });
+    expect(cef(r)).toEqual([]);
+  });
+});

@@ -38,7 +38,12 @@ export type RuleId =
   | "native/components"
   | "perf/remote-asset"
   | "perf/frame-send"
-  | "attention/glow";
+  | "attention/glow"
+  | "cef/backdrop-filter"
+  | "cef/has"
+  | "cef/container"
+  | "cef/individual-transform"
+  | "cef/color-mix-inline";
 
 export const RULES: Record<RuleId, { level: Level; description: string }> = {
   "color/hardcoded": { level: 1, description: "Hex, rgb(), hsl(), oklch()… or named colour literal instead of a theme token" },
@@ -54,6 +59,11 @@ export const RULES: Record<RuleId, { level: Level; description: string }> = {
   "perf/remote-asset": { level: 0, description: "Font or asset loaded from the network instead of the resource" },
   "perf/frame-send": { level: 0, description: "NUI message sent from a Wait(0) loop (every frame)" },
   "attention/glow": { level: 0, description: "More than one part marked data-nk-glow: the runtime lets --nk-glow-budget (1) glow, so rank them or drop the extra marks" },
+  "cef/backdrop-filter": { level: 0, description: "backdrop-filter draws a black box over the game in NUI (Chromium 103); silence a deliberate use with nuikit-ignore" },
+  "cef/has": { level: 0, description: ":has() is unsupported in Chromium 103 (the build polyfills some uses); don't rely on it for anything essential" },
+  "cef/container": { level: 0, description: "@container queries and container-type are unsupported in Chromium 103; use media queries" },
+  "cef/individual-transform": { level: 0, description: "Individual scale/translate/rotate properties are Chromium 104+ and clobber transform animations; use transform" },
+  "cef/color-mix-inline": { level: 0, description: "color-mix()/oklch() in an inline style: the plugin only lowers stylesheets, so Chromium 103 drops it; use a token class or rgb()" },
 };
 
 export const LEVEL_NAMES: Record<Level, string> = { 0: "not conformant", 1: "themed", 2: "well-behaved", 3: "native" };
@@ -198,6 +208,12 @@ function scanCss(css: string, base: number, report: Report, ctx: FileContext) {
     const valueOffset = lead + colon + 1;
     const value = t.slice(colon + 1);
     remoteInCss(value, base + valueOffset, report);
+    if (!ctx.built) {
+      if (/^backdrop-filter$/i.test(prop)) report("cef/backdrop-filter", base + lead, "backdrop-filter draws a black box over the game in NUI; use a --scrim or a solid surface, or nuikit-ignore cef/backdrop-filter if it's deliberate");
+      else if (/^container(-type|-name)?$/i.test(prop)) report("cef/container", base + lead, `${prop} is unsupported in Chromium 103`);
+      else if (/^(scale|translate|rotate)$/i.test(prop)) report("cef/individual-transform", base + lead, `${prop}: is Chromium 104+ and clobbers transform animations; use transform: ${prop}(…)`);
+      if (ctx.inlineStyle) for (const m of value.matchAll(/\b(color-mix|oklch|oklab)\(/gi)) report("cef/color-mix-inline", base + valueOffset + m.index!, `${m[1]}() in an inline style isn't lowered (the plugin only rewrites stylesheets); use a token class or rgb()`);
+    }
     const inTheme = selectors.some((s) => THEME_SELECTOR.test(s));
     if (prop.startsWith("--")) {
       const name = prop.slice(2);
@@ -238,7 +254,13 @@ function scanCss(css: string, base: number, report: Report, ctx: FileContext) {
     if (ch === "(") paren++;
     if (ch === ")") paren = Math.max(0, paren - 1);
     if (paren === 0 && ch === "{") {
-      selectors.push(buf.trim());
+      const prelude = buf.trim();
+      if (!ctx.built) {
+        const at = base + bufStart + buf.indexOf(prelude);
+        if (/^@container\b/i.test(prelude)) report("cef/container", at, "@container is unsupported in Chromium 103 (ignored); use a media query");
+        else if (!prelude.startsWith("@") && /:has\(/i.test(prelude)) report("cef/has", at + prelude.search(/:has\(/i), ":has() is unsupported in Chromium 103; don't depend on it for anything essential");
+      }
+      selectors.push(prelude);
       buf = "";
       bufStart = i + 1;
       continue;
@@ -276,6 +298,10 @@ interface FileContext {
   hasScript: boolean;
   /** data-nk-glow marks seen across the resource's UI files (tokens 1.4 glow budget). */
   glowMarks: number;
+  /** Scanning a style="" attribute (the plugin doesn't lower CSS inside it). */
+  inlineStyle?: boolean;
+  /** The file is build output (compiled Tailwind legitimately uses these features). */
+  built?: boolean;
 }
 
 const GLOW_MARK = /\bdata-nk-glow(?![-\w])/g;
@@ -362,6 +388,22 @@ function scanScript(src: string, base: number, report: Report, ctx: FileContext)
   if (/from\s+["'][^"']*components\/ui\/[^"']+["']/.test(code)) ctx.usesComponents = true;
   scanEscape(code, rep, ctx, ctx.handshakeOff ? "warning" : "error");
   scanGlow(code, base, report, ctx);
+  if (!ctx.built) scanOldCefScript(src, code, strings, rep);
+}
+
+const BACKDROP_MSG = "backdrop-filter draws a black box over the game in NUI; use a --scrim or a solid surface, or nuikit-ignore cef/backdrop-filter if it's deliberate";
+/** Inline styles in script: backdropFilter keys, and colour functions the plugin can't lower (it only rewrites stylesheets). */
+function scanOldCefScript(src: string, code: string, strings: Span[], report: Report) {
+  for (const m of code.matchAll(/\b(?:Webkit)?[bB]ackdropFilter\b/g)) report("cef/backdrop-filter", m.index!, BACKDROP_MSG);
+  for (const s of strings) {
+    const text = src.slice(s.start, s.end);
+    const before = src.slice(Math.max(0, s.start - 40), s.start - 1);
+    if (/(^|[^\w$-])(-webkit-)?backdrop-filter\s*:/.test(text) || (/^(-webkit-)?backdrop-filter$/.test(text.trim()) && /\bsetProperty\s*\(\s*$/.test(before))) report("cef/backdrop-filter", s.start, BACKDROP_MSG);
+    const fn = /\b(?:color-mix|oklch|oklab)\(/i.exec(text);
+    // a style value (style={{ background: "color-mix(…)" }}, el.style.x = …, setProperty), not a class string
+    if (fn && (/[\w$"']\s*:\s*$/.test(before) || /\bstyle\b[^=]*=\s*\{?\s*$/.test(before) || /\bstyle\.\w+\s*=\s*$/.test(before) || /\bsetProperty\s*\([^,]*,\s*$/.test(before)))
+      report("cef/color-mix-inline", s.start + fn.index, "color-mix()/oklch() in an inline style isn't lowered (the plugin only rewrites stylesheets); use a token class or rgb()");
+  }
 }
 
 function scanHtml(src: string, report: Report, ctx: FileContext) {
@@ -377,7 +419,9 @@ function scanHtml(src: string, report: Report, ctx: FileContext) {
     const start = m.index! + m[0].indexOf(m[2]!) + 1;
     ctx.tokenRefs += tokenRefs(value);
     if (attr === "style" || attr === ":style") {
+      ctx.inlineStyle = true;
       scanCss(`x{${value}}`, start - 2, report, ctx);
+      ctx.inlineStyle = false;
       continue;
     }
     if (/^(href|src|id|for|name|content|data-[\w-]+|alt|title|action)$/.test(attr)) {
@@ -488,6 +532,7 @@ export function checkResource(root: string, options: CheckOptions = {}): CheckRe
     const src = fs.readFileSync(path.join(abs, f.rel), "utf8");
     const report = collector.file(f.rel, src);
     if (/(^|\/)components\/ui\//.test(f.rel)) ctx.usesComponents = true;
+    ctx.built = f.built;
     if (/\.(css|scss|sass|less)$/i.test(f.rel)) scanCss(src, 0, report, ctx);
     else if (/\.(html?|vue|svelte)$/i.test(f.rel)) scanHtml(src, report, ctx);
     else scanScript(src, 0, report, ctx);
