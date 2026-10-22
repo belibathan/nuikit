@@ -2179,3 +2179,27 @@ html[data-nk-backdrop="on"] * {
   /* nuikit-ignore cef/backdrop-filter: the one place, behind --nk-backdrop */
   backdrop-filter: var(--nk-backdrop-filter);
 }
+
+/* ───────────────────────────── enter / exit on the compositor
+   tw-animate-css's enter and exit keyframes also animate filter: blur(var(--tw-enter-blur, 0)), which runs on
+   the main thread every frame even at blur 0 (sheets, dialogs, menus: measured on the pause and inventory opens
+   under a 4x CPU throttle). The same keyframes, transform and opacity only, under their own names (the build
+   keeps the first of two same-named keyframes); --animate-in / --animate-out (every animate-in / animate-out,
+   variants included) point at them (Tailwind inlines theme values, so this is a @theme, not :root). A blur-in
+   is dropped. */
+@theme inline {
+  --animate-in: nk-tw-enter var(--tw-animation-duration, var(--tw-duration, 0.15s)) var(--tw-ease, ease) var(--tw-animation-delay, 0s) var(--tw-animation-iteration-count, 1) var(--tw-animation-direction, normal) var(--tw-animation-fill-mode, none);
+  --animate-out: nk-tw-exit var(--tw-animation-duration, var(--tw-duration, 0.15s)) var(--tw-ease, ease) var(--tw-animation-delay, 0s) var(--tw-animation-iteration-count, 1) var(--tw-animation-direction, normal) var(--tw-animation-fill-mode, none);
+}
+@keyframes nk-tw-enter {
+  from {
+    opacity: var(--tw-enter-opacity, 1);
+    transform: translate3d(var(--tw-enter-translate-x, 0), var(--tw-enter-translate-y, 0), 0) scale3d(var(--tw-enter-scale, 1), var(--tw-enter-scale, 1), var(--tw-enter-scale, 1)) rotate(var(--tw-enter-rotate, 0));
+  }
+}
+@keyframes nk-tw-exit {
+  to {
+    opacity: var(--tw-exit-opacity, 1);
+    transform: translate3d(var(--tw-exit-translate-x, 0), var(--tw-exit-translate-y, 0), 0) scale3d(var(--tw-exit-scale, 1), var(--tw-exit-scale, 1), var(--tw-exit-scale, 1)) rotate(var(--tw-exit-rotate, 0));
+  }
+}

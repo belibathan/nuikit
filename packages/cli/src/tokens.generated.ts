@@ -772,7 +772,7 @@ export const GENERATED: { name: string; group: string; type: string; description
     "name": "nk-backdrop",
     "group": "kit",
     "type": "number",
-    "description": "Backdrop filters (blur behind materials, the death screen's desaturation): on applies each surface's --nk-backdrop-filter (seen right in game). off for clients whose NUI draws them as black boxes over the game"
+    "description": "Backdrop filters (blur behind materials, the death screen's desaturation): off by default, because FiveM's NUI draws backdrop-filter as a black box over the game; on applies each surface's --nk-backdrop-filter (browser previews, clients that draw it right)"
   },
   {
     "name": "nk-slash",
