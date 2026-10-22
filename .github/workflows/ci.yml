@@ -4,12 +4,6 @@ on:
   push:
     branches: [main, "lead/**"]
   pull_request:
-  workflow_dispatch:
-    inputs:
-      update_visual_baselines:
-        description: "Rewrite the visual baselines and upload them as an artifact (commit them from there)"
-        type: boolean
-        default: false
 
 jobs:
   test:
@@ -97,30 +91,3 @@ jobs:
             (cd "tpl-$t/web" && pnpm build)
             node "$GITHUB_WORKSPACE/packages/cli/dist/cli.js" check "tpl-$t" --level 3
           done
-
-  # Visual baselines (docs/design/contract.md). Non-blocking until the baselines are committed from this image.
-  visual:
-    name: Visual baselines
-    runs-on: ubuntu-latest
-    needs: test
-    continue-on-error: true
-    container: mcr.microsoft.com/playwright:v1.56.0-noble
-    steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm -r --filter "./packages/**" build
-      - name: pnpm visual
-        run: pnpm ${{ inputs.update_visual_baselines && 'visual:update' || 'visual' }}
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: visual
-          path: |
-            bench/visual/out
-            bench/visual/baselines
-          if-no-files-found: ignore
