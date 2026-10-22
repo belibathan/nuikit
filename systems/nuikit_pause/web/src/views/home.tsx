@@ -1,6 +1,6 @@
 import { fetchNui, type NuiPlayer } from "nuikit-core/react";
 import { LandmarkIcon, MoveHorizontalIcon, UsersIcon, WalletIcon } from "lucide-react";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 import type { PauseData } from "../nui";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { HudChip } from "@/components/ui/hud-chip";
@@ -56,10 +56,20 @@ export function Stage({ active, back = false }: { active: boolean; back?: boolea
       onPointerCancel={() => (drag.current = null)}
     >
       <div data-slot="pause-hints" className="nk-anchor-b flex items-center gap-2 [--nk-edge:0rem]">
-        <HudChip icon={<Kbd>Tab</Kbd>}>Choose</HudChip>
-        <HudChip icon={<Kbd>Enter</Kbd>}>Confirm</HudChip>
-        <HudChip icon={<Kbd>Esc</Kbd>}>{back ? "Back" : "Resume"}</HudChip>
-        {active && <HudChip icon={<MoveHorizontalIcon />}>Drag to look around</HudChip>}
+        <HudChip icon={<Kbd>Tab</Kbd>}>
+          <Hint>Choose</Hint>
+        </HudChip>
+        <HudChip icon={<Kbd>Enter</Kbd>}>
+          <Hint>Confirm</Hint>
+        </HudChip>
+        <HudChip icon={<Kbd>Esc</Kbd>}>
+          <Hint>{back ? "Back" : "Resume"}</Hint>
+        </HudChip>
+        {active && (
+          <HudChip icon={<MoveHorizontalIcon />}>
+            <Hint>Drag to look around</Hint>
+          </HudChip>
+        )}
       </div>
     </div>
   );
@@ -76,7 +86,8 @@ export function PlayerSummary({ player, data }: { player: NuiPlayer; data: Pause
     <section data-slot="pause-player" aria-label="Your character" className="my-8 flex flex-col gap-4 border-y border-border py-6">
       <div className="flex items-center gap-3">
         <Avatar className="size-10">
-          <AvatarFallback className="bg-muted text-sm font-semibold text-foreground">{initials(name)}</AvatarFallback>
+          {/* the ring keeps it a disc in themes where muted sits close to the panel colour */}
+          <AvatarFallback className="bg-muted text-sm font-semibold text-foreground ring-1 ring-border ring-inset">{initials(name)}</AvatarFallback>
         </Avatar>
         <div className="flex min-w-0 flex-1 flex-col gap-0.5">
           <p className="nk-title truncate">{name}</p>
@@ -164,4 +175,9 @@ export function HelpPage({ help, onBack }: { help: PauseData["help"]; onBack: ()
       )}
     </SheetPage>
   );
+}
+
+/** A hint's words: the body face, not the chip's number face (a mono numeric face reads as code). */
+function Hint({ children }: { children: ReactNode }) {
+  return <span className="font-sans">{children}</span>;
 }
