@@ -1,0 +1,9 @@
+{
+  "block": "job-tracker",
+  "title": "Job tracker",
+  "description": "A task panel for a job: its steps (done, current, locked), the current step as a meter, a key prompt, abandon behind a confirm; jobs, order, places, items and pay checked by the server (needs OneSync)",
+  "next": [
+    "walk to the sorting office in Elysian Island and press E (or /{{name}}) to take the Parcel run",
+    "fill in Config.player, Config.money and Config.items for your framework; needs OneSync"
+  ]
+}

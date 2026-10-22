@@ -1,0 +1,9 @@
+{
+  "block": "mdt",
+  "title": "MDT",
+  "description": "A police and EMS terminal shell: nav, search of people and vehicles, records, and reports behind a confirm; the server checks job and duty, runs every search, limits input and rate, and stamps reports",
+  "next": [
+    "clock in with /{{name}}_duty, then press F6 (or /{{name}}); the demo records are in config.lua",
+    "fill in Config.player and Config.lookup for your framework"
+  ]
+}

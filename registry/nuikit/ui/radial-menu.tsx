@@ -3,7 +3,7 @@
 import * as React from "react"
 import { ArrowLeftIcon, XIcon } from "lucide-react"
 
-import { cn } from "@/lib/utils"
+import { cn, nkState } from "@/lib/utils"
 
 /**
  * RadialMenu — the action wheel (the `radial` intent, docs/architecture.md §2). shadcn has no
@@ -210,6 +210,7 @@ const RadialMenu = React.forwardRef<
             aria-haspopup={item.items?.length ? "menu" : undefined}
             data-slot="radial-menu-item"
             data-active={on || undefined}
+            data-state={nkState({ disabled: item.disabled, focus: on })}
             className={cn(
               "pointer-events-none absolute flex w-[22%] flex-col items-center gap-1 text-center [&_svg:not([class*='size-'])]:size-5",
               on ? "text-accent-foreground" : "text-muted-foreground",

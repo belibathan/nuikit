@@ -3,7 +3,7 @@
 import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
 
-import { cn } from "@/lib/utils"
+import { cn, nkLevel } from "@/lib/utils"
 import { Kbd } from "@/components/ui/kbd"
 
 /**
@@ -181,6 +181,7 @@ function ProgressRing({
       data-complete={percent >= 100 || undefined}
       className={cn("inline-flex flex-col items-center gap-2", game && "text-(color:--hud-foreground)", className)}
       {...props}
+      style={{ ...nkLevel(percent / 100), ...props.style }}
     >
       <div ref={box} className={cn(progressRingVariants({ size }), game && "nk-shadow")}>
         <svg viewBox="0 0 100 100" aria-hidden className="size-full">

@@ -2,7 +2,7 @@
 "use client"
 
 import * as React from "react"
-import { motionLevel } from "nuikit-core/motion"
+import { motionLevel, tokenMs } from "nuikit-core/motion"
 
 import { cn } from "@/lib/utils"
 
@@ -67,11 +67,8 @@ function useAlign(root: React.RefObject<HTMLElement | null>, align?: Align): Ali
 const EASE = "cubic-bezier(0.2, 0.8, 0.2, 1)"
 /** One roll's duration: about 1.6 panel steps (the identity's --nk-duration), at most 420 ms. */
 function rollMs() {
-  if (typeof document === "undefined") return 220
-  const v = getComputedStyle(document.documentElement).getPropertyValue("--nk-duration").trim()
-  const m = /^([\d.]+)(m?s)$/.exec(v)
-  const base = m ? parseFloat(m[1]!) * (m[2] === "s" ? 1000 : 1) : 140
-  return Math.min(420, Math.max(120, base * 1.6))
+  // the cached token read (nuikit-core/motion), not a getComputedStyle per roll per digit
+  return Math.min(420, Math.max(120, tokenMs("--nk-duration", 140) * 1.6))
 }
 
 interface Layer {
@@ -123,23 +120,9 @@ function Reel({ text, dir, delay = 0, align = "start", appear = false }: { text:
       // nothing measured at rest: a page full of rolls would force a layout per mount
       return
     }
-    const level = motionLevel()
-    const incoming = el.lastElementChild as HTMLElement | null
-    if (level !== "on" || !incoming || typeof el.animate !== "function") return
-    // from where it is now (mid-roll, if one is running) or the outgoing text's width, to the incoming
-    // text's own width (both layers measured the same way)
-    const outgoing = incoming.previousElementSibling as HTMLElement | null
-    const from = widthAnim.current || !outgoing ? el.getBoundingClientRect().width : outgoing.getBoundingClientRect().width
-    const to = incoming.getBoundingClientRect().width
-    widthAnim.current?.cancel()
-    // the column follows the box while it moves, so text aligns in what you see, not the widest layer
-    el.style.gridTemplateColumns = "100%"
-    el.style.width = `${to}px`
-    if (Math.abs(to - from) < 0.5) {
-      widthAnim.current = null
-      return
-    }
-    widthAnim.current = el.animate([{ width: `${from}px` }, { width: `${to}px` }], { duration: rollMs(), delay, easing: EASE, fill: "backwards" })
+    // While it rolls the reel is as wide as its widest layer (both share one grid cell) and settles to
+    // the new text's width when the old layer leaves: two layout changes per roll, nothing measured and
+    // nothing animated on width (a width animation lays out every frame, per digit in a NumberRoll).
   }, [rolling, lastKey, delay])
 
   return (

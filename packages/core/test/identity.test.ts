@@ -306,7 +306,12 @@ describe("flexibility", () => {
 // whose formula reaches --nk-density / --radius, or it would keep the value resolved at :root.
 describe("kit variants re-derive what depends on density and radius", () => {
   const kit = read("packages/create-nuikit/kit.css");
-  const root = kit.slice(kit.indexOf(":root {"), kit.indexOf("\n}\n", kit.indexOf(":root {")));
+  const at = kit.indexOf(":root,\n[data-nk-theme] {");
+  const root = kit.slice(at, kit.indexOf("\n}\n", at));
+
+  it("a themed subtree re-declares the component tokens ([data-nk-theme] on the :root block)", () => {
+    expect(at).toBeGreaterThan(0);
+  });
   const decls = [...root.matchAll(/^\s*(--[\w-]+):\s*([^;]+);/gm)].map((m) => [m[1]!, m[2]!] as const);
   const reaching = (seed: string) => {
     const set = new Set([seed]);

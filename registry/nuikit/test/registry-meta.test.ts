@@ -4,7 +4,8 @@ import { describe, expect, it } from "vitest"
 
 // Registry metadata and the deprecation policy (docs/design/contract.md, "Registry metadata").
 const root = path.resolve(__dirname, "../../..")
-type Meta = { since: string; status: string; replaces: string[]; removeIn: string | null; replacedBy?: string[] }
+type Spec = { role: string; anatomy: string[]; props?: string[]; level?: string; rules: string[] }
+type Meta = { since: string; status: string; replaces: string[]; removeIn: string | null; replacedBy?: string[]; spec?: Spec }
 const registry = JSON.parse(fs.readFileSync(path.join(root, "registry.json"), "utf8")) as {
   items: { name: string; description?: string; files: { path: string }[]; meta?: Meta }[]
 }
@@ -54,5 +55,33 @@ describe("registry meta", () => {
       expect(fs.existsSync(path.join(root, `registry/nuikit/ui/${n}.tsx`)), n).toBe(false)
     }
     for (const n of ["key-prompt", "meter", "progress-ring", "notice"]) expect(names.has(n), n).toBe(true)
+  })
+})
+
+// Foundation 2: the component spec template (role, anatomy, props, level means, rules) in registry meta.
+describe("component specs", () => {
+  const SPECCED = ["panel", "menu-row", "meter", "vital-chip", "progress-ring", "notice", "key-prompt", "item-slot", "radial-menu", "hud-chip", "band", "confirm", "edge-sheet"]
+  const LEVEL = ["meter", "vital-chip", "progress-ring", "notice", "key-prompt"]
+  const meta = (n: string) => registry.items.find((i) => i.name === n)?.meta
+
+  it("every specced component says its role, anatomy and rules", () => {
+    for (const n of SPECCED) {
+      const spec = meta(n)?.spec
+      expect(spec, n).toBeDefined()
+      expect(spec!.role.length, n).toBeGreaterThan(10)
+      expect(spec!.anatomy.length, n).toBeGreaterThan(0)
+      expect(spec!.rules.length, n).toBeGreaterThan(0)
+    }
+  })
+
+  it("every component on the --level contract says what its level means", () => {
+    for (const n of LEVEL) expect(meta(n)?.spec?.level, n).toMatch(/\S/)
+  })
+
+  it("a spec's props are real: each file mentions them", () => {
+    for (const item of registry.items.filter((i) => i.meta?.spec?.props)) {
+      const src = item.files.map((f) => fs.readFileSync(path.join(root, f.path), "utf8")).join("\n")
+      for (const p of item.meta!.spec!.props!) expect(src, `${item.name}: ${p}`).toMatch(new RegExp(`\\b${p}\\b`))
+    }
   })
 })

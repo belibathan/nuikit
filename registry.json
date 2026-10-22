@@ -24,7 +24,29 @@
         "since": "0.5.0",
         "status": "stable",
         "replaces": [],
-        "removeIn": null
+        "removeIn": null,
+        "spec": {
+          "role": "The one floating surface: a menu, a form, a list on the game.",
+          "anatomy": [
+            "panel",
+            "panel-header (icon, title, description, actions)",
+            "panel-body (list | form)",
+            "panel-footer"
+          ],
+          "props": [
+            "size",
+            "selected",
+            "animate",
+            "density",
+            "shape",
+            "motion"
+          ],
+          "rules": [
+            "One primary action per panel.",
+            "Rows inside, not cards.",
+            "Positioned by anchors and zones, never absolute pixels."
+          ]
+        }
       }
     },
     {
@@ -50,7 +72,32 @@
         "since": "unreleased",
         "status": "experimental",
         "replaces": [],
-        "removeIn": null
+        "removeIn": null,
+        "spec": {
+          "role": "A sheet from a screen edge: an inventory side, a context menu.",
+          "anatomy": [
+            "edge-sheet (side)",
+            "column: header (title, description, actions)",
+            "edge (a level line)",
+            "body"
+          ],
+          "props": [
+            "open",
+            "side",
+            "modal",
+            "title",
+            "description",
+            "actions",
+            "density",
+            "shape",
+            "motion"
+          ],
+          "level": "the edge line: a fill such as weight (EdgeSheetEdge value, 0–100).",
+          "rules": [
+            "The game stays visible beside it.",
+            "Positioned on an edge, never centred with a transform."
+          ]
+        }
       }
     },
     {
@@ -103,7 +150,32 @@
         "since": "0.5.0",
         "status": "stable",
         "replaces": [],
-        "removeIn": null
+        "removeIn": null,
+        "spec": {
+          "role": "The action row every list is made of.",
+          "anatomy": [
+            "menu-row (icon | image, label, description, progress)",
+            "one trailing thing: meta | chevron | kbd | checkbox | stepper | actions",
+            "menu-row-list + menu-row-indicator (the sliding focus)"
+          ],
+          "props": [
+            "active",
+            "disabled",
+            "alert",
+            "readOnly",
+            "inert",
+            "tone",
+            "density",
+            "shape",
+            "motion"
+          ],
+          "level": "progress: the row's progress line (0–1 of its value).",
+          "rules": [
+            "States on data-state: rest, focus (active), confirm (on click), disabled, alert.",
+            "Hover is the accent; focus is the identity's indicator, never the hover colour.",
+            "A list the UI drives slides one indicator (MenuRowList)."
+          ]
+        }
       }
     },
     {
@@ -151,7 +223,37 @@
         "replaces": [
           "task-progress"
         ],
-        "removeIn": null
+        "removeIn": null,
+        "spec": {
+          "role": "A level on a bar: health, fuel, weight, a timed action.",
+          "anatomy": [
+            "meter (label row: icon, label, value text)",
+            "track",
+            "fill (or segments)",
+            "slab: label, cancel key, thin line"
+          ],
+          "props": [
+            "value",
+            "max",
+            "low",
+            "high",
+            "tone",
+            "track",
+            "segments",
+            "duration",
+            "variant",
+            "size",
+            "density",
+            "shape",
+            "motion"
+          ],
+          "level": "value / max; a timed run fills 0 → 1 over duration (--level is its end state).",
+          "rules": [
+            "Data is value/max or --level, never a variant.",
+            "Thresholds turn it destructive; tone never encodes data.",
+            "A timed run completes from a timer, so it finishes with motion off."
+          ]
+        }
       }
     },
     {
@@ -172,7 +274,29 @@
         "since": "0.5.0",
         "status": "stable",
         "replaces": [],
-        "removeIn": null
+        "removeIn": null,
+        "spec": {
+          "role": "A small fact on the HUD: voice range, radio, seatbelt.",
+          "anatomy": [
+            "hud-chip (pill | tile)",
+            "icon",
+            "text"
+          ],
+          "props": [
+            "shape",
+            "state",
+            "active",
+            "icon",
+            "density",
+            "motion",
+            "hue"
+          ],
+          "rules": [
+            "Its shape prop is the form (pill, tile); corners follow data-nk-shape on an ancestor.",
+            "warning is the theme's destructive; active is primary.",
+            "data-hue carries its role; the theme colours it."
+          ]
+        }
       }
     },
     {
@@ -246,6 +370,71 @@
       }
     },
     {
+      "name": "use-collapse",
+      "type": "registry:hook",
+      "title": "useCollapse",
+      "description": "The collapse engine for clustered indicators: a change opens a chip for --nk-rest-delay, changes within 400 ms batch together, critical first then the biggest change, at most N then +N, per-key opt-outs. Pure state functions for tests.",
+      "files": [
+        {
+          "path": "registry/nuikit/hooks/use-collapse.ts",
+          "type": "registry:hook"
+        }
+      ],
+      "dependencies": [
+        "nuikit-core"
+      ],
+      "meta": {
+        "since": "unreleased",
+        "status": "stable",
+        "replaces": [],
+        "removeIn": null
+      }
+    },
+    {
+      "name": "collapse-stack",
+      "type": "registry:ui",
+      "title": "Collapse stack",
+      "description": "A row of clustered indicators on the collapse engine: icons at rest, a change opens a chip, open chips lead (critical first, then the biggest change), at most max, then +N.",
+      "files": [
+        {
+          "path": "registry/nuikit/ui/collapse-stack.tsx",
+          "type": "registry:ui"
+        }
+      ],
+      "registryDependencies": [
+        "https://nuikit.vercel.app/r/use-collapse.json"
+      ],
+      "meta": {
+        "since": "unreleased",
+        "status": "stable",
+        "replaces": [],
+        "removeIn": null,
+        "spec": {
+          "role": "Clustered indicators (vitals, voice, job status) that stay icons until something changes.",
+          "anatomy": [
+            "collapse-stack",
+            "collapse-stack-item (your chip, via renderItem)",
+            "collapse-stack-more (+N)"
+          ],
+          "props": [
+            "items",
+            "renderItem",
+            "max",
+            "restDelay",
+            "batchMs",
+            "min",
+            "optOut"
+          ],
+          "rules": [
+            "At rest only icons; a change opens a chip for --nk-rest-delay.",
+            "Changes within the batch window (400 ms) open and close together.",
+            "Critical first, then the biggest change; at most max, then +N.",
+            "Order moves with CSS order; the DOM never re-orders, nothing remounts."
+          ]
+        }
+      }
+    },
+    {
       "name": "vital-chip",
       "type": "registry:ui",
       "title": "Vital Chip",
@@ -260,13 +449,48 @@
         "nuikit-core"
       ],
       "registryDependencies": [
-        "text-roll"
+        "text-roll",
+        "https://nuikit.vercel.app/r/collapse-stack.json",
+        "https://nuikit.vercel.app/r/use-collapse.json"
       ],
       "meta": {
         "since": "unreleased",
         "status": "experimental",
         "replaces": [],
-        "removeIn": null
+        "removeIn": null,
+        "spec": {
+          "role": "One vital on the HUD: health, armor, hunger, thirst, stress.",
+          "anatomy": [
+            "vital-chip-row (optional: chips that know each other)",
+            "vital-chip (shape)",
+            "icon",
+            "level drawing (outline | liquid | bar)",
+            "label (name, value)",
+            "pop (a change)"
+          ],
+          "props": [
+            "value",
+            "tone",
+            "shape",
+            "level",
+            "attach",
+            "icon",
+            "open",
+            "display",
+            "neighbours",
+            "format",
+            "max"
+          ],
+          "level": "the vital, 0–100 as 0–1.",
+          "rules": [
+            "data-hue carries the vital's role (health, armor…).",
+            "The level style comes from the theme (outline, liquid, bar); the data never picks it.",
+            "Readable over a bright sky (legibility fixture).",
+            "display: pill (icon, name, value) | value | icon (level as fill) | expand (opens on a change, settles after --nk-rest-delay); the theme default is --nk-vital-display.",
+            "neighbours (a chip that opens, in a Row): push | collapse | overlay; the theme default is --nk-vital-neighbours.",
+            "expand chips in a VitalChip.Row open through the row's collapse engine (useCollapse): batched, ordered, capped at max with +N."
+          ]
+        }
       }
     },
     {
@@ -306,7 +530,28 @@
         "since": "0.3.0",
         "status": "stable",
         "replaces": [],
-        "removeIn": null
+        "removeIn": null,
+        "spec": {
+          "role": "The action wheel.",
+          "anatomy": [
+            "radial-menu",
+            "wedges",
+            "radial-menu-item (icon, label)",
+            "centre"
+          ],
+          "props": [
+            "items",
+            "active",
+            "size",
+            "label",
+            "onSelect",
+            "onClose"
+          ],
+          "rules": [
+            "Items draw data-state: focus (the pointed wedge), disabled.",
+            "Sub-menus open in place; Escape goes back a level."
+          ]
+        }
       }
     },
     {
@@ -377,7 +622,42 @@
         "replaces": [
           "nui-toaster"
         ],
-        "removeIn": null
+        "removeIn": null,
+        "spec": {
+          "role": "A notification on the game, and the stack that holds them.",
+          "anatomy": [
+            "notice-stack (position)",
+            "notice-item (the flip wrapper)",
+            "notice: status icon, title, description, time line, close",
+            "item slab: tile, name, delta"
+          ],
+          "props": [
+            "status",
+            "title",
+            "description",
+            "icon",
+            "duration",
+            "elapsed",
+            "item",
+            "size",
+            "slide",
+            "animate",
+            "leaving",
+            "density",
+            "shape",
+            "motion",
+            "policy",
+            "queue",
+            "hurry"
+          ],
+          "level": "the time left, 1 → 0 over duration.",
+          "rules": [
+            "Newest nearest the edge; at most five per position.",
+            "Slides in from its stack's edge, out toward it.",
+            "error is data-state alert.",
+            "Queue policy (useNotices / NuiNotices): stack or one at a time, a capped queue (the oldest waiting goes), shown ones hurry (dwell x hurry) while others wait."
+          ]
+        }
       }
     },
     {
@@ -523,7 +803,32 @@
         "since": "0.6.0",
         "status": "stable",
         "replaces": [],
-        "removeIn": null
+        "removeIn": null,
+        "spec": {
+          "role": "A decision before something that can't be undone.",
+          "anatomy": [
+            "confirm-root + scrim",
+            "confirm (icon, title, description)",
+            "cancel, action"
+          ],
+          "props": [
+            "title",
+            "description",
+            "tone",
+            "confirmLabel",
+            "cancelLabel",
+            "loading",
+            "scrim",
+            "initialFocus",
+            "density",
+            "shape",
+            "motion"
+          ],
+          "rules": [
+            "Focus starts on the action; Escape and Cancel go back.",
+            "Destructive actions say so in the label."
+          ]
+        }
       }
     },
     {
@@ -549,7 +854,40 @@
         "replaces": [
           "key-hint"
         ],
-        "removeIn": null
+        "removeIn": null,
+        "spec": {
+          "role": "\"[E] Open garage\": what a key does here.",
+          "anatomy": [
+            "key-prompt (slab | panel | hud)",
+            "keys (key chips)",
+            "label, description",
+            "hold line"
+          ],
+          "props": [
+            "keys",
+            "label",
+            "description",
+            "hold",
+            "progress",
+            "active",
+            "disabled",
+            "listen",
+            "onConfirm",
+            "surface",
+            "size",
+            "density",
+            "shape",
+            "motion",
+            "stage"
+          ],
+          "level": "the hold progress, 0 → 1 (Lua's progress, or the pointer/key hold).",
+          "rules": [
+            "States: rest, focus (active), hold, confirm (when the hold fills), disabled.",
+            "In game Lua reads the key and sends progress; the page draws it.",
+            "One prompt per action; a stack for several.",
+            "The interaction ladder (stage): dormant (the key chip alone, quiet) → aware → focus → hold → confirm, on data-ladder; without stage, today's prompt."
+          ]
+        }
       }
     },
     {
@@ -575,7 +913,32 @@
         "replaces": [
           "task-progress"
         ],
-        "removeIn": null
+        "removeIn": null,
+        "spec": {
+          "role": "A level or a timed run, round.",
+          "anatomy": [
+            "progress-ring",
+            "track circle",
+            "fill arc",
+            "centre (percent | any node)",
+            "label, cancel hint"
+          ],
+          "props": [
+            "value",
+            "max",
+            "duration",
+            "tone",
+            "track",
+            "size",
+            "center",
+            "label"
+          ],
+          "level": "value / max; a timed run fills 0 → 1.",
+          "rules": [
+            "onComplete fires from a timer, never an animation event.",
+            "The round half of the progress intent; meter is the bar."
+          ]
+        }
       }
     },
     {
@@ -620,7 +983,28 @@
         "since": "unreleased",
         "status": "stable",
         "replaces": [],
-        "removeIn": null
+        "removeIn": null,
+        "spec": {
+          "role": "A full-width state across the screen: incapacitated, wanted.",
+          "anatomy": [
+            "band (top | bottom | inline)",
+            "title",
+            "subtitle"
+          ],
+          "props": [
+            "tone",
+            "title",
+            "subtitle",
+            "position",
+            "density",
+            "shape",
+            "motion"
+          ],
+          "rules": [
+            "One band at a time.",
+            "Text on the game: world foreground, legible over any frame."
+          ]
+        }
       }
     },
     {
@@ -664,7 +1048,35 @@
         "since": "0.6.0",
         "status": "stable",
         "replaces": [],
-        "removeIn": null
+        "removeIn": null,
+        "spec": {
+          "role": "One slot of an inventory, hotbar or shop.",
+          "anatomy": [
+            "item-slot",
+            "image | icon",
+            "name, count, hotkey, price, stock",
+            "durability line"
+          ],
+          "props": [
+            "image",
+            "label",
+            "count",
+            "hotkey",
+            "durability",
+            "price",
+            "active",
+            "dropTarget",
+            "dragging",
+            "locked",
+            "surface",
+            "size"
+          ],
+          "level": "durability, 0–100 as 0–1 (the line under the item).",
+          "rules": [
+            "data-state: focus (active or drop target), disabled (locked); the slot's own state is data-slot-state.",
+            "Drag and drop stays with the caller."
+          ]
+        }
       }
     },
     {
@@ -1349,6 +1761,237 @@
       "meta": {
         "since": "unreleased",
         "status": "stable",
+        "replaces": [],
+        "removeIn": null
+      }
+    },
+    {
+      "name": "npc-dialogue",
+      "type": "registry:block",
+      "title": "NPC dialogue",
+      "description": "Talking to an NPC: the speaker's name and role in a band at the bottom of the screen, the line typing itself out (all at once with reduced motion), and the replies as rows on the number keys, arrows and Enter; a locked reply shows why. The page sends only a choice id; the server holds the tree and decides. Protocol-agnostic.",
+      "files": [
+        {
+          "path": "registry/nuikit/blocks/npc-dialogue/npc-dialogue.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/npc-dialogue/npc-dialogue.tsx"
+        },
+        {
+          "path": "registry/nuikit/blocks/npc-dialogue/nui.ts",
+          "type": "registry:lib",
+          "target": "components/blocks/npc-dialogue/nui.ts"
+        },
+        {
+          "path": "registry/nuikit/blocks/npc-dialogue/fixtures.ts",
+          "type": "registry:lib",
+          "target": "components/blocks/npc-dialogue/fixtures.ts"
+        }
+      ],
+      "dependencies": [
+        "lucide-react",
+        "nuikit-core"
+      ],
+      "registryDependencies": [
+        "https://nuikit.vercel.app/r/panel.json",
+        "https://nuikit.vercel.app/r/menu-row.json"
+      ],
+      "categories": [
+        "screens"
+      ],
+      "docs": "Mount <DialogueSurface /> in App.tsx. In Lua, open nk.surface(\"dialogue\", { layer = \"panel\", exclusive = true, escape = \"back\" }) with a DialogueData table, answer nk.on(\"dialogue:choose\") with { ok, error } and :update it with the next node or close it when the conversation ends. On the server, keep the tree and each player's current node, accept only ids that node offers, re-check requirements and distance, and apply actions all or nothing. A whole resource with the Lua: npm create nuikit@latest my-dialogue -- -t npc-dialogue",
+      "meta": {
+        "since": "unreleased",
+        "status": "experimental",
+        "replaces": [],
+        "removeIn": null
+      }
+    },
+    {
+      "name": "job-tracker",
+      "type": "registry:block",
+      "title": "Job tracker",
+      "description": "The task panel a job shows while you work it: name and pay, the steps as rows (done, current, locked), the current step as a meter (a count or the distance), a key prompt for its action, and Abandon job behind a confirm. Docked at the right edge, compact. The server owns the job, the progress and the pay. Protocol-agnostic.",
+      "files": [
+        {
+          "path": "registry/nuikit/blocks/job-tracker/job-tracker.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/job-tracker/job-tracker.tsx"
+        },
+        {
+          "path": "registry/nuikit/blocks/job-tracker/nui.ts",
+          "type": "registry:lib",
+          "target": "components/blocks/job-tracker/nui.ts"
+        },
+        {
+          "path": "registry/nuikit/blocks/job-tracker/fixtures.ts",
+          "type": "registry:lib",
+          "target": "components/blocks/job-tracker/fixtures.ts"
+        }
+      ],
+      "dependencies": [
+        "lucide-react",
+        "nuikit-core"
+      ],
+      "registryDependencies": [
+        "button",
+        "spinner",
+        "https://nuikit.vercel.app/r/panel.json",
+        "https://nuikit.vercel.app/r/menu-row.json",
+        "https://nuikit.vercel.app/r/meter.json",
+        "https://nuikit.vercel.app/r/key-prompt.json",
+        "https://nuikit.vercel.app/r/money.json",
+        "https://nuikit.vercel.app/r/confirm.json"
+      ],
+      "categories": [
+        "screens"
+      ],
+      "docs": "Mount <JobTrackerSurface /> in App.tsx. In Lua, show nk.surface(\"jobtracker\", { layer = \"hud\" }) with a JobTrackerData table while the player has a job, and nk.surface(\"jobtracker-manage\", { layer = \"panel\", input = \"full\", keepInput = true, escape = \"back\", hides = { \"jobtracker\" } }) for the focused panel; answer nk.on(\"jobtracker:step\") and nk.on(\"jobtracker:abandon\") with { ok, error } and :update both with the fresh snapshot. On the server, own the jobs, the steps' places and the pay: check the job, the order, the distance and the items, and pay once. A whole resource with the Lua: npm create nuikit@latest my-jobs -- -t job-tracker",
+      "meta": {
+        "since": "unreleased",
+        "status": "experimental",
+        "replaces": [],
+        "removeIn": null
+      }
+    },
+    {
+      "name": "storefront",
+      "type": "registry:block",
+      "title": "Storefront",
+      "description": "The counter of a player-run business: its name and open or closed state, products at the price and stock the business set, a cart with cash or bank checkout, and a Manage tab for its employees (open or close, set a price within a range, switch a product on or off, restock). The page checks the cart; the server prices and decides.",
+      "files": [
+        {
+          "path": "registry/nuikit/blocks/storefront/storefront.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/storefront/storefront.tsx"
+        },
+        {
+          "path": "registry/nuikit/blocks/storefront/nui.ts",
+          "type": "registry:lib",
+          "target": "components/blocks/storefront/nui.ts"
+        },
+        {
+          "path": "registry/nuikit/blocks/storefront/fixtures.ts",
+          "type": "registry:lib",
+          "target": "components/blocks/storefront/fixtures.ts"
+        }
+      ],
+      "dependencies": [
+        "lucide-react",
+        "nuikit-core"
+      ],
+      "registryDependencies": [
+        "button",
+        "spinner",
+        "tabs",
+        "https://nuikit.vercel.app/r/panel.json",
+        "https://nuikit.vercel.app/r/item-slot.json",
+        "https://nuikit.vercel.app/r/money.json",
+        "https://nuikit.vercel.app/r/menu-row.json",
+        "https://nuikit.vercel.app/r/confirm.json",
+        "https://nuikit.vercel.app/r/empty-state.json"
+      ],
+      "categories": [
+        "screens"
+      ],
+      "docs": "Mount <StorefrontSurface /> in App.tsx. In Lua, open nk.surface(\"storefront\", { layer = \"panel\", exclusive = true, escape = \"back\" }) with a StorefrontData table (set staff = true for the business's employees), answer nk.on(\"storefront:buy\") and nk.on(\"storefront:manage\") with { ok, error } and :update it with fresh prices, stock and money. On the server, use your own prices and stock, check every line and the player's job and grade, and move money and items all or nothing. A whole resource with the Lua: npm create nuikit@latest my-storefront -- -t storefront",
+      "meta": {
+        "since": "unreleased",
+        "status": "experimental",
+        "replaces": [],
+        "removeIn": null
+      }
+    },
+    {
+      "name": "phone",
+      "type": "registry:block",
+      "title": "Phone",
+      "description": "A phone anchored bottom right: a status bar, a home screen of app icons and an app frame with a back action, with Contacts and Messages and a registry for your own apps. The server owns the number, the contacts and the texts, and stamps the sender and the time.",
+      "files": [
+        {
+          "path": "registry/nuikit/blocks/phone/phone.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/phone/phone.tsx"
+        },
+        {
+          "path": "registry/nuikit/blocks/phone/nui.ts",
+          "type": "registry:lib",
+          "target": "components/blocks/phone/nui.ts"
+        },
+        {
+          "path": "registry/nuikit/blocks/phone/fixtures.ts",
+          "type": "registry:lib",
+          "target": "components/blocks/phone/fixtures.ts"
+        }
+      ],
+      "dependencies": [
+        "lucide-react",
+        "nuikit-core"
+      ],
+      "registryDependencies": [
+        "button",
+        "input",
+        "spinner",
+        "https://nuikit.vercel.app/r/panel.json",
+        "https://nuikit.vercel.app/r/menu-row.json",
+        "https://nuikit.vercel.app/r/form-field.json",
+        "https://nuikit.vercel.app/r/empty-state.json"
+      ],
+      "categories": [
+        "screens"
+      ],
+      "docs": "Mount <PhoneSurface /> in App.tsx. In Lua, open nk.surface(\"phone\", { layer = \"panel\", escape = \"back\" }) with a PhoneData table, answer nk.on(\"phone:addContact\") and nk.on(\"phone:send\") with { ok, error } and :update it with a fresh snapshot. Add your own app by appending { id, label, icon, Component } to PHONE_APPS. On the server, assign numbers, keep contacts and messages per player, stamp the sender and the time, validate and rate-limit. A whole resource with the Lua: npm create nuikit@latest my-phone -- -t phone",
+      "meta": {
+        "since": "unreleased",
+        "status": "experimental",
+        "replaces": [],
+        "removeIn": null
+      }
+    },
+    {
+      "name": "mdt",
+      "type": "registry:block",
+      "title": "MDT",
+      "description": "The shell of a police or EMS terminal: a nav (Dashboard, People, Vehicles, Reports), a search with a results list and a record pane, and a short report form behind a confirm. The server checks job and duty on every call, runs every search, limits input and rate, and stamps reports. Protocol-agnostic.",
+      "files": [
+        {
+          "path": "registry/nuikit/blocks/mdt/mdt.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/mdt/mdt.tsx"
+        },
+        {
+          "path": "registry/nuikit/blocks/mdt/nui.ts",
+          "type": "registry:lib",
+          "target": "components/blocks/mdt/nui.ts"
+        },
+        {
+          "path": "registry/nuikit/blocks/mdt/fixtures.ts",
+          "type": "registry:lib",
+          "target": "components/blocks/mdt/fixtures.ts"
+        }
+      ],
+      "dependencies": [
+        "lucide-react",
+        "nuikit-core"
+      ],
+      "registryDependencies": [
+        "badge",
+        "button",
+        "input",
+        "spinner",
+        "https://nuikit.vercel.app/r/panel.json",
+        "https://nuikit.vercel.app/r/menu-row.json",
+        "https://nuikit.vercel.app/r/player-card.json",
+        "https://nuikit.vercel.app/r/form-field.json",
+        "https://nuikit.vercel.app/r/confirm.json",
+        "https://nuikit.vercel.app/r/empty-state.json"
+      ],
+      "categories": [
+        "screens"
+      ],
+      "docs": "Mount <MdtSurface /> in App.tsx. In Lua, open nk.surface(\"mdt\", { layer = \"panel\", exclusive = true, escape = \"back\" }) with an MdtData table, and answer nk.on(\"mdt:search\"), nk.on(\"mdt:record\") and nk.on(\"mdt:report\") with { ok, error, ... }. On the server, allow only your jobs and only on duty, search yourself, send opaque record ids and whitelisted fields, limit input and rate, and stamp the author and time of a report. A whole resource with the Lua: npm create nuikit@latest my-mdt -- -t mdt",
+      "meta": {
+        "since": "unreleased",
+        "status": "experimental",
         "replaces": [],
         "removeIn": null
       }

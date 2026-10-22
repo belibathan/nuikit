@@ -1,0 +1,9 @@
+{
+  "block": "storefront",
+  "title": "Storefront",
+  "description": "The counter of a player-run business: products at the business's prices and stock, a cart and checkout, and a Manage tab for its employees; everything checked by the server (needs OneSync)",
+  "next": [
+    "walk up to Burger Shot in Vespucci and press E (or /{{name}}); add your license to Config.staff to see the Manage tab",
+    "fill in Config.job, Config.money, Config.account and Config.items for your framework; needs OneSync"
+  ]
+}

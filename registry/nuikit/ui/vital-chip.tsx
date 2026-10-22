@@ -1,9 +1,12 @@
 "use client"
 
 import * as React from "react"
+import { token, tokenMs } from "nuikit-core/motion"
 
-import { cn } from "@/lib/utils"
+import { cn, nkLevel } from "@/lib/utils"
 import { NumberRoll } from "@/components/ui/text-roll"
+import { CollapseMore } from "@/components/ui/collapse-stack"
+import { useCollapse, type UseCollapseOptions } from "@/hooks/use-collapse"
 
 /**
  * VitalChip — the HUD's status chip as composable parts (shadcn-style), so a theme (or a player) can vary
@@ -37,18 +40,37 @@ export type ChipShape = "auto" | "square" | "rounded" | "circle" | "diamond" | "
 export type LevelStyle = "outline" | "fill" | "bar" | "none"
 export type LabelAttach = "inline" | "tag" | "flag" | "none"
 export type IconMode = "vital" | "uniform"
+/**
+ * What the chip shows (the owner's HUD customization): pill = icon + label + value; value = icon + value;
+ * icon = the icon alone, the level as fill; expand = the icon, which opens to the pill when the value
+ * changes and settles back after --nk-rest-delay (2.5 s when that is 0). auto: the label shows while
+ * the Root is open (the parts as composed).
+ */
+export type ChipDisplay = "auto" | "pill" | "value" | "icon" | "expand"
+/**
+ * How a chip that opens (voice while talking, an expand) treats the chips beside it in a VitalChip.Row:
+ * push = they make way (its label takes room in the row); collapse = they close to their icons while
+ * it's open; overlay = they never move (its label floats over them).
+ */
+export type ChipNeighbours = "push" | "collapse" | "overlay"
 
 const SHAPES: ChipShape[] = ["auto", "square", "rounded", "circle", "diamond", "hex", "chamfer"]
 const LEVELS: LevelStyle[] = ["outline", "fill", "bar", "none"]
 const ATTACH: LabelAttach[] = ["inline", "tag", "flag", "none"]
+/** tokens 1.4's --nk-level-style names, as the chip's drawings */
+const LEVEL_14: Record<string, LevelStyle> = { ring: "outline", liquid: "fill", bar: "bar", slab: "bar", pips: "bar" }
+const DISPLAYS: ChipDisplay[] = ["auto", "pill", "value", "icon", "expand"]
+const NEIGHBOURS: ChipNeighbours[] = ["push", "collapse", "overlay"]
 
 export interface ChipStyle {
   shape: ChipShape
   level: LevelStyle
   attach: LabelAttach
   icon: IconMode
+  display: ChipDisplay
+  neighbours: ChipNeighbours
 }
-export const DEFAULT_STYLE: ChipStyle = { shape: "auto", level: "outline", attach: "inline", icon: "vital" }
+export const DEFAULT_STYLE: ChipStyle = { shape: "auto", level: "outline", attach: "inline", icon: "vital", display: "auto", neighbours: "push" }
 
 function pickOf<T extends string>(list: readonly T[], v: string, d: T): T {
   const s = v.trim().replace(/["']/g, "") as T
@@ -59,29 +81,52 @@ function pickOf<T extends string>(list: readonly T[], v: string, d: T): T {
 export function readChipStyle(get: (name: string) => string): ChipStyle {
   return {
     shape: pickOf(SHAPES, get("--nk-chip-shape"), DEFAULT_STYLE.shape),
-    level: pickOf(LEVELS, get("--nk-level-style"), DEFAULT_STYLE.level),
+    level: pickOf(LEVELS, LEVEL_14[get("--nk-level-style").trim()] ?? get("--nk-level-style"), DEFAULT_STYLE.level),
     attach: pickOf(ATTACH, get("--nk-label-attach"), DEFAULT_STYLE.attach),
     icon: pickOf(["vital", "uniform"] as const, get("--nk-vital-icon"), DEFAULT_STYLE.icon),
+    display: pickOf(DISPLAYS, get("--nk-vital-display"), DEFAULT_STYLE.display),
+    neighbours: pickOf(NEIGHBOURS, get("--nk-vital-neighbours"), DEFAULT_STYLE.neighbours),
   }
 }
 
 /** The chip style tokens, live: re-read when <html>'s style or class changes (a theme, a player override). */
-export function useChipStyle(): ChipStyle {
-  const read = () => (typeof document === "undefined" ? DEFAULT_STYLE : readChipStyle((n) => getComputedStyle(document.documentElement).getPropertyValue(n)))
-  const [style, setStyle] = React.useState<ChipStyle>(read)
-  React.useEffect(() => {
-    const update = () =>
-      setStyle((prev) => {
-        const next = read()
-        return prev.shape === next.shape && prev.level === next.level && prev.attach === next.attach && prev.icon === next.icon ? prev : next
+// One store for every chip: <html>'s style is read once per change (coalesced to a frame), not once per chip.
+let chipStyle: ChipStyle = DEFAULT_STYLE
+const chipListeners = new Set<() => void>()
+let chipObserver: MutationObserver | null = null
+let chipPending = false
+function readChipStyleNow() {
+  const cs = getComputedStyle(document.documentElement)
+  const next = readChipStyle((n) => cs.getPropertyValue(n))
+  if ((Object.keys(next) as (keyof ChipStyle)[]).every((k) => chipStyle[k] === next[k])) return
+  chipStyle = next
+  chipListeners.forEach((l) => l())
+}
+function subscribeChipStyle(listener: () => void) {
+  chipListeners.add(listener)
+  if (!chipObserver && typeof MutationObserver !== "undefined") {
+    readChipStyleNow()
+    chipObserver = new MutationObserver(() => {
+      if (chipPending) return
+      chipPending = true
+      requestAnimationFrame(() => {
+        chipPending = false
+        readChipStyleNow()
       })
-    update()
-    const mo = new MutationObserver(update)
-    mo.observe(document.documentElement, { attributes: true, attributeFilter: ["style", "class"] })
-    return () => mo.disconnect()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-  return style
+    })
+    chipObserver.observe(document.documentElement, { attributes: true, attributeFilter: ["style", "class"] })
+  }
+  return () => {
+    chipListeners.delete(listener)
+    if (!chipListeners.size) {
+      chipObserver?.disconnect()
+      chipObserver = null
+    }
+  }
+}
+
+export function useChipStyle(): ChipStyle {
+  return React.useSyncExternalStore(subscribeChipStyle, () => chipStyle, () => DEFAULT_STYLE)
 }
 
 // ───────────────────────────────── geometry: one path per shape
@@ -181,12 +226,56 @@ interface Ctx {
   tone?: string
   style: ChipStyle
   geo: Geometry | null
-  setGeo: (g: Geometry | null) => void
+  setGeo: React.Dispatch<React.SetStateAction<Geometry | null>>
   open: boolean
+  /** the label floats over the row (neighbours: overlay) */
+  float: boolean
+  /** what the label says besides its children: the value, formatted */
+  valueText: React.ReactNode | null
+  /** value: the label is the value alone */
+  valueOnly: boolean
   wide: boolean
   setWide: (w: boolean) => void
 }
 const ChipCtx = React.createContext<Ctx | null>(null)
+
+/** A row of chips: which chip (if any) has claimed the room (neighbours: collapse). */
+const RowCtx = React.createContext<{
+  claim: string | null
+  take: (id: string) => void
+  give: (id: string) => void
+  /** the row's collapse engine: expand chips open and close through it */
+  collapse: ReturnType<typeof useCollapse>
+} | null>(null)
+
+/**
+ * A row of chips that know about each other. A chip that opens with neighbours="collapse" closes the rest.
+ * Chips with display="expand" open through the row's collapse engine (useCollapse): changes within the batch
+ * window open together and close together, open chips lead the row (critical first, then the biggest
+ * change), at most `max` (default 3), then "+N".
+ */
+function Row({ className, children, max, batchMs, restDelay, optOut, ...props }: React.ComponentProps<"div"> & UseCollapseOptions) {
+  const [claim, setClaim] = React.useState<string | null>(null)
+  const collapse = useCollapse({ max, batchMs, restDelay, optOut })
+  const api = React.useMemo(
+    () => ({ claim, take: (id: string) => setClaim(id), give: (id: string) => setClaim((c) => (c === id ? null : c)), collapse }),
+    [claim, collapse]
+  )
+  return (
+    <RowCtx.Provider value={api}>
+      <div data-slot="vital-chip-row" className={cn("flex items-center gap-1.5", className)} {...props}>
+        {children}
+        {collapse.overflow > 0 && <CollapseMore count={collapse.overflow} style={{ order: -50 }} />}
+      </div>
+    </RowCtx.Provider>
+  )
+}
+
+/** --nk-alert-threshold (tokens 1.4: 0.2): a vital at or under it is critical. */
+function alertThreshold() {
+  const n = parseFloat(token("--nk-alert-threshold"))
+  return Number.isFinite(n) ? n : 0.2
+}
 /** true inside Shape: an inline Label renders there, a tag or flag outside it */
 const InShape = React.createContext(false)
 function useChip() {
@@ -201,6 +290,22 @@ function effectiveAttach(style: ChipStyle): LabelAttach {
   return style.attach === "inline" && !rect ? "flag" : style.attach
 }
 
+/** expand: true from a change of the value until --nk-rest-delay (2.5 s when 0) after the last one. */
+function useExpand(value: number | undefined) {
+  const [on, setOn] = React.useState(false)
+  const last = React.useRef(value)
+  React.useEffect(() => {
+    if (value === undefined || last.current === value) return
+    const first = last.current === undefined
+    last.current = value
+    if (first) return
+    setOn(true)
+    const t = setTimeout(() => setOn(false), tokenMs("--nk-rest-delay", 0) || 2500)
+    return () => clearTimeout(t)
+  }, [value])
+  return on
+}
+
 type RootProps = React.ComponentProps<"div"> & {
   /** 0–100; leave out for a chip without a level (voice, radio) */
   value?: number
@@ -212,25 +317,72 @@ type RootProps = React.ComponentProps<"div"> & {
   icon?: IconMode
   /** the label shows (inline / tag / flag) */
   open?: boolean
+  /** what it shows: pill, value, icon, expand (see ChipDisplay); default the theme's --nk-vital-display */
+  display?: ChipDisplay
+  /** when it opens, what the chips beside it in a Row do (see ChipNeighbours) */
+  neighbours?: ChipNeighbours
+  /** the value as text (pill, value, expand); default the rounded number */
+  format?: (value: number) => React.ReactNode
 }
 
-function Root({ value, tone, shape, level, attach, icon, open = false, className, style, children, ...props }: RootProps) {
+function Root({ value, tone, shape, level, attach, icon, open = false, display, neighbours, format, className, style, children, ...props }: RootProps) {
   const theme = useChipStyle()
-  const chip: ChipStyle = { shape: shape ?? theme.shape, level: level ?? theme.level, attach: attach ?? theme.attach, icon: icon ?? theme.icon }
+  const mode = display ?? theme.display
+  const chip: ChipStyle = {
+    shape: shape ?? theme.shape,
+    // icon only: the level shows as the fill
+    level: level ?? (mode === "icon" ? "fill" : theme.level),
+    attach: attach ?? theme.attach,
+    icon: icon ?? theme.icon,
+    display: mode,
+    neighbours: neighbours ?? theme.neighbours,
+  }
+  const row = React.useContext(RowCtx)
+  const id = React.useId()
+  // expand: in a Row through its collapse engine (batched, ordered, capped), alone on its own timer
+  const engine = row && mode === "expand" ? row.collapse : null
+  const key = tone ?? id
+  const ownExpanded = useExpand(mode === "expand" && !engine ? value : undefined)
+  const report = engine?.report
+  const critical = value !== undefined && value <= alertThreshold() * 100
+  React.useEffect(() => {
+    if (report && value !== undefined) report(key, value, { critical })
+  }, [report, key, value, critical])
+  const rank = engine ? engine.rank(key) : -1
+  const expanded = engine ? rank >= 0 : ownExpanded
+  const own = open || mode === "pill" || mode === "value" || (mode === "expand" && expanded)
+  // in a Row: a chip that opens with neighbours="collapse" takes the room; the others close meanwhile
+  const claiming = own && chip.neighbours === "collapse"
+  const take = row?.take
+  const give = row?.give
+  React.useEffect(() => {
+    if (claiming) take?.(id)
+    else give?.(id)
+  }, [claiming, id, take, give])
+  React.useEffect(() => () => give?.(id), [give, id])
+  const yielded = !!row?.claim && row.claim !== id
+  const isOpen = own && !yielded
+  const shown = mode === "pill" || mode === "value" || mode === "expand"
+  const valueText = shown && value !== undefined ? (format ? format(value) : Math.round(value)) : null
   const [geo, setGeo] = React.useState<Geometry | null>(null)
   const [wide, setWide] = React.useState(false)
   const at = effectiveAttach(chip)
   return (
-    <ChipCtx.Provider value={{ value, tone, style: chip, geo, setGeo, open, wide, setWide }}>
+    <ChipCtx.Provider value={{ value, tone, style: chip, geo, setGeo, open: isOpen, float: chip.neighbours === "overlay", valueText, valueOnly: mode === "value", wide, setWide }}>
       <div
         data-slot="vital-chip"
+        data-hue={tone}
         data-shape={chip.shape}
         data-level={chip.level}
         data-attach={at}
         data-icon={chip.icon}
-        data-open={open || undefined}
-        className={cn("relative isolate inline-flex shrink-0", className)}
-        style={{ ...(tone ? ({ "--vital": `var(--vital-${tone})` } as React.CSSProperties) : null), ...style }}
+        data-open={isOpen || undefined}
+        data-display={mode}
+        data-neighbours={chip.neighbours}
+        data-yielded={yielded || undefined}
+        // overlay: an open chip's floating label sits above the chips after it
+        className={cn("relative isolate inline-flex shrink-0", isOpen && chip.neighbours === "overlay" && "z-10", className)}
+        style={{ ...(rank >= 0 ? { order: rank - 100 } : null), ...nkLevel(value === undefined ? undefined : value / 100), ...(tone ? ({ "--vital": `var(--hue-solid, var(--vital-${tone}))` } as React.CSSProperties) : null), ...style }}
         {...props}
       >
         {children}
@@ -266,12 +418,20 @@ function Shape({ className, children, ...props }: React.ComponentProps<"span">) 
         r = Math.min(parseFloat(cs.borderTopRightRadius) || 0, w / 2, h / 2)
         if (cs.clipPath && cs.clipPath !== "none") cut = p.getBoundingClientRect().width
       }
-      setGeo({ w, h, r, cut })
+      setGeo((g) => (g && g.w === w && g.h === h && g.r === r && g.cut === cut ? g : { w, h, r, cut }))
     }
     measure()
     const ro = new ResizeObserver(measure)
     ro.observe(el)
-    const mo = new MutationObserver(() => requestAnimationFrame(measure))
+    let pending = false
+    const mo = new MutationObserver(() => {
+      if (pending) return
+      pending = true
+      requestAnimationFrame(() => {
+        pending = false
+        measure()
+      })
+    })
     mo.observe(document.documentElement, { attributes: true, attributeFilter: ["style", "class"] })
     return () => {
       ro.disconnect()
@@ -356,7 +516,7 @@ function Shape({ className, children, ...props }: React.ComponentProps<"span">) 
                 pathLength={100}
                 // full: a plain closed stroke (its corners joined), no dash, so start and end meet with no gap
                 strokeDasharray={v! >= 99.5 ? undefined : `${v} 100`}
-                style={{ fill: "none", stroke: "var(--vital, var(--primary))", transition: "stroke-dasharray calc(300ms * var(--nk-motion, 1)) ease-out" }}
+                style={{ fill: "none", stroke: "var(--vital, var(--primary))" }}
               />
             )}
           </>
@@ -396,10 +556,24 @@ function Icon({ className, ...props }: React.ComponentProps<"span">) {
  * Tag: a banner hanging beneath on a short stem. Flag: a rect sticking out to the right, tucked under
  * the chip. Shows while the Root is open.
  */
-function Label({ className, children, ...props }: React.ComponentProps<"span">) {
-  const { style, open } = useChip()
+function Label({ className, children: name, ...props }: React.ComponentProps<"span">) {
+  const { style, open, float, valueText, valueOnly } = useChip()
   const inShape = React.useContext(InShape)
-  const at = effectiveAttach(style)
+  const attached = effectiveAttach(style)
+  // overlay: an inline or flag label floats over the row (rendered outside Shape, like a tag)
+  const at = float && (attached === "inline" || attached === "flag") ? "float" : attached
+  // pill and expand: the name and the value; value: the value alone
+  const children =
+    valueText === null ? (
+      name
+    ) : valueOnly ? (
+      <span className="nk-num">{valueText}</span>
+    ) : (
+      <>
+        {name}
+        <span className="nk-num ml-1.5 opacity-80">{valueText}</span>
+      </>
+    )
   // write it in both places: inside Shape it is the inline label, outside the tag or flag
   if (at === "none" || (at === "inline") !== inShape) return null
   if (at === "inline") {
@@ -408,7 +582,7 @@ function Label({ className, children, ...props }: React.ComponentProps<"span">) 
         data-slot="vital-chip-label"
         data-open={open || undefined}
         className={cn(
-          "pointer-events-none order-last max-w-0 overflow-hidden text-[0.8125rem] leading-none font-semibold opacity-0 transition-[max-width,opacity,margin] duration-[calc(220ms*var(--nk-motion,1))] ease-out data-[open]:ml-[0.3125rem] data-[open]:max-w-24 data-[open]:opacity-100",
+          "pointer-events-none order-last max-w-0 overflow-hidden text-[0.8125rem] leading-none font-semibold opacity-0 -translate-x-1 transition-[opacity,transform] duration-[calc(220ms*var(--nk-motion,1))] ease-out data-[open]:ml-[0.3125rem] data-[open]:max-w-24 data-[open]:translate-x-0 data-[open]:opacity-100",
           className
         )}
         {...props}
@@ -426,7 +600,7 @@ function Label({ className, children, ...props }: React.ComponentProps<"span">) 
         data-attach="flag"
         data-open={open || undefined}
         className={cn(
-          "pointer-events-none relative z-0 data-[open]:-ml-[0.375rem] flex h-[calc(var(--vital-size)*0.72)] max-w-0 items-center self-center overflow-hidden rounded-r-(--nk-chip-radius) bg-(--nk-chip-bg) text-[0.8125rem] font-semibold whitespace-nowrap text-(--nk-chip-fg) opacity-0 transition-[max-width,opacity,padding,margin] duration-[calc(220ms*var(--nk-motion,1))] ease-out data-[open]:max-w-28 data-[open]:pr-2 data-[open]:pl-[0.625rem] data-[open]:opacity-100",
+          "pointer-events-none relative z-0 data-[open]:-ml-[0.375rem] flex h-[calc(var(--vital-size)*0.72)] max-w-0 items-center self-center overflow-hidden rounded-r-(--nk-chip-radius) bg-(--nk-chip-bg) text-[0.8125rem] font-semibold whitespace-nowrap text-(--nk-chip-fg) opacity-0 -translate-x-1 transition-[opacity,transform] duration-[calc(220ms*var(--nk-motion,1))] ease-out data-[open]:max-w-28 data-[open]:translate-x-0 data-[open]:pr-2 data-[open]:pl-[0.625rem] data-[open]:opacity-100",
           className
         )}
         {...props}
@@ -523,7 +697,7 @@ function Pop({ label, mode = "change", min = 3, critical = false, force = null, 
         // a flag out of the chip's side, in line with the row: it takes its own room, so pops of
         // vitals that change together sit side by side and can never overlap
         "pointer-events-none relative z-0 data-[open]:-ml-[0.375rem] flex h-[calc(var(--vital-size)*0.8)] max-w-0 items-center gap-1.5 self-center overflow-hidden rounded-r-(--nk-chip-radius) bg-(--nk-chip-bg) text-[0.875rem] leading-none font-semibold whitespace-nowrap text-(--nk-chip-fg) opacity-0",
-        "transition-[max-width,opacity,padding,margin] duration-[calc(240ms*var(--nk-motion,1))] ease-out data-[open]:max-w-48 data-[open]:pr-2.5 data-[open]:pl-[0.75rem] data-[open]:opacity-100"
+        "-translate-x-1 transition-[opacity,transform] duration-[calc(240ms*var(--nk-motion,1))] ease-out data-[open]:max-w-48 data-[open]:translate-x-0 data-[open]:pr-2.5 data-[open]:pl-[0.75rem] data-[open]:opacity-100"
       )}
     >
       <span>{label}</span>
@@ -535,6 +709,6 @@ function Pop({ label, mode = "change", min = 3, critical = false, force = null, 
   )
 }
 
-const VitalChip = { Root, Shape, Level, Icon, Label, Pop }
+const VitalChip = { Root, Row, Shape, Level, Icon, Label, Pop }
 
 export { VitalChip }

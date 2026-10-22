@@ -3,7 +3,7 @@
 import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
 
-import { cn, nkVariant, type NkVariantProps } from "@/lib/utils"
+import { cn, nkConfirm, nkLevel, nkState, nkVariant, type NkVariantProps } from "@/lib/utils"
 import { Kbd, KbdGroup } from "@/components/ui/kbd"
 
 /**
@@ -151,6 +151,12 @@ type KeyPromptProps = Omit<React.ComponentProps<"div">, "children"> &
     progress?: number
     /** The one the key acts on now, among several prompts. */
     active?: boolean
+    /**
+     * Where the player is on the interaction ladder (wave 3): dormant (the thing is near: the key chip
+     * alone, quiet), aware (in reach: the prompt, not yet the target), focus (the key acts on it; what
+     * `active` says). Hold and confirm follow from the hold. Without it: today's prompt (focus when active), no ladder.
+     */
+    stage?: "dormant" | "aware" | "focus"
     disabled?: boolean
     /**
      * Listen for the key while mounted (only when the page has keyboard focus): a press, or a hold
@@ -174,9 +180,11 @@ function KeyPrompt({
   hold,
   progress,
   active = false,
+  stage,
   disabled = false,
   listen = false,
   onConfirm,
+  style,
   density,
   shape,
   motion,
@@ -184,13 +192,26 @@ function KeyPrompt({
 }: NkVariantProps & KeyPromptProps) {
   const list = (typeof keys === "string" ? [keys] : [...keys]).filter((k) => k !== "")
   const slab = (surface ?? "slab") === "slab"
+  const root = React.useRef<HTMLDivElement>(null)
   const line = React.useRef<HTMLSpanElement>(null)
-  const internal = useHold(hold, onConfirm, (n) => {
+  const confirm = () => {
+    nkConfirm(root.current)
+    onConfirm?.()
+  }
+  const internal = useHold(hold, onConfirm && confirm, (n) => {
     if (line.current) line.current.style.transform = `scaleX(${n})`
+    root.current?.style.setProperty("--level", n.toFixed(3))
   })
   const controlled = progress !== undefined
   const p = controlled ? holdProgress(progress, 1) : 0
+  // a hold Lua drives pops when it fills
+  const full = controlled && p >= 1
+  React.useEffect(() => {
+    if (full) nkConfirm(root.current)
+  }, [full])
   const holding = controlled ? p > 0 : internal.holding
+  // no stage: today's prompt (focus only when active), no ladder drawn
+  const rung = stage ?? (active ? "focus" : undefined)
   const interactive = !!onConfirm && !disabled
   const bind = typeof listen === "string" ? listen : listen ? list[0] : undefined
   // more than one line of text: the slab grows downwards, the key stays on the first line
@@ -237,10 +258,14 @@ function KeyPrompt({
       tabIndex={interactive ? 0 : undefined}
       aria-disabled={disabled || undefined}
       aria-keyshortcuts={list.length ? list.join("+") : undefined}
+      ref={root}
       {...nkVariant({ density, shape, motion })}
       data-slot="key-prompt"
+      data-state={nkState({ disabled, hold: holding, focus: rung === "focus" })}
+      data-ladder={stage || holding ? (holding ? "hold" : rung) : undefined}
+      style={{ ...nkLevel(p), ...style }}
       data-surface-variant={surface ?? "slab"}
-      data-active={active || undefined}
+      data-active={rung === "focus" || undefined}
       data-disabled={disabled || undefined}
       data-holding={holding || undefined}
       data-wrap={wrap || undefined}
@@ -249,7 +274,7 @@ function KeyPrompt({
         tall && "items-start [&>[data-slot=key-prompt-keys]]:mt-[calc((1.25rem-var(--nk-slab-key-size))/2)]",
         tall && slab && "py-[calc((var(--nk-slab-height)-1.25rem)/2)]",
         wrap && "whitespace-normal",
-        active && "outline-2 -outline-offset-1 outline-(--nk-row-indicator-color)",
+        rung === "focus" && "outline-2 -outline-offset-1 outline-(--nk-row-indicator-color)",
         disabled && "opacity-50",
         interactive && "cursor-pointer outline-none select-none focus-visible:ring-[3px] focus-visible:ring-ring/50",
         className
@@ -300,7 +325,7 @@ function KeyPrompt({
           {icon}
         </span>
       )}
-      <span className="flex min-w-0 flex-col">
+      <span data-slot="key-prompt-text" className="flex min-w-0 flex-col">
         <span data-slot="key-prompt-label" className={wrap ? "text-pretty break-words" : "truncate"}>
           {label}
         </span>

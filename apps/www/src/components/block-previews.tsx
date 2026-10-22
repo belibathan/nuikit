@@ -27,6 +27,16 @@ import { Scoreboard } from "@/blocks/scoreboard/scoreboard";
 import { scoreboardFixtures } from "@/blocks/scoreboard/fixtures";
 import { Settings } from "@/blocks/settings/settings";
 import { settingsFixtures } from "@/blocks/settings/fixtures";
+import { dialogueFixtures } from "@/blocks/npc-dialogue/fixtures";
+import { NpcDialogue } from "@/blocks/npc-dialogue/npc-dialogue";
+import { jobTrackerFixtures } from "@/blocks/job-tracker/fixtures";
+import { JobTracker } from "@/blocks/job-tracker/job-tracker";
+import { storefrontCarts, storefrontFixtures } from "@/blocks/storefront/fixtures";
+import { Storefront } from "@/blocks/storefront/storefront";
+import { phoneFixtures } from "@/blocks/phone/fixtures";
+import { Phone } from "@/blocks/phone/phone";
+import { mdtFixtures, mdtSamples } from "@/blocks/mdt/fixtures";
+import { Mdt } from "@/blocks/mdt/mdt";
 
 export interface BlockPreview {
   name: string;
@@ -200,6 +210,61 @@ export const BLOCKS: BlockPreview[] = [
       Spawn: () => <CharacterSelect data={characterSelectFixtures.three} defaultStep="spawn" autoFocus={false} />,
       Create: () => <CharacterSelect data={characterSelectFixtures.first} defaultStep="create" autoFocus={false} />,
       Delete: () => <CharacterSelect data={characterSelectFixtures.three} defaultSelected="RCH20811" confirming autoFocus={false} />,
+    },
+  },
+  {
+    name: "npc-dialogue",
+    title: "NPC dialogue",
+    description: "Talking to an NPC: who is speaking, the line typing itself out, and replies on the number keys; a locked reply says why. The server holds the tree and checks every choice.",
+    states: {
+      Greeting: () => <NpcDialogue data={dialogueFixtures.bartender} onChoose={async () => ({ ok: true })} />,
+      Locked: () => <NpcDialogue data={dialogueFixtures.desk} onChoose={async () => ({ ok: true })} />,
+      "Long line": () => <NpcDialogue data={dialogueFixtures.long} onChoose={async () => ({ ok: true })} />,
+    },
+  },
+  {
+    name: "job-tracker",
+    title: "Job tracker",
+    description: "The task panel a job shows while you work it: the steps as rows (done, current, locked), the current step as a meter (a count or the distance), a key prompt for its action, and Abandon job behind a confirm. The server owns the job and pays once.",
+    states: {
+      Counting: () => <JobTracker data={jobTrackerFixtures.loading} />,
+      "On the road": () => <JobTracker data={jobTrackerFixtures.driving} />,
+      Manage: () => <JobTracker data={jobTrackerFixtures.loading} manage />,
+      Abandon: () => <JobTracker data={jobTrackerFixtures.loading} manage abandoning />,
+    },
+  },
+  {
+    name: "storefront",
+    title: "Storefront",
+    description: "The counter of a player-run business: products at the price and stock it set, a cart with cash or bank, and a Manage tab for its employees. The server prices every line, checks stock and money, and moves them all or nothing.",
+    states: {
+      Cart: () => <Storefront data={storefrontFixtures.burgers} defaultCart={storefrontCarts.lunch} autoFocus={false} onBuy={async () => ({ ok: true })} />,
+      Confirm: () => <Storefront data={storefrontFixtures.burgers} defaultCart={storefrontCarts.lunch} confirming autoFocus={false} onBuy={async () => ({ ok: true })} />,
+      Closed: () => <Storefront data={storefrontFixtures.closed} defaultCart={storefrontCarts.lunch} autoFocus={false} />,
+      Manage: () => <Storefront data={storefrontFixtures.staff} defaultTab="manage" autoFocus={false} onManage={async () => ({ ok: true })} />,
+    },
+  },
+  {
+    name: "phone",
+    title: "Phone",
+    description: "A phone anchored bottom right with a home screen of apps, Contacts and Messages, and room for your own. The server assigns the number, keeps the contacts and texts, stamps the sender and the time, and rate-limits.",
+    states: {
+      Home: () => <Phone data={phoneFixtures.full} />,
+      Contacts: () => <Phone data={phoneFixtures.full} defaultApp={{ id: "contacts" }} />,
+      Messages: () => <Phone data={phoneFixtures.full} defaultApp={{ id: "messages" }} />,
+      Thread: () => <Phone data={phoneFixtures.full} defaultApp={{ id: "messages", params: { number: "5550188" } }} onSend={async () => ({ ok: true })} />,
+    },
+  },
+  {
+    name: "mdt",
+    title: "MDT",
+    description: "A police or EMS terminal shell: a nav, a search of people and vehicles with a record pane, and a report form behind a confirm. The server checks job and duty on every call, runs the searches, and stamps the author and time.",
+    states: {
+      Dashboard: () => <Mdt data={mdtFixtures.police} autoFocus={false} />,
+      Person: () => <Mdt data={mdtFixtures.police} defaultSection="people" defaultQuery="ar" defaultResults={mdtSamples.people} defaultRecord={mdtSamples.person} autoFocus={false} />,
+      Vehicle: () => <Mdt data={mdtFixtures.police} defaultSection="vehicles" defaultQuery="klm" defaultResults={mdtSamples.vehicles} defaultRecord={mdtSamples.vehicle} autoFocus={false} />,
+      "New report": () => <Mdt data={mdtFixtures.police} defaultSection="reports" defaultComposing defaultResults={mdtSamples.people} defaultDraft={mdtSamples.draft} autoFocus={false} />,
+      Confirm: () => <Mdt data={mdtFixtures.police} defaultSection="reports" confirming defaultResults={mdtSamples.people} defaultDraft={mdtSamples.draft} autoFocus={false} onReport={async () => ({ ok: true })} />,
     },
   },
 ];

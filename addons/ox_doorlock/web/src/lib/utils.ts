@@ -167,3 +167,40 @@ export function nkVariant({ density, shape, motion }: NkVariantProps) {
     "data-nk-motion": motion === false ? "off" : motion === "reduced" ? "reduced" : undefined,
   }
 }
+
+/**
+ * Foundation 2 states: every interactive kit component draws one of these on data-state (kit.css
+ * "States" styles them; a theme restyles them). Most telling first: disabled, confirm, hold, alert,
+ * focus (the highlight the UI or Lua drives, or keyboard focus), rest.
+ */
+export type NkState = "rest" | "focus" | "hold" | "confirm" | "disabled" | "alert"
+
+export function nkState(s: { disabled?: boolean; confirm?: boolean; hold?: boolean; alert?: boolean; focus?: boolean }): NkState {
+  return s.disabled ? "disabled" : s.confirm ? "confirm" : s.hold ? "hold" : s.alert ? "alert" : s.focus ? "focus" : "rest"
+}
+
+/**
+ * The confirm pop on an element: data-state="confirm" for --nk-time-confirm (160ms), then back to what
+ * it was, unless something changed it meanwhile. Set on the DOM, so the component doesn't re-render.
+ */
+export function nkConfirm(el: Element | null | undefined) {
+  if (!el || typeof window === "undefined") return
+  const before = el.getAttribute("data-state")
+  const ms = parseFloat(getComputedStyle(el).getPropertyValue("--nk-time-confirm")) || 160
+  el.setAttribute("data-state", "confirm")
+  window.setTimeout(() => {
+    if (el.getAttribute("data-state") !== "confirm") return
+    if (before === null) el.removeAttribute("data-state")
+    else el.setAttribute("data-state", before)
+  }, ms)
+}
+
+/**
+ * The level contract: --level (0–1) on a component's root, set from its data (a meter's value, a
+ * vital, a hold, the time left). Level styles (bar, ring, liquid, slab, pips) draw from it; each
+ * component documents what its level means.
+ */
+export function nkLevel(level: number | undefined): Record<string, string> {
+  const n = Number.isFinite(level) ? Math.min(1, Math.max(0, level as number)) : 0
+  return { "--level": n.toFixed(3) }
+}

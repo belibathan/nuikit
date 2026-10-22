@@ -244,3 +244,16 @@ describe("loadServerTheme (override pages)", () => {
     expect(applyServerTheme({ hash: "y" })).toBe(false);
   });
 });
+
+describe("a themed subtree", () => {
+  it("is marked data-nk-theme (kit.css re-derives component tokens there), and cleared with the theme", () => {
+    const stage = document.createElement("div");
+    document.body.append(stage);
+    applyTheme({ primary: "#2563eb" }, stage);
+    expect(stage.hasAttribute("data-nk-theme")).toBe(true);
+    expect(document.documentElement.hasAttribute("data-nk-theme")).toBe(false);
+    clearTheme(undefined, stage);
+    expect(stage.hasAttribute("data-nk-theme")).toBe(false);
+    stage.remove();
+  });
+});

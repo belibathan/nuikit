@@ -2,7 +2,7 @@ import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
 import { LockIcon } from "lucide-react"
 
-import { cn } from "@/lib/utils"
+import { cn, nkState } from "@/lib/utils"
 
 /**
  * ItemSlot — one square of an inventory, a shop, a hotbar or a crafting grid: the item's image
@@ -134,7 +134,8 @@ function ItemSlot({
   return (
     <div
       data-slot="item-slot"
-      data-state={state}
+      data-slot-state={state}
+      data-state={nkState({ disabled: locked, focus: active || dropTarget })}
       role={interactive ? "button" : undefined}
       tabIndex={interactive ? 0 : undefined}
       aria-disabled={locked || undefined}

@@ -1,7 +1,7 @@
 import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
 
-import { cn } from "@/lib/utils"
+import { cn, nkVariant, type NkVariantProps } from "@/lib/utils"
 
 /**
  * HudChip — an always-on mark on the game world (docs/design.md, rule 8): voice range, radio
@@ -13,6 +13,7 @@ import { cn } from "@/lib/utils"
  *   <HudChip icon={<TriangleAlertIcon />} state="warning">Seatbelt</HudChip>
  *   <HudChip shape="tile" icon={<PillIcon />}>3</HudChip>
  *
+ * `shape` is the chip's form (pill or tile); its corners follow `data-nk-shape` on any ancestor (kit variants).
  * `active` (talking, the selected slot) is the theme's primary; `warning` is destructive.
  */
 const hudChipVariants = cva(
@@ -45,17 +46,24 @@ function HudChip({
   active,
   icon,
   children,
+  hue,
+  density,
+  motion,
   ...props
-}: React.ComponentProps<"span"> &
+}: Omit<NkVariantProps, "shape"> & React.ComponentProps<"span"> &
   VariantProps<typeof hudChipVariants> & {
     icon?: React.ReactNode
+    /** The role it shows (police, ems, health, rare…): data-hue, which the theme's role ramps colour (tokens 1.4). */
+    hue?: string
     /** Shorthand for state="active" (talking, selected). */
     active?: boolean
   }) {
   const s = state ?? (active ? "active" : "default")
   return (
     <span
+      {...nkVariant({ density, motion })}
       data-slot="hud-chip"
+      data-hue={hue}
       data-state={s}
       className={cn(hudChipVariants({ shape, state: s }), className)}
       {...props}

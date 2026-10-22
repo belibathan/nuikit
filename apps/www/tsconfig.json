@@ -13,8 +13,9 @@
         "../../registry/nuikit/ui/*",
         "../../vendor/shadcn/ui/*"
       ],
-      "@/hooks/use-nui-store": [
-        "../../registry/nuikit/hooks/use-nui-store.ts"
+      "@/hooks/*": [
+        "../../registry/nuikit/hooks/*",
+        "../../vendor/shadcn/hooks/*"
       ],
       "@/blocks/*": [
         "../../registry/nuikit/blocks/*"

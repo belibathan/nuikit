@@ -1,7 +1,7 @@
 import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
 
-import { cn, nkVariant, type NkVariantProps } from "@/lib/utils"
+import { cn, nkLevel, nkVariant, type NkVariantProps } from "@/lib/utils"
 import { Progress } from "@/components/ui/progress"
 
 /**
@@ -359,7 +359,10 @@ function Meter({
   const fillClass = custom ? CUSTOM_FILL : FILL[critical ? "destructive" : tone] ?? FILL.primary
   // Timed: the animation draws the fill; React only sets the end state, with no transition.
   const timedClass = timed && "[&_[data-slot=progress-indicator]]:transition-none"
+  // the level contract: --level is the value (0–1); a timed run draws on the compositor and --level is
+  // its end state
   const rootStyle = {
+    ...nkLevel(percent / 100),
     ...style,
     ...(custom && { "--meter-fill": color }),
   } as React.CSSProperties
@@ -382,6 +385,7 @@ function Meter({
         ref={root}
         style={
           {
+            ...nkLevel(percent / 100),
             ...style,
             ...(toneVar
               ? { "--nk-slab-tone-rgb": toneVar === "--brand" ? "var(--brand-rgb, var(--primary-rgb))" : `var(${toneVar}-rgb)` }

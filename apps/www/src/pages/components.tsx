@@ -37,7 +37,7 @@ import {
   WrenchIcon,
 } from "lucide-react";
 import { closeSurface, openSurface, Surface } from "nuikit-core/react";
-import { cloneElement, useRef, useState, type ReactElement, type ReactNode } from "react";
+import { cloneElement, useLayoutEffect, useRef, useState, type ReactElement, type ReactNode } from "react";
 import { Command } from "@/components/code";
 import { Scene } from "@/components/scene";
 import { Footer, Nav, SITE, ThemePicker } from "@/components/site";
@@ -69,20 +69,26 @@ import {
 } from "@/components/ui/form-field";
 import { Confirm, ConfirmPanel, type ConfirmTone } from "@/components/ui/confirm";
 import { KeyPrompt, KeyPromptStack } from "@/components/ui/key-prompt";
+import { VariantsDemo } from "@/components/variants-demo";
 import { ProgressRing } from "@/components/ui/progress-ring";
 import { Speedometer } from "@/components/ui/speedometer";
 import { Countdown } from "@/components/ui/countdown";
 import { Band } from "@/components/ui/band";
+import { VitalChip } from "@/components/ui/vital-chip";
 import { Money } from "@/components/ui/money";
 import { ItemSlot } from "@/components/ui/item-slot";
 import { PlayerCard } from "@/components/ui/player-card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { SKILL_CHECK_PRESETS, SkillCheck, skillCheckZone } from "@/components/ui/skill-check";
 import { RadialMenu, type RadialMenuItem } from "@/components/ui/radial-menu";
+import { applyStageTheme, clearStageTheme } from "@/lib/stage-theme";
+import { studioTheme } from "@/lib/theme-studio";
 import { cn } from "@/lib/utils";
+import { identities } from "@/themes";
 import registry from "../../../../registry.json";
 
 export function ComponentsPage() {
+  const preview = useRef<HTMLDivElement>(null);
   return (
     <div className="min-h-screen">
       <Nav />
@@ -98,7 +104,10 @@ export function ComponentsPage() {
             its own.
           </p>
           <ThemePicker className="mt-6" />
+          <IdentityPicker target={preview} className="mt-3" />
         </header>
+
+        <div ref={preview}>
 
         <Section
           name="variants"
@@ -108,6 +117,39 @@ export function ComponentsPage() {
           stageClassName="items-start"
         >
           <VariantsDemo />
+        </Section>
+
+        <Section
+          name="legibility"
+          title="Legibility"
+          text="The fixture every HUD part is checked against: the brightest, busiest frame the game draws (midday sun, sky and palms). Text on the game must still read, chips must still separate from the sky, levels must still show. Switch the identity above to check yours."
+          install={false}
+          scene="day"
+          stageClassName="items-end justify-between"
+        >
+          <LegibilityDemo />
+        </Section>
+
+        <Section
+          name="vital-chip"
+          title="Vital chip: display modes"
+          text="What a chip shows, per server or per player: pill (icon, name, value), value (icon and value), icon (the level as fill), expand (the icon opens to the pill on a change and settles after --nk-rest-delay). A chip that opens (voice while talking) pushes its neighbours, collapses them to icons, or floats over them."
+          install={false}
+          stageClassName="flex-col items-center"
+        >
+          <ChipModesDemo />
+        </Section>
+
+        <Section
+          name="key-prompt"
+          title="Key prompt: the interaction ladder"
+          text="A prompt climbs as the player does: dormant (near: the key alone, quiet), aware (in reach), focus (the key acts on it), hold (the line fills, by --nk-hold-style) and confirm (a short pop, --nk-confirm-scale). Hold E on the last one."
+          install={false}
+          stageClassName="items-center"
+        >
+          <KeyPrompt stage="dormant" keys="E" label="Open garage" />
+          <KeyPrompt stage="aware" keys="E" label="Open garage" />
+          <KeyPrompt stage="focus" keys="E" label="Open garage" hold={900} listen onConfirm={() => {}} />
         </Section>
 
         <Section
@@ -513,6 +555,7 @@ export function ComponentsPage() {
             ))}
           </div>
         </section>
+        </div>
       </main>
       <Footer />
     </div>
@@ -520,8 +563,44 @@ export function ComponentsPage() {
 }
 
 // registry.json meta (docs/design/contract.md, "Registry metadata"): status and the release it shipped in
-type ItemMeta = { since: string; status: string; replaces: string[]; removeIn: string | null; replacedBy?: string[] };
+type ItemSpec = { role: string; anatomy: string[]; props?: string[]; level?: string; rules: string[] };
+type ItemMeta = { since: string; status: string; replaces: string[]; removeIn: string | null; replacedBy?: string[]; spec?: ItemSpec };
 const META = new Map((registry.items as { name: string; meta?: ItemMeta }[]).flatMap((i) => (i.meta ? [[i.name, i.meta] as const] : [])));
+
+/** The spec template (Foundation 2): role, anatomy, props, what the level means, rules. */
+function SpecDetails({ spec }: { spec: ItemSpec }) {
+  return (
+    <details data-slot="component-spec" className="mt-3 text-sm">
+      <summary className="cursor-pointer text-muted-foreground select-none">Spec{spec.level ? `: level is ${spec.level}` : ""}</summary>
+      <dl className="mt-3 grid grid-cols-[7rem_1fr] gap-x-4 gap-y-2">
+        <dt className="text-muted-foreground">Role</dt>
+        <dd>{spec.role}</dd>
+        <dt className="text-muted-foreground">Anatomy</dt>
+        <dd>{spec.anatomy.join(" · ")}</dd>
+        {spec.props && (
+          <>
+            <dt className="text-muted-foreground">Props</dt>
+            <dd className="font-mono text-xs leading-5">{spec.props.join(", ")}</dd>
+          </>
+        )}
+        {spec.level && (
+          <>
+            <dt className="text-muted-foreground">Level means</dt>
+            <dd>{spec.level}</dd>
+          </>
+        )}
+        <dt className="text-muted-foreground">Rules</dt>
+        <dd>
+          <ul className="list-disc pl-4">
+            {spec.rules.map((r) => (
+              <li key={r}>{r}</li>
+            ))}
+          </ul>
+        </dd>
+      </dl>
+    </details>
+  );
+}
 
 function MetaBadges({ meta }: { meta: ItemMeta }) {
   return (
@@ -547,11 +626,14 @@ function Section({
   text,
   install = true,
   stageClassName,
+  scene,
   children,
 }: {
   name: string;
   title: string;
   text: string;
+  /** The world behind the stage (day: the bright legibility fixture). */
+  scene?: "dusk" | "day";
   /** false for a second section of the same item (one id, one install command). */
   install?: boolean;
   stageClassName?: string;
@@ -567,81 +649,161 @@ function Section({
             {meta && <MetaBadges meta={meta} />}
           </div>
           <p className="mt-2 text-muted-foreground text-pretty">{text}</p>
+          {install && meta?.spec && <SpecDetails spec={meta.spec} />}
         </div>
         {install && <Command className="h-10 w-full max-w-md text-xs">{`npx shadcn add ${SITE}/r/${name}.json`}</Command>}
       </div>
       <div className="relative isolate mt-6 overflow-hidden rounded-xl border bg-black">
-        <Scene />
+        <Scene variant={scene} />
         <div className={cn("relative flex min-h-80 flex-wrap items-start justify-center gap-8 p-10", stageClassName)}>{children}</div>
       </div>
     </section>
   );
 }
 
-type Knob<T extends string> = { label: string; value: T; options: readonly T[]; set: (v: T) => void };
-
-function KnobTabs<T extends string>({ label, value, options, set }: Knob<T>) {
+/**
+ * Every component under one identity (all of packages/core/themes): its type, shape, surface, density,
+ * motion and HUD, painted on the previews only, so the page around them stays the site's. "Site": none.
+ */
+function IdentityPicker({ target, className }: { target: React.RefObject<HTMLDivElement | null>; className?: string }) {
+  const [active, setActive] = useState(-1);
+  useLayoutEffect(() => {
+    const el = target.current;
+    const id = identities[active];
+    if (!el || !id) return;
+    applyStageTheme(studioTheme(id.css), el);
+    // the site's font-sans is a literal (@theme inline): read the identity's own
+    el.style.fontFamily = "var(--font-sans)";
+    return () => {
+      clearStageTheme(el);
+      el.style.removeProperty("font-family");
+    };
+  }, [active, target]);
   return (
-    <div className="flex flex-col gap-1.5">
-      <span className="nk-label text-muted-foreground">{label}</span>
-      <Tabs value={value} onValueChange={(v) => set(v as T)}>
-        <TabsList>
-          {options.map((o) => (
-            <TabsTrigger key={o} value={o} className="capitalize">
-              {o}
-            </TabsTrigger>
-          ))}
-        </TabsList>
-      </Tabs>
+    <div className={cn("flex flex-wrap items-center gap-2", className)} role="radiogroup" aria-label="Identity">
+      <span className="mr-1 text-sm text-muted-foreground">Identity</span>
+      {[{ name: "Site", swatch: [] as string[] }, ...identities].map((t, i) => (
+        <Button key={t.name} role="radio" aria-checked={active === i - 1} variant={active === i - 1 ? "secondary" : "ghost"} size="sm" onClick={() => setActive(i - 1)}>
+          {t.swatch.length > 0 && (
+            <span className="flex -space-x-1">
+              {t.swatch.map((c) => (
+                <span key={c} className="size-3 rounded-full ring-2 ring-background" style={{ background: c }} />
+              ))}
+            </span>
+          )}
+          {t.name}
+        </Button>
+      ))}
     </div>
   );
 }
 
-/** One set of knobs, five components: every variant the registry's most-seen components take. */
-function VariantsDemo() {
-  const [size, setSize] = useState<"sm" | "default" | "lg">("default");
-  const [density, setDensity] = useState<"compact" | "default" | "comfortable">("default");
-  const [shape, setShape] = useState<"square" | "default" | "round">("default");
-  const [motion, setMotion] = useState<"on" | "reduced" | "off">("on");
-  const [active, setActive] = useState(0);
-  const [run, setRun] = useState(0);
-  const v = { density, shape, motion: motion === "on" ? undefined : motion === "off" ? false : ("reduced" as const) };
+/** HUD parts as they sit on the game: vitals, chips, a notice, a prompt, a timed slab, a band. */
+function LegibilityDemo() {
+  const vitals = [
+    { tone: "health", value: 82, icon: <HeartPulseIcon /> },
+    { tone: "armor", value: 46, icon: <ShieldIcon /> },
+    { tone: "hunger", value: 18, icon: <UtensilsIcon /> },
+    { tone: "thirst", value: 64, icon: <DropletIcon /> },
+  ];
   return (
-    <div className="flex w-full flex-col gap-6">
-      <div className="flex flex-wrap gap-4">
-        <KnobTabs label="Size" value={size} options={["sm", "default", "lg"] as const} set={setSize} />
-        <KnobTabs label="Density" value={density} options={["compact", "default", "comfortable"] as const} set={setDensity} />
-        <KnobTabs label="Shape" value={shape} options={["square", "default", "round"] as const} set={setShape} />
-        <KnobTabs label="Motion" value={motion} options={["on", "reduced", "off"] as const} set={(m) => (setMotion(m), setRun((r) => r + 1))} />
+    <>
+      <div className="flex flex-col gap-4">
+        <div className="flex gap-2">
+          {vitals.map((v) => (
+            <VitalChip.Root key={v.tone} value={v.value} tone={v.tone}>
+              <VitalChip.Shape>
+                <VitalChip.Level />
+                <VitalChip.Icon>{v.icon}</VitalChip.Icon>
+              </VitalChip.Shape>
+            </VitalChip.Root>
+          ))}
+        </div>
+        <div className="flex gap-2">
+          <HudChip icon={<MicIcon />} active>
+            Normal
+          </HudChip>
+          <HudChip icon={<RadioIcon />}>101 MHz</HudChip>
+          <HudChip icon={<TriangleAlertIcon />} state="warning">
+            Seatbelt
+          </HudChip>
+        </div>
+        <Stat surface="game" icon={<WalletIcon />} label="Cash" value="$12,480" />
       </div>
-      <div className="flex flex-wrap items-start gap-6">
-        <Panel size={size} {...v}>
-          <PanelHeader icon={<CarIcon />} title="Garage" description="Legion Square" />
-          <PanelBody>
-            <MenuRowList active={active} {...v}>
-              {CARS.slice(0, 4).map((c, i) => (
-                <MenuRow key={c.plate} icon={<CarIcon />} description={c.note} meta={c.plate} active={i === active} onMouseEnter={() => setActive(i)} {...v}>
-                  {c.name}
-                </MenuRow>
-              ))}
-            </MenuRowList>
-          </PanelBody>
-        </Panel>
-        <div className="flex flex-col items-start gap-4">
-          <div className="relative h-48 w-[26rem] [--nk-edge:0rem]">
-            <NoticeStack position="top-right" key={`n${run}`} {...v}>
-              <Notice size={size} status="success" title="Paid" description="$500 from Lester" duration={0} />
-              <Notice item={{ name: "Water bottle", count: 2, icon: <CupSodaIcon /> }} duration={0} />
-            </NoticeStack>
-          </div>
-          <KeyPrompt keys="E" label="Open garage" size={size === "lg" ? "default" : size} {...v} />
-          <div className="flex w-72 flex-col gap-3">
-            <Meter label="Fuel" value={64} valueText="64%" size={size} {...v} />
-            <Meter key={`m${run}`} variant="slab" label="Repairing" duration={4000} cancelKey="X" onComplete={() => setTimeout(() => setRun((r) => r + 1), 800)} {...v} />
-          </div>
+      <div className="flex flex-col items-center gap-4">
+        <KeyPrompt keys="E" label="Open garage" />
+        <div className="w-80">
+          <Meter variant="slab" label="Repairing" value={62} cancelKey="X" />
         </div>
       </div>
-    </div>
+      <div className="flex flex-col items-end gap-3">
+        <Notice status="warning" title="Low fuel" description="8% left" duration={0} />
+        <Notice item={{ name: "Water bottle", count: 2, icon: <CupSodaIcon /> }} duration={0} />
+      </div>
+      <Band position="inline" tone="destructive" title="You are incapacitated" subtitle="Hold E to call for help" className="basis-full" />
+    </>
+  );
+}
+
+/** The vital chip's display modes and the voice chip's neighbour option, live. */
+function ChipModesDemo() {
+  const [display, setDisplay] = useState<"pill" | "value" | "icon" | "expand">("expand");
+  const [neighbours, setNeighbours] = useState<"push" | "collapse" | "overlay">("push");
+  const [talking, setTalking] = useState(false);
+  const [vitals, setVitals] = useState({ health: 82, armor: 46, hunger: 38, thirst: 64 });
+  const icons = { health: <HeartPulseIcon />, armor: <ShieldIcon />, hunger: <UtensilsIcon />, thirst: <DropletIcon /> };
+  const names = { health: "Health", armor: "Armor", hunger: "Hunger", thirst: "Thirst" };
+  const eat = () => setVitals((v) => ({ ...v, hunger: v.hunger >= 90 ? 20 : v.hunger + 25 }));
+  // every vital at once: one batch, critical health first, then the biggest change, three open and +1
+  const hit = () => setVitals((v) => (v.health < 30 ? { health: 82, armor: 46, hunger: 38, thirst: 64 } : { health: 12, armor: Math.max(0, v.armor - 30), hunger: v.hunger - 4, thirst: v.thirst - 8 }));
+  return (
+    <>
+      <div className="flex flex-wrap justify-center gap-2">
+        {(["pill", "value", "icon", "expand"] as const).map((d) => (
+          <Button key={d} size="sm" variant={display === d ? "secondary" : "outline"} onClick={() => setDisplay(d)}>
+            {d}
+          </Button>
+        ))}
+        <span className="w-4" />
+        {(["push", "collapse", "overlay"] as const).map((n) => (
+          <Button key={n} size="sm" variant={neighbours === n ? "secondary" : "outline"} onClick={() => setNeighbours(n)}>
+            {n}
+          </Button>
+        ))}
+      </div>
+      <VitalChip.Row>
+        <VitalChip.Root open={talking} neighbours={neighbours}>
+          <VitalChip.Shape>
+            <VitalChip.Icon>
+              <MicIcon />
+            </VitalChip.Icon>
+            <VitalChip.Label>Normal</VitalChip.Label>
+          </VitalChip.Shape>
+          <VitalChip.Label>Normal</VitalChip.Label>
+        </VitalChip.Root>
+        {(Object.keys(vitals) as (keyof typeof vitals)[]).map((k) => (
+          <VitalChip.Root key={k} value={vitals[k]} tone={k} display={display}>
+            <VitalChip.Shape>
+              <VitalChip.Level />
+              <VitalChip.Icon>{icons[k]}</VitalChip.Icon>
+              <VitalChip.Label>{names[k]}</VitalChip.Label>
+            </VitalChip.Shape>
+            <VitalChip.Label>{names[k]}</VitalChip.Label>
+          </VitalChip.Root>
+        ))}
+      </VitalChip.Row>
+      <div className="flex gap-2">
+        <Button size="sm" variant="outline" onClick={eat}>
+          Eat (+25 hunger)
+        </Button>
+        <Button size="sm" variant="outline" onClick={hit}>
+          Take damage (all change)
+        </Button>
+        <Button size="sm" variant={talking ? "secondary" : "outline"} onClick={() => setTalking((t) => !t)}>
+          {talking ? "Stop talking" : "Talk"}
+        </Button>
+      </div>
+    </>
   );
 }
 
@@ -853,7 +1015,8 @@ const GRID: { position: NoticePosition | null; icon?: ReactNode; label?: string 
 ];
 
 function NoticeDemo() {
-  const { notices, notify, dismiss, clear } = useNotices();
+  const [policy, setPolicy] = useState<"stack" | "one">("stack");
+  const { notices, notify, dismiss, clear, waiting } = useNotices({ policy });
   const [status, setStatus] = useState<NoticeStatus>("success");
   const [count, setCount] = useState(0);
   const [fuel, setFuel] = useState(12);
@@ -872,6 +1035,14 @@ function NoticeDemo() {
       <Panel size="sm" className="relative z-10">
         <PanelHeader title="Notify" description="Pick a status, then a position" />
         <PanelBody variant="form">
+          <div className="flex items-center gap-2" role="radiogroup" aria-label="Queue policy">
+            {(["stack", "one"] as const).map((p) => (
+              <Button key={p} role="radio" aria-checked={policy === p} size="sm" variant={policy === p ? "secondary" : "ghost"} onClick={() => setPolicy(p)}>
+                {p === "stack" ? "Stacked" : "One at a time"}
+              </Button>
+            ))}
+            {waiting > 0 && <span className="nk-num ml-auto text-sm text-muted-foreground">{waiting} waiting</span>}
+          </div>
           <Tabs value={status} onValueChange={(v) => setStatus(v as NoticeStatus)}>
             <TabsList className="w-full">
               {STATUSES.map((s) => (
