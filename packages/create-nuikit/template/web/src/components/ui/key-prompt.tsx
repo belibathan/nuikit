@@ -3,7 +3,7 @@
 import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
 
-import { cn } from "@/lib/utils"
+import { cn, nkVariant, type NkVariantProps } from "@/lib/utils"
 import { Kbd, KbdGroup } from "@/components/ui/kbd"
 
 /**
@@ -177,8 +177,11 @@ function KeyPrompt({
   disabled = false,
   listen = false,
   onConfirm,
+  density,
+  shape,
+  motion,
   ...props
-}: KeyPromptProps) {
+}: NkVariantProps & KeyPromptProps) {
   const list = (typeof keys === "string" ? [keys] : [...keys]).filter((k) => k !== "")
   const slab = (surface ?? "slab") === "slab"
   const line = React.useRef<HTMLSpanElement>(null)
@@ -234,6 +237,7 @@ function KeyPrompt({
       tabIndex={interactive ? 0 : undefined}
       aria-disabled={disabled || undefined}
       aria-keyshortcuts={list.length ? list.join("+") : undefined}
+      {...nkVariant({ density, shape, motion })}
       data-slot="key-prompt"
       data-surface-variant={surface ?? "slab"}
       data-active={active || undefined}

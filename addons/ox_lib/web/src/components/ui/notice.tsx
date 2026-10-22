@@ -8,7 +8,7 @@ import { CircleCheckIcon, CircleXIcon, InfoIcon, PackageIcon, TriangleAlertIcon,
 import { flipFrom, motionLevel, token, tokenMs } from "nuikit-core/motion"
 import { Stagger, useNuiEvent, useStaggerGroup, useStaggerItem } from "nuikit-core/react"
 
-import { cn } from "@/lib/utils"
+import { cn, nkVariant, type NkVariantProps } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 
 /**
@@ -148,13 +148,21 @@ function noticeTimeLeft(duration: number = NOTICE_DURATION, elapsed = 0) {
 }
 
 const noticeVariants = cva(
-  "nk-panel pointer-events-auto relative flex w-80 overflow-hidden px-4 py-3 text-sm leading-5",
+  "nk-panel pointer-events-auto relative flex overflow-hidden px-4 py-3 text-sm leading-5",
   {
     variants: {
+      size: {
+        sm: "w-72",
+        default: "w-80",
+        lg: "w-96",
+      },
       iconAlign: {
         start: "items-start",
         center: "items-center",
       },
+    },
+    defaultVariants: {
+      size: "default",
     },
   }
 )
@@ -241,7 +249,7 @@ function useEdgeMotion(ref: React.RefObject<HTMLDivElement | null>, on: boolean,
   const position = React.useContext(NoticeStackContext)
   React.useLayoutEffect(() => {
     const el = ref.current
-    const level = motionLevel()
+    const level = motionLevel(el)
     if (!on || !el?.animate || level === "off") return
     const [x, y] = level === "reduced" ? ["0rem", "0rem"] : noticeOffset(position)
     const away = { opacity: 0, transform: `translate3d(${x}, ${y}, 0) scale(0.98)` }
@@ -265,6 +273,7 @@ function Notice({
   description,
   icon,
   iconAlign,
+  size,
   duration = NOTICE_DURATION,
   elapsed = 0,
   showDuration = true,
@@ -281,8 +290,11 @@ function Notice({
   onFocus,
   onBlur,
   item,
+  density,
+  shape,
+  motion,
   ...props
-}: Omit<React.ComponentProps<"div">, "title"> &
+}: NkVariantProps & Omit<React.ComponentProps<"div">, "title"> &
   VariantProps<typeof noticeVariants> & {
     status?: NoticeStatus
     title?: React.ReactNode
@@ -338,6 +350,7 @@ function Notice({
     return (
       <div
         ref={setRoot}
+        {...nkVariant({ density, shape, motion })}
         data-slot="notice"
         data-variant="item"
         data-delta={down ? "down" : "up"}
@@ -363,13 +376,14 @@ function Notice({
   return (
     <div
       ref={setRoot}
+      {...nkVariant({ density, shape, motion })}
       data-slot="notice"
       data-status={status}
       data-leaving={leaving || undefined}
       data-paused={frozen || undefined}
       role={status === "error" ? "alert" : "status"}
       className={cn(
-        noticeVariants({ iconAlign: iconAlign ?? (title && description ? "start" : "center") }),
+        noticeVariants({ size, iconAlign: iconAlign ?? (title && description ? "start" : "center") }),
         "gap-[calc(var(--nk-space)*3)]",
         animate && !slide && !inGroup && "nk-enter",
         leaving && "pointer-events-none",
@@ -460,8 +474,11 @@ function NoticeStack({
   className,
   position = "top-right",
   children,
+  density,
+  shape,
+  motion,
   ...props
-}: React.ComponentProps<"div"> & { position?: NoticePosition }) {
+}: NkVariantProps & React.ComponentProps<"div"> & { position?: NoticePosition }) {
   // when a notice leaves (or arrives), the others slide into their new places instead of jumping:
   // a spring per notice (nuikit-core flip), staggered from the gap outward
   const stack = React.useRef<HTMLDivElement>(null)
@@ -482,6 +499,7 @@ function NoticeStack({
     <NoticeStackContext.Provider value={position}>
       <div
         ref={stack}
+        {...nkVariant({ density, shape, motion })}
         data-slot="notice-stack"
         data-position={position}
         aria-label="Notifications"
@@ -615,7 +633,8 @@ function Notices({
   onDismiss,
   closable = false,
   className,
-}: {
+  ...variant
+}: NkVariantProps & {
   notices: readonly NoticeEntry[]
   onDismiss: (key: string) => void
   closable?: boolean
@@ -642,7 +661,7 @@ function Notices({
   return (
     <>
       {groupNotices(all).map(([position, list]) => (
-        <NoticeStack key={position} position={position} className={className}>
+        <NoticeStack key={position} position={position} className={className} {...variant}>
           {list.map(({ key, at, id: _id, position: _position, merged, ...n }, i) => (
             // The wrapper is what the stack's flip moves; the notice inside slides in and out. Keyed on
             // `at` too: an update restarts the time (and comes in again, unless it is a merged item
