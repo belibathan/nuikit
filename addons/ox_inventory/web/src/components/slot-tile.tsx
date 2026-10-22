@@ -36,7 +36,7 @@ function Price({ item }: { item: Slot }) {
   if (item.currency && item.currency !== "money" && item.currency !== "black_money") {
     return (
       <span className="inv-price">
-        <ItemImage src={itemImage(item.currency)} className="size-3" />
+        <ItemImage src={itemImage(item.currency)} name={item.currency} className="size-3" />
         {formatMoney(item.price, { currency: null, fractionDigits: digits(item.price) })}
       </span>
     );
@@ -108,7 +108,7 @@ export const SlotTile = memo(function SlotTile({ side, item, invType, locked, di
       {filled && (
         <>
           <div className="grid min-h-0 flex-1 place-items-center">
-            <ItemImage src={itemImage(item, imagepath)} className={display ? "size-9" : "size-10"} />
+            <ItemImage src={itemImage(item, imagepath)} name={item.name} className={display ? "size-9" : "size-10"} />
           </div>
           {!display && <div className="inv-slot-label">{itemLabel(item)}</div>}
         </>

@@ -272,6 +272,7 @@
       "web/src/components/ui/input.tsx",
       "web/src/components/ui/kbd.tsx",
       "web/src/components/ui/money.tsx",
+      "web/src/components/ui/nui-image.tsx",
       "web/src/components/ui/scroll-area.tsx",
       "web/src/components/ui/separator.tsx",
       "web/src/components/ui/sheet.tsx",

@@ -28,7 +28,7 @@ function Ingredients({ item }: { item: Slot }) {
         const ok = hasIngredient(name, n);
         return (
           <div key={name} className="flex items-center gap-2 text-xs leading-4">
-            <ItemImage src={itemImage(name)} className="size-5 shrink-0" />
+            <ItemImage src={itemImage(name)} name={name} className="size-5 shrink-0" />
             <span className="nk-num min-w-0 flex-1 truncate">{text}</span>
             {ok ? <CheckIcon className="size-4 text-muted-foreground" /> : <XIcon className="size-4 text-destructive" />}
           </div>

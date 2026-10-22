@@ -373,3 +373,34 @@ body.inv-dragging * {
   list-style: decimal;
   padding-left: 1rem;
 }
+
+/* ───────────────────────────── on the game: item notes and the hotbar (components/overlays.tsx)
+   The notices' motion (#102): in from the bottom edge on the sheets' ladder (panel time x 2.2, at most
+   360ms, ease-out), back out toward it when they end (x 1.4, at most 200ms, ease-in); the notes' flip
+   glides the others into the gap. The motion is on the chip, the flip on its wrapper. */
+.inv-note > .nk-chip,
+.inv-hotbar {
+  animation: inv-in min(calc(var(--nk-time) * 2.2), 360ms) var(--nk-ease-out, cubic-bezier(0.16, 1, 0.3, 1)) both;
+}
+.inv-note[data-leaving] > .nk-chip,
+.inv-hotbar[data-leaving] {
+  animation: inv-out min(calc(var(--nk-time) * 1.4), 200ms) var(--nk-ease-in, cubic-bezier(0.4, 0, 1, 1)) both;
+}
+html[data-nk-motion="reduced"] :is(.inv-note > .nk-chip, .inv-hotbar) {
+  --inv-y: 0rem;
+}
+html[data-nk-motion="off"] :is(.inv-note > .nk-chip, .inv-hotbar) {
+  animation: none;
+}
+@keyframes inv-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, var(--inv-y, 0.75rem), 0) scale(0.98);
+  }
+}
+@keyframes inv-out {
+  to {
+    opacity: 0;
+    transform: translate3d(0, var(--inv-y, 0.75rem), 0) scale(0.98);
+  }
+}
