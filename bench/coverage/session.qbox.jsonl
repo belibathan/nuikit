@@ -1,0 +1,12 @@
+{"framework":"qbox","step":5,"source":"ox_lib","intent":"menu","expected":true}
+{"framework":"qbox","step":5,"source":"ox_lib","intent":"input","expected":true}
+{"framework":"qbox","step":5,"source":"ox_lib","intent":"confirm","expected":true}
+{"framework":"qbox","step":5,"source":"ox_lib","intent":"progress","expected":true}
+{"framework":"qbox","step":5,"source":"ox_lib","intent":"prompt","expected":true}
+{"framework":"qbox","step":5,"source":"ox_lib","intent":"notify","expected":true}
+{"framework":"qbox","step":6,"source":"qbx_core","intent":"notify","expected":true}
+{"framework":"qbox","step":7,"source":"ox_target","intent":"target","expected":true}
+{"framework":"qbox","step":8,"source":"ox_lib","intent":"radial","expected":true}
+{"framework":"qbox","step":9,"source":"qbx_taxijob","intent":"menu","expected":true}
+{"framework":"qbox","step":9,"source":"qbx_taxijob","intent":"progress","expected":true}
+{"framework":"qbox","step":9,"source":"qbx_taxijob","intent":"notify","expected":true}

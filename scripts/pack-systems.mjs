@@ -1,7 +1,7 @@
 // Builds the release zips in out/:
 //
 //   nuikit.zip               everything, shaped to drop into a server:
-//     [nuikit]/              every system (put it in resources/, `ensure [nuikit]`)
+//     [nuikit]/              every system (put it in resources/; nuikit.cfg ensures each by name)
 //     overrides/<resource>/  UI replacements that merge into resources you already run
 //                            (e.g. overrides/ox_lib/web/build → resources/[ox]/ox_lib/web/build)
 //   nuikit-<addon>.zip       one override on its own, shaped like the resource it replaces

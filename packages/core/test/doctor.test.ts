@@ -223,6 +223,28 @@ describe("conflicts", () => {
   });
 });
 
+describe("[nuikit] systems", () => {
+  it("warns once when installed systems aren't running, naming them and how to start them", () => {
+    const r = doctor(snap([res("nuikit_hud", {}, { state: "stopped" }), res("nuikit_pause", {}, { state: "uninitialized" }), res("nuikit_death")]));
+    const f = r.findings.filter((x) => x.code === "systems-stopped");
+    expect(f).toHaveLength(1);
+    expect(f[0]).toMatchObject({ severity: "warn" });
+    expect(f[0]!.message).toContain("2 [nuikit] systems are installed but not running: nuikit_hud, nuikit_pause");
+    expect(f[0]!.next).toContain("exec @nuikit/nuikit.cfg");
+    expect(f[0]!.next).toContain("ensure nuikit_hud");
+    expect(r.summary.warnings).toBeGreaterThanOrEqual(1);
+  });
+  it("says nothing when they run, or when nuikit_dev (opt-in) is stopped", () => {
+    const r = doctor(snap([res("nuikit_hud"), res("nuikit_dev", {}, { state: "stopped" })]));
+    expect(r.findings.some((x) => x.code === "systems-stopped")).toBe(false);
+  });
+  it("an info line when no system is known to the server at all", () => {
+    const f = doctor(snap([])).findings.find((x) => x.code === "systems-stopped")!;
+    expect(f).toMatchObject({ severity: "info" });
+    expect(f.next).toContain("not junctions");
+  });
+});
+
 describe("intents", () => {
   it("counts by source, biggest first, and formats", () => {
     const r = doctor(snap([], { intents: { qb_shops: { menu: 3 }, ox_lib: { notify: 10, menu: 2 } } }));

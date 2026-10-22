@@ -44,6 +44,7 @@ Resource statuses:
 | `override-drifted` | warn | the page has the marker but its hash isn't the shipped one | copy the override again unless you edited it |
 | `manifest-changed` | warn | a started resource's `fxmanifest.lua` on disk differs from when it started (hash on `onResourceStart`); a new `files` entry isn't served until then | `refresh`, then `restart <resource>` |
 | `missing-dependency` | warn | imports `@nuikit/init.lua` without `dependency 'nuikit'` | add the line |
+| `systems-stopped` | warn / info | a `[nuikit]` system is installed but not running (warn), or none is known to the server (info) | `exec @nuikit/nuikit.cfg` (ensures each by name) or `ensure <name>`; real folders, not junctions |
 | `renderer-failed` | warn | a client posted `nuikit:renderer:failed` (a renderer pack's module didn't load, threw, or has no renderer for a kind it claims; the default drew instead) | rebuild the pack (`pnpm build` in its web/), check `files { 'web/dist/renderers.js' }`, `restart <pack>`. **Not wired on the server yet:** the client event exists (`systems/nuikit/client/renderers.lua`); `server/doctor.js` must count it (lead) |
 | `theme-contrast` | warn | one of the compiled theme's contrast checks fails (the same checks `nuikit theme` prints) | which two tokens to change, then `nuikit theme reload` |
 | `theme-warning` | info | other compiler warnings (missing dark set, values FiveM can't read) | fix in theme.css |
