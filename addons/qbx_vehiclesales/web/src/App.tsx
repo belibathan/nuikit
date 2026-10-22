@@ -93,6 +93,12 @@ async function vehicleModel(): Promise<string | null> {
 }
 
 /** qbx_vehiclesales' sale contract. Protocol: docs/qbx-vehiclesales-protocol.md */
+/** Rendered by NuiImage only when no source loads: tells the contract to drop the picture's box. */
+function Gone({ onGone }: { onGone: () => void }) {
+  useEffect(onGone, [onGone]);
+  return null;
+}
+
 export default function App() {
   const [c, setC] = useState<Contract | null>(null);
   const [desc, setDesc] = useState("");
@@ -102,6 +108,8 @@ export default function App() {
   const busy = useRef(false);
 
   const [model, setModel] = useState<string | null>(null);
+  // the model whose picture didn't load from any source: its box goes, the contract looks as before
+  const [noPicture, setNoPicture] = useState<string | null>(null);
 
   useMessages((m) => {
     if (m.action !== "sellVehicle" && m.action !== "buyVehicle") return;
@@ -192,9 +200,9 @@ export default function App() {
           }
         >
         <EdgeSheetBody scroll>
-        {model && (
+        {model && noPicture !== model && (
           <div className="mb-4 flex aspect-[16/7] items-center justify-center overflow-hidden rounded-(--nk-row-radius) bg-muted/60">
-            <NuiImage kind="vehicle" imageKey={model} alt={model} className="h-full w-auto" fallback={null} />
+            <NuiImage kind="vehicle" imageKey={model} alt={model} className="h-full w-auto" fallback={<Gone onGone={() => setNoPicture(model)} />} />
           </div>
         )}
         <dl className="grid grid-cols-3 gap-4 border-b pb-4">
