@@ -33,6 +33,8 @@ import { jobTrackerFixtures } from "@/blocks/job-tracker/fixtures";
 import { JobTracker } from "@/blocks/job-tracker/job-tracker";
 import { storefrontCarts, storefrontFixtures } from "@/blocks/storefront/fixtures";
 import { Storefront } from "@/blocks/storefront/storefront";
+import { phoneFixtures } from "@/blocks/phone/fixtures";
+import { Phone } from "@/blocks/phone/phone";
 
 export interface BlockPreview {
   name: string;
@@ -238,6 +240,17 @@ export const BLOCKS: BlockPreview[] = [
       Confirm: () => <Storefront data={storefrontFixtures.burgers} defaultCart={storefrontCarts.lunch} confirming autoFocus={false} onBuy={async () => ({ ok: true })} />,
       Closed: () => <Storefront data={storefrontFixtures.closed} defaultCart={storefrontCarts.lunch} autoFocus={false} />,
       Manage: () => <Storefront data={storefrontFixtures.staff} defaultTab="manage" autoFocus={false} onManage={async () => ({ ok: true })} />,
+    },
+  },
+  {
+    name: "phone",
+    title: "Phone",
+    description: "A phone anchored bottom right with a home screen of apps, Contacts and Messages, and room for your own. The server assigns the number, keeps the contacts and texts, stamps the sender and the time, and rate-limits.",
+    states: {
+      Home: () => <Phone data={phoneFixtures.full} />,
+      Contacts: () => <Phone data={phoneFixtures.full} defaultApp={{ id: "contacts" }} />,
+      Messages: () => <Phone data={phoneFixtures.full} defaultApp={{ id: "messages" }} />,
+      Thread: () => <Phone data={phoneFixtures.full} defaultApp={{ id: "messages", params: { number: "5550188" } }} onSend={async () => ({ ok: true })} />,
     },
   },
 ];

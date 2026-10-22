@@ -1,0 +1,9 @@
+{
+  "block": "phone",
+  "title": "Phone",
+  "description": "A phone at the bottom right with Contacts and Messages and room for your own apps; numbers, contacts and texts kept by the server",
+  "next": [
+    "press F1 (or /{{name}}) to open the phone; your number is assigned the first time",
+    "contacts and messages are in memory: see the persistence note at the top of server/main.lua; set Config.hasPhone to require an item"
+  ]
+}

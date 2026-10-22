@@ -1902,6 +1902,52 @@
       }
     },
     {
+      "name": "phone",
+      "type": "registry:block",
+      "title": "Phone",
+      "description": "A phone anchored bottom right: a status bar, a home screen of app icons and an app frame with a back action, with Contacts and Messages and a registry for your own apps. The server owns the number, the contacts and the texts, and stamps the sender and the time.",
+      "files": [
+        {
+          "path": "registry/nuikit/blocks/phone/phone.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/phone/phone.tsx"
+        },
+        {
+          "path": "registry/nuikit/blocks/phone/nui.ts",
+          "type": "registry:lib",
+          "target": "components/blocks/phone/nui.ts"
+        },
+        {
+          "path": "registry/nuikit/blocks/phone/fixtures.ts",
+          "type": "registry:lib",
+          "target": "components/blocks/phone/fixtures.ts"
+        }
+      ],
+      "dependencies": [
+        "lucide-react",
+        "nuikit-core"
+      ],
+      "registryDependencies": [
+        "button",
+        "input",
+        "spinner",
+        "https://nuikit.vercel.app/r/panel.json",
+        "https://nuikit.vercel.app/r/menu-row.json",
+        "https://nuikit.vercel.app/r/form-field.json",
+        "https://nuikit.vercel.app/r/empty-state.json"
+      ],
+      "categories": [
+        "screens"
+      ],
+      "docs": "Mount <PhoneSurface /> in App.tsx. In Lua, open nk.surface(\"phone\", { layer = \"panel\", escape = \"back\" }) with a PhoneData table, answer nk.on(\"phone:addContact\") and nk.on(\"phone:send\") with { ok, error } and :update it with a fresh snapshot. Add your own app by appending { id, label, icon, Component } to PHONE_APPS. On the server, assign numbers, keep contacts and messages per player, stamp the sender and the time, validate and rate-limit. A whole resource with the Lua: npm create nuikit@latest my-phone -- -t phone",
+      "meta": {
+        "since": "unreleased",
+        "status": "experimental",
+        "replaces": [],
+        "removeIn": null
+      }
+    },
+    {
       "name": "utils",
       "type": "registry:lib",
       "title": "cn (kit-aware)",
