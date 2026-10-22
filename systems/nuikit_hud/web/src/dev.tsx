@@ -197,6 +197,8 @@ const DEV_STYLES: StyleChoice[] = (
     ["column.money", true, [true, false]],
     ["column.job", true, [true, false]],
     ["column.align", "center", ["center", "start", "end"]],
+    ["map.radar", "always", ["always", "vehicle", "never"]],
+    ...(["scale.top-left", "scale.top-right", "scale.bottom-left", "scale.bottom-right", "scale.map"] as StyleKey[]).map((k) => [k, 1, [0.8, 0.9, 1, 1.1, 1.25, 1.5]]),
   ] as [StyleKey, StyleValue, StyleValue[]][]
 ).map(([key, d, options]) => ({ key, value: d, default: d, options }));
 let devSettings: HudSettings | null = null;

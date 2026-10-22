@@ -317,6 +317,7 @@ end
 Layout.STYLE_KEYS = {
   'vitals.display', 'vitals.voice', 'vehicle.gauge', 'map.radar', 'map.shape', 'map.size', 'map.halo', 'map.compass',
   'map.column', 'column.street', 'column.area', 'column.money', 'column.job', 'column.align',
+  'scale.top-left', 'scale.top-right', 'scale.bottom-left', 'scale.bottom-right', 'scale.map',
 }
 Layout.STYLE_OPTIONS = {
   ['vitals.display'] = { 'icons', 'value', 'pill', 'expand' },
@@ -333,6 +334,12 @@ Layout.STYLE_OPTIONS = {
   ['column.money'] = { true, false },
   ['column.job'] = { true, false },
   ['column.align'] = { 'center', 'start', 'end' },
+  -- each cluster (a corner's stack, the column by the map) scaled from its own anchor
+  ['scale.top-left'] = { 0.8, 0.9, 1, 1.1, 1.25, 1.5 },
+  ['scale.top-right'] = { 0.8, 0.9, 1, 1.1, 1.25, 1.5 },
+  ['scale.bottom-left'] = { 0.8, 0.9, 1, 1.1, 1.25, 1.5 },
+  ['scale.bottom-right'] = { 0.8, 0.9, 1, 1.1, 1.25, 1.5 },
+  ['scale.map'] = { 0.8, 0.9, 1, 1.1, 1.25, 1.5 },
 }
 
 local function has(list, v)
@@ -345,7 +352,7 @@ end
 --- come from the layout preset).
 function Layout.styleDefault(key)
   local s = type(Config.styles) == 'table' and Config.styles or {}
-  local part, name = key:match('^(%w+)%.(%w+)$')
+  local part, name = key:match('^(%w+)%.([%w-]+)$')
   local v = type(s[part]) == 'table' and s[part][name] or nil
   if v ~= nil then return v end
   local mm, veh = Config.minimap or {}, Config.vehicle or {}
@@ -359,6 +366,7 @@ function Layout.styleDefault(key)
   if key == 'map.compass' then return mm.compass ~= false end
   if key == 'map.column' then return mm.column or 'auto' end
   if key == 'column.align' then return 'center' end
+  if key:find('^scale%.') then return 1 end
   return true -- the column's lines
 end
 

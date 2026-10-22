@@ -100,7 +100,13 @@ export type StyleKey =
   | "column.area"
   | "column.money"
   | "column.job"
-  | "column.align";
+  | "column.align"
+  | "map.radar"
+  | "scale.top-left"
+  | "scale.top-right"
+  | "scale.bottom-left"
+  | "scale.bottom-right"
+  | "scale.map";
 export interface StyleChoice {
   key: StyleKey;
   value?: StyleValue;

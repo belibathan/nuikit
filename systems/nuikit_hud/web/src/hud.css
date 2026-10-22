@@ -2132,3 +2132,20 @@ html[data-nk-motion="off"] .hud-root * {
   justify-content: flex-end;
   gap: 0.125rem;
 }
+
+/* each cluster scaled from its own corner (styles scale.<corner>), so its anchor never moves */
+[data-slot="hud-corner"][data-scaled] {
+  transform: scale(var(--hud-cluster-scale, 1));
+}
+[data-slot="hud-corner"][data-scaled][data-corner="top-left"] {
+  transform-origin: top left;
+}
+[data-slot="hud-corner"][data-scaled][data-corner="top-right"] {
+  transform-origin: top right;
+}
+[data-slot="hud-corner"][data-scaled][data-corner="bottom-left"] {
+  transform-origin: bottom left;
+}
+[data-slot="hud-corner"][data-scaled][data-corner="bottom-right"] {
+  transform-origin: bottom right;
+}

@@ -6,14 +6,16 @@ import type { HudStyles, StyleChoice, StyleKey, StyleValue } from "../nui";
 const GROUPS: { title: string; keys: StyleKey[] }[] = [
   { title: "Vitals", keys: ["vitals.display", "vitals.voice"] },
   { title: "Speedometer", keys: ["vehicle.gauge"] },
-  { title: "Map", keys: ["map.shape", "map.size", "map.halo", "map.compass", "map.column"] },
+  { title: "Map", keys: ["map.radar", "map.shape", "map.size", "map.halo", "map.compass", "map.column"] },
   { title: "Location and money", keys: ["column.street", "column.area", "column.money", "column.job", "column.align"] },
+  { title: "Size", keys: ["scale.top-left", "scale.top-right", "scale.bottom-left", "scale.bottom-right", "scale.map"] },
 ];
 
 const ROW: Record<StyleKey, string> = {
   "vitals.display": "Display",
   "vitals.voice": "While talking",
   "vehicle.gauge": "Gauge",
+  "map.radar": "Radar",
   "map.shape": "Shape",
   "map.size": "Size",
   "map.halo": "Halo",
@@ -24,6 +26,11 @@ const ROW: Record<StyleKey, string> = {
   "column.money": "Money",
   "column.job": "Job",
   "column.align": "Alignment",
+  "scale.top-left": "Top left",
+  "scale.top-right": "Top right",
+  "scale.bottom-left": "Bottom left",
+  "scale.bottom-right": "Bottom right",
+  "scale.map": "By the map",
 };
 
 const OPTION: Record<string, string> = {
@@ -37,6 +44,9 @@ const OPTION: Record<string, string> = {
   arc: "Arc",
   bar: "Bar",
   digital: "Digital",
+  always: "Always",
+  vehicle: "In a vehicle",
+  never: "Never",
   circle: "Circle",
   square: "Square",
   "12": "Small",
@@ -83,7 +93,7 @@ export function StyleTab({ choices, styles, onChange }: { choices: StyleChoice[]
                       data-active={now === o || undefined}
                       onClick={() => onChange({ ...styles, [c.key]: o })}
                     >
-                      {OPTION[String(o)] ?? String(o)}
+                      {optionLabel(o)}
                     </button>
                   ))}
                 </span>
@@ -94,4 +104,10 @@ export function StyleTab({ choices, styles, onChange }: { choices: StyleChoice[]
       ))}
     </div>
   );
+}
+
+/** An option's label: named ones from OPTION, a scale (under 2) as a percentage. */
+function optionLabel(o: StyleValue) {
+  if (typeof o === "number" && o < 2) return `${Math.round(o * 100)}%`;
+  return OPTION[String(o)] ?? String(o);
 }
