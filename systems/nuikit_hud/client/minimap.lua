@@ -354,6 +354,13 @@ function Minimap.slide(show)
   return true
 end
 
+--- The placement changed (/hud edit): put the radar in its corner again (it re-reads, so in a thread).
+function Minimap.relayout()
+  CreateThread(function()
+    if Minimap.style() == 'ring' and Minimap.inGame() then Minimap.apply() end
+  end)
+end
+
 --- The player is in the world: no loading screen, the network session running and the character
 --- loaded. Placing the radar before that (while joining) left GTA's big map stuck on.
 ---@return boolean

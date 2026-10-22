@@ -15,6 +15,7 @@
 // &chip=diamond,fill,tag,uniform   a /hudstyle override (shape, level, label, icon)
 // &pop=hunger:25     fire a vital pop after load (/hudpop)
 import { applyTheme, emit, openSurface } from "nuikit-core";
+import { PRESET_PARTS } from "./hud/parts";
 import { NuiDevtools, defineMocks } from "nuikit-core/devtools";
 import { useEffect, useState } from "react";
 import type { HudLayout, HudLocation, HudPreset, HudSettings, HudVehicle, HudWeapon, MinimapFrame } from "./nui";
@@ -190,6 +191,8 @@ const mocks = defineMocks({
   callbacks: {
     "hud:ready": () => ({ ok: true }),
     "hud:minimap:ready": () => ({ ok: true }),
+    "hud:parts:save": () => ({ ok: true }),
+    "hud:parts:reset": () => ({ ok: true }),
     "hud:style:get": () => {
       const [shape, level, attach, icon] = (q.get("chip") ?? "").split(",");
       return { ok: true, style: q.get("chip") ? { shape, level, attach, icon } : null };
@@ -238,6 +241,11 @@ export default function Dev() {
     }
     if (radar) setFrame(mf);
     openSurface("hud", settings);
+    // ?edit: the layout editor (/hud edit) over the HUD
+    if (q.has("edit")) {
+      const parts = { ...PRESET_PARTS[settings.layout ?? "compact"], ...settings.parts };
+      openSurface("hud-edit", { parts, preset: settings.layout ?? "compact", base: PRESET_PARTS[settings.layout ?? "compact"] });
+    }
     const pop = q.get("pop");
     if (pop) {
       const [tone, by] = pop.split(":");

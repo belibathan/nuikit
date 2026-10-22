@@ -1,9 +1,10 @@
 import { fetchNui, Surface, useNuiState, usePlayer, useSurfaceOpen } from "nuikit-core/react";
 import { MinimapFrameView, useMinimap } from "./minimap";
-import { Fragment, useEffect, useRef, type CSSProperties, type ReactNode } from "react";
-import type { HudLayout, HudLocation, HudSettings, HudVehicle, HudWeapon, MinimapFrame, MinimapState } from "./nui";
+import { Fragment, useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
+import type { HudLayout, HudParts, HudLocation, HudSettings, HudVehicle, HudWeapon, MinimapFrame, MinimapState } from "./nui";
 import { Ammo } from "./hud/ammo";
 import { Cluster } from "./hud/cluster";
+import { LayoutEditor } from "./hud/editor";
 import { layoutVars, stageLayout, useHudLayout, useViewport } from "./hud/layout";
 import { CompassTape, LocationStrip } from "./hud/location";
 import { useHudLook, type HudLook } from "./hud/look";
@@ -23,10 +24,20 @@ export default function App() {
     layout: useHudLayout(),
     ...useMinimap(),
   };
+  // /hud edit: the editor's draft placement, shown on the HUD live until it is saved or dropped
+  const [draft, setDraft] = useState<HudParts | null>(null);
   return (
-    <Surface name="hud" layer="hud">
-      {(settings) => <Hud settings={settings ?? { units: "mph", needs: true }} {...data} />}
-    </Surface>
+    <>
+      <Surface name="hud" layer="hud">
+        {(settings) => {
+          const s = settings ?? { units: "mph", needs: true };
+          return <Hud settings={draft ? { ...s, parts: draft } : s} {...data} />;
+        }}
+      </Surface>
+      <Surface name="hud-edit" layer="panel" input="full">
+        {(edit) => edit && <LayoutEditor data={edit} onDraft={setDraft} />}
+      </Surface>
+    </>
   );
 }
 

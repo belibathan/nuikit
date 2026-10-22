@@ -2,6 +2,7 @@
   "lua": [],
   "surface": "world",
   "components": [
+    "button",
     "hud-chip",
     "money",
     "text-roll",

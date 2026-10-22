@@ -74,6 +74,13 @@ export interface HudParts {
   vehicle: HudPart;
 }
 
+/** /hud edit: the placement on screen, the preset and its own placement (the editor's "preset" button) */
+export interface HudEditData {
+  parts: HudParts;
+  preset: HudPreset;
+  base: HudParts;
+}
+
 /** The weapon in hand (client/weapon.lua); false when unarmed or holding something without ammo. */
 export interface HudWeapon {
   /** rounds in the clip; for thrown weapons, how many are left */
@@ -189,8 +196,11 @@ declare module "nuikit-core" {
   interface NuiCallbacks {
     "hud:minimap:ready": { req: Record<string, never>; res: { ok: boolean } };
     "hud:ready": { req: Record<string, never>; res: { ok: boolean } };
+    "hud:parts:save": { req: { parts: HudParts }; res: { ok: boolean } };
+    "hud:parts:reset": { req: Record<string, never>; res: { ok: boolean } };
   }
   interface NuiSurfaces {
     hud: HudSettings;
+    "hud-edit": HudEditData;
   }
 }
