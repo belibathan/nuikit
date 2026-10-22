@@ -466,7 +466,7 @@ Everything below is readable on `<html>` (compiled theme, or kit.css on `:root`)
 
 | Material | Who draws it | Through |
 |---|---|---|
-| `menu` | Every panel: sheets (`edge-sheet`, the pause sheet, the inventory tray), dialogs, menus, notices on a panel | `--nk-panel-bg` (opacity × `--nk-menu-alpha`, which day legibility lifts), `--nk-panel-radius` (`--nk-material-menu-radius`), `--nk-panel-edge` (`--nk-material-menu-edge`), `--nk-panel-blur` (`--nk-material-menu-blur`; the surface applies `backdrop-filter` itself, 0px by default) |
+| `menu` | Every panel: sheets (`edge-sheet`, the pause sheet, the inventory tray), dialogs, menus, notices on a panel | `--nk-panel-bg` (opacity × `--nk-menu-alpha`, which day legibility lifts), `--nk-panel-radius` (`--nk-material-menu-radius`), `--nk-panel-edge` (`--nk-material-menu-edge`), `--nk-panel-blur` (`--nk-material-menu-blur`, 0px by default; a surface blurs with `--nk-backdrop-filter: blur(var(--nk-panel-blur))`, applied under `--nk-backdrop`, default on) |
 | `hud` | HUD chips, slabs and tiles drawn over the game | `--nk-chip-bg` (and `--nk-slab-bg`): `--nk-hud-alpha` |
 | `overlay` | Full-screen backdrops behind a moment (death, loading, the dim behind a dialog) | `--nk-overlay-alpha`, `--nk-material-overlay-*` |
 
