@@ -37,7 +37,7 @@ a compiler, so it takes milliseconds and needs nothing installed.
 | `perf/remote-asset` | advisory | Fonts, styles and media fetched from the network (`@import url(https://…)`, `<link href>`, `src`) |
 | `perf/frame-send` | advisory | `SendNUIMessage` / `NUI.send` inside a loop that waits `Wait(0)` |
 | `attention/glow` | advisory | More than one part marked `data-nk-glow` |
-| `cef/backdrop-filter` | advisory | `backdrop-filter` in CSS or inline styles: it draws a black box over the game in NUI. Silence a deliberate use with `nuikit-ignore cef/backdrop-filter` |
+| `cef/backdrop-filter` | advisory | A raw `backdrop-filter` in CSS or inline styles. Set `--nk-backdrop-filter` instead: kit.css applies it behind `--nk-backdrop`, which a server whose clients draw backdrop filters as black boxes turns `off` |
 | `cef/has` | advisory | `:has()` in a stylesheet selector (unsupported in Chromium 103) |
 | `cef/container` | advisory | `@container` queries and `container-type` (unsupported in Chromium 103) |
 | `cef/individual-transform` | advisory | `scale:` / `translate:` / `rotate:` properties in source CSS (Chromium 104+) |

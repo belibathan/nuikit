@@ -450,6 +450,7 @@
   --nk-material-overlay-radius: 0.625rem;
   --nk-material-overlay-edge: 0.06;
   --nk-material-overlay-texture: none;
+  --nk-backdrop: on;
   --nk-slash: none;
   --nk-legibility: auto;
   --nk-legibility-lift: 0.5;
@@ -670,6 +671,7 @@
   --nk-material-overlay-radius: 0.625rem;
   --nk-material-overlay-edge: 0.06;
   --nk-material-overlay-texture: none;
+  --nk-backdrop: on;
   --nk-slash: none;
   --nk-legibility: auto;
   --nk-legibility-lift: 0.5;
@@ -896,7 +898,7 @@
   --nk-panel-border: var(--border);
   /* the theme's radius as is (10px in Graphite): compact panels read crisper than rounded ones */
   --nk-panel-radius: var(--nk-material-menu-radius, var(--radius));
-  /* the menu material's backdrop blur (0px by default); a surface that wants it applies backdrop-filter */
+  /* the menu material's backdrop blur (0px by default); a surface sets --nk-backdrop-filter: blur(var(--nk-panel-blur)); --nk-backdrop: off turns it off */
   --nk-panel-blur: var(--nk-material-menu-blur, 0px);
   --nk-panel-cut: var(--nk-cut, 0px);
   --nk-panel-clip: var(--nk-clip, none);
@@ -2155,4 +2157,20 @@ html[data-nk-legibility="auto"][data-nk-daytime] {
 [data-nk-glow]:not([data-nk-glow-on]) {
   --nk-glow: 0;
   --nk-hue-glow: 0;
+}
+
+/* Backdrop filters (tokens 1.4, --nk-backdrop, default on: the owner's pause, death and sheet blur, seen right in
+   game). A surface sets --nk-backdrop-filter (never backdrop-filter itself), so a server whose clients draw
+   backdrop-filter as a black box over the game turns every one off with --nk-backdrop: off. The property
+   doesn't inherit, so it stays on the element that set it. Applied unless html[data-nk-backdrop="off"], so a
+   page blurs before its theme arrives too. */
+@property --nk-backdrop-filter {
+  syntax: "*";
+  inherits: false;
+}
+html:not([data-nk-backdrop="off"]) * {
+  /* nuikit-ignore cef/backdrop-filter: the one place, behind --nk-backdrop */
+  -webkit-backdrop-filter: var(--nk-backdrop-filter);
+  /* nuikit-ignore cef/backdrop-filter: the one place, behind --nk-backdrop */
+  backdrop-filter: var(--nk-backdrop-filter);
 }

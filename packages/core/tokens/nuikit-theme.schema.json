@@ -1294,6 +1294,14 @@
           "description": "Texture over full-screen overlays (pause, death, loading)",
           "$comment": "tokens 1.4"
         },
+        "nk-backdrop": {
+          "enum": [
+            "on",
+            "off"
+          ],
+          "description": "Backdrop filters (blur behind materials, the death screen's desaturation): on applies each surface's --nk-backdrop-filter (seen right in game). off for clients whose NUI draws them as black boxes over the game",
+          "$comment": "tokens 1.4"
+        },
         "nk-slash": {
           "enum": [
             "none",

@@ -7,13 +7,11 @@
 
 /* the game behind: drained in last stand, nearly black-and-white once unconscious */
 .death-tint {
-  -webkit-backdrop-filter: saturate(0.45) contrast(1.06);
-  backdrop-filter: saturate(0.45) contrast(1.06);
+  --nk-backdrop-filter: saturate(0.45) contrast(1.06);
   background: radial-gradient(ellipse 60% 55% at 50% 42%, color-mix(in oklab, var(--scrim) 50%, transparent) 0%, color-mix(in oklab, var(--scrim) 38%, transparent) 100%);
 }
 .death-dead .death-tint {
-  -webkit-backdrop-filter: grayscale(0.9) brightness(0.62) blur(2px);
-  backdrop-filter: grayscale(0.9) brightness(0.62) blur(2px);
+  --nk-backdrop-filter: grayscale(0.9) brightness(0.62) blur(2px);
   background: color-mix(in oklab, var(--scrim) 55%, transparent);
 }
 

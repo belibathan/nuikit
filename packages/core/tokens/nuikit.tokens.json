@@ -1324,6 +1324,15 @@
         }
       }
     },
+    "backdrop": {
+      "$value": "on",
+      "$description": "Backdrop filters (blur behind materials, the death screen's desaturation): on applies each surface's --nk-backdrop-filter (seen right in game). off for clients whose NUI draws them as black boxes over the game",
+      "$extensions": {
+        "dev.nuikit": {
+          "type": "keyword"
+        }
+      }
+    },
     "slash": {
       "$value": "none",
       "$description": "A decorative diagonal cut on menus, at most once per full-screen moment",

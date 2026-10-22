@@ -17,12 +17,8 @@
 .pause-scrim {
   inset: -32px; /* past the edges, so the blur has no hard border */
   background: color-mix(in oklab, var(--scrim) 38%, transparent);
-}
-/* The blur is the browser preview's only (html[data-browser], main.tsx): in game GTA blurs the world, and a
-   backdrop-filter in NUI draws a black box over the game. */
-html[data-browser] .pause-scrim {
-  -webkit-backdrop-filter: blur(var(--pause-scrim-blur, 16px)) saturate(1.15);
-  backdrop-filter: blur(var(--pause-scrim-blur, 16px)) saturate(1.15); /* nuikit-ignore cef/backdrop-filter */
+  /* the world shade, not a panel: its own token (the menu material's blur is 0 by default) */
+  --nk-backdrop-filter: blur(var(--pause-scrim-blur, 16px)) saturate(1.15);
 }
 
 /*
@@ -35,11 +31,13 @@ html[data-browser] .pause-scrim {
 .pause-sheet {
   color: var(--nk-panel-fg) !important;
   background-color: var(--nk-panel-bg) !important;
-  /* the menu material (tokens 1.4): --nk-panel-bg (× --nk-menu-alpha; no backdrop blur: in NUI it draws a black box); the screen-edge depth is a token of its own
+  /* the menu material (tokens 1.4): --nk-panel-bg (× --nk-menu-alpha; blur through --nk-backdrop-filter, on unless a server sets --nk-backdrop: off); the screen-edge depth is a token of its own
      (--pause-sheet-depth, set in theme.css; 0 = flat) */
   background-image: linear-gradient(90deg, rgba(var(--scrim-rgb), var(--pause-sheet-depth, 0.22)) 0%, rgba(var(--scrim-rgb), 0) 70%);
   border-right: var(--nk-border) solid var(--nk-panel-border) !important;
   box-shadow: var(--nk-panel-shadow) !important;
+  /* the menu material's blur (tokens 1.4: the surface applies it; 0px by default) */
+  --nk-backdrop-filter: blur(var(--nk-panel-blur, 0px));
 }
 .pause-sheet[data-state="open"] {
   animation-duration: min(calc(var(--nk-time) * 2.2), 360ms) !important;
@@ -83,8 +81,7 @@ html[data-browser] .pause-scrim {
  */
 .pause-scrim[data-stage] {
   background: transparent;
-  -webkit-backdrop-filter: none;
-  backdrop-filter: none; /* nuikit-ignore cef/backdrop-filter */
+  --nk-backdrop-filter: none;
 }
 
 /* The map: the world stays sharp; a light shade at the edges keeps the panels readable. */
