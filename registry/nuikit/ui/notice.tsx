@@ -361,7 +361,7 @@ function Notice({
           aria-hidden
           data-slot="notice-time"
           className={cn(
-            "absolute inset-x-0 bottom-0 h-(--nk-slab-line-height) origin-left motion-reduce:hidden [html[data-nk-motion=off]_&]:hidden",
+            "absolute inset-x-0 bottom-0 h-(--nk-slab-line-height) origin-left motion-reduce:hidden [[data-nk-motion=off]_&]:hidden",
             s.line
           )}
         />

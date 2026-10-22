@@ -82,10 +82,13 @@ export function springOf(preset: SpringName | string | Spring = "move"): Spring 
 }
 
 let reduceQuery: MediaQueryList | null | undefined;
-/** The motion level: html[data-nk-motion] (theme and player prefs), then the OS reduced-motion setting. */
-export function motionLevel(): MotionLevel {
+/**
+ * The motion level: the nearest [data-nk-motion] from `el` up (a theme painted on a subtree), else
+ * <html>'s (theme and player prefs), then the OS reduced-motion setting.
+ */
+export function motionLevel(el?: Element | null): MotionLevel {
   if (!hasDom()) return "on";
-  const a = document.documentElement.getAttribute("data-nk-motion");
+  const a = (el?.closest("[data-nk-motion]") ?? document.documentElement).getAttribute("data-nk-motion");
   if (a === "off") return "off";
   if (reduceQuery === undefined) reduceQuery = typeof matchMedia === "function" ? matchMedia("(prefers-reduced-motion: reduce)") : null;
   return a === "reduced" || reduceQuery?.matches ? "reduced" : "on";

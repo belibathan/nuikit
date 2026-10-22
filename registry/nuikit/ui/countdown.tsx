@@ -127,10 +127,13 @@ function countdownDrain(seconds: number, total: number, whole = false) {
   return { from, to: Math.max(0, (s - step) / total), ms: Math.round(step * 1000) }
 }
 
-/** Motion is off when the theme or the player turned it off (kit.css) or the OS asks for less. */
-const motionOn = () =>
+/**
+ * Motion is off when the theme or the player turned it off (data-nk-motion="off" on any ancestor,
+ * kit.css) or the OS asks for less.
+ */
+const motionOn = (el: Element) =>
   typeof document === "undefined" ||
-  (document.documentElement.getAttribute("data-nk-motion") !== "off" &&
+  ((el.closest("[data-nk-motion]") ?? document.documentElement).getAttribute("data-nk-motion") !== "off" &&
     !(typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches))
 
 /**
@@ -142,7 +145,7 @@ function useDrain(ref: React.RefObject<HTMLDivElement | null>, from: number, to:
     const el = ref.current
     if (!el) return
     el.style.transform = `scaleX(${from})`
-    if (!(ms > 0) || !motionOn() || typeof el.animate !== "function") return
+    if (!(ms > 0) || !motionOn(el) || typeof el.animate !== "function") return
     const a = el.animate([{ transform: `scaleX(${from})` }, { transform: `scaleX(${to})` }], { duration: ms, easing: "linear", fill: "forwards" })
     return () => a.cancel()
   }, [ref, from, to, ms])

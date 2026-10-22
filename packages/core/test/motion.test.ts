@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 // nuikit-core/motion: springs sampled into WAAPI keyframes, retargeting, FLIP, timed runs, motion levels.
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { flip, flipFrom, indicator, parseSpring, solveSpring, spring, springOf, springValues, stagger, timed, valueOf } from "../src/motion";
+import { flip, flipFrom, indicator, motionLevel, parseSpring, solveSpring, spring, springOf, springValues, stagger, timed, valueOf } from "../src/motion";
 
 /** A stand-in for WAAPI (jsdom has none): records what was asked, lets a test move the clock and finish. */
 class FakeAnimation {
@@ -209,5 +209,20 @@ describe("choreography", () => {
     move(0, 1.5);
     expect(el.getAttribute("data-repeat")).toBe("");
     expect(el.style.transform).toBe("translateY(0px) scaleY(1.5)");
+  });
+});
+
+describe("motionLevel", () => {
+  afterEach(() => {
+    document.documentElement.removeAttribute("data-nk-motion");
+    document.body.innerHTML = "";
+  });
+
+  it("reads the nearest data-nk-motion from an element up, else <html>'s", () => {
+    document.documentElement.setAttribute("data-nk-motion", "reduced");
+    document.body.innerHTML = `<div data-nk-motion="off"><span id="in"></span></div><span id="out"></span>`;
+    expect(motionLevel(document.getElementById("in"))).toBe("off");
+    expect(motionLevel(document.getElementById("out"))).toBe("reduced");
+    expect(motionLevel()).toBe("reduced");
   });
 });
