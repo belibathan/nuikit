@@ -77,6 +77,7 @@ and target motion; `edge-sheet` first-frame fix; `nuikit.cfg` comments without s
 | ox_lib notify `×N` bump re-enters in place (decisions #11) | PR #117. Needs the in-game check |
 | Progress cancel key: `nuikit_cancel_key` convar (decisions #2) | PR #119 (lane C files). Needs the in-game check |
 | Overrides polish: ox_lib text UI slides from its edge (#122), mm_radio enter/exit + chip stagger (#125), qbx_taxijob meter on `edge-sheet`, clear of the HUD zones (#126); Renewed-Banking, illenium-appearance, qbx_scoreboard, qbx_vehiclesales already match #102 | PRs open. Needs the in-game check |
+| nuikit_chat: a recalled message (up arrow) no longer shows clipped to half a line | PR open. Needs the in-game check |
 
 ## Lane E: Kit + site
 

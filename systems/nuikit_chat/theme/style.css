@@ -257,6 +257,12 @@
   width: auto;
   min-width: 0;
   box-sizing: border-box; /* chat sizes it to scrollHeight + 2 */
+  /* chat sets an inline height from scrollHeight; measured at the wrong moment (an up-arrow recall
+     sets the value before a layout pass) it came out one padding short and clipped the line
+     vertically. min-height wins over any inline height: one full line (padding + line) always shows,
+     and longer text still grows the box. */
+  min-height: calc(var(--nk-px) * 36);
+  overflow: hidden;
   margin: 0;
   padding: calc(var(--nk-px) * 8) calc(var(--nk-px) * 12);
   border: 0;
