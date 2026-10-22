@@ -10,8 +10,8 @@
 // --nk-vital-icon) and a player's override (/hudstyle, kept in KVP by client/style.lua and sent as
 // `hud:style`). Icon + level + the critical state, never colour alone; the value is in aria-valuenow.
 import { onNui } from "nuikit-core";
-import { fetchNui, Stagger, useStaggerItem, type NuiPlayer } from "nuikit-core/react";
-import { MicIcon, RadioIcon } from "lucide-react";
+import { fetchNui, Stagger, useSlots, useStaggerItem, type NuiPlayer, type Slot } from "nuikit-core/react";
+import { BriefcaseIcon, CircleIcon, MicIcon, PhoneIcon, RadioIcon, ShieldIcon, type LucideIcon } from "lucide-react";
 import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
 import type { HudSettings, VitalMode } from "../nui";
 import { VitalChip } from "@/components/ui/vital-chip";
@@ -149,6 +149,8 @@ function useHudStyle() {
 /** The status row: voice, the vitals, the radio channel. */
 export function VitalsRow({ player, settings, layout }: { player: NuiPlayer; settings: HudSettings; layout: "compact" | "classic" }) {
   const force = useHudStyle();
+  // other resources' chips in this cluster (docs/slots.md: nuikit_voice's range, radio and call, a job's indicator)
+  const slots = useSlots("vitals");
   const cfg = settings.vitals ?? {};
   if (cfg.enabled === false) return null;
   const low = cfg.low ?? 25;
@@ -157,10 +159,13 @@ export function VitalsRow({ player, settings, layout }: { player: NuiPlayer; set
   const pop: PopMode = cfg.pop === undefined ? "change" : cfg.pop;
   const needs = settings.needs !== false;
   const mode = (m: VitalMode | undefined): VitalMode => (m === undefined ? "auto" : m);
-  const voice = settings.voice !== false ? player.voice : undefined;
+  // nuikit_voice draws voice as slots: then the HUD's own voice and radio chips step aside, so voice shows once
+  const voiceSlots = slots.some((s) => s.resource === VOICE_RESOURCE);
+  const voice = settings.voice !== false && !voiceSlots ? player.voice : undefined;
+  const talking = player.voice?.talking === true;
   // styles (Config.styles, /hud edit): how the chips draw, and whether they tuck behind voice while talking
   const display = (settings.styles?.["vitals.display"] as VitalDisplay | undefined) ?? "icons";
-  const collapse = settings.styles?.["vitals.voice"] === "collapse" && voice?.talking === true;
+  const collapse = settings.styles?.["vitals.voice"] === "collapse" && talking;
   const common = { low, high, linger, pop };
   const item = (tone: Tone, value: number | undefined, m: VitalMode | undefined, extra?: Partial<VitalProps>) => (
     <VitalItem tone={tone} value={value} mode={mode(m)} {...common} force={force[tone] ?? null} display={display} {...extra} />
@@ -175,6 +180,9 @@ export function VitalsRow({ player, settings, layout }: { player: NuiPlayer; set
       {needs && item("thirst", player.thirst, cfg.thirst)}
       {needs && item("stress", player.stress, cfg.stress)}
       {voice?.radio !== undefined && <RadioChip radio={voice.radio} />}
+      {slots.map((s) => (
+        <SlotChip key={`${s.resource}:${s.key}`} slot={s} display={display} linger={linger} />
+      ))}
     </div>
     </Stagger>
   );
@@ -186,7 +194,7 @@ export function VitalsCompact({ player, settings }: { player: NuiPlayer; setting
 }
 
 /** expand: true for a while after the value changes (not on the first value). */
-function useExpanded(value: number | undefined, linger: number) {
+function useExpanded(value: number | string | undefined, linger: number) {
   const [on, setOn] = useState(false);
   const first = useRef(true);
   useEffect(() => {
@@ -201,4 +209,50 @@ function useExpanded(value: number | undefined, linger: number) {
     return () => clearTimeout(t);
   }, [value, linger]);
   return on;
+}
+
+/** The resource whose slots carry voice (nuikit_voice: pma-voice's range, radio, call). */
+const VOICE_RESOURCE = "nuikit_voice";
+
+/** A slot's `icon` name → the glyph; an unknown name draws a dot. */
+const SLOT_ICONS: Record<string, LucideIcon> = { mic: MicIcon, radio: RadioIcon, phone: PhoneIcon, briefcase: BriefcaseIcon, job: BriefcaseIcon, shield: ShieldIcon };
+
+/**
+ * A chip another resource put in the vitals cluster (NUI.slot('vitals', …)): drawn and folded by the
+ * same rules as a vital (the display style, the voice collapse), coloured by its `hue` role, its
+ * `level` (0–1) as the chip's level and its `value` (or label) where a vital shows its number.
+ */
+function SlotChip({ slot, display, linger }: { slot: Slot; display: VitalDisplay; linger: number }) {
+  const Icon = (slot.icon && SLOT_ICONS[slot.icon]) || CircleIcon;
+  const value = slot.value !== undefined && slot.value !== "" ? String(slot.value) : undefined;
+  const expanded = useExpanded(display === "expand" ? value : undefined, linger);
+  const open = !!value && (display === "value" || display === "pill" || (display === "expand" && expanded));
+  const level = typeof slot.level === "number" ? Math.round(Math.max(0, Math.min(1, slot.level)) * 100) : undefined;
+  const label = value && (
+    <VitalChip.Label>
+      {display === "pill" && slot.label && <span className="hud-vlabel">{slot.label}</span>}
+      <span className="hud-num">{value}</span>
+    </VitalChip.Label>
+  );
+  return (
+    <div
+      data-slot="hud-slot"
+      data-key={`${slot.resource}:${slot.key}`}
+      data-hue={slot.hue}
+      data-voice={slot.resource === VOICE_RESOURCE || undefined}
+      data-shown
+      data-critical={slot.alert || undefined}
+      className="hud-vchip"
+    >
+      <VitalChip.Root value={level} open={open} style={{ "--vital": "var(--hue-solid, currentColor)" } as CSSProperties} aria-label={[slot.label, value].filter(Boolean).join(" ")}>
+        <VitalChip.Shape>
+          <VitalChip.Icon>
+            <Icon />
+          </VitalChip.Icon>
+          {label}
+        </VitalChip.Shape>
+        {label}
+      </VitalChip.Root>
+    </div>
+  );
 }

@@ -272,6 +272,20 @@ export default function Dev() {
     if (q.has("retract")) document.documentElement.style.setProperty("--nk-rest-delay", "8s");
     if (q.has("retract")) settings.situations = { retract: true, rest: ["map", "vehicle"], moment: ["status", "map", "vitals", "vehicle"], driving: ["status", "map", "vitals", "vehicle"], interaction: ["map", "vitals"] };
     devSettings = settings;
+    // ?slots: other resources in the vitals cluster (nuikit_voice's range and radio, a job's indicator)
+    if (q.has("slots")) {
+      setTimeout(
+        () =>
+          emit("nuikit:slots" as never, {
+            vitals: {
+              "nuikit_voice:range": { key: "range", resource: "nuikit_voice", order: 10, icon: "mic", label: "Voice", value: "Normal", hue: "neutral" },
+              "nuikit_voice:radio": { key: "radio", resource: "nuikit_voice", order: 20, icon: "radio", label: "Radio", value: "3 MHz", hue: "info" },
+              "police_job:duty": { key: "duty", resource: "police_job", order: 200, icon: "shield", label: "On duty", value: "Unit 12", hue: "police", level: 0.6 },
+            },
+          } as never),
+        300,
+      );
+    }
     openSurface("hud", settings);
     // ?edit: the layout editor (/hud edit) over the HUD
     if (q.has("edit")) {
