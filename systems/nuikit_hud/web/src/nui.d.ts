@@ -81,6 +81,8 @@ export interface HudEditData {
   base: HudParts;
   /** each style: its value now, the server's default and what players may pick */
   styles?: StyleChoice[];
+  /** players may move the parts (Config.playerLayout and the hud_layout flag); false: Style only */
+  layout?: boolean;
 }
 
 export type StyleValue = string | number | boolean;

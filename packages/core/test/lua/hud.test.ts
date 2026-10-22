@@ -80,7 +80,7 @@ const threads = `
     end
   end
 `;
-const HUD_SCRIPTS = ["config.lua", "client/layout.lua", "client/adapters.lua", "client/location.lua", "client/vehicle.lua", "client/main.lua"].map((f) => HUD + f);
+const HUD_SCRIPTS = ["config.lua", "client/layout.lua", "client/adapters.lua", "client/location.lua", "client/vehicle.lua", "client/prefs.lua", "client/main.lua"].map((f) => HUD + f);
 HUD_SCRIPTS.splice(1, 0, "bridge.lua");
 
 describe("systems/nuikit_hud", () => {
@@ -118,45 +118,6 @@ describe("systems/nuikit_hud", () => {
         vehicle: { at: "bottom-right", order: 2 },
       },
     });
-  });
-
-  it("/hud edit: a player's layout goes on top of Config.parts, saved per preset; reset and export", async () => {
-    client = await createClient();
-    const hud = await client.start("nuikit_hud", {
-      before: natives + ` PD = {} function DeleteResourceKvp(k) DELETED = k end PRINTED = {} function print(s) PRINTED[#PRINTED + 1] = s end`,
-      scripts: HUD_SCRIPTS,
-    });
-    await hud.run(`Config.parts = { vitals = 'top-left' }`);
-    client.event("QBCore:Player:SetPlayerData", { citizenid: "ABC", charinfo: { firstname: "Niko" }, money: { cash: 5, bank: 0 }, metadata: {} });
-    hud.commands.get("hud")!(0, ["edit"]);
-    await hud.run(`return 1`); // flush
-    expect(hud.surfaces()["hud-edit"]).toMatchObject({ open: true, focused: true, data: { preset: "compact", parts: { vitals: { at: "top-left" } } } });
-
-    // the page's draft, with junk the server must drop
-    const parts = { map: "bottom-left", vitals: { at: "bottom-right", order: 3 }, ammo: { at: false, order: 1 }, wallet: { at: "nowhere", order: 1 }, money: { at: "map", order: 1 } };
-    expect(await hud.call("hud:parts:save", { parts })).toEqual({ ok: true });
-    expect(hud.surfaces()["hud-edit"].open).toBe(false);
-    expect(JSON.parse(hud.kvp.get("nuikit_hud:parts:compact")!)).toEqual({ map: "bottom-left", vitals: { at: "bottom-right", order: 3 }, ammo: { at: false, order: 1 } });
-    expect(hud.surfaces().hud.data.parts).toMatchObject({ map: "bottom-left", vitals: { at: "bottom-right", order: 3 }, ammo: { at: false }, wallet: { at: "map", order: 2 } });
-    expect(await hud.call("hud:parts:save", { parts: "nope" })).toEqual({ ok: false });
-
-    hud.commands.get("hud")!(0, ["export"]);
-    const printed = await hud.run<string>(`return PRINTED[#PRINTED]`);
-    expect(printed).toContain("    map = 'bottom-left',");
-    expect(printed).toContain("    ammo = { at = false, order = 1 },");
-    expect(printed).toContain("    vitals = { at = 'bottom-right', order = 3 },");
-
-    // a new session reads it back; reset drops it (Config.parts stays)
-    expect(await hud.run(`Layout.player = nil Layout.loadPlayer() return Layout.parts().vitals.at`)).toBe("bottom-right");
-    hud.commands.get("hud")!(0, ["reset"]);
-    await hud.run(`return 1`); // flush
-    expect(await hud.run(`return DELETED`)).toBe("nuikit_hud:parts:compact");
-    expect(hud.surfaces().hud.data.parts.vitals.at).toBe("top-left");
-    // playerLayout = false: no editor, saved layouts ignored
-    await hud.run(`Config.playerLayout = false`);
-    hud.commands.get("hud")!(0, ["edit"]);
-    await hud.run(`return 1`); // flush
-    expect(hud.surfaces()["hud-edit"].open).toBe(false);
   });
 
   it("legibility (Foundation 2): day or night from the game clock, sent on hud:ready and when it changes", async () => {
@@ -206,37 +167,92 @@ describe("systems/nuikit_hud", () => {
     expect(hud.surfaces().hud.data.situations).toMatchObject({ retract: false, rest: ["map", "vehicle"] });
   });
 
-  it("styles: server defaults and allow-lists, the player's picks previewed, saved and reset", async () => {
-    client = await createClient();
-    const hud = await client.start("nuikit_hud", { before: natives + ` PD = {} function DeleteResourceKvp(k) DELETED = k end`, scripts: HUD_SCRIPTS });
-    await hud.run(`Config.styles.allow = { ['map.size'] = { 15, 18 } } Config.vehicle.gauge = 'bar' Minimap.options = function() return { shape = 'circle', size = 15 } end`); // the stub's preset
-    client.event("QBCore:Player:SetPlayerData", { citizenid: "ABC", charinfo: { firstname: "Niko" }, money: { cash: 5, bank: 0 }, metadata: {} });
-    // defaults equal today's settings
-    expect(hud.surfaces().hud.data).toMatchObject({ vehicle: { gauge: "bar" }, wallet: { cash: "always", bank: "change", job: true }, halo: true, mapColumn: "auto", compass: { ring: true } });
-    expect(hud.surfaces().hud.data.styles).toMatchObject({ "vitals.display": "icons", "vitals.voice": "beside", "column.align": "center" });
+  describe("the player's HUD on nk.settings (/hud edit, client/prefs.lua)", () => {
+    // the nuikit resource holds the settings; the HUD keeps the harness's exports to reach it
+    const withRuntime = (kvp?: Map<string, string>) => async () => {
+      client = await createClient();
+      const nuikit = await client.start("nuikit", { scripts: ["settings.lua"] });
+      await client.start("qbx_core", { before: `exports("GetPlayerData", function() return { citizenid = "ABC", charinfo = { firstname = "Niko" }, money = { cash = 5, bank = 0 }, metadata = {} } end)` });
+      const hud = await client.start("nuikit_hud", {
+        before: `__EX = exports\n` + natives + `\nexports = __EX STARTED.nuikit = true PD = {} PRINTED = {} function print(s) PRINTED[#PRINTED + 1] = s end function DeleteResourceKvp(k) DELETED = DELETED or {} DELETED[#DELETED + 1] = k end`,
+        scripts: ["settings.lua", ...HUD_SCRIPTS],
+        kvp,
+      });
+      client.event("QBCore:Player:SetPlayerData", { citizenid: "ABC", charinfo: { firstname: "Niko" }, money: { cash: 5, bank: 0 }, metadata: {} });
+      return { nuikit, hud };
+    };
+    const saved = (nuikit: Awaited<ReturnType<typeof client.start>>) => JSON.parse(nuikit.kvp.get("nuikit:settings:nuikit_hud") ?? "null");
 
-    hud.commands.get("hud")!(0, ["edit"]);
-    await hud.run(`return 1`);
-    const size = hud.surfaces()["hud-edit"].data.styles.find((s: any) => s.key === "map.size");
-    expect(size).toMatchObject({ options: [15, 18], value: 15, default: 15 });
+    it("layout: the editor's save keeps only what differs from the server's; reset and export", async () => {
+      const { nuikit, hud } = await withRuntime()();
+      hud.commands.get("hud")!(0, ["edit"]);
+      await hud.run(`return 1`);
+      expect(hud.surfaces()["hud-edit"]).toMatchObject({ open: true, data: { preset: "compact", layout: true } });
 
-    // a draft shows at once; junk and what the server doesn't allow are dropped
-    await hud.call("hud:styles:preview", { styles: { "vitals.display": "pill", "column.money": false, "map.size": 12, "vehicle.gauge": "nope" } });
-    expect(hud.surfaces().hud.data).toMatchObject({ styles: { "vitals.display": "pill" }, wallet: { cash: false, bank: false, job: true }, vehicle: { gauge: "bar" } });
-    expect(hud.surfaces().hud.data.styles["map.size"]).toBeUndefined(); // 12 isn't allowed: the preset's
-    await hud.call("hud:styles:preview", {}); // dropped (Escape, Cancel)
-    expect(hud.surfaces().hud.data.styles["vitals.display"]).toBe("icons");
+      const parts = { map: "bottom-left", vitals: { at: "bottom-right", order: 3 }, ammo: { at: false, order: 1 }, wallet: { at: "nowhere", order: 1 }, money: { at: "map", order: 1 } };
+      expect(await hud.call("hud:parts:save", { parts })).toEqual({ ok: true });
+      expect(hud.surfaces()["hud-edit"].open).toBe(false);
+      expect(saved(nuikit).values).toEqual({ "place.map": "bottom-left", "place.vitals": "bottom-right", "order.vitals": 3, "place.ammo": "hidden" });
+      expect(hud.surfaces().hud.data.parts).toMatchObject({ map: "bottom-left", vitals: { at: "bottom-right", order: 3 }, ammo: { at: false }, wallet: { at: "map", order: 2 } });
 
-    expect(await hud.call("hud:styles:save", { styles: { "vehicle.gauge": "digital", "map.size": 18 } })).toEqual({ ok: true });
-    expect(JSON.parse(hud.kvp.get("nuikit_hud:styles")!)).toEqual({ "vehicle.gauge": "digital", "map.size": 18 });
-    expect(hud.surfaces().hud.data.vehicle.gauge).toBe("digital");
-    expect(await hud.run(`Layout.playerStyles = nil Layout.loadStyles() return Layout.styles()['map.size']`)).toBe(18);
-    // the server narrows what's allowed later: the old pick falls back to the default
-    expect(await hud.run(`Config.styles.allow['vehicle.gauge'] = { 'arc' } return Layout.styles()['vehicle.gauge']`)).toBe("bar");
-    await hud.call("hud:styles:reset");
-    expect(await hud.run(`return DELETED`)).toBe("nuikit_hud:styles");
-    // players = false: the defaults for everyone
-    expect(await hud.run(`Config.styles.players = false return Layout.saveStyles({ ['vitals.display'] = 'pill' }) and Layout.styles()['vitals.display']`)).toBe("icons");
+      hud.commands.get("hud")!(0, ["export"]);
+      const printed = await hud.run<string>(`return PRINTED[#PRINTED]`);
+      expect(printed).toContain("    map = 'bottom-left',");
+      expect(printed).toContain("    vitals = { at = 'bottom-right', order = 3 },");
+
+      hud.commands.get("hud")!(0, ["reset"]);
+      await hud.run(`return 1`);
+      expect(saved(nuikit).values).toEqual({});
+      expect(hud.surfaces().hud.data.parts.vitals.at).toBe("bottom-left");
+    });
+
+    it("styles: previewed as a draft, saved, the server's allow-list respected; presets", async () => {
+      const { nuikit, hud } = await withRuntime()();
+      expect(hud.surfaces().hud.data).toMatchObject({ wallet: { cash: "always", bank: "change", job: true }, halo: true, mapColumn: "auto", styles: { "vitals.display": "icons" } });
+      await hud.call("hud:styles:preview", { styles: { "vitals.display": "pill", "column.money": false, "vehicle.gauge": "nope" } });
+      await hud.run(`return 1`);
+      expect(hud.surfaces().hud.data).toMatchObject({ styles: { "vitals.display": "pill" }, wallet: { cash: false, bank: false } });
+      expect(saved(nuikit)).toBeNull(); // a draft isn't saved
+      await hud.call("hud:styles:preview", {}); // Escape: dropped
+      expect(hud.surfaces().hud.data.styles["vitals.display"]).toBe("icons");
+      await hud.call("hud:styles:save", { styles: { "vehicle.gauge": "digital" } });
+      expect(saved(nuikit).values).toEqual({ "vehicle.gauge": "digital" });
+      expect(hud.surfaces().hud.data.vehicle.gauge).toBe("digital");
+
+      // presets, as the pause menu applies them (a draft until saved)
+      await hud.run(`Prefs.handle.preset('streamer')`);
+      expect(hud.surfaces().hud.data.wallet).toMatchObject({ cash: false, bank: false, job: false });
+      await hud.run(`Prefs.handle.preset('cinema')`);
+      expect(hud.surfaces().hud.data.parts).toMatchObject({ vitals: { at: false }, location: { at: false }, ammo: { at: false } });
+      expect(await hud.run(`return Layout.playerStyles['map.radar']`)).toBe("never");
+      await hud.run(`Prefs.handle.cancel()`);
+      expect(hud.surfaces().hud.data.parts.vitals.at).toBe("bottom-left");
+    });
+
+    it("moves the old KVP layout and styles onto the settings once", async () => {
+      const kvp = new Map([
+        ["nuikit_hud:parts:compact", JSON.stringify({ vitals: { at: "top-left", order: 1 } })],
+        ["nuikit_hud:styles", JSON.stringify({ "map.size": 18 })],
+      ]);
+      const { nuikit, hud } = await withRuntime(kvp)();
+      expect(saved(nuikit).values).toEqual({ "place.vitals": "top-left", "map.size": 18 });
+      expect(await hud.run(`return DELETED`)).toEqual(["nuikit_hud:parts:compact", "nuikit_hud:styles"]);
+      expect(hud.surfaces().hud.data.parts.vitals.at).toBe("top-left");
+    });
+
+    it("streamer mode and Hide HUD (NUI.state from the pause menu), live", async () => {
+      const { hud } = await withRuntime()();
+      await hud.run(`NUI.state('streamer', true)`);
+      await hud.run(`return 1`);
+      expect(hud.surfaces().hud.data.wallet).toMatchObject({ cash: false, bank: false, job: false });
+      expect(hud.surfaces().hud.data.styles["column.street"]).toBe(false);
+      await hud.run(`NUI.state('hud:hidden', true)`);
+      await hud.run(`return 1`);
+      expect(hud.surfaces().hud.open).toBe(false);
+      await hud.run(`NUI.state('hud:hidden', false) NUI.state('streamer', false)`);
+      await hud.run(`return 1`);
+      expect(hud.surfaces().hud).toMatchObject({ open: true, data: { wallet: { cash: "always" } } });
+    });
   });
 
   it("never takes focus, so it can't block other UIs", async () => {

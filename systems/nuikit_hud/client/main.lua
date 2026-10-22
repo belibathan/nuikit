@@ -26,6 +26,10 @@ local function settings()
   local preset = Layout.preset()
   -- the player's styles (/hud edit, Style) on the server's defaults, within what it allows
   local st = Layout.styles()
+  -- streamer mode (NUI.state 'streamer', the pause menu's privacy setting): no cash, job or street
+  if NUI.getState and NUI.getState('streamer') then
+    st['column.money'], st['column.job'], st['column.street'] = false, false, false
+  end
   return {
     layout = preset,
     styles = st,
@@ -72,10 +76,16 @@ end
 -- nuikit resource can hide it with `hides = { 'hud' }`.
 local invOpen = LocalPlayer.state.invOpen == true
 local function sync()
-  local visible = NUI.player.get().loaded and not IsPauseMenuActive() and not invOpen
+  -- hud:hidden (NUI.state, the pause menu's "Hide HUD"): the whole HUD goes, as under a menu
+  local hidden = NUI.getState and NUI.getState('hud:hidden')
+  local visible = NUI.player.get().loaded and not IsPauseMenuActive() and not invOpen and not hidden
   if visible then hud:open(settings()) else hud:close() end
 end
 NUI.player.onChange(sync)
+-- the pause menu's "Hide HUD" and streamer mode, the moment they change (NUI.state, any resource)
+AddEventHandler('nuikit:sf:state', function(name)
+  if name == 'hud:hidden' or name == 'streamer' then sync() end
+end)
 -- the moment the inventory opens or closes, not on the next loop
 AddStateBagChangeHandler('invOpen', ('player:%d'):format(GetPlayerServerId(PlayerId())), function(_, _, value)
   invOpen = value == true
@@ -218,7 +228,9 @@ end)
 -- go on the same frame as the rest of the HUD starts sliding, not on this loop's next pass.
 local shown = false
 local function radarWanted()
-  return Config.radar == 'always' or (Config.radar == 'vehicle' and current ~= 0)
+  -- the player's pick (styles map.radar; Cinema: never) or Config.radar
+  local mode = (Layout.playerStyles and Layout.playerStyles['map.radar']) or Config.radar
+  return mode == 'always' or (mode == 'vehicle' and current ~= 0)
 end
 local function applyRadar()
   -- through a slide-out (Config.minimap.slide) the radar stays drawn until it is off to the side
@@ -318,88 +330,82 @@ end)
 -- (prompts, interaction, toasts) from Config.zones or their defaults. For the resources that draw them.
 pcall(exports, 'zones', function() return Layout.zones() end)
 
--- ───────────────────────────────── the player's layout (/hud edit)
+-- ───────────────────────────────── the player's HUD (/hud edit, nk.settings)
 
 -- /hud edit: a panel over the HUD where each part is dragged to a corner, onto the map or off, and
--- reordered; the HUD behind it follows the draft live (and so do the notices: the zones). Save keeps
--- it for this player (KVP, per preset), Escape or Cancel drops it. Config.playerLayout = false turns
--- the editor and the saved layouts off.
+-- reordered (Layout), and each part's style picked (Style); the HUD behind it follows the draft live
+-- (and so do the notices: the zones). The values are nk.settings rows (client/prefs.lua), so the pause
+-- menu's settings, presets and feature flags see the same; Save keeps them, Escape or Cancel drops
+-- the draft. Config.playerLayout = false, or the hud_layout / hud_style flags, take a side away.
 local editor = NUI.surface('hud-edit', { layer = 'panel', input = 'full' })
-Layout.loadPlayer()
-Layout.loadStyles()
 
---- After the placement changed: the radar to its corner (when the map moved), the page's settings.
-local function relayout()
-  if Minimap and Minimap.relayout then Minimap.relayout() end
-  sync()
-end
-
-NUI.on('hud:parts:save', function(body)
-  if Config.playerLayout == false or not Layout.savePlayer(body and body.parts) then return { ok = false } end
-  editor:close()
-  relayout()
-  return { ok = true }
-end)
-
-NUI.on('hud:parts:reset', function()
-  if Config.playerLayout == false then return { ok = false } end
-  Layout.resetPlayer()
-  editor:close()
-  relayout()
-  return { ok = true }
-end)
-
-
--- Styles (/hud edit, Style): the editor previews a draft live (the map re-placed only when its shape,
--- size or compass changed), saves it on the player's machine, or drops it (a draft of nil).
+--- After the placement or a style changed: the radar to its corner (only when the map moved or
+--- changed shape, size or compass: that re-places GTA's radar), the page's settings.
 local mapKey
 local function restyle()
   local st = Layout.styles()
-  local key = ('%s|%s|%s'):format(st['map.shape'], st['map.size'], st['map.compass'])
+  local key = ('%s|%s|%s|%s'):format(Layout.parts().map, st['map.shape'], st['map.size'], st['map.compass'])
   if key ~= mapKey then
+    if mapKey ~= nil and Minimap and Minimap.relayout then Minimap.relayout() end
     mapKey = key
-    if Minimap and Minimap.relayout then Minimap.relayout() end
   end
   sync()
 end
 
+local prefs = Prefs.define(function() restyle() end)
+
+NUI.on('hud:parts:save', function(body)
+  if Config.playerLayout == false or not Layout.clean(body and body.parts) then return { ok = false } end
+  prefs.draft(Prefs.fromParts(body.parts))
+  prefs.save()
+  editor:close()
+  return { ok = true }
+end)
+
+NUI.on('hud:parts:reset', function()
+  prefs.reset(Prefs.keys('layout'))
+  editor:close()
+  return { ok = true }
+end)
+
+-- Style: the editor previews a draft live; nil drops it (Escape, Cancel)
 NUI.on('hud:styles:preview', function(body)
-  Layout.stylePreview = body and Layout.cleanStyles(body.styles) or nil
-  restyle()
+  local styles = body and Layout.cleanStyles(body.styles)
+  if styles then prefs.draft(styles) else prefs.cancel() end
   return { ok = true }
 end)
 
 NUI.on('hud:styles:save', function(body)
-  if not Layout.saveStyles(body and body.styles) then return { ok = false } end
-  Layout.stylePreview = nil
-  restyle()
+  local styles = Layout.cleanStyles(body and body.styles)
+  if not styles then return { ok = false } end
+  prefs.draft(styles)
+  prefs.save()
   return { ok = true }
 end)
 
 NUI.on('hud:styles:reset', function()
-  Layout.resetStyles()
-  Layout.stylePreview = nil
-  restyle()
+  prefs.reset(Prefs.keys('style'))
   return { ok = true }
 end)
 
 --- Each style for the editor: its value now, the server's default and the options players may pick
---- (the map's shape and size default to the layout preset's).
+--- (none with the hud_style flag off; the map's shape and size default to the layout preset's).
 local function styleChoices()
   local st, out = Layout.styles(), {}
   local mo = Minimap and Minimap.options and Minimap.options() or {}
+  local on = not nk or not nk.settings or not nk.settings.flag or nk.settings.flag('hud_style')
   for _, key in ipairs(Layout.STYLE_KEYS) do
     local d = Layout.styleDefault(key)
     if d == nil and key == 'map.shape' then d = mo.shape end
     if d == nil and key == 'map.size' then d = mo.size end
     local v = st[key]
     if v == nil then v = d end
-    out[#out + 1] = { key = key, value = v, default = d, options = Layout.styleAllowed(key) }
+    out[#out + 1] = { key = key, value = v, default = d, options = on and Layout.styleAllowed(key) or {} }
   end
   return out
 end
 
--- /hud units mph|kmh (Config.playerUnits) · /hud edit · /hud reset (Config.playerLayout) ·
+-- /hud units mph|kmh (Config.playerUnits) · /hud edit · /hud reset (layout and styles) ·
 -- /hud export: the layout on screen as the `parts = { … }` block of config.lua, in F8
 RegisterCommand('hud', function(_, args)
   local cmd = args[1]
@@ -409,11 +415,11 @@ RegisterCommand('hud', function(_, args)
     if current ~= 0 then enter(current, kind) end
     Location.resend()
     sync()
-  elseif cmd == 'edit' and Config.playerLayout ~= false then
-    editor:open({ parts = Layout.parts(), preset = Layout.preset(), base = Layout.PARTS[Layout.preset()], styles = styleChoices() })
-  elseif cmd == 'reset' and Config.playerLayout ~= false then
-    Layout.resetPlayer()
-    relayout()
+  elseif cmd == 'edit' then
+    local layoutOn = Config.playerLayout ~= false and (not nk or not nk.settings or not nk.settings.flag or nk.settings.flag('hud_layout'))
+    editor:open({ parts = Layout.parts(), preset = Layout.preset(), base = Layout.PARTS[Layout.preset()], styles = styleChoices(), layout = layoutOn })
+  elseif cmd == 'reset' then
+    prefs.reset() -- the layout and the styles, back to the server's
   elseif cmd == 'export' then
     print(('[nuikit_hud] your layout as config.lua (layout = \'%s\'):\n%s'):format(Layout.preset(), Layout.export(Layout.parts())))
   end

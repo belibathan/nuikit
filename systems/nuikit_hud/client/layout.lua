@@ -72,17 +72,8 @@ local function overlay(out, over)
   end
 end
 
---- The player's own layout (/hud edit), per preset, kept between sessions. nil: none.
-local PLAYER_KVP = 'nuikit_hud:parts:'
+--- The player's own placement (/hud edit, nk.settings via client/prefs.lua). nil: none.
 Layout.player = nil
-
-function Layout.loadPlayer()
-  Layout.player = nil
-  if Config.playerLayout == false or not GetResourceKvpString then return end
-  local s = GetResourceKvpString(PLAYER_KVP .. Layout.preset())
-  local ok, t = pcall(function() return s and json.decode(s) end)
-  if ok then Layout.player = Layout.clean(t) end
-end
 
 --- What a page sends back, made safe: known parts only, a corner / 'map' / false, an order 1-20.
 function Layout.clean(t)
@@ -97,19 +88,6 @@ function Layout.clean(t)
     end
   end
   return out
-end
-
-function Layout.savePlayer(t)
-  local clean = Layout.clean(t)
-  if not clean then return false end
-  SetResourceKvp(PLAYER_KVP .. Layout.preset(), json.encode(clean))
-  Layout.player = clean
-  return true
-end
-
-function Layout.resetPlayer()
-  DeleteResourceKvp(PLAYER_KVP .. Layout.preset())
-  Layout.player = nil
 end
 
 --- The preset's placement, Config.parts on top, then the player's own layout (Config.playerLayout).
@@ -335,15 +313,16 @@ end
 
 --- Every style a part has and its options, in the order the editor lists them. A server sets the
 --- default of each (Config.styles) and may narrow what players can pick (Config.styles.allow);
---- players pick in /hud edit's Style tab, kept on their machine (KVP).
+--- players pick in /hud edit's Style tab or any settings page (nk.settings, client/prefs.lua).
 Layout.STYLE_KEYS = {
-  'vitals.display', 'vitals.voice', 'vehicle.gauge', 'map.shape', 'map.size', 'map.halo', 'map.compass',
+  'vitals.display', 'vitals.voice', 'vehicle.gauge', 'map.radar', 'map.shape', 'map.size', 'map.halo', 'map.compass',
   'map.column', 'column.street', 'column.area', 'column.money', 'column.job', 'column.align',
 }
 Layout.STYLE_OPTIONS = {
   ['vitals.display'] = { 'icons', 'value', 'pill', 'expand' },
   ['vitals.voice'] = { 'beside', 'collapse' },
   ['vehicle.gauge'] = { 'theme', 'arc', 'bar', 'digital' },
+  ['map.radar'] = { 'always', 'vehicle', 'never' },
   ['map.shape'] = { 'circle', 'square' },
   ['map.size'] = { 12, 15, 18 },
   ['map.halo'] = { true, false },
@@ -373,6 +352,7 @@ function Layout.styleDefault(key)
   if key == 'vitals.display' then return 'icons' end
   if key == 'vitals.voice' then return 'beside' end
   if key == 'vehicle.gauge' then return veh.gauge or 'theme' end
+  if key == 'map.radar' then return Config.radar or 'always' end
   if key == 'map.shape' then return mm.shape end
   if key == 'map.size' then return mm.size end
   if key == 'map.halo' then return mm.halo ~= false end
@@ -394,9 +374,7 @@ function Layout.styleAllowed(key)
   return out
 end
 
-local STYLE_KVP = 'nuikit_hud:styles'
-Layout.playerStyles = nil -- key → value, the player's picks
-Layout.stylePreview = nil -- the editor's draft while it is open
+Layout.playerStyles = nil -- key → value, the player's picks (client/prefs.lua, from nk.settings)
 
 --- A player's picks made safe: known keys, values among the options players are allowed.
 function Layout.cleanStyles(t)
@@ -409,32 +387,11 @@ function Layout.cleanStyles(t)
   return out
 end
 
-function Layout.loadStyles()
-  Layout.playerStyles = nil
-  if not GetResourceKvpString then return end
-  local s = GetResourceKvpString(STYLE_KVP)
-  local ok, t = pcall(function() return s and json.decode(s) end)
-  if ok then Layout.playerStyles = Layout.cleanStyles(t) end
-end
-
-function Layout.saveStyles(t)
-  local clean = Layout.cleanStyles(t)
-  if not clean then return false end
-  SetResourceKvp(STYLE_KVP, json.encode(clean))
-  Layout.playerStyles = clean
-  return true
-end
-
-function Layout.resetStyles()
-  if DeleteResourceKvp then DeleteResourceKvp(STYLE_KVP) end
-  Layout.playerStyles = nil
-end
-
---- Every style as it applies now: the editor's draft, else the player's pick (when still allowed),
---- else the server's default. Values may be nil (map.shape, map.size: the preset's).
+--- Every style as it applies now: the player's pick (a settings draft while one is open) when still
+--- allowed, else the server's default. Values may be nil (map.shape, map.size: the preset's).
 function Layout.styles()
   local out = {}
-  local picks = Layout.stylePreview or Layout.playerStyles or {}
+  local picks = Layout.playerStyles or {}
   for _, key in ipairs(Layout.STYLE_KEYS) do
     local v = picks[key]
     if v == nil or not has(Layout.styleAllowed(key), v) then v = Layout.styleDefault(key) end
