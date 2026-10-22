@@ -5,7 +5,7 @@ import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
 import { CircleCheckIcon, CircleXIcon, InfoIcon, PackageIcon, TriangleAlertIcon, XIcon } from "lucide-react"
 
-import { flipFrom } from "nuikit-core/motion"
+import { flipFrom, motionLevel, token, tokenMs } from "nuikit-core/motion"
 import { Stagger, useNuiEvent, useStaggerGroup, useStaggerItem } from "nuikit-core/react"
 
 import { cn } from "@/lib/utils"
@@ -32,6 +32,10 @@ import { Button } from "@/components/ui/button"
  *
  * The time left runs on its own (and pauses while hovered or focused); `onExpire` fires when it
  * runs out. Colours are the theme's status tokens; the time line is hidden when motion is off.
+ *
+ * In a stack a notice slides in from the stack's edge and, through the queue, back out toward it
+ * when it ends, while the others glide into the gap (`slide={false}`: a fade in place; `animate={false}`:
+ * no entrance at all). Reduced motion fades; motion off draws it still.
  *
  * Items added or removed are the item slab (design v2 §4.5, `nk-slab`): an icon tile, the name and
  * the change. Through the queue, changes to the same item in the same direction within 1.5 s merge
@@ -212,6 +216,48 @@ function useTimeLine(ref: React.RefObject<HTMLDivElement | null>, duration: numb
   }, [paused, duration, elapsed, on])
 }
 
+/** How long a leaving notice stays drawn for its exit (the slide out takes at most 200 ms). */
+const NOTICE_EXIT_MS = 220
+
+/** The position of the stack a notice is in: the edge it slides from. */
+const NoticeStackContext = React.createContext<NoticePosition | null>(null)
+
+/** How far a notice in a stack at `position` travels (x, y): in from that edge, out toward it. */
+function noticeOffset(position: NoticePosition | null): [string, string] {
+  if (position?.endsWith("right")) return ["1.5rem", "0rem"]
+  if (position?.endsWith("left")) return ["-1.5rem", "0rem"]
+  if (position === "top-center") return ["0rem", "-0.75rem"]
+  if (position === "bottom-center") return ["0rem", "0.75rem"]
+  return ["0rem", "0rem"]
+}
+
+/**
+ * The edge motion, on the sheets' ladder: in from the stack's edge with a fade (--nk-time x 2.2, at
+ * most 360 ms, ease-out) after the stack's stagger delay; while `leaving`, back out toward it (x 1.4,
+ * at most 200 ms, ease-in). Web Animations on the notice itself (the queue's flip moves its wrapper,
+ * so the two transforms never fight), so there is no stylesheet to install.
+ */
+function useEdgeMotion(ref: React.RefObject<HTMLDivElement | null>, on: boolean, leaving: boolean) {
+  const position = React.useContext(NoticeStackContext)
+  React.useLayoutEffect(() => {
+    const el = ref.current
+    const level = motionLevel()
+    if (!on || !el?.animate || level === "off") return
+    const [x, y] = level === "reduced" ? ["0rem", "0rem"] : noticeOffset(position)
+    const away = { opacity: 0, transform: `translate3d(${x}, ${y}, 0) scale(0.98)` }
+    const here = { opacity: 1, transform: "translate3d(0, 0, 0) scale(1)" }
+    const time = tokenMs("--nk-time", 160)
+    const anim = leaving
+      ? el.animate([here, away], { duration: Math.min(time * 1.4, 200), easing: token("--nk-ease-in") || "cubic-bezier(0.4, 0, 1, 1)", fill: "forwards" })
+      : el.animate([away, here], { duration: Math.min(time * 2.2, 360), easing: token("--nk-ease-out") || "cubic-bezier(0.16, 1, 0.3, 1)", fill: "backwards" })
+    // notices that arrive together come in one after another: the stack's stagger sets this one's
+    // delay in a microtask queued before this one
+    if (!leaving) queueMicrotask(() => anim.effect?.updateTiming({ delay: parseFloat(el.style.getPropertyValue("--nk-stagger-delay")) || 0 }))
+    return () => anim.cancel()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [on, leaving])
+}
+
 function Notice({
   className,
   status = "info",
@@ -225,6 +271,8 @@ function Notice({
   paused = false,
   pauseOnHover = true,
   animate = true,
+  slide = true,
+  leaving = false,
   onExpire,
   onDismiss,
   children,
@@ -251,8 +299,12 @@ function Notice({
     paused?: boolean
     /** Freeze it while the pointer is over the notice or focus is inside it. */
     pauseOnHover?: boolean
-    /** Fade in with nk-enter when it mounts. */
+    /** Play an entrance when it mounts (and an exit while `leaving`). */
     animate?: boolean
+    /** The entrance slides in from the stack's edge, the exit back toward it; false: a fade in place. */
+    slide?: boolean
+    /** It has ended and is on its way out: plays the exit, freezes its time, ignores the pointer. */
+    leaving?: boolean
     /** Called once when the time runs out. */
     onExpire?: () => void
     /** Shows a close button that calls this. */
@@ -265,22 +317,33 @@ function Notice({
   const s = STATUS[status] ?? STATUS.info
   const timed = Number.isFinite(noticeTimeLeft(duration, elapsed))
   const inGroup = useStaggerGroup() !== null
-  const staggerRef = useStaggerItem<HTMLDivElement>(undefined, { appear: true, animate: inGroup && animate ? "rise" : false })
-  const frozen = paused || (pauseOnHover && held)
+  const staggerRef = useStaggerItem<HTMLDivElement>(undefined, { appear: true, animate: inGroup && animate && !slide ? "rise" : false })
+  const root = React.useRef<HTMLDivElement>(null)
+  const setRoot = React.useCallback(
+    (node: HTMLDivElement | null) => {
+      root.current = node
+      staggerRef(node)
+    },
+    [staggerRef]
+  )
+  const frozen = paused || leaving || (pauseOnHover && held)
   const iconEl = icon === undefined ? s.icon : icon
 
   useNoticeTimer(duration, elapsed, frozen, onExpire)
   useTimeLine(line, duration, elapsed, frozen, !item && timed && showDuration)
+  useEdgeMotion(root, slide && (animate || leaving), leaving)
 
   if (item) {
     const down = item.count < 0
     return (
       <div
+        ref={setRoot}
         data-slot="notice"
         data-variant="item"
         data-delta={down ? "down" : "up"}
+        data-leaving={leaving || undefined}
         role="status"
-        className={cn("nk-slab pointer-events-auto max-w-80", animate && "nk-enter", className)}
+        className={cn("nk-slab pointer-events-auto max-w-80", animate && !slide && "nk-enter", leaving && "pointer-events-none", className)}
         {...props}
       >
         <span data-slot="notice-item-tile" className="nk-slab-tile">
@@ -299,15 +362,17 @@ function Notice({
 
   return (
     <div
-      ref={staggerRef}
+      ref={setRoot}
       data-slot="notice"
       data-status={status}
+      data-leaving={leaving || undefined}
       data-paused={frozen || undefined}
       role={status === "error" ? "alert" : "status"}
       className={cn(
         noticeVariants({ iconAlign: iconAlign ?? (title && description ? "start" : "center") }),
         "gap-[calc(var(--nk-space)*3)]",
-        animate && !inGroup && "nk-enter",
+        animate && !slide && !inGroup && "nk-enter",
+        leaving && "pointer-events-none",
         className
       )}
       onMouseEnter={(e) => {
@@ -414,17 +479,19 @@ function NoticeStack({
     }
   })
   return (
-    <div
-      ref={stack}
-      data-slot="notice-stack"
-      data-position={position}
-      aria-label="Notifications"
-      className={cn("pointer-events-none z-50 flex flex-col gap-2", STACK[position] ?? STACK["top-right"], className)}
-      {...props}
-    >
-      {/* notices that arrive together come in one after another */}
-      <Stagger budget={240}>{children}</Stagger>
-    </div>
+    <NoticeStackContext.Provider value={position}>
+      <div
+        ref={stack}
+        data-slot="notice-stack"
+        data-position={position}
+        aria-label="Notifications"
+        className={cn("pointer-events-none z-50 flex flex-col gap-2", STACK[position] ?? STACK["top-right"], className)}
+        {...props}
+      >
+        {/* notices that arrive together come in one after another */}
+        <Stagger budget={240}>{children}</Stagger>
+      </div>
+    </NoticeStackContext.Provider>
   )
 }
 
@@ -540,7 +607,8 @@ function useNotices({ max = 5 }: { max?: number } = {}) {
 
 /**
  * Every notice of a queue, in one stack per position, each dismissed when its time runs out.
- * `closable` adds a close button to each.
+ * `closable` adds a close button to each. A notice that leaves the queue stays drawn for its exit
+ * (NOTICE_EXIT_MS), sliding back toward its edge, and the others glide into the gap.
  */
 function Notices({
   notices,
@@ -553,20 +621,42 @@ function Notices({
   closable?: boolean
   className?: string
 }) {
+  // Notices that left the queue, still drawn for their exit. Worked out while rendering (not in an
+  // effect), so a leaving notice is never unmounted for a frame.
+  const [shown, setShown] = React.useState({ notices, leaving: [] as NoticeEntry[] })
+  let leaving = shown.leaving
+  if (shown.notices !== notices) {
+    const live = new Set(notices.map((n) => n.key))
+    const gone = shown.notices.filter((n) => !live.has(n.key))
+    leaving = [...leaving.filter((n) => !live.has(n.key)), ...gone]
+    setShown({ notices, leaving })
+  }
+  React.useEffect(() => {
+    if (!leaving.length) return
+    // not cleared when more leave: each exit always ends
+    const done = leaving
+    setTimeout(() => setShown((s) => ({ ...s, leaving: s.leaving.filter((n) => !done.includes(n)) })), NOTICE_EXIT_MS)
+  }, [leaving])
+  const out = new Set(leaving)
+  const all = [...notices, ...leaving].sort((a, b) => a.at - b.at)
   return (
     <>
-      {groupNotices(notices).map(([position, list]) => (
+      {groupNotices(all).map(([position, list]) => (
         <NoticeStack key={position} position={position} className={className}>
-          {list.map(({ key, at, id: _id, position: _position, merged, ...n }) => (
-            // Keyed on `at` too: an update restarts the time (and fades in again, unless it is a
-            // merged item change: that one just updates its count).
-            <Notice
-              key={`${key}:${at}`}
-              {...n}
-              animate={!merged}
-              onExpire={() => onDismiss(key)}
-              onDismiss={closable ? () => onDismiss(key) : undefined}
-            />
+          {list.map(({ key, at, id: _id, position: _position, merged, ...n }, i) => (
+            // The wrapper is what the stack's flip moves; the notice inside slides in and out. Keyed on
+            // `at` too: an update restarts the time (and comes in again, unless it is a merged item
+            // change: that one just updates its count).
+            <div key={key} data-slot="notice-item">
+              <Notice
+                key={`${key}:${at}`}
+                {...n}
+                animate={!merged}
+                leaving={out.has(list[i]!)}
+                onExpire={() => onDismiss(key)}
+                onDismiss={closable ? () => onDismiss(key) : undefined}
+              />
+            </div>
           ))}
         </NoticeStack>
       ))}
@@ -608,6 +698,7 @@ export {
   groupNotices,
   NOTICE_DURATION,
   NOTICE_ITEM_MERGE_MS,
+  NOTICE_EXIT_MS,
   NOTICE_POSITIONS,
   type NoticeItem,
   type NoticeStatus,
