@@ -103,6 +103,7 @@
       "themes/graphite.css",
       "themes/signal.css",
       "themes/street.css",
+      "themes/studio.css",
       "themes/vector.css",
       "themes/velvet.css",
       "web/src/components/ui/button.tsx",

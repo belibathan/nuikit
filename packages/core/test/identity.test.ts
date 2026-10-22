@@ -21,7 +21,7 @@ import {
 
 const root = path.resolve(__dirname, "../../..") + "/";
 const read = (p: string) => readFileSync(root + p, "utf8");
-const IDENTITIES = ["graphite", "signal", "velvet", "vector", "arcade", "street"] as const;
+const IDENTITIES = ["graphite", "signal", "velvet", "vector", "arcade", "street", "studio"] as const;
 const identity = (n: (typeof IDENTITIES)[number]) => read(`packages/core/themes/${n}.css`);
 const GRAPHITE = {
   "nk-type-ratio": "1.2",
