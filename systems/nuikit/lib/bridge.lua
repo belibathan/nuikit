@@ -10,7 +10,8 @@
 
     NUI.player.get()           -- the current table
     NUI.player.onChange(fn)    -- fn(player) after every change
-    NUI.player.framework       -- 'qbox' | 'qbcore' | 'esx' | 'standalone'
+    NUI.player.framework       -- 'qbox' | 'qbcore' | 'esx' | 'standalone' | a custom framework's resource name
+    (your own framework plugs in without editing this file: docs/adapters/framework-sdk.md)
 
   Health and armor are 0–100. Hunger, thirst and stress are 0–100 when the framework has them, nil otherwise.
 
@@ -238,6 +239,68 @@ adapters.standalone = function()
   NUI.player.set({ loaded = true })
 end
 
+-- ───────────────────────────────── custom framework (docs/adapters/framework-sdk.md)
+-- A server's own framework is a resource that exports nuikitGetPlayer (required) and, optionally,
+-- nuikitPoll and nuikitEvents, and declares `nuikit_framework 'name'` in its fxmanifest (or is named by
+-- the convar nuikit_framework). It wins over the built-ins. Its changes reach us as the local event
+-- `nuikit:framework:update` (fields) or through the event names nuikitEvents lists.
+
+local FIELDS = { 'loaded', 'id', 'name', 'cash', 'bank', 'job', 'gang', 'hunger', 'thirst', 'stress', 'downed' }
+
+local function callExport(resource, name)
+  local ok, result = pcall(function() return exports[resource][name](exports[resource]) end)
+  if ok then return result end
+  return nil
+end
+
+-- Only the documented fields, vitals clamped to 0-100; anything else an adapter returns is dropped.
+local function sanitize(raw)
+  if type(raw) ~= 'table' then return {} end
+  local out = {}
+  for _, k in ipairs(FIELDS) do
+    if raw[k] ~= nil then out[k] = raw[k] end
+  end
+  for _, k in ipairs({ 'hunger', 'thirst', 'stress' }) do
+    if out[k] ~= nil then out[k] = clamp100(out[k]) end
+  end
+  if type(out.cash) ~= 'number' then out.cash = nil end
+  if type(out.bank) ~= 'number' then out.bank = nil end
+  return out
+end
+
+local function findCustom()
+  local forced = GetConvar('nuikit_framework', '')
+  if forced ~= '' then
+    if adapters[forced] then return nil end -- a built-in, forced
+    return forced
+  end
+  if GetNumResources and GetResourceByFindIndex and GetNumResourceMetadata then
+    for i = 0, GetNumResources() - 1 do
+      local r = GetResourceByFindIndex(i)
+      if r and started(r) and GetNumResourceMetadata(r, 'nuikit_framework') > 0 then return r end
+    end
+  end
+  return nil
+end
+
+adapters.custom = function(resource)
+  local function load()
+    local fields = sanitize(callExport(resource, 'nuikitGetPlayer'))
+    if fields.loaded == nil then fields.loaded = fields.id ~= nil end
+    NUI.player.set(fields)
+  end
+  AddEventHandler('nuikit:framework:update', function(fields) NUI.player.set(sanitize(fields)) end)
+  local names = callExport(resource, 'nuikitEvents')
+  if type(names) == 'table' then
+    for _, e in ipairs(names) do
+      if type(e) == 'string' then RegisterNetEvent(e, load) end
+    end
+  end
+  load()
+  -- nuikitPoll is optional; a missing or failing export gives an empty table.
+  return function() return sanitize(callExport(resource, 'nuikitPoll')) end
+end
+
 local function detect()
   if started('qbx_core') then return 'qbox' end
   if started('qb-core') then return 'qbcore' end
@@ -247,8 +310,13 @@ end
 
 -- The context goes before the first player message, so a page can format cash as soon as it has it.
 sendContext(true)
-NUI.player.framework = GetConvar('nuikit_framework', '') ~= '' and GetConvar('nuikit_framework', '') or detect()
-local frameworkPoll = adapters[NUI.player.framework]()
+local custom = findCustom()
+if custom then
+  NUI.player.framework = custom
+else
+  NUI.player.framework = GetConvar('nuikit_framework', '') ~= '' and GetConvar('nuikit_framework', '') or detect()
+end
+local frameworkPoll = custom and adapters.custom(custom) or adapters[NUI.player.framework]()
 
 -- ───────────────────────────────── polled values (every framework)
 

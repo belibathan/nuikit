@@ -68,6 +68,12 @@ recipes with a scripted session (join, spawn, menus, a job, inventory, death):
 
 The misses become the backlog; the doctor reports the same on any live server.
 
+## Your own framework
+
+Qbox, QBCore and ESX are built in; any other framework plugs in as a small resource that exports `nuikitGetPlayer`
+and declares `nuikit_framework` in its fxmanifest: [`framework-sdk.md`](framework-sdk.md), template in
+`adapters/[nuikit-framework-template]/`.
+
 ## Conventions every adapter follows
 
 - **Translate UI calls only.** Animations, props, control disabling, freezing, the raycast, zones, callbacks and
