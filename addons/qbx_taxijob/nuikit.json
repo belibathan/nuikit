@@ -13,7 +13,8 @@
     "kbd",
     "separator",
     "scroll-area",
-    "panel",
+    "sheet",
+    "edge-sheet",
     "stat",
     "money",
     "text-roll"
