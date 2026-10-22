@@ -92,6 +92,6 @@ and target motion; `edge-sheet` first-frame fix; `nuikit.cfg` comments without s
 
 | Item | State |
 |---|---|
-| ox_inventory item and weapon pictures through the resolver | Open |
-| 3D map `perf/frame-send`: pins only when they move (`Config.map.pinsHz` caps them), panel text 5 Hz | PR #106; not seen in game |
-| 3D map as GTA map replacement: blips named by sprite (or `nameBlip`), legend filters remembered, click a blip or double-click the ground for a waypoint, Find me follows the player (`Config.map.follow`, `followOnOpen`) | PR #114; not seen in game |
+| ox_inventory item and weapon pictures through the resolver; item notes and the hotbar on the notice motion | PR #123 (POST log identical); not seen in game |
+| 3D map `perf/frame-send`: pins only when they move (`Config.map.pinsHz` caps them), panel text 5 Hz | Merged (#106); not seen in game |
+| 3D map as GTA map replacement: blips named by sprite (or `nameBlip`), legend filters remembered, click a blip or double-click the ground for a waypoint, Find me follows the player (`Config.map.follow`, `followOnOpen`) | Merged (#114); not seen in game |

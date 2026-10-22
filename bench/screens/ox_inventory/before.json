@@ -1,0 +1,71 @@
+{
+ "1280x720": {
+  "posts": [
+   {
+    "step": "load",
+    "name": "uiLoaded",
+    "body": "{}",
+    "ms": 159
+   },
+   {
+    "step": "drag",
+    "name": "swapItems",
+    "body": "{\"fromSlot\":1,\"fromType\":\"player\",\"toSlot\":1,\"toType\":\"newdrop\",\"count\":4}",
+    "ms": 199
+   },
+   {
+    "step": "escape",
+    "name": "exit",
+    "body": null,
+    "ms": 17
+   }
+  ],
+  "themeRequests": 7
+ },
+ "1920x1080": {
+  "posts": [
+   {
+    "step": "load",
+    "name": "uiLoaded",
+    "body": "{}",
+    "ms": 136
+   },
+   {
+    "step": "drag",
+    "name": "swapItems",
+    "body": "{\"fromSlot\":1,\"fromType\":\"player\",\"toSlot\":1,\"toType\":\"newdrop\",\"count\":4}",
+    "ms": 222
+   },
+   {
+    "step": "escape",
+    "name": "exit",
+    "body": null,
+    "ms": 27
+   }
+  ],
+  "themeRequests": 7
+ },
+ "2560x1440": {
+  "posts": [
+   {
+    "step": "load",
+    "name": "uiLoaded",
+    "body": "{}",
+    "ms": 151
+   },
+   {
+    "step": "drag",
+    "name": "swapItems",
+    "body": "{\"fromSlot\":1,\"fromType\":\"player\",\"toSlot\":1,\"toType\":\"newdrop\",\"count\":4}",
+    "ms": 135
+   },
+   {
+    "step": "escape",
+    "name": "exit",
+    "body": null,
+    "ms": 20
+   }
+  ],
+  "themeRequests": 7
+ }
+}
