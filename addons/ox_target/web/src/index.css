@@ -601,9 +601,13 @@
  * A utility removes the earlier stock classes that set what it paints (colour and type),
  * never layout or shape. `@merge <family>` in the comment above a utility means one member per element: a later
  * one removes an earlier one.
+ *
+ * The component tokens below are declared on :root and on [data-nk-theme]: a subtree applyTheme painted
+ * (a stage, a host module) re-derives them from its own identity tokens.
  */
 
-:root {
+:root,
+[data-nk-theme] {
   /* ── scale: the kit's spacing step × --nk-density, type sizes from one base × --nk-type-ratio */
   --nk-space: calc(0.25rem * var(--nk-density, 0.875));
   --nk-ratio: var(--nk-type-ratio, 1.2);
