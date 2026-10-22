@@ -554,6 +554,32 @@
         "hex": "#ffffff"
       },
       "$description": "Secondary text on the game"
+    },
+    "world-success": {
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.0784,
+          0.7451,
+          0.3529
+        ],
+        "alpha": 1,
+        "hex": "#14be5a"
+      },
+      "$description": "A gain drawn on the game or the HUD plate (slab deltas: +2, $250). Reads on the dark plate in every theme, light or dark"
+    },
+    "world-destructive": {
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          1,
+          0.3922,
+          0.4039
+        ],
+        "alpha": 1,
+        "hex": "#ff6467"
+      },
+      "$description": "A loss drawn on the game or the HUD plate (slab deltas: −1)"
     }
   },
   "radius": {

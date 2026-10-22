@@ -6,7 +6,7 @@ import { KeyPrompt } from "@/components/ui/key-prompt";
 import { Kbd } from "@/components/ui/kbd";
 import { MenuRow, MenuRowList } from "@/components/ui/menu-row";
 import { Meter } from "@/components/ui/meter";
-import { NuiToaster } from "@/components/ui/nui-toaster";
+import { NuiNotices } from "@/components/ui/notice";
 import { Panel, PanelBody, PanelFooter, PanelHeader } from "@/components/ui/panel";
 import { useNuiStore } from "@/hooks/use-nui-store";
 
@@ -69,7 +69,7 @@ export default function App() {
         )}
       </Surface>
 
-      <NuiToaster />
+      <NuiNotices />
     </main>
   );
 }

@@ -3,14 +3,12 @@
 import { defineReactRenderer, type RendererProps } from "nuikit-core/intents-react";
 import { useClearOf } from "nuikit-core/react";
 import { useEffect, useRef, useState } from "react";
-import { Notice, NoticeStack, noticePosition, type NoticePosition } from "@/components/ui/notice";
+import { Notice, NoticeStack, NOTICE_EXIT_MS, noticePosition, type NoticePosition } from "@/components/ui/notice";
 import { Icon } from "@/lib/icon";
 import { Text } from "@/lib/text";
 import { anchor } from "@/lib/anchor";
 
 const DEFAULT_MS = 5000;
-/** How long an ended notice stays drawn for its exit (frame.css .ntf-item[data-leaving], ≤ 200ms). */
-const EXIT_MS = 220;
 
 function NotifyRenderer({ intents, ctx }: RendererProps<"notify">) {
   // Timers live here, not in the Notice (which restarts on every re-render of a changed prop):
@@ -36,8 +34,8 @@ function NotifyRenderer({ intents, ctx }: RendererProps<"notify">) {
   }, [intents, ctx]);
   useEffect(() => () => timers.current.forEach(({ t }) => clearTimeout(t)), []);
 
-  // A notice that ended stays drawn for its exit (it slides back out toward its edge, frame.css), then
-  // goes; the stack's others then glide into the gap (NoticeStack's flip).
+  // A notice that ended stays drawn for its exit (`leaving`: notice slides it back out toward its
+  // edge), then goes; the stack's others then glide into the gap (NoticeStack's flip).
   type Shown = (typeof intents)[number] & { leaving?: boolean };
   const [leaving, setLeaving] = useState<Shown[]>([]);
   const prev = useRef<typeof intents>([]);
@@ -48,7 +46,7 @@ function NotifyRenderer({ intents, ctx }: RendererProps<"notify">) {
     if (!gone.length) return;
     setLeaving((l) => [...l.filter((x) => !live.has(x.id)), ...gone.map((it) => ({ ...it, leaving: true }))]);
     // not cleared when intents change again: each exit always ends
-    setTimeout(() => setLeaving((l) => l.filter((x) => !gone.some((g) => g.id === x.id))), EXIT_MS);
+    setTimeout(() => setLeaving((l) => l.filter((x) => !gone.some((g) => g.id === x.id))), NOTICE_EXIT_MS);
   }, [intents]);
 
   const groups = new Map<NoticePosition, Shown[]>();
@@ -68,11 +66,11 @@ function NotifyRenderer({ intents, ctx }: RendererProps<"notify">) {
             const ms = p.duration && p.duration > 0 ? p.duration : DEFAULT_MS;
             const icon = p.icon ? <Icon icon={p.icon} color={p.iconColor} animation={p.iconAnimation} allowImage={false} /> : p.iconColor ? <Icon icon={statusIcon(p.status)} color={p.iconColor} /> : undefined;
             return (
-              <div key={it.id} data-slot="notify-item" data-leaving={it.leaving || undefined} className="ntf-item">
+              // the wrapper is what the stack's flip moves; the notice slides in and out inside it
+              <div key={it.id} data-slot="notify-item">
               <Notice
                 key={`${it.id}:${it.at ?? it.seq}`}
-                animate={false}
-                className={it.leaving ? "pointer-events-none" : "pointer-events-auto"}
+                leaving={it.leaving}
                 status={p.status ?? "info"}
                 title={<Text>{p.title}</Text>}
                 description={p.description ? <Text>{p.description}</Text> : undefined}

@@ -3,7 +3,7 @@
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
-import { contrastRatio, toRgba } from "../src/color";
+import { contrastRatio, rgbToOklch, toRgba } from "../src/color";
 import { __resetTheme, applyTheme, setPrefs } from "../src/theme";
 import {
   ALL_TOKEN_NAMES,
@@ -266,6 +266,18 @@ describe("flexibility", () => {
     expect(daylight.vars["world-shadow"]).toMatch(/^0 1px 2px rgba\(0, 0, 0/);
     expect(daylight.vars["hud-foreground"]).toBe(daylight.vars["world-foreground"]);
     expect(daylight.vars.foreground).not.toBe(daylight.vars["world-foreground"]); // the theme's own text is dark
+  });
+
+  it("gains and losses on the game read on the HUD plate in a light theme: world-success, world-destructive", () => {
+    const light = compileTheme({ success: "rgb(22, 101, 52)", destructive: "rgb(153, 27, 27)" }, { mode: "light" });
+    for (const [world, status] of [["world-success", "success"], ["world-destructive", "destructive"]] as const) {
+      const w = rgbToOklch(toRgba(light.vars[world]!)!);
+      const s = rgbToOklch(toRgba(light.vars[status]!)!);
+      expect(w.l, world).toBeGreaterThanOrEqual(0.69);
+      expect(Math.abs(w.h - s.h), world).toBeLessThan(3); // same hue
+    }
+    expect(compileTheme({ "world-success": "rgb(0, 255, 0)" }).vars["world-success"]).toBe("rgb(0, 255, 0)");
+    expect(kit).toContain("--nk-slab-delta-up: var(--world-success, var(--success));");
   });
 
   it("the kit wires it: nk-on-game re-scopes foreground to the world, panels inside restore the theme", () => {

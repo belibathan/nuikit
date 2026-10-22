@@ -417,6 +417,8 @@ theme, light or dark**: a light theme changes the panels, not the game.
 | `--world-foreground` | Text and icons on the game | `rgb(255, 255, 255)`, whatever the theme's mode |
 | `--world-foreground-muted` | Secondary text on the game | `--world-foreground` at 80% (3.1:1 on a mid-grey frame) |
 | `--world-shadow` | The text-shadow that keeps it legible over any frame | `0 1px 2px rgba(0,0,0,.65), 0 0 0.5rem rgba(0,0,0,.35)` (black: it shades the game, not the theme) |
+| `--world-success` (1.3) | A gain on the game or the HUD plate (the slab delta `+2`) | `--success`, OKLCH lightness raised to 0.7 (a light theme's success is dark, for its panels) |
+| `--world-destructive` (1.3) | A loss on the game or the HUD plate (`−1`) | `--destructive`, lightness raised to 0.7 |
 
 - `--hud-foreground` (text on HUD plates) now defaults to `--world-foreground`. A theme with light HUD
   plates sets `--hud-foreground` dark itself; unplated HUD text should then read `--world-foreground`.

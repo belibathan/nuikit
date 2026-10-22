@@ -253,6 +253,18 @@ export const GENERATED: { name: string; group: string; type: string; description
     "description": "Secondary text on the game"
   },
   {
+    "name": "world-success",
+    "group": "base",
+    "type": "color",
+    "description": "A gain drawn on the game or the HUD plate (slab deltas: +2, $250). Reads on the dark plate in every theme, light or dark"
+  },
+  {
+    "name": "world-destructive",
+    "group": "base",
+    "type": "color",
+    "description": "A loss drawn on the game or the HUD plate (slab deltas: −1)"
+  },
+  {
     "name": "radius",
     "group": "shape",
     "type": "dimension",
