@@ -230,6 +230,23 @@ describe.each([
     expect(await r.run(`return ROT(S, 3)`)).toBeCloseTo(0, 5); // looking north
   });
 
+  it("default offset per kind: peds close, vehicles further out; a call's offset and camera.defaults win", async () => {
+    client = await createClient();
+    const r = await client.start("shop", { before: natives + " function IsEntityAVehicle(e) return e == 7 end", scripts });
+    // heading 90 (west): forward is -x, so y = 2.2 in front of the ped is x = 97.8
+    await r.run(`P = NUI.camera.claim({ id = 'p', target = 1 })`);
+    expect(await r.run(`return POS(P, 1)`)).toBeCloseTo(97.8, 5);
+    expect(await r.run(`return POS(P, 3)`)).toBeCloseTo(30.6, 5);
+    await r.run(`P:release({ instant = true }) V = NUI.camera.claim({ id = 'v', target = 7 })`);
+    expect(await r.run(`return POS(V, 1)`)).toBeCloseTo(94.5, 5);
+    expect(await r.run(`return POS(V, 3)`)).toBeCloseTo(31.4, 5);
+    await r.run(`V:release({ instant = true }) W = NUI.camera.claim({ id = 'w', target = 7, offset = { z = 3.0 } })`);
+    expect(await r.run(`return POS(W, 1)`)).toBeCloseTo(94.5, 5); // y from the vehicle default
+    expect(await r.run(`return POS(W, 3)`)).toBeCloseTo(33, 5);
+    await r.run(`W:release({ instant = true }) NUI.camera.defaults.vehicle.offset = { x = 0, y = 8.0, z = 2.0 } X = NUI.camera.claim({ id = 'x', target = 7 })`);
+    expect(await r.run(`return POS(X, 1)`)).toBeCloseTo(92, 5);
+  });
+
   it("a targeted claim on top of another one cuts in (no blend between script cameras)", async () => {
     client = await createClient();
     const r = await client.start("shop", { before: natives, scripts });
