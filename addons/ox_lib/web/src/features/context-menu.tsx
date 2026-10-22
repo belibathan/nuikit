@@ -3,6 +3,7 @@ import { EdgeSheet, EdgeSheetBody } from "@/components/ui/edge-sheet";
 import { MenuRow, MenuRowDetails, menuMetadata } from "@/components/ui/menu-row";
 import { Icon } from "@/lib/icon";
 import { contextIntent } from "@/lib/intents";
+import { useLever } from "@/lib/levers";
 import { Markdown } from "@/lib/markdown";
 import { post, useOx } from "@/lib/nui";
 import { openIntent, type Handle } from "@/lib/route";
@@ -42,6 +43,8 @@ interface ContextData {
  * closeContext.
  */
 export function ContextMenu() {
+  // lever (README): the screen edge the sheet sits on, right by default
+  const side = useLever("ox-context-side", "right") === "left" ? "left" : "right";
   const [data, setData] = useState<ContextData | null>(null);
   const [open, setOpen] = useState(false);
   // Each showContext is a new page of the open sheet (a fade); the rows rise in when the sheet opens.
@@ -126,7 +129,7 @@ export function ContextMenu() {
   return (
     <EdgeSheet
       open={open}
-      side="right"
+      side={side}
       width="26rem"
       fit
       page={gen}
@@ -142,7 +145,7 @@ export function ContextMenu() {
           ))}
         </div>
       </EdgeSheetBody>
-      {hovered && !hovered.disabled && (hovered.metadata || hovered.image) && <HoverCard key={hover!.key} option={hovered} top={hover!.top} />}
+      {hovered && !hovered.disabled && (hovered.metadata || hovered.image) && <HoverCard key={hover!.key} option={hovered} top={hover!.top} side={side} />}
     </EdgeSheet>
   );
 }
@@ -183,7 +186,7 @@ function ContextOption({ id, option, onEnter, onLeave }: { id: string; option: O
 }
 
 /** Image and metadata, shown beside the hovered option (ox opens it after 200 ms). */
-function HoverCard({ option, top }: { option: Option; top: number }) {
+function HoverCard({ option, top, side }: { option: Option; top: number; side: "left" | "right" }) {
   const [shown, setShown] = useState(false);
   useEffect(() => {
     const t = setTimeout(() => setShown(true), 200);
@@ -192,5 +195,5 @@ function HoverCard({ option, top }: { option: Option; top: number }) {
   if (!shown) return null;
   // Each bar keeps its own colorScheme; without one it takes the option's, then ox's default.
   const items = menuMetadata(option.metadata).map((m) => (m.progress !== undefined && !m.color ? { ...m, color: option.colorScheme ?? OX_BAR } : m));
-  return <MenuRowDetails image={option.image} items={items} className="absolute right-full mr-2" style={{ top }} />;
+  return <MenuRowDetails image={option.image} items={items} className={side === "right" ? "absolute right-full mr-2" : "absolute left-full ml-2"} style={{ top }} />;
 }

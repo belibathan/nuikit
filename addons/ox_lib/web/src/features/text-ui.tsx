@@ -2,6 +2,7 @@ import { useRef, useState, type CSSProperties } from "react";
 import { KeyPrompt, KeyPromptStack, keyPromptPosition, parseKeyText, type KeyPromptPosition } from "@/components/ui/key-prompt";
 import { Icon } from "@/lib/icon";
 import { parseStyle, textUiIntent } from "@/lib/intents";
+import { useLever } from "@/lib/levers";
 import { Markdown } from "@/lib/markdown";
 import { useOx } from "@/lib/nui";
 import { usePresence } from "@/lib/presence";
@@ -43,6 +44,8 @@ const MOTION =
   "data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:duration-200 data-[state=open]:ease-out data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:duration-150 data-[state=closed]:ease-in data-[state=closed]:fill-mode-forwards";
 
 export function TextUi() {
+  // lever (README): where a text UI without a position goes (ox's default right-center)
+  const anchor = useLever("ox-textui-position", "right-center");
   const [data, setData] = useState<TextUiData | null>(null);
   const [open, setOpen] = useState(false);
   const presence = usePresence(open, 150);
@@ -73,7 +76,7 @@ export function TextUi() {
   const text = String(data.text ?? "");
   const parsed = parseKeyText(text);
   const keys = parsed.keys;
-  const position = keyPromptPosition(data.position);
+  const position = keyPromptPosition(data.position || anchor);
   // without a leading key the text is kept whole (parseKeyText would strip a leading "- ", a list)
   const label = keys.length ? parsed.label : text;
   return (
