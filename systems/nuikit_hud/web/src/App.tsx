@@ -1,6 +1,6 @@
-import { fetchNui, Surface, useNuiState, usePlayer, useSurfaceOpen } from "nuikit-core/react";
+import { fetchNui, getPlayer, onPlayer, Surface, useNuiState, useSurfaceOpen } from "nuikit-core/react";
 import { MinimapFrameView, useMinimap } from "./minimap";
-import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore, type CSSProperties, type ReactNode } from "react";
 import type { HudCorner, HudLayout, HudParts, HudStyles, HudLocation, HudSettings, HudVehicle, HudWeapon, MinimapFrame, MinimapState } from "./nui";
 import { Ammo } from "./hud/ammo";
 import { Cluster } from "./hud/cluster";
@@ -15,10 +15,13 @@ import { BESIDE_CLASS, clusterScale, CORNER_CLASS, CORNERS, cornerSide, Part, pl
 import { VitalsRow } from "./hud/pills";
 import { Wallet } from "./hud/wallet";
 
+// the player store listens from load on, so a player sent before the HUD opens isn't missed (the parts that
+// show the player subscribe themselves: VitalsRow, Wallet)
+getPlayer();
+
 export default function App() {
   // Subscribed for the page's whole life, not only while the HUD shows: Lua sends the layout, the
   // frame and the vehicle whenever they change, which can be before the surface opens.
-  usePlayer(); // the player store listens from here on, so a player sent before the HUD opens isn't missed
   useLegibility();
   const data: HudData = {
     vehicle: useNuiState("hud:vehicle", false),
@@ -31,7 +34,9 @@ export default function App() {
   const [draft, setDraft] = useState<HudParts | null>(null);
   return (
     <>
-      <Surface name="hud" layer="hud">
+      {/* kept mounted while a menu hides it: re-mounting the whole HUD on every open was the entrance's long
+          task; coming back from display: none still replays the entrance (hud.css .hud-side) */}
+      <Surface name="hud" layer="hud" keepMounted>
         {(settings) => {
           const s = settings ?? { units: "mph", needs: true };
           return <Hud settings={draft ? { ...s, parts: draft } : s} {...data} />;
@@ -57,7 +62,6 @@ interface HudData {
 
 /** The parts, placed by the layout preset (Config.layout). A 0.6 client sends no preset: classic. */
 function Hud(props: { settings: HudSettings } & HudData) {
-  const player = usePlayer();
   const { w, h } = useViewport();
   const look = useHudLook();
   // Lua shows GTA's radar only while the HUD is shown, told the moment the exit or entrance starts, so
@@ -69,18 +73,26 @@ function Hud(props: { settings: HudSettings } & HudData) {
   usePublishZones(open);
   // Foundation 2 situations: a moment is any change to what the HUD shows (situation.ts)
   const lua: Situation = useNuiState("hud:situation", { name: "rest" }).name;
-  const p = player;
-  const key = [p.health, p.armor, p.hunger, p.thirst, p.stress, p.cash, p.bank, props.location?.street, props.weapon ? props.weapon.kind : ""].join("|");
+  // the moment's key reads the player through a selector, and only when the situations retract: a vital
+  // changing must not re-render the whole HUD (the vitals row and the wallet subscribe on their own)
+  const retract = props.settings.situations?.retract === true;
+  const vitalsKey = useSyncExternalStore(onPlayer, () => {
+    if (!retract) return "";
+    const p = getPlayer();
+    return [p.health, p.armor, p.hunger, p.thirst, p.stress, p.cash, p.bank].join("|");
+  });
+  const key = [vitalsKey, props.location?.street, props.weapon ? props.weapon.kind : ""].join("|");
   const zones = shownZones(props.settings.situations, useSituation(lua, key));
+  // "Always visible" vitals never retract, whatever the situation
+  if (zones && props.settings.styles?.["vitals.visibility"] === "always") zones.add("vitals");
   return (
     <ShownZones value={zones}>
-      {props.settings.layout === "compact" ? <Compact {...props} player={player} look={look} w={w} h={h} /> : <Classic {...props} player={player} look={look} w={w} h={h} />}
+      {props.settings.layout === "compact" ? <Compact {...props} look={look} w={w} h={h} /> : <Classic {...props} look={look} w={w} h={h} />}
     </ShownZones>
   );
 }
 
 interface Placed {
-  player: ReturnType<typeof usePlayer>;
   look: HudLook;
   w: number;
   h: number;
@@ -108,8 +120,14 @@ function Side({ side, slide, children }: { side: "left" | "right" | "top" | "map
  */
 function usePublishZones(open: boolean) {
   const last = useRef("");
-  const frame = useRef(0);
+  const timer = useRef(0);
   const measure = useRef(() => {});
+  // measured once things settle (150 ms after the last render or resize), in one frame: notices don't need
+  // the zones per frame, and a chip folding away must not trigger reads and a post on every frame of it
+  const schedule = useRef(() => {
+    clearTimeout(timer.current);
+    timer.current = window.setTimeout(() => requestAnimationFrame(() => measure.current()), 150);
+  });
   measure.current = () => {
     if (!open) return;
     const W = window.innerWidth;
@@ -135,12 +153,10 @@ function usePublishZones(open: boolean) {
     last.current = key;
     void fetchNui("hud:zones", { rects }).catch(() => {});
   };
+  useEffect(() => schedule.current());
+  useEffect(() => () => clearTimeout(timer.current), []);
   useEffect(() => {
-    cancelAnimationFrame(frame.current);
-    frame.current = requestAnimationFrame(() => measure.current());
-  });
-  useEffect(() => {
-    const on = () => measure.current();
+    const on = () => schedule.current();
     window.addEventListener("resize", on);
     // a part that grows or shrinks without a render (a roll, an image)
     const ro = new ResizeObserver(on);
@@ -190,7 +206,7 @@ function corners(groups: ReturnType<typeof placeParts>, side: "left" | "right", 
  * ring, the location and money under it; bottom left the vitals; bottom right the ammo over the
  * vehicle cluster. Nothing floats alone. Config.parts moves any of them.
  */
-function Compact({ settings, vehicle, location, weapon, layout, frame, state, player, look, w, h }: { settings: HudSettings } & HudData & Placed) {
+function Compact({ settings, vehicle, location, weapon, layout, frame, state, look, w, h }: { settings: HudSettings } & HudData & Placed) {
   const units = settings.units === "kmh" ? "kmh" : "mph";
   const mapShown = !!frame && !!state?.visible;
   // the layout follows where the map belongs, not its blink: the radar cuts the moment a menu opens,
@@ -224,8 +240,8 @@ function Compact({ settings, vehicle, location, weapon, layout, frame, state, pl
     location: settings.location !== false && location && (
       <MapLocation location={location} units={units} waypoint={!ring} street={settings.styles?.["column.street"] !== false} area={settings.styles?.["column.area"] !== false} />
     ),
-    wallet: <Wallet player={player} settings={settings} inline compact />,
-    vitals: <VitalsRow player={player} settings={settings} layout="compact" />,
+    wallet: <Wallet settings={settings} inline compact />,
+    vitals: <VitalsRow settings={settings} layout="compact" />,
     ammo: settings.ammo !== false && <Ammo weapon={weapon} />,
     vehicle: vehicle && <Cluster key={vehicle.kind ?? "car"} vehicle={{ ...OLD_SHAPE, ...vehicle }} settings={settings} look={look} compact anchored={false} />,
   });
@@ -260,7 +276,7 @@ function Compact({ settings, vehicle, location, weapon, layout, frame, state, pl
  * minimap's real rectangle: bottom left the map, the location above it and the vitals beside it;
  * bottom right the vehicle; top right the wallet; top centre the heading strip. Config.parts moves any of them.
  */
-function Classic({ settings, vehicle, location, weapon, layout, frame, state, player, look, w, h }: { settings: HudSettings } & HudData & Placed) {
+function Classic({ settings, vehicle, location, weapon, layout, frame, state, look, w, h }: { settings: HudSettings } & HudData & Placed) {
   const mapShown = !!frame && !!state?.visible;
   // the vitals and location line up with a map in the bottom-left corner (where it belongs, so a menu
   // cutting the radar doesn't move them mid-exit)
@@ -273,8 +289,8 @@ function Classic({ settings, vehicle, location, weapon, layout, frame, state, pl
 
   const groups = placeParts(resolveParts("classic", settings.parts), {
     location: settings.location !== false && settings.styles?.["column.street"] !== false && location && <LocationStrip location={location} units={units} heading start={heading} />,
-    wallet: <Wallet player={player} settings={settings} inline />,
-    vitals: <VitalsRow player={player} settings={settings} layout="classic" />,
+    wallet: <Wallet settings={settings} inline />,
+    vitals: <VitalsRow settings={settings} layout="classic" />,
     ammo: settings.ammo !== false && <Ammo weapon={weapon} />,
     // defaults for a client that sends the 0.6 shape (speed, rpm, gear, fuel, engine, seatbelt)
     vehicle: vehicle && <Cluster key={vehicle.kind ?? "car"} vehicle={{ ...OLD_SHAPE, ...vehicle }} settings={settings} look={look} anchored={false} />,

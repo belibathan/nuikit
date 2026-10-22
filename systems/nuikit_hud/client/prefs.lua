@@ -9,7 +9,7 @@
 Prefs = {}
 Prefs.defaults = {} -- row key → default, from the last Prefs.rows()
 
-local VERSION = 1
+local VERSION = 2 -- 2: vitals.voice became vitals.visibility
 local PLACES = { 'top-left', 'top-right', 'bottom-left', 'bottom-right', 'map', 'hidden' }
 local CORNERS = { 'top-left', 'top-right', 'bottom-left', 'bottom-right' }
 local PART_LABEL = { map = 'Map', location = 'Location', wallet = 'Money', vitals = 'Vitals', ammo = 'Ammo', vehicle = 'Vehicle' }
@@ -19,7 +19,7 @@ local PLACE_LABEL = {
 }
 local STYLE_GROUP = { vitals = 'Vitals', vehicle = 'Speedometer', map = 'Map', column = 'Location and money', scale = 'Size' }
 local STYLE_LABEL = {
-  ['vitals.display'] = 'Vitals', ['vitals.voice'] = 'While talking', ['vehicle.gauge'] = 'Gauge',
+  ['vitals.visibility'] = 'Vitals', ['vitals.display'] = 'Vitals style', ['vehicle.gauge'] = 'Gauge',
   ['map.radar'] = 'Radar', ['map.shape'] = 'Shape', ['map.size'] = 'Size', ['map.halo'] = 'Halo',
   ['map.compass'] = 'Compass ring', ['map.column'] = 'Info', ['column.street'] = 'Street',
   ['column.area'] = 'Area', ['column.money'] = 'Money', ['column.job'] = 'Job', ['column.align'] = 'Alignment',
@@ -39,15 +39,20 @@ local function has(list, v)
   return false
 end
 
-local function option(v)
-  local label = OPTION_LABEL[v]
+-- options whose plain words depend on the row
+local KEY_OPTION_LABEL = {
+  ['vitals.visibility'] = { always = 'Always visible', rest = 'Hide at rest (show on change)', voice = 'Tuck behind voice while talking' },
+}
+
+local function option(v, key)
+  local label = KEY_OPTION_LABEL[key] and KEY_OPTION_LABEL[key][v] or OPTION_LABEL[v]
   if label == nil and type(v) == 'number' and v < 2 then label = ('%d%%'):format(math.floor(v * 100 + 0.5)) end
   if label == nil then label = v == true and 'On' or v == false and 'Off' or tostring(v) end
   return { value = v, label = label }
 end
 
 --- The server's placement (preset + Config.parts), without the player's.
-local function serverParts()
+function Prefs.serverParts()
   local player = Layout.player
   Layout.player = nil
   local parts = Layout.parts()
@@ -69,7 +74,7 @@ function Prefs.rows()
   local rows = {}
   Prefs.defaults = {}
   if Config.playerLayout ~= false then
-    local parts = serverParts()
+    local parts = Prefs.serverParts()
     rows[#rows + 1] = { key = 'place.map', label = 'Map', group = 'Layout', flag = 'hud_layout', default = parts.map,
       options = (function() local o = {} for _, c in ipairs(CORNERS) do o[#o + 1] = { value = c, label = PLACE_LABEL[c] } end return o end)() }
     for _, name in ipairs(Layout.PART_NAMES) do
@@ -94,7 +99,7 @@ function Prefs.rows()
         row.toggle = true -- on / off (both allowed: a one-way allow-list leaves no choice, so no row)
       else
         row.options = {}
-        for _, v in ipairs(allowed) do row.options[#row.options + 1] = option(v) end
+        for _, v in ipairs(allowed) do row.options[#row.options + 1] = option(v, key) end
       end
       rows[#rows + 1] = row
     end
@@ -137,7 +142,7 @@ function Prefs.apply(values)
       local order = tonumber(values['order.' .. name])
       if name ~= 'map' and (at ~= nil or order) then
         -- a part moved, or reordered in place: the other half from the server's placement
-        local base = serverParts()[name]
+        local base = Prefs.serverParts()[name]
         if at == nil then at = base.at == false and 'hidden' or base.at end
         if at == 'hidden' then at = false end -- (not `and false or`: that gives back 'hidden')
         p[name] = { at = at, order = order or base.order }
@@ -226,7 +231,10 @@ local function migrateKvp(handle)
   if s then
     found[#found + 1] = 'nuikit_hud:styles'
     local ok, t = pcall(json.decode, s)
-    if ok and type(t) == 'table' then for k, v in pairs(Layout.cleanStyles(t) or {}) do patch[k] = v end end
+    if ok and type(t) == 'table' then
+      if t['vitals.voice'] == 'collapse' then t['vitals.visibility'] = 'voice' end
+      for k, v in pairs(Layout.cleanStyles(t) or {}) do patch[k] = v end
+    end
   end
   if #found == 0 then return end
   if next(patch) then handle.draft(patch) handle.save() end
@@ -239,6 +247,12 @@ function Prefs.define(onChange)
   local rows = Prefs.rows()
   local schema = {
     label = 'HUD', version = VERSION, rows = rows, presets = Prefs.presets(rows),
+    -- 1 → 2: the voice style became the vitals' visibility (collapse = tuck behind voice)
+    migrate = function(old)
+      if old['vitals.voice'] == 'collapse' and old['vitals.visibility'] == nil then old['vitals.visibility'] = 'voice' end
+      old['vitals.voice'] = nil
+      return old
+    end,
     onChange = function(values, _, draft)
       Prefs.apply(values)
       onChange(values, draft)

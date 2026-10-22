@@ -6,7 +6,8 @@ import "./index.css";
 import "./hud.css";
 
 // Browser-only devtools (press `). Not bundled into the build the game loads.
-const Dev = import.meta.env.DEV ? lazy(() => import("./dev")) : () => null;
+// VITE_PERF=1 builds them into a production bundle for perf.mjs (never the one the game loads)
+const Dev = import.meta.env.DEV || import.meta.env.VITE_PERF ? lazy(() => import("./dev")) : () => null;
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

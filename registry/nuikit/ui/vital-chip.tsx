@@ -138,6 +138,8 @@ export interface Geometry {
   r: number
   /** auto / chamfer: the cut at top-left and bottom-right (px) */
   cut: number
+  /** the root font size (px) when measured: read with the geometry, never during a render */
+  rem?: number
 }
 
 const f = (n: number) => (Math.round(n * 100) / 100).toString()
@@ -418,7 +420,9 @@ function Shape({ className, children, ...props }: React.ComponentProps<"span">) 
         r = Math.min(parseFloat(cs.borderTopRightRadius) || 0, w / 2, h / 2)
         if (cs.clipPath && cs.clipPath !== "none") cut = p.getBoundingClientRect().width
       }
-      setGeo((g) => (g && g.w === w && g.h === h && g.r === r && g.cut === cut ? g : { w, h, r, cut }))
+      // the rem with it: reading it in every render forced a style recalc each time a value changed
+      const rem = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16
+      setGeo((g) => (g && g.w === w && g.h === h && g.r === r && g.cut === cut && g.rem === rem ? g : { w, h, r, cut, rem }))
     }
     measure()
     const ro = new ResizeObserver(measure)
@@ -440,7 +444,7 @@ function Shape({ className, children, ...props }: React.ComponentProps<"span">) 
   }, [setGeo])
 
   const id = React.useId().replace(/:/g, "")
-  const rem = typeof document === "undefined" ? 16 : parseFloat(getComputedStyle(document.documentElement).fontSize) || 16
+  const rem = geo?.rem ?? 16
   const sw = (STROKE_1080 * rem) / 16
   const shape = style.shape
   const body = geo ? shapePath(shape, geo, 0) : ""

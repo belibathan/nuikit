@@ -159,10 +159,9 @@
   transform: none;
   max-width: 24rem;
   opacity: 1;
+  /* transform and opacity only: the row never lays out per frame (pills.tsx useFold, flip.ts) */
   transition:
     opacity var(--hud-ms) ease-out,
-    max-width var(--hud-ms) ease-out,
-    margin var(--hud-ms) ease-out,
     transform var(--hud-ms) cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 /* each chip sits over the one to its right, so a chip that folds away slides under its left neighbour */
@@ -173,20 +172,21 @@
 .hud-vitals-row > .hud-vchip:nth-child(5) { z-index: 5; }
 .hud-vitals-row > .hud-vchip:nth-child(6) { z-index: 4; }
 .hud-vitals-row > .hud-vchip:nth-child(7) { z-index: 3; }
-/* hidden: it folds into its neighbour (slides left, shrinks, tucks under it) and the row closes up with
-   it; vitals that go together go in sequence, the last first (<Stagger>), so nothing just vanishes */
+/* hidden: it folds into its neighbour (slides left, shrinks, tucks under it), then leaves the row
+   (data-gone) while its neighbours slide over (FLIP); vitals that go together go in sequence, the last
+   first (<Stagger>), so nothing just vanishes */
+.hud-vchip[data-gone] {
+  display: none;
+}
 .hud-vchip:not([data-shown]) {
-  overflow: hidden;
   opacity: 0;
-  max-width: 0;
-  margin-left: calc(var(--hud-vchip-gap) * -1);
   transform: translateX(-45%) scale(0.82);
   transition-duration: calc(300ms * var(--nk-motion, 1));
   transition-timing-function: cubic-bezier(0.4, 0, 0.6, 1);
 }
 :is(html, *)[data-nk-motion="reduced"] .hud-vchip {
   transform: none;
-  transition-property: opacity, max-width, margin;
+  transition-property: opacity;
 }
 /* talking: the accent fills the chip from the bottom up, the ink eases with it */
 .hud-vchip {
@@ -465,9 +465,8 @@
   gap: 0.5rem;
   max-height: 2.5rem;
   opacity: 1;
-  transition:
-    opacity var(--hud-ms) ease-out,
-    max-height var(--hud-ms) ease-out;
+  /* opacity only: the line's height snaps (a height transition laid out the column every frame) */
+  transition: opacity var(--hud-ms) ease-out;
 }
 .hud-money:not([data-shown]) {
   max-height: 0;
@@ -1730,11 +1729,10 @@
   max-height: 3rem;
   opacity: 1;
   transform: none;
+  /* transform and opacity only, while driving above all: the column's height and gaps snap */
   transition:
     opacity calc(180ms * var(--nk-motion, 1)) ease-out,
-    transform calc(180ms * var(--nk-motion, 1)) ease-out,
-    max-height calc(180ms * var(--nk-motion, 1)) ease-out,
-    margin calc(180ms * var(--nk-motion, 1)) ease-out;
+    transform calc(180ms * var(--nk-motion, 1)) ease-out;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -2058,17 +2056,23 @@ html[data-nk-motion="off"] .hud-root * {
   font-weight: 500;
   opacity: 0.75;
 }
-/* vitals.voice = collapse: while talking the vitals fold into the voice chip as a hidden chip does,
-   and unfold after */
+/* vitals.visibility = voice: while talking the vitals slide under the voice chip (each its own number of
+   places, --i) and fade, transform and opacity only; they slide back out after */
 .hud-vitals-row[data-collapsed] > [data-slot="hud-vital"],
 .hud-vitals-row[data-collapsed] > [data-slot="hud-radio"],
 .hud-vitals-row[data-collapsed] > [data-slot="hud-slot"]:not([data-voice]) {
-  overflow: hidden;
   opacity: 0;
-  max-width: 0;
-  margin-left: calc(var(--hud-vchip-gap) * -1);
-  transform: translateX(-45%) scale(0.82);
+  transform: translateX(calc((var(--vital-size) + var(--hud-vchip-gap)) * var(--i, 1) * -1)) scale(0.82);
 }
+.hud-vitals-row[data-collapsed] > :nth-child(2) { --i: 1; }
+.hud-vitals-row[data-collapsed] > :nth-child(3) { --i: 2; }
+.hud-vitals-row[data-collapsed] > :nth-child(4) { --i: 3; }
+.hud-vitals-row[data-collapsed] > :nth-child(5) { --i: 4; }
+.hud-vitals-row[data-collapsed] > :nth-child(6) { --i: 5; }
+.hud-vitals-row[data-collapsed] > :nth-child(7) { --i: 6; }
+.hud-vitals-row[data-collapsed] > :nth-child(8) { --i: 7; }
+.hud-vitals-row[data-collapsed] > :nth-child(9) { --i: 8; }
+.hud-vitals-row[data-collapsed] > :nth-child(10) { --i: 9; }
 /* column.align (styles): the column's lines to the map's left or right edge instead of its middle */
 .hud-column[data-placed][data-align="start"] {
   align-items: flex-start;
@@ -2148,4 +2152,13 @@ html[data-nk-motion="off"] .hud-root * {
 }
 [data-slot="hud-corner"][data-scaled][data-corner="bottom-right"] {
   transform-origin: bottom right;
+}
+
+/* layout containment: a number or a chip changing in one cluster lays out that cluster, not the page
+   (a forced or per-frame layout was paying for the whole HUD each time) */
+[data-slot="hud-corner"],
+.hud-column,
+.hud-above-map,
+.hud-beside-map {
+  contain: layout;
 }

@@ -362,6 +362,13 @@ NUI.on('hud:parts:save', function(body)
   return { ok = true }
 end)
 
+-- the editor's placement previews on the real HUD (a draft: Escape or Cancel drops it with the styles)
+NUI.on('hud:parts:preview', function(body)
+  if Config.playerLayout == false or not Layout.clean(body and body.parts) then return { ok = false } end
+  prefs.draft(Prefs.fromParts(body.parts))
+  return { ok = true }
+end)
+
 NUI.on('hud:parts:reset', function()
   prefs.reset(Prefs.keys('layout'))
   editor:close()
@@ -417,7 +424,7 @@ RegisterCommand('hud', function(_, args)
     sync()
   elseif cmd == 'edit' then
     local layoutOn = Config.playerLayout ~= false and (not nk or not nk.settings or not nk.settings.flag or nk.settings.flag('hud_layout'))
-    editor:open({ parts = Layout.parts(), preset = Layout.preset(), base = Layout.PARTS[Layout.preset()], styles = styleChoices(), layout = layoutOn })
+    editor:open({ parts = Layout.parts(), preset = Layout.preset(), base = Prefs.serverParts(), styles = styleChoices(), layout = layoutOn })
   elseif cmd == 'reset' then
     prefs.reset() -- the layout and the styles, back to the server's
   elseif cmd == 'export' then

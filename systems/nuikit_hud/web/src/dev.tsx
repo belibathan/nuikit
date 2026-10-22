@@ -14,7 +14,7 @@
 // &style=stock      Config.minimap.style = 'stock': GTA's own radar box bottom left, no frame
 // &chip=diamond,fill,tag,uniform   a /hudstyle override (shape, level, label, icon)
 // &pop=hunger:25     fire a vital pop after load (/hudpop)
-import { applyTheme, emit, openSurface } from "nuikit-core";
+import { applyTheme, closeSurface, emit, openSurface } from "nuikit-core";
 import { PRESET_PARTS } from "./hud/parts";
 import { NuiDevtools, defineMocks } from "nuikit-core/devtools";
 import { useEffect, useState } from "react";
@@ -185,7 +185,7 @@ function FakeRadar({ frame }: { frame: MinimapFrame }) {
 const DEV_STYLES: StyleChoice[] = (
   [
     ["vitals.display", "icons", ["icons", "value", "pill", "expand"]],
-    ["vitals.voice", "beside", ["beside", "collapse"]],
+    ["vitals.visibility", "rest", ["always", "rest", "voice"]],
     ["vehicle.gauge", "theme", ["theme", "arc", "bar", "digital"]],
     ["map.shape", "circle", ["circle", "square"]],
     ["map.size", 15, [12, 15, 18]],
@@ -216,6 +216,7 @@ const mocks = defineMocks({
     "hud:ready": () => ({ ok: true }),
     "hud:minimap:ready": () => ({ ok: true }),
     "hud:parts:save": () => ({ ok: true }),
+    "hud:parts:preview": () => ({ ok: true }),
     "hud:styles:preview": ({ styles }: { styles?: HudStyles }) => {
       if (devSettings) openSurface("hud", { ...devSettings, styles: { ...devSettings.styles, ...styles } });
       return { ok: true };
@@ -274,6 +275,11 @@ export default function Dev() {
     if (q.has("retract")) document.documentElement.style.setProperty("--nk-rest-delay", "8s");
     if (q.has("retract")) settings.situations = { retract: true, rest: ["map", "vehicle"], moment: ["status", "map", "vitals", "vehicle"], driving: ["status", "map", "vitals", "vehicle"], interaction: ["map", "vitals"] };
     devSettings = settings;
+    // for bench/hud-perf: open and close the HUD (the entrance and the exit) with any settings on top
+    (window as unknown as { __hud?: unknown }).__hud = {
+      open: (s?: Partial<HudSettings>) => openSurface("hud", { ...settings, ...s, styles: { ...settings.styles, ...s?.styles } }),
+      close: () => closeSurface("hud"),
+    };
     // ?slots: other resources in the vitals cluster (nuikit_voice's range and radio, a job's indicator)
     if (q.has("slots")) {
       setTimeout(

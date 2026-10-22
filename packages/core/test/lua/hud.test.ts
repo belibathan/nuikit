@@ -169,9 +169,9 @@ describe("systems/nuikit_hud", () => {
 
   describe("the player's HUD on nk.settings (/hud edit, client/prefs.lua)", () => {
     // the nuikit resource holds the settings; the HUD keeps the harness's exports to reach it
-    const withRuntime = (kvp?: Map<string, string>) => async () => {
+    const withRuntime = (kvp?: Map<string, string>, nuikitKvp?: Map<string, string>) => async () => {
       client = await createClient();
-      const nuikit = await client.start("nuikit", { scripts: ["settings.lua"] });
+      const nuikit = await client.start("nuikit", { scripts: ["settings.lua"], kvp: nuikitKvp });
       await client.start("qbx_core", { before: `exports("GetPlayerData", function() return { citizenid = "ABC", charinfo = { firstname = "Niko" }, money = { cash = 5, bank = 0 }, metadata = {} } end)` });
       const hud = await client.start("nuikit_hud", {
         before: `__EX = exports\n` + natives + `\nexports = __EX STARTED.nuikit = true PD = {} PRINTED = {} function print(s) PRINTED[#PRINTED + 1] = s end function DeleteResourceKvp(k) DELETED = DELETED or {} DELETED[#DELETED + 1] = k end`,
@@ -238,6 +238,20 @@ describe("systems/nuikit_hud", () => {
       expect(saved(nuikit).values).toEqual({ "place.vitals": "top-left", "map.size": 18 });
       expect(await hud.run(`return DELETED`)).toEqual(["nuikit_hud:parts:compact", "nuikit_hud:styles"]);
       expect(hud.surfaces().hud.data.parts.vitals.at).toBe("top-left");
+    });
+
+    it("vitals visibility (v2): a v1 \"tuck behind voice\" pick carries over; the layout previews as a draft", async () => {
+      const old = new Map([["nuikit:settings:nuikit_hud", JSON.stringify({ v: 1, values: { "vitals.voice": "collapse" } })]]);
+      const { nuikit, hud } = await withRuntime(undefined, old)();
+      expect(await hud.run(`return Prefs.handle.values()["vitals.visibility"]`)).toBe("voice");
+      expect(hud.surfaces().hud.data.styles["vitals.visibility"]).toBe("voice");
+      expect(saved(nuikit).values["vitals.voice"]).toBeUndefined();
+      expect(await hud.call("hud:parts:preview", { parts: { vitals: { at: "top-left", order: 1 } } })).toEqual({ ok: true });
+      await hud.run(`return 1`);
+      expect(hud.surfaces().hud.data.parts.vitals.at).toBe("top-left");
+      await hud.call("hud:styles:preview", {}); // Escape: the whole draft goes
+      await hud.run(`return 1`);
+      expect(hud.surfaces().hud.data.parts.vitals.at).toBe("bottom-left");
     });
 
     it("streamer mode and Hide HUD (NUI.state from the pause menu), live", async () => {
