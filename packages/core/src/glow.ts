@@ -37,7 +37,8 @@ function schedule() {
   queued = true;
   queueMicrotask(() => {
     queued = false;
-    applyGlowBudget();
+    // the page (or a test's DOM) may be gone by the time the microtask runs
+    if (typeof document !== "undefined") applyGlowBudget();
   });
 }
 
