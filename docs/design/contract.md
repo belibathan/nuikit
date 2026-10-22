@@ -142,7 +142,16 @@ The site's `/components` page shows the status and `since` next to each componen
 Deprecated now: `key-hint` (→ `key-prompt`), `task-progress` (→ `meter` timed mode, `progress-ring`),
 `nui-toaster` (→ `notice`), all deprecated in 0.6.0 and removable in 0.8.0.
 
-## Follow-up: visual baselines (not enforced yet)
+## Follow-up: visual baselines (cheap version shipped, non-blocking)
+
+`pnpm visual` (`bench/visual/run.mjs`) shoots 4 `/components` sections at 1920×1080 (Chromium, reduced motion,
+animations off, fontsource fonts) and compares them with `bench/visual/baselines/*.png` (pixel ratio, default 1%,
+`VISUAL_MAX_DIFF`); `pnpm visual:update` rewrites them. The CI job `visual` runs in the Playwright image, is
+`continue-on-error: true`, and uploads `bench/visual/out` (actual + diff) on every run. **No baselines are
+committed yet** (Windows renders differ from Linux): a missing baseline is written to the artifact as `new-*.png`
+and does not fail. To start: run CI by hand (Actions → CI → Run workflow, tick "update_visual_baselines"), commit
+the `visual` artifact's `baselines/` here. Make the job blocking (drop `continue-on-error`) once two PRs in a row
+pass against the committed baselines. The longer plan from the earlier spike follows.
 
 Item 23 is a review item until CI compares screenshots. A spike on `feat/hardening` (commit 1553c7f, reverted
 before merge; recover it with `git show 1553c7f`) built the harness and showed:
