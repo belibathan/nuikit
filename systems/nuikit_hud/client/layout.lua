@@ -271,3 +271,62 @@ function Layout.resend()
   sentKey = nil
   if Layout.current then Layout.update(true) end
 end
+
+-- ───────────────────────────────── named zones (Foundation 2)
+
+--- Where each named zone sits by default, in fractions of the screen inside GTA's safe area (x, y
+--- from the area's top-left, w, h of the area). The HUD's own zones (status, map, vitals, vehicle)
+--- are replaced by what the page measures once it shows; prompts, interaction and toasts are boxes
+--- for the resources that draw them. Config.zones overrides any of them.
+Layout.ZONES = {
+  status = { x = 0.80, y = 0.30, w = 0.20, h = 0.12 },
+  map = { x = 0.84, y = 0.00, w = 0.16, h = 0.29 },
+  vitals = { x = 0.00, y = 0.92, w = 0.30, h = 0.08 },
+  vehicle = { x = 0.80, y = 0.70, w = 0.20, h = 0.30 },
+  prompts = { x = 0.35, y = 0.80, w = 0.30, h = 0.10 },
+  interaction = { x = 0.60, y = 0.35, w = 0.20, h = 0.30 },
+  toasts = { x = 0.00, y = 0.00, w = 0.28, h = 0.40 },
+}
+
+Layout.measured = {} -- zone name → { x, y, w, h } (screen fractions), from the page's hud:zones
+
+--- Keep what the page measured, one box per zone (the union of its parts).
+function Layout.setMeasured(rects)
+  local out = {}
+  for _, r in ipairs(type(rects) == 'table' and rects or {}) do
+    local z = type(r.zone) == 'string' and r.zone or nil
+    if z and type(r.x) == 'number' and type(r.y) == 'number' and type(r.w) == 'number' and type(r.h) == 'number' then
+      local b = out[z]
+      if b then
+        local x2, y2 = math.max(b.x + b.w, r.x + r.w), math.max(b.y + b.h, r.y + r.h)
+        b.x, b.y = math.min(b.x, r.x), math.min(b.y, r.y)
+        b.w, b.h = x2 - b.x, y2 - b.y
+      else
+        out[z] = { x = r.x, y = r.y, w = r.w, h = r.h }
+      end
+    end
+  end
+  Layout.measured = out
+end
+
+--- Every named zone as a box in screen fractions, with where it came from: 'hud' (measured on
+--- screen), 'config' (Config.zones) or 'default'. exports.nuikit_hud:zones().
+function Layout.zones()
+  local msg = Layout.current and Layout.message(Layout.current.width, Layout.current.height, Layout.current)
+    or { l = 0, r = 0, t = 0, b = 0 }
+  local aw, ah = 1 - msg.l - msg.r, 1 - msg.t - msg.b
+  local over = type(Config.zones) == 'table' and Config.zones or {}
+  local out = {}
+  for name, d in pairs(Layout.ZONES) do
+    local o = over[name]
+    if type(o) == 'table' and type(o.x) == 'number' and type(o.y) == 'number' and type(o.w) == 'number' and type(o.h) == 'number' then
+      d = o
+    end
+    out[name] = { x = msg.l + d.x * aw, y = msg.t + d.y * ah, w = d.w * aw, h = d.h * ah, source = d == o and 'config' or 'default' }
+    if Layout.measured[name] then
+      local m = Layout.measured[name]
+      out[name] = { x = m.x, y = m.y, w = m.w, h = m.h, source = 'hud' }
+    end
+  end
+  return out
+end

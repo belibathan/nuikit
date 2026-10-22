@@ -198,6 +198,7 @@ local function applyRadar()
 end
 -- What the HUD covers (the page measures its parts): notices and prompts start clear of them.
 NUI.on('hud:zones', function(body)
+  Layout.setMeasured(body and body.rects)
   NUI.zone('hud', body and body.rects or nil)
   return { ok = true }
 end)
@@ -279,6 +280,10 @@ NUI.on('hud:ready', function()
   end
   return { ok = true }
 end)
+
+-- Every named zone (Foundation 2) as a box in screen fractions: the HUD's as measured, the rest
+-- (prompts, interaction, toasts) from Config.zones or their defaults. For the resources that draw them.
+pcall(exports, 'zones', function() return Layout.zones() end)
 
 -- ───────────────────────────────── the player's layout (/hud edit)
 

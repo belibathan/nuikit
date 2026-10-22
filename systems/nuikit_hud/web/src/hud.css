@@ -1948,3 +1948,10 @@ html[data-nk-legibility="day"] .hud-root {
   --hud-hairline: color-mix(in oklab, var(--hud-fg) 18%, transparent);
   --hud-track: var(--nk-meter-track, color-mix(in oklab, var(--hud-fg) 24%, transparent));
 }
+
+/* a placed part (parts.tsx Part): a flex item that passes its place's alignment on to the part */
+.hud-part {
+  display: flex;
+  flex-direction: column;
+  align-items: inherit;
+}

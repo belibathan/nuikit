@@ -38,6 +38,14 @@ Config = {
   },
   playerLayout = true,
 
+  -- Named zones (Foundation 2): status, map, vitals, vehicle (the HUD's parts, measured on screen
+  -- once it shows) and prompts, interaction, toasts (boxes for the resources that draw them).
+  -- exports.nuikit_hud:zones() returns them all. A box here replaces a default: x, y from the safe
+  -- area's top-left, w, h, all as fractions of the safe area. Defaults: client/layout.lua Layout.ZONES.
+  zones = {
+    -- prompts = { x = 0.35, y = 0.80, w = 0.30, h = 0.10 },
+  },
+
   -- Where the HUD's edges are. 'game' reads GTA's own HUD alignment for this screen and safe zone
   -- (16:9, 21:9, 32:9), falling back to 'stage' if the game's answer looks wrong. 'stage' is the
   -- 0.5.0 rule: the middle 16:9 of the screen, inset by the safe zone.
