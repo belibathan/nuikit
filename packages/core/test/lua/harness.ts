@@ -29,6 +29,8 @@ export interface StartOptions {
   runtime?: "vendored" | "import" | "none";
   /** "import" only: pretend the nuikit resource isn't there (LoadResourceFile returns nil). */
   runtimeMissing?: boolean;
+  /** The resource's KVP at start (what an earlier session saved): pass another resource's `kvp` to restart with it. */
+  kvp?: Map<string, string>;
 }
 
 type Handler = { resource: string; fn: (...args: unknown[]) => unknown };
@@ -147,7 +149,7 @@ export async function createClient(options: { syncEvents?: boolean; onNuiMessage
           fn(clone(data), (r) => resolve(clone(r)));
           flush();
         }),
-      kvp: new Map(),
+      kvp: new Map(startOptions.kvp ?? []),
       commands: new Map(),
       keyMappings: new Map(),
       serverEvents: [],

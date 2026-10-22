@@ -33,6 +33,7 @@ import {
 } from "./index";
 import { flipFrom, indicator, motionLevel, spring, type Channel, type SpringName } from "./motion";
 import { clearOf, getZones, onZones, type ClearOptions, type ZonePosition, type Zones } from "./zones";
+import { applySettingsPreset, cancelSettings, draftSettings, loadSettings, resetSettings, saveSettings, type SettingValue, type SettingsSection } from "./settings";
 import { getTheme } from "./theme";
 import type { CompiledTheme } from "./tokens";
 
@@ -64,6 +65,50 @@ export function useClearOf(position: ZonePosition, opts?: ClearOptions): CSSProp
     return c.top !== undefined ? { top: c.top } : c.bottom !== undefined ? { bottom: c.bottom } : {};
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [zones, position, size, key]);
+}
+
+/**
+ * One resource's settings (nk.settings, docs/settings.md) and the draft → save → reset loop. `values`
+ * follow every change: this page's own ops, and `nuikit:settings` when the page belongs to that resource.
+ *
+ *   const s = useSettings("nuikit_hud");
+ *   <Select value={s.values.layout} onValueChange={(v) => s.draft({ layout: v })} /> … <Button onClick={s.save}>Save</Button>
+ */
+export function useSettings(resource: string) {
+  const [section, setSection] = useState<SettingsSection | null>(null);
+  const reload = useCallback(async () => setSection((await loadSettings(resource))[0] ?? null), [resource]);
+  useEffect(() => {
+    void reload();
+  }, [reload]);
+  useEffect(
+    () =>
+      onNui("nuikit:settings" as EventName, (d: unknown) => {
+        const data = d as { values?: Record<string, SettingValue>; draft?: boolean } | null;
+        if (data?.values) setSection((s) => (s ? { ...s, values: data.values!, draft: !!data.draft } : s));
+      }),
+    [],
+  );
+  const run = useCallback(
+    (p: Promise<Record<string, SettingValue> | null>, draft: boolean) =>
+      p.then((values) => {
+        if (values) setSection((s) => (s ? { ...s, values, draft } : s));
+        return values;
+      }),
+    [],
+  );
+  return {
+    section,
+    rows: section?.rows ?? [],
+    values: section?.values ?? {},
+    presets: section?.presets ?? [],
+    dirty: section?.draft ?? false,
+    draft: (patch: Record<string, SettingValue>) => run(draftSettings(resource, patch), true),
+    save: () => run(saveSettings(resource), false),
+    cancel: () => run(cancelSettings(resource), false),
+    reset: (keys?: string[]) => run(resetSettings(resource, keys), false),
+    preset: (id: string) => run(applySettingsPreset(resource, id), true),
+    reload,
+  };
 }
 
 /**

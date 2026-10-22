@@ -384,6 +384,7 @@ export function __reset(): void {
 export { hostedContext, type HostedContext, type HostedMessage } from "./hosted";
 import { hostedContext } from "./hosted";
 export { applyGlowBudget, startGlowBudget } from "./glow";
+export { applySettingsPreset, cancelSettings, draftSettings, loadSettings, mergeSettings, mockSettings, normalizeSetting, resetSettings, saveSettings, type SettingRow, type SettingValue, type SettingsSection } from "./settings";
 export { KEYWORD_ATTRS, applyTheme, clearTheme, getPrefs, getTheme, loadImports, onTheme, parseTheme, setPrefs, toRgba, type ThemeVars } from "./theme";
 import { __resetTheme, applyTheme, setPrefs } from "./theme";
 export {

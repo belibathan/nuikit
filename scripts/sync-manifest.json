@@ -97,6 +97,7 @@
       "lib/intents.lua",
       "lib/intents.schema.lua",
       "lib/nuikit.lua",
+      "lib/settings.lua",
       "server/compiler.js",
       "themes/arcade.css",
       "themes/graphite.css",

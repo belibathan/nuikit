@@ -45,9 +45,10 @@ import('lib/nuikit.lua')
 import('lib/intents.lua') -- nk.notify … nk.challenge (docs/intents.md)
 nk = NUI
 nk.version = version
--- services (docs/services.md): nk.camera, nk.controls
+-- services (docs/services.md): nk.camera, nk.controls, nk.settings
 import('lib/camera.lua')
 import('lib/controls.lua')
+import('lib/settings.lua') -- nk.settings (docs/settings.md)
 -- end services
 rawset(nk, '__imported', true)
 
