@@ -1,11 +1,11 @@
-# nuikit tokens v1 (revision 1.2)
+# nuikit tokens v1 (revision 1.4)
 
 The theme contract every nuikit UI reads. A server's theme is any shadcn / TweakCN paste in
 `nuikit/theme.css`; the compiler (`compileTheme` in `nuikit-core`) turns it into this exact set of
 CSS variables, so a UI built on the tokens matches every server it runs on.
 
-- **Version:** tokens v1 (`TOKENS_VERSION = 1`), revision 1.2 (`TOKENS_REVISION`, `revision` on a compiled
-  theme). Adding a token keeps v1; renaming or removing one is v2. 1.2 added the [motion tokens](#motion-12)
+- **Version:** tokens v1 (`TOKENS_VERSION = 1`), revision 1.4 (`TOKENS_REVISION`, `revision` on a compiled
+  theme). Adding a token keeps v1; renaming or removing one is v2. 1.4 added the [foundation](#foundation-14) (treatment, roles, materials, behaviour…); 1.2 the [motion tokens](#motion-12)
   (additive). 1.1 added the
   [identity tokens](#identity-tokens-11) and [component tokens](#component-tokens-11): additive, every v1 name
   and meaning is unchanged. The defaults of `--font-sans` / `--font-mono` changed from the system stack to
@@ -438,6 +438,36 @@ theme, light or dark**: a light theme changes the panels, not the game.
 
 Text size outside the kit: synced `index.css` raises Tailwind's two small steps (`text-xs` 13px,
 `text-sm` 15px) for readability at 1080p; `text-base` and up are Tailwind's.
+
+## Foundation (1.4)
+
+Tokens 1.4 ([design/foundation.md](design/foundation.md)) split an identity into **palette** and
+**treatment**, and add the families game UIs need beyond colour. All additive and all defaulted: every theme
+compiles every 1.3 token to the same value (`test/fixtures/compiled-1.3.json` pins it). Names are in
+`FOUNDATION_TOKENS` (nuikit-core), the DTCG file and the schema.
+
+| Family | Tokens | Default | Notes |
+|---|---|---|---|
+| **Treatment** | `--nk-treatment: soft \| glass \| plate \| slab` | `soft` | A preset that fills material, stroke, type, focus and motion tokens *under* the theme's own values (`TREATMENT_PRESETS`). `soft` is empty: today's defaults. Painted as `html[data-nk-treatment]` |
+| **States** | `--nk-focus-style` (ring, halo, tint, fill, invert, bar), `--nk-hold-style` (bar, ring, fill), `--nk-confirm-scale`, `--nk-level-style` (bar, ring, liquid, slab, pips) | ring, bar, 1.04, bar | One focus style for every component; components draw `data-state="rest\|focus\|hold\|confirm\|disabled\|alert"` and read `--level` (0–1). Painted as `data-nk-focus`, `-hold`, `-level` |
+| **Roles** | `--role-<name>` (+ derived `-deep`, `-light`), `--nk-hue-{line,tint,glow,alert}` alphas | vitals = today's `vital-*`; stamina → success, oxygen → info; status = info, success, warning, destructive; factions and rarity fixed hues; brand; neutral = muted-foreground | `data-hue="<role>"` on any element gives its subtree `--hue-solid`, `-deep`, `-line`, `-tint`, `-glow`, `-alert`, `-grad-a`, `-grad-b` (kit.css). Sets: vitals (health, armor, hunger, thirst, stress, stamina, oxygen), status (info, success, warning, danger), faction (police, ems, mech, gang, civ, staff), rarity (common, uncommon, rare, epic, legendary), brand, neutral |
+| **Materials** | `--nk-material-{hud,menu,overlay}-{opacity,blur,radius,edge,texture}`, `--nk-slash` (none, cut) | hud opacity = `nk-hud-opacity`, menu/overlay = `nk-surface-opacity`, radius = `radius`, edge = `nk-surface-edge`, blur 0, texture none | Surfaces read `--nk-{hud,menu,overlay}-alpha` (kit.css), which legibility lifts. Textures paint as `data-nk-texture-<ctx>` |
+| **Legibility** | `--nk-legibility: auto \| night \| day`, `--nk-legibility-lift` | auto, 0.5 | `day` closes each material's gap to opaque by the lift (not a light theme). `auto` does so while `html[data-nk-daytime]` is set (the HUD sets it from the game clock) |
+| **Behaviour** | `--nk-alert-threshold`, `--nk-fuel-threshold`, `--nk-notify-ms-{info,success,warning,danger}`, `--nk-hold-ms`, `--nk-cooldown-ms`, `--nk-rest-delay` | 0.2, 0.15, 5000ms each, 800ms, 0ms, 0ms (never retract) | Durations up to 60 s. Servers tune them in theme.css; resources may override per surface |
+| **Motion steps** | `--nk-ease-{standard,expand,retract,spring,breathe}`, `--nk-time-{confirm,retract,fill,pulse}`, `--nk-motion-profile: full \| reduced \| instant` | eases alias the ladder's curves (+ a spring and a breathe); confirm 0.65 × d, retract 1.55 × d (≤ 300), fill 3 × d, pulse 1000ms; full | The new rungs are clamped by the player's prefs like the rest. `reduced` / `instant` act like the reduced-motion pref / motion off, for the whole server |
+| **Layers** | `--nk-z-{world,hud,scrim,surface,dim,dialog,system}` | 10 … 70 | A modal is the current surface + `dim` + `dialog`, never a new screen |
+| **Offsets** | `--nk-hang-md`, `--nk-hang-lg`, `--nk-focus-shift` | 0.375rem, 0.75rem, 0rem | Badges and gems that break a panel edge; the focused row's nudge |
+| **Attention** | `--nk-glow-budget` | 1 (0 = no limit) | A part that may glow carries `data-nk-glow` (a number ranks it); the runtime marks at most the budget `data-nk-glow-on`, the focused one first, and kit.css zeroes the rest. `nuikit check` warns (`attention/glow`, advisory) on a second mark in a resource |
+
+Each identity names its treatment: Graphite and Studio `soft`, Velvet `glass`, Signal and Vector `plate`,
+Arcade and Street `slab`. A server keeps its palette and borrows another treatment with one line:
+
+```css
+.dark {
+  /* …your TweakCN colours… */
+  --nk-treatment: slab; /* Arcade's flat, bold, skewed drawing; any token you set still wins */
+}
+```
 
 ## Identities
 
