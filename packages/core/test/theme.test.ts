@@ -118,7 +118,7 @@ describe("applyTheme (compiled tokens)", () => {
     setPrefs({ highContrast: true });
     expect(html().getAttribute("data-nk-contrast")).toBe("high");
     expect(css("hud")).toBe("rgba(0, 0, 0, 0.72)");
-    expect(getPrefs()).toEqual({ scale: 1.2, reducedMotion: true, highContrast: true });
+    expect(getPrefs()).toEqual({ scale: 1.2, reducedMotion: true, highContrast: true, density: 1 });
     // a new theme keeps the prefs
     applyTheme(".dark { --primary: #123456; }");
     expect(css("nk-scale")).toBe("1.2");

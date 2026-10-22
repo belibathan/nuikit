@@ -55,7 +55,70 @@ function publish(reason) {
       `${theme.contrast.length - failed}/${theme.contrast.length} contrast checks pass (${theme.hash})`,
   );
   for (const w of theme.warnings) log(`^3${w}^7`);
+  publishLooks(css || "");
   return theme;
+}
+
+// ───────────────────────────────── player looks
+// What a player may pick instead of the server theme (pause › Settings › Look), compiled here like the theme:
+//
+//   setr nuikit_identities "graphite,studio,arcade"   identities from nuikit/themes/*.css (default: none)
+//   setr nuikit_treatments "slab,glass"                treatments over the server theme or an identity (default: none)
+//
+// GlobalState.nuikitLooks = { identities, treatments, themes = { ["<identity|server>|<treatment|>"] = compiled } }.
+// Clients pick the one matching the player's prefs (nuikit.lua NUI.theme); unknown or disallowed picks get the
+// server theme. Every combination is compiled once, at most MAX_LOOKS of them.
+const LOOKS_KEY = "nuikitLooks";
+const TREATMENTS = ["soft", "glass", "plate", "slab"];
+const MAX_LOOKS = 24;
+
+function list(name) {
+  const raw = typeof GetConvar === "function" ? String(GetConvar(name, "") || "") : "";
+  return [...new Set(raw.split(/[\s,|]+/).map((x) => x.trim().toLowerCase()).filter(Boolean))];
+}
+
+function payloadOf(t) {
+  return { version: t.version, mode: t.mode, hash: t.hash, vars: t.vars, imports: t.imports };
+}
+
+function publishLooks(serverCss) {
+  const identities = [];
+  const sources = { server: serverCss };
+  for (const id of list("nuikit_identities")) {
+    if (!/^[a-z0-9_-]{1,32}$/.test(id)) continue;
+    const css = LoadResourceFile(RESOURCE, `themes/${id}.css`);
+    if (!css || css.indexOf("--") === -1) {
+      log(`^3nuikit_identities: no themes/${id}.css; ${id} is left out.^7`);
+      continue;
+    }
+    identities.push(id);
+    sources[id] = css;
+  }
+  const treatments = list("nuikit_treatments").filter((t) => {
+    if (TREATMENTS.includes(t)) return true;
+    log(`^3nuikit_treatments: ${t} isn't a treatment (${TREATMENTS.join(", ")}); it is left out.^7`);
+    return false;
+  });
+  const themes = {};
+  let count = 0;
+  for (const base of ["server", ...identities]) {
+    for (const t of ["", ...treatments]) {
+      if (base === "server" && t === "") continue; // the server theme itself: GlobalState.nuikitTheme
+      if (++count > MAX_LOOKS) break;
+      try {
+        // a treatment fills defaults under the theme's own values (tokens 1.4), so it goes last as a plain override
+        const css = t ? `${sources[base]}\n.dark { --nk-treatment: ${t}; }` : sources[base];
+        themes[`${base}|${t}`] = payloadOf(compileTheme(css));
+      } catch (err) {
+        log(`^3look ${base}|${t} didn't compile: ${err && err.message ? err.message : err}^7`);
+      }
+    }
+  }
+  if (count > MAX_LOOKS) log(`^3${count} looks asked for, ${MAX_LOOKS} compiled: shorten nuikit_identities or nuikit_treatments.^7`);
+  const value = { identities, treatments, themes };
+  if (typeof GlobalState.set === "function") GlobalState.set(LOOKS_KEY, value, true);
+  else GlobalState[LOOKS_KEY] = value;
+  if (identities.length || treatments.length) log(`looks: ${identities.length} identities, ${treatments.length} treatments, ${Object.keys(themes).length} compiled`);
 }
 
 function report(reply) {

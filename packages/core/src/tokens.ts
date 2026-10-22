@@ -1343,9 +1343,14 @@ export interface NuiPrefs {
   scale: number;
   reducedMotion: boolean;
   highContrast: boolean;
+  /** Spacing multiplier, 0.85–1.2 (on top of the theme's --nk-density). */
+  density?: number;
+  /** The look the player picked (the Lua side applies it as the theme; pages only read it). */
+  identity?: string | null;
+  treatment?: string | null;
 }
 
-export const DEFAULT_PREFS: NuiPrefs = { scale: 1, reducedMotion: false, highContrast: false };
+export const DEFAULT_PREFS: NuiPrefs = { scale: 1, reducedMotion: false, highContrast: false, density: 1 };
 
 export function normalizePrefs(p: Partial<NuiPrefs> | null | undefined): NuiPrefs {
   const scale = Number(p?.scale);
@@ -1353,6 +1358,7 @@ export function normalizePrefs(p: Partial<NuiPrefs> | null | undefined): NuiPref
     scale: Number.isFinite(scale) && scale > 0 ? Math.round(clamp(scale, 0.85, 1.25) * 100) / 100 : 1,
     reducedMotion: p?.reducedMotion === true,
     highContrast: p?.highContrast === true,
+    density: Number.isFinite(Number(p?.density)) && Number(p?.density) > 0 ? Math.round(clamp(Number(p?.density), 0.85, 1.2) * 100) / 100 : 1,
   };
 }
 
@@ -1363,6 +1369,9 @@ export function withPrefs(vars: ThemeVars, prefs: Partial<NuiPrefs> = DEFAULT_PR
   if (p.highContrast) highContrast(out);
   const scale = (parseFloat(out["nk-scale"] ?? "1") || 1) * p.scale;
   out["nk-scale"] = String(Math.round(scale * 1000) / 1000);
+  if (p.density !== undefined && p.density !== 1 && out["nk-density"] !== undefined) {
+    out["nk-density"] = String(Math.round((parseFloat(out["nk-density"]) || 0.875) * p.density * 1000) / 1000);
+  }
   const level = themeMotionLevel(vars, p);
   out["nk-motion"] = level === "on" ? "1" : "0";
   if (level !== "on") {

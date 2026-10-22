@@ -113,3 +113,22 @@ describe("the nuikit resource's server script", () => {
     expect(bad.logs.some((l) => /nuikit_locale "not a tag" is not a BCP 47 tag/.test(l))).toBe(true);
   });
 });
+
+describe("player looks (server/main.js publishLooks)", () => {
+  const ARCADE = readFileSync(dir + "themes/arcade.css", "utf8");
+  it("compiles every allowed identity and treatment combination; unknown names are left out with a line", () => {
+    const s = boot({ "theme.css": THEME, "themes/arcade.css": ARCADE }, {}, { nuikit_identities: "arcade, nope", nuikit_treatments: "slab,chrome" });
+    const looks = s.state.nuikitLooks as { identities: string[]; treatments: string[]; themes: Record<string, { hash: string; vars: Record<string, string> }> };
+    expect(looks.identities).toEqual(["arcade"]);
+    expect(looks.treatments).toEqual(["slab"]);
+    expect(Object.keys(looks.themes).sort()).toEqual(["arcade|", "arcade|slab", "server|slab"]);
+    expect(looks.themes["arcade|"]!.hash).toBe(compileTheme(ARCADE).hash);
+    expect(looks.themes["server|slab"]!.vars["nk-treatment"]).toBe("slab");
+    expect(s.logs.some((l) => /no themes\/nope\.css/.test(l))).toBe(true);
+    expect(s.logs.some((l) => /chrome isn't a treatment/.test(l))).toBe(true);
+  });
+  it("publishes empty lists by default (the server theme only)", () => {
+    const s = boot({ "theme.css": THEME });
+    expect(s.state.nuikitLooks).toEqual({ identities: [], treatments: [], themes: {} });
+  });
+});
