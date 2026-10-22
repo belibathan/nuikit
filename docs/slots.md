@@ -10,7 +10,7 @@ resources read as one cluster. Rides the same local state bag as [screen zones](
 local talk = NUI.slot('vitals', 'talk', { order = 50, icon = 'mic', hue = 'info', label = 'Voice', level = 0 })
 talk.set({ level = 0.7, alert = false })   -- change-only: no write when nothing changed
 talk.set({ hidden = true })                -- keep the slot, draw nothing
-talk.remove()                              -- leave the cluster
+talk.remove()                              -- leave the cluster (or NUI.unslot('vitals', 'talk'))
 ```
 
 `order` (default 100, lower first) and whatever the cluster draws: `label`, `icon`, `hue` (a [role](tokens.md#foundation-14)),

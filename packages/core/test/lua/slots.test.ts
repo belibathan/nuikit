@@ -25,7 +25,7 @@ describe("NUI.slot", () => {
     expect(await hud.run(`local n = 0 for _ in pairs(NUI.slots().vitals) do n = n + 1 end return n`)).toBe(2);
     client.stop("voice");
     expect(Object.keys(last(hud).vitals)).toEqual(["radio:signal"]);
-    await radio.run(`NUI.slot('vitals', 'signal').remove()`);
+    await radio.run(`NUI.unslot('vitals', 'signal')`);
     expect(last(hud)).toEqual({});
   });
 

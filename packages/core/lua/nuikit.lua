@@ -729,6 +729,13 @@ function NUI.slot(cluster, key, opts)
   return handle
 end
 
+--- Leave a cluster without the handle (the same as handle.remove()).
+---@param cluster string
+---@param key string
+function NUI.unslot(cluster, key)
+  writeSlot(cluster, RESOURCE .. ':' .. key, nil)
+end
+
 if AddStateBagChangeHandler then
   AddStateBagChangeHandler(SLOTS, nil, function(bagName, _, value)
     if not bagName:find('^player:') then return end
