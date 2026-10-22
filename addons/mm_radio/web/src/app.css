@@ -20,20 +20,50 @@ input {
   letter-spacing: -0.02em;
 }
 
-/* The handheld rises from below and drops away: the motion ladder (full-screen step), transform and
-   opacity only; /nuikit motion off makes it instant. */
-/* the handheld stays where it is: slides up into place like the sheets, slides back down faster (× 1.4,
-   ≤ 200ms, easing in), always mounted. Reduced motion: a fade only. */
-.radio-frame {
-  transition: transform min(calc(var(--nk-time) * 2.2), 360ms) var(--nk-ease-out), opacity var(--nk-time) var(--nk-ease-out);
+/* The handheld slides up into place and fades in once, like the edge sheets (× 2.2, ≤ 360ms), and slides
+   back down faster (× 1.4, ≤ 200ms, easing in). A transition on its own wrapper (.radio-slide): the
+   positioned frame around it carries the size scale, so the two transforms never fight, a size change
+   never replays the slide, and data updates while open change nothing here. Always mounted; App renders
+   it closed first, so the first open slides too. Reduced motion: a fade only; motion off: instant. */
+.radio-slide {
+  transition:
+    transform min(calc(var(--nk-time) * 2.2), 360ms) var(--nk-ease-out),
+    opacity min(calc(var(--nk-time) * 2.2), 360ms) var(--nk-ease-out);
+  will-change: transform, opacity;
 }
-.radio-frame[data-state="closed"] {
-  --radio-off: 120%;
+.radio-slide[data-state="closed"] {
+  transform: translateY(120%);
+  opacity: 0;
   transition-duration: min(calc(var(--nk-time) * 1.4), 200ms);
   transition-timing-function: var(--nk-ease-in, ease-in);
 }
-:is(html, *)[data-nk-motion="reduced"] .radio-frame {
-  --radio-off: 0%;
+:is(html, *)[data-nk-motion="reduced"] .radio-slide[data-state="closed"] {
+  transform: none;
+}
+
+/* The device: a radio silhouette as a mask, filled with the panel surface, so it follows the identity.
+   The default is the addon's own drawing (radio-shape.svg, inlined by the build); a server swaps it with
+   --mm-radio-shape: url(...) on :root in nuikit/theme.css (any image: its alpha is the shape, stretched
+   to 18 × 34rem; the body from 3.5rem down holds the screen and the controls). The hairline and the drop
+   are drop-shadows on the layer around the mask (a mask clips borders and box-shadows). */
+.radio-shape {
+  filter: drop-shadow(0 calc(var(--nk-border) * -1) 0 var(--nk-panel-border)) drop-shadow(0 var(--nk-border) 0 var(--nk-panel-border))
+    drop-shadow(calc(var(--nk-border) * -1) 0 0 var(--nk-panel-border)) drop-shadow(var(--nk-border) 0 0 var(--nk-panel-border))
+    drop-shadow(0 0.75rem 1.25rem rgba(var(--scrim-rgb), 0.45));
+}
+.radio-shape[data-move] {
+  filter: drop-shadow(0 -0.125rem 0 var(--primary)) drop-shadow(0 0.125rem 0 var(--primary)) drop-shadow(-0.125rem 0 0 var(--primary))
+    drop-shadow(0.125rem 0 0 var(--primary)) drop-shadow(0 0.75rem 1.25rem rgba(var(--scrim-rgb), 0.45));
+}
+.radio-shape > div {
+  background-color: var(--nk-panel-bg);
+  background-image: var(--nk-panel-gradient);
+  -webkit-mask-image: var(--mm-radio-shape, url("./radio-shape.svg"));
+  mask-image: var(--mm-radio-shape, url("./radio-shape.svg"));
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
 }
 
 /* channel lists: rows with a hairline between, drawn without taking layout (the pause menu's rows) */

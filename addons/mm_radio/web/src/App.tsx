@@ -36,6 +36,9 @@ export default function App() {
 
   useRadio<RadioData>("setRadioVisible", (d) => {
     accept(d);
+    // reset on the way in, not out: the screen must not change under the exit slide
+    setTabState("home");
+    setMoveMode(false);
     setShown(true);
   });
   useRadio<RadioData>("updateRadio", accept);
@@ -55,8 +58,6 @@ export default function App() {
 
   function hide(notify: boolean) {
     setShown(false);
-    setTabState("home");
-    setMoveMode(false);
     if (notify) void post("hideUI");
   }
 
@@ -112,20 +113,25 @@ function RadioFrame({ shown }: { shown: boolean }) {
   const setPos = (p: Pos) => update((d) => ({ ...d, userData: { ...d.userData, radio: { ...d.userData?.radio, coords: p } } }));
   const onMouseDown = useAnchoredDrag({ enabled: moveMode && shown, fromTop: false, get: () => pos, set: setPos, onEnd: (p) => void post("updateRadioPosition", p) });
 
+  // The radio mounts with the first setRadioVisible, already shown: paint the closed state once (its
+  // style resolved) before opening, so the first open slides in instead of appearing (app.css).
+  const slide = useRef<HTMLDivElement>(null);
+  const [open, setOpen] = useState(false);
+  useLayoutEffect(() => {
+    if (shown && slide.current) void slide.current.offsetHeight; // commit the closed style
+    setOpen(shown);
+  }, [shown]);
+
   return (
     <div
       data-radio=""
-      data-state={shown ? "open" : "closed"}
-      className={cn("radio-frame pointer-events-auto absolute", !shown && "pointer-events-none opacity-0")}
-      style={{
-        right: pos.x,
-        bottom: pos.y,
-        transform: `translateY(var(--radio-off, 0%)) scale(${scaleOf(data.userData?.radioSizeMultiplier)})`,
-        transformOrigin: "bottom right",
-      }}
+      className={cn("absolute", open ? "pointer-events-auto" : "pointer-events-none")}
+      style={{ right: pos.x, bottom: pos.y, transform: `scale(${scaleOf(data.userData?.radioSizeMultiplier)})`, transformOrigin: "bottom right" }}
       onMouseDown={onMouseDown}
     >
-      <Handheld />
+      <div ref={slide} className="radio-slide" data-state={open ? "open" : "closed"}>
+        <Handheld />
+      </div>
     </div>
   );
 }
