@@ -1,7 +1,7 @@
 import { fetchNui, Surface, useNuiState, usePlayer, useSurfaceOpen } from "nuikit-core/react";
 import { MinimapFrameView, useMinimap } from "./minimap";
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
-import type { HudCorner, HudLayout, HudParts, HudLocation, HudSettings, HudVehicle, HudWeapon, MinimapFrame, MinimapState } from "./nui";
+import type { HudCorner, HudLayout, HudParts, HudStyles, HudLocation, HudSettings, HudVehicle, HudWeapon, MinimapFrame, MinimapState } from "./nui";
 import { Ammo } from "./hud/ammo";
 import { Cluster } from "./hud/cluster";
 import { LayoutEditor } from "./hud/editor";
@@ -11,7 +11,7 @@ import { layoutVars, stageLayout, useHudLayout, useViewport } from "./hud/layout
 import { CompassTape, LocationStrip } from "./hud/location";
 import { useHudLook, type HudLook } from "./hud/look";
 import { MapLocation, MapRing } from "./hud/map";
-import { BESIDE_CLASS, CORNER_CLASS, CORNERS, cornerSide, Part, placeParts, resolveParts } from "./hud/parts";
+import { BESIDE_CLASS, clusterScale, CORNER_CLASS, CORNERS, cornerSide, Part, placeParts, resolveParts } from "./hud/parts";
 import { VitalsRow } from "./hud/pills";
 import { Wallet } from "./hud/wallet";
 
@@ -161,16 +161,28 @@ function mapEdge(frame: MinimapFrame | null): "left" | "right" {
  * One stack per corner (Config.parts), on the side it belongs to. The stack in the map's own corner
  * (`beside`) sits beside the map, level with its outer edge, instead of under or over it.
  */
-function corners(groups: ReturnType<typeof placeParts>, side: "left" | "right", beside?: HudCorner | null) {
-  return CORNERS.filter((c) => cornerSide(c) === side && groups[c].length > 0).map((c) => (
-    <div key={c} data-slot="hud-corner" data-corner={c} data-beside={c === beside || undefined} className={c === beside ? BESIDE_CLASS[c] : CORNER_CLASS[c]}>
+function corners(groups: ReturnType<typeof placeParts>, side: "left" | "right", beside?: HudCorner | null, styles?: HudStyles) {
+  return CORNERS.filter((c) => cornerSide(c) === side && groups[c].length > 0).map((c) => {
+    // the player's size for this cluster, from its own corner (hud.css: the origin is the anchor)
+    const scale = clusterScale(styles, `scale.${c}`);
+    return (
+    <div
+      key={c}
+      data-slot="hud-corner"
+      data-corner={c}
+      data-beside={c === beside || undefined}
+      data-scaled={scale ? true : undefined}
+      className={c === beside ? BESIDE_CLASS[c] : CORNER_CLASS[c]}
+      style={scale ? ({ "--hud-cluster-scale": String(scale) } as CSSProperties) : undefined}
+    >
       {groups[c].map((p) => (
         <Part key={p.name} name={p.name}>
           {p.el}
         </Part>
       ))}
     </div>
-  ));
+    );
+  });
 }
 
 /**
@@ -202,6 +214,9 @@ function Compact({ settings, vehicle, location, weapon, layout, frame, state, pl
     column = below
       ? { left: cx, top: mapPlaced ? (frame.y + frame.h) * h : frame.y * h, transform: "translateX(-50%)" }
       : { left: cx, bottom: `calc(${((1 - frame.y) * h).toFixed(1)}px + ${clear})`, transform: "translateX(-50%)" };
+    // the player's size for the column, from the edge it hangs from
+    const s = clusterScale(settings.styles, "scale.map");
+    if (s) column = { ...column, transform: `translateX(-50%) scale(${s})`, transformOrigin: below ? "top center" : "bottom center" };
     vars["--hud-col-w"] = `${(frame.w * w).toFixed(1)}px`;
   }
   const heading = state?.heading ?? 0;
@@ -230,11 +245,11 @@ function Compact({ settings, vehicle, location, weapon, layout, frame, state, pl
       <Side side="map" slide={settings.slide && frame ? mapEdge(frame) : undefined}>{ring && <MapRing frame={frame!} start={heading} compass={settings.compass?.ring !== false} location={location} units={units} halo={settings.halo !== false} tag={settings.waypointTag === true} />}</Side>
       <Side side="left">
         {columnSide === "left" && columnEl}
-        {corners(groups, "left", mapCorner)}
+        {corners(groups, "left", mapCorner, settings.styles)}
       </Side>
       <Side side="right">
         {columnSide === "right" && columnEl}
-        {corners(groups, "right", mapCorner)}
+        {corners(groups, "right", mapCorner, settings.styles)}
       </Side>
     </div>
   );
@@ -289,10 +304,10 @@ function Classic({ settings, vehicle, location, weapon, layout, frame, state, pl
             ))}
           </div>
         )}
-        {corners(groups, "left")}
+        {corners(groups, "left", null, settings.styles)}
       </Side>
       <Side side="top">{tape && <CompassTape start={heading} />}</Side>
-      <Side side="right">{corners(groups, "right")}</Side>
+      <Side side="right">{corners(groups, "right", null, settings.styles)}</Side>
     </div>
   );
 }

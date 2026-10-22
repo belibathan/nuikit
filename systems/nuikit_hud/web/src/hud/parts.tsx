@@ -1,7 +1,7 @@
 // Where each part goes: the preset's placement with Config.parts on top (client/layout.lua resolves it
 // and sends it in the settings; this mirror covers a client that doesn't).
 import type { ReactNode } from "react";
-import type { HudCorner, HudPart, HudParts, HudPreset } from "../nui";
+import type { HudCorner, HudPart, HudParts, HudPreset, HudStyles } from "../nui";
 import { useZoneShown } from "./situation";
 
 export const PRESET_PARTS: Record<HudPreset, HudParts> = {
@@ -90,4 +90,10 @@ export function Part({ name, children }: { name: PartName; children: ReactNode }
       {children}
     </div>
   );
+}
+
+/** A cluster's scale (styles scale.<corner> / scale.map), or undefined at 100%. */
+export function clusterScale(styles: HudStyles | undefined, key: "scale.top-left" | "scale.top-right" | "scale.bottom-left" | "scale.bottom-right" | "scale.map"): number | undefined {
+  const s = Number(styles?.[key]);
+  return Number.isFinite(s) && s > 0 && s !== 1 ? s : undefined;
 }
