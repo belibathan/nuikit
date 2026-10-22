@@ -4,7 +4,7 @@ import { Notice, NoticeStack, noticePosition, type NoticePosition, type NoticeSt
 import { Icon } from "@/lib/icon";
 import { Markdown } from "@/lib/markdown";
 import { notifyIntent } from "@/lib/intents";
-import { useLever } from "@/lib/levers";
+import { tokenMs, useLever } from "@/lib/levers";
 import { useOx } from "@/lib/nui";
 import { openIntent } from "@/lib/route";
 import { cn } from "@/lib/utils";
@@ -43,6 +43,15 @@ const MAX = 20;
 const EXIT_MS = 400;
 /** ox_lib's default: a falsy duration means 3000 ms. */
 const DEFAULT_MS = 3000;
+
+/** The behaviour token for a notice's severity (foundation 2: `--nk-notify-ms-{info,success,warning,danger}`). */
+const SEVERITY: Record<NoticeStatus, string> = { info: "info", success: "success", warning: "warning", error: "danger" };
+
+/**
+ * How long a toast stays: the script's own duration first (ox_lib's protocol), then the theme's
+ * duration for its severity, then ox's 3 s. Without the tokens it is exactly ox's timing.
+ */
+const durationOf = (data: NotifyData) => data.duration || tokenMs(`nk-notify-ms-${SEVERITY[status(data.type)]}`, DEFAULT_MS);
 
 /** ox_lib's rule: success, error and warning pick their look; anything else (inform, info, warn…) is info. */
 const status = (type?: string): NoticeStatus => (type === "success" || type === "error" || type === "warning" ? type : "info");
@@ -149,7 +158,7 @@ export function Notifications() {
   };
 
   const showLocal = (data: NotifyData) => {
-    const duration = data.duration || DEFAULT_MS;
+    const duration = durationOf(data);
     const own = data.id !== undefined && data.id !== null;
     // The same toast again, still on screen: count it on the first one and restart its time.
     const dup = own ? undefined : current.current.find((t) => !t.leaving && t.key.startsWith("n:") && sameToast(t, data));
@@ -206,7 +215,7 @@ export function Notifications() {
               title={t.title ? <Counted count={t.count}>{t.title}</Counted> : undefined}
               description={t.description ? <Counted count={t.title ? 1 : t.count}><Markdown>{t.description}</Markdown></Counted> : undefined}
               item={t.item ? { name: t.item.name, count: t.item.count, image: t.item.image, icon: t.item.icon ? <Icon icon={t.item.icon} className="size-4" /> : undefined } : undefined}
-              duration={t.duration || DEFAULT_MS}
+              duration={durationOf(t)}
               showDuration={t.showDuration !== false}
               pauseOnHover={false}
               iconAlign={t.alignIcon === "top" ? "start" : t.alignIcon === "center" ? "center" : undefined}
