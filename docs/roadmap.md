@@ -75,6 +75,11 @@ and target motion; `edge-sheet` first-frame fix; `nuikit.cfg` comments without s
 | Item | State |
 |---|---|
 | Remove `key-hint`, `task-progress`, `nui-toaster` (moved to 0.9.0); move the site's demos to `key-prompt`, `meter`/`progress-ring`, `notice` first | **PR #108**: site moved; the three removed; `<NuiNotices />` (notice wired to `NUI.notify()`) replaces `NuiToaster` in the template and blocks |
+| `menu-row` on `nk-indicator` | **PR #113**: `MenuRowList` slides one indicator to the active row; the template menu and the /components garage on it |
+| Slab delta colours in light themes | **PR #120**: `--world-success` / `--world-destructive` (tokens 1.3, lane C files, flagged); the slab delta uses them |
+| Blocks adopting `useNuiContext` for money | **PR #121**: `useFormatMoney()` in `money`; bank, shop, vehicle-shop, garage, death-screen, hud-minimal format money text with it |
+| Notice stack as smooth as the sheets | **PR #127**: `notice` slides in from its stack's edge and out (`leaving`) by default (`slide={false}`: a fade); `Notices` keeps exits drawn; nuikit's notify renderer uses it (its frame.css block gone) |
+| kit.css identity keywords on any ancestor | Already in kit.css (`:is(html, *)[data-nk-…]`). **PR #128**: `motionLevel(el)` reads the nearest `[data-nk-motion]`; countdown and notice's time line follow |
 
 ## Lane F: Showcase
 
