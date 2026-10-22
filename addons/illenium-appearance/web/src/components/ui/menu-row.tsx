@@ -4,7 +4,7 @@
 import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react"
-import { installPressFeel, useStaggerGroup, useStaggerItem } from "nuikit-core/react"
+import { installPressFeel, useIndicator, useStaggerGroup, useStaggerItem } from "nuikit-core/react"
 import { Slot } from "radix-ui"
 
 import { cn } from "@/lib/utils"
@@ -39,6 +39,11 @@ import { meterColor, type MeterTone } from "@/components/ui/meter"
  * game CEF keeps :hover matched after Lua takes focus away, so a UI that drives the highlight
  * itself sets it and hover changes nothing (background, text, icon, chevron). `readOnly` is a row
  * you read, not use: no highlight, no click, not dimmed.
+ *
+ * `MenuRowList` holds the rows of a list whose active row the UI drives (keys, Lua): one
+ * `nk-indicator` slides to it instead of each row marking itself (design v2 §5A):
+ *
+ *   <MenuRowList active={i}>{items.map((it, j) => <MenuRow key={it.id} active={j === i}>…</MenuRow>)}</MenuRowList>
  *
  * `MenuRowDetails` is the card beside a hovered row: an image and metadata (label, value,
  * progress, each bar in its own colour). `menuMetadata()` reads ox_lib's metadata shapes into its
@@ -462,9 +467,34 @@ function MenuRowDetails({
   )
 }
 
+/**
+ * The rows of one list, with the identity's indicator (bar, fill or outline) sliding to the
+ * `active` row (an index among the rows; null or undefined hides it). The rows change state
+ * instantly; only the indicator moves, and a held key jumps instead of trailing. `indicator={false}`
+ * leaves each active row marking itself.
+ */
+function MenuRowList({
+  active,
+  indicator = true,
+  className,
+  children,
+  ...props
+}: React.ComponentProps<"div"> & { active?: number | null; indicator?: boolean }) {
+  const list = React.useRef<HTMLDivElement>(null)
+  const marker = React.useRef<HTMLDivElement>(null)
+  useIndicator(list, marker, indicator ? active : null, "[data-slot=menu-row]")
+  return (
+    <div ref={list} data-slot="menu-row-list" className={cn("relative flex flex-col gap-0.5", className)} {...props}>
+      {indicator && <div ref={marker} aria-hidden data-slot="menu-row-indicator" className="nk-indicator" />}
+      {children}
+    </div>
+  )
+}
+
 export {
   MenuRow,
   MenuRowDetails,
+  MenuRowList,
   menuRowVariants,
   menuMetadata,
   menuRowColor,

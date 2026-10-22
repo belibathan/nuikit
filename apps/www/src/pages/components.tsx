@@ -44,7 +44,7 @@ import { Footer, Nav, SITE, ThemePicker } from "@/components/site";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { HudChip } from "@/components/ui/hud-chip";
-import { MenuRow, MenuRowDetails, menuMetadata } from "@/components/ui/menu-row";
+import { MenuRow, MenuRowDetails, MenuRowList, menuMetadata } from "@/components/ui/menu-row";
 import { Meter, meterColor } from "@/components/ui/meter";
 import { Panel, PanelBody, PanelFooter, PanelHeader } from "@/components/ui/panel";
 import { Separator } from "@/components/ui/separator";
@@ -584,18 +584,20 @@ function GaragePanel() {
     <Panel>
       <PanelHeader icon={<WarehouseIcon />} title="Garage" description="Legion Square" actions={<Badge variant="secondary">6 cars</Badge>} />
       <PanelBody scroll className="max-h-64">
-        {CARS.map((c, i) => (
-          <MenuRow
-            key={c.plate}
-            icon={<CarIcon />}
-            description={c.note}
-            meta={c.plate}
-            active={i === active}
-            onMouseEnter={() => setActive(i)}
-          >
-            {c.name}
-          </MenuRow>
-        ))}
+        <MenuRowList active={active}>
+          {CARS.map((c, i) => (
+            <MenuRow
+              key={c.plate}
+              icon={<CarIcon />}
+              description={c.note}
+              meta={c.plate}
+              active={i === active}
+              onMouseEnter={() => setActive(i)}
+            >
+              {c.name}
+            </MenuRow>
+          ))}
+        </MenuRowList>
       </PanelBody>
       <PanelFooter>
         <Button variant="outline" size="sm">

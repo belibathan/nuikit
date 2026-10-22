@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { KeyPrompt } from "@/components/ui/key-prompt";
 import { Kbd } from "@/components/ui/kbd";
-import { MenuRow } from "@/components/ui/menu-row";
+import { MenuRow, MenuRowList } from "@/components/ui/menu-row";
 import { Meter } from "@/components/ui/meter";
 import { NuiToaster } from "@/components/ui/nui-toaster";
 import { Panel, PanelBody, PanelFooter, PanelHeader } from "@/components/ui/panel";
@@ -103,20 +103,22 @@ function Menu({ keys }: { keys: boolean }) {
     <Panel>
       <PanelHeader title="Menu" description="Pick an action" />
       <PanelBody>
-        {actions.map((a, i) => (
-          <MenuRow
-            key={a.id}
-            icon={<a.icon />}
-            description={a.description}
-            meta={a.meta}
-            disabled={a.disabled}
-            active={i === active}
-            onMouseEnter={() => !a.disabled && setActive(i)}
-            onClick={() => void select(a)}
-          >
-            {a.label}
-          </MenuRow>
-        ))}
+        <MenuRowList active={active}>
+          {actions.map((a, i) => (
+            <MenuRow
+              key={a.id}
+              icon={<a.icon />}
+              description={a.description}
+              meta={a.meta}
+              disabled={a.disabled}
+              active={i === active}
+              onMouseEnter={() => !a.disabled && setActive(i)}
+              onClick={() => void select(a)}
+            >
+              {a.label}
+            </MenuRow>
+          ))}
+        </MenuRowList>
       </PanelBody>
       <PanelFooter className="nk-label">
         <Kbd>↑</Kbd>

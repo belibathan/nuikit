@@ -80,7 +80,7 @@
       "name": "menu-row",
       "type": "registry:ui",
       "title": "Menu Row",
-      "description": "The 40px action row: icon, label, description, a progress bar in any tone or colour, and a trailing meta, chevron, Kbd, checkbox or value stepper. Active, disabled and destructive. MenuRowDetails shows metadata with per-item bar colours.",
+      "description": "The 40px action row: icon, label, description, a progress bar in any tone or colour, and a trailing meta, chevron, Kbd, checkbox or value stepper. Active, disabled and destructive. MenuRowList slides one indicator to the active row. MenuRowDetails shows metadata with per-item bar colours.",
       "files": [
         {
           "path": "registry/nuikit/ui/menu-row.tsx",
