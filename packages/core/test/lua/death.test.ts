@@ -249,7 +249,7 @@ describe("systems/nuikit_death", () => {
         function CreateThread() end function Wait() end function IsPauseMenuActive() return false end
         function IsNuiFocused() return false end exports = setmetatable({}, { __call = function() end })
         LocalPlayer = { state = {} } function vec3(x, y, z) return { x = x, y = y, z = z } end`,
-      scripts: [PAUSE + "config.lua", "bridge.lua", "camera.lua", "controls.lua", PAUSE + "client/camera.lua", PAUSE + "client/map3d.lua", PAUSE + "client/focus.lua", PAUSE + "client/keys.lua", PAUSE + "client/main.lua"],
+      scripts: [PAUSE + "config.lua", "bridge.lua", "camera.lua", "controls.lua", PAUSE + "client/camera.lua", PAUSE + "client/map3d.lua", PAUSE + "client/focus.lua", PAUSE + "client/keys.lua", PAUSE + "client/settings.lua", PAUSE + "client/main.lua"],
     });
     await d.run(`LocalPlayer.state['qbx_medical:deathState'] = 2 LS = 100 Death.update()`);
     expect(await pause.run(`return NUI.getState('dead')`)).toBe("laststand");
