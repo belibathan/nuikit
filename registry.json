@@ -1766,6 +1766,47 @@
       }
     },
     {
+      "name": "npc-dialogue",
+      "type": "registry:block",
+      "title": "NPC dialogue",
+      "description": "Talking to an NPC: the speaker's name and role in a band at the bottom of the screen, the line typing itself out (all at once with reduced motion), and the replies as rows on the number keys, arrows and Enter; a locked reply shows why. The page sends only a choice id; the server holds the tree and decides. Protocol-agnostic.",
+      "files": [
+        {
+          "path": "registry/nuikit/blocks/npc-dialogue/npc-dialogue.tsx",
+          "type": "registry:component",
+          "target": "components/blocks/npc-dialogue/npc-dialogue.tsx"
+        },
+        {
+          "path": "registry/nuikit/blocks/npc-dialogue/nui.ts",
+          "type": "registry:lib",
+          "target": "components/blocks/npc-dialogue/nui.ts"
+        },
+        {
+          "path": "registry/nuikit/blocks/npc-dialogue/fixtures.ts",
+          "type": "registry:lib",
+          "target": "components/blocks/npc-dialogue/fixtures.ts"
+        }
+      ],
+      "dependencies": [
+        "lucide-react",
+        "nuikit-core"
+      ],
+      "registryDependencies": [
+        "https://nuikit.vercel.app/r/panel.json",
+        "https://nuikit.vercel.app/r/menu-row.json"
+      ],
+      "categories": [
+        "screens"
+      ],
+      "docs": "Mount <DialogueSurface /> in App.tsx. In Lua, open nk.surface(\"dialogue\", { layer = \"panel\", exclusive = true, escape = \"back\" }) with a DialogueData table, answer nk.on(\"dialogue:choose\") with { ok, error } and :update it with the next node or close it when the conversation ends. On the server, keep the tree and each player's current node, accept only ids that node offers, re-check requirements and distance, and apply actions all or nothing. A whole resource with the Lua: npm create nuikit@latest my-dialogue -- -t npc-dialogue",
+      "meta": {
+        "since": "unreleased",
+        "status": "experimental",
+        "replaces": [],
+        "removeIn": null
+      }
+    },
+    {
       "name": "utils",
       "type": "registry:lib",
       "title": "cn (kit-aware)",

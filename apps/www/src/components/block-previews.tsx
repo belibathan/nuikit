@@ -27,6 +27,8 @@ import { Scoreboard } from "@/blocks/scoreboard/scoreboard";
 import { scoreboardFixtures } from "@/blocks/scoreboard/fixtures";
 import { Settings } from "@/blocks/settings/settings";
 import { settingsFixtures } from "@/blocks/settings/fixtures";
+import { dialogueFixtures } from "@/blocks/npc-dialogue/fixtures";
+import { NpcDialogue } from "@/blocks/npc-dialogue/npc-dialogue";
 
 export interface BlockPreview {
   name: string;
@@ -200,6 +202,16 @@ export const BLOCKS: BlockPreview[] = [
       Spawn: () => <CharacterSelect data={characterSelectFixtures.three} defaultStep="spawn" autoFocus={false} />,
       Create: () => <CharacterSelect data={characterSelectFixtures.first} defaultStep="create" autoFocus={false} />,
       Delete: () => <CharacterSelect data={characterSelectFixtures.three} defaultSelected="RCH20811" confirming autoFocus={false} />,
+    },
+  },
+  {
+    name: "npc-dialogue",
+    title: "NPC dialogue",
+    description: "Talking to an NPC: who is speaking, the line typing itself out, and replies on the number keys; a locked reply says why. The server holds the tree and checks every choice.",
+    states: {
+      Greeting: () => <NpcDialogue data={dialogueFixtures.bartender} onChoose={async () => ({ ok: true })} />,
+      Locked: () => <NpcDialogue data={dialogueFixtures.desk} onChoose={async () => ({ ok: true })} />,
+      "Long line": () => <NpcDialogue data={dialogueFixtures.long} onChoose={async () => ({ ok: true })} />,
     },
   },
 ];

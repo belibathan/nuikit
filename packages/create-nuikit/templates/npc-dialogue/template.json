@@ -1,0 +1,9 @@
+{
+  "block": "npc-dialogue",
+  "title": "NPC dialogue",
+  "description": "Talk to an NPC: the speaker, a line that types itself out, and choices on number keys; the tree, requirements and rewards live on the server (needs OneSync)",
+  "next": [
+    "walk up to Marty at The Hen House and press E (or /{{name}})",
+    "write your own trees in Config.dialogues and place the NPCs in Config.npcs; fill in Config.job, Config.money and Config.items for your framework; needs OneSync"
+  ]
+}
