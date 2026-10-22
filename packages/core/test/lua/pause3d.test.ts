@@ -259,6 +259,24 @@ describe("systems/nuikit_pause: the bigger menu", () => {
     expect(await pause.run(`return Map3D.project({ x = 0, y = 0, z = 0, d = 100, pitch = -30, heading = 0 }, 16 / 9, 0, -5000, 0)`)).toBeFalsy();
   });
 
+  it("sends the pins only when they change, at most Config.map.pinsHz a second when set", async () => {
+    client = await createClient();
+    const pause = await client.start("nuikit_pause", { before: natives, scripts });
+    await pause.run(press);
+    await pause.call("pause:view", { view: "map" });
+    const count = async () => (await pause.run<number>(`return 0`), pause.messages.filter((m) => m.action === "pause:map:pins").length);
+    await pause.run(`Map3D.publish(50000, 1)`);
+    const base = await count();
+    await pause.run(`Map3D.publish(50001, 1)`);
+    expect(await count()).toBe(base); // still: nothing new
+    await pause.run(`local cur = Map3D.state() cur.d = cur.d + 50 Map3D.publish(50002, 1)`);
+    expect(await count()).toBe(base + 1); // moved: sent the same frame
+    await pause.run(`Config.map.pinsHz = 10 local cur = Map3D.state() cur.d = cur.d + 50 Map3D.publish(50050, 1)`);
+    expect(await count()).toBe(base + 1); // capped: 48 ms since the last
+    await pause.run(`Map3D.publish(50102, 1)`);
+    expect(await count()).toBe(base + 2);
+  });
+
   it("sends every blip on GTA's big map while the map is open, and their positions with the pins", async () => {
     client = await createClient();
     const pause = await client.start("nuikit_pause", { before: natives, scripts });

@@ -83,3 +83,4 @@ and target motion; `edge-sheet` first-frame fix; `nuikit.cfg` comments without s
 | Item | State |
 |---|---|
 | ox_inventory item and weapon pictures through the resolver | Open |
+| 3D map `perf/frame-send`: pins only when they move (`Config.map.pinsHz` caps them), panel text 5 Hz | PR #106; not seen in game |

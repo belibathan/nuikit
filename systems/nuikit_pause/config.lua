@@ -46,6 +46,7 @@ Config = {
     startAtWaypoint = true,  -- open above the waypoint when one is set
     hidePeds = true,         -- hide crowds, traffic and players while looking (this player only)
     timecycle = '',          -- optional timecycle modifier while the map is open ('' = none)
+    pinsHz = 0,              -- cap marker updates per second while the camera moves (0 = every frame)
   },
 
   -- While ox_inventory is open, frame the player between the inventory panels (needs the nuikit
