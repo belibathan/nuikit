@@ -320,19 +320,19 @@ html[data-nk-motion="reduced"] .ox-indicator {
 }
 
 /*
- * Foundation 2 (docs/design/foundation.md, tokens 1.4): sheets and dialogs are menu surfaces and
- * read the menu material. Every value falls back to today's panel, so nothing changes until a theme
- * (or the 1.4 kit) sets --nk-material-menu-*; blur only applies when one is set.
+ * Foundation 2 (docs/tokens.md, Foundation 1.4): sheets and dialogs are menu surfaces. Their fill
+ * reads --nk-menu-alpha (the menu material's opacity, lifted by legibility "day"); radius, the top
+ * edge highlight and the backdrop blur read --nk-material-menu-*. The fallbacks are today's panel.
  */
 [data-slot="edge-sheet"],
 [data-slot="dialog-content"],
 [data-slot="alert-dialog-content"],
 .ox-list {
-  --nk-panel-bg: rgba(var(--surface-rgb, var(--popover-rgb)), calc(var(--surface-a, var(--popover-a, 1)) * var(--nk-material-menu-opacity, var(--nk-surface-opacity, 0.96))));
+  --nk-panel-bg: rgba(var(--surface-rgb, var(--popover-rgb)), calc(var(--surface-a, var(--popover-a, 1)) * var(--nk-menu-alpha, var(--nk-surface-opacity, 0.96))));
   --nk-panel-radius: var(--nk-material-menu-radius, var(--radius));
-  --nk-panel-border: var(--nk-material-menu-edge, var(--border));
-  -webkit-backdrop-filter: blur(var(--nk-material-menu-blur));
-  backdrop-filter: blur(var(--nk-material-menu-blur));
+  --nk-panel-edge: inset 0 1px 0 0 rgba(var(--popover-foreground-rgb), var(--nk-material-menu-edge, var(--nk-surface-edge, 0.06)));
+  -webkit-backdrop-filter: blur(var(--nk-material-menu-blur, 0px));
+  backdrop-filter: blur(var(--nk-material-menu-blur, 0px));
 }
 
 /*
@@ -346,5 +346,5 @@ html[data-nk-motion="reduced"] .ox-indicator {
 }
 [data-slot="dialog-content"],
 [data-slot="alert-dialog-content"] {
-  z-index: var(--nk-z-dialog, 50) !important;
+  z-index: var(--nk-z-dialog, 60) !important;
 }

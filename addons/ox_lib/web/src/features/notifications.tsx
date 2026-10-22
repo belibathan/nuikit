@@ -4,7 +4,7 @@ import { Notice, NoticeStack, noticePosition, type NoticePosition, type NoticeSt
 import { Icon } from "@/lib/icon";
 import { Markdown } from "@/lib/markdown";
 import { notifyIntent } from "@/lib/intents";
-import { tokenMs, useLever } from "@/lib/levers";
+import { tokenMs, tokenRaw, useLever } from "@/lib/levers";
 import { useOx } from "@/lib/nui";
 import { openIntent } from "@/lib/route";
 import { cn } from "@/lib/utils";
@@ -48,10 +48,15 @@ const DEFAULT_MS = 3000;
 const SEVERITY: Record<NoticeStatus, string> = { info: "info", success: "success", warning: "warning", error: "danger" };
 
 /**
- * How long a toast stays: the script's own duration first (ox_lib's protocol), then the theme's
- * duration for its severity, then ox's 3 s. Without the tokens it is exactly ox's timing.
+ * How long a toast stays: the script's own duration first (ox_lib's protocol), then the ox_lib lever
+ * --ox-notify-ms (ox's 3 s unless the server sets it). `--ox-notify-ms: severity` hands it to the
+ * behaviour tokens instead (--nk-notify-ms-{info,success,warning,danger}, 5 s each in the stock kit).
  */
-const durationOf = (data: NotifyData) => data.duration || tokenMs(`nk-notify-ms-${SEVERITY[status(data.type)]}`, DEFAULT_MS);
+const durationOf = (data: NotifyData) => {
+  if (data.duration) return data.duration;
+  if (tokenRaw("ox-notify-ms") === "severity") return tokenMs(`nk-notify-ms-${SEVERITY[status(data.type)]}`, DEFAULT_MS);
+  return tokenMs("ox-notify-ms", DEFAULT_MS);
+};
 
 /** ox_lib's rule: success, error and warning pick their look; anything else (inform, info, warn…) is info. */
 const status = (type?: string): NoticeStatus => (type === "success" || type === "error" || type === "warning" ? type : "info");

@@ -41,7 +41,7 @@ applies them live). Unset, each is the stock nuikit look.
   --ox-notify-position: top-right; /* where a notify without a position goes: top-left/-center/-right, center-left/-right, bottom-… */
   --ox-clear-zones: 1; /* 1: notify stacks move clear of other UIs' screen zones (the HUD) instead of the fixed --ox-notify-top-right */
   --ox-context-side: left; /* the context menu's screen edge (right by default) */
-  --nk-notify-ms-info: 4000; /* how long a notify without its own duration stays, by severity: -info, -success, -warning, -danger (ox's 3000 otherwise) */
+  --ox-notify-ms: 3000; /* how long a notify without its own duration stays (ox's 3000); "severity" uses --nk-notify-ms-{info,success,warning,danger} instead */
   --ox-textui-position: left-center; /* where a text UI without a position goes (right-center by default) */
   --ox-density: 1;   /* this screen's density (the identity's --nk-density otherwise; 0.875 stock) */
   --ox-motion: 0;    /* 0 turns this screen's motion off; another number scales it */
