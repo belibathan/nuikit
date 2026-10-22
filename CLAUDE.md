@@ -6,20 +6,22 @@ intents (notify, menu, input…) and swappable, themed renderers draw them; adap
 scripts in without rewrites; bespoke screens join through the protocol. The kit (stock shadcn/ui, one
 TweakCN theme) is the default look and the showcase, not the product. Design: `docs/architecture.md`.
 
-**How we work (Oct 21, 2026: speed first):**
-- Every step ships something useful on its own. Small commits, so a cut-off loses little.
-- **Ship, then iterate.** The owner judges in game and spots defects faster than any review. No screenshot
-  sweeps, no identity × resolution matrices, no before/after sheets, no visual "proof" passes. Don't ask
-  permission for anything a backup covers.
-- **The only gate:** `pnpm typecheck`, the build, `pnpm sync` clean, and a POST-log diff for an override's
-  main flow (its protocol must not break). Tests where there is real logic. Nothing else gates shipping.
-- Test a mechanism before building on it only when it's genuinely unknown (a native's behaviour, a
-  process model); then one quick spike, not a study.
-- Be honest about what's unproven, in one line, and move on.
-- Premium means subtle: motion, rows not cards, sheets, text that rolls, cameras that don't spin. See
-  `docs/design.md` and `docs/releases/v0.7.0-handoff.md` §2–§4.
+**How we work (Oct 22, 2026: fast, many agents, one direction):**
+- **Nobody runs this in production yet. Ship, break, fix.** Many agents moving the same way beat one agent
+  deliberating. A wrong default costs one commit to change; a stalled agent costs the day.
+- **Don't ask, decide by the design rule:** everything hierarchical (identity → tokens → component → resource
+  config → player prefs), the best option as the default, the alternative behind a config key, token or prop.
+  Never hard-code what a server might want different. The owner is asked only about money, accounts, publishing,
+  secrets or a real server. Log new calls in one row of `docs/next/decisions.md`.
+- **Spend few tokens:** read only what your item touches (grep, then line ranges), no screenshot sweeps, matrices,
+  long reports, before/after sheets or speculative refactors. Small PRs, one item each; open it, start the next.
+- **The only gate:** `pnpm typecheck`, the build, `pnpm sync` clean, `nuikit check` (CI), and a POST-log diff for
+  an override's main flow (its protocol must not break). Tests where there is real logic. Nothing else gates shipping.
+- A spike only for a genuine unknown (a native's behaviour, a process model), then build.
+- One line on what's unproven ("not seen in game"), and move on. The owner tests in game at checkpoints.
+- Premium means subtle: motion, rows not cards, sheets, text that rolls, cameras that don't spin (`docs/design.md`).
 
-Read this before changing anything, then `docs/design.md`.
+Roles, lanes and file ownership: `docs/next/dispatch.md`. Read this, then only what your item needs.
 
 Current release: **0.8.0** (npm `nuikit-core`, `vite-plugin-nuikit`, `create-nuikit`; GitHub release
 `v0.8.0` with `nuikit.zip` and the per-framework zips). Direction: `docs/vision.md` (read first), then `docs/architecture.md`.
