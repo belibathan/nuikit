@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils"
 import { Countdown, formatCountdown } from "@/components/ui/countdown"
 import { HudChip } from "@/components/ui/hud-chip"
 import { KeyPrompt } from "@/components/ui/key-prompt"
-import { formatMoney } from "@/components/ui/money"
+import { useFormatMoney } from "@/components/ui/money"
 
 import type { DeathScreenData } from "./nui"
 
@@ -144,6 +144,7 @@ function DeathScreenKeys({ data, hold }: { data: DeathScreenData; hold?: number 
  * stays at its first value, so React leaves the painting alone).
  */
 function RespawnPrompt({ keyName, cost, hold = 0 }: { keyName: string; cost?: number; hold?: number }) {
+  const fmt = useFormatMoney()
   const ref = React.useRef<HTMLDivElement>(null)
   useFollow(
     "death:hold",
@@ -160,7 +161,7 @@ function RespawnPrompt({ keyName, cost, hold = 0 }: { keyName: string; cost?: nu
       size="sm"
       keys={keyName}
       label="Hold to respawn"
-      description={cost ? formatMoney(cost) : undefined}
+      description={cost ? fmt(cost) : undefined}
       hold={0}
       progress={hold}
     />
