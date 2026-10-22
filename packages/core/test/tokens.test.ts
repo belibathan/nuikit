@@ -325,6 +325,8 @@ describe("player preferences", () => {
     expect(normalizePrefs({ scale: 3 }).scale).toBe(1.25);
     expect(normalizePrefs({ scale: 0.1 }).scale).toBe(0.85);
     expect(normalizePrefs({ scale: "x" as unknown as number }).scale).toBe(1);
+    expect(normalizePrefs({ density: 2 }).density).toBe(1.2);
+    expect(withPrefs({ ...vars, "nk-density": "0.875" }, { density: 1.2 })["nk-density"]).toBe("1.05");
   });
   it("multiply the theme's scale and turn motion off", () => {
     const out = withPrefs({ ...vars, "nk-scale": "1.1" }, { scale: 1.2, reducedMotion: true });

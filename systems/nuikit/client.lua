@@ -23,16 +23,26 @@
 ]]
 
 local KVP = 'nuikit:prefs'
-local DEFAULTS = { scale = 1.0, reducedMotion = false, highContrast = false }
+local DEFAULTS = { scale = 1.0, reducedMotion = false, highContrast = false, density = 1.0, identity = false, treatment = false }
+
+local function lookName(v)
+  return type(v) == 'string' and v:match('^[%w_-]+$') and #v <= 32 and v:lower() or nil
+end
 
 local function normalize(p)
   p = type(p) == 'table' and p or {}
   local scale = tonumber(p.scale) or 1.0
   if scale < 0.85 then scale = 0.85 elseif scale > 1.25 then scale = 1.25 end
+  local density = tonumber(p.density) or 1.0
+  if density < 0.85 then density = 0.85 elseif density > 1.2 then density = 1.2 end
   return {
     scale = math.floor(scale * 100 + 0.5) / 100,
     reducedMotion = p.reducedMotion == true,
     highContrast = p.highContrast == true,
+    density = math.floor(density * 100 + 0.5) / 100,
+    -- the player's look (Look settings); applied when the server's allow-list has it (GlobalState.nuikitLooks)
+    identity = lookName(p.identity),
+    treatment = lookName(p.treatment),
   }
 end
 
@@ -48,7 +58,20 @@ local theme = nil -- the last GlobalState.nuikitTheme seen (state bag handler, o
 
 --- The server's compiled theme, read when a page asks: at this script's start GlobalState may not
 --- have replicated yet, and the change handler only fires for later changes (0.7.0 test, F4).
+local looks = nil -- the last GlobalState.nuikitLooks seen
+
+--- The player's look, when the server allows it, else nil (the server theme).
+local function look()
+  if not prefs.identity and not prefs.treatment then return nil end
+  if looks == nil then looks = GlobalState.nuikitLooks end
+  local themes = type(looks) == 'table' and looks.themes
+  local t = type(themes) == 'table' and themes[(prefs.identity or 'server') .. '|' .. (prefs.treatment or '')]
+  return type(t) == 'table' and t.vars and t or nil
+end
+
 local function compiled()
+  local own = look()
+  if own then return own end
   if type(theme) == 'table' and theme.vars then return theme end
   local value = GlobalState.nuikitTheme
   if type(value) == 'table' and value.vars then theme = value end
@@ -60,7 +83,8 @@ end
 local function themeHash()
   local c = compiled()
   local t = c and c.hash or 'css'
-  return ('%s:%s:%s:%s'):format(t, prefs.scale, prefs.reducedMotion and 1 or 0, prefs.highContrast and 1 or 0)
+  local h = ('%s:%s:%s:%s'):format(t, prefs.scale, prefs.reducedMotion and 1 or 0, prefs.highContrast and 1 or 0)
+  return prefs.density ~= 1 and (h .. ':d' .. prefs.density) or h
 end
 
 -- Screen zones (nuikit.lua's NUI.zone): the local player's bag, counted so a change answers the long-poll.
@@ -131,6 +155,10 @@ AddStateBagChangeHandler('nuikitTheme', 'global', function(_, _, value)
   theme = value
   flush()
 end)
+AddStateBagChangeHandler('nuikitLooks', 'global', function(_, _, value)
+  looks = value
+  flush()
+end)
 
 -- A UI published or dropped a zone: waiting override pages get the new set. The handler runs before
 -- the value lands in the bag, so keep the value it was given.
@@ -151,7 +179,7 @@ end
 --- The player's UI preferences.
 ---@return { scale: number, reducedMotion: boolean, highContrast: boolean }
 local function getPrefs()
-  return { scale = prefs.scale, reducedMotion = prefs.reducedMotion, highContrast = prefs.highContrast }
+  return { scale = prefs.scale, reducedMotion = prefs.reducedMotion, highContrast = prefs.highContrast, density = prefs.density, identity = prefs.identity, treatment = prefs.treatment }
 end
 
 --- Change some preferences (missing keys keep their value). Saved and applied to every UI.
@@ -159,6 +187,7 @@ end
 local function setPrefs(patch)
   if type(patch) ~= 'table' then return getPrefs() end
   local merged = getPrefs()
+  -- false clears a look (nil can't travel in an event's table)
   for k, v in pairs(patch) do merged[k] = v end
   prefs = normalize(merged)
   SetResourceKvp(KVP, json.encode(prefs))
@@ -168,6 +197,85 @@ end
 
 exports('getPrefs', getPrefs)
 exports('setPrefs', setPrefs)
+
+-- ───────────────────────────────── Look settings (nk.settings, docs/settings.md)
+-- The player's own look inside what the server allows: pause › Settings renders this section like any other.
+-- The prefs stay the one source: the section is re-stored from them, a draft previews without saving, save
+-- (or cancel, reset) writes them back.
+local applying = false
+
+local function title(s) return s:sub(1, 1):upper() .. s:sub(2) end
+
+local function lookRows()
+  local allowed = type(looks) == 'table' and looks or GlobalState.nuikitLooks
+  allowed = type(allowed) == 'table' and allowed or {}
+  local rows = {}
+  if type(allowed.identities) == 'table' and #allowed.identities > 0 then
+    local options = { { value = '', label = 'Server theme' } }
+    for _, id in ipairs(allowed.identities) do options[#options + 1] = { value = id, label = title(id) } end
+    rows[#rows + 1] = { key = 'identity', label = 'Look', options = options, default = '' }
+  end
+  if type(allowed.treatments) == 'table' and #allowed.treatments > 0 then
+    local options = { { value = '', label = 'As designed' } }
+    for _, t in ipairs(allowed.treatments) do options[#options + 1] = { value = t, label = title(t) } end
+    rows[#rows + 1] = { key = 'treatment', label = 'Style', options = options, default = '' }
+  end
+  rows[#rows + 1] = { key = 'scale', label = 'UI size', range = { 0.85, 1.25, 0.05 }, default = 1.0 }
+  rows[#rows + 1] = { key = 'density', label = 'Spacing', range = { 0.85, 1.2, 0.05 }, default = 1.0 }
+  rows[#rows + 1] = { key = 'reducedMotion', label = 'Reduce motion', toggle = true, default = false }
+  rows[#rows + 1] = { key = 'highContrast', label = 'High contrast', toggle = true, default = false }
+  return rows
+end
+
+local function lookValues()
+  return { identity = prefs.identity or '', treatment = prefs.treatment or '', scale = prefs.scale, density = prefs.density, reducedMotion = prefs.reducedMotion, highContrast = prefs.highContrast }
+end
+
+local lookRowsKey = nil
+
+local function storeLook()
+  if applying or not (NUI and NUI.settings and NUI.settings.store) then return end
+  local res, values, rows = GetCurrentResourceName(), lookValues(), lookRows()
+  -- the section already shows these prefs (its own draft or save echoing back): leave it, its draft included
+  local shown = NUI.settings.values(res)
+  local key = json.encode(rows)
+  if shown and key == lookRowsKey then
+    local same = true
+    for k, v in pairs(values) do if shown[k] ~= v then same = false break end end
+    if same then return end
+  end
+  lookRowsKey = key
+  NUI.settings.store(res, { label = 'Look', version = 1, rows = rows }, values)
+end
+
+AddEventHandler('nuikit:settings:changed', function(res, values, _, draft)
+  if res ~= GetCurrentResourceName() or type(values) ~= 'table' then return end
+  local patch = {
+    identity = values.identity ~= '' and values.identity or false,
+    treatment = values.treatment ~= '' and values.treatment or false,
+    scale = values.scale, density = values.density, reducedMotion = values.reducedMotion, highContrast = values.highContrast,
+  }
+  applying = true
+  if draft then
+    -- a preview: every UI repaints, nothing saved
+    local merged = getPrefs()
+    for k, v in pairs(patch) do merged[k] = v end
+    prefs = normalize(merged)
+    broadcast()
+  else
+    setPrefs(patch)
+  end
+  applying = false
+end)
+
+-- prefs changed elsewhere (/nuikit scale, exports.nuikit:setPrefs): the section follows
+AddEventHandler('nuikit:prefs:changed', function(_, to)
+  if to == nil then storeLook() end
+end)
+AddStateBagChangeHandler('nuikitLooks', 'global', function()
+  SetTimeout(0, storeLook)
+end)
+SetTimeout(0, storeLook)
 
 AddEventHandler('nuikit:prefs:set', function(patch) setPrefs(patch) end)
 AddEventHandler('nuikit:prefs:request', function(from) TriggerEvent('nuikit:prefs:changed', prefs, from) end)

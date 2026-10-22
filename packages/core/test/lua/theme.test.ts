@@ -62,16 +62,16 @@ describe.each([
     client = await createClient({ syncEvents });
     const hud = await client.start("hud", { before: started(["nuikit", "hud"]) });
     const nuikit = await client.start("nuikit", { before: started(["nuikit", "hud"]), scripts: [NUIKIT_CLIENT] });
-    expect(last(hud, "nuikit:prefs")).toEqual({ scale: 1, reducedMotion: false, highContrast: false });
+    expect(last(hud, "nuikit:prefs")).toEqual({ scale: 1, reducedMotion: false, highContrast: false, density: 1 });
 
     await hud.run(`NUI.prefs.set({ scale = 1.1, reducedMotion = true })`);
-    expect(last(hud, "nuikit:prefs")).toEqual({ scale: 1.1, reducedMotion: true, highContrast: false });
-    expect(JSON.parse(nuikit.kvp.get("nuikit:prefs")!)).toEqual({ scale: 1.1, reducedMotion: true, highContrast: false });
+    expect(last(hud, "nuikit:prefs")).toEqual({ scale: 1.1, reducedMotion: true, highContrast: false, density: 1 });
+    expect(JSON.parse(nuikit.kvp.get("nuikit:prefs")!)).toEqual({ scale: 1.1, reducedMotion: true, highContrast: false, density: 1 });
     expect(await hud.run(`return NUI.prefs.get().scale`)).toBe(1.1);
 
     // a resource that starts later asks and gets them
     const late = await client.start("late", { before: started(["nuikit", "hud", "late"]) });
-    expect(last(late, "nuikit:prefs")).toEqual({ scale: 1.1, reducedMotion: true, highContrast: false });
+    expect(last(late, "nuikit:prefs")).toEqual({ scale: 1.1, reducedMotion: true, highContrast: false, density: 1 });
     late.messages.length = 0;
     await late.call("nuikit:ready");
     expect(last(late, "nuikit:prefs")).toMatchObject({ scale: 1.1 });
@@ -85,7 +85,7 @@ describe.each([
       scripts: [NUIKIT_CLIENT],
     });
     const hud = await client.start("hud", { before: started(["nuikit", "hud"]) });
-    expect(last(hud, "nuikit:prefs")).toEqual({ scale: 1.2, reducedMotion: false, highContrast: true });
+    expect(last(hud, "nuikit:prefs")).toEqual({ scale: 1.2, reducedMotion: false, highContrast: true, density: 1 });
     await hud.run(`NUI.prefs.set({ scale = 4 })`);
     expect(last(hud, "nuikit:prefs").scale).toBe(1.25);
     await hud.run(`NUI.prefs.set({ scale = 0.1 })`);
@@ -96,7 +96,7 @@ describe.each([
     client = await createClient({ syncEvents });
     const ui = await client.start("ui", { before: started(["ui"]) });
     await ui.run(`NUI.prefs.set({ highContrast = true })`);
-    expect(last(ui, "nuikit:prefs")).toEqual({ scale: 1, reducedMotion: false, highContrast: true });
+    expect(last(ui, "nuikit:prefs")).toEqual({ scale: 1, reducedMotion: false, highContrast: true, density: 1 });
     expect(JSON.parse(ui.kvp.get("nuikit:prefs")!)).toMatchObject({ highContrast: true });
   });
 
@@ -109,10 +109,10 @@ describe.each([
     cmd(0, ["motion", "off"]);
     cmd(0, ["contrast", "on"]);
     await nuikit.run(`return 1`); // flush queued events
-    expect(last(hud, "nuikit:prefs")).toEqual({ scale: 1.15, reducedMotion: true, highContrast: true });
+    expect(last(hud, "nuikit:prefs")).toEqual({ scale: 1.15, reducedMotion: true, highContrast: true, density: 1 });
     cmd(0, ["reset"]);
     await nuikit.run(`return 1`);
-    expect(last(hud, "nuikit:prefs")).toEqual({ scale: 1, reducedMotion: false, highContrast: false });
+    expect(last(hud, "nuikit:prefs")).toEqual({ scale: 1, reducedMotion: false, highContrast: false, density: 1 });
     cmd(0, ["theme", "reload"]);
     expect(nuikit.serverEvents).toEqual([{ event: "nuikit:command", args: [["theme", "reload"]] }]);
   });
@@ -129,7 +129,7 @@ describe("theme callback for override pages (systems/nuikit/client.lua)", () => 
     const nuikit = await start();
     const r = await nuikit.call("theme", {});
     expect(r.theme.vars.primary).toBe("rgb(0, 255, 0)");
-    expect(r.prefs).toEqual({ scale: 1, reducedMotion: false, highContrast: false });
+    expect(r.prefs).toEqual({ scale: 1, reducedMotion: false, highContrast: false, density: 1 });
     expect(r.themeHash).toMatch(/^[0-9a-f]{8}:1(\.0)?:0:0$/);
     expect(r.hash).toBe(`${r.themeHash}:z0`);
     expect(r.css).toBeUndefined();

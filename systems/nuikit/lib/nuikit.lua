@@ -549,7 +549,30 @@ end)
 --- nuikit UI applies it, so the whole server shares one look. Falls back to the raw theme.css from an
 --- older nuikit resource. Returns nil without the nuikit resource.
 ---@return { version: integer, mode: string, hash: string, vars: table<string, string>, imports: string[] }|string|nil
+local currentPrefs -- defined below (the player's prefs pick their look)
+
+--- The key of the look in use ('studio|slab'), or nil for the server theme: the player's prefs (identity,
+--- treatment) when GlobalState.nuikitLooks (nuikit_identities / nuikit_treatments) has them. Keys are compared,
+--- not tables: every GlobalState read is a fresh copy.
+function NUI.lookKey()
+  local looks = GlobalState and GlobalState.nuikitLooks
+  if type(looks) ~= 'table' or type(looks.themes) ~= 'table' or not currentPrefs then return nil end
+  local p = currentPrefs()
+  if not p.identity and not p.treatment then return nil end
+  local key = (p.identity or 'server') .. '|' .. (p.treatment or '')
+  local theme = looks.themes[key]
+  return type(theme) == 'table' and theme.vars and key or nil
+end
+
+--- The player's look (a compiled theme), or nil for the server theme.
+function NUI.look()
+  local key = NUI.lookKey()
+  return key and GlobalState.nuikitLooks.themes[key] or nil
+end
+
 function NUI.theme()
+  local look = NUI.look()
+  if look then return look end
   local compiled = GlobalState and GlobalState.nuikitTheme
   if type(compiled) == 'table' and compiled.vars then return compiled end
   if GetResourceState('nuikit') ~= 'started' then return nil end
@@ -561,7 +584,15 @@ end
 -- `nuikit theme reload` on the server: repaint this UI live.
 if AddStateBagChangeHandler then
   AddStateBagChangeHandler('nuikitTheme', 'global', function(_, _, value)
-    if type(value) == 'table' and value.vars then NUI.send('nuikit:theme', value) end
+    -- a player on their own look keeps it; the server theme reaches everyone else
+    if type(value) == 'table' and value.vars and not NUI.lookKey() then NUI.send('nuikit:theme', value) end
+  end)
+  -- the allowed looks were recompiled (theme reload): the handler runs before the value lands, so wait a tick
+  AddStateBagChangeHandler('nuikitLooks', 'global', function()
+    SetTimeout(0, function()
+      local t = NUI.theme()
+      if type(t) == 'table' then NUI.send('nuikit:theme', t) end
+    end)
   end)
 end
 
@@ -569,15 +600,32 @@ end
 ---@field scale number          0.85–1.25, multiplies the theme's --nk-scale
 ---@field reducedMotion boolean no animations or transitions
 ---@field highContrast boolean  maximum-contrast text and borders
+---@field density number        0.85–1.2, multiplies the theme's --nk-density
+---@field identity string|nil   a look from nuikit_identities (nil: the server theme)
+---@field treatment string|nil  a treatment from nuikit_treatments over that look
 
 local PREFS_KVP = 'nuikit:prefs'
 local prefs = nil -- last known, from the nuikit resource (or this resource's KVP without it)
+
+local function lookName(v)
+  return type(v) == 'string' and v:match('^[%w_-]+$') and #v <= 32 and v:lower() or nil
+end
 
 local function normalizePrefs(p)
   p = type(p) == 'table' and p or {}
   local scale = tonumber(p.scale) or 1.0
   if scale < 0.85 then scale = 0.85 elseif scale > 1.25 then scale = 1.25 end
-  return { scale = math.floor(scale * 100 + 0.5) / 100, reducedMotion = p.reducedMotion == true, highContrast = p.highContrast == true }
+  local density = tonumber(p.density) or 1.0
+  if density < 0.85 then density = 0.85 elseif density > 1.2 then density = 1.2 end
+  return {
+    scale = math.floor(scale * 100 + 0.5) / 100,
+    reducedMotion = p.reducedMotion == true,
+    highContrast = p.highContrast == true,
+    density = math.floor(density * 100 + 0.5) / 100,
+    -- a look (Settings › Look); the server's allow-list decides whether it applies
+    identity = lookName(p.identity),
+    treatment = lookName(p.treatment),
+  }
 end
 
 local function nuikitRunning()
@@ -599,8 +647,9 @@ NUI.prefs = {}
 ---@return NuiPrefs
 function NUI.prefs.get()
   local p = prefs or localPrefs()
-  return { scale = p.scale, reducedMotion = p.reducedMotion, highContrast = p.highContrast }
+  return { scale = p.scale, reducedMotion = p.reducedMotion, highContrast = p.highContrast, density = p.density, identity = p.identity, treatment = p.treatment }
 end
+currentPrefs = NUI.prefs.get
 
 --- Change preferences (missing keys keep their value). Saved, and applied to every nuikit UI.
 ---@param patch { scale?: number, reducedMotion?: boolean, highContrast?: boolean }
@@ -613,16 +662,24 @@ function NUI.prefs.set(patch)
   -- no nuikit resource: this resource's UI only
   local merged = NUI.prefs.get()
   for k, v in pairs(patch) do merged[k] = v end
+  local before = NUI.lookKey()
   prefs = normalizePrefs(merged)
   if SetResourceKvp then SetResourceKvp(PREFS_KVP, json.encode(prefs)) end
   NUI.send('nuikit:prefs', prefs)
+  if NUI.lookKey() ~= before then NUI.send('nuikit:theme', NUI.theme()) end
 end
 
 -- From the nuikit resource: to everyone on a change, or to one resource answering its request.
 AddEventHandler('nuikit:prefs:changed', function(p, to)
   if to and to ~= RESOURCE then return end
+  local before = NUI.lookKey()
   prefs = normalizePrefs(p)
   NUI.send('nuikit:prefs', prefs)
+  -- a new look repaints this UI live, like a theme reload
+  if NUI.lookKey() ~= before then
+    local t = NUI.theme()
+    if t then NUI.send('nuikit:theme', t) end
+  end
 end)
 TriggerEvent('nuikit:prefs:request', RESOURCE)
 
