@@ -250,17 +250,54 @@ NUI.on('hud:ready', function()
   return { ok = true }
 end)
 
-if Config.playerUnits ~= false then
-  -- /hud units mph|kmh: the player's own speed unit, kept between sessions
-  RegisterCommand('hud', function(_, args)
-    if args[1] == 'units' and (args[2] == 'mph' or args[2] == 'kmh') then
-      SetResourceKvp(KVP, args[2])
-      units = args[2]
-      if current ~= 0 then enter(current, kind) end
-      Location.resend()
-      sync()
-    end
-  end, false)
+-- ───────────────────────────────── the player's layout (/hud edit)
+
+-- /hud edit: a panel over the HUD where each part is dragged to a corner, onto the map or off, and
+-- reordered; the HUD behind it follows the draft live (and so do the notices: the zones). Save keeps
+-- it for this player (KVP, per preset), Escape or Cancel drops it. Config.playerLayout = false turns
+-- the editor and the saved layouts off.
+local editor = NUI.surface('hud-edit', { layer = 'panel', input = 'full' })
+Layout.loadPlayer()
+
+--- After the placement changed: the radar to its corner (when the map moved), the page's settings.
+local function relayout()
+  if Minimap and Minimap.relayout then Minimap.relayout() end
+  sync()
 end
+
+NUI.on('hud:parts:save', function(body)
+  if Config.playerLayout == false or not Layout.savePlayer(body and body.parts) then return { ok = false } end
+  editor:close()
+  relayout()
+  return { ok = true }
+end)
+
+NUI.on('hud:parts:reset', function()
+  if Config.playerLayout == false then return { ok = false } end
+  Layout.resetPlayer()
+  editor:close()
+  relayout()
+  return { ok = true }
+end)
+
+-- /hud units mph|kmh (Config.playerUnits) · /hud edit · /hud reset (Config.playerLayout) ·
+-- /hud export: the layout on screen as the `parts = { … }` block of config.lua, in F8
+RegisterCommand('hud', function(_, args)
+  local cmd = args[1]
+  if cmd == 'units' and Config.playerUnits ~= false and (args[2] == 'mph' or args[2] == 'kmh') then
+    SetResourceKvp(KVP, args[2])
+    units = args[2]
+    if current ~= 0 then enter(current, kind) end
+    Location.resend()
+    sync()
+  elseif cmd == 'edit' and Config.playerLayout ~= false then
+    editor:open({ parts = Layout.parts(), preset = Layout.preset(), base = Layout.PARTS[Layout.preset()] })
+  elseif cmd == 'reset' and Config.playerLayout ~= false then
+    Layout.resetPlayer()
+    relayout()
+  elseif cmd == 'export' then
+    print(('[nuikit_hud] your layout as config.lua (layout = \'%s\'):\n%s'):format(Layout.preset(), Layout.export(Layout.parts())))
+  end
+end, false)
 
 sync()
