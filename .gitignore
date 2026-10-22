@@ -18,3 +18,4 @@ bench/components/.out
 bench/identity/shots/*/
 bench/motion/.out
 !bench/coverage/
+bench/visual/out/

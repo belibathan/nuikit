@@ -10,6 +10,8 @@
     "typecheck": "pnpm -r --filter \"./packages/**\" --filter www --filter \"./systems/**\" typecheck",
     "registry:build": "shadcn build -o apps/www/public/r",
     "proof": "pnpm --filter cef-proof proof",
+    "visual": "node bench/visual/run.mjs",
+    "visual:update": "node bench/visual/run.mjs --update",
     "changeset": "changeset",
     "build:systems": "pnpm -r --filter \"./systems/**\" --filter \"./addons/**\" build",
     "pack:systems": "node scripts/pack-systems.mjs",
@@ -21,6 +23,7 @@
     "@typescript-eslint/parser": "8.71.1",
     "eslint": "9.39.5",
     "eslint-plugin-better-tailwindcss": "4.8.0",
+    "playwright-core": "1.56.0",
     "shadcn": "^4.22.0",
     "tailwind-merge": "^3.0.0",
     "typescript": "^5.6.3"
