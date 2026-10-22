@@ -68,5 +68,7 @@ declare module "nuikit-core" {
     "character:play": { req: { id: string; spawn?: string }; res: CharacterAnswer }
     "character:create": { req: NewCharacter; res: CharacterAnswer }
     "character:delete": { req: { id: string }; res: CharacterAnswer }
+    /** The spawn point the player is looking at (undefined: none). Fire and forget; Lua moves the camera. */
+    "character:preview": { req: { spawn?: string }; res: { ok: boolean } }
   }
 }
