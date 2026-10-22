@@ -451,7 +451,7 @@
   --nk-material-overlay-radius: 0.625rem;
   --nk-material-overlay-edge: 0.06;
   --nk-material-overlay-texture: none;
-  --nk-backdrop: on;
+  --nk-backdrop: off;
   --nk-slash: none;
   --nk-legibility: auto;
   --nk-legibility-lift: 0.5;
@@ -672,7 +672,7 @@
   --nk-material-overlay-radius: 0.625rem;
   --nk-material-overlay-edge: 0.06;
   --nk-material-overlay-texture: none;
-  --nk-backdrop: on;
+  --nk-backdrop: off;
   --nk-slash: none;
   --nk-legibility: auto;
   --nk-legibility-lift: 0.5;
@@ -2164,16 +2164,16 @@ html[data-nk-legibility="auto"][data-nk-daytime] {
   --nk-hue-glow: 0;
 }
 
-/* Backdrop filters (tokens 1.4, --nk-backdrop, default on: the owner's pause, death and sheet blur, seen right in
-   game). A surface sets --nk-backdrop-filter (never backdrop-filter itself), so a server whose clients draw
-   backdrop-filter as a black box over the game turns every one off with --nk-backdrop: off. The property
-   doesn't inherit, so it stays on the element that set it. Applied unless html[data-nk-backdrop="off"], so a
-   page blurs before its theme arrives too. */
+/* Backdrop filters (tokens 1.4, --nk-backdrop, default off). In game, FiveM's NUI draws backdrop-filter as a
+   black box over the game (seen on the pause menu, Oct 22), and even blur(0px) costs a filter pass, so it is opt-in:
+   the world blur behind the pause menu is GTA's own (TriggerScreenblurFadeIn). A surface sets --nk-backdrop-filter
+   (never backdrop-filter itself); only html[data-nk-backdrop="on"] applies it (a browser preview, or a client that
+   draws it right). The property doesn't inherit, so it stays on the element that set it. */
 @property --nk-backdrop-filter {
   syntax: "*";
   inherits: false;
 }
-html:not([data-nk-backdrop="off"]) * {
+html[data-nk-backdrop="on"] * {
   /* nuikit-ignore cef/backdrop-filter: the one place, behind --nk-backdrop */
   -webkit-backdrop-filter: var(--nk-backdrop-filter);
   /* nuikit-ignore cef/backdrop-filter: the one place, behind --nk-backdrop */

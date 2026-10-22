@@ -313,7 +313,7 @@ export const FOUNDATION_TOKENS: readonly TokenSpec[] = [
     f14(`nk-material-${ctx}-edge`, "number", `Inner top highlight of ${what} (alpha)`, "nk-surface-edge", { range: [0, 0.3] }),
     f14(`nk-material-${ctx}-texture`, "keyword", `Texture over ${what}`, "none", { values: ["none", "scanlines"] }),
   ]),
-  f14("nk-backdrop", "keyword", "Backdrop filters (blur behind materials, the death screen's desaturation): on applies each surface's --nk-backdrop-filter (seen right in game). off for clients whose NUI draws them as black boxes over the game", "on", { values: ["on", "off"] }),
+  f14("nk-backdrop", "keyword", "Backdrop filters (blur behind materials, the death screen's desaturation): off by default, because FiveM's NUI draws backdrop-filter as a black box over the game; on applies each surface's --nk-backdrop-filter (browser previews, clients that draw it right)", "off", { values: ["on", "off"] }),
   f14("nk-slash", "keyword", "A decorative diagonal cut on menus, at most once per full-screen moment", "none", { values: ["none", "cut"] }),
   f14("nk-legibility", "keyword", "night: as designed. day: surfaces and hairlines lifted for a bright sky (not a light theme). auto: day while the game clock says so (html[data-nk-daytime], set by the HUD)", "auto", { values: ["auto", "night", "day"] }),
   f14("nk-legibility-lift", "number", "How far day closes the gap to opaque (0 none, 1 fully opaque)", "0.5", { range: [0, 1] }),
