@@ -7,7 +7,7 @@ import { CircleCheckIcon, CircleXIcon, InfoIcon, PackageIcon, TriangleAlertIcon,
 import { flipFrom, motionLevel, token, tokenMs } from "nuikit-core/motion"
 import { Stagger, useNuiEvent, useStaggerGroup, useStaggerItem } from "nuikit-core/react"
 
-import { cn, nkVariant, type NkVariantProps } from "@/lib/utils"
+import { cn, nkLevel, nkState, nkVariant, type NkVariantProps } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 
 /**
@@ -380,6 +380,7 @@ function Notice({
       data-status={status}
       data-leaving={leaving || undefined}
       data-paused={frozen || undefined}
+      data-state={nkState({ alert: status === "error", focus: held })}
       role={status === "error" ? "alert" : "status"}
       className={cn(
         noticeVariants({ size, iconAlign: iconAlign ?? (title && description ? "start" : "center") }),
@@ -405,6 +406,8 @@ function Notice({
         onBlur?.(e)
       }}
       {...props}
+      // the level contract: the time left (1 → 0); the time line drains on the compositor from here
+      style={{ ...nkLevel(timed ? 1 - Math.min(elapsed, duration) / duration : 1), ...props.style }}
     >
       {iconEl !== null && iconEl !== false && (
         <span

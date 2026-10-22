@@ -4,7 +4,7 @@
 import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
 
-import { cn, nkVariant, type NkVariantProps } from "@/lib/utils"
+import { cn, nkConfirm, nkLevel, nkState, nkVariant, type NkVariantProps } from "@/lib/utils"
 import { Kbd, KbdGroup } from "@/components/ui/kbd"
 
 /**
@@ -178,6 +178,7 @@ function KeyPrompt({
   disabled = false,
   listen = false,
   onConfirm,
+  style,
   density,
   shape,
   motion,
@@ -185,12 +186,23 @@ function KeyPrompt({
 }: NkVariantProps & KeyPromptProps) {
   const list = (typeof keys === "string" ? [keys] : [...keys]).filter((k) => k !== "")
   const slab = (surface ?? "slab") === "slab"
+  const root = React.useRef<HTMLDivElement>(null)
   const line = React.useRef<HTMLSpanElement>(null)
-  const internal = useHold(hold, onConfirm, (n) => {
+  const confirm = () => {
+    nkConfirm(root.current)
+    onConfirm?.()
+  }
+  const internal = useHold(hold, onConfirm && confirm, (n) => {
     if (line.current) line.current.style.transform = `scaleX(${n})`
+    root.current?.style.setProperty("--level", n.toFixed(3))
   })
   const controlled = progress !== undefined
   const p = controlled ? holdProgress(progress, 1) : 0
+  // a hold Lua drives pops when it fills
+  const full = controlled && p >= 1
+  React.useEffect(() => {
+    if (full) nkConfirm(root.current)
+  }, [full])
   const holding = controlled ? p > 0 : internal.holding
   const interactive = !!onConfirm && !disabled
   const bind = typeof listen === "string" ? listen : listen ? list[0] : undefined
@@ -238,8 +250,11 @@ function KeyPrompt({
       tabIndex={interactive ? 0 : undefined}
       aria-disabled={disabled || undefined}
       aria-keyshortcuts={list.length ? list.join("+") : undefined}
+      ref={root}
       {...nkVariant({ density, shape, motion })}
       data-slot="key-prompt"
+      data-state={nkState({ disabled, hold: holding, focus: active })}
+      style={{ ...nkLevel(p), ...style }}
       data-surface-variant={surface ?? "slab"}
       data-active={active || undefined}
       data-disabled={disabled || undefined}

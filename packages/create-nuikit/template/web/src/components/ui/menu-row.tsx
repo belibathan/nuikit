@@ -6,7 +6,7 @@ import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react"
 import { installPressFeel, useIndicator, useStaggerGroup, useStaggerItem } from "nuikit-core/react"
 import { Slot } from "radix-ui"
 
-import { cn, nkVariant, type NkVariantProps } from "@/lib/utils"
+import { cn, nkConfirm, nkState, nkVariant, type NkVariantProps } from "@/lib/utils"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Kbd } from "@/components/ui/kbd"
 import { Progress } from "@/components/ui/progress"
@@ -117,6 +117,8 @@ type MenuRowProps = Omit<React.ComponentProps<"button">, "value" | "inert"> &
     valueTone?: "default" | "muted"
     /** Shown, not used: no highlight, no click, not dimmed. */
     readOnly?: boolean
+    /** Needs attention (overdue, low, wanted): data-state="alert". */
+    alert?: boolean
     /** Hover changes nothing; the row is still clickable and focusable (see above). */
     inert?: boolean
     /** Trailing controls that act on the row (icon buttons). Keyboard-reachable; their events stay theirs. */
@@ -143,6 +145,7 @@ function MenuRow({
   onStep,
   valueTone = "default",
   readOnly = false,
+  alert = false,
   inert = false,
   actions,
   disabled,
@@ -261,6 +264,7 @@ function MenuRow({
     ...nkVariant({ density, shape, motion }),
     "data-slot": "menu-row",
     "data-active": (active && !readOnly) || undefined,
+    "data-state": nkState({ disabled, alert, focus: active && !readOnly }),
     "data-inert": inert || undefined,
     "data-readonly": readOnly || undefined,
     className: cn(menuRowVariants({ tone, hover: hovers }), readOnly && "focus-visible:bg-transparent", className),
@@ -280,6 +284,7 @@ function MenuRow({
         tabIndex={disabled || readOnly ? -1 : 0}
         onClick={(e) => {
           if (readOnly) return
+          nkConfirm(e.currentTarget)
           onClick?.(e as unknown as React.MouseEvent<HTMLButtonElement>)
           if (isCheck) toggle()
         }}
@@ -300,14 +305,29 @@ function MenuRow({
 
   if (asChild) {
     return (
-      <Slot.Root {...shared} aria-disabled={disabled || undefined} onClick={onClick} onKeyDown={onKeyDown} {...props} ref={ref}>
+      <Slot.Root
+        {...shared}
+        aria-disabled={disabled || undefined}
+        onClick={(e: React.MouseEvent<HTMLButtonElement>) => (nkConfirm(e.currentTarget), onClick?.(e))}
+        onKeyDown={onKeyDown}
+        {...props}
+        ref={ref}
+      >
         {children}
       </Slot.Root>
     )
   }
 
   return (
-    <button type="button" {...shared} disabled={disabled} onClick={onClick} onKeyDown={onKeyDown} {...props} ref={ref as React.Ref<HTMLButtonElement>}>
+    <button
+      type="button"
+      {...shared}
+      disabled={disabled}
+      onClick={(e) => (nkConfirm(e.currentTarget), onClick?.(e))}
+      onKeyDown={onKeyDown}
+      {...props}
+      ref={ref as React.Ref<HTMLButtonElement>}
+    >
       {label}
     </button>
   )

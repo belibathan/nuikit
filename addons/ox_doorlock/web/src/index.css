@@ -861,9 +861,13 @@
  * A utility removes the earlier stock classes that set what it paints (colour and type),
  * never layout or shape. `@merge <family>` in the comment above a utility means one member per element: a later
  * one removes an earlier one.
+ *
+ * The component tokens below are declared on :root and on [data-nk-theme]: a subtree applyTheme painted
+ * (a stage, a host module) re-derives them from its own identity tokens.
  */
 
-:root {
+:root,
+[data-nk-theme] {
   /* ── scale: the kit's spacing step × --nk-density, type sizes from one base × --nk-type-ratio */
   --nk-space: calc(0.25rem * var(--nk-density, 0.875));
   --nk-ratio: var(--nk-type-ratio, 1.2);
@@ -2174,4 +2178,26 @@ html:not([data-nk-backdrop="off"]) * {
   -webkit-backdrop-filter: var(--nk-backdrop-filter);
   /* nuikit-ignore cef/backdrop-filter: the one place, behind --nk-backdrop */
   backdrop-filter: var(--nk-backdrop-filter);
+}
+
+/*
+ * States (Foundation 2): every interactive kit component draws one of rest / focus / hold / confirm /
+ * disabled / alert on data-state (nkState() in lib/utils). Components already style focus (the identity
+ * indicator), hold (the filling line) and disabled; here, what is the same for all of them: confirm is a
+ * short pop (--nk-confirm-scale over --nk-time-confirm, from nkConfirm()). A theme restyles any state with
+ * [data-state="…"]. Only these values: Radix uses data-state for open / closed / checked.
+ */
+[data-state="confirm"] {
+  animation: nk-confirm var(--nk-time-confirm, 160ms) var(--nk-ease-spring, cubic-bezier(0.34, 1.56, 0.64, 1));
+}
+@keyframes nk-confirm {
+  40% {
+    transform: scale(var(--nk-confirm-scale, 1.03));
+  }
+}
+:is(html, *)[data-nk-motion="reduced"] [data-state="confirm"],
+:is(html, *)[data-nk-motion="off"] [data-state="confirm"],
+[data-nk-motion="reduced"][data-state="confirm"],
+[data-nk-motion="off"][data-state="confirm"] {
+  animation: none;
 }

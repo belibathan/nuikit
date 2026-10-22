@@ -3,7 +3,7 @@
 
 import * as React from "react"
 
-import { cn } from "@/lib/utils"
+import { cn, nkLevel } from "@/lib/utils"
 import { NumberRoll } from "@/components/ui/text-roll"
 
 /**
@@ -225,13 +225,14 @@ function Root({ value, tone, shape, level, attach, icon, open = false, className
     <ChipCtx.Provider value={{ value, tone, style: chip, geo, setGeo, open, wide, setWide }}>
       <div
         data-slot="vital-chip"
+        data-hue={tone}
         data-shape={chip.shape}
         data-level={chip.level}
         data-attach={at}
         data-icon={chip.icon}
         data-open={open || undefined}
         className={cn("relative isolate inline-flex shrink-0", className)}
-        style={{ ...(tone ? ({ "--vital": `var(--vital-${tone})` } as React.CSSProperties) : null), ...style }}
+        style={{ ...nkLevel(value === undefined ? undefined : value / 100), ...(tone ? ({ "--vital": `var(--vital-${tone})` } as React.CSSProperties) : null), ...style }}
         {...props}
       >
         {children}
