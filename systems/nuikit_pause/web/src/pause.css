@@ -278,3 +278,25 @@
   margin-left: 0;
   margin-right: 0;
 }
+
+/* Page to page inside the sheet (views/sheet.tsx): deeper slides in from the right, back Home from the left,
+   over the sheets' ladder; reduced motion fades only, motion off is instant. */
+.pause-page {
+  --pause-page-x: 1.5rem;
+  animation: pause-page-in min(calc(var(--nk-time) * 1.8), 280ms) var(--nk-ease-out, cubic-bezier(0.16, 1, 0.3, 1)) both;
+}
+.pause-page[data-dir="back"] {
+  --pause-page-x: -1.5rem;
+}
+html[data-nk-motion="reduced"] .pause-page {
+  --pause-page-x: 0rem;
+}
+html[data-nk-motion="off"] .pause-page {
+  animation: none;
+}
+@keyframes pause-page-in {
+  from {
+    opacity: 0;
+    transform: translate3d(var(--pause-page-x), 0, 0);
+  }
+}
