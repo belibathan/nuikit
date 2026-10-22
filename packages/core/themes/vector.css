@@ -36,6 +36,7 @@
   --font-display: "Chakra Petch", "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
   --font-numeric: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --nk-treatment: plate;
   --nk-type-ratio: 1.2;
   --nk-weight-body: 400;
   --nk-weight-strong: 600;
