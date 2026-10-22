@@ -1,6 +1,6 @@
 import { fetchNui, Surface, useNuiState, usePlayer, useSurfaceOpen } from "nuikit-core/react";
 import { MinimapFrameView, useMinimap } from "./minimap";
-import { useEffect, useRef, type CSSProperties, type ReactNode } from "react";
+import { Fragment, useEffect, useRef, type CSSProperties, type ReactNode } from "react";
 import type { HudLayout, HudLocation, HudSettings, HudVehicle, HudWeapon, MinimapFrame, MinimapState } from "./nui";
 import { Ammo } from "./hud/ammo";
 import { Cluster } from "./hud/cluster";
@@ -8,6 +8,7 @@ import { layoutVars, stageLayout, useHudLayout, useViewport } from "./hud/layout
 import { CompassTape, LocationStrip } from "./hud/location";
 import { useHudLook, type HudLook } from "./hud/look";
 import { MapLocation, MapRing } from "./hud/map";
+import { CORNER_CLASS, CORNERS, cornerSide, placeParts, resolveParts } from "./hud/parts";
 import { VitalsRow } from "./hud/pills";
 import { Wallet } from "./hud/wallet";
 
@@ -126,10 +127,21 @@ function mapEdge(frame: MinimapFrame | null): "left" | "right" {
   return frame && frame.x + frame.w / 2 < 0.5 ? "left" : "right";
 }
 
+/** One stack per corner (Config.parts), on the side it belongs to; `bl` replaces the bottom-left stack's class. */
+function corners(groups: ReturnType<typeof placeParts>, side: "left" | "right", bl?: string) {
+  return CORNERS.filter((c) => cornerSide(c) === side && groups[c].length > 0).map((c) => (
+    <div key={c} data-slot="hud-corner" data-corner={c} className={c === "bottom-left" && bl ? bl : CORNER_CLASS[c]}>
+      {groups[c].map((p) => (
+        <Fragment key={p.name}>{p.el}</Fragment>
+      ))}
+    </div>
+  ));
+}
+
 /**
  * Compact (default, design v2 §4): one cluster per job. Top right the map with the compass on its
  * ring, the location and money under it; bottom left the vitals; bottom right the ammo over the
- * vehicle cluster. Nothing floats alone.
+ * vehicle cluster. Nothing floats alone. Config.parts moves any of them.
  */
 function Compact({ settings, vehicle, location, weapon, layout, frame, state, player, look, w, h }: { settings: HudSettings } & HudData & Placed) {
   const units = settings.units === "kmh" ? "kmh" : "mph";
@@ -139,7 +151,7 @@ function Compact({ settings, vehicle, location, weapon, layout, frame, state, pl
   const mapPlaced = !!frame && (state?.wanted ?? mapShown);
   const ring = mapShown && frame!.framed !== false && settings.frame !== false;
   // a map in the bottom-left corner (Config.minimap.style = 'stock', or a ring anchored there): the
-  // vitals sit beside its bottom edge instead of under it
+  // bottom-left stack sits beside its bottom edge instead of under it
   const besideMap = !!frame && mapPlaced && frame.x < 0.5 && frame.y > 0.5;
   const vars = layoutVars(layout ?? stageLayout(w, h), besideMap ? frame : null, w, h) as Record<string, string>;
   // the column (location, money) hangs under the map, or stands over it when the map is in a bottom
@@ -155,29 +167,33 @@ function Compact({ settings, vehicle, location, weapon, layout, frame, state, pl
     vars["--hud-col-w"] = `${(frame.w * w).toFixed(1)}px`;
   }
   const heading = state?.heading ?? 0;
+  const groups = placeParts(resolveParts("compact", settings.parts), {
+    location: settings.location !== false && location && <MapLocation location={location} units={units} waypoint={!ring} />,
+    wallet: <Wallet player={player} settings={settings} inline compact />,
+    vitals: <VitalsRow player={player} settings={settings} layout="compact" />,
+    ammo: settings.ammo !== false && <Ammo weapon={weapon} />,
+    vehicle: vehicle && <Cluster key={vehicle.kind ?? "car"} vehicle={{ ...OLD_SHAPE, ...vehicle }} settings={settings} look={look} compact anchored={false} />,
+  });
   // the column leaves with the map's edge; unplaced, it stands top right
   const columnSide = frame ? mapEdge(frame) : "right";
-  const columnEl = (
+  const columnEl = groups.map.length > 0 && (
     <div data-slot="hud-map-column" data-placed={!!frame || undefined} data-map={mapPlaced || undefined} className="hud-column" style={column}>
-      {settings.location !== false && location && <MapLocation location={location} units={units} waypoint={!ring} />}
-      <Wallet player={player} settings={settings} inline compact />
+      {groups.map.map((p) => (
+        <Fragment key={p.name}>{p.el}</Fragment>
+      ))}
     </div>
   );
+  const bl = besideMap ? "hud-beside-map hud-stack" : undefined;
   return (
     <div data-slot="hud" data-layout="compact" className="hud-root" data-shadow={look.shadow} style={vars as CSSProperties}>
       <Side side="map">{ring && <MapRing frame={frame!} start={heading} compass={settings.compass?.ring !== false} location={location} units={units} />}</Side>
       <Side side="left">
         {columnSide === "left" && columnEl}
-        <div className={besideMap ? "hud-beside-map" : "hud-anchor-bl"}>
-          <VitalsRow player={player} settings={settings} layout="compact" />
-        </div>
+        {corners(groups, "left", bl)}
       </Side>
       <Side side="right">
         {columnSide === "right" && columnEl}
-        <div className="hud-anchor-br hud-br-stack">
-          {settings.ammo !== false && <Ammo weapon={weapon} />}
-          {vehicle && <Cluster key={vehicle.kind ?? "car"} vehicle={{ ...OLD_SHAPE, ...vehicle }} settings={settings} look={look} compact anchored={false} />}
-        </div>
+        {corners(groups, "right")}
       </Side>
     </div>
   );
@@ -186,7 +202,7 @@ function Compact({ settings, vehicle, location, weapon, layout, frame, state, pl
 /**
  * Classic (the 0.6 layout). Everything is anchored to GTA's HUD area (client/layout.lua → CSS variables) and to the
  * minimap's real rectangle: bottom left the map, the location above it and the vitals beside it;
- * bottom right the vehicle; top right the wallet; top centre the heading strip.
+ * bottom right the vehicle; top right the wallet; top centre the heading strip. Config.parts moves any of them.
  */
 function Classic({ settings, vehicle, location, weapon, layout, frame, state, player, look, w, h }: { settings: HudSettings } & HudData & Placed) {
   const mapShown = !!frame && !!state?.visible;
@@ -199,37 +215,37 @@ function Classic({ settings, vehicle, location, weapon, layout, frame, state, pl
   const compass = settings.compass ?? {};
   const tape = compass.enabled !== false && (!!vehicle || compass.onFoot === true);
 
-  const strip = settings.location !== false && location && <LocationStrip location={location} units={units} heading start={heading} />;
+  const groups = placeParts(resolveParts("classic", settings.parts), {
+    location: settings.location !== false && location && <LocationStrip location={location} units={units} heading start={heading} />,
+    wallet: <Wallet player={player} settings={settings} inline />,
+    vitals: <VitalsRow player={player} settings={settings} layout="classic" />,
+    ammo: settings.ammo !== false && <Ammo weapon={weapon} />,
+    // defaults for a client that sends the 0.6 shape (speed, rpm, gear, fuel, engine, seatbelt)
+    vehicle: vehicle && <Cluster key={vehicle.kind ?? "car"} vehicle={{ ...OLD_SHAPE, ...vehicle }} settings={settings} look={look} anchored={false} />,
+  });
+  // on the map: the location above a bottom-left map, the rest beside it; elsewhere they join the
+  // bottom-left stack in their order
+  const onMap = groups.map;
+  const above = beside ? onMap.filter((p) => p.name === "location") : [];
+  const besideEls = beside ? onMap.filter((p) => p.name !== "location") : [];
+  if (!beside) groups["bottom-left"] = [...groups["bottom-left"], ...onMap].sort((a, b) => a.order - b.order);
 
   return (
     <div data-slot="hud" data-layout="classic" className="hud-root" data-shadow={look.shadow} style={vars}>
       <Side side="map">{mapShown && frame!.framed !== false && settings.frame !== false && <MinimapFrameView frame={frame!} state={state!} />}</Side>
       <Side side="left">
-        {beside ? (
-          <>
-            {strip && <div className="hud-above-map">{strip}</div>}
-            <div className="hud-beside-map">
-              <VitalsRow player={player} settings={settings} layout="classic" />
-            </div>
-          </>
-        ) : (
-          <div className="hud-anchor-bl hud-stack">
-            {strip}
-            <VitalsRow player={player} settings={settings} layout="classic" />
+        {above.length > 0 && <div className="hud-above-map">{above[0].el}</div>}
+        {besideEls.length > 0 && (
+          <div className="hud-beside-map hud-stack">
+            {besideEls.map((p) => (
+              <Fragment key={p.name}>{p.el}</Fragment>
+            ))}
           </div>
         )}
+        {corners(groups, "left")}
       </Side>
       <Side side="top">{tape && <CompassTape start={heading} />}</Side>
-      <Side side="right">
-        <div className="hud-anchor-tr hud-tr-stack">
-          <Wallet player={player} settings={settings} inline />
-          {settings.ammo !== false && <Ammo weapon={weapon} />}
-        </div>
-        {vehicle && (
-          // defaults for a client that sends the 0.6 shape (speed, rpm, gear, fuel, engine, seatbelt)
-          <Cluster key={vehicle.kind ?? "car"} vehicle={{ ...OLD_SHAPE, ...vehicle }} settings={settings} look={look} />
-        )}
-      </Side>
+      <Side side="right">{corners(groups, "right")}</Side>
     </div>
   );
 }

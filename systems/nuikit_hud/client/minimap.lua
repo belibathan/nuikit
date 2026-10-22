@@ -49,6 +49,7 @@ function Minimap.options()
   local p = PRESETS[preset]
   local o = { preset = preset }
   for k, v in pairs(p) do o[k] = v end
+  o.anchor = Layout.parts().map
   for _, k in ipairs({ 'shape', 'size', 'band', 'anchor' }) do
     if cfg[k] ~= nil then o[k] = cfg[k] end
   end

@@ -21,6 +21,58 @@ function Layout.preset()
   return 'compact'
 end
 
+--- Where each part goes in each preset (Config.parts puts any of them elsewhere). `at` is a corner
+--- ('top-left', 'top-right', 'bottom-left', 'bottom-right'), 'map' (compact: the column under or over
+--- the map; classic: the location above the map, the vitals beside it, both falling back to the
+--- bottom-left stack when the map isn't in that corner) or false (hidden). `order` is top to bottom
+--- within a corner. The map itself is the minimap's anchor.
+Layout.PARTS = {
+  compact = {
+    map = 'top-right',
+    location = { at = 'map', order = 1 },
+    wallet = { at = 'map', order = 2 },
+    vitals = { at = 'bottom-left', order = 1 },
+    ammo = { at = 'bottom-right', order = 1 },
+    vehicle = { at = 'bottom-right', order = 2 },
+  },
+  classic = {
+    map = 'bottom-left',
+    location = { at = 'map', order = 1 },
+    vitals = { at = 'map', order = 2 },
+    wallet = { at = 'top-right', order = 1 },
+    ammo = { at = 'top-right', order = 2 },
+    vehicle = { at = 'bottom-right', order = 1 },
+  },
+}
+
+local CORNERS = { ['top-left'] = true, ['top-right'] = true, ['bottom-left'] = true, ['bottom-right'] = true }
+
+--- The preset's placement with Config.parts on top. A part's value is a corner, 'map', false, or
+--- { at = …, order = … } (either key may be left out to keep the preset's).
+function Layout.parts()
+  local base = Layout.PARTS[Layout.preset()]
+  local over = type(Config.parts) == 'table' and Config.parts or {}
+  local out = {}
+  for name, p in pairs(base) do
+    if name == 'map' then
+      local v = over.map
+      out.map = CORNERS[v] and v or p
+    else
+      local v = over[name]
+      local at, order = p.at, p.order
+      if v == false then at = false
+      elseif type(v) == 'string' then at = v
+      elseif type(v) == 'table' then
+        if v.at ~= nil then at = v.at end
+        if type(v.order) == 'number' then order = v.order end
+      end
+      if at ~= false and at ~= 'map' and not CORNERS[at] then at = p.at end
+      out[name] = { at = at, order = order }
+    end
+  end
+  return out
+end
+
 --- 'game' or 'stage' (Config.area; 0.6 configs: Config.layout.source).
 function Layout.source()
   local l = Config.layout

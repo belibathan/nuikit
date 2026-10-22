@@ -26,6 +26,7 @@ local function settings()
   local preset = Layout.preset()
   return {
     layout = preset,
+    parts = Layout.parts(),
     ammo = Config.ammo ~= false,
     units = units,
     needs = Config.needs ~= false,
