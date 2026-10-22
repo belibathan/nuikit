@@ -136,9 +136,15 @@
   --nk-chip-fg: var(--hud-chip-fg);
   --nk-chip-track: var(--hud-track);
   display: flex;
-  align-items: center;
+  /* anchor-preserving growth (Foundation 2): a chip that grows (a pop, a taller identity) grows away
+     from the corner the row is anchored to, so its bottom edge stays put (top corners: its top) */
+  align-items: flex-end;
   gap: var(--hud-vchip-gap);
   text-shadow: none;
+}
+[data-corner^="top"] .hud-vitals-row,
+.hud-column .hud-vitals-row {
+  align-items: flex-start;
 }
 .hud-vitals-row[data-layout="classic"] {
   --vital-size: 2.5rem;
