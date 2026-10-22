@@ -18,7 +18,9 @@ export function DragPreview() {
   useLayoutEffect(() => {
     if (!drag) return;
     const place = () => {
-      if (ref.current) ref.current.style.transform = `translate3d(${pointer.x}px, ${pointer.y}px, 0) translate(-30%, -30%)`;
+      // centred on the cursor: it covers the slot it would land in, so the target's ring frames it instead of
+      // reading as a second tile beside it
+      if (ref.current) ref.current.style.transform = `translate3d(${pointer.x}px, ${pointer.y}px, 0) translate(-50%, -50%)`;
     };
     place();
     return onPointerMove(place);
