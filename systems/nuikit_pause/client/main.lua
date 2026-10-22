@@ -3,7 +3,8 @@
 -- the game's own frontend. Player data comes from bridge.lua; the player count from server/main.lua.
 
 local RESOURCE = GetCurrentResourceName()
-local ESC = 200          -- INPUT_FRONTEND_PAUSE_ALTERNATE (Esc). P is 199 and is left alone.
+local ESC = 200          -- INPUT_FRONTEND_PAUSE_ALTERNATE (Esc)
+local P_KEY = 199        -- INPUT_FRONTEND_PAUSE (P): left to GTA unless Config.map.takeP
 local QUIET_MS = 400     -- ignore Esc this long after a menu closes, so one press can't reopen it
 local BLUR_MS = 200.0
 
@@ -23,6 +24,7 @@ local enabled = {}
 for _, b in ipairs(Config.buttons or {}) do enabled[b] = true end
 
 local views = Config.views or {}
+local mapCfg = Config.map or {}
 
 --- Scripted cameras (the focus camera and the 3D map) only when the server allows them
 --- (Config.camera) and the player hasn't asked for reduced motion (NUI.prefs). Otherwise the menu is
@@ -76,6 +78,7 @@ local function payload()
     },
     preview = Focus.isActive(),
     places = places(),
+    takeP = mapCfg.takeP == true,
     pages = Config.pages or {},
   }
 end
@@ -98,19 +101,23 @@ function Pause.blocked()
 end
 
 ---@return boolean
-function Pause.open()
+---@param at? 'map' open straight on the 3D map (Back still goes Home); falls back to Home when the map is off
+function Pause.open(at)
   if pause:isOpen() or Pause.blocked() then return false end
   SetPauseMenuActive(false)
   view = "home"
+  local direct = at == "map" and views.map ~= false and Pause.cameras()
   -- The focus camera replaces the blur; without it the world's blur has to come from GTA (CEF
-  -- draws over the game).
-  local focused = views.preview ~= false and Pause.cameras() and Focus.start()
-  if not pause:open(payload()) then
+  -- draws over the game). Straight to the map: the map's camera lifts off from the game's instead.
+  local focused = not direct and views.preview ~= false and Pause.cameras() and Focus.start()
+  local data = payload()
+  if direct then data.view = "map" end
+  if not pause:open(data) then
     if focused then Focus.stop('instant') end
     return false
   end
   wasOpen = true
-  blur(not focused)
+  if direct then Pause.setView("map") else blur(not focused) end
   TriggerServerEvent('nuikit_pause:request')
   return true
 end
@@ -225,6 +232,14 @@ function Pause.tick()
     SetPauseMenuActive(false)
     Pause.open()
   end
+  -- Config.map.takeP: P opens the 3D map instead of GTA's pause map (a full replacement)
+  if mapCfg.takeP == true then
+    DisableControlAction(0, P_KEY, true)
+    if now >= quietUntil and IsDisabledControlJustPressed(0, P_KEY) then
+      SetPauseMenuActive(false)
+      Pause.open("map")
+    end
+  end
 end
 
 --- Close ours, then open one of the game's frontend menus.
@@ -305,6 +320,12 @@ end)
 exports('open', Pause.open)
 exports('close', Pause.close)
 exports('isOpen', Pause.isOpen)
+-- Straight to the 3D map (a radial menu entry, a phone app): exports.nuikit_pause:openMap()
+exports('openMap', function() return Pause.open('map') end)
+
+-- A key players can bind in FiveM's key settings (Config.map.key is the default, '' = unbound).
+RegisterCommand('nuikit_map', function() Pause.open('map') end, false)
+RegisterKeyMapping('nuikit_map', 'Open the map', 'keyboard', mapCfg.key or '')
 -- A resource that made a blip can give the map its real name (GTA can't read it back):
 --   exports.nuikit_pause:nameBlip(blip, 'Legion Square garage')
 exports('nameBlip', Map3D.nameBlip)

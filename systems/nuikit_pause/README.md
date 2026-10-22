@@ -17,7 +17,8 @@ Works on **Qbox**, **QBCore**, **ESX** or **standalone**: the player card comes 
 | | |
 |---|---|
 | Esc | Opens the menu. Esc again, or Resume, closes it. |
-| P | GTA's pause menu, untouched. |
+| P | GTA's pause menu, untouched (`Config.map.takeP = true`: P opens the 3D map instead). |
+| Open the map | A key players bind in FiveM's key settings (default `Config.map.key`, none); `exports.nuikit_pause:openMap()` from a radial menu or phone. |
 | Map | Opens GTA's map. Closing it brings this menu back (`returnToMenu`). |
 | Settings | GTA's settings page; closing it returns here. |
 | Key bindings | FiveM's key bindings page; closing it returns here. |

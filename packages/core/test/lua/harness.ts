@@ -50,6 +50,7 @@ export interface Resource {
   kvp: Map<string, string>;
   /** Commands it registered. */
   commands: Map<string, (source: number, args: string[]) => void>;
+  keyMappings: Map<string, string>;
   /** Server events it triggered. */
   serverEvents: { event: string; args: unknown[] }[];
   /** Like call, for callbacks that answer later: `done`/`result` fill in when cb runs. */
@@ -148,6 +149,7 @@ export async function createClient(options: { syncEvents?: boolean; onNuiMessage
         }),
       kvp: new Map(),
       commands: new Map(),
+      keyMappings: new Map(),
       serverEvents: [],
       exports: new Map(),
       callPending: (cbName, data = {}) => {
@@ -203,6 +205,10 @@ export async function createClient(options: { syncEvents?: boolean; onNuiMessage
     });
     g.set("RegisterCommand", (cmd: string, fn: any) => {
       res.commands.set(cmd, fn);
+    });
+    // key mappings: recorded, so a test can read the default key
+    g.set("RegisterKeyMapping", (cmd: string, _desc: string, _mapper: string, key: string) => {
+      res.keyMappings.set(cmd, key);
     });
     g.set("TriggerServerEvent", (event: string, ...args: unknown[]) => {
       res.serverEvents.push({ event, args: args.map(clone) });

@@ -47,6 +47,8 @@ export interface PauseData {
   pages?: PausePage[];
   /** Browser fixtures only: start on this view. */
   view?: PauseView;
+  /** P opens this map instead of GTA's (Config.map.takeP) */
+  takeP?: boolean;
 }
 
 /**
