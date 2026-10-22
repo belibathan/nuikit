@@ -50,7 +50,9 @@ function settings.normalize(row, value)
     return math.floor(n * 1e6 + 0.5) / 1e6
   else
     for _, o in ipairs(row.options) do
-      local v = type(o) == 'table' and o.value or o
+      -- not `and o.value or o`: an option whose value is false must still match
+      local v = o
+      if type(o) == 'table' then v = o.value end
       if v == value then return v end
     end
     return nil
