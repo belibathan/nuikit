@@ -41,3 +41,31 @@ send-on-change).
 
 Five cheap natives a frame is in the 0.01–0.02 ms range of resmon; A9's 0.05 ms was measured before the
 fix. Not seen in game: resmon `nuikit_pause` closed, Home open, map dragging decides.
+
+## World screen (`systems/nuikit_screen`)
+
+A screen costs in two places: the Lua frame that draws it, and the DUI, a browser tab that renders the page
+whether anyone looks at it or not.
+
+**Lua per frame** (`test/lua/screen.test.ts`, natives counted on `Screens.frame()`):
+
+| where the player is | natives per frame | loop |
+|---|---|---|
+| over 25 m from every screen (`Config.drawDistance`) | 2 (`PlayerPedId`, `GetEntityCoords`) | every 500 ms |
+| in range, one screen | 4: those 2 and `DrawSpritePoly` × 2 | every frame |
+| within reach (1.6 m) | + the help text (3) and `IsControlJustPressed` | every frame |
+| using it | + the cursor ray, `SendDuiMouseMove` and the control reads (about 15) | every frame |
+
+**The DUI page** (`perf.mjs`, headless Chrome, the terminal at its 1920x1080):
+
+| scenario | frames / 2 s | main ms/frame | longest task |
+|---|---|---|---|
+| terminal idle | 0 | 0 | 0.6 ms |
+| cursor moving over rows (a move every frame) | 125 | 1.38 | 7.2 ms |
+| click a row | 1 in 600 ms | 14 | 8.2 ms |
+
+Idle, the page draws nothing; a moving cursor costs the hover repaint. What headless can't show, and resmon /
+the F8 `profiler` decide in game: `DrawSpritePoly`'s GPU cost (two textured triangles, expected to be small),
+and the DUI's own process cost, which a DUI keeps paying out of range. Keep a page idle when nobody's near
+(no timers faster than the clock's 10 s; the terminal's is the only one), or remove the screen with
+`exports.nuikit_screen:remove(id)` and create it again when a player comes back.
