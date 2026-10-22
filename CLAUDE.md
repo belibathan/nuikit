@@ -14,9 +14,12 @@ TweakCN theme) is the default look and the showcase, not the product. Design: `d
   Never hard-code what a server might want different. The owner is asked only about money, accounts, publishing,
   secrets or a real server. Log new calls in one row of `docs/next/decisions.md`.
 - **Spend few tokens:** read only what your item touches (grep, then line ranges), no screenshot sweeps, matrices,
-  long reports, before/after sheets or speculative refactors. Small PRs, one item each; open it, start the next.
-- **The only gate:** `pnpm typecheck`, the build, `pnpm sync` clean, `nuikit check` (CI), and a POST-log diff for
-  an override's main flow (its protocol must not break). Tests where there is real logic. Nothing else gates shipping.
+  long reports, before/after sheets or speculative refactors.
+- **No PRs until servers run nuikit.** Lanes commit small to their own branch and push it; the lead merges into
+  `main` locally and pushes. CI runs on `main` after the fact; red means the next commit fixes it.
+- **The quick gate (about a minute):** `pnpm typecheck`, the build of what you touched, `pnpm sync` clean. Tests
+  where there is real logic. A POST-log diff only when an override changes what it POSTs (its protocol must not
+  break). Nothing else gates shipping.
 - A spike only for a genuine unknown (a native's behaviour, a process model), then build.
 - One line on what's unproven ("not seen in game"), and move on. The owner tests in game at checkpoints.
 - Premium means subtle: motion, rows not cards, sheets, text that rolls, cameras that don't spin (`docs/design.md`).
@@ -25,7 +28,7 @@ Roles, lanes and file ownership: `docs/next/dispatch.md`. Read this, then only w
 
 Current release: **0.8.0** (npm `nuikit-core`, `vite-plugin-nuikit`, `create-nuikit`; GitHub release
 `v0.8.0` with `nuikit.zip` and the per-framework zips). Direction: `docs/vision.md` (read first), then `docs/architecture.md`.
-**Status and what's next: `docs/roadmap.md`** (update your rows in every PR). Parallel agents: `docs/next/dispatch.md`
+**Status and what's next: `docs/roadmap.md`** (the lead keeps it). Parallel agents: `docs/next/dispatch.md`
 (lanes, file ownership, rules).
 
 ## Map

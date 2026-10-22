@@ -12,8 +12,9 @@ things **configurable** (see "The design rule") and move on. A wrong default cos
   Ask the owner only for money, accounts, publishing, secrets, or anything that touches a real server.
 - **Spend few tokens.** Read only the files your task touches; don't re-read the whole docs set per task. No
   screenshot sweeps, matrices, long reports or speculative refactors. Grep before reading; read ranges, not files.
-- **Small PRs, many of them.** One item per PR; open it and start the next item. A broken `main` is fixed by the
-  next PR, not prevented by a slower one.
+- **Small commits, no PRs.** One item per commit (or a few); push your branch and start the next item. The lead
+  merges branches into `main` locally. A broken `main` is fixed by the next commit, not prevented by a slower flow.
+  (PRs, required CI and reviews come back once real servers run nuikit.)
 - **Say what's unproven in one line** (usually "not seen in game") and move on.
 
 ## The design rule (settles design questions)
@@ -31,8 +32,8 @@ nuikit is a universal, open-source framework: great conventions, shortcuts and p
 
 | Role | Who | Does |
 |---|---|---|
-| Lead | the session on the owner's PC | Direction, the lane list, reviews and merges every PR, deploys to the owner's server, the in-game loop |
-| Lane sessions | one per lane (below), each in its own worktree | Execute their list, open PRs, never merge |
+| Lead | the session on the owner's PC | Direction, the lane list, merges lane branches into `main` locally (quick gate, push), keeps the roadmap, deploys to the owner's server, the in-game loop |
+| Lane sessions | one per lane (below), each in its own worktree | Execute their list on their own branch, push it, tell the lead; never touch `main` |
 | Thinkers | subagents a lane spawns (`Plan`, `architect`, `Explore`) | Design or research one question, return a short answer; never edit |
 | Executors | subagents a lane spawns for independent pieces | Implement one piece in the lane's files |
 
@@ -42,15 +43,18 @@ API shape); a spike beats a study.
 ## Every lane
 
 1. `CLAUDE.md`, then only the docs your item needs.
-2. Branch from `main` (or your previous unmerged PR's branch, said in the PR body). PR into `main`. Never push to
-   `main` or `next/*`; never merge, release or publish. Never touch the FiveM server.
-3. Stay in your files (table). A change elsewhere goes under "Requests" in your PR body; small, obviously safe edits
-   to shared files (a token, a kit utility) are fine when the item can't ship without them: say so in the PR.
-4. Gate: `pnpm typecheck`, the build of what you touched, `pnpm sync` clean, `nuikit check` (CI), tests where there's
-   logic, a POST-log diff for an override's main flow. Changeset for user-facing package changes.
-5. PR body: what changed (bullets), what needs an in-game check (3 lines max), Requests.
-6. Update only your lane's rows in `docs/roadmap.md`. Credit `@belibathan` only. Never print or commit secrets.
-7. Done or blocked: end your turn with PR links, the in-game checks, what's blocked. The lead picks it up.
+2. Work on your lane branch (`lane-<x>`); `git pull --rebase origin main` before you start an item. Commit small,
+   push your branch. Never push to `main` or `next/*`; never merge, release or publish. Never touch the FiveM server.
+3. Stay in your files (table). Small, obviously safe edits to shared files (a token, a kit utility) are fine when the
+   item can't ship without them: say so in the commit message.
+4. Quick gate before each push (about a minute): `pnpm typecheck` and the build of what you touched, `pnpm sync`
+   clean. Tests only where there's real logic. For an **override that changes what it POSTs** to its resource, also a
+   POST-log diff of its main flow (`bench/screens/run.mjs` + `diff.mjs`): that's the one change that breaks servers.
+   Full CI runs on `main` after the merge; if it goes red, the next commit fixes it.
+5. Don't edit `docs/roadmap.md` (the lead keeps it, per batch). Changeset for user-facing package changes. Credit
+   `@belibathan` only. Never print or commit secrets.
+6. Done or blocked: end your turn with your branch, what's in it (bullets), what needs an in-game check (3 lines),
+   what's blocked. The lead merges it.
 
 ## Lanes and files
 
