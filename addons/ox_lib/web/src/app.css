@@ -303,3 +303,18 @@ html[data-nk-motion="reduced"] .ox-indicator {
   transform-box: view-box;
   transform-origin: center;
 }
+
+/*
+ * The ×N bump (features/notifications.tsx): the same notice again re-enters in place: a short slide
+ * from half ox's distance and a lift from half opacity, so a repeat reads as "again", not as a new
+ * notice. --ox-notify-bump (0–1, default 1) scales it; 0 on :root in nuikit/theme.css turns it off.
+ */
+.ox-notify-bump {
+  animation: ox-notify-bump min(calc(var(--nk-time) * 1.6), 240ms) var(--nk-ease-out) both;
+}
+@keyframes ox-notify-bump {
+  from {
+    opacity: calc(1 - 0.5 * var(--ox-notify-bump, 1));
+    transform: translate(calc(var(--ox-bump-x, 0rem) * var(--ox-notify-bump, 1)), calc(var(--ox-bump-y, 0rem) * var(--ox-notify-bump, 1)));
+  }
+}
