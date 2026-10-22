@@ -1,5 +1,7 @@
 import { Mic } from "lucide-react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { Stagger, useStaggerItem } from "nuikit-core/react";
+import { flipFrom } from "nuikit-core/motion";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { Ctx, useCtx, type RadioCtx, type Tab } from "@/features/context";
 import { Handheld } from "@/features/radio";
 import { useAnchoredDrag, type Pos } from "@/lib/drag";
@@ -113,11 +115,12 @@ function RadioFrame({ shown }: { shown: boolean }) {
   return (
     <div
       data-radio=""
+      data-state={shown ? "open" : "closed"}
       className={cn("radio-frame pointer-events-auto absolute", !shown && "pointer-events-none opacity-0")}
       style={{
         right: pos.x,
         bottom: pos.y,
-        transform: `${shown ? "" : "translateY(120%) "}scale(${scaleOf(data.userData?.radioSizeMultiplier)})`,
+        transform: `translateY(var(--radio-off, 0%)) scale(${scaleOf(data.userData?.radioSizeMultiplier)})`,
         transformOrigin: "bottom right",
       }}
       onMouseDown={onMouseDown}
@@ -127,7 +130,8 @@ function RadioFrame({ shown }: { shown: boolean }) {
   );
 }
 
-/** Who's talking: shown even with the radio put away. */
+/** Who’s talking: shown even with the radio put away. Chips rise in one after another and fold out
+ *  (kept mounted until the exit ends); the others slide to their new places, like the notices. */
 function Overlay({ forced, draggable }: { forced: boolean; draggable: boolean }) {
   const { data, members, overlayOn, update } = useCtx();
   const mode = data.overlay ?? "default";
@@ -135,31 +139,87 @@ function Overlay({ forced, draggable }: { forced: boolean; draggable: boolean })
   const setPos = (p: Pos) => update((d) => ({ ...d, userData: { ...d.userData, playerlist: { ...d.userData?.playerlist, coords: p } } }));
   const onMouseDown = useAnchoredDrag({ enabled: draggable, fromTop: true, get: () => pos, set: setPos, onEnd: (p) => void post("updatePlayerListPosition", p) });
 
-  if (!overlayOn || mode === "never" || !data.onRadio) return null;
+  const on = overlayOn && mode !== "never" && !!data.onRadio;
   const all = forced || mode === "always";
-  const rows = Object.entries(members).filter(([, m]) => all || m.isTalking);
-  if (rows.length === 0 && !forced) return null;
+  const rows: [string, PlayerList[string] | null][] = on ? Object.entries(members).filter(([, m]) => all || m.isTalking) : [];
+  if (on && forced) rows.unshift(["@channel", null]);
+  const chips = useKeptThroughExit(rows, CHIP_EXIT_MS);
+
+  const box = useRef<HTMLDivElement>(null);
+  const places = useRef(new WeakMap<Element, [number, number]>());
+  useLayoutEffect(() => {
+    if (box.current) flipFrom(box.current.children as HTMLCollectionOf<HTMLElement>, places.current, "move");
+  });
+
+  if (chips.length === 0) return null;
 
   return (
     <div
+      ref={box}
       data-overlay=""
       className={cn("absolute flex max-w-[15vw] min-w-40 flex-col items-end gap-1", draggable ? "pointer-events-auto cursor-move" : "pointer-events-none")}
       style={{ right: pos.x, top: pos.y, transform: `scale(${scaleOf(data.userData?.overlaySizeMultiplier)})`, transformOrigin: "top right" }}
       onMouseDown={onMouseDown}
     >
-      {forced && <div className="nk-chip radio-lcd opacity-70">{data.channel} MHz</div>}
-      {rows.map(([id, m]) =>
-        m.isTalking ? (
-          <div key={id} className="nk-chip nk-chip-active nk-rise max-w-full">
-            <Mic className="size-3.5 shrink-0" />
-            <span className="truncate">{m.name}</span>
-          </div>
-        ) : (
-          <div key={id} className="nk-chip nk-rise max-w-full">
-            <span className="truncate opacity-70">{m.name}</span>
-          </div>
-        ),
-      )}
+      <Stagger budget={240}>
+        {chips.map(({ id, value: m, leaving }) =>
+          m === null ? (
+            <Chip key={id} on={!leaving} className="radio-lcd opacity-70">
+              {data.channel} MHz
+            </Chip>
+          ) : m.isTalking ? (
+            <Chip key={id} on={!leaving} className="nk-chip-active">
+              <Mic className="size-3.5 shrink-0" />
+              <span className="truncate">{m.name}</span>
+            </Chip>
+          ) : (
+            <Chip key={id} on={!leaving}>
+              <span className="truncate opacity-70">{m.name}</span>
+            </Chip>
+          ),
+        )}
+      </Stagger>
     </div>
   );
+}
+
+function Chip({ on, className, children }: { on: boolean; className?: string; children: ReactNode }) {
+  const ref = useStaggerItem<HTMLDivElement>(on, { appear: true, animate: "rise" });
+  return (
+    <div ref={ref} className={cn("nk-chip max-w-full", !on && "pointer-events-none", className)}>
+      {children}
+    </div>
+  );
+}
+
+/** Long enough for the last of a group to fold out: the exit (≤ 200ms) after the stagger budget. */
+const CHIP_EXIT_MS = 440;
+
+type Kept<T> = { id: string; value: T; leaving: boolean; since: number };
+
+/** The list as it was, plus what just left (leaving: true) until `ms` after it left, in place. */
+function useKeptThroughExit<T>(items: [string, T][], ms: number): Kept<T>[] {
+  const prev = useRef<Kept<T>[]>([]);
+  const [, tick] = useState(0);
+  const now = performance.now();
+  const live = new Map(items);
+  const out: Kept<T>[] = [];
+  for (const k of prev.current) {
+    if (live.has(k.id)) {
+      out.push({ id: k.id, value: live.get(k.id) as T, leaving: false, since: 0 });
+      live.delete(k.id);
+    } else if (!k.leaving) out.push({ ...k, leaving: true, since: now });
+    else if (now - k.since < ms) out.push(k);
+  }
+  for (const [id, value] of live) out.push({ id, value, leaving: false, since: 0 });
+  useLayoutEffect(() => {
+    prev.current = out;
+  });
+  const leaving = out.some((k) => k.leaving);
+  useEffect(() => {
+    if (!leaving) return;
+    const t = setTimeout(() => tick((n) => n + 1), ms);
+    return () => clearTimeout(t);
+  });
+  return out;
 }

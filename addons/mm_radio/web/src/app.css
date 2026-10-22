@@ -22,8 +22,18 @@ input {
 
 /* The handheld rises from below and drops away: the motion ladder (full-screen step), transform and
    opacity only; /nuikit motion off makes it instant. */
+/* the handheld stays where it is: slides up into place like the sheets, slides back down faster (× 1.4,
+   ≤ 200ms, easing in), always mounted. Reduced motion: a fade only. */
 .radio-frame {
   transition: transform min(calc(var(--nk-time) * 2.2), 360ms) var(--nk-ease-out), opacity var(--nk-time) var(--nk-ease-out);
+}
+.radio-frame[data-state="closed"] {
+  --radio-off: 120%;
+  transition-duration: min(calc(var(--nk-time) * 1.4), 200ms);
+  transition-timing-function: var(--nk-ease-in, ease-in);
+}
+:is(html, *)[data-nk-motion="reduced"] .radio-frame {
+  --radio-off: 0%;
 }
 
 /* channel lists: rows with a hairline between, drawn without taking layout (the pause menu's rows) */
