@@ -24,7 +24,29 @@
         "since": "0.5.0",
         "status": "stable",
         "replaces": [],
-        "removeIn": null
+        "removeIn": null,
+        "spec": {
+          "role": "The one floating surface: a menu, a form, a list on the game.",
+          "anatomy": [
+            "panel",
+            "panel-header (icon, title, description, actions)",
+            "panel-body (list | form)",
+            "panel-footer"
+          ],
+          "props": [
+            "size",
+            "selected",
+            "animate",
+            "density",
+            "shape",
+            "motion"
+          ],
+          "rules": [
+            "One primary action per panel.",
+            "Rows inside, not cards.",
+            "Positioned by anchors and zones, never absolute pixels."
+          ]
+        }
       }
     },
     {
@@ -50,7 +72,32 @@
         "since": "unreleased",
         "status": "experimental",
         "replaces": [],
-        "removeIn": null
+        "removeIn": null,
+        "spec": {
+          "role": "A sheet from a screen edge: an inventory side, a context menu.",
+          "anatomy": [
+            "edge-sheet (side)",
+            "column: header (title, description, actions)",
+            "edge (a level line)",
+            "body"
+          ],
+          "props": [
+            "open",
+            "side",
+            "modal",
+            "title",
+            "description",
+            "actions",
+            "density",
+            "shape",
+            "motion"
+          ],
+          "level": "the edge line: a fill such as weight (EdgeSheetEdge value, 0–100).",
+          "rules": [
+            "The game stays visible beside it.",
+            "Positioned on an edge, never centred with a transform."
+          ]
+        }
       }
     },
     {
@@ -103,7 +150,32 @@
         "since": "0.5.0",
         "status": "stable",
         "replaces": [],
-        "removeIn": null
+        "removeIn": null,
+        "spec": {
+          "role": "The action row every list is made of.",
+          "anatomy": [
+            "menu-row (icon | image, label, description, progress)",
+            "one trailing thing: meta | chevron | kbd | checkbox | stepper | actions",
+            "menu-row-list + menu-row-indicator (the sliding focus)"
+          ],
+          "props": [
+            "active",
+            "disabled",
+            "alert",
+            "readOnly",
+            "inert",
+            "tone",
+            "density",
+            "shape",
+            "motion"
+          ],
+          "level": "progress: the row's progress line (0–1 of its value).",
+          "rules": [
+            "States on data-state: rest, focus (active), confirm (on click), disabled, alert.",
+            "Hover is the accent; focus is the identity's indicator, never the hover colour.",
+            "A list the UI drives slides one indicator (MenuRowList)."
+          ]
+        }
       }
     },
     {
@@ -151,7 +223,37 @@
         "replaces": [
           "task-progress"
         ],
-        "removeIn": null
+        "removeIn": null,
+        "spec": {
+          "role": "A level on a bar: health, fuel, weight, a timed action.",
+          "anatomy": [
+            "meter (label row: icon, label, value text)",
+            "track",
+            "fill (or segments)",
+            "slab: label, cancel key, thin line"
+          ],
+          "props": [
+            "value",
+            "max",
+            "low",
+            "high",
+            "tone",
+            "track",
+            "segments",
+            "duration",
+            "variant",
+            "size",
+            "density",
+            "shape",
+            "motion"
+          ],
+          "level": "value / max; a timed run fills 0 → 1 over duration (--level is its end state).",
+          "rules": [
+            "Data is value/max or --level, never a variant.",
+            "Thresholds turn it destructive; tone never encodes data.",
+            "A timed run completes from a timer, so it finishes with motion off."
+          ]
+        }
       }
     },
     {
@@ -172,7 +274,27 @@
         "since": "0.5.0",
         "status": "stable",
         "replaces": [],
-        "removeIn": null
+        "removeIn": null,
+        "spec": {
+          "role": "A small fact on the HUD: voice range, radio, seatbelt.",
+          "anatomy": [
+            "hud-chip (pill | tile)",
+            "icon",
+            "text"
+          ],
+          "props": [
+            "shape",
+            "state",
+            "active",
+            "icon",
+            "density",
+            "motion"
+          ],
+          "rules": [
+            "Its shape prop is the form (pill, tile); corners follow data-nk-shape on an ancestor.",
+            "warning is the theme's destructive; active is primary."
+          ]
+        }
       }
     },
     {
@@ -266,7 +388,31 @@
         "since": "unreleased",
         "status": "experimental",
         "replaces": [],
-        "removeIn": null
+        "removeIn": null,
+        "spec": {
+          "role": "One vital on the HUD: health, armor, hunger, thirst, stress.",
+          "anatomy": [
+            "vital-chip (shape)",
+            "icon",
+            "level drawing (outline | liquid | bar)",
+            "pop (a change)"
+          ],
+          "props": [
+            "value",
+            "tone",
+            "shape",
+            "level",
+            "attach",
+            "icon",
+            "open"
+          ],
+          "level": "the vital, 0–100 as 0–1.",
+          "rules": [
+            "data-hue carries the vital's role (health, armor…).",
+            "The level style comes from the theme (outline, liquid, bar); the data never picks it.",
+            "Readable over a bright sky (legibility fixture)."
+          ]
+        }
       }
     },
     {
@@ -306,7 +452,28 @@
         "since": "0.3.0",
         "status": "stable",
         "replaces": [],
-        "removeIn": null
+        "removeIn": null,
+        "spec": {
+          "role": "The action wheel.",
+          "anatomy": [
+            "radial-menu",
+            "wedges",
+            "radial-menu-item (icon, label)",
+            "centre"
+          ],
+          "props": [
+            "items",
+            "active",
+            "size",
+            "label",
+            "onSelect",
+            "onClose"
+          ],
+          "rules": [
+            "Items draw data-state: focus (the pointed wedge), disabled.",
+            "Sub-menus open in place; Escape goes back a level."
+          ]
+        }
       }
     },
     {
@@ -377,7 +544,38 @@
         "replaces": [
           "nui-toaster"
         ],
-        "removeIn": null
+        "removeIn": null,
+        "spec": {
+          "role": "A notification on the game, and the stack that holds them.",
+          "anatomy": [
+            "notice-stack (position)",
+            "notice-item (the flip wrapper)",
+            "notice: status icon, title, description, time line, close",
+            "item slab: tile, name, delta"
+          ],
+          "props": [
+            "status",
+            "title",
+            "description",
+            "icon",
+            "duration",
+            "elapsed",
+            "item",
+            "size",
+            "slide",
+            "animate",
+            "leaving",
+            "density",
+            "shape",
+            "motion"
+          ],
+          "level": "the time left, 1 → 0 over duration.",
+          "rules": [
+            "Newest nearest the edge; at most five per position.",
+            "Slides in from its stack's edge, out toward it.",
+            "error is data-state alert."
+          ]
+        }
       }
     },
     {
@@ -523,7 +721,32 @@
         "since": "0.6.0",
         "status": "stable",
         "replaces": [],
-        "removeIn": null
+        "removeIn": null,
+        "spec": {
+          "role": "A decision before something that can't be undone.",
+          "anatomy": [
+            "confirm-root + scrim",
+            "confirm (icon, title, description)",
+            "cancel, action"
+          ],
+          "props": [
+            "title",
+            "description",
+            "tone",
+            "confirmLabel",
+            "cancelLabel",
+            "loading",
+            "scrim",
+            "initialFocus",
+            "density",
+            "shape",
+            "motion"
+          ],
+          "rules": [
+            "Focus starts on the action; Escape and Cancel go back.",
+            "Destructive actions say so in the label."
+          ]
+        }
       }
     },
     {
@@ -549,7 +772,38 @@
         "replaces": [
           "key-hint"
         ],
-        "removeIn": null
+        "removeIn": null,
+        "spec": {
+          "role": "\"[E] Open garage\": what a key does here.",
+          "anatomy": [
+            "key-prompt (slab | panel | hud)",
+            "keys (key chips)",
+            "label, description",
+            "hold line"
+          ],
+          "props": [
+            "keys",
+            "label",
+            "description",
+            "hold",
+            "progress",
+            "active",
+            "disabled",
+            "listen",
+            "onConfirm",
+            "surface",
+            "size",
+            "density",
+            "shape",
+            "motion"
+          ],
+          "level": "the hold progress, 0 → 1 (Lua's progress, or the pointer/key hold).",
+          "rules": [
+            "States: rest, focus (active), hold, confirm (when the hold fills), disabled.",
+            "In game Lua reads the key and sends progress; the page draws it.",
+            "One prompt per action; a stack for several."
+          ]
+        }
       }
     },
     {
@@ -575,7 +829,32 @@
         "replaces": [
           "task-progress"
         ],
-        "removeIn": null
+        "removeIn": null,
+        "spec": {
+          "role": "A level or a timed run, round.",
+          "anatomy": [
+            "progress-ring",
+            "track circle",
+            "fill arc",
+            "centre (percent | any node)",
+            "label, cancel hint"
+          ],
+          "props": [
+            "value",
+            "max",
+            "duration",
+            "tone",
+            "track",
+            "size",
+            "center",
+            "label"
+          ],
+          "level": "value / max; a timed run fills 0 → 1.",
+          "rules": [
+            "onComplete fires from a timer, never an animation event.",
+            "The round half of the progress intent; meter is the bar."
+          ]
+        }
       }
     },
     {
@@ -620,7 +899,28 @@
         "since": "unreleased",
         "status": "stable",
         "replaces": [],
-        "removeIn": null
+        "removeIn": null,
+        "spec": {
+          "role": "A full-width state across the screen: incapacitated, wanted.",
+          "anatomy": [
+            "band (top | bottom | inline)",
+            "title",
+            "subtitle"
+          ],
+          "props": [
+            "tone",
+            "title",
+            "subtitle",
+            "position",
+            "density",
+            "shape",
+            "motion"
+          ],
+          "rules": [
+            "One band at a time.",
+            "Text on the game: world foreground, legible over any frame."
+          ]
+        }
       }
     },
     {
@@ -664,7 +964,35 @@
         "since": "0.6.0",
         "status": "stable",
         "replaces": [],
-        "removeIn": null
+        "removeIn": null,
+        "spec": {
+          "role": "One slot of an inventory, hotbar or shop.",
+          "anatomy": [
+            "item-slot",
+            "image | icon",
+            "name, count, hotkey, price, stock",
+            "durability line"
+          ],
+          "props": [
+            "image",
+            "label",
+            "count",
+            "hotkey",
+            "durability",
+            "price",
+            "active",
+            "dropTarget",
+            "dragging",
+            "locked",
+            "surface",
+            "size"
+          ],
+          "level": "durability, 0–100 as 0–1 (the line under the item).",
+          "rules": [
+            "data-state: focus (active or drop target), disabled (locked); the slot's own state is data-slot-state.",
+            "Drag and drop stays with the caller."
+          ]
+        }
       }
     },
     {

@@ -74,6 +74,7 @@ import { ProgressRing } from "@/components/ui/progress-ring";
 import { Speedometer } from "@/components/ui/speedometer";
 import { Countdown } from "@/components/ui/countdown";
 import { Band } from "@/components/ui/band";
+import { VitalChip } from "@/components/ui/vital-chip";
 import { Money } from "@/components/ui/money";
 import { ItemSlot } from "@/components/ui/item-slot";
 import { PlayerCard } from "@/components/ui/player-card";
@@ -116,6 +117,17 @@ export function ComponentsPage() {
           stageClassName="items-start"
         >
           <VariantsDemo />
+        </Section>
+
+        <Section
+          name="legibility"
+          title="Legibility"
+          text="The fixture every HUD part is checked against: the brightest, busiest frame the game draws (midday sun, sky and palms). Text on the game must still read, chips must still separate from the sky, levels must still show. Switch the identity above to check yours."
+          install={false}
+          scene="day"
+          stageClassName="items-end justify-between"
+        >
+          <LegibilityDemo />
         </Section>
 
         <Section
@@ -529,8 +541,44 @@ export function ComponentsPage() {
 }
 
 // registry.json meta (docs/design/contract.md, "Registry metadata"): status and the release it shipped in
-type ItemMeta = { since: string; status: string; replaces: string[]; removeIn: string | null; replacedBy?: string[] };
+type ItemSpec = { role: string; anatomy: string[]; props?: string[]; level?: string; rules: string[] };
+type ItemMeta = { since: string; status: string; replaces: string[]; removeIn: string | null; replacedBy?: string[]; spec?: ItemSpec };
 const META = new Map((registry.items as { name: string; meta?: ItemMeta }[]).flatMap((i) => (i.meta ? [[i.name, i.meta] as const] : [])));
+
+/** The spec template (Foundation 2): role, anatomy, props, what the level means, rules. */
+function SpecDetails({ spec }: { spec: ItemSpec }) {
+  return (
+    <details data-slot="component-spec" className="mt-3 text-sm">
+      <summary className="cursor-pointer text-muted-foreground select-none">Spec{spec.level ? `: level is ${spec.level}` : ""}</summary>
+      <dl className="mt-3 grid grid-cols-[7rem_1fr] gap-x-4 gap-y-2">
+        <dt className="text-muted-foreground">Role</dt>
+        <dd>{spec.role}</dd>
+        <dt className="text-muted-foreground">Anatomy</dt>
+        <dd>{spec.anatomy.join(" · ")}</dd>
+        {spec.props && (
+          <>
+            <dt className="text-muted-foreground">Props</dt>
+            <dd className="font-mono text-xs leading-5">{spec.props.join(", ")}</dd>
+          </>
+        )}
+        {spec.level && (
+          <>
+            <dt className="text-muted-foreground">Level means</dt>
+            <dd>{spec.level}</dd>
+          </>
+        )}
+        <dt className="text-muted-foreground">Rules</dt>
+        <dd>
+          <ul className="list-disc pl-4">
+            {spec.rules.map((r) => (
+              <li key={r}>{r}</li>
+            ))}
+          </ul>
+        </dd>
+      </dl>
+    </details>
+  );
+}
 
 function MetaBadges({ meta }: { meta: ItemMeta }) {
   return (
@@ -556,11 +604,14 @@ function Section({
   text,
   install = true,
   stageClassName,
+  scene,
   children,
 }: {
   name: string;
   title: string;
   text: string;
+  /** The world behind the stage (day: the bright legibility fixture). */
+  scene?: "dusk" | "day";
   /** false for a second section of the same item (one id, one install command). */
   install?: boolean;
   stageClassName?: string;
@@ -576,11 +627,12 @@ function Section({
             {meta && <MetaBadges meta={meta} />}
           </div>
           <p className="mt-2 text-muted-foreground text-pretty">{text}</p>
+          {install && meta?.spec && <SpecDetails spec={meta.spec} />}
         </div>
         {install && <Command className="h-10 w-full max-w-md text-xs">{`npx shadcn add ${SITE}/r/${name}.json`}</Command>}
       </div>
       <div className="relative isolate mt-6 overflow-hidden rounded-xl border bg-black">
-        <Scene />
+        <Scene variant={scene} />
         <div className={cn("relative flex min-h-80 flex-wrap items-start justify-center gap-8 p-10", stageClassName)}>{children}</div>
       </div>
     </section>
@@ -621,6 +673,53 @@ function IdentityPicker({ target, className }: { target: React.RefObject<HTMLDiv
         </Button>
       ))}
     </div>
+  );
+}
+
+/** HUD parts as they sit on the game: vitals, chips, a notice, a prompt, a timed slab, a band. */
+function LegibilityDemo() {
+  const vitals = [
+    { tone: "health", value: 82, icon: <HeartPulseIcon /> },
+    { tone: "armor", value: 46, icon: <ShieldIcon /> },
+    { tone: "hunger", value: 18, icon: <UtensilsIcon /> },
+    { tone: "thirst", value: 64, icon: <DropletIcon /> },
+  ];
+  return (
+    <>
+      <div className="flex flex-col gap-4">
+        <div className="flex gap-2">
+          {vitals.map((v) => (
+            <VitalChip.Root key={v.tone} value={v.value} tone={v.tone}>
+              <VitalChip.Shape>
+                <VitalChip.Level />
+                <VitalChip.Icon>{v.icon}</VitalChip.Icon>
+              </VitalChip.Shape>
+            </VitalChip.Root>
+          ))}
+        </div>
+        <div className="flex gap-2">
+          <HudChip icon={<MicIcon />} active>
+            Normal
+          </HudChip>
+          <HudChip icon={<RadioIcon />}>101 MHz</HudChip>
+          <HudChip icon={<TriangleAlertIcon />} state="warning">
+            Seatbelt
+          </HudChip>
+        </div>
+        <Stat surface="game" icon={<WalletIcon />} label="Cash" value="$12,480" />
+      </div>
+      <div className="flex flex-col items-center gap-4">
+        <KeyPrompt keys="E" label="Open garage" />
+        <div className="w-80">
+          <Meter variant="slab" label="Repairing" value={62} cancelKey="X" />
+        </div>
+      </div>
+      <div className="flex flex-col items-end gap-3">
+        <Notice status="warning" title="Low fuel" description="8% left" duration={0} />
+        <Notice item={{ name: "Water bottle", count: 2, icon: <CupSodaIcon /> }} duration={0} />
+      </div>
+      <Band position="inline" tone="destructive" title="You are incapacitated" subtitle="Hold E to call for help" className="basis-full" />
+    </>
   );
 }
 
