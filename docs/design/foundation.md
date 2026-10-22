@@ -71,7 +71,9 @@ Rules that come with it:
 ## What a real server's codebase taught us (wave 3)
 
 From reading a full RP server's own resources (24 of them, a clean-room framework, a design-system resource and
-many reskinned paid scripts), read for patterns only. The design system unified the *look* across resources but
+many reskinned paid scripts), read for patterns only. It is context on what a live server looks like, not a model:
+nuikit's structure (systems, addons, adapters) and its framework-agnostic, accommodate-everyone approach stay as
+they are; only the feature ideas below were taken. The design system unified the *look* across resources but
 never the *behaviour*: NUI focus is juggled in 20 resources, Escape in 18, input dialogs in 18, toasts in 11,
 progress in 11, key mappings in 13, script cameras in 10, settings in KVP in 8. That gap is nuikit's market.
 
