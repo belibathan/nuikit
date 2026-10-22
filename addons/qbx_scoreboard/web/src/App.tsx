@@ -118,7 +118,8 @@ function Status({ activity, cops }: { activity: Activity; cops: number }) {
         aria-hidden
         className={cn(
           "size-2 rounded-full",
-          state === "available" ? "bg-primary" : state === "busy" ? "bg-muted-foreground" : "border border-muted-foreground/60",
+          // available in the success tone (theme token), so the open activities read at a glance
+          state === "available" ? "bg-success" : state === "busy" ? "bg-muted-foreground" : "border border-muted-foreground/60",
         )}
       />
       {state === "busy" ? "In progress" : state === "available" ? "Available" : "Unavailable"}
