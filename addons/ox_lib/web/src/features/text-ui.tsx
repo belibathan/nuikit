@@ -1,10 +1,9 @@
 import { useRef, useState, type CSSProperties } from "react";
-import { KeyPrompt, KeyPromptStack, keyPromptPosition, parseKeyText } from "@/components/ui/key-prompt";
+import { KeyPrompt, KeyPromptStack, keyPromptPosition, parseKeyText, type KeyPromptPosition } from "@/components/ui/key-prompt";
 import { Icon } from "@/lib/icon";
 import { parseStyle, textUiIntent } from "@/lib/intents";
 import { Markdown } from "@/lib/markdown";
 import { useOx } from "@/lib/nui";
-import { presenceMotion } from "@/lib/motion";
 import { usePresence } from "@/lib/presence";
 import { openIntent, type Handle } from "@/lib/route";
 import { cn } from "@/lib/utils";
@@ -26,10 +25,27 @@ interface TextUiData {
  * Leading keys become the prompt's keys and the rest its label (Markdown, wrapping). Text without a
  * leading key ("Press [E] to talk") is the label alone, as the script wrote it.
  */
+/**
+ * The prompt slides in from its own edge and back out to it, like the notices (#102): a short slide
+ * and a fade in, a faster one out (the presence keeps it mounted for the exit).
+ */
+const SLIDE: Record<KeyPromptPosition, string> = {
+  "top-left": "data-[state=open]:slide-in-from-left-4 data-[state=closed]:slide-out-to-left-4",
+  "center-left": "data-[state=open]:slide-in-from-left-4 data-[state=closed]:slide-out-to-left-4",
+  "bottom-left": "data-[state=open]:slide-in-from-left-4 data-[state=closed]:slide-out-to-left-4",
+  "top-right": "data-[state=open]:slide-in-from-right-4 data-[state=closed]:slide-out-to-right-4",
+  "center-right": "data-[state=open]:slide-in-from-right-4 data-[state=closed]:slide-out-to-right-4",
+  "bottom-right": "data-[state=open]:slide-in-from-right-4 data-[state=closed]:slide-out-to-right-4",
+  "top-center": "data-[state=open]:slide-in-from-top-4 data-[state=closed]:slide-out-to-top-2",
+  "bottom-center": "data-[state=open]:slide-in-from-bottom-4 data-[state=closed]:slide-out-to-bottom-2",
+};
+const MOTION =
+  "data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:duration-200 data-[state=open]:ease-out data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:duration-150 data-[state=closed]:ease-in data-[state=closed]:fill-mode-forwards";
+
 export function TextUi() {
   const [data, setData] = useState<TextUiData | null>(null);
   const [open, setOpen] = useState(false);
-  const presence = usePresence(open, 100);
+  const presence = usePresence(open, 150);
 
   const routed = useRef<Handle | null>(null);
 
@@ -57,11 +73,12 @@ export function TextUi() {
   const text = String(data.text ?? "");
   const parsed = parseKeyText(text);
   const keys = parsed.keys;
+  const position = keyPromptPosition(data.position);
   // without a leading key the text is kept whole (parseKeyText would strip a leading "- ", a list)
   const label = keys.length ? parsed.label : text;
   return (
     <div className="pointer-events-none fixed inset-0 z-10">
-      <KeyPromptStack position={keyPromptPosition(data.position)} data-state={presence.state} className={presenceMotion}>
+      <KeyPromptStack position={position} data-state={presence.state} className={cn(MOTION, SLIDE[position])}>
         <KeyPrompt
           keys={keys}
           // ox_lib's icon is fixed width and takes the theme's muted colour unless the script sets one
