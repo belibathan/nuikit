@@ -358,7 +358,10 @@ RegisterCommand('nuikit_cancel', function()
   end
   if top then cancelIntent(top, 'cancel') end
 end, false)
-if RegisterKeyMapping then RegisterKeyMapping('nuikit_cancel', 'Cancel the current action', 'keyboard', 'x') end
+-- The default key is X (decisions #2): convar nuikit_cancel_key picks another, empty leaves it unbound.
+-- Either way players rebind it in GTA's key settings (FiveM).
+local cancelKey = GetConvar('nuikit_cancel_key', 'x')
+if RegisterKeyMapping then RegisterKeyMapping('nuikit_cancel', 'Cancel the current action', 'keyboard', cancelKey) end
 
 -- ───────────────────────────────── exports (any language)
 
