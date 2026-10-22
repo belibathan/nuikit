@@ -1,4 +1,5 @@
 import { onNui } from "nuikit-core";
+import { motionLevel } from "nuikit-core/motion";
 import { fetchNui, useNuiState } from "nuikit-core/react";
 import {
   FlagIcon,
@@ -62,6 +63,12 @@ export function useMapModel(data: PauseData, open: boolean) {
   const raw = useNuiState("pause:map:blips", NO_BLIPS);
   const blips = useMemo(() => (Array.isArray(raw) ? raw : []), [raw]);
   const [hidden, setHidden] = useState<ReadonlySet<BlipKind>>(loadHidden);
+  // bumps each time the player sets a waypoint here: the pin drops in (<Pins>)
+  const [waypointSet, setWaypointSet] = useState(0);
+  const setWaypoint = (x: number, y: number) => {
+    setWaypointSet((n) => n + 1);
+    void fetchNui("pause:map:waypoint", { x, y }).catch(() => {});
+  };
   // a fresh map each time it opens: nothing picked, no search
   useEffect(() => {
     if (!open) return;
@@ -91,7 +98,7 @@ export function useMapModel(data: PauseData, open: boolean) {
       return;
     }
     setSelection({ kind: "blip", choice: c, waypoint: true });
-    void fetchNui("pause:map:waypoint", { x: c.blip.x, y: c.blip.y }).catch(() => {});
+    setWaypoint(c.blip.x, c.blip.y);
   };
   // a search result: fly there and show it; the waypoint is one press away
   const findBlip = (c: BlipChoice) => {
@@ -128,7 +135,7 @@ export function useMapModel(data: PauseData, open: boolean) {
     const hit = await fetchNui("pause:map:pick", { u, v }).catch(() => null);
     if (!hit?.ok || !hit.point) return;
     setSelection({ kind: "point", pick: hit, waypoint: true });
-    void fetchNui("pause:map:waypoint", { x: hit.point.x, y: hit.point.y }).catch(() => {});
+    setWaypoint(hit.point.x, hit.point.y);
   };
   // Find me recentres and keeps following; pressed again (or a drag) lets go
   const follow = (on: boolean) => void (on ? fetchNui("pause:map:recenter") : fetchNui("pause:map:follow", { on: false })).catch(() => {});
@@ -172,6 +179,8 @@ export function useMapModel(data: PauseData, open: boolean) {
     findBlip,
     pick,
     dropWaypoint,
+    waypointSet,
+    setWaypoint,
     follow,
     pan,
     rotate,
@@ -210,7 +219,7 @@ export function MapStage({ model: m, left }: { model: MapModel; left: string }) 
       <div className="pause-map-shade pointer-events-none absolute inset-0" aria-hidden />
       <InputLayer pan={pan} rotate={rotate} zoom={zoom} pick={m.pick} dropWaypoint={m.dropWaypoint} />
       <Blips blips={m.blips} hidden={m.hidden} selectedId={m.selectedBlip} onChoose={m.chooseBlip} />
-      <Pins places={m.places} selectedId={m.selectedId} onChoose={m.choose} compass={m.compass} />
+      <Pins places={m.places} selectedId={m.selectedId} onChoose={m.choose} compass={m.compass} waypointSet={m.waypointSet} />
       {/* the open area, right of the sheet: the camera buttons on its edge */}
       <div className="pointer-events-none absolute inset-y-0 right-0 [--nk-edge:1.5rem] [&>*]:pointer-events-auto" style={{ left }}>
         <Controls topdown={m.info.topdown} following={m.info.follow === true} follow={m.follow} zoom={zoom} compass={m.compass} />
@@ -241,6 +250,7 @@ export function MapSheetPage({ model: m, onBack }: { model: MapModel; onBack: ()
           key={m.selection.kind === "place" ? m.selection.place.id : m.selection.kind === "blip" ? `blip-${m.selection.choice.blip.id}` : `${m.selection.pick.point?.x},${m.selection.pick.point?.y}`}
           selection={m.selection}
           hasWaypoint={m.info.waypoint}
+          onWaypoint={m.setWaypoint}
           onClose={() => m.setSelection(null)}
         />
       )}
@@ -380,11 +390,14 @@ const Pins = memo(function Pins({
   selectedId,
   onChoose,
   compass,
+  waypointSet,
 }: {
   places: PausePlace[];
   selectedId?: string;
   onChoose: (p: PausePlace) => void;
   compass: RefObject<SVGSVGElement | null>;
+  /** bumps when the player sets a waypoint: the pin drops in */
+  waypointSet: number;
 }) {
   const root = useRef<HTMLDivElement>(null);
   const pins = useRef<(HTMLButtonElement | null)[]>([]);
@@ -392,6 +405,24 @@ const Pins = memo(function Pins({
   const arrow = useRef<SVGSVGElement>(null);
   const wp = useRef<HTMLDivElement>(null);
   const [hover, setHover] = useState<string | null>(null);
+
+  // a waypoint just set here: its pin drops onto the spot and settles (the chip, not the positioned anchor)
+  useEffect(() => {
+    // anchor > .pause-pin-above (its own transform places it) > the chip, which is free to move
+    const chip = wp.current?.firstElementChild?.firstElementChild as HTMLElement | null;
+    if (!waypointSet || !chip || motionLevel(chip) === "off") return;
+    const reduced = motionLevel(chip) === "reduced";
+    chip.animate(
+      reduced
+        ? [{ opacity: 0 }, { opacity: 1 }]
+        : [
+            { transform: "translate3d(0, -1.5rem, 0) scale(0.9)", opacity: 0 },
+            { transform: "translate3d(0, 0.15rem, 0) scale(1.04)", opacity: 1, offset: 0.7 },
+            { transform: "none", opacity: 1 },
+          ],
+      { duration: reduced ? 160 : 360, easing: "cubic-bezier(0.16, 1, 0.3, 1)" },
+    );
+  }, [waypointSet]);
 
   useEffect(
     () =>
@@ -494,7 +525,17 @@ function Controls({
 }
 
 /** The picked spot, as the first section of the map page: what it is, how far, and the waypoint. */
-function SelectionSection({ selection, hasWaypoint, onClose }: { selection: Selection; hasWaypoint: boolean; onClose: () => void }) {
+function SelectionSection({
+  selection,
+  hasWaypoint,
+  onWaypoint,
+  onClose,
+}: {
+  selection: Selection;
+  hasWaypoint: boolean;
+  onWaypoint: (x: number, y: number) => void;
+  onClose: () => void;
+}) {
   const blip = selection.kind === "blip" ? selection.choice : undefined;
   // a blip sets the waypoint when it's clicked
   const [set, setSet] = useState(selection.kind !== "place" && selection.waypoint === true);
@@ -545,7 +586,7 @@ function SelectionSection({ selection, hasWaypoint, onClose }: { selection: Sele
             onClick={() => {
               if (!target) return;
               setSet(true);
-              void fetchNui("pause:map:waypoint", { x: target.x, y: target.y }).catch(() => {});
+              onWaypoint(target.x, target.y);
             }}
           >
             <FlagIcon />
