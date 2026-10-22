@@ -1,6 +1,6 @@
 import { fetchNui, Surface, useNuiState, usePlayer, useSurfaceOpen } from "nuikit-core/react";
 import { MinimapFrameView, useMinimap } from "./minimap";
-import { useEffect, type CSSProperties, type ReactNode } from "react";
+import { useEffect, useRef, type CSSProperties, type ReactNode } from "react";
 import type { HudLayout, HudLocation, HudSettings, HudVehicle, HudWeapon, MinimapFrame, MinimapState } from "./nui";
 import { Ammo } from "./hud/ammo";
 import { Cluster } from "./hud/cluster";
@@ -51,6 +51,7 @@ function Hud(props: { settings: HudSettings } & HudData) {
   useEffect(() => {
     void fetchNui("hud:shown", { shown: open }).catch(() => {});
   }, [open]);
+  usePublishZones(open);
   return props.settings.layout === "compact" ? <Compact {...props} player={player} look={look} w={w} h={h} /> : <Classic {...props} player={player} look={look} w={w} h={h} />;
 }
 
@@ -72,6 +73,52 @@ function Side({ side, children }: { side: "left" | "right" | "top" | "map"; chil
       {children}
     </div>
   );
+}
+
+/**
+ * Publish what the HUD covers (screen zones, nuikit-core): every part on the sides, where it rests
+ * (an entrance's slide is taken out), so notices and prompts in the same corner start clear of the map
+ * and the cluster. Measured after each render and on resize, sent only when it changed; left as it is
+ * while the HUD is away (a menu hiding it shouldn't move the notices).
+ */
+function usePublishZones(open: boolean) {
+  const last = useRef("");
+  const frame = useRef(0);
+  const measure = useRef(() => {});
+  measure.current = () => {
+    if (!open) return;
+    const W = window.innerWidth;
+    const H = window.innerHeight;
+    const rects: { x: number; y: number; w: number; h: number }[] = [];
+    document.querySelectorAll<HTMLElement>('[data-slot="hud-side"]').forEach((side) => {
+      const m = new DOMMatrixReadOnly(getComputedStyle(side).transform === "none" ? undefined : getComputedStyle(side).transform);
+      for (const el of Array.from(side.children)) {
+        const r = el.getBoundingClientRect();
+        if (r.width < 1 || r.height < 1) continue;
+        const round = (n: number) => Math.round(n * 1000) / 1000;
+        rects.push({ x: round((r.left - m.m41) / W), y: round((r.top - m.m42) / H), w: round(r.width / W), h: round(r.height / H) });
+      }
+    });
+    const key = JSON.stringify(rects);
+    if (key === last.current) return;
+    last.current = key;
+    void fetchNui("hud:zones", { rects }).catch(() => {});
+  };
+  useEffect(() => {
+    cancelAnimationFrame(frame.current);
+    frame.current = requestAnimationFrame(() => measure.current());
+  });
+  useEffect(() => {
+    const on = () => measure.current();
+    window.addEventListener("resize", on);
+    // a part that grows or shrinks without a render (a roll, an image)
+    const ro = new ResizeObserver(on);
+    document.querySelectorAll('[data-slot="hud-side"] > *').forEach((el) => ro.observe(el));
+    return () => {
+      window.removeEventListener("resize", on);
+      ro.disconnect();
+    };
+  });
 }
 
 /** Which edge a map at this rectangle belongs to. */

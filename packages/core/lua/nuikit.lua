@@ -626,6 +626,55 @@ AddEventHandler('nuikit:prefs:changed', function(p, to)
 end)
 TriggerEvent('nuikit:prefs:request', RESOURCE)
 
+-- ───────────────────────────────── screen zones
+
+-- What each UI covers on screen, so the others place themselves around it (nuikit-core src/zones.ts):
+-- the HUD publishes its map and cluster, notices start below them. One local (never replicated) state
+-- bag on the player holds every resource's zones, so a UI that starts later reads them too.
+local ZONES = 'nuikitZones'
+
+local function ownBag()
+  return LocalPlayer and LocalPlayer.state
+end
+
+--- Every published zone: `resource:name` → rectangles { x, y, w, h } in fractions of the screen.
+---@return table<string, { x: number, y: number, w: number, h: number }[]>
+function NUI.zones()
+  local bag = ownBag()
+  return (bag and bag[ZONES]) or {}
+end
+
+--- Publish (or with nil, remove) what this UI covers on screen. Rectangles in fractions of the screen.
+---@param name string
+---@param rects { x: number, y: number, w: number, h: number }[]|nil
+function NUI.zone(name, rects)
+  local bag = ownBag()
+  if not bag then return end
+  local all = {}
+  for k, v in pairs(bag[ZONES] or {}) do all[k] = v end
+  all[RESOURCE .. ':' .. name] = rects
+  bag:set(ZONES, all, false)
+end
+
+if AddStateBagChangeHandler then
+  AddStateBagChangeHandler(ZONES, nil, function(bagName, _, value)
+    if not bagName:find('^player:') then return end
+    NUI.send('nuikit:zones', value or {})
+  end)
+end
+
+-- a stopped UI covers nothing
+AddEventHandler('onClientResourceStop', function(resource)
+  if resource ~= RESOURCE then return end
+  local bag = ownBag()
+  if not bag or not bag[ZONES] then return end
+  local all, mine = {}, ('^' .. RESOURCE:gsub('%p', '%%%0') .. ':')
+  for k, v in pairs(bag[ZONES]) do
+    if not k:find(mine) then all[k] = v end
+  end
+  bag:set(ZONES, all, false)
+end)
+
 -- ───────────────────────────────── handshake
 
 -- The page loads after this script runs, so anything sent before it is lost. The UI calls
@@ -639,6 +688,7 @@ NUI.on('nuikit:ready', function(req)
   local theme = NUI.theme()
   if theme then NUI.send('nuikit:theme', theme) end
   NUI.send('nuikit:prefs', NUI.prefs.get())
+  NUI.send('nuikit:zones', NUI.zones())
   -- rawget: with @nuikit/init.lua, reading NUI.player would load the bridge into every resource
   local player = rawget(NUI, 'player')
   local hasPlayer = player ~= nil and player.resend ~= nil

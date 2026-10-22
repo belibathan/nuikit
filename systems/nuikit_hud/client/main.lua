@@ -188,6 +188,12 @@ local function applyRadar()
   Minimap.radarOn = on
   Minimap.tick(on)
 end
+-- What the HUD covers (the page measures its parts): notices and prompts start clear of them.
+NUI.on('hud:zones', function(body)
+  NUI.zone('hud', body and body.rects or nil)
+  return { ok = true }
+end)
+
 NUI.on('hud:shown', function(body)
   shown = body and body.shown == true
   applyRadar()

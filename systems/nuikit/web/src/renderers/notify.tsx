@@ -1,6 +1,7 @@
 // notify → `notice`: one stack per position, newest nearest the edge. A notice ends itself when its
 // time runs out (the runtime is told, so the stack stays small); the same id updates in place.
 import { defineReactRenderer, type RendererProps } from "nuikit-core/intents-react";
+import { useClearOf } from "nuikit-core/react";
 import { useEffect, useRef } from "react";
 import { Notice, NoticeStack, noticePosition, type NoticePosition } from "@/components/ui/notice";
 import { Icon } from "@/lib/icon";
@@ -42,7 +43,7 @@ function NotifyRenderer({ intents, ctx }: RendererProps<"notify">) {
   return (
     <>
       {[...groups].map(([position, list]) => (
-        <NoticeStack key={position} position={position}>
+        <ClearStack key={position} position={position}>
           {list.map((it) => {
             const p = it.props;
             if (!p.title && !p.description && !p.item) return null;
@@ -64,9 +65,19 @@ function NotifyRenderer({ intents, ctx }: RendererProps<"notify">) {
               />
             );
           })}
-        </NoticeStack>
+        </ClearStack>
       ))}
     </>
+  );
+}
+
+/** A notice stack that starts clear of what other UIs cover in its corner (screen zones: the HUD's map). */
+function ClearStack({ position, children }: { position: NoticePosition; children: React.ReactNode }) {
+  const clear = useClearOf(position);
+  return (
+    <NoticeStack position={position} style={clear}>
+      {children}
+    </NoticeStack>
   );
 }
 

@@ -32,8 +32,37 @@ import {
   type EventName,
 } from "./index";
 import { flipFrom, indicator, motionLevel, spring, type Channel, type SpringName } from "./motion";
+import { clearOf, getZones, onZones, type ClearOptions, type ZonePosition, type Zones } from "./zones";
 
 export * from "./index";
+export { clearOf, getZones, onZones, type ClearOptions, type ZonePosition, type ZoneRect, type Zones } from "./zones";
+
+/** Every UI's published screen zones (NUI.zone in Lua, src/zones.ts); re-renders when they change. */
+export function useZones(): Zones {
+  return useSyncExternalStore(onZones, getZones, getZones);
+}
+
+/**
+ * The inline style that keeps a stack anchored at `position` clear of every zone in its corner (the
+ * HUD's map top right, the cluster bottom right), or `{}` when nothing is there. Follows resizes.
+ *
+ *   <NoticeStack position="top-right" style={useClearOf("top-right")}>…
+ */
+export function useClearOf(position: ZonePosition, opts?: ClearOptions): CSSProperties {
+  const zones = useZones();
+  const [size, setSize] = useState(() => (typeof window === "undefined" ? { w: 1920, h: 1080 } : { w: window.innerWidth, h: window.innerHeight }));
+  useEffect(() => {
+    const on = () => setSize({ w: window.innerWidth, h: window.innerHeight });
+    window.addEventListener("resize", on);
+    return () => window.removeEventListener("resize", on);
+  }, []);
+  const key = JSON.stringify(opts ?? {});
+  return useMemo(() => {
+    const c = clearOf(zones, position, { ...opts, screen: size });
+    return c.top !== undefined ? { top: c.top } : c.bottom !== undefined ? { bottom: c.bottom } : {};
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [zones, position, size, key]);
+}
 
 /**
  * Run a handler whenever Lua sends `action`. The handler can change every render;
