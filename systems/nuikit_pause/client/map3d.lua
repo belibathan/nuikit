@@ -21,6 +21,7 @@ local cur, goal
 local drag = { x = 0.0, y = 0.0, heading = 0.0, pitch = 0.0 } -- dragged but not landed yet
 local lastPins, lastPinsAt, lastInfo, lastInfoAt = '', 0, '', 0
 local timecycle = false
+local following = false        -- the target tracks the player (Find me; a drag or a fly ends it)
 local blipList, blipKey, blipsAt = {}, '', 0 -- the blips last sent to the UI (see refreshBlips)
 
 local function clamp(v, a, b) return math.max(a, math.min(b, v)) end
@@ -153,7 +154,7 @@ local function info()
   local s1, s2 = GetStreetNameAtCoord(cur.x, cur.y, cur.z)
   local street = GetStreetNameFromHashKey(s1)
   if s2 and s2 ~= 0 then street = street .. ' / ' .. GetStreetNameFromHashKey(s2) end
-  return { zone = zone, street = street, topdown = goal.pitch <= MIN_PITCH + 0.5, waypoint = waypoint() ~= nil }
+  return { zone = zone, street = street, topdown = goal.pitch <= MIN_PITCH + 0.5, waypoint = waypoint() ~= nil, follow = following }
 end
 
 -- ---------------------------------------------------------------- blips: everything GTA's map shows
@@ -287,7 +288,7 @@ local function publish(now, ped)
   if now - lastInfoAt >= INFO_MS then
     lastInfoAt = now
     local i = info()
-    local ikey = ('%s|%s|%s|%s'):format(i.zone, i.street, tostring(i.topdown), tostring(i.waypoint))
+    local ikey = ('%s|%s|%s|%s|%s'):format(i.zone, i.street, tostring(i.topdown), tostring(i.waypoint), tostring(i.follow))
     if ikey ~= lastInfo then
       lastInfo = ikey
       NUI.send('pause:map:info', i)
@@ -296,12 +297,21 @@ local function publish(now, ped)
 end
 Map3D.publish = publish
 
+--- Following: the goal is wherever the player is now (the ease keeps it smooth).
+local function track()
+  if not following then return end
+  local pc = GetEntityCoords(PlayerPedId())
+  goal.x, goal.y, goal.z = pc.x, pc.y, pc.z
+end
+Map3D.track = track
+
 local function loop()
   local last = GetGameTimer()
   while active do
     local now = GetGameTimer()
     local dt = math.min(0.1, (now - last) / 1000.0)
     last = now
+    track()
     step(dt)
     local ex, ey, ez = Map3D.eye(cur)
     SetCamCoord(cam, ex, ey, ez)
@@ -327,6 +337,7 @@ function Map3D.start()
   local wp = waypoint()
   local tx, ty = pc.x, pc.y
   if wp and cfg.startAtWaypoint ~= false then tx, ty = wp.x, wp.y end
+  following = cfg.followOnOpen == true and not (wp and cfg.startAtWaypoint ~= false)
   -- Start exactly where the picture is now (the gameplay camera, or Home's focus camera), so
   -- the map lifts off from the player's own view with no jump.
   local gc, gr = GetFinalRenderedCamCoord(), GetFinalRenderedCamRot(2)
@@ -376,6 +387,7 @@ end
 function Map3D.stop(mode)
   if not active then return end
   active = false
+  following = false
   blipList, blipKey = {}, ''
   if mode == true then mode = 'instant' end
   -- the service clears world streaming with the camera (or when the focus camera takes over)
@@ -402,6 +414,7 @@ function Map3D.pan(dx, dy)
   local fx, fy = -math.sin(h), math.cos(h)    -- screen up (away from the camera), on the ground
   local mx = -rx * dx * across + fx * dy * along
   local my = -ry * dx * across + fy * dy * along
+  following = false
   -- lands over the next few frames (land()), not eased: the ground has to follow the cursor
   drag.x, drag.y = drag.x + mx, drag.y + my
   goal.z = groundZ(goal.x + drag.x, goal.y + drag.y, goal.z)
@@ -421,6 +434,7 @@ end
 
 function Map3D.fly(x, y, d)
   if not active then return false end
+  following = false
   goal.x, goal.y = x + 0.0, y + 0.0
   goal.z = groundZ(x, y, goal.z)
   if d then goal.d = clamp(d, MIN_D, MAX_D) end
@@ -435,8 +449,23 @@ end
 
 function Map3D.recenter()
   local pc = GetEntityCoords(PlayerPedId())
-  return Map3D.fly(pc.x, pc.y, cfg.focusHeight or 350.0)
+  if not Map3D.fly(pc.x, pc.y, cfg.focusHeight or 350.0) then return false end
+  -- Find me keeps the player in the middle as they move (Config.map.follow = false: only recentre)
+  following = cfg.follow ~= false
+  lastInfo, lastInfoAt = '', 0
+  return true
 end
+
+--- Stop (or start) following the player without moving the camera.
+function Map3D.follow(on)
+  if not active then return false end
+  if on then return Map3D.recenter() end
+  following = false
+  lastInfo, lastInfoAt = '', 0
+  return true
+end
+
+function Map3D.isFollowing() return following end
 
 function Map3D.topdown(on)
   if not active then return end
