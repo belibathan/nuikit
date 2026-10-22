@@ -71,8 +71,13 @@
 
 .hud-anchor-bl,
 .hud-anchor-br,
-.hud-anchor-tr {
+.hud-anchor-tr,
+.hud-anchor-tl {
   position: absolute;
+}
+.hud-anchor-tl {
+  left: calc(var(--hud-l, 0%) + var(--edge));
+  top: calc(var(--hud-t, 0%) + var(--edge));
 }
 .hud-anchor-bl {
   left: calc(var(--hud-l, 0%) + var(--edge));

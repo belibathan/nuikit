@@ -62,6 +62,7 @@ Everything is in `config.lua` with a comment on each line. The main switches:
 | `units`, `playerUnits` | `'mph'` / `'kmh'`; let players choose |
 | `radar` | `'always'` (default, on foot too), `'vehicle'`, `'never'`. Whichever, it leaves with the HUD when a menu hides it |
 | `layout` | `'compact'` (default) or `'classic'` (see Layouts) |
+| `parts` | Move any part (`map`, `location`, `wallet`, `vitals`, `ammo`, `vehicle`) on top of the preset: a corner, `'map'`, `false`, or `{ at, order }`. `compact` and `classic` are presets of it (`client/layout.lua` `Layout.PARTS`); notices follow (screen zones) |
 | `area` | `'game'` (read GTA's HUD alignment, fall back when it looks wrong) or `'stage'` (the 0.5.0 rule); was `layout.source` |
 | `minimap.style` | `'ring'` (default: nuikit places GTA's radar and draws the ring or frame) or `'stock'` (GTA's radar untouched, put back to GTA's own placement; the HUD lays out around it). `enabled = false` is the 0.6 spelling of `'stock'` |
 | `minimap.yieldTo` | Minimap resources nuikit gives way to: when one is started the style becomes `'stock'` and F8 says so once. `nil` = the built-in list (`circleminimap`, `squaremap`, `minimap`, `jg-hud`, `ps-hud`, `qb-hud`, `qbx_hud`), `{}` = never |

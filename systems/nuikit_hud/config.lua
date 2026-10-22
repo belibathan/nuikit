@@ -16,6 +16,25 @@ Config = {
   --              beside it, the heading strip top centre, money top right, the large cluster.
   layout = 'compact',
 
+  -- Move any part on top of the preset (nil keeps the preset's place). A corner ('top-left',
+  -- 'top-right', 'bottom-left', 'bottom-right'), 'map' (compact: the column under or over the map;
+  -- classic: the location above the map, the vitals beside it) or false (hidden); or a table
+  -- { at = 'bottom-right', order = 1 } where order is top to bottom within the corner.
+  -- The presets:
+  --   compact  map top-right; location 1, wallet 2 on the map; vitals bottom-left;
+  --            ammo 1, vehicle 2 bottom-right
+  --   classic  map bottom-left; location 1, vitals 2 on the map; wallet 1, ammo 2 top-right;
+  --            vehicle bottom-right
+  -- Notices and prompts follow the parts (the HUD publishes the screen zones it covers).
+  parts = {
+    map = nil,         -- a corner (Config.minimap.anchor, when set, wins)
+    location = nil,
+    wallet = nil,
+    vitals = nil,
+    ammo = nil,
+    vehicle = nil,
+  },
+
   -- Where the HUD's edges are. 'game' reads GTA's own HUD alignment for this screen and safe zone
   -- (16:9, 21:9, 32:9), falling back to 'stage' if the game's answer looks wrong. 'stage' is the
   -- 0.5.0 rule: the middle 16:9 of the screen, inset by the safe zone.

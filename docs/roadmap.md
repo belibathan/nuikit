@@ -39,7 +39,7 @@ and target motion; `edge-sheet` first-frame fix; `nuikit.cfg` comments without s
 | Next | State |
 |---|---|
 | Slide the minimap itself with the HUD (per-frame component placement) | Spike |
-| A HUD layout config on top of zones | Open |
+| A HUD layout config on top of zones | Lane B (#104) |
 
 ## Lane B: HUD
 
@@ -48,6 +48,7 @@ and target motion; `edge-sheet` first-frame fix; `nuikit.cfg` comments without s
 | Item | State |
 |---|---|
 | GPS route clip: pick the `routeClip` candidate that works, or `aspect = 1` | Needs the owner in game |
+| HUD layout config: `Config.parts` places each part (corner + order, or on the map); `compact` and `classic` are presets of it; default unchanged | #104; not seen in game |
 
 ## Lane C: Platform + docs
 

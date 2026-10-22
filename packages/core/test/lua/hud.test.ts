@@ -99,6 +99,27 @@ describe("systems/nuikit_hud", () => {
     expect(hud.surfaces().hud.open).toBe(false);
   });
 
+  it("places the parts by preset with Config.parts on top", async () => {
+    client = await createClient();
+    const hud = await client.start("nuikit_hud", {
+      before: natives + ` PD = {} `,
+      scripts: HUD_SCRIPTS,
+    });
+    await hud.run(`Config.parts = { vitals = 'top-left', ammo = { order = 3 }, wallet = false, map = 'bottom-left', location = 'nowhere' }`);
+    client.event("QBCore:Player:SetPlayerData", { citizenid: "ABC", charinfo: { firstname: "Niko" }, money: { cash: 5, bank: 0 }, metadata: {} });
+    expect(hud.surfaces().hud.data).toMatchObject({
+      layout: "compact",
+      parts: {
+        map: "bottom-left",
+        location: { at: "map", order: 1 },
+        wallet: { at: false, order: 2 },
+        vitals: { at: "top-left", order: 1 },
+        ammo: { at: "bottom-right", order: 3 },
+        vehicle: { at: "bottom-right", order: 2 },
+      },
+    });
+  });
+
   it("never takes focus, so it can't block other UIs", async () => {
     client = await createClient();
     const hud = await client.start("nuikit_hud", { before: natives, scripts: HUD_SCRIPTS });

@@ -59,6 +59,21 @@ export interface MinimapFrame {
 
 export type HudPreset = "compact" | "classic";
 
+export type HudCorner = "top-left" | "top-right" | "bottom-left" | "bottom-right";
+/** a part's place: a corner, on the map (compact: the column; classic: above or beside it), or hidden */
+export interface HudPart {
+  at: HudCorner | "map" | false;
+  order: number;
+}
+export interface HudParts {
+  map: HudCorner;
+  location: HudPart;
+  wallet: HudPart;
+  vitals: HudPart;
+  ammo: HudPart;
+  vehicle: HudPart;
+}
+
 /** The weapon in hand (client/weapon.lua); false when unarmed or holding something without ammo. */
 export interface HudWeapon {
   /** rounds in the clip; for thrown weapons, how many are left */
@@ -105,6 +120,8 @@ export type WalletMode = "always" | "change" | false;
 export interface HudSettings {
   /** where the parts go (Config.layout); absent from a 0.6 client: classic */
   layout?: HudPreset;
+  /** where each part goes (client/layout.lua Layout.parts: the preset with Config.parts on top); absent: the preset's */
+  parts?: Partial<HudParts>;
   /** the ammo readout (Config.ammo) */
   ammo?: boolean;
   units: "mph" | "kmh";
