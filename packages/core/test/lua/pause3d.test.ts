@@ -277,33 +277,35 @@ describe("systems/nuikit_pause: the bigger menu", () => {
     expect(await count()).toBe(base + 2);
   });
 
-  it("settings: rows and presets, prefs through NUI.prefs, the rest saved per player and published as states", async () => {
+  it("settings on nk.settings: the section any page lists; a draft previews prefs and states; 0.9's KVP carried over once", async () => {
     client = await createClient();
-    const pause = await client.start("nuikit_pause", { before: natives, scripts });
-    await pause.run(press);
-    await pause.call("pause:view", { view: "settings" });
-    const snap = pause.messages.filter((m) => m.action === "pause:settings").at(-1)!.data as { rows: { key: string }[]; presets: { id: string }[]; values: Record<string, unknown> };
-    expect(snap.rows.map((r) => r.key)).toEqual(["textSize", "contrast", "reducedMotion", "streamer", "hud"]);
-    expect(snap.presets.map((p) => p.id)).toEqual(["standard", "streamer", "performance", "cinema"]);
-    expect(snap.values.streamer).toBe(false);
-    // a pref row goes to NUI.prefs; an own row is saved and published
-    let r: { values: Record<string, unknown> } = await pause.call("pause:settings:set", { patch: { textSize: 1.1, streamer: true } });
-    expect(r.values.textSize).toBe(1.1);
-    expect(r.values.streamer).toBe(true);
-    expect(await pause.run(`return NUI.prefs.get().scale`)).toBe(1.1);
+    const nuikit = await client.start("nuikit", { scripts: ["settings.lua"] });
+    const kvp = new Map([["nuikit_pause:settings", JSON.stringify({ version: 1, values: { streamer: true, hud: true } })]]);
+    // the harness's exports reach the nuikit resource's store (the natives stub them)
+    const pause = await client.start("nuikit_pause", { before: `REAL_EXPORTS = exports
+${natives}
+exports = REAL_EXPORTS`, scripts: [...scripts.slice(0, -2), "settings.lua", PAUSE + "client/main.lua", PAUSE + "client/inventory.lua"], kvp });
+    await pause.run(`Settings.init()`);
+    const section = (await nuikit.call("settings", { resource: "nuikit_pause" })).sections[0];
+    expect(section.label).toBe("Display");
+    expect(section.rows.map((r: { key: string }) => r.key)).toEqual(["textSize", "contrast", "reducedMotion", "streamer", "hud"]);
+    expect(section.presets.map((p: { id: string }) => p.id)).toEqual(["standard", "streamer", "performance", "cinema"]);
+    // carried over from 0.9's own store, which is gone
+    expect(section.values.streamer).toBe(true);
+    expect(await pause.run(`return GetResourceKvpString('nuikit_pause:settings')`)).toBeFalsy();
     expect(await pause.run(`return NUI.getState('streamer')`)).toBe(true);
-    expect(JSON.parse(await pause.run<string>(`return GetResourceKvpString('nuikit_pause:settings')`))).toEqual({ version: 1, values: { streamer: true, hud: true } });
-    // a wrong type is refused; a preset is a patch; reset goes back to the defaults
-    r = await pause.call("pause:settings:set", { patch: { hud: "no" } });
-    expect(r.values.hud).toBe(true);
-    r = await pause.call("pause:settings:preset", { id: "cinema" });
-    expect(r.values.hud).toBe(false);
+    // a page's draft: the prefs and states follow at once; cancel puts them back
+    await nuikit.call("settings:draft", { resource: "nuikit_pause", patch: { textSize: 1.1, hud: false } });
+    expect(await pause.run(`return NUI.prefs.get().scale`)).toBe(1.1);
     expect(await pause.run(`return NUI.getState('hud:hidden')`)).toBe(true);
-    r = await pause.call("pause:settings:reset", {});
-    expect(r.values).toMatchObject({ textSize: 1, contrast: false, reducedMotion: false, streamer: false, hud: true });
-    // Home hides names and money in streamer mode (the payload carries it)
-    await pause.call("pause:settings:set", { patch: { streamer: true } });
-    await pause.run(`Pause.close(true) NOW = NOW + 1000`);
+    await nuikit.call("settings:cancel", { resource: "nuikit_pause" });
+    expect(await pause.run(`return NUI.prefs.get().scale`)).toBe(1);
+    expect(await pause.run(`return NUI.getState('hud:hidden') == true`)).toBe(false);
+    // a preset, saved
+    await nuikit.call("settings:preset", { resource: "nuikit_pause", preset: "cinema" });
+    await nuikit.call("settings:save", { resource: "nuikit_pause" });
+    expect(await pause.run(`return Settings.get('hud')`)).toBe(false);
+    // Home's payload carries streamer mode
     await pause.run(press);
     expect(pause.surfaces().pause.data.streamer).toBe(true);
   });

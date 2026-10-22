@@ -202,6 +202,9 @@ export async function createClient(options: { syncEvents?: boolean; onNuiMessage
     g.set("SetResourceKvp", (k: string, v: string) => {
       res.kvp.set(k, String(v));
     });
+    g.set("DeleteResourceKvp", (k: string) => {
+      res.kvp.delete(k);
+    });
     g.set("SetTimeout", (ms: number, fn: () => void) => {
       timers.push({ resource: name, ms, fn });
     });
