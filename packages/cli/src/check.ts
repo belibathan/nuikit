@@ -84,8 +84,10 @@ const IGNORED_DIRS = new Set(["node_modules", ".git", ".turbo", ".vite", "covera
 const BUILT_DIRS = new Set(["dist", "build", "out"]);
 const UI_EXT = /\.(css|scss|sass|less|html?|tsx|jsx|ts|js|mjs|cjs|vue|svelte)$/i;
 const SKIP_FILE = /(\.d\.ts|\.test\.[jt]sx?|\.spec\.[jt]sx?|\.stories\.[jt]sx?|\.min\.js|\.map)$|(^|\/)(dev\.[jt]sx?|vite\.config\.[jt]s|tailwind\.config\.[jt]s|postcss\.config\.[cm]?js|vitest\.config\.[jt]s|tsup\.config\.[jt]s|eslint\.config\.[cm]?js)$/i;
-// test code, and server-side scripts (never part of a page)
-const SKIP_DIR_IN_PATH = /(^|\/)(test|tests|__tests__|__mocks__|fixtures)\/|^server\//;
+// test code, and server-side scripts (never part of a page); and theme sources (the nuikit resource's
+// theme.css and the identities in themes/): they define the colours every page reads, so a colour there
+// is the theme itself, not a page bypassing it
+const SKIP_DIR_IN_PATH = /(^|\/)(test|tests|__tests__|__mocks__|fixtures)\/|^server\/|^themes\/[^/]+\.css$|^theme\.css$/;
 
 function walk(dir: string, rel = "", out: { rel: string; built: boolean }[] = [], built = false): typeof out {
   let entries: fs.Dirent[];
