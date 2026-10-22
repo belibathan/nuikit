@@ -1,0 +1,75 @@
+/*
+ * Studio: clean, modern, professional. The calm precision of pro software: a cool near-black with a hint
+ * of blue, one refined indigo accent, soft translucent glass panels with a faint top-edge highlight and a
+ * soft deep shadow, generous rounding, filled pills on the active row. Inter for reading, Inter Tight for
+ * headings, Geist Mono for numbers; sentence-case labels, a comfortable rhythm and a smooth 180ms ease.
+ * Every font ships with nuikit, so it needs no network.
+ *
+ * Use it: copy this file over nuikit/theme.css, then `nuikit theme reload`. Change any value; leave out
+ * what you don't change. Tokens: docs/tokens.md.
+ */
+.dark {
+  --background: oklch(0.155 0.008 268);
+  --foreground: oklch(0.975 0.004 268);
+  --card: oklch(0.195 0.01 268);
+  --card-foreground: oklch(0.975 0.004 268);
+  --popover: oklch(0.21 0.011 268);
+  --popover-foreground: oklch(0.975 0.004 268);
+  --primary: oklch(0.56 0.19 268);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.255 0.012 268);
+  --secondary-foreground: oklch(0.975 0.004 268);
+  --muted: oklch(0.24 0.011 268);
+  --muted-foreground: oklch(0.72 0.012 268);
+  --accent: oklch(0.27 0.02 268);
+  --accent-foreground: oklch(0.975 0.004 268);
+  --destructive: oklch(0.68 0.19 22);
+  --border: oklch(1 0 0 / 9%);
+  --input: oklch(1 0 0 / 13%);
+  --ring: oklch(0.72 0.15 268);
+  --chart-1: oklch(0.72 0.15 268);
+  --chart-2: oklch(0.74 0.12 190);
+  --chart-3: oklch(0.8 0.14 80);
+  --chart-4: oklch(0.7 0.18 10);
+  --chart-5: oklch(0.68 0.16 300);
+  --radius: 0.75rem;
+  --brand: oklch(0.72 0.15 268);
+
+  /* identity */
+  --font-sans: Inter, ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Inter Tight", Inter, ui-sans-serif, system-ui, sans-serif;
+  --font-numeric: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --nk-type-ratio: 1.2;
+  --nk-weight-body: 400;
+  --nk-weight-strong: 550;
+  --nk-weight-display: 650;
+  --nk-tracking-display: -0.025em;
+  --nk-label-case: none;
+  --nk-tracking-label: 0.005em;
+  --nk-heading-case: none;
+  --nk-border-width: 1px;
+  --nk-cut: 0px;
+  --nk-surface-opacity: 0.93;
+  --nk-surface-tint: 0.03;
+  --nk-surface-gradient: 0.18;
+  --nk-surface-edge: 0.12;
+  --nk-elevation: deep;
+  --nk-glow: 0.08;
+  --nk-density: 1;
+  --nk-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --nk-duration: 180ms;
+  --nk-motion-feel: smooth;
+  --nk-spring-bounce: 0;
+  --nk-hud-opacity: 0.6;
+  --nk-hud-text-shadow: soft;
+  --nk-gauge-style: arc;
+  --nk-gauge-track: 0.1875rem;
+  --nk-gauge-ticks: 0;
+  --nk-row-indicator: fill;
+  --nk-row-radius: 0.5rem;
+  --nk-chip-radius: 0.5rem;
+  --nk-meter-radius: 9999px;
+  --nk-display-style: normal;
+  --nk-skew: 0deg;
+}

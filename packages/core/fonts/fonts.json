@@ -2,9 +2,9 @@
   "$comment": "Identity fonts (docs/tokens.md#fonts). Latin subsets, woff2, from @fontsource 5.3.0. All SIL OFL 1.1 (licence next to each file). pnpm sync writes the @font-face rules into every UI's index.css and copies the files to the nuikit resource (fonts/).",
   "unicodeRange": "U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD",
   "fonts": [
-    { "family": "Inter", "file": "inter-latin-wght-normal.woff2", "weight": "100 900", "identity": [ "graphite" ], "license": "inter.OFL.txt" },
-    { "family": "Inter Tight", "file": "inter-tight-latin-wght-normal.woff2", "weight": "100 900", "identity": [ "graphite" ], "license": "inter-tight.OFL.txt" },
-    { "family": "Geist Mono", "file": "geist-mono-latin-wght-normal.woff2", "weight": "100 900", "identity": [ "graphite", "signal", "velvet" ], "license": "geist-mono.OFL.txt" },
+    { "family": "Inter", "file": "inter-latin-wght-normal.woff2", "weight": "100 900", "identity": [ "graphite", "studio" ], "license": "inter.OFL.txt" },
+    { "family": "Inter Tight", "file": "inter-tight-latin-wght-normal.woff2", "weight": "100 900", "identity": [ "graphite", "studio" ], "license": "inter-tight.OFL.txt" },
+    { "family": "Geist Mono", "file": "geist-mono-latin-wght-normal.woff2", "weight": "100 900", "identity": [ "graphite", "signal", "velvet", "studio" ], "license": "geist-mono.OFL.txt" },
     { "family": "Barlow", "file": "barlow-latin-400-normal.woff2", "weight": "400", "identity": [ "signal", "arcade" ], "license": "barlow.OFL.txt" },
     { "family": "Barlow", "file": "barlow-latin-500-normal.woff2", "weight": "500", "identity": [ "signal", "arcade" ], "license": "barlow.OFL.txt" },
     { "family": "Barlow", "file": "barlow-latin-600-normal.woff2", "weight": "600", "identity": [ "signal", "arcade" ], "license": "barlow.OFL.txt" },
