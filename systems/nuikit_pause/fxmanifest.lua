@@ -11,6 +11,7 @@ dependency 'nuikit'
 
 ui_page 'web/dist/index.html'
 nuikit_protocol '1'
+nuikit_level '3'
 
 files {
   'web/dist/index.html',

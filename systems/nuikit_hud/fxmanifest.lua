@@ -11,6 +11,7 @@ dependency 'nuikit'
 
 ui_page 'web/dist/index.html'
 nuikit_protocol '1'
+nuikit_level '3'
 -- With the nuikit host running, nuikit renders this module in its own frame and the ui_page
 -- above stays an empty page (docs/host.md). Without it, the ui_page renders the HUD as before.
 nuikit_ui 'web/dist/module.js'

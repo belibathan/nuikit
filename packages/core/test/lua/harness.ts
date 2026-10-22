@@ -288,6 +288,8 @@ export async function createClient(options: { syncEvents?: boolean; onNuiMessage
     metadata.delete(name);
     stopping = name;
     try {
+      // onResourceStop reaches every resource (the stopping one included), with the stopping name.
+      for (const h of [...(handlers.get("onResourceStop") ?? [])]) h.fn(name);
       trigger("onClientResourceStop", name);
       flush();
     } finally {

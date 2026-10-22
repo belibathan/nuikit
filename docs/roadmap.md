@@ -26,6 +26,7 @@ FiveM starts a dependency (`nuikit`) when a dependent starts.
   [`adapters/ox-lib.md`](adapters/ox-lib.md) §6), renderer packs, `nk.camera` checklist in [`services.md`](services.md).
 - Known issues: GPS route outside the minimap ring (`Config.minimap.routeClip` candidates, none proven); minimap blank
   after repeated live restarts until the pause map opens (not on a fresh join).
+- Unproven: an empty `nuikit_cancel_key` leaves the cancel key unbound in FiveM (#119, `client/intents.lua`).
 - Owner only: claim the npm name `nuikit`, then drop `"private": true` in `packages/cli`; GitHub About + social preview;
   check the kit on Chromium 144 (FiveM canary).
 

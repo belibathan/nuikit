@@ -225,3 +225,17 @@ describe.each([
     expect((await ui.call("boom")).error).toMatch(/nope/);
   });
 });
+
+describe("harness stop()", () => {
+  it("fires onResourceStop in every resource, the stopping one included, with the stopping name", async () => {
+    client = await create();
+    const shop = await client.start("shop");
+    const hud = await client.start("hud");
+    for (const r of [shop, hud]) {
+      await r.run(`AddEventHandler('onResourceStop', function(res) SendNUIMessage({ action = 'stopped', data = res }) end)`);
+    }
+    client.stop("shop");
+    expect(shop.messages.filter((m) => m.action === "stopped").map((m) => m.data)).toEqual(["shop"]);
+    expect(hud.messages.filter((m) => m.action === "stopped").map((m) => m.data)).toEqual(["shop"]);
+  });
+});
