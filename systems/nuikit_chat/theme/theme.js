@@ -14,12 +14,40 @@
  * since the page is chat's): see smoothField below. Purely visual: chat's keys, history and posts are
  * untouched.
  *
+ * The same file is nuikit_skins' skin.js (a byte-identical copy, checked by a test): with
+ * `data-skin="<name>"` on its script tag it brings the theme into any resource's page the same way and
+ * then adds nuikit_skins/skins/<name>.css after the page's own styles (see skins below).
+ *
  * Plain ES2017, no build step. MIT, https://github.com/belibathan/nuikit
  */
 (function () {
   "use strict";
 
   var SOURCES = ["https://cfx-nui-nuikit/theme.css", "nui://nuikit/theme.css"];
+
+  // ── skins (systems/nuikit_skins) ────────────────────────────────────────────────────────────────
+  //
+  // A third-party page adds one line, `<script src="https://cfx-nui-nuikit_skins/skin.js" data-skin="qb-menu">`:
+  // the server theme lands on its <html> as --nk-* (as on chat's page), and once it has, the skin's
+  // stylesheet goes in after the page's own, re-pointing the page's own variables and selectors at
+  // those tokens. Looks only: nothing here listens to, handles or posts anything of the page's. No
+  // nuikit resource: no theme, so no skin either, and the page stays as it ships.
+  var self = typeof document !== "undefined" ? document.currentScript : null;
+  var SKIN = self && self.getAttribute ? self.getAttribute("data-skin") : null;
+
+  /** skins/<name>.css next to the loader (`src` is the loader's own URL). */
+  function skinUrl(src, name) {
+    return String(src).replace(/[?#].*$/, "").replace(/[^/]*$/, "") + "skins/" + encodeURIComponent(name) + ".css";
+  }
+
+  function addSkin() {
+    if (!SKIN || document.querySelector("link[data-nuikit-skin]")) return;
+    var link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = skinUrl(self.src, SKIN);
+    link.setAttribute("data-nuikit-skin", SKIN);
+    document.head.appendChild(link);
+  }
   var CALLBACK = "https://nuikit/theme";
 
   /** { light, dark } variable maps from pasted TweakCN / shadcn CSS. */
@@ -206,6 +234,7 @@
       document.head.appendChild(link);
     }
     root.setAttribute("data-nuikit-theme", "server");
+    addSkin();
   }
 
   function apply(css) {
@@ -451,10 +480,11 @@
     new MutationObserver(find).observe(document.documentElement, { childList: true, subtree: true });
   }
 
-  var api = { inserted: inserted, parseTheme: parseTheme, toRgba: toRgba, themeDecls: themeDecls, varsDecls: varsDecls, importUrls: importUrls, apply: apply, applyPayload: applyPayload };
+  var api = { skinUrl: skinUrl, inserted: inserted, parseTheme: parseTheme, toRgba: toRgba, themeDecls: themeDecls, varsDecls: varsDecls, importUrls: importUrls, apply: apply, applyPayload: applyPayload };
   if (typeof module === "object" && module.exports) module.exports = api;
   else {
     start();
-    watchInput();
+    // chat's input only exists on chat's page
+    if (!SKIN) watchInput();
   }
 })();

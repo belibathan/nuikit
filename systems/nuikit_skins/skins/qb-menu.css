@@ -1,0 +1,40 @@
+/*
+ * nuikit skin for qb-menu (qbcore-framework/qb-menu, html/index.html). Looks only.
+ *
+ * qb-menu draws everything from its own --md-* variables, so the skin re-points them at the server
+ * theme (skin.js sets it as --nk-*); each keeps qb-menu's own value when the theme has no such token.
+ * Its layout, keys, sounds and posts are untouched.
+ */
+:root {
+  --md-primary: var(--nk-primary, #f44336);
+  --md-on-primary: var(--nk-primary-foreground, #ffffff);
+  --md-primary-container: var(--nk-accent, #ffdad6);
+  --md-on-primary-container: var(--nk-accent-foreground, #410002);
+  --md-secondary: var(--nk-secondary, #d32f2f);
+  --md-on-secondary: var(--nk-secondary-foreground, #ffffff);
+  --md-secondary-container: var(--nk-muted, #ffdad5);
+  --md-on-secondary-container: var(--nk-muted-foreground, #410001);
+  --md-tertiary: var(--nk-ring, #ff8a65);
+  --md-on-tertiary: var(--nk-primary-foreground, #ffffff);
+
+  --md-surface: var(--nk-popover, #1c1b1f);
+  --md-on-surface: var(--nk-popover-foreground, #e6e1e5);
+  --md-surface-container-lowest: var(--nk-background, #0f0d13);
+  --md-surface-container-low: var(--nk-popover, #1d1b20);
+  --md-surface-container: var(--nk-card, #211f26);
+  --md-surface-container-high: var(--nk-muted, #2b2930);
+  --md-surface-container-highest: var(--nk-accent, #36343b);
+
+  --md-error: var(--nk-destructive, #b3261e);
+  --md-on-error: var(--nk-primary-foreground, #ffffff);
+  --md-outline: var(--nk-border, #79747e);
+  --md-outline-variant: var(--nk-border, #49454f);
+  --md-inverse-surface: var(--nk-foreground, #e6e1e5);
+  --md-inverse-on-surface: var(--nk-background, #1c1b1f);
+  --md-scrim: rgba(var(--nk-scrim-rgb, 0, 0, 0), 0.6);
+
+  --md-radius-small: calc(var(--nk-radius, 10px) - 2px);
+  --md-radius-medium: var(--nk-radius, 12px);
+
+  --font-primary: var(--nk-font-sans, "Exo 2", sans-serif);
+}

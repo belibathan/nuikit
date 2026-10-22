@@ -18,10 +18,20 @@ const chat = (() => {
     varsDecls(vars: Record<string, string>): Record<string, string>;
     importUrls(css: string): string[];
     inserted(before: string, after: string): [number, number] | null;
+    skinUrl(src: string, name: string): string;
   };
 })();
 
 describe("nuikit_chat theme.js", () => {
+  it("is nuikit_skins/skin.js, byte for byte (one theme bridge for chat and skins)", () => {
+    expect(readFileSync(fileURLToPath(new URL("../../../systems/nuikit_skins/skin.js", import.meta.url)), "utf8")).toBe(source);
+  });
+
+  it("finds a skin next to the loader", () => {
+    expect(chat.skinUrl("https://cfx-nui-nuikit_skins/skin.js", "qb-menu")).toBe("https://cfx-nui-nuikit_skins/skins/qb-menu.css");
+    expect(chat.skinUrl("nui://nuikit_skins/skin.js?v=2", "pma voice")).toBe("nui://nuikit_skins/skins/pma%20voice.css");
+  });
+
   it("finds what was typed for the smooth caret (a keystroke, a paste, a deletion, a recall)", () => {
     expect(chat.inserted("/car ad", "/car add")).toEqual([7, 8]);
     expect(chat.inserted("/car", "/c ar")).toEqual([2, 3]);

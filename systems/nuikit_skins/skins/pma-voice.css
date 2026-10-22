@@ -1,0 +1,33 @@
+/*
+ * nuikit skin for pma-voice's voice readout (AvarianKnight/pma-voice, ui/index.html: the call, radio
+ * and range lines in .voiceInfo, the live one marked .talking). Looks only.
+ *
+ * pma-voice has no variables, so the skin restyles its few selectors with the server theme (skin.js
+ * sets it as --nk-*): each line a small chip in the popover surface, muted at rest, the foreground
+ * and a primary edge while that line is live. Its corner, sounds and messages are untouched.
+ */
+.voiceInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  right: 16px;
+  bottom: 16px;
+  font-family: var(--nk-font-sans, Avenir, Helvetica, Arial, sans-serif);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--nk-muted-foreground, #949697);
+  text-shadow: none;
+}
+.voiceInfo p {
+  padding: 2px 10px;
+  border: 1px solid var(--nk-border, rgba(255, 255, 255, 0.12));
+  border-radius: 9999px;
+  background: rgba(var(--nk-popover-rgb, 20, 20, 20), 0.85);
+  line-height: 18px;
+  transition: color 150ms, border-color 150ms;
+}
+.voiceInfo p.talking {
+  color: var(--nk-foreground, rgba(255, 255, 255, 0.822));
+  border-color: var(--nk-primary, #ffffff);
+}
