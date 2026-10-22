@@ -1,5 +1,5 @@
 import { useStaggerItem } from "nuikit-core/react";
-import { memo, type CSSProperties, type MouseEvent } from "react";
+import { memo, useEffect, useRef, useState, type CSSProperties, type MouseEvent } from "react";
 import { ItemImage } from "@/components/item-image";
 import { SlotOutline } from "@/components/outline";
 import { formatMoney } from "@/components/ui/money";
@@ -83,6 +83,18 @@ export const SlotTile = memo(function SlotTile({ side, item, invType, locked, di
   // the level contract: durability as --level (0–1); worn at the theme's alert threshold
   const level = durability !== undefined ? durability / 100 : undefined;
   const rarity = filled ? rarityOf(item) : undefined;
+  // an item arrived (a drop, a split, a pick-up): the slot answers with a short pop, never on first paint
+  const content = filled ? `${item.name}:${item.count ?? 1}` : "";
+  const seen = useRef(content);
+  const [landed, setLanded] = useState(false);
+  useEffect(() => {
+    if (content === seen.current) return;
+    seen.current = content;
+    if (!content || display) return;
+    setLanded(true);
+    const t = setTimeout(() => setLanded(false), 260);
+    return () => clearTimeout(t);
+  }, [content, display]);
 
   // in the sheet's <Stagger>: slots pop in one after another when it opens, and fold out when it closes
   const stagger = useStaggerItem<HTMLDivElement>(undefined, { appear: !display, animate: display ? false : "pop" });
@@ -97,6 +109,7 @@ export const SlotTile = memo(function SlotTile({ side, item, invType, locked, di
       data-display={display || undefined}
       data-worn={level !== undefined && level <= alertThreshold() ? "" : undefined}
       data-hue={rarity}
+      data-landed={landed || undefined}
       style={level !== undefined ? ({ "--level": level } as CSSProperties) : undefined}
       onPointerDown={display ? undefined : (e) => filled && !locked && pressSlot(e, { side, slot: item.slot })}
       onPointerEnter={display || !filled ? undefined : () => hoverSlot({ side, slot: item.slot })}
