@@ -10,9 +10,11 @@
 // --nk-vital-icon) and a player's override (/hudstyle, kept in KVP by client/style.lua and sent as
 // `hud:style`). Icon + level + the critical state, never colour alone; the value is in aria-valuenow.
 import { onNui } from "nuikit-core";
-import { fetchNui, Stagger, useSlots, useStaggerItem, type NuiPlayer, type Slot } from "nuikit-core/react";
+import { fetchNui, Stagger, usePlayer, useSlots, useStaggerItem, type NuiPlayer, type Slot } from "nuikit-core/react";
 import { BriefcaseIcon, CircleIcon, MicIcon, PhoneIcon, RadioIcon, ShieldIcon, type LucideIcon } from "lucide-react";
-import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
+import { memo, useCallback, useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from "react";
+import { motionLevel } from "nuikit-core/motion";
+import { flipRow, FOLD_EASE, FOLD_MS, FOLDED, inlineDelay } from "./flip";
 import type { HudSettings, VitalMode } from "../nui";
 import { VitalChip } from "@/components/ui/vital-chip";
 import { ICONS, LABELS, useShown, vitalCritical, type Tone } from "./vitals";
@@ -39,8 +41,9 @@ export type VitalDisplay = "icons" | "value" | "pill" | "expand";
 // --role-<vital>; --vital-<tone> only for a page without the 1.4 kit.
 const roleColour = (tone: Tone) => ({ "--vital": `var(--hue-solid, var(--vital-${tone}))` }) as CSSProperties;
 
-/** One vital: the icon in a chip whose level shows the value; a pop when it changes. */
-export function VitalItem({ tone, value, mode, low, high, linger, pop, force, display = "icons" }: VitalProps) {
+/** One vital: the icon in a chip whose level shows the value; a pop when it changes. Memoised: a change to
+ *  one vital (or the money) re-renders that chip only. */
+export const VitalItem = memo(function VitalItem({ tone, value, mode, low, high, linger, pop, force, display = "icons" }: VitalProps) {
   const v = Math.max(0, Math.min(100, Math.round(value ?? 0)));
   // value and pill keep their label open; expand opens it on a change and settles after the theme's
   // --nk-rest-delay (the vitals' linger when that is 0); those three show the change there, not as a pop
@@ -62,8 +65,17 @@ export function VitalItem({ tone, value, mode, low, high, linger, pop, force, di
   const shown = (shownByRule || popping) && mode !== false && value !== undefined;
   // in sequence with the vitals that come or go with it (the row is a <Stagger>)
   const stagger = useStaggerItem<HTMLDivElement>(shown);
+  const box = useRef<HTMLDivElement | null>(null);
+  const ref = useCallback(
+    (n: HTMLDivElement | null) => {
+      box.current = n;
+      stagger(n);
+    },
+    [stagger],
+  );
+  useFold(box, shown);
   return (
-    <div ref={stagger} data-slot="hud-vital" data-tone={tone} data-hue={tone} data-shown={shown || undefined} data-critical={critical || undefined} className="hud-vchip" aria-hidden={!shown}>
+    <div ref={ref} data-slot="hud-vital" data-tone={tone} data-hue={tone} data-shown={shown || undefined} data-critical={critical || undefined} className="hud-vchip" aria-hidden={!shown}>
       <VitalChip.Root value={v} tone={tone} open={open} style={roleColour(tone)} role="meter" aria-label={`${LABELS[tone]} ${v}%`} aria-valuemin={0} aria-valuemax={100} aria-valuenow={v}>
         <VitalChip.Shape>
           <VitalChip.Icon>{ICONS[tone]}</VitalChip.Icon>
@@ -74,7 +86,7 @@ export function VitalItem({ tone, value, mode, low, high, linger, pop, force, di
       </VitalChip.Root>
     </div>
   );
-}
+});
 
 /** Voice: the primary chip, always there; lit while talking; the range shows when it changes. */
 function VoiceChip({ voice, linger }: { voice: NuiPlayer["voice"]; linger: number }) {
@@ -147,7 +159,9 @@ function useHudStyle() {
 }
 
 /** The status row: voice, the vitals, the radio channel. */
-export function VitalsRow({ player, settings, layout }: { player: NuiPlayer; settings: HudSettings; layout: "compact" | "classic" }) {
+export function VitalsRow({ settings, layout }: { settings: HudSettings; layout: "compact" | "classic" }) {
+  // its own subscription: a vital changing re-renders this row (and only the chips that changed), not the HUD
+  const player = usePlayer();
   const force = useHudStyle();
   // other resources' chips in this cluster (docs/slots.md: nuikit_voice's range, radio and call, a job's indicator)
   const slots = useSlots("vitals");
@@ -192,8 +206,8 @@ export function VitalsRow({ player, settings, layout }: { player: NuiPlayer; set
 }
 
 /** The compact preset's vitals (bottom left, or beside a map in that corner). */
-export function VitalsCompact({ player, settings }: { player: NuiPlayer; settings: HudSettings }) {
-  return <VitalsRow player={player} settings={settings} layout="compact" />;
+export function VitalsCompact({ settings }: { settings: HudSettings }) {
+  return <VitalsRow settings={settings} layout="compact" />;
 }
 
 /** expand: true for a while after the value changes (not on the first value). */
@@ -225,7 +239,7 @@ const SLOT_ICONS: Record<string, LucideIcon> = { mic: MicIcon, radio: RadioIcon,
  * same rules as a vital (the display style, the voice collapse), coloured by its `hue` role, its
  * `level` (0–1) as the chip's level and its `value` (or label) where a vital shows its number.
  */
-function SlotChip({ slot, display, linger }: { slot: Slot; display: VitalDisplay; linger: number }) {
+const SlotChip = memo(function SlotChip({ slot, display, linger }: { slot: Slot; display: VitalDisplay; linger: number }) {
   const Icon = (slot.icon && SLOT_ICONS[slot.icon]) || CircleIcon;
   const value = slot.value !== undefined && slot.value !== "" ? String(slot.value) : undefined;
   const expanded = useExpanded(display === "expand" ? value : undefined, linger);
@@ -258,4 +272,31 @@ function SlotChip({ slot, display, linger }: { slot: Slot; display: VitalDisplay
       </VitalChip.Root>
     </div>
   );
+});
+
+/**
+ * A chip folds away and back with transform and opacity only (hud.css); it leaves the row's layout
+ * (data-gone) once folded, and joins it again before unfolding, each time with its neighbours sliding
+ * over by FLIP (flip.ts). The row's width never animates, so nothing lays out per frame.
+ */
+function useFold(box: { current: HTMLElement | null }, shown: boolean) {
+  const first = useRef(true);
+  useLayoutEffect(() => {
+    const el = box.current;
+    if (!el) return;
+    if (first.current) {
+      first.current = false;
+      if (!shown) el.dataset.gone = "";
+      return;
+    }
+    if (shown) {
+      if (el.dataset.gone === undefined) return;
+      flipRow(el.parentElement, () => delete el.dataset.gone);
+      // out of display: none a CSS transition has nothing to start from: the unfold is animated here
+      if (motionLevel(el) !== "off") el.animate([{ opacity: 0, transform: FOLDED }, { opacity: 1, transform: "none" }], { duration: FOLD_MS, delay: inlineDelay(el), easing: FOLD_EASE, fill: "backwards" });
+      return;
+    }
+    const t = setTimeout(() => flipRow(el.parentElement, () => (el.dataset.gone = "")), FOLD_MS + inlineDelay(el));
+    return () => clearTimeout(t);
+  }, [shown, box]);
 }

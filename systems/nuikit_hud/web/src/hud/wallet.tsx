@@ -1,7 +1,7 @@
 // Top right: cash, bank and job. 'change' shows a value when it changes, with the difference, then
 // fades; 'always' keeps it. Money is never coloured, only its difference (success / destructive) is.
 // Amounts are formatted with the server's currency and locale (nuikit:context, protocol §7.2).
-import { useNuiContext, type NuiPlayer } from "nuikit-core/react";
+import { useNuiContext, usePlayer } from "nuikit-core/react";
 import { BriefcaseIcon, LandmarkIcon, WalletIcon } from "lucide-react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { formatMoney } from "@/components/ui/money";
@@ -48,7 +48,8 @@ function Money({ icon, label, value, mode, size }: { icon: ReactNode; label: str
 }
 
 /** Cash, bank and job. `inline`: placed by its parent (compact: under the map), else top right. */
-export function Wallet({ player, settings, inline = false, compact = false }: { player: NuiPlayer; settings: HudSettings; inline?: boolean; compact?: boolean }) {
+export function Wallet({ settings, inline = false, compact = false }: { settings: HudSettings; inline?: boolean; compact?: boolean }) {
+  const player = usePlayer(); // its own subscription: money changing re-renders the wallet, not the HUD
   const w = settings.wallet ?? {};
   if (!player.loaded) return null;
   const job = w.job !== false ? player.job : undefined;

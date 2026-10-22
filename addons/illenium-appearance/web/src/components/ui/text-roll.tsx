@@ -65,10 +65,29 @@ function useAlign(root: React.RefObject<HTMLElement | null>, align?: Align): Ali
 }
 
 const EASE = "cubic-bezier(0.2, 0.8, 0.2, 1)"
-/** One roll's duration: about 1.6 panel steps (the identity's --nk-duration), at most 420 ms. */
+
+// Width measurements of every reel, batched into one frame: all the reads, then all the writes. Read
+// one by one in each reel's layout effect, a burst of rolls (several vitals changing at once) forced a
+// layout per reel, each after the previous one's write.
+const measures: (() => (() => void) | void)[] = []
+let measuring = 0
+function measureInFrame(read: () => (() => void) | void) {
+  measures.push(read)
+  if (measuring) return
+  measuring = requestAnimationFrame(() => {
+    measuring = 0
+    const writes = measures.splice(0).map((r) => r())
+    for (const w of writes) w?.()
+  })
+}
+/** One roll's duration: about 1.6 panel steps (the identity's --nk-duration), at most 420 ms. The token is read at
+ *  most once a second (a theme change is caught then): a style read per roll forced a recalc each time. */
+let durationRead = { at: -Infinity, value: "" }
 function rollMs() {
   if (typeof document === "undefined") return 220
-  const v = getComputedStyle(document.documentElement).getPropertyValue("--nk-duration").trim()
+  const now = performance.now()
+  if (now - durationRead.at > 1000) durationRead = { at: now, value: getComputedStyle(document.documentElement).getPropertyValue("--nk-duration").trim() }
+  const v = durationRead.value
   const m = /^([\d.]+)(m?s)$/.exec(v)
   const base = m ? parseFloat(m[1]!) * (m[2] === "s" ? 1000 : 1) : 140
   return Math.min(420, Math.max(120, base * 1.6))
@@ -85,7 +104,10 @@ interface Layer {
 }
 
 /** One reel: a string that rolls to its next value. The building block of both components. */
-function Reel({ text, dir, delay = 0, align = "start", appear = false }: { text: string; dir: Direction; delay?: number; align?: Align; appear?: boolean }) {
+// `width`: the box follows the roll from the old width to the new. false: a per-character reel of tabular
+// figures, whose width never changes; "edges": only when a character comes or goes (a digit to a digit
+// keeps its width). Measuring every roll forced a layout per reel per change.
+function Reel({ text, dir, delay = 0, align = "start", appear = false, width = true }: { text: string; dir: Direction; delay?: number; align?: Align; appear?: boolean; width?: boolean | "edges" }) {
   const seq = React.useRef(0)
   // appear: mounted after its parent's first value (a new digit): start empty and roll in, width and all
   const start = appear && motionLevel() !== "off" ? "" : text
@@ -123,24 +145,37 @@ function Reel({ text, dir, delay = 0, align = "start", appear = false }: { text:
       // nothing measured at rest: a page full of rolls would force a layout per mount
       return
     }
-    const level = motionLevel()
-    const incoming = el.lastElementChild as HTMLElement | null
-    if (level !== "on" || !incoming || typeof el.animate !== "function") return
-    // from where it is now (mid-roll, if one is running) or the outgoing text's width, to the incoming
-    // text's own width (both layers measured the same way)
-    const outgoing = incoming.previousElementSibling as HTMLElement | null
-    const from = widthAnim.current || !outgoing ? el.getBoundingClientRect().width : outgoing.getBoundingClientRect().width
-    const to = incoming.getBoundingClientRect().width
-    widthAnim.current?.cancel()
-    // the column follows the box while it moves, so text aligns in what you see, not the widest layer
-    el.style.gridTemplateColumns = "100%"
-    el.style.width = `${to}px`
-    if (Math.abs(to - from) < 0.5) {
-      widthAnim.current = null
-      return
+    if (!width || motionLevel() !== "on" || typeof el.animate !== "function") return
+    if (width === "edges") {
+      const last = layers[layers.length - 1]!
+      const prev = layers[layers.length - 2]
+      if (last.text !== "" && prev && prev.text !== "") return
     }
-    widthAnim.current = el.animate([{ width: `${from}px` }, { width: `${to}px` }], { duration: rollMs(), delay, easing: EASE, fill: "backwards" })
-  }, [rolling, lastKey, delay])
+    let live = true
+    measureInFrame(() => {
+      const incoming = el.lastElementChild as HTMLElement | null
+      if (!live || !incoming || !el.isConnected) return
+      // from where it is now (mid-roll, if one is running) or the outgoing text's width, to the incoming
+      // text's own width (both layers measured the same way)
+      const outgoing = incoming.previousElementSibling as HTMLElement | null
+      const from = widthAnim.current || !outgoing ? el.getBoundingClientRect().width : outgoing.getBoundingClientRect().width
+      const to = incoming.getBoundingClientRect().width
+      return () => {
+        widthAnim.current?.cancel()
+        // the column follows the box while it moves, so text aligns in what you see, not the widest layer
+        el.style.gridTemplateColumns = "100%"
+        el.style.width = `${to}px`
+        if (Math.abs(to - from) < 0.5) {
+          widthAnim.current = null
+          return
+        }
+        widthAnim.current = el.animate([{ width: `${from}px` }, { width: `${to}px` }], { duration: rollMs(), delay, easing: EASE, fill: "backwards" })
+      }
+    })
+    return () => {
+      live = false
+    }
+  }, [rolling, lastKey, delay, width])
 
   return (
     <span
@@ -265,7 +300,7 @@ function TextRoll({ value, direction = "up", stagger = 0, align, className, ...p
       <span className="sr-only">{text}</span>
       <span aria-hidden className="inline-flex min-w-0">
         {stagger > 0 ? (
-          Array.from({ length: slots }, (_, i) => <Reel key={i} text={chars[i] ?? ""} dir={direction} delay={i * stagger} appear={live} align="center" />)
+          Array.from({ length: slots }, (_, i) => <Reel key={i} text={chars[i] ?? ""} dir={direction} delay={i * stagger} appear={live} align="center" width={false} />)
         ) : (
           <Reel text={text} dir={direction} align={at} />
         )}
@@ -307,7 +342,7 @@ function NumberRoll({ value, format = plain, direction, stagger = 24, className,
         {Array.from({ length: slots }, (_, i) => {
           const fromRight = slots - 1 - i
           const ch = chars[chars.length - 1 - fromRight] ?? ""
-          return <Reel key={fromRight} text={ch} dir={dir} delay={fromRight * stagger} align="center" appear={live} />
+          return <Reel key={fromRight} text={ch} dir={dir} delay={fromRight * stagger} align="center" appear={live} width="edges" />
         })}
       </span>
     </span>

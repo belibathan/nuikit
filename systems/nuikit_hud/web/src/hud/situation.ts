@@ -15,8 +15,15 @@ export interface HudSituations {
   interaction?: ZoneName[];
 }
 
-/** The theme's --nk-rest-delay (tokens 1.4) as ms ("8s", "8000ms"); 0, its default, or unset: never. */
-export function restDelay(value = getComputedStyle(document.documentElement).getPropertyValue("--nk-rest-delay")): number {
+/** The theme's --nk-rest-delay (tokens 1.4) as ms ("8s", "8000ms"); 0, its default, or unset: never. Read at
+ *  most once a second (a theme reload is caught then): reading styles per change forced a recalc. */
+let delayRead = { at: -Infinity, value: "" };
+function delayToken() {
+  const now = performance.now();
+  if (now - delayRead.at > 1000) delayRead = { at: now, value: getComputedStyle(document.documentElement).getPropertyValue("--nk-rest-delay") };
+  return delayRead.value;
+}
+export function restDelay(value = delayToken()): number {
   const v = value.trim();
   const n = parseFloat(v);
   if (!Number.isFinite(n) || n <= 0) return Infinity;
