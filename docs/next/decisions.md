@@ -17,5 +17,6 @@ Only money, accounts, publishing and secrets go to the owner.
 | 8 | Targeted camera offset (`nk.camera`) | Per kind: peds as now, vehicles further out (≈ `{ y = 5.5, z = 1.4 }`) | `offset` per call, or one global offset in config |
 | 9 | Resume between two resources' camera claims | A cut | `duration` on resume for a blend, once spiked |
 | 10 | Death band (`nuikit_death` `Config.band`) | On | `Config.band = false` |
+| 11 | ox_lib notify `×N` (the same toast again) | Re-enters in place: a short half-distance slide, the count rises in | `--ox-notify-bump: 0` on `:root` in `nuikit/theme.css` (0–1 scales it) |
 
 Implementation of rows 2, 5, 7, 8 and 10 goes to the lane that owns the files (`dispatch.md`).

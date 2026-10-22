@@ -72,6 +72,18 @@ const ENTER: Record<NoticePosition, string> = {
   "bottom-right": "slide-in-from-bottom-8",
 };
 
+/** Where a ×N bump re-enters from: half ox's distance, from the same side as the first entrance. */
+const BUMP: Record<NoticePosition, [string, string]> = {
+  "top-left": ["0rem", "-0.75rem"],
+  "top-center": ["0rem", "-0.75rem"],
+  "top-right": ["0rem", "-0.75rem"],
+  "center-left": ["-0.75rem", "0rem"],
+  "center-right": ["0.75rem", "0rem"],
+  "bottom-left": ["0rem", "0.75rem"],
+  "bottom-center": ["0rem", "0.75rem"],
+  "bottom-right": ["0rem", "0.75rem"],
+};
+
 let seq = 0;
 
 /** Two toasts without an id are the same when everything a player reads is the same. */
@@ -84,7 +96,8 @@ function Counted({ children, count }: { children: React.ReactNode; count: number
   return (
     <span className="flex items-center gap-2">
       <span className="min-w-0 flex-1">{children}</span>
-      <span data-slot="notice-count" className="nk-num shrink-0 text-xs font-medium text-muted-foreground" aria-label={`${count} times`}>
+      {/* keyed on the count: each repeat rises in */}
+      <span key={count} data-slot="notice-count" className="nk-num nk-rise shrink-0 text-xs font-medium text-muted-foreground" aria-label={`${count} times`}>
         {`×${count}`}
       </span>
     </span>
@@ -182,11 +195,16 @@ export function Notifications() {
               iconAlign={t.alignIcon === "top" ? "start" : t.alignIcon === "center" ? "center" : undefined}
               data-state={t.leaving ? "closed" : "open"}
               animate={false}
-              // a ×N bump restarts the time line in place: no second entrance
+              // a ×N bump re-enters in place (app.css .ox-notify-bump): shorter and nearer than the first
+              // entrance, in the same slot, and its time line restarts
               className={cn(
-                t.leaving ? cn("animate-out fade-out-0 duration-400 fill-mode-forwards", EXIT[position]) : t.count < 2 && cn("animate-in fade-in-0 duration-200 ease-out", ENTER[position]),
+                t.leaving
+                  ? cn("animate-out fade-out-0 duration-400 fill-mode-forwards", EXIT[position])
+                  : t.count < 2
+                    ? cn("animate-in fade-in-0 duration-200 ease-out", ENTER[position])
+                    : "ox-notify-bump",
               )}
-              style={t.style}
+              style={t.count < 2 ? t.style : ({ "--ox-bump-x": BUMP[position][0], "--ox-bump-y": BUMP[position][1], ...t.style } as CSSProperties)}
             />
           ))}
         </NoticeStack>
