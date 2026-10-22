@@ -30,6 +30,10 @@ interface VitalProps {
   force: { by: number; nonce: number } | null;
 }
 
+// Foundation 2 roles: the wrapper carries data-hue="<vital>", whose ramp (tokens 1.4) colours the chip;
+// before those tokens, --hue-solid is unset and the vital keeps its --vital-<tone>.
+const roleColour = (tone: Tone) => ({ "--vital": `var(--hue-solid, var(--vital-${tone}))` }) as CSSProperties;
+
 /** One vital: the icon in a chip whose level shows the value; a pop when it changes. */
 export function VitalItem({ tone, value, mode, low, high, linger, pop, force }: VitalProps) {
   const v = Math.max(0, Math.min(100, Math.round(value ?? 0)));
@@ -42,8 +46,8 @@ export function VitalItem({ tone, value, mode, low, high, linger, pop, force }: 
   // in sequence with the vitals that come or go with it (the row is a <Stagger>)
   const stagger = useStaggerItem<HTMLDivElement>(shown);
   return (
-    <div ref={stagger} data-slot="hud-vital" data-tone={tone} data-shown={shown || undefined} data-critical={critical || undefined} className="hud-vchip" aria-hidden={!shown}>
-      <VitalChip.Root value={v} tone={tone} role="meter" aria-label={`${LABELS[tone]} ${v}%`} aria-valuemin={0} aria-valuemax={100} aria-valuenow={v}>
+    <div ref={stagger} data-slot="hud-vital" data-tone={tone} data-hue={tone} data-shown={shown || undefined} data-critical={critical || undefined} className="hud-vchip" aria-hidden={!shown}>
+      <VitalChip.Root value={v} tone={tone} style={roleColour(tone)} role="meter" aria-label={`${LABELS[tone]} ${v}%`} aria-valuemin={0} aria-valuemax={100} aria-valuenow={v}>
         <VitalChip.Shape>
           <VitalChip.Icon>{ICONS[tone]}</VitalChip.Icon>
         </VitalChip.Shape>

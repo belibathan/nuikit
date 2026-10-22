@@ -31,7 +31,11 @@
   --hud-faint: color-mix(in oklab, var(--hud-fg) 18%, transparent);
   --hud-hairline: color-mix(in oklab, var(--hud-fg) 10%, transparent);
   --hud-track: var(--nk-meter-track, color-mix(in oklab, var(--hud-fg) 16%, transparent));
-  --hud-redline: var(--nk-gauge-redline, var(--destructive));
+  /* status colours on Foundation 2 roles (tokens 1.4: --role-<name>), today's tokens until those land */
+  --hud-ok: var(--role-success, var(--success));
+  --hud-warn: var(--role-warning, var(--warning));
+  --hud-danger: var(--role-danger, var(--destructive));
+  --hud-redline: var(--nk-gauge-redline, var(--hud-danger));
   --hud-fill: var(--nk-gauge-fill, var(--brand, var(--primary)));
   --hud-needle: var(--nk-gauge-needle, var(--hud-fg));
   --hud-font-num: var(--font-numeric, var(--font-sans));
@@ -491,11 +495,11 @@
   margin-right: 0.25rem;
   font-size: 0.875rem;
   font-weight: 600;
-  color: var(--destructive);
+  color: var(--hud-danger);
   animation: hud-rise calc(5s * var(--nk-motion, 1)) ease-out both;
 }
 .hud-money-delta[data-up] {
-  color: var(--success);
+  color: var(--hud-ok);
 }
 .hud-job {
   display: flex;
@@ -522,7 +526,7 @@
   background-color: var(--hud-faint);
 }
 .hud-duty[data-on] {
-  background-color: var(--success);
+  background-color: var(--hud-ok);
 }
 
 /* ───────────────────────────── vehicle cluster */
@@ -581,7 +585,7 @@
   transition: background-color calc(120ms * var(--nk-motion, 1)), color calc(120ms * var(--nk-motion, 1));
 }
 .hud-gear[data-gear="R"] {
-  background-color: var(--warning);
+  background-color: var(--hud-warn);
   color: var(--warning-foreground);
   box-shadow: none;
   text-shadow: none;
@@ -614,11 +618,11 @@
 }
 .hud-shift span[data-on][data-step="0"],
 .hud-shift span[data-on][data-step="1"] {
-  background-color: var(--success);
+  background-color: var(--hud-ok);
 }
 .hud-shift span[data-on][data-step="2"],
 .hud-shift span[data-on][data-step="3"] {
-  background-color: var(--warning);
+  background-color: var(--hud-warn);
 }
 .hud-shift span[data-on][data-step="4"] {
   background-color: var(--hud-redline);
@@ -631,7 +635,7 @@
 /* turn signals: blink while on */
 .hud-signal {
   display: flex;
-  color: var(--success);
+  color: var(--hud-ok);
   opacity: 0.16;
 }
 .hud-signal svg {
@@ -675,10 +679,10 @@
   transition: transform var(--hud-ms) ease-out;
 }
 .hud-fuel[data-low] {
-  color: var(--warning);
+  color: var(--hud-warn);
 }
 .hud-fuel[data-low] .hud-fuel-fill {
-  background-color: var(--warning);
+  background-color: var(--hud-warn);
 }
 
 /* telltales: lit in their colour, unlit ones stay faintly in place */
@@ -714,10 +718,10 @@
 .hud-telltale[data-on] {
   opacity: 1;
 }
-.hud-telltale[data-on][data-tone="success"] { color: var(--success); }
+.hud-telltale[data-on][data-tone="success"] { color: var(--hud-ok); }
 .hud-telltale[data-on][data-tone="info"] { color: var(--info); }
-.hud-telltale[data-on][data-tone="warning"] { color: var(--warning); }
-.hud-telltale[data-on][data-tone="destructive"] { color: var(--destructive); }
+.hud-telltale[data-on][data-tone="warning"] { color: var(--hud-warn); }
+.hud-telltale[data-on][data-tone="destructive"] { color: var(--hud-danger); }
 
 /* above the gauge, out of the flow: a warning appearing never moves the cluster (in game, Oct 20) */
 .hud-warnings {
@@ -930,7 +934,7 @@
   background-color: var(--hud-fill);
 }
 .hud-segments span[data-on][data-zone="warn"] {
-  background-color: var(--warning);
+  background-color: var(--hud-warn);
 }
 .hud-segments span[data-on][data-zone="red"] {
   background-color: var(--hud-redline);
@@ -1048,10 +1052,10 @@
   width: 0.875rem;
   height: 0.875rem;
 }
-.hud-air-flag[data-tone="success"] { color: var(--success); }
+.hud-air-flag[data-tone="success"] { color: var(--hud-ok); }
 .hud-air-flag[data-tone="info"] { color: var(--info); }
-.hud-air-flag[data-tone="warning"] { color: var(--warning); }
-.hud-air-flag[data-tone="destructive"] { color: var(--destructive); }
+.hud-air-flag[data-tone="warning"] { color: var(--hud-warn); }
+.hud-air-flag[data-tone="destructive"] { color: var(--hud-danger); }
 .hud-air-flag[data-tone="muted"] { opacity: 0.8; }
 
 /* ═════════════════════════════ compact layout (design v2 §4) ═════════════════════════════
@@ -1360,7 +1364,7 @@
   opacity: 0.92;
 }
 .hud-ammo[data-empty] .hud-ammo-clip {
-  color: var(--warning);
+  color: var(--hud-warn);
 }
 
 /* ───────────────────────────── vehicle: the compact gauge */
@@ -1499,7 +1503,7 @@
     stroke calc(200ms * var(--nk-motion, 1)) ease-out;
 }
 .hud-c-fuelarc[data-low] .hud-c-fuelarc-fill {
-  stroke: var(--warning);
+  stroke: var(--hud-warn);
   stroke-opacity: 1;
 }
 .hud-c-fuelarc-icon {
@@ -1515,7 +1519,7 @@
   height: 0.75rem;
 }
 .hud-c-fuelarc-icon[data-low] {
-  color: var(--warning);
+  color: var(--hud-warn);
   opacity: 1;
 }
 .hud-c-unit {
@@ -1551,7 +1555,7 @@
   transition: background-color calc(120ms * var(--nk-motion, 1)), color calc(120ms * var(--nk-motion, 1));
 }
 .hud-c-gear[data-gear="R"] {
-  background-color: var(--warning);
+  background-color: var(--hud-warn);
   color: var(--warning-foreground);
 }
 .hud-c-gear[data-gear="N"] {
@@ -1620,11 +1624,11 @@
   font-weight: 600;
 }
 .hud-c-fuel[data-low] {
-  color: var(--warning);
+  color: var(--hud-warn);
   opacity: 1;
 }
 .hud-c-fuel[data-low] .hud-c-fuel-fill {
-  background-color: var(--warning);
+  background-color: var(--hud-warn);
 }
 .hud-c-gauge[data-off] .hud-c-svg,
 .hud-c-gauge[data-off] .hud-c-center,
@@ -1754,10 +1758,10 @@
   line-height: 1;
   font-weight: 700;
 }
-.hud-c-tell[data-tone="success"] { color: var(--success); }
+.hud-c-tell[data-tone="success"] { color: var(--hud-ok); }
 .hud-c-tell[data-tone="info"] { color: var(--info); }
-.hud-c-tell[data-tone="warning"] { color: var(--warning); }
-.hud-c-tell[data-tone="destructive"] { color: var(--destructive); }
+.hud-c-tell[data-tone="warning"] { color: var(--hud-warn); }
+.hud-c-tell[data-tone="destructive"] { color: var(--hud-danger); }
 
 /* ───────────────────────────── motion */
 
