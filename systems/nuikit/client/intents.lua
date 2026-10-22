@@ -114,6 +114,7 @@ local function openIntent(resource, id, kind, props)
   send({ op = 'open', intent = entry(it) })
   -- One event per drawn intent: the doctor counts them by source (docs/architecture.md §6).
   TriggerEvent('nuikit:intent', { source = resource, intent = kind, id = id })
+  TriggerServerEvent('nuikit:intent', { source = resource, intent = kind })
   return id
 end
 

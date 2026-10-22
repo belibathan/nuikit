@@ -17,6 +17,8 @@ export default defineConfig([
       host: "src/host.ts",
       // Intents (docs/intents.md): validation, store and renderer contract; React renderers.
       intents: "src/intents.ts",
+      // Coverage harness maths (bench/coverage): pure, no imports.
+      coverage: "src/coverage.ts",
       "intents-react": "src/intents-react.ts",
     },
     format: ["esm"],

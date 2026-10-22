@@ -13,6 +13,7 @@
  *   nuikit:intent {source,intent} server event the intents runtime emits; the doctor counts by source
  */
 
+import { COVERAGE_TARGETS } from "./coverage";
 import type { ContrastResult } from "./tokens";
 
 // ─────────────────────────────────────────── input
@@ -492,5 +493,8 @@ export function formatDoctor(rep: DoctorReport): string[] {
       out.push(`  ${i.source.padEnd(24)} ${i.total}  (${parts})`);
     }
   } else out.push("intents: none counted yet (the intents runtime emits nuikit:intent; play a bit, then run again)");
+  const target = (COVERAGE_TARGETS as Record<string, number>)[rep.framework];
+  const drawn = rep.intents.reduce((a, i) => a + i.total, 0);
+  out.push(`coverage: ${drawn} drawn from ${rep.intents.length} source${rep.intents.length === 1 ? "" : "s"}${target ? `; target ${Math.round(target * 100)}% on ${rep.framework}` : ""} (bench/coverage/run.mjs)`);
   return out;
 }

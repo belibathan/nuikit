@@ -85,7 +85,13 @@ intent: `notify`, `menu`, `input`, …), as a server event (`TriggerEvent` on th
 totals, biggest source first. This is the live half of the coverage number: with the scripted session in
 [`../bench/coverage/`](../bench/coverage/README.md) it says what share of a server's UI calls nuikit draws.
 
-Until the intents lane emits the event, the section prints "none counted yet".
+The client runtime (`systems/nuikit/client/intents.lua`) sends it with `TriggerServerEvent`. The doctor ignores
+non-string fields and caps `source` at 64 chars, `intent` at 32, 256 sources and 64 intents per source. Before
+any arrives the section prints "none counted yet".
+
+The last line, `coverage: N drawn from M sources; target 90% on qbox`, names the framework's target (qbox 90%,
+qbcore and esx 75%). The percentage itself needs the session log: `node bench/coverage/run.mjs <framework>
+session.jsonl doctor.json`.
 
 ## 5. Sample output
 
