@@ -29,7 +29,7 @@ export function DragPreview() {
   const moving = shift && count > 1 ? Math.floor(count / 2) : amount === 0 || amount > count ? count : amount;
   return (
     <div ref={ref} className="pointer-events-none fixed top-0 left-0 z-[70]">
-      <div className="inv-drag relative grid size-[5.5rem] place-items-center">
+      <div className="inv-drag relative grid size-(--inv-slot-size) place-items-center">
         <ItemImage src={itemImage(drag.item)} name={drag.item.name} className="size-12" />
         {count > 1 && (
           <span className="inv-drag-count nk-num absolute -top-2 -right-2 grid h-6 min-w-6 place-items-center px-1.5 text-sm leading-none font-semibold">

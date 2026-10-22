@@ -11,6 +11,20 @@ A drop-in replacement for [ox_inventory](https://github.com/overextended/ox_inve
 
 Only `web/build` is replaced: item images stay in `ox_inventory/web/images`, and the `inventory:imagepath` convar works as before. Updating ox_inventory replaces `web/build`, so re-copy it after each update. Each nuikit release lists the ox_inventory versions it was tested against.
 
+## Size
+
+Slot size, grid density and sheet width are tokens with today's look as the default. Set any of them on `:root` in
+`nuikit/theme.css` (every page gets the theme):
+
+```css
+:root {
+  --inv-slot-size: 5.5rem;   /* one slot, square */
+  --inv-columns: 5;          /* slots across */
+  --inv-gap: 0.5rem;         /* space between slots: smaller is denser */
+  /* --inv-sheet-width: 36rem;  default: follows the grid (columns, slot size, gap) */
+}
+```
+
 ## Edit it
 
 `web/` is a normal Vite + React + shadcn app: state and the drag & drop logic in `web/src/state`, UI in `web/src/components`, stock shadcn components in `web/src/components/ui`. The full message protocol it implements is in [`docs/ox-inventory-protocol.md`](../../docs/ox-inventory-protocol.md).
