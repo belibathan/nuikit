@@ -22,5 +22,6 @@ Only money, accounts, publishing and secrets go to the owner.
 | 13 | GPS route on the compact ring (changes the default look on purpose; A4, `nuikit_hud` `Config.minimap.routeClip`) | `'box'`: a square radar box (the route reaches past the ring only at its corners; the map is squeezed ~29%) | `'mask'` for GTA's aspect (unsqueezed, the route overhangs), or `aspect` to force one |
 | 14 | Compact map size (changes the default look on purpose; `nuikit_hud` `Config.minimap.size`) | 15rem | `size = 12` (the 0.7 ring) or any rem |
 | 15 | Map halo (`nuikit_hud` `Config.minimap.halo`) | On (an experiment): the speedometer's plate behind the round ring | `halo = false`; strength from `--nk-hud-opacity` (shared), `--nk-map-halo-size` / `--nk-map-halo-opacity` |
+| 16 | mm_radio device shape (`addons/mm_radio`) | nuikit's own drawn handheld silhouette (`radio-shape.svg`, inlined in the CSS) as a mask, filled with the panel surface, hairline and drop in the theme's tokens | `--mm-radio-shape: url(...)` on `:root` in `nuikit/theme.css` (any image; its alpha is the shape, stretched to 18 × 34rem) |
 
 Implementation of rows 2, 5, 7, 8 and 10 goes to the lane that owns the files (`dispatch.md`).

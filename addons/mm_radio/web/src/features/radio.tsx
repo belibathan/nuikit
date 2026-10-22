@@ -150,22 +150,19 @@ export function Handheld() {
   const screen = { home: <Home />, channels: <Channels />, keypad: <Keypad />, members: <Members />, settings: <SettingsScreen /> }[tab];
 
   return (
-    <div className="relative pt-10">
-      {/* antenna */}
-      <div className="bg-muted absolute top-0 left-8 h-14 w-5 rounded-t-md border border-b-0" />
-      <section
-        className={cn(
-          "nk-panel relative flex w-72 flex-col gap-3 rounded-[1.75rem] p-3",
-          moveMode && "outline-primary cursor-move outline-2 outline-offset-2",
-        )}
-      >
+    <div className={cn("relative h-[34rem] w-72", moveMode && "cursor-move")}>
+      {/* the device: a masked silhouette in the panel surface (app.css, --mm-radio-shape) */}
+      <div aria-hidden className="radio-shape absolute inset-0" data-move={moveMode ? "" : undefined}>
+        <div className="absolute inset-0" />
+      </div>
+      <section className="absolute inset-x-1.5 top-14 bottom-0 flex flex-col gap-3 p-3 text-(--nk-panel-fg)">
         {/* speaker slot */}
-        <div className="relative flex h-3 items-center justify-center">
+        <div className="relative flex h-3 shrink-0 items-center justify-center">
           <div className="bg-muted h-1 w-12 rounded-full" />
           {moveMode && <Move className="text-primary absolute right-2 size-4" />}
         </div>
 
-        <div className="bg-background relative h-[18.75rem] overflow-hidden rounded-2xl border p-3">
+        <div className="bg-background relative min-h-0 flex-1 overflow-hidden rounded-2xl border p-3">
           {charged ? (
             <div className="flex h-full flex-col">
               <StatusBar message={message} />

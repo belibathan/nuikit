@@ -77,6 +77,7 @@ and target motion; `edge-sheet` first-frame fix; `nuikit.cfg` comments without s
 | ox_lib context menu on `edge-sheet` (551e749 superseded) | PR #112. Needs the in-game check |
 | ox_lib notify `×N` bump re-enters in place (decisions #11) | PR #117. Needs the in-game check |
 | Progress cancel key: `nuikit_cancel_key` convar (decisions #2) | PR #119 (lane C files). Needs the in-game check |
+| mm_radio: clean enter/leave (slide on its own wrapper, first open slides too, no replay on updates); the device is a masked radio silhouette in the panel surface, `--mm-radio-shape` to swap it (decisions #15) | PR open (POST log identical); not seen in game |
 | Overrides polish: ox_lib text UI slides from its edge (#122), mm_radio enter/exit + chip stagger (#125), qbx_taxijob meter on `edge-sheet`, clear of the HUD zones (#126); Renewed-Banking, illenium-appearance, qbx_scoreboard, qbx_vehiclesales already match #102 | PRs open. Needs the in-game check |
 | nuikit_chat: a recalled message (up arrow) no longer shows clipped to half a line | PR open. Needs the in-game check |
 
