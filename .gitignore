@@ -19,3 +19,4 @@ bench/identity/shots/*/
 bench/motion/.out
 !bench/coverage/
 bench/visual/out/
+systems/nuikit_dev/restart.queue

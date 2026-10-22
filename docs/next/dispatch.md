@@ -17,6 +17,34 @@ things **configurable** (see "The design rule") and move on. A wrong default cos
   (PRs, required CI and reviews come back once real servers run nuikit.)
 - **Say what's unproven in one line** (usually "not seen in game") and move on.
 
+## The product loop (from Oct 22, evening): start from the experience, work backwards
+
+Like building from the product experience back: the lanes work **in the running server**, not on the repo. A lane
+owns one *player moment* end to end, changes it live, the owner plays it, and the code is tidied into the repo
+afterwards. Product lanes run on Sonnet, low effort, in the live checkout `C:\dev\nuikit` (the server reads it
+through junctions); no worktrees, branches or commits of their own.
+
+| Product lane | The moment | Owns (live) |
+|---|---|---|
+| P1 HUD | on foot, driving, talking: vitals, voice, minimap, speedometer, the HUD editor | `systems/nuikit_hud`, `systems/nuikit_voice` |
+| P2 Menus | pause, inventory, settings | `systems/nuikit_pause`, `addons/ox_inventory` |
+| P3 Interactions | notify, progress, input, context, radial, target, key prompts, scoreboard, banking | `addons/*` except ox_inventory, `systems/nuikit_screen` |
+| P4 Moments | spawn, loading, chat, death, stress, the `/nk test` commands | `systems/nuikit_{loading,chat,death,stress,dev}` |
+
+The loop, per change:
+- **Systems:** `pnpm --filter ./systems/<system>/web dev` (once; the vite plugin points the resource's `ui_page` at it), then
+  `.local\nk-restart.ps1 <resource>` once. After that every save hot-reloads in game.
+- **Addons:** `pnpm --filter ./addons/<addon>/web build`, `.local\deploy.ps1 -Only <addon>`, `.local\nk-restart.ps1 <resource>`
+  (ox_inventory brings ox_fuel and qbx_ambulancejob back on its own). ox_lib and ox_target need a full restart: ask the lead.
+- **Lua:** save, `.local\nk-restart.ps1 <resource>`.
+- **Shared things** (kit.css, core, tokens): don't edit them. Override locally in your resource's CSS first and
+  note it in `.local/promote.md` (one line: what, where, why). The lead promotes it into the kit later.
+- The owner talks to a lane directly while playing. Answer in one or two lines, fix and reload, and say "reloaded".
+- Stay in your files: other lanes edit the same checkout live. Never `git` anything except `git diff` and `git status`.
+
+The lead works backwards: it commits each lane's paths as a batch, runs the gate, promotes `.local/promote.md` items
+into the kit, and pushes `main`. The repo lanes below (B–F) are paused while the product loop runs.
+
 ## Order of work (the owner, Oct 22)
 
 1. **The product, in game, as good as it can be.** Only work that makes the screens on a real server better.

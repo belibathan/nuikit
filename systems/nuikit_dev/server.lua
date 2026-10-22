@@ -40,3 +40,24 @@ RegisterCommand('nk', function(source, args)
 end, false)
 
 print('^2[nuikit_dev]^7 on: /nk test <what> (ace ' .. NkDev.ACE .. ')')
+
+-- Restart queue (dev only): a local tool appends resource names, one per line, to this resource's restart.queue
+-- (`.local/nk-restart.ps1 nuikit_hud ox_inventory`); each is ensured within a second. Lets an agent iterate
+-- without the txAdmin console. A resource that stops dependants (ox_inventory) gets them back via `then`.
+local after = { ox_inventory = { 'ox_fuel', 'qbx_ambulancejob' }, nuikit = { 'nuikit_chat', 'nuikit_death', 'nuikit_hud', 'nuikit_loading', 'nuikit_pause', 'nuikit_stress', 'nuikit_dev', 'nuikit_voice', 'nuikit_screen', 'nuikit_skins' } }
+CreateThread(function()
+  while true do
+    Wait(1000)
+    local queue = LoadResourceFile(GetCurrentResourceName(), 'restart.queue')
+    if queue and queue:find('%S') then
+      SaveResourceFile(GetCurrentResourceName(), 'restart.queue', '', 0)
+      for name in queue:gmatch('[%w_%-]+') do
+        if name ~= GetCurrentResourceName() then
+          print('[nuikit_dev] restart ' .. name)
+          ExecuteCommand('ensure ' .. name) -- starts it, or restarts it when running
+          for _, dep in ipairs(after[name] or {}) do ExecuteCommand('ensure ' .. dep) end
+        end
+      end
+    end
+  end
+end)
