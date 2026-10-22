@@ -4,6 +4,7 @@ import { __reset, emit } from "../src/index";
 import { __resetServerTheme, applyServerTheme, loadServerTheme, retryDelay } from "../src/remote";
 import { applyTheme, clearTheme, getPrefs, getTheme, onTheme, parseTheme, setPrefs, toRgba } from "../src/theme";
 import { compileTheme } from "../src/tokens";
+import { getZones } from "../src/zones";
 
 const near = (a: number[] | null, b: number[], tol = 2) => {
   expect(a).not.toBeNull();
@@ -174,6 +175,32 @@ describe("loadServerTheme (override pages)", () => {
     await new Promise((r) => setTimeout(r, 0));
     await new Promise((r) => setTimeout(r, 0));
     expect(document.documentElement.style.getPropertyValue("--primary")).toBe("rgb(0, 255, 255)");
+  });
+
+  it("takes the screen zones from the same answers; a zone change alone doesn't repaint", async () => {
+    window.GetParentResourceName = () => "ox_lib";
+    const theme = compileTheme(".dark { --primary: #ff00ff; }");
+    let calls = 0;
+    let release: (v: Response) => void = () => {};
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(() => {
+        if (++calls === 1) return Promise.resolve(new Response(JSON.stringify({ hash: "t:z0", themeHash: "t", theme, zones: [] })));
+        return new Promise<Response>((r) => (release = r));
+      }),
+    );
+    expect(await loadServerTheme()).toBe(true);
+    expect(getZones()).toEqual({});
+    await new Promise((r) => setTimeout(r, 0));
+    const repaints = vi.fn();
+    const off = onTheme(repaints);
+    const map = { "nuikit_hud:map": [{ x: 0.8, y: 0, w: 0.2, h: 0.3 }] };
+    release(new Response(JSON.stringify({ hash: "t:z1", themeHash: "t", theme, zones: map })));
+    await new Promise((r) => setTimeout(r, 0));
+    await new Promise((r) => setTimeout(r, 0));
+    expect(getZones()).toEqual(map);
+    expect(repaints).not.toHaveBeenCalled();
+    off();
   });
 
   it("falls back to nuikit/theme.css from an older nuikit resource", async () => {

@@ -130,7 +130,8 @@ describe("theme callback for override pages (systems/nuikit/client.lua)", () => 
     const r = await nuikit.call("theme", {});
     expect(r.theme.vars.primary).toBe("rgb(0, 255, 0)");
     expect(r.prefs).toEqual({ scale: 1, reducedMotion: false, highContrast: false });
-    expect(r.hash).toMatch(/^[0-9a-f]{8}:1(\.0)?:0:0$/);
+    expect(r.themeHash).toMatch(/^[0-9a-f]{8}:1(\.0)?:0:0$/);
+    expect(r.hash).toBe(`${r.themeHash}:z0`);
     expect(r.css).toBeUndefined();
   });
 
@@ -163,6 +164,30 @@ describe("theme callback for override pages (systems/nuikit/client.lua)", () => 
     const quiet = nuikit.callLater("theme", { hash: h2, wait: true });
     client.runTimers();
     expect(await quiet).toEqual({ hash: h2, unchanged: true });
+  });
+
+  it("carries every UI's screen zones; a zone change answers waiting pages with the same themeHash", async () => {
+    const nuikit = await start();
+    const hud = await client.start("hud", { before: started(["nuikit", "hud"]) });
+    const first = await nuikit.call("theme", {});
+    expect(Object.keys(first.zones)).toEqual([]); // an empty Lua table ({} or [])
+    const waiting = nuikit.callLater("theme", { hash: first.hash, wait: true });
+    await hud.run(`NUI.zone('map', { { x = 0.8, y = 0.02, w = 0.18, h = 0.3 } })`);
+    const next = await waiting;
+    expect(next.zones).toEqual({ "hud:map": [{ x: 0.8, y: 0.02, w: 0.18, h: 0.3 }] });
+    expect(next.themeHash).toBe(first.themeHash);
+    expect(next.hash).not.toBe(first.hash);
+    // a UI that stops drops its zones
+    const again = nuikit.callLater("theme", { hash: next.hash, wait: true });
+    client.stop("hud");
+    expect(Object.keys((await again).zones)).toEqual([]);
+  });
+
+  it("a page asking after a zone was published gets it at once", async () => {
+    const nuikit = await start();
+    const hud = await client.start("hud", { before: started(["nuikit", "hud"]) });
+    await hud.run(`NUI.zone('cluster', { { x = 0.7, y = 0.8, w = 0.28, h = 0.18 } })`);
+    expect((await nuikit.call("theme", {})).zones).toEqual({ "hud:cluster": [{ x: 0.7, y: 0.8, w: 0.28, h: 0.18 }] });
   });
 
   it("sends theme.css when the server couldn't compile", async () => {
