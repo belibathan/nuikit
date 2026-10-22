@@ -488,7 +488,9 @@ function Shape({ className, children, ...props }: React.ComponentProps<"span">) 
             {/* liquid: rises inside the shape, a brighter line on its surface */}
             {level === "fill" && (
               <g clipPath={`url(#vc-${id})`}>
-                <g style={{ transform: `translateY(${((1 - v! / 100) * geo.h).toFixed(2)}px)`, transition: "transform calc(420ms * var(--nk-motion, 1)) cubic-bezier(0.2, 0.8, 0.2, 1)" }}>
+                {/* levels snap to the value: an SVG element's transform isn't composited, so a transition here costs
+                    style, layout and paint on the main thread every frame (the HUD ticks; it never stops) */}
+                <g style={{ transform: `translateY(${((1 - v! / 100) * geo.h).toFixed(2)}px)` }}>
                   <rect x={0} y={0} width={geo.w} height={geo.h} style={{ fill: "var(--vital, var(--primary))", opacity: 0.42 }} />
                   <rect x={0} y={0} width={geo.w} height={Math.max(1, sw * 0.6)} style={{ fill: "var(--vital, var(--primary))", opacity: 0.95 }} />
                 </g>
@@ -502,7 +504,7 @@ function Shape({ className, children, ...props }: React.ComponentProps<"span">) 
                   y={geo.h - sw * 1.4}
                   width={geo.w}
                   height={sw * 1.4}
-                  style={{ fill: "var(--vital, var(--primary))", transformOrigin: "0 0", transform: `scaleX(${(v! / 100).toFixed(3)})`, transition: "transform calc(300ms * var(--nk-motion, 1)) ease-out" }}
+                  style={{ fill: "var(--vital, var(--primary))", transformOrigin: "0 0", transform: `scaleX(${(v! / 100).toFixed(3)})` }}
                 />
               </g>
             )}
