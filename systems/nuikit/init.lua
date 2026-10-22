@@ -49,6 +49,7 @@ nk.version = version
 import('lib/camera.lua')
 import('lib/controls.lua')
 import('lib/settings.lua') -- nk.settings (docs/settings.md)
+import('lib/keys.lua') -- nk.keys
 -- end services
 rawset(nk, '__imported', true)
 

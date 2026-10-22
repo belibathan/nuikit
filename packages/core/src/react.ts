@@ -33,6 +33,7 @@ import {
 } from "./index";
 import { flipFrom, indicator, motionLevel, spring, type Channel, type SpringName } from "./motion";
 import { clearOf, getZones, onZones, type ClearOptions, type ZonePosition, type Zones } from "./zones";
+import { loadKeys, type KeyBinding } from "./keys";
 import { applySettingsPreset, cancelSettings, draftSettings, loadSettings, resetSettings, saveSettings, type SettingValue, type SettingsSection } from "./settings";
 import { getSlots, onSlots, type Slot } from "./slots";
 import { getTheme } from "./theme";
@@ -73,6 +74,20 @@ export function useClearOf(position: ZonePosition, opts?: ClearOptions): CSSProp
     return c.top !== undefined ? { top: c.top } : c.bottom !== undefined ? { bottom: c.bottom } : {};
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [zones, position, size, key]);
+}
+
+/**
+ * Every key a resource declared with nk.keys (read-only; players rebind in GTA's Settings › Key Bindings › FiveM).
+ *
+ *   const { keys } = useKeys();  // [{ resource, id, label, default, binding, mapper }]
+ */
+export function useKeys() {
+  const [keys, setKeys] = useState<KeyBinding[]>([]);
+  const reload = useCallback(async () => setKeys(await loadKeys()), []);
+  useEffect(() => {
+    void reload();
+  }, [reload]);
+  return { keys, reload };
 }
 
 /**
