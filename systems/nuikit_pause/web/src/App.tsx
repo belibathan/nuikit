@@ -22,6 +22,7 @@ import { cn } from "@/lib/utils";
 import { HelpPage, PlayerSummary, ServerSummary, Stage } from "./views/home";
 import { InfoPage } from "./views/info";
 import { KeysPage } from "./views/keys";
+import { SettingsPage } from "./views/settings";
 import { MapSheetPage, MapStage, useMapModel } from "./views/map";
 import { PauseSheet, rise, SHEET_W } from "./views/sheet";
 
@@ -51,6 +52,8 @@ function Pause({ data, player }: { data: PauseData; player: NuiPlayer }) {
   const views = data?.views;
   const [view, setView] = useState<Side>(data?.view ?? "home");
   const [standIn, setStandIn] = useState(!!data?.preview);
+  const [streamer, setStreamer] = useState(!!data?.streamer);
+  useEffect(() => setStreamer(!!data?.streamer), [data?.streamer]);
   useEffect(() => setStandIn(!!data?.preview), [data?.preview]);
 
   const go = useCallback((next: Side) => {
@@ -79,6 +82,7 @@ function Pause({ data, player }: { data: PauseData; player: NuiPlayer }) {
     const toggle = (v: Side) => go(view === v ? "home" : v);
     if (b === "map" && views?.map) return go("map");
     if (b === "keybinds" && views?.keys) return toggle("keys");
+    if (b === "settings" && views?.settings) return toggle("settings");
     if (b === "info") return toggle("info");
     if (b === "help") return toggle("help");
     if (b !== "disconnect") void fetchNui(`pause:${b}`).catch(() => {});
@@ -98,6 +102,14 @@ function Pause({ data, player }: { data: PauseData; player: NuiPlayer }) {
   if (view === "map") page = <MapSheetPage model={map} onBack={home} />;
   else if (view === "keys") page = <KeysPage onBack={home} onChange={() => void fetchNui("pause:keybinds").catch(() => {})} />;
   else if (view === "info") page = <InfoPage pages={list(data?.pages)} onBack={home} />;
+  else if (view === "settings")
+    page = (
+      <SettingsPage
+        onBack={home}
+        onValues={(v) => setStreamer(v.streamer === true)}
+        onGame={() => void fetchNui("pause:settings").catch(() => {})}
+      />
+    );
   else if (view === "help") page = <HelpPage help={list(data?.help)} onBack={home} />;
   else
     page = (
@@ -123,7 +135,7 @@ function Pause({ data, player }: { data: PauseData; player: NuiPlayer }) {
             </div>
           </header>
 
-          <PlayerSummary player={player} data={data} />
+          <PlayerSummary player={player} data={data} streamer={streamer} />
 
           <nav className="flex flex-col" aria-label="Pause menu">
             {buttons.includes("resume") ? (

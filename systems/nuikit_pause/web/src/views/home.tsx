@@ -76,11 +76,12 @@ export function Stage({ active, back = false }: { active: boolean; back?: boolea
 }
 
 /** Who you are: the character, their job, and their money. A section of the sheet, not a card. */
-export function PlayerSummary({ player, data }: { player: NuiPlayer; data: PauseData }) {
-  const name = (player.loaded && player.name) || data?.playerName || "Player";
+export function PlayerSummary({ player, data, streamer }: { player: NuiPlayer; data: PauseData; streamer?: boolean }) {
+  // streamer mode (Settings): no name, no money on screen
+  const name = streamer ? "You" : (player.loaded && player.name) || data?.playerName || "Player";
   const job = player.loaded ? player.job : undefined;
   const role = job ? [job.label ?? job.name, job.gradeLabel].filter(Boolean).join(", ") : player.loaded ? "Civilian" : "No character loaded";
-  const showMoney = player.loaded && (player.cash !== undefined || player.bank !== undefined);
+  const showMoney = !streamer && player.loaded && (player.cash !== undefined || player.bank !== undefined);
 
   return (
     <section data-slot="pause-player" aria-label="Your character" className="my-8 flex flex-col gap-4 border-y border-border py-6">

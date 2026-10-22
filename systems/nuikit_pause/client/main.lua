@@ -74,10 +74,12 @@ local function payload()
       map = views.map ~= false and Pause.cameras(),
       keys = views.keys ~= false,
       info = views.info ~= false,
+      settings = views.settings ~= false,
       preview = views.preview ~= false and Pause.cameras(),
     },
     preview = Focus.isActive(),
     places = places(),
+    streamer = Settings.get('streamer') == true,
     takeP = mapCfg.takeP == true,
     pages = Config.pages or {},
   }
@@ -153,7 +155,8 @@ end
 ---@param next string
 ---@return table
 function Pause.setView(next)
-  if next ~= "home" and next ~= "map" and next ~= "keys" and next ~= "info" then return { ok = false } end
+  if next ~= "home" and next ~= "map" and next ~= "keys" and next ~= "info" and next ~= "settings" then return { ok = false } end
+  if next == "settings" and views.settings == false then return { ok = false } end
   if next == "map" and (views.map == false or not Pause.cameras()) then return { ok = false } end
   if next == view then return { ok = true, preview = Focus.isActive() } end
   local was = view
@@ -168,6 +171,7 @@ function Pause.setView(next)
     blur(not focused)
   end
   if next == "keys" then NUI.send("pause:keys", Keys.resolve()) end
+  if next == "settings" then NUI.send("pause:settings", Settings.snapshot()) end
   return { ok = true, preview = Focus.isActive() }
 end
 
@@ -292,6 +296,13 @@ open("pause:map:zoom", function(d) Map3D.zoom(num(d.delta)) end)
 open("pause:map:focus", function(d) return Map3D.focus(d.id) end)
 open("pause:map:recenter", function() return Map3D.recenter() end)
 open("pause:map:follow", function(d) return Map3D.follow(d.on == true) end)
+-- Settings (client/settings.lua): a patch, a preset, or back to the defaults; each answers the values
+open("pause:settings:set", function(d) return { ok = true, values = Settings.set(d.patch) } end)
+open("pause:settings:preset", function(d)
+  local v = Settings.preset(d.id)
+  return { ok = v ~= nil, values = v }
+end)
+open("pause:settings:reset", function() return { ok = true, values = Settings.reset() } end)
 -- closer in over a point (a merged group of blips)
 open("pause:map:fly", function(d) return Map3D.fly(num(d.x), num(d.y), (Config.map or {}).focusHeight or 350.0) end)
 open("pause:map:topdown", function(d) Map3D.topdown(d.on == true) end)

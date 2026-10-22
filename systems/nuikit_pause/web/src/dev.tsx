@@ -49,7 +49,7 @@ const data: PauseData = {
   ping: 38,
   uptime: 3 * 3600 + 12 * 60,
   restartIn: 2 * 3600 + 5 * 60,
-  views: { map: true, keys: true, info: true, preview: true },
+  views: { map: true, keys: true, info: true, preview: true, settings: true },
   preview: true,
   places,
   pages: [
@@ -78,6 +78,24 @@ Questions? Ask staff in Discord.`,
     },
   ],
 };
+
+// the rows client/settings.lua sends
+const settingsRows = {
+  rows: [
+    { key: "textSize", label: "Text size", kind: "choice" as const, group: "Display", options: [{ value: 0.9, label: "Small" }, { value: 1, label: "Standard" }, { value: 1.1, label: "Large" }, { value: 1.2, label: "Larger" }] },
+    { key: "contrast", label: "High contrast", kind: "toggle" as const, group: "Display" },
+    { key: "reducedMotion", label: "Reduced motion", kind: "toggle" as const, group: "Display", description: "Fades instead of slides, no camera moves" },
+    { key: "streamer", label: "Streamer mode", kind: "toggle" as const, group: "Privacy", description: "Hides names and money on screen" },
+    { key: "hud", label: "Show the HUD", kind: "toggle" as const, group: "HUD" },
+  ],
+  presets: [
+    { id: "standard", label: "Standard" },
+    { id: "streamer", label: "Streamer" },
+    { id: "performance", label: "Performance" },
+    { id: "cinema", label: "Cinema" },
+  ],
+};
+let settingValues: Record<string, number | boolean> = { textSize: 1, contrast: false, reducedMotion: false, streamer: false, hud: true };
 
 const keys: KeyBinding[] = [
   { group: "Menus", label: "Radial menu", key: "Z" },
@@ -192,7 +210,21 @@ const mocks = defineMocks({
     "pause:view": ({ view }: { view: PauseView }) => {
       if (view === "keys") setTimeout(() => emit("pause:keys", keys), 120);
       if (view === "map") setTimeout(sendMap, 60);
+      if (view === "settings") setTimeout(() => emit("pause:settings", { ...settingsRows, values: settingValues }), 120);
       return { ok: true, preview: view === "home" };
+    },
+    "pause:settings:set": ({ patch }: { patch: Record<string, unknown> }) => {
+      settingValues = { ...settingValues, ...patch } as typeof settingValues;
+      return { ok: true, values: settingValues };
+    },
+    "pause:settings:preset": ({ id }: { id: string }) => {
+      const patch: Record<string, Record<string, unknown>> = { standard: { textSize: 1, contrast: false, reducedMotion: false, streamer: false, hud: true }, streamer: { streamer: true }, performance: { reducedMotion: true }, cinema: { hud: false } };
+      settingValues = { ...settingValues, ...patch[id] } as typeof settingValues;
+      return { ok: true, values: settingValues };
+    },
+    "pause:settings:reset": () => {
+      settingValues = { textSize: 1, contrast: false, reducedMotion: false, streamer: false, hud: true };
+      return { ok: true, values: settingValues };
     },
     "pause:map:fly": () => ok,
     "pause:map:pick": () => ({

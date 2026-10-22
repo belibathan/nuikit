@@ -18,6 +18,7 @@
     "hud-chip",
     "text-roll",
     "smooth-input",
-    "sheet"
+    "sheet",
+    "slider"
   ]
 }

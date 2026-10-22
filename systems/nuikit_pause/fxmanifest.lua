@@ -28,6 +28,7 @@ client_scripts {
   'client/map3d.lua',
   'client/focus.lua',
   'client/keys.lua',
+  'client/settings.lua',
   'client/main.lua',
   'client/inventory.lua',
 }
