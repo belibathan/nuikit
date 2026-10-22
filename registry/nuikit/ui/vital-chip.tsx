@@ -5,6 +5,8 @@ import { tokenMs } from "nuikit-core/motion"
 
 import { cn, nkLevel } from "@/lib/utils"
 import { NumberRoll } from "@/components/ui/text-roll"
+import { CollapseMore } from "@/components/ui/collapse-stack"
+import { useCollapse, type UseCollapseOptions } from "@/hooks/use-collapse"
 
 /**
  * VitalChip — the HUD's status chip as composable parts (shadcn-style), so a theme (or a player) can vary
@@ -217,20 +219,42 @@ interface Ctx {
 const ChipCtx = React.createContext<Ctx | null>(null)
 
 /** A row of chips: which chip (if any) has claimed the room (neighbours: collapse). */
-const RowCtx = React.createContext<{ claim: string | null; take: (id: string) => void; give: (id: string) => void } | null>(null)
+const RowCtx = React.createContext<{
+  claim: string | null
+  take: (id: string) => void
+  give: (id: string) => void
+  /** the row's collapse engine: expand chips open and close through it */
+  collapse: ReturnType<typeof useCollapse>
+} | null>(null)
 
-/** A row of chips that know about each other: a chip that opens with neighbours="collapse" closes the rest. */
-function Row({ className, ...props }: React.ComponentProps<"div">) {
+/**
+ * A row of chips that know about each other. A chip that opens with neighbours="collapse" closes the rest.
+ * Chips with display="expand" open through the row's collapse engine (useCollapse): changes within the batch
+ * window open together and close together, open chips lead the row (critical first, then the biggest
+ * change), at most `max` (default 3), then "+N".
+ */
+function Row({ className, children, max, batchMs, restDelay, optOut, ...props }: React.ComponentProps<"div"> & UseCollapseOptions) {
   const [claim, setClaim] = React.useState<string | null>(null)
+  const collapse = useCollapse({ max, batchMs, restDelay, optOut })
   const api = React.useMemo(
-    () => ({ claim, take: (id: string) => setClaim(id), give: (id: string) => setClaim((c) => (c === id ? null : c)) }),
-    [claim]
+    () => ({ claim, take: (id: string) => setClaim(id), give: (id: string) => setClaim((c) => (c === id ? null : c)), collapse }),
+    [claim, collapse]
   )
   return (
     <RowCtx.Provider value={api}>
-      <div data-slot="vital-chip-row" className={cn("flex items-center gap-1.5", className)} {...props} />
+      <div data-slot="vital-chip-row" className={cn("flex items-center gap-1.5", className)} {...props}>
+        {children}
+        {collapse.overflow > 0 && <CollapseMore count={collapse.overflow} style={{ order: -50 }} />}
+      </div>
     </RowCtx.Provider>
   )
+}
+
+/** --nk-alert-threshold (tokens 1.4: 0.2): a vital at or under it is critical. */
+function alertThreshold() {
+  if (typeof document === "undefined") return 0.2
+  const n = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--nk-alert-threshold"))
+  return Number.isFinite(n) ? n : 0.2
 }
 /** true inside Shape: an inline Label renders there, a tag or flag outside it */
 const InShape = React.createContext(false)
@@ -293,11 +317,21 @@ function Root({ value, tone, shape, level, attach, icon, open = false, display, 
     display: mode,
     neighbours: neighbours ?? theme.neighbours,
   }
-  const expanded = useExpand(mode === "expand" ? value : undefined)
-  const own = open || mode === "pill" || mode === "value" || (mode === "expand" && expanded)
-  // in a Row: a chip that opens with neighbours="collapse" takes the room; the others close meanwhile
   const row = React.useContext(RowCtx)
   const id = React.useId()
+  // expand: in a Row through its collapse engine (batched, ordered, capped), alone on its own timer
+  const engine = row && mode === "expand" ? row.collapse : null
+  const key = tone ?? id
+  const ownExpanded = useExpand(mode === "expand" && !engine ? value : undefined)
+  const report = engine?.report
+  const critical = value !== undefined && value <= alertThreshold() * 100
+  React.useEffect(() => {
+    if (report && value !== undefined) report(key, value, { critical })
+  }, [report, key, value, critical])
+  const rank = engine ? engine.rank(key) : -1
+  const expanded = engine ? rank >= 0 : ownExpanded
+  const own = open || mode === "pill" || mode === "value" || (mode === "expand" && expanded)
+  // in a Row: a chip that opens with neighbours="collapse" takes the room; the others close meanwhile
   const claiming = own && chip.neighbours === "collapse"
   const take = row?.take
   const give = row?.give
@@ -328,7 +362,7 @@ function Root({ value, tone, shape, level, attach, icon, open = false, display, 
         data-yielded={yielded || undefined}
         // overlay: an open chip's floating label sits above the chips after it
         className={cn("relative isolate inline-flex shrink-0", isOpen && chip.neighbours === "overlay" && "z-10", className)}
-        style={{ ...nkLevel(value === undefined ? undefined : value / 100), ...(tone ? ({ "--vital": `var(--hue-solid, var(--vital-${tone}))` } as React.CSSProperties) : null), ...style }}
+        style={{ ...(rank >= 0 ? { order: rank - 100 } : null), ...nkLevel(value === undefined ? undefined : value / 100), ...(tone ? ({ "--vital": `var(--hue-solid, var(--vital-${tone}))` } as React.CSSProperties) : null), ...style }}
         {...props}
       >
         {children}

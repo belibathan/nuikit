@@ -370,6 +370,71 @@
       }
     },
     {
+      "name": "use-collapse",
+      "type": "registry:hook",
+      "title": "useCollapse",
+      "description": "The collapse engine for clustered indicators: a change opens a chip for --nk-rest-delay, changes within 400 ms batch together, critical first then the biggest change, at most N then +N, per-key opt-outs. Pure state functions for tests.",
+      "files": [
+        {
+          "path": "registry/nuikit/hooks/use-collapse.ts",
+          "type": "registry:hook"
+        }
+      ],
+      "dependencies": [
+        "nuikit-core"
+      ],
+      "meta": {
+        "since": "unreleased",
+        "status": "stable",
+        "replaces": [],
+        "removeIn": null
+      }
+    },
+    {
+      "name": "collapse-stack",
+      "type": "registry:ui",
+      "title": "Collapse stack",
+      "description": "A row of clustered indicators on the collapse engine: icons at rest, a change opens a chip, open chips lead (critical first, then the biggest change), at most max, then +N.",
+      "files": [
+        {
+          "path": "registry/nuikit/ui/collapse-stack.tsx",
+          "type": "registry:ui"
+        }
+      ],
+      "registryDependencies": [
+        "https://nuikit.vercel.app/r/use-collapse.json"
+      ],
+      "meta": {
+        "since": "unreleased",
+        "status": "stable",
+        "replaces": [],
+        "removeIn": null,
+        "spec": {
+          "role": "Clustered indicators (vitals, voice, job status) that stay icons until something changes.",
+          "anatomy": [
+            "collapse-stack",
+            "collapse-stack-item (your chip, via renderItem)",
+            "collapse-stack-more (+N)"
+          ],
+          "props": [
+            "items",
+            "renderItem",
+            "max",
+            "restDelay",
+            "batchMs",
+            "min",
+            "optOut"
+          ],
+          "rules": [
+            "At rest only icons; a change opens a chip for --nk-rest-delay.",
+            "Changes within the batch window (400 ms) open and close together.",
+            "Critical first, then the biggest change; at most max, then +N.",
+            "Order moves with CSS order; the DOM never re-orders, nothing remounts."
+          ]
+        }
+      }
+    },
+    {
       "name": "vital-chip",
       "type": "registry:ui",
       "title": "Vital Chip",
@@ -384,7 +449,9 @@
         "nuikit-core"
       ],
       "registryDependencies": [
-        "text-roll"
+        "text-roll",
+        "https://nuikit.vercel.app/r/collapse-stack.json",
+        "https://nuikit.vercel.app/r/use-collapse.json"
       ],
       "meta": {
         "since": "unreleased",
@@ -411,7 +478,8 @@
             "open",
             "display",
             "neighbours",
-            "format"
+            "format",
+            "max"
           ],
           "level": "the vital, 0–100 as 0–1.",
           "rules": [
@@ -419,7 +487,8 @@
             "The level style comes from the theme (outline, liquid, bar); the data never picks it.",
             "Readable over a bright sky (legibility fixture).",
             "display: pill (icon, name, value) | value | icon (level as fill) | expand (opens on a change, settles after --nk-rest-delay); the theme default is --nk-vital-display.",
-            "neighbours (a chip that opens, in a Row): push | collapse | overlay; the theme default is --nk-vital-neighbours."
+            "neighbours (a chip that opens, in a Row): push | collapse | overlay; the theme default is --nk-vital-neighbours.",
+            "expand chips in a VitalChip.Row open through the row's collapse engine (useCollapse): batched, ordered, capped at max with +N."
           ]
         }
       }

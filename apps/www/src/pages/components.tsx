@@ -742,6 +742,8 @@ function ChipModesDemo() {
   const icons = { health: <HeartPulseIcon />, armor: <ShieldIcon />, hunger: <UtensilsIcon />, thirst: <DropletIcon /> };
   const names = { health: "Health", armor: "Armor", hunger: "Hunger", thirst: "Thirst" };
   const eat = () => setVitals((v) => ({ ...v, hunger: v.hunger >= 90 ? 20 : v.hunger + 25 }));
+  // every vital at once: one batch, critical health first, then the biggest change, three open and +1
+  const hit = () => setVitals((v) => (v.health < 30 ? { health: 82, armor: 46, hunger: 38, thirst: 64 } : { health: 12, armor: Math.max(0, v.armor - 30), hunger: v.hunger - 4, thirst: v.thirst - 8 }));
   return (
     <>
       <div className="flex flex-wrap justify-center gap-2">
@@ -781,6 +783,9 @@ function ChipModesDemo() {
       <div className="flex gap-2">
         <Button size="sm" variant="outline" onClick={eat}>
           Eat (+25 hunger)
+        </Button>
+        <Button size="sm" variant="outline" onClick={hit}>
+          Take damage (all change)
         </Button>
         <Button size="sm" variant={talking ? "secondary" : "outline"} onClick={() => setTalking((t) => !t)}>
           {talking ? "Stop talking" : "Talk"}
