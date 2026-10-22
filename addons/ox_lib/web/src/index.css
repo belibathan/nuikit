@@ -913,7 +913,7 @@
     rgba(var(--popover-foreground-rgb), 0) 60%
   );
   --nk-panel-edge: inset 0 1px 0 0 rgba(var(--popover-foreground-rgb), var(--nk-material-menu-edge, var(--nk-surface-edge, 0.06)));
-  --nk-panel-shadow: var(--nk-elevation-shadow, 0 0 0 1px rgba(var(--scrim-rgb), 0.25), 0 12px 32px -16px rgba(var(--scrim-rgb), 0.6));
+  --nk-panel-shadow: var(--nk-elevation-shadow, 0 0 0 1px rgba(var(--scrim-rgb), 0.25), 0 8px 16px -8px rgba(var(--scrim-rgb), 0.6));
   --nk-panel-header-height: calc(3.25rem * var(--nk-density, 0.875));
   --nk-panel-header-padding: calc(var(--nk-space) * 3) calc(var(--nk-space) * 4);
   --nk-panel-body-padding: calc(var(--nk-space) * 2);
