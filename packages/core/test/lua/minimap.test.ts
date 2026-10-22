@@ -204,6 +204,7 @@ describe("systems/nuikit_hud: the minimap", () => {
       SetRadarBigmapEnabled = function() FLICKS = FLICKS + 1 end
       local set = SetMinimapComponentPosition
       SetMinimapComponentPosition = function(name, ...) if name == 'minimap' then XS[#XS + 1] = select(3, ...) end set(name, ...) end
+      DisplayRadar = function(on) HIDDEN_AT = not on and #XS or HIDDEN_AT end
       CreateThread = function(f) f() end`);
     expect(await hud.run(`return Minimap.slide(false)`)).toBe(true);
     const out = await hud.run<number[]>(`return XS`);
@@ -212,6 +213,7 @@ describe("systems/nuikit_hud: the minimap", () => {
     for (let i = 1; i < out.length - 1; i++) expect(out[i]!).toBeGreaterThanOrEqual(out[i - 1]!);
     expect(out.at(-2)! - rest[0]!).toBeCloseTo((2.5 * 1080 * 0.014815) / ((1080 * 16) / 9), 4); // 2.5rem
     expect(out.at(-1)).toBeCloseTo(rest[0]!, 6);
+    expect(await hud.run(`return HIDDEN_AT`)).toBe(out.length - 1); // hidden before it goes back, so it never jumps home on screen
     expect(await hud.run(`return Minimap.sliding`)).toBe(false);
     // in: starts 2.5rem out, ends in place
     await hud.run(`XS = {}`);

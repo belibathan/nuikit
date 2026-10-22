@@ -343,7 +343,13 @@ function Minimap.slide(show)
     end
     if id ~= slideId then return end
     Minimap.sliding = false
-    if not show then at(0) end -- back in place while hidden, for the next entrance
+    if not show then
+      -- hidden first, then back in place for the next entrance: put back while drawn, it jumped home
+      -- until main.lua's next pass hid it
+      DisplayRadar(false)
+      Minimap.radarOn = false
+      at(0)
+    end
   end)
   return true
 end
