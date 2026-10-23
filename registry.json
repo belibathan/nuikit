@@ -2807,6 +2807,60 @@
       }
     },
     {
+      "name": "stepper",
+      "type": "registry:ui",
+      "title": "Stepper",
+      "description": "One segmented control for a value picked by stepping: a prev keycap, the value field and a next keycap joined in one rim at --nk-h-control. The value rolls on change (per digit for numbers; static text never moves), a held keycap repeats (--nk-stepper-delay, --nk-stepper-rate), controlled value/onValueChange or defaultValue, onStep for a parent that computes the step, onCommit makes the value typeable. Appearance drawables and textures, settings pickers, an input dialog's number.",
+      "files": [
+        {
+          "path": "registry/nuikit/ui/stepper.tsx",
+          "type": "registry:ui"
+        }
+      ],
+      "dependencies": [
+        "class-variance-authority",
+        "lucide-react",
+        "nuikit-core"
+      ],
+      "registryDependencies": [
+        "https://nuikit.vercel.app/r/text-roll.json"
+      ],
+      "meta": {
+        "since": "unreleased",
+        "status": "experimental",
+        "replaces": [],
+        "removeIn": null,
+        "spec": {
+          "role": "One value picked by stepping: prev, the value, next, as one joined control.",
+          "anatomy": [
+            "stepper (the rim, --nk-h-control)",
+            "stepper-key (a Tile button, prev)",
+            "stepper-value (the roll, or the input while typing)",
+            "stepper-key (next)"
+          ],
+          "props": [
+            "value",
+            "defaultValue",
+            "onValueChange",
+            "onStep",
+            "onCommit",
+            "min",
+            "max",
+            "step",
+            "wrap",
+            "format",
+            "size",
+            "disabled"
+          ],
+          "rules": [
+            "One height for the three parts (--nk-h-control; size picks --nk-h-chip or --nk-h-field); the keycaps are Tiles and never restyled.",
+            "The value rolls per digit; static text (a separator, a total) stays still.",
+            "A held keycap repeats after --nk-stepper-delay every --nk-stepper-rate; no focus ring; rem, never px."
+          ]
+        }
+      }
+    },
+    {
       "name": "utils",
       "type": "registry:lib",
       "title": "cn (kit-aware)",

@@ -29,6 +29,7 @@
     "nui-image",
     "action-bar",
     "chip",
-    "empty-state"
+    "empty-state",
+    "stepper"
   ]
 }
