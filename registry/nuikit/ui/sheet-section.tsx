@@ -1,6 +1,7 @@
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
+import { Stack } from "@/components/ui/stack"
 
 /**
  * SheetSection — one group of rows in a sheet or panel body (docs/design/ink.md §3, Sheet): a label, an
@@ -13,7 +14,7 @@ import { cn } from "@/lib/utils"
  *   </EdgeSheetBody>
  *
  * Role: groups the rows of a sheet page under a short name (rows, not cards).
- * Anatomy: section > head (label role name, num-role meta, right-aligned) > rows (a flex column, the rows' own gap).
+ * Anatomy: section > head (label role name, num-role meta, right-aligned) > rows (a Stack: none, or the items gap).
  * Props: label, meta, rows (the gap between rows: none | items).
  * Rules: one to three words for the label; the meta is a count or a total, never a sentence. The first section
  *   has no top pad, the last no hairline. Spacing from --nk-space-*, the hairline is --nk-plate-hair.
@@ -54,9 +55,9 @@ function SheetSection({
           )}
         </div>
       )}
-      <div data-slot="sheet-section-rows" className={cn("flex flex-col", rows === "items" && "gap-(--nk-gap-items)")}>
+      <Stack data-slot="sheet-section-rows" gap={rows === "items" ? "items" : "none"}>
         {children}
-      </div>
+      </Stack>
     </section>
   )
 }

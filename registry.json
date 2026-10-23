@@ -247,7 +247,10 @@
             "Trend colours mean direction only (success up, destructive down)."
           ]
         }
-      }
+      },
+      "registryDependencies": [
+        "https://nuikit.vercel.app/r/text.json"
+      ]
     },
     {
       "name": "meter",
@@ -1258,7 +1261,10 @@
             "A direction tone for gains and losses, never decoration."
           ]
         }
-      }
+      },
+      "registryDependencies": [
+        "https://nuikit.vercel.app/r/text.json"
+      ]
     },
     {
       "name": "item-slot",
@@ -1518,6 +1524,82 @@
       }
     },
     {
+      "name": "text",
+      "type": "registry:ui",
+      "title": "Text",
+      "description": "The type roles as one component: scan, title, label, num, body, caption and display (the nk-* role classes, read from the theme's --nk-type-<role>-* levers), and the value ladder numbers sit on (sm, md, display). Stat's value and Money are Text in the num role.",
+      "files": [
+        {
+          "path": "registry/nuikit/ui/text.tsx",
+          "type": "registry:ui"
+        }
+      ],
+      "dependencies": [
+        "class-variance-authority"
+      ],
+      "meta": {
+        "since": "unreleased",
+        "status": "experimental",
+        "replaces": [],
+        "removeIn": null,
+        "spec": {
+          "role": "Every piece of text in one of the kit's type roles, on one value ladder.",
+          "anatomy": [
+            "text (one element: span, p, div, h2…)"
+          ],
+          "props": [
+            "variant",
+            "size",
+            "as"
+          ],
+          "rules": [
+            "Pick a role (variant), never a font size: the role's levers come from the theme.",
+            "size is for values only (sm | md | display); inherit keeps the parent's size."
+          ]
+        }
+      }
+    },
+    {
+      "name": "stack",
+      "type": "registry:ui",
+      "title": "Stack",
+      "description": "Layout on the gap levers: Stack (a flex column) and Cluster (a centred row) whose gap is a named lever (none, key, items, cluster, section, surface: --nk-gap-*, --nk-space-*, --nk-pad-surface), so a composite laid out on it follows the theme's density.",
+      "files": [
+        {
+          "path": "registry/nuikit/ui/stack.tsx",
+          "type": "registry:ui"
+        }
+      ],
+      "dependencies": [
+        "class-variance-authority"
+      ],
+      "meta": {
+        "since": "unreleased",
+        "status": "experimental",
+        "replaces": [],
+        "removeIn": null,
+        "spec": {
+          "role": "The gaps between things, from the spacing levers: columns of rows, rows of chips and buttons.",
+          "anatomy": [
+            "stack (flex; column or row)",
+            "children"
+          ],
+          "props": [
+            "direction",
+            "gap",
+            "align",
+            "justify",
+            "wrap",
+            "as"
+          ],
+          "rules": [
+            "Gaps are levers, never a literal.",
+            "Cluster is a centred row with the cluster gap; Stack a column with none."
+          ]
+        }
+      }
+    },
+    {
       "name": "action-bar",
       "type": "registry:ui",
       "title": "Action bar",
@@ -1603,7 +1685,8 @@
       "registryDependencies": [
         "https://nuikit.vercel.app/r/action-bar.json",
         "alert-dialog",
-        "dialog"
+        "dialog",
+        "https://nuikit.vercel.app/r/stack.json"
       ]
     },
     {
@@ -1639,7 +1722,10 @@
             "The first section has no top pad, the last no hairline."
           ]
         }
-      }
+      },
+      "registryDependencies": [
+        "https://nuikit.vercel.app/r/stack.json"
+      ]
     },
     {
       "name": "dial",

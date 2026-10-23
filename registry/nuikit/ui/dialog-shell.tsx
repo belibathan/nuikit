@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils"
 import { ActionBar, ActionBarItem, type ActionBarItemProps } from "@/components/ui/action-bar"
 import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogTitle } from "@/components/ui/alert-dialog"
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog"
+import { Cluster } from "@/components/ui/stack"
 
 /**
  * DialogShell — the one dialog chrome (docs/design/ink.md §3, Dialog shell): stock shadcn Dialog (or
@@ -143,9 +144,9 @@ function DialogShellFooter({ className, hints, children, ...props }: React.Compo
           ))}
         </ActionBar>
       )}
-      <div data-slot="dialog-shell-actions" className="ml-auto flex shrink-0 items-center gap-(--nk-gap-cluster)">
+      <Cluster data-slot="dialog-shell-actions" className="ml-auto shrink-0">
         {children}
-      </div>
+      </Cluster>
     </footer>
   )
 }
