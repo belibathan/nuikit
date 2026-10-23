@@ -3242,7 +3242,7 @@
           "js": "clearOf",
           "from": "nuikit-core/zones",
           "signature": {
-            "js": "clearOf(all: Zones, position: ZonePosition, opts?: ClearOptions): { top?: number | undefined; bottom?: number | undefined; }"
+            "js": "clearOf(all: Zones, position: ZonePosition | ZoneId, opts?: ClearOptions): { top?: number | undefined; bottom?: number | undefined; left?: number | undefined; right?: number | undefined; }"
           },
           "doc": "The offsets that keep a position clear of the zones.",
           "only": "js only: layout",
@@ -3270,7 +3270,7 @@
           "js": "useClearOf",
           "from": "nuikit-core/react",
           "signature": {
-            "js": "useClearOf(position: ZonePosition, opts?: ClearOptions | undefined): CSSProperties"
+            "js": "useClearOf(position: ZonePosition | ZoneId, opts?: ClearOptions | undefined): CSSProperties"
           },
           "doc": "A style that keeps a position clear of the zones.",
           "only": "js only: React",
@@ -3635,6 +3635,115 @@
       "legacy": [],
       "rules": [
         "transform only (never individual scale/translate); reduced motion ends at the final state."
+      ]
+    },
+    {
+      "js": "layout",
+      "lua": "layout",
+      "title": "Layout",
+      "doc": "The 16:9 screen box, the viewport table, zone ids and placement: every part of every page is placed through these.",
+      "docs": "docs/design/layout.md",
+      "import": "nuikit-core/layout",
+      "entries": [
+        {
+          "name": "viewports",
+          "kind": "const",
+          "side": "js",
+          "js": "VIEWPORTS",
+          "from": "nuikit-core/layout",
+          "signature": {},
+          "doc": "The one table of aspects, scale floors and sample sizes.",
+          "only": "js only: layout",
+          "since": "0.9.0",
+          "status": "stable"
+        },
+        {
+          "name": "viewport",
+          "kind": "call",
+          "side": "js",
+          "js": "getViewport",
+          "from": "nuikit-core/layout",
+          "signature": {
+            "js": "getViewport(): Viewport"
+          },
+          "doc": "The current viewport (size, aspect, scale, safe area).",
+          "only": "js only: layout",
+          "since": "0.9.0",
+          "status": "stable"
+        },
+        {
+          "name": "watch",
+          "kind": "call",
+          "side": "js",
+          "js": "watchViewport",
+          "from": "nuikit-core/layout",
+          "signature": {
+            "js": "watchViewport(): void"
+          },
+          "doc": "Paint data-nk-aspect on <html> and call back on change.",
+          "only": "js only: layout",
+          "since": "0.9.0",
+          "status": "stable"
+        },
+        {
+          "name": "useViewport",
+          "kind": "hook",
+          "side": "js",
+          "js": "useViewport",
+          "from": "nuikit-core/react",
+          "signature": {
+            "js": "useViewport(): Viewport"
+          },
+          "doc": "The viewport, live.",
+          "only": "js only: React",
+          "since": "0.9.0",
+          "status": "stable"
+        },
+        {
+          "name": "zones",
+          "kind": "const",
+          "side": "js",
+          "js": "ZONE_IDS",
+          "from": "nuikit-core/layout",
+          "signature": {},
+          "doc": "The nine places and four edges a part can live in.",
+          "only": "js only: layout",
+          "since": "0.9.0",
+          "status": "stable"
+        },
+        {
+          "name": "place",
+          "kind": "call",
+          "side": "js",
+          "js": "zonePlacement",
+          "from": "nuikit-core/layout",
+          "signature": {
+            "js": "zonePlacement(id: ZoneId): ZonePlacement"
+          },
+          "doc": "Where a zone sits in the box, and how parts stack inside it.",
+          "only": "js only: layout",
+          "since": "0.9.0",
+          "status": "stable"
+        },
+        {
+          "name": "publish",
+          "kind": "call",
+          "side": "js",
+          "js": "publishZone",
+          "from": "nuikit-core/layout",
+          "signature": {
+            "js": "publishZone(name: string, rects: ZoneRect[] | null, opts?: { remote?: boolean | undefined; }): Promise<void>"
+          },
+          "doc": "Publish the rectangles a page's zone covers (locally, and to other pages).",
+          "only": "js only: a page publishes its own",
+          "since": "0.9.0",
+          "status": "stable"
+        }
+      ],
+      "events": [],
+      "legacy": [],
+      "rules": [
+        "Every page root is a Screen; every anchored part sits in a Zone; nothing is positioned with ad-hoc coordinates."
       ]
     },
     {
