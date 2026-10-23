@@ -101,6 +101,11 @@ function wedgePath(cx: number, cy: number, r0: number, r1: number, a0: number, a
 }
 
 const VB = 100 // viewBox units: radius 50
+/** Turn about the wheel's centre as translate-rotate-translate in user units: no transform-box or origin needed (CEF 103 safe). */
+function radialSpin(deg: number) {
+  const c = VB / 2
+  return `translate(${c}px, ${c}px) rotate(${deg}deg) translate(${-c}px, ${-c}px)`
+}
 const INNER = 0.42 // inner radius as a share of the outer
 
 const RadialMenu = React.forwardRef<
@@ -188,10 +193,10 @@ const RadialMenu = React.forwardRef<
     if (fresh || el.style.opacity === "0") {
       // appearing: no glide from a stale place
       el.style.transition = "none"
-      el.style.transform = `rotate(${t.deg}deg)`
+      el.style.transform = radialSpin(t.deg)
       void el.getBoundingClientRect()
       el.style.transition = ""
-    } else el.style.transform = `rotate(${t.deg}deg)`
+    } else el.style.transform = radialSpin(t.deg)
     el.style.opacity = ""
   }, [active, n, level])
 
@@ -252,7 +257,7 @@ const RadialMenu = React.forwardRef<
             d={wedgePath(r, r, inner, r - 0.3, (-0.5 / n) * Math.PI * 2 - Math.PI / 2 + gap, (0.5 / n) * Math.PI * 2 - Math.PI / 2 - gap)}
             strokeWidth={0.3}
             className="nk-indicator fill-(--nk-sel-face) stroke-(--nk-sel-face)"
-            style={{ position: "static", transformOrigin: `${r}px ${r}px`, transformBox: "view-box", opacity: 0 }}
+            style={{ position: "static", transformOrigin: "0 0", transform: radialSpin(0), opacity: 0 }}
           />
         )}
       </svg>
@@ -321,4 +326,4 @@ const RadialMenu = React.forwardRef<
   )
 })
 
-export { RadialMenu, radialCenterAction, radialIndex, radialStep, radialTurn, wedgePath, type RadialMenuItem, type RadialMenuHandle }
+export { RadialMenu, radialCenterAction, radialIndex, radialSpin, radialStep, radialTurn, wedgePath, type RadialMenuItem, type RadialMenuHandle }
