@@ -606,7 +606,7 @@
       "name": "vital-chip",
       "type": "registry:ui",
       "title": "Vital Chip",
-      "description": "The HUD status chip as composable parts (Root, Shape, Level, Icon, Label, Pop): one SVG path per shape (auto, square, rounded, circle, diamond, hex, chamfer) drives the surface, border, level trace, liquid fill and label anchors; level outline/fill/bar/none; label inline/tag/flag; a pop with the signed change. Themed by --nk-chip-shape, --nk-level-style, --nk-label-attach, --nk-vital-icon.",
+      "description": "The HUD status chip as composable parts (Root, Shape, Level, Icon, Label, Glyph, Pop): the in-game keycap by default (a Tile face over a plate that slides out with the label, the level as a liquid in the face, white when active), or one SVG path per shape (auto, square, rounded, circle, diamond, hex, chamfer); level fill/outline/bar/none; a pop with the signed change. Themed by --nk-chip-shape, --nk-level-style, --nk-label-attach, --nk-vital-icon and the --nk-vital-* levers.",
       "files": [
         {
           "path": "registry/nuikit/ui/vital-chip.tsx",
@@ -619,6 +619,7 @@
       "registryDependencies": [
         "text-roll",
         "https://nuikit.vercel.app/r/collapse-stack.json",
+        "https://nuikit.vercel.app/r/tile.json",
         "https://nuikit.vercel.app/r/use-collapse.json"
       ],
       "meta": {
@@ -630,7 +631,7 @@
           "role": "One vital on the HUD: health, armor, hunger, thirst, stress.",
           "anatomy": [
             "vital-chip-row (optional: chips that know each other)",
-            "vital-chip (shape)",
+            "vital-chip (keycap: plate, face Tile, liquid, icon; or an SVG shape)",
             "icon",
             "level drawing (outline | liquid | bar)",
             "label (name, value)",
@@ -644,6 +645,9 @@
             "attach",
             "icon",
             "open",
+            "active",
+            "alert",
+            "side",
             "display",
             "neighbours",
             "format",
@@ -652,7 +656,8 @@
           "level": "the vital, 0–100 as 0–1.",
           "rules": [
             "data-hue carries the vital's role (health, armor…).",
-            "The level style comes from the theme (outline, liquid, bar); the data never picks it.",
+            "The default shape is the keycap (the in-game vitals): a Tile face over a plate that slides out with the label, the level as a liquid in the face; every number is a --nk-vital-* lever.",
+            "The level style comes from the theme (liquid, outline, bar); the data never picks it.",
             "Readable over a bright sky (legibility fixture).",
             "display: pill (icon, name, value) | value | icon (level as fill) | expand (opens on a change, settles after --nk-rest-delay); the theme default is --nk-vital-display.",
             "neighbours (a chip that opens, in a Row): push | collapse | overlay; the theme default is --nk-vital-neighbours.",
