@@ -108,6 +108,19 @@ lever catalog is the documentation.*
 | D5 Studio and CLI: studio done; `nuikit theme new --from <theme>` still open | Half |
 | D6 `docs/design/your-language.md` + `/language` | Done Oct 23 |
 
+## 0.9 · Track E: lean (the owner, Oct 23)
+
+*"We just need the right stuff and show off the individual systems." No stored images, no mock renders of every page, no
+one-off harnesses kept around. Lane: site + platform. Done when: the site is one thing per component (live preview + source),
+the repo holds no screenshots, and a standing pass removes what nothing references.*
+
+| Item | State |
+|---|---|
+| E1 No committed screenshots: 400 files / ~82 MB removed from `bench/`; `bench/.gitignore`; the visual job shoots and uploads, baselines are local only | Done Oct 23 |
+| E2 The site: per component a live preview + the source + the install line, blocks the same, one-screen landing; galleries, `/blocks/shot`, public images gone | In progress (lane) |
+| E3 Standing lighten pass: one-off bench harnesses, unreferenced assets, stale changesets, unused deps and exports, dead screen files, with a grep per deletion | In progress (lane) |
+| E4 Keep it lean: a CI check that fails on a committed image outside `docs/assets/{banner,social-preview}.png` and `docs/brand/`, and a size budget line in the job summary | Open, small |
+
 ## 0.9 · Track C: rails for rapid building (so lanes run with less lead attention)
 
 *Lane: platform. Done when a lane can ship an item with the gate alone, and the lead can see at a glance what moved.*
