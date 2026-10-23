@@ -2,7 +2,7 @@
   nuikit_qb_notify: QBCore:Notify on the `notify` intent.  MIT · https://github.com/belibathan/nuikit
 
   Clean-room, from docs/adapters/qb-core-notify.md. A listener: every TriggerEvent / TriggerClientEvent
-  'QBCore:Notify' (text | { text, caption }, textype?, length?) becomes nk.notify. The event is never
+  'QBCore:Notify' (text | { text, caption }, textype?, length?) becomes nk.intent.notify. The event is never
   cancelled, so other listeners still run.
 
   Direct QBCore.Functions.Notify calls never raise the event: those reach qb-core's own page. The optional
@@ -39,7 +39,7 @@ local function notify(text, textype, length)
   if not STATUS[kind] then props.meta.kind = kind end
   props.duration = tonumber(length) or Config.duration
   if Config.position then props.position = Config.position end
-  nk.notify(props)
+  nk.intent.notify(props)
   log(props.status, props.description or props.title)
 end
 

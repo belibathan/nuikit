@@ -3,7 +3,7 @@ game 'gta5'
 lua54 'yes'
 
 name 'nuikit_esx_notify'
-description 'nuikit adapter: esx_notify → nk.notify. Stand-in (provide) + listener. Clean-room from docs/adapters/esx-notify.md.'
+description 'nuikit adapter: esx_notify → nk.intent.notify. Stand-in (provide) + listener. Clean-room from docs/adapters/esx-notify.md.'
 author '@belibathan'
 version '0.8.0'
 

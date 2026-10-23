@@ -8,7 +8,7 @@
   prints them as JSON lines to paste into docs/adapters/qb-target.md. Targeting is blind while the
   recorder page is in: put the original page back afterwards.
 
-  Once the format is known, this resource draws the list with nk.target and posts selections back to
+  Once the format is known, this resource draws the list with nk.intent.target and posts selections back to
   qb-target's own callbacks, and declares nuikit_adapter 'qb-target'.
 ]]
 

@@ -3,7 +3,7 @@ game 'gta5'
 lua54 'yes'
 
 name 'nuikit_qb_menu'
-description 'nuikit adapter: stands in for qb-menu. openMenu / closeMenu / showHeader (exports and events) land on the nk.menu intent; selections dispatch exactly as qb-menu documents.'
+description 'nuikit adapter: stands in for qb-menu. openMenu / closeMenu / showHeader (exports and events) land on the nk.intent.menu intent; selections dispatch exactly as qb-menu documents.'
 repository 'https://github.com/belibathan/nuikit'
 version '0.8.0'
 

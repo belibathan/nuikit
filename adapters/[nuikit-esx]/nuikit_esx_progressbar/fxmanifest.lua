@@ -3,7 +3,7 @@ game 'gta5'
 lua54 'yes'
 
 name 'nuikit_esx_progressbar'
-description 'nuikit adapter: esx_progressbar → nk.progress. Stand-in (provide). Clean-room from docs/adapters/esx-progressbar.md.'
+description 'nuikit adapter: esx_progressbar → nk.intent.progress. Stand-in (provide). Clean-room from docs/adapters/esx-progressbar.md.'
 author '@belibathan'
 version '0.8.0'
 

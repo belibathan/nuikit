@@ -1,5 +1,5 @@
 --[[
-  nuikit_mythic_notify: mythic_notify's public API, drawn by nk.notify (docs/adapters/mythic-notify.md).
+  nuikit_mythic_notify: mythic_notify's public API, drawn by nk.intent.notify (docs/adapters/mythic-notify.md).
 
   Mechanism: stand-in. `provide 'mythic_notify'` plus the five exports registered under mythic_notify's
   name and the two client events (the server path) handled. `style` (a CSS table) goes to `meta.style`
@@ -24,7 +24,7 @@ end
 
 local function show(kind, text, length, style)
   local p = props(kind, text, length, style)
-  if p then nk.notify(p) end
+  if p then nk.intent.notify(p) end
 end
 
 local function SendAlert(data)
@@ -47,7 +47,7 @@ local function PersistentAlert(data)
   if not p then return end
   p.id = 'persistent:' .. id
   p.duration = 0
-  persistent[id] = nk.notify(p)
+  persistent[id] = nk.intent.notify(p)
 end
 
 local API = {

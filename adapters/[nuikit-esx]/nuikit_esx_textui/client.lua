@@ -1,5 +1,5 @@
 --[[
-  nuikit_esx_textui: esx_textui's public API, drawn by nk.prompt (docs/adapters/esx-textui.md).
+  nuikit_esx_textui: esx_textui's public API, drawn by nk.intent.prompt (docs/adapters/esx-textui.md).
 
   Mechanism: stand-in. `provide 'esx_textui'` plus the two exports registered under esx_textui's name, so
   `ESX.TextUI` / `ESX.HideUI` and `exports['esx_textui']:TextUI(...)` land here.
@@ -38,7 +38,7 @@ local function TextUI(message, kind)
     return
   end
   shown = next
-  prompt = nk.prompt({ id = 'textui', label = label, keys = keys, status = next.status })
+  prompt = nk.intent.prompt({ id = 'textui', label = label, keys = keys, status = next.status })
 end
 
 local function HideUI()

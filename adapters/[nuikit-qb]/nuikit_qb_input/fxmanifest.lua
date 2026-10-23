@@ -3,7 +3,7 @@ game 'gta5'
 lua54 'yes'
 
 name 'nuikit_qb_input'
-description 'nuikit adapter: stands in for qb-input. ShowInput / CloseMenu land on the nk.input intent; the caller gets the same table back.'
+description 'nuikit adapter: stands in for qb-input. ShowInput / CloseMenu land on the nk.intent.input intent; the caller gets the same table back.'
 repository 'https://github.com/belibathan/nuikit'
 version '0.8.0'
 

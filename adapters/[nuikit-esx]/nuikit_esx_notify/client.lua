@@ -1,5 +1,5 @@
 --[[
-  nuikit_esx_notify: esx_notify's public API, drawn by nk.notify (docs/adapters/esx-notify.md).
+  nuikit_esx_notify: esx_notify's public API, drawn by nk.intent.notify (docs/adapters/esx-notify.md).
 
   Mechanism: stand-in + listener.
     - `provide 'esx_notify'` (fxmanifest) stands in for the resource; the `Notify` export is registered
@@ -60,7 +60,7 @@ local function show(message, kind, length, title, position)
   local ms = tonumber(length)
   if ms and ms >= 0 then props.duration = math.floor(ms) end
   if props.status == nil and kind ~= nil then props.meta = { type = kind } end -- an unknown type still reaches a renderer
-  nk.notify(props)
+  nk.intent.notify(props)
 end
 
 -- ───────────────────────────────── the library's API, by name
@@ -89,7 +89,7 @@ if GetConvarInt('nuikit_esx_notify_advanced', 0) == 1 then
     if type(msg) == 'string' and msg ~= '' then lines[#lines + 1] = msg end
     local description = table.concat(lines, '\n')
     if (type(sender) ~= 'string' or sender == '') and description == '' then return end
-    nk.notify({
+    nk.intent.notify({
       title = type(sender) == 'string' and sender or nil,
       description = description ~= '' and description or nil,
       meta = { picture = textureDict, iconType = iconType, flash = flash == true },

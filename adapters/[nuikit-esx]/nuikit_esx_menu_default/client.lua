@@ -1,5 +1,5 @@
 --[[
-  nuikit_esx_menu_default: the ESX.UI.Menu "default" type, drawn by nk.menu (docs/adapters/esx-menu-default.md).
+  nuikit_esx_menu_default: the ESX.UI.Menu "default" type, drawn by nk.intent.menu (docs/adapters/esx-menu-default.md).
 
   Mechanism: stand-in as a menu type. `provide 'esx_menu_default'` stands in for the resource, and the
   type is registered through the documented ESX.UI.Menu.RegisterType('default', open, close), so every
@@ -119,7 +119,7 @@ local function redraw(m)
     m.handle:update({ title = p.title, position = p.position, items = p.items })
     return
   end
-  m.handle = nk.menu(props(m), {
+  m.handle = nk.intent.menu(props(m), {
     cb = function(result, reason)
       if opened[m.key] ~= m then return end
       if reason == 'replaced' then return end -- the same menu opened again: the new handle owns it

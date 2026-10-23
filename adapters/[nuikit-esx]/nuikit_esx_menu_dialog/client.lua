@@ -1,5 +1,5 @@
 --[[
-  nuikit_esx_menu_dialog: the ESX.UI.Menu "dialog" type, drawn by nk.input (docs/adapters/esx-menu-dialog.md).
+  nuikit_esx_menu_dialog: the ESX.UI.Menu "dialog" type, drawn by nk.intent.input (docs/adapters/esx-menu-dialog.md).
 
   Mechanism: stand-in as a menu type (`provide 'esx_menu_dialog'` + ESX.UI.Menu.RegisterType('dialog', …)),
   like nuikit_esx_menu_default. One text field under the title; submit runs `submit({ value = '<typed>' })`
@@ -22,7 +22,7 @@ local function call(fn, ...)
 end
 
 local function draw(d)
-  d.handle = nk.input({
+  d.handle = nk.intent.input({
     id = d.key,
     title = d.data.title ~= nil and tostring(d.data.title) or '',
     fields = { { id = 'value', type = 'text', required = false } },

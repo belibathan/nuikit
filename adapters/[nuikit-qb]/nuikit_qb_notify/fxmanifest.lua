@@ -3,7 +3,7 @@ game 'gta5'
 lua54 'yes'
 
 name 'nuikit_qb_notify'
-description 'nuikit adapter: listens to QBCore:Notify (client and server) and draws it with the nk.notify intent. Optional silencer page for qb-core/html (override/).'
+description 'nuikit adapter: listens to QBCore:Notify (client and server) and draws it with the nk.intent.notify intent. Optional silencer page for qb-core/html (override/).'
 repository 'https://github.com/belibathan/nuikit'
 version '0.8.0'
 

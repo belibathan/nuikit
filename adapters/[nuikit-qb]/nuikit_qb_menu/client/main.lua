@@ -5,9 +5,9 @@
   name (`provide 'qb-menu'` + the __cfx_export_qb-menu_* events, the pattern the (removed) spike proved
   under the harness) and the three events scripts trigger instead of the exports.
 
-    exports['qb-menu']:openMenu(data, sort?, skipFirst?)   → nk.menu
+    exports['qb-menu']:openMenu(data, sort?, skipFirst?)   → nk.intent.menu
     exports['qb-menu']:closeMenu()                          → cancel
-    exports['qb-menu']:showHeader(data)                     → nk.menu with header rows only
+    exports['qb-menu']:showHeader(data)                     → nk.intent.menu with header rows only
     qb-menu:client:openMenu / closeMenu / showHeader        → the same
 
   What the caller gets back is exactly what qb-menu gives: nothing from the calls; on select, one of
@@ -125,7 +125,7 @@ local function show(data, headerOnly)
     old.handle:cancel('replaced')
   end
   local menu = { byId = byId }
-  menu.handle = nk.menu(props, {
+  menu.handle = nk.intent.menu(props, {
     cb = function(result, reason)
       if current ~= menu then
         -- Replaced or closed by closeMenu: nothing goes back to the caller.
