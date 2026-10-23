@@ -20,7 +20,7 @@ server_scripts {
 
 -- The host (docs/host.md, prototype): renders the UI modules of resources that declare
 -- `nuikit_ui` in this one frame. `setr nuikit_host 0` turns it off; they use their ui_page.
-ui_page 'web/dist/index.html'
+ui_page 'http://localhost:5313'
 nuikit_protocol '1'
 nuikit_level '3'
 
