@@ -224,9 +224,9 @@ function Dial({
           <>
             <defs>
               <radialGradient id={`${accentId}-disc`}>
-                <stop offset="0" style={{ stopColor: "var(--scrim, #000)", stopOpacity: "var(--nk-dial-disc-opacity, var(--nk-hud-alpha, var(--nk-hud-opacity, 0.55)))" }} />
-                <stop offset="0.58" style={{ stopColor: "var(--scrim, #000)", stopOpacity: "var(--nk-dial-disc-opacity, var(--nk-hud-alpha, var(--nk-hud-opacity, 0.55)))" }} />
-                <stop offset="1" style={{ stopColor: "var(--scrim, #000)", stopOpacity: 0 }} />
+                <stop offset="0" style={{ stopColor: "var(--scrim)", stopOpacity: "var(--nk-dial-disc-opacity, var(--nk-hud-alpha, var(--nk-hud-opacity, 0.55)))" }} />
+                <stop offset="0.58" style={{ stopColor: "var(--scrim)", stopOpacity: "var(--nk-dial-disc-opacity, var(--nk-hud-alpha, var(--nk-hud-opacity, 0.55)))" }} />
+                <stop offset="1" style={{ stopColor: "var(--scrim)", stopOpacity: 0 }} />
               </radialGradient>
             </defs>
             {/* the scrim reaches past the arc (the speedometer's plate, 1.17× the dial) and fades out there */}
