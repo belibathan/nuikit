@@ -31,8 +31,8 @@ import { useLinearRun } from "@/hooks/use-linear-run"
  * Fills move with transforms only (the bar translates, segments scale on X): never `width`.
  *
  * Role: A level on a bar: health, fuel, weight, a timed action.
- * Anatomy: meter (label row: icon, label, value text) > track > fill (or segments) > slab: label, cancel key,
- *   thin line
+ * Anatomy: meter (label row: icon, label, value text) > bar (shadcn Progress) or segments (one Fill each) > slab:
+ *   label, cancel key, thin line (a Fill on the slab track). A timed run is useLinearRun.
  * Props: value, max, low, high, tone, track, segments, duration, variant, size, density, shape, motion, hue,
  *   threshold.
  * Level means: value / max; a timed run fills 0 → 1 over duration (--level is its end state).

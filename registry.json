@@ -1563,7 +1563,10 @@
             "A muted icon is --muted-foreground, never an opacity."
           ]
         }
-      }
+      },
+      "registryDependencies": [
+        "https://nuikit.vercel.app/r/text.json"
+      ]
     },
     {
       "name": "text",

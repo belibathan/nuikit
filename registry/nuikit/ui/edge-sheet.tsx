@@ -83,7 +83,7 @@ type EdgeSheetProps = Omit<React.ComponentProps<typeof SheetContent>, "title" | 
   onBack?: () => void
   /**
    * With `onBack` (1.5): the back control as an ActionBarItem with its key (Esc) instead of the chevron; a
-   * string or node replaces the label ("Back"). The Ink header (docs/design/ink.md §3, Sheet).
+   * string or node replaces the label ("Back"). The default theme's header (docs/design/ink.md §3, Sheet).
    */
   back?: boolean | React.ReactNode
   /** A close button after the title. */
