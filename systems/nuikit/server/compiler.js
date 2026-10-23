@@ -1457,18 +1457,37 @@ ${lines.join("\n")}
   }
   function compareVersions(a, b) {
     var _a, _b;
-    const pa = a.replace(/^v/, "").split(/[.-]/);
-    const pb = b.replace(/^v/, "").split(/[.-]/);
-    for (let i = 0; i < Math.max(pa.length, pb.length); i++) {
-      const x = (_a = pa[i]) != null ? _a : "0";
-      const y = (_b = pb[i]) != null ? _b : "0";
-      const nx = Number(x);
-      const ny = Number(y);
-      if (!Number.isNaN(nx) && !Number.isNaN(ny)) {
-        if (nx !== ny) return nx - ny;
-      } else if (x !== y) return x < y ? -1 : 1;
+    const [ca, pa = ""] = splitVersion(a);
+    const [cb, pb = ""] = splitVersion(b);
+    const na = ca.split(".");
+    const nb = cb.split(".");
+    for (let i = 0; i < Math.max(na.length, nb.length); i++) {
+      const d = (Number((_a = na[i]) != null ? _a : 0) || 0) - (Number((_b = nb[i]) != null ? _b : 0) || 0);
+      if (d !== 0) return d;
+    }
+    if (pa === pb) return 0;
+    if (!pa) return 1;
+    if (!pb) return -1;
+    const ia = pa.split(".");
+    const ib = pb.split(".");
+    for (let i = 0; i < Math.max(ia.length, ib.length); i++) {
+      if (ia[i] === void 0) return -1;
+      if (ib[i] === void 0) return 1;
+      const x = ia[i];
+      const y = ib[i];
+      const xn = /^\d+$/.test(x);
+      const yn = /^\d+$/.test(y);
+      if (xn && yn) {
+        if (Number(x) !== Number(y)) return Number(x) - Number(y);
+      } else if (xn !== yn) return xn ? -1 : 1;
+      else if (x !== y) return x < y ? -1 : 1;
     }
     return 0;
+  }
+  function splitVersion(v) {
+    const s = v.trim().replace(/^v/i, "").split("+")[0];
+    const dash = s.indexOf("-");
+    return dash < 0 ? [s, ""] : [s.slice(0, dash), s.slice(dash + 1)];
   }
   function detectFramework(resources) {
     for (const f of FRAMEWORKS) {
