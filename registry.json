@@ -529,7 +529,9 @@
             "--nk-type-label-weight"
           ],
           "hooks": []
-        }
+        },
+        "hidden": true,
+        "hiddenReason": "a Text/IconText composition; Text shows the voices"
       },
       "registryDependencies": [
         "https://nuikit.vercel.app/r/text.json"
@@ -1529,7 +1531,9 @@
             "--nk-weight-strong"
           ],
           "hooks": []
-        }
+        },
+        "hidden": true,
+        "hiddenReason": "a labelled Input wrapper; SmoothInput shows the input"
       }
     },
     {
@@ -1918,7 +1922,9 @@
           "hooks": [
             "useLinearRun"
           ]
-        }
+        },
+        "hidden": true,
+        "hiddenReason": "a Dial with sweep 360"
       }
     },
     {

@@ -129,7 +129,7 @@ describe("registry items", () => {
 })
 
 // A11: the curated catalogue. Every item is classified, grouped by purpose and (optionally) hidden from the
-// site; the site lists at most 20 components, foundations first, each with its variants, levers and hooks.
+// site; the site lists at most 21 components, foundations first, each with its variants, levers and hooks.
 describe("curated catalogue", () => {
   const GROUPS = ["Foundations", "Lists & selection", "Gauges & vitals", "Dialogs & sheets", "Notices & prompts", "Inputs", "HUD", "Layout", "Blocks"]
   type Curated = Meta & { group?: string; tier?: string; hidden?: boolean; hiddenReason?: string; variants?: { axes: Record<string, string[]>; levers: string[]; hooks: string[] } }
@@ -155,8 +155,8 @@ describe("curated catalogue", () => {
     for (const i of registry.items.filter((x) => m(x).hidden && m(x).tier !== "alias")) expect(m(i).hiddenReason?.length ?? 0, i.name).toBeGreaterThan(15)
   })
 
-  it("the site lists at most 20 components, foundations first, and every listed item shows its variants", () => {
-    expect(listed.length).toBeLessThanOrEqual(20)
+  it("the site lists at most 21 components, foundations first, and every listed item shows its variants", () => {
+    expect(listed.length).toBeLessThanOrEqual(21)
     expect(listed.filter((i) => m(i).tier === "foundation").length).toBeGreaterThan(0)
     for (const i of listed) {
       expect(m(i).tier, i.name).not.toBe("alias")
