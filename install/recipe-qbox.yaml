@@ -4,9 +4,8 @@
 # Qbox recipe (Qbox-project/txAdminRecipe), then adds nuikit from the latest GitHub release and writes
 # a server.cfg that starts it in the right order with `exec @nuikit/nuikit.cfg`.
 #
-# What it does NOT do yet: copy the overrides (ox_lib, ox_inventory, ox_target…) over those resources'
-# UI folders. The zip's README has the two-line copy per override; `nuikit doctor` lists which are missing.
-# Unproven in game: this recipe has not been run on a real txAdmin yet (Oct 21, 2026).
+# STATUS: written for 0.7.0 and never run on a real txAdmin (as of Oct 23, 2026). Treat it as a starting point.
+# It does not install the overrides: once the server is up, run `nuikit install` in the console (docs/install.md).
 $engine: 3
 $onesync: on
 name: Qbox + nuikit
@@ -35,10 +34,6 @@ tasks:
   - action: move_path
     src: ./tmp/nuikit/[nuikit]
     dest: ./resources/[nuikit]
-    overwrite: true
-  - action: move_path
-    src: ./tmp/nuikit/overrides
-    dest: ./resources/[nuikit]/_overrides-to-copy
     overwrite: true
 
   # ── server.cfg: Qbox's, then nuikit after the framework ──────────────────────────────────────────
