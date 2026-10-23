@@ -1,11 +1,12 @@
 "use client"
 
 import * as React from "react"
-import { token, tokenMs } from "nuikit-core/motion"
+import { motionLevel, token, tokenMs } from "nuikit-core/motion"
 
 import { cn, nkLevel } from "@/lib/utils"
 import { NumberRoll } from "@/components/ui/text-roll"
 import { CollapseMore } from "@/components/ui/collapse-stack"
+import { Tile } from "@/components/ui/tile"
 import { useCollapse, type UseCollapseOptions } from "@/hooks/use-collapse"
 
 /**
@@ -21,10 +22,18 @@ import { useCollapse, type UseCollapseOptions } from "@/hooks/use-collapse"
  *     <VitalChip.Pop label="Hunger" />
  *   </VitalChip.Root>
  *
- * One SVG path per shape is the single source of truth, generated for the chip's measured size: the
- * chip's surface, its outline, the level trace, the liquid's container (clip) and the label anchors all
- * come from it. Shapes: auto (the identity's chip: --nk-chip-radius and the --nk-chip-clip chamfer, the
- * default look) | square | rounded | circle | diamond | hex | chamfer.
+ * The default shape is the keycap (the HUD vitals the owner approved in game, docs/design/baseline.md): the kit's
+ * Tile as a light front face, slanted, with the glyph centred on it, over a darker back plate dropped straight down
+ * (--nk-vital-plate-drop, 0.25rem). The plate IS the expansion: when the chip opens it slides out from behind the
+ * face (translateX only, so the slant and radius stay) and the label sits on it, fading in a beat later. The level
+ * is a liquid rising inside the face (--level, scaleY), with a surface line, and a copy of the icon in the fill's ink
+ * clipped to the part under the surface; `active` (the mic while talking) lights the face white. Its room in a Row
+ * is measured once per open and FLIPped, never per frame.
+ *
+ * The other shapes are one SVG path each, generated for the chip's measured size: the chip's surface, its outline,
+ * the level trace, the liquid's container (clip) and the label anchors all come from it. Shapes: keycap (default) |
+ * auto (the identity's chip: --nk-chip-radius and the --nk-chip-clip chamfer, the 0.7 look) | square | rounded |
+ * circle | diamond | hex | chamfer.
  * Levels: outline (traced along the edge, clockwise from the top) | fill (liquid rising inside the shape,
  * with a surface line) | bar | none. Label attach: inline (grows sideways, rect shapes only; others use
  * flag) | tag (a banner hanging beneath, like a crest's ribbon) | flag (sticks out to the side) | none.
@@ -36,9 +45,9 @@ import { useCollapse, type UseCollapseOptions } from "@/hooks/use-collapse"
  * the colour). Props win over tokens. Transform and opacity only for motion; Chromium 103.
  *
  * Role: One vital on the HUD: health, armor, hunger, thirst, stress.
- * Anatomy: vital-chip-row (optional: chips that know each other) > vital-chip (shape) > icon > level drawing
- *   (outline | liquid | bar) > label (name, value) > pop (a change)
- * Props: value, tone, shape, level, attach, icon, open, display, neighbours, format, max.
+ * Anatomy: vital-chip-row (optional: chips that know each other) > vital-chip (keycap: plate, face Tile, liquid,
+ *   icon; or an SVG shape) > icon > level drawing (liquid | outline | bar) > label (name, value) > pop (a change)
+ * Props: value, tone, shape, level, attach, icon, open, active, alert, display, neighbours, format, max, side.
  * Level means: the vital, 0–100 as 0–1.
  * Rules: data-hue carries the vital's role (health, armor…). The level style comes from the theme (outline,
  *   liquid, bar); the data never picks it. Readable over a bright sky (legibility fixture). display: pill
@@ -48,7 +57,7 @@ import { useCollapse, type UseCollapseOptions } from "@/hooks/use-collapse"
  *   through the row's collapse engine (useCollapse): batched, ordered, capped at max with +N.
  */
 
-export type ChipShape = "auto" | "square" | "rounded" | "circle" | "diamond" | "hex" | "chamfer"
+export type ChipShape = "keycap" | "auto" | "square" | "rounded" | "circle" | "diamond" | "hex" | "chamfer"
 export type LevelStyle = "outline" | "fill" | "bar" | "none"
 export type LabelAttach = "inline" | "tag" | "flag" | "none"
 export type IconMode = "vital" | "uniform"
@@ -66,7 +75,7 @@ export type ChipDisplay = "auto" | "pill" | "value" | "icon" | "expand"
  */
 export type ChipNeighbours = "push" | "collapse" | "overlay"
 
-const SHAPES: ChipShape[] = ["auto", "square", "rounded", "circle", "diamond", "hex", "chamfer"]
+const SHAPES: ChipShape[] = ["keycap", "auto", "square", "rounded", "circle", "diamond", "hex", "chamfer"]
 const LEVELS: LevelStyle[] = ["outline", "fill", "bar", "none"]
 const ATTACH: LabelAttach[] = ["inline", "tag", "flag", "none"]
 /** tokens 1.4's --nk-level-style names, as the chip's drawings */
@@ -82,7 +91,7 @@ export interface ChipStyle {
   display: ChipDisplay
   neighbours: ChipNeighbours
 }
-const DEFAULT_STYLE: ChipStyle = { shape: "auto", level: "outline", attach: "inline", icon: "vital", display: "auto", neighbours: "push" }
+const DEFAULT_STYLE: ChipStyle = { shape: "keycap", level: "fill", attach: "flag", icon: "uniform", display: "auto", neighbours: "push" }
 
 function pickOf<T extends string>(list: readonly T[], v: string, d: T): T {
   const s = v.trim().replace(/["']/g, "") as T
@@ -227,6 +236,227 @@ function rounded(x0: number, y0: number, x1: number, y1: number, rr: number, cut
   return p.join(" ")
 }
 
+
+// ───────────────────────────────── the keycap's stylesheet
+//
+// The keycap is drawn by these rules (the in-game vitals, hud.css before 0.9), shipped with the component so
+// `npx shadcn add vital-chip` gets the look without a kit.css change; every number is a --nk-vital-* lever with the
+// in-game value as its default. Injected once per document. (kit.css may absorb it; the selectors are stable.)
+const KEYCAP_CSS = `
+[data-slot="vital-chip-shape"][data-shape="keycap"] {
+  width: var(--vital-size, 2.125rem);
+  height: var(--vital-size, 2.125rem);
+  --nk-vital-face: calc(var(--vital-size, 2.125rem) * var(--nk-vital-face-ratio, 0.94));
+  --nk-vital-tag: 0px;
+  --nk-vital-tag-pad: var(--nk-vital-tag-gap, 1rem);
+  --nk-vital-plate-drop: 0.25rem;
+  --nk-vital-plate-x: 0rem;
+  --nk-vital-d: 1;
+}
+[data-slot="vital-chip-shape"][data-shape="keycap"][data-side="left"] { --nk-vital-d: -1; }
+[data-slot="vital-chip-shape"][data-shape="keycap"] > [data-slot="tile"],
+[data-slot="vital-chip-shape"][data-shape="keycap"] [data-slot="vital-chip-icon"] {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+/* the face is the kit Tile (its face, rim, slant and alert state), sized by the chip and without its own plate:
+   the chip's plate below is the one that slides out */
+[data-slot="vital-chip-shape"][data-shape="keycap"] > [data-slot="tile"] {
+  --nk-key-radius: var(--nk-r-chip);
+  --nk-tile-plate-now: transparent;
+  z-index: 2;
+  width: var(--nk-vital-face);
+  min-width: 0;
+  height: var(--nk-vital-face);
+  padding: 0;
+}
+[data-slot="vital-chip-level"] {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  border-radius: inherit;
+  transform: skewX(var(--nk-tile-skew));
+}
+[data-slot="vital-chip-liquid"],
+[data-slot="vital-chip-lit"] {
+  position: absolute;
+  inset: 0;
+  transform-origin: 50% 100%;
+}
+/* the level in the vital's role colour (data-hue gives --hue; Default's roles are white): solid by default, a flat
+   full colour (--nk-fill-style); soft keeps the translucent liquid */
+[data-slot="vital-chip-liquid"] {
+  background: rgb(var(--hue, var(--foreground-rgb)));
+  transform: scaleY(var(--level, 0));
+  transition: transform calc(var(--nk-time-fill) * var(--nk-motion, 1)) var(--nk-ease-standard);
+}
+:is(html, *)[data-nk-fill="soft"] [data-slot="vital-chip-liquid"] {
+  background: linear-gradient(180deg, rgba(var(--hue, var(--foreground-rgb)), 0.62), rgba(var(--hue, var(--foreground-rgb)), 0.38));
+}
+[data-slot="vital-chip-line"] {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: var(--nk-vital-line, 0.125rem);
+  background: var(--hue-grad-a, var(--nk-tile-ink));
+  transform: translateY(calc((1 - var(--level, 0)) * var(--nk-vital-face) - 0.0625rem));
+  transition: transform calc(var(--nk-time-fill) * var(--nk-motion, 1)) var(--nk-ease-standard);
+  opacity: calc(var(--level, 0) * 100);
+}
+/* active (the mic): a bright layer fills the face from the bottom, the icon turns to the dark ink */
+[data-slot="vital-chip-lit"] {
+  background: var(--nk-tile-active, var(--nk-tile-confirm-face));
+  transform: scaleY(0);
+  transition: transform calc(var(--nk-time-base) * var(--nk-motion, 1)) var(--nk-ease-standard);
+}
+[data-slot="vital-chip-shape"][data-shape="keycap"][data-active] [data-slot="vital-chip-lit"] { transform: scaleY(1); transition-duration: calc(var(--nk-time-fast) * var(--nk-motion, 1)); }
+[data-slot="vital-chip-shape"][data-shape="keycap"] [data-slot="vital-chip-icon"] {
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: calc(var(--nk-vital-face) * var(--nk-vital-icon-ratio, 0.52));
+  height: calc(var(--nk-vital-face) * var(--nk-vital-icon-ratio, 0.52));
+  color: var(--nk-tile-ink);
+  transition: color calc(var(--nk-time-base) * var(--nk-motion, 1)) ease-out;
+}
+[data-slot="vital-chip-shape"][data-shape="keycap"] [data-slot="vital-chip-icon"] > svg { width: 100%; height: 100%; stroke-width: 2.25; }
+/* the icon's ink copy: dark on the solid level, cut at the surface (the icon box sits 0.24 × the face from its top) */
+[data-slot="vital-chip-shape"][data-shape="keycap"] [data-slot="vital-chip-icon-ink"] {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--nk-fill-ink, var(--nk-tile-confirm-ink));
+  clip-path: inset(max(0px, calc((1 - var(--level, 0)) * var(--nk-vital-face) - var(--nk-vital-face) * 0.24)) 0 0 0);
+}
+[data-slot="vital-chip-shape"][data-shape="keycap"] [data-slot="vital-chip-icon-ink"] > svg { width: 100%; height: 100%; }
+:is(html, *)[data-nk-fill="soft"] [data-slot="vital-chip-shape"][data-shape="keycap"] [data-slot="vital-chip-icon-ink"],
+[data-slot="vital-chip-shape"][data-shape="keycap"]:not([data-level]) [data-slot="vital-chip-icon-ink"],
+[data-slot="vital-chip-shape"][data-shape="keycap"][data-active] [data-slot="vital-chip-icon-ink"] { display: none; }
+[data-slot="vital-chip-shape"][data-shape="keycap"][data-active] [data-slot="vital-chip-icon"] { color: var(--nk-tile-confirm-ink); transition-duration: calc(var(--nk-time-fast) * var(--nk-motion, 1)); }
+/* a letter on the face (a gear, a compass mark): the scan voice, nudged left by the italic's lean */
+[data-slot="vital-chip-shape"][data-shape="keycap"] [data-slot="vital-chip-glyph"] {
+  display: block;
+  font-size: calc(var(--nk-vital-face) * 0.62);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  text-shadow: none;
+  transform: translateX(-0.04em);
+}
+/* the base: the tile's own wall, always there, the face's size dropped by the plate drop, its corners rounded all
+   round. The extension slides out over it from under the face's centre, so the near end you see is always this
+   base's rounded corner, never a clipped edge. */
+[data-slot="vital-chip-wall"] {
+  position: absolute;
+  z-index: 0;
+  top: calc((var(--vital-size, 2.125rem) - var(--nk-vital-face)) / 2);
+  left: calc((var(--vital-size, 2.125rem) - var(--nk-vital-face)) / 2);
+  width: var(--nk-vital-face);
+  height: var(--nk-vital-face);
+  border-radius: var(--nk-r-chip);
+  background: var(--nk-tile-plate-dim);
+  box-shadow: 0 0 0 var(--nk-border, 1px) rgba(var(--scrim-rgb), 0.9);
+  transform: translate(calc(var(--nk-vital-plate-x) * var(--nk-vital-d)), var(--nk-vital-plate-drop)) skewX(var(--nk-tile-skew));
+}
+/* the track clips the extension from the face's centre outwards (that cut is always under the face or on the base) */
+[data-slot="vital-chip-track"] {
+  position: absolute;
+  z-index: 1;
+  top: calc((var(--vital-size, 2.125rem) - var(--nk-vital-face)) / 2);
+  left: calc((var(--vital-size, 2.125rem) - var(--nk-vital-face)) / 2 + var(--nk-vital-face) / 2);
+  width: calc(var(--nk-vital-face) / 2 + var(--nk-vital-tag) + var(--nk-vital-tag-pad) + var(--nk-vital-plate-drop) + 0.5rem + 2px);
+  height: calc(var(--nk-vital-face) + var(--nk-vital-plate-drop) + 2px);
+  overflow: hidden;
+  pointer-events: none;
+}
+[data-slot="vital-chip-shape"][data-shape="keycap"][data-side="left"] [data-slot="vital-chip-track"] { left: auto; right: calc((var(--vital-size, 2.125rem) - var(--nk-vital-face)) / 2 + var(--nk-vital-face) / 2); }
+[data-slot="vital-chip-plate"] {
+  position: absolute;
+  top: 0;
+  left: calc(var(--nk-vital-face) / -2);
+  width: calc(var(--nk-vital-face) + var(--nk-vital-tag) + var(--nk-vital-tag-pad));
+  height: var(--nk-vital-face);
+  border-radius: var(--nk-r-chip);
+  background: var(--nk-tile-plate-dim);
+  box-shadow: 0 0 0 var(--nk-border, 1px) rgba(var(--scrim-rgb), 0.9);
+  /* at rest only the drop offset shows behind the face */
+  transform: translate(calc(var(--nk-vital-plate-x) - var(--nk-vital-d) * (var(--nk-vital-tag) + var(--nk-vital-tag-pad))), var(--nk-vital-plate-drop)) skewX(var(--nk-tile-skew));
+  transition: transform calc(var(--nk-time-slow) * var(--nk-motion, 1)) var(--nk-ease-expand);
+}
+[data-slot="vital-chip-shape"][data-shape="keycap"][data-side="left"] [data-slot="vital-chip-plate"] { left: auto; right: calc(var(--nk-vital-face) / -2); }
+[data-slot="vital-chip-shape"][data-shape="keycap"][data-open] [data-slot="vital-chip-plate"] { transform: translate(var(--nk-vital-plate-x), var(--nk-vital-plate-drop)) skewX(var(--nk-tile-skew)); }
+[data-slot="vital-chip-shape"][data-shape="keycap"][data-side="left"][data-open] [data-slot="vital-chip-plate"] { transform: translate(calc(var(--nk-vital-plate-x) * -1), var(--nk-vital-plate-drop)) skewX(var(--nk-tile-skew)); }
+/* the label on the revealed plate: the scan voice, fading in a beat after the plate */
+[data-slot="vital-chip-label"][data-attach="plate"] {
+  position: absolute;
+  z-index: 1;
+  top: 50%;
+  left: calc((var(--vital-size, 2.125rem) + var(--nk-vital-face)) / 2 + 0.5rem);
+  display: block;
+  transform: translateY(-50%);
+  white-space: nowrap;
+  font-size: var(--nk-vital-label-size, 0.9375rem);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--nk-tile-ink);
+  opacity: 0;
+  transition: opacity calc(var(--nk-time-fast) * var(--nk-motion, 1)) ease-out;
+}
+[data-slot="vital-chip-shape"][data-shape="keycap"][data-side="left"] [data-slot="vital-chip-label"][data-attach="plate"] { left: auto; right: calc((var(--vital-size, 2.125rem) + var(--nk-vital-face)) / 2 + 0.5rem); }
+[data-slot="vital-chip-label"][data-attach="plate"][data-open] { opacity: 1; transition-duration: calc(var(--nk-time-base) * var(--nk-motion, 1)); transition-delay: calc(var(--nk-time-fast) * var(--nk-motion, 1)); }
+[data-slot="vital-chip-label"][data-attach="plate"] [data-slot="vital-chip-name"] { opacity: 0.7; margin-right: 0.25rem; }
+/* alert: the liquid and its line take the status colour (the Tile's rim breathes) */
+[data-slot="vital-chip-shape"][data-shape="keycap"][data-state="alert"] [data-slot="vital-chip-liquid"] { background: var(--vital, var(--nk-fill-alert)); }
+:is(html, *)[data-nk-fill="soft"] [data-slot="vital-chip-shape"][data-shape="keycap"][data-state="alert"] [data-slot="vital-chip-liquid"] { background: rgba(var(--destructive-rgb, 239, 68, 68), 0.7); }
+[data-slot="vital-chip-shape"][data-shape="keycap"][data-state="alert"] [data-slot="vital-chip-line"] { background: var(--vital, var(--nk-fill-alert)); }
+[data-shape="keycap"][data-display][data-state="alert"] { --vital: var(--nk-fill-alert, var(--destructive)); }
+/* the room the plate takes in the row: the chip's margin on its plate side, FLIPped by Row (the Root: the one
+   element with the shape and the display; a composer may rename its data-slot) */
+[data-shape="keycap"][data-display] { margin-right: var(--nk-vital-room, 0px); }
+[data-shape="keycap"][data-display][data-side="left"] { margin-right: 0; margin-left: var(--nk-vital-room, 0px); }
+:is(html, *)[data-nk-motion="reduced"] :is([data-slot="vital-chip-liquid"], [data-slot="vital-chip-line"], [data-slot="vital-chip-lit"], [data-slot="vital-chip-plate"], [data-slot="vital-chip-label"][data-attach="plate"], [data-slot="vital-chip-shape"][data-shape="keycap"] [data-slot="vital-chip-icon"]) { transition: none; }
+`
+
+
+/**
+ * FLIP for a row of chips: run `mutate` (a chip taking or giving room), then slide every other chip from where it
+ * was. Layout is read twice per change (before, after), never per frame; the row's width itself never animates
+ * (transform and opacity only).
+ */
+function flipRow(row: Element | null, mutate: () => void) {
+  if (!row || motionLevel(row) === "off") return mutate()
+  const kids = Array.from(row.children) as HTMLElement[]
+  const before = kids.map((k) => (k.dataset.gone !== undefined ? null : k.getBoundingClientRect().left))
+  mutate()
+  const after = kids.map((k) => (k.dataset.gone !== undefined ? null : k.getBoundingClientRect().left))
+  kids.forEach((k, i) => {
+    const a = before[i]
+    const b = after[i]
+    if (a == null || b == null || Math.abs(a - b) < 0.5) return
+    k.animate([{ transform: `translateX(${(a - b).toFixed(1)}px)` }, { transform: "translateX(0)" }], { duration: tokenMs("--nk-time-slow", 300) || 300, easing: "cubic-bezier(0.2, 0.8, 0.2, 1)", composite: "add" })
+  })
+}
+
+let keycapStyled = false
+function useKeycapStyle() {
+  React.useInsertionEffect(() => {
+    if (keycapStyled || typeof document === "undefined") return
+    keycapStyled = true
+    const el = document.createElement("style")
+    el.dataset.nk = "vital-chip-keycap"
+    el.textContent = KEYCAP_CSS
+    document.head.appendChild(el)
+  }, [])
+}
+
 // ───────────────────────────────── parts
 
 interface Ctx {
@@ -244,6 +474,9 @@ interface Ctx {
   valueOnly: boolean
   wide: boolean
   setWide: (w: boolean) => void
+  active: boolean
+  alert: boolean
+  side?: "left" | "right"
 }
 const ChipCtx = React.createContext<Ctx | null>(null)
 
@@ -294,6 +527,8 @@ function useChip() {
 
 /** A label that grows sideways needs a rect; other shapes use a flag instead. */
 function effectiveAttach(style: ChipStyle): LabelAttach {
+  // a keycap's label sits on its sliding plate (drawn by Shape), whatever the attach says short of none
+  if (style.shape === "keycap") return style.attach === "none" ? "none" : "flag"
   const rect = style.shape === "auto" || style.shape === "square" || style.shape === "rounded" || style.shape === "chamfer"
   return style.attach === "inline" && !rect ? "flag" : style.attach
 }
@@ -323,8 +558,14 @@ type RootProps = React.ComponentProps<"div"> & {
   level?: LevelStyle
   attach?: LabelAttach
   icon?: IconMode
-  /** the label shows (inline / tag / flag) */
+  /** the label shows (inline / tag / flag; the keycap's plate slides out) */
   open?: boolean
+  /** on (the mic while talking, N on a compass): the keycap's face lights white, the icon turns to the dark ink */
+  active?: boolean
+  /** past its threshold: the alert state (danger rim, breathing, the level in the danger colour); default: value at or under --nk-alert-threshold */
+  alert?: boolean
+  /** which way the keycap's plate slides out: away from the corner it is anchored to. Default: an ancestor's data-corner, else right. */
+  side?: "left" | "right"
   /** what it shows: pill, value, icon, expand (see ChipDisplay); default the theme's --nk-vital-display */
   display?: ChipDisplay
   /** when it opens, what the chips beside it in a Row do (see ChipNeighbours) */
@@ -333,7 +574,7 @@ type RootProps = React.ComponentProps<"div"> & {
   format?: (value: number) => React.ReactNode
 }
 
-function Root({ value, tone, shape, level, attach, icon, open = false, display, neighbours, format, className, style, children, ...props }: RootProps) {
+function Root({ ref, value, tone, shape, level, attach, icon, open = false, active, alert, side, display, neighbours, format, className, style, children, ...props }: RootProps) {
   const theme = useChipStyle()
   const mode = display ?? theme.display
   const chip: ChipStyle = {
@@ -352,7 +593,7 @@ function Root({ value, tone, shape, level, attach, icon, open = false, display, 
   const key = tone ?? id
   const ownExpanded = useExpand(mode === "expand" && !engine ? value : undefined)
   const report = engine?.report
-  const critical = value !== undefined && value <= alertThreshold() * 100
+  const critical = alert ?? (value !== undefined && value <= alertThreshold() * 100)
   React.useEffect(() => {
     if (report && value !== undefined) report(key, value, { critical })
   }, [report, key, value, critical])
@@ -376,8 +617,9 @@ function Root({ value, tone, shape, level, attach, icon, open = false, display, 
   const [wide, setWide] = React.useState(false)
   const at = effectiveAttach(chip)
   return (
-    <ChipCtx.Provider value={{ value, tone, style: chip, geo, setGeo, open: isOpen, float: chip.neighbours === "overlay", valueText, valueOnly: mode === "value", wide, setWide }}>
+    <ChipCtx.Provider value={{ value, tone, style: chip, geo, setGeo, open: isOpen, float: chip.neighbours === "overlay", valueText, valueOnly: mode === "value", wide, setWide, active: !!active, alert: critical, side }}>
       <div
+        ref={ref}
         data-slot="vital-chip"
         data-hue={tone}
         data-shape={chip.shape}
@@ -385,6 +627,9 @@ function Root({ value, tone, shape, level, attach, icon, open = false, display, 
         data-attach={at}
         data-icon={chip.icon}
         data-open={isOpen || undefined}
+        data-active={active || undefined}
+        data-state={critical ? "alert" : undefined}
+        data-side={side}
         data-display={mode}
         data-neighbours={chip.neighbours}
         data-yielded={yielded || undefined}
@@ -406,6 +651,108 @@ const STROKE_1080 = 2.5
  * from the shape path: surface, level, outline. Its children (Icon, an inline Label) sit on top.
  */
 function Shape({ className, children, ...props }: React.ComponentProps<"span">) {
+  const { style } = useChip()
+  if (style.shape === "keycap") return <Keycap className={className} {...props}>{children}</Keycap>
+  return <SvgShape className={className} {...props}>{children}</SvgShape>
+}
+
+/** The in-game keycap: the kit's Tile face over a sliding plate, the liquid inside the face, the label on the plate. */
+function Keycap({ className, children, ...props }: React.ComponentProps<"span">) {
+  useKeycapStyle()
+  const { value, open, active, alert, side: sideProp, style, valueText, valueOnly } = useChip()
+  const root = React.useRef<HTMLSpanElement>(null)
+  const text = React.useRef<HTMLSpanElement>(null)
+  const [side, setSide] = React.useState<"left" | "right">(sideProp ?? "right")
+  const v = value === undefined ? undefined : Math.max(0, Math.min(1, value / 100))
+  const level = v !== undefined && style.level !== "none" ? v : undefined
+  // the plate reads the name and the value ("HEALTH 100") whenever there is a value
+  const plateValue = valueText ?? (value === undefined ? null : Math.round(value))
+  // the plate slides away from the corner the row is anchored to (an ancestor's data-corner), read once per mount
+  React.useLayoutEffect(() => {
+    if (sideProp) return setSide(sideProp)
+    const corner = root.current?.closest<HTMLElement>("[data-corner]")?.dataset.corner
+    setSide(corner?.endsWith("right") ? "left" : "right")
+  }, [sideProp])
+  React.useLayoutEffect(() => {
+    root.current?.parentElement?.setAttribute("data-side", side)
+  }, [side])
+  // the label is measured once per open / close or label change, never per frame (and again once the display
+  // font has loaded, since a label measured before it is too narrow)
+  const label = React.Children.toArray(children).some((c) => React.isValidElement(c) && (c.type === Label || (c.props as { "data-slot"?: string } | null)?.["data-slot"] === "vital-chip-label"))
+  const measure = React.useCallback(() => {
+    const t = root.current
+    const l = text.current
+    if (!t || !l) return
+    const w = l.offsetWidth
+    t.style.setProperty("--nk-vital-tag", `${w}px`)
+    // push: the chip takes the plate's room in the row (its margin), its neighbours sliding aside (Row FLIPs it)
+    const chip = t.parentElement
+    if (!chip || style.neighbours !== "push") return
+    const rem = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16
+    const room = t.hasAttribute("data-open") ? `${(w + rem).toFixed(1)}px` : "0px"
+    if (chip.style.getPropertyValue("--nk-vital-room") !== room) flipRow(chip.parentElement, () => chip.style.setProperty("--nk-vital-room", room))
+  }, [style.neighbours])
+  React.useLayoutEffect(measure, [measure, open, children, valueText])
+  React.useLayoutEffect(() => {
+    let live = true
+    void document.fonts?.ready.then(() => live && measure())
+    return () => {
+      live = false
+    }
+  }, [measure])
+  // the icon (and an inline label, which the keycap draws on its plate instead)
+  const icon = React.Children.toArray(children).filter((c) => !(React.isValidElement(c) && c.type === Label))
+  void label
+  return (
+    <span
+      ref={root}
+      data-slot="vital-chip-shape"
+      data-shape="keycap"
+      data-open={open || undefined}
+      data-active={active || undefined}
+      data-state={alert ? "alert" : undefined}
+      data-side={side}
+      data-level={level === undefined ? undefined : ""}
+      className={cn("relative block shrink-0 text-(--nk-tile-ink)", className)}
+      {...props}
+    >
+      {/* the base: the tile's own wall, always there, dropped straight down by --nk-vital-plate-drop */}
+      <span aria-hidden data-slot="vital-chip-wall" />
+      {/* the track clips the plate from the face's centre outwards; the plate slides out on open */}
+      <span aria-hidden data-slot="vital-chip-track">
+        <span data-slot="vital-chip-plate" />
+      </span>
+      <Tile aria-hidden data-slot="tile" data-part="vital-chip-face" size="md" shape="square" state={alert ? "alert" : undefined} active={active}>
+        <span data-slot="vital-chip-level" style={level === undefined ? undefined : ({ "--level": level.toFixed(3) } as React.CSSProperties)}>
+          {level !== undefined && <span data-slot="vital-chip-liquid" />}
+          {level !== undefined && <span data-slot="vital-chip-line" />}
+          <span data-slot="vital-chip-lit" />
+        </span>
+        <InShape.Provider value={true}>{icon}</InShape.Provider>
+      </Tile>
+      <span ref={text} data-slot="vital-chip-label" data-attach="plate" data-open={open || undefined} className="nk-scan">
+        {valueOnly ? (
+          <span className="nk-num">{plateValue}</span>
+        ) : (
+          <>
+            <KeycapName>{children}</KeycapName>
+            {plateValue !== null && <span className="nk-num">{plateValue}</span>}
+          </>
+        )}
+      </span>
+    </span>
+  )
+}
+
+/** The Label children of a keycap (its name), written on the plate. */
+function KeycapName({ children }: { children: React.ReactNode }) {
+  const names = React.Children.toArray(children).filter((c) => React.isValidElement(c) && c.type === Label) as React.ReactElement<{ children?: React.ReactNode }>[]
+  if (!names.length) return null
+  return <span data-slot="vital-chip-name">{names[0]!.props.children}</span>
+}
+
+/** An SVG shape: one path for the surface, the outline, the level and the clip. */
+function SvgShape({ className, children, ...props }: React.ComponentProps<"span">) {
   const { style, setGeo, geo, value, open } = useChip()
   const face = React.useRef<HTMLSpanElement>(null)
   const probe = React.useRef<HTMLSpanElement>(null)
@@ -554,6 +901,17 @@ function Level() {
  */
 function Icon({ className, children, ...props }: React.ComponentProps<"span">) {
   const { style } = useChip()
+  if (style.shape === "keycap") {
+    return (
+      <span data-slot="vital-chip-icon" className={cn("relative flex items-center justify-center", className)} {...props}>
+        {children}
+        {/* over a solid fill the icon keeps its contrast: a copy in the fill's ink, clipped to the part under the level */}
+        <span data-slot="vital-chip-icon-ink" aria-hidden>
+          {children}
+        </span>
+      </span>
+    )
+  }
   return (
     <span
       data-slot="vital-chip-icon"
@@ -596,8 +954,9 @@ function Label({ className, children: name, ...props }: React.ComponentProps<"sp
         <span className="nk-num ml-(--nk-space-2) opacity-80">{valueText}</span>
       </>
     )
-  // write it in both places: inside Shape it is the inline label, outside the tag or flag
-  if (at === "none" || (at === "inline") !== inShape) return null
+  // write it in both places: inside Shape it is the inline label, outside the tag or flag. A keycap writes it
+  // on its plate itself (the Label inside Shape is read as the name; the one outside draws nothing).
+  if (style.shape === "keycap" || at === "none" || (at === "inline") !== inShape) return null
   if (at === "inline") {
     return (
       <span
@@ -731,6 +1090,11 @@ function Pop({ label, mode = "change", min = 3, critical = false, force = null, 
   )
 }
 
-const VitalChip = { Root, Row, Shape, Level, Icon, Label, Pop }
+/** A letter on a keycap's face (a gear, a compass mark), in the scan voice. */
+function Glyph({ className, ...props }: React.ComponentProps<"span">) {
+  return <span data-slot="vital-chip-glyph" className={cn("nk-scan", className)} {...props} />
+}
+
+const VitalChip = { Root, Row, Shape, Level, Icon, Label, Pop, Glyph }
 
 export { VitalChip }

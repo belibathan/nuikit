@@ -607,7 +607,7 @@
       "name": "vital-chip",
       "type": "registry:ui",
       "title": "Vital Chip",
-      "description": "The HUD status chip as composable parts (Root, Shape, Level, Icon, Label, Pop): one SVG path per shape (auto, square, rounded, circle, diamond, hex, chamfer) drives the surface, border, level trace, liquid fill and label anchors; level outline/fill/bar/none; label inline/tag/flag; a pop with the signed change. Themed by --nk-chip-shape, --nk-level-style, --nk-label-attach, --nk-vital-icon.",
+      "description": "The HUD status chip as composable parts (Root, Shape, Level, Icon, Label, Glyph, Pop): the in-game keycap by default (a Tile face over a plate that slides out with the label, the level as a liquid in the face, white when active), or one SVG path per shape (auto, square, rounded, circle, diamond, hex, chamfer); level fill/outline/bar/none; a pop with the signed change. Themed by --nk-chip-shape, --nk-level-style, --nk-label-attach, --nk-vital-icon and the --nk-vital-* levers.",
       "files": [
         {
           "path": "registry/nuikit/ui/vital-chip.tsx",
@@ -620,6 +620,7 @@
       "registryDependencies": [
         "text-roll",
         "https://nuikit.vercel.app/r/collapse-stack.json",
+        "https://nuikit.vercel.app/r/tile.json",
         "https://nuikit.vercel.app/r/use-collapse.json"
       ],
       "meta": {
@@ -631,7 +632,7 @@
           "role": "One vital on the HUD: health, armor, hunger, thirst, stress.",
           "anatomy": [
             "vital-chip-row (optional: chips that know each other)",
-            "vital-chip (shape)",
+            "vital-chip (keycap: plate, face Tile, liquid, icon; or an SVG shape)",
             "icon",
             "level drawing (outline | liquid | bar)",
             "label (name, value)",
@@ -645,6 +646,9 @@
             "attach",
             "icon",
             "open",
+            "active",
+            "alert",
+            "side",
             "display",
             "neighbours",
             "format",
@@ -653,7 +657,8 @@
           "level": "the vital, 0–100 as 0–1.",
           "rules": [
             "data-hue carries the vital's role (health, armor…).",
-            "The level style comes from the theme (outline, liquid, bar); the data never picks it.",
+            "The default shape is the keycap (the in-game vitals): a Tile face over a plate that slides out with the label, the level as a liquid in the face; every number is a --nk-vital-* lever.",
+            "The level style comes from the theme (liquid, outline, bar); the data never picks it.",
             "Readable over a bright sky (legibility fixture).",
             "display: pill (icon, name, value) | value | icon (level as fill) | expand (opens on a change, settles after --nk-rest-delay); the theme default is --nk-vital-display.",
             "neighbours (a chip that opens, in a Row): push | collapse | overlay; the theme default is --nk-vital-neighbours.",
@@ -754,16 +759,20 @@
       "name": "speedometer",
       "type": "registry:ui",
       "title": "Speedometer",
-      "description": "Vehicle gauge on a Dial: the rpm arc with ticks and a redline (data-state=\"alert\"), the speed in the num role, a gear Tile and a fuel Fill; speedometerDash() for live writes.",
+      "description": "The in-game vehicle gauge on a Dial: thick rpm segments with even gaps (or a thin arc), the redline, the speed with its leading zeros dimmed, a gear Tile in the opening, fuel as outer segments and the turn signals; speedometerPainter() for live writes.",
       "files": [
         {
           "path": "registry/nuikit/ui/speedometer.tsx",
           "type": "registry:ui"
         }
       ],
+      "dependencies": [
+        "lucide-react",
+        "nuikit-core"
+      ],
       "registryDependencies": [
         "https://nuikit.vercel.app/r/dial.json",
-        "https://nuikit.vercel.app/r/fill.json",
+        "https://nuikit.vercel.app/r/text-roll.json",
         "https://nuikit.vercel.app/r/tile.json"
       ],
       "meta": {
@@ -772,11 +781,13 @@
         "replaces": [],
         "removeIn": null,
         "spec": {
-          "role": "Speed, rpm, gear and fuel while driving, on the game or a panel.",
+          "role": "Speed, rpm, gear and fuel while driving, on the game or a panel: the in-game gauge.",
           "anatomy": [
-            "Dial (ticks, track, rpm arc)",
-            "center: speed (num), unit (caption)",
-            "foot: gear Tile, fuel Fill"
+            "Dial (segments or arc + ticks, the redline, the soft disc)",
+            "fuel band (outer segments, the pump)",
+            "signals",
+            "readout: speed digits (leading zeros dimmed), unit",
+            "foot: gear Tile, or center"
           ],
           "props": [
             "speed",
@@ -786,12 +797,17 @@
             "unit",
             "size",
             "surface",
-            "redline"
+            "redline",
+            "style",
+            "indicators",
+            "engine",
+            "center",
+            "live"
           ],
-          "level": "rpm (0–1) on the arc; fuel / 100 on the fuel line.",
+          "level": "rpm (0–1) lights the segments from the left; fuel / 100 lights the band from the bottom.",
           "rules": [
-            "Past the redline the dial and the gear are data-state=\"alert\".",
-            "No glow filter; the arc is data-driven, never tweened."
+            "Past the redline the dial and the gear are data-state=\"alert\"; fuel at or under 15 is the danger colour.",
+            "No glow filter; segments switch, nothing tweens on the dash. The leading zeros are --nk-speedo-dim."
           ]
         }
       }
@@ -991,7 +1007,7 @@
       "name": "hud-minimal",
       "type": "registry:block",
       "title": "Minimal HUD",
-      "description": "The always-on HUD: vitals and needs with voice, cash, bank and job, and a speedometer with seatbelt and engine warnings while driving. The player comes from nuikit's bridge (any framework); speed and rpm are live values.",
+      "description": "The always-on HUD: voice, vitals and needs as keycaps (VitalChip), cash, bank and job, and the in-game Speedometer with seatbelt and engine warnings while driving. The player comes from nuikit's bridge (any framework); speed and rpm are live values.",
       "files": [
         {
           "path": "registry/nuikit/blocks/hud-minimal/hud-minimal.tsx",
@@ -1014,7 +1030,7 @@
         "nuikit-core"
       ],
       "registryDependencies": [
-        "https://nuikit.vercel.app/r/meter.json",
+        "https://nuikit.vercel.app/r/vital-chip.json",
         "https://nuikit.vercel.app/r/stat.json",
         "https://nuikit.vercel.app/r/speedometer.json",
         "https://nuikit.vercel.app/r/money.json",
@@ -1854,11 +1870,19 @@
             "variant",
             "ticks",
             "segments",
+            "segmentGap",
+            "direction",
+            "paint",
+            "disc",
             "redline",
             "needle",
             "tone",
             "hue",
-            "surface"
+            "surface",
+            "sweep",
+            "start",
+            "thickness",
+            "inset"
           ],
           "level": "How far the value has swept the arc: 0 at its start, 1 at its end.",
           "rules": [

@@ -11,6 +11,7 @@ import { KeyPrompt } from "@/components/ui/key-prompt"
 import { Meter } from "@/components/ui/meter"
 import { Money } from "@/components/ui/money"
 import { Notice } from "@/components/ui/notice"
+import { VitalChip } from "@/components/ui/vital-chip"
 import { NuiMenu } from "@/components/ui/nui-menu"
 import { ProgressRing } from "@/components/ui/progress-ring"
 import { SheetSection } from "@/components/ui/sheet-section"
@@ -87,11 +88,14 @@ describe("composites", () => {
     expect(d.has('data-slot="dial-segment"', 'data-active="true"')).toBe(true)
   })
 
-  it("Speedometer is a Dial, a gear Tile and a fuel Fill", () => {
+  it("Speedometer is a segmented Dial, a gear Tile and a fuel Dial on the outer curve", () => {
     const d = dom(<Speedometer speed={80} rpm={0.95} gear={3} fuel={10} />)
     expect(d.has('data-slot="speedometer"', 'data-state="alert"')).toBe(true)
+    expect(d.has('data-slot="dial-segment"', 'data-active="true"')).toBe(true)
     expect(d.has('data-slot="tile"', 'data-part="speedometer-gear"', 'data-state="alert"')).toBe(true)
-    expect(d.has('data-slot="fill"', 'data-part="speedometer-fuel"', 'data-state="alert"')).toBe(true)
+    expect(d.has('data-slot="dial"', 'data-part="speedometer-fuel"', 'data-state="alert"')).toBe(true)
+    // the leading zero is dimmed
+    expect(d.has('data-slot="speedometer-digit"', "data-dim")).toBe(true)
   })
 
   it("Countdown's line and Notice's time line are Fills", () => {
@@ -149,5 +153,36 @@ describe("aliases render their canonical component", () => {
     expect(d.has('data-slot="nui-menu"', "nk-panel")).toBe(true)
     expect(d.has('data-slot="menu-row-list"')).toBe(true)
     expect(d.tags('data-slot="menu-row"')).toHaveLength(2)
+  })
+})
+
+describe("VitalChip keycap (the in-game vitals)", () => {
+  it("is a Tile face over a sliding plate, the level a liquid in the face", () => {
+    const d = dom(
+      <VitalChip.Root value={40} tone="health" open>
+        <VitalChip.Shape>
+          <VitalChip.Icon>i</VitalChip.Icon>
+          <VitalChip.Label>Health</VitalChip.Label>
+        </VitalChip.Shape>
+      </VitalChip.Root>
+    )
+    expect(d.has('data-slot="vital-chip"', 'data-shape="keycap"', "--level:0.4")).toBe(true)
+    expect(d.has('data-slot="tile"', 'data-part="vital-chip-face"', 'data-shape="square"')).toBe(true)
+    expect(d.has('data-slot="vital-chip-plate"')).toBe(true)
+    expect(d.has('data-slot="vital-chip-liquid"')).toBe(true)
+    // the plate reads the name and the value
+    expect(d.has('data-slot="vital-chip-label"', 'data-attach="plate"', 'data-open="true"')).toBe(true)
+    expect(d.has('data-slot="vital-chip-name"')).toBe(true)
+  })
+  it("alert and active reach the face", () => {
+    const d = dom(
+      <VitalChip.Root value={10} tone="health" active>
+        <VitalChip.Shape>
+          <VitalChip.Icon>i</VitalChip.Icon>
+        </VitalChip.Shape>
+      </VitalChip.Root>
+    )
+    expect(d.has('data-slot="vital-chip"', 'data-state="alert"', 'data-active="true"')).toBe(true)
+    expect(d.has('data-slot="tile"', 'data-state="alert"', 'data-active="true"')).toBe(true)
   })
 })

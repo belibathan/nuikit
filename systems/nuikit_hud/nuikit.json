@@ -6,7 +6,9 @@
     "chip",
     "icon-text",
     "money",
+    "speedometer",
     "text-roll",
-    "tile"
+    "tile",
+    "vital-chip"
   ]
 }

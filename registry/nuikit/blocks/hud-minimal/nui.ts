@@ -18,6 +18,8 @@ export interface HudVehicle {
   seatbelt?: boolean
   /** Fast enough that an open seatbelt matters. */
   moving?: boolean
+  /** The turn signals as bits: 1 left, 2 right, 3 both. */
+  indicators?: number
 }
 
 declare module "nuikit-core" {

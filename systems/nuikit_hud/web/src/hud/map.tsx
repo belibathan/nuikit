@@ -16,7 +16,7 @@ import { formatDistance } from "./location";
 import { cardinal, setText } from "./util";
 import { TextRoll } from "@/components/ui/text-roll";
 import { calm, rollText } from "./reel";
-import { KeyTile } from "./key-tile";
+import { Keycap } from "./keycap";
 
 const CARDINALS = [
   { label: "N", at: 0 },
@@ -143,7 +143,7 @@ export function MapRing({ frame, start, compass = true, location, units, halo = 
               const p = onRing(m.at, c, r);
               return (
                 <span key={m.label} data-north={m.label === "N" || undefined} className="hud-map-cardinal" style={{ "--x": `${p.x.toFixed(2)}px`, "--y": `${p.y.toFixed(2)}px` } as CSSProperties}>
-                  <KeyTile size="sm" active={m.label === "N"} icon={<span className="hud-key-glyph">{m.label}</span>} />
+                  <Keycap size="sm" active={m.label === "N"} glyph={m.label} />
                 </span>
               );
             })}

@@ -10,7 +10,7 @@ import { BodyIcon, CruiseIcon, EngineIcon, HandbrakeIcon, HighBeamIcon, LowBeamI
 import type { GaugeStyle, HudLook } from "./look";
 import { Aircraft } from "./aircraft";
 import { CompactGauge, TelltaleColumn } from "./compact";
-import { KeyTile } from "./key-tile";
+import { Keycap } from "./keycap";
 import { cardinal, setText, UNIT_LABEL } from "./util";
 import { Chip } from "@/components/ui/chip";
 import { cn } from "@/lib/utils";
@@ -254,7 +254,7 @@ function ArcGauge({ v, look, paint, settings, center }: GaugeProps) {
         ) : (
           v.gear !== undefined && (
             <span data-slot="hud-gear" data-gear={String(v.gear)} className="hud-c-gear-tile" aria-label="Gear">
-              <KeyTile icon={<span className="hud-key-glyph">{v.gear}</span>} />
+              <Keycap glyph={String(v.gear)} />
             </span>
           )
         )}
@@ -316,7 +316,7 @@ function BarGauge({ v, look, paint, settings, center }: GaugeProps) {
         ) : (
           v.gear !== undefined && (
             <span data-slot="hud-gear" data-gear={String(v.gear)} className="hud-c-gear-tile" aria-label="Gear">
-              <KeyTile icon={<span className="hud-key-glyph">{v.gear}</span>} />
+              <Keycap glyph={String(v.gear)} />
             </span>
           )
         )}
@@ -394,7 +394,7 @@ function DigitalGauge({ v, paint, settings, center }: GaugeProps) {
         ) : (
           v.gear !== undefined && (
             <span data-slot="hud-gear" data-gear={String(v.gear)} className="hud-c-gear-tile" aria-label="Gear">
-              <KeyTile icon={<span className="hud-key-glyph">{v.gear}</span>} />
+              <Keycap glyph={String(v.gear)} />
             </span>
           )
         )}

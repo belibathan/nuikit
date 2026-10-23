@@ -1,5 +1,6 @@
-// The status row (both layouts), built from the kit's VitalChip anatomy (components/ui/vital-chip):
-// one shape path per chip, its level (outline trace, liquid fill, bar), its label attachment and a pop.
+// The status row (both layouts), built from the kit's VitalChip (components/ui/vital-chip): the keycap
+// (its default shape: a Tile face over a plate that slides out with the label, the level as a liquid in the
+// face), or a shape path per chip (/hudstyle), and a pop.
 //
 // Voice first, the vitals, the radio channel last (the 0.7 order and look). Each vital shows on change or
 // past its threshold, then fades back (vitals.tsx useShown); a change pops a flag from the chip's side
@@ -16,7 +17,7 @@ import { memo, useCallback, useEffect, useLayoutEffect, useRef, useState, type C
 import { motionLevel } from "nuikit-core/motion";
 import { flipRow, FOLD_EASE, FOLD_MS, FOLDED, inlineDelay } from "./flip";
 import type { HudSettings, VitalMode } from "../nui";
-import { KeyTile } from "./key-tile";
+import { VitalChip } from "@/components/ui/vital-chip";
 import { ICONS, LABELS, useShown, vitalCritical, type Tone } from "./vitals";
 import { restDelay } from "./situation";
 
@@ -67,11 +68,12 @@ export const VitalItem = memo(function VitalItem({ tone, value, mode, low, high,
   );
   useFold(box, shown);
   return (
-    <div ref={ref} data-slot="hud-vital" data-tone={tone} data-hue={tone} data-shown={shown || undefined} data-state={critical ? "alert" : undefined} data-open={open || undefined} className="hud-vchip" aria-hidden={!shown} role="meter" aria-label={`${LABELS[tone]} ${v}%`} aria-valuemin={0} aria-valuemax={100} aria-valuenow={v} style={critical ? undefined : roleColour(tone)}>
-      <KeyTile room icon={ICONS[tone]} fill={v / 100} alert={critical} open={open}>
-        <span className="hud-vlabel">{LABELS[tone]}</span> <span className="hud-num">{v}</span>
-      </KeyTile>
-    </div>
+    <VitalChip.Root ref={ref} data-slot="hud-vital" data-tone={tone} data-shown={shown || undefined} value={v} tone={tone} alert={critical} open={open} display="auto" className="hud-vchip" aria-hidden={!shown} role="meter" aria-label={`${LABELS[tone]} ${v}%`} aria-valuemin={0} aria-valuemax={100} aria-valuenow={v} style={critical ? undefined : roleColour(tone)}>
+      <VitalChip.Shape>
+        <VitalChip.Icon>{ICONS[tone]}</VitalChip.Icon>
+        <VitalChip.Label>{LABELS[tone]}</VitalChip.Label>
+      </VitalChip.Shape>
+    </VitalChip.Root>
   );
 });
 
@@ -81,22 +83,30 @@ function VoiceChip({ voice, linger }: { voice: NuiPlayer["voice"]; linger: numbe
   const expanded = useExpanded(range, linger);
   if (range === undefined) return null;
   return (
-    <div data-slot="hud-voice" data-active={voice.talking || undefined} data-shown className="hud-vchip" aria-label={voice.talking ? `Talking, ${range}` : `Voice range ${range}`}>
-      <KeyTile room icon={<MicIcon />} active={voice.talking === true} open={expanded}>
-        {range}
-      </KeyTile>
-    </div>
+    <VitalChip.Root data-slot="hud-voice" data-shown active={voice.talking === true} open={expanded} display="auto" className="hud-vchip" aria-label={voice.talking ? `Talking, ${range}` : `Voice range ${range}`}>
+      <VitalChip.Shape>
+        <VitalChip.Icon>
+          <MicIcon />
+        </VitalChip.Icon>
+        <VitalChip.Label>{range}</VitalChip.Label>
+      </VitalChip.Shape>
+    </VitalChip.Root>
   );
 }
 
 /** The radio channel, while on one: the plate stays out with the channel. */
 function RadioChip({ radio }: { radio: number | string }) {
   return (
-    <div data-slot="hud-radio" data-shown className="hud-vchip" aria-label={`Radio ${radio} MHz`}>
-      <KeyTile room icon={<RadioIcon />} open>
-        <span className="hud-num">{String(radio)}</span>
-      </KeyTile>
-    </div>
+    <VitalChip.Root data-slot="hud-radio" data-shown open display="auto" className="hud-vchip" aria-label={`Radio ${radio} MHz`}>
+      <VitalChip.Shape>
+        <VitalChip.Icon>
+          <RadioIcon />
+        </VitalChip.Icon>
+        <VitalChip.Label>
+          <span className="nk-num">{String(radio)}</span>
+        </VitalChip.Label>
+      </VitalChip.Shape>
+    </VitalChip.Root>
   );
 }
 
@@ -252,21 +262,32 @@ const SlotChip = memo(function SlotChip({ slot, display, linger }: { slot: Slot;
   void display;
   const level = typeof slot.level === "number" ? Math.max(0, Math.min(1, slot.level)) : undefined;
   return (
-    <div
+    <VitalChip.Root
       data-slot="hud-slot"
       data-key={`${slot.resource}:${slot.key}`}
-      data-hue={slot.hue}
       data-voice={slot.resource === VOICE_RESOURCE || undefined}
       data-shown
-      data-state={slot.alert ? "alert" : undefined}
+      value={level === undefined ? undefined : level * 100}
+      tone={slot.hue}
+      active={slot.active === true}
+      alert={slot.alert === true}
+      open={open}
+      display="auto"
       className="hud-vchip"
       aria-label={[slot.label, value].filter(Boolean).join(" ")}
       style={{ "--vital": "var(--hue-solid, currentColor)" } as CSSProperties}
     >
-      <KeyTile room icon={<Icon />} fill={level} active={slot.active === true} alert={slot.alert === true} open={open}>
-        {value !== undefined && <span className="hud-num">{value}</span>}
-      </KeyTile>
-    </div>
+      <VitalChip.Shape>
+        <VitalChip.Icon>
+          <Icon />
+        </VitalChip.Icon>
+        {value !== undefined && (
+          <VitalChip.Label>
+            <span className="nk-num">{value}</span>
+          </VitalChip.Label>
+        )}
+      </VitalChip.Shape>
+    </VitalChip.Root>
   );
 });
 

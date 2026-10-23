@@ -8,16 +8,16 @@ import { noticeStatus } from "@/components/ui/notice"
 describe("dial", () => {
   const parts = (s: string) => s.split(" ").map(Number)
 
-  it("sweeps 240° and clamps the level", () => {
+  it("sweeps 256° (the in-game speedometer's) and clamps the level", () => {
     const { arc, circumference } = dialGeometry(192)
-    expect(arc / circumference).toBeCloseTo(240 / 360)
+    expect(arc / circumference).toBeCloseTo(256 / 360)
     expect(parts(dialDash(0.5, 192))[0]).toBeCloseTo(arc / 2)
     expect(dialDash(2)).toBe(dialDash(1))
     expect(parts(dialDash(Number.NaN))[0]).toBe(0)
   })
 
   it("is the speedometer's geometry (a live HUD writes the same dash)", () => {
-    for (const v of [0, 0.3, 0.88, 1]) expect(speedometerDash(v, 192)).toBe(dialDash(v, 192))
+    for (const v of [0, 0.3, 0.88, 1]) expect(speedometerDash(v, 192)).toBe(dialDash(v, 192, 256))
   })
 
   it("lights a segment once the level reaches it", () => {

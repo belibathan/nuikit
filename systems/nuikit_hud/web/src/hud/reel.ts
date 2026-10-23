@@ -6,51 +6,10 @@
 // shown number changes at most `hz` times a second, and only when it moved by a whole step past the
 // shown one (hysteresis, so ±1 jitter at a steady speed never rolls).
 import { motionLevel } from "nuikit-core/motion";
+import { rollDigit } from "@/components/ui/speedometer";
 
-const ROLL_MS = 170;
-const reels = new WeakMap<HTMLElement, { ch: string; at: number; busy: Animation[] }>();
-
-/**
- * Roll one reel to `ch` (dir 1: up, the new glyph from below). Nothing queues: a new value finishes the
- * roll in flight and starts from there, in at most the time since the last change; a reel that changes
- * faster than it can roll snaps.
- */
-export function rollDigit(el: HTMLElement | null, ch: string, dir: 1 | -1) {
-  if (!el) return;
-  const now = performance.now();
-  let st = reels.get(el);
-  if (!st) {
-    st = { ch: el.textContent ?? "", at: 0, busy: [] };
-    reels.set(el, st);
-  }
-  if (st.ch === ch) return;
-  const gap = now - st.at;
-  st.at = now;
-  st.ch = ch;
-  for (const a of st.busy) a.finish();
-  st.busy = [];
-  while (el.childNodes.length > 1) el.removeChild(el.firstChild!);
-  let glyph = el.firstElementChild as HTMLElement | null;
-  if (!glyph) {
-    el.textContent = "";
-    glyph = document.createElement("span");
-    el.appendChild(glyph);
-  }
-  const ms = Math.min(ROLL_MS, gap - 10);
-  if (motionLevel() !== "on" || ms < 60 || typeof glyph.animate !== "function") {
-    glyph.textContent = ch;
-    return;
-  }
-  const next = document.createElement("span");
-  next.textContent = ch;
-  el.appendChild(next);
-  const opts: KeyframeAnimationOptions = { duration: ms, easing: "cubic-bezier(0.2, 0.8, 0.2, 1)" };
-  const out = glyph.animate([{ transform: "translateY(0)" }, { transform: `translateY(${-dir * 100}%)` }], { ...opts, fill: "forwards" });
-  const into = next.animate([{ transform: `translateY(${dir * 100}%)` }, { transform: "translateY(0)" }], opts);
-  const old = glyph;
-  out.onfinish = () => old.remove();
-  st.busy = [out, into];
-}
+// one reel roll for the kit: the Speedometer's rollDigit (components/ui/speedometer) rolls a digit or a character
+export { rollDigit };
 
 /** Roll a short text, one reel per character, kept from the right (units stay units). */
 export function rollText(container: HTMLElement | null, text: string, dir: 1 | -1) {
@@ -66,10 +25,9 @@ export function rollText(container: HTMLElement | null, text: string, dir: 1 | -
   const reelsEls = Array.from(container.children) as HTMLElement[];
   for (let i = 0; i < chars.length; i++) {
     const el = reelsEls[i]!;
-    if (!reels.has(el) && !el.textContent) {
+    if (!el.textContent) {
       // a fresh reel: its first glyph is just written
       (el.firstElementChild as HTMLElement).textContent = chars[i]!;
-      reels.set(el, { ch: chars[i]!, at: performance.now(), busy: [] });
     } else rollDigit(el, chars[i]!, dir);
   }
 }

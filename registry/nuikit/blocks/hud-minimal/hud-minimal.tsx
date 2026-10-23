@@ -16,18 +16,18 @@ import {
 
 import { cn } from "@/lib/utils"
 import { Chip } from "@/components/ui/chip"
-import { Meter } from "@/components/ui/meter"
 import { useFormatMoney } from "@/components/ui/money"
-import { SPEEDOMETER_REDLINE, Speedometer, speedometerDash } from "@/components/ui/speedometer"
+import { Speedometer, speedometerPainter } from "@/components/ui/speedometer"
 import { Stat } from "@/components/ui/stat"
+import { VitalChip } from "@/components/ui/vital-chip"
 
 import type { HudVehicle } from "./nui"
 
 /**
- * HudMinimal — the always-on HUD: vitals and needs with voice bottom left, cash, bank and job top
- * right, and a speedometer bottom right while driving. Drawn straight on the game (docs/design.md
- * rule 8): bare marks with a shadow and HUD chips, no panels. Built from the kit: Meter, Stat,
- * Chip (material="hud"), Speedometer, Money.
+ * HudMinimal — the always-on HUD: voice, vitals and needs as keycaps bottom left, cash, bank and job top
+ * right, and the in-game speedometer bottom right while driving. Drawn straight on the game (docs/design.md
+ * rule 8): bare marks with a shadow and HUD chips, no panels. Built from the kit: VitalChip (the keycap, a
+ * vital opening on a change), Stat, Chip (material="hud"), Speedometer, Money.
  *
  *   <HudMinimalSurface />                                   // wired: nk.surface('hud') + nk.player in Lua
  *   <HudMinimal player={player} vehicle={vehicle} />        // a still, for previews
@@ -67,40 +67,60 @@ function HudMinimal({
   )
 }
 
-/** Bottom left: vitals, needs and voice. */
+/** Bottom left: voice first, then the vitals and needs, as keycaps (the in-game row). */
 function HudStatus({ player, needs }: { player: NuiPlayer; needs: boolean }) {
+  const range = player.voice.mode ?? (player.voice.range === undefined ? null : `${Math.round(player.voice.range * 10) / 10} m`)
+  const vital = (tone: string, label: string, value: number | undefined, icon: React.ReactNode, extra?: { low?: number; high?: number }) =>
+    value === undefined ? null : (
+      <VitalChip.Root
+        key={tone}
+        value={value}
+        tone={tone}
+        alert={extra?.high !== undefined ? value >= extra.high : value <= (extra?.low ?? 20)}
+        display="expand"
+        role="meter"
+        aria-label={`${label} ${Math.round(value)}%`}
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-valuenow={Math.round(value)}
+      >
+        <VitalChip.Shape>
+          <VitalChip.Icon>{icon}</VitalChip.Icon>
+          <VitalChip.Label>{label}</VitalChip.Label>
+        </VitalChip.Shape>
+      </VitalChip.Root>
+    )
   return (
-    <div className="nk-anchor-bl flex flex-col gap-3">
-      <div className="nk-shadow flex w-32 flex-col gap-2">
-        <Meter aria-label="Health" icon={<HeartPulseIcon />} value={player.health} low={20} tone="health" track="game" size="sm" />
-        <Meter aria-label="Armor" icon={<ShieldIcon />} value={player.armor} tone="armor" track="game" size="sm" />
-        {needs && player.hunger !== undefined && (
-          <Meter aria-label="Hunger" icon={<UtensilsIcon />} value={player.hunger} low={20} tone="hunger" track="game" size="sm" />
+    <div className="nk-anchor-bl nk-shadow flex flex-col gap-3">
+      <VitalChip.Row>
+        {range && (
+          <VitalChip.Root active={player.voice.talking === true} aria-label={player.voice.talking ? `Talking, ${range}` : `Voice range ${range}`}>
+            <VitalChip.Shape>
+              <VitalChip.Icon>
+                <MicIcon />
+              </VitalChip.Icon>
+              <VitalChip.Label>{range}</VitalChip.Label>
+            </VitalChip.Shape>
+          </VitalChip.Root>
         )}
-        {needs && player.thirst !== undefined && (
-          <Meter aria-label="Thirst" icon={<DropletIcon />} value={player.thirst} low={20} tone="thirst" track="game" size="sm" />
+        {vital("health", "Health", player.health, <HeartPulseIcon />)}
+        {vital("armor", "Armor", player.armor, <ShieldIcon />, { low: -1 })}
+        {needs && vital("hunger", "Hunger", player.hunger, <UtensilsIcon />)}
+        {needs && vital("thirst", "Thirst", player.thirst, <DropletIcon />)}
+        {needs && vital("stress", "Stress", player.stress, <FlameIcon />, { high: 80 })}
+        {player.voice.radio !== undefined && (
+          <VitalChip.Root open aria-label={`Radio ${player.voice.radio} MHz`}>
+            <VitalChip.Shape>
+              <VitalChip.Icon>
+                <RadioIcon />
+              </VitalChip.Icon>
+              <VitalChip.Label>
+                <span className="nk-num">{player.voice.radio}</span>
+              </VitalChip.Label>
+            </VitalChip.Shape>
+          </VitalChip.Root>
         )}
-        {needs && !!player.stress && (
-          <Meter aria-label="Stress" icon={<FlameIcon />} value={player.stress} high={80} tone="stress" track="game" size="sm" />
-        )}
-      </div>
-      <HudVoice voice={player.voice} />
-    </div>
-  )
-}
-
-function HudVoice({ voice }: { voice: NuiPlayer["voice"] }) {
-  // the voice resource's own name for the range wins ("Whisper", "Normal", "Shouting")
-  const range = voice.mode ?? (voice.range === undefined ? null : `${Math.round(voice.range * 10) / 10} m`)
-  if (!range && voice.radio === undefined) return null
-  return (
-    <div className="flex items-center gap-2">
-      {range && (
-        <Chip material="hud" icon={<MicIcon />} active={voice.talking} aria-label={voice.talking ? "Talking" : "Voice range"}>
-          {range}
-        </Chip>
-      )}
-      {voice.radio !== undefined && <Chip material="hud" icon={<RadioIcon />}>{voice.radio} MHz</Chip>}
+      </VitalChip.Row>
     </div>
   )
 }
@@ -129,42 +149,22 @@ function HudWallet({ player }: { player: NuiPlayer }) {
   )
 }
 
-const GAUGE = 176
-
 /**
  * Bottom right while driving. The gauge starts at the speed and rpm "hud:vehicle" carried when it
- * appeared, then follows the live channels: written straight to the gauge, no React render. React
- * renders on gear, fuel, damage or seatbelt, and when the rpm crosses the redline.
+ * appeared, then follows the live channels through the Speedometer's painter: written straight to the
+ * gauge (digit reels, segments, the redline), no React render. React renders on gear, fuel, damage or
+ * seatbelt.
  */
 function HudVehicleGauge({ vehicle }: { vehicle: HudVehicle }) {
   const gauge = React.useRef<HTMLDivElement>(null)
+  const painter = React.useRef<ReturnType<typeof speedometerPainter> | null>(null)
   const [start] = React.useState(() => ({ speed: vehicle.speed, rpm: vehicle.rpm }))
-  const [redline, setRedline] = React.useState(vehicle.rpm > SPEEDOMETER_REDLINE)
-  const red = React.useRef(redline)
+  React.useLayoutEffect(() => {
+    painter.current = gauge.current ? speedometerPainter(gauge.current) : null
+  }, [])
 
-  useFollow(
-    "hud:vehicle:rpm",
-    (rpm) => {
-      const arc = gauge.current?.querySelector<SVGElement>("[data-slot=speedometer-rpm]")
-      if (arc) {
-        arc.style.transition = "none"
-        arc.style.strokeDasharray = speedometerDash(rpm, GAUGE)
-      }
-      const over = rpm > SPEEDOMETER_REDLINE
-      if (over !== red.current) setRedline((red.current = over))
-    },
-    { start: start.rpm }
-  )
-  useFollow(
-    "hud:vehicle:speed",
-    (speed) => {
-      // React's own text node, so a later render finds it in place
-      const text = gauge.current?.querySelector("[data-slot=speedometer-speed]")?.firstChild
-      const shown = String(Math.round(speed))
-      if (text && text.nodeValue !== shown) text.nodeValue = shown
-    },
-    { start: start.speed, epsilon: 0.05 }
-  )
+  useFollow("hud:vehicle:rpm", (rpm) => painter.current?.rpm(rpm), { start: start.rpm })
+  useFollow("hud:vehicle:speed", (speed) => painter.current?.speed(speed), { start: start.speed, epsilon: 0.05 })
 
   const unbuckled = vehicle.seatbelt === false && (vehicle.moving ?? vehicle.speed > 10)
   const engine = vehicle.engine !== undefined && vehicle.engine < 35
@@ -172,13 +172,13 @@ function HudVehicleGauge({ vehicle }: { vehicle: HudVehicle }) {
     <div className="nk-anchor-br flex flex-col items-center gap-3">
       <Speedometer
         ref={gauge}
+        live
         speed={start.speed}
         rpm={start.rpm}
-        redline={redline}
         gear={vehicle.gear}
         fuel={vehicle.fuel}
         unit={vehicle.units === "kmh" ? "km/h" : "mph"}
-        size={GAUGE}
+        indicators={vehicle.indicators}
         className="nk-shadow"
       />
       {(unbuckled || engine) && (
