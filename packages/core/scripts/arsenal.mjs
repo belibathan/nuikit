@@ -201,6 +201,7 @@ for (const d of DOMAINS) {
     L.push(callable ? `local ${d.lua}, ${d.lua}Fn = domain('${d.lua}')` : `local ${d.lua} = domain('${d.lua}')`);
     for (const e of binds) {
       const verb = e.lua.split(".")[2];
+      L.push(`--- ${e.doc}${e.sig?.lua ? `  \`${e.sig.lua}\`` : ""}`);
       if (e.kind === "intent") L.push(`${d.lua}.${verb} = rawget(nk, '${verb}')`);
       else if (e.impl) {
         if (e.impl.startsWith("function")) { L.push(`${d.lua}.${verb} = ${e.impl}`); continue; }

@@ -19,35 +19,58 @@ end
 
 -- Messages: The wire between a resource's Lua and its page: events down, callbacks up, live values at frame rate.
 local message = domain('message')
+--- Lua → page: a message the page receives with onNui.  `nk.message.send(action, data?)`
 message.send = rawget(nk, 'send')
+--- Page → Lua: answer the page's fetchNui; the handler's return is the reply.  `nk.message.on(name, fn(data) → reply)`
 message.on = rawget(nk, 'on')
+--- A live value on its own channel (rate-capped, on change); the page glides with follow.  `nk.message.stream(action, { rate?, precision?, kind? }) → NuiStream`
 message.stream = rawget(nk, 'stream')
+--- A notice on this resource's own page (<NuiNotices />); for the shared stack use nk.intent.notify.  `nk.message.notice(n|string)`
 message.notice = rawget(nk, 'notify')
+--- The protocol version spoken (docs/protocol.md §2).
 message.protocol = rawget(nk, 'PROTOCOL')
+--- The nuikit runtime's version.
 message.version = function() return GetResourceMetadata('nuikit', 'version', 0) end
 
 -- Surfaces: Declare a piece of UI (layer, input, Escape); nuikit decides focus, cursor, stacking and Escape across every resource.
 local surface, surfaceFn = domain('surface')
+--- Declare a surface; returns its handle.  `nk.surface.define(name, opts?) → NuiSurface`
 surface.define = surfaceFn or surface.define
+--- The client-wide stack, bottom to top.  `nk.surface.list() → table[]`
 surface.list = rawget(nk, 'surfaces')
+--- Set or clear a client-wide state ('dead', 'cuffed'); surfaces block on it.  `nk.surface.setState(name, value)`
 surface.setState = rawget(nk, 'state')
+--- A client-wide state's value.  `nk.surface.getState(name) → any`
 surface.getState = rawget(nk, 'getState')
+--- Simple mode: show the one UI and take focus (the 'main' surface).  `nk.surface.open(opts?)`
 surface.open = rawget(nk, 'open')
+--- Simple mode: hide the UI and release focus.  `nk.surface.close()`
 surface.close = rawget(nk, 'close')
+--- Simple mode: open if closed, close if open.  `nk.surface.toggle(opts?)`
 surface.toggle = rawget(nk, 'toggle')
+--- Simple mode: is the UI open.  `nk.surface.isOpen() → boolean`
 surface.isOpen = rawget(nk, 'isOpen')
 
 -- Intents: Ask for a notice, menu, input, confirm, progress, prompt, target, radial or challenge; a swappable renderer draws it.
 rawset(nk, 'intent', rawget(nk, 'intents'))
 local intent = domain('intent')
+--- A toast.  `nk.intent.notify(props|string, opts?) → NkIntent`
 intent.notify = rawget(nk, 'notify')
+--- A context or list menu: a panel of rows.  `nk.intent.menu(props, opts?) → result, reason`
 intent.menu = rawget(nk, 'menu')
+--- A form in a centred panel.  `nk.intent.input(props, opts?) → result, reason`
 intent.input = rawget(nk, 'input')
+--- An alert with confirm and (optionally) cancel.  `nk.intent.confirm(props, opts?) → result, reason`
 intent.confirm = rawget(nk, 'confirm')
+--- A timed bar or ring.  `nk.intent.progress(props, opts?) → result, reason`
 intent.progress = rawget(nk, 'progress')
+--- A persistent key hint: "[E] Open garage".  `nk.intent.prompt(props|string, opts?) → NkIntent`
 intent.prompt = rawget(nk, 'prompt')
+--- Options on the thing under the crosshair.  `nk.intent.target(props, opts?) → result, reason`
 intent.target = rawget(nk, 'target')
+--- A radial menu with submenus.  `nk.intent.radial(props, opts?) → result, reason`
 intent.radial = rawget(nk, 'radial')
+--- A skill check: press the key while the needle is in the zone.  `nk.intent.challenge(props, opts?) → result, reason`
 intent.challenge = rawget(nk, 'challenge')
 intent.kinds = { 'notify', 'menu', 'input', 'confirm', 'progress', 'prompt', 'target', 'radial', 'challenge' }
 
@@ -67,26 +90,38 @@ local settings = domain('settings')
 
 -- Theme: One look for the server: compiled tokens, the player's look and prefs, applied to every page live.
 local theme, themeFn = domain('theme')
+--- The compiled theme in use (the player's look, else the server's).  `nk.theme.get() → CompiledTheme|string|nil`
 theme.get = themeFn or theme.get
+--- The player's look (identity, treatment), or nil for the server theme.
 theme.look = rawget(nk, 'look')
+--- The key of the look in use ('studio|slab'), or nil.
 theme.lookKey = rawget(nk, 'lookKey')
+--- The player's UI prefs (scale, reducedMotion, highContrast, identity, treatment).
 theme.prefs = rawget(nk, 'prefs').get
+--- Change prefs; saved and applied to every nuikit UI.  `nk.theme.setPrefs(patch)`
 theme.setPrefs = rawget(nk, 'prefs').set
 
 -- Zones: Publish what a UI covers on screen; every other UI stays clear of it.
 local zone, zoneFn = domain('zone')
+--- Publish (or with nil, remove) the rectangles this UI covers.  `nk.zone.set(name, rects|nil)`
 zone.set = zoneFn or zone.set
+--- Every published zone.
 zone.all = rawget(nk, 'zones')
 
 -- Slots: Join a cluster (the HUD's vitals row) with a slot; the cluster draws it, ordered.
 local slot, slotFn = domain('slot')
+--- Join a cluster; returns a handle (set, remove).  `nk.slot.join(cluster, key, { order?, label?, icon?, hue?, level?, value?, alert?, hidden? })`
 slot.join = slotFn or slot.join
+--- Leave a cluster without the handle.
 slot.leave = rawget(nk, 'unslot')
+--- Every joined slot by cluster.
 slot.all = rawget(nk, 'slots')
 
 -- Host: One frame renders many resources' UIs as modules; each falls back to its own ui_page.
 local host = domain('host')
+--- Hosted resources (tooling).
 host.modules = rawget(nk, 'hostModules')
+--- This resource's UI is rendered by the host.
 host.isHosted = function() return rawget(nk, 'hosted') == true end
 
 --- Old names and what replaces them (each still works until removeIn).
