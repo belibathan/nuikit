@@ -192,13 +192,14 @@
             "shape",
             "motion",
             "as",
-            "kbd"
+            "kbd",
+            "bleed"
           ],
           "level": "progress: the row's progress line (0–1 of its value).",
           "rules": [
             "States on data-state: rest, focus (active), confirm (on click), disabled, alert; the lit row carries data-lit.",
             "Hover, keyboard, controller and programmatic focus and the active row are one lit state: a Tile under the row, no focus ring, no hover fill.",
-            "A list slides one SelectionTile (MenuRowList); rows sit --nk-list-gap apart and never touch.",
+            "A list slides one SelectionTile (MenuRowList); rows sit --nk-list-gap apart and never touch; the list pads its sides by --nk-list-pad-x (the tile inset plus the skew overhang) so the lit tile never touches the panel edge (bleed turns it off).",
             "A trailing key is a Tile (Kbd); as=\"div\" keeps the row look on a focusable div."
           ]
         }
