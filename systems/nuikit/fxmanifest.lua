@@ -37,6 +37,7 @@ files {
   'lib/keys.lua',
   'lib/intents.lua',
   'lib/intents.schema.lua',
+  'lib/api.lua',
   'theme.css',
   -- identity fonts, served to every UI that loads them from here (docs/tokens.md#fonts)
   'fonts/*.woff2',
@@ -59,6 +60,7 @@ client_scripts {
   'lib/keys.lua',
   'lib/host.lua',
   'lib/intents.lua',
+  'lib/api.lua',
   'client.lua',
   'client/intents.lua',
   'client/renderers.lua',

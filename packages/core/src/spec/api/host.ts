@@ -16,7 +16,7 @@ export default {
     { name: "context", kind: "call", doc: "The hosted context, or null on a page of its own.", js: "hostedContext", only: "js only: pages", since: "0.5.0" },
     { name: "scope", kind: "call", doc: "Scope a module's stylesheet.", js: "scopeStylesheet", also: ["scopeSelector", "splitSelectors", "hoist"], only: "js only: the host page", since: "0.5.0" },
     { name: "modules", kind: "call", doc: "Hosted resources (tooling).", lua: "nk.host.modules", impl: "NUI.hostModules", scope: "nuikit", only: "lua only: the nuikit resource hosts", since: "0.5.0" },
-    { name: "hosted", kind: "const", doc: "This resource's UI is rendered by the host.", lua: "nk.host.hosted", impl: "NUI.hosted", only: "lua only: the page asks nuikit:host:mode", since: "0.5.0" },
+    { name: "isHosted", kind: "call", doc: "This resource's UI is rendered by the host.", lua: "nk.host.isHosted", impl: "function() return rawget(nk, 'hosted') == true end", only: "lua only: the page asks nuikit:host:mode", since: "0.5.0" },
   ],
   events: [
     { name: "nuikit:host:mode", dir: "page→lua", payload: "{}", reply: "{ hosted: boolean }", sender: "runtime", doc: "Own ui_page asks whether to render.", since: "0.5.0" },
@@ -31,6 +31,6 @@ export default {
     { name: "nuikit:host:forward", dir: "local", payload: "(resource, id, name, payload)", sender: "nuikit", doc: "A module's call, to its resource.", since: "0.5.0" },
     { name: "nuikit:host:reply", dir: "local", payload: "(id: string, result: unknown)", sender: "owner", doc: "The resource's reply, to the host.", since: "0.5.0" },
   ],
-  legacy: [{ old: "NUI.hostModules", now: "nk.host.modules", removeIn: "1.0.0" }, { old: "NUI.hosted", now: "nk.host.hosted", removeIn: "1.0.0" }],
+  legacy: [{ old: "NUI.hostModules", now: "nk.host.modules", removeIn: "1.0.0" }, { old: "NUI.hosted", now: "nk.host.isHosted", removeIn: "1.0.0" }],
   rules: ["Only the nuikit resource can adopt or call in (GetInvokingResource)."],
 } satisfies DomainSpec;
