@@ -136,7 +136,7 @@
             "back",
             "anchor"
           ],
-          "level": "the edge line: a fill such as weight (EdgeSheetEdge value, 0–100).",
+          "level": "the edge line: a fill such as weight (EdgeSheetEdge value, 0\u2013100).",
           "rules": [
             "The game stays visible beside it.",
             "Positioned on an edge, never centred with a transform."
@@ -286,7 +286,7 @@
             "kbd",
             "bleed"
           ],
-          "level": "progress: the row's progress line (0–1 of its value).",
+          "level": "progress: the row's progress line (0\u20131 of its value).",
           "rules": [
             "States on data-state: rest, focus (active), confirm (on click), disabled, alert; the lit row carries data-lit.",
             "Hover, keyboard, controller and programmatic focus and the active row are one lit state: a Tile under the row, no focus ring, no hover fill.",
@@ -397,8 +397,7 @@
         },
         "group": "Lists & selection",
         "tier": "foundation",
-        "hidden": true,
-        "hiddenReason": "internal helper under MenuRow and RadialMenu (the moving selection indicator)",
+        "hidden": false,
         "variants": {
           "axes": {},
           "levers": [
@@ -532,7 +531,7 @@
             "hue",
             "threshold"
           ],
-          "level": "value / max; a timed run fills 0 → 1 over duration (--level is its end state).",
+          "level": "value / max; a timed run fills 0 \u2192 1 over duration (--level is its end state).",
           "rules": [
             "Data is value/max or --level, never a variant.",
             "Thresholds turn it destructive; tone never encodes data.",
@@ -727,8 +726,7 @@
         },
         "group": "Inputs",
         "tier": "composite",
-        "hidden": true,
-        "hiddenReason": "a gliding caret on stock Input; the FormField wraps it",
+        "hidden": false,
         "variants": {
           "axes": {},
           "levers": [
@@ -749,7 +747,7 @@
       "name": "vital",
       "type": "registry:ui",
       "title": "Vital",
-      "description": "Deprecated: use Meter (the same icon and bar, with labels, segments and runs). Still works. A player stat as an icon and a bar: a preset of Meter (value 0–100, a vital tone, low).",
+      "description": "Deprecated: use Meter (the same icon and bar, with labels, segments and runs). Still works. A player stat as an icon and a bar: a preset of Meter (value 0\u2013100, a vital tone, low).",
       "files": [
         {
           "path": "registry/nuikit/ui/vital.tsx",
@@ -951,9 +949,9 @@
             "format",
             "max"
           ],
-          "level": "the vital, 0–100 as 0–1.",
+          "level": "the vital, 0\u2013100 as 0\u20131.",
           "rules": [
-            "data-hue carries the vital's role (health, armor…).",
+            "data-hue carries the vital's role (health, armor\u2026).",
             "The default shape is the keycap (the in-game vitals): a Tile face over a plate that slides out with the label, the level as a liquid in the face; every number is a --nk-vital-* lever.",
             "The level style comes from the theme (liquid, outline, bar); the data never picks it.",
             "Readable over a bright sky (legibility fixture).",
@@ -1220,7 +1218,7 @@
             "center",
             "live"
           ],
-          "level": "rpm (0–1) lights the segments from the left; fuel / 100 lights the band from the bottom.",
+          "level": "rpm (0\u20131) lights the segments from the left; fuel / 100 lights the band from the bottom.",
           "rules": [
             "Past the redline the dial and the gear are data-state=\"alert\"; fuel at or under 15 is the danger colour.",
             "No glow filter; segments switch, nothing tweens on the dash. The leading zeros are --nk-speedo-dim."
@@ -1339,7 +1337,7 @@
             "tone",
             "hue"
           ],
-          "level": "the time left, 1 → 0 over duration.",
+          "level": "the time left, 1 \u2192 0 over duration.",
           "rules": [
             "Newest nearest the edge; at most five per position.",
             "Slides in from its stack's edge, out toward it.",
@@ -1710,12 +1708,12 @@
             "motion",
             "stage"
           ],
-          "level": "the hold progress, 0 → 1 (Lua's progress, or the pointer/key hold).",
+          "level": "the hold progress, 0 \u2192 1 (Lua's progress, or the pointer/key hold).",
           "rules": [
             "States: rest, focus (active), hold, confirm (when the hold fills), disabled.",
             "In game Lua reads the key and sends progress; the page draws it.",
             "One prompt per action; a stack for several.",
-            "The interaction ladder (stage): dormant (the key chip alone, quiet) → aware → focus → hold → confirm, on data-ladder; without stage, today's prompt."
+            "The interaction ladder (stage): dormant (the key chip alone, quiet) \u2192 aware \u2192 focus \u2192 hold \u2192 confirm, on data-ladder; without stage, today's prompt."
           ]
         },
         "group": "Notices & prompts",
@@ -1817,7 +1815,7 @@
             "label",
             "hue"
           ],
-          "level": "value / max; a timed run fills 0 → 1.",
+          "level": "value / max; a timed run fills 0 \u2192 1.",
           "rules": [
             "onComplete fires from a timer, never an animation event.",
             "The round half of the progress intent; meter is the bar."
@@ -2127,7 +2125,7 @@
             "surface",
             "size"
           ],
-          "level": "durability, 0–100 as 0–1 (the line under the item).",
+          "level": "durability, 0\u2013100 as 0\u20131 (the line under the item).",
           "rules": [
             "data-state: focus (active or drop target), disabled (locked); the slot's own state is data-slot-state.",
             "Drag and drop stays with the caller."
@@ -2273,7 +2271,7 @@
             "alertAt",
             "variant"
           ],
-          "level": "0–1, set inline as --level.",
+          "level": "0\u20131, set inline as --level.",
           "rules": [
             "Transform only: the bar scales, never width.",
             "Colour: hue, then tone, then --nk-fill-color; alert wins."
@@ -2626,7 +2624,7 @@
         "spec": {
           "role": "Every piece of text in one of the kit's type roles, on one value ladder.",
           "anatomy": [
-            "text (one element: span, p, div, h2…)"
+            "text (one element: span, p, div, h2\u2026)"
           ],
           "props": [
             "variant",
@@ -3123,7 +3121,7 @@
       "name": "skill-check",
       "type": "registry:ui",
       "title": "Skill check",
-      "description": "Press the key while the needle is in the zone: zone start and size (wrapping past 360°), speed, the key, a success or fail outcome. Runs itself (needle drawn per frame without re-rendering, a full turn is a miss) and reads the key, or takes the angle from outside. The default look of the challenge intent.",
+      "description": "Press the key while the needle is in the zone: zone start and size (wrapping past 360\u00b0), speed, the key, a success or fail outcome. Runs itself (needle drawn per frame without re-rendering, a full turn is a miss) and reads the key, or takes the angle from outside. The default look of the challenge intent.",
       "files": [
         {
           "path": "registry/nuikit/ui/skill-check.tsx",
@@ -3277,7 +3275,7 @@
       "categories": [
         "screens"
       ],
-      "docs": "Mount <LoadingScreenPage /> in App.tsx of a resource whose fxmanifest has loadscreen 'web/dist/index.html' and loadscreen_manual_shutdown 'yes'. Hand it data from the server with deferrals.handover({ nuikit = { serverName, tips, theme = GlobalState.nuikitTheme, … } }). A whole resource with the Lua: npm create nuikit@latest my-loading -- -t loading-screen",
+      "docs": "Mount <LoadingScreenPage /> in App.tsx of a resource whose fxmanifest has loadscreen 'web/dist/index.html' and loadscreen_manual_shutdown 'yes'. Hand it data from the server with deferrals.handover({ nuikit = { serverName, tips, theme = GlobalState.nuikitTheme, \u2026 } }). A whole resource with the Lua: npm create nuikit@latest my-loading -- -t loading-screen",
       "meta": {
         "since": "0.6.0",
         "status": "stable",
@@ -4124,8 +4122,7 @@
         },
         "group": "Inputs",
         "tier": "composite",
-        "hidden": true,
-        "hiddenReason": "a number input variant of FormField; stays installable",
+        "hidden": false,
         "variants": {
           "axes": {
             "size": [

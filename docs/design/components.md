@@ -46,9 +46,8 @@ hidden items stay installable and keep their `/components/<name>` page, but are 
 | `player-card` | A Panel of Stat rows | the scoreboard, job-sheet blocks |
 | `empty-state` | A Panel body with Text and an icon Tile | Panel |
 | `collapse-stack`, `use-collapse` | The collapse engine behind VitalChip | VitalChip |
-| `selection-tile`, `dialog-shell`, `sheet-section` | Internal frames under MenuRow, Confirm, EdgeSheet | their parents |
+| `dialog-shell`, `sheet-section` | Internal frames under Confirm, EdgeSheet | their parents |
 | `text`, `stack`, `icon-text`, `nui-image`, `utils`, `use-nui-store` | Helpers the others compose | n/a |
-| `smooth-input`, `stepper` | Input flavours of FormField | FormField |
 
 **Blocks.** Each of the 16 shown is a finished screen with a one-line `demonstrates` (components and system). Hidden as
 demo-only: `storefront` (the shop in a grid), `job-tracker` (job-menu with a task list), `npc-dialogue` (a Panel of MenuRow replies).
