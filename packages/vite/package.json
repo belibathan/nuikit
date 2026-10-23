@@ -5,6 +5,9 @@
   "author": "belibathan (https://github.com/belibathan)",
   "license": "MIT",
   "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
   "keywords": [
     "fivem",
     "nui",
@@ -43,7 +46,6 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "browserslist": "^4.24.0",
     "css-has-pseudo": "^8.0.2",
     "lightningcss": "^1.29.0",
     "postcss": "^8.5.30"
