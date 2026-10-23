@@ -6,9 +6,6 @@
   },
   "lua": [],
   "components": [
-    "badge",
-    "card",
-    "item",
     "progress",
     "separator",
     "sheet",

@@ -7,9 +7,7 @@
   },
   "lua": [],
   "components": [
-    "badge",
     "button",
-    "card",
     "field",
     "input",
     "kbd",

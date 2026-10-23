@@ -6,10 +6,6 @@
   },
   "lua": [],
   "components": [
-    "badge",
-    "card",
-    "kbd",
-    "separator",
     "sheet",
     "edge-sheet",
     "action-bar"

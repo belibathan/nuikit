@@ -6,12 +6,9 @@
   },
   "lua": [],
   "components": [
-    "badge",
     "button",
     "input",
-    "kbd",
     "label",
-    "separator",
     "scroll-area",
     "select",
     "switch",
