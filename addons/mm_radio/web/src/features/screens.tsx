@@ -7,7 +7,7 @@ import { CheckboxField, SliderField, TextField } from "@/components/ui/form-fiel
 import { MenuRow } from "@/components/ui/menu-row";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/selection-tabs";
 import { channelLabel, soft } from "@/lib/locale";
 import { post } from "@/lib/nui";
 import { isMuted, nums, type MutedList } from "@/lib/types";
@@ -108,7 +108,7 @@ export function Channels() {
   const { data, t } = useCtx();
   return (
     <Tabs defaultValue="favourite" className="h-full gap-2">
-      <TabsList className="h-8 w-full">
+      <TabsList className="w-full">
         <TabsTrigger value="favourite" className="nk-label">{soft(t("favorites"))}</TabsTrigger>
         <TabsTrigger value="recomended" className="nk-label">{soft(t("recommended"))}</TabsTrigger>
       </TabsList>
