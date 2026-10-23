@@ -1,5 +1,8 @@
 blank_issues_enabled: false
 contact_links:
-  - name: Questions & show-and-tell
-    url: https://github.com/belibathan/nuikit/discussions
-    about: Ask questions or share what you built with nuikit.
+  - name: Docs and components
+    url: https://nuikit.vercel.app
+    about: Install steps, components, blocks and the theme studio.
+  - name: Report a vulnerability
+    url: https://github.com/belibathan/nuikit/security/advisories/new
+    about: Security issues go here privately, not in a public issue.

@@ -6,21 +6,32 @@ body:
     id: where
     attributes:
       label: Where does it happen?
-      options: [In game (CEF), In the browser (dev), Build / CLI]
+      options: [In game, In the browser (dev), Build / CLI]
     validations: { required: true }
+  - type: input
+    id: resource
+    attributes:
+      label: Which resource or package?
+      placeholder: "nuikit_hud, ox_inventory override, [nuikit-esx], vite-plugin-nuikit…"
+    validations: { required: true }
+  - type: dropdown
+    id: framework
+    attributes:
+      label: Framework
+      options: [Qbox, QBCore, ESX, Standalone, Not applicable]
   - type: textarea
     id: what
     attributes:
-      label: What happened?
-      description: Include the Tailwind classes or CSS involved and a screenshot if it's visual.
+      label: What happened, and what did you expect?
+      description: A screenshot helps for anything visual. For CSS, include the classes involved.
     validations: { required: true }
   - type: textarea
     id: repro
     attributes:
-      label: Minimal reproduction
-      description: A repo, a snippet, or a failing case for examples/cef-proof/page.html.
+      label: Steps to reproduce
+      description: Steps, a snippet, or a failing case for examples/cef-proof/page.html. Paste `nuikit doctor` output if you have it.
   - type: input
     id: versions
     attributes:
       label: Versions
-      placeholder: "vite-plugin-nuikit 0.1.0, tailwindcss 4.1, FiveM build 12345"
+      placeholder: "nuikit 0.8.0, FiveM artifact 12345, ox_lib 3.x"

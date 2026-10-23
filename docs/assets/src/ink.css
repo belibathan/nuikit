@@ -1,0 +1,156 @@
+/*
+ * Ink, restated for the README art (docs/design/ink.md). Values only from the Ink theme
+ * (systems/nuikit/theme.css): #0a0a0a ground, white ink, four greys, colour only when it means something.
+ * The tile: a face slanted -12deg on a hard plate 2px down and right. Fonts are the repo's own (OFL 1.1).
+ */
+@font-face { font-family: "Barlow Condensed"; font-style: italic; font-weight: 700; src: url("../../../packages/core/fonts/barlow-condensed-latin-700-italic.woff2") format("woff2"); }
+@font-face { font-family: "Barlow Condensed"; font-style: italic; font-weight: 800; src: url("../../../packages/core/fonts/barlow-condensed-latin-800-italic.woff2") format("woff2"); }
+@font-face { font-family: "Barlow Condensed"; font-style: italic; font-weight: 900; src: url("../../../packages/core/fonts/barlow-condensed-latin-900-italic.woff2") format("woff2"); }
+@font-face { font-family: "Geist"; font-style: normal; font-weight: 100 900; src: url("../../../packages/core/fonts/geist-latin-wght-normal.woff2") format("woff2"); }
+@font-face { font-family: "Geist Mono"; font-style: normal; font-weight: 100 900; src: url("../../../packages/core/fonts/geist-mono-latin-wght-normal.woff2") format("woff2"); }
+
+:root {
+  --bg: #0a0a0a;
+  --fg: #fafafa;
+  --muted: #a3a3a3;
+  --grey-3: #737373;
+  --grey-4: #525252;
+  --grey-5: #262626;
+  --danger: #f05252;
+  --hair: rgba(255, 255, 255, 0.12);
+  --tile-face: #161616;
+  --tile-light: rgba(255, 255, 255, 0.16);
+  --tile-rim: rgba(255, 255, 255, 0.32);
+  --tile-rim-focus: rgba(255, 255, 255, 0.6);
+  --tile-plate: #737373;
+  --tile-plate-dim: #262626;
+  --skew: -12deg;
+  --r-key: 0.25rem;
+  --r-chip: 0.375rem;
+  --r-control: 0.5rem;
+  --r-surface: 0.75rem;
+  --display: "Barlow Condensed", "Arial Narrow", sans-serif;
+  --sans: Geist, "Segoe UI", system-ui, sans-serif;
+  --mono: "Geist Mono", ui-monospace, monospace;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: var(--bg); color: var(--fg); }
+body { font-family: var(--sans); -webkit-font-smoothing: antialiased; overflow: hidden; }
+
+/* type roles */
+.scan, .title, .label, .num {
+  font-family: var(--display);
+  font-style: italic;
+  text-transform: uppercase;
+  padding-right: 0.15em; /* overhang pad: italic caps lean past their box */
+}
+.scan { font-weight: 800; letter-spacing: 0.02em; }
+.title { font-weight: 800; letter-spacing: 0.02em; line-height: 0.92; }
+.label { font-weight: 700; letter-spacing: 0.03em; color: var(--muted); }
+.num { font-weight: 700; letter-spacing: 0.01em; font-variant-numeric: tabular-nums; text-transform: none; }
+.body { font-family: var(--sans); font-weight: 400; color: var(--muted); }
+
+/* the tile: plate behind, slanted face, upright legend */
+.tile {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--h, 2.25rem);
+  min-width: var(--h, 2.25rem);
+  padding: 0 0.7em;
+  font-family: var(--display);
+  font-style: italic;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  font-size: var(--fs, 1rem);
+  color: var(--fg);
+  isolation: isolate;
+}
+.tile::before, .tile::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: var(--r-key);
+  transform: skewX(var(--skew));
+  z-index: -1;
+}
+.tile::before { /* plate */
+  background: var(--plate, var(--tile-plate));
+  translate: 2px 2px;
+  z-index: -2;
+}
+.tile::after { /* face */
+  background: var(--face, var(--tile-face));
+  border: 1px solid var(--rim, var(--tile-rim));
+  box-shadow: inset 0 1px 0 var(--tile-light);
+}
+.tile.square { padding: 0; width: var(--h, 2.25rem); }
+.tile.focus { --rim: var(--tile-rim-focus); }
+.tile.confirm { --face: var(--fg); color: var(--bg); }
+.tile.alert { --rim: var(--danger); color: var(--danger); }
+.tile.dim { --plate: var(--tile-plate-dim); }
+.tile svg { width: 1.05em; height: 1.05em; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.tile .fill { /* hold: a level filling left to right inside the face */
+  position: absolute;
+  inset: 0;
+  border-radius: var(--r-key);
+  transform: skewX(var(--skew));
+  overflow: hidden;
+  z-index: 0;
+}
+.tile .fill::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.28);
+  transform-origin: left;
+  transform: scaleX(var(--level, 0));
+}
+
+/* plate: the surface recipe */
+.plate {
+  background: rgba(10, 10, 10, 0.92);
+  border: 1px solid var(--hair);
+  border-radius: var(--r-surface);
+  box-shadow: 0 0.125rem 0 rgba(0, 0, 0, 0.6);
+}
+
+/* fill / level */
+.meter { position: relative; height: 0.25rem; background: rgba(255, 255, 255, 0.12); border-radius: 1px; overflow: hidden; }
+.meter i { position: absolute; inset: 0; background: var(--fg); transform-origin: left; transform: scaleX(var(--level)); }
+.meter i::after { content: ""; position: absolute; right: 0; top: 0; bottom: 0; width: 1px; background: rgba(255, 255, 255, 0.4); }
+.alert-tone .meter i { background: var(--danger); }
+.alert-tone .num { color: var(--danger); }
+
+/* vital: square tile + label + fill */
+.vital { display: grid; grid-template-columns: auto 1fr; grid-template-rows: auto auto; column-gap: 0.75rem; row-gap: 0.35rem; align-items: center; }
+.vital .tile { grid-row: 1 / 3; --h: 2.5rem; --fs: 1.15rem; }
+.vital .top { display: flex; justify-content: space-between; align-items: baseline; gap: 0.5rem; }
+.vital .label { font-size: 0.8rem; }
+.vital .num { font-size: 1.15rem; }
+
+/* action bar */
+.bar { display: inline-flex; align-items: center; gap: 1.1rem; padding: 0.6rem 1rem 0.6rem 0.8rem; }
+.bar .item { display: inline-flex; align-items: center; gap: 0.55rem; }
+.bar .item .label { color: var(--fg); font-size: 0.95rem; }
+.bar .sep { width: 1px; height: 1.25rem; background: var(--hair); }
+.bar .tile { --h: 1.7rem; --fs: 0.85rem; padding: 0 0.55em; }
+
+/* row with the sweep */
+.row { position: relative; display: flex; align-items: center; gap: 0.8rem; height: 3rem; padding: 0 0.9rem; border-radius: var(--r-control); }
+.row.on { background: rgba(255, 255, 255, 0.12); }
+.row.on::before { content: ""; position: absolute; left: 0; top: 0.6rem; bottom: 0.6rem; width: 3px; background: var(--fg); transform: skewX(var(--skew)); }
+.row .t { font-family: var(--display); font-style: italic; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; font-size: 1.05rem; padding-right: 0.15em; }
+.row .d { font-size: 0.8rem; color: var(--muted); }
+.row .end { margin-left: auto; }
+.row .tile { --h: 1.6rem; --fs: 0.8rem; padding: 0 0.5em; }
+
+/* chip */
+.chip { display: inline-flex; align-items: center; gap: 0.4rem; height: 1.75rem; padding: 0 0.6rem; border: 1px solid var(--hair); border-radius: var(--r-chip); font-family: var(--display); font-style: italic; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; font-size: 0.85rem; color: var(--muted); }
+.chip b { color: var(--fg); font-weight: 800; }
+
+.mark { display: inline-block; }
+.mark path { fill: var(--fg); }

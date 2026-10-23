@@ -1,12 +1,18 @@
-name: Feature or component request
-description: A new component, API or compat fix
+name: Feature or override request
+description: A new screen, component, override, adapter or API
 labels: [enhancement]
 body:
+  - type: dropdown
+    id: kind
+    attributes:
+      label: Kind
+      options: [Component or block, Override for a resource, Adapter for a framework or library, Runtime / Lua API, Theme or tokens, Tooling]
+    validations: { required: true }
   - type: textarea
     id: what
     attributes:
       label: What do you want to build?
-      description: Describe the server feature, not just the API. "A phone shell for my server's apps" beats "add <Phone />".
+      description: Describe the server feature, not just the API. "A phone shell for my server's apps" beats "add <Phone />". For an override, name the resource and link it.
     validations: { required: true }
   - type: textarea
     id: today
