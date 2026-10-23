@@ -157,7 +157,7 @@ function checkForUpdate() {
   }, "GET", "", { "User-Agent": "nuikit-doctor", Accept: "application/vnd.github+json" });
 }
 const delay = Math.min(Math.max(Number(GetConvar("nuikit_update_delay", "60")) || 0, 0), 3600);
-SetTimeout(delay * 1000, checkForUpdate);
+if (typeof SetTimeout === "function") SetTimeout(delay * 1000, checkForUpdate); // absent under the test harness
 
 function run(reply, json) {
   const report = doctor(snapshot());
