@@ -293,7 +293,7 @@ html[data-nk-motion="reduced"] .ox-indicator {
   }
 }
 
-/* Sheets, dialogs and the list menu are plates: the kit's --nk-plate-* recipe (docs/design/ink.md, Plate). */
+/* Sheets, dialogs and the list menu are plates: the kit's --nk-plate-* recipe (docs/design/default.md, Plate). */
 [data-slot="edge-sheet"],
 [data-slot="dialog-content"],
 [data-slot="alert-dialog-content"],
@@ -346,7 +346,7 @@ html[data-nk-motion="reduced"] .ox-indicator {
 }
 
 /*
- * Dialog and row motion (docs/design/ink.md, Motion): transform and opacity only. Dialogs fade in on the
+ * Dialog and row motion (docs/design/default.md, Motion): transform and opacity only. Dialogs fade in on the
  * expand ease and out on the retract ease; list rows nudge on focus.
  */
 @keyframes nk-dialog-in { from { opacity: 0; } to { opacity: 1; } }

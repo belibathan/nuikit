@@ -1,4 +1,4 @@
-// The one HUD tile (Ink, matched to the owner's reference): a light front face, slanted, with the glyph centred
+// The one HUD tile (Default, matched to the owner's reference): a light front face, slanted, with the glyph centred
 // on it, over a darker back plate offset down-right. Every tile in the HUD renders through this: the vitals,
 // voice, radio and other resources' slots, the gear, the compass marks and the heading.
 //

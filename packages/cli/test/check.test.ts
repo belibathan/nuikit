@@ -4,13 +4,13 @@ import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
-import { check, checkResource, findResources, INK_RULES, type CheckResult, type RuleId } from "../src/check";
+import { check, checkResource, findResources, KIT_RULES, type CheckResult, type RuleId } from "../src/check";
 import { DEFAULT_TOKENS, TOKENS } from "../src/tokens";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const fixture = (name: string) => path.join(here, "fixtures", name);
-// the Ink rules (warnings) have their own tests below; the conformance tests grade the rest
-const core = (r: CheckResult) => r.findings.filter((f) => !INK_RULES.includes(f.rule));
+// the Default rules (warnings) have their own tests below; the conformance tests grade the rest
+const core = (r: CheckResult) => r.findings.filter((f) => !KIT_RULES.includes(f.rule));
 const rules = (r: CheckResult) => [...new Set(core(r).map((f) => f.rule))].sort();
 const at = (r: CheckResult, rule: RuleId) => r.findings.filter((f) => f.rule === rule).map((f) => `${f.file}:${f.line}`);
 
@@ -299,7 +299,7 @@ describe("cef/* (old-CEF profile, advisory)", () => {
   });
 });
 
-// The Ink conventions (docs/design/ink.md §4): warnings until each directory's wave lands.
+// The Default conventions (docs/design/default.md §4): warnings until each directory's wave lands.
 describe("ink rules", () => {
   const run = (files: Record<string, string>) => {
     const dir = fs.mkdtempSync(path.join(os.tmpdir(), "nk-ink-"));
@@ -312,7 +312,7 @@ describe("ink rules", () => {
     const r = checkResource(dir);
     fs.rmSync(dir, { recursive: true, force: true });
     const seen = new Set(base.findings.map((f) => `${f.rule}@${f.file}:${f.line}`));
-    return { r, base, ink: r.findings.filter((f) => INK_RULES.includes(f.rule) && !seen.has(`${f.rule}@${f.file}:${f.line}`)).map((f) => `${f.rule}@${f.file}:${f.line}`) };
+    return { r, base, ink: r.findings.filter((f) => KIT_RULES.includes(f.rule) && !seen.has(`${f.rule}@${f.file}:${f.line}`)).map((f) => `${f.rule}@${f.file}:${f.line}`) };
   };
 
   it("flags each CSS sample, as warnings that keep the level", () => {
@@ -348,7 +348,7 @@ describe("ink rules", () => {
         "space/off-scale@web/src/ink.css:11",
       ].sort(),
     );
-    expect(r.findings.filter((f) => INK_RULES.includes(f.rule)).every((f) => f.severity === "warning" && f.level === 0)).toBe(true);
+    expect(r.findings.filter((f) => KIT_RULES.includes(f.rule)).every((f) => f.severity === "warning" && f.level === 0)).toBe(true);
     expect(r.level).toBe(base.level);
   });
 

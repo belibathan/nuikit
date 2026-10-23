@@ -15,8 +15,8 @@ export type ThemeMode = "dark" | "light";
 export const TOKENS_VERSION = 1 as const;
 /**
  * The contract revision: 1.1 added the identity tokens (IDENTITY_TOKENS), 1.2 the motion tokens (MOTION_TOKENS),
- * 1.4 the foundation (FOUNDATION_TOKENS), 1.5 the Ink levers (KIT_TOKENS: scales, type roles, tile, plate, fill;
- * docs/design/ink.md). Additive, so still v1.
+ * 1.4 the foundation (FOUNDATION_TOKENS), 1.5 the Default theme levers (KIT_TOKENS: scales, type roles, tile, plate, fill;
+ * docs/design/default.md). Additive, so still v1.
  */
 export const TOKENS_REVISION = "1.5" as const;
 
@@ -191,7 +191,7 @@ export function motionTokens(d: number, feel: MotionFeel = "crisp", bounce = 0, 
     "nk-time-retract": ms(Math.min(300, d * 1.55)),
     "nk-time-fill": ms(d * 3),
     "nk-time-pulse": "1000ms",
-    // tokens 1.5: the ladder (ink.md §2): snap .5, fast .667, base 1, slow 1.556, fill 2.333 × d
+    // tokens 1.5: the ladder (default.md §2): snap .5, fast .667, base 1, slow 1.556, fill 2.333 × d
     "nk-time-snap": ms(d * 0.5),
     "nk-time-fast": ms(d * 0.667),
     "nk-time-slow": ms(d * 1.556),
@@ -269,7 +269,7 @@ export const TREATMENT_PRESETS: Record<Treatment, ThemeVars> = {
     "nk-slash": "cut",
   },
   /**
-   * tile (1.5, docs/design/ink.md): Ink's values, so Ink is `tile` plus a palette. One slanted keycap language
+   * tile (1.5, docs/design/default.md): Default's values, so Default is `tile` plus a palette. One slanted keycap language
    * on hard plates, fill-based status, italic caps for anything scanned, the 1.5 motion ladder.
    */
   tile: {
@@ -489,7 +489,7 @@ export const IDENTITY_TOKENS: readonly TokenSpec[] = [
   { ...id("nk-time-reduced", "duration", "The one reduced-motion duration: under reduced motion every fade is at most this", "100ms", { range: [0, 400] }), since: "1.5" },
 ];
 
-// ─────────────────────────────────────────── tokens 1.5 (docs/design/ink.md §2): the Ink levers
+// ─────────────────────────────────────────── tokens 1.5 (docs/design/default.md §2): the Default theme levers
 
 const k15 = (name: string, type: TokenType, description: string, fallback: string, extra: Partial<TokenSpec> = {}): TokenSpec => ({ name, type, group: "identity", description, fallback, since: "1.5", css: true, ...extra });
 
@@ -1506,7 +1506,7 @@ export function toDtcg(theme: CompiledTheme, description = "nuikit theme"): Dtcg
   }
   if (Object.keys(font).length > 1) doc.font = font;
   doc.nk = nk;
-  // a derived token the theme set itself (Ink's eases) differs from what compiling the file derives: keep it
+  // a derived token the theme set itself (Default's eases) differs from what compiling the file derives: keep it
   const again = compileTheme(doc, { mode: theme.mode }).vars;
   for (const [name, value] of Object.entries(theme.vars)) {
     const spec = SPEC.get(name);

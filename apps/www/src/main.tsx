@@ -2,7 +2,7 @@ import { lazy, StrictMode, Suspense, type ReactNode } from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App";
 import { loadIdentityFonts } from "./fonts";
-import { applySiteInk } from "./lib/ink";
+import { applySiteTheme } from "./lib/default-theme";
 import "./index.css";
 
 // The landing page ships in the first chunk; every other page loads on its own.
@@ -25,7 +25,7 @@ const pages: Record<string, () => ReactNode> = {
   "/blocks/shot": () => <ShotPage />,
 };
 loadIdentityFonts();
-applySiteInk();
+applySiteTheme();
 const path = location.pathname.replace(/\/$/, "");
 // /components/<item>: one registry item's page
 const page = pages[path] ?? (/^\/components\/[a-z-]+$/.test(path) ? pages["/components"] : undefined);

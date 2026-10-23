@@ -36,7 +36,7 @@ export function BlocksPage() {
             <a href="/components" className="text-foreground underline underline-offset-4">
               components
             </a>
-            , each wired to typed NUI messages with Lua that runs, shown in Ink, any other identity or your own
+            , each wired to typed NUI messages with Lua that runs, shown in Default, any other identity or your own
             theme. Add one to your UI with the shadcn CLI, or start a resource from it with{" "}
             <code className="font-mono text-foreground">npm create nuikit</code>. Every preview is its real size at 1080p.
           </p>

@@ -21,7 +21,9 @@ import {
 
 const root = path.resolve(__dirname, "../../..") + "/";
 const read = (p: string) => readFileSync(root + p, "utf8");
-const IDENTITIES = ["graphite", "signal", "velvet", "vector", "arcade", "street", "studio", "ink"] as const;
+const IDENTITIES = ["default", "neon-pop", "graphite", "signal", "velvet", "vector", "arcade", "street", "studio"] as const;
+// Neon Pop is Default's structure with a palette, so it is left out of the structural-distinctness check.
+const STRUCTURES = IDENTITIES.filter((n) => n !== "neon-pop");
 const identity = (n: (typeof IDENTITIES)[number]) => read(`packages/core/themes/${n}.css`);
 const GRAPHITE = {
   "nk-type-ratio": "1.2",
@@ -163,7 +165,7 @@ describe("validation and floors", () => {
   });
 });
 
-describe("the four identities", () => {
+describe("the identities", () => {
   for (const n of IDENTITIES) {
     it(`${n} compiles with no warnings and passes every contrast check`, () => {
       const t = compileTheme(identity(n));
@@ -172,12 +174,21 @@ describe("the four identities", () => {
     });
   }
 
+  const sig = (n: (typeof IDENTITIES)[number]) => {
+    const v = compileTheme(identity(n)).vars;
+    return [v["font-display"], v["nk-row-indicator"], v["nk-elevation"], v["nk-cut"], v["nk-gauge-style"], v.radius].join("|");
+  };
+
   it("are distinct in more than colour", () => {
-    const sig = (n: (typeof IDENTITIES)[number]) => {
-      const v = compileTheme(identity(n)).vars;
-      return [v["font-display"], v["nk-row-indicator"], v["nk-elevation"], v["nk-cut"], v["nk-gauge-style"], v.radius].join("|");
-    };
-    expect(new Set(IDENTITIES.map(sig)).size).toBe(IDENTITIES.length);
+    expect(new Set(STRUCTURES.map(sig)).size).toBe(STRUCTURES.length);
+  });
+
+  it("Neon Pop is Default's structure with another palette", () => {
+    expect(sig("neon-pop")).toBe(sig("default"));
+    const [d, n] = [compileTheme(identity("default")).vars, compileTheme(identity("neon-pop")).vars];
+    expect(n["nk-treatment"]).toBe("tile");
+    expect(n.brand).not.toBe(d.brand);
+    expect(n["role-health"]).not.toBe(d["role-health"]);
   });
 
   it("Graphite is exactly the default: stock neutral plus every identity default", () => {
@@ -201,7 +212,7 @@ describe("the four identities", () => {
   });
 
   it("round-trip keeps a derived token the theme set and the treatment's unresolved values", () => {
-    const t = compileTheme(identity("ink"));
+    const t = compileTheme(identity("default"));
     const back = compileTheme(toDtcg(t)).vars;
     expect(back["nk-ease-expand"]).toBe("cubic-bezier(0.16, 1, 0.3, 1)");
     expect(back["nk-ease-breathe"]).toBe("cubic-bezier(0.45, 0, 0.55, 1)");

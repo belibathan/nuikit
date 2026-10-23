@@ -1,4 +1,4 @@
-/* Cascade layers (tokens 1.5, docs/design/ink.md §4), declared before Tailwind's own so the kit's sit between
+/* Cascade layers (tokens 1.5, docs/design/default.md §4), declared before Tailwind's own so the kit's sit between
    them: kit defaults and primitives under the utilities, a theme (nk.theme) and the page (nk.app) over them. */
 @layer theme, base, nk.base, components, nk.kit, utilities, nk.theme, nk.app;
 @import "tailwindcss";

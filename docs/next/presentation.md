@@ -46,7 +46,7 @@ Attach `docs/assets/banner.png` or the social preview.
 > • **Overrides, not rewrites:** new interfaces for ox_lib, ox_inventory, ox_target, Renewed-Banking,
 > illenium-appearance and more. Same Lua, same callbacks
 > • **For devs:** `@nuikit/init.lua`, 32 components and 20 blocks, `npm create nuikit`, `nuikit check`
-> • **Ink**, the new flagship theme: black and white, italic caps, slanted keycaps
+> • **Default**, the new flagship theme: black and white, italic caps, slanted keycaps
 >
 > Qbox tested in game; QBCore and ESX adapters included. Free, MIT.
 > https://github.com/belibathan/nuikit

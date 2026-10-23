@@ -628,8 +628,13 @@ end
 local PREFS_KVP = 'nuikit:prefs'
 local prefs = nil -- last known, from the nuikit resource (or this resource's KVP without it)
 
+-- Renamed theme ids, kept for one minor (docs/next/decisions.md): a pref saved as 'ink' still finds Default.
+local THEME_ALIASES = { ink = 'default' }
+
 local function lookName(v)
-  return type(v) == 'string' and v:match('^[%w_-]+$') and #v <= 32 and v:lower() or nil
+  if type(v) ~= 'string' or not v:match('^[%w_-]+$') or #v > 32 then return nil end
+  local name = v:lower()
+  return THEME_ALIASES[name] or name
 end
 
 local function normalizePrefs(p)

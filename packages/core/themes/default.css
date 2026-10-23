@@ -1,18 +1,21 @@
 /*
- * Ink: nuikit's flagship. Black and white: near-black surfaces, white text and lines, greys for hierarchy, colour
- * only where it means something (status, a role, a vital in alert). Barlow Condensed italic caps for anything you
- * scan, Geist for sentences. One keycap language (the tile: a slanted face on a hard plate straight below it),
- * fills instead of rings, hard drops, no pills, no blur. Ink is the `tile` treatment plus this palette; the
- * levers below restate the treatment's values so a server can tune any of them here (docs/tokens.md, Ink levers).
+ * Default: nuikit's flagship theme, and the one a new project and the stock server get. Black and white:
+ * near-black surfaces, white text and lines, greys for hierarchy, colour only where it means something
+ * (status, a role, a vital in alert). Barlow Condensed italic caps for anything you scan, Geist for
+ * sentences. One keycap language (the tile: a slanted face on a hard plate straight below it), fills
+ * instead of rings, hard drops, no pills, no blur. Default is the `tile` treatment plus this palette; the
+ * levers below restate the treatment's values so a server can tune any of them here (docs/tokens.md,
+ * Default theme levers). Called "ink" before 0.9; that id still resolves here (deprecated).
  *
- * Use it: copy this file over nuikit/theme.css, then `nuikit theme reload`. The compiler keeps only variables and
- * @import URLs, so the few rules tokens can't say live in the nuikit resource's theme/ink.css, imported below. The
- * fonts (Geist, Barlow Condensed italic; SIL OFL 1.1) ship in every UI through fonts.json.
+ * Use it: copy this file over nuikit/theme.css, then `nuikit theme reload`. The compiler keeps only
+ * variables and @import URLs, so the few rules tokens can't say live in the nuikit resource's
+ * theme/default.css, imported below. The fonts (Geist, Barlow Condensed italic; SIL OFL 1.1) ship in
+ * every UI through fonts.json.
  */
-@import url("https://cfx-nui-nuikit/theme/ink.css");
+@import url("https://cfx-nui-nuikit/theme/default.css");
 
 .dark {
-  /* palette: near-black surfaces, white ink, greys for hierarchy */
+  /* palette: near-black surfaces, white text, greys for hierarchy */
   --background: #0a0a0a;
   --foreground: #fafafa;
   --card: #111111;

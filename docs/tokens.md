@@ -448,7 +448,7 @@ compiles every 1.3 token to the same value (`test/fixtures/compiled-1.3.json` pi
 
 | Family | Tokens | Default | Notes |
 |---|---|---|---|
-| **Treatment** | `--nk-treatment: soft \| glass \| plate \| slab \| tile` (tile: 1.5, [Ink levers](#ink-levers-15)) | `soft` | A preset that fills material, stroke, type, focus and motion tokens *under* the theme's own values (`TREATMENT_PRESETS`). `soft` is empty: today's defaults. Painted as `html[data-nk-treatment]` |
+| **Treatment** | `--nk-treatment: soft \| glass \| plate \| slab \| tile` (tile: 1.5, [Default theme levers](#ink-levers-15)) | `soft` | A preset that fills material, stroke, type, focus and motion tokens *under* the theme's own values (`TREATMENT_PRESETS`). `soft` is empty: today's defaults. Painted as `html[data-nk-treatment]` |
 | **States** | `--nk-focus-style` (ring, halo, tint, fill, invert, bar), `--nk-hold-style` (bar, ring, fill), `--nk-confirm-scale`, `--nk-level-style` (bar, ring, liquid, slab, pips) | ring, bar, 1.04, bar | One focus style for every component; components draw `data-state="rest\|focus\|hold\|confirm\|disabled\|alert"` and read `--level` (0–1). Painted as `data-nk-focus`, `-hold`, `-level` |
 | **Roles** | `--role-<name>` (+ derived `-deep`, `-light`), `--nk-hue-{line,tint,glow,alert}` alphas | vitals = today's `vital-*`; stamina → success, oxygen → info; status = info, success, warning, destructive; factions and rarity fixed hues; brand; neutral = muted-foreground | `data-hue="<role>"` on any element gives its subtree `--hue-solid`, `-deep`, `-line`, `-tint`, `-glow`, `-alert`, `-grad-a`, `-grad-b` (kit.css). Sets: vitals (health, armor, hunger, thirst, stress, stamina, oxygen), status (info, success, warning, danger), faction (police, ems, mech, gang, civ, staff), rarity (common, uncommon, rare, epic, legendary), brand, neutral |
 | **Materials** | `--nk-material-{hud,menu,overlay}-{opacity,blur,radius,edge,texture}`, `--nk-slash` (none, cut) | hud opacity = `nk-hud-opacity`, menu/overlay = `nk-surface-opacity`, radius = `radius`, edge = `nk-surface-edge`, blur 0, texture none | Surfaces read `--nk-{hud,menu,overlay}-alpha` (kit.css), which legibility lifts. Textures paint as `data-nk-texture-<ctx>` |
@@ -486,9 +486,9 @@ Arcade and Street `slab`. A server keeps its palette and borrows another treatme
 }
 ```
 
-## Ink levers (1.5)
+## Default theme levers (1.5)
 
-Tokens 1.5 ([design/ink.md](design/ink.md) §2) turn the Ink theme into kit levers every theme gets. They are
+Tokens 1.5 ([design/default.md](design/default.md) §2) turn the Default theme into kit levers every theme gets. They are
 **kit levers**: kit.css holds each default (`@layer nk.base`, a formula over the identity, so a subtree's density or
 radius re-derives it); the compiler validates a value a theme or the `tile` treatment sets and never emits a
 default (`KIT_TOKENS` in nuikit-core, flag `css: true`). Graphite compiles exactly as in 1.4. The older component
@@ -496,7 +496,7 @@ tokens read the new ones (`--nk-key-radius: var(--nk-r-key)`, `--nk-row-height: 
 `--nk-key-bg: var(--nk-tile-face)`, `--nk-key-font: var(--nk-type-scan-family)`…), so a theme may set either name
 for one revision. `--nk-meter-radius` keeps its own value (Graphite's meters are rounded).
 
-| Group | Tokens | Graphite default | `tile` (Ink) |
+| Group | Tokens | Graphite default | `tile` (Default) |
 |---|---|---|---|
 | **Spacing** (`SCALE_TOKENS`) | `--nk-space-unit`, `--nk-space-{1,2,3,4,6,8}`, `--nk-gap-cluster`, `--nk-gap-items`, `--nk-pad-x`, `--nk-pad-surface` | 0.25rem × density; cluster space-2, items space-1, pad-x space-3, surface space-6 | density 1 |
 | **Radius** | `--nk-r-key`, `--nk-r-chip`, `--nk-r-control`, `--nk-r-surface` | radius − 4px (≥ 0.25rem), the same, radius − 2px, the menu material's | 0.25, 0.375, 0.5, 0.75rem |
@@ -512,7 +512,7 @@ for one revision. `--nk-meter-radius` keeps its own value (Graphite's meters are
 
 `--nk-row-indicator` gains `sweep` (no bar: the row's `--nk-fill-tint` sweep, and the content slides by
 `--nk-lift`). `--nk-treatment: tile` fills all of the above, plus hard elevation, italic display, caps labels, fill
-holds and a 1.08 confirm. Ink is `tile` plus a palette.
+holds and a 1.08 confirm. Default is `tile` plus a palette.
 
 **Layers.** Every index.css declares `@layer theme, base, nk.base, components, nk.kit, utilities, nk.theme, nk.app`
 before Tailwind's import. A theme writes token values, and rules on documented data attributes, into
@@ -522,13 +522,17 @@ restyles them.
 
 ## Identities
 
-Four complete `theme.css` files, each a finished identity on its own: `packages/core/themes/`, shipped as
+Complete `theme.css` files, each a finished identity on its own: `packages/core/themes/`, shipped as
 `nuikit-core/themes/*.css` and in the nuikit resource's `themes/`. Copy one over `nuikit/theme.css`, run
-`nuikit theme reload`, then tune it. The same screens in all four: `bench/identity/shots/`.
+`nuikit theme reload`, then tune it. Screens in several of them: `bench/identity/shots/`. The theme id is the
+file's base name (`neon-pop.css` → `neon-pop`); `ink` is the old id of `default` and still resolves, with a
+deprecation line in the log, for one minor.
 
 | Identity | Character | What sets it apart |
 |---|---|---|
-| **Graphite** (default) | Utilitarian: minimal, neat, compact; every element earns its place ([design v2 §4](design/v2.md)) | Stock neutral colours; Inter, Inter Tight, Geist Mono; flat panels with a crisp hairline, a machined edge and a short soft drop; compact rhythm (density 0.875) with 16px reading text; small uppercase captions (13px, 0.06em); panels at `--radius`, chips and slabs as small rounded rects; thin meters (4px); a brand bar on the active row; arc gauges; 140ms. Exactly what a plain paste compiles to |
+| **Default** (the flagship, and what a new project and the stock server get) | Monochrome: near-black surfaces, white text, greys for hierarchy, colour only where it carries information | Geist for sentences, Barlow Condensed italic caps for anything you scan; the `tile` treatment (a face slanted -12deg on a hard plate straight below); fills instead of rings, hard drops, no pills, no blur; radius .25/.375/.5/.75rem; density 1; 180ms |
+| **Neon Pop** | Default's structure with a vivid palette | The same `tile` treatment and levers; `--nk-accent-gradient` blue → violet → rose, solid brand #8A8CFF; a colour per vital (health rose, armor blue, hunger amber, thirst sky, stress green); rarity climbs grey, green, blue, violet, amber |
+| **Graphite** (what `compileTheme("")` fills: the token defaults) | Utilitarian: minimal, neat, compact; every element earns its place ([design v2 §4](design/v2.md)) | Stock neutral colours; Inter, Inter Tight, Geist Mono; flat panels with a crisp hairline, a machined edge and a short soft drop; compact rhythm (density 0.875) with 16px reading text; small uppercase captions (13px, 0.06em); panels at `--radius`, chips and slabs as small rounded rects; thin meters (4px); a brand bar on the active row; arc gauges; 140ms. Exactly what a plain paste compiles to |
 | **Signal** | Bold and street | Signal yellow on warm black; Barlow, with Barlow Condensed for display and numbers; ratio 1.333; uppercase captions and headings; 0.75rem chamfers on panels, rows, chips and buttons; flat and opaque, with a 3px brand edge on top (`--nk-panel-edge`); solid square `fill` rows; density 0.95; a strong HUD shadow; bar gauges; 120ms snap |
 | **Velvet** | Soft, warm, luxury | Champagne on aubergine; DM Sans, with Fraunces for display and numbers; 1rem radius; strong gradient and edge, deep elevation, a hint of glow; roomy (density 1.15); a solid champagne pill on the active row (`fill`, `--nk-row-radius: 9999px`); 240ms smooth ease |
 | **Vector** | Tactical instrument | Cyan on blue-black; IBM Plex Sans, Chakra Petch display, JetBrains Mono numbers and captions; cyan hairlines and corner brackets (`--nk-panel-bracket`); flat, with a cyan halo instead of a shadow; `outline` rows; segmented meters; glow 0.35; compact (0.85); digital gauges |

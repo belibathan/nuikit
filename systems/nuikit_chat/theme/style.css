@@ -55,7 +55,7 @@
 .chat-window {
   background: transparent !important;
   font-family: var(--nk-font-sans);
-  /* Ink: show/hide is opacity only, 280ms standard ease */
+  /* Default: show/hide is opacity only, 280ms standard ease */
   transition: opacity var(--nk-time-slow, 280ms) var(--nk-ease-standard, cubic-bezier(0.2, 0, 0, 1));
 }
 .chat-input { animation: nk-chat-in var(--nk-time-slow, 280ms) var(--nk-ease-expand, cubic-bezier(0.16, 1, 0.3, 1)) backwards; }

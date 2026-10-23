@@ -106,13 +106,13 @@ function Hero() {
             </Chip>
           </a>
         </div>
-        <h1 className="ink-display mt-6 max-w-4xl text-[clamp(2.75rem,9vw,6.5rem)] text-balance">
+        <h1 className="site-display mt-6 max-w-4xl text-[clamp(2.75rem,9vw,6.5rem)] text-balance">
           Every screen on your server. <span className="text-muted-foreground">One look.</span>
         </h1>
         <p className="mt-6 max-w-2xl text-lg text-pretty text-muted-foreground sm:text-xl">
           nuikit is the shared layer between FiveM scripts and their screens: one runtime for focus, Escape, camera and theme, themed renderers for
           notifications, menus and input, and adapters that bring ox_lib, QBCore and ESX scripts in unchanged.{" "}
-          <span className="text-foreground">Ink is the look it ships with.</span>
+          <span className="text-foreground">Default is the look it ships with.</span>
         </p>
         <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
           <Button size="lg" className="h-12 px-6" asChild>
@@ -133,7 +133,7 @@ function Hero() {
   );
 }
 
-/** A frame of the game in Ink: vitals, a key tile with its tag, a hold, a toast and the hint bar. */
+/** A frame of the game in Default: vitals, a key tile with its tag, a hold, a toast and the hint bar. */
 function HeroFrame({ className }: { className?: string }) {
   const [v, setV] = useState({ health: 86, armor: 54, hunger: 41, thirst: 18 });
   const [hold, setHold] = useState(0);
@@ -156,7 +156,7 @@ function HeroFrame({ className }: { className?: string }) {
     { k: "thirst", icon: <DropletIcon />, label: "Thirst" },
   ] as const;
   return (
-    <figure className={cn("relative isolate overflow-hidden rounded-(--nk-r-surface) border bg-black", className)} aria-label="nuikit's Ink look on a game frame">
+    <figure className={cn("relative isolate overflow-hidden rounded-(--nk-r-surface) border bg-black", className)} aria-label="nuikit's Default look on a game frame">
       <img src="/bg/stage-dusk.jpg" alt="" loading="lazy" className="absolute inset-0 -z-10 size-full object-cover" />
       <div className="absolute inset-0 -z-10" style={{ background: "radial-gradient(120% 90% at 50% 40%, transparent 45%, rgba(0,0,0,.6))" }} />
       <div className="grid min-h-[30rem] gap-6 p-4 sm:aspect-[2/1] sm:min-h-0 sm:grid-cols-[1fr_auto_1fr] sm:grid-rows-[auto_1fr_auto] sm:p-8">
@@ -182,7 +182,7 @@ function HeroFrame({ className }: { className?: string }) {
             <Tile size="lg" state={hold > 1 ? "confirm" : "hold"} level={Math.min(1, hold)}>
               G
             </Tile>
-            <span className="ink-eyebrow text-white">{hold > 1 ? "Engine on" : "Hold to start engine"}</span>
+            <span className="site-eyebrow text-white">{hold > 1 ? "Engine on" : "Hold to start engine"}</span>
           </div>
         </div>
         {/* bottom left: the vitals row */}
@@ -223,8 +223,8 @@ function HeroFrame({ className }: { className?: string }) {
 function SectionTitle({ eyebrow, title, children, id }: { eyebrow: string; title: ReactNode; children?: ReactNode; id?: string }) {
   return (
     <div id={id} className="max-w-3xl scroll-mt-24">
-      <p className="ink-eyebrow">{eyebrow}</p>
-      <h2 className="ink-display mt-3 text-[clamp(2rem,5vw,3.25rem)] text-balance">{title}</h2>
+      <p className="site-eyebrow">{eyebrow}</p>
+      <h2 className="site-display mt-3 text-[clamp(2rem,5vw,3.25rem)] text-balance">{title}</h2>
       {children && <p className="mt-4 text-pretty text-muted-foreground sm:text-lg">{children}</p>}
     </div>
   );
@@ -265,7 +265,7 @@ function What() {
             <Tile shape="square" size="lg" aria-hidden>
               {p.icon}
             </Tile>
-            <h3 className="ink-display text-2xl">
+            <h3 className="site-display text-2xl">
               <span className="mr-2 text-muted-foreground">0{i + 1}</span>
               {p.title}
             </h3>
@@ -283,7 +283,7 @@ function Step({ n, title, children }: { n: number; title: string; children: Reac
       <Tile size="md" shape="square" aria-hidden>
         {n}
       </Tile>
-      <h3 className="ink-display self-center text-xl">{title}</h3>
+      <h3 className="site-display self-center text-xl">{title}</h3>
       <div className="col-start-2 min-w-0 text-sm text-muted-foreground">{children}</div>
     </li>
   );
@@ -318,7 +318,7 @@ function QuickStart() {
             </Step>
             <Step n={3} title="Make it yours">
               <p>
-                Ink is on by default. Copy another identity over <code className="font-mono text-foreground">nuikit/theme.css</code> or make your own in the{" "}
+                Default is on by default. Copy another identity over <code className="font-mono text-foreground">nuikit/theme.css</code> or make your own in the{" "}
                 <a className="text-foreground underline underline-offset-4" href="/theme">
                   theme studio
                 </a>
@@ -367,7 +367,7 @@ function QuickStart() {
   );
 }
 
-/** The identities, Ink first; picking one repaints the preview the way nuikit/theme.css repaints the server. */
+/** The identities, Default first; picking one repaints the preview the way nuikit/theme.css repaints the server. */
 function Themes() {
   const [active, setActive] = useState(0);
   const stage = useRef<HTMLDivElement>(null);
@@ -384,8 +384,8 @@ function Themes() {
   }, [active]);
   return (
     <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-24">
-      <SectionTitle id="themes" eyebrow="Themes" title="Ink by default. Seven more in the box.">
-        A theme is one CSS file of values: colour, type, shape, surface, motion and the HUD's style. Ink is the flagship. Pick another and every screen
+      <SectionTitle id="themes" eyebrow="Themes" title="Default by default. Eight more in the box.">
+        A theme is one CSS file of values: colour, type, shape, surface, motion and the HUD's style. Default is the flagship. Pick another and every screen
         follows, in game too. Or paste any TweakCN theme.
       </SectionTitle>
       <div className="mt-10 grid gap-6 lg:grid-cols-[18rem_1fr]">
@@ -407,7 +407,7 @@ function Themes() {
                 ))}
               </span>
               <span className="font-medium">{t.name}</span>
-              {i === 0 && <span className="ink-eyebrow ml-auto hidden lg:inline">Default</span>}
+              {i === 0 && <span className="site-eyebrow ml-auto hidden lg:inline">Default</span>}
             </button>
           ))}
         </div>
@@ -448,14 +448,14 @@ function Themes() {
 /** A tile in the component showcase: the live part on the game, its name, a link to its page. */
 function Part({ name, title, text, children, className }: { name: string; title: string; text: string; children: ReactNode; className?: string }) {
   return (
-    <a href={`/components/${name}`} className={cn("group ink-plate flex flex-col overflow-hidden transition-colors hover:bg-accent", className)}>
+    <a href={`/components/${name}`} className={cn("group site-plate flex flex-col overflow-hidden transition-colors hover:bg-accent", className)}>
       <div className="relative isolate grid min-h-44 flex-1 place-items-center overflow-hidden border-b bg-black p-6">
         <img src="/bg/stage-dusk.jpg" alt="" loading="lazy" className="absolute inset-0 -z-10 size-full object-cover opacity-60" />
         <div className="pointer-events-none">{children}</div>
       </div>
       <div className="flex items-start justify-between gap-3 p-4">
         <div>
-          <h3 className="ink-display text-xl">{title}</h3>
+          <h3 className="site-display text-xl">{title}</h3>
           <p className="mt-1 text-sm text-muted-foreground">{text}</p>
         </div>
         <ArrowRightIcon className="mt-1 size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-foreground" />
@@ -622,9 +622,9 @@ NUI.notify({ title = 'Paid', type = 'success' })`}
 function Closing() {
   return (
     <section className="mx-auto max-w-6xl px-4 pt-8 pb-24 sm:px-6">
-      <div className="ink-plate flex flex-col items-start gap-6 p-6 sm:flex-row sm:items-center sm:p-10">
+      <div className="site-plate flex flex-col items-start gap-6 p-6 sm:flex-row sm:items-center sm:p-10">
         <div className="flex-1">
-          <h2 className="ink-display text-[clamp(2rem,5vw,3rem)]">Give your server one look.</h2>
+          <h2 className="site-display text-[clamp(2rem,5vw,3rem)]">Give your server one look.</h2>
           <p className="mt-2 text-muted-foreground">Free, MIT licensed, built in the open.</p>
         </div>
         <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">

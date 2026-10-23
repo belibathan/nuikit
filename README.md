@@ -1,6 +1,6 @@
 <div align="center">
 
-<a href="https://nuikit.vercel.app"><img src="docs/assets/banner.png" alt="nuikit, the design system for FiveM NUI: a pause sheet, vitals with fill meters and slanted keycap hints in the Ink theme" width="100%" /></a>
+<a href="https://nuikit.vercel.app"><img src="docs/assets/banner.png" alt="nuikit, the design system for FiveM NUI: a pause sheet, vitals with fill meters and slanted keycap hints in the Default theme" width="100%" /></a>
 
 # nuikit
 
@@ -85,13 +85,14 @@ on npm yet.
 
 ## Themes
 
-**Ink** is the flagship and the default: monochrome, Barlow Condensed italic caps for anything you scan, Geist for
+**Default** is the flagship and the default: monochrome, Barlow Condensed italic caps for anything you scan, Geist for
 sentences, one slanted keycap tile for keys, icons and status, fills instead of rings, hard drops, no pills, no
-blur. Colour appears only when it means something. Spec: [`docs/design/ink.md`](docs/design/ink.md).
+blur. Colour appears only when it means something. Spec: [`docs/design/default.md`](docs/design/default.md).
 
 | Identity | Character |
 |---|---|
-| **Ink** (default) | Black and white, italic caps, slanted keycaps, fill-based status |
+| **Default** (default) | Black and white, italic caps, slanted keycaps, fill-based status |
+| **Neon Pop** | Default's structure, vivid palette: a blue-violet-rose accent gradient, a colour per vital |
 | **Graphite** | Utilitarian: stock shadcn neutrals, Inter, compact |
 | **Signal** | Bold and street: condensed type, chamfered corners, high-vis yellow |
 | **Velvet** | Soft and warm: rounded, serif display, champagne on aubergine |
@@ -168,7 +169,7 @@ issues and what's next: [`docs/roadmap.md`](docs/roadmap.md).
 | [Protocol](docs/protocol.md) | The standard (v1): surfaces, messaging, theme, context, conformance |
 | [Intents](docs/intents.md) · [Services](docs/services.md) | What scripts ask for; camera and controls |
 | [Adapters](docs/adapters/README.md) | ox_lib, QBCore, ESX and standalone libraries on nuikit |
-| [Tokens](docs/tokens.md) · [Ink](docs/design/ink.md) · [Design](docs/design.md) | Theme contract, the flagship theme, the kit language |
+| [Tokens](docs/tokens.md) · [Default](docs/design/default.md) · [Design](docs/design.md) · [Naming](docs/design/naming.md) | Theme contract, the flagship theme, the kit language, the naming conventions |
 | [Coverage](docs/coverage.md) · [Roadmap](docs/roadmap.md) | What's covered on a Qbox server; status and next |
 | [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md) | How to help; how to report a vulnerability |
 
