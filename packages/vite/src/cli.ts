@@ -27,9 +27,19 @@ if (!files.length) {
 }
 
 let problems = 0;
+let unparsed = 0;
 for (const file of files) {
   const before = fs.readFileSync(file, "utf8");
-  const { code, report } = lowerCss(before, { filename: file, minify: true });
+  let lowered: ReturnType<typeof lowerCss>;
+  try {
+    lowered = lowerCss(before, { filename: file, minify: true });
+  } catch (e) {
+    // one unparsable file (a vendor bundle, a half-written build) shouldn't hide the rest
+    unparsed++;
+    console.log(`\n\x1b[1m${file}\x1b[0m\n  \x1b[31m✗\x1b[0m could not parse: ${e instanceof Error ? e.message : String(e)}`);
+    continue;
+  }
+  const { code, report } = lowered;
   // What would break if shipped as-is:
   const unsupported = [
     ["oklch()/lab() colors", (before.match(/\b(?:okl(?:ch|ab)|lab|lch)\(/g) ?? []).length],
@@ -52,6 +62,10 @@ for (const file of files) {
   }
 }
 
+if (unparsed) {
+  console.log(`\n\x1b[31m✗\x1b[0m ${unparsed} file(s) could not be parsed`);
+  process.exit(1);
+}
 if (!fix && problems) {
   console.log(`\n\x1b[2mRun with --fix to lower in place, or build with vite-plugin-nuikit.\x1b[0m`);
   process.exit(1);

@@ -10,7 +10,8 @@ import { check, LEVEL_NAMES, RULES, type Level } from "./check";
 import { bold, dim, formatResult, formatSummary, formatTokens, red } from "./format";
 import { TOKENS, TOKEN_SOURCE } from "./tokens";
 
-const VERSION = "0.6.0";
+/** From package.json (dist/cli.js → ../package.json), so it can't fall behind the release. */
+const VERSION: string = JSON.parse(fs.readFileSync(new URL("../package.json", import.meta.url), "utf8")).version;
 
 const HELP = `${bold("nuikit")} ${dim(VERSION)}: the UI platform layer for FiveM
 
@@ -32,7 +33,10 @@ ${bold("Levels")} (docs/protocol.md §10)
 Silence a deliberate exception with a comment: ${dim("/* nuikit-ignore color/hardcoded: GTA hair palette */")}
 or ${dim("// nuikit-ignore-next-line")} on the line above.`;
 
+/** `--name value` or `--name=value`. */
 function flag(args: string[], name: string): string | undefined {
+  const eq = args.find((a) => a.startsWith(`${name}=`));
+  if (eq !== undefined) return eq.slice(name.length + 1);
   const i = args.indexOf(name);
   if (i === -1) return undefined;
   return args[i + 1];
@@ -77,7 +81,13 @@ function main(argv: string[]): number {
       console.error(red(`✗ --level must be 1, 2 or 3`));
       return 2;
     }
-    const results = targets.flatMap((t) => check(t, { includeBuilt: args.includes("--include-built") }));
+    let results: ReturnType<typeof check>;
+    try {
+      results = targets.flatMap((t) => check(t, { includeBuilt: args.includes("--include-built") }));
+    } catch (e) {
+      console.error(red(`✗ check failed: ${e instanceof Error ? e.message : String(e)}`));
+      return 2;
+    }
     if (!results.length) {
       console.error(red(`✗ no resource found under ${target} (looked for fxmanifest.lua, web/ or index.html)`));
       return 2;

@@ -135,7 +135,10 @@ export function nuikit(options: NuikitOptions = {}): Plugin {
       });
       const restore = () => writeUiPage(page);
       server.httpServer?.once("close", restore);
-      for (const sig of ["SIGINT", "SIGTERM"] as const) {
+      // a crash or a plain exit must not leave the manifest on the dev server either (sync, so it runs on exit)
+      process.once("exit", restore);
+      // SIGHUP: the terminal window was closed (Windows sends it to node on console close)
+      for (const sig of ["SIGINT", "SIGTERM", "SIGHUP"] as const) {
         process.once(sig, () => {
           restore();
           process.exit(0);

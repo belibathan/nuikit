@@ -890,9 +890,6 @@ importers:
 
   packages/vite:
     dependencies:
-      browserslist:
-        specifier: ^4.24.0
-        version: 4.29.3
       css-has-pseudo:
         specifier: ^8.0.2
         version: 8.0.2(postcss@8.5.30)

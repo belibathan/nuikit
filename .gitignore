@@ -20,3 +20,6 @@ bench/motion/.out
 !bench/coverage/
 bench/visual/out/
 systems/nuikit_dev/restart.queue
+
+# oh-my-claudecode agent state (per session, never shared)
+.omc/
