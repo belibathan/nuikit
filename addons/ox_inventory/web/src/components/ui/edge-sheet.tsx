@@ -10,6 +10,7 @@ import { Stagger } from "nuikit-core/react"
 import { cn, nkVariant, type NkVariantProps } from "@/lib/utils"
 import { ActionBar, ActionBarItem } from "@/components/ui/action-bar"
 import { Button } from "@/components/ui/button"
+import { Fill } from "@/components/ui/fill"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Sheet, SheetContent, SheetDescription, SheetTitle } from "@/components/ui/sheet"
 
@@ -43,7 +44,8 @@ import { Sheet, SheetContent, SheetDescription, SheetTitle } from "@/components/
  * `meterDanger` (default 90).
  *
  * Role: A sheet from a screen edge: an inventory side, a context menu.
- * Anatomy: edge-sheet (side) > column: header (title, description, actions) > edge (a level line) > body
+ * Anatomy: edge-sheet (side) > column: header (title, description, actions; back as an ActionBarItem) > edge (a
+ *   Fill, variant edge) > body
  * Props: open, side, modal, title, description, actions, density, shape, motion, back, anchor.
  * Level means: the edge line: a fill such as weight (EdgeSheetEdge value, 0–100).
  * Rules: The game stays visible beside it. Positioned on an edge, never centred with a transform.
@@ -82,7 +84,7 @@ type EdgeSheetProps = Omit<React.ComponentProps<typeof SheetContent>, "title" | 
   onBack?: () => void
   /**
    * With `onBack` (1.5): the back control as an ActionBarItem with its key (Esc) instead of the chevron; a
-   * string or node replaces the label ("Back"). The Ink header (docs/design/ink.md §3, Sheet).
+   * string or node replaces the label ("Back"). The default theme's header (docs/design/ink.md §3, Sheet).
    */
   back?: boolean | React.ReactNode
   /** A close button after the title. */
@@ -204,20 +206,23 @@ function EdgeSheet({
   )
 }
 
-/** The header's bottom edge: the hairline, with a level traced along it (scaleX: nothing repaints). */
+/**
+ * The header's bottom edge: the hairline as a Fill's track (variant edge), with a level traced along it
+ * (scaleX: nothing repaints), in the Fill colour; alert at or over `danger`.
+ */
 function EdgeSheetEdge({ value, danger = 90, className }: { value?: number; danger?: number; className?: string }) {
   const v = value === undefined || !Number.isFinite(value) ? undefined : Math.max(0, Math.min(100, value))
   return (
-    <div data-slot="edge-sheet-edge" aria-hidden className={cn("relative h-0.5 shrink-0 overflow-hidden bg-(--nk-panel-border)", className)}>
-      {v !== undefined && (
-        <div
-          data-slot="edge-sheet-edge-fill"
-          data-state={v >= danger ? "alert" : undefined}
-          className="absolute inset-0 origin-left bg-(--brand,var(--primary)) transition-transform duration-(--nk-time-fill) ease-(--nk-ease-out) data-[state=alert]:bg-destructive"
-          style={{ transform: `scaleX(${v / 100})` }}
-        />
-      )}
-    </div>
+    <Fill
+      data-slot="edge-sheet-edge"
+      variant="edge"
+      level={v === undefined ? 0 : v / 100}
+      alert={v !== undefined && v >= danger}
+      color="var(--brand, var(--primary))"
+      // no level: the hairline alone (no edge mark at its start)
+      className={cn("shrink-0", v === undefined && "after:hidden", className)}
+      style={{ "--nk-fill-track": "var(--nk-panel-border)" } as React.CSSProperties}
+    />
   )
 }
 

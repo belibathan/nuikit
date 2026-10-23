@@ -6,7 +6,7 @@ import { toneVars } from "@/components/ui/fill"
 /**
  * Dial — the speedometer arc as a primitive (docs/design/ink.md §3, Dial): one SVG geometry with a track
  * arc, a value arc, ticks and an optional needle, and whatever you put inside (a readout, a gear Tile, a unit).
- * Speedometer composes it; a fuel or boost gauge is a Dial too.
+ * Speedometer composes it; a fuel or boost gauge is a Dial too, and so is ProgressRing: a Dial with `sweep={360}`.
  *
  *   <Dial level={rpm} redline={0.88}>
  *     <span className="nk-num">{speed}</span>
@@ -16,7 +16,8 @@ import { toneVars } from "@/components/ui/fill"
  * Role: a level read at a glance on a round gauge (rpm, boost, a charge), on the game or on a panel.
  * Anatomy: root (data-slot="dial", --level) > svg (ticks, track arc, value arc or segments, needle) > center (children).
  * Props: level (0–1, or value / max), size (sm | md | lg or px at 1080p), variant (ticks | digital), ticks
- *   (the tick count lever, 0 for none), segments, redline, needle, tone, hue, surface.
+ *   (the tick count lever, 0 for none), segments, redline, needle, tone, hue, surface, sweep (240 a gauge, 360 a
+ *   ring), start, thickness, inset, trackProps, valueProps.
  * Level means: how far the value has swept the arc, 0 at the start, 1 at the end of the sweep.
  * Rules: the value arc is data-driven (no CSS tween on the dash; a live gauge writes it with dialDash()); the
  *   needle moves by a rotate transform. Past the redline it is data-state="alert". Colours only from the
@@ -58,9 +59,12 @@ function useGaugeStroke(ref: React.RefObject<HTMLElement | null>) {
 /** 0–1, NaN → 0. */
 const clamp01 = (n: number) => Math.max(0, Math.min(1, Number.isFinite(n) ? n : 0))
 
-/** The dial's geometry for a diameter (px at 1080p). The radius stays at the default stroke's, so dialDash() holds. */
-function dialGeometry(size: number = DIAL_SIZE.md, sweep = DIAL_SWEEP) {
-  const r = size / 2 - DIAL_STROKE
+/**
+ * The dial's geometry for a diameter (px at 1080p). The radius sits `inset` in from the edge (the default
+ * stroke's, so dialDash() holds whatever --nk-gauge-width says); a ring (ProgressRing) passes its own.
+ */
+function dialGeometry(size: number = DIAL_SIZE.md, sweep = DIAL_SWEEP, inset = DIAL_STROKE) {
+  const r = size / 2 - inset
   const circumference = 2 * Math.PI * r
   return { r, c: size / 2, circumference, arc: (circumference * sweep) / 360, start: 90 + (360 - sweep) / 2 }
 }
@@ -77,10 +81,11 @@ function dialSegments(level: number, segments: number) {
   return Math.max(0, Math.min(n, Math.ceil(clamp01(level) * n - 1e-9)))
 }
 
-/** Literal class names, so Tailwind finds them. */
+/** Literal class names, so Tailwind finds them. none: no surface of its own (a composite colours the track). */
 const SURFACE = {
   game: { root: "nk-on-game", track: "stroke-(--nk-gauge-track-color)" },
   theme: { root: "text-foreground", track: "stroke-(--nk-fill-track)" },
+  none: { root: "", track: "" },
 } as const
 
 type DialProps = Omit<React.ComponentProps<"div">, "children"> & {
@@ -105,8 +110,18 @@ type DialProps = Omit<React.ComponentProps<"div">, "children"> & {
   tone?: "neutral" | "info" | "success" | "warning" | "danger"
   /** A role (health, police…): the value arc in its colour. */
   hue?: string
-  /** game: on the world (HUD tokens). theme: on a panel. */
-  surface?: "game" | "theme"
+  /** game: on the world (HUD tokens). theme: on a panel. none: the composite colours it (trackProps, valueProps). */
+  surface?: "game" | "theme" | "none"
+  /** The arc's sweep in degrees: 240 (a gauge, the gap at the bottom), 360 (a ring). */
+  sweep?: number
+  /** Where the sweep starts, in degrees clockwise from 3 o'clock. Default: centred on the gap (-90, 12 o'clock, for a ring). */
+  start?: number
+  /** The arc's thickness in the SVG's units (px at 1080p). Default: --nk-gauge-width. */
+  thickness?: number
+  /** How far the arc sits in from the edge (px at 1080p). Default: the gauge stroke. */
+  inset?: number
+  /** Extra props for the track arc. */
+  trackProps?: React.ComponentProps<"circle"> & Record<`data-${string}`, string | undefined>
   /** Extra props for the value arc (a live gauge's data-slot, say). */
   valueProps?: React.ComponentProps<"circle"> & Record<`data-${string}`, string | undefined>
   children?: React.ReactNode
@@ -127,18 +142,27 @@ function Dial({
   tone,
   hue,
   surface = "game",
+  sweep = DIAL_SWEEP,
+  start: startProp,
+  thickness,
+  inset,
+  trackProps,
   valueProps,
   style,
   children,
   ...props
 }: DialProps) {
   const root = React.useRef<HTMLDivElement>(null)
-  const stroke = useGaugeStroke(root)
+  const gauge = useGaugeStroke(root)
+  const stroke = thickness ?? gauge
   const size = typeof sizeProp === "number" ? sizeProp : (DIAL_SIZE[sizeProp] ?? DIAL_SIZE.md)
   const level = clamp01(levelProp ?? (value !== undefined && max > 0 ? value / max : 0))
   const threshold = redlineProp === true ? DIAL_REDLINE : redlineProp === false ? undefined : redlineProp
   const alert = alertProp ?? (threshold !== undefined && level > threshold)
-  const { r, c, circumference, arc, start } = dialGeometry(size)
+  const ring = sweep >= 360
+  const geo = dialGeometry(size, Math.max(1, Math.min(360, sweep)), inset)
+  const { r, c, circumference, arc } = geo
+  const start = startProp ?? (ring ? -90 : geo.start)
   const s = SURFACE[surface] ?? SURFACE.game
   const valueClass = alert ? "stroke-(--nk-gauge-redline)" : "stroke-[var(--hue-solid,var(--nk-gauge-fill))]"
   const tickCount = variant === "digital" ? 0 : Math.max(0, Math.floor(ticks))
@@ -164,7 +188,7 @@ function Dial({
           <g data-slot="dial-ticks">
             {Array.from({ length: tickCount }, (_, i) => {
               const at = i / (tickCount - 1)
-              const a = ((start + DIAL_SWEEP * at) * Math.PI) / 180
+              const a = ((start + sweep * at) * Math.PI) / 180
               const r1 = r - stroke / 2 - 3
               const r2 = r1 - (i % 2 === 0 ? 7 : 4)
               return (
@@ -195,8 +219,9 @@ function Dial({
           fill="none"
           strokeWidth={stroke}
           className={s.track}
-          strokeDasharray={`${arc} ${circumference}`}
+          strokeDasharray={ring ? undefined : `${arc} ${circumference}`}
           transform={`rotate(${start} ${c} ${c})`}
+          {...trackProps}
         />
         {segs > 0 ? (
           <g data-slot="dial-segments">
@@ -211,7 +236,7 @@ function Dial({
                 strokeWidth={stroke}
                 className={i < lit ? valueClass : "stroke-transparent"}
                 strokeDasharray={`${Math.max(0, segLen - segGap)} ${circumference}`}
-                transform={`rotate(${start + (DIAL_SWEEP * i) / segs} ${c} ${c})`}
+                transform={`rotate(${start + (sweep * i) / segs} ${c} ${c})`}
               />
             ))}
           </g>
@@ -238,7 +263,7 @@ function Dial({
             y2={c}
             strokeWidth={2}
             className="stroke-(--nk-gauge-needle) transition-transform duration-(--nk-time-fast) ease-(--nk-ease-standard)"
-            style={{ transformOrigin: `${c}px ${c}px`, transform: `rotate(${start + DIAL_SWEEP * level}deg)` }}
+            style={{ transformOrigin: `${c}px ${c}px`, transform: `rotate(${start + sweep * level}deg)` }}
           />
         )}
       </svg>

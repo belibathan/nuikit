@@ -1,9 +1,10 @@
 // synced by pnpm sync: don't edit here. Change registry/nuikit/ui/money.tsx, then run pnpm sync.
 import * as React from "react"
-import { cva, type VariantProps } from "class-variance-authority"
+import { type VariantProps } from "class-variance-authority"
 import { getContext, useNuiContext } from "nuikit-core/react"
 
 import { cn } from "@/lib/utils"
+import { Text, textVariants, type TextSize } from "@/components/ui/text"
 
 /**
  * Money — an amount of money, formatted the same way everywhere: tabular figures (nk-num), the
@@ -22,26 +23,16 @@ import { cn } from "@/lib/utils"
  * the same string for places that need text.
  *
  * Role: Every amount formatted one way: the server currency and locale, tabular figures.
- * Anatomy: money (num role) > sign > amount
+ * Anatomy: money (Text, num role) > sign > amount
  * Props: amount, signDisplay, tone, size.
  * Rules: Whole units by default; compact only when asked. A direction tone for gains and losses, never
  *   decoration.
  */
 
-const moneyVariants = cva("nk-num whitespace-nowrap", {
-  variants: {
-    size: {
-      inherit: "",
-      sm: "text-(length:--nk-text-base) leading-5 [font-weight:var(--nk-weight-strong,600)]",
-      md: "text-(length:--nk-hud-value-size) leading-7 [font-weight:var(--nk-weight-strong,600)]",
-      /** The money hero (a bank balance): display type in the numeric face. */
-      display: "nk-display [font-family:var(--nk-num-font)]!",
-    },
-  },
-  defaultVariants: {
-    size: "inherit",
-  },
-})
+/** The amount's classes: Text in the num role on the value ladder (inherit, sm, md, display), on one line. */
+function moneyVariants({ size = "inherit" }: { size?: TextSize | null } = {}) {
+  return cn(textVariants({ variant: "num", size: size ?? "inherit" }), "whitespace-nowrap")
+}
 
 type MoneySign = "auto" | "always" | "never"
 
@@ -127,12 +118,14 @@ function Money({
   const text = formatMoney(amount, { ...fmt, compact })
   const full = compact ? formatMoney(amount, fmt) : undefined
   return (
-    <span
+    <Text
+      variant="num"
+      size={size ?? "inherit"}
       data-slot="money"
       data-direction={dir > 0 ? "up" : dir < 0 ? "down" : undefined}
       title={full}
       className={cn(
-        moneyVariants({ size }),
+        "whitespace-nowrap",
         tone === "direction" && dir > 0 && "text-success",
         tone === "direction" && dir < 0 && "text-destructive",
         tone === "muted" && "text-muted-foreground",
@@ -141,7 +134,7 @@ function Money({
       {...props}
     >
       {text}
-    </span>
+    </Text>
   )
 }
 

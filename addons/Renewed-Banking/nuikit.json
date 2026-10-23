@@ -29,11 +29,10 @@
     "stat",
     "sheet",
     "edge-sheet",
-    "hud-chip",
+    "chip",
     "money",
     "empty-state",
     "notice",
-    "action-bar",
-    "chip"
+    "action-bar"
   ]
 }

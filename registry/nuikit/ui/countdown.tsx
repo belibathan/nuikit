@@ -4,7 +4,8 @@ import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
 
 import { cn } from "@/lib/utils"
-import { toneVars } from "@/components/ui/fill"
+import { Fill, fillTargets } from "@/components/ui/fill"
+import { useLinearRun } from "@/hooks/use-linear-run"
 
 /**
  * Countdown — a big timer that matters: until you can respawn, until the heist alarm, until the
@@ -24,8 +25,8 @@ import { toneVars } from "@/components/ui/fill"
  * Lua updates once a second still drains smoothly. With motion off it steps.
  *
  * Role: a wait that matters, read from across the screen (respawn, alarm, restart).
- * Anatomy: root > clock (display size, num face, role="timer") > label (caption) > line (a track and a fill
- *   that drains, transform only).
+ * Anatomy: root > clock (display size, num face, role="timer") > label (caption) > line (a Fill that drains on
+ *   useLinearRun, transform only).
  * Props: seconds, total, duration, onComplete, label, warnAt, warnTone, lineTone, hue, size, surface, line, format.
  * Level means: the line is the time left over the total, 1 at the start, 0 when it is done.
  * Rules: at or under warnAt the root is data-state="alert" (data-phase keeps running | warning | done) and the
@@ -116,12 +117,12 @@ const TONE = {
 
 type CountdownLineTone = "neutral" | "primary" | "warning" | "destructive" | "danger"
 
-/** The line's fill per tone (literal class names, so Tailwind finds them). Neutral follows the surface. */
+/** The line's Fill colour per tone (the --nk-fill-color lever). Neutral follows the surface (the foreground). */
 const LINE_FILL: Record<Exclude<CountdownLineTone, "neutral">, string> = {
-  primary: "bg-[var(--brand,var(--primary))]",
-  warning: "bg-warning",
-  destructive: "bg-destructive",
-  danger: "bg-destructive",
+  primary: "var(--brand, var(--primary))",
+  warning: "var(--warning)",
+  destructive: "var(--destructive)",
+  danger: "var(--destructive)",
 }
 
 /**
@@ -136,30 +137,6 @@ function countdownDrain(seconds: number, total: number, whole = false) {
   const from = Math.min(1, s / total)
   const step = whole ? s : Math.min(1, s)
   return { from, to: Math.max(0, (s - step) / total), ms: Math.round(step * 1000) }
-}
-
-/**
- * Motion is off when the theme or the player turned it off (data-nk-motion="off" on any ancestor,
- * kit.css) or the OS asks for less.
- */
-const motionOn = (el: Element) =>
-  typeof document === "undefined" ||
-  ((el.closest("[data-nk-motion]") ?? document.documentElement).getAttribute("data-nk-motion") !== "off" &&
-    !(typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches))
-
-/**
- * Drains the line on its own: one linear WAAPI transform (on the compositor) from `from` to `to`
- * over `ms`, restarted when they change. With motion off, the static `from` is drawn.
- */
-function useDrain(ref: React.RefObject<HTMLDivElement | null>, from: number, to: number, ms: number) {
-  React.useEffect(() => {
-    const el = ref.current
-    if (!el) return
-    el.style.transform = `scaleX(${from})`
-    if (!(ms > 0) || !motionOn(el) || typeof el.animate !== "function") return
-    const a = el.animate([{ transform: `scaleX(${from})` }, { transform: `scaleX(${to})` }], { duration: ms, easing: "linear", fill: "forwards" })
-    return () => a.cancel()
-  }, [ref, from, to, ms])
 }
 
 /**
@@ -229,13 +206,20 @@ function Countdown({
   const showLine = (line ?? whole !== undefined) && !!whole && whole > 0
   const game = surface === "game"
   const lineFill = countdownLineTone(state, lineTone, warnTone)
-  const fill = React.useRef<HTMLDivElement>(null)
-  // Timed runs drain once over the whole duration (from mount); from Lua, from each new value.
+  const root = React.useRef<HTMLDivElement>(null)
+  // Timed runs drain once over the whole duration (from mount); from Lua, from each new value. Motion: one
+  // linear run on the line's Fill, re-aimed when the value changes; with motion off it steps.
   const drain = timed ? countdownDrain(duration / 1000, duration / 1000, true) : countdownDrain(seconds, whole ?? 0)
-  useDrain(fill, drain.from, drain.to, showLine ? drain.ms : 0)
+  useLinearRun(root, {
+    duration: showLine ? drain.ms : 0,
+    motion: "respect",
+    deps: [drain.from, drain.to],
+    targets: (el) => fillTargets(el.querySelector("[data-slot=countdown-line]"), drain.from, drain.to),
+  })
 
   return (
     <div
+      ref={root}
       data-slot="countdown"
       data-state={state === "warning" ? "alert" : undefined}
       data-phase={state}
@@ -262,25 +246,21 @@ function Countdown({
         </div>
       )}
       {showLine && (
-        <div
+        // the line is a Fill: the meter's track and height, the tone's (or the hue's) colour, the meter glow
+        <Fill
           data-slot="countdown-line"
-          {...toneVars({ tone: lineFill === "neutral" ? undefined : lineFill })}
-          aria-hidden
+          level={drain.from}
+          tween={false}
+          // the warning colour beats a hue (data-tone), a hue beats the line's tone (the root's data-hue)
+          tone={state === "warning" ? (lineFill === "warning" ? "warning" : "danger") : undefined}
           className={cn(
-            "relative h-(--nk-meter-height) overflow-hidden rounded-(--nk-meter-radius)",
+            "h-(--nk-meter-height) before:[box-shadow:var(--nk-meter-glow)]",
             size === "hero" ? "mt-6 w-80" : size === "sm" ? "mt-2 w-24" : "mt-3 w-40",
             game ? "nk-track" : "bg-foreground/15"
           )}
-        >
-          <div
-            ref={fill}
-            data-slot="countdown-line-fill"
-            className={cn(
-              "absolute inset-0 origin-left [box-shadow:var(--nk-meter-glow)]",
-              hue && state !== "warning" ? "bg-(--hue-solid)" : lineFill !== "neutral" ? LINE_FILL[lineFill as keyof typeof LINE_FILL] : "bg-foreground"
-            )}
-          />
-        </div>
+          // its own hue (the root's data-hue) until the warning; otherwise the line's tone, never an ancestor's hue
+          color={hue ? undefined : lineFill !== "neutral" ? LINE_FILL[lineFill as keyof typeof LINE_FILL] : "var(--foreground)"}
+        />
       )}
     </div>
   )

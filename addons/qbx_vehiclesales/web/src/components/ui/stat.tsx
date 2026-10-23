@@ -4,6 +4,7 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { ArrowDownRightIcon, ArrowUpRightIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
+import { Text, textVariants, type TextSize } from "@/components/ui/text"
 
 /**
  * Stat — a label over a number that matters: cash, bank, players online, a fine, a timer.
@@ -19,7 +20,7 @@ import { cn } from "@/lib/utils"
  * theme text can vanish over a bright sky.
  *
  * Role: A label over a number that matters: cash, players, a timer.
- * Anatomy: stat > label (caption, optional icon) > value (num role) > meta > delta (trend tone)
+ * Anatomy: stat > label (caption, optional icon) > value (Text, num role) > meta > delta (trend tone)
  * Props: size, align, surface, label, value, icon, meta, delta, trend.
  * Rules: Numbers are tabular (num role); the label is a caption. Trend colours mean direction only (success up,
  *   destructive down).
@@ -47,19 +48,12 @@ const statVariants = cva("flex min-w-0 flex-col", {
   },
 })
 
-const statValueVariants = cva("nk-num flex min-w-0 items-baseline gap-(--nk-space-2)", {
-  variants: {
-    size: {
-      sm: "text-(length:--nk-text-base) leading-5 [font-weight:var(--nk-weight-strong,600)]",
-      md: "text-(length:--nk-hud-value-size) leading-7 [font-weight:var(--nk-weight-strong,600)]",
-      // display type in the numeric face (nk-display sets the heading font; numbers keep theirs)
-      display: "nk-display [font-family:var(--nk-num-font)]!",
-    },
-  },
-  defaultVariants: {
-    size: "md",
-  },
-})
+const STAT_VALUE = "flex min-w-0 items-baseline gap-(--nk-space-2)"
+
+/** The value's classes: Text in the num role on the value ladder (sm, md, display), baseline-aligned with its meta. */
+function statValueVariants({ size = "md" }: { size?: Exclude<TextSize, "inherit"> | null } = {}) {
+  return cn(textVariants({ variant: "num", size: size ?? "md" }), STAT_VALUE)
+}
 
 function Stat({
   className,
@@ -100,7 +94,7 @@ function Stat({
         {icon}
         <span className="truncate">{label}</span>
       </span>
-      <span data-slot="stat-value" className={cn(statValueVariants({ size }), align === "end" && "justify-end")}>
+      <Text variant="num" size={size ?? "md"} data-slot="stat-value" className={cn(STAT_VALUE, align === "end" && "justify-end")}>
         <span className="truncate">{value}</span>
         {meta !== undefined && (
           <span
@@ -114,7 +108,7 @@ function Stat({
             {meta}
           </span>
         )}
-      </span>
+      </Text>
       {delta !== undefined && (
         <span
           data-slot="stat-delta"

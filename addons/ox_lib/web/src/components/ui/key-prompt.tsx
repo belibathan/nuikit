@@ -5,7 +5,8 @@ import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
 
 import { cn, nkConfirm, nkLevel, nkState, nkVariant, type NkVariantProps } from "@/lib/utils"
-import { Kbd, KbdGroup } from "@/components/ui/kbd"
+import { Fill } from "@/components/ui/fill"
+import { Kbd, KbdGroup } from "@/components/ui/tile"
 
 /**
  * KeyPrompt — "[E] Open garage": the key and what it does, near what the player can use. The
@@ -28,7 +29,7 @@ import { Kbd, KbdGroup } from "@/components/ui/kbd"
  * `description` is two lines tall: the slab grows to fit (the key stays on the first line).
  *
  * Role: "[E] Open garage": what a key does here.
- * Anatomy: key-prompt (slab | panel | hud) > keys (key chips) > label, description > hold line
+ * Anatomy: key-prompt (slab | panel | hud) > keys (slab key chips, or Kbd Tiles) > label, description > hold (a Fill)
  * Props: keys, label, description, hold, progress, active, disabled, listen, onConfirm, surface, size, density,
  *   shape, motion, stage.
  * Level means: the hold progress, 0 → 1 (Lua's progress, or the pointer/key hold).
@@ -204,13 +205,12 @@ function KeyPrompt({
   const list = (typeof keys === "string" ? [keys] : [...keys]).filter((k) => k !== "")
   const slab = (surface ?? "slab") === "slab"
   const root = React.useRef<HTMLDivElement>(null)
-  const line = React.useRef<HTMLSpanElement>(null)
   const confirm = () => {
     nkConfirm(root.current)
     onConfirm?.()
   }
   const internal = useHold(hold, onConfirm && confirm, (n) => {
-    if (line.current) line.current.style.transform = `scaleX(${n})`
+    root.current?.querySelector<HTMLElement>("[data-slot=key-prompt-hold]")?.style.setProperty("--level", String(n))
     root.current?.style.setProperty("--level", n.toFixed(3))
   })
   const controlled = progress !== undefined
@@ -354,17 +354,15 @@ function KeyPrompt({
         )}
       </span>
       {hold !== undefined && (
-        <span
-          ref={line}
-          aria-hidden
+        // the hold is a Fill on no track: the slab's tone, or the row indicator on a panel
+        <Fill
           data-slot="key-prompt-hold"
-          className={cn(
-            "absolute inset-x-0 bottom-0 origin-left",
-            slab ? "h-(--nk-slab-line-height) bg-[rgb(var(--nk-slab-tone-rgb))]" : "h-0.5 bg-(--nk-row-indicator-color)"
-          )}
-          // Controlled: from props. Internal: the hold draws on this element each frame; the
+          // Controlled: from props. Internal: the hold writes --level on this element each frame; the
           // constant here never changes, so React leaves that drawing alone.
-          style={{ transform: `scaleX(${p})` }}
+          level={p}
+          tween={false}
+          className={cn("absolute inset-x-0 bottom-0 rounded-none bg-transparent", slab ? "h-(--nk-slab-line-height)" : "h-0.5")}
+          color={slab ? "rgb(var(--nk-slab-tone-rgb))" : "var(--nk-row-indicator-color)"}
         />
       )}
     </div>

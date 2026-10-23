@@ -3,21 +3,24 @@
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
-import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Item, ItemActions, ItemContent, ItemDescription, ItemGroup, ItemMedia, ItemTitle } from "@/components/ui/item"
+import { MenuRow, MenuRowList } from "@/components/ui/menu-row"
+import { Panel, PanelBody, PanelHeader } from "@/components/ui/panel"
 
 /**
- * NuiMenu — the keyboard-first list menu servers use for garages, jobs and interactions.
- * A shadcn Card holding Items; the highlighted row uses `accent`, like shadcn's menus.
- * Arrow keys / W S move, Enter / E select.
+ * NuiMenu — the keyboard-first list menu servers use for garages, jobs and interactions, from data: a Panel with
+ * a header and a MenuRowList of MenuRows (the identity's row indicator slides to the active one). Arrow keys /
+ * W S move, Enter / E select. Kept so old imports keep working; compose Panel + MenuRowList + MenuRow yourself.
  *
  *   <NuiMenu title="Garage" items={cars} onSelect={(car) => fetchNui("garage:spawn", car)} />
  *
- * Role: A keyboard-first list menu: a Card of Items highlighted like shadcn menus.
- * Anatomy: card > header (title, description) > items (icon, label, description, meta)
+ * @deprecated Use Panel + MenuRowList + MenuRow (`@/components/ui/panel`, `@/components/ui/menu-row`): the same
+ *   rows every menu is made of. Removed in 0.10.0.
+ *
+ * Role: A keyboard-first list menu from data: Panel > MenuRowList > MenuRow.
+ * Anatomy: Panel > PanelHeader (title, description) > PanelBody > MenuRowList > MenuRow (icon, label, description, meta)
  * Props: title, description, items, onSelect, global.
- * Rules: Arrows move, Enter selects; keys are read on window by default. The highlight is the accent, as in
- *   shadcn menus.
+ * Rules: Arrows move, Enter selects; keys are read on window by default. The active row is the identity's row
+ *   indicator (MenuRowList), never the hover accent.
  */
 type NuiMenuItem = {
   id: string
@@ -37,7 +40,7 @@ function NuiMenu<T extends NuiMenuItem>({
   onSelect,
   global = true,
   ...props
-}: Omit<React.ComponentProps<typeof Card>, "onSelect" | "title"> & {
+}: Omit<React.ComponentProps<typeof Panel>, "onSelect" | "title"> & {
   title?: React.ReactNode
   description?: React.ReactNode
   items: T[]
@@ -91,50 +94,38 @@ function NuiMenu<T extends NuiMenuItem>({
   }, [active])
 
   return (
-    <Card
+    <Panel
       data-slot="nui-menu"
-      className={cn("nk-panel w-80 gap-0 overflow-hidden py-0", className)}
+      animate={false}
+      className={className}
       onKeyDown={global ? undefined : onKey}
       tabIndex={global ? undefined : 0}
       {...props}
     >
-      {(title || description) && (
-        <CardHeader className="border-b px-4 py-3 [.border-b]:pb-3">
-          {title && <CardTitle className="nk-title">{title}</CardTitle>}
-          {description && <CardDescription className="text-(length:--nk-text-label)">{description}</CardDescription>}
-        </CardHeader>
-      )}
-      <ItemGroup ref={listRef} role="listbox" className="relative max-h-96 gap-1 overflow-y-auto p-(--nk-space-2)">
-        {items.map((item, i) => (
-          <Item
-            key={item.id}
-            asChild
-            size="sm"
-            data-index={i}
-            data-selected={i === active || undefined}
-            data-active={i === active || undefined}
-            className="nk-row text-left data-[selected]:bg-accent data-[selected]:text-accent-foreground aria-disabled:opacity-50"
-          >
-            <button
-              type="button"
+      {(title || description) && <PanelHeader title={title} description={description} />}
+      <PanelBody className="max-h-96 overflow-y-auto" ref={listRef}>
+        <MenuRowList role="listbox" active={active}>
+          {items.map((item, i) => (
+            <MenuRow
+              key={item.id}
               role="option"
               aria-selected={i === active}
-              aria-disabled={item.disabled || undefined}
+              data-index={i}
+              active={i === active}
+              inert
               disabled={item.disabled}
+              icon={item.icon}
+              description={item.description}
+              meta={item.meta}
               onMouseEnter={() => !item.disabled && setActive(i)}
               onClick={() => !item.disabled && onSelect(item)}
             >
-              {item.icon && <ItemMedia variant="icon">{item.icon}</ItemMedia>}
-              <ItemContent className="gap-(--nk-space-1)">
-                <ItemTitle>{item.label}</ItemTitle>
-                {item.description && <ItemDescription className="line-clamp-1 text-(length:--nk-text-label)">{item.description}</ItemDescription>}
-              </ItemContent>
-              {item.meta && <ItemActions className="text-(length:--nk-text-label) text-muted-foreground tabular-nums">{item.meta}</ItemActions>}
-            </button>
-          </Item>
-        ))}
-      </ItemGroup>
-    </Card>
+              {item.label}
+            </MenuRow>
+          ))}
+        </MenuRowList>
+      </PanelBody>
+    </Panel>
   )
 }
 

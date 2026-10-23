@@ -19,7 +19,7 @@ import type { MapBlip, MapInfo, MapPick, PauseData, PausePlace } from "../nui";
 import { Blips, type BlipChoice } from "./blips";
 import { blipLook, KINDS, type BlipKind } from "@/lib/blips";
 import { Button } from "@/components/ui/button";
-import { HudChip } from "@/components/ui/hud-chip";
+import { Chip } from "@/components/ui/chip";
 import { SmoothInput } from "@/components/ui/smooth-input";
 import { Kbd } from "@/components/ui/kbd";
 import { MenuRow } from "@/components/ui/menu-row";
@@ -466,18 +466,18 @@ const Pins = memo(function Pins({
             aria-label={p.label}
           >
             <span className="pause-pin-center">
-              <HudChip icon={<Icon />} active={selected} className={cn("pause-pin", !labelled && "w-7 justify-center px-0")}>
+              <Chip material="hud" icon={<Icon />} active={selected} className={cn("pause-pin", !labelled && "w-7 justify-center px-0")}>
                 {labelled ? p.label : undefined}
-              </HudChip>
+              </Chip>
             </span>
           </button>
         );
       })}
       <div ref={wp} className="pause-pin-anchor" style={{ visibility: "hidden", zIndex: 3 }}>
         <span className="pause-pin-above">
-          <HudChip icon={<FlagIcon />} active>
+          <Chip material="hud" icon={<FlagIcon />} active>
             Waypoint
-          </HudChip>
+          </Chip>
         </span>
       </div>
       <div ref={you} className="pause-pin-anchor" style={{ visibility: "hidden", zIndex: 4 }} aria-label="You">

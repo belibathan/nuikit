@@ -1372,7 +1372,8 @@ html :focus-visible {
 }
 
 /* Vector (stepped): bar fills tick in steps instead of gliding. */
-:is(html, *)[data-nk-feel="stepped"] :is([data-slot="progress-indicator"], [data-slot="meter-fill"]) {
+:is(html, *)[data-nk-feel="stepped"] [data-slot="progress-indicator"],
+:is(html, *)[data-nk-feel="stepped"] [data-slot="meter"] .nk-fill::before {
   transition-timing-function: steps(4, end) !important;
 }
 
@@ -1855,8 +1856,13 @@ html[data-nk-backdrop="on"] * {
   :is(.nk-fill, [data-slot="fill"])[data-tone="warning"] { --nk-fill-now: var(--warning); }
   :is(.nk-fill, [data-slot="fill"])[data-tone="danger"] { --nk-fill-now: var(--destructive); }
   :is(.nk-fill, [data-slot="fill"])[data-hue],
-  [data-hue] :is(.nk-fill, [data-slot="fill"]):not([data-tone]) { --nk-fill-now: var(--hue-solid); }
+  [data-hue] :is(.nk-fill, [data-slot="fill"]):not([data-tone], [data-color]) { --nk-fill-now: var(--hue-solid); }
   :is(.nk-fill, [data-slot="fill"])[data-state="alert"] { --nk-fill-now: var(--nk-fill-alert); }
+  /* tween off: a level drawn every frame (a hold) or by a run (useLinearRun + fillTargets) never eases */
+  :is(.nk-fill, [data-slot="fill"])[data-tween="off"]::before,
+  :is(.nk-fill, [data-slot="fill"])[data-tween="off"]::after {
+    transition: none;
+  }
   :is(.nk-fill, [data-slot="fill"])[data-variant="edge"] {
     height: 0.125rem;
     border-radius: 0;

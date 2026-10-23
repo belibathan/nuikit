@@ -2,6 +2,7 @@
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
+import { textVariants } from "@/components/ui/text"
 
 /**
  * IconText — an icon and a text on one centre line (docs/design/ink.md §3): --nk-gap-cluster apart, the icon
@@ -12,12 +13,10 @@ import { cn } from "@/lib/utils"
  *   <IconText icon={<BriefcaseIcon />} muted>Police · Sergeant</IconText>
  *
  * Role: Money, job, fuel, ammo, notes: an icon next to a value.
- * Anatomy: icon > text
+ * Anatomy: icon > text (a Text role: label, num or body)
  * Props: icon, text, size, muted.
  * Rules: One gap and one icon size per step. A muted icon is --muted-foreground, never an opacity.
  */
-const ROLE = { label: "nk-label", num: "nk-num", body: "nk-body" } as const
-
 function IconText({
   className,
   icon,
@@ -29,13 +28,13 @@ function IconText({
 }: React.ComponentProps<"span"> & {
   icon?: React.ReactNode
   /** The text's type role: label, num or body. */
-  text?: keyof typeof ROLE
+  text?: "label" | "num" | "body"
   size?: "sm" | "md" | "lg"
   /** The icon in --muted-foreground (never an opacity). */
   muted?: boolean
 }) {
   return (
-    <span data-slot="icon-text" data-size={size === "md" ? undefined : size} data-muted={muted || undefined} className={cn(ROLE[text], className)} {...props}>
+    <span data-slot="icon-text" data-size={size === "md" ? undefined : size} data-muted={muted || undefined} className={cn(textVariants({ variant: text }), className)} {...props}>
       {icon && (
         <span data-slot="icon-text-icon" aria-hidden className="flex items-center">
           {icon}

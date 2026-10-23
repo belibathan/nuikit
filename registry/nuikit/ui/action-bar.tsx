@@ -20,7 +20,7 @@ import { Kbd } from "@/components/ui/tile"
  * `level` (0–1) shows a hold filling under the item; `state` is the shared data-state.
  *
  * Role: Key hints, back and close: one bar.
- * Anatomy: plate (optional) > item: keys or icon, label, hold fill > separator
+ * Anatomy: plate (optional) > item: keys (Kbd Tiles) or icon, label, hold (a Fill) > separator
  * Props: plate, keys, icon, label, onClick, level, state.
  * Rules: An item that acts is a button. Keys are Tiles, never a styled span.
  */

@@ -68,7 +68,8 @@
         "sheet",
         "scroll-area",
         "button",
-        "https://nuikit.vercel.app/r/action-bar.json"
+        "https://nuikit.vercel.app/r/action-bar.json",
+        "https://nuikit.vercel.app/r/fill.json"
       ],
       "meta": {
         "since": "unreleased",
@@ -247,7 +248,10 @@
             "Trend colours mean direction only (success up, destructive down)."
           ]
         }
-      }
+      },
+      "registryDependencies": [
+        "https://nuikit.vercel.app/r/text.json"
+      ]
     },
     {
       "name": "meter",
@@ -264,13 +268,16 @@
         "class-variance-authority"
       ],
       "registryDependencies": [
-        "progress"
+        "progress",
+        "https://nuikit.vercel.app/r/fill.json",
+        "https://nuikit.vercel.app/r/use-linear-run.json"
       ],
       "meta": {
         "since": "0.5.0",
         "status": "stable",
         "replaces": [
-          "task-progress"
+          "task-progress",
+          "vital"
         ],
         "removeIn": null,
         "spec": {
@@ -311,25 +318,22 @@
       "name": "hud-chip",
       "type": "registry:ui",
       "title": "HUD Chip",
-      "description": "An always-on pill or tile on the game world: icon and text; active (talking, selected) or warning.",
+      "description": "Deprecated: use Chip with material=\"hud\" (the same markup and look). Still works. An always-on mark on the game world (voice range, radio, seatbelt): an alias of Chip's HUD material.",
       "files": [
         {
           "path": "registry/nuikit/ui/hud-chip.tsx",
           "type": "registry:ui"
         }
       ],
-      "dependencies": [
-        "class-variance-authority"
-      ],
       "meta": {
         "since": "0.5.0",
-        "status": "stable",
+        "status": "deprecated",
         "replaces": [],
-        "removeIn": null,
+        "removeIn": "0.10.0",
         "spec": {
-          "role": "A small fact on the HUD: voice range, radio, seatbelt.",
+          "role": "A small fact on the HUD (voice range, radio, seatbelt): an alias of Chip's HUD material.",
           "anatomy": [
-            "hud-chip (pill | tile)",
+            "Chip material=\"hud\" (pill | tile)",
             "icon",
             "text"
           ],
@@ -343,12 +347,17 @@
             "hue"
           ],
           "rules": [
-            "Its shape prop is the form (pill, tile); corners follow data-nk-shape on an ancestor.",
-            "warning is the theme's destructive; active is primary.",
-            "data-hue carries its role; the theme colours it."
+            "Use Chip material=\"hud\"; the alias renders it unchanged.",
+            "warning is the theme's destructive; active is primary."
           ]
-        }
-      }
+        },
+        "replacedBy": [
+          "chip"
+        ]
+      },
+      "registryDependencies": [
+        "https://nuikit.vercel.app/r/chip.json"
+      ]
     },
     {
       "name": "text-roll",
@@ -429,31 +438,25 @@
       "name": "vital",
       "type": "registry:ui",
       "title": "Vital",
-      "description": "A player stat: an icon and a shadcn Progress, colored by a theme token. Pulses and is data-state=\"alert\" when low.",
+      "description": "Deprecated: use Meter (the same icon and bar, with labels, segments and runs). Still works. A player stat as an icon and a bar: a preset of Meter (value 0–100, a vital tone, low).",
       "files": [
         {
           "path": "registry/nuikit/ui/vital.tsx",
           "type": "registry:ui"
         }
       ],
-      "dependencies": [
-        "class-variance-authority"
-      ],
       "registryDependencies": [
-        "progress"
+        "https://nuikit.vercel.app/r/meter.json"
       ],
       "meta": {
         "since": "0.3.0",
-        "status": "stable",
+        "status": "deprecated",
         "replaces": [],
-        "removeIn": null,
+        "removeIn": "0.10.0",
         "spec": {
-          "role": "A player stat as an icon and a bar, coloured by a theme token.",
+          "role": "A player stat as an icon and a bar: an alias of Meter.",
           "anatomy": [
-            "vital",
-            "icon (pulses when low)",
-            "label",
-            "bar (shadcn Progress)"
+            "Meter (icon > bar)"
           ],
           "props": [
             "value",
@@ -465,10 +468,31 @@
           ],
           "level": "value / 100: how full the stat is.",
           "rules": [
-            "At or under low it is data-state=\"alert\" and the icon pulses.",
-            "Colours from the vital tokens, never a literal."
+            "Use Meter; the alias maps value, tone, low and size onto it.",
+            "At or under low it is data-state=\"alert\"."
           ]
+        },
+        "replacedBy": [
+          "meter"
+        ]
+      }
+    },
+    {
+      "name": "use-linear-run",
+      "type": "registry:hook",
+      "title": "useLinearRun",
+      "description": "The kit's one timed run (Motion): a linear Web Animation per target (transform only, pseudo-elements too: a Fill's bar and edge) on one start time, a completion from a timer (fires with motion off), elapsed, pause and resume, an optional motion gate. Meter's and ProgressRing's duration, Notice's time line and Countdown's drain run on it.",
+      "files": [
+        {
+          "path": "registry/nuikit/hooks/use-linear-run.ts",
+          "type": "registry:hook"
         }
+      ],
+      "meta": {
+        "since": "unreleased",
+        "status": "experimental",
+        "replaces": [],
+        "removeIn": null
       }
     },
     {
@@ -599,7 +623,7 @@
       "name": "nui-menu",
       "type": "registry:ui",
       "title": "NUI Menu",
-      "description": "Keyboard-first list menu: a shadcn Card of Items, highlighted with accent like shadcn menus.",
+      "description": "Deprecated: use Panel + MenuRowList + MenuRow. Still works. A keyboard-first list menu from data (arrows / W S move, Enter / E select): a Panel of MenuRows whose active row the identity's indicator marks.",
       "files": [
         {
           "path": "registry/nuikit/ui/nui-menu.tsx",
@@ -607,20 +631,21 @@
         }
       ],
       "registryDependencies": [
-        "card",
-        "item"
+        "https://nuikit.vercel.app/r/menu-row.json",
+        "https://nuikit.vercel.app/r/panel.json"
       ],
       "meta": {
         "since": "0.3.0",
-        "status": "stable",
+        "status": "deprecated",
         "replaces": [],
-        "removeIn": null,
+        "removeIn": "0.10.0",
         "spec": {
-          "role": "A keyboard-first list menu: a Card of Items highlighted like shadcn menus.",
+          "role": "A keyboard-first list menu from data: Panel > MenuRowList > MenuRow.",
           "anatomy": [
-            "card",
-            "header (title, description)",
-            "items (icon, label, description, meta)"
+            "Panel",
+            "PanelHeader (title, description)",
+            "PanelBody > MenuRowList",
+            "MenuRow (icon, label, description, meta)"
           ],
           "props": [
             "title",
@@ -631,9 +656,13 @@
           ],
           "rules": [
             "Arrows move, Enter selects; keys are read on window by default.",
-            "The highlight is the accent, as in shadcn menus."
+            "The active row is the identity's row indicator (MenuRowList), never the hover accent."
           ]
-        }
+        },
+        "replacedBy": [
+          "panel",
+          "menu-row"
+        ]
       }
     },
     {
@@ -763,7 +792,8 @@
       ],
       "registryDependencies": [
         "button",
-        "https://nuikit.vercel.app/r/fill.json"
+        "https://nuikit.vercel.app/r/fill.json",
+        "https://nuikit.vercel.app/r/use-linear-run.json"
       ],
       "meta": {
         "since": "0.6.0",
@@ -899,8 +929,8 @@
       "registryDependencies": [
         "https://nuikit.vercel.app/r/countdown.json",
         "https://nuikit.vercel.app/r/key-prompt.json",
-        "https://nuikit.vercel.app/r/hud-chip.json",
-        "https://nuikit.vercel.app/r/money.json"
+        "https://nuikit.vercel.app/r/money.json",
+        "https://nuikit.vercel.app/r/chip.json"
       ],
       "categories": [
         "screens"
@@ -942,7 +972,6 @@
       "registryDependencies": [
         "https://nuikit.vercel.app/r/meter.json",
         "https://nuikit.vercel.app/r/stat.json",
-        "https://nuikit.vercel.app/r/hud-chip.json",
         "https://nuikit.vercel.app/r/speedometer.json",
         "https://nuikit.vercel.app/r/money.json",
         "https://nuikit.vercel.app/r/chip.json"
@@ -1024,7 +1053,8 @@
         "class-variance-authority"
       ],
       "registryDependencies": [
-        "kbd"
+        "https://nuikit.vercel.app/r/fill.json",
+        "https://nuikit.vercel.app/r/tile.json"
       ],
       "meta": {
         "since": "0.6.0",
@@ -1084,7 +1114,9 @@
       ],
       "registryDependencies": [
         "https://nuikit.vercel.app/r/fill.json",
-        "https://nuikit.vercel.app/r/tile.json"
+        "https://nuikit.vercel.app/r/tile.json",
+        "https://nuikit.vercel.app/r/dial.json",
+        "https://nuikit.vercel.app/r/use-linear-run.json"
       ],
       "meta": {
         "since": "0.6.0",
@@ -1171,7 +1203,8 @@
         }
       },
       "registryDependencies": [
-        "https://nuikit.vercel.app/r/fill.json"
+        "https://nuikit.vercel.app/r/fill.json",
+        "https://nuikit.vercel.app/r/use-linear-run.json"
       ]
     },
     {
@@ -1258,7 +1291,10 @@
             "A direction tone for gains and losses, never decoration."
           ]
         }
-      }
+      },
+      "registryDependencies": [
+        "https://nuikit.vercel.app/r/text.json"
+      ]
     },
     {
       "name": "item-slot",
@@ -1445,7 +1481,7 @@
       "name": "chip",
       "type": "registry:ui",
       "title": "Chip",
-      "description": "A short status on one line (tokens 1.5): --nk-h-chip tall, --nk-r-chip corners (never a pill), the label role; tone, hue, fill hair|tint|solid, an icon, a count, and a status dot (variant=dot).",
+      "description": "A short status on one line in two materials: panel (h-chip, r-chip, the label role; fill hair | tint | solid; tone, hue, icon, count, the dot) and hud (the game surface, nk-chip / nk-hud: pill | tile, active, warning). HudChip is Chip material=\"hud\".",
       "files": [
         {
           "path": "registry/nuikit/ui/chip.tsx",
@@ -1458,29 +1494,41 @@
       "meta": {
         "since": "unreleased",
         "status": "experimental",
-        "replaces": [],
+        "replaces": [
+          "hud-chip"
+        ],
         "removeIn": null,
         "spec": {
           "role": "A tag, a count, a status dot: one chip.",
           "anatomy": [
+            "chip (panel: data-slot=chip; hud: data-slot=hud-chip, pill | tile)",
             "icon",
             "label",
             "count"
           ],
           "props": [
+            "material",
             "tone",
             "hue",
             "fill",
             "icon",
             "count",
-            "variant"
+            "variant",
+            "shape",
+            "state",
+            "active",
+            "density",
+            "motion"
           ],
           "rules": [
             "No pills: r-chip, or the dot at r-key.",
             "Colour means something: tone or hue only."
           ]
         }
-      }
+      },
+      "dependencies": [
+        "class-variance-authority"
+      ]
     },
     {
       "name": "icon-text",
@@ -1513,6 +1561,85 @@
           "rules": [
             "One gap and one icon size per step.",
             "A muted icon is --muted-foreground, never an opacity."
+          ]
+        }
+      },
+      "registryDependencies": [
+        "https://nuikit.vercel.app/r/text.json"
+      ]
+    },
+    {
+      "name": "text",
+      "type": "registry:ui",
+      "title": "Text",
+      "description": "The type roles as one component: scan, title, label, num, body, caption and display (the nk-* role classes, read from the theme's --nk-type-<role>-* levers), and the value ladder numbers sit on (sm, md, display). Stat's value and Money are Text in the num role.",
+      "files": [
+        {
+          "path": "registry/nuikit/ui/text.tsx",
+          "type": "registry:ui"
+        }
+      ],
+      "dependencies": [
+        "class-variance-authority"
+      ],
+      "meta": {
+        "since": "unreleased",
+        "status": "experimental",
+        "replaces": [],
+        "removeIn": null,
+        "spec": {
+          "role": "Every piece of text in one of the kit's type roles, on one value ladder.",
+          "anatomy": [
+            "text (one element: span, p, div, h2…)"
+          ],
+          "props": [
+            "variant",
+            "size",
+            "as"
+          ],
+          "rules": [
+            "Pick a role (variant), never a font size: the role's levers come from the theme.",
+            "size is for values only (sm | md | display); inherit keeps the parent's size."
+          ]
+        }
+      }
+    },
+    {
+      "name": "stack",
+      "type": "registry:ui",
+      "title": "Stack",
+      "description": "Layout on the gap levers: Stack (a flex column) and Cluster (a centred row) whose gap is a named lever (none, key, items, cluster, section, surface: --nk-gap-*, --nk-space-*, --nk-pad-surface), so a composite laid out on it follows the theme's density.",
+      "files": [
+        {
+          "path": "registry/nuikit/ui/stack.tsx",
+          "type": "registry:ui"
+        }
+      ],
+      "dependencies": [
+        "class-variance-authority"
+      ],
+      "meta": {
+        "since": "unreleased",
+        "status": "experimental",
+        "replaces": [],
+        "removeIn": null,
+        "spec": {
+          "role": "The gaps between things, from the spacing levers: columns of rows, rows of chips and buttons.",
+          "anatomy": [
+            "stack (flex; column or row)",
+            "children"
+          ],
+          "props": [
+            "direction",
+            "gap",
+            "align",
+            "justify",
+            "wrap",
+            "as"
+          ],
+          "rules": [
+            "Gaps are levers, never a literal.",
+            "Cluster is a centred row with the cluster gap; Stack a column with none."
           ]
         }
       }
@@ -1603,7 +1730,8 @@
       "registryDependencies": [
         "https://nuikit.vercel.app/r/action-bar.json",
         "alert-dialog",
-        "dialog"
+        "dialog",
+        "https://nuikit.vercel.app/r/stack.json"
       ]
     },
     {
@@ -1639,7 +1767,10 @@
             "The first section has no top pad, the last no hairline."
           ]
         }
-      }
+      },
+      "registryDependencies": [
+        "https://nuikit.vercel.app/r/stack.json"
+      ]
     },
     {
       "name": "dial",
@@ -1757,7 +1888,7 @@
         "class-variance-authority"
       ],
       "registryDependencies": [
-        "kbd"
+        "https://nuikit.vercel.app/r/tile.json"
       ],
       "meta": {
         "since": "0.6.0",
@@ -2199,7 +2330,7 @@
         "https://nuikit.vercel.app/r/key-prompt.json",
         "https://nuikit.vercel.app/r/menu-row.json",
         "https://nuikit.vercel.app/r/panel.json",
-        "https://nuikit.vercel.app/r/hud-chip.json"
+        "https://nuikit.vercel.app/r/chip.json"
       ],
       "categories": [
         "screens"

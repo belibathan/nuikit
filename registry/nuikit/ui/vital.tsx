@@ -1,102 +1,64 @@
 import * as React from "react"
-import { cva, type VariantProps } from "class-variance-authority"
 
 import { cn } from "@/lib/utils"
-import { Progress } from "@/components/ui/progress"
+import { Meter, type MeterTone } from "@/components/ui/meter"
 
 /**
- * Vital — a player stat (health, armor, hunger…): an icon and a shadcn Progress.
- * The tone only picks which theme token colors it: health, armor, hunger, thirst and stress use
- * the theme's --vital-* tokens (docs/tokens.md).
+ * Vital — a player stat (health, armor, hunger…) as an icon and a bar: a preset of Meter, kept so old imports
+ * keep working. `value` is 0–100, `tone` picks the theme token (health, armor, hunger, thirst and stress use the
+ * --vital-* tokens), and at or under `low` it is the Meter's alert (destructive, the icon blinks).
  *
  *   <Vital value={health} tone="health" icon={<HeartIcon />} label="Health" />
+ *   → <Meter value={health} tone="health" icon={<HeartIcon />} aria-label="Health" low={20} className="w-32" />
  *
- * Role: A player stat as an icon and a bar, coloured by a theme token.
- * Anatomy: vital > icon (pulses when low) > label > bar (shadcn Progress)
+ * @deprecated Use `<Meter>` from `@/components/ui/meter` (the same bar, with labels, segments and runs).
+ *   Removed in 0.10.0.
+ *
+ * Role: A player stat as an icon and a bar: an alias of Meter.
+ * Anatomy: Meter, data-slot="vital" (icon > bar)
  * Props: value, icon, label, low, tone, size.
  * Level means: value / 100: how full the stat is.
- * Rules: At or under low it is data-state="alert" and the icon pulses. Colours from the vital tokens, never a
- *   literal.
+ * Rules: Use Meter. At or under low it is data-state="alert". Colours from the vital tokens, never a literal.
  */
-const vitalVariants = cva(
-  "flex items-center gap-2 [&_svg:not([class*='size-'])]:size-4 [&_svg]:shrink-0",
-  {
-    variants: {
-      tone: {
-        default:
-          "text-primary [&_[data-slot=progress]]:bg-primary/20 [&_[data-slot=progress-indicator]]:bg-primary",
-        destructive:
-          "text-destructive [&_[data-slot=progress]]:bg-destructive/20 [&_[data-slot=progress-indicator]]:bg-destructive",
-        health:
-          "text-vital-health [&_[data-slot=progress]]:bg-vital-health/20 [&_[data-slot=progress-indicator]]:bg-vital-health",
-        armor:
-          "text-vital-armor [&_[data-slot=progress]]:bg-vital-armor/20 [&_[data-slot=progress-indicator]]:bg-vital-armor",
-        hunger:
-          "text-vital-hunger [&_[data-slot=progress]]:bg-vital-hunger/20 [&_[data-slot=progress-indicator]]:bg-vital-hunger",
-        thirst:
-          "text-vital-thirst [&_[data-slot=progress]]:bg-vital-thirst/20 [&_[data-slot=progress-indicator]]:bg-vital-thirst",
-        stress:
-          "text-vital-stress [&_[data-slot=progress]]:bg-vital-stress/20 [&_[data-slot=progress-indicator]]:bg-vital-stress",
-        "chart-1":
-          "text-chart-1 [&_[data-slot=progress]]:bg-chart-1/20 [&_[data-slot=progress-indicator]]:bg-chart-1",
-        "chart-2":
-          "text-chart-2 [&_[data-slot=progress]]:bg-chart-2/20 [&_[data-slot=progress-indicator]]:bg-chart-2",
-        "chart-3":
-          "text-chart-3 [&_[data-slot=progress]]:bg-chart-3/20 [&_[data-slot=progress-indicator]]:bg-chart-3",
-        "chart-4":
-          "text-chart-4 [&_[data-slot=progress]]:bg-chart-4/20 [&_[data-slot=progress-indicator]]:bg-chart-4",
-        "chart-5":
-          "text-chart-5 [&_[data-slot=progress]]:bg-chart-5/20 [&_[data-slot=progress-indicator]]:bg-chart-5",
-      },
-      size: {
-        default: "w-32 [&_[data-slot=progress]]:h-(--nk-meter-height)",
-        sm: "w-20 [&_[data-slot=progress]]:h-(--nk-meter-height)",
-      },
-    },
-    defaultVariants: {
-      tone: "default",
-      size: "default",
-    },
-  }
-)
+type VitalTone = "default" | Exclude<MeterTone, "primary" | "foreground" | "success" | "warning" | "info">
 
 function Vital({
   className,
-  tone,
-  size,
+  tone = "default",
+  size = "default",
   value,
   icon,
   label,
   low = 20,
   ...props
-}: React.ComponentProps<"div"> &
-  VariantProps<typeof vitalVariants> & {
-    /** 0–100 */
-    value: number
-    icon?: React.ReactNode
-    /** Accessible name, e.g. "Health". */
-    label?: string
-    /** At or below this the icon pulses. -1 disables. */
-    low?: number
-  }) {
-  const v = Math.max(0, Math.min(100, value))
-  const critical = low >= 0 && v <= low
-
+}: Omit<React.ComponentProps<typeof Meter>, "tone" | "size" | "value" | "low"> & {
+  /** 0–100 */
+  value: number
+  icon?: React.ReactNode
+  /** Accessible name, e.g. "Health". */
+  label?: string
+  /** At or below this it is the alert. -1 disables. */
+  low?: number
+  tone?: VitalTone | null
+  size?: "default" | "sm" | null
+}) {
   return (
-    <div
+    <Meter
+      value={value}
+      icon={icon}
+      aria-label={label}
+      low={low >= 0 ? low : undefined}
+      tone={!tone || tone === "default" ? "primary" : tone}
+      className={cn(size === "sm" ? "w-20" : "w-32", className)}
       data-slot="vital"
-      data-state={critical ? "alert" : undefined}
-      className={cn(vitalVariants({ tone, size }), className)}
       {...props}
-    >
-      {icon && (
-        <span data-slot="vital-icon" className={cn("flex", critical && "animate-pulse")}>
-          {icon}
-        </span>
-      )}
-      <Progress value={v} aria-label={label} />
-    </div>
+    />
   )
+}
+
+/** @deprecated Vital's old class recipe; Meter draws it now. Returns its width class. */
+function vitalVariants({ size }: { tone?: VitalTone | null; size?: "default" | "sm" | null } = {}) {
+  return size === "sm" ? "w-20" : "w-32"
 }
 
 export { Vital, vitalVariants }
