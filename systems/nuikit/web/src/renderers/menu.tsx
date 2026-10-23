@@ -178,6 +178,9 @@ function OneMenu({ id, props, ctx }: { id: string; props: MenuProps; ctx: Render
     return () => window.removeEventListener("keydown", h);
   }, [keyboard, props.focus]);
 
+  // one icon column for the whole list when any row has an icon (rows without keep the column: titles start on one line)
+  const iconCol = level.some((it) => !!it.icon);
+
   const place = anchor(props.position, keyboard ? "top-left" : cursor ? "top-right" : "top-right");
   const hovered = hover !== null ? level[hover.index] : undefined;
   const details = hovered && !hovered.disabled && (hovered.metadata || hovered.image) ? hovered : undefined;
@@ -259,6 +262,7 @@ function OneMenu({ id, props, ctx }: { id: string; props: MenuProps; ctx: Render
                     disabled={item.disabled}
                     readOnly={item.readOnly || props.focus === false}
                     icon={item.icon ? <Icon icon={item.icon} color={item.iconColor} animation={item.iconAnimation} /> : undefined}
+                    iconSpace={iconCol}
                     description={item.description ? <Text>{item.description}</Text> : undefined}
                     progress={item.progress}
                     progressColor={item.colorScheme}

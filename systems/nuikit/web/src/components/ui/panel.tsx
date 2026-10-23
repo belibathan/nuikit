@@ -175,7 +175,7 @@ function PanelBody({
   return (
     <ScrollArea
       data-slot="panel-body"
-      className={cn("min-h-0 [&>[data-slot=scroll-area-viewport]]:max-h-[inherit]", className)}
+      className={cn("min-h-0 [&>[data-slot=scroll-area-viewport]]:max-h-[inherit] [&>[data-slot=scroll-area-viewport]>div]:!block", className)}
       {...(props as React.ComponentProps<typeof ScrollArea>)}
     >
       <div className={panelBodyVariants({ variant })}>{children}</div>
