@@ -1,6 +1,6 @@
 -- nuikit_hud: what the vehicle cluster shows. Pure helpers (tested) and one read of the vehicle.
 --
--- Gliding values (speed, rpm, heading, altitude) go on live channels (NUI.stream, main.lua). Everything
+-- Gliding values (speed, rpm, heading, altitude) go on live channels (nk.message.stream, main.lua). Everything
 -- here changes in steps (gear, fuel, damage, lights…) and goes to the page as `hud:vehicle`, only when
 -- a field changed.
 

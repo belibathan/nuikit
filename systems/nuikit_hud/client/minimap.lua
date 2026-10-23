@@ -307,7 +307,7 @@ function Minimap.apply()
     x = frame.x / width, y = frame.y / height, w = frame.w / width, h = frame.h / height,
     band = band / height, shape = o.shape, framed = true, preset = o.preset,
   }
-  NUI.send('hud:minimap:frame', placed)
+  nk.message.send('hud:minimap:frame', placed)
   if Config.debug then
     print(('[nuikit_hud] minimap: %dx%d safezone %.2f, frame %.0f,%.0f %.0fpx, hole %.0f,%.0f %.0fx%.0fpx, radar box %.0fx%.0fpx (%.3f:1)'):format(
       width, height, safezone, frame.x, frame.y, frame.w, radar.x, radar.y, radar.w, radar.h, box.w, box.h, box.w / box.h))
@@ -408,15 +408,15 @@ function Minimap.tick(radarOn)
       CreateThread(reread)
     end
     -- `heading` is where the compass starts; then it follows hud:minimap:heading
-    NUI.send('hud:minimap', { visible = visible, wanted = wanted, heading = Minimap.cameraHeading() })
+    nk.message.send('hud:minimap', { visible = visible, wanted = wanted, heading = Minimap.cameraHeading() })
   end
 end
 
---- The compass: the heading alone on its own channel, a live value (NUI.stream): sent only when it
+--- The compass: the heading alone on its own channel, a live value (nk.message.stream): sent only when it
 --- changed to the tenth of a degree, at most 30 times a second. The page glides between messages on
 --- every browser frame (nuikit-core follow, minimap.tsx), so the compass turns at the game's full
 --- frame rate from about 30 small messages a second.
-local heading = NUI.stream('hud:minimap:heading', { rate = 30, precision = 0.1, kind = 'angle' })
+local heading = nk.message.stream('hud:minimap:heading', { rate = 30, precision = 0.1, kind = 'angle' })
 function Minimap.compass()
   heading:push(Minimap.cameraHeading())
 end
@@ -461,13 +461,13 @@ function Minimap.applyStock()
     x = box.x / width, y = box.y / height, w = box.w / width, h = box.h / height,
     band = 0, shape = 'square', framed = false, preset = Layout.preset(),
   }
-  NUI.send('hud:minimap:frame', placed)
+  nk.message.send('hud:minimap:frame', placed)
 end
 
 --- The page asks for the frame when it (re)loads.
 function Minimap.resend()
   Layout.resend()
-  if placed then NUI.send('hud:minimap:frame', placed) end
+  if placed then nk.message.send('hud:minimap:frame', placed) end
   lastKey = ''
   heading:reset()
 end
@@ -476,7 +476,7 @@ Minimap.radarOn = false -- set by main.lua
 Minimap.wanted = false -- set by main.lua: Config.radar wants it now (shown or not)
 
 -- The page asks for the frame when it loads (after a resource restart, say).
-NUI.on('hud:minimap:ready', function()
+nk.message.on('hud:minimap:ready', function()
   Minimap.resend()
   return { ok = true }
 end)

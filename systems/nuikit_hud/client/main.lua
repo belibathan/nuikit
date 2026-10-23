@@ -5,10 +5,10 @@
 --
 -- Cost (see README.md, "Cost"): on foot two slow loops wake 2–3 times a second and send nothing when
 -- nothing changed; the compass sends only while the camera turns. In a vehicle one loop runs every
--- 33 ms for the live values (speed, rpm, heading: NUI.stream sends ≤30 a second, only on change) and
+-- 33 ms for the live values (speed, rpm, heading: nk.message.stream sends ≤30 a second, only on change) and
 -- reads the rest every 150 ms, sending `hud:vehicle` only when a field changed.
 
-local hud = NUI.surface('hud', { layer = 'hud' })
+local hud = nk.surface.define('hud', { layer = 'hud' })
 
 -- ───────────────────────────────── units (config, or the player's own with Config.playerUnits)
 
@@ -26,8 +26,8 @@ local function settings()
   local preset = Layout.preset()
   -- the player's styles (/hud edit, Style) on the server's defaults, within what it allows
   local st = Layout.styles()
-  -- streamer mode (NUI.state 'streamer', the pause menu's privacy setting): no cash, job or street
-  if NUI.getState and NUI.getState('streamer') then
+  -- streamer mode (nk.surface.setState 'streamer', the pause menu's privacy setting): no cash, job or street
+  if nk.surface.getState and nk.surface.getState('streamer') then
     st['column.money'], st['column.job'], st['column.street'] = false, false, false
   end
   return {
@@ -76,13 +76,13 @@ end
 -- nuikit resource can hide it with `hides = { 'hud' }`.
 local invOpen = LocalPlayer.state.invOpen == true
 local function sync()
-  -- hud:hidden (NUI.state, the pause menu's "Hide HUD"): the whole HUD goes, as under a menu
-  local hidden = NUI.getState and NUI.getState('hud:hidden')
+  -- hud:hidden (nk.surface.setState, the pause menu's "Hide HUD"): the whole HUD goes, as under a menu
+  local hidden = nk.surface.getState and nk.surface.getState('hud:hidden')
   local visible = NUI.player.get().loaded and not IsPauseMenuActive() and not invOpen and not hidden
   if visible then hud:open(settings()) else hud:close() end
 end
 NUI.player.onChange(sync)
--- the pause menu's "Hide HUD" and streamer mode, the moment they change (NUI.state, any resource)
+-- the pause menu's "Hide HUD" and streamer mode, the moment they change (nk.surface.setState, any resource)
 AddEventHandler('nuikit:sf:state', function(name)
   if name == 'hud:hidden' or name == 'streamer' then sync() end
 end)
@@ -96,10 +96,10 @@ end)
 
 -- Live values on their own channels (protocol §5.7): at most 30 a second and only when they changed
 -- by a step. The page glides between messages at the game's frame rate (useFollow).
-local speedLive = NUI.stream('hud:vehicle:speed', { rate = 30, precision = 1 })
-local rpmLive = NUI.stream('hud:vehicle:rpm', { rate = 30, precision = 0.01 })
-local headingLive = NUI.stream('hud:vehicle:heading', { rate = 30, precision = 1, kind = 'angle' })
-local altLive = NUI.stream('hud:vehicle:altitude', { rate = 15, precision = 1 })
+local speedLive = nk.message.stream('hud:vehicle:speed', { rate = 30, precision = 1 })
+local rpmLive = nk.message.stream('hud:vehicle:rpm', { rate = 30, precision = 0.01 })
+local headingLive = nk.message.stream('hud:vehicle:heading', { rate = 30, precision = 1, kind = 'angle' })
+local altLive = nk.message.stream('hud:vehicle:altitude', { rate = 15, precision = 1 })
 
 local current, kind, last = 0, nil, nil -- the vehicle being driven (or 0), its kind, the last hud:vehicle
 local factor = Vehicle.FACTOR.mph
@@ -117,7 +117,7 @@ local function readVehicle(force)
     for k, x in pairs(v) do out[k] = x end
     -- where the gauge starts when it appears; the live channels move it from there
     for k, x in pairs(Vehicle.live(current, kind, units)) do out[k] = x end
-    NUI.send('hud:vehicle', out)
+    nk.message.send('hud:vehicle', out)
   end
 end
 
@@ -142,7 +142,7 @@ local function pushSituation(force)
   local now = interacting and 'interaction' or (current ~= 0 and 'driving') or 'rest'
   if now == situation and not force then return end
   situation = now
-  NUI.send('hud:situation', { name = now })
+  nk.message.send('hud:situation', { name = now })
 end
 AddEventHandler('nuikit_hud:interaction', function(on)
   interacting = on == true
@@ -160,7 +160,7 @@ end
 local function leave()
   current, kind, last = 0, nil, nil
   Adapters.leftVehicle()
-  NUI.send('hud:vehicle', false)
+  nk.message.send('hud:vehicle', false)
   resetLive()
   pushSituation()
 end
@@ -241,13 +241,13 @@ local function applyRadar()
   Minimap.tick(on)
 end
 -- What the HUD covers (the page measures its parts): notices and prompts start clear of them.
-NUI.on('hud:zones', function(body)
+nk.message.on('hud:zones', function(body)
   Layout.setMeasured(body and body.rects)
-  NUI.zone('hud', body and body.rects or nil)
+  nk.zone.set('hud', body and body.rects or nil)
   return { ok = true }
 end)
 
-NUI.on('hud:shown', function(body)
+nk.message.on('hud:shown', function(body)
   shown = body and body.shown == true
   if Minimap.slide then Minimap.slide(shown) end
   applyRadar()
@@ -302,7 +302,7 @@ local function pushLegibility()
   local mode = LegibilityOf(GetClockHours())
   if mode == legibility then return end
   legibility = mode
-  NUI.send('hud:legibility', { mode = mode, force = type(Config.legibility) == 'table' and Config.legibility.mode or nil })
+  nk.message.send('hud:legibility', { mode = mode, force = type(Config.legibility) == 'table' and Config.legibility.mode or nil })
   TriggerEvent('nuikit:legibility', mode)
 end
 CreateThread(function()
@@ -312,7 +312,7 @@ CreateThread(function()
   end
 end)
 
-NUI.on('hud:ready', function()
+nk.message.on('hud:ready', function()
   legibility = nil -- a reloaded page hears it again
   pushSituation(true)
   if Config.legibility ~= false then pushLegibility() end
@@ -337,7 +337,7 @@ pcall(exports, 'zones', function() return Layout.zones() end)
 -- (and so do the notices: the zones). The values are nk.settings rows (client/prefs.lua), so the pause
 -- menu's settings, presets and feature flags see the same; Save keeps them, Escape or Cancel drops
 -- the draft. Config.playerLayout = false, or the hud_layout / hud_style flags, take a side away.
-local editor = NUI.surface('hud-edit', { layer = 'panel', input = 'full' })
+local editor = nk.surface.define('hud-edit', { layer = 'panel', input = 'full' })
 
 --- After the placement or a style changed: the radar to its corner (only when the map moved or
 --- changed shape, size or compass: that re-places GTA's radar), the page's settings.
@@ -354,7 +354,7 @@ end
 
 local prefs = Prefs.define(function() restyle() end)
 
-NUI.on('hud:parts:save', function(body)
+nk.message.on('hud:parts:save', function(body)
   if Config.playerLayout == false or not Layout.clean(body and body.parts) then return { ok = false } end
   prefs.draft(Prefs.fromParts(body.parts))
   prefs.save()
@@ -363,26 +363,26 @@ NUI.on('hud:parts:save', function(body)
 end)
 
 -- the editor's placement previews on the real HUD (a draft: Escape or Cancel drops it with the styles)
-NUI.on('hud:parts:preview', function(body)
+nk.message.on('hud:parts:preview', function(body)
   if Config.playerLayout == false or not Layout.clean(body and body.parts) then return { ok = false } end
   prefs.draft(Prefs.fromParts(body.parts))
   return { ok = true }
 end)
 
-NUI.on('hud:parts:reset', function()
+nk.message.on('hud:parts:reset', function()
   prefs.reset(Prefs.keys('layout'))
   editor:close()
   return { ok = true }
 end)
 
 -- Style: the editor previews a draft live; nil drops it (Escape, Cancel)
-NUI.on('hud:styles:preview', function(body)
+nk.message.on('hud:styles:preview', function(body)
   local styles = body and Layout.cleanStyles(body.styles)
   if styles then prefs.draft(styles) else prefs.cancel() end
   return { ok = true }
 end)
 
-NUI.on('hud:styles:save', function(body)
+nk.message.on('hud:styles:save', function(body)
   local styles = Layout.cleanStyles(body and body.styles)
   if not styles then return { ok = false } end
   prefs.draft(styles)
@@ -390,7 +390,7 @@ NUI.on('hud:styles:save', function(body)
   return { ok = true }
 end)
 
-NUI.on('hud:styles:reset', function()
+nk.message.on('hud:styles:reset', function()
   prefs.reset(Prefs.keys('style'))
   return { ok = true }
 end)
