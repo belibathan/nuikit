@@ -39,7 +39,7 @@ const OUT = path.join(here, "out");
 const slug = (s) => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 fs.mkdirSync(BASE, { recursive: true });
-fs.rmSync(OUT, { recursive: true, force: true });
+if (!process.argv.includes("--look")) fs.rmSync(OUT, { recursive: true, force: true }); // look keeps earlier shots
 fs.mkdirSync(OUT, { recursive: true });
 
 // The browser: VISUAL_CHROMIUM, else the Chromium 103 `pnpm proof` runs (FiveM's CEF), else Playwright's own.
@@ -190,7 +190,6 @@ async function fixture(name, dir, port, url) {
 
 // The site's /components: a few sections, each under the page's own identity picker.
 async function components(port) {
-  execFileSync(process.execPath, ["scripts/api.mjs"], { cwd: path.join(repo, "apps/www"), stdio: "ignore" }); // src/generated/api.json
   const stop = await serve("apps/www", port);
   try {
     const page = await context.newPage();
@@ -224,6 +223,42 @@ async function components(port) {
   } finally {
     await stop();
   }
+}
+
+// `pnpm look <dir> [url]`: shoot one web package's dev fixture under every theme into bench/visual/out, no compare.
+// Every lane that changes something visual runs it and Reads the PNGs before pushing (docs/next/dispatch.md, the gate).
+const LOOK = process.argv.indexOf("--look");
+if (LOOK !== -1) {
+  const dir = process.argv[LOOK + 1];
+  const url = process.argv[LOOK + 2] ?? "/";
+  if (!dir || !fs.existsSync(path.join(repo, dir, "src/dev.tsx")) && !fs.existsSync(path.join(repo, dir, "index.html"))) {
+    console.error("usage: pnpm look <web package dir> [url]   (a dir with src/dev.tsx or index.html)");
+    process.exit(2);
+  }
+  await use(false);
+  const name = slug(dir.replace(/\/web$/, "").split("/").pop());
+  const stop = await serve(dir, 5897);
+  try {
+    const page = await context.newPage();
+    for (const [id] of THEMES) {
+      await open(page, `http://127.0.0.1:5897${url}`);
+      await page.evaluate(async ([core, css]) => (await import(core)).applyTheme(css, undefined, "dark"), [`/@fs${repo}/packages/core/dist/index.js`, identityCss(id)]);
+      await page.addStyleTag({ content: FREEZE });
+      await sleep(500);
+      await page.evaluate(() => document.fonts.ready);
+      await sleep(800);
+      const file = path.join(OUT, `${name}-${id}.png`);
+      fs.writeFileSync(file, await page.screenshot({ type: "png", timeout: 120000 }));
+      console.log(file);
+    }
+    const errs = [];
+    page.on("pageerror", (e) => errs.push(String(e)));
+    await page.close();
+  } finally {
+    await stop();
+    await browser?.close();
+  }
+  process.exit(0);
 }
 
 const want = (n) => !ONLY.length || ONLY.includes(n);
