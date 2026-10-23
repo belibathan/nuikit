@@ -120,14 +120,11 @@
       "types": "./dist/doctor.d.ts",
       "import": "./dist/doctor.js"
     },
-<<<<<<< HEAD
     "./layout": {
       "types": "./dist/layout.d.ts",
       "import": "./dist/layout.js"
-    }
-=======
+    },
     "./arsenal.json": "./arsenal.json"
->>>>>>> 4a609ca633a93d127f3645ceef274aa162725cf9
   },
   "scripts": {
     "intents": "node scripts/gen-intents.mjs",

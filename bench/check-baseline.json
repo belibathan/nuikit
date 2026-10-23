@@ -1,6 +1,6 @@
 {
   "systems/nuikit": {
-    "errors": 3,
+    "errors": 5,
     "warnings": 45
   },
   "systems/nuikit_chat": {
@@ -8,7 +8,7 @@
     "warnings": 6
   },
   "systems/nuikit_death": {
-    "errors": 0,
+    "errors": 2,
     "warnings": 4
   },
   "systems/nuikit_dev": {
@@ -16,27 +16,19 @@
     "warnings": 13
   },
   "systems/nuikit_hud": {
-    "errors": 3,
-<<<<<<< HEAD
-    "warnings": 187
-=======
-    "warnings": 225
->>>>>>> 4a609ca633a93d127f3645ceef274aa162725cf9
+    "errors": 5,
+    "warnings": 224
   },
   "systems/nuikit_loading": {
-    "errors": 0,
+    "errors": 2,
     "warnings": 1
   },
   "systems/nuikit_pause": {
-    "errors": 0,
-<<<<<<< HEAD
-    "warnings": 55
-=======
-    "warnings": 73
->>>>>>> 4a609ca633a93d127f3645ceef274aa162725cf9
+    "errors": 2,
+    "warnings": 71
   },
   "systems/nuikit_screen": {
-    "errors": 0,
+    "errors": 2,
     "warnings": 1
   },
   "systems/nuikit_skins": {
@@ -52,51 +44,51 @@
     "warnings": 1
   },
   "addons/Renewed-Banking": {
-    "errors": 0,
+    "errors": 2,
     "warnings": 1
   },
   "addons/illenium-appearance": {
-    "errors": 0,
+    "errors": 2,
     "warnings": 0
   },
   "addons/mm_radio": {
-    "errors": 0,
+    "errors": 2,
     "warnings": 1
   },
   "addons/ox_doorlock": {
-    "errors": 0,
+    "errors": 2,
     "warnings": 1
   },
   "addons/ox_inventory": {
-    "errors": 0,
+    "errors": 2,
     "warnings": 45
   },
   "addons/ox_lib": {
-    "errors": 3,
+    "errors": 5,
     "warnings": 18
   },
   "addons/ox_target": {
-    "errors": 0,
+    "errors": 2,
     "warnings": 0
   },
   "addons/qbx_idcard": {
-    "errors": 0,
+    "errors": 2,
     "warnings": 1
   },
   "addons/qbx_scoreboard": {
-    "errors": 0,
+    "errors": 2,
     "warnings": 0
   },
   "addons/qbx_taxijob": {
-    "errors": 0,
+    "errors": 2,
     "warnings": 1
   },
   "addons/qbx_vehiclesales": {
-    "errors": 0,
+    "errors": 2,
     "warnings": 7
   },
   "packages/create-nuikit/template": {
-    "errors": 0,
+    "errors": 2,
     "warnings": 10
   }
 }
