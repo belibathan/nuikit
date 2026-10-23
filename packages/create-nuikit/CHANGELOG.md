@@ -1,5 +1,53 @@
 # create-nuikit
 
+## 0.9.0
+
+### Minor Changes
+
+- 2a9d0e6: Kit components follow tokens 1.4: `--nk-focus-style` (halo, tint, fill, invert, bar; ring keeps each component's own focus), `--nk-hold-style` (bar, ring around the key chips, fill across the prompt, from `--level`), `--nk-level-style` (pips cut a meter into plates; vital-chip maps ring, liquid and bar to its drawings), and `data-hue` roles colour vital chips and chip icons.
+- 1c4bc64: New block `job-tracker` (`npm create nuikit -t job-tracker`): the task panel a job shows while you work it (steps done, current and locked, the current step's progress and key, abandon behind a confirm); the server owns the job, each step's conditions and the pay.
+- 6a458f8: New block `mdt` (`npm create nuikit -t mdt`): the shell of a police or EMS terminal (nav, people and vehicle search, records with flags and notes, reports with a confirm); only allowed jobs on duty, every search on the server, opaque record ids, no identifiers to the page.
+- 31a6d50: New block `npc-dialogue` (`npm create nuikit -t npc-dialogue`): the speaker in a band at the bottom, the line typing out, replies on the number keys with locked replies saying why; the server holds the tree, re-checks requirements and distance, and applies actions all or nothing.
+- 83e3d89: New block `phone` (`npm create nuikit -t phone`): a phone shell (status bar, home grid, app frame with back) with Contacts and Messages as the first apps and an app registry for your own; numbers, contacts and messages live on the server, which validates, rate-limits and stamps every text.
+- ed525a0: New block `storefront` (`npm create nuikit -t storefront`): the counter of a player-run business (products, cart, checkout from cash or bank; a Manage tab for staff to price, show or hide, restock and open or close); the server owns prices and stock and moves money and items all or nothing.
+- 0515e69: The collapse engine: `useCollapse` (hook) and `collapse-stack` (component) for clustered indicators. At rest only icons; a change opens a chip for `--nk-rest-delay`; changes within 400 ms batch together and close together; critical first, then the biggest change; at most `max`, then "+N"; per-key opt-outs. `vital-chip`'s `expand` chips in a `VitalChip.Row` run on it.
+- 1a68fb0: Themes are named universally. The flagship theme **Ink is renamed Default** (`nuikit-core/themes/default.css`,
+  id `default`): it is the theme a new project and the stock `nuikit` resource ship with, and the one the site
+  wears. The nuikit resource's `theme/ink.css` and `theme/ink-fonts.css` are `theme/default.css` and
+  `theme/default-fonts.css`; its theme-layer keyframes are `nk-theme-{reveal,rise-x,rise-y,deny}`. The built-in
+  token defaults are unchanged, so `compileTheme("")` and a plain TweakCN paste still compile to Graphite, which
+  stays a named theme. The id `ink` resolves to `default` for one minor (in `nuikit_identities` and in a saved
+  player pref) with a deprecation line in the log; `nuikit-cli`'s `INK_RULES` is now `KIT_RULES`, with the old
+  name kept as a deprecated alias.
+
+  New theme **Neon Pop** (`nuikit-core/themes/neon-pop.css`): Default's structure — the `tile` treatment, keycap
+  tiles, fills and motion — with a vivid palette. A blue → violet → rose `--nk-accent-gradient`, solid brand
+  `#8A8CFF`, a colour per vital, and a grey → green → blue → violet → amber rarity ladder on near-black surfaces
+  with white text.
+
+  Conventions are written down in `docs/design/naming.md` (themes, treatments, token families, components, data
+  attributes, files and folders), and `docs/design/ink.md` is `docs/design/default.md`.
+
+- 1a68fb0: Default W0 (docs/design/default.md): tokens 1.5. Kit levers every theme gets, with Graphite-equal defaults in kit.css: scales (`--nk-space-*`, `--nk-gap-*`, `--nk-r-{key,chip,control,surface}`, `--nk-h-*`, `--nk-icon-*`), five type roles (`--nk-type-{scan,title,label,num,body}-*`, `.nk-scan`, `.nk-body`), tile (`--nk-tile-*`), plate (`--nk-plate*`) and fill (`--nk-fill-*`) tokens, the motion ladder (`--nk-time-{snap,fast,slow}`, `--nk-exit-factor`, `--nk-time-reduced`, `--nk-lift`, `--nk-rise`, `--nk-land-scale`, `--nk-deny-x`), `--nk-row-indicator: sweep`, and the `--nk-treatment: tile` preset (Default's values). `--nk-hang-*` is removed. Cascade layers `nk.base, nk.kit, nk.theme, nk.app` (a theme writes into `nk.theme`); shadcn's Kbd is drawn as a Tile. Registry: new `tile`, `fill`, `chip`, `icon-text`, `action-bar`; `meter` gains `hue` and `threshold`, `edge-sheet` `back` and `anchor`, `empty-state` `tile`. `nuikit check` gains the Default rules (radius, blur, color-mix, soft shadows, motion, type, class-substring selectors, alert spellings, unlayered themes, off-scale spacing), all warnings for now.
+- 1c49b77: Foundation 2 states and level: interactive components (menu-row, key-prompt, item-slot, radial-menu items; notice for alert) draw `data-state` (rest, focus, hold, confirm, disabled, alert) and pop briefly on confirm; meter, progress-ring, vital-chip, key-prompt (hold) and notice (time left) set `--level` (0–1) on their root. vital-chip carries `data-hue`. menu-row gains `alert`. item-slot's own states move to `data-slot-state`. `nkState()`, `nkConfirm()` and `nkLevel()` are in `lib/utils`.
+- 9cfd2e3: `key-prompt` takes `stage` for the interaction ladder: dormant (the key chip alone, quiet), aware (in reach), focus (the key acts on it), then hold and confirm from the hold, drawn on `data-ladder`. Without `stage` a prompt looks as before.
+- aebf5ac: Variants: `panel`, `menu-row` (and `MenuRowList`), `meter`, `key-prompt` and `notice` take `density` (compact, comfortable), `shape` (square, round) and `motion` (false, "reduced") for themselves and what's inside, over the theme's identity; `notice` gains `size` (sm, lg). They paint `data-nk-density` / `data-nk-shape` / `data-nk-motion`, which any element can carry: kit.css re-derives the density- and radius-dependent component tokens in that subtree. `nkVariant()` and `NkVariantProps` are in `lib/utils`.
+- 9e331fa: `notice` queue policy: `useNotices({ policy, max, queue, hurry })` (and `<NuiNotices>`): `stack` (default, as before) or `one` at a time per position, a capped queue of waiting notices (the oldest waiting goes past it), and a shorter dwell (`hurry`, 0.5) for shown notices while others wait. `waiting` counts the queued.
+- ebe2436: New projects show `NUI.notify()` with `<NuiNotices />` from `notice` (the kit's notice stack) instead of the Sonner `NuiToaster`; `sonner` and `next-themes` are no longer template dependencies. The registry drops `key-hint`, `task-progress` and `nui-toaster` (deprecated since 0.6.0): use `key-prompt`, `meter` (`variant="slab"`) or `progress-ring`, and `notice`.
+- ec350b4: `vital-chip` display modes: `display` = pill (icon, name, value), value (icon, value), icon (the level as fill) or expand (opens to the pill on a change, settles after `--nk-rest-delay`); theme default `--nk-vital-display`. A chip that opens in a new `VitalChip.Row` pushes its neighbours, collapses them to icons or floats over them (`neighbours`, theme default `--nk-vital-neighbours`). `format` sets the value text.
+
+### Patch Changes
+
+- 8626fbc: Blocks format money in text (titles, confirms, the HUD wallet) with `useFormatMoney()` from `money`: the server's currency and locale from `useNuiContext()`, re-rendering when `nuikit:context` arrives after the first frame.
+- e23b371: character-select block: the camera glides over the highlighted spawn point while choosing where to start (nuikit's camera service, `Config.preview`); the city view uses `nk.camera` instead of a raw script camera.
+- 4be79e6: The template's menu marks its active row with one sliding indicator: `MenuRowList` from `menu-row` (`<MenuRowList active={i}>`), the identity's bar, fill or outline gliding between rows.
+- b42b444: `notice` slides in from its stack's edge and, through `<Notices>`, back out toward it when it ends while the others glide into the gap (the motion nuikit's own notifications had). `slide={false}` fades in place; `leaving` plays the exit for a queue of your own; `NOTICE_EXIT_MS` is how long to keep it drawn.
+- f3ca588: `confirm` (and `ConfirmPanel`), `edge-sheet` and `band` take the kit variants (`density`, `shape`, `motion`); `hud-chip` takes `density` and `motion` (its `shape` stays pill or tile; its corners follow `data-nk-shape` on any ancestor).
+- c9a557a: Performance: `vital-chip` shares one theme-style reader across chips (one observer, one style read per change), re-measures at most once a frame and re-renders only on a real size change, reads the alert threshold from the cached token, and animates labels, flags and pops on opacity and transform only (no width, padding or margin per frame); the outline level snaps instead of repainting the SVG each frame. `useCollapse` re-renders only when the open set changes. `text-roll` / `NumberRoll` no longer measure or animate width per digit.
+- 4cc03e1: Performance: `vital-chip`'s bar and liquid levels snap to the value; a transform transition on an SVG element runs on the main thread (style, layout and paint every frame) and a ticking HUD kept it running.
+- 378c07d: A theme painted on a subtree (`applyTheme(theme, element)`: a preview stage, a host module) now shows its whole identity: `applyTheme` marks the element `data-nk-theme` and kit.css re-declares its component tokens there, so density, radii, the HUD plate and the rest derive from that theme instead of what `<html>` resolved.
+- eece522: Tokens 1.3 adds `--world-success` and `--world-destructive`: gains and losses drawn on the game or the HUD plate, derived from `--success` / `--destructive` with their lightness raised to 0.7, so a light theme's dark status colours still read on the dark plate. The slab delta (`+2`, `−1` on item notices) uses them.
+
 ## 0.8.0
 
 ### Minor Changes
