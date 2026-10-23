@@ -1,51 +1,24 @@
-// Generates the Figma variable spec (out/vars.json, out/ember.css, variables.md) from the compiled identities.
+// Generates the Figma variable spec (out/vars.json, variables.md) from the compiled identities.
 // Run from the repo root after `pnpm --filter nuikit-core build`: `node bench/figma/gen.mjs && node bench/figma/emit.mjs`.
 // emit.mjs writes out/data-*.json: the compact rows that populate.js turns into variables inside use_figma.
 import { mkdirSync } from "node:fs";
 import { compileTheme } from "../../packages/core/dist/index.js";
 import { readFileSync, writeFileSync } from "node:fs";
+import { KIT_TOKENS, BASELINE_TOKENS, SELECTION_TOKENS } from "../../packages/core/dist/index.js";
+import { makeEnv, subst, plainVar, toNumber, toColor } from "./resolve.mjs";
 const root = new URL("../..", import.meta.url).pathname;
 const scratch = new URL("./out", import.meta.url).pathname;
 mkdirSync(scratch, { recursive: true });
 
-const ids = ["graphite", "signal", "velvet", "vector"];
+// Four modes (the Pro plan's cap): the shipped themes. Graphite fills the "yours" pair of collections.
+const ids = ["default", "neon-pop", "flat", "square"];
 const compiled = {};
-for (const id of ids) {
+for (const id of [...ids, "graphite"]) {
   const css = readFileSync(`${root}/packages/core/themes/${id}.css`, "utf8");
-  compiled[id] = compileTheme(css, { mode: "dark" }).vars;
+  const r = compileTheme(css, { mode: "dark" });
+  if (r.warnings.length) console.log(id, "warnings", r.warnings);
+  compiled[id] = r.vars;
 }
-// Ember: Graphite + identity-tier values only (the "make it yours" proof).
-const emberCss = readFileSync(`${root}/packages/core/themes/graphite.css`, "utf8").replace(/\}\s*$/, `
-  --brand: oklch(0.74 0.17 50);
-  --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
-  --font-display: Fraunces, Georgia, ui-serif, serif;
-  --font-numeric: "DM Sans", ui-sans-serif, system-ui, sans-serif;
-  --radius: 0.375rem;
-  --nk-type-ratio: 1.25;
-  --nk-weight-strong: 500;
-  --nk-weight-display: 600;
-  --nk-tracking-display: -0.03em;
-  --nk-label-case: none;
-  --nk-tracking-label: 0em;
-  --nk-surface-opacity: 0.94;
-  --nk-surface-tint: 0.08;
-  --nk-surface-gradient: 0.06;
-  --nk-surface-edge: 0.1;
-  --nk-elevation: deep;
-  --nk-glow: 0.2;
-  --nk-density: 1.05;
-  --nk-ease: cubic-bezier(0.22, 1, 0.36, 1);
-  --nk-duration: 180ms;
-  --nk-motion-feel: smooth;
-  --nk-spring-bounce: 0.05;
-  --nk-gauge-ticks: 0;
-  --nk-gauge-track: 0.375rem;
-  --nk-row-indicator: fill;
-}`);
-const ember = compileTheme(emberCss, { mode: "dark" });
-compiled.ember = ember.vars;
-writeFileSync(`${scratch}/ember.css`, emberCss);
-console.log("ember warnings", ember.warnings);
 
 // ---- parsers
 const REM = 16;
@@ -321,6 +294,64 @@ for (const [n, desc] of [["time-press", "0.5 × d, 50–100ms: press, toggle, ke
 for (const [n, desc] of [["ease-out", "nk/ease: enter, hover"], ["ease-in", "exit"], ["ease-in-out", "on-screen moves"], ["ease-emphasized", "full-screen, big moments"], ["ease-linear", "progress, countdowns, needles"], ["spring-snap", "<duration> <bounce>"], ["spring-move", "<duration> <bounce>"], ["spring-soft", "<duration> <bounce>"], ["spring-pop", "<duration> <bounce>"]])
   add(C, `nk/${n}`, "STRING", HIDE, cssv(`nk-${n}`), desc + ".", (t) => t[`nk-${n}`]);
 
+// ---------- component tier: the 1.5-1.7 levers (KIT_TOKENS, BASELINE_TOKENS, SELECTION_TOKENS)
+// Per mode: the theme's value (treatment included, as compileTheme resolved it), else the kit.css default, resolved to a
+// number / colour / string. Where the CSS is a plain var() (the same target in every mode) the variable is an alias.
+// The two levers retired in 1.7 are left out: nothing reads them.
+const RETIRED = new Set(["nk-row-marker-width", "nk-row-tint-reach"]);
+const LEVERS = [...KIT_TOKENS, ...BASELINE_TOKENS, ...SELECTION_TOKENS].filter((s) => !RETIRED.has(s.name));
+const envs = Object.fromEntries(Object.keys(compiled).map((id) => [id, makeEnv(compiled[id])]));
+const figmaName = (css) => css.startsWith("nk-") ? "nk/" + css.slice(3) : css;
+const semNames = new Set(SEM.map(([n]) => n));
+const known = new Map(vars.map((v) => [v.name, v.type])); // Figma name -> type, as the tiers above define them
+for (const s of LEVERS) known.set(figmaName(s.name), null); // levers resolve below; their type is filled in as each is typed
+const leverType = {};
+function scopesFor(s) {
+  const n = s.name;
+  if (s.type === "color" || (s.type === "image" && leverType[n] === "COLOR")) return ALLC;
+  if (s.type === "fontFamily") return FF;
+  if (s.type === "dimension") {
+    if (/-(r|radius)(-|$)|^nk-r-/.test(n) || n === "nk-tile-radius" || n === "nk-plate-radius") return RAD;
+    if (/^nk-text-|-size$/.test(n)) return FS;
+    if (/tracking$/.test(n)) return LS;
+    return LEN;
+  }
+  return HIDE;
+}
+for (const s of LEVERS) {
+  const raw = {}, res = {};
+  for (const id of Object.keys(compiled)) {
+    const e = envs[id];
+    raw[id] = compiled[id][s.name] !== undefined ? String(compiled[id][s.name]) : e[s.name] ?? (s.name === "nk-plate" ? "var(--surface, var(--popover))" : s.fallback); // no kit.css default: the consumers' fallback
+    if (raw[id] === undefined) throw new Error(`no value or kit default for --${s.name}`);
+    res[id] = subst(raw[id], e);
+  }
+  // type: colour (and an image that is a colour in every mode), number, string
+  let type = "STRING";
+  const tryAll = (f) => { try { return Object.fromEntries(Object.entries(res).map(([id, c]) => [id, f(c)])); } catch { return null; } };
+  let val;
+  if (s.type === "color" || s.type === "image") { val = tryAll(toColor); if (val) type = "COLOR"; }
+  else if (s.type === "dimension" || s.type === "number" || s.type === "duration") { val = tryAll((c) => toNumber(c, { em: /tracking$/.test(s.name) })); if (val) type = "FLOAT"; }
+  if (!val) val = tryAll((c) => (s.type === "fontFamily" ? fam(c) : c.trim()));
+  leverType[s.name] = type;
+  // alias: a plain var() that points at the same Figma variable (same type) in every mode; tracking stays resolved (units differ)
+  let target = null;
+  if (!/tracking$/.test(s.name)) {
+    const names = Object.keys(compiled).map((id) => plainVar(raw[id], envs[id]));
+    if (names.every((n) => n && n === names[0])) {
+      const n = names[0];
+      const fname = semNames.has(n) || n === "brand" || n === "brand-foreground" ? "color/" + n : /^font-(sans|mono|display|numeric)$/.test(n) ? "font/" + n.slice(5) : n === "radius" ? "radius" : n.startsWith("nk-") ? figmaName(n) : null;
+      const tt = fname && (known.get(fname) ?? (LEVERS.some((l) => figmaName(l.name) === fname) ? leverType[LEVERS.find((l) => figmaName(l.name) === fname).name] : undefined));
+      if (fname && fname !== figmaName(s.name) && tt === type) target = fname;
+    }
+  }
+  const desc = `${s.description}. Since ${s.since}.${s.values ? " One of: " + s.values.join(", ") + "." : ""}${/tracking$/.test(s.name) ? " Percent of em." : ""}`;
+  const name = figmaName(s.name), code = cssv(s.name);
+  known.set(name, type);
+  if (target) alias(C, name, type, scopesFor(s), code, desc, target);
+  else add(C, name, type, scopesFor(s), code, desc, (_t, id) => val[id]);
+}
+
 // fonts to preload in Figma (family × style) across all modes
 const fonts = new Set();
 for (const v of vars) if (v.type === "STRING" && v.v) for (const id in v.v) { /* collected below */ }
@@ -336,7 +367,7 @@ writeFileSync(`${scratch}/vars.json`, JSON.stringify(out));
 const counts = {}; for (const v of vars) counts[v.col] = (counts[v.col] || 0) + 1;
 console.log(counts, "fonts", out.fonts.length, "bytes", JSON.stringify(out).length);
 // also a CSV-ish table for docs
-const lines = ["| Figma variable | Tier | Type | CSS | Graphite | Signal | Velvet | Vector |", "|---|---|---|---|---|---|---|---|"];
+const lines = ["| Figma variable | Tier | Type | CSS | Default | Neon Pop | Flat | Square | Graphite (yours) |", "|---|---|---|---|---|---|---|---|---|"];
 const fmt = (x) => typeof x === "object" ? (x.a === 1 ? `#${[x.r, x.g, x.b].map((c) => Math.round(c * 255).toString(16).padStart(2, "0")).join("")}` : `#${[x.r, x.g, x.b].map((c) => Math.round(c * 255).toString(16).padStart(2, "0")).join("")} @${Math.round(x.a * 100)}%`) : typeof x === "number" ? String(Math.round(x * 1000) / 1000) : String(x);
-for (const v of vars) lines.push(`| \`${v.name}\` | ${v.col} | ${v.type} | ${v.code ? "`" + v.code + "`" : "—"} | ${v.alias ? `→ \`${v.alias}\`` : ids.map((id) => fmt(v.v[id])).join(" | ")} |`);
+for (const v of vars) lines.push(`| \`${v.name}\` | ${v.col} | ${v.type} | ${v.code ? "`" + v.code + "`" : "—"} | ${v.alias ? `→ \`${v.alias}\`` : [...ids, "graphite"].map((id) => fmt(v.v[id])).join(" | ")} |`);
 writeFileSync(new URL("./variables.md", import.meta.url).pathname, lines.join("\n"));
