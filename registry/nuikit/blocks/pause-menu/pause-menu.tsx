@@ -16,7 +16,7 @@ import {
 
 import { cn } from "@/lib/utils"
 import { Confirm } from "@/components/ui/confirm"
-import { MenuRow } from "@/components/ui/menu-row"
+import { MenuRow, MenuRowList } from "@/components/ui/menu-row"
 import { Meter } from "@/components/ui/meter"
 import { Money } from "@/components/ui/money"
 import { Panel, PanelBody } from "@/components/ui/panel"
@@ -148,17 +148,20 @@ function PauseMenu({
             </div>
           </header>
 
-          <nav ref={nav} className="mt-12 flex flex-col gap-(--nk-space-1)" aria-label="Pause menu" onKeyDown={onKeyDown}>
-            {actions.map((a, i) => {
-              if (a === "disconnect") return null
-              const item = ACTIONS[a]
-              if (!item) return null
-              return (
-                <MenuRow key={a} autoFocus={autoFocus && i === 0} icon={<item.icon />} kbd={item.kbd} onClick={() => onAction?.(a)}>
-                  {item.label}
-                </MenuRow>
-              )
-            })}
+          <nav ref={nav} className="mt-12 flex flex-col" aria-label="Pause menu" onKeyDown={onKeyDown}>
+            {/* one SelectionTile slides from row to row with the focus (docs/design/baseline.md, Selection) */}
+            <MenuRowList>
+              {actions.map((a, i) => {
+                if (a === "disconnect") return null
+                const item = ACTIONS[a]
+                if (!item) return null
+                return (
+                  <MenuRow key={a} autoFocus={autoFocus && i === 0} icon={<item.icon />} kbd={item.kbd} onClick={() => onAction?.(a)}>
+                    {item.label}
+                  </MenuRow>
+                )
+              })}
+            </MenuRowList>
             {actions.includes("disconnect") && (
               <>
                 <Separator className="my-3" />
