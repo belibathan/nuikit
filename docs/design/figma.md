@@ -1,4 +1,8 @@
-# The Figma design system (tokens 1.2, four identities)
+# The Figma design system (tokens 1.7, four modes)
+
+**Status:** variables regenerated for 1.7 on 2026-10-23; the Figma file itself is not yet repopulated (run
+`bench/figma/populate.js` inside `use_figma`: steps below). Until then the file still holds the 1.2 variables
+(Graphite / Signal / Velvet / Vector, plus Ember) and the pages below describe that state.
 
 **File:** [nuikit — design system v2](https://www.figma.com/design/IroNuj1YQL223JPzfxJ1ok) (Quarry Studio team, Professional
 plan). The v2 pages and collections were built on `design/figma-tokens` (Oct 20, 2026) on top of the v1 draft that was
@@ -6,9 +10,10 @@ already in the file; the v1 pages (README, Foundations, Components (v1 baseline)
 are kept for reference and marked superseded on the README page.
 
 The repo stays the source of truth: every value in Figma is `compileTheme`'s output for
-`packages/core/themes/{graphite,signal,velvet,vector}.css` (tokens 1.2, `docs/tokens.md`). Figma is the visual
-reference and the documentation of the token system, not where tokens are edited. `bench/figma/` holds the
-generator that produced the variables, the exported sheets and the fifth identity used as the flexibility proof.
+`packages/core/themes/{default,neon-pop,flat,square}.css` (tokens 1.7, `docs/tokens.md`), with the 1.5-1.7 levers
+(`docs/design/levers.md`) resolved per mode and falling back to the `kit.css` default where a theme leaves one out.
+Figma is the visual reference and the documentation of the token system, not where tokens are edited. `bench/figma/`
+holds the generator that produces the variables and the exported sheets.
 
 ## Structure
 
@@ -26,14 +31,23 @@ segments, brackets. The exported sheets in `bench/figma/` show every page in eve
 
 | Collection | Variables | Modes | Holds |
 |---|---|---|---|
-| `nuikit · 1 identity` | 44 | Graphite · Signal · Velvet · Vector | `color/brand`, `color/brand-foreground`, `font/*`, `radius`, every `nk/*` identity token (type, shape, surface, density, motion, HUD, rows), plus `figma/style-*` (Figma only) |
+| `nuikit · 1 identity` | 44 | Default · Neon Pop · Flat · Square | `color/brand`, `color/brand-foreground`, `font/*`, `radius`, every `nk/*` identity token (type, shape, surface, density, motion, HUD, rows), plus `figma/style-*` (Figma only) |
 | `nuikit · 2 semantic` | 40 | same | Every other `color/*`: shadcn base, status, game (`hud`, `scrim`, `world-*`), vitals |
-| `nuikit · 3 component` | 137 | same | The `--nk-*` component tokens the kit reads (`kit.css` `:root`), resolved per identity, or an alias where the CSS is a plain `var()` |
-| `nuikit · yours (Ember) · identity` / `· component` | 44 / 137 | Ember | The fifth identity (see below). The semantic tier is shared with the main collection |
+| `nuikit · 3 component` | 264 (21 aliases among the 127 levers) | same | The `--nk-*` component tokens the kit reads (`kit.css` `:root`, 137), plus every 1.5-1.7 lever (127: scale, the five type roles, tile, plate, fill, accent, motion distances, hygiene, baseline, selection), resolved per mode, or an alias where the CSS is a plain `var()` |
+| `nuikit · yours (Graphite) · identity` / `· component` | 44 / 264 | Graphite | The "yours" pair: Graphite, the original identity, standing in for a server's own. The semantic tier is shared with the main collection |
 
-**Why four modes.** The Professional plan caps a collection at four modes, and the four shipped identities use them. A
-fifth identity therefore lives in its own pair of collections (identity + component) and shares the semantic
-collection. On an Organization plan it would be a fifth mode.
+**Why four modes.** The Professional plan caps a collection at four modes: Default, Neon Pop, Flat and Square use them.
+A fifth identity lives in its own pair of collections (identity + component) and shares the semantic collection; the
+pair holds Graphite. On an Organization plan it would be a fifth mode.
+
+**Levers.** Names are `--nk-<name>` → `nk/<name>`, the same rule as before. The value per mode is what the theme
+(treatment included) sets, else the `kit.css` default, else the lever's documented fallback, evaluated to px / a colour
+/ a string (`bench/figma/resolve.mjs`). Aliases are made only when the CSS is a plain `var()` that points at the same
+Figma variable in every mode (`nk/space-1` → `nk/space-unit`, `nk/tile-key` → `color/primary`, `nk/plate-radius` →
+`nk/r-surface`). Exceptions: letter-spacing levers (`nk/type-*-tracking`) are percent of em and never alias (the older
+tracking variables are px at their role's size); a lever that is a colour in one mode and a gradient in another
+(`nk/tile-active`, `nk/accent-gradient`) is a `STRING`; shadows (`nk/plate-drop`) are the resolved CSS `STRING`. The two
+levers retired in 1.7 (`nk-row-marker-width`, `nk-row-tint-reach`) are left out.
 
 ## Variable ↔ token mapping
 
@@ -62,31 +76,36 @@ Units and types in Figma:
 Scopes are set on every variable (fills, text, strokes, radius, gap/size, font family/style/size, letter-spacing,
 effects, opacity); keywords and pure numbers are hidden from pickers.
 
-## Make it yours: Ember
+## Make it yours: Graphite
 
-Proof of the flexibility claim in `docs/tokens.md#flexibility`, in Figma. `bench/figma/ember.css` is Graphite's
-`theme.css` plus 25 identity-tier lines (brand, the three fonts, radius, type ratio and weights, tracking, label case,
-surface opacity / tint / gradient / edge, elevation, glow, density, easing, duration, feel, bounce, gauge track and
-ticks, row indicator). It compiles with no warnings; its derived values fill the `yours (Ember)` collections. The
-semantic tier (every colour but brand) is untouched: Ember is orange on Graphite's neutrals, with Fraunces headings,
-DM Sans text, a filled active row, deep elevation, a glow and a roomier rhythm. The page lists each token with its
-Graphite and Ember values.
-
-Ember is not a shipped identity, only a demonstration; to ship it, it would get the `packages/core/themes/` treatment
-(fonts in `fonts.json`, a contact sheet, the flexibility test).
+Proof of the flexibility claim in `docs/tokens.md#flexibility`, in Figma: the same scene twice, once on the main
+collections (Default) and once on the `yours (Graphite)` pair. Graphite is `packages/core/themes/graphite.css`
+unchanged, so the page shows how far apart two identity-tier sets sit while the semantic tier stays shared. (The 1.2
+file used Ember, a fifth identity built from 25 identity-tier lines; `ember.css` is retired, a server's own identity
+is the point and Graphite is the stand-in.)
 
 ## Regenerating
 
 ```
 pnpm --filter nuikit-core build
-node bench/figma/gen.mjs      # out/vars.json, out/ember.css, bench/figma/variables.md
-node bench/figma/emit.mjs     # out/data-*.json: compact rows per collection
+node bench/figma/gen.mjs      # out/vars.json, bench/figma/variables.md  (44 / 40 / 264)
+node bench/figma/emit.mjs     # out/data-*.json: compact rows per collection (out/ is git-ignored)
 ```
 
-Then, in `use_figma` (Figma MCP), paste `bench/figma/populate.js` and a `data-*.json` array:
-`await populate(collection, rows)` creates or updates variables by name (idempotent), sets scopes, descriptions, code
-syntax and the per-mode values; aliases come back to resolve by name. The Primitives and Tokens pages were built by
-scripts in the same session (bound by variable name, so they survive a re-populate).
+Repopulating the file (the one step left):
+
+1. In the file, rename the modes of the three `nuikit ·` collections, in order, to `Default`, `Neon Pop`, `Flat`,
+   `Square`; rename the yours pair's mode to `Graphite` and the pair itself to `nuikit · yours (Graphite) · ...`.
+2. In `use_figma`, paste `bench/figma/populate.js` and one `out/data-*.json` array, then
+   `await populate(collection, rows)`: `identity`, `semantic`, `component` into the main collections,
+   `yoursIdentity` and `yoursComponent` into the yours pair. It creates or updates by name (idempotent), sets scopes,
+   descriptions, code syntax and the per-mode values (row order = mode order), and returns the aliases to resolve by
+   name. The component rows are large (about 33 KB): send them in two or three slices.
+3. Variables the 1.2 file has that 1.7 no longer generates (`nk/*` names that exist only in the old file) are left
+   alone; delete them by hand if the Tokens page should match exactly. No new scopes are used.
+
+The Primitives and Tokens pages were built by scripts in an earlier session (bound by variable name, so they survive a
+re-populate); their documentation frames do not list the 127 levers yet.
 
 ## What is missing or approximate
 

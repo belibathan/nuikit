@@ -1,3 +1,4 @@
+// Modes, in order: Default, Neon Pop, Flat, Square (the "yours" pair: Graphite). Row order in data-*.json is mode order; the collections' modes must be named and ordered to match (docs/design/figma.md).
 // Paste into a use_figma script together with a rows array from out/data-*.json: `await populate(collection, rows)`.
 // Creates or updates variables by name, sets scopes, descriptions, WEB code syntax and per-mode values; returns aliases to resolve.
 const SCOPES={F:["FRAME_FILL","SHAPE_FILL"],T:["TEXT_FILL"],S:["STROKE_COLOR"],A:["ALL_FILLS","STROKE_COLOR","EFFECT_COLOR"],L:["WIDTH_HEIGHT","GAP"],R:["CORNER_RADIUS"],Z:["FONT_SIZE"],K:["LETTER_SPACING"],P:["FONT_FAMILY"],Y:["FONT_STYLE"],H:[],W:["STROKE_FLOAT"],O:["OPACITY"],E:["EFFECT_COLOR"],G:["EFFECT_FLOAT"],N:["GAP"]};
