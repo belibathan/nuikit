@@ -2,7 +2,6 @@
   "lua": [],
   "components": [
     "button",
-    "separator",
     "kbd",
     "avatar",
     "alert-dialog",
@@ -11,7 +10,6 @@
     "scroll-area",
     "input",
     "tabs",
-    "panel",
     "menu-row",
     "stat",
     "meter",
@@ -21,11 +19,9 @@
     "sheet",
     "slider",
     "action-bar",
-    "edge-sheet",
     "tile",
     "fill",
     "empty-state",
-    "icon-text",
     "selection-tile"
   ]
 }

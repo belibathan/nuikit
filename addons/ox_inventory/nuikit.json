@@ -6,15 +6,11 @@
   "fonts": "graphite",
   "lua": [],
   "components": [
-    "badge",
     "button",
-    "card",
     "dialog",
     "dropdown-menu",
     "input",
     "kbd",
-    "separator",
-    "tooltip",
     "sheet",
     "scroll-area",
     "money",
@@ -24,10 +20,7 @@
     "action-bar",
     "tile",
     "chip",
-    "item-slot",
     "menu-row",
-    "empty-state",
-    "icon-text",
     "selection-tile"
   ]
 }

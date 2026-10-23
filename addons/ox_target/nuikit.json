@@ -5,10 +5,8 @@
   },
   "lua": [],
   "components": [
-    "button",
     "separator",
     "checkbox",
-    "kbd",
     "scroll-area",
     "panel",
     "menu-row"
