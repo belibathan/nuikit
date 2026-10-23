@@ -10,6 +10,7 @@
  *   nuikit theme reload   re-read theme.css and repaint every open UI (console, or ace command.nuikit)
  *   nuikit theme          show the current theme's warnings and contrast
  *   nuikit doctor [json]  server/doctor.js: framework, UI resources, conflicts, next steps
+ *   nuikit install | upgrade | uninstall [resource…] [--dry-run] [--force]   server/install.js: the overrides
  *
  * compiler.js is nuikit-core's compiler (copied by `pnpm sync`). MIT, https://github.com/belibathan/nuikit
  */
@@ -146,7 +147,14 @@ function command(source, args) {
   // ── doctor (server/doctor.js, docs/doctor.md) ──
   else if (sub === "doctor" && globalThis.NuikitDoctor) globalThis.NuikitDoctor.run(reply, action === "json");
   // ── end doctor ──
-  else reply("usage: nuikit theme [reload] | nuikit doctor [json]");
+  // ── install (server/install.js, docs/install.md): console only, it writes to disk ──
+  else if ((sub === "install" || sub === "upgrade" || sub === "uninstall") && globalThis.NuikitInstall) {
+    if (source > 0) return reply("nuikit install runs from the server console (it writes files)");
+    if (sub === "uninstall") globalThis.NuikitInstall.uninstall(reply, args.slice(1));
+    else globalThis.NuikitInstall.install(reply, args.slice(1));
+  }
+  // ── end install ──
+  else reply("usage: nuikit theme [reload] | nuikit doctor [json] | nuikit install|upgrade|uninstall [resource…] [--dry-run] [--force]");
 }
 
 // Console, or players with the ace `command.nuikit` (add_ace group.admin command.nuikit allow).

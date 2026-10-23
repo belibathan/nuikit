@@ -25,13 +25,18 @@ var NuikitTheme = (() => {
     ADAPTER_PACKS: () => ADAPTER_PACKS,
     TOKENS_VERSION: () => TOKENS_VERSION,
     TOKEN_NAMES: () => TOKEN_NAMES,
+    bytesHash: () => bytesHash,
     checkContrast: () => checkContrast,
     compareVersions: () => compareVersions,
     compileTheme: () => compileTheme,
     detectFramework: () => detectFramework,
     doctor: () => doctor,
     formatDoctor: () => formatDoctor,
+    formatInstall: () => formatInstall,
+    overrideOutdated: () => overrideOutdated,
     pageHash: () => pageHash,
+    planInstall: () => planInstall,
+    planUninstall: () => planUninstall,
     themeToCss: () => themeToCss,
     toDtcg: () => toDtcg
   });
@@ -1472,7 +1477,7 @@ ${lines.join("\n")}
     return { framework: "standalone", resource: null };
   }
   function doctor(snap) {
-    var _a, _b, _c, _d, _e;
+    var _a, _b, _c, _d, _e, _f, _g;
     const resources = snap.resources;
     const running = resources.filter(started);
     const byName = new Map(resources.map((r) => [r.name, r]));
@@ -1547,30 +1552,58 @@ ${lines.join("\n")}
       }
     }
     if (snap.overrides && snap.readFile) {
+      const shippedVersion = snap.overrides.version;
       for (const [res, o] of Object.entries(snap.overrides.overrides)) {
         const r = byName.get(res);
         if (!r || !started(r)) continue;
         const html = snap.readFile(res, o.path);
         const rep = reports.find((x) => x.name === res);
+        const installed = (_e = (_d = snap.installed) == null ? void 0 : _d[res]) != null ? _e : null;
         if (!html || !OVERRIDE_MARKER.test(html)) {
           findings.push({
             code: "override-missing",
             severity: "warn",
             resource: res,
-            message: `${res}: the nuikit override page isn't at ${o.path} (a library update replaced it, or it was never copied)`,
-            next: `copy overrides/${res}/ from nuikit.zip over resources/${res}/ again and \`restart ${res}\``
+            message: `${res}: the nuikit override page isn't at ${o.path} (a library update replaced it, or it was never installed)`,
+            next: `\`nuikit install ${res}\` in the server console, then \`restart ${res}\``
           });
           if (rep) {
             rep.via = "override missing";
-            rep.next = `copy overrides/${res}/ from nuikit.zip back over resources/${res}/`;
+            rep.next = `\`nuikit install ${res}\``;
           }
+          continue;
+        }
+        if (installed && compareVersions(shippedVersion, installed.version) > 0) {
+          findings.push({
+            code: "override-outdated",
+            severity: "warn",
+            resource: res,
+            message: `${res}: the override is from nuikit ${installed.version}; this zip ships ${shippedVersion}`,
+            next: `\`nuikit upgrade ${res}\` (or \`nuikit upgrade\` for all), then \`restart ${res}\``
+          });
+          if (rep) rep.via = `override ${installed.version}, outdated`;
+          continue;
+        }
+        const editedByOwner = !!installed && !!snap.fileHash && Object.entries(installed.files).some(([rel, h]) => {
+          const d = snap.fileHash(res, rel);
+          return d !== null && d !== h;
+        });
+        if (editedByOwner) {
+          findings.push({
+            code: "override-edited",
+            severity: "info",
+            resource: res,
+            message: `${res}: the override was edited since nuikit ${installed.version} installed it`,
+            next: `keep it, or \`nuikit install ${res} --force\` to put the shipped files back (your edits are saved under ${res}/.nuikit-backup/)`
+          });
+          if (rep) rep.via = "override edited";
         } else if (pageHash(html) !== o.hash) {
           findings.push({
             code: "override-drifted",
             severity: "warn",
             resource: res,
-            message: `${res}: the override page at ${o.path} isn't the one nuikit ${snap.overrides.version} shipped (edited, or from another release)`,
-            next: `if you didn't edit it, copy overrides/${res}/ from nuikit.zip over resources/${res}/ and \`restart ${res}\``
+            message: `${res}: the override page at ${o.path} isn't the one nuikit ${shippedVersion} shipped (edited, or from another release)`,
+            next: `if you didn't edit it, \`nuikit install ${res}\` and \`restart ${res}\``
           });
           if (rep) rep.via = "override changed";
         }
@@ -1656,13 +1689,13 @@ ${lines.join("\n")}
         findings.push({ code: "theme-warning", severity: "info", message: `theme: ${w}`, next: `fix it in nuikit/theme.css, then \`nuikit theme reload\`` });
       }
     }
-    const latest = (_d = snap.runtime.latest) != null ? _d : null;
+    const latest = (_f = snap.runtime.latest) != null ? _f : null;
     if (latest && compareVersions(latest, snap.runtime.version) > 0) {
       findings.push({
         code: "update-available",
         severity: "info",
         message: `nuikit ${snap.runtime.version} is running; ${latest} is out`,
-        next: `download nuikit.zip from github.com/belibathan/nuikit/releases/tag/v${latest.replace(/^v/, "")} and replace [nuikit]/ and overrides/`
+        next: `download nuikit.zip from github.com/belibathan/nuikit/releases/tag/v${latest.replace(/^v/, "")}, replace [nuikit]/, then \`nuikit upgrade\` (docs/install.md)`
       });
     }
     findings.push({
@@ -1683,7 +1716,7 @@ ${lines.join("\n")}
     findings.push(...unique);
     const rank = { error: 0, warn: 1, info: 2 };
     findings.sort((a, b) => rank[a.severity] - rank[b.severity]);
-    const intents = Object.entries((_e = snap.intents) != null ? _e : {}).map(([source, byIntent]) => ({ source, byIntent, total: Object.values(byIntent).reduce((a, b) => a + b, 0) })).sort((a, b) => b.total - a.total);
+    const intents = Object.entries((_g = snap.intents) != null ? _g : {}).map(([source, byIntent]) => ({ source, byIntent, total: Object.values(byIntent).reduce((a, b) => a + b, 0) })).sort((a, b) => b.total - a.total);
     const count = (s) => reports.filter((r) => r.status === s).length;
     const summary = {
       ui: reports.filter((r) => r.status !== "runtime").length,
@@ -1740,6 +1773,126 @@ ${lines.join("\n")}
     const target = COVERAGE_TARGETS[rep.framework];
     const drawn = rep.intents.reduce((a, i) => a + i.total, 0);
     out.push(`coverage: ${drawn} drawn from ${rep.intents.length} source${rep.intents.length === 1 ? "" : "s"}${target ? `; target ${Math.round(target * 100)}% on ${rep.framework}` : ""} (bench/coverage/run.mjs)`);
+    return out;
+  }
+
+  // src/install.ts
+  function bytesHash(bytes) {
+    let h = 2166136261;
+    for (let i = 0; i < bytes.length; i++) {
+      h ^= bytes[i];
+      h = Math.imul(h, 16777619);
+    }
+    return (h >>> 0).toString(16).padStart(8, "0");
+  }
+  function planInstall(input) {
+    var _a, _b, _c, _d, _e, _f;
+    const { version, shipped, installed, disk, force = false } = input;
+    const ours = (_a = installed == null ? void 0 : installed.files) != null ? _a : {};
+    const actions = [];
+    const edited = [];
+    const files = {};
+    const rels = Object.keys(shipped).sort();
+    for (const rel of rels) {
+      const want = shipped[rel];
+      const have = (_b = disk[rel]) != null ? _b : null;
+      const was = ours[rel];
+      if (have === null) {
+        actions.push({ rel, op: "add" });
+        files[rel] = want;
+      } else if (have === want) {
+        actions.push({ rel, op: "keep" });
+        files[rel] = want;
+      } else if (was === void 0) {
+        actions.push({ rel, op: "replace", backup: true });
+        files[rel] = want;
+      } else if (have === was) {
+        actions.push({ rel, op: "update" });
+        files[rel] = want;
+      } else if (force) {
+        actions.push({ rel, op: "force-edited", backup: true });
+        files[rel] = want;
+      } else {
+        actions.push({ rel, op: "skip-edited" });
+        edited.push(rel);
+        files[rel] = was;
+      }
+    }
+    for (const rel of Object.keys(ours).sort()) {
+      if (rel in shipped) continue;
+      const have = (_c = disk[rel]) != null ? _c : null;
+      if (have === null) continue;
+      if (have !== ours[rel] && !force) {
+        actions.push({ rel, op: "skip-edited" });
+        edited.push(rel);
+        files[rel] = ours[rel];
+        continue;
+      }
+      actions.push({ rel, op: ((_d = input.hasBackup) == null ? void 0 : _d.call(input, rel)) ? "restore" : "remove" });
+    }
+    const changes = actions.filter((a) => a.op !== "keep" && a.op !== "skip-edited").length;
+    return {
+      actions,
+      manifest: { version, backup: (_e = installed == null ? void 0 : installed.backup) != null ? _e : version, files, installedAt: (_f = input.now) != null ? _f : (/* @__PURE__ */ new Date()).toISOString() },
+      edited,
+      changes
+    };
+  }
+  function planUninstall(input) {
+    var _a;
+    const actions = [];
+    const edited = [];
+    for (const rel of Object.keys(input.installed.files).sort()) {
+      const have = (_a = input.disk[rel]) != null ? _a : null;
+      if (have !== null && have !== input.installed.files[rel]) edited.push(rel);
+      if (input.hasBackup(rel)) actions.push({ rel, op: "restore" });
+      else if (have !== null) actions.push({ rel, op: "remove" });
+    }
+    return { actions, edited };
+  }
+  function overrideOutdated(installed, shippedVersion) {
+    return !!installed && compareVersions(shippedVersion, installed.version) > 0;
+  }
+  var VERB = {
+    add: "added",
+    replace: "replaced (stock backed up)",
+    update: "updated",
+    keep: "unchanged",
+    "skip-edited": "kept: you edited it (use --force to overwrite)",
+    "force-edited": "overwritten (your edit saved to .nuikit-backup)",
+    restore: "restored from backup",
+    remove: "removed"
+  };
+  function formatInstall(outcomes, opts) {
+    var _a;
+    const out = [];
+    const head = opts.uninstall ? "nuikit uninstall" : `nuikit install ${opts.version}`;
+    out.push(`${head}${opts.dryRun ? " (dry run: nothing written)" : ""}`);
+    const restart = [];
+    for (const o of outcomes) {
+      if (o.state === "missing") {
+        out.push(`  ${o.resource.padEnd(24)} not on this server; skipped`);
+        continue;
+      }
+      if (o.state === "no-files") {
+        out.push(`  ${o.resource.padEnd(24)} this zip predates \`nuikit install\`; copy nuikit/overrides/${o.resource}/ by hand`);
+        continue;
+      }
+      if (o.state === "not-installed") {
+        out.push(`  ${o.resource.padEnd(24)} nothing installed by nuikit; skipped`);
+        continue;
+      }
+      const plan = o.plan;
+      const counts = {};
+      for (const a of plan.actions) counts[a.op] = ((_a = counts[a.op]) != null ? _a : 0) + 1;
+      const parts = Object.keys(counts).map((op) => `${counts[op]} ${VERB[op]}`);
+      const changes = "changes" in plan ? plan.changes : plan.actions.length;
+      out.push(`  ${o.resource.padEnd(24)} ${parts.length ? parts.join(", ") : "nothing to do"}`);
+      for (const rel of plan.edited) out.push(`    ${opts.uninstall ? "edited since install, restored anyway" : "edited"}: ${rel}`);
+      if (changes > 0) restart.push(o.resource);
+    }
+    if (!opts.dryRun && restart.length) out.push(`  \u2192 \`refresh\`, then ${restart.map((r) => `\`restart ${r}\``).join(", ")}`);
+    if (opts.dryRun && restart.length) out.push(`  \u2192 run it without --dry-run to write, then \`refresh\` and restart ${restart.join(", ")}`);
     return out;
   }
   return __toCommonJS(fxserver_exports);

@@ -117,6 +117,8 @@ function snapshot() {
       console.log(`^5[nuikit]^7 ^3overrides.json is not valid JSON: ${err && err.message ? err.message : err}^7`);
     }
   }
+  const inst = globalThis.NuikitInstall;
+  const installed = inst && overrides ? inst.installedAll(overrides) : null;
   const theme = typeof globalThis.__nuikitTheme === "function" ? globalThis.__nuikitTheme() : null;
   const latest = GetConvar("nuikit_latest", "") || null;
   return {
@@ -124,6 +126,8 @@ function snapshot() {
     resources,
     readFile: (res, path) => LoadResourceFile(res, path) || null,
     overrides,
+    installed,
+    fileHash: inst ? inst.fileHash : undefined,
     theme: theme ? { contrast: theme.contrast, warnings: theme.warnings } : null,
     intents,
   };
