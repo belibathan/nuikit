@@ -8,7 +8,7 @@
  * On by default; `--ox-title-normalise: 0` on :root in nuikit/theme.css keeps titles as written.
  */
 
-import { lookup } from "@/lib/icon";
+import { lookup } from "./icon";
 
 // One emoji element: keycap (1️⃣), flag (🇺🇸), tag flag (🏴 + tags), or a pictograph / symbol with its modifiers
 // (VS16, skin tone, enclosing keycap); elements join with ZWJ (👨‍👩‍👧, 🏳️‍🌈, 👨🏽‍⚕️).
