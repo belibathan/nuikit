@@ -96,7 +96,7 @@ end to end on a machine that is not the owner's, without reading the monorepo.*
 |---|---|
 | `docs/README.md` index: every doc marked current / reference / historical; `docs/next` down to dispatch, decisions, handoff | Done (Oct 23) |
 | Branch hygiene: 210 of 223 branches are fully merged; `node scripts/prune-branches.mjs --delete` removes them (a dry run lists them); the 12 with unique commits are triaged below | **Owner: run the prune** (cloud sessions can't delete refs); see "Unmerged work" |
-| `nuikit check` burn-down visible: CI prints warning counts per folder as a step summary; one folder at a time flips to errors | Open |
+| `nuikit check` ratchet: `pnpm check:burndown` compares every folder with `bench/check-baseline.json` and fails CI when one grows; the table is in the job summary. Baseline Oct 23: 589 warnings, of which nuikit_chat 212, nuikit_hud 209, nuikit_pause 54, ox_inventory 46, ox_lib 18, the rest ≤ 7 | Done (Oct 23); burn down chat, hud, pause (mostly `color/mix` in page CSS the plugin lowers anyway, and `type/raw`), `--update` after each |
 | Visual baselines in CI, the cheap set (`design/contract.md`): the dev fixtures under Default, Neon Pop, Graphite at 1080p, compared to committed shots; a lane sees the diff in the run | Open (was "in progress" in lane C) |
 | Fixtures realistic by rule: mixed vital levels, long titles, third-party strings in every `src/dev.tsx` | Open |
 | Release cadence: cut a release at every in-game-verified checkpoint (changesets + adapter and system bumps, `docs/releases/`); `0.9.0` when Track A lands | Open |

@@ -1,0 +1,94 @@
+{
+  "systems/nuikit": {
+    "errors": 0,
+    "warnings": 28
+  },
+  "systems/nuikit_chat": {
+    "errors": 0,
+    "warnings": 212
+  },
+  "systems/nuikit_death": {
+    "errors": 0,
+    "warnings": 0
+  },
+  "systems/nuikit_dev": {
+    "errors": 0,
+    "warnings": 0
+  },
+  "systems/nuikit_hud": {
+    "errors": 0,
+    "warnings": 209
+  },
+  "systems/nuikit_loading": {
+    "errors": 0,
+    "warnings": 1
+  },
+  "systems/nuikit_pause": {
+    "errors": 0,
+    "warnings": 54
+  },
+  "systems/nuikit_screen": {
+    "errors": 0,
+    "warnings": 0
+  },
+  "systems/nuikit_skins": {
+    "errors": 0,
+    "warnings": 7
+  },
+  "systems/nuikit_stress": {
+    "errors": 0,
+    "warnings": 0
+  },
+  "systems/nuikit_voice": {
+    "errors": 0,
+    "warnings": 0
+  },
+  "addons/Renewed-Banking": {
+    "errors": 0,
+    "warnings": 1
+  },
+  "addons/illenium-appearance": {
+    "errors": 0,
+    "warnings": 0
+  },
+  "addons/mm_radio": {
+    "errors": 0,
+    "warnings": 1
+  },
+  "addons/ox_doorlock": {
+    "errors": 0,
+    "warnings": 1
+  },
+  "addons/ox_inventory": {
+    "errors": 0,
+    "warnings": 46
+  },
+  "addons/ox_lib": {
+    "errors": 0,
+    "warnings": 18
+  },
+  "addons/ox_target": {
+    "errors": 0,
+    "warnings": 0
+  },
+  "addons/qbx_idcard": {
+    "errors": 0,
+    "warnings": 1
+  },
+  "addons/qbx_scoreboard": {
+    "errors": 0,
+    "warnings": 0
+  },
+  "addons/qbx_taxijob": {
+    "errors": 0,
+    "warnings": 1
+  },
+  "addons/qbx_vehiclesales": {
+    "errors": 0,
+    "warnings": 7
+  },
+  "packages/create-nuikit/template": {
+    "errors": 0,
+    "warnings": 2
+  }
+}

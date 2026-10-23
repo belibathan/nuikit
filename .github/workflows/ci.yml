@@ -40,6 +40,10 @@ jobs:
         run: |
           node packages/cli/dist/cli.js check systems/nuikit_death systems/nuikit_hud systems/nuikit_loading systems/nuikit_pause addons packages/create-nuikit/template --level 3
           node packages/cli/dist/cli.js check systems --level 1
+      # The warning ratchet (scripts/check-burndown.mjs): a folder's `nuikit check` warnings may only go down
+      # against bench/check-baseline.json; the table lands in the job summary (docs/roadmap.md Track C).
+      - name: nuikit check burn-down
+        run: node scripts/check-burndown.mjs
       # Class strings (eslint.config.js): conflicting, unknown and forbidden classes. Warnings, never a failure.
       - name: Class lint (warnings)
         run: pnpm lint:classes

@@ -16,6 +16,7 @@
     "build:systems": "pnpm -r --filter \"./systems/**\" --filter \"./addons/**\" build",
     "pack:systems": "node scripts/pack-systems.mjs",
     "sync": "node scripts/sync-template.mjs",
+    "check:burndown": "node scripts/check-burndown.mjs",
     "lint:classes": "eslint registry systems addons --report-unused-disable-directives-severity off -f ./scripts/eslint-github.cjs"
   },
   "devDependencies": {
