@@ -7,10 +7,14 @@ export const REPO = "https://github.com/belibathan/nuikit";
 export const SITE = "https://nuikit.vercel.app";
 
 const PAGES = [
+  { href: "/start", label: "Start" },
   { href: "/components", label: "Components" },
   { href: "/blocks", label: "Blocks" },
   { href: "/theme", label: "Theme studio" },
   { href: "/design", label: "Design" },
+  { href: "/protocol", label: "Protocol" },
+  { href: "/intents", label: "Intents" },
+  { href: "/adopt", label: "Adopt" },
   { href: "/coverage", label: "Coverage" },
 ];
 

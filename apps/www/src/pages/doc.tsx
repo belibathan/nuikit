@@ -2,14 +2,41 @@ import { marked } from "marked";
 import { useEffect, useState } from "react";
 import { Footer, Nav, REPO } from "@/components/site";
 
+/** Docs that have a page here; any other relative link goes to the file on GitHub. */
+const ON_SITE: Record<string, string> = {
+  "docs/protocol.md": "/protocol",
+  "docs/intents.md": "/intents",
+  "docs/adopt.md": "/adopt",
+  "docs/design.md": "/design",
+  "docs/coverage.md": "/coverage",
+};
+
+function resolve(href: string, from: string): string {
+  if (/^(https?:|mailto:|#|\/)/.test(href)) return href;
+  const [file, hash = ""] = href.split("#");
+  const parts = from.split("/").slice(0, -1);
+  for (const seg of (file || "").split("/")) {
+    if (seg === "..") parts.pop();
+    else if (seg && seg !== ".") parts.push(seg);
+  }
+  const target = parts.join("/");
+  const page = ON_SITE[target];
+  if (page) return page + (hash ? `#${hash}` : "");
+  return `${REPO}/blob/main/${target}${hash ? `#${hash}` : ""}`;
+}
+
 /** A page rendered from a markdown file in docs/, so the site and the repo never disagree. */
 export function DocPage({ load, path }: { load: () => Promise<string>; path: string }) {
   const [html, setHtml] = useState("");
   useEffect(() => {
     let live = true;
-    load().then((source) => live && setHtml(marked.parse(source, { async: false, gfm: true }) as string));
+    load().then((source) => {
+      if (!live) return;
+      const parsed = marked.parse(source, { async: false, gfm: true }) as string;
+      setHtml(parsed.replace(/href="([^"]+)"/g, (_, href: string) => `href="${resolve(href, path)}"`));
+    });
     return () => void (live = false);
-  }, [load]);
+  }, [load, path]);
   return (
     <div className="min-h-screen">
       <Nav />
