@@ -9,7 +9,7 @@ const root = path.resolve(__dirname, "../../..") + "/";
 const read = (p: string) => readFileSync(root + p, "utf8");
 const BEFORE = JSON.parse(read("packages/core/test/fixtures/compiled-1.3.json")) as Record<string, Record<string, string>>;
 const SOURCES: Record<string, string> = {
-  stock: "systems/nuikit/theme.css",
+  stock: "packages/core/test/fixtures/stock-theme.css",
   daylight: "packages/core/test/themes/daylight.css",
 };
 const source = (n: string) => read(SOURCES[n] ?? `packages/core/themes/${n}.css`);
@@ -50,7 +50,7 @@ describe("treatment presets", () => {
 });
 
 describe("roles", () => {
-  const v = compileTheme(read("systems/nuikit/theme.css")).vars;
+  const v = compileTheme(read("packages/core/test/fixtures/stock-theme.css")).vars;
   it("every role has a colour and its deep and light steps", () => {
     for (const r of ROLES) for (const k of [`role-${r}`, `role-${r}-deep`, `role-${r}-light`]) expect(v[k], k).toMatch(/^rgba?\(/);
   });
@@ -69,7 +69,7 @@ describe("roles", () => {
 });
 
 describe("materials, behaviour, motion, layers", () => {
-  const v = compileTheme(read("systems/nuikit/theme.css")).vars;
+  const v = compileTheme(read("packages/core/test/fixtures/stock-theme.css")).vars;
   it("materials default to today's surfaces", () => {
     expect(v["nk-material-hud-opacity"]).toBe(v["nk-hud-opacity"]);
     expect(v["nk-material-menu-opacity"]).toBe(v["nk-surface-opacity"]);

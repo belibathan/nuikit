@@ -110,12 +110,14 @@ describe("motion tokens", () => {
     expect(t.warnings.join("\n")).toMatch(/--nk-duration is 300ms/);
   });
 
-  it("a theme may set a derived token itself; DTCG carries only the inputs", () => {
+  it("a theme may set a derived token itself; DTCG carries it, and nothing derivation gives back", () => {
     const t = compileTheme(".dark { --nk-time-press: 60ms; --nk-motion-feel: snap; }");
     expect(t.vars["nk-time-press"]).toBe("60ms");
     const doc = toDtcg(t) as any;
     expect(doc.nk["motion-feel"].$value).toBe("snap");
-    expect(doc.nk["time-press"]).toBeUndefined();
+    expect(doc.nk["time-press"].$value).toEqual({ value: 60, unit: "ms" });
+    expect(doc.nk["time-hover"]).toBeUndefined();
+    expect(compileTheme(doc).vars).toEqual(t.vars);
   });
 });
 

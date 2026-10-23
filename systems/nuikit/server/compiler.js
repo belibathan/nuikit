@@ -1321,7 +1321,7 @@ ${lines.join("\n")}
 `;
   }
   function toDtcg(theme, description = "nuikit theme") {
-    var _a;
+    var _a, _b;
     const color = { $type: "color" };
     const doc = {
       $description: `${description} (nuikit tokens v${TOKENS_REVISION}, ${theme.mode})`,
@@ -1330,12 +1330,14 @@ ${lines.join("\n")}
     };
     const font = { $type: "fontFamily" };
     const nk = {};
+    const preset = (_a = TREATMENT_PRESETS[theme.vars["nk-treatment"]]) != null ? _a : {};
     for (const [name, value] of Object.entries(theme.vars)) {
       const spec = SPEC.get(name);
       if ((spec == null ? void 0 : spec.group) === "derived") continue;
+      if (preset[name] === value) continue;
       const desc = spec ? { $description: spec.description } : {};
       const col = toRgba(value);
-      if (col && ((_a = spec == null ? void 0 : spec.type) != null ? _a : "color") === "color") {
+      if (col && ((_b = spec == null ? void 0 : spec.type) != null ? _b : "color") === "color") {
         const hex = `#${col.slice(0, 3).map((x) => x.toString(16).padStart(2, "0")).join("")}`;
         color[name] = {
           $value: { colorSpace: "srgb", components: col.slice(0, 3).map((x) => Math.round(x / 255 * 1e4) / 1e4), alpha: col[3], hex },
@@ -1351,7 +1353,13 @@ ${lines.join("\n")}
       }
     }
     if (Object.keys(font).length > 1) doc.font = font;
-    if (Object.keys(nk).length > 1) doc.nk = nk;
+    doc.nk = nk;
+    const again = compileTheme(doc, { mode: theme.mode }).vars;
+    for (const [name, value] of Object.entries(theme.vars)) {
+      const spec = SPEC.get(name);
+      if ((spec == null ? void 0 : spec.group) === "derived" && name.startsWith("nk-") && again[name] !== value) nk[name.slice(3)] = dtcgNk(spec, value, { $description: spec.description });
+    }
+    if (Object.keys(nk).length === 0) delete doc.nk;
     return doc;
   }
   function dtcgNk(spec, value, desc) {

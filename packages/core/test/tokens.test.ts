@@ -23,7 +23,7 @@ import {
 const root = fileURLToPath(new URL("../../../", import.meta.url));
 const read = (p: string) => readFileSync(root + p, "utf8");
 const THEMES = {
-  neutral: read("systems/nuikit/theme.css"),
+  neutral: read("packages/core/test/fixtures/stock-theme.css"),
   highChroma: read("packages/core/test/themes/high-chroma.css"),
   lightOnly: read("packages/core/test/themes/light-only.css"),
   lowContrast: read("packages/core/test/themes/low-contrast.css"),
@@ -68,7 +68,7 @@ describe("the token contract", () => {
   });
 });
 
-describe("reference theme: stock neutral (systems/nuikit/theme.css)", () => {
+describe("reference theme: stock neutral (test/fixtures/stock-theme.css)", () => {
   const t = compileTheme(THEMES.neutral);
 
   it("uses the dark set, has every token and no warnings", () => {

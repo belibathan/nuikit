@@ -7,6 +7,7 @@ import { toRgba } from "../src/theme";
 import { compileTheme } from "../src/tokens";
 
 const dir = fileURLToPath(new URL("../../../systems/nuikit_chat/", import.meta.url));
+const STOCK = fileURLToPath(new URL("./fixtures/stock-theme.css", import.meta.url)); // the shipped stock theme, not a local nuikit/theme.css
 const source = readFileSync(dir + "theme/theme.js", "utf8");
 const chat = (() => {
   const module = { exports: {} as any };
@@ -80,7 +81,7 @@ describe("nuikit_chat theme.js", () => {
   });
 
   it("reads the stock nuikit/theme.css", () => {
-    const d = chat.themeDecls(readFileSync(dir + "../nuikit/theme.css", "utf8"));
+    const d = chat.themeDecls(readFileSync(STOCK, "utf8"));
     expect(d["--nk-card"]).toBe("rgb(23, 23, 23)");
     expect(d["--nk-background-rgb"]).toBe("10, 10, 10");
   });
@@ -95,7 +96,7 @@ describe("nuikit_chat theme.js", () => {
 });
 
 describe("nuikit_chat theme.js with the compiled theme (tokens v1)", () => {
-  const stock = compileTheme(readFileSync(dir + "../nuikit/theme.css", "utf8"));
+  const stock = compileTheme(readFileSync(STOCK, "utf8"));
 
   it("sets every token, semantic ones included, from the nuikit resource's compiled vars", () => {
     const d = chat.varsDecls(stock.vars);

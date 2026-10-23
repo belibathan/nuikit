@@ -195,15 +195,16 @@
     var k;
     var out = {};
     for (k in vars) {
+      var pre = /^nk-/.test(k) ? "--" : "--nk-";
       var value = vars[k].replace(/var\(\s*--/g, "var(--nk-");
       var rgba = toRgba(value);
       if (rgba) {
         var rgb = rgba[0] + ", " + rgba[1] + ", " + rgba[2];
-        out["--nk-" + k] = rgba[3] === 1 ? "rgb(" + rgb + ")" : "rgba(" + rgb + ", " + rgba[3] + ")";
-        out["--nk-" + k + "-rgb"] = rgb;
-        out["--nk-" + k + "-a"] = String(rgba[3]);
+        out[pre + k] = rgba[3] === 1 ? "rgb(" + rgb + ")" : "rgba(" + rgb + ", " + rgba[3] + ")";
+        out[pre + k + "-rgb"] = rgb;
+        out[pre + k + "-a"] = String(rgba[3]);
       } else if (!/okl(ch|ab)\(|color-mix\(/.test(value)) {
-        out["--nk-" + k] = value;
+        out[pre + k] = value;
       }
     }
     return out;

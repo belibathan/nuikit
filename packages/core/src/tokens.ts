@@ -1469,10 +1469,13 @@ export function toDtcg(theme: CompiledTheme, description = "nuikit theme"): Dtcg
   };
   const font: Record<string, unknown> = { $type: "fontFamily" };
   const nk: Record<string, unknown> = {};
+  // the treatment's preset fills these again on compile (and its var() values must stay unresolved)
+  const preset = TREATMENT_PRESETS[theme.vars["nk-treatment"] as Treatment] ?? {};
   for (const [name, value] of Object.entries(theme.vars)) {
     const spec = SPEC.get(name);
     // derived tokens are outputs: compiling the file derives them again
     if (spec?.group === "derived") continue;
+    if (preset[name] === value) continue;
     const desc = spec ? { $description: spec.description } : {};
     const col = toRgba(value);
     if (col && (spec?.type ?? "color") === "color") {
@@ -1491,7 +1494,14 @@ export function toDtcg(theme: CompiledTheme, description = "nuikit theme"): Dtcg
     }
   }
   if (Object.keys(font).length > 1) doc.font = font;
-  if (Object.keys(nk).length > 1) doc.nk = nk;
+  doc.nk = nk;
+  // a derived token the theme set itself (Ink's eases) differs from what compiling the file derives: keep it
+  const again = compileTheme(doc, { mode: theme.mode }).vars;
+  for (const [name, value] of Object.entries(theme.vars)) {
+    const spec = SPEC.get(name);
+    if (spec?.group === "derived" && name.startsWith("nk-") && again[name] !== value) nk[name.slice(3)] = dtcgNk(spec, value, { $description: spec.description });
+  }
+  if (Object.keys(nk).length === 0) delete doc.nk;
   return doc;
 }
 

@@ -1,0 +1,133 @@
+/*
+ * Ink, the rules tokens can't say. Everything else (the tile, the plate, fills, the row sweep, type roles, the
+ * notice tile, the action bar) is the kit's, driven by theme.css's values. Only documented data attributes, in
+ * nk.theme; motion is transform and opacity, on the kit's ladder and eases, and only while motion is on.
+ */
+@layer nk.theme {
+  /* the 0.x names still read outside the theme (hud.css, ox_lib app.css), for one release */
+  :root {
+    --ink-6: var(--nk-space-6);
+    --ink-t-pulse: var(--nk-time-pulse);
+    --ink-breathe: var(--nk-ease-breathe);
+  }
+
+  /* a prompt's state reaches its keys: focus lights the rim, hold presses the cap, confirm turns it white */
+  [data-slot="key-prompt"][data-state="focus"] [data-slot="kbd"] {
+    --nk-tile-rim-now: var(--nk-tile-rim-focus);
+  }
+  [data-slot="key-prompt"][data-state="hold"] [data-slot="kbd"] {
+    --nk-tile-rim-now: var(--nk-tile-rim-focus);
+    --nk-tile-x: var(--nk-tile-press);
+    --nk-tile-y: var(--nk-tile-press);
+  }
+  [data-slot="key-prompt"][data-state="confirm"] [data-slot="kbd"] {
+    --nk-tile-face-now: var(--nk-tile-confirm-face);
+    --nk-tile-ink-now: var(--nk-tile-confirm-ink);
+    color: var(--nk-tile-confirm-ink);
+  }
+
+  /* the tab mark: a slanted bar under the active tab */
+  [data-slot="tabs-trigger"] {
+    position: relative;
+  }
+  [data-slot="tabs-trigger"][data-state="active"] {
+    background: transparent;
+    box-shadow: none;
+  }
+  [data-slot="tabs-trigger"]::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: 0.0625rem;
+    width: var(--nk-space-4);
+    height: 0.1875rem;
+    margin-left: calc(var(--nk-space-4) / -2);
+    background: var(--foreground);
+    opacity: 0;
+    transform: skewX(var(--nk-tile-skew)) scaleX(0.4);
+    transition: transform var(--nk-time-snap) var(--nk-ease-spring), opacity var(--nk-time-snap) var(--nk-ease-standard);
+  }
+  [data-slot="tabs-trigger"][data-state="active"]::after {
+    opacity: 1;
+    transform: skewX(var(--nk-tile-skew)) scaleX(1);
+  }
+
+  /* a checked box is a small key: a hard plate straight below */
+  [data-slot="checkbox"] {
+    border-radius: var(--nk-r-key);
+  }
+  [data-slot="checkbox"][data-state="checked"] {
+    box-shadow: 0 var(--nk-tile-plate-y) 0 var(--nk-tile-plate);
+  }
+
+  /* slots: focus lifts by --nk-lift onto a white rim and a hard plate (a layer that fades in) */
+  [data-slot="item-slot"] {
+    position: relative;
+    border-radius: var(--nk-r-control);
+    transition: transform var(--nk-time-exit) var(--nk-ease-retract);
+  }
+  [data-slot="item-slot"]::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    box-shadow: inset 0 0 0 1px var(--nk-tile-rim-focus), 0 var(--nk-tile-plate-y) 0 var(--nk-tile-plate-dim);
+    opacity: 0;
+    transition: opacity var(--nk-time-base) var(--nk-ease-standard);
+  }
+  [data-slot="item-slot"][data-state="focus"] {
+    transform: translateY(calc(var(--nk-lift) * -1));
+    transition: transform var(--nk-time-base) var(--nk-ease-expand);
+  }
+  [data-slot="item-slot"][data-state="focus"]::after {
+    opacity: 1;
+  }
+
+  /* a vital in alert takes danger and breathes */
+  [data-slot="vital-chip"][data-state="alert"] {
+    --vital: var(--nk-fill-alert);
+    animation: nk-breathe var(--nk-time-pulse) var(--nk-ease-breathe) infinite;
+  }
+
+  /* entrances (motion on): the notice tile lands, the plate opens from it (+2 steps), the text follows (+3);
+     leaving, the text fades first. A panel's contents rise by --nk-rise. A refused action shakes twice. */
+  :is(html, *)[data-nk-motion="on"] {
+    & [data-slot="notice"]:not([data-leaving]) {
+      animation: ink-reveal var(--nk-time-slow) var(--nk-ease-expand) calc(var(--nk-stagger) * 2) backwards;
+    }
+    & [data-slot="notice"]:not([data-leaving]) [data-slot="notice-icon"] {
+      animation: nk-land var(--nk-time-slow) var(--nk-ease-spring) backwards;
+    }
+    & [data-slot="notice"]:not([data-leaving]) > div {
+      animation: ink-rise var(--nk-time-base) var(--nk-ease-standard) calc(var(--nk-stagger) * 3) backwards;
+    }
+    & :is([data-slot="panel-header"], [data-slot="panel-body"]) {
+      animation: ink-rise-y var(--nk-time-slow) var(--nk-ease-expand) backwards;
+    }
+    & [data-nk-deny] {
+      animation: ink-deny calc(var(--nk-time-fast) * 2) var(--nk-ease-standard);
+    }
+  }
+  [data-slot="notice"] > div {
+    transition: opacity var(--nk-time-snap) var(--nk-ease-retract);
+  }
+  [data-slot="notice"][data-leaving] > div {
+    opacity: 0;
+  }
+}
+
+@keyframes ink-reveal {
+  from { clip-path: inset(0 calc(100% - 3.25rem) 0 0 round var(--nk-r-surface)); }
+  to { clip-path: inset(-0.5rem round var(--nk-r-surface)); }
+}
+@keyframes ink-rise {
+  from { opacity: 0; transform: translateX(calc(var(--nk-rise) * -1)); }
+}
+@keyframes ink-rise-y {
+  from { opacity: 0; transform: translateY(var(--nk-rise)); }
+}
+@keyframes ink-deny {
+  25% { transform: translateX(calc(var(--nk-deny-x) * -1)); }
+  75% { transform: translateX(var(--nk-deny-x)); }
+}

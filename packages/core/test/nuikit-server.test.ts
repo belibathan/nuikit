@@ -39,7 +39,8 @@ function boot(files: Record<string, string>, aces: Record<string, boolean> = {},
   return { state, logs, net, commands, exported, files, asPlayer };
 }
 
-const THEME = readFileSync(dir + "theme.css", "utf8");
+// the shipped stock theme, not a server's local nuikit/theme.css
+const THEME = readFileSync(fileURLToPath(new URL("./fixtures/stock-theme.css", import.meta.url)), "utf8");
 const LOW = readFileSync(fileURLToPath(new URL("./themes/low-contrast.css", import.meta.url)), "utf8");
 
 describe("the nuikit resource's server script", () => {

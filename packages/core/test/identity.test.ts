@@ -21,7 +21,7 @@ import {
 
 const root = path.resolve(__dirname, "../../..") + "/";
 const read = (p: string) => readFileSync(root + p, "utf8");
-const IDENTITIES = ["graphite", "signal", "velvet", "vector", "arcade", "street", "studio"] as const;
+const IDENTITIES = ["graphite", "signal", "velvet", "vector", "arcade", "street", "studio", "ink"] as const;
 const identity = (n: (typeof IDENTITIES)[number]) => read(`packages/core/themes/${n}.css`);
 const GRAPHITE = {
   "nk-type-ratio": "1.2",
@@ -182,7 +182,8 @@ describe("the four identities", () => {
 
   it("Graphite is exactly the default: stock neutral plus every identity default", () => {
     const g = compileTheme(identity("graphite"));
-    const stock = compileTheme(read("systems/nuikit/theme.css"));
+    // the kit default (stock neutral, every identity default), not a server's local nuikit/theme.css
+    const stock = compileTheme("");
     expect(g.vars).toEqual(stock.vars);
   });
 
@@ -197,6 +198,16 @@ describe("the four identities", () => {
     expect(doc.nk.duration).toMatchObject({ $type: "duration", $value: { value: 120, unit: "ms" } });
     expect(doc.nk["row-indicator"].$value).toBe("fill");
     expect(parseDtcg(doc)["nk-row-indicator"]).toBe("fill");
+  });
+
+  it("round-trip keeps a derived token the theme set and the treatment's unresolved values", () => {
+    const t = compileTheme(identity("ink"));
+    const back = compileTheme(toDtcg(t)).vars;
+    expect(back["nk-ease-expand"]).toBe("cubic-bezier(0.16, 1, 0.3, 1)");
+    expect(back["nk-ease-breathe"]).toBe("cubic-bezier(0.45, 0, 0.55, 1)");
+    expect(back["nk-type-scan-family"]).toBe("var(--font-display)");
+    // a token left to its derivation stays out of the file
+    expect((toDtcg(compileTheme(identity("graphite"))) as any).nk?.["ease-expand"]).toBeUndefined();
   });
 });
 

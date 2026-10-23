@@ -38,6 +38,8 @@ files {
   'theme.css',
   -- identity fonts, served to every UI that loads them from here (docs/tokens.md#fonts)
   'fonts/*.woff2',
+  -- a theme's own stylesheets, which theme.css can @import (https://cfx-nui-nuikit/theme/…)
+  'theme/*.css',
   'web/dist/index.html',
   'web/dist/**/*',
 }
