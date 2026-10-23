@@ -6,20 +6,20 @@
     scale          0.85–1.25  UI size, on top of the theme's --nk-scale
     reducedMotion  boolean    no animations or transitions
     highContrast   boolean    maximum-contrast text and borders, darker HUD surfaces
-  Other resources: NUI.prefs.get() / NUI.prefs.set({ scale = 1.1 }) (nuikit.lua), or the local events
+  Other resources: nk.theme.prefs() / nk.theme.setPrefs({ scale = 1.1 }) (nuikit.lua), or the local events
   below. Players: /nuikit scale 1.1 · /nuikit motion off · /nuikit contrast on · /nuikit reset
 
   Events (local, client side)
     nuikit:prefs:changed (prefs, to?)  to every resource when prefs change (to = nil), or to one
                                        resource answering its request
     nuikit:prefs:request (resource)    ask for nuikit:prefs:changed (nuikit.lua does on start)
-    nuikit:prefs:set (patch)       change prefs (what NUI.prefs.set does)
+    nuikit:prefs:set (patch)       change prefs (what nk.theme.setPrefs does)
 
   NUI callback https://nuikit/theme (any page may call it)
     { hash = nil }                 → { hash, themeHash, theme, prefs, zones } now
     { hash = <last>, wait = true } → answers when the theme, prefs or screen zones change (long-poll, ≤ 25 s)
   `themeHash` covers theme + prefs only, so a page repaints only when it changed; `zones` is every UI's
-  screen zones (NUI.zone, LocalPlayer.state.nuikitZones), for pages nuikit.lua can't message.
+  screen zones (nk.zone.set, LocalPlayer.state.nuikitZones), for pages nuikit.lua can't message.
 ]]
 
 local KVP = 'nuikit:prefs'
@@ -87,7 +87,7 @@ local function themeHash()
   return prefs.density ~= 1 and (h .. ':d' .. prefs.density) or h
 end
 
--- Screen zones (nuikit.lua's NUI.zone): the local player's bag, counted so a change answers the long-poll.
+-- Screen zones (nuikit.lua's nk.zone.set): the local player's bag, counted so a change answers the long-poll.
 local ZONES = 'nuikitZones'
 local zones, zonesGen = nil, 0
 

@@ -1,7 +1,7 @@
 --[[
   nuikit (client): the intent runtime (docs/intents.md §3). Loaded after lib/nuikit.lua and lib/intents.lua.
 
-  Every resource's nk.notify / nk.menu / … lands here (local events, sender = GetInvokingResource()).
+  Every resource's nk.intent.notify / nk.intent.menu / … lands here (local events, sender = GetInvokingResource()).
   This resource owns the one stack, draws each intent in its own frame (web/, the renderers) and
   takes focus for the ones that need it through surfaces, so Escape, the cursor and stacking are
   the same for an intent as for any other nuikit UI.
@@ -42,7 +42,7 @@ local SURFACES = {
   ['intent:challenge'] = { layer = 'panel', input = 'keyboard', escape = 'ignore' },
 }
 local surfaces = {}
-for name, opts in pairs(SURFACES) do surfaces[name] = NUI.surface(name, opts) end
+for name, opts in pairs(SURFACES) do surfaces[name] = nk.surface.define(name, opts) end
 
 --- The surface an intent needs, or nil (notify, prompt, progress draw over the game without focus).
 local function surfaceFor(kind, props)
@@ -76,7 +76,7 @@ end
 -- ───────────────────────────────── the stack
 
 local function send(payload)
-  NUI.send('nuikit:intent', payload)
+  nk.message.send('nuikit:intent', payload)
 end
 
 local function entry(it)
@@ -112,7 +112,7 @@ end
 --- Open an intent. Returns the id, or nil and a reason ('invalid', 'busy').
 local function openIntent(resource, id, kind, props)
   if type(id) ~= 'string' or type(kind) ~= 'string' or type(props) ~= 'table' then return nil, 'invalid' end
-  local issues = NUI.intents.validate(kind, props)
+  local issues = nk.intent.validate(kind, props)
   if #issues > 0 then
     print(('^1[nuikit] %s asked for an invalid %s: %s %s^7'):format(resource, kind, issues[1].path, issues[1].message))
     return nil, 'invalid'
@@ -162,7 +162,7 @@ local function updateIntent(it, patch)
   local merged = {}
   for k, v in pairs(it.props) do merged[k] = v end
   for k, v in pairs(patch) do merged[k] = v end
-  local issues = NUI.intents.validate(it.kind, merged)
+  local issues = nk.intent.validate(it.kind, merged)
   if #issues > 0 then
     print(('^1[nuikit] %s sent an invalid update for %s: %s %s^7'):format(it.resource, it.kind, issues[1].path, issues[1].message))
     return false
@@ -224,14 +224,14 @@ end)
 
 -- ───────────────────────────────── from the frame
 
-NUI.on('nuikit:intent:resolve', function(req)
+nk.message.on('nuikit:intent:resolve', function(req)
   local it = type(req) == 'table' and open[req.id]
   if not it then return { ok = false } end
   closeIntent(it, req.result, req.reason, req.data)
   return { ok = true }
 end)
 
-NUI.on('nuikit:intent:event', function(req)
+nk.message.on('nuikit:intent:event', function(req)
   local it = type(req) == 'table' and open[req.id]
   if not it then return { ok = false } end
   TriggerEvent('nuikit:intent:event', it.id, req.event, req.data)
@@ -240,7 +240,7 @@ NUI.on('nuikit:intent:event', function(req)
 end)
 
 -- The page (re)loaded: give it the whole stack.
-NUI.on('nuikit:intent:sync', function()
+nk.message.on('nuikit:intent:sync', function()
   local list = {}
   for i, it in ipairs(stack()) do list[i] = entry(it) end
   send({ op = 'sync', intents = list })
