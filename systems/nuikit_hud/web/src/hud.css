@@ -2175,8 +2175,9 @@ html[data-nk-motion="off"] .hud-root * {
   transform-origin: 50% 100%;
 }
 /* the level in the vital's role colour (data-hue on the chip gives --hue; Default's roles are white) */
+/* the baseline's fill style (1.6): solid by default, a flat full colour; soft keeps the translucent liquid */
 .hud-key-liquid {
-  background: linear-gradient(180deg, rgba(var(--hue, var(--foreground-rgb)), 0.62), rgba(var(--hue, var(--foreground-rgb)), 0.38));
+  background: rgb(var(--hue, var(--foreground-rgb)));
   transform: scaleY(var(--f, 0));
   transition: transform calc(var(--nk-time-fill) * var(--nk-motion, 1)) var(--nk-ease-standard);
 }
@@ -2207,6 +2208,19 @@ html[data-nk-motion="off"] .hud-root * {
   transition: color calc(var(--nk-time-base) * var(--nk-motion, 1)) ease-out;
 }
 .hud-key-icon { align-items: center; justify-content: center; }
+:is(html, *)[data-nk-fill="soft"] .hud-key-liquid {
+  background: linear-gradient(180deg, rgba(var(--hue, var(--foreground-rgb)), 0.62), rgba(var(--hue, var(--foreground-rgb)), 0.38));
+}
+/* the icon's ink copy: dark on the solid level, cut at the surface (the icon box sits 0.24 × the face from its top) */
+.hud-key-ink {
+  z-index: 3;
+  color: var(--nk-fill-ink, var(--nk-tile-confirm-ink));
+  clip-path: inset(max(0px, calc((1 - var(--f, 0)) * var(--fs) - var(--fs) * 0.24)) 0 0 0);
+}
+:is(html, *)[data-nk-fill="soft"] .hud-key-ink,
+.hud-key-tile[data-active] .hud-key-ink {
+  display: none;
+}
 .hud-key-icon svg { width: 100%; height: 100%; stroke-width: 2.25; }
 /* a letter or number on the face: the display face, nudged left by the italic's lean so it sits optically centred */
 .hud-key-glyph {
@@ -2296,7 +2310,8 @@ html[data-nk-motion="off"] .hud-root * {
 .hud-vchip { margin-right: var(--tag-w, 0px); }
 [data-corner$="right"] .hud-vchip { margin-right: 0; margin-left: var(--tag-w, 0px); }
 /* alert: the rim, fill and line take the status colour and breathe */
-.hud-vchip[data-state="alert"] .hud-key-liquid { background: color-mix(in srgb, var(--vital) 70%, transparent); }
+.hud-vchip[data-state="alert"] .hud-key-liquid { background: var(--vital); }
+:is(html, *)[data-nk-fill="soft"] .hud-vchip[data-state="alert"] .hud-key-liquid { background: color-mix(in srgb, var(--vital) 70%, transparent); }
 .hud-vchip[data-state="alert"] .hud-key-line { background: var(--vital); }
 :is(html, *)[data-nk-motion="reduced"] :is(.hud-key-liquid, .hud-key-line, .hud-key-lit, .hud-key-plate, .hud-key-label, .hud-key-icon) { transition: none; }
 

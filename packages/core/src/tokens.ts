@@ -16,9 +16,10 @@ export const TOKENS_VERSION = 1 as const;
 /**
  * The contract revision: 1.1 added the identity tokens (IDENTITY_TOKENS), 1.2 the motion tokens (MOTION_TOKENS),
  * 1.4 the foundation (FOUNDATION_TOKENS), 1.5 the Default theme levers (KIT_TOKENS: scales, type roles, tile, plate, fill;
- * docs/design/default.md). Additive, so still v1.
+ * docs/design/default.md), 1.6 the baseline every component shares (BASELINE_TOKENS: row rhythm and voices, the field,
+ * the keycap button, the segmented ring; docs/design/baseline.md). Additive, so still v1.
  */
-export const TOKENS_REVISION = "1.5" as const;
+export const TOKENS_REVISION = "1.6" as const;
 
 export type TokenType = "color" | "dimension" | "fontFamily" | "number" | "keyword" | "duration" | "cubicBezier" | "shadow" | "image";
 
@@ -40,7 +41,7 @@ export interface TokenSpec {
   /** Numbers: accepted range. */
   range?: readonly [number, number];
   /** The revision that added it. */
-  since?: "1.1" | "1.2" | "1.3" | "1.4" | "1.5";
+  since?: "1.1" | "1.2" | "1.3" | "1.4" | "1.5" | "1.6";
   /**
    * Tokens 1.5 (KIT_TOKENS): the default is a kit.css formula over the identity (so a subtree's density or
    * radius re-derives it), not a compiled literal. The compiler validates a value a theme or treatment sets and
@@ -294,6 +295,8 @@ export const TREATMENT_PRESETS: Record<Treatment, ThemeVars> = {
     "nk-h-control": "2.25rem",
     "nk-h-row": "3rem",
     "nk-text-key": "0.8125rem",
+    // baseline (1.6): the condensed face reads a step larger as a row title
+    "nk-row-title-size": "1.125rem",
     // type roles: Barlow italic caps (font-display) for anything scanned, the sans for sentences
     ...Object.fromEntries(
       (["scan", "title", "label", "num"] as const).flatMap((r) => [
@@ -598,12 +601,38 @@ export const HYGIENE_TOKENS: readonly TokenSpec[] = [
 /** Every 1.5 lever: kit.css holds the defaults; the compiler validates what a theme or treatment sets. */
 export const KIT_TOKENS: readonly TokenSpec[] = [...SCALE_TOKENS, ...TYPE_ROLE_TOKENS, ...TILE_TOKENS, ...PLATE_TOKENS, ...FILL_TOKENS, ...ACCENT_TOKENS, ...MOTION_15_TOKENS, ...HYGIENE_TOKENS];
 
+const k16 = (name: string, type: TokenType, description: string, fallback: string, extra: Partial<TokenSpec> = {}): TokenSpec => ({ name, type, group: "identity", description, fallback, since: "1.6", css: true, ...extra });
+
+/**
+ * The baseline (1.6, docs/design/baseline.md): what every component shares in every theme, read off the
+ * speedometer and the minimap. Generous rows with an icon tile column and two voices, one selection language
+ * (a marker, a fading tint and a lift), a single focus rim, keycap primaries and segmented rings. kit.css holds
+ * each default (the same in every theme); a theme tunes a value, never a rule.
+ */
+export const BASELINE_TOKENS: readonly TokenSpec[] = [
+  k16("nk-fill-style", "keyword", "How fills read: solid (flat, full, vivid: progress, meters, vital liquid, the selected row) or soft (translucent, a fading tint)", "solid", { values: ["solid", "soft"] }),
+  k16("nk-row-pad-y", "dimension", "A list row's block padding", "nk-space-2"),
+  k16("nk-row-pad-x", "dimension", "A list row's inline padding", "nk-space-3"),
+  k16("nk-row-gap", "dimension", "Between a row's icon tile, its text and its trail", "nk-space-4"),
+  k16("nk-row-lift", "dimension", "How far the selected row's content slides in", "nk-space-2"),
+  k16("nk-row-title-size", "dimension", "A row title (the label voice)", "nk-text-base; tile: 1.125rem"),
+  k16("nk-row-desc-size", "dimension", "A row description (the body voice)", "0.875rem"),
+  k16("nk-row-icon-box", "dimension", "The icon tile beside a row title (the icon inside is --nk-icon-md)", "2rem"),
+  k16("nk-row-marker-width", "dimension", "The selection marker at the row's leading edge", "0.25rem"),
+  k16("nk-row-tint-reach", "number", "How far across the row the selection tint fades out (0–1)", "0.7", { range: [0, 1] }),
+  k16("nk-h-field", "dimension", "Height of text inputs, selects and dialog buttons", "2.75rem"),
+  k16("nk-focus-rim", "color", "The one focus mark of a field or button: a single 1px rim", "ring"),
+  k16("nk-button-wall", "dimension", "The primary keycap's wall: how far its face sits above it", "0.1875rem"),
+  k16("nk-ring-segments", "number", "Segments in a progress ring (the speedometer's language)", "24", { range: [6, 60] }),
+  k16("nk-ring-gap", "number", "Degrees between a progress ring's segments", "4", { range: [0, 12] }),
+];
+
 /** The chamfer (top left and bottom right) as a clip-path of a cut size. */
 export const chamferClip = (cut: string) =>
   `polygon(${cut} 0, 100% 0, 100% calc(100% - ${cut}), calc(100% - ${cut}) 100%, 0 100%, 0 ${cut})`;
 
 /** Every token: v1 then the 1.1 identity tokens. */
-export const ALL_TOKENS: readonly TokenSpec[] = [...TOKENS, ...IDENTITY_TOKENS, ...KIT_TOKENS];
+export const ALL_TOKENS: readonly TokenSpec[] = [...TOKENS, ...IDENTITY_TOKENS, ...KIT_TOKENS, ...BASELINE_TOKENS];
 export const ALL_TOKEN_NAMES: readonly string[] = ALL_TOKENS.map((t) => t.name);
 const SPEC = new Map(ALL_TOKENS.map((t) => [t.name, t]));
 
@@ -1282,7 +1311,7 @@ function deriveIdentity(vars: ThemeVars, warnings: string[], given: ReadonlySet<
     } else vars[spec.name] = v;
   }
   // 1.5 levers: kit.css holds the defaults, so only a value the theme or treatment set is checked (and kept)
-  for (const spec of KIT_TOKENS) {
+  for (const spec of [...KIT_TOKENS, ...BASELINE_TOKENS]) {
     const value = vars[spec.name];
     if (value === undefined || spec.type === "color" || spec.type === "fontFamily" || spec.type === "shadow" || spec.type === "image") continue;
     // a formula (calc(), var()) is the theme's call: CSS resolves it

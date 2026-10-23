@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { flushSync } from "react-dom";
+import { Kbd } from "@/components/ui/kbd";
 import { Meter } from "@/components/ui/meter";
 import { ProgressRing } from "@/components/ui/progress-ring";
 import { progressIntent } from "@/lib/intents";
@@ -105,17 +106,16 @@ export function ProgressBar() {
       <div
         data-slot="progress-slab"
         data-state={presence.state}
-        className={cn("nk-slab-stack rounded-(--nk-slab-radius) bg-(--nk-slab-bg) px-4 py-3 text-(--nk-slab-fg) shadow-[inset_0_0_0_var(--nk-border)_var(--nk-slab-border)]", presenceMotion)}
+        // the baseline: the HUD plate, the label voice, the percentage in the numeric voice, a key tile, a solid fill
+        className={cn("nk-slab-stack gap-(--nk-space-3) rounded-(--nk-slab-radius) bg-(--nk-slab-bg) p-(--nk-space-4) text-(--nk-slab-fg) shadow-[inset_0_0_0_var(--nk-border)_var(--nk-slab-border)]", presenceMotion)}
       >
         <div className="nk-slab-stack-row">
-          <span className="truncate">{run.label}</span>
-          <span ref={pct} className="nk-num text-xs opacity-70" aria-hidden>
+          <span data-slot="progress-label" className="truncate">{run.label}</span>
+          <span ref={pct} data-slot="progress-percent" className="nk-num" aria-hidden>
             0%
           </span>
           {run.canCancel && (
-            <kbd className="nk-slab-key" aria-label="Press X to cancel">
-              X
-            </kbd>
+            <Kbd aria-label="Press X to cancel">X</Kbd>
           )}
         </div>
         <Meter key={run.id} size="sm" track="game" duration={run.duration} aria-label={run.label || "Progress"} />
@@ -133,9 +133,9 @@ export function ProgressCircle() {
   const counter = useRef<HTMLSpanElement>(null);
   const show = (p: number) => {
     pct.current = p;
-    // the text node React made, so a later render finds its own node (and the same text)
+    // the text node React made, so a later render finds its own node (and the same text); the % is its own span
     const text = counter.current?.firstChild;
-    if (text) text.nodeValue = `${p}%`;
+    if (text) text.nodeValue = `${p}`;
   };
 
   useOx<{ duration: number; position?: "middle" | "bottom"; label?: string }>("circleProgress", (d) => {
@@ -171,7 +171,12 @@ export function ProgressCircle() {
         duration={run.duration}
         label={run.label}
         aria-label={run.label || "Progress"}
-        center={<span ref={counter}>{`${pct.current}%`}</span>}
+        center={
+          <span>
+            <span ref={counter}>{`${pct.current}`}</span>
+            <span data-slot="progress-ring-unit">%</span>
+          </span>
+        }
         data-state={presence.state}
         className={presenceMotion}
       />

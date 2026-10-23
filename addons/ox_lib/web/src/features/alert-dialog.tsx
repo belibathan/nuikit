@@ -116,11 +116,11 @@ export function AlertDialog() {
         </AlertDialogDescription>
         <AlertDialogFooter className="nk-panel-footer justify-end">
           {data.cancel && (
-            <AlertDialogCancel ref={cancel} onPointerEnter={(e) => e.currentTarget.focus()} onClick={() => close("cancel")}>
+            <AlertDialogCancel size="lg" ref={cancel} onPointerEnter={(e) => e.currentTarget.focus()} onClick={() => close("cancel")}>
               {data.labels?.cancel ?? locale.cancel}
             </AlertDialogCancel>
           )}
-          <AlertDialogAction ref={confirm} onPointerEnter={(e) => e.currentTarget.focus()} onClick={() => close("confirm")}>
+          <AlertDialogAction size="lg" ref={confirm} onPointerEnter={(e) => e.currentTarget.focus()} onClick={() => close("confirm")}>
             {data.labels?.confirm ?? locale.confirm}
             {!data.cancel && <EnterKey />}
           </AlertDialogAction>

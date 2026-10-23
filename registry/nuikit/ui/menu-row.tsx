@@ -8,13 +8,14 @@ import { Slot } from "radix-ui"
 
 import { cn, nkConfirm, nkState, nkVariant, type NkVariantProps } from "@/lib/utils"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Kbd, KbdGroup } from "@/components/ui/tile"
+import { Kbd, KbdGroup, Tile } from "@/components/ui/tile"
 import { Progress } from "@/components/ui/progress"
 import { meterColor, type MeterTone } from "@/components/ui/meter"
 
 /**
- * MenuRow — the 40px action row every list is made of (docs/design.md, rule 5): an icon or an
- * image, a label, an optional description and progress, and one trailing thing: meta text, a
+ * MenuRow — the action row every list is made of (docs/design.md, rule 5; the baseline, docs/design/baseline.md):
+ * an icon in a tile (one icon size, one column) or an image, a title in the label voice, an optional description
+ * in the body voice and progress, and one trailing thing: meta text, a
  * chevron, a Kbd, a checkbox or a value stepper. Keyboard focus and the list's active row draw the
  * identity's indicator (`nk-row`: bar, outline or fill; one sliding `nk-indicator` when the list
  * drives it); the pointer's hover is the theme's accent, like shadcn's menus. The default look of
@@ -53,17 +54,18 @@ import { meterColor, type MeterTone } from "@/components/ui/meter"
  * row a parent drives), and `kbd` takes one key or a list (["Shift", "E"]): the kbd trail, Tiles gap-items apart.
  *
  * Role: the one action row every list is made of (menus, sheets, settings, pickers).
- * Anatomy: sweep / indicator (nk-row) > lead (icon or image) > body (label over a body-role description, an
- *   optional progress line) > trail (meta, the kbd trail, a checkbox, a stepper, actions, a chevron).
- * Props: icon, image, description, progress, meta, kbd, chevron, active, checked, value, onStep, readOnly,
- *   alert, inert, actions, as, asChild, tone.
+ * Anatomy: sweep / marker / indicator (nk-row) > lead (an icon Tile in the icon column, or an image) > body (a
+ *   label-voice title over a body-voice description, an optional progress line) > trail (meta, the kbd trail, a checkbox, a stepper, actions, a chevron).
+ * Props: icon, iconSpace, image, description, progress, meta, kbd, chevron, active, checked, value, onStep,
+ *   readOnly, alert, inert, actions, as, asChild, tone.
  * Level means: progress, the row's progress line (0–100 of its value, drawn 0–1).
- * Rules: one trailing thing per row; height --nk-h-row; focus and the active row draw the identity indicator
+ * Rules: one trailing thing per row; height --nk-h-row, padding --nk-row-pad-y / -x, gaps --nk-row-gap; the lit row
+ *   slides by --nk-row-lift and lights its icon tile; focus and the active row draw the identity indicator
  *   (never the hover accent); attention is data-state="alert"; a trailing key is a Tile (Kbd), never text.
  */
 const menuRowVariants = cva(
   [
-    "group/menu-row nk-row w-full cursor-default text-left [font-weight:var(--nk-type-label-weight,500)] outline-none select-none",
+    "group/menu-row nk-row w-full cursor-default text-left outline-none select-none",
     // focus and active: the identity indicator (nk-row); the text brightens to the foreground
     "focus-visible:text-foreground data-[active]:text-foreground",
     "disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50",
@@ -101,6 +103,8 @@ const clampPercent = (n: number) => Math.max(0, Math.min(100, Number.isFinite(n)
 type MenuRowProps = Omit<React.ComponentProps<"button">, "value" | "inert"> &
   VariantProps<typeof menuRowVariants> & {
     icon?: React.ReactNode
+    /** Keep the icon column without an icon (rows of a list where some have one: every title starts on one line). */
+    iconSpace?: boolean
     /** A thumbnail instead of the icon: an item, a car, a face. A URL or your own element. */
     image?: string | React.ReactNode
     description?: React.ReactNode
@@ -145,6 +149,7 @@ function MenuRow({
   className,
   tone,
   icon,
+  iconSpace = false,
   image,
   description,
   progress,
@@ -206,20 +211,25 @@ function MenuRow({
         {typeof image === "string" ? <img src={image} alt="" className="size-full object-cover" /> : image}
       </span>
     ) : (
-      icon && (
-        <span data-slot="menu-row-icon" className={cn("flex", tone === "destructive" ? "" : quiet)}>
-          {icon}
+      icon ? (
+        // the icon column: one icon size in a small tile (the tile lights with the row)
+        <span data-slot="menu-row-icon">
+          <Tile size="md" shape="square" aria-hidden>
+            {icon}
+          </Tile>
         </span>
+      ) : (
+        iconSpace && <span data-slot="menu-row-icon" aria-hidden />
       )
     )
 
   const label = (
     <>
       {lead}
-      <span className="flex min-w-0 flex-1 flex-col">
-        <span className="truncate">{children}</span>
+      <span data-slot="menu-row-body">
+        <span data-slot="menu-row-title" className="truncate">{children}</span>
         {description && (
-          <span data-slot="menu-row-description" className={cn("truncate text-(length:--nk-text-label) leading-4 font-normal", quiet)}>
+          <span data-slot="menu-row-description" className={cn("truncate", quiet)}>
             {description}
           </span>
         )}
@@ -281,6 +291,8 @@ function MenuRow({
     "data-active": (active && !readOnly) || undefined,
     "data-state": nkState({ disabled, alert, focus: active && !readOnly }),
     "data-inert": inert || undefined,
+    // the pointer lights a row that hovers the way the keyboard does (baseline: one selection language)
+    "data-hover": (hovers && !readOnly) || undefined,
     "data-readonly": readOnly || undefined,
     className: cn(menuRowVariants({ tone, hover: hovers }), readOnly && "focus-visible:bg-transparent", className),
   }

@@ -56,7 +56,7 @@ afterEach(() => __resetTheme());
 
 describe("tokens 1.1", () => {
   it("is additive: the v1 names are unchanged and come first", () => {
-    expect(TOKENS_REVISION).toBe("1.5");
+    expect(TOKENS_REVISION).toBe("1.6");
     expect(ALL_TOKEN_NAMES.slice(0, TOKEN_NAMES.length)).toEqual([...TOKEN_NAMES]);
     for (const t of IDENTITY_TOKENS) expect(TOKEN_NAMES, t.name).not.toContain(t.name);
   });
@@ -77,7 +77,7 @@ describe("a plain TweakCN paste is Graphite", () => {
     expect(t.vars["font-sans"]).toBe(DEFAULT_FONT_SANS);
     expect(t.vars["font-display"]).toBe(DEFAULT_FONT_DISPLAY);
     expect(t.vars["font-numeric"]).toBe(DEFAULT_FONT_SANS);
-    expect(t.revision).toBe("1.5");
+    expect(t.revision).toBe("1.6");
   });
 
   it("brand is the primary when it has colour, else chart-1", () => {

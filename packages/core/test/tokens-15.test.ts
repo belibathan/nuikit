@@ -3,7 +3,7 @@ import { ALL_TOKENS, compileTheme, IDENTITY_TOKENS, KIT_TOKENS, motionTokens, TO
 
 // tokens 1.5 (docs/design/default.md §2): the Default theme levers. Graphite keeps today's look; `tile` is Default's values.
 describe("tokens 1.5", () => {
-  it("is revision 1.5", () => expect(TOKENS_REVISION).toBe("1.5"));
+  it("is revision 1.6", () => expect(TOKENS_REVISION).toBe("1.6"));
 
   it("lists every lever once, in the schema, out of the compiled defaults", () => {
     const names = KIT_TOKENS.map((t) => t.name);

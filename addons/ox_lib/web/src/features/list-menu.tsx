@@ -227,21 +227,19 @@ export function ListMenu() {
         onCloseAutoFocus={(e) => e.preventDefault()}
         className={cn(
           // a floating sheet: the panel recipe, --nk-edge off the screen edges, as tall as its content
-          "ox-sheet-float ox-list nk-panel z-30 h-auto w-[25rem] gap-0 sm:max-w-[25rem]",
+          "ox-sheet-float ox-list nk-panel z-30 h-auto w-[26rem] gap-0 sm:max-w-[26rem]",
           bottom ? "top-auto bottom-(--nk-edge,1.5rem)" : "top-(--nk-edge,1.5rem) bottom-auto",
           right ? "right-(--nk-edge,1.5rem) left-auto" : "left-(--nk-edge,1.5rem) right-auto",
         )}
       >
         <TooltipProvider delayDuration={0}>
-          <div className="flex min-h-0 flex-col p-6 pb-0">
-            <header className="pb-4">
+          <div className="flex min-h-0 flex-col p-(--nk-pad-surface) pb-0">
+            <header className="pb-(--nk-space-4)">
               <SheetTitle className="ox-sheet-title nk-title truncate">{view.title}</SheetTitle>
             </header>
-            {/* Exactly 7 rows tall (7 × 48px), so scrollIntoView({ block: "nearest" }) always lands on a
-                whole row. The rows change state instantly; only the indicator moves. */}
-            <div ref={list} className="ox-rows relative flex max-h-[21rem] flex-col overflow-y-hidden border-t border-border">
-              {/* hairlines between rows, drawn under the indicator so they never cut through it */}
-              <div aria-hidden className="ox-rules" style={{ "--rows": items.filter((it) => it.label).length } as CSSProperties} />
+            {/* At most 7 rows tall, so scrollIntoView({ block: "nearest" }) always lands on a whole row. The rows
+                change state instantly; only the indicator moves. No hairlines (the baseline: rows breathe). */}
+            <div ref={list} className="ox-rows relative flex max-h-[calc(var(--nk-row-height)*7)] flex-col overflow-y-hidden">
               <div ref={indicator} className="nk-indicator ox-indicator" />
               {items.map((item, i) =>
                 item.label ? (
@@ -273,7 +271,7 @@ export function ListMenu() {
               </div>
             )}
           </div>
-          <ActionBar className="nk-panel-footer mt-4 flex-wrap">
+          <ActionBar className="nk-panel-footer mt-(--nk-space-2) flex-wrap">
             <ActionBarItem keys={["↑", "↓"]} label="Move" />
             {current && isValues(current) && <ActionBarItem keys={["←", "→"]} label="Change" />}
             <ActionBarItem keys={["Enter"]} label={current && isCheck(current) ? "Toggle" : "Select"} />
@@ -321,7 +319,7 @@ function Row({
       active={active}
       // no hover look of its own: hover moves the selection (ListMenu), so the selected row is the only lit one
       hover={false}
-      className={cn("shrink-0 text-base", stagger !== undefined && "nk-rise nk-stagger", className)}
+      className={cn("shrink-0", stagger !== undefined && "nk-rise nk-stagger", className)}
       style={stagger !== undefined ? ({ "--i": stagger, ...style } as CSSProperties) : style}
       icon={item.icon ? <Icon icon={item.icon} color={item.iconColor} animation={item.iconAnimation} allowImage className="size-4" /> : undefined}
       {...kind}

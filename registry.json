@@ -1129,9 +1129,10 @@
           "role": "A level or a timed run, round.",
           "anatomy": [
             "progress-ring",
-            "track circle",
-            "fill arc",
-            "centre (percent | any node)",
+            "disc",
+            "segmented track (--nk-ring-segments, --nk-ring-gap)",
+            "lit segments (the accent, a tone or a hue; solid)",
+            "centre (percent in the numeric voice | any node)",
             "label, cancel hint"
           ],
           "props": [
