@@ -15,7 +15,7 @@ scripts get the report as an object from `exports.nuikit:doctor()`.
 
 | Section | What it says | Where it comes from |
 |---|---|---|
-| Runtime | nuikit's version and protocol; the newest release when known | `nuikit`'s fxmanifest; convar `nuikit_latest` |
+| Runtime | nuikit's version and protocol; the newest release when known | `nuikit`'s fxmanifest; the online check (§3), or convar `nuikit_latest` |
 | Framework | Qbox, QBCore, ESX or standalone | `qbx_core`, `qb-core`, `es_extended` started (`GetResourceState`), in that order |
 | Adapter packs | for each of `[nuikit-ox]`, `[nuikit-qb]`, `[nuikit-esx]`: running, fits (not installed), fits but **not shipped yet**, or not needed | a table in `packages/core/src/doctor.ts`; "running" when a started resource declares `nuikit_adapter '<library>'` |
 | Resources with a UI | every started resource with `ui_page`, `loadscreen`, `nuikit_ui` or `chat_theme`, with its status and a next step | fxmanifest metadata; the page file for overrides |
@@ -50,7 +50,7 @@ Resource statuses:
 | `renderer-failed` | warn | a client posted `nuikit:renderer:failed` (a renderer pack's module didn't load, threw, or has no renderer for a kind it claims; the default drew instead) | rebuild the pack (`pnpm build` in its web/), check `files { 'web/dist/renderers.js' }`, `restart <pack>`. **Not wired on the server yet:** the client event exists (`systems/nuikit/client/renderers.lua`); `server/doctor.js` must count it (lead) |
 | `theme-contrast` | warn | one of the compiled theme's contrast checks fails (the same checks `nuikit theme` prints) | which two tokens to change, then `nuikit theme reload` |
 | `theme-warning` | info | other compiler warnings (missing dark set, values FiveM can't read) | fix in theme.css |
-| `update-available` | info | `nuikit_latest` is newer than the running version | the release URL |
+| `update-available` | info | the newest release (online check, or `nuikit_latest`) is newer than the running version | the release URL |
 | `framework` | info | always: what was detected and which packs fit | the packs that fit |
 
 Errors first, then warnings, then info; the same finding never prints twice (a failed contrast pair is one `theme-contrast`, not that plus the compiler's own warning line). The start-order check only sees resources that were started
@@ -78,8 +78,13 @@ Everything registers through fxmanifest metadata or a file; no code calls into t
   `LoadResourceFile` and compares; `server/install.js` hands it each resource's `.nuikit-backup/manifest.json`
   (`installed`) and a byte hasher (`fileHash`) for the outdated and edited checks. Without the file, the marker check
   still runs and the hash checks are skipped.
-- **Newest release.** `set nuikit_latest 0.7.0` in server.cfg makes the doctor compare. No network calls are made;
-  `nuikit_check_updates 1` is reserved for an opt-in online check and prints that it isn't built yet.
+- **Newest release.** Two sources, one answer. `set nuikit_latest 0.7.0` in server.cfg is the manual override: the
+  doctor compares it and makes no request. Otherwise the server checks once per start, `nuikit_update_delay` seconds
+  after nuikit starts (default 60), with `GET https://api.github.com/repos/belibathan/nuikit/releases/latest`
+  (`PerformHttpRequest`, a `User-Agent` header, no data sent). A newer `tag_name` prints one console line,
+  `nuikit <v> is out: <url>`, and feeds `update-available`. `set nuikit_update_check 0` turns the request off.
+  A failed request (rate limit, no network, bad JSON) is silent; the doctor then shows no update line.
+  Prerelease tags (`0.7.0-next`) lose to the release, so they never count as newer.
 - **Intent counts.** §4.
 
 ## 4. Intent counts (`nuikit:intent`)
@@ -161,6 +166,8 @@ Unproven in game (the natives are used as documented, but nothing here has run o
    `ox_lib`'s ~100 KB page; untested for very large bundles.
 4. `on("nuikit:intent")` and `onNet("nuikit:intent")` on the same name in one script.
 5. Colour codes (`^1`, `^3`, `^5`) through `emitNet("chat:addMessage")` when a player runs `/nuikit doctor`.
+6. The online update check: `PerformHttpRequest` to the GitHub releases API from a server script, the 200 response
+   shape (`tag_name`, `html_url`), and the console line. Unit-tested with a fake request; not seen on FXServer.
 
 In-game checklist (Qbox test server):
 

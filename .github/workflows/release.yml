@@ -66,7 +66,7 @@ jobs:
           fi
           git push --follow-tags || true
 
-      # A GitHub release per version, with the server zips ([nuikit] + addons). Skipped if it exists.
+      # A GitHub release per version, with the server zips ([nuikit] + addons) and SHA256SUMS.txt. Skipped if it exists.
       - if: steps.token.outputs.present == 'true' && steps.pending.outputs.count == '0'
         name: GitHub release with server zips
         env:
@@ -78,4 +78,4 @@ jobs:
           pnpm build:systems && pnpm pack:systems
           notes="docs/releases/$tag.md"
           [ -f "$notes" ] || notes=/dev/null
-          gh release create "$tag" out/*.zip --target "$GITHUB_SHA" --title "nuikit $version" --notes-file "$notes" --latest
+          gh release create "$tag" out/*.zip out/SHA256SUMS.txt --target "$GITHUB_SHA" --title "nuikit $version" --notes-file "$notes" --latest
