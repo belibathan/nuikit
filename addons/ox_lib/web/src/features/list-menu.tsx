@@ -271,7 +271,7 @@ export function ListMenu() {
               </div>
             )}
           </div>
-          <ActionBar className="nk-panel-footer mt-(--nk-space-2) flex-wrap">
+          <ActionBar className="nk-panel-footer mt-(--nk-space-2) gap-0 px-(--nk-space-4)">
             <ActionBarItem keys={["↑", "↓"]} label="Move" />
             {current && isValues(current) && <ActionBarItem keys={["←", "→"]} label="Change" />}
             <ActionBarItem keys={["Enter"]} label={current && isCheck(current) ? "Toggle" : "Select"} />
