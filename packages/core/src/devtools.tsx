@@ -141,6 +141,23 @@ export function NuiDevtools({
     return () => offs.forEach((o) => o());
   }, [enabled, callbacks]);
 
+  // ?fire=<event>[:<preset index>][,<event>…] sends mock presets on load (pnpm look, screenshots, deep links).
+  useEffect(() => {
+    if (!enabled) return;
+    const fireParam = new URLSearchParams(location.search).get("fire");
+    if (!fireParam) return;
+    const t = setTimeout(() => {
+      for (const item of fireParam.split(",")) {
+        const [name, idx] = item.split(":");
+        const presets = (events as Record<string, unknown[]>)[name ?? ""];
+        if (!presets) continue;
+        emit(name!, presets[Number(idx ?? 0)] as never);
+      }
+    }, 50);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [enabled]);
+
   useEffect(() => {
     if (!enabled) return;
     const push = (e: Omit<LogEntry, "id" | "t">) => setLog((l) => [{ ...e, id: ++seq, t: Date.now() }, ...l].slice(0, 100));
