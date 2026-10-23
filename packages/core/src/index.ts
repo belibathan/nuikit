@@ -623,3 +623,10 @@ export {
 // Intents (docs/intents.md): the generated types, for scripts' pages and adapters. The validator,
 // the store and the renderer contract live in nuikit-core/intents (nuikit-core/intents-react for React).
 export { INTENT_KINDS, INTENT_VERSIONS, type IntentKind, type IntentProps, type IntentResults, type IntentEvents } from "./intents.generated";
+
+// The arsenal (src/spec/api): every react-free domain from the root too. nuikit-core/<domain> is the one entry point
+// per domain; host and devtools need React, so they stay on their own subpath (nuikit-core/host, nuikit-core/devtools).
+export * from "./domains/motion";
+export * from "./domains/intents";
+export * from "./domains/zones";
+export * from "./domains/slots";
