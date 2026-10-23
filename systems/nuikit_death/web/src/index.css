@@ -901,6 +901,324 @@
  */
 @layer theme, base, nk.base, components, nk.kit, utilities, nk.theme, nk.app;
 
+/* @generated levers: packages/core/scripts/gen-tokens.mjs from packages/core/src/spec. Never edit by hand. */
+@layer nk.base {
+  :root,
+  [data-nk-theme] {
+    /* identity · scale */
+    --nk-scale: 1;
+    /* identity · density */
+    --nk-density: 1;
+    /* identity · space */
+    --nk-space-1: var(--nk-space-unit);
+    --nk-space-2: calc(var(--nk-space-unit) * 2);
+    --nk-space-3: calc(var(--nk-space-unit) * 3);
+    --nk-space-4: calc(var(--nk-space-unit) * 4);
+    --nk-space-6: calc(var(--nk-space-unit) * 6);
+    --nk-space-8: calc(var(--nk-space-unit) * 8);
+    --nk-space-unit: calc(0.25rem * var(--nk-density));
+    /* identity · radius */
+    --nk-radius-key: max(0.25rem, calc(var(--radius) - 0.5rem));
+    --nk-radius-chip: max(0.25rem, calc(var(--radius) - 0.375rem));
+    --nk-radius-control: calc(var(--radius) - 0.25rem);
+    --nk-radius-surface: var(--nk-material-menu-radius);
+    /* identity · height */
+    --nk-height-key: 1.5rem;
+    --nk-height-chip: calc(1.75rem * var(--nk-density));
+    --nk-height-control: 2.25rem;
+    --nk-height-row: calc(3rem * var(--nk-density));
+    --nk-height-field: 2.75rem;
+    /* identity · icon */
+    --nk-icon-sm: 0.75rem;
+    --nk-icon-md: 1rem;
+    --nk-icon-lg: 1.25rem;
+    --nk-icon-stroke: 2;
+    /* identity · text */
+    --nk-text-base: 1rem;
+    --nk-text-key: 0.8125rem;
+    --nk-text-body: var(--nk-text-base);
+    --nk-text-label: max(0.8125rem, calc(var(--nk-text-base) / var(--nk-type-ratio)));
+    --nk-text-title: calc(var(--nk-text-base) * (1 + (var(--nk-type-ratio) - 1) / 2));
+    --nk-text-section: calc(var(--nk-text-base) * var(--nk-type-ratio) * var(--nk-type-ratio));
+    --nk-text-display: calc(var(--nk-text-base) * var(--nk-type-ratio) * var(--nk-type-ratio) * var(--nk-type-ratio) * var(--nk-type-ratio) * 1.1);
+    --nk-text-hud: max(1.125rem, calc(var(--nk-text-base) * var(--nk-type-ratio)));
+    --nk-text-row: 1.125rem;
+    --nk-text-desc: 0.875rem;
+    /* identity · leading */
+    --nk-leading-tight: 1rem;
+    --nk-leading-normal: 1.25rem;
+    /* identity · shape */
+    --nk-shape-skew: 0deg;
+    --nk-shape-cut: 0px;
+    --nk-shape-stroke: 1px;
+    /* identity · type */
+    --nk-type-ratio: 1.25;
+    --nk-type-weight-body: 400;
+    --nk-type-weight-strong: 600;
+    --nk-type-weight-display: 800;
+    --nk-type-tracking-display: 0.02em;
+    --nk-type-tracking-label: 0.03em;
+    --nk-type-case: uppercase;
+    --nk-type-slant: normal;
+    --nk-type-overhang: 0em;
+    /* identity · surface */
+    --nk-surface-opacity: 0.94;
+    --nk-surface-tint: 0;
+    --nk-surface-gradient: 0;
+    --nk-surface-edge: 0;
+    --nk-surface-elevation: hard;
+    --nk-surface-glow: 0;
+    --nk-surface-glow-budget: 1;
+    --nk-surface-backdrop: off;
+    --nk-surface-legibility: auto;
+    --nk-surface-legibility-lift: 0.5;
+    --nk-surface-slash: none;
+    /* identity · material */
+    --nk-material-hud-opacity: 0.8;
+    --nk-material-hud-blur: 0px;
+    --nk-material-hud-radius: var(--radius);
+    --nk-material-hud-edge: 0;
+    --nk-material-hud-texture: none;
+    --nk-material-menu-opacity: 0.94;
+    --nk-material-menu-blur: 0px;
+    --nk-material-menu-radius: var(--radius);
+    --nk-material-menu-edge: 0;
+    --nk-material-menu-texture: none;
+    --nk-material-overlay-opacity: 0.6;
+    --nk-material-overlay-blur: 0px;
+    --nk-material-overlay-radius: var(--radius);
+    --nk-material-overlay-edge: 0;
+    --nk-material-overlay-texture: none;
+    /* identity · hud */
+    --nk-hud-opacity: 0.8;
+    --nk-hud-text: soft;
+    /* identity · motion */
+    --nk-motion: 1;
+    --nk-motion-duration: 180ms;
+    --nk-motion-ease: cubic-bezier(0.2, 0, 0, 1);
+    --nk-motion-feel: crisp;
+    --nk-motion-bounce: 0;
+    --nk-motion-exit-factor: 0.7;
+    --nk-motion-reduced: 100ms;
+    --nk-motion-profile: full;
+    --nk-motion-move: 1;
+    /* identity · style */
+    --nk-style-fill: solid;
+    --nk-style-level: liquid;
+    --nk-style-hold: fill;
+    --nk-style-gauge: digital;
+    --nk-style-focus: halo;
+    --nk-style-pause: sheet;
+    /* identity · behavior */
+    --nk-behavior-alert: 0.2;
+    --nk-behavior-fuel: 0.15;
+    --nk-behavior-hold: 800ms;
+    --nk-behavior-cooldown: 0ms;
+    --nk-behavior-rest: 3000ms;
+    --nk-behavior-notify-info: 4000ms;
+    --nk-behavior-notify-success: 4000ms;
+    --nk-behavior-notify-warning: 5000ms;
+    --nk-behavior-notify-danger: 7000ms;
+    /* identity · hue */
+    --nk-hue-line: 0.5;
+    --nk-hue-tint: 0.1;
+    --nk-hue-glow: 0.25;
+    --nk-hue-alert: 0.8;
+    /* identity · layer */
+    --nk-layer-world: 10;
+    --nk-layer-hud: 20;
+    --nk-layer-scrim: 30;
+    --nk-layer-surface: 40;
+    --nk-layer-dim: 50;
+    --nk-layer-dialog: 60;
+    --nk-layer-system: 70;
+    /* semantic · time */
+    --nk-time-instant: 0ms;
+    --nk-time-snap: 90ms;
+    --nk-time-fast: 120ms;
+    --nk-time-base: 180ms;
+    --nk-time-slow: 280ms;
+    --nk-time-fill: 420ms;
+    --nk-time-exit: 126ms;
+    --nk-time-pulse: 1000ms;
+    /* semantic · ease */
+    --nk-ease-enter: var(--nk-motion-ease);
+    --nk-ease-exit: cubic-bezier(0.4, 0, 1, 1);
+    --nk-ease-move: var(--nk-motion-ease);
+    --nk-ease-expand: cubic-bezier(0.16, 1, 0.3, 1);
+    --nk-ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+    --nk-ease-breathe: cubic-bezier(0.45, 0, 0.55, 1);
+    --nk-ease-linear: linear;
+    /* semantic · spring */
+    --nk-spring-snap: 0ms 0;
+    --nk-spring-move: 0ms 0;
+    --nk-spring-soft: 0ms 0;
+    --nk-spring-pop: 0ms 0;
+    /* semantic · stagger */
+    --nk-stagger: 40ms;
+    --nk-stagger-max: 100ms;
+    /* semantic · gesture */
+    --nk-gesture-lift: 0.5rem;
+    --nk-gesture-rise: 0.5rem;
+    --nk-gesture-land: 0.6;
+    --nk-gesture-deny: 0.3125rem;
+    --nk-gesture-press: 0.97;
+    --nk-gesture-confirm: 1.08;
+    --nk-gesture-shift: 0rem;
+    /* semantic · voice */
+    --nk-voice-scan-family: var(--font-display);
+    --nk-voice-scan-style: var(--nk-type-slant);
+    --nk-voice-scan-weight: var(--nk-type-weight-display);
+    --nk-voice-scan-tracking: var(--nk-type-tracking-display);
+    --nk-voice-scan-case: var(--nk-type-case);
+    --nk-voice-scan-pad: var(--nk-type-overhang);
+    --nk-voice-title-family: var(--font-display);
+    --nk-voice-title-style: var(--nk-type-slant);
+    --nk-voice-title-weight: var(--nk-type-weight-display);
+    --nk-voice-title-tracking: var(--nk-type-tracking-display);
+    --nk-voice-title-case: var(--nk-type-case);
+    --nk-voice-title-pad: var(--nk-type-overhang);
+    --nk-voice-label-family: var(--font-display);
+    --nk-voice-label-style: var(--nk-type-slant);
+    --nk-voice-label-weight: var(--nk-type-weight-strong);
+    --nk-voice-label-tracking: var(--nk-type-tracking-label);
+    --nk-voice-label-case: var(--nk-type-case);
+    --nk-voice-label-pad: var(--nk-type-overhang);
+    --nk-voice-num-family: var(--font-numeric);
+    --nk-voice-num-style: var(--nk-type-slant);
+    --nk-voice-num-weight: var(--nk-type-weight-strong);
+    --nk-voice-num-tracking: 0.01em;
+    --nk-voice-num-case: none;
+    --nk-voice-num-pad: var(--nk-type-overhang);
+    --nk-voice-body-family: var(--font-sans);
+    --nk-voice-body-style: normal;
+    --nk-voice-body-weight: var(--nk-type-weight-body);
+    --nk-voice-body-tracking: 0em;
+    --nk-voice-body-case: none;
+    --nk-voice-body-pad: 0em;
+    /* semantic · plate */
+    --nk-plate-color: var(--surface);
+    --nk-plate-hair: var(--border);
+    --nk-plate-drop: 0 0.125rem 0 rgba(var(--scrim-rgb), 0.6);
+    --nk-plate-radius: var(--nk-radius-surface);
+    /* semantic · fill */
+    --nk-fill-color: var(--foreground);
+    --nk-fill-track: rgba(var(--foreground-rgb), 0.12);
+    --nk-fill-tint: rgba(var(--foreground-rgb), 0.12);
+    --nk-fill-edge: rgba(var(--foreground-rgb), 0.4);
+    --nk-fill-alert: var(--destructive);
+    --nk-fill-height: var(--nk-meter-track-height);
+    /* semantic · accent */
+    --nk-accent-paint: var(--brand);
+    --nk-accent-from: var(--brand);
+    --nk-accent-via: var(--nk-accent-from);
+    --nk-accent-to: var(--nk-accent-from);
+    /* semantic · list */
+    --nk-list-gap: calc(var(--nk-tile-wall-height) + var(--nk-space-1));
+    --nk-list-pad-x: calc(var(--nk-tile-key-inset) + var(--nk-space-1));
+    /* semantic · gap */
+    --nk-gap-cluster: var(--nk-space-2);
+    --nk-gap-items: var(--nk-space-1);
+    --nk-gap-pad-x: var(--nk-space-3);
+    --nk-gap-surface: var(--nk-space-6);
+    /* semantic · line */
+    --nk-line-width: var(--nk-shape-stroke);
+    --nk-line-focus: var(--ring);
+    --nk-line-clip: none;
+    --nk-line-clip-sm: none;
+    --nk-line-glow: 1rem;
+    /* semantic · depth */
+    --nk-depth-elevation: 0 0.25rem 0 0 rgba(0, 0, 0, 0.5);
+    --nk-depth-text: 0 1px 2px rgba(0, 0, 0, 0.6);
+    /* semantic · alpha */
+    --nk-alpha-day: 0;
+    --nk-alpha-hud: calc(var(--nk-material-hud-opacity) + (1 - var(--nk-material-hud-opacity)) * var(--nk-surface-legibility-lift) * var(--nk-alpha-day));
+    --nk-alpha-menu: calc(var(--nk-material-menu-opacity) + (1 - var(--nk-material-menu-opacity)) * var(--nk-surface-legibility-lift) * var(--nk-alpha-day));
+    --nk-alpha-overlay: calc(var(--nk-material-overlay-opacity) + (1 - var(--nk-material-overlay-opacity)) * var(--nk-surface-legibility-lift) * var(--nk-alpha-day));
+    /* component · tile */
+    --nk-tile-plate-color: var(--border);
+    --nk-tile-plate-dim: var(--nk-tile-plate-color);
+    --nk-tile-plate-x: 0px;
+    --nk-tile-plate-y: 2px;
+    --nk-tile-plate-press: 1px;
+    --nk-tile-wall-height: 0.1875rem;
+    --nk-tile-wall-shade: 0.45;
+    --nk-tile-face-color: var(--muted);
+    --nk-tile-face-ink: var(--popover-foreground);
+    --nk-tile-face-light: rgba(var(--popover-foreground-rgb), 0.16);
+    --nk-tile-face-shade: rgba(var(--scrim-rgb), 0);
+    --nk-tile-face-rim: rgba(var(--foreground-rgb), 0.32);
+    --nk-tile-face-rim-focus: rgba(var(--foreground-rgb), 0.4);
+    --nk-tile-face-radius: var(--nk-radius-key);
+    --nk-tile-face-skew: var(--nk-shape-skew);
+    --nk-tile-face-shadow: inset 0 -1px 0 0 var(--nk-tile-face-shade), inset 0 1px 0 0 var(--nk-tile-face-light);
+    --nk-tile-face-clip: var(--nk-line-clip-sm);
+    --nk-tile-face-confirm: var(--foreground);
+    --nk-tile-face-confirm-ink: var(--background);
+    --nk-tile-face-active: var(--nk-accent-paint);
+    --nk-tile-face-hold: rgba(var(--foreground-rgb), 0.35);
+    --nk-tile-legend-font: var(--nk-voice-scan-family);
+    --nk-tile-legend-weight: var(--nk-voice-scan-weight);
+    --nk-tile-legend-pad: calc(var(--nk-voice-scan-pad) / 2);
+    --nk-tile-legend-shift: 0em;
+    --nk-tile-legend-gap: var(--nk-space-1);
+    --nk-tile-legend-inset: var(--nk-space-1);
+    --nk-tile-tag-delay: 80ms;
+    --nk-tile-key-color: var(--primary);
+    --nk-tile-key-ink: var(--primary-foreground);
+    --nk-tile-key-rim: transparent;
+    --nk-tile-key-radius: var(--nk-radius-control);
+    --nk-tile-key-tint: 0.16;
+    --nk-tile-key-inset: 0.375rem;
+    --nk-tile-key-lift: 1px;
+    --nk-tile-key-press: 0.67;
+    --nk-tile-key-overhang: 0.25rem;
+    /* component · vital-chip */
+    --nk-vital-chip-size: 2.125rem;
+    --nk-vital-chip-size-sm: 1.625rem;
+    --nk-vital-chip-shape: auto;
+    --nk-vital-chip-display: expand;
+    --nk-vital-chip-icon: uniform;
+    --nk-vital-chip-neighbours: push;
+    --nk-vital-chip-attach: flag;
+    --nk-vital-chip-tile-ratio: 0.94;
+    --nk-vital-chip-icon-ratio: 0.52;
+    --nk-vital-chip-label-size: 0.9375rem;
+    --nk-vital-chip-label-gap: 1rem;
+    --nk-vital-chip-line-width: 0.125rem;
+    --nk-vital-chip-plate-drop: 0.25rem;
+    --nk-vital-chip-plate-x: 0rem;
+    --nk-vital-chip-activefill-color: transparent;
+    --nk-vital-chip-track-color: rgba(var(--hud-foreground-rgb), 0.16);
+  }
+  /* a subtree that changes --nk-density re-derives these */
+  [data-nk-density] {
+    --nk-space-1: var(--nk-space-unit);
+    --nk-space-2: calc(var(--nk-space-unit) * 2);
+    --nk-space-3: calc(var(--nk-space-unit) * 3);
+    --nk-space-4: calc(var(--nk-space-unit) * 4);
+    --nk-space-6: calc(var(--nk-space-unit) * 6);
+    --nk-space-8: calc(var(--nk-space-unit) * 8);
+    --nk-space-unit: calc(0.25rem * var(--nk-density));
+    --nk-height-chip: calc(1.75rem * var(--nk-density));
+    --nk-height-row: calc(3rem * var(--nk-density));
+    --nk-gap-cluster: var(--nk-space-2);
+    --nk-gap-items: var(--nk-space-1);
+    --nk-gap-pad-x: var(--nk-space-3);
+    --nk-gap-surface: var(--nk-space-6);
+  }
+  /* a subtree that changes --nk-radius re-derives these */
+  [data-nk-shape] {
+    --nk-radius-key: max(0.25rem, calc(var(--radius) - 0.5rem));
+    --nk-radius-chip: max(0.25rem, calc(var(--radius) - 0.375rem));
+    --nk-radius-control: calc(var(--radius) - 0.25rem);
+    --nk-radius-surface: var(--nk-material-menu-radius);
+    --nk-tile-face-radius: var(--nk-radius-key);
+    --nk-tile-key-radius: var(--nk-radius-control);
+  }
+}
+/* @end generated levers */
+
 /*
  * Tokens 1.5 (docs/design/default.md §2): the Default theme levers, every theme gets them. These are the Graphite defaults
  * (today's proportions); the `tile` treatment and Default set their own values. The older component tokens below
