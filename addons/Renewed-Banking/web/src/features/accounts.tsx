@@ -32,9 +32,9 @@ function AccountRow({ account, personal, active, onSelect }: { account: Account;
       className="min-h-14 px-3"
       icon={personal ? <UserRound /> : <Building2 />}
       description={account.type}
-      meta={<span className="text-sm">{money(account.amount, "compact")}</span>}
+      meta={<span className="nk-num">{money(account.amount, "compact")}</span>}
     >
-      <span className="flex items-center gap-1.5">
+      <span className="flex items-center gap-2">
         <span className="truncate">{account.name || account.id}</span>
         {frozen && <Snowflake className="size-3.5 shrink-0" aria-label={t("frozen")} />}
       </span>

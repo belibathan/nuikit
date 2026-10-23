@@ -26,6 +26,9 @@
     "sheet",
     "edge-sheet",
     "text-roll",
-    "nui-image"
+    "nui-image",
+    "action-bar",
+    "chip",
+    "empty-state"
   ]
 }

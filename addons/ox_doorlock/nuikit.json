@@ -21,6 +21,7 @@
     "menu-row",
     "form-field",
     "confirm",
-    "empty-state"
+    "empty-state",
+    "action-bar"
   ]
 }

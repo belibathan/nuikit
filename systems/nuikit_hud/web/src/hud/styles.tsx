@@ -4,7 +4,7 @@
 import type { HudStyles, StyleChoice, StyleKey, StyleValue } from "../nui";
 
 const GROUPS: { title: string; keys: StyleKey[] }[] = [
-  { title: "Vitals", keys: ["vitals.visibility", "vitals.display"] },
+  { title: "Vitals", keys: ["vitals.visibility"] },
   { title: "Speedometer", keys: ["vehicle.gauge"] },
   { title: "Map", keys: ["map.radar", "map.shape", "map.size", "map.halo", "map.compass", "map.column"] },
   { title: "Location and money", keys: ["column.street", "column.area", "column.money", "column.job", "column.align"] },

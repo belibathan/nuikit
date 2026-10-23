@@ -1,7 +1,9 @@
-import { useEffect, useRef, useState, type ReactNode } from "react";
-import { useClearOf, useStaggerItem } from "nuikit-core/react";
+import { useEffect, useRef, useState } from "react";
+import { useClearOf } from "nuikit-core/react";
 import { Button } from "@/components/ui/button";
-import { Kbd } from "@/components/ui/kbd";
+import { ActionBar, ActionBarItem } from "@/components/ui/action-bar";
+import { Chip } from "@/components/ui/chip";
+import { MenuRow } from "@/components/ui/menu-row";
 import { EdgeSheet, EdgeSheetBody, EdgeSheetFooter } from "@/components/ui/edge-sheet";
 import { formatMoney } from "@/components/ui/money";
 import { Stat } from "@/components/ui/stat";
@@ -16,17 +18,6 @@ const num = (v: unknown) => (typeof v === "number" ? v : Number(v) || 0);
 
 /** rem in px (1rem follows the game's resolution). */
 const rem = (n: number) => n * (parseFloat(getComputedStyle(document.documentElement).fontSize) || 16);
-
-/** One label/value row: rises in with the sheet's other rows (the group is the sheet's Stagger). */
-function Row({ label, children }: { label: string; children: ReactNode }) {
-  const ref = useStaggerItem<HTMLDivElement>(undefined, { appear: true, animate: "rise" });
-  return (
-    <div ref={ref} className="flex min-h-10 items-center justify-between">
-      <dt className="text-muted-foreground">{label}</dt>
-      <dd className="nk-num font-medium">{children}</dd>
-    </div>
-  );
-}
 
 /** qbx_taxijob's fare meter. Protocol: docs/qbx-taxijob-protocol.md */
 export default function App() {
@@ -110,18 +101,18 @@ export default function App() {
       side="left"
       width="18rem"
       fit
-      className="top-[34vh]"
+      anchor="upper"
       style={clear.top !== undefined ? { top: `max(34vh, ${clear.top}px)` } : undefined}
       title="Taxi meter"
       actions={
         <button
           type="button"
           onClick={toggle}
-          className="nk-label -mr-1.5 flex h-6 items-center gap-1.5 rounded-full px-1.5 outline-none hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50"
+          className="nk-label -mr-1 flex h-6 items-center gap-2 rounded-(--nk-r-chip) px-1 outline-none hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50"
           aria-pressed={running}
           title={running ? "Stop the meter" : "Start the meter"}
         >
-          <span className={cn("size-1.5 rounded-full", running ? "bg-success" : "bg-muted-foreground/60")} />
+          <Chip variant="dot" tone={running ? "success" : "neutral"} aria-hidden />
           <span className={cn(running && "text-foreground")}>{running ? "Running" : "Stopped"}</span>
         </button>
       }
@@ -135,17 +126,11 @@ export default function App() {
           className="pb-4"
         />
 
-        <dl className="flex flex-col divide-y divide-border border-t text-sm">
-          <Row label="Rate">
-            {money(rate.perMile, 2)}
-            <span className="text-muted-foreground font-normal"> / mi</span>
-          </Row>
-          <Row label="Distance">
-            {miles.toFixed(2)}
-            <span className="text-muted-foreground font-normal"> mi</span>
-          </Row>
-          {rate.start > 0 && <Row label="Starting fare">{money(rate.start, 2)}</Row>}
-        </dl>
+        <div className="flex flex-col border-t">
+          <MenuRow readOnly meta={<>{money(rate.perMile, 2)}<span className="text-muted-foreground"> / mi</span></>}>Rate</MenuRow>
+          <MenuRow readOnly meta={<>{miles.toFixed(2)}<span className="text-muted-foreground"> mi</span></>}>Distance</MenuRow>
+          {rate.start > 0 && <MenuRow readOnly meta={money(rate.start, 2)}>Starting fare</MenuRow>}
+        </div>
       </EdgeSheetBody>
 
       {cursor && (
@@ -153,10 +138,9 @@ export default function App() {
           <Button variant={running ? "secondary" : "default"} className="flex-1" onClick={toggle}>
             {running ? "Stop meter" : "Start meter"}
           </Button>
-          <Button variant="ghost" onClick={release} className="text-muted-foreground">
-            Done
-            <Kbd>Esc</Kbd>
-          </Button>
+          <ActionBar>
+            <ActionBarItem keys={["Esc"]} label="Done" onClick={release} />
+          </ActionBar>
         </EdgeSheetFooter>
       )}
     </EdgeSheet>

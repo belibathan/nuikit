@@ -2,9 +2,9 @@ import { ArrowDownLeft, ArrowUpRight, FileDown, ReceiptText, Search } from "luci
 import { Fragment, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
+import { MenuRow } from "@/components/ui/menu-row";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Separator } from "@/components/ui/separator";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { ago, money, t } from "@/lib/locale";
 import type { Transaction } from "@/lib/types";
@@ -21,19 +21,10 @@ export function matches(tx: Transaction, q: string) {
   return [tx.message, tx.trans_id, tx.receiver].some((f) => String(f ?? "").toLowerCase().includes(n));
 }
 
-/** Direction is carried by the arrow and the sign, so amounts stay neutral. */
-function Direction({ out, className }: { out: boolean; className?: string }) {
-  return (
-    <span className={cn("flex size-8 shrink-0 items-center justify-center rounded-(--nk-key-radius) bg-muted text-muted-foreground", className)}>
-      {out ? <ArrowUpRight className="size-4" /> : <ArrowDownLeft className="size-4" />}
-    </span>
-  );
-}
-
 export function Amount({ tx, className }: { tx: Transaction; className?: string }) {
   const out = isOut(tx);
   return (
-    <span className={cn("nk-num font-semibold whitespace-nowrap", className)}>
+    <span className={cn("nk-num whitespace-nowrap", className)}>
       {out ? "−" : "+"}
       {money(Math.abs(Number(tx.amount) || 0))}
     </span>
@@ -44,14 +35,15 @@ export function NoTransactions({ text }: { text: string }) {
   return <EmptyState icon={<ReceiptText />} title={text} description="Deposits, withdrawals and transfers show up here." />;
 }
 
-/** One transaction as a 56px row: direction, message, when and who, the amount. */
+/** One transaction as a read-only row: direction, message, when and who, the amount. */
 function TxRow({ tx, full }: { tx: Transaction; full?: boolean }) {
   return (
-    <div className="flex min-h-14 items-center gap-3 py-2" title={tx.title}>
-      <Direction out={isOut(tx)} />
-      <div className="min-w-0 flex-1">
-        <div className="truncate text-sm font-medium">{tx.message || tx.title}</div>
-        <div className="nk-label truncate font-normal">
+    <MenuRow
+      readOnly
+      title={tx.title}
+      icon={isOut(tx) ? <ArrowUpRight /> : <ArrowDownLeft />}
+      description={
+        <>
           {ago(tx.time)}
           {full && (
             <>
@@ -61,10 +53,12 @@ function TxRow({ tx, full }: { tx: Transaction; full?: boolean }) {
               <span className="font-mono">{String(tx.trans_id ?? "").slice(0, 8)}</span>
             </>
           )}
-        </div>
-      </div>
-      <Amount tx={tx} className="text-sm" />
-    </div>
+        </>
+      }
+      meta={<Amount tx={tx} />}
+    >
+      {tx.message || tx.title}
+    </MenuRow>
   );
 }
 
@@ -113,7 +107,6 @@ export function TransactionsPanel({ transactions, onExport, canExport }: { trans
           <div className="flex flex-col">
             {rows.map((tx, i) => (
               <Fragment key={`${tx.trans_id}:${i}`}>
-                {i > 0 && <Separator />}
                 <TxRow tx={tx} full />
               </Fragment>
             ))}
@@ -132,7 +125,6 @@ export function RecentList({ transactions, limit = 4 }: { transactions: Transact
     <div className="flex flex-col">
       {rows.map((tx, i) => (
         <Fragment key={`${tx.trans_id}:${i}`}>
-          {i > 0 && <Separator />}
           <TxRow tx={tx} />
         </Fragment>
       ))}

@@ -15,8 +15,6 @@
 .pause-scrim {
   inset: -32px; /* past the edges, so the blur has no hard border */
   background: color-mix(in oklab, var(--scrim) 38%, transparent);
-  /* the world shade, not a panel: its own token (the menu material's blur is 0 by default) */
-  --nk-backdrop-filter: blur(var(--pause-scrim-blur, 16px)) saturate(1.15);
 }
 
 /*
@@ -31,7 +29,6 @@
   background-color: var(--nk-panel-bg) !important;
   /* the menu material (tokens 1.4): --nk-panel-bg (× --nk-menu-alpha; blur through --nk-backdrop-filter, on unless a server sets --nk-backdrop: off); the screen-edge depth is a token of its own
      (--pause-sheet-depth, set in theme.css; 0 = flat) */
-  background-image: linear-gradient(90deg, rgba(var(--scrim-rgb), var(--pause-sheet-depth, 0.22)) 0%, rgba(var(--scrim-rgb), 0) 70%);
   border-right: var(--nk-border) solid var(--nk-panel-border) !important;
   box-shadow: var(--nk-panel-shadow) !important;
   /* the menu material's blur (tokens 1.4: the surface applies it; 0px by default) */

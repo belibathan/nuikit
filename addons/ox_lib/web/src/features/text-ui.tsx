@@ -41,7 +41,7 @@ const SLIDE: Record<KeyPromptPosition, string> = {
   "bottom-center": "data-[state=open]:slide-in-from-bottom-4 data-[state=closed]:slide-out-to-bottom-2",
 };
 const MOTION =
-  "data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:duration-200 data-[state=open]:ease-out data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:duration-150 data-[state=closed]:ease-in data-[state=closed]:fill-mode-forwards";
+  "data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:duration-(--nk-time) data-[state=open]:ease-(--nk-ease-out) data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:duration-(--nk-time) data-[state=closed]:ease-(--nk-ease-retract) data-[state=closed]:fill-mode-forwards";
 
 export function TextUi() {
   // lever (README): where a text UI without a position goes (ox's default right-center)

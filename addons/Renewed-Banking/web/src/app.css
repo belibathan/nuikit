@@ -34,8 +34,6 @@ textarea {
   clip-path: var(--nk-chip-clip, none);
   background-color: var(--muted);
   color: var(--muted-foreground);
-  font-size: 0.875rem;
-  font-weight: 500;
   outline: none;
 }
 .rb-chip:hover {
@@ -47,29 +45,4 @@ textarea {
 }
 .rb-chip:focus-visible {
   box-shadow: inset 0 0 0 0.125rem var(--ring);
-}
-/* the Close hint is a button: it lights like an active chip */
-.rb-hint:hover [data-slot="hud-chip"],
-.rb-hint:focus-visible [data-slot="hud-chip"] {
-  background-color: var(--nk-chip-active-bg);
-  color: var(--nk-chip-active-fg);
-}
-
-/*
- * Foundation 2 (docs/tokens.md, Foundation 1.4): sheets and dialogs are menu surfaces. Their fill
- * reads --nk-menu-alpha (the menu material's opacity, lifted by legibility "day"); radius, the top
- * edge highlight and the backdrop blur read --nk-material-menu-*. The fallbacks are today's panel.
- */
-[data-slot="edge-sheet"],
-[data-slot="dialog-content"],
-[data-slot="alert-dialog-content"] {
-  --nk-panel-bg: rgba(var(--surface-rgb, var(--popover-rgb)), calc(var(--surface-a, var(--popover-a, 1)) * var(--nk-menu-alpha, var(--nk-surface-opacity, 0.96))));
-  --nk-panel-radius: var(--nk-material-menu-radius, var(--radius));
-  --nk-panel-edge: inset 0 1px 0 0 rgba(var(--popover-foreground-rgb), var(--nk-material-menu-edge, var(--nk-surface-edge, 0.06)));
-  --nk-backdrop-filter: blur(var(--nk-material-menu-blur, 0px));
-}
-/* A sheet's drop shadow, tighter than the panel's (16px blur, not 32px): a large blur over a full-height
-   sheet is the slowest thing to paint on open (Renewed-Banking at 4x CPU: 392 to 121 ms for the first frame). */
-[data-slot="edge-sheet"] {
-  --nk-panel-shadow: 0 0 0 1px rgba(var(--scrim-rgb), 0.25), 0 8px 16px -10px rgba(var(--scrim-rgb), 0.55);
 }

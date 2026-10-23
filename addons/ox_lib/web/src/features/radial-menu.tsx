@@ -1,7 +1,7 @@
 import { onTheme } from "nuikit-core";
 import { Stagger, useStaggerItem } from "nuikit-core/react";
 import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
-import { Kbd } from "@/components/ui/kbd";
+import { ActionBar, ActionBarItem } from "@/components/ui/action-bar";
 import { TextRoll } from "@/components/ui/text-roll";
 import { Icon, isImage } from "@/lib/icon";
 import { useLocale } from "@/lib/locale";
@@ -209,7 +209,7 @@ export function RadialMenu() {
     <div
       data-state={presence.state}
       data-hub={hover === "hub" || undefined}
-      className="ox-radial fixed inset-0 z-30 grid place-items-center data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:duration-100 data-[state=closed]:fill-mode-forwards"
+      className="ox-radial fixed inset-0 z-30 grid place-items-center data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:duration-(--nk-time) data-[state=closed]:fill-mode-forwards"
       onPointerMove={(e) => setHover(hitAt(e))}
       onPointerLeave={() => setHover(null)}
       onClick={(e) => {
@@ -288,18 +288,10 @@ export function RadialMenu() {
         </svg>
 
         {/* key hints along the bottom, the pause menu's chips */}
-        <div data-slot="radial-hints" className="absolute top-full left-1/2 mt-6 flex -translate-x-1/2 items-center gap-2 whitespace-nowrap">
-          <span className="nk-chip">
-            <Kbd>LMB</Kbd>
-            Select
-          </span>
-          {canBack && (
-            <span className="nk-chip">
-              <Kbd>RMB</Kbd>
-              Back
-            </span>
-          )}
-        </div>
+        <ActionBar plate data-slot="radial-hints" className="absolute top-full left-1/2 mt-6 -translate-x-1/2 whitespace-nowrap">
+          <ActionBarItem keys={["LMB"]} label="Select" />
+          {canBack && <ActionBarItem keys={["RMB"]} label="Back" />}
+        </ActionBar>
       </div>
     </div>
   );

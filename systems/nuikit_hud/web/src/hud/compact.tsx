@@ -17,6 +17,7 @@ import type { HudSettings, HudVehicle } from "../nui";
 import { Signal, type Painter, type Tell } from "./cluster";
 import type { GaugeStyle, HudLook } from "./look";
 import { calm, rollDigit } from "./reel";
+import { KeyTile } from "./key-tile";
 import { cardinal, setText, UNIT_LABEL } from "./util";
 
 const clamp01 = (v: number) => Math.max(0, Math.min(1, Number.isFinite(v) ? v : 0));
@@ -42,10 +43,15 @@ const TICK_IN = 58;
 const TICK_OUT = 64;
 const ARC_R = 70;
 const COUNT = 32;
-/** the segmented ticks of the digital style: fewer, longer */
-const SEG_COUNT = 24;
-const SEG_IN = 56;
-const SEG_OUT = 66;
+/** the digital style: a few full segments (thick arc pieces with small even gaps), so the arc reads smooth */
+const SEG_COUNT = 11;
+const SEG_R = 64;
+const SEG_GAP = 3; // degrees between segments
+/** fuel: the same segments, thinner, along the outer curve on the right */
+const FUEL_SEGS = 5;
+const FUEL_SEG_R = 74.5;
+const FUEL_FROM = 124; // empty end (lower right), degrees clockwise from the top
+const FUEL_TO = 56; // full end
 
 function polar(deg: number, r: number): [number, number] {
   const a = (deg * Math.PI) / 180;
@@ -125,17 +131,34 @@ function Gear({ gear }: { gear: HudVehicle["gear"] }) {
   }
   if (gear === undefined) return null;
   return (
-    <span data-slot="hud-gear" data-gear={String(gear)} className="hud-num hud-c-gear" aria-label="Gear">
-      <TextRoll value={String(gear)} direction={dir.current} align="center" />
+    <span data-slot="hud-gear" data-gear={String(gear)} className="hud-c-gear-tile" aria-label="Gear">
+      <KeyTile icon={<TextRoll className="hud-key-glyph" value={String(gear)} direction={dir.current} align="center" />} />
     </span>
   );
 }
+
+/** Fuel as segments on the outer right-hand curve (digital): lit from the bottom up, the alert colour when low. */
+function FuelSegments({ fuel }: { fuel: number }) {
+  const low = fuel <= 15;
+  const lit = Math.ceil((fuel / 100) * FUEL_SEGS);
+  const step = (FUEL_FROM - FUEL_TO) / FUEL_SEGS;
+  return (
+    <g data-slot="hud-fuel" data-state={low ? "alert" : undefined} className="hud-c-fuelsegs" role="meter" aria-label="Fuel" aria-valuemin={0} aria-valuemax={100} aria-valuenow={fuel}>
+      {Array.from({ length: FUEL_SEGS }, (_, i) => {
+        const a1 = FUEL_FROM - step * i - SEG_GAP / 2;
+        const a0 = FUEL_FROM - step * (i + 1) + SEG_GAP / 2;
+        return <path key={i} d={arc(a0, a1, FUEL_SEG_R)} data-on={i < lit || undefined} />;
+      })}
+    </g>
+  );
+}
+const FUEL_SEG_ICON_AT = polar(FUEL_FROM + 12, FUEL_SEG_R);
 
 /** Fuel on the dial's right-hand curve: drains down along it, warning below the threshold. */
 function FuelArc({ fuel }: { fuel: number }) {
   const low = fuel <= 15;
   return (
-    <g data-slot="hud-fuel" data-low={low || undefined} className="hud-c-fuelarc" role="meter" aria-label="Fuel" aria-valuemin={0} aria-valuemax={100} aria-valuenow={fuel}>
+    <g data-slot="hud-fuel" data-state={low ? "alert" : undefined} className="hud-c-fuelarc" role="meter" aria-label="Fuel" aria-valuemin={0} aria-valuemax={100} aria-valuenow={fuel}>
       <path d={FUEL_ARC} className="hud-c-fuelarc-track" />
       <path d={FUEL_ARC} pathLength={100} strokeDasharray={`${fuel} 100`} className="hud-c-fuelarc-fill" />
     </g>
@@ -146,7 +169,7 @@ function FuelArc({ fuel }: { fuel: number }) {
 function FuelLine({ fuel }: { fuel: number }) {
   const low = fuel <= 15;
   return (
-    <span data-slot="hud-fuel" data-low={low || undefined} className="hud-c-fuel" role="meter" aria-label="Fuel" aria-valuemin={0} aria-valuemax={100} aria-valuenow={fuel}>
+    <span data-slot="hud-fuel" data-state={low ? "alert" : undefined} className="hud-c-fuel" role="meter" aria-label="Fuel" aria-valuemin={0} aria-valuemax={100} aria-valuenow={fuel}>
       <FuelIcon />
       <span className="hud-c-fuel-track" aria-hidden>
         <span className="hud-c-fuel-fill" style={{ transform: `scaleX(${fuel / 100})` }} />
@@ -179,7 +202,8 @@ function useSpeedPainter(
   const redline = (on: boolean) => {
     if (on !== state.current.red) {
       state.current.red = on;
-      root.current?.toggleAttribute("data-redline", on);
+      if (on) root.current?.setAttribute("data-state", "alert");
+        else root.current?.removeAttribute("data-state");
     }
   };
   const head = (h: number) => setText(heading.current, `${Math.round(h) % 360}° ${cardinal(h)}`);
@@ -238,9 +262,15 @@ function CompactArc({ v, look, settings, paint, center, style }: CompactProps) {
       const at = (i + 0.5) / count;
       const deg = START + SWEEP * at;
       // every fourth tick is a little longer: a quiet scale without numbers
-      const major = !digital && look.ticks && i % 4 === 3;
-      const [x0, y0] = polar(deg, digital ? SEG_IN : major ? TICK_IN - 3 : TICK_IN);
-      const [x1, y1] = polar(deg, digital ? SEG_OUT : TICK_OUT);
+      if (digital) {
+        const step = SWEEP / count;
+        const a0 = START + step * i + SEG_GAP / 2;
+        marks.push(<path key={i} d={arc(a0, a0 + step - SEG_GAP, SEG_R)} data-red={at >= redline || undefined} />);
+        continue;
+      }
+      const major = look.ticks && i % 4 === 3;
+      const [x0, y0] = polar(deg, major ? TICK_IN - 3 : TICK_IN);
+      const [x1, y1] = polar(deg, TICK_OUT);
       marks.push(<line key={i} x1={x0.toFixed(2)} y1={y0.toFixed(2)} x2={x1.toFixed(2)} y2={y1.toFixed(2)} data-red={at >= redline || undefined} />);
     }
   }
@@ -261,9 +291,15 @@ function CompactArc({ v, look, settings, paint, center, style }: CompactProps) {
             {marks}
           </g>
           {fuel !== undefined && !digital && <FuelArc fuel={fuel} />}
+          {fuel !== undefined && digital && <FuelSegments fuel={fuel} />}
         </svg>
         {fuel !== undefined && !digital && (
-          <span className="hud-c-fuelarc-icon" data-low={fuel <= 15 || undefined} style={{ left: `${(FUEL_ICON_AT[0] / VB) * 100}%`, top: `${(FUEL_ICON_AT[1] / VB) * 100}%` }} aria-hidden>
+          <span className="hud-c-fuelarc-icon" data-state={fuel <= 15 ? "alert" : undefined} style={{ left: `${(FUEL_ICON_AT[0] / VB) * 100}%`, top: `${(FUEL_ICON_AT[1] / VB) * 100}%` }} aria-hidden>
+            <FuelIcon />
+          </span>
+        )}
+        {fuel !== undefined && digital && (
+          <span className="hud-c-fuelarc-icon" data-state={fuel <= 15 ? "alert" : undefined} style={{ left: `${(FUEL_SEG_ICON_AT[0] / VB) * 100}%`, top: `${(FUEL_SEG_ICON_AT[1] / VB) * 100}%` }} aria-hidden>
             <FuelIcon />
           </span>
         )}
@@ -285,7 +321,6 @@ function CompactArc({ v, look, settings, paint, center, style }: CompactProps) {
           <Center v={v} center={center} heading={heading} />
         </div>
       </div>
-      {fuel !== undefined && digital && <FuelLine fuel={fuel} />}
     </div>
   );
 }
@@ -370,8 +405,9 @@ function Telltale({ t }: { t: Tell }) {
   const stagger = useStaggerItem<HTMLSpanElement>(!!t.on);
   return (
     <span ref={stagger} data-slot="hud-telltale" data-key={t.key} data-on={t.on || undefined} data-tone={t.tone} className="hud-c-tell" aria-label={t.label} aria-hidden={!t.on}>
-      {t.icon}
-      {t.text && <span className="hud-num hud-c-tell-text">{t.text}</span>}
+      <KeyTile size="sm" icon={t.icon} open={!!t.text}>
+        {t.text && <span className="hud-num">{t.text}</span>}
+      </KeyTile>
     </span>
   );
 }

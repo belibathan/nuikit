@@ -6,7 +6,7 @@ import { EdgeSheet, EdgeSheetBody, EdgeSheetFooter } from "@/components/ui/edge-
 import { EmptyState } from "@/components/ui/empty-state";
 import { NumberField, SelectField, TextField } from "@/components/ui/form-field";
 import { Input } from "@/components/ui/input";
-import { Kbd } from "@/components/ui/kbd";
+import { ActionBar, ActionBarItem } from "@/components/ui/action-bar";
 import { MenuRow } from "@/components/ui/menu-row";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
@@ -259,10 +259,9 @@ export default function App() {
               )}
             </EdgeSheetBody>
             <EdgeSheetFooter className="justify-end">
-              <Button variant="ghost" size="sm" className="-mr-2 text-muted-foreground" onClick={() => leave("exit")}>
-                Close
-                <Kbd>Esc</Kbd>
-              </Button>
+              <ActionBar>
+                <ActionBarItem keys={["Esc"]} label="Close" onClick={() => leave("exit")} />
+              </ActionBar>
             </EdgeSheetFooter>
           </>
         ) : (
@@ -319,7 +318,7 @@ export default function App() {
 
               {tab === "characters" && (
                 <div className="flex flex-col gap-2">
-                  <p className="text-sm text-muted-foreground">Characters who can always use this door.</p>
+                  <p className="nk-body text-muted-foreground">Characters who can always use this door.</p>
                   {form.characters.map((c, i) => (
                     <Row key={i} onRemove={() => set({ characters: form.characters.filter((_, j) => j !== i) })}>
                       <Input
@@ -335,7 +334,7 @@ export default function App() {
 
               {tab === "groups" && (
                 <div className="flex flex-col gap-2">
-                  <p className="text-sm text-muted-foreground">Jobs or gangs that can use it, from a minimum grade.</p>
+                  <p className="nk-body text-muted-foreground">Jobs or gangs that can use it, from a minimum grade.</p>
                   {form.groups.map((g, i) => (
                     <Row key={i} onRemove={() => set({ groups: form.groups.filter((_, j) => j !== i) })}>
                       <Input
@@ -359,7 +358,7 @@ export default function App() {
 
               {tab === "items" && (
                 <div className="flex flex-col gap-2">
-                  <p className="text-sm text-muted-foreground">Items that open it. Metadata type narrows it to keys of one kind.</p>
+                  <p className="nk-body text-muted-foreground">Items that open it. Metadata type narrows it to keys of one kind.</p>
                   {form.items.map((it, i) => {
                     const patch = (p: Partial<typeof it>) => set({ items: form.items.map((x, j) => (j === i ? { ...x, ...p } : x)) });
                     return (
@@ -379,7 +378,7 @@ export default function App() {
 
               {tab === "lockpick" && (
                 <div className="flex flex-col gap-2">
-                  <p className="text-sm text-muted-foreground">The skill checks a lockpick runs, in order. None: the server's default.</p>
+                  <p className="nk-body text-muted-foreground">The skill checks a lockpick runs, in order. None: the server's default.</p>
                   {form.lockpickDifficulty.map((d, i) => {
                     const put = (v: Difficulty) => set({ lockpickDifficulty: form.lockpickDifficulty.map((x, j) => (j === i ? v : x)) });
                     const custom = typeof d === "object" ? (d as Custom) : null;

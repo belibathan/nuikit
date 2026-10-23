@@ -1,3 +1,5 @@
+import { Chip } from "@/components/ui/chip";
+import { Kbd } from "@/components/ui/tile";
 import { useStaggerItem } from "nuikit-core/react";
 import { memo, useEffect, useRef, useState, type CSSProperties, type MouseEvent } from "react";
 import { ItemImage } from "@/components/item-image";
@@ -36,16 +38,16 @@ function Price({ item }: { item: Slot }) {
   if (!item.price || item.price <= 0) return null;
   if (item.currency && item.currency !== "money" && item.currency !== "black_money") {
     return (
-      <span className="inv-price">
+      <Chip>
         <ItemImage src={itemImage(item.currency)} name={item.currency} className="size-3" />
         {formatMoney(item.price, { currency: null, fractionDigits: digits(item.price) })}
-      </span>
+      </Chip>
     );
   }
   return (
-    <span className={cn("inv-price", item.currency === "black_money" && "text-destructive")}>
+    <Chip tone={item.currency === "black_money" ? "danger" : undefined}>
       {formatMoney(item.price, { currency: null, prefix: t("$"), fractionDigits: digits(item.price) })}
-    </span>
+    </Chip>
   );
 }
 
@@ -105,6 +107,8 @@ export const SlotTile = memo(function SlotTile({ side, item, invType, locked, di
       data-filled={filled || undefined}
       data-over={isOver || undefined}
       data-source={isSource || undefined}
+      data-slot="item-slot"
+      data-state={locked ? "disabled" : undefined}
       data-locked={locked || undefined}
       data-display={display || undefined}
       data-worn={level !== undefined && level <= alertThreshold() ? "" : undefined}
@@ -120,8 +124,8 @@ export const SlotTile = memo(function SlotTile({ side, item, invType, locked, di
     >
       {durability !== undefined && <SlotOutline value={durability} />}
       <div className="inv-slot-top">
-        {hot ? <span className="inv-key">{item.slot}</span> : <span className="nk-num">{stock}</span>}
-        {shop ? <Price item={item} /> : count && <span className="inv-count">{count}</span>}
+        {hot ? <Kbd>{item.slot}</Kbd> : <span className="nk-num">{stock}</span>}
+        {shop ? <Price item={item} /> : count && <Chip>{count}</Chip>}
       </div>
 
       {filled && (

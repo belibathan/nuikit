@@ -11,7 +11,7 @@ RegisterNetEvent('hud:client:UpdateStress', function(value) stress = value or 0 
 RegisterNetEvent('nuikit_stress:notify', function()
   local text = 'Feeling more stressed'
   if GetResourceState('ox_lib') == 'started' then
-    TriggerEvent('ox_lib:notify', { description = text, type = 'inform', icon = 'brain', iconColor = '#C53030', duration = 2500 })
+    TriggerEvent('ox_lib:notify', { description = text, type = 'error', icon = 'brain' })
   else
     BeginTextCommandThefeedPost('STRING')
     AddTextComponentSubstringPlayerName(text)

@@ -42,7 +42,7 @@
   --hud-font-display: var(--font-display, var(--font-sans));
   /* the HUD material (tokens 1.4), which legibility lifts by day; 1.3 themes: --nk-hud-opacity */
   --hud-plate-opacity: var(--nk-hud-alpha, var(--nk-hud-opacity, 0.55));
-  --hud-ms: calc(220ms * var(--nk-motion, 1));
+  --hud-ms: calc(var(--nk-time-slow) * var(--nk-motion, 1));
   text-shadow: var(--world-shadow, var(--hud-ts));
 }
 /* Legibility over the sky (research §2.6): the identity picks how strong. */
@@ -162,7 +162,7 @@
   /* transform and opacity only: the row never lays out per frame (pills.tsx useFold, flip.ts) */
   transition:
     opacity var(--hud-ms) ease-out,
-    transform var(--hud-ms) cubic-bezier(0.2, 0.8, 0.2, 1);
+    transform var(--hud-ms) var(--nk-ease-out);
 }
 /* each chip sits over the one to its right, so a chip that folds away slides under its left neighbour */
 .hud-vitals-row > .hud-vchip:nth-child(1) { z-index: 9; }
@@ -181,8 +181,8 @@
 .hud-vchip:not([data-shown]) {
   opacity: 0;
   transform: translateX(-45%) scale(0.82);
-  transition-duration: calc(300ms * var(--nk-motion, 1));
-  transition-timing-function: cubic-bezier(0.4, 0, 0.6, 1);
+  transition-duration: calc(var(--nk-time-slow) * var(--nk-motion, 1));
+  transition-timing-function: var(--nk-ease-retract);
 }
 :is(html, *)[data-nk-motion="reduced"] .hud-vchip {
   transform: none;
@@ -196,10 +196,10 @@
   transform-box: fill-box;
   transform-origin: center bottom;
   transform: scaleY(0);
-  transition: transform calc(220ms * var(--nk-motion, 1)) cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition: transform calc(var(--nk-time-slow) * var(--nk-motion, 1)) var(--nk-ease-out);
 }
 .hud-vchip [data-slot="vital-chip-shape"] {
-  transition: color calc(220ms * var(--nk-motion, 1)) ease-out;
+  transition: color calc(var(--nk-time-slow) * var(--nk-motion, 1)) ease-out;
 }
 .hud-vchip[data-active] [data-slot="vital-chip-activefill"] {
   transform: scaleY(1);
@@ -212,7 +212,7 @@
   transition: none;
 }
 /* past its threshold: the whole outline takes the vital's colour (outline level) */
-.hud-vchip[data-critical] {
+.hud-vchip[data-state="alert"] {
   --nk-chip-track: color-mix(in oklab, var(--vital) 40%, transparent);
 }
 .hud-vchip[data-tone="health"] { --vital: var(--vital-health); }
@@ -400,8 +400,7 @@
   border-style: solid;
   border-color: var(--popover);
   box-shadow:
-    0 0 0 1px var(--border),
-    0 14px 32px -14px color-mix(in oklab, var(--scrim) 75%, transparent);
+    0 0 0 1px var(--border);
   pointer-events: none;
   text-shadow: none;
 }
@@ -416,8 +415,7 @@
   inset: 0;
   border-radius: inherit;
   box-shadow:
-    inset 0 0 0 1px color-mix(in oklab, var(--scrim) 40%, transparent),
-    inset 0 1px 6px color-mix(in oklab, var(--scrim) 35%, transparent);
+    inset 0 0 0 1px color-mix(in oklab, var(--scrim) 40%, transparent);
 }
 .hud-minimap-square .hud-minimap-inner {
   border-radius: calc(var(--radius) + 4px - 0.375rem);
@@ -524,16 +522,6 @@
   height: 0.875rem;
   opacity: 0.75;
 }
-.hud-duty {
-  flex: none;
-  width: 0.4375rem;
-  height: 0.4375rem;
-  border-radius: 9999px;
-  background-color: var(--hud-faint);
-}
-.hud-duty[data-on] {
-  background-color: var(--hud-ok);
-}
 
 /* ───────────────────────────── vehicle cluster */
 
@@ -588,7 +576,7 @@
   font-size: 1.125rem;
   line-height: 1;
   font-weight: 700;
-  transition: background-color calc(120ms * var(--nk-motion, 1)), color calc(120ms * var(--nk-motion, 1));
+  transition: background-color calc(var(--nk-time-fast) * var(--nk-motion, 1)), color calc(var(--nk-time-fast) * var(--nk-motion, 1));
 }
 .hud-gear[data-gear="R"] {
   background-color: var(--hud-warn);
@@ -599,7 +587,7 @@
 .hud-gear[data-gear="N"] {
   opacity: 0.8;
 }
-[data-redline] .hud-gear {
+[data-state="alert"] .hud-gear {
   background-color: var(--hud-redline);
   color: var(--destructive-foreground);
   box-shadow: none;
@@ -635,7 +623,7 @@
 }
 .hud-shift[data-flash] span {
   background-color: var(--hud-redline);
-  animation: hud-blink calc(160ms * var(--nk-motion, 1)) steps(1) infinite;
+  animation: hud-blink calc(var(--nk-time-base) * var(--nk-motion, 1)) steps(1) infinite;
 }
 
 /* turn signals: blink while on */
@@ -684,10 +672,10 @@
   transform-origin: left center;
   transition: transform var(--hud-ms) ease-out;
 }
-.hud-fuel[data-low] {
+.hud-fuel[data-state="alert"] {
   color: var(--hud-warn);
 }
-.hud-fuel[data-low] .hud-fuel-fill {
+.hud-fuel[data-state="alert"] .hud-fuel-fill {
   background-color: var(--hud-warn);
 }
 
@@ -706,7 +694,7 @@
   display: flex;
   color: var(--hud-fg);
   opacity: 0.22;
-  transition: opacity calc(120ms * var(--nk-motion, 1));
+  transition: opacity calc(var(--nk-time-fast) * var(--nk-motion, 1));
 }
 .hud-telltale-text {
   margin-left: 0.25rem;
@@ -802,8 +790,8 @@
 .hud-arc-glow {
   opacity: calc(var(--nk-glow, 0) * 0.5);
 }
-[data-redline] .hud-arc-fill,
-[data-redline] .hud-arc-glow {
+[data-state="alert"] .hud-arc-fill,
+[data-state="alert"] .hud-arc-glow {
   stroke: var(--hud-redline);
 }
 .hud-arc-needle line {
@@ -890,7 +878,7 @@
   transform-origin: left center;
   transform: scaleX(0);
 }
-[data-redline] .hud-bar-fill {
+[data-state="alert"] .hud-bar-fill {
   background-color: var(--hud-redline);
 }
 .hud-bar-redzone {
@@ -1122,65 +1110,24 @@
 }
 .hud-map-heading {
   position: absolute;
-  display: flex;
-  white-space: pre;
   transform: translateX(-50%);
-  font-size: 0.875rem;
-  line-height: 1;
-  font-weight: 600;
+}
+/* one layer turns with the camera (--deg, set once a frame); each cardinal counter-rotates to stay upright */
+.hud-map-dial {
+  position: absolute;
+  inset: 0;
+  transform: rotate(calc(var(--deg, 0) * -1deg));
+  will-change: transform;
+  pointer-events: none;
 }
 .hud-map-cardinal {
   position: absolute;
   left: 0;
   top: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 1.125rem;
-  height: 1.125rem;
-  border-radius: 9999px;
-  background-color: var(--hud-solid);
-  color: var(--hud-solid-fg);
-  box-shadow: 0 0 0 1px var(--hud-hairline);
-  font-family: var(--hud-font-num);
-  font-size: 0.625rem;
-  line-height: 1;
-  font-weight: 700;
-  text-shadow: none;
-  will-change: transform;
+  display: block;
+  transform: translate3d(var(--x), var(--y), 0) translate(-50%, -50%) rotate(calc(var(--deg, 0) * 1deg));
 }
-.hud-map-cardinal[data-north] {
-  background-color: var(--hud-accent);
-  color: var(--hud-accent-foreground);
-  box-shadow: none;
-}
-/* skewed identities: cardinals as small skewed tags, N a light one (the band carries them) */
-:is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"]) .hud-map-cardinal {
-  border-radius: 0;
-  background-color: transparent;
-  box-shadow: none;
-  font-style: var(--nk-display-style, normal);
-  font-size: 0.75rem;
-}
-:is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"]) .hud-map-cardinal[data-north] {
-  background-color: transparent;
-  color: var(--hud-solid);
-  isolation: isolate;
-}
-/* N as a compass needle: a slim diamond on the ring, its outer point aiming out from the centre */
-:is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"]) .hud-map-cardinal[data-north]::after {
-  content: "";
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 0.875rem;
-  height: 0.875rem;
-  margin: -0.4375rem 0 0 -0.4375rem;
-  z-index: -1;
-  background-color: var(--nk-ring-stroke, var(--hud-fg));
-  box-shadow: 0 0 0 1px rgba(var(--scrim-rgb), 0.35);
-  transform: rotate(var(--hud-at, 0deg)) translateY(-0.125rem) scale(0.8, 1.45) rotate(45deg);
-}
+
 .hud-map-tag {
   position: absolute;
   display: flex;
@@ -1443,9 +1390,9 @@
 .hud-c-arc-fill {
   stroke: var(--hud-fill);
   /* the shift light eases in and out (the dash itself follows the rpm frame by frame) */
-  transition: stroke calc(140ms * var(--nk-motion, 1)) ease-out;
+  transition: stroke calc(var(--nk-time-base) * var(--nk-motion, 1)) ease-out;
 }
-.hud-c-gauge[data-redline] .hud-c-arc-fill {
+.hud-c-gauge[data-state="alert"] .hud-c-arc-fill {
   stroke: var(--hud-redline);
 }
 /* digital: segmented ticks only, lit in the fill colour with the identity's glow */
@@ -1486,7 +1433,7 @@
   clip-path: inset(0 -0.5em);
   padding: 0.08em 0;
   margin: -0.08em 0;
-  transition: opacity calc(160ms * var(--nk-motion, 1)) ease-out;
+  transition: opacity calc(var(--nk-time-base) * var(--nk-motion, 1)) ease-out;
 }
 .hud-reel > span {
   grid-area: 1 / 1;
@@ -1505,10 +1452,10 @@
   stroke: var(--hud-fg);
   stroke-opacity: 0.9;
   transition:
-    stroke-dasharray calc(400ms * var(--nk-motion, 1)) ease-out,
-    stroke calc(200ms * var(--nk-motion, 1)) ease-out;
+    stroke-dasharray calc(var(--nk-time-fill) * var(--nk-motion, 1)) ease-out,
+    stroke calc(var(--nk-time-slow) * var(--nk-motion, 1)) ease-out;
 }
-.hud-c-fuelarc[data-low] .hud-c-fuelarc-fill {
+.hud-c-fuelarc[data-state="alert"] .hud-c-fuelarc-fill {
   stroke: var(--hud-warn);
   stroke-opacity: 1;
 }
@@ -1518,13 +1465,13 @@
   color: var(--hud-fg);
   opacity: 0.7;
   transform: translate(-50%, -50%);
-  transition: color calc(200ms * var(--nk-motion, 1)) ease-out;
+  transition: color calc(var(--nk-time-slow) * var(--nk-motion, 1)) ease-out;
 }
 .hud-c-fuelarc-icon svg {
   width: 0.75rem;
   height: 0.75rem;
 }
-.hud-c-fuelarc-icon[data-low] {
+.hud-c-fuelarc-icon[data-state="alert"] {
   color: var(--hud-warn);
   opacity: 1;
 }
@@ -1544,35 +1491,7 @@
   top: 7.875rem;
   transform: translate(-50%, -50%);
 }
-.hud-c-gear {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 1.75rem;
-  height: 1.75rem;
-  padding: 0 0.375rem;
-  border-radius: calc(var(--radius) - 2px);
-  background-color: var(--hud-accent);
-  color: var(--hud-accent-foreground);
-  font-size: 1rem;
-  line-height: 1;
-  font-weight: var(--nk-weight-display, 700);
-  text-shadow: none;
-  transition: background-color calc(120ms * var(--nk-motion, 1)), color calc(120ms * var(--nk-motion, 1));
-}
-.hud-c-gear[data-gear="R"] {
-  background-color: var(--hud-warn);
-  color: var(--warning-foreground);
-}
-.hud-c-gear[data-gear="N"] {
-  background-color: color-mix(in oklab, var(--hud-fg) 22%, transparent);
-  color: var(--hud-fg);
-  box-shadow: inset 0 0 0 1px var(--hud-faint);
-}
-.hud-c-gauge[data-redline] .hud-c-gear {
-  background-color: var(--hud-redline);
-  color: var(--destructive-foreground);
-}
+
 .hud-c-heading {
   font-size: 0.875rem;
   line-height: 1;
@@ -1622,18 +1541,18 @@
   height: 100%;
   background-color: var(--hud-fg);
   transform-origin: left center;
-  transition: transform calc(300ms * var(--nk-motion, 1)) ease-out;
+  transition: transform calc(var(--nk-time-slow) * var(--nk-motion, 1)) ease-out;
 }
 .hud-c-fuel-value {
   font-size: 0.8125rem;
   line-height: 1;
   font-weight: 600;
 }
-.hud-c-fuel[data-low] {
+.hud-c-fuel[data-state="alert"] {
   color: var(--hud-warn);
   opacity: 1;
 }
-.hud-c-fuel[data-low] .hud-c-fuel-fill {
+.hud-c-fuel[data-state="alert"] .hud-c-fuel-fill {
   background-color: var(--hud-warn);
 }
 .hud-c-gauge[data-off] .hud-c-svg,
@@ -1731,25 +1650,12 @@
   transform: none;
   /* transform and opacity only, while driving above all: the column's height and gaps snap */
   transition:
-    opacity calc(180ms * var(--nk-motion, 1)) ease-out,
-    transform calc(180ms * var(--nk-motion, 1)) ease-out;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0.125rem;
-  width: 1.75rem;
-  min-height: 1.75rem;
-  padding: 0.3125rem 0;
-  border-radius: var(--hud-chip-radius);
-  background-color: var(--hud-chip-bg);
-  box-shadow: inset 0 0 0 1px var(--hud-hairline);
-  text-shadow: none;
+    opacity calc(var(--nk-time-base) * var(--nk-motion, 1)) ease-out,
+    transform calc(var(--nk-time-base) * var(--nk-motion, 1)) ease-out;
+  display: block;
 }
 .hud-c-tell:not([data-on]) {
   max-height: 0;
-  min-height: 0;
-  padding: 0;
   margin-top: -0.3125rem;
   opacity: 0;
   transform: scale(0.8);
@@ -1778,7 +1684,7 @@
   position: absolute;
   inset: 0;
   pointer-events: none;
-  animation: hud-side-in calc(280ms * var(--nk-motion, 1)) var(--nk-ease-out, cubic-bezier(0.16, 1, 0.3, 1)) both;
+  animation: hud-side-in calc(var(--nk-time-slow) * var(--nk-motion, 1)) var(--nk-ease-out, var(--nk-ease-expand)) both;
 }
 .hud-side[data-side="left"] {
   --hud-side-x: -2.5rem;
@@ -1794,14 +1700,14 @@ html[data-nk-motion="reduced"] .hud-side {
   --hud-side-y: 0;
 }
 [data-surface="hud"][data-closing] .hud-side {
-  animation: hud-side-out calc(200ms * var(--nk-motion, 1)) var(--nk-ease-in, cubic-bezier(0.4, 0, 1, 1)) both;
+  animation: hud-side-out calc(var(--nk-time-slow) * var(--nk-motion, 1)) var(--nk-ease-in, var(--nk-ease-retract)) both;
 }
 .hud-side[data-side="map"] {
   animation: none;
 }
 /* the ring mounts when the radar shows (Lua's hud:minimap), so it fades in on its own mount */
 .hud-side[data-side="map"] > * {
-  animation: hud-map-in calc(200ms * var(--nk-motion, 1)) var(--nk-ease-out, ease-out) both;
+  animation: hud-map-in calc(var(--nk-time-slow) * var(--nk-motion, 1)) var(--nk-ease-out, ease-out) both;
 }
 [data-surface="hud"][data-closing] .hud-side[data-side="map"] {
   animation: none;
@@ -1811,7 +1717,7 @@ html[data-nk-motion="reduced"] .hud-side {
    slides with it and doesn't fade (the radar can't) */
 .hud-side[data-side="map"][data-slide] {
   --hud-side-x: 2.5rem;
-  animation: hud-map-slide-in calc(280ms * var(--nk-motion, 1)) var(--nk-ease-out, cubic-bezier(0.16, 1, 0.3, 1)) both;
+  animation: hud-map-slide-in calc(var(--nk-time-slow) * var(--nk-motion, 1)) var(--nk-ease-out, var(--nk-ease-expand)) both;
 }
 .hud-side[data-side="map"][data-slide="left"] {
   --hud-side-x: -2.5rem;
@@ -1821,7 +1727,7 @@ html[data-nk-motion="reduced"] .hud-side {
 }
 [data-surface="hud"][data-closing] .hud-side[data-side="map"][data-slide] {
   opacity: 1;
-  animation: hud-map-slide-out calc(200ms * var(--nk-motion, 1)) var(--nk-ease-in, cubic-bezier(0.4, 0, 1, 1)) both;
+  animation: hud-map-slide-out calc(var(--nk-time-slow) * var(--nk-motion, 1)) var(--nk-ease-in, var(--nk-ease-retract)) both;
 }
 @keyframes hud-map-slide-in {
   from {
@@ -2029,7 +1935,6 @@ html[data-nk-motion="off"] .hud-root * {
   font-size: 0.875rem;
   line-height: 1.25rem;
   pointer-events: none;
-  box-shadow: 0 0.5rem 1.5rem -0.5rem rgba(var(--scrim-rgb), 0.6);
 }
 
 /* the stack in the map's own corner sits beside the map, level with its outer edge (bottom-left is
@@ -2162,3 +2067,311 @@ html[data-nk-motion="off"] .hud-root * {
 .hud-beside-map {
   contain: layout;
 }
+
+/* ───────────────────────────── Ink, one system (.local/ink.md): the keycap (a slanted face on a hard grey drop),
+   Barlow Condensed italic uppercase for display and numbers, one spacing scale, one radius scale. */
+.hud-vchip :is([data-slot="vital-chip-label"], [data-slot="vital-chip-pop"]),
+.hud-key-text {
+  font-family: var(--hud-font-display);
+}
+
+/* location, money, job: display type */
+.hud-loc-street,
+.hud-money-value,
+.hud-job,
+.hud-street {
+  font-family: var(--hud-font-display);
+  font-style: italic;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding-right: 0.15em;
+}
+.hud-loc-street { font-size: 1.25rem; line-height: 1.5rem; }
+.hud-job { font-size: 0.9375rem; gap: 0.5rem; opacity: 0.85; }
+.hud-wallet[data-compact] .hud-job { font-size: 0.875rem; }
+.hud-money-delta { font-family: var(--hud-font-display); font-style: italic; font-weight: 700; letter-spacing: 0.03em; }
+
+/* the speedometer: speed and unit in the display face */
+.hud-speed { font-family: var(--hud-font-display); font-style: italic; letter-spacing: 0.01em; padding-right: 0.15em; }
+.hud-unit { font-family: var(--hud-font-display); font-style: italic; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; }
+
+/* compact cluster: speed and unit in the display face; the gear and the telltales are keycaps */
+.hud-c-speed,
+.hud-c-heading,
+.hud-c-unit,
+.hud-c-fuel-value,
+.hud-c-tell-text {
+  font-family: var(--hud-font-display);
+  font-style: italic;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  padding-right: 0.15em;
+}
+.hud-c-speed { font-size: 3.25rem; letter-spacing: 0.01em; }
+.hud-c-unit,
+.hud-c-heading { text-transform: uppercase; }
+.hud-c-unit { font-size: 0.8125rem; letter-spacing: 0.08em; }
+/* a telltale is a tile; a lit one carries its status colour on the glyph */
+.hud-c-tell { position: relative; overflow: visible; }
+.hud-c-tell[data-tone="success"] .hud-key-icon { color: var(--hud-ok); }
+.hud-c-tell[data-tone="info"] .hud-key-icon { color: var(--info); }
+.hud-c-tell[data-tone="warning"] .hud-key-icon { color: var(--hud-warn); }
+.hud-c-tell[data-tone="destructive"] .hud-key-icon { color: var(--hud-danger); }
+.hud-c-tells { width: auto; gap: var(--nk-space-2, 0.5rem); }
+
+
+/* ───────────────────────────── the keycap tile (every status chip): a lighter front face with the icon centred
+   on it, over a darker back plate. The plate IS the expansion: it slides out from behind the face (translateX only,
+   the skew and radius stay), the label sits on the revealed plate and fades in 60ms later. Transform and opacity. */
+.hud-key-tile {
+  --kt-s: var(--vital-size, 2.125rem);
+  --fs: calc(var(--kt-s) * 0.94);
+  --d: 1;
+  --dr: 0.25rem; /* the plate's drop below the face */
+  --dx: 0rem; /* and sideways: 0 = straight down, aligned under the face */
+  --pw: calc(var(--tw, 0px) + 1rem);
+  position: relative;
+  display: block;
+  width: var(--kt-s);
+  height: var(--kt-s);
+  flex: none;
+}
+[data-corner$="right"] .hud-key-tile { --d: -1; }
+.hud-key-tile[data-size="sm"] { --kt-s: 1.625rem; --dr: 0.1875rem; }
+.hud-key-tile[data-size="sm"] .hud-key-label { font-size: 0.8125rem; left: calc((var(--kt-s) + var(--fs)) / 2 + 0.375rem); }
+.hud-key-tile[data-size="sm"] .hud-key-plate { border-radius: var(--nk-r-key); }
+.hud-key-tile[data-size="sm"] .hud-key-face { --nk-key-radius: var(--nk-r-key); }
+.hud-key-face,
+.hud-key-icon {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+/* the face is the kit Tile (its face, rim, slant and alert state), sized by the tile and without its own plate:
+   the HUD's plate below is the one that slides out */
+.hud-key-face {
+  --nk-key-radius: var(--nk-r-chip);
+  --nk-tile-plate-now: transparent;
+  z-index: 2;
+  width: var(--fs);
+  min-width: 0;
+  height: var(--fs);
+  padding: 0;
+}
+.hud-key-face > .hud-key-level {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  border-radius: inherit;
+  transform: skewX(var(--nk-tile-skew));
+}
+.hud-key-liquid,
+.hud-key-lit {
+  position: absolute;
+  inset: 0;
+  transform-origin: 50% 100%;
+}
+.hud-key-liquid {
+  background: linear-gradient(180deg, rgba(var(--foreground-rgb), 0.62), rgba(var(--foreground-rgb), 0.38));
+  transform: scaleY(var(--f, 0));
+  transition: transform calc(var(--nk-time-fill) * var(--nk-motion, 1)) var(--nk-ease-standard);
+}
+.hud-key-line {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 0.125rem;
+  background: var(--nk-tile-ink);
+  transform: translateY(calc((1 - var(--f, 0)) * var(--fs) - 0.0625rem));
+  transition: transform calc(var(--nk-time-fill) * var(--nk-motion, 1)) var(--nk-ease-standard);
+  opacity: calc(var(--f, 0) * 100);
+}
+/* the mic: a bright layer fills the face from the bottom, the icon turns to the dark ink */
+.hud-key-lit {
+  background: var(--nk-tile-confirm-face);
+  transform: scaleY(0);
+  transition: transform calc(var(--nk-time-base) * var(--nk-motion, 1)) var(--nk-ease-standard);
+}
+.hud-key-tile[data-active] .hud-key-lit { transform: scaleY(1); transition-duration: calc(var(--nk-time-fast) * var(--nk-motion, 1)); }
+.hud-key-icon {
+  z-index: 3;
+  display: flex;
+  width: calc(var(--fs) * 0.52);
+  height: calc(var(--fs) * 0.52);
+  color: var(--nk-tile-ink);
+  transition: color calc(var(--nk-time-base) * var(--nk-motion, 1)) ease-out;
+}
+.hud-key-icon { align-items: center; justify-content: center; }
+.hud-key-icon svg { width: 100%; height: 100%; stroke-width: 2.25; }
+/* a letter or number on the face: the display face, nudged left by the italic's lean so it sits optically centred */
+.hud-key-glyph {
+  display: block;
+  font-family: var(--hud-font-display);
+  font-style: italic;
+  font-weight: 800;
+  font-size: calc(var(--fs) * 0.62);
+  line-height: 1;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  text-shadow: none;
+  transform: translateX(-0.04em);
+}
+.hud-key-glyph > * { line-height: 1; }
+.hud-key-tile[data-active] .hud-key-icon { color: var(--nk-tile-confirm-ink); transition-duration: calc(var(--nk-time-fast) * var(--nk-motion, 1)); }
+/* the track clips the plate: from the face's near edge out to its full length */
+/* the base: the tile's own wall, always there, the face's size dropped by --dr, its corners rounded all
+   round. The extension slides out over it from under the face's centre, so the near end you see is
+   always this base's rounded corner, never a clipped edge. */
+.hud-key-tile::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  top: calc((var(--kt-s) - var(--fs)) / 2);
+  left: calc((var(--kt-s) - var(--fs)) / 2);
+  width: var(--fs);
+  height: var(--fs);
+  border-radius: var(--nk-r-chip);
+  background: var(--nk-tile-plate-dim);
+  box-shadow: 0 0 0 var(--nk-border, 1px) rgba(var(--scrim-rgb), 0.9);
+  transform: translate(calc(var(--dx) * var(--d)), var(--dr)) skewX(var(--nk-tile-skew));
+}
+.hud-key-tile[data-size="sm"]::before { border-radius: 0.3125rem; }
+/* the track clips the extension from the face's centre outwards (that cut is always under the face or on the base) */
+.hud-key-track {
+  position: absolute;
+  z-index: 1;
+  top: calc((var(--kt-s) - var(--fs)) / 2);
+  left: calc((var(--kt-s) - var(--fs)) / 2 + var(--fs) / 2);
+  width: calc(var(--fs) / 2 + var(--pw) + var(--dr) + 0.5rem + 2px);
+  height: calc(var(--fs) + var(--dr) + 2px);
+  overflow: hidden;
+  pointer-events: none;
+}
+[data-corner$="right"] .hud-key-track { left: auto; right: calc((var(--kt-s) - var(--fs)) / 2 + var(--fs) / 2); }
+.hud-key-plate {
+  position: absolute;
+  top: 0;
+  left: calc(var(--fs) / -2);
+  width: calc(var(--fs) + var(--pw));
+  height: var(--fs);
+  border-radius: var(--nk-r-chip);
+  background: var(--nk-tile-plate-dim);
+  box-shadow: 0 0 0 var(--nk-border, 1px) rgba(var(--scrim-rgb), 0.9);
+  /* at rest only the drop offset shows behind the face */
+  transform: translate(calc(var(--dx) - var(--d) * var(--pw)), var(--dr)) skewX(var(--nk-tile-skew));
+  transition: transform calc(var(--nk-time-slow) * var(--nk-motion, 1)) var(--nk-ease-expand);
+}
+[data-corner$="right"] .hud-key-plate { left: auto; right: calc(var(--fs) / -2); }
+.hud-key-tile[data-open] .hud-key-plate { transform: translate(var(--dx), var(--dr)) skewX(var(--nk-tile-skew)); }
+[data-corner$="right"] .hud-key-tile[data-open] .hud-key-plate { transform: translate(calc(var(--dx) * -1), var(--dr)) skewX(var(--nk-tile-skew)); }
+.hud-key-label {
+  position: absolute;
+  z-index: 1;
+  top: 50%;
+  left: calc((var(--kt-s) + var(--fs)) / 2 + 0.5rem);
+  display: block;
+  transform: translateY(-50%);
+  white-space: nowrap;
+  font-family: var(--hud-font-display);
+  font-style: italic;
+  font-weight: 700;
+  font-size: 0.9375rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--nk-tile-ink);
+  opacity: 0;
+  transition: opacity calc(var(--nk-time-fast) * var(--nk-motion, 1)) ease-out;
+}
+[data-corner$="right"] .hud-key-label { left: auto; right: calc((var(--kt-s) + var(--fs)) / 2 + 0.5rem); }
+.hud-key-tile[data-open] .hud-key-label { opacity: 1; transition-duration: calc(var(--nk-time-base) * var(--nk-motion, 1)); transition-delay: calc(var(--nk-time-fast) * var(--nk-motion, 1)); }
+.hud-key-label .hud-num { font-family: inherit; }
+.hud-vlabel { opacity: 0.7; margin-right: 0.25rem; }
+/* the room the plate takes in the row (measured, FLIPped in pills.tsx KeyTile) */
+.hud-vchip { margin-right: var(--tag-w, 0px); }
+[data-corner$="right"] .hud-vchip { margin-right: 0; margin-left: var(--tag-w, 0px); }
+/* alert: the rim, fill and line take the status colour and breathe */
+.hud-vchip[data-state="alert"] .hud-key-liquid { background: color-mix(in srgb, var(--vital) 70%, transparent); }
+.hud-vchip[data-state="alert"] .hud-key-line { background: var(--vital); }
+:is(html, *)[data-nk-motion="reduced"] :is(.hud-key-liquid, .hud-key-line, .hud-key-lit, .hud-key-plate, .hud-key-label, .hud-key-icon) { transition: none; }
+
+/* a wallet line that goes away fades first, then its row collapses (one layout step, after the fade), so the
+   lines never overlap while it leaves */
+.hud-money { transition: opacity var(--hud-ms) ease-out, max-height 0s linear 0s; }
+.hud-money:not([data-shown]) { transition: opacity var(--hud-ms) ease-out, max-height 0s linear var(--hud-ms); }
+
+/* the compass heading: one quiet container, the point and the degrees together ("NE 32°") */
+.hud-map-heading {
+  display: flex;
+  align-items: center;
+  height: 1.5rem;
+  padding: 0 calc(0.625rem + 0.15em) 0 0.625rem;
+  border-radius: 0.375rem;
+  background: rgba(var(--scrim-rgb), 0.72);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.14);
+  white-space: pre;
+  color: var(--hud-fg);
+  font-family: var(--hud-font-display);
+  font-style: italic;
+  font-weight: 700;
+  font-size: 0.9375rem;
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+/* the gear: one tile; reverse takes the warning rim, the redline fills the face red */
+.hud-c-gear-tile { display: block; }
+.hud-c-gear-tile[data-gear="N"] .hud-key-tile { opacity: 0.7; }
+.hud-c-gear-tile[data-gear="R"] .hud-key-face { --nk-tile-rim-now: var(--hud-warn); }
+.hud-c-gauge[data-state="alert"] .hud-c-gear-tile .hud-key-lit { background: var(--hud-redline); transform: scaleY(1); }
+
+/* the speedometer, 12% larger; digital: a few full segments with small even gaps, fuel as thinner segments on
+   the outer right-hand curve (white, the alert colour when low) */
+.hud-c-dial { width: 10.875rem; height: 10.875rem; }
+.hud-c-plate { left: -1rem; top: -1rem; width: 12.875rem; height: 12.875rem; }
+.hud-c-readout { top: 4.75rem; }
+.hud-c-center { top: 8.75rem; }
+.hud-c-speed { font-size: 3.625rem; }
+.hud-c-gauge[data-style="digital"] .hud-c-ticks path {
+  fill: none;
+  stroke: var(--hud-fg);
+  stroke-opacity: 0.14;
+  stroke-width: 9;
+  stroke-linecap: butt;
+}
+.hud-c-gauge[data-style="digital"] .hud-c-ticks path[data-red] { stroke: var(--hud-redline); stroke-opacity: 0.3; }
+.hud-c-gauge[data-style="digital"] .hud-c-ticks path[data-on] { stroke: var(--hud-fill, var(--hud-fg)); stroke-opacity: 1; }
+.hud-c-gauge[data-style="digital"] .hud-c-ticks path[data-on][data-red] { stroke: var(--hud-redline); }
+.hud-c-fuelsegs path {
+  fill: none;
+  stroke: var(--hud-fg);
+  stroke-opacity: 0.16;
+  stroke-width: 4;
+  stroke-linecap: butt;
+}
+.hud-c-fuelsegs path[data-on] { stroke-opacity: 0.95; }
+.hud-c-fuelsegs[data-state="alert"] path[data-on] { stroke: var(--hud-danger, var(--hud-redline)); animation: nk-breathe var(--nk-time-pulse, 1000ms) var(--nk-ease-breathe, var(--nk-ease-breathe)) infinite; }
+:is(html, *)[data-nk-motion="reduced"] .hud-c-fuelsegs[data-state="alert"] path[data-on] { animation: none; }
+/* a vital in alert takes the danger colour (Ink: colour only on alert) */
+.hud-vchip[data-state="alert"] { --vital: var(--hud-danger, rgb(var(--destructive-rgb, 239, 68, 68))); }
+
+/* the speedometer: the ring wide around the readout (about 1rem clear on every side), the gear seated in the
+   ring's open gap at the bottom, the turn signals inside the ring beside the unit, the telltales centred on the
+   dial's left side at a fixed gap */
+.hud-c-dial { width: 13.5rem; height: 13.5rem; }
+.hud-c-plate { left: -1.125rem; top: -1.125rem; width: 15.75rem; height: 15.75rem; }
+.hud-c-readout { top: 46%; }
+.hud-c-speed { font-size: 3.625rem; }
+.hud-c-center { top: calc(50% + 4.875rem); }
+.hud-c-signal { top: calc(46% + 1.875rem); }
+.hud-c-signal[data-side="left"] { left: calc(50% - 3.5rem); }
+.hud-c-signal[data-side="right"] { left: calc(50% + 3.5rem); }
+.hud-c-signal .hud-signal svg { width: 1rem; height: 1rem; }
+.hud-c-cluster { padding-left: 2.375rem; }
+.hud-c-tells { top: 50%; bottom: auto; transform: translateY(-50%); }
+/* a right-anchored small tile's label sits on the left too */
+[data-corner$="right"] .hud-key-tile[data-size="sm"] .hud-key-label { left: auto; right: calc((var(--kt-s) + var(--fs)) / 2 + var(--nk-space-1, 0.25rem)); }

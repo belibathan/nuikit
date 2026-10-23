@@ -1,4 +1,5 @@
 import { Check, ChevronLeft, ChevronRight, ChevronsUpDown, Search } from "lucide-react";
+import { EmptyState } from "@/components/ui/empty-state";
 import { useMemo, useState } from "react";
 import { FieldLabel } from "@/components/controls";
 import { Button } from "@/components/ui/button";
@@ -57,7 +58,7 @@ export function PedSection() {
           </Button>
           <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
-              <Button variant="outline" size="sm" className="min-w-0 flex-1 justify-between rounded-none font-mono text-xs" disabled={busy}>
+              <Button variant="outline" size="sm" className="min-w-0 flex-1 justify-between rounded-none font-mono nk-label" disabled={busy}>
                 <span className="truncate">{current.model}</span>
                 {busy ? <Spinner /> : <ChevronsUpDown className="text-muted-foreground" />}
               </Button>
@@ -75,7 +76,7 @@ export function PedSection() {
                       type="button"
                       onClick={() => void choose(m)}
                       className={cn(
-                        "flex h-8 w-full items-center gap-2 rounded-md px-2 text-left font-mono text-xs outline-none hover:bg-accent hover:text-accent-foreground focus-visible:bg-accent",
+                        "flex h-8 w-full items-center gap-2 rounded-(--nk-r-control) px-2 text-left font-mono nk-label outline-none hover:bg-accent hover:text-accent-foreground focus-visible:bg-accent",
                         m === current.model && "text-foreground",
                       )}
                     >
@@ -84,7 +85,7 @@ export function PedSection() {
                       {FREEMODE[m] && <span className="nk-label ml-auto shrink-0 font-sans">{FREEMODE[m]}</span>}
                     </button>
                   ))}
-                  {!filtered.length && <p className="px-2 py-6 text-center text-sm text-muted-foreground">No model matches “{query}”. Try part of the name.</p>}
+                  {!filtered.length && <EmptyState title={`No model matches “${query}”`} description="Try part of the name." />}
                   {filtered.length === 300 && <p className="nk-label px-2 py-2 text-center">Type to narrow the list.</p>}
                 </div>
               </ScrollArea>
@@ -96,7 +97,7 @@ export function PedSection() {
         </ButtonGroup>
       </div>
       {!FREEMODE[current.model] && (
-        <p className="rounded-md bg-muted px-3 py-2 text-xs leading-4 text-muted-foreground">
+        <p className="rounded-(--nk-r-control) bg-muted px-3 py-2 nk-label">
           Heritage, face, makeup and tattoos need a freemode ped. Clothing and accessories still apply.
         </p>
       )}

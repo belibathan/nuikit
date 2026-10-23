@@ -5,7 +5,9 @@
 // the location: the street, then cross street · zone postal.
 //
 // The heading is a live value (`hud:minimap:heading`, ≤30 messages a second, followed at the browser's
-// frame rate) written straight into the DOM: a transform per mark and one text node, no React render.
+// frame rate) written straight into the DOM: one custom property (--deg) on the map and one text node, no
+// React render. The marks and ticks sit in one dial layer that rotates by -deg; each mark counter-rotates
+// by +deg (CSS reads --deg), so they stay upright. No transitions on those transforms.
 import { follow } from "nuikit-core/react";
 import { FlagIcon, NavigationIcon } from "lucide-react";
 import { useEffect, useRef, type ReactNode, type CSSProperties } from "react";
@@ -14,6 +16,7 @@ import { formatDistance } from "./location";
 import { cardinal, setText } from "./util";
 import { TextRoll } from "@/components/ui/text-roll";
 import { calm, rollText } from "./reel";
+import { KeyTile } from "./key-tile";
 
 const CARDINALS = [
   { label: "N", at: 0 },
@@ -65,9 +68,8 @@ export function MapRing({ frame, start, compass = true, location, units, halo = 
   const c = size / 2;
   const r = c - band / 2;
   const rem = H / 67.5; // the kit's 1rem at this height (16px at 1080p)
-  const marks = useRef<(HTMLSpanElement | null)[]>([]);
-  const ticks = useRef<SVGGElement>(null);
-  const readout = useRef<HTMLSpanElement>(null);
+  const root = useRef<HTMLDivElement>(null);
+  const readout = useRef<HTMLSpanElement | null>(null);
   const arrow = useRef<HTMLSpanElement>(null);
   const bearing = useRef<number | undefined>(location?.bearing);
   bearing.current = location?.bearing;
@@ -88,15 +90,7 @@ export function MapRing({ frame, start, compass = true, location, units, halo = 
         (deg) => {
           heading.current = deg;
           if (compass) {
-            CARDINALS.forEach((m, i) => {
-              const el = marks.current[i];
-              if (!el) return;
-              const p = onRing(m.at - deg, c, r);
-              el.style.transform = `translate3d(${p.x.toFixed(2)}px, ${p.y.toFixed(2)}px, 0) translate(-50%, -50%)`;
-              // the needle (skewed themes) points out from the centre
-              if (m.label === "N") el.style.setProperty("--hud-at", `${(m.at - deg).toFixed(1)}deg`);
-            });
-            ticks.current?.setAttribute("transform", `rotate(${(-deg).toFixed(2)} ${c} ${c})`);
+            root.current?.style.setProperty("--deg", deg.toFixed(2));
             headGate.current!.feed(deg);
           }
           if (arrow.current && bearing.current !== undefined) {
@@ -118,10 +112,11 @@ export function MapRing({ frame, start, compass = true, location, units, halo = 
   const tickOuter = tickInner + 0.3125 * rem;
   return (
     <div
+      ref={root}
       data-slot="hud-map"
       data-shape={frame.shape}
       className="hud-map"
-      style={{ left: `${frame.x * 100}%`, top: `${frame.y * 100}%`, width: size, height: size }}
+      style={{ left: `${frame.x * 100}%`, top: `${frame.y * 100}%`, width: size, height: size, "--deg": start.toFixed(2) } as CSSProperties}
     >
       {halo && frame.shape === "circle" && <div className="hud-map-plate" style={{ "--hud-ring-r": `${(r + band / 2).toFixed(1)}px` } as CSSProperties} aria-hidden />}
       <svg className="hud-map-svg" width={size} height={size} viewBox={`0 0 ${size} ${size}`} aria-hidden>
@@ -129,13 +124,6 @@ export function MapRing({ frame, start, compass = true, location, units, halo = 
         <circle className="hud-map-ring" cx={c} cy={c} r={r} strokeWidth={band} />
         {compass && (
           <>
-            <g ref={ticks} transform={`rotate(${-start} ${c} ${c})`}>
-              {TICKS.map((d) => {
-                const a = onRing(d, c, tickInner);
-                const b = onRing(d, c, tickOuter);
-                return <line key={d} x1={a.x} y1={a.y} x2={b.x} y2={b.y} className="hud-map-tick" />;
-              })}
-            </g>
             {/* the lubber mark: where the heading above is read */}
             <line x1={c} x2={c} y1={c - r - band / 2 - 0.125 * rem} y2={c - r - band / 2 - 0.5 * rem} className="hud-map-lubber" />
           </>
@@ -143,24 +131,24 @@ export function MapRing({ frame, start, compass = true, location, units, halo = 
       </svg>
       {compass && (
         <>
+          <div className="hud-map-dial" aria-hidden>
+            <svg className="hud-map-svg" width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
+              {TICKS.map((d) => {
+                const a = onRing(d, c, tickInner);
+                const b = onRing(d, c, tickOuter);
+                return <line key={d} x1={a.x} y1={a.y} x2={b.x} y2={b.y} className="hud-map-tick" />;
+              })}
+            </svg>
+            {CARDINALS.map((m) => {
+              const p = onRing(m.at, c, r);
+              return (
+                <span key={m.label} data-north={m.label === "N" || undefined} className="hud-map-cardinal" style={{ "--x": `${p.x.toFixed(2)}px`, "--y": `${p.y.toFixed(2)}px` } as CSSProperties}>
+                  <KeyTile size="sm" active={m.label === "N"} icon={<span className="hud-key-glyph">{m.label}</span>} />
+                </span>
+              );
+            })}
+          </div>
           <span ref={readout} data-slot="hud-heading" className="hud-num hud-map-heading" style={{ left: c, bottom: size + 0.875 * rem }} aria-label={headingText(start)} />
-          {CARDINALS.map((m, i) => {
-            const p = onRing(m.at - start, c, r);
-            return (
-              <span
-                key={m.label}
-                ref={(el) => {
-                  marks.current[i] = el;
-                }}
-                data-north={m.label === "N" || undefined}
-                className="hud-map-cardinal"
-                style={{ transform: `translate3d(${p.x.toFixed(2)}px, ${p.y.toFixed(2)}px, 0) translate(-50%, -50%)`, ...(m.label === "N" ? ({ "--hud-at": `${m.at - start}deg` } as CSSProperties) : null) }}
-                aria-hidden
-              >
-                {m.label}
-              </span>
-            );
-          })}
         </>
       )}
       {waypoint && (

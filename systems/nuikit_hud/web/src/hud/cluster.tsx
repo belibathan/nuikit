@@ -10,8 +10,9 @@ import { BodyIcon, CruiseIcon, EngineIcon, HandbrakeIcon, HighBeamIcon, LowBeamI
 import type { GaugeStyle, HudLook } from "./look";
 import { Aircraft } from "./aircraft";
 import { CompactGauge, TelltaleColumn } from "./compact";
+import { KeyTile } from "./key-tile";
 import { cardinal, setText, UNIT_LABEL } from "./util";
-import { HudChip } from "@/components/ui/hud-chip";
+import { Chip } from "@/components/ui/chip";
 import { cn } from "@/lib/utils";
 
 /** What paints the live values of one gauge variant. */
@@ -67,7 +68,7 @@ function paintShift(el: HTMLElement | null, rpm: number, redline: number, state:
 function Fuel({ value }: { value: number }) {
   const v = Math.max(0, Math.min(100, Math.round(value)));
   return (
-    <div data-slot="hud-fuel" data-low={v <= 15 || undefined} className="hud-fuel" role="meter" aria-label="Fuel" aria-valuemin={0} aria-valuemax={100} aria-valuenow={v}>
+    <div data-slot="hud-fuel" data-state={v <= 15 ? "alert" : undefined} className="hud-fuel" role="meter" aria-label="Fuel" aria-valuemin={0} aria-valuemax={100} aria-valuenow={v}>
       <FuelIcon />
       <span className="hud-fuel-track">
         <span className="hud-fuel-fill" style={{ transform: `scaleX(${v / 100})` }} />
@@ -136,9 +137,9 @@ function Warnings({ v, s }: { v: HudVehicle; s: NonNullable<HudSettings["vehicle
   return (
     <div data-slot="hud-warnings" className="hud-warnings">
       {list.map((w) => (
-        <HudChip key={w.key} data-tone={w.tone} state="warning" icon={<TriangleAlertIcon />} className={cn("hud-warning", w.tone === "warning" && "bg-warning text-warning-foreground")}>
+        <Chip key={w.key} tone={w.tone === "warning" ? "warning" : "danger"} fill="solid" icon={<TriangleAlertIcon />} className="hud-warning">
           {w.text}
-        </HudChip>
+        </Chip>
       ))}
     </div>
   );
@@ -187,7 +188,8 @@ function ArcGauge({ v, look, paint, settings, center }: GaugeProps) {
       const red = x >= redline;
       if (red !== state.current.red) {
         state.current.red = red;
-        root.current?.toggleAttribute("data-redline", red);
+        if (red) root.current?.setAttribute("data-state", "alert");
+        else root.current?.removeAttribute("data-state");
       }
       if (settings.shiftLight !== false) paintShift(shift.current, x, redline, state.current);
     },
@@ -251,8 +253,8 @@ function ArcGauge({ v, look, paint, settings, center }: GaugeProps) {
           </span>
         ) : (
           v.gear !== undefined && (
-            <span data-slot="hud-gear" data-gear={String(v.gear)} className="hud-gear hud-num" aria-label="Gear">
-              {v.gear}
+            <span data-slot="hud-gear" data-gear={String(v.gear)} className="hud-c-gear-tile" aria-label="Gear">
+              <KeyTile icon={<span className="hud-key-glyph">{v.gear}</span>} />
             </span>
           )
         )}
@@ -287,7 +289,8 @@ function BarGauge({ v, look, paint, settings, center }: GaugeProps) {
       const red = x >= redline;
       if (red !== state.current.red) {
         state.current.red = red;
-        root.current?.toggleAttribute("data-redline", red);
+        if (red) root.current?.setAttribute("data-state", "alert");
+        else root.current?.removeAttribute("data-state");
       }
       if (settings.shiftLight !== false) paintShift(shift.current, x, redline, state.current);
     },
@@ -312,8 +315,8 @@ function BarGauge({ v, look, paint, settings, center }: GaugeProps) {
           <span ref={heading} className="hud-gear hud-gear-wide hud-num">{`${Math.round(v.heading ?? 0) % 360}° ${cardinal(v.heading ?? 0)}`}</span>
         ) : (
           v.gear !== undefined && (
-            <span data-slot="hud-gear" data-gear={String(v.gear)} className="hud-gear hud-num" aria-label="Gear">
-              {v.gear}
+            <span data-slot="hud-gear" data-gear={String(v.gear)} className="hud-c-gear-tile" aria-label="Gear">
+              <KeyTile icon={<span className="hud-key-glyph">{v.gear}</span>} />
             </span>
           )
         )}
@@ -358,7 +361,8 @@ function DigitalGauge({ v, paint, settings, center }: GaugeProps) {
       const red = x >= redline;
       if (red !== state.current.red) {
         state.current.red = red;
-        root.current?.toggleAttribute("data-redline", red);
+        if (red) root.current?.setAttribute("data-state", "alert");
+        else root.current?.removeAttribute("data-state");
       }
     },
     heading(h) {
@@ -389,8 +393,8 @@ function DigitalGauge({ v, paint, settings, center }: GaugeProps) {
           <span ref={heading} className="hud-gear hud-gear-wide hud-num">{`${Math.round(v.heading ?? 0) % 360}° ${cardinal(v.heading ?? 0)}`}</span>
         ) : (
           v.gear !== undefined && (
-            <span data-slot="hud-gear" data-gear={String(v.gear)} className="hud-gear hud-gear-big hud-num" aria-label="Gear">
-              {v.gear}
+            <span data-slot="hud-gear" data-gear={String(v.gear)} className="hud-c-gear-tile" aria-label="Gear">
+              <KeyTile icon={<span className="hud-key-glyph">{v.gear}</span>} />
             </span>
           )
         )}

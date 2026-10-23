@@ -1,3 +1,5 @@
+import { MenuRow } from "@/components/ui/menu-row";
+import { EmptyState } from "@/components/ui/empty-state";
 import { useNuiState } from "nuikit-core/react";
 import type { KeyBinding } from "../nui";
 import { Button } from "@/components/ui/button";
@@ -24,16 +26,13 @@ export function KeysPage({ onBack, onChange }: { onBack: () => void; onChange: (
       }
     >
       {groups.size === 0 ? (
-        <p className="nk-row px-0 text-muted-foreground">Reading your keys from the game…</p>
+        <EmptyState title="Reading your keys" description="Asking the game…" />
       ) : (
         [...groups].map(([group, rows], i) => (
           <SheetSection key={group || i} label={group || undefined}>
             <div className="flex flex-col divide-y divide-border">
               {rows.map((k) => (
-                <div key={k.label} className="nk-row min-h-11 justify-between px-0">
-                  <span className="truncate">{k.label}</span>
-                  {k.key ? <Kbd className="min-w-8">{k.key}</Kbd> : <span className="nk-label">Not bound</span>}
-                </div>
+                <MenuRow key={k.label} inert kbd={k.key || undefined} meta={k.key ? undefined : "Not bound"}>{k.label}</MenuRow>
               ))}
             </div>
           </SheetSection>

@@ -7,6 +7,8 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { formatMoney } from "@/components/ui/money";
 import type { HudSettings, WalletMode } from "../nui";
 import { NumberRoll } from "@/components/ui/text-roll";
+import { IconText } from "@/components/ui/icon-text";
+import { Chip } from "@/components/ui/chip";
 
 const LINGER = 5000;
 
@@ -59,9 +61,10 @@ export function Wallet({ settings, inline = false, compact = false }: { settings
       <Money icon={<LandmarkIcon />} label="Bank" value={player.bank} mode={w.bank === undefined ? "change" : w.bank} size="sm" />
       {job && (
         <div data-slot="hud-job" className="hud-job">
-          <BriefcaseIcon />
-          <span className="truncate">{[job.label ?? job.name, job.gradeLabel].filter(Boolean).join(", ")}</span>
-          {job.onDuty !== undefined && <span className="hud-duty" data-on={job.onDuty || undefined} aria-label={job.onDuty ? "On duty" : "Off duty"} />}
+          <IconText icon={<BriefcaseIcon />} text="label" muted>
+            {[job.label ?? job.name, job.gradeLabel].filter(Boolean).join(", ")}
+          </IconText>
+          {job.onDuty !== undefined && <Chip variant="dot" tone={job.onDuty ? "success" : "neutral"} aria-label={job.onDuty ? "On duty" : "Off duty"} />}
         </div>
       )}
     </div>

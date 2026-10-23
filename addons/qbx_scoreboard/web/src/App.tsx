@@ -1,8 +1,9 @@
 import { UsersIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { EdgeSheet, EdgeSheetBody } from "@/components/ui/edge-sheet";
+import { Chip } from "@/components/ui/chip";
 import { EmptyState } from "@/components/ui/empty-state";
-import { Separator } from "@/components/ui/separator";
+import { MenuRow } from "@/components/ui/menu-row";
 import { useLever } from "@/lib/levers";
 import { loadServerTheme } from "@/lib/theme";
 import { cn } from "@/lib/utils";
@@ -69,14 +70,14 @@ export default function App() {
       width="26rem"
       fit
       // below the HUD's top-right block (the minimap, location and cash), where the stock board sits
-      className="top-[30vh]"
+      anchor="upper"
       icon={<UsersIcon />}
       title="Players online"
       description={max > 0 ? `${players} of ${max} slots taken` : undefined}
       meter={max > 0 ? Math.min(100, (players / max) * 100) : undefined}
       meterDanger={101}
       actions={
-        <span className="nk-num text-base font-semibold">
+        <span className="nk-num">
           {players}
           {max > 0 && <span className="font-normal text-muted-foreground"> / {max}</span>}
         </span>
@@ -86,20 +87,16 @@ export default function App() {
         {keys.length > 0 ? (
           <>
             <h3 className="nk-caption pb-2">Activities</h3>
-            <ul className="flex flex-col">
-              {keys.map((key, i) => {
+            <div className="flex flex-col">
+              {keys.map((key) => {
                 const a = activities[key];
                 return (
-                  <li key={key}>
-                    {i > 0 && <Separator />}
-                    <div className="flex min-h-12 items-center justify-between gap-3 text-base font-medium">
-                      <span className="truncate">{labels[key] ?? a?.label ?? key}</span>
-                      {a && <Status activity={a} cops={Number(data.currentCops) || 0} />}
-                    </div>
-                  </li>
+                  <MenuRow key={key} readOnly meta={a && <Status activity={a} cops={Number(data.currentCops) || 0} />}>
+                    {labels[key] ?? a?.label ?? key}
+                  </MenuRow>
                 );
               })}
-            </ul>
+            </div>
           </>
         ) : (
           <EmptyState title="No activities" description="This server hasn't listed any police-gated activities." />
@@ -113,15 +110,9 @@ export default function App() {
 function Status({ activity, cops }: { activity: Activity; cops: number }) {
   const state = activity.busy ? "busy" : cops >= (Number(activity.minimumPolice) || 0) ? "available" : "unavailable";
   return (
-    <span className={cn("nk-label flex shrink-0 items-center gap-2 text-sm!", state === "available" && "text-foreground")}>
-      <span
-        aria-hidden
-        className={cn(
-          "size-2 rounded-full",
-          // available in the success tone (theme token), so the open activities read at a glance
-          state === "available" ? "bg-success" : state === "busy" ? "bg-muted-foreground" : "border border-muted-foreground/60",
-        )}
-      />
+    <span className={cn("nk-label flex shrink-0 items-center gap-2", state === "available" && "text-foreground")}>
+      {/* available in the success tone, busy neutral, unavailable a quiet rim */}
+      <Chip variant="dot" tone={state === "available" ? "success" : "neutral"} fill={state === "unavailable" ? "hair" : "solid"} aria-hidden />
       {state === "busy" ? "In progress" : state === "available" ? "Available" : "Unavailable"}
     </span>
   );

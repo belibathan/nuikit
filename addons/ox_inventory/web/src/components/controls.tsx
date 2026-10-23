@@ -1,9 +1,10 @@
 import { HandIcon, SparklesIcon } from "lucide-react";
 import type { ReactNode } from "react";
+import { ActionBar, ActionBarItem, ActionBarSep } from "@/components/ui/action-bar";
+import { MenuRow } from "@/components/ui/menu-row";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Kbd, KbdGroup } from "@/components/ui/kbd";
-import { Separator } from "@/components/ui/separator";
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { useT } from "@/lib/locale";
 import { exit } from "@/state/actions";
@@ -90,33 +91,13 @@ function UsefulControls() {
         </header>
         <div className="flex flex-col px-6 pt-2 pb-4">
           {rows.map(([keys, text], i) => (
-            <div key={i}>
-              {i > 0 && <Separator />}
-              <div className="flex min-h-12 items-center justify-between gap-6 text-sm">
-                <span>{text}</span>
-                <span className="shrink-0">{keys}</span>
-              </div>
-            </div>
+            <MenuRow key={i} inert meta={keys}>
+              {text}
+            </MenuRow>
           ))}
         </div>
       </DialogContent>
     </Dialog>
-  );
-}
-
-/** A key hint, the pause menu's way: key caps beside the verb. `onClick` makes it a button. */
-function Hint({ keys, children, onClick, label }: { keys: ReactNode; children: ReactNode; onClick?: () => void; label?: string }) {
-  const body = (
-    <>
-      {keys}
-      <span>{children}</span>
-    </>
-  );
-  if (!onClick) return <span className="inv-hint">{body}</span>;
-  return (
-    <button type="button" onClick={onClick} aria-label={label} className="inv-hint inv-hint-button">
-      {body}
-    </button>
   );
 }
 
@@ -142,7 +123,7 @@ export function Controls({ open }: { open: boolean }) {
         aria-describedby={undefined}
       >
         <SheetTitle className="sr-only">{t("ui_usefulcontrols")}</SheetTitle>
-        <div className="flex items-center gap-2">
+        <ActionBar plate>
           <AmountInput />
           <DropZone id="use" icon={<SparklesIcon />}>
             {t("ui_use")}
@@ -150,16 +131,10 @@ export function Controls({ open }: { open: boolean }) {
           <DropZone id="give" icon={<HandIcon />}>
             {t("ui_give")}
           </DropZone>
-          <Separator orientation="vertical" className="mx-2 h-6!" />
-          <div className="flex items-center gap-4">
-            <Hint keys={<Kbd>?</Kbd>} onClick={() => ui.set({ help: true })} label={t("ui_usefulcontrols")}>
-              {t("ui_usefulcontrols")}
-            </Hint>
-            <Hint keys={<Kbd>Esc</Kbd>} onClick={exit}>
-              {t("ui_close")}
-            </Hint>
-          </div>
-        </div>
+          <ActionBarSep />
+          <ActionBarItem keys={["?"]} label={t("ui_usefulcontrols")} aria-label={t("ui_usefulcontrols")} onClick={() => ui.set({ help: true })} />
+          <ActionBarItem keys={["Esc"]} label={t("ui_close")} onClick={exit} />
+        </ActionBar>
       </SheetContent>
       <UsefulControls />
     </Sheet>

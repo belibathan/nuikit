@@ -21,6 +21,8 @@
     "sheet",
     "edge-sheet",
     "money",
-    "nui-image"
+    "nui-image",
+    "action-bar",
+    "menu-row"
   ]
 }

@@ -1,11 +1,11 @@
 import { Surface, useFollow } from "nuikit-core/react";
 import { CheckIcon, HeartCrackIcon, HeartPulseIcon } from "lucide-react";
-import { useRef, type ReactNode } from "react";
+import { useRef, type CSSProperties, type ReactNode } from "react";
 import type { DeathData } from "./nui";
-import { Countdown } from "@/components/ui/countdown";
-import { Kbd } from "@/components/ui/kbd";
-import { Meter } from "@/components/ui/meter";
 import { cn } from "@/lib/utils";
+import { Countdown } from "@/components/ui/countdown";
+import { ActionBarItem } from "@/components/ui/action-bar";
+import { Meter } from "@/components/ui/meter";
 
 const money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
 
@@ -33,11 +33,11 @@ function Death({ data }: { data: DeathData }) {
 
       {/* content sits above centre; the bottom of the screen stays clear for the medical resource's own text */}
       <div className="death-text absolute inset-x-0 top-[20%] flex flex-col items-center px-12 text-center">
-        <h1 className="death-in text-[2rem] leading-10 font-semibold tracking-tight">
+        <h1 className="death-in nk-display">
           {data.title ?? (laststand ? "You are down" : "You are unconscious")}
         </h1>
         {data.subtitle ? (
-          <p className="death-in mt-2 max-w-xl text-base text-foreground/75" style={{ animationDelay: "60ms" }}>
+          <p className="death-in mt-2 max-w-xl nk-body text-foreground/75" style={{ "--i": 1 } as CSSProperties}>
             {data.subtitle}
           </p>
         ) : null}
@@ -54,10 +54,10 @@ function Death({ data }: { data: DeathData }) {
             warnAt={laststand ? 30 : undefined}
             lineTone={laststand ? "destructive" : "neutral"}
             className="death-in mt-12"
-            style={{ animationDelay: "120ms" }}
+            style={{ "--i": 3 } as CSSProperties}
           />
         ) : (
-          <div className="death-in mt-12 text-sm font-medium text-foreground/75" style={{ animationDelay: "120ms" }}>
+          <div className="death-in mt-12 nk-body text-foreground/75" style={{ "--i": 3 } as CSSProperties}>
             Waiting to respawn
           </div>
         )}
@@ -84,10 +84,10 @@ function Band({ data, laststand, seconds }: { data: DeathData; laststand: boolea
     <div
       data-slot="death-band"
       className="nk-slab-band death-band absolute inset-x-0 bottom-0 flex-row justify-between [--nk-slab-tone-rgb:var(--destructive-rgb)]"
-      style={{ animationDelay: "240ms" }}
+      style={{ "--i": 6 } as CSSProperties}
       aria-live="off"
     >
-      <span className="flex items-center gap-2 text-sm font-medium">
+      <span className="flex items-center gap-2 nk-label">
         <HeartCrackIcon className="size-4 text-destructive" />
         {state}
       </span>
@@ -110,7 +110,7 @@ function Hints({ data }: { data: DeathData }) {
   const { respawn, ems, helpable } = data;
   if (!respawn && !ems && !helpable) return null;
   return (
-    <div className="death-in mt-12 flex items-start gap-6" style={{ animationDelay: "180ms" }}>
+    <div className="death-in mt-12 flex items-start gap-6" style={{ "--i": 4 } as CSSProperties}>
       {helpable && !ems ? <Hint icon={<HeartPulseIcon className="text-destructive" />} label="Another player can revive you" /> : null}
 
       {ems ? (
@@ -167,14 +167,14 @@ function HoldToRespawn({ kbd, cost }: { kbd: string; cost?: number }) {
     </div>
   );
 }
-
 function Hint({ kbd, icon, label, meta, muted }: { kbd?: string; icon?: ReactNode; label: string; meta?: string; muted?: boolean }) {
   return (
-    <div className={cn("flex h-6 items-center gap-2 text-sm font-medium whitespace-nowrap [&>svg]:size-4", muted ? "text-foreground/50" : "text-foreground")}>
-      {kbd ? <Kbd className={cn("h-6 min-w-6", muted ? "bg-foreground/10 text-foreground/60" : "bg-foreground text-background")}>{kbd}</Kbd> : null}
-      {icon}
-      <span>{label}</span>
-      {meta ? <span className="nk-num text-foreground/60">{meta}</span> : null}
-    </div>
+    <ActionBarItem
+      keys={kbd ? [kbd] : undefined}
+      icon={icon}
+      state={muted ? "disabled" : undefined}
+      disabled={muted}
+      label={meta ? <>{label} <span className="nk-num">{meta}</span></> : label}
+    />
   );
 }

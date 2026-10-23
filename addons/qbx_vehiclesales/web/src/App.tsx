@@ -3,7 +3,9 @@ import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { ActionBar, ActionBarItem } from "@/components/ui/action-bar";
 import { Kbd } from "@/components/ui/kbd";
+import { MenuRow } from "@/components/ui/menu-row";
 import { NuiImage } from "@/components/ui/nui-image";
 import { formatMoney } from "@/components/ui/money";
 import { EdgeSheet, EdgeSheetBody, EdgeSheetFooter } from "@/components/ui/edge-sheet";
@@ -46,21 +48,15 @@ function Breakdown({ price }: { price: number }) {
     ["Dealer fee", "4%", money(p * 0.04)],
   ];
   return (
-    <div className="flex flex-col gap-2 text-sm">
+    <div className="flex flex-col">
       {rows.map(([label, pct, value]) => (
-        <div key={label} className="text-muted-foreground flex items-center justify-between">
-          <span>
-            {label} <span className="nk-num text-xs">{pct}</span>
-          </span>
-          <span className="nk-num">−{value}</span>
-        </div>
+        <MenuRow key={label} readOnly meta={`−${value}`}>
+          {label} <span className="nk-num nk-label text-muted-foreground">{pct}</span>
+        </MenuRow>
       ))}
-      <div className="flex items-center justify-between border-t pt-2 font-medium">
-        <span>
-          Seller receives <span className="nk-num text-muted-foreground text-xs font-normal">77%</span>
-        </span>
-        <span className="nk-num">{money(Math.ceil((p / 100) * 77))}</span>
-      </div>
+      <MenuRow readOnly meta={money(Math.ceil((p / 100) * 77))} className="border-t font-medium">
+        Seller receives <span className="nk-num nk-label text-muted-foreground">77%</span>
+      </MenuRow>
     </div>
   );
 }
@@ -69,7 +65,7 @@ function Detail({ label, value, mono }: { label: string; value: string; mono?: b
   return (
     <div className="flex min-w-0 flex-col gap-1">
       <dt className="nk-label">{label}</dt>
-      <dd className={cn("truncate text-sm font-medium", mono && "font-mono text-[0.8125rem]")} title={value}>
+      <dd className={cn("nk-body truncate", mono && "font-mono")} title={value}>
         {value || "—"}
       </dd>
     </div>
@@ -259,7 +255,7 @@ export default function App() {
               </div>
               <div className="flex items-end justify-between gap-3">
                 <Stat size="display" label="Price" value={money(shown.price)} />
-                <span className="nk-label pb-1.5 font-normal">Paid from your bank</span>
+                <span className="nk-label pb-1 font-normal">Paid from your bank</span>
               </div>
               {shown.takeBack && (
                 <div className="border-t pt-4">
@@ -272,10 +268,9 @@ export default function App() {
 
         </EdgeSheetBody>
         <EdgeSheetFooter className="justify-between">
-          <Button variant="ghost" size="lg" className="-ml-3 text-muted-foreground" onClick={() => finish()}>
-            Cancel
-            <Kbd>Esc</Kbd>
-          </Button>
+          <ActionBar>
+            <ActionBarItem keys={["Esc"]} label="Cancel" onClick={() => finish()} />
+          </ActionBar>
           <div className="flex items-center gap-2">
             {selling ? (
               <Button size="lg" onClick={sell}>List for {Number.isFinite(typed) && typed > 0 ? money(typed) : "sale"}</Button>

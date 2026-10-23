@@ -105,7 +105,7 @@ export function ProgressBar() {
       <div
         data-slot="progress-slab"
         data-state={presence.state}
-        className={cn("nk-slab-stack rounded-(--nk-slab-radius) bg-(--nk-slab-bg) px-4 py-2.5 text-(--nk-slab-fg) shadow-[inset_0_0_0_var(--nk-border)_var(--nk-slab-border)]", presenceMotion)}
+        className={cn("nk-slab-stack rounded-(--nk-slab-radius) bg-(--nk-slab-bg) px-4 py-3 text-(--nk-slab-fg) shadow-[inset_0_0_0_var(--nk-border)_var(--nk-slab-border)]", presenceMotion)}
       >
         <div className="nk-slab-stack-row">
           <span className="truncate">{run.label}</span>

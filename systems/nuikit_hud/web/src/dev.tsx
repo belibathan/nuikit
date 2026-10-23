@@ -18,6 +18,10 @@ import { applyTheme, closeSurface, emit, openSurface } from "nuikit-core";
 import { PRESET_PARTS } from "./hud/parts";
 import { NuiDevtools, defineMocks } from "nuikit-core/devtools";
 import { useEffect, useState } from "react";
+// the server's own theme (Ink), as in game; &theme=stock opts out
+import inkTheme from "../../../nuikit/theme.css?raw";
+import "../../../nuikit/theme/ink-fonts.css";
+import "../../../nuikit/theme/ink.css";
 import type { HudLayout, HudLocation, HudPreset, HudSettings, HudStyles, HudVehicle, HudWeapon, MinimapFrame, StyleChoice, StyleKey, StyleValue } from "./nui";
 
 const q = new URLSearchParams(location.search);
@@ -66,6 +70,7 @@ const fixtures: Record<string, { player: object; vehicle?: HudVehicle; changes?:
   idle: { player: full, vehicle: car({ gear: "N", rpm: 0.2, speed: 0 }) },
   cruise: { player: full, vehicle: car({ gear: 4, rpm: 0.56, speed: 64, moving: true, lights: "low", cruise: true, cruiseSpeed: 65, indicators: 1 }) },
   redline: { player: full, vehicle: car({ gear: 3, rpm: 0.97, speed: 98, moving: true, lights: "high" }) },
+  redlow: { player: full, vehicle: car({ gear: 3, rpm: 0.97, speed: 98, moving: true, lights: "high", fuel: 9 }) },
   reverse: { player: full, vehicle: car({ gear: "R", rpm: 0.34, speed: 6, handbrake: false }) },
   damaged: {
     player: { ...full, health: 41, armor: 0 },
@@ -185,7 +190,7 @@ function FakeRadar({ frame }: { frame: MinimapFrame }) {
 const DEV_STYLES: StyleChoice[] = (
   [
     ["vitals.display", "icons", ["icons", "value", "pill", "expand"]],
-    ["vitals.visibility", "rest", ["always", "rest", "voice"]],
+    ["vitals.visibility", "always", ["always", "rest", "voice"]],
     ["vehicle.gauge", "theme", ["theme", "arc", "bar", "digital"]],
     ["map.shape", "circle", ["circle", "square"]],
     ["map.size", 15, [12, 15, 18]],
@@ -237,6 +242,7 @@ export default function Dev() {
     const f = fixtures[q.get("fixture") ?? "foot"] ?? fixtures.foot!;
     const theme = THEMES[q.get("theme") ?? ""];
     if (theme) applyTheme(theme);
+    else if (q.get("theme") !== "stock") applyTheme(inkTheme);
     for (const [k, v] of Object.entries(IDENTITIES[q.get("identity") ?? ""] ?? {})) document.documentElement.style.setProperty(k, v);
 
     const preset: HudPreset = q.get("layout") === "classic" ? "classic" : "compact";
@@ -302,8 +308,10 @@ export default function Dev() {
     }
     const pop = q.get("pop");
     if (pop) {
-      const [tone, by] = pop.split(":");
-      setTimeout(() => emit("hud:pop" as never, { tone, by: Number(by ?? 10) } as never), 900);
+      for (const one of pop.split(",")) {
+        const [tone, by] = one.split(":");
+        setTimeout(() => emit("hud:pop" as never, { tone, by: Number(by ?? 10) } as never), 900);
+      }
     }
     if (f.changes) {
       const t = setTimeout(() => emit("nuikit:player", f.changes as never), 400);

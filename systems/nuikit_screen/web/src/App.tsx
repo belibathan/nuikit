@@ -33,26 +33,26 @@ function Terminal() {
     return () => clearInterval(t);
   }, []);
   return (
-    <div className="dark flex h-screen flex-col bg-background p-10 text-foreground">
-      <header className="flex items-baseline justify-between border-b border-border pb-6">
-        <h1 className="nk-display text-4xl">{open ? open.title : "Terminal"}</h1>
-        <span className="nk-num text-2xl text-muted-foreground">
+    <div className="dark flex h-screen flex-col bg-background p-(--nk-space-8) text-foreground">
+      <header className="flex items-baseline justify-between border-b border-border pb-(--nk-space-6)">
+        <h1 className="nk-title text-(length:--nk-text-display)">{open ? open.title : "Terminal"}</h1>
+        <span className="nk-num text-(length:--nk-text-title) text-muted-foreground">
           <TextRoll value={clock} />
         </span>
       </header>
       {open ? (
-        <div className="flex flex-1 flex-col gap-8 py-8">
-          <p className="text-2xl leading-relaxed">{open.detail}</p>
-          <Button size="lg" variant="outline" className="w-fit text-xl" onClick={() => setOpen(null)}>
+        <div className="flex flex-1 flex-col gap-(--nk-space-8) py-(--nk-space-8)">
+          <p className="nk-body text-(length:--nk-text-title)">{open.detail}</p>
+          <Button size="lg" variant="outline" className="w-fit" onClick={() => setOpen(null)}>
             Back
           </Button>
         </div>
       ) : (
-        <div className="flex flex-1 flex-col divide-y divide-border py-4">
+        <div className="flex flex-1 flex-col divide-y divide-border py-(--nk-space-4)">
           {entries.map((e) => {
             const Icon = ICONS[e.icon] ?? MailIcon;
             return (
-              <MenuRow key={e.id} icon={<Icon />} chevron className="min-h-20 text-2xl" onClick={() => setOpen(e)}>
+              <MenuRow key={e.id} icon={<Icon />} chevron className="min-h-(--nk-row-height) text-(length:--nk-text-title)" onClick={() => setOpen(e)}>
                 {e.title}
               </MenuRow>
             );

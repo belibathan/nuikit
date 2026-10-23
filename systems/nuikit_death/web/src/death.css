@@ -2,17 +2,17 @@
  * nuikit_death: the tint, the vignette and motion. Loaded after index.css.
  * In game the backdrop-filter tint only affects other NUI (CEF draws over the game); the world is
  * desaturated by GTA itself (Config.effects). The vignette is painted, so it shows either way. The red is the theme's
- * --destructive; strength comes from `opacity`, not color-mix, so Chromium 103 renders it as written.
+ * --destructive; strength comes from `opacity`, not a colour mix, so Chromium 103 renders it as written.
  */
 
 /* the game behind: drained in last stand, nearly black-and-white once unconscious */
 .death-tint {
   --nk-backdrop-filter: saturate(0.45) contrast(1.06);
-  background: radial-gradient(ellipse 60% 55% at 50% 42%, color-mix(in oklab, var(--scrim) 50%, transparent) 0%, color-mix(in oklab, var(--scrim) 38%, transparent) 100%);
+  background: radial-gradient(ellipse 60% 55% at 50% 42%, rgba(var(--scrim-rgb), 0.5) 0%, rgba(var(--scrim-rgb), 0.38) 100%);
 }
 .death-dead .death-tint {
-  --nk-backdrop-filter: grayscale(0.9) brightness(0.62) blur(2px);
-  background: color-mix(in oklab, var(--scrim) 55%, transparent);
+  --nk-backdrop-filter: grayscale(0.9) brightness(0.62);
+  background: rgba(var(--scrim-rgb), 0.55);
 }
 
 /* red bleeding in from the edges */
@@ -27,10 +27,10 @@
   opacity: 0.75;
 }
 .death-vignette::after {
-  background: radial-gradient(ellipse 72% 72% at 50% 45%, transparent 30%, color-mix(in oklab, var(--scrim) 70%, transparent) 100%);
+  background: radial-gradient(ellipse 72% 72% at 50% 45%, transparent 30%, rgba(var(--scrim-rgb), 0.70) 100%);
 }
 .death-laststand .death-vignette::before {
-  animation: death-pulse 1.4s ease-in-out infinite;
+  animation: death-pulse calc(var(--nk-time-pulse) * 1.4) var(--nk-ease-breathe) infinite;
 }
 .death-dead .death-vignette::before {
   opacity: 0.3;
@@ -43,26 +43,25 @@
   40% { opacity: 0.78; }
 }
 @keyframes death-in {
-  from { opacity: 0; transform: translateY(10px); filter: blur(4px); }
-  to { opacity: 1; transform: none; filter: none; }
+  from { opacity: 0; transform: translateY(var(--nk-rise)); }
+  to { opacity: 1; transform: none; }
 }
 
-.death-tint, .death-vignette { animation: death-fade 600ms ease-out both; }
+.death-tint, .death-vignette { animation: death-fade calc(var(--nk-time-slow) * 2) var(--nk-ease-standard) both; }
 @keyframes death-fade {
   from { opacity: 0; }
   to { opacity: 1; }
 }
-.death-in { animation: death-in 700ms cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+.death-in { animation: death-in var(--nk-time-slow) var(--nk-ease-expand) calc(var(--nk-stagger) * var(--i, 0)) both; }
 /* the band: a thin line along the bottom edge, no top padding to waste; fades in with the text */
 .death-band {
   min-height: 2.5rem;
   padding-top: 0;
   padding-bottom: 0;
-  animation: death-fade 600ms ease-out both;
+  animation: death-fade calc(var(--nk-time-slow) * 2) var(--nk-ease-standard) both;
 }
-.death-text { text-shadow: 0 1px 8px color-mix(in oklab, var(--scrim) 60%, transparent); }
-.death-text [data-slot="countdown-clock"] { text-shadow: 0 4px 32px color-mix(in oklab, var(--scrim) 50%, transparent); }
+.death-text { text-shadow: var(--world-shadow); }
+.death-text [data-slot="countdown-clock"] { text-shadow: var(--world-shadow); }
 
-@media (prefers-reduced-motion: reduce) {
-  .death-tint, .death-vignette, .death-in, .death-band, .death-laststand .death-vignette::before { animation: none; }
-}
+[data-nk-motion="reduced"] :is(.death-tint, .death-vignette, .death-in, .death-band, .death-laststand .death-vignette::before),
+[data-nk-motion="off"] :is(.death-tint, .death-vignette, .death-in, .death-band, .death-laststand .death-vignette::before) { animation: none; }

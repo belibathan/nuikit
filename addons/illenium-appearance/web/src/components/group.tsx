@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, type ReactNode } from "react";
+import { Chip } from "@/components/ui/chip";
 import { MenuRow } from "@/components/ui/menu-row";
 import { TextRoll } from "@/components/ui/text-roll";
 
@@ -38,13 +39,13 @@ export function Group({ value, title, meta, changed, children }: { value: string
   if (isOpen) return <div className="flex flex-col gap-5 pt-2">{children}</div>;
   return (
     <MenuRow
-      className="min-h-12 text-base"
+      className="min-h-12"
       onClick={() => setOpen(value)}
       chevron
       meta={
         <span className="flex items-center gap-2">
-          {changed && <span className="size-1.5 shrink-0 rounded-full bg-primary" aria-label="Changed" />}
-          {meta !== undefined && (typeof meta === "string" || typeof meta === "number" ? <TextRoll value={String(meta)} className="text-sm" /> : meta)}
+          {changed && <Chip variant="dot" tone="info" aria-label="Changed" />}
+          {meta !== undefined && (typeof meta === "string" || typeof meta === "number" ? <TextRoll value={String(meta)} className="nk-num" /> : meta)}
         </span>
       }
     >

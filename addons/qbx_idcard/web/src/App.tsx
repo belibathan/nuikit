@@ -2,7 +2,7 @@ import { toRgba } from "nuikit-core";
 import { IdCardIcon, UserIcon } from "lucide-react";
 import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
 import { EdgeSheet } from "@/components/ui/edge-sheet";
-import { Kbd } from "@/components/ui/kbd";
+import { ActionBar, ActionBarItem } from "@/components/ui/action-bar";
 import { DEFAULT_CONFIG, DEFAULT_LABELS, loadLabels, post, type IdConfig, type Labels, type PlayerData } from "@/lib/nui";
 import { loadServerTheme } from "@/lib/theme";
 import { cn } from "@/lib/utils";
@@ -91,7 +91,7 @@ function IdCard({ open, data, config, labels }: { open: boolean; data: PlayerDat
       side="right"
       width="30rem"
       fit
-      className="top-[28vh]"
+      anchor="upper"
       style={accent ? ({ "--idc-accent": accent } as CSSProperties) : undefined}
       icon={<IdCardIcon className={cn(accent && "idc-icon")} />}
       title={title}
@@ -113,13 +113,12 @@ function IdCard({ open, data, config, labels }: { open: boolean; data: PlayerDat
       </div>
 
       <footer className="relative mt-4 flex items-center justify-between gap-4 border-t border-border pt-4">
-        <span className="idc-signature truncate text-xl leading-7 text-foreground/80">{name}</span>
+        <span className="idc-signature nk-title truncate text-foreground/80">{name}</span>
         <div className="flex shrink-0 items-center gap-3">
-          <img src="flags/32.png" alt="" className="h-4 rounded-[2px]" onError={(e) => (e.currentTarget.style.display = "none")} />
-          <span className="nk-label flex items-center gap-1.5">
-            <Kbd>{config.idCardSettings?.closeKey ?? "Backspace"}</Kbd>
-            Put away
-          </span>
+          <img src="flags/32.png" alt="" className="h-4 rounded-(--nk-r-key)" onError={(e) => (e.currentTarget.style.display = "none")} />
+          <ActionBar>
+            <ActionBarItem keys={[config.idCardSettings?.closeKey ?? "Backspace"]} label="Put away" />
+          </ActionBar>
         </div>
       </footer>
     </EdgeSheet>
@@ -145,7 +144,7 @@ function Field({ label, value, strong, mono, num, className }: { label: string; 
   return (
     <div className={cn("flex min-w-0 flex-col gap-1", className)}>
       <dt className="nk-label truncate">{sentence(label)}</dt>
-      <dd className={cn("truncate text-sm leading-5", strong ? "text-[0.9375rem] font-semibold" : "font-medium", mono && "font-mono text-[0.8125rem]", num && "nk-num")}>
+      <dd className={cn("nk-body truncate", strong && "font-semibold", mono && "font-mono", num && "nk-num")}>
         {value || "—"}
       </dd>
     </div>
@@ -163,7 +162,7 @@ function Portrait({ src, avatar }: { src?: string; avatar?: boolean }) {
       data-slot="idc-photo"
       className={cn(
         "flex shrink-0 items-center justify-center overflow-hidden border bg-muted",
-        avatar ? "size-16 self-start rounded-full" : "min-h-36 w-32 self-stretch rounded-md",
+        avatar ? "size-16 self-start rounded-(--nk-r-surface)" : "min-h-36 w-32 self-stretch rounded-(--nk-r-control)",
       )}
     >
       {ok ? (
@@ -181,7 +180,7 @@ function JobBadge({ badge }: { badge: PlayerData["badge"] }) {
   if (!badge || badge === "none" || typeof badge !== "object") return null;
   return (
     <div className="flex shrink-0 flex-col items-center">
-      {badge.img && !failed && <img src={`badges/${badge.img}.png`} alt="" className="h-20 drop-shadow-lg" onError={() => setFailed(true)} />}
+      {badge.img && !failed && <img src={`badges/${badge.img}.png`} alt="" className="h-20" onError={() => setFailed(true)} />}
     </div>
   );
 }

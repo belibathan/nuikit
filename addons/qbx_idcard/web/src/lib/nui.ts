@@ -42,14 +42,13 @@ export interface IdConfig {
 /** qbx_idcard's defaults, used until Lua sends `configData`. */
 export const DEFAULT_CONFIG: IdConfig = {
   idCardSettings: { closeKey: "Backspace", autoClose: { status: false, time: 3000 } },
-  // nuikit-ignore-start color/hardcoded: card stock colours from qbx_idcard's config (Lua sends its own)
+  // card stock colours come from qbx_idcard's config (Lua sends them); no stock is baked in here
   licenses: {
-    id_card: { header: "Identity", background: "#ebf7fd" },
-    driver_license: { header: "Driver License", background: "#febbbb" },
-    weaponlicense: { header: "Weapon License", background: "#c7ffe5" },
-    lawyerpass: { header: "Lawyer Pass", background: "#f9c491" },
+    id_card: { header: "Identity" },
+    driver_license: { header: "Driver License" },
+    weaponlicense: { header: "Weapon License" },
+    lawyerpass: { header: "Lawyer Pass" },
   },
-  // nuikit-ignore-end
 };
 
 /** What `playerData` carries (main/server.lua sendData). */

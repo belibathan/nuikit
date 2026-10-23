@@ -362,7 +362,7 @@ function Layout.styleDefault(key)
   if key == 'vitals.visibility' then
     -- a 0.8 config's styles.vitals.voice = 'collapse' meant tuck behind voice
     local vs = type(Config.styles) == 'table' and type(Config.styles.vitals) == 'table' and Config.styles.vitals or {}
-    return vs.voice == 'collapse' and 'voice' or 'rest'
+    return vs.voice == 'collapse' and 'voice' or 'always'
   end
   if key == 'vehicle.gauge' then return veh.gauge or 'theme' end
   if key == 'map.radar' then return Config.radar or 'always' end

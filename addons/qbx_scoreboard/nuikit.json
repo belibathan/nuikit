@@ -13,6 +13,8 @@
     "separator",
     "sheet",
     "edge-sheet",
-    "empty-state"
+    "empty-state",
+    "menu-row",
+    "chip"
   ]
 }

@@ -132,7 +132,7 @@ export function DatePicker({
   return (
     <Popover open={open} onOpenChange={show}>
       <PopoverAnchor asChild>
-        <div className="flex min-w-0 flex-1 gap-1.5">
+        <div className="flex min-w-0 flex-1 gap-(--nk-gap-items)">
           <Input
             disabled={disabled}
             aria-invalid={invalid || typedBad || undefined}

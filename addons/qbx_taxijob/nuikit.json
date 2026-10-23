@@ -17,6 +17,9 @@
     "edge-sheet",
     "stat",
     "money",
-    "text-roll"
+    "text-roll",
+    "action-bar",
+    "menu-row",
+    "chip"
   ]
 }

@@ -102,7 +102,7 @@ export function Stepper({
             else if (e.key === "ArrowUp") (e.preventDefault(), step(1));
             else if (e.key === "ArrowDown") (e.preventDefault(), step(-1));
           }}
-          className="nk-num h-8 min-w-0 rounded-none text-center text-sm font-medium"
+          className="nk-num h-8 min-w-0 rounded-none text-center nk-num"
           aria-label={typeof label === "string" ? label : undefined}
         />
         <Button variant="outline" size="icon-sm" className="text-muted-foreground" disabled={disabled} onClick={() => step(1)} aria-label="Next">
@@ -161,7 +161,7 @@ export function RangeSlider({
       />
       </div>
       {ends && (
-        <div className="-mt-1 flex justify-between text-xs leading-4 text-muted-foreground">
+        <div className="-mt-1 flex justify-between nk-label">
           <span>{ends[0]}</span>
           <span>{ends[1]}</span>
         </div>
@@ -198,7 +198,7 @@ export function Swatches({
             aria-label={`${typeof label === "string" ? label : "Colour"} ${i}`}
             onClick={() => value !== i && onChange(i)}
             className={cn(
-              "aspect-square w-full rounded-sm border border-white/10 ring-offset-2 ring-offset-popover transition-transform outline-none hover:scale-110 focus-visible:ring-2 focus-visible:ring-ring",
+              "aspect-square w-full rounded-(--nk-r-key) border border-white/10 ring-offset-2 ring-offset-popover transition-transform outline-none hover:scale-110 focus-visible:ring-2 focus-visible:ring-ring",
               value === i && "z-10 border-transparent ring-2 ring-foreground",
             )}
             style={{ backgroundColor: `rgb(${c[0]}, ${c[1]}, ${c[2]})` }}

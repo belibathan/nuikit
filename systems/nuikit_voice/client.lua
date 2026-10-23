@@ -38,6 +38,7 @@ local function read()
     label = 'Voice',
     value = mode or '',
     hue = talking and 'success' or 'neutral',
+    active = talking,
     alert = false,
   })
 
@@ -48,6 +49,7 @@ local function read()
     label = 'Radio',
     value = radio > 0 and (('%s MHz'):format(radio)) or '',
     hue = transmitting and 'success' or 'info',
+    active = transmitting,
     alert = false,
   })
 
@@ -57,6 +59,7 @@ local function read()
     label = 'Call',
     value = call > 0 and 'In call' or '',
     hue = (call > 0 and talking) and 'success' or 'info',
+    active = call > 0 and talking,
     alert = false,
   })
 end

@@ -11,21 +11,21 @@ body {
 
 /* Markdown from scripts: keep it inside the theme. */
 .ox-md p { margin: 0; white-space: pre-line; } /* scripts write "a\nb" and expect two lines */
-.ox-md p + p { margin-top: 0.25rem; }
-.ox-md h1 { font-size: 1.125rem; font-weight: 600; }
-.ox-md h2 { font-size: 1rem; font-weight: 600; }
-.ox-md h3 { font-size: 0.875rem; font-weight: 600; }
+.ox-md p + p { margin-top: var(--nk-space-1); }
+.ox-md h1 { font-size: var(--nk-text-title); font-weight: var(--nk-weight-strong, 600); }
+.ox-md h2 { font-size: var(--nk-text-base); font-weight: var(--nk-weight-strong, 600); }
+.ox-md h3 { font-size: var(--nk-text-label); font-weight: var(--nk-weight-strong, 600); }
 .ox-md a { text-decoration: underline; text-underline-offset: 2px; }
 .ox-md code { font-family: var(--font-mono, ui-monospace, monospace); font-size: 0.85em; }
-.ox-md ul { list-style: disc; padding-left: 1.25rem; }
-.ox-md ol { list-style: decimal; padding-left: 1.25rem; }
-.ox-md table { border-collapse: collapse; margin: 0.25rem 0; }
-.ox-md th, .ox-md td { border: 1px solid var(--border); padding: 0.125rem 0.5rem; }
+.ox-md ul { list-style: disc; padding-left: var(--nk-space-6); }
+.ox-md ol { list-style: decimal; padding-left: var(--nk-space-6); }
+.ox-md table { border-collapse: collapse; margin: var(--nk-space-1) 0; }
+.ox-md th, .ox-md td { border: 1px solid var(--border); padding: var(--nk-space-1) var(--nk-space-2); }
 .ox-md img { max-width: 100%; max-height: 100%; }
 
 /* input dialog colour row: the native picker as a plain swatch */
 .ox-swatch::-webkit-color-swatch-wrapper { padding: 0; }
-.ox-swatch::-webkit-color-swatch { border: none; border-radius: calc(var(--radius) - 6px); }
+.ox-swatch::-webkit-color-swatch { border: none; border-radius: var(--nk-r-key); }
 
 /*
  * Radial menu (features/radial-menu.tsx). A ring of segments in the panel surface with the panel's
@@ -35,23 +35,17 @@ body {
  * purpose: rem would scale twice inside a foreignObject.
  */
 .ox-radial {
-  /* the game darkened behind the wheel only (tokens: --scrim), so the ring reads over a bright sky */
-  background-image: radial-gradient(circle at 50% 50%, rgba(var(--scrim-rgb), 0.5) 0, rgba(var(--scrim-rgb), 0.28) 13rem, rgba(var(--scrim-rgb), 0) 24rem);
-}
-.ox-radial-svg {
-  filter: drop-shadow(0 0.75rem 1.5rem rgba(var(--scrim-rgb), 0.45));
+  /* the game darkened behind the wheel only (--scrim): flat, no gradient */
+  background-color: rgba(var(--scrim-rgb), 0.35);
 }
 .ox-radial-seg {
   fill: var(--nk-panel-bg);
   stroke: var(--nk-panel-border);
   stroke-width: 1;
-  /* pointer hover eases; everything else is instant (docs/design.md, motion 1) */
-  transition: fill var(--nk-time-hover, var(--nk-time)) var(--nk-ease-out);
 }
 [data-slot="radial-segment"][data-active] .ox-radial-seg {
   fill: var(--nk-row-fill-color);
   stroke: var(--nk-row-fill-color);
-  filter: drop-shadow(0 0 0.75rem rgba(var(--brand-rgb, var(--primary-rgb)), calc(var(--nk-glow, 0) * 0.8)));
 }
 [data-slot="radial-segment"][data-empty] .ox-radial-seg {
   fill: rgba(var(--scrim-rgb), 0.35);
@@ -97,7 +91,6 @@ body {
   fill: var(--nk-panel-bg);
   stroke: var(--nk-panel-border);
   stroke-width: 1;
-  transition: fill var(--nk-time-hover, var(--nk-time)) var(--nk-ease-out);
 }
 [data-slot="radial-hub"][data-active] .ox-radial-hub {
   fill: var(--accent);
@@ -149,22 +142,22 @@ body {
  * larger (back to a parent, the previous page). Under reduced motion it only fades (nk-enter); with
  * motion off kit.css zeroes it. The exit is the shared 100 ms fade: Lua waits ~100 ms between menus.
  */
-@keyframes ox-radial-in {
+@keyframes nk-radial-in {
   from { opacity: 0; transform: scale(0.92) rotate(-6deg); }
   to { opacity: 1; transform: none; }
 }
-@keyframes ox-radial-out {
+@keyframes nk-radial-out {
   from { opacity: 0; transform: scale(1.06) rotate(6deg); }
   to { opacity: 1; transform: none; }
 }
 .ox-radial[data-state="open"] .ox-radial-svg {
-  animation: ox-radial-in calc(var(--nk-time) * 1.6) var(--nk-ease-out) both;
+  animation: nk-radial-in var(--nk-time-slow, var(--nk-time)) var(--nk-ease-expand, var(--nk-ease-out)) both;
 }
 .ox-radial[data-state="open"] .ox-radial-wheel[data-dir="out"] .ox-radial-svg {
-  animation-name: ox-radial-out;
+  animation-name: nk-radial-out;
 }
 .ox-radial[data-state="open"] [data-slot="radial-hints"] {
-  animation: nk-enter calc(var(--nk-time) * 1.6) var(--nk-ease-out) both;
+  animation: nk-enter var(--nk-time-slow, var(--nk-time)) var(--nk-ease-expand, var(--nk-ease-out)) both;
 }
 html[data-nk-motion="reduced"] .ox-radial[data-state="open"] .ox-radial-svg {
   animation-name: nk-enter;
@@ -223,25 +216,6 @@ html[data-nk-motion="reduced"] .ox-radial[data-state="open"] .ox-radial-svg {
 html[data-nk-row="fill"] .ox-indicator {
   background-color: var(--nk-row-fill-color);
 }
-/* Key hints: the pause menu's small key caps, each beside the verb it triggers. */
-.ox-hints {
-  flex-wrap: wrap;
-  row-gap: calc(var(--nk-space) * 2);
-  gap: calc(var(--nk-space) * 3);
-  font-size: var(--nk-text-label);
-  line-height: 1rem;
-  color: var(--muted-foreground);
-  white-space: nowrap;
-}
-.ox-hints > span {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-}
-.ox-hints [data-slot="kbd"] + :not([data-slot="kbd"]),
-.ox-hints [data-slot="kbd"]:last-of-type {
-  margin-right: 0.125rem;
-}
 
 /* Modal dialogs (shadcn AlertDialog / Dialog): the game darkened with the theme's scrim, not black. */
 [data-slot="alert-dialog-overlay"],
@@ -262,24 +236,24 @@ html[data-nk-row="fill"] .ox-indicator {
   top: var(--ox-notify-top-right);
 }
 
-/* the alert keeps the panel edge and depth (shadcn's shadow-lg would replace them) */
+/* the alert keeps the plate's drop (shadcn's shadow-lg would replace it) */
 .ox-alert {
-  box-shadow: var(--nk-panel-edge), var(--nk-panel-shadow) !important;
+  box-shadow: var(--nk-panel-shadow) !important;
 }
 
 /* Reduced motion (the player's /nuikit motion off): the wheel and its hints fade in ≤ 100ms, no movement. */
 html[data-nk-motion="reduced"] .ox-radial[data-state="open"] :is(.ox-radial-svg, [data-slot="radial-hints"]) {
-  animation-duration: 100ms;
+  animation-duration: var(--nk-time-snap, 90ms);
 }
 
-/* Floating sheets (list menu): the panel recipe off the edges; the same slide as the edge sheet. */
+/* Floating sheets (list menu): the same slide as the edge sheet. */
 .ox-sheet-float[data-state="open"] {
-  animation-duration: min(calc(var(--nk-time) * 2.2), 360ms) !important;
-  animation-timing-function: var(--nk-ease-out) !important;
+  animation-duration: var(--nk-time-slow, var(--nk-time)) !important;
+  animation-timing-function: var(--nk-ease-expand, var(--nk-ease-out)) !important;
 }
 .ox-sheet-float[data-state="closed"] {
-  animation-duration: min(calc(var(--nk-time) * 1.4), 200ms) !important;
-  animation-timing-function: var(--nk-ease-in, ease-in) !important;
+  animation-duration: var(--nk-time-fast, var(--nk-time)) !important;
+  animation-timing-function: var(--nk-ease-retract, var(--nk-ease-in, ease-in)) !important;
 }
 /* the row tooltip (shadcn Tooltip) as a small panel: no arrow, the panel colours */
 .ox-tip > svg,
@@ -309,34 +283,26 @@ html[data-nk-motion="reduced"] .ox-indicator {
  * from half ox's distance and a lift from half opacity, so a repeat reads as "again", not as a new
  * notice. --ox-notify-bump (0–1, default 1) scales it; 0 on :root in nuikit/theme.css turns it off.
  */
-.ox-notify-bump {
-  animation: ox-notify-bump min(calc(var(--nk-time) * 1.6), 240ms) var(--nk-ease-out) both;
+.nk-bump {
+  animation: nk-bump var(--nk-time-base, var(--nk-time)) var(--nk-ease-expand, var(--nk-ease-out)) both;
 }
-@keyframes ox-notify-bump {
+@keyframes nk-bump {
   from {
     opacity: calc(1 - 0.5 * var(--ox-notify-bump, 1));
     transform: translate(calc(var(--ox-bump-x, 0rem) * var(--ox-notify-bump, 1)), calc(var(--ox-bump-y, 0rem) * var(--ox-notify-bump, 1)));
   }
 }
 
-/*
- * Foundation 2 (docs/tokens.md, Foundation 1.4): sheets and dialogs are menu surfaces. Their fill
- * reads --nk-menu-alpha (the menu material's opacity, lifted by legibility "day"); radius, the top
- * edge highlight and the backdrop blur read --nk-material-menu-*. The fallbacks are today's panel.
- */
+/* Sheets, dialogs and the list menu are plates: the kit's --nk-plate-* recipe (docs/design/ink.md, Plate). */
 [data-slot="edge-sheet"],
 [data-slot="dialog-content"],
 [data-slot="alert-dialog-content"],
 .ox-list {
-  --nk-panel-bg: rgba(var(--surface-rgb, var(--popover-rgb)), calc(var(--surface-a, var(--popover-a, 1)) * var(--nk-menu-alpha, var(--nk-surface-opacity, 0.96))));
-  --nk-panel-radius: var(--nk-material-menu-radius, var(--radius));
-  --nk-panel-edge: inset 0 1px 0 0 rgba(var(--popover-foreground-rgb), var(--nk-material-menu-edge, var(--nk-surface-edge, 0.06)));
-  --nk-backdrop-filter: blur(var(--nk-material-menu-blur, 0px));
-}
-/* A sheet's drop shadow, tighter than the panel's (16px blur, not 32px): a large blur over a full-height
-   sheet is the slowest thing to paint on open (Renewed-Banking at 4x CPU: 392 to 121 ms for the first frame). */
-[data-slot="edge-sheet"] {
-  --nk-panel-shadow: 0 0 0 1px rgba(var(--scrim-rgb), 0.25), 0 8px 16px -10px rgba(var(--scrim-rgb), 0.55);
+  --nk-panel-bg: var(--nk-plate-bg);
+  --nk-panel-radius: var(--nk-plate-radius);
+  --nk-panel-shadow: var(--nk-plate-drop);
+  --nk-panel-edge: 0 0 0 0 transparent;
+  --nk-backdrop-filter: none;
 }
 
 /*
@@ -360,21 +326,47 @@ html[data-nk-motion="reduced"] .ox-indicator {
  */
 [data-slot="dialog-content"],
 [data-slot="alert-dialog-content"] {
-  --ox-dialog-pad: 1.5rem;
+  --ox-dialog-pad: var(--nk-pad-surface);
   --nk-panel-divider: var(--nk-border) solid var(--nk-panel-border);
 }
 :is([data-slot="dialog-content"], [data-slot="alert-dialog-content"]) .nk-panel-header {
   min-height: 0;
-  padding: var(--ox-dialog-pad) var(--ox-dialog-pad) 1rem;
+  padding: var(--ox-dialog-pad) var(--ox-dialog-pad) var(--nk-space-4);
   background: none;
 }
 :is([data-slot="dialog-content"], [data-slot="alert-dialog-content"]) .nk-panel-header .nk-title {
   --nk-heading-size: var(--nk-text-section);
 }
 :is([data-slot="dialog-content"], [data-slot="alert-dialog-content"]) .ox-dialog-body {
-  padding: 1.25rem var(--ox-dialog-pad);
+  padding: var(--nk-space-6) var(--ox-dialog-pad);
 }
 :is([data-slot="dialog-content"], [data-slot="alert-dialog-content"]) .nk-panel-footer {
-  padding: 1rem var(--ox-dialog-pad) var(--ox-dialog-pad);
+  padding: var(--nk-space-4) var(--ox-dialog-pad) var(--ox-dialog-pad);
   background: none;
 }
+
+/*
+ * Dialog and row motion (docs/design/ink.md, Motion): transform and opacity only. Dialogs fade in on the
+ * expand ease and out on the retract ease; list rows nudge on focus.
+ */
+@keyframes nk-dialog-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes nk-dialog-out { from { opacity: 1; } to { opacity: 0; } }
+:is([data-slot="dialog-content"], [data-slot="alert-dialog-content"])[data-state="open"] {
+  animation: nk-dialog-in var(--nk-time-base, var(--nk-time)) var(--nk-ease-expand, var(--nk-ease-out)) both !important;
+}
+:is([data-slot="dialog-content"], [data-slot="alert-dialog-content"])[data-state="closed"] {
+  animation: nk-dialog-out var(--nk-time-fast, var(--nk-time)) var(--nk-ease-retract, var(--nk-ease-in, ease-in)) both !important;
+}
+.ox-rows > .nk-row > * {
+  transition: transform var(--nk-time-base, var(--nk-time)) var(--nk-ease-expand, var(--nk-ease-out));
+}
+.ox-rows > .nk-row:is(:hover, [data-selected], [aria-selected="true"]) > * {
+  transform: translateX(var(--nk-rise, 0.5rem));
+}
+/* progress: a linear fill that does not ease, so the bar tells the real time left */
+[data-slot="progress-slab"] [role="progressbar"] > * { transition-timing-function: linear; }
+html[data-nk-motion="reduced"] :is([data-slot="dialog-content"], [data-slot="alert-dialog-content"]) {
+  animation-name: nk-enter !important;
+  animation-duration: var(--nk-time-fast, 120ms) !important;
+}
+html[data-nk-motion="reduced"] .ox-rows > .nk-row > * { transition: none; transform: none !important; }

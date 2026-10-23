@@ -19,6 +19,13 @@
     "text-roll",
     "smooth-input",
     "sheet",
-    "slider"
+    "slider",
+    "action-bar",
+    "edge-sheet",
+    "tile",
+    "fill",
+    "chip",
+    "empty-state",
+    "icon-text"
   ]
 }

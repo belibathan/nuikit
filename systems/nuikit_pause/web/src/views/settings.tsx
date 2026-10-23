@@ -1,3 +1,4 @@
+import { EmptyState } from "@/components/ui/empty-state";
 import {
   applySettingsPreset,
   cancelSettings,
@@ -76,7 +77,7 @@ export function SettingsPage({ onBack, onValues, onGame }: { onBack: () => void;
       }
     >
       {sections === null ? null : sections.length === 0 ? (
-        <p className="nk-row px-0 text-muted-foreground">Nothing to set here yet.</p>
+        <EmptyState title="Nothing to set" description="This server has no settings here yet." />
       ) : (
         sections.map((s) => (
           <Section

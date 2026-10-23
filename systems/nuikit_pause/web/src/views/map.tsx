@@ -1,3 +1,4 @@
+import { EmptyState } from "@/components/ui/empty-state";
 import { onNui } from "nuikit-core";
 import { motionLevel } from "nuikit-core/motion";
 import { fetchNui, useNuiState } from "nuikit-core/react";
@@ -266,7 +267,7 @@ export function MapSheetPage({ model: m, onBack }: { model: MapModel; onBack: ()
 
       {searching && m.groups.length === 0 && m.blipHits.length === 0 && (
         <SheetSection>
-          <p className="nk-row px-0 text-muted-foreground">Nothing matches. Try another name.</p>
+          <EmptyState title="Nothing matches" description="Try another name." />
         </SheetSection>
       )}
 

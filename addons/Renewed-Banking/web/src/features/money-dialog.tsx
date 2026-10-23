@@ -88,7 +88,7 @@ export function MoneyForm({
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
               placeholder="0"
-              className="rb-amount nk-num text-xl font-semibold"
+              className="rb-amount nk-title"
             />
           </InputGroup>
           {presets.length > 0 && (

@@ -37,7 +37,7 @@ export function ClothingGrid({
   const current = mode === "drawables" ? drawable : texture;
 
   return (
-    <div className={cn("grid gap-1.5", mode === "drawables" ? "grid-cols-4" : "grid-cols-6")} role="radiogroup">
+    <div className={cn("grid gap-2", mode === "drawables" ? "grid-cols-4" : "grid-cols-6")} role="radiogroup">
       {values.map((v) => (
         <button
           key={v}

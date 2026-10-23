@@ -1,7 +1,7 @@
 import { ChevronDownIcon } from "lucide-react";
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ComponentProps, type CSSProperties } from "react";
 import { MenuRow } from "@/components/ui/menu-row";
-import { Kbd } from "@/components/ui/kbd";
+import { ActionBar, ActionBarItem } from "@/components/ui/action-bar";
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Meter, meterColor } from "@/components/ui/meter";
@@ -273,12 +273,12 @@ export function ListMenu() {
               </div>
             )}
           </div>
-          <footer className="nk-panel-footer ox-hints mt-4">
-            <span><Kbd>↑</Kbd><Kbd>↓</Kbd>Move</span>
-            {current && isValues(current) && <span><Kbd>←</Kbd><Kbd>→</Kbd>Change</span>}
-            <span><Kbd>Enter</Kbd>{current && isCheck(current) ? "Toggle" : "Select"}</span>
-            {view.canClose !== false && <span className="ml-auto"><Kbd>Esc</Kbd>Close</span>}
-          </footer>
+          <ActionBar className="nk-panel-footer mt-4 flex-wrap">
+            <ActionBarItem keys={["↑", "↓"]} label="Move" />
+            {current && isValues(current) && <ActionBarItem keys={["←", "→"]} label="Change" />}
+            <ActionBarItem keys={["Enter"]} label={current && isCheck(current) ? "Toggle" : "Select"} />
+            {view.canClose !== false && <ActionBarItem className="ml-auto" keys={["Esc"]} label="Close" />}
+          </ActionBar>
         </TooltipProvider>
       </SheetContent>
     </Sheet>

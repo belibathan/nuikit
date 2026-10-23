@@ -6,6 +6,7 @@ import { Meter } from "@/components/ui/meter";
 import { Separator } from "@/components/ui/separator";
 import { Spinner } from "@/components/ui/spinner";
 import { Stat } from "@/components/ui/stat";
+import { NumberRoll } from "@/components/ui/text-roll";
 import { useHandover, type Link, type LoadingHandover, type Tip } from "@/lib/handover";
 import { PHASES, useLoadProgress, type LoadState } from "@/lib/progress";
 import { cn } from "@/lib/utils";
@@ -26,7 +27,7 @@ export default function App() {
       <Backdrop images={h.backgrounds ?? []} interval={h.backgroundInterval} />
 
       <header className="absolute top-12 left-12 flex items-center gap-4">
-        {h.logo && <img src={h.logo} alt="" className="size-12 rounded-lg object-contain" />}
+        {h.logo && <img src={h.logo} alt="" className="size-12 rounded-(--nk-r-chip) object-contain" />}
         <div className="flex flex-col gap-1">
           <h1 className="nk-display">{name}</h1>
           {h.tagline && <p className="nk-label">{h.tagline}</p>}
@@ -88,14 +89,14 @@ function Tips({ tips, interval = 8000 }: { tips: Tip[]; interval?: number }) {
     <section className="flex w-96 flex-col gap-3" aria-label="Tip">
       <div key={i} className="ld-fade flex min-h-16 flex-col justify-end gap-1">
         {title && <h2 className="nk-title">{title}</h2>}
-        <p className="text-sm leading-relaxed text-muted-foreground">{text}</p>
+        <p className="nk-body text-muted-foreground">{text}</p>
       </div>
       {tips.length > 1 && (
         <div className="flex items-center gap-1" aria-hidden>
           {tips.map((_, n) => (
             <span
               key={n}
-              className={cn("h-0.5 rounded-full transition-[background-color] duration-(--nk-time)", n === i % tips.length ? "w-6 bg-foreground" : "w-3 bg-foreground/25")}
+              className={cn("h-0.5 rounded-(--nk-r-key) transition-opacity duration-(--nk-time)", n === i % tips.length ? "w-6 bg-foreground" : "w-3 bg-foreground opacity-25")}
             />
           ))}
         </div>
@@ -140,8 +141,8 @@ function Status({ load, player }: { load: LoadState; player?: string }) {
           label="Loaded"
           value={
             <>
-              {pct}
-              <span className="text-xl text-muted-foreground">%</span>
+              <NumberRoll value={pct} />
+              <span className="nk-title text-muted-foreground">%</span>
             </>
           }
         />
@@ -191,7 +192,7 @@ function Music({ tracks, volume = 0.15 }: { tracks: string[]; volume?: LoadingHa
       <Button
         variant="outline"
         size="icon"
-        className="size-9 rounded-full bg-background/40 backdrop-blur-md"
+        className="size-9 rounded-(--nk-r-control) bg-background/70"
         aria-label={muted ? "Unmute music" : "Mute music"}
         onClick={() => setMuted((m) => !m)}
       >

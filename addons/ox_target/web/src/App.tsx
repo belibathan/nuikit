@@ -144,7 +144,7 @@ export default function App() {
                         role="menuitem"
                         inert={inert}
                         data-back={row.back || undefined}
-                        className={cn("text-base", row.back && "text-muted-foreground")}
+                        className={cn(row.back && "text-muted-foreground")}
                         // Always an icon slot, so labels stay aligned when an option has no (or an unknown) icon.
                         icon={
                           <span className="flex w-5 justify-center">

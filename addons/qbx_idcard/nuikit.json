@@ -11,6 +11,7 @@
     "kbd",
     "separator",
     "sheet",
-    "edge-sheet"
+    "edge-sheet",
+    "action-bar"
   ]
 }

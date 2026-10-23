@@ -67,9 +67,9 @@ export const WIDTH = { xs: "sm:max-w-80", sm: "sm:max-w-96", md: "sm:max-w-md", 
 /**
  * The kit panel on shadcn's DialogContent: header / body / footer, no padding of its own.
  * DialogContent's own bg-background / rounded-lg out-rank nk-panel in the cascade, so they're
- * restated here with the panel's tokens (bg-popover, rounded-xl = radius + 4px).
+ * restated here with the plate's tokens (bg-popover, --nk-r-surface).
  */
-export const DIALOG_PANEL = "nk-panel nk-enter gap-0 overflow-hidden rounded-xl bg-popover p-0 text-popover-foreground";
+export const DIALOG_PANEL = "nk-panel nk-enter gap-0 overflow-hidden rounded-(--nk-r-surface) bg-popover p-0 text-popover-foreground";
 export const DIALOG_HEADER = "nk-panel-header flex-row text-left";
 
 const toDate = (v: unknown): Date | undefined => {

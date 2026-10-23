@@ -3,9 +3,10 @@
   "surface": "world",
   "components": [
     "button",
-    "hud-chip",
+    "chip",
+    "icon-text",
     "money",
     "text-roll",
-    "vital-chip"
+    "tile"
   ]
 }

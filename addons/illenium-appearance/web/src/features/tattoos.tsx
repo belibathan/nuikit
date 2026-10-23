@@ -1,4 +1,5 @@
 import { Check, Search, Trash2 } from "lucide-react";
+import { EmptyState } from "@/components/ui/empty-state";
 import { useMemo, useState } from "react";
 import { RangeSlider } from "@/components/controls";
 import { Group, Groups } from "@/components/group";
@@ -55,7 +56,7 @@ function Zone({ zone, items }: { zone: TattooZone; items: Tattoo[] }) {
         <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
         <Input placeholder={`Search ${items.length} designs`} value={query} onChange={(e) => setQuery(e.target.value)} className="h-9 pl-9" />
       </div>
-      <ScrollArea className="h-60 rounded-md border [&_[data-slot=scroll-area-viewport]>div]:!block">
+      <ScrollArea className="h-60 rounded-(--nk-r-control) border [&_[data-slot=scroll-area-viewport]>div]:!block">
         <div className="p-1">
           {filtered.map((t) => {
             const on = applied.some((a) => a.name === t.name);
@@ -74,7 +75,7 @@ function Zone({ zone, items }: { zone: TattooZone; items: Tattoo[] }) {
               </MenuRow>
             );
           })}
-          {!filtered.length && <p className="px-2 py-6 text-center text-sm text-muted-foreground">Nothing matches “{query}”. Try another word.</p>}
+          {!filtered.length && <EmptyState title={`Nothing matches “${query}”`} description="Try another word." />}
         </div>
       </ScrollArea>
       <RangeSlider
@@ -94,7 +95,7 @@ function Zone({ zone, items }: { zone: TattooZone; items: Tattoo[] }) {
         {appliedOne ? L.delete : L.apply}
         {selected && <span className="min-w-0 truncate font-normal text-muted-foreground">{selected.label}</span>}
       </Button>
-      {declined && declined === selected?.name && <p className="text-center text-xs text-destructive">Not applied.</p>}
+      {declined && declined === selected?.name && <p className="text-center nk-label text-destructive">Not applied.</p>}
     </div>
   );
 }

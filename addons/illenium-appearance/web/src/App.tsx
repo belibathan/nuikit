@@ -11,7 +11,8 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { Kbd } from "@/components/ui/kbd";
+import { ActionBar, ActionBarItem } from "@/components/ui/action-bar";
+import { Chip } from "@/components/ui/chip";
 import { EdgeSheet, EdgeSheetBody } from "@/components/ui/edge-sheet";
 import { MenuRow } from "@/components/ui/menu-row";
 import { Separator } from "@/components/ui/separator";
@@ -84,7 +85,7 @@ function Editor({ open }: { open: boolean }) {
       icon={!group && Icon ? <Icon /> : undefined}
       title={title}
       description={description}
-      actions={dirty && <span className="size-2 rounded-full bg-primary" aria-hidden />}
+      actions={dirty && <Chip variant="dot" tone="info" aria-label="Unsaved changes" />}
     >
       <EdgeSheetBody scroll>
         {active ? (
@@ -96,7 +97,7 @@ function Editor({ open }: { open: boolean }) {
         ) : (
           <div className="ia-groups" data-mode="list">
             {sections.map((s) => (
-              <MenuRow key={s.id} className="min-h-12 text-base" icon={<s.icon className="size-4" />} chevron onClick={() => setSection(s.id)}>
+              <MenuRow key={s.id} className="min-h-12" icon={<s.icon className="size-4" />} chevron onClick={() => setSection(s.id)}>
                 {s.title}
               </MenuRow>
             ))}
@@ -124,17 +125,10 @@ function Tray({ open, onConfirm, canExit }: { open: boolean; onConfirm: (kind: "
       >
         <SheetTitle className="sr-only">Save or exit</SheetTitle>
         <div className="flex items-center gap-4">
-          <span className="ia-hint">
-            <Kbd>A</Kbd>
-            <Kbd>D</Kbd>
-            <span>Turn</span>
-          </span>
-          {canExit && (
-            <span className="ia-hint">
-              <Kbd>Esc</Kbd>
-              <span>Exit</span>
-            </span>
-          )}
+          <ActionBar>
+            <ActionBarItem keys={["A", "D"]} label="Turn" />
+            {canExit && <ActionBarItem keys={["Esc"]} label="Exit" />}
+          </ActionBar>
           <Separator orientation="vertical" className="h-6!" />
           {canExit && (
             <Button variant="ghost" onClick={() => onConfirm("exit")}>
@@ -188,7 +182,7 @@ function Shell() {
       ) : (
         open && (
           <div className="pointer-events-none fixed inset-0 flex items-center justify-center">
-            <div className="nk-panel nk-enter flex items-center gap-2 px-4 py-3 text-sm text-muted-foreground">
+            <div className="nk-panel nk-enter flex items-center gap-2 px-4 py-3 nk-body text-muted-foreground">
               <Spinner />
               Loading
             </div>

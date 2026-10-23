@@ -20,6 +20,13 @@
     "money",
     "edge-sheet",
     "text-roll",
-    "nui-image"
+    "nui-image",
+    "action-bar",
+    "tile",
+    "chip",
+    "item-slot",
+    "menu-row",
+    "empty-state",
+    "icon-text"
   ]
 }

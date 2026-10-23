@@ -1,9 +1,11 @@
+import { MenuRow } from "@/components/ui/menu-row";
+import { EmptyState } from "@/components/ui/empty-state";
 import { fetchNui, type NuiPlayer } from "nuikit-core/react";
 import { LandmarkIcon, MoveHorizontalIcon, UsersIcon, WalletIcon } from "lucide-react";
 import { useEffect, useRef, type ReactNode } from "react";
 import type { PauseData } from "../nui";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { HudChip } from "@/components/ui/hud-chip";
+import { ActionBar, ActionBarItem, ActionBarSep } from "@/components/ui/action-bar";
 import { Kbd } from "@/components/ui/kbd";
 import { Meter } from "@/components/ui/meter";
 import { Stat } from "@/components/ui/stat";
@@ -55,22 +57,17 @@ export function Stage({ active, back = false }: { active: boolean; back?: boolea
       onPointerUp={() => (drag.current = null)}
       onPointerCancel={() => (drag.current = null)}
     >
-      <div data-slot="pause-hints" className="nk-anchor-b flex items-center gap-2 [--nk-edge:0rem]">
-        <HudChip icon={<Kbd>Tab</Kbd>}>
-          <Hint>Choose</Hint>
-        </HudChip>
-        <HudChip icon={<Kbd>Enter</Kbd>}>
-          <Hint>Confirm</Hint>
-        </HudChip>
-        <HudChip icon={<Kbd>Esc</Kbd>}>
-          <Hint>{back ? "Back" : "Resume"}</Hint>
-        </HudChip>
+      <ActionBar className="nk-anchor-b [--nk-edge:0rem]">
+        <ActionBarItem keys={["Tab"]} label="Choose" />
+        <ActionBarItem keys={["Enter"]} label="Confirm" />
+        <ActionBarItem keys={["Esc"]} label={back ? "Back" : "Resume"} />
         {active && (
-          <HudChip icon={<MoveHorizontalIcon />}>
-            <Hint>Drag to look around</Hint>
-          </HudChip>
+          <>
+            <ActionBarSep />
+            <ActionBarItem icon={<MoveHorizontalIcon />} label="Drag to look around" />
+          </>
         )}
-      </div>
+      </ActionBar>
     </div>
   );
 }
@@ -165,20 +162,12 @@ export function HelpPage({ help, onBack }: { help: PauseData["help"]; onBack: ()
       {help.length ? (
         <div className="flex flex-col divide-y divide-border">
           {help.map((h) => (
-            <div key={h.key + h.label} className="nk-row min-h-12 justify-between px-0 text-base">
-              <span>{h.label}</span>
-              <Kbd className="min-w-8">{h.key}</Kbd>
-            </div>
+            <MenuRow key={h.key + h.label} inert kbd={h.key}>{h.label}</MenuRow>
           ))}
         </div>
       ) : (
-        <p className="nk-row px-0 text-muted-foreground">This server hasn't listed its controls.</p>
+        <EmptyState title="No controls listed" description="This server hasn't listed its controls." />
       )}
     </SheetPage>
   );
-}
-
-/** A hint's words: the body face, not the chip's number face (a mono numeric face reads as code). */
-function Hint({ children }: { children: ReactNode }) {
-  return <span className="font-sans">{children}</span>;
 }

@@ -12,11 +12,11 @@
 import { onNui } from "nuikit-core";
 import { fetchNui, Stagger, usePlayer, useSlots, useStaggerItem, type NuiPlayer, type Slot } from "nuikit-core/react";
 import { BriefcaseIcon, CircleIcon, MicIcon, PhoneIcon, RadioIcon, ShieldIcon, type LucideIcon } from "lucide-react";
-import { memo, useCallback, useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from "react";
+import { memo, useCallback, useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { motionLevel } from "nuikit-core/motion";
 import { flipRow, FOLD_EASE, FOLD_MS, FOLDED, inlineDelay } from "./flip";
 import type { HudSettings, VitalMode } from "../nui";
-import { VitalChip } from "@/components/ui/vital-chip";
+import { KeyTile } from "./key-tile";
 import { ICONS, LABELS, useShown, vitalCritical, type Tone } from "./vitals";
 import { restDelay } from "./situation";
 
@@ -47,22 +47,14 @@ export const VitalItem = memo(function VitalItem({ tone, value, mode, low, high,
   const v = Math.max(0, Math.min(100, Math.round(value ?? 0)));
   // value and pill keep their label open; expand opens it on a change and settles after the theme's
   // --nk-rest-delay (the vitals' linger when that is 0); those three show the change there, not as a pop
-  const expanded = useExpanded(display === "expand" ? v : undefined, linger);
-  const open = display === "value" || display === "pill" || (display === "expand" && expanded);
-  if (display !== "icons") pop = false;
-  // written inside and outside the shape: the kit renders the one that fits the chip's attachment
-  const label = display !== "icons" && (
-    <VitalChip.Label>
-      {display !== "value" && <span className="hud-vlabel">{LABELS[tone]}</span>}
-      <span className="hud-num">{v}</span>
-    </VitalChip.Label>
-  );
+  const expanded = useExpanded(`${v}:${force?.nonce ?? 0}`, linger);
+  // one variant: a tag tucks out from behind the keycap on a change (or stays out for pill / value)
+  const open = display === "value" || display === "pill" || expanded;
+  void pop;
   const critical = value !== undefined && vitalCritical(tone, v, low, high);
   const shownByRule = useShown(value === undefined ? undefined : v, mode, critical, linger);
   // a pop keeps the chip on screen while it shows (a test pop on a hidden vital included)
-  const [popping, setPopping] = useState(false);
-  const onShow = useCallback((s: boolean) => setPopping(s), []);
-  const shown = (shownByRule || popping) && mode !== false && value !== undefined;
+  const shown = (shownByRule || open) && mode !== false && value !== undefined;
   // in sequence with the vitals that come or go with it (the row is a <Stagger>)
   const stagger = useStaggerItem<HTMLDivElement>(shown);
   const box = useRef<HTMLDivElement | null>(null);
@@ -75,52 +67,35 @@ export const VitalItem = memo(function VitalItem({ tone, value, mode, low, high,
   );
   useFold(box, shown);
   return (
-    <div ref={ref} data-slot="hud-vital" data-tone={tone} data-hue={tone} data-shown={shown || undefined} data-critical={critical || undefined} className="hud-vchip" aria-hidden={!shown}>
-      <VitalChip.Root value={v} tone={tone} open={open} style={roleColour(tone)} role="meter" aria-label={`${LABELS[tone]} ${v}%`} aria-valuemin={0} aria-valuemax={100} aria-valuenow={v}>
-        <VitalChip.Shape>
-          <VitalChip.Icon>{ICONS[tone]}</VitalChip.Icon>
-          {label}
-        </VitalChip.Shape>
-        {label}
-        <VitalChip.Pop label={LABELS[tone]} mode={pop} critical={critical} force={force} onShow={onShow} />
-      </VitalChip.Root>
+    <div ref={ref} data-slot="hud-vital" data-tone={tone} data-hue={tone} data-shown={shown || undefined} data-state={critical ? "alert" : undefined} data-open={open || undefined} className="hud-vchip" aria-hidden={!shown} role="meter" aria-label={`${LABELS[tone]} ${v}%`} aria-valuemin={0} aria-valuemax={100} aria-valuenow={v} style={critical ? undefined : roleColour(tone)}>
+      <KeyTile room icon={ICONS[tone]} fill={v / 100} alert={critical} open={open}>
+        <span className="hud-vlabel">{LABELS[tone]}</span> <span className="hud-num">{v}</span>
+      </KeyTile>
     </div>
   );
 });
 
-/** Voice: the primary chip, always there; lit while talking; the range shows when it changes. */
+/** Voice: the primary key, always there; lit while talking; the range name slides out when it changes. */
 function VoiceChip({ voice, linger }: { voice: NuiPlayer["voice"]; linger: number }) {
   const range = voice.mode ?? (voice.range === undefined ? undefined : `${Math.round(voice.range * 10) / 10} m`);
-  const changed = useShown(range, "auto", false, linger);
+  const expanded = useExpanded(range, linger);
   if (range === undefined) return null;
   return (
     <div data-slot="hud-voice" data-active={voice.talking || undefined} data-shown className="hud-vchip" aria-label={voice.talking ? `Talking, ${range}` : `Voice range ${range}`}>
-      <VitalChip.Root open={changed || voice.talking} icon="uniform">
-        <VitalChip.Shape>
-          <VitalChip.Icon>
-            <MicIcon />
-          </VitalChip.Icon>
-          <VitalChip.Label>{range}</VitalChip.Label>
-        </VitalChip.Shape>
-        <VitalChip.Label>{range}</VitalChip.Label>
-      </VitalChip.Root>
+      <KeyTile room icon={<MicIcon />} active={voice.talking === true} open={expanded}>
+        {range}
+      </KeyTile>
     </div>
   );
 }
 
-/** The radio channel, while on one: primary, always shown with its channel. */
+/** The radio channel, while on one: the plate stays out with the channel. */
 function RadioChip({ radio }: { radio: number | string }) {
   return (
     <div data-slot="hud-radio" data-shown className="hud-vchip" aria-label={`Radio ${radio} MHz`}>
-      <VitalChip.Root open icon="uniform">
-        <VitalChip.Shape>
-          <VitalChip.Icon>
-            <RadioIcon />
-          </VitalChip.Icon>
-          <VitalChip.Label className="hud-num">{String(radio)}</VitalChip.Label>
-        </VitalChip.Shape>
-        <VitalChip.Label className="hud-num">{String(radio)}</VitalChip.Label>
-      </VitalChip.Root>
+      <KeyTile room icon={<RadioIcon />} open>
+        <span className="hud-num">{String(radio)}</span>
+      </KeyTile>
     </div>
   );
 }
@@ -174,7 +149,7 @@ export function VitalsRow({ settings, layout }: { settings: HudSettings; layout:
   const needs = settings.needs !== false;
   // the player's visibility (styles vitals.visibility): "always" wins over every rule that hides a vital (its
   // auto mode and linger, the voice tuck, a situation's retract); only a vital the server turned off stays off
-  const visibility = (settings.styles?.["vitals.visibility"] as string | undefined) ?? "rest";
+  const visibility = (settings.styles?.["vitals.visibility"] as string | undefined) ?? "always";
   const mode = (m: VitalMode | undefined): VitalMode => (m === false ? false : visibility === "always" ? "always" : (m ?? "auto"));
   // nuikit_voice draws voice as slots: then the HUD's own voice and radio chips step aside, so voice shows once
   const voiceSlots = slots.some((s) => s.resource === VOICE_RESOURCE);
@@ -210,7 +185,16 @@ export function VitalsCompact({ settings }: { settings: HudSettings }) {
   return <VitalsRow settings={settings} layout="compact" />;
 }
 
-/** expand: true for a while after the value changes (not on the first value). */
+/** At most this many tags are out at once; the rest wait their turn (a change still shows once a slot frees). */
+const MAX_TAGS = 2;
+const tagWaiting: (() => void)[] = [];
+let tagsOut = 0;
+const tagRelease = () => {
+  tagsOut = Math.max(0, tagsOut - 1);
+  tagWaiting.shift()?.();
+};
+
+/** A tag is out for a while after the value changes (not on the first value), within the MAX_TAGS budget. */
 function useExpanded(value: number | string | undefined, linger: number) {
   const [on, setOn] = useState(false);
   const first = useRef(true);
@@ -220,10 +204,30 @@ function useExpanded(value: number | string | undefined, linger: number) {
       first.current = false;
       return;
     }
-    setOn(true);
     const ms = restDelay();
-    const t = setTimeout(() => setOn(false), Number.isFinite(ms) ? ms : linger);
-    return () => clearTimeout(t);
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    let holding = false;
+    let dead = false;
+    const start = () => {
+      if (dead) return;
+      holding = true;
+      tagsOut++;
+      setOn(true);
+      timer = setTimeout(() => {
+        holding = false;
+        setOn(false);
+        tagRelease();
+      }, Number.isFinite(ms) ? ms : linger);
+    };
+    if (tagsOut < MAX_TAGS) start();
+    else tagWaiting.push(start);
+    return () => {
+      dead = true;
+      clearTimeout(timer);
+      const i = tagWaiting.indexOf(start);
+      if (i >= 0) tagWaiting.splice(i, 1);
+      if (holding) tagRelease();
+    };
   }, [value, linger]);
   return on;
 }
@@ -242,15 +246,11 @@ const SLOT_ICONS: Record<string, LucideIcon> = { mic: MicIcon, radio: RadioIcon,
 const SlotChip = memo(function SlotChip({ slot, display, linger }: { slot: Slot; display: VitalDisplay; linger: number }) {
   const Icon = (slot.icon && SLOT_ICONS[slot.icon]) || CircleIcon;
   const value = slot.value !== undefined && slot.value !== "" ? String(slot.value) : undefined;
-  const expanded = useExpanded(display === "expand" ? value : undefined, linger);
-  const open = !!value && (display === "value" || display === "pill" || (display === "expand" && expanded));
-  const level = typeof slot.level === "number" ? Math.round(Math.max(0, Math.min(1, slot.level)) * 100) : undefined;
-  const label = value && (
-    <VitalChip.Label>
-      {display === "pill" && slot.label && <span className="hud-vlabel">{slot.label}</span>}
-      <span className="hud-num">{value}</span>
-    </VitalChip.Label>
-  );
+  // a voice range opens on a change, like a vital; a channel or a call keeps its plate out
+  const expanded = useExpanded(value, linger);
+  const open = !!value && (slot.key === "range" ? expanded : true);
+  void display;
+  const level = typeof slot.level === "number" ? Math.max(0, Math.min(1, slot.level)) : undefined;
   return (
     <div
       data-slot="hud-slot"
@@ -258,18 +258,14 @@ const SlotChip = memo(function SlotChip({ slot, display, linger }: { slot: Slot;
       data-hue={slot.hue}
       data-voice={slot.resource === VOICE_RESOURCE || undefined}
       data-shown
-      data-critical={slot.alert || undefined}
+      data-state={slot.alert ? "alert" : undefined}
       className="hud-vchip"
+      aria-label={[slot.label, value].filter(Boolean).join(" ")}
+      style={{ "--vital": "var(--hue-solid, currentColor)" } as CSSProperties}
     >
-      <VitalChip.Root value={level} open={open} style={{ "--vital": "var(--hue-solid, currentColor)" } as CSSProperties} aria-label={[slot.label, value].filter(Boolean).join(" ")}>
-        <VitalChip.Shape>
-          <VitalChip.Icon>
-            <Icon />
-          </VitalChip.Icon>
-          {label}
-        </VitalChip.Shape>
-        {label}
-      </VitalChip.Root>
+      <KeyTile room icon={<Icon />} fill={level} active={slot.active === true} alert={slot.alert === true} open={open}>
+        {value !== undefined && <span className="hud-num">{value}</span>}
+      </KeyTile>
     </div>
   );
 });

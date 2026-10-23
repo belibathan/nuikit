@@ -226,14 +226,14 @@ export function Notifications() {
               iconAlign={t.alignIcon === "top" ? "start" : t.alignIcon === "center" ? "center" : undefined}
               data-state={t.leaving ? "closed" : "open"}
               animate={false}
-              // a ×N bump re-enters in place (app.css .ox-notify-bump): shorter and nearer than the first
+              // a ×N bump re-enters in place (app.css .nk-bump): shorter and nearer than the first
               // entrance, in the same slot, and its time line restarts
               className={cn(
                 t.leaving
-                  ? cn("animate-out fade-out-0 duration-400 fill-mode-forwards", EXIT[position])
+                  ? cn("animate-out fade-out-0 duration-(--nk-time-fill) fill-mode-forwards", EXIT[position])
                   : t.count < 2
-                    ? cn("animate-in fade-in-0 duration-200 ease-out", ENTER[position])
-                    : "ox-notify-bump",
+                    ? cn("animate-in fade-in-0 duration-(--nk-time) ease-(--nk-ease-expand)", ENTER[position])
+                    : "nk-bump",
               )}
               style={t.count < 2 ? t.style : ({ "--ox-bump-x": BUMP[position][0], "--ox-bump-y": BUMP[position][1], ...t.style } as CSSProperties)}
             />

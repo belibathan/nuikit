@@ -18,6 +18,11 @@
     "switch",
     "tabs",
     "toggle",
-    "toggle-group"
+    "toggle-group",
+    "panel",
+    "menu-row",
+    "chip",
+    "empty-state",
+    "form-field"
   ]
 }

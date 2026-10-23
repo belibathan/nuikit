@@ -1,9 +1,10 @@
-import { ArrowDownLeft, ArrowLeftRight, ArrowUpRight, Info, Landmark, Snowflake, Wallet } from "lucide-react";
+import { ArrowDownLeft, ArrowLeftRight, ArrowUpRight, Landmark, Snowflake, Wallet } from "lucide-react";
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { EdgeSheet, EdgeSheetBody } from "@/components/ui/edge-sheet";
-import { HudChip } from "@/components/ui/hud-chip";
-import { Kbd } from "@/components/ui/kbd";
+import { ActionBar, ActionBarItem } from "@/components/ui/action-bar";
+import { EmptyState } from "@/components/ui/empty-state";
+import { Notice, NoticeStack } from "@/components/ui/notice";
 import { Separator } from "@/components/ui/separator";
 import { Spinner } from "@/components/ui/spinner";
 import { Stat } from "@/components/ui/stat";
@@ -46,8 +47,8 @@ export default function App() {
   const toast = (text: string) => {
     const id = Date.now() + Math.random();
     setToasts((l) => [...l.slice(-2), { id, text }]);
-    setTimeout(() => setToasts((l) => l.filter((x) => x.id !== id)), TOAST_MS);
   };
+  const dismissToast = (id: number) => setToasts((l) => l.filter((x) => x.id !== id));
 
   useBank("updateLocale", (m) => setLocale(m.translations, m.currency));
   useBank("setLoading", (m) => setLoading(!!m.status));
@@ -129,9 +130,9 @@ export default function App() {
       <AtmView {...props} open={open && atm} />
       {open && (
         <div className="nk-anchor-b">
-          <button type="button" onClick={close} aria-label={t("nuikit_close")} className="rb-hint outline-none">
-            <HudChip icon={<Kbd>Esc</Kbd>}>{t("nuikit_close")}</HudChip>
-          </button>
+          <ActionBar plate>
+            <ActionBarItem keys={["Esc"]} label={t("nuikit_close")} onClick={close} aria-label={t("nuikit_close")} />
+          </ActionBar>
         </div>
       )}
 
@@ -147,14 +148,11 @@ export default function App() {
         </div>
       )}
 
-      <div className="pointer-events-none fixed inset-x-0 top-6 z-[60] flex flex-col items-center gap-2">
+      <NoticeStack position="top-center">
         {toasts.map((n) => (
-          <div key={n.id} className="nk-panel nk-rise flex min-h-12 items-center gap-3 px-4 py-2 text-sm font-medium">
-            <Info className="size-4 shrink-0 text-muted-foreground" />
-            {n.text}
-          </div>
+          <Notice key={n.id} status="info" title={n.text} duration={TOAST_MS} onExpire={() => dismissToast(n.id)} onDismiss={() => dismissToast(n.id)} />
         ))}
-      </div>
+      </NoticeStack>
     </>
   );
 }
@@ -183,7 +181,7 @@ function formHeader(request: MoneyRequest) {
 function Actions({ account, atm, onAction, className }: { account: Account; atm: boolean; onAction: ViewProps["onAction"]; className?: string }) {
   if (isFrozen(account)) {
     return (
-      <div className={cn("flex h-10 items-center gap-2 rounded-(--nk-row-radius) border px-3 text-sm text-muted-foreground", className)}>
+      <div className={cn("flex h-10 items-center gap-2 rounded-(--nk-row-radius) border px-3 nk-body text-muted-foreground", className)}>
         <Snowflake className="size-4 shrink-0" />
         {t("frozen")}
       </div>
@@ -212,9 +210,9 @@ function Actions({ account, atm, onAction, className }: { account: Account; atm:
 /** Cash on hand, under the bank's name. */
 function CashLine({ cash }: { cash: number }) {
   return (
-    <span className="flex items-center gap-1.5">
+    <span className="flex items-center gap-2">
       <Wallet className="size-3.5" />
-      {cashLabel()} <span className="nk-num font-medium text-foreground">{money(cash)}</span>
+      {cashLabel()} <span className="nk-num text-foreground">{money(cash)}</span>
     </span>
   );
 }
@@ -317,7 +315,7 @@ function AtmView({ open, accounts, active, cash, onSelect, onAction, request, fo
               </div>
             </>
           ) : (
-            <p className="py-6 text-center text-sm text-muted-foreground">{t("select_account")}</p>
+            <EmptyState title={t("select_account")} />
           )}
         </div>
       </EdgeSheetBody>}
