@@ -22,7 +22,6 @@ import { TextField } from "@/components/ui/form-field"
 import { MenuRow } from "@/components/ui/menu-row"
 import { Money, useFormatMoney } from "@/components/ui/money"
 import { Panel, PanelBody, PanelHeader } from "@/components/ui/panel"
-import { Spinner } from "@/components/ui/spinner"
 import { Stat } from "@/components/ui/stat"
 
 import type { BankAccount, BankAccountKind, BankAnswer, BankData, BankMoneyAction, BankTransaction, BankTransactionKind } from "./nui"
@@ -32,7 +31,7 @@ import type { BankAccount, BankAccountKind, BankAnswer, BankData, BankMoneyActio
  * right; deposit, withdraw and transfer in a dialog that checks the amount before Lua does. Lua
  * answers every move, and its error stays in the dialog. At an ATM there are no transfers.
  * Protocol-agnostic: fill BankData from any banking resource. Built from the kit: Panel, MenuRow,
- * Stat, Money, EmptyState, Confirm and TextField (form-field), with stock shadcn Button and Spinner.
+ * Stat, Money, EmptyState, Confirm and TextField (form-field), with stock shadcn Button.
  *
  *   <BankSurface />                                   // wired: nk.surface('bank', …) in Lua opens it
  *   <Bank data={data} onMoney={…} />                  // a still, or your own wiring

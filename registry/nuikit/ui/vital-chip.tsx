@@ -70,7 +70,7 @@ export interface ChipStyle {
   display: ChipDisplay
   neighbours: ChipNeighbours
 }
-export const DEFAULT_STYLE: ChipStyle = { shape: "auto", level: "outline", attach: "inline", icon: "vital", display: "auto", neighbours: "push" }
+const DEFAULT_STYLE: ChipStyle = { shape: "auto", level: "outline", attach: "inline", icon: "vital", display: "auto", neighbours: "push" }
 
 function pickOf<T extends string>(list: readonly T[], v: string, d: T): T {
   const s = v.trim().replace(/["']/g, "") as T
@@ -78,7 +78,7 @@ function pickOf<T extends string>(list: readonly T[], v: string, d: T): T {
 }
 
 /** The theme's chip style from the computed tokens (defaults: today's look). */
-export function readChipStyle(get: (name: string) => string): ChipStyle {
+function readChipStyle(get: (name: string) => string): ChipStyle {
   return {
     shape: pickOf(SHAPES, get("--nk-chip-shape"), DEFAULT_STYLE.shape),
     level: pickOf(LEVELS, LEVEL_14[get("--nk-level-style").trim()] ?? get("--nk-level-style"), DEFAULT_STYLE.level),
@@ -125,7 +125,7 @@ function subscribeChipStyle(listener: () => void) {
   }
 }
 
-export function useChipStyle(): ChipStyle {
+function useChipStyle(): ChipStyle {
   return React.useSyncExternalStore(subscribeChipStyle, () => chipStyle, () => DEFAULT_STYLE)
 }
 
@@ -156,7 +156,7 @@ function polygon(points: [number, number][], start: [number, number]): string {
  * The shape's outline, inset by `inset` px (half a stroke), starting at the top centre and running
  * clockwise. The single source for the surface, the border, the trace, the liquid clip and anchors.
  */
-export function shapePath(shape: ChipShape, g: Geometry, inset = 0): string {
+function shapePath(shape: ChipShape, g: Geometry, inset = 0): string {
   const d = inset
   const x0 = d
   const y0 = d
@@ -213,12 +213,6 @@ function rounded(x0: number, y0: number, x1: number, y1: number, rr: number, cut
   }
   p.push("Z")
   return p.join(" ")
-}
-
-/** Where things attach: below (a tag's stem), to the right (a flag), above (a pop). */
-export function anchors(shape: ChipShape, g: Geometry) {
-  // pointed shapes attach at their tips; the rest at the middle of an edge
-  return { bottom: { x: g.w / 2, y: g.h }, right: { x: g.w, y: g.h / 2 }, top: { x: g.w / 2, y: 0 }, pointed: shape === "diamond" || shape === "hex" }
 }
 
 // ───────────────────────────────── parts

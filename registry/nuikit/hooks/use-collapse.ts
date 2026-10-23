@@ -47,7 +47,7 @@ export type CollapseOptions = {
   optOut?: readonly string[]
 }
 
-export const COLLAPSE_BATCH_MS = 400
+const COLLAPSE_BATCH_MS = 400
 
 export const collapseInit = (): CollapseState => ({ last: {}, open: [], batch: 0, batchAt: -Infinity })
 

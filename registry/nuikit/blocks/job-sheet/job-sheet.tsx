@@ -9,7 +9,8 @@ import { Kbd } from "@/components/ui/kbd"
 import { MenuRow } from "@/components/ui/menu-row"
 import { Separator } from "@/components/ui/separator"
 import { Spinner } from "@/components/ui/spinner"
-import { EdgeSheet, EdgeSheetBody, EdgeSheetFooter } from "./edge-sheet"
+import { Chip } from "@/components/ui/chip"
+import { EdgeSheet, EdgeSheetBody, EdgeSheetFooter } from "@/components/ui/edge-sheet"
 
 import type { JobSheetAction, JobSheetAnswer, JobSheetData, JobSheetPage, JobSheetRow } from "./nui"
 
@@ -165,8 +166,8 @@ function JobSheet({
         title={root ? job.label : page?.title}
         description={
           root ? (
-            <span className="flex items-center gap-1.5">
-              <span className={cn("size-1.5 rounded-full", job.onDuty ? "bg-success" : "bg-muted-foreground/50")} />
+            <span className="flex items-center gap-(--nk-gap-cluster)">
+              <Chip variant="dot" tone={job.onDuty ? "success" : undefined} aria-hidden />
               {[job.gradeLabel, job.onDuty ? "On duty" : "Off duty"].filter(Boolean).join(", ")}
             </span>
           ) : (

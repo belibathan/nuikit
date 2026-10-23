@@ -61,7 +61,8 @@
         }
       ],
       "dependencies": [
-        "nuikit-core"
+        "nuikit-core",
+        "lucide-react"
       ],
       "registryDependencies": [
         "sheet",
@@ -118,7 +119,6 @@
         "nuikit-core",
         "lucide-react"
       ],
-      "registryDependencies": [],
       "meta": {
         "since": "unreleased",
         "status": "experimental",
@@ -145,9 +145,9 @@
       ],
       "registryDependencies": [
         "checkbox",
-        "kbd",
         "progress",
-        "https://nuikit.vercel.app/r/meter.json"
+        "https://nuikit.vercel.app/r/meter.json",
+        "https://nuikit.vercel.app/r/tile.json"
       ],
       "meta": {
         "since": "0.5.0",
@@ -557,7 +557,10 @@
             "Sub-menus open in place; Escape goes back a level."
           ]
         }
-      }
+      },
+      "dependencies": [
+        "lucide-react"
+      ]
     },
     {
       "name": "speedometer",
@@ -571,8 +574,9 @@
         }
       ],
       "registryDependencies": [
-        "badge",
-        "progress"
+        "https://nuikit.vercel.app/r/dial.json",
+        "https://nuikit.vercel.app/r/fill.json",
+        "https://nuikit.vercel.app/r/tile.json"
       ],
       "meta": {
         "since": "0.3.0",
@@ -619,7 +623,8 @@
         "nuikit-core"
       ],
       "registryDependencies": [
-        "button"
+        "button",
+        "https://nuikit.vercel.app/r/fill.json"
       ],
       "meta": {
         "since": "0.6.0",
@@ -910,7 +915,8 @@
         "class-variance-authority"
       ],
       "registryDependencies": [
-        "kbd"
+        "https://nuikit.vercel.app/r/fill.json",
+        "https://nuikit.vercel.app/r/tile.json"
       ],
       "meta": {
         "since": "0.6.0",
@@ -967,7 +973,7 @@
         "removeIn": null
       },
       "registryDependencies": [
-        "progress"
+        "https://nuikit.vercel.app/r/fill.json"
       ]
     },
     {
@@ -1010,7 +1016,10 @@
             "Text on the game: world foreground, legible over any frame."
           ]
         }
-      }
+      },
+      "registryDependencies": [
+        "https://nuikit.vercel.app/r/fill.json"
+      ]
     },
     {
       "name": "money",
@@ -1118,8 +1127,6 @@
           "type": "registry:ui"
         }
       ],
-      "dependencies": [],
-      "registryDependencies": [],
       "meta": {
         "since": "unreleased",
         "status": "experimental",
@@ -1158,8 +1165,6 @@
           "type": "registry:ui"
         }
       ],
-      "dependencies": [],
-      "registryDependencies": [],
       "meta": {
         "since": "unreleased",
         "status": "experimental",
@@ -1206,7 +1211,6 @@
           "type": "registry:ui"
         }
       ],
-      "dependencies": [],
       "registryDependencies": [
         "https://nuikit.vercel.app/r/fill.json"
       ],
@@ -1248,8 +1252,6 @@
           "type": "registry:ui"
         }
       ],
-      "dependencies": [],
-      "registryDependencies": [],
       "meta": {
         "since": "unreleased",
         "status": "experimental",
@@ -1285,7 +1287,6 @@
           "type": "registry:ui"
         }
       ],
-      "dependencies": [],
       "registryDependencies": [
         "https://nuikit.vercel.app/r/tile.json",
         "https://nuikit.vercel.app/r/fill.json"
@@ -1317,6 +1318,139 @@
           ]
         }
       }
+    },
+    {
+      "name": "dialog-shell",
+      "type": "registry:ui",
+      "title": "Dialog shell",
+      "description": "The one dialog chrome (tokens 1.5): stock Dialog or AlertDialog content on the plate recipe, with a title-role header, a padded body and an ActionBar footer; opacity-only when centred, a rise when on top.",
+      "files": [
+        {
+          "path": "registry/nuikit/ui/dialog-shell.tsx",
+          "type": "registry:ui"
+        }
+      ],
+      "meta": {
+        "since": "unreleased",
+        "status": "experimental",
+        "replaces": [],
+        "removeIn": null,
+        "spec": {
+          "role": "A modal question or form over the current surface (surface + dim + dialog, never a new screen).",
+          "anatomy": [
+            "plate (.nk-plate, --nk-z-dialog)",
+            "header: title, description, hairline",
+            "body (--nk-pad-surface)",
+            "footer: ActionBar hints, then buttons"
+          ],
+          "props": [
+            "size",
+            "position",
+            "alert",
+            "title",
+            "description",
+            "hints",
+            "footer"
+          ],
+          "rules": [
+            "A centred dialog animates opacity only; a top dialog may rise by --nk-rise.",
+            "One primary button per dialog.",
+            "A theme sets --nk-plate-*, never restyles the shell."
+          ]
+        }
+      },
+      "registryDependencies": [
+        "https://nuikit.vercel.app/r/action-bar.json",
+        "alert-dialog",
+        "dialog"
+      ]
+    },
+    {
+      "name": "sheet-section",
+      "type": "registry:ui",
+      "title": "Sheet section",
+      "description": "One group of rows in a sheet or panel body (tokens 1.5): a label, a meta on the same line, then the rows; sections split by a hairline.",
+      "files": [
+        {
+          "path": "registry/nuikit/ui/sheet-section.tsx",
+          "type": "registry:ui"
+        }
+      ],
+      "meta": {
+        "since": "unreleased",
+        "status": "experimental",
+        "replaces": [],
+        "removeIn": null,
+        "spec": {
+          "role": "Groups the rows of a sheet page under a short name (rows, not cards).",
+          "anatomy": [
+            "section",
+            "head: label (caption), meta (num)",
+            "rows"
+          ],
+          "props": [
+            "label",
+            "meta",
+            "rows"
+          ],
+          "rules": [
+            "One to three words for the label; the meta is a count or a total.",
+            "The first section has no top pad, the last no hairline."
+          ]
+        }
+      }
+    },
+    {
+      "name": "dial",
+      "type": "registry:ui",
+      "title": "Dial",
+      "description": "A round gauge (tokens 1.5): one SVG geometry with a track arc, a value arc or segments, ticks (a tick count lever) and an optional needle around your readout; a redline sets data-state=\"alert\". Speedometer composes it.",
+      "files": [
+        {
+          "path": "registry/nuikit/ui/dial.tsx",
+          "type": "registry:ui"
+        }
+      ],
+      "meta": {
+        "since": "unreleased",
+        "status": "experimental",
+        "replaces": [],
+        "removeIn": null,
+        "spec": {
+          "role": "A level read at a glance on a round gauge: rpm, boost, a charge.",
+          "anatomy": [
+            "root (--level)",
+            "ticks",
+            "track arc",
+            "value arc or segments",
+            "needle",
+            "center (children)"
+          ],
+          "props": [
+            "level",
+            "value",
+            "max",
+            "size",
+            "variant",
+            "ticks",
+            "segments",
+            "redline",
+            "needle",
+            "tone",
+            "hue",
+            "surface"
+          ],
+          "level": "How far the value has swept the arc: 0 at its start, 1 at its end.",
+          "rules": [
+            "The value arc is data-driven, never tweened; the needle moves by rotate.",
+            "Past the redline it is data-state=\"alert\".",
+            "Colours only from --nk-gauge-* and --nk-fill-* (or a hue); no glow filter."
+          ]
+        }
+      },
+      "registryDependencies": [
+        "https://nuikit.vercel.app/r/fill.json"
+      ]
     },
     {
       "name": "empty-state",
@@ -1631,7 +1765,6 @@
       ],
       "registryDependencies": [
         "button",
-        "spinner",
         "https://nuikit.vercel.app/r/panel.json",
         "https://nuikit.vercel.app/r/menu-row.json",
         "https://nuikit.vercel.app/r/stat.json",
@@ -1711,11 +1844,6 @@
           "target": "components/blocks/job-sheet/job-sheet.tsx"
         },
         {
-          "path": "registry/nuikit/blocks/job-sheet/edge-sheet.tsx",
-          "type": "registry:component",
-          "target": "components/blocks/job-sheet/edge-sheet.tsx"
-        },
-        {
           "path": "registry/nuikit/blocks/job-sheet/nui.ts",
           "type": "registry:lib",
           "target": "components/blocks/job-sheet/nui.ts"
@@ -1734,10 +1862,10 @@
         "button",
         "kbd",
         "separator",
-        "sheet",
-        "scroll-area",
         "spinner",
-        "https://nuikit.vercel.app/r/menu-row.json"
+        "https://nuikit.vercel.app/r/menu-row.json",
+        "https://nuikit.vercel.app/r/chip.json",
+        "https://nuikit.vercel.app/r/edge-sheet.json"
       ],
       "categories": [
         "screens"

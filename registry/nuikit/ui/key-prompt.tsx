@@ -419,7 +419,6 @@ export {
   keyPromptPosition,
   holdProgress,
   parseKeyText,
-  useHold,
   type KeyPromptProps,
   type KeyPromptPosition,
 }
