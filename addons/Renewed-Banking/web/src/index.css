@@ -1125,8 +1125,8 @@
     --nk-line-clip-sm: none;
     --nk-line-glow: 1rem;
     /* semantic · depth */
-    --nk-depth-elevation: 0 0.25rem 0 0 rgba(0, 0, 0, 0.5);
-    --nk-depth-text: 0 1px 2px rgba(0, 0, 0, 0.6);
+    --nk-depth-elevation: 0 0.25rem 0 0 rgba(var(--scrim-rgb), 0.5);
+    --nk-depth-text: 0 1px 2px rgba(var(--scrim-rgb), 0.6);
     /* semantic · alpha */
     --nk-alpha-day: 0;
     --nk-alpha-hud: calc(var(--nk-material-hud-opacity) + (1 - var(--nk-material-hud-opacity)) * var(--nk-surface-legibility-lift) * var(--nk-alpha-day));

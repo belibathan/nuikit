@@ -173,8 +173,8 @@ export const depthGroup: Group = {
   tier: "semantic",
   description: "Shadows the identity's keywords name, in scrim colour",
   levers: {
-    elevation: shadow("0 0.25rem 0 0 rgba(0, 0, 0, 0.5)", "The box-shadow surface.elevation names", { derived: true, floor: true, was: ["nk-elevation-shadow"] }),
-    text: shadow("0 1px 2px rgba(0, 0, 0, 0.6)", "The text-shadow hud.text-shadow names", { derived: true, floor: true, was: ["nk-hud-shadow", "nk-hud-text-shadow"] }),
+    elevation: shadow("0 0.25rem 0 0 rgba(var(--scrim-rgb), 0.5)", "The box-shadow surface.elevation names", { derived: true, floor: true, was: ["nk-elevation-shadow"] }),
+    text: shadow("0 1px 2px rgba(var(--scrim-rgb), 0.6)", "The text-shadow hud.text-shadow names", { derived: true, floor: true, was: ["nk-hud-shadow", "nk-hud-text-shadow"] }),
   },
 };
 
