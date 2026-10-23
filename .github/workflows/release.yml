@@ -12,7 +12,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-      pull-requests: write
       id-token: write
     env:
       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
@@ -49,14 +48,10 @@ jobs:
           n=$(find .changeset -name '*.md' ! -name README.md | wc -l)
           echo "count=$n" >> "$GITHUB_OUTPUT"
 
-      # Pending changesets → open/update the "Version packages" PR.
+      # Pending changesets → nothing to publish yet. Actions may not open PRs in this repo, so the
+      # version bump is done locally (CLAUDE.md "Releasing"); say so instead of failing every push.
       - if: steps.token.outputs.present == 'true' && steps.pending.outputs.count != '0'
-        uses: changesets/action@v1
-        with:
-          title: "chore: release"
-          commit: "chore: release"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: echo "::notice title=Release::${{ steps.pending.outputs.count }} pending changesets; run pnpm changeset version locally on main to release."
 
       # No pending changesets → publish any version that isn't on npm yet.
       - if: steps.token.outputs.present == 'true' && steps.pending.outputs.count == '0'
