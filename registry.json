@@ -753,16 +753,20 @@
       "name": "speedometer",
       "type": "registry:ui",
       "title": "Speedometer",
-      "description": "Vehicle gauge on a Dial: the rpm arc with ticks and a redline (data-state=\"alert\"), the speed in the num role, a gear Tile and a fuel Fill; speedometerDash() for live writes.",
+      "description": "The in-game vehicle gauge on a Dial: thick rpm segments with even gaps (or a thin arc), the redline, the speed with its leading zeros dimmed, a gear Tile in the opening, fuel as outer segments and the turn signals; speedometerPainter() for live writes.",
       "files": [
         {
           "path": "registry/nuikit/ui/speedometer.tsx",
           "type": "registry:ui"
         }
       ],
+      "dependencies": [
+        "lucide-react",
+        "nuikit-core"
+      ],
       "registryDependencies": [
         "https://nuikit.vercel.app/r/dial.json",
-        "https://nuikit.vercel.app/r/fill.json",
+        "https://nuikit.vercel.app/r/text-roll.json",
         "https://nuikit.vercel.app/r/tile.json"
       ],
       "meta": {
@@ -771,11 +775,13 @@
         "replaces": [],
         "removeIn": null,
         "spec": {
-          "role": "Speed, rpm, gear and fuel while driving, on the game or a panel.",
+          "role": "Speed, rpm, gear and fuel while driving, on the game or a panel: the in-game gauge.",
           "anatomy": [
-            "Dial (ticks, track, rpm arc)",
-            "center: speed (num), unit (caption)",
-            "foot: gear Tile, fuel Fill"
+            "Dial (segments or arc + ticks, the redline, the soft disc)",
+            "fuel band (outer segments, the pump)",
+            "signals",
+            "readout: speed digits (leading zeros dimmed), unit",
+            "foot: gear Tile, or center"
           ],
           "props": [
             "speed",
@@ -785,12 +791,17 @@
             "unit",
             "size",
             "surface",
-            "redline"
+            "redline",
+            "style",
+            "indicators",
+            "engine",
+            "center",
+            "live"
           ],
-          "level": "rpm (0–1) on the arc; fuel / 100 on the fuel line.",
+          "level": "rpm (0–1) lights the segments from the left; fuel / 100 lights the band from the bottom.",
           "rules": [
-            "Past the redline the dial and the gear are data-state=\"alert\".",
-            "No glow filter; the arc is data-driven, never tweened."
+            "Past the redline the dial and the gear are data-state=\"alert\"; fuel at or under 15 is the danger colour.",
+            "No glow filter; segments switch, nothing tweens on the dash. The leading zeros are --nk-speedo-dim."
           ]
         }
       }
@@ -1849,11 +1860,19 @@
             "variant",
             "ticks",
             "segments",
+            "segmentGap",
+            "direction",
+            "paint",
+            "disc",
             "redline",
             "needle",
             "tone",
             "hue",
-            "surface"
+            "surface",
+            "sweep",
+            "start",
+            "thickness",
+            "inset"
           ],
           "level": "How far the value has swept the arc: 0 at its start, 1 at its end.",
           "rules": [

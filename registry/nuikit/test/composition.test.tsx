@@ -87,11 +87,14 @@ describe("composites", () => {
     expect(d.has('data-slot="dial-segment"', 'data-active="true"')).toBe(true)
   })
 
-  it("Speedometer is a Dial, a gear Tile and a fuel Fill", () => {
+  it("Speedometer is a segmented Dial, a gear Tile and a fuel Dial on the outer curve", () => {
     const d = dom(<Speedometer speed={80} rpm={0.95} gear={3} fuel={10} />)
     expect(d.has('data-slot="speedometer"', 'data-state="alert"')).toBe(true)
+    expect(d.has('data-slot="dial-segment"', 'data-active="true"')).toBe(true)
     expect(d.has('data-slot="tile"', 'data-part="speedometer-gear"', 'data-state="alert"')).toBe(true)
-    expect(d.has('data-slot="fill"', 'data-part="speedometer-fuel"', 'data-state="alert"')).toBe(true)
+    expect(d.has('data-slot="dial"', 'data-part="speedometer-fuel"', 'data-state="alert"')).toBe(true)
+    // the leading zero is dimmed
+    expect(d.has('data-slot="speedometer-digit"', "data-dim")).toBe(true)
   })
 
   it("Countdown's line and Notice's time line are Fills", () => {
