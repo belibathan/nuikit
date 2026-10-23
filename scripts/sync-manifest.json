@@ -219,6 +219,8 @@
       "web/src/components/ui/menu-row.tsx",
       "web/src/components/ui/meter.tsx",
       "web/src/components/ui/progress.tsx",
+      "web/src/components/ui/region.tsx",
+      "web/src/components/ui/screen.tsx",
       "web/src/components/ui/scroll-area.tsx",
       "web/src/components/ui/selection-tabs.tsx",
       "web/src/components/ui/selection-tile.tsx",

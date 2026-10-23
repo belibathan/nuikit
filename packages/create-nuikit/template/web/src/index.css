@@ -3572,6 +3572,10 @@ html[data-nk-backdrop="on"] * {
     min-height: 0;
     flex: 1 1 auto;
   }
+  div[data-slot="region-body"] {
+    display: flex;
+    flex-direction: column;
+  }
   [data-slot="region-footer"] {
     margin-top: auto;
     flex-shrink: 0;

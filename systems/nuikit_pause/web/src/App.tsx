@@ -16,15 +16,17 @@ import {
 import { Button } from "@/components/ui/button";
 import { Kbd } from "@/components/ui/kbd";
 import { MenuRow, MenuRowList } from "@/components/ui/menu-row";
+import { Region } from "@/components/ui/region";
+import { Screen } from "@/components/ui/screen";
 import { SheetTitle } from "@/components/ui/sheet";
 import { list } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { HelpPage, PlayerSummary, ServerSummary, Stage } from "./views/home";
 import { InfoPage } from "./views/info";
 import { KeysPage } from "./views/keys";
-import { SELF as SETTINGS_SELF, SETTINGS_W, SettingsPage } from "./views/settings";
+import { SELF as SETTINGS_SELF, SettingsPage } from "./views/settings";
 import { MapSheetPage, MapStage, useMapModel } from "./views/map";
-import { PauseSheet, rise, SHEET_W } from "./views/sheet";
+import { PauseSheet, rise } from "./views/sheet";
 
 export default function App() {
   // Subscribed here, not in <Pause>: bridge.lua only sends the player when it changes, so a
@@ -101,7 +103,8 @@ function Pause({ data, player }: { data: PauseData; player: NuiPlayer }) {
 
   const homePage = (
     <div className="flex h-full min-h-0 justify-end">
-      <div className="flex h-full w-full max-w-[28rem] flex-col overflow-y-auto py-12 pr-12 pl-6">
+      {/* the page column (a layout Region: --nk-region-max, the sheet's own padding) */}
+      <Region fill pad="none" className="pause-column overflow-y-auto" footer={<div className="w-full pt-(--nk-space-2)"><ServerSummary data={data} /></div>}>
         <header className="flex items-center gap-4">
           {server.logo ? (
             <div className="pause-logo flex size-12 shrink-0 items-center justify-center bg-foreground text-base font-semibold text-background">
@@ -151,11 +154,7 @@ function Pause({ data, player }: { data: PauseData; player: NuiPlayer }) {
             {buttons.includes("disconnect") ? <Disconnect rise={rise(first ? buttons.length : undefined)} /> : null}
           </MenuRowList>
         </nav>
-
-        <div className="mt-auto pt-6">
-          <ServerSummary data={data} />
-        </div>
-      </div>
+      </Region>
     </div>
   );
 
@@ -168,13 +167,15 @@ function Pause({ data, player }: { data: PauseData; player: NuiPlayer }) {
   else page = homePage;
 
   return (
-    <div className="pause-root absolute inset-0 overflow-hidden">
+    // a Screen that bleeds: the sheets are flush to the screen's edges at every aspect; the stage between them
+    // is the open area (--pause-sheet-w on the left, --pause-settings-w on the right while Settings is open)
+    <Screen bleed className="pause-root" data-settings={view === "settings" || undefined}>
       <div className="pause-scrim absolute inset-0" data-stage={standIn || view === "map" || undefined} aria-hidden />
       {/* the world: the map's glass, or the open stage the focus camera frames the player in */}
       {view === "map" ? (
-        <MapStage model={map} left={SHEET_W} />
+        <MapStage model={map} left="var(--pause-sheet-w)" />
       ) : (
-        <div className="absolute inset-y-0 right-0 flex" style={{ left: SHEET_W, right: view === "settings" ? SETTINGS_W : 0 }}>
+        <div className="pause-stage absolute inset-y-0 flex">
           <Stage active={standIn} back={view !== "home"} />
         </div>
       )}
@@ -190,7 +191,7 @@ function Pause({ data, player }: { data: PauseData; player: NuiPlayer }) {
           onGame={() => void fetchNui("pause:settings").catch(() => {})}
         />
       ) : null}
-    </div>
+    </Screen>
   );
 }
 
