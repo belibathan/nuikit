@@ -1005,7 +1005,7 @@
       "name": "hud-minimal",
       "type": "registry:block",
       "title": "Minimal HUD",
-      "description": "The always-on HUD: vitals and needs with voice, cash, bank and job, and a speedometer with seatbelt and engine warnings while driving. The player comes from nuikit's bridge (any framework); speed and rpm are live values.",
+      "description": "The always-on HUD: voice, vitals and needs as keycaps (VitalChip), cash, bank and job, and the in-game Speedometer with seatbelt and engine warnings while driving. The player comes from nuikit's bridge (any framework); speed and rpm are live values.",
       "files": [
         {
           "path": "registry/nuikit/blocks/hud-minimal/hud-minimal.tsx",
@@ -1028,7 +1028,7 @@
         "nuikit-core"
       ],
       "registryDependencies": [
-        "https://nuikit.vercel.app/r/meter.json",
+        "https://nuikit.vercel.app/r/vital-chip.json",
         "https://nuikit.vercel.app/r/stat.json",
         "https://nuikit.vercel.app/r/speedometer.json",
         "https://nuikit.vercel.app/r/money.json",
