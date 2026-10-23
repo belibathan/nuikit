@@ -24,7 +24,7 @@ whatever script asked.
 | `radial` | yes | yes | `radial-menu` | `{ index, id, path, args }`, or nil + reason |
 | `challenge` | yes | no | `skill-check` | `true` when every round passed |
 
-Every field of every intent is in `packages/core/intents/<name>.json`, with its doc string. The generated
+Every field of every intent is in `packages/core/src/spec/api/intents/<name>.json`, with its doc string. The generated
 types (`nuikit-core/intents`: `NotifyProps`, `MenuItem`, `InputField`…) and the LuaLS classes
 (`NkNotifyProps`, `NkMenuItem`…, in `lib/intents.schema.lua`) carry the same docs, so the editor shows them.
 
@@ -37,7 +37,7 @@ still works.
 
 ## 2. Schemas: one source of truth
 
-`packages/core/intents/*.json` (+ `_defs.json` for shared types: `icon`, `anchor`, `status`, `metadata`,
+`packages/core/src/spec/api/intents/*.json` (+ `_defs.json` for shared types: `icon`, `anchor`, `status`, `metadata`,
 `difficulty`…) is the only place an intent is described. `pnpm intents` in `packages/core` (also part of its
 build) runs `scripts/gen-intents.mjs`, which emits:
 
@@ -207,7 +207,7 @@ through each renderer, and writes the screenshots and `posts.json`.
 
 ## 7. Files
 
-`packages/core/intents/*.json` (schemas) · `packages/core/scripts/gen-intents.mjs` · `packages/core/src/intents.ts`
+`packages/core/src/spec/api/intents/*.json` (schemas) · `packages/core/scripts/gen-intents.mjs` · `packages/core/src/intents.ts`
 (validator, store, wire types, renderer contract) · `src/intents-react.ts` · `src/intents.generated.ts` ·
 `packages/core/lua/intents.lua` (the API, loaded by `init.lua`) · `lua/intents.schema.lua` ·
 `systems/nuikit/client/intents.lua` (the runtime) · `client/renderers.lua` (renderer packs) ·

@@ -1,0 +1,66 @@
+import type { DomainSpec } from "./types";
+
+/**
+ * Intents: a script asks for a notice, a menu, an input… and the nuikit resource draws it with a themed renderer.
+ * The nine kinds and their props live in ./intents/*.json (generating src/intents.generated.ts and
+ * lua/intents.schema.lua); arsenal.mjs adds one `intent` entry per kind (`nk.intent.<kind>`).
+ */
+export default {
+  js: "intents",
+  lua: "intent",
+  title: "Intents",
+  doc: "Ask for a notice, menu, input, confirm, progress, prompt, target, radial or challenge; a swappable renderer draws it.",
+  docs: "docs/intents.md",
+  entries: [
+    { name: "open", kind: "call", doc: "Open any intent by kind; returns the handle.", lua: "nk.intent.open", sig: { lua: "nk.intent.open(kind, props, opts?) → NkIntent" }, only: "lua only: scripts ask, the nuikit frame draws", since: "0.7.0" },
+    { name: "cancelAll", kind: "call", doc: "Cancel this resource's open intents (of one kind when given).", lua: "nk.intent.cancelAll", sig: { lua: "nk.intent.cancelAll(kind?)" }, only: "lua only: the owner cancels", since: "0.7.0" },
+    { name: "list", kind: "call", doc: "This resource's open intents.", lua: "nk.intent.list", sig: { lua: "nk.intent.list() → NkIntent[]" }, only: "lua only: intents belong to the resource that opened them", since: "0.7.0" },
+    { name: "validate", kind: "call", doc: "Check props against the kind's schema; returns the issues.", js: "validateIntent", lua: "nk.intent.validate", sig: { js: "validateIntent(kind, props): IntentIssue[]", lua: "nk.intent.validate(kind, props) → issues" }, since: "0.7.0" },
+    { name: "defaults", kind: "call", doc: "Props with the schema's defaults filled in.", js: "withIntentDefaults", sig: { js: "withIntentDefaults(kind, props): IntentProps[K]" }, only: "js only: Lua sends props as given, the frame fills defaults", since: "0.7.0" },
+    { name: "schema", kind: "const", doc: "The schemas as data.", js: "INTENT_SCHEMAS", lua: "nk.intent.schema", since: "0.7.0" },
+    { name: "kinds", kind: "const", doc: "The nine kinds, in catalogue order.", js: "INTENT_KINDS", lua: "nk.intent.kinds", since: "0.7.0" },
+    { name: "store", kind: "call", doc: "The frame's intent store: the open intents a renderer draws.", js: "createIntentStore", sig: { js: "createIntentStore(): IntentStore" }, only: "js only: the frame keeps the stack", since: "0.7.0" },
+    { name: "defineRenderer", kind: "call", doc: "Declare a renderer module for one kind.", js: "defineRenderer", sig: { js: "defineRenderer({ kind, mount }): RendererDefinition" }, only: "js only: renderers are pages", since: "0.7.0" },
+    { name: "defineReactRenderer", kind: "call", doc: "A renderer from a React component.", js: "defineReactRenderer", sig: { js: "defineReactRenderer({ kind, Component, css })" }, only: "js only: renderers are pages", since: "0.7.0" },
+    { name: "update", kind: "handle", doc: "Patch an open intent's props.", lua: "NkIntent:update", sig: { lua: "intent:update(patch)" }, only: "lua only: the handle a script holds", since: "0.7.0" },
+    { name: "cancel", kind: "handle", doc: "Cancel an open intent.", lua: "NkIntent:cancel", sig: { lua: "intent:cancel(reason?)" }, only: "lua only: the handle a script holds", since: "0.7.0" },
+    { name: "on", kind: "handle", doc: "Listen to one of the intent's events.", lua: "NkIntent:on", sig: { lua: "intent:on(event, fn)" }, only: "lua only: the handle a script holds", since: "0.7.0" },
+    { name: "await", kind: "handle", doc: "Wait for the result (yields).", lua: "NkIntent:await", sig: { lua: "intent:await() → result, reason" }, only: "lua only: the handle a script holds", since: "0.7.0" },
+  ],
+  events: [
+    { name: "nuikit:intent:open", dir: "local", payload: "(id: string, kind: IntentKind, props: IntentProps[K])", sender: "any", doc: "A resource asks the nuikit resource to open an intent.", since: "0.7.0" },
+    { name: "nuikit:intent:update", dir: "local", payload: "(id: string, patch: object)", sender: "owner", doc: "Patch an open intent.", since: "0.7.0" },
+    { name: "nuikit:intent:cancel", dir: "local", payload: "(id: string, reason?: IntentReason)", sender: "owner", doc: "Cancel an open intent.", since: "0.7.0" },
+    { name: "nuikit:intent:resolved", dir: "local", payload: "(id: string, { result, reason, data })", sender: "nuikit", doc: "The intent finished; the owner's Lua resumes.", since: "0.7.0" },
+    { name: "nuikit:intent:event", dir: "local", payload: "(id: string, event: string, data: unknown)", sender: "nuikit", doc: "An intent event (onChange, onSelect) back to the owner.", since: "0.7.0" },
+    { name: "nuikit:intent:message", dir: "lua→page", payload: "IntentMessage", sender: "nuikit", doc: "Open, update or cancel an intent in the frame.", wire: "nuikit:intent", since: "0.7.0" },
+    { name: "nuikit:intent:resolve", dir: "page→lua", payload: "{ id: string; result?: unknown; reason?: IntentReason; data?: unknown }", reply: "{ ok: boolean }", sender: "nuikit", doc: "The renderer resolved an intent.", since: "0.7.0" },
+    { name: "nuikit:intent:emit", dir: "page→lua", payload: "{ id: string; event: string; data?: unknown }", reply: "{ ok: boolean }", sender: "nuikit", doc: "The renderer raised an intent event.", wire: "nuikit:intent:event", since: "0.7.0" },
+    { name: "nuikit:intent:sync", dir: "page→lua", payload: "{}", reply: "{ ok: boolean }", sender: "nuikit", doc: "The frame (re)loaded: resend the open intents.", since: "0.7.0" },
+    { name: "nuikit:intent:count", dir: "net", payload: "{ batch: { source: string; intent: IntentKind; id: string }[] }", sender: "nuikit", doc: "Intent counts for the doctor.", wire: "nuikit:intent", since: "0.7.0" },
+  ],
+  legacy: [
+    { old: "nk.intents.open", now: "nk.intent.open", removeIn: "1.0.0" },
+    { old: "nk.intents.cancelAll", now: "nk.intent.cancelAll", removeIn: "1.0.0" },
+    { old: "nk.intents.list", now: "nk.intent.list", removeIn: "1.0.0" },
+    { old: "nk.intents.validate", now: "nk.intent.validate", removeIn: "1.0.0" },
+    { old: "nk.intents.schema", now: "nk.intent.schema", removeIn: "1.0.0" },
+    { old: "nk.notify", now: "nk.intent.notify", removeIn: "1.0.0" },
+    { old: "nk.menu", now: "nk.intent.menu", removeIn: "1.0.0" },
+    { old: "nk.input", now: "nk.intent.input", removeIn: "1.0.0" },
+    { old: "nk.confirm", now: "nk.intent.confirm", removeIn: "1.0.0" },
+    { old: "nk.progress", now: "nk.intent.progress", removeIn: "1.0.0" },
+    { old: "nk.prompt", now: "nk.intent.prompt", removeIn: "1.0.0" },
+    { old: "nk.target", now: "nk.intent.target", removeIn: "1.0.0" },
+    { old: "nk.radial", now: "nk.intent.radial", removeIn: "1.0.0" },
+    { old: "nk.challenge", now: "nk.intent.challenge", removeIn: "1.0.0" },
+    { old: "nk.hidePrompt", now: "nk.intent.cancelAll", removeIn: "1.0.0" },
+    { old: "nk.cancelProgress", now: "nk.intent.cancelAll", removeIn: "1.0.0" },
+    { old: "nk.closeMenu", now: "nk.intent.cancelAll", removeIn: "1.0.0" },
+  ],
+  rules: [
+    "An intent belongs to the resource that opened it: only it may update or cancel it (GetInvokingResource).",
+    "The same props id replaces the open intent (reason 'replaced').",
+    "A stopped resource's intents are cancelled with reason 'stopped'.",
+  ],
+} satisfies DomainSpec;

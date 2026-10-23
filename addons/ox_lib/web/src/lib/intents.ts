@@ -1,7 +1,7 @@
 /**
  * ox_lib messages → intents (docs/adapters/ox-lib.md §3, the field mapping). Pure functions: each
  * takes the payload ox_lib's Lua sends (docs/ox-lib-protocol.md) and returns the props the `nuikit`
- * frame draws, checked against packages/core/intents/*.json. Nothing is dropped: what the schema has
+ * frame draws, checked against packages/core/src/spec/api/intents/*.json. Nothing is dropped: what the schema has
  * no field for goes in `meta.ox`. The answers → ox_lib POSTs live with each feature (they own the
  * protocol), with the helpers at the bottom.
  */
