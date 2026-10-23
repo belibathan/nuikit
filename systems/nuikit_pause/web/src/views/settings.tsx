@@ -14,7 +14,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { MenuRow, MenuRowList } from "@/components/ui/menu-row";
 import { Input } from "@/components/ui/input";
-import { Slider } from "@/components/ui/slider";
+import { Stepper } from "@/components/ui/stepper";
 import { SelectionTile } from "@/components/ui/selection-tile";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SheetPage, SheetSection } from "./sheet";
@@ -150,6 +150,25 @@ function Row({ row, value, onChange }: { row: SettingRow; value: SettingValue | 
         <Input key={String(value)} defaultValue={typeof value === "string" ? value : ""} maxLength={row.maxLength ?? 64} onBlur={(e) => e.target.value !== value && onChange(e.target.value)} />
       </div>
     );
+  if (row.options && row.options.every((o) => typeof (typeof o === "object" ? o.value : o) === "number")) {
+    // numeric select: the kit Stepper walks the options (hold repeats, the value rolls)
+    const options = row.options.map(option);
+    const at = Math.max(0, options.findIndex((o) => o.value === value));
+    return (
+      <div className="flex flex-col gap-2 py-3">
+        <span className="truncate">{row.label}</span>
+        {row.description ? <span className="nk-label -mt-1.5 text-muted-foreground">{row.description}</span> : null}
+        <Stepper
+          aria-label={row.label}
+          value={options[at]!.label ?? String(options[at]!.value)}
+          onStep={(dir) => {
+            const next = options[Math.min(options.length - 1, Math.max(0, at + dir))]!;
+            if (next.value !== options[at]!.value) onChange(next.value);
+          }}
+        />
+      </div>
+    );
+  }
   if (row.options) {
     const options = row.options.map(option);
     const at = options.findIndex((o) => o.value === value);
@@ -171,15 +190,15 @@ function Row({ row, value, onChange }: { row: SettingRow; value: SettingValue | 
       </div>
     );
   }
-  const [min, max, step] = row.range ?? [0, 1, 0.1];
+  const [min, max, stepRaw] = row.range ?? [0, 1, 0.1];
+  const step = stepRaw ?? (max - min) / 20;
+  const dp = (String(step).split(".")[1] ?? "").length;
+  const round = (x: number) => Math.round(x * 10 ** dp) / 10 ** dp;
   const n = typeof value === "number" ? value : min;
   return (
     <div className="flex flex-col gap-3 py-3">
-      <div className="flex items-baseline justify-between gap-3">
-        <span className="truncate">{row.label}</span>
-        <span className="nk-num nk-label text-muted-foreground">{Math.round(n * 100) / 100}</span>
-      </div>
-      <Slider value={[n]} min={min} max={max} step={step ?? (max - min) / 20} onValueCommit={(v) => onChange(v[0]!)} />
+      <span className="truncate">{row.label}</span>
+      <Stepper aria-label={row.label} value={round(n)} min={min} max={max} step={step} format={(x) => String(round(x))} onStep={(dir) => onChange(round(Math.min(max, Math.max(min, n + dir * step))))} />
     </div>
   );
 }
