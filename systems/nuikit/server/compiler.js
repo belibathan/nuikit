@@ -1436,8 +1436,7 @@ ${lines.join("\n")}
   // src/doctor.ts
   var NUIKIT_SYSTEMS = ["nuikit_chat", "nuikit_death", "nuikit_hud", "nuikit_loading", "nuikit_pause", "nuikit_stress", "nuikit_voice"];
   var ADAPTER_PACKS = [
-    // ox_lib has no pack: its override (overrides/ox_lib) already routes it to the intents (0.8.0).
-    { name: "[nuikit-ox]", library: "ox_lib", frameworks: ["any"], shipped: false },
+    // ox_lib has no pack, ever: its override (overrides/ox_lib) already routes it to the intents.
     { name: "[nuikit-qb]", library: "qb-core", frameworks: ["qbcore", "qbox"], shipped: true },
     { name: "[nuikit-esx]", library: "es_extended", frameworks: ["esx"], shipped: true }
   ];
@@ -1556,7 +1555,7 @@ ${lines.join("\n")}
         const html = snap.readFile(r.name, page);
         if (html && OVERRIDE_MARKER.test(html)) {
           rep.status = "override";
-          rep.via = "override page";
+          rep.via = "nuikit";
         }
       }
       if (rep.status === "untouched" && loadscreen) {

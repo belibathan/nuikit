@@ -71,7 +71,7 @@ describe("nuikit doctor (server glue)", () => {
     const out = s.run("doctor");
     expect(out[0]).toBe("nuikit 0.6.0 (protocol 1)");
     expect(out[1]).toBe("framework: qbox (qbx_core)");
-    expect(out.join("\n")).toContain("ox_lib                   override (override page)");
+    expect(out.join("\n")).toContain("ox_lib                   override (nuikit)");
     expect(out.join("\n")).toContain("nuikit_pause             on nuikit v1 level 3");
     expect(out.join("\n")).not.toContain("qb-menu");
     expect(out.join("\n")).toContain("findings:");
