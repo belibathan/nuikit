@@ -12,7 +12,6 @@ import {
   FormField,
   DateField,
   DateRangeField,
-  NumberField,
   SelectField,
   SliderField,
   TextField,
@@ -24,6 +23,7 @@ import {
   type DateRange,
   type FieldKind,
 } from "@/components/ui/form-field";
+import { Stepper } from "@/components/ui/stepper";
 import { Panel, PanelBody, PanelFooter, PanelHeader } from "@/components/ui/panel";
 import { Icon } from "@/lib/icon";
 import { Text } from "@/lib/text";
@@ -194,6 +194,28 @@ function OneInput({ id, props, ctx }: { id: string; props: InputProps; ctx: Rend
   );
 }
 
+/** A numeric row as the kit Stepper (hold repeats, the value rolls); the value stays the file's number | null. */
+function StepperRow({ row, value, onChange, min, max, step, precision, placeholder }: { row: Record<string, any>; value: number | null; onChange: (v: number | null) => void; min?: number; max?: number; step: number; precision: number; placeholder?: string }) {
+  const clamp = (n: number) => Math.round(Math.min(max ?? Infinity, Math.max(min ?? -Infinity, n)) * 10 ** precision) / 10 ** precision;
+  return (
+    <FormField {...row}>
+      <Stepper
+        aria-label={typeof row.label === "string" ? row.label : undefined}
+        disabled={row.disabled}
+        value={value === null ? (placeholder ?? "–") : value}
+        format={(x) => x.toFixed(precision)}
+        onStep={(dir) => onChange(clamp(value === null ? (dir > 0 ? (min ?? 0) - step : (max ?? 0) + step) + dir * step : value + dir * step))}
+        onCommit={(t) => {
+          const n = Number(t);
+          if (Number.isFinite(n)) onChange(Math.round(n * 10 ** precision) / 10 ** precision);
+        }}
+      />
+    </FormField>
+  );
+}
+
+const decimalsOf = (n: number) => (String(n).split(".")[1] ?? "").length;
+
 function Field({ field: f, index, value, error, onChange, autoFocus }: { field: InputField; index: number; value: unknown; error: string | null; onChange: (v: unknown) => void; autoFocus?: boolean }) {
   const row = {
     label: f.label ?? `Field ${index + 1}`,
@@ -206,8 +228,10 @@ function Field({ field: f, index, value, error, onChange, autoFocus }: { field: 
   switch (f.type ?? "text") {
     case "textarea":
       return <TextField {...row} multiline rows={typeof f.min === "number" ? f.min : 3} value={value as string} onValueChange={onChange} placeholder={f.placeholder} minLength={f.minLength} maxLength={f.maxLength} />;
-    case "number":
-      return <NumberField {...row} value={value as number | null} onValueChange={onChange} min={f.min as number | undefined} max={f.max as number | undefined} step={f.step} precision={f.precision ?? 0} placeholder={f.placeholder} icon={icon} />;
+    case "number": {
+      const step = f.step ?? 1;
+      return <StepperRow row={row} value={value as number | null} onChange={onChange} min={f.min as number | undefined} max={f.max as number | undefined} step={step} precision={f.precision ?? 0} placeholder={f.placeholder} />;
+    }
     case "checkbox":
       return <CheckboxField {...row} checked={value as boolean} onCheckedChange={onChange} />;
     case "select":
@@ -243,7 +267,8 @@ function Field({ field: f, index, value, error, onChange, autoFocus }: { field: 
       );
     }
     case "slider":
-      return <SliderField {...row} value={value as number} onValueChange={onChange} min={(f.min as number) ?? 0} max={(f.max as number) ?? 100} step={f.step ?? 1} />;
+      if (f.step !== undefined) return <StepperRow row={row} value={value as number} onChange={onChange} min={(f.min as number) ?? 0} max={(f.max as number) ?? 100} step={f.step} precision={decimalsOf(f.step)} />;
+      return <SliderField {...row} value={value as number} onValueChange={onChange} min={(f.min as number) ?? 0} max={(f.max as number) ?? 100} step={1} />;
     case "date":
       return <DateField {...row} value={value as string | null} onValueChange={onChange} min={typeof f.min === "string" ? f.min : undefined} max={typeof f.max === "string" ? f.max : undefined} />;
     case "date-range":
