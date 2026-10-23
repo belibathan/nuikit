@@ -1,4 +1,5 @@
 import { useEffect, useState, type ReactNode } from "react";
+import { VIEWPORT_SAMPLES, parseViewport } from "./viewport";
 import {
   closeSurface,
   emit,
@@ -62,6 +63,9 @@ const SCENES: Record<SceneName, string> = {
 type LogEntry = { id: number; t: number; kind: "event" | "call"; name: string; data: unknown; response?: unknown; ms?: number; code?: string };
 
 const css = `
+.nkdt-vp{position:fixed;inset:0;z-index:2147483600;background:#0b0b0f;display:grid;place-items:center;overflow:hidden}
+.nkdt-vp iframe{border:0;flex:none;transform-origin:center;box-shadow:0 0 0 1px #333;background:transparent}
+.nkdt-vp-label{position:absolute;left:12px;bottom:10px;font:12px ui-monospace,monospace;color:#999}
 .nkdt{position:fixed;right:16px;bottom:16px;z-index:2147483646;font:12px/1.4 ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;color:#e7e9ee;letter-spacing:0}
 .nkdt *{box-sizing:border-box}
 .nkdt-fab{display:flex;align-items:center;gap:8px;height:34px;padding:0 14px 0 10px;border-radius:999px;border:1px solid #ffffff1f;background:#0a0a0ae6;backdrop-filter:blur(12px);color:inherit;cursor:pointer;box-shadow:0 8px 30px #0008}
@@ -134,6 +138,18 @@ export function NuiDevtools({
     }
   });
   const [visible, setVis] = useState(getVisible());
+  // the viewport picker (docs/design/layout.md): the page again in a WxH frame, scaled to fit the window
+  const framed = typeof window !== "undefined" && window.self !== window.top;
+  const [viewport, setViewport] = useState<string>(() => {
+    if (framed) return "";
+    const q = typeof location !== "undefined" ? new URLSearchParams(location.search).get("viewport") : null;
+    if (q && parseViewport(q)) return q;
+    try {
+      return localStorage.getItem("nuikit:viewport") ?? "";
+    } catch {
+      return "";
+    }
+  });
 
   useEffect(() => {
     if (!enabled) return;
@@ -183,6 +199,15 @@ export function NuiDevtools({
   }, [enabled]);
 
   useEffect(() => {
+    if (framed) return;
+    try {
+      localStorage.setItem("nuikit:viewport", viewport);
+    } catch {
+      /* private mode */
+    }
+  }, [viewport, framed]);
+
+  useEffect(() => {
     try {
       localStorage.setItem("nuikit:scene", scene);
     } catch {
@@ -198,7 +223,8 @@ export function NuiDevtools({
     <>
       <style>{css}</style>
       {scene !== "none" && <div className="nkdt-scene-bg" style={{ background }} aria-hidden />}
-      <div className="nkdt" data-nuikit-devtools="">
+      {!framed && parseViewport(viewport) && <ViewportFrame size={parseViewport(viewport)!} />}
+      <div className="nkdt" data-nuikit-devtools="" hidden={framed}>
         {!open ? (
           <button className="nkdt-fab" onClick={() => setOpen(true)} title="nuikit devtools (`)">
             <span className="nkdt-gem" />
@@ -219,7 +245,7 @@ export function NuiDevtools({
             <div className="nkdt-tabs" role="tablist">
               {(["events", "surfaces", "log", "scene"] as const).map((t) => (
                 <button key={t} className="nkdt-tab" role="tab" aria-selected={tab === t} onClick={() => setTab(t)}>
-                  {t === "events" ? "Events" : t === "surfaces" ? "Surfaces" : t === "log" ? `Log${log.length ? ` · ${log.length}` : ""}` : "Scene"}
+                  {t === "events" ? "Events" : t === "surfaces" ? "Surfaces" : t === "log" ? `Log${log.length ? ` · ${log.length}` : ""}` : "Scene & size"}
                 </button>
               ))}
             </div>
@@ -277,6 +303,15 @@ export function NuiDevtools({
                       </button>
                     ))}
                   </div>
+                  {!framed && (
+                    <div className="nkdt-scenes" role="radiogroup" aria-label="Viewport">
+                      {["", ...VIEWPORT_SAMPLES.map(([w, h]) => `${w}x${h}`)].map((v) => (
+                        <button key={v || "window"} className="nkdt-scene" role="radio" aria-checked={viewport === v} aria-pressed={viewport === v} onClick={() => setViewport(v)}>
+                          <span>{v ? v.replace("x", "×") : "window"}</span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
                   <p className="nkdt-dim">Check your UI against a bright sky and a dark street. Pass any image URL as the <code>scene</code> prop to use a real screenshot.</p>
                 </>
               )}
@@ -414,3 +449,24 @@ function label(p: unknown, i: number) {
 
 export default NuiDevtools;
 
+
+/** The page itself in a w × h iframe, scaled to fit the window: vh, vw, rem and the aspect are the frame's. */
+function ViewportFrame({ size: [w, h] }: { size: [number, number] }) {
+  const [win, setWin] = useState(() => ({ w: window.innerWidth, h: window.innerHeight }));
+  useEffect(() => {
+    const on = () => setWin({ w: window.innerWidth, h: window.innerHeight });
+    window.addEventListener("resize", on);
+    return () => window.removeEventListener("resize", on);
+  }, []);
+  const k = Math.min(1, (win.w - 32) / w, (win.h - 32) / h);
+  const url = new URL(location.href);
+  url.searchParams.delete("viewport");
+  return (
+    <div className="nkdt-vp" aria-label={`${w}×${h} frame`}>
+      <iframe title={`${w}×${h}`} src={url.toString()} width={w} height={h} style={{ transform: `scale(${k})` }} />
+      <span className="nkdt-vp-label">
+        {w}×{h} · {Math.round(k * 100)}%
+      </span>
+    </div>
+  );
+}
