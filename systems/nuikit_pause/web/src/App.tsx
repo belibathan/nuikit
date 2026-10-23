@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Kbd } from "@/components/ui/kbd";
-import { MenuRow } from "@/components/ui/menu-row";
+import { MenuRow, MenuRowList } from "@/components/ui/menu-row";
 import { SheetTitle } from "@/components/ui/sheet";
 import { list } from "@/lib/format";
 import { cn } from "@/lib/utils";
@@ -139,7 +139,7 @@ function Pause({ data, player }: { data: PauseData; player: NuiPlayer }) {
 
           <nav className="flex flex-col" aria-label="Pause menu">
             {buttons.includes("resume") ? (
-              <Button size="lg" autoFocus style={rise(first ? 0 : undefined).style} className={cn("mb-2 h-12 justify-between px-4 text-base", rise(first ? 0 : undefined).className)} onClick={() => run("resume")}>
+              <Button size="lg" autoFocus style={rise(first ? 0 : undefined).style} className={cn("h-12 justify-between px-4 text-base", rise(first ? 0 : undefined).className)} onClick={() => run("resume")}>
                 <span className="flex items-center gap-3">
                   <PlayIcon />
                   Resume
@@ -147,20 +147,22 @@ function Pause({ data, player }: { data: PauseData; player: NuiPlayer }) {
                 <Kbd className="bg-primary-foreground/15 text-primary-foreground">Esc</Kbd>
               </Button>
             ) : null}
-            <div className="flex flex-col divide-y divide-border">
+            {/* one selection tile slides between the rows (hover and focus alike); Resume, the primary keycap, is
+                the same object at rest, so the rows sit a list gap below it */}
+            <MenuRowList className="mt-(--nk-space-1)">
               {buttons.map((b, i) => {
                 if (b === "disconnect" || b === "resume") return null;
                 const item = NAV[b];
                 if (!item) return null;
                 const r = rise(first ? i + 1 : undefined);
                 return (
-                  <MenuRow key={b} autoFocus={i === 0} icon={<item.icon />} kbd={item.kbd} onClick={() => run(b)} className={cn("min-h-12 text-base", r.className)} style={r.style}>
+                  <MenuRow key={b} autoFocus={i === 0 && !buttons.includes("resume")} icon={<item.icon />} kbd={item.kbd} onClick={() => run(b)} className={cn("min-h-12 text-base", r.className)} style={r.style}>
                     {item.label}
                   </MenuRow>
                 );
               })}
               {buttons.includes("disconnect") ? <Disconnect rise={rise(first ? buttons.length : undefined)} /> : null}
-            </div>
+            </MenuRowList>
           </nav>
 
           <div className="mt-auto pt-6">

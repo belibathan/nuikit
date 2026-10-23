@@ -1,6 +1,7 @@
 import { ChevronDownIcon } from "lucide-react";
-import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ComponentProps, type CSSProperties } from "react";
+import { useEffect, useMemo, useRef, useState, type ComponentProps, type CSSProperties } from "react";
 import { MenuRow } from "@/components/ui/menu-row";
+import { SelectionTile } from "@/components/ui/selection-tile";
 import { ActionBar, ActionBarItem } from "@/components/ui/action-bar";
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -49,7 +50,6 @@ export function ListMenu() {
   const [checks, setChecks] = useState<Record<number, boolean>>({});
   const touched = useRef(false); // changeIndex/changeChecked stay quiet until the first key press
   const list = useRef<HTMLDivElement>(null);
-  const indicator = useRef<HTMLDivElement>(null);
 
   const changeSelected = useMemo(() => debounce((body: unknown[]) => void post("changeSelected", body), 100), []);
   const changeIndex = useMemo(() => debounce((body: unknown[]) => void post("changeIndex", body), 100), []);
@@ -176,27 +176,6 @@ export function ListMenu() {
   if (menu) last.current = menu;
   const view = menu ?? last.current;
 
-  // One indicator glides behind the rows to the selected one (nk-indicator, docs/design.md motion 2): placed
-  // from the selected row's own box every time, so it can never be left on a stale row. Moves sooner than
-  // the panel time apart glide fast; the third in a row jumps (it never trails a held key).
-  const lastMove = useRef({ at: 0, streak: 0 });
-  useLayoutEffect(() => {
-    const el = indicator.current;
-    const row = list.current?.querySelector<HTMLElement>(`.nk-row[data-index="${selected}"]`);
-    if (!el) return;
-    el.toggleAttribute("data-hidden", !row);
-    if (!row) return;
-    const now = performance.now();
-    const m = lastMove.current;
-    m.streak = now - m.at < 140 ? m.streak + 1 : 0;
-    m.at = now;
-    if (m.streak >= 2) el.setAttribute("data-repeat", "jump");
-    else if (m.streak === 1) el.setAttribute("data-repeat", "fast");
-    else el.removeAttribute("data-repeat");
-    el.style.transform = `translateY(${row.offsetTop}px)`;
-    el.style.height = `${row.offsetHeight}px`;
-  });
-
   // Hover moves the selection, exactly as the arrow keys do (the same changeSelected), so only one row
   // is ever lit. Pointer movement only: a row scrolling under a still cursor doesn't steal it.
   const hoverTo = (i: number) => {
@@ -237,10 +216,11 @@ export function ListMenu() {
             <header className="pb-(--nk-space-4)">
               <SheetTitle className="ox-sheet-title nk-title truncate">{view.title}</SheetTitle>
             </header>
-            {/* At most 7 rows tall, so scrollIntoView({ block: "nearest" }) always lands on a whole row. The rows
-                change state instantly; only the indicator moves. No hairlines (the baseline: rows breathe). */}
-            <div ref={list} className="ox-rows relative flex max-h-[calc(var(--nk-row-height)*7)] flex-col overflow-y-hidden">
-              <div ref={indicator} className="nk-indicator ox-indicator" />
+            {/* At most 7 rows tall (and their gaps), so scrollIntoView({ block: "nearest" }) always lands on a whole
+                row. The rows change state instantly; only the selection Tile moves (SelectionTile: the selected row,
+                which the keys and the pointer both move). Rows sit --nk-list-gap apart and never touch. */}
+            <div ref={list} className="ox-rows nk-list max-h-[calc(var(--nk-row-height)*7_+_var(--nk-list-gap)*6_+_var(--nk-tile-wall))] overflow-y-hidden">
+              <SelectionTile className="ox-indicator" items=".nk-row[data-index]" lit={`[data-index="${selected}"]`} pointer={false} focus={false} />
               {items.map((item, i) =>
                 item.label ? (
                   <Tooltip key={i} open={i === selected && !!tooltip && !!menu}>

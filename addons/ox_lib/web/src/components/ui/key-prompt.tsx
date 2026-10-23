@@ -287,7 +287,7 @@ function KeyPrompt({
         wrap && "whitespace-normal",
         rung === "focus" && "outline-2 -outline-offset-1 outline-(--nk-row-indicator-color)",
         disabled && "opacity-50",
-        interactive && "cursor-pointer outline-none select-none focus-visible:ring-[3px] focus-visible:ring-ring/50",
+        interactive && "cursor-pointer outline-none select-none",
         className
       )}
       {...pointer}

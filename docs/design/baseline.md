@@ -40,21 +40,14 @@ The goal is a game UI language, not a web app: rows you select like a GTA menu, 
 `--nk-row-icon-box` (2rem): the keycap face, rim and wall of the theme. A row without an icon keeps the column
 (`iconSpace`), so titles start on one line.
 
-**Selection and focus: one language.**
-- `--nk-fill-style: solid` (default): the lit row (keyboard, script, the list's indicator, or the pointer on a row that
-  hovers) is one flat fill in the row colour (`--nk-row-fill-color`, the brand) with dark ink; its icon tile turns into
-  a dark keycap on it; the content slides in by `--nk-row-lift` (space-2) on `--nk-time-base`. The row is the mark.
-- `soft`: a slanted marker (`--nk-row-marker-width`, the accent paint, the tile's skew) over a tint that fades out by
-  `--nk-row-tint-reach` (0.7). Never a flat translucent slab.
-- `--nk-row-indicator` stays a theme's choice: `sweep` (Default, Neon Pop) takes the above, `bar` (Graphite) keeps its
-  bar plus the lift and the lit icon tile, `fill` (Signal, Velvet) its solid row.
-- Focus on a field or button is a single 1px rim in `--nk-focus-rim` (the ring colour). shadcn's border plus 3px halo
-  is switched off in the kit.
+**Selection and focus: one language.** See [Selection](#selection) below: the lit row sits on the keycap Tile, focus
+is the hover state, one tile slides per list, rows never touch.
 
-**Primary actions are keycaps.** `Button` and `AlertDialogAction` with the default variant draw a face (`--primary`,
-the tile's slant, a top light) on a wall (the same colour in shade, `--nk-button-wall` 3px below). Hover raises the
-face a pixel; a press sinks it onto the wall. The label is the scan voice. Secondary (outline) is a hairline rim on
-the panel that tints on hover; ghost is bare.
+**Primary actions are keycaps.** `Button` and `AlertDialogAction` with the default variant draw the Tile: a face
+(`--nk-tile-key`, the tile's slant, `--nk-tile-radius`, a top light) on a wall (the same colour in shade,
+`--nk-tile-wall-shade`, dropped `--nk-tile-wall` straight down). Hover and focus raise the face a pixel; a press sinks it
+onto the wall. The label is the scan voice. Secondary (outline) is a hairline rim on the panel that tints on hover and
+focus; ghost and secondary take the accent on hover and focus alike.
 
 **Progress is segmented or a fill, never a thick ring.** ProgressRing is the speedometer: a Dial with
 `--nk-ring-segments` (24) separated by `--nk-ring-gap` (4°), on a dark disc, lit segments solid in the accent's stops
@@ -73,18 +66,64 @@ between rows or above a footer. No blur, no soft shadows, no gradients that carr
 dialogs, a tile landing), fill 420 (levels), pulse 1000 (alert breathe); exits at 0.7×. Things land, open, then speak:
 a notice's tile lands, its plate opens, its text follows. Reduced motion keeps fades and drops every slide.
 
+## Selection
+
+*Tokens 1.7 (`SELECTION_TOKENS`). Settled after the owner's three observations: a focus ring around Resume that hid
+under its shadow; Resume a slanted keycap with a wall while a hovered row was a flat, rounded, unslanted fill; and a
+hover band touching the row above. One convention, every theme, every list.*
+
+1. **No focus rings, anywhere.** Keyboard, controller and programmatic focus render the same lit state as the pointer's
+   hover: one language (`data-lit` on a list's item, `:hover` / `:focus-visible` on anything else). kit.css drops every
+   outline and ring on `:focus-visible` (shadcn's 3px halo included). Focus still moves and the lit state shows where.
+   The one exception is a text field holding the caret: it keeps a single 1px rim in `--nk-focus-rim`, because typing
+   must show where the text goes; checkboxes and switches light that rim too (they have no hover look of their own).
+   Buttons: the primary's face rises a pixel, outline tints, ghost and secondary take the accent, link underlines.
+2. **The selection IS a Tile.** A lit row, menu item or tab is the primary keycap: the face in the theme's skew over the
+   wall dropped straight below, the same radius (`--nk-tile-radius`, `--nk-r-control`), the same top light and depth
+   line. Under `--nk-fill-style: solid` the face is `--nk-tile-key` (the primary) with `--nk-tile-key-ink`; under `soft`
+   it is a tinted face (`--nk-tile-tint` of the primary, the wall half that) with the foreground ink. A destructive row's
+   tile takes `--destructive`. Resume at rest and a lit row are the same object in two states.
+3. **One indicator per list, sliding.** Each list (MenuRowList, pause menus, ox_lib context and list menus, the
+   inventory item menu, tabs) has a single `SelectionTile` (`registry/nuikit/ui/selection-tile.tsx`, kit class
+   `nk-indicator`) that moves between items by transform: `translate()`, and a size change by a measured FLIP (the new
+   box at once, drawn scaled from the old one, settling to scale 1), never a height or width animation. It glides on
+   `--nk-indicator-time` / `--nk-indicator-ease` (the ladder); a key held down glides fast then jumps
+   (`data-repeat`); reduced motion and motion off jump. The items change ink at once: no per-row fades, no row fills.
+   Last input wins: a pointer move lights the row under it, a key press hands it back to focus or the UI's `active`.
+4. **Rows never touch.** A list (`nk-list`) spaces its items by `--nk-list-gap` (the wall plus `--nk-space-1`) and
+   leaves `--nk-tile-wall` under the last one; the tile sits `--nk-tile-inset` in from the item's sides (room for the
+   skew). The lit row's lead and text slide by `--nk-row-lift`; its trail (meta, keys, checkbox, stepper) holds its
+   column.
+
+| Lever (1.7) | Default | What it sets |
+|---|---|---|
+| `--nk-tile-wall` | 0.1875rem | How far the face sits above its wall (`--nk-button-wall` reads it) |
+| `--nk-tile-wall-shade` | 0.45 | How dark the wall is (the scrim over the face colour) |
+| `--nk-tile-radius` | `--nk-r-control` | The keycap's radius: the primary button and the selection tile |
+| `--nk-tile-key` / `--nk-tile-key-ink` | `--primary` / `--primary-foreground` | The solid face and its ink |
+| `--nk-tile-tint` | 0.16 | The soft face's opacity |
+| `--nk-tile-inset` | 0.375rem | The tile's inset from its item's sides (the primary button's face too) |
+| `--nk-list-gap` | wall + space-1 | Between the items of a list |
+
+Use it: `<MenuRowList active={i}>` for rows; `<SelectionTile items="[data-slot=tabs-trigger]" lit="[data-state=active]"
+pointer={false} focus={false} />` as the first child of a `TabsList`; `lit="[data-highlighted]"` in a Radix menu's
+content; `useSelectionIndicator(ref, options)` for a list that renders its own `nk-indicator`. A row or a tab outside a
+list draws the same tile itself (its `::before` wall and `::after` face), without the slide. `--nk-row-indicator`
+(bar, fill, outline, sweep) and `--nk-row-marker-width` / `--nk-row-tint-reach` no longer change how rows select.
+
 ## Where it lives
 
 | Part | Files |
 |---|---|
-| Levers | `packages/core/src/tokens.ts` (`BASELINE_TOKENS`, `nk-fill-style` painted as `data-nk-fill`), `packages/create-nuikit/kit.css` (`nk.base` defaults; rows, notice, ring readout in `nk.kit`; buttons and fields in the kit's `utilities` block; selection and fill style unlayered) |
-| Components | `registry/nuikit/ui/menu-row.tsx` (icon Tile column, `menu-row-body/title/description`, `data-hover`, `iconSpace`), `notice.tsx`, `progress-ring.tsx`, `dial.tsx` (`segmentGap`, `paint="accent"`, `disc`, segmented track), `vital-chip.tsx` (solid liquid, ink copy) |
-| Consumers | `addons/ox_lib` (context, menu, input, alert, notify, progress circle and bar), `systems/nuikit_hud` (vital keycaps) |
+| Levers | `packages/core/src/tokens.ts` (`BASELINE_TOKENS`, `SELECTION_TOKENS`, `nk-fill-style` painted as `data-nk-fill`), `packages/create-nuikit/kit.css` (`nk.base` defaults; rows, notice, ring readout in `nk.kit`; the `nk-row`, `nk-list` and `nk-indicator` utilities; buttons and fields in the kit's `utilities` block; the Selection section and fill style unlayered) |
+| Components | `registry/nuikit/ui/selection-tile.tsx` (`SelectionTile`, `useSelectionIndicator`), `menu-row.tsx` (icon Tile column, `menu-row-body/title/description`, `data-hover`, `data-tone`, `iconSpace`; `MenuRowList`), `notice.tsx`, `progress-ring.tsx`, `dial.tsx` (`segmentGap`, `paint="accent"`, `disc`, segmented track), `vital-chip.tsx` (solid liquid, ink copy) |
+| Consumers | `systems/nuikit_pause` (home rows under Resume, sub-page lists, settings tabs), `addons/ox_lib` (context, list menu, input, alert, notify, progress circle and bar), `addons/ox_inventory` (the item menu), `systems/nuikit_hud` (vital keycaps) |
 
 ## Graphite under the baseline
 
-Graphite keeps its palette, fonts, bar indicator and rounded meters. What changes there: rows are a little taller
-(space-2 block padding, a 2rem icon tile column), the lit row's content slides by space-2 and its icon tile lights,
+Graphite keeps its palette, fonts and rounded meters. What changes there: rows are a little taller
+(space-2 block padding, a 2rem icon tile column), the lit row sits on the straight Tile (skew 0) like every theme's
+and its content slides by space-2,
 panel headers and footers use the surface padding with no footer rule, buttons use the scan voice (Inter 600), the
 primary is a straight keycap (no slant: Graphite's skew is 0), fields focus with one rim, notices get a tinted icon
 tile and a 2px time line, and progress rings are segmented.

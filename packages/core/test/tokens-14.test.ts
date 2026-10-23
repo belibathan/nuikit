@@ -15,7 +15,7 @@ const SOURCES: Record<string, string> = {
 const source = (n: string) => read(SOURCES[n] ?? `packages/core/themes/${n}.css`);
 
 describe("tokens 1.4: today's look, exactly", () => {
-  it("is revision 1.6 (1.4 plus the Default theme levers and the baseline)", () => expect(TOKENS_REVISION).toBe("1.6"));
+  it("is revision 1.7 (1.4 plus the Default theme levers, the baseline and selection)", () => expect(TOKENS_REVISION).toBe("1.7"));
   for (const n of Object.keys(BEFORE)) {
     it(`${n} compiles every 1.3 token to the same value`, () => {
       const t = compileTheme(source(n));

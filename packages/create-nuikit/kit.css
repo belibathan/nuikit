@@ -139,7 +139,7 @@
     --nk-land-scale: 1;
     --nk-deny-x: 0.3125rem;
     /* baseline (1.6, docs/design/baseline.md): what every component shares, the same in every theme. Rows:
-       generous padding, an icon tile column, two voices; selection is a marker, a fading tint and a lift. */
+       generous padding, an icon tile column, two voices; selection is a Tile and a lift (1.7, below). */
     --nk-row-pad-y: var(--nk-space-2);
     --nk-row-pad-x: var(--nk-space-3);
     --nk-row-gap: var(--nk-space-4);
@@ -147,12 +147,21 @@
     --nk-row-title-size: var(--nk-text-base, 1rem);
     --nk-row-desc-size: 0.875rem;
     --nk-row-icon-box: 2rem;
-    --nk-row-marker-width: 0.25rem;
-    --nk-row-tint-reach: 0.7;
-    /* fields and buttons: one height, one focus rim; the primary is a keycap on its wall */
+    /* Selection (1.7, docs/design/baseline.md "Selection"): the selection IS a Tile, the primary keycap's
+       geometry. A face in the theme's skew over its wall (the face's colour in shade, dropped straight down),
+       one radius, one top light. Resume and a lit row are the same object in two states. */
+    --nk-tile-wall: 0.1875rem;
+    --nk-tile-wall-shade: 0.45;
+    --nk-tile-radius: var(--nk-r-control);
+    --nk-tile-key: var(--primary);
+    --nk-tile-key-ink: var(--primary-foreground);
+    --nk-tile-tint: 0.16;
+    --nk-tile-inset: 0.375rem;
+    --nk-list-gap: calc(var(--nk-tile-wall) + var(--nk-space-1));
+    /* fields and buttons: one height; a text field's caret focus is one rim; the primary is a keycap */
     --nk-h-field: 2.75rem;
     --nk-focus-rim: var(--ring);
-    --nk-button-wall: 0.1875rem;
+    --nk-button-wall: var(--nk-tile-wall);
     /* progress rings are segmented, like the speedometer */
     --nk-ring-segments: 24;
     --nk-ring-gap: 4;
@@ -191,7 +200,7 @@
   --nk-ease-out: var(--nk-ease, cubic-bezier(0.2, 0.8, 0.2, 1));
   --nk-time: var(--nk-time-base, calc(var(--nk-duration, 140ms) * var(--nk-motion, 1)));
   --nk-press-scale: 0.97;
-  /* the selection indicator: one element per list that slides to the active row (nk-indicator) */
+  /* the selection tile: one element per list that slides to the lit item (nk-indicator, SelectionTile) */
   --nk-indicator-time: var(--nk-time);
   --nk-indicator-ease: var(--nk-ease-in-out, cubic-bezier(0.2, 0, 0, 1));
 
@@ -581,64 +590,28 @@
   letter-spacing: var(--nk-caption-tracking);
   color: var(--muted-foreground);
 }
-/* Interactive row in a list: 44px tall at 1080p (× density). The active row ([data-active],
-   :focus-visible, [data-highlighted]) carries the identity's indicator: bar, fill or outline. */
+/* Interactive row in a list: 44px tall at 1080p (× density). The lit row (hover, focus, the list's selection:
+   one state, docs/design/baseline.md "Selection") sits on a Tile: the list's sliding SelectionTile, or, for a
+   row on its own, its own ::before (the wall) and ::after (the face), drawn by the Selection section below. */
 @utility nk-row {
   position: relative;
+  isolation: isolate;
   display: flex;
   align-items: center;
   gap: var(--nk-row-gap, calc(var(--nk-space) * 3));
   min-height: var(--nk-row-height);
   padding: var(--nk-row-padding);
   border-radius: var(--nk-row-radius);
-  clip-path: var(--nk-row-clip);
   font-size: var(--nk-row-font-size);
   line-height: 1.25rem;
-  /* interaction (0.8.1): a state fills with movement. The highlight is a sweep from the leading edge
-     (--nk-sweep, drawn as a background layer so the row's own surface classes don't flash it), the bar
-     grows from its middle, text eases with the fill; a press dips and springs back (--nk-motion-feel).
-     Motion off: instant; reduced: no movement. The sweep is a Fill at level 1 in --nk-fill-tint (1.5). */
-  /* baseline (1.6): the tint fades out across the row (--nk-row-tint-reach), never a flat slab; the fill
-     indicator (a theme's solid row) sets --nk-sweep-end to the same colour */
-  --nk-sweep: var(--nk-fill-tint, var(--accent));
-  --nk-sweep-end: transparent;
-  background-image: linear-gradient(90deg, var(--nk-sweep), var(--nk-sweep-end) calc(var(--nk-row-tint-reach, 0.7) * 100%));
-  background-repeat: no-repeat;
-  background-position: left center;
-  background-size: 0% 100%;
-  transition-property: background-size, color, box-shadow, transform;
-  transition-duration: var(--nk-time), var(--nk-time), var(--nk-time), var(--nk-time-press, 120ms);
-  transition-timing-function: var(--nk-ease-out), var(--nk-ease-out), var(--nk-ease-out), var(--nk-ease-spring, cubic-bezier(0.34, 1.56, 0.64, 1));
-  &::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    top: var(--nk-row-bar-inset);
-    bottom: var(--nk-row-bar-inset);
-    width: var(--nk-row-bar-width);
-    border-radius: 9999px;
-    background-color: var(--nk-row-indicator-color);
-    opacity: 0;
-    transform: scaleY(0);
-    transition:
-      opacity var(--nk-time) var(--nk-ease-out),
-      transform var(--nk-time) var(--nk-ease-out);
-    pointer-events: none;
-  }
-  &:is(:hover, [data-active], [data-highlighted], :focus-visible) {
-    background-color: transparent !important;
-    background-size: 100% 100%;
-  }
-  &[class*="text-destructive"] {
-    --nk-sweep: rgba(var(--destructive-rgb), 0.12);
-  }
+  outline: none;
+  /* a state changes ink at once (the tile carries the movement); a press dips and springs back */
+  transition-property: color, transform;
+  transition-duration: var(--nk-time-fast, var(--nk-time)), var(--nk-time-press, 120ms);
+  transition-timing-function: var(--nk-ease-standard, var(--nk-ease-out)), var(--nk-ease-spring, cubic-bezier(0.34, 1.56, 0.64, 1));
   &:not([aria-disabled="true"], [data-disabled], :disabled):is(:active, [data-nk-press]) {
     transform: scale(var(--nk-press-scale, 0.97));
-    transition-duration: var(--nk-time), var(--nk-time), var(--nk-time), var(--nk-time-press, 70ms);
-    transition-timing-function: var(--nk-ease-out);
-  }
-  :is(html, *)[data-nk-feel="snap"] &,
-  :is(html, *)[data-nk-feel="stepped"] & {
+    transition-duration: var(--nk-time-fast, var(--nk-time)), var(--nk-time-press, 70ms);
     transition-timing-function: var(--nk-ease-out);
   }
   :is(html, *)[data-nk-motion="reduced"] & {
@@ -647,19 +620,15 @@
   :is(html, *)[data-nk-motion="reduced"] &:active {
     transform: none;
   }
-  /* the identity indicator marks keyboard, controller and script selection; the pointer's hover is the
-     accent surface the row's own hover: classes paint (menu-row's hover variant), never the indicator */
-  &[data-active],
-  &[data-highlighted],
-  &:focus-visible {
-    box-shadow: inset 0 0 0 var(--nk-row-outline-width) var(--nk-row-outline-color), var(--nk-row-glow);
-  }
-  &[data-active]::before,
-  &[data-highlighted]::before,
-  &:focus-visible::before {
-    opacity: 1;
-    transform: none;
-  }
+}
+/* A list (MenuRowList, any SelectionTile's parent): rows --nk-list-gap apart (the wall plus breathing room), so
+   a lit tile never touches its neighbour; room under the last row for its wall. */
+@utility nk-list {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--nk-list-gap);
+  padding-bottom: var(--nk-tile-wall);
 }
 /* Numbers: money, timers, counts. */
 @utility nk-num {
@@ -1131,60 +1100,37 @@
   50% { opacity: 0.4; }
 }
 /*
- * The selection indicator: ONE element per list, behind the rows, that slides to the active row with a
- * transform (the rows don't animate; they change state instantly). Position it from code: useIndicator()
- * in nuikit-core/react, or indicator() in nuikit-core/motion, which also apply the key-repeat rule.
- *   <div class="relative" ref={list}><div class="nk-indicator" ref={ind} />{rows}</div>
- * data-repeat="fast" (moves sooner than --nk-time apart) glides in --nk-time-press; "jump" (the third
- * such move in a row) doesn't glide, so it never trails a held d-pad. Signal (snap) and reduced motion
- * jump on every move. It draws the identity's indicator: bar, fill or outline.
+ * The selection tile (docs/design/baseline.md "Selection"): ONE element per list, behind the items, that slides
+ * to the lit item by transform; the items never animate a fill of their own. Drive it with SelectionTile /
+ * useSelectionIndicator (registry), which sets its box (translate, width, height; a size change is a measured
+ * FLIP), data-tone and the key-repeat rule: data-repeat="fast" (sooner than --nk-time-base apart) glides in
+ * --nk-time-press, "jump" (the third such move in a row) doesn't glide, so it never trails a held d-pad.
+ * Reduced motion and motion off jump. It is the primary keycap: ::before the wall, ::after the face.
  */
 @utility nk-indicator {
   position: absolute;
   top: 0;
   left: 0;
-  right: 0;
-  height: var(--nk-row-height);
-  border-radius: var(--nk-row-radius);
+  z-index: 0;
   pointer-events: none;
   transform-origin: 0 0;
   will-change: transform;
-  background-color: rgba(var(--brand-rgb, var(--primary-rgb)), calc(var(--nk-row-fill, 0)));
-  box-shadow: inset 0 0 0 var(--nk-row-outline-width) var(--nk-row-outline-color), var(--nk-row-glow);
-  transition: transform var(--nk-indicator-time) var(--nk-indicator-ease);
-  &::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    top: var(--nk-row-bar-inset);
-    bottom: var(--nk-row-bar-inset);
-    width: var(--nk-row-bar-width);
-    border-radius: 9999px;
-    background-color: var(--nk-row-indicator-color);
-  }
+  isolation: isolate;
+  transition:
+    transform var(--nk-indicator-time) var(--nk-indicator-ease),
+    opacity var(--nk-time-fast, var(--nk-time)) var(--nk-ease-standard, var(--nk-ease-out));
   &[data-repeat="fast"] {
-    transition-duration: var(--nk-time-press, 70ms);
+    transition-duration: var(--nk-time-press, 70ms), var(--nk-time-fast, var(--nk-time));
   }
   &[data-repeat="jump"],
   :is(html, *)[data-nk-motion="reduced"] &,
-  :is(html, *)[data-nk-feel="snap"] & {
+  :is(html, *)[data-nk-motion="off"] & {
     transition-duration: 0s;
   }
   &[data-hidden] {
     opacity: 0;
   }
 }
-/* Rows after an indicator leave the active marking to it (their text colour still changes, instantly). */
-.nk-indicator ~ .nk-row::before {
-  display: none;
-}
-.nk-indicator ~ .nk-row {
-  box-shadow: none;
-}
-:is(html, *)[data-nk-row="fill"] .nk-indicator ~ .nk-row.nk-row:is([data-active], [data-highlighted], :focus-visible) {
-  background-color: transparent;
-}
-
 /*
  * Stock shadcn parts, dressed by component tokens (vendor/ is never edited). In the utilities layer
  * after Tailwind's own, so they beat a component's base classes (bg-muted) but lose to anything more
@@ -1207,7 +1153,8 @@
     clip-path: var(--nk-chip-clip);
   }
   /* Buttons (baseline 1.6, docs/design/baseline.md): the scan voice; a text button reads at the field height
-     in a dialog. Focus is one crisp rim, never shadcn's border plus a 3px halo. */
+     in a dialog. Focus is the hover state (Selection, 1.7): no ring, no rim; keyboard, controller and
+     programmatic focus light a button exactly as the pointer does. */
   :is([data-slot="button"], [data-slot="alert-dialog-action"], [data-slot="alert-dialog-cancel"]):not([data-variant="link"]) {
     font-family: var(--nk-type-scan-family);
     font-style: var(--nk-type-scan-style);
@@ -1216,89 +1163,91 @@
     text-transform: var(--nk-type-scan-case);
   }
   :is([data-slot="button"], [data-slot="alert-dialog-action"], [data-slot="alert-dialog-cancel"]):focus-visible {
-    --tw-ring-shadow: 0 0 0 0 var(--nk-focus-rim);
-    border-color: var(--nk-focus-rim);
+    border-color: transparent;
   }
-  /* The primary is a keycap: a face on its wall (the face in --primary, the wall the same colour in shade, the
-     tile's slant). Hover raises the face a pixel; a press sinks it onto the wall. The element stays upright
-     and transparent; ::after is the face, ::before the wall. */
+  :is([data-slot="button"], [data-slot="alert-dialog-action"], [data-slot="alert-dialog-cancel"]):is([data-variant="ghost"], [data-variant="secondary"]):focus-visible {
+    background-color: var(--accent);
+    color: var(--accent-foreground);
+  }
+  :is([data-slot="button"], [data-slot="alert-dialog-action"])[data-variant="destructive"]:focus-visible {
+    background-color: rgba(var(--destructive-rgb), 0.9);
+  }
+  [data-slot="button"][data-variant="link"]:focus-visible {
+    text-decoration-line: underline;
+  }
+  /* The primary is a keycap: the Tile (Selection, 1.7). A face on its wall: the face in --nk-tile-key, the wall
+     the same colour in shade (--nk-tile-wall-shade) dropped --nk-tile-wall straight down, the tile's slant and
+     radius. Hover (and focus) raises the face a pixel; a press sinks it onto the wall. The element stays
+     upright and transparent; ::after is the face, ::before the wall. A lit row is the same object. */
   :is([data-slot="button"], [data-slot="alert-dialog-action"])[data-variant="default"] {
     position: relative;
     isolation: isolate;
-    margin-bottom: var(--nk-button-wall);
+    margin-bottom: var(--nk-tile-wall);
     background-color: transparent;
     background-image: none;
     box-shadow: none;
     border-color: transparent;
-    color: var(--primary-foreground);
+    border-radius: var(--nk-tile-radius);
+    color: var(--nk-tile-key-ink);
     clip-path: none;
     &::before,
     &::after {
       content: "";
       position: absolute;
-      inset: 0;
+      inset: 0 var(--nk-tile-inset);
       pointer-events: none;
       border-radius: inherit;
+      background-color: var(--nk-tile-key);
       transition: transform var(--nk-time-snap, 70ms) var(--nk-ease-standard, cubic-bezier(0.2, 0, 0, 1));
     }
     &::before {
       z-index: -2;
-      background-color: var(--primary);
-      box-shadow: inset 0 0 0 100vmax rgba(var(--scrim-rgb, 0, 0, 0), 0.45);
-      transform: translateY(var(--nk-button-wall)) skewX(var(--nk-tile-skew, 0deg));
+      box-shadow: inset 0 0 0 100vmax rgba(var(--scrim-rgb, 0, 0, 0), var(--nk-tile-wall-shade));
+      transform: translateY(var(--nk-tile-wall)) skewX(var(--nk-tile-skew, 0deg));
     }
     &::after {
       z-index: -1;
-      background-color: var(--primary);
       box-shadow: inset 0 1px 0 var(--nk-tile-light);
       transform: skewX(var(--nk-tile-skew, 0deg));
     }
-    &:hover {
+    &:is(:hover, :focus-visible) {
       background-color: transparent;
+      border-color: transparent;
     }
-    &:hover::after {
+    &:is(:hover, :focus-visible)::after {
       transform: translateY(-1px) skewX(var(--nk-tile-skew, 0deg));
     }
     &:not(:disabled):is(:active, [data-nk-press]) {
       transform: none;
     }
     &:not(:disabled):is(:active, [data-nk-press])::after {
-      transform: translateY(calc(var(--nk-button-wall) * 0.67)) skewX(var(--nk-tile-skew, 0deg));
-    }
-    &:focus-visible {
-      border-color: transparent;
-    }
-    /* the rim sits off the face, so a white face still shows it */
-    &:focus-visible::after {
-      box-shadow: inset 0 1px 0 var(--nk-tile-light), 0 0 0 0.125rem var(--nk-plate-bg, var(--background)), 0 0 0 calc(0.125rem + 1px) var(--nk-focus-rim);
+      transform: translateY(calc(var(--nk-tile-wall) * 0.67)) skewX(var(--nk-tile-skew, 0deg));
     }
   }
   /* a Kbd on the face reads dark on it */
   :is([data-slot="button"], [data-slot="alert-dialog-action"])[data-variant="default"] [data-slot="kbd"] {
     --nk-tile-face-now: rgba(var(--scrim-rgb, 0, 0, 0), 0.25);
-    --nk-tile-ink-now: var(--primary-foreground);
+    --nk-tile-ink-now: var(--nk-tile-key-ink);
     --nk-tile-rim-now: rgba(var(--scrim-rgb, 0, 0, 0), 0.35);
     --nk-tile-plate-now: transparent;
-    color: var(--primary-foreground);
+    color: var(--nk-tile-key-ink);
   }
-  /* secondary (outline): a hairline rim on the panel, the tint on hover */
+  /* secondary (outline): a hairline rim on the panel, the tint on hover and focus */
   :is([data-slot="button"], [data-slot="alert-dialog-cancel"])[data-variant="outline"] {
     background-color: transparent;
     border-color: var(--nk-plate-hair, var(--border));
     box-shadow: none;
   }
-  :is([data-slot="button"], [data-slot="alert-dialog-cancel"])[data-variant="outline"]:hover {
+  :is([data-slot="button"], [data-slot="alert-dialog-cancel"])[data-variant="outline"]:is(:hover, :focus-visible) {
     background-color: var(--nk-fill-tint, var(--accent));
+    border-color: var(--nk-plate-hair, var(--border));
   }
-  :is([data-slot="button"], [data-slot="alert-dialog-cancel"])[data-variant="outline"]:focus-visible {
-    border-color: var(--nk-focus-rim);
-  }
-  /* Fields (baseline 1.6): one height, a single crisp rim on focus */
+  /* Fields (baseline 1.6): one height. A text field keeps ONE crisp rim while it holds the caret (typing needs
+     to show where it goes; Selection, 1.7); checkboxes and switches light their rim the same way. No halo. */
   :is([data-slot="input"], [data-slot="select-trigger"], input[data-slot="form-field-control"], button[data-slot="form-field-control"]:not([role="checkbox"], [role="switch"])) {
     min-height: var(--nk-h-field);
   }
   :is([data-slot="input"], [data-slot="textarea"], [data-slot="select-trigger"], [data-slot="input-group"], [data-slot="form-field-control"], [data-slot="checkbox"], [data-slot="switch"]):is(:focus-visible, :focus-within, [data-state="open"]) {
-    --tw-ring-shadow: 0 0 0 0 var(--nk-focus-rim);
     border-color: var(--nk-focus-rim);
   }
   /* a press dips and springs back */
@@ -1322,27 +1271,6 @@
   [data-slot="progress-indicator"] {
     box-shadow: var(--nk-meter-glow);
   }
-}
-
-/*
- * Row indicator "fill" (Signal): the active row in solid brand. A colour swap CSS can't do from a number,
- * so it keys off the attribute applyTheme paints from --nk-row-indicator. Unlayered on purpose: it must
- * beat the row's and its children's own text colours. Destructive rows keep their colour.
- */
-:is(html, *)[data-nk-row="fill"] .nk-row:is([data-active], [data-highlighted], :focus-visible):not([class*="text-destructive"]) {
-  --nk-sweep: var(--nk-row-fill-color);
-  --nk-sweep-end: var(--nk-row-fill-color);
-  color: var(--nk-row-fill-foreground);
-}
-/* rows after an indicator: the indicator carries the selection; the row only sweeps for the pointer */
-.nk-indicator ~ .nk-row:is([data-active], [data-highlighted], :focus-visible):not(:hover) {
-  background-size: 0% 100%;
-}
-:is(html, *)[data-nk-row="fill"] .nk-row:is([data-active], [data-highlighted], :focus-visible):not([class*="text-destructive"]) :not([data-slot="kbd"], [data-slot="kbd"] *, [data-slot="progress"], [data-slot="progress"] *) {
-  color: inherit;
-}
-:is(html, *)[data-nk-row="fill"] .nk-row::before {
-  display: none;
 }
 
 /* a chip keeps its own surface under the rising active fill (tiles, nk-hud, take the brand at once) */
@@ -1425,58 +1353,6 @@
   width: 0.75rem;
   height: 0.75rem;
 }
-/* tabs: the active one a solid light slab with dark text */
-:is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"]) [data-slot="tabs-trigger"][data-state="active"] {
-  background-color: var(--foreground);
-  color: var(--background);
-}
-
-/* the selected row (fill indicator) and the gliding indicator: a skewed bar, a little in from the sides */
-:is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"])[data-nk-row="fill"] .nk-row:is([data-active], [data-highlighted], :focus-visible):not([class*="text-destructive"]) {
-  isolation: isolate;
-  background-color: transparent;
-}
-:is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"])[data-nk-row="fill"] .nk-row {
-  isolation: isolate;
-}
-:is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"])[data-nk-row="fill"] .nk-row::before {
-  content: "";
-  display: block;
-  position: absolute;
-  inset: 0 0.375rem;
-  width: auto;
-  z-index: -1;
-  border-radius: 0;
-  pointer-events: none;
-  opacity: 1;
-  background-color: var(--nk-row-fill-color);
-  transform-origin: left center;
-  transform: skewX(var(--nk-skew)) scaleX(0);
-  transition: transform var(--nk-time) var(--nk-ease-out);
-}
-:is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"])[data-nk-row="fill"] .nk-row:is([data-active], [data-highlighted], :focus-visible):not([class*="text-destructive"]) {
-  background-size: 0% 100%;
-}
-:is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"])[data-nk-row="fill"] .nk-row:is([data-active], [data-highlighted], :focus-visible):not([class*="text-destructive"])::before {
-  transform: skewX(var(--nk-skew)) scaleX(1);
-}
-:is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"])[data-nk-row="fill"] .nk-indicator ~ .nk-row:is([data-active], [data-highlighted], :focus-visible)::before {
-  display: none;
-}
-:is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"]) .nk-indicator {
-  background-color: transparent;
-  box-shadow: none;
-}
-:is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"]) .nk-indicator::after {
-  content: "";
-  position: absolute;
-  inset: 0 0.375rem;
-  pointer-events: none;
-  background-color: rgba(var(--brand-rgb, var(--primary-rgb)), calc(var(--nk-row-fill, 0)));
-  box-shadow: inset 0 0 0 var(--nk-row-outline-width) var(--nk-row-outline-color), var(--nk-row-glow);
-  transform: skewX(var(--nk-skew));
-}
-
 /*
  * Instant state (design v2 §5A, premium-qualities §1): selection, tabs, toggles and focus driven by the
  * keyboard or a controller change with no transition; only pointer hover may ease. shadcn's parts carry
@@ -2225,17 +2101,11 @@ html[data-nk-backdrop="on"] * {
     }
   }
 
-  /* ── Row (MenuRow, .nk-row), the baseline (1.6, docs/design/baseline.md): every theme. The lit row (keyboard,
-     script, the list's selection, or the pointer on a row that hovers) slides its content in by --nk-row-lift
-     and lights its icon tile; the marker (sweep) or the bar marks its edge. Anatomy: an icon tile column
-     (--nk-row-icon-box, one icon size), a title in the label voice over a description in the body voice. */
-  .nk-row {
-    & > * {
-      transition: transform var(--nk-time-base, var(--nk-time)) var(--nk-ease-standard, cubic-bezier(0.2, 0, 0, 1));
-    }
-    &:is([data-active], [data-highlighted], :focus-visible, [data-hover]:hover):not([data-readonly], [aria-disabled="true"], :disabled) > * {
-      transform: translateX(var(--nk-row-lift, 0rem));
-    }
+  /* ── Row (MenuRow, .nk-row), the baseline (1.6, docs/design/baseline.md): every theme. Anatomy: an icon tile
+     column (--nk-row-icon-box, one icon size), a title in the label voice over a description in the body voice.
+     The lit row (the Selection section, unlayered at the end) slides its content in by --nk-row-lift. */
+  .nk-row > * {
+    transition: transform var(--nk-time-base, var(--nk-time)) var(--nk-ease-standard, cubic-bezier(0.2, 0, 0, 1));
   }
   [data-slot="menu-row-icon"] {
     display: inline-flex;
@@ -2256,14 +2126,7 @@ html[data-nk-backdrop="on"] * {
       height: var(--nk-icon-md);
     }
   }
-  .nk-row:is([data-active], [data-highlighted], :focus-visible, [data-hover]:hover):not([data-readonly]) > [data-slot="menu-row-icon"] > [data-slot="tile"] {
-    --nk-tile-face-now: var(--nk-tile-confirm-face);
-    --nk-tile-ink-now: var(--nk-tile-confirm-ink);
-    &::after {
-      background: var(--nk-tile-active);
-    }
-  }
-  .nk-row[class*="text-destructive"] > [data-slot="menu-row-icon"] > [data-slot="tile"] {
+  .nk-row[data-tone="destructive"] > [data-slot="menu-row-icon"] > [data-slot="tile"] {
     --nk-tile-ink-now: var(--destructive);
   }
   [data-slot="menu-row-body"] {
@@ -2387,60 +2250,186 @@ html[data-nk-backdrop="on"] * {
 }
 
 /*
- * Selection (baseline 1.6, docs/design/baseline.md) under --nk-row-indicator: sweep (Default, Neon Pop).
- * --nk-fill-style: solid (the default): the lit row is one flat, full fill in the row colour (--brand) with dark
- * ink, its icon tile a dark keycap on it; the content slides in by --nk-row-lift. No marker: the row is the mark.
- * soft: a short slanted marker in the accent paint over a tint that fades across the row. Unlayered, so it beats
- * the row utility's bar; the list indicator (nk-indicator) draws the same thing as it glides.
+ * Selection (1.7, docs/design/baseline.md "Selection"): one language, every theme.
+ * 1. No focus rings. Keyboard, controller and programmatic focus light an element exactly as the pointer's hover
+ *    does; a text field keeps one rim while it holds the caret (the Fields rule above), nothing draws a ring.
+ * 2. The selection IS a Tile: the primary keycap's face (the theme's skew, --nk-tile-radius, the top light) over
+ *    its wall (dropped --nk-tile-wall straight down, in shade). --nk-fill-style: solid paints it --nk-tile-key with
+ *    --nk-tile-key-ink; soft paints a tinted face (--nk-tile-tint) and keeps the foreground ink.
+ * 3. One tile per list (nk-indicator, driven by SelectionTile): it slides to the lit item; the item only takes the
+ *    ink, the lift (--nk-row-lift) and its lit icon tile, never a fill of its own. In a list ([data-nk-sel]) the
+ *    lit item is the one carrying data-lit; a row or a tab on its own draws the same tile itself.
+ * 4. Rows never touch: a list (nk-list) spaces them by --nk-list-gap (the wall plus breathing room) and the tile is
+ *    inset by --nk-tile-inset.
+ * Unlayered on purpose: it must beat shadcn's focus and hover utilities and the rows' own text colours.
  */
-:is(html, *)[data-nk-row="sweep"]:not([data-nk-fill="soft"]) .nk-row:is([data-active], [data-highlighted], :focus-visible, [data-hover]:hover):not([class*="text-destructive"], [data-readonly]) {
-  --nk-sweep: var(--nk-row-fill-color);
-  --nk-sweep-end: var(--nk-row-fill-color);
-  color: var(--nk-row-fill-foreground);
+:root,
+[data-nk-theme] {
+  --nk-sel-face: var(--nk-tile-key);
+  --nk-sel-wall: var(--nk-tile-key);
+  --nk-sel-shade: var(--nk-tile-wall-shade);
+  --nk-sel-ink: var(--nk-tile-key-ink);
 }
-:is(html, *)[data-nk-row="sweep"]:not([data-nk-fill="soft"]) .nk-row:is([data-active], [data-highlighted], :focus-visible, [data-hover]:hover):not([class*="text-destructive"], [data-readonly]) :not([data-slot="kbd"], [data-slot="kbd"] *, [data-slot="tile"], [data-slot="tile"] *, [data-slot="progress"], [data-slot="progress"] *, [data-slot="meter"], [data-slot="meter"] *) {
+:is(html, *)[data-nk-fill="soft"] {
+  --nk-sel-face: rgba(var(--primary-rgb), var(--nk-tile-tint));
+  --nk-sel-wall: rgba(var(--primary-rgb), calc(var(--nk-tile-tint) * 0.5));
+  --nk-sel-shade: 0;
+  --nk-sel-ink: var(--foreground);
+}
+:is(.nk-indicator, .nk-row)[data-tone="destructive"] {
+  --nk-sel-face: var(--destructive);
+  --nk-sel-wall: var(--destructive);
+}
+:is(html, *)[data-nk-fill="soft"] :is(.nk-indicator, .nk-row)[data-tone="destructive"] {
+  --nk-sel-face: rgba(var(--destructive-rgb), var(--nk-tile-tint));
+  --nk-sel-wall: rgba(var(--destructive-rgb), calc(var(--nk-tile-tint) * 0.5));
+  --nk-sel-ink: var(--destructive);
+}
+
+/* 1. no rings: whatever a utility asked for on focus (shadcn's 3px halo, an outline) */
+:focus-visible {
+  outline: none;
+  --tw-ring-shadow: 0 0 transparent;
+  --tw-ring-offset-shadow: 0 0 transparent;
+}
+
+/* 2. the tile: the list's sliding one, and the one a row or a tab on its own draws */
+.nk-indicator::before,
+.nk-indicator::after,
+.nk-row:not([data-nk-sel] *)::before,
+.nk-row:not([data-nk-sel] *)::after,
+[data-slot="tabs-trigger"]:not([data-nk-sel] *)::before,
+[data-slot="tabs-trigger"]:not([data-nk-sel] *)::after {
+  content: "";
+  position: absolute;
+  inset: 0 var(--nk-tile-inset);
+  border-radius: var(--nk-tile-radius);
+  pointer-events: none;
+}
+.nk-indicator::before,
+.nk-row:not([data-nk-sel] *)::before,
+[data-slot="tabs-trigger"]:not([data-nk-sel] *)::before {
+  z-index: -2;
+  background-color: var(--nk-sel-wall);
+  box-shadow: inset 0 0 0 100vmax rgba(var(--scrim-rgb, 0, 0, 0), var(--nk-sel-shade));
+  transform: translateY(var(--nk-tile-wall)) skewX(var(--nk-tile-skew, 0deg));
+}
+.nk-indicator::after,
+.nk-row:not([data-nk-sel] *)::after,
+[data-slot="tabs-trigger"]:not([data-nk-sel] *)::after {
+  z-index: -1;
+  background-color: var(--nk-sel-face);
+  box-shadow: inset 0 1px 0 var(--nk-tile-light);
+  transform: skewX(var(--nk-tile-skew, 0deg));
+}
+.nk-indicator::before,
+.nk-indicator::after {
+  transition: background-color var(--nk-time-fast, var(--nk-time)) var(--nk-ease-standard, var(--nk-ease-out));
+}
+/* a row or a tab on its own: the tile only while it is lit, at once (no per-row fade) */
+.nk-row:not([data-nk-sel] *)::before,
+.nk-row:not([data-nk-sel] *)::after,
+[data-slot="tabs-trigger"]:not([data-nk-sel] *)::before,
+[data-slot="tabs-trigger"]:not([data-nk-sel] *)::after {
+  opacity: 0;
+}
+.nk-row:not([data-nk-sel] *):is([data-active], [data-highlighted], :focus-visible, [data-hover]:hover):not([data-readonly], [aria-disabled="true"], :disabled, [data-disabled])::before,
+.nk-row:not([data-nk-sel] *):is([data-active], [data-highlighted], :focus-visible, [data-hover]:hover):not([data-readonly], [aria-disabled="true"], :disabled, [data-disabled])::after,
+[data-slot="tabs-trigger"]:not([data-nk-sel] *)[data-state="active"]::before,
+[data-slot="tabs-trigger"]:not([data-nk-sel] *)[data-state="active"]::after {
+  opacity: 1;
+}
+[data-slot="tabs-trigger"] {
+  position: relative;
+  isolation: isolate;
+}
+
+/* 3. the lit item: the ink, the lift, its lit icon tile. Rows in a list are lit by data-lit only (one at a time). */
+.nk-row:is([data-lit], :not([data-nk-sel] *):is([data-active], [data-highlighted], :focus-visible, [data-hover]:hover)):not([data-readonly], [aria-disabled="true"], :disabled, [data-disabled]) {
+  color: var(--nk-sel-ink);
+}
+.nk-row:is([data-lit], :not([data-nk-sel] *):is([data-active], [data-highlighted], :focus-visible, [data-hover]:hover)):not([data-readonly], [aria-disabled="true"], :disabled, [data-disabled]) :not([data-slot="kbd"], [data-slot="kbd"] *, [data-slot="tile"], [data-slot="tile"] *, [data-slot="progress"], [data-slot="progress"] *, [data-slot="meter"], [data-slot="meter"] *, [data-slot="checkbox"], [data-slot="checkbox"] *) {
   color: inherit;
 }
-/* the icon tile on a solid row: a dark keycap, its glyph light (the speedometer's gear) */
-:is(html, *)[data-nk-row="sweep"]:not([data-nk-fill="soft"]) .nk-row:is([data-active], [data-highlighted], :focus-visible, [data-hover]:hover):not([data-readonly]) > [data-slot="menu-row-icon"] > [data-slot="tile"] {
+/* the lead and the text slide in; the trail (meta, keys, a checkbox, a stepper, a chevron) holds its column */
+.nk-row:is([data-lit], :not([data-nk-sel] *):is([data-active], [data-highlighted], :focus-visible, [data-hover]:hover)):not([data-readonly], [aria-disabled="true"], :disabled, [data-disabled]) > :not([data-slot="menu-row-meta"], [data-slot="menu-row-stepper"], [data-slot="menu-row-actions"], [data-slot="menu-row-chevron"], [data-part="menu-row-kbd"], [data-slot="checkbox"]) {
+  transform: translateX(var(--nk-row-lift, 0rem));
+}
+/* the icon tile on a lit row: a dark keycap on the solid face (the speedometer's gear); on a soft face it lights */
+.nk-row:is([data-lit], :not([data-nk-sel] *):is([data-active], [data-highlighted], :focus-visible, [data-hover]:hover)):not([data-readonly], [aria-disabled="true"], :disabled, [data-disabled]) > [data-slot="menu-row-icon"] > [data-slot="tile"] {
   --nk-tile-face-now: var(--nk-tile-face);
   --nk-tile-ink-now: var(--nk-tile-ink);
   --nk-tile-rim-now: transparent;
   color: var(--nk-tile-ink);
 }
-:is(html, *)[data-nk-row="sweep"]:not([data-nk-fill="soft"]) .nk-row:is([data-active], [data-highlighted], :focus-visible, [data-hover]:hover):not([data-readonly]) > [data-slot="menu-row-icon"] > [data-slot="tile"]::after {
-  background: var(--nk-tile-face);
+:is(html, *)[data-nk-fill="soft"] .nk-row:is([data-lit], :not([data-nk-sel] *):is([data-active], [data-highlighted], :focus-visible, [data-hover]:hover)):not([data-readonly], [aria-disabled="true"], :disabled, [data-disabled]) > [data-slot="menu-row-icon"] > [data-slot="tile"] {
+  --nk-tile-face-now: var(--nk-tile-confirm-face);
+  --nk-tile-ink-now: var(--nk-tile-confirm-ink);
+  color: var(--nk-tile-confirm-ink);
 }
-/* rows after an indicator: the indicator carries the fill, the row keeps only its ink */
-:is(html, *)[data-nk-row="sweep"]:not([data-nk-fill="soft"]) .nk-indicator ~ .nk-row.nk-row:is([data-active], [data-highlighted], :focus-visible) {
-  background-size: 0% 100%;
+/* a key and a checkbox on a solid lit row read dark on it, as on the primary keycap */
+.nk-row:is([data-lit], :not([data-nk-sel] *):is([data-active], [data-highlighted], :focus-visible, [data-hover]:hover)):not([data-readonly], [aria-disabled="true"], :disabled, [data-disabled]) [data-slot="kbd"],
+[data-nk-sel] [data-slot="dropdown-menu-item"][data-lit] [data-slot="kbd"] {
+  --nk-tile-face-now: rgba(var(--scrim-rgb, 0, 0, 0), 0.25);
+  --nk-tile-ink-now: var(--nk-sel-ink);
+  --nk-tile-rim-now: rgba(var(--scrim-rgb, 0, 0, 0), 0.35);
+  --nk-tile-plate-now: transparent;
+  color: var(--nk-sel-ink);
 }
-:is(html, *)[data-nk-row="sweep"]:not([data-nk-fill="soft"]) .nk-indicator {
-  background-color: var(--nk-row-fill-color);
+.nk-row:is([data-lit], :not([data-nk-sel] *):is([data-active], [data-highlighted], :focus-visible, [data-hover]:hover)):not([data-readonly], [aria-disabled="true"], :disabled, [data-disabled]) [data-slot="checkbox"] {
+  border-color: var(--nk-sel-ink);
+  background-color: transparent;
+  color: var(--nk-sel-ink);
 }
-:is(html, *)[data-nk-row="sweep"] .nk-row::before,
-:is(html, *)[data-nk-row="sweep"]:not([data-nk-fill="soft"]) .nk-indicator::before {
-  display: none;
+.nk-row:is([data-lit], :not([data-nk-sel] *):is([data-active], [data-highlighted], :focus-visible, [data-hover]:hover)):not([data-readonly], [aria-disabled="true"], :disabled, [data-disabled]) [data-slot="checkbox"][data-state="checked"] {
+  background-color: var(--nk-sel-ink);
+  color: var(--nk-sel-face);
 }
-/* soft: the marker and the fading tint */
-:is(html, *)[data-nk-row="sweep"][data-nk-fill="soft"] :is(.nk-row, .nk-indicator)::before {
-  display: block;
-  width: var(--nk-row-marker-width);
-  border-radius: 1px;
-  background: var(--nk-accent-gradient, var(--foreground));
-  transform: skewX(var(--nk-tile-skew, 0deg)) scaleY(0);
+/* soft: the key keeps its own face (the tint is not a surface to darken) */
+:is(html, *)[data-nk-fill="soft"] .nk-row[data-lit] [data-slot="kbd"],
+:is(html, *)[data-nk-fill="soft"] [data-nk-sel] [data-slot="dropdown-menu-item"][data-lit] [data-slot="kbd"] {
+  --nk-tile-face-now: var(--nk-tile-face);
+  --nk-tile-ink-now: var(--nk-tile-ink);
+  --nk-tile-rim-now: var(--nk-tile-rim-focus);
+  --nk-tile-plate-now: var(--nk-tile-plate);
+  color: var(--nk-tile-ink);
 }
-:is(html, *)[data-nk-row="sweep"][data-nk-fill="soft"] .nk-row:is([data-active], [data-highlighted], :focus-visible, [data-hover]:hover)::before,
-:is(html, *)[data-nk-row="sweep"][data-nk-fill="soft"] .nk-indicator::before {
-  opacity: 1;
-  transform: skewX(var(--nk-tile-skew, 0deg));
+/* other items of a list (menu items, tabs): no fill of their own; the lit one takes the ink */
+[data-nk-sel] :is([data-slot="dropdown-menu-item"], [data-slot="dropdown-menu-sub-trigger"], [data-slot="tabs-trigger"]) {
+  position: relative;
+  background-color: transparent;
+  border-color: transparent;
+  box-shadow: none;
 }
-.nk-indicator {
-  background-image: linear-gradient(90deg, var(--nk-fill-tint, var(--accent)), transparent calc(var(--nk-row-tint-reach, 0.7) * 100%));
+[data-nk-sel] :is([data-slot="dropdown-menu-item"], [data-slot="dropdown-menu-sub-trigger"], [data-slot="tabs-trigger"])[data-lit],
+[data-slot="tabs-trigger"]:not([data-nk-sel] *)[data-state="active"] {
+  color: var(--nk-sel-ink);
 }
-:is(html, *)[data-nk-row="fill"] .nk-indicator,
-:is(html, *)[data-nk-row="sweep"]:not([data-nk-fill="soft"]) .nk-indicator {
-  background-image: none;
+[data-nk-sel] :is([data-slot="dropdown-menu-item"], [data-slot="dropdown-menu-sub-trigger"], [data-slot="tabs-trigger"])[data-lit] :not([data-slot="kbd"], [data-slot="kbd"] *),
+[data-slot="tabs-trigger"]:not([data-nk-sel] *)[data-state="active"] :not([data-slot="kbd"], [data-slot="kbd"] *) {
+  color: inherit;
+}
+/* a tab that isn't the selected one lights its text on hover and focus alike */
+[data-slot="tabs-trigger"]:is(:hover, :focus-visible):not([data-state="active"]) {
+  color: var(--foreground);
+}
+/* 4. a list with a tile is its containing block; menus and tabs that carry one make room for its wall */
+[data-nk-sel] {
+  position: relative;
+}
+:is([data-slot="dropdown-menu-content"], [data-slot="dropdown-menu-sub-content"])[data-nk-sel] {
+  display: flex;
+  flex-direction: column;
+  gap: var(--nk-list-gap);
+  padding-bottom: calc(var(--nk-space-1) + var(--nk-tile-wall));
+}
+[data-slot="tabs-list"][data-nk-sel] {
+  height: auto;
+  padding-bottom: calc(0.1875rem + var(--nk-tile-wall));
+  --nk-tile-inset: 0.125rem;
+}
+[data-slot="tabs-list"][data-nk-sel] > [data-slot="tabs-trigger"] {
+  min-height: var(--nk-h-control, 2.25rem);
 }
 
 /* Fill style (baseline 1.6): solid fills are full and opaque; soft is today's translucent liquid. A vital's

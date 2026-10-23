@@ -22,7 +22,7 @@ import { Button } from "@/components/ui/button";
 import { Chip } from "@/components/ui/chip";
 import { SmoothInput } from "@/components/ui/smooth-input";
 import { Kbd } from "@/components/ui/kbd";
-import { MenuRow } from "@/components/ui/menu-row";
+import { MenuRow, MenuRowList } from "@/components/ui/menu-row";
 import { TextRoll } from "@/components/ui/text-roll";
 import { rise, SheetPage, SheetSection } from "./sheet";
 import { Stat } from "@/components/ui/stat";
@@ -273,7 +273,7 @@ export function MapSheetPage({ model: m, onBack }: { model: MapModel; onBack: ()
 
       {m.groups.map(([category, rows]) => (
         <SheetSection key={category} label={category} meta={rows.length}>
-          <div className="flex flex-col divide-y divide-border">
+          <MenuRowList active={rows.findIndex((p) => p.id === m.selectedId)}>
             {rows.map((p) => {
               const Icon = icon(p.icon);
               return (
@@ -282,19 +282,19 @@ export function MapSheetPage({ model: m, onBack }: { model: MapModel; onBack: ()
                 </MenuRow>
               );
             })}
-          </div>
+          </MenuRowList>
         </SheetSection>
       ))}
 
       {m.blipHits.length > 0 && (
         <SheetSection label="On the map" meta={m.blipHits.length}>
-          <div className="flex flex-col divide-y divide-border">
+          <MenuRowList active={m.blipHits.findIndex((c) => c.blip.id === m.selectedBlip)}>
             {m.blipHits.map((c) => (
               <MenuRow key={c.blip.id} icon={<c.look.icon />} meta={c.look.kindLabel} active={c.blip.id === m.selectedBlip} onClick={() => m.findBlip(c)} className="min-h-11">
                 {c.look.label}
               </MenuRow>
             ))}
-          </div>
+          </MenuRowList>
         </SheetSection>
       )}
 
@@ -311,13 +311,13 @@ export function MapSheetPage({ model: m, onBack }: { model: MapModel; onBack: ()
             )
           }
         >
-          <div className="flex flex-col divide-y divide-border">
+          <MenuRowList>
             {m.legend.map((k, i) => (
               <MenuRow key={k.kind} icon={<k.icon />} checked={!m.hidden.has(k.kind)} onCheckedChange={() => m.toggle(k.kind)} meta={String(k.count)} className={cn("min-h-11", rise(i).className)} style={rise(i).style}>
                 {k.label}
               </MenuRow>
             ))}
-          </div>
+          </MenuRowList>
         </SheetSection>
       )}
     </SheetPage>

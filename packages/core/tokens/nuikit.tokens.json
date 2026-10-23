@@ -1,9 +1,9 @@
 {
-  "$description": "nuikit default theme (stock shadcn neutral) (nuikit tokens v1.6, dark)",
+  "$description": "nuikit default theme (stock shadcn neutral) (nuikit tokens v1.7, dark)",
   "$extensions": {
     "dev.nuikit": {
       "tokens": 1,
-      "revision": "1.6",
+      "revision": "1.7",
       "mode": "dark"
     }
   },

@@ -1044,7 +1044,7 @@ function SegmentedInput({
       className={cn(
         "flex h-9 w-full min-w-0 items-center rounded-(--nk-r-control) border border-input bg-transparent text-(length:--nk-text-label) shadow-xs dark:bg-input/30",
         dense ? "gap-(--nk-space-1) px-2" : "gap-1 px-3",
-        "focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/50",
+        "focus-within:border-ring",
         "aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40",
         "data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
       )}
@@ -1795,7 +1795,7 @@ function ColorControl({
                   onValueChange(s)
                 }}
                 className={cn(
-                  "grid size-6 place-items-center rounded-(--nk-r-control) border border-input outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:opacity-50",
+                  "grid size-6 place-items-center rounded-(--nk-r-control) border border-input outline-none hover:bg-accent focus-visible:bg-accent disabled:opacity-50",
                   on && "ring-2 ring-ring ring-offset-1 ring-offset-popover"
                 )}
                 style={{ backgroundColor: s }}

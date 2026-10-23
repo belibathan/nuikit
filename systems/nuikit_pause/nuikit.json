@@ -25,6 +25,7 @@
     "tile",
     "fill",
     "empty-state",
-    "icon-text"
+    "icon-text",
+    "selection-tile"
   ]
 }

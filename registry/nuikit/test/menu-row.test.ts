@@ -1,18 +1,31 @@
+import * as React from "react"
+import { renderToStaticMarkup } from "react-dom/server"
 import { describe, expect, it } from "vitest"
 
-import { menuMetadata, menuRowColor, menuRowVariants } from "@/components/ui/menu-row"
+import { MenuRow, MenuRowList, menuMetadata, menuRowColor, menuRowVariants } from "@/components/ui/menu-row"
 
 describe("menu-row", () => {
-  it("only hovers when hover is on (inert and readOnly turn it off)", () => {
-    expect(menuRowVariants()).toContain("hover:bg-accent")
-    expect(menuRowVariants({ hover: false })).not.toContain("hover:")
-    // keyboard selection and active draw the identity indicator (nk-row), never the hover accent
-    expect(menuRowVariants({ hover: false })).toContain("nk-row")
-    expect(menuRowVariants({ hover: false })).toContain("data-[active]:text-foreground")
-    expect(menuRowVariants()).not.toContain("focus-visible:bg-accent")
-    expect(menuRowVariants()).not.toContain("data-[active]:bg-accent")
-    expect(menuRowVariants({ tone: "destructive" })).toContain("hover:text-destructive")
-    expect(menuRowVariants({ tone: "destructive", hover: false })).not.toContain("hover:")
+  it("paints no hover fill and no focus ring of its own (Selection: one lit state, drawn by the kit)", () => {
+    for (const v of [menuRowVariants(), menuRowVariants({ hover: false }), menuRowVariants({ tone: "destructive" })]) {
+      expect(v).toContain("nk-row")
+      expect(v).not.toMatch(/hover:bg-|focus-visible:(bg|ring|text)-|data-\[active\]:/)
+    }
+    expect(menuRowVariants({ tone: "destructive" })).toContain("text-destructive")
+  })
+
+  it("a list spaces its rows and carries one selection tile; the pointer lights only rows that hover", () => {
+    const html = renderToStaticMarkup(
+      React.createElement(MenuRowList, { active: 1 }, [
+        React.createElement(MenuRow, { key: "a" }, "Map"),
+        React.createElement(MenuRow, { key: "b", inert: true }, "Keys"),
+        React.createElement(MenuRow, { key: "c", tone: "destructive" }, "Disconnect"),
+      ])
+    )
+    expect(html.match(/data-slot="selection-tile"/g)).toHaveLength(1)
+    expect(html).toMatch(/data-slot="menu-row-list" class="nk-list"/)
+    expect(html).toContain('class="nk-indicator"')
+    expect(html.match(/data-hover="true"/g)).toHaveLength(2)
+    expect(html).toContain('data-tone="destructive"')
   })
 
   it("reads ox_lib metadata in all three shapes", () => {

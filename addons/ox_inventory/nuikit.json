@@ -27,6 +27,7 @@
     "item-slot",
     "menu-row",
     "empty-state",
-    "icon-text"
+    "icon-text",
+    "selection-tile"
   ]
 }

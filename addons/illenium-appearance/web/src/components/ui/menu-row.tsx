@@ -4,7 +4,7 @@
 import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react"
-import { installPressFeel, useIndicator, useStaggerGroup, useStaggerItem } from "nuikit-core/react"
+import { installPressFeel, useStaggerGroup, useStaggerItem } from "nuikit-core/react"
 import { Slot } from "radix-ui"
 
 import { cn, nkConfirm, nkState, nkVariant, type NkVariantProps } from "@/lib/utils"
@@ -12,15 +12,17 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Kbd, KbdGroup, Tile } from "@/components/ui/tile"
 import { Progress } from "@/components/ui/progress"
 import { meterColor, type MeterTone } from "@/components/ui/meter"
+import { SelectionTile } from "@/components/ui/selection-tile"
 
 /**
  * MenuRow — the action row every list is made of (docs/design.md, rule 5; the baseline, docs/design/baseline.md):
  * an icon in a tile (one icon size, one column) or an image, a title in the label voice, an optional description
  * in the body voice and progress, and one trailing thing: meta text, a
- * chevron, a Kbd, a checkbox or a value stepper. Keyboard focus and the list's active row draw the
- * identity's indicator (`nk-row`: bar, outline or fill; one sliding `nk-indicator` when the list
- * drives it); the pointer's hover is the theme's accent, like shadcn's menus. The default look of
- * the `menu` intent's items (docs/architecture.md §2).
+ * chevron, a Kbd, a checkbox or a value stepper. Selection is one language (the baseline's Selection
+ * section): the pointer's hover, keyboard, controller and programmatic focus, and the list's active row all
+ * light the row the same way, and the lit row sits on a Tile (the primary keycap's face and wall). In a
+ * `MenuRowList` that Tile is one SelectionTile sliding between the rows; a row on its own draws it itself.
+ * No focus ring, no per-row hover fill. The default look of the `menu` intent's items (docs/architecture.md §2).
  *
  *   <MenuRow icon={<MapIcon />} kbd="P" onClick={openMap}>Map</MenuRow>
  *   <MenuRow icon={<CarIcon />} description="Stored, 98% condition" meta="ZEN 01" chevron>Zentorno</MenuRow>
@@ -41,8 +43,9 @@ import { meterColor, type MeterTone } from "@/components/ui/meter"
  * itself sets it and hover changes nothing (background, text, icon, chevron). `readOnly` is a row
  * you read, not use: no highlight, no click, not dimmed.
  *
- * `MenuRowList` holds the rows of a list whose active row the UI drives (keys, Lua): one
- * `nk-indicator` slides to it instead of each row marking itself (design v2 §5A):
+ * `MenuRowList` holds the rows of a list: one SelectionTile slides to the lit row (the hovered or focused one,
+ * else `active`, the row the UI drives: keys, Lua) instead of each row marking itself. Rows sit
+ * --nk-list-gap apart, so the tile's wall never touches the next row:
  *
  *   <MenuRowList active={i}>{items.map((it, j) => <MenuRow key={it.id} active={j === i}>…</MenuRow>)}</MenuRowList>
  *
@@ -55,20 +58,19 @@ import { meterColor, type MeterTone } from "@/components/ui/meter"
  * row a parent drives), and `kbd` takes one key or a list (["Shift", "E"]): the kbd trail, Tiles gap-items apart.
  *
  * Role: the one action row every list is made of (menus, sheets, settings, pickers).
- * Anatomy: sweep / marker / indicator (nk-row) > lead (an icon Tile in the icon column, or an image) > body (a
+ * Anatomy: the lit tile (the list's SelectionTile, or the row's own ::before wall and ::after face) > lead (an icon Tile in the icon column, or an image) > body (a
  *   label-voice title over a body-voice description, an optional progress line) > trail (meta, the kbd trail, a checkbox, a stepper, actions, a chevron).
  * Props: icon, iconSpace, image, description, progress, meta, kbd, chevron, active, checked, value, onStep,
  *   readOnly, alert, inert, actions, as, asChild, tone.
  * Level means: progress, the row's progress line (0–100 of its value, drawn 0–1).
- * Rules: one trailing thing per row; height --nk-h-row, padding --nk-row-pad-y / -x, gaps --nk-row-gap; the lit row
- *   slides by --nk-row-lift and lights its icon tile; focus and the active row draw the identity indicator
- *   (never the hover accent); attention is data-state="alert"; a trailing key is a Tile (Kbd), never text.
+ * Rules: one trailing thing per row; height --nk-h-row, padding --nk-row-pad-y / -x, gaps --nk-row-gap; rows of a
+ *   list sit --nk-list-gap apart; hover, focus and active are one lit state (data-lit): the Tile under it, the
+ *   content slid by --nk-row-lift, the icon tile lit; no focus ring; attention is data-state="alert"; a trailing
+ *   key is a Tile (Kbd), never text.
  */
 const menuRowVariants = cva(
   [
     "group/menu-row nk-row w-full cursor-default text-left outline-none select-none",
-    // focus and active: the identity indicator (nk-row); the text brightens to the foreground
-    "focus-visible:text-foreground data-[active]:text-foreground",
     "disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50",
     "[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
   ],
@@ -76,27 +78,20 @@ const menuRowVariants = cva(
     variants: {
       tone: {
         default: "",
-        destructive: "text-destructive focus-visible:text-destructive data-[active]:text-destructive",
+        destructive: "text-destructive",
       },
+      // whether the pointer lights the row (data-hover); the look is the one lit state (kit.css), never a fill here
       hover: {
-        true: "hover:bg-accent hover:text-accent-foreground",
+        true: "",
         false: "",
       },
     },
-    compoundVariants: [{ tone: "destructive", hover: true, className: "hover:text-destructive" }],
     defaultVariants: {
       tone: "default",
       hover: true,
     },
   }
 )
-
-/** Icons and secondary text follow the row into its highlight (keyboard and active always; hover unless inert). */
-const ON_HIGHLIGHT = "group-focus-visible/menu-row:text-foreground group-data-[active]/menu-row:text-foreground"
-const ON_HOVER = "group-hover/menu-row:text-accent-foreground"
-
-/** In many themes muted = accent, so a Kbd would vanish into the hover highlight: lift it off it. */
-const KBD_ON_HOVER = "group-hover/menu-row:bg-background/60"
 
 /** 0–100, NaN → 0. */
 const clampPercent = (n: number) => Math.max(0, Math.min(100, Number.isFinite(n) ? n : 0))
@@ -198,10 +193,8 @@ function MenuRow({
   const hasActions = actions !== undefined && actions !== null && actions !== false
   const asDiv = as === "div" || isCheck || isStepper || readOnly || hasActions
   const hovers = hover ?? !(inert || readOnly)
-  // readOnly rows never highlight, not even when told to.
-  const lit = readOnly ? "" : cn(ON_HIGHLIGHT, hovers && ON_HOVER)
-  const kbdLit = readOnly ? "" : (hovers ? KBD_ON_HOVER : "")
-  const quiet = cn("text-muted-foreground", lit)
+  // secondary text; the lit row's ink (kit.css, the Selection section) takes it over
+  const quiet = "text-muted-foreground"
 
   const step = (dir: -1 | 1) => !disabled && !readOnly && onStep?.(dir)
   const toggle = () => !disabled && !readOnly && onCheckedChange?.(!checked)
@@ -249,7 +242,7 @@ function MenuRow({
           {meta}
         </span>
       )}
-      {kbd !== undefined && kbd !== null && <MenuRowKbd keys={kbd} className={kbdLit} />}
+      {kbd !== undefined && kbd !== null && <MenuRowKbd keys={kbd} />}
       {isCheck && <Checkbox checked={checked} disabled={disabled} tabIndex={-1} aria-hidden className="pointer-events-none" />}
       {isStepper && (
         <span data-slot="menu-row-stepper" className="flex shrink-0 items-center gap-1">
@@ -292,10 +285,11 @@ function MenuRow({
     "data-active": (active && !readOnly) || undefined,
     "data-state": nkState({ disabled, alert, focus: active && !readOnly }),
     "data-inert": inert || undefined,
+    "data-tone": tone === "destructive" ? "destructive" : undefined,
     // the pointer lights a row that hovers the way the keyboard does (baseline: one selection language)
     "data-hover": (hovers && !readOnly) || undefined,
     "data-readonly": readOnly || undefined,
-    className: cn(menuRowVariants({ tone, hover: hovers }), readOnly && "focus-visible:bg-transparent", className),
+    className: cn(menuRowVariants({ tone, hover: hovers }), className),
   }
 
   if (asDiv) {
@@ -533,10 +527,10 @@ function MenuRowDetails({
 }
 
 /**
- * The rows of one list, with the identity's indicator (bar, fill or outline) sliding to the
- * `active` row (an index among the rows; null or undefined hides it). The rows change state
- * instantly; only the indicator moves, and a held key jumps instead of trailing. `indicator={false}`
- * leaves each active row marking itself.
+ * The rows of one list, --nk-list-gap apart, with one SelectionTile sliding to the lit row: the hovered or
+ * focused one, else `active` (an index among the rows; null or undefined: none). The rows change state
+ * instantly; only the tile moves, and a held key jumps instead of trailing. `indicator={false}` leaves each
+ * lit row drawing its own tile.
  */
 function MenuRowList({
   active,
@@ -548,12 +542,9 @@ function MenuRowList({
   motion,
   ...props
 }: NkVariantProps & React.ComponentProps<"div"> & { active?: number | null; indicator?: boolean }) {
-  const list = React.useRef<HTMLDivElement>(null)
-  const marker = React.useRef<HTMLDivElement>(null)
-  useIndicator(list, marker, indicator ? active : null, "[data-slot=menu-row]")
   return (
-    <div ref={list} {...nkVariant({ density, shape, motion })} data-slot="menu-row-list" className={cn("relative flex flex-col gap-(--nk-space-1)", className)} {...props}>
-      {indicator && <div ref={marker} aria-hidden data-slot="menu-row-indicator" className="nk-indicator" />}
+    <div {...nkVariant({ density, shape, motion })} data-slot="menu-row-list" className={cn("nk-list", className)} {...props}>
+      {indicator && <SelectionTile data-part="menu-row-indicator" items="[data-slot=menu-row]" pointer="[data-hover]" active={active} />}
       {children}
     </div>
   )

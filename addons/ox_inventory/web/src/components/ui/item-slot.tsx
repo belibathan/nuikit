@@ -152,7 +152,7 @@ function ItemSlot({
       className={cn(
         itemSlotVariants({ surface, size }),
         !hud && (filled ? "bg-muted/60" : "bg-muted/25"),
-        interactive && "cursor-pointer hover:bg-accent hover:text-accent-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50",
+        interactive && "cursor-pointer hover:bg-accent hover:text-accent-foreground focus-visible:bg-accent focus-visible:text-accent-foreground",
         // A ring, not an outline: the base outline-none would win over outline-2.
         // On the HUD: the HUD surface, or primary with primary-foreground content when active
         // (never both: nk-hud sets its own background and colour).
