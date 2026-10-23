@@ -27,9 +27,9 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 const panelVariants = cva("nk-panel flex flex-col overflow-hidden", {
   variants: {
     size: {
-      sm: "w-72",
-      default: "w-80",
-      lg: "w-96",
+      sm: "w-[var(--nk-panel-w-sm,18rem)]",
+      default: "w-[var(--nk-panel-w,20rem)]",
+      lg: "w-[var(--nk-panel-w-lg,24rem)]",
       auto: "w-max",
     },
   },
@@ -93,7 +93,7 @@ function PanelHeader({
       {icon && (
         <span
           data-slot="panel-icon"
-          className="flex shrink-0 text-muted-foreground [&_svg:not([class*='size-'])]:size-4"
+          className="flex shrink-0 text-muted-foreground [&_svg:not([class*='size-'])]:size-(--nk-icon-md)"
         >
           {icon}
         </span>
