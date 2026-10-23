@@ -412,6 +412,62 @@
       }
     },
     {
+      "name": "selection-tabs",
+      "type": "registry:ui",
+      "title": "Selection Tabs",
+      "description": "shadcn Tabs with one SelectionTile sliding to the active trigger (FLIP on --nk-indicator-time/-ease), the lit trigger the keycap tile, triggers --nk-list-gap apart, arrows move it, reduced motion jumps. SegmentedControl is the same with a value prop and no panels.",
+      "files": [
+        {
+          "path": "registry/nuikit/ui/selection-tabs.tsx",
+          "type": "registry:ui"
+        }
+      ],
+      "registryDependencies": [
+        "tabs",
+        "selection-tile"
+      ],
+      "meta": {
+        "since": "unreleased",
+        "status": "experimental",
+        "replaces": [],
+        "removeIn": null,
+        "spec": {
+          "role": "Tabs and segmented choices as one list with one sliding keycap.",
+          "anatomy": [
+            "tabs-list (data-nk-sel) > selection-tile + tabs-trigger\u2026",
+            "tabs-content beside it"
+          ],
+          "props": [
+            "options",
+            "value",
+            "defaultValue",
+            "onValueChange",
+            "stretch"
+          ],
+          "rules": [
+            "One tile per list; the trigger paints no fill of its own.",
+            "Transform and opacity only; reduced motion jumps.",
+            "Arrows move the tile; no focus ring."
+          ]
+        },
+        "group": "Lists & selection",
+        "tier": "composite",
+        "hidden": false,
+        "variants": {
+          "axes": {},
+          "levers": [
+            "--nk-tile-wall",
+            "--nk-list-gap",
+            "--nk-fill-style",
+            "--nk-indicator-time"
+          ],
+          "hooks": [
+            "useSelectionIndicator"
+          ]
+        }
+      }
+    },
+    {
       "name": "stat",
       "type": "registry:ui",
       "title": "Stat",

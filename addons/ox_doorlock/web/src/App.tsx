@@ -10,7 +10,7 @@ import { ActionBar, ActionBarItem } from "@/components/ui/action-bar";
 import { MenuRow } from "@/components/ui/menu-row";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/selection-tabs";
 import { applyCopied, newDoor, toBody, toForm, type Custom, type Difficulty, type Door, type Flag, type Form } from "@/lib/door";
 import { post, useMessages } from "@/lib/nui";
 import { loadServerTheme } from "@/lib/theme";
@@ -267,7 +267,7 @@ export default function App() {
         ) : (
           <>
             <Tabs value={tab} onValueChange={(v) => setSection(v as Section)} className="pt-4">
-              <TabsList variant="line" className="w-full justify-start">
+              <TabsList className="w-full justify-start">
                 {SECTIONS.map(([value, name]) => (
                   <TabsTrigger key={value} value={value} disabled={value === "lockpick" && lockpickOff} className="flex-none">
                     {name}

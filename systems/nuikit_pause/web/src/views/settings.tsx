@@ -15,8 +15,7 @@ import { Button } from "@/components/ui/button";
 import { MenuRow, MenuRowList } from "@/components/ui/menu-row";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
-import { SelectionTile } from "@/components/ui/selection-tile";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { SegmentedControl } from "@/components/ui/selection-tabs";
 import { SheetPage, SheetSection } from "./sheet";
 
 type Values = Record<string, SettingValue>;
@@ -157,17 +156,11 @@ function Row({ row, value, onChange }: { row: SettingRow; value: SettingValue | 
       <div className="flex flex-col gap-2 py-3">
         <span className="truncate">{row.label}</span>
         {row.description ? <span className="nk-label -mt-1.5 text-muted-foreground">{row.description}</span> : null}
-        <Tabs value={String(Math.max(0, at))} onValueChange={(i) => onChange(options[Number(i)]!.value)}>
-          <TabsList className="w-full">
-            {/* the chosen option is the selection Tile, sliding between the options */}
-            <SelectionTile items="[data-slot=tabs-trigger]" lit="[data-state=active]" pointer={false} focus={false} />
-            {options.map((o, i) => (
-              <TabsTrigger key={String(o.value)} value={String(i)} className="flex-1">
-                {o.label ?? String(o.value)}
-              </TabsTrigger>
-            ))}
-          </TabsList>
-        </Tabs>
+        <SegmentedControl
+          value={String(Math.max(0, at))}
+          onValueChange={(i) => onChange(options[Number(i)]!.value)}
+          options={options.map((o, i) => ({ value: String(i), label: o.label ?? String(o.value) }))}
+        />
       </div>
     );
   }

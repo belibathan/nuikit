@@ -10,6 +10,7 @@
     "scroll-area",
     "input",
     "tabs",
+    "selection-tabs",
     "menu-row",
     "stat",
     "meter",
