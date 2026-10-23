@@ -43,7 +43,7 @@ applies them live). Unset, each is the stock nuikit look.
   --ox-context-side: left; /* the context menu's screen edge (right by default) */
   --ox-title-normalise: 0; /* 0 keeps context titles as written; by default a leading emoji and its "|" / "-" become the icon */
   --ox-notify-ms: 3000; /* how long a notify without its own duration stays (ox's 3000); "severity" uses --nk-notify-ms-{info,success,warning,danger} instead */
-  --ox-textui-position: left-center; /* where a text UI without a position goes (right-center by default) */
+  --ox-textui-position: left-center; /* where a text UI without a position goes (bottom-center by default, the kit KeyPrompt; a script's own position wins) */
   --ox-density: 1;   /* this screen's density (the identity's --nk-density otherwise; 0.875 stock) */
   --ox-motion: 0;    /* 0 turns this screen's motion off; another number scales it */
 }

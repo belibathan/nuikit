@@ -44,8 +44,8 @@ const MOTION =
   "data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:duration-(--nk-time) data-[state=open]:ease-(--nk-ease-out) data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:duration-(--nk-time) data-[state=closed]:ease-(--nk-ease-retract) data-[state=closed]:fill-mode-forwards";
 
 export function TextUi() {
-  // lever (README): where a text UI without a position goes (ox's default right-center)
-  const anchor = useLever("ox-textui-position", "right-center");
+  // lever (README): where a text UI without a position goes (nuikit's default bottom-center; ox's was right-center)
+  const anchor = useLever("ox-textui-position", "bottom-center");
   const [data, setData] = useState<TextUiData | null>(null);
   const [open, setOpen] = useState(false);
   const presence = usePresence(open, 150);

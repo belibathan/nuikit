@@ -139,7 +139,7 @@ export function ContextMenu() {
       fit
       page={gen}
       className="z-30"
-      icon={head ? <span aria-hidden>{head.icon}</span> : undefined}
+      icon={head ? <TitleGlyph glyph={head} /> : undefined}
       title={<Markdown className="[&_p]:m-0">{head ? head.title : data.title}</Markdown>}
       onBack={data.menu ? () => post("openContext", { id: data.menu, back: true }) : undefined}
       onClose={data.canClose === false ? undefined : close}
@@ -157,6 +157,11 @@ export function ContextMenu() {
   );
 }
 
+/** The glyph splitTitle took out of a title: an emoji character, or a Font Awesome name drawn as an icon. */
+function TitleGlyph({ glyph }: { glyph: { icon: string; named?: boolean } }) {
+  return glyph.named ? <Icon icon={glyph.icon} className="size-4" /> : <span aria-hidden className="text-(length:--nk-icon-md) leading-none">{glyph.icon}</span>;
+}
+
 /** ox's default colorScheme for context bars (protocol §4). menu-row reads Mantine names through meterColor(). */
 const OX_BAR = "dark.3";
 
@@ -169,7 +174,7 @@ function ContextOption({ id, option, iconColumn, normalise, onEnter, onLeave }: 
   const icon = option.icon ? (
     <Icon icon={option.icon} color={option.iconColor} animation={option.iconAnimation} allowImage className="size-4" />
   ) : split ? (
-    <span aria-hidden className="text-(length:--nk-icon-md) leading-none">{split.icon}</span>
+    <TitleGlyph glyph={split} />
   ) : undefined;
   const arrow = Boolean(option.menu || option.arrow) && option.arrow !== false;
   const hasProgress = option.progress !== undefined;
