@@ -260,6 +260,18 @@
           "status": "stable"
         },
         {
+          "name": "events",
+          "kind": "const",
+          "side": "js",
+          "js": "ARSENAL_EVENTS",
+          "from": "nuikit-core/messages",
+          "signature": {},
+          "doc": "Every event in the arsenal as data: name, wire, direction, sender, domain.",
+          "only": "js only: the generated table (Lua reads the spec through nuikit check)",
+          "since": "0.9.0",
+          "status": "stable"
+        },
+        {
           "name": "NuiError",
           "kind": "type",
           "side": "js",
