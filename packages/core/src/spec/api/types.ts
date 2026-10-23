@@ -20,14 +20,23 @@ export interface EntrySpec {
   doc: string;
   /** The JS export (from `nuikit-core/<domain>`), when the page side has it. */
   js?: string;
+  /** More JS exports this row covers (a family of constants: the token tables). */
+  also?: string[];
   /** The Lua path (`nk.surface.define`), when the Lua side has it. */
   lua?: string;
+  /**
+   * Where the Lua implementation lives today, when it is not `lua` itself (`NUI.surface`). The generated
+   * lua/api.lua binds `lua` to it, and the old path becomes a legacy alias (listed in arsenal.json with `removeIn`).
+   */
+  impl?: string;
   /** Signatures, one line each. */
   sig?: { js?: string; lua?: string };
   /** Why only one side has it ("lua only: focus natives run in Lua"). Required when js or lua is missing. */
   only?: string;
   since: string;
   status?: Status;
+  /** "nuikit": the Lua path exists only inside the nuikit resource (the store side of a service). */
+  scope?: "nuikit";
 }
 
 /** Who may send an event. runtime: nuikit.lua / nuikit-core themselves · owner: the resource that owns the thing · nuikit: the nuikit resource · any: any resource. */
@@ -56,6 +65,8 @@ export interface LegacySpec {
   /** The canonical replacement. */
   now: string;
   removeIn: string;
+  /** Lua for the alias when it is not a plain rename (`function() nk.intent.cancelAll('prompt') end`); the generated legacy.lua assigns it. */
+  shim?: string;
 }
 
 export interface DomainSpec {
@@ -70,6 +81,12 @@ export interface DomainSpec {
   entries: EntrySpec[];
   events?: EventSpec[];
   legacy?: LegacySpec[];
+  /** External calls brought in without rewrites: the adapter resource maps `from` onto the `to` entry. */
+  adapters?: { from: string; to: string; pack: string }[];
+  /** The Lua table today when the domain table takes over an existing one (`nk.intents`): the same table, renamed. */
+  luaTable?: string;
+  /** Type-only imports the event payload types need: module (relative to src/) → names. */
+  imports?: Record<string, string[]>;
   /** Ownership and lifetime rules, one line each (services: who holds what, when it is released). */
   rules?: string[];
 }

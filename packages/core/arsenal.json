@@ -3,6 +3,423 @@
   "version": "0.8.0",
   "domains": [
     {
+      "js": "messages",
+      "lua": "message",
+      "title": "Messages",
+      "doc": "The wire between a resource's Lua and its page: events down, callbacks up, live values at frame rate.",
+      "docs": "docs/protocol.md#5-messaging",
+      "import": "nuikit-core/messages",
+      "entries": [
+        {
+          "name": "send",
+          "kind": "call",
+          "side": "both",
+          "js": "onNui",
+          "from": "nuikit-core/messages",
+          "lua": "nk.message.send",
+          "signature": {
+            "js": "onNui<K extends EventName>(action: K, handler: (data: EventData<K>) => void) => (): void",
+            "lua": "nk.message.send(action, data?)"
+          },
+          "doc": "Lua → page: a message the page receives with onNui.",
+          "since": "0.4.0",
+          "status": "stable"
+        },
+        {
+          "name": "on",
+          "kind": "call",
+          "side": "both",
+          "js": "fetchNui",
+          "from": "nuikit-core/messages",
+          "lua": "nk.message.on",
+          "signature": {
+            "js": "fetchNui<K extends CallbackName>(name: K, ...args: OptionalReq<CallbackReq<K>> extends true ? [data?: CallbackReq<K>, options?: FetchNuiOptions<CallbackRes<K>>] : [data: CallbackReq<K>, options?: FetchNuiOptions<CallbackRes<K>>]): Promise<CallbackRes<K>>",
+            "lua": "nk.message.on(name, fn(data) → reply)"
+          },
+          "doc": "Page → Lua: answer the page's fetchNui; the handler's return is the reply.",
+          "since": "0.4.0",
+          "status": "stable"
+        },
+        {
+          "name": "stream",
+          "kind": "call",
+          "side": "both",
+          "js": "follow",
+          "from": "nuikit-core/messages",
+          "lua": "nk.message.stream",
+          "signature": {
+            "js": "follow<K extends EventName>(action: K, paint: (value: number) => void, options?: FollowOptions) => (): void",
+            "lua": "nk.message.stream(action, { rate?, precision?, kind? }) → NuiStream"
+          },
+          "doc": "A live value on its own channel (rate-capped, on change); the page glides with follow.",
+          "since": "0.5.0",
+          "status": "stable"
+        },
+        {
+          "name": "notice",
+          "kind": "call",
+          "side": "lua",
+          "lua": "nk.message.notice",
+          "signature": {
+            "lua": "nk.message.notice(n|string)"
+          },
+          "doc": "A notice on this resource's own page (<NuiNotices />); for the shared stack use nk.intent.notify.",
+          "only": "lua only: the page side is the notice component (<NuiNotices />), not nuikit-core",
+          "since": "0.4.0",
+          "status": "stable"
+        },
+        {
+          "name": "followed",
+          "kind": "call",
+          "side": "js",
+          "js": "followed",
+          "from": "nuikit-core/messages",
+          "signature": {
+            "js": "followed(action: string): number"
+          },
+          "doc": "A stream's latest value.",
+          "only": "js only: the page's view of a stream",
+          "since": "0.5.0",
+          "status": "stable"
+        },
+        {
+          "name": "emit",
+          "kind": "call",
+          "side": "js",
+          "js": "emit",
+          "from": "nuikit-core/messages",
+          "signature": {
+            "js": "emit<K extends EventName>(action: K, data: EventData<K>): void"
+          },
+          "doc": "Pretend to be Lua: deliver a message like SendNUIMessage (dev, tests).",
+          "only": "js only: the browser has no Lua",
+          "since": "0.4.0",
+          "status": "stable"
+        },
+        {
+          "name": "mock",
+          "kind": "call",
+          "side": "js",
+          "js": "mockNui",
+          "from": "nuikit-core/messages",
+          "signature": {
+            "js": "mockNui<K extends CallbackName>(name: K, response: CallbackRes<K> | ((data: CallbackReq<K>) => CallbackRes<K> | Promise<CallbackRes<K>>)) => (): void"
+          },
+          "doc": "A browser-only reply for a callback.",
+          "only": "js only: the browser has no Lua",
+          "since": "0.4.0",
+          "status": "stable"
+        },
+        {
+          "name": "onAny",
+          "kind": "call",
+          "side": "js",
+          "js": "onAnyNui",
+          "from": "nuikit-core/messages",
+          "signature": {
+            "js": "onAnyNui(handler: (msg: NuiMessage<unknown>) => void) => (): void"
+          },
+          "doc": "Observe every message (devtools, logging).",
+          "only": "js only: tooling",
+          "since": "0.4.0",
+          "status": "stable"
+        },
+        {
+          "name": "onCall",
+          "kind": "call",
+          "side": "js",
+          "js": "onNuiCall",
+          "from": "nuikit-core/messages",
+          "signature": {
+            "js": "onNuiCall(handler: (entry: NuiCallEntry) => void) => (): void"
+          },
+          "doc": "Observe every fetchNui call, ok or failed.",
+          "only": "js only: tooling",
+          "since": "0.4.0",
+          "status": "stable"
+        },
+        {
+          "name": "configure",
+          "kind": "call",
+          "side": "js",
+          "js": "configureNui",
+          "from": "nuikit-core/messages",
+          "signature": {
+            "js": "configureNui(next: Partial<{ timeoutMs: number; strictMocks: boolean; }>): void"
+          },
+          "doc": "Defaults for every call: timeoutMs, strictMocks.",
+          "only": "js only: the page's transport",
+          "since": "0.6.0",
+          "status": "stable"
+        },
+        {
+          "name": "diagnostics",
+          "kind": "call",
+          "side": "js",
+          "js": "getNuiDiagnostics",
+          "from": "nuikit-core/messages",
+          "signature": {
+            "js": "getNuiDiagnostics(): NuiDiagnostics[]"
+          },
+          "doc": "Calls, errors by code and p50/p95 per resource.",
+          "only": "js only: read by the doctor",
+          "since": "0.6.0",
+          "status": "stable"
+        },
+        {
+          "name": "isBrowser",
+          "kind": "call",
+          "side": "js",
+          "js": "isBrowser",
+          "from": "nuikit-core/messages",
+          "signature": {
+            "js": "isBrowser(): boolean"
+          },
+          "doc": "True in a normal browser (dev), false in the game.",
+          "only": "js only: Lua always runs in game",
+          "since": "0.4.0",
+          "status": "stable"
+        },
+        {
+          "name": "resource",
+          "kind": "call",
+          "side": "js",
+          "js": "resourceName",
+          "from": "nuikit-core/messages",
+          "signature": {
+            "js": "resourceName(): string"
+          },
+          "doc": "The current resource's name.",
+          "only": "js only: Lua has GetCurrentResourceName",
+          "since": "0.4.0",
+          "status": "stable"
+        },
+        {
+          "name": "handshake",
+          "kind": "call",
+          "side": "js",
+          "js": "getHandshake",
+          "from": "nuikit-core/messages",
+          "signature": {
+            "js": "getHandshake(): Handshake"
+          },
+          "doc": "Lua's reply to the ready handshake (protocol, capabilities).",
+          "only": "js only: the page asks, Lua answers nuikit:message:ready",
+          "since": "0.6.0",
+          "status": "stable"
+        },
+        {
+          "name": "protocolVersion",
+          "kind": "call",
+          "side": "js",
+          "js": "protocolVersion",
+          "from": "nuikit-core/messages",
+          "signature": {
+            "js": "protocolVersion(): number"
+          },
+          "doc": "The effective protocol: the lower of the page's and Lua's.",
+          "only": "js only: negotiated by the page",
+          "since": "0.6.0",
+          "status": "stable"
+        },
+        {
+          "name": "hasCapability",
+          "kind": "call",
+          "side": "js",
+          "js": "hasCapability",
+          "from": "nuikit-core/messages",
+          "signature": {
+            "js": "hasCapability(capability: string): boolean"
+          },
+          "doc": "Does this UI's Lua provide a capability.",
+          "only": "js only: negotiated by the page",
+          "since": "0.6.0",
+          "status": "stable"
+        },
+        {
+          "name": "protocol",
+          "kind": "const",
+          "side": "both",
+          "js": "PROTOCOL",
+          "from": "nuikit-core/messages",
+          "lua": "nk.message.protocol",
+          "signature": {},
+          "doc": "The protocol version spoken (docs/protocol.md §2).",
+          "since": "0.6.0",
+          "status": "stable"
+        },
+        {
+          "name": "version",
+          "kind": "const",
+          "side": "lua",
+          "lua": "nk.message.version",
+          "signature": {},
+          "doc": "The nuikit runtime's version.",
+          "only": "lua only: the page has its package version",
+          "since": "0.6.0",
+          "status": "stable"
+        },
+        {
+          "name": "NuiError",
+          "kind": "type",
+          "side": "js",
+          "js": "NuiError",
+          "from": "nuikit-core/messages",
+          "signature": {},
+          "doc": "A failed call: .code TIMEOUT, TRANSPORT, UNKNOWN_CALLBACK, INVALID or CANCELLED.",
+          "only": "js only: Lua answers { error }",
+          "since": "0.6.0",
+          "status": "stable"
+        },
+        {
+          "name": "useNuiEvent",
+          "kind": "hook",
+          "side": "js",
+          "js": "useNuiEvent",
+          "from": "nuikit-core/react",
+          "signature": {
+            "js": "useNuiEvent<K extends EventName>(action: K, handler: (data: EventData<K>) => void): void"
+          },
+          "doc": "Run a handler whenever Lua sends an event.",
+          "only": "js only: React",
+          "since": "0.4.0",
+          "status": "stable"
+        },
+        {
+          "name": "useNuiState",
+          "kind": "hook",
+          "side": "js",
+          "js": "useNuiState",
+          "from": "nuikit-core/react",
+          "signature": {
+            "js": "useNuiState<K extends EventName>(action: K, initial: EventData<K>): EventData<K>"
+          },
+          "doc": "The latest payload of an event as state.",
+          "only": "js only: React",
+          "since": "0.4.0",
+          "status": "stable"
+        },
+        {
+          "name": "useNuiCallback",
+          "kind": "hook",
+          "side": "js",
+          "js": "useNuiCallback",
+          "from": "nuikit-core/react",
+          "signature": {
+            "js": "useNuiCallback<K extends CallbackName>(name: K) => { call: (data?: CallbackReq<K>): Promise<CallbackRes<K>>; loading: boolean; error: Error; data: CallbackRes<K>; }"
+          },
+          "doc": "Call a Lua callback with loading and error state.",
+          "only": "js only: React",
+          "since": "0.4.0",
+          "status": "stable"
+        },
+        {
+          "name": "useFollow",
+          "kind": "hook",
+          "side": "js",
+          "js": "useFollow",
+          "from": "nuikit-core/react",
+          "signature": {
+            "js": "useFollow<K extends EventName>(action: K, paint: (value: number) => void, options?: FollowOptions): void"
+          },
+          "doc": "Paint a stream at frame rate.",
+          "only": "js only: React",
+          "since": "0.5.0",
+          "status": "stable"
+        },
+        {
+          "name": "stream.push",
+          "kind": "handle",
+          "side": "lua",
+          "lua": "NuiStream:push",
+          "signature": {},
+          "doc": "Send if it changed and the rate allows.",
+          "only": "lua only: the stream handle",
+          "since": "0.5.0",
+          "status": "stable"
+        },
+        {
+          "name": "stream.reset",
+          "kind": "handle",
+          "side": "lua",
+          "lua": "NuiStream:reset",
+          "signature": {},
+          "doc": "Forget the last value so the next push sends.",
+          "only": "lua only: the stream handle",
+          "since": "0.5.0",
+          "status": "stable"
+        },
+        {
+          "name": "stream.value",
+          "kind": "handle",
+          "side": "lua",
+          "lua": "NuiStream:value",
+          "signature": {},
+          "doc": "The last value sent.",
+          "only": "lua only: the stream handle",
+          "since": "0.5.0",
+          "status": "stable"
+        }
+      ],
+      "events": [
+        {
+          "name": "nuikit:message:notice",
+          "dir": "lua→page",
+          "payload": "{ title: string; description?: string; type?: string; duration?: number }",
+          "sender": "owner",
+          "doc": "A notice on the resource's own page.",
+          "wire": "nuikit:notify",
+          "since": "0.4.0"
+        },
+        {
+          "name": "nuikit:message:ready",
+          "dir": "page→lua",
+          "payload": "{ protocol: number; client: string }",
+          "reply": "Handshake",
+          "sender": "runtime",
+          "doc": "The page listens: Lua resends surfaces, theme, prefs, zones, slots, player.",
+          "wire": "nuikit:ready",
+          "since": "0.4.0"
+        }
+      ],
+      "legacy": [
+        {
+          "old": "NUI.send",
+          "now": "nk.message.send",
+          "removeIn": "1.0.0"
+        },
+        {
+          "old": "NUI.on",
+          "now": "nk.message.on",
+          "removeIn": "1.0.0"
+        },
+        {
+          "old": "NUI.stream",
+          "now": "nk.message.stream",
+          "removeIn": "1.0.0"
+        },
+        {
+          "old": "NUI.notify",
+          "now": "nk.message.notice",
+          "removeIn": "1.0.0"
+        },
+        {
+          "old": "NUI.PROTOCOL",
+          "now": "nk.message.protocol",
+          "removeIn": "1.0.0"
+        },
+        {
+          "old": "nk.version",
+          "now": "nk.message.version",
+          "removeIn": "1.0.0"
+        }
+      ],
+      "rules": [
+        "A callback that errors answers { error }, which fetchNui throws as NuiError.",
+        "A stream sends at most `rate` times a second and only on a `precision` step."
+      ]
+    },
+    {
       "js": "surfaces",
       "lua": "surface",
       "title": "Surfaces",
@@ -927,6 +1344,35 @@
           "since": "0.7.0"
         },
         {
+          "name": "nuikit:intent:renderer",
+          "dir": "lua→page",
+          "payload": "{ op: 'state'; active: Record<string, { resource: string; url: string; gen: number }> }",
+          "sender": "nuikit",
+          "doc": "The renderer chosen per kind.",
+          "wire": "nuikit:renderer",
+          "since": "0.7.0"
+        },
+        {
+          "name": "nuikit:intent:renderer-sync",
+          "dir": "page→lua",
+          "payload": "{}",
+          "reply": "{ ok: boolean }",
+          "sender": "nuikit",
+          "doc": "The frame loaded: resend the renderers.",
+          "wire": "nuikit:renderer:sync",
+          "since": "0.7.0"
+        },
+        {
+          "name": "nuikit:intent:renderer-failed",
+          "dir": "page→lua",
+          "payload": "{ kind: string; resource: string; url: string; message: string }",
+          "reply": "{ ok: boolean }",
+          "sender": "nuikit",
+          "doc": "A renderer failed; the stock one takes over.",
+          "wire": "nuikit:renderer:failed",
+          "since": "0.7.0"
+        },
+        {
           "name": "nuikit:intent:count",
           "dir": "net",
           "payload": "{ batch: { source: string; intent: IntentKind; id: string }[] }",
@@ -1010,17 +1456,20 @@
         {
           "old": "nk.hidePrompt",
           "now": "nk.intent.cancelAll",
-          "removeIn": "1.0.0"
+          "removeIn": "1.0.0",
+          "shim": "function() nk.intent.cancelAll('prompt') end"
         },
         {
           "old": "nk.cancelProgress",
           "now": "nk.intent.cancelAll",
-          "removeIn": "1.0.0"
+          "removeIn": "1.0.0",
+          "shim": "function() nk.intent.cancelAll('progress') end"
         },
         {
           "old": "nk.closeMenu",
           "now": "nk.intent.cancelAll",
-          "removeIn": "1.0.0"
+          "removeIn": "1.0.0",
+          "shim": "function() nk.intent.cancelAll('menu') end"
         }
       ],
       "rules": [
@@ -1028,6 +1477,2565 @@
         "The same props id replaces the open intent (reason 'replaced').",
         "A stopped resource's intents are cancelled with reason 'stopped'."
       ]
+    },
+    {
+      "js": "camera",
+      "lua": "camera",
+      "title": "Camera",
+      "doc": "Take the screen with a scripted camera; a stack across resources, and the game camera always comes back.",
+      "docs": "docs/services.md#nkcamera",
+      "import": "nuikit-core/camera",
+      "entries": [
+        {
+          "name": "claim",
+          "kind": "call",
+          "side": "lua",
+          "lua": "nk.camera.claim",
+          "signature": {
+            "lua": "nk.camera.claim(opts?) → NuiCameraClaim, from"
+          },
+          "doc": "Take the screen: a targeted camera placed around an entity, or your own on the current view.",
+          "only": "lua only: cameras are natives; a page asks its Lua",
+          "since": "0.8.0",
+          "status": "stable"
+        },
+        {
+          "name": "release",
+          "kind": "call",
+          "side": "lua",
+          "lua": "nk.camera.release",
+          "signature": {
+            "lua": "nk.camera.release(claim, { ms?, instant? })"
+          },
+          "doc": "Give a claim back; the claim below (or the game) resumes.",
+          "only": "lua only: cameras are natives; a page asks its Lua",
+          "since": "0.8.0",
+          "status": "stable"
+        },
+        {
+          "name": "releaseAll",
+          "kind": "call",
+          "side": "lua",
+          "lua": "nk.camera.releaseAll",
+          "signature": {},
+          "doc": "Release every claim of this resource.",
+          "only": "lua only: cameras are natives; a page asks its Lua",
+          "since": "0.8.0",
+          "status": "stable"
+        },
+        {
+          "name": "stream",
+          "kind": "call",
+          "side": "lua",
+          "lua": "nk.camera.stream",
+          "signature": {},
+          "doc": "Stream the world around a far point while the claim lasts.",
+          "only": "lua only: cameras are natives; a page asks its Lua",
+          "since": "0.8.0",
+          "status": "stable"
+        },
+        {
+          "name": "handle",
+          "kind": "call",
+          "side": "lua",
+          "lua": "nk.camera.handle",
+          "signature": {},
+          "doc": "This resource's top camera handle.",
+          "only": "lua only: cameras are natives; a page asks its Lua",
+          "since": "0.8.0",
+          "status": "stable"
+        },
+        {
+          "name": "owner",
+          "kind": "call",
+          "side": "lua",
+          "lua": "nk.camera.owner",
+          "signature": {},
+          "doc": "Who holds the screen: resource and id.",
+          "only": "lua only: cameras are natives; a page asks its Lua",
+          "since": "0.8.0",
+          "status": "stable"
+        },
+        {
+          "name": "isActive",
+          "kind": "call",
+          "side": "lua",
+          "lua": "nk.camera.isActive",
+          "signature": {},
+          "doc": "A scripted camera is on screen (any resource).",
+          "only": "lua only: cameras are natives; a page asks its Lua",
+          "since": "0.8.0",
+          "status": "stable"
+        },
+        {
+          "name": "get",
+          "kind": "call",
+          "side": "lua",
+          "lua": "nk.camera.get",
+          "signature": {},
+          "doc": "This resource's claim with that id.",
+          "only": "lua only: cameras are natives; a page asks its Lua",
+          "since": "0.8.0",
+          "status": "stable"
+        },
+        {
+          "name": "stack",
+          "kind": "call",
+          "side": "lua",
+          "lua": "nk.camera.stack",
+          "signature": {},
+          "doc": "The client-wide stack, bottom to top.",
+          "only": "lua only: cameras are natives; a page asks its Lua",
+          "since": "0.8.0",
+          "status": "stable"
+        },
+        {
+          "name": "down",
+          "kind": "call",
+          "side": "lua",
+          "lua": "nk.camera.down",
+          "signature": {},
+          "doc": "The player is down (dead, or the 'dead' state).",
+          "only": "lua only: cameras are natives; a page asks its Lua",
+          "since": "0.8.0",
+          "status": "stable"
+        },
+        {
+          "name": "pose",
+          "kind": "call",
+          "side": "lua",
+          "lua": "nk.camera.pose",
+          "signature": {},
+          "doc": "Where a targeted claim's camera sits and looks this frame.",
+          "only": "lua only: cameras are natives; a page asks its Lua",
+          "since": "0.8.0",
+          "status": "unproven"
+        },
+        {
+          "name": "defaults",
+          "kind": "const",
+          "side": "lua",
+          "lua": "nk.camera.defaults",
+          "signature": {},
+          "doc": "Default offsets per target kind (ped, vehicle); a resource may change them.",
+          "only": "lua only: cameras are natives; a page asks its Lua",
+          "since": "0.8.0",
+          "status": "stable"
+        },
+        {
+          "name": "claim.release",
+          "kind": "handle",
+          "side": "lua",
+          "lua": "NuiCameraClaim:release",
+          "signature": {},
+          "doc": "Release this claim.",
+          "only": "lua only: cameras are natives; a page asks its Lua",
+          "since": "0.8.0",
+          "status": "stable"
+        },
+        {
+          "name": "claim.stream",
+          "kind": "handle",
+          "side": "lua",
+          "lua": "NuiCameraClaim:stream",
+          "signature": {},
+          "doc": "Stream around a point while this claim lasts.",
+          "only": "lua only: cameras are natives; a page asks its Lua",
+          "since": "0.8.0",
+          "status": "stable"
+        },
+        {
+          "name": "claim.isActive",
+          "kind": "handle",
+          "side": "lua",
+          "lua": "NuiCameraClaim:isActive",
+          "signature": {},
+          "doc": "Active and not suspended.",
+          "only": "lua only: cameras are natives; a page asks its Lua",
+          "since": "0.8.0",
+          "status": "stable"
+        },
+        {
+          "name": "NuiCameraOptions",
+          "kind": "type",
+          "side": "lua",
+          "lua": "NuiCameraOptions",
+          "signature": {},
+          "doc": "id, target, offset, look, fov, duration, lockHeading, follow, onSuspend, onResume, onLost.",
+          "only": "lua only: cameras are natives; a page asks its Lua",
+          "since": "0.8.0",
+          "status": "stable"
+        }
+      ],
+      "events": [
+        {
+          "name": "nuikit:camera:claim",
+          "dir": "local",
+          "payload": "{ resource: string; id: string }",
+          "sender": "owner",
+          "doc": "Replicated: a claim went on top.",
+          "wire": "nuikit:cam:claim",
+          "since": "0.8.0"
+        },
+        {
+          "name": "nuikit:camera:release",
+          "dir": "local",
+          "payload": "(resource: string, id: string)",
+          "sender": "owner",
+          "doc": "Replicated: a claim left.",
+          "wire": "nuikit:cam:release",
+          "since": "0.8.0"
+        },
+        {
+          "name": "nuikit:camera:hello",
+          "dir": "local",
+          "payload": "(resource: string)",
+          "sender": "runtime",
+          "doc": "A copy joined: ask for the stack.",
+          "wire": "nuikit:cam:hello",
+          "since": "0.8.0"
+        },
+        {
+          "name": "nuikit:camera:stack",
+          "dir": "local",
+          "payload": "(to: string, { stack, seq })",
+          "sender": "runtime",
+          "doc": "The stack, to a copy that joined.",
+          "wire": "nuikit:cam:snapshot",
+          "since": "0.8.0"
+        }
+      ],
+      "legacy": [],
+      "rules": [
+        "Each copy touches only its own cameras; the stack is replicated in order.",
+        "A claim starts on the rendered view: taking the screen is a cut to the same picture.",
+        "A resource stopping releases its claims; the player going down releases every claim (onLost('dead')).",
+        "Idle cost zero: no thread without a claim."
+      ]
+    },
+    {
+      "js": "controls",
+      "lua": "controls",
+      "title": "Controls",
+      "doc": "Disable game controls in sets (presets or ids) until released; surfaces declare theirs.",
+      "docs": "docs/services.md#nkcontrols",
+      "import": "nuikit-core/controls",
+      "entries": [
+        {
+          "name": "disable",
+          "kind": "call",
+          "side": "lua",
+          "lua": "nk.controls.disable",
+          "signature": {
+            "lua": "nk.controls.disable(spec, { onDeath?, name? }) → NuiControlsHandle"
+          },
+          "doc": "Disable a set until released; returns its handle.",
+          "only": "lua only: DisableControlAction runs in Lua",
+          "since": "0.8.0",
+          "status": "stable"
+        },
+        {
+          "name": "release",
+          "kind": "call",
+          "side": "lua",
+          "lua": "nk.controls.release",
+          "signature": {},
+          "doc": "Release one set; the others stay.",
+          "only": "lua only: DisableControlAction runs in Lua",
+          "since": "0.8.0",
+          "status": "stable"
+        },
+        {
+          "name": "releaseAll",
+          "kind": "call",
+          "side": "lua",
+          "lua": "nk.controls.releaseAll",
+          "signature": {},
+          "doc": "Release every set ('dead' keeps onDeath = 'keep').",
+          "only": "lua only: DisableControlAction runs in Lua",
+          "since": "0.8.0",
+          "status": "stable"
+        },
+        {
+          "name": "isDisabled",
+          "kind": "call",
+          "side": "lua",
+          "lua": "nk.controls.isDisabled",
+          "signature": {},
+          "doc": "Is this control disabled by a set now.",
+          "only": "lua only: DisableControlAction runs in Lua",
+          "since": "0.8.0",
+          "status": "stable"
+        },
+        {
+          "name": "active",
+          "kind": "call",
+          "side": "lua",
+          "lua": "nk.controls.active",
+          "signature": {},
+          "doc": "The union being disabled: ids, or 'all'.",
+          "only": "lua only: DisableControlAction runs in Lua",
+          "since": "0.8.0",
+          "status": "stable"
+        },
+        {
+          "name": "count",
+          "kind": "call",
+          "side": "lua",
+          "lua": "nk.controls.count",
+          "signature": {},
+          "doc": "How many sets are active.",
+          "only": "lua only: DisableControlAction runs in Lua",
+          "since": "0.8.0",
+          "status": "stable"
+        },
+        {
+          "name": "resolve",
+          "kind": "call",
+          "side": "lua",
+          "lua": "nk.controls.resolve",
+          "signature": {},
+          "doc": "A spec (preset, id, list) as ids.",
+          "only": "lua only: DisableControlAction runs in Lua",
+          "since": "0.8.0",
+          "status": "stable"
+        },
+        {
+          "name": "presets",
+          "kind": "const",
+          "side": "lua",
+          "lua": "nk.controls.presets",
+          "signature": {},
+          "doc": "movement, look, weapons, vehicle, frontend.",
+          "only": "lua only: DisableControlAction runs in Lua",
+          "since": "0.8.0",
+          "status": "stable"
+        },
+        {
+          "name": "handle.release",
+          "kind": "handle",
+          "side": "lua",
+          "lua": "NuiControlsHandle:release",
+          "signature": {},
+          "doc": "Release this set.",
+          "only": "lua only: DisableControlAction runs in Lua",
+          "since": "0.8.0",
+          "status": "stable"
+        }
+      ],
+      "events": [],
+      "legacy": [],
+      "rules": [
+        "A surface's `controls` are disabled while it is open, released when it closes.",
+        "Idle: no thread. Death releases every set without onDeath = 'keep'."
+      ]
+    },
+    {
+      "js": "keys",
+      "lua": "keys",
+      "title": "Keys",
+      "doc": "Declare key bindings in one place; any page lists them; players rebind in GTA's settings.",
+      "docs": "docs/settings.md",
+      "import": "nuikit-core/keys",
+      "entries": [
+        {
+          "name": "define",
+          "kind": "call",
+          "side": "lua",
+          "lua": "nk.keys.define",
+          "signature": {
+            "lua": "nk.keys.define({ id, label, key, mapper?, onPress, onRelease?, command? })"
+          },
+          "doc": "Register +/- commands and the key mapping; returns binding().",
+          "only": "lua only: key mappings are natives",
+          "since": "0.8.0",
+          "status": "stable"
+        },
+        {
+          "name": "label",
+          "kind": "call",
+          "side": "lua",
+          "lua": "nk.keys.label",
+          "signature": {},
+          "doc": "An instructional button string as display text.",
+          "only": "lua only: natives",
+          "since": "0.8.0",
+          "status": "stable"
+        },
+        {
+          "name": "list",
+          "kind": "call",
+          "side": "both",
+          "js": "loadKeys",
+          "from": "nuikit-core/keys",
+          "lua": "nk.keys.list",
+          "signature": {
+            "js": "loadKeys(): Promise<KeyBinding[]>"
+          },
+          "doc": "Every resource's keys.",
+          "since": "0.8.0",
+          "status": "stable"
+        },
+        {
+          "name": "mock",
+          "kind": "call",
+          "side": "js",
+          "js": "mockKeys",
+          "from": "nuikit-core/keys",
+          "signature": {
+            "js": "mockKeys(keys: (Omit<KeyBinding, \"binding\" | \"mapper\"> & { binding?: string; mapper?: string; })[]): void"
+          },
+          "doc": "Dev: the keys the browser pretends exist.",
+          "only": "js only: the browser has no Lua",
+          "since": "0.8.0",
+          "status": "stable"
+        },
+        {
+          "name": "useKeys",
+          "kind": "hook",
+          "side": "js",
+          "js": "useKeys",
+          "from": "nuikit-core/react",
+          "signature": {
+            "js": "useKeys() => { keys: KeyBinding[]; reload: (): Promise<void>; }"
+          },
+          "doc": "Every resource's keys, loaded.",
+          "only": "js only: React",
+          "since": "0.8.0",
+          "status": "stable"
+        },
+        {
+          "name": "KeyBinding",
+          "kind": "type",
+          "side": "js",
+          "js": "KeyBinding",
+          "from": "nuikit-core/keys",
+          "signature": {},
+          "doc": "resource, id, label, default, binding, mapper.",
+          "only": "js only: Lua tables are untyped",
+          "since": "0.8.0",
+          "status": "stable"
+        }
+      ],
+      "events": [
+        {
+          "name": "nuikit:keys:list",
+          "dir": "page→lua",
+          "payload": "{}",
+          "reply": "{ keys: KeyBinding[] }",
+          "sender": "any",
+          "doc": "https://nuikit/keys.",
+          "wire": "keys",
+          "since": "0.8.0"
+        }
+      ],
+      "legacy": [],
+      "rules": [
+        "A mapping belongs to the resource that registers it; a stopped resource's keys leave the list."
+      ]
+    },
+    {
+      "js": "settings",
+      "lua": "settings",
+      "title": "Settings",
+      "doc": "Declare settings rows; any page previews a draft, then saves or resets; saved per player, merged by version.",
+      "docs": "docs/settings.md",
+      "import": "nuikit-core/settings",
+      "entries": [
+        {
+          "name": "define",
+          "kind": "call",
+          "side": "lua",
+          "lua": "nk.settings.define",
+          "signature": {},
+          "doc": "Declare this resource's settings; returns get, values and the ops.",
+          "only": "lua only: resources declare, pages show",
+          "since": "0.8.0",
+          "status": "stable"
+        },
+        {
+          "name": "register",
+          "kind": "call",
+          "side": "lua",
+          "lua": "nk.settings.register",
+          "signature": {},
+          "doc": "Register one section of this resource's settings.",
+          "only": "lua only: resources declare, pages show",
+          "since": "0.8.0",
+          "status": "stable"
+        },
+        {
+          "name": "get",
+          "kind": "call",
+          "side": "lua",
+          "lua": "nk.settings.get",
+          "signature": {},
+          "doc": "A registered section's values, or one row's.",
+          "only": "lua only: the page loads sections",
+          "since": "0.8.0",
+          "status": "stable"
+        },
+        {
+          "name": "onChange",
+          "kind": "call",
+          "side": "lua",
+          "lua": "nk.settings.onChange",
+          "signature": {},
+          "doc": "Every change of this resource's sections.",
+          "only": "lua only: the page hears nuikit:settings:changed",
+          "since": "0.8.0",
+          "status": "stable"
+        },
+        {
+          "name": "flag",
+          "kind": "call",
+          "side": "lua",
+          "lua": "nk.settings.flag",
+          "signature": {},
+          "doc": "Is a feature flag on (setr nuikit_flag_<name> 0 turns it off).",
+          "only": "lua only: convars",
+          "since": "0.8.0",
+          "status": "stable"
+        },
+        {
+          "name": "load",
+          "kind": "call",
+          "side": "both",
+          "js": "loadSettings",
+          "from": "nuikit-core/settings",
+          "lua": "nk.settings.list",
+          "signature": {
+            "js": "loadSettings(resource?: string): Promise<SettingsSection[]>"
+          },
+          "doc": "Every resource's sections (or one's).",
+          "since": "0.8.0",
+          "status": "stable"
+        },
+        {
+          "name": "draft",
+          "kind": "call",
+          "side": "both",
+          "js": "draftSettings",
+          "from": "nuikit-core/settings",
+          "lua": "nk.settings.draft",
+          "signature": {
+            "js": "draftSettings(resource: string, patch: Record<string, SettingValue>): Promise<Record<string, SettingValue>>"
+          },
+          "doc": "Preview a patch without saving.",
+          "since": "0.8.0",
+          "status": "stable"
+        },
+        {
+          "name": "save",
+          "kind": "call",
+          "side": "both",
+          "js": "saveSettings",
+          "from": "nuikit-core/settings",
+          "lua": "nk.settings.save",
+          "signature": {
+            "js": "saveSettings(resource: string): Promise<Record<string, SettingValue>>"
+          },
+          "doc": "Save the draft.",
+          "since": "0.8.0",
+          "status": "stable"
+        },
+        {
+          "name": "cancel",
+          "kind": "call",
+          "side": "both",
+          "js": "cancelSettings",
+          "from": "nuikit-core/settings",
+          "lua": "nk.settings.cancel",
+          "signature": {
+            "js": "cancelSettings(resource: string): Promise<Record<string, SettingValue>>"
+          },
+          "doc": "Drop the draft.",
+          "since": "0.8.0",
+          "status": "stable"
+        },
+        {
+          "name": "reset",
+          "kind": "call",
+          "side": "both",
+          "js": "resetSettings",
+          "from": "nuikit-core/settings",
+          "lua": "nk.settings.reset",
+          "signature": {
+            "js": "resetSettings(resource: string, keys?: string[]): Promise<Record<string, SettingValue>>"
+          },
+          "doc": "Back to defaults (some keys or all).",
+          "since": "0.8.0",
+          "status": "stable"
+        },
+        {
+          "name": "preset",
+          "kind": "call",
+          "side": "both",
+          "js": "applySettingsPreset",
+          "from": "nuikit-core/settings",
+          "lua": "nk.settings.preset",
+          "signature": {
+            "js": "applySettingsPreset(resource: string, preset: string): Promise<Record<string, SettingValue>>"
+          },
+          "doc": "Apply a preset as a draft.",
+          "since": "0.8.0",
+          "status": "stable"
+        },
+        {
+          "name": "normalize",
+          "kind": "call",
+          "side": "both",
+          "js": "normalizeSetting",
+          "from": "nuikit-core/settings",
+          "lua": "nk.settings.normalize",
+          "signature": {
+            "js": "normalizeSetting(row: SettingRow, value: unknown): SettingValue"
+          },
+          "doc": "A value fitted to its row (clamped, snapped, or rejected).",
+          "since": "0.8.0",
+          "status": "stable"
+        },
+        {
+          "name": "merge",
+          "kind": "call",
+          "side": "both",
+          "js": "mergeSettings",
+          "from": "nuikit-core/settings",
+          "lua": "nk.settings.merge",
+          "signature": {
+            "js": "mergeSettings(rows: SettingRow[], saved: Record<string, unknown>, draft?: Record<string, unknown>): Record<string, SettingValue>"
+          },
+          "doc": "Saved and draft values over the defaults.",
+          "since": "0.8.0",
+          "status": "stable"
+        },
+        {
+          "name": "validate",
+          "kind": "call",
+          "side": "lua",
+          "lua": "nk.settings.validate",
+          "signature": {},
+          "doc": "Check a schema's rows.",
+          "only": "lua only: schemas are declared in Lua",
+          "since": "0.8.0",
+          "status": "stable"
+        },
+        {
+          "name": "mock",
+          "kind": "call",
+          "side": "js",
+          "js": "mockSettings",
+          "from": "nuikit-core/settings",
+          "signature": {
+            "js": "mockSettings(sections: (Omit<SettingsSection, \"values\" | \"draft\" | \"presets\"> & { presets?: { id: string; label: string; patch: Record<string, SettingValue>; }[]; })[]): void"
+          },
+          "doc": "Dev: the sections the browser pretends exist.",
+          "only": "js only: the browser has no Lua",
+          "since": "0.8.0",
+          "status": "stable"
+        },
+        {
+          "name": "useSettings",
+          "kind": "hook",
+          "side": "js",
+          "js": "useSettings",
+          "from": "nuikit-core/react",
+          "signature": {
+            "js": "useSettings(resource: string) => { section: SettingsSection; rows: SettingRow[]; values: Record<string, SettingValue>; presets: { id: string; label: string; }[]; dirty: boolean; draft: (patch: Record<string, SettingValue>) => Promise<Record<string, SettingValue>>; save: () => Promise<Record<string, SettingValue>>; cancel: () => Promise<Record<string, SettingValue>>; reset: (keys?: string[]) => Promise<Record<string, SettingValue>>; preset: (id: string) => Promise<Record<string, SettingValue>>; reload: (): Promise<void>; }"
+          },
+          "doc": "A resource's section with the ops, live.",
+          "only": "js only: React",
+          "since": "0.8.0",
+          "status": "stable"
+        },
+        {
+          "name": "SettingRow",
+          "kind": "type",
+          "side": "js",
+          "js": "SettingRow",
+          "from": "nuikit-core/settings",
+          "signature": {},
+          "doc": "key, label, options | range | toggle | text, default, flag, group.",
+          "only": "js only: Lua tables are untyped",
+          "since": "0.8.0",
+          "status": "stable"
+        }
+      ],
+      "events": [
+        {
+          "name": "nuikit:settings:changed",
+          "dir": "lua→page",
+          "payload": "{ id?: string; values: Record<string, SettingValue>; changed: string[]; draft: boolean }",
+          "sender": "runtime",
+          "doc": "This resource's settings changed (a page's preview included).",
+          "wire": "nuikit:settings",
+          "since": "0.8.0"
+        },
+        {
+          "name": "nuikit:settings:store-changed",
+          "dir": "local",
+          "payload": "(key: string, values, changed: string[], draft: boolean)",
+          "sender": "nuikit",
+          "doc": "The store, to every copy: a section changed.",
+          "wire": "nuikit:settings:changed",
+          "since": "0.8.0"
+        },
+        {
+          "name": "nuikit:settings:list",
+          "dir": "page→lua",
+          "payload": "{ resource?: string }",
+          "reply": "{ sections: SettingsSection[] }",
+          "sender": "any",
+          "doc": "https://nuikit/settings.",
+          "wire": "settings",
+          "since": "0.8.0"
+        },
+        {
+          "name": "nuikit:settings:draft",
+          "dir": "page→lua",
+          "payload": "{ resource: string; patch: object }",
+          "reply": "{ ok: boolean }",
+          "sender": "any",
+          "doc": "https://nuikit/settings:draft.",
+          "wire": "settings:draft",
+          "since": "0.8.0"
+        },
+        {
+          "name": "nuikit:settings:save",
+          "dir": "page→lua",
+          "payload": "{ resource: string }",
+          "reply": "{ ok: boolean }",
+          "sender": "any",
+          "doc": "https://nuikit/settings:save.",
+          "wire": "settings:save",
+          "since": "0.8.0"
+        },
+        {
+          "name": "nuikit:settings:cancel",
+          "dir": "page→lua",
+          "payload": "{ resource: string }",
+          "reply": "{ ok: boolean }",
+          "sender": "any",
+          "doc": "https://nuikit/settings:cancel.",
+          "wire": "settings:cancel",
+          "since": "0.8.0"
+        },
+        {
+          "name": "nuikit:settings:reset",
+          "dir": "page→lua",
+          "payload": "{ resource: string; keys?: string[] }",
+          "reply": "{ ok: boolean }",
+          "sender": "any",
+          "doc": "https://nuikit/settings:reset.",
+          "wire": "settings:reset",
+          "since": "0.8.0"
+        },
+        {
+          "name": "nuikit:settings:preset",
+          "dir": "page→lua",
+          "payload": "{ resource: string; preset: string }",
+          "reply": "{ ok: boolean }",
+          "sender": "any",
+          "doc": "https://nuikit/settings:preset.",
+          "wire": "settings:preset",
+          "since": "0.8.0"
+        }
+      ],
+      "legacy": [],
+      "rules": [
+        "The store lives in the nuikit resource; a resource defines and changes only its own section.",
+        "A saved version that differs runs migrate; an update never wipes a player's choices."
+      ]
+    },
+    {
+      "js": "player",
+      "lua": "player",
+      "title": "Player",
+      "doc": "One player shape for every framework, and the server's currency and locale.",
+      "docs": "docs/protocol.md#7-context",
+      "import": "nuikit-core/player",
+      "entries": [
+        {
+          "name": "get",
+          "kind": "call",
+          "side": "both",
+          "js": "getPlayer",
+          "from": "nuikit-core/player",
+          "lua": "nk.player.get",
+          "signature": {
+            "js": "getPlayer(): NuiPlayer"
+          },
+          "doc": "The current player.",
+          "since": "0.4.0",
+          "status": "stable"
+        },
+        {
+          "name": "onChange",
+          "kind": "call",
+          "side": "both",
+          "js": "onPlayer",
+          "from": "nuikit-core/player",
+          "lua": "nk.player.onChange",
+          "signature": {
+            "js": "onPlayer(listener: () => void) => (): void",
+            "lua": "nk.player.onChange(fn(player))"
+          },
+          "doc": "Called after every change.",
+          "since": "0.4.0",
+          "status": "stable"
+        },
+        {
+          "name": "context",
+          "kind": "call",
+          "side": "both",
+          "js": "getContext",
+          "from": "nuikit-core/player",
+          "lua": "nk.player.context",
+          "signature": {
+            "js": "getContext(): NuiContext"
+          },
+          "doc": "The server's currency (ISO 4217) and locale (BCP 47).",
+          "since": "0.5.0",
+          "status": "stable"
+        },
+        {
+          "name": "onContext",
+          "kind": "call",
+          "side": "js",
+          "js": "onContext",
+          "from": "nuikit-core/player",
+          "signature": {
+            "js": "onContext(listener: () => void) => (): void"
+          },
+          "doc": "Called when the context changes.",
+          "only": "js only: Lua reads GlobalState",
+          "since": "0.5.0",
+          "status": "stable"
+        },
+        {
+          "name": "set",
+          "kind": "call",
+          "side": "lua",
+          "lua": "nk.player.set",
+          "signature": {},
+          "doc": "Merge fields into the player and push it if it changed.",
+          "only": "lua only: Lua owns the player",
+          "since": "0.4.0",
+          "status": "stable"
+        },
+        {
+          "name": "resend",
+          "kind": "call",
+          "side": "lua",
+          "lua": "nk.player.resend",
+          "signature": {},
+          "doc": "Send the player and context again.",
+          "only": "lua only: Lua owns the player",
+          "since": "0.4.0",
+          "status": "stable"
+        },
+        {
+          "name": "poll",
+          "kind": "call",
+          "side": "lua",
+          "lua": "nk.player.poll",
+          "signature": {},
+          "doc": "Read what natives and state bags own now.",
+          "only": "lua only: natives",
+          "since": "0.4.0",
+          "status": "stable"
+        },
+        {
+          "name": "framework",
+          "kind": "const",
+          "side": "lua",
+          "lua": "nk.player.framework",
+          "signature": {},
+          "doc": "'qbox' | 'qbcore' | 'esx' | 'standalone' | a custom framework's resource.",
+          "only": "lua only: detection runs in Lua",
+          "since": "0.4.0",
+          "status": "stable"
+        },
+        {
+          "name": "defaults",
+          "kind": "const",
+          "side": "js",
+          "js": "DEFAULT_PLAYER",
+          "from": "nuikit-core/player",
+          "signature": {},
+          "doc": "The player and context before Lua's first message.",
+          "only": "js only: the page's first paint",
+          "since": "0.4.0",
+          "status": "stable"
+        },
+        {
+          "name": "usePlayer",
+          "kind": "hook",
+          "side": "js",
+          "js": "usePlayer",
+          "from": "nuikit-core/react",
+          "signature": {
+            "js": "usePlayer(): NuiPlayer"
+          },
+          "doc": "The player, live.",
+          "only": "js only: React",
+          "since": "0.4.0",
+          "status": "stable"
+        },
+        {
+          "name": "useNuiContext",
+          "kind": "hook",
+          "side": "js",
+          "js": "useNuiContext",
+          "from": "nuikit-core/react",
+          "signature": {
+            "js": "useNuiContext(): NuiContext"
+          },
+          "doc": "The server context, live.",
+          "only": "js only: React",
+          "since": "0.5.0",
+          "status": "stable"
+        },
+        {
+          "name": "NuiPlayer",
+          "kind": "type",
+          "side": "js",
+          "js": "NuiPlayer",
+          "from": "nuikit-core/player",
+          "signature": {},
+          "doc": "loaded, id, name, health, armor, hunger, thirst, stress, cash, bank, job, gang, dead, voice.",
+          "only": "js only: Lua tables are untyped",
+          "since": "0.4.0",
+          "status": "stable"
+        },
+        {
+          "name": "NuiContext",
+          "kind": "type",
+          "side": "js",
+          "js": "NuiContext",
+          "from": "nuikit-core/player",
+          "signature": {},
+          "doc": "currency, locale.",
+          "only": "js only: Lua tables are untyped",
+          "since": "0.5.0",
+          "status": "stable"
+        }
+      ],
+      "events": [
+        {
+          "name": "nuikit:player:changed",
+          "dir": "lua→page",
+          "payload": "NuiPlayer",
+          "sender": "runtime",
+          "doc": "The player changed (only when something did).",
+          "wire": "nuikit:player",
+          "since": "0.4.0"
+        },
+        {
+          "name": "nuikit:player:context",
+          "dir": "lua→page",
+          "payload": "NuiContext",
+          "sender": "runtime",
+          "doc": "The server context, on load and on change.",
+          "wire": "nuikit:context",
+          "since": "0.5.0"
+        },
+        {
+          "name": "nuikit:player:framework",
+          "dir": "local",
+          "payload": "(fields: Partial<NuiPlayer>)",
+          "sender": "any",
+          "doc": "A custom framework pushes player fields (docs/adapters/framework-sdk.md).",
+          "wire": "nuikit:framework:update",
+          "since": "0.6.0"
+        }
+      ],
+      "legacy": [],
+      "rules": [
+        "Read framework data only through the bridge; a UI never asks a framework directly.",
+        "Loaded on first use: a resource that never reads nk.player doesn't pay for the bridge."
+      ]
+    },
+    {
+      "js": "theme",
+      "lua": "theme",
+      "title": "Theme",
+      "doc": "One look for the server: compiled tokens, the player's look and prefs, applied to every page live.",
+      "docs": "docs/tokens.md",
+      "import": "nuikit-core/theme",
+      "entries": [
+        {
+          "name": "get",
+          "kind": "call",
+          "side": "both",
+          "js": "getTheme",
+          "from": "nuikit-core/theme",
+          "lua": "nk.theme.get",
+          "signature": {
+            "js": "getTheme(): CompiledTheme",
+            "lua": "nk.theme.get() → CompiledTheme|string|nil"
+          },
+          "doc": "The compiled theme in use (the player's look, else the server's).",
+          "since": "0.4.0",
+          "status": "stable"
+        },
+        {
+          "name": "look",
+          "kind": "call",
+          "side": "lua",
+          "lua": "nk.theme.look",
+          "signature": {},
+          "doc": "The player's look (identity, treatment), or nil for the server theme.",
+          "only": "lua only: the page receives the look as the theme",
+          "since": "0.7.0",
+          "status": "stable"
+        },
+        {
+          "name": "lookKey",
+          "kind": "call",
+          "side": "lua",
+          "lua": "nk.theme.lookKey",
+          "signature": {},
+          "doc": "The key of the look in use ('studio|slab'), or nil.",
+          "only": "lua only: the page receives the look as the theme",
+          "since": "0.7.0",
+          "status": "stable"
+        },
+        {
+          "name": "prefs",
+          "kind": "call",
+          "side": "both",
+          "js": "getPrefs",
+          "from": "nuikit-core/theme",
+          "lua": "nk.theme.prefs",
+          "signature": {
+            "js": "getPrefs(): NuiPrefs"
+          },
+          "doc": "The player's UI prefs (scale, reducedMotion, highContrast, identity, treatment).",
+          "since": "0.4.0",
+          "status": "stable"
+        },
+        {
+          "name": "setPrefs",
+          "kind": "call",
+          "side": "both",
+          "js": "setPrefs",
+          "from": "nuikit-core/theme",
+          "lua": "nk.theme.setPrefs",
+          "signature": {
+            "js": "setPrefs(next: Partial<NuiPrefs>): NuiPrefs",
+            "lua": "nk.theme.setPrefs(patch)"
+          },
+          "doc": "Change prefs; saved and applied to every nuikit UI.",
+          "since": "0.4.0",
+          "status": "stable"
+        },
+        {
+          "name": "apply",
+          "kind": "call",
+          "side": "js",
+          "js": "applyTheme",
+          "from": "nuikit-core/theme",
+          "signature": {
+            "js": "applyTheme(theme: ThemeInput, target?: HTMLElement, mode?: ThemeMode): ThemeVars"
+          },
+          "doc": "Paint a theme (compiled, CSS or tokens) on the page or an element.",
+          "only": "js only: the page paints, Lua publishes",
+          "since": "0.4.0",
+          "status": "stable"
+        },
+        {
+          "name": "clear",
+          "kind": "call",
+          "side": "js",
+          "js": "clearTheme",
+          "from": "nuikit-core/theme",
+          "signature": {
+            "js": "clearTheme(vars?: ThemeVars, target?: HTMLElement): void"
+          },
+          "doc": "Remove what apply painted.",
+          "only": "js only: the page paints",
+          "since": "0.4.0",
+          "status": "stable"
+        },
+        {
+          "name": "subscribe",
+          "kind": "call",
+          "side": "js",
+          "js": "onTheme",
+          "from": "nuikit-core/theme",
+          "signature": {
+            "js": "onTheme(listener: (theme: CompiledTheme) => void) => (): void"
+          },
+          "doc": "Called when the theme changes.",
+          "only": "js only: Lua is the source",
+          "since": "0.4.0",
+          "status": "stable"
+        },
+        {
+          "name": "compile",
+          "kind": "call",
+          "side": "js",
+          "js": "compileTheme",
+          "from": "nuikit-core/theme",
+          "signature": {
+            "js": "compileTheme(input: ThemeInput, opts?: CompileOptions): CompiledTheme"
+          },
+          "doc": "A TweakCN / shadcn theme.css or tokens → the compiled nuikit tokens.",
+          "only": "js only: runs in the page and in the nuikit resource's server (fxserver-compiler.js)",
+          "since": "0.5.0",
+          "status": "stable"
+        },
+        {
+          "name": "parse",
+          "kind": "call",
+          "side": "js",
+          "js": "parseTheme",
+          "from": "nuikit-core/theme",
+          "signature": {
+            "js": "parseTheme(css: string): { light: ThemeVars; dark: ThemeVars; }"
+          },
+          "doc": "Read a theme from CSS, JSON or DTCG.",
+          "only": "js only: compiler",
+          "since": "0.5.0",
+          "status": "stable"
+        },
+        {
+          "name": "parseCss",
+          "kind": "call",
+          "side": "js",
+          "js": "parseThemeCss",
+          "from": "nuikit-core/theme",
+          "signature": {
+            "js": "parseThemeCss(css: string): Parsed"
+          },
+          "doc": "Read the variables of a theme.css.",
+          "only": "js only: compiler",
+          "since": "0.5.0",
+          "status": "stable"
+        },
+        {
+          "name": "parseDtcg",
+          "kind": "call",
+          "side": "js",
+          "js": "parseDtcg",
+          "from": "nuikit-core/theme",
+          "signature": {
+            "js": "parseDtcg(doc: DtcgDocument): ThemeVars"
+          },
+          "doc": "Read a DTCG tokens file.",
+          "only": "js only: compiler",
+          "since": "0.5.0",
+          "status": "stable"
+        },
+        {
+          "name": "toDtcg",
+          "kind": "call",
+          "side": "js",
+          "js": "toDtcg",
+          "from": "nuikit-core/theme",
+          "signature": {
+            "js": "toDtcg(theme: CompiledTheme, description?: string): DtcgDocument"
+          },
+          "doc": "A compiled theme as a DTCG document.",
+          "only": "js only: compiler",
+          "since": "0.5.0",
+          "status": "stable"
+        },
+        {
+          "name": "toCss",
+          "kind": "call",
+          "side": "js",
+          "js": "themeToCss",
+          "from": "nuikit-core/theme",
+          "signature": {
+            "js": "themeToCss(theme: ThemeVars | CompiledTheme, selector?: string): string"
+          },
+          "doc": "A compiled theme as CSS variables.",
+          "only": "js only: compiler",
+          "since": "0.5.0",
+          "status": "stable"
+        },
+        {
+          "name": "channels",
+          "kind": "call",
+          "side": "js",
+          "js": "themeChannels",
+          "from": "nuikit-core/theme",
+          "signature": {
+            "js": "themeChannels(vars: ThemeVars): ThemeVars"
+          },
+          "doc": "The rgb channel variables (--x-rgb) for alpha without color-mix.",
+          "only": "js only: compiler",
+          "since": "0.5.0",
+          "status": "stable"
+        },
+        {
+          "name": "lower",
+          "kind": "call",
+          "side": "js",
+          "js": "lowerValue",
+          "from": "nuikit-core/theme",
+          "signature": {
+            "js": "lowerValue(value: string): string"
+          },
+          "doc": "Lower a CSS value for Chromium 103 (oklch, color-mix).",
+          "only": "js only: compiler",
+          "since": "0.5.0",
+          "status": "stable"
+        },
+        {
+          "name": "schema",
+          "kind": "call",
+          "side": "js",
+          "js": "themeJsonSchema",
+          "from": "nuikit-core/theme",
+          "signature": {
+            "js": "themeJsonSchema(): Record<string, unknown>"
+          },
+          "doc": "The JSON schema of a theme file.",
+          "only": "js only: tooling",
+          "since": "0.5.0",
+          "status": "stable"
+        },
+        {
+          "name": "contrast",
+          "kind": "call",
+          "side": "js",
+          "js": "checkContrast",
+          "from": "nuikit-core/theme",
+          "signature": {
+            "js": "checkContrast(vars: ThemeVars): ContrastResult[]"
+          },
+          "doc": "Check the token pairs for WCAG contrast.",
+          "only": "js only: compiler",
+          "since": "0.5.0",
+          "status": "stable"
+        },
+        {
+          "name": "highContrast",
+          "kind": "call",
+          "side": "js",
+          "js": "highContrast",
+          "from": "nuikit-core/theme",
+          "signature": {
+            "js": "highContrast(vars: ThemeVars): ThemeVars"
+          },
+          "doc": "The high-contrast variant of a theme.",
+          "only": "js only: compiler",
+          "since": "0.5.0",
+          "status": "stable"
+        },
+        {
+          "name": "withPrefs",
+          "kind": "call",
+          "side": "js",
+          "js": "withPrefs",
+          "from": "nuikit-core/theme",
+          "signature": {
+            "js": "withPrefs(vars: ThemeVars, prefs?: Partial<NuiPrefs>): ThemeVars"
+          },
+          "doc": "A compiled theme with the player's prefs applied.",
+          "only": "js only: compiler",
+          "since": "0.5.0",
+          "status": "stable"
+        },
+        {
+          "name": "normalizePrefs",
+          "kind": "call",
+          "side": "js",
+          "js": "normalizePrefs",
+          "from": "nuikit-core/theme",
+          "signature": {
+            "js": "normalizePrefs(p: Partial<NuiPrefs>): NuiPrefs"
+          },
+          "doc": "Prefs clamped and defaulted.",
+          "only": "js only: Lua clamps in the nuikit resource",
+          "since": "0.5.0",
+          "status": "stable"
+        },
+        {
+          "name": "motionLevel",
+          "kind": "call",
+          "side": "js",
+          "js": "themeMotionLevel",
+          "from": "nuikit-core/theme",
+          "signature": {
+            "js": "themeMotionLevel(vars: ThemeVars, prefs?: Partial<NuiPrefs>): \"on\" | \"reduced\" | \"off\""
+          },
+          "doc": "The theme's motion level (on, reduced, off).",
+          "only": "js only: the page animates",
+          "since": "0.7.0",
+          "status": "stable"
+        },
+        {
+          "name": "loadServer",
+          "kind": "call",
+          "side": "js",
+          "js": "loadServerTheme",
+          "from": "nuikit-core/theme",
+          "signature": {
+            "js": "loadServerTheme(options?: { live?: boolean; }): Promise<boolean>"
+          },
+          "doc": "Override pages: fetch the server theme and keep it live.",
+          "only": "js only: pages without nuikit.lua",
+          "since": "0.5.0",
+          "status": "stable"
+        },
+        {
+          "name": "applyServer",
+          "kind": "call",
+          "side": "js",
+          "js": "applyServerTheme",
+          "from": "nuikit-core/theme",
+          "signature": {
+            "js": "applyServerTheme(p: ServerThemePayload): boolean"
+          },
+          "doc": "Apply one server theme payload.",
+          "only": "js only: pages without nuikit.lua",
+          "since": "0.5.0",
+          "status": "stable"
+        },
+        {
+          "name": "loadImports",
+          "kind": "call",
+          "side": "js",
+          "js": "loadImports",
+          "from": "nuikit-core/theme",
+          "signature": {
+            "js": "loadImports(css: string | string[]): string[]"
+          },
+          "doc": "Load a theme's font imports.",
+          "only": "js only: the page loads fonts",
+          "since": "0.5.0",
+          "status": "stable"
+        },
+        {
+          "name": "glow",
+          "kind": "call",
+          "side": "js",
+          "js": "applyGlowBudget",
+          "from": "nuikit-core/theme",
+          "signature": {
+            "js": "applyGlowBudget(root?: ParentNode): void"
+          },
+          "doc": "Let --nk-glow-budget parts glow; the rest stay quiet.",
+          "only": "js only: the page paints",
+          "since": "0.7.0",
+          "status": "stable"
+        },
+        {
+          "name": "elevation",
+          "kind": "call",
+          "side": "js",
+          "js": "elevationShadow",
+          "from": "nuikit-core/theme",
+          "signature": {
+            "js": "elevationShadow(level: string, s: string): string"
+          },
+          "doc": "The hard-drop shadow for a plate level.",
+          "only": "js only: the page paints",
+          "since": "0.6.0",
+          "status": "stable"
+        },
+        {
+          "name": "color",
+          "kind": "call",
+          "side": "js",
+          "js": "toRgba",
+          "from": "nuikit-core/theme",
+          "signature": {
+            "js": "toRgba(input: string): RGBA"
+          },
+          "doc": "Colour maths: parse, format, oklch, composite, luminance, contrast.",
+          "only": "js only: the compiler's maths",
+          "since": "0.5.0",
+          "status": "stable"
+        },
+        {
+          "name": "tokens",
+          "kind": "const",
+          "side": "js",
+          "js": "TOKENS",
+          "from": "nuikit-core/theme",
+          "signature": {},
+          "doc": "The token tables (tokens 1.7): names, specs, groups, presets.",
+          "only": "js only: Lua reads the compiled theme",
+          "since": "0.5.0",
+          "status": "stable"
+        },
+        {
+          "name": "motionTokens",
+          "kind": "call",
+          "side": "js",
+          "js": "motionTokens",
+          "from": "nuikit-core/theme",
+          "signature": {
+            "js": "motionTokens(d: number, feel?: \"crisp\" | \"snap\" | \"smooth\" | \"stepped\", bounce?: number, opts?: { exitFactor?: number; ladder?: boolean; }): ThemeVars"
+          },
+          "doc": "The motion tokens of a compiled theme.",
+          "only": "js only: the page animates",
+          "since": "0.7.0",
+          "status": "stable"
+        },
+        {
+          "name": "CompiledTheme",
+          "kind": "type",
+          "side": "js",
+          "js": "CompiledTheme",
+          "from": "nuikit-core/theme",
+          "signature": {},
+          "doc": "version, mode, hash, vars, imports.",
+          "only": "js only: Lua passes it through",
+          "since": "0.5.0",
+          "status": "stable"
+        },
+        {
+          "name": "NuiPrefs",
+          "kind": "type",
+          "side": "both",
+          "js": "NuiPrefs",
+          "from": "nuikit-core/theme",
+          "lua": "NuiPrefs",
+          "signature": {},
+          "doc": "scale, reducedMotion, highContrast, identity, treatment.",
+          "since": "0.4.0",
+          "status": "stable"
+        }
+      ],
+      "events": [
+        {
+          "name": "nuikit:theme:changed",
+          "dir": "lua→page",
+          "payload": "string | CompiledTheme",
+          "sender": "runtime",
+          "doc": "The theme (or the player's look) changed.",
+          "wire": "nuikit:theme",
+          "since": "0.4.0"
+        },
+        {
+          "name": "nuikit:theme:prefs",
+          "dir": "lua→page",
+          "payload": "Partial<NuiPrefs>",
+          "sender": "runtime",
+          "doc": "The player's prefs changed.",
+          "wire": "nuikit:prefs",
+          "since": "0.4.0"
+        },
+        {
+          "name": "nuikit:theme:set-prefs",
+          "dir": "local",
+          "payload": "(patch: Partial<NuiPrefs>)",
+          "sender": "any",
+          "doc": "Change prefs (what nk.theme.setPrefs does).",
+          "wire": "nuikit:prefs:set",
+          "since": "0.4.0"
+        },
+        {
+          "name": "nuikit:theme:prefs-changed",
+          "dir": "local",
+          "payload": "(prefs: NuiPrefs, to?: string)",
+          "sender": "nuikit",
+          "doc": "Prefs, to every resource (or one).",
+          "wire": "nuikit:prefs:changed",
+          "since": "0.4.0"
+        },
+        {
+          "name": "nuikit:theme:prefs-request",
+          "dir": "local",
+          "payload": "(resource: string)",
+          "sender": "runtime",
+          "doc": "Ask the nuikit resource for the prefs.",
+          "wire": "nuikit:prefs:request",
+          "since": "0.4.0"
+        },
+        {
+          "name": "nuikit:theme:poll",
+          "dir": "page→lua",
+          "payload": "{ hash?: string }",
+          "reply": "ServerThemePayload",
+          "sender": "any",
+          "doc": "https://nuikit/theme: the server theme, long-polled by override pages.",
+          "wire": "theme",
+          "since": "0.5.0"
+        }
+      ],
+      "legacy": [
+        {
+          "old": "NUI.theme",
+          "now": "nk.theme.get",
+          "removeIn": "1.0.0"
+        },
+        {
+          "old": "NUI.look",
+          "now": "nk.theme.look",
+          "removeIn": "1.0.0"
+        },
+        {
+          "old": "NUI.lookKey",
+          "now": "nk.theme.lookKey",
+          "removeIn": "1.0.0"
+        },
+        {
+          "old": "NUI.prefs.get",
+          "now": "nk.theme.prefs",
+          "removeIn": "1.0.0"
+        },
+        {
+          "old": "NUI.prefs.set",
+          "now": "nk.theme.setPrefs",
+          "removeIn": "1.0.0"
+        }
+      ],
+      "rules": [
+        "The nuikit resource owns the theme and the prefs; every page applies them, nobody else writes them.",
+        "Hierarchy: identity → tokens → component → resource config → player prefs."
+      ]
+    },
+    {
+      "js": "images",
+      "lua": "images",
+      "title": "Images",
+      "doc": "Resolve item, weapon, vehicle and clothing pictures from known conventions; servers add their own by convar.",
+      "docs": "docs/images.md",
+      "import": "nuikit-core/images",
+      "entries": [
+        {
+          "name": "resolve",
+          "kind": "call",
+          "side": "js",
+          "js": "resolveImage",
+          "from": "nuikit-core/images",
+          "signature": {
+            "js": "resolveImage(kind: ImageKind, key: ImageKey, cfg?: ImageConfig): string[]"
+          },
+          "doc": "Candidate URLs for a thing, best first.",
+          "only": "js only: the page loads images; Lua sets convars",
+          "since": "0.8.0",
+          "status": "stable"
+        },
+        {
+          "name": "load",
+          "kind": "call",
+          "side": "js",
+          "js": "loadImageConfig",
+          "from": "nuikit-core/images",
+          "signature": {
+            "js": "loadImageConfig(): Promise<ImageConfig>"
+          },
+          "doc": "Fetch the server's templates once per page.",
+          "only": "js only: the page asks nuikit:images:config",
+          "since": "0.8.0",
+          "status": "stable"
+        },
+        {
+          "name": "config",
+          "kind": "call",
+          "side": "js",
+          "js": "getImageConfig",
+          "from": "nuikit-core/images",
+          "signature": {
+            "js": "getImageConfig(): ImageConfig"
+          },
+          "doc": "The templates in use, per kind.",
+          "only": "js only: the page's resolver",
+          "since": "0.8.0",
+          "status": "stable"
+        },
+        {
+          "name": "setConfig",
+          "kind": "call",
+          "side": "js",
+          "js": "setImageConfig",
+          "from": "nuikit-core/images",
+          "signature": {
+            "js": "setImageConfig(server: Partial<Record<ImageKind, unknown>> & { replace?: boolean; }): void"
+          },
+          "doc": "Merge server templates over the defaults.",
+          "only": "js only: the page's resolver",
+          "since": "0.8.0",
+          "status": "stable"
+        },
+        {
+          "name": "subscribe",
+          "kind": "call",
+          "side": "js",
+          "js": "onImageConfig",
+          "from": "nuikit-core/images",
+          "signature": {
+            "js": "onImageConfig(listener: () => void) => (): void"
+          },
+          "doc": "Called when the templates change.",
+          "only": "js only: the page's resolver",
+          "since": "0.8.0",
+          "status": "stable"
+        },
+        {
+          "name": "parseTemplates",
+          "kind": "call",
+          "side": "js",
+          "js": "parseTemplates",
+          "from": "nuikit-core/images",
+          "signature": {
+            "js": "parseTemplates(value: unknown): string[]"
+          },
+          "doc": "A ;-separated template list.",
+          "only": "js only: the page's resolver",
+          "since": "0.8.0",
+          "status": "stable"
+        },
+        {
+          "name": "clothingValues",
+          "kind": "call",
+          "side": "js",
+          "js": "clothingValues",
+          "from": "nuikit-core/images",
+          "signature": {
+            "js": "clothingValues(k: ClothingKey): Record<string, unknown>"
+          },
+          "doc": "The placeholder values of a clothing key.",
+          "only": "js only: the page's resolver",
+          "since": "0.8.0",
+          "status": "stable"
+        },
+        {
+          "name": "hasClothing",
+          "kind": "call",
+          "side": "js",
+          "js": "hasClothingImages",
+          "from": "nuikit-core/images",
+          "signature": {
+            "js": "hasClothingImages(cfg?: ImageConfig): boolean"
+          },
+          "doc": "The server named a clothing pack.",
+          "only": "js only: the page's resolver",
+          "since": "0.8.0",
+          "status": "stable"
+        },
+        {
+          "name": "defaults",
+          "kind": "const",
+          "side": "js",
+          "js": "DEFAULT_IMAGES",
+          "from": "nuikit-core/images",
+          "signature": {},
+          "doc": "ox/qb/ps/lj inventory images, FiveM docs vehicles.",
+          "only": "js only: the page's resolver",
+          "since": "0.8.0",
+          "status": "stable"
+        },
+        {
+          "name": "ImageKind",
+          "kind": "type",
+          "side": "js",
+          "js": "ImageKind",
+          "from": "nuikit-core/images",
+          "signature": {},
+          "doc": "item, weapon, vehicle, clothing.",
+          "only": "js only: the page's resolver",
+          "since": "0.8.0",
+          "status": "stable"
+        }
+      ],
+      "events": [
+        {
+          "name": "nuikit:images:config",
+          "dir": "page→lua",
+          "payload": "{}",
+          "reply": "{ item: string; weapon: string; vehicle: string; clothing: string; replace: boolean }",
+          "sender": "any",
+          "doc": "https://nuikit/images: the server's templates.",
+          "wire": "images",
+          "since": "0.8.0"
+        },
+        {
+          "name": "nuikit:images:vehicle",
+          "dir": "page→lua",
+          "payload": "{}",
+          "reply": "{ model?: string; hash?: number }",
+          "sender": "any",
+          "doc": "https://nuikit/vehicle: the vehicle the player sits in or stands at.",
+          "wire": "vehicle",
+          "since": "0.8.0"
+        }
+      ],
+      "legacy": [],
+      "rules": [
+        "Never a broken-image icon: try each URL, then the fallback.",
+        "Servers configure by convar (setr nuikit_images_<kind>); nothing to code."
+      ]
+    },
+    {
+      "js": "zones",
+      "lua": "zone",
+      "title": "Zones",
+      "doc": "Publish what a UI covers on screen; every other UI stays clear of it.",
+      "docs": "docs/protocol.md",
+      "import": "nuikit-core/zones",
+      "entries": [
+        {
+          "name": "set",
+          "kind": "call",
+          "side": "lua",
+          "lua": "nk.zone.set",
+          "signature": {
+            "lua": "nk.zone.set(name, rects|nil)"
+          },
+          "doc": "Publish (or with nil, remove) the rectangles this UI covers.",
+          "only": "lua only: the owner publishes through its state bag",
+          "since": "0.7.0",
+          "status": "stable"
+        },
+        {
+          "name": "all",
+          "kind": "call",
+          "side": "both",
+          "js": "getZones",
+          "from": "nuikit-core/zones",
+          "lua": "nk.zone.all",
+          "signature": {
+            "js": "getZones(): Zones"
+          },
+          "doc": "Every published zone.",
+          "since": "0.7.0",
+          "status": "stable"
+        },
+        {
+          "name": "subscribe",
+          "kind": "call",
+          "side": "js",
+          "js": "onZones",
+          "from": "nuikit-core/zones",
+          "signature": {
+            "js": "onZones(fn: () => void) => (): void"
+          },
+          "doc": "Called on every change.",
+          "only": "js only: Lua is the source",
+          "since": "0.7.0",
+          "status": "stable"
+        },
+        {
+          "name": "clearOf",
+          "kind": "call",
+          "side": "js",
+          "js": "clearOf",
+          "from": "nuikit-core/zones",
+          "signature": {
+            "js": "clearOf(all: Zones, position: ZonePosition, opts?: ClearOptions): { top?: number; bottom?: number; }"
+          },
+          "doc": "The offsets that keep a position clear of the zones.",
+          "only": "js only: layout",
+          "since": "0.7.0",
+          "status": "stable"
+        },
+        {
+          "name": "useZones",
+          "kind": "hook",
+          "side": "js",
+          "js": "useZones",
+          "from": "nuikit-core/react",
+          "signature": {
+            "js": "useZones(): Zones"
+          },
+          "doc": "The zones, live.",
+          "only": "js only: React",
+          "since": "0.7.0",
+          "status": "stable"
+        },
+        {
+          "name": "useClearOf",
+          "kind": "hook",
+          "side": "js",
+          "js": "useClearOf",
+          "from": "nuikit-core/react",
+          "signature": {
+            "js": "useClearOf(position: ZonePosition, opts?: ClearOptions): CSSProperties"
+          },
+          "doc": "A style that keeps a position clear of the zones.",
+          "only": "js only: React",
+          "since": "0.7.0",
+          "status": "stable"
+        }
+      ],
+      "events": [
+        {
+          "name": "nuikit:zone:changed",
+          "dir": "lua→page",
+          "payload": "Zones",
+          "sender": "runtime",
+          "doc": "Every zone, on change.",
+          "wire": "nuikit:zones",
+          "since": "0.7.0"
+        }
+      ],
+      "legacy": [
+        {
+          "old": "NUI.zone",
+          "now": "nk.zone.set",
+          "removeIn": "1.0.0"
+        },
+        {
+          "old": "NUI.zones",
+          "now": "nk.zone.all",
+          "removeIn": "1.0.0"
+        }
+      ],
+      "rules": [
+        "Rectangles in fractions of the screen; a resource publishes only its own."
+      ]
+    },
+    {
+      "js": "slots",
+      "lua": "slot",
+      "title": "Slots",
+      "doc": "Join a cluster (the HUD's vitals row) with a slot; the cluster draws it, ordered.",
+      "docs": "docs/slots.md",
+      "import": "nuikit-core/slots",
+      "entries": [
+        {
+          "name": "join",
+          "kind": "call",
+          "side": "lua",
+          "lua": "nk.slot.join",
+          "signature": {
+            "lua": "nk.slot.join(cluster, key, { order?, label?, icon?, hue?, level?, value?, alert?, hidden? })"
+          },
+          "doc": "Join a cluster; returns a handle (set, remove).",
+          "only": "lua only: resources join, pages draw",
+          "since": "0.6.0",
+          "status": "stable"
+        },
+        {
+          "name": "leave",
+          "kind": "call",
+          "side": "lua",
+          "lua": "nk.slot.leave",
+          "signature": {},
+          "doc": "Leave a cluster without the handle.",
+          "only": "lua only: resources join, pages draw",
+          "since": "0.6.0",
+          "status": "stable"
+        },
+        {
+          "name": "all",
+          "kind": "call",
+          "side": "both",
+          "js": "getAllSlots",
+          "from": "nuikit-core/slots",
+          "lua": "nk.slot.all",
+          "signature": {
+            "js": "getAllSlots(): Slots"
+          },
+          "doc": "Every joined slot by cluster.",
+          "since": "0.6.0",
+          "status": "stable"
+        },
+        {
+          "name": "get",
+          "kind": "call",
+          "side": "js",
+          "js": "getSlots",
+          "from": "nuikit-core/slots",
+          "signature": {
+            "js": "getSlots(cluster: string): Slot[]"
+          },
+          "doc": "One cluster's slots, ordered.",
+          "only": "js only: the cluster draws",
+          "since": "0.6.0",
+          "status": "stable"
+        },
+        {
+          "name": "subscribe",
+          "kind": "call",
+          "side": "js",
+          "js": "onSlots",
+          "from": "nuikit-core/slots",
+          "signature": {
+            "js": "onSlots(fn: () => void) => (): void"
+          },
+          "doc": "Called on every change.",
+          "only": "js only: Lua is the source",
+          "since": "0.6.0",
+          "status": "stable"
+        },
+        {
+          "name": "replace",
+          "kind": "call",
+          "side": "js",
+          "js": "setSlots",
+          "from": "nuikit-core/slots",
+          "signature": {
+            "js": "setSlots(data: unknown): void"
+          },
+          "doc": "Replace the set (what the event does; dev).",
+          "only": "js only: dev",
+          "since": "0.6.0",
+          "status": "stable"
+        },
+        {
+          "name": "useSlots",
+          "kind": "hook",
+          "side": "js",
+          "js": "useSlots",
+          "from": "nuikit-core/react",
+          "signature": {
+            "js": "useSlots(cluster: string): Slot[]"
+          },
+          "doc": "One cluster's slots, live.",
+          "only": "js only: React",
+          "since": "0.6.0",
+          "status": "stable"
+        }
+      ],
+      "events": [
+        {
+          "name": "nuikit:slot:changed",
+          "dir": "lua→page",
+          "payload": "Slots",
+          "sender": "runtime",
+          "doc": "Every slot, on change.",
+          "wire": "nuikit:slots",
+          "since": "0.6.0"
+        }
+      ],
+      "legacy": [
+        {
+          "old": "NUI.slot",
+          "now": "nk.slot.join",
+          "removeIn": "1.0.0"
+        },
+        {
+          "old": "NUI.unslot",
+          "now": "nk.slot.leave",
+          "removeIn": "1.0.0"
+        },
+        {
+          "old": "NUI.slots",
+          "now": "nk.slot.all",
+          "removeIn": "1.0.0"
+        }
+      ],
+      "rules": [
+        "A resource joins and changes only its own slots (resource:key)."
+      ]
+    },
+    {
+      "js": "motion",
+      "lua": "motion",
+      "title": "Motion",
+      "doc": "Springs, FLIP, stagger and timed runs from the theme's motion tokens; reduced motion respected.",
+      "docs": "docs/tokens.md#motion",
+      "import": "nuikit-core/motion",
+      "entries": [
+        {
+          "name": "spring",
+          "kind": "call",
+          "side": "js",
+          "js": "spring",
+          "from": "nuikit-core/motion",
+          "signature": {
+            "js": "spring(el: HTMLElement, channel: Channel, to: number, opts?: SpringOptions): Promise<boolean>"
+          },
+          "doc": "Spring an element's channel to a value (retargets mid-flight).",
+          "only": "js only: motion is the page's (WAAPI)",
+          "since": "0.7.0",
+          "status": "stable"
+        },
+        {
+          "name": "flip",
+          "kind": "call",
+          "side": "js",
+          "js": "flip",
+          "from": "nuikit-core/motion",
+          "signature": {
+            "js": "flip(els: ArrayLike<HTMLElement> | (() => ArrayLike<HTMLElement>), mutate: () => void, preset?: string | Spring): void"
+          },
+          "doc": "Animate a layout change from where things were.",
+          "only": "js only: motion is the page's (WAAPI)",
+          "since": "0.7.0",
+          "status": "stable"
+        },
+        {
+          "name": "timed",
+          "kind": "call",
+          "side": "js",
+          "js": "timed",
+          "from": "nuikit-core/motion",
+          "signature": {
+            "js": "timed(el: Element, keyframes: Keyframe[], duration: number, { startedAt, easing, fill }?: TimedOptions): Animation"
+          },
+          "doc": "A keyframe run that joins a clock (startedAt).",
+          "only": "js only: motion is the page's (WAAPI)",
+          "since": "0.7.0",
+          "status": "stable"
+        },
+        {
+          "name": "stagger",
+          "kind": "call",
+          "side": "js",
+          "js": "stagger",
+          "from": "nuikit-core/motion",
+          "signature": {
+            "js": "stagger(i: number): number"
+          },
+          "doc": "The delay of item i from --nk-stagger.",
+          "only": "js only: motion is the page's (WAAPI)",
+          "since": "0.7.0",
+          "status": "stable"
+        },
+        {
+          "name": "indicator",
+          "kind": "call",
+          "side": "js",
+          "js": "indicator",
+          "from": "nuikit-core/motion",
+          "signature": {
+            "js": "indicator(el: HTMLElement) => (y: number, scaleY?: number): void"
+          },
+          "doc": "A selection indicator that springs between rows.",
+          "only": "js only: motion is the page's (WAAPI)",
+          "since": "0.7.0",
+          "status": "stable"
+        },
+        {
+          "name": "level",
+          "kind": "call",
+          "side": "js",
+          "js": "motionLevel",
+          "from": "nuikit-core/motion",
+          "signature": {
+            "js": "motionLevel(el?: Element): MotionLevel"
+          },
+          "doc": "on, reduced or off for an element.",
+          "only": "js only: motion is the page's (WAAPI)",
+          "since": "0.7.0",
+          "status": "stable"
+        },
+        {
+          "name": "springOf",
+          "kind": "call",
+          "side": "js",
+          "js": "springOf",
+          "from": "nuikit-core/motion",
+          "signature": {
+            "js": "springOf(preset?: string | Spring): Spring"
+          },
+          "doc": "A preset or token as a spring.",
+          "only": "js only: motion is the page's (WAAPI)",
+          "since": "0.7.0",
+          "status": "stable"
+        },
+        {
+          "name": "token",
+          "kind": "call",
+          "side": "js",
+          "js": "token",
+          "from": "nuikit-core/motion",
+          "signature": {
+            "js": "token(name: string): string"
+          },
+          "doc": "A motion token's value (ms).",
+          "only": "js only: motion is the page's (WAAPI)",
+          "since": "0.7.0",
+          "status": "stable"
+        },
+        {
+          "name": "useSpring",
+          "kind": "hook",
+          "side": "js",
+          "js": "useSpring",
+          "from": "nuikit-core/react",
+          "signature": {
+            "js": "useSpring(ref: { current: HTMLElement; }, value: number, channel?: Channel, preset?: string): void"
+          },
+          "doc": "Spring a ref to a value.",
+          "only": "js only: React",
+          "since": "0.7.0",
+          "status": "stable"
+        },
+        {
+          "name": "useFlip",
+          "kind": "hook",
+          "side": "js",
+          "js": "useFlip",
+          "from": "nuikit-core/react",
+          "signature": {
+            "js": "useFlip(ref: { current: HTMLElement; }, deps: readonly unknown[], preset?: string): void"
+          },
+          "doc": "FLIP a ref when deps change.",
+          "only": "js only: React",
+          "since": "0.7.0",
+          "status": "stable"
+        },
+        {
+          "name": "useIndicator",
+          "kind": "hook",
+          "side": "js",
+          "js": "useIndicator",
+          "from": "nuikit-core/react",
+          "signature": {
+            "js": "useIndicator(listRef: { current: HTMLElement; }, indicatorRef: { current: HTMLElement; }, active: number, rows?: string): void"
+          },
+          "doc": "The selection indicator.",
+          "only": "js only: React",
+          "since": "0.7.0",
+          "status": "stable"
+        },
+        {
+          "name": "Stagger",
+          "kind": "component",
+          "side": "js",
+          "js": "Stagger",
+          "from": "nuikit-core/react",
+          "signature": {
+            "js": "Stagger({ children, step, budget, from, on }: StaggerOptions & { children: ReactNode; on?: boolean; }): ReactElement<unknown, string | JSXElementConstructor<any>>"
+          },
+          "doc": "Children enter one after another.",
+          "only": "js only: React",
+          "since": "0.7.0",
+          "status": "stable"
+        },
+        {
+          "name": "installPressFeel",
+          "kind": "call",
+          "side": "js",
+          "js": "installPressFeel",
+          "from": "nuikit-core/motion",
+          "signature": {
+            "js": "installPressFeel(): void"
+          },
+          "doc": "The press feel on every button (once).",
+          "only": "js only: motion is the page's (WAAPI)",
+          "since": "0.7.0",
+          "status": "stable"
+        }
+      ],
+      "events": [],
+      "legacy": [],
+      "rules": [
+        "transform only (never individual scale/translate); reduced motion ends at the final state."
+      ]
+    },
+    {
+      "js": "host",
+      "lua": "host",
+      "title": "Host",
+      "doc": "One frame renders many resources' UIs as modules; each falls back to its own ui_page.",
+      "docs": "docs/host.md",
+      "import": "nuikit-core/host",
+      "entries": [
+        {
+          "name": "create",
+          "kind": "call",
+          "side": "js",
+          "js": "createHost",
+          "from": "nuikit-core/host",
+          "signature": {
+            "js": "createHost(options?: HostOptions): Host"
+          },
+          "doc": "The host page runtime.",
+          "only": "js only: the host page",
+          "since": "0.5.0",
+          "status": "stable"
+        },
+        {
+          "name": "defineModule",
+          "kind": "call",
+          "side": "js",
+          "js": "defineModule",
+          "from": "nuikit-core/host",
+          "signature": {
+            "js": "defineModule(def: ModuleDefinition): ModuleDefinition"
+          },
+          "doc": "A resource's UI as a module.",
+          "only": "js only: pages",
+          "since": "0.5.0",
+          "status": "stable"
+        },
+        {
+          "name": "defineReactModule",
+          "kind": "call",
+          "side": "js",
+          "js": "defineReactModule",
+          "from": "nuikit-core/host",
+          "signature": {
+            "js": "defineReactModule({ App, css, strict }: ReactModuleOptions): ModuleDefinition"
+          },
+          "doc": "A module from a React App.",
+          "only": "js only: pages",
+          "since": "0.5.0",
+          "status": "stable"
+        },
+        {
+          "name": "mountStandalone",
+          "kind": "call",
+          "side": "js",
+          "js": "mountStandalone",
+          "from": "nuikit-core/host",
+          "signature": {
+            "js": "mountStandalone(def: ModuleDefinition, el?: HTMLElement) => (): void"
+          },
+          "doc": "Mount a module as its own page.",
+          "only": "js only: pages",
+          "since": "0.5.0",
+          "status": "stable"
+        },
+        {
+          "name": "standalone",
+          "kind": "call",
+          "side": "js",
+          "js": "standalone",
+          "from": "nuikit-core/host",
+          "signature": {
+            "js": "standalone(app: () => Promise<unknown>, options?: { timeout?: number; }): void"
+          },
+          "doc": "ui_page boot: render unless the host adopted this resource.",
+          "only": "js only: pages",
+          "since": "0.5.0",
+          "status": "stable"
+        },
+        {
+          "name": "context",
+          "kind": "call",
+          "side": "js",
+          "js": "hostedContext",
+          "from": "nuikit-core/host",
+          "signature": {
+            "js": "hostedContext(): HostedContext"
+          },
+          "doc": "The hosted context, or null on a page of its own.",
+          "only": "js only: pages",
+          "since": "0.5.0",
+          "status": "stable"
+        },
+        {
+          "name": "scope",
+          "kind": "call",
+          "side": "js",
+          "js": "scopeStylesheet",
+          "from": "nuikit-core/host",
+          "signature": {
+            "js": "scopeStylesheet(css: string, scope: string): { sheet: CSSStyleSheet; hoisted: string[]; }"
+          },
+          "doc": "Scope a module's stylesheet.",
+          "only": "js only: the host page",
+          "since": "0.5.0",
+          "status": "stable"
+        },
+        {
+          "name": "modules",
+          "kind": "call",
+          "side": "lua",
+          "lua": "nk.host.modules",
+          "signature": {},
+          "doc": "Hosted resources (tooling).",
+          "only": "lua only: the nuikit resource hosts",
+          "since": "0.5.0",
+          "status": "stable"
+        },
+        {
+          "name": "hosted",
+          "kind": "const",
+          "side": "lua",
+          "lua": "nk.host.hosted",
+          "signature": {},
+          "doc": "This resource's UI is rendered by the host.",
+          "only": "lua only: the page asks nuikit:host:mode",
+          "since": "0.5.0",
+          "status": "stable"
+        }
+      ],
+      "events": [
+        {
+          "name": "nuikit:host:mode",
+          "dir": "page→lua",
+          "payload": "{}",
+          "reply": "{ hosted: boolean }",
+          "sender": "runtime",
+          "doc": "Own ui_page asks whether to render.",
+          "since": "0.5.0"
+        },
+        {
+          "name": "nuikit:host:call",
+          "dir": "page→lua",
+          "payload": "{ t: string; n: string; d?: unknown }",
+          "reply": "unknown",
+          "sender": "nuikit",
+          "doc": "A hosted module's fetchNui, forwarded.",
+          "since": "0.5.0"
+        },
+        {
+          "name": "nuikit:host:ready",
+          "dir": "page→lua",
+          "payload": "{}",
+          "reply": "{ ok: boolean }",
+          "sender": "nuikit",
+          "doc": "The host page loaded.",
+          "since": "0.5.0"
+        },
+        {
+          "name": "nuikit:host:error",
+          "dir": "page→lua",
+          "payload": "{ resource: string; message: string }",
+          "reply": "{ ok: boolean }",
+          "sender": "nuikit",
+          "doc": "A module failed to mount.",
+          "since": "0.5.0"
+        },
+        {
+          "name": "nuikit:host:adopted",
+          "dir": "lua→page",
+          "payload": "undefined",
+          "sender": "runtime",
+          "doc": "Own ui_page: stay empty, the host renders.",
+          "since": "0.5.0"
+        },
+        {
+          "name": "nuikit:host:fallback",
+          "dir": "lua→page",
+          "payload": "undefined",
+          "sender": "runtime",
+          "doc": "Own ui_page: render, the host is gone.",
+          "since": "0.5.0"
+        },
+        {
+          "name": "nuikit:host:hello",
+          "dir": "local",
+          "payload": "(resource: string)",
+          "sender": "owner",
+          "doc": "A resource with a module started.",
+          "since": "0.5.0"
+        },
+        {
+          "name": "nuikit:host:adopt",
+          "dir": "local",
+          "payload": "(resource: string)",
+          "sender": "nuikit",
+          "doc": "The host adopts a resource.",
+          "since": "0.5.0"
+        },
+        {
+          "name": "nuikit:host:send",
+          "dir": "local",
+          "payload": "(action: string, data: unknown)",
+          "sender": "owner",
+          "doc": "A hosted resource's message, through the host.",
+          "since": "0.5.0"
+        },
+        {
+          "name": "nuikit:host:forward",
+          "dir": "local",
+          "payload": "(resource, id, name, payload)",
+          "sender": "nuikit",
+          "doc": "A module's call, to its resource.",
+          "since": "0.5.0"
+        },
+        {
+          "name": "nuikit:host:reply",
+          "dir": "local",
+          "payload": "(id: string, result: unknown)",
+          "sender": "owner",
+          "doc": "The resource's reply, to the host.",
+          "since": "0.5.0"
+        }
+      ],
+      "legacy": [
+        {
+          "old": "NUI.hostModules",
+          "now": "nk.host.modules",
+          "removeIn": "1.0.0"
+        },
+        {
+          "old": "NUI.hosted",
+          "now": "nk.host.hosted",
+          "removeIn": "1.0.0"
+        }
+      ],
+      "rules": [
+        "Only the nuikit resource can adopt or call in (GetInvokingResource)."
+      ]
+    },
+    {
+      "js": "devtools",
+      "lua": "devtools",
+      "title": "Devtools",
+      "doc": "Work in the browser like in game: event presets, mocked callbacks, the surface stack, a call log, scenes.",
+      "import": "nuikit-core/devtools",
+      "entries": [
+        {
+          "name": "NuiDevtools",
+          "kind": "component",
+          "side": "js",
+          "js": "NuiDevtools",
+          "from": "nuikit-core/devtools",
+          "signature": {
+            "js": "NuiDevtools({ events, callbacks, scene: initialScene, defaultOpen, force, surfaces: surfaceData, states: stateNames, }: NuiDevtoolsProps): Element"
+          },
+          "doc": "The panel (press `).",
+          "only": "js only: browser dev",
+          "since": "0.4.0",
+          "status": "stable"
+        },
+        {
+          "name": "defineMocks",
+          "kind": "call",
+          "side": "js",
+          "js": "defineMocks",
+          "from": "nuikit-core/devtools",
+          "signature": {
+            "js": "defineMocks<E extends EventPresets, C extends CallbackMocks>(mocks: { events?: E; callbacks?: C; }): { events?: E; callbacks?: C; }"
+          },
+          "doc": "Typed event presets and callback mocks.",
+          "only": "js only: browser dev",
+          "since": "0.4.0",
+          "status": "stable"
+        }
+      ],
+      "events": [],
+      "legacy": [],
+      "rules": []
+    },
+    {
+      "js": "doctor",
+      "lua": "doctor",
+      "title": "Doctor",
+      "doc": "What runs on the server and in the CLI: the doctor's report, override install plans, coverage maths.",
+      "docs": "docs/doctor.md",
+      "import": "nuikit-core/doctor",
+      "entries": [
+        {
+          "name": "run",
+          "kind": "call",
+          "side": "js",
+          "js": "doctor",
+          "from": "nuikit-core/doctor",
+          "signature": {
+            "js": "doctor(snap: DoctorSnapshot): DoctorReport"
+          },
+          "doc": "A report of every resource: nuikit, override, adapter, outdated.",
+          "only": "js only: runs in the nuikit resource's server (Node) and the CLI",
+          "since": "0.6.0",
+          "status": "stable"
+        },
+        {
+          "name": "format",
+          "kind": "call",
+          "side": "js",
+          "js": "formatDoctor",
+          "from": "nuikit-core/doctor",
+          "signature": {
+            "js": "formatDoctor(rep: DoctorReport): string[]"
+          },
+          "doc": "The report as lines.",
+          "only": "js only: runs in the nuikit resource's server (Node) and the CLI",
+          "since": "0.6.0",
+          "status": "stable"
+        },
+        {
+          "name": "detectFramework",
+          "kind": "call",
+          "side": "js",
+          "js": "detectFramework",
+          "from": "nuikit-core/doctor",
+          "signature": {
+            "js": "detectFramework(resources: DoctorResource[]): { framework: Framework; resource: string; }"
+          },
+          "doc": "Qbox, QBCore, ESX or standalone from the resource list.",
+          "only": "js only: runs in the nuikit resource's server (Node) and the CLI",
+          "since": "0.6.0",
+          "status": "stable"
+        },
+        {
+          "name": "compareVersions",
+          "kind": "call",
+          "side": "js",
+          "js": "compareVersions",
+          "from": "nuikit-core/doctor",
+          "signature": {
+            "js": "compareVersions(a: string, b: string): number"
+          },
+          "doc": "Semver compare.",
+          "only": "js only: runs in the nuikit resource's server (Node) and the CLI",
+          "since": "0.6.0",
+          "status": "stable"
+        },
+        {
+          "name": "pageHash",
+          "kind": "call",
+          "side": "js",
+          "js": "pageHash",
+          "from": "nuikit-core/doctor",
+          "signature": {
+            "js": "pageHash(text: string): string"
+          },
+          "doc": "A page's hash (override drift).",
+          "only": "js only: runs in the nuikit resource's server (Node) and the CLI",
+          "since": "0.6.0",
+          "status": "stable"
+        },
+        {
+          "name": "adapterPacks",
+          "kind": "const",
+          "side": "js",
+          "js": "ADAPTER_PACKS",
+          "from": "nuikit-core/doctor",
+          "signature": {},
+          "doc": "The adapter packs the doctor knows.",
+          "only": "js only: runs in the nuikit resource's server (Node) and the CLI",
+          "since": "0.6.0",
+          "status": "stable"
+        },
+        {
+          "name": "planInstall",
+          "kind": "call",
+          "side": "js",
+          "js": "planInstall",
+          "from": "nuikit-core/doctor",
+          "signature": {
+            "js": "planInstall(input: PlanInstallInput): InstallPlan"
+          },
+          "doc": "What installing overrides would change.",
+          "only": "js only: runs in the nuikit resource's server (Node) and the CLI",
+          "since": "0.6.0",
+          "status": "stable"
+        },
+        {
+          "name": "coverage",
+          "kind": "call",
+          "side": "js",
+          "js": "computeCoverage",
+          "from": "nuikit-core/doctor",
+          "signature": {
+            "js": "computeCoverage(framework: string, session: SessionStep[], drawn: DrawnCounts): CoverageResult"
+          },
+          "doc": "Coverage of a framework session by the drawn intents.",
+          "only": "js only: runs in the nuikit resource's server (Node) and the CLI",
+          "since": "0.7.0",
+          "status": "stable"
+        }
+      ],
+      "events": [
+        {
+          "name": "nuikit:doctor:command",
+          "dir": "net",
+          "payload": "string[]",
+          "sender": "any",
+          "doc": "/nuikit <sub>, ace-checked on the server.",
+          "wire": "nuikit:command",
+          "since": "0.5.0"
+        },
+        {
+          "name": "nuikit:doctor:renderer-failed",
+          "dir": "net",
+          "payload": "{ resource: string; kind: string; message: string }",
+          "sender": "nuikit",
+          "doc": "A renderer failed to load (for the doctor).",
+          "wire": "nuikit:renderer:failed",
+          "since": "0.7.0"
+        }
+      ],
+      "legacy": [],
+      "rules": []
     }
   ],
   "components": [
