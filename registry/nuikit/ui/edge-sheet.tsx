@@ -168,7 +168,7 @@ function EdgeSheet({
         >
           {(title || icon || actions || onBack || onClose) && (
             <header data-slot="edge-sheet-header" className="flex flex-col gap-1 pb-4">
-              <div className="flex min-h-8 items-center gap-3">
+              <div className="flex min-h-[var(--nk-edge-sheet-header-h,2rem)] items-center gap-3">
                 {onBack && back ? (
                   <ActionBar className="-ml-2 shrink-0">
                     <ActionBarItem keys={["Esc"]} label={back === true ? "Back" : back} onClick={onBack} aria-label="Back" />
@@ -178,7 +178,7 @@ function EdgeSheet({
                     <ChevronLeftIcon />
                   </Button>
                 )}
-                {icon && !onBack && <span className="flex shrink-0 text-muted-foreground [&_svg:not([class*='size-'])]:size-5">{icon}</span>}
+                {icon && !onBack && <span className="flex shrink-0 text-muted-foreground [&_svg:not([class*='size-'])]:size-(--nk-icon-lg)">{icon}</span>}
                 <SheetTitle className="nk-title min-w-0 flex-1 truncate" style={TITLE}>
                   {title}
                 </SheetTitle>
