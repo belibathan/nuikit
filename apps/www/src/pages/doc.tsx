@@ -8,6 +8,7 @@ const ON_SITE: Record<string, string> = {
   "docs/intents.md": "/intents",
   "docs/adopt.md": "/adopt",
   "docs/design.md": "/design",
+  "docs/design/your-language.md": "/language",
   "docs/coverage.md": "/coverage",
 };
 

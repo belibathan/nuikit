@@ -10,7 +10,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { SelectField, SliderField } from "@/components/ui/form-field";
 import { Textarea } from "@/components/ui/textarea";
 import { applyStageTheme, clearStageTheme } from "@/lib/stage-theme";
-import { COMPONENTS, exportThemeCss, fontChoice, FONT_CHOICES, IDENTITY, identityNumber, identityValue, studioTheme, toHex, TWEAKS, withAlpha, type IdentityControl } from "@/lib/theme-studio";
+import { COMPONENTS, diffTheme, exportChangesCss, exportThemeCss, fontChoice, FONT_CHOICES, IDENTITY, identityNumber, identityValue, LEVERS, studioTheme, toHex, TREATMENT_INFO, TREATMENTS, TWEAKS, withAlpha, withTreatment, type IdentityControl, type Treatment } from "@/lib/theme-studio";
+import { LanguageStrip } from "@/components/language-strip";
 import { cn } from "@/lib/utils";
 import { identities, themes } from "@/themes";
 
@@ -25,8 +26,13 @@ export function ThemePage() {
   const [css, setCss] = useState(PRESETS[0]!.css);
   const [preset, setPreset] = useState<number | null>(0);
   const [tweaks, setTweaks] = useState<ThemeVars>({});
-  const theme = useMemo(() => studioTheme(css, tweaks), [css, tweaks]);
+  const [treatment, setTreatment] = useState<Treatment | null>(null);
+  const theme = useMemo(() => studioTheme(withTreatment(css, treatment), tweaks), [css, treatment, tweaks]);
+  const base = useMemo(() => studioTheme(css), [css]);
   const file = useMemo(() => exportThemeCss(theme), [theme]);
+  const changes = useMemo(() => diffTheme(theme, base), [theme, base]);
+  const startName = preset === null ? "your paste" : PRESETS[preset]!.name;
+  const changesFile = useMemo(() => exportChangesCss(changes, startName), [changes, startName]);
 
   const stage = useRef<HTMLDivElement>(null);
   const variants = useRef<HTMLDivElement>(null);
@@ -48,8 +54,8 @@ export function ThemePage() {
   const contrastIssues = theme.contrast.filter((c) => !c.ok).length;
   const notes = theme.warnings.filter((w) => !/:1 \(needs /.test(w));
 
-  const download = () => {
-    const url = URL.createObjectURL(new Blob([file], { type: "text/css" }));
+  const download = (text = file) => {
+    const url = URL.createObjectURL(new Blob([text], { type: "text/css" }));
     const a = document.createElement("a");
     a.href = url;
     a.download = "theme.css";
@@ -68,9 +74,13 @@ export function ThemePage() {
             <a href="https://tweakcn.com" className="text-foreground underline underline-offset-4">
               TweakCN
             </a>{" "}
-            or shadcn theme, tweak the colours and the identity (type, shape, surface, density, motion, HUD), and watch the kit change on a game screen. The checks are the ones your server runs. Download
+            or shadcn theme, tweak the colours and the identity (type, shape, surface, density, motion, HUD), and watch the kit change on a game screen. Pick a treatment, then drag the levers. The checks are the ones your server runs. Download
             theme.css, drop it in <code className="font-mono text-foreground">nuikit/theme.css</code> and run{" "}
-            <code className="font-mono text-foreground">nuikit theme reload</code>.
+            <code className="font-mono text-foreground">nuikit theme reload</code>. New to this?{" "}
+            <a href="/language" className="text-foreground underline underline-offset-4">
+              Your language in an hour
+            </a>
+            .
           </p>
         </header>
 
@@ -154,6 +164,7 @@ export function ThemePage() {
                       setPreset(i);
                       setCss(t.css);
                       setTweaks({});
+                      setTreatment(null);
                     }}
                   >
                     <span className="flex -space-x-1">
@@ -180,6 +191,7 @@ export function ThemePage() {
                   onChange={(e) => {
                     setCss(e.target.value);
                     setPreset(null);
+                    setTreatment(null);
                   }}
                   spellCheck={false}
                   className="h-56 resize-y font-mono text-xs"
@@ -187,6 +199,22 @@ export function ThemePage() {
               </CardContent>
             </Card>
 
+            <Card className="gap-4 py-5">
+              <CardHeader className="px-5">
+                <CardTitle>Treatment</CardTitle>
+                <CardDescription>How the palette is drawn: a named set of levers. Anything you set yourself wins over it.</CardDescription>
+              </CardHeader>
+              <CardContent className="flex flex-col gap-3 px-5">
+                <div className="flex flex-wrap gap-1" role="radiogroup" aria-label="Treatment">
+                  {TREATMENTS.map((t) => (
+                    <Button key={t} role="radio" aria-checked={theme.vars["nk-treatment"] === t} variant={theme.vars["nk-treatment"] === t ? "secondary" : "outline"} size="sm" onClick={() => setTreatment(t)} className="capitalize">
+                      {t}
+                    </Button>
+                  ))}
+                </div>
+                <p className="text-sm text-muted-foreground">{TREATMENT_INFO[(theme.vars["nk-treatment"] as Treatment) ?? "soft"]}</p>
+              </CardContent>
+            </Card>
             <Card className="gap-4 py-5">
               <CardHeader className="px-5">
                 <CardTitle>1 · Identity</CardTitle>
@@ -211,7 +239,7 @@ export function ThemePage() {
                 <CardTitle className="flex items-center justify-between">
                   2 · Colours
                   {Object.keys(tweaks).length > 0 && (
-                    <Button variant="ghost" size="sm" onClick={() => setTweaks({})}>
+                    <Button variant="ghost" size="sm" onClick={() => { setTweaks({}); setTreatment(null); }}>
                       <RotateCcwIcon /> Undo tweaks
                     </Button>
                   )}
@@ -264,6 +292,55 @@ export function ThemePage() {
 
             <Card className="gap-4 py-5">
               <CardHeader className="px-5">
+                <CardTitle>4 · Levers</CardTitle>
+                <CardDescription>
+                  Geometry, type voices, fills, selection and motion: every one a token a theme file may set (
+                  <a href="https://github.com/belibathan/nuikit/blob/main/docs/design/levers.md" className="underline underline-offset-4">levers.md</a>). A dot marks what you moved.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="flex flex-col gap-6 px-5">
+                {LEVERS.map((g) => (
+                  <div key={g.group} className="flex flex-col gap-3">
+                    <p className="text-xs font-medium text-muted-foreground">{g.group}</p>
+                    {g.controls.map((c) => (
+                      <IdentityField key={c.name} control={c} value={theme.vars[c.name]} tweaked={c.name in tweaks} onChange={(v) => tweak(c.name, v)} />
+                    ))}
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+
+            <Card className="gap-4 py-5">
+              <CardHeader className="px-5">
+                <CardTitle>Only what you changed</CardTitle>
+                <CardDescription>
+                  Diffed against {startName}: {changes.length} {changes.length === 1 ? "value" : "values"}, values only, in <code className="font-mono">@layer nk.theme</code>. Keep the base theme and layer this on top.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="flex flex-col gap-3 px-5">
+                {changes.length > 0 && (
+                  <ul className="max-h-48 overflow-auto font-mono text-xs">
+                    {changes.map((c) => (
+                      <li key={c.name} className="flex gap-2 py-0.5">
+                        <span className="truncate">--{c.name}</span>
+                        <span className="ml-auto shrink-0 text-muted-foreground">
+                          {c.from ?? "unset"} → <span className="text-foreground">{c.to}</span>
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                <div className="flex gap-2">
+                  <Button className="flex-1" variant="outline" onClick={() => download(changesFile)}>
+                    <DownloadIcon /> Download changes
+                  </Button>
+                  <CopyThemeButton text={changesFile} label="Copy changes" />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="gap-4 py-5">
+              <CardHeader className="px-5">
                 <CardTitle>theme.css</CardTitle>
                 <CardDescription>
                   Every token, compiled for the game. Put it in <code className="font-mono">nuikit/theme.css</code>; every nuikit UI on the server
@@ -271,7 +348,7 @@ export function ThemePage() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="flex gap-2 px-5">
-                <Button className="flex-1" onClick={download}>
+                <Button className="flex-1" onClick={() => download()}>
                   <DownloadIcon /> Download theme.css
                 </Button>
                 <CopyThemeButton text={file} />
@@ -279,6 +356,7 @@ export function ThemePage() {
             </Card>
           </div>
         </div>
+        <LanguageStrip />
       </main>
       <Footer />
     </div>
@@ -343,7 +421,7 @@ function IdentityField({ control: c, value, tweaked, onChange }: { control: Iden
 }
 
 /** Copies theme.css, and says so for a moment. */
-function CopyThemeButton({ text }: { text: string }) {
+function CopyThemeButton({ text, label = "Copy theme.css" }: { text: string; label?: string }) {
   const [done, setDone] = useState(false);
   return (
     <Button
@@ -355,7 +433,7 @@ function CopyThemeButton({ text }: { text: string }) {
       }}
     >
       {done ? <CheckIcon /> : <CopyIcon />}
-      {done ? "Copied" : "Copy theme.css"}
+      {done ? "Copied" : label}
     </Button>
   );
 }
