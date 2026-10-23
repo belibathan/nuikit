@@ -68,6 +68,31 @@ jobs:
           name: chromium-103-render
           path: examples/cef-proof/out/*.png
 
+  visual:
+    name: Visual baselines (Chromium 103)
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm -r --filter "./packages/**" build
+      # The site (/components) is a modern page: it gets Playwright's Chromium; HUD and pause run in 103.
+      - run: node node_modules/.pnpm/playwright-core@1.56.0/node_modules/playwright-core/cli.js install --with-deps chromium
+      # HUD, pause and /components under five identities vs bench/visual/baselines. A missing baseline is
+      # reported, not failed; a diff over the threshold fails. bench/visual/out holds actual + diff (and new-*).
+      - run: pnpm visual
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: visual
+          path: bench/visual/out/*.png
+          if-no-files-found: ignore
+
   scaffold:
     name: create-nuikit end to end
     runs-on: ubuntu-latest
