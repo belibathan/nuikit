@@ -1,0 +1,141 @@
+/*
+ * Flat: the utilitarian language. Flat, rounded, quiet: no keycap walls, no slant, no plates, no drops. Upright
+ * sans voices in sentence case (Inter for everything, Geist Mono for codes), a cool slate palette with one blue
+ * accent, soft translucent fills (a tinted selection, a tinted focus), rows marked by their sweep alone, bar gauges
+ * and meters. The kind of UI a busy roleplay server runs all day without noticing it.
+ *
+ * Built from values only: every line below is a lever from docs/design/levers.md; no selectors, no component rules.
+ * The import is the kit's token-driven state sheet (key states, the lifted slot, notice entrances), the same one
+ * Default uses; it draws nothing this file doesn't ask for.
+ *
+ * Use it: copy this file over nuikit/theme.css, then `nuikit theme reload`. Tokens: docs/tokens.md.
+ */
+@import url("https://cfx-nui-nuikit/theme/default.css");
+
+.dark {
+  /* palette: slate surfaces, soft white text, one blue */
+  --background: #121417;
+  --foreground: #e8eaed;
+  --card: #181b1f;
+  --card-foreground: #e8eaed;
+  --popover: #1a1d22;
+  --popover-foreground: #e8eaed;
+  --primary: #5b9dff;
+  --primary-foreground: #0c1320;
+  --secondary: #23272e;
+  --secondary-foreground: #e8eaed;
+  --muted: #20242a;
+  --muted-foreground: #9aa3ad;
+  --accent: rgba(255, 255, 255, 0.06);
+  --accent-foreground: #e8eaed;
+  --destructive: #ff6b6b;
+  --border: rgba(255, 255, 255, 0.08);
+  --input: rgba(255, 255, 255, 0.1);
+  --ring: #5b9dff;
+  --chart-1: #5b9dff;
+  --chart-2: #3ecf8e;
+  --chart-3: #f5b547;
+  --chart-4: #c084fc;
+  --chart-5: #9aa3ad;
+  --radius: 0.875rem;
+  --brand: #5b9dff;
+  --brand-foreground: #0c1320;
+  --success: #3ecf8e;
+  --warning: #f5b547;
+  --info: #5b9dff;
+  --hud: rgba(18, 20, 23, 0.78);
+  --hud-foreground: #f2f4f6;
+  --scrim: #000000;
+  --nk-hue-line: 0.4;
+  --nk-hue-tint: 0.12;
+  --nk-hue-glow: 0;
+  --nk-hue-alert: 0.2;
+
+  /* type: one upright sans, sentence case everywhere, numbers tabular in the same face */
+  --font-sans: Inter, ui-sans-serif, system-ui, sans-serif;
+  --font-display: Inter, ui-sans-serif, system-ui, sans-serif;
+  --font-numeric: Inter, ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --nk-type-ratio: 1.2;
+  --nk-weight-body: 400;
+  --nk-weight-strong: 600;
+  --nk-weight-display: 600;
+  --nk-tracking-display: -0.01em;
+  --nk-label-case: none;
+  --nk-tracking-label: 0em;
+  --nk-heading-case: none;
+  --nk-display-style: normal;
+  --nk-type-scan-weight: 600;
+  --nk-type-label-weight: 500;
+
+  /* treatment: soft, tuned flat */
+  --nk-treatment: soft;
+  --nk-density: 1;
+
+  /* geometry: round everything, no slant, no wall, no plate, no cut */
+  --nk-r-key: 0.5rem;
+  --nk-r-chip: 0.625rem;
+  --nk-r-control: 0.75rem;
+  --nk-r-surface: 1rem;
+  --nk-h-key: 1.5rem;
+  --nk-h-chip: 1.75rem;
+  --nk-h-control: 2.25rem;
+  --nk-h-row: 2.75rem;
+  --nk-skew: 0deg;
+  --nk-cut: 0px;
+  --nk-border-width: 1px;
+  --nk-tile-skew: 0deg;
+  --nk-tile-wall: 0px;
+  --nk-tile-wall-shade: 0;
+  --nk-tile-plate-x: 0px;
+  --nk-tile-plate-y: 0px;
+  --nk-tile-press: 0px;
+  --nk-tile-inset: 0.25rem;
+  --nk-chip-shape: rounded;
+
+  /* depth: none. Flat surfaces, a faint hairline, no edge light, no drop, no glow */
+  --nk-elevation: none;
+  --nk-surface-opacity: 0.96;
+  --nk-surface-tint: 0;
+  --nk-surface-gradient: 0;
+  --nk-surface-edge: 0;
+  --nk-glow: 0;
+  --nk-backdrop: off;
+  --nk-tile-face: #23272e;
+  --nk-tile-ink: #e8eaed;
+  --nk-tile-light: rgba(0, 0, 0, 0);
+  --nk-tile-shade: rgba(0, 0, 0, 0);
+  --nk-tile-rim: rgba(255, 255, 255, 0.08);
+  --nk-tile-rim-focus: #5b9dff;
+  --nk-plate: rgb(26, 29, 34);
+  --nk-plate-hair: rgba(255, 255, 255, 0.08);
+  --nk-plate-drop: 0 0 0 0 rgba(0, 0, 0, 0);
+  --nk-hud-opacity: 0.78;
+  --nk-hud-text-shadow: none;
+
+  /* fills and selection: soft. A tinted face, the foreground ink, a thin bar in the brand */
+  --nk-fill-style: soft;
+  --nk-tile-tint: 0.14;
+  --nk-fill-color: var(--brand);
+  --nk-fill-track: rgba(255, 255, 255, 0.08);
+  --nk-fill-tint: rgba(91, 157, 255, 0.1);
+  --nk-fill-edge: rgba(0, 0, 0, 0);
+  --nk-row-indicator: sweep;
+  --nk-focus-style: tint;
+  --nk-hold-style: bar;
+  --nk-level-style: bar;
+  --nk-gauge-style: bar;
+  --nk-gauge-track: 0.375rem;
+  --nk-gauge-ticks: 0;
+  --nk-meter-radius: 9999px;
+
+  /* motion: short and even */
+  --nk-duration: 160ms;
+  --nk-ease: cubic-bezier(0.2, 0, 0, 1);
+  --nk-motion-feel: crisp;
+  --nk-stagger: 30ms;
+  --nk-confirm-scale: 1.02;
+  --nk-lift: 0rem;
+  --nk-rise: 0.25rem;
+  --nk-land-scale: 1;
+}

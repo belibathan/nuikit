@@ -1,0 +1,151 @@
+/*
+ * Square: the terminal language. Zero radius, hard 1px rims on everything, pure black and white, no walls, no
+ * slant, no shadows. IBM Plex Sans upright for sentences and titles in small caps spacing, JetBrains Mono for every
+ * number and key; an amber brand reserved for the one thing that matters; outlined rows, digital gauges, segmented
+ * meters, an inverted focus. Brutal on purpose: what a dispatch console or a hacker terminal wants.
+ *
+ * Built from values only: every line below is a lever from docs/design/levers.md; no selectors, no component rules.
+ * The import is the kit's token-driven state sheet (key states, the lifted slot, notice entrances), the same one
+ * Default uses; it draws nothing this file doesn't ask for.
+ *
+ * Use it: copy this file over nuikit/theme.css, then `nuikit theme reload`. Tokens: docs/tokens.md.
+ */
+@import url("https://cfx-nui-nuikit/theme/default.css");
+
+.dark {
+  /* palette: black, white, one amber */
+  --background: #000000;
+  --foreground: #ffffff;
+  --card: #050505;
+  --card-foreground: #ffffff;
+  --popover: #000000;
+  --popover-foreground: #ffffff;
+  --primary: #ffffff;
+  --primary-foreground: #000000;
+  --secondary: #111111;
+  --secondary-foreground: #ffffff;
+  --muted: #0d0d0d;
+  --muted-foreground: #b3b3b3;
+  --accent: rgba(255, 255, 255, 0.1);
+  --accent-foreground: #ffffff;
+  --destructive: #ff3b3b;
+  --border: rgba(255, 255, 255, 0.35);
+  --input: rgba(255, 255, 255, 0.4);
+  --ring: #ffffff;
+  --chart-1: #ffffff;
+  --chart-2: #ffd400;
+  --chart-3: #b3b3b3;
+  --chart-4: #666666;
+  --chart-5: #333333;
+  --radius: 0rem;
+  --brand: #ffd400;
+  --brand-foreground: #000000;
+  --success: #00e07a;
+  --warning: #ffd400;
+  --info: #ffffff;
+  --hud: rgba(0, 0, 0, 0.85);
+  --hud-foreground: #ffffff;
+  --scrim: #000000;
+  --nk-hue-line: 0.8;
+  --nk-hue-tint: 0.1;
+  --nk-hue-glow: 0;
+  --nk-hue-alert: 0.3;
+
+  /* type: Plex upright for words, Mono for every number and key; caps labels, wide tracking */
+  --font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-numeric: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --nk-type-ratio: 1.2;
+  --nk-weight-body: 400;
+  --nk-weight-strong: 600;
+  --nk-weight-display: 700;
+  --nk-tracking-display: 0.02em;
+  --nk-label-case: uppercase;
+  --nk-tracking-label: 0.08em;
+  --nk-heading-case: uppercase;
+  --nk-display-style: normal;
+  --nk-type-scan-family: var(--font-mono);
+  --nk-type-scan-case: uppercase;
+  --nk-type-scan-tracking: 0.06em;
+  --nk-type-num-family: var(--font-numeric);
+  --nk-type-num-tracking: 0em;
+  --nk-type-label-tracking: 0.08em;
+  --nk-type-label-case: uppercase;
+  --nk-caption-font: var(--font-mono);
+
+  /* treatment: soft, tuned hard */
+  --nk-treatment: soft;
+  --nk-density: 0.95;
+
+  /* geometry: square. No radius anywhere, 1px rims, no slant, no wall, no plate */
+  --nk-r-key: 0px;
+  --nk-r-chip: 0px;
+  --nk-r-control: 0px;
+  --nk-r-surface: 0px;
+  --nk-h-key: 1.5rem;
+  --nk-h-chip: 1.75rem;
+  --nk-h-control: 2.25rem;
+  --nk-h-row: 2.75rem;
+  --nk-skew: 0deg;
+  --nk-cut: 0px;
+  --nk-border-width: 1px;
+  --nk-tile-skew: 0deg;
+  --nk-tile-wall: 0px;
+  --nk-tile-wall-shade: 0;
+  --nk-tile-plate-x: 0px;
+  --nk-tile-plate-y: 0px;
+  --nk-tile-press: 0px;
+  --nk-tile-inset: 0.125rem;
+  --nk-chip-shape: square;
+  --nk-meter-radius: 0px;
+  --nk-chip-radius: 0px;
+  --nk-row-radius: 0px;
+
+  /* depth: none. Black plates with a white rim, no edge light, no drop */
+  --nk-elevation: none;
+  --nk-surface-opacity: 1;
+  --nk-surface-tint: 0;
+  --nk-surface-gradient: 0;
+  --nk-surface-edge: 0;
+  --nk-glow: 0;
+  --nk-backdrop: off;
+  --nk-tile-face: #000000;
+  --nk-tile-ink: #ffffff;
+  --nk-tile-light: rgba(0, 0, 0, 0);
+  --nk-tile-shade: rgba(0, 0, 0, 0);
+  --nk-tile-rim: rgba(255, 255, 255, 0.6);
+  --nk-tile-rim-focus: #ffd400;
+  --nk-tile-key-rim: #ffffff;
+  --nk-plate: rgb(0, 0, 0);
+  --nk-plate-hair: rgba(255, 255, 255, 0.5);
+  --nk-plate-drop: 0 0 0 0 rgba(0, 0, 0, 0);
+  --nk-hud-opacity: 0.85;
+  --nk-hud-text-shadow: none;
+
+  /* fills and selection: a white rim around a faintly lit face; white bars on a dim track; outlined rows */
+  --nk-fill-style: soft;
+  --nk-tile-tint: 0.1;
+  --nk-fill-color: var(--foreground);
+  --nk-fill-track: rgba(255, 255, 255, 0.15);
+  --nk-fill-tint: rgba(255, 255, 255, 0.08);
+  --nk-fill-edge: rgba(0, 0, 0, 0);
+  --nk-row-indicator: outline;
+  --nk-focus-style: invert;
+  --nk-hold-style: bar;
+  --nk-level-style: bar;
+  --nk-gauge-style: digital;
+  --nk-gauge-track: 0.25rem;
+  --nk-gauge-ticks: 1;
+  --nk-meter-segments: 1;
+
+  /* motion: instant-feeling snaps */
+  --nk-duration: 100ms;
+  --nk-ease: cubic-bezier(0.2, 0, 0, 1);
+  --nk-motion-feel: snap;
+  --nk-stagger: 20ms;
+  --nk-confirm-scale: 1;
+  --nk-lift: 0rem;
+  --nk-rise: 0rem;
+  --nk-land-scale: 1;
+}

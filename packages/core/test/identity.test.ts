@@ -21,7 +21,7 @@ import {
 
 const root = path.resolve(__dirname, "../../..") + "/";
 const read = (p: string) => readFileSync(root + p, "utf8");
-const IDENTITIES = ["default", "neon-pop", "graphite", "signal", "velvet", "vector", "arcade", "street", "studio"] as const;
+const IDENTITIES = ["default", "neon-pop", "graphite", "signal", "velvet", "vector", "arcade", "street", "studio", "flat", "square"] as const;
 // Neon Pop is Default's structure with a palette, so it is left out of the structural-distinctness check.
 const STRUCTURES = IDENTITIES.filter((n) => n !== "neon-pop");
 const identity = (n: (typeof IDENTITIES)[number]) => read(`packages/core/themes/${n}.css`);
