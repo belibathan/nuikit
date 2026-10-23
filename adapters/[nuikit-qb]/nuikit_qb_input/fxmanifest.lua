@@ -5,7 +5,7 @@ lua54 'yes'
 name 'nuikit_qb_input'
 description 'nuikit adapter: stands in for qb-input. ShowInput / CloseMenu land on the nk.input intent; the caller gets the same table back.'
 repository 'https://github.com/belibathan/nuikit'
-version '0.7.0'
+version '0.8.0'
 
 provide 'qb-input'
 nuikit_adapter 'qb-input'

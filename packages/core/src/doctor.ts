@@ -131,12 +131,13 @@ export interface DoctorReport {
 // ─────────────────────────────────────────── tables
 
 /** The systems `[nuikit]` ships and nuikit.cfg ensures by name (nuikit_dev is opt-in, so not here). */
-export const NUIKIT_SYSTEMS = ["nuikit_chat", "nuikit_death", "nuikit_hud", "nuikit_loading", "nuikit_pause", "nuikit_stress"];
+export const NUIKIT_SYSTEMS = ["nuikit_chat", "nuikit_death", "nuikit_hud", "nuikit_loading", "nuikit_pause", "nuikit_stress", "nuikit_voice"];
 
 export const ADAPTER_PACKS: AdapterPack[] = [
+  // ox_lib has no pack: its override (overrides/ox_lib) already routes it to the intents (0.8.0).
   { name: "[nuikit-ox]", library: "ox_lib", frameworks: ["any"], shipped: false },
-  { name: "[nuikit-qb]", library: "qb-core", frameworks: ["qbcore", "qbox"], shipped: false },
-  { name: "[nuikit-esx]", library: "es_extended", frameworks: ["esx"], shipped: false },
+  { name: "[nuikit-qb]", library: "qb-core", frameworks: ["qbcore", "qbox"], shipped: true },
+  { name: "[nuikit-esx]", library: "es_extended", frameworks: ["esx"], shipped: true },
 ];
 
 const FRAMEWORKS: { resource: string; framework: Framework }[] = [

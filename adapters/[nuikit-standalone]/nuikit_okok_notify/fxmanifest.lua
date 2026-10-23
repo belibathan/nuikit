@@ -5,7 +5,7 @@ lua54 'yes'
 name 'nuikit_okok_notify'
 description 'nuikit adapter: okokNotify → nk.notify. Stand-in (provide). Clean-room from docs/adapters/okok-notify.md.'
 author '@belibathan'
-version '0.7.0'
+version '0.8.0'
 
 nuikit_adapter 'okokNotify'
 provide 'okokNotify'

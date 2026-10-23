@@ -1417,11 +1417,12 @@ ${lines.join("\n")}
   var COVERAGE_TARGETS = { qbox: 0.9, qbcore: 0.75, esx: 0.75 };
 
   // src/doctor.ts
-  var NUIKIT_SYSTEMS = ["nuikit_chat", "nuikit_death", "nuikit_hud", "nuikit_loading", "nuikit_pause", "nuikit_stress"];
+  var NUIKIT_SYSTEMS = ["nuikit_chat", "nuikit_death", "nuikit_hud", "nuikit_loading", "nuikit_pause", "nuikit_stress", "nuikit_voice"];
   var ADAPTER_PACKS = [
+    // ox_lib has no pack: its override (overrides/ox_lib) already routes it to the intents (0.8.0).
     { name: "[nuikit-ox]", library: "ox_lib", frameworks: ["any"], shipped: false },
-    { name: "[nuikit-qb]", library: "qb-core", frameworks: ["qbcore", "qbox"], shipped: false },
-    { name: "[nuikit-esx]", library: "es_extended", frameworks: ["esx"], shipped: false }
+    { name: "[nuikit-qb]", library: "qb-core", frameworks: ["qbcore", "qbox"], shipped: true },
+    { name: "[nuikit-esx]", library: "es_extended", frameworks: ["esx"], shipped: true }
   ];
   var FRAMEWORKS = [
     { resource: "qbx_core", framework: "qbox" },

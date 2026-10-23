@@ -145,7 +145,7 @@ console.log(`→ out/nuikit.zip`);
 // ── per-framework zips: the same stage plus a server.cfg snippet for that framework (and, when adapter
 // packs exist under adapters/[nuikit-<x>], only the one that fits: docs/architecture.md §3).
 const frameworks = {
-  qbox: { start: "ensure ox_lib\nensure [qbx]\nensure pma-voice", stop: ["qbx_hud", "loadscreen", "qbx_chat_theme"], adapter: "ox" },
+  qbox: { start: "ensure ox_lib\nensure [qbx]\nensure pma-voice", stop: ["qbx_hud", "loadscreen", "qbx_chat_theme"], adapter: null },
   qbcore: { start: "ensure ox_lib\nensure qb-core\nensure pma-voice", stop: ["qb-hud", "qb-loading"], adapter: "qb" },
   esx: { start: "ensure ox_lib\nensure es_extended\nensure pma-voice", stop: ["esx_hud", "esx_loadingscreen"], adapter: "esx" },
   standalone: { start: "ensure ox_lib", stop: [], adapter: "standalone" },
@@ -162,7 +162,7 @@ for (const [fw, f] of Object.entries(frameworks)) {
 ${f.start}
 exec @nuikit/nuikit.cfg
 ${f.stop.map((r) => `stop ${r}`).join("\n")}
-${hasPack ? `ensure [nuikit-${f.adapter}]` : f.adapter ? `# [nuikit-${f.adapter}] adapter pack: not shipped yet; the overrides/ folder covers ox_lib and friends` : ""}
+${hasPack ? `ensure [nuikit-${f.adapter}]` : f.adapter ? `# no adapter pack needed: the overrides/ox_lib folder covers ox_lib and everything built on it` : ""}
 `.replace(/\n{3,}/g, "\n\n"),
   );
   execFileSync("zip", ["-qr", path.join(out, `nuikit-${fw}.zip`), "."], { cwd: dir });
