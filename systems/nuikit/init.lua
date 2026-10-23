@@ -51,6 +51,7 @@ import('lib/controls.lua')
 import('lib/settings.lua') -- nk.settings (docs/settings.md)
 import('lib/keys.lua') -- nk.keys
 -- end services
+import('lib/api.lua') -- nk.<domain>.<verb> for every domain, and the old names (generated from the arsenal spec)
 rawset(nk, '__imported', true)
 
 -- nk.player: the framework bridge, loaded on first use.

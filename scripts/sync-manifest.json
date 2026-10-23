@@ -102,6 +102,7 @@
       "fonts/jetbrains-mono-latin-wght-normal.woff2",
       "fonts/jetbrains-mono.OFL.txt",
       "init.lua",
+      "lib/api.lua",
       "lib/bridge.lua",
       "lib/camera.lua",
       "lib/controls.lua",

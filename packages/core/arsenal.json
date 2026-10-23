@@ -250,7 +250,7 @@
         },
         {
           "name": "version",
-          "kind": "const",
+          "kind": "call",
           "side": "lua",
           "lua": "nk.message.version",
           "signature": {},
@@ -1873,6 +1873,7 @@
             "js": "loadKeys(): Promise<KeyBinding[]>"
           },
           "doc": "Every resource's keys.",
+          "scope": "nuikit",
           "since": "0.8.0",
           "status": "stable"
         },
@@ -2008,6 +2009,7 @@
             "js": "loadSettings(resource?: string | undefined): Promise<SettingsSection[]>"
           },
           "doc": "Every resource's sections (or one's).",
+          "scope": "nuikit",
           "since": "0.8.0",
           "status": "stable"
         },
@@ -2022,6 +2024,7 @@
             "js": "draftSettings(resource: string, patch: Record<string, SettingValue>): Promise<Record<string, SettingValue> | null>"
           },
           "doc": "Preview a patch without saving.",
+          "scope": "nuikit",
           "since": "0.8.0",
           "status": "stable"
         },
@@ -2036,6 +2039,7 @@
             "js": "saveSettings(resource: string): Promise<Record<string, SettingValue> | null>"
           },
           "doc": "Save the draft.",
+          "scope": "nuikit",
           "since": "0.8.0",
           "status": "stable"
         },
@@ -2050,6 +2054,7 @@
             "js": "cancelSettings(resource: string): Promise<Record<string, SettingValue> | null>"
           },
           "doc": "Drop the draft.",
+          "scope": "nuikit",
           "since": "0.8.0",
           "status": "stable"
         },
@@ -2064,6 +2069,7 @@
             "js": "resetSettings(resource: string, keys?: string[] | undefined): Promise<Record<string, SettingValue> | null>"
           },
           "doc": "Back to defaults (some keys or all).",
+          "scope": "nuikit",
           "since": "0.8.0",
           "status": "stable"
         },
@@ -2078,6 +2084,7 @@
             "js": "applySettingsPreset(resource: string, preset: string): Promise<Record<string, SettingValue> | null>"
           },
           "doc": "Apply a preset as a draft.",
+          "scope": "nuikit",
           "since": "0.8.0",
           "status": "stable"
         },
@@ -3744,14 +3751,15 @@
           "signature": {},
           "doc": "Hosted resources (tooling).",
           "only": "lua only: the nuikit resource hosts",
+          "scope": "nuikit",
           "since": "0.5.0",
           "status": "stable"
         },
         {
-          "name": "hosted",
-          "kind": "const",
+          "name": "isHosted",
+          "kind": "call",
           "side": "lua",
-          "lua": "nk.host.hosted",
+          "lua": "nk.host.isHosted",
           "signature": {},
           "doc": "This resource's UI is rendered by the host.",
           "only": "lua only: the page asks nuikit:host:mode",
@@ -3861,7 +3869,7 @@
         },
         {
           "old": "NUI.hosted",
-          "now": "nk.host.hosted",
+          "now": "nk.host.isHosted",
           "removeIn": "1.0.0"
         }
       ],

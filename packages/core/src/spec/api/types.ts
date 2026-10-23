@@ -28,6 +28,7 @@ export interface EntrySpec {
    * Where the Lua implementation lives today, when it is not `lua` itself (`NUI.surface`). The generated
    * lua/api.lua binds `lua` to it, and the old path becomes a legacy alias (listed in arsenal.json with `removeIn`).
    */
+  /** Or a Lua expression (starts with `function`) when no function holds it (a flag: `nk.host.isHosted`). */
   impl?: string;
   /** Signatures, one line each. */
   sig?: { js?: string; lua?: string };
