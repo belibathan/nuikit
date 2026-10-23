@@ -7,6 +7,8 @@
  */
 import type { ChallengeProps, ConfirmProps, InputField, InputProps, MenuItem, MenuProps, NotifyProps, ProgressProps, PromptProps } from "nuikit-core/intents";
 import { parseKeyText } from "@/components/ui/key-prompt";
+import { lever } from "@/lib/levers";
+import { glyphIcon, splitTitle, TITLE_LEVER } from "@/lib/title";
 
 type Icon = string | [string, string] | undefined;
 const icon = (v: unknown): Icon => (typeof v === "string" || Array.isArray(v) ? (v as Icon) : undefined);
@@ -53,15 +55,20 @@ export function notifyIntent(d: Record<string, any>): NotifyProps | null {
 /** `showContext` → `menu`. Items keep ox's `Object.entries` order; each row's `id` is the key `clickContext` sends back. */
 export function contextIntent(d: Record<string, any>): MenuProps {
   const entries = Object.entries((d.options ?? {}) as Record<string, Record<string, any>>);
+  // "🧥 | Clothing": the frame draws icon names, not characters, so the glyph leaves the text (and becomes
+  // an icon name where one fits) instead of showing as "🧥 | " in the label. `--ox-title-normalise: 0` keeps titles as written.
+  const normalise = lever(TITLE_LEVER, "1") !== "0";
   const items: MenuItem[] = entries.map(([key, o]) => {
     o = o && typeof o === "object" ? o : {};
     const sub = str(o.menu);
+    // a missing title on a keyed option shows the key itself (ox)
+    const raw = str(o.title) ?? (Number.isNaN(Number(key)) ? key : undefined);
+    const split = normalise ? splitTitle(raw) : null;
     return clean({
       id: key,
-      // a missing title on a keyed option shows the key itself (ox)
-      label: str(o.title) ?? (Number.isNaN(Number(key)) ? key : undefined),
+      label: split ? split.title : raw,
       description: str(o.description),
-      icon: icon(o.icon),
+      icon: icon(o.icon) ?? (split ? glyphIcon(split) : undefined),
       iconColor: str(o.iconColor),
       iconAnimation: anim(o.iconAnimation),
       image: str(o.image),
@@ -76,9 +83,11 @@ export function contextIntent(d: Record<string, any>): MenuProps {
       close: sub ? undefined : false,
     }) as MenuItem;
   });
+  const head = normalise ? splitTitle(str(d.title)) : null;
   return clean({
     id: "context",
-    title: str(d.title) ?? "",
+    title: head ? head.title : str(d.title) ?? "",
+    icon: head ? glyphIcon(head) : undefined,
     input: "cursor",
     canClose: bool(d.canClose),
     menu: str(d.menu),
@@ -258,7 +267,7 @@ export function textUiIntent(d: Record<string, any>): PromptProps {
     icon: icon(d.icon),
     iconColor: str(d.iconColor),
     iconAnimation: anim(d.iconAnimation),
-    position: str(d.position) ?? "right-center",
+    position: str(d.position) ?? "bottom-center",
     style: parseStyle(d.style),
     meta: d.alignIcon !== undefined ? { ox: { alignIcon: d.alignIcon } } : undefined,
   }) as PromptProps;

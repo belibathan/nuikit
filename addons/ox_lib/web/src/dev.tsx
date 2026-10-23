@@ -19,6 +19,18 @@ const mocks = defineMocks({
       { title: "Balance", description: "You have $0 in cash.", type: "inform", position: "top-right" },
     ],
     showContext: [
+      // illenium-appearance's clothing room, as its Lua sends it through lib.registerContext (emoji + " | " titles)
+      {
+        title: "🧥 | Clothing store",
+        options: [
+          { title: "👕 | Change outfit", description: "Pick one of your saved outfits", arrow: true, menu: "illenium_outfits" },
+          { title: "💾 | Save current outfit", description: "Name and save what you are wearing" },
+          { title: "🗑️ | Delete outfit", description: "Remove a saved outfit", arrow: true, menu: "illenium_delete" },
+          { title: "👨🏽‍⚕️ | Job outfits", description: "Uniforms for your job", arrow: true, menu: "illenium_job" },
+          { title: "shirt | Tops and layers", description: "A Font Awesome name first", arrow: true, menu: "illenium_tops" },
+          { title: "Plain title, no glyph", icon: "shirt", description: "An option with an icon field" },
+        ],
+      },
       {
         title: "Garage — Legion Square",
         options: [
