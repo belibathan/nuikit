@@ -74,7 +74,7 @@ function NavKey({ icon: Icon, label, tab, disabled }: { icon: LucideIcon; label:
       variant="ghost"
       disabled={disabled}
       onClick={() => setTab(active ? "home" : tab)}
-      className={cn("text-muted-foreground h-12 min-w-0 flex-1 flex-col gap-1 px-1 nk-label", active && "bg-accent text-accent-foreground")}
+      className={cn("text-muted-foreground h-12 min-w-0 flex-1 flex-col gap-1 px-1 has-[>svg]:px-1 nk-label", active && "bg-accent text-accent-foreground")}
       aria-pressed={active}
     >
       <Icon className="size-4" />
