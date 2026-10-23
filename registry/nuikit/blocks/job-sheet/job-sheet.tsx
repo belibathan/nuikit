@@ -244,7 +244,7 @@ function JobSheet({
               </Button>
             )
           })}
-          <span className="nk-label ml-auto flex items-center gap-1.5 text-muted-foreground">
+          <span className="nk-label ml-auto flex items-center gap-(--nk-space-2) text-muted-foreground">
             <Kbd>Esc</Kbd> {root ? "Close" : "Back"}
           </span>
         </EdgeSheetFooter>

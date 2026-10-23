@@ -259,7 +259,7 @@ function Row({ className, children, max, batchMs, restDelay, optOut, ...props }:
   )
   return (
     <RowCtx.Provider value={api}>
-      <div data-slot="vital-chip-row" className={cn("flex items-center gap-1.5", className)} {...props}>
+      <div data-slot="vital-chip-row" className={cn("flex items-center gap-(--nk-space-2)", className)} {...props}>
         {children}
         {collapse.overflow > 0 && <CollapseMore count={collapse.overflow} style={{ order: -50 }} />}
       </div>
@@ -571,7 +571,7 @@ function Label({ className, children: name, ...props }: React.ComponentProps<"sp
     ) : (
       <>
         {name}
-        <span className="nk-num ml-1.5 opacity-80">{valueText}</span>
+        <span className="nk-num ml-(--nk-space-2) opacity-80">{valueText}</span>
       </>
     )
   // write it in both places: inside Shape it is the inline label, outside the tag or flag
@@ -582,7 +582,7 @@ function Label({ className, children: name, ...props }: React.ComponentProps<"sp
         data-slot="vital-chip-label"
         data-open={open || undefined}
         className={cn(
-          "pointer-events-none order-last max-w-0 overflow-hidden text-[0.8125rem] leading-none font-semibold opacity-0 -translate-x-1 transition-[opacity,transform] duration-[calc(220ms*var(--nk-motion,1))] ease-out data-[open]:ml-[0.3125rem] data-[open]:max-w-24 data-[open]:translate-x-0 data-[open]:opacity-100",
+          "pointer-events-none order-last max-w-0 overflow-hidden text-(length:--nk-text-key) leading-none [font-weight:var(--nk-weight-strong,600)] opacity-0 -translate-x-1 transition-[opacity,transform] duration-[calc(var(--nk-time-slow)*var(--nk-motion,1))] ease-(--nk-ease-out) data-[open]:ml-[0.3125rem] data-[open]:max-w-24 data-[open]:translate-x-0 data-[open]:opacity-100",
           className
         )}
         {...props}
@@ -600,7 +600,7 @@ function Label({ className, children: name, ...props }: React.ComponentProps<"sp
         data-attach="flag"
         data-open={open || undefined}
         className={cn(
-          "pointer-events-none relative z-0 data-[open]:-ml-[0.375rem] flex h-[calc(var(--vital-size)*0.72)] max-w-0 items-center self-center overflow-hidden rounded-r-(--nk-chip-radius) bg-(--nk-chip-bg) text-[0.8125rem] font-semibold whitespace-nowrap text-(--nk-chip-fg) opacity-0 -translate-x-1 transition-[opacity,transform] duration-[calc(220ms*var(--nk-motion,1))] ease-out data-[open]:max-w-28 data-[open]:translate-x-0 data-[open]:pr-2 data-[open]:pl-[0.625rem] data-[open]:opacity-100",
+          "pointer-events-none relative z-0 data-[open]:-ml-[0.375rem] flex h-[calc(var(--vital-size)*0.72)] max-w-0 items-center self-center overflow-hidden rounded-r-(--nk-chip-radius) bg-(--nk-chip-bg) text-(length:--nk-text-key) [font-weight:var(--nk-weight-strong,600)] whitespace-nowrap text-(--nk-chip-fg) opacity-0 -translate-x-1 transition-[opacity,transform] duration-[calc(var(--nk-time-slow)*var(--nk-motion,1))] ease-(--nk-ease-out) data-[open]:max-w-28 data-[open]:translate-x-0 data-[open]:pr-2 data-[open]:pl-[0.625rem] data-[open]:opacity-100",
           className
         )}
         {...props}
@@ -616,10 +616,10 @@ function Label({ className, children: name, ...props }: React.ComponentProps<"sp
       data-attach={at}
       data-open={open || undefined}
       className={cn(
-        "pointer-events-none absolute z-0 flex items-center whitespace-nowrap bg-(--nk-chip-bg) text-(--nk-chip-fg) opacity-0 transition-[opacity,transform] duration-[calc(200ms*var(--nk-motion,1))] ease-out data-[open]:opacity-100",
+        "pointer-events-none absolute z-0 flex items-center whitespace-nowrap bg-(--nk-chip-bg) text-(--nk-chip-fg) opacity-0 transition-[opacity,transform] duration-[calc(var(--nk-time-slow)*var(--nk-motion,1))] ease-(--nk-ease-out) data-[open]:opacity-100",
         tag
-          ? "top-full left-1/2 mt-[0.1875rem] h-4 -translate-x-1/2 -translate-y-1 rounded-(--nk-chip-radius) px-1.5 text-[0.6875rem] font-semibold data-[open]:translate-y-0"
-          : "top-1/2 left-[calc(100%-0.375rem)] h-[calc(var(--vital-size)*0.72)] -translate-x-1 -translate-y-1/2 rounded-r-(--nk-chip-radius) pr-2 pl-[0.625rem] text-[0.8125rem] font-semibold data-[open]:translate-x-0",
+          ? "top-full left-1/2 mt-[0.1875rem] h-4 -translate-x-1/2 -translate-y-1 rounded-(--nk-chip-radius) px-(--nk-space-2) text-(length:--nk-text-key) [font-weight:var(--nk-weight-strong,600)] data-[open]:translate-y-0"
+          : "top-1/2 left-[calc(100%-0.375rem)] h-[calc(var(--vital-size)*0.72)] -translate-x-1 -translate-y-1/2 rounded-r-(--nk-chip-radius) pr-2 pl-[0.625rem] text-(length:--nk-text-key) [font-weight:var(--nk-weight-strong,600)] data-[open]:translate-x-0",
         className
       )}
       {...props}
@@ -696,8 +696,8 @@ function Pop({ label, mode = "change", min = 3, critical = false, force = null, 
       className={cn(
         // a flag out of the chip's side, in line with the row: it takes its own room, so pops of
         // vitals that change together sit side by side and can never overlap
-        "pointer-events-none relative z-0 data-[open]:-ml-[0.375rem] flex h-[calc(var(--vital-size)*0.8)] max-w-0 items-center gap-1.5 self-center overflow-hidden rounded-r-(--nk-chip-radius) bg-(--nk-chip-bg) text-[0.875rem] leading-none font-semibold whitespace-nowrap text-(--nk-chip-fg) opacity-0",
-        "-translate-x-1 transition-[opacity,transform] duration-[calc(240ms*var(--nk-motion,1))] ease-out data-[open]:max-w-48 data-[open]:translate-x-0 data-[open]:pr-2.5 data-[open]:pl-[0.75rem] data-[open]:opacity-100"
+        "pointer-events-none relative z-0 data-[open]:-ml-[0.375rem] flex h-[calc(var(--vital-size)*0.8)] max-w-0 items-center gap-(--nk-space-2) self-center overflow-hidden rounded-r-(--nk-chip-radius) bg-(--nk-chip-bg) text-(length:--nk-text-label) leading-none [font-weight:var(--nk-weight-strong,600)] whitespace-nowrap text-(--nk-chip-fg) opacity-0",
+        "-translate-x-1 transition-[opacity,transform] duration-[calc(var(--nk-time-slow)*var(--nk-motion,1))] ease-(--nk-ease-out) data-[open]:max-w-48 data-[open]:translate-x-0 data-[open]:pr-(--nk-space-3) data-[open]:pl-[0.75rem] data-[open]:opacity-100"
       )}
     >
       <span>{label}</span>

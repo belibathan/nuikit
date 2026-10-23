@@ -78,7 +78,7 @@ function Vital({
   return (
     <div
       data-slot="vital"
-      data-critical={critical || undefined}
+      data-state={critical ? "alert" : undefined}
       className={cn(vitalVariants({ tone, size }), className)}
       {...props}
     >

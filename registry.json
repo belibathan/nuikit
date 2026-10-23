@@ -777,7 +777,8 @@
         "https://nuikit.vercel.app/r/stat.json",
         "https://nuikit.vercel.app/r/hud-chip.json",
         "https://nuikit.vercel.app/r/speedometer.json",
-        "https://nuikit.vercel.app/r/money.json"
+        "https://nuikit.vercel.app/r/money.json",
+        "https://nuikit.vercel.app/r/chip.json"
       ],
       "categories": [
         "screens"
@@ -1107,7 +1108,8 @@
       "registryDependencies": [
         "avatar",
         "https://nuikit.vercel.app/r/panel.json",
-        "https://nuikit.vercel.app/r/stat.json"
+        "https://nuikit.vercel.app/r/stat.json",
+        "https://nuikit.vercel.app/r/chip.json"
       ],
       "meta": {
         "since": "0.6.0",
@@ -1676,7 +1678,8 @@
         "https://nuikit.vercel.app/r/panel.json",
         "https://nuikit.vercel.app/r/meter.json",
         "https://nuikit.vercel.app/r/menu-row.json",
-        "https://nuikit.vercel.app/r/empty-state.json"
+        "https://nuikit.vercel.app/r/empty-state.json",
+        "https://nuikit.vercel.app/r/chip.json"
       ],
       "categories": [
         "screens"
@@ -1819,7 +1822,8 @@
         "https://nuikit.vercel.app/r/stat.json",
         "https://nuikit.vercel.app/r/confirm.json",
         "https://nuikit.vercel.app/r/money.json",
-        "https://nuikit.vercel.app/r/empty-state.json"
+        "https://nuikit.vercel.app/r/empty-state.json",
+        "https://nuikit.vercel.app/r/chip.json"
       ],
       "categories": [
         "screens"

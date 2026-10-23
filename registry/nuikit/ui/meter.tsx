@@ -452,7 +452,7 @@ function Meter({
             data-slot="meter-line-fill"
             className={cn(
               "absolute inset-0 origin-left bg-[var(--nk-slab-line-fill,rgb(var(--nk-slab-tone-rgb)))] [box-shadow:0_0_0.5rem_rgba(var(--nk-slab-tone-rgb),var(--nk-glow,0))]",
-              timed ? "transition-none" : "transition-transform ease-out"
+              timed ? "transition-none" : "transition-transform ease-(--nk-ease-out)"
             )}
             style={{ transform: `scaleX(${drawn / 100})` }}
           />
@@ -469,14 +469,14 @@ function Meter({
         aria-valuemax={100}
         aria-valuenow={Math.round(percent)}
         aria-label={typeof label === "string" ? label : props["aria-label"]}
-        className={cn("flex min-w-0 gap-0.5", grow)}
+        className={cn("flex min-w-0 gap-(--nk-space-1)", grow)}
       >
         {segmentFills(drawn, segments).map((fill, i) => (
           <div key={i} data-slot="meter-segment" className={cn("relative h-(--meter-h) flex-1 overflow-hidden rounded-(--nk-meter-radius)", trackClass)}>
             {/* scaleX, never width: the compositor moves it, nothing is laid out again */}
             <div
               data-slot="meter-fill"
-              className={cn("h-full w-full origin-left", t.fill, timed ? "transition-none" : "transition-transform ease-out")}
+              className={cn("h-full w-full origin-left", t.fill, timed ? "transition-none" : "transition-transform ease-(--nk-ease-out)")}
               style={{ transform: `scaleX(${fill / 100})` }}
             />
           </div>
@@ -510,18 +510,18 @@ function Meter({
       data-state={critical ? "alert" : undefined}
       data-level={level}
       data-complete={(timed && percent >= 100) || undefined}
-      className={cn(meterVariants({ size }), stacked ? "flex flex-col gap-1.5" : "flex items-center gap-2", className)}
+      className={cn(meterVariants({ size }), stacked ? "flex flex-col gap-(--nk-space-2)" : "flex items-center gap-2", className)}
       ref={root}
       style={rootStyle}
       {...props}
     >
       {stacked ? (
         <>
-          <div className="flex min-w-0 items-center gap-1.5">
+          <div className="flex min-w-0 items-center gap-(--nk-space-2)">
             {iconEl}
             {label !== undefined && <span data-slot="meter-label" className="nk-caption min-w-0 flex-1 truncate">{label}</span>}
             {valueText !== undefined && (
-              <span data-slot="meter-value" className={cn("nk-num ml-auto shrink-0 text-(length:--nk-caption-size) leading-4 font-medium", critical && "text-destructive")}>
+              <span data-slot="meter-value" className={cn("nk-num ml-auto shrink-0 text-(length:--nk-caption-size) leading-4 [font-weight:var(--nk-type-label-weight,500)]", critical && "text-destructive")}>
                 {valueText}
               </span>
             )}

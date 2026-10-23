@@ -2,6 +2,7 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 import { Avatar, AvatarBadge, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Chip } from "@/components/ui/chip"
 import { Panel, PanelBody, PanelFooter, PanelHeader } from "@/components/ui/panel"
 import { Stat } from "@/components/ui/stat"
 
@@ -82,7 +83,7 @@ function PlayerCard({
         icon={
           <Avatar size="lg" data-slot="player-card-avatar">
             {avatar && <AvatarImage src={avatar} alt="" className="object-cover" />}
-            <AvatarFallback className="font-medium">{initials(name)}</AvatarFallback>
+            <AvatarFallback className="[font-weight:var(--nk-type-label-weight,500)]">{initials(name)}</AvatarFallback>
             {duty && (
               <AvatarBadge
                 aria-hidden
@@ -107,8 +108,8 @@ function PlayerCard({
         }
         actions={
           duty ? (
-            <span data-slot="player-card-duty" className="nk-label flex items-center gap-1.5">
-              <span aria-hidden className={cn("size-1.5 rounded-full", onDuty ? "bg-success" : "bg-muted-foreground")} />
+            <span data-slot="player-card-duty" className="nk-label flex items-center gap-(--nk-space-2)">
+              <Chip variant="dot" tone={onDuty ? "success" : undefined} aria-hidden />
               {onDuty ? dutyLabels[0] : dutyLabels[1]}
             </span>
           ) : undefined

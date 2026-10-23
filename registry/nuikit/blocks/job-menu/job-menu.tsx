@@ -4,6 +4,7 @@ import { BriefcaseIcon, ChevronDownIcon, ChevronUpIcon, UserMinusIcon, UserPlusI
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
+import { Chip } from "@/components/ui/chip"
 import { Confirm } from "@/components/ui/confirm"
 import { EmptyState } from "@/components/ui/empty-state"
 import { MenuRow } from "@/components/ui/menu-row"
@@ -153,8 +154,8 @@ function JobMenu({
             icon={<BriefcaseIcon />}
             title={job.label}
             description={
-              <span className="flex items-center gap-1.5">
-                <span className={cn("size-1.5 rounded-full", job.onDuty ? "bg-success" : "bg-muted-foreground/50")} />
+              <span className="flex items-center gap-(--nk-space-2)">
+                <Chip variant="dot" tone={job.onDuty ? "success" : undefined} aria-hidden />
                 {[job.gradeLabel, job.onDuty ? "On duty" : "Off duty"].filter(Boolean).join(", ")}
               </span>
             }
@@ -173,7 +174,7 @@ function JobMenu({
           />
 
           {error && (
-            <p role="alert" className="border-b px-4 py-2 text-sm text-destructive">
+            <p role="alert" className="border-b px-4 py-2 text-(length:--nk-text-label) text-destructive">
               {error}
             </p>
           )}
@@ -275,7 +276,7 @@ function JobStaff({
             key={e.id}
             data-slot="job-employee"
             readOnly
-            icon={<span className={cn("size-1.5 rounded-full", e.onDuty ? "bg-success" : e.online ? "bg-muted-foreground" : "bg-muted-foreground/30")} />}
+            icon={<Chip variant="dot" tone={e.onDuty ? "success" : undefined} className={e.online || e.onDuty ? undefined : "opacity-50"} aria-hidden />}
             description={[label(e.grade), e.onDuty ? "On duty" : e.online ? "Online" : "Offline"].join(", ")}
             actions={
               working ? (

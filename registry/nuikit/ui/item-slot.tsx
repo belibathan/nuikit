@@ -23,7 +23,7 @@ import { cn, nkState } from "@/lib/utils"
  */
 
 const itemSlotVariants = cva(
-  "group/item-slot relative flex aspect-square min-w-0 flex-col rounded-(--nk-row-radius) p-[calc(var(--nk-space)*2)] text-left outline-none transition-[background-color,box-shadow,opacity] select-none",
+  "group/item-slot relative flex aspect-square min-w-0 flex-col rounded-(--nk-row-radius) p-[calc(var(--nk-space)*2)] text-left outline-none transition-opacity select-none",
   {
     variants: {
       surface: {
@@ -152,7 +152,7 @@ function ItemSlot({
         state === "active" && !hud && "ring-2 ring-(--nk-row-indicator-color) ring-inset",
         state === "drop-target" && "bg-accent ring-2 ring-(--nk-row-indicator-color) ring-inset",
         state === "dragging" && "opacity-40",
-        state === "locked" && "opacity-50 grayscale",
+        state === "locked" && "opacity-50",
         className
       )}
       onClick={interactive ? onClick : undefined}
@@ -167,11 +167,11 @@ function ItemSlot({
     >
       <div
         data-slot="item-slot-top"
-        className={cn("nk-num flex h-3 shrink-0 items-center justify-between gap-1 text-xs leading-none", hudActive ? "" : hud ? "opacity-75" : "text-muted-foreground")}
+        className={cn("nk-num flex h-3 shrink-0 items-center justify-between gap-1 text-(length:--nk-text-label) leading-none", hudActive ? "" : hud ? "opacity-75" : "text-muted-foreground")}
       >
         <span data-slot="item-slot-corner">{corner}</span>
         {right !== null && right !== undefined && (
-          <span data-slot="item-slot-right" className={cn("font-medium", !hud && "text-foreground")}>
+          <span data-slot="item-slot-right" className={cn("[font-weight:var(--nk-type-label-weight,500)]", !hud && "text-foreground")}>
             {right}
           </span>
         )}
@@ -186,7 +186,7 @@ function ItemSlot({
             )}
           </div>
           {label !== undefined && !hud && (
-            <div data-slot="item-slot-label" className="truncate text-center text-xs leading-4 font-medium">
+            <div data-slot="item-slot-label" className="truncate text-center text-(length:--nk-text-label) leading-4 [font-weight:var(--nk-type-label-weight,500)]">
               {label}
             </div>
           )}
@@ -204,13 +204,13 @@ function ItemSlot({
           aria-valuemax={100}
           aria-valuenow={Math.round(dur.value)}
           className={cn(
-            "absolute inset-x-2 bottom-1 h-0.5 overflow-hidden rounded-full",
+            "absolute inset-x-2 bottom-1 h-0.5 overflow-hidden",
             hud ? "nk-track" : "bg-foreground/15"
           )}
         >
           <div
             className={cn(
-              "h-full rounded-full",
+              "h-full",
               dur.low ? "bg-destructive" : hudActive ? "bg-(--nk-chip-active-fg)" : hud ? "bg-hud-foreground" : "bg-foreground"
             )}
             style={{ width: `${dur.value}%` }}

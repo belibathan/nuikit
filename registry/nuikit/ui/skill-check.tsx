@@ -288,7 +288,7 @@ function SkillCheck({
         <Kbd
           data-slot="skill-check-key"
           className={cn(
-            "h-8 min-w-8 rounded-md bg-popover px-2 text-sm font-semibold text-popover-foreground uppercase shadow-sm ring-1 ring-border",
+            "h-8 min-w-8 rounded-(--nk-r-control) bg-popover px-2 text-(length:--nk-text-label) [font-weight:var(--nk-weight-strong,600)] text-popover-foreground uppercase ring-1 ring-border",
             shown === "success" && "ring-success",
             shown === "fail" && "ring-destructive"
           )}

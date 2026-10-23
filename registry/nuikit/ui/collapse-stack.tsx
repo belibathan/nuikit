@@ -44,7 +44,7 @@ function CollapseStack<T extends CollapseItem>({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [signature, report])
   return (
-    <div data-slot="collapse-stack" className={cn("flex items-center gap-1.5", className)} {...props}>
+    <div data-slot="collapse-stack" className={cn("flex items-center gap-(--nk-space-2)", className)} {...props}>
       {items.map((item, i) => {
         const rank = c.rank(item.key)
         return (
@@ -64,7 +64,7 @@ function CollapseMore({ count, className, ...props }: React.ComponentProps<"span
     <span
       data-slot="collapse-stack-more"
       className={cn(
-        "nk-num inline-flex h-(--nk-chip-height) items-center rounded-(--nk-chip-radius) bg-(--nk-chip-bg) px-2 text-xs font-semibold text-(--nk-chip-fg)",
+        "nk-num inline-flex h-(--nk-chip-height) items-center rounded-(--nk-chip-radius) bg-(--nk-chip-bg) px-2 text-(length:--nk-text-label) [font-weight:var(--nk-weight-strong,600)] text-(--nk-chip-fg)",
         className
       )}
       {...props}

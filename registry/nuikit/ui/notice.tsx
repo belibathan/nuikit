@@ -166,7 +166,7 @@ function noticeTimeLeft(duration: number = NOTICE_DURATION, elapsed = 0) {
 }
 
 const noticeVariants = cva(
-  "nk-panel pointer-events-auto relative flex overflow-hidden px-4 py-3 text-sm leading-5",
+  "nk-panel pointer-events-auto relative flex overflow-hidden px-4 py-3 text-(length:--nk-text-label) leading-5",
   {
     variants: {
       size: {
@@ -386,7 +386,7 @@ function Notice({
         {...props}
       >
         <span data-slot="notice-item-tile" className="nk-slab-tile">
-          {item.image ? <img src={item.image} alt="" draggable={false} className="size-full object-contain p-0.5" /> : (item.icon ?? <PackageIcon />)}
+          {item.image ? <img src={item.image} alt="" draggable={false} className="size-full object-contain p-(--nk-space-1)" /> : (item.icon ?? <PackageIcon />)}
         </span>
         <span data-slot="notice-item-name" className="min-w-0 truncate">
           {item.name}
@@ -445,7 +445,7 @@ function Notice({
           {iconEl}
         </span>
       )}
-      <div className="flex min-w-0 flex-1 flex-col gap-0.5 break-words">
+      <div className="flex min-w-0 flex-1 flex-col gap-(--nk-space-1) break-words">
         {title && (
           <p data-slot="notice-title" className="[font-weight:var(--nk-weight-strong,600)]">
             {title}
@@ -463,7 +463,7 @@ function Notice({
           variant="ghost"
           size="icon-xs"
           aria-label="Dismiss"
-          className="-my-0.5 -mr-1.5 shrink-0 text-muted-foreground"
+          className="-my-(--nk-space-1) -mr-(--nk-space-2) shrink-0 text-muted-foreground"
           onClick={onDismiss}
         >
           <XIcon />

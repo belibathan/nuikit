@@ -366,7 +366,7 @@ function Mdt({
                       >
                         <div className="flex flex-col gap-3">
                           {record.flags.length > 0 && (
-                            <div className="flex flex-wrap gap-1.5">
+                            <div className="flex flex-wrap gap-(--nk-space-2)">
                               {record.flags.map((f) => (
                                 <Badge key={f} variant="destructive">
                                   {f}
@@ -374,7 +374,7 @@ function Mdt({
                               ))}
                             </div>
                           )}
-                          {record.notes && <p className="text-sm text-muted-foreground">{record.notes}</p>}
+                          {record.notes && <p className="text-(length:--nk-text-label) text-muted-foreground">{record.notes}</p>}
                         </div>
                       </PlayerCard>
                     </div>
@@ -414,7 +414,7 @@ function Mdt({
                           {shownReport.person ? `, about ${shownReport.person}` : ""}
                         </p>
                       </div>
-                      <p className="text-sm whitespace-pre-wrap">{shownReport.text}</p>
+                      <p className="text-(length:--nk-text-label) whitespace-pre-wrap">{shownReport.text}</p>
                     </div>
                   ) : (
                     <EmptyState icon={<FileTextIcon />} title="No report open" description="Pick a report to read it." />
@@ -466,7 +466,7 @@ function Mdt({
           </div>
         </div>
         <PanelFooter className="flex items-center gap-3">
-          <p role={error ? "alert" : undefined} className={cn("min-w-0 flex-1 truncate text-sm", error ? "text-destructive" : "text-muted-foreground")}>
+          <p role={error ? "alert" : undefined} className={cn("min-w-0 flex-1 truncate text-(length:--nk-text-label)", error ? "text-destructive" : "text-muted-foreground")}>
             {error ?? (composing && draft.title.trim() ? problem : null) ?? "Every search and report is logged by the server."}
           </p>
           {composing ? (

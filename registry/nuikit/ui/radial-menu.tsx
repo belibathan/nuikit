@@ -160,7 +160,11 @@ const RadialMenu = React.forwardRef<
       tabIndex={0}
       data-slot="radial-menu"
       data-depth={path.length}
-      className={cn("relative rounded-full text-popover-foreground outline-none select-none focus-visible:ring-[3px] focus-visible:ring-ring/50", className)}
+      className={cn(
+        // nuikit-ignore-next-line radius/pill: the radial menu is a circle (its wedges and centre are round by geometry)
+        "relative rounded-full text-popover-foreground outline-none select-none focus-visible:ring-[3px] focus-visible:ring-ring/50",
+        className
+      )}
       style={{ width: `${size / 16}rem`, height: `${size / 16}rem`, ...style }}
       onPointerMove={onPointerMove}
       onPointerLeave={() => setActive(null)}
@@ -191,7 +195,7 @@ const RadialMenu = React.forwardRef<
               data-active={i === active || undefined}
               d={wedgePath(r, r, inner, r - 0.3, a0, a1)}
               strokeWidth={0.3}
-              className={cn("fill-(--nk-panel-bg) stroke-(--nk-panel-border) transition-colors", i === active && "fill-accent stroke-(--nk-row-indicator-color)", item.disabled && "opacity-50")}
+              className={cn("fill-(--nk-panel-bg) stroke-(--nk-panel-border)", i === active && "fill-accent stroke-(--nk-row-indicator-color)", item.disabled && "opacity-50")}
               onClick={() => choose(i)}
             />
           )
@@ -220,8 +224,8 @@ const RadialMenu = React.forwardRef<
             style={{ left: `${50 + Math.cos(a) * d}%`, top: `${50 + Math.sin(a) * d}%`, transform: "translate(-50%, -50%)" }}
           >
             {item.icon}
-            {labels && <span className={cn("w-full truncate text-xs leading-4 font-medium", !on && "text-popover-foreground/80")}>{item.label}</span>}
-            {item.items?.length ? <span aria-hidden className="size-1 rounded-full bg-current opacity-60" /> : null}
+            {labels && <span className={cn("w-full truncate text-(length:--nk-text-label) leading-4 [font-weight:var(--nk-type-label-weight,500)]", !on && "text-popover-foreground/80")}>{item.label}</span>}
+            {item.items?.length ? <span aria-hidden className="size-1 rounded-(--nk-r-key) bg-current opacity-60" /> : null}
           </div>
         )
       })}
@@ -233,18 +237,19 @@ const RadialMenu = React.forwardRef<
         data-action={centre ?? undefined}
         onClick={onCentre}
         className={cn(
+          // nuikit-ignore-next-line radius/pill: the round centre of the circle
           "absolute top-1/2 left-1/2 grid aspect-square w-[34%] place-items-center rounded-full border border-(--nk-panel-border) bg-(--nk-panel-bg) p-2 text-center text-(--nk-panel-fg) [box-shadow:var(--nk-panel-edge),var(--nk-panel-shadow)]",
           centre ? "cursor-pointer hover:bg-accent hover:text-accent-foreground" : "pointer-events-none"
         )}
         style={{ transform: "translate(-50%, -50%)" }}
       >
-        <span className="flex min-w-0 flex-col items-center gap-0.5">
+        <span className="flex min-w-0 flex-col items-center gap-(--nk-space-1)">
           {!current && centre === "back" && <ArrowLeftIcon className="size-4 text-muted-foreground" />}
           {!current && centre === "close" && <XIcon className="size-4 text-muted-foreground" />}
-          <span className="w-full truncate text-sm leading-5 font-semibold">
+          <span className="w-full truncate text-(length:--nk-text-label) leading-5 [font-weight:var(--nk-weight-strong,600)]">
             {current?.label ?? (path.length ? path[path.length - 1]!.label : label)}
           </span>
-          <span className="w-full truncate text-xs leading-4 text-muted-foreground">
+          <span className="w-full truncate text-(length:--nk-text-label) leading-4 text-muted-foreground">
             {current
               ? current.disabled
                 ? "Not available"

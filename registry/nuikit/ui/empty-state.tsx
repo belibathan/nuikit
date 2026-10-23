@@ -69,7 +69,7 @@ function EmptyState({
       className={cn(emptyStateVariants({ size }), className)}
       {...props}
     >
-      <EmptyHeader className="gap-1.5">
+      <EmptyHeader className="gap-(--nk-space-2)">
         {iconEl !== null && iconEl !== false && tile && (
           <Tile shape="square" size={size === "screen" ? "lg" : "md"} tone={error ? "danger" : undefined} className="mb-1">
             {iconEl}
@@ -94,7 +94,7 @@ function EmptyState({
         >
           {title}
         </EmptyTitle>
-        {description && <EmptyDescription className="text-sm leading-5 text-pretty">{description}</EmptyDescription>}
+        {description && <EmptyDescription className="text-(length:--nk-text-label) leading-5 text-pretty">{description}</EmptyDescription>}
       </EmptyHeader>
       {(action || children) && (
         <EmptyContent className="flex-row justify-center gap-2">

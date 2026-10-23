@@ -62,7 +62,7 @@ import { meterColor, type MeterTone } from "@/components/ui/meter"
  */
 const menuRowVariants = cva(
   [
-    "group/menu-row nk-row w-full cursor-default text-left font-medium outline-none select-none",
+    "group/menu-row nk-row w-full cursor-default text-left [font-weight:var(--nk-type-label-weight,500)] outline-none select-none",
     // focus and active: the identity indicator (nk-row); the text brightens to the foreground
     "focus-visible:text-foreground data-[active]:text-foreground",
     "disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50",
@@ -218,7 +218,7 @@ function MenuRow({
       <span className="flex min-w-0 flex-1 flex-col">
         <span className="truncate">{children}</span>
         {description && (
-          <span data-slot="menu-row-description" className={cn("truncate text-xs leading-4 font-normal", quiet)}>
+          <span data-slot="menu-row-description" className={cn("truncate text-(length:--nk-text-label) leading-4 font-normal", quiet)}>
             {description}
           </span>
         )}
@@ -228,12 +228,12 @@ function MenuRow({
             value={progress}
             color={progressColor}
             label={typeof children === "string" ? children : undefined}
-            className="mt-1.5 mb-0.5 h-1"
+            className="mt-(--nk-space-2) mb-(--nk-space-1) h-1"
           />
         )}
       </span>
       {meta !== undefined && (
-        <span data-slot="menu-row-meta" className={cn("nk-num shrink-0 text-xs", quiet)}>
+        <span data-slot="menu-row-meta" className={cn("nk-num shrink-0 text-(length:--nk-text-label)", quiet)}>
           {meta}
         </span>
       )}
@@ -242,17 +242,17 @@ function MenuRow({
       {isStepper && (
         <span data-slot="menu-row-stepper" className="flex shrink-0 items-center gap-1">
           <span
-            className={cn("rounded-sm p-0.5", quiet, hovers && "hover:bg-background/50 hover:text-foreground")}
+            className={cn("rounded-(--nk-r-key) p-(--nk-space-1)", quiet, hovers && "hover:bg-background/50 hover:text-foreground")}
             onClick={(e) => (e.stopPropagation(), step(-1))}
             aria-hidden
           >
             <ChevronLeftIcon />
           </span>
-          <span data-slot="menu-row-value" data-tone={valueTone} className={cn("nk-num min-w-12 text-center text-sm", valueTone === "muted" && quiet)}>
+          <span data-slot="menu-row-value" data-tone={valueTone} className={cn("nk-num min-w-12 text-center text-(length:--nk-text-label)", valueTone === "muted" && quiet)}>
             {value}
           </span>
           <span
-            className={cn("rounded-sm p-0.5", quiet, hovers && "hover:bg-background/50 hover:text-foreground")}
+            className={cn("rounded-(--nk-r-key) p-(--nk-space-1)", quiet, hovers && "hover:bg-background/50 hover:text-foreground")}
             onClick={(e) => (e.stopPropagation(), step(1))}
             aria-hidden
           >
@@ -491,7 +491,7 @@ function MenuRowDetails({
         <div className="flex flex-col gap-2 p-3">
           {title && <p className="nk-title truncate">{title}</p>}
           {items.length > 0 && (
-            <dl className="flex flex-col gap-1.5 text-xs leading-4">
+            <dl className="flex flex-col gap-(--nk-space-2) text-(length:--nk-text-label) leading-4">
               {items.map((m, i) => (
                 <div key={i} data-slot="menu-row-details-item" className="flex flex-col gap-1">
                   <div className="flex min-w-0 items-center gap-2">
@@ -538,7 +538,7 @@ function MenuRowList({
   const marker = React.useRef<HTMLDivElement>(null)
   useIndicator(list, marker, indicator ? active : null, "[data-slot=menu-row]")
   return (
-    <div ref={list} {...nkVariant({ density, shape, motion })} data-slot="menu-row-list" className={cn("relative flex flex-col gap-0.5", className)} {...props}>
+    <div ref={list} {...nkVariant({ density, shape, motion })} data-slot="menu-row-list" className={cn("relative flex flex-col gap-(--nk-space-1)", className)} {...props}>
       {indicator && <div ref={marker} aria-hidden data-slot="menu-row-indicator" className="nk-indicator" />}
       {children}
     </div>

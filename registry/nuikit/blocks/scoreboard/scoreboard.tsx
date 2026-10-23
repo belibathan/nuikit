@@ -4,6 +4,7 @@ import { SearchIcon, UsersIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
+import { Chip } from "@/components/ui/chip"
 import { EmptyState } from "@/components/ui/empty-state"
 import { Input } from "@/components/ui/input"
 import { MenuRow } from "@/components/ui/menu-row"
@@ -73,7 +74,7 @@ function Scoreboard({
           icon={<UsersIcon />}
           title={data.title || "Players"}
           actions={
-            <span className="nk-num text-sm font-medium">
+            <span className="nk-num text-(length:--nk-text-label) [font-weight:var(--nk-type-label-weight,500)]">
               {players.length}
               {data.max ? <span className="text-muted-foreground"> / {data.max}</span> : null}
             </span>
@@ -108,16 +109,16 @@ function Scoreboard({
         </PanelBody>
         <PanelFooter className="nk-label">
           <span className="flex-1">Ping</span>
-          <span className="flex items-center gap-1.5">
-            <span className="size-1.5 rounded-full bg-muted-foreground" />
+          <span className="flex items-center gap-(--nk-space-2)">
+            <Chip variant="dot" aria-hidden />
             Under 100 ms
           </span>
-          <span className="flex items-center gap-1.5">
-            <span className="size-1.5 rounded-full bg-warning" />
+          <span className="flex items-center gap-(--nk-space-2)">
+            <Chip variant="dot" tone="warning" aria-hidden />
             Under 200
           </span>
-          <span className="flex items-center gap-1.5">
-            <span className="size-1.5 rounded-full bg-destructive" />
+          <span className="flex items-center gap-(--nk-space-2)">
+            <Chip variant="dot" tone="danger" aria-hidden />
             Slower
           </span>
         </PanelFooter>
@@ -131,20 +132,20 @@ function ScoreboardRow({ player: p }: { player: ScoreboardPlayer }) {
   const level = pingLevel(p.ping)
   return (
     <div role="row" data-slot="scoreboard-row" data-you={p.you || undefined} className={cn("nk-row", p.you && "bg-accent text-accent-foreground")}>
-      <span role="cell" className="nk-num w-10 shrink-0 text-xs text-muted-foreground">
+      <span role="cell" className="nk-num w-10 shrink-0 text-(length:--nk-text-label) text-muted-foreground">
         {p.id}
       </span>
-      <span role="cell" className="flex min-w-0 flex-1 items-center gap-2 font-medium">
+      <span role="cell" className="flex min-w-0 flex-1 items-center gap-2 [font-weight:var(--nk-type-label-weight,500)]">
         <span className="truncate">{p.name}</span>
         {p.you && <Badge variant="outline">You</Badge>}
       </span>
-      <span role="cell" className="w-28 shrink-0 truncate text-sm text-muted-foreground">
+      <span role="cell" className="w-28 shrink-0 truncate text-(length:--nk-text-label) text-muted-foreground">
         {p.job ?? ""}
       </span>
       <span
         role="cell"
         className={cn(
-          "nk-num w-14 shrink-0 text-right text-xs",
+          "nk-num w-14 shrink-0 text-right text-(length:--nk-text-label)",
           level === "good" && "text-muted-foreground",
           level === "fair" && "text-warning",
           level === "poor" && "text-destructive"
@@ -168,10 +169,7 @@ function ScoreboardActivities({ activities }: { activities: ScoreboardActivity[]
             data-scoreboard-activity
             readOnly
             icon={
-              <span
-                className={cn("size-2 rounded-full", a.available ? "bg-success" : "bg-muted-foreground/40")}
-                aria-label={a.available ? "Available" : "Not available"}
-              />
+              <Chip variant="dot" tone={a.available ? "success" : undefined} aria-label={a.available ? "Available" : "Not available"} />
             }
             description={a.detail}
             className={cn(!a.available && "text-muted-foreground")}

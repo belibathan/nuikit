@@ -225,7 +225,7 @@ function CharacterSelect({
   }
 
   const errorLine = error && (
-    <p role="alert" className="text-sm text-destructive">
+    <p role="alert" className="text-(length:--nk-text-label) text-destructive">
       {error}
     </p>
   )
@@ -238,7 +238,7 @@ function CharacterSelect({
             icon={<UsersIcon />}
             title={data.title ?? "Characters"}
             actions={
-              <span className="nk-num text-sm text-muted-foreground">
+              <span className="nk-num text-(length:--nk-text-label) text-muted-foreground">
                 {characters.length} / {data.slots}
               </span>
             }
@@ -250,7 +250,7 @@ function CharacterSelect({
                 image={
                   <Avatar aria-hidden className="size-full rounded-none">
                     {c.avatar && <AvatarImage src={c.avatar} alt="" className="object-cover" />}
-                    <AvatarFallback className="rounded-none text-xs font-medium">{initials(fullName(c))}</AvatarFallback>
+                    <AvatarFallback className="rounded-none text-(length:--nk-text-label) [font-weight:var(--nk-type-label-weight,500)]">{initials(fullName(c))}</AvatarFallback>
                   </Avatar>
                 }
                 description={[c.job, c.lastPlayed].filter(Boolean).join(", ") || undefined}

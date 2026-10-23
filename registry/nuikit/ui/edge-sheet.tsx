@@ -142,7 +142,7 @@ function EdgeSheet({
           // jumped out and slid in (a blink, then a second entrance). The exit never waits.
           "data-[state=open]:duration-[min(calc(var(--nk-time)*2.2),360ms)] data-[state=open]:ease-(--nk-ease-out)",
           "data-[state=open]:[animation-delay:calc(var(--edge-sheet-delay)*var(--nk-motion,1))] data-[state=open]:[animation-fill-mode:both]",
-          "data-[state=closed]:duration-[min(calc(var(--nk-time)*1.4),200ms)] data-[state=closed]:ease-(--nk-ease-in,ease-in)",
+          "data-[state=closed]:duration-[min(calc(var(--nk-time)*1.4),200ms)] data-[state=closed]:ease-(--nk-ease-in)",
           className
         )}
         {...props}
@@ -205,8 +205,8 @@ function EdgeSheetEdge({ value, danger = 90, className }: { value?: number; dang
       {v !== undefined && (
         <div
           data-slot="edge-sheet-edge-fill"
-          data-danger={v >= danger || undefined}
-          className="absolute inset-0 origin-left bg-(--brand,var(--primary)) transition-transform duration-[calc(var(--nk-time)*2)] ease-(--nk-ease-out) data-[danger]:bg-destructive"
+          data-state={v >= danger ? "alert" : undefined}
+          className="absolute inset-0 origin-left bg-(--brand,var(--primary)) transition-transform duration-(--nk-time-fill) ease-(--nk-ease-out) data-[state=alert]:bg-destructive"
           style={{ transform: `scaleX(${v / 100})` }}
         />
       )}

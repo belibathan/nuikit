@@ -124,7 +124,7 @@ function ConfirmPanel({
       {(description || children) && (
         <PanelBody variant="form" className="gap-3">
           {description && (
-            <div id={`${id}-description`} data-slot="confirm-description" className="text-sm leading-5 text-pretty text-muted-foreground">
+            <div id={`${id}-description`} data-slot="confirm-description" className="text-(length:--nk-text-label) leading-5 text-pretty text-muted-foreground">
               {description}
             </div>
           )}

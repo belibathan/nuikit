@@ -93,7 +93,7 @@ function PanelHeader({
         </span>
       )}
       {(title || description) && (
-        <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+        <div className="flex min-w-0 flex-1 flex-col gap-(--nk-space-1)">
           {title && <PanelTitle>{title}</PanelTitle>}
           {description && <PanelDescription>{description}</PanelDescription>}
         </div>
@@ -134,7 +134,7 @@ const panelBodyVariants = cva("", {
   variants: {
     variant: {
       /** Rows: 8px around 40px rows. */
-      list: "nk-panel-body flex flex-col gap-0.5",
+      list: "nk-panel-body flex flex-col gap-(--nk-space-1)",
       /** Fields and text: 16px, 16px between groups. */
       form: "flex flex-col gap-[calc(var(--nk-space)*4)] p-[calc(var(--nk-space)*4)]",
     },

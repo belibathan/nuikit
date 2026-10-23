@@ -150,7 +150,7 @@ function Garage({
             }
           />
           <PanelBody scroll className="max-h-[22rem]">
-            <div ref={rows} className="flex flex-col gap-0.5" onKeyDown={onKeyDown}>
+            <div ref={rows} className="flex flex-col gap-(--nk-space-1)" onKeyDown={onKeyDown}>
               {shown.length ? (
                 shown.map((v) => (
                   <MenuRow
@@ -213,9 +213,9 @@ function GarageDetail({
         <Meter icon={<FuelIcon />} label="Fuel" value={v.fuel} valueText={`${Math.round(v.fuel)}%`} low={15} tone="foreground" />
         <Meter icon={<WrenchIcon />} label="Engine" value={v.engine} valueText={`${Math.round(v.engine)}%`} low={30} tone="foreground" />
         <Meter icon={<ShieldIcon />} label="Body" value={v.body} valueText={`${Math.round(v.body)}%`} low={30} tone="foreground" />
-        <p className={cn("text-sm", v.state === "impounded" ? "text-warning" : "text-muted-foreground")}>{garageWhere(v, fmt)}</p>
+        <p className={cn("text-(length:--nk-text-label)", v.state === "impounded" ? "text-warning" : "text-muted-foreground")}>{garageWhere(v, fmt)}</p>
         {error && (
-          <p role="alert" className="text-sm text-destructive">
+          <p role="alert" className="text-(length:--nk-text-label) text-destructive">
             {error}
           </p>
         )}

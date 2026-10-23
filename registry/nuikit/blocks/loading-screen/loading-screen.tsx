@@ -43,7 +43,7 @@ function LoadingScreen({
       <LoadingBackdrop images={h.backgrounds ?? []} interval={h.backgroundInterval} />
 
       <header className="absolute top-12 left-12 flex items-center gap-4">
-        {h.logo && <img src={h.logo} alt="" className="size-12 rounded-lg object-contain" />}
+        {h.logo && <img src={h.logo} alt="" className="size-12 rounded-(--nk-r-control) object-contain" />}
         <div className="flex flex-col gap-1">
           {/* the server name: the screen's display moment (the identity's display face) */}
           <h1 className="nk-display [--nk-display-size:var(--nk-text-section)]">{h.serverName || "Welcome"}</h1>
@@ -112,7 +112,7 @@ function LoadingTips({ tips, interval = 8000 }: { tips: LoadingTip[]; interval?:
     <section className="flex w-96 flex-col gap-3" aria-label="Tip">
       <div key={i} className="nk-enter flex min-h-16 flex-col justify-end gap-1">
         {title && <h2 className="nk-title">{title}</h2>}
-        <p className="text-sm leading-relaxed text-muted-foreground">{text}</p>
+        <p className="text-(length:--nk-text-label) leading-relaxed text-muted-foreground">{text}</p>
       </div>
       {tips.length > 1 && (
         <div className="flex items-center gap-1" aria-hidden>
@@ -120,7 +120,7 @@ function LoadingTips({ tips, interval = 8000 }: { tips: LoadingTip[]; interval?:
           {tips.map((_, n) => (
             <span
               key={n}
-              className={cn("h-0.5 rounded-full bg-foreground", n === i % tips.length ? "w-6" : "w-3 opacity-25")}
+              className={cn("h-0.5 bg-foreground", n === i % tips.length ? "w-6" : "w-3 opacity-25")}
             />
           ))}
         </div>
@@ -132,13 +132,13 @@ function LoadingTips({ tips, interval = 8000 }: { tips: LoadingTip[]; interval?:
 function LoadingLinks({ links }: { links: LoadingLink[] }) {
   if (links.length === 0) return null
   return (
-    <dl className="flex items-center gap-6 text-sm">
+    <dl className="flex items-center gap-6 text-(length:--nk-text-label)">
       {links.map((l, n) => (
         <div key={l.label + n} className="flex items-center gap-6">
           {n > 0 && <Separator orientation="vertical" className="h-8!" />}
-          <div className="flex flex-col gap-0.5 text-right">
+          <div className="flex flex-col gap-(--nk-space-1) text-right">
             <dt className="nk-label">{l.label}</dt>
-            {l.url && <dd className="font-medium">{l.url}</dd>}
+            {l.url && <dd className="[font-weight:var(--nk-type-label-weight,500)]">{l.url}</dd>}
           </div>
         </div>
       ))}
@@ -214,7 +214,7 @@ function LoadingMusic({ tracks, volume = 0.15 }: { tracks: string[]; volume?: nu
       <Button
         variant="outline"
         size="icon"
-        className="size-9 rounded-full bg-background/40 backdrop-blur-md"
+        className="size-9 rounded-(--nk-r-control) bg-background/40"
         aria-label={muted ? "Unmute music" : "Mute music"}
         onClick={() => setMuted((m) => !m)}
       >

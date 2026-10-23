@@ -35,9 +35,9 @@ const keyPromptVariants = cva(
         /** The prompt slab on the game: key chip + verb, the HUD plate (nk-slab). */
         slab: "nk-slab",
         /** A small floating panel, like the rest of the kit's floating UI. */
-        panel: "nk-panel inline-flex items-center gap-2.5 text-sm leading-5 font-medium",
+        panel: "nk-panel inline-flex items-center gap-(--nk-space-3) text-(length:--nk-text-label) leading-5 [font-weight:var(--nk-type-label-weight,500)]",
         /** The game's dark HUD surface, for prompts that sit on the world (nk-hud). */
-        hud: "nk-hud nk-shadow inline-flex items-center gap-2.5 text-sm leading-5 font-medium",
+        hud: "nk-hud nk-shadow inline-flex items-center gap-(--nk-space-3) text-(length:--nk-text-label) leading-5 [font-weight:var(--nk-type-label-weight,500)]",
       },
       size: {
         sm: "",
@@ -45,8 +45,8 @@ const keyPromptVariants = cva(
       },
     },
     compoundVariants: [
-      { surface: ["panel", "hud"], size: "sm", className: "min-h-8 py-1 pr-2.5 pl-1.5" },
-      { surface: ["panel", "hud"], size: "default", className: "min-h-10 py-1.5 pr-3 pl-2" },
+      { surface: ["panel", "hud"], size: "sm", className: "min-h-8 py-1 pr-(--nk-space-3) pl-(--nk-space-2)" },
+      { surface: ["panel", "hud"], size: "default", className: "min-h-10 py-(--nk-space-2) pr-3 pl-2" },
       // the slab's own height and padding (--nk-slab-*); sm is a step tighter
       { surface: "slab", size: "sm", className: "[--nk-slab-height:calc(2rem*var(--nk-density,0.875))]" },
     ],
@@ -306,11 +306,11 @@ function KeyPrompt({
             {list.map((k, i) => (
               <React.Fragment key={`${k}-${i}`}>
                 {i > 0 && (
-                  <span aria-hidden className="text-xs text-muted-foreground">
+                  <span aria-hidden className="text-(length:--nk-text-label) text-muted-foreground">
                     {separator}
                   </span>
                 )}
-                <Kbd className={cn("h-6 min-w-6 px-1.5 text-xs", active && "bg-(--nk-chip-active-bg) text-(--nk-chip-active-fg)")}>
+                <Kbd className={cn("h-6 min-w-6 px-(--nk-space-2) text-(length:--nk-text-label)", active && "bg-(--nk-chip-active-bg) text-(--nk-chip-active-fg)")}>
                   {k}
                 </Kbd>
               </React.Fragment>
@@ -334,7 +334,7 @@ function KeyPrompt({
             data-slot="key-prompt-description"
             className={cn(
               wrap ? "text-pretty break-words" : "truncate",
-              slab ? "nk-label [color:inherit]! opacity-75" : "text-xs leading-4 font-normal",
+              slab ? "nk-label [color:inherit]! opacity-75" : "text-(length:--nk-text-label) leading-4 font-normal",
               surface === "panel" ? "text-muted-foreground" : !slab && "opacity-75"
             )}
           >
