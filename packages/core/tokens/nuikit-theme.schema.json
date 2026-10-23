@@ -2188,6 +2188,63 @@
           "description": "How far a selection tile sits in from its item's sides (room for the skew; never over a neighbour)",
           "$comment": "tokens 1.7"
         },
+        "nk-tile-lift": {
+          "type": "string",
+          "description": "How far a keycap's face rises on hover and focus (0 = flat)",
+          "$comment": "tokens 1.7"
+        },
+        "nk-tile-press-ratio": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "How far a pressed keycap sinks, as a fraction of its wall (1 = flush with the plate)",
+          "$comment": "tokens 1.7"
+        },
+        "nk-leading-tight": {
+          "type": "string",
+          "description": "Line height of small text (captions, field labels, notice and row descriptions' tight lines)",
+          "$comment": "tokens 1.7"
+        },
+        "nk-leading-normal": {
+          "type": "string",
+          "description": "Line height of body-size text (rows, notices, slabs, row titles)",
+          "$comment": "tokens 1.7"
+        },
+        "nk-row-bar-thickness": {
+          "type": "string",
+          "description": "Width of the active row's bar (× nk-row-bar)",
+          "$comment": "tokens 1.7"
+        },
+        "nk-row-bar-inset-scale": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "The row bar's inset from the row's top and bottom, in spacing units",
+          "$comment": "tokens 1.7"
+        },
+        "nk-hold-ring-pad": {
+          "type": "string",
+          "description": "Thickness of the hold ring around a key under nk-hold-style ring",
+          "$comment": "tokens 1.7"
+        },
+        "nk-pip-size": {
+          "type": "string",
+          "description": "Width of one pip under nk-level-style pips (a percentage of the bar: 10% = ten pips)",
+          "$comment": "tokens 1.7"
+        },
+        "nk-pip-gap": {
+          "type": "string",
+          "description": "The gap between pips",
+          "$comment": "tokens 1.7"
+        },
+        "nk-meter-segment-gap": {
+          "type": "string",
+          "description": "The gap between a segmented meter's segments",
+          "$comment": "tokens 1.7"
+        },
+        "nk-glow-radius": {
+          "type": "string",
+          "description": "Blur radius of a row's glow (a chip's is 0.75 of it, a meter's 0.625)",
+          "$comment": "tokens 1.7"
+        },
         "nk-list-gap": {
           "type": "string",
           "description": "Between the items of a list: the wall plus breathing room, so a lit tile never touches the next row",
