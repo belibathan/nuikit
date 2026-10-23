@@ -72,7 +72,7 @@ describe("theme studio: tweaks", () => {
 
 describe("theme studio: identities (tokens 1.2)", () => {
   it("reads every identity (all of packages/core/themes) with no warnings, each a different identity", () => {
-    expect(identities.map((t) => t.name).slice(0, 7)).toEqual(["Graphite", "Signal", "Velvet", "Vector", "Arcade", "Street", "Studio"]);
+    expect(identities.map((t) => t.name).slice(0, 8)).toEqual(["Ink", "Graphite", "Signal", "Velvet", "Vector", "Arcade", "Street", "Studio"]);
     const seen = new Set<string>();
     for (const t of identities) {
       const theme = studioTheme(t.css);

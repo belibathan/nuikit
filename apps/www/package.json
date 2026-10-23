@@ -3,10 +3,11 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
+    "api": "node scripts/api.mjs",
+    "dev": "node scripts/api.mjs && vite",
+    "build": "node scripts/api.mjs && vite build",
     "preview": "vite preview",
-    "typecheck": "tsc --noEmit -p .",
+    "typecheck": "node scripts/api.mjs && tsc --noEmit -p .",
     "test": "vitest run"
   },
   "dependencies": {

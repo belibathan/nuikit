@@ -37,11 +37,13 @@ import {
   WrenchIcon,
 } from "lucide-react";
 import { closeSurface, openSurface, Surface } from "nuikit-core/react";
-import { cloneElement, useLayoutEffect, useRef, useState, type ReactElement, type ReactNode } from "react";
+import { cloneElement, createContext, useContext, useLayoutEffect, useRef, useState, type ReactElement, type ReactNode } from "react";
 import { Command } from "@/components/code";
 import { Scene } from "@/components/scene";
-import { Footer, Nav, SITE, ThemePicker } from "@/components/site";
+import { Footer, Nav, SITE } from "@/components/site";
+import { ApiDetails, Hooks, ITEMS, NewSections, SideNav } from "@/components/registry-docs";
 import { Badge } from "@/components/ui/badge";
+import { Chip } from "@/components/ui/chip";
 import { Button } from "@/components/ui/button";
 import { HudChip } from "@/components/ui/hud-chip";
 import { MenuRow, MenuRowDetails, MenuRowList, menuMetadata } from "@/components/ui/menu-row";
@@ -87,27 +89,51 @@ import { cn } from "@/lib/utils";
 import { identities } from "@/themes";
 import registry from "../../../../registry.json";
 
+/** The registry item this page is about (/components/<name>), or null for the whole catalogue. */
+const Focus = createContext<string | null>(null);
+
 export function ComponentsPage() {
   const preview = useRef<HTMLDivElement>(null);
+  const focus = location.pathname.match(/^\/components\/([a-z-]+)\/?$/)?.[1] ?? null;
+  const item = focus ? ITEMS.find((i) => i.name === focus) : undefined;
+  useLayoutEffect(() => {
+    document.title = item ? `${item.title}: nuikit components` : "Components: nuikit";
+  }, [item]);
   return (
-    <div className="min-h-screen">
-      <Nav />
-      <main className="mx-auto max-w-6xl px-6 py-16">
-        <header className="max-w-3xl">
-          <h1 className="text-4xl font-semibold tracking-tight">Components</h1>
-          <p className="mt-4 text-lg text-muted-foreground text-pretty">
-            What every nuikit screen is made of: stock shadcn/ui composed with the{" "}
-            <a href="/design" className="text-foreground underline underline-offset-4">
-              kit
-            </a>
-            . Each preview sits on a game scene at its in-game size at 1080p, and every state is a prop. Switch the theme: nothing here has a colour of
-            its own.
-          </p>
-          <ThemePicker className="mt-6" />
-          <IdentityPicker target={preview} className="mt-3" />
-        </header>
+    <div className="min-h-screen overflow-x-clip">
+      <Nav wide />
+      <div className="mx-auto flex max-w-7xl gap-10 px-4 sm:px-6">
+        <SideNav current={focus} />
+        <main className="min-w-0 flex-1 pt-10 pb-24 sm:pt-14 lg:pb-14">
+          <header className="max-w-3xl">
+            {item ? (
+              <>
+                <a href="/components" className="ink-eyebrow hover:text-foreground">
+                  Components /
+                </a>
+                <h1 className="ink-display mt-3 text-[clamp(2.5rem,7vw,4.5rem)]">{item.title}</h1>
+              </>
+            ) : (
+              <>
+                <p className="ink-eyebrow">Registry</p>
+                <h1 className="ink-display mt-3 text-[clamp(2.5rem,7vw,4.5rem)]">Components</h1>
+                <p className="mt-4 text-lg text-pretty text-muted-foreground">
+                  What every nuikit screen is made of: stock shadcn/ui composed with the{" "}
+                  <a href="/design" className="text-foreground underline underline-offset-4">
+                    kit
+                  </a>
+                  . Each preview sits on a game scene at its in-game size at 1080p, in Ink, and every state is a prop. Switch the identity: nothing here has
+                  a colour of its own.
+                </p>
+              </>
+            )}
+            <IdentityPicker target={preview} className="mt-6" />
+          </header>
 
-        <div ref={preview}>
+          <Focus.Provider value={focus}>
+          <div ref={preview}>
+
+          <NewSections Section={Section} />
 
         <Section
           name="variants"
@@ -132,9 +158,8 @@ export function ComponentsPage() {
 
         <Section
           name="vital-chip"
-          title="Vital chip: display modes"
+          title="Vital chip"
           text="What a chip shows, per server or per player: pill (icon, name, value), value (icon and value), icon (the level as fill), expand (the icon opens to the pill on a change and settles after --nk-rest-delay). A chip that opens (voice while talking) pushes its neighbours, collapses them to icons, or floats over them."
-          install={false}
           stageClassName="flex-col items-center"
         >
           <ChipModesDemo />
@@ -524,8 +549,11 @@ export function ComponentsPage() {
           <RadialDemo />
         </Section>
 
+        <Hooks />
+
+        {!focus && (
         <section id="removed" className="mt-20 scroll-mt-20">
-          <h2 className="text-2xl font-semibold tracking-tight">Removed</h2>
+          <h2 className="ink-display text-3xl">Removed</h2>
           <p className="mt-2 max-w-2xl text-muted-foreground text-pretty">
             Deprecated in 0.6.0 and removed from the registry in 0.9.0. Copies already in a project keep working; new UI uses the component that replaced them.
           </p>
@@ -544,7 +572,7 @@ export function ComponentsPage() {
                   {d.use.map((u, i) => (
                     <span key={u}>
                       {i > 0 && " or "}
-                      <a href={`#${u}`} className="font-mono underline underline-offset-4">
+                      <a href={`/components/${u}`} className="font-mono underline underline-offset-4">
                         {u}
                       </a>
                     </span>
@@ -555,8 +583,11 @@ export function ComponentsPage() {
             ))}
           </div>
         </section>
-        </div>
-      </main>
+        )}
+          </div>
+          </Focus.Provider>
+        </main>
+      </div>
       <Footer />
     </div>
   );
@@ -606,16 +637,14 @@ function MetaBadges({ meta }: { meta: ItemMeta }) {
   return (
     <>
       {meta.status === "deprecated" ? (
-        <Badge variant="destructive">
+        <Chip tone="danger" fill="tint">
           Deprecated{meta.replacedBy?.length ? `: use ${meta.replacedBy.join(" or ")}` : ""}
           {meta.removeIn ? `, removed in ${meta.removeIn}` : ""}
-        </Badge>
+        </Chip>
       ) : meta.status === "experimental" ? (
-        <Badge variant="secondary">Experimental</Badge>
+        <Chip fill="tint">Experimental</Chip>
       ) : null}
-      <Badge variant="outline" className="text-muted-foreground">
-        {meta.since === "unreleased" ? "Unreleased" : `Since ${meta.since}`}
-      </Badge>
+      <Chip className="text-muted-foreground">{meta.since === "unreleased" ? "Unreleased" : `Since ${meta.since}`}</Chip>
     </>
   );
 }
@@ -639,38 +668,59 @@ function Section({
   stageClassName?: string;
   children: ReactNode;
 }) {
+  const focus = useContext(Focus);
+  if (focus && focus !== name) return null;
   const meta = install ? META.get(name) : undefined;
+  const entry = ITEMS.find((i) => i.name === name);
+  const item = !!entry;
+  // on the item's own page the h1 already says its name
+  const repeat = !!focus && entry?.title === title;
   return (
-    <section id={install ? name : undefined} className="mt-20 scroll-mt-20">
+    <section id={install ? name : undefined} className="mt-16 scroll-mt-24 first:mt-12">
       <div className="flex flex-wrap items-end justify-between gap-4">
-        <div className="max-w-2xl">
+        <div className="max-w-2xl min-w-0">
           <div className="flex flex-wrap items-center gap-3">
-            <h2 className="text-2xl font-semibold tracking-tight">{title}</h2>
+            <h2 className={cn("ink-display text-3xl", repeat && "sr-only")}>
+              {install && item && !focus ? (
+                <a href={`/components/${name}`} className="hover:underline hover:decoration-2 hover:underline-offset-4">
+                  {title}
+                </a>
+              ) : (
+                title
+              )}
+            </h2>
             {meta && <MetaBadges meta={meta} />}
           </div>
-          <p className="mt-2 text-muted-foreground text-pretty">{text}</p>
+          <p className="mt-2 text-pretty text-muted-foreground">{text}</p>
           {install && meta?.spec && <SpecDetails spec={meta.spec} />}
         </div>
         {install && <Command className="h-10 w-full max-w-md text-xs">{`npx shadcn add ${SITE}/r/${name}.json`}</Command>}
       </div>
-      <div className="relative isolate mt-6 overflow-hidden rounded-xl border bg-black">
+      <div className="relative isolate mt-6 overflow-hidden rounded-(--nk-r-surface) border bg-black">
         <Scene variant={scene} />
-        <div className={cn("relative flex min-h-80 flex-wrap items-start justify-center gap-8 p-10", stageClassName)}>{children}</div>
+        {/* phones: the stage scrolls sideways rather than squeezing a 1080p part */}
+        <div className="overflow-x-auto">
+          <div className={cn("relative flex min-h-80 flex-wrap items-start justify-center gap-8 p-4 sm:p-10", stageClassName)}>{children}</div>
+        </div>
       </div>
+      {install && item && <ApiDetails name={name} open={focus === name} />}
     </section>
   );
 }
 
+export type SectionComponent = typeof Section;
+
 /**
  * Every component under one identity (all of packages/core/themes): its type, shape, surface, density,
- * motion and HUD, painted on the previews only, so the page around them stays the site's. "Site": none.
+ * motion and HUD, painted on the previews only, so the page around them stays the site's. Ink (the first) is
+ * the site's own identity, so it paints nothing.
  */
 function IdentityPicker({ target, className }: { target: React.RefObject<HTMLDivElement | null>; className?: string }) {
-  const [active, setActive] = useState(-1);
+  const [active, setActive] = useState(0);
   useLayoutEffect(() => {
     const el = target.current;
     const id = identities[active];
-    if (!el || !id) return;
+    if (!el || !id || active === 0) return;
     applyStageTheme(studioTheme(id.css), el);
     // the site's font-sans is a literal (@theme inline): read the identity's own
     el.style.fontFamily = "var(--font-sans)";
@@ -681,16 +731,14 @@ function IdentityPicker({ target, className }: { target: React.RefObject<HTMLDiv
   }, [active, target]);
   return (
     <div className={cn("flex flex-wrap items-center gap-2", className)} role="radiogroup" aria-label="Identity">
-      <span className="mr-1 text-sm text-muted-foreground">Identity</span>
-      {[{ name: "Site", swatch: [] as string[] }, ...identities].map((t, i) => (
-        <Button key={t.name} role="radio" aria-checked={active === i - 1} variant={active === i - 1 ? "secondary" : "ghost"} size="sm" onClick={() => setActive(i - 1)}>
-          {t.swatch.length > 0 && (
-            <span className="flex -space-x-1">
-              {t.swatch.map((c) => (
-                <span key={c} className="size-3 rounded-full ring-2 ring-background" style={{ background: c }} />
-              ))}
-            </span>
-          )}
+      <span className="ink-eyebrow mr-1">Identity</span>
+      {identities.map((t, i) => (
+        <Button key={t.name} role="radio" aria-checked={active === i} variant={active === i ? "secondary" : "ghost"} size="sm" onClick={() => setActive(i)}>
+          <span className="flex" aria-hidden>
+            {t.swatch.map((c, j) => (
+              <span key={j} className="size-3 rounded-(--nk-r-key) border border-white/20" style={{ background: c, marginLeft: j ? -3 : 0 }} />
+            ))}
+          </span>
           {t.name}
         </Button>
       ))}

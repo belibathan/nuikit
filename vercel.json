@@ -23,6 +23,10 @@
     {
       "source": "/(components|blocks|design|coverage|theme)",
       "destination": "/index.html"
+    },
+    {
+      "source": "/components/:name",
+      "destination": "/index.html"
     }
   ]
 }

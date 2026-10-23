@@ -157,8 +157,8 @@ export function ThemePage() {
                     }}
                   >
                     <span className="flex -space-x-1">
-                      {t.swatch.map((c) => (
-                        <span key={c} className="size-3 rounded-full ring-2 ring-background" style={{ background: c }} />
+                      {t.swatch.map((c, j) => (
+                        <span key={j} className="size-3 rounded-(--nk-r-key) ring-2 ring-background" style={{ background: c }} />
                       ))}
                     </span>
                     {t.name}
