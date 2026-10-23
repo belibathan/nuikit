@@ -122,7 +122,19 @@ lever catalog is the documentation.*
 | Release cadence: cut a release at every in-game-verified checkpoint (changesets + adapter and system bumps, `docs/releases/`); `0.9.0` when Track A lands | Open |
 | Feedback loop beyond the owner: Discussions on, an issue template for "it looks wrong on my server" asking for theme, framework and a screenshot | **Owner: turn on Discussions**; template open |
 
+## Landscape (Oct 23; ideas only, never code: licences differ)
+
+| Repo | What | Verdict | Take |
+|---|---|---|---|
+| IEver3st/cortex-lib (3.4, "free use", no redistribution) | ox_lib-shaped `lib.*` with one hosted React bundle: notify, progress, menus, radial, zones, **world/entity/bone-anchored interaction prompts**, callouts, settings tabs, pause pages | **Competitor**, same slot; closed-ish | anchored prompts (below); per-resource interaction budgets; third-party settings tabs on `nk.settings`; `[KEY]` tokens in strings render as keycaps; release zip checksum |
+| Avenida-Scripts/fivem-interact-script (no licence; Tebex) | DUI sprite prompts on peds/coords/entities, hold, choices, NPC dialogue + camera | A renderer concern, not an override (owns gameplay nuikit must not) | the same anchored-prompt surface |
+| rian-be/FiveM.Nui (MIT, C#) | Typed C# ⇄ TS bridge: request/response envelope, error codes, deadlines, cancellation, diagnostics | Complement for C# shops | `fetchNui` error vocabulary (`TIMEOUT` / `TRANSPORT` / `UNKNOWN_CALLBACK`) + deadlines; per-resource diagnostics counters for doctor and the dev overlay |
+
+Positioning: *cortex-lib is another library you port your scripts to; nuikit is the layer the scripts you already run land on.*
+
 ## Later (after 0.9)
+
+- **World-anchored prompts** (`nk.prompt` with `anchor: { world | entity, bone?, offset?, maxDistance, markerDistance }`, drawn by `nuikit_screen`'s DUI path; hold via the existing progress; `target` stays screen-space; peds and dialogue stay out of scope). Two repos above show the demand. Effort M; the DUI path has never been seen in game, so it is the spike first.
 
 - Chromium 144 on the release channel: relax the 103 rules, the compiler becomes opt-in compat (`vision.md` §2).
 - Vue / Svelte bindings for the protocol; DUI surfaces (`nuikit_screen` is the spike); gamepad navigation.
