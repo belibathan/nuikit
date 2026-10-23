@@ -47,7 +47,7 @@ function boot(resources: Record<string, Fake>, convars: Record<string, string> =
     commands.get("nuikit")!(0, args);
     return logs.slice(start).map((l) => l.replace(/\^\d/g, "").replace(/^\[nuikit\] /, ""));
   };
-  return { logs, run, handlers, netHandlers, exported };
+  return { logs, run, handlers, netHandlers, exported, ctx };
 }
 
 const QBOX = {
@@ -132,6 +132,27 @@ describe("nuikit doctor (server glue)", () => {
     const out = s.run("doctor").join("\n");
     expect(out).toContain("ox_lib                   2  (notify 2)");
     expect(out).toContain("qb_shops                 1  (menu 1)");
+  });
+
+  it("counts a client's batch, capped, at most one batch per player per 5 s", () => {
+    const s = boot(QBOX);
+    s.ctx.source = 7;
+    s.netHandlers.get("nuikit:intent")!({ batch: [{ source: "shop", intent: "notify", count: 3 }, { source: "shop", intent: "menu", count: 1e9 }, { source: 5, intent: "x", count: 1 }] });
+    s.netHandlers.get("nuikit:intent")!({ batch: [{ source: "shop", intent: "notify", count: 100 }] }); // too soon: dropped
+    s.ctx.source = 8; // another player is independent
+    s.netHandlers.get("nuikit:intent")!({ batch: [{ source: "shop", intent: "notify", count: -4 }] }); // counts at least 1
+    const rep = JSON.parse(s.run("doctor", "json")[0]!);
+    expect(rep.intents).toEqual([{ source: "shop", total: 10004, byIntent: { notify: 4, menu: 10000 } }]);
+  });
+
+  it("a client can't write into Object.prototype through a source or intent name", () => {
+    const s = boot(QBOX);
+    s.netHandlers.get("nuikit:intent")!({ source: "__proto__", intent: "polluted" });
+    s.handlers.get("nuikit:intent")!({ source: "ox_lib", intent: "__proto__" });
+    s.handlers.get("nuikit:intent")!({ source: "constructor", intent: "toString" });
+    expect(vm.runInContext("({}).polluted", s.ctx as vm.Context)).toBeUndefined();
+    const rep = JSON.parse(s.run("doctor", "json")[0]!);
+    expect(rep.intents.find((i: { source: string }) => i.source === "constructor").byIntent).toEqual({ toString: 1 });
   });
 
   it("`nuikit doctor json` prints one JSON line; exports doctor()", () => {

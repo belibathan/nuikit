@@ -402,7 +402,15 @@ end
 
 -- Replicated handlers: every copy applies the same change in the same order.
 
+--- A change may only be about the resource that sent it: another resource can't open, close or
+--- push out a surface in someone else's name.
+local function sentBy(resource)
+  local from = GetInvokingResource and GetInvokingResource()
+  return type(resource) == 'string' and (from == nil or from == resource)
+end
+
 AddEventHandler(EV.open, function(e)
+  if type(e) ~= 'table' or type(e.name) ~= 'string' or not sentBy(e.resource) then return end
   seen = seen + 1
   seq = seq + 1
   if e.exclusive then
@@ -423,6 +431,7 @@ AddEventHandler(EV.open, function(e)
 end)
 
 AddEventHandler(EV.close, function(resource, name)
+  if not sentBy(resource) then return end
   seen = seen + 1
   if resource == RESOURCE then mine[name] = false end
   local i = find(resource, name)
@@ -706,6 +715,14 @@ local function ownBag()
   return LocalPlayer and LocalPlayer.state
 end
 
+--- Is `bagName` the local player's own bag? Another player can replicate their own bag to every
+--- client, so a handler with a nil filter must not take their zones or slots as ours.
+function NUI._isOwnBag(bagName)
+  if type(bagName) ~= 'string' then return false end
+  if GetPlayerServerId and PlayerId then return bagName == ('player:%d'):format(GetPlayerServerId(PlayerId())) end
+  return bagName:find('^player:') ~= nil
+end
+
 --- Every published zone: `resource:name` → rectangles { x, y, w, h } in fractions of the screen.
 ---@return table<string, { x: number, y: number, w: number, h: number }[]>
 function NUI.zones()
@@ -727,7 +744,7 @@ end
 
 if AddStateBagChangeHandler then
   AddStateBagChangeHandler(ZONES, nil, function(bagName, _, value)
-    if not bagName:find('^player:') then return end
+    if not NUI._isOwnBag(bagName) then return end
     NUI.send('nuikit:zones', value or {})
   end)
 end
@@ -807,7 +824,7 @@ end
 
 if AddStateBagChangeHandler then
   AddStateBagChangeHandler(SLOTS, nil, function(bagName, _, value)
-    if not bagName:find('^player:') then return end
+    if not NUI._isOwnBag(bagName) then return end
     NUI.send('nuikit:slots', value or {})
   end)
 end

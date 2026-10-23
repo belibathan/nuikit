@@ -118,7 +118,9 @@ NUI.on('nuikit:renderer:failed', function(req)
   if type(req) ~= 'table' then return { ok = false } end
   print(('^1[nuikit] renderer pack %s failed for %s (%s): %s. Using the default renderer.^7'):format(
     tostring(req.resource), tostring(req.kind), tostring(req.url), tostring(req.message)))
-  TriggerServerEvent('nuikit:renderer:failed', { resource = req.resource, kind = req.kind, message = req.message })
+  -- page-sent: only strings, capped, reach the server
+  local function cap(v, n) return type(v) == 'string' and v:sub(1, n) or nil end
+  TriggerServerEvent('nuikit:renderer:failed', { resource = cap(req.resource, 64), kind = cap(req.kind, 32), message = cap(req.message, 300) })
   return { ok = true }
 end)
 

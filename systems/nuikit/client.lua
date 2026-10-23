@@ -163,7 +163,7 @@ end)
 -- A UI published or dropped a zone: waiting override pages get the new set. The handler runs before
 -- the value lands in the bag, so keep the value it was given.
 AddStateBagChangeHandler(ZONES, nil, function(bagName, _, value)
-  if not bagName:find('^player:') then return end
+  if not NUI._isOwnBag(bagName) then return end -- another player's replicated bag is not ours
   zones = value or {}
   zonesGen = zonesGen + 1
   flush()

@@ -234,6 +234,54 @@ describe("the runtime (systems/nuikit/client/intents.lua)", () => {
     expect(frame(host)).toEqual([]);
   });
 
+  it("a resource can't take over, or cancel, another resource's intent by its id", async () => {
+    client = await createClient();
+    const host = await startRuntime();
+    const shop = await startScript("shop");
+    const evil = await startScript("evil");
+    await shop.run(`H = nk.menu({ title = 'Shop', items = { { label = 'Buy' } } }, { async = true })`);
+    const id = await shop.run<string>(`return H.id`);
+    // same id, valid payload: refused, the shop's menu stays
+    await evil.run(`TriggerEvent('nuikit:intent:open', '${id}', 'menu', { title = 'Phish', items = { { label = 'x' } } })`);
+    // same id, invalid payload: must not answer the shop's waiting call with 'invalid'
+    await evil.run(`TriggerEvent('nuikit:intent:open', '${id}', 'menu', { title = 1 })`);
+    expect(await shop.run(`return H:isOpen()`)).toBe(true);
+    expect(frame(host).filter((m) => m.op === "open").map((m) => m.intent.props.title)).toEqual(["Shop"]);
+    // exports namespace by the caller too: evil#… can't collide with shop#…
+    expect(await evil.run(`return exports.nuikit:notify({ id = '${id.split("#")[1]}', title = 'x' })`)).toMatch(/^evil#/);
+    expect(await shop.run(`return H:isOpen()`)).toBe(true);
+  });
+
+  it("an update that would make the intent invalid is refused (page and resource alike)", async () => {
+    client = await createClient();
+    const host = await startRuntime();
+    const shop = await startScript("shop");
+    await shop.run(`H = nk.menu({ title = 'Shop', items = { { label = 'Buy' } } }, { async = true })`);
+    const id = await shop.run<string>(`return H.id`);
+    await shop.run(`TriggerEvent('nuikit:intent:update', '${id}', { items = 'nope' })`);
+    expect(frame(host).filter((m) => m.op === "update")).toEqual([]);
+    const { id: pid } = await host.call("intent", { source: "ox_lib", intent: "notify", props: { title: "hi" } });
+    expect(await host.call("intent", { update: pid, props: { title: 7 } })).toEqual({ ok: false });
+    expect(await host.call("intent", { update: pid, props: { title: "ok" } })).toEqual({ ok: true });
+    expect(frame(host).filter((m) => m.op === "update").map((m) => m.props)).toEqual([{ title: "ok" }]);
+  });
+
+  it("the doctor's counts reach the server as one batch, not one event per intent", async () => {
+    client = await createClient();
+    const host = await startRuntime();
+    const shop = await startScript("shop");
+    await shop.run(`for i = 1, 50 do nk.prompt('[E] Open') end nk.notify('a')`);
+    expect(host.serverEvents.filter((e) => e.event === "nuikit:intent")).toEqual([]);
+    client.runTimers();
+    const sent = host.serverEvents.filter((e) => e.event === "nuikit:intent");
+    expect(sent.length).toBe(1);
+    const batch = (sent[0]!.args[0] as any).batch;
+    expect(batch.sort((a: any, b: any) => a.intent.localeCompare(b.intent))).toEqual([
+      { source: "shop", intent: "notify", count: 1 },
+      { source: "shop", intent: "prompt", count: 50 },
+    ]);
+  });
+
   it("a stopped resource's intents are cancelled in the frame and focus is released", async () => {
     client = await createClient();
     const host = await startRuntime();

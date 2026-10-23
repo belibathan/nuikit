@@ -73,7 +73,13 @@ if RESOURCE == RUNTIME then
     end
   end)
 
-  exports('keysDefine', keys.store)
+  -- a resource declares keys only in its own name (the invoker, whatever name it passes)
+  exports('keysDefine', function(res, entry)
+    local from = GetInvokingResource and GetInvokingResource()
+    if type(res) ~= 'string' or (from ~= nil and from ~= res) then return false end
+    if type(entry) ~= 'table' or type(entry.id) ~= 'string' then return false end
+    return keys.store(res, entry)
+  end)
   exports('keysList', keys.list)
 
   -- Pages: https://nuikit/keys → { keys = [{ resource, id, label, default, binding, mapper }] }

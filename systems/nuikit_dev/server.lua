@@ -15,6 +15,7 @@ local deps = {
   invStarted = function() return GetResourceState('ox_inventory') == 'started' end,
   canCarry = function(src, name, count) return exports.ox_inventory:CanCarryItem(src, name, count) and true or false end,
   add = function(src, name, count, metadata) return exports.ox_inventory:AddItem(src, name, count, metadata) and true or false end,
+  remove = function(src, name, count, metadata) return exports.ox_inventory:RemoveItem(src, name, count, metadata) and true or false end,
   playerData = function(src)
     if GetResourceState('qbx_core') ~= 'started' then return nil end
     local ok, player = pcall(function() return exports.qbx_core:GetPlayer(src) end)
@@ -51,12 +52,11 @@ CreateThread(function()
     local queue = LoadResourceFile(GetCurrentResourceName(), 'restart.queue')
     if queue and queue:find('%S') then
       SaveResourceFile(GetCurrentResourceName(), 'restart.queue', '', 0)
-      for name in queue:gmatch('[%w_%-]+') do
-        if name ~= GetCurrentResourceName() then
-          print('[nuikit_dev] restart ' .. name)
-          ExecuteCommand('ensure ' .. name) -- starts it, or restarts it when running
-          for _, dep in ipairs(after[name] or {}) do ExecuteCommand('ensure ' .. dep) end
-        end
+      -- only names of resources that exist (never a command: NkDev.queueNames), at most 32 per round
+      for _, name in ipairs(NkDev.queueNames(queue, GetCurrentResourceName(), function(n) return GetResourceState(n) ~= 'missing' end)) do
+        print('[nuikit_dev] restart ' .. name)
+        ExecuteCommand('ensure ' .. name) -- starts it, or restarts it when running
+        for _, dep in ipairs(after[name] or {}) do ExecuteCommand('ensure ' .. dep) end
       end
     end
   end

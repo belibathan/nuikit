@@ -87,6 +87,28 @@ local function caller()
   return GetInvokingResource() or RESOURCE
 end
 
+-- The doctor's counts go to the server in one batch every FLUSH_MS, never one event per intent: a
+-- script that shows a prompt every frame must not become a server event every frame.
+local FLUSH_MS = 10000
+local counted, countedKeys, flushing = {}, 0, false
+local function countForServer(resource, kind)
+  local key = resource .. '\0' .. kind
+  if not counted[key] then
+    if countedKeys >= 64 then return end -- the server keeps no more distinct keys than this per batch
+    countedKeys = countedKeys + 1
+    counted[key] = { source = resource, intent = kind, count = 0 }
+  end
+  counted[key].count = counted[key].count + 1
+  if flushing then return end
+  flushing = true
+  SetTimeout(FLUSH_MS, function()
+    local batch = {}
+    for _, c in pairs(counted) do batch[#batch + 1] = c end
+    counted, countedKeys, flushing = {}, 0, false
+    if #batch > 0 then TriggerServerEvent('nuikit:intent', { batch = batch }) end
+  end)
+end
+
 --- Open an intent. Returns the id, or nil and a reason ('invalid', 'busy').
 local function openIntent(resource, id, kind, props)
   if type(id) ~= 'string' or type(kind) ~= 'string' or type(props) ~= 'table' then return nil, 'invalid' end
@@ -96,6 +118,9 @@ local function openIntent(resource, id, kind, props)
     return nil, 'invalid'
   end
   local prev = open[id]
+  -- An id belongs to whoever opened it: another resource re-using it would take that intent over
+  -- (and its answer would reach the first resource's waiting call).
+  if prev and prev.resource ~= resource then return nil, 'invalid' end
   if kind == 'progress' and not prev then
     -- One progress at a time (every library's rule): a second one is refused, not queued.
     for _, other in pairs(open) do
@@ -114,7 +139,7 @@ local function openIntent(resource, id, kind, props)
   send({ op = 'open', intent = entry(it) })
   -- One event per drawn intent: the doctor counts them by source (docs/architecture.md §6).
   TriggerEvent('nuikit:intent', { source = resource, intent = kind, id = id })
-  TriggerServerEvent('nuikit:intent', { source = resource, intent = kind })
+  countForServer(resource, kind)
   return id
 end
 
@@ -132,8 +157,17 @@ local function closeIntent(it, result, reason, data, notify)
 end
 
 local function updateIntent(it, patch)
-  if type(patch) ~= 'table' then return end
-  for k, v in pairs(patch) do it.props[k] = v end
+  if type(patch) ~= 'table' then return false end
+  -- the merged props must still be a valid intent (a patch is checked like an open)
+  local merged = {}
+  for k, v in pairs(it.props) do merged[k] = v end
+  for k, v in pairs(patch) do merged[k] = v end
+  local issues = NUI.intents.validate(it.kind, merged)
+  if #issues > 0 then
+    print(('^1[nuikit] %s sent an invalid update for %s: %s %s^7'):format(it.resource, it.kind, issues[1].path, issues[1].message))
+    return false
+  end
+  it.props = merged
   local s = surfaceFor(it.kind, it.props)
   if s ~= it.surface then
     release(it.surface)
@@ -141,6 +175,7 @@ local function updateIntent(it, patch)
     take(s)
   end
   send({ op = 'update', id = it.id, props = patch })
+  return true
 end
 
 local function cancelIntent(it, reason)
@@ -151,9 +186,13 @@ end
 -- ───────────────────────────────── from other resources (nk.*)
 
 AddEventHandler('nuikit:intent:open', function(id, kind, props)
-  local ok, reason = openIntent(caller(), id, kind, props)
+  local from = caller()
+  -- ids are '<resource>#…' (lua/intents.lua): one in another resource's namespace is dropped without an
+  -- answer, so it can neither take over nor cancel that resource's waiting call.
+  if type(id) ~= 'string' or id:sub(1, #from + 1) ~= from .. '#' then return end
+  local ok, reason = openIntent(from, id, kind, props)
   -- Refused: answer at once so a waiting script gets nil + the reason instead of hanging.
-  if not ok and type(id) == 'string' then TriggerEvent('nuikit:intent:resolved', id, { reason = reason }) end
+  if not ok and not (open[id] and open[id].resource ~= from) then TriggerEvent('nuikit:intent:resolved', id, { reason = reason }) end
 end)
 
 AddEventHandler('nuikit:intent:update', function(id, patch)
@@ -258,6 +297,7 @@ function pageEvent(it, event, data)
     l = { queue = {}, token = 0 }
     pageEvents[it.id] = l
   end
+  if #l.queue >= 100 then table.remove(l.queue, 1) end -- a page that stopped listening can't grow it forever
   l.queue[#l.queue + 1] = { event = event, data = data }
   if l.cb then
     local events = l.queue
@@ -319,8 +359,8 @@ RegisterNUICallback('intent', function(data, cb)
   end
   if type(data.update) == 'string' then
     local it = open[data.update]
-    if it and it.page then updateIntent(it, data.props) end
-    return cb({ ok = it ~= nil })
+    if not (it and it.page) then return cb({ ok = false }) end
+    return cb({ ok = updateIntent(it, data.props) })
   end
   local source = ('page:%s'):format(type(data.source) == 'string' and data.source or 'unknown')
   exportSeq = exportSeq + 1

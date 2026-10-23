@@ -27,11 +27,11 @@ every purchase `server/main.lua` checks:
 - every line is a product on sale here, with a whole count from 1 to its `max` (or 99), lines for the same
   product merged, never more than what's in stock;
 - the price is the server's (the business's current price), never the page's, and the player has that much;
-- one purchase at a time per player, and at most one request per `Config.rateMs`.
+- one purchase at a time per player, and at most one request of each kind per `Config.rateMs`.
 
-Then the money and the items move **all or nothing**: it takes the money from the buyer, gives each item, and
-credits the business; if any step fails it undoes the ones before it. A refund that fails is printed in red in
-the server console. Stock goes down only after a purchase goes through.
+Then the money and the items move **all or nothing**: it holds the stock, takes the money from the buyer,
+gives each item, and credits the business; if any step fails it undoes the ones before it and puts the stock
+back. A refund that fails is printed in red in the server console. Two buyers can't both get the last item.
 
 Every Manage action first checks the player's **job and grade** for that business (`job`, `manageGrade`),
 again on every request, and that they're at the counter. Prices must be whole numbers inside the product's

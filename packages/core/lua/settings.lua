@@ -43,7 +43,7 @@ function settings.normalize(row, value)
     return nil
   elseif k == 'range' then
     local n = tonumber(value)
-    if not n then return nil end
+    if not n or n ~= n then return nil end -- NaN passes every comparison, so it would skip the clamp
     local lo, hi, step = tonumber(row.range[1]) or 0, tonumber(row.range[2]) or 1, tonumber(row.range[3])
     if n < lo then n = lo elseif n > hi then n = hi end
     if step and step > 0 then n = lo + math.floor((n - lo) / step + 0.5) * step end
@@ -263,14 +263,24 @@ if RESOURCE == RUNTIME then
     for i, r in ipairs(order) do if r == res then table.remove(order, i) break end end
   end)
 
+  -- A resource defines and changes only its own section through the exports (the caller is who invoked
+  -- the export, whatever name it passes). Pages change any section through the callbacks below: that is
+  -- the settings page's job.
+  local function own(fn)
+    return function(res, ...)
+      local from = GetInvokingResource and GetInvokingResource()
+      if type(res) ~= 'string' or (from ~= nil and from ~= res) then return nil end
+      return fn(res, ...)
+    end
+  end
   exports('settingsSaved', settings.saved)
-  exports('settingsDefine', settings.store)
+  exports('settingsDefine', own(settings.store))
   exports('settingsValues', settings.values)
-  exports('settingsDraft', settings.draft)
-  exports('settingsSave', settings.save)
-  exports('settingsCancel', settings.cancel)
-  exports('settingsReset', settings.reset)
-  exports('settingsPreset', settings.preset)
+  exports('settingsDraft', own(settings.draft))
+  exports('settingsSave', own(settings.save))
+  exports('settingsCancel', own(settings.cancel))
+  exports('settingsReset', own(settings.reset))
+  exports('settingsPreset', own(settings.preset))
   exports('settingsList', settings.list)
 
   -- Pages (any resource's): https://nuikit/settings { resource? } → { sections }; the rest take { resource, … }
