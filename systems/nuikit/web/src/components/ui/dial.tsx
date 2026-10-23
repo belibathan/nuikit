@@ -18,17 +18,18 @@ import { toneVars } from "@/components/ui/fill"
  * Anatomy: root (data-slot="dial", --level) > svg (ticks, track arc, value arc or segments, needle) > center (children).
  * Props: level (0–1, or value / max), size (sm | md | lg or px at 1080p), variant (ticks | digital), ticks
  *   (the tick count lever, 0 for none), segments, segmentGap (degrees between them: the speedometer's even gaps; the
- *   track is segmented too), paint (accent: the value in the accent's stops, like the speedometer), disc (a plate
- *   behind the arc), redline, needle, tone, hue, surface, sweep (240 a gauge, 360 a ring), start, thickness, inset,
- *   trackProps, valueProps.
+ *   track is segmented too), direction (cw: lit from the start; ccw: from the end, a fuel band draining down), paint
+ *   (accent: the value in the accent's stops, like the speedometer), disc (true: a plate behind the arc; soft: the
+ *   speedometer's scrim that fades out at the edge), redline (the segments past it are red even unlit), needle, tone,
+ *   hue, surface, sweep (256 a gauge, 360 a ring), start, thickness, inset, trackProps, valueProps.
  * Level means: how far the value has swept the arc, 0 at the start, 1 at the end of the sweep.
  * Rules: the value arc is data-driven (no CSS tween on the dash; a live gauge writes it with dialDash()); the
  *   needle moves by a rotate transform. Past the redline it is data-state="alert". Colours only from the
  *   gauge and fill tokens (--nk-gauge-*, --nk-fill-*, a hue); no glow filter, no drop shadow.
  */
 
-/** The arc's sweep in degrees (a gap at the bottom). */
-const DIAL_SWEEP = 240
+/** The arc's sweep in degrees (a gap at the bottom): the speedometer's, as refined in game. */
+const DIAL_SWEEP = 256
 /** The default track thickness in the SVG's units (px at 1080p). */
 const DIAL_STROKE = 3
 /** Major and minor ticks around the sweep (0, 1/8 … 1). */
@@ -106,10 +107,13 @@ type DialProps = Omit<React.ComponentProps<"div">, "children"> & {
   segments?: number
   /** Degrees between segments. Default: a hairline (the stroke + 2 units). */
   segmentGap?: number
+  /** cw: segments light from the start of the sweep (default). ccw: from its end (a band that drains downward). */
+  direction?: "cw" | "ccw"
   /** accent: the value painted in the accent's stops across the dial (the speedometer's level). */
   paint?: "tone" | "accent"
-  /** A plate disc behind the arc (the speedometer's): the HUD material on the game, the plate on a panel. */
-  disc?: boolean
+  /** A plate disc behind the arc: true is the HUD material on the game (the plate on a panel); soft is the
+   *  speedometer's scrim, solid under the arc and fading out past it (--nk-dial-disc-opacity, --nk-dial-disc-reach). */
+  disc?: boolean | "soft"
   /** Past this level (0–1; true = 0.88) the arc turns --nk-gauge-redline and the dial is data-state="alert". */
   redline?: number | boolean
   /** Force the alert (a live gauge that computes its own redline). */
@@ -146,6 +150,7 @@ function Dial({
   ticks = DIAL_TICKS,
   segments,
   segmentGap,
+  direction = "cw",
   paint = "tone",
   disc = false,
   redline: redlineProp = false,
@@ -177,12 +182,19 @@ function Dial({
   const start = startProp ?? (ring ? -90 : geo.start)
   const s = SURFACE[surface] ?? SURFACE.game
   const accentId = `nk-dial-accent-${React.useId().replace(/[^a-zA-Z0-9_-]/g, "")}`
-  const accent = paint === "accent" && !alert && !hue && (!tone || tone === "neutral")
+  const accentPaint = paint === "accent" && !hue && (!tone || tone === "neutral")
+  // one arc turns the redline whole past it; segments keep their colour, only the red zone's are red
+  const accent = accentPaint && !alert
   const valueClass = alert ? "stroke-(--nk-gauge-redline)" : accent ? "" : "stroke-[var(--hue-solid,var(--nk-gauge-fill))]"
   const valueStroke = accent ? `url(#${accentId})` : undefined
+  const segClass = accentPaint ? "" : "stroke-[var(--hue-solid,var(--nk-gauge-fill))]"
+  const segStroke = accentPaint ? `url(#${accentId})` : undefined
   const tickCount = variant === "digital" ? 0 : Math.max(0, Math.floor(ticks))
   const segs = segments !== undefined && segments > 1 ? Math.floor(segments) : 0
   const lit = segs ? dialSegments(level, segs) : 0
+  const isLit = (i: number) => (direction === "ccw" ? segs - 1 - i < lit : i < lit)
+  /** past the redline (by its start) */
+  const isRed = (i: number) => threshold !== undefined && i / segs >= threshold - 1e-6
   // the gap between segments, in user units along the arc: the lever's degrees, else a hairline
   const segLen = segs ? arc / segs : 0
   const segGap = segmentGap !== undefined ? Math.min(segLen * 0.8, (2 * Math.PI * r * Math.max(0, segmentGap)) / 360) : Math.min(segLen / 3, stroke + 2)
@@ -199,7 +211,7 @@ function Dial({
       {...props}
     >
       <svg viewBox={`0 0 ${size} ${size}`} aria-hidden className="absolute inset-0 size-full overflow-visible">
-        {accent && (
+        {accentPaint && (
           <defs>
             <linearGradient id={accentId} gradientUnits="userSpaceOnUse" x1={0} y1={0} x2={size} y2={0}>
               <stop offset="0" style={{ stopColor: "var(--nk-accent-from, var(--nk-gauge-fill))" }} />
@@ -208,7 +220,20 @@ function Dial({
             </linearGradient>
           </defs>
         )}
-        {disc && (
+        {disc === "soft" && (
+          <>
+            <defs>
+              <radialGradient id={`${accentId}-disc`}>
+                <stop offset="0" style={{ stopColor: "var(--scrim, #000)", stopOpacity: "var(--nk-dial-disc-opacity, var(--nk-hud-alpha, var(--nk-hud-opacity, 0.55)))" }} />
+                <stop offset="0.58" style={{ stopColor: "var(--scrim, #000)", stopOpacity: "var(--nk-dial-disc-opacity, var(--nk-hud-alpha, var(--nk-hud-opacity, 0.55)))" }} />
+                <stop offset="1" style={{ stopColor: "var(--scrim, #000)", stopOpacity: 0 }} />
+              </radialGradient>
+            </defs>
+            {/* the scrim reaches past the arc (the speedometer's plate, 1.17× the dial) and fades out there */}
+            <circle data-slot="dial-disc" data-variant="soft" cx={c} cy={c} r={size * 0.585} fill={`url(#${accentId}-disc)`} />
+          </>
+        )}
+        {disc === true && (
           <circle
             data-slot="dial-disc"
             cx={c}
@@ -245,17 +270,19 @@ function Dial({
           </g>
         )}
         {segs > 0 ? (
-          // segmented: the track is the same segments, unlit (the speedometer's dim pieces)
+          // segmented: the track is the same segments, unlit (the speedometer's dim pieces); past the redline they
+          // are the redline colour, dimmed, so the red zone reads before the rpm gets there
           <g data-slot="dial-track" {...(trackProps as React.ComponentProps<"g">)}>
             {Array.from({ length: segs }, (_, i) => (
               <circle
                 key={i}
+                data-red={isRed(i) || undefined}
                 cx={c}
                 cy={c}
                 r={r}
                 fill="none"
                 strokeWidth={stroke}
-                className={cn(s.track, (trackProps as { className?: string } | undefined)?.className)}
+                className={cn(isRed(i) ? "stroke-(--nk-gauge-redline) [stroke-opacity:var(--nk-dial-red-dim,0.3)]" : s.track, (trackProps as { className?: string } | undefined)?.className)}
                 strokeDasharray={`${Math.max(0, segLen - segGap)} ${circumference}`}
                 transform={`rotate(${start + (sweep * i) / segs + (segGap / 2 / (2 * Math.PI * r)) * 360} ${c} ${c})`}
               />
@@ -282,15 +309,16 @@ function Dial({
                 key={i}
                 data-slot="dial-segment"
                 data-index={i}
-                data-active={i < lit || undefined}
+                data-active={isLit(i) || undefined}
+                data-red={isRed(i) || undefined}
                 cx={c}
                 cy={c}
                 r={r}
                 fill="none"
                 strokeWidth={stroke}
-                className={cn(valueClass, (valueProps as { className?: string } | undefined)?.className)}
-                stroke={valueStroke}
-                style={{ opacity: i < lit ? 1 : 0 }}
+                className={cn(isRed(i) ? "stroke-(--nk-gauge-redline)" : segClass, (valueProps as { className?: string } | undefined)?.className)}
+                stroke={isRed(i) ? undefined : segStroke}
+                style={{ opacity: isLit(i) ? 1 : 0 }}
                 strokeDasharray={`${Math.max(0, segLen - segGap)} ${circumference}`}
                 transform={`rotate(${start + (sweep * i) / segs + (segGap / 2 / (2 * Math.PI * r)) * 360} ${c} ${c})`}
               />
