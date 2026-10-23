@@ -6,6 +6,8 @@ intents (notify, menu, input…) and swappable, themed renderers draw them; adap
 scripts in without rewrites; bespoke screens join through the protocol. The kit (stock shadcn/ui, one
 TweakCN theme) is the default look and the showcase, not the product. Design: `docs/architecture.md`.
 
+**Start here (Oct 23, 2026):** [`docs/next/handoff.md`](docs/next/handoff.md) has the current state, the design philosophy, open bugs and the strategy; [`docs/design/baseline.md`](docs/design/baseline.md) has the rules every component follows.
+
 **How we work (Oct 22, 2026: fast, many agents, one direction):**
 - **Nobody runs this in production yet. Ship, break, fix.** Many agents moving the same way beat one agent
   deliberating. A wrong default costs one commit to change; a stalled agent costs the day.
