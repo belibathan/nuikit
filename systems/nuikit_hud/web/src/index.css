@@ -1419,7 +1419,7 @@
   min-height: 1.5rem;
   font-family: var(--nk-caption-font);
   font-size: var(--nk-caption-size);
-  line-height: 1rem;
+  line-height: var(--nk-leading-tight, 1rem);
   font-weight: var(--nk-caption-weight);
   text-transform: var(--nk-caption-transform);
   letter-spacing: var(--nk-caption-tracking);
@@ -1441,7 +1441,7 @@
   /* the label role (1.5): --nk-type-label-*; its style, tracking and case apply under the tile treatment */
   font-family: var(--nk-type-label-family);
   font-size: var(--nk-label-size) !important;
-  line-height: 1rem !important;
+  line-height: var(--nk-leading-tight, 1rem) !important;
   font-weight: var(--nk-type-label-weight);
   color: var(--muted-foreground);
 }
@@ -1469,7 +1469,7 @@
 @utility nk-caption {
   font-family: var(--nk-caption-font);
   font-size: var(--nk-caption-size) !important;
-  line-height: 1rem !important;
+  line-height: var(--nk-leading-tight, 1rem) !important;
   font-weight: var(--nk-caption-weight);
   text-transform: var(--nk-caption-transform);
   letter-spacing: var(--nk-caption-tracking);
@@ -1488,7 +1488,7 @@
   padding: var(--nk-row-padding);
   border-radius: var(--nk-row-radius);
   font-size: var(--nk-row-font-size);
-  line-height: 1.25rem;
+  line-height: var(--nk-leading-normal, 1.25rem);
   outline: none;
   /* a state changes ink at once (the tile carries the movement); a press dips and springs back */
   transition-property: color, transform;
@@ -1632,7 +1632,7 @@
   box-shadow: inset 0 0 0 var(--nk-border) var(--nk-slab-border);
   font-size: var(--nk-slab-font-size);
   font-weight: var(--nk-slab-weight);
-  line-height: 1.25rem;
+  line-height: var(--nk-leading-normal, 1.25rem);
   text-shadow: var(--nk-slab-text-shadow);
   white-space: nowrap;
 }
@@ -1701,7 +1701,7 @@
   gap: calc(var(--nk-space) * 2);
   font-size: var(--nk-slab-font-size);
   font-weight: var(--nk-slab-weight);
-  line-height: 1.25rem;
+  line-height: var(--nk-leading-normal, 1.25rem);
   & > :first-child {
     margin-right: auto;
   }
@@ -2746,7 +2746,7 @@ html[data-nk-backdrop="on"] * {
     transition: none;
   }
   :is(.nk-fill, [data-slot="fill"])[data-variant="edge"] {
-    height: 0.125rem;
+    height: calc(var(--nk-gauge-track, 0.25rem) / 2);
     border-radius: 0;
   }
 
@@ -2821,7 +2821,7 @@ html[data-nk-backdrop="on"] * {
     align-items: center;
     gap: var(--nk-gap-cluster);
     min-width: 0;
-    line-height: 1.25rem;
+    line-height: var(--nk-leading-normal, 1.25rem);
     & > svg,
     & > [data-slot="icon-text-icon"] {
       flex: none;
@@ -2924,7 +2924,7 @@ html[data-nk-backdrop="on"] * {
     left: var(--nk-space-2);
     right: var(--nk-space-2);
     bottom: 0;
-    height: 0.125rem;
+    height: calc(var(--nk-gauge-track, 0.25rem) / 2);
   }
 
   /* ── Plate (.nk-plate): the one surface recipe for sheets, dialogs and notices. Flat (no gradient, no
@@ -3075,7 +3075,7 @@ html[data-nk-backdrop="on"] * {
     font-family: var(--nk-type-body-family);
     font-size: var(--nk-row-desc-size);
     font-weight: var(--nk-type-body-weight);
-    line-height: 1.25rem;
+    line-height: var(--nk-leading-normal, 1.25rem);
   }
   /* ── ProgressRing (baseline 1.6): the speedometer's readout. The number in the numeric voice, the label in the
      label voice, the cancel hint a key and its verb. */
@@ -3115,7 +3115,7 @@ html[data-nk-backdrop="on"] * {
     font-weight: var(--nk-type-body-weight);
     letter-spacing: 0;
     text-transform: none;
-    line-height: 1.25rem;
+    line-height: var(--nk-leading-normal, 1.25rem);
   }
 }
 

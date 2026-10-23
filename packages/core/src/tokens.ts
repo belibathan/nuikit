@@ -646,6 +646,8 @@ export const SELECTION_TOKENS: readonly TokenSpec[] = [
   k17("nk-tile-inset", "dimension", "How far a selection tile sits in from its item's sides (room for the skew; never over a neighbour)", "0.375rem"),
   k17("nk-tile-lift", "dimension", "How far a keycap's face rises on hover and focus (0 = flat)", "1px"),
   k17("nk-tile-press-ratio", "number", "How far a pressed keycap sinks, as a fraction of its wall (1 = flush with the plate)", "0.67", { range: [0, 1.5] }),
+  k17("nk-leading-tight", "dimension", "Line height of small text (captions, field labels, notice and row descriptions' tight lines)", "1rem"),
+  k17("nk-leading-normal", "dimension", "Line height of body-size text (rows, notices, slabs, row titles)", "1.25rem"),
   k17("nk-list-gap", "dimension", "Between the items of a list: the wall plus breathing room, so a lit tile never touches the next row", "calc(nk-tile-wall + nk-space-1)"),
 ];
 
