@@ -61,11 +61,60 @@ function tests.prompt()
   p:cancel()
 end
 
+-- Target: the targeting library's job done by hand. Look at a vehicle or prop within 8 m (the eye lights), press
+-- LEFT ALT to open its options, click one (a notification says which) or press Escape to cancel. 40 s, or Escape.
+local TARGET_KEY = 19 -- LEFT ALT
+local TARGET_RANGE = 8.0
+
+local function targetInSight()
+  local from = GetGameplayCamCoord()
+  local rot = GetGameplayCamRot(2)
+  local rx, rz = math.rad(rot.x), math.rad(rot.z)
+  local fwd = vector3(-math.sin(rz) * math.abs(math.cos(rx)), math.cos(rz) * math.abs(math.cos(rx)), math.sin(rx))
+  local ped = PlayerPedId()
+  local me, own = GetEntityCoords(ped), GetVehiclePedIsIn(ped, false)
+  local best, bestDot
+  for _, pool in ipairs({ 'CVehicle', 'CObject' }) do
+    for _, e in ipairs(GetGamePool(pool)) do
+      local at = GetEntityCoords(e)
+      local d = at - from
+      local dist = #d
+      if e ~= own and dist > 0.5 and #(at - me) <= TARGET_RANGE then
+        local dot = (d / dist):dot(fwd)
+        if dot > 0.97 and (not bestDot or dot > bestDot) then best, bestDot = e, dot end
+      end
+    end
+  end
+  return best
+end
+
 function tests.target()
-  result('target', nk.target({
-    title = 'Vehicle',
-    items = { { label = 'Open trunk' }, { label = 'Lock' }, { label = 'Inspect' } },
-  }))
+  note('Target test: look at a nearby vehicle or prop (the eye lights up), press LEFT ALT to open its options, click one or press Escape. Ends in 40 s.')
+  local options = {
+    { label = 'Inspect', icon = 'search', id = 'inspect' },
+    { label = 'Lock', icon = 'lock', id = 'lock' },
+    { label = 'Honk', icon = 'volume-2', id = 'honk' },
+  }
+  local handle = nk.target({ title = 'Target test', eye = true, active = false, options = options }, {
+    cb = function(res, reason)
+      local o = res and options[res.index or 0]
+      note(o and ('Target option chosen: ' .. o.label) or ('Target closed (' .. tostring(reason) .. ')'))
+    end,
+  })
+  local active, open = false, false
+  local ends = GetGameTimer() + 40000
+  while handle:isOpen() and GetGameTimer() < ends do
+    Wait(0)
+    if not open then
+      local seen = targetInSight() ~= nil
+      if seen ~= active then active = seen handle:update({ active = seen }) end
+      if active and IsControlJustPressed(0, TARGET_KEY) then
+        open = true
+        handle:update({ open = true, active = true })
+      end
+    end
+  end
+  if handle:isOpen() then handle:cancel('timeout') end
 end
 
 function tests.radial()
