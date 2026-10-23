@@ -8,7 +8,7 @@ import { defineReactRenderer, type RendererProps } from "nuikit-core/intents-rea
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { CheckboxField, NumberField, SelectField, SliderField, TextField } from "@/components/ui/form-field";
-import { MenuRow, MenuRowDetails, menuMetadata } from "@/components/ui/menu-row";
+import { MenuRow, MenuRowDetails, MenuRowList, menuMetadata } from "@/components/ui/menu-row";
 import { Panel, PanelBody, PanelHeader } from "@/components/ui/panel";
 import { ANCHOR_CLASS, anchor } from "@/lib/anchor";
 import { Icon } from "@/lib/icon";
@@ -204,62 +204,65 @@ function OneMenu({ id, props, ctx }: { id: string; props: MenuProps; ctx: Render
             }
           />
           <PanelBody ref={list} scroll onScroll={() => setHover(null)}>
-            {level.map((item, i) => {
-              if (!item.label && !item.description && !item.icon && !item.field) return null; // ox: no label, no row (the index still counts)
-              if (item.kind === "header")
+            {/* one tile per menu: it slides to the lit row (hover, keys, the script's startIndex) instead of each row lighting itself */}
+            <MenuRowList active={keyboard || hover ? rowOrdinal(level, active) : null}>
+              {level.map((item, i) => {
+                if (!item.label && !item.description && !item.icon && !item.field) return null; // ox: no label, no row (the index still counts)
+                if (item.kind === "header")
+                  return (
+                    <div key={i} data-slot="menu-header" className="nk-caption px-3 pt-3 pb-1 text-muted-foreground first:pt-1">
+                      <Text>{item.label}</Text>
+                    </div>
+                  );
+                if (item.field)
+                  return (
+                    <div key={i} data-slot="menu-field" className="px-3 py-1.5">
+                      <InlineField field={item.field} label={item.label} value={fields[fieldId(i, item)]} onChange={(v) => {
+                        setFields((all) => ({ ...all, [fieldId(i, item)]: v }));
+                        ctx.emit(id, "field", { index: i + 1, id: fieldId(i, item), value: v });
+                      }} />
+                    </div>
+                  );
+                const isStep = !!item.values?.length;
+                const stepIndex = (steps[i] ?? (item.defaultIndex ?? 1) - 1) % Math.max(1, item.values?.length ?? 1);
+                const stepValue = item.values?.[stepIndex];
+                const checked = isStep ? undefined : (checks[i] ?? item.checked);
+                const hasMore = !!(item.items?.length || item.menu);
                 return (
-                  <div key={i} data-slot="menu-header" className="nk-caption px-3 pt-3 pb-1 text-muted-foreground first:pt-1">
+                  <MenuRow
+                    key={i}
+                    ref={(el) => {
+                      if (el) rows.current.set(i, el);
+                      else rows.current.delete(i);
+                    }}
+                    active={keyboard && i === active}
+                    disabled={item.disabled}
+                    readOnly={item.readOnly || props.focus === false}
+                    icon={item.icon ? <Icon icon={item.icon} color={item.iconColor} animation={item.iconAnimation} /> : undefined}
+                    description={item.description ? <Text>{item.description}</Text> : undefined}
+                    progress={item.progress}
+                    progressColor={item.colorScheme}
+                    meta={item.meta}
+                    kbd={item.kbd}
+                    chevron={item.arrow ?? hasMore}
+                    checked={checked}
+                    onCheckedChange={checked !== undefined ? () => toggle(i) : undefined}
+                    value={isStep ? (typeof stepValue === "string" ? stepValue : stepValue?.label) : undefined}
+                    onStep={isStep ? (d) => step(i, d) : undefined}
+                    onClick={checked !== undefined ? undefined : () => choose(i)}
+                    onMouseEnter={(e) => {
+                      if (item.readOnly || item.disabled) return;
+                      setActive(i);
+                      setHover({ index: i, top: e.currentTarget.getBoundingClientRect().top - (list.current?.getBoundingClientRect().top ?? 0) + (list.current?.scrollTop ?? 0) });
+                    }}
+                    onMouseLeave={() => setHover((h) => (h?.index === i ? null : h))}
+                    tabIndex={keyboard ? (i === active ? 0 : -1) : undefined}
+                  >
                     <Text>{item.label}</Text>
-                  </div>
+                  </MenuRow>
                 );
-              if (item.field)
-                return (
-                  <div key={i} data-slot="menu-field" className="px-3 py-1.5">
-                    <InlineField field={item.field} label={item.label} value={fields[fieldId(i, item)]} onChange={(v) => {
-                      setFields((all) => ({ ...all, [fieldId(i, item)]: v }));
-                      ctx.emit(id, "field", { index: i + 1, id: fieldId(i, item), value: v });
-                    }} />
-                  </div>
-                );
-              const isStep = !!item.values?.length;
-              const stepIndex = (steps[i] ?? (item.defaultIndex ?? 1) - 1) % Math.max(1, item.values?.length ?? 1);
-              const stepValue = item.values?.[stepIndex];
-              const checked = isStep ? undefined : (checks[i] ?? item.checked);
-              const hasMore = !!(item.items?.length || item.menu);
-              return (
-                <MenuRow
-                  key={i}
-                  ref={(el) => {
-                    if (el) rows.current.set(i, el);
-                    else rows.current.delete(i);
-                  }}
-                  active={keyboard && i === active}
-                  disabled={item.disabled}
-                  readOnly={item.readOnly || props.focus === false}
-                  icon={item.icon ? <Icon icon={item.icon} color={item.iconColor} animation={item.iconAnimation} /> : undefined}
-                  description={item.description ? <Text>{item.description}</Text> : undefined}
-                  progress={item.progress}
-                  progressColor={item.colorScheme}
-                  meta={item.meta}
-                  kbd={item.kbd}
-                  chevron={item.arrow ?? hasMore}
-                  checked={checked}
-                  onCheckedChange={checked !== undefined ? () => toggle(i) : undefined}
-                  value={isStep ? (typeof stepValue === "string" ? stepValue : stepValue?.label) : undefined}
-                  onStep={isStep ? (d) => step(i, d) : undefined}
-                  onClick={checked !== undefined ? undefined : () => choose(i)}
-                  onMouseEnter={(e) => {
-                    if (item.readOnly || item.disabled) return;
-                    setActive(i);
-                    setHover({ index: i, top: e.currentTarget.getBoundingClientRect().top - (list.current?.getBoundingClientRect().top ?? 0) + (list.current?.scrollTop ?? 0) });
-                  }}
-                  onMouseLeave={() => setHover((h) => (h?.index === i ? null : h))}
-                  tabIndex={keyboard ? (i === active ? 0 : -1) : undefined}
-                >
-                  <Text>{item.label}</Text>
-                </MenuRow>
-              );
-            })}
+              })}
+            </MenuRowList>
           </PanelBody>
         </Panel>
       </div>
@@ -284,6 +287,13 @@ function InlineField({ field: f, label, value, onChange }: { field: Field; label
     default:
       return <TextField {...row} value={(value as string) ?? (typeof f.default === "string" ? f.default : "")} onValueChange={onChange} placeholder={f.placeholder} />;
   }
+}
+
+/** A row's index among the rendered MenuRows (headers, fields and label-less items draw no row). */
+function rowOrdinal(level: MenuItem[], index: number) {
+  const isRow = (item: MenuItem) => item.kind !== "header" && !item.field && !!(item.label || item.description || item.icon);
+  if (!level[index] || !isRow(level[index]!)) return null;
+  return level.slice(0, index).filter(isRow).length;
 }
 
 function clamp(i: number, n: number) {

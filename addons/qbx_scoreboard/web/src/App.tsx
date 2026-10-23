@@ -3,7 +3,8 @@ import { useEffect, useState } from "react";
 import { EdgeSheet, EdgeSheetBody } from "@/components/ui/edge-sheet";
 import { Chip } from "@/components/ui/chip";
 import { EmptyState } from "@/components/ui/empty-state";
-import { MenuRow } from "@/components/ui/menu-row";
+import { MenuRow, MenuRowList } from "@/components/ui/menu-row";
+import { NumberRoll, TextRoll } from "@/components/ui/text-roll";
 import { useLever } from "@/lib/levers";
 import { loadServerTheme } from "@/lib/theme";
 import { cn } from "@/lib/utils";
@@ -78,7 +79,7 @@ export default function App() {
       meterDanger={101}
       actions={
         <span className="nk-num">
-          {players}
+          <NumberRoll value={players} />
           {max > 0 && <span className="font-normal text-muted-foreground"> / {max}</span>}
         </span>
       }
@@ -87,7 +88,8 @@ export default function App() {
         {keys.length > 0 ? (
           <>
             <h3 className="nk-caption pb-2">Activities</h3>
-            <div className="flex flex-col">
+            {/* the rows of a list (one selection tile, the list gap); read-only here: the board never takes focus */}
+            <MenuRowList>
               {keys.map((key) => {
                 const a = activities[key];
                 return (
@@ -96,7 +98,7 @@ export default function App() {
                   </MenuRow>
                 );
               })}
-            </div>
+            </MenuRowList>
           </>
         ) : (
           <EmptyState title="No activities" description="This server hasn't listed any police-gated activities." />
@@ -113,7 +115,8 @@ function Status({ activity, cops }: { activity: Activity; cops: number }) {
     <span className={cn("nk-label flex shrink-0 items-center gap-2", state === "available" && "text-foreground")}>
       {/* available in the success tone, busy neutral, unavailable a quiet rim */}
       <Chip variant="dot" tone={state === "available" ? "success" : "neutral"} fill={state === "unavailable" ? "hair" : "solid"} aria-hidden />
-      {state === "busy" ? "In progress" : state === "available" ? "Available" : "Unavailable"}
+      {/* the word rolls when the state changes (police arrive, a job starts) */}
+      <TextRoll value={state === "busy" ? "In progress" : state === "available" ? "Available" : "Unavailable"} />
     </span>
   );
 }

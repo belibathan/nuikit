@@ -1,6 +1,6 @@
 import { EmptyState } from "@/components/ui/empty-state";
 import { onNui } from "nuikit-core";
-import { motionLevel } from "nuikit-core/motion";
+import { motionLevel, token, tokenMs } from "nuikit-core/motion";
 import { fetchNui, useNuiState } from "nuikit-core/react";
 import {
   FlagIcon,
@@ -421,7 +421,8 @@ const Pins = memo(function Pins({
             { transform: "translate3d(0, 0.15rem, 0) scale(1.04)", opacity: 1, offset: 0.7 },
             { transform: "none", opacity: 1 },
           ],
-      { duration: reduced ? 160 : 360, easing: "cubic-bezier(0.16, 1, 0.3, 1)" },
+      // the ladder: a landing is a "move" (--nk-time-move), reduced the capped fade (--nk-time-reduced)
+      { duration: reduced ? tokenMs("--nk-time-reduced", 100) : tokenMs("--nk-time-move", 210) * 1.5, easing: token("--nk-ease-emphasized") || "cubic-bezier(0.05, 0.7, 0.1, 1)" },
     );
   }, [waypointSet]);
 
