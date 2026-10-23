@@ -5,6 +5,7 @@ import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
 
 import { cn } from "@/lib/utils"
+import { toneVars } from "@/components/ui/fill"
 
 /**
  * Countdown — a big timer that matters: until you can respawn, until the heist alarm, until the
@@ -22,6 +23,14 @@ import { cn } from "@/lib/utils"
  * label is a caption (nk-caption). The line drains on its own between updates: one linear
  * compositor animation from the time left to zero, re-aimed whenever `seconds` changes, so a clock
  * Lua updates once a second still drains smoothly. With motion off it steps.
+ *
+ * Role: a wait that matters, read from across the screen (respawn, alarm, restart).
+ * Anatomy: root > clock (display size, num face, role="timer") > label (caption) > line (a track and a fill
+ *   that drains, transform only).
+ * Props: seconds, total, duration, onComplete, label, warnAt, warnTone, lineTone, hue, size, surface, line, format.
+ * Level means: the line is the time left over the total, 1 at the start, 0 when it is done.
+ * Rules: at or under warnAt the root is data-state="alert" (data-phase keeps running | warning | done) and the
+ *   clock pulses; tones use the shared vocabulary (danger = destructive) through toneVars(), `hue` a role.
  */
 
 // Display type in the numeric face: nk-display's size, weight and tracking, the numbers' font.
@@ -103,15 +112,17 @@ function useRun(duration: number | undefined, onComplete?: () => void) {
 const TONE = {
   warning: "text-warning",
   destructive: "text-destructive",
+  danger: "text-destructive",
 } as const
 
-type CountdownLineTone = "neutral" | "primary" | "warning" | "destructive"
+type CountdownLineTone = "neutral" | "primary" | "warning" | "destructive" | "danger"
 
 /** The line's fill per tone (literal class names, so Tailwind finds them). Neutral follows the surface. */
 const LINE_FILL: Record<Exclude<CountdownLineTone, "neutral">, string> = {
   primary: "bg-[var(--brand,var(--primary))]",
   warning: "bg-warning",
   destructive: "bg-destructive",
+  danger: "bg-destructive",
 }
 
 /**
@@ -162,7 +173,9 @@ function countdownLineTone(
   warnTone: keyof typeof TONE = "destructive"
 ): CountdownLineTone {
   const has = (o: object, k: string) => Object.prototype.hasOwnProperty.call(o, k)
-  if (state === "warning") return has(TONE, warnTone) ? warnTone : "destructive"
+  // danger is the shared name of destructive (1.5)
+  if (state === "warning") return has(TONE, warnTone) ? (warnTone === "danger" ? "destructive" : warnTone) : "destructive"
+  if (lineTone === "danger") return "destructive"
   return has(LINE_FILL, lineTone) ? lineTone : "neutral"
 }
 
@@ -179,6 +192,7 @@ function Countdown({
   lineTone = "neutral",
   surface = "theme",
   line,
+  hue,
   format = formatCountdown,
   ...props
 }: Omit<React.ComponentProps<"div">, "children"> &
@@ -204,6 +218,8 @@ function Countdown({
     surface?: "theme" | "game"
     /** Draw the line (default: when there's a total, or when running on its own). */
     line?: boolean
+    /** A role (health, police…): the line in its colour until the warning (1.5). */
+    hue?: string
     format?: (seconds: number) => React.ReactNode
   }) {
   const running = useRun(duration, onComplete)
@@ -222,7 +238,9 @@ function Countdown({
   return (
     <div
       data-slot="countdown"
-      data-state={state}
+      data-state={state === "warning" ? "alert" : undefined}
+      data-phase={state}
+      data-hue={hue || undefined}
       className={cn("inline-flex flex-col items-center", game ? "nk-on-game" : "text-foreground", className)}
       {...props}
     >
@@ -247,7 +265,7 @@ function Countdown({
       {showLine && (
         <div
           data-slot="countdown-line"
-          data-tone={lineFill}
+          {...toneVars({ tone: lineFill === "neutral" ? undefined : lineFill })}
           aria-hidden
           className={cn(
             "relative h-(--nk-meter-height) overflow-hidden rounded-(--nk-meter-radius)",
@@ -260,7 +278,7 @@ function Countdown({
             data-slot="countdown-line-fill"
             className={cn(
               "absolute inset-0 origin-left [box-shadow:var(--nk-meter-glow)]",
-              lineFill !== "neutral" ? LINE_FILL[lineFill] : "bg-foreground"
+              hue && state !== "warning" ? "bg-(--hue-solid)" : lineFill !== "neutral" ? LINE_FILL[lineFill as keyof typeof LINE_FILL] : "bg-foreground"
             )}
           />
         </div>

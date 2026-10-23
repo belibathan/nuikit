@@ -7,7 +7,7 @@ const root = path.resolve(__dirname, "../../..")
 type Spec = { role: string; anatomy: string[]; props?: string[]; level?: string; rules: string[] }
 type Meta = { since: string; status: string; replaces: string[]; removeIn: string | null; replacedBy?: string[]; spec?: Spec }
 const registry = JSON.parse(fs.readFileSync(path.join(root, "registry.json"), "utf8")) as {
-  items: { name: string; description?: string; files: { path: string }[]; meta?: Meta }[]
+  items: { name: string; type: string; description?: string; files: { path: string }[]; meta?: Meta }[]
 }
 const names = new Set(registry.items.map((i) => i.name))
 // removed after their deprecation; `replaces` still names them (history)

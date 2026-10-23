@@ -26,6 +26,16 @@ import { Kbd, KbdGroup } from "@/components/ui/kbd"
  * `surface="hud"` keep the earlier looks. `keys={[]}` draws no key chip (a script's text with no
  * key); `wrap` lets a long label run onto more lines instead of truncating. A prompt with a
  * `description` is two lines tall: the slab grows to fit (the key stays on the first line).
+ *
+ * Role: "[E] Open garage": what a key does here.
+ * Anatomy: key-prompt (slab | panel | hud) > keys (key chips) > label, description > hold line
+ * Props: keys, label, description, hold, progress, active, disabled, listen, onConfirm, surface, size, density,
+ *   shape, motion, stage.
+ * Level means: the hold progress, 0 → 1 (Lua's progress, or the pointer/key hold).
+ * Rules: States: rest, focus (active), hold, confirm (when the hold fills), disabled. In game Lua reads the key
+ *   and sends progress; the page draws it. One prompt per action; a stack for several. The interaction ladder
+ *   (stage): dormant (the key chip alone, quiet) → aware → focus → hold → confirm, on data-ladder; without
+ *   stage, today's prompt.
  */
 
 const keyPromptVariants = cva(
@@ -36,9 +46,9 @@ const keyPromptVariants = cva(
         /** The prompt slab on the game: key chip + verb, the HUD plate (nk-slab). */
         slab: "nk-slab",
         /** A small floating panel, like the rest of the kit's floating UI. */
-        panel: "nk-panel inline-flex items-center gap-2.5 text-sm leading-5 font-medium",
+        panel: "nk-panel inline-flex items-center gap-(--nk-space-3) text-(length:--nk-text-label) leading-5 [font-weight:var(--nk-type-label-weight,500)]",
         /** The game's dark HUD surface, for prompts that sit on the world (nk-hud). */
-        hud: "nk-hud nk-shadow inline-flex items-center gap-2.5 text-sm leading-5 font-medium",
+        hud: "nk-hud nk-shadow inline-flex items-center gap-(--nk-space-3) text-(length:--nk-text-label) leading-5 [font-weight:var(--nk-type-label-weight,500)]",
       },
       size: {
         sm: "",
@@ -46,8 +56,8 @@ const keyPromptVariants = cva(
       },
     },
     compoundVariants: [
-      { surface: ["panel", "hud"], size: "sm", className: "min-h-8 py-1 pr-2.5 pl-1.5" },
-      { surface: ["panel", "hud"], size: "default", className: "min-h-10 py-1.5 pr-3 pl-2" },
+      { surface: ["panel", "hud"], size: "sm", className: "min-h-8 py-1 pr-(--nk-space-3) pl-(--nk-space-2)" },
+      { surface: ["panel", "hud"], size: "default", className: "min-h-10 py-(--nk-space-2) pr-3 pl-2" },
       // the slab's own height and padding (--nk-slab-*); sm is a step tighter
       { surface: "slab", size: "sm", className: "[--nk-slab-height:calc(2rem*var(--nk-density,0.875))]" },
     ],
@@ -307,11 +317,11 @@ function KeyPrompt({
             {list.map((k, i) => (
               <React.Fragment key={`${k}-${i}`}>
                 {i > 0 && (
-                  <span aria-hidden className="text-xs text-muted-foreground">
+                  <span aria-hidden className="text-(length:--nk-text-label) text-muted-foreground">
                     {separator}
                   </span>
                 )}
-                <Kbd className={cn("h-6 min-w-6 px-1.5 text-xs", active && "bg-(--nk-chip-active-bg) text-(--nk-chip-active-fg)")}>
+                <Kbd className={cn("h-6 min-w-6 px-(--nk-space-2) text-(length:--nk-text-label)", active && "bg-(--nk-chip-active-bg) text-(--nk-chip-active-fg)")}>
                   {k}
                 </Kbd>
               </React.Fragment>
@@ -335,7 +345,7 @@ function KeyPrompt({
             data-slot="key-prompt-description"
             className={cn(
               wrap ? "text-pretty break-words" : "truncate",
-              slab ? "nk-label [color:inherit]! opacity-75" : "text-xs leading-4 font-normal",
+              slab ? "nk-label [color:inherit]! opacity-75" : "text-(length:--nk-text-label) leading-4 font-normal",
               surface === "panel" ? "text-muted-foreground" : !slab && "opacity-75"
             )}
           >
@@ -420,7 +430,6 @@ export {
   keyPromptPosition,
   holdProgress,
   parseKeyText,
-  useHold,
   type KeyPromptProps,
   type KeyPromptPosition,
 }
