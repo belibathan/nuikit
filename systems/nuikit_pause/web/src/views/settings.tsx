@@ -12,8 +12,9 @@ import {
 } from "nuikit-core";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { MenuRow } from "@/components/ui/menu-row";
+import { MenuRow, MenuRowList } from "@/components/ui/menu-row";
 import { Slider } from "@/components/ui/slider";
+import { SelectionTile } from "@/components/ui/selection-tile";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SheetPage, SheetSection } from "./sheet";
 
@@ -118,11 +119,11 @@ function Section({ section: s, onDraft, onPreset, onReset }: { section: Settings
         {[...groups].map(([group, rows]) => (
           <div key={group} className="flex flex-col">
             {group && group !== s.label ? <p className="nk-caption pt-3 text-muted-foreground">{group}</p> : null}
-            <div className="flex flex-col divide-y divide-border">
+            <MenuRowList>
               {rows.map((r) => (
                 <Row key={r.key} row={r} value={s.values[r.key]} onChange={(v) => onDraft({ [r.key]: v })} />
               ))}
-            </div>
+            </MenuRowList>
           </div>
         ))}
       </SheetSection>
@@ -148,6 +149,8 @@ function Row({ row, value, onChange }: { row: SettingRow; value: SettingValue | 
         {row.description ? <span className="nk-label -mt-1.5 text-muted-foreground">{row.description}</span> : null}
         <Tabs value={String(Math.max(0, at))} onValueChange={(i) => onChange(options[Number(i)]!.value)}>
           <TabsList className="w-full">
+            {/* the chosen option is the selection Tile, sliding between the options */}
+            <SelectionTile items="[data-slot=tabs-trigger]" lit="[data-state=active]" pointer={false} focus={false} />
             {options.map((o, i) => (
               <TabsTrigger key={String(o.value)} value={String(i)} className="flex-1">
                 {o.label ?? String(o.value)}

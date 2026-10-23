@@ -1,4 +1,4 @@
-import { MenuRow } from "@/components/ui/menu-row";
+import { MenuRow, MenuRowList } from "@/components/ui/menu-row";
 import { EmptyState } from "@/components/ui/empty-state";
 import { useNuiState } from "nuikit-core/react";
 import type { KeyBinding } from "../nui";
@@ -30,11 +30,11 @@ export function KeysPage({ onBack, onChange }: { onBack: () => void; onChange: (
       ) : (
         [...groups].map(([group, rows], i) => (
           <SheetSection key={group || i} label={group || undefined}>
-            <div className="flex flex-col divide-y divide-border">
+            <MenuRowList>
               {rows.map((k) => (
                 <MenuRow key={k.label} inert kbd={k.key || undefined} meta={k.key ? undefined : "Not bound"}>{k.label}</MenuRow>
               ))}
-            </div>
+            </MenuRowList>
           </SheetSection>
         ))
       )}

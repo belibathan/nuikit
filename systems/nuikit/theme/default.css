@@ -19,31 +19,7 @@
     color: var(--nk-tile-confirm-ink);
   }
 
-  /* the tab mark: a slanted bar under the active tab */
-  [data-slot="tabs-trigger"] {
-    position: relative;
-  }
-  [data-slot="tabs-trigger"][data-state="active"] {
-    background: transparent;
-    box-shadow: none;
-  }
-  [data-slot="tabs-trigger"]::after {
-    content: "";
-    position: absolute;
-    left: 50%;
-    bottom: 0.0625rem;
-    width: var(--nk-space-4);
-    height: 0.1875rem;
-    margin-left: calc(var(--nk-space-4) / -2);
-    background: var(--foreground);
-    opacity: 0;
-    transform: skewX(var(--nk-tile-skew)) scaleX(0.4);
-    transition: transform var(--nk-time-snap) var(--nk-ease-spring), opacity var(--nk-time-snap) var(--nk-ease-standard);
-  }
-  [data-slot="tabs-trigger"][data-state="active"]::after {
-    opacity: 1;
-    transform: skewX(var(--nk-tile-skew)) scaleX(1);
-  }
+  /* the active tab is the kit's selection Tile (kit.css, Selection): no mark of its own */
 
   /* a checked box is a small key: a hard plate straight below */
   [data-slot="checkbox"] {

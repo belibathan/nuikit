@@ -17,9 +17,10 @@ export const TOKENS_VERSION = 1 as const;
  * The contract revision: 1.1 added the identity tokens (IDENTITY_TOKENS), 1.2 the motion tokens (MOTION_TOKENS),
  * 1.4 the foundation (FOUNDATION_TOKENS), 1.5 the Default theme levers (KIT_TOKENS: scales, type roles, tile, plate, fill;
  * docs/design/default.md), 1.6 the baseline every component shares (BASELINE_TOKENS: row rhythm and voices, the field,
- * the keycap button, the segmented ring; docs/design/baseline.md). Additive, so still v1.
+ * the keycap button, the segmented ring; docs/design/baseline.md), 1.7 the selection convention (SELECTION_TOKENS: the
+ * selection is the keycap Tile, one per list, rows a list gap apart; baseline.md "Selection"). Additive, so still v1.
  */
-export const TOKENS_REVISION = "1.6" as const;
+export const TOKENS_REVISION = "1.7" as const;
 
 export type TokenType = "color" | "dimension" | "fontFamily" | "number" | "keyword" | "duration" | "cubicBezier" | "shadow" | "image";
 
@@ -41,7 +42,7 @@ export interface TokenSpec {
   /** Numbers: accepted range. */
   range?: readonly [number, number];
   /** The revision that added it. */
-  since?: "1.1" | "1.2" | "1.3" | "1.4" | "1.5" | "1.6";
+  since?: "1.1" | "1.2" | "1.3" | "1.4" | "1.5" | "1.6" | "1.7";
   /**
    * Tokens 1.5 (KIT_TOKENS): the default is a kit.css formula over the identity (so a subtree's density or
    * radius re-derives it), not a compiled literal. The compiler validates a value a theme or treatment sets and
@@ -618,13 +619,31 @@ export const BASELINE_TOKENS: readonly TokenSpec[] = [
   k16("nk-row-title-size", "dimension", "A row title (the label voice)", "nk-text-base; tile: 1.125rem"),
   k16("nk-row-desc-size", "dimension", "A row description (the body voice)", "0.875rem"),
   k16("nk-row-icon-box", "dimension", "The icon tile beside a row title (the icon inside is --nk-icon-md)", "2rem"),
-  k16("nk-row-marker-width", "dimension", "The selection marker at the row's leading edge", "0.25rem"),
-  k16("nk-row-tint-reach", "number", "How far across the row the selection tint fades out (0–1)", "0.7", { range: [0, 1] }),
+  k16("nk-row-marker-width", "dimension", "Retired in 1.7 (the selection is a Tile, SELECTION_TOKENS); read by nothing", "0.25rem"),
+  k16("nk-row-tint-reach", "number", "Retired in 1.7 (the soft selection is a tinted Tile face, --nk-tile-tint); read by nothing", "0.7", { range: [0, 1] }),
   k16("nk-h-field", "dimension", "Height of text inputs, selects and dialog buttons", "2.75rem"),
-  k16("nk-focus-rim", "color", "The one focus mark of a field or button: a single 1px rim", "ring"),
-  k16("nk-button-wall", "dimension", "The primary keycap's wall: how far its face sits above it", "0.1875rem"),
+  k16("nk-focus-rim", "color", "A text field's caret focus (and a checkbox's or switch's lit rim): a single 1px rim. Nothing else draws focus (1.7)", "ring"),
+  k16("nk-button-wall", "dimension", "The primary keycap's wall (1.7: reads --nk-tile-wall)", "nk-tile-wall"),
   k16("nk-ring-segments", "number", "Segments in a progress ring (the speedometer's language)", "24", { range: [6, 60] }),
   k16("nk-ring-gap", "number", "Degrees between a progress ring's segments", "4", { range: [0, 12] }),
+];
+
+const k17 = (name: string, type: TokenType, description: string, fallback: string, extra: Partial<TokenSpec> = {}): TokenSpec => ({ name, type, group: "identity", description, fallback, since: "1.7", css: true, ...extra });
+
+/**
+ * Selection (1.7, docs/design/baseline.md "Selection"): no focus rings anywhere (focus renders the hover state), the
+ * selection IS the primary keycap's Tile (one lever set, so Resume and a lit row are one object in two states), one
+ * sliding tile per list, rows a list gap apart so a lit tile never touches its neighbour.
+ */
+export const SELECTION_TOKENS: readonly TokenSpec[] = [
+  k17("nk-tile-wall", "dimension", "The keycap's wall: how far the face sits above its plate (the primary button and the selection tile)", "0.1875rem"),
+  k17("nk-tile-wall-shade", "number", "How dark the wall is under its face (0–1, the scrim over the face colour)", "0.45", { range: [0, 1] }),
+  k17("nk-tile-radius", "dimension", "The keycap's radius (the primary button and the selection tile)", "nk-r-control"),
+  k17("nk-tile-key", "color", "The keycap face under --nk-fill-style: solid (the primary button, the lit row, the active tab)", "primary"),
+  k17("nk-tile-key-ink", "color", "Text on the keycap face", "primary-foreground"),
+  k17("nk-tile-tint", "number", "The face's opacity under --nk-fill-style: soft (a tinted tile, the foreground ink)", "0.16", { range: [0, 1] }),
+  k17("nk-tile-inset", "dimension", "How far a selection tile sits in from its item's sides (room for the skew; never over a neighbour)", "0.375rem"),
+  k17("nk-list-gap", "dimension", "Between the items of a list: the wall plus breathing room, so a lit tile never touches the next row", "calc(nk-tile-wall + nk-space-1)"),
 ];
 
 /** The chamfer (top left and bottom right) as a clip-path of a cut size. */
@@ -632,7 +651,7 @@ export const chamferClip = (cut: string) =>
   `polygon(${cut} 0, 100% 0, 100% calc(100% - ${cut}), calc(100% - ${cut}) 100%, 0 100%, 0 ${cut})`;
 
 /** Every token: v1 then the 1.1 identity tokens. */
-export const ALL_TOKENS: readonly TokenSpec[] = [...TOKENS, ...IDENTITY_TOKENS, ...KIT_TOKENS, ...BASELINE_TOKENS];
+export const ALL_TOKENS: readonly TokenSpec[] = [...TOKENS, ...IDENTITY_TOKENS, ...KIT_TOKENS, ...BASELINE_TOKENS, ...SELECTION_TOKENS];
 export const ALL_TOKEN_NAMES: readonly string[] = ALL_TOKENS.map((t) => t.name);
 const SPEC = new Map(ALL_TOKENS.map((t) => [t.name, t]));
 
@@ -1311,7 +1330,7 @@ function deriveIdentity(vars: ThemeVars, warnings: string[], given: ReadonlySet<
     } else vars[spec.name] = v;
   }
   // 1.5 levers: kit.css holds the defaults, so only a value the theme or treatment set is checked (and kept)
-  for (const spec of [...KIT_TOKENS, ...BASELINE_TOKENS]) {
+  for (const spec of [...KIT_TOKENS, ...BASELINE_TOKENS, ...SELECTION_TOKENS]) {
     const value = vars[spec.name];
     if (value === undefined || spec.type === "color" || spec.type === "fontFamily" || spec.type === "shadow" || spec.type === "image") continue;
     // a formula (calc(), var()) is the theme's call: CSS resolves it

@@ -195,15 +195,13 @@
 [data-open] > .pause-pin-center > .pause-blip-label {
   display: flex;
 }
-[data-open] > .pause-pin-center > .pause-blip {
+/* hover opens a pin; keyboard focus lights it the same way (no ring: docs/design/baseline.md, Selection) */
+[data-open] > .pause-pin-center > .pause-blip,
+.pause-blip-hit:focus-visible > .pause-pin-center > .pause-blip {
   transform: scale(1.12);
 }
 [data-selected] > .pause-pin-center > .pause-blip {
   outline: 2px solid var(--brand, var(--primary));
-  outline-offset: 1px;
-}
-.pause-blip-hit:focus-visible > .pause-pin-center > .pause-blip {
-  outline: 2px solid var(--ring);
   outline-offset: 1px;
 }
 /* a blip its owner flashes: a ring in its colour (static: nothing runs while the map idles) */

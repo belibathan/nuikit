@@ -19,6 +19,7 @@ type KitClassGroup =
   | "nk-body"
   | "nk-caption"
   | "nk-row"
+  | "nk-list"
   | "nk-num"
   | "nk-chip"
   | "nk-chip-active"
@@ -73,6 +74,7 @@ const twMerge = extendTailwindMerge<KitClassGroup>({
       "nk-body": ["nk-body"],
       "nk-caption": ["nk-caption"],
       "nk-row": ["nk-row"],
+      "nk-list": ["nk-list"],
       "nk-num": ["nk-num"],
       "nk-chip": ["nk-chip"],
       "nk-chip-active": ["nk-chip-active"],
@@ -146,7 +148,6 @@ const twMerge = extendTailwindMerge<KitClassGroup>({
       "nk-anchor-l": ["nk-anchor-b", "nk-anchor-bl", "nk-anchor-br", "nk-anchor-r", "nk-anchor-t", "nk-anchor-tl", "nk-anchor-tr"],
       "nk-anchor-r": ["nk-anchor-b", "nk-anchor-bl", "nk-anchor-br", "nk-anchor-l", "nk-anchor-t", "nk-anchor-tl", "nk-anchor-tr"],
       "nk-skeleton": ["bg-color", "text-color"],
-      "nk-indicator": ["bg-color"],
     },
   },
 })

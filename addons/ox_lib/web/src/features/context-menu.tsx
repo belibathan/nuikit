@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type MouseEvent } from "react";
 import { EdgeSheet, EdgeSheetBody } from "@/components/ui/edge-sheet";
-import { MenuRow, MenuRowDetails, menuMetadata } from "@/components/ui/menu-row";
+import { MenuRow, MenuRowDetails, MenuRowList, menuMetadata } from "@/components/ui/menu-row";
 import { Icon } from "@/lib/icon";
 import { contextIntent } from "@/lib/intents";
 import { useLever } from "@/lib/levers";
@@ -140,12 +140,12 @@ export function ContextMenu() {
       onClose={data.canClose === false ? undefined : close}
     >
       <EdgeSheetBody scroll onViewportScroll={() => setHover(null)}>
-        {/* the baseline: rows breathe instead of hairlines between them */}
-        <div className="flex flex-col gap-(--nk-space-1)">
+        {/* the baseline: rows breathe (--nk-list-gap) instead of hairlines; one selection Tile slides between them */}
+        <MenuRowList>
           {entries.map(([key, option]) => (
             <ContextOption key={key} id={key} option={option} iconColumn={iconColumn} onEnter={(e) => enter(key, e)} onLeave={() => setHover((h) => (h?.key === key ? null : h))} />
           ))}
-        </div>
+        </MenuRowList>
       </EdgeSheetBody>
       {hovered && !hovered.disabled && (hovered.metadata || hovered.image) && <HoverCard key={hover!.key} option={hovered} top={hover!.top} side={side} />}
     </EdgeSheet>

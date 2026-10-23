@@ -169,7 +169,7 @@ var NuikitTheme = (() => {
 
   // src/tokens.ts
   var TOKENS_VERSION = 1;
-  var TOKENS_REVISION = "1.6";
+  var TOKENS_REVISION = "1.7";
   var DEFAULT_FONT_SANS = "Inter, ui-sans-serif, system-ui, sans-serif";
   var DEFAULT_FONT_DISPLAY = `"Inter Tight", ${DEFAULT_FONT_SANS}`;
   var DEFAULT_FONT_MONO = `"Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace`;
@@ -651,16 +651,27 @@ var NuikitTheme = (() => {
     k16("nk-row-title-size", "dimension", "A row title (the label voice)", "nk-text-base; tile: 1.125rem"),
     k16("nk-row-desc-size", "dimension", "A row description (the body voice)", "0.875rem"),
     k16("nk-row-icon-box", "dimension", "The icon tile beside a row title (the icon inside is --nk-icon-md)", "2rem"),
-    k16("nk-row-marker-width", "dimension", "The selection marker at the row's leading edge", "0.25rem"),
-    k16("nk-row-tint-reach", "number", "How far across the row the selection tint fades out (0\u20131)", "0.7", { range: [0, 1] }),
+    k16("nk-row-marker-width", "dimension", "Retired in 1.7 (the selection is a Tile, SELECTION_TOKENS); read by nothing", "0.25rem"),
+    k16("nk-row-tint-reach", "number", "Retired in 1.7 (the soft selection is a tinted Tile face, --nk-tile-tint); read by nothing", "0.7", { range: [0, 1] }),
     k16("nk-h-field", "dimension", "Height of text inputs, selects and dialog buttons", "2.75rem"),
-    k16("nk-focus-rim", "color", "The one focus mark of a field or button: a single 1px rim", "ring"),
-    k16("nk-button-wall", "dimension", "The primary keycap's wall: how far its face sits above it", "0.1875rem"),
+    k16("nk-focus-rim", "color", "A text field's caret focus (and a checkbox's or switch's lit rim): a single 1px rim. Nothing else draws focus (1.7)", "ring"),
+    k16("nk-button-wall", "dimension", "The primary keycap's wall (1.7: reads --nk-tile-wall)", "nk-tile-wall"),
     k16("nk-ring-segments", "number", "Segments in a progress ring (the speedometer's language)", "24", { range: [6, 60] }),
     k16("nk-ring-gap", "number", "Degrees between a progress ring's segments", "4", { range: [0, 12] })
   ];
+  var k17 = (name, type, description, fallback, extra = {}) => ({ name, type, group: "identity", description, fallback, since: "1.7", css: true, ...extra });
+  var SELECTION_TOKENS = [
+    k17("nk-tile-wall", "dimension", "The keycap's wall: how far the face sits above its plate (the primary button and the selection tile)", "0.1875rem"),
+    k17("nk-tile-wall-shade", "number", "How dark the wall is under its face (0\u20131, the scrim over the face colour)", "0.45", { range: [0, 1] }),
+    k17("nk-tile-radius", "dimension", "The keycap's radius (the primary button and the selection tile)", "nk-r-control"),
+    k17("nk-tile-key", "color", "The keycap face under --nk-fill-style: solid (the primary button, the lit row, the active tab)", "primary"),
+    k17("nk-tile-key-ink", "color", "Text on the keycap face", "primary-foreground"),
+    k17("nk-tile-tint", "number", "The face's opacity under --nk-fill-style: soft (a tinted tile, the foreground ink)", "0.16", { range: [0, 1] }),
+    k17("nk-tile-inset", "dimension", "How far a selection tile sits in from its item's sides (room for the skew; never over a neighbour)", "0.375rem"),
+    k17("nk-list-gap", "dimension", "Between the items of a list: the wall plus breathing room, so a lit tile never touches the next row", "calc(nk-tile-wall + nk-space-1)")
+  ];
   var chamferClip = (cut) => `polygon(${cut} 0, 100% 0, 100% calc(100% - ${cut}), calc(100% - ${cut}) 100%, 0 100%, 0 ${cut})`;
-  var ALL_TOKENS = [...TOKENS, ...IDENTITY_TOKENS, ...KIT_TOKENS, ...BASELINE_TOKENS];
+  var ALL_TOKENS = [...TOKENS, ...IDENTITY_TOKENS, ...KIT_TOKENS, ...BASELINE_TOKENS, ...SELECTION_TOKENS];
   var ALL_TOKEN_NAMES = ALL_TOKENS.map((t) => t.name);
   var SPEC = new Map(ALL_TOKENS.map((t) => [t.name, t]));
   var NEUTRAL = {
@@ -1189,7 +1200,7 @@ var NuikitTheme = (() => {
         else vars[spec.name] = spec.fallback;
       } else vars[spec.name] = v;
     }
-    for (const spec of [...KIT_TOKENS, ...BASELINE_TOKENS]) {
+    for (const spec of [...KIT_TOKENS, ...BASELINE_TOKENS, ...SELECTION_TOKENS]) {
       const value = vars[spec.name];
       if (value === void 0 || spec.type === "color" || spec.type === "fontFamily" || spec.type === "shadow" || spec.type === "image") continue;
       if (/^(calc|var|max|min|clamp)\(/.test(value.trim())) continue;

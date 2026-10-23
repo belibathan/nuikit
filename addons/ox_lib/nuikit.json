@@ -38,6 +38,7 @@
     "notice",
     "confirm",
     "key-prompt",
-    "form-field"
+    "form-field",
+    "selection-tile"
   ]
 }

@@ -2106,13 +2106,13 @@
         },
         "nk-row-marker-width": {
           "type": "string",
-          "description": "The selection marker at the row's leading edge",
+          "description": "Retired in 1.7 (the selection is a Tile, SELECTION_TOKENS); read by nothing",
           "$comment": "tokens 1.6"
         },
         "nk-row-tint-reach": {
           "type": "string",
           "pattern": "^-?\\d+(\\.\\d+)?$",
-          "description": "How far across the row the selection tint fades out (0–1)",
+          "description": "Retired in 1.7 (the soft selection is a tinted Tile face, --nk-tile-tint); read by nothing",
           "$comment": "tokens 1.6"
         },
         "nk-h-field": {
@@ -2123,12 +2123,12 @@
         "nk-focus-rim": {
           "type": "string",
           "pattern": "^rgba?\\(",
-          "description": "The one focus mark of a field or button: a single 1px rim",
+          "description": "A text field's caret focus (and a checkbox's or switch's lit rim): a single 1px rim. Nothing else draws focus (1.7)",
           "$comment": "tokens 1.6"
         },
         "nk-button-wall": {
           "type": "string",
-          "description": "The primary keycap's wall: how far its face sits above it",
+          "description": "The primary keycap's wall (1.7: reads --nk-tile-wall)",
           "$comment": "tokens 1.6"
         },
         "nk-ring-segments": {
@@ -2142,6 +2142,50 @@
           "pattern": "^-?\\d+(\\.\\d+)?$",
           "description": "Degrees between a progress ring's segments",
           "$comment": "tokens 1.6"
+        },
+        "nk-tile-wall": {
+          "type": "string",
+          "description": "The keycap's wall: how far the face sits above its plate (the primary button and the selection tile)",
+          "$comment": "tokens 1.7"
+        },
+        "nk-tile-wall-shade": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "How dark the wall is under its face (0–1, the scrim over the face colour)",
+          "$comment": "tokens 1.7"
+        },
+        "nk-tile-radius": {
+          "type": "string",
+          "description": "The keycap's radius (the primary button and the selection tile)",
+          "$comment": "tokens 1.7"
+        },
+        "nk-tile-key": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "The keycap face under --nk-fill-style: solid (the primary button, the lit row, the active tab)",
+          "$comment": "tokens 1.7"
+        },
+        "nk-tile-key-ink": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "Text on the keycap face",
+          "$comment": "tokens 1.7"
+        },
+        "nk-tile-tint": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "The face's opacity under --nk-fill-style: soft (a tinted tile, the foreground ink)",
+          "$comment": "tokens 1.7"
+        },
+        "nk-tile-inset": {
+          "type": "string",
+          "description": "How far a selection tile sits in from its item's sides (room for the skew; never over a neighbour)",
+          "$comment": "tokens 1.7"
+        },
+        "nk-list-gap": {
+          "type": "string",
+          "description": "Between the items of a list: the wall plus breathing room, so a lit tile never touches the next row",
+          "$comment": "tokens 1.7"
         }
       },
       "additionalProperties": {

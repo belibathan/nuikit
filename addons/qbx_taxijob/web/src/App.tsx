@@ -108,7 +108,7 @@ export default function App() {
         <button
           type="button"
           onClick={toggle}
-          className="nk-label -mr-1 flex h-6 items-center gap-2 rounded-(--nk-r-chip) px-1 outline-none hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50"
+          className="nk-label -mr-1 flex h-6 items-center gap-2 rounded-(--nk-r-chip) px-1 outline-none hover:text-foreground focus-visible:text-foreground"
           aria-pressed={running}
           title={running ? "Stop the meter" : "Start the meter"}
         >

@@ -24,6 +24,7 @@ flowchart TB
     Stack["Stack / Cluster"]
     Panel["Panel (surface)"]
     ActionBar
+    SelectionTile
     Run["useLinearRun (motion)"]
   end
   subgraph C["Composites"]
@@ -62,6 +63,7 @@ flowchart TB
   Confirm --> Panel
   EmptyState --> Tile
   MenuRow --> Tile
+  MenuRow --> SelectionTile
   MenuRow --> Meter
   PlayerCard --> Panel
   PlayerCard --> Chip
@@ -89,6 +91,7 @@ flowchart TB
 | **Dial** | `dial.tsx` | One arc geometry: gauges and rings | `level`/`value`+`max`, `size`, `variant` ticks/digital, `ticks`, `segments`, `redline`, `alert`, `needle`, `tone`, `hue`, `surface` game/theme/none, `sweep` (240 gauge, 360 ring), `start`, `thickness`, `inset`, `trackProps`, `valueProps` | `--nk-gauge-*`, `--nk-fill-*` |
 | **Stack / Cluster** | `stack.tsx` | Layout on the gap levers | `direction`, `gap` none/key/items/cluster/section/surface, `align`, `justify`, `wrap`, `as` | `--nk-gap-*`, `--nk-space-*`, `--nk-pad-surface` |
 | **Panel** (surface) | `panel.tsx` | The floating surface (`nk-panel`); its header, body and footer | `size`, `selected`, `animate`, `density`, `shape`, `motion` | `--nk-panel-*`, the menu material |
+| **SelectionTile** (+ `useSelectionIndicator`) | `selection-tile.tsx` | The one selection mark of a list, tabs or a menu: the keycap Tile sliding to the lit item | `items`, `active`, `lit`, `pointer`, `focus`, `list` | `--nk-tile-*`, `--nk-list-gap`, `--nk-indicator-time/-ease` |
 | **ActionBar** | `action-bar.tsx` | The one hint, back and close pattern: Kbd Tiles, a label, a hold Fill | `plate`, `keys`, `icon`, `label`, `onClick`, `level`, `state` | `--nk-gap-items`, the plate recipe |
 | **useLinearRun** (motion) | `hooks/use-linear-run.ts` | The one timed run: linear Web Animations on one start time (pseudo-elements too), a completion from a timer, elapsed, pause and resume, a motion gate | `duration`, `elapsed`, `paused`, `targets`, `onComplete`, `motion` always/respect, `release`, `deps` | `data-nk-motion`, reduced-motion |
 
@@ -111,7 +114,7 @@ kit's `nk-enter` / `nk-rise` classes. Those stay in core: they are runtime, not 
 | SheetSection | Stack (rows) | — |
 | Confirm | Panel, Button, Spinner | Focus containment; no Radix (Escape goes through surfaces) |
 | EmptyState | Tile (with `tile`), Empty | — |
-| MenuRow / MenuRowList | Kbd Tiles, Checkbox, Progress, `meterColor` | The row, its trail, the sliding indicator |
+| MenuRow / MenuRowList | Kbd Tiles, Checkbox, Progress, `meterColor`, SelectionTile (the list's lit tile) | The row, its trail |
 | Stat, Money | Text (num role on the value ladder) | Formatting (`formatMoney`), trend |
 | PlayerCard | Panel, Chip (dot), Stat, Avatar | — |
 | Band | `toneVars` | The band slab (`nk-slab-band`) |

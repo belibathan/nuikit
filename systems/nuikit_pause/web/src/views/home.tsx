@@ -1,4 +1,4 @@
-import { MenuRow } from "@/components/ui/menu-row";
+import { MenuRow, MenuRowList } from "@/components/ui/menu-row";
 import { EmptyState } from "@/components/ui/empty-state";
 import { fetchNui, type NuiPlayer } from "nuikit-core/react";
 import { LandmarkIcon, MoveHorizontalIcon, UsersIcon, WalletIcon } from "lucide-react";
@@ -160,11 +160,11 @@ export function HelpPage({ help, onBack }: { help: PauseData["help"]; onBack: ()
   return (
     <SheetPage title="Controls" description="Change yours in Key bindings." onBack={onBack}>
       {help.length ? (
-        <div className="flex flex-col divide-y divide-border">
+        <MenuRowList>
           {help.map((h) => (
             <MenuRow key={h.key + h.label} inert kbd={h.key}>{h.label}</MenuRow>
           ))}
-        </div>
+        </MenuRowList>
       ) : (
         <EmptyState title="No controls listed" description="This server hasn't listed its controls." />
       )}

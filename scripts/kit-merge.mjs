@@ -49,7 +49,7 @@ const LAYOUT = new Set([
   "clip-path", "transition-property", "transition-duration", "transition-timing-function", "transition", "animation",
   "animation-delay", "will-change",
   "transform", "transform-origin", "background-position", "background-size", "background-repeat", "background-origin",
-  "content", "inset", "opacity", "pointer-events",
+  "content", "inset", "opacity", "pointer-events", "isolation", "outline", "padding-bottom", "z-index",
 ]);
 
 /** Parse kit.css: every `@utility nk-*` with its top-level properties and its `@merge` family. */

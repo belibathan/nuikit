@@ -169,7 +169,7 @@ const RadialMenu = React.forwardRef<
       data-depth={path.length}
       className={cn(
         // nuikit-ignore-next-line radius/pill: the radial menu is a circle (its wedges and centre are round by geometry)
-        "relative rounded-full text-popover-foreground outline-none select-none focus-visible:ring-[3px] focus-visible:ring-ring/50",
+        "relative rounded-full text-popover-foreground outline-none select-none",
         className
       )}
       style={{ width: `${size / 16}rem`, height: `${size / 16}rem`, ...style }}
