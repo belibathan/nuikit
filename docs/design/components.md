@@ -82,7 +82,7 @@ flowchart TB
 | Primitive | File | What it is | Props (the configuration) | Levers |
 |---|---|---|---|---|
 | **Tile** (+ `Kbd`, `KbdGroup`) | `tile.tsx` | The keycap: keys, notice and empty-state icons, gears, checked boxes | `size` sm/md/lg, `shape` key/square, `state` rest/focus/hold/confirm/alert/disabled, `active`, `level`, `tone`, `hue`, `tag`, `tagOpen`, `plate`, `land` | `--nk-tile-*`, `--nk-h-key/chip/control`, `--nk-r-key`, scan role |
-| **Fill** (+ `fillTargets`, `alertAt`, `toneVars`) | `fill.tsx` | The one level bar: holds, sweeps, meters, timers, edges | `level`, `tone`, `hue`, `alertAt`, `alert`, `variant` bar/edge, `tween` | `--nk-fill-color/track/edge/alert/height`, `--nk-time-fill` |
+| **Fill** (+ `fillTargets`, `alertAt`, `toneVars`) | `fill.tsx` | The one level bar: holds, sweeps, meters, timers, edges | `level`, `tone`, `hue`, `color` (own colour, opts out of an ancestor hue), `alertAt`, `alert`, `variant` bar/edge, `tween` | `--nk-fill-color/track/edge/alert/height`, `--nk-time-fill` |
 | **Chip** | `chip.tsx` | A short status on one line, in two materials | `material` panel/hud, `tone`, `hue`, `fill` hair/tint/solid, `icon`, `count`, `variant` chip/dot, `shape` pill/tile, `state`, `active`, `density`, `motion` | `--nk-h-chip`, `--nk-r-chip`, `--nk-chip-*` |
 | **Text** | `text.tsx` | The type roles as one component, and the value ladder | `variant` scan/title/label/num/body/caption/display, `size` inherit/sm/md/display, `as` | `--nk-type-<role>-*`, `--nk-text-*`, `--nk-hud-value-size` |
 | **IconText** | `icon-text.tsx` | An icon and a Text role on one centre line | `icon`, `text` label/num/body, `size`, `muted` | `--nk-gap-cluster`, `--nk-icon-*` |
