@@ -671,6 +671,7 @@ var NuikitTheme = (() => {
     k17("nk-tile-radius", "dimension", "The keycap's radius (the primary button and the selection tile)", "nk-r-control"),
     k17("nk-tile-key", "color", "The keycap face under --nk-fill-style: solid (the primary button, the lit row, the active tab)", "primary"),
     k17("nk-tile-key-ink", "color", "Text on the keycap face", "primary-foreground"),
+    k17("nk-tile-key-rim", "color", "The keycap face's rim, --nk-border-width wide (the primary button and the selection tile); transparent = none", "transparent"),
     k17("nk-tile-tint", "number", "The face's opacity under --nk-fill-style: soft (a tinted tile, the foreground ink)", "0.16", { range: [0, 1] }),
     k17("nk-tile-inset", "dimension", "How far a selection tile sits in from its item's sides (room for the skew; never over a neighbour)", "0.375rem"),
     k17("nk-list-gap", "dimension", "Between the items of a list: the wall plus breathing room, so a lit tile never touches the next row", "calc(nk-tile-wall + nk-space-1)")

@@ -57,6 +57,7 @@ export type RuleId =
   | "selector/class-substring"
   | "state/alert"
   | "theme/unlayered"
+  | "theme/values-only"
   | "space/off-scale";
 
 export const RULES: Record<RuleId, { level: Level; description: string }> = {
@@ -90,11 +91,12 @@ export const RULES: Record<RuleId, { level: Level; description: string }> = {
   "selector/class-substring": { level: 0, description: "[class*=…], [class^=…], [class$=…] selectors; key on data-state, data-tone or data-hue" },
   "state/alert": { level: 0, description: "data-critical, data-low, data-redline, data-danger, data-ink-deny; the one alert spelling is data-state=\"alert\" (deny: data-nk-deny)" },
   "theme/unlayered": { level: 0, description: "Theme CSS outside @layer nk.theme, !important, or app markup (.inv-*, .pause-*) in a theme; a theme sets tokens" },
+  "theme/values-only": { level: 0, description: "A selector or a non-token declaration in a theme file (theme.css, themes/*.css); a theme sets values only, and a rule it needs means the kit is missing a lever (docs/design/levers.md)" },
   "space/off-scale": { level: 0, description: "A gap, padding or margin off the 0.25rem step (0.375rem, 0.3125rem, gap-1.5…); use --nk-space-* and gap-(--nk-gap-*)" },
 };
 
 /** The kit conventions (docs/design/default.md §4): all warnings (level 0) for now. */
-export const KIT_RULES: readonly RuleId[] = ["radius/raw", "radius/pill", "effect/blur", "color/mix", "shadow/soft", "motion/duration", "motion/ease", "motion/property", "type/raw", "selector/class-substring", "state/alert", "theme/unlayered", "space/off-scale"];
+export const KIT_RULES: readonly RuleId[] = ["radius/raw", "radius/pill", "effect/blur", "color/mix", "shadow/soft", "motion/duration", "motion/ease", "motion/property", "type/raw", "selector/class-substring", "state/alert", "theme/unlayered", "theme/values-only", "space/off-scale"];
 
 export const LEVEL_NAMES: Record<Level, string> = { 0: "not conformant", 1: "themed", 2: "well-behaved", 3: "native" };
 
@@ -338,8 +340,14 @@ function kitScript(code: string, report: Report) {
     report("motion/duration", m.index!, `${m[1]}: ${m[2]} is a literal; use --nk-time-* or calc(var(--nk-stagger) * var(--i))`);
 }
 
-/** A theme stylesheet: token values in @layer nk.theme only (theme/unlayered). */
-function scanThemeCss(css: string, report: Report) {
+/** The blocks a values-only theme file may open: a mode block, Tailwind's @theme, the nk.theme layer, a colour-scheme media query. */
+const MODE_BLOCK = /^(:root|\.dark|\.light|html|@theme\b.*|@layer\s+nk\.theme|@media\s*\(\s*prefers-color-scheme:[^)]*\))$/;
+
+/**
+ * A theme stylesheet: token values in @layer nk.theme only (theme/unlayered). A theme *file* (theme.css, themes/*.css;
+ * `valuesOnly`) also sets values only: any other block, or a non-token declaration, is theme/values-only.
+ */
+function scanThemeCss(css: string, report: Report, valuesOnly = false) {
   const src = lexCss(css);
   const stack: string[] = [];
   let buf = "";
@@ -354,6 +362,7 @@ function scanThemeCss(css: string, report: Report) {
       const prelude = buf.trim();
       const at = bufStart + buf.indexOf(prelude);
       if (!prelude.startsWith("@") && /(^|[\s,>+~(])\.(inv|pause|hud|ox|ia)-[\w-]/.test(prelude)) report("theme/unlayered", at, `${prelude.slice(0, 40)}: app markup in a theme; a theme sets tokens and styles documented data attributes`);
+      else if (valuesOnly && !MODE_BLOCK.test(prelude)) report("theme/values-only", at, `${prelude.slice(0, 40)}: a rule in a theme file; a theme sets values, so the kit is missing a lever (docs/design/levers.md)`);
       stack.push(prelude);
       buf = "";
       bufStart = i + 1;
@@ -365,6 +374,7 @@ function scanThemeCss(css: string, report: Report) {
         const lead = bufStart + buf.indexOf(t);
         if (/!important\s*$/.test(t)) report("theme/unlayered", lead, "!important in a theme; put it in @layer nk.theme and set a token");
         else if (!t.startsWith("--") && stack.length && !inTheme() && !stack.some((s) => /^@(font-face|keyframes|property)\b/.test(s))) report("theme/unlayered", lead, `${t.split(":")[0]} outside @layer nk.theme; a theme writes into nk.theme (token values and data-attribute rules)`);
+        else if (valuesOnly && !t.startsWith("--") && stack.length && stack.every((s) => MODE_BLOCK.test(s))) report("theme/values-only", lead, `${t.split(":")[0]}: a property in a theme file; a theme sets tokens only`);
       }
       buf = "";
       bufStart = i + 1;
@@ -766,9 +776,10 @@ export function checkResource(root: string, options: CheckOptions = {}): CheckRe
   }
 
   // theme stylesheets (theme.css, themes/, theme/): token values in @layer nk.theme only
+  // theme files (theme.css, themes/*.css) set values only; a theme's rule sheets (theme/*.css) may hold data-attribute rules
   for (const f of all.filter((f) => !f.built && /^(theme\.css|themes?\/[^/]+\.css)$/.test(f.rel))) {
     const src = fs.readFileSync(path.join(abs, f.rel), "utf8");
-    scanThemeCss(src, collector.file(f.rel, src));
+    scanThemeCss(src, collector.file(f.rel, src), /^(theme\.css|themes\/)/.test(f.rel));
   }
 
   const lua: LuaContext = { focusCalls: [], releasesOnStop: false, surfaces: false, usesNuikitLua: false };

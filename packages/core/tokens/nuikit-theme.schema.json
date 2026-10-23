@@ -2171,6 +2171,12 @@
           "description": "Text on the keycap face",
           "$comment": "tokens 1.7"
         },
+        "nk-tile-key-rim": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "The keycap face's rim, --nk-border-width wide (the primary button and the selection tile); transparent = none",
+          "$comment": "tokens 1.7"
+        },
         "nk-tile-tint": {
           "type": "string",
           "pattern": "^-?\\d+(\\.\\d+)?$",
