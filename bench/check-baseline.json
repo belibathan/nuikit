@@ -5,7 +5,7 @@
   },
   "systems/nuikit_chat": {
     "errors": 0,
-    "warnings": 212
+    "warnings": 202
   },
   "systems/nuikit_death": {
     "errors": 0,
@@ -61,7 +61,7 @@
   },
   "addons/ox_inventory": {
     "errors": 0,
-    "warnings": 46
+    "warnings": 45
   },
   "addons/ox_lib": {
     "errors": 0,
