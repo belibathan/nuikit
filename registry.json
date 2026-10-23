@@ -907,6 +907,7 @@
         "popover",
         "select",
         "slider",
+        "smooth-input",
         "switch",
         "textarea"
       ],
