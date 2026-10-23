@@ -224,12 +224,8 @@ add(C, "nk/row-padding-x", "FLOAT", ["GAP"], "", "Figma only: nk-row-padding, 3 
 alias(C, "nk/row-font-size", "FLOAT", FS, cssv("nk-row-font-size"), "nk/text-base.", "nk/text-base");
 alias(C, "nk/row-indicator-color", "COLOR", ALLC, cssv("nk-row-indicator-color"), "brand.", "color/brand");
 add(C, "nk/row-bar-width", "FLOAT", LEN, cssv("nk-row-bar-width"), "3px × nk-row-bar (0 unless the indicator is bar).", (t) => 3 * num(t["nk-row-bar"]));
-add(C, "nk/row-bar-inset", "FLOAT", ["GAP"], cssv("nk-row-bar-inset"), "2.5 × space.", (t) => 10 * d(t));
 add(C, "nk/row-fill-color", "COLOR", FILL, cssv("nk-row-fill-color"), "brand when the indicator is fill, else accent (hover/keyboard highlight).", (t) => num(t["nk-row-fill"]) ? color(t.brand) : color(t.accent));
 add(C, "nk/row-fill-foreground", "COLOR", TEXT, cssv("nk-row-fill-foreground"), "brand-foreground when the indicator is fill, else accent-foreground.", (t) => num(t["nk-row-fill"]) ? color(t["brand-foreground"]) : color(t["accent-foreground"]));
-add(C, "nk/row-outline-width", "FLOAT", ["STROKE_FLOAT"], cssv("nk-row-outline-width"), "border-width × nk-row-outline.", (t) => px(t["nk-border-width"]) * num(t["nk-row-outline"]));
-add(C, "nk/row-outline-color", "COLOR", STROKE, cssv("nk-row-outline-color"), "brand at 70%.", (t) => withAlpha(color(t.brand), 0.7));
-add(C, "nk/row-glow-color", "COLOR", ["EFFECT_COLOR"], cssv("nk-row-glow"), "brand at glow × 0.5 (0 0 1rem).", (t) => withAlpha(color(t.brand), num(t["nk-glow"]) * 0.5));
 // key
 alias(C, "nk/key-bg", "COLOR", FILL, cssv("nk-key-bg"), "muted.", "color/muted");
 alias(C, "nk/key-fg", "COLOR", TEXT, cssv("nk-key-fg"), "popover-foreground.", "color/popover-foreground");

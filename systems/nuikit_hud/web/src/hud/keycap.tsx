@@ -20,7 +20,7 @@ export interface KeycapProps {
 
 export function Keycap({ glyph, icon, size = "md", active, alert, open = false, label, className }: KeycapProps) {
   return (
-    <VitalChip.Root shape="keycap" active={active} alert={alert} open={open} display="auto" data-size={size} className={className}>
+    <VitalChip.Root active={active} alert={alert} open={open} display="auto" data-size={size} className={className}>
       <VitalChip.Shape>
         <VitalChip.Icon>{glyph !== undefined ? <VitalChip.Glyph>{glyph}</VitalChip.Glyph> : icon}</VitalChip.Icon>
         {label !== undefined && label !== false && <VitalChip.Label>{label}</VitalChip.Label>}

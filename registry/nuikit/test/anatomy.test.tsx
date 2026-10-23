@@ -99,10 +99,7 @@ const NO_SLOT = new Set<string>()
 /** Items that read <html> through an observer store (a frame after a theme): wait for it. */
 const STORE = new Set(["vital-chip"])
 /** Existing violations (a ratchet): item → the configs whose anatomy differs from the baseline. Delete a row when fixed. */
-const KNOWN: Record<string, string[]> = {
-  // --nk-chip-shape picks the DOM (keycap wall/track/plate/tile/liquid vs a bare shape): a lever must change values, not parts
-  "vital-chip": ["theme:default", "theme:flat", "theme:graphite", "theme:neon-pop", "theme:signal", "theme:square", "theme:street", "theme:studio", "theme:vector", "theme:velvet"],
-}
+const KNOWN: Record<string, string[]> = {}
 const frames = () => act(async () => { await new Promise((r) => setTimeout(r, 10)) })
 
 afterEach(() => clearTheme())

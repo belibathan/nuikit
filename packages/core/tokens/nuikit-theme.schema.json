@@ -1966,11 +1966,6 @@
           "description": "The bar at or under the alert threshold",
           "$comment": "tokens 1.5"
         },
-        "nk-accent-gradient": {
-          "type": "string",
-          "description": "The accent paint: an active tile's face, the speedometer's level, the compass N, the heading's accent",
-          "$comment": "tokens 1.5"
-        },
         "nk-accent-from": {
           "type": "string",
           "pattern": "^rgba?\\(",
@@ -2008,29 +2003,6 @@
         "nk-deny-x": {
           "type": "string",
           "description": "The deny shake's distance (two beats of fast)",
-          "$comment": "tokens 1.5"
-        },
-        "nk-chip-shape": {
-          "enum": [
-            "auto",
-            "square",
-            "rounded",
-            "circle",
-            "diamond",
-            "hex",
-            "chamfer"
-          ],
-          "description": "Vital chip shape",
-          "$comment": "tokens 1.5"
-        },
-        "nk-label-attach": {
-          "enum": [
-            "inline",
-            "tag",
-            "flag",
-            "none"
-          ],
-          "description": "Where a chip's label sits",
           "$comment": "tokens 1.5"
         },
         "nk-vital-icon": {
@@ -2124,11 +2096,6 @@
           "type": "string",
           "pattern": "^rgba?\\(",
           "description": "A text field's caret focus (and a checkbox's or switch's lit rim): a single 1px rim. Nothing else draws focus (1.7)",
-          "$comment": "tokens 1.6"
-        },
-        "nk-button-wall": {
-          "type": "string",
-          "description": "The primary keycap's wall (1.7: reads --nk-tile-wall)",
           "$comment": "tokens 1.6"
         },
         "nk-ring-segments": {

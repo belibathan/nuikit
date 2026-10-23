@@ -7,8 +7,7 @@
 // with its name and the difference ("Hunger +25"), so pops of vitals that change together never overlap.
 // (A comms-first hierarchy was tried and shelved, see docs/design.md.)
 //
-// The style comes from the theme tokens (--nk-chip-shape, --nk-level-style, --nk-label-attach,
-// --nk-vital-icon) and a player's override (/hudstyle, kept in KVP by client/style.lua and sent as
+// The style comes from the theme tokens (--nk-vital-icon, --nk-vital-display) and a player's override (/hudstyle, kept in KVP by client/style.lua and sent as
 // `hud:style`). Icon + level + the critical state, never colour alone; the value is in aria-valuenow.
 import { onNui } from "nuikit-core";
 import { fetchNui, Stagger, usePlayer, useSlots, useStaggerItem, type NuiPlayer, type Slot } from "nuikit-core/react";
@@ -110,8 +109,8 @@ function RadioChip({ radio }: { radio: number | string }) {
   );
 }
 
-/** A player's style override (/hudstyle): the four tokens set on <html>, so every chip reads them. */
-const TOKENS = { shape: "--nk-chip-shape", level: "--nk-level-style", attach: "--nk-label-attach", icon: "--nk-vital-icon" } as const;
+/** A player's style override (/hudstyle): the token set on <html>, so every chip reads them. */
+const TOKENS = { icon: "--nk-vital-icon" } as const;
 type StyleOverride = Partial<Record<keyof typeof TOKENS, string>> | null;
 function applyStyle(s: StyleOverride) {
   const root = document.documentElement.style;

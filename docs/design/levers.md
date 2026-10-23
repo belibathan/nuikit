@@ -46,7 +46,6 @@ mono numerals, high contrast) reach two languages far from Default's slanted key
 | Keycap rim (button + selection face) | `--nk-tile-key-rim` (new, 1.7) | `transparent` | colour | | |
 | Tile rim / focus rim (Kbd, registry Tile) | `--nk-tile-rim`, `--nk-tile-rim-focus` | `--border`, `--ring` | colour | tile white .32 / .40 | |
 | Selection tile inset from its row's sides | `--nk-tile-inset` | `0.375rem` | length | | tabs list forces `0.125rem` (kit.css ~2428) |
-| Vital chip shape | `--nk-chip-shape` | `auto` | `auto square rounded circle diamond hex chamfer` | | |
 | Corner brackets (Vector) | `--nk-panel-bracket`, `-width`, `-color` | `0px` | length (kit-only) | | |
 | Panel top accent edge (Signal, Arcade) | `--nk-panel-edge` | `inset 0 1px 0 0 rgba(fg, --nk-surface-edge)` | shadow (kit-only) | | |
 
@@ -107,13 +106,13 @@ The five roles: `scan` (keys, buttons, tabs), `title`, `label`, `num`, `body`. E
 | Field caret rim | `--nk-focus-rim` | `--ring` | colour | | |
 | Hold style | `--nk-hold-style` → `data-nk-hold` | `bar` | `bar ring fill` | slab, tile `fill` | ring pad `2px`, fill tint `.32` (kit.css ~1543–1548) |
 | Level style | `--nk-level-style` → `data-nk-level` | `bar` | `bar ring liquid slab pips` | slab `slab`; Default `liquid` | pips mask `10%` steps, `2px` gaps (kit.css ~1557) |
-| Gauge | `--nk-gauge-style`, `-track`, `-ticks`, `--nk-gauge-sweep` | `arc`, `0.25rem`, `1`, `270deg` | `arc bar digital`; length; 0–1 | | dial/ring thickness `× 0.09`, inset `× 0.07` of diameter (`progress-ring.tsx` 236) |
+| Gauge | `--nk-gauge-style`, `-track`, `-ticks` | `arc`, `0.25rem`, `1` | `arc bar digital`; length; 0–1 | | dial/ring thickness `× 0.09`, inset `× 0.07` of diameter (`progress-ring.tsx` 236) |
 | Meter segments | `--nk-meter-segments`, `--nk-meter-segment` | `0`, `0.5rem` | kit-only | | segment gap `0.125rem` (kit.css ~1269) |
 | Progress ring | `--nk-ring-segments`, `--nk-ring-gap` | `24`, `4` | 6–60; 0–12 | | |
 | Role alphas | `--nk-hue-line`, `-tint`, `-glow`, `-alert` | `.5 .14 .45 .24` | 0–1 | | |
 | Accent paint | `--nk-accent-gradient`, `-from`, `-via`, `-to` | `--brand` | colour / gradient | | |
 | Tile active / confirm | `--nk-tile-active`, `--nk-tile-confirm-face`, `-ink`, `--nk-tile-hold` | confirm face; fg / bg; fg .35 | colour | tile active = accent gradient | |
-| Vital chip hygiene | `--nk-label-attach`, `--nk-vital-icon`, `--nk-vital-display`, `--nk-vital-neighbours` | `inline vital auto push` | enums | | tag stem `0.1875rem`, label `h-4`, open margin `-0.375rem` (`vital-chip.tsx` 625–650) |
+| Vital chip hygiene | `--nk-vital-icon`, `--nk-vital-display`, `--nk-vital-neighbours` | `vital auto push` | enums | | |
 | Alert threshold | `--nk-alert-threshold`, `--nk-fuel-threshold` | `0.2`, `0.15` | 0–1 | | |
 
 ## Spacing and size

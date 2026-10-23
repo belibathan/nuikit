@@ -142,12 +142,8 @@
 | `nk/row-font-size` | component | FLOAT | `var(--nk-row-font-size)` | → `nk/text-base` |
 | `nk/row-indicator-color` | component | COLOR | `var(--nk-row-indicator-color)` | → `color/brand` |
 | `nk/row-bar-width` | component | FLOAT | `var(--nk-row-bar-width)` | 0 | 0 | 0 | 0 | 3 |
-| `nk/row-bar-inset` | component | FLOAT | `var(--nk-row-bar-inset)` | 10 | 10 | 10 | 9.5 | 8.75 |
 | `nk/row-fill-color` | component | COLOR | `var(--nk-row-fill-color)` | #ffffff @8% | #ffffff @8% | #ffffff @6% | #ffffff @10% | #262626 |
 | `nk/row-fill-foreground` | component | COLOR | `var(--nk-row-fill-foreground)` | #fafafa | #fafafa | #e8eaed | #ffffff | #fafafa |
-| `nk/row-outline-width` | component | FLOAT | `var(--nk-row-outline-width)` | 0 | 0 | 0 | 1 | 0 |
-| `nk/row-outline-color` | component | COLOR | `var(--nk-row-outline-color)` | #fafafa @70% | #8a8cff @70% | #5b9dff @70% | #ffd400 @70% | #d4d4d4 @70% |
-| `nk/row-glow-color` | component | COLOR | `var(--nk-row-glow)` | #fafafa @0% | #8a8cff @0% | #5b9dff @0% | #ffd400 @0% | #d4d4d4 @0% |
 | `nk/key-bg` | component | COLOR | `var(--nk-key-bg)` | → `color/muted` |
 | `nk/key-fg` | component | COLOR | `var(--nk-key-fg)` | → `color/popover-foreground` |
 | `nk/key-border` | component | COLOR | `var(--nk-key-border)` | → `color/border` |
@@ -275,7 +271,6 @@
 | `nk/type-body-weight` | component | FLOAT | `var(--nk-type-body-weight)` | → `nk/weight-body` |
 | `nk/type-body-tracking` | component | FLOAT | `var(--nk-type-body-tracking)` | 0 | 0 | 0 | 0 | 0 |
 | `nk/type-body-case` | component | STRING | `var(--nk-type-body-case)` | none | none | none | none | none |
-| `nk/type-body-pad` | component | FLOAT | `var(--nk-type-body-pad)` | 0 | 0 | 0 | 0 | 0 |
 | `nk/tile-face` | component | COLOR | `var(--nk-tile-face)` | #161616 | #161616 | #23272e | #000000 | #262626 |
 | `nk/tile-ink` | component | COLOR | `var(--nk-tile-ink)` | #fafafa | #fafafa | #e8eaed | #ffffff | #fafafa |
 | `nk/tile-light` | component | COLOR | `var(--nk-tile-light)` | #ffffff @16% | #ffffff @16% | #000000 @0% | #000000 @0% | #fafafa @9% |
@@ -325,7 +320,6 @@
 | `nk/row-icon-box` | component | FLOAT | `var(--nk-row-icon-box)` | 32 | 32 | 32 | 32 | 32 |
 | `nk/h-field` | component | FLOAT | `var(--nk-h-field)` | 44 | 44 | 44 | 44 | 44 |
 | `nk/focus-rim` | component | COLOR | `var(--nk-focus-rim)` | → `color/ring` |
-| `nk/button-wall` | component | FLOAT | `var(--nk-button-wall)` | 3 | 3 | 0 | 0 | 3 |
 | `nk/ring-segments` | component | FLOAT | `var(--nk-ring-segments)` | 24 | 24 | 24 | 24 | 24 |
 | `nk/ring-gap` | component | FLOAT | `var(--nk-ring-gap)` | 4 | 4 | 4 | 4 | 4 |
 | `nk/tile-wall` | component | FLOAT | `var(--nk-tile-wall)` | 3 | 3 | 0 | 0 | 3 |

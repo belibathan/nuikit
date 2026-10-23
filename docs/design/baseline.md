@@ -97,7 +97,7 @@ hover band touching the row above. One convention, every theme, every list.*
 
 | Lever (1.7) | Default | What it sets |
 |---|---|---|
-| `--nk-tile-wall` | 0.1875rem | How far the face sits above its wall (`--nk-button-wall` reads it) |
+| `--nk-tile-wall` | 0.1875rem | How far the face sits above its wall |
 | `--nk-tile-wall-shade` | 0.45 | How dark the wall is (the scrim over the face colour) |
 | `--nk-tile-radius` | `--nk-r-control` | The keycap's radius: the primary button and the selection tile |
 | `--nk-tile-key` / `--nk-tile-key-ink` | `--primary` / `--primary-foreground` | The solid face and its ink |

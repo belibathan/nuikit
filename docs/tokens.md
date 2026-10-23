@@ -468,7 +468,7 @@ Everything below is readable on `<html>` (compiled theme, or kit.css on `:root`)
 |---|---|---|
 | `menu` | Every panel: sheets (`edge-sheet`, the pause sheet, the inventory tray), dialogs, menus, notices on a panel | `--nk-panel-bg` (opacity × `--nk-menu-alpha`, which day legibility lifts), `--nk-panel-radius` (`--nk-material-menu-radius`), `--nk-panel-edge` (`--nk-material-menu-edge`), `--nk-panel-blur` (`--nk-material-menu-blur`, 0px by default; a surface blurs with `--nk-backdrop-filter: blur(var(--nk-panel-blur))`, applied under `--nk-backdrop`, default on) |
 | `hud` | HUD chips, slabs and tiles drawn over the game | `--nk-chip-bg` (and `--nk-slab-bg`): `--nk-hud-alpha` |
-| `overlay` | Full-screen backdrops behind a moment (death, loading, the dim behind a dialog) | `--nk-overlay-alpha`, `--nk-material-overlay-*` |
+| `overlay` | Full-screen backdrops behind a moment (death, loading, the dim behind a dialog) | `--nk-material-overlay-*` |
 
 The HUD material never affects panels, and the menu material never affects the HUD.
 
@@ -511,7 +511,7 @@ for one revision. `--nk-meter-radius` keeps its own value (Graphite's meters are
 | **Fill** (`FILL_TOKENS`) | `--nk-fill-{color,track,tint,edge,alert}` (and kit.css's `--nk-fill-height`); `--level` inline | brand, scrim .35, accent (the row sweep), no edge, destructive | foreground, white .12, white .12, white .4, destructive |
 | **Accent** (`ACCENT_TOKENS`) | `--nk-accent-gradient` (a colour or a gradient: an active tile's face, the HUD heading's accent edge); `--nk-accent-{from,via,to}` (its stops, for SVG strokes: the speedometer level, the lubber mark) | flat `--brand` (stops: brand) | the same (a theme sets the gradient and its stops together) |
 | **Motion** | the ladder `--nk-time-{snap,fast,slow}` (.5, .667, 1.556 × d, compiled); `--nk-exit-factor` (0.7), `--nk-time-reduced` (100ms, the reduced-motion cap); distances `--nk-lift`, `--nk-rise`, `--nk-land-scale`, `--nk-deny-x` | the 1.2 rungs keep their formulas; lift 0, rise .5rem, land 1 | d = 180ms: 90 / 120 / 180 / 280 / 420; press → snap, hover → fast, move / modal / confirm / retract / screen → slow, ambient and fill 2.333 × d; stagger 40ms; lift .5rem, land .6 |
-| **Hygiene** (`HYGIENE_TOKENS`) | `--nk-chip-shape`, `--nk-label-attach`, `--nk-vital-{icon,display,neighbours}` (read by vital-chip) | unset: the component's default | — |
+| **Hygiene** (`HYGIENE_TOKENS`) | `--nk-vital-{icon,display,neighbours}` (read by vital-chip) | unset: the component's default | — |
 
 `--nk-row-indicator` gains `sweep` (no bar: the row's `--nk-fill-tint` sweep, and the content slides by
 `--nk-lift`). `--nk-treatment: tile` fills all of the above, plus hard elevation, italic display, caps labels, fill
