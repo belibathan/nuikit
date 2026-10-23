@@ -177,7 +177,8 @@ export function overrideOutdated(installed: InstalledManifest | null | undefined
 
 export interface ResourceOutcome {
   resource: string;
-  /** "missing": the resource isn't on this server. "no-files": the zip predates the files map. */
+  /** "missing": the resource isn't on this server. "no-files": nothing packaged for it here (a zip from before the
+   * files map, or a dev checkout, where `nuikit/overrides/` is only built by the release pack). */
   state: "planned" | "missing" | "no-files" | "not-installed";
   plan?: InstallPlan | UninstallPlan;
 }
@@ -204,7 +205,7 @@ export function formatInstall(outcomes: ResourceOutcome[], opts: { dryRun?: bool
       continue;
     }
     if (o.state === "no-files") {
-      out.push(`  ${o.resource.padEnd(24)} this zip predates \`nuikit install\`; copy nuikit/overrides/${o.resource}/ by hand`);
+      out.push(`  ${o.resource.padEnd(24)} no override files packaged here (a pre-0.9 zip or a dev checkout); install from the release zip, or copy nuikit/overrides/${o.resource}/ by hand`);
       continue;
     }
     if (o.state === "not-installed") {

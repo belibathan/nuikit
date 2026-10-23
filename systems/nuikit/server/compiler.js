@@ -1906,7 +1906,7 @@ ${lines.join("\n")}
         continue;
       }
       if (o.state === "no-files") {
-        out.push(`  ${o.resource.padEnd(24)} this zip predates \`nuikit install\`; copy nuikit/overrides/${o.resource}/ by hand`);
+        out.push(`  ${o.resource.padEnd(24)} no override files packaged here (a pre-0.9 zip or a dev checkout); install from the release zip, or copy nuikit/overrides/${o.resource}/ by hand`);
         continue;
       }
       if (o.state === "not-installed") {
