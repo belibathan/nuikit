@@ -1,13 +1,13 @@
 -- {{name}}: client
--- Lua → UI:  NUI.send(event, data)          · UI → Lua:  NUI.on(callback, fn) ↔ fetchNui()
--- Surfaces:  NUI.surface(name, opts)         · nuikit owns focus, cursor, stacking and Escape
+-- Lua → UI:  nk.message.send(event, data)          · UI → Lua:  nk.message.on(callback, fn) ↔ fetchNui()
+-- Surfaces:  nk.surface.define(name, opts)         · nuikit owns focus, cursor, stacking and Escape
 -- Docs: https://github.com/belibathan/nuikit
 
 -- Declare every piece of UI once. Layers stack hud < world < panel < modal < system,
 -- and focus always goes to the top surface that takes input, across every nuikit resource.
-local hud = NUI.surface('hud', { layer = 'hud' })                                    -- no input
-local menu = NUI.surface('menu', { layer = 'panel', exclusive = true, blockedBy = { 'dead' } })
-local confirm = NUI.surface('confirm', { layer = 'modal' })                          -- above the menu
+local hud = nk.surface.define('hud', { layer = 'hud' })                                    -- no input
+local menu = nk.surface.define('menu', { layer = 'panel', exclusive = true, blockedBy = { 'dead' } })
+local confirm = nk.surface.define('confirm', { layer = 'modal' })                          -- above the menu
 
 hud:open()
 
@@ -23,11 +23,11 @@ local actions = {
 
 local function run(id)
   actions[id](PlayerPedId())
-  NUI.notify({ title = 'Done', description = ('You picked %s'):format(id), type = 'success' })
+  nk.message.notice({ title = 'Done', description = ('You picked %s'):format(id), type = 'success' })
 end
 
 -- Whatever you return is what `await fetchNui('menu:select', { id })` resolves with in React.
-NUI.on('menu:select', function(data)
+nk.message.on('menu:select', function(data)
   if not actions[data.id] then return { ok = false } end
   if data.id == 'armor' then
     -- A modal on top of the menu: it takes focus, and Escape closes it first.
@@ -39,7 +39,7 @@ NUI.on('menu:select', function(data)
   return { ok = true }
 end)
 
-NUI.on('confirm:answer', function(data)
+nk.message.on('confirm:answer', function(data)
   confirm:close()
   if data.yes then
     run(data.id)
@@ -58,12 +58,12 @@ CreateThread(function()
       armor = GetPedArmour(ped),
     }
     if v.health ~= last.health or v.armor ~= last.armor then
-      NUI.send('hud:vitals', v)
+      nk.message.send('hud:vitals', v)
       last = v
     end
     -- Shared with every nuikit resource: surfaces with blockedBy = { 'dead' } won't open.
     local dead = IsEntityDead(ped)
-    if dead ~= last.dead then NUI.state('dead', dead) end
+    if dead ~= last.dead then nk.surface.setState('dead', dead) end
     last.dead = dead
     Wait(250)
   end
