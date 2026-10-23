@@ -11,14 +11,41 @@ const items = {
   jewellery: "Jewelry",
   pacific: "Pacific Bank",
   paleto: "Paleto Bay Bank",
+  // a long third-party label, and more rows so the list runs past a screen
+  fleeca: "🏦 | Fleeca Bank, Vinewood Hills branch (upgraded)",
+  humane: "Humane Labs Raid",
+  cargoplane: "Cargo plane",
+  prison: "Bolingbroke breakout",
+  yacht: "Yacht heist",
+  casino: "Diamond Casino",
+  gang: "Gang takeover",
+  carjack: "Carjacking ring",
+  taxi: "Taxi hijack",
+  cayo: "Cayo Perico",
+  yacht2: "Scuba drop",
 };
-const cops = (busy: string[] = []) => ({
-  storerobbery: { minimumPolice: 2, label: "Store Robbery", busy: busy.includes("storerobbery") },
-  bankrobbery: { minimumPolice: 3, label: "Bank Robbery", busy: busy.includes("bankrobbery") },
-  jewellery: { minimumPolice: 2, label: "Jewelry", busy: busy.includes("jewellery") },
-  pacific: { minimumPolice: 5, label: "Pacific Bank", busy: busy.includes("pacific") },
-  paleto: { minimumPolice: 4, label: "Paleto Bay Bank", busy: busy.includes("paleto") },
-});
+const minimum: Record<keyof typeof items, number> = {
+  storerobbery: 2,
+  bankrobbery: 3,
+  jewellery: 2,
+  pacific: 5,
+  paleto: 4,
+  fleeca: 3,
+  humane: 0,
+  cargoplane: 4,
+  prison: 6,
+  yacht: 4,
+  casino: 8,
+  gang: 2,
+  carjack: 1,
+  taxi: 0,
+  cayo: 10,
+  yacht2: 3,
+};
+const cops = (busy: string[] = []) =>
+  Object.fromEntries(
+    (Object.keys(items) as (keyof typeof items)[]).map((k) => [k, { minimumPolice: minimum[k], label: items[k], busy: busy.includes(k) }]),
+  );
 
 const OPEN = {
   open: { players: 37, maxPlayers: 64, requiredCops: cops(), currentCops: 3 },
@@ -27,6 +54,9 @@ const OPEN = {
   full: { players: 128, maxPlayers: 128, requiredCops: cops(["paleto"]), currentCops: 12 },
   nosetup: { players: 21, maxPlayers: 64, requiredCops: cops(), currentCops: 2 },
   noactivities: { players: 3, maxPlayers: 32, requiredCops: {}, currentCops: 0 },
+  // a big server: 1,234 players of 2,048 slots, a full activity list
+  big: { players: 1234, maxPlayers: 2048, requiredCops: cops(["casino", "cayo", "fleeca"]), currentCops: 1234 },
+  zero: { players: 0, maxPlayers: 64, requiredCops: cops(), currentCops: 0 },
 };
 
 const mocks = defineMocks({

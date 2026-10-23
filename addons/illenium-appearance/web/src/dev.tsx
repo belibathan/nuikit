@@ -85,6 +85,12 @@ const TATTOOS: Tattoos = Object.fromEntries(
     ),
   ]),
 );
+// third-party names as a tattoo pack ships them: an emoji and " | ", a long label, a 7-figure price (the
+// mock refuses it, so the error path is seen), and an empty label
+TATTOOS.ZONE_LEFT_ARM!.push(
+  tattoo("ZONE_LEFT_ARM", "🐉 | Full sleeve: ember dragon with koi, lotus and a very long custom label", { cost: 1234567 }),
+  tattoo("ZONE_LEFT_ARM", "", {}),
+);
 TATTOOS.ZONE_HAIR = ["None", "Low fade", "Mid fade", "High fade", "Taper", "Shaved sides", "Undercut", "Buzz"].map((l) => tattoo("ZONE_HAIR", l));
 
 // ── shop presets (what client/*.lua passes to startPlayerCustomization)

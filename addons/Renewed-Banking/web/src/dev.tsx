@@ -54,6 +54,14 @@ const personal: Account = {
     tx({ amount: 650, trans_type: "withdraw", message: "Weazel News subscription", receiver: "Weazel News" }, 9 * 86400),
     tx({ amount: 3200, trans_type: "withdraw", message: "Insurance premium", receiver: "Mors Mutual" }, 16 * 86400),
     tx({ amount: 900, trans_type: "deposit", message: "Jordan Vale has deposited $900" }, 22 * 86400),
+    // more rows so the ledger scrolls, one with a third-party emoji and " | ", one with a long title
+    tx({ amount: 12, trans_type: "withdraw", message: "🛒 | Sprunk and a Burger, 24/7 Supermarket", receiver: "24/7 Supermarket" }, 23 * 86400),
+    tx({ amount: 1750, trans_type: "deposit", title: "Personal Account / TRP48213 (Pacific Standard refund)", message: "Refund for the cancelled Pacific job", issuer: "Pacific Standard" }, 30 * 86400),
+    tx({ amount: 240, trans_type: "withdraw", message: "Fuel, Ron's Gas Station (regular, 40 litres)", receiver: "Ron's Gas" }, 31 * 86400),
+    tx({ amount: 5000, trans_type: "withdraw", message: "Transfer to savings", receiver: "Vale Family Savings" }, 40 * 86400),
+    tx({ amount: 60, trans_type: "deposit", message: "Jordan Vale has deposited $60" }, 41 * 86400),
+    tx({ amount: 99, trans_type: "withdraw", message: "Netflix? Weazel Plus subscription", receiver: "Weazel News" }, 45 * 86400),
+    tx({ amount: 1, trans_type: "deposit", message: "Test payment" }, 60 * 86400),
   ],
 };
 
@@ -71,10 +79,13 @@ const police: Account = {
   creator: null,
 };
 
+// a seven-figure org account and one with nothing in it yet
+const vault: Account = { id: "vaultlsc", type: "Organization", name: "Los Santos Customs Vault", frozen: false, amount: 1234567, transactions: [], auth: {}, creator: "Mayor Office" };
+const empty: Account = { id: "neworg", type: "Organization", name: "New Org (no funds yet)", frozen: false, amount: 0, transactions: [], auth: {}, creator: null };
 const shared: Account = { id: "valefamily", type: "Organization", name: "Vale Family Savings", frozen: false, amount: 8200, transactions: [], auth: { TRP48213: true }, creator: "TRP48213" };
 const frozen: Account = { id: "ballas", type: "Organization", name: "Grove Holdings", frozen: true, amount: 312, transactions: {} as never, auth: [], creator: null };
 
-let state: Account[] = [personal, police, shared, frozen];
+let state: Account[] = [personal, police, shared, frozen, vault, empty];
 
 /** The browser stand-in for the server callbacks: mutate, then answer with the full account list. */
 function act(kind: "deposit" | "withdraw" | "transfer") {
@@ -144,7 +155,7 @@ export default function Dev() {
       send,
       accounts: () => state,
       reset: () => {
-        state = [personal, police, shared, frozen].map((a) => ({ ...a }));
+        state = [personal, police, shared, frozen, vault, empty].map((a) => ({ ...a }));
       },
     };
     send({ action: "updateLocale", translations, currency: "USD" });

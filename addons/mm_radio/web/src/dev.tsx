@@ -28,7 +28,25 @@ const locale = {
   "ui.enableClicks": "Radio Sound",
 };
 
-const channelName = { "1": "MRPD CH#1", "1.%": "MRPD CH#1", "2": "MRPD CH#2", "2.%": "MRPD CH#2", "420": "Ballas CH#1", "420.%": "Ballas CH#1" };
+const channelName = {
+  "1": "MRPD CH#1",
+  "1.%": "MRPD CH#1",
+  "2": "MRPD CH#2",
+  "2.%": "MRPD CH#2",
+  "420": "Ballas CH#1",
+  "420.%": "Ballas CH#1",
+  // a long list of recommended stations, with a third-party name and a long one
+  "9": "Pacific Standard Dispatch",
+  "12.5": "🎵 | Vinewood Gospel Hour (Late Night Edition)",
+  "77.7": "Weazel News",
+  "88.5": "Radio Los Santos",
+  "101.1": "Bounce FM",
+  "150": "Sweet 96.1 (Ads)",
+  "222": "Blaine County Sheriff",
+  "300": "Mirror Park Rec",
+  "415.2": "Vespucci Beach Club",
+  "499": "Emergency Services (EMS)",
+};
 
 const userData = {
   favourite: [88.5],
@@ -47,7 +65,7 @@ let state: RadioData = {
   channel: 1,
   volume: 30,
   favourite: [1, 2, 88.5],
-  recomended: [1, 12.5, 420],
+  recomended: [1, 12.5, 420, 9, 77.7, 88.5, 101.1, 150, 222, 300, 415.2, 499],
   maxChannel: 500,
   userData,
   time: "21:07",
@@ -64,6 +82,17 @@ const players: PlayerList = {
   "7": { name: "Officer Casey Reed", isTalking: true },
   "12": { name: "Sgt. Morgan Hale", isTalking: false },
   "23": { name: "Dispatch", isTalking: false },
+  // a long roster: mixed-case names, one with an emoji and " | ", one very long
+  "31": { name: "🚔 | Officer Lupe Ortega", isTalking: false },
+  "32": { name: "Dr. Priya Ramanathan-Whitfield (EMS)", isTalking: false },
+  "33": { name: "mechanic_dan", isTalking: false },
+  "34": { name: "Tommy Vercetti-Montgomery-Longname-Esquire", isTalking: false },
+  "35": { name: "Kenji Ito", isTalking: true },
+  "36": { name: "Shelby", isTalking: false },
+  "37": { name: "DJ Sunshine 2026 (Bounce FM)", isTalking: false },
+  "38": { name: "Officer Casey Reed", isTalking: false },
+  "39": { name: "Gus", isTalking: false },
+  "40": { name: "Lester Crest", isTalking: false },
 };
 
 let muted: Record<string, boolean> = {};

@@ -41,6 +41,10 @@ const ITEMS = {
   WEAPON_PISTOL: item("Pistol", { stack: false, close: true, ammoName: "ammo-9" }),
   WEAPON_CARBINERIFLE: item("Carbine Rifle", { stack: false, close: true, ammoName: "ammo-rifle" }),
   WEAPON_HAMMER: item("Hammer", { stack: false, close: true }),
+  // third-party names as item packs ship them: an emoji and " | ", mixed case, a long label
+  snack_mix: item("🍿 | Movie Night Snack Mix (Large, Salted Caramel)", { description: "Sweet, salty, and a little bit sticky." }),
+  goldwatch: item("Gold Watch (Limited Edition 2026, Engraved)", { stack: false, description: "Engraved on the back: 'To Niko, from the crew.'" }),
+  gold_bar: item("Gold Bar"),
 };
 
 const PLAYER_ITEMS: Slot[] = [
@@ -73,6 +77,10 @@ const PLAYER_ITEMS: Slot[] = [
   { slot: 14, name: "WEAPON_HAMMER", count: 1, weight: 1200, metadata: { durability: 47 } },
   { slot: 15, name: "radio", count: 1, weight: 500 },
   { slot: 16, name: "armour", count: 1, weight: 3000, metadata: { durability: 100 } },
+  // a seven-figure stack of bars: the count must fit the slot
+  { slot: 17, name: "gold_bar", count: 1234, weight: 12340 },
+  { slot: 18, name: "goldwatch", count: 1, weight: 150 },
+  { slot: 19, name: "snack_mix", count: 3, weight: 630 },
   { slot: 22, name: "vape", count: 1, weight: 90 }, // not in the registry: exercises getItemData + image fallback
 ];
 
@@ -93,6 +101,12 @@ const TRUNK = {
     { slot: 3, name: "medikit", count: 2, weight: 600 },
     { slot: 5, name: "at_clip_extended", count: 1, weight: 280 },
     { slot: 6, name: "garbage", count: 9, weight: 900 },
+    { slot: 7, name: "snack_mix", count: 2, weight: 420 },
+    { slot: 8, name: "sprunk", count: 12, weight: 4200 },
+    { slot: 9, name: "lockpick", count: 1, weight: 160 },
+    { slot: 10, name: "bandage", count: 4, weight: 460 },
+    { slot: 11, name: "goldwatch", count: 1, weight: 150 },
+    { slot: 12, name: "scrapmetal", count: 30, weight: 3600 },
     null,
   ],
 };
@@ -100,7 +114,7 @@ const SHOP = {
   id: "General 1",
   type: "shop",
   label: "24/7 Supermarket",
-  slots: 8,
+  slots: 12,
   groups: { police: 0 },
   items: [
     { slot: 1, name: "burger", price: 10, weight: 220 },
@@ -111,6 +125,10 @@ const SHOP = {
     { slot: 6, name: "radio", price: 4, currency: "scrapmetal", weight: 500 },
     { slot: 7, name: "armour", price: 1200, weight: 3000, count: 0 },
     { slot: 8, name: "WEAPON_PISTOL", price: 1800, weight: 1130, grade: 3, metadata: { registered: true } },
+    { slot: 9, name: "snack_mix", price: 12, weight: 630, count: 5 },
+    { slot: 10, name: "goldwatch", price: 1234567, weight: 150, count: 1 },
+    { slot: 11, name: "gold_bar", price: 9999, weight: 10000, count: 0 },
+    { slot: 12, name: "bandage", price: 15, weight: 230, count: 40 },
   ],
 };
 const BENCH = {

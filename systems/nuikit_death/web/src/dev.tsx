@@ -40,10 +40,27 @@ const fixtures: Record<string, DeathData> = {
     respawn: { key: "E", available: true }, ems: { key: "G", state: "cooldown", seconds: 38 }, ...deadText,
   },
   native: { phase: "dead", medical: "native", ...deadText, subtitle: undefined },
+  // third-party strings as a medical script sends them: an emoji and " | ", mixed case, long text
+  "qbx-laststand-long": {
+    phase: "laststand", medical: "qbx", seconds: 340, total: 360, helpable: true,
+    ems: { key: "G", state: "available" },
+    title: "🩸 | You are down, and the EMS crew is four blocks out",
+    subtitle: "Stay with us. A Pillbox Hill medic has been dispatched and is on the way, so keep breathing and do not try to stand up until they arrive.",
+  },
+  // a hospital bill past the readout's width; respawn is accepted now
+  "qbx-dead-bill": {
+    phase: "dead", medical: "qbx", seconds: 0, total: 300,
+    respawn: { key: "E", available: true, cost: 1234567 }, ...deadText,
+  },
+  // a last stand whose timer has run out: zero on the clock
+  "qbx-laststand-zero": {
+    phase: "laststand", medical: "qbx", seconds: 0, total: 360, helpable: false,
+    ems: { key: "G", state: "requested" }, ...laststandText,
+  },
 };
 
 // How far E is held in each fixture: client/main.lua streams it on death:hold (NUI.stream).
-const holds: Record<string, number> = { "qbx-dead-hold": 0.5, "esx-cooldown": 0.2 };
+const holds: Record<string, number> = { "qbx-dead-hold": 0.5, "esx-cooldown": 0.2, "qbx-dead-bill": 1 };
 
 const mocks = defineMocks({ events: {} });
 

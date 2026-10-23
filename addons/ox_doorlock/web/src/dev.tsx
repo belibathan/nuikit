@@ -41,6 +41,47 @@ const doors: Record<string, Door> = {
   "7": { id: 7, zone: "Vinewood Hills", state: 0, coords: v(-174.8, 497.1, 137.7), model: -1287581810, heading: 15, hash: 6, maxDistance: 2, characters: ["XYZ00001"] },
 };
 
+// A long list, as a server with many doors sends it: mixed locked/unlocked, some with groups,
+// items or a long third-party name, and one with no zone.
+const LONG_NAMES = [
+  "Mission Row Police Department: evidence locker B3 (restricted)",
+  "🔒 | Pacific Standard Bank: vault antechamber",
+  "Bolingbroke Penitentiary: east cell block gate, level 2",
+  "Sandy Shores Medical Centre (staff entrance)",
+  "Paleto Bay sheriff: holding cell 4",
+  "Vinewood Hills garage shutter, north",
+  "Fort Zancudo perimeter gate C",
+  "Grapeseed farm: barn door (old)",
+  "Del Perro Pier: marina office",
+  "Mirror Park laundromat back room",
+  "Little Seoul convenience store",
+  "Davis mechanic: lift bay 2",
+];
+const more = Object.fromEntries(
+  LONG_NAMES.map((name, i) => {
+    const id = 10 + i;
+    return [
+      String(id),
+      {
+        id,
+        name,
+        ...(i === 11 ? {} : { zone: i % 2 ? "Los Santos" : "Blaine County" }),
+        state: i % 3 === 0 ? 0 : 1,
+        coords: v(-1000 + i * 37.5, -500 + i * 12.25, 30.2),
+        model: 1000000 + i * 311,
+        heading: (i * 30) % 360,
+        hash: 10 + i,
+        maxDistance: 1 + (i % 4),
+        ...(i % 4 === 0 ? { groups: { police: i % 8 === 0 ? 0 : 1 } } : {}),
+        ...(i === 1 ? { items: [{ name: "bank_key", metadata: "vault", remove: true }] } : {}),
+        ...(i === 4 ? { auto: true, autolock: 120 } : {}),
+        distance: 3 + i * 1.4,
+      } as Door,
+    ];
+  }),
+);
+Object.assign(doors, more);
+
 const sounds = ["button-remote", "door-bolt-4", "metal-locker", "metallic-creak"];
 
 const mocks = defineMocks({

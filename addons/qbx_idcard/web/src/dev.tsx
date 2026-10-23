@@ -1,7 +1,7 @@
 // qbx_idcard's traffic, faked for browser development. Press ` for the devtools.
 // Each preset is a payload qbx_idcard's Lua really sends (docs/qbx-idcard-protocol.md). The game
 // sends { type, playerData | configData }; devtools sends { action, data }, which the page accepts too.
-// Jump to a state with ?state=id|driver|weapon|lawyer|badge|nomugshot|unknown|recolored|avatar|closed.
+// Jump to a state with ?state=id|driver|weapon|lawyer|badge|nomugshot|unknown|cdl|recolored|avatar|closed.
 import { NuiDevtools, defineMocks } from "nuikit-core/devtools";
 import { useEffect } from "react";
 
@@ -54,6 +54,18 @@ const CARDS = {
   badge: { ...NIKO, cardtype: "id_card", badge: { img: "examplebadge", grade: "Sergeant" } },
   nomugshot: { ...NIKO, cardtype: "driver_license", mugShot: undefined },
   unknown: { ...NIKO, cardtype: "pilot_license", firstname: "Tommy", lastname: "Vercetti-Montgomery-Long" },
+  // a long header and third-party strings: an emoji and " | " in the grade, mixed-case job and nationality
+  cdl: {
+    citizenid: "QBX90417",
+    firstname: "d'Arcy",
+    lastname: "McDonald-van der Berg",
+    birthdate: "1969-12-31",
+    sex: "F",
+    nationality: "Côte d'Ivoire",
+    cardtype: "commercial_license",
+    mugShot: mugshot("#8fa5b8", "#f0c9a6", "#7a6a5a"),
+    badge: { img: "examplebadge", grade: "🚓 | Sergeant, Traffic Division (Acting Lieutenant)" },
+  },
 };
 
 const CONFIG = {
@@ -63,6 +75,7 @@ const CONFIG = {
     driver_license: { header: "Driver License", background: "#febbbb", prop: "prop_franklin_dl" },
     weaponlicense: { header: "Weapon License", background: "#c7ffe5", prop: "prop_franklin_dl" },
     lawyerpass: { header: "Lawyer Pass", background: "#f9c491", prop: "prop_cs_r_business_card" },
+    commercial_license: { header: "Commercial Driver License — Class A Restricted", background: "#fde68a", prop: "prop_franklin_dl" },
   },
 };
 const RECOLORED = { ...CONFIG, licenses: { ...CONFIG.licenses, id_card: { header: "San Andreas ID", background: "#7c9cff" } } };
