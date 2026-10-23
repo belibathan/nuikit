@@ -127,3 +127,48 @@ describe("registry items", () => {
     }
   })
 })
+
+// A11: the curated catalogue. Every item is classified, grouped by purpose and (optionally) hidden from the
+// site; the site lists at most 20 components, foundations first, each with its variants, levers and hooks.
+describe("curated catalogue", () => {
+  const GROUPS = ["Foundations", "Lists & selection", "Gauges & vitals", "Dialogs & sheets", "Notices & prompts", "Inputs", "HUD", "Layout", "Blocks"]
+  type Curated = Meta & { group?: string; tier?: string; hidden?: boolean; hiddenReason?: string; variants?: { axes: Record<string, string[]>; levers: string[]; hooks: string[] } }
+  const m = (i: { meta?: Meta }) => i.meta as Curated
+  const UI = registry.items.filter((i) => i.type === "registry:ui")
+  const listed = UI.filter((i) => !m(i).hidden)
+
+  it("every item has a group; every ui and hook item has a tier", () => {
+    for (const i of registry.items) {
+      expect(GROUPS, `${i.name} group`).toContain(m(i).group)
+      if (i.type !== "registry:block" && i.type !== "registry:lib") expect(["foundation", "composite", "alias"], `${i.name} tier`).toContain(m(i).tier)
+    }
+  })
+
+  it("deprecated items are aliases and hidden; aliases are deprecated", () => {
+    for (const i of registry.items) {
+      expect(m(i).tier === "alias", i.name).toBe(i.meta!.status === "deprecated")
+      if (m(i).tier === "alias") expect(m(i).hidden, i.name).toBe(true)
+    }
+  })
+
+  it("a hidden item says why (unless it is a deprecated alias)", () => {
+    for (const i of registry.items.filter((x) => m(x).hidden && m(x).tier !== "alias")) expect(m(i).hiddenReason?.length ?? 0, i.name).toBeGreaterThan(15)
+  })
+
+  it("the site lists at most 20 components, foundations first, and every listed item shows its variants", () => {
+    expect(listed.length).toBeLessThanOrEqual(20)
+    expect(listed.filter((i) => m(i).tier === "foundation").length).toBeGreaterThan(0)
+    for (const i of listed) {
+      expect(m(i).tier, i.name).not.toBe("alias")
+      const v = m(i).variants
+      expect(v, `${i.name} variants`).toBeDefined()
+      expect(Array.isArray(v!.levers) && Array.isArray(v!.hooks), i.name).toBe(true)
+      for (const [axis, vals] of Object.entries(v!.axes)) expect(vals.length, `${i.name}.${axis}`).toBeGreaterThan(0)
+    }
+  })
+
+  it("the hooks a card names are real", () => {
+    const REAL = ["useLinearRun", "useSelectionIndicator", "TextRoll", "NumberRoll", "useCollapse", "useStaggerGroup"]
+    for (const i of UI) for (const h of m(i).variants?.hooks ?? []) expect(REAL, `${i.name} ${h}`).toContain(h)
+  })
+})

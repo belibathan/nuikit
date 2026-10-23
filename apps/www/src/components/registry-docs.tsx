@@ -49,68 +49,109 @@ const API = api as Api;
 
 const DESCRIPTIONS = new Map((registry.items as { name: string; description?: string }[]).map((i) => [i.name, i.description ?? ""]));
 
-/** Every registry:ui item, grouped as the side navigation shows them. */
-const GROUPS: { group: string; items: [name: string, title: string][] }[] = [
-  {
-    group: "Primitives",
-    items: [
-      ["tile", "Tile"],
-      ["fill", "Fill"],
-      ["chip", "Chip"],
-      ["icon-text", "Icon text"],
-      ["action-bar", "Action bar"],
-    ],
-  },
-  {
-    group: "Surfaces",
-    items: [
-      ["panel", "Panel"],
-      ["edge-sheet", "Edge sheet"],
-      ["menu-row", "Menu row"],
-      ["nui-menu", "NUI menu"],
-      ["confirm", "Confirm"],
-      ["form-field", "Form field"],
-      ["empty-state", "Empty state"],
-    ],
-  },
-  {
-    group: "HUD",
-    items: [
-      ["vital-chip", "Vital chip"],
-      ["vital", "Vital"],
-      ["collapse-stack", "Collapse stack"],
-      ["meter", "Meter"],
-      ["hud-chip", "HUD chip"],
-      ["stat", "Stat"],
-      ["money", "Money"],
-      ["speedometer", "Speedometer"],
-      ["progress-ring", "Progress ring"],
-      ["countdown", "Countdown"],
-      ["band", "Band"],
-    ],
-  },
-  {
-    group: "Interaction",
-    items: [
-      ["notice", "Notice"],
-      ["key-prompt", "Key prompt"],
-      ["skill-check", "Skill check"],
-      ["radial-menu", "Radial menu"],
-      ["item-slot", "Item slot"],
-      ["player-card", "Player card"],
-    ],
-  },
-  {
-    group: "Utilities",
-    items: [
-      ["text-roll", "Text roll"],
-      ["smooth-input", "Smooth input"],
-      ["nui-image", "NUI image"],
-    ],
-  },
-];
+type Curated = {
+  group?: string;
+  tier?: string;
+  hidden?: boolean;
+  hiddenReason?: string;
+  variants?: { axes: Record<string, string[]>; levers: string[]; hooks: string[] };
+};
+const CURATED = registry.items as { name: string; type: string; title?: string; meta?: Curated }[];
 
-export const ITEMS = GROUPS.flatMap((g) => g.items.map(([name, title]) => ({ name, title, group: g.group, description: DESCRIPTIONS.get(name) ?? "" })));
+/** The curated map (docs/design/components.md): registry meta says the group, the tier and what is hidden. */
+export const GROUP_ORDER = ["Foundations", "Lists & selection", "Gauges & vitals", "Dialogs & sheets", "Notices & prompts", "Inputs", "HUD", "Layout"];
+const UI = CURATED.filter((i) => i.type === "registry:ui");
+const byGroup = (hidden: boolean) =>
+  GROUP_ORDER.map((group) => ({
+    group,
+    items: UI.filter((i) => i.meta?.group === group && !!i.meta?.hidden === hidden)
+      // foundations first inside a group
+      .sort((x, y) => Number(y.meta?.tier === "foundation") - Number(x.meta?.tier === "foundation"))
+      .map((i) => [i.name, i.title ?? i.name] as [string, string]),
+  })).filter((g) => g.items.length > 0);
+
+/** What the nav and the catalogue list: not hidden, grouped by purpose, foundations first. */
+const GROUPS = byGroup(false);
+/** Hidden from the site, still installable and still at /components/<name>. */
+export const HIDDEN = UI.filter((i) => i.meta?.hidden && i.meta.tier !== "alias").map((i) => ({ name: i.name, title: i.title ?? i.name, reason: i.meta?.hiddenReason ?? "" }));
+/** The catalogue's order: the listed items in nav order, everything else after. */
+export const ORDER = new Map(GROUPS.flatMap((g) => g.items).map(([name], i) => [name, i] as const));
+export const VARIANTS = new Map(UI.flatMap((i) => (i.meta?.variants ? [[i.name, { ...i.meta.variants, tier: i.meta.tier, group: i.meta.group }] as const] : [])));
+
+export const ITEMS = [...GROUPS, ...byGroup(true)].flatMap((g) => g.items.map(([name, title]) => ({ name, title, group: g.group, description: DESCRIPTIONS.get(name) ?? "" })));
+
+/** A card's wiring: the variant axes, the levers it reads and the hooks that make it live. */
+export function Wiring({ name }: { name: string }) {
+  const v = VARIANTS.get(name);
+  if (!v) return null;
+  const axes = Object.entries(v.axes);
+  const shown = v.levers.slice(0, 8);
+  const code = "inline-flex h-6 items-center rounded-(--nk-r-key) border px-1.5 font-mono text-xs text-muted-foreground";
+  return (
+    <dl data-slot="component-wiring" className="mt-4 grid grid-cols-[5.5rem_1fr] gap-x-4 gap-y-2 text-sm">
+      {axes.length > 0 && (
+        <>
+          <dt className="text-muted-foreground">Variants</dt>
+          <dd className="flex flex-col gap-1">
+            {axes.map(([axis, vals]) => (
+              <span key={axis}>
+                <span className="font-mono text-xs text-muted-foreground">{axis}</span> {vals.join(" · ")}
+              </span>
+            ))}
+          </dd>
+        </>
+      )}
+      {shown.length > 0 && (
+        <>
+          <dt className="text-muted-foreground">Levers</dt>
+          <dd className="flex flex-wrap gap-1.5">
+            {shown.map((l) => (
+              <code key={l} className={code}>
+                {l}
+              </code>
+            ))}
+            {v.levers.length > shown.length && <span className="self-center text-xs text-muted-foreground">+{v.levers.length - shown.length} more</span>}
+          </dd>
+        </>
+      )}
+      {v.hooks.length > 0 && (
+        <>
+          <dt className="text-muted-foreground">Hooks</dt>
+          <dd className="flex flex-wrap gap-1.5">
+            {v.hooks.map((h) => (
+              <code key={h} className={code}>
+                {h}
+              </code>
+            ))}
+          </dd>
+        </>
+      )}
+    </dl>
+  );
+}
+
+/** Installable but not featured: composites that a foundation covers with a prop, and internal helpers. */
+export function HiddenList() {
+  if (typeof location !== "undefined" && /^\/components\/./.test(location.pathname)) return null;
+  return (
+    <section id="more" style={{ order: 1001 }} className="mt-20 scroll-mt-20">
+      <h2 className="site-display text-3xl">Also installable</h2>
+      <p className="mt-2 max-w-2xl text-muted-foreground text-pretty">
+        Not featured: a foundation above covers each with a prop, or it is a helper under one. They stay in the registry, and the block that uses one shows it composed.
+      </p>
+      <ul className="mt-6 divide-y border-y">
+        {HIDDEN.map((h) => (
+          <li key={h.name} className="grid gap-1 py-3 md:grid-cols-[12rem_1fr] md:gap-6">
+            <a href={`/components/${h.name}`} className="font-mono text-sm underline-offset-4 hover:underline">
+              {h.name}
+            </a>
+            <p className="text-sm text-pretty text-muted-foreground">{h.reason}</p>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
 
 /** Sticky on wide screens; a disclosure on phones. */
 export function SideNav({ current }: { current: string | null }) {
@@ -226,6 +267,7 @@ export function ApiDetails({ name, open = false }: { name: string; open?: boolea
 }
 
 const HOOKS = [
+  { name: "use-linear-run", text: DESCRIPTIONS.get("use-linear-run") ?? "" },
   { name: "use-nui-store", text: "Merge partial updates from Lua into one object: useNuiStore(event, initial)." },
   { name: "use-collapse", text: DESCRIPTIONS.get("use-collapse") ?? "" },
 ];
@@ -233,7 +275,7 @@ const HOOKS = [
 export function Hooks() {
   if (typeof location !== "undefined" && /^\/components\/./.test(location.pathname)) return null;
   return (
-    <section id="hooks" className="mt-16 scroll-mt-24">
+    <section id="hooks" style={{ order: 1000 }} className="mt-16 scroll-mt-24">
       <h2 className="site-display text-3xl">Hooks</h2>
       <ul className="mt-6 divide-y border-y">
         {HOOKS.map((h) => (

@@ -10,6 +10,49 @@ Each component's doc comment carries the template (Role / Anatomy / Props / Leve
 `registry.json` `meta.spec`; `registry/nuikit/test/registry-meta.test.ts` keeps them in step, and
 `registry/nuikit/test/composition.test.tsx` holds the composition contracts below.
 
+## The curated map (Oct 23, 2026)
+
+`registry.json` `meta` classifies every item; the site (`/components`, `/blocks`) reads it. Nothing is removed:
+hidden items stay installable and keep their `/components/<name>` page, but are not featured.
+
+- `meta.tier`: **foundation** (a primitive the others compose), **composite** (configures foundations), **alias** (deprecated, renders its replacement).
+- `meta.group`: Foundations; Lists & selection; Gauges & vitals; Dialogs & sheets; Notices & prompts; Inputs; HUD; Layout; Blocks.
+- `meta.hidden` (+ `hiddenReason`): off the site's list. `meta.demonstrates` (blocks): the one line on what the screen shows.
+- `meta.variants`: `axes` (treatment, size, tone, motion, density, shape, state, read from the props), `levers` (the `--nk-*` it reads, from the source) and `hooks` (useLinearRun, useSelectionIndicator, TextRoll, useCollapse…). Each listed card renders them, so a component arrives pre-wired.
+
+`registry/nuikit/test/registry-meta.test.ts` keeps it honest: every item grouped, aliases hidden, a hidden item says why, at most 20 listed.
+
+**Listed (20), foundations first**
+
+| Group | Components |
+|---|---|
+| Foundations | Tile, Fill, Chip, Panel, ActionBar, Dial, TextRoll (+ `useLinearRun`) |
+| Lists & selection | MenuRow, RadialMenu |
+| Gauges & vitals | Meter, Speedometer, ProgressRing |
+| Dialogs & sheets | EdgeSheet, Confirm |
+| Notices & prompts | Notice, KeyPrompt, SkillCheck |
+| Inputs | FormField |
+| HUD | VitalChip, Stat |
+
+**Hidden, and why**
+
+| Hidden | Why | Use instead |
+|---|---|---|
+| `hud-chip`, `vital`, `nui-menu` | Deprecated aliases (`removeIn` 0.10.0) | Chip `material="hud"`, Meter, Panel + MenuRow |
+| `countdown` | A Meter or ProgressRing with a seconds prop | Meter, ProgressRing |
+| `band` | A Notice at a screen edge | Notice `position` |
+| `money` | NumberRoll in Text with a currency format; Stat shows it with a label | Stat |
+| `item-slot` | A Tile with an image and a count | the inventory block |
+| `player-card` | A Panel of Stat rows | the scoreboard, job-sheet blocks |
+| `empty-state` | A Panel body with Text and an icon Tile | Panel |
+| `collapse-stack`, `use-collapse` | The collapse engine behind VitalChip | VitalChip |
+| `selection-tile`, `dialog-shell`, `sheet-section` | Internal frames under MenuRow, Confirm, EdgeSheet | their parents |
+| `text`, `stack`, `icon-text`, `nui-image`, `utils`, `use-nui-store` | Helpers the others compose | n/a |
+| `smooth-input`, `stepper` | Input flavours of FormField | FormField |
+
+**Blocks.** Each of the 16 shown is a finished screen with a one-line `demonstrates` (components and system). Hidden as
+demo-only: `storefront` (the shop in a grid), `job-tracker` (job-menu with a task list), `npc-dialogue` (a Panel of MenuRow replies).
+
 ## The graph
 
 ```mermaid
