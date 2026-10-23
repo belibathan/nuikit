@@ -25,6 +25,7 @@
     "select",
     "separator",
     "slider",
+    "stepper",
     "spinner",
     "skill-check",
     "switch",

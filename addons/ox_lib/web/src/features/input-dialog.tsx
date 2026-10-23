@@ -11,13 +11,12 @@ import {
   ColorField,
   DateRangeField,
   FormField,
-  NumberField,
   SelectField,
-  SliderField,
   TextField,
   TimeField,
   type DateOrder,
 } from "@/components/ui/form-field";
+import { Stepper } from "@/components/ui/stepper";
 import { Icon } from "@/lib/icon";
 import { inputIntent, inputValues, normalizeRows } from "@/lib/intents";
 import { useLocale } from "@/lib/locale";
@@ -312,6 +311,26 @@ export function InputDialog() {
   );
 }
 
+/** A numeric row as the kit Stepper (hold repeats, the value rolls); the value stays the file's number | null. */
+function StepperRow({ row, value, onChange, min, max, step, precision, placeholder }: { row: Record<string, any>; value: number | null; onChange: (v: number | null) => void; min?: number; max?: number; step: number; precision: number; placeholder?: string }) {
+  const clamp = (n: number) => Math.round(Math.min(max ?? Infinity, Math.max(min ?? -Infinity, n)) * 10 ** precision) / 10 ** precision;
+  return (
+    <FormField {...row}>
+      <Stepper
+        aria-label={typeof row.label === "string" ? row.label : undefined}
+        disabled={row.disabled}
+        value={value === null ? (placeholder ?? "–") : value}
+        format={(x) => x.toFixed(precision)}
+        onStep={(dir) => onChange(clamp(value === null ? (dir > 0 ? (min ?? 0) - step : (max ?? 0) + step) + dir * step : value + dir * step))}
+        onCommit={(t) => {
+          const n = Number(t);
+          if (Number.isFinite(n)) onChange(Math.round(n * 10 ** precision) / 10 ** precision);
+        }}
+      />
+    </FormField>
+  );
+}
+
 /**
  * One dialog row as the kit's form-field preset for its type (the `input` intent's renderer).
  * Values stay in this file's shapes (initial/output above), so what Lua receives is unchanged.
@@ -349,16 +368,15 @@ function RowField({ row, value, error, onChange }: { row: Row; value: any; error
       );
     case "number":
       return (
-        <NumberField
-          {...base}
-          icon={icon}
-          stepper="inline"
-          placeholder={row.placeholder}
+        <StepperRow
+          row={base}
+          value={value === null || value === "" || value === undefined ? null : Number(value)}
+          onChange={onChange}
           min={row.min as number | undefined}
           max={row.max as number | undefined}
           step={row.step ?? (row.precision ? 1 / 10 ** row.precision : 1)}
-          value={value === null || value === "" || value === undefined ? null : Number(value)}
-          onValueChange={onChange}
+          precision={row.precision ?? 0}
+          placeholder={row.placeholder}
         />
       );
     case "checkbox":
@@ -388,7 +406,7 @@ function RowField({ row, value, error, onChange }: { row: Row; value: any; error
         />
       );
     case "slider":
-      return <SliderField {...base} min={Number(row.min ?? 0)} max={Number(row.max ?? 100)} step={row.step ?? 1} value={Number(value)} onValueChange={onChange} />;
+      return <StepperRow row={base} value={Number(value)} onChange={onChange} min={Number(row.min ?? 0)} max={Number(row.max ?? 100)} step={row.step ?? 1} precision={(String(row.step ?? 1).split(".")[1] ?? "").length} />;
     case "color":
       // The field holds "#rrggbb"; output() turns it into the row's format when posting.
       return <ColorField {...base} placeholder={row.placeholder} value={toHex(value)} onValueChange={onChange} />;
