@@ -168,7 +168,8 @@ function noticeTimeLeft(duration: number = NOTICE_DURATION, elapsed = 0) {
 }
 
 const noticeVariants = cva(
-  "nk-panel pointer-events-auto relative flex overflow-hidden px-4 py-3 text-(length:--nk-text-label) leading-5",
+  // baseline (1.6): the row's rhythm (space-4 all round, the icon tile a row-gap from the text)
+  "nk-panel pointer-events-auto relative flex overflow-hidden p-(--nk-space-4) text-(length:--nk-text-label) leading-5",
   {
     variants: {
       size: {
@@ -364,7 +365,7 @@ function Notice({
       role={status === "error" ? "alert" : "status"}
       className={cn(
         noticeVariants({ size, iconAlign: iconAlign ?? (title && description ? "start" : "center") }),
-        "gap-[calc(var(--nk-space)*3)]",
+        "gap-(--nk-row-gap)",
         animate && !slide && !inGroup && "nk-enter",
         leaving && "pointer-events-none",
         className
@@ -392,14 +393,14 @@ function Notice({
       {iconEl !== null && iconEl !== false && (
         <span
           data-slot="notice-icon"
-          className={cn("flex h-5 shrink-0 items-center [&_svg:not([class*='size-'])]:size-4", hue ? "text-(--hue-solid)" : s.text)}
+          className={cn("shrink-0", hue ? "text-(--hue-solid)" : s.text)}
         >
           {iconEl}
         </span>
       )}
-      <div className="flex min-w-0 flex-1 flex-col gap-(--nk-space-1) break-words">
+      <div className="flex min-w-0 flex-1 flex-col justify-center gap-0.5 self-stretch break-words">
         {title && (
-          <p data-slot="notice-title" className="[font-weight:var(--nk-weight-strong,600)]">
+          <p data-slot="notice-title">
             {title}
           </p>
         )}
@@ -429,7 +430,7 @@ function Notice({
           tween={false}
           tone={STATUS_TONE[status] ?? "info"}
           hue={hue}
-          className="absolute inset-x-0 bottom-0 h-(--nk-slab-line-height) rounded-none bg-transparent motion-reduce:hidden [[data-nk-motion=off]_&]:hidden"
+          className="absolute inset-x-0 bottom-0 h-0.5 rounded-none bg-transparent motion-reduce:hidden [[data-nk-motion=off]_&]:hidden"
         />
       )}
     </div>

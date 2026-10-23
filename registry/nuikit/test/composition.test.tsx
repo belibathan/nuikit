@@ -83,7 +83,8 @@ describe("composites", () => {
     const d = dom(<ProgressRing value={50} />)
     expect(d.has('data-slot="progress-ring"')).toBe(true)
     expect(d.has('data-slot="dial"')).toBe(true)
-    expect(d.has('data-slot="progress-ring-fill"', 'stroke-linecap="round"')).toBe(true)
+    // segmented, like the speedometer: the track and the value are segments
+    expect(d.has('data-slot="dial-segment"', 'data-active="true"')).toBe(true)
   })
 
   it("Speedometer is a Dial, a gear Tile and a fuel Fill", () => {

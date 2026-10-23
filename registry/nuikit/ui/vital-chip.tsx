@@ -494,13 +494,14 @@ function Shape({ className, children, ...props }: React.ComponentProps<"span">) 
             <g clipPath={`url(#vc-${id})`}>
               <rect data-slot="vital-chip-activefill" x={0} y={0} width={geo.w} height={geo.h} style={{ fill: "var(--nk-chip-active-fill, transparent)" }} />
             </g>
-            {/* liquid: rises inside the shape, a brighter line on its surface */}
+            {/* liquid: rises inside the shape, a brighter line on its surface. Solid by default (--nk-fill-opacity:
+                the baseline's --nk-fill-style, solid 1 or soft 0.42) */}
             {level === "fill" && (
               <g clipPath={`url(#vc-${id})`}>
                 {/* levels snap to the value: an SVG element's transform isn't composited, so a transition here costs
                     style, layout and paint on the main thread every frame (the HUD ticks; it never stops) */}
                 <g style={{ transform: `translateY(${((1 - v! / 100) * geo.h).toFixed(2)}px)` }}>
-                  <rect x={0} y={0} width={geo.w} height={geo.h} style={{ fill: "var(--vital, var(--primary))", opacity: 0.42 }} />
+                  <rect x={0} y={0} width={geo.w} height={geo.h} style={{ fill: "var(--vital, var(--primary))", opacity: "var(--nk-fill-opacity, 1)" }} />
                   <rect x={0} y={0} width={geo.w} height={Math.max(1, sw * 0.6)} style={{ fill: "var(--vital, var(--primary))", opacity: 0.95 }} />
                 </g>
               </g>
@@ -546,19 +547,28 @@ function Level() {
   return null
 }
 
-/** The icon, centred on the shape: in the vital's colour, or the chip's ink when the theme says uniform. */
-function Icon({ className, ...props }: React.ComponentProps<"span">) {
+/**
+ * The icon, centred on the shape: in the vital's colour, or the chip's ink when the theme says uniform. Over a
+ * solid liquid fill it stays legible: a second copy in the fill's ink (--nk-fill-ink) is clipped to the part
+ * under the surface (kit.css shows it for a fill level under the solid fill style).
+ */
+function Icon({ className, children, ...props }: React.ComponentProps<"span">) {
   const { style } = useChip()
   return (
     <span
       data-slot="vital-chip-icon"
       className={cn(
-        "flex [&_svg]:size-(--vital-icon-size)",
+        "relative flex [&_svg]:size-(--vital-icon-size)",
         style.icon === "uniform" ? "text-(--nk-chip-fg)" : "text-(--vital,currentColor)",
         className
       )}
       {...props}
-    />
+    >
+      {children}
+      <span data-slot="vital-chip-icon-ink" aria-hidden>
+        {children}
+      </span>
+    </span>
   )
 }
 

@@ -2060,6 +2060,88 @@
           ],
           "description": "What a growing chip does to its neighbours",
           "$comment": "tokens 1.5"
+        },
+        "nk-fill-style": {
+          "enum": [
+            "solid",
+            "soft"
+          ],
+          "description": "How fills read: solid (flat, full, vivid: progress, meters, vital liquid, the selected row) or soft (translucent, a fading tint)",
+          "$comment": "tokens 1.6"
+        },
+        "nk-row-pad-y": {
+          "type": "string",
+          "description": "A list row's block padding",
+          "$comment": "tokens 1.6"
+        },
+        "nk-row-pad-x": {
+          "type": "string",
+          "description": "A list row's inline padding",
+          "$comment": "tokens 1.6"
+        },
+        "nk-row-gap": {
+          "type": "string",
+          "description": "Between a row's icon tile, its text and its trail",
+          "$comment": "tokens 1.6"
+        },
+        "nk-row-lift": {
+          "type": "string",
+          "description": "How far the selected row's content slides in",
+          "$comment": "tokens 1.6"
+        },
+        "nk-row-title-size": {
+          "type": "string",
+          "description": "A row title (the label voice)",
+          "$comment": "tokens 1.6"
+        },
+        "nk-row-desc-size": {
+          "type": "string",
+          "description": "A row description (the body voice)",
+          "$comment": "tokens 1.6"
+        },
+        "nk-row-icon-box": {
+          "type": "string",
+          "description": "The icon tile beside a row title (the icon inside is --nk-icon-md)",
+          "$comment": "tokens 1.6"
+        },
+        "nk-row-marker-width": {
+          "type": "string",
+          "description": "The selection marker at the row's leading edge",
+          "$comment": "tokens 1.6"
+        },
+        "nk-row-tint-reach": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "How far across the row the selection tint fades out (0–1)",
+          "$comment": "tokens 1.6"
+        },
+        "nk-h-field": {
+          "type": "string",
+          "description": "Height of text inputs, selects and dialog buttons",
+          "$comment": "tokens 1.6"
+        },
+        "nk-focus-rim": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "The one focus mark of a field or button: a single 1px rim",
+          "$comment": "tokens 1.6"
+        },
+        "nk-button-wall": {
+          "type": "string",
+          "description": "The primary keycap's wall: how far its face sits above it",
+          "$comment": "tokens 1.6"
+        },
+        "nk-ring-segments": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "Segments in a progress ring (the speedometer's language)",
+          "$comment": "tokens 1.6"
+        },
+        "nk-ring-gap": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "Degrees between a progress ring's segments",
+          "$comment": "tokens 1.6"
         }
       },
       "additionalProperties": {

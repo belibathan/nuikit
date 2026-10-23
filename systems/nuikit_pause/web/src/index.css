@@ -1005,6 +1005,24 @@
     --nk-rise: 0.5rem;
     --nk-land-scale: 1;
     --nk-deny-x: 0.3125rem;
+    /* baseline (1.6, docs/design/baseline.md): what every component shares, the same in every theme. Rows:
+       generous padding, an icon tile column, two voices; selection is a marker, a fading tint and a lift. */
+    --nk-row-pad-y: var(--nk-space-2);
+    --nk-row-pad-x: var(--nk-space-3);
+    --nk-row-gap: var(--nk-space-4);
+    --nk-row-lift: var(--nk-space-2);
+    --nk-row-title-size: var(--nk-text-base, 1rem);
+    --nk-row-desc-size: 0.875rem;
+    --nk-row-icon-box: 2rem;
+    --nk-row-marker-width: 0.25rem;
+    --nk-row-tint-reach: 0.7;
+    /* fields and buttons: one height, one focus rim; the primary is a keycap on its wall */
+    --nk-h-field: 2.75rem;
+    --nk-focus-rim: var(--ring);
+    --nk-button-wall: 0.1875rem;
+    /* progress rings are segmented, like the speedometer */
+    --nk-ring-segments: 24;
+    --nk-ring-gap: 4;
   }
   /* --nk-skew (1.3) keeps its keycap plate: a slanted key sits on an offset plate */
   :is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"]) {
@@ -1063,8 +1081,12 @@
   --nk-panel-edge: inset 0 1px 0 0 rgba(var(--popover-foreground-rgb), var(--nk-material-menu-edge, var(--nk-surface-edge, 0.06)));
   --nk-panel-shadow: var(--nk-elevation-shadow, 0 0 0 1px rgba(var(--scrim-rgb), 0.25), 0 8px 16px -8px rgba(var(--scrim-rgb), 0.6));
   --nk-panel-header-height: calc(3.25rem * var(--nk-density, 0.875));
-  --nk-panel-header-padding: calc(var(--nk-space) * 3) calc(var(--nk-space) * 4);
-  --nk-panel-body-padding: calc(var(--nk-space) * 2);
+  /* baseline (1.6): the surface padding on every side, the title a step off its hairline, the footer on the
+     panel itself (no rule: spacing separates it) */
+  --nk-panel-header-padding: var(--nk-pad-surface) var(--nk-pad-surface) var(--nk-space-4);
+  --nk-panel-body-padding: var(--nk-space-3);
+  --nk-panel-footer-padding: var(--nk-space-4) var(--nk-pad-surface) var(--nk-pad-surface);
+  --nk-panel-footer-rule: none;
   --nk-panel-divider: var(--nk-border) solid var(--nk-panel-border);
   /* corner brackets (Vector): L-shaped brand marks at the four corners; 0 = off */
   --nk-panel-bracket: 0px;
@@ -1099,7 +1121,7 @@
   --nk-row-height: var(--nk-h-row);
   --nk-row-radius: var(--nk-r-control);
   --nk-row-clip: var(--nk-clip-sm, none);
-  --nk-row-padding: calc(var(--nk-space) * 1.5) calc(var(--nk-space) * 3);
+  --nk-row-padding: var(--nk-row-pad-y) var(--nk-row-pad-x);
   --nk-row-font-size: var(--nk-text-base);
   --nk-row-indicator-color: var(--brand, var(--primary));
   /* bar: a pill at the row's leading edge */
@@ -1239,10 +1261,15 @@
   --nk-h-row: calc(2.75rem * var(--nk-density, 0.875));
   --nk-space: calc(0.25rem * var(--nk-density, 0.875));
   --nk-panel-header-height: calc(3.25rem * var(--nk-density, 0.875));
-  --nk-panel-header-padding: calc(var(--nk-space) * 3) calc(var(--nk-space) * 4);
-  --nk-panel-body-padding: calc(var(--nk-space) * 2);
+  --nk-panel-header-padding: var(--nk-pad-surface) var(--nk-pad-surface) var(--nk-space-4);
+  --nk-panel-body-padding: var(--nk-space-3);
+  --nk-panel-footer-padding: var(--nk-space-4) var(--nk-pad-surface) var(--nk-pad-surface);
   --nk-row-height: calc(2.75rem * var(--nk-density, 0.875));
-  --nk-row-padding: calc(var(--nk-space) * 1.5) calc(var(--nk-space) * 3);
+  --nk-row-pad-y: var(--nk-space-2);
+  --nk-row-pad-x: var(--nk-space-3);
+  --nk-row-gap: var(--nk-space-4);
+  --nk-row-lift: var(--nk-space-2);
+  --nk-row-padding: var(--nk-row-pad-y) var(--nk-row-pad-x);
   --nk-row-bar-inset: calc(var(--nk-space) * 2.5);
   --nk-chip-height: calc(2rem * var(--nk-density, 0.875));
   --nk-chip-padding: calc(var(--nk-space) * 2.5);
@@ -1327,9 +1354,9 @@
 @utility nk-panel-footer {
   display: flex;
   align-items: center;
-  gap: calc(var(--nk-space) * 2);
-  padding: var(--nk-panel-header-padding);
-  border-top: var(--nk-panel-divider);
+  gap: var(--nk-space-3);
+  padding: var(--nk-panel-footer-padding);
+  border-top: var(--nk-panel-footer-rule, none);
 }
 /* Two-row panel header: a title row (nk-panel-title-row) above tabs, a search or a meter. @merge nk-panel-header */
 @utility nk-panel-header-stack {
@@ -1427,7 +1454,7 @@
   position: relative;
   display: flex;
   align-items: center;
-  gap: calc(var(--nk-space) * 3);
+  gap: var(--nk-row-gap, calc(var(--nk-space) * 3));
   min-height: var(--nk-row-height);
   padding: var(--nk-row-padding);
   border-radius: var(--nk-row-radius);
@@ -1438,8 +1465,11 @@
      (--nk-sweep, drawn as a background layer so the row's own surface classes don't flash it), the bar
      grows from its middle, text eases with the fill; a press dips and springs back (--nk-motion-feel).
      Motion off: instant; reduced: no movement. The sweep is a Fill at level 1 in --nk-fill-tint (1.5). */
+  /* baseline (1.6): the tint fades out across the row (--nk-row-tint-reach), never a flat slab; the fill
+     indicator (a theme's solid row) sets --nk-sweep-end to the same colour */
   --nk-sweep: var(--nk-fill-tint, var(--accent));
-  background-image: linear-gradient(var(--nk-sweep), var(--nk-sweep));
+  --nk-sweep-end: transparent;
+  background-image: linear-gradient(90deg, var(--nk-sweep), var(--nk-sweep-end) calc(var(--nk-row-tint-reach, 0.7) * 100%));
   background-repeat: no-repeat;
   background-position: left center;
   background-size: 0% 100%;
@@ -2043,15 +2073,100 @@
   [data-slot="button"] {
     clip-path: var(--nk-chip-clip);
   }
-  /* the primary button: a light sweep across on hover (shadcn's transition-all eases it) */
-  [data-slot="button"][data-variant="default"] {
-    background-image: linear-gradient(rgba(var(--primary-foreground-rgb), 0.14), rgba(var(--primary-foreground-rgb), 0.14));
-    background-repeat: no-repeat;
-    background-position: left center;
-    background-size: 0% 100%;
+  /* Buttons (baseline 1.6, docs/design/baseline.md): the scan voice; a text button reads at the field height
+     in a dialog. Focus is one crisp rim, never shadcn's border plus a 3px halo. */
+  :is([data-slot="button"], [data-slot="alert-dialog-action"], [data-slot="alert-dialog-cancel"]):not([data-variant="link"]) {
+    font-family: var(--nk-type-scan-family);
+    font-style: var(--nk-type-scan-style);
+    font-weight: var(--nk-type-scan-weight);
+    letter-spacing: var(--nk-type-scan-tracking);
+    text-transform: var(--nk-type-scan-case);
   }
-  [data-slot="button"][data-variant="default"]:hover {
-    background-size: 100% 100%;
+  :is([data-slot="button"], [data-slot="alert-dialog-action"], [data-slot="alert-dialog-cancel"]):focus-visible {
+    --tw-ring-shadow: 0 0 0 0 var(--nk-focus-rim);
+    border-color: var(--nk-focus-rim);
+  }
+  /* The primary is a keycap: a face on its wall (the face in --primary, the wall the same colour in shade, the
+     tile's slant). Hover raises the face a pixel; a press sinks it onto the wall. The element stays upright
+     and transparent; ::after is the face, ::before the wall. */
+  :is([data-slot="button"], [data-slot="alert-dialog-action"])[data-variant="default"] {
+    position: relative;
+    isolation: isolate;
+    margin-bottom: var(--nk-button-wall);
+    background-color: transparent;
+    background-image: none;
+    box-shadow: none;
+    border-color: transparent;
+    color: var(--primary-foreground);
+    clip-path: none;
+    &::before,
+    &::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      border-radius: inherit;
+      transition: transform var(--nk-time-snap, 70ms) var(--nk-ease-standard, cubic-bezier(0.2, 0, 0, 1));
+    }
+    &::before {
+      z-index: -2;
+      background-color: var(--primary);
+      box-shadow: inset 0 0 0 100vmax rgba(var(--scrim-rgb, 0, 0, 0), 0.45);
+      transform: translateY(var(--nk-button-wall)) skewX(var(--nk-tile-skew, 0deg));
+    }
+    &::after {
+      z-index: -1;
+      background-color: var(--primary);
+      box-shadow: inset 0 1px 0 var(--nk-tile-light);
+      transform: skewX(var(--nk-tile-skew, 0deg));
+    }
+    &:hover {
+      background-color: transparent;
+    }
+    &:hover::after {
+      transform: translateY(-1px) skewX(var(--nk-tile-skew, 0deg));
+    }
+    &:not(:disabled):is(:active, [data-nk-press]) {
+      transform: none;
+    }
+    &:not(:disabled):is(:active, [data-nk-press])::after {
+      transform: translateY(calc(var(--nk-button-wall) * 0.67)) skewX(var(--nk-tile-skew, 0deg));
+    }
+    &:focus-visible {
+      border-color: transparent;
+    }
+    /* the rim sits off the face, so a white face still shows it */
+    &:focus-visible::after {
+      box-shadow: inset 0 1px 0 var(--nk-tile-light), 0 0 0 0.125rem var(--nk-plate-bg, var(--background)), 0 0 0 calc(0.125rem + 1px) var(--nk-focus-rim);
+    }
+  }
+  /* a Kbd on the face reads dark on it */
+  :is([data-slot="button"], [data-slot="alert-dialog-action"])[data-variant="default"] [data-slot="kbd"] {
+    --nk-tile-face-now: rgba(var(--scrim-rgb, 0, 0, 0), 0.25);
+    --nk-tile-ink-now: var(--primary-foreground);
+    --nk-tile-rim-now: rgba(var(--scrim-rgb, 0, 0, 0), 0.35);
+    --nk-tile-plate-now: transparent;
+    color: var(--primary-foreground);
+  }
+  /* secondary (outline): a hairline rim on the panel, the tint on hover */
+  :is([data-slot="button"], [data-slot="alert-dialog-cancel"])[data-variant="outline"] {
+    background-color: transparent;
+    border-color: var(--nk-plate-hair, var(--border));
+    box-shadow: none;
+  }
+  :is([data-slot="button"], [data-slot="alert-dialog-cancel"])[data-variant="outline"]:hover {
+    background-color: var(--nk-fill-tint, var(--accent));
+  }
+  :is([data-slot="button"], [data-slot="alert-dialog-cancel"])[data-variant="outline"]:focus-visible {
+    border-color: var(--nk-focus-rim);
+  }
+  /* Fields (baseline 1.6): one height, a single crisp rim on focus */
+  :is([data-slot="input"], [data-slot="select-trigger"], input[data-slot="form-field-control"], button[data-slot="form-field-control"]:not([role="checkbox"], [role="switch"])) {
+    min-height: var(--nk-h-field);
+  }
+  :is([data-slot="input"], [data-slot="textarea"], [data-slot="select-trigger"], [data-slot="input-group"], [data-slot="form-field-control"], [data-slot="checkbox"], [data-slot="switch"]):is(:focus-visible, :focus-within, [data-state="open"]) {
+    --tw-ring-shadow: 0 0 0 0 var(--nk-focus-rim);
+    border-color: var(--nk-focus-rim);
   }
   /* a press dips and springs back */
   [data-slot="button"]:not([class*="translate"], :disabled):is(:active, [data-nk-press]) {
@@ -2083,6 +2198,7 @@
  */
 :is(html, *)[data-nk-row="fill"] .nk-row:is([data-active], [data-highlighted], :focus-visible):not([class*="text-destructive"]) {
   --nk-sweep: var(--nk-row-fill-color);
+  --nk-sweep-end: var(--nk-row-fill-color);
   color: var(--nk-row-fill-foreground);
 }
 /* rows after an indicator: the indicator carries the selection; the row only sweeps for the pointer */
@@ -2947,8 +3063,9 @@ html[data-nk-backdrop="on"] * {
       isolation: isolate;
       flex: none;
       justify-content: center;
-      width: var(--nk-h-chip);
-      height: var(--nk-h-chip);
+      width: var(--nk-row-icon-box);
+      height: var(--nk-row-icon-box);
+      background-color: transparent;
       &::before,
       &::after {
         content: "";
@@ -2975,15 +3092,144 @@ html[data-nk-backdrop="on"] * {
     }
   }
 
-  /* ── Row (MenuRow, .nk-row) under --nk-row-indicator: sweep: no bar, the sweep alone; the focused row's
-     content slides by --nk-lift. */
-  :is(html, *)[data-nk-row="sweep"] .nk-row {
+  /* ── Row (MenuRow, .nk-row), the baseline (1.6, docs/design/baseline.md): every theme. The lit row (keyboard,
+     script, the list's selection, or the pointer on a row that hovers) slides its content in by --nk-row-lift
+     and lights its icon tile; the marker (sweep) or the bar marks its edge. Anatomy: an icon tile column
+     (--nk-row-icon-box, one icon size), a title in the label voice over a description in the body voice. */
+  .nk-row {
     & > * {
       transition: transform var(--nk-time-base, var(--nk-time)) var(--nk-ease-standard, cubic-bezier(0.2, 0, 0, 1));
     }
-    &:is([data-active], [data-highlighted], :focus-visible) > * {
-      transform: translateX(var(--nk-lift));
+    &:is([data-active], [data-highlighted], :focus-visible, [data-hover]:hover):not([data-readonly], [aria-disabled="true"], :disabled) > * {
+      transform: translateX(var(--nk-row-lift, 0rem));
     }
+  }
+  [data-slot="menu-row-icon"] {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: var(--nk-row-icon-box);
+    height: var(--nk-row-icon-box);
+    & > [data-slot="tile"] {
+      width: var(--nk-row-icon-box);
+      min-width: var(--nk-row-icon-box);
+      height: var(--nk-row-icon-box);
+      --nk-tile-ink-now: var(--muted-foreground);
+      color: var(--nk-tile-ink-now);
+    }
+    & svg {
+      width: var(--nk-icon-md);
+      height: var(--nk-icon-md);
+    }
+  }
+  .nk-row:is([data-active], [data-highlighted], :focus-visible, [data-hover]:hover):not([data-readonly]) > [data-slot="menu-row-icon"] > [data-slot="tile"] {
+    --nk-tile-face-now: var(--nk-tile-confirm-face);
+    --nk-tile-ink-now: var(--nk-tile-confirm-ink);
+    &::after {
+      background: var(--nk-tile-active);
+    }
+  }
+  .nk-row[class*="text-destructive"] > [data-slot="menu-row-icon"] > [data-slot="tile"] {
+    --nk-tile-ink-now: var(--destructive);
+  }
+  [data-slot="menu-row-body"] {
+    display: flex;
+    min-width: 0;
+    flex: 1 1 0%;
+    flex-direction: column;
+    gap: 0.125rem;
+  }
+  /* the label voice (Barlow italic caps in Default; the sans at medium in Graphite), never a bold sans */
+  [data-slot="menu-row-title"] {
+    font-family: var(--nk-type-label-family);
+    font-style: var(--nk-type-label-style);
+    font-size: var(--nk-row-title-size);
+    font-weight: var(--nk-type-label-weight);
+    letter-spacing: var(--nk-type-label-tracking);
+    text-transform: var(--nk-type-label-case);
+    line-height: 1.25;
+    padding-inline-end: var(--nk-type-label-pad);
+  }
+  /* ── Notice (baseline 1.6): the row's anatomy. An icon tile in the status colour, the title in the label voice
+     (always sentence-led: a script's "error" reads "Error"), the description in the body voice. */
+  [data-slot="notice-icon"] {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: var(--nk-row-icon-box);
+    height: var(--nk-row-icon-box);
+    border-radius: var(--nk-r-key);
+    background-color: rgba(var(--nk-notice-tone-rgb, var(--foreground-rgb)), var(--nk-hue-tint, 0.14));
+    & svg {
+      width: var(--nk-icon-md);
+      height: var(--nk-icon-md);
+    }
+  }
+  [data-slot="notice"][data-tone="info"] { --nk-notice-tone-rgb: var(--info-rgb); }
+  [data-slot="notice"][data-tone="success"] { --nk-notice-tone-rgb: var(--success-rgb); }
+  [data-slot="notice"][data-tone="warning"] { --nk-notice-tone-rgb: var(--warning-rgb); }
+  [data-slot="notice"][data-tone="danger"] { --nk-notice-tone-rgb: var(--destructive-rgb); }
+  [data-slot="notice"][data-hue] { --nk-notice-tone-rgb: var(--hue); }
+  [data-slot="notice-title"] {
+    font-family: var(--nk-type-label-family);
+    font-style: var(--nk-type-label-style);
+    font-size: var(--nk-row-title-size);
+    font-weight: var(--nk-type-label-weight);
+    letter-spacing: var(--nk-type-label-tracking);
+    text-transform: var(--nk-type-label-case);
+    line-height: 1.25;
+    padding-inline-end: var(--nk-type-label-pad);
+    &::first-letter {
+      text-transform: uppercase;
+    }
+  }
+  [data-slot="notice-description"] {
+    font-family: var(--nk-type-body-family);
+    font-size: var(--nk-row-desc-size);
+    font-weight: var(--nk-type-body-weight);
+    line-height: 1.25rem;
+  }
+  /* ── ProgressRing (baseline 1.6): the speedometer's readout. The number in the numeric voice, the label in the
+     label voice, the cancel hint a key and its verb. */
+  [data-slot="progress-ring-center"] {
+    font-family: var(--nk-type-num-family);
+    font-style: var(--nk-type-num-style);
+    font-weight: var(--nk-weight-display, 700);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: var(--nk-type-num-tracking);
+    line-height: 1;
+  }
+  [data-slot="progress-ring-unit"] {
+    margin-inline-start: 0.0625em;
+    font-size: 0.6em;
+    opacity: 0.6;
+  }
+  :is([data-slot="progress-ring-label"], [data-slot="progress-ring-cancel-label"]) {
+    font-family: var(--nk-type-label-family);
+    font-style: var(--nk-type-label-style);
+    font-weight: var(--nk-type-label-weight);
+    letter-spacing: var(--nk-type-label-tracking);
+    text-transform: var(--nk-type-label-case);
+    padding-inline-end: var(--nk-type-label-pad);
+    line-height: 1.25;
+  }
+  [data-slot="progress-ring-label"] {
+    font-size: var(--nk-row-title-size);
+  }
+  [data-slot="progress-ring-cancel-label"] {
+    font-size: var(--nk-text-label);
+  }
+  /* the body voice: regular, muted, one step down */
+  [data-slot="menu-row-description"] {
+    font-family: var(--nk-type-body-family);
+    font-style: normal;
+    font-size: var(--nk-row-desc-size);
+    font-weight: var(--nk-type-body-weight);
+    letter-spacing: 0;
+    text-transform: none;
+    line-height: 1.25rem;
   }
 }
 
@@ -3003,6 +3249,87 @@ html[data-nk-backdrop="on"] * {
 :is(html, *)[data-nk-motion="off"] :is([data-slot="tile"], [data-slot="kbd"]):is([data-state="confirm"], [data-state="alert"], [data-land]) {
   animation: none;
 }
-:is(html, *)[data-nk-motion="reduced"][data-nk-row="sweep"] .nk-row > * {
-  transform: none;
+:is(html, *)[data-nk-motion="reduced"] .nk-row > * {
+  transform: none !important;
+}
+
+/*
+ * Selection (baseline 1.6, docs/design/baseline.md) under --nk-row-indicator: sweep (Default, Neon Pop).
+ * --nk-fill-style: solid (the default): the lit row is one flat, full fill in the row colour (--brand) with dark
+ * ink, its icon tile a dark keycap on it; the content slides in by --nk-row-lift. No marker: the row is the mark.
+ * soft: a short slanted marker in the accent paint over a tint that fades across the row. Unlayered, so it beats
+ * the row utility's bar; the list indicator (nk-indicator) draws the same thing as it glides.
+ */
+:is(html, *)[data-nk-row="sweep"]:not([data-nk-fill="soft"]) .nk-row:is([data-active], [data-highlighted], :focus-visible, [data-hover]:hover):not([class*="text-destructive"], [data-readonly]) {
+  --nk-sweep: var(--nk-row-fill-color);
+  --nk-sweep-end: var(--nk-row-fill-color);
+  color: var(--nk-row-fill-foreground);
+}
+:is(html, *)[data-nk-row="sweep"]:not([data-nk-fill="soft"]) .nk-row:is([data-active], [data-highlighted], :focus-visible, [data-hover]:hover):not([class*="text-destructive"], [data-readonly]) :not([data-slot="kbd"], [data-slot="kbd"] *, [data-slot="tile"], [data-slot="tile"] *, [data-slot="progress"], [data-slot="progress"] *, [data-slot="meter"], [data-slot="meter"] *) {
+  color: inherit;
+}
+/* the icon tile on a solid row: a dark keycap, its glyph light (the speedometer's gear) */
+:is(html, *)[data-nk-row="sweep"]:not([data-nk-fill="soft"]) .nk-row:is([data-active], [data-highlighted], :focus-visible, [data-hover]:hover):not([data-readonly]) > [data-slot="menu-row-icon"] > [data-slot="tile"] {
+  --nk-tile-face-now: var(--nk-tile-face);
+  --nk-tile-ink-now: var(--nk-tile-ink);
+  --nk-tile-rim-now: transparent;
+  color: var(--nk-tile-ink);
+}
+:is(html, *)[data-nk-row="sweep"]:not([data-nk-fill="soft"]) .nk-row:is([data-active], [data-highlighted], :focus-visible, [data-hover]:hover):not([data-readonly]) > [data-slot="menu-row-icon"] > [data-slot="tile"]::after {
+  background: var(--nk-tile-face);
+}
+/* rows after an indicator: the indicator carries the fill, the row keeps only its ink */
+:is(html, *)[data-nk-row="sweep"]:not([data-nk-fill="soft"]) .nk-indicator ~ .nk-row.nk-row:is([data-active], [data-highlighted], :focus-visible) {
+  background-size: 0% 100%;
+}
+:is(html, *)[data-nk-row="sweep"]:not([data-nk-fill="soft"]) .nk-indicator {
+  background-color: var(--nk-row-fill-color);
+}
+:is(html, *)[data-nk-row="sweep"] .nk-row::before,
+:is(html, *)[data-nk-row="sweep"]:not([data-nk-fill="soft"]) .nk-indicator::before {
+  display: none;
+}
+/* soft: the marker and the fading tint */
+:is(html, *)[data-nk-row="sweep"][data-nk-fill="soft"] :is(.nk-row, .nk-indicator)::before {
+  display: block;
+  width: var(--nk-row-marker-width);
+  border-radius: 1px;
+  background: var(--nk-accent-gradient, var(--foreground));
+  transform: skewX(var(--nk-tile-skew, 0deg)) scaleY(0);
+}
+:is(html, *)[data-nk-row="sweep"][data-nk-fill="soft"] .nk-row:is([data-active], [data-highlighted], :focus-visible, [data-hover]:hover)::before,
+:is(html, *)[data-nk-row="sweep"][data-nk-fill="soft"] .nk-indicator::before {
+  opacity: 1;
+  transform: skewX(var(--nk-tile-skew, 0deg));
+}
+.nk-indicator {
+  background-image: linear-gradient(90deg, var(--nk-fill-tint, var(--accent)), transparent calc(var(--nk-row-tint-reach, 0.7) * 100%));
+}
+:is(html, *)[data-nk-row="fill"] .nk-indicator,
+:is(html, *)[data-nk-row="sweep"]:not([data-nk-fill="soft"]) .nk-indicator {
+  background-image: none;
+}
+
+/* Fill style (baseline 1.6): solid fills are full and opaque; soft is today's translucent liquid. A vital's
+   icon over a solid fill keeps a copy in the fill's ink, clipped to the part under the surface. */
+:root,
+[data-nk-theme] {
+  --nk-fill-opacity: 1;
+  --nk-fill-ink: var(--nk-tile-confirm-ink, var(--background));
+}
+:is(html, *)[data-nk-fill="soft"] {
+  --nk-fill-opacity: 0.42;
+}
+[data-slot="vital-chip-icon-ink"] {
+  position: absolute;
+  inset: 0;
+  display: none;
+  color: var(--nk-fill-ink);
+  clip-path: inset(max(0px, calc((1 - var(--level, 0)) * var(--vital-size, 1.875rem) - (var(--vital-size, 1.875rem) - var(--vital-icon-size, 1rem)) / 2)) 0 0 0);
+}
+[data-slot="vital-chip"][data-level="fill"] [data-slot="vital-chip-icon-ink"] {
+  display: flex;
+}
+:is(html, *)[data-nk-fill="soft"] [data-slot="vital-chip"][data-level="fill"] [data-slot="vital-chip-icon-ink"] {
+  display: none;
 }

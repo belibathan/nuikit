@@ -169,7 +169,7 @@ var NuikitTheme = (() => {
 
   // src/tokens.ts
   var TOKENS_VERSION = 1;
-  var TOKENS_REVISION = "1.5";
+  var TOKENS_REVISION = "1.6";
   var DEFAULT_FONT_SANS = "Inter, ui-sans-serif, system-ui, sans-serif";
   var DEFAULT_FONT_DISPLAY = `"Inter Tight", ${DEFAULT_FONT_SANS}`;
   var DEFAULT_FONT_MONO = `"Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace`;
@@ -373,6 +373,8 @@ var NuikitTheme = (() => {
       "nk-h-control": "2.25rem",
       "nk-h-row": "3rem",
       "nk-text-key": "0.8125rem",
+      // baseline (1.6): the condensed face reads a step larger as a row title
+      "nk-row-title-size": "1.125rem",
       // type roles: Barlow italic caps (font-display) for anything scanned, the sans for sentences
       ...Object.fromEntries(
         ["scan", "title", "label", "num"].flatMap((r) => [
@@ -639,8 +641,26 @@ var NuikitTheme = (() => {
     k15("nk-vital-neighbours", "keyword", "What a growing chip does to its neighbours", "push", { values: ["push", "collapse", "overlay"] })
   ];
   var KIT_TOKENS = [...SCALE_TOKENS, ...TYPE_ROLE_TOKENS, ...TILE_TOKENS, ...PLATE_TOKENS, ...FILL_TOKENS, ...ACCENT_TOKENS, ...MOTION_15_TOKENS, ...HYGIENE_TOKENS];
+  var k16 = (name, type, description, fallback, extra = {}) => ({ name, type, group: "identity", description, fallback, since: "1.6", css: true, ...extra });
+  var BASELINE_TOKENS = [
+    k16("nk-fill-style", "keyword", "How fills read: solid (flat, full, vivid: progress, meters, vital liquid, the selected row) or soft (translucent, a fading tint)", "solid", { values: ["solid", "soft"] }),
+    k16("nk-row-pad-y", "dimension", "A list row's block padding", "nk-space-2"),
+    k16("nk-row-pad-x", "dimension", "A list row's inline padding", "nk-space-3"),
+    k16("nk-row-gap", "dimension", "Between a row's icon tile, its text and its trail", "nk-space-4"),
+    k16("nk-row-lift", "dimension", "How far the selected row's content slides in", "nk-space-2"),
+    k16("nk-row-title-size", "dimension", "A row title (the label voice)", "nk-text-base; tile: 1.125rem"),
+    k16("nk-row-desc-size", "dimension", "A row description (the body voice)", "0.875rem"),
+    k16("nk-row-icon-box", "dimension", "The icon tile beside a row title (the icon inside is --nk-icon-md)", "2rem"),
+    k16("nk-row-marker-width", "dimension", "The selection marker at the row's leading edge", "0.25rem"),
+    k16("nk-row-tint-reach", "number", "How far across the row the selection tint fades out (0\u20131)", "0.7", { range: [0, 1] }),
+    k16("nk-h-field", "dimension", "Height of text inputs, selects and dialog buttons", "2.75rem"),
+    k16("nk-focus-rim", "color", "The one focus mark of a field or button: a single 1px rim", "ring"),
+    k16("nk-button-wall", "dimension", "The primary keycap's wall: how far its face sits above it", "0.1875rem"),
+    k16("nk-ring-segments", "number", "Segments in a progress ring (the speedometer's language)", "24", { range: [6, 60] }),
+    k16("nk-ring-gap", "number", "Degrees between a progress ring's segments", "4", { range: [0, 12] })
+  ];
   var chamferClip = (cut) => `polygon(${cut} 0, 100% 0, 100% calc(100% - ${cut}), calc(100% - ${cut}) 100%, 0 100%, 0 ${cut})`;
-  var ALL_TOKENS = [...TOKENS, ...IDENTITY_TOKENS, ...KIT_TOKENS];
+  var ALL_TOKENS = [...TOKENS, ...IDENTITY_TOKENS, ...KIT_TOKENS, ...BASELINE_TOKENS];
   var ALL_TOKEN_NAMES = ALL_TOKENS.map((t) => t.name);
   var SPEC = new Map(ALL_TOKENS.map((t) => [t.name, t]));
   var NEUTRAL = {
@@ -1169,7 +1189,7 @@ var NuikitTheme = (() => {
         else vars[spec.name] = spec.fallback;
       } else vars[spec.name] = v;
     }
-    for (const spec of KIT_TOKENS) {
+    for (const spec of [...KIT_TOKENS, ...BASELINE_TOKENS]) {
       const value = vars[spec.name];
       if (value === void 0 || spec.type === "color" || spec.type === "fontFamily" || spec.type === "shadow" || spec.type === "image") continue;
       if (/^(calc|var|max|min|clamp)\(/.test(value.trim())) continue;

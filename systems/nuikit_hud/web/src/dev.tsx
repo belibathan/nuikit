@@ -67,6 +67,8 @@ const car = (v: Partial<HudVehicle>): HudVehicle => ({
 const fixtures: Record<string, { player: object; vehicle?: HudVehicle; changes?: object }> = {
   foot: { player: full, changes: { ...full, cash: 2020, bank: 47710 } },
   low: { player: low },
+  // every vital at its own level, none in alert (the solid fill in each role colour)
+  mixed: { player: { ...full, health: 80, armor: 40, hunger: 60, thirst: 30, stress: 15 } },
   idle: { player: full, vehicle: car({ gear: "N", rpm: 0.2, speed: 0 }) },
   cruise: { player: full, vehicle: car({ gear: 4, rpm: 0.56, speed: 64, moving: true, lights: "low", cruise: true, cruiseSpeed: 65, indicators: 1 }) },
   redline: { player: full, vehicle: car({ gear: 3, rpm: 0.97, speed: 98, moving: true, lights: "high" }) },

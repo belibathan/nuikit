@@ -298,10 +298,10 @@ export function InputDialog() {
             ))}
           </div>
           <DialogFooter className="nk-panel-footer">
-            <Button type="button" variant="outline" disabled={!allowCancel} onClick={cancel}>
+            <Button type="button" size="lg" variant="outline" disabled={!allowCancel} onClick={cancel}>
               {locale.cancel}
             </Button>
-            <Button type="submit">
+            <Button type="submit" size="lg">
               {locale.confirm}
               <EnterKey />
             </Button>

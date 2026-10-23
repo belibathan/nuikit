@@ -171,22 +171,15 @@ html[data-nk-motion="reduced"] .ox-radial[data-state="open"] .ox-radial-svg {
   margin: 0;
 }
 
-/*
- * Rows, the pause menu's way (list menu, context sheet): 48px, a hairline between rows drawn without
- * taking layout (so a fixed number of rows fits a scroll box exactly).
- */
-.ox-list {
-  --nk-row-height: 3rem;
-}
+/* Rows are the kit's (the baseline, docs/design/baseline.md): its height, padding, icon column and voices. */
 .ox-list-header {
   --nk-heading-size: calc(var(--nk-text-title) * 1.1);
 }
 /*
- * The list menu's selection is ONE gliding element (.ox-indicator, the kit's nk-indicator): the fill and
- * its ring move together, same transform, same timing. The rows never paint a selected background,
- * bar or outline of their own, and the hairlines between rows are drawn on a layer under the
- * indicator, so nothing snaps, trims or cuts through it. The selected row's text eases to the fill's
- * foreground over the same time as the glide.
+ * The list menu's selection is ONE gliding element (.ox-indicator, the kit's nk-indicator, which draws the
+ * baseline's selection: the solid row fill, or the soft marker and tint). The rows never paint a selected
+ * background, bar or outline of their own, so nothing snaps or trims it. The selected row's text eases to
+ * the fill's ink over the same time as the glide.
  */
 .ox-rows > .nk-row,
 .ox-rows > .nk-row.nk-row {
@@ -198,23 +191,8 @@ html[data-nk-motion="reduced"] .ox-radial[data-state="open"] .ox-radial-svg {
 .ox-rows > .nk-row::after {
   display: none !important;
 }
-.ox-rules {
-  position: absolute;
-  top: 0;
-  left: calc(var(--nk-space) * 3);
-  right: calc(var(--nk-space) * 3);
-  height: calc(var(--rows, 0) * var(--nk-row-height) - var(--nk-border));
-  background-image: repeating-linear-gradient(to bottom, transparent 0, transparent calc(var(--nk-row-height) - var(--nk-border)), var(--border) calc(var(--nk-row-height) - var(--nk-border)), var(--border) var(--nk-row-height));
-  pointer-events: none;
-}
 .ox-indicator {
   z-index: 0;
-  /* fill identities (Signal, Velvet): the row fill; the others: the hover surface, with their bar or outline */
-  background-color: var(--accent);
-  box-shadow: inset 0 0 0 calc(var(--nk-border) * 1.5) rgba(var(--brand-rgb, var(--primary-rgb)), 0.85), var(--nk-row-glow);
-}
-html[data-nk-row="fill"] .ox-indicator {
-  background-color: var(--nk-row-fill-color);
 }
 
 /* Modal dialogs (shadcn AlertDialog / Dialog): the game darkened with the theme's scrim, not black. */
@@ -331,7 +309,6 @@ html[data-nk-motion="reduced"] .ox-indicator {
 }
 :is([data-slot="dialog-content"], [data-slot="alert-dialog-content"]) .nk-panel-header {
   min-height: 0;
-  padding: var(--ox-dialog-pad) var(--ox-dialog-pad) var(--nk-space-4);
   background: none;
 }
 :is([data-slot="dialog-content"], [data-slot="alert-dialog-content"]) .nk-panel-header .nk-title {
@@ -341,13 +318,12 @@ html[data-nk-motion="reduced"] .ox-indicator {
   padding: var(--nk-space-6) var(--ox-dialog-pad);
 }
 :is([data-slot="dialog-content"], [data-slot="alert-dialog-content"]) .nk-panel-footer {
-  padding: var(--nk-space-4) var(--ox-dialog-pad) var(--ox-dialog-pad);
   background: none;
 }
 
 /*
  * Dialog and row motion (docs/design/default.md, Motion): transform and opacity only. Dialogs fade in on the
- * expand ease and out on the retract ease; list rows nudge on focus.
+ * expand ease and out on the retract ease (rows slide by the kit's --nk-row-lift).
  */
 @keyframes nk-dialog-in { from { opacity: 0; } to { opacity: 1; } }
 @keyframes nk-dialog-out { from { opacity: 1; } to { opacity: 0; } }
@@ -357,16 +333,25 @@ html[data-nk-motion="reduced"] .ox-indicator {
 :is([data-slot="dialog-content"], [data-slot="alert-dialog-content"])[data-state="closed"] {
   animation: nk-dialog-out var(--nk-time-fast, var(--nk-time)) var(--nk-ease-retract, var(--nk-ease-in, ease-in)) both !important;
 }
-.ox-rows > .nk-row > * {
-  transition: transform var(--nk-time-base, var(--nk-time)) var(--nk-ease-expand, var(--nk-ease-out));
-}
-.ox-rows > .nk-row:is(:hover, [data-selected], [aria-selected="true"]) > * {
-  transform: translateX(var(--nk-rise, 0.5rem));
-}
 /* progress: a linear fill that does not ease, so the bar tells the real time left */
 [data-slot="progress-slab"] [role="progressbar"] > * { transition-timing-function: linear; }
 html[data-nk-motion="reduced"] :is([data-slot="dialog-content"], [data-slot="alert-dialog-content"]) {
   animation-name: nk-enter !important;
   animation-duration: var(--nk-time-fast, 120ms) !important;
 }
-html[data-nk-motion="reduced"] .ox-rows > .nk-row > * { transition: none; transform: none !important; }
+
+
+/* the progress bar's slab (features/progress.tsx): the baseline's voices, label over a solid fill */
+[data-slot="progress-label"] {
+  font-family: var(--nk-type-label-family);
+  font-style: var(--nk-type-label-style);
+  font-size: var(--nk-row-title-size);
+  font-weight: var(--nk-type-label-weight);
+  letter-spacing: var(--nk-type-label-tracking);
+  text-transform: var(--nk-type-label-case);
+  padding-inline-end: var(--nk-type-label-pad);
+}
+[data-slot="progress-percent"] {
+  font-weight: var(--nk-weight-display, 700);
+  opacity: 0.7;
+}

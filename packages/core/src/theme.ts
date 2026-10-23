@@ -58,6 +58,8 @@ export const KEYWORD_ATTRS: readonly (readonly [string, string])[] = [
   ["data-nk-profile", "nk-motion-profile"],
   ["data-nk-slash", "nk-slash"],
   ["data-nk-backdrop", "nk-backdrop"],
+  // tokens 1.6 (the baseline): solid or soft fills
+  ["data-nk-fill", "nk-fill-style"],
   ["data-nk-texture-hud", "nk-material-hud-texture"],
   ["data-nk-texture-menu", "nk-material-menu-texture"],
   ["data-nk-texture-overlay", "nk-material-overlay-texture"],

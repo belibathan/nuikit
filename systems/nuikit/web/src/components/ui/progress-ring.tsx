@@ -19,25 +19,27 @@ import { useLinearRun } from "@/hooks/use-linear-run"
  *
  * With `duration` it runs on its own and `onComplete` fires from a timer when the time is up
  * (never from an animation event, so it still fires with motion off). Restart it with a new `key`.
- * The timed ring is drawn on the compositor: two half-rings, each rotated by one linear Web Animation
- * (transform only) on one start time, so it closes exactly at `duration` with no React render and no
- * repaint while it runs (ringHalfKeyframes()). It plays at every motion level: progress is information.
+ * It is the speedometer's language (the baseline, docs/design/baseline.md): a segmented Dial on a dark disc, the
+ * segments lit solid in the accent (or the tone), the percentage in the numeric voice, the label in the label
+ * voice. A timed ring lights its segments on the compositor: one linear opacity step per segment on one start
+ * time, the last exactly at `duration`, with no React render (ringSegmentKeyframes()). It plays at every motion
+ * level: progress is information. Segments and their gap are levers (--nk-ring-segments, --nk-ring-gap).
  *
  * Role: the round half of the progress intent: a timed action or a level, on the game or a panel.
- * Anatomy: root (role="progressbar", --level) > Dial (sweep 360: track, value arc; or two timed half-rotors)
- *   > center (the percentage, num role) > label > cancel (a Kbd Tile and its label; a button with onCancel).
+ * Anatomy: root (role="progressbar", --level) > Dial (sweep 360, a disc, segmented track and value segments)
+ *   > center (the percentage, num voice) > label (label voice) > cancel (a Kbd Tile and its label; a button with onCancel).
  * Props: value, max, duration, onComplete, label, tone, hue, track, center, cancelKey, cancelLabel, onCancel, size.
  * Level means: the fraction done, 0 at the start, 1 when complete (data-complete).
  * Rules: tones use the shared vocabulary through toneVars() (danger = destructive), `hue` a role; a timed ring
- *   moves by transform only; the value ring steps with the data (no tween on the dash).
+ *   lights by opacity only; the value steps with the data (no tween); never a thick continuous ring.
  */
 
 const progressRingVariants = cva("", {
   variants: {
     size: {
       sm: "text-(length:--nk-text-label)",
-      default: "text-(length:--nk-text-label)",
-      lg: "text-(length:--nk-text-title)",
+      default: "text-(length:--nk-text-title)",
+      lg: "text-(length:--nk-text-section)",
     },
   },
   defaultVariants: {
@@ -58,9 +60,12 @@ const TONE: Record<ProgressRingTone, string> = {
 }
 
 /** The ring's diameter per size, px at 1080p (the Dial's size). */
-const RING_SIZE = { sm: 40, default: 64, lg: 96 } as const
+const RING_SIZE = { sm: 48, default: 72, lg: 104 } as const
 
 const STEP_MS = 100
+/** The ring baseline (1.6): --nk-ring-segments and --nk-ring-gap (degrees) when the theme sets none. */
+const RING_SEGMENTS = 24
+const RING_GAP = 4
 const RADIUS = 44
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS
 
@@ -130,6 +135,27 @@ type ProgressRingProps = Omit<React.ComponentProps<"div">, "children"> &
     onCancel?: () => void
   }
 
+/** A CSS number lever read once from the element (the ring's segments and gap), else its default. */
+function useNumberLever(ref: React.RefObject<HTMLElement | null>, name: string, fallback: number) {
+  const [n, setN] = React.useState(fallback)
+  React.useLayoutEffect(() => {
+    const el = ref.current
+    if (!el || typeof getComputedStyle !== "function") return
+    const v = parseFloat(getComputedStyle(el).getPropertyValue(name))
+    if (Number.isFinite(v) && v >= 0) setN(v)
+  }, [ref, name])
+  return n
+}
+
+/**
+ * Each segment of a timed ring lights when the run reaches it: an opacity step at (i + 1) / n, linear over one
+ * duration, so the last one lights exactly at the end (opacity only, on the compositor).
+ */
+function ringSegmentKeyframes(i: number, n: number): Keyframe[] {
+  const at = Math.min(1, (i + 1) / Math.max(1, n))
+  return [{ opacity: 0, offset: 0 }, { opacity: 0, offset: at }, { opacity: 1, offset: at }, { opacity: 1, offset: 1 }]
+}
+
 function ProgressRing({
   className,
   size,
@@ -148,29 +174,37 @@ function ProgressRing({
   ...props
 }: ProgressRingProps) {
   const box = React.useRef<HTMLDivElement>(null)
-  // Motion: the two half-ring rotors on one start time, closed exactly at `duration`; onComplete from a timer
+  // the baseline levers: segments and the degrees between them (the speedometer's even gaps)
+  const segments = Math.round(useNumberLever(box, "--nk-ring-segments", RING_SEGMENTS))
+  const gap = useNumberLever(box, "--nk-ring-gap", RING_GAP)
+  // Motion: every segment lights on one start time, the last exactly at `duration`; onComplete from a timer
   const done = useLinearRun(box, {
     duration,
     onComplete,
     targets: (el) =>
-      (["right", "left"] as const).map((half) => ({
-        el: el.querySelector(`[data-slot=progress-ring-rotor][data-half=${half}]`),
-        keyframes: ringHalfKeyframes(half),
+      Array.from(el.querySelectorAll("[data-slot=dial-segment]")).map((seg, i, all) => ({
+        el: seg,
+        keyframes: ringSegmentKeyframes(i, all.length),
       })),
+    deps: [segments],
   })
   useRunText(box, duration, center === undefined)
   const timed = duration !== undefined && duration > 0
   const running = timed && !done
   const percent = timed ? (done ? 100 : 0) : ringPercent(value, max)
-  const drawn = percent
   const game = track === "game"
   const inside = center === undefined ? `${Math.round(percent)}%` : center
-  const toneClass = hue ? "stroke-(--hue-solid)" : (TONE[tone] ?? TONE.primary)
+  // the primary paints in the accent's stops (the speedometer's level); a tone or a role, its colour
+  const accent = !hue && (tone === "primary" || tone === undefined)
+  const toneClass = hue ? "stroke-(--hue-solid)" : accent ? undefined : (TONE[tone] ?? TONE.primary)
+  const px = RING_SIZE[size ?? "default"] ?? RING_SIZE.default
 
   const cancel = (cancelKey || onCancel) && (
-    <span className="flex items-center gap-(--nk-gap-cluster) text-(length:--nk-text-label) leading-4 [font-weight:var(--nk-type-label-weight,500)]">
+    <span className="flex items-center gap-(--nk-gap-cluster)">
       {cancelKey && <Kbd>{cancelKey}</Kbd>}
-      <span className={game ? "opacity-75" : "text-muted-foreground"}>{cancelLabel}</span>
+      <span data-slot="progress-ring-cancel-label" className={game ? "opacity-75" : "text-muted-foreground"}>
+        {cancelLabel}
+      </span>
     </span>
   )
 
@@ -183,66 +217,43 @@ function ProgressRing({
       aria-valuenow={Math.round(percent)}
       aria-label={typeof label === "string" ? label : props["aria-label"]}
       data-slot="progress-ring"
+      data-size={size ?? "default"}
       {...toneVars({ tone, hue })}
       data-complete={percent >= 100 || undefined}
-      className={cn("inline-flex flex-col items-center gap-2", game && "text-(color:--hud-foreground)", className)}
+      className={cn("inline-flex flex-col items-center gap-(--nk-space-3)", game && "text-(color:--hud-foreground)", className)}
       {...props}
       style={{ ...nkLevel(percent / 100), ...props.style }}
     >
       <Dial
-        size={RING_SIZE[size ?? "default"] ?? RING_SIZE.default}
+        size={px}
         sweep={360}
-        surface="none"
+        surface={game ? "none" : "theme"}
         ticks={0}
-        // the ring's own proportions: an 8% stroke 6% in from the edge (r 44 of 100)
-        thickness={(RING_SIZE[size ?? "default"] ?? RING_SIZE.default) * 0.08}
-        inset={(RING_SIZE[size ?? "default"] ?? RING_SIZE.default) * 0.06}
-        level={running ? 0 : drawn / 100}
-        trackProps={{ className: game ? "stroke-(--scrim)" : "stroke-(--muted)", strokeOpacity: game ? 0.35 : 1 }}
-        // timed: the rotors draw the run, the value arc waits (a butt cap draws nothing at 0)
-        valueProps={{ "data-slot": "progress-ring-fill", className: toneClass, strokeLinecap: timed ? "butt" : "round" }}
-        className={cn(progressRingVariants({ size }), game && "nk-shadow")}
+        segments={segments}
+        segmentGap={gap}
+        paint={accent ? "accent" : "tone"}
+        disc
+        // the speedometer's proportions: a thick segment stroke, a hair in from the edge
+        thickness={px * 0.09}
+        inset={px * 0.07}
+        level={running ? 0 : percent / 100}
+        trackProps={{ className: game ? "stroke-[rgba(var(--hud-foreground-rgb),0.16)]" : "stroke-(--nk-fill-track)" }}
+        valueProps={{ "data-slot": "progress-ring-fill", className: toneClass, strokeLinecap: "butt" }}
+        className={cn(progressRingVariants({ size }))}
       >
-        {timed &&
-          // Timed: each half of the box clips a rotor carrying the opposite half-ring; rotating the rotor
-          // sweeps its arc into view (right half first, from 12 o'clock clockwise). Transform only.
-          (["right", "left"] as const).map((half) => (
-            <div
-              key={half}
-              aria-hidden
-              // mounted for the whole timed life (a restart finds them), hidden once the run is done
-              hidden={!running}
-              className={cn("absolute inset-y-0 w-1/2 overflow-hidden", half === "right" ? "right-0" : "left-0")}
-            >
-              <div
-                data-slot="progress-ring-rotor"
-                data-half={half}
-                className={cn("absolute inset-y-0 w-[200%]", half === "right" ? "right-0" : "left-0")}
-              >
-                <svg viewBox="0 0 100 100" className="size-full">
-                  <path
-                    d={half === "right" ? `M50 ${50 + RADIUS} A${RADIUS} ${RADIUS} 0 0 1 50 ${50 - RADIUS}` : `M50 ${50 - RADIUS} A${RADIUS} ${RADIUS} 0 0 1 50 ${50 + RADIUS}`}
-                    fill="none"
-                    strokeWidth="8"
-                    className={toneClass}
-                  />
-                </svg>
-              </div>
-            </div>
-          ))}
         {inside !== false && inside !== null && (
           <span
             data-slot="progress-ring-center"
             data-auto={(running && center === undefined) || undefined}
             // While running, a ticking counter repaints only itself: its own layer, its own layout
-            className={cn("absolute inset-0 grid place-items-center nk-num [font-weight:var(--nk-weight-strong,600)]", running && "[contain:strict] will-change-transform")}
+            className={cn("absolute inset-0 grid place-items-center", running && "[contain:strict] will-change-transform")}
           >
             {inside}
           </span>
         )}
       </Dial>
       {label && (
-        <span data-slot="progress-ring-label" className={cn("nk-body max-w-48 truncate leading-5 [font-weight:var(--nk-type-label-weight,500)]", game && "nk-shadow")}>
+        <span data-slot="progress-ring-label" className={cn("max-w-48 truncate", game && "nk-shadow")}>
           {label}
         </span>
       )}
@@ -252,7 +263,7 @@ function ProgressRing({
             type="button"
             data-slot="progress-ring-cancel"
             onClick={onCancel}
-            className="rounded-(--nk-r-control) px-(--nk-space-1) outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
+            className="rounded-(--nk-r-control) px-(--nk-space-1) outline-none focus-visible:shadow-[inset_0_0_0_1px_var(--nk-focus-rim)]"
           >
             {cancel}
           </button>
@@ -263,4 +274,4 @@ function ProgressRing({
   )
 }
 
-export { ProgressRing, progressRingVariants, ringPercent, ringOffset, ringHalfKeyframes, type ProgressRingTone, type ProgressRingProps }
+export { ProgressRing, progressRingVariants, ringPercent, ringOffset, ringHalfKeyframes, ringSegmentKeyframes, type ProgressRingTone, type ProgressRingProps }

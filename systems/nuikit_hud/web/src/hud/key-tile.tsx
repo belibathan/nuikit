@@ -94,6 +94,12 @@ export function KeyTile({ icon, size = "md", fill, active, alert, open = false, 
           <span className="hud-key-lit" />
         </span>
         <span className="hud-key-icon">{icon}</span>
+        {/* over a solid fill the icon keeps its contrast: a copy in the fill's ink, clipped to the part under the level */}
+        {fill !== undefined && (
+          <span className="hud-key-icon hud-key-ink" aria-hidden>
+            {icon}
+          </span>
+        )}
       </Tile>
       {children !== undefined && (
         <span ref={setText} className="hud-key-label">

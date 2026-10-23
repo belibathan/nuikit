@@ -140,7 +140,8 @@ export function ContextMenu() {
       onClose={data.canClose === false ? undefined : close}
     >
       <EdgeSheetBody scroll onViewportScroll={() => setHover(null)}>
-        <div className="flex flex-col divide-y divide-border">
+        {/* the baseline: rows breathe instead of hairlines between them */}
+        <div className="flex flex-col gap-(--nk-space-1)">
           {entries.map(([key, option]) => (
             <ContextOption key={key} id={key} option={option} iconColumn={iconColumn} onEnter={(e) => enter(key, e)} onLeave={() => setHover((h) => (h?.key === key ? null : h))} />
           ))}
@@ -173,9 +174,9 @@ function ContextOption({ id, option, iconColumn, onEnter, onLeave }: { id: strin
       onClick={click}
       onMouseEnter={onEnter}
       onMouseLeave={onLeave}
-      className="min-h-12 text-base"
-      // when any row has an icon, the others keep an empty slot so every title starts on one column
-      icon={option.icon ? <Icon icon={option.icon} color={option.iconColor} animation={option.iconAnimation} allowImage className="size-4" /> : iconColumn ? <span aria-hidden className="block h-4 w-[1.25em]" /> : undefined}
+      // when any row has an icon, the others keep the icon column so every title starts on one line
+      icon={option.icon ? <Icon icon={option.icon} color={option.iconColor} animation={option.iconAnimation} allowImage className="size-4" /> : undefined}
+      iconSpace={iconColumn}
       description={option.description ? <Markdown>{option.description}</Markdown> : undefined}
       // ox shows the bar whenever `progress` is present, 0 included
       progress={hasProgress ? Number(option.progress) : undefined}
