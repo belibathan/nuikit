@@ -16,7 +16,8 @@ The mark is a lowercase **n** built like a doorway into the game: two legs on be
 | [`mark-small.svg`](mark-small.svg) | Single-band version for **24px and below** (favicons, tabs); the two bands merge at small sizes. Follows the system light/dark setting. |
 | [`icon-dark.svg`](icon-dark.svg) / [`icon-light.svg`](icon-light.svg) | App icon: mark in a rounded square. |
 | [`avatar.png`](avatar.png) | 512×512 avatar for GitHub, npm and social. |
-| [`../assets/banner.png`](../assets/banner.png) | README banner and GitHub social preview (1280×640). |
+| [`../assets/banner.png`](../assets/banner.png) | README hero banner (3200×1120, Ink). |
+| [`../assets/social-preview.png`](../assets/social-preview.png) | GitHub social preview (1280×640, Ink). Sources and `render.mjs` in [`../assets/src`](../assets/src). |
 
 | Primary | Small (≤24px) | Icon | Avatar |
 |:-:|:-:|:-:|:-:|
