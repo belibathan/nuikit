@@ -57,7 +57,7 @@ Decided by [decisions.md](../next/decisions.md) row 28. Nothing in nuikit is nam
    `vite-plugin-nuikit`, `packages/core` publishes `nuikit-core`. Directory names should match the package.
 5. **`data-ink-deny`** survives as a legacy spelling the linter flags (`state/alert`). It is a lint target for
    old pages, not a name we use; remove the rule once no page trips it.
-6. **`docs/design/v2.md`** still calls Graphite "(default)" and talks about "all four identities". It is a
+6. **`docs/archive/design-v2.md`** still calls Graphite "(default)" and talks about "all four identities". It is a
    historical design doc; it should either be dated or brought in line.
 7. **`addons/Renewed-Banking`** is the only non-lowercase directory. It mirrors the upstream resource's folder
    name, which an override must match, so it stays — noted here so nobody "fixes" it.

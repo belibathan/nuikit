@@ -1,7 +1,7 @@
 # Component contract
 
 *The merge checklist for every registry component (`registry/nuikit/ui/*`) and hook, from design v2 §5B and
-the research in [`research/system-architecture.md`](research/system-architecture.md) §4, adapted to nuikit's
+the research in [`../archive/design-research/system-architecture.md`](../archive/design-research/system-architecture.md) §4, adapted to nuikit's
 tokens 1.1 ([`../tokens.md`](../tokens.md)) and the identities. A component that meets it renders correctly in
 every identity, on every resolution, driven by mouse, keyboard or Lua, and can be upgraded by the people who
 copied it.*

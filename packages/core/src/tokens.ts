@@ -122,7 +122,7 @@ export type SpringPresetName = (typeof SPRING_PRESETS)[number];
 const mt = (name: string, type: TokenType, description: string, fallback: string): TokenSpec => ({ name, type, group: "derived", description, fallback, since: "1.2" });
 
 /**
- * Motion tokens (tokens 1.2, docs/design/research/motion.md §2.2). Two identity inputs; everything else is
+ * Motion tokens (tokens 1.2, docs/archive/design-research/motion.md §2.2). Two identity inputs; everything else is
  * derived from --nk-duration (d), --nk-ease, the feel and the bounce. The compiler writes literal values (no
  * calc() on <time> inside animation shorthands in Chromium 103), and the player's prefs clamp them
  * (withPrefs): off = 0ms; reduced = at most 100ms and no movement (--nk-motion-move: 0).
@@ -436,7 +436,7 @@ export const FOUNDATION_TOKENS: readonly TokenSpec[] = [
 ];
 
 /**
- * Identity tokens (tokens 1.1, docs/design/v2.md): what makes a UI recognisable besides colour. A server
+ * Identity tokens (tokens 1.1, docs/archive/design-v2.md): what makes a UI recognisable besides colour. A server
  * sets a handful in theme.css; everything left out is derived, so a plain TweakCN paste is Graphite.
  */
 export const IDENTITY_TOKENS: readonly TokenSpec[] = [
@@ -1400,7 +1400,7 @@ function deriveIdentity(vars: ThemeVars, warnings: string[], given: ReadonlySet<
 
   deriveFoundation(vars);
 
-  // floors (docs/design/research.md §3): warn, never block
+  // floors (docs/archive/design-research.md §3): warn, never block
   const op = parseFloat(vars["nk-surface-opacity"]!);
   if (op < 0.92) warnings.push(`--nk-surface-opacity is ${op} (floor 0.92); the game will show through text in panels, and a bright sky will wash it out.`);
   const plate = hudPlateOverWhite(vars);

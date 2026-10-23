@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-// Tokens 1.2: the motion tokens (docs/tokens.md#motion, docs/design/research/motion.md §2).
+// Tokens 1.2: the motion tokens (docs/tokens.md#motion, docs/archive/design-research/motion.md §2).
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { afterEach, describe, expect, it } from "vitest";

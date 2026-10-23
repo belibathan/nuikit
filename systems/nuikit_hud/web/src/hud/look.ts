@@ -1,7 +1,7 @@
 // The identity's HUD tokens that change structure, not just colour: read in JS from the computed
 // style (with defaults, so the HUD works before an identity sets them) and re-read when the theme
 // changes. Everything else (colours, fonts, opacity, glow) is read straight in hud.css with var()
-// fallbacks. Token names: docs/design/v2.md §1.
+// fallbacks. Token names: docs/archive/design-v2.md §1.
 import { onTheme } from "nuikit-core";
 import { useEffect, useState } from "react";
 

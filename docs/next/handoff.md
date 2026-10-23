@@ -123,6 +123,8 @@ landed fast only when they were made once, in a foundation, and inherited.
 
 ## 7. Suggested next steps (for the planner to order)
 
+*Ordered on Oct 23 into the 0.9 plan: [`../roadmap.md`](../roadmap.md) (Track A is this list; Tracks B and C are the adoption surface and the rails).*
+
 1. Fix the §3 bugs in the foundations (Tile/Kbd centring, list inline padding, stepper as one control, TextRoll
    per token, action-bar de-dup), then re-shoot and re-test in game.
 2. Generalise the sliding selection (§4) to every collection component; migrate the host renderers.

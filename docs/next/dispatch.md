@@ -1,118 +1,75 @@
 # Dispatch: many agents, one direction
 
-*How the agents work on nuikit at once. Status: [`../roadmap.md`](../roadmap.md). Direction: [`../vision.md`](../vision.md).*
+*How the agents work on nuikit at once. What to work on: [`../roadmap.md`](../roadmap.md). Design calls: [`decisions.md`](decisions.md).
+Rules every component follows: [`../design/baseline.md`](../design/baseline.md).*
 
-## The stance (Oct 22, 2026)
+## The stance (Oct 22, 2026; unchanged Oct 23)
 
-Nobody runs nuikit in production yet. **Speed beats polish.** Ship, break, fix. Many small agents moving the same
-direction produce the right whole; one agent deliberating produces nothing. When unsure, pick the option that keeps
-things **configurable** (see "The design rule") and move on. A wrong default costs one commit to change.
+Nobody runs nuikit in production yet. **Speed beats polish.** Ship, break, fix. Many small agents moving the same direction
+produce the right whole; one agent deliberating produces nothing. When unsure, pick the option that keeps things
+**configurable** (the design rule) and move on. A wrong default costs one commit to change.
 
-- **Act, don't ask.** No owner questions for design calls: apply the design rule, ship the default, make it a setting.
-  Ask the owner only for money, accounts, publishing, secrets, or anything that touches a real server.
-- **Spend few tokens.** Read only the files your task touches; don't re-read the whole docs set per task. No
-  screenshot sweeps, matrices, long reports or speculative refactors. Grep before reading; read ranges, not files.
-- **Small commits, no PRs.** One item per commit (or a few); push your branch and start the next item. The lead
-  merges branches into `main` locally. A broken `main` is fixed by the next commit, not prevented by a slower flow.
-  (PRs, required CI and reviews come back once real servers run nuikit.)
-- **Say what's unproven in one line** (usually "not seen in game") and move on.
+- **Act, don't ask.** No owner questions for design calls. Ask the owner only for money, accounts, publishing, secrets, or
+  anything that touches a real server.
+- **Spend few tokens.** Read `CLAUDE.md`, then only the files your item touches. Grep before reading; read ranges. No
+  screenshot sweeps, matrices, long reports or speculative refactors.
+- **Small commits, no PRs.** One item per commit. Push your branch; the lead merges into `main` locally and pushes. A broken
+  `main` is fixed by the next commit. (PRs, required CI and reviews come back once real servers run nuikit.)
+- **Say what's unproven in one line** ("not seen in game") and move on. The owner tests in game at checkpoints.
 
-## The product loop (from Oct 22, evening): start from the experience, work backwards
+## Two ways of working
 
-Like building from the product experience back: the lanes work **in the running server**, not on the repo. A lane
-owns one *player moment* end to end, changes it live, the owner plays it, and the code is tidied into the repo
-afterwards. Product lanes run on Sonnet, low effort, in the live checkout `C:\dev\nuikit` (the server reads it
-through junctions); no worktrees, branches or commits of their own.
+**Cloud lanes** (this is most work): a lane session takes a roadmap item, works in its own worktree on `lane-<x>/<item>`,
+runs the gate, pushes, and ends its turn with: the branch, what's in it, what needs an in-game check (3 lines), what's blocked.
+The lead merges.
 
-| Product lane | The moment | Owns (live) |
-|---|---|---|
-| P1 HUD | on foot, driving, talking: vitals, voice, minimap, speedometer, the HUD editor | `systems/nuikit_hud`, `systems/nuikit_voice` |
-| P2 Menus | pause, inventory, settings | `systems/nuikit_pause`, `addons/ox_inventory` |
-| P3 Interactions | notify, progress, input, context, radial, target, key prompts, scoreboard, banking | `addons/*` except ox_inventory, `systems/nuikit_screen` |
-| P4 Moments | spawn, loading, chat, death, stress, the `/nk test` commands | `systems/nuikit_{loading,chat,death,stress,dev}` |
-
-The loop, per change:
-- **Systems:** `pnpm --filter ./systems/<system>/web dev` (once; the vite plugin points the resource's `ui_page` at it), then
-  `.local\nk-restart.ps1 <resource>` once. After that every save hot-reloads in game.
-- **Addons:** `pnpm --filter ./addons/<addon>/web build`, `.local\deploy.ps1 -Only <addon>`, `.local\nk-restart.ps1 <resource>`
-  (ox_inventory brings ox_fuel and qbx_ambulancejob back on its own). ox_lib and ox_target need a full restart: ask the lead.
-- **Lua:** save, `.local\nk-restart.ps1 <resource>`.
-- **Shared things** (kit.css, core, tokens): don't edit them. Override locally in your resource's CSS first and
-  note it in `.local/promote.md` (one line: what, where, why). The lead promotes it into the kit later.
-- The owner talks to a lane directly while playing. Answer in one or two lines, fix and reload, and say "reloaded".
-- Stay in your files: other lanes edit the same checkout live. Never `git` anything except `git diff` and `git status`.
-
-The lead works backwards: it commits each lane's paths as a batch, runs the gate, promotes `.local/promote.md` items
-into the kit, and pushes `main`. The repo lanes below (B–F) are paused while the product loop runs.
-
-## Order of work (the owner, Oct 22)
-
-1. **The product, in game, as good as it can be.** Only work that makes the screens on a real server better.
-2. Then conventions, performance, code hierarchy.
-3. Then presentation: the site, the registry pages, `npm create` blocks, the GitHub README.
-
-Until step 1 is done, don't spend tokens on 2 or 3: no site or theme-studio work, no blocks, no docs beyond one line
-a feature needs.
+**The owner's local session** (`C:\dev\nuikit`, junctioned into his Qbox server): works live in game, hot-reloading a system
+(`pnpm --filter ./systems/<x>/web dev`) or deploying an addon (`pnpm build`, `.local\deploy.ps1`), and commits its own
+batches straight to `main` when the owner says it's right. Practical notes (what not to restart, the private theme.css,
+worktrees): [`handoff.md`](handoff.md) §6. The two modes don't conflict: cloud lanes rebase on `main` before each item.
 
 ## The design rule (settles design questions)
 
-nuikit is a universal, open-source framework: great conventions, shortcuts and presets on top of a system where
-**everything can be configured and connected**. So every design question resolves the same way:
+nuikit is a universal, open-source framework: great conventions and presets on top of a system where everything can be
+configured and connected. Every design question resolves the same way:
 
-1. **Hierarchical:** identity → semantic tokens → component tokens → per-resource config → per-player prefs. A
-   value is set at the highest level that makes sense, and every lower level can override it.
-2. **Default + switch:** ship the best default (the recommended option), and put the alternative behind a config
-   key, a token or a prop. Never hard-code a choice a server might want different.
+1. **Hierarchical:** identity → semantic tokens → component tokens → per-resource config → per-player prefs. Set a value at
+   the highest level that makes sense; every lower level can override it.
+2. **Default + switch:** ship the best default, put the alternative behind a config key, a token or a prop. Never hard-code
+   a choice a server might want different.
 3. **Conventions over options in the common path:** zero config gives the premium look; config is for the 20%.
+4. **One concept, one component.** Every visual idea has exactly one implementation in `registry/nuikit/ui`; screens compose
+   and never restyle internals. A new need is a prop or a lever on the foundation, not CSS on the screen.
 
-## Roles
+Log a new call in one row of [`decisions.md`](decisions.md).
 
-| Role | Who | Does |
+## Lanes for 0.9 and the files they own
+
+| Lane | Track | Owns |
 |---|---|---|
-| Lead | the session on the owner's PC | Direction, the lane list, merges lane branches into `main` locally (quick gate, push), keeps the roadmap, deploys to the owner's server, the in-game loop |
-| Lane sessions | one per lane (below), each in its own worktree | Execute their list on their own branch, push it, tell the lead; never touch `main` |
-| Thinkers | subagents a lane spawns (`Plan`, `architect`, `Explore`) | Design or research one question, return a short answer; never edit |
-| Executors | subagents a lane spawns for independent pieces | Implement one piece in the lane's files |
+| Lead | all | merges, the roadmap, releases, `CLAUDE.md`, this file |
+| Kit | A | `registry/**`, `registry.json`, `packages/create-nuikit` (except `kit.css` / `index.css.tpl`) |
+| Screens | A (migration), B1 | `systems/nuikit_{hud,pause,death,loading,chat,voice}`, `addons/*` |
+| Platform | B1, B3, C | `packages/{core,cli,vite}`, `systems/nuikit`, `scripts/`, `bench/`, `install/`, `docs/`, `kit.css` + `index.css.tpl` |
+| Site | B2, B4 | `apps/www` |
+| Figma | B4 | the Figma file and `docs/design/figma.md`, `bench/figma` |
 
-The lane session is the integrator of its own subagents. Thinkers are for real unknowns only (a native's behaviour, an
-API shape); a spike beats a study.
+Append-only and shared: `registry.json` entries, `.changeset/*.md`. Synced copies (`web/src/index.css`, `web/src/components/ui/*`,
+`lib/`, `client/*.lua` copies) are never edited by hand: change the source, `pnpm sync`. A small, obviously safe edit to a
+shared file (a token, a kit utility) is fine when the item can't ship without it: say so in the commit.
 
-## Every lane
+## The gate (about a minute, before each push)
 
-1. `CLAUDE.md`, then only the docs your item needs.
-2. Work on your lane branch (`lane-<x>`); `git pull --rebase origin main` before you start an item. Commit small,
-   push your branch. Never push to `main` or `next/*`; never merge, release or publish. Never touch the FiveM server.
-3. Stay in your files (table). Small, obviously safe edits to shared files (a token, a kit utility) are fine when the
-   item can't ship without them: say so in the commit message.
-4. Quick gate before each push (about a minute): `pnpm typecheck` and the build of what you touched, `pnpm sync`
-   clean. Tests only where there's real logic. For an **override that changes what it POSTs** to its resource, also a
-   POST-log diff of its main flow (`bench/screens/run.mjs` + `diff.mjs`): that's the one change that breaks servers.
-   Full CI runs on `main` after the merge; if it goes red, the next commit fixes it.
-5. Don't edit `docs/roadmap.md` (the lead keeps it, per batch). Changeset for user-facing package changes. Credit
-   `@belibathan` only. Never print or commit secrets.
-6. Done or blocked: end your turn with your branch, what's in it (bullets), what needs an in-game check (3 lines),
-   what's blocked. The lead merges it.
-
-## Lanes and files
-
-| Lane | Owns |
-|---|---|
-| Lead / A (in-game) | merges, the owner's server, `docs/releases/*-test.md`, this file, `CLAUDE.md` |
-| B HUD | `systems/nuikit_hud`, the minimap part of `systems/nuikit/client.lua` |
-| C Platform + docs | `packages/core`, `packages/cli`, `packages/vite`, `systems/nuikit` (rest), `scripts/`, `bench/`, `docs/` (architecture, protocol, tokens, host, roadmap rewrite), `packages/create-nuikit/kit.css` + `index.css.tpl` |
-| D Screens + overrides | `systems/nuikit_death`, `nuikit_loading`, `nuikit_chat`, `addons/*` except `ox_inventory` |
-| E Kit + site | `registry/**`, `registry.json`, `packages/create-nuikit` (except kit.css/index.css.tpl), `apps/www` |
-| F Showcase | `systems/nuikit_pause`, `systems/nuikit_stress`, `addons/ox_inventory` |
-
-Append-only and shared: `registry.json` entries, `.changeset/*.md` (one file per PR). Synced copies (`web/src/index.css`,
-`web/src/components/ui/*`, `lib/`, `client/*.lua` copies) are never edited by hand: change the source, `pnpm sync`.
+`pnpm typecheck`, the build of what you touched, `pnpm sync` clean. Tests where there is real logic. For an override that
+changes what it POSTs to its resource, a POST-log diff of its main flow (`bench/screens/run.mjs` + `diff.mjs`): that is the
+one change that breaks servers. Full CI runs on `main` after the merge; red means the next commit fixes it.
 
 ## Hard rules that stay (they protect players and licences)
 
-- Overrides are **clean-room** and **protocol-exact**: implement from `docs/<name>-protocol.md`, never copy upstream
-  code, markup or styles; POST payloads and timings match.
+- Overrides are **clean-room** and **protocol-exact**: implement from `docs/<name>-protocol.md`, never copy upstream code,
+  markup or styles; POST payloads and timings match.
 - Chromium 103 rules in `CLAUDE.md`. Presentation only (no gameplay).
-- **Server-authoritative templates** (any block or template with server Lua is copied into real servers): never trust
-  the page (look up prices, amounts, targets, item names on the server); validate types and ranges; check identity,
-  permission, presence and distance on the server; move money and items atomically with rollback; rate-limit per
-  player; never send licenses or identifiers to the page; Lua tests for each rule including failure paths.
+- **Server-authoritative templates** (any block or template with server Lua is copied into real servers): never trust the
+  page; validate types and ranges; check identity, permission, presence and distance on the server; move money and items
+  atomically with rollback; rate-limit per player; never send identifiers to the page; Lua tests for each rule.
+- Credit `@belibathan` only. Never print or commit secrets.

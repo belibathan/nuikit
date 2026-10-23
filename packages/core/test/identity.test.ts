@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-// Tokens 1.1: the identity tokens (docs/tokens.md#identity-tokens, docs/design/v2.md).
+// Tokens 1.1: the identity tokens (docs/tokens.md#identity-tokens, docs/archive/design-v2.md).
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { afterEach, describe, expect, it } from "vitest";

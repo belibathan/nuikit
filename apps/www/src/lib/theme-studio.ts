@@ -64,7 +64,7 @@ export const FONT_CHOICES: readonly { label: string; value: string }[] = [
 ];
 
 /**
- * The identity tier as the studio shows it (docs/design/v2.md §1): type, shape, surface, density,
+ * The identity tier as the studio shows it (docs/archive/design-v2.md §1): type, shape, surface, density,
  * motion, HUD. Every control writes one token; the compiler derives the rest and warns on the floors.
  */
 export const IDENTITY: { group: string; controls: IdentityControl[] }[] = [

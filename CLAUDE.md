@@ -6,7 +6,7 @@ intents (notify, menu, input…) and swappable, themed renderers draw them; adap
 scripts in without rewrites; bespoke screens join through the protocol. The kit (stock shadcn/ui, one
 TweakCN theme) is the default look and the showcase, not the product. Design: `docs/architecture.md`.
 
-**Start here (Oct 23, 2026):** [`docs/next/handoff.md`](docs/next/handoff.md) has the current state, the design philosophy, open bugs and the strategy; [`docs/design/baseline.md`](docs/design/baseline.md) has the rules every component follows.
+**Start here (Oct 23, 2026):** [`docs/roadmap.md`](docs/roadmap.md) is the one tracker (the 0.9 plan: finish the foundations, the adoption surface, the rails); [`docs/next/handoff.md`](docs/next/handoff.md) is the dated state snapshot (philosophy, open bugs, owner screenshots); [`docs/design/baseline.md`](docs/design/baseline.md) has the rules every component follows; [`docs/README.md`](docs/README.md) says what every other doc is and whether it's current.
 
 **How we work (Oct 22, 2026: fast, many agents, one direction):**
 - **Nobody runs this in production yet. Ship, break, fix.** Many agents moving the same way beat one agent
@@ -29,9 +29,8 @@ TweakCN theme) is the default look and the showcase, not the product. Design: `d
 Roles, lanes and file ownership: `docs/next/dispatch.md`. Read this, then only what your item needs.
 
 Current release: **0.8.0** (npm `nuikit-core`, `vite-plugin-nuikit`, `create-nuikit`; GitHub release
-`v0.8.0` with `nuikit.zip` and the per-framework zips). Direction: `docs/vision.md` (read first), then `docs/architecture.md`.
-**Status and what's next: `docs/roadmap.md`** (the lead keeps it). Parallel agents: `docs/next/dispatch.md`
-(lanes, file ownership, rules).
+`v0.8.0` with `nuikit.zip` and the per-framework zips); `main` is ahead of it (tokens 1.7, Default, Neon Pop, the baseline).
+Direction: `docs/vision.md`, then `docs/architecture.md`. Parallel agents: `docs/next/dispatch.md` (lanes, file ownership, rules).
 
 ## Map
 
@@ -46,9 +45,9 @@ Current release: **0.8.0** (npm `nuikit-core`, `vite-plugin-nuikit`, `create-nui
 | `systems/<name>` | `[nuikit]` resources (fxmanifest, Lua, `web/`). Reference UI: `systems/nuikit_pause`. |
 | `addons/<name>` | Overrides: new web UIs for other resources (ox_lib, ox_inventory…), built into that resource's UI folder. Clean-room from `docs/<name>-protocol.md`. |
 | `apps/www` | The site + registry host (Vercel, deploys from `main`). |
-| `scripts/` | `sync-template.mjs` (`pnpm sync`), `pack-systems.mjs` (`pnpm pack:systems` → `out/nuikit.zip`), `new-system.mjs` (scaffold). |
+| `scripts/` | `sync-template.mjs` (`pnpm sync`), `pack-systems.mjs` (`pnpm pack:systems` → `out/nuikit.zip`), `new-system.mjs` (scaffold), `vendor-shadcn.mjs`, `kit-merge.mjs`, `prune-branches.mjs` (delete fully-merged branches), `server/setup-windows.ps1`. |
 | `bench/host` | Host benchmark (iframes vs one frame) and the host's end-to-end check. Results in `results.md`. |
-| `docs/` | `roadmap.md` (status, the one tracker), `next/dispatch.md` (agent lanes), `vision.md` (direction), `architecture.md` (the target design: runtime, intents, adapters, renderers, services, doctor; the 0.7 plan), `protocol.md` (the standard, v1), `tokens.md` (tokens v1, theme pipeline, prefs), `host.md` (host prototype), `design.md` (kit language), `design/default.md` (the flagship theme's spec), `design/naming.md` (naming conventions), `coverage.md`, protocol specs, `releases/`. |
+| `docs/` | `README.md` is the index (current / reference / historical). `roadmap.md` (the one tracker), `next/` (dispatch, decisions, handoff), `vision.md`, `architecture.md`, `protocol.md` (v1), `tokens.md` (1.7), `design/` (`baseline.md`, `components.md`, `default.md`, `naming.md`), `coverage.md`, `doctor.md`, the `*-protocol.md` specs, `releases/`, `archive/` (superseded). |
 
 ## Commands
 
@@ -108,6 +107,6 @@ fine when you need to see something; never a sweep. The owner tests in game and 
 
 1. Changesets: add `.changeset/<name>.md` for user-facing package changes.
 2. Merge to `main`. The version PR can't be opened by Actions in this repo, so run `pnpm changeset version`
-   locally on `main`, bump `version` in every `systems/*/fxmanifest.lua`, write `docs/releases/v<version>.md`,
+   locally on `main`, bump `version` in every `systems/*/fxmanifest.lua` **and `adapters/*/*/fxmanifest.lua`**, write `docs/releases/v<version>.md`,
    commit "chore: release <version>", push.
 3. The Release workflow publishes npm and creates GitHub release `v<version>` with `out/*.zip`.

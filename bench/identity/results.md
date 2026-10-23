@@ -1,6 +1,6 @@
 # Identity layer spike: surfaces, Chromium 103, fonts
 
-*Oct 20, 2026. Step 1 of [design v2](../../docs/design/v2.md). Desktop Chromium 141 (Playwright, headless,
+*Oct 20, 2026. Step 1 of [design v2](../../docs/archive/design-v2.md). Desktop Chromium 141 (Playwright, headless,
 software raster and compositing, no GPU), 2 CPUs, 1920×1080, 3 runs per cell (medians). Raw data:
 `results.json`. Not FiveM: see [what must be checked in game](#what-must-be-checked-in-game).*
 

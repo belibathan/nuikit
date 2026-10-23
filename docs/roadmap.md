@@ -1,107 +1,132 @@
 # Roadmap and status
 
-*The one tracker. Each lane updates only its own section, in the PR that changes it. Lanes, files and rules:
-[`next/dispatch.md`](next/dispatch.md). Direction: [`vision.md`](vision.md), design: [`architecture.md`](architecture.md).
-Design calls: [`next/decisions.md`](next/decisions.md).*
+*The one tracker. The lead keeps it per batch; lanes don't edit it. How we work: [`next/dispatch.md`](next/dispatch.md).
+Direction: [`vision.md`](vision.md), design: [`architecture.md`](architecture.md), rules: [`design/baseline.md`](design/baseline.md).
+Design calls: [`next/decisions.md`](next/decisions.md). Where everything stood on Oct 23: [`next/handoff.md`](next/handoff.md).*
 
-Last updated: Oct 22 2026, after the 0.8.0 release.
+Last updated: Oct 23 2026 (the 0.9 plan).
 
 ## Released
 
 | Version | What | In game |
 |---|---|---|
 | 0.4.0 | The full kit: HUD, pause, death, loading, chat, stress, 10 overrides | Yes |
-| 0.5.0 | Tokens v1 + theme engine, protocol v1, `nuikit check` (level 3 in CI), `@nuikit/init.lua` + `nk`, showcase pause/inventory/minimap | Yes |
-| 0.6.0 | 15 components, 7 screens rebuilt on them, 9 blocks + `npm create nuikit -t`, `/blocks`, theme studio | Yes (7 of 8) |
-| 0.7.0 | Identities + tokens 1.2, motion, compact HUD, components v2, hardening, `nuikit doctor`, `nuikit.cfg`, per-framework zips, txAdmin recipe | Checkpoint ([results](releases/v0.7.0-results.md)) |
-| **0.8.0** | Intents (`nk.notify` … `nk.challenge`) drawn in nuikit's frame; ox_lib routed to them; `[nuikit-qb]`, `[nuikit-esx]`, `[nuikit-standalone]` adapters; renderer packs; `nk.camera` + `nk.controls`; the owner's design (sheets, rows, text roll, vital chips, flush pause); image resolver (page side); server currency/locale ([notes](releases/v0.8.0.md)) | **Not as a whole**: per-PR checklists |
+| 0.5.0 | Tokens v1 + theme engine, protocol v1, `nuikit check` (level 3 in CI), `@nuikit/init.lua` + `nk` | Yes |
+| 0.6.0 | 15 components, 7 screens rebuilt on them, 9 blocks + `npm create nuikit -t`, theme studio | Yes (7 of 8) |
+| 0.7.0 | Identities + tokens 1.2, motion, compact HUD, components v2, hardening, `nuikit doctor`, `nuikit.cfg`, per-framework zips | [Results](releases/v0.7.0-results.md) |
+| **0.8.0** | Intents drawn in nuikit's frame, ox_lib routed to them, `[nuikit-qb]` / `[nuikit-esx]` / `[nuikit-standalone]`, `nk.camera` + `nk.controls`, image resolver, currency/locale ([notes](releases/v0.8.0.md)) | Qbox, per feature |
+| main after 0.8.0 | **Tokens 1.6 + 1.7** (the baseline, selection as a sliding keycap tile), **Default** and **Neon Pop** themes, the registry as a network of 10 foundations, security and health passes, the site on Default | Qbox: HUD, pause, inventory, ox_lib played; the rest per feature |
 
-Measured and settled: FiveM shares one browser process across NUI frames, so the host saves ~5 MB and stays opt-in;
-mouse over focused UI ~1.2 ms/frame, Lua→page ~0.3 ms, page→Lua ~0.5 ms (hence live values, protocol §5.7);
-FiveM starts a dependency (`nuikit`) when a dependent starts.
+Measured and settled: FiveM shares one browser process across NUI frames (the host saves ~5 MB, stays opt-in);
+mouse over focused UI ~1.2 ms/frame, Lua→page ~0.3 ms, page→Lua ~0.5 ms (hence live values, protocol §5.7).
 
-## Open across lanes
+## Where we are (Oct 23)
 
-- **0.8.0 in game as a whole:** adapters on a real QBCore and ESX server (cross-resource fetch, which frame gets keys:
-  [`adapters/ox-lib.md`](adapters/ox-lib.md) §6), renderer packs, `nk.camera` checklist in [`services.md`](services.md).
-- Known issues: GPS route outside the minimap ring (`Config.minimap.routeClip` candidates, none proven); minimap blank
-  after repeated live restarts until the pause map opens (not on a fresh join).
-- Unproven: an empty `nuikit_cancel_key` leaves the cancel key unbound in FiveM (#119, `client/intents.lua`).
-- Owner only: claim the npm name `nuikit`, then drop `"private": true` in `packages/cli`; GitHub About + social preview;
-  check the kit on Chromium 144 (FiveM canary).
+The flagship design is premium and the owner has played it. What hasn't been worked is **the outside of the product**:
+how a stranger adopts it. 1 star, no users, no feedback loop but the owner's own server. The adoption audit of Oct 23 found
+the first ten minutes broken or undocumented for every persona (details in each item below). The design side is in a good
+place to stop adding screens and finish the foundations.
 
-## Owner's local lane (in game on the owner's Qbox server)
+**0.9 is "adoptable":** no new screens. Three tracks, each with a definition of done a stranger could check.
 
-`local/*` branches, judged live, merged by the lead. `local/hud-layers` (#102): tokens 1.3 (Arcade/Street, rolls,
-choreography); the HUD leaves toward its edges and returns as one; screen zones (`NUI.zone`, `useClearOf`); notice
-and target motion; `edge-sheet` first-frame fix; `nuikit.cfg` comments without semicolons. All good in game, Oct 22.
+## 0.9 · Track A: finish the foundations (keeps the premium bar)
 
-| Next | State |
-|---|---|
-| Slide the minimap itself with the HUD (per-frame component placement) | Lane B spike (#116) |
-| A HUD layout config on top of zones | Lane B (#104) |
+*Owner-reported bugs and the one design philosophy still to carry everywhere. Lane: kit (registry/**) with the screen lanes
+for migration. Done when: every list, tab set, segmented control, stepper and grid in every theme slides one selection;
+the five bugs are fixed in the foundation and verified in game.*
 
-## Lane B: HUD
+| Item | Where | State |
+|---|---|---|
+| A1 Kbd legend centred on the skewed face (not the bounding box) | `registry/nuikit/ui/tile.tsx` | Open (`next/feedback/2026-10-23/kbd-centering-action-bar.png`) |
+| A2 Lists get inline padding = tile inset + skew overhang; resource titles normalised (leading emoji / pipe → icon slot) | `menu-row.tsx`, `selection-tile.tsx`, ox_lib context adapter | Open (`clothing-menu-clipping.webp`) |
+| A3 Stepper = one segmented control at `--nk-h-control` (value + prev/next keycaps, roll on change, hold to repeat) | new `stepper.tsx`; appearance, settings, input dialogs on it | Open (`stepper-height-and-roll.png`) |
+| A4 TextRoll rolls per numeric token; static text and separators stay still | `text-roll.tsx` | Open |
+| A5 Action bar de-dups a key hint and a button for the same action | `action-bar.tsx`; appearance | Open |
+| A6 "Moves with you" everywhere: `useSelectionIndicator` on tabs, segmented controls, radial, inventory grid, scoreboard rows, pause map list; the host renderers (menu, target) slide | registry + `systems/nuikit/web/src/renderers` | Open |
+| A7 Verify in game: inventory item menu, qbx multichar on ox_lib context, Confirm without DialogShell | owner | Open |
+| A8 HUD editor on the baseline and the sliding selection | `systems/nuikit_hud` | Open |
 
-*`systems/nuikit_hud`, the minimap part of `systems/nuikit/client.lua`.*
+## 0.9 · Track B: the adoption surface (the first ten minutes, per persona)
 
-| Item | State |
-|---|---|
-| GPS route clip (A4): `routeClip = 'box'` (a square radar box, the one bound seen in game) is the default, on purpose (the map is squeezed ~29%); `'mask'` keeps GTA's aspect (unsqueezed, route overhangs) | #110; not seen in game |
-| GTA's own GPS distance in the radar hidden (`Config.minimap.gameDistance = false`; the satnav, `HIDE_SATNAV` every frame from the `nuikit` resource) | PR open; not seen in game |
-| HUD layout config: `Config.parts` places each part (corner + order, or on the map); `compact` and `classic` are presets of it; default unchanged | #104; not seen in game |
-| Waypoint tag on the ring off by default (`Config.minimap.waypointTag = false`; `true` brings it back): GTA already marks the waypoint | PR open; not seen in game |
-| Minimap slide spike: `Config.minimap.slide` (off) moves the three components 2.5rem toward the edge per frame over the exit/entrance (no big-map flick); the ring slides with it unfaded | #116; not seen in game: whether GTA takes positions without a flick is the open question |
-| Compact ring 15rem (was 12rem; v0.7.0 Polish 7), on purpose; `Config.minimap.size = 12` keeps the old ring. The HUD wallet already formats with `useNuiContext` (9f9d5c9) | #118; not seen in game |
-| Map halo: `Config.minimap.halo` (on, an experiment) puts the speedometer's plate behind the round ring, same strength token (`--nk-hud-opacity`), `--nk-map-halo-size` for its fade | PR open; not seen in game |
+*Lane: platform (`packages/**`, `scripts/`, `install/`, `docs/`) and site (`apps/www`). Done when each persona's path below works
+end to end on a machine that is not the owner's, without reading the monorepo.*
 
-## Lane C: Platform + docs
-
-*`packages/{core,cli,vite}`, `systems/nuikit` (rest), `scripts/`, `bench/`, `docs/`, `kit.css` + `index.css.tpl`.*
+**B1 Server owner** · zip → `exec @nuikit/nuikit.cfg` → `nuikit doctor` says green → it looks premium.
 
 | Item | State |
 |---|---|
-| Roadmap rewritten to 0.8.0 | PR open |
-| Image resolver, Lua side: `https://nuikit/images` (convars `nuikit_images_*`) and `https://nuikit/vehicle` | PR open |
-| Coverage harness (`bench/coverage`): 90% Qbox, 75% QBCore/ESX, reported by `nuikit doctor` | In progress |
-| `nuikit-standalone.zip` mapping; systems declare `nuikit_level`; Lua harness `stop()` runs the stopping resource's own handler | In progress |
-| Visual baselines in CI, cheap set ([contract](design/contract.md)) | In progress |
-| Screen zones on override pages (`https://nuikit/theme` carries `zones`; for #126) | PR open |
+| Adapters at 0.8.0, doctor's pack table current, `nuikit_voice` ensured, no phantom `[nuikit-ox]` in the Qbox zip | Done (Oct 23) |
+| `nuikit install` / `nuikit upgrade` (CLI or `nuikit_dev` command): copies `overrides/*` over the real resources with a backup and a manifest, so an upgrade is one command; doctor reports an outdated override | Open; the biggest friction |
+| txAdmin recipe that actually runs (`install/recipe-qbox.yaml` is 0.7.0 and paste-your-own) or drop it from the zip until it does | Open |
+| `docs/install.md`: one page per framework (Qbox, QBCore, ESX, standalone) with start order, what gets stopped, the upgrade path; the zip README points at it | Open |
+| Online update check in doctor (`nuikit_latest` is manual today) | Open, small |
+| QBCore and ESX coverage rounds in game (today Qbox only) | Needs a second server (owner or a community tester) |
 
-## Lane D: Screens + overrides
-
-*`systems/nuikit_{death,loading,chat}`, `addons/*` except `ox_inventory`.*
+**B2 Script developer** · `npm create nuikit` → `dev` → `npx shadcn add` a component → `nuikit check` level 3.
 
 | Item | State |
 |---|---|
-| illenium-appearance clothing thumbnails and the qbx_vehiclesales car picture: consume lane C's resolver callbacks | Waiting on lane C |
-| qbx_idcard full-height portrait, `photo = 'avatar'` switch (decisions #5); death band (#10) already shipped | PR #105. Needs the in-game check |
-| ox_lib context menu on `edge-sheet` (551e749 superseded) | PR #112. Needs the in-game check |
-| ox_lib notify `×N` bump re-enters in place (decisions #11) | PR #117. Needs the in-game check |
-| Progress cancel key: `nuikit_cancel_key` convar (decisions #2) | PR #119 (lane C files). Needs the in-game check |
-| mm_radio: clean enter/leave (slide on its own wrapper, first open slides too, no replay on updates); the device is a masked radio silhouette in the panel surface, `--mm-radio-shape` to swap it (decisions #15) | PR open (POST log identical); not seen in game |
-| Overrides polish: ox_lib text UI slides from its edge (#122), mm_radio enter/exit + chip stagger (#125), qbx_taxijob meter on `edge-sheet`, clear of the HUD zones (#126); Renewed-Banking, illenium-appearance, qbx_scoreboard, qbx_vehiclesales already match #102 | PRs open. Needs the in-game check |
-| nuikit_chat: a recalled message (up arrow) no longer shows clipped to half a line | PR open. Needs the in-game check |
+| Site and registry live at nuikit.vercel.app (verified Oct 23); `/components`, `/blocks`, `/design`, `/coverage`, `/theme` | Live |
+| Site: a getting-started page, a protocol page and an intents page (today GitHub markdown only) | Open |
+| Publish `packages/cli` so `npx nuikit check` works outside the monorepo (needs the npm name; `nuikit` is free as of Oct 23) | **Owner: claim the npm name**, then drop `private` |
+| README counts current (38 UI files, 64 registry items, 20 blocks, 9 themes) and the `CHANGELOG.md` at the root points at the real changelogs | Open, small |
+| `create-nuikit -t renderer-pack` has no block behind it: ship the block or drop the template | Open, small |
 
-## Lane E: Kit + site
-
-*`registry/**`, `registry.json`, `packages/create-nuikit` (except kit.css/index.css.tpl), `apps/www`.*
+**B3 Resource seller** · "built on nuikit": read the tokens, join the protocol, pass `nuikit check`, fall back without nuikit.
 
 | Item | State |
 |---|---|
-| Remove `key-hint`, `task-progress`, `nui-toaster` (moved to 0.9.0); move the site's demos to `key-prompt`, `meter`/`progress-ring`, `notice` first | **PR #108**: site moved; the three removed; `<NuiNotices />` (notice wired to `NUI.notify()`) replaces `NuiToaster` in the template and blocks |
-| `menu-row` on `nk-indicator` | **PR #113**: `MenuRowList` slides one indicator to the active row; the template menu and the /components garage on it |
-| Slab delta colours in light themes | **PR #120**: `--world-success` / `--world-destructive` (tokens 1.3, lane C files, flagged); the slab delta uses them |
-| Blocks adopting `useNuiContext` for money | **PR #121**: `useFormatMoney()` in `money`; bank, shop, vehicle-shop, garage, death-screen, hud-minimal format money text with it |
-| Notice stack as smooth as the sheets | **PR #127**: `notice` slides in from its stack's edge and out (`leaving`) by default (`slide={false}`: a fade); `Notices` keeps exits drawn; nuikit's notify renderer uses it (its frame.css block gone) |
-| kit.css identity keywords on any ancestor | Already in kit.css (`:is(html, *)[data-nk-…]`). **PR #128**: `motionLevel(el)` reads the nearest `[data-nk-motion]`; countdown and notice's time line follow |
+| `docs/adopt.md` (or site page): make my existing resource nuikit-native — read the theme tokens, `nuikit_protocol` + `nuikit_level`, the `"lua"` vendoring option for running without nuikit, what `nuikit check` levels mean and what to put in your Tebex listing | Open |
+| The override workflow outside the monorepo: `new-system.mjs` and the POST-log bench as a published starter, or document the monorepo fork path honestly | Open |
+| Framework SDK (`docs/adapters/framework-sdk.md`) verified by one custom adapter end to end | Open |
 
-## Lane F: Showcase
-
-*`systems/nuikit_pause`, `systems/nuikit_stress`, `addons/ox_inventory`.*
+**B4 Theme designer** · a theme is one file: studio → download → `nuikit theme reload` → Figma matches.
 
 | Item | State |
 |---|---|
-| ox_inventory item and weapon pictures through the resolver; item notes and the hotbar on the notice motion | PR #123 (POST log identical); not seen in game |
-| 3D map `perf/frame-send`: pins only when they move (`Config.map.pinsHz` caps them), panel text 5 Hz | Merged (#106); not seen in game |
-| 3D map as GTA map replacement: blips named by sprite (or `nameBlip`), legend filters remembered, click a blip or double-click the ground for a waypoint, Find me follows the player (`Config.map.follow`, `followOnOpen`) | Merged (#114); not seen in game |
+| Theme studio on tokens 1.7, Default and Neon Pop (it is reachable; check it exposes the baseline and selection levers) | Open |
+| Figma reference regenerated for tokens 1.7 / Default / Neon Pop (`docs/design/figma.md` is at 1.2 and four identities) | Open (Figma lane) |
+| DTCG `$description` and the CLI help agree with `design/naming.md` on what "default" means | Open, small |
+
+## 0.9 · Track C: rails for rapid building (so lanes run with less lead attention)
+
+*Lane: platform. Done when a lane can ship an item with the gate alone, and the lead can see at a glance what moved.*
+
+| Item | State |
+|---|---|
+| `docs/README.md` index: every doc marked current / reference / historical; `docs/next` down to dispatch, decisions, handoff | Done (Oct 23) |
+| Branch hygiene: 210 of 223 branches are fully merged; `node scripts/prune-branches.mjs --delete` removes them (a dry run lists them); the 12 with unique commits are triaged below | **Owner: run the prune** (cloud sessions can't delete refs); see "Unmerged work" |
+| `nuikit check` burn-down visible: CI prints warning counts per folder as a step summary; one folder at a time flips to errors | Open |
+| Visual baselines in CI, the cheap set (`design/contract.md`): the dev fixtures under Default, Neon Pop, Graphite at 1080p, compared to committed shots; a lane sees the diff in the run | Open (was "in progress" in lane C) |
+| Fixtures realistic by rule: mixed vital levels, long titles, third-party strings in every `src/dev.tsx` | Open |
+| Release cadence: cut a release at every in-game-verified checkpoint (changesets + adapter and system bumps, `docs/releases/`); `0.9.0` when Track A lands | Open |
+| Feedback loop beyond the owner: Discussions on, an issue template for "it looks wrong on my server" asking for theme, framework and a screenshot | **Owner: turn on Discussions**; template open |
+
+## Later (after 0.9)
+
+- Chromium 144 on the release channel: relax the 103 rules, the compiler becomes opt-in compat (`vision.md` §2).
+- Vue / Svelte bindings for the protocol; DUI surfaces (`nuikit_screen` is the spike); gamepad navigation.
+- The seller program built on `nuikit check`; a showcase page of servers running nuikit.
+- The phone layer (npwd apps as modules) once the host is worth it.
+
+## Open, unproven, owner-only
+
+- Known issues: GPS route outside the minimap ring (`Config.minimap.routeClip` candidates); minimap blank after repeated live restarts until the pause map opens.
+- Unproven: an empty `nuikit_cancel_key` leaves the cancel key unbound (#119); `nuikit_screen` DUI never seen in game.
+- Owner only: claim npm `nuikit`; GitHub About, topics and social preview ([`next/presentation.md`](next/presentation.md)); turn on Discussions; a second framework's server for B1.
+
+## Unmerged work (branches with commits not on main, Oct 23)
+
+Everything else was fully merged and deleted. Triage: keep until the item lands or is rejected, then delete.
+
+| Branch | Ahead | What | Call |
+|---|---|---|---|
+| `feat/renderer-packs` | 5 | renderer discovery + `-t renderer-pack` (superseded by 0.8.0's renderer packs?) | Compare with main, then delete or port B2's "renderer-pack block" |
+| `lane-kit/theme-studio` | 4 | variants (density/shape/motion) on panel, menu-row, meter…; themed subtree `data-nk-theme` | Port the themed subtree if B4 wants it; else delete |
+| `lane-b/settings` | 2 | vitals slots after vitals; per-corner scale in the HUD editor | Port into A8 |
+| `lane-b/hud-editor` | 1 | `/hud edit`, `/hud reset`, `/hud export` | Port into A8 |
+| `claude/pause-nk-settings` | 2 | Settings on `nk.settings` (decision #20 landed another way), no backdrop-filter in game | Check the backdrop fix is on main; delete |
+| `local/cfg-comments` | 1 | no semicolons in nuikit.cfg comments | Check main's cfg; delete |
+| `feat/screens-menu-row-cleanup` | 1 | ox_lib/ox_target extras on menu-row (551e749, superseded by #112) | Delete |
+| `next/blocks`, `next/design-v2`, `lead/design-v2`, `test/070-results` | 7/2/2/1 | old integration branches and a docs commit | Delete |
+| `changeset-release/main` | 1 | the changesets bot | Leave |
