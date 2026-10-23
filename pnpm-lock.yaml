@@ -811,6 +811,10 @@ importers:
         version: link:../../packages/vite
 
   packages/cli:
+    dependencies:
+      nuikit-core:
+        specifier: workspace:*
+        version: link:../core
     devDependencies:
       '@types/node':
         specifier: ^22.10.0

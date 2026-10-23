@@ -872,3 +872,10 @@ export function findResources(dir: string, depth = 4): string[] {
 export function check(target: string, options: CheckOptions = {}): CheckResult[] {
   return findResources(target).map((r) => checkResource(r, options));
 }
+
+/** The theme/values-only and theme/unlayered findings for one theme file's text (what `nuikit check` reports for theme.css and themes/*.css). */
+export function themeValuesFindings(css: string, file = "theme.css"): Finding[] {
+  const collector = new Collector("");
+  scanThemeCss(css, collector.file(file, css), true);
+  return collector.findings;
+}

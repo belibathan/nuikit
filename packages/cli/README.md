@@ -7,6 +7,7 @@ the UI platform layer for FiveM.
 npx nuikit check ./my_resource          # grade one resource
 npx nuikit check ./resources --level 2  # every resource under a folder; exit 1 if any is below level 2
 npx nuikit tokens                       # the theme tokens a UI should read
+npx nuikit theme new my-server          # a theme file to start from (graphite by default)
 ```
 
 ## `nuikit check [path…]`
@@ -64,6 +65,21 @@ because they're fixed once in `packages/create-nuikit/index.css.tpl`.
 
 Prints tokens v1 (`docs/tokens.md`): the shadcn base tokens plus `success`, `warning`, `info`, `hud`,
 `vital-*`, `nk-scale` and `nk-motion`. `--json` for tooling, `--css` for a plain list of custom properties.
+
+## `nuikit theme new <name>`
+
+Writes a theme file that starts from a shipped theme (`--from`, default `graphite`; `nuikit theme --list` names them).
+The file sets the chosen theme's values in `@layer nk.theme { .dark { … } }`, then lists every other lever the
+kit has, commented out with its default and range, grouped by the concepts of [levers.md](https://github.com/belibathan/nuikit/blob/main/docs/design/levers.md):
+
+```css
+    /* Geometry: slant, keycap wall, radii, chamfer and hairlines */
+    /* --nk-tile-skew: nk-skew  (-20deg..20deg) */
+```
+
+The levers come from nuikit-core's token tables, so a new lever shows up here when it lands in the tokens. The file is
+values only (`theme/values-only` passes) and compiles to the same tokens as the theme it starts from, with no warnings.
+Options: `--out <file>` (default `theme.css`), `--force` to overwrite. Copy the file over `nuikit/theme.css`, then `nuikit theme reload`.
 
 ## API
 
