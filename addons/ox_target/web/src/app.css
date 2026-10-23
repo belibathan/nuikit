@@ -81,12 +81,12 @@ body {
   position: absolute;
   width: 0.5rem;
   height: 0.5rem;
-  border: 0 solid var(--nk-row-fill-color);
+  border: 0.125rem solid transparent;
 }
-.tgt-reticle > span:nth-child(1) { top: 0; left: 0; border-top-width: 0.125rem; border-left-width: 0.125rem; border-top-left-radius: var(--nk-chip-radius); }
-.tgt-reticle > span:nth-child(2) { top: 0; right: 0; border-top-width: 0.125rem; border-right-width: 0.125rem; border-top-right-radius: var(--nk-chip-radius); }
-.tgt-reticle > span:nth-child(3) { bottom: 0; right: 0; border-bottom-width: 0.125rem; border-right-width: 0.125rem; border-bottom-right-radius: var(--nk-chip-radius); }
-.tgt-reticle > span:nth-child(4) { bottom: 0; left: 0; border-bottom-width: 0.125rem; border-left-width: 0.125rem; border-bottom-left-radius: var(--nk-chip-radius); }
+.tgt-reticle > span:nth-child(1) { top: 0; left: 0; border-color: var(--nk-row-fill-color) transparent transparent var(--nk-row-fill-color); border-top-left-radius: var(--nk-chip-radius); }
+.tgt-reticle > span:nth-child(2) { top: 0; right: 0; border-color: var(--nk-row-fill-color) var(--nk-row-fill-color) transparent transparent; border-top-right-radius: var(--nk-chip-radius); }
+.tgt-reticle > span:nth-child(3) { bottom: 0; right: 0; border-color: transparent var(--nk-row-fill-color) var(--nk-row-fill-color) transparent; border-bottom-right-radius: var(--nk-chip-radius); }
+.tgt-reticle > span:nth-child(4) { bottom: 0; left: 0; border-color: transparent transparent var(--nk-row-fill-color) var(--nk-row-fill-color); border-bottom-left-radius: var(--nk-chip-radius); }
 @keyframes tgt-lock {
   from { opacity: 0; transform: scale(1.6); }
   to { opacity: 1; transform: none; }

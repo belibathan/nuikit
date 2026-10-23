@@ -374,12 +374,11 @@
 }
 .hud-compass-caret {
   position: relative;
-  width: 0;
-  height: 0;
+  width: 0.625rem;
+  height: 0.375rem;
   margin-top: 0.125rem;
-  border-left: 0.3125rem solid transparent;
-  border-right: 0.3125rem solid transparent;
-  border-bottom: 0.375rem solid var(--hud-accent);
+  background: var(--hud-accent);
+  clip-path: polygon(50% 0, 0 100%, 100% 100%);
 }
 .hud-compass-readout {
   position: relative;

@@ -1,15 +1,15 @@
-import { Check, ChevronLeft, ChevronRight, ChevronsUpDown, Search } from "lucide-react";
+import { ChevronLeft, ChevronRight, ChevronsUpDown, Search } from "lucide-react";
 import { EmptyState } from "@/components/ui/empty-state";
 import { useMemo, useState } from "react";
 import { FieldLabel } from "@/components/controls";
 import { Button } from "@/components/ui/button";
 import { ButtonGroup } from "@/components/ui/button-group";
 import { Input } from "@/components/ui/input";
+import { MenuRow, MenuRowList } from "@/components/ui/menu-row";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Spinner } from "@/components/ui/spinner";
 import { useLoaded } from "@/lib/store";
-import { cn } from "@/lib/utils";
 
 const FREEMODE: Record<string, string> = { mp_m_freemode_01: "Freemode male", mp_f_freemode_01: "Freemode female" };
 
@@ -69,22 +69,14 @@ export function PedSection() {
                 <Input autoFocus placeholder="Search models" value={query} onChange={(e) => setQuery(e.target.value)} className="h-9 pl-9" />
               </div>
               <ScrollArea className="h-72">
-                <div className="p-1">
+                <MenuRowList>
                   {filtered.map((m) => (
-                    <button
-                      key={m}
-                      type="button"
-                      onClick={() => void choose(m)}
-                      className={cn(
-                        "flex h-8 w-full items-center gap-2 rounded-(--nk-r-control) px-2 text-left font-mono nk-label outline-none hover:bg-accent hover:text-accent-foreground focus-visible:bg-accent",
-                        m === current.model && "text-foreground",
-                      )}
-                    >
-                      <Check className={cn("size-4 shrink-0", m === current.model ? "opacity-100" : "opacity-0")} />
-                      <span className="truncate">{m}</span>
-                      {FREEMODE[m] && <span className="nk-label ml-auto shrink-0 font-sans">{FREEMODE[m]}</span>}
-                    </button>
+                    <MenuRow key={m} className="font-mono" active={m === current.model} meta={FREEMODE[m]} onClick={() => void choose(m)}>
+                      {m}
+                    </MenuRow>
                   ))}
+                </MenuRowList>
+                <div className="p-1">
                   {!filtered.length && <EmptyState title={`No model matches “${query}”`} description="Try part of the name." />}
                   {filtered.length === 300 && <p className="nk-label px-2 py-2 text-center">Type to narrow the list.</p>}
                 </div>
