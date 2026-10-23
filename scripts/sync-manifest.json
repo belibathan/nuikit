@@ -311,6 +311,7 @@
       "web/src/components/ui/sheet.tsx",
       "web/src/components/ui/slider.tsx",
       "web/src/components/ui/spinner.tsx",
+      "web/src/components/ui/stepper.tsx",
       "web/src/components/ui/tabs.tsx",
       "web/src/components/ui/text-roll.tsx",
       "web/src/components/ui/tile.tsx",

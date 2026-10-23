@@ -45,7 +45,8 @@ import { SelectionTile } from "@/components/ui/selection-tile"
  *
  * `MenuRowList` holds the rows of a list: one SelectionTile slides to the lit row (the hovered or focused one,
  * else `active`, the row the UI drives: keys, Lua) instead of each row marking itself. Rows sit
- * --nk-list-gap apart, so the tile's wall never touches the next row:
+ * --nk-list-gap apart, so the tile's wall never touches the next row, and the list pads its sides by
+ * --nk-list-pad-x (the tile's inset plus its skew overhang), so the face never touches the panel's edge:
  *
  *   <MenuRowList active={i}>{items.map((it, j) => <MenuRow key={it.id} active={j === i}>…</MenuRow>)}</MenuRowList>
  *
@@ -61,10 +62,11 @@ import { SelectionTile } from "@/components/ui/selection-tile"
  * Anatomy: the lit tile (the list's SelectionTile, or the row's own ::before wall and ::after face) > lead (an icon Tile in the icon column, or an image) > body (a
  *   label-voice title over a body-voice description, an optional progress line) > trail (meta, the kbd trail, a checkbox, a stepper, actions, a chevron).
  * Props: icon, iconSpace, image, description, progress, meta, kbd, chevron, active, checked, value, onStep,
- *   readOnly, alert, inert, actions, as, asChild, tone.
+ *   readOnly, alert, inert, actions, as, asChild, tone; MenuRowList: active, indicator, bleed.
  * Level means: progress, the row's progress line (0–100 of its value, drawn 0–1).
  * Rules: one trailing thing per row; height --nk-h-row, padding --nk-row-pad-y / -x, gaps --nk-row-gap; rows of a
- *   list sit --nk-list-gap apart; hover, focus and active are one lit state (data-lit): the Tile under it, the
+ *   list sit --nk-list-gap apart and the list pads its sides by --nk-list-pad-x (inset + skew overhang) so the lit
+ *   tile never touches the panel edge; hover, focus and active are one lit state (data-lit): the Tile under it, the
  *   content slid by --nk-row-lift, the icon tile lit; no focus ring; attention is data-state="alert"; a trailing
  *   key is a Tile (Kbd), never text.
  */
@@ -531,19 +533,27 @@ function MenuRowDetails({
  * focused one, else `active` (an index among the rows; null or undefined: none). The rows change state
  * instantly; only the tile moves, and a held key jumps instead of trailing. `indicator={false}` leaves each
  * lit row drawing its own tile.
+ *
+ * The list keeps the lit tile off its container's edge: inline padding of --nk-list-pad-x, by default the tile's
+ * inset plus its skew overhang (--nk-tile-overhang: half a row's height × tan(--nk-tile-skew); 0.25rem for the
+ * stock -12deg), so a sheet or panel that puts the list flush never clips the face's slanted corner. `bleed`
+ * drops the padding (a list whose container already pads).
  */
+const LIST_PAD = "[padding-inline:var(--nk-list-pad-x,calc(var(--nk-tile-inset)_+_var(--nk-tile-overhang,0.25rem)))]"
+
 function MenuRowList({
   active,
   indicator = true,
+  bleed = false,
   className,
   children,
   density,
   shape,
   motion,
   ...props
-}: NkVariantProps & React.ComponentProps<"div"> & { active?: number | null; indicator?: boolean }) {
+}: NkVariantProps & React.ComponentProps<"div"> & { active?: number | null; indicator?: boolean; bleed?: boolean }) {
   return (
-    <div {...nkVariant({ density, shape, motion })} data-slot="menu-row-list" className={cn("nk-list", className)} {...props}>
+    <div {...nkVariant({ density, shape, motion })} data-slot="menu-row-list" className={cn("nk-list", !bleed && LIST_PAD, className)} {...props}>
       {indicator && <SelectionTile data-part="menu-row-indicator" items="[data-slot=menu-row]" pointer="[data-hover]" active={active} />}
       {children}
     </div>

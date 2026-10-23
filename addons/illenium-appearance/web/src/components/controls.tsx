@@ -1,11 +1,10 @@
 // The four building blocks every section uses: index stepper, float slider, colour swatches, field label.
-import { ChevronLeft, ChevronRight, RotateCcw } from "lucide-react";
-import { useEffect, useState, type ReactNode } from "react";
+import { RotateCcw } from "lucide-react";
+import { type ReactNode } from "react";
 import { Button } from "@/components/ui/button";
-import { ButtonGroup } from "@/components/ui/button-group";
-import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
-import { TextRoll } from "@/components/ui/text-roll";
+import { Stepper as KitStepper } from "@/components/ui/stepper";
+import { NumberRoll, TextRoll } from "@/components/ui/text-roll";
 import { cn } from "@/lib/utils";
 import type { RGB } from "@/lib/types";
 
@@ -40,7 +39,7 @@ export function stepValue(from: number, dir: -1 | 0 | 1, min: number, max: numbe
   return v;
 }
 
-/** Integer index with prev / next and a typeable value: drawables, textures, styles, parents. */
+/** Integer index with prev / next and a typeable value: drawables, textures, styles, parents. The kit's Stepper. */
 export function Stepper({
   label,
   hint,
@@ -62,16 +61,14 @@ export function Stepper({
   onChange: (v: number) => void;
   format?: (v: number) => ReactNode;
 }) {
-  const [text, setText] = useState(String(value));
-  useEffect(() => setText(String(value)), [value]);
   const disabled = max <= min;
   const count = Math.max(0, max - min + 1);
 
+  // a typed value: out of range wraps, a blacklisted one moves up (stepValue with dir 0)
   const commit = (raw: string) => {
     const n = Number.parseInt(raw, 10);
-    if (Number.isNaN(n)) return setText(String(value));
+    if (Number.isNaN(n)) return;
     const next = stepValue(n, 0, min, max, blacklist);
-    setText(String(next));
     if (next !== value) onChange(next);
   };
   const step = (dir: -1 | 1) => {
@@ -80,36 +77,25 @@ export function Stepper({
   };
 
   return (
-    <div className="min-w-0">
+    <div className="nk-field min-w-0">
       <FieldLabel
         label={label}
         hint={hint ?? format?.(value)}
-        value={count <= 1 ? (count === 1 ? "Only one" : "None") : `${value} / ${max}`}
+        value={count <= 1 ? (count === 1 ? "Only one" : "None") : <Count value={value} total={max} />}
         onReset={original !== undefined && original !== value ? () => onChange(original) : undefined}
       />
-      <ButtonGroup className="mt-1 w-full">
-        <Button variant="outline" size="icon-sm" className="text-muted-foreground" disabled={disabled} onClick={() => step(-1)} aria-label="Previous">
-          <ChevronLeft />
-        </Button>
-        <Input
-          inputMode="numeric"
-          value={text}
-          disabled={disabled}
-          onChange={(e) => setText(e.target.value.replace(/[^\d-]/g, ""))}
-          onBlur={(e) => commit(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") commit((e.target as HTMLInputElement).value);
-            else if (e.key === "ArrowUp") (e.preventDefault(), step(1));
-            else if (e.key === "ArrowDown") (e.preventDefault(), step(-1));
-          }}
-          className="nk-num h-8 min-w-0 rounded-none text-center nk-num"
-          aria-label={typeof label === "string" ? label : undefined}
-        />
-        <Button variant="outline" size="icon-sm" className="text-muted-foreground" disabled={disabled} onClick={() => step(1)} aria-label="Next">
-          <ChevronRight />
-        </Button>
-      </ButtonGroup>
+      <KitStepper value={value} onStep={step} onCommit={commit} disabled={disabled} aria-label={typeof label === "string" ? label : undefined} />
     </div>
+  );
+}
+
+/** "1 / 243": the changing number rolls, the separator and the total stay still (handoff §3.4). */
+function Count({ value, total }: { value: number; total: number }) {
+  return (
+    <span className="nk-num inline-flex items-center text-muted-foreground">
+      <NumberRoll value={value} format={String} />
+      <span>&nbsp;/&nbsp;{total}</span>
+    </span>
   );
 }
 

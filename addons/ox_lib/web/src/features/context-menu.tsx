@@ -7,6 +7,7 @@ import { useLever } from "@/lib/levers";
 import { Markdown } from "@/lib/markdown";
 import { post, useOx } from "@/lib/nui";
 import { openIntent, type Handle } from "@/lib/route";
+import { splitTitle, TITLE_LEVER } from "@/lib/title";
 
 type Metadata = string[] | Record<string, unknown> | Array<string | { label: string; value?: unknown; progress?: number; colorScheme?: string }>;
 
@@ -45,6 +46,8 @@ interface ContextData {
 export function ContextMenu() {
   // lever (README): the screen edge the sheet sits on, right by default
   const side = useLever("ox-context-side", "right") === "left" ? "left" : "right";
+  // lever (README): a leading emoji and its "|" / "-" become the sheet's or row's icon (lib/title.ts); 0 keeps titles as written
+  const normalise = useLever(TITLE_LEVER, "1") !== "0";
   const [data, setData] = useState<ContextData | null>(null);
   const [open, setOpen] = useState(false);
   // Each showContext is a new page of the open sheet (a fade); the rows rise in when the sheet opens.
@@ -118,7 +121,8 @@ export function ContextMenu() {
   if (!data) return null;
   // Same order as ox_lib: Object.entries (integer-like keys first, then the rest as received).
   const entries = Object.entries(data.options ?? {});
-  const iconColumn = entries.some(([, o]) => !!o.icon);
+  const head = normalise ? splitTitle(data.title) : null;
+  const iconColumn = entries.some(([, o]) => !!o.icon || (normalise && !!splitTitle(o.title)));
   const hovered = hover ? (data.options as Record<string, Option>)[hover.key] : undefined;
 
   const enter = (key: string, e: MouseEvent<HTMLElement>) => {
@@ -135,7 +139,8 @@ export function ContextMenu() {
       fit
       page={gen}
       className="z-30"
-      title={<Markdown className="[&_p]:m-0">{data.title}</Markdown>}
+      icon={head ? <span aria-hidden>{head.icon}</span> : undefined}
+      title={<Markdown className="[&_p]:m-0">{head ? head.title : data.title}</Markdown>}
       onBack={data.menu ? () => post("openContext", { id: data.menu, back: true }) : undefined}
       onClose={data.canClose === false ? undefined : close}
     >
@@ -143,7 +148,7 @@ export function ContextMenu() {
         {/* the baseline: rows breathe (--nk-list-gap) instead of hairlines; one selection Tile slides between them */}
         <MenuRowList>
           {entries.map(([key, option]) => (
-            <ContextOption key={key} id={key} option={option} iconColumn={iconColumn} onEnter={(e) => enter(key, e)} onLeave={() => setHover((h) => (h?.key === key ? null : h))} />
+            <ContextOption key={key} id={key} option={option} iconColumn={iconColumn} normalise={normalise} onEnter={(e) => enter(key, e)} onLeave={() => setHover((h) => (h?.key === key ? null : h))} />
           ))}
         </MenuRowList>
       </EdgeSheetBody>
@@ -155,9 +160,17 @@ export function ContextMenu() {
 /** ox's default colorScheme for context bars (protocol §4). menu-row reads Mantine names through meterColor(). */
 const OX_BAR = "dark.3";
 
-function ContextOption({ id, option, iconColumn, onEnter, onLeave }: { id: string; option: Option; iconColumn: boolean; onEnter: (e: MouseEvent<HTMLElement>) => void; onLeave: () => void }) {
+function ContextOption({ id, option, iconColumn, normalise, onEnter, onLeave }: { id: string; option: Option; iconColumn: boolean; normalise: boolean; onEnter: (e: MouseEvent<HTMLElement>) => void; onLeave: () => void }) {
   // A missing title on a keyed option shows the key itself (ox_lib does this).
-  const title = option.title ?? (Number.isNaN(Number(id)) ? id : undefined);
+  const raw = option.title ?? (Number.isNaN(Number(id)) ? id : undefined);
+  // a leading emoji in the title is the row's icon when the script gave none (lib/title.ts)
+  const split = normalise ? splitTitle(raw) : null;
+  const title = split ? split.title : raw;
+  const icon = option.icon ? (
+    <Icon icon={option.icon} color={option.iconColor} animation={option.iconAnimation} allowImage className="size-4" />
+  ) : split ? (
+    <span aria-hidden className="text-(length:--nk-icon-md) leading-none">{split.icon}</span>
+  ) : undefined;
   const arrow = Boolean(option.menu || option.arrow) && option.arrow !== false;
   const hasProgress = option.progress !== undefined;
 
@@ -175,7 +188,7 @@ function ContextOption({ id, option, iconColumn, onEnter, onLeave }: { id: strin
       onMouseEnter={onEnter}
       onMouseLeave={onLeave}
       // when any row has an icon, the others keep the icon column so every title starts on one line
-      icon={option.icon ? <Icon icon={option.icon} color={option.iconColor} animation={option.iconAnimation} allowImage className="size-4" /> : undefined}
+      icon={icon}
       iconSpace={iconColumn}
       description={option.description ? <Markdown>{option.description}</Markdown> : undefined}
       // ox shows the bar whenever `progress` is present, 0 included
