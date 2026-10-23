@@ -11,7 +11,8 @@ const keep = new Set(["main", "changeset-release/main"]);
 const del = process.argv.includes("--delete");
 const gh = (...args) => execFileSync("gh", args, { encoding: "utf8" }).trim();
 
-const branches = JSON.parse(gh("api", "--paginate", `repos/${repo}/branches?per_page=100`, "--jq", "[.[].name]"));
+// one name per line: with --paginate, a `[...]` jq filter prints one array per page, which isn't one JSON value
+const branches = gh("api", "--paginate", `repos/${repo}/branches?per_page=100`, "--jq", ".[].name").split("\n").filter(Boolean);
 const merged = [];
 const ahead = [];
 for (const b of branches) {
