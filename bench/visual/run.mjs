@@ -39,7 +39,7 @@ const OUT = path.join(here, "out");
 const slug = (s) => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 fs.mkdirSync(BASE, { recursive: true });
-fs.rmSync(OUT, { recursive: true, force: true });
+if (!process.argv.includes("--look")) fs.rmSync(OUT, { recursive: true, force: true }); // look keeps earlier shots
 fs.mkdirSync(OUT, { recursive: true });
 
 // The browser: VISUAL_CHROMIUM, else the Chromium 103 `pnpm proof` runs (FiveM's CEF), else Playwright's own.
