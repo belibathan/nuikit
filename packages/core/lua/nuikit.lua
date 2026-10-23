@@ -916,7 +916,7 @@ AddEventHandler('nuikit:host:forward', function(resource, id, name, payload)
     TriggerEvent('nuikit:host:reply', id, result == nil and {} or result)
   end
   local fn = nuiCallbacks[name]
-  if not fn then return reply({ error = ('no NUI callback "%s" in %s'):format(tostring(name), RESOURCE) }) end
+  if not fn then return reply({ error = 'UNKNOWN_CALLBACK', message = ('no NUI callback "%s" in %s'):format(tostring(name), RESOURCE) }) end
   local ok, err = pcall(fn, payload or {}, reply)
   if not ok then reply({ error = tostring(err) }) end
 end)

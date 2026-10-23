@@ -158,7 +158,22 @@ export function emit<K extends EventName>(action: K, data: EventData<K>): void {
 
 type MockFn = (data: any) => unknown | Promise<unknown>;
 const mocks = new Map<string, MockFn>();
-const callLog = new Set<(entry: { name: string; data: unknown; response: unknown; mocked: boolean }) => void>();
+
+/** Why a fetchNui call failed. */
+export type NuiErrorCode = "TIMEOUT" | "TRANSPORT" | "UNKNOWN_CALLBACK" | "INVALID" | "CANCELLED";
+const CODES: readonly string[] = ["TIMEOUT", "TRANSPORT", "UNKNOWN_CALLBACK", "INVALID", "CANCELLED"];
+
+export interface NuiCallEntry {
+  name: string;
+  data: unknown;
+  response: unknown;
+  mocked: boolean;
+  /** Wall time of the call in ms. */
+  ms: number;
+  /** Set when the call failed. */
+  code?: NuiErrorCode;
+}
+const callLog = new Set<(entry: NuiCallEntry) => void>();
 
 /**
  * Register a browser-only response for a callback. Ignored inside the game.
@@ -176,8 +191,8 @@ export function mockNui<K extends CallbackName>(
   };
 }
 
-/** Observe every fetchNui call (used by devtools). */
-export function onNuiCall(handler: (entry: { name: string; data: unknown; response: unknown; mocked: boolean }) => void) {
+/** Observe every fetchNui call, successful or not (used by devtools). */
+export function onNuiCall(handler: (entry: NuiCallEntry) => void) {
   callLog.add(handler);
   return () => {
     callLog.delete(handler);
@@ -187,24 +202,88 @@ export function onNuiCall(handler: (entry: { name: string; data: unknown; respon
 export interface FetchNuiOptions<R> {
   /** Response to use in the browser if no mock is registered. */
   mock?: R;
-  /** Abort after this many ms (default 10s). */
+  /** Reject with `TIMEOUT` after this many ms (default: `configureNui().timeoutMs`, 10 s). */
+  timeoutMs?: number;
+  /** @deprecated Use `timeoutMs`. */
   timeout?: number;
+  /** Aborting rejects with `CANCELLED`. */
+  signal?: AbortSignal;
 }
 
 /** Request data is optional for void callbacks and for untyped (un-augmented) ones. */
 type OptionalReq<T> = [T] extends [void] ? true : unknown extends T ? true : false;
 
 export class NuiError extends Error {
-  constructor(public callback: string, message: string, public cause?: unknown) {
+  /**
+   * `TIMEOUT` no answer in time · `TRANSPORT` the call never completed (fetch failed, resource stopped) ·
+   * `UNKNOWN_CALLBACK` Lua has no such callback · `INVALID` Lua answered `{ error }` or the reply was not JSON ·
+   * `CANCELLED` the caller's AbortSignal fired.
+   */
+  readonly code: NuiErrorCode;
+  constructor(public callback: string, message: string, public cause?: unknown, code: NuiErrorCode = "INVALID") {
     super(`[nuikit] ${callback}: ${message}`);
     this.name = "NuiError";
+    this.code = code;
   }
 }
 
+const nuiConfig = { timeoutMs: 10_000, strictMocks: false };
 /**
- * Call a Lua NUI callback and await its response.
+ * Defaults for every fetchNui call. `timeoutMs` (10 s) is the deadline; `strictMocks` makes a browser call with
+ * no mock and no `options.mock` reject with `UNKNOWN_CALLBACK` (as the game would) instead of resolving `{}`.
+ */
+export function configureNui(next: Partial<typeof nuiConfig>): void {
+  Object.assign(nuiConfig, next);
+}
+
+// Per-resource call diagnostics (for `nuikit-doctor`). Percentiles come from the last 200 call times.
+export interface NuiDiagnostics {
+  resource: string;
+  calls: number;
+  errors: Partial<Record<NuiErrorCode, number>>;
+  p50: number;
+  p95: number;
+}
+const DIAG_WINDOW = 200;
+const diag = new Map<string, { calls: number; errors: Partial<Record<NuiErrorCode, number>>; ms: number[] }>();
+
+function record(ms: number, code?: NuiErrorCode): void {
+  const r = resourceName();
+  let d = diag.get(r);
+  if (!d) diag.set(r, (d = { calls: 0, errors: {}, ms: [] }));
+  d.calls++;
+  if (code) d.errors[code] = (d.errors[code] ?? 0) + 1;
+  d.ms.push(ms);
+  if (d.ms.length > DIAG_WINDOW) d.ms.shift();
+}
+
+function pct(sorted: number[], p: number): number {
+  if (!sorted.length) return 0;
+  return sorted[Math.min(sorted.length - 1, Math.ceil(p * sorted.length) - 1)]!;
+}
+
+/** Calls, errors by code and p50/p95 ms for every resource this page has called from. */
+export function getNuiDiagnostics(): NuiDiagnostics[] {
+  return [...diag].map(([resource, d]) => {
+    const sorted = [...d.ms].sort((a, b) => a - b);
+    return { resource, calls: d.calls, errors: { ...d.errors }, p50: pct(sorted, 0.5), p95: pct(sorted, 0.95) };
+  });
+}
+
+// The `nuikit:diagnostics` export: doctor and tooling read it from the page (`window["nuikit:diagnostics"]()`).
+if (typeof window !== "undefined") (window as any)["nuikit:diagnostics"] = getNuiDiagnostics;
+
+function luaCode(err: string): NuiErrorCode {
+  if (CODES.includes(err)) return err as NuiErrorCode;
+  if (err === "timed out") return "TIMEOUT"; // the host's forward deadline
+  if (err === "resource stopped") return "TRANSPORT";
+  return "INVALID";
+}
+
+/**
+ * Call a Lua NUI callback and await its response. Rejects with a `NuiError` (see `.code`).
  *
- *   const { ok } = await fetchNui("inventory:use", { slot: 3 });
+ *   const { ok } = await fetchNui("inventory:use", { slot: 3 }, { timeoutMs: 2000, signal });
  *
  * In the browser it resolves with the registered mock (mockNui) or `options.mock`.
  */
@@ -215,46 +294,77 @@ export async function fetchNui<K extends CallbackName>(
     : [data: CallbackReq<K>, options?: FetchNuiOptions<CallbackRes<K>>]
 ): Promise<CallbackRes<K>> {
   const [data, options = {}] = args as [unknown, FetchNuiOptions<CallbackRes<K>>?];
-
-  if (isBrowser()) {
-    const mock = mocks.get(name);
-    const response = (mock ? await mock(data) : options?.mock ?? ({} as unknown)) as CallbackRes<K>;
-    callLog.forEach((h) => h({ name, data, response, mocked: true }));
-    return response;
-  }
+  const t0 = typeof performance !== "undefined" ? performance.now() : Date.now();
+  const now = () => (typeof performance !== "undefined" ? performance.now() : Date.now());
+  const mocked = isBrowser();
+  let response: unknown;
+  let failure: NuiError | undefined;
 
   const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), options?.timeout ?? 10_000);
-  const hosted = hostedContext();
+  let timedOut = false;
+  const timer = setTimeout(() => {
+    timedOut = true;
+    controller.abort();
+  }, options.timeoutMs ?? options.timeout ?? nuiConfig.timeoutMs);
+  const onAbort = () => controller.abort();
+  if (options.signal) {
+    if (options.signal.aborted) controller.abort();
+    else options.signal.addEventListener("abort", onAbort);
+  }
+  const aborted = new Promise<never>((_, reject) =>
+    controller.signal.addEventListener("abort", () => reject(Object.assign(new Error("aborted"), { name: "AbortError" }))),
+  );
+  aborted.catch(() => {});
+
   try {
-    let response: CallbackRes<K>;
-    if (hosted) {
-      // Hosted module: the host forwards the call to this resource's Lua.
-      const aborted = new Promise<never>((_, reject) =>
-        controller.signal.addEventListener("abort", () => reject(Object.assign(new Error("aborted"), { name: "AbortError" }))),
-      );
-      response = ((await Promise.race([hosted.post(name, data ?? {}), aborted])) ?? {}) as CallbackRes<K>;
+    if (controller.signal.aborted) throw Object.assign(new Error("aborted"), { name: "AbortError" });
+    if (mocked) {
+      const mock = mocks.get(name);
+      if (!mock && options.mock === undefined && nuiConfig.strictMocks) {
+        response = { error: "UNKNOWN_CALLBACK" };
+      } else {
+        response = await Promise.race([mock ? mock(data) : (options.mock ?? {}), aborted]);
+      }
     } else {
-      const res = await fetch(`https://${resourceName()}/${name}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json; charset=UTF-8" },
-        body: JSON.stringify(data ?? {}),
-        signal: controller.signal,
-      });
-      const text = await res.text();
-      response = (text ? JSON.parse(text) : {}) as CallbackRes<K>;
+      const hosted = hostedContext();
+      if (hosted) {
+        // Hosted module: the host forwards the call to this resource's Lua.
+        response = (await Promise.race([hosted.post(name, data ?? {}), aborted])) ?? {};
+      } else {
+        const res = await fetch(`https://${resourceName()}/${name}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json; charset=UTF-8" },
+          body: JSON.stringify(data ?? {}),
+          signal: controller.signal,
+        });
+        const text = await res.text();
+        try {
+          response = text ? JSON.parse(text) : {};
+        } catch (e) {
+          throw new NuiError(name, "the reply was not JSON", e, "INVALID");
+        }
+      }
     }
-    callLog.forEach((h) => h({ name, data, response, mocked: false }));
     if (response && typeof response === "object" && "error" in (response as object)) {
-      throw new NuiError(name, String((response as unknown as { error: unknown }).error));
+      const e = response as { error: unknown; message?: unknown };
+      const code = luaCode(String(e.error));
+      throw new NuiError(name, String(e.message ?? e.error), undefined, code);
     }
-    return response;
+    return response as CallbackRes<K>;
   } catch (err) {
-    if (err instanceof NuiError) throw err;
-    const reason = (err as Error)?.name === "AbortError" ? "timed out (is the callback registered in Lua?)" : String(err);
-    throw new NuiError(name, reason, err);
+    if (err instanceof NuiError) failure = err;
+    else if ((err as Error)?.name === "AbortError") {
+      failure = timedOut
+        ? new NuiError(name, "timed out (is the callback registered in Lua?)", err, "TIMEOUT")
+        : new NuiError(name, "cancelled", err, "CANCELLED");
+    } else failure = new NuiError(name, String(err), err, "TRANSPORT");
+    throw failure;
   } finally {
     clearTimeout(timer);
+    options.signal?.removeEventListener("abort", onAbort);
+    const ms = now() - t0;
+    record(ms, failure?.code);
+    callLog.forEach((h) => h({ name, data, response, mocked, ms, ...(failure ? { code: failure.code } : {}) }));
   }
 }
 
@@ -370,6 +480,9 @@ export function __reset(): void {
   anyHandlers.clear();
   mocks.clear();
   callLog.clear();
+  diag.clear();
+  nuiConfig.timeoutMs = 10_000;
+  nuiConfig.strictMocks = false;
   visibilityListeners.clear();
   visible = true;
   onNui("nuikit:visible", (v) => setVisible(Boolean(v)));

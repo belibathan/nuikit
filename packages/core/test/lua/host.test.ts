@@ -80,7 +80,9 @@ describe("host: routing", () => {
     expect(await shop.run("return BOUGHT")).toBe(7);
     // Errors come back the way fetchNui expects them.
     expect((await host.call("nuikit:host:call", { t, n: "shop:boom" })).error).toMatch(/nope/);
-    expect((await host.call("nuikit:host:call", { t, n: "shop:missing" })).error).toMatch(/no NUI callback "shop:missing" in shop/);
+    const missing = await host.call("nuikit:host:call", { t, n: "shop:missing" });
+    expect(missing.error).toBe("UNKNOWN_CALLBACK");
+    expect(missing.message).toMatch(/no NUI callback "shop:missing" in shop/);
   });
 
   it("module → Lua: raw RegisterNUICallback handlers that answer later", async () => {
@@ -119,7 +121,8 @@ describe("host: security", () => {
 
     // The shop module asking for the bank's callback lands in the shop, which has none.
     const res = await host.call("nuikit:host:call", { t: tokenOf(host, "shop"), n: "bank:withdraw", d: {} });
-    expect(res.error).toMatch(/in shop/);
+    expect(res.error).toBe("UNKNOWN_CALLBACK");
+    expect(res.message).toMatch(/in shop/);
     expect(await bank.run("return WITHDRAWN")).toBeNull();
     // No token, a made-up token, or a resource name instead of a token: refused.
     for (const req of [{ n: "bank:withdraw" }, { t: "0".repeat(32), n: "bank:withdraw" }, { t: "bank", n: "bank:withdraw" }]) {
