@@ -102,6 +102,13 @@
   align-items: flex-start;
   gap: 0.75rem;
 }
+/* a corner is a layout zone (kit.css nk.layout): GTA's area via --nk-area-*, --nk-edge in; the HUD's own gaps */
+.hud-root [data-slot="hud-corner"][data-nk-zone] {
+  --nk-zone-gap: 0.75rem;
+}
+.hud-root [data-slot="hud-corner"][data-nk-zone="br"] {
+  --nk-zone-gap: 1rem;
+}
 /* with the map in the bottom-left corner: location above it, vitals beside its bottom edge */
 .hud-above-map {
   position: absolute;
@@ -303,13 +310,10 @@
 
 /* ───────────────────────────── heading strip */
 
+/* placed by its zone (App.tsx: <Zone at="tc">, inside GTA's area at --nk-edge) */
 .hud-compass {
-  position: absolute;
-  top: calc(var(--hud-t, 0%) + var(--edge));
-  left: var(--hud-l, 0%);
-  right: var(--hud-r, 0%);
+  position: relative;
   width: 26rem;
-  margin: 0 auto;
   display: flex;
   flex-direction: column;
   align-items: center;

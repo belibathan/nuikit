@@ -102,14 +102,24 @@ async function serve(dir, port) {
 
 let failed = 0;
 let browser, context, cmp;
+// `--viewport 2560x1440` (look only): the window size, as a player's screen (docs/design/layout.md)
+const VIEWPORT = (() => {
+  const i = process.argv.indexOf("--viewport");
+  const m = i === -1 ? null : String(process.argv[i + 1] ?? "").match(/^(\d{3,5})[x×](\d{3,5})$/i);
+  if (i !== -1 && !m) {
+    console.error("--viewport takes WxH, e.g. 2560x1440");
+    process.exit(2);
+  }
+  return m ? { width: Number(m[1]), height: Number(m[2]) } : null;
+})();
 async function use(modern) {
   await browser?.close();
   browser = await launch(modern);
-  context = await browser.newContext({ viewport: { width: 1920, height: 1080 }, reducedMotion: "reduce" });
+  context = await browser.newContext({ viewport: VIEWPORT ?? { width: 1920, height: 1080 }, reducedMotion: "reduce" });
   cmp = await context.newPage(); // the pixel diff runs in a page: no image dependency
 }
-// NUI scale (1rem = 1.4815vh), as in game; nothing may move.
-const FREEZE = `html{font-size:1.4815vh !important}*,*::before,*::after{animation:none !important;transition:none !important;caret-color:transparent !important}`;
+// NUI scale as in game (index.css.tpl: the height, or a 16:9 width on a narrower screen, floored); nothing may move.
+const FREEZE = `html{font-size:calc(clamp(calc(16px * var(--nk-scale-min, 0.75)), min(1.4815vh, 0.8333vw), 32px) * var(--nk-scale, 1)) !important}*,*::before,*::after{animation:none !important;transition:none !important;caret-color:transparent !important}`;
 
 async function check(name, shot) {
   const file = path.join(BASE, `${name}.png`);
@@ -225,12 +235,16 @@ async function components(port) {
   }
 }
 
-// `pnpm look <dir> [url]`: shoot one web package's dev fixture under every theme into bench/visual/out, no compare.
+// `pnpm look <dir> [url] [--viewport WxH] [--themes a,b]`: shoot one web package's dev fixture under every theme
+// (or the listed ones) into bench/visual/out, no compare. With --viewport the files are named <name>-<theme>-<WxH>.png.
 // Every lane that changes something visual runs it and Reads the PNGs before pushing (docs/next/dispatch.md, the gate).
 const LOOK = process.argv.indexOf("--look");
 if (LOOK !== -1) {
   const dir = process.argv[LOOK + 1];
-  const url = process.argv[LOOK + 2] ?? "/";
+  const third = process.argv[LOOK + 2];
+  const url = third && !third.startsWith("--") ? third : "/";
+  const ti = process.argv.indexOf("--themes");
+  const pick = ti === -1 ? null : String(process.argv[ti + 1] ?? "").split(",");
   if (!dir || !fs.existsSync(path.join(repo, dir, "src/dev.tsx")) && !fs.existsSync(path.join(repo, dir, "index.html"))) {
     console.error("usage: pnpm look <web package dir> [url]   (a dir with src/dev.tsx or index.html)");
     process.exit(2);
@@ -240,14 +254,14 @@ if (LOOK !== -1) {
   const stop = await serve(dir, 5897);
   try {
     const page = await context.newPage();
-    for (const [id] of THEMES) {
+    for (const [id] of THEMES.filter(([t]) => !pick || pick.includes(t))) {
       await open(page, `http://127.0.0.1:5897${url}`);
       await page.evaluate(async ([core, css]) => (await import(core)).applyTheme(css, undefined, "dark"), [`/@fs${repo}/packages/core/dist/index.js`, identityCss(id)]);
       await page.addStyleTag({ content: FREEZE });
       await sleep(500);
       await page.evaluate(() => document.fonts.ready);
       await sleep(800);
-      const file = path.join(OUT, `${name}-${id}.png`);
+      const file = path.join(OUT, `${name}-${id}${VIEWPORT ? `-${VIEWPORT.width}x${VIEWPORT.height}` : ""}.png`);
       fs.writeFileSync(file, await page.screenshot({ type: "png", timeout: 120000 }));
       console.log(file);
     }

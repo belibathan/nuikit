@@ -87,12 +87,13 @@ const fixtures: Record<string, { player: object; vehicle?: HudVehicle; changes?:
 fixtures.wide = fixtures.cruise!;
 
 /** client/layout.lua's answer for this window. 'game' (assumed until measured in game): GTA's HUD
- * spans the screen up to 3.5:1 and keeps to the middle 16:9 beyond; 'stage': the 0.5.0 rule. */
+ * spans the screen up to 3.5:1 and keeps to the middle 16:9 beyond; 'stage': the 0.5.0 rule. Both are kept
+ * to the layout box (Layout.box: the middle 16:9) unless ?bleed (Config.ultrawide = 'bleed'). */
 function layoutFor(): HudLayout {
   const w = innerWidth;
   const h = innerHeight;
   const aspect = w / h;
-  const stage = q.get("rule") === "stage" || aspect > 3.5;
+  const stage = !q.has("bleed") || q.get("rule") === "stage" || aspect > 3.5;
   const side = stage ? Math.max(0, (w - (h * 16) / 9) / 2) / w : 0;
   return { l: side, r: side, t: 0, b: 0, aspect, source: stage ? "stage" : "game" };
 }
@@ -102,7 +103,7 @@ function layoutFor(): HudLayout {
 function frameFor(layout: HudLayout, shape: MinimapFrame["shape"], preset: HudPreset): MinimapFrame {
   const w = innerWidth;
   const h = innerHeight;
-  const rem = Math.min(32, Math.max(12, h * 0.014815));
+  const rem = parseFloat(getComputedStyle(document.documentElement).fontSize) || Math.min(32, Math.max(12, Math.min(h, (w * 9) / 16) * 0.014815));
   if (preset === "compact") {
     const size = 15 * rem;
     // ?anchor=bottom-left (any corner): Config.parts.map

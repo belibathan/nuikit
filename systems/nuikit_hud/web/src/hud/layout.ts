@@ -2,7 +2,7 @@
 // it as `hud:layout`), as CSS variables every anchor in hud.css reads. Before Lua answers (the
 // browser, an older client) the 0.5.0 rule stands in: the middle 16:9 of the window.
 import { useNuiState } from "nuikit-core/react";
-import { useEffect, useState, type CSSProperties } from "react";
+import type { CSSProperties } from "react";
 import type { HudLayout, MinimapFrame } from "../nui";
 
 /** The 0.5.0 rule for a window: the middle 16:9, no safe-zone inset. */
@@ -21,6 +21,12 @@ export function layoutVars(layout: HudLayout, map: MinimapFrame | null, width: n
     "--hud-r": pct(layout.r),
     "--hud-t": pct(layout.t),
     "--hud-b": pct(layout.b),
+    // the layout's content box is GTA's HUD area (client/layout.lua: the 16:9 box unless Config.bleed), so every
+    // zone, nk-anchor and notice clear lines up with the radar Lua places in the same area
+    "--nk-area-l": pct(layout.l),
+    "--nk-area-r": pct(layout.r),
+    "--nk-area-t": pct(layout.t),
+    "--nk-area-b": pct(layout.b),
   };
   if (map) {
     vars["--hud-map-x"] = px(map.x * width);
@@ -36,17 +42,6 @@ export function layoutVars(layout: HudLayout, map: MinimapFrame | null, width: n
     vars["--hud-map-y"] = px(map.y * height);
   }
   return vars as CSSProperties;
-}
-
-/** The window's size, updated on resize. */
-export function useViewport() {
-  const [size, setSize] = useState(() => ({ w: window.innerWidth, h: window.innerHeight }));
-  useEffect(() => {
-    const on = () => setSize({ w: window.innerWidth, h: window.innerHeight });
-    window.addEventListener("resize", on);
-    return () => window.removeEventListener("resize", on);
-  }, []);
-  return size;
 }
 
 export function useHudLayout(): HudLayout | null {

@@ -210,8 +210,14 @@ local function useRouteTexture(on, txd, name)
   end
 end
 
---- The kit's rem in pixels for a screen height (1rem = 1.4815% of the height, 12–32px).
-local function rem(height) return clamp(height * 0.014815, 12.0, 32.0) end
+--- The kit's rem in pixels for a screen (index.css, docs/design/layout.md): 1.4815% of the height, or of a
+--- 16:9 width on a narrower screen (16:10, 4:3), 12–32px. `width` may be left out (16:9 and wider).
+local function rem(height, width)
+  local h = height
+  if width and width > 0 then h = math.min(height, width * 9.0 / 16.0) end
+  return clamp(h * 0.014815, 12.0, 32.0)
+end
+Minimap.rem = rem
 
 --- The frame's rectangle in screen pixels, its band width, the hole (where the radar shows) and the
 --- radar's box: the hole's height, Minimap.aspect() times as wide, centred on it.
@@ -220,7 +226,7 @@ local function rem(height) return clamp(height * 0.014815, 12.0, 32.0) end
 function Minimap.layout(width, height, safezone, area)
   area = area or Layout.stage(width, height, safezone)
   local o = Minimap.options()
-  local r = rem(height)
+  local r = rem(height, width)
   local size = o.size * r
   local band = o.band * r
   -- --nk-edge (1.5rem) inside GTA's safe area, like every other anchor of the HUD
@@ -246,7 +252,7 @@ end
 function Minimap.component(box, width, height, safezone, area)
   area = area or Layout.stage(width, height, safezone)
   local unitW = Layout.unit16(height)
-  return (box.x - area.left) / unitW, (box.y + box.h - area.bottom) / area.unitH, box.w / unitW, box.h / area.unitH
+  return (box.x - (area.gtaLeft or area.left)) / unitW, (box.y + box.h - area.bottom) / area.unitH, box.w / unitW, box.h / area.unitH
 end
 
 local function place(box, hole, width, height, safezone, area)
@@ -328,7 +334,7 @@ function Minimap.slide(show)
   local id, l = slideId, last
   local duration = show and 280 or 200
   local edge = (l.box.x + l.box.w / 2 < l.width / 2) and -1 or 1
-  local distance = 2.5 * rem(l.height) * edge
+  local distance = 2.5 * rem(l.height, l.width) * edge
   local function at(offset)
     local box = { x = l.box.x + offset, y = l.box.y, w = l.box.w, h = l.box.h }
     local hole = { x = l.hole.x + offset, y = l.hole.y, w = l.hole.w, h = l.hole.h }

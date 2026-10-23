@@ -177,11 +177,13 @@
       "web/src/components/ui/fill.tsx",
       "web/src/components/ui/icon-text.tsx",
       "web/src/components/ui/money.tsx",
+      "web/src/components/ui/screen.tsx",
       "web/src/components/ui/speedometer.tsx",
       "web/src/components/ui/text-roll.tsx",
       "web/src/components/ui/text.tsx",
       "web/src/components/ui/tile.tsx",
       "web/src/components/ui/vital-chip.tsx",
+      "web/src/components/ui/zone.tsx",
       "web/src/hooks/use-collapse.ts",
       "web/src/index.css",
       "web/src/lib/utils.ts"

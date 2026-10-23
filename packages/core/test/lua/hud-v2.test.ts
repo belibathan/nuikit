@@ -91,6 +91,19 @@ describe("nuikit_hud: the HUD area (client/layout.lua)", () => {
     expect(await hud.run(`return Layout.fromGfx(1920, 1080, nil, nil, nil, nil) == nil`)).toBe(true);
   });
 
+  it("keeps the area to the layout box on an ultrawide (Config.ultrawide), GTA's origin for the radar", async () => {
+    const hud = await start();
+    const boxed = await hud.run<any>(`return Layout.box(Layout.fromGfx(3440, 1440, 0.0, 1.0, 0.744, 2.0), 3440, 1440)`);
+    expect(boxed.left).toBeCloseTo(440, 3);
+    expect(boxed.right).toBeCloseTo(3000, 3);
+    expect(boxed.gtaLeft).toBe(0);
+    const bled = await hud.run<any>(`Config.ultrawide = 'bleed' return Layout.box(Layout.fromGfx(3440, 1440, 0.0, 1.0, 0.744, 2.0), 3440, 1440)`);
+    expect(bled.left).toBe(0);
+    // 16:9 and narrower: untouched
+    const hd = await hud.run<any>(`Config.ultrawide = nil return Layout.box(Layout.stage(1920, 1080, 0.9), 1920, 1080)`);
+    expect(hd.left).toBeCloseTo(96, 3);
+  });
+
   it("sends the area to the page as screen fractions, only when it changed", async () => {
     const hud = await start(`
       SCREEN = { 1920, 1080 }

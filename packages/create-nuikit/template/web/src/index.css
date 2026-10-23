@@ -3439,9 +3439,6 @@ html[data-nk-backdrop="on"] * {
     max-width: calc(100% - var(--nk-area-l) - var(--nk-area-r) - 2 * var(--nk-safe-x) - 2 * var(--nk-zone-inset, var(--nk-edge)));
     max-height: calc(100% - var(--nk-area-t) - var(--nk-area-b) - 2 * var(--nk-safe-y) - 2 * var(--nk-zone-inset, var(--nk-edge)));
   }
-  [data-nk-zone]:not([data-nk-zone="t"], [data-nk-zone="b"], [data-nk-zone="l"], [data-nk-zone="r"]) > * {
-    pointer-events: auto;
-  }
   [data-nk-zone^="t"] {
     top: calc(var(--nk-area-t) + var(--nk-safe-y) + var(--nk-zone-inset, var(--nk-edge)));
   }

@@ -1,4 +1,6 @@
-import { fetchNui, getPlayer, onPlayer, Surface, useNuiState, useSurfaceOpen } from "nuikit-core/react";
+import { fetchNui, getPlayer, onPlayer, Surface, useNuiState, useSurfaceOpen, useViewport } from "nuikit-core/react";
+import { Screen } from "@/components/ui/screen";
+import { Zone } from "@/components/ui/zone";
 import { MinimapFrameView, useMinimap } from "./minimap";
 import { useEffect, useRef, useState, useSyncExternalStore, type CSSProperties, type ReactNode } from "react";
 import type { HudCorner, HudLayout, HudParts, HudStyles, HudLocation, HudSettings, HudVehicle, HudWeapon, MinimapFrame, MinimapState } from "./nui";
@@ -7,11 +9,11 @@ import { Cluster } from "./hud/cluster";
 import { LayoutEditor } from "./hud/editor";
 import { useLegibility } from "./hud/legibility";
 import { ShownZones, shownZones, useSituation, type Situation } from "./hud/situation";
-import { layoutVars, stageLayout, useHudLayout, useViewport } from "./hud/layout";
+import { layoutVars, stageLayout, useHudLayout } from "./hud/layout";
 import { CompassTape, LocationStrip } from "./hud/location";
 import { useHudLook, type HudLook } from "./hud/look";
 import { MapLocation, MapRing } from "./hud/map";
-import { BESIDE_CLASS, clusterScale, CORNER_CLASS, CORNERS, cornerSide, Part, placeParts, resolveParts } from "./hud/parts";
+import { BESIDE_CLASS, clusterScale, CORNER_ZONE, CORNERS, cornerSide, Part, placeParts, resolveParts } from "./hud/parts";
 import { VitalsRow } from "./hud/pills";
 import { Wallet } from "./hud/wallet";
 
@@ -181,22 +183,29 @@ function corners(groups: ReturnType<typeof placeParts>, side: "left" | "right", 
   return CORNERS.filter((c) => cornerSide(c) === side && groups[c].length > 0).map((c) => {
     // the player's size for this cluster, from its own corner (hud.css: the origin is the anchor)
     const scale = clusterScale(styles, `scale.${c}`);
+    const parts = groups[c].map((p) => (
+      <Part key={p.name} name={p.name}>
+        {p.el}
+      </Part>
+    ));
+    const common = {
+      key: c,
+      "data-slot": "hud-corner",
+      "data-corner": c,
+      "data-scaled": scale ? true : undefined,
+      style: scale ? ({ "--hud-cluster-scale": String(scale) } as CSSProperties) : undefined,
+    };
+    // the stack in the map's own corner sits beside the map (map-relative, hud.css .hud-beside)
+    if (c === beside)
+      return (
+        <div {...common} data-beside className={BESIDE_CLASS[c]}>
+          {parts}
+        </div>
+      );
     return (
-    <div
-      key={c}
-      data-slot="hud-corner"
-      data-corner={c}
-      data-beside={c === beside || undefined}
-      data-scaled={scale ? true : undefined}
-      className={c === beside ? BESIDE_CLASS[c] : CORNER_CLASS[c]}
-      style={scale ? ({ "--hud-cluster-scale": String(scale) } as CSSProperties) : undefined}
-    >
-      {groups[c].map((p) => (
-        <Part key={p.name} name={p.name}>
-          {p.el}
-        </Part>
-      ))}
-    </div>
+      <Zone {...common} at={CORNER_ZONE[c]} flow="column">
+        {parts}
+      </Zone>
     );
   });
 }
@@ -257,7 +266,7 @@ function Compact({ settings, vehicle, location, weapon, layout, frame, state, lo
     </div>
   );
   return (
-    <div data-slot="hud" data-layout="compact" className="hud-root" data-shadow={look.shadow} style={vars as CSSProperties}>
+    <Screen data-hud data-layout="compact" className="hud-root" data-shadow={look.shadow} style={vars as CSSProperties}>
       <Side side="map" slide={settings.slide && frame ? mapEdge(frame) : undefined}>{ring && <MapRing frame={frame!} start={heading} compass={settings.compass?.ring !== false} location={location} units={units} halo={settings.halo !== false} tag={settings.waypointTag === true} />}</Side>
       <Side side="left">
         {columnSide === "left" && columnEl}
@@ -267,7 +276,7 @@ function Compact({ settings, vehicle, location, weapon, layout, frame, state, lo
         {columnSide === "right" && columnEl}
         {corners(groups, "right", mapCorner, settings.styles)}
       </Side>
-    </div>
+    </Screen>
   );
 }
 
@@ -303,7 +312,7 @@ function Classic({ settings, vehicle, location, weapon, layout, frame, state, lo
   if (!beside) groups["bottom-left"] = [...groups["bottom-left"], ...onMap].sort((a, b) => a.order - b.order);
 
   return (
-    <div data-slot="hud" data-layout="classic" className="hud-root" data-shadow={look.shadow} style={vars}>
+    <Screen data-hud data-layout="classic" className="hud-root" data-shadow={look.shadow} style={vars}>
       <Side side="map" slide={settings.slide && frame ? mapEdge(frame) : undefined}>{mapShown && frame!.framed !== false && settings.frame !== false && <MinimapFrameView frame={frame!} state={state!} />}</Side>
       <Side side="left">
         {above.length > 0 && (
@@ -322,8 +331,14 @@ function Classic({ settings, vehicle, location, weapon, layout, frame, state, lo
         )}
         {corners(groups, "left", null, settings.styles)}
       </Side>
-      <Side side="top">{tape && <CompassTape start={heading} />}</Side>
+      <Side side="top">
+        {tape && (
+          <Zone at="tc">
+            <CompassTape start={heading} />
+          </Zone>
+        )}
+      </Side>
       <Side side="right">{corners(groups, "right", null, settings.styles)}</Side>
-    </div>
+    </Screen>
   );
 }
