@@ -43,9 +43,9 @@ const itemSlotVariants = cva(
       },
       size: {
         fill: "w-full",
-        sm: "w-14",
-        md: "w-20",
-        lg: "w-24",
+        sm: "w-[var(--nk-item-slot-w-sm,3.5rem)]",
+        md: "w-[var(--nk-item-slot-w,5rem)]",
+        lg: "w-[var(--nk-item-slot-w-lg,6rem)]",
       },
     },
     defaultVariants: {
@@ -175,7 +175,7 @@ function ItemSlot({
     >
       <div
         data-slot="item-slot-top"
-        className={cn("nk-num flex h-3 shrink-0 items-center justify-between gap-1 text-(length:--nk-text-label) leading-none", hudActive ? "" : hud ? "opacity-75" : "text-muted-foreground")}
+        className={cn("nk-num flex h-[var(--nk-item-slot-meta-h,0.75rem)] shrink-0 items-center justify-between gap-[var(--nk-item-slot-gap,0.25rem)] text-(length:--nk-text-label) leading-none", hudActive ? "" : hud ? "opacity-75" : "text-muted-foreground")}
       >
         <span data-slot="item-slot-corner">{corner}</span>
         {right !== null && right !== undefined && (
@@ -201,7 +201,7 @@ function ItemSlot({
         </>
       )}
       {locked && (
-        <LockIcon aria-hidden className="absolute right-1.5 bottom-1.5 size-3.5 text-muted-foreground" />
+        <LockIcon aria-hidden className="absolute right-1.5 bottom-1.5 size-[var(--nk-item-slot-lock,0.875rem)] text-muted-foreground" />
       )}
       {dur && (
         <div
@@ -212,7 +212,7 @@ function ItemSlot({
           aria-valuemax={100}
           aria-valuenow={Math.round(dur.value)}
           className={cn(
-            "absolute inset-x-2 bottom-1 h-0.5 overflow-hidden",
+            "absolute inset-x-2 bottom-1 h-[calc(var(--nk-gauge-track,0.25rem)/2)] overflow-hidden",
             hud ? "nk-track" : "bg-foreground/15"
           )}
         >

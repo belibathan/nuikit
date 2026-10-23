@@ -111,7 +111,7 @@ function Kbd({ className, ...props }: Omit<TileProps, "slot">) {
       slot="kbd"
       size="sm"
       className={cn(
-        "pointer-events-none inline-flex h-(--nk-h-key) w-fit min-w-(--nk-h-key) items-center justify-center gap-1 px-1 text-(length:--nk-text-key) select-none [&_svg:not([class*='size-'])]:size-3",
+        "pointer-events-none inline-flex h-(--nk-h-key) w-fit min-w-(--nk-h-key) items-center justify-center gap-[var(--nk-tile-gap,0.25rem)] px-[var(--nk-tile-pad,0.25rem)] text-(length:--nk-text-key) select-none [&_svg:not([class*='size-'])]:size-(--nk-icon-sm)",
         className
       )}
       {...props}

@@ -121,19 +121,19 @@ The five roles: `scan` (keys, buttons, tabs), `title`, `label`, `num`, `body`. E
 | Decision | Lever | Default | Range / values | Set by treatment | Hard-coded |
 |---|---|---|---|---|---|
 | Density | `--nk-density` → `--nk-space-unit` | `0.875` | 0.75–1.3 | tile `1` | |
-| Spacing steps | `--nk-space-{1,2,3,4,6,8}`, `--nk-gap-cluster`, `--nk-gap-items`, `--nk-pad-x`, `--nk-pad-surface` | n × unit; 2 / 1 / 3 / 6 | length | | `tile.tsx` 113 `gap-1 px-1`; `menu-row.tsx` 271 `gap-1`; `stat.tsx` 116 `gap-1`; `skill-check.tsx` 297 `px-2`; `key-prompt.tsx` 59 `py-1` |
+| Spacing steps | `--nk-space-{1,2,3,4,6,8}`, `--nk-gap-cluster`, `--nk-gap-items`, `--nk-pad-x`, `--nk-pad-surface` | n × unit; 2 / 1 / 3 / 6 | length | | lever: `--nk-tile-{gap,pad}`, `--nk-menu-row-gap`, `--nk-stat-gap`, `--nk-skill-check-key-pad`, `--nk-key-prompt-{pad-y,pad-l,pad-r,gap}`, `--nk-item-slot-gap` (no `--nk-space-n` equals `0.25rem` at density 0.875, so component families) |
 | Row bar shape | `--nk-row-bar-thickness`, `--nk-row-bar-inset-scale` | `0.1875rem`, `2.5` | length; 0–6 | | |
 | Hold ring, pips, segments | `--nk-hold-ring-pad`, `--nk-pip-size`, `--nk-pip-gap`, `--nk-meter-segment-gap` | `2px`, `10%`, `2px`, `0.125rem` | length | | |
 | Glow radius | `--nk-glow-radius` (chip × .75, meter × .625) | `1rem` | length | | |
 | Line height | `--nk-leading-tight`, `--nk-leading-normal` | `1rem`, `1.25rem` | length | | |
-| Heights | `--nk-h-key`, `-chip`, `-control`, `-row`, `-field` | `1.25rem`, `2rem × d`, `2.25rem`, `2.75rem × d`, `2.75rem` | length | tile 1.5 / 1.75 / 2.25 / 3rem | `key-prompt.tsx` 59 `min-h-8`, 323 `h-6`; `skill-check.tsx` 297 `h-8`; `menu-row.tsx` 203 `size-8`; `nui-image.tsx` 71 `h-6` |
+| Heights | `--nk-h-key`, `-chip`, `-control`, `-row`, `-field` | `1.25rem`, `2rem × d`, `2.25rem`, `2.75rem × d`, `2.75rem` | length | tile 1.5 / 1.75 / 2.25 / 3rem | lever: `--nk-key-prompt-{min-h,min-h-sm,cap-h}`, `--nk-skill-check-key-h`, `--nk-menu-row-image`, `--nk-nui-image-icon-max`, `--nk-edge-sheet-header-h` (each with today's value as fallback) |
 | Row padding and gap | `--nk-row-pad-y`, `-pad-x`, `--nk-row-gap`, `--nk-row-icon-box` | space-2 / 3 / 4; `2rem` | length | | |
-| Icons | `--nk-icon-sm`, `-md`, `-lg`, `--nk-icon-stroke` | `.75 / 1 / 1.25rem`, `2` | length; 0.5–4 | | `stat.tsx` 116 `size-3.5`; world icon `1rem` (kit.css ~767) |
+| Icons | `--nk-icon-sm`, `-md`, `-lg`, `--nk-icon-stroke` | `.75 / 1 / 1.25rem`, `2` | length; 0.5–4 | | lever `--nk-stat-icon` (`0.875rem`), `--nk-item-slot-lock`; svg defaults read `--nk-icon-{sm,md,lg}`; world icon `1rem` (kit.css ~767) |
 | Panel paddings and header | `--nk-panel-header-height`, `-header-padding`, `-body-padding`, `-footer-padding`, `-footer-rule`, `-divider` | `3.25rem × d`, surface pads, `space-3`, none | kit-only | | field-row minimums `1.75rem` / `1.5rem`, `gap: 0.5rem` (kit.css 519–534) |
 | Screen edge | `--nk-edge` | `1.5rem` | kit-only | | |
 | Slab | `--nk-slab-height`, `-padding`, `-gap`, `-radius`, `-bg`, `-fg`, `-border`, `-font-size`, `-weight` | `2.5rem × d`, … | kit-only | | key chip pad `0 0.375rem` (kit.css ~791) |
 | Dial / ring / speedometer diameter | prop `size` | 128 / 192 / 256 px at 1080p | | | `RING_SIZE`, `speedometer.tsx` 85 (`48px`, `192px`): props, not tokens |
-| Notice progress line | `--nk-gauge-track` / 2 (edge fill, action-bar hold line) | `0.125rem` | length | | `h-0.5` (`notice.tsx` 432, `key-prompt.tsx` 363) |
+| Notice progress line | `--nk-gauge-track` / 2 (edge fill, action-bar hold line) | `0.125rem` | length | | `notice`, `key-prompt`, `item-slot` lines now `--nk-gauge-track / 2` |
 
 ## Motion
 
@@ -159,7 +159,7 @@ the default, so nothing shipped changes. Items in `registry/nuikit/ui` belong to
 
 1. ~~Keycap hover lift and press depth~~ done: `--nk-tile-lift`, `--nk-tile-press-ratio` (`--nk-tile-press` was taken: the plate offset).
 2. ~~Line heights~~ done: `--nk-leading-tight` (`1rem`), `--nk-leading-normal` (`1.25rem`); unitless leadings (1, 1.2, 1.25, 1.3) stay.
-3. **Registry size literals**: `h-6`/`min-h-8`/`h-8`/`size-8`/`gap-1`/`px-1`/`px-2`/`size-3.5` in `key-prompt.tsx`,
+3. ~~Registry size literals~~ done (widths too: `--nk-{panel,notice,confirm}-w[-sm|-lg]`, `--nk-item-slot-w*`, `--nk-countdown-bar-w*`, `--nk-skill-check-size*`). Was: `h-6`/`min-h-8`/`h-8`/`size-8`/`gap-1`/`px-1`/`px-2`/`size-3.5` in `key-prompt.tsx`,
    `skill-check.tsx`, `menu-row.tsx`, `tile.tsx`, `stat.tsx`, `nui-image.tsx`. Should read `--nk-h-key`, `--nk-h-chip`,
    `--nk-space-*`, `--nk-icon-*` (the lanes editing those files).
 4. ~~Progress-line and edge-fill thickness~~ done in kit.css: the edge fill and action-bar hold line are `--nk-gauge-track / 2`. The registry `h-0.5` literals stay with their lane.

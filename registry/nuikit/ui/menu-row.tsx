@@ -73,7 +73,7 @@ const menuRowVariants = cva(
   [
     "group/menu-row nk-row w-full cursor-default text-left outline-none select-none",
     "disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50",
-    "[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+    "[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-(--nk-icon-md)",
   ],
   {
     variants: {
@@ -202,7 +202,7 @@ function MenuRow({
 
   const lead =
     image !== undefined && image !== null ? (
-      <span data-slot="menu-row-image" className="flex size-8 shrink-0 overflow-hidden rounded-(--nk-key-radius) bg-muted">
+      <span data-slot="menu-row-image" className="flex size-[var(--nk-menu-row-image,2rem)] shrink-0 overflow-hidden rounded-(--nk-key-radius) bg-muted">
         {typeof image === "string" ? <img src={image} alt="" className="size-full object-cover" /> : image}
       </span>
     ) : (
@@ -234,7 +234,7 @@ function MenuRow({
             value={progress}
             color={progressColor}
             label={typeof children === "string" ? children : undefined}
-            className="mt-(--nk-space-2) mb-(--nk-space-1) h-1"
+            className="mt-(--nk-space-2) mb-(--nk-space-1) h-[var(--nk-menu-row-bar-h,0.25rem)]"
           />
         )}
       </span>
@@ -246,7 +246,7 @@ function MenuRow({
       {kbd !== undefined && kbd !== null && <MenuRowKbd keys={kbd} />}
       {isCheck && <Checkbox checked={checked} disabled={disabled} tabIndex={-1} aria-hidden className="pointer-events-none" />}
       {isStepper && (
-        <span data-slot="menu-row-stepper" className="flex shrink-0 items-center gap-1">
+        <span data-slot="menu-row-stepper" className="flex shrink-0 items-center gap-[var(--nk-menu-row-gap,0.25rem)]">
           <span
             className={cn("rounded-(--nk-r-key) p-(--nk-space-1)", quiet, hovers && "hover:bg-background/50 hover:text-foreground")}
             onClick={(e) => (e.stopPropagation(), step(-1))}
@@ -254,7 +254,7 @@ function MenuRow({
           >
             <ChevronLeftIcon />
           </span>
-          <span data-slot="menu-row-value" data-tone={valueTone} className={cn("nk-num min-w-12 text-center text-(length:--nk-text-label)", valueTone === "muted" && quiet)}>
+          <span data-slot="menu-row-value" data-tone={valueTone} className={cn("nk-num min-w-[var(--nk-menu-row-value-w,3rem)] text-center text-(length:--nk-text-label)", valueTone === "muted" && quiet)}>
             {value}
           </span>
           <span
@@ -270,7 +270,7 @@ function MenuRow({
         <span
           data-slot="menu-row-actions"
           // a control on a highlighted row would vanish into the accent: lift its hover off it
-          className="flex shrink-0 items-center gap-1 [&>button:hover]:bg-background/50 [&>button:hover]:text-foreground"
+          className="flex shrink-0 items-center gap-[var(--nk-menu-row-gap,0.25rem)] [&>button:hover]:bg-background/50 [&>button:hover]:text-foreground"
           onClick={(e) => e.stopPropagation()}
         >
           {actions}
