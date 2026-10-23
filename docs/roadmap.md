@@ -27,7 +27,7 @@ how a stranger adopts it. 1 star, no users, no feedback loop but the owner's own
 the first ten minutes broken or undocumented for every persona (details in each item below). The design side is in a good
 place to stop adding screens and finish the foundations.
 
-**0.9 is "adoptable":** no new screens. Three tracks, each with a definition of done a stranger could check.
+**0.9 is "adoptable":** no new screens. Four tracks (A foundations, B adoption surface, D the styling system as a platform, C rails), each with a definition of done a stranger could check.
 
 ## 0.9 · Track A: finish the foundations (keeps the premium bar)
 
@@ -87,6 +87,23 @@ end to end on a machine that is not the owner's, without reading the monorepo.*
 | Theme studio on tokens 1.7, Default and Neon Pop (it is reachable; check it exposes the baseline and selection levers) | Open |
 | Figma reference regenerated for tokens 1.7 / Default / Neon Pop (`docs/design/figma.md` is at 1.2 and four identities) | Open (Figma lane) |
 | DTCG `$description` and the CLI help agree with `design/naming.md` on what "default" means | Open, small |
+
+## 0.9 · Track D: the styling system is a platform (the owner, Oct 23)
+
+*The API is robust for building UI logic; the styling system must be as robust for building a design language. Default is
+opinionated (slanted keycaps, condensed italic caps) on purpose, and that must be one choice among many, not the shape of the
+kit. Lane: kit + platform + site. Done when: three visibly different design languages ship as theme files that set values only
+(no component rules, enforced), a server can start from any of them in the studio and have its own look in an hour, and the
+lever catalog is the documentation.*
+
+| Item | State |
+|---|---|
+| D1 Lever audit: every visual decision in `registry/nuikit/ui` and `kit.css` classified as lever (which token), treatment preset, or hard-coded; `docs/design/levers.md` is the catalog by concept (geometry, depth, type voices, fills, selection, motion) with each lever's default and range. The hard-coded ones become levers | Open, first |
+| D2 Treatments as the first-class axis: `--nk-treatment` presets (`soft`, `glass`, `plate`, `slab`, `tile` today) each a complete, coherent language, and the geometry levers (`--nk-skew`, walls, radii, type voices) free under every treatment | Open |
+| D3 The flexibility proof: three shipped themes in three languages (Default = slanted keycaps; a flat rounded utilitarian one; one more, e.g. square/brutal or soft glass) built from values only, shown side by side on the site and in the dev fixtures | Open |
+| D4 Enforce "themes set values only": a `nuikit check` rule (and a core test) that a `themes/*.css` contains only custom properties in `@layer nk.theme`; a theme that needs a selector means the kit is missing a lever | Open |
+| D5 Studio and CLI: pick a treatment, drag the levers, see every component, export; `nuikit theme new --from <theme>` scaffolds a theme file with every lever commented | Open |
+| D6 `docs/design/your-language.md` (+ site page): design your own language in an hour, lever by lever, from any shipped theme | Open |
 
 ## 0.9 · Track C: rails for rapid building (so lanes run with less lead attention)
 
