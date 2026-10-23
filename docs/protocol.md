@@ -300,7 +300,27 @@ Application names SHOULD be `<feature>:<verb or noun>` in lower case (`hud:vital
 - A failed handler MUST answer `{ "error": "<message>" }` and SHOULD log it on the client console. Pages MUST
   treat any response object with an `error` key as a failure (`nuikit-core` throws `NuiError`).
 - A page SHOULD time out a callback (default 10 s) and report it as "callback not registered".
+  The full vocabulary is §5.3.1.
 - Responses to built-ins use `ok: boolean` plus the fields listed below.
+
+#### 5.3.1 Error codes, deadlines, diagnostics
+
+`nuikit-core`'s `fetchNui(name, data, { timeoutMs, signal })` rejects with a `NuiError` whose `code` is one of:
+
+| code | meaning |
+|---|---|
+| `TIMEOUT` | no answer within `timeoutMs` (default 10 s; `configureNui({ timeoutMs })` changes it for the page) |
+| `TRANSPORT` | the call never completed (fetch failed, the owning resource stopped) |
+| `UNKNOWN_CALLBACK` | the peer has no such callback |
+| `INVALID` | Lua answered `{ error }` (a failed handler) or the reply was not JSON |
+| `CANCELLED` | the caller's `AbortSignal` fired |
+
+A peer that knows a callback is not registered (the host forwarding a hosted module's call) answers
+`{ "error": "UNKNOWN_CALLBACK", "message": "<detail>" }`; a response whose `error` is one of the codes above
+carries that code, any other `error` text is `INVALID`. A plain page's unregistered callback never answers in game,
+so it surfaces as `TIMEOUT`. In the browser `configureNui({ strictMocks: true })` makes an unmocked call reject
+`UNKNOWN_CALLBACK`. Devtools show each call's code and time. Per resource, `getNuiDiagnostics()` (also
+`window["nuikit:diagnostics"]()`) returns `{ resource, calls, errors: { [code]: n }, p50, p95 }` (ms, last 200 calls).
 
 ### 5.4 Built-ins
 

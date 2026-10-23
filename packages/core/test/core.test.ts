@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { __reset, closeNui, emit, fetchNui, getVisible, isBrowser, mockNui, NuiError, onNui, onNuiCall, setVisible } from "../src/index";
+import { __reset, closeNui, configureNui, getNuiDiagnostics, emit, fetchNui, getVisible, isBrowser, mockNui, NuiError, onNui, onNuiCall, setVisible } from "../src/index";
 
 afterEach(() => {
   __reset();
@@ -60,7 +60,7 @@ describe("callbacks (UI → Lua)", () => {
     onNuiCall(log);
     mockNui("double", (d: any) => ({ n: d.n * 2 }));
     await expect(fetchNui("double", { n: 21 })).resolves.toEqual({ n: 42 });
-    expect(log).toHaveBeenCalledWith({ name: "double", data: { n: 21 }, response: { n: 42 }, mocked: true });
+    expect(log).toHaveBeenCalledWith(expect.objectContaining({ name: "double", data: { n: 21 }, response: { n: 42 }, mocked: true, ms: expect.any(Number) }));
   });
 
   it("POSTs to https://<resource>/<name> in game", async () => {
@@ -88,6 +88,84 @@ describe("callbacks (UI → Lua)", () => {
         ),
     );
     await expect(fetchNui("missing", {}, { timeout: 10 })).rejects.toThrow(/timed out/);
+  });
+});
+
+describe("NuiError codes", () => {
+  const game = () => ((window as any).GetParentResourceName = () => "my-hud");
+  const hang = () =>
+    vi.spyOn(globalThis, "fetch").mockImplementation(
+      (_u, init) =>
+        new Promise((_r, reject) =>
+          (init as RequestInit).signal!.addEventListener("abort", () => reject(Object.assign(new Error("aborted"), { name: "AbortError" }))),
+        ),
+    );
+  const code = async (p: Promise<unknown>) => p.then(() => "ok", (e) => (e as NuiError).code);
+
+  it("TIMEOUT via timeoutMs and via the configured default", async () => {
+    game();
+    hang();
+    expect(await code(fetchNui("m", {}, { timeoutMs: 10 }))).toBe("TIMEOUT");
+    configureNui({ timeoutMs: 10 });
+    expect(await code(fetchNui("m", {}))).toBe("TIMEOUT");
+  });
+
+  it("CANCELLED via AbortSignal, also when already aborted", async () => {
+    game();
+    hang();
+    const c = new AbortController();
+    const p = code(fetchNui("m", {}, { signal: c.signal }));
+    c.abort();
+    expect(await p).toBe("CANCELLED");
+    expect(await code(fetchNui("m", {}, { signal: c.signal }))).toBe("CANCELLED");
+  });
+
+  it("TRANSPORT when fetch fails", async () => {
+    game();
+    vi.spyOn(globalThis, "fetch").mockRejectedValue(new TypeError("net"));
+    expect(await code(fetchNui("m"))).toBe("TRANSPORT");
+  });
+
+  it("UNKNOWN_CALLBACK from Lua's reply, and from strictMocks in the browser", async () => {
+    game();
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response(JSON.stringify({ error: "UNKNOWN_CALLBACK", message: "no NUI callback" })));
+    const err = (await fetchNui("m").catch((e) => e)) as NuiError;
+    expect(err.code).toBe("UNKNOWN_CALLBACK");
+    expect(err.message).toMatch(/no NUI callback/);
+    delete (window as any).GetParentResourceName;
+    configureNui({ strictMocks: true });
+    expect(await code(fetchNui("nothing"))).toBe("UNKNOWN_CALLBACK");
+    expect(await fetchNui("nothing", {}, { mock: { ok: true } })).toEqual({ ok: true });
+  });
+
+  it("INVALID for a Lua { error } and for a non-JSON reply", async () => {
+    game();
+    const f = vi.spyOn(globalThis, "fetch").mockImplementation(async () => new Response(JSON.stringify({ error: "no item" })));
+    expect(await code(fetchNui("m"))).toBe("INVALID");
+    f.mockImplementation(async () => new Response("<html>"));
+    expect(await code(fetchNui("m"))).toBe("INVALID");
+  });
+
+  it("a mock that returns { error } fails like the game would", async () => {
+    mockNui("m", () => ({ error: "UNKNOWN_CALLBACK" }) as never);
+    expect(await code(fetchNui("m"))).toBe("UNKNOWN_CALLBACK");
+  });
+
+  it("logs code and ms per call, and keeps per-resource diagnostics", async () => {
+    const log = vi.fn();
+    onNuiCall(log);
+    game();
+    const f = vi.spyOn(globalThis, "fetch").mockImplementation(async () => new Response("{}"));
+    await fetchNui("a");
+    await fetchNui("a");
+    f.mockImplementation(async () => new Response(JSON.stringify({ error: "x" })));
+    await code(fetchNui("a"));
+    expect(log.mock.calls[2]![0]).toMatchObject({ code: "INVALID", mocked: false });
+    expect(log.mock.calls[0]![0].code).toBeUndefined();
+    const [d] = getNuiDiagnostics();
+    expect(d).toMatchObject({ resource: "my-hud", calls: 3, errors: { INVALID: 1 } });
+    expect(d!.p95).toBeGreaterThanOrEqual(d!.p50);
+    expect((window as any)["nuikit:diagnostics"]()).toEqual(getNuiDiagnostics());
   });
 });
 

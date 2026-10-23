@@ -59,7 +59,7 @@ const SCENES: Record<SceneName, string> = {
   grid: "linear-gradient(#ffffff0d 1px, transparent 1px) 0 0/40px 40px, linear-gradient(90deg, #ffffff0d 1px, transparent 1px) 0 0/40px 40px, #0a0d14",
 };
 
-type LogEntry = { id: number; t: number; kind: "event" | "call"; name: string; data: unknown; response?: unknown };
+type LogEntry = { id: number; t: number; kind: "event" | "call"; name: string; data: unknown; response?: unknown; ms?: number; code?: string };
 
 const css = `
 .nkdt{position:fixed;right:16px;bottom:16px;z-index:2147483646;font:12px/1.4 ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;color:#e7e9ee;letter-spacing:0}
@@ -145,7 +145,7 @@ export function NuiDevtools({
     if (!enabled) return;
     const push = (e: Omit<LogEntry, "id" | "t">) => setLog((l) => [{ ...e, id: ++seq, t: Date.now() }, ...l].slice(0, 100));
     const a = onAnyNui((m) => push({ kind: "event", name: m.action, data: m.data }));
-    const b = onNuiCall((c) => push({ kind: "call", name: c.name, data: c.data, response: c.response }));
+    const b = onNuiCall((c) => push({ kind: "call", name: c.name, data: c.data, response: c.response, ms: c.ms, code: c.code }));
     const c = onVisible(setVis);
     return () => {
       a();
@@ -229,7 +229,13 @@ export function NuiDevtools({
                     <div key={e.id}>
                       <span className={`nkdt-k ${e.kind === "event" ? "e" : "c"}`}>{e.kind === "event" ? "LUA→" : "→LUA"}</span>{" "}
                       {e.name} <span className="nkdt-dim">{short(e.data)}</span>
-                      {e.kind === "call" && <span className="nkdt-dim"> ⇐ {short(e.response)}</span>}
+                      {e.kind === "call" && (
+                        <span className="nkdt-dim">
+                          {" "}
+                          ⇐ {e.code ? <b>{e.code}</b> : short(e.response)}
+                          {e.ms !== undefined && ` · ${e.ms < 10 ? e.ms.toFixed(1) : Math.round(e.ms)} ms`}
+                        </span>
+                      )}
                     </div>
                   ))}
                   {log.length > 0 && (
