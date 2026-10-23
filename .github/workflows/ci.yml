@@ -72,7 +72,7 @@ jobs:
     name: Visual baselines (Chromium 103)
     runs-on: ubuntu-latest
     needs: test
-    # Advisory until the baselines have been regenerated from CI's own browsers (bench/visual/run.mjs --update).
+    # Advisory: shots are a CI artifact to look at, never committed (no stored images in the repo).
     continue-on-error: true
     steps:
       - uses: actions/checkout@v4
@@ -85,8 +85,8 @@ jobs:
       - run: pnpm -r --filter "./packages/**" build
       # The site (/components) is a modern page: it gets Playwright's Chromium; HUD and pause run in 103.
       - run: node node_modules/.pnpm/playwright-core@1.56.0/node_modules/playwright-core/cli.js install --with-deps chromium
-      # HUD, pause and /components under five identities vs bench/visual/baselines. A missing baseline is
-      # reported, not failed; a diff over the threshold fails. bench/visual/out holds actual + diff (and new-*).
+      # HUD, pause and /components under five identities. No baselines are committed, so every shot is `new`
+      # and lands in bench/visual/out for a lane to look at; run locally with baselines to diff.
       - run: pnpm visual
       - uses: actions/upload-artifact@v4
         if: always()

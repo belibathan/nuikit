@@ -151,7 +151,7 @@ Removed in 0.9.0: `key-hint` (→ `key-prompt`), `task-progress` (→ `meter` ti
 `systems/nuikit_pause/web` plus four `/components` sections under Default, Neon Pop, Graphite, Flat and Square at
 1920×1080 (animations off, reduced motion, fontsource fonts) in Chromium 103, the build `pnpm proof` uses
 (`@sparticuz/chromium`; `VISUAL_CHROMIUM` overrides, `VISUAL_ONLY=hud,pause,components` narrows). Each shot is compared with
-`bench/visual/baselines/<page>-<theme>.png` by pixel ratio (default 1%, `VISUAL_MAX_DIFF`); `pnpm visual:update`
+`bench/visual/baselines/ (local only, never committed)<page>-<theme>.png` by pixel ratio (default 1%, `VISUAL_MAX_DIFF`); `pnpm visual:update`
 rewrites them. A missing baseline is written to `bench/visual/out/new-*.png` and reported, not failed; a diff over the
 threshold fails the CI job `visual` (after `test`) and the `visual` artifact carries `actual-*` and `diff-*` PNGs. Baselines
 are rendered by software GL in Chromium 103, so regenerate them with `pnpm visual:update` on Linux, not Windows.

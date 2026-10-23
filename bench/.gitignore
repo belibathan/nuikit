@@ -1,0 +1,5 @@
+# shots are CI artifacts, never committed (the owner: no stored images)
+*.png
+*.jpg
+*.jpeg
+*.webp

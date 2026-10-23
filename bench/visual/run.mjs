@@ -2,7 +2,8 @@
 // and systems/nuikit_pause plus four sections of the site's /components, each under Default, Neon Pop, Graphite,
 // Flat and Square at 1920x1080, animations off, fonts from npm (fontsource), in Chromium 103 (the FiveM CEF build
 // `pnpm proof` uses: @sparticuz/chromium from examples/cef-proof), compared with the committed PNGs in
-// bench/visual/baselines/<page>-<theme>.png by a pixel ratio.
+// bench/visual/baselines/<page>-<theme>.png by a pixel ratio. Baselines are never committed (bench/.gitignore):
+// CI only produces the shots as an artifact; compare locally after `pnpm visual:update`.
 //
 //   pnpm visual           compare; a missing baseline is written to bench/visual/out and reported, not failed
 //   pnpm visual:update    rewrite the baselines (do it in the Playwright image, see contract.md)
