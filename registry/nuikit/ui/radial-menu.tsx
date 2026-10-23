@@ -22,6 +22,11 @@ import { cn, nkState } from "@/lib/utils"
  *     onSelect={run}
  *   />
  *
+ * The lit wedge is ONE element (the list's selection tile, in a circle): a wedge-shaped face drawn once and turned
+ * to the pointed item by `rotate()` on the ladder (`--nk-indicator-time`, `--nk-indicator-ease`), the short way
+ * round, so the highlight travels with the pointer or the arrows instead of jumping wedge to wedge. Reduced motion
+ * and motion off jump (kit.css nk-indicator). The items never paint a fill of their own.
+ *
  * Pointer: the angle from the centre picks a wedge (the middle is a dead zone); click selects.
  * Keyboard (the wheel is focusable; keys only while it has focus): arrows rotate, Enter / Space
  * select, 1–9 pick directly, Backspace goes back (and closes at the root when `onClose` is given).
@@ -31,10 +36,10 @@ import { cn, nkState } from "@/lib/utils"
  * `size` is the diameter in px at 1080p; it's laid out in rem, so it follows the NUI scale.
  *
  * Role: The action wheel.
- * Anatomy: radial-menu > wedges > radial-menu-item (icon, label) > centre
+ * Anatomy: radial-menu > wedges > radial-menu-indicator (the lit wedge, one, turning) > radial-menu-item (icon, label) > centre
  * Props: items, active, size, label, onSelect, onClose.
- * Rules: Items draw data-state: focus (the pointed wedge), disabled. Sub-menus open in place; Escape goes back
- *   a level.
+ * Rules: Items draw data-state: focus (the pointed wedge), disabled. One lit wedge per wheel, turned by transform
+ *   (never a fill per wedge). Sub-menus open in place; Escape goes back a level.
  */
 
 type RadialMenuItem = {
@@ -79,6 +84,13 @@ function radialStep(items: readonly { disabled?: boolean }[], from: number | nul
     if (!items[i]?.disabled) return i
   }
   return null
+}
+
+/** The unwound angle the lit wedge turns to: from `deg` to `target` (mod 360) the short way round. */
+function radialTurn(deg: number, target: number) {
+  let delta = (((target - deg) % 360) + 360) % 360
+  if (delta > 180) delta -= 360
+  return deg + delta
 }
 
 /** SVG path of a ring wedge between radii r0 and r1, angles a0 → a1 (radians). */
@@ -157,6 +169,32 @@ const RadialMenu = React.forwardRef<
   const inner = r * INNER
   const gap = 0.012
 
+  // the lit wedge: one path at item 0's place, turned to the active item the short way round (an unwound angle,
+  // so 7 → 0 on an 8-wheel is +45°, not −315°); it fades where it is when nothing is lit and when the level changes
+  const lit = React.useRef<SVGPathElement>(null)
+  const turn = React.useRef({ deg: 0, level })
+  React.useLayoutEffect(() => {
+    const el = lit.current
+    if (!el) return
+    const t = turn.current
+    const fresh = t.level !== level
+    t.level = level
+    if (active === null) {
+      el.style.opacity = "0"
+      return
+    }
+    const target = (active * 360) / n
+    t.deg = fresh ? target : radialTurn(t.deg, target)
+    if (fresh || el.style.opacity === "0") {
+      // appearing: no glide from a stale place
+      el.style.transition = "none"
+      el.style.transform = `rotate(${t.deg}deg)`
+      void el.getBoundingClientRect()
+      el.style.transition = ""
+    } else el.style.transform = `rotate(${t.deg}deg)`
+    el.style.opacity = ""
+  }, [active, n, level])
+
   return (
     <div
       ref={root}
@@ -201,11 +239,22 @@ const RadialMenu = React.forwardRef<
               data-active={i === active || undefined}
               d={wedgePath(r, r, inner, r - 0.3, a0, a1)}
               strokeWidth={0.3}
-              className={cn("fill-(--nk-panel-bg) stroke-(--nk-panel-border)", i === active && "fill-accent stroke-(--nk-row-indicator-color)", item.disabled && "opacity-50")}
+              className={cn("fill-(--nk-panel-bg) stroke-(--nk-panel-border)", item.disabled && "opacity-50")}
               onClick={() => choose(i)}
             />
           )
         })}
+        {level.length > 0 && (
+          <path
+            ref={lit}
+            data-slot="radial-menu-indicator"
+            aria-hidden
+            d={wedgePath(r, r, inner, r - 0.3, (-0.5 / n) * Math.PI * 2 - Math.PI / 2 + gap, (0.5 / n) * Math.PI * 2 - Math.PI / 2 - gap)}
+            strokeWidth={0.3}
+            className="nk-indicator fill-(--nk-sel-face) stroke-(--nk-sel-face)"
+            style={{ position: "static", transformOrigin: `${r}px ${r}px`, transformBox: "view-box", opacity: 0 }}
+          />
+        )}
       </svg>
       {level.map((item, i) => {
         const a = (i / n) * Math.PI * 2 - Math.PI / 2
@@ -223,7 +272,7 @@ const RadialMenu = React.forwardRef<
             data-state={nkState({ disabled: item.disabled, focus: on })}
             className={cn(
               "pointer-events-none absolute flex w-[22%] flex-col items-center gap-1 text-center [&_svg:not([class*='size-'])]:size-5",
-              on ? "text-accent-foreground" : "text-muted-foreground",
+              on ? "text-(--nk-sel-ink)" : "text-muted-foreground",
               item.disabled && "opacity-50"
             )}
             // transform, not Tailwind's translate-*: the individual `translate` property is Chromium 104+.
@@ -272,4 +321,4 @@ const RadialMenu = React.forwardRef<
   )
 })
 
-export { RadialMenu, radialCenterAction, radialIndex, radialStep, wedgePath, type RadialMenuItem, type RadialMenuHandle }
+export { RadialMenu, radialCenterAction, radialIndex, radialStep, radialTurn, wedgePath, type RadialMenuItem, type RadialMenuHandle }
