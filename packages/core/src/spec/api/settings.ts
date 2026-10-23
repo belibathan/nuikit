@@ -1,0 +1,40 @@
+import type { DomainSpec } from "./types";
+
+/** Settings: rows a resource declares, shown by any page as a live-preview draft, saved per player. */
+export default {
+  js: "settings",
+  lua: "settings",
+  title: "Settings",
+  doc: "Declare settings rows; any page previews a draft, then saves or resets; saved per player, merged by version.",
+  docs: "docs/settings.md",
+  entries: [
+    { name: "define", kind: "call", doc: "Declare this resource's settings; returns get, values and the ops.", lua: "nk.settings.define", only: "lua only: resources declare, pages show", since: "0.8.0" },
+    { name: "register", kind: "call", doc: "Register one section of this resource's settings.", lua: "nk.settings.register", only: "lua only: resources declare, pages show", since: "0.8.0" },
+    { name: "get", kind: "call", doc: "A registered section's values, or one row's.", lua: "nk.settings.get", only: "lua only: the page loads sections", since: "0.8.0" },
+    { name: "onChange", kind: "call", doc: "Every change of this resource's sections.", lua: "nk.settings.onChange", only: "lua only: the page hears nuikit:settings:changed", since: "0.8.0" },
+    { name: "flag", kind: "call", doc: "Is a feature flag on (setr nuikit_flag_<name> 0 turns it off).", lua: "nk.settings.flag", only: "lua only: convars", since: "0.8.0" },
+    { name: "load", kind: "call", doc: "Every resource's sections (or one's).", js: "loadSettings", lua: "nk.settings.list", scope: "nuikit", since: "0.8.0" },
+    { name: "draft", kind: "call", doc: "Preview a patch without saving.", js: "draftSettings", lua: "nk.settings.draft", scope: "nuikit", since: "0.8.0" },
+    { name: "save", kind: "call", doc: "Save the draft.", js: "saveSettings", lua: "nk.settings.save", scope: "nuikit", since: "0.8.0" },
+    { name: "cancel", kind: "call", doc: "Drop the draft.", js: "cancelSettings", lua: "nk.settings.cancel", scope: "nuikit", since: "0.8.0" },
+    { name: "reset", kind: "call", doc: "Back to defaults (some keys or all).", js: "resetSettings", lua: "nk.settings.reset", scope: "nuikit", since: "0.8.0" },
+    { name: "preset", kind: "call", doc: "Apply a preset as a draft.", js: "applySettingsPreset", lua: "nk.settings.preset", scope: "nuikit", since: "0.8.0" },
+    { name: "normalize", kind: "call", doc: "A value fitted to its row (clamped, snapped, or rejected).", js: "normalizeSetting", lua: "nk.settings.normalize", since: "0.8.0" },
+    { name: "merge", kind: "call", doc: "Saved and draft values over the defaults.", js: "mergeSettings", lua: "nk.settings.merge", since: "0.8.0" },
+    { name: "validate", kind: "call", doc: "Check a schema's rows.", lua: "nk.settings.validate", only: "lua only: schemas are declared in Lua", since: "0.8.0" },
+    { name: "mock", kind: "call", doc: "Dev: the sections the browser pretends exist.", js: "mockSettings", only: "js only: the browser has no Lua", since: "0.8.0" },
+    { name: "useSettings", kind: "hook", doc: "A resource's section with the ops, live.", js: "useSettings", only: "js only: React", since: "0.8.0" },
+    { name: "SettingRow", kind: "type", doc: "key, label, options | range | toggle | text, default, flag, group.", js: "SettingRow", only: "js only: Lua tables are untyped", since: "0.8.0" },
+  ],
+  events: [
+    { name: "nuikit:settings:changed", dir: "lua→page", payload: "{ id?: string; values: Record<string, SettingValue>; changed: string[]; draft: boolean }", sender: "runtime", doc: "This resource's settings changed (a page's preview included).", wire: "nuikit:settings", since: "0.8.0" },
+    { name: "nuikit:settings:store-changed", dir: "local", payload: "(key: string, values, changed: string[], draft: boolean)", sender: "nuikit", doc: "The store, to every copy: a section changed.", wire: "nuikit:settings:changed", since: "0.8.0" },
+    { name: "nuikit:settings:list", dir: "page→lua", payload: "{ resource?: string }", reply: "{ sections: SettingsSection[] }", sender: "any", doc: "https://nuikit/settings.", wire: "settings", since: "0.8.0" },
+    { name: "nuikit:settings:draft", dir: "page→lua", payload: "{ resource: string; patch: object }", reply: "{ ok: boolean }", sender: "any", doc: "https://nuikit/settings:draft.", wire: "settings:draft", since: "0.8.0" },
+    { name: "nuikit:settings:save", dir: "page→lua", payload: "{ resource: string }", reply: "{ ok: boolean }", sender: "any", doc: "https://nuikit/settings:save.", wire: "settings:save", since: "0.8.0" },
+    { name: "nuikit:settings:cancel", dir: "page→lua", payload: "{ resource: string }", reply: "{ ok: boolean }", sender: "any", doc: "https://nuikit/settings:cancel.", wire: "settings:cancel", since: "0.8.0" },
+    { name: "nuikit:settings:reset", dir: "page→lua", payload: "{ resource: string; keys?: string[] }", reply: "{ ok: boolean }", sender: "any", doc: "https://nuikit/settings:reset.", wire: "settings:reset", since: "0.8.0" },
+    { name: "nuikit:settings:preset", dir: "page→lua", payload: "{ resource: string; preset: string }", reply: "{ ok: boolean }", sender: "any", doc: "https://nuikit/settings:preset.", wire: "settings:preset", since: "0.8.0" },
+  ],
+  rules: ["The store lives in the nuikit resource; a resource defines and changes only its own section.", "A saved version that differs runs migrate; an update never wipes a player's choices."],
+} satisfies DomainSpec;
