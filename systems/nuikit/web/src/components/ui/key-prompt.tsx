@@ -40,7 +40,7 @@ import { Kbd, KbdGroup } from "@/components/ui/tile"
  */
 
 const keyPromptVariants = cva(
-  "relative max-w-80 overflow-hidden text-left [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+  "relative max-w-80 overflow-hidden text-left [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-(--nk-icon-md)",
   {
     variants: {
       surface: {
@@ -57,8 +57,8 @@ const keyPromptVariants = cva(
       },
     },
     compoundVariants: [
-      { surface: ["panel", "hud"], size: "sm", className: "min-h-8 py-1 pr-(--nk-space-3) pl-(--nk-space-2)" },
-      { surface: ["panel", "hud"], size: "default", className: "min-h-10 py-(--nk-space-2) pr-3 pl-2" },
+      { surface: ["panel", "hud"], size: "sm", className: "min-h-[var(--nk-key-prompt-min-h-sm,2rem)] py-[var(--nk-key-prompt-pad-y,0.25rem)] pr-(--nk-space-3) pl-(--nk-space-2)" },
+      { surface: ["panel", "hud"], size: "default", className: "min-h-[var(--nk-key-prompt-min-h,2.5rem)] py-(--nk-space-2) pr-[var(--nk-key-prompt-pad-r,0.75rem)] pl-[var(--nk-key-prompt-pad-l,0.5rem)]" },
       // the slab's own height and padding (--nk-slab-*); sm is a step tighter
       { surface: "slab", size: "sm", className: "[--nk-slab-height:calc(2rem*var(--nk-density,0.875))]" },
     ],
@@ -295,7 +295,7 @@ function KeyPrompt({
     >
       {list.length > 0 &&
         (slab ? (
-          <span data-slot="key-prompt-keys" className="flex shrink-0 items-center gap-1">
+          <span data-slot="key-prompt-keys" className="flex shrink-0 items-center gap-[var(--nk-key-prompt-gap,0.25rem)]">
             {list.map((k, i) => (
               <React.Fragment key={`${k}-${i}`}>
                 {i > 0 && (
@@ -321,7 +321,7 @@ function KeyPrompt({
                     {separator}
                   </span>
                 )}
-                <Kbd className={cn("h-6 min-w-6 px-(--nk-space-2) text-(length:--nk-text-label)", active && "bg-(--nk-chip-active-bg) text-(--nk-chip-active-fg)")}>
+                <Kbd className={cn("h-[var(--nk-key-prompt-cap-h,1.5rem)] min-w-[var(--nk-key-prompt-cap-h,1.5rem)] px-(--nk-space-2) text-(length:--nk-text-label)", active && "bg-(--nk-chip-active-bg) text-(--nk-chip-active-fg)")}>
                   {k}
                 </Kbd>
               </React.Fragment>
@@ -331,7 +331,7 @@ function KeyPrompt({
       {icon && (
         <span
           data-slot="key-prompt-icon"
-          className={cn("flex", tall && "h-5 items-center", surface === "panel" ? "text-muted-foreground" : "opacity-75")}
+          className={cn("flex", tall && "h-(--nk-h-key) items-center", surface === "panel" ? "text-muted-foreground" : "opacity-75")}
         >
           {icon}
         </span>
@@ -361,7 +361,7 @@ function KeyPrompt({
           // constant here never changes, so React leaves that drawing alone.
           level={p}
           tween={false}
-          className={cn("absolute inset-x-0 bottom-0 rounded-none bg-transparent", slab ? "h-(--nk-slab-line-height)" : "h-0.5")}
+          className={cn("absolute inset-x-0 bottom-0 rounded-none bg-transparent", slab ? "h-(--nk-slab-line-height)" : "h-[calc(var(--nk-gauge-track,0.25rem)/2)]")}
           color={slab ? "rgb(var(--nk-slab-tone-rgb))" : "var(--nk-row-indicator-color)"}
         />
       )}
