@@ -28,8 +28,9 @@ mono numerals, high contrast) reach two languages far from Default's slanted key
 |---|---|---|---|---|---|
 | Keycap / tile slant (face only, box upright) | `--nk-tile-skew` (falls back to `--nk-skew`) | `0deg` | `±20deg` | tile `-12deg`; slab via `--nk-skew -8deg` | |
 | Badge / chip / tag / selected-bar slant | `--nk-skew` | `0deg` | `±20deg` | slab `-8deg` | notice-icon skew badge size `1.375rem × 1.25rem` (kit.css ~1335) |
-| Keycap wall (the primary button, the selection tile) | `--nk-tile-wall` | `0.1875rem` | length | | hover raises the face `-1px` (kit.css ~1218) |
-| Wall shade (scrim over the face colour) | `--nk-tile-wall-shade` | `0.45` | 0–1 | | press sinks `× 0.67` of the wall (kit.css ~1224) |
+| Keycap wall (the primary button, the selection tile) | `--nk-tile-wall` | `0.1875rem` | length | | |
+| Keycap hover lift, press depth | `--nk-tile-lift`, `--nk-tile-press-ratio` | `1px`, `0.67` (of the wall) | length; 0–1.5 | | |
+| Wall shade (scrim over the face colour) | `--nk-tile-wall-shade` | `0.45` | 0–1 | | |
 | Tile plate offset (Kbd, registry Tile) | `--nk-tile-plate-x`, `--nk-tile-plate-y` | `0px`; `0.1875rem` under a non-zero `--nk-skew` | length | tile `2px` / `2px` | |
 | Tile press depth | `--nk-tile-press` | `1px` | length | tile `1px` | |
 | Radius: keys / tiles | `--nk-r-key` (alias `--nk-key-radius`) | `max(0.25rem, radius − 4px)` | length | tile `0.25rem` | skeleton block radius repeats the formula (kit.css ~1073) |
@@ -152,9 +153,7 @@ The five roles: `scan` (keys, buttons, tabs), `title`, `label`, `num`, `body`. E
 Ordered by how much a language needs them. Each is a lever to add to kit.css + tokens.ts with the current value as
 the default, so nothing shipped changes. Items in `registry/nuikit/ui` belong to the lanes that own those files.
 
-1. **Keycap hover lift and press depth** are literals: `translateY(-1px)` on hover and `wall × 0.67` on press
-   (kit.css ~1218, ~1224). A flat language wants `0`; a deep keycap wants more. Lever: `--nk-tile-hover-lift`,
-   `--nk-tile-press-ratio`.
+1. ~~Keycap hover lift and press depth~~ done: `--nk-tile-lift`, `--nk-tile-press-ratio` (`--nk-tile-press` was taken: the plate offset).
 2. **Line heights** (`1rem`, `1.25rem` ×9 in kit.css) ignore `--nk-type-ratio` and the role; a condensed or a
    mono language gets uneven rhythm. Lever: `--nk-leading-tight`, `--nk-leading-body`.
 3. **Registry size literals**: `h-6`/`min-h-8`/`h-8`/`size-8`/`gap-1`/`px-1`/`px-2`/`size-3.5` in `key-prompt.tsx`,

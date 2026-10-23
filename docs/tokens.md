@@ -500,6 +500,7 @@ for one revision. `--nk-meter-radius` keeps its own value (Graphite's meters are
 |---|---|---|---|
 | **Spacing** (`SCALE_TOKENS`) | `--nk-space-unit`, `--nk-space-{1,2,3,4,6,8}`, `--nk-gap-cluster`, `--nk-gap-items`, `--nk-pad-x`, `--nk-pad-surface` | 0.25rem × density; cluster space-2, items space-1, pad-x space-3, surface space-6 | density 1 |
 | **Radius** | `--nk-r-key`, `--nk-r-chip`, `--nk-r-control`, `--nk-r-surface` | radius − 4px (≥ 0.25rem), the same, radius − 2px, the menu material's | 0.25, 0.375, 0.5, 0.75rem |
+| **Keycap motion** | `--nk-tile-lift` (hover rise), `--nk-tile-press-ratio` (press sink, × wall) | 1px, 0.67 | 0, 0–1.5 |
 | **Heights** | `--nk-h-key`, `--nk-h-chip`, `--nk-h-control`, `--nk-h-row` | 1.25rem, 2rem × density, 2.25rem, 2.75rem × density | 1.5, 1.75, 2.25, 3rem |
 | **Icons** | `--nk-icon-{sm,md,lg}`, `--nk-icon-stroke` | 0.75, 1, 1.25rem; 2 | same |
 | **Type roles** (`TYPE_ROLE_TOKENS`) | `--nk-type-{scan,title,label,num,body}-{family,style,weight,tracking,case,pad}`, `--nk-text-key`, `--nk-text-body` | each role reads today's tokens (title = the heading tokens, scan = the key font and weight…); pad 0 | display font, italic, 800 / 700, caps, 0.15em pad (num: no caps) |

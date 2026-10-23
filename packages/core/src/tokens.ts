@@ -644,6 +644,8 @@ export const SELECTION_TOKENS: readonly TokenSpec[] = [
   k17("nk-tile-key-rim", "color", "The keycap face's rim, --nk-border-width wide (the primary button and the selection tile); transparent = none", "transparent"),
   k17("nk-tile-tint", "number", "The face's opacity under --nk-fill-style: soft (a tinted tile, the foreground ink)", "0.16", { range: [0, 1] }),
   k17("nk-tile-inset", "dimension", "How far a selection tile sits in from its item's sides (room for the skew; never over a neighbour)", "0.375rem"),
+  k17("nk-tile-lift", "dimension", "How far a keycap's face rises on hover and focus (0 = flat)", "1px"),
+  k17("nk-tile-press-ratio", "number", "How far a pressed keycap sinks, as a fraction of its wall (1 = flush with the plate)", "0.67", { range: [0, 1.5] }),
   k17("nk-list-gap", "dimension", "Between the items of a list: the wall plus breathing room, so a lit tile never touches the next row", "calc(nk-tile-wall + nk-space-1)"),
 ];
 

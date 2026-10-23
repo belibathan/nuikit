@@ -2100,13 +2100,13 @@
       border-color: transparent;
     }
     &:is(:hover, :focus-visible)::after {
-      transform: translateY(-1px) skewX(var(--nk-tile-skew, 0deg));
+      transform: translateY(calc(var(--nk-tile-lift, 1px) * -1)) skewX(var(--nk-tile-skew, 0deg));
     }
     &:not(:disabled):is(:active, [data-nk-press]) {
       transform: none;
     }
     &:not(:disabled):is(:active, [data-nk-press])::after {
-      transform: translateY(calc(var(--nk-tile-wall) * 0.67)) skewX(var(--nk-tile-skew, 0deg));
+      transform: translateY(calc(var(--nk-tile-wall) * var(--nk-tile-press-ratio, 0.67))) skewX(var(--nk-tile-skew, 0deg));
     }
   }
   /* a Kbd on the face reads dark on it */
