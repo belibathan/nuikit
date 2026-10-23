@@ -1493,10 +1493,11 @@
     {
       "js": "camera",
       "lua": "camera",
+      "only": "lua only: no page-side API (natives / client events); pages see its effects through other domains",
       "title": "Camera",
       "doc": "Take the screen with a scripted camera; a stack across resources, and the game camera always comes back.",
       "docs": "docs/services.md#nkcamera",
-      "import": "nuikit-core/camera",
+      "import": null,
       "entries": [
         {
           "name": "claim",
@@ -1728,10 +1729,11 @@
     {
       "js": "controls",
       "lua": "controls",
+      "only": "lua only: no page-side API (natives / client events); pages see its effects through other domains",
       "title": "Controls",
       "doc": "Disable game controls in sets (presets or ids) until released; surfaces declare theirs.",
       "docs": "docs/services.md#nkcontrols",
-      "import": "nuikit-core/controls",
+      "import": null,
       "entries": [
         {
           "name": "disable",
@@ -2101,6 +2103,30 @@
           "status": "stable"
         },
         {
+          "name": "store",
+          "kind": "call",
+          "side": "lua",
+          "lua": "nk.settings.store",
+          "signature": {},
+          "doc": "Store side: register a section's schema and saved values.",
+          "only": "lua only: the nuikit resource's store",
+          "scope": "nuikit",
+          "since": "0.8.0",
+          "status": "stable"
+        },
+        {
+          "name": "values",
+          "kind": "call",
+          "side": "lua",
+          "lua": "nk.settings.values",
+          "signature": {},
+          "doc": "Store side: a section's current values.",
+          "only": "lua only: the nuikit resource's store",
+          "scope": "nuikit",
+          "since": "0.8.0",
+          "status": "stable"
+        },
+        {
           "name": "normalize",
           "kind": "call",
           "side": "both",
@@ -2188,6 +2214,15 @@
           "sender": "runtime",
           "doc": "This resource's settings changed (a page's preview included).",
           "wire": "nuikit:settings",
+          "since": "0.8.0"
+        },
+        {
+          "name": "nuikit:settings:section",
+          "dir": "lua→page",
+          "payload": "{ id: string; values: Record<string, SettingValue>; changed: string[]; draft: boolean }",
+          "sender": "runtime",
+          "doc": "One registered section changed (nk.settings.register).",
+          "wire": "nuikit:settings:{resource}",
           "since": "0.8.0"
         },
         {
@@ -2969,6 +3004,15 @@
           "since": "0.4.0"
         },
         {
+          "name": "nuikit:theme:legibility",
+          "dir": "local",
+          "payload": "(mode: 'day' | 'night')",
+          "sender": "any",
+          "doc": "Day or night from the game clock, for --nk-legibility: auto (the HUD sends it on change).",
+          "wire": "nuikit:legibility",
+          "since": "0.8.0"
+        },
+        {
           "name": "nuikit:theme:poll",
           "dir": "page→lua",
           "payload": "{ hash?: string }",
@@ -2997,6 +3041,11 @@
         },
         {
           "old": "NUI.prefs.get",
+          "now": "nk.theme.prefs",
+          "removeIn": "1.0.0"
+        },
+        {
+          "old": "NUI.prefs",
           "now": "nk.theme.prefs",
           "removeIn": "1.0.0"
         },
@@ -3450,6 +3499,66 @@
       ],
       "rules": [
         "A resource joins and changes only its own slots (resource:key)."
+      ]
+    },
+    {
+      "js": "radar",
+      "lua": "radar",
+      "only": "lua only: no page-side API (natives / client events); pages see its effects through other domains",
+      "title": "Radar",
+      "doc": "A HUD that moves GTA's radar says so; the nuikit resource keeps its mask and puts it back when the HUD stops.",
+      "import": null,
+      "entries": [],
+      "events": [
+        {
+          "name": "nuikit:radar:placed",
+          "dir": "local",
+          "payload": "()",
+          "sender": "owner",
+          "doc": "A HUD moved the radar (the nuikit resource restores it when that HUD stops).",
+          "wire": "nuikit:minimap:placed",
+          "since": "0.7.0"
+        },
+        {
+          "name": "nuikit:radar:released",
+          "dir": "local",
+          "payload": "()",
+          "sender": "owner",
+          "doc": "The HUD gave the radar back itself.",
+          "wire": "nuikit:minimap:released",
+          "since": "0.7.0"
+        },
+        {
+          "name": "nuikit:radar:mask",
+          "dir": "local",
+          "payload": "(kind: 'circle' | 'square', aspect: number)",
+          "sender": "owner",
+          "doc": "Use a runtime mask texture kept alive by the nuikit resource.",
+          "wire": "nuikit:minimap:mask",
+          "since": "0.8.0"
+        },
+        {
+          "name": "nuikit:radar:bars",
+          "dir": "local",
+          "payload": "(show: boolean)",
+          "sender": "owner",
+          "doc": "Show or hide the radar's health and armour bars.",
+          "wire": "nuikit:minimap:bars",
+          "since": "0.8.0"
+        },
+        {
+          "name": "nuikit:radar:satnav",
+          "dir": "local",
+          "payload": "(show: boolean)",
+          "sender": "owner",
+          "doc": "Hide GTA's satnav readout while the HUD shows its own.",
+          "wire": "nuikit:minimap:satnav",
+          "since": "0.8.0"
+        }
+      ],
+      "legacy": [],
+      "rules": [
+        "The resource that placed the radar owns it until it stops or releases; the nuikit resource restores the stock layout after."
       ]
     },
     {

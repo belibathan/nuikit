@@ -11,6 +11,7 @@ import keys from "./keys";
 import messages from "./messages";
 import motion from "./motion";
 import player from "./player";
+import radar from "./radar";
 import settings from "./settings";
 import slots from "./slots";
 import surfaces from "./surfaces";
@@ -18,7 +19,7 @@ import theme from "./theme";
 import zones from "./zones";
 import type { DomainSpec } from "./types";
 
-export const DOMAINS: DomainSpec[] = [messages, surfaces, intents, camera, controls, keys, settings, player, theme, images, zones, slots, motion, host, devtools, doctor];
+export const DOMAINS: DomainSpec[] = [messages, surfaces, intents, camera, controls, keys, settings, player, theme, images, zones, slots, radar, motion, host, devtools, doctor];
 export { checkDomain, checkSpec } from "./naming";
 export type * from "./types";
 

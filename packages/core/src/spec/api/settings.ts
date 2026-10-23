@@ -19,6 +19,8 @@ export default {
     { name: "cancel", kind: "call", doc: "Drop the draft.", js: "cancelSettings", lua: "nk.settings.cancel", scope: "nuikit", since: "0.8.0" },
     { name: "reset", kind: "call", doc: "Back to defaults (some keys or all).", js: "resetSettings", lua: "nk.settings.reset", scope: "nuikit", since: "0.8.0" },
     { name: "preset", kind: "call", doc: "Apply a preset as a draft.", js: "applySettingsPreset", lua: "nk.settings.preset", scope: "nuikit", since: "0.8.0" },
+    { name: "store", kind: "call", doc: "Store side: register a section's schema and saved values.", lua: "nk.settings.store", scope: "nuikit", only: "lua only: the nuikit resource's store", since: "0.8.0" },
+    { name: "values", kind: "call", doc: "Store side: a section's current values.", lua: "nk.settings.values", scope: "nuikit", only: "lua only: the nuikit resource's store", since: "0.8.0" },
     { name: "normalize", kind: "call", doc: "A value fitted to its row (clamped, snapped, or rejected).", js: "normalizeSetting", lua: "nk.settings.normalize", since: "0.8.0" },
     { name: "merge", kind: "call", doc: "Saved and draft values over the defaults.", js: "mergeSettings", lua: "nk.settings.merge", since: "0.8.0" },
     { name: "validate", kind: "call", doc: "Check a schema's rows.", lua: "nk.settings.validate", only: "lua only: schemas are declared in Lua", since: "0.8.0" },
@@ -28,6 +30,7 @@ export default {
   ],
   events: [
     { name: "nuikit:settings:changed", dir: "lua→page", payload: "{ id?: string; values: Record<string, SettingValue>; changed: string[]; draft: boolean }", sender: "runtime", doc: "This resource's settings changed (a page's preview included).", wire: "nuikit:settings", since: "0.8.0" },
+    { name: "nuikit:settings:section", dir: "lua→page", payload: "{ id: string; values: Record<string, SettingValue>; changed: string[]; draft: boolean }", sender: "runtime", doc: "One registered section changed (nk.settings.register).", wire: "nuikit:settings:{resource}", since: "0.8.0" },
     { name: "nuikit:settings:store-changed", dir: "local", payload: "(key: string, values, changed: string[], draft: boolean)", sender: "nuikit", doc: "The store, to every copy: a section changed.", wire: "nuikit:settings:changed", since: "0.8.0" },
     { name: "nuikit:settings:list", dir: "page→lua", payload: "{ resource?: string }", reply: "{ sections: SettingsSection[] }", sender: "any", doc: "https://nuikit/settings.", wire: "settings", since: "0.8.0" },
     { name: "nuikit:settings:draft", dir: "page→lua", payload: "{ resource: string; patch: object }", reply: "{ ok: boolean }", sender: "any", doc: "https://nuikit/settings:draft.", wire: "settings:draft", since: "0.8.0" },

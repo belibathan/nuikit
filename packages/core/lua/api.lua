@@ -126,6 +126,7 @@ nk.legacy = {
   ['NUI.look'] = { now = 'nk.theme.look', removeIn = '1.0.0' },
   ['NUI.lookKey'] = { now = 'nk.theme.lookKey', removeIn = '1.0.0' },
   ['NUI.prefs.get'] = { now = 'nk.theme.prefs', removeIn = '1.0.0' },
+  ['NUI.prefs'] = { now = 'nk.theme.prefs', removeIn = '1.0.0' },
   ['NUI.prefs.set'] = { now = 'nk.theme.setPrefs', removeIn = '1.0.0' },
   ['NUI.zone'] = { now = 'nk.zone.set', removeIn = '1.0.0' },
   ['NUI.zones'] = { now = 'nk.zone.all', removeIn = '1.0.0' },
