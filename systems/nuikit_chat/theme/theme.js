@@ -330,8 +330,40 @@
   // chat's own; nothing here posts or handles a key.
 
   var MIRRORED = ["fontFamily", "fontSize", "fontWeight", "fontStyle", "letterSpacing", "wordSpacing", "textTransform", "textIndent", "textAlign", "lineHeight", "paddingTop", "paddingRight", "paddingBottom", "paddingLeft", "borderTopWidth", "borderRightWidth", "borderBottomWidth", "borderLeftWidth", "color"];
-  var TYPE_MS = 140;
-  var CARET_MS = 90;
+  var TYPE_MS = 210;
+  var CARET_MS = 140;
+  var EASE = "cubic-bezier(0.2, 0.8, 0.2, 1)";
+
+  /**
+   * The motion levers from <html> (--nk-caret-time/ease, --nk-type-in-time/distance: the kit's, set by
+   * the server theme or style.css's defaults), resolved by the browser itself on a probe so calc(), var()
+   * and em all come out as numbers; the constants above only when a lever is missing.
+   */
+  function levers(el) {
+    var probe = levers.probe;
+    if (!probe || !probe.isConnected) {
+      probe = levers.probe = document.createElement("span");
+      probe.setAttribute("aria-hidden", "true");
+      probe.style.cssText = "position:absolute;visibility:hidden;pointer-events:none;width:0;height:0;overflow:hidden;" +
+        "transition-duration:var(--nk-caret-time,140ms);transition-timing-function:var(--nk-caret-ease,cubic-bezier(0.2,0.8,0.2,1));" +
+        "animation-duration:var(--nk-type-in-time,210ms);margin-left:var(--nk-type-in-distance,0.45em);";
+      document.body.appendChild(probe);
+    }
+    probe.style.fontSize = getComputedStyle(el).fontSize;
+    var cs = getComputedStyle(probe);
+    var ms = function (v, d) {
+      var n = parseFloat(v);
+      if (!(n >= 0)) return d;
+      return /ms$/.test(v) ? n : n * 1000;
+    };
+    var dist = parseFloat(cs.marginLeft);
+    return {
+      caret: ms(cs.transitionDuration, CARET_MS),
+      ease: cs.transitionTimingFunction && cs.transitionTimingFunction !== "ease" ? cs.transitionTimingFunction : EASE,
+      type: ms(cs.animationDuration, TYPE_MS),
+      distance: dist >= 0 ? dist : 0,
+    };
+  }
 
   /** What was inserted going from `before` to `after`: [from, to) in `after`, or null. */
   function inserted(before, after) {
@@ -361,7 +393,6 @@
     content.className = "nk-smooth-content";
     var caret = document.createElement("span");
     caret.className = "nk-smooth-caret";
-    caret.style.transition = "transform " + CARET_MS + "ms cubic-bezier(0.2, 0.8, 0.2, 1)";
     overlay.appendChild(content);
     row.appendChild(overlay);
     var last = el.value;
@@ -393,6 +424,8 @@
       overlay.style.width = el.offsetWidth + "px";
       overlay.style.height = el.offsetHeight + "px";
 
+      var lv = levers(el);
+      caret.style.transition = "transform " + lv.caret + "ms " + lv.ease;
       // the text as before / typed / after, with a zero-width marker at the caret
       while (content.firstChild) content.removeChild(content.firstChild);
       var cuts = [0, value.length, a];
@@ -418,9 +451,9 @@
         span.textContent = value.slice(at, next);
         if (ins && at >= ins[0] && next <= ins[1] && typeof span.animate === "function") {
           span.className = "nk-smooth-typed";
-          span.animate([{ opacity: 0, transform: "translateY(0.25em)" }, { opacity: 1, transform: "translateY(0)" }], {
-            duration: next - at > 12 ? TYPE_MS * 1.5 : TYPE_MS,
-            easing: "cubic-bezier(0.2, 0.8, 0.2, 1)",
+          span.animate([{ opacity: 0, transform: "translateY(" + lv.distance + "px)" }, { opacity: 1, transform: "translateY(0)" }], {
+            duration: next - at > 12 ? lv.type * 1.5 : lv.type,
+            easing: EASE,
           });
         }
         content.appendChild(span);

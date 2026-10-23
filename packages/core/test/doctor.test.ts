@@ -33,17 +33,15 @@ describe("framework detection", () => {
 describe("adapter packs", () => {
   it("fit by library and framework, and say they're not shipped", () => {
     const r = doctor(snap([res("ox_lib", { ui_page: ["web/build/index.html"] }), res("qbx_core")]));
-    const ox = r.packs.find((p) => p.name === "[nuikit-ox]")!;
+    expect(r.packs.find((p) => p.name === "[nuikit-ox]")).toBeUndefined(); // ox_lib is an override, never a pack
     const qb = r.packs.find((p) => p.name === "[nuikit-qb]")!;
     const esx = r.packs.find((p) => p.name === "[nuikit-esx]")!;
-    expect(ox).toMatchObject({ fits: true, shipped: false, running: false });
     expect(qb.fits).toBe(false); // qb-core itself isn't running on this Qbox server
     expect(esx.fits).toBe(false);
-    expect(formatDoctor(r).join("\n")).toContain("[nuikit-ox]    fits, not shipped yet");
+    expect(formatDoctor(r).join("\n")).not.toContain("[nuikit-ox]");
   });
   it("a running adapter marks its library adapted", () => {
     const r = doctor(snap([res("ox_lib", { ui_page: ["web/build/index.html"] }), res("nuikit-ox", { nuikit_adapter: ["ox_lib"] })]));
-    expect(r.packs.find((p) => p.name === "[nuikit-ox]")!.running).toBe(true);
     expect(r.resources.find((x) => x.name === "ox_lib")).toMatchObject({ status: "adapted", via: "nuikit-ox" });
     expect(r.summary.adapted).toBe(1);
   });
@@ -299,7 +297,8 @@ describe("output", () => {
     expect(lines).toContain("resources with a UI (3): 1 on nuikit, 0 adapted, 1 override, 1 untouched");
     expect(lines.join("\n")).toContain("ERROR nuikit-ox provides ox_lib, and ox_lib itself is running");
     expect(lines.join("\n")).toContain("→ stop one of them");
-    expect(lines.join("\n")).toContain("→ adapter packs that fit: [nuikit-ox] (not shipped yet)");
+    expect(lines.join("\n")).not.toContain("[nuikit-ox]");
+    expect(lines.join("\n")).toContain("ox_target                override (nuikit)");
     expect(lines.every((l) => !/\^\d/.test(l))).toBe(true); // no colour codes in core
   });
 });

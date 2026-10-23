@@ -92,6 +92,9 @@ mockSettings([
       { key: "reducedMotion", label: "Reduced motion", group: "Display", toggle: true, default: false, description: "Fades instead of slides, no camera moves" },
       { key: "streamer", label: "Streamer mode", group: "Privacy", toggle: true, default: false, description: "Hides names and money on screen" },
       { key: "hud", label: "Show the HUD", group: "HUD", toggle: true, default: true },
+      { key: "subtitles", label: "Subtitles", group: "Audio", toggle: true, default: true, description: "Captions for speech and radio" },
+      { key: "volume", label: "Master volume", group: "Audio", range: [0, 100, 5], default: 70 },
+      { key: "crosshair", label: "Crosshair", group: "Aim", toggle: true, default: false },
     ],
     presets: [
       { id: "standard", label: "Standard", patch: { textSize: 1, contrast: false, reducedMotion: false, streamer: false, hud: true } },
@@ -153,6 +156,7 @@ const fixtures: Record<string, { player: object; data: PauseData }> = {
   map: { player, data: { ...data, view: "map" } },
   "map-picked": { player, data: { ...data, view: "map" } },
   keys: { player, data: { ...data, view: "keys" } },
+  settings: { player, data: { ...data, view: "settings" } },
   info: { player, data: { ...data, view: "info" } },
 };
 

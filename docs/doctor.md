@@ -17,7 +17,7 @@ scripts get the report as an object from `exports.nuikit:doctor()`.
 |---|---|---|
 | Runtime | nuikit's version and protocol; the newest release when known | `nuikit`'s fxmanifest; the online check (§3), or convar `nuikit_latest` |
 | Framework | Qbox, QBCore, ESX or standalone | `qbx_core`, `qb-core`, `es_extended` started (`GetResourceState`), in that order |
-| Adapter packs | for each of `[nuikit-ox]`, `[nuikit-qb]`, `[nuikit-esx]`: running, fits (not installed), fits but **not shipped yet**, or not needed | a table in `packages/core/src/doctor.ts`; "running" when a started resource declares `nuikit_adapter '<library>'` |
+| Adapter packs | for each of `[nuikit-qb]`, `[nuikit-esx]`: running, fits (not installed), fits but **not shipped yet**, or not needed | a table in `packages/core/src/doctor.ts`; "running" when a started resource declares `nuikit_adapter '<library>'` |
 | Resources with a UI | every started resource with `ui_page`, `loadscreen`, `nuikit_ui` or `chat_theme`, with its status and a next step | fxmanifest metadata; the page file for overrides |
 | Findings | conflicts and problems, each with a next step in plain words | §2 |
 | Intents | how many intents each resource drew since start, by intent | the `nuikit:intent` event, §4 |
@@ -109,12 +109,11 @@ session.jsonl doctor.json`.
 nuikit 0.6.0 (protocol 1), latest 0.7.0
 framework: qbox (qbx_core)
 adapter packs:
-  [nuikit-ox]    fits, not shipped yet
   [nuikit-qb]    not needed (qb-core isn't running)
   [nuikit-esx]   not needed (es_extended isn't running)
 resources with a UI (6): 2 on nuikit, 0 adapted, 2 override, 2 untouched
   ox_lib                   override (override changed)
-  ox_target                override (override page)
+  ox_target                override (nuikit)
   ox_inventory             untouched (override missing)
                              → `nuikit install ox_inventory`
   nuikit_pause             on nuikit v1 level 3
@@ -135,7 +134,7 @@ findings: 1 error, 4 warnings
         → lighten or darken `--muted-foreground` or `--muted` in nuikit/theme.css, then `nuikit theme reload`
   INFO  nuikit 0.6.0 is running; 0.7.0 is out
         → download nuikit.zip from github.com/belibathan/nuikit/releases/tag/v0.7.0, replace [nuikit]/, then `nuikit upgrade` (docs/install.md)
-  → adapter packs that fit: [nuikit-ox] (not shipped yet)
+  → every fitting adapter pack is running
 intents drawn since start (by source):
   ox_lib                   53  (notify 41, menu 12)
   qbx_garages              3  (menu 3)
