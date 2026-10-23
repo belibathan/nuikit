@@ -127,11 +127,11 @@ function Tray({ open, onConfirm, canExit }: { open: boolean; onConfirm: (kind: "
         <div className="flex items-center gap-4">
           <ActionBar>
             <ActionBarItem keys={["A", "D"]} label="Turn" />
-            {canExit && <ActionBarItem keys={["Esc"]} label="Exit" />}
           </ActionBar>
           <Separator orientation="vertical" className="h-6!" />
           {canExit && (
-            <Button variant="ghost" onClick={() => onConfirm("exit")}>
+            // the one Exit: a button, with Escape as its key (the hint bar no longer says it twice)
+            <Button variant="ghost" onClick={() => onConfirm("exit")} aria-keyshortcuts="Escape">
               <LogOut />
               Exit
             </Button>
