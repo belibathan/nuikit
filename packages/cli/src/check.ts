@@ -777,7 +777,9 @@ export function checkResource(root: string, options: CheckOptions = {}): CheckRe
 
   // theme stylesheets (theme.css, themes/, theme/): token values in @layer nk.theme only
   // theme files (theme.css, themes/*.css) set values only; a theme's rule sheets (theme/*.css) may hold data-attribute rules
-  for (const f of all.filter((f) => !f.built && /^(theme\.css|themes?\/[^/]+\.css)$/.test(f.rel))) {
+  // A cfx `chat_theme` stylesheet (nuikit_chat's theme/style.css) is page CSS for the chat resource, not a nuikit theme.
+  const chatTheme = /\bchat_theme\b/.test(manifest?.src ?? "");
+  for (const f of all.filter((f) => !f.built && /^(theme\.css|themes?\/[^/]+\.css)$/.test(f.rel) && !(chatTheme && /^theme\//.test(f.rel)))) {
     const src = fs.readFileSync(path.join(abs, f.rel), "utf8");
     scanThemeCss(src, collector.file(f.rel, src), /^(theme\.css|themes\/)/.test(f.rel));
   }
