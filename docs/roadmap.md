@@ -45,6 +45,7 @@ the five bugs are fixed in the foundation and verified in game.*
 | A6 "Moves with you" everywhere: `useSelectionIndicator` on tabs, segmented controls, radial, inventory grid, scoreboard rows, pause map list; the host renderers (menu, target) slide | registry + `systems/nuikit/web/src/renderers` | Open |
 | A7 Verify in game: inventory item menu, qbx multichar on ox_lib context, Confirm without DialogShell | owner | Open |
 | A8 HUD editor on the baseline and the sliding selection | `systems/nuikit_hud` | Open |
+| A9 Promote the screens' refinements into the registry (the owner, Oct 23): the registry speedometer, dial, chip, meter, fill and the HUD/pause blocks must be the premium versions tuned in game, not older drafts; the systems then import the registry component instead of a local copy | `registry/nuikit/{ui,blocks}`, `systems/nuikit_hud`, `systems/nuikit_pause` | Open |
 
 ## 0.9 · Track B: the adoption surface (the first ten minutes, per persona)
 
