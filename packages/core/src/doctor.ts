@@ -180,19 +180,44 @@ export function pageHash(text: string): string {
 }
 
 /** Compare dotted versions; >0 when a is newer. Non-numeric parts compare as strings. */
+/**
+ * Semver-ish compare: `v` prefix and `+build` metadata ignored; missing core parts count as 0; a prerelease
+ * (`0.7.0-next.1`) sorts before its release (`0.7.0`), and prerelease identifiers compare as semver does.
+ * Returns <0, 0 or >0.
+ */
 export function compareVersions(a: string, b: string): number {
-  const pa = a.replace(/^v/, "").split(/[.-]/);
-  const pb = b.replace(/^v/, "").split(/[.-]/);
-  for (let i = 0; i < Math.max(pa.length, pb.length); i++) {
-    const x = pa[i] ?? "0";
-    const y = pb[i] ?? "0";
-    const nx = Number(x);
-    const ny = Number(y);
-    if (!Number.isNaN(nx) && !Number.isNaN(ny)) {
-      if (nx !== ny) return nx - ny;
-    } else if (x !== y) return x < y ? -1 : 1;
+  const [ca, pa = ""] = splitVersion(a);
+  const [cb, pb = ""] = splitVersion(b);
+  const na = ca.split(".");
+  const nb = cb.split(".");
+  for (let i = 0; i < Math.max(na.length, nb.length); i++) {
+    const d = (Number(na[i] ?? 0) || 0) - (Number(nb[i] ?? 0) || 0);
+    if (d !== 0) return d;
+  }
+  if (pa === pb) return 0;
+  if (!pa) return 1; // release beats prerelease
+  if (!pb) return -1;
+  const ia = pa.split(".");
+  const ib = pb.split(".");
+  for (let i = 0; i < Math.max(ia.length, ib.length); i++) {
+    if (ia[i] === undefined) return -1; // shorter prerelease sorts first
+    if (ib[i] === undefined) return 1;
+    const x = ia[i]!;
+    const y = ib[i]!;
+    const xn = /^\d+$/.test(x);
+    const yn = /^\d+$/.test(y);
+    if (xn && yn) {
+      if (Number(x) !== Number(y)) return Number(x) - Number(y);
+    } else if (xn !== yn) return xn ? -1 : 1; // numeric identifiers sort before alphanumeric
+    else if (x !== y) return x < y ? -1 : 1;
   }
   return 0;
+}
+
+function splitVersion(v: string): [string, string] {
+  const s = v.trim().replace(/^v/i, "").split("+")[0]!;
+  const dash = s.indexOf("-");
+  return dash < 0 ? [s, ""] : [s.slice(0, dash), s.slice(dash + 1)];
 }
 
 export function detectFramework(resources: DoctorResource[]): { framework: Framework; resource: string | null } {

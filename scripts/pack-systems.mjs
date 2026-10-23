@@ -10,6 +10,7 @@
 //
 // Only what the game needs ships: manifests, Lua, config, theme, READMEs and built web output.
 import { execFileSync } from "node:child_process";
+import { createHash } from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -192,3 +193,12 @@ ${hasPack ? `ensure [nuikit-${f.adapter}]` : f.adapter ? `# no adapter pack need
 }
 fs.rmSync(path.join(out, "fw"), { recursive: true, force: true });
 for (const o of overrides) console.log(`→ out/nuikit-${o.name}.zip`);
+
+// SHA256SUMS.txt: `sha256sum -c` format for every zip in out/ (docs/install.md "Verify the download").
+const sums = fs
+  .readdirSync(out)
+  .filter((f) => f.endsWith(".zip"))
+  .sort()
+  .map((f) => `${createHash("sha256").update(fs.readFileSync(path.join(out, f))).digest("hex")}  ${f}`);
+fs.writeFileSync(path.join(out, "SHA256SUMS.txt"), sums.join("\n") + "\n");
+console.log(`→ out/SHA256SUMS.txt (${sums.length} zips)`);

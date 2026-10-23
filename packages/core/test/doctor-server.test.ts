@@ -13,8 +13,12 @@ const OVERRIDE_PAGE = '<!doctype html><html><head><meta name="nuikit-handshake" 
 
 type Fake = { state: string; metadata?: Record<string, string[]>; files?: Record<string, string> };
 
+type Http = { url: string; headers: Record<string, string>; cb: (status: number, body: string) => void };
+
 function boot(resources: Record<string, Fake>, convars: Record<string, string> = {}) {
   const logs: string[] = [];
+  const http: Http[] = [];
+  const timers: { ms: number; fn: () => void }[] = [];
   const commands = new Map<string, (src: number, args: string[]) => void>();
   const handlers = new Map<string, (...a: unknown[]) => void>();
   const netHandlers = new Map<string, (...a: unknown[]) => void>();
@@ -37,6 +41,9 @@ function boot(resources: Record<string, Fake>, convars: Record<string, string> =
     emitNet: () => {},
     IsPlayerAceAllowed: () => false,
     exports: (name: string, fn: () => unknown) => exported.set(name, fn),
+    SetTimeout: (ms: number, fn: () => void) => timers.push({ ms, fn }),
+    PerformHttpRequest: (url: string, cb: (status: number, body: string) => void, _method: string, _data: string, headers: Record<string, string>) =>
+      http.push({ url, headers, cb }),
   };
   ctx.globalThis = ctx;
   ctx.global = ctx;
@@ -47,7 +54,7 @@ function boot(resources: Record<string, Fake>, convars: Record<string, string> =
     commands.get("nuikit")!(0, args);
     return logs.slice(start).map((l) => l.replace(/\^\d/g, "").replace(/^\[nuikit\] /, ""));
   };
-  return { logs, run, handlers, netHandlers, exported, ctx };
+  return { logs, run, handlers, netHandlers, exported, ctx, http, timers };
 }
 
 const QBOX = {
@@ -165,9 +172,44 @@ describe("nuikit doctor (server glue)", () => {
     expect((s.exported.get("doctor")!() as { framework: string }).framework).toBe("qbox");
   });
 
-  it("the online update check is opt-in and honestly not built", () => {
-    expect(boot(QBOX, { nuikit_check_updates: "1" }).run("doctor").join("\n")).toContain("online check isn't built yet");
-    expect(boot(QBOX).run("doctor").join("\n")).not.toContain("online check");
+  it("update check: one request after the delay, one line when newer, silent otherwise", () => {
+    const s = boot(QBOX);
+    expect(s.timers.map((t) => t.ms)).toEqual([60000]);
+    s.timers[0]!.fn();
+    expect(s.http).toHaveLength(1);
+    expect(s.http[0]!.url).toBe("https://api.github.com/repos/belibathan/nuikit/releases/latest");
+    expect(s.http[0]!.headers["User-Agent"]).toBeTruthy();
+    s.http[0]!.cb(200, JSON.stringify({ tag_name: "v0.7.0", html_url: "https://github.com/belibathan/nuikit/releases/tag/v0.7.0" }));
+    expect(s.logs.filter((l) => l.includes("is out"))).toEqual(["^5[nuikit]^7 nuikit 0.7.0 is out: https://github.com/belibathan/nuikit/releases/tag/v0.7.0"]);
+    expect(s.run("doctor", "json")[0]).toContain('"update-available"');
+
+    const same = boot(QBOX);
+    same.timers[0]!.fn();
+    same.http[0]!.cb(200, JSON.stringify({ tag_name: "v0.6.0" }));
+    expect(same.logs.some((l) => l.includes("is out"))).toBe(false);
+  });
+
+  it("update check: failures are silent; a prerelease tag never counts as newer", () => {
+    const s = boot(QBOX);
+    s.timers[0]!.fn();
+    s.http[0]!.cb(403, "rate limited");
+    s.http[0]!.cb(200, "not json");
+    expect(s.logs.some((l) => l.includes("is out"))).toBe(false);
+    const pre = boot(QBOX);
+    pre.timers[0]!.fn();
+    pre.http[0]!.cb(200, JSON.stringify({ tag_name: "v0.6.0-next" }));
+    expect(pre.logs.some((l) => l.includes("is out"))).toBe(false);
+  });
+
+  it("update check: convars turn it off, set the delay, and nuikit_latest wins without a request", () => {
+    const off = boot(QBOX, { nuikit_update_check: "0" });
+    off.timers[0]!.fn();
+    expect(off.http).toEqual([]);
+    expect(boot(QBOX, { nuikit_update_delay: "5" }).timers[0]!.ms).toBe(5000);
+    const manual = boot(QBOX, { nuikit_latest: "0.7.0" });
+    expect(manual.timers[0]!.fn()).toBeUndefined();
+    expect(manual.http).toEqual([]);
+    expect(manual.run("doctor").join("\n")).toContain("latest 0.7.0");
   });
 
   it("usage mentions doctor", () => {

@@ -18,7 +18,7 @@
 // One scope: FXServer runs every server_script of a resource in the same context (main.js has its own RESOURCE).
 (() => {
 const RESOURCE = GetCurrentResourceName();
-const { doctor, formatDoctor, pageHash } = globalThis.NuikitTheme;
+const { doctor, formatDoctor, pageHash, compareVersions } = globalThis.NuikitTheme;
 
 // Metadata keys the doctor reads. GetResourceMetadata only answers for keys asked by name.
 // chat_theme is what the cfx chat resource looks for (nuikit_chat has no page of its own).
@@ -120,7 +120,7 @@ function snapshot() {
   const inst = globalThis.NuikitInstall;
   const installed = inst && overrides ? inst.installedAll(overrides) : null;
   const theme = typeof globalThis.__nuikitTheme === "function" ? globalThis.__nuikitTheme() : null;
-  const latest = GetConvar("nuikit_latest", "") || null;
+  const latest = GetConvar("nuikit_latest", "") || (online && online.version) || null;
   return {
     runtime: { version: GetResourceMetadata(RESOURCE, "version", 0) || "0.0.0", protocol: Number(GetResourceMetadata(RESOURCE, "nuikit_protocol", 0) || 1), latest },
     resources,
@@ -133,6 +133,32 @@ function snapshot() {
   };
 }
 
+// Online update check (docs/doctor.md §3). The result is kept until the next start; `nuikit doctor` reads it.
+const RELEASE_API = "https://api.github.com/repos/belibathan/nuikit/releases/latest";
+let online = null; // { version, url } once a newer release is seen; nothing otherwise
+function checkForUpdate() {
+  if (GetConvar("nuikit_update_check", "1") === "0") return;
+  if (GetConvar("nuikit_latest", "")) return; // manual override: no request
+  const current = GetResourceMetadata(RESOURCE, "version", 0) || "0.0.0";
+  PerformHttpRequest(RELEASE_API, (status, body) => {
+    if (status !== 200 || !body) return;
+    let release;
+    try {
+      release = JSON.parse(body);
+    } catch (_) {
+      return;
+    }
+    const tag = release && typeof release.tag_name === "string" ? release.tag_name.replace(/^v/i, "") : "";
+    if (!/^\d+(\.\d+)*([-+].*)?$/.test(tag)) return;
+    if (compareVersions(tag, current) <= 0) return;
+    const url = typeof release.html_url === "string" && release.html_url.startsWith("https://") ? release.html_url : `https://github.com/belibathan/nuikit/releases/tag/v${tag}`;
+    online = { version: tag, url };
+    console.log(`^5[nuikit]^7 nuikit ${tag} is out: ${url}`);
+  }, "GET", "", { "User-Agent": "nuikit-doctor", Accept: "application/vnd.github+json" });
+}
+const delay = Math.min(Math.max(Number(GetConvar("nuikit_update_delay", "60")) || 0, 0), 3600);
+SetTimeout(delay * 1000, checkForUpdate);
+
 function run(reply, json) {
   const report = doctor(snapshot());
   if (json) {
@@ -142,12 +168,9 @@ function run(reply, json) {
   for (const line of formatDoctor(report)) {
     reply(line.replace(/^(\s+)(ERROR)\b/, "$1^1$2^7").replace(/^(\s+)(WARN)\b/, "$1^3$2^7").replace(/^(\s+)(INFO)\b/, "$1^5$2^7"));
   }
-  if (GetConvar("nuikit_check_updates", "0") === "1") {
-    reply("^3nuikit_check_updates is set, but the online check isn't built yet; set `nuikit_latest <version>` by hand^7");
-  }
   return report;
 }
 
-globalThis.NuikitDoctor = { run, snapshot };
+globalThis.NuikitDoctor = { run, snapshot, checkForUpdate };
 exports("doctor", () => doctor(snapshot()));
 })();

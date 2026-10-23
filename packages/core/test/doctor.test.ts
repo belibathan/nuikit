@@ -310,7 +310,15 @@ describe("helpers", () => {
     expect(compareVersions("v0.6.0", "0.6.0")).toBe(0);
     expect(compareVersions("0.6.0", "0.6.1")).toBeLessThan(0);
     expect(compareVersions("0.10.0", "0.9.0")).toBeGreaterThan(0);
-    expect(compareVersions("0.7.0-next", "0.7.0")).toBeGreaterThan(0);
+    expect(compareVersions("0.7.0-next", "0.7.0")).toBeLessThan(0); // a prerelease loses to its release
+    expect(compareVersions("0.7.0", "0.7.0-next")).toBeGreaterThan(0);
+    expect(compareVersions("0.7.0-rc.2", "0.7.0-rc.10")).toBeLessThan(0); // numeric identifiers compare as numbers
+    expect(compareVersions("0.7.0-beta", "0.7.0-alpha.1")).toBeGreaterThan(0);
+    expect(compareVersions("0.7.0-alpha", "0.7.0-alpha.1")).toBeLessThan(0); // shorter prerelease first
+    expect(compareVersions("0.7.0-1", "0.7.0-beta")).toBeLessThan(0); // numeric before alphanumeric
+    expect(compareVersions("0.7.0+build.5", "0.7.0")).toBe(0);
+    expect(compareVersions("0.8.0-next", "0.7.0")).toBeGreaterThan(0);
+    expect(compareVersions("0.9", "0.9.0")).toBe(0);
   });
   it("pageHash ignores line endings", () => {
     expect(pageHash("a\r\nb")).toBe(pageHash("a\nb"));

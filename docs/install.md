@@ -25,6 +25,10 @@ Status (Oct 23, 2026): the commands are built and unit-tested; `nuikit install` 
 
 5. **Theme:** paste any [TweakCN](https://tweakcn.com) export into `[nuikit]/nuikit/theme.css`, then `nuikit theme reload`.
 
+**Verify the download.** Each release carries `SHA256SUMS.txt` next to the zips. In the folder you downloaded to,
+run `sha256sum -c SHA256SUMS.txt` (Linux, macOS, Git Bash), or on Windows compare `certutil -hashfile nuikit-qbox.zip SHA256`
+with the matching line in the file. A mismatch means the file is not the one released: download it again.
+
 ## 2. Per framework
 
 What gets stopped are the stock screens a `[nuikit]` system replaces. Everything else keeps running; the overrides change
