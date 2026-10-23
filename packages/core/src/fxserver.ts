@@ -5,3 +5,4 @@
  */
 export { checkContrast, compileTheme, themeToCss, toDtcg, TOKEN_NAMES, TOKENS_VERSION } from "./tokens";
 export { ADAPTER_PACKS, compareVersions, detectFramework, doctor, formatDoctor, pageHash } from "./doctor";
+export { bytesHash, formatInstall, overrideOutdated, planInstall, planUninstall } from "./install";

@@ -146,8 +146,26 @@ describe("conflicts", () => {
     const r = doctor(snap([res("ox_lib", { ui_page: ["web/build/index.html"] })], { overrides, readFile: () => PLAIN_PAGE }));
     const f = r.findings.find((x) => x.code === "override-missing")!;
     expect(f.severity).toBe("warn");
-    expect(f.next).toContain("overrides/ox_lib/");
+    expect(f.next).toContain("nuikit install ox_lib");
     expect(r.resources.find((x) => x.name === "ox_lib")).toMatchObject({ status: "untouched", via: "override missing" });
+  });
+  it("override outdated: installed by an older nuikit than the zip", () => {
+    const overrides = { version: "0.9.0", overrides: { ox_lib: { path: "web/build/index.html", hash: pageHash(OVERRIDE_PAGE) } } };
+    const installed = { ox_lib: { version: "0.8.0", files: { "web/build/index.html": "aaaa0001" } } };
+    const r = doctor(snap([res("ox_lib", { ui_page: ["web/build/index.html"] })], { overrides, installed, readFile: () => OVERRIDE_PAGE + "<!-- old -->" }));
+    const f = r.findings.find((x) => x.code === "override-outdated")!;
+    expect(f).toMatchObject({ severity: "warn", resource: "ox_lib" });
+    expect(f.next).toContain("nuikit upgrade ox_lib");
+    expect(r.resources.find((x) => x.name === "ox_lib")!.via).toBe("override 0.8.0, outdated");
+  });
+  it("override edited: a file differs from what nuikit install wrote → info, not a warning", () => {
+    const overrides = { version: "0.9.0", overrides: { ox_lib: { path: "web/build/index.html", hash: pageHash(OVERRIDE_PAGE) } } };
+    const installed = { ox_lib: { version: "0.9.0", files: { "web/build/index.html": "aaaa0001" } } };
+    const r = doctor(snap([res("ox_lib", { ui_page: ["web/build/index.html"] })], { overrides, installed, fileHash: () => "ed170001", readFile: () => OVERRIDE_PAGE + "<!-- mine -->" }));
+    const f = r.findings.find((x) => x.code === "override-edited")!;
+    expect(f).toMatchObject({ severity: "info", resource: "ox_lib" });
+    expect(f.next).toContain("--force");
+    expect(r.findings.find((x) => x.code === "override-drifted")).toBeUndefined();
   });
   it("override list entries for resources that aren't running are ignored", () => {
     const overrides = { version: "0.6.0", overrides: { ox_inventory: { path: "web/build/index.html", hash: "00000000" } } };

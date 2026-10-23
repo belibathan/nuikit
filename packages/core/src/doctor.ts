@@ -44,6 +44,10 @@ export interface DoctorSnapshot {
   readFile?: (resource: string, path: string) => string | null;
   /** The shipped override list (overrides.json in the nuikit resource). */
   overrides?: OverrideManifest | null;
+  /** Per resource: its `.nuikit-backup/manifest.json` (what `nuikit install` wrote), when there is one. */
+  installed?: Record<string, { version: string; files: Record<string, string> } | null> | null;
+  /** `fileHash(resource, rel)`: bytesHash of a file on disk, null when absent (for the edited check). */
+  fileHash?: (resource: string, rel: string) => string | null;
   /** The compiled theme's checks (server/main.js keeps them). */
   theme?: { contrast: ContrastResult[]; warnings: string[] } | null;
   /** Live intent counts: source resource → intent → count. */
@@ -56,7 +60,7 @@ export interface DoctorSnapshot {
 export interface OverrideManifest {
   /** nuikit version the hashes belong to. */
   version: string;
-  overrides: Record<string, { path: string; hash: string }>;
+  overrides: Record<string, { path: string; hash: string; files?: Record<string, string> }>;
 }
 
 export interface AdapterPack {
@@ -99,6 +103,8 @@ export interface Finding {
     | "provide-conflict"
     | "override-drifted"
     | "override-missing"
+    | "override-outdated"
+    | "override-edited"
     | "protocol-newer"
     | "start-order"
     | "manifest-changed"
@@ -293,30 +299,57 @@ export function doctor(snap: DoctorSnapshot): DoctorReport {
 
   // Override pages vs what we shipped.
   if (snap.overrides && snap.readFile) {
+    const shippedVersion = snap.overrides.version;
     for (const [res, o] of Object.entries(snap.overrides.overrides)) {
       const r = byName.get(res);
       if (!r || !started(r)) continue;
       const html = snap.readFile(res, o.path);
       const rep = reports.find((x) => x.name === res);
+      const installed = snap.installed?.[res] ?? null;
       if (!html || !OVERRIDE_MARKER.test(html)) {
         findings.push({
           code: "override-missing",
           severity: "warn",
           resource: res,
-          message: `${res}: the nuikit override page isn't at ${o.path} (a library update replaced it, or it was never copied)`,
-          next: `copy overrides/${res}/ from nuikit.zip over resources/${res}/ again and \`restart ${res}\``,
+          message: `${res}: the nuikit override page isn't at ${o.path} (a library update replaced it, or it was never installed)`,
+          next: `\`nuikit install ${res}\` in the server console, then \`restart ${res}\``,
         });
         if (rep) {
           rep.via = "override missing";
-          rep.next = `copy overrides/${res}/ from nuikit.zip back over resources/${res}/`;
+          rep.next = `\`nuikit install ${res}\``;
         }
+        continue;
+      }
+      if (installed && compareVersions(shippedVersion, installed.version) > 0) {
+        findings.push({
+          code: "override-outdated",
+          severity: "warn",
+          resource: res,
+          message: `${res}: the override is from nuikit ${installed.version}; this zip ships ${shippedVersion}`,
+          next: `\`nuikit upgrade ${res}\` (or \`nuikit upgrade\` for all), then \`restart ${res}\``,
+        });
+        if (rep) rep.via = `override ${installed.version}, outdated`;
+        continue;
+      }
+      // Any file `nuikit install` wrote that differs from what it wrote: the owner's edit (kept on upgrade).
+      const editedByOwner =
+        !!installed && !!snap.fileHash && Object.entries(installed.files).some(([rel, h]) => { const d = snap.fileHash!(res, rel); return d !== null && d !== h; });
+      if (editedByOwner) {
+        findings.push({
+          code: "override-edited",
+          severity: "info",
+          resource: res,
+          message: `${res}: the override was edited since nuikit ${installed!.version} installed it`,
+          next: `keep it, or \`nuikit install ${res} --force\` to put the shipped files back (your edits are saved under ${res}/.nuikit-backup/)`,
+        });
+        if (rep) rep.via = "override edited";
       } else if (pageHash(html) !== o.hash) {
         findings.push({
           code: "override-drifted",
           severity: "warn",
           resource: res,
-          message: `${res}: the override page at ${o.path} isn't the one nuikit ${snap.overrides.version} shipped (edited, or from another release)`,
-          next: `if you didn't edit it, copy overrides/${res}/ from nuikit.zip over resources/${res}/ and \`restart ${res}\``,
+          message: `${res}: the override page at ${o.path} isn't the one nuikit ${shippedVersion} shipped (edited, or from another release)`,
+          next: `if you didn't edit it, \`nuikit install ${res}\` and \`restart ${res}\``,
         });
         if (rep) rep.via = "override changed";
       }
@@ -423,7 +456,7 @@ export function doctor(snap: DoctorSnapshot): DoctorReport {
       code: "update-available",
       severity: "info",
       message: `nuikit ${snap.runtime.version} is running; ${latest} is out`,
-      next: `download nuikit.zip from github.com/belibathan/nuikit/releases/tag/v${latest.replace(/^v/, "")} and replace [nuikit]/ and overrides/`,
+      next: `download nuikit.zip from github.com/belibathan/nuikit/releases/tag/v${latest.replace(/^v/, "")}, replace [nuikit]/, then \`nuikit upgrade\` (docs/install.md)`,
     });
   }
 

@@ -489,6 +489,7 @@ import { __resetPlayer, subscribeContext } from "./player";
 export { follow, followed, type FollowKind, type FollowOptions } from "./follow";
 import { __resetFollow } from "./follow";
 
+export { bytesHash, formatInstall, overrideOutdated, planInstall, planUninstall, type InstalledManifest, type InstallPlan, type InstallAction, type InstallOp, type ShippedOverride } from "./install";
 export { COVERAGE_TARGETS, computeCoverage, formatCoverage, parseSessionLog, type CoverageResult, type SessionStep } from "./coverage";
 export {
   ADAPTER_PACKS,
