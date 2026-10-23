@@ -20,7 +20,7 @@ TweakCN theme) is the default look and the showcase, not the product. Design: `d
 - **No PRs until servers run nuikit.** Lanes commit small to their own branch and push it; the lead merges into
   `main` locally and pushes. CI runs on `main` after the fact; red means the next commit fixes it.
 - **The quick gate (about a minute):** `pnpm typecheck`, the build of what you touched, `pnpm sync` clean. Tests
-  where there is real logic. A POST-log diff only when an override changes what it POSTs (its protocol must not
+  where there is real logic. **Visual change: `pnpm look <web dir>` and look at the PNGs (every theme) before pushing.** A POST-log diff only when an override changes what it POSTs (its protocol must not
   break). Nothing else gates shipping.
 - A spike only for a genuine unknown (a native's behaviour, a process model), then build.
 - One line on what's unproven ("not seen in game"), and move on. The owner tests in game at checkpoints.

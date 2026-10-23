@@ -60,7 +60,7 @@ shared file (a token, a kit utility) is fine when the item can't ship without it
 
 ## The gate (about a minute, before each push)
 
-`pnpm typecheck`, the build of what you touched, `pnpm sync` clean. Tests where there is real logic. For an override that
+`pnpm typecheck`, the build of what you touched, `pnpm sync` clean. **Anything visual: `pnpm look <web dir> [url]` and Read the PNGs it writes (every theme) before you push; say in your report which you looked at.** A component that looks different under a theme in any way other than skew, wall, radius, fill style, palette or type is a bug: themes set values, never anatomy. Tests where there is real logic. For an override that
 changes what it POSTs to its resource, a POST-log diff of its main flow (`bench/screens/run.mjs` + `diff.mjs`): that is the
 one change that breaks servers. Full CI runs on `main` after the merge; red means the next commit fixes it.
 

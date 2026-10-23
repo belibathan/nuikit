@@ -12,6 +12,7 @@
     "proof": "pnpm --filter cef-proof proof",
     "visual": "node bench/visual/run.mjs",
     "visual:update": "node bench/visual/run.mjs --update",
+    "look": "node bench/visual/run.mjs --look",
     "changeset": "changeset",
     "build:systems": "pnpm -r --filter \"./systems/**\" --filter \"./addons/**\" build",
     "pack:systems": "node scripts/pack-systems.mjs",
