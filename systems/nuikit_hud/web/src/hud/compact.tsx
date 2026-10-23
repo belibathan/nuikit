@@ -17,7 +17,7 @@ import type { HudSettings, HudVehicle } from "../nui";
 import { Signal, type Painter, type Tell } from "./cluster";
 import type { GaugeStyle, HudLook } from "./look";
 import { calm } from "./reel";
-import { KeyTile } from "./key-tile";
+import { Keycap } from "./keycap";
 import { cardinal, setText, UNIT_LABEL } from "./util";
 
 const clamp01 = (v: number) => Math.max(0, Math.min(1, Number.isFinite(v) ? v : 0));
@@ -147,7 +147,7 @@ function Gear({ gear }: { gear: HudVehicle["gear"] }) {
   if (gear === undefined) return null;
   return (
     <span data-slot="hud-gear" data-gear={String(gear)} className="hud-c-gear-tile" aria-label="Gear">
-      <KeyTile icon={<TextRoll className="hud-key-glyph" value={String(gear)} direction={dir.current} align="center" />} />
+      <Keycap glyph={<TextRoll value={String(gear)} direction={dir.current} align="center" />} />
     </span>
   );
 }
@@ -262,9 +262,7 @@ function Telltale({ t }: { t: Tell }) {
   const stagger = useStaggerItem<HTMLSpanElement>(!!t.on);
   return (
     <span ref={stagger} data-slot="hud-telltale" data-key={t.key} data-on={t.on || undefined} data-tone={t.tone} className="hud-c-tell" aria-label={t.label} aria-hidden={!t.on}>
-      <KeyTile size="sm" icon={t.icon} open={!!t.text}>
-        {t.text && <span className="hud-num">{t.text}</span>}
-      </KeyTile>
+      <Keycap size="sm" icon={t.icon} open={!!t.text} label={t.text && <span className="nk-num">{t.text}</span>} />
     </span>
   );
 }
