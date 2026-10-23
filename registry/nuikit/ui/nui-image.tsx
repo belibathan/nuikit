@@ -68,7 +68,7 @@ function NuiImage({
     if (fallback === null) return null
     return (
       <span data-slot="nui-image" data-missing className={cn("flex items-center justify-center text-muted-foreground/50", className)}>
-        {fallback ?? <ImageIcon className="size-1/2 max-h-6 max-w-6" strokeWidth={1.25} />}
+        {fallback ?? <ImageIcon className="size-1/2 max-h-[var(--nk-nui-image-icon-max,1.5rem)] max-w-[var(--nk-nui-image-icon-max,1.5rem)]" strokeWidth={1.25} />}
       </span>
     )
   }
