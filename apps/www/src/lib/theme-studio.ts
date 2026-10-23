@@ -210,18 +210,30 @@ function dropEmptyValues(css: string): { css: string; empty: string[] } {
  * set nuikit reads in game, with the font @imports first. Derived tokens (surface, shadows, clip
  * paths, the motion ladder) are left out, as toDtcg leaves them out: compiling the file derives them
  * again, so it gives the same tokens, and a hand edit to `--nk-cut` or `--nk-duration` still takes.
+ * Two exceptions, found by compiling the file and comparing: a derived token the theme set itself
+ * (Ink's `--nk-ease-expand`) is written out, and a default that is a `var()` reference (the tile
+ * treatment's `--nk-type-*-family`) is left out, since writing it would resolve it to a literal.
  */
 export function exportThemeCss(theme: CompiledTheme): string {
-  const lines = Object.entries(theme.vars)
-    .filter(([k]) => !DERIVED.has(k))
-    .map(([k, v]) => `  --${k}: ${v};`)
-  return [
-    "/* nuikit theme (tokens v1), made in the theme studio: https://nuikit.vercel.app/theme",
-    "   Drop it in nuikit/theme.css and run `nuikit theme reload`. */",
-    ...theme.imports.map((u) => `@import url("${u}");`),
-    `.dark {\n${lines.join("\n")}\n}`,
-    "",
-  ].join("\n");
+  const keep = new Set(Object.keys(theme.vars).filter((k) => !DERIVED.has(k)));
+  const render = () =>
+    [
+      "/* nuikit theme (tokens v1), made in the theme studio: https://nuikit.vercel.app/theme",
+      "   Drop it in nuikit/theme.css and run `nuikit theme reload`. */",
+      ...theme.imports.map((u) => `@import url("${u}");`),
+      `.dark {\n${[...keep].map((k) => `  --${k}: ${theme.vars[k]};`).join("\n")}\n}`,
+      "",
+    ].join("\n");
+  for (let pass = 0; pass < 3; pass++) {
+    const again = compileTheme(render(), { mode: "dark" }).vars;
+    const off = Object.keys(theme.vars).filter((k) => again[k] !== theme.vars[k]);
+    if (!off.length) break;
+    for (const k of off) {
+      if (!keep.has(k)) keep.add(k);
+      else if (theme.vars[k]!.includes("var(")) keep.delete(k);
+    }
+  }
+  return render();
 }
 
 /** "rgb(229, 229, 229)" → "#e5e5e5" for <input type=color>; alpha is dropped (shown separately). */
