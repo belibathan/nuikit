@@ -13,6 +13,7 @@ import {
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { MenuRow, MenuRowList } from "@/components/ui/menu-row";
+import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
 import { SelectionTile } from "@/components/ui/selection-tile";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -32,8 +33,9 @@ export function SettingsPage({ onBack, onValues, onGame }: { onBack: () => void;
   const [sections, setSections] = useState<SettingsSection[] | null>(null);
   useEffect(() => {
     void loadSettings().then((all) => {
-      // this menu's own section first, the rest as the service lists them
-      setSections([...all.filter((s) => s.resource === SELF), ...all.filter((s) => s.resource !== SELF)]);
+      // this menu's own (Display) section first, the rest by label
+      const rest = all.filter((s) => s.resource !== SELF).sort((a, b) => (a.label || a.resource).localeCompare(b.label || b.resource));
+      setSections([...all.filter((s) => s.resource === SELF), ...rest]);
     });
   }, []);
 
@@ -139,6 +141,14 @@ function Row({ row, value, onChange }: { row: SettingRow; value: SettingValue | 
       <MenuRow checked={value === true} onCheckedChange={onChange} description={row.description} className="min-h-11">
         {row.label}
       </MenuRow>
+    );
+  if (row.text)
+    return (
+      <div className="flex flex-col gap-2 py-3">
+        <span className="truncate">{row.label}</span>
+        {row.description ? <span className="nk-label -mt-1.5 text-muted-foreground">{row.description}</span> : null}
+        <Input key={String(value)} defaultValue={typeof value === "string" ? value : ""} maxLength={row.maxLength ?? 64} onBlur={(e) => e.target.value !== value && onChange(e.target.value)} />
+      </div>
     );
   if (row.options) {
     const options = row.options.map(option);

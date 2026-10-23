@@ -30,6 +30,7 @@ local settings = {}
 -- ───────────────────────────────── pure: rows, values, merge (used by the store and the tests)
 
 local function kind(row)
+  if row.text then return 'text' end
   if row.options then return 'options' end
   if row.range then return 'range' end
   return 'toggle'
@@ -41,6 +42,10 @@ function settings.normalize(row, value)
   if k == 'toggle' then
     if type(value) == 'boolean' then return value end
     return nil
+  elseif k == 'text' then
+    if type(value) ~= 'string' then return nil end
+    local max = tonumber(row.maxLength) or 64
+    return #value > max and value:sub(1, max) or value
   elseif k == 'range' then
     local n = tonumber(value)
     if not n or n ~= n then return nil end -- NaN passes every comparison, so it would skip the clamp
@@ -75,7 +80,7 @@ function settings.validate(schema)
       if d == nil then
         problems[#problems + 1] = ('row %s: its default %s isn\'t a value it accepts'):format(row.key, tostring(row.default))
       else
-        rows[#rows + 1] = { key = row.key, label = row.label or row.key, description = row.description, options = row.options, range = row.range, toggle = kind(row) == 'toggle' or nil, default = d, flag = row.flag, group = row.group }
+        rows[#rows + 1] = { key = row.key, label = row.label or row.key, description = row.description, options = row.options, range = row.range, text = row.text, maxLength = row.maxLength, toggle = kind(row) == 'toggle' or nil, default = d, flag = row.flag, group = row.group }
       end
     end
   end
@@ -83,7 +88,7 @@ function settings.validate(schema)
   for _, p in ipairs(type(schema.presets) == 'table' and schema.presets or {}) do
     if type(p) == 'table' and type(p.id) == 'string' and type(p.patch) == 'table' then presets[#presets + 1] = { id = p.id, label = p.label or p.id, patch = p.patch } end
   end
-  return { label = schema.label, version = tonumber(schema.version) or 1, rows = rows, presets = presets }, problems
+  return { label = schema.label, icon = schema.icon, version = tonumber(schema.version) or 1, rows = rows, presets = presets }, problems
 end
 
 --- Only what the rows accept, from `patch` (unknown keys and invalid values dropped).
@@ -166,7 +171,7 @@ if RESOURCE == RUNTIME then
     local s = sections[res]
     local presets = {}
     for _, p in ipairs(s.schema.presets) do presets[#presets + 1] = { id = p.id, label = p.label } end
-    return { resource = res, label = s.schema.label or res, version = s.schema.version, rows = visibleRows(s), presets = presets, values = s.values, draft = s.draft ~= nil }
+    return { resource = res, label = s.schema.label or res, icon = s.schema.icon, version = s.schema.version, rows = visibleRows(s), presets = presets, values = s.values, draft = s.draft ~= nil }
   end
 
   --- What a resource saved last: { v = version, values = {…} } or nil (its migrate runs on it).
@@ -258,9 +263,13 @@ if RESOURCE == RUNTIME then
 
   -- a stopped resource leaves the list (what it saved stays in KVP); an open draft is dropped
   AddEventHandler('onClientResourceStop', function(res)
-    if not sections[res] then return end
-    sections[res] = nil
-    for i, r in ipairs(order) do if r == res then table.remove(order, i) break end end
+    for i = #order, 1, -1 do
+      local key = order[i]
+      if key == res or key:sub(1, #res + 1) == res .. ':' then
+        sections[key] = nil
+        table.remove(order, i)
+      end
+    end
   end)
 
   -- A resource defines and changes only its own section through the exports (the caller is who invoked
@@ -269,7 +278,7 @@ if RESOURCE == RUNTIME then
   local function own(fn)
     return function(res, ...)
       local from = GetInvokingResource and GetInvokingResource()
-      if type(res) ~= 'string' or (from ~= nil and from ~= res) then return nil end
+      if type(res) ~= 'string' or (from ~= nil and from ~= res and res:sub(1, #from + 1) ~= from .. ':') then return nil end
       return fn(res, ...)
     end
   end
@@ -315,35 +324,115 @@ local function store(name, ...)
 end
 
 --- Declare this resource's settings. Returns a handle: get(key), values(), and the store's ops for this resource.
-function settings.define(schema)
-  assert(type(schema) == 'table', 'nk.settings.define(schema)')
-  local saved = store('settingsSaved', RESOURCE)
+local function declare(key, schema, push)
+  local saved = store('settingsSaved', key)
   local values = saved and saved.values or {}
   if saved and type(schema.migrate) == 'function' and saved.v ~= (tonumber(schema.version) or 1) then
     local ok, migrated = pcall(schema.migrate, values, saved.v)
     if ok and type(migrated) == 'table' then values = migrated
     else print(('^3[nuikit] settings migrate failed for %s: %s^7'):format(RESOURCE, tostring(migrated))) end
   end
-  local plain = { label = schema.label, version = schema.version, rows = schema.rows, presets = schema.presets }
-  local current = store('settingsDefine', RESOURCE, plain, values) or {}
+  local plain = { label = schema.label, icon = schema.icon, version = schema.version, rows = schema.rows, presets = schema.presets }
+  local current = store('settingsDefine', key, plain, values) or {}
   local onChange = schema.onChange
 
   AddEventHandler('nuikit:settings:changed', function(res, v, changed, draft)
-    if res ~= RESOURCE then return end
+    if res ~= key then return end
     current = v
-    if NUI and NUI.send then NUI.send('nuikit:settings', { values = v, changed = changed, draft = draft }) end
+    if push then push(v, changed, draft) end
     if onChange then onChange(v, changed, draft) end
   end)
 
   local handle = {}
   function handle.get(key) return current[key] end
   function handle.values() return current end
-  function handle.draft(patch) return store('settingsDraft', RESOURCE, patch) end
-  function handle.save() return store('settingsSave', RESOURCE) end
-  function handle.cancel() return store('settingsCancel', RESOURCE) end
-  function handle.reset(keys) return store('settingsReset', RESOURCE, keys) end
-  function handle.preset(id) return store('settingsPreset', RESOURCE, id) end
+  function handle.draft(patch) return store('settingsDraft', key, patch) end
+  function handle.save() return store('settingsSave', key) end
+  function handle.cancel() return store('settingsCancel', key) end
+  function handle.reset(keys) return store('settingsReset', key, keys) end
+  function handle.preset(id) return store('settingsPreset', key, id) end
   return handle
+end
+
+function settings.define(schema)
+  assert(type(schema) == 'table', 'nk.settings.define(schema)')
+  return declare(RESOURCE, schema, function(v, changed, draft)
+    if NUI and NUI.send then NUI.send('nuikit:settings', { values = v, changed = changed, draft = draft }) end
+  end)
+end
+
+-- ───────────────────────────────── register: sections for third-party resources (cortex-lib style)
+
+local TYPES = { toggle = true, select = true, range = true, text = true }
+local registered, listeners = {}, {}
+
+--- A `register` row as a define row, or nil (with a console warning) when its type isn't known.
+local function convert(sectionId, row)
+  if type(row) ~= 'table' or type(row.id) ~= 'string' or row.id == '' then
+    print(('^3[nuikit] settings %s: a row has no id, skipped^7'):format(sectionId))
+    return nil
+  end
+  if not TYPES[row.type] then
+    print(('^3[nuikit] settings %s: row %s has unknown type %s, skipped^7'):format(sectionId, row.id, tostring(row.type)))
+    return nil
+  end
+  local out = { key = row.id, label = row.label, description = row.description, group = row.group, flag = row.flag, default = row.default }
+  if row.type == 'toggle' then
+    out.toggle = true
+    if out.default == nil then out.default = false end
+  elseif row.type == 'select' then
+    out.options = type(row.options) == 'table' and row.options or {}
+    if out.default == nil then
+      local first = out.options[1]
+      if type(first) == 'table' then first = first.value end
+      out.default = first
+    end
+  elseif row.type == 'range' then
+    out.range = { row.min or 0, row.max or 1, row.step }
+    if out.default == nil then out.default = row.min or 0 end
+  else
+    out.text, out.maxLength = true, row.maxLength
+    if out.default == nil then out.default = '' end
+  end
+  return out
+end
+
+--- Register a section of this resource's own settings:
+---   nk.settings.register({ id = 'hud', label = 'HUD', icon = 'layout', rows = { { id = 'minimap', type = 'toggle', label = 'Minimap', default = true } } })
+--- Rows: toggle, select (options), range (min, max, step), text (maxLength). Saved per player in
+--- `nuikit:settings:<resource>:<id>` (versioned, merged over defaults). Read with nk.settings.get(id[, rowId]);
+--- every change (a page's preview included) also arrives as `nuikit:settings:<resource>` (NUI message
+--- { id, values, changed, draft }) and in the nk.settings.onChange(fn(id, values, changed, draft)) listeners.
+function settings.register(def)
+  assert(type(def) == 'table' and type(def.id) == 'string' and def.id ~= '' and not def.id:find(':', 1, true), 'nk.settings.register({ id, label, rows })')
+  local rows = {}
+  for _, row in ipairs(type(def.rows) == 'table' and def.rows or {}) do
+    local r = convert(def.id, row)
+    if r then rows[#rows + 1] = r end
+  end
+  local id = def.id
+  local handle = declare(RESOURCE .. ':' .. id, {
+    label = def.label or id, icon = def.icon, version = def.version, rows = rows, presets = def.presets, migrate = def.migrate,
+  }, function(v, changed, draft)
+    for _, fn in ipairs(listeners) do pcall(fn, id, v, changed, draft) end
+    if NUI and NUI.send then NUI.send('nuikit:settings:' .. RESOURCE, { id = id, values = v, changed = changed, draft = draft }) end
+  end)
+  registered[id] = handle
+  return handle
+end
+
+--- The values of a registered section, or one row's value when `rowId` is given.
+function settings.get(id, rowId)
+  local h = registered[id]
+  if not h then return nil end
+  if rowId ~= nil then return h.get(rowId) end
+  return h.values()
+end
+
+--- Listen to every change of this resource's registered sections: fn(id, values, changed, draft).
+function settings.onChange(fn)
+  assert(type(fn) == 'function', 'nk.settings.onChange(fn)')
+  listeners[#listeners + 1] = fn
 end
 
 if NUI then NUI.settings = settings end

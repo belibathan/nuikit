@@ -33,6 +33,30 @@ Row kinds: `options` (a choice; each `value` a string, number or boolean), `rang
 `step`), or `toggle`. A row whose default it doesn't accept is skipped with an F8 line. `group` is a heading for
 pages; `description` a second line.
 
+## Register a section (third-party resources)
+
+`nk.settings.register` is the short form for a resource that just wants a section on the Settings page. Rows are
+`toggle`, `select` (`options`), `range` (`min`, `max`, `step`) or `text` (`maxLength`); a missing `default` is
+`false` / the first option / `min` / `''`. An unknown row type is skipped with an F8 line.
+
+```lua
+nk.settings.register({
+  id = 'shop', label = 'Shop', icon = 'store',
+  rows = {
+    { id = 'sound', type = 'toggle', label = 'Sound effects', default = true },
+    { id = 'tone', type = 'select', label = 'Tone', options = { 'cool', 'warm' } },
+    { id = 'vol', type = 'range', label = 'Volume', min = 0, max = 10, step = 1, default = 5 },
+    { id = 'tag', type = 'text', label = 'Order name', maxLength = 16 },
+  },
+})
+nk.settings.get('shop', 'vol')                       -- one value; nk.settings.get('shop') is the table
+nk.settings.onChange(function(id, values, changed, draft) end)   -- every change, previews included
+```
+
+Saved per player at `nuikit:settings:<resource>:<id>` (versioned, merged over the defaults, as above); the
+resource's page also hears the NUI message `nuikit:settings:<resource>` `{ id, values, changed, draft }`. The
+page's section key is `<resource>:<id>`. The pause Settings page lists Display first, then sections by label.
+
 ## Show (pages, any resource)
 
 ```tsx

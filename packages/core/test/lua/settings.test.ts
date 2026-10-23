@@ -134,4 +134,31 @@ describe("nk.settings", () => {
     client.stop("radio");
     expect((await nuikit.call("settings", {})).sections.map((s: { resource: string }) => s.resource)).toEqual(["hud"]);
   });
+  it("register: a third-party section with typed rows; get, change events, onChange, KVP namespace, merge", async () => {
+    client = await createClient();
+    const kvp = new Map<string, string>([["nuikit:settings:shop:main", JSON.stringify({ v: 1, values: { tone: "warm", gone: 1 } })]]);
+    const nuikit = await client.start("nuikit", { scripts: ["settings.lua"], kvp });
+    const shop = await client.start("shop", { scripts: ["settings.lua"] });
+    await shop.run(`CH = {} NUI.settings.onChange(function(id, v, changed, draft) CH[#CH + 1] = { id = id, changed = changed, draft = draft } end)
+      NUI.settings.register({ id = 'main', label = 'Shop', icon = 'store', rows = {
+        { id = 'sound', type = 'toggle', label = 'Sound', default = true },
+        { id = 'tone', type = 'select', label = 'Tone', options = { 'cool', 'warm' }, default = 'cool' },
+        { id = 'vol', type = 'range', label = 'Volume', min = 0, max = 10, step = 1, default = 5 },
+        { id = 'name', type = 'text', label = 'Name', default = 'Bob', maxLength = 5 },
+        { id = 'bad', type = 'colour', label = 'Bad' },
+      } })`);
+    // saved choice merged over defaults, unknown saved key dropped, unknown row type skipped
+    expect(await shop.run(`return NUI.settings.get('main')`)).toEqual({ sound: true, tone: "warm", vol: 5, name: "Bob" });
+    expect(await shop.run(`return NUI.settings.get('main', 'vol')`)).toBe(5);
+    const { sections } = await nuikit.call("settings", { resource: "shop:main" });
+    expect(sections[0]).toMatchObject({ label: "Shop", icon: "store" });
+    expect(sections[0].rows.map((r: { key: string }) => r.key)).toEqual(["sound", "tone", "vol", "name"]);
+    await nuikit.call("settings:draft", { resource: "shop:main", patch: { vol: 99, name: "Alexander", tone: "hot" } });
+    expect(await shop.run(`return NUI.settings.get('main')`)).toEqual({ sound: true, tone: "warm", vol: 10, name: "Alexa" });
+    expect(await shop.run(`return CH[#CH]`)).toEqual({ id: "main", changed: ["name", "vol"], draft: true });
+    expect(shop.messages.at(-1)).toMatchObject({ action: "nuikit:settings:shop", data: { id: "main", draft: true } });
+    await nuikit.call("settings:save", { resource: "shop:main" });
+    expect(JSON.parse(nuikit.kvp.get("nuikit:settings:shop:main")!).values).toEqual({ tone: "warm", vol: 10, name: "Alexa" });
+    expect(await shop.run(`return CH[#CH].draft`)).toBe(false);
+  });
 });
