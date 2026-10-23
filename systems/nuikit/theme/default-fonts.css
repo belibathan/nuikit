@@ -1,4 +1,4 @@
-/* Ink fonts, inlined so a UI built before Ink joined fonts.json still gets them with no cross-origin request:
+/* Default fonts, inlined so a UI built before Default joined fonts.json still gets them with no cross-origin request:
    Geist (variable) and Barlow Condensed 600 to 800 italic. SIL OFL 1.1 (fonts/geist.OFL.txt, fonts/barlow-condensed.OFL.txt).
    Sources: fonts/geist-latin-wght-normal.woff2, fonts/barlow-condensed-latin-{600,700,800}-italic.woff2. Drop the
    @import of this file once every UI is rebuilt with the fonts.json faces. */

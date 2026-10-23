@@ -1,0 +1,179 @@
+/*
+ * Neon Pop: Default's structure with a vivid palette. The same `tile` treatment, keycap tiles, fills and
+ * motion; near-black surfaces and white text, the colour carried by fills, accents and the signature
+ * gradient (blue, violet, rose). Each vital gets its own hue, status keeps the classic four, rarity climbs
+ * grey, green, blue, violet, amber. Contrast: every foreground is #fafafa or #0a0a0a on its own surface.
+ *
+ * Use it: copy this file over nuikit/theme.css, then `nuikit theme reload`. It imports the same
+ * stylesheet as Default (the rules its tokens can't say), served by the nuikit resource.
+ */
+@import url("https://cfx-nui-nuikit/theme/default.css");
+
+.dark {
+  /* palette: near-black surfaces, white text, greys for hierarchy */
+  --background: #0a0a0a;
+  --foreground: #fafafa;
+  --card: #111111;
+  --card-foreground: #fafafa;
+  --popover: #141414;
+  --popover-foreground: #fafafa;
+  --primary: #8a8cff;
+  --primary-foreground: #0a0a0a;
+  --secondary: #1f1f1f;
+  --secondary-foreground: #fafafa;
+  --muted: #1c1c1c;
+  --muted-foreground: #a3a3a3;
+  --accent: rgba(255, 255, 255, 0.08);
+  --accent-foreground: #fafafa;
+  --destructive: #f04d6e;
+  --border: rgba(255, 255, 255, 0.12);
+  --input: rgba(255, 255, 255, 0.14);
+  --ring: #fafafa;
+  --chart-1: #4774ff;
+  --chart-2: #a066f2;
+  --chart-3: #f04d6e;
+  --chart-4: #2aa6f0;
+  --chart-5: #34cc78;
+  --radius: 0.75rem;
+  --brand: #8a8cff;
+  --brand-foreground: #0a0a0a;
+  --success: #34cc78;
+  --warning: #f29a35;
+  --info: #2aa6f0;
+  --hud: rgba(10, 10, 10, 0.8);
+  --hud-foreground: #fafafa;
+  --scrim: #000000;
+
+  /* roles: each vital its own colour (a vital in alert takes danger); status in the palette; rarity climbs grey, green, blue, violet, amber */
+  --role-health: #f04d6e;
+  --role-armor: #4774ff;
+  --role-hunger: #f29a35;
+  --role-thirst: #2aa6f0;
+  --role-stress: #34cc78;
+  --role-stamina: #fafafa;
+  --role-oxygen: #fafafa;
+  --role-info: #2aa6f0;
+  --role-success: #34cc78;
+  --role-warning: #f29a35;
+  --role-danger: #f04d6e;
+  --role-brand: #8a8cff;
+  --role-neutral: #a3a3a3;
+  --role-police: #4774ff;
+  --role-ems: #f04d6e;
+  --role-mech: #f29a35;
+  --role-gang: #a3a3a3;
+  --role-civ: #737373;
+  --role-staff: #fafafa;
+  --role-common: #737373;
+  --role-uncommon: #34cc78;
+  --role-rare: #2aa6f0;
+  --role-epic: #a066f2;
+  --role-legendary: #f29a35;
+  --nk-hue-line: 0.5;
+  --nk-hue-tint: 0.1;
+  --nk-hue-glow: 0.25;
+  --nk-hue-alert: 0.8;
+
+  /* accent: the signature gradient (HTML layers) and its stops (SVG strokes); --brand is its solid */
+  --nk-accent-gradient: linear-gradient(135deg, #4774ff 0%, #a066f2 55%, #f04d6e 100%);
+  --nk-accent-from: #4774ff;
+  --nk-accent-via: #a066f2;
+  --nk-accent-to: #f04d6e;
+
+  /* type: the families; the tile treatment sets the roles (scan / title 800, label / num 700, italic caps, 0.15em pad) */
+  --font-sans: Geist, Inter, "Segoe UI", system-ui, sans-serif;
+  --font-display: "Barlow Condensed", "Arial Narrow", sans-serif;
+  --font-numeric: "Barlow Condensed", "Arial Narrow", sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, monospace;
+  --nk-type-ratio: 1.25;
+  --nk-weight-body: 400;
+  --nk-weight-strong: 500;
+  --nk-heading-case: uppercase;
+  --nk-caption-font: var(--font-display);
+
+  /* treatment: tile. Everything below restates or tunes it. */
+  --nk-treatment: tile;
+  --nk-density: 1;
+
+  /* scales: radius (no pill value), heights */
+  --nk-r-key: 0.25rem;
+  --nk-r-chip: 0.375rem;
+  --nk-r-control: 0.5rem;
+  --nk-r-surface: 0.75rem;
+  --nk-h-key: 1.5rem;
+  --nk-h-chip: 1.75rem;
+  --nk-h-control: 2.25rem;
+  --nk-h-row: 3rem;
+  --nk-meter-radius: 0.125rem;
+
+  /* tile: a #161616 face slanted -12deg, white .32 rim, the grey plate straight down 2px (no sideways step) */
+  --nk-tile-face: rgb(22, 22, 22);
+  --nk-tile-ink: rgb(250, 250, 250);
+  --nk-tile-rim: rgba(255, 255, 255, 0.32);
+  --nk-tile-rim-focus: rgba(255, 255, 255, 0.4);
+  --nk-tile-plate: rgb(115, 115, 115);
+  --nk-tile-plate-dim: rgb(38, 38, 38);
+  --nk-tile-plate-x: 0px;
+  --nk-tile-plate-y: 2px;
+  --nk-tile-press: 1px;
+  --nk-tile-skew: -12deg;
+
+  /* plate (every surface): near-black at the material's opacity, a white hairline, a hard drop */
+  --nk-plate: rgb(10, 10, 10);
+  --nk-plate-hair: rgba(255, 255, 255, 0.12);
+  --nk-plate-drop: 0 0.125rem 0 rgba(0, 0, 0, 0.6);
+  --nk-material-hud-opacity: 0.8;
+  --nk-material-menu-opacity: 0.94;
+  --nk-material-overlay-opacity: 0.6;
+  --nk-surface-opacity: 0.94;
+  --nk-surface-tint: 0;
+  --nk-glow: 0;
+  --nk-glow-budget: 1;
+  --nk-backdrop: off;
+  --nk-hud-opacity: 0.8;
+  --nk-hud-text-shadow: soft;
+
+  /* fill: white on a white .12 track, a bright leading edge; rows sweep in the tint and slide by --nk-lift */
+  --nk-fill-color: var(--foreground);
+  --nk-fill-track: rgba(255, 255, 255, 0.12);
+  --nk-fill-tint: rgba(138, 140, 255, 0.14);
+  --nk-fill-edge: rgba(255, 255, 255, 0.4);
+  --nk-row-indicator: sweep;
+  --nk-focus-style: halo;
+  --nk-level-style: liquid;
+  --nk-gauge-style: digital;
+  --nk-gauge-ticks: 0;
+
+  /* HUD vitals (read by vital-chip) */
+  --nk-chip-shape: auto;
+  --nk-label-attach: flag;
+  --nk-vital-icon: uniform;
+  --nk-vital-display: expand;
+
+  /* motion: d = 180ms gives 90 / 120 / 180 / 280 / 420; five eases; distances */
+  --nk-duration: 180ms;
+  --nk-ease: cubic-bezier(0.2, 0, 0, 1);
+  --nk-ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --nk-ease-expand: cubic-bezier(0.16, 1, 0.3, 1);
+  --nk-ease-retract: cubic-bezier(0.4, 0, 1, 1);
+  --nk-ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --nk-ease-breathe: cubic-bezier(0.45, 0, 0.55, 1);
+  --nk-time-pulse: 1000ms;
+  --nk-stagger: 40ms;
+  --nk-exit-factor: 0.7;
+  --nk-confirm-scale: 1.08;
+  --nk-lift: 0.5rem;
+  --nk-rise: 0.5rem;
+  --nk-land-scale: 0.6;
+  --nk-deny-x: 0.3125rem;
+
+  /* behaviour: a changed vital stays open 3 s; notify by severity */
+  --nk-rest-delay: 3000ms;
+  --nk-alert-threshold: 0.2;
+  --nk-fuel-threshold: 0.15;
+  --nk-notify-ms-info: 4000ms;
+  --nk-notify-ms-success: 4000ms;
+  --nk-notify-ms-warning: 5000ms;
+  --nk-notify-ms-danger: 7000ms;
+  --nk-hold-ms: 800ms;
+}

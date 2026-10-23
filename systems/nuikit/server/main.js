@@ -70,6 +70,8 @@ function publish(reason) {
 // server theme. Every combination is compiled once, at most MAX_LOOKS of them.
 const LOOKS_KEY = "nuikitLooks";
 const TREATMENTS = ["soft", "glass", "plate", "slab"];
+// Renamed theme ids, kept for one minor (docs/next/decisions.md): "ink" is the theme now called "default".
+const THEME_ALIASES = { ink: "default" };
 const MAX_LOOKS = 24;
 
 function list(name) {
@@ -84,8 +86,10 @@ function payloadOf(t) {
 function publishLooks(serverCss) {
   const identities = [];
   const sources = { server: serverCss };
-  for (const id of list("nuikit_identities")) {
-    if (!/^[a-z0-9_-]{1,32}$/.test(id)) continue;
+  for (const raw of list("nuikit_identities")) {
+    if (!/^[a-z0-9_-]{1,32}$/.test(raw)) continue;
+    const id = THEME_ALIASES[raw] ?? raw;
+    if (id !== raw) log(`^3nuikit_identities: "${raw}" was renamed "${id}" in 0.9; the old id still works for one minor.^7`);
     const css = LoadResourceFile(RESOURCE, `themes/${id}.css`);
     if (!css || css.indexOf("--") === -1) {
       log(`^3nuikit_identities: no themes/${id}.css; ${id} is left out.^7`);

@@ -44,7 +44,7 @@ export type RuleId =
   | "cef/container"
   | "cef/individual-transform"
   | "cef/color-mix-inline"
-  // the Ink conventions (tokens 1.5, docs/design/ink.md §4): warnings until each directory's wave lands
+  // the kit conventions (tokens 1.5, docs/design/default.md §4): warnings until each directory's wave lands
   | "radius/raw"
   | "radius/pill"
   | "effect/blur"
@@ -93,8 +93,8 @@ export const RULES: Record<RuleId, { level: Level; description: string }> = {
   "space/off-scale": { level: 0, description: "A gap, padding or margin off the 0.25rem step (0.375rem, 0.3125rem, gap-1.5…); use --nk-space-* and gap-(--nk-gap-*)" },
 };
 
-/** The Ink rules (docs/design/ink.md §4): all warnings (level 0) for now. */
-export const INK_RULES: readonly RuleId[] = ["radius/raw", "radius/pill", "effect/blur", "color/mix", "shadow/soft", "motion/duration", "motion/ease", "motion/property", "type/raw", "selector/class-substring", "state/alert", "theme/unlayered", "space/off-scale"];
+/** The kit conventions (docs/design/default.md §4): all warnings (level 0) for now. */
+export const KIT_RULES: readonly RuleId[] = ["radius/raw", "radius/pill", "effect/blur", "color/mix", "shadow/soft", "motion/duration", "motion/ease", "motion/property", "type/raw", "selector/class-substring", "state/alert", "theme/unlayered", "space/off-scale"];
 
 export const LEVEL_NAMES: Record<Level, string> = { 0: "not conformant", 1: "themed", 2: "well-behaved", 3: "native" };
 
@@ -188,7 +188,7 @@ class Collector {
 
 type Report = ReturnType<Collector["file"]>;
 
-// ───────────────────────────────── Ink conventions (docs/design/ink.md §4), all warnings
+// ───────────────────────────────── kit conventions (docs/design/default.md §4), all warnings
 
 /** Blank every var(…) (with its fallback): a token reference is never a literal. */
 function blankVars(value: string): string {
@@ -237,8 +237,8 @@ const EASE_WORD = /(?<![\w-])(ease|ease-in|ease-out|ease-in-out)(?![\w-])/g;
 const MOTION_OK = new Set(["transform", "opacity", "none", "-webkit-transform"]);
 const ALERT_ATTR = /\bdata-(critical|low|redline|danger|ink-deny)\b/g;
 
-/** One CSS declaration against the Ink rules. `at` is the declaration's offset, `vat` its value's. */
-function inkDeclaration(prop: string, value: string, at: number, vat: number, report: Report) {
+/** One CSS declaration against the Default rules. `at` is the declaration's offset, `vat` its value's. */
+function kitDeclaration(prop: string, value: string, at: number, vat: number, report: Report) {
   const p = prop.toLowerCase();
   const v = blankVars(value);
   if (/color-mix\(/i.test(value)) report("color/mix", at, `${prop}: color-mix() isn't in Chromium 103; use rgba(var(--…-rgb), a)`);
@@ -299,8 +299,8 @@ function inkDeclaration(prop: string, value: string, at: number, vat: number, re
   }
 }
 
-/** A rule's selector against the Ink rules. */
-function inkSelector(prelude: string, at: number, report: Report) {
+/** A rule's selector against the Default rules. */
+function kitSelector(prelude: string, at: number, report: Report) {
   const sub = /\[class\s*[*^$]=/.exec(prelude);
   if (sub) report("selector/class-substring", at + sub.index, "a class-substring selector; key on data-state, data-tone or data-hue");
   for (const m of prelude.matchAll(ALERT_ATTR)) report("state/alert", at + m.index!, `${m[0]}: the one alert spelling is data-state="alert" (deny: data-nk-deny)`);
@@ -319,7 +319,7 @@ const CLASS_RULES: [RegExp, RuleId, string][] = [
   [/(?<![\w-])-?(gap(-[xy])?|p[xytrblse]?|m[xytrblse]?|space-[xy])-\d+\.5(?![\w-])/g, "space/off-scale", "off the 0.25rem step; use gap-(--nk-gap-*) or --nk-space-*"],
 ];
 
-function inkClasses(text: string, base: number, report: Report) {
+function kitClasses(text: string, base: number, report: Report) {
   // only things that look like class lists (no sentences): a token with a dash or a colon
   for (const [re, rule, msg] of CLASS_RULES) {
     for (const m of text.matchAll(re)) {
@@ -332,7 +332,7 @@ function inkClasses(text: string, base: number, report: Report) {
 }
 
 /** Script code (not strings): JSX alert attributes, animationDelay / transitionDuration literals. */
-function inkScript(code: string, report: Report) {
+function kitScript(code: string, report: Report) {
   for (const m of code.matchAll(ALERT_ATTR)) report("state/alert", m.index!, `${m[0]}: the one alert spelling is data-state="alert" (deny: data-nk-deny)`);
   for (const m of code.matchAll(/\b(animationDelay|animationDuration|transitionDelay|transitionDuration)\s*:\s*(\d+)/g))
     report("motion/duration", m.index!, `${m[1]}: ${m[2]} is a literal; use --nk-time-* or calc(var(--nk-stagger) * var(--i))`);
@@ -432,7 +432,7 @@ function scanCss(css: string, base: number, report: Report, ctx: FileContext) {
       else if (/^(scale|translate|rotate)$/i.test(prop)) report("cef/individual-transform", base + lead, `${prop}: is Chromium 104+ and clobbers transform animations; use transform: ${prop}(…)`);
       if (ctx.inlineStyle) for (const m of value.matchAll(/\b(color-mix|oklch|oklab)\(/gi)) report("cef/color-mix-inline", base + valueOffset + m.index!, `${m[1]}() in an inline style isn't lowered (the plugin only rewrites stylesheets); use a token class or rgb()`);
     }
-    if (ctx.ink) inkDeclaration(prop, value, base + lead, base + valueOffset, report);
+    if (ctx.kit) kitDeclaration(prop, value, base + lead, base + valueOffset, report);
     const inTheme = selectors.some((s) => THEME_SELECTOR.test(s));
     if (prop.startsWith("--")) {
       const name = prop.slice(2);
@@ -479,7 +479,7 @@ function scanCss(css: string, base: number, report: Report, ctx: FileContext) {
         if (/^@container\b/i.test(prelude)) report("cef/container", at, "@container is unsupported in Chromium 103 (ignored); use a media query");
         else if (!prelude.startsWith("@") && /:has\(/i.test(prelude)) report("cef/has", at + prelude.search(/:has\(/i), ":has() is unsupported in Chromium 103; don't depend on it for anything essential");
       }
-      if (ctx.ink && !prelude.startsWith("@")) inkSelector(prelude, base + bufStart + buf.indexOf(prelude), report);
+      if (ctx.kit && !prelude.startsWith("@")) kitSelector(prelude, base + bufStart + buf.indexOf(prelude), report);
       selectors.push(prelude);
       buf = "";
       bufStart = i + 1;
@@ -522,8 +522,8 @@ interface FileContext {
   inlineStyle?: boolean;
   /** The file is build output (compiled Tailwind legitimately uses these features). */
   built?: boolean;
-  /** Grade it against the Ink rules: the page's own source, not a synced copy (components/ui, lib/utils, the kit layer of index.css). */
-  ink?: boolean;
+  /** Grade it against the kit conventions: the page's own source, not a synced copy (components/ui, lib/utils, the kit layer of index.css). */
+  kit?: boolean;
 }
 
 const GLOW_MARK = /\bdata-nk-glow(?![-\w])/g;
@@ -554,7 +554,7 @@ function scanStrings(src: string, strings: Span[], report: Report, ctx: FileCont
       report("color/hardcoded", s.start + h.index, `${h.text} is a fixed colour; use a theme token (var(--…) or a token class)`);
     }
     for (const h of paletteClasses(text)) report("color/palette-class", s.start + h.index, `${h.text} is a fixed palette colour; use a token class (bg-primary, text-muted-foreground…)`);
-    if (ctx.ink) inkClasses(text, s.start, report);
+    if (ctx.kit) kitClasses(text, s.start, report);
     const url = text.trim();
     if (isRemoteAsset(url)) {
       report("perf/remote-asset", s.start, `${url} is fetched from the network by every client; ship it in the resource`);
@@ -611,7 +611,7 @@ function scanScript(src: string, base: number, report: Report, ctx: FileContext)
   if (/from\s+["'][^"']*components\/ui\/[^"']+["']/.test(code)) ctx.usesComponents = true;
   scanEscape(code, rep, ctx, ctx.handshakeOff ? "warning" : "error");
   scanGlow(code, base, report, ctx);
-  if (ctx.ink) inkScript(code, rep);
+  if (ctx.kit) kitScript(code, rep);
   if (!ctx.built) scanOldCefScript(src, code, strings, rep);
 }
 
@@ -659,9 +659,9 @@ function scanHtml(src: string, report: Report, ctx: FileContext) {
     }
     for (const h of colorLiterals(value)) report("color/hardcoded", start + h.index, `${attr}="${h.text}" is a fixed colour; use a theme token`);
     for (const h of paletteClasses(value)) report("color/palette-class", start + h.index, `${h.text} is a fixed palette colour; use a token class`);
-    if (ctx.ink && (attr === "class" || attr === "classname" || attr === ":class")) inkClasses(value, start, report);
+    if (ctx.kit && (attr === "class" || attr === "classname" || attr === ":class")) kitClasses(value, start, report);
   }
-  if (ctx.ink) for (const m of markup.matchAll(ALERT_ATTR)) report("state/alert", m.index!, `${m[0]}: the one alert spelling is data-state="alert" (deny: data-nk-deny)`);
+  if (ctx.kit) for (const m of markup.matchAll(ALERT_ATTR)) report("state/alert", m.index!, `${m[0]}: the one alert spelling is data-state="alert" (deny: data-nk-deny)`);
 }
 
 // ───────────────────────────────── Lua
@@ -759,7 +759,7 @@ export function checkResource(root: string, options: CheckOptions = {}): CheckRe
     const report = collector.file(f.rel, src);
     if (/(^|\/)components\/ui\//.test(f.rel)) ctx.usesComponents = true;
     ctx.built = f.built;
-    ctx.ink = !f.built && !/(^|\/)(components\/ui\/|lib\/utils\.ts$)/.test(f.rel) && !(/(^|\/)index\.css$/.test(f.rel) && /nuikit kit (layer|utilities)/.test(src));
+    ctx.kit = !f.built && !/(^|\/)(components\/ui\/|lib\/utils\.ts$)/.test(f.rel) && !(/(^|\/)index\.css$/.test(f.rel) && /nuikit kit (layer|utilities)/.test(src));
     if (/\.(css|scss|sass|less)$/i.test(f.rel)) scanCss(src, 0, report, ctx);
     else if (/\.(html?|vue|svelte)$/i.test(f.rel)) scanHtml(src, report, ctx);
     else scanScript(src, 0, report, ctx);

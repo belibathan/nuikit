@@ -1,6 +1,6 @@
-# Ink: the design system contract
+# Default: the design system contract
 
-*Ink is nuikit's flagship theme: monochrome, Barlow Condensed italic caps for anything you scan, Geist for sentences, one slanted keycap language, fill-based status, transform and opacity motion. This page turns it into kit levers (`--nk-*`, so every theme gets them), the primitives every surface must use, the lint rules that hold the line, and the migration. Sources: the four audits in `.local/audit/` (hud, menus, interactions, foundation). File refs are `path:line` as of the audit; C = `systems/nuikit/theme/ink.css`, K = `packages/create-nuikit/kit.css`, I = `systems/nuikit/theme.css`.*
+*Default is nuikit's flagship theme: monochrome, Barlow Condensed italic caps for anything you scan, Geist for sentences, one slanted keycap language, fill-based status, transform and opacity motion. This page turns it into kit levers (`--nk-*`, so every theme gets them), the primitives every surface must use, the lint rules that hold the line, and the migration. Sources: the four audits in `.local/audit/` (hud, menus, interactions, foundation). File refs are `path:line` as of the audit; C = `systems/nuikit/theme/default.css`, K = `packages/create-nuikit/kit.css`, I = `systems/nuikit/theme.css`.*
 
 ## 1. Principles
 
@@ -11,13 +11,13 @@
 5. **Colour means something.** Black, white and four greys. Success, warning, danger, gold and role hues appear only when they carry information. No colour gradients, no purple.
 6. **Two voices.** Barlow italic caps (with 0.15em overhang pad) for display, titles, labels, keys and numbers. Geist for sentences.
 7. **Transform and opacity only,** on one ladder (snap 90, fast 120, base 180, slow 280, fill 420, pulse 1000ms). Things land, open, then speak. Exits are 0.7x and retract.
-8. **Themes set values, not rules.** Every Ink decision is a `--nk-*` value on a kit lever. A theme that needs a selector has found a missing lever.
+8. **Themes set values, not rules.** Every Default decision is a `--nk-*` value on a kit lever. A theme that needs a selector has found a missing lever.
 
 ## 2. Levers: the token contract (tokens 1.5)
 
-Add these to `packages/core/src/tokens.ts` as new groups (`SCALE_TOKENS`, `TYPE_ROLE_TOKENS`, `TILE_TOKENS`, `PLATE_TOKENS`, `FILL_TOKENS`) and bump `TOKENS_REVISION` to `"1.5"`. kit.css consumes them, and Graphite keeps today's look through derived defaults. A new treatment preset, `--nk-treatment: tile`, fills the Ink values, so Ink is `tile` plus a palette. *Alias* means the old name stays for one revision and reads the new one; *replace* means it is deleted.
+Add these to `packages/core/src/tokens.ts` as new groups (`SCALE_TOKENS`, `TYPE_ROLE_TOKENS`, `TILE_TOKENS`, `PLATE_TOKENS`, `FILL_TOKENS`) and bump `TOKENS_REVISION` to `"1.5"`. kit.css consumes them, and Graphite keeps today's look through derived defaults. A new treatment preset, `--nk-treatment: tile`, fills the Default values, so Default is `tile` plus a palette. *Alias* means the old name stays for one revision and reads the new one; *replace* means it is deleted.
 
-**Spacing.** `--nk-space-unit` (= `.25rem × --nk-density`; aliases today's `--nk-space`, K:30) and `--nk-space-{1,2,3,4,6,8}` = n × unit. Semantics: `--nk-gap-cluster` (space-2: icon + text, key + label), `--nk-gap-items` (space-1: items in a bar), `--nk-pad-x` (space-3: inline pad of anything labelled), `--nk-pad-surface` (space-6). Replaces `--ink-1..6`, `--ink-gap-*` and `--ink-pad-x` (C:12-20). Ink sets density 1.
+**Spacing.** `--nk-space-unit` (= `.25rem × --nk-density`; aliases today's `--nk-space`, K:30) and `--nk-space-{1,2,3,4,6,8}` = n × unit. Semantics: `--nk-gap-cluster` (space-2: icon + text, key + label), `--nk-gap-items` (space-1: items in a bar), `--nk-pad-x` (space-3: inline pad of anything labelled), `--nk-pad-surface` (space-6). Replaces `--ink-1..6`, `--ink-gap-*` and `--ink-pad-x` (C:12-20). Default sets density 1.
 
 **Radius.** `--nk-r-key` .25, `--nk-r-chip` .375, `--nk-r-control` .5, `--nk-r-surface` .75rem, with defaults derived from `--radius` as K:77-100 does now. Aliases: `--nk-key-radius` → r-key; `--nk-chip-radius` → r-chip; `--nk-row-radius` → r-control; `--nk-meter-radius` → r-key; `--nk-material-*-radius` → r-surface. Replaces `--ink-r-*` (C:26-29) and the duplicate literals in I. There is no pill value.
 
@@ -27,7 +27,7 @@ Add these to `packages/core/src/tokens.ts` as new groups (`SCALE_TOKENS`, `TYPE_
 
 **Type roles.** Five roles: `scan` (keys, buttons, tabs), `title`, `label`, `num`, `body`. Each has six tokens, `--nk-type-<role>-{family,style,weight,tracking,case,pad}`. Size comes from `--nk-text-<role>`, which extends K:27-45 (`label/title/section/display`) with `key` and `body`. Kit classes `.nk-scan`, `.nk-title`, `.nk-label`, `.nk-num` and `.nk-body` apply a role; nothing else sets font properties.
 
-| role | family | style | weight | tracking | case | pad | Ink size |
+| role | family | style | weight | tracking | case | pad | Default size |
 |---|---|---|---|---|---|---|---|
 | scan | `--font-display` | italic | 800 | .02em | upper | .15em | `--nk-text-key` .8125rem |
 | title | `--font-display` | italic | 800 | .02em | upper | .15em | `--nk-text-title` |
@@ -39,16 +39,16 @@ The role defaults alias `--nk-weight-display/strong`, `--nk-tracking-display/lab
 
 **Tile.** `--nk-tile-face` (#161616), `--nk-tile-light` (top hairline, white .16), `--nk-tile-rim` (white .32), `--nk-tile-rim-focus` (white .4), `--nk-tile-plate` (#737373), `--nk-tile-plate-dim` (#262626, HUD), `--nk-tile-plate-x` / `-y` (2px), `--nk-tile-press` (1px), `--nk-tile-skew` (-12deg), `--nk-tile-confirm-face` (`--foreground`), `--nk-tile-confirm-ink` (`--background`). Replaces `--ink-face`, `--ink-edge`, `--ink-drop(-dim)`, `--ink-skew`, `--nk-skew` and the `data-nk-skew` family (K:1078-1210), plus the literals `2px`×9 and `.4`×6 (C:143-473). Aliases: `--nk-slab-key-*` and `--nk-key-*`.
 
-**Plate (surface recipe).** `--nk-plate-rgb` (a triplet, 10 10 10), `--nk-plate-bg` = `rgba(var(--nk-plate-rgb), var(--nk-material-<ctx>-opacity))` (no color-mix on Chromium 103), `--nk-plate-hair` (white .12), `--nk-plate-drop` (`0 .125rem 0 rgb(0 0 0/.6)`, hard), `--nk-plate-radius` (r-surface). Replaces `--ink-plate` (C:33, which ignored material opacity), `--ink-hair`, the soft `0 2px 6px` recipe (C:218, 224, 509) and the panel recipe copied into 8 app.css files.
+**Plate (surface recipe).** `--nk-plate-rgb` (a triplet, 10 10 10), `--nk-plate-bg` = `rgba(var(--nk-plate-rgb), var(--nk-material-<ctx>-opacity))` (no color-mix on Chromium 103), `--nk-plate-hair` (white .12), `--nk-plate-drop` (`0 .125rem 0 rgb(0 0 0/.6)`, hard), `--nk-plate-radius` (r-surface). Replaces `--site-plate` (C:33, which ignored material opacity), `--ink-hair`, the soft `0 2px 6px` recipe (C:218, 224, 509) and the panel recipe copied into 8 app.css files.
 
 **Fill.** `--level` (0–1, set inline), `--nk-fill-color` (`--foreground`), `--nk-fill-track` (white .12), `--nk-fill-tint` (white .12, the row sweep), `--nk-fill-edge` (a leading 1px at white .4), `--nk-fill-alert` (`--destructive`). The existing `--nk-level-style`, `--nk-alert-threshold` and `--nk-fuel-threshold` stay the only style and threshold levers. Replaces `--ink-sweep` and `--ink-sheen` (fills are flat now) and the white wash over meters (C:450-454).
 
-**Motion.** The ladder is `--nk-time-{snap,fast,base,slow,fill}`, derived from `--nk-duration` d as .5 / .667 / 1 / 1.556 / 2.333 × d (Ink d = 180 gives 90/120/180/280/420), plus `--nk-time-pulse` fixed at 1000ms. The rest of the motion contract:
+**Motion.** The ladder is `--nk-time-{snap,fast,base,slow,fill}`, derived from `--nk-duration` d as .5 / .667 / 1 / 1.556 / 2.333 × d (Default d = 180 gives 90/120/180/280/420), plus `--nk-time-pulse` fixed at 1000ms. The rest of the motion contract:
 - `--nk-exit-factor` .7, and `--nk-time-exit` = base × factor.
 - `--nk-stagger` 40ms, consumed through `--i`.
-- `--nk-time-reduced` 100ms: one reduced-motion value, replacing `REDUCED_FADE_MS` and Ink's 120 (C:642-661).
+- `--nk-time-reduced` 100ms: one reduced-motion value, replacing `REDUCED_FADE_MS` and Default's 120 (C:642-661).
 - Distances: `--nk-lift` .5rem (row slide, slot lift), `--nk-rise` .5rem (enter), `--nk-land-scale` .6.
-- `--nk-confirm-scale` (Ink 1.08) and `--nk-deny-x` (.3125rem, two beats of `fast`).
+- `--nk-confirm-scale` (Default 1.08) and `--nk-deny-x` (.3125rem, two beats of `fast`).
 
 Eases stay `--nk-ease-{standard,expand,retract,spring,breathe}`. Aliases: press → snap, hover → fast, move/modal/confirm/retract/screen → slow, ambient → fill. Replaces `--ink-t-*`, `--ink-stagger`, `--ink-standard..breathe` (C:43-54) and the literal `--ink-t-exit: 154ms`.
 
@@ -63,7 +63,7 @@ Every surface composes these primitives and does not restyle them locally. Compo
 - *Props:* `size` sm|md|lg (= h-key / h-chip / h-control), `shape` key|square, `state`, `active`, `level`, `tone`, `hue`, `tag`, `tagOpen`.
 - *States:* focus switches the rim to rim-focus. Hold presses by `--nk-tile-press` and fills. Confirm turns the face white and pops by the confirm scale over `slow` with the spring ease. Alert sets a danger rim and breathes (opacity). Disabled is 50% opacity.
 - *Data attributes:* `data-slot=tile|kbd`, `data-size`, `data-shape`, `data-tag`.
-- *Replaces:* Ink's 5-slot keycap list (C:101-182), notice-icon (C:238-270), the tab mark (C:397), the checkbox key, the vital-chip drop plate (C:462-481) and the kit `data-nk-skew` family. On the HUD: KeyTile (hud.css:2194-2345), `.hud-gear` (2124-2150) and `.hud-c-tell` (2169-2190). Elsewhere: `.inv-key` (ox_inventory app.css:119-134), the ox_lib toast tile (app.css:325-339) and the death hint key (App.tsx:173).
+- *Replaces:* Default's 5-slot keycap list (C:101-182), notice-icon (C:238-270), the tab mark (C:397), the checkbox key, the vital-chip drop plate (C:462-481) and the kit `data-nk-skew` family. On the HUD: KeyTile (hud.css:2194-2345), `.hud-gear` (2124-2150) and `.hud-c-tell` (2169-2190). Elsewhere: `.inv-key` (ox_inventory app.css:119-134), the ox_lib toast tile (app.css:325-339) and the death hint key (App.tsx:173).
 
 **Fill / Level** (`fill.tsx` and the `.nk-fill` class). Anatomy: a track (`--nk-fill-track`), a bar (`scaleX(--level)` from the left, in `--nk-fill-color` or the hue) and an edge (`--nk-fill-edge`). It takes `style` (`--nk-level-style`: bar|ring|liquid|slab|pips), `tone`, `hue` and `level`. A level change eases over `--nk-time-fill`. When `level ≤ --nk-alert-threshold`, one helper, `alertAt()`, sets `data-state="alert"`. It replaces four implementations: the key-prompt hold (C:190 + K:1405), the row sweep (C:289-311), the meter wash (C:450-458) and the KeyTile liquid.
 
@@ -146,12 +146,12 @@ never set them. Not yet: `dialog-shell`, `sheet-section`, `dial`, MenuRow `as` /
 `toneVars` in Countdown / Band / ProgressRing, and the CI diff of the index.css copies. Graphite screenshots: not
 compared (no baseline run); the defaults are equal by construction.
 
-**W1: Ink as values (theme lane).** Starts after W0 merges.
+**W1: Default as values (theme lane).** Starts after W0 merges.
 1. I sets `--nk-treatment: tile` and drops `--nk-skew: 0deg` (I:123) and `--vital-*`.
 2. C's `:root` holds `--nk-*` values only. `--ink-*` becomes aliases for one release, removed after W2.
 3. Delete C's re-implementations: the keycap lists (101-182), the notice tile (238-279), the row sweep (281-345), the hold (190), `ink-pop`, the reduced-motion block (642-661) and the nth-child stagger (492).
 4. Delete C's hacks: `[class*=ring-*]` (181), `[class*=text-destructive]` (314), `!important` (578, 654), `.inv-tray.inv-tray`, and every app-markup selector.
-5. Move what remains into `@layer nk.theme`, targeting ink.css ≤ 150 lines (from 662). Update `.local/ink.md` to name tokens instead of values.
+5. Move what remains into `@layer nk.theme`, targeting ink.css ≤ 150 lines (from 662). Update `docs/design/default.md` to name tokens instead of values.
 6. Screenshot-compare pause, inventory, the HUD and a notice against the pre-W1 baseline.
 
 **W2: surfaces (four parallel lanes, after W1).**

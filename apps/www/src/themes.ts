@@ -7,8 +7,11 @@ import { compileTheme, toRgba } from "nuikit-core";
 // files too). A new file there shows up in the pickers on its own.
 const files = import.meta.glob("../../../packages/core/themes/*.css", { query: "?raw", import: "default", eager: true }) as Record<string, string>;
 
-/** The identities first in the pickers (Ink, the flagship, leads); any other file there follows in name order. */
-const ORDER = ["ink", "graphite", "signal", "velvet", "vector", "arcade", "street", "studio"];
+/** The identities first in the pickers (Default, the flagship, leads); any other file there follows in name order. */
+const ORDER = ["default", "neon-pop", "graphite", "signal", "velvet", "vector", "arcade", "street", "studio"];
+
+/** A theme id as a display name: "neon-pop" → "Neon Pop". */
+const title = (id: string) => id.split("-").map((w) => w[0]!.toUpperCase() + w.slice(1)).join(" ");
 
 const hex = (v: string | undefined) => {
   const c = v ? toRgba(v) : null;
@@ -22,12 +25,12 @@ const hex = (v: string | undefined) => {
  */
 export const identities: { name: string; swatch: string[]; css: string }[] = Object.entries(files)
   // the site has no nuikit resource to serve an identity's rule file (@import "https://cfx-nui-nuikit/…"): drop
-  // the line, so no request fails; index.css imports Ink's rules directly
+  // the line, so no request fails; index.css imports Default's rules directly
   .map(([path, css]) => ({ id: path.split("/").pop()!.replace(/.css$/, ""), css: css.replace(/^@import url\("https:\/\/cfx-nui-[^\n]*\n/gm, "") }))
   .sort((x, y) => (ORDER.indexOf(x.id) + 1 || 99) - (ORDER.indexOf(y.id) + 1 || 99) || x.id.localeCompare(y.id))
   .map(({ id, css }) => {
     const v = compileTheme(css, { mode: "dark" }).vars;
-    return { name: id[0]!.toUpperCase() + id.slice(1), swatch: [hex(v.brand ?? v.primary), hex(v.foreground), hex(v.background)], css };
+    return { name: title(id), swatch: [hex(v.brand ?? v.primary), hex(v.foreground), hex(v.background)], css };
   });
 
 export const themes: { name: string; swatch: string[]; css: string }[] = [

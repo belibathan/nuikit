@@ -21,10 +21,10 @@ doesn't fail. Everything else is a review item: the reviewer checks it against t
    `var()` fallback (`var(--nk-meter-radius, 9999px)`), so a theme from before tokens 1.1 still renders. Never a
    hard-coded look. Channels (`--x-rgb`, `--x-a`) stay inside `kit.css` and component tokens, never in TSX, so
    the Chromium 103 lowering can retire without touching components.
-3. **rem, on the kit scale** (tokens 1.5, [ink.md](ink.md): `--nk-space-*`, `--nk-gap-*`, `--nk-r-{key,chip,control,surface}`,
+3. **rem, on the kit scale** (tokens 1.5, [default.md](default.md): `--nk-space-*`, `--nk-gap-*`, `--nk-r-{key,chip,control,surface}`,
    `--nk-h-{key,chip,control,row}`, `--nk-icon-*`, the type roles `.nk-scan` / `.nk-title` / `.nk-label` / `.nk-num` /
    `.nk-body`; primitives Tile, Fill, Chip, IconText, ActionBar and `.nk-plate` in `@layer nk.kit`; a theme writes into
-   `@layer nk.theme`; **CI (warn)**: the Ink rules in `nuikit check`, `nuikit rules` lists them). Spacing `--nk-space` steps (Tailwind `1 2 3 4 6`), text `--nk-text-*` (13 label,
+   `@layer nk.theme`; **CI (warn)**: the Default rules in `nuikit check`, `nuikit rules` lists them). Spacing `--nk-space` steps (Tailwind `1 2 3 4 6`), text `--nk-text-*` (13 label,
    16 body, 18+ HUD values at 1080p). px only for hairlines (`--nk-border-width`), rings and shadow offsets.
    **CI (warn)**: class lint flags bare px arbitrary values (`w-[640px]`).
 4. **Stock shadcn + `nk-*` only.** Compose vendored shadcn (`vendor/` is never edited) and the kit utilities;

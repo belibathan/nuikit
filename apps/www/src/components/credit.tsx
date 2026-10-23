@@ -2,7 +2,7 @@ import { cn } from "@/lib/utils";
 
 export const AUTHOR = { handle: "belibathan", avatar: "https://avatars.githubusercontent.com/u/128108519?v=4&s=96" };
 
-/** "Made by" chip: GitHub avatar and handle, linking to the profile. Ink's chip: r-chip corners, a hairline, no blur. */
+/** "Made by" chip: GitHub avatar and handle, linking to the profile. Default's chip: r-chip corners, a hairline, no blur. */
 export function Credit({ className }: { className?: string }) {
   return (
     <a

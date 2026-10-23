@@ -2068,7 +2068,7 @@ html[data-nk-motion="off"] .hud-root * {
   contain: layout;
 }
 
-/* ───────────────────────────── Ink, one system (.local/ink.md): the keycap (a slanted face on a hard grey drop),
+/* ───────────────────────────── Default, one system (docs/design/default.md): the keycap (a slanted face on a hard grey drop),
    Barlow Condensed italic uppercase for display and numbers, one spacing scale, one radius scale. */
 .hud-vchip :is([data-slot="vital-chip-label"], [data-slot="vital-chip-pop"]),
 .hud-key-text {
@@ -2174,7 +2174,7 @@ html[data-nk-motion="off"] .hud-root * {
   inset: 0;
   transform-origin: 50% 100%;
 }
-/* the level in the vital's role colour (data-hue on the chip gives --hue; Ink's roles are white) */
+/* the level in the vital's role colour (data-hue on the chip gives --hue; Default's roles are white) */
 .hud-key-liquid {
   background: linear-gradient(180deg, rgba(var(--hue, var(--foreground-rgb)), 0.62), rgba(var(--hue, var(--foreground-rgb)), 0.38));
   transform: scaleY(var(--f, 0));
@@ -2374,7 +2374,7 @@ html[data-nk-motion="off"] .hud-root * {
 .hud-c-fuelsegs path[data-on] { stroke-opacity: 0.95; }
 .hud-c-fuelsegs[data-state="alert"] path[data-on] { stroke: var(--hud-danger, var(--hud-redline)); animation: nk-breathe var(--nk-time-pulse, 1000ms) var(--nk-ease-breathe, var(--nk-ease-breathe)) infinite; }
 :is(html, *)[data-nk-motion="reduced"] .hud-c-fuelsegs[data-state="alert"] path[data-on] { animation: none; }
-/* a vital in alert takes the danger colour (Ink: colour only on alert) */
+/* a vital in alert takes the danger colour (Default: colour only on alert) */
 .hud-vchip[data-state="alert"] { --vital: var(--hud-danger, rgb(var(--destructive-rgb, 239, 68, 68))); }
 
 /* the speedometer: the ring wide around the readout (about 1rem clear on every side), the gear seated in the

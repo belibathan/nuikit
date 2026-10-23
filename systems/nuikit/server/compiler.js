@@ -287,7 +287,7 @@ var NuikitTheme = (() => {
       "nk-time-retract": ms(Math.min(300, d * 1.55)),
       "nk-time-fill": ms(d * 3),
       "nk-time-pulse": "1000ms",
-      // tokens 1.5: the ladder (ink.md §2): snap .5, fast .667, base 1, slow 1.556, fill 2.333 × d
+      // tokens 1.5: the ladder (default.md §2): snap .5, fast .667, base 1, slow 1.556, fill 2.333 × d
       "nk-time-snap": ms(d * 0.5),
       "nk-time-fast": ms(d * 0.667),
       "nk-time-slow": ms(d * 1.556)
@@ -348,7 +348,7 @@ var NuikitTheme = (() => {
       "nk-slash": "cut"
     },
     /**
-     * tile (1.5, docs/design/ink.md): Ink's values, so Ink is `tile` plus a palette. One slanted keycap language
+     * tile (1.5, docs/design/default.md): Default's values, so Default is `tile` plus a palette. One slanted keycap language
      * on hard plates, fill-based status, italic caps for anything scanned, the 1.5 motion ladder.
      */
     tile: {

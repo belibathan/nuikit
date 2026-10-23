@@ -18,10 +18,10 @@ import { applyTheme, closeSurface, emit, openSurface } from "nuikit-core";
 import { PRESET_PARTS } from "./hud/parts";
 import { NuiDevtools, defineMocks } from "nuikit-core/devtools";
 import { useEffect, useState } from "react";
-// the server's own theme (Ink), as in game; &theme=stock opts out
-import inkTheme from "../../../nuikit/theme.css?raw";
-import "../../../nuikit/theme/ink-fonts.css";
-import "../../../nuikit/theme/ink.css";
+// the server's own theme (Default), as in game; &theme=stock opts out
+import defaultTheme from "../../../nuikit/theme.css?raw";
+import "../../../nuikit/theme/default-fonts.css";
+import "../../../nuikit/theme/default.css";
 import type { HudLayout, HudLocation, HudPreset, HudSettings, HudStyles, HudVehicle, HudWeapon, MinimapFrame, StyleChoice, StyleKey, StyleValue } from "./nui";
 
 const q = new URLSearchParams(location.search);
@@ -242,7 +242,7 @@ export default function Dev() {
     const f = fixtures[q.get("fixture") ?? "foot"] ?? fixtures.foot!;
     const theme = THEMES[q.get("theme") ?? ""];
     if (theme) applyTheme(theme);
-    else if (q.get("theme") !== "stock") applyTheme(inkTheme);
+    else if (q.get("theme") !== "stock") applyTheme(defaultTheme);
     for (const [k, v] of Object.entries(IDENTITIES[q.get("identity") ?? ""] ?? {})) document.documentElement.style.setProperty(k, v);
 
     const preset: HudPreset = q.get("layout") === "classic" ? "classic" : "compact";

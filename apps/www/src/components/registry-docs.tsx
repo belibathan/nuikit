@@ -1,6 +1,6 @@
 // The registry's catalogue on /components: the item list and side navigation, the props and levers tables
 // (src/generated/api.json, read from the sources by scripts/api.mjs), and the sections for the items the page
-// didn't show before (the Ink primitives and the utilities).
+// didn't show before (the Default primitives and the utilities).
 import {
   BriefcaseIcon,
   CarIcon,
@@ -121,7 +121,7 @@ export function SideNav({ current }: { current: string | null }) {
       </a>
       {GROUPS.map((g) => (
         <div key={g.group}>
-          <p className="ink-eyebrow mb-2">{g.group}</p>
+          <p className="site-eyebrow mb-2">{g.group}</p>
           <ul className="flex flex-col">
             {g.items.map(([name, title]) => (
               <li key={name}>
@@ -234,7 +234,7 @@ export function Hooks() {
   if (typeof location !== "undefined" && /^\/components\/./.test(location.pathname)) return null;
   return (
     <section id="hooks" className="mt-16 scroll-mt-24">
-      <h2 className="ink-display text-3xl">Hooks</h2>
+      <h2 className="site-display text-3xl">Hooks</h2>
       <ul className="mt-6 divide-y border-y">
         {HOOKS.map((h) => (
           <li key={h.name} className="grid gap-3 py-4 md:grid-cols-[1fr_auto] md:items-center">
@@ -264,7 +264,7 @@ function useWalk(start = 0.7, step = 0.08, ms = 900) {
 }
 
 function Label({ children }: { children: ReactNode }) {
-  return <p className="ink-eyebrow mb-3 text-white/70">{children}</p>;
+  return <p className="site-eyebrow mb-3 text-white/70">{children}</p>;
 }
 
 function TileDemo() {
@@ -586,11 +586,11 @@ function TextRollDemo() {
     <div className="flex flex-wrap items-center justify-center gap-12 text-white">
       <div>
         <Label>TextRoll</Label>
-        <TextRoll value={WORDS[i]!} className="ink-display text-3xl" />
+        <TextRoll value={WORDS[i]!} className="site-display text-3xl" />
       </div>
       <div>
         <Label>NumberRoll</Label>
-        <NumberRoll value={cash} format={(n) => `$${n.toLocaleString("en-US")}`} className="ink-display text-3xl" />
+        <NumberRoll value={cash} format={(n) => `$${n.toLocaleString("en-US")}`} className="site-display text-3xl" />
       </div>
     </div>
   );
@@ -620,7 +620,7 @@ function NuiImageDemo() {
   );
 }
 
-/** The sections for items the page didn't show: the Ink primitives first, then the rest, by group. */
+/** The sections for items the page didn't show: the Default primitives first, then the rest, by group. */
 export function NewSections({ Section }: { Section: SectionComponent }) {
   return (
     <>

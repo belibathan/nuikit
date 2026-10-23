@@ -11,8 +11,8 @@ runs from CI: all green after the fixes below. Before them, `main` was red in CI
 
 ## Fixed
 
-- **CI red on main**: `apps/www` theme studio's `exportThemeCss` didn't round-trip Ink. It dropped every
-  derived token (Ink sets its own `--nk-ease-expand` / `--nk-ease-breathe`, re-derived to stock curves) and
+- **CI red on main**: `apps/www` theme studio's `exportThemeCss` didn't round-trip Default. It dropped every
+  derived token (Default sets its own `--nk-ease-expand` / `--nk-ease-breathe`, re-derived to stock curves) and
   wrote the tile treatment's `var(--font-display)` defaults, which recompiling resolved to literals (and,
   after today's accent-gradient commit, `var(--nk-accent-gradient)`, which it warned about). The export now
   recompiles itself and keeps or omits exactly those tokens.

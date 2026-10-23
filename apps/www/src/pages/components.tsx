@@ -108,21 +108,21 @@ export function ComponentsPage() {
           <header className="max-w-3xl">
             {item ? (
               <>
-                <a href="/components" className="ink-eyebrow hover:text-foreground">
+                <a href="/components" className="site-eyebrow hover:text-foreground">
                   Components /
                 </a>
-                <h1 className="ink-display mt-3 text-[clamp(2.5rem,7vw,4.5rem)]">{item.title}</h1>
+                <h1 className="site-display mt-3 text-[clamp(2.5rem,7vw,4.5rem)]">{item.title}</h1>
               </>
             ) : (
               <>
-                <p className="ink-eyebrow">Registry</p>
-                <h1 className="ink-display mt-3 text-[clamp(2.5rem,7vw,4.5rem)]">Components</h1>
+                <p className="site-eyebrow">Registry</p>
+                <h1 className="site-display mt-3 text-[clamp(2.5rem,7vw,4.5rem)]">Components</h1>
                 <p className="mt-4 text-lg text-pretty text-muted-foreground">
                   What every nuikit screen is made of: stock shadcn/ui composed with the{" "}
                   <a href="/design" className="text-foreground underline underline-offset-4">
                     kit
                   </a>
-                  . Each preview sits on a game scene at its in-game size at 1080p, in Ink, and every state is a prop. Switch the identity: nothing here has
+                  . Each preview sits on a game scene at its in-game size at 1080p, in Default, and every state is a prop. Switch the identity: nothing here has
                   a colour of its own.
                 </p>
               </>
@@ -553,7 +553,7 @@ export function ComponentsPage() {
 
         {!focus && (
         <section id="removed" className="mt-20 scroll-mt-20">
-          <h2 className="ink-display text-3xl">Removed</h2>
+          <h2 className="site-display text-3xl">Removed</h2>
           <p className="mt-2 max-w-2xl text-muted-foreground text-pretty">
             Deprecated in 0.6.0 and removed from the registry in 0.9.0. Copies already in a project keep working; new UI uses the component that replaced them.
           </p>
@@ -680,7 +680,7 @@ function Section({
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div className="max-w-2xl min-w-0">
           <div className="flex flex-wrap items-center gap-3">
-            <h2 className={cn("ink-display text-3xl", repeat && "sr-only")}>
+            <h2 className={cn("site-display text-3xl", repeat && "sr-only")}>
               {install && item && !focus ? (
                 <a href={`/components/${name}`} className="hover:underline hover:decoration-2 hover:underline-offset-4">
                   {title}
@@ -712,7 +712,7 @@ export type SectionComponent = typeof Section;
 
 /**
  * Every component under one identity (all of packages/core/themes): its type, shape, surface, density,
- * motion and HUD, painted on the previews only, so the page around them stays the site's. Ink (the first) is
+ * motion and HUD, painted on the previews only, so the page around them stays the site's. Default (the first) is
  * the site's own identity, so it paints nothing.
  */
 function IdentityPicker({ target, className }: { target: React.RefObject<HTMLDivElement | null>; className?: string }) {
@@ -731,7 +731,7 @@ function IdentityPicker({ target, className }: { target: React.RefObject<HTMLDiv
   }, [active, target]);
   return (
     <div className={cn("flex flex-wrap items-center gap-2", className)} role="radiogroup" aria-label="Identity">
-      <span className="ink-eyebrow mr-1">Identity</span>
+      <span className="site-eyebrow mr-1">Identity</span>
       {identities.map((t, i) => (
         <Button key={t.name} role="radio" aria-checked={active === i} variant={active === i ? "secondary" : "ghost"} size="sm" onClick={() => setActive(i)}>
           <span className="flex" aria-hidden>

@@ -1,4 +1,4 @@
-/* Cascade layers (tokens 1.5, docs/design/ink.md §4), declared before Tailwind's own so the kit's sit between
+/* Cascade layers (tokens 1.5, docs/design/default.md §4), declared before Tailwind's own so the kit's sit between
    them: kit defaults and primitives under the utilities, a theme (nk.theme) and the page (nk.app) over them. */
 @layer theme, base, nk.base, components, nk.kit, utilities, nk.theme, nk.app;
 @import "tailwindcss";
@@ -889,7 +889,7 @@
  * The component tokens below are declared on :root and on [data-nk-theme]: a subtree applyTheme painted
  * (a stage, a host module) re-derives them from its own identity tokens.
  *
- * Layers (tokens 1.5, docs/design/ink.md §4): nk.base holds the 1.5 lever defaults, nk.kit the primitives
+ * Layers (tokens 1.5, docs/design/default.md §4): nk.base holds the 1.5 lever defaults, nk.kit the primitives
  * (tile, fill, chip, icon-text, action-bar, plate); a theme writes only into nk.theme (token values and rules
  * on documented data attributes), a page into nk.app or unlayered. Tailwind's utilities sit between nk.kit and
  * nk.theme, so a className still restyles a primitive. index.css.tpl declares the order before Tailwind's own.
@@ -897,8 +897,8 @@
 @layer theme, base, nk.base, components, nk.kit, utilities, nk.theme, nk.app;
 
 /*
- * Tokens 1.5 (docs/design/ink.md §2): the Ink levers, every theme gets them. These are the Graphite defaults
- * (today's proportions); the `tile` treatment and Ink set their own values. The older component tokens below
+ * Tokens 1.5 (docs/design/default.md §2): the Default theme levers, every theme gets them. These are the Graphite defaults
+ * (today's proportions); the `tile` treatment and Default set their own values. The older component tokens below
  * read these (--nk-key-radius: var(--nk-r-key)…), so a theme may set either name.
  */
 @layer nk.base {
@@ -2479,7 +2479,7 @@ html[data-nk-backdrop="on"] * {
   }
 }
 
-/* ───────────────────────────── tokens 1.5: the Ink primitives (docs/design/ink.md §3)
+/* ───────────────────────────── tokens 1.5: the Default primitives (docs/design/default.md §3)
    Every surface composes these and doesn't restyle them locally; a theme only sets their tokens (nk.theme).
    They live in nk.kit, under Tailwind's utilities, so a className still wins. Shared attributes:
    data-state = rest | focus | hold | confirm | alert | disabled; data-active = on, selected or checked;

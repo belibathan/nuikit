@@ -1,6 +1,6 @@
 /*
- * Ink, restated for the README art (docs/design/ink.md). Values only from the Ink theme
- * (systems/nuikit/theme.css): #0a0a0a ground, white ink, four greys, colour only when it means something.
+ * Default, restated for the README art (docs/design/default.md). Values only from the Default theme
+ * (systems/nuikit/theme.css): #0a0a0a ground, white text, four greys, colour only when it means something.
  * The tile: a face slanted -12deg on a hard plate 2px down and right. Fonts are the repo's own (OFL 1.1).
  */
 @font-face { font-family: "Barlow Condensed"; font-style: italic; font-weight: 700; src: url("../../../packages/core/fonts/barlow-condensed-latin-700-italic.woff2") format("woff2"); }

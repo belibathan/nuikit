@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { ALL_TOKENS, compileTheme, IDENTITY_TOKENS, KIT_TOKENS, motionTokens, TOKENS_REVISION, TREATMENT_PRESETS, withPrefs } from "../src/tokens";
 
-// tokens 1.5 (docs/design/ink.md §2): the Ink levers. Graphite keeps today's look; `tile` is Ink's values.
+// tokens 1.5 (docs/design/default.md §2): the Default theme levers. Graphite keeps today's look; `tile` is Default's values.
 describe("tokens 1.5", () => {
   it("is revision 1.5", () => expect(TOKENS_REVISION).toBe("1.5"));
 
@@ -34,7 +34,7 @@ describe("tokens 1.5", () => {
     expect([vars["nk-time-snap"], vars["nk-time-fast"], vars["nk-time-slow"]]).toEqual(["70ms", "93ms", "218ms"]);
   });
 
-  it("compiles the tile treatment to Ink's values, on the 1.5 ladder", () => {
+  it("compiles the tile treatment to Default's values, on the 1.5 ladder", () => {
     const { vars, warnings } = compileTheme({ "nk-treatment": "tile" });
     expect(warnings.filter((w) => /must be/.test(w))).toEqual([]);
     expect(vars["nk-tile-skew"]).toBe("-12deg");

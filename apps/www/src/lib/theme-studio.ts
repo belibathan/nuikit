@@ -211,7 +211,7 @@ function dropEmptyValues(css: string): { css: string; empty: string[] } {
  * paths, the motion ladder) are left out, as toDtcg leaves them out: compiling the file derives them
  * again, so it gives the same tokens, and a hand edit to `--nk-cut` or `--nk-duration` still takes.
  * Two exceptions, found by compiling the file and comparing: a derived token the theme set itself
- * (Ink's `--nk-ease-expand`) is written out, and a default that is a `var()` reference (the tile
+ * (Default's `--nk-ease-expand`) is written out, and a default that is a `var()` reference (the tile
  * treatment's `--nk-type-*-family`) is left out, since writing it would resolve it to a literal.
  */
 export function exportThemeCss(theme: CompiledTheme): string {
