@@ -453,8 +453,8 @@ function Meter({
           level={drawn / 100}
           tween={!timed}
           // the slab line's track and height (nk-slab-line); its bar is the Fill's, in the slab's tone, with its glow
+          color="var(--nk-slab-line-fill, rgb(var(--nk-slab-tone-rgb)))"
           className="nk-slab-line after:hidden before:[box-shadow:0_0_0.5rem_rgba(var(--nk-slab-tone-rgb),var(--nk-glow,0))]"
-          style={{ "--nk-fill-color": "var(--nk-slab-line-fill, rgb(var(--nk-slab-tone-rgb)))" } as React.CSSProperties}
         />
       </div>
     )
@@ -477,8 +477,9 @@ function Meter({
             data-slot="meter-segment"
             level={fill / 100}
             tween={!timed}
+            alert={critical}
+            color={custom ? "var(--meter-fill)" : FILL_COLOR[critical ? "destructive" : tone]}
             className={cn("h-(--meter-h) flex-1", trackClass)}
-            style={{ "--nk-fill-color": custom ? "var(--meter-fill)" : FILL_COLOR[critical ? "destructive" : tone] } as React.CSSProperties}
           />
         ))}
       </div>

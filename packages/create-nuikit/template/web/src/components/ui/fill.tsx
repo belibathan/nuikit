@@ -23,7 +23,7 @@ import { cn } from "@/lib/utils"
  *
  * Role: A level as a bar that fills: holds, sweeps, meters, timers.
  * Anatomy: track > bar (::before, scaleX(--level)) > edge (::after)
- * Props: level, tone, hue, alertAt, alert, variant, tween.
+ * Props: level, tone, hue, color, alertAt, alert, variant, tween.
  * Level means: 0–1, set inline as --level.
  * Rules: Transform only: the bar scales, never width. Colour: hue, then tone, then --nk-fill-color; alert wins.
  *   The track, height and colour are levers (--nk-fill-track, --nk-fill-height, --nk-fill-color), so a composite
@@ -67,9 +67,15 @@ function Fill({
   alert,
   variant = "bar",
   tween = true,
+  color,
   style,
   ...props
-}: Omit<React.ComponentProps<"span">, "children"> & {
+}: Omit<React.ComponentProps<"span">, "children" | "color"> & {
+  /**
+   * The bar's own colour (a CSS colour or var()): sets --nk-fill-color and opts out of an ancestor's data-hue, so a
+   * composite's tone stays its own inside a hued subtree. Its own hue, tone and alert still win.
+   */
+  color?: string
   /** 0–1. */
   level?: number
   tone?: FillTone | "destructive" | "error"
@@ -91,11 +97,12 @@ function Fill({
       data-variant={variant === "bar" ? undefined : variant}
       data-state={(alert ?? alertAt(v, threshold)) ? "alert" : undefined}
       data-tween={tween ? undefined : "off"}
+      data-color={color ? "" : undefined}
       {...toneVars({ tone, hue })}
       aria-hidden
       // the class too: a composite may rename data-slot (meter-segment) and keep the Fill's drawing
       className={cn("nk-fill", className)}
-      style={{ "--level": String(v), ...style } as React.CSSProperties}
+      style={{ "--level": String(v), ...(color && { "--nk-fill-color": color }), ...style } as React.CSSProperties}
       {...props}
     />
   )

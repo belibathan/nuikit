@@ -60,6 +60,7 @@ type Run = { anims: Animation[]; left: number; at: number; timer: ReturnType<typ
 function useLinearRun(root: React.RefObject<HTMLElement | null>, options: LinearRunOptions): boolean {
   const { duration, elapsed = 0, paused = false, motion = "always", release = false, deps = [] } = options
   const [done, setDone] = React.useState(false)
+  // targets come from this render's options (a restart aims with the new values); onComplete from the latest
   const latest = React.useRef(options)
   const run = React.useRef<Run | null>(null)
   const pausedNow = React.useRef(paused)
@@ -78,7 +79,7 @@ function useLinearRun(root: React.RefObject<HTMLElement | null>, options: Linear
     const play = !!el && (motion === "always" || motionOn(el))
     const anims =
       play && el
-        ? (latest.current.targets?.(el) ?? []).flatMap(({ el: t, keyframes, pseudoElement }) => {
+        ? (options.targets?.(el) ?? []).flatMap(({ el: t, keyframes, pseudoElement }) => {
             if (!t || typeof (t as HTMLElement).animate !== "function") return []
             const a = (t as HTMLElement).animate(keyframes, { duration, easing: "linear", fill: "both", pseudoElement })
             a.startTime = start // the document timeline's clock: every target ends exactly at start + duration

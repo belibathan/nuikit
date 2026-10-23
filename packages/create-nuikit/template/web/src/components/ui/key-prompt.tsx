@@ -204,13 +204,12 @@ function KeyPrompt({
   const list = (typeof keys === "string" ? [keys] : [...keys]).filter((k) => k !== "")
   const slab = (surface ?? "slab") === "slab"
   const root = React.useRef<HTMLDivElement>(null)
-  const line = React.useRef<HTMLSpanElement>(null)
   const confirm = () => {
     nkConfirm(root.current)
     onConfirm?.()
   }
   const internal = useHold(hold, onConfirm && confirm, (n) => {
-    line.current?.style.setProperty("--level", String(n))
+    root.current?.querySelector<HTMLElement>("[data-slot=key-prompt-hold]")?.style.setProperty("--level", String(n))
     root.current?.style.setProperty("--level", n.toFixed(3))
   })
   const controlled = progress !== undefined
@@ -356,14 +355,13 @@ function KeyPrompt({
       {hold !== undefined && (
         // the hold is a Fill on no track: the slab's tone, or the row indicator on a panel
         <Fill
-          ref={line}
           data-slot="key-prompt-hold"
           // Controlled: from props. Internal: the hold writes --level on this element each frame; the
           // constant here never changes, so React leaves that drawing alone.
           level={p}
           tween={false}
           className={cn("absolute inset-x-0 bottom-0 rounded-none bg-transparent", slab ? "h-(--nk-slab-line-height)" : "h-0.5")}
-          style={{ "--nk-fill-color": slab ? "rgb(var(--nk-slab-tone-rgb))" : "var(--nk-row-indicator-color)" } as React.CSSProperties}
+          color={slab ? "rgb(var(--nk-slab-tone-rgb))" : "var(--nk-row-indicator-color)"}
         />
       )}
     </div>
