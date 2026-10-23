@@ -18,7 +18,7 @@ import { cn } from "@/lib/utils"
 import { Chip } from "@/components/ui/chip"
 import { Meter } from "@/components/ui/meter"
 import { useFormatMoney } from "@/components/ui/money"
-import { SPEEDOMETER_REDLINE, Speedometer, speedometerDash } from "@/components/ui/speedometer"
+import { Speedometer, speedometerPainter } from "@/components/ui/speedometer"
 import { Stat } from "@/components/ui/stat"
 
 import type { HudVehicle } from "./nui"
@@ -129,42 +129,22 @@ function HudWallet({ player }: { player: NuiPlayer }) {
   )
 }
 
-const GAUGE = 176
-
 /**
  * Bottom right while driving. The gauge starts at the speed and rpm "hud:vehicle" carried when it
- * appeared, then follows the live channels: written straight to the gauge, no React render. React
- * renders on gear, fuel, damage or seatbelt, and when the rpm crosses the redline.
+ * appeared, then follows the live channels through the Speedometer's painter: written straight to the
+ * gauge (digit reels, segments, the redline), no React render. React renders on gear, fuel, damage or
+ * seatbelt.
  */
 function HudVehicleGauge({ vehicle }: { vehicle: HudVehicle }) {
   const gauge = React.useRef<HTMLDivElement>(null)
+  const painter = React.useRef<ReturnType<typeof speedometerPainter> | null>(null)
   const [start] = React.useState(() => ({ speed: vehicle.speed, rpm: vehicle.rpm }))
-  const [redline, setRedline] = React.useState(vehicle.rpm > SPEEDOMETER_REDLINE)
-  const red = React.useRef(redline)
+  React.useLayoutEffect(() => {
+    painter.current = gauge.current ? speedometerPainter(gauge.current) : null
+  }, [])
 
-  useFollow(
-    "hud:vehicle:rpm",
-    (rpm) => {
-      const arc = gauge.current?.querySelector<SVGElement>("[data-slot=speedometer-rpm]")
-      if (arc) {
-        arc.style.transition = "none"
-        arc.style.strokeDasharray = speedometerDash(rpm, GAUGE)
-      }
-      const over = rpm > SPEEDOMETER_REDLINE
-      if (over !== red.current) setRedline((red.current = over))
-    },
-    { start: start.rpm }
-  )
-  useFollow(
-    "hud:vehicle:speed",
-    (speed) => {
-      // React's own text node, so a later render finds it in place
-      const text = gauge.current?.querySelector("[data-slot=speedometer-speed]")?.firstChild
-      const shown = String(Math.round(speed))
-      if (text && text.nodeValue !== shown) text.nodeValue = shown
-    },
-    { start: start.speed, epsilon: 0.05 }
-  )
+  useFollow("hud:vehicle:rpm", (rpm) => painter.current?.rpm(rpm), { start: start.rpm })
+  useFollow("hud:vehicle:speed", (speed) => painter.current?.speed(speed), { start: start.speed, epsilon: 0.05 })
 
   const unbuckled = vehicle.seatbelt === false && (vehicle.moving ?? vehicle.speed > 10)
   const engine = vehicle.engine !== undefined && vehicle.engine < 35
@@ -172,13 +152,13 @@ function HudVehicleGauge({ vehicle }: { vehicle: HudVehicle }) {
     <div className="nk-anchor-br flex flex-col items-center gap-3">
       <Speedometer
         ref={gauge}
+        live
         speed={start.speed}
         rpm={start.rpm}
-        redline={redline}
         gear={vehicle.gear}
         fuel={vehicle.fuel}
         unit={vehicle.units === "kmh" ? "km/h" : "mph"}
-        size={GAUGE}
+        indicators={vehicle.indicators}
         className="nk-shadow"
       />
       {(unbuckled || engine) && (
