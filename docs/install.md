@@ -8,7 +8,7 @@ Status (Oct 23, 2026): the commands are built and unit-tested; `nuikit install` 
 1. **Download** `nuikit-<framework>.zip` from the [latest release](https://github.com/belibathan/nuikit/releases/latest)
    (`nuikit-qbox.zip`, `-qbcore`, `-esx`, `-standalone`). It is `nuikit.zip` plus a `server.cfg.snippet` for that framework.
 2. **Copy `[nuikit]/` into `resources/`** as a real folder (not a junction or symlink). The adapter pack folder
-   (`[nuikit-qb]`, `[nuikit-esx]`), when the zip has one, goes next to it. If you have an older nuikit, delete the old
+   (`[nuikit-qb]`, `[nuikit-esx]`, `[nuikit-standalone]`), when the zip has one, goes next to it. If you have an older nuikit, delete the old
    `nuikit*` folders first, keeping a copy of `nuikit/theme.css`.
 3. **server.cfg:** paste the snippet after the lines that start ox_lib and your framework (the per-framework lines are in §2).
    The one line that matters is `exec @nuikit/nuikit.cfg`: that file starts `nuikit` and every `[nuikit]` system by name and
@@ -85,10 +85,12 @@ Overrides that fit: as for QBCore. Not yet tested on an ESX server.
 ```cfg
 ensure ox_lib           # optional; the ox_lib override needs it
 exec @nuikit/nuikit.cfg
+ensure [nuikit-standalone]  # the standalone adapter pack (okokNotify, mythic_notify stand-ins drawn by nuikit)
 ```
 
 `nuikit_hud` and `nuikit_pause` show what the bridge can read without a framework (health, armour, vehicle, voice).
-No stop lines, no adapter pack.
+No stop lines. The `[nuikit-standalone]` pack only matters if you run okokNotify or mythic_notify; if you run neither,
+delete its folder and the `ensure` line. Not yet tested on a standalone server.
 
 ## 3. What `nuikit install` does
 
