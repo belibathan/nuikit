@@ -96,7 +96,7 @@ drops information.
 | `radial` | Radial items and submenus | ox `registerRadial`, qb-radialmenu |
 | `challenge` | Skill check | ox `skillCheck` |
 
-**One source of truth.** Each schema is written once (`packages/core/intents/`) and generates the TypeScript
+**One source of truth.** Each schema is written once (`packages/core/src/spec/api/intents/`) and generates the TypeScript
 types, LuaLS annotations for `nk`, runtime validation, browser mocks, docs and `nuikit check` rules.
 *Built (`feat/intents`, browser + Lua harness, not yet in game): the nine schemas with the adapter supersets,
 the generator, validation at the call, `nk.*` with yields and events, the runtime in the `nuikit` resource and

@@ -28,7 +28,8 @@
   "files": [
     "dist",
     "lua",
-    "intents",
+    "arsenal.json",
+    "src/spec",
     "tokens",
     "fonts",
     "themes",
@@ -82,7 +83,7 @@
   },
   "scripts": {
     "intents": "node scripts/gen-intents.mjs",
-    "build": "node scripts/gen-intents.mjs && node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\" && tsup && node scripts/export-tokens.mjs",
+    "build": "node scripts/gen-intents.mjs && node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\" && tsup && node scripts/export-tokens.mjs && node scripts/arsenal.mjs",
     "test": "vitest run",
     "typecheck": "tsc --noEmit"
   },

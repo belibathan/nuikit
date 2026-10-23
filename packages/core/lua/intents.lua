@@ -11,7 +11,7 @@
     local p = nk.prompt({ label = 'Open garage', keys = { 'E' } })  p:cancel()
 
   Every call validates its props against the schema (lib/intents.schema.lua, generated from
-  packages/core/intents/*.json) and errors with the path of the first problem, so a typo fails at
+  packages/core/src/spec/api/intents/*.json) and errors with the path of the first problem, so a typo fails at
   the call, not in the page.
 
   Yielding intents (menu, input, confirm, progress, target, radial, challenge) return the result,

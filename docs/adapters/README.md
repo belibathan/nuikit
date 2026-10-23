@@ -8,7 +8,7 @@ would change it.*
 
 Every spec has the same sections: **Source** (what is documented, what isn't), **Public API** (every call and
 event, every argument, what the caller gets back), **Intent and field mapping** (to the `docs/architecture.md`
-§2 catalogue; schemas live in `packages/core/intents/`, the intents lane), **What the intent must cover** (so the
+§2 catalogue; schemas live in `packages/core/src/spec/api/intents/`, the intents lane), **What the intent must cover** (so the
 schema is a superset and the adapter never drops information), **Mechanism** (stand-in / listener / page override,
 why, and what the spike decides), **Replay test** (recorded calls → what the caller must get back, run by
 [`bench/adapters/replay/`](../../bench/adapters/replay/README.md)).

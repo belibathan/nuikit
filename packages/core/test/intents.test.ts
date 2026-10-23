@@ -1,4 +1,4 @@
-// The intent schemas (packages/core/intents/*.json) through the TypeScript validator and the store.
+// The intent schemas (packages/core/src/spec/api/intents/*.json) through the TypeScript validator and the store.
 import { readFileSync, readdirSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
@@ -14,7 +14,7 @@ describe("intent schemas", () => {
   });
 
   it("generated code is current (run `pnpm intents` in packages/core after editing a schema)", () => {
-    const dir = fileURLToPath(new URL("../intents/", import.meta.url));
+    const dir = fileURLToPath(new URL("../src/spec/api/intents/", import.meta.url));
     for (const f of readdirSync(dir).filter((f) => f.endsWith(".json") && !f.startsWith("_"))) {
       const json = JSON.parse(readFileSync(dir + f, "utf8"));
       const gen = INTENT_SCHEMAS[json.name as keyof typeof INTENT_SCHEMAS];
