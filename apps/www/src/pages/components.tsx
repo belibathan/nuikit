@@ -1,20 +1,9 @@
 import {
   AnchorIcon,
-  ArrowDownIcon,
-  ArrowDownLeftIcon,
-  ArrowDownRightIcon,
-  ArrowLeftIcon,
-  ArrowRightIcon,
-  ArrowUpIcon,
-  ArrowUpLeftIcon,
-  ArrowUpRightIcon,
   BackpackIcon,
-  BandageIcon,
   CarIcon,
   CarFrontIcon,
-  CupSodaIcon,
   DropletIcon,
-  KeyRoundIcon,
   EyeIcon,
   FlameIcon,
   FuelIcon,
@@ -37,23 +26,21 @@ import {
   WrenchIcon,
 } from "lucide-react";
 import { closeSurface, openSurface, Surface } from "nuikit-core/react";
-import { cloneElement, createContext, useContext, useLayoutEffect, useRef, useState, type ReactElement, type ReactNode } from "react";
-import { Command } from "@/components/code";
-import { Scene } from "@/components/scene";
-import { Footer, Nav, SITE } from "@/components/site";
-import { ApiDetails, HiddenList, Hooks, ITEMS, NewSections, ORDER, SideNav, Wiring } from "@/components/registry-docs";
+import { cloneElement, createContext, useContext, useLayoutEffect, useState, type ReactElement, type ReactNode } from "react";
+import { Footer, Nav } from "@/components/site";
+import { Entry, StageBar, useStageRef } from "@/components/preview";
+import { ITEMS, NewSections, ORDER } from "@/components/registry-docs";
 import { Badge } from "@/components/ui/badge";
-import { Chip } from "@/components/ui/chip";
 import { Button } from "@/components/ui/button";
 import { HudChip } from "@/components/ui/hud-chip";
-import { MenuRow, MenuRowDetails, MenuRowList, menuMetadata } from "@/components/ui/menu-row";
-import { Meter, meterColor } from "@/components/ui/meter";
+import { MenuRow, MenuRowList, } from "@/components/ui/menu-row";
+import { Meter, } from "@/components/ui/meter";
 import { Panel, PanelBody, PanelFooter, PanelHeader } from "@/components/ui/panel";
 import { Separator } from "@/components/ui/separator";
 import { Slider } from "@/components/ui/slider";
 import { Stat } from "@/components/ui/stat";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Notice, NoticeStack, Notices, useNotices, type NoticePosition, type NoticeStatus } from "@/components/ui/notice";
+import { Notice } from "@/components/ui/notice";
 import {
   CheckboxField,
   ColorField,
@@ -71,7 +58,6 @@ import {
 } from "@/components/ui/form-field";
 import { Confirm, ConfirmPanel, type ConfirmTone } from "@/components/ui/confirm";
 import { KeyPrompt, KeyPromptStack } from "@/components/ui/key-prompt";
-import { VariantsDemo } from "@/components/variants-demo";
 import { ProgressRing } from "@/components/ui/progress-ring";
 import { Speedometer } from "@/components/ui/speedometer";
 import { Countdown } from "@/components/ui/countdown";
@@ -83,17 +69,13 @@ import { PlayerCard } from "@/components/ui/player-card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { SKILL_CHECK_PRESETS, SkillCheck, skillCheckZone } from "@/components/ui/skill-check";
 import { RadialMenu, type RadialMenuItem } from "@/components/ui/radial-menu";
-import { applyStageTheme, clearStageTheme } from "@/lib/stage-theme";
-import { studioTheme } from "@/lib/theme-studio";
-import { cn } from "@/lib/utils";
-import { identities } from "@/themes";
 import registry from "../../../../registry.json";
 
 /** The registry item this page is about (/components/<name>), or null for the whole catalogue. */
 const Focus = createContext<string | null>(null);
 
 export function ComponentsPage() {
-  const preview = useRef<HTMLDivElement>(null);
+  const preview = useStageRef();
   const focus = location.pathname.match(/^\/components\/([a-z-]+)\/?$/)?.[1] ?? null;
   const item = focus ? ITEMS.find((i) => i.name === focus) : undefined;
   useLayoutEffect(() => {
@@ -101,60 +83,30 @@ export function ComponentsPage() {
   }, [item]);
   return (
     <div className="min-h-screen overflow-x-clip">
-      <Nav wide />
-      <div className="mx-auto flex max-w-7xl gap-10 px-4 sm:px-6">
-        <SideNav current={focus} />
-        <main className="min-w-0 flex-1 pt-10 pb-24 sm:pt-14 lg:pb-14">
-          <header className="max-w-3xl">
-            {item ? (
-              <>
-                <a href="/components" className="site-eyebrow hover:text-foreground">
-                  Components /
-                </a>
-                <h1 className="site-display mt-3 text-[clamp(2.5rem,7vw,4.5rem)]">{item.title}</h1>
-              </>
-            ) : (
-              <>
-                <p className="site-eyebrow">Registry</p>
-                <h1 className="site-display mt-3 text-[clamp(2.5rem,7vw,4.5rem)]">Components</h1>
-                <p className="mt-4 text-lg text-pretty text-muted-foreground">
-                  What every nuikit screen is made of: stock shadcn/ui composed with the{" "}
-                  <a href="/design" className="text-foreground underline underline-offset-4">
-                    kit
-                  </a>
-                  . Foundations first, then the composites grouped by what they are for. Each card shows its variants, the levers it reads and the hooks that make it live. Each preview sits on a game scene at its in-game size at 1080p, and every state is a prop. Switch the identity: nothing here has
-                  a colour of its own.
-                </p>
-              </>
-            )}
-            <IdentityPicker target={preview} className="mt-6" />
-          </header>
-
-          <Focus.Provider value={focus}>
-          <div ref={preview} className="-mt-4 flex flex-col">
-
+      <Nav />
+      <main className="mx-auto max-w-6xl px-4 pb-24 sm:px-6">
+        <header className="max-w-3xl pt-10 pb-6 sm:pt-14">
+          {item ? (
+            <>
+              <a href="/components" className="site-eyebrow hover:text-foreground">
+                Components /
+              </a>
+              <h1 className="site-display mt-3 text-[clamp(2.5rem,7vw,4.5rem)]">{item.title}</h1>
+            </>
+          ) : (
+            <>
+              <h1 className="site-display text-[clamp(2.5rem,7vw,4.5rem)]">Components</h1>
+              <p className="mt-4 text-lg text-pretty text-muted-foreground">Stock shadcn/ui composed with the kit. Each one: the live preview, the install line, the source.</p>
+            </>
+          )}
+        </header>
+        <StageBar target={preview} />
+        <Focus.Provider value={focus}>
+          <div ref={preview} className="flex flex-col">
+            <NewSections Section={Section} />
           <NewSections Section={Section} />
 
-        <Section
-          name="variants"
-          title="Variants"
-          text="The knobs every kit component takes, per component, over the theme's identity: size, density (compact, comfortable), shape (square, round) and motion (off or reduced). Props on the component; attributes (data-nk-density, data-nk-shape, data-nk-motion) on any element for a whole subtree. Nothing set: the theme decides."
-          install={false}
-          stageClassName="items-start"
-        >
-          <VariantsDemo />
-        </Section>
 
-        <Section
-          name="legibility"
-          title="Legibility"
-          text="The fixture every HUD part is checked against: the brightest, busiest frame the game draws (midday sun, sky and palms). Text on the game must still read, chips must still separate from the sky, levels must still show. Switch the identity above to check yours."
-          install={false}
-          scene="day"
-          stageClassName="items-end justify-between"
-        >
-          <LegibilityDemo />
-        </Section>
 
         <Section
           name="vital-chip"
@@ -165,17 +117,6 @@ export function ComponentsPage() {
           <ChipModesDemo />
         </Section>
 
-        <Section
-          name="key-prompt"
-          title="Key prompt: the interaction ladder"
-          text="A prompt climbs as the player does: dormant (near: the key alone, quiet), aware (in reach), focus (the key acts on it), hold (the line fills, by --nk-hold-style) and confirm (a short pop, --nk-confirm-scale). Hold E on the last one."
-          install={false}
-          stageClassName="items-center"
-        >
-          <KeyPrompt stage="dormant" keys="E" label="Open garage" />
-          <KeyPrompt stage="aware" keys="E" label="Open garage" />
-          <KeyPrompt stage="focus" keys="E" label="Open garage" hold={900} listen onConfirm={() => {}} />
-        </Section>
 
         <Section
           name="panel"
@@ -203,16 +144,6 @@ export function ComponentsPage() {
           <RowsPanel />
         </Section>
 
-        <Section
-          name="menu-row"
-          title="Menu row: items"
-          text="What the menu intent's items carry: an image, a progress line in any tone or colour, read-only rows, trailing actions (promote, fire) a list reaches with Tab, the details card beside the hovered row (each metadata bar in its own colour), quiet stepper values, and inert rows that ignore hover (CEF keeps :hover after Lua takes focus)."
-          install={false}
-          stageClassName="min-h-[28rem]"
-        >
-          <ContextMenuDemo />
-          <InertListDemo />
-        </Section>
 
         <Section
           name="stat"
@@ -260,16 +191,6 @@ export function ComponentsPage() {
           </div>
         </Section>
 
-        <Section
-          name="meter"
-          title="Meter: tones, colours, timed"
-          text="Status tones from the theme; a library's colour through meterColor() (Mantine names become theme tones, CSS colours pass through); and a timed bar whose onComplete fires from a timer, so it still finishes with motion off."
-          install={false}
-          stageClassName="items-center"
-        >
-          <MeterTones />
-          <MeterTimed />
-        </Section>
 
         <Section
           name="hud-chip"
@@ -316,25 +237,7 @@ export function ComponentsPage() {
           <NoticeStates />
         </Section>
 
-        <Section
-          name="notice"
-          title="Notice stack"
-          text="useNotices() is the queue: notify() shows one, the same id updates it in place, and each goes when its time is up. Pick a status, then a position."
-          install={false}
-          stageClassName="min-h-[40rem] items-center"
-        >
-          <NoticeDemo />
-        </Section>
 
-        <Section
-          name="notice"
-          title="Slabs"
-          text="Transient feedback on the game, one anatomy for every script: an item added or removed (icon tile, name, change; changes to the same item within 1.5 s merge), a prompt (key chip, verb), a timed progress (label, thin line, cancel key), and a full-width band for a state. notice, key-prompt, meter and band draw them."
-          install={false}
-          stageClassName="min-h-[36rem] [--nk-edge:2.5rem]"
-        >
-          <SlabStates />
-        </Section>
 
         <Section
           name="band"
@@ -446,7 +349,6 @@ export function ComponentsPage() {
         >
           <PlayerCard
             name="Niko Bellic"
-            avatar="/screens/appearance.jpg"
             job="LSPD"
             grade="Sergeant"
             onDuty
@@ -549,113 +451,20 @@ export function ComponentsPage() {
           <RadialDemo />
         </Section>
 
-        <Hooks />
-        <HiddenList />
-
-        {!focus && (
-        <section id="removed" style={{ order: 1002 }} className="mt-20 scroll-mt-20">
-          <h2 className="site-display text-3xl">Removed</h2>
-          <p className="mt-2 max-w-2xl text-muted-foreground text-pretty">
-            Deprecated in 0.6.0 and removed from the registry in 0.9.0. Copies already in a project keep working; new UI uses the component that replaced them.
-          </p>
-          <div className="mt-6 divide-y rounded-xl border">
-            {REMOVED.map((d) => (
-              <div key={d.name} data-slot="removed-item" className="flex flex-wrap items-center gap-x-6 gap-y-2 px-5 py-4">
-                <div className="min-w-48">
-                  <div className="flex items-center gap-2">
-                    <code className="font-mono text-sm">{d.name}</code>
-                    <Badge variant="outline">Removed</Badge>
-                  </div>
-                  <p className="mt-1 text-sm text-muted-foreground">{d.what}</p>
-                </div>
-                <p className="flex-1 text-sm">
-                  Use{" "}
-                  {d.use.map((u, i) => (
-                    <span key={u}>
-                      {i > 0 && " or "}
-                      <a href={`/components/${u}`} className="font-mono underline underline-offset-4">
-                        {u}
-                      </a>
-                    </span>
-                  ))}
-                  {d.how && <span className="text-muted-foreground"> ({d.how})</span>}
-                </p>
-              </div>
-            ))}
           </div>
-        </section>
-        )}
-          </div>
-          </Focus.Provider>
-        </main>
-      </div>
+        </Focus.Provider>
+      </main>
       <Footer />
     </div>
   );
 }
 
-// registry.json meta (docs/design/contract.md, "Registry metadata"): status and the release it shipped in
-type ItemSpec = { role: string; anatomy: string[]; props?: string[]; level?: string; rules: string[] };
-type ItemMeta = { since: string; status: string; replaces: string[]; removeIn: string | null; replacedBy?: string[]; spec?: ItemSpec; hidden?: boolean; tier?: string };
-const META = new Map((registry.items as { name: string; meta?: ItemMeta }[]).flatMap((i) => (i.meta ? [[i.name, i.meta] as const] : [])));
-
-/** The spec template (Foundation 2): role, anatomy, props, what the level means, rules. */
-function SpecDetails({ spec }: { spec: ItemSpec }) {
-  return (
-    <details data-slot="component-spec" className="mt-3 text-sm">
-      <summary className="cursor-pointer text-muted-foreground select-none">Spec{spec.level ? `: level is ${spec.level}` : ""}</summary>
-      <dl className="mt-3 grid grid-cols-[7rem_1fr] gap-x-4 gap-y-2">
-        <dt className="text-muted-foreground">Role</dt>
-        <dd>{spec.role}</dd>
-        <dt className="text-muted-foreground">Anatomy</dt>
-        <dd>{spec.anatomy.join(" · ")}</dd>
-        {spec.props && (
-          <>
-            <dt className="text-muted-foreground">Props</dt>
-            <dd className="font-mono text-xs leading-5">{spec.props.join(", ")}</dd>
-          </>
-        )}
-        {spec.level && (
-          <>
-            <dt className="text-muted-foreground">Level means</dt>
-            <dd>{spec.level}</dd>
-          </>
-        )}
-        <dt className="text-muted-foreground">Rules</dt>
-        <dd>
-          <ul className="list-disc pl-4">
-            {spec.rules.map((r) => (
-              <li key={r}>{r}</li>
-            ))}
-          </ul>
-        </dd>
-      </dl>
-    </details>
-  );
-}
-
-function MetaBadges({ meta }: { meta: ItemMeta }) {
-  return (
-    <>
-      {meta.status === "deprecated" ? (
-        <Chip tone="danger" fill="tint">
-          Deprecated{meta.replacedBy?.length ? `: use ${meta.replacedBy.join(" or ")}` : ""}
-          {meta.removeIn ? `, removed in ${meta.removeIn}` : ""}
-        </Chip>
-      ) : meta.status === "experimental" ? (
-        <Chip fill="tint">Experimental</Chip>
-      ) : null}
-      {meta.tier === "foundation" && <Chip fill="tint">Foundation</Chip>}
-      <Chip className="text-muted-foreground">{meta.since === "unreleased" ? "Unreleased" : `Since ${meta.since}`}</Chip>
-    </>
-  );
-}
+const META = new Map((registry.items as { name: string; meta?: { hidden?: boolean } }[]).flatMap((i) => (i.meta ? [[i.name, i.meta] as const] : [])));
 
 function Section({
   name,
   title,
   text,
-  install = true,
   stageClassName,
   scene,
   children,
@@ -663,142 +472,26 @@ function Section({
   name: string;
   title: string;
   text: string;
-  /** The world behind the stage (day: the bright legibility fixture). */
   scene?: "dusk" | "day";
-  /** false for a second section of the same item (one id, one install command). */
   install?: boolean;
   stageClassName?: string;
   children: ReactNode;
 }) {
   const focus = useContext(Focus);
   if (focus && focus !== name) return null;
-  // curated out of the catalogue: still at /components/<name>, listed under "Also installable"
+  // curated out of the catalogue: still at /components/<name>
   if (!focus && META.get(name)?.hidden) return null;
-  const meta = install ? META.get(name) : undefined;
-  const entry = ITEMS.find((i) => i.name === name);
-  const item = !!entry;
-  // on the item's own page the h1 already says its name
-  const repeat = !!focus && entry?.title === title;
   return (
-    <section id={install ? name : undefined} style={{ order: ORDER.get(name) ?? 900 }} className="mt-16 scroll-mt-24">
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div className="max-w-2xl min-w-0">
-          <div className="flex flex-wrap items-center gap-3">
-            <h2 className={cn("site-display text-3xl", repeat && "sr-only")}>
-              {install && item && !focus ? (
-                <a href={`/components/${name}`} className="hover:underline hover:decoration-2 hover:underline-offset-4">
-                  {title}
-                </a>
-              ) : (
-                title
-              )}
-            </h2>
-            {meta && <MetaBadges meta={meta} />}
-          </div>
-          <p className="mt-2 text-pretty text-muted-foreground">{text}</p>
-          {install && <Wiring name={name} />}
-          {install && meta?.spec && <SpecDetails spec={meta.spec} />}
-        </div>
-        {install && <Command className="h-10 w-full max-w-md text-xs">{`npx shadcn add ${SITE}/r/${name}.json`}</Command>}
-      </div>
-      <div className="relative isolate mt-6 overflow-hidden rounded-(--nk-r-surface) border bg-black">
-        <Scene variant={scene} />
-        {/* phones: the stage scrolls sideways rather than squeezing a 1080p part */}
-        <div className="overflow-x-auto">
-          <div className={cn("relative flex min-h-80 flex-wrap items-start justify-center gap-8 p-4 sm:p-10", stageClassName)}>{children}</div>
-        </div>
-      </div>
-      {install && item && <ApiDetails name={name} open={focus === name} />}
-    </section>
+    <div style={{ order: ORDER.get(name) ?? 900 }}>
+      <Entry name={name} title={title} text={text} scene={scene} stageClassName={stageClassName} focus={!!focus}>
+        {children}
+      </Entry>
+    </div>
   );
 }
 
 export type SectionComponent = typeof Section;
 
-/**
- * Every component under one identity (all of packages/core/themes): its type, shape, surface, density,
- * motion and HUD, painted on the previews only, so the page around them stays the site's. Default (the first) is
- * the site's own identity, so it paints nothing.
- */
-function IdentityPicker({ target, className }: { target: React.RefObject<HTMLDivElement | null>; className?: string }) {
-  const [active, setActive] = useState(0);
-  useLayoutEffect(() => {
-    const el = target.current;
-    const id = identities[active];
-    if (!el || !id || active === 0) return;
-    applyStageTheme(studioTheme(id.css), el);
-    // the site's font-sans is a literal (@theme inline): read the identity's own
-    el.style.fontFamily = "var(--font-sans)";
-    return () => {
-      clearStageTheme(el);
-      el.style.removeProperty("font-family");
-    };
-  }, [active, target]);
-  return (
-    <div className={cn("flex flex-wrap items-center gap-2", className)} role="radiogroup" aria-label="Identity">
-      <span className="site-eyebrow mr-1">Identity</span>
-      {identities.map((t, i) => (
-        <Button key={t.name} role="radio" aria-checked={active === i} variant={active === i ? "secondary" : "ghost"} size="sm" onClick={() => setActive(i)}>
-          <span className="flex" aria-hidden>
-            {t.swatch.map((c, j) => (
-              <span key={j} className="size-3 rounded-(--nk-r-key) border border-white/20" style={{ background: c, marginLeft: j ? -3 : 0 }} />
-            ))}
-          </span>
-          {t.name}
-        </Button>
-      ))}
-    </div>
-  );
-}
-
-/** HUD parts as they sit on the game: vitals, chips, a notice, a prompt, a timed slab, a band. */
-function LegibilityDemo() {
-  const vitals = [
-    { tone: "health", value: 82, icon: <HeartPulseIcon /> },
-    { tone: "armor", value: 46, icon: <ShieldIcon /> },
-    { tone: "hunger", value: 18, icon: <UtensilsIcon /> },
-    { tone: "thirst", value: 64, icon: <DropletIcon /> },
-  ];
-  return (
-    <>
-      <div className="flex flex-col gap-4">
-        <div className="flex gap-2">
-          {vitals.map((v) => (
-            <VitalChip.Root key={v.tone} value={v.value} tone={v.tone}>
-              <VitalChip.Shape>
-                <VitalChip.Level />
-                <VitalChip.Icon>{v.icon}</VitalChip.Icon>
-              </VitalChip.Shape>
-            </VitalChip.Root>
-          ))}
-        </div>
-        <div className="flex gap-2">
-          <HudChip icon={<MicIcon />} active>
-            Normal
-          </HudChip>
-          <HudChip icon={<RadioIcon />}>101 MHz</HudChip>
-          <HudChip icon={<TriangleAlertIcon />} state="warning">
-            Seatbelt
-          </HudChip>
-        </div>
-        <Stat surface="game" icon={<WalletIcon />} label="Cash" value="$12,480" />
-      </div>
-      <div className="flex flex-col items-center gap-4">
-        <KeyPrompt keys="E" label="Open garage" />
-        <div className="w-80">
-          <Meter variant="slab" label="Repairing" value={62} cancelKey="X" />
-        </div>
-      </div>
-      <div className="flex flex-col items-end gap-3">
-        <Notice status="warning" title="Low fuel" description="8% left" duration={0} />
-        <Notice item={{ name: "Water bottle", count: 2, icon: <CupSodaIcon /> }} duration={0} />
-      </div>
-      <Band position="inline" tone="destructive" title="You are incapacitated" subtitle="Hold E to call for help" className="basis-full" />
-    </>
-  );
-}
-
-/** The vital chip's display modes and the voice chip's neighbour option, live. */
 function ChipModesDemo() {
   const [display, setDisplay] = useState<"pill" | "value" | "icon" | "expand">("expand");
   const [neighbours, setNeighbours] = useState<"push" | "collapse" | "overlay">("push");
@@ -1025,108 +718,6 @@ function NoticeStates() {
         <Notice status="warning" title="Server restart in 10 minutes" description="Finish what you're doing and park somewhere safe." duration={0} onDismiss={() => {}} />
         <Notice icon={null} title="Welcome to Los Santos" description="Your apartment key is in your pockets." showDuration={false} />
       </div>
-    </>
-  );
-}
-
-const SAMPLES: Record<NoticeStatus, { title: string; description: string }[]> = {
-  info: [
-    { title: "Vehicle stored", description: "Your Bravado Buffalo is in the Pillbox garage." },
-    { title: "New message", description: "Lester: I have a job for you." },
-  ],
-  success: [
-    { title: "Paid", description: "$500 from Lester" },
-    { title: "Repaired", description: "Engine back to 100%." },
-  ],
-  warning: [
-    { title: "Hungry", description: "Eat something soon." },
-    { title: "Wanted", description: "Two stars. Lose the police." },
-  ],
-  error: [
-    { title: "Couldn't lock it", description: "You don't have the keys." },
-    { title: "Not enough cash", description: "You need $250 more." },
-  ],
-};
-
-const STATUSES: { value: NoticeStatus; label: string }[] = [
-  { value: "info", label: "Info" },
-  { value: "success", label: "Success" },
-  { value: "warning", label: "Warning" },
-  { value: "error", label: "Error" },
-];
-
-const GRID: { position: NoticePosition | null; icon?: ReactNode; label?: string }[] = [
-  { position: "top-left", icon: <ArrowUpLeftIcon />, label: "Top left" },
-  { position: "top-center", icon: <ArrowUpIcon />, label: "Top" },
-  { position: "top-right", icon: <ArrowUpRightIcon />, label: "Top right" },
-  { position: "center-left", icon: <ArrowLeftIcon />, label: "Left" },
-  { position: null },
-  { position: "center-right", icon: <ArrowRightIcon />, label: "Right" },
-  { position: "bottom-left", icon: <ArrowDownLeftIcon />, label: "Bottom left" },
-  { position: "bottom-center", icon: <ArrowDownIcon />, label: "Bottom" },
-  { position: "bottom-right", icon: <ArrowDownRightIcon />, label: "Bottom right" },
-];
-
-function NoticeDemo() {
-  const [policy, setPolicy] = useState<"stack" | "one">("stack");
-  const { notices, notify, dismiss, clear, waiting } = useNotices({ policy });
-  const [status, setStatus] = useState<NoticeStatus>("success");
-  const [count, setCount] = useState(0);
-  const [fuel, setFuel] = useState(12);
-  const fire = (position: NoticePosition) => {
-    const list = SAMPLES[status];
-    notify({ ...list[count % list.length]!, status, position });
-    setCount((c) => c + 1);
-  };
-  const updateFuel = () => {
-    const next = fuel > 1 ? fuel - 3 : 12;
-    setFuel(next);
-    notify({ id: "fuel", status: next <= 3 ? "error" : "warning", title: "Low fuel", description: `${next}% left.`, position: "top-right" });
-  };
-  return (
-    <>
-      <Panel size="sm" className="relative z-10">
-        <PanelHeader title="Notify" description="Pick a status, then a position" />
-        <PanelBody variant="form">
-          <div className="flex items-center gap-2" role="radiogroup" aria-label="Queue policy">
-            {(["stack", "one"] as const).map((p) => (
-              <Button key={p} role="radio" aria-checked={policy === p} size="sm" variant={policy === p ? "secondary" : "ghost"} onClick={() => setPolicy(p)}>
-                {p === "stack" ? "Stacked" : "One at a time"}
-              </Button>
-            ))}
-            {waiting > 0 && <span className="nk-num ml-auto text-sm text-muted-foreground">{waiting} waiting</span>}
-          </div>
-          <Tabs value={status} onValueChange={(v) => setStatus(v as NoticeStatus)}>
-            <TabsList className="w-full">
-              {STATUSES.map((s) => (
-                <TabsTrigger key={s.value} value={s.value}>
-                  {s.label}
-                </TabsTrigger>
-              ))}
-            </TabsList>
-          </Tabs>
-          <div className="grid grid-cols-3 gap-2" role="group" aria-label="Position">
-            {GRID.map((cell, i) =>
-              cell.position ? (
-                <Button key={cell.position} variant="outline" size="sm" aria-label={cell.label} title={cell.label} onClick={() => fire(cell.position!)}>
-                  {cell.icon}
-                </Button>
-              ) : (
-                <span key={i} aria-hidden />
-              ),
-            )}
-          </div>
-        </PanelBody>
-        <PanelFooter>
-          <Button variant="ghost" size="sm" onClick={clear}>
-            Clear
-          </Button>
-          <Button size="sm" className="ml-auto" onClick={updateFuel}>
-            Update fuel
-          </Button>
-        </PanelFooter>
-      </Panel>
-      <Notices notices={notices} onDismiss={dismiss} closable />
     </>
   );
 }
@@ -1433,52 +1024,6 @@ function KeyPromptStates() {
   );
 }
 
-/** The four slabs, every state from props, plus a live item queue that merges. */
-function SlabStates() {
-  const { notices, notify, dismiss } = useNotices();
-  const [run, setRun] = useState(0);
-  return (
-    <>
-      <NoticeStack position="center-left">
-        <Notice animate={false} duration={0} item={{ name: "Water bottle", count: 2, icon: <CupSodaIcon /> }} />
-        <Notice animate={false} duration={0} item={{ name: "Bandage", count: 1, icon: <BandageIcon /> }} />
-        <Notice animate={false} duration={0} item={{ name: "Lockpick", count: -1, icon: <KeyRoundIcon /> }} />
-      </NoticeStack>
-      <Notices notices={notices} onDismiss={dismiss} />
-      <KeyPromptStack position="center-right">
-        <KeyPrompt keys="E" label="Clean dishes" />
-        <KeyPrompt keys="G" label="Search the counter" hold={1200} progress={0.45} />
-      </KeyPromptStack>
-      <div className="nk-anchor-b bottom-[9rem]!">
-        <Meter
-          key={run}
-          variant="slab"
-          label="Raw crystals"
-          duration={run ? 6000 : undefined}
-          value={run ? undefined : 45}
-          cancelKey="Esc"
-          onCancel={() => setRun(0)}
-        />
-      </div>
-      <Band title="You are incapacitated" subtitle="Wait for EMS" />
-      <Panel size="sm" className="self-start">
-        <PanelHeader title="Try it" description="Quick presses merge" />
-        <PanelBody variant="form" className="flex-row flex-wrap">
-          <Button size="sm" onClick={() => notify({ item: { name: "Water bottle", count: 1, icon: <CupSodaIcon /> }, position: "top-right", duration: 3000 })}>
-            Add water
-          </Button>
-          <Button size="sm" variant="outline" onClick={() => notify({ item: { name: "Water bottle", count: -1, icon: <CupSodaIcon /> }, position: "top-right", duration: 3000 })}>
-            Drink one
-          </Button>
-          <Button size="sm" variant="outline" onClick={() => setRun((n) => n + 1)}>
-            Start progress
-          </Button>
-        </PanelBody>
-      </Panel>
-    </>
-  );
-}
-
 /** Press and hold with the pointer, or hold G while the page has focus. */
 function KeyPromptDemo() {
   const [robbed, setRobbed] = useState(0);
@@ -1580,209 +1125,6 @@ function ProgressRingDemo() {
 
 // ox_lib metadata, in two of its shapes (menuMetadata reads all three). Each bar keeps its own
 // colorScheme, as ox passes it (Mantine names); the fuel line takes a tone.
-const VEHICLES = [
-  {
-    name: "Pegassi Zentorno",
-    image: "/bg/garage.jpg",
-    fuel: 92,
-    fuelColor: "success",
-    metadata: [
-      { label: "Plate", value: "ZEN 01" },
-      { label: "Engine", value: "98%", progress: 98, colorScheme: "green" },
-      { label: "Body", value: "41%", progress: 41, colorScheme: "yellow.6" },
-      { label: "Tyres", value: "12%", progress: 12, colorScheme: "red" },
-      { label: "Clutch", value: "80%", progress: 80 },
-    ],
-  },
-  {
-    name: "Karin Sultan",
-    image: "/bg/street.jpg",
-    fuel: 23,
-    fuelColor: "destructive",
-    metadata: { Plate: "SUL 07", Garage: "Impound", Fee: "$250" },
-  },
-];
-
-/** A context menu: image rows with a fuel line, a read-only row, the details card beside the hovered row. */
-function ContextMenuDemo() {
-  const [hovered, setHovered] = useState<number | null>(0);
-  const v = hovered === null ? undefined : VEHICLES[hovered];
-  return (
-    <div className="flex items-start gap-3">
-      <Panel>
-        <PanelHeader icon={<WarehouseIcon />} title="Garage" description="Hover a car" />
-        <PanelBody>
-          {VEHICLES.map((c, i) => (
-            <MenuRow
-              key={c.name}
-              image={c.image}
-              description="Fuel"
-              progress={c.fuel}
-              progressColor={c.fuelColor}
-              meta={`${c.fuel}%`}
-              chevron
-              active={hovered === i}
-              onMouseEnter={() => setHovered(i)}
-            >
-              {c.name}
-            </MenuRow>
-          ))}
-          <Separator className="my-1" />
-          <MenuRow readOnly icon={<UsersIcon />} description="Set by your job" meta="2 of 4">
-            Garage slots
-          </MenuRow>
-          <MenuRow
-            readOnly
-            icon={<span className="size-1.5 rounded-full bg-success" />}
-            description="Mechanic, on duty"
-            actions={
-              <>
-                <Button variant="ghost" size="icon-sm" aria-label="Promote Lee">
-                  <ArrowUpIcon />
-                </Button>
-                <Button variant="ghost" size="icon-sm" aria-label="Demote Lee">
-                  <ArrowDownIcon />
-                </Button>
-                <Button variant="ghost" size="icon-sm" aria-label="Fire Lee" className="text-destructive hover:text-destructive">
-                  <LogOutIcon />
-                </Button>
-              </>
-            }
-          >
-            Lee
-          </MenuRow>
-        </PanelBody>
-      </Panel>
-      {v && <MenuRowDetails key={v.name} image={v.image} title={v.name} items={menuMetadata(v.metadata)} />}
-    </div>
-  );
-}
-
-const SETTINGS = [
-  { label: "Voice range", values: ["Whisper", "Normal", "Shouting"] },
-  { label: "Radio volume", values: ["20%", "40%", "60%", "80%"] },
-  { label: "Minimap", values: ["Off", "In vehicles", "Always"] },
-];
-
-/**
- * A keyboard-driven list (ox_lib's list menu): arrows move the highlight, values are quiet until
- * their row is highlighted. Inert on: the pointer's hover changes nothing.
- */
-function InertListDemo() {
-  const [index, setIndex] = useState(0);
-  const [inert, setInert] = useState(true);
-  const [picked, setPicked] = useState([1, 2, 1]);
-  return (
-    <Panel
-      size="sm"
-      tabIndex={0}
-      className="outline-none"
-      onKeyDown={(e) => {
-        if (e.key === "ArrowDown" || e.key === "ArrowUp") {
-          e.preventDefault();
-          setIndex((i) => (i + (e.key === "ArrowDown" ? 1 : -1) + SETTINGS.length) % SETTINGS.length);
-        } else if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
-          e.preventDefault();
-          const d = e.key === "ArrowRight" ? 1 : -1;
-          setPicked((all) => all.map((p, j) => (j === index ? (p + d + SETTINGS[j]!.values.length) % SETTINGS[j]!.values.length : p)));
-        }
-      }}
-    >
-      <PanelHeader title="Settings" description="Click here, then use the arrows" />
-      <PanelBody>
-        {SETTINGS.map((s, i) => (
-          <MenuRow
-            key={s.label}
-            inert={inert}
-            active={index === i}
-            value={s.values[picked[i]!]}
-            valueTone="muted"
-            onStep={(d) => setPicked((all) => all.map((p, j) => (j === i ? (p + d + s.values.length) % s.values.length : p)))}
-            tabIndex={-1}
-          >
-            {s.label}
-          </MenuRow>
-        ))}
-        <Separator className="my-1" />
-        {/* A library-supplied icon colour (ox iconColor) set inline: it survives hover and highlight. */}
-        <MenuRow icon={<EyeIcon style={{ color: "#4dabf7" }} />} checked={inert} onCheckedChange={setInert} tabIndex={-1}>
-          Inert (ignore hover)
-        </MenuRow>
-      </PanelBody>
-    </Panel>
-  );
-}
-
-/** Status tones, and colours as a library sends them (ox colorScheme), through meterColor(). */
-function MeterTones() {
-  return (
-    <Panel>
-      <PanelHeader title="Tones and colours" description="Status from the theme; library colours mapped" />
-      <PanelBody variant="form">
-        <Meter label="Paid off" value={80} valueText="80%" tone="success" />
-        <Meter label="Fuel reserve" value={35} valueText="35%" tone="warning" />
-        <Meter label="Download" value={55} valueText="55%" tone="info" />
-        <Separator />
-        <Meter label='colorScheme "green"' value={64} valueText="64%" {...meterColor("green")} />
-        <Meter label='colorScheme "red.6"' value={42} valueText="42%" {...meterColor("red.6")} />
-        <Meter label='colorScheme "#4dabf7"' value={70} valueText="70%" segments={5} {...meterColor("#4dabf7")} />
-      </PanelBody>
-    </Panel>
-  );
-}
-
-/**
- * A timed bar (ox progressBar): fills over its duration, full exactly at the end; onComplete from
- * a timer. Like ox, the full bar stays a moment before it goes.
- */
-function MeterTimed() {
-  const [run, setRun] = useState(0);
-  const [running, setRunning] = useState(false);
-  const [last, setLast] = useState("Nothing yet");
-  const current = useRef(0);
-  return (
-    <div className="flex w-80 flex-col gap-4">
-      <Panel size="default">
-        <PanelHeader title="Try it" description="A 3 second search" />
-        <PanelBody>
-          <MenuRow
-            icon={<BackpackIcon />}
-            onClick={() => {
-              current.current = run + 1;
-              setRun((r) => r + 1);
-              setRunning(true);
-            }}
-          >
-            Search the glovebox
-          </MenuRow>
-        </PanelBody>
-        <PanelFooter>
-          <span className="nk-label">Last result</span>
-          <span data-slot="meter-demo-result" className="ml-auto text-sm">
-            {last}
-          </span>
-        </PanelFooter>
-      </Panel>
-      {running && (
-        <Panel size="default" className="nk-enter">
-          <PanelBody variant="form">
-            <Meter
-              key={run}
-              label="Searching the glovebox"
-              duration={3000}
-              onComplete={() => {
-                setLast("Found $120");
-                const done = run;
-                setTimeout(() => current.current === done && setRunning(false), 500);
-              }}
-            />
-          </PanelBody>
-        </Panel>
-      )}
-    </div>
-  );
-}
-
 /**
  * The other states from props, straight on the game (surface="game": HUD text with a shadow).
  * On a panel or a tinted full-screen surface, the default theme surface (the Bank alarm panel).
@@ -2048,10 +1390,4 @@ function RadialDemo() {
     </>
   );
 }
-
-const REMOVED: { name: string; what: string; use: string[]; how?: string }[] = [
-  { name: "nui-toaster", what: "Sonner toasts wired to NUI.notify()", use: ["notice"], how: "<NuiNotices />, or useNotices() + <Notices>" },
-  { name: "task-progress", what: "A timed action in a Card", use: ["meter", "progress-ring"], how: 'variant="slab" + duration, cancelKey, onCancel' },
-  { name: "key-hint", what: '"[E] Talk" with hold-to-confirm', use: ["key-prompt"] },
-];
 

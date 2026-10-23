@@ -4,7 +4,6 @@
 import {
   BriefcaseIcon,
   CarIcon,
-  ChevronDownIcon,
   CrosshairIcon,
   DropletIcon,
   FuelIcon,
@@ -22,7 +21,6 @@ import {
 } from "lucide-react";
 import { emit } from "nuikit-core/react";
 import { useEffect, useState, type ReactNode } from "react";
-import { Command } from "@/components/code";
 import { ActionBar, ActionBarItem, ActionBarSep } from "@/components/ui/action-bar";
 import { Button } from "@/components/ui/button";
 import { Chip } from "@/components/ui/chip";
@@ -38,16 +36,10 @@ import { NumberRoll, TextRoll } from "@/components/ui/text-roll";
 import { Tile } from "@/components/ui/tile";
 import { Vital } from "@/components/ui/vital";
 import { VitalChip } from "@/components/ui/vital-chip";
-import { cn } from "@/lib/utils";
-import api from "@/generated/api.json";
 import type { SectionComponent } from "@/pages/components";
 import registry from "../../../../registry.json";
 
-type Prop = { name: string; type: string; default: string | null; doc: string; required: boolean };
-type Api = Record<string, { components: { name: string; props: Prop[] }[]; levers: string[] }>;
-const API = api as Api;
-
-const DESCRIPTIONS = new Map((registry.items as { name: string; description?: string }[]).map((i) => [i.name, i.description ?? ""]));
+export const DESCRIPTIONS = new Map((registry.items as { name: string; description?: string }[]).map((i) => [i.name, i.description ?? ""]));
 
 type Curated = {
   group?: string;
@@ -73,224 +65,11 @@ const byGroup = (hidden: boolean) =>
 /** What the nav and the catalogue list: not hidden, grouped by purpose, foundations first. */
 const GROUPS = byGroup(false);
 /** Hidden from the site, still installable and still at /components/<name>. */
-export const HIDDEN = UI.filter((i) => i.meta?.hidden && i.meta.tier !== "alias").map((i) => ({ name: i.name, title: i.title ?? i.name, reason: i.meta?.hiddenReason ?? "" }));
 /** The catalogue's order: the listed items in nav order, everything else after. */
 export const ORDER = new Map(GROUPS.flatMap((g) => g.items).map(([name], i) => [name, i] as const));
-export const VARIANTS = new Map(UI.flatMap((i) => (i.meta?.variants ? [[i.name, { ...i.meta.variants, tier: i.meta.tier, group: i.meta.group }] as const] : [])));
 
+export const VARIANTS = new Map(UI.flatMap((i) => (i.meta?.variants ? [[i.name, i.meta.variants] as const] : [])));
 export const ITEMS = [...GROUPS, ...byGroup(true)].flatMap((g) => g.items.map(([name, title]) => ({ name, title, group: g.group, description: DESCRIPTIONS.get(name) ?? "" })));
-
-/** A card's wiring: the variant axes, the levers it reads and the hooks that make it live. */
-export function Wiring({ name }: { name: string }) {
-  const v = VARIANTS.get(name);
-  if (!v) return null;
-  const axes = Object.entries(v.axes);
-  const shown = v.levers.slice(0, 8);
-  const code = "inline-flex h-6 items-center rounded-(--nk-r-key) border px-1.5 font-mono text-xs text-muted-foreground";
-  return (
-    <dl data-slot="component-wiring" className="mt-4 grid grid-cols-[5.5rem_1fr] gap-x-4 gap-y-2 text-sm">
-      {axes.length > 0 && (
-        <>
-          <dt className="text-muted-foreground">Variants</dt>
-          <dd className="flex flex-col gap-1">
-            {axes.map(([axis, vals]) => (
-              <span key={axis}>
-                <span className="font-mono text-xs text-muted-foreground">{axis}</span> {vals.join(" · ")}
-              </span>
-            ))}
-          </dd>
-        </>
-      )}
-      {shown.length > 0 && (
-        <>
-          <dt className="text-muted-foreground">Levers</dt>
-          <dd className="flex flex-wrap gap-1.5">
-            {shown.map((l) => (
-              <code key={l} className={code}>
-                {l}
-              </code>
-            ))}
-            {v.levers.length > shown.length && <span className="self-center text-xs text-muted-foreground">+{v.levers.length - shown.length} more</span>}
-          </dd>
-        </>
-      )}
-      {v.hooks.length > 0 && (
-        <>
-          <dt className="text-muted-foreground">Hooks</dt>
-          <dd className="flex flex-wrap gap-1.5">
-            {v.hooks.map((h) => (
-              <code key={h} className={code}>
-                {h}
-              </code>
-            ))}
-          </dd>
-        </>
-      )}
-    </dl>
-  );
-}
-
-/** Installable but not featured: composites that a foundation covers with a prop, and internal helpers. */
-export function HiddenList() {
-  if (typeof location !== "undefined" && /^\/components\/./.test(location.pathname)) return null;
-  return (
-    <section id="more" style={{ order: 1001 }} className="mt-20 scroll-mt-20">
-      <h2 className="site-display text-3xl">Also installable</h2>
-      <p className="mt-2 max-w-2xl text-muted-foreground text-pretty">
-        Not featured: a foundation above covers each with a prop, or it is a helper under one. They stay in the registry, and the block that uses one shows it composed.
-      </p>
-      <ul className="mt-6 divide-y border-y">
-        {HIDDEN.map((h) => (
-          <li key={h.name} className="grid gap-1 py-3 md:grid-cols-[12rem_1fr] md:gap-6">
-            <a href={`/components/${h.name}`} className="font-mono text-sm underline-offset-4 hover:underline">
-              {h.name}
-            </a>
-            <p className="text-sm text-pretty text-muted-foreground">{h.reason}</p>
-          </li>
-        ))}
-      </ul>
-    </section>
-  );
-}
-
-/** Sticky on wide screens; a disclosure on phones. */
-export function SideNav({ current }: { current: string | null }) {
-  const list = (
-    <nav aria-label="Components" className="flex flex-col gap-6 text-sm">
-      <a href="/components" aria-current={current === null ? "page" : undefined} className={cn("text-muted-foreground hover:text-foreground", current === null && "text-foreground")}>
-        All components
-      </a>
-      {GROUPS.map((g) => (
-        <div key={g.group}>
-          <p className="site-eyebrow mb-2">{g.group}</p>
-          <ul className="flex flex-col">
-            {g.items.map(([name, title]) => (
-              <li key={name}>
-                <a
-                  href={`/components/${name}`}
-                  aria-current={current === name ? "page" : undefined}
-                  className={cn(
-                    "-ml-3 block border-l-2 border-transparent py-1 pl-3 text-muted-foreground hover:text-foreground",
-                    current === name && "border-foreground font-medium text-foreground",
-                  )}
-                >
-                  {title}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </div>
-      ))}
-      <a href="/components#hooks" className="text-muted-foreground hover:text-foreground">
-        Hooks
-      </a>
-    </nav>
-  );
-  return (
-    <>
-      <aside className="sticky top-14 hidden h-[calc(100vh-3.5rem)] w-48 shrink-0 overflow-y-auto py-14 pr-2 lg:block">{list}</aside>
-      <details className="group fixed inset-x-4 bottom-4 z-30 rounded-(--nk-r-surface) border bg-popover shadow-[0_0.125rem_0_rgba(0,0,0,0.6)] lg:hidden">
-        <summary className="flex h-12 cursor-pointer list-none items-center justify-between px-4 text-sm font-medium [&::-webkit-details-marker]:hidden">
-          {ITEMS.find((i) => i.name === current)?.title ?? "All components"}
-          <ChevronDownIcon className="size-4 transition-transform group-open:rotate-180" aria-hidden />
-        </summary>
-        <div className="max-h-[60vh] overflow-y-auto border-t px-4 py-4">{list}</div>
-      </details>
-    </>
-  );
-}
-
-/** Props (per exported component) and the --nk-* levers the item reads. */
-export function ApiDetails({ name, open = false }: { name: string; open?: boolean }) {
-  const a = API[name];
-  if (!a) return null;
-  const parts = a.components.filter((c) => c.props.length > 0);
-  return (
-    <details data-slot="component-api" open={open} className="group mt-4 border-y">
-      <summary className="flex cursor-pointer list-none items-center gap-2 py-3 text-sm font-medium [&::-webkit-details-marker]:hidden">
-        <ChevronDownIcon className="size-4 -rotate-90 transition-transform group-open:rotate-0" aria-hidden />
-        Props and levers
-        <span className="font-normal text-muted-foreground">
-          {parts.reduce((n, c) => n + c.props.length, 0)} props · {a.levers.length} levers
-        </span>
-      </summary>
-      <div className="flex flex-col gap-8 pb-6">
-        {parts.map((c) => (
-          <div key={c.name} className="min-w-0">
-            <h3 className="font-mono text-sm">{`<${c.name}>`}</h3>
-            <div className="mt-2 overflow-x-auto">
-              <table className="w-full min-w-[40rem] border-collapse text-sm">
-                <thead>
-                  <tr className="border-b text-left text-muted-foreground">
-                    <th className="py-2 pr-4 font-medium">Prop</th>
-                    <th className="py-2 pr-4 font-medium">Type</th>
-                    <th className="py-2 pr-4 font-medium">Default</th>
-                    <th className="py-2 font-medium">Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {c.props.map((p) => (
-                    <tr key={p.name} className="border-b align-top last:border-0">
-                      <td className="py-2 pr-4 font-mono text-xs whitespace-nowrap">
-                        {p.name}
-                        {p.required && <span className="text-muted-foreground">*</span>}
-                      </td>
-                      <td className="max-w-64 py-2 pr-4 font-mono text-xs break-words text-muted-foreground">{p.type}</td>
-                      <td className="py-2 pr-4 font-mono text-xs whitespace-nowrap text-muted-foreground">{p.default ?? "–"}</td>
-                      <td className="py-2 text-pretty text-muted-foreground">{p.doc}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        ))}
-        {a.levers.length > 0 && (
-          <div>
-            <h3 className="text-sm font-medium">Levers</h3>
-            <p className="mt-1 text-sm text-muted-foreground">
-              The theme values this reads. Set them in <code className="font-mono text-foreground">nuikit/theme.css</code> for the whole server, or on any
-              element for one subtree.
-            </p>
-            <ul className="mt-3 flex flex-wrap gap-1.5">
-              {a.levers.map((l) => (
-                <li key={l}>
-                  <code className="inline-flex h-6 items-center rounded-(--nk-r-key) border px-1.5 font-mono text-xs text-muted-foreground">{l}</code>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-      </div>
-    </details>
-  );
-}
-
-const HOOKS = [
-  { name: "use-linear-run", text: DESCRIPTIONS.get("use-linear-run") ?? "" },
-  { name: "use-nui-store", text: "Merge partial updates from Lua into one object: useNuiStore(event, initial)." },
-  { name: "use-collapse", text: DESCRIPTIONS.get("use-collapse") ?? "" },
-];
-
-export function Hooks() {
-  if (typeof location !== "undefined" && /^\/components\/./.test(location.pathname)) return null;
-  return (
-    <section id="hooks" style={{ order: 1000 }} className="mt-16 scroll-mt-24">
-      <h2 className="site-display text-3xl">Hooks</h2>
-      <ul className="mt-6 divide-y border-y">
-        {HOOKS.map((h) => (
-          <li key={h.name} className="grid gap-3 py-4 md:grid-cols-[1fr_auto] md:items-center">
-            <div>
-              <code className="font-mono text-sm">{h.name}</code>
-              <p className="mt-1 text-sm text-pretty text-muted-foreground">{h.text}</p>
-            </div>
-            <Command className="h-10 w-full text-xs md:w-[28rem]">{`npx shadcn add https://nuikit.vercel.app/r/${h.name}.json`}</Command>
-          </li>
-        ))}
-      </ul>
-    </section>
-  );
-}
 
 /* ─────────────────────────────── New sections ─────────────────────────────── */
 
@@ -650,10 +429,6 @@ function SmoothInputDemo() {
 function NuiImageDemo() {
   return (
     <div className="flex flex-wrap items-end justify-center gap-6 text-white">
-      <figure className="flex flex-col items-center gap-2">
-        <NuiImage kind="vehicle" imageKey="zentorno" urls={["/screens/garage-missing.png", "/bg/garage.jpg"]} className="aspect-video w-56 rounded-(--nk-r-control) object-cover" />
-        <figcaption className="text-xs text-white/70">The second URL loads after the first fails</figcaption>
-      </figure>
       <figure className="flex flex-col items-center gap-2">
         <NuiImage kind="item" imageKey="water" urls={["/missing-water.png"]} className="size-24 rounded-(--nk-r-control) bg-black/40" />
         <figcaption className="text-xs text-white/70">None load: the fallback icon</figcaption>
