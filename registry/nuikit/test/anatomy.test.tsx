@@ -2,6 +2,7 @@
 import * as React from "react"
 import fs from "node:fs"
 import path from "node:path"
+// @ts-ignore www's tsconfig maps react-dom/server only; the client entry resolves at runtime
 import { createRoot } from "react-dom/client"
 import { act } from "react"
 import { afterEach, describe, expect, it } from "vitest"
