@@ -16,7 +16,7 @@ One theme repaints all of it. Free and open source.
 [![CI](https://img.shields.io/github/actions/workflow/status/belibathan/nuikit/ci.yml?branch=main&label=CI&style=flat-square&labelColor=0a0a0a&color=262626)](https://github.com/belibathan/nuikit/actions/workflows/ci.yml)
 [![MIT](https://img.shields.io/badge/license-MIT-262626?style=flat-square&labelColor=0a0a0a)](LICENSE)
 
-**[Download](https://github.com/belibathan/nuikit/releases/latest)** · [Website](https://nuikit.vercel.app) · [Components](https://nuikit.vercel.app/components) · [Blocks](https://nuikit.vercel.app/blocks) · [Theme studio](https://nuikit.vercel.app/theme) · [Docs](#docs)
+**[Download](https://github.com/belibathan/nuikit/releases/latest)** · [Website](https://nuikit.vercel.app) · [Components](https://nuikit.vercel.app/components) · [Blocks](https://nuikit.vercel.app/blocks) · [Theme studio](https://nuikit.vercel.app/theme) · [Get started](https://nuikit.vercel.app/start) · [Docs](#docs)
 
 </div>
 
@@ -40,8 +40,8 @@ One theme repaints all of it. Free and open source.
 | **Overrides** | Clean-room interfaces for 11 popular resources. Same Lua, new screen. |
 | **Intents** | `nk.notify`, `nk.menu`, `nk.input`, `nk.progress`, `nk.target`… drawn by swappable renderer packs. |
 | **Adapters** | QBCore, ESX and standalone libraries (qb-menu, esx_context, okokNotify…) land on the same intents. |
-| **Registry** | 32 components and 20 blocks, shadcn-native: `npx shadcn add` one, or start from a whole screen. |
-| **Themes** | Tokens in three tiers. Paste a TweakCN theme or pick an identity; `nuikit theme reload` repaints live. |
+| **Registry** | 38 components, 20 blocks and 3 hooks, shadcn-native: `npx shadcn add` one, or start from a whole screen. |
+| **Themes** | Tokens in three tiers. Paste a TweakCN theme or pick one of 9 identities; `nuikit theme reload` repaints live. |
 | **Runtime** | `shared_script '@nuikit/init.lua'` gives any resource `nk`: surfaces, messaging, state, camera, controls. |
 | **Tooling** | `npm create nuikit`, browser devtools that fake the game, `nuikit check` and `nuikit doctor`. |
 
@@ -55,8 +55,9 @@ and add one line to `server.cfg`, after your framework:
 exec @nuikit/nuikit.cfg
 ```
 
-For each folder in `overrides/`, back up the real resource and copy ours over it (merge, don't replace). The zip's
-README covers start order; new Qbox servers can use the txAdmin recipe in [`install/recipe-qbox.yaml`](install/recipe-qbox.yaml).
+For each folder in `overrides/`, back up the real resource and copy ours over it (merge, don't replace). Start order,
+what gets stopped and the upgrade path, per framework: [`docs/install.md`](docs/install.md). New Qbox servers can use
+the txAdmin recipe in [`install/recipe-qbox.yaml`](install/recipe-qbox.yaml).
 
 **Build a UI.**
 
@@ -166,8 +167,10 @@ issues and what's next: [`docs/roadmap.md`](docs/roadmap.md).
 |---|---|
 | [Vision](docs/vision.md) | Why nuikit exists and where it's going |
 | [Architecture](docs/architecture.md) | Runtime, intents, adapters, renderers |
-| [Protocol](docs/protocol.md) | The standard (v1): surfaces, messaging, theme, context, conformance |
-| [Intents](docs/intents.md) · [Services](docs/services.md) | What scripts ask for; camera and controls |
+| [Install](docs/install.md) · [Get started](https://nuikit.vercel.app/start) | Per-framework install; the four ways in |
+| [Protocol](docs/protocol.md) ([site](https://nuikit.vercel.app/protocol)) | The standard (v1): surfaces, messaging, theme, context, conformance |
+| [Intents](docs/intents.md) ([site](https://nuikit.vercel.app/intents)) · [Services](docs/services.md) | What scripts ask for; camera and controls |
+| [Adopt](docs/adopt.md) ([site](https://nuikit.vercel.app/adopt)) | Make a resource you sell nuikit-native: tokens, `nuikit_protocol`, `nuikit check` levels, running without nuikit |
 | [Adapters](docs/adapters/README.md) | ox_lib, QBCore, ESX and standalone libraries on nuikit |
 | [Tokens](docs/tokens.md) · [Default](docs/design/default.md) · [Design](docs/design.md) · [Naming](docs/design/naming.md) | Theme contract, the flagship theme, the kit language, the naming conventions |
 | [Coverage](docs/coverage.md) · [Roadmap](docs/roadmap.md) | What's covered on a Qbox server; status and next |
