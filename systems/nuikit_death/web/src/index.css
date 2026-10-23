@@ -986,6 +986,9 @@
     --nk-tile-confirm-ink: var(--background);
     --nk-tile-hold: rgba(var(--foreground-rgb), 0.35);
     --nk-tile-tag-delay: 80ms;
+    /* the legend's seat on the face: the italic pad split to both sides, and a nudge for a leaning face */
+    --nk-tile-legend-pad: calc(var(--nk-type-scan-pad) / 2);
+    --nk-tile-legend-shift: 0em;
     --nk-tile-active: var(--nk-tile-confirm-face);
     /* accent: the signature paint, a colour or a gradient (flat brand by default); its stops paint SVG strokes */
     --nk-accent-gradient: var(--brand, var(--primary));
@@ -2580,9 +2583,14 @@ html[data-nk-backdrop="on"] * {
   [data-slot="tile"][data-shape="square"][data-size="lg"] {
     width: var(--nk-h-control);
   }
-  /* the legend's italic overhang */
+  /* the legend sits on the face's optical centre: the italic overhang pad is split to both sides (an
+     end-only pad pushed A, D, ESC left of the slanted face) and --nk-tile-legend-shift (0em) nudges the
+     glyph for a face that leans; the box, not the pad, decides the width */
   [data-slot="tile-legend"] {
-    padding-inline-end: var(--nk-type-scan-pad);
+    padding-inline: var(--nk-tile-legend-pad);
+  }
+  :is([data-slot="tile"], [data-slot="kbd"]) > [data-slot="tile-legend"] {
+    transform: translate(calc(var(--nk-tile-x) + var(--nk-tile-legend-shift)), var(--nk-tile-y));
   }
   /* the HUD's dimmer plate */
   [data-slot="tile"][data-plate="dim"] {

@@ -20,13 +20,73 @@ import { Kbd } from "@/components/ui/tile"
  *
  * `level` (0–1) shows a hold filling under the item; `state` is the shared data-state.
  *
+ * One action, one place (`dedupe`, default true): when a key hint and a button in the bar name the same
+ * action (the same label, or the same key), the bar renders one item that does both: the hint's keys, the
+ * action's label and onClick. A `<Button>` child whose text matches a hint folds into the hint the same way.
+ * `dedupe={false}` keeps every child as written.
+ *
  * Role: Key hints, back and close: one bar.
  * Anatomy: plate (optional) > item: keys (Kbd Tiles) or icon, label, hold (a Fill) > separator
- * Props: plate, keys, icon, label, onClick, level, state.
- * Rules: An item that acts is a button. Keys are Tiles, never a styled span.
+ * Props: plate, dedupe, keys, icon, label, onClick, level, state.
+ * Rules: An item that acts is a button. Keys are Tiles, never a styled span. One action is one item.
  */
-function ActionBar({ className, plate = false, ...props }: React.ComponentProps<"div"> & { plate?: boolean }) {
-  return <div data-slot="action-bar" data-plate={plate || undefined} className={cn("nk-action-bar", className)} {...props} />
+function ActionBar({ className, plate = false, dedupe = true, children, ...props }: React.ComponentProps<"div"> & { plate?: boolean; dedupe?: boolean }) {
+  return (
+    <div data-slot="action-bar" data-plate={plate || undefined} className={cn("nk-action-bar", className)} {...props}>
+      {dedupe ? dedupeItems(children) : children}
+    </div>
+  )
+}
+
+/** The plain text of a node (labels, keys, a Button's children), lower-cased and trimmed; "" if none. */
+function textOf(node: React.ReactNode): string {
+  if (node === null || node === undefined || typeof node === "boolean") return ""
+  if (typeof node === "string" || typeof node === "number") return String(node)
+  if (Array.isArray(node)) return node.map(textOf).join("")
+  if (React.isValidElement<{ children?: React.ReactNode }>(node)) return textOf(node.props.children)
+  return ""
+}
+const norm = (s: string) => s.trim().toLowerCase()
+
+type ItemEl = React.ReactElement<ActionBarItemProps>
+const isItem = (n: React.ReactNode): n is ItemEl => React.isValidElement(n) && n.type === ActionBarItem
+
+/**
+ * Hints and actions that name one action become one item: the first of a pair keeps its place; the keys
+ * come from whichever has them, the label and onClick from whichever acts. A foreign element (a Button)
+ * that reads like a hint's label folds into that hint, lending it its onClick.
+ */
+function dedupeItems(children: React.ReactNode): React.ReactNode {
+  const list = React.Children.toArray(children)
+  const out: (React.ReactNode | null)[] = [...list]
+  const nameOf = (n: React.ReactNode) => (isItem(n) ? norm(textOf(n.props.label)) : React.isValidElement(n) ? norm(textOf(n)) : "")
+  const keysOf = (n: React.ReactNode) => (isItem(n) ? (n.props.keys ?? []).map((k) => norm(textOf(k))).filter(Boolean) : [])
+  for (let i = 0; i < list.length; i++) {
+    const a = out[i]
+    if (!isItem(a)) continue
+    const an = nameOf(a)
+    const ak = keysOf(a)
+    for (let j = i + 1; j < list.length; j++) {
+      const b = out[j]
+      if (b === null || !React.isValidElement(b)) continue
+      const bn = nameOf(b)
+      const sameName = an !== "" && an === bn
+      const sameKey = isItem(b) && ak.some((k) => keysOf(b).includes(k))
+      if (!sameName && !sameKey) continue
+      const bp = (isItem(b) ? b.props : (b.props as { onClick?: ActionBarItemProps["onClick"]; disabled?: boolean })) as ActionBarItemProps
+      const act = a.props.onClick ? a.props : bp.onClick ? bp : a.props
+      const merged: ActionBarItemProps = {
+        ...a.props,
+        keys: a.props.keys?.length ? a.props.keys : isItem(b) ? b.props.keys : undefined,
+        label: a.props.label ?? (isItem(b) ? b.props.label : undefined),
+        onClick: act.onClick,
+        disabled: a.props.disabled || bp.disabled,
+      }
+      out[i] = React.cloneElement(a, merged)
+      out[j] = null
+    }
+  }
+  return out.filter((n) => n !== null)
 }
 
 type ActionBarItemProps = Omit<React.ComponentProps<"button">, "children"> & {
