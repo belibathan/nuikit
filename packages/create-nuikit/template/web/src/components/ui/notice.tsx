@@ -9,7 +9,8 @@ import { Stagger, useNuiEvent, useStaggerGroup, useStaggerItem } from "nuikit-co
 
 import { cn, nkLevel, nkState, nkVariant, type NkVariantProps } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { toneVars } from "@/components/ui/fill"
+import { Fill, fillTargets, toneVars } from "@/components/ui/fill"
+import { useLinearRun } from "@/hooks/use-linear-run"
 
 /**
  * Notice — a notification on top of the game, and the stack that holds them: the default look of
@@ -122,11 +123,11 @@ const NOTICE_POSITIONS: readonly NoticePosition[] = [
  * Literal class names, so Tailwind finds them. The status tokens are read as variables
  * (docs/tokens.md), so they work in any project that defines them, mapped into @theme or not.
  */
-const STATUS: Record<NoticeStatus, { icon: React.ReactNode; text: string; line: string }> = {
-  info: { icon: <InfoIcon />, text: "text-(color:--info)", line: "bg-(--info)" },
-  success: { icon: <CircleCheckIcon />, text: "text-(color:--success)", line: "bg-(--success)" },
-  warning: { icon: <TriangleAlertIcon />, text: "text-(color:--warning)", line: "bg-(--warning)" },
-  error: { icon: <CircleXIcon />, text: "text-(color:--destructive)", line: "bg-(--destructive)" },
+const STATUS: Record<NoticeStatus, { icon: React.ReactNode; text: string }> = {
+  info: { icon: <InfoIcon />, text: "text-(color:--info)" },
+  success: { icon: <CircleCheckIcon />, text: "text-(color:--success)" },
+  warning: { icon: <TriangleAlertIcon />, text: "text-(color:--warning)" },
+  error: { icon: <CircleXIcon />, text: "text-(color:--destructive)" },
 }
 
 /** The words other libraries use for a status (ox `inform`, QBCore `primary`, …). */
@@ -184,63 +185,6 @@ const noticeVariants = cva(
     },
   }
 )
-
-/**
- * Runs `onExpire` after the time left, pausing while `paused`. Restarts when `duration` or
- * `elapsed` change.
- */
-function useNoticeTimer(duration: number, elapsed: number, paused: boolean, onExpire?: () => void) {
-  const expire = React.useRef(onExpire)
-  const left = React.useRef(noticeTimeLeft(duration, elapsed))
-  const armed = onExpire !== undefined
-
-  React.useEffect(() => {
-    expire.current = onExpire
-  })
-  React.useEffect(() => {
-    left.current = noticeTimeLeft(duration, elapsed)
-  }, [duration, elapsed])
-  React.useEffect(() => {
-    if (paused || !armed || !Number.isFinite(left.current)) return
-    const start = Date.now()
-    const timer = setTimeout(() => expire.current?.(), left.current)
-    return () => {
-      clearTimeout(timer)
-      left.current = Math.max(0, left.current - (Date.now() - start))
-    }
-  }, [duration, elapsed, paused, armed])
-}
-
-/**
- * Drains the time line with the Web Animations API (a composited transform, no stylesheet
- * keyframes to install), from `elapsed` and frozen while `paused`.
- */
-function useTimeLine(ref: React.RefObject<HTMLDivElement | null>, duration: number, elapsed: number, paused: boolean, on: boolean) {
-  const animation = React.useRef<Animation | null>(null)
-
-  React.useEffect(() => {
-    const el = ref.current
-    if (!on || !el || typeof el.animate !== "function") return
-    const a = el.animate([{ transform: "scaleX(1)" }, { transform: "scaleX(0)" }], {
-      duration,
-      easing: "linear",
-      fill: "forwards",
-    })
-    a.currentTime = Math.min(duration, Math.max(0, elapsed))
-    animation.current = a
-    return () => {
-      a.cancel()
-      animation.current = null
-    }
-  }, [ref, duration, elapsed, on])
-
-  React.useEffect(() => {
-    const a = animation.current
-    if (!a || a.playState === "finished") return
-    if (paused) a.pause()
-    else a.play()
-  }, [paused, duration, elapsed, on])
-}
 
 /** How long a leaving notice stays drawn for its exit (the slide out takes at most 200 ms). */
 const NOTICE_EXIT_MS = 220
@@ -351,7 +295,6 @@ function Notice({
   }) {
   const status = tone ? noticeStatus(tone) : statusProp
   const [held, setHeld] = React.useState(false)
-  const line = React.useRef<HTMLDivElement>(null)
   const s = STATUS[status] ?? STATUS.info
   const timed = Number.isFinite(noticeTimeLeft(duration, elapsed))
   const inGroup = useStaggerGroup() !== null
@@ -367,8 +310,16 @@ function Notice({
   const frozen = paused || leaving || (pauseOnHover && held)
   const iconEl = icon === undefined ? s.icon : icon
 
-  useNoticeTimer(duration, elapsed, frozen, onExpire)
-  useTimeLine(line, duration, elapsed, frozen, !item && timed && showDuration)
+  // Motion: the time line drains on the compositor and onExpire fires when the time left runs out; both hold
+  // while frozen (hover, focus, paused, leaving) and resume with what they had left
+  useLinearRun(root, {
+    duration: timed ? duration : undefined,
+    elapsed,
+    paused: frozen,
+    onComplete: onExpire,
+    deps: [!item && showDuration],
+    targets: (el) => (!item && showDuration ? fillTargets(el.querySelector("[data-slot=notice-time]"), 1, 0) : []),
+  })
   useEdgeMotion(root, slide && (animate || leaving), leaving)
 
   if (item) {
@@ -470,14 +421,14 @@ function Notice({
         </Button>
       )}
       {timed && showDuration && (
-        <div
-          ref={line}
-          aria-hidden
+        // the duration Fill along the bottom edge, in the status tone (or the hue), on no track
+        <Fill
           data-slot="notice-time"
-          className={cn(
-            "absolute inset-x-0 bottom-0 h-(--nk-slab-line-height) origin-left motion-reduce:hidden [[data-nk-motion=off]_&]:hidden",
-            hue ? "bg-(--hue-solid)" : s.line
-          )}
+          level={timed ? 1 - Math.min(elapsed, duration) / duration : 1}
+          tween={false}
+          tone={STATUS_TONE[status] ?? "info"}
+          hue={hue}
+          className="absolute inset-x-0 bottom-0 h-(--nk-slab-line-height) rounded-none bg-transparent motion-reduce:hidden [[data-nk-motion=off]_&]:hidden"
         />
       )}
     </div>

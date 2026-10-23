@@ -29,6 +29,9 @@
       "react/jsx-runtime": [
         "./node_modules/@types/react/jsx-runtime.d.ts"
       ],
+      "react-dom/server": [
+        "./node_modules/@types/react-dom/server.d.ts"
+      ],
       "nuikit-core/motion": [
         "./node_modules/nuikit-core/dist/motion.d.ts"
       ],

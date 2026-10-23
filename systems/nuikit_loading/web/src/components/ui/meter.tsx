@@ -4,6 +4,8 @@ import { cva, type VariantProps } from "class-variance-authority"
 
 import { cn, nkLevel, nkVariant, type NkVariantProps } from "@/lib/utils"
 import { Progress } from "@/components/ui/progress"
+import { Fill, fillTargets } from "@/components/ui/fill"
+import { useLinearRun } from "@/hooks/use-linear-run"
 
 /**
  * Meter — a slim bar for any level: health, fuel, weight, players online, engine. A shadcn
@@ -30,8 +32,8 @@ import { Progress } from "@/components/ui/progress"
  * Fills move with transforms only (the bar translates, segments scale on X): never `width`.
  *
  * Role: A level on a bar: health, fuel, weight, a timed action.
- * Anatomy: meter (label row: icon, label, value text) > track > fill (or segments) > slab: label, cancel key,
- *   thin line
+ * Anatomy: meter (label row: icon, label, value text) > bar (shadcn Progress) or segments (one Fill each) > slab:
+ *   label, cancel key, thin line (a Fill on the slab track). A timed run is useLinearRun.
  * Props: value, max, low, high, tone, track, segments, duration, variant, size, density, shape, motion, hue,
  *   threshold.
  * Level means: value / max; a timed run fills 0 → 1 over duration (--level is its end state).
@@ -117,6 +119,28 @@ const FILL: Record<MeterFill, string> = {
   hue: "[&_[data-slot=progress-indicator]]:bg-[var(--hue-solid,var(--nk-fill-color))]",
 }
 
+/** Each tone as the Fill colour lever (--nk-fill-color) for the parts drawn as a Fill (segments). "hue" reads the
+ * role from data-hue (the Fill's own rule), so it sets nothing. */
+const FILL_COLOR: Record<MeterFill, string | undefined> = {
+  primary: "var(--primary)",
+  foreground: "var(--foreground)",
+  destructive: "var(--destructive)",
+  success: "var(--success)",
+  warning: "var(--warning)",
+  info: "var(--info)",
+  "chart-1": "var(--chart-1)",
+  "chart-2": "var(--chart-2)",
+  "chart-3": "var(--chart-3)",
+  "chart-4": "var(--chart-4)",
+  "chart-5": "var(--chart-5)",
+  health: "var(--vital-health)",
+  armor: "var(--vital-armor)",
+  hunger: "var(--vital-hunger)",
+  thirst: "var(--vital-thirst)",
+  stress: "var(--vital-stress)",
+  hue: undefined,
+}
+
 /** A library colour (`color`), carried in --meter-fill so no colour is mixed inline. */
 const CUSTOM = { text: "text-(color:--meter-fill)", fill: "bg-(--meter-fill)", track: "bg-foreground/15" }
 const CUSTOM_FILL = "[&_[data-slot=progress-indicator]]:bg-(--meter-fill)"
@@ -198,54 +222,13 @@ function segmentKeyframes(i: number, count: number): Keyframe[] {
   ]
 }
 
-/** The slab line's keyframes in a timed run: its fill scales from the left. */
-const LINE_KEYFRAMES: Keyframe[] = [{ transform: "scaleX(0)" }, { transform: "scaleX(1)" }]
+/** The edge of segment `i` in a timed run: the Fill's ::after, following the front of its bar. */
+function segmentEdgeKeyframes(i: number, count: number): Keyframe[] {
+  return segmentKeyframes(i, count).map((f) => ({ ...f, transform: f.transform === "scaleX(1)" ? "translateX(0%)" : "translateX(-100%)" }))
+}
 
 /** The bar's keyframes in a timed run: shadcn Progress draws a level by translating its fill. */
 const BAR_KEYFRAMES: Keyframe[] = [{ transform: "translateX(-100%)" }, { transform: "translateX(0%)" }]
-
-/**
- * A `duration` run from mount: one linear Web Animation per fill (found in `root` by `selector`), all
- * started on the same clock reading so they reach the end exactly at `duration`. React renders twice:
- * at the start and at the end, when `onComplete` fires from its own timer (never an animation event).
- */
-function useTimedFill(root: React.RefObject<HTMLElement | null>, duration: number | undefined, frames: (i: number, count: number) => Keyframe[], selector: string, onComplete?: () => void) {
-  const [done, setDone] = React.useState(false)
-  const complete = React.useRef(onComplete)
-  const anims = React.useRef<Animation[]>([])
-  React.useEffect(() => {
-    complete.current = onComplete
-  })
-  React.useLayoutEffect(() => {
-    if (!duration || duration <= 0) return
-    setDone(false)
-    const t0 = performance.now()
-    const els = Array.from(root.current?.querySelectorAll<HTMLElement>(selector) ?? [])
-    anims.current = els.flatMap((el, i) => {
-      if (!el.animate) return []
-      const a = el.animate(frames(i, els.length), { duration, easing: "linear", fill: "both" })
-      a.startTime = t0 // the document timeline's clock: full exactly at t0 + duration
-      return [a]
-    })
-    const end = setTimeout(() => {
-      setDone(true)
-      complete.current?.()
-    }, duration)
-    return () => {
-      clearTimeout(end)
-      anims.current.forEach((a) => a.cancel())
-      anims.current = []
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [duration])
-  // At the end the fills are drawn full by React (value 100); the animations are let go, so nothing is left running.
-  React.useLayoutEffect(() => {
-    if (!done) return
-    anims.current.forEach((a) => a.cancel())
-    anims.current = []
-  }, [done])
-  return done
-}
 
 /** The theme variable behind each tone (its `-rgb` channels colour the slab line). */
 const TONE_VAR: Record<MeterFill, string> = {
@@ -368,13 +351,25 @@ function Meter({
   const root = React.useRef<HTMLDivElement>(null)
   const segmented = !!segments && segments > 1
   const slab = variant === "slab"
-  const done = useTimedFill(
-    root,
+  // a timed run (Motion): the bar's indicator, each segment's Fill (its share of the run), or the slab line's Fill
+  const done = useLinearRun(root, {
     duration,
-    slab ? () => LINE_KEYFRAMES : segmented ? segmentKeyframes : () => BAR_KEYFRAMES,
-    slab ? "[data-slot=meter-line-fill]" : segmented ? "[data-slot=meter-fill]" : "[data-slot=progress-indicator]",
-    onComplete
-  )
+    onComplete,
+    release: true,
+    targets: (el) => {
+      if (slab) return fillTargets(el.querySelector("[data-slot=meter-line]"), 0, 1)
+      if (segmented) {
+        const segs = Array.from(el.querySelectorAll("[data-slot=meter-segment]"))
+        return segs.flatMap((seg, i) => {
+          return [
+            { el: seg, pseudoElement: "::before", keyframes: segmentKeyframes(i, segs.length) },
+            { el: seg, pseudoElement: "::after", keyframes: segmentEdgeKeyframes(i, segs.length) },
+          ]
+        })
+      }
+      return [{ el: el.querySelector("[data-slot=progress-indicator]"), keyframes: BAR_KEYFRAMES }]
+    },
+  })
   const timed = duration !== undefined && duration > 0
   const value = timed ? (done ? duration : 0) : valueProp
   const max = timed ? duration : maxProp
@@ -447,26 +442,20 @@ function Meter({
             )}
           </div>
         )}
-        <div
+        <Fill
           role="progressbar"
+          aria-hidden={false}
           aria-valuemin={0}
           aria-valuemax={100}
           aria-valuenow={Math.round(percent)}
           aria-label={typeof label === "string" ? label : props["aria-label"]}
           data-slot="meter-line"
-          // The line's own ::after fill is replaced by an element, so a timed run can animate it
-          // (one linear Web Animation, like the bar); it reads the same tokens.
-          className="nk-slab-line after:hidden"
-        >
-          <span
-            data-slot="meter-line-fill"
-            className={cn(
-              "absolute inset-0 origin-left bg-[var(--nk-slab-line-fill,rgb(var(--nk-slab-tone-rgb)))] [box-shadow:0_0_0.5rem_rgba(var(--nk-slab-tone-rgb),var(--nk-glow,0))]",
-              timed ? "transition-none" : "transition-transform ease-(--nk-ease-out)"
-            )}
-            style={{ transform: `scaleX(${drawn / 100})` }}
-          />
-        </div>
+          level={drawn / 100}
+          tween={!timed}
+          // the slab line's track and height (nk-slab-line); its bar is the Fill's, in the slab's tone, with its glow
+          className="nk-slab-line after:hidden before:[box-shadow:0_0_0.5rem_rgba(var(--nk-slab-tone-rgb),var(--nk-glow,0))]"
+          style={{ "--nk-fill-color": "var(--nk-slab-line-fill, rgb(var(--nk-slab-tone-rgb)))" } as React.CSSProperties}
+        />
       </div>
     )
   }
@@ -482,14 +471,15 @@ function Meter({
         className={cn("flex min-w-0 gap-(--nk-space-1)", grow)}
       >
         {segmentFills(drawn, segments).map((fill, i) => (
-          <div key={i} data-slot="meter-segment" className={cn("relative h-(--meter-h) flex-1 overflow-hidden rounded-(--nk-meter-radius)", trackClass)}>
-            {/* scaleX, never width: the compositor moves it, nothing is laid out again */}
-            <div
-              data-slot="meter-fill"
-              className={cn("h-full w-full origin-left", t.fill, timed ? "transition-none" : "transition-transform ease-(--nk-ease-out)")}
-              style={{ transform: `scaleX(${fill / 100})` }}
-            />
-          </div>
+          // each plate is a Fill on the meter's track, in the meter's colour (hue: the role, read by the Fill)
+          <Fill
+            key={i}
+            data-slot="meter-segment"
+            level={fill / 100}
+            tween={!timed}
+            className={cn("h-(--meter-h) flex-1", trackClass)}
+            style={{ "--nk-fill-color": custom ? "var(--meter-fill)" : FILL_COLOR[critical ? "destructive" : tone] } as React.CSSProperties}
+          />
         ))}
       </div>
     ) : (
