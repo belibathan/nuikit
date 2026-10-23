@@ -10,7 +10,7 @@ import { DEFAULT_TOKENS, TOKENS } from "../src/tokens";
 const here = path.dirname(fileURLToPath(import.meta.url));
 const fixture = (name: string) => path.join(here, "fixtures", name);
 // the Default rules (warnings) have their own tests below; the conformance tests grade the rest
-const core = (r: CheckResult) => r.findings.filter((f) => !KIT_RULES.includes(f.rule));
+const core = (r: CheckResult) => r.findings.filter((f) => !KIT_RULES.includes(f.rule) && !f.rule.startsWith("arsenal/"));
 const rules = (r: CheckResult) => [...new Set(core(r).map((f) => f.rule))].sort();
 const at = (r: CheckResult, rule: RuleId) => r.findings.filter((f) => f.rule === rule).map((f) => `${f.file}:${f.line}`);
 
@@ -441,5 +441,34 @@ describe("invariant rules: selection/local and kit/local-concept", () => {
     expect(hits.sort()).toEqual(
       ["kit/local-concept@web/src/plate.css:1", "kit/local-concept@web/src/plate.css:2", "kit/local-concept@web/src/plate.css:3", "kit/local-concept@web/src/plate.css:4", "kit/local-concept@web/src/plate.tsx:1", "kit/local-concept@web/src/plate.tsx:1", "kit/local-concept@web/src/plate.tsx:1"].sort(),
     );
+  });
+});
+
+describe("arsenal rule (packages/core/arsenal.json)", () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "nk-arsenal-"));
+  fs.mkdirSync(path.join(dir, "client"));
+  fs.writeFileSync(path.join(dir, "fxmanifest.lua"), "fx_version 'cerulean'\ngame 'gta5'\nshared_script '@nuikit/init.lua'\nclient_script 'client/*.lua'\n");
+  fs.writeFileSync(
+    path.join(dir, "client/main.lua"),
+    [
+      "local s = nk.surface.define('shop')",
+      "nk.intent.notify({ title = 'ok' })",
+      "nk.notify('old')",
+      "nk.camera.secret()",
+      "NUI._private()",
+      "TriggerEvent('nuikit:made:up')",
+      "TriggerEvent('nuikit:minimap:placed')",
+      "-- 'nuikit:in:a:comment'",
+    ].join("\n"),
+  );
+  const r = checkResource(dir);
+  const of = (rule: string) => r.findings.filter((f) => f.rule === rule).map((f) => f.line);
+  it("passes published names, warns old names with their replacement", () => {
+    expect(of("arsenal/legacy")).toEqual([3]);
+    expect(r.findings.find((f) => f.rule === "arsenal/legacy")!.message).toMatch(/nk\.intent\.notify/);
+  });
+  it("warns private paths and undeclared events (wire names count as declared)", () => {
+    expect(of("arsenal/unknown")).toEqual([4, 5, 6]);
+    expect(r.findings.filter((f) => f.rule.startsWith("arsenal/")).every((f) => f.severity === "warning")).toBe(true);
   });
 });

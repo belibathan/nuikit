@@ -8,6 +8,7 @@ import path from "node:path";
 import { COLOR_PROPS, NAMED, colorLiterals, isNeutralShadow, paletteClasses, tokenRefs } from "./colors";
 import { lexCss, lexHtml, lexJs, lexLua, locator, luaBlocks, type Span } from "./lex";
 import { isTokenDefinition, TOKEN_NAMES } from "./tokens";
+import { arsenalLua, arsenalPage } from "./arsenal";
 
 export type Level = 0 | 1 | 2 | 3;
 export type Severity = "error" | "warning";
@@ -59,6 +60,9 @@ export type RuleId =
   | "theme/unlayered"
   | "theme/values-only"
   | "space/off-scale"
+  // the arsenal (packages/core/arsenal.json): every nuikit feature a resource uses is a published, named part
+  | "arsenal/unknown"
+  | "arsenal/legacy"
   // the invariants (docs/design/baseline.md "Invariants"): a page draws no concept of its own
   | "selection/local"
   | "kit/local-concept";
@@ -97,6 +101,8 @@ export const RULES: Record<RuleId, { level: Level; description: string }> = {
   "theme/values-only": { level: 0, description: "A selector or a non-token declaration in a theme file (theme.css, themes/*.css); a theme sets values only, and a rule it needs means the kit is missing a lever (docs/design/levers.md)" },
   "selection/local": { level: 0, description: "A page draws its own selected/hover state (hover:bg-*, data-[state=active]:bg-*, aria-selected:bg-*, bg-accent, a .selected/.active/.hover class with a background); one selection, one component: MenuRowList, SelectionTile or Tabs" },
   "kit/local-concept": { level: 0, description: "A page hand-draws a keycap, plate, wall, skew or level fill (transform: skew, box-shadow: 0 Npx 0, border-bottom: Npx solid, a linear-gradient level fill); use Tile, Fill or Chip" },
+  "arsenal/unknown": { level: 0, description: "A nk.* / NUI.* call, or a nuikit:* event, that the arsenal (packages/core/arsenal.json) doesn't declare: a private path, not a published part" },
+  "arsenal/legacy": { level: 0, description: "An old name (nk.notify, NUI.surface…) the arsenal lists with a replacement and removeIn; use the nk.<domain>.<verb> it names" },
   "space/off-scale": { level: 0, description: "A gap, padding or margin off the 0.25rem step (0.375rem, 0.3125rem, gap-1.5…); use --nk-space-* and gap-(--nk-gap-*)" },
 };
 
@@ -651,6 +657,7 @@ function scanScript(src: string, base: number, report: Report, ctx: FileContext)
   if (/from\s+["']nuikit-core(\/[\w-]+)?["']|import\(\s*["']nuikit-core|require\(\s*["']nuikit-core/.test(code)) ctx.importsCore = true;
   if (/from\s+["'][^"']*components\/ui\/[^"']+["']/.test(code)) ctx.usesComponents = true;
   scanEscape(code, rep, ctx, ctx.handshakeOff ? "warning" : "error");
+  if (!ctx.built) arsenalPage(strings, src, rep);
   scanGlow(code, base, report, ctx);
   if (ctx.kit) kitScript(code, rep);
   if (!ctx.built) scanOldCefScript(src, code, strings, rep);
@@ -712,6 +719,8 @@ interface LuaContext {
   releasesOnStop: boolean;
   surfaces: boolean;
   usesNuikitLua: boolean;
+  /** Events this resource declares itself (its own nuikit:* names are not the arsenal's to judge: none should exist). */
+  declaredEvents?: Set<string>;
 }
 
 function isNuikitLua(rel: string, src: string) {
@@ -729,6 +738,9 @@ function scanLua(rel: string, src: string, report: Report, ctx: LuaContext) {
     }
     if (/\b(?:NUI|nk)\s*\.\s*(surface|open|toggle)\s*\(/.test(bare)) ctx.surfaces = true;
   }
+  // the runtime's own files (synced into lib/ or vendored into client/) implement the arsenal; they aren't graded by it
+  const runtime = own || /(^|\/)(lib|client)\/(bridge|camera|controls|host|intents|intents\.schema|keys|settings|api)\.lua$/.test(rel) && /MIT · https:\/\/github\.com\/belibathan\/nuikit|^\s*nk\.(keys|settings):/m.test(src.slice(0, 600));
+  if (!runtime) arsenalLua(src, bare, code, report, ctx.declaredEvents);
   const blocks = luaBlocks(bare);
   // focus release in a stop handler
   for (const m of code.matchAll(/AddEventHandler\s*\(\s*["']on(?:Client)?ResourceStop["']/g)) {

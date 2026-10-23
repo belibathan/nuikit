@@ -1,7 +1,7 @@
 {
   "systems/nuikit": {
     "errors": 3,
-    "warnings": 28
+    "warnings": 45
   },
   "systems/nuikit_chat": {
     "errors": 0,
@@ -9,15 +9,19 @@
   },
   "systems/nuikit_death": {
     "errors": 0,
-    "warnings": 0
+    "warnings": 4
   },
   "systems/nuikit_dev": {
     "errors": 0,
-    "warnings": 0
+    "warnings": 13
   },
   "systems/nuikit_hud": {
     "errors": 3,
+<<<<<<< HEAD
     "warnings": 187
+=======
+    "warnings": 225
+>>>>>>> 4a609ca633a93d127f3645ceef274aa162725cf9
   },
   "systems/nuikit_loading": {
     "errors": 0,
@@ -25,11 +29,15 @@
   },
   "systems/nuikit_pause": {
     "errors": 0,
+<<<<<<< HEAD
     "warnings": 55
+=======
+    "warnings": 73
+>>>>>>> 4a609ca633a93d127f3645ceef274aa162725cf9
   },
   "systems/nuikit_screen": {
     "errors": 0,
-    "warnings": 0
+    "warnings": 1
   },
   "systems/nuikit_skins": {
     "errors": 0,
@@ -41,7 +49,7 @@
   },
   "systems/nuikit_voice": {
     "errors": 0,
-    "warnings": 0
+    "warnings": 1
   },
   "addons/Renewed-Banking": {
     "errors": 0,
@@ -89,6 +97,6 @@
   },
   "packages/create-nuikit/template": {
     "errors": 0,
-    "warnings": 2
+    "warnings": 10
   }
 }

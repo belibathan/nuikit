@@ -47,6 +47,7 @@ export default {
     { name: "nuikit:theme:set-prefs", dir: "local", payload: "(patch: Partial<NuiPrefs>)", sender: "any", doc: "Change prefs (what nk.theme.setPrefs does).", wire: "nuikit:prefs:set", since: "0.4.0" },
     { name: "nuikit:theme:prefs-changed", dir: "local", payload: "(prefs: NuiPrefs, to?: string)", sender: "nuikit", doc: "Prefs, to every resource (or one).", wire: "nuikit:prefs:changed", since: "0.4.0" },
     { name: "nuikit:theme:prefs-request", dir: "local", payload: "(resource: string)", sender: "runtime", doc: "Ask the nuikit resource for the prefs.", wire: "nuikit:prefs:request", since: "0.4.0" },
+    { name: "nuikit:theme:legibility", dir: "local", payload: "(mode: 'day' | 'night')", sender: "any", doc: "Day or night from the game clock, for --nk-legibility: auto (the HUD sends it on change).", wire: "nuikit:legibility", since: "0.8.0" },
     { name: "nuikit:theme:poll", dir: "page→lua", payload: "{ hash?: string }", reply: "ServerThemePayload", sender: "any", doc: "https://nuikit/theme: the server theme, long-polled by override pages.", wire: "theme", since: "0.5.0" },
   ],
   legacy: [
@@ -54,6 +55,7 @@ export default {
     { old: "NUI.look", now: "nk.theme.look", removeIn: "1.0.0" },
     { old: "NUI.lookKey", now: "nk.theme.lookKey", removeIn: "1.0.0" },
     { old: "NUI.prefs.get", now: "nk.theme.prefs", removeIn: "1.0.0" },
+    { old: "NUI.prefs", now: "nk.theme.prefs", removeIn: "1.0.0" },
     { old: "NUI.prefs.set", now: "nk.theme.setPrefs", removeIn: "1.0.0" },
   ],
   rules: ["The nuikit resource owns the theme and the prefs; every page applies them, nobody else writes them.", "Hierarchy: identity → tokens → component → resource config → player prefs."],
