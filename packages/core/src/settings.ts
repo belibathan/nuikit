@@ -17,6 +17,9 @@ export interface SettingRow {
   range?: [number, number, number?];
   /** A switch. */
   toggle?: true;
+  /** A short string (nk.settings.register `text`). */
+  text?: true;
+  maxLength?: number;
   default: SettingValue;
   /** A server feature flag that can hide the row (`setr nuikit_flag_<name> 0`). Hidden rows aren't sent. */
   flag?: string;
@@ -27,6 +30,8 @@ export interface SettingRow {
 export interface SettingsSection {
   resource: string;
   label: string;
+  /** Icon name from nk.settings.register. */
+  icon?: string;
   version: number;
   rows: SettingRow[];
   presets: { id: string; label: string }[];
@@ -66,6 +71,7 @@ export function mockSettings(sections: (Omit<SettingsSection, "values" | "draft"
 /** A value the row accepts, or undefined (ranges clamp and snap, options must be listed). */
 export function normalizeSetting(row: SettingRow, value: unknown): SettingValue | undefined {
   if (row.options) return row.options.map((o) => (typeof o === "object" ? o.value : o)).find((v) => v === value);
+  if (row.text) return typeof value === "string" ? value.slice(0, row.maxLength ?? 64) : undefined;
   if (row.range) {
     let n = typeof value === "number" ? value : Number(value);
     if (!Number.isFinite(n)) return undefined;
