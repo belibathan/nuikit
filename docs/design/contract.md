@@ -147,14 +147,15 @@ Removed in 0.9.0: `key-hint` (→ `key-prompt`), `task-progress` (→ `meter` ti
 
 ## Follow-up: visual baselines (cheap version shipped, non-blocking)
 
-`pnpm visual` (`bench/visual/run.mjs`) shoots 4 `/components` sections at 1920×1080 (Chromium, reduced motion,
-animations off, fontsource fonts) and compares them with `bench/visual/baselines/*.png` (pixel ratio, default 1%,
-`VISUAL_MAX_DIFF`); `pnpm visual:update` rewrites them. The CI job `visual` runs in the Playwright image, is
-`continue-on-error: true`, and uploads `bench/visual/out` (actual + diff) on every run. **No baselines are
-committed yet** (Windows renders differ from Linux): a missing baseline is written to the artifact as `new-*.png`
-and does not fail. To start: run CI by hand (Actions → CI → Run workflow, tick "update_visual_baselines"), commit
-the `visual` artifact's `baselines/` here. Make the job blocking (drop `continue-on-error`) once two PRs in a row
-pass against the committed baselines. The longer plan from the earlier spike follows.
+`pnpm visual` (`bench/visual/run.mjs`) shoots the dev fixtures of `systems/nuikit_hud/web` and
+`systems/nuikit_pause/web` plus four `/components` sections under Default, Neon Pop, Graphite, Flat and Square at
+1920×1080 (animations off, reduced motion, fontsource fonts) in Chromium 103, the build `pnpm proof` uses
+(`@sparticuz/chromium`; `VISUAL_CHROMIUM` overrides, `VISUAL_ONLY=hud,pause,components` narrows). Each shot is compared with
+`bench/visual/baselines/<page>-<theme>.png` by pixel ratio (default 1%, `VISUAL_MAX_DIFF`); `pnpm visual:update`
+rewrites them. A missing baseline is written to `bench/visual/out/new-*.png` and reported, not failed; a diff over the
+threshold fails the CI job `visual` (after `test`) and the `visual` artifact carries `actual-*` and `diff-*` PNGs. Baselines
+are rendered by software GL in Chromium 103, so regenerate them with `pnpm visual:update` on Linux, not Windows.
+The longer plan from the earlier spike follows.
 
 Item 23 is a review item until CI compares screenshots. A spike on `feat/hardening` (commit 1553c7f, reverted
 before merge; recover it with `git show 1553c7f`) built the harness and showed:
