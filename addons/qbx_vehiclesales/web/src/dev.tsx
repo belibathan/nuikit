@@ -27,6 +27,25 @@ const mocks = defineMocks({
         plate: "46EEK572",
       },
       {
+        // a long third-party description, an emoji and " | " in it, a large price and mixed-case names
+        showTakeBackOption: false,
+        bizName,
+        sellerData: { firstname: "d'Arcy", lastname: "McDonald-van der Berg", account: "US11QBX0042817", phone: "5550142" },
+        vehicleData: {
+          desc: "🏁 | Track-prepared, 1 owner, full service history since 2019. Carbon ceramic brakes, adjustable coilovers, stage 3 tune on dyno (see photos). Garage kept, never raced on public roads, never impounded. Price is firm, serious buyers only, cash or bank transfer.",
+          price: 1234567,
+        },
+        plate: "CARB0N01",
+      },
+      {
+        // a free listing, a zero price: the seller is giving it away
+        showTakeBackOption: false,
+        bizName,
+        sellerData: me,
+        vehicleData: { desc: "Free to a good home.", price: 0 },
+        plate: "FREE0001",
+      },
+      {
         // seller not found: the locale placeholders
         showTakeBackOption: false,
         bizName,

@@ -2,7 +2,7 @@
 //
 // The loading screen has no Lua → UI messages of its own: the game posts its load events and
 // sets window.nuiHandoverData once. Here you can:
-//   ?handover=full|minimal|themed|none   pick what server/main.lua would hand over
+//   ?handover=full|minimal|themed|long|none   pick what server/main.lua would hand over
 //   ?state=connecting|core|map|afterMap|session|finishing|ready   jump to a step
 //   (no ?state)                           replay a whole load, like the game does
 // and fire any single event from the devtools panel.
@@ -58,6 +58,23 @@ const HANDOVERS: Record<string, LoadingHandover | undefined> = {
   },
   minimal: { serverName: "Los Santos Stories", playerName: "Niko", theme: serverTheme },
   themed: { ...BASE, theme: VIOLET },
+  // third-party strings as a server really sends them: an emoji and " | ", mixed case, long text
+  long: {
+    ...BASE,
+    serverName: "🌴 | VINEWOOD NIGHTS RP — Serious roleplay since 2019 — discord.gg/vnr",
+    tagline: "Long-form stories, real consequences, and a staff team that answers tickets within a day, most days of the week.",
+    playerName: "Tommy Vercetti-Montgomery-Longname",
+    tips: [
+      { title: "Press Z for the radial menu and every other thing you can do in this world", text: "Emotes, vehicle options, your phone, documents and more live in one place. Hold Z to see the full list." },
+      { title: "Read the server rules before your first session", text: "They are short, and staff will ask you about them in your first ticket. Find them in the #rules channel on our Discord, pinned at the top." },
+      "Out-of-character chat goes in /ooc, and everything in /me and /do is your story to tell.",
+      { title: "Need help? 🆘", text: "Use /report in game. A staff member will get back to you, usually within a few minutes during the evening." },
+    ],
+    links: [
+      { label: "Discord (rules, events, the weekly town hall)", url: "discord.gg/vnr" },
+      { label: "Website", url: "vinewoodnights.gg" },
+    ],
+  },
   none: undefined,
 };
 

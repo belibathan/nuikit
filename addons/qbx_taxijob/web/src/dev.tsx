@@ -18,6 +18,9 @@ const mocks = defineMocks({
       { meterData: { fareAmount: 6, currentFare: 37, distanceTraveled: 0.29 } },
       { meterData: { fareAmount: 6, currentFare: 301, distanceTraveled: 2.41 } },
       { meterData: { fareAmount: 6, currentFare: 1874, distanceTraveled: 14.99 } },
+      // a fare that runs past the readout's width, and a meter just reset (zero)
+      { meterData: { fareAmount: 6, currentFare: 1234567, distanceTraveled: 1204.83 } },
+      { meterData: { fareAmount: 0, currentFare: 0, distanceTraveled: 0 } },
     ],
     resetMeter: {},
   },

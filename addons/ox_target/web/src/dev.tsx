@@ -75,6 +75,32 @@ const player = {
   zones: [],
 };
 
+// A crowded vehicle: 12 options, some hidden, some with long or third-party labels and a large price.
+const crowded = {
+  options: {
+    __global: [],
+    entity: [
+      { label: "🚓 | Impound vehicle (police only)", icon: "fa-solid fa-truck-pickup", iconColor: "#f59e0b", groups: { police: 0 } },
+      { label: "Sell vehicle to the dealer for $1,234,567", icon: "fa-solid fa-sack-dollar", iconColor: "#22c55e" },
+    ],
+    globalTarget: [
+      { label: "Toggle front driver door", icon: "fa-solid fa-car-side", bones: ["door_dside_f", "seat_dside_f"] },
+      { label: "Toggle front passenger door", icon: "fa-solid fa-car-side" },
+      { label: "Toggle rear left door", icon: "fa-solid fa-car-side", hide: true },
+      { label: "Toggle trunk", icon: "fa-solid fa-car-rear", bones: "boot" },
+      { label: "Toggle hood", icon: "fa-solid fa-car-battery", bones: "bonnet", hide: true },
+      { label: "Vehicle keys", icon: "fa-solid fa-key", openMenu: "vehicle_keys" },
+      { label: "Give keys to the passenger in the seat next to you", icon: "fa-solid fa-hand-holding", menuName: "vehicle_keys" },
+      { label: "Refuel (Premium, $1,234,567 for a full tank)", icon: "fa-solid fa-gas-pump", name: "fuel:refuel", iconColor: "#ef4444" },
+      { label: "Repair engine", icon: "fa-solid fa-wrench", name: "mechanic:repair", hide: true },
+      { label: "Wash vehicle", icon: "fa-solid fa-soap", name: "carwash:start" },
+      { label: "Check registration", icon: "fa-regular fa-id-card", name: "vehicle:registration" },
+      { label: "Park here", icon: "fa-solid fa-square-parking", name: "vehicle:park" },
+    ],
+  },
+  zones: [],
+};
+
 // Lua's encoder: empty tables as {}, a holey array as an object with numeric keys, unknown icon.
 const encoderEdges = {
   options: { __global: {}, model: { "1": { label: "ATM", icon: "fa-solid fa-credit-card" }, "3": { label: "Rob ATM", icon: "fa-solid fa-mask" } }, localEntity: [{ label: "No icon option" }, { label: "Unknown icon", icon: "fa-solid fa-not-a-real-icon" }] },
@@ -85,7 +111,7 @@ const mocks = defineMocks({
   events: {
     visible: [{ state: true }, { state: false }],
     leftTarget: [{}],
-    setTarget: [garage, pickUp, vehicle, vehicleKeys, player, encoderEdges],
+    setTarget: [garage, pickUp, vehicle, vehicleKeys, player, crowded, encoderEdges],
   } as never,
 });
 
