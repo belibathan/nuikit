@@ -4,8 +4,10 @@ import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
 
 import { cn, nkLevel } from "@/lib/utils"
+import { Dial } from "@/components/ui/dial"
 import { toneVars } from "@/components/ui/fill"
 import { Kbd } from "@/components/ui/tile"
+import { useLinearRun } from "@/hooks/use-linear-run"
 
 /**
  * ProgressRing — a circle that fills: a timed action ("Lockpicking…"), a level, a download. The
@@ -21,20 +23,20 @@ import { Kbd } from "@/components/ui/tile"
  * repaint while it runs (ringHalfKeyframes()). It plays at every motion level: progress is information.
  *
  * Role: the round half of the progress intent: a timed action or a level, on the game or a panel.
- * Anatomy: root (role="progressbar", --level) > ring (track circle, fill circle or two timed half-rotors)
- *   > center (the percentage, num role) > label > cancel (a Kbd and its label; a button with onCancel).
+ * Anatomy: root (role="progressbar", --level) > Dial (sweep 360: track, value arc; or two timed half-rotors)
+ *   > center (the percentage, num role) > label > cancel (a Kbd Tile and its label; a button with onCancel).
  * Props: value, max, duration, onComplete, label, tone, hue, track, center, cancelKey, cancelLabel, onCancel, size.
  * Level means: the fraction done, 0 at the start, 1 when complete (data-complete).
  * Rules: tones use the shared vocabulary through toneVars() (danger = destructive), `hue` a role; a timed ring
  *   moves by transform only; the value ring steps with the data (no tween on the dash).
  */
 
-const progressRingVariants = cva("relative shrink-0", {
+const progressRingVariants = cva("", {
   variants: {
     size: {
-      sm: "size-10 text-(length:--nk-text-label)",
-      default: "size-16 text-(length:--nk-text-label)",
-      lg: "size-24 text-(length:--nk-text-title)",
+      sm: "text-(length:--nk-text-label)",
+      default: "text-(length:--nk-text-label)",
+      lg: "text-(length:--nk-text-title)",
     },
   },
   defaultVariants: {
@@ -53,6 +55,9 @@ const TONE: Record<ProgressRingTone, string> = {
   destructive: "stroke-(--destructive)",
   danger: "stroke-(--destructive)",
 }
+
+/** The ring's diameter per size, px at 1080p (the Dial's size). */
+const RING_SIZE = { sm: 40, default: 64, lg: 96 } as const
 
 const STEP_MS = 100
 const RADIUS = 44
@@ -81,48 +86,24 @@ function ringHalfKeyframes(half: "right" | "left"): Keyframe[] {
 }
 
 /**
- * A timed run from mount (or a new `duration`): the two half-ring rotors in `root` animate on one start
- * time; the default centre text is written straight to the DOM every STEP_MS (no React render).
- * React renders at the start and at the end, when `onComplete` fires from its own timer.
+ * The default centre text of a timed run, written straight to the DOM every STEP_MS (no React render); the
+ * rotors themselves run on useLinearRun.
  */
-function useTimedRun(root: React.RefObject<HTMLElement | null>, duration: number | undefined, onComplete?: () => void) {
-  const [done, setDone] = React.useState(false)
-  const complete = React.useRef(onComplete)
-  React.useEffect(() => {
-    complete.current = onComplete
-  })
+function useRunText(root: React.RefObject<HTMLElement | null>, duration: number | undefined) {
   React.useLayoutEffect(() => {
     if (!duration || duration <= 0) return
-    setDone(false)
     const t0 = performance.now()
-    const el = root.current
-    const anims: Animation[] = []
-    for (const half of ["right", "left"] as const) {
-      const rotor = el?.querySelector<HTMLElement>(`[data-slot=progress-ring-rotor][data-half=${half}]`)
-      if (!rotor?.animate) continue
-      const a = rotor.animate(ringHalfKeyframes(half), { duration, easing: "linear", fill: "both" })
-      a.startTime = t0 // the document timeline's clock: closed exactly at t0 + duration
-      anims.push(a)
-    }
-    const text = el?.querySelector<HTMLElement>("[data-slot=progress-ring-center][data-auto]")
-    const tick = text
-      ? setInterval(() => {
-          text.textContent = `${Math.round(ringPercent(performance.now() - t0, duration))}%`
-        }, STEP_MS)
-      : undefined
-    const end = setTimeout(() => {
-      clearInterval(tick)
-      setDone(true)
-      complete.current?.()
-    }, duration)
+    const text = root.current?.querySelector<HTMLElement>("[data-slot=progress-ring-center][data-auto]")
+    if (!text) return
+    const tick = setInterval(() => {
+      text.textContent = `${Math.round(ringPercent(performance.now() - t0, duration))}%`
+    }, STEP_MS)
+    const end = setTimeout(() => clearInterval(tick), duration)
     return () => {
       clearInterval(tick)
       clearTimeout(end)
-      anims.forEach((a) => a.cancel())
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [duration])
-  return done
+  }, [root, duration])
 }
 
 type ProgressRingProps = Omit<React.ComponentProps<"div">, "children"> &
@@ -166,7 +147,17 @@ function ProgressRing({
   ...props
 }: ProgressRingProps) {
   const box = React.useRef<HTMLDivElement>(null)
-  const done = useTimedRun(box, duration, onComplete)
+  // Motion: the two half-ring rotors on one start time, closed exactly at `duration`; onComplete from a timer
+  const done = useLinearRun(box, {
+    duration,
+    onComplete,
+    targets: (el) =>
+      (["right", "left"] as const).map((half) => ({
+        el: el.querySelector(`[data-slot=progress-ring-rotor][data-half=${half}]`),
+        keyframes: ringHalfKeyframes(half),
+      })),
+  })
+  useRunText(box, duration)
   const timed = duration !== undefined && duration > 0
   const running = timed && !done
   const percent = timed ? (done ? 100 : 0) : ringPercent(value, max)
@@ -184,6 +175,7 @@ function ProgressRing({
 
   return (
     <div
+      ref={box}
       role="progressbar"
       aria-valuemin={0}
       aria-valuemax={100}
@@ -196,33 +188,21 @@ function ProgressRing({
       {...props}
       style={{ ...nkLevel(percent / 100), ...props.style }}
     >
-      <div ref={box} className={cn(progressRingVariants({ size }), game && "nk-shadow")}>
-        <svg viewBox="0 0 100 100" aria-hidden className="size-full">
-          <circle
-            cx="50"
-            cy="50"
-            r={RADIUS}
-            fill="none"
-            strokeWidth="8"
-            className={game ? "stroke-(--scrim)" : "stroke-(--muted)"}
-            strokeOpacity={game ? 0.35 : 1}
-          />
-          {!running && (
-            <circle
-              data-slot="progress-ring-fill"
-              cx="50"
-              cy="50"
-              r={RADIUS}
-              fill="none"
-              strokeWidth="8"
-              strokeLinecap={timed ? "butt" : "round"}
-              transform="rotate(-90 50 50)"
-              strokeDasharray={CIRCUMFERENCE}
-              strokeDashoffset={ringOffset(drawn)}
-              className={toneClass}
-            />
-          )}
-        </svg>
+      <Dial
+        size={RING_SIZE[size ?? "default"] ?? RING_SIZE.default}
+        sweep={360}
+        surface="none"
+        ticks={0}
+        // the ring's own proportions: an 8% stroke 6% in from the edge (r 44 of 100)
+        thickness={(RING_SIZE[size ?? "default"] ?? RING_SIZE.default) * 0.08}
+        inset={(RING_SIZE[size ?? "default"] ?? RING_SIZE.default) * 0.06}
+        level={running ? 0 : drawn / 100}
+        trackProps={{ className: game ? "stroke-(--scrim)" : "stroke-(--muted)", strokeOpacity: game ? 0.35 : 1 }}
+        // timed: the rotors draw the run, the value arc waits (a butt cap draws nothing at 0)
+        valueProps={{ "data-slot": "progress-ring-fill", className: toneClass, strokeLinecap: timed ? "butt" : "round" }}
+        aria-hidden
+        className={cn(progressRingVariants({ size }), game && "nk-shadow")}
+      >
         {running &&
           // Timed: each half of the box clips a rotor carrying the opposite half-ring; rotating the rotor
           // sweeps its arc into view (right half first, from 12 o'clock clockwise). Transform only.
@@ -258,7 +238,7 @@ function ProgressRing({
             {inside}
           </span>
         )}
-      </div>
+      </Dial>
       {label && (
         <span data-slot="progress-ring-label" className={cn("nk-body max-w-48 truncate leading-5 [font-weight:var(--nk-type-label-weight,500)]", game && "nk-shadow")}>
           {label}
