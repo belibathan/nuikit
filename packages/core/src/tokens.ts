@@ -648,6 +648,13 @@ export const SELECTION_TOKENS: readonly TokenSpec[] = [
   k17("nk-tile-press-ratio", "number", "How far a pressed keycap sinks, as a fraction of its wall (1 = flush with the plate)", "0.67", { range: [0, 1.5] }),
   k17("nk-leading-tight", "dimension", "Line height of small text (captions, field labels, notice and row descriptions' tight lines)", "1rem"),
   k17("nk-leading-normal", "dimension", "Line height of body-size text (rows, notices, slabs, row titles)", "1.25rem"),
+  k17("nk-row-bar-thickness", "dimension", "Width of the active row's bar (× nk-row-bar)", "0.1875rem"),
+  k17("nk-row-bar-inset-scale", "number", "The row bar's inset from the row's top and bottom, in spacing units", "2.5", { range: [0, 6] }),
+  k17("nk-hold-ring-pad", "dimension", "Thickness of the hold ring around a key under nk-hold-style ring", "2px"),
+  k17("nk-pip-size", "dimension", "Width of one pip under nk-level-style pips (a percentage of the bar: 10% = ten pips)", "10%"),
+  k17("nk-pip-gap", "dimension", "The gap between pips", "2px"),
+  k17("nk-meter-segment-gap", "dimension", "The gap between a segmented meter's segments", "0.125rem"),
+  k17("nk-glow-radius", "dimension", "Blur radius of a row's glow (a chip's is 0.75 of it, a meter's 0.625)", "1rem"),
   k17("nk-list-gap", "dimension", "Between the items of a list: the wall plus breathing room, so a lit tile never touches the next row", "calc(nk-tile-wall + nk-space-1)"),
 ];
 

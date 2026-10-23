@@ -122,6 +122,9 @@ The five roles: `scan` (keys, buttons, tabs), `title`, `label`, `num`, `body`. E
 |---|---|---|---|---|---|
 | Density | `--nk-density` → `--nk-space-unit` | `0.875` | 0.75–1.3 | tile `1` | |
 | Spacing steps | `--nk-space-{1,2,3,4,6,8}`, `--nk-gap-cluster`, `--nk-gap-items`, `--nk-pad-x`, `--nk-pad-surface` | n × unit; 2 / 1 / 3 / 6 | length | | `tile.tsx` 113 `gap-1 px-1`; `menu-row.tsx` 271 `gap-1`; `stat.tsx` 116 `gap-1`; `skill-check.tsx` 297 `px-2`; `key-prompt.tsx` 59 `py-1` |
+| Row bar shape | `--nk-row-bar-thickness`, `--nk-row-bar-inset-scale` | `0.1875rem`, `2.5` | length; 0–6 | | |
+| Hold ring, pips, segments | `--nk-hold-ring-pad`, `--nk-pip-size`, `--nk-pip-gap`, `--nk-meter-segment-gap` | `2px`, `10%`, `2px`, `0.125rem` | length | | |
+| Glow radius | `--nk-glow-radius` (chip × .75, meter × .625) | `1rem` | length | | |
 | Line height | `--nk-leading-tight`, `--nk-leading-normal` | `1rem`, `1.25rem` | length | | |
 | Heights | `--nk-h-key`, `-chip`, `-control`, `-row`, `-field` | `1.25rem`, `2rem × d`, `2.25rem`, `2.75rem × d`, `2.75rem` | length | tile 1.5 / 1.75 / 2.25 / 3rem | `key-prompt.tsx` 59 `min-h-8`, 323 `h-6`; `skill-check.tsx` 297 `h-8`; `menu-row.tsx` 203 `size-8`; `nui-image.tsx` 71 `h-6` |
 | Row padding and gap | `--nk-row-pad-y`, `-pad-x`, `--nk-row-gap`, `--nk-row-icon-box` | space-2 / 3 / 4; `2rem` | length | | |
@@ -160,9 +163,7 @@ the default, so nothing shipped changes. Items in `registry/nuikit/ui` belong to
    `skill-check.tsx`, `menu-row.tsx`, `tile.tsx`, `stat.tsx`, `nui-image.tsx`. Should read `--nk-h-key`, `--nk-h-chip`,
    `--nk-space-*`, `--nk-icon-*` (the lanes editing those files).
 4. ~~Progress-line and edge-fill thickness~~ done in kit.css: the edge fill and action-bar hold line are `--nk-gauge-track / 2`. The registry `h-0.5` literals stay with their lane.
-5. **Row bar geometry** (`0.1875rem` wide, `2.5 × space` inset), **hold ring pad** (`2px`), **pips** (`10%`, `2px`),
-   **meter segment gap** (`0.125rem`), **glow radii** (`1rem` / `.75rem` / `.625rem`): fixed shapes under switchable
-   styles. Levers: `--nk-row-bar-width` (exists, derived), `--nk-hold-ring-pad`, `--nk-pip-gap`, `--nk-glow-radius`.
+5. ~~Row bar, hold ring, pips, meter segment gap, glow radii~~ done: `--nk-row-bar-thickness`, `--nk-row-bar-inset-scale`, `--nk-hold-ring-pad`, `--nk-pip-size`, `--nk-pip-gap`, `--nk-meter-segment-gap`, `--nk-glow-radius`.
 6. **The elevation recipes** (`elevationShadow`) and **the motion ladder multipliers** are compiler constants; a
    theme picks one of four shadows or sets `--nk-plate-drop`. Acceptable for now: `--nk-plate-drop` covers plates,
    `--nk-panel-shadow` covers panels.
