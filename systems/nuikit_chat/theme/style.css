@@ -60,7 +60,7 @@
 }
 .chat-input { animation: nk-chat-in var(--nk-time-slow, 280ms) var(--nk-ease-expand, cubic-bezier(0.16, 1, 0.3, 1)) backwards; }
 @keyframes nk-chat-in { from { opacity: 0; transform: translateY(8px); } }
-@media (prefers-reduced-motion: reduce) { .chat-input { animation: none; } .chat-window { transition-duration: 120ms; } }
+@media (prefers-reduced-motion: reduce) { .chat-input { animation: none; } .chat-window { transition-duration: var(--nk-time-fast, 120ms); } }
 
 .chat-messages {
   font-size: calc(var(--nk-px) * 14);
@@ -106,12 +106,12 @@
 }
 
 .chat-messages .nk-author {
-  font-weight: 600;
+  font-weight: var(--nk-weight-strong, 600);
   margin-right: calc(var(--nk-px) * 8);
 }
 
 .chat-messages .nk-text {
-  font-weight: 400;
+  font-weight: var(--nk-type-body-weight, 400);
 }
 
 /* print: console output */
@@ -130,7 +130,7 @@
   color: var(--nk-muted-foreground);
   font-family: var(--nk-font-sans);
   font-size: calc(var(--nk-px) * 12);
-  font-weight: 500;
+  font-weight: var(--nk-type-label-weight, 500);
   line-height: calc(var(--nk-px) * 18);
   vertical-align: calc(var(--nk-px) * 1);
 }
@@ -181,7 +181,7 @@
   box-shadow: none;
   color: var(--nk-muted-foreground);
   font-size: calc(var(--nk-px) * 12);
-  font-weight: 500;
+  font-weight: var(--nk-type-label-weight, 500);
   line-height: calc(var(--nk-px) * 16);
 }
 .chat-messages .nk-presence::before {
@@ -232,7 +232,7 @@
   background: rgba(var(--nk-popover-rgb), 0.95) !important;
   box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25), 0 12px 32px -12px rgba(0, 0, 0, 0.7);
   overflow: hidden;
-  transition: border-color 150ms, box-shadow 150ms;
+  transition: border-color var(--nk-time-fast, 150ms), box-shadow var(--nk-time-fast, 150ms);
 }
 .chat-input > div:first-child:focus-within {
   border-color: var(--nk-ring);
@@ -249,7 +249,7 @@
   background: var(--nk-muted);
   color: var(--nk-muted-foreground); /* a mode's own colour (inline) wins */
   font-size: calc(var(--nk-px) * 12);
-  font-weight: 500;
+  font-weight: var(--nk-type-label-weight, 500);
   line-height: calc(var(--nk-px) * 20);
 }
 .chat-input .prefix:empty {
@@ -313,13 +313,13 @@
   margin: 0;
   font-family: var(--nk-font-mono);
   font-size: calc(var(--nk-px) * 13);
-  font-weight: 500;
+  font-weight: var(--nk-type-label-weight, 500);
   line-height: calc(var(--nk-px) * 20);
 }
 .chat-input .suggestion .param {
   margin-left: calc(var(--nk-px) * 6);
   color: var(--nk-muted-foreground);
-  font-weight: 400;
+  font-weight: var(--nk-type-body-weight, 400);
 }
 .chat-input .suggestion .help {
   display: block;
@@ -336,7 +336,7 @@
   margin: calc(var(--nk-px) * 8) 0 0 calc(var(--nk-px) * 4);
   color: var(--nk-muted-foreground);
   font-size: calc(var(--nk-px) * 12);
-  font-weight: 500;
+  font-weight: var(--nk-type-label-weight, 500);
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
 }
 
