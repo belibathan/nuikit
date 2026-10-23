@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import type { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
-import { HudChip } from "@/components/ui/hud-chip";
+import { Chip } from "@/components/ui/chip";
 import { Kbd } from "@/components/ui/kbd";
 import { MenuRow } from "@/components/ui/menu-row";
 import { Meter } from "@/components/ui/meter";
@@ -53,10 +53,10 @@ export function ThemePreview() {
           <Meter aria-label="Stress" icon={<FlameIcon />} value={36} high={80} tone="stress" track="game" size="sm" />
         </div>
         <div className="flex gap-2">
-          <HudChip icon={<MicIcon />} active>
+          <Chip material="hud" icon={<MicIcon />} active>
             Normal
-          </HudChip>
-          <HudChip icon={<RadioIcon />}>101 MHz</HudChip>
+          </Chip>
+          <Chip material="hud" icon={<RadioIcon />}>101 MHz</Chip>
         </div>
       </div>
 
@@ -69,10 +69,10 @@ export function ThemePreview() {
       </div>
 
       <div className="nk-anchor-b flex gap-2">
-        <HudChip icon={<Kbd className="h-4 min-w-4 bg-hud-foreground/20 text-hud-foreground">E</Kbd>}>Open garage</HudChip>
-        <HudChip icon={<TriangleAlertIcon />} state="warning">
+        <Chip material="hud" icon={<Kbd className="h-4 min-w-4 bg-hud-foreground/20 text-hud-foreground">E</Kbd>}>Open garage</Chip>
+        <Chip material="hud" icon={<TriangleAlertIcon />} state="warning">
           Seatbelt
-        </HudChip>
+        </Chip>
       </div>
 
       <div className="nk-anchor-r">

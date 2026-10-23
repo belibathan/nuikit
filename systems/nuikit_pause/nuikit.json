@@ -15,7 +15,7 @@
     "menu-row",
     "stat",
     "meter",
-    "hud-chip",
+    "chip",
     "text-roll",
     "smooth-input",
     "sheet",
@@ -24,7 +24,6 @@
     "edge-sheet",
     "tile",
     "fill",
-    "chip",
     "empty-state",
     "icon-text"
   ]

@@ -16,7 +16,6 @@ import {
 
 import { cn } from "@/lib/utils"
 import { Chip } from "@/components/ui/chip"
-import { HudChip } from "@/components/ui/hud-chip"
 import { Meter } from "@/components/ui/meter"
 import { useFormatMoney } from "@/components/ui/money"
 import { SPEEDOMETER_REDLINE, Speedometer, speedometerDash } from "@/components/ui/speedometer"
@@ -28,7 +27,7 @@ import type { HudVehicle } from "./nui"
  * HudMinimal — the always-on HUD: vitals and needs with voice bottom left, cash, bank and job top
  * right, and a speedometer bottom right while driving. Drawn straight on the game (docs/design.md
  * rule 8): bare marks with a shadow and HUD chips, no panels. Built from the kit: Meter, Stat,
- * HudChip, Speedometer, Money.
+ * Chip (material="hud"), Speedometer, Money.
  *
  *   <HudMinimalSurface />                                   // wired: nk.surface('hud') + nk.player in Lua
  *   <HudMinimal player={player} vehicle={vehicle} />        // a still, for previews
@@ -97,11 +96,11 @@ function HudVoice({ voice }: { voice: NuiPlayer["voice"] }) {
   return (
     <div className="flex items-center gap-2">
       {range && (
-        <HudChip icon={<MicIcon />} active={voice.talking} aria-label={voice.talking ? "Talking" : "Voice range"}>
+        <Chip material="hud" icon={<MicIcon />} active={voice.talking} aria-label={voice.talking ? "Talking" : "Voice range"}>
           {range}
-        </HudChip>
+        </Chip>
       )}
-      {voice.radio !== undefined && <HudChip icon={<RadioIcon />}>{voice.radio} MHz</HudChip>}
+      {voice.radio !== undefined && <Chip material="hud" icon={<RadioIcon />}>{voice.radio} MHz</Chip>}
     </div>
   )
 }
@@ -185,14 +184,14 @@ function HudVehicleGauge({ vehicle }: { vehicle: HudVehicle }) {
       {(unbuckled || engine) && (
         <div className="flex gap-2">
           {unbuckled && (
-            <HudChip icon={<TriangleAlertIcon />} state="warning">
+            <Chip material="hud" icon={<TriangleAlertIcon />} state="warning">
               Seatbelt
-            </HudChip>
+            </Chip>
           )}
           {engine && (
-            <HudChip icon={<CarFrontIcon />} state="warning">
+            <Chip material="hud" icon={<CarFrontIcon />} state="warning">
               Engine {vehicle.engine}%
-            </HudChip>
+            </Chip>
           )}
         </div>
       )}

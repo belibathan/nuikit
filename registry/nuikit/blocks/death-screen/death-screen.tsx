@@ -4,7 +4,7 @@ import { CheckIcon, HeartPulseIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { Countdown, formatCountdown } from "@/components/ui/countdown"
-import { HudChip } from "@/components/ui/hud-chip"
+import { Chip } from "@/components/ui/chip"
 import { KeyPrompt } from "@/components/ui/key-prompt"
 import { useFormatMoney } from "@/components/ui/money"
 
@@ -13,7 +13,7 @@ import type { DeathScreenData } from "./nui"
 /**
  * DeathScreen — last stand and death, over the game: a countdown, a bar, and the keys your Lua
  * listens for (respawn, call EMS). Presentation only: your medical script owns the rules and sends
- * a DeathScreenData snapshot; this draws it. Built from the kit: Countdown, KeyPrompt, HudChip,
+ * a DeathScreenData snapshot; this draws it. Built from the kit: Countdown, KeyPrompt, Chip (material="hud"),
  * Money. Text on the game (nk-on-game): light in every theme, with the world shadow.
  *
  *   <DeathScreenSurface />                      // wired: nk.surface('death', …) in Lua opens it
@@ -101,14 +101,14 @@ function DeathScreenKeys({ data, hold }: { data: DeathScreenData; hold?: number 
   return (
     <div className="mt-12 flex items-start gap-3">
       {helpable && !ems && (
-        <HudChip icon={<HeartPulseIcon />} className="[&_[data-slot=hud-chip-icon]]:text-destructive [&_[data-slot=hud-chip-icon]]:opacity-100">
+        <Chip material="hud" icon={<HeartPulseIcon />} className="[&_[data-slot=hud-chip-icon]]:text-destructive [&_[data-slot=hud-chip-icon]]:opacity-100">
           Another player can revive you
-        </HudChip>
+        </Chip>
       )}
 
       {ems &&
         (ems.state === "requested" ? (
-          <HudChip icon={<CheckIcon />}>EMS have been notified</HudChip>
+          <Chip material="hud" icon={<CheckIcon />}>EMS have been notified</Chip>
         ) : (
           <KeyPrompt
             surface="hud"

@@ -24,7 +24,7 @@ import {
 } from "lucide-react"
 
 import { cn } from "@/lib/utils"
-import { HudChip } from "@/components/ui/hud-chip"
+import { Chip } from "@/components/ui/chip"
 import { KeyPrompt, KeyPromptStack, keyPromptPosition } from "@/components/ui/key-prompt"
 import { MenuRow } from "@/components/ui/menu-row"
 import { Panel, PanelBody } from "@/components/ui/panel"
@@ -36,7 +36,7 @@ import type { InteractionAnswer, InteractionIcon, PromptsData, TargetData } from
  * Interaction — how the player uses the world: the target eye at the centre of the screen with
  * the options of whatever they aim at, and "[E] Open the fridge" key prompts near things. Lua does
  * the raycast, reads the keys and decides; the page draws. Built from the kit: Panel, MenuRow,
- * KeyPrompt (and its stack), HudChip, Spinner.
+ * KeyPrompt (and its stack), Chip (material="hud"), Spinner.
  *
  *   <InteractionSurface />                          // wired: nk.surface('target' | 'prompts', …) in Lua
  *   <Target data={data} onSelect={…} />             // stills, or your own wiring
@@ -195,7 +195,7 @@ function Target({
             )}
             </PanelBody>
           </Panel>
-          {data.hint && <HudChip className="mt-2 opacity-80">{data.hint}</HudChip>}
+          {data.hint && <Chip material="hud" className="mt-2 opacity-80">{data.hint}</Chip>}
         </div>
       ) : (
         <div />

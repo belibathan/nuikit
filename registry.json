@@ -276,7 +276,8 @@
         "since": "0.5.0",
         "status": "stable",
         "replaces": [
-          "task-progress"
+          "task-progress",
+          "vital"
         ],
         "removeIn": null,
         "spec": {
@@ -317,25 +318,22 @@
       "name": "hud-chip",
       "type": "registry:ui",
       "title": "HUD Chip",
-      "description": "An always-on pill or tile on the game world: icon and text; active (talking, selected) or warning.",
+      "description": "Deprecated: use Chip with material=\"hud\" (the same markup and look). Still works. An always-on mark on the game world (voice range, radio, seatbelt): an alias of Chip's HUD material.",
       "files": [
         {
           "path": "registry/nuikit/ui/hud-chip.tsx",
           "type": "registry:ui"
         }
       ],
-      "dependencies": [
-        "class-variance-authority"
-      ],
       "meta": {
         "since": "0.5.0",
-        "status": "stable",
+        "status": "deprecated",
         "replaces": [],
-        "removeIn": null,
+        "removeIn": "0.10.0",
         "spec": {
-          "role": "A small fact on the HUD: voice range, radio, seatbelt.",
+          "role": "A small fact on the HUD (voice range, radio, seatbelt): an alias of Chip's HUD material.",
           "anatomy": [
-            "hud-chip (pill | tile)",
+            "Chip material=\"hud\" (pill | tile)",
             "icon",
             "text"
           ],
@@ -349,12 +347,17 @@
             "hue"
           ],
           "rules": [
-            "Its shape prop is the form (pill, tile); corners follow data-nk-shape on an ancestor.",
-            "warning is the theme's destructive; active is primary.",
-            "data-hue carries its role; the theme colours it."
+            "Use Chip material=\"hud\"; the alias renders it unchanged.",
+            "warning is the theme's destructive; active is primary."
           ]
-        }
-      }
+        },
+        "replacedBy": [
+          "chip"
+        ]
+      },
+      "registryDependencies": [
+        "https://nuikit.vercel.app/r/chip.json"
+      ]
     },
     {
       "name": "text-roll",
@@ -435,31 +438,25 @@
       "name": "vital",
       "type": "registry:ui",
       "title": "Vital",
-      "description": "A player stat: an icon and a shadcn Progress, colored by a theme token. Pulses and is data-state=\"alert\" when low.",
+      "description": "Deprecated: use Meter (the same icon and bar, with labels, segments and runs). Still works. A player stat as an icon and a bar: a preset of Meter (value 0–100, a vital tone, low).",
       "files": [
         {
           "path": "registry/nuikit/ui/vital.tsx",
           "type": "registry:ui"
         }
       ],
-      "dependencies": [
-        "class-variance-authority"
-      ],
       "registryDependencies": [
-        "progress"
+        "https://nuikit.vercel.app/r/meter.json"
       ],
       "meta": {
         "since": "0.3.0",
-        "status": "stable",
+        "status": "deprecated",
         "replaces": [],
-        "removeIn": null,
+        "removeIn": "0.10.0",
         "spec": {
-          "role": "A player stat as an icon and a bar, coloured by a theme token.",
+          "role": "A player stat as an icon and a bar: an alias of Meter.",
           "anatomy": [
-            "vital",
-            "icon (pulses when low)",
-            "label",
-            "bar (shadcn Progress)"
+            "Meter (icon > bar)"
           ],
           "props": [
             "value",
@@ -471,10 +468,13 @@
           ],
           "level": "value / 100: how full the stat is.",
           "rules": [
-            "At or under low it is data-state=\"alert\" and the icon pulses.",
-            "Colours from the vital tokens, never a literal."
+            "Use Meter; the alias maps value, tone, low and size onto it.",
+            "At or under low it is data-state=\"alert\"."
           ]
-        }
+        },
+        "replacedBy": [
+          "meter"
+        ]
       }
     },
     {
@@ -623,7 +623,7 @@
       "name": "nui-menu",
       "type": "registry:ui",
       "title": "NUI Menu",
-      "description": "Keyboard-first list menu: a shadcn Card of Items, highlighted with accent like shadcn menus.",
+      "description": "Deprecated: use Panel + MenuRowList + MenuRow. Still works. A keyboard-first list menu from data (arrows / W S move, Enter / E select): a Panel of MenuRows whose active row the identity's indicator marks.",
       "files": [
         {
           "path": "registry/nuikit/ui/nui-menu.tsx",
@@ -631,20 +631,21 @@
         }
       ],
       "registryDependencies": [
-        "card",
-        "item"
+        "https://nuikit.vercel.app/r/menu-row.json",
+        "https://nuikit.vercel.app/r/panel.json"
       ],
       "meta": {
         "since": "0.3.0",
-        "status": "stable",
+        "status": "deprecated",
         "replaces": [],
-        "removeIn": null,
+        "removeIn": "0.10.0",
         "spec": {
-          "role": "A keyboard-first list menu: a Card of Items highlighted like shadcn menus.",
+          "role": "A keyboard-first list menu from data: Panel > MenuRowList > MenuRow.",
           "anatomy": [
-            "card",
-            "header (title, description)",
-            "items (icon, label, description, meta)"
+            "Panel",
+            "PanelHeader (title, description)",
+            "PanelBody > MenuRowList",
+            "MenuRow (icon, label, description, meta)"
           ],
           "props": [
             "title",
@@ -655,9 +656,13 @@
           ],
           "rules": [
             "Arrows move, Enter selects; keys are read on window by default.",
-            "The highlight is the accent, as in shadcn menus."
+            "The active row is the identity's row indicator (MenuRowList), never the hover accent."
           ]
-        }
+        },
+        "replacedBy": [
+          "panel",
+          "menu-row"
+        ]
       }
     },
     {
@@ -924,8 +929,8 @@
       "registryDependencies": [
         "https://nuikit.vercel.app/r/countdown.json",
         "https://nuikit.vercel.app/r/key-prompt.json",
-        "https://nuikit.vercel.app/r/hud-chip.json",
-        "https://nuikit.vercel.app/r/money.json"
+        "https://nuikit.vercel.app/r/money.json",
+        "https://nuikit.vercel.app/r/chip.json"
       ],
       "categories": [
         "screens"
@@ -967,7 +972,6 @@
       "registryDependencies": [
         "https://nuikit.vercel.app/r/meter.json",
         "https://nuikit.vercel.app/r/stat.json",
-        "https://nuikit.vercel.app/r/hud-chip.json",
         "https://nuikit.vercel.app/r/speedometer.json",
         "https://nuikit.vercel.app/r/money.json",
         "https://nuikit.vercel.app/r/chip.json"
@@ -1477,7 +1481,7 @@
       "name": "chip",
       "type": "registry:ui",
       "title": "Chip",
-      "description": "A short status on one line (tokens 1.5): --nk-h-chip tall, --nk-r-chip corners (never a pill), the label role; tone, hue, fill hair|tint|solid, an icon, a count, and a status dot (variant=dot).",
+      "description": "A short status on one line in two materials: panel (h-chip, r-chip, the label role; fill hair | tint | solid; tone, hue, icon, count, the dot) and hud (the game surface, nk-chip / nk-hud: pill | tile, active, warning). HudChip is Chip material=\"hud\".",
       "files": [
         {
           "path": "registry/nuikit/ui/chip.tsx",
@@ -1490,29 +1494,41 @@
       "meta": {
         "since": "unreleased",
         "status": "experimental",
-        "replaces": [],
+        "replaces": [
+          "hud-chip"
+        ],
         "removeIn": null,
         "spec": {
           "role": "A tag, a count, a status dot: one chip.",
           "anatomy": [
+            "chip (panel: data-slot=chip; hud: data-slot=hud-chip, pill | tile)",
             "icon",
             "label",
             "count"
           ],
           "props": [
+            "material",
             "tone",
             "hue",
             "fill",
             "icon",
             "count",
-            "variant"
+            "variant",
+            "shape",
+            "state",
+            "active",
+            "density",
+            "motion"
           ],
           "rules": [
             "No pills: r-chip, or the dot at r-key.",
             "Colour means something: tone or hue only."
           ]
         }
-      }
+      },
+      "dependencies": [
+        "class-variance-authority"
+      ]
     },
     {
       "name": "icon-text",
@@ -2311,7 +2327,7 @@
         "https://nuikit.vercel.app/r/key-prompt.json",
         "https://nuikit.vercel.app/r/menu-row.json",
         "https://nuikit.vercel.app/r/panel.json",
-        "https://nuikit.vercel.app/r/hud-chip.json"
+        "https://nuikit.vercel.app/r/chip.json"
       ],
       "categories": [
         "screens"
