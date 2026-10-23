@@ -2,6 +2,7 @@
 // intent resolves true. A cancel from Lua (the X key, death, a ragdoll) arrives as a cancel message
 // and the renderer simply stops drawing it: the caller already got false.
 // With `value`, the script drives it (nk.progress{...}:update{ value = 40 }) and the clock is off.
+import { Text } from "@/lib/text";
 import type { ProgressProps } from "nuikit-core/intents";
 import { defineReactRenderer, type RendererProps } from "nuikit-core/intents-react";
 import { useEffect } from "react";
@@ -43,7 +44,8 @@ function OneProgress({ id, props, ctx }: { id: string; props: ProgressProps; ctx
           size="lg"
           duration={driven ? undefined : duration}
           value={driven ? props.value : undefined}
-          label={props.label}
+          label={props.label ? <Text>{props.label}</Text> : undefined}
+          aria-label={props.label ?? "Progress"}
           tone={props.tone ?? "primary"}
           track="game"
           center={props.showPercent === false ? false : undefined}
@@ -57,7 +59,8 @@ function OneProgress({ id, props, ctx }: { id: string; props: ProgressProps; ctx
             tone={props.tone ?? "primary"}
             duration={driven ? undefined : duration}
             value={driven ? props.value : undefined}
-            label={props.label ?? ""}
+            label={props.label ? <Text>{props.label}</Text> : ""}
+            aria-label={props.label ?? "Progress"}
             valueText={props.showPercent && driven ? `${Math.round(props.value ?? 0)}%` : undefined}
           />
           {cancel && (

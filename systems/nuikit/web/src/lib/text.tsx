@@ -1,6 +1,8 @@
 // The little markdown scripts put in notifications and menus (ox_lib renders CommonMark there):
+// [E]-style key tokens render as keycaps (components/ui/text).
 // **bold**, *italic*, `code`, line breaks, and a heading line as bold. No HTML, no links to follow.
 import { Fragment, type ReactNode } from "react";
+import { withKeys } from "@/components/ui/text";
 
 const INLINE = /(\*\*[^*]+\*\*|__[^_]+__|\*[^*\n]+\*|_[^_\n]+_|`[^`]+`)/g;
 
@@ -10,7 +12,7 @@ function inline(text: string, key: string): ReactNode[] {
     if (/^\*\*.+\*\*$|^__.+__$/.test(part)) return <strong key={k}>{part.slice(2, -2)}</strong>;
     if (/^\*.+\*$|^_.+_$/.test(part)) return <em key={k}>{part.slice(1, -1)}</em>;
     if (/^`.+`$/.test(part)) return <code key={k} className="rounded-sm bg-muted px-1 font-mono text-[0.85em]">{part.slice(1, -1)}</code>;
-    return <Fragment key={k}>{part}</Fragment>;
+    return <Fragment key={k}>{withKeys(part)}</Fragment>;
   });
 }
 
