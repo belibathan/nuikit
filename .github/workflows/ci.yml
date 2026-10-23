@@ -44,6 +44,9 @@ jobs:
       # against bench/check-baseline.json; the table lands in the job summary (docs/roadmap.md Track C).
       - name: nuikit check burn-down
         run: node scripts/check-burndown.mjs
+      # No committed images, and the tracked size in the summary (docs/roadmap.md Track E).
+      - name: Lean check
+        run: bash scripts/lean-check.sh
       # Class strings (eslint.config.js): conflicting, unknown and forbidden classes. Warnings, never a failure.
       - name: Class lint (warnings)
         run: pnpm lint:classes

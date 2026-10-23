@@ -117,9 +117,9 @@ the repo holds no screenshots, and a standing pass removes what nothing referenc
 | Item | State |
 |---|---|
 | E1 No committed screenshots: 400 files / ~82 MB removed from `bench/`; `bench/.gitignore`; the visual job shoots and uploads, baselines are local only | Done Oct 23 |
-| E2 The site: per component a live preview + the source + the install line, blocks the same, one-screen landing; galleries, `/blocks/shot`, public images gone | In progress (lane) |
-| E3 Standing lighten pass: one-off bench harnesses, unreferenced assets, stale changesets, unused deps and exports, dead screen files, with a grep per deletion | In progress (lane) |
-| E4 Keep it lean: a CI check that fails on a committed image outside `docs/assets/{banner,social-preview}.png` and `docs/brand/`, and a size budget line in the job summary | Open, small |
+| E2 The site: per component a live preview + the source + the install line, blocks the same, one-screen landing; galleries, `/blocks/shot`, public images gone (`public/` 1.9 MB → 60 KB) | Done Oct 23; not seen in a browser |
+| E3 Lighten pass: one-off bench harnesses, unreferenced assets, 55 unimported synced components, 0.7.0 test files archived (2098 → 1979 tracked files) | Done Oct 23; rerun each release |
+| E4 Keep it lean: `scripts/lean-check.sh` in CI fails on a committed image outside the allow-list (brand, banner, og, owner feedback shots) and prints the tracked size | Done Oct 23 |
 
 ## 0.9 · Track C: rails for rapid building (so lanes run with less lead attention)
 
