@@ -47,6 +47,11 @@
   /* The kit's scale (docs/design.md), in px at 1080p: the chat page isn't ours, so instead of
      rem this follows the game's height directly. calc(var(--nk-px) * 14) is 14px at 1080p. */
   --nk-px: calc(100vh / 1080);
+  /* smooth caret and typing levers (the kit's; a server theme's own values replace these) */
+  --nk-caret-time: 140ms;
+  --nk-caret-ease: cubic-bezier(0.2, 0, 0, 1);
+  --nk-type-in-time: 210ms;
+  --nk-type-in-distance: 0.45em;
 }
 
 /* ── window ─────────────────────────────────────────────────────────────── */
@@ -377,7 +382,7 @@
   position: absolute;
   top: 0;
   left: 0;
-  width: calc(var(--nk-px) * 2);
+  width: var(--nk-caret-width, calc(var(--nk-px) * 2));
   border-radius: var(--nk-r-key, 0.25rem);
   background: var(--nk-primary);
 }
