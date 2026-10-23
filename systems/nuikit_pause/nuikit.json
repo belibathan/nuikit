@@ -24,6 +24,7 @@
     "tile",
     "fill",
     "empty-state",
-    "selection-tile"
+    "selection-tile",
+    "edge-sheet"
   ]
 }

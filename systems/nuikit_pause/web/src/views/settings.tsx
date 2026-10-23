@@ -16,10 +16,13 @@ import { MenuRow, MenuRowList } from "@/components/ui/menu-row";
 import { Input } from "@/components/ui/input";
 import { Stepper } from "@/components/ui/stepper";
 import { SegmentedControl } from "@/components/ui/selection-tabs";
-import { SheetPage, SheetSection } from "./sheet";
+import { EdgeSheet, EdgeSheetBody, EdgeSheetFooter } from "@/components/ui/edge-sheet";
+import { SheetSection } from "./sheet";
 
 type Values = Record<string, SettingValue>;
 const parent = (globalThis as { GetParentResourceName?: () => string }).GetParentResourceName;
+/** The settings sheet's width: responsive, and the open area (stage, hints) ends where it starts. */
+export const SETTINGS_W = "clamp(22rem, 30vw, 34rem)";
 export const SELF = typeof parent === "function" ? parent() : "nuikit_pause";
 
 /**
@@ -28,15 +31,21 @@ export const SELF = typeof parent === "function" ? parent() : "nuikit_pause";
  * toggle, a choice or a range) with its presets. A change is a draft its owner previews live; Save
  * keeps every draft, Cancel (or leaving) drops them.
  */
-export function SettingsPage({ onBack, onValues, onGame }: { onBack: () => void; onValues: (resource: string, v: Values) => void; onGame: () => void }) {
+export function SettingsPage({ open, onBack, onValues, onGame }: { open: boolean; onBack: () => void; onValues: (resource: string, v: Values) => void; onGame: () => void }) {
   const [sections, setSections] = useState<SettingsSection[] | null>(null);
   useEffect(() => {
+    if (!open) return;
+    let live = true;
     void loadSettings().then((all) => {
+      if (!live) return;
       // this menu's own (Display) section first, the rest by label
       const rest = all.filter((s) => s.resource !== SELF).sort((a, b) => (a.label || a.resource).localeCompare(b.label || b.resource));
       setSections([...all.filter((s) => s.resource === SELF), ...rest]);
     });
-  }, []);
+    return () => {
+      live = false;
+    };
+  }, [open]);
 
   const take = useCallback(
     (resource: string, draft: boolean) => (values: Values | null) => {
@@ -50,48 +59,60 @@ export function SettingsPage({ onBack, onValues, onGame }: { onBack: () => void;
   const saveAll = () => dirty.forEach((s) => void saveSettings(s.resource).then(take(s.resource, false)));
   const cancelAll = () => dirty.forEach((s) => void cancelSettings(s.resource).then(take(s.resource, false)));
 
-  // leaving with unsaved changes drops them (the owners put back what they previewed)
+  // closing with unsaved changes drops them (the owners put back what they previewed); the sheet keeps its
+  // content drawn through the slide-out
   const latest = useRef(sections);
   latest.current = sections;
-  useEffect(() => () => latest.current?.filter((s) => s.draft).forEach((s) => void cancelSettings(s.resource)), []);
+  useEffect(() => {
+    if (open) return;
+    latest.current?.filter((s) => s.draft).forEach((s) => void cancelSettings(s.resource));
+    latest.current = latest.current?.map((s) => ({ ...s, draft: false })) ?? null;
+  }, [open]);
 
   return (
-    <SheetPage
+    <EdgeSheet
+      open={open}
+      side="right"
+      variant="flush"
+      width={SETTINGS_W}
       title="Settings"
       description="Saved for you on this server"
       onBack={onBack}
+      back
       actions={
         <Button variant="outline" size="sm" onClick={onGame}>
           Game settings
         </Button>
       }
-      footer={
-        dirty.length > 0 ? (
-          <div className="flex items-center justify-end gap-2">
-            <Button variant="ghost" size="sm" onClick={cancelAll}>
-              Cancel
-            </Button>
-            <Button size="sm" onClick={saveAll}>
-              Save
-            </Button>
-          </div>
-        ) : null
-      }
+      className="pause-settings z-50"
     >
-      {sections === null ? null : sections.length === 0 ? (
-        <EmptyState title="Nothing to set" description="This server has no settings here yet." />
-      ) : (
-        sections.map((s) => (
-          <Section
-            key={s.resource}
-            section={s}
-            onDraft={(patch) => void draftSettings(s.resource, patch).then(take(s.resource, true))}
-            onPreset={(id) => void applySettingsPreset(s.resource, id).then(take(s.resource, true))}
-            onReset={() => void resetSettings(s.resource).then(take(s.resource, false))}
-          />
-        ))
-      )}
-    </SheetPage>
+      {/* the sections scroll inside the sheet (never the page); Radix's table wrapper is made a block so no row outgrows the column */}
+      <EdgeSheetBody scroll className="[&_[data-slot=scroll-area-viewport]>div]:!block">
+        {sections === null ? null : sections.length === 0 ? (
+          <EmptyState title="Nothing to set" description="This server has no settings here yet." />
+        ) : (
+          sections.map((s) => (
+            <Section
+              key={s.resource}
+              section={s}
+              onDraft={(patch) => void draftSettings(s.resource, patch).then(take(s.resource, true))}
+              onPreset={(id) => void applySettingsPreset(s.resource, id).then(take(s.resource, true))}
+              onReset={() => void resetSettings(s.resource).then(take(s.resource, false))}
+            />
+          ))
+        )}
+      </EdgeSheetBody>
+      {dirty.length > 0 ? (
+        <EdgeSheetFooter className="justify-end">
+          <Button variant="ghost" size="sm" onClick={cancelAll}>
+            Cancel
+          </Button>
+          <Button size="sm" onClick={saveAll}>
+            Save
+          </Button>
+        </EdgeSheetFooter>
+      ) : null}
+    </EdgeSheet>
   );
 }
 
