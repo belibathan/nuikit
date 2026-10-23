@@ -7,7 +7,7 @@ const root = path.resolve(__dirname, "../../..")
 type Spec = { role: string; anatomy: string[]; props?: string[]; level?: string; rules: string[] }
 type Meta = { since: string; status: string; replaces: string[]; removeIn: string | null; replacedBy?: string[]; spec?: Spec }
 const registry = JSON.parse(fs.readFileSync(path.join(root, "registry.json"), "utf8")) as {
-  items: { name: string; description?: string; files: { path: string }[]; meta?: Meta }[]
+  items: { name: string; type: string; description?: string; files: { path: string }[]; meta?: Meta }[]
 }
 const names = new Set(registry.items.map((i) => i.name))
 // removed after their deprecation; `replaces` still names them (history)
@@ -58,14 +58,15 @@ describe("registry meta", () => {
   })
 })
 
-// Foundation 2: the component spec template (role, anatomy, props, level means, rules) in registry meta.
+// Foundation 2: the component spec template (role, anatomy, props, level means, rules) in registry meta,
+// and the same template in each component's doc comment (docs/design/ink.md §3).
 describe("component specs", () => {
-  const SPECCED = ["panel", "menu-row", "meter", "vital-chip", "progress-ring", "notice", "key-prompt", "item-slot", "radial-menu", "hud-chip", "band", "confirm", "edge-sheet"]
-  const LEVEL = ["meter", "vital-chip", "progress-ring", "notice", "key-prompt"]
+  const UI = registry.items.filter((i) => i.type === "registry:ui")
+  const LEVEL = ["meter", "vital-chip", "progress-ring", "notice", "key-prompt", "dial", "countdown", "speedometer", "vital"]
   const meta = (n: string) => registry.items.find((i) => i.name === n)?.meta
 
-  it("every specced component says its role, anatomy and rules", () => {
-    for (const n of SPECCED) {
+  it("every component says its role, anatomy and rules", () => {
+    for (const { name: n } of UI) {
       const spec = meta(n)?.spec
       expect(spec, n).toBeDefined()
       expect(spec!.role.length, n).toBeGreaterThan(10)
@@ -82,6 +83,47 @@ describe("component specs", () => {
     for (const item of registry.items.filter((i) => i.meta?.spec?.props)) {
       const src = item.files.map((f) => fs.readFileSync(path.join(root, f.path), "utf8")).join("\n")
       for (const p of item.meta!.spec!.props!) expect(src, `${item.name}: ${p}`).toMatch(new RegExp(`\\b${p}\\b`))
+    }
+  })
+
+  it("every component's doc comment carries the spec template", () => {
+    for (const item of UI) {
+      const src = fs.readFileSync(path.join(root, item.files[0]!.path), "utf8")
+      for (const head of ["Role:", "Anatomy:", "Rules:"]) expect(src, `${item.name}: ${head}`).toMatch(new RegExp(`^ \\* ${head}`, "m"))
+      if (item.meta?.spec?.props?.length) expect(src, `${item.name}: Props:`).toMatch(/^ \* Props:/m)
+      if (item.meta?.spec?.level) expect(src, `${item.name}: Level means:`).toMatch(/^ \* Level means:/m)
+    }
+  })
+})
+
+// Each item ships exactly what it needs: its files exist, every registry file belongs to an item, and its
+// dependencies / registryDependencies are what its files import (no more, no less).
+describe("registry items", () => {
+  const items = registry.items as { name: string; type: string; description?: string; files: { path: string }[]; dependencies?: string[]; registryDependencies?: string[] }[]
+  const norm = (d: string) => d.replace(/^https?:.*\/r\/([\w-]+)\.json$/, "$1")
+  const imports = (src: string, re: RegExp) => [...src.matchAll(re)].map((m) => m[1]!)
+
+  it("has a description and files that exist", () => {
+    for (const item of items) {
+      expect(item.description?.length ?? 0, item.name).toBeGreaterThan(20)
+      for (const f of item.files) expect(fs.existsSync(path.join(root, f.path)), f.path).toBe(true)
+    }
+  })
+
+  it("covers every registry source file", () => {
+    const listed = new Set(items.flatMap((i) => i.files.map((f) => f.path)))
+    for (const dir of ["ui", "hooks", "lib"])
+      for (const f of fs.readdirSync(path.join(root, "registry/nuikit", dir))) expect(listed.has(`registry/nuikit/${dir}/${f}`), `${dir}/${f}`).toBe(true)
+  })
+
+  it("declares what its files import", () => {
+    for (const item of items) {
+      const own = new Set(item.files.map((f) => path.basename(f.path).replace(/\.tsx?$/, "")))
+      const src = item.files.map((f) => fs.readFileSync(path.join(root, f.path), "utf8")).join("\n")
+      const reg = new Set([...imports(src, /from\s+["']@\/components\/ui\/([\w-]+)["']/g), ...imports(src, /from\s+["']@\/hooks\/([\w-]+)["']/g)].filter((x) => !own.has(x)))
+      const pkg = new Set(imports(src, /from\s+["']((?:@[\w.-]+\/)?[\w.-]+)(?:\/[^"']*)?["']/g).filter((p) => p !== "react" && !p.startsWith("@/") && !p.startsWith(".")))
+      expect([...(item.registryDependencies ?? []).map(norm)].sort(), `${item.name} registryDependencies`).toEqual([...reg].sort())
+      expect([...(item.dependencies ?? [])].sort(), `${item.name} dependencies`).toEqual([...pkg].sort())
     }
   })
 })

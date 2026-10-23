@@ -17,6 +17,13 @@ import { cn } from "@/lib/utils"
  * States (data-state): focus switches the rim; hold presses by --nk-tile-press and fills (`level`); confirm
  * turns the face white and pops; alert sets a danger rim and breathes; disabled is half opacity. `active`
  * (on, selected, checked) is the white face.
+ *
+ * Role: Keys, notice icons, tab marks, checked boxes, gears and telltales: one tile.
+ * Anatomy: plate (::before) > face (::after: rim, light) > tile-fill (hold) > legend > tile-tag (the plate
+ *   extending right)
+ * Props: size, shape, state, active, level, tone, hue, tag, tagOpen, plate, land.
+ * Rules: Rims switch state, they never tween. Hard drops only: the plate is an offset, never a blur. A theme
+ *   sets --nk-tile-* values, never selectors.
  */
 
 type TileState = "rest" | "focus" | "hold" | "confirm" | "alert" | "disabled"

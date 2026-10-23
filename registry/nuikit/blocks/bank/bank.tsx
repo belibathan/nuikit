@@ -22,7 +22,6 @@ import { TextField } from "@/components/ui/form-field"
 import { MenuRow } from "@/components/ui/menu-row"
 import { Money, useFormatMoney } from "@/components/ui/money"
 import { Panel, PanelBody, PanelHeader } from "@/components/ui/panel"
-import { Spinner } from "@/components/ui/spinner"
 import { Stat } from "@/components/ui/stat"
 
 import type { BankAccount, BankAccountKind, BankAnswer, BankData, BankMoneyAction, BankTransaction, BankTransactionKind } from "./nui"
@@ -32,7 +31,7 @@ import type { BankAccount, BankAccountKind, BankAnswer, BankData, BankMoneyActio
  * right; deposit, withdraw and transfer in a dialog that checks the amount before Lua does. Lua
  * answers every move, and its error stays in the dialog. At an ATM there are no transfers.
  * Protocol-agnostic: fill BankData from any banking resource. Built from the kit: Panel, MenuRow,
- * Stat, Money, EmptyState, Confirm and TextField (form-field), with stock shadcn Button and Spinner.
+ * Stat, Money, EmptyState, Confirm and TextField (form-field), with stock shadcn Button.
  *
  *   <BankSurface />                                   // wired: nk.surface('bank', …) in Lua opens it
  *   <Bank data={data} onMoney={…} />                  // a still, or your own wiring
@@ -203,7 +202,7 @@ function BankAccountPanel({
       <PanelBody variant="form">
         <Stat size="display" label="Balance" value={<Money amount={a.balance} />} />
         {a.frozen && (
-          <p className="flex items-center gap-2 text-sm text-destructive">
+          <p className="flex items-center gap-2 text-(length:--nk-text-label) text-destructive">
             <SnowflakeIcon className="size-4" />
             This account is frozen: it can take deposits but can't send money.
           </p>
@@ -237,7 +236,7 @@ function BankAccountPanel({
                 readOnly
                 icon={<TxIcon />}
                 description={[t.time, t.note].filter(Boolean).join(", ") || undefined}
-                meta={<Money amount={t.amount} sign="always" className={cn("text-sm", t.amount > 0 ? "text-success" : "text-foreground")} />}
+                meta={<Money amount={t.amount} sign="always" className={cn("text-(length:--nk-text-label)", t.amount > 0 ? "text-success" : "text-foreground")} />}
               >
                 {t.title}
               </MenuRow>
@@ -344,7 +343,7 @@ function BankMoneyDialog({
         <TextField
           label="Amount"
           hint={
-            <Button type="button" variant="ghost" size="sm" className="h-6 px-2 text-xs" onClick={() => setAmount(String(Math.floor(available)))}>
+            <Button type="button" variant="ghost" size="sm" className="h-6 px-2 text-(length:--nk-text-label)" onClick={() => setAmount(String(Math.floor(available)))}>
               All {fmt(available)}
             </Button>
           }
@@ -359,7 +358,7 @@ function BankMoneyDialog({
         )}
         <TextField label="Note" hint="Optional" maxLength={60} showCount={false} value={note} onValueChange={setNote} />
         {error && (
-          <p role="alert" className="text-sm text-destructive">
+          <p role="alert" className="text-(length:--nk-text-label) text-destructive">
             {error}
           </p>
         )}

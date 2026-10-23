@@ -33,6 +33,12 @@ import { Spinner } from "@/components/ui/spinner"
  *   `initialFocus="cancel"` starts on cancel instead. Tab stays inside the dialog.
  *
  * `ConfirmPanel` is the panel alone, every state from props, for previews or your own layout.
+ *
+ * Role: A decision before something that can't be undone.
+ * Anatomy: confirm-root + scrim > confirm (icon, title, description) > cancel, action
+ * Props: title, description, tone, confirmLabel, cancelLabel, loading, scrim, initialFocus, density, shape,
+ *   motion.
+ * Rules: Focus starts on the action; Escape and Cancel go back. Destructive actions say so in the label.
  */
 
 const confirmVariants = cva("", {
@@ -125,7 +131,7 @@ function ConfirmPanel({
       {(description || children) && (
         <PanelBody variant="form" className="gap-3">
           {description && (
-            <div id={`${id}-description`} data-slot="confirm-description" className="text-sm leading-5 text-pretty text-muted-foreground">
+            <div id={`${id}-description`} data-slot="confirm-description" className="text-(length:--nk-text-label) leading-5 text-pretty text-muted-foreground">
               {description}
             </div>
           )}

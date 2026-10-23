@@ -10,6 +10,7 @@ import { Stagger, useNuiEvent, useStaggerGroup, useStaggerItem } from "nuikit-co
 
 import { cn, nkLevel, nkState, nkVariant, type NkVariantProps } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
+import { toneVars } from "@/components/ui/fill"
 
 /**
  * Notice — a notification on top of the game, and the stack that holds them: the default look of
@@ -43,9 +44,26 @@ import { Button } from "@/components/ui/button"
  *
  *   notify({ item: { name: "Water bottle", count: 2, icon: <CupSodaIcon /> }, position: "center-left" })
  *   <Notice item={{ name: "Lockpick", count: -1 }} />
+ *
+ * `tone` (1.5) is the shared tone vocabulary (neutral | info | success | warning | danger) and wins over
+ * `status`, which stays as its older name (`error` = danger, neutral = info); `hue` colours it with a role.
+ *
+ * Role: a message on top of the game that speaks once and leaves (the notify intent), or an item change.
+ * Anatomy: plate (nk-panel) > icon (a square Tile under the tile treatment; tone = status) > title (strong) over
+ *   a body-role description > dismiss > time line (the duration Fill along the bottom edge).
+ * Props: tone, status, hue, title, description, icon, duration, elapsed, paused, onDismiss, item, slide, leaving.
+ * Level means: the time left, 1 when it appears, 0 when it expires (--level, the time line drains from it).
+ * Rules: danger is data-state="alert" and role="alert"; lifetimes come from --nk-notify-ms-*; the stack sits on
+ *   --nk-z-system; transform and opacity only; the time line is hidden with motion off.
  */
 
 type NoticeStatus = "info" | "success" | "warning" | "error"
+
+/** The shared tone vocabulary (1.5); error and destructive are accepted aliases of danger. */
+type NoticeTone = "neutral" | "info" | "success" | "warning" | "danger" | "error" | "destructive"
+
+/** A status as the shared tone (data-tone). */
+const STATUS_TONE: Record<NoticeStatus, "info" | "success" | "warning" | "danger"> = { info: "info", success: "success", warning: "warning", error: "danger" }
 
 type NoticePosition =
   | "top-left"
@@ -115,6 +133,7 @@ const STATUS: Record<NoticeStatus, { icon: React.ReactNode; text: string; line: 
 /** The words other libraries use for a status (ox `inform`, QBCore `primary`, …). */
 const STATUS_ALIASES: Record<string, NoticeStatus> = {
   info: "info",
+  neutral: "info",
   inform: "info",
   primary: "info",
   default: "info",
@@ -148,7 +167,7 @@ function noticeTimeLeft(duration: number = NOTICE_DURATION, elapsed = 0) {
 }
 
 const noticeVariants = cva(
-  "nk-panel pointer-events-auto relative flex overflow-hidden px-4 py-3 text-sm leading-5",
+  "nk-panel pointer-events-auto relative flex overflow-hidden px-4 py-3 text-(length:--nk-text-label) leading-5",
   {
     variants: {
       size: {
@@ -268,7 +287,9 @@ function useEdgeMotion(ref: React.RefObject<HTMLDivElement | null>, on: boolean,
 
 function Notice({
   className,
-  status = "info",
+  status: statusProp = "info",
+  tone,
+  hue,
   title,
   description,
   icon,
@@ -296,7 +317,12 @@ function Notice({
   ...props
 }: NkVariantProps & Omit<React.ComponentProps<"div">, "title"> &
   VariantProps<typeof noticeVariants> & {
+    /** The older name of `tone` (error = danger). */
     status?: NoticeStatus
+    /** The tone (1.5): neutral | info | success | warning | danger. Wins over `status`. */
+    tone?: NoticeTone
+    /** A role (health, police…) for the icon and line colour. */
+    hue?: string
     title?: React.ReactNode
     description?: React.ReactNode
     /** Replaces the status icon; `null` or `false` for none. The status colour still applies. */
@@ -324,6 +350,7 @@ function Notice({
     /** An item added or removed: draws the item slab (icon tile + name + change) instead of a panel. */
     item?: NoticeItem
   }) {
+  const status = tone ? noticeStatus(tone) : statusProp
   const [held, setHeld] = React.useState(false)
   const line = React.useRef<HTMLDivElement>(null)
   const s = STATUS[status] ?? STATUS.info
@@ -360,7 +387,7 @@ function Notice({
         {...props}
       >
         <span data-slot="notice-item-tile" className="nk-slab-tile">
-          {item.image ? <img src={item.image} alt="" draggable={false} className="size-full object-contain p-0.5" /> : (item.icon ?? <PackageIcon />)}
+          {item.image ? <img src={item.image} alt="" draggable={false} className="size-full object-contain p-(--nk-space-1)" /> : (item.icon ?? <PackageIcon />)}
         </span>
         <span data-slot="notice-item-name" className="min-w-0 truncate">
           {item.name}
@@ -379,6 +406,7 @@ function Notice({
       {...nkVariant({ density, shape, motion })}
       data-slot="notice"
       data-status={status}
+      {...toneVars({ tone: STATUS_TONE[status] ?? "info", hue })}
       data-leaving={leaving || undefined}
       data-paused={frozen || undefined}
       data-state={nkState({ alert: status === "error", focus: held })}
@@ -413,12 +441,12 @@ function Notice({
       {iconEl !== null && iconEl !== false && (
         <span
           data-slot="notice-icon"
-          className={cn("flex h-5 shrink-0 items-center [&_svg:not([class*='size-'])]:size-4", s.text)}
+          className={cn("flex h-5 shrink-0 items-center [&_svg:not([class*='size-'])]:size-4", hue ? "text-(--hue-solid)" : s.text)}
         >
           {iconEl}
         </span>
       )}
-      <div className="flex min-w-0 flex-1 flex-col gap-0.5 break-words">
+      <div className="flex min-w-0 flex-1 flex-col gap-(--nk-space-1) break-words">
         {title && (
           <p data-slot="notice-title" className="[font-weight:var(--nk-weight-strong,600)]">
             {title}
@@ -436,7 +464,7 @@ function Notice({
           variant="ghost"
           size="icon-xs"
           aria-label="Dismiss"
-          className="-my-0.5 -mr-1.5 shrink-0 text-muted-foreground"
+          className="-my-(--nk-space-1) -mr-(--nk-space-2) shrink-0 text-muted-foreground"
           onClick={onDismiss}
         >
           <XIcon />
@@ -449,7 +477,7 @@ function Notice({
           data-slot="notice-time"
           className={cn(
             "absolute inset-x-0 bottom-0 h-(--nk-slab-line-height) origin-left motion-reduce:hidden [[data-nk-motion=off]_&]:hidden",
-            s.line
+            hue ? "bg-(--hue-solid)" : s.line
           )}
         />
       )}
@@ -523,6 +551,9 @@ type NoticeData = {
   title?: React.ReactNode
   description?: React.ReactNode
   status?: NoticeStatus
+  /** The tone (1.5); wins over status. */
+  tone?: NoticeTone
+  hue?: string
   icon?: React.ReactNode
   /** ms; 0 or Infinity stays until dismissed. Default 5000. */
   duration?: number
@@ -764,9 +795,9 @@ export {
   NOTICE_DURATION,
   NOTICE_ITEM_MERGE_MS,
   NOTICE_EXIT_MS,
-  NOTICE_POSITIONS,
   type NoticeItem,
   type NoticeStatus,
+  type NoticeTone,
   type NoticePosition,
   type NoticeData,
   type NoticeEntry,

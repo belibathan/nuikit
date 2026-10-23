@@ -9,7 +9,7 @@ import { Slot } from "radix-ui"
 
 import { cn, nkConfirm, nkState, nkVariant, type NkVariantProps } from "@/lib/utils"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Kbd } from "@/components/ui/kbd"
+import { Kbd, KbdGroup } from "@/components/ui/tile"
 import { Progress } from "@/components/ui/progress"
 import { meterColor, type MeterTone } from "@/components/ui/meter"
 
@@ -49,10 +49,22 @@ import { meterColor, type MeterTone } from "@/components/ui/meter"
  * progress, each bar in its own colour). `menuMetadata()` reads ox_lib's metadata shapes into its
  * items, keeping each item's colorScheme. `menuRowColor()` turns a tone, a library colour name or
  * a CSS colour into what the bars paint with (`progressColor`, an item's `color`).
+ *
+ * `as="div"` (1.5) renders the row as a focusable div with the row's look (a row inside another control, a
+ * row a parent drives), and `kbd` takes one key or a list (["Shift", "E"]): the kbd trail, Tiles gap-items apart.
+ *
+ * Role: the one action row every list is made of (menus, sheets, settings, pickers).
+ * Anatomy: sweep / indicator (nk-row) > lead (icon or image) > body (label over a body-role description, an
+ *   optional progress line) > trail (meta, the kbd trail, a checkbox, a stepper, actions, a chevron).
+ * Props: icon, image, description, progress, meta, kbd, chevron, active, checked, value, onStep, readOnly,
+ *   alert, inert, actions, as, asChild, tone.
+ * Level means: progress, the row's progress line (0–100 of its value, drawn 0–1).
+ * Rules: one trailing thing per row; height --nk-h-row; focus and the active row draw the identity indicator
+ *   (never the hover accent); attention is data-state="alert"; a trailing key is a Tile (Kbd), never text.
  */
 const menuRowVariants = cva(
   [
-    "group/menu-row nk-row w-full cursor-default text-left font-medium outline-none select-none",
+    "group/menu-row nk-row w-full cursor-default text-left [font-weight:var(--nk-type-label-weight,500)] outline-none select-none",
     // focus and active: the identity indicator (nk-row); the text brightens to the foreground
     "focus-visible:text-foreground data-[active]:text-foreground",
     "disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50",
@@ -102,8 +114,8 @@ type MenuRowProps = Omit<React.ComponentProps<"button">, "value" | "inert"> &
     progressColor?: string
     /** Right-aligned text: a price, a count, a plate. Tabular. */
     meta?: React.ReactNode
-    /** The key that triggers this row, as a shadcn Kbd. */
-    kbd?: React.ReactNode
+    /** The key that triggers this row (a Tile Kbd), or keys pressed together: the kbd trail. */
+    kbd?: React.ReactNode | readonly React.ReactNode[]
     /** A chevron: this row opens something. */
     chevron?: boolean
     /** Highlighted (keyboard selection, the open section). */
@@ -126,6 +138,8 @@ type MenuRowProps = Omit<React.ComponentProps<"button">, "value" | "inert"> &
     actions?: React.ReactNode
     /** Render your own element (a link) with the row's styles. */
     asChild?: boolean
+    /** div: a focusable div with the row's look instead of a button (1.5). Default: button (or a div when it must be). */
+    as?: "button" | "div"
   }
 
 function MenuRow({
@@ -151,6 +165,7 @@ function MenuRow({
   actions,
   disabled,
   asChild = false,
+  as,
   hover,
   children,
   onClick,
@@ -176,7 +191,7 @@ function MenuRow({
   const isCheck = checked !== undefined
   const isStepper = onStep !== undefined
   const hasActions = actions !== undefined && actions !== null && actions !== false
-  const asDiv = isCheck || isStepper || readOnly || hasActions
+  const asDiv = as === "div" || isCheck || isStepper || readOnly || hasActions
   const hovers = hover ?? !(inert || readOnly)
   // readOnly rows never highlight, not even when told to.
   const lit = readOnly ? "" : cn(ON_HIGHLIGHT, hovers && ON_HOVER)
@@ -205,7 +220,7 @@ function MenuRow({
       <span className="flex min-w-0 flex-1 flex-col">
         <span className="truncate">{children}</span>
         {description && (
-          <span data-slot="menu-row-description" className={cn("truncate text-xs leading-4 font-normal", quiet)}>
+          <span data-slot="menu-row-description" className={cn("truncate text-(length:--nk-text-label) leading-4 font-normal", quiet)}>
             {description}
           </span>
         )}
@@ -215,31 +230,31 @@ function MenuRow({
             value={progress}
             color={progressColor}
             label={typeof children === "string" ? children : undefined}
-            className="mt-1.5 mb-0.5 h-1"
+            className="mt-(--nk-space-2) mb-(--nk-space-1) h-1"
           />
         )}
       </span>
       {meta !== undefined && (
-        <span data-slot="menu-row-meta" className={cn("nk-num shrink-0 text-xs", quiet)}>
+        <span data-slot="menu-row-meta" className={cn("nk-num shrink-0 text-(length:--nk-text-label)", quiet)}>
           {meta}
         </span>
       )}
-      {kbd !== undefined && <Kbd className={kbdLit}>{kbd}</Kbd>}
+      {kbd !== undefined && kbd !== null && <MenuRowKbd keys={kbd} className={kbdLit} />}
       {isCheck && <Checkbox checked={checked} disabled={disabled} tabIndex={-1} aria-hidden className="pointer-events-none" />}
       {isStepper && (
         <span data-slot="menu-row-stepper" className="flex shrink-0 items-center gap-1">
           <span
-            className={cn("rounded-sm p-0.5", quiet, hovers && "hover:bg-background/50 hover:text-foreground")}
+            className={cn("rounded-(--nk-r-key) p-(--nk-space-1)", quiet, hovers && "hover:bg-background/50 hover:text-foreground")}
             onClick={(e) => (e.stopPropagation(), step(-1))}
             aria-hidden
           >
             <ChevronLeftIcon />
           </span>
-          <span data-slot="menu-row-value" data-tone={valueTone} className={cn("nk-num min-w-12 text-center text-sm", valueTone === "muted" && quiet)}>
+          <span data-slot="menu-row-value" data-tone={valueTone} className={cn("nk-num min-w-12 text-center text-(length:--nk-text-label)", valueTone === "muted" && quiet)}>
             {value}
           </span>
           <span
-            className={cn("rounded-sm p-0.5", quiet, hovers && "hover:bg-background/50 hover:text-foreground")}
+            className={cn("rounded-(--nk-r-key) p-(--nk-space-1)", quiet, hovers && "hover:bg-background/50 hover:text-foreground")}
             onClick={(e) => (e.stopPropagation(), step(1))}
             aria-hidden
           >
@@ -331,6 +346,20 @@ function MenuRow({
     >
       {label}
     </button>
+  )
+}
+
+/** The kbd trail: one key, or keys pressed together (a KbdGroup). */
+function MenuRowKbd({ keys, className }: { keys: React.ReactNode | readonly React.ReactNode[]; className?: string }) {
+  if (!Array.isArray(keys)) return <Kbd data-part="menu-row-kbd" className={className}>{keys as React.ReactNode}</Kbd>
+  return (
+    <KbdGroup data-part="menu-row-kbd" className="shrink-0">
+      {keys.map((k, i) => (
+        <Kbd key={i} className={className}>
+          {k}
+        </Kbd>
+      ))}
+    </KbdGroup>
   )
 }
 
@@ -464,7 +493,7 @@ function MenuRowDetails({
         <div className="flex flex-col gap-2 p-3">
           {title && <p className="nk-title truncate">{title}</p>}
           {items.length > 0 && (
-            <dl className="flex flex-col gap-1.5 text-xs leading-4">
+            <dl className="flex flex-col gap-(--nk-space-2) text-(length:--nk-text-label) leading-4">
               {items.map((m, i) => (
                 <div key={i} data-slot="menu-row-details-item" className="flex flex-col gap-1">
                   <div className="flex min-w-0 items-center gap-2">
@@ -511,7 +540,7 @@ function MenuRowList({
   const marker = React.useRef<HTMLDivElement>(null)
   useIndicator(list, marker, indicator ? active : null, "[data-slot=menu-row]")
   return (
-    <div ref={list} {...nkVariant({ density, shape, motion })} data-slot="menu-row-list" className={cn("relative flex flex-col gap-0.5", className)} {...props}>
+    <div ref={list} {...nkVariant({ density, shape, motion })} data-slot="menu-row-list" className={cn("relative flex flex-col gap-(--nk-space-1)", className)} {...props}>
       {indicator && <div ref={marker} aria-hidden data-slot="menu-row-indicator" className="nk-indicator" />}
       {children}
     </div>

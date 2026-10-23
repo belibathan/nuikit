@@ -15,16 +15,22 @@ import { cn, nkVariant, type NkVariantProps } from "@/lib/utils"
  *
  * `shape` is the chip's form (pill or tile); its corners follow `data-nk-shape` on any ancestor (kit variants).
  * `active` (talking, the selected slot) is the theme's primary; `warning` is destructive.
+ *
+ * Role: A small fact on the HUD: voice range, radio, seatbelt.
+ * Anatomy: hud-chip (pill | tile) > icon > text
+ * Props: shape, state, active, icon, density, motion, hue.
+ * Rules: Its shape prop is the form (pill, tile); corners follow data-nk-shape on an ancestor. warning is the
+ *   theme's destructive; active is primary. data-hue carries its role; the theme colours it.
  */
 const hudChipVariants = cva(
-  "nk-num shrink-0 transition-colors [&_svg]:pointer-events-none [&_svg]:shrink-0",
+  "nk-num shrink-0 [&_svg]:pointer-events-none [&_svg]:shrink-0",
   {
     variants: {
       shape: {
         /** 28px pill: icon + short text. */
         pill: "nk-chip [&_svg:not([class*='size-'])]:size-3.5",
         /** 48px square tile: icon over a short label. */
-        tile: "nk-hud inline-flex size-12 flex-col items-center justify-center gap-0.5 text-xs leading-4 font-medium [&_svg:not([class*='size-'])]:size-5",
+        tile: "nk-hud inline-flex size-12 flex-col items-center justify-center gap-(--nk-space-1) text-(length:--nk-text-label) leading-4 [font-weight:var(--nk-type-label-weight,500)] [&_svg:not([class*='size-'])]:size-5",
       },
       state: {
         default: "[&_[data-slot=hud-chip-icon]]:opacity-75",

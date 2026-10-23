@@ -21,6 +21,11 @@ import { Textarea } from "@/components/ui/textarea"
  * by transform. While an IME composes, while there is a selection range (the field draws its own
  * highlight then), and whenever motion is off or reduced (`html[data-nk-motion]`, the
  * OS setting), it is the plain native field: nothing is drawn over it.
+ *
+ * Role: Drop-in Input and Textarea with a caret that glides and characters that ease in.
+ * Anatomy: the real field (selection, IME, paste) > overlay (caret, typed characters)
+ * Rules: The real field stays underneath; the overlay never takes the pointer. The native caret with motion
+ *   off.
  */
 
 type Field = HTMLInputElement | HTMLTextAreaElement
@@ -178,7 +183,7 @@ function useSmoothField<T extends Field>(multiline: boolean) {
     // typing or moving restarts the breath, so the caret is solid while it moves
     c.getAnimations?.().forEach((a) => a.cancel())
     if (typeof c.animate === "function")
-      c.animate([{ opacity: 1 }, { opacity: 1, offset: 0.45 }, { opacity: 0.15, offset: 0.7 }, { opacity: 1 }], { duration: 1100, delay: 500, iterations: Infinity, easing: "ease-in-out" })
+      c.animate([{ opacity: 1 }, { opacity: 1, offset: 0.45 }, { opacity: 0.15, offset: 0.7 }, { opacity: 1 }], { duration: 1100, delay: 500, iterations: Infinity, easing: "linear" })
   })
 
   // the caret's breath stops when the field loses focus (nothing runs while idle)
@@ -203,7 +208,7 @@ function useSmoothField<T extends Field>(multiline: boolean) {
         <span
           ref={caret}
           data-slot="smooth-caret"
-          className="absolute top-0 left-0 w-0.5 rounded-full bg-primary"
+          className="absolute top-0 left-0 w-0.5 bg-primary"
           style={{ transition: `transform ${CARET_MS}ms cubic-bezier(0.2, 0.8, 0.2, 1)`, opacity: 0 }}
         />
       </div>

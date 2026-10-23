@@ -2,6 +2,7 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 import { Avatar, AvatarBadge, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Chip } from "@/components/ui/chip"
 import { Panel, PanelBody, PanelFooter, PanelHeader } from "@/components/ui/panel"
 import { Stat } from "@/components/ui/stat"
 
@@ -25,6 +26,11 @@ import { Stat } from "@/components/ui/stat"
  *
  * Duty is shown twice on purpose: a dot on the avatar for a glance, and the words for screen
  * readers and colour-blind players.
+ *
+ * Role: Who someone is at a glance: avatar, name, job and grade, duty, stats, actions.
+ * Anatomy: panel > header: avatar (or initials), name, job, duty Chip dot > stats grid > footer actions
+ * Props: name, avatar, job, grade, onDuty, dutyLabels, stats, columns.
+ * Rules: Duty is a Chip dot and the words, never colour alone. On the panel recipe; codes in the num role.
  */
 
 type PlayerCardStat = {
@@ -82,7 +88,7 @@ function PlayerCard({
         icon={
           <Avatar size="lg" data-slot="player-card-avatar">
             {avatar && <AvatarImage src={avatar} alt="" className="object-cover" />}
-            <AvatarFallback className="font-medium">{initials(name)}</AvatarFallback>
+            <AvatarFallback className="[font-weight:var(--nk-type-label-weight,500)]">{initials(name)}</AvatarFallback>
             {duty && (
               <AvatarBadge
                 aria-hidden
@@ -107,8 +113,8 @@ function PlayerCard({
         }
         actions={
           duty ? (
-            <span data-slot="player-card-duty" className="nk-label flex items-center gap-1.5">
-              <span aria-hidden className={cn("size-1.5 rounded-full", onDuty ? "bg-success" : "bg-muted-foreground")} />
+            <span data-slot="player-card-duty" className="nk-label flex items-center gap-(--nk-space-2)">
+              <Chip variant="dot" tone={onDuty ? "success" : undefined} aria-hidden />
               {onDuty ? dutyLabels[0] : dutyLabels[1]}
             </span>
           ) : undefined

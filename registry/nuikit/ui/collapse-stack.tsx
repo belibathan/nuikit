@@ -16,6 +16,13 @@ import { useCollapse, type UseCollapseOptions } from "@/hooks/use-collapse"
  *   />
  *
  * The row never re-orders the DOM: open chips move to the front with CSS `order`, so nothing remounts.
+ *
+ * Role: Clustered indicators (vitals, voice, job status) that stay icons until something changes.
+ * Anatomy: collapse-stack > collapse-stack-item (your chip, via renderItem) > collapse-stack-more (+N)
+ * Props: items, renderItem, max, restDelay, batchMs, min, optOut.
+ * Rules: At rest only icons; a change opens a chip for --nk-rest-delay. Changes within the batch window (400
+ *   ms) open and close together. Critical first, then the biggest change; at most max, then +N. Order moves
+ *   with CSS order; the DOM never re-orders, nothing remounts.
  */
 type CollapseItem = { key: string; value: number; critical?: boolean }
 type CollapseItemState = { open: boolean; delta: number; rank: number }
@@ -44,7 +51,7 @@ function CollapseStack<T extends CollapseItem>({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [signature, report])
   return (
-    <div data-slot="collapse-stack" className={cn("flex items-center gap-1.5", className)} {...props}>
+    <div data-slot="collapse-stack" className={cn("flex items-center gap-(--nk-space-2)", className)} {...props}>
       {items.map((item, i) => {
         const rank = c.rank(item.key)
         return (
@@ -64,7 +71,7 @@ function CollapseMore({ count, className, ...props }: React.ComponentProps<"span
     <span
       data-slot="collapse-stack-more"
       className={cn(
-        "nk-num inline-flex h-(--nk-chip-height) items-center rounded-(--nk-chip-radius) bg-(--nk-chip-bg) px-2 text-xs font-semibold text-(--nk-chip-fg)",
+        "nk-num inline-flex h-(--nk-chip-height) items-center rounded-(--nk-chip-radius) bg-(--nk-chip-bg) px-2 text-(length:--nk-text-label) [font-weight:var(--nk-weight-strong,600)] text-(--nk-chip-fg)",
         className
       )}
       {...props}

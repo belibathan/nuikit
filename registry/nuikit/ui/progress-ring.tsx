@@ -4,7 +4,8 @@ import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
 
 import { cn, nkLevel } from "@/lib/utils"
-import { Kbd } from "@/components/ui/kbd"
+import { toneVars } from "@/components/ui/fill"
+import { Kbd } from "@/components/ui/tile"
 
 /**
  * ProgressRing — a circle that fills: a timed action ("Lockpicking…"), a level, a download. The
@@ -18,14 +19,22 @@ import { Kbd } from "@/components/ui/kbd"
  * The timed ring is drawn on the compositor: two half-rings, each rotated by one linear Web Animation
  * (transform only) on one start time, so it closes exactly at `duration` with no React render and no
  * repaint while it runs (ringHalfKeyframes()). It plays at every motion level: progress is information.
+ *
+ * Role: the round half of the progress intent: a timed action or a level, on the game or a panel.
+ * Anatomy: root (role="progressbar", --level) > ring (track circle, fill circle or two timed half-rotors)
+ *   > center (the percentage, num role) > label > cancel (a Kbd and its label; a button with onCancel).
+ * Props: value, max, duration, onComplete, label, tone, hue, track, center, cancelKey, cancelLabel, onCancel, size.
+ * Level means: the fraction done, 0 at the start, 1 when complete (data-complete).
+ * Rules: tones use the shared vocabulary through toneVars() (danger = destructive), `hue` a role; a timed ring
+ *   moves by transform only; the value ring steps with the data (no tween on the dash).
  */
 
 const progressRingVariants = cva("relative shrink-0", {
   variants: {
     size: {
-      sm: "size-10 text-xs",
-      default: "size-16 text-sm",
-      lg: "size-24 text-xl",
+      sm: "size-10 text-(length:--nk-text-label)",
+      default: "size-16 text-(length:--nk-text-label)",
+      lg: "size-24 text-(length:--nk-text-title)",
     },
   },
   defaultVariants: {
@@ -33,7 +42,7 @@ const progressRingVariants = cva("relative shrink-0", {
   },
 })
 
-type ProgressRingTone = "primary" | "success" | "warning" | "info" | "destructive"
+type ProgressRingTone = "primary" | "success" | "warning" | "info" | "destructive" | "danger"
 
 /** Literal class names, so Tailwind finds them; tokens read as variables (docs/tokens.md). */
 const TONE: Record<ProgressRingTone, string> = {
@@ -42,6 +51,7 @@ const TONE: Record<ProgressRingTone, string> = {
   warning: "stroke-(--warning)",
   info: "stroke-(--info)",
   destructive: "stroke-(--destructive)",
+  danger: "stroke-(--destructive)",
 }
 
 const STEP_MS = 100
@@ -125,6 +135,8 @@ type ProgressRingProps = Omit<React.ComponentProps<"div">, "children"> &
     onComplete?: () => void
     label?: React.ReactNode
     tone?: ProgressRingTone
+    /** A role (health, police…): the ring in its colour (1.5). */
+    hue?: string
     /** game: drawn on the world (dark track, shadowed text). theme: on a panel. */
     track?: "game" | "theme"
     /** What's inside the ring. Default: the percentage; false: nothing. */
@@ -145,6 +157,7 @@ function ProgressRing({
   onComplete,
   label,
   tone = "primary",
+  hue,
   track = "game",
   center,
   cancelKey,
@@ -160,11 +173,11 @@ function ProgressRing({
   const drawn = percent
   const game = track === "game"
   const inside = center === undefined ? `${Math.round(percent)}%` : center
-  const toneClass = TONE[tone] ?? TONE.primary
+  const toneClass = hue ? "stroke-(--hue-solid)" : (TONE[tone] ?? TONE.primary)
 
   const cancel = (cancelKey || onCancel) && (
-    <span className="flex items-center gap-1.5 text-xs leading-4 font-medium">
-      {cancelKey && <Kbd className="h-5 min-w-5">{cancelKey}</Kbd>}
+    <span className="flex items-center gap-(--nk-gap-cluster) text-(length:--nk-text-label) leading-4 [font-weight:var(--nk-type-label-weight,500)]">
+      {cancelKey && <Kbd>{cancelKey}</Kbd>}
       <span className={game ? "opacity-75" : "text-muted-foreground"}>{cancelLabel}</span>
     </span>
   )
@@ -177,7 +190,7 @@ function ProgressRing({
       aria-valuenow={Math.round(percent)}
       aria-label={typeof label === "string" ? label : props["aria-label"]}
       data-slot="progress-ring"
-      data-tone={tone}
+      {...toneVars({ tone, hue })}
       data-complete={percent >= 100 || undefined}
       className={cn("inline-flex flex-col items-center gap-2", game && "text-(color:--hud-foreground)", className)}
       {...props}
@@ -206,7 +219,7 @@ function ProgressRing({
               transform="rotate(-90 50 50)"
               strokeDasharray={CIRCUMFERENCE}
               strokeDashoffset={ringOffset(drawn)}
-              className={cn(toneClass, "transition-[stroke-dashoffset] duration-200 ease-linear")}
+              className={toneClass}
             />
           )}
         </svg>
@@ -240,14 +253,14 @@ function ProgressRing({
             data-slot="progress-ring-center"
             data-auto={(running && center === undefined) || undefined}
             // While running, a ticking counter repaints only itself: its own layer, its own layout
-            className={cn("absolute inset-0 grid place-items-center nk-num font-semibold", running && "[contain:strict] will-change-transform")}
+            className={cn("absolute inset-0 grid place-items-center nk-num [font-weight:var(--nk-weight-strong,600)]", running && "[contain:strict] will-change-transform")}
           >
             {inside}
           </span>
         )}
       </div>
       {label && (
-        <span data-slot="progress-ring-label" className={cn("max-w-48 truncate text-sm leading-5 font-medium", game && "nk-shadow")}>
+        <span data-slot="progress-ring-label" className={cn("nk-body max-w-48 truncate leading-5 [font-weight:var(--nk-type-label-weight,500)]", game && "nk-shadow")}>
           {label}
         </span>
       )}
@@ -257,7 +270,7 @@ function ProgressRing({
             type="button"
             data-slot="progress-ring-cancel"
             onClick={onCancel}
-            className="rounded-md px-1 outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
+            className="rounded-(--nk-r-control) px-(--nk-space-1) outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
           >
             {cancel}
           </button>

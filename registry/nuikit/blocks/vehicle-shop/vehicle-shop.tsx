@@ -223,12 +223,12 @@ function VehicleShop({
               actions={<Money amount={vehicle.price} size="md" />}
             />
             <PanelBody variant="form">
-              <div className="flex flex-col gap-2.5">
+              <div className="flex flex-col gap-(--nk-space-3)">
                 {STATS.map(([key, label]) =>
                   vehicle.stats?.[key] !== undefined ? <Meter key={key} label={label} value={vehicle.stats[key]} valueText={`${Math.round(vehicle.stats[key]!)}`} /> : null
                 )}
                 {vehicle.seats !== undefined && (
-                  <p className="flex items-center gap-1.5 text-sm text-muted-foreground [&_svg]:size-3.5">
+                  <p className="flex items-center gap-(--nk-space-2) text-(length:--nk-text-label) text-muted-foreground [&_svg]:size-3.5">
                     <UsersIcon /> {vehicle.seats} {vehicle.seats === 1 ? "seat" : "seats"}
                   </p>
                 )}
@@ -251,7 +251,7 @@ function VehicleShop({
             </PanelBody>
             <PanelFooter className="flex flex-col items-stretch gap-2">
               {(error || problem) && (
-                <p role={error ? "alert" : undefined} className="text-sm text-destructive">
+                <p role={error ? "alert" : undefined} className="text-(length:--nk-text-label) text-destructive">
                   {error ?? problem}
                 </p>
               )}

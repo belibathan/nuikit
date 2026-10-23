@@ -24,6 +24,12 @@ import { cn } from "@/lib/utils"
  * Motion: `html[data-nk-motion="off"]` swaps at once; "reduced" (the player's pref or the OS) keeps a
  * ≤ 100 ms cross-fade with no movement. Nothing runs when the value is still. The reel is
  * `aria-hidden`; the current value is read once from a visually hidden copy.
+ *
+ * Role: A short text that changes like a slot reel; NumberRoll rolls each digit.
+ * Anatomy: root (sr-only text for readers) > reels (masked to the line, one per character with stagger)
+ * Props: value, direction, stagger, align, format.
+ * Rules: Transform and opacity only, masked to the line box. Swaps at once with motion off; the text is always
+ *   in the DOM for readers.
  */
 
 type Direction = "up" | "down"

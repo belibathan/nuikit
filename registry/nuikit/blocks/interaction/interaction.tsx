@@ -163,7 +163,7 @@ function Target({
         aria-hidden
         className={cn(
           // a Lua-driven state (live): it changes on the kit's base time, never Tailwind's default
-          "nk-hud nk-shadow flex size-10 items-center justify-center rounded-full transition-colors duration-(--nk-time) [&_svg]:size-5",
+          "nk-hud nk-shadow flex size-10 items-center justify-center rounded-(--nk-r-control) [&_svg]:size-5",
           live ? "text-primary" : "opacity-60"
         )}
       >
@@ -173,7 +173,7 @@ function Target({
         <div className="justify-self-start pl-4">
           <Panel size="sm" className={cn(!data.picking && "pointer-events-none")}>
             <PanelBody ref={rows} role="menu" aria-label={data.label ?? "Options"} onKeyDown={onKeyDown}>
-            {data.label && <p className="nk-caption truncate px-2.5 pt-1 pb-1.5">{data.label}</p>}
+            {data.label && <p className="nk-caption truncate px-(--nk-space-3) pt-1 pb-(--nk-space-2)">{data.label}</p>}
             {options.map((o, i) => (
               <MenuRow
                 key={o.id}
@@ -189,7 +189,7 @@ function Target({
               </MenuRow>
             ))}
             {error && (
-              <p role="alert" className="nk-label px-2.5 pt-1.5 pb-1 text-destructive">
+              <p role="alert" className="nk-label px-(--nk-space-3) pt-(--nk-space-2) pb-1 text-destructive">
                 {error}
               </p>
             )}

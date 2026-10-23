@@ -15,6 +15,7 @@ import {
 } from "lucide-react"
 
 import { cn } from "@/lib/utils"
+import { Chip } from "@/components/ui/chip"
 import { HudChip } from "@/components/ui/hud-chip"
 import { Meter } from "@/components/ui/meter"
 import { useFormatMoney } from "@/components/ui/money"
@@ -118,12 +119,9 @@ function HudWallet({ player }: { player: NuiPlayer }) {
       )}
       {job && (
         // a caption on the game (the identity's label style); duty is a status dot, never primary
-        <div data-slot="hud-minimal-job" className="nk-caption nk-on-game flex items-center gap-1.5">
+        <div data-slot="hud-minimal-job" className="nk-caption nk-on-game flex items-center gap-(--nk-space-2)">
           {job.onDuty !== undefined && (
-            <span
-              className={cn("size-1.5 rounded-full", job.onDuty ? "bg-success" : "bg-muted-foreground/40")}
-              aria-label={job.onDuty ? "On duty" : "Off duty"}
-            />
+            <Chip variant="dot" tone={job.onDuty ? "success" : undefined} aria-label={job.onDuty ? "On duty" : "Off duty"} />
           )}
           {[job.label ?? job.name, job.gradeLabel].filter(Boolean).join(", ")}
         </div>

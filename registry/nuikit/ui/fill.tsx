@@ -13,6 +13,12 @@ import { cn } from "@/lib/utils"
  *
  * Colour: `hue` (a role, data-hue) or an ancestor's data-hue, then `tone`, then --nk-fill-color. At or under
  * `alertAt` (true: the theme's --nk-alert-threshold, 0.2) it is data-state="alert" (--nk-fill-alert).
+ *
+ * Role: A level as a bar that fills: holds, sweeps, meters, timers.
+ * Anatomy: track > bar (::before, scaleX(--level)) > edge (::after)
+ * Props: level, tone, hue, alertAt, variant.
+ * Level means: 0–1, set inline as --level.
+ * Rules: Transform only: the bar scales, never width. Colour: hue, then tone, then --nk-fill-color; alert wins.
  */
 
 type FillTone = "neutral" | "info" | "success" | "warning" | "danger"

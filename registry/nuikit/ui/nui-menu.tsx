@@ -12,6 +12,12 @@ import { Item, ItemActions, ItemContent, ItemDescription, ItemGroup, ItemMedia, 
  * Arrow keys / W S move, Enter / E select.
  *
  *   <NuiMenu title="Garage" items={cars} onSelect={(car) => fetchNui("garage:spawn", car)} />
+ *
+ * Role: A keyboard-first list menu: a Card of Items highlighted like shadcn menus.
+ * Anatomy: card > header (title, description) > items (icon, label, description, meta)
+ * Props: title, description, items, onSelect, global.
+ * Rules: Arrows move, Enter selects; keys are read on window by default. The highlight is the accent, as in
+ *   shadcn menus.
  */
 type NuiMenuItem = {
   id: string
@@ -95,10 +101,10 @@ function NuiMenu<T extends NuiMenuItem>({
       {(title || description) && (
         <CardHeader className="border-b px-4 py-3 [.border-b]:pb-3">
           {title && <CardTitle className="nk-title">{title}</CardTitle>}
-          {description && <CardDescription className="text-xs">{description}</CardDescription>}
+          {description && <CardDescription className="text-(length:--nk-text-label)">{description}</CardDescription>}
         </CardHeader>
       )}
-      <ItemGroup ref={listRef} role="listbox" className="relative max-h-96 gap-1 overflow-y-auto p-1.5">
+      <ItemGroup ref={listRef} role="listbox" className="relative max-h-96 gap-1 overflow-y-auto p-(--nk-space-2)">
         {items.map((item, i) => (
           <Item
             key={item.id}
@@ -119,11 +125,11 @@ function NuiMenu<T extends NuiMenuItem>({
               onClick={() => !item.disabled && onSelect(item)}
             >
               {item.icon && <ItemMedia variant="icon">{item.icon}</ItemMedia>}
-              <ItemContent className="gap-0.5">
+              <ItemContent className="gap-(--nk-space-1)">
                 <ItemTitle>{item.label}</ItemTitle>
-                {item.description && <ItemDescription className="line-clamp-1 text-xs">{item.description}</ItemDescription>}
+                {item.description && <ItemDescription className="line-clamp-1 text-(length:--nk-text-label)">{item.description}</ItemDescription>}
               </ItemContent>
-              {item.meta && <ItemActions className="text-xs text-muted-foreground tabular-nums">{item.meta}</ItemActions>}
+              {item.meta && <ItemActions className="text-(length:--nk-text-label) text-muted-foreground tabular-nums">{item.meta}</ItemActions>}
             </button>
           </Item>
         ))}

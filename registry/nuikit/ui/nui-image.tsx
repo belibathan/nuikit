@@ -18,6 +18,12 @@ import { cn } from "@/lib/utils"
  *
  * The server's own templates come from the nuikit resource (`setr nuikit_images_<kind>`); the first
  * NuiImage on a page asks for them once.
+ *
+ * Role: The picture of an item, clothing, vehicle or weapon, found by the conventions servers use.
+ * Anatomy: img (the first candidate that loads) > fallback (a muted icon in the same box)
+ * Props: kind, imageKey, urls, fallback, alt.
+ * Rules: Candidates come from nuikit-core resolveImage, tried in order on error. The box never collapses: the
+ *   fallback keeps its size.
  */
 
 /** The server's image templates, live: loads them once per page and re-renders when they arrive. */

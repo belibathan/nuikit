@@ -248,12 +248,12 @@ function Storefront({
           title={data.title}
           description={data.description}
           actions={
-            <span className="flex items-center gap-3 text-sm">
+            <span className="flex items-center gap-3 text-(length:--nk-text-label)">
               <span className={cn("nk-caption", data.open ? "text-foreground" : "text-destructive")}>{data.open ? "Open" : "Closed"}</span>
               {payments.map((p) => {
                 const Icon = PAYMENT[p].icon
                 return (
-                  <span key={p} className="flex items-center gap-1.5 text-muted-foreground [&_svg]:size-3.5" title={PAYMENT[p].label}>
+                  <span key={p} className="flex items-center gap-(--nk-space-2) text-muted-foreground [&_svg]:size-3.5" title={PAYMENT[p].label}>
                     <Icon />
                     <Money amount={data.wallet?.[p] ?? 0} className="text-foreground" />
                   </span>
@@ -299,7 +299,7 @@ function Storefront({
               )}
             </PanelBody>
             <div data-slot="storefront-cart" className="flex min-h-0 flex-col border-l">
-              <p className="nk-caption flex items-center gap-1.5 px-4 pt-3 pb-1 [&_svg]:size-3.5">
+              <p className="nk-caption flex items-center gap-(--nk-space-2) px-4 pt-3 pb-1 [&_svg]:size-3.5">
                 <ShoppingCartIcon /> Cart
                 {count > 0 && <span className="nk-num ml-auto text-foreground">{count}</span>}
               </p>
@@ -378,7 +378,7 @@ function Storefront({
           <p
             role={error ? "alert" : undefined}
             className={cn(
-              "min-w-0 flex-1 truncate text-sm",
+              "min-w-0 flex-1 truncate text-(length:--nk-text-label)",
               error || (tab === "shop" && (lines.length || !data.open) && problem) ? "text-destructive" : "text-muted-foreground",
             )}
           >

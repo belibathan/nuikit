@@ -129,7 +129,7 @@ function PauseMenu({
   return (
     <div data-slot="pause-menu" className={cn("absolute inset-0 overflow-hidden text-foreground", className)} {...props}>
       {/* the game, blurred; the rail's side solid in the theme's background; a vignette so the cards float */}
-      <div className="nk-enter absolute -inset-8 bg-scrim/40 backdrop-blur-lg" aria-hidden />
+      <div className="nk-enter absolute -inset-8 bg-scrim/40" aria-hidden />
       <div className="absolute inset-0 bg-linear-to-r from-background from-25% to-transparent to-60% opacity-90" aria-hidden />
       <div className="absolute inset-0 bg-radial-[120%_90%_at_70%_50%] from-transparent from-45% to-scrim/55" aria-hidden />
 
@@ -137,7 +137,7 @@ function PauseMenu({
         <aside className="flex h-full w-80 shrink-0 flex-col p-12">
           <header className="flex items-center gap-3">
             {server.logo ? (
-              <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary text-sm font-semibold text-primary-foreground">
+              <div className="flex size-10 shrink-0 items-center justify-center rounded-(--nk-r-control) bg-primary text-(length:--nk-text-label) [font-weight:var(--nk-weight-strong,600)] text-primary-foreground">
                 {server.logo}
               </div>
             ) : null}
@@ -148,7 +148,7 @@ function PauseMenu({
             </div>
           </header>
 
-          <nav ref={nav} className="mt-12 flex flex-col gap-0.5" aria-label="Pause menu" onKeyDown={onKeyDown}>
+          <nav ref={nav} className="mt-12 flex flex-col gap-(--nk-space-1)" aria-label="Pause menu" onKeyDown={onKeyDown}>
             {actions.map((a, i) => {
               if (a === "disconnect") return null
               const item = ACTIONS[a]
@@ -173,7 +173,7 @@ function PauseMenu({
             {list(data?.links).map((l) => (
               <div key={l.label} className="flex items-baseline justify-between gap-4">
                 <dt className="nk-caption">{l.label}</dt>
-                <dd className="truncate text-sm font-medium">{l.value}</dd>
+                <dd className="truncate text-(length:--nk-text-label) [font-weight:var(--nk-type-label-weight,500)]">{l.value}</dd>
               </div>
             ))}
           </dl>
@@ -237,7 +237,7 @@ function PausePlayerCard({ player, data }: { player: NuiPlayer; data: PauseMenuD
           )}
           <div className="flex items-center justify-between">
             <span className="nk-caption">Server ID</span>
-            <span className="nk-num text-sm font-medium">{data?.serverId ?? "—"}</span>
+            <span className="nk-num text-(length:--nk-text-label) [font-weight:var(--nk-type-label-weight,500)]">{data?.serverId ?? "—"}</span>
           </div>
         </div>
       }

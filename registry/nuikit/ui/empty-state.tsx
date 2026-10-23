@@ -18,6 +18,12 @@ import { Tile } from "@/components/ui/tile"
  * Ink empty state. Without it the icon sits in shadcn's EmptyMedia, as before.
  *
  * Named empty-state, not empty: stock shadcn already has `empty`, and this is built on it.
+ *
+ * Role: What a list, a search or a screen shows when there is nothing, or something went wrong.
+ * Anatomy: empty > icon (EmptyMedia, or a square Tile with tile) > title (title role) > description (one
+ *   sentence) > actions
+ * Props: size, tone, icon, title, description, action, tile.
+ * Rules: One sentence on what to do next. error is role alert and the danger tone.
  */
 
 const emptyStateVariants = cva("border-0 text-balance", {
@@ -69,7 +75,7 @@ function EmptyState({
       className={cn(emptyStateVariants({ size }), className)}
       {...props}
     >
-      <EmptyHeader className="gap-1.5">
+      <EmptyHeader className="gap-(--nk-space-2)">
         {iconEl !== null && iconEl !== false && tile && (
           <Tile shape="square" size={size === "screen" ? "lg" : "md"} tone={error ? "danger" : undefined} className="mb-1">
             {iconEl}
@@ -94,7 +100,7 @@ function EmptyState({
         >
           {title}
         </EmptyTitle>
-        {description && <EmptyDescription className="text-sm leading-5 text-pretty">{description}</EmptyDescription>}
+        {description && <EmptyDescription className="text-(length:--nk-text-label) leading-5 text-pretty">{description}</EmptyDescription>}
       </EmptyHeader>
       {(action || children) && (
         <EmptyContent className="flex-row justify-center gap-2">

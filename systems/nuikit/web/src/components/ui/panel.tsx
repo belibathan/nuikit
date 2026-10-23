@@ -18,6 +18,12 @@ import { ScrollArea } from "@/components/ui/scroll-area"
  *   </Panel>
  *
  * A header with `tabs` (or a search, or a meter) becomes two rows: the title row, then that.
+ *
+ * Role: The one floating surface: a menu, a form, a list on the game.
+ * Anatomy: panel > panel-header (icon, title, description, actions) > panel-body (list | form) > panel-footer
+ * Props: size, selected, animate, density, shape, motion.
+ * Rules: One primary action per panel. Rows inside, not cards. Positioned by anchors and zones, never absolute
+ *   pixels.
  */
 const panelVariants = cva("nk-panel flex flex-col overflow-hidden", {
   variants: {
@@ -94,7 +100,7 @@ function PanelHeader({
         </span>
       )}
       {(title || description) && (
-        <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+        <div className="flex min-w-0 flex-1 flex-col gap-(--nk-space-1)">
           {title && <PanelTitle>{title}</PanelTitle>}
           {description && <PanelDescription>{description}</PanelDescription>}
         </div>
@@ -135,7 +141,7 @@ const panelBodyVariants = cva("", {
   variants: {
     variant: {
       /** Rows: 8px around 40px rows. */
-      list: "nk-panel-body flex flex-col gap-0.5",
+      list: "nk-panel-body flex flex-col gap-(--nk-space-1)",
       /** Fields and text: 16px, 16px between groups. */
       form: "flex flex-col gap-[calc(var(--nk-space)*4)] p-[calc(var(--nk-space)*4)]",
     },

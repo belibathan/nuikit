@@ -61,7 +61,8 @@
         }
       ],
       "dependencies": [
-        "nuikit-core"
+        "nuikit-core",
+        "lucide-react"
       ],
       "registryDependencies": [
         "sheet",
@@ -118,19 +119,36 @@
         "nuikit-core",
         "lucide-react"
       ],
-      "registryDependencies": [],
       "meta": {
         "since": "unreleased",
         "status": "experimental",
         "replaces": [],
-        "removeIn": null
+        "removeIn": null,
+        "spec": {
+          "role": "The picture of an item, clothing, vehicle or weapon, found by the conventions servers use.",
+          "anatomy": [
+            "img (the first candidate that loads)",
+            "fallback (a muted icon in the same box)"
+          ],
+          "props": [
+            "kind",
+            "imageKey",
+            "urls",
+            "fallback",
+            "alt"
+          ],
+          "rules": [
+            "Candidates come from nuikit-core resolveImage, tried in order on error.",
+            "The box never collapses: the fallback keeps its size."
+          ]
+        }
       }
     },
     {
       "name": "menu-row",
       "type": "registry:ui",
       "title": "Menu Row",
-      "description": "The 40px action row: icon, label, description, a progress bar in any tone or colour, and a trailing meta, chevron, Kbd, checkbox or value stepper. Active, disabled and destructive. MenuRowList slides one indicator to the active row. MenuRowDetails shows metadata with per-item bar colours.",
+      "description": "The 40px action row: icon, label, description, a progress bar in any tone or colour, and a trailing meta, chevron, kbd trail (one key or several, Tile Kbds), checkbox or value stepper; as=\"div\" for a focusable div with the row look. Active, disabled and destructive. MenuRowList slides one indicator to the active row. MenuRowDetails shows metadata with per-item bar colours.",
       "files": [
         {
           "path": "registry/nuikit/ui/menu-row.tsx",
@@ -145,9 +163,9 @@
       ],
       "registryDependencies": [
         "checkbox",
-        "kbd",
         "progress",
-        "https://nuikit.vercel.app/r/meter.json"
+        "https://nuikit.vercel.app/r/meter.json",
+        "https://nuikit.vercel.app/r/tile.json"
       ],
       "meta": {
         "since": "0.5.0",
@@ -170,13 +188,16 @@
             "tone",
             "density",
             "shape",
-            "motion"
+            "motion",
+            "as",
+            "kbd"
           ],
           "level": "progress: the row's progress line (0–1 of its value).",
           "rules": [
             "States on data-state: rest, focus (active), confirm (on click), disabled, alert.",
             "Hover is the accent; focus is the identity's indicator, never the hover colour.",
-            "A list the UI drives slides one indicator (MenuRowList)."
+            "A list the UI drives slides one indicator (MenuRowList).",
+            "A trailing key is a Tile (Kbd); as=\"div\" keeps the row look on a focusable div."
           ]
         }
       }
@@ -200,7 +221,32 @@
         "since": "0.5.0",
         "status": "stable",
         "replaces": [],
-        "removeIn": null
+        "removeIn": null,
+        "spec": {
+          "role": "A label over a number that matters: cash, players, a timer.",
+          "anatomy": [
+            "stat",
+            "label (caption, optional icon)",
+            "value (num role)",
+            "meta",
+            "delta (trend tone)"
+          ],
+          "props": [
+            "size",
+            "align",
+            "surface",
+            "label",
+            "value",
+            "icon",
+            "meta",
+            "delta",
+            "trend"
+          ],
+          "rules": [
+            "Numbers are tabular (num role); the label is a caption.",
+            "Trend colours mean direction only (success up, destructive down)."
+          ]
+        }
       }
     },
     {
@@ -322,7 +368,25 @@
         "since": "unreleased",
         "status": "experimental",
         "replaces": [],
-        "removeIn": null
+        "removeIn": null,
+        "spec": {
+          "role": "A short text that changes like a slot reel; NumberRoll rolls each digit.",
+          "anatomy": [
+            "root (sr-only text for readers)",
+            "reels (masked to the line, one per character with stagger)"
+          ],
+          "props": [
+            "value",
+            "direction",
+            "stagger",
+            "align",
+            "format"
+          ],
+          "rules": [
+            "Transform and opacity only, masked to the line box.",
+            "Swaps at once with motion off; the text is always in the DOM for readers."
+          ]
+        }
       }
     },
     {
@@ -347,14 +411,25 @@
         "since": "unreleased",
         "status": "experimental",
         "replaces": [],
-        "removeIn": null
+        "removeIn": null,
+        "spec": {
+          "role": "Drop-in Input and Textarea with a caret that glides and characters that ease in.",
+          "anatomy": [
+            "the real field (selection, IME, paste)",
+            "overlay (caret, typed characters)"
+          ],
+          "rules": [
+            "The real field stays underneath; the overlay never takes the pointer.",
+            "The native caret with motion off."
+          ]
+        }
       }
     },
     {
       "name": "vital",
       "type": "registry:ui",
       "title": "Vital",
-      "description": "A player stat: an icon and a shadcn Progress, colored by a theme token. Pulses when low.",
+      "description": "A player stat: an icon and a shadcn Progress, colored by a theme token. Pulses and is data-state=\"alert\" when low.",
       "files": [
         {
           "path": "registry/nuikit/ui/vital.tsx",
@@ -371,7 +446,29 @@
         "since": "0.3.0",
         "status": "stable",
         "replaces": [],
-        "removeIn": null
+        "removeIn": null,
+        "spec": {
+          "role": "A player stat as an icon and a bar, coloured by a theme token.",
+          "anatomy": [
+            "vital",
+            "icon (pulses when low)",
+            "label",
+            "bar (shadcn Progress)"
+          ],
+          "props": [
+            "value",
+            "icon",
+            "label",
+            "low",
+            "tone",
+            "size"
+          ],
+          "level": "value / 100: how full the stat is.",
+          "rules": [
+            "At or under low it is data-state=\"alert\" and the icon pulses.",
+            "Colours from the vital tokens, never a literal."
+          ]
+        }
       }
     },
     {
@@ -517,7 +614,26 @@
         "since": "0.3.0",
         "status": "stable",
         "replaces": [],
-        "removeIn": null
+        "removeIn": null,
+        "spec": {
+          "role": "A keyboard-first list menu: a Card of Items highlighted like shadcn menus.",
+          "anatomy": [
+            "card",
+            "header (title, description)",
+            "items (icon, label, description, meta)"
+          ],
+          "props": [
+            "title",
+            "description",
+            "items",
+            "onSelect",
+            "global"
+          ],
+          "rules": [
+            "Arrows move, Enter selects; keys are read on window by default.",
+            "The highlight is the accent, as in shadcn menus."
+          ]
+        }
       }
     },
     {
@@ -557,13 +673,16 @@
             "Sub-menus open in place; Escape goes back a level."
           ]
         }
-      }
+      },
+      "dependencies": [
+        "lucide-react"
+      ]
     },
     {
       "name": "speedometer",
       "type": "registry:ui",
       "title": "Speedometer",
-      "description": "Vehicle gauge: SVG arc in primary/destructive, gear as a Badge, fuel as a Progress.",
+      "description": "Vehicle gauge on a Dial: the rpm arc with ticks and a redline (data-state=\"alert\"), the speed in the num role, a gear Tile and a fuel Fill; speedometerDash() for live writes.",
       "files": [
         {
           "path": "registry/nuikit/ui/speedometer.tsx",
@@ -571,14 +690,38 @@
         }
       ],
       "registryDependencies": [
-        "badge",
-        "progress"
+        "https://nuikit.vercel.app/r/dial.json",
+        "https://nuikit.vercel.app/r/fill.json",
+        "https://nuikit.vercel.app/r/tile.json"
       ],
       "meta": {
         "since": "0.3.0",
         "status": "stable",
         "replaces": [],
-        "removeIn": null
+        "removeIn": null,
+        "spec": {
+          "role": "Speed, rpm, gear and fuel while driving, on the game or a panel.",
+          "anatomy": [
+            "Dial (ticks, track, rpm arc)",
+            "center: speed (num), unit (caption)",
+            "foot: gear Tile, fuel Fill"
+          ],
+          "props": [
+            "speed",
+            "rpm",
+            "gear",
+            "fuel",
+            "unit",
+            "size",
+            "surface",
+            "redline"
+          ],
+          "level": "rpm (0–1) on the arc; fuel / 100 on the fuel line.",
+          "rules": [
+            "Past the redline the dial and the gear are data-state=\"alert\".",
+            "No glow filter; the arc is data-driven, never tweened."
+          ]
+        }
       }
     },
     {
@@ -606,7 +749,7 @@
       "name": "notice",
       "type": "registry:ui",
       "title": "Notice",
-      "description": "A notification on the game (status icon, title, description, a time-left line that pauses on hover) and the stack that pins them to any of eight positions, with a useNotices() queue; an item add/remove slab (icon tile, name, delta) whose changes merge within 1.5 s. The default look of the notify intent.",
+      "description": "A notification on the game (a tone: neutral, info, success, warning or danger, with status as its older name; a hue; an icon, title, description, a time-left line that pauses on hover) and the stack that pins them to any of eight positions, with a useNotices() queue; an item add/remove slab (icon tile, name, delta) whose changes merge within 1.5 s. The default look of the notify intent.",
       "files": [
         {
           "path": "registry/nuikit/ui/notice.tsx",
@@ -619,7 +762,8 @@
         "nuikit-core"
       ],
       "registryDependencies": [
-        "button"
+        "button",
+        "https://nuikit.vercel.app/r/fill.json"
       ],
       "meta": {
         "since": "0.6.0",
@@ -653,14 +797,17 @@
             "motion",
             "policy",
             "queue",
-            "hurry"
+            "hurry",
+            "tone",
+            "hue"
           ],
           "level": "the time left, 1 → 0 over duration.",
           "rules": [
             "Newest nearest the edge; at most five per position.",
             "Slides in from its stack's edge, out toward it.",
             "error is data-state alert.",
-            "Queue policy (useNotices / NuiNotices): stack or one at a time, a capped queue (the oldest waiting goes), shown ones hurry (dwell x hurry) while others wait."
+            "Queue policy (useNotices / NuiNotices): stack or one at a time, a capped queue (the oldest waiting goes), shown ones hurry (dwell x hurry) while others wait.",
+            "tone (neutral | info | success | warning | danger) wins over status, its older name."
           ]
         }
       }
@@ -695,7 +842,32 @@
         "since": "0.6.0",
         "status": "stable",
         "replaces": [],
-        "removeIn": null
+        "removeIn": null,
+        "spec": {
+          "role": "One row of a game form and a preset per value (text, number, select, checkbox, slider, date, time, colour).",
+          "anatomy": [
+            "field",
+            "label (required mark, inline value, reset)",
+            "control",
+            "hint / description",
+            "error (role alert)"
+          ],
+          "props": [
+            "orientation",
+            "label",
+            "hint",
+            "description",
+            "error",
+            "required",
+            "disabled",
+            "valueText",
+            "onReset"
+          ],
+          "rules": [
+            "Nothing relies on :has() or native pickers (Chromium 103).",
+            "validateField() is the one validation path; the error replaces the description."
+          ]
+        }
       }
     },
     {
@@ -772,7 +944,8 @@
         "https://nuikit.vercel.app/r/stat.json",
         "https://nuikit.vercel.app/r/hud-chip.json",
         "https://nuikit.vercel.app/r/speedometer.json",
-        "https://nuikit.vercel.app/r/money.json"
+        "https://nuikit.vercel.app/r/money.json",
+        "https://nuikit.vercel.app/r/chip.json"
       ],
       "categories": [
         "screens"
@@ -899,7 +1072,7 @@
       "name": "progress-ring",
       "type": "registry:ui",
       "title": "Progress ring",
-      "description": "A circle that fills: a level, or a timed run whose onComplete fires from a timer (never an animation event, so it works with motion off). Label, percentage or any centre, tones, a game or theme track, three sizes, a cancel hint. The round half of the progress intent; meter is the bar.",
+      "description": "A circle that fills: a level, or a timed run whose onComplete fires from a timer (never an animation event, so it works with motion off). Label, percentage or any centre, tones or a role hue (toneVars()), a game or theme track, three sizes, a cancel hint. The round half of the progress intent; meter is the bar.",
       "files": [
         {
           "path": "registry/nuikit/ui/progress-ring.tsx",
@@ -910,7 +1083,8 @@
         "class-variance-authority"
       ],
       "registryDependencies": [
-        "kbd"
+        "https://nuikit.vercel.app/r/fill.json",
+        "https://nuikit.vercel.app/r/tile.json"
       ],
       "meta": {
         "since": "0.6.0",
@@ -936,7 +1110,8 @@
             "track",
             "size",
             "center",
-            "label"
+            "label",
+            "hue"
           ],
           "level": "value / max; a timed run fills 0 → 1.",
           "rules": [
@@ -950,7 +1125,7 @@
       "name": "countdown",
       "type": "registry:ui",
       "title": "Countdown",
-      "description": "A timer that matters: tabular mm:ss (h:mm:ss past an hour) in the identity's display type, a caption, a line that drains on its own between updates, a warning threshold, a done state, sizes up to a full-screen clock, theme or game surface. From Lua's seconds, or running on its own with onComplete from a timer.",
+      "description": "A timer that matters: tabular mm:ss (h:mm:ss past an hour) in the identity's display type, a caption, a line that drains on its own between updates, a warning threshold (data-state=\"alert\"), a hue or tone line through toneVars(), a done state, sizes up to a full-screen clock, theme or game surface. From Lua's seconds, or running on its own with onComplete from a timer.",
       "files": [
         {
           "path": "registry/nuikit/ui/countdown.tsx",
@@ -964,17 +1139,46 @@
         "since": "0.6.0",
         "status": "stable",
         "replaces": [],
-        "removeIn": null
+        "removeIn": null,
+        "spec": {
+          "role": "A wait that matters, read from across the screen: respawn, alarm, restart.",
+          "anatomy": [
+            "root",
+            "clock (display size, num face, role timer)",
+            "label (caption)",
+            "line (track and draining fill)"
+          ],
+          "props": [
+            "seconds",
+            "total",
+            "duration",
+            "onComplete",
+            "label",
+            "warnAt",
+            "warnTone",
+            "lineTone",
+            "hue",
+            "size",
+            "surface",
+            "line",
+            "format"
+          ],
+          "level": "The line is the time left over the total: 1 at the start, 0 when done.",
+          "rules": [
+            "At or under warnAt the root is data-state=\"alert\" and the clock pulses.",
+            "onComplete fires from a timer, so it finishes with motion off."
+          ]
+        }
       },
       "registryDependencies": [
-        "progress"
+        "https://nuikit.vercel.app/r/fill.json"
       ]
     },
     {
       "name": "band",
       "type": "registry:ui",
       "title": "Band",
-      "description": "A full-width band for a state the player is in (incapacitated, cuffed, spectating): the game darkened and tinted by a tone, tone hairlines above and below, a display title and a caption. The band slab of design v2, pinned to the bottom or top edge or in the flow.",
+      "description": "A full-width band for a state the player is in (incapacitated, cuffed, spectating): the game darkened and tinted by a tone or a role hue (toneVars()), tone hairlines above and below, a display title and a caption. The band slab of design v2, pinned to the bottom or top edge or in the flow.",
       "files": [
         {
           "path": "registry/nuikit/ui/band.tsx",
@@ -1003,14 +1207,18 @@
             "position",
             "density",
             "shape",
-            "motion"
+            "motion",
+            "hue"
           ],
           "rules": [
             "One band at a time.",
             "Text on the game: world foreground, legible over any frame."
           ]
         }
-      }
+      },
+      "registryDependencies": [
+        "https://nuikit.vercel.app/r/fill.json"
+      ]
     },
     {
       "name": "money",
@@ -1031,7 +1239,25 @@
         "since": "0.6.0",
         "status": "stable",
         "replaces": [],
-        "removeIn": null
+        "removeIn": null,
+        "spec": {
+          "role": "Every amount formatted one way: the server currency and locale, tabular figures.",
+          "anatomy": [
+            "money (num role)",
+            "sign",
+            "amount"
+          ],
+          "props": [
+            "amount",
+            "signDisplay",
+            "tone",
+            "size"
+          ],
+          "rules": [
+            "Whole units by default; compact only when asked.",
+            "A direction tone for gains and losses, never decoration."
+          ]
+        }
       }
     },
     {
@@ -1088,7 +1314,7 @@
       "name": "player-card",
       "type": "registry:ui",
       "title": "Player card",
-      "description": "Who someone is at a glance: avatar or initials, name, job and grade with an on/off duty dot and the words, a grid of stats (mono for codes), and footer actions. On the panel recipe.",
+      "description": "Who someone is at a glance: avatar or initials, name, job and grade with an on/off duty Chip dot and the words, a grid of stats (mono for codes), and footer actions. On the panel recipe.",
       "files": [
         {
           "path": "registry/nuikit/ui/player-card.tsx",
@@ -1098,13 +1324,37 @@
       "registryDependencies": [
         "avatar",
         "https://nuikit.vercel.app/r/panel.json",
-        "https://nuikit.vercel.app/r/stat.json"
+        "https://nuikit.vercel.app/r/stat.json",
+        "https://nuikit.vercel.app/r/chip.json"
       ],
       "meta": {
         "since": "0.6.0",
         "status": "stable",
         "replaces": [],
-        "removeIn": null
+        "removeIn": null,
+        "spec": {
+          "role": "Who someone is at a glance: avatar, name, job and grade, duty, stats, actions.",
+          "anatomy": [
+            "panel",
+            "header: avatar (or initials), name, job, duty Chip dot",
+            "stats grid",
+            "footer actions"
+          ],
+          "props": [
+            "name",
+            "avatar",
+            "job",
+            "grade",
+            "onDuty",
+            "dutyLabels",
+            "stats",
+            "columns"
+          ],
+          "rules": [
+            "Duty is a Chip dot and the words, never colour alone.",
+            "On the panel recipe; codes in the num role."
+          ]
+        }
       }
     },
     {
@@ -1118,8 +1368,6 @@
           "type": "registry:ui"
         }
       ],
-      "dependencies": [],
-      "registryDependencies": [],
       "meta": {
         "since": "unreleased",
         "status": "experimental",
@@ -1158,8 +1406,6 @@
           "type": "registry:ui"
         }
       ],
-      "dependencies": [],
-      "registryDependencies": [],
       "meta": {
         "since": "unreleased",
         "status": "experimental",
@@ -1206,7 +1452,6 @@
           "type": "registry:ui"
         }
       ],
-      "dependencies": [],
       "registryDependencies": [
         "https://nuikit.vercel.app/r/fill.json"
       ],
@@ -1248,8 +1493,6 @@
           "type": "registry:ui"
         }
       ],
-      "dependencies": [],
-      "registryDependencies": [],
       "meta": {
         "since": "unreleased",
         "status": "experimental",
@@ -1285,7 +1528,6 @@
           "type": "registry:ui"
         }
       ],
-      "dependencies": [],
       "registryDependencies": [
         "https://nuikit.vercel.app/r/tile.json",
         "https://nuikit.vercel.app/r/fill.json"
@@ -1319,6 +1561,139 @@
       }
     },
     {
+      "name": "dialog-shell",
+      "type": "registry:ui",
+      "title": "Dialog shell",
+      "description": "The one dialog chrome (tokens 1.5): stock Dialog or AlertDialog content on the plate recipe, with a title-role header, a padded body and an ActionBar footer; opacity-only when centred, a rise when on top.",
+      "files": [
+        {
+          "path": "registry/nuikit/ui/dialog-shell.tsx",
+          "type": "registry:ui"
+        }
+      ],
+      "meta": {
+        "since": "unreleased",
+        "status": "experimental",
+        "replaces": [],
+        "removeIn": null,
+        "spec": {
+          "role": "A modal question or form over the current surface (surface + dim + dialog, never a new screen).",
+          "anatomy": [
+            "plate (.nk-plate, --nk-z-dialog)",
+            "header: title, description, hairline",
+            "body (--nk-pad-surface)",
+            "footer: ActionBar hints, then buttons"
+          ],
+          "props": [
+            "size",
+            "position",
+            "alert",
+            "title",
+            "description",
+            "hints",
+            "footer"
+          ],
+          "rules": [
+            "A centred dialog animates opacity only; a top dialog may rise by --nk-rise.",
+            "One primary button per dialog.",
+            "A theme sets --nk-plate-*, never restyles the shell."
+          ]
+        }
+      },
+      "registryDependencies": [
+        "https://nuikit.vercel.app/r/action-bar.json",
+        "alert-dialog",
+        "dialog"
+      ]
+    },
+    {
+      "name": "sheet-section",
+      "type": "registry:ui",
+      "title": "Sheet section",
+      "description": "One group of rows in a sheet or panel body (tokens 1.5): a label, a meta on the same line, then the rows; sections split by a hairline.",
+      "files": [
+        {
+          "path": "registry/nuikit/ui/sheet-section.tsx",
+          "type": "registry:ui"
+        }
+      ],
+      "meta": {
+        "since": "unreleased",
+        "status": "experimental",
+        "replaces": [],
+        "removeIn": null,
+        "spec": {
+          "role": "Groups the rows of a sheet page under a short name (rows, not cards).",
+          "anatomy": [
+            "section",
+            "head: label (caption), meta (num)",
+            "rows"
+          ],
+          "props": [
+            "label",
+            "meta",
+            "rows"
+          ],
+          "rules": [
+            "One to three words for the label; the meta is a count or a total.",
+            "The first section has no top pad, the last no hairline."
+          ]
+        }
+      }
+    },
+    {
+      "name": "dial",
+      "type": "registry:ui",
+      "title": "Dial",
+      "description": "A round gauge (tokens 1.5): one SVG geometry with a track arc, a value arc or segments, ticks (a tick count lever) and an optional needle around your readout; a redline sets data-state=\"alert\". Speedometer composes it.",
+      "files": [
+        {
+          "path": "registry/nuikit/ui/dial.tsx",
+          "type": "registry:ui"
+        }
+      ],
+      "meta": {
+        "since": "unreleased",
+        "status": "experimental",
+        "replaces": [],
+        "removeIn": null,
+        "spec": {
+          "role": "A level read at a glance on a round gauge: rpm, boost, a charge.",
+          "anatomy": [
+            "root (--level)",
+            "ticks",
+            "track arc",
+            "value arc or segments",
+            "needle",
+            "center (children)"
+          ],
+          "props": [
+            "level",
+            "value",
+            "max",
+            "size",
+            "variant",
+            "ticks",
+            "segments",
+            "redline",
+            "needle",
+            "tone",
+            "hue",
+            "surface"
+          ],
+          "level": "How far the value has swept the arc: 0 at its start, 1 at its end.",
+          "rules": [
+            "The value arc is data-driven, never tweened; the needle moves by rotate.",
+            "Past the redline it is data-state=\"alert\".",
+            "Colours only from --nk-gauge-* and --nk-fill-* (or a hue); no glow filter."
+          ]
+        }
+      },
+      "registryDependencies": [
+        "https://nuikit.vercel.app/r/fill.json"
+      ]
+    },
+    {
       "name": "empty-state",
       "type": "registry:ui",
       "title": "Empty state",
@@ -1341,7 +1716,30 @@
         "since": "0.6.0",
         "status": "stable",
         "replaces": [],
-        "removeIn": null
+        "removeIn": null,
+        "spec": {
+          "role": "What a list, a search or a screen shows when there is nothing, or something went wrong.",
+          "anatomy": [
+            "empty",
+            "icon (EmptyMedia, or a square Tile with tile)",
+            "title (title role)",
+            "description (one sentence)",
+            "actions"
+          ],
+          "props": [
+            "size",
+            "tone",
+            "icon",
+            "title",
+            "description",
+            "action",
+            "tile"
+          ],
+          "rules": [
+            "One sentence on what to do next.",
+            "error is role alert and the danger tone."
+          ]
+        }
       }
     },
     {
@@ -1365,7 +1763,31 @@
         "since": "0.6.0",
         "status": "stable",
         "replaces": [],
-        "removeIn": null
+        "removeIn": null,
+        "spec": {
+          "role": "Press the key while the needle is in the zone: the challenge intent.",
+          "anatomy": [
+            "dial (track, zone arc)",
+            "needle (drawn per frame)",
+            "key (a Kbd tile)",
+            "outcome"
+          ],
+          "props": [
+            "size",
+            "zoneStart",
+            "zoneSize",
+            "keyLabel",
+            "speed",
+            "running",
+            "listen",
+            "result",
+            "onResult"
+          ],
+          "rules": [
+            "The needle moves without re-rendering; a full turn is a miss.",
+            "The outcome is success or fail on the key, never colour alone."
+          ]
+        }
       }
     },
     {
@@ -1542,7 +1964,8 @@
         "https://nuikit.vercel.app/r/panel.json",
         "https://nuikit.vercel.app/r/meter.json",
         "https://nuikit.vercel.app/r/menu-row.json",
-        "https://nuikit.vercel.app/r/empty-state.json"
+        "https://nuikit.vercel.app/r/empty-state.json",
+        "https://nuikit.vercel.app/r/chip.json"
       ],
       "categories": [
         "screens"
@@ -1631,7 +2054,6 @@
       ],
       "registryDependencies": [
         "button",
-        "spinner",
         "https://nuikit.vercel.app/r/panel.json",
         "https://nuikit.vercel.app/r/menu-row.json",
         "https://nuikit.vercel.app/r/stat.json",
@@ -1686,7 +2108,8 @@
         "https://nuikit.vercel.app/r/stat.json",
         "https://nuikit.vercel.app/r/confirm.json",
         "https://nuikit.vercel.app/r/money.json",
-        "https://nuikit.vercel.app/r/empty-state.json"
+        "https://nuikit.vercel.app/r/empty-state.json",
+        "https://nuikit.vercel.app/r/chip.json"
       ],
       "categories": [
         "screens"
@@ -1703,17 +2126,12 @@
       "name": "job-sheet",
       "type": "registry:block",
       "title": "Job sheet",
-      "description": "The one frame for a resource's menu: a floating sheet (docs/design.md, Surfaces) with a header row, sections of 48px rows, sub-pages that swap in place with a back row, and one actions row with a single primary. Lua fills the pages; the server checks every row against the caller's own job, grade and duty. Protocol-agnostic.",
+      "description": "The one frame for a resource's menu: a floating EdgeSheet (docs/design.md, Surfaces) with a header row, sections of 48px rows, sub-pages that swap in place with a back row, and one actions row with a single primary. Lua fills the pages; the server checks every row against the caller's own job, grade and duty. Protocol-agnostic.",
       "files": [
         {
           "path": "registry/nuikit/blocks/job-sheet/job-sheet.tsx",
           "type": "registry:component",
           "target": "components/blocks/job-sheet/job-sheet.tsx"
-        },
-        {
-          "path": "registry/nuikit/blocks/job-sheet/edge-sheet.tsx",
-          "type": "registry:component",
-          "target": "components/blocks/job-sheet/edge-sheet.tsx"
         },
         {
           "path": "registry/nuikit/blocks/job-sheet/nui.ts",
@@ -1734,10 +2152,10 @@
         "button",
         "kbd",
         "separator",
-        "sheet",
-        "scroll-area",
         "spinner",
-        "https://nuikit.vercel.app/r/menu-row.json"
+        "https://nuikit.vercel.app/r/menu-row.json",
+        "https://nuikit.vercel.app/r/chip.json",
+        "https://nuikit.vercel.app/r/edge-sheet.json"
       ],
       "categories": [
         "screens"

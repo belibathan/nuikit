@@ -27,6 +27,12 @@ import { Kbd } from "@/components/ui/kbd"
  *
  * One check per mount: a sequence of checks is a sequence of `key`s. skillCheckZone() places a
  * zone, skillCheckHit() is the rule, SKILL_CHECK_PRESETS has easy / medium / hard.
+ *
+ * Role: Press the key while the needle is in the zone: the challenge intent.
+ * Anatomy: dial (track, zone arc) > needle (drawn per frame) > key (a Kbd tile) > outcome
+ * Props: size, zoneStart, zoneSize, keyLabel, speed, running, listen, result, onResult.
+ * Rules: The needle moves without re-rendering; a full turn is a miss. The outcome is success or fail on the
+ *   key, never colour alone.
  */
 
 const skillCheckVariants = cva("relative shrink-0", {
@@ -288,7 +294,7 @@ function SkillCheck({
         <Kbd
           data-slot="skill-check-key"
           className={cn(
-            "h-8 min-w-8 rounded-md bg-popover px-2 text-sm font-semibold text-popover-foreground uppercase shadow-sm ring-1 ring-border",
+            "h-8 min-w-8 rounded-(--nk-r-control) bg-popover px-2 text-(length:--nk-text-label) [font-weight:var(--nk-weight-strong,600)] text-popover-foreground uppercase ring-1 ring-border",
             shown === "success" && "ring-success",
             shown === "fail" && "ring-destructive"
           )}

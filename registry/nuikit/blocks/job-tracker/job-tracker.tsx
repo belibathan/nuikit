@@ -162,7 +162,7 @@ function JobTracker({
           icon={<ClipboardListIcon />}
           title={data.title}
           description={jobSummary(steps, data.current)}
-          actions={<Money amount={data.pay} className="text-sm" />}
+          actions={<Money amount={data.pay} className="text-(length:--nk-text-label)" />}
         />
         <PanelBody>
           {steps.map((step, i) => {
@@ -191,7 +191,7 @@ function JobTracker({
         )}
         {(manage || error) && (
           <PanelFooter className="flex items-center gap-3">
-            <p role={error ? "alert" : undefined} className={cn("min-w-0 flex-1 truncate text-sm", error ? "text-destructive" : "text-muted-foreground")}>
+            <p role={error ? "alert" : undefined} className={cn("min-w-0 flex-1 truncate text-(length:--nk-text-label)", error ? "text-destructive" : "text-muted-foreground")}>
               {error ?? "Abandoning pays nothing."}
             </p>
             {manage && (

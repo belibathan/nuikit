@@ -34,6 +34,14 @@ import { Textarea } from "@/components/ui/textarea"
  *
  * Chromium 103 (FiveM): nothing here relies on :has(), and no control opens a native popup
  * (the date and colour inputs are drawn in the page; native pickers don't show in game).
+ *
+ * Role: One row of a game form and a preset per value (text, number, select, checkbox, slider, date, time,
+ *   colour).
+ * Anatomy: field > label (required mark, inline value, reset) > control > hint / description > error (role
+ *   alert)
+ * Props: orientation, label, hint, description, error, required, disabled, valueText, onReset.
+ * Rules: Nothing relies on :has() or native pickers (Chromium 103). validateField() is the one validation path;
+ *   the error replaces the description.
  */
 
 /* ── the row ─────────────────────────────────────────────────────────────── */
@@ -72,9 +80,9 @@ const formFieldVariants = cva("min-w-0", {
       /** Label row over the control (inputs, selects, sliders). */
       vertical: "nk-field",
       /** Control, then the label (checkboxes). */
-      horizontal: "flex flex-col gap-1.5",
+      horizontal: "flex flex-col gap-(--nk-space-2)",
       /** Label, then the control at the end of the row (switches). */
-      "inline-end": "flex flex-col gap-1.5",
+      "inline-end": "flex flex-col gap-(--nk-space-2)",
     },
   },
   defaultVariants: {
@@ -142,7 +150,7 @@ function FormField({
       data-slot="form-field-label"
       className={cn(
         "min-w-0 gap-1",
-        row ? "text-sm leading-5 font-medium" : "text-xs leading-4",
+        row ? "text-(length:--nk-text-label) leading-5 [font-weight:var(--nk-type-label-weight,500)]" : "text-(length:--nk-text-label) leading-4",
         disabled && "opacity-50"
       )}
     >
@@ -155,7 +163,7 @@ function FormField({
     </Label>
   )
   const hintEl = hint !== undefined && (
-    <span data-slot="form-field-hint" className={cn("truncate text-xs leading-4 text-muted-foreground", row && "font-normal")}>
+    <span data-slot="form-field-hint" className={cn("truncate text-(length:--nk-text-label) leading-4 text-muted-foreground", row && "font-normal")}>
       {hint}
     </span>
   )
@@ -175,18 +183,18 @@ function FormField({
         </Button>
       )}
       {valueText !== undefined && valueText !== null && (
-        <span data-slot="form-field-value" className="nk-num text-xs leading-4 font-medium normal-case text-muted-foreground">
+        <span data-slot="form-field-value" className="nk-num text-(length:--nk-text-label) leading-4 [font-weight:var(--nk-type-label-weight,500)] normal-case text-muted-foreground">
           {valueText}
         </span>
       )}
     </span>
   )
   const below = invalid ? (
-    <p id={errId} data-slot="form-field-error" role="alert" className={cn("text-xs leading-4 text-destructive", orientation === "horizontal" && "pl-6")}>
+    <p id={errId} data-slot="form-field-error" role="alert" className={cn("text-(length:--nk-text-label) leading-4 text-destructive", orientation === "horizontal" && "pl-6")}>
       {error}
     </p>
   ) : description ? (
-    <p id={descId} data-slot="form-field-description" className={cn("text-xs leading-4 text-muted-foreground", orientation === "horizontal" && "pl-6")}>
+    <p id={descId} data-slot="form-field-description" className={cn("text-(length:--nk-text-label) leading-4 text-muted-foreground", orientation === "horizontal" && "pl-6")}>
       {description}
     </p>
   ) : null
@@ -573,7 +581,7 @@ function NumberControl({
   const atMax = f.disabled || (max !== undefined && value !== null && value >= max)
   const inline = stepper === "inline"
   return (
-    <div className="flex items-center gap-1.5">
+    <div className="flex items-center gap-(--nk-space-2)">
       <div className="relative min-w-0 flex-1">
         {icon && (
           <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-muted-foreground [&_svg:not([class*='size-'])]:size-4">
@@ -598,7 +606,7 @@ function NumberControl({
           className={cn("nk-num [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none", icon && "pl-9", inline && "pr-14")}
         />
         {inline && (
-          <span data-slot="form-field-stepper" className="absolute inset-y-0 right-1 flex items-center gap-0.5">
+          <span data-slot="form-field-stepper" className="absolute inset-y-0 right-1 flex items-center gap-(--nk-space-1)">
             <Button type="button" variant="ghost" size="icon-xs" aria-label="Decrease" className="text-muted-foreground" disabled={atMin} onClick={() => press(-1)}>
               <ChevronDownIcon />
             </Button>
@@ -687,7 +695,7 @@ function SingleSelectControl({
   const f = useFormField()
   const [v, setV] = useControllable(value, defaultValue, onValueChange)
   return (
-    <div className="flex items-center gap-1.5">
+    <div className="flex items-center gap-(--nk-space-2)">
       <Select disabled={f.disabled} value={v ?? ""} onValueChange={(next) => setV(next || null)}>
         <SelectTrigger {...controlProps(f)} data-slot="form-field-control" className="w-full min-w-0">
           <SelectValue placeholder={placeholder} />
@@ -731,7 +739,7 @@ function MultiSelectControl({
   const labels = selected.map((s) => options.find((o) => o.value === s)?.label ?? s)
   const full = maxSelected !== undefined && selected.length >= maxSelected
   return (
-    <div className="flex items-center gap-1.5">
+    <div className="flex items-center gap-(--nk-space-2)">
       <Popover>
         <PopoverTrigger asChild>
           <Button
@@ -767,7 +775,7 @@ function MultiSelectControl({
                 <label
                   key={o.value}
                   className={cn(
-                    "flex min-h-8 items-center gap-2 rounded-sm px-2 text-sm hover:bg-accent hover:text-accent-foreground",
+                    "flex min-h-8 items-center gap-2 rounded-(--nk-r-key) px-2 text-(length:--nk-text-label) hover:bg-accent hover:text-accent-foreground",
                     off && "pointer-events-none opacity-50"
                   )}
                 >
@@ -1034,8 +1042,8 @@ function SegmentedInput({
       aria-invalid={bad}
       data-disabled={f.disabled || undefined}
       className={cn(
-        "flex h-9 w-full min-w-0 items-center rounded-md border border-input bg-transparent text-sm shadow-xs transition-[color,box-shadow] dark:bg-input/30",
-        dense ? "gap-0.5 px-2" : "gap-1 px-3",
+        "flex h-9 w-full min-w-0 items-center rounded-(--nk-r-control) border border-input bg-transparent text-(length:--nk-text-label) shadow-xs dark:bg-input/30",
+        dense ? "gap-(--nk-space-1) px-2" : "gap-1 px-3",
         "focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/50",
         "aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40",
         "data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
@@ -1496,7 +1504,7 @@ function DateRangeControl({
       invalid={(full(parts.start) && !s) || (full(parts.end) && !e) || backwards}
       separator={(i) =>
         i === order3.length ? (
-          <span aria-hidden className={cn(sepClass, "px-0.5")}>
+          <span aria-hidden className={cn(sepClass, "px-(--nk-space-1)")}>
             –
           </span>
         ) : (
@@ -1676,7 +1684,7 @@ function TimeControl({
               if (pm !== parts.pm) update({ ...parts, pm })
             }
           }}
-          className="nk-num ml-1 rounded-sm px-1 text-xs font-medium text-muted-foreground outline-none hover:text-foreground focus-visible:bg-accent focus-visible:text-accent-foreground"
+          className="nk-num ml-1 rounded-(--nk-r-key) px-1 text-(length:--nk-text-label) [font-weight:var(--nk-type-label-weight,500)] text-muted-foreground outline-none hover:text-foreground focus-visible:bg-accent focus-visible:text-accent-foreground"
         >
           {parts.pm ? "PM" : "AM"}
         </button>
@@ -1742,7 +1750,7 @@ function ColorControl({
           aria-hidden
           data-slot="form-field-swatch"
           className={cn(
-            "pointer-events-none absolute inset-y-0 left-2.5 my-auto size-5 rounded-sm border border-input",
+            "pointer-events-none absolute inset-y-0 left-2.5 my-auto size-5 rounded-(--nk-r-key) border border-input",
             !value && "bg-[repeating-linear-gradient(135deg,transparent_0_3px,var(--border)_3px_5px)]"
           )}
           // A user's colour, not a theme colour: plain hex, never oklch / color-mix.
@@ -1771,7 +1779,7 @@ function ColorControl({
         />
       </div>
       {normalized && normalized.length > 0 && (
-        <div role="group" aria-label="Swatches" className="flex flex-wrap gap-1.5">
+        <div role="group" aria-label="Swatches" className="flex flex-wrap gap-(--nk-space-2)">
           {normalized.map((s) => {
             const on = s === value
             return (
@@ -1787,7 +1795,7 @@ function ColorControl({
                   onValueChange(s)
                 }}
                 className={cn(
-                  "grid size-6 place-items-center rounded-md border border-input outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:opacity-50",
+                  "grid size-6 place-items-center rounded-(--nk-r-control) border border-input outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:opacity-50",
                   on && "ring-2 ring-ring ring-offset-1 ring-offset-popover"
                 )}
                 style={{ backgroundColor: s }}

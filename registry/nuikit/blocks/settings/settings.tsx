@@ -148,7 +148,7 @@ function Settings({
         }
       />
       <PanelBody scroll className="max-h-[26rem]">
-        <div ref={body} className="flex flex-col gap-0.5" onKeyDownCapture={onKeyDownCapture}>
+        <div ref={body} className="flex flex-col gap-(--nk-space-1)" onKeyDownCapture={onKeyDownCapture}>
           {current ? (
             list(current.items).map((item) => <SettingsRow key={item.id} item={item} value={values[item.id]} onValue={set} />)
           ) : (

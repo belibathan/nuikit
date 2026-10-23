@@ -10,6 +10,13 @@ import { Progress } from "@/components/ui/progress"
  * the theme's --vital-* tokens (docs/tokens.md).
  *
  *   <Vital value={health} tone="health" icon={<HeartIcon />} label="Health" />
+ *
+ * Role: A player stat as an icon and a bar, coloured by a theme token.
+ * Anatomy: vital > icon (pulses when low) > label > bar (shadcn Progress)
+ * Props: value, icon, label, low, tone, size.
+ * Level means: value / 100: how full the stat is.
+ * Rules: At or under low it is data-state="alert" and the icon pulses. Colours from the vital tokens, never a
+ *   literal.
  */
 const vitalVariants = cva(
   "flex items-center gap-2 [&_svg:not([class*='size-'])]:size-4 [&_svg]:shrink-0",
@@ -78,7 +85,7 @@ function Vital({
   return (
     <div
       data-slot="vital"
-      data-critical={critical || undefined}
+      data-state={critical ? "alert" : undefined}
       className={cn(vitalVariants({ tone, size }), className)}
       {...props}
     >

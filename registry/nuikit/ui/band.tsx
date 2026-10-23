@@ -2,6 +2,7 @@ import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
 
 import { cn, nkVariant, type NkVariantProps } from "@/lib/utils"
+import { toneVars } from "@/components/ui/fill"
 
 /**
  * Band — a full-width band across the screen for a state the player is in, not a message they
@@ -18,6 +19,13 @@ import { cn, nkVariant, type NkVariantProps } from "@/lib/utils"
  * It pins itself to the bottom (or top) edge of the full-screen root, or sits in the flow with
  * `position="inline"`. Colours are the tone's theme token, so it follows every identity; text is
  * the world's (light over the game in every theme).
+ *
+ * Role: a state the player is in (down, cuffed, spectating), not a message read once.
+ * Anatomy: band (nk-slab-band: the darkened game, a tint and two hairlines in the tone) > title (display face)
+ *   > subtitle (caption) > children (a countdown, a hint).
+ * Props: tone (danger | warning | success | info | brand | neutral; destructive = danger), hue, title, subtitle, position.
+ * Rules: one band on screen; colours from the tone's or the hue's channels (toneVars()), never a literal;
+ *   the text is the world's; it never takes the pointer.
  */
 const bandVariants = cva("nk-slab-band nk-on-game pointer-events-none z-10", {
   variants: {
@@ -35,11 +43,12 @@ const bandVariants = cva("nk-slab-band nk-on-game pointer-events-none z-10", {
   },
 })
 
-type BandTone = "destructive" | "warning" | "success" | "info" | "brand" | "neutral"
+type BandTone = "destructive" | "danger" | "warning" | "success" | "info" | "brand" | "neutral"
 
 /** The theme channels behind each tone (docs/tokens.md); neutral is the darkened game alone. */
 const TONE_RGB: Record<BandTone, string | null> = {
   destructive: "var(--destructive-rgb)",
+  danger: "var(--destructive-rgb)",
   warning: "var(--warning-rgb)",
   success: "var(--success-rgb)",
   info: "var(--info-rgb)",
@@ -53,6 +62,7 @@ function Band({
   tone = "destructive",
   title,
   subtitle,
+  hue,
   children,
   style,
   density,
@@ -67,14 +77,16 @@ function Band({
     title?: React.ReactNode
     /** A caption under it: what to do, who did it. */
     subtitle?: React.ReactNode
+    /** A role (police, ems…): the band in its colour instead of the tone's (1.5). */
+    hue?: string
   }) {
-  const rgb = Object.prototype.hasOwnProperty.call(TONE_RGB, tone) ? TONE_RGB[tone] : TONE_RGB.destructive
+  const rgb = hue ? "var(--hue)" : Object.prototype.hasOwnProperty.call(TONE_RGB, tone) ? TONE_RGB[tone] : TONE_RGB.destructive
   return (
     <div
       role="status"
       {...nkVariant({ density, shape, motion })}
       data-slot="band"
-      data-tone={tone}
+      {...toneVars({ tone, hue })}
       className={cn(bandVariants({ position }), className)}
       style={
         {

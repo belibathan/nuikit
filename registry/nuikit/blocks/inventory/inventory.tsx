@@ -259,7 +259,7 @@ function Inventory({
           title={c.label}
           actions={
             c.maxWeight ? (
-              <span className="nk-num text-sm text-muted-foreground">
+              <span className="nk-num text-(length:--nk-text-label) text-muted-foreground">
                 {formatWeight(weight)} / {formatWeight(c.maxWeight)}
               </span>
             ) : undefined
@@ -330,7 +330,7 @@ function Inventory({
         </PanelBody>
         {side === "player" && (
           <PanelFooter className="flex items-center gap-3">
-            <p role={error ? "alert" : undefined} className={cn("min-w-0 flex-1 truncate text-sm", error ? "text-destructive" : "text-muted-foreground")}>
+            <p role={error ? "alert" : undefined} className={cn("min-w-0 flex-1 truncate text-(length:--nk-text-label)", error ? "text-destructive" : "text-muted-foreground")}>
               {error ?? (pick ? `${pick.label}${pick.count > 1 ? ` × ${pick.count}` : ""}` : "Drag to move. Shift drags half, Ctrl one.")}
             </p>
             <Button size="sm" disabled={!pick?.usable || busy} onClick={() => use(pick)}>
@@ -374,8 +374,8 @@ function ItemTooltip({ item, className, ...props }: React.ComponentProps<"sectio
     <Panel role="tooltip" data-inventory-tooltip animate={false} size="sm" className={cn("pointer-events-none fixed z-40 w-60", className)} {...props}>
       <PanelBody variant="form" className="gap-2 p-3">
         <div className="flex items-baseline justify-between gap-3">
-          <span className="truncate font-medium">{item.label}</span>
-          {item.count > 1 && <span className="nk-num text-sm text-muted-foreground">× {item.count}</span>}
+          <span className="truncate [font-weight:var(--nk-type-label-weight,500)]">{item.label}</span>
+          {item.count > 1 && <span className="nk-num text-(length:--nk-text-label) text-muted-foreground">× {item.count}</span>}
         </div>
         {item.description && <p className="nk-label">{item.description}</p>}
         {(item.weight !== undefined || info.length > 0) && (

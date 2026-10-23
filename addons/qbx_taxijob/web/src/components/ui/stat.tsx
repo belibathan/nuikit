@@ -17,11 +17,17 @@ import { cn } from "@/lib/utils"
  *
  * `surface="game"` is for bare text on the game world (the HUD): white with a soft shadow, since
  * theme text can vanish over a bright sky.
+ *
+ * Role: A label over a number that matters: cash, players, a timer.
+ * Anatomy: stat > label (caption, optional icon) > value (num role) > meta > delta (trend tone)
+ * Props: size, align, surface, label, value, icon, meta, delta, trend.
+ * Rules: Numbers are tabular (num role); the label is a caption. Trend colours mean direction only (success up,
+ *   destructive down).
  */
 const statVariants = cva("flex min-w-0 flex-col", {
   variants: {
     size: {
-      sm: "gap-0.5",
+      sm: "gap-(--nk-space-1)",
       md: "gap-1",
       display: "gap-1",
     },
@@ -41,7 +47,7 @@ const statVariants = cva("flex min-w-0 flex-col", {
   },
 })
 
-const statValueVariants = cva("nk-num flex min-w-0 items-baseline gap-1.5", {
+const statValueVariants = cva("nk-num flex min-w-0 items-baseline gap-(--nk-space-2)", {
   variants: {
     size: {
       sm: "text-(length:--nk-text-base) leading-5 [font-weight:var(--nk-weight-strong,600)]",
@@ -86,7 +92,7 @@ function Stat({
       <span
         data-slot="stat-label"
         className={cn(
-          "nk-caption flex min-w-0 items-center gap-1.5 [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-3.5",
+          "nk-caption flex min-w-0 items-center gap-(--nk-space-2) [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-3.5",
           game && "text-world-foreground-muted",
           align === "end" && "flex-row-reverse"
         )}
@@ -100,9 +106,9 @@ function Stat({
           <span
             data-slot="stat-meta"
             className={cn(
-              "shrink-0 text-xs font-medium",
+              "shrink-0 text-(length:--nk-text-label) [font-weight:var(--nk-type-label-weight,500)]",
               "text-muted-foreground",
-              size === "display" && "text-sm"
+              size === "display" && "text-(length:--nk-text-label)"
             )}
           >
             {meta}
@@ -114,7 +120,7 @@ function Stat({
           data-slot="stat-delta"
           data-trend={trend}
           className={cn(
-            "nk-num flex items-center gap-1 text-xs font-medium [&_svg]:size-3.5",
+            "nk-num flex items-center gap-1 text-(length:--nk-text-label) [font-weight:var(--nk-type-label-weight,500)] [&_svg]:size-3.5",
             trend === "down" ? "text-destructive" : "text-muted-foreground"
           )}
         >
