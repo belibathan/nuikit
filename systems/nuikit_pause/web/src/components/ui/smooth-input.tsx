@@ -2,7 +2,7 @@
 "use client"
 
 import * as React from "react"
-import { motionLevel } from "nuikit-core/motion"
+import { motionLevel, token, tokenMs } from "nuikit-core/motion"
 
 import { cn } from "@/lib/utils"
 import { Input } from "@/components/ui/input"
@@ -18,10 +18,13 @@ import { Textarea } from "@/components/ui/textarea"
  *   <SmoothTextarea rows={4} defaultValue={note} />
  *
  * How: the field's own glyphs and caret are made transparent and a mirror of its text is drawn over it
- * (same font, padding and scroll), with the new characters fading up and a caret element that moves
- * by transform. While an IME composes, while there is a selection range (the field draws its own
- * highlight then), and whenever motion is off or reduced (`html[data-nk-motion]`, the
- * OS setting), it is the plain native field: nothing is drawn over it.
+ * (same font, padding and scroll). The caret is a drawn element that glides to the measured position on the
+ * ladder (`--nk-caret-time`, `--nk-caret-ease`, `--nk-caret-width`); every typed character rises in on its own
+ * (`--nk-type-in-distance` over `--nk-type-in-time`, a key-stagger between characters of one paste) and a deleted
+ * one drops out (`--nk-type-out-time`). While an IME composes, while there is a selection range (the field draws
+ * its own highlight then), and whenever motion is off or reduced (`html[data-nk-motion]`, the OS setting), it is
+ * the plain native field: nothing is drawn over it. Transform and opacity only; the value, events and form
+ * semantics are the field's own.
  *
  * Role: Drop-in Input and Textarea with a caret that glides and characters that ease in.
  * Anatomy: the real field (selection, IME, paste) > overlay (caret, typed characters)
@@ -55,9 +58,15 @@ const MIRRORED = [
   "color",
 ] as const
 
-/** Longer insertions (a paste) fade in as one block; short ones per keystroke. */
-const TYPE_MS = 140
-const CARET_MS = 90
+/** The motion levers (kit.css), read from <html> once: the defaults when a page has no kit. */
+const TYPE_IN_MS = 210
+const TYPE_OUT_MS = 98
+const STAGGER_MS = 20
+/** Past this many characters an insertion (a paste) rises as one block, not a ripple. */
+const RIPPLE_MAX = 12
+const EASE_OUT = "cubic-bezier(0.2, 0.8, 0.2, 1)"
+const EASE_IN = "cubic-bezier(0.4, 0, 1, 1)"
+const distanceOf = () => token("--nk-type-in-distance") || "0.45em"
 
 function useMotionOn() {
   const [on, setOn] = React.useState(() => motionLevel() === "on")
@@ -82,6 +91,8 @@ interface View {
   caret: number
   /** the last insertion [from, to), keyed so it animates once */
   ins: { from: number; to: number; key: number } | null
+  /** the last deletion: the text that left and where it stood, keyed so it leaves once */
+  del: { at: number; text: string; key: number } | null
   focused: boolean
   composing: boolean
 }
@@ -94,7 +105,7 @@ function useSmoothField<T extends Field>(multiline: boolean) {
   const caret = React.useRef<HTMLSpanElement>(null)
   const on = useMotionOn()
   const seq = React.useRef(0)
-  const [view, setView] = React.useState<View>({ value: "", caret: 0, ins: null, focused: false, composing: false })
+  const [view, setView] = React.useState<View>({ value: "", caret: 0, ins: null, del: null, focused: false, composing: false })
 
   // read the field into the view; diff the value to find what was typed
   const sync = React.useCallback(() => {
@@ -105,16 +116,20 @@ function useSmoothField<T extends Field>(multiline: boolean) {
       const a = el.selectionStart ?? value.length
       const b = el.selectionEnd ?? a
       let ins = v.ins
+      let del = v.del
       if (value !== v.value) {
         let p = 0
         while (p < value.length && p < v.value.length && value[p] === v.value[p]) p++
         let s = 0
         while (s < value.length - p && s < v.value.length - p && value[value.length - 1 - s] === v.value[v.value.length - 1 - s]) s++
         const to = value.length - s
-        ins = to > p ? { from: p, to, key: ++seq.current } : null
+        const gone = v.value.slice(p, v.value.length - s)
+        const key = ++seq.current
+        ins = to > p ? { from: p, to, key } : null
+        del = gone ? { at: p, text: gone, key } : null
       }
-      const next = { ...v, value, caret: a === b ? a : -1, ins, focused: document.activeElement === el }
-      return next.value === v.value && next.caret === v.caret && next.ins === v.ins && next.focused === v.focused ? v : next
+      const next = { ...v, value, caret: a === b ? a : -1, ins, del, focused: document.activeElement === el }
+      return next.value === v.value && next.caret === v.caret && next.ins === v.ins && next.del === v.del && next.focused === v.focused ? v : next
     })
   }, [])
 
@@ -179,7 +194,13 @@ function useSmoothField<T extends Field>(multiline: boolean) {
     const x = mk.offsetLeft - el.scrollLeft
     const y = mk.offsetTop - el.scrollTop
     c.style.height = `${mk.offsetHeight}px`
-    c.style.transform = `translate(${x}px, ${y}px)`
+    if (c.style.opacity === "0") {
+      // first show (focus): appear where the caret is, no glide from a stale place
+      c.style.transition = "none"
+      c.style.transform = `translate(${x}px, ${y}px)`
+      void c.offsetWidth
+      c.style.transition = ""
+    } else c.style.transform = `translate(${x}px, ${y}px)`
     c.style.opacity = ""
     // typing or moving restarts the breath, so the caret is solid while it moves
     c.getAnimations?.().forEach((a) => a.cancel())
@@ -209,8 +230,8 @@ function useSmoothField<T extends Field>(multiline: boolean) {
         <span
           ref={caret}
           data-slot="smooth-caret"
-          className="absolute top-0 left-0 w-0.5 bg-primary"
-          style={{ transition: `transform ${CARET_MS}ms cubic-bezier(0.2, 0.8, 0.2, 1)`, opacity: 0 }}
+          className="absolute top-0 left-0 bg-primary [transition:transform_var(--nk-caret-time,140ms)_var(--nk-caret-ease,cubic-bezier(0.2,0,0,1))]"
+          style={{ width: "var(--nk-caret-width, 0.125rem)", borderRadius: "var(--nk-r-key, 1px)", opacity: 0 }}
         />
       </div>
     </div>
@@ -221,19 +242,24 @@ function useSmoothField<T extends Field>(multiline: boolean) {
   return { field, overlay, fieldClass }
 }
 
-/** The text as spans: before, the new characters (fading up once), after, with the caret marker. */
+/**
+ * The text as spans: before, the new characters (each rising in once), after, with the caret marker; what was
+ * just deleted leaves from where it stood (a zero-width span, so the rest of the line never shifts for it).
+ */
 function Mirrored({ view, marker }: { view: View; marker: React.RefObject<HTMLSpanElement | null> }) {
-  const { value, caret, ins } = view
+  const { value, caret, ins, del } = view
   const cuts = new Set<number>([0, value.length])
   if (ins) {
     cuts.add(Math.min(ins.from, value.length))
     cuts.add(Math.min(ins.to, value.length))
   }
   if (caret >= 0) cuts.add(Math.min(caret, value.length))
+  if (del) cuts.add(Math.min(del.at, value.length))
   const points = [...cuts].sort((a, b) => a - b)
   const out: React.ReactNode[] = []
   for (let i = 0; i < points.length; i++) {
     const at = points[i]!
+    if (del && del.at === at) out.push(<Leaving key={`d${del.key}`} text={del.text} />)
     if (caret === at) out.push(<span key={`m${at}`} ref={marker} className="inline-block w-0 align-baseline" style={{ height: "1.15em", verticalAlign: "-0.2em" }} />)
     const next = points[i + 1]
     if (next === undefined || next <= at) continue
@@ -246,23 +272,48 @@ function Mirrored({ view, marker }: { view: View; marker: React.RefObject<HTMLSp
   return <>{out}</>
 }
 
+/** A typed run: each character rises in from --nk-type-in-distance, a key-stagger apart; a paste rises as one. */
 function Typed({ text }: { text: string }) {
+  const ref = React.useRef<HTMLSpanElement>(null)
+  const ripple = text.length <= RIPPLE_MAX
+  React.useLayoutEffect(() => {
+    const el = ref.current
+    if (!el || typeof el.animate !== "function") return
+    const time = tokenMs("--nk-type-in-time", TYPE_IN_MS)
+    const stagger = Math.min(tokenMs("--nk-stagger", STAGGER_MS), 30)
+    const frames = [
+      { opacity: 0, transform: `translateY(${distanceOf()})` },
+      { opacity: 1, transform: "translateY(0)" },
+    ]
+    const targets = ripple ? Array.from(el.children as HTMLCollectionOf<HTMLElement>) : [el]
+    const runs = targets.map((t, i) => t.animate(frames, { duration: ripple ? time : time * 1.5, delay: ripple ? i * stagger : 0, easing: EASE_OUT, fill: "backwards" }))
+    return () => runs.forEach((a) => a.cancel())
+  }, [text, ripple])
+  // inline-block so the transform applies; pre keeps typed spaces
+  return (
+    <span ref={ref} className="inline-block whitespace-pre-wrap">
+      {ripple ? [...text].map((ch, i) => <span key={i} className="inline-block whitespace-pre">{ch}</span>) : text}
+    </span>
+  )
+}
+
+/** What was deleted: it drops out and fades over --nk-type-out-time, taking no width (the line closes at once). */
+function Leaving({ text }: { text: string }) {
   const ref = React.useRef<HTMLSpanElement>(null)
   React.useLayoutEffect(() => {
     const el = ref.current
     if (!el || typeof el.animate !== "function") return
     const a = el.animate(
       [
-        { opacity: 0, transform: "translateY(0.25em)" },
-        { opacity: 1, transform: "translateY(0)" },
+        { opacity: 0.8, transform: "translateY(0)" },
+        { opacity: 0, transform: `translateY(${distanceOf()})` },
       ],
-      { duration: text.length > 12 ? TYPE_MS * 1.5 : TYPE_MS, easing: "cubic-bezier(0.2, 0.8, 0.2, 1)" }
+      { duration: tokenMs("--nk-type-out-time", TYPE_OUT_MS), easing: EASE_IN, fill: "forwards" }
     )
     return () => a.cancel()
   }, [text])
-  // inline-block so the transform applies; pre keeps typed spaces
   return (
-    <span ref={ref} className="inline-block whitespace-pre-wrap">
+    <span ref={ref} aria-hidden className="pointer-events-none inline-block w-0 overflow-visible whitespace-pre align-baseline text-muted-foreground" style={{ opacity: 0 }}>
       {text}
     </span>
   )

@@ -6,7 +6,7 @@ import { EyeIcon } from "lucide-react";
 import type { TargetOption, TargetProps } from "nuikit-core/intents";
 import { defineReactRenderer, type RendererProps } from "nuikit-core/intents-react";
 import { useEffect, useState } from "react";
-import { MenuRow } from "@/components/ui/menu-row";
+import { MenuRow, MenuRowList } from "@/components/ui/menu-row";
 import { Panel, PanelBody, PanelHeader } from "@/components/ui/panel";
 import { Icon } from "@/lib/icon";
 import { Text } from "@/lib/text";
@@ -51,20 +51,23 @@ function OneTarget({ id, props, ctx }: { id: string; props: TargetProps; ctx: Re
           <Panel size="sm" className="nk-first-row nk-enter">
             {(props.title || path.length > 0) && <PanelHeader title={<Text>{path.length ? level === props.options ? props.title : crumbLabel(props.options ?? [], path) : props.title}</Text>} />}
             <PanelBody>
-              {level.map((o, i) => (
-                <MenuRow
-                  key={i}
-                  disabled={o.disabled}
-                  active={o.active}
-                  icon={<Icon icon={o.icon} color={o.iconColor} fallback={<span className="size-4" />} />}
-                  description={o.description ? <Text>{o.description}</Text> : undefined}
-                  chevron={!!o.items?.length}
-                  onClick={() => choose(i)}
-                  onMouseEnter={() => ctx.emit(id, "hover", { index: i + 1, id: o.id ?? String(i + 1) })}
-                >
-                  <Text>{o.label}</Text>
-                </MenuRow>
-              ))}
+              {/* one tile per list: it slides between options under the pointer; a new level starts its own */}
+              <MenuRowList key={path.join(".")} active={level.findIndex((o) => o.active)}>
+                {level.map((o, i) => (
+                  <MenuRow
+                    key={i}
+                    disabled={o.disabled}
+                    active={o.active}
+                    icon={<Icon icon={o.icon} color={o.iconColor} fallback={<span className="size-4" />} />}
+                    description={o.description ? <Text>{o.description}</Text> : undefined}
+                    chevron={!!o.items?.length}
+                    onClick={() => choose(i)}
+                    onMouseEnter={() => ctx.emit(id, "hover", { index: i + 1, id: o.id ?? String(i + 1) })}
+                  >
+                    <Text>{o.label}</Text>
+                  </MenuRow>
+                ))}
+              </MenuRowList>
             </PanelBody>
           </Panel>
         </div>

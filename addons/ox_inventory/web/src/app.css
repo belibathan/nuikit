@@ -31,9 +31,23 @@ body.inv-dragging * {
 /* ───────────────────────────── the slot grid inside an edge sheet (registry edge-sheet) */
 
 .inv-grid {
+  position: relative;
   display: grid;
   grid-template-columns: repeat(var(--inv-columns), var(--inv-slot-size));
   gap: var(--inv-gap);
+}
+/* the grid's selection tile (registry SelectionTile, kit.css nk-indicator): the one lit mark, over the wells so the
+   item stays visible through a soft face in the slot's own shape; it glides slot to slot on --nk-indicator-time */
+.inv-grid-focus {
+  z-index: 1;
+  --nk-sel-face: rgba(var(--primary-rgb), var(--nk-tile-tint, 0.16));
+  --nk-sel-wall: rgba(var(--primary-rgb), calc(var(--nk-tile-tint, 0.16) * 0.5));
+  --nk-sel-shade: 0;
+  --nk-tile-inset: 0px;
+  --nk-tile-radius: var(--nk-chip-radius);
+}
+.inv-grid-focus::after {
+  box-shadow: inset 0 0 0 var(--nk-border, 1px) rgba(var(--primary-rgb), 0.5);
 }
 
 /* ───────────────────────────── slots: the vitals' chip family, as wells in the sheet */
@@ -73,9 +87,7 @@ body.inv-dragging * {
 .inv-slot[data-filled]:not([data-locked]):not([data-display]) {
   cursor: grab;
 }
-.inv-slot[data-filled]:not([data-locked]):not([data-display]):hover::before {
-  opacity: 1;
-}
+/* the pointer's mark is the grid's sliding tile (.inv-grid-focus); a slot outside a grid (the hotbar) has no hover */
 /* the drop target: the selection's colour along the inside of the tile */
 .inv-slot[data-over] {
   background-color: var(--accent);
@@ -309,7 +321,7 @@ html:is([data-nk-motion="reduced"], [data-nk-motion="off"]) .inv-slot[data-lande
   background-color: var(--muted-foreground);
   transform-origin: left center;
   transform: scaleX(var(--level, 0));
-  transition: transform calc(300ms * var(--nk-motion, 1)) var(--nk-ease-out);
+  transition: transform var(--nk-time-fill, calc(var(--nk-time) * 3)) var(--nk-ease-standard, var(--nk-ease-out));
 }
 .inv-meter[data-tone="weight"] .inv-meter-fill {
   background-color: var(--brand, var(--primary));

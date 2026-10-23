@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import { radialCenterAction, radialIndex, radialStep, wedgePath } from "@/components/ui/radial-menu"
+import { radialCenterAction, radialIndex, radialStep, radialTurn, wedgePath } from "@/components/ui/radial-menu"
 
 describe("radial-menu", () => {
   it("picks the wedge under the pointer, clockwise from 12 o'clock", () => {
@@ -29,6 +29,14 @@ describe("radial-menu", () => {
     expect(radialStep(items, null, -1)).toBe(3)
     expect(radialStep([{ disabled: true }], null, 1)).toBeNull()
     expect(radialStep([], null, 1)).toBeNull()
+  })
+
+  it("turns the lit wedge the short way round, unwound", () => {
+    expect(radialTurn(0, 45)).toBe(45)
+    expect(radialTurn(315, 0)).toBe(360) // 7 → 0 on an 8-wheel: +45°, not −315°
+    expect(radialTurn(360, 315)).toBe(315)
+    expect(radialTurn(0, 180)).toBe(180)
+    expect(radialTurn(90, 300)).toBe(-60)
   })
 
   it("draws a closed ring wedge", () => {

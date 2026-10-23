@@ -1074,6 +1074,15 @@
   /* the selection tile: one element per list that slides to the lit item (nk-indicator, SelectionTile) */
   --nk-indicator-time: var(--nk-time);
   --nk-indicator-ease: var(--nk-ease-in-out, cubic-bezier(0.2, 0, 0, 1));
+  /* smooth type (SmoothInput, registry): the drawn caret glides to the measured position; a typed character rises
+     --nk-type-in-distance in over --nk-type-in-time, a deleted one drops out over --nk-type-out-time. Reduced motion
+     and motion off draw the native field instead (nothing here plays). */
+  --nk-caret-time: var(--nk-time);
+  --nk-caret-ease: var(--nk-ease-standard, var(--nk-ease-in-out, cubic-bezier(0.2, 0, 0, 1)));
+  --nk-caret-width: 0.125rem;
+  --nk-type-in-distance: 0.45em;
+  --nk-type-in-time: var(--nk-time-move, calc(var(--nk-time) * 1.5));
+  --nk-type-out-time: var(--nk-time-exit, calc(var(--nk-time) * 0.7));
 
   /* ── panel: every floating surface */
   /* panels draw the menu material (tokens 1.4): opacity (lifted by day legibility), radius, edge, blur */

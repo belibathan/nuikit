@@ -15,6 +15,7 @@
     "edge-sheet",
     "empty-state",
     "menu-row",
-    "chip"
+    "chip",
+    "text-roll"
   ]
 }
