@@ -397,6 +397,7 @@ var NuikitTheme = (() => {
       "nk-tile-plate-y": "2px",
       "nk-tile-press": "1px",
       "nk-tile-skew": "-12deg",
+      "nk-tile-active": "var(--nk-accent-gradient)",
       // plate (surface recipe)
       "nk-plate": "rgb(10, 10, 10)",
       "nk-plate-hair": "rgba(255, 255, 255, 0.12)",
@@ -602,6 +603,7 @@ var NuikitTheme = (() => {
     k15("nk-tile-confirm-face", "color", "The face when confirmed or active", "foreground"),
     k15("nk-tile-confirm-ink", "color", "The legend when confirmed or active", "background"),
     k15("nk-tile-hold", "color", "The hold fill over the face", "foreground at 0.35"),
+    k15("nk-tile-active", "image", "The face of an active tile (data-active: the mic while talking, N on the compass, a checked box); a colour or a gradient", "nk-tile-confirm-face; tile: nk-accent-gradient"),
     k15("nk-tile-tag-delay", "duration", "The tag opens this long after the tile lands", "80ms")
   ];
   var PLATE_TOKENS = [
@@ -617,6 +619,12 @@ var NuikitTheme = (() => {
     k15("nk-fill-edge", "color", "The bar's leading 1px edge", "transparent"),
     k15("nk-fill-alert", "color", "The bar at or under the alert threshold", "destructive")
   ];
+  var ACCENT_TOKENS = [
+    k15("nk-accent-gradient", "image", "The accent paint: an active tile's face, the speedometer's level, the compass N, the heading's accent", "brand"),
+    k15("nk-accent-from", "color", "The accent's first stop (SVG strokes: the speedometer arc, the lubber mark)", "brand"),
+    k15("nk-accent-via", "color", "The accent's middle stop", "nk-accent-from"),
+    k15("nk-accent-to", "color", "The accent's last stop", "nk-accent-from")
+  ];
   var MOTION_15_TOKENS = [
     k15("nk-lift", "dimension", "Row slide and slot lift on focus", "0rem"),
     k15("nk-rise", "dimension", "How far things rise as they enter", "0.5rem"),
@@ -630,7 +638,7 @@ var NuikitTheme = (() => {
     k15("nk-vital-display", "keyword", "What a vital chip shows", "auto", { values: ["auto", "pill", "value", "icon", "expand"] }),
     k15("nk-vital-neighbours", "keyword", "What a growing chip does to its neighbours", "push", { values: ["push", "collapse", "overlay"] })
   ];
-  var KIT_TOKENS = [...SCALE_TOKENS, ...TYPE_ROLE_TOKENS, ...TILE_TOKENS, ...PLATE_TOKENS, ...FILL_TOKENS, ...MOTION_15_TOKENS, ...HYGIENE_TOKENS];
+  var KIT_TOKENS = [...SCALE_TOKENS, ...TYPE_ROLE_TOKENS, ...TILE_TOKENS, ...PLATE_TOKENS, ...FILL_TOKENS, ...ACCENT_TOKENS, ...MOTION_15_TOKENS, ...HYGIENE_TOKENS];
   var chamferClip = (cut) => `polygon(${cut} 0, 100% 0, 100% calc(100% - ${cut}), calc(100% - ${cut}) 100%, 0 100%, 0 ${cut})`;
   var ALL_TOKENS = [...TOKENS, ...IDENTITY_TOKENS, ...KIT_TOKENS];
   var ALL_TOKEN_NAMES = ALL_TOKENS.map((t) => t.name);
@@ -1147,7 +1155,7 @@ var NuikitTheme = (() => {
     var _a, _b, _c, _d;
     applyTreatment(vars, warnings);
     for (const spec of IDENTITY_TOKENS) {
-      if (spec.type === "color" || spec.type === "fontFamily" || spec.type === "shadow" || spec.group === "derived") continue;
+      if (spec.type === "color" || spec.type === "fontFamily" || spec.type === "shadow" || spec.type === "image" || spec.group === "derived") continue;
       const value = vars[spec.name];
       if (value === void 0) {
         if (!REF_DEFAULTS.has(spec.name)) vars[spec.name] = spec.fallback;
@@ -1163,7 +1171,7 @@ var NuikitTheme = (() => {
     }
     for (const spec of KIT_TOKENS) {
       const value = vars[spec.name];
-      if (value === void 0 || spec.type === "color" || spec.type === "fontFamily" || spec.type === "shadow") continue;
+      if (value === void 0 || spec.type === "color" || spec.type === "fontFamily" || spec.type === "shadow" || spec.type === "image") continue;
       if (/^(calc|var|max|min|clamp)\(/.test(value.trim())) continue;
       const v = identityValue(spec, value);
       if (v === null) {

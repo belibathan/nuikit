@@ -1104,7 +1104,7 @@
   stroke-opacity: 0.6;
 }
 .hud-map-lubber {
-  stroke: var(--hud-accent);
+  stroke: var(--nk-accent-via, var(--hud-accent));
   stroke-width: 2;
   stroke-linecap: round;
 }
@@ -1388,7 +1388,7 @@
   stroke-opacity: 0.55;
 }
 .hud-c-arc-fill {
-  stroke: var(--hud-fill);
+  stroke: var(--hud-accent-paint, var(--hud-fill));
   /* the shift light eases in and out (the dash itself follows the rpm frame by frame) */
   transition: stroke calc(var(--nk-time-base) * var(--nk-motion, 1)) ease-out;
 }
@@ -1401,7 +1401,7 @@
   stroke-opacity: 0.14;
 }
 .hud-c-gauge[data-style="digital"] .hud-c-ticks line[data-on] {
-  stroke: var(--hud-fill);
+  stroke: var(--hud-accent-paint, var(--hud-fill));
   stroke-opacity: 1;
 }
 .hud-c-gauge[data-style="digital"] .hud-c-ticks line[data-on][data-red] {
@@ -2174,8 +2174,9 @@ html[data-nk-motion="off"] .hud-root * {
   inset: 0;
   transform-origin: 50% 100%;
 }
+/* the level in the vital's role colour (data-hue on the chip gives --hue; Ink's roles are white) */
 .hud-key-liquid {
-  background: linear-gradient(180deg, rgba(var(--foreground-rgb), 0.62), rgba(var(--foreground-rgb), 0.38));
+  background: linear-gradient(180deg, rgba(var(--hue, var(--foreground-rgb)), 0.62), rgba(var(--hue, var(--foreground-rgb)), 0.38));
   transform: scaleY(var(--f, 0));
   transition: transform calc(var(--nk-time-fill) * var(--nk-motion, 1)) var(--nk-ease-standard);
 }
@@ -2185,14 +2186,14 @@ html[data-nk-motion="off"] .hud-root * {
   top: 0;
   width: 100%;
   height: 0.125rem;
-  background: var(--nk-tile-ink);
+  background: var(--hue-grad-a, var(--nk-tile-ink));
   transform: translateY(calc((1 - var(--f, 0)) * var(--fs) - 0.0625rem));
   transition: transform calc(var(--nk-time-fill) * var(--nk-motion, 1)) var(--nk-ease-standard);
   opacity: calc(var(--f, 0) * 100);
 }
 /* the mic: a bright layer fills the face from the bottom, the icon turns to the dark ink */
 .hud-key-lit {
-  background: var(--nk-tile-confirm-face);
+  background: var(--nk-tile-active, var(--nk-tile-confirm-face));
   transform: scaleY(0);
   transition: transform calc(var(--nk-time-base) * var(--nk-motion, 1)) var(--nk-ease-standard);
 }
@@ -2323,6 +2324,19 @@ html[data-nk-motion="off"] .hud-root * {
   text-transform: uppercase;
   letter-spacing: 0.03em;
 }
+/* its accent: a hard 2px edge along the bottom in the accent paint (a flat brand, or the theme's gradient),
+   over the lubber mark below it */
+.hud-map-heading::after {
+  content: "";
+  position: absolute;
+  left: 0.375rem;
+  right: 0.375rem;
+  bottom: 0;
+  height: 0.125rem;
+  border-radius: 0.125rem 0.125rem 0 0;
+  background: var(--nk-accent-gradient, var(--hud-accent));
+  pointer-events: none;
+}
 /* the gear: one tile; reverse takes the warning rim, the redline fills the face red */
 .hud-c-gear-tile { display: block; }
 .hud-c-gear-tile[data-gear="N"] .hud-key-tile { opacity: 0.7; }
@@ -2344,8 +2358,12 @@ html[data-nk-motion="off"] .hud-root * {
   stroke-linecap: butt;
 }
 .hud-c-gauge[data-style="digital"] .hud-c-ticks path[data-red] { stroke: var(--hud-redline); stroke-opacity: 0.3; }
-.hud-c-gauge[data-style="digital"] .hud-c-ticks path[data-on] { stroke: var(--hud-fill, var(--hud-fg)); stroke-opacity: 1; }
+.hud-c-gauge[data-style="digital"] .hud-c-ticks path[data-on] { stroke: var(--hud-accent-paint, var(--hud-fill, var(--hud-fg))); stroke-opacity: 1; }
 .hud-c-gauge[data-style="digital"] .hud-c-ticks path[data-on][data-red] { stroke: var(--hud-redline); }
+/* the accent's stops (tokens 1.5: --nk-accent-from / -via / -to; a flat brand unless the theme sets a gradient) */
+.hud-accent-from { stop-color: var(--nk-accent-from, var(--hud-fill)); }
+.hud-accent-via { stop-color: var(--nk-accent-via, var(--nk-accent-from, var(--hud-fill))); }
+.hud-accent-to { stop-color: var(--nk-accent-to, var(--nk-accent-from, var(--hud-fill))); }
 .hud-c-fuelsegs path {
   fill: none;
   stroke: var(--hud-fg);

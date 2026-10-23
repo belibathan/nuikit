@@ -115,7 +115,7 @@ export function Controls({ open }: { open: boolean }) {
       <SheetContent
         side="bottom"
         showCloseButton={false}
-        className="nk-panel inv-tray"
+        className="inv-tray border-0 bg-transparent shadow-none"
         onOpenAutoFocus={keep}
         onCloseAutoFocus={keep}
         onInteractOutside={keep}

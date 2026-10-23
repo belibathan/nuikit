@@ -10,7 +10,7 @@
 // (cluster.tsx): a tick toggles only when the lit count changes, a digit only when it changes, the
 // arc's dash only when the rpm moved.
 import { FuelIcon } from "lucide-react";
-import { useRef, type ReactNode } from "react";
+import { useId, useRef, type CSSProperties, type ReactNode } from "react";
 import { Stagger, useStaggerItem } from "nuikit-core/react";
 import { TextRoll } from "@/components/ui/text-roll";
 import type { HudSettings, HudVehicle } from "../nui";
@@ -223,6 +223,8 @@ export function CompactGauge(props: CompactProps) {
 function CompactArc({ v, look, settings, paint, center, style }: CompactProps) {
   const root = useRef<HTMLDivElement>(null);
   const ticks = useRef<SVGGElement>(null);
+  // the level's paint: the accent's stops across the dial, low rpm on the left, the redline end on the right
+  const accent = `hud-accent-${useId().replace(/[^w-]/g, "")}`;
   const fill = useRef<SVGPathElement>(null);
   const digits = useRef<(HTMLSpanElement | null)[]>([]);
   const heading = useRef<HTMLSpanElement>(null);
@@ -279,7 +281,14 @@ function CompactArc({ v, look, settings, paint, center, style }: CompactProps) {
     <div ref={root} data-slot="hud-gauge" data-style={digital ? "digital" : "arc"} data-off={!v.engineOn || undefined} className="hud-gauge hud-c-gauge">
       <span className="hud-plate hud-c-plate" aria-hidden />
       <div className="hud-c-dial">
-        <svg viewBox={`0 0 ${VB} ${VB}`} className="hud-c-svg" aria-hidden>
+        <svg viewBox={`0 0 ${VB} ${VB}`} className="hud-c-svg" style={{ "--hud-accent-paint": `url(#${accent})` } as CSSProperties} aria-hidden>
+          <defs>
+            <linearGradient id={accent} gradientUnits="userSpaceOnUse" x1={0} y1={0} x2={VB} y2={0}>
+              <stop offset="0" className="hud-accent-from" />
+              <stop offset="0.5" className="hud-accent-via" />
+              <stop offset="1" className="hud-accent-to" />
+            </linearGradient>
+          </defs>
           {showRpm && !digital && (
             <>
               <path d={ARC} className="hud-c-arc-track" />

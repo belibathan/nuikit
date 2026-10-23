@@ -20,7 +20,7 @@ export const TOKENS_VERSION = 1 as const;
  */
 export const TOKENS_REVISION = "1.5" as const;
 
-export type TokenType = "color" | "dimension" | "fontFamily" | "number" | "keyword" | "duration" | "cubicBezier" | "shadow";
+export type TokenType = "color" | "dimension" | "fontFamily" | "number" | "keyword" | "duration" | "cubicBezier" | "shadow" | "image";
 
 export interface TokenSpec {
   name: string;
@@ -318,6 +318,7 @@ export const TREATMENT_PRESETS: Record<Treatment, ThemeVars> = {
     "nk-tile-plate-y": "2px",
     "nk-tile-press": "1px",
     "nk-tile-skew": "-12deg",
+    "nk-tile-active": "var(--nk-accent-gradient)",
     // plate (surface recipe)
     "nk-plate": "rgb(10, 10, 10)",
     "nk-plate-hair": "rgba(255, 255, 255, 0.12)",
@@ -547,6 +548,7 @@ export const TILE_TOKENS: readonly TokenSpec[] = [
   k15("nk-tile-confirm-face", "color", "The face when confirmed or active", "foreground"),
   k15("nk-tile-confirm-ink", "color", "The legend when confirmed or active", "background"),
   k15("nk-tile-hold", "color", "The hold fill over the face", "foreground at 0.35"),
+  k15("nk-tile-active", "image", "The face of an active tile (data-active: the mic while talking, N on the compass, a checked box); a colour or a gradient", "nk-tile-confirm-face; tile: nk-accent-gradient"),
   k15("nk-tile-tag-delay", "duration", "The tag opens this long after the tile lands", "80ms"),
 ];
 
@@ -567,6 +569,15 @@ export const FILL_TOKENS: readonly TokenSpec[] = [
   k15("nk-fill-alert", "color", "The bar at or under the alert threshold", "destructive"),
 ];
 
+/** Accent (1.5): the signature paint. A colour or a gradient for HTML layers, and its stops for SVG strokes
+ *  (an SVG stroke can't take a CSS gradient). A flat brand by default, so a theme without one looks the same. */
+export const ACCENT_TOKENS: readonly TokenSpec[] = [
+  k15("nk-accent-gradient", "image", "The accent paint: an active tile's face, the speedometer's level, the compass N, the heading's accent", "brand"),
+  k15("nk-accent-from", "color", "The accent's first stop (SVG strokes: the speedometer arc, the lubber mark)", "brand"),
+  k15("nk-accent-via", "color", "The accent's middle stop", "nk-accent-from"),
+  k15("nk-accent-to", "color", "The accent's last stop", "nk-accent-from"),
+];
+
 /** Motion distances (1.5): the ladder itself is in MOTION_TOKENS. */
 export const MOTION_15_TOKENS: readonly TokenSpec[] = [
   k15("nk-lift", "dimension", "Row slide and slot lift on focus", "0rem"),
@@ -585,7 +596,7 @@ export const HYGIENE_TOKENS: readonly TokenSpec[] = [
 ];
 
 /** Every 1.5 lever: kit.css holds the defaults; the compiler validates what a theme or treatment sets. */
-export const KIT_TOKENS: readonly TokenSpec[] = [...SCALE_TOKENS, ...TYPE_ROLE_TOKENS, ...TILE_TOKENS, ...PLATE_TOKENS, ...FILL_TOKENS, ...MOTION_15_TOKENS, ...HYGIENE_TOKENS];
+export const KIT_TOKENS: readonly TokenSpec[] = [...SCALE_TOKENS, ...TYPE_ROLE_TOKENS, ...TILE_TOKENS, ...PLATE_TOKENS, ...FILL_TOKENS, ...ACCENT_TOKENS, ...MOTION_15_TOKENS, ...HYGIENE_TOKENS];
 
 /** The chamfer (top left and bottom right) as a clip-path of a cut size. */
 export const chamferClip = (cut: string) =>
@@ -1255,7 +1266,7 @@ function deriveIdentity(vars: ThemeVars, warnings: string[], given: ReadonlySet<
   applyTreatment(vars, warnings);
   // validate what the theme set; anything invalid falls back to the default, with a warning
   for (const spec of IDENTITY_TOKENS) {
-    if (spec.type === "color" || spec.type === "fontFamily" || spec.type === "shadow" || spec.group === "derived") continue;
+    if (spec.type === "color" || spec.type === "fontFamily" || spec.type === "shadow" || spec.type === "image" || spec.group === "derived") continue;
     const value = vars[spec.name];
     if (value === undefined) {
       // a default that is another token's value (materials): filled once those are known
@@ -1273,7 +1284,7 @@ function deriveIdentity(vars: ThemeVars, warnings: string[], given: ReadonlySet<
   // 1.5 levers: kit.css holds the defaults, so only a value the theme or treatment set is checked (and kept)
   for (const spec of KIT_TOKENS) {
     const value = vars[spec.name];
-    if (value === undefined || spec.type === "color" || spec.type === "fontFamily" || spec.type === "shadow") continue;
+    if (value === undefined || spec.type === "color" || spec.type === "fontFamily" || spec.type === "shadow" || spec.type === "image") continue;
     // a formula (calc(), var()) is the theme's call: CSS resolves it
     if (/^(calc|var|max|min|clamp)\(/.test(value.trim())) continue;
     const v = identityValue(spec, value);

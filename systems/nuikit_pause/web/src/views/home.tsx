@@ -57,7 +57,7 @@ export function Stage({ active, back = false }: { active: boolean; back?: boolea
       onPointerUp={() => (drag.current = null)}
       onPointerCancel={() => (drag.current = null)}
     >
-      <ActionBar className="nk-anchor-b [--nk-edge:0rem]">
+      <ActionBar plate className="nk-anchor-b [--nk-edge:0rem]">
         <ActionBarItem keys={["Tab"]} label="Choose" />
         <ActionBarItem keys={["Enter"]} label="Confirm" />
         <ActionBarItem keys={["Esc"]} label={back ? "Back" : "Resume"} />

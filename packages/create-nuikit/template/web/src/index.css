@@ -981,6 +981,12 @@
     --nk-tile-confirm-ink: var(--background);
     --nk-tile-hold: rgba(var(--foreground-rgb), 0.35);
     --nk-tile-tag-delay: 80ms;
+    --nk-tile-active: var(--nk-tile-confirm-face);
+    /* accent: the signature paint, a colour or a gradient (flat brand by default); its stops paint SVG strokes */
+    --nk-accent-gradient: var(--brand, var(--primary));
+    --nk-accent-from: var(--brand, var(--primary));
+    --nk-accent-via: var(--nk-accent-from);
+    --nk-accent-to: var(--nk-accent-from);
     /* plate: the one surface recipe (Graphite: the panel's). No color-mix on Chromium 103: channels */
     --nk-plate-bg: rgba(var(--nk-plate-rgb, var(--surface-rgb, var(--popover-rgb))), var(--nk-menu-alpha, var(--nk-surface-opacity, 0.96)));
     --nk-plate-hair: var(--border);
@@ -2596,6 +2602,10 @@ html[data-nk-backdrop="on"] * {
     --nk-tile-face-now: var(--nk-tile-confirm-face);
     --nk-tile-ink-now: var(--nk-tile-confirm-ink);
     color: var(--nk-tile-confirm-ink);
+  }
+  /* active (not confirming): the face takes --nk-tile-active, a colour or the accent gradient */
+  :is([data-slot="tile"], [data-slot="kbd"])[data-active]:not([data-state="confirm"])::after {
+    background: var(--nk-tile-active);
   }
   :is([data-slot="tile"], [data-slot="kbd"])[data-state="confirm"] {
     animation: nk-confirm var(--nk-time-slow, var(--nk-time-confirm, 160ms)) var(--nk-ease-spring, cubic-bezier(0.34, 1.56, 0.64, 1));
