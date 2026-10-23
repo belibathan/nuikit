@@ -79,11 +79,60 @@
     "./intents-react": {
       "types": "./dist/intents-react.d.ts",
       "import": "./dist/intents-react.js"
+    },
+    "./messages": {
+      "types": "./dist/messages.d.ts",
+      "import": "./dist/messages.js"
+    },
+    "./surfaces": {
+      "types": "./dist/surfaces.d.ts",
+      "import": "./dist/surfaces.js"
+    },
+    "./camera": {
+      "types": "./dist/camera.d.ts",
+      "import": "./dist/camera.js"
+    },
+    "./controls": {
+      "types": "./dist/controls.d.ts",
+      "import": "./dist/controls.js"
+    },
+    "./keys": {
+      "types": "./dist/keys.d.ts",
+      "import": "./dist/keys.js"
+    },
+    "./settings": {
+      "types": "./dist/settings.d.ts",
+      "import": "./dist/settings.js"
+    },
+    "./player": {
+      "types": "./dist/player.d.ts",
+      "import": "./dist/player.js"
+    },
+    "./theme": {
+      "types": "./dist/theme.d.ts",
+      "import": "./dist/theme.js"
+    },
+    "./images": {
+      "types": "./dist/images.d.ts",
+      "import": "./dist/images.js"
+    },
+    "./zones": {
+      "types": "./dist/zones.d.ts",
+      "import": "./dist/zones.js"
+    },
+    "./slots": {
+      "types": "./dist/slots.d.ts",
+      "import": "./dist/slots.js"
+    },
+    "./doctor": {
+      "types": "./dist/doctor.d.ts",
+      "import": "./dist/doctor.js"
     }
   },
   "scripts": {
     "intents": "node scripts/gen-intents.mjs",
-    "build": "node scripts/gen-intents.mjs && node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\" && tsup && node scripts/export-tokens.mjs && node scripts/arsenal.mjs",
+    "build": "node scripts/gen-intents.mjs && node scripts/arsenal.mjs && node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\" && tsup && node scripts/export-tokens.mjs",
+    "arsenal": "node scripts/arsenal.mjs",
     "test": "vitest run",
     "typecheck": "tsc --noEmit"
   },

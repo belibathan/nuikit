@@ -33,7 +33,7 @@
           "from": "nuikit-core/messages",
           "lua": "nk.message.on",
           "signature": {
-            "js": "fetchNui<K extends CallbackName>(name: K, ...args: OptionalReq<CallbackReq<K>> extends true ? [data?: CallbackReq<K>, options?: FetchNuiOptions<CallbackRes<K>>] : [data: CallbackReq<K>, options?: FetchNuiOptions<CallbackRes<K>>]): Promise<CallbackRes<K>>",
+            "js": "fetchNui<K extends CallbackName>(name: K, ...args: OptionalReq<CallbackReq<K>> extends true ? [data?: CallbackReq<K> | undefined, options?: FetchNuiOptions<CallbackRes<K>> | undefined] : [data: CallbackReq<K>, options?: FetchNuiOptions<CallbackRes<K>> | undefined]): Promise<CallbackRes<K>>",
             "lua": "nk.message.on(name, fn(data) → reply)"
           },
           "doc": "Page → Lua: answer the page's fetchNui; the handler's return is the reply.",
@@ -75,7 +75,7 @@
           "js": "followed",
           "from": "nuikit-core/messages",
           "signature": {
-            "js": "followed(action: string): number"
+            "js": "followed(action: string): number | undefined"
           },
           "doc": "A stream's latest value.",
           "only": "js only: the page's view of a stream",
@@ -201,7 +201,7 @@
           "js": "getHandshake",
           "from": "nuikit-core/messages",
           "signature": {
-            "js": "getHandshake(): Handshake"
+            "js": "getHandshake(): Handshake | null"
           },
           "doc": "Lua's reply to the ready handshake (protocol, capabilities).",
           "only": "js only: the page asks, Lua answers nuikit:message:ready",
@@ -306,7 +306,7 @@
           "js": "useNuiCallback",
           "from": "nuikit-core/react",
           "signature": {
-            "js": "useNuiCallback<K extends CallbackName>(name: K) => { call: (data?: CallbackReq<K>): Promise<CallbackRes<K>>; loading: boolean; error: Error; data: CallbackRes<K>; }"
+            "js": "useNuiCallback<K extends CallbackName>(name: K) => { call: (data?: CallbackReq<K> | undefined): Promise<CallbackRes<K>>; loading: boolean; error: Error | null; data: CallbackRes<K> | null; }"
           },
           "doc": "Call a Lua callback with loading and error state.",
           "only": "js only: React",
@@ -449,7 +449,7 @@
           "js": "openSurface",
           "from": "nuikit-core/surfaces",
           "signature": {
-            "js": "openSurface<K extends SurfaceName>(name: K, data?: SurfaceData<K>): Promise<boolean>"
+            "js": "openSurface<K extends SurfaceName>(name: K, data?: SurfaceData<K> | undefined): Promise<boolean>"
           },
           "doc": "Ask Lua to open a declared surface from the page.",
           "only": "js only: Lua opens with the handle (handle:open)",
@@ -577,7 +577,7 @@
           "from": "nuikit-core/surfaces",
           "lua": "nk.surface.open",
           "signature": {
-            "js": "useNuiVisibility(options?: { closeOnEscape?: boolean; }) => { visible: boolean; close: (): Promise<void>; }",
+            "js": "useNuiVisibility(options?: { closeOnEscape?: boolean | undefined; }) => { visible: boolean; close: (): Promise<void>; }",
             "lua": "nk.surface.open(opts?)"
           },
           "doc": "Simple mode: show the one UI and take focus (the 'main' surface).",
@@ -648,7 +648,7 @@
           "js": "useSurface",
           "from": "nuikit-core/react",
           "signature": {
-            "js": "useSurface<K extends SurfaceName>(name: K) => { isOpen: boolean; openSurface: (data?: SurfaceData<K>) => Promise<boolean>; close: (): Promise<void>; open: boolean; visible: boolean; focused: boolean; layer: SurfaceLayer; data?: SurfaceData<K>; z?: number; }"
+            "js": "useSurface<K extends SurfaceName>(name: K) => { isOpen: boolean; openSurface: (data?: SurfaceData<K> | undefined) => Promise<boolean>; close: (): Promise<void>; open: boolean; visible: boolean; focused: boolean; layer: SurfaceLayer; data?: SurfaceData<K> | undefined; z?: number | undefined; }"
           },
           "doc": "A surface's state, live.",
           "only": "js only: React",
@@ -676,7 +676,7 @@
           "js": "Surface",
           "from": "nuikit-core/react",
           "signature": {
-            "js": "Surface<K extends SurfaceName>(props: SurfaceProps<K>): ReactElement<unknown, string | JSXElementConstructor<any>>"
+            "js": "Surface<K extends SurfaceName>(props: SurfaceProps<K>): ReactElement<unknown, string | JSXElementConstructor<any>> | null"
           },
           "doc": "Renders children while the surface is open, with its enter and exit.",
           "only": "js only: React",
@@ -1061,7 +1061,7 @@
           "js": "defineReactRenderer",
           "from": "nuikit-core/intents",
           "signature": {
-            "js": "defineReactRenderer<K extends IntentKind>({ kind, Component, css, version, }: { kind: K; Component: ComponentType<RendererProps<K>>; css?: string; version?: number; }): RendererDefinition<K>"
+            "js": "defineReactRenderer<K extends IntentKind>({ kind, Component, css, version, }: { kind: K; Component: ComponentType<RendererProps<K>>; css?: string | undefined; version?: number | undefined; }): RendererDefinition<K>"
           },
           "doc": "A renderer from a React component.",
           "only": "js only: renderers are pages",
@@ -1883,7 +1883,7 @@
           "js": "mockKeys",
           "from": "nuikit-core/keys",
           "signature": {
-            "js": "mockKeys(keys: (Omit<KeyBinding, \"binding\" | \"mapper\"> & { binding?: string; mapper?: string; })[]): void"
+            "js": "mockKeys(keys: (Omit<KeyBinding, \"binding\" | \"mapper\"> & { binding?: string | undefined; mapper?: string | undefined; })[]): void"
           },
           "doc": "Dev: the keys the browser pretends exist.",
           "only": "js only: the browser has no Lua",
@@ -2005,7 +2005,7 @@
           "from": "nuikit-core/settings",
           "lua": "nk.settings.list",
           "signature": {
-            "js": "loadSettings(resource?: string): Promise<SettingsSection[]>"
+            "js": "loadSettings(resource?: string | undefined): Promise<SettingsSection[]>"
           },
           "doc": "Every resource's sections (or one's).",
           "since": "0.8.0",
@@ -2019,7 +2019,7 @@
           "from": "nuikit-core/settings",
           "lua": "nk.settings.draft",
           "signature": {
-            "js": "draftSettings(resource: string, patch: Record<string, SettingValue>): Promise<Record<string, SettingValue>>"
+            "js": "draftSettings(resource: string, patch: Record<string, SettingValue>): Promise<Record<string, SettingValue> | null>"
           },
           "doc": "Preview a patch without saving.",
           "since": "0.8.0",
@@ -2033,7 +2033,7 @@
           "from": "nuikit-core/settings",
           "lua": "nk.settings.save",
           "signature": {
-            "js": "saveSettings(resource: string): Promise<Record<string, SettingValue>>"
+            "js": "saveSettings(resource: string): Promise<Record<string, SettingValue> | null>"
           },
           "doc": "Save the draft.",
           "since": "0.8.0",
@@ -2047,7 +2047,7 @@
           "from": "nuikit-core/settings",
           "lua": "nk.settings.cancel",
           "signature": {
-            "js": "cancelSettings(resource: string): Promise<Record<string, SettingValue>>"
+            "js": "cancelSettings(resource: string): Promise<Record<string, SettingValue> | null>"
           },
           "doc": "Drop the draft.",
           "since": "0.8.0",
@@ -2061,7 +2061,7 @@
           "from": "nuikit-core/settings",
           "lua": "nk.settings.reset",
           "signature": {
-            "js": "resetSettings(resource: string, keys?: string[]): Promise<Record<string, SettingValue>>"
+            "js": "resetSettings(resource: string, keys?: string[] | undefined): Promise<Record<string, SettingValue> | null>"
           },
           "doc": "Back to defaults (some keys or all).",
           "since": "0.8.0",
@@ -2075,7 +2075,7 @@
           "from": "nuikit-core/settings",
           "lua": "nk.settings.preset",
           "signature": {
-            "js": "applySettingsPreset(resource: string, preset: string): Promise<Record<string, SettingValue>>"
+            "js": "applySettingsPreset(resource: string, preset: string): Promise<Record<string, SettingValue> | null>"
           },
           "doc": "Apply a preset as a draft.",
           "since": "0.8.0",
@@ -2089,7 +2089,7 @@
           "from": "nuikit-core/settings",
           "lua": "nk.settings.normalize",
           "signature": {
-            "js": "normalizeSetting(row: SettingRow, value: unknown): SettingValue"
+            "js": "normalizeSetting(row: SettingRow, value: unknown): SettingValue | undefined"
           },
           "doc": "A value fitted to its row (clamped, snapped, or rejected).",
           "since": "0.8.0",
@@ -2103,7 +2103,7 @@
           "from": "nuikit-core/settings",
           "lua": "nk.settings.merge",
           "signature": {
-            "js": "mergeSettings(rows: SettingRow[], saved: Record<string, unknown>, draft?: Record<string, unknown>): Record<string, SettingValue>"
+            "js": "mergeSettings(rows: SettingRow[], saved: Record<string, unknown>, draft?: Record<string, unknown> | undefined): Record<string, SettingValue>"
           },
           "doc": "Saved and draft values over the defaults.",
           "since": "0.8.0",
@@ -2127,7 +2127,7 @@
           "js": "mockSettings",
           "from": "nuikit-core/settings",
           "signature": {
-            "js": "mockSettings(sections: (Omit<SettingsSection, \"values\" | \"draft\" | \"presets\"> & { presets?: { id: string; label: string; patch: Record<string, SettingValue>; }[]; })[]): void"
+            "js": "mockSettings(sections: (Omit<SettingsSection, \"draft\" | \"values\" | \"presets\"> & { presets?: { id: string; label: string; patch: Record<string, SettingValue>; }[] | undefined; })[]): void"
           },
           "doc": "Dev: the sections the browser pretends exist.",
           "only": "js only: the browser has no Lua",
@@ -2141,7 +2141,7 @@
           "js": "useSettings",
           "from": "nuikit-core/react",
           "signature": {
-            "js": "useSettings(resource: string) => { section: SettingsSection; rows: SettingRow[]; values: Record<string, SettingValue>; presets: { id: string; label: string; }[]; dirty: boolean; draft: (patch: Record<string, SettingValue>) => Promise<Record<string, SettingValue>>; save: () => Promise<Record<string, SettingValue>>; cancel: () => Promise<Record<string, SettingValue>>; reset: (keys?: string[]) => Promise<Record<string, SettingValue>>; preset: (id: string) => Promise<Record<string, SettingValue>>; reload: (): Promise<void>; }"
+            "js": "useSettings(resource: string) => { section: SettingsSection | null; rows: SettingRow[]; values: Record<string, SettingValue>; presets: { id: string; label: string; }[]; dirty: boolean; draft: (patch: Record<string, SettingValue>) => Promise<Record<string, SettingValue> | null>; save: () => Promise<Record<string, SettingValue> | null>; cancel: () => Promise<Record<string, SettingValue> | null>; reset: (keys?: string[] | undefined) => Promise<Record<string, SettingValue> | null>; preset: (id: string) => Promise<Record<string, SettingValue> | null>; reload: (): Promise<void>; }"
           },
           "doc": "A resource's section with the ops, live.",
           "only": "js only: React",
@@ -2472,7 +2472,7 @@
           "from": "nuikit-core/theme",
           "lua": "nk.theme.get",
           "signature": {
-            "js": "getTheme(): CompiledTheme",
+            "js": "getTheme(): CompiledTheme | null",
             "lua": "nk.theme.get() → CompiledTheme|string|nil"
           },
           "doc": "The compiled theme in use (the player's look, else the server's).",
@@ -2537,7 +2537,7 @@
           "js": "applyTheme",
           "from": "nuikit-core/theme",
           "signature": {
-            "js": "applyTheme(theme: ThemeInput, target?: HTMLElement, mode?: ThemeMode): ThemeVars"
+            "js": "applyTheme(theme: ThemeInput, target?: HTMLElement | undefined, mode?: ThemeMode | undefined): ThemeVars"
           },
           "doc": "Paint a theme (compiled, CSS or tokens) on the page or an element.",
           "only": "js only: the page paints, Lua publishes",
@@ -2551,7 +2551,7 @@
           "js": "clearTheme",
           "from": "nuikit-core/theme",
           "signature": {
-            "js": "clearTheme(vars?: ThemeVars, target?: HTMLElement): void"
+            "js": "clearTheme(vars?: ThemeVars | undefined, target?: HTMLElement | undefined): void"
           },
           "doc": "Remove what apply painted.",
           "only": "js only: the page paints",
@@ -2677,7 +2677,7 @@
           "js": "lowerValue",
           "from": "nuikit-core/theme",
           "signature": {
-            "js": "lowerValue(value: string): string"
+            "js": "lowerValue(value: string): string | null"
           },
           "doc": "Lower a CSS value for Chromium 103 (oklch, color-mix).",
           "only": "js only: compiler",
@@ -2747,7 +2747,7 @@
           "js": "normalizePrefs",
           "from": "nuikit-core/theme",
           "signature": {
-            "js": "normalizePrefs(p: Partial<NuiPrefs>): NuiPrefs"
+            "js": "normalizePrefs(p: Partial<NuiPrefs> | null | undefined): NuiPrefs"
           },
           "doc": "Prefs clamped and defaulted.",
           "only": "js only: Lua clamps in the nuikit resource",
@@ -2775,7 +2775,7 @@
           "js": "loadServerTheme",
           "from": "nuikit-core/theme",
           "signature": {
-            "js": "loadServerTheme(options?: { live?: boolean; }): Promise<boolean>"
+            "js": "loadServerTheme(options?: { live?: boolean | undefined; }): Promise<boolean>"
           },
           "doc": "Override pages: fetch the server theme and keep it live.",
           "only": "js only: pages without nuikit.lua",
@@ -2845,7 +2845,7 @@
           "js": "toRgba",
           "from": "nuikit-core/theme",
           "signature": {
-            "js": "toRgba(input: string): RGBA"
+            "js": "toRgba(input: string): RGBA | null"
           },
           "doc": "Colour maths: parse, format, oklch, composite, luminance, contrast.",
           "only": "js only: the compiler's maths",
@@ -2871,7 +2871,7 @@
           "js": "motionTokens",
           "from": "nuikit-core/theme",
           "signature": {
-            "js": "motionTokens(d: number, feel?: \"crisp\" | \"snap\" | \"smooth\" | \"stepped\", bounce?: number, opts?: { exitFactor?: number; ladder?: boolean; }): ThemeVars"
+            "js": "motionTokens(d: number, feel?: \"crisp\" | \"snap\" | \"smooth\" | \"stepped\", bounce?: number, opts?: { exitFactor?: number | undefined; ladder?: boolean | undefined; }): ThemeVars"
           },
           "doc": "The motion tokens of a compiled theme.",
           "only": "js only: the page animates",
@@ -3049,7 +3049,7 @@
           "js": "setImageConfig",
           "from": "nuikit-core/images",
           "signature": {
-            "js": "setImageConfig(server: Partial<Record<ImageKind, unknown>> & { replace?: boolean; }): void"
+            "js": "setImageConfig(server: (Partial<Record<ImageKind, unknown>> & { replace?: boolean | undefined; }) | null | undefined): void"
           },
           "doc": "Merge server templates over the defaults.",
           "only": "js only: the page's resolver",
@@ -3215,13 +3215,27 @@
           "status": "stable"
         },
         {
+          "name": "replace",
+          "kind": "call",
+          "side": "js",
+          "js": "setZones",
+          "from": "nuikit-core/zones",
+          "signature": {
+            "js": "setZones(data: unknown): void"
+          },
+          "doc": "Replace the zones (what the event does; override pages via the theme poll).",
+          "only": "js only: Lua publishes",
+          "since": "0.7.0",
+          "status": "stable"
+        },
+        {
           "name": "clearOf",
           "kind": "call",
           "side": "js",
           "js": "clearOf",
           "from": "nuikit-core/zones",
           "signature": {
-            "js": "clearOf(all: Zones, position: ZonePosition, opts?: ClearOptions): { top?: number; bottom?: number; }"
+            "js": "clearOf(all: Zones, position: ZonePosition, opts?: ClearOptions): { top?: number | undefined; bottom?: number | undefined; }"
           },
           "doc": "The offsets that keep a position clear of the zones.",
           "only": "js only: layout",
@@ -3249,7 +3263,7 @@
           "js": "useClearOf",
           "from": "nuikit-core/react",
           "signature": {
-            "js": "useClearOf(position: ZonePosition, opts?: ClearOptions): CSSProperties"
+            "js": "useClearOf(position: ZonePosition, opts?: ClearOptions | undefined): CSSProperties"
           },
           "doc": "A style that keeps a position clear of the zones.",
           "only": "js only: React",
@@ -3448,7 +3462,7 @@
           "js": "flip",
           "from": "nuikit-core/motion",
           "signature": {
-            "js": "flip(els: ArrayLike<HTMLElement> | (() => ArrayLike<HTMLElement>), mutate: () => void, preset?: string | Spring): void"
+            "js": "flip(els: ArrayLike<HTMLElement> | (() => ArrayLike<HTMLElement>), mutate: () => void, preset?: string | Spring | undefined): void"
           },
           "doc": "Animate a layout change from where things were.",
           "only": "js only: motion is the page's (WAAPI)",
@@ -3462,7 +3476,7 @@
           "js": "timed",
           "from": "nuikit-core/motion",
           "signature": {
-            "js": "timed(el: Element, keyframes: Keyframe[], duration: number, { startedAt, easing, fill }?: TimedOptions): Animation"
+            "js": "timed(el: Element, keyframes: Keyframe[], duration: number, { startedAt, easing, fill }?: TimedOptions): Animation | null"
           },
           "doc": "A keyframe run that joins a clock (startedAt).",
           "only": "js only: motion is the page's (WAAPI)",
@@ -3504,7 +3518,7 @@
           "js": "motionLevel",
           "from": "nuikit-core/motion",
           "signature": {
-            "js": "motionLevel(el?: Element): MotionLevel"
+            "js": "motionLevel(el?: Element | null | undefined): MotionLevel"
           },
           "doc": "on, reduced or off for an element.",
           "only": "js only: motion is the page's (WAAPI)",
@@ -3546,7 +3560,7 @@
           "js": "useSpring",
           "from": "nuikit-core/react",
           "signature": {
-            "js": "useSpring(ref: { current: HTMLElement; }, value: number, channel?: Channel, preset?: string): void"
+            "js": "useSpring(ref: { current: HTMLElement | null; }, value: number, channel?: Channel, preset?: string): void"
           },
           "doc": "Spring a ref to a value.",
           "only": "js only: React",
@@ -3560,7 +3574,7 @@
           "js": "useFlip",
           "from": "nuikit-core/react",
           "signature": {
-            "js": "useFlip(ref: { current: HTMLElement; }, deps: readonly unknown[], preset?: string): void"
+            "js": "useFlip(ref: { current: HTMLElement | null; }, deps: readonly unknown[], preset?: string): void"
           },
           "doc": "FLIP a ref when deps change.",
           "only": "js only: React",
@@ -3574,7 +3588,7 @@
           "js": "useIndicator",
           "from": "nuikit-core/react",
           "signature": {
-            "js": "useIndicator(listRef: { current: HTMLElement; }, indicatorRef: { current: HTMLElement; }, active: number, rows?: string): void"
+            "js": "useIndicator(listRef: { current: HTMLElement | null; }, indicatorRef: { current: HTMLElement | null; }, active: number | null | undefined, rows?: string): void"
           },
           "doc": "The selection indicator.",
           "only": "js only: React",
@@ -3588,7 +3602,7 @@
           "js": "Stagger",
           "from": "nuikit-core/react",
           "signature": {
-            "js": "Stagger({ children, step, budget, from, on }: StaggerOptions & { children: ReactNode; on?: boolean; }): ReactElement<unknown, string | JSXElementConstructor<any>>"
+            "js": "Stagger({ children, step, budget, from, on }: StaggerOptions & { children: ReactNode; on?: boolean | undefined; }): ReactElement<unknown, string | JSXElementConstructor<any>>"
           },
           "doc": "Children enter one after another.",
           "only": "js only: React",
@@ -3687,7 +3701,7 @@
           "js": "standalone",
           "from": "nuikit-core/host",
           "signature": {
-            "js": "standalone(app: () => Promise<unknown>, options?: { timeout?: number; }): void"
+            "js": "standalone(app: () => Promise<unknown>, options?: { timeout?: number | undefined; }): void"
           },
           "doc": "ui_page boot: render unless the host adopted this resource.",
           "only": "js only: pages",
@@ -3701,7 +3715,7 @@
           "js": "hostedContext",
           "from": "nuikit-core/host",
           "signature": {
-            "js": "hostedContext(): HostedContext"
+            "js": "hostedContext(): HostedContext | null"
           },
           "doc": "The hosted context, or null on a page of its own.",
           "only": "js only: pages",
@@ -3869,7 +3883,7 @@
           "js": "NuiDevtools",
           "from": "nuikit-core/devtools",
           "signature": {
-            "js": "NuiDevtools({ events, callbacks, scene: initialScene, defaultOpen, force, surfaces: surfaceData, states: stateNames, }: NuiDevtoolsProps): Element"
+            "js": "NuiDevtools({ events, callbacks, scene: initialScene, defaultOpen, force, surfaces: surfaceData, states: stateNames, }: NuiDevtoolsProps): Element | null"
           },
           "doc": "The panel (press `).",
           "only": "js only: browser dev",
@@ -3883,7 +3897,7 @@
           "js": "defineMocks",
           "from": "nuikit-core/devtools",
           "signature": {
-            "js": "defineMocks<E extends EventPresets, C extends CallbackMocks>(mocks: { events?: E; callbacks?: C; }): { events?: E; callbacks?: C; }"
+            "js": "defineMocks<E extends EventPresets, C extends CallbackMocks>(mocks: { events?: E | undefined; callbacks?: C | undefined; }): { events?: E | undefined; callbacks?: C | undefined; }"
           },
           "doc": "Typed event presets and callback mocks.",
           "only": "js only: browser dev",
@@ -3938,7 +3952,7 @@
           "js": "detectFramework",
           "from": "nuikit-core/doctor",
           "signature": {
-            "js": "detectFramework(resources: DoctorResource[]): { framework: Framework; resource: string; }"
+            "js": "detectFramework(resources: DoctorResource[]): { framework: Framework; resource: string | null; }"
           },
           "doc": "Qbox, QBCore, ESX or standalone from the resource list.",
           "only": "js only: runs in the nuikit resource's server (Node) and the CLI",
