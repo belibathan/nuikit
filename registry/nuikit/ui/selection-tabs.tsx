@@ -29,7 +29,7 @@ function TabsList({ className, children, ...props }: React.ComponentProps<typeof
       className={cn("relative h-auto gap-(--nk-list-gap) pb-[calc(3px+var(--nk-tile-wall))]", className)}
       {...props}
     >
-      <SelectionTile items="[data-slot=tabs-trigger]" lit="[data-state=active]" pointer={false} />
+      <SelectionTile shape="tile" items="[data-slot=tabs-trigger]" lit="[data-state=active]" pointer={false} />
       {children}
     </ShadcnTabsList>
   )

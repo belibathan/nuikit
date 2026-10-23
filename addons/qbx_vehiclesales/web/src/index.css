@@ -1073,7 +1073,8 @@
   --nk-time: var(--nk-time-base, calc(var(--nk-duration, 140ms) * var(--nk-motion, 1)));
   --nk-press-scale: 0.97;
   /* the selection tile: one element per list that slides to the lit item (nk-indicator, SelectionTile) */
-  --nk-indicator-time: var(--nk-time);
+  /* a slide to read, not a snap: longer than a panel fade (a theme sets --nk-indicator-time) */
+  --nk-indicator-time: calc(var(--nk-time) * 1.6);
   --nk-indicator-ease: var(--nk-ease-in-out, cubic-bezier(0.2, 0, 0, 1));
   /* smooth type (SmoothInput, registry): the drawn caret glides to the measured position; a typed character rises
      --nk-type-in-distance in over --nk-type-in-time, a deleted one drops out over --nk-type-out-time. Reduced motion
@@ -3211,6 +3212,21 @@ html[data-nk-backdrop="on"] * {
 .nk-indicator::before,
 .nk-indicator::after {
   transition: background-color var(--nk-time-fast, var(--nk-time)) var(--nk-ease-standard, var(--nk-ease-out));
+}
+/* shape inherit (SelectionTile's default, the --nk-sel-shape lever): the mark takes the shape of what it is on: the
+   host's radius and clip, a flat face, no skew and no wall. A list that wants the keycap passes shape="tile". */
+.nk-indicator[data-shape="inherit"] {
+  border-radius: var(--nk-host-radius, var(--nk-tile-radius));
+  clip-path: var(--nk-host-clip, none);
+}
+.nk-indicator[data-shape="inherit"]::before {
+  display: none;
+}
+.nk-indicator[data-shape="inherit"]::after {
+  inset: 0;
+  border-radius: inherit;
+  transform: none;
+  box-shadow: inset 0 0 0 var(--nk-border, 1px) var(--nk-sel-rim, var(--nk-tile-key-rim));
 }
 /* a row or a tab on its own: the tile only while it is lit, at once (no per-row fade) */
 .nk-row:not([data-nk-sel] *)::before,
