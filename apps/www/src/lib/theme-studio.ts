@@ -225,8 +225,10 @@ export function exportThemeCss(theme: CompiledTheme): string {
       "",
     ].join("\n");
   for (let pass = 0; pass < 3; pass++) {
-    const again = compileTheme(render(), { mode: "dark" }).vars;
-    const off = Object.keys(theme.vars).filter((k) => again[k] !== theme.vars[k]);
+    const { vars: again, warnings } = compileTheme(render(), { mode: "dark" });
+    // a var() default can also point at a derived token the file leaves out ("… isn't defined")
+    const unresolved = (k: string) => warnings.some((w) => w.startsWith(`--${k} is var(`) && !theme.warnings.includes(w));
+    const off = Object.keys(theme.vars).filter((k) => again[k] !== theme.vars[k] || (keep.has(k) && unresolved(k)));
     if (!off.length) break;
     for (const k of off) {
       if (!keep.has(k)) keep.add(k);
