@@ -87,21 +87,9 @@ for (const [, token] of KEYWORD_ATTRS) readElsewhere.add(`--${token}`)
 // a lever read inside another declaration of kit.css (var(--nk-a) in a value) counts as read: `reads` covers kit.css
 
 /** Reads with no declaration anywhere (existing debt: delete a row when fixed). */
-const UNDECLARED_DEBT: string[] = [
-  "--nk-slab", // built dynamically (--nk-slab-${x}); the regex sees the prefix only
-]
+const UNDECLARED_DEBT: string[] = []
 /** Declared levers nothing reads (existing debt: delete a row when it is read or removed). */
-const DEAD_DEBT: string[] = [
-  "--nk-button-wall",
-  "--nk-gauge-glow",
-  "--nk-gauge-sweep",
-  "--nk-overlay-alpha",
-  "--nk-row-bar-inset",
-  "--nk-row-glow",
-  "--nk-row-outline-color",
-  "--nk-row-outline-width",
-  "--nk-type-body-pad",
-]
+const DEAD_DEBT: string[] = []
 
 const undeclared = [...bareReads].filter((n) => !declared.has(n) && !setByUi.has(n)).sort()
 const dead = [...leverNames].filter((n) => !reads.has(n) && !readElsewhere.has(n)).sort()

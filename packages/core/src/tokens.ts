@@ -322,7 +322,7 @@ export const TREATMENT_PRESETS: Record<Treatment, ThemeVars> = {
     "nk-tile-plate-y": "2px",
     "nk-tile-press": "1px",
     "nk-tile-skew": "-12deg",
-    "nk-tile-active": "var(--nk-accent-gradient)",
+    "nk-tile-active": "var(--nk-tile-confirm-face)",
     // plate (surface recipe)
     "nk-plate": "rgb(10, 10, 10)",
     "nk-plate-hair": "rgba(255, 255, 255, 0.12)",
@@ -576,7 +576,6 @@ export const FILL_TOKENS: readonly TokenSpec[] = [
 /** Accent (1.5): the signature paint. A colour or a gradient for HTML layers, and its stops for SVG strokes
  *  (an SVG stroke can't take a CSS gradient). A flat brand by default, so a theme without one looks the same. */
 export const ACCENT_TOKENS: readonly TokenSpec[] = [
-  k15("nk-accent-gradient", "image", "The accent paint: an active tile's face, the speedometer's level, the compass N, the heading's accent", "brand"),
   k15("nk-accent-from", "color", "The accent's first stop (SVG strokes: the speedometer arc, the lubber mark)", "brand"),
   k15("nk-accent-via", "color", "The accent's middle stop", "nk-accent-from"),
   k15("nk-accent-to", "color", "The accent's last stop", "nk-accent-from"),
@@ -592,8 +591,6 @@ export const MOTION_15_TOKENS: readonly TokenSpec[] = [
 
 /** Tokens components already read (vital-chip.tsx), moved into the contract (1.5). Unset = the component's default. */
 export const HYGIENE_TOKENS: readonly TokenSpec[] = [
-  k15("nk-chip-shape", "keyword", "Vital chip shape", "auto", { values: ["auto", "square", "rounded", "circle", "diamond", "hex", "chamfer"] }),
-  k15("nk-label-attach", "keyword", "Where a chip's label sits", "inline", { values: ["inline", "tag", "flag", "none"] }),
   k15("nk-vital-icon", "keyword", "Vital icons: each vital's own, or one uniform glyph", "vital", { values: ["vital", "uniform"] }),
   k15("nk-vital-display", "keyword", "What a vital chip shows", "auto", { values: ["auto", "pill", "value", "icon", "expand"] }),
   k15("nk-vital-neighbours", "keyword", "What a growing chip does to its neighbours", "push", { values: ["push", "collapse", "overlay"] }),
@@ -623,7 +620,6 @@ export const BASELINE_TOKENS: readonly TokenSpec[] = [
   k16("nk-row-tint-reach", "number", "Retired in 1.7 (the soft selection is a tinted Tile face, --nk-tile-tint); read by nothing", "0.7", { range: [0, 1] }),
   k16("nk-h-field", "dimension", "Height of text inputs, selects and dialog buttons", "2.75rem"),
   k16("nk-focus-rim", "color", "A text field's caret focus (and a checkbox's or switch's lit rim): a single 1px rim. Nothing else draws focus (1.7)", "ring"),
-  k16("nk-button-wall", "dimension", "The primary keycap's wall (1.7: reads --nk-tile-wall)", "nk-tile-wall"),
   k16("nk-ring-segments", "number", "Segments in a progress ring (the speedometer's language)", "24", { range: [6, 60] }),
   k16("nk-ring-gap", "number", "Degrees between a progress ring's segments", "4", { range: [0, 12] }),
 ];

@@ -97,7 +97,6 @@
     --nk-type-body-weight: var(--nk-weight-body, 400);
     --nk-type-body-tracking: 0em;
     --nk-type-body-case: none;
-    --nk-type-body-pad: 0em;
     /* tile: Graphite's keycap (no plate, no slant); the tile treatment and --nk-skew add them */
     --nk-tile-face: var(--muted);
     --nk-tile-ink: var(--popover-foreground);
@@ -120,7 +119,6 @@
     --nk-tile-legend-shift: 0em;
     --nk-tile-active: var(--nk-tile-confirm-face);
     /* accent: the signature paint, a colour or a gradient (flat brand by default); its stops paint SVG strokes */
-    --nk-accent-gradient: var(--brand, var(--primary));
     --nk-accent-from: var(--brand, var(--primary));
     --nk-accent-via: var(--nk-accent-from);
     --nk-accent-to: var(--nk-accent-from);
@@ -166,7 +164,6 @@
     /* fields and buttons: one height; a text field's caret focus is one rim; the primary is a keycap */
     --nk-h-field: 2.75rem;
     --nk-focus-rim: var(--ring);
-    --nk-button-wall: var(--nk-tile-wall);
     /* progress rings are segmented, like the speedometer */
     --nk-ring-segments: 24;
     --nk-ring-gap: 4;
@@ -283,14 +280,10 @@
   --nk-row-indicator-color: var(--brand, var(--primary));
   /* bar: a pill at the row's leading edge */
   --nk-row-bar-width: calc(var(--nk-row-bar-thickness, 0.1875rem) * var(--nk-row-bar, 1));
-  --nk-row-bar-inset: calc(var(--nk-space) * var(--nk-row-bar-inset-scale, 2.5));
   /* fill: the row in solid brand, its text in brand-foreground ([data-nk-row="fill"] on an ancestor, set by applyTheme) */
   --nk-row-fill-color: var(--brand, var(--primary));
   --nk-row-fill-foreground: var(--brand-foreground, var(--primary-foreground));
   /* outline: a brand hairline */
-  --nk-row-outline-width: calc(var(--nk-border) * var(--nk-row-outline, 0));
-  --nk-row-outline-color: rgba(var(--brand-rgb, var(--primary-rgb)), 0.7);
-  --nk-row-glow: 0 0 var(--nk-glow-radius, 1rem) rgba(var(--brand-rgb, var(--primary-rgb)), calc(var(--nk-glow, 0) * 0.5));
 
   /* ── key: shadcn's Kbd, as a keycap */
   /* aliases of the 1.5 tile and scan-role levers (a theme may set either name) */
@@ -330,7 +323,6 @@
 
   /* ── gauge: speedometer, RPM, fuel (the HUD reads --nk-gauge-style: arc | bar | digital) */
   --nk-gauge-width: var(--nk-gauge-track, 0.25rem);
-  --nk-gauge-sweep: 270deg;
   --nk-gauge-track-color: rgba(var(--hud-foreground-rgb), 0.16);
   --nk-gauge-fill: var(--brand, var(--primary));
   --nk-gauge-needle: var(--brand, var(--primary));
@@ -338,7 +330,6 @@
   --nk-gauge-tick: rgba(var(--hud-foreground-rgb), calc(0.55 * var(--nk-gauge-ticks, 1)));
   --nk-gauge-tick-major: rgba(var(--hud-foreground-rgb), calc(0.9 * var(--nk-gauge-ticks, 1)));
   --nk-gauge-font: var(--font-numeric, var(--font-sans));
-  --nk-gauge-glow: rgba(var(--brand-rgb, var(--primary-rgb)), var(--nk-glow, 0));
 
   /* ── slab: transient feedback on the game (design v2 §4.5). One anatomy for every script, so new
      scripts look native: item added (tile + name + delta), prompt (key + verb), progress (label + thin
@@ -427,7 +418,6 @@
   --nk-row-gap: var(--nk-space-4);
   --nk-row-lift: var(--nk-space-2);
   --nk-row-padding: var(--nk-row-pad-y) var(--nk-row-pad-x);
-  --nk-row-bar-inset: calc(var(--nk-space) * var(--nk-row-bar-inset-scale, 2.5));
   --nk-chip-height: calc(2rem * var(--nk-density, 0.875));
   --nk-chip-padding: calc(var(--nk-space) * 2.5);
   --nk-slab-height: calc(2.5rem * var(--nk-density, 0.875));
@@ -1465,7 +1455,6 @@ html :focus-visible {
   --nk-day: 0;
   --nk-hud-alpha: calc(var(--nk-material-hud-opacity, 0.55) + (1 - var(--nk-material-hud-opacity, 0.55)) * var(--nk-legibility-lift, 0.5) * var(--nk-day));
   --nk-menu-alpha: calc(var(--nk-material-menu-opacity, 0.96) + (1 - var(--nk-material-menu-opacity, 0.96)) * var(--nk-legibility-lift, 0.5) * var(--nk-day));
-  --nk-overlay-alpha: calc(var(--nk-material-overlay-opacity, 0.96) + (1 - var(--nk-material-overlay-opacity, 0.96)) * var(--nk-legibility-lift, 0.5) * var(--nk-day));
 }
 html[data-nk-legibility="day"],
 html[data-nk-legibility="auto"][data-nk-daytime] {
@@ -2474,11 +2463,7 @@ html[data-nk-backdrop="on"] * {
    icon over a solid fill keeps a copy in the fill's ink, clipped to the part under the surface. */
 :root,
 [data-nk-theme] {
-  --nk-fill-opacity: 1;
   --nk-fill-ink: var(--nk-tile-confirm-ink, var(--background));
-}
-:is(html, *)[data-nk-fill="soft"] {
-  --nk-fill-opacity: 0.42;
 }
 [data-slot="vital-chip-icon-ink"] {
   position: absolute;

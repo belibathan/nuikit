@@ -51,7 +51,7 @@ export type ConceptId = (typeof CONCEPTS)[number]["id"];
 
 /** Ordered: the first rule that matches a lever's name decides its concept. Colours not named here fall to `colour`. */
 const RULES: [ConceptId, RegExp][] = [
-  ["treatment", /^nk-(treatment|chip-shape|label-attach|vital-|alert-threshold|fuel-threshold|pause-)/],
+  ["treatment", /^nk-(treatment|vital-|alert-threshold|fuel-threshold|pause-)/],
   ["motion", /^nk-(time-|duration|stagger|ease|spring|motion-|exit-factor|rest-delay|notify-ms|hold-ms|cooldown-ms|tile-tag-delay|confirm-scale|land-scale|rise$|lift$|deny-x$|press-scale$)/],
   ["depth", /^nk-(glow|elevation|plate-drop|plate$|plate-hair|surface-|material-.*-(opacity|blur|edge|texture)|hud-opacity|hud-text-shadow|hud-shadow|legibility|backdrop|slash|z-)|^(world-shadow|shadow)/],
   ["type", /^nk-(type-|weight-|tracking|num-tracking|label-case|display-style|row-title-size|row-desc-size|text-key|text-body)|^font-/],

@@ -167,7 +167,7 @@ export function Keypad() {
           <Button
             key={k}
             variant="ghost"
-            className="radio-lcd nk-num hover:bg-accent h-full min-h-0 py-0"
+            className="radio-lcd nk-num h-full min-h-0 py-0"
             onClick={() => setText((s) => pressKey(s, k, data.maxChannel))}
             aria-label={k === "back" ? "Backspace" : k}
           >

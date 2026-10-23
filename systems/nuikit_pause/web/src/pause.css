@@ -135,9 +135,7 @@
   transition: transform var(--nk-time-hover, 120ms) ease-out;
 }
 .pause-blip-accent {
-  box-shadow:
-    inset 0 -0.1875rem 0 0 var(--blip),
-    inset 0 0 0 1px color-mix(in oklab, var(--hud-foreground) 14%, transparent);
+  box-shadow: inset 0 0 0 var(--nk-border, 1px) var(--blip);
 }
 .pause-blip-accent .pause-blip-icon {
   color: var(--blip);

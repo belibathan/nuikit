@@ -21,6 +21,7 @@ import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Panel } from "@/components/ui/panel";
 import { Slider } from "@/components/ui/slider";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/selection-tabs";
 import { soft } from "@/lib/locale";
 import { post } from "@/lib/nui";
 import { cn } from "@/lib/utils";
@@ -38,7 +39,7 @@ function StatusBar({ message }: { message: string | null }) {
   const battery = Math.round(Number(data.battery ?? 100));
   if (message) {
     return (
-      <div className="bg-accent text-accent-foreground -mx-3 -mt-3 mb-3 flex h-8 shrink-0 items-center overflow-hidden px-3">
+      <div className="bg-secondary text-secondary-foreground -mx-3 -mt-3 mb-3 flex h-8 shrink-0 items-center overflow-hidden px-3">
         <span className="nk-label truncate" title={message}>
           {message}
         </span>
@@ -68,18 +69,16 @@ function StatusBar({ message }: { message: string | null }) {
 
 function NavKey({ icon: Icon, label, tab, disabled }: { icon: LucideIcon; label: string; tab: Tab; disabled?: boolean }) {
   const { tab: current, setTab } = useCtx();
-  const active = current === tab;
   return (
-    <Button
-      variant="ghost"
+    <TabsTrigger
+      value={tab}
       disabled={disabled}
-      onClick={() => setTab(active ? "home" : tab)}
-      className={cn("text-muted-foreground h-12 min-w-0 flex-1 flex-col gap-1 px-1 has-[>svg]:px-1 nk-label", active && "bg-accent text-accent-foreground")}
-      aria-pressed={active}
+      onClick={() => current === tab && setTab("home")}
+      className="nk-label h-12 min-w-0 flex-1 flex-col gap-1 px-1"
     >
       <Icon className="size-4" />
       <span className="max-w-full truncate">{label}</span>
-    </Button>
+    </TabsTrigger>
   );
 }
 
@@ -181,7 +180,8 @@ export function Handheld() {
         {charged && (
           <>
             <Volume />
-            <div className="flex gap-2">
+            <Tabs value={tab} onValueChange={(v) => setTab(v as Tab)}>
+              <TabsList className="w-full">
               <NavKey icon={ListMusic} label={soft(t("channels"))} tab="channels" />
               <NavKey icon={Grid3x3} label={soft(t("radio"))} tab="keypad" />
               {never ? (
@@ -189,7 +189,8 @@ export function Handheld() {
               ) : (
                 <NavKey icon={UsersRound} label={soft(t("members"))} tab="members" disabled={!data.onRadio} />
               )}
-            </div>
+              </TabsList>
+            </Tabs>
             <div className="text-muted-foreground flex h-5 items-center justify-center gap-2 nk-label">
               <MapPin className="size-3.5 shrink-0" />
               <span className="truncate">{data.street || "—"}</span>

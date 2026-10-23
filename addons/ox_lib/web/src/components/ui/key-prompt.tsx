@@ -59,7 +59,7 @@ const keyPromptVariants = cva(
     compoundVariants: [
       { surface: ["panel", "hud"], size: "sm", className: "min-h-[var(--nk-key-prompt-min-h-sm,2rem)] py-[var(--nk-key-prompt-pad-y,0.25rem)] pr-(--nk-space-3) pl-(--nk-space-2)" },
       { surface: ["panel", "hud"], size: "default", className: "min-h-[var(--nk-key-prompt-min-h,2.5rem)] py-(--nk-space-2) pr-[var(--nk-key-prompt-pad-r,0.75rem)] pl-[var(--nk-key-prompt-pad-l,0.5rem)]" },
-      // the slab's own height and padding (--nk-slab-*); sm is a step tighter
+      // the slab's own height and padding; sm is a step tighter
       { surface: "slab", size: "sm", className: "[--nk-slab-height:calc(2rem*var(--nk-density,0.875))]" },
     ],
     defaultVariants: {

@@ -226,7 +226,7 @@ All of them read `html[data-nk-motion]`: off swaps at once, reduced keeps a ≤ 
 `Label`, `Pop`) and one SVG path per shape drives its surface, border, level trace, liquid fill and anchors,
 so the level is traced along the chip's own outline in the identity's shape, never a circle inside a square.
 A change pops a flag out of the chip's side, in line with the row, so several vitals changing at once sit side
-by side and never collide. The other variants (`--nk-chip-shape`, `--nk-level-style`, `--nk-label-attach`,
+by side and never collide. The other variants (`--nk-level-style`,
 `--nk-vital-icon`; in game `/hudstyle`) are **experimental**: tried with the owner and shelved (too small, weak
 as an aesthetic); the parts structure stays. Voice and radio are the always-on layer; vitals surface on change.
 

@@ -11,56 +11,40 @@ import { Tile } from "@/components/ui/tile"
 import { useCollapse, type UseCollapseOptions } from "@/hooks/use-collapse"
 
 /**
- * VitalChip — the HUD's status chip as composable parts (shadcn-style), so a theme (or a player) can vary
- * the shape, how the level shows, and how a label attaches, without new components:
+ * VitalChip: the HUD's status chip as composable parts (shadcn-style). One anatomy under every theme: the keycap
+ * (docs/design/baseline.md). A theme flattens or reshapes it with levers (--nk-tile-skew, --nk-tile-wall, radius
+ * levers), never by swapping parts.
  *
- *   <VitalChip.Root value={hunger} tone="hunger" shape="diamond" level="fill" attach="tag">
+ *   <VitalChip.Root value={hunger} tone="hunger">
  *     <VitalChip.Shape>
- *       <VitalChip.Level />
  *       <VitalChip.Icon><UtensilsIcon /></VitalChip.Icon>
+ *       <VitalChip.Label>Hunger</VitalChip.Label>
  *     </VitalChip.Shape>
- *     <VitalChip.Label>Hunger</VitalChip.Label>
  *     <VitalChip.Pop label="Hunger" />
  *   </VitalChip.Root>
  *
- * The default shape is the keycap (the HUD vitals the owner approved in game, docs/design/baseline.md): the kit's
- * Tile as a light front face, slanted, with the glyph centred on it, over a darker back plate dropped straight down
- * (--nk-vital-plate-drop, 0.25rem). The plate IS the expansion: when the chip opens it slides out from behind the
- * face (translateX only, so the slant and radius stay) and the label sits on it, fading in a beat later. The level
- * is a liquid rising inside the face (--level, scaleY), with a surface line, and a copy of the icon in the fill's ink
- * clipped to the part under the surface; `active` (the mic while talking) lights the face white. Its room in a Row
- * is measured once per open and FLIPped, never per frame.
+ * Anatomy: tile (the kit Tile as the face), icon, label (name, value), value, plate (slides out from behind the
+ * face; the label sits on it), fill (the liquid rising inside the face, --level, scaleY, with a surface line and a
+ * copy of the icon in the fill's ink), track (clips the plate), wall (the base, dropped by --nk-vital-plate-drop).
+ * `active` (the mic while talking) lights the face. Its room in a Row is measured once per open and FLIPped,
+ * never per frame.
  *
- * The other shapes are one SVG path each, generated for the chip's measured size: the chip's surface, its outline,
- * the level trace, the liquid's container (clip) and the label anchors all come from it. Shapes: keycap (default) |
- * auto (the identity's chip: --nk-chip-radius and the --nk-chip-clip chamfer, the 0.7 look) | square | rounded |
- * circle | diamond | hex | chamfer.
- * Levels: outline (traced along the edge, clockwise from the top) | fill (liquid rising inside the shape,
- * with a surface line) | bar | none. Label attach: inline (grows sideways, rect shapes only; others use
- * flag) | tag (a banner hanging beneath, like a crest's ribbon) | flag (sticks out to the side) | none.
- * Pop: a flag out of the chip's side on a change ("Hunger +25"), in line with the row (so pops of several
- * vitals never overlap), merged while it shows, gone after ~1.5 s.
+ * Pop: a flag out of the chip's side on a change ("Hunger +25"), in line with the row, merged while it shows,
+ * gone after ~1.5 s.
  *
- * Theme tokens choose the defaults: --nk-chip-shape, --nk-level-style, --nk-label-attach and
- * --nk-vital-icon (vital: the icon in the vital's colour; uniform: the chip's ink, the level carries
- * the colour). Props win over tokens. Transform and opacity only for motion; Chromium 103.
+ * Theme tokens choose the defaults: --nk-vital-icon (vital: the icon in the vital's colour; uniform: the chip's
+ * ink), --nk-vital-display, --nk-vital-neighbours. Props win over tokens. Transform and opacity only for motion;
+ * Chromium 103.
  *
  * Role: One vital on the HUD: health, armor, hunger, thirst, stress.
- * Anatomy: vital-chip-row (optional: chips that know each other) > vital-chip (keycap: plate, face Tile, liquid,
- *   icon; or an SVG shape) > icon > level drawing (liquid | outline | bar) > label (name, value) > pop (a change)
- * Props: value, tone, shape, level, attach, icon, open, active, alert, display, neighbours, format, max, side.
- * Level means: the vital, 0–100 as 0–1.
- * Rules: data-hue carries the vital's role (health, armor…). The level style comes from the theme (outline,
- *   liquid, bar); the data never picks it. Readable over a bright sky (legibility fixture). display: pill
- *   (icon, name, value) | value | icon (level as fill) | expand (opens on a change, settles after
- *   --nk-rest-delay); the theme default is --nk-vital-display. neighbours (a chip that opens, in a Row): push |
- *   collapse | overlay; the theme default is --nk-vital-neighbours. expand chips in a VitalChip.Row open
- *   through the row's collapse engine (useCollapse): batched, ordered, capped at max with +N.
+ * Props: value, tone, icon, open, active, alert, display, neighbours, format, max, side.
+ * Level means: the vital, 0-100 as 0-1.
+ * Rules: data-hue carries the vital's role (health, armor...). display: pill (icon, name, value) | value |
+ *   icon (level as fill) | expand (opens on a change, settles after --nk-rest-delay). neighbours (a chip that
+ *   opens, in a Row): push | collapse | overlay. expand chips in a VitalChip.Row open through the row's collapse
+ *   engine (useCollapse): batched, ordered, capped at max with +N.
  */
 
-export type ChipShape = "keycap" | "auto" | "square" | "rounded" | "circle" | "diamond" | "hex" | "chamfer"
-export type LevelStyle = "outline" | "fill" | "bar" | "none"
-export type LabelAttach = "inline" | "tag" | "flag" | "none"
 export type IconMode = "vital" | "uniform"
 /**
  * What the chip shows (the owner's HUD customization): pill = icon + label + value; value = icon + value;
@@ -76,23 +60,15 @@ export type ChipDisplay = "auto" | "pill" | "value" | "icon" | "expand"
  */
 export type ChipNeighbours = "push" | "collapse" | "overlay"
 
-const SHAPES: ChipShape[] = ["keycap", "auto", "square", "rounded", "circle", "diamond", "hex", "chamfer"]
-const LEVELS: LevelStyle[] = ["outline", "fill", "bar", "none"]
-const ATTACH: LabelAttach[] = ["inline", "tag", "flag", "none"]
-/** tokens 1.4's --nk-level-style names, as the chip's drawings */
-const LEVEL_14: Record<string, LevelStyle> = { ring: "outline", liquid: "fill", bar: "bar", slab: "bar", pips: "bar" }
 const DISPLAYS: ChipDisplay[] = ["auto", "pill", "value", "icon", "expand"]
 const NEIGHBOURS: ChipNeighbours[] = ["push", "collapse", "overlay"]
 
 export interface ChipStyle {
-  shape: ChipShape
-  level: LevelStyle
-  attach: LabelAttach
   icon: IconMode
   display: ChipDisplay
   neighbours: ChipNeighbours
 }
-const DEFAULT_STYLE: ChipStyle = { shape: "keycap", level: "fill", attach: "flag", icon: "uniform", display: "auto", neighbours: "push" }
+const DEFAULT_STYLE: ChipStyle = { icon: "uniform", display: "auto", neighbours: "push" }
 
 function pickOf<T extends string>(list: readonly T[], v: string, d: T): T {
   const s = v.trim().replace(/["']/g, "") as T
@@ -102,9 +78,6 @@ function pickOf<T extends string>(list: readonly T[], v: string, d: T): T {
 /** The theme's chip style from the computed tokens (defaults: today's look). */
 function readChipStyle(get: (name: string) => string): ChipStyle {
   return {
-    shape: pickOf(SHAPES, get("--nk-chip-shape"), DEFAULT_STYLE.shape),
-    level: pickOf(LEVELS, LEVEL_14[get("--nk-level-style").trim()] ?? get("--nk-level-style"), DEFAULT_STYLE.level),
-    attach: pickOf(ATTACH, get("--nk-label-attach"), DEFAULT_STYLE.attach),
     icon: pickOf(["vital", "uniform"] as const, get("--nk-vital-icon"), DEFAULT_STYLE.icon),
     display: pickOf(DISPLAYS, get("--nk-vital-display"), DEFAULT_STYLE.display),
     neighbours: pickOf(NEIGHBOURS, get("--nk-vital-neighbours"), DEFAULT_STYLE.neighbours),
@@ -150,93 +123,6 @@ function subscribeChipStyle(listener: () => void) {
 function useChipStyle(): ChipStyle {
   return React.useSyncExternalStore(subscribeChipStyle, () => chipStyle, () => DEFAULT_STYLE)
 }
-
-// ───────────────────────────────── geometry: one path per shape
-
-export interface Geometry {
-  w: number
-  h: number
-  /** auto / rounded: the corner radius (px) */
-  r: number
-  /** auto / chamfer: the cut at top-left and bottom-right (px) */
-  cut: number
-  /** the root font size (px) when measured: read with the geometry, never during a render */
-  rem?: number
-}
-
-const f = (n: number) => (Math.round(n * 100) / 100).toString()
-
-function polygon(points: [number, number][], start: [number, number]): string {
-  // start at the top centre, clockwise: the level trace fills from twelve o'clock
-  const parts = [`M ${f(start[0])} ${f(start[1])}`]
-  for (const [x, y] of points) parts.push(`L ${f(x)} ${f(y)}`)
-  parts.push("Z")
-  return parts.join(" ")
-}
-
-/**
- * The shape's outline, inset by `inset` px (half a stroke), starting at the top centre and running
- * clockwise. The single source for the surface, the border, the trace, the liquid clip and anchors.
- */
-function shapePath(shape: ChipShape, g: Geometry, inset = 0): string {
-  const d = inset
-  const x0 = d
-  const y0 = d
-  const x1 = g.w - d
-  const y1 = g.h - d
-  const iw = x1 - x0
-  const ih = y1 - y0
-  if (iw <= 0 || ih <= 0) return ""
-  const cx = x0 + iw / 2
-  const cy = y0 + ih / 2
-  switch (shape) {
-    case "diamond":
-      return polygon([[x1, cy], [cx, y1], [x0, cy], [cx, y0]], [cx, y0])
-    case "hex": {
-      const k = iw * 0.25
-      return polygon([[x1 - k, y0], [x1, cy], [x1 - k, y1], [x0 + k, y1], [x0, cy], [x0 + k, y0], [cx, y0]], [cx, y0])
-    }
-    case "circle": {
-      const rx = iw / 2
-      const ry = ih / 2
-      return `M ${f(cx)} ${f(y0)} A ${f(rx)} ${f(ry)} 0 1 1 ${f(cx)} ${f(y1)} A ${f(rx)} ${f(ry)} 0 1 1 ${f(cx)} ${f(y0)} Z`
-    }
-    case "square":
-      return rounded(x0, y0, x1, y1, 0, 0)
-    case "rounded":
-      return rounded(x0, y0, x1, y1, Math.max(0, Math.min(g.r || 0.25 * Math.min(g.w, g.h), iw / 2, ih / 2) - d), 0)
-    case "chamfer":
-      return rounded(x0, y0, x1, y1, 0, Math.max(0, (g.cut || 0.3 * Math.min(g.w, g.h)) - d * (2 - Math.SQRT2)))
-    default:
-      return rounded(x0, y0, x1, y1, Math.max(0, Math.min(g.r - d, iw / 2, ih / 2)), g.cut > 0 ? Math.max(0, g.cut - d * (2 - Math.SQRT2)) : 0)
-  }
-}
-
-/** A rect with rounded corners and, when cut, chamfers at top-left and bottom-right (the kit's clip). */
-function rounded(x0: number, y0: number, x1: number, y1: number, rr: number, cut: number): string {
-  const iw = x1 - x0
-  const ih = y1 - y0
-  const cc = Math.min(cut, iw / 2, ih / 2)
-  const mid = x0 + iw / 2
-  const arc = (x: number, y: number) => `A ${f(rr)} ${f(rr)} 0 0 1 ${f(x)} ${f(y)}`
-  const p = [`M ${f(mid)} ${f(y0)}`, `L ${f(x1 - rr)} ${f(y0)}`]
-  if (rr > 0) p.push(arc(x1, y0 + rr))
-  if (cc > 0) p.push(`L ${f(x1)} ${f(y1 - cc)}`, `L ${f(x1 - cc)} ${f(y1)}`)
-  else {
-    p.push(`L ${f(x1)} ${f(y1 - rr)}`)
-    if (rr > 0) p.push(arc(x1 - rr, y1))
-  }
-  p.push(`L ${f(x0 + rr)} ${f(y1)}`)
-  if (rr > 0) p.push(arc(x0, y1 - rr))
-  if (cc > 0) p.push(`L ${f(x0)} ${f(y0 + cc)}`, `L ${f(x0 + cc)} ${f(y0)}`)
-  else {
-    p.push(`L ${f(x0)} ${f(y0 + rr)}`)
-    if (rr > 0) p.push(arc(x0 + rr, y0))
-  }
-  p.push("Z")
-  return p.join(" ")
-}
-
 
 // ───────────────────────────────── the keycap's stylesheet
 //
@@ -464,8 +350,6 @@ interface Ctx {
   value?: number
   tone?: string
   style: ChipStyle
-  geo: Geometry | null
-  setGeo: React.Dispatch<React.SetStateAction<Geometry | null>>
   open: boolean
   /** the label floats over the row (neighbours: overlay) */
   float: boolean
@@ -473,8 +357,6 @@ interface Ctx {
   valueText: React.ReactNode | null
   /** value: the label is the value alone */
   valueOnly: boolean
-  wide: boolean
-  setWide: (w: boolean) => void
   active: boolean
   alert: boolean
   side?: "left" | "right"
@@ -518,20 +400,10 @@ function alertThreshold() {
   const n = parseFloat(token("--nk-alert-threshold"))
   return Number.isFinite(n) ? n : 0.2
 }
-/** true inside Shape: an inline Label renders there, a tag or flag outside it */
-const InShape = React.createContext(false)
 function useChip() {
   const c = React.useContext(ChipCtx)
   if (!c) throw new Error("VitalChip parts go inside <VitalChip.Root>")
   return c
-}
-
-/** A label that grows sideways needs a rect; other shapes use a flag instead. */
-function effectiveAttach(style: ChipStyle): LabelAttach {
-  // a keycap's label sits on its sliding plate (drawn by Shape), whatever the attach says short of none
-  if (style.shape === "keycap") return style.attach === "none" ? "none" : "flag"
-  const rect = style.shape === "auto" || style.shape === "square" || style.shape === "rounded" || style.shape === "chamfer"
-  return style.attach === "inline" && !rect ? "flag" : style.attach
 }
 
 /** expand: true from a change of the value until --nk-rest-delay (2.5 s when 0) after the last one. */
@@ -555,9 +427,6 @@ type RootProps = React.ComponentProps<"div"> & {
   value?: number
   /** the vital: its --vital-<tone> colours the level (and the icon unless uniform) */
   tone?: string
-  shape?: ChipShape
-  level?: LevelStyle
-  attach?: LabelAttach
   icon?: IconMode
   /** the label shows (inline / tag / flag; the keycap's plate slides out) */
   open?: boolean
@@ -575,14 +444,10 @@ type RootProps = React.ComponentProps<"div"> & {
   format?: (value: number) => React.ReactNode
 }
 
-function Root({ ref, value, tone, shape, level, attach, icon, open = false, active, alert, side, display, neighbours, format, className, style, children, ...props }: RootProps) {
+function Root({ ref, value, tone, icon, open = false, active, alert, side, display, neighbours, format, className, style, children, ...props }: RootProps) {
   const theme = useChipStyle()
   const mode = display ?? theme.display
   const chip: ChipStyle = {
-    shape: shape ?? theme.shape,
-    // icon only: the level shows as the fill
-    level: level ?? (mode === "icon" ? "fill" : theme.level),
-    attach: attach ?? theme.attach,
     icon: icon ?? theme.icon,
     display: mode,
     neighbours: neighbours ?? theme.neighbours,
@@ -614,18 +479,14 @@ function Root({ ref, value, tone, shape, level, attach, icon, open = false, acti
   const isOpen = own && !yielded
   const shown = mode === "pill" || mode === "value" || mode === "expand"
   const valueText = shown && value !== undefined ? (format ? format(value) : Math.round(value)) : null
-  const [geo, setGeo] = React.useState<Geometry | null>(null)
-  const [wide, setWide] = React.useState(false)
-  const at = effectiveAttach(chip)
   return (
-    <ChipCtx.Provider value={{ value, tone, style: chip, geo, setGeo, open: isOpen, float: chip.neighbours === "overlay", valueText, valueOnly: mode === "value", wide, setWide, active: !!active, alert: critical, side }}>
+    <ChipCtx.Provider value={{ value, tone, style: chip, open: isOpen, float: chip.neighbours === "overlay", valueText, valueOnly: mode === "value", active: !!active, alert: critical, side }}>
       <div
         ref={ref}
         data-slot="vital-chip"
         data-hue={tone}
-        data-shape={chip.shape}
-        data-level={chip.level}
-        data-attach={at}
+        data-shape="keycap"
+        data-level="fill"
         data-icon={chip.icon}
         data-open={isOpen || undefined}
         data-active={active || undefined}
@@ -645,16 +506,9 @@ function Root({ ref, value, tone, shape, level, attach, icon, open = false, acti
   )
 }
 
-const STROKE_1080 = 2.5
-
-/**
- * The chip's body: sized by --vital-size (default 1.875rem; inline labels widen it), drawn as one SVG
- * from the shape path: surface, level, outline. Its children (Icon, an inline Label) sit on top.
- */
+/** The chip's body: the keycap. */
 function Shape({ className, children, ...props }: React.ComponentProps<"span">) {
-  const { style } = useChip()
-  if (style.shape === "keycap") return <Keycap className={className} {...props}>{children}</Keycap>
-  return <SvgShape className={className} {...props}>{children}</SvgShape>
+  return <Keycap className={className} {...props}>{children}</Keycap>
 }
 
 /** The in-game keycap: the kit's Tile face over a sliding plate, the liquid inside the face, the label on the plate. */
@@ -665,7 +519,7 @@ function Keycap({ className, children, ...props }: React.ComponentProps<"span">)
   const text = React.useRef<HTMLSpanElement>(null)
   const [side, setSide] = React.useState<"left" | "right">(sideProp ?? "right")
   const v = value === undefined ? undefined : Math.max(0, Math.min(1, value / 100))
-  const level = v !== undefined && style.level !== "none" ? v : undefined
+  const level = v
   // the plate reads the name and the value ("HEALTH 100") whenever there is a value
   const plateValue = valueText ?? (value === undefined ? null : Math.round(value))
   // the plate slides away from the corner the row is anchored to (an ancestor's data-corner), read once per mount
@@ -679,7 +533,6 @@ function Keycap({ className, children, ...props }: React.ComponentProps<"span">)
   }, [side])
   // the label is measured once per open / close or label change, never per frame (and again once the display
   // font has loaded, since a label measured before it is too narrow)
-  const label = React.Children.toArray(children).some((c) => React.isValidElement(c) && (c.type === Label || (c.props as { "data-slot"?: string } | null)?.["data-slot"] === "vital-chip-label"))
   const measure = React.useCallback(() => {
     const t = root.current
     const l = text.current
@@ -697,13 +550,16 @@ function Keycap({ className, children, ...props }: React.ComponentProps<"span">)
   React.useLayoutEffect(() => {
     let live = true
     void document.fonts?.ready.then(() => live && measure())
+    // a theme's own fonts load after the page's: measure again when they arrive
+    const again = () => live && measure()
+    document.fonts?.addEventListener?.("loadingdone", again)
     return () => {
       live = false
+      document.fonts?.removeEventListener?.("loadingdone", again)
     }
   }, [measure])
   // the icon (and an inline label, which the keycap draws on its plate instead)
   const icon = React.Children.toArray(children).filter((c) => !(React.isValidElement(c) && c.type === Label))
-  void label
   return (
     <span
       ref={root}
@@ -729,7 +585,7 @@ function Keycap({ className, children, ...props }: React.ComponentProps<"span">)
           {level !== undefined && <span data-slot="vital-chip-line" />}
           <span data-slot="vital-chip-lit" />
         </span>
-        <InShape.Provider value={true}>{icon}</InShape.Provider>
+        {icon}
       </Tile>
       <span ref={text} data-slot="vital-chip-label" data-attach="plate" data-open={open || undefined} className="nk-scan">
         {valueOnly ? (
@@ -752,144 +608,6 @@ function KeycapName({ children }: { children: React.ReactNode }) {
   return <span data-slot="vital-chip-name">{names[0]!.props.children}</span>
 }
 
-/** An SVG shape: one path for the surface, the outline, the level and the clip. */
-function SvgShape({ className, children, ...props }: React.ComponentProps<"span">) {
-  const { style, setGeo, geo, value, open } = useChip()
-  const face = React.useRef<HTMLSpanElement>(null)
-  const probe = React.useRef<HTMLSpanElement>(null)
-  const inline = effectiveAttach(style) === "inline"
-
-  React.useLayoutEffect(() => {
-    const el = face.current
-    if (!el) return
-    const measure = () => {
-      const w = el.offsetWidth
-      const h = el.offsetHeight
-      if (!w || !h) return setGeo(null)
-      const p = probe.current
-      let r = 0
-      let cut = 0
-      if (p) {
-        const cs = getComputedStyle(p)
-        r = Math.min(parseFloat(cs.borderTopRightRadius) || 0, w / 2, h / 2)
-        if (cs.clipPath && cs.clipPath !== "none") cut = p.getBoundingClientRect().width
-      }
-      // the rem with it: reading it in every render forced a style recalc each time a value changed
-      const rem = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16
-      setGeo((g) => (g && g.w === w && g.h === h && g.r === r && g.cut === cut && g.rem === rem ? g : { w, h, r, cut, rem }))
-    }
-    measure()
-    const ro = new ResizeObserver(measure)
-    ro.observe(el)
-    let pending = false
-    const mo = new MutationObserver(() => {
-      if (pending) return
-      pending = true
-      requestAnimationFrame(() => {
-        pending = false
-        measure()
-      })
-    })
-    mo.observe(document.documentElement, { attributes: true, attributeFilter: ["style", "class"] })
-    return () => {
-      ro.disconnect()
-      mo.disconnect()
-    }
-  }, [setGeo])
-
-  const id = React.useId().replace(/:/g, "")
-  const rem = geo?.rem ?? 16
-  const sw = (STROKE_1080 * rem) / 16
-  const shape = style.shape
-  const body = geo ? shapePath(shape, geo, 0) : ""
-  const edge = geo ? shapePath(shape, geo, sw / 2) : ""
-  const v = value === undefined ? undefined : Math.max(0, Math.min(100, value))
-  const level = v === undefined ? "none" : style.level
-
-  return (
-    <span
-      ref={face}
-      data-slot="vital-chip-shape"
-      className={cn(
-        "relative z-[1] inline-flex items-center justify-center whitespace-nowrap text-(--nk-chip-fg)",
-        inline ? "min-w-(--vital-size) px-[calc((var(--vital-size)-var(--vital-icon-size))/2)]" : "w-(--vital-size)",
-        "h-(--vital-size)",
-        className
-      )}
-      {...props}
-    >
-      {/* the identity's chip radius and clip, measured for the auto shape */}
-      <span
-        ref={probe}
-        aria-hidden
-        className="pointer-events-none invisible absolute top-0 left-0 h-0 rounded-(--nk-chip-radius) [clip-path:var(--nk-chip-clip,none)]"
-        style={{ width: "calc(var(--nk-cut, 0px) / 2)" }}
-      />
-      {/* --nk-skew: the whole drawing (surface, border, level) is skewed together, so the trace stays on the
-          edge; the icon and label stay upright */}
-      <svg aria-hidden className="pointer-events-none absolute inset-0 size-full overflow-visible [transform:skewX(var(--nk-skew,0deg))]" viewBox={geo ? `0 0 ${geo.w} ${geo.h}` : "0 0 1 1"}>
-        {geo && (
-          <>
-            <defs>
-              <clipPath id={`vc-${id}`}>
-                <path d={body} />
-              </clipPath>
-            </defs>
-            {/* the surface */}
-            <path d={body} style={{ fill: "var(--nk-chip-bg)" }} />
-            {/* the active fill (talking, selected): rises from the bottom inside the shape; a parent marks it
-                active with [data-active] and styles [data-slot=vital-chip-activefill] */}
-            <g clipPath={`url(#vc-${id})`}>
-              <rect data-slot="vital-chip-activefill" x={0} y={0} width={geo.w} height={geo.h} style={{ fill: "var(--nk-chip-active-fill, transparent)" }} />
-            </g>
-            {/* liquid: rises inside the shape, a brighter line on its surface. Solid by default (--nk-fill-opacity:
-                the baseline's --nk-fill-style, solid 1 or soft 0.42) */}
-            {level === "fill" && (
-              <g clipPath={`url(#vc-${id})`}>
-                {/* levels snap to the value: an SVG element's transform isn't composited, so a transition here costs
-                    style, layout and paint on the main thread every frame (the HUD ticks; it never stops) */}
-                <g style={{ transform: `translateY(${((1 - v! / 100) * geo.h).toFixed(2)}px)` }}>
-                  <rect x={0} y={0} width={geo.w} height={geo.h} style={{ fill: "var(--vital, var(--primary))", opacity: "var(--nk-fill-opacity, 1)" }} />
-                  <rect x={0} y={0} width={geo.w} height={Math.max(1, sw * 0.6)} style={{ fill: "var(--vital, var(--primary))", opacity: 0.95 }} />
-                </g>
-              </g>
-            )}
-            {level === "bar" && (
-              <g clipPath={`url(#vc-${id})`}>
-                <rect x={0} y={geo.h - sw * 1.4} width={geo.w} height={sw * 1.4} style={{ fill: "var(--nk-chip-track, rgba(var(--hud-foreground-rgb, 255, 255, 255), 0.16))" }} />
-                <rect
-                  x={0}
-                  y={geo.h - sw * 1.4}
-                  width={geo.w}
-                  height={sw * 1.4}
-                  style={{ fill: "var(--vital, var(--primary))", transformOrigin: "0 0", transform: `scaleX(${(v! / 100).toFixed(3)})` }}
-                />
-              </g>
-            )}
-            {/* the border, and the level traced along it */}
-            <path d={edge} strokeWidth={sw} strokeLinejoin="round" style={{ fill: "none", stroke: "var(--nk-chip-track, rgba(var(--hud-foreground-rgb, 255, 255, 255), 0.16))" }} />
-            {level === "outline" && v! > 0 && (
-              <path
-                d={edge}
-                strokeWidth={sw}
-                strokeLinejoin="round"
-                strokeLinecap="round"
-                pathLength={100}
-                // full: a plain closed stroke (its corners joined), no dash, so start and end meet with no gap
-                strokeDasharray={v! >= 99.5 ? undefined : `${v} 100`}
-                style={{ fill: "none", stroke: "var(--vital, var(--primary))" }}
-              />
-            )}
-          </>
-        )}
-      </svg>
-      <span data-open={open || undefined} className="relative inline-flex items-center">
-        <InShape.Provider value={true}>{children}</InShape.Provider>
-      </span>
-    </span>
-  )
-}
-
 /** Kept for API symmetry: the level is drawn by Shape from the Root's value and style. */
 function Level() {
   return null
@@ -901,29 +619,10 @@ function Level() {
  * under the surface (kit.css shows it for a fill level under the solid fill style).
  */
 function Icon({ className, children, ...props }: React.ComponentProps<"span">) {
-  const { style } = useChip()
-  if (style.shape === "keycap") {
-    return (
-      <span data-slot="vital-chip-icon" className={cn("relative flex items-center justify-center", className)} {...props}>
-        {children}
-        {/* over a solid fill the icon keeps its contrast: a copy in the fill's ink, clipped to the part under the level */}
-        <span data-slot="vital-chip-icon-ink" aria-hidden>
-          {children}
-        </span>
-      </span>
-    )
-  }
   return (
-    <span
-      data-slot="vital-chip-icon"
-      className={cn(
-        "relative flex [&_svg]:size-(--vital-icon-size)",
-        style.icon === "uniform" ? "text-(--nk-chip-fg)" : "text-(--vital,currentColor)",
-        className
-      )}
-      {...props}
-    >
+    <span data-slot="vital-chip-icon" className={cn("relative flex items-center justify-center", className)} {...props}>
       {children}
+      {/* over a solid fill the icon keeps its contrast: a copy in the fill's ink, clipped to the part under the level */}
       <span data-slot="vital-chip-icon-ink" aria-hidden>
         {children}
       </span>
@@ -932,85 +631,12 @@ function Icon({ className, children, ...props }: React.ComponentProps<"span">) {
 }
 
 /**
- * The chip's text (voice range, radio channel, a vital's name). Put it both inside Shape and after it;
- * the one that fits the attachment renders. Inline: grows sideways inside the chip.
- * Tag: a banner hanging beneath on a short stem. Flag: a rect sticking out to the right, tucked under
- * the chip. Shows while the Root is open.
+ * The chip's text (voice range, radio channel, a vital's name). Put it inside Shape: the keycap reads its children
+ * as the name and writes it, with the value, on its plate. It draws nothing itself.
  */
-function Label({ className, children: name, ...props }: React.ComponentProps<"span">) {
-  const { style, open, float, valueText, valueOnly } = useChip()
-  const inShape = React.useContext(InShape)
-  const attached = effectiveAttach(style)
-  // overlay: an inline or flag label floats over the row (rendered outside Shape, like a tag)
-  const at = float && (attached === "inline" || attached === "flag") ? "float" : attached
-  // pill and expand: the name and the value; value: the value alone
-  const children =
-    valueText === null ? (
-      name
-    ) : valueOnly ? (
-      <span className="nk-num">{valueText}</span>
-    ) : (
-      <>
-        {name}
-        <span className="nk-num ml-(--nk-space-2) opacity-80">{valueText}</span>
-      </>
-    )
-  // write it in both places: inside Shape it is the inline label, outside the tag or flag. A keycap writes it
-  // on its plate itself (the Label inside Shape is read as the name; the one outside draws nothing).
-  if (style.shape === "keycap" || at === "none" || (at === "inline") !== inShape) return null
-  if (at === "inline") {
-    return (
-      <span
-        data-slot="vital-chip-label"
-        data-open={open || undefined}
-        className={cn(
-          "pointer-events-none order-last max-w-0 overflow-hidden text-(length:--nk-text-key) leading-none [font-weight:var(--nk-weight-strong,600)] opacity-0 -translate-x-1 transition-[opacity,transform] duration-[calc(var(--nk-time-slow)*var(--nk-motion,1))] ease-(--nk-ease-out) data-[open]:ml-[0.3125rem] data-[open]:max-w-24 data-[open]:translate-x-0 data-[open]:opacity-100",
-          className
-        )}
-        {...props}
-      >
-        {children}
-      </span>
-    )
-  }
-  if (at === "flag") {
-    // a flag sticks out to the side in its own shape, tucked under the chip; it takes its room in the
-    // row (opening like an inline label), so neighbours make way instead of being covered
-    return (
-      <span
-        data-slot="vital-chip-label"
-        data-attach="flag"
-        data-open={open || undefined}
-        className={cn(
-          "pointer-events-none relative z-0 data-[open]:-ml-[0.375rem] flex h-[calc(var(--vital-size)*0.72)] max-w-0 items-center self-center overflow-hidden rounded-r-(--nk-chip-radius) bg-(--nk-chip-bg) text-(length:--nk-text-key) [font-weight:var(--nk-weight-strong,600)] whitespace-nowrap text-(--nk-chip-fg) opacity-0 -translate-x-1 transition-[opacity,transform] duration-[calc(var(--nk-time-slow)*var(--nk-motion,1))] ease-(--nk-ease-out) data-[open]:max-w-28 data-[open]:translate-x-0 data-[open]:pr-2 data-[open]:pl-[0.625rem] data-[open]:opacity-100",
-          className
-        )}
-        {...props}
-      >
-        {children}
-      </span>
-    )
-  }
-  const tag = at === "tag"
-  return (
-    <span
-      data-slot="vital-chip-label"
-      data-attach={at}
-      data-open={open || undefined}
-      className={cn(
-        "pointer-events-none absolute z-0 flex items-center whitespace-nowrap bg-(--nk-chip-bg) text-(--nk-chip-fg) opacity-0 transition-[opacity,transform] duration-[calc(var(--nk-time-slow)*var(--nk-motion,1))] ease-(--nk-ease-out) data-[open]:opacity-100",
-        tag
-          ? "top-full left-1/2 mt-[0.1875rem] h-4 -translate-x-1/2 -translate-y-1 rounded-(--nk-chip-radius) px-(--nk-space-2) text-(length:--nk-text-key) [font-weight:var(--nk-weight-strong,600)] data-[open]:translate-y-0"
-          : "top-1/2 left-[calc(100%-0.375rem)] h-[calc(var(--vital-size)*0.72)] -translate-x-1 -translate-y-1/2 rounded-r-(--nk-chip-radius) pr-2 pl-[0.625rem] text-(length:--nk-text-key) [font-weight:var(--nk-weight-strong,600)] data-[open]:translate-x-0",
-        className
-      )}
-      {...props}
-    >
-      {/* a tag hangs from the chip on a short stem, like a ribbon under a crest */}
-      {tag && <span aria-hidden className="absolute bottom-full left-1/2 h-[0.1875rem] w-px -translate-x-1/2 bg-(--nk-chip-bg)" />}
-      {children}
-    </span>
-  )
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function Label(_props: React.ComponentProps<"span">) {
+  return null
 }
 
 type PopProps = {

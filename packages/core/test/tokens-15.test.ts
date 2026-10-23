@@ -14,7 +14,7 @@ describe("tokens 1.5", () => {
       expect(IDENTITY_TOKENS.some((i) => i.name === t.name), t.name).toBe(false);
       expect(ALL_TOKENS).toContain(t);
     }
-    for (const n of ["nk-space-unit", "nk-r-key", "nk-h-row", "nk-icon-md", "nk-type-scan-family", "nk-type-body-pad", "nk-tile-skew", "nk-plate", "nk-fill-edge", "nk-lift", "nk-chip-shape", "nk-vital-neighbours"]) expect(names).toContain(n);
+    for (const n of ["nk-space-unit", "nk-r-key", "nk-h-row", "nk-icon-md", "nk-type-scan-family", "nk-tile-skew", "nk-plate", "nk-fill-edge", "nk-lift", "nk-vital-neighbours"]) expect(names).toContain(n);
     // removed in 1.5
     expect(ALL_TOKENS.some((t) => t.name.startsWith("nk-hang-"))).toBe(false);
   });

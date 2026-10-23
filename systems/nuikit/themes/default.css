@@ -144,8 +144,6 @@
   --nk-gauge-ticks: 0;
 
   /* HUD vitals (read by vital-chip) */
-  --nk-chip-shape: auto;
-  --nk-label-attach: flag;
   --nk-vital-icon: uniform;
   --nk-vital-display: expand;
 
