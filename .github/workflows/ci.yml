@@ -32,6 +32,10 @@ jobs:
             git diff --stat | tail -1
             exit 1
           fi
+      # The arsenal (packages/core/src/spec/api) is the source: its generated files (arsenal.json, src/domains,
+      # lua/api.lua, src/events.generated.ts, package.json exports) must be what the spec makes.
+      - name: Arsenal generated from the spec
+        run: node packages/core/scripts/arsenal.mjs --check
       - run: pnpm typecheck
       - run: pnpm test
       # Protocol conformance (docs/protocol.md §10): every page is native (level 3); the theme

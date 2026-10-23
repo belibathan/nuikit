@@ -8,6 +8,7 @@ export const SITE = "https://nuikit.vercel.app";
 
 const PAGES = [
   { href: "/start", label: "Start" },
+  { href: "/kit", label: "Kit" },
   { href: "/components", label: "Components" },
   { href: "/blocks", label: "Blocks" },
   { href: "/theme", label: "Theme studio" },

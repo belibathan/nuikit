@@ -12,6 +12,7 @@ import { VitalChip } from "@/components/ui/vital-chip";
 
 const LINKS = [
   { href: "/start", label: "Start" },
+  { href: "/kit", label: "The kit" },
   { href: "/components", label: "Components" },
   { href: "/blocks", label: "Blocks" },
   { href: "/theme", label: "Theme studio" },

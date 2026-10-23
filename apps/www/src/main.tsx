@@ -10,6 +10,7 @@ const ComponentsPage = lazy(() => import("./pages/components").then((m) => ({ de
 const BlocksPage = lazy(() => import("./pages/blocks").then((m) => ({ default: m.BlocksPage })));
 const ThemePage = lazy(() => import("./pages/theme").then((m) => ({ default: m.ThemePage })));
 const DocPage = lazy(() => import("./pages/doc").then((m) => ({ default: m.DocPage })));
+const KitPage = lazy(() => import("./pages/kit").then((m) => ({ default: m.KitPage })));
 const StartPage = lazy(() => import("./pages/start").then((m) => ({ default: m.StartPage })));
 const design = () => import("../../../docs/design.md?raw").then((m) => m.default as string);
 const coverage = () => import("../../../docs/coverage.md?raw").then((m) => m.default as string);
@@ -21,6 +22,7 @@ const adopt = () => import("../../../docs/adopt.md?raw").then((m) => m.default a
 // Extra pages, no router: vercel.json rewrites them to this index.html.
 const pages: Record<string, () => ReactNode> = {
   "/start": () => <StartPage />,
+  "/kit": () => <KitPage />,
   "/components": () => <ComponentsPage />,
   "/blocks": () => <BlocksPage />,
   "/design": () => <DocPage load={design} path="docs/design.md" />,

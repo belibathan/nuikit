@@ -18,7 +18,7 @@
           "from": "nuikit-core/messages",
           "lua": "nk.message.send",
           "signature": {
-            "js": "onNui<K extends EventName>(action: K, handler: (data: EventData<K>) => void) => (): void",
+            "js": "onNui<K extends EventName>(action: K, handler: (data: EventData<K>) => void): () => void",
             "lua": "nk.message.send(action, data?)"
           },
           "doc": "Lua → page: a message the page receives with onNui.",
@@ -48,7 +48,7 @@
           "from": "nuikit-core/messages",
           "lua": "nk.message.stream",
           "signature": {
-            "js": "follow<K extends EventName>(action: K, paint: (value: number) => void, options?: FollowOptions) => (): void",
+            "js": "follow<K extends EventName>(action: K, paint: (value: number) => void, options?: FollowOptions): () => void",
             "lua": "nk.message.stream(action, { rate?, precision?, kind? }) → NuiStream"
           },
           "doc": "A live value on its own channel (rate-capped, on change); the page glides with follow.",
@@ -103,7 +103,7 @@
           "js": "mockNui",
           "from": "nuikit-core/messages",
           "signature": {
-            "js": "mockNui<K extends CallbackName>(name: K, response: CallbackRes<K> | ((data: CallbackReq<K>) => CallbackRes<K> | Promise<CallbackRes<K>>)) => (): void"
+            "js": "mockNui<K extends CallbackName>(name: K, response: CallbackRes<K> | ((data: CallbackReq<K>) => CallbackRes<K> | Promise<CallbackRes<K>>)): () => void"
           },
           "doc": "A browser-only reply for a callback.",
           "only": "js only: the browser has no Lua",
@@ -117,7 +117,7 @@
           "js": "onAnyNui",
           "from": "nuikit-core/messages",
           "signature": {
-            "js": "onAnyNui(handler: (msg: NuiMessage<unknown>) => void) => (): void"
+            "js": "onAnyNui(handler: (msg: NuiMessage<unknown>) => void): () => void"
           },
           "doc": "Observe every message (devtools, logging).",
           "only": "js only: tooling",
@@ -131,7 +131,7 @@
           "js": "onNuiCall",
           "from": "nuikit-core/messages",
           "signature": {
-            "js": "onNuiCall(handler: (entry: NuiCallEntry) => void) => (): void"
+            "js": "onNuiCall(handler: (entry: NuiCallEntry) => void): () => void"
           },
           "doc": "Observe every fetchNui call, ok or failed.",
           "only": "js only: tooling",
@@ -318,7 +318,7 @@
           "js": "useNuiCallback",
           "from": "nuikit-core/react",
           "signature": {
-            "js": "useNuiCallback<K extends CallbackName>(name: K) => { call: (data?: CallbackReq<K> | undefined): Promise<CallbackRes<K>>; loading: boolean; error: Error | null; data: CallbackRes<K> | null; }"
+            "js": "useNuiCallback<K extends CallbackName>(name: K): { call: (data?: CallbackReq<K> | undefined) => Promise<CallbackRes<K>>; loading: boolean; error: Error | null; data: CallbackRes<K> | null; }"
           },
           "doc": "Call a Lua callback with loading and error state.",
           "only": "js only: React",
@@ -530,7 +530,7 @@
           "js": "onSurfaces",
           "from": "nuikit-core/surfaces",
           "signature": {
-            "js": "onSurfaces(listener: () => void) => (): void"
+            "js": "onSurfaces(listener: () => void): () => void"
           },
           "doc": "Called on every change of the snapshot.",
           "only": "js only: Lua is the source of the change",
@@ -544,7 +544,7 @@
           "js": "onSurfaceBack",
           "from": "nuikit-core/surfaces",
           "signature": {
-            "js": "onSurfaceBack(name: string, handler: () => void) => (): void"
+            "js": "onSurfaceBack(name: string, handler: () => void): () => void"
           },
           "doc": "Escape on a surface with escape = 'back'.",
           "only": "js only: back is a page navigation",
@@ -589,7 +589,7 @@
           "from": "nuikit-core/surfaces",
           "lua": "nk.surface.open",
           "signature": {
-            "js": "useNuiVisibility(options?: { closeOnEscape?: boolean | undefined; }) => { visible: boolean; close: (): Promise<void>; }",
+            "js": "useNuiVisibility(options?: { closeOnEscape?: boolean | undefined; }): { visible: boolean; close: () => Promise<void>; }",
             "lua": "nk.surface.open(opts?)"
           },
           "doc": "Simple mode: show the one UI and take focus (the 'main' surface).",
@@ -646,7 +646,7 @@
           "js": "onVisible",
           "from": "nuikit-core/surfaces",
           "signature": {
-            "js": "onVisible(listener: (v: boolean) => void) => (): void"
+            "js": "onVisible(listener: (v: boolean) => void): () => void"
           },
           "doc": "Simple mode: called when the UI shows or hides.",
           "only": "js only: Lua drives visibility",
@@ -660,7 +660,7 @@
           "js": "useSurface",
           "from": "nuikit-core/react",
           "signature": {
-            "js": "useSurface<K extends SurfaceName>(name: K) => { isOpen: boolean; openSurface: (data?: SurfaceData<K> | undefined) => Promise<boolean>; close: (): Promise<void>; open: boolean; visible: boolean; focused: boolean; layer: SurfaceLayer; data?: SurfaceData<K> | undefined; z?: number | undefined; }"
+            "js": "useSurface<K extends SurfaceName>(name: K): { isOpen: boolean; openSurface: (data?: SurfaceData<K> | undefined) => Promise<boolean>; close: () => Promise<void>; open: boolean; visible: boolean; focused: boolean; layer: SurfaceLayer; data?: SurfaceData<K> | undefined; z?: number | undefined; }"
           },
           "doc": "A surface's state, live.",
           "only": "js only: React",
@@ -1912,7 +1912,7 @@
           "js": "useKeys",
           "from": "nuikit-core/react",
           "signature": {
-            "js": "useKeys() => { keys: KeyBinding[]; reload: (): Promise<void>; }"
+            "js": "useKeys(): { keys: KeyBinding[]; reload: () => Promise<void>; }"
           },
           "doc": "Every resource's keys, loaded.",
           "only": "js only: React",
@@ -2186,7 +2186,7 @@
           "js": "useSettings",
           "from": "nuikit-core/react",
           "signature": {
-            "js": "useSettings(resource: string) => { section: SettingsSection | null; rows: SettingRow[]; values: Record<string, SettingValue>; presets: { id: string; label: string; }[]; dirty: boolean; draft: (patch: Record<string, SettingValue>) => Promise<Record<string, SettingValue> | null>; save: () => Promise<Record<string, SettingValue> | null>; cancel: () => Promise<Record<string, SettingValue> | null>; reset: (keys?: string[] | undefined) => Promise<Record<string, SettingValue> | null>; preset: (id: string) => Promise<Record<string, SettingValue> | null>; reload: (): Promise<void>; }"
+            "js": "useSettings(resource: string): { section: SettingsSection | null; rows: SettingRow[]; values: Record<string, SettingValue>; presets: { id: string; label: string; }[]; dirty: boolean; draft: (patch: Record<string, SettingValue>) => Promise<Record<string, SettingValue> | null>; save: () => Promise<Record<string, SettingValue> | null>; cancel: () => Promise<Record<string, SettingValue> | null>; reset: (keys?: string[] | undefined) => Promise<Record<string, SettingValue> | null>; preset: (id: string) => Promise<Record<string, SettingValue> | null>; reload: () => Promise<void>; }"
           },
           "doc": "A resource's section with the ops, live.",
           "only": "js only: React",
@@ -2331,7 +2331,7 @@
           "from": "nuikit-core/player",
           "lua": "nk.player.onChange",
           "signature": {
-            "js": "onPlayer(listener: () => void) => (): void",
+            "js": "onPlayer(listener: () => void): () => void",
             "lua": "nk.player.onChange(fn(player))"
           },
           "doc": "Called after every change.",
@@ -2359,7 +2359,7 @@
           "js": "onContext",
           "from": "nuikit-core/player",
           "signature": {
-            "js": "onContext(listener: () => void) => (): void"
+            "js": "onContext(listener: () => void): () => void"
           },
           "doc": "Called when the context changes.",
           "only": "js only: Lua reads GlobalState",
@@ -2619,7 +2619,7 @@
           "js": "onTheme",
           "from": "nuikit-core/theme",
           "signature": {
-            "js": "onTheme(listener: (theme: CompiledTheme) => void) => (): void"
+            "js": "onTheme(listener: (theme: CompiledTheme) => void): () => void"
           },
           "doc": "Called when the theme changes.",
           "only": "js only: Lua is the source",
@@ -3131,7 +3131,7 @@
           "js": "onImageConfig",
           "from": "nuikit-core/images",
           "signature": {
-            "js": "onImageConfig(listener: () => void) => (): void"
+            "js": "onImageConfig(listener: () => void): () => void"
           },
           "doc": "Called when the templates change.",
           "only": "js only: the page's resolver",
@@ -3275,7 +3275,7 @@
           "js": "onZones",
           "from": "nuikit-core/zones",
           "signature": {
-            "js": "onZones(fn: () => void) => (): void"
+            "js": "onZones(fn: () => void): () => void"
           },
           "doc": "Called on every change.",
           "only": "js only: Lua is the source",
@@ -3433,7 +3433,7 @@
           "js": "onSlots",
           "from": "nuikit-core/slots",
           "signature": {
-            "js": "onSlots(fn: () => void) => (): void"
+            "js": "onSlots(fn: () => void): () => void"
           },
           "doc": "Called on every change.",
           "only": "js only: Lua is the source",
@@ -3632,7 +3632,7 @@
           "js": "indicator",
           "from": "nuikit-core/motion",
           "signature": {
-            "js": "indicator(el: HTMLElement) => (y: number, scaleY?: number): void"
+            "js": "indicator(el: HTMLElement): (y: number, scaleY?: number) => void"
           },
           "doc": "A selection indicator that springs between rows.",
           "only": "js only: motion is the page's (WAAPI)",
@@ -3924,7 +3924,7 @@
           "js": "mountStandalone",
           "from": "nuikit-core/host",
           "signature": {
-            "js": "mountStandalone(def: ModuleDefinition, el?: HTMLElement) => (): void"
+            "js": "mountStandalone(def: ModuleDefinition, el?: HTMLElement): () => void"
           },
           "doc": "Mount a module as its own page.",
           "only": "js only: pages",
