@@ -81,8 +81,11 @@ function Zone({ at, clear = false, publish, gap, inset, z, flow, align, justify,
   )
 }
 
-/** Measure an element (settled: 150ms after the last change) and publish its rectangle as a screen zone. */
-function usePublishedRect(ref: React.RefObject<HTMLElement | null>, name: string | undefined) {
+/**
+ * Measure an element (settled: 150ms after the last change) and publish its rectangle as a screen zone: this page's
+ * stacks clear it at once; `remote: false` keeps it to this page (no NUI.zone).
+ */
+function usePublishedRect(ref: React.RefObject<HTMLElement | null>, name: string | undefined, { remote = true }: { remote?: boolean } = {}) {
   React.useEffect(() => {
     const el = ref.current
     if (!name || !el || typeof ResizeObserver === "undefined") return
@@ -97,7 +100,7 @@ function usePublishedRect(ref: React.RefObject<HTMLElement | null>, name: string
       const key = JSON.stringify(rects)
       if (key === last) return
       last = key
-      void publishZone(name, rects)
+      void publishZone(name, rects, { remote })
     }
     const schedule = () => {
       clearTimeout(t)
@@ -111,9 +114,9 @@ function usePublishedRect(ref: React.RefObject<HTMLElement | null>, name: string
       clearTimeout(t)
       ro.disconnect()
       window.removeEventListener("resize", schedule)
-      void publishZone(name, null)
+      void publishZone(name, null, { remote })
     }
-  }, [ref, name])
+  }, [ref, name, remote])
 }
 
 export { Zone, usePublishedRect, type ZoneProps }

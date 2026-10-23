@@ -10,6 +10,7 @@ import { defineSurface, onSurfaceBack, type SurfaceOptions } from "nuikit-core";
 import { useEffect, useReducer, useRef } from "react";
 import type { PackRenderer, RendererPacks } from "./packs";
 import { renderers } from "./renderers";
+import { Screen } from "@/components/ui/screen";
 
 /** The surfaces client/intents.lua declares (mirrored for the browser's local manager). */
 export const INTENT_SURFACES: Record<string, { kind: IntentKind } & SurfaceOptions> = {
@@ -42,14 +43,15 @@ export function Frame({ store, packs }: { store: IntentStore; packs?: RendererPa
   useEffect(() => packs?.subscribe(bump), [packs]);
 
   return (
-    <div data-nk-frame className="pointer-events-none absolute inset-0 overflow-hidden">
+    // the layout root (docs/design/layout.md): every renderer places itself in a zone of this screen
+    <Screen data-nk-frame>
       {ORDER.filter((k) => INTENT_KINDS.includes(k)).map((kind) => {
         const pack = packs?.get(kind);
         // A new key per pack (and per pack restart) remounts the kind on a swap.
         const key = pack ? `${kind}:${pack.resource}:${pack.gen}` : kind;
         return <RendererMount key={key} kind={kind} store={store} renderer={pack?.def ?? renderers[kind]} pack={pack} />;
       })}
-    </div>
+    </Screen>
   );
 }
 

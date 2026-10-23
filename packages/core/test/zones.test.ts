@@ -99,6 +99,12 @@ describe("clearOf: generalised", () => {
     expect(clearOf(hud, "tr", opts)).toEqual(clearOf(hud, "top-right", opts));
   });
 
+  it("a middle zone (prompts at the centre line) never pushes a corner stack", () => {
+    const prompts = { local: [{ x: 0.85, y: 0.42, w: 0.13, h: 0.16 }] };
+    expect(clearOf(prompts, "top-right", opts)).toEqual({});
+    expect(clearOf(prompts, "bottom-right", opts)).toEqual({});
+  });
+
   it("pushes a middle-right stack inwards past what sits on the right edge in its band", () => {
     const phone = { phone: [{ x: 0.8, y: 0.3, w: 0.18, h: 0.5 }] };
     expect(clearOf(phone, "center-right", opts).right).toBeCloseTo(1920 - 0.8 * 1920 + 12, 6);

@@ -135,8 +135,13 @@ export function zoneOf(r: ZoneRect): ZoneId {
   return `${row}${col}` as ZoneId;
 }
 
+let remote: Zones = {};
+let local: Zones = {};
 let zones: Zones = {};
 const listeners = new Set<() => void>();
+const merge = () => {
+  zones = Object.keys(local).length ? { ...remote, ...local } : remote;
+};
 let listening = false;
 
 function listen() {
@@ -151,7 +156,8 @@ function listen() {
  */
 export function setZones(data: unknown): void {
   // an empty Lua table arrives as [] (json.encode can't tell): no zones
-  zones = data && typeof data === "object" && !Array.isArray(data) ? (data as Zones) : {};
+  remote = data && typeof data === "object" && !Array.isArray(data) ? (data as Zones) : {};
+  merge();
   listeners.forEach((l) => l());
 }
 // subscribed right after the first import (a microtask: index → remote → zones is a cycle, so onNui's
@@ -193,7 +199,7 @@ export interface ClearOptions {
  * Where a stack anchored at `position` must start to clear the zones in its column: `{ top }` (px from
  * the top) for a top position, `{ bottom }` for a bottom one, `{ left }` / `{ right }` (px from that side)
  * for a middle-left or middle-right one, `{}` when nothing is in the way (keep the anchor's own edge). Only
- * zones in the stack's half (its band, for a middle one) count, so the map top right pushes top-right
+ * zones whose centre is in the stack's third of the height (its band, for a middle one) count, so the map top right pushes top-right
  * notices down, the cluster bottom right pushes bottom-right ones up, a phone on the right edge pushes
  * center-right prompts inwards. The centre never moves.
  */
@@ -249,8 +255,10 @@ export function clearOf(all: Zones, position: ZonePosition | ZoneId, opts: Clear
       const ry0 = r.y * H;
       const ry1 = (r.y + r.h) * H;
       if (rx1 <= x0 || rx0 >= x1 || r.w <= 0 || r.h <= 0) continue;
-      if (top && ry0 < H / 2) out = Math.max(out ?? 0, ry1 + gap);
-      if (bottom && ry1 > H / 2) out = Math.max(out ?? 0, H - ry0 + gap);
+      // only what belongs to the stack's third (its centre there): a middle zone (a prompt, a phone) never pushes a corner
+      const cy = (ry0 + ry1) / 2;
+      if (top && cy < H / 3 + 0.5) out = Math.max(out ?? 0, ry1 + gap);
+      if (bottom && cy > (H * 2) / 3 - 0.5) out = Math.max(out ?? 0, H - ry0 + gap);
     }
   }
   if (out === undefined || out <= edge) return {};
@@ -272,8 +280,28 @@ export function stackOffsets(heights: number[], start: number, gap: number): num
   return out;
 }
 
-/** Publish rectangles (screen fractions) a page covers, through NUI.zone (nuikit.lua `nuikit:zone`). */
-export async function publishZone(name: string, rects: ZoneRect[] | null): Promise<void> {
+/**
+ * Set (or with null, remove) a zone this page covers, for this page only: the page's own stacks clear it at once,
+ * without a round trip (a prompt stack bottom centre lifts the notices there). Keyed `local:<name>`.
+ */
+export function setLocalZone(name: string, rects: ZoneRect[] | null): void {
+  const key = `local:${name}`;
+  const next = { ...local };
+  if (rects && rects.length) next[key] = rects;
+  else delete next[key];
+  if (JSON.stringify(next[key]) === JSON.stringify(local[key])) return;
+  local = next;
+  merge();
+  listeners.forEach((l) => l());
+}
+
+/**
+ * Publish rectangles (screen fractions) a page covers: at once for this page (setLocalZone), and through NUI.zone
+ * (nuikit.lua `nuikit:zone`) for every other page.
+ */
+export async function publishZone(name: string, rects: ZoneRect[] | null, opts: { remote?: boolean } = {}): Promise<void> {
+  setLocalZone(name, rects);
+  if (opts.remote === false) return;
   if (isBrowser()) return;
   await fetchNui("nuikit:zone" as never, { name, rects: rects ?? null } as never).catch(() => {});
 }

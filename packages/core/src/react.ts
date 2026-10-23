@@ -46,6 +46,7 @@ export {
   getZones,
   onZones,
   publishZone,
+  setLocalZone,
   stackOffsets,
   toZoneId,
   zoneOf,

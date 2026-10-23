@@ -64,3 +64,10 @@ html[data-nk-motion="reduced"] [class*="nk-fa-"] {
   animation: none;
 }
 
+
+/* A pointer menu top right sits in from the corner, near where the eye is: 15% down, a quarter of the layout box
+   in from its right edge (the box, not the screen: on an ultrawide the notices stand at the box's edge). */
+.nk-menu-inward[data-nk-zone] {
+  top: 15%;
+  right: calc(var(--nk-area-r, 0px) + (100vw - var(--nk-area-l, 0px) - var(--nk-area-r, 0px)) * 0.25);
+}

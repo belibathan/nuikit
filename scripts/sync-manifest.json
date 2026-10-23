@@ -141,6 +141,7 @@
       "web/src/components/ui/progress-ring.tsx",
       "web/src/components/ui/progress.tsx",
       "web/src/components/ui/radial-menu.tsx",
+      "web/src/components/ui/screen.tsx",
       "web/src/components/ui/scroll-area.tsx",
       "web/src/components/ui/select.tsx",
       "web/src/components/ui/selection-tile.tsx",
@@ -154,6 +155,7 @@
       "web/src/components/ui/text.tsx",
       "web/src/components/ui/textarea.tsx",
       "web/src/components/ui/tile.tsx",
+      "web/src/components/ui/zone.tsx",
       "web/src/hooks/use-linear-run.ts",
       "web/src/index.css",
       "web/src/lib/utils.ts"

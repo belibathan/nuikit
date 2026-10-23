@@ -1,4 +1,5 @@
 import type { IntentAnchor } from "nuikit-core/intents";
+import type { ZoneId } from "nuikit-core/react";
 
 export type Anchor = "top-left" | "top-center" | "top-right" | "center-left" | "center-right" | "bottom-left" | "bottom-center" | "bottom-right" | "center";
 
@@ -30,4 +31,17 @@ export const ANCHOR_CLASS: Record<Anchor, string> = {
   "bottom-center": "nk-anchor-b",
   "bottom-right": "nk-anchor-br",
   center: "absolute inset-0 m-auto h-max w-max",
+};
+
+/** The layout zone of each anchor (docs/design/layout.md): renderers place themselves in these. */
+export const ANCHOR_ZONE: Record<Anchor, ZoneId> = {
+  "top-left": "tl",
+  "top-center": "tc",
+  "top-right": "tr",
+  "center-left": "ml",
+  "center-right": "mr",
+  "bottom-left": "bl",
+  "bottom-center": "bc",
+  "bottom-right": "br",
+  center: "mc",
 };
