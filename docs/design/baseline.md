@@ -111,6 +111,16 @@ content; `useSelectionIndicator(ref, options)` for a list that renders its own `
 list draws the same tile itself (its `::before` wall and `::after` face), without the slide. `--nk-row-indicator`
 (bar, fill, outline, sweep) and `--nk-row-marker-width` / `--nk-row-tint-reach` no longer change how rows select.
 
+## Invariants
+
+Mechanical, so the gaps cannot come back (each lists its debt; a new violation fails or grows the burn-down).
+
+1. Themes set values, never anatomy: `registry/nuikit/test/anatomy.test.tsx` renders every registry ui item under each treatment and shipped theme; the `data-slot`/`data-part` tree must match. A new ui item adds a row to its `CASES`.
+2. One selection, one component: `nuikit check` rule `selection/local` (page-drawn hover/active/selected backgrounds; use MenuRowList, SelectionTile, Tabs).
+3. No local plates, walls or skews: rule `kit/local-concept` (skew, `box-shadow: 0 Npx 0`, `border-bottom: Npx solid`, gradient level fills; use Tile, Fill, Chip).
+4. Every lever has a default and a reader: `registry/nuikit/test/levers.test.ts` (`--nk-*` read without a declaration, or declared in kit.css and read nowhere).
+Counts: `bench/check-baseline.json` via `node scripts/check-burndown.mjs`.
+
 ## Where it lives
 
 | Part | Files |
