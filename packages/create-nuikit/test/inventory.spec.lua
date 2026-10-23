@@ -35,7 +35,7 @@ local function boot()
 end
 boot()
 check(#PRINTED == 0, 'no other inventory running, OneSync on: nothing printed at start')
-local function req(src, name, data) source = src; handler(1, name, data); return last end
+local function req(src, name, data) clock = clock + 150; source = src; handler(1, name, data); return last end
 local function inv(src, stash) local r = req(src, 'open', { stash = stash }); return r end
 local function slots(c) local t = {} for _, i in ipairs(c.items) do t[i.slot] = i end return t end
 local function mine(src) return slots(inv(src).data.player) end
@@ -150,6 +150,14 @@ check(not r.ok and r.error == 'Not so fast.' and mine(1)[sw].count == n - 1, 'ea
 clock = clock + 1100
 r = req(1, 'use', { slot = sw })
 check(r.ok and mine(1)[sw] == nil, 'a second later: the last sandwich, and the slot empties')
+
+-- rate limit: a client spamming moves (each one saves the whole file and refreshes the viewers)
+clock = clock + 5000
+local refused = 0
+for i = 1, 30 do source = 1; handler(1, 'move', { from = { container = 'player', slot = 1 }, to = { container = 'player', slot = 24 + (i % 2) }, count = 1 }); if last.error == 'Not so fast.' then refused = refused + 1 end end
+check(refused == 20, '30 moves in the same instant: 10 go through, 20 refused (' .. refused .. ')')
+clock = clock + 1000
+check(req(1, 'open', {}).ok, 'a second later: requests go through again')
 
 -- the give command
 PRINTED = {}

@@ -48,6 +48,7 @@ end
 
 local handler
 function RegisterNetEvent(_, fn) handler = fn end
+function AddEventHandler() end
 local exportsT = {}
 function exports(name, fn) exportsT[name] = fn end
 local answers = {}
@@ -59,6 +60,7 @@ local seq = 0
 --- Start a request in its own coroutine; returns a function that runs it to the end and gives the answer.
 local function start(src, name, data)
   seq = seq + 1
+  clock = clock + 150
   local id = seq
   local co = coroutine.create(function() source = src; handler(id, name, data) end)
   assert(coroutine.resume(co))
@@ -210,6 +212,18 @@ GetPlayerPed = function() return 0 end
 r = req(1, 'take', { id = 'ZEN 01', garage = 'legion' })
 check(not r.ok, "take with no server-side ped refused (" .. tostring(r.error) .. ')')
 GetPlayerPed = realPed
+
+-- rate limit: a client spamming the event (a list walks every record; a store or take saves)
+clock = clock + 5000
+local refused = 0
+for i = 1, 30 do
+  local co = coroutine.create(function() source = 1; handler(1000 + i, 'list', { garage = 'legion' }) end)
+  assert(coroutine.resume(co))
+  if answers[1000 + i] and answers[1000 + i].error == 'Not so fast.' then refused = refused + 1 end
+end
+check(refused == 20, '30 requests in the same instant: 10 answered, 20 refused (' .. refused .. ')')
+clock = clock + 1000
+check(req(1, 'list', { garage = 'legion' }).ok, 'a second later: requests go through again')
 
 -- OneSync off: loud at start, every request refused
 ONESYNC_CONVAR = 'off'

@@ -190,6 +190,7 @@ end
 
 local talking = {}  -- src → { npc = id, node = id }
 local busy, lastAt = {}, {}
+local usedAt = {}   -- license .. '|' .. npc .. '|' .. choice → GetGameTimer() when it last went through (choice.cooldown)
 AddEventHandler('playerDropped', function()
   local src = source
   talking[src], busy[src], lastAt[src] = nil, nil, nil
@@ -239,11 +240,18 @@ handlers.choose = function(src, data)
   local why = unmet(src, choice)
   if why then return { ok = false, error = "You can't choose that: " .. why:lower() .. '.' } end
   if choice.next and not nodeOf(npc, choice.next) then return { ok = false, error = "They don't know what to say." } end
+  -- A choice with a cooldown (one that pays, say) goes through once per `cooldown` ms per player,
+  -- however often the tree leads back to it. Keyed by license, so a reconnect doesn't reset it.
+  local key = owner(src) .. '|' .. npc.id .. '|' .. choice.id
+  if choice.cooldown and usedAt[key] and now - usedAt[key] < choice.cooldown then
+    return { ok = false, error = 'Not again so soon.' }
+  end
 
   busy[src] = true
   local done = apply(src, npc, choice)
   busy[src] = nil
   if not done then return { ok = false, error = "That didn't go through. Nothing changed." } end
+  if choice.cooldown then usedAt[key] = now end
 
   if choice.next then
     st.node = choice.next

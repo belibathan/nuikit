@@ -7,6 +7,14 @@ local resource = GetCurrentResourceName()
 local db = json.decode(LoadResourceFile(resource, Config.saveFile) or '{}') or {}
 local MAX_TX = 50
 
+-- Money only moves at a bank or an ATM, and only a bank sends transfers: checked here from the
+-- server's own view of where the player stands, which needs OneSync. Without it every deposit,
+-- withdrawal and transfer is refused; say so at start.
+local ONESYNC = GetConvar('onesync', 'off') ~= 'off'
+if not ONESYNC then
+  print(('^1[%s] OneSync is off. The bank needs it (set onesync on in server.cfg); every deposit, withdrawal and transfer will be refused.^0'):format(resource))
+end
+
 local function save() SaveResourceFile(resource, Config.saveFile, json.encode(db), -1) end
 local function owner(src) return GetPlayerIdentifierByType(src, 'license') or ('src:' .. src) end
 
@@ -89,6 +97,17 @@ local function move(fromSrc, fromAccount, toSrc, toAccount, amount, why)
   return true
 end
 
+--- Where the player stands: 'bank', 'atm' or nil (the server's position; the page's `atm` is never used).
+local function at(src)
+  local ped = ONESYNC and GetPlayerPed(src)
+  if not ped or ped == 0 then return nil end
+  local p, r2 = GetEntityCoords(ped), (Config.radius + 2.0) ^ 2
+  local function near(c) local dx, dy, dz = p.x - c.x, p.y - c.y, p.z - c.z return dx * dx + dy * dy + dz * dz <= r2 end
+  for _, b in ipairs(Config.banks) do if near(b.coords) then return 'bank' end end
+  for _, a in ipairs(Config.atms) do if near(a) then return 'atm' end end
+end
+local AWAY = { ok = false, error = "You're not at a bank or an ATM." }
+
 local handlers = {}
 
 handlers.open = function(src, data)
@@ -99,6 +118,7 @@ handlers.deposit = function(src, data)
   local amount = amountOf(data.amount)
   if not amount then return { ok = false, error = 'Enter whole dollars above $0.' } end
   if data.account ~= 'checking' and data.account ~= 'savings' then return { ok = false, error = 'Unknown account.' } end
+  if not at(src) then return AWAY end
   if balance(src, 'cash') < amount then return { ok = false, error = "You don't have that much cash." } end
   if not move(src, 'cash', src, data.account, amount, 'bank deposit') then return { ok = false, error = "The deposit didn't go through." } end
   log(src, data.account, 'deposit', 'Cash deposit', amount, noteOf(data.note))
@@ -110,6 +130,7 @@ handlers.withdraw = function(src, data)
   local amount = amountOf(data.amount)
   if not amount then return { ok = false, error = 'Enter whole dollars above $0.' } end
   if data.account ~= 'checking' and data.account ~= 'savings' then return { ok = false, error = 'Unknown account.' } end
+  if not at(src) then return AWAY end
   if balance(src, data.account) < amount then return { ok = false, error = "There isn't that much in the account." } end
   if not move(src, data.account, src, 'cash', amount, 'bank withdrawal') then return { ok = false, error = "The withdrawal didn't go through." } end
   log(src, data.account, 'withdraw', 'Cash withdrawal', -amount, noteOf(data.note))
@@ -120,8 +141,10 @@ end
 handlers.transfer = function(src, data)
   local amount = amountOf(data.amount)
   if not amount then return { ok = false, error = 'Enter whole dollars above $0.' } end
-  if data.atm then return { ok = false, error = "ATMs can't send transfers." } end
   if data.account ~= 'checking' and data.account ~= 'savings' then return { ok = false, error = 'Unknown account.' } end
+  local where = at(src)
+  if not where then return AWAY end
+  if where ~= 'bank' then return { ok = false, error = "ATMs can't send transfers." } end
   local note = noteOf(data.note)
   -- to: a server ID or the "LS-000012" number the page shows; your own other account with "savings"
   local to = (type(data.to) == 'string' or type(data.to) == 'number') and tostring(data.to):gsub('%s', '') or ''
@@ -146,9 +169,24 @@ handlers.transfer = function(src, data)
   return { ok = true }
 end
 
+-- At most RATE requests a second per player: the page asks far less often, and each move writes
+-- the whole file (and calls the framework's money).
+local hits, RATE = {}, 10
+local function limited(src)
+  local now, h = GetGameTimer(), hits[src]
+  if not h or now - h.at >= 1000 then h = { at = now, n = 0 }; hits[src] = h end
+  h.n = h.n + 1
+  return h.n > RATE
+end
+AddEventHandler('playerDropped', function() hits[source] = nil end)
+
 RegisterNetEvent('{{name}}:req', function(id, name, data)
   local src = source
-  local handler = handlers[name]
+  if limited(src) then
+    TriggerClientEvent('{{name}}:res', src, id, { ok = false, error = 'Not so fast.' })
+    return
+  end
+  local handler = type(name) == 'string' and handlers[name]
   local ok, result = pcall(function() return handler and handler(src, type(data) == 'table' and data or {}) end)
   if not ok then print(('[{{name}}] %s failed: %s'):format(name, result)) end
   TriggerClientEvent('{{name}}:res', src, id, ok and result or { ok = false, error = 'The bank had a problem. Try again.' })

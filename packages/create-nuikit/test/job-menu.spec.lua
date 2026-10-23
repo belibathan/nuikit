@@ -22,6 +22,9 @@ function GetPlayerPed(s) return ONLINE[s] and 1000 + s or 0 end
 function GetEntityCoords(p) local c = POS[p - 1000] return { x = c[1], y = c[2], z = c[3] } end
 local events = {}
 function TriggerEvent(...) events[#events+1] = { ... } end
+function AddEventHandler() end
+local clock = 0
+function GetGameTimer() return clock end
 local synced = {}
 local handler, commands = nil, {}
 function RegisterNetEvent(_, fn) handler = fn end
@@ -34,7 +37,7 @@ local function boot()
   assert(load(SERVER, 'server.lua', 't'))()
 end
 boot()
-local function req(src, name, data) source = src; handler(1, name, data); return last end
+local function req(src, name, data) clock = clock + 150; source = src; handler(1, name, data); return last end
 local function open(src) return req(src, 'open') end
 local function staff(src) local r = open(src); local by = {} for _, e in ipairs(r.data.boss.employees) do by[e.name] = e end return by, r.data end
 local function members() local n = 0 for _ in pairs(store and store.members or {}) do n = n + 1 end return n end
@@ -184,3 +187,11 @@ r = req(1, 'hire', { player = 4 })
 check(not r.ok and r.error == 'Hiring needs OneSync on the server.', 'OneSync off: hiring refused (' .. tostring(r.error) .. ')')
 r = req(2, 'action', { id = 'armory' })
 check(r.ok, 'OneSync off: actions still work')
+
+-- rate limit: a client spamming an action (each one is announced, and may spawn a car)
+clock = clock + 5000
+local refused, ev = 0, #events
+for _ = 1, 30 do source = 2; handler(1, 'action', { id = 'armory' }); if last.error == 'Not so fast.' then refused = refused + 1 end end
+check(refused == 20 and #events == ev + 10, '30 actions in the same instant: 10 announced, 20 refused (' .. refused .. ')')
+clock = clock + 1000
+check(req(2, 'action', { id = 'armory' }).ok, 'a second later: actions go through again')

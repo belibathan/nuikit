@@ -13,8 +13,9 @@ Config = {
   maxMessages = 100, -- messages kept per thread (the newest)
   maxThreads = 30,   -- threads kept per player (the quietest goes first)
 
-  -- At most `max` requests (adding a contact, sending a text) per `window` seconds, per player.
-  rate = { max = 5, window = 10 },
+  -- At most `max` requests (adding a contact, sending a text) and `opens` snapshots per `window`
+  -- seconds, per player.
+  rate = { max = 5, window = 10, opens = 30 },
 }
 
 if IsDuplicityVersion() then

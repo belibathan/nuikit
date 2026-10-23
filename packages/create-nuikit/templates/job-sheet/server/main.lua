@@ -31,6 +31,29 @@ end
 --- Whether a row or action is visible to this grade.
 local function allowed(item, grade) return grade >= (item.minGrade or 0) end
 
+--- The pages this grade can reach from root, each with whether the way there needs duty. A page
+--- only opens through a row that leads to it (`page = '<id>'`) and that the grade may use, so that
+--- row's minGrade and onDutyOnly guard every row behind it too.
+local function reachable(job, grade)
+  local out, queue, i = { root = { duty = false } }, { 'root' }, 1
+  while queue[i] do
+    local from = queue[i]
+    i = i + 1
+    for _, s in ipairs((job.pages[from] or {}).sections or {}) do
+      for _, r in ipairs(s.rows or {}) do
+        if type(r.page) == 'string' and job.pages[r.page] and allowed(r, grade) and not r.disabled then
+          local duty, seen = out[from].duty or r.onDutyOnly == true, out[r.page]
+          if not seen or (seen.duty and not duty) then
+            out[r.page] = { duty = duty }
+            queue[#queue + 1] = r.page
+          end
+        end
+      end
+    end
+  end
+  return out
+end
+
 --- The pages the caller may see: rows above their grade are left out, empty sections dropped.
 --- Nothing from the record but the job's name, label, grade label and duty reaches the page.
 local function snapshot(src)
@@ -56,9 +79,10 @@ local function snapshot(src)
     end
     pages[#pages + 1] = { id = id, title = p.title or job.label, description = p.description, sections = sections, actions = actions }
   end
+  local reach = reachable(job, m.grade)
   page('root', job.pages.root or {})
   for id, p in pairs(job.pages) do
-    if id ~= 'root' then page(id, p) end
+    if id ~= 'root' and reach[id] then page(id, p) end
   end
   return {
     job = { name = m.job, label = job.label, gradeLabel = (gradeOf(job, m.grade) or {}).label, onDuty = m.onDuty == true },
@@ -113,8 +137,9 @@ handlers.row = function(src, data)
   local m, job = memberOf(src)
   if not m then return NO_JOB end
   local r = rowOf(job, data.page, data.id)
-  if not r or not allowed(r, m.grade) or r.disabled then return { ok = false, error = "You can't do that." } end
-  if r.onDutyOnly and not m.onDuty then return { ok = false, error = 'Go on duty first.' } end
+  local via = reachable(job, m.grade)[data.page]
+  if not r or not via or not allowed(r, m.grade) or r.disabled then return { ok = false, error = "You can't do that." } end
+  if (r.onDutyOnly or via.duty) and not m.onDuty then return { ok = false, error = 'Go on duty first.' } end
   if r.id == 'clockin' or r.id == 'clockout' then
     setDuty(src, m, r.id == 'clockin')
     return { ok = true, stay = true }
@@ -124,12 +149,20 @@ handlers.row = function(src, data)
 end
 
 -- One request at a time per player: a second one while the first runs is refused, not queued.
-local busy = {}
+-- And at most RATE a second: the sheet asks far less often, and each duty change saves and syncs.
+local busy, hits, RATE = {}, {}, 10
+
+local function limited(src)
+  local now, h = GetGameTimer(), hits[src]
+  if not h or now - h.at >= 1000 then h = { at = now, n = 0 }; hits[src] = h end
+  h.n = h.n + 1
+  return h.n > RATE
+end
 
 RegisterNetEvent('{{name}}:req', function(id, name, data)
   local src = source
-  if busy[src] then
-    TriggerClientEvent('{{name}}:res', src, id, { ok = false, error = 'One thing at a time.' })
+  if busy[src] or limited(src) then
+    TriggerClientEvent('{{name}}:res', src, id, { ok = false, error = busy[src] and 'One thing at a time.' or 'Not so fast.' })
     return
   end
   busy[src] = true
@@ -140,7 +173,7 @@ RegisterNetEvent('{{name}}:req', function(id, name, data)
   TriggerClientEvent('{{name}}:res', src, id, ok and result or { ok = false, error = 'The job sheet had a problem. Try again.' })
 end)
 
-AddEventHandler('playerDropped', function() busy[source] = nil end)
+AddEventHandler('playerDropped', function() busy[source], hits[source] = nil, nil end)
 
 -- Give someone a job from the server console (or as an admin with the ace below):
 --   {{name}}_setjob <server id> <job> <grade>      e.g. {{name}}_setjob 1 police 1
