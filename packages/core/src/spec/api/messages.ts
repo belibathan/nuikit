@@ -26,6 +26,7 @@ export default {
     { name: "hasCapability", kind: "call", doc: "Does this UI's Lua provide a capability.", js: "hasCapability", only: "js only: negotiated by the page", since: "0.6.0" },
     { name: "protocol", kind: "const", doc: "The protocol version spoken (docs/protocol.md §2).", js: "PROTOCOL", lua: "nk.message.protocol", impl: "NUI.PROTOCOL", since: "0.6.0" },
     { name: "version", kind: "call", doc: "The nuikit runtime's version.", lua: "nk.message.version", impl: "function() return GetResourceMetadata('nuikit', 'version', 0) end", only: "lua only: the page has its package version", since: "0.6.0" },
+    { name: "events", kind: "const", doc: "Every event in the arsenal as data: name, wire, direction, sender, domain.", js: "ARSENAL_EVENTS", only: "js only: the generated table (Lua reads the spec through nuikit check)", since: "0.9.0" },
     { name: "NuiError", kind: "type", doc: "A failed call: .code TIMEOUT, TRANSPORT, UNKNOWN_CALLBACK, INVALID or CANCELLED.", js: "NuiError", only: "js only: Lua answers { error }", since: "0.6.0" },
     { name: "useNuiEvent", kind: "hook", doc: "Run a handler whenever Lua sends an event.", js: "useNuiEvent", only: "js only: React", since: "0.4.0" },
     { name: "useNuiState", kind: "hook", doc: "The latest payload of an event as state.", js: "useNuiState", only: "js only: React", since: "0.4.0" },

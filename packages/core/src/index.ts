@@ -21,26 +21,14 @@ export interface NuiEvents {}
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface NuiCallbacks {}
 
-/** Built-ins every nuikit resource understands (mirrored in lua/nuikit.lua). */
-export interface BuiltinEvents {
-  "nuikit:visible": boolean;
-  "nuikit:surfaces": import("./surfaces").SurfacesSnapshot;
-  "nuikit:back": string;
-  "nuikit:player": import("./player").NuiPlayer;
-  /** The server's currency and locale (bridge.lua, protocol §7.2). */
-  "nuikit:context": import("./player").NuiContext;
-  /** The server theme: compiled tokens from the nuikit resource (or a raw theme.css from an older one). */
-  "nuikit:theme": string | import("./tokens").CompiledTheme;
-  /** The player's UI preferences (scale, reduced motion, high contrast). */
-  "nuikit:prefs": Partial<import("./tokens").NuiPrefs>;
-}
-export interface BuiltinCallbacks {
-  "nuikit:ready": { req: { protocol: number; client: string }; res: Handshake };
-  "nuikit:close": { req: void | { name?: string }; res: { ok: boolean } };
-  "nuikit:escape": { req: void; res: { ok: boolean; closed?: string; back?: string } };
-  "nuikit:surface:open": { req: { name: string; data?: unknown }; res: { ok: boolean } };
-  "nuikit:surface:close": { req: { name: string }; res: { ok: boolean } };
-}
+/**
+ * Built-ins every nuikit resource understands: the arsenal's page↔Lua events (src/spec/api, generated into
+ * events.generated.ts). Augment NuiEvents / NuiCallbacks for your own.
+ */
+export interface BuiltinEvents extends ArsenalEvents {}
+export interface BuiltinCallbacks extends ArsenalCallbacks {}
+export { ARSENAL_EVENTS, type ArsenalCallbacks, type ArsenalEvents, type ArsenalNuikitCallbacks, type EventDirection } from "./events.generated";
+import type { ArsenalCallbacks, ArsenalEvents } from "./events.generated";
 
 type AllEvents = BuiltinEvents & NuiEvents;
 type AllCallbacks = BuiltinCallbacks & NuiCallbacks;
