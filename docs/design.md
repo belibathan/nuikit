@@ -6,7 +6,7 @@ and how it moves*. A server that pastes a new theme changes every screen at once
 like one product.
 
 The rules in **Surfaces**, **Motion** and **Universal glue** are the owner's, judged in game on the
-v0.7.0 experiment server (`releases/v0.7.0-handoff.md` §2–§4, `releases/v0.7.0-design-patterns.md`).
+v0.7.0 experiment server (`archive/v0.7.0-handoff.md` §2–§4, `archive/v0.7.0-design-patterns.md`).
 They are the system; where an older rule or screen disagrees, these win.
 
 ## Token contract
