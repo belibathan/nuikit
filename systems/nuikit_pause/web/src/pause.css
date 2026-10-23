@@ -1,3 +1,29 @@
+/* The shell's levers (docs/design/layout.md): the home sheet's width, the settings sheet's, the page column's.
+   The stage (the camera's frame, the map) is what's left between them.
+   On :root: the sheets are portalled out of the Screen. */
+:root {
+  --pause-sheet-w: 36rem;
+  --pause-settings-w: clamp(22rem, 30vw, 34rem);
+}
+.pause-root,
+.pause-sheet {
+  --nk-region-max: 28rem;
+}
+.pause-root {
+  pointer-events: auto; /* a Screen is click-through by default; the pause stage takes drags */
+}
+.pause-stage {
+  left: var(--pause-sheet-w);
+  right: 0;
+}
+.pause-root[data-settings] .pause-stage {
+  right: var(--pause-settings-w);
+}
+/* the home column: the sheet's padding (more from the screen edge, less from the open edge) */
+.pause-column {
+  padding: 3rem 3rem 3rem 1.5rem;
+}
+
 @import "./index.css"; /* tw-animate-css comes with it, before kit.css (whose enter / exit keyframes win) */
 
 /*

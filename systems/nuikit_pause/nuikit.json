@@ -25,6 +25,8 @@
     "fill",
     "empty-state",
     "selection-tile",
-    "edge-sheet"
+    "edge-sheet",
+    "screen",
+    "region"
   ]
 }

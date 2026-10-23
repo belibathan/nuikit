@@ -2,10 +2,26 @@
 // `hold`, the page reads the key only when it has focus (it usually doesn't: the script feeds
 // `progress` from the game and resolves itself, or the hold fills here and resolves true).
 import { defineReactRenderer, type RendererProps } from "nuikit-core/intents-react";
+import { useClearOf } from "nuikit-core/react";
+import * as React from "react";
+import { usePublishedRect } from "@/components/ui/zone";
 import { KeyPrompt, KeyPromptStack, keyPromptPosition, type KeyPromptPosition } from "@/components/ui/key-prompt";
 import { Icon } from "@/lib/icon";
 import { Text } from "@/lib/text";
 import { cn } from "@/lib/utils";
+
+/** A prompt stack clear of what other UIs cover in its zone (screen zones: a phone on the right edge, the HUD's map). */
+function ClearPromptStack({ position, children }: { position: KeyPromptPosition; children: React.ReactNode }) {
+  // prompts clear other resources (never this page's notices); the notices in the same zone clear them (local zone)
+  const clear = useClearOf(position, { ignore: ["nuikit", "local"] });
+  const ref = React.useRef<HTMLDivElement>(null);
+  usePublishedRect(ref, `prompt:${position}`, { remote: false });
+  return (
+    <KeyPromptStack ref={ref} position={position} className="pointer-events-none" style={clear}>
+      {children}
+    </KeyPromptStack>
+  );
+}
 
 function PromptRenderer({ intents, ctx }: RendererProps<"prompt">) {
   const groups = new Map<KeyPromptPosition, typeof intents>();
@@ -16,7 +32,7 @@ function PromptRenderer({ intents, ctx }: RendererProps<"prompt">) {
   return (
     <>
       {[...groups].map(([position, list]) => (
-        <KeyPromptStack key={position} position={position} className="pointer-events-none">
+        <ClearPromptStack key={position} position={position}>
           {list.map((it) => {
             const p = it.props;
             return (
@@ -41,7 +57,7 @@ function PromptRenderer({ intents, ctx }: RendererProps<"prompt">) {
               />
             );
           })}
-        </KeyPromptStack>
+        </ClearPromptStack>
       ))}
     </>
   );

@@ -22,7 +22,7 @@ import { SheetSection } from "./sheet";
 type Values = Record<string, SettingValue>;
 const parent = (globalThis as { GetParentResourceName?: () => string }).GetParentResourceName;
 /** The settings sheet's width: responsive, and the open area (stage, hints) ends where it starts. */
-export const SETTINGS_W = "clamp(22rem, 30vw, 34rem)";
+export const SETTINGS_W = "var(--pause-settings-w)";
 export const SELF = typeof parent === "function" ? parent() : "nuikit_pause";
 
 /**

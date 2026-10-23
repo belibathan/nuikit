@@ -46,6 +46,7 @@ that have been superseded outright.
 |---|---|---|
 | [`design.md`](design.md) | The kit language: the ten rules | Current |
 | [`design/baseline.md`](design/baseline.md) | **The rules every component follows** (tokens 1.6/1.7): spacing, two voices, tiles, fills, selection | Current |
+| [`design/layout.md`](design/layout.md) | **The layout model**: Screen, zones, Region, Grid, the viewport table and its levers | Current |
 | [`design/components.md`](design/components.md) | The registry as a network: foundations, composites, aliases | Current |
 | [`design/default.md`](design/default.md) | The flagship theme's spec (Default, was Ink) | Current |
 | [`design/naming.md`](design/naming.md) | Naming conventions: themes, treatments, tokens, classes, files, resources | Current |

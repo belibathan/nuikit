@@ -11,8 +11,8 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 
-/** The sheet's width; the open area (the focus camera's frame, the map) starts here. */
-export const SHEET_W = "36rem";
+/** The sheet's width (the lever --pause-sheet-w, pause.css); the open area (the focus camera's frame, the map) starts here. */
+export const SHEET_W = "var(--pause-sheet-w)";
 
 /**
  * Radix's dismissable layer handles Escape on the document (capture) and marks it handled, which would
@@ -80,7 +80,7 @@ export function SheetPage({
   // the same column as Home: 28rem, right-aligned in the sheet, so every page lines up
   return (
     <div className="flex h-full min-h-0 justify-end">
-      <div className="flex h-full min-h-0 w-full max-w-[28rem] flex-col">
+      <div className="flex h-full min-h-0 w-full max-w-(--nk-region-max) flex-col">
       <header className="flex flex-col gap-4 pt-12 pr-12 pb-6 pl-6">
         {/* Back and the page's actions share the top row, so the title below gets the column's full width
             (a long name in an italic display face never runs under a button) */}

@@ -32,7 +32,8 @@ import {
   type EventName,
 } from "./index";
 import { flipFrom, indicator, motionLevel, spring, type Channel, type SpringName } from "./motion";
-import { clearOf, getZones, onZones, type ClearOptions, type ZonePosition, type Zones } from "./zones";
+import { clearOf, getZones, onZones, type ClearOptions, type ZoneId, type ZonePosition, type Zones } from "./zones";
+import { getViewport, onViewport, type Viewport } from "./viewport";
 import { loadKeys, type KeyBinding } from "./keys";
 import { applySettingsPreset, cancelSettings, draftSettings, loadSettings, resetSettings, saveSettings, type SettingValue, type SettingsSection } from "./settings";
 import { getSlots, onSlots, type Slot } from "./slots";
@@ -40,7 +41,37 @@ import { getTheme } from "./theme";
 import type { CompiledTheme } from "./tokens";
 
 export * from "./index";
-export { clearOf, getZones, onZones, type ClearOptions, type ZonePosition, type ZoneRect, type Zones } from "./zones";
+export {
+  clearOf,
+  getZones,
+  onZones,
+  publishZone,
+  setLocalZone,
+  stackOffsets,
+  toZoneId,
+  zoneOf,
+  zonePlacement,
+  zonePosition,
+  zoneRect,
+  ZONE_IDS,
+  type ClearOptions,
+  type ZoneFrame,
+  type ZoneId,
+  type ZonePlacement,
+  type ZonePosition,
+  type ZoneRect,
+  type Zones,
+} from "./zones";
+export { aspectOf, DESIGN, getViewport, onViewport, parseViewport, viewportOf, VIEWPORT_SAMPLES, VIEWPORTS, watchViewport, type AspectId, type Viewport, type ViewportOptions, type ViewportSpec } from "./viewport";
+
+/**
+ * The screen as the layout sees it (docs/design/layout.md): size, aspect class (16-9, 21-9…), rem in px, the
+ * UI scale, the safe area and the 16:9 content box. Follows resizes and theme / UI-size changes; starts
+ * painting `data-nk-aspect` on <html>.
+ */
+export function useViewport(): Viewport {
+  return useSyncExternalStore(onViewport, getViewport, getViewport);
+}
 export { getAllSlots, getSlots, onSlots, setSlots, type Slot, type Slots } from "./slots";
 
 /** A cluster's slots, joined by any resource with NUI.slot(cluster, key, opts), ordered (docs/slots.md). */
@@ -60,22 +91,16 @@ export function useZones(): Zones {
  *
  *   <NoticeStack position="top-right" style={useClearOf("top-right")}>…
  */
-export function useClearOf(position: ZonePosition, opts?: ClearOptions): CSSProperties {
+export function useClearOf(position: ZonePosition | ZoneId, opts?: ClearOptions): CSSProperties {
   const zones = useZones();
-  const [size, setSize] = useState(() => (typeof window === "undefined" ? { w: 1920, h: 1080 } : { w: window.innerWidth, h: window.innerHeight }));
-  useEffect(() => {
-    const on = () => setSize({ w: window.innerWidth, h: window.innerHeight });
-    window.addEventListener("resize", on);
-    return () => window.removeEventListener("resize", on);
-  }, []);
+  const vp = useViewport();
   const key = JSON.stringify(opts ?? {});
   return useMemo(() => {
-    const c = clearOf(zones, position, { ...opts, screen: size });
-    return c.top !== undefined ? { top: c.top } : c.bottom !== undefined ? { bottom: c.bottom } : {};
+    const c = clearOf(zones, position, { area: { l: vp.box.x, r: vp.box.x }, ...opts, screen: { w: vp.w, h: vp.h } });
+    return c as CSSProperties;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [zones, position, size, key]);
+  }, [zones, position, vp, key]);
 }
-
 /**
  * Every key a resource declared with nk.keys (read-only; players rebind in GTA's Settings › Key Bindings › FiveM).
  *

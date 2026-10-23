@@ -176,15 +176,29 @@ local function gfx(x, y)
   return rx, ry
 end
 
---- The HUD area for this screen: the game's, or the 0.5.0 rule.
+--- The layout box (docs/design/layout.md): on a screen wider than 16:9 the HUD keeps to the middle 16:9
+--- (Config.ultrawide = 'box', the default) or uses GTA's whole area ('bleed'). `gtaLeft` / `gtaBottom` keep
+--- GTA's own origin: minimap components are placed from it, whatever the box. Pure.
+function Layout.box(area, width, height)
+  area.gtaLeft = area.gtaLeft or area.left
+  if Config.ultrawide == 'bleed' then return area end
+  local side = math.max(0.0, (width - height * 16.0 / 9.0) / 2.0)
+  if area.left < side then
+    area.left = side
+    area.right = width - side
+  end
+  return area
+end
+
+--- The HUD area for this screen: the game's, or the 0.5.0 rule, kept to the layout box.
 function Layout.measure(width, height, safezone)
   if Layout.source() ~= 'stage' then
     local p0x, p0y = gfx(0.0, 0.0)
     local p1x, p1y = gfx(1.0, 1.0)
     local area = Layout.fromGfx(width, height, p0x, p0y, p1x, p1y)
-    if area then return area end
+    if area then return Layout.box(area, width, height) end
   end
-  return Layout.stage(width, height, safezone)
+  return Layout.box(Layout.stage(width, height, safezone), width, height)
 end
 
 --- The width of one minimap component unit: a 16:9 width at this height, on every screen (the
@@ -204,7 +218,7 @@ Layout.STOCK = {
 function Layout.stockMinimap(area)
   local x, y, w, h = Layout.STOCK.minimap[1], Layout.STOCK.minimap[2], Layout.STOCK.minimap[3], Layout.STOCK.minimap[4]
   local unitW = Layout.unit16(area.height or area.unitH)
-  local px = area.left + x * unitW
+  local px = (area.gtaLeft or area.left) + x * unitW
   local bottom = area.bottom + y * area.unitH
   return { x = px, y = bottom - h * area.unitH, w = w * unitW, h = h * area.unitH }
 end

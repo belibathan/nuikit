@@ -48,12 +48,16 @@ export function placeParts(parts: HudParts, els: Record<PartName, ReactNode>) {
   return groups;
 }
 
-/** The anchor and stack classes of a corner (hud.css). */
-export const CORNER_CLASS: Record<HudCorner, string> = {
-  "top-left": "hud-anchor-tl hud-stack",
-  "top-right": "hud-anchor-tr hud-tr-stack",
-  "bottom-left": "hud-anchor-bl hud-stack",
-  "bottom-right": "hud-anchor-br hud-br-stack",
+/**
+ * Each corner is a layout zone (docs/design/layout.md, the registry Zone): placed inside GTA's HUD area (the
+ * Screen's --nk-area-*, set from hud:layout) at --nk-edge, a flex column on --nk-zone-gap. Config.parts' order
+ * is top to bottom in every corner, so bottom zones flow as a column too (the zone default stacks upwards).
+ */
+export const CORNER_ZONE: Record<HudCorner, "tl" | "tr" | "bl" | "br"> = {
+  "top-left": "tl",
+  "top-right": "tr",
+  "bottom-left": "bl",
+  "bottom-right": "br",
 };
 
 /** The classes of a corner's stack when the map is in that corner: beside it (hud.css). */

@@ -89,6 +89,9 @@ Config = {
   -- (16:9, 21:9, 32:9), falling back to 'stage' if the game's answer looks wrong. 'stage' is the
   -- 0.5.0 rule: the middle 16:9 of the screen, inset by the safe zone.
   area = 'game',
+  -- On a screen wider than 16:9 (21:9, 32:9): 'box' keeps the HUD (and the radar) to the middle 16:9, where
+  -- the eye is; 'bleed' uses GTA's whole area, out to the screen's edges (docs/design/layout.md).
+  ultrawide = 'box',
 
   -- nuikit shapes and frames GTA's minimap. enabled = false leaves GTA's radar alone (the HUD still
   -- lines up beside it). Values left out (nil) come from the layout preset:

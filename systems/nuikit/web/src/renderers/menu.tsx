@@ -10,7 +10,8 @@ import { Button } from "@/components/ui/button";
 import { CheckboxField, NumberField, SelectField, SliderField, TextField } from "@/components/ui/form-field";
 import { MenuRow, MenuRowDetails, MenuRowList, menuMetadata } from "@/components/ui/menu-row";
 import { Panel, PanelBody, PanelHeader } from "@/components/ui/panel";
-import { ANCHOR_CLASS, anchor } from "@/lib/anchor";
+import { ANCHOR_ZONE, anchor } from "@/lib/anchor";
+import { Zone } from "@/components/ui/zone";
 import { Icon } from "@/lib/icon";
 import { Text, plain } from "@/lib/text";
 import { cn } from "@/lib/utils";
@@ -189,11 +190,13 @@ function OneMenu({ id, props, ctx }: { id: string; props: MenuProps; ctx: Render
   const title = crumb.label ?? props.title;
 
   return (
-    <div
+    // placed in its zone; a pointer menu top right sits further in (near where the eye is), by the zone's inset lever
+    <Zone
+      at={ANCHOR_ZONE[place]}
       data-intent="menu"
       data-input={props.input ?? "full"}
       data-focus={props.focus === false ? "false" : undefined}
-      className={cn(props.focus === false ? "pointer-events-none" : "pointer-events-auto", ANCHOR_CLASS[place], place === "top-right" && !keyboard && "top-[15%]! right-[25%]!")}
+      className={cn(props.focus === false ? "pointer-events-none" : "pointer-events-auto", place === "top-right" && !keyboard && "nk-menu-inward")}
       onKeyDown={onKey}
     >
       <div className="relative flex items-start gap-2">
@@ -290,7 +293,7 @@ function OneMenu({ id, props, ctx }: { id: string; props: MenuProps; ctx: Render
           </PanelBody>
         </Panel>
       </div>
-    </div>
+    </Zone>
   );
 }
 

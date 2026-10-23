@@ -28,7 +28,7 @@ export function GameStage({
     return () => ro.disconnect();
   }, []);
   return (
-    <div ref={box} className={cn("relative isolate aspect-video w-full overflow-hidden rounded-xl border bg-black", className)}>
+    <div ref={box} data-nk-stage className={cn("relative isolate aspect-video w-full overflow-hidden rounded-xl border bg-black", className)}>
       <Scene variant={scene} />
       <div
         ref={stageRef}

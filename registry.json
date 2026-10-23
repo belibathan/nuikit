@@ -2793,6 +2793,224 @@
       }
     },
     {
+      "name": "screen",
+      "type": "registry:ui",
+      "title": "Screen",
+      "description": "The page root of the layout model: the 16:9 content box (centred on an ultrawide, bleed for full width), the safe area, the density and the aspect class every zone reads.",
+      "files": [
+        {
+          "path": "registry/nuikit/ui/screen.tsx",
+          "type": "registry:ui"
+        }
+      ],
+      "dependencies": [
+        "nuikit-core"
+      ],
+      "meta": {
+        "since": "unreleased",
+        "status": "experimental",
+        "replaces": [],
+        "removeIn": null,
+        "spec": {
+          "role": "The page root: the content box, the safe area, the aspect class every zone reads.",
+          "anatomy": [
+            "screen (absolute, inset 0)",
+            "zone\u2026"
+          ],
+          "props": [
+            "bleed",
+            "ratio",
+            "safe",
+            "density",
+            "as"
+          ],
+          "rules": [
+            "One Screen per page.",
+            "Levers, never literals; nothing inside is placed with fixed coordinates."
+          ]
+        },
+        "group": "Layout",
+        "tier": "foundation",
+        "hidden": true,
+        "hiddenReason": "layout primitive every screen composes; documented in docs/design/layout.md",
+        "variants": {
+          "axes": {},
+          "levers": [
+            "--nk-screen-ratio",
+            "--nk-safe-x",
+            "--nk-safe-y",
+            "--nk-scale-min"
+          ],
+          "hooks": []
+        }
+      }
+    },
+    {
+      "name": "zone",
+      "type": "registry:ui",
+      "title": "Zone",
+      "description": "One of the screen's nine places or four edges: a flex container that grows towards the centre, with gap, inset and order levers, that clears what other UIs publish and publishes what it covers.",
+      "files": [
+        {
+          "path": "registry/nuikit/ui/zone.tsx",
+          "type": "registry:ui"
+        }
+      ],
+      "dependencies": [
+        "nuikit-core"
+      ],
+      "meta": {
+        "since": "unreleased",
+        "status": "experimental",
+        "replaces": [],
+        "removeIn": null,
+        "spec": {
+          "role": "A place on the screen: the flex container everything is placed in.",
+          "anatomy": [
+            "zone (absolute; flex, towards the centre)",
+            "children"
+          ],
+          "props": [
+            "at",
+            "clear",
+            "publish",
+            "gap",
+            "inset",
+            "z",
+            "flow",
+            "align",
+            "justify",
+            "bleed",
+            "as"
+          ],
+          "rules": [
+            "Placed by its id, never by coordinates.",
+            "Items in one zone stack, never overlap; gap, inset and order are levers."
+          ]
+        },
+        "group": "Layout",
+        "tier": "foundation",
+        "hidden": true,
+        "hiddenReason": "layout primitive every screen composes; documented in docs/design/layout.md",
+        "variants": {
+          "axes": {},
+          "levers": [
+            "--nk-edge",
+            "--nk-zone-inset",
+            "--nk-zone-gap",
+            "--nk-zone-z",
+            "--nk-area-l",
+            "--nk-area-r"
+          ],
+          "hooks": []
+        }
+      }
+    },
+    {
+      "name": "region",
+      "type": "registry:ui",
+      "title": "Region",
+      "description": "A content column with a max width and the padding scale: header, a body that may scroll with the kit's scrollbar, a footer pinned to the bottom.",
+      "files": [
+        {
+          "path": "registry/nuikit/ui/region.tsx",
+          "type": "registry:ui"
+        }
+      ],
+      "registryDependencies": [
+        "scroll-area"
+      ],
+      "meta": {
+        "since": "unreleased",
+        "status": "experimental",
+        "replaces": [],
+        "removeIn": null,
+        "spec": {
+          "role": "A content column: header, a body that may scroll, footer, on the spacing levers.",
+          "anatomy": [
+            "region (flex column, max width, padding)",
+            "region-header",
+            "region-body (scroll-area)",
+            "region-footer"
+          ],
+          "props": [
+            "header",
+            "footer",
+            "scroll",
+            "fill",
+            "pad",
+            "max",
+            "as"
+          ],
+          "rules": [
+            "Width and padding are levers.",
+            "One scroll per region, in its body."
+          ]
+        },
+        "group": "Layout",
+        "tier": "foundation",
+        "hidden": true,
+        "hiddenReason": "layout primitive every screen composes; documented in docs/design/layout.md",
+        "variants": {
+          "axes": {},
+          "levers": [
+            "--nk-region-max",
+            "--nk-region-pad"
+          ],
+          "hooks": []
+        }
+      }
+    },
+    {
+      "name": "grid",
+      "type": "registry:ui",
+      "title": "Grid",
+      "description": "A slot grid of equal cells on two levers (cell size, gap), fixed columns or as many as fit, with useGridNav: spatial arrow-key navigation between the cells.",
+      "files": [
+        {
+          "path": "registry/nuikit/ui/grid.tsx",
+          "type": "registry:ui"
+        }
+      ],
+      "meta": {
+        "since": "unreleased",
+        "status": "experimental",
+        "replaces": [],
+        "removeIn": null,
+        "spec": {
+          "role": "A grid of equal cells on two levers, with spatial keyboard navigation.",
+          "anatomy": [
+            "grid (css grid)",
+            "cells"
+          ],
+          "props": [
+            "cols",
+            "cell",
+            "gap",
+            "fluid",
+            "as"
+          ],
+          "rules": [
+            "Cell size and gap are levers, never per-screen CSS.",
+            "Navigation is spatial, never by index arithmetic."
+          ]
+        },
+        "group": "Layout",
+        "tier": "foundation",
+        "hidden": true,
+        "hiddenReason": "layout primitive every screen composes; documented in docs/design/layout.md",
+        "variants": {
+          "axes": {},
+          "levers": [
+            "--nk-grid-cell",
+            "--nk-grid-gap",
+            "--nk-grid-cols"
+          ],
+          "hooks": []
+        }
+      }
+    },
+    {
       "name": "action-bar",
       "type": "registry:ui",
       "title": "Action bar",

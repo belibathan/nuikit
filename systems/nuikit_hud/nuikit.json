@@ -9,6 +9,8 @@
     "speedometer",
     "text-roll",
     "tile",
-    "vital-chip"
+    "vital-chip",
+    "screen",
+    "zone"
   ]
 }
