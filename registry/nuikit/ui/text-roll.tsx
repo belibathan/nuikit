@@ -13,6 +13,11 @@ import { cn } from "@/lib/utils"
  *   <TextRoll value={street} />                       → the whole word rolls (up)
  *   <TextRoll value={zone} direction="down" />
  *   <TextRoll value={label} stagger={18} />           → per character, a ripple left to right
+ *   <TextRoll value={`${i} / ${total}`} />            → only the numbers roll; " / " never moves
+ *
+ * Numbers inside a text are their own reels: every run of digits rolls per digit (keyed from the right,
+ * up when it grows, down when it shrinks), while separators, units and words stand still unless they
+ * change themselves. "$1,250" rolls its digits; "1 / 243" rolls only the "1".
  *
  * NumberRoll — the numeric variant: each digit is its own reel, so only the digits that change roll,
  * up when the value grows and down when it shrinks, ripple from the right. Money, speed, ammo, clocks.
@@ -212,7 +217,7 @@ function ReelLayer({ layer, delay, onDone }: { layer: Layer; delay: number; onDo
 type RollProps = Omit<React.ComponentProps<"span">, "children"> & {
   /** The text shown; a change rolls. */
   value: string
-  /** Which way it turns. Default "up". */
+  /** Which way it turns. Default: words up; a number up when it grows, down when it shrinks. */
   direction?: Direction
   /** Per-character ripple in ms (0: the whole text as one reel). Default 0. */
   stagger?: number
@@ -242,20 +247,79 @@ function useLinger(length: number): [number, boolean] {
   return [Math.max(length, shown), mounted.current]
 }
 
-function TextRoll({ value, direction = "up", stagger = 0, align, className, ...props }: RollProps) {
+/** A run of characters, one reel each, keyed from the right (units keep their reel when the length changes). */
+function CharReels({ text, dir, stagger, appear }: { text: string; dir: Direction; stagger: number; appear: boolean }) {
+  const chars = [...text]
+  const [slots, live] = useLinger(chars.length)
+  return (
+    <>
+      {Array.from({ length: slots }, (_, i) => {
+        const fromRight = slots - 1 - i
+        const ch = chars[chars.length - 1 - fromRight] ?? ""
+        return <Reel key={fromRight} text={ch} dir={dir} delay={fromRight * stagger} align="center" appear={appear || live} />
+      })}
+    </>
+  )
+}
+
+/** The words of a text, per character (stagger) or as one reel. Still unless the text itself changes. */
+function WordReels({ text, dir, stagger, align, appear }: { text: string; dir: Direction; stagger: number; align: Align; appear: boolean }) {
+  const chars = [...text]
+  const [slots, live] = useLinger(stagger > 0 ? chars.length : 0)
+  if (stagger <= 0) return <Reel text={text} dir={dir} align={align} appear={appear} />
+  return <>{Array.from({ length: slots }, (_, i) => <Reel key={i} text={chars[i] ?? ""} dir={dir} delay={i * stagger} appear={appear || live} align="center" />)}</>
+}
+
+type Token = { text: string; num: boolean }
+
+/** "$1,250 / 3" → ["$", "1", ",", "250", " / ", "3"]: runs of digits and the text between them. */
+function tokenize(text: string): Token[] {
+  const out: Token[] = []
+  const re = /\d+/g
+  let last = 0
+  for (let m = re.exec(text); m; m = re.exec(text)) {
+    if (m.index > last) out.push({ text: text.slice(last, m.index), num: false })
+    out.push({ text: m[0], num: true })
+    last = m.index + m[0].length
+  }
+  if (last < text.length || out.length === 0) out.push({ text: text.slice(last), num: false })
+  return out
+}
+
+/** The numbers of a text roll by themselves: up when one grows, down when it shrinks; words take `direction`. */
+function TextRoll({ value, direction, stagger = 0, align, className, ...props }: RollProps) {
   const root = React.useRef<HTMLSpanElement>(null)
   const at = useAlign(root, align)
   const text = value ?? ""
-  const chars = [...text]
-  const [slots, live] = useLinger(stagger > 0 ? chars.length : 0)
+  const tokens = React.useMemo(() => tokenize(text), [text])
+  // each number's direction is decided from the last value it showed, before its reels see the new text
+  const prev = React.useRef<Token[]>(tokens)
+  const ways = React.useRef<Direction[]>([])
+  if (prev.current !== tokens) {
+    tokens.forEach((t, i) => {
+      const was = prev.current[i]
+      if (!t.num || !was?.num || was.text === t.text) return
+      ways.current[i] = Number(t.text) >= Number(was.text) ? "up" : "down"
+    })
+    prev.current = tokens
+  }
+  // a token the value gains later rolls in from nothing
+  const seen = React.useRef(tokens.length)
+  const known = seen.current
+  React.useEffect(() => {
+    seen.current = tokens.length
+  }, [tokens])
+  const single = tokens.length === 1 && !tokens[0]!.num
   return (
     <span ref={root} data-slot="text-roll" data-align={at} className={cn("inline-flex max-w-full", className)} {...props}>
       <span className="sr-only">{text}</span>
-      <span aria-hidden className="inline-flex min-w-0">
-        {stagger > 0 ? (
-          Array.from({ length: slots }, (_, i) => <Reel key={i} text={chars[i] ?? ""} dir={direction} delay={i * stagger} appear={live} align="center" />)
-        ) : (
-          <Reel text={text} dir={direction} align={at} />
+      <span aria-hidden className="inline-flex min-w-0 whitespace-pre">
+        {tokens.map((t, i) =>
+          t.num ? (
+            <CharReels key={i} text={t.text} dir={direction ?? ways.current[i] ?? "up"} stagger={stagger} appear={i >= known} />
+          ) : (
+            <WordReels key={i} text={t.text} dir={direction ?? "up"} stagger={stagger} align={single ? at : "start"} appear={i >= known} />
+          )
         )}
       </span>
     </span>
@@ -284,22 +348,16 @@ function NumberRoll({ value, format = plain, direction, stagger = 24, className,
   }
   const dir = direction ?? way.current
   const text = format(Number.isFinite(value) ? value : 0)
-  const chars = [...text]
-  const [slots, live] = useLinger(chars.length)
   // keyed from the right, so units, tens and hundreds keep their reel when the length changes; a
   // digit that comes rolls in from nothing, one that goes rolls out and closes its width
   return (
     <span data-slot="number-roll" className={cn("nk-num inline-flex", className)} {...props}>
       <span className="sr-only">{text}</span>
       <span aria-hidden className="inline-flex">
-        {Array.from({ length: slots }, (_, i) => {
-          const fromRight = slots - 1 - i
-          const ch = chars[chars.length - 1 - fromRight] ?? ""
-          return <Reel key={fromRight} text={ch} dir={dir} delay={fromRight * stagger} align="center" appear={live} />
-        })}
+        <CharReels text={text} dir={dir} stagger={stagger} appear={false} />
       </span>
     </span>
   )
 }
 
-export { TextRoll, NumberRoll }
+export { TextRoll, NumberRoll, tokenize as __tokenize }
