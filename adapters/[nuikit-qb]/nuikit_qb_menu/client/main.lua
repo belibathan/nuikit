@@ -2,7 +2,7 @@
   nuikit_qb_menu: qb-menu's public API on the `menu` intent.  MIT · https://github.com/belibathan/nuikit
 
   Clean-room, from docs/adapters/qb-menu.md (qb-menu's documentation only). Answers under qb-menu's own
-  name (`provide 'qb-menu'` + the __cfx_export_qb-menu_* events, the pattern bench/adapters/spike proved
+  name (`provide 'qb-menu'` + the __cfx_export_qb-menu_* events, the pattern the (removed) spike proved
   under the harness) and the three events scripts trigger instead of the exports.
 
     exports['qb-menu']:openMenu(data, sort?, skipFirst?)   → nk.menu
