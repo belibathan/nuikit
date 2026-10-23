@@ -68,7 +68,8 @@
         "sheet",
         "scroll-area",
         "button",
-        "https://nuikit.vercel.app/r/action-bar.json"
+        "https://nuikit.vercel.app/r/action-bar.json",
+        "https://nuikit.vercel.app/r/fill.json"
       ],
       "meta": {
         "since": "unreleased",
@@ -267,7 +268,9 @@
         "class-variance-authority"
       ],
       "registryDependencies": [
-        "progress"
+        "progress",
+        "https://nuikit.vercel.app/r/fill.json",
+        "https://nuikit.vercel.app/r/use-linear-run.json"
       ],
       "meta": {
         "since": "0.5.0",
@@ -472,6 +475,24 @@
             "Colours from the vital tokens, never a literal."
           ]
         }
+      }
+    },
+    {
+      "name": "use-linear-run",
+      "type": "registry:hook",
+      "title": "useLinearRun",
+      "description": "The kit's one timed run (Motion): a linear Web Animation per target (transform only, pseudo-elements too: a Fill's bar and edge) on one start time, a completion from a timer (fires with motion off), elapsed, pause and resume, an optional motion gate. Meter's and ProgressRing's duration, Notice's time line and Countdown's drain run on it.",
+      "files": [
+        {
+          "path": "registry/nuikit/hooks/use-linear-run.ts",
+          "type": "registry:hook"
+        }
+      ],
+      "meta": {
+        "since": "unreleased",
+        "status": "experimental",
+        "replaces": [],
+        "removeIn": null
       }
     },
     {
@@ -766,7 +787,8 @@
       ],
       "registryDependencies": [
         "button",
-        "https://nuikit.vercel.app/r/fill.json"
+        "https://nuikit.vercel.app/r/fill.json",
+        "https://nuikit.vercel.app/r/use-linear-run.json"
       ],
       "meta": {
         "since": "0.6.0",
@@ -1027,7 +1049,8 @@
         "class-variance-authority"
       ],
       "registryDependencies": [
-        "kbd"
+        "https://nuikit.vercel.app/r/fill.json",
+        "https://nuikit.vercel.app/r/tile.json"
       ],
       "meta": {
         "since": "0.6.0",
@@ -1087,7 +1110,9 @@
       ],
       "registryDependencies": [
         "https://nuikit.vercel.app/r/fill.json",
-        "https://nuikit.vercel.app/r/tile.json"
+        "https://nuikit.vercel.app/r/tile.json",
+        "https://nuikit.vercel.app/r/dial.json",
+        "https://nuikit.vercel.app/r/use-linear-run.json"
       ],
       "meta": {
         "since": "0.6.0",
@@ -1174,7 +1199,8 @@
         }
       },
       "registryDependencies": [
-        "https://nuikit.vercel.app/r/fill.json"
+        "https://nuikit.vercel.app/r/fill.json",
+        "https://nuikit.vercel.app/r/use-linear-run.json"
       ]
     },
     {
@@ -1843,7 +1869,7 @@
         "class-variance-authority"
       ],
       "registryDependencies": [
-        "kbd"
+        "https://nuikit.vercel.app/r/tile.json"
       ],
       "meta": {
         "since": "0.6.0",
