@@ -29,6 +29,12 @@ import { cn, nkState } from "@/lib/utils"
  * back through `ref`, or close it).
  *
  * `size` is the diameter in px at 1080p; it's laid out in rem, so it follows the NUI scale.
+ *
+ * Role: The action wheel.
+ * Anatomy: radial-menu > wedges > radial-menu-item (icon, label) > centre
+ * Props: items, active, size, label, onSelect, onClose.
+ * Rules: Items draw data-state: focus (the pointed wedge), disabled. Sub-menus open in place; Escape goes back
+ *   a level.
  */
 
 type RadialMenuItem = {

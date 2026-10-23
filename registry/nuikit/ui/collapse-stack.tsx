@@ -16,6 +16,13 @@ import { useCollapse, type UseCollapseOptions } from "@/hooks/use-collapse"
  *   />
  *
  * The row never re-orders the DOM: open chips move to the front with CSS `order`, so nothing remounts.
+ *
+ * Role: Clustered indicators (vitals, voice, job status) that stay icons until something changes.
+ * Anatomy: collapse-stack > collapse-stack-item (your chip, via renderItem) > collapse-stack-more (+N)
+ * Props: items, renderItem, max, restDelay, batchMs, min, optOut.
+ * Rules: At rest only icons; a change opens a chip for --nk-rest-delay. Changes within the batch window (400
+ *   ms) open and close together. Critical first, then the biggest change; at most max, then +N. Order moves
+ *   with CSS order; the DOM never re-orders, nothing remounts.
  */
 type CollapseItem = { key: string; value: number; critical?: boolean }
 type CollapseItemState = { open: boolean; delta: number; rank: number }

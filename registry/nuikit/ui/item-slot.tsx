@@ -20,6 +20,13 @@ import { cn, nkState } from "@/lib/utils"
  * It fills its grid cell (`size="fill"`) unless you give it a size. With `onClick` it is a
  * button (focusable, Enter / Space); drag and drop stays with the caller (pass `dropTarget`,
  * `dragging`). Images are your URLs: an inventory's own item images, not theme colours.
+ *
+ * Role: One slot of an inventory, hotbar or shop.
+ * Anatomy: item-slot > image | icon > name, count, hotkey, price, stock > durability line
+ * Props: image, label, count, hotkey, durability, price, active, dropTarget, dragging, locked, surface, size.
+ * Level means: durability, 0–100 as 0–1 (the line under the item).
+ * Rules: data-state: focus (active or drop target), disabled (locked); the slot's own state is data-slot-state.
+ *   Drag and drop stays with the caller.
  */
 
 const itemSlotVariants = cva(

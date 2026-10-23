@@ -21,6 +21,11 @@ import { Textarea } from "@/components/ui/textarea"
  * by transform. While an IME composes, while there is a selection range (the field draws its own
  * highlight then), and whenever motion is off or reduced (`html[data-nk-motion]`, the
  * OS setting), it is the plain native field: nothing is drawn over it.
+ *
+ * Role: Drop-in Input and Textarea with a caret that glides and characters that ease in.
+ * Anatomy: the real field (selection, IME, paste) > overlay (caret, typed characters)
+ * Rules: The real field stays underneath; the overlay never takes the pointer. The native caret with motion
+ *   off.
  */
 
 type Field = HTMLInputElement | HTMLTextAreaElement

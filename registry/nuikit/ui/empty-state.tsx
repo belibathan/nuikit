@@ -18,6 +18,12 @@ import { Tile } from "@/components/ui/tile"
  * Ink empty state. Without it the icon sits in shadcn's EmptyMedia, as before.
  *
  * Named empty-state, not empty: stock shadcn already has `empty`, and this is built on it.
+ *
+ * Role: What a list, a search or a screen shows when there is nothing, or something went wrong.
+ * Anatomy: empty > icon (EmptyMedia, or a square Tile with tile) > title (title role) > description (one
+ *   sentence) > actions
+ * Props: size, tone, icon, title, description, action, tile.
+ * Rules: One sentence on what to do next. error is role alert and the danger tone.
  */
 
 const emptyStateVariants = cva("border-0 text-balance", {

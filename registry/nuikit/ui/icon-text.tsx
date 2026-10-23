@@ -9,6 +9,11 @@ import { cn } from "@/lib/utils"
  *
  *   <IconText icon={<WalletIcon />} text="num">$12,400</IconText>
  *   <IconText icon={<BriefcaseIcon />} muted>Police · Sergeant</IconText>
+ *
+ * Role: Money, job, fuel, ammo, notes: an icon next to a value.
+ * Anatomy: icon > text
+ * Props: icon, text, size, muted.
+ * Rules: One gap and one icon size per step. A muted icon is --muted-foreground, never an opacity.
  */
 const ROLE = { label: "nk-label", num: "nk-num", body: "nk-body" } as const
 

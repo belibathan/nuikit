@@ -26,6 +26,11 @@ import { Stat } from "@/components/ui/stat"
  *
  * Duty is shown twice on purpose: a dot on the avatar for a glance, and the words for screen
  * readers and colour-blind players.
+ *
+ * Role: Who someone is at a glance: avatar, name, job and grade, duty, stats, actions.
+ * Anatomy: panel > header: avatar (or initials), name, job, duty Chip dot > stats grid > footer actions
+ * Props: name, avatar, job, grade, onDuty, dutyLabels, stats, columns.
+ * Rules: Duty is a Chip dot and the words, never colour alone. On the panel recipe; codes in the num role.
  */
 
 type PlayerCardStat = {

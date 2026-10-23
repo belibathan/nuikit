@@ -18,6 +18,11 @@ import { Kbd } from "@/components/ui/tile"
  *   </ActionBar>
  *
  * `level` (0–1) shows a hold filling under the item; `state` is the shared data-state.
+ *
+ * Role: Key hints, back and close: one bar.
+ * Anatomy: plate (optional) > item: keys or icon, label, hold fill > separator
+ * Props: plate, keys, icon, label, onClick, level, state.
+ * Rules: An item that acts is a button. Keys are Tiles, never a styled span.
  */
 function ActionBar({ className, plate = false, ...props }: React.ComponentProps<"div"> & { plate?: boolean }) {
   return <div data-slot="action-bar" data-plate={plate || undefined} className={cn("nk-action-bar", className)} {...props} />

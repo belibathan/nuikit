@@ -25,6 +25,16 @@ import { Kbd, KbdGroup } from "@/components/ui/kbd"
  * `surface="hud"` keep the earlier looks. `keys={[]}` draws no key chip (a script's text with no
  * key); `wrap` lets a long label run onto more lines instead of truncating. A prompt with a
  * `description` is two lines tall: the slab grows to fit (the key stays on the first line).
+ *
+ * Role: "[E] Open garage": what a key does here.
+ * Anatomy: key-prompt (slab | panel | hud) > keys (key chips) > label, description > hold line
+ * Props: keys, label, description, hold, progress, active, disabled, listen, onConfirm, surface, size, density,
+ *   shape, motion, stage.
+ * Level means: the hold progress, 0 → 1 (Lua's progress, or the pointer/key hold).
+ * Rules: States: rest, focus (active), hold, confirm (when the hold fills), disabled. In game Lua reads the key
+ *   and sends progress; the page draws it. One prompt per action; a stack for several. The interaction ladder
+ *   (stage): dormant (the key chip alone, quiet) → aware → focus → hold → confirm, on data-ladder; without
+ *   stage, today's prompt.
  */
 
 const keyPromptVariants = cva(

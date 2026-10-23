@@ -34,6 +34,18 @@ import { useCollapse, type UseCollapseOptions } from "@/hooks/use-collapse"
  * Theme tokens choose the defaults: --nk-chip-shape, --nk-level-style, --nk-label-attach and
  * --nk-vital-icon (vital: the icon in the vital's colour; uniform: the chip's ink, the level carries
  * the colour). Props win over tokens. Transform and opacity only for motion; Chromium 103.
+ *
+ * Role: One vital on the HUD: health, armor, hunger, thirst, stress.
+ * Anatomy: vital-chip-row (optional: chips that know each other) > vital-chip (shape) > icon > level drawing
+ *   (outline | liquid | bar) > label (name, value) > pop (a change)
+ * Props: value, tone, shape, level, attach, icon, open, display, neighbours, format, max.
+ * Level means: the vital, 0–100 as 0–1.
+ * Rules: data-hue carries the vital's role (health, armor…). The level style comes from the theme (outline,
+ *   liquid, bar); the data never picks it. Readable over a bright sky (legibility fixture). display: pill
+ *   (icon, name, value) | value | icon (level as fill) | expand (opens on a change, settles after
+ *   --nk-rest-delay); the theme default is --nk-vital-display. neighbours (a chip that opens, in a Row): push |
+ *   collapse | overlay; the theme default is --nk-vital-neighbours. expand chips in a VitalChip.Row open
+ *   through the row's collapse engine (useCollapse): batched, ordered, capped at max with +N.
  */
 
 export type ChipShape = "auto" | "square" | "rounded" | "circle" | "diamond" | "hex" | "chamfer"

@@ -17,6 +17,12 @@ import { ScrollArea } from "@/components/ui/scroll-area"
  *   </Panel>
  *
  * A header with `tabs` (or a search, or a meter) becomes two rows: the title row, then that.
+ *
+ * Role: The one floating surface: a menu, a form, a list on the game.
+ * Anatomy: panel > panel-header (icon, title, description, actions) > panel-body (list | form) > panel-footer
+ * Props: size, selected, animate, density, shape, motion.
+ * Rules: One primary action per panel. Rows inside, not cards. Positioned by anchors and zones, never absolute
+ *   pixels.
  */
 const panelVariants = cva("nk-panel flex flex-col overflow-hidden", {
   variants: {

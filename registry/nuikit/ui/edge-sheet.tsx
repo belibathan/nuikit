@@ -40,6 +40,12 @@ import { Sheet, SheetContent, SheetDescription, SheetTitle } from "@/components/
  * `meter` (0–100) traces a level along the header's bottom edge (a weight, a capacity), like a
  * vital along its chip: the hairline is the track, the fill is the brand, destructive from
  * `meterDanger` (default 90).
+ *
+ * Role: A sheet from a screen edge: an inventory side, a context menu.
+ * Anatomy: edge-sheet (side) > column: header (title, description, actions) > edge (a level line) > body
+ * Props: open, side, modal, title, description, actions, density, shape, motion, back, anchor.
+ * Level means: the edge line: a fill such as weight (EdgeSheetEdge value, 0–100).
+ * Rules: The game stays visible beside it. Positioned on an edge, never centred with a transform.
  */
 
 /** nk-title one step up: the heading face at section size (the pause title's family, one step down). */

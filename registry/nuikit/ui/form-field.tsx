@@ -34,6 +34,14 @@ import { Textarea } from "@/components/ui/textarea"
  *
  * Chromium 103 (FiveM): nothing here relies on :has(), and no control opens a native popup
  * (the date and colour inputs are drawn in the page; native pickers don't show in game).
+ *
+ * Role: One row of a game form and a preset per value (text, number, select, checkbox, slider, date, time,
+ *   colour).
+ * Anatomy: field > label (required mark, inline value, reset) > control > hint / description > error (role
+ *   alert)
+ * Props: orientation, label, hint, description, error, required, disabled, valueText, onReset.
+ * Rules: Nothing relies on :has() or native pickers (Chromium 103). validateField() is the one validation path;
+ *   the error replaces the description.
  */
 
 /* ── the row ─────────────────────────────────────────────────────────────── */

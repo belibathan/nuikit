@@ -12,6 +12,12 @@ import { Item, ItemActions, ItemContent, ItemDescription, ItemGroup, ItemMedia, 
  * Arrow keys / W S move, Enter / E select.
  *
  *   <NuiMenu title="Garage" items={cars} onSelect={(car) => fetchNui("garage:spawn", car)} />
+ *
+ * Role: A keyboard-first list menu: a Card of Items highlighted like shadcn menus.
+ * Anatomy: card > header (title, description) > items (icon, label, description, meta)
+ * Props: title, description, items, onSelect, global.
+ * Rules: Arrows move, Enter selects; keys are read on window by default. The highlight is the accent, as in
+ *   shadcn menus.
  */
 type NuiMenuItem = {
   id: string

@@ -14,6 +14,11 @@ import { toneVars } from "@/components/ui/fill"
  *
  * `tone` is meaning (neutral | info | success | warning | danger), `hue` a role; `fill` is hair (a rim, the
  * default), tint or solid. `variant="dot"` is a square of --nk-space-2 at --nk-r-key: the status dot.
+ *
+ * Role: A tag, a count, a status dot: one chip.
+ * Anatomy: icon > label > count
+ * Props: tone, hue, fill, icon, count, variant.
+ * Rules: No pills: r-chip, or the dot at r-key. Colour means something: tone or hue only.
  */
 function Chip({
   className,

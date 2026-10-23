@@ -16,6 +16,12 @@ import { cn } from "@/lib/utils"
  *
  * `surface="game"` is for bare text on the game world (the HUD): white with a soft shadow, since
  * theme text can vanish over a bright sky.
+ *
+ * Role: A label over a number that matters: cash, players, a timer.
+ * Anatomy: stat > label (caption, optional icon) > value (num role) > meta > delta (trend tone)
+ * Props: size, align, surface, label, value, icon, meta, delta, trend.
+ * Rules: Numbers are tabular (num role); the label is a caption. Trend colours mean direction only (success up,
+ *   destructive down).
  */
 const statVariants = cva("flex min-w-0 flex-col", {
   variants: {

@@ -19,6 +19,12 @@ import { cn } from "@/lib/utils"
  *
  * It's inline text: put it in a Stat's value, a menu-row's meta, a HUD chip. formatMoney() gives
  * the same string for places that need text.
+ *
+ * Role: Every amount formatted one way: the server currency and locale, tabular figures.
+ * Anatomy: money (num role) > sign > amount
+ * Props: amount, signDisplay, tone, size.
+ * Rules: Whole units by default; compact only when asked. A direction tone for gains and losses, never
+ *   decoration.
  */
 
 const moneyVariants = cva("nk-num whitespace-nowrap", {

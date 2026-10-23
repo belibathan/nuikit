@@ -27,6 +27,15 @@ import { Progress } from "@/components/ui/progress"
  * `duration`: no React render while it runs. It plays at every motion level: progress is information.
  *
  * Fills move with transforms only (the bar translates, segments scale on X): never `width`.
+ *
+ * Role: A level on a bar: health, fuel, weight, a timed action.
+ * Anatomy: meter (label row: icon, label, value text) > track > fill (or segments) > slab: label, cancel key,
+ *   thin line
+ * Props: value, max, low, high, tone, track, segments, duration, variant, size, density, shape, motion, hue,
+ *   threshold.
+ * Level means: value / max; a timed run fills 0 → 1 over duration (--level is its end state).
+ * Rules: Data is value/max or --level, never a variant. Thresholds turn it destructive; tone never encodes
+ *   data. A timed run completes from a timer, so it finishes with motion off.
  */
 // The bar's thickness is the identity's (--nk-meter-height: --nk-gauge-track, 4px in Graphite);
 // sm and lg step it down and up from there.

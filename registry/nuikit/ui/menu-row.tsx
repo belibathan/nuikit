@@ -57,6 +57,7 @@ import { meterColor, type MeterTone } from "@/components/ui/meter"
  *   optional progress line) > trail (meta, the kbd trail, a checkbox, a stepper, actions, a chevron).
  * Props: icon, image, description, progress, meta, kbd, chevron, active, checked, value, onStep, readOnly,
  *   alert, inert, actions, as, asChild, tone.
+ * Level means: progress, the row's progress line (0–100 of its value, drawn 0–1).
  * Rules: one trailing thing per row; height --nk-h-row; focus and the active row draw the identity indicator
  *   (never the hover accent); attention is data-state="alert"; a trailing key is a Tile (Kbd), never text.
  */
