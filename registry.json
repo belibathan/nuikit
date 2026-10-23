@@ -46,6 +46,45 @@
             "Rows inside, not cards.",
             "Positioned by anchors and zones, never absolute pixels."
           ]
+        },
+        "group": "Foundations",
+        "tier": "foundation",
+        "variants": {
+          "axes": {
+            "density": [
+              "compact",
+              "default",
+              "comfortable"
+            ],
+            "shape": [
+              "square",
+              "default",
+              "round"
+            ],
+            "motion": [
+              "on",
+              "off",
+              "reduced"
+            ],
+            "size": [
+              "default",
+              "sm",
+              "lg",
+              "auto"
+            ]
+          },
+          "levers": [
+            "--nk-row-indicator-color",
+            "--nk-space",
+            "--nk-space-1",
+            "--nk-theme-background",
+            "--nk-theme-background-a",
+            "--nk-theme-background-rgb",
+            "--nk-theme-muted-foreground",
+            "--nk-theme-muted-foreground-a",
+            "--nk-theme-muted-foreground-rgb"
+          ],
+          "hooks": []
         }
       }
     },
@@ -102,6 +141,49 @@
             "The game stays visible beside it.",
             "Positioned on an edge, never centred with a transform."
           ]
+        },
+        "group": "Dialogs & sheets",
+        "tier": "composite",
+        "variants": {
+          "axes": {
+            "density": [
+              "compact",
+              "default",
+              "comfortable"
+            ],
+            "shape": [
+              "square",
+              "default",
+              "round"
+            ],
+            "motion": [
+              "on",
+              "off",
+              "reduced"
+            ],
+            "treatment": [
+              "floating",
+              "flush"
+            ]
+          },
+          "levers": [
+            "--nk-border",
+            "--nk-ease-in",
+            "--nk-ease-out",
+            "--nk-edge",
+            "--nk-fill-track",
+            "--nk-heading-size",
+            "--nk-motion",
+            "--nk-panel-bg",
+            "--nk-panel-border",
+            "--nk-panel-fg",
+            "--nk-panel-shadow",
+            "--nk-text-section",
+            "--nk-time"
+          ],
+          "hooks": [
+            "useLinearRun"
+          ]
         }
       }
     },
@@ -142,6 +224,15 @@
             "Candidates come from nuikit-core resolveImage, tried in order on error.",
             "The box never collapses: the fallback keeps its size."
           ]
+        },
+        "group": "Layout",
+        "tier": "composite",
+        "hidden": true,
+        "hiddenReason": "an image resolver used by item blocks",
+        "variants": {
+          "axes": {},
+          "levers": [],
+          "hooks": []
         }
       }
     },
@@ -202,6 +293,66 @@
             "A list slides one SelectionTile (MenuRowList); rows sit --nk-list-gap apart and never touch; the list pads its sides by --nk-list-pad-x (the tile inset plus the skew overhang) so the lit tile never touches the panel edge (bleed turns it off).",
             "A trailing key is a Tile (Kbd); as=\"div\" keeps the row look on a focusable div."
           ]
+        },
+        "group": "Lists & selection",
+        "tier": "composite",
+        "variants": {
+          "axes": {
+            "density": [
+              "compact",
+              "default",
+              "comfortable"
+            ],
+            "shape": [
+              "square",
+              "default",
+              "round"
+            ],
+            "motion": [
+              "on",
+              "off",
+              "reduced"
+            ],
+            "tone": [
+              "default",
+              "destructive"
+            ]
+          },
+          "levers": [
+            "--nk-h-row",
+            "--nk-key-radius",
+            "--nk-leading-normal",
+            "--nk-list-gap",
+            "--nk-list-pad-x",
+            "--nk-r-key",
+            "--nk-row-desc-size",
+            "--nk-row-gap",
+            "--nk-row-lift",
+            "--nk-row-pad-y",
+            "--nk-row-title-size",
+            "--nk-space-1",
+            "--nk-space-2",
+            "--nk-text-label",
+            "--nk-tile-confirm-face",
+            "--nk-tile-confirm-ink",
+            "--nk-tile-face",
+            "--nk-tile-ink",
+            "--nk-tile-inset",
+            "--nk-tile-overhang",
+            "--nk-tile-skew",
+            "--nk-type-body-family",
+            "--nk-type-body-weight",
+            "--nk-type-label-case",
+            "--nk-type-label-family",
+            "--nk-type-label-pad",
+            "--nk-type-label-style",
+            "--nk-type-label-tracking",
+            "--nk-type-label-weight"
+          ],
+          "hooks": [
+            "useSelectionIndicator",
+            "useStaggerGroup"
+          ]
         }
       }
     },
@@ -242,6 +393,21 @@
             "One tile per list; the lit item gets data-lit and paints no fill of its own.",
             "Pointer, focus and the active index are one language; the last input wins.",
             "Transform only; a size change is a FLIP; reduced motion jumps."
+          ]
+        },
+        "group": "Lists & selection",
+        "tier": "foundation",
+        "hidden": true,
+        "hiddenReason": "internal helper under MenuRow and RadialMenu (the moving selection indicator)",
+        "variants": {
+          "axes": {},
+          "levers": [
+            "--nk-tile",
+            "--nk-tile-wall",
+            "--nk-time-base"
+          ],
+          "hooks": [
+            "useSelectionIndicator"
           ]
         }
       }
@@ -290,6 +456,24 @@
             "Numbers are tabular (num role); the label is a caption.",
             "Trend colours mean direction only (success up, destructive down)."
           ]
+        },
+        "group": "HUD",
+        "tier": "composite",
+        "variants": {
+          "axes": {
+            "size": [
+              "sm",
+              "md",
+              "display"
+            ]
+          },
+          "levers": [
+            "--nk-space-1",
+            "--nk-space-2",
+            "--nk-text-label",
+            "--nk-type-label-weight"
+          ],
+          "hooks": []
         }
       },
       "registryDependencies": [
@@ -354,6 +538,58 @@
             "Thresholds turn it destructive; tone never encodes data.",
             "A timed run completes from a timer, so it finishes with motion off."
           ]
+        },
+        "group": "Gauges & vitals",
+        "tier": "composite",
+        "variants": {
+          "axes": {
+            "density": [
+              "compact",
+              "default",
+              "comfortable"
+            ],
+            "shape": [
+              "square",
+              "default",
+              "round"
+            ],
+            "motion": [
+              "on",
+              "off",
+              "reduced"
+            ],
+            "size": [
+              "default",
+              "sm",
+              "lg"
+            ],
+            "tone": [
+              "theme tones"
+            ],
+            "treatment": [
+              "bar",
+              "slab"
+            ]
+          },
+          "levers": [
+            "--nk-alert-threshold",
+            "--nk-caption-size",
+            "--nk-fill-color",
+            "--nk-fill-track",
+            "--nk-gauge-track",
+            "--nk-glow",
+            "--nk-meter-height",
+            "--nk-pip-gap",
+            "--nk-pip-size",
+            "--nk-slab-line-fill",
+            "--nk-slab-tone-rgb",
+            "--nk-space-1",
+            "--nk-space-2",
+            "--nk-type-label-weight"
+          ],
+          "hooks": [
+            "useLinearRun"
+          ]
         }
       }
     },
@@ -396,7 +632,10 @@
         },
         "replacedBy": [
           "chip"
-        ]
+        ],
+        "group": "HUD",
+        "tier": "alias",
+        "hidden": true
       },
       "registryDependencies": [
         "https://nuikit.vercel.app/r/chip.json"
@@ -438,6 +677,17 @@
             "Transform and opacity only, masked to the line box.",
             "Swaps at once with motion off; the text is always in the DOM for readers."
           ]
+        },
+        "group": "Foundations",
+        "tier": "foundation",
+        "variants": {
+          "axes": {},
+          "levers": [
+            "--nk-duration"
+          ],
+          "hooks": [
+            "TextRoll"
+          ]
         }
       }
     },
@@ -474,6 +724,24 @@
             "The real field stays underneath; the overlay never takes the pointer.",
             "The native caret with motion off."
           ]
+        },
+        "group": "Inputs",
+        "tier": "composite",
+        "hidden": true,
+        "hiddenReason": "a gliding caret on stock Input; the FormField wraps it",
+        "variants": {
+          "axes": {},
+          "levers": [
+            "--nk-caret-ease",
+            "--nk-caret-time",
+            "--nk-caret-width",
+            "--nk-r-key",
+            "--nk-stagger",
+            "--nk-type-in-distance",
+            "--nk-type-in-time",
+            "--nk-type-out-time"
+          ],
+          "hooks": []
         }
       }
     },
@@ -517,7 +785,10 @@
         },
         "replacedBy": [
           "meter"
-        ]
+        ],
+        "group": "Gauges & vitals",
+        "tier": "alias",
+        "hidden": true
       }
     },
     {
@@ -535,7 +806,9 @@
         "since": "unreleased",
         "status": "experimental",
         "replaces": [],
-        "removeIn": null
+        "removeIn": null,
+        "tier": "foundation",
+        "group": "Foundations"
       }
     },
     {
@@ -556,7 +829,11 @@
         "since": "unreleased",
         "status": "stable",
         "replaces": [],
-        "removeIn": null
+        "removeIn": null,
+        "group": "Foundations",
+        "tier": "foundation",
+        "hidden": true,
+        "hiddenReason": "engine hook behind VitalChip"
       }
     },
     {
@@ -599,6 +876,26 @@
             "Changes within the batch window (400 ms) open and close together.",
             "Critical first, then the biggest change; at most max, then +N.",
             "Order moves with CSS order; the DOM never re-orders, nothing remounts."
+          ]
+        },
+        "group": "HUD",
+        "tier": "composite",
+        "hidden": true,
+        "hiddenReason": "the collapse engine behind VitalChip, kept as a helper; the HUD block shows it live",
+        "variants": {
+          "axes": {},
+          "levers": [
+            "--nk-chip-bg",
+            "--nk-chip-fg",
+            "--nk-chip-height",
+            "--nk-chip-radius",
+            "--nk-rest-delay",
+            "--nk-space-2",
+            "--nk-text-label",
+            "--nk-weight-strong"
+          ],
+          "hooks": [
+            "useCollapse"
           ]
         }
       }
@@ -664,6 +961,100 @@
             "neighbours (a chip that opens, in a Row): push | collapse | overlay; the theme default is --nk-vital-neighbours.",
             "expand chips in a VitalChip.Row open through the row's collapse engine (useCollapse): batched, ordered, capped at max with +N."
           ]
+        },
+        "group": "HUD",
+        "tier": "composite",
+        "variants": {
+          "axes": {
+            "tone": [
+              "theme tones"
+            ]
+          },
+          "levers": [
+            "--nk-alert-threshold",
+            "--nk-border",
+            "--nk-chip-active-fill",
+            "--nk-chip-bg",
+            "--nk-chip-clip",
+            "--nk-chip-fg",
+            "--nk-chip-radius",
+            "--nk-chip-shape",
+            "--nk-chip-track",
+            "--nk-cut",
+            "--nk-ease-breathe",
+            "--nk-ease-expand",
+            "--nk-ease-out",
+            "--nk-ease-spring",
+            "--nk-ease-standard",
+            "--nk-fill-alert",
+            "--nk-fill-ink",
+            "--nk-fill-opacity",
+            "--nk-fill-style",
+            "--nk-h-chip",
+            "--nk-h-control",
+            "--nk-h-key",
+            "--nk-icon-sm",
+            "--nk-key-bg",
+            "--nk-key-border",
+            "--nk-key-clip",
+            "--nk-key-fg",
+            "--nk-key-radius",
+            "--nk-key-shadow",
+            "--nk-label-attach",
+            "--nk-level-style",
+            "--nk-motion",
+            "--nk-r-chip",
+            "--nk-rest-delay",
+            "--nk-row-icon-box",
+            "--nk-skew",
+            "--nk-space-2",
+            "--nk-space-3",
+            "--nk-text-key",
+            "--nk-text-label",
+            "--nk-tile-active",
+            "--nk-tile-confirm-face",
+            "--nk-tile-confirm-ink",
+            "--nk-tile-face",
+            "--nk-tile-ink",
+            "--nk-tile-legend-shift",
+            "--nk-tile-plate",
+            "--nk-tile-plate-dim",
+            "--nk-tile-plate-x",
+            "--nk-tile-plate-y",
+            "--nk-tile-press",
+            "--nk-tile-rim-focus",
+            "--nk-tile-skew",
+            "--nk-tile-tone",
+            "--nk-tile-x",
+            "--nk-tile-y",
+            "--nk-time-base",
+            "--nk-time-confirm",
+            "--nk-time-fast",
+            "--nk-time-fill",
+            "--nk-time-pulse",
+            "--nk-time-slow",
+            "--nk-vital",
+            "--nk-vital-d",
+            "--nk-vital-display",
+            "--nk-vital-face",
+            "--nk-vital-face-ratio",
+            "--nk-vital-icon",
+            "--nk-vital-icon-ratio",
+            "--nk-vital-label-size",
+            "--nk-vital-line",
+            "--nk-vital-neighbours",
+            "--nk-vital-plate-drop",
+            "--nk-vital-plate-x",
+            "--nk-vital-room",
+            "--nk-vital-tag",
+            "--nk-vital-tag-gap",
+            "--nk-vital-tag-pad",
+            "--nk-weight-strong"
+          ],
+          "hooks": [
+            "NumberRoll",
+            "useCollapse"
+          ]
         }
       }
     },
@@ -710,7 +1101,10 @@
         "replacedBy": [
           "panel",
           "menu-row"
-        ]
+        ],
+        "group": "Lists & selection",
+        "tier": "alias",
+        "hidden": true
       }
     },
     {
@@ -749,6 +1143,28 @@
             "Items draw data-state: focus (the pointed wedge), disabled.",
             "Sub-menus open in place; Escape goes back a level."
           ]
+        },
+        "group": "Lists & selection",
+        "tier": "composite",
+        "variants": {
+          "axes": {},
+          "levers": [
+            "--nk-indicator-ease",
+            "--nk-indicator-time",
+            "--nk-panel-bg",
+            "--nk-panel-border",
+            "--nk-panel-edge",
+            "--nk-panel-fg",
+            "--nk-panel-shadow",
+            "--nk-r-key",
+            "--nk-sel-face",
+            "--nk-sel-ink",
+            "--nk-space-1",
+            "--nk-text-label",
+            "--nk-type-label-weight",
+            "--nk-weight-strong"
+          ],
+          "hooks": []
         }
       },
       "dependencies": [
@@ -809,6 +1225,35 @@
             "Past the redline the dial and the gear are data-state=\"alert\"; fuel at or under 15 is the danger colour.",
             "No glow filter; segments switch, nothing tweens on the dash. The leading zeros are --nk-speedo-dim."
           ]
+        },
+        "group": "Gauges & vitals",
+        "tier": "composite",
+        "variants": {
+          "axes": {},
+          "levers": [
+            "--nk-ease-breathe",
+            "--nk-gauge-font",
+            "--nk-gauge-redline",
+            "--nk-gauge-style",
+            "--nk-gauge-track-color",
+            "--nk-h-chip",
+            "--nk-icon-md",
+            "--nk-icon-sm",
+            "--nk-motion",
+            "--nk-space-1",
+            "--nk-speedo",
+            "--nk-speedo-dim",
+            "--nk-speedo-segments",
+            "--nk-speedo-tracking",
+            "--nk-time-base",
+            "--nk-time-fill",
+            "--nk-time-pulse",
+            "--nk-time-slow",
+            "--nk-weight-display"
+          ],
+          "hooks": [
+            "TextRoll"
+          ]
         }
       }
     },
@@ -830,7 +1275,11 @@
         "since": "0.3.0",
         "status": "stable",
         "replaces": [],
-        "removeIn": null
+        "removeIn": null,
+        "group": "Foundations",
+        "tier": "foundation",
+        "hidden": true,
+        "hiddenReason": "a NUI state hook; listed under hooks in the docs"
       }
     },
     {
@@ -898,6 +1347,58 @@
             "Queue policy (useNotices / NuiNotices): stack or one at a time, a capped queue (the oldest waiting goes), shown ones hurry (dwell x hurry) while others wait.",
             "tone (neutral | info | success | warning | danger) wins over status, its older name."
           ]
+        },
+        "group": "Notices & prompts",
+        "tier": "composite",
+        "variants": {
+          "axes": {
+            "density": [
+              "compact",
+              "default",
+              "comfortable"
+            ],
+            "shape": [
+              "square",
+              "default",
+              "round"
+            ],
+            "motion": [
+              "on",
+              "off",
+              "reduced"
+            ],
+            "size": [
+              "default",
+              "sm",
+              "lg"
+            ],
+            "tone": [
+              "theme tones"
+            ]
+          },
+          "levers": [
+            "--nk-ease-in",
+            "--nk-ease-out",
+            "--nk-edge",
+            "--nk-leading-normal",
+            "--nk-notify-ms",
+            "--nk-row-desc-size",
+            "--nk-row-gap",
+            "--nk-skew",
+            "--nk-space-1",
+            "--nk-space-2",
+            "--nk-space-4",
+            "--nk-stagger-delay",
+            "--nk-text-label",
+            "--nk-time",
+            "--nk-type-body-family",
+            "--nk-type-body-weight",
+            "--nk-z-system"
+          ],
+          "hooks": [
+            "useLinearRun",
+            "useStaggerGroup"
+          ]
         }
       }
     },
@@ -957,6 +1458,23 @@
             "Nothing relies on :has() or native pickers (Chromium 103).",
             "validateField() is the one validation path; the error replaces the description."
           ]
+        },
+        "group": "Inputs",
+        "tier": "composite",
+        "variants": {
+          "axes": {},
+          "levers": [
+            "--nk-focus-rim",
+            "--nk-h-field",
+            "--nk-r-control",
+            "--nk-r-key",
+            "--nk-space-1",
+            "--nk-space-2",
+            "--nk-text-label",
+            "--nk-type-label-weight",
+            "--nk-weight-strong"
+          ],
+          "hooks": []
         }
       }
     },
@@ -1000,7 +1518,9 @@
         "since": "0.6.0",
         "status": "stable",
         "replaces": [],
-        "removeIn": null
+        "removeIn": null,
+        "group": "Blocks",
+        "demonstrates": "Countdown, KeyPrompt and Money: the respawn timer and hold-to-confirm on the scrim (systems/nuikit_death)."
       }
     },
     {
@@ -1044,7 +1564,9 @@
         "since": "0.6.0",
         "status": "stable",
         "replaces": [],
-        "removeIn": null
+        "removeIn": null,
+        "group": "Blocks",
+        "demonstrates": "VitalChip, Speedometer, Money and Stat on the collapse engine; the player comes from the bridge (systems/nuikit_hud)."
       }
     },
     {
@@ -1095,6 +1617,46 @@
             "Focus starts on the action; Escape and Cancel go back.",
             "Destructive actions say so in the label."
           ]
+        },
+        "group": "Dialogs & sheets",
+        "tier": "composite",
+        "variants": {
+          "axes": {
+            "density": [
+              "compact",
+              "default",
+              "comfortable"
+            ],
+            "shape": [
+              "square",
+              "default",
+              "round"
+            ],
+            "motion": [
+              "on",
+              "off",
+              "reduced"
+            ],
+            "size": [
+              "default",
+              "sm",
+              "lg"
+            ],
+            "tone": [
+              "theme tones"
+            ]
+          },
+          "levers": [
+            "--nk-ease-spring",
+            "--nk-text-label",
+            "--nk-tile-active",
+            "--nk-tile-confirm-face",
+            "--nk-tile-confirm-ink",
+            "--nk-tile-tone",
+            "--nk-time-confirm",
+            "--nk-time-slow"
+          ],
+          "hooks": []
         }
       }
     },
@@ -1155,6 +1717,55 @@
             "One prompt per action; a stack for several.",
             "The interaction ladder (stage): dormant (the key chip alone, quiet) → aware → focus → hold → confirm, on data-ladder; without stage, today's prompt."
           ]
+        },
+        "group": "Notices & prompts",
+        "tier": "composite",
+        "variants": {
+          "axes": {
+            "density": [
+              "compact",
+              "default",
+              "comfortable"
+            ],
+            "shape": [
+              "square",
+              "default",
+              "round"
+            ],
+            "motion": [
+              "on",
+              "off",
+              "reduced"
+            ],
+            "size": [
+              "default",
+              "sm"
+            ]
+          },
+          "levers": [
+            "--nk-chip-active-bg",
+            "--nk-chip-active-fg",
+            "--nk-density",
+            "--nk-ease-standard",
+            "--nk-edge",
+            "--nk-hold-ring-pad",
+            "--nk-key-radius",
+            "--nk-row-indicator-color",
+            "--nk-slab",
+            "--nk-slab-height",
+            "--nk-slab-key-font-size",
+            "--nk-slab-key-size",
+            "--nk-slab-line-height",
+            "--nk-slab-tone-rgb",
+            "--nk-space-2",
+            "--nk-space-3",
+            "--nk-text-label",
+            "--nk-time",
+            "--nk-type-label-weight"
+          ],
+          "hooks": [
+            "useLinearRun"
+          ]
         }
       }
     },
@@ -1211,6 +1822,48 @@
             "onComplete fires from a timer, never an animation event.",
             "The round half of the progress intent; meter is the bar."
           ]
+        },
+        "group": "Gauges & vitals",
+        "tier": "composite",
+        "variants": {
+          "axes": {
+            "size": [
+              "default",
+              "sm",
+              "lg"
+            ],
+            "tone": [
+              "theme tones"
+            ]
+          },
+          "levers": [
+            "--nk-fill-track",
+            "--nk-focus-rim",
+            "--nk-gap-cluster",
+            "--nk-gauge-fill",
+            "--nk-r-control",
+            "--nk-ring-gap",
+            "--nk-ring-segments",
+            "--nk-row-title-size",
+            "--nk-space-1",
+            "--nk-space-3",
+            "--nk-text-label",
+            "--nk-text-section",
+            "--nk-text-title",
+            "--nk-type-label-case",
+            "--nk-type-label-family",
+            "--nk-type-label-pad",
+            "--nk-type-label-style",
+            "--nk-type-label-tracking",
+            "--nk-type-label-weight",
+            "--nk-type-num-family",
+            "--nk-type-num-style",
+            "--nk-type-num-tracking",
+            "--nk-weight-display"
+          ],
+          "hooks": [
+            "useLinearRun"
+          ]
         }
       }
     },
@@ -1261,6 +1914,31 @@
             "At or under warnAt the root is data-state=\"alert\" and the clock pulses.",
             "onComplete fires from a timer, so it finishes with motion off."
           ]
+        },
+        "group": "Gauges & vitals",
+        "tier": "composite",
+        "hidden": true,
+        "hiddenReason": "a Meter or ProgressRing with a seconds prop; use them (countdown stays installable)",
+        "variants": {
+          "axes": {
+            "size": [
+              "default",
+              "sm",
+              "hero"
+            ]
+          },
+          "levers": [
+            "--nk-display-size",
+            "--nk-fill-color",
+            "--nk-hud-value-size",
+            "--nk-meter-glow",
+            "--nk-meter-height",
+            "--nk-num-font",
+            "--nk-text-display"
+          ],
+          "hooks": [
+            "useLinearRun"
+          ]
         }
       },
       "registryDependencies": [
@@ -1308,6 +1986,41 @@
             "One band at a time.",
             "Text on the game: world foreground, legible over any frame."
           ]
+        },
+        "group": "Notices & prompts",
+        "tier": "composite",
+        "hidden": true,
+        "hiddenReason": "a Notice at a screen edge (position prop); the Notice is the one status surface",
+        "variants": {
+          "axes": {
+            "density": [
+              "compact",
+              "default",
+              "comfortable"
+            ],
+            "shape": [
+              "square",
+              "default",
+              "round"
+            ],
+            "motion": [
+              "on",
+              "off",
+              "reduced"
+            ],
+            "tone": [
+              "theme tones"
+            ]
+          },
+          "levers": [
+            "--nk-edge",
+            "--nk-slab-band-edge",
+            "--nk-slab-band-tint",
+            "--nk-slab-tone-rgb"
+          ],
+          "hooks": [
+            "useLinearRun"
+          ]
         }
       },
       "registryDependencies": [
@@ -1351,6 +2064,21 @@
             "Whole units by default; compact only when asked.",
             "A direction tone for gains and losses, never decoration."
           ]
+        },
+        "group": "HUD",
+        "tier": "composite",
+        "hidden": true,
+        "hiddenReason": "NumberRoll inside Text with a currency format; the Stat shows it with a label",
+        "variants": {
+          "axes": {
+            "tone": [
+              "default",
+              "direction",
+              "muted"
+            ]
+          },
+          "levers": [],
+          "hooks": []
         }
       },
       "registryDependencies": [
@@ -1404,6 +2132,33 @@
             "data-state: focus (active or drop target), disabled (locked); the slot's own state is data-slot-state.",
             "Drag and drop stays with the caller."
           ]
+        },
+        "group": "Lists & selection",
+        "tier": "composite",
+        "hidden": true,
+        "hiddenReason": "a Tile with an image and a count; the inventory block shows it composed",
+        "variants": {
+          "axes": {
+            "size": [
+              "sm",
+              "lg",
+              "md",
+              "fill"
+            ]
+          },
+          "levers": [
+            "--nk-chip-active-bg",
+            "--nk-chip-active-fg",
+            "--nk-chip-clip",
+            "--nk-chip-glow",
+            "--nk-hud-radius",
+            "--nk-row-indicator-color",
+            "--nk-row-radius",
+            "--nk-space",
+            "--nk-text-label",
+            "--nk-type-label-weight"
+          ],
+          "hooks": []
         }
       }
     },
@@ -1451,6 +2206,40 @@
             "Duty is a Chip dot and the words, never colour alone.",
             "On the panel recipe; codes in the num role."
           ]
+        },
+        "group": "HUD",
+        "tier": "composite",
+        "hidden": true,
+        "hiddenReason": "a Panel with Stat rows; the scoreboard and job-sheet blocks show it composed",
+        "variants": {
+          "axes": {
+            "shape": [
+              "square",
+              "default",
+              "round"
+            ],
+            "density": [
+              "compact",
+              "default",
+              "comfortable"
+            ],
+            "motion": [
+              "on",
+              "off",
+              "reduced"
+            ],
+            "size": [
+              "default",
+              "sm",
+              "lg",
+              "auto"
+            ]
+          },
+          "levers": [
+            "--nk-space-2",
+            "--nk-type-label-weight"
+          ],
+          "hooks": []
         }
       }
     },
@@ -1488,6 +2277,33 @@
           "rules": [
             "Transform only: the bar scales, never width.",
             "Colour: hue, then tone, then --nk-fill-color; alert wins."
+          ]
+        },
+        "group": "Foundations",
+        "tier": "foundation",
+        "variants": {
+          "axes": {
+            "treatment": [
+              "bar",
+              "edge"
+            ],
+            "tone": [
+              "theme tones"
+            ]
+          },
+          "levers": [
+            "--nk-alert-threshold",
+            "--nk-fill-alert",
+            "--nk-fill-color",
+            "--nk-fill-edge",
+            "--nk-fill-height",
+            "--nk-fill-track",
+            "--nk-gauge-track",
+            "--nk-space-2",
+            "--nk-time-fill"
+          ],
+          "hooks": [
+            "useLinearRun"
           ]
         }
       }
@@ -1535,6 +2351,80 @@
             "Hard drops only: the plate is an offset, never a blur.",
             "A theme sets --nk-tile-* values, never selectors."
           ]
+        },
+        "group": "Foundations",
+        "tier": "foundation",
+        "variants": {
+          "axes": {
+            "size": [
+              "sm",
+              "md",
+              "lg"
+            ],
+            "shape": [
+              "key",
+              "square"
+            ],
+            "tone": [
+              "neutral",
+              "info",
+              "success",
+              "warning",
+              "danger"
+            ]
+          },
+          "levers": [
+            "--nk-border",
+            "--nk-display-style",
+            "--nk-ease-breathe",
+            "--nk-ease-spring",
+            "--nk-fill-alert",
+            "--nk-h-chip",
+            "--nk-h-control",
+            "--nk-h-key",
+            "--nk-icon-sm",
+            "--nk-key-bg",
+            "--nk-key-border",
+            "--nk-key-clip",
+            "--nk-key-fg",
+            "--nk-key-font",
+            "--nk-key-radius",
+            "--nk-key-shadow",
+            "--nk-key-weight",
+            "--nk-land-scale",
+            "--nk-row-icon-box",
+            "--nk-sel-ink",
+            "--nk-space-1",
+            "--nk-space-2",
+            "--nk-text-key",
+            "--nk-tile",
+            "--nk-tile-active",
+            "--nk-tile-confirm-face",
+            "--nk-tile-confirm-ink",
+            "--nk-tile-face",
+            "--nk-tile-hold",
+            "--nk-tile-ink",
+            "--nk-tile-key-ink",
+            "--nk-tile-legend-pad",
+            "--nk-tile-legend-shift",
+            "--nk-tile-plate",
+            "--nk-tile-plate-dim",
+            "--nk-tile-plate-x",
+            "--nk-tile-plate-y",
+            "--nk-tile-press",
+            "--nk-tile-rim-focus",
+            "--nk-tile-skew",
+            "--nk-tile-tone",
+            "--nk-tile-x",
+            "--nk-tile-y",
+            "--nk-time-confirm",
+            "--nk-time-pulse",
+            "--nk-time-slow",
+            "--nk-type-scan-case",
+            "--nk-type-scan-style",
+            "--nk-type-scan-tracking"
+          ],
+          "hooks": []
         }
       }
     },
@@ -1585,6 +2475,67 @@
             "No pills: r-chip, or the dot at r-key.",
             "Colour means something: tone or hue only."
           ]
+        },
+        "group": "Foundations",
+        "tier": "foundation",
+        "variants": {
+          "axes": {
+            "density": [
+              "compact",
+              "default",
+              "comfortable"
+            ],
+            "motion": [
+              "on",
+              "off",
+              "reduced"
+            ],
+            "shape": [
+              "pill",
+              "tile"
+            ],
+            "state": [
+              "default",
+              "warning",
+              "active"
+            ],
+            "treatment": [
+              "hair",
+              "tint",
+              "solid"
+            ],
+            "tone": [
+              "theme tones"
+            ],
+            "material": [
+              "panel",
+              "hud"
+            ]
+          },
+          "levers": [
+            "--nk-border",
+            "--nk-chip-active-bg",
+            "--nk-chip-bg",
+            "--nk-chip-tone",
+            "--nk-chip-tone-rgb",
+            "--nk-h-chip",
+            "--nk-hue-line",
+            "--nk-hue-tint",
+            "--nk-icon-md",
+            "--nk-r-chip",
+            "--nk-r-key",
+            "--nk-skew",
+            "--nk-slab-fill",
+            "--nk-slab-stroke",
+            "--nk-space-1",
+            "--nk-space-2",
+            "--nk-text-label",
+            "--nk-type-label-weight",
+            "--nk-type-num-family"
+          ],
+          "hooks": [
+            "useLinearRun"
+          ]
         }
       },
       "dependencies": [
@@ -1623,6 +2574,27 @@
             "One gap and one icon size per step.",
             "A muted icon is --muted-foreground, never an opacity."
           ]
+        },
+        "group": "Layout",
+        "tier": "foundation",
+        "hidden": true,
+        "hiddenReason": "Text with an icon, covered by Stat and Chip",
+        "variants": {
+          "axes": {
+            "size": [
+              "sm",
+              "md",
+              "lg"
+            ]
+          },
+          "levers": [
+            "--nk-gap-cluster",
+            "--nk-icon-lg",
+            "--nk-icon-md",
+            "--nk-icon-sm",
+            "--nk-icon-stroke"
+          ],
+          "hooks": []
         }
       },
       "registryDependencies": [
@@ -1665,6 +2637,41 @@
             "Pick a role (variant), never a font size: the role's levers come from the theme.",
             "size is for values only (sm | md | display); inherit keeps the parent's size."
           ]
+        },
+        "group": "Layout",
+        "tier": "foundation",
+        "hidden": true,
+        "hiddenReason": "typography helper the others compose",
+        "variants": {
+          "axes": {
+            "size": [
+              "sm",
+              "md",
+              "inherit",
+              "display"
+            ],
+            "treatment": [
+              "body",
+              "caption",
+              "label",
+              "title",
+              "none",
+              "num",
+              "scan",
+              "display"
+            ]
+          },
+          "levers": [
+            "--nk-h-key",
+            "--nk-hud-value-size",
+            "--nk-inline-key-scale",
+            "--nk-num-font",
+            "--nk-text-base",
+            "--nk-text-key",
+            "--nk-type",
+            "--nk-weight-strong"
+          ],
+          "hooks": []
         }
       }
     },
@@ -1705,6 +2712,23 @@
             "Gaps are levers, never a literal.",
             "Cluster is a centred row with the cluster gap; Stack a column with none."
           ]
+        },
+        "group": "Layout",
+        "tier": "foundation",
+        "hidden": true,
+        "hiddenReason": "layout helper the others compose",
+        "variants": {
+          "axes": {},
+          "levers": [
+            "--nk-gap",
+            "--nk-gap-cluster",
+            "--nk-gap-items",
+            "--nk-pad-surface",
+            "--nk-space",
+            "--nk-space-1",
+            "--nk-space-4"
+          ],
+          "hooks": []
         }
       }
     },
@@ -1748,6 +2772,34 @@
             "An item that acts is a button.",
             "Keys are Tiles, never a styled span."
           ]
+        },
+        "group": "Foundations",
+        "tier": "foundation",
+        "variants": {
+          "axes": {},
+          "levers": [
+            "--nk-border",
+            "--nk-fill-tint",
+            "--nk-gap-items",
+            "--nk-gauge-track",
+            "--nk-icon-lg",
+            "--nk-plate-bg",
+            "--nk-plate-drop",
+            "--nk-plate-hair",
+            "--nk-plate-radius",
+            "--nk-space-1",
+            "--nk-space-2",
+            "--nk-text-label",
+            "--nk-type-label-case",
+            "--nk-type-label-family",
+            "--nk-type-label-pad",
+            "--nk-type-label-style",
+            "--nk-type-label-tracking",
+            "--nk-type-label-weight"
+          ],
+          "hooks": [
+            "useLinearRun"
+          ]
         }
       }
     },
@@ -1789,6 +2841,37 @@
             "One primary button per dialog.",
             "A theme sets --nk-plate-*, never restyles the shell."
           ]
+        },
+        "group": "Dialogs & sheets",
+        "tier": "composite",
+        "hidden": true,
+        "hiddenReason": "internal frame under Confirm; Confirm with its props covers every dialog",
+        "variants": {
+          "axes": {
+            "size": [
+              "sm",
+              "lg",
+              "md"
+            ]
+          },
+          "levers": [
+            "--nk-ease-expand",
+            "--nk-ease-retract",
+            "--nk-gap-cluster",
+            "--nk-pad-surface",
+            "--nk-plate",
+            "--nk-plate-bg",
+            "--nk-plate-hair",
+            "--nk-rise",
+            "--nk-space-1",
+            "--nk-space-2",
+            "--nk-space-3",
+            "--nk-space-4",
+            "--nk-time-exit",
+            "--nk-time-slow",
+            "--nk-z-dialog"
+          ],
+          "hooks": []
         }
       },
       "registryDependencies": [
@@ -1830,6 +2913,22 @@
             "One to three words for the label; the meta is a count or a total.",
             "The first section has no top pad, the last no hairline."
           ]
+        },
+        "group": "Dialogs & sheets",
+        "tier": "composite",
+        "hidden": true,
+        "hiddenReason": "internal section under EdgeSheet",
+        "variants": {
+          "axes": {},
+          "levers": [
+            "--nk-gap-cluster",
+            "--nk-gap-items",
+            "--nk-plate-hair",
+            "--nk-space",
+            "--nk-space-2",
+            "--nk-space-4"
+          ],
+          "hooks": []
         }
       },
       "registryDependencies": [
@@ -1890,6 +2989,56 @@
             "Past the redline it is data-state=\"alert\".",
             "Colours only from --nk-gauge-* and --nk-fill-* (or a hue); no glow filter."
           ]
+        },
+        "group": "Foundations",
+        "tier": "foundation",
+        "variants": {
+          "axes": {
+            "size": [
+              "sm",
+              "md",
+              "lg"
+            ],
+            "treatment": [
+              "ticks",
+              "digital"
+            ],
+            "tone": [
+              "neutral",
+              "info",
+              "success",
+              "warning",
+              "danger"
+            ]
+          },
+          "levers": [
+            "--nk-accent-from",
+            "--nk-accent-to",
+            "--nk-accent-via",
+            "--nk-chip-bg",
+            "--nk-dial-disc-opacity",
+            "--nk-dial-disc-reach",
+            "--nk-dial-red-dim",
+            "--nk-ease-standard",
+            "--nk-fill",
+            "--nk-fill-track",
+            "--nk-gauge",
+            "--nk-gauge-fill",
+            "--nk-gauge-needle",
+            "--nk-gauge-redline",
+            "--nk-gauge-tick",
+            "--nk-gauge-tick-major",
+            "--nk-gauge-ticks",
+            "--nk-gauge-track-color",
+            "--nk-gauge-width",
+            "--nk-hud-alpha",
+            "--nk-hud-opacity",
+            "--nk-plate-bg",
+            "--nk-time-fast"
+          ],
+          "hooks": [
+            "useLinearRun"
+          ]
         }
       },
       "registryDependencies": [
@@ -1942,6 +3091,31 @@
             "One sentence on what to do next.",
             "error is role alert and the danger tone."
           ]
+        },
+        "group": "Layout",
+        "tier": "composite",
+        "hidden": true,
+        "hiddenReason": "a Panel body with Text and an icon Tile; panels and lists carry their own empty state",
+        "variants": {
+          "axes": {
+            "size": [
+              "panel",
+              "screen"
+            ],
+            "tone": [
+              "empty",
+              "error"
+            ]
+          },
+          "levers": [
+            "--nk-heading-size",
+            "--nk-heading-weight",
+            "--nk-space-2",
+            "--nk-text-label",
+            "--nk-text-section",
+            "--nk-type-title-weight"
+          ],
+          "hooks": []
         }
       }
     },
@@ -1990,6 +3164,26 @@
             "The needle moves without re-rendering; a full turn is a miss.",
             "The outcome is success or fail on the key, never colour alone."
           ]
+        },
+        "group": "Notices & prompts",
+        "tier": "composite",
+        "variants": {
+          "axes": {
+            "size": [
+              "default",
+              "sm",
+              "lg"
+            ]
+          },
+          "levers": [
+            "--nk-gauge-fill",
+            "--nk-gauge-tick",
+            "--nk-gauge-ticks",
+            "--nk-r-control",
+            "--nk-text-label",
+            "--nk-weight-strong"
+          ],
+          "hooks": []
         }
       }
     },
@@ -2037,7 +3231,9 @@
         "since": "0.6.0",
         "status": "stable",
         "replaces": [],
-        "removeIn": null
+        "removeIn": null,
+        "group": "Blocks",
+        "demonstrates": "EdgeSheet, MenuRow, Meter, Stat and PlayerCard: the pause system with Confirm (systems/nuikit_pause)."
       }
     },
     {
@@ -2086,7 +3282,9 @@
         "since": "0.6.0",
         "status": "stable",
         "replaces": [],
-        "removeIn": null
+        "removeIn": null,
+        "group": "Blocks",
+        "demonstrates": "Meter and Stat driven by load progress; no focus, no input (systems/nuikit_loading)."
       }
     },
     {
@@ -2132,7 +3330,9 @@
         "since": "0.6.0",
         "status": "stable",
         "replaces": [],
-        "removeIn": null
+        "removeIn": null,
+        "group": "Blocks",
+        "demonstrates": "MenuRow, FormField and Panel: player prefs written through the prefs layer."
       }
     },
     {
@@ -2178,7 +3378,9 @@
         "since": "0.6.0",
         "status": "stable",
         "replaces": [],
-        "removeIn": null
+        "removeIn": null,
+        "group": "Blocks",
+        "demonstrates": "Panel, MenuRow and Meter: a live list with Chip tags and search."
       }
     },
     {
@@ -2226,7 +3428,9 @@
         "since": "0.6.0",
         "status": "stable",
         "replaces": [],
-        "removeIn": null
+        "removeIn": null,
+        "group": "Blocks",
+        "demonstrates": "Panel, MenuRow and Meter: a list with a detail and the vehicle stats as gauges."
       }
     },
     {
@@ -2273,7 +3477,9 @@
         "since": "0.6.0",
         "status": "stable",
         "replaces": [],
-        "removeIn": null
+        "removeIn": null,
+        "group": "Blocks",
+        "demonstrates": "FormField, Confirm, Money and Stat: a validated transfer behind one Confirm."
       }
     },
     {
@@ -2322,7 +3528,9 @@
         "since": "0.6.0",
         "status": "stable",
         "replaces": [],
-        "removeIn": null
+        "removeIn": null,
+        "group": "Blocks",
+        "demonstrates": "Panel, Confirm, Chip and Stat: duty and grades over the framework adapters."
       }
     },
     {
@@ -2368,7 +3576,9 @@
         "since": "unreleased",
         "status": "stable",
         "replaces": [],
-        "removeIn": null
+        "removeIn": null,
+        "group": "Blocks",
+        "demonstrates": "EdgeSheet and MenuRow: the context sheet that swaps sub-pages in place."
       }
     },
     {
@@ -2412,7 +3622,9 @@
         "since": "unreleased",
         "status": "stable",
         "replaces": [],
-        "removeIn": null
+        "removeIn": null,
+        "group": "Blocks",
+        "demonstrates": "KeyPrompt ladder and MenuRow context menu: the interaction system on world targets."
       }
     },
     {
@@ -2460,7 +3672,9 @@
         "since": "unreleased",
         "status": "stable",
         "replaces": [],
-        "removeIn": null
+        "removeIn": null,
+        "group": "Blocks",
+        "demonstrates": "ItemSlot, Money and Confirm: a cart over Panel and MenuRow."
       }
     },
     {
@@ -2504,7 +3718,9 @@
         "since": "unreleased",
         "status": "stable",
         "replaces": [],
-        "removeIn": null
+        "removeIn": null,
+        "group": "Blocks",
+        "demonstrates": "ItemSlot grid with Meter durability and drag and drop on Panel."
       }
     },
     {
@@ -2552,7 +3768,9 @@
         "since": "unreleased",
         "status": "stable",
         "replaces": [],
-        "removeIn": null
+        "removeIn": null,
+        "group": "Blocks",
+        "demonstrates": "FormField, Meter and Money: stats and a colour choice before Confirm."
       }
     },
     {
@@ -2600,7 +3818,9 @@
         "since": "unreleased",
         "status": "stable",
         "replaces": [],
-        "removeIn": null
+        "removeIn": null,
+        "group": "Blocks",
+        "demonstrates": "PlayerCard, FormField and Confirm: a character list and creation form."
       }
     },
     {
@@ -2641,7 +3861,11 @@
         "since": "unreleased",
         "status": "experimental",
         "replaces": [],
-        "removeIn": null
+        "removeIn": null,
+        "group": "Blocks",
+        "demonstrates": "MenuRow replies on a Panel.",
+        "hidden": true,
+        "hiddenReason": "Demo-only, thin: a Panel with MenuRow replies, nothing a Panel does not show."
       }
     },
     {
@@ -2688,7 +3912,11 @@
         "since": "unreleased",
         "status": "experimental",
         "replaces": [],
-        "removeIn": null
+        "removeIn": null,
+        "group": "Blocks",
+        "demonstrates": "KeyPrompt, Meter and Money for task progress.",
+        "hidden": true,
+        "hiddenReason": "Demo-only, the job-menu block with a task list; the same components and systems."
       }
     },
     {
@@ -2736,7 +3964,11 @@
         "since": "unreleased",
         "status": "experimental",
         "replaces": [],
-        "removeIn": null
+        "removeIn": null,
+        "group": "Blocks",
+        "demonstrates": "ItemSlot, Money and Confirm in a grid layout.",
+        "hidden": true,
+        "hiddenReason": "Demo-only, the shop block in a grid; the same components and systems."
       }
     },
     {
@@ -2782,7 +4014,9 @@
         "since": "unreleased",
         "status": "experimental",
         "replaces": [],
-        "removeIn": null
+        "removeIn": null,
+        "group": "Blocks",
+        "demonstrates": "FormField, MenuRow and EmptyState: apps in one Panel with bespoke screens joining by protocol."
       }
     },
     {
@@ -2831,7 +4065,9 @@
         "since": "unreleased",
         "status": "experimental",
         "replaces": [],
-        "removeIn": null
+        "removeIn": null,
+        "group": "Blocks",
+        "demonstrates": "FormField, PlayerCard and Confirm: search, records and a report form."
       }
     },
     {
@@ -2885,6 +4121,65 @@
             "The value rolls per digit; static text (a separator, a total) stays still.",
             "A held keycap repeats after --nk-stepper-delay every --nk-stepper-rate; no focus ring; rem, never px."
           ]
+        },
+        "group": "Inputs",
+        "tier": "composite",
+        "hidden": true,
+        "hiddenReason": "a number input variant of FormField; stays installable",
+        "variants": {
+          "axes": {
+            "size": [
+              "default",
+              "sm",
+              "lg"
+            ]
+          },
+          "levers": [
+            "--nk-border",
+            "--nk-ease-breathe",
+            "--nk-ease-spring",
+            "--nk-fill-alert",
+            "--nk-fill-tint",
+            "--nk-h-chip",
+            "--nk-h-control",
+            "--nk-h-field",
+            "--nk-h-key",
+            "--nk-icon-sm",
+            "--nk-key-bg",
+            "--nk-key-border",
+            "--nk-key-clip",
+            "--nk-key-fg",
+            "--nk-key-shadow",
+            "--nk-plate-hair",
+            "--nk-r-control",
+            "--nk-row-icon-box",
+            "--nk-space-2",
+            "--nk-stepper-delay",
+            "--nk-stepper-rate",
+            "--nk-text-label",
+            "--nk-tile-active",
+            "--nk-tile-confirm-face",
+            "--nk-tile-confirm-ink",
+            "--nk-tile-face",
+            "--nk-tile-ink",
+            "--nk-tile-legend-shift",
+            "--nk-tile-plate",
+            "--nk-tile-plate-dim",
+            "--nk-tile-plate-x",
+            "--nk-tile-plate-y",
+            "--nk-tile-press",
+            "--nk-tile-rim-focus",
+            "--nk-tile-skew",
+            "--nk-tile-tone",
+            "--nk-tile-x",
+            "--nk-tile-y",
+            "--nk-time-confirm",
+            "--nk-time-pulse",
+            "--nk-time-slow"
+          ],
+          "hooks": [
+            "TextRoll"
+          ]
         }
       }
     },
@@ -2907,7 +4202,11 @@
         "since": "unreleased",
         "status": "stable",
         "replaces": [],
-        "removeIn": null
+        "removeIn": null,
+        "group": "Layout",
+        "tier": "foundation",
+        "hidden": true,
+        "hiddenReason": "The cn helper every component imports, not a component."
       }
     }
   ]

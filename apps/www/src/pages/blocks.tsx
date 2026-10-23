@@ -11,6 +11,13 @@ import { applyStageTheme, clearStageTheme } from "@/lib/stage-theme";
 import { studioTheme } from "@/lib/theme-studio";
 import { cn } from "@/lib/utils";
 import { identities, themes } from "@/themes";
+import registry from "../../../../registry.json";
+
+// registry.json meta: which blocks the site shows, and the line on what each demonstrates
+const BLOCK_META = new Map(
+  (registry.items as { name: string; type: string; meta?: { hidden?: boolean; demonstrates?: string } }[]).filter((i) => i.type === "registry:block").map((i) => [i.name, i.meta ?? {}] as const),
+);
+const SHOWN = BLOCKS.filter((b) => !BLOCK_META.get(b.name)?.hidden);
 
 const PRESETS = [...identities, ...themes];
 
@@ -32,7 +39,7 @@ export function BlocksPage() {
         <header className="max-w-3xl">
           <h1 className="text-4xl font-semibold tracking-tight">Blocks</h1>
           <p className="mt-4 text-lg text-muted-foreground text-pretty">
-            Whole screens built from the{" "}
+            Finished screens that show the system: the{" "}
             <a href="/components" className="text-foreground underline underline-offset-4">
               components
             </a>
@@ -92,7 +99,7 @@ export function BlocksPage() {
         </section>
 
         <div className="flex flex-col">
-          {BLOCKS.map((b) => (
+          {SHOWN.map((b) => (
             <Block key={b.name} block={b} theme={theme} />
           ))}
         </div>
@@ -128,6 +135,12 @@ function Block({ block, theme }: { block: BlockPreview; theme: CompiledTheme }) 
       <div className="max-w-2xl">
         <h2 className="text-2xl font-semibold tracking-tight">{block.title}</h2>
         <p className="mt-2 text-muted-foreground text-pretty">{block.description}</p>
+        {BLOCK_META.get(block.name)?.demonstrates && (
+          <p className="mt-2 text-sm text-pretty">
+            <span className="text-muted-foreground">Shows </span>
+            {BLOCK_META.get(block.name)?.demonstrates}
+          </p>
+        )}
       </div>
       <div className="mt-4 flex flex-wrap gap-1.5" role="tablist" aria-label={`${block.title} states`}>
         {names.map((n) => (

@@ -41,7 +41,7 @@ import { cloneElement, createContext, useContext, useLayoutEffect, useRef, useSt
 import { Command } from "@/components/code";
 import { Scene } from "@/components/scene";
 import { Footer, Nav, SITE } from "@/components/site";
-import { ApiDetails, Hooks, ITEMS, NewSections, SideNav } from "@/components/registry-docs";
+import { ApiDetails, HiddenList, Hooks, ITEMS, NewSections, ORDER, SideNav, Wiring } from "@/components/registry-docs";
 import { Badge } from "@/components/ui/badge";
 import { Chip } from "@/components/ui/chip";
 import { Button } from "@/components/ui/button";
@@ -122,7 +122,7 @@ export function ComponentsPage() {
                   <a href="/design" className="text-foreground underline underline-offset-4">
                     kit
                   </a>
-                  . Each preview sits on a game scene at its in-game size at 1080p, in Default, and every state is a prop. Switch the identity: nothing here has
+                  . Foundations first, then the composites grouped by what they are for. Each card shows its variants, the levers it reads and the hooks that make it live. Each preview sits on a game scene at its in-game size at 1080p, and every state is a prop. Switch the identity: nothing here has
                   a colour of its own.
                 </p>
               </>
@@ -131,7 +131,7 @@ export function ComponentsPage() {
           </header>
 
           <Focus.Provider value={focus}>
-          <div ref={preview}>
+          <div ref={preview} className="-mt-4 flex flex-col">
 
           <NewSections Section={Section} />
 
@@ -550,9 +550,10 @@ export function ComponentsPage() {
         </Section>
 
         <Hooks />
+        <HiddenList />
 
         {!focus && (
-        <section id="removed" className="mt-20 scroll-mt-20">
+        <section id="removed" style={{ order: 1002 }} className="mt-20 scroll-mt-20">
           <h2 className="site-display text-3xl">Removed</h2>
           <p className="mt-2 max-w-2xl text-muted-foreground text-pretty">
             Deprecated in 0.6.0 and removed from the registry in 0.9.0. Copies already in a project keep working; new UI uses the component that replaced them.
@@ -595,7 +596,7 @@ export function ComponentsPage() {
 
 // registry.json meta (docs/design/contract.md, "Registry metadata"): status and the release it shipped in
 type ItemSpec = { role: string; anatomy: string[]; props?: string[]; level?: string; rules: string[] };
-type ItemMeta = { since: string; status: string; replaces: string[]; removeIn: string | null; replacedBy?: string[]; spec?: ItemSpec };
+type ItemMeta = { since: string; status: string; replaces: string[]; removeIn: string | null; replacedBy?: string[]; spec?: ItemSpec; hidden?: boolean; tier?: string };
 const META = new Map((registry.items as { name: string; meta?: ItemMeta }[]).flatMap((i) => (i.meta ? [[i.name, i.meta] as const] : [])));
 
 /** The spec template (Foundation 2): role, anatomy, props, what the level means, rules. */
@@ -644,6 +645,7 @@ function MetaBadges({ meta }: { meta: ItemMeta }) {
       ) : meta.status === "experimental" ? (
         <Chip fill="tint">Experimental</Chip>
       ) : null}
+      {meta.tier === "foundation" && <Chip fill="tint">Foundation</Chip>}
       <Chip className="text-muted-foreground">{meta.since === "unreleased" ? "Unreleased" : `Since ${meta.since}`}</Chip>
     </>
   );
@@ -670,13 +672,15 @@ function Section({
 }) {
   const focus = useContext(Focus);
   if (focus && focus !== name) return null;
+  // curated out of the catalogue: still at /components/<name>, listed under "Also installable"
+  if (!focus && META.get(name)?.hidden) return null;
   const meta = install ? META.get(name) : undefined;
   const entry = ITEMS.find((i) => i.name === name);
   const item = !!entry;
   // on the item's own page the h1 already says its name
   const repeat = !!focus && entry?.title === title;
   return (
-    <section id={install ? name : undefined} className="mt-16 scroll-mt-24 first:mt-12">
+    <section id={install ? name : undefined} style={{ order: ORDER.get(name) ?? 900 }} className="mt-16 scroll-mt-24">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div className="max-w-2xl min-w-0">
           <div className="flex flex-wrap items-center gap-3">
@@ -692,6 +696,7 @@ function Section({
             {meta && <MetaBadges meta={meta} />}
           </div>
           <p className="mt-2 text-pretty text-muted-foreground">{text}</p>
+          {install && <Wiring name={name} />}
           {install && meta?.spec && <SpecDetails spec={meta.spec} />}
         </div>
         {install && <Command className="h-10 w-full max-w-md text-xs">{`npx shadcn add ${SITE}/r/${name}.json`}</Command>}
