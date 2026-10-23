@@ -36,6 +36,8 @@ function OneMenu({ id, props, ctx }: { id: string; props: MenuProps; ctx: Render
   const [path, setPath] = useState<number[]>([]);
   const level: MenuItem[] = useMemo(() => path.reduce<MenuItem[]>((items, i) => items[i]?.items ?? [], props.items), [path, props.items]);
   const [active, setActive] = useState<number>(() => clamp((props.startIndex ?? 1) - 1, level.length));
+  // the arrows drive the highlight in every mode (a full menu has no focused row, so keys are heard on the window)
+  const [driven, setDriven] = useState(false);
   const [steps, setSteps] = useState<Record<number, number>>({});
   const [checks, setChecks] = useState<Record<number, boolean>>({});
   // Inline fields (esx_context inputs, esx_menu_default sliders): values by item id, kept across updates.
@@ -54,7 +56,7 @@ function OneMenu({ id, props, ctx }: { id: string; props: MenuProps; ctx: Render
 
   // Highlight follows the keyboard; the script hears about it (ox onSelected / changeSelected).
   useEffect(() => {
-    if (!keyboard && !hover) return;
+    if (!keyboard && !hover && !driven) return;
     const item = level[active];
     if (!item) return;
     ctx.emit(id, "change", { index: active + 1, id: item.id ?? String(active + 1), value: stepOf(item, steps[active]), checked: checks[active] ?? item.checked, path: [...path, active + 1], fields: fieldValues() });
@@ -133,6 +135,7 @@ function OneMenu({ id, props, ctx }: { id: string; props: MenuProps; ctx: Render
         if (!level[i]?.readOnly && level[i]?.kind !== "header") break;
       }
       setActive(i);
+      setDriven(true);
     };
     switch (e.key) {
       case "ArrowDown":
@@ -157,6 +160,23 @@ function OneMenu({ id, props, ctx }: { id: string; props: MenuProps; ctx: Render
         return close();
     }
   };
+
+  const keys = useRef(onKey);
+  keys.current = onKey;
+  const drivenRef = useRef(false);
+  drivenRef.current = driven || hover !== null;
+  useEffect(() => {
+    if (keyboard || props.focus === false) return; // keyboard menus focus their rows; a preview takes no keys
+    const h = (e: KeyboardEvent) => {
+      const t = e.target as HTMLElement | null;
+      if (t?.closest("input, textarea, select, [contenteditable]")) return;
+      // Enter / Space / Backspace act on a row the player has pointed at or arrowed to, never on the untouched start row
+      if (!drivenRef.current && !e.key.startsWith("Arrow")) return;
+      keys.current(e as unknown as React.KeyboardEvent);
+    };
+    window.addEventListener("keydown", h);
+    return () => window.removeEventListener("keydown", h);
+  }, [keyboard, props.focus]);
 
   const place = anchor(props.position, keyboard ? "top-left" : cursor ? "top-right" : "top-right");
   const hovered = hover !== null ? level[hover.index] : undefined;
@@ -205,7 +225,7 @@ function OneMenu({ id, props, ctx }: { id: string; props: MenuProps; ctx: Render
           />
           <PanelBody ref={list} scroll onScroll={() => setHover(null)}>
             {/* one tile per menu: it slides to the lit row (hover, keys, the script's startIndex) instead of each row lighting itself */}
-            <MenuRowList active={keyboard || hover ? rowOrdinal(level, active) : null}>
+            <MenuRowList active={keyboard || driven || hover ? rowOrdinal(level, active) : null}>
               {level.map((item, i) => {
                 if (!item.label && !item.description && !item.icon && !item.field) return null; // ox: no label, no row (the index still counts)
                 if (item.kind === "header")
@@ -235,7 +255,7 @@ function OneMenu({ id, props, ctx }: { id: string; props: MenuProps; ctx: Render
                       if (el) rows.current.set(i, el);
                       else rows.current.delete(i);
                     }}
-                    active={keyboard && i === active}
+                    active={(keyboard || driven) && i === active}
                     disabled={item.disabled}
                     readOnly={item.readOnly || props.focus === false}
                     icon={item.icon ? <Icon icon={item.icon} color={item.iconColor} animation={item.iconAnimation} /> : undefined}

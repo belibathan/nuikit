@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import { radialCenterAction, radialIndex, radialStep, radialTurn, wedgePath } from "@/components/ui/radial-menu"
+import { radialCenterAction, radialIndex, radialSpin, radialStep, radialTurn, wedgePath } from "@/components/ui/radial-menu"
 
 describe("radial-menu", () => {
   it("picks the wedge under the pointer, clockwise from 12 o'clock", () => {
@@ -50,5 +50,10 @@ describe("radial-menu", () => {
     expect(radialCenterAction(2, true)).toBe("back")
     expect(radialCenterAction(0, true)).toBe("close")
     expect(radialCenterAction(0, false)).toBeNull()
+  })
+
+  it("spins about the centre as translate-rotate-translate (no transform-box, CEF 103 safe)", () => {
+    expect(radialSpin(90)).toBe("translate(50px, 50px) rotate(90deg) translate(-50px, -50px)")
+    expect(radialSpin(0)).not.toContain("view-box")
   })
 })

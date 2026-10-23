@@ -554,7 +554,7 @@ function MenuRowList({
 }: NkVariantProps & React.ComponentProps<"div"> & { active?: number | null; indicator?: boolean; bleed?: boolean }) {
   return (
     <div {...nkVariant({ density, shape, motion })} data-slot="menu-row-list" className={cn("nk-list", !bleed && LIST_PAD, className)} {...props}>
-      {indicator && <SelectionTile data-part="menu-row-indicator" items="[data-slot=menu-row]" pointer="[data-hover]" active={active} />}
+      {indicator && <SelectionTile shape="tile" data-part="menu-row-indicator" items="[data-slot=menu-row]" pointer="[data-hover]" active={active} />}
       {children}
     </div>
   )

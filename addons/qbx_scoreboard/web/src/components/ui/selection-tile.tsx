@@ -27,7 +27,7 @@ import { cn } from "@/lib/utils"
  *
  * Role: the one selection mark of a list, tabs or a menu: a Tile that slides to the lit item.
  * Anatomy: nk-indicator (absolute, behind the items) > ::before (the wall, dropped --nk-tile-wall) > ::after (the face).
- * Props: items, active, lit, pointer, focus, list.
+ * Props: items, active, lit, pointer, focus, list, shape (inherit | tile).
  * Rules: one tile per list; the lit item gets data-lit and never paints its own fill; pointer, focus and the
  *   active index are one language (last input wins); moves are transform only, sizes a FLIP; reduced motion jumps.
  */
@@ -46,6 +46,13 @@ type SelectionOptions = {
   /** The list element; default the tile's parent. */
   list?: React.RefObject<HTMLElement | null>
 }
+
+/**
+ * What the mark looks like (the `--nk-sel-shape` lever, set as data-shape): `inherit` (default) is a flat face in the
+ * shape of what it sits on (radius `--nk-host-radius`, clip `--nk-host-clip`, no skew, no wall: a grid slot, a tile of
+ * a sheet); `tile` is the primary keycap (skewed face over its wall), which rows and tabs ask for.
+ */
+type SelectionShape = "inherit" | "tile"
 
 const NOT_USABLE = '[data-inert], [data-readonly], [aria-disabled="true"], :disabled, [data-disabled]'
 
@@ -81,6 +88,8 @@ function useSelectionIndicator(tileRef: React.RefObject<HTMLElement | null>, opt
     box: null as Box | null,
     last: -Infinity,
     rapid: 0,
+    /** the move being placed comes from the pointer: it always glides in full (the key-repeat rule is for held keys) */
+    byPointer: false,
   })
   const listOf = () => opts.current.list?.current ?? (tileRef.current?.parentElement as HTMLElement | null) ?? null
   const itemsOf = (list: HTMLElement) => {
@@ -124,7 +133,8 @@ function useSelectionIndicator(tileRef: React.RefObject<HTMLElement | null>, opt
     }
     if (from.x === to.x && from.y === to.y && from.w === to.w && from.h === to.h) return
     const now = performance.now()
-    st.rapid = now - st.last < tokenMs("--nk-time-base", 180) ? st.rapid + 1 : 0
+    // a pointer sweeping rows is not a held d-pad: only keys, the controller and Lua count as repeats
+    st.rapid = !st.byPointer && now - st.last < tokenMs("--nk-time-base", 180) ? st.rapid + 1 : 0
     st.last = now
     if (st.rapid === 0) tile.removeAttribute("data-repeat")
     else tile.setAttribute("data-repeat", st.rapid < 3 ? "fast" : "jump")
@@ -179,7 +189,9 @@ function useSelectionIndicator(tileRef: React.RefObject<HTMLElement | null>, opt
       const next = ok ? el : null
       if (next === st.pointer) return
       st.pointer = next
+      st.byPointer = true
       resolve()
+      st.byPointer = false
     }
     const onLeave = () => {
       if (!st.pointer) return
@@ -256,11 +268,12 @@ function SelectionTile({
   pointer,
   focus,
   list,
+  shape = "inherit",
   ...props
-}: Omit<React.ComponentProps<"div">, "children"> & SelectionOptions) {
+}: Omit<React.ComponentProps<"div">, "children"> & SelectionOptions & { shape?: SelectionShape }) {
   const ref = React.useRef<HTMLDivElement>(null)
   useSelectionIndicator(ref, { items, active, lit, pointer, focus, list })
-  return <div ref={ref} aria-hidden data-slot="selection-tile" data-hidden="" className={cn("nk-indicator", className)} {...props} />
+  return <div ref={ref} aria-hidden data-slot="selection-tile" data-shape={shape} data-hidden="" className={cn("nk-indicator", className)} {...props} />
 }
 
-export { SelectionTile, useSelectionIndicator, type SelectionOptions }
+export { SelectionTile, useSelectionIndicator, type SelectionOptions, type SelectionShape }
