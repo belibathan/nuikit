@@ -19,7 +19,7 @@ import { toneVars } from "@/components/ui/fill"
  *   (the tick count lever, 0 for none), segments, segmentGap (degrees between them: the speedometer's even gaps; the
  *   track is segmented too), direction (cw: lit from the start; ccw: from the end, a fuel band draining down), paint
  *   (accent: the value in the accent's stops, like the speedometer), disc (true: a plate behind the arc; soft: the
- *   speedometer's scrim that fades out at the edge), redline (the segments past it are red even unlit), needle, tone,
+ *   speedometer's scrim that fades out at the edge), redline (lit segments past it are red; unlit ones look like any other), needle, tone,
  *   hue, surface, sweep (256 a gauge, 360 a ring), start, thickness, inset, trackProps, valueProps.
  * Level means: how far the value has swept the arc, 0 at the start, 1 at the end of the sweep.
  * Rules: the value arc is data-driven (no CSS tween on the dash; a live gauge writes it with dialDash()); the
@@ -269,8 +269,8 @@ function Dial({
           </g>
         )}
         {segs > 0 ? (
-          // segmented: the track is the same segments, unlit (the speedometer's dim pieces); past the redline they
-          // are the redline colour, dimmed, so the red zone reads before the rpm gets there
+          // segmented: the track is the same segments, unlit (the speedometer's dim pieces); unlit red-zone pieces
+          // look like every other unlit piece, only lit ones past the redline are red
           <g data-slot="dial-track" {...(trackProps as React.ComponentProps<"g">)}>
             {Array.from({ length: segs }, (_, i) => (
               <circle
@@ -281,7 +281,7 @@ function Dial({
                 r={r}
                 fill="none"
                 strokeWidth={stroke}
-                className={cn(isRed(i) ? "stroke-(--nk-gauge-redline) [stroke-opacity:var(--nk-dial-red-dim,0.3)]" : s.track, (trackProps as { className?: string } | undefined)?.className)}
+                className={cn(s.track, (trackProps as { className?: string } | undefined)?.className)}
                 strokeDasharray={`${Math.max(0, segLen - segGap)} ${circumference}`}
                 transform={`rotate(${start + (sweep * i) / segs + (segGap / 2 / (2 * Math.PI * r)) * 360} ${c} ${c})`}
               />

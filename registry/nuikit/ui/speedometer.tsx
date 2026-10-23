@@ -12,7 +12,7 @@ import { Tile } from "@/components/ui/tile"
  * --nk-speedo-segments thick segments with small even gaps (digital, the default), or a thin arc over faint ticks
  * (arc), the speed big in the middle with its leading zeros dimmed (`0`64), the unit under it, the gear on a keycap
  * Tile seated in the arc's opening, fuel as thinner segments on the outer right-hand curve that drain downward,
- * and the turn signals inside the ring. Past the redline the segments are red (dimmed before the rpm gets there),
+ * and the turn signals inside the ring. Past the redline the segments are red (only lit ones; unlit look like the rest),
  * the dial and the gear data-state="alert". The dial sits on a soft scrim that fades out past the ring.
  *
  *   <Speedometer speed={87} rpm={0.62} gear={3} fuel={41} />
@@ -234,8 +234,10 @@ function Speedometer({
   ...props
 }: SpeedometerProps) {
   const G = SPEEDOMETER_GEOMETRY
-  const value = Math.max(0, Math.min(1, Number.isFinite(rpm) ? rpm : 0))
-  const redline = redlineProp ?? value >= SPEEDOMETER_REDLINE
+  // `live`: speedometerPainter() owns the rpm, the redline and every data-state it writes. The props are not
+  // read, so a React re-render (10 Hz hud:vehicle, a stale v.rpm) can never re-light, re-red or un-clear them.
+  const value = live ? 0 : Math.max(0, Math.min(1, Number.isFinite(rpm) ? rpm : 0))
+  const redline = live ? false : (redlineProp ?? value >= SPEEDOMETER_REDLINE)
   const fuelNow = fuel === undefined ? undefined : Math.round(Math.max(0, Math.min(100, fuel)))
   const low = fuelNow !== undefined && fuelNow <= SPEEDOMETER_LOW_FUEL
   const digital = gaugeStyle !== "arc"

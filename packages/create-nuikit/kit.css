@@ -1652,6 +1652,9 @@ html[data-nk-backdrop="on"] * {
   }
   :is([data-slot="tile"], [data-slot="kbd"])::before {
     z-index: -3;
+    /* no wall (plate offset 0: Flat, the stepper's keys): the plate sits half a px inside the face, so its colour
+       never bleeds at the face's anti-aliased edge (the "grooves"); with a wall it is the full face size */
+    inset: calc(0.5px - min(0.5px, max(var(--nk-tile-plate-x), 0px - var(--nk-tile-plate-x)) + max(var(--nk-tile-plate-y), 0px - var(--nk-tile-plate-y))));
     background-color: var(--nk-tile-plate-now);
     transform: translate(var(--nk-tile-plate-x), var(--nk-tile-plate-y)) skewX(var(--nk-tile-skew));
   }
