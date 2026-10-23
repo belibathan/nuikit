@@ -1147,15 +1147,15 @@
   --nk-row-font-size: var(--nk-text-base);
   --nk-row-indicator-color: var(--brand, var(--primary));
   /* bar: a pill at the row's leading edge */
-  --nk-row-bar-width: calc(0.1875rem * var(--nk-row-bar, 1));
-  --nk-row-bar-inset: calc(var(--nk-space) * 2.5);
+  --nk-row-bar-width: calc(var(--nk-row-bar-thickness, 0.1875rem) * var(--nk-row-bar, 1));
+  --nk-row-bar-inset: calc(var(--nk-space) * var(--nk-row-bar-inset-scale, 2.5));
   /* fill: the row in solid brand, its text in brand-foreground ([data-nk-row="fill"] on an ancestor, set by applyTheme) */
   --nk-row-fill-color: var(--brand, var(--primary));
   --nk-row-fill-foreground: var(--brand-foreground, var(--primary-foreground));
   /* outline: a brand hairline */
   --nk-row-outline-width: calc(var(--nk-border) * var(--nk-row-outline, 0));
   --nk-row-outline-color: rgba(var(--brand-rgb, var(--primary-rgb)), 0.7);
-  --nk-row-glow: 0 0 1rem rgba(var(--brand-rgb, var(--primary-rgb)), calc(var(--nk-glow, 0) * 0.5));
+  --nk-row-glow: 0 0 var(--nk-glow-radius, 1rem) rgba(var(--brand-rgb, var(--primary-rgb)), calc(var(--nk-glow, 0) * 0.5));
 
   /* ── key: shadcn's Kbd, as a keycap */
   /* aliases of the 1.5 tile and scan-role levers (a theme may set either name) */
@@ -1179,7 +1179,7 @@
   --nk-chip-weight: 500;
   --nk-chip-active-bg: var(--brand, var(--primary));
   --nk-chip-active-fg: var(--brand-foreground, var(--primary-foreground));
-  --nk-chip-glow: 0 0 0.75rem rgba(var(--brand-rgb, var(--primary-rgb)), var(--nk-glow, 0));
+  --nk-chip-glow: 0 0 calc(var(--nk-glow-radius, 1rem) * 0.75) rgba(var(--brand-rgb, var(--primary-rgb)), var(--nk-glow, 0));
   --nk-chip-clip: var(--nk-clip-sm, none);
   --nk-hud-radius: max(0.25rem, calc(var(--radius) - 2px));
   --nk-hud-text-shadow: var(--nk-hud-shadow, 0 1px 2px rgba(var(--scrim-rgb), 0.6));
@@ -1188,7 +1188,7 @@
   --nk-meter-height: var(--nk-gauge-track, 0.25rem);
   --nk-meter-radius: 9999px;
   --nk-meter-track: rgba(var(--scrim-rgb), 0.35);
-  --nk-meter-glow: 0 0 0.625rem rgba(var(--brand-rgb, var(--primary-rgb)), var(--nk-glow, 0));
+  --nk-meter-glow: 0 0 calc(var(--nk-glow-radius, 1rem) * 0.625) rgba(var(--brand-rgb, var(--primary-rgb)), var(--nk-glow, 0));
   --nk-meter-segments: 0;
   --nk-meter-segment: 0.5rem;
   --nk-meter-gap: rgba(var(--popover-rgb), calc(0.85 * var(--nk-meter-segments)));
@@ -1292,7 +1292,7 @@
   --nk-row-gap: var(--nk-space-4);
   --nk-row-lift: var(--nk-space-2);
   --nk-row-padding: var(--nk-row-pad-y) var(--nk-row-pad-x);
-  --nk-row-bar-inset: calc(var(--nk-space) * 2.5);
+  --nk-row-bar-inset: calc(var(--nk-space) * var(--nk-row-bar-inset-scale, 2.5));
   --nk-chip-height: calc(2rem * var(--nk-density, 0.875));
   --nk-chip-padding: calc(var(--nk-space) * 2.5);
   --nk-slab-height: calc(2.5rem * var(--nk-density, 0.875));
@@ -1414,7 +1414,7 @@
   min-height: 1.5rem;
   font-family: var(--nk-caption-font);
   font-size: var(--nk-caption-size);
-  line-height: 1rem;
+  line-height: var(--nk-leading-tight, 1rem);
   font-weight: var(--nk-caption-weight);
   text-transform: var(--nk-caption-transform);
   letter-spacing: var(--nk-caption-tracking);
@@ -1436,7 +1436,7 @@
   /* the label role (1.5): --nk-type-label-*; its style, tracking and case apply under the tile treatment */
   font-family: var(--nk-type-label-family);
   font-size: var(--nk-label-size) !important;
-  line-height: 1rem !important;
+  line-height: var(--nk-leading-tight, 1rem) !important;
   font-weight: var(--nk-type-label-weight);
   color: var(--muted-foreground);
 }
@@ -1464,7 +1464,7 @@
 @utility nk-caption {
   font-family: var(--nk-caption-font);
   font-size: var(--nk-caption-size) !important;
-  line-height: 1rem !important;
+  line-height: var(--nk-leading-tight, 1rem) !important;
   font-weight: var(--nk-caption-weight);
   text-transform: var(--nk-caption-transform);
   letter-spacing: var(--nk-caption-tracking);
@@ -1483,7 +1483,7 @@
   padding: var(--nk-row-padding);
   border-radius: var(--nk-row-radius);
   font-size: var(--nk-row-font-size);
-  line-height: 1.25rem;
+  line-height: var(--nk-leading-normal, 1.25rem);
   outline: none;
   /* a state changes ink at once (the tile carries the movement); a press dips and springs back */
   transition-property: color, transform;
@@ -1627,7 +1627,7 @@
   box-shadow: inset 0 0 0 var(--nk-border) var(--nk-slab-border);
   font-size: var(--nk-slab-font-size);
   font-weight: var(--nk-slab-weight);
-  line-height: 1.25rem;
+  line-height: var(--nk-leading-normal, 1.25rem);
   text-shadow: var(--nk-slab-text-shadow);
   white-space: nowrap;
 }
@@ -1696,7 +1696,7 @@
   gap: calc(var(--nk-space) * 2);
   font-size: var(--nk-slab-font-size);
   font-weight: var(--nk-slab-weight);
-  line-height: 1.25rem;
+  line-height: var(--nk-leading-normal, 1.25rem);
   & > :first-child {
     margin-right: auto;
   }
@@ -2095,13 +2095,13 @@
       border-color: transparent;
     }
     &:is(:hover, :focus-visible)::after {
-      transform: translateY(-1px) skewX(var(--nk-tile-skew, 0deg));
+      transform: translateY(calc(var(--nk-tile-lift, 1px) * -1)) skewX(var(--nk-tile-skew, 0deg));
     }
     &:not(:disabled):is(:active, [data-nk-press]) {
       transform: none;
     }
     &:not(:disabled):is(:active, [data-nk-press])::after {
-      transform: translateY(calc(var(--nk-tile-wall) * 0.67)) skewX(var(--nk-tile-skew, 0deg));
+      transform: translateY(calc(var(--nk-tile-wall) * var(--nk-tile-press-ratio, 0.67))) skewX(var(--nk-tile-skew, 0deg));
     }
   }
   /* a Kbd on the face reads dark on it */
@@ -2146,7 +2146,7 @@
     position: absolute;
     inset: 0;
     pointer-events: none;
-    background-image: repeating-linear-gradient(90deg, transparent 0 calc(var(--nk-meter-segment) - 0.125rem), var(--nk-meter-gap) calc(var(--nk-meter-segment) - 0.125rem) var(--nk-meter-segment));
+    background-image: repeating-linear-gradient(90deg, transparent 0 calc(var(--nk-meter-segment) - var(--nk-meter-segment-gap, 0.125rem)), var(--nk-meter-gap) calc(var(--nk-meter-segment) - var(--nk-meter-segment-gap, 0.125rem)) var(--nk-meter-segment));
   }
   [data-slot="progress-indicator"] {
     box-shadow: var(--nk-meter-glow);
@@ -2393,7 +2393,7 @@ html[data-nk-backdrop="on"] * {
 :is(html, *)[data-nk-focus="halo"] [data-state="focus"]:not(.nk-row) {
   box-shadow:
     0 0 0 2px rgba(var(--brand-rgb, var(--primary-rgb)), 0.9),
-    0 0 1rem rgba(var(--brand-rgb, var(--primary-rgb)), var(--nk-hue-glow, 0.45));
+    0 0 var(--nk-glow-radius, 1rem) rgba(var(--brand-rgb, var(--primary-rgb)), var(--nk-hue-glow, 0.45));
 }
 :is(html, *)[data-nk-focus="tint"] [data-state="focus"]:not(.nk-row) {
   background-color: rgba(var(--brand-rgb, var(--primary-rgb)), var(--nk-hue-tint, 0.14));
@@ -2420,8 +2420,8 @@ html[data-nk-backdrop="on"] * {
   display: none;
 }
 :is(html, *)[data-nk-hold="ring"] [data-slot="key-prompt"][data-state="hold"] > [data-slot="key-prompt-keys"] {
-  padding: 2px;
-  border-radius: calc(var(--nk-key-radius, 0.375rem) + 2px);
+  padding: var(--nk-hold-ring-pad, 2px);
+  border-radius: calc(var(--nk-key-radius, 0.375rem) + var(--nk-hold-ring-pad, 2px));
   background: conic-gradient(var(--brand, var(--primary)) calc(var(--level, 0) * 360deg), rgba(var(--hud-foreground-rgb, 255, 255, 255), 0.16) 0);
 }
 :is(html, *)[data-nk-hold="fill"] [data-slot="key-prompt"][data-state="hold"] {
@@ -2434,8 +2434,8 @@ html[data-nk-backdrop="on"] * {
  * drawings (ring → outline, liquid → fill, bar / slab / pips → bar).
  */
 :is(html, *)[data-nk-level="pips"] [data-slot="meter"] [data-slot="progress"] {
-  -webkit-mask-image: repeating-linear-gradient(to right, #000 0 calc(10% - 2px), transparent calc(10% - 2px) 10%);
-  mask-image: repeating-linear-gradient(to right, #000 0 calc(10% - 2px), transparent calc(10% - 2px) 10%);
+  -webkit-mask-image: repeating-linear-gradient(to right, #000 0 calc(var(--nk-pip-size, 10%) - var(--nk-pip-gap, 2px)), transparent calc(var(--nk-pip-size, 10%) - var(--nk-pip-gap, 2px)) var(--nk-pip-size, 10%));
+  mask-image: repeating-linear-gradient(to right, #000 0 calc(var(--nk-pip-size, 10%) - var(--nk-pip-gap, 2px)), transparent calc(var(--nk-pip-size, 10%) - var(--nk-pip-gap, 2px)) var(--nk-pip-size, 10%));
 }
 
 /* Roles on chips: a chip with data-hue draws its icon in the role's colour. */
@@ -2741,7 +2741,7 @@ html[data-nk-backdrop="on"] * {
     transition: none;
   }
   :is(.nk-fill, [data-slot="fill"])[data-variant="edge"] {
-    height: 0.125rem;
+    height: calc(var(--nk-gauge-track, 0.25rem) / 2);
     border-radius: 0;
   }
 
@@ -2816,7 +2816,7 @@ html[data-nk-backdrop="on"] * {
     align-items: center;
     gap: var(--nk-gap-cluster);
     min-width: 0;
-    line-height: 1.25rem;
+    line-height: var(--nk-leading-normal, 1.25rem);
     & > svg,
     & > [data-slot="icon-text-icon"] {
       flex: none;
@@ -2919,7 +2919,7 @@ html[data-nk-backdrop="on"] * {
     left: var(--nk-space-2);
     right: var(--nk-space-2);
     bottom: 0;
-    height: 0.125rem;
+    height: calc(var(--nk-gauge-track, 0.25rem) / 2);
   }
 
   /* ── Plate (.nk-plate): the one surface recipe for sheets, dialogs and notices. Flat (no gradient, no
@@ -3070,7 +3070,7 @@ html[data-nk-backdrop="on"] * {
     font-family: var(--nk-type-body-family);
     font-size: var(--nk-row-desc-size);
     font-weight: var(--nk-type-body-weight);
-    line-height: 1.25rem;
+    line-height: var(--nk-leading-normal, 1.25rem);
   }
   /* ── ProgressRing (baseline 1.6): the speedometer's readout. The number in the numeric voice, the label in the
      label voice, the cancel hint a key and its verb. */
@@ -3110,7 +3110,7 @@ html[data-nk-backdrop="on"] * {
     font-weight: var(--nk-type-body-weight);
     letter-spacing: 0;
     text-transform: none;
-    line-height: 1.25rem;
+    line-height: var(--nk-leading-normal, 1.25rem);
   }
 }
 

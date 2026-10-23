@@ -28,8 +28,9 @@ mono numerals, high contrast) reach two languages far from Default's slanted key
 |---|---|---|---|---|---|
 | Keycap / tile slant (face only, box upright) | `--nk-tile-skew` (falls back to `--nk-skew`) | `0deg` | `±20deg` | tile `-12deg`; slab via `--nk-skew -8deg` | |
 | Badge / chip / tag / selected-bar slant | `--nk-skew` | `0deg` | `±20deg` | slab `-8deg` | notice-icon skew badge size `1.375rem × 1.25rem` (kit.css ~1335) |
-| Keycap wall (the primary button, the selection tile) | `--nk-tile-wall` | `0.1875rem` | length | | hover raises the face `-1px` (kit.css ~1218) |
-| Wall shade (scrim over the face colour) | `--nk-tile-wall-shade` | `0.45` | 0–1 | | press sinks `× 0.67` of the wall (kit.css ~1224) |
+| Keycap wall (the primary button, the selection tile) | `--nk-tile-wall` | `0.1875rem` | length | | |
+| Keycap hover lift, press depth | `--nk-tile-lift`, `--nk-tile-press-ratio` | `1px`, `0.67` (of the wall) | length; 0–1.5 | | |
+| Wall shade (scrim over the face colour) | `--nk-tile-wall-shade` | `0.45` | 0–1 | | |
 | Tile plate offset (Kbd, registry Tile) | `--nk-tile-plate-x`, `--nk-tile-plate-y` | `0px`; `0.1875rem` under a non-zero `--nk-skew` | length | tile `2px` / `2px` | |
 | Tile press depth | `--nk-tile-press` | `1px` | length | tile `1px` | |
 | Radius: keys / tiles | `--nk-r-key` (alias `--nk-key-radius`) | `max(0.25rem, radius − 4px)` | length | tile `0.25rem` | skeleton block radius repeats the formula (kit.css ~1073) |
@@ -121,6 +122,10 @@ The five roles: `scan` (keys, buttons, tabs), `title`, `label`, `num`, `body`. E
 |---|---|---|---|---|---|
 | Density | `--nk-density` → `--nk-space-unit` | `0.875` | 0.75–1.3 | tile `1` | |
 | Spacing steps | `--nk-space-{1,2,3,4,6,8}`, `--nk-gap-cluster`, `--nk-gap-items`, `--nk-pad-x`, `--nk-pad-surface` | n × unit; 2 / 1 / 3 / 6 | length | | `tile.tsx` 113 `gap-1 px-1`; `menu-row.tsx` 271 `gap-1`; `stat.tsx` 116 `gap-1`; `skill-check.tsx` 297 `px-2`; `key-prompt.tsx` 59 `py-1` |
+| Row bar shape | `--nk-row-bar-thickness`, `--nk-row-bar-inset-scale` | `0.1875rem`, `2.5` | length; 0–6 | | |
+| Hold ring, pips, segments | `--nk-hold-ring-pad`, `--nk-pip-size`, `--nk-pip-gap`, `--nk-meter-segment-gap` | `2px`, `10%`, `2px`, `0.125rem` | length | | |
+| Glow radius | `--nk-glow-radius` (chip × .75, meter × .625) | `1rem` | length | | |
+| Line height | `--nk-leading-tight`, `--nk-leading-normal` | `1rem`, `1.25rem` | length | | |
 | Heights | `--nk-h-key`, `-chip`, `-control`, `-row`, `-field` | `1.25rem`, `2rem × d`, `2.25rem`, `2.75rem × d`, `2.75rem` | length | tile 1.5 / 1.75 / 2.25 / 3rem | `key-prompt.tsx` 59 `min-h-8`, 323 `h-6`; `skill-check.tsx` 297 `h-8`; `menu-row.tsx` 203 `size-8`; `nui-image.tsx` 71 `h-6` |
 | Row padding and gap | `--nk-row-pad-y`, `-pad-x`, `--nk-row-gap`, `--nk-row-icon-box` | space-2 / 3 / 4; `2rem` | length | | |
 | Icons | `--nk-icon-sm`, `-md`, `-lg`, `--nk-icon-stroke` | `.75 / 1 / 1.25rem`, `2` | length; 0.5–4 | | `stat.tsx` 116 `size-3.5`; world icon `1rem` (kit.css ~767) |
@@ -128,7 +133,7 @@ The five roles: `scan` (keys, buttons, tabs), `title`, `label`, `num`, `body`. E
 | Screen edge | `--nk-edge` | `1.5rem` | kit-only | | |
 | Slab | `--nk-slab-height`, `-padding`, `-gap`, `-radius`, `-bg`, `-fg`, `-border`, `-font-size`, `-weight` | `2.5rem × d`, … | kit-only | | key chip pad `0 0.375rem` (kit.css ~791) |
 | Dial / ring / speedometer diameter | prop `size` | 128 / 192 / 256 px at 1080p | | | `RING_SIZE`, `speedometer.tsx` 85 (`48px`, `192px`): props, not tokens |
-| Notice progress line | | | | | `h-0.5` (`notice.tsx` 432, `key-prompt.tsx` 363) |
+| Notice progress line | `--nk-gauge-track` / 2 (edge fill, action-bar hold line) | `0.125rem` | length | | `h-0.5` (`notice.tsx` 432, `key-prompt.tsx` 363) |
 
 ## Motion
 
@@ -152,19 +157,13 @@ The five roles: `scan` (keys, buttons, tabs), `title`, `label`, `num`, `body`. E
 Ordered by how much a language needs them. Each is a lever to add to kit.css + tokens.ts with the current value as
 the default, so nothing shipped changes. Items in `registry/nuikit/ui` belong to the lanes that own those files.
 
-1. **Keycap hover lift and press depth** are literals: `translateY(-1px)` on hover and `wall × 0.67` on press
-   (kit.css ~1218, ~1224). A flat language wants `0`; a deep keycap wants more. Lever: `--nk-tile-hover-lift`,
-   `--nk-tile-press-ratio`.
-2. **Line heights** (`1rem`, `1.25rem` ×9 in kit.css) ignore `--nk-type-ratio` and the role; a condensed or a
-   mono language gets uneven rhythm. Lever: `--nk-leading-tight`, `--nk-leading-body`.
+1. ~~Keycap hover lift and press depth~~ done: `--nk-tile-lift`, `--nk-tile-press-ratio` (`--nk-tile-press` was taken: the plate offset).
+2. ~~Line heights~~ done: `--nk-leading-tight` (`1rem`), `--nk-leading-normal` (`1.25rem`); unitless leadings (1, 1.2, 1.25, 1.3) stay.
 3. **Registry size literals**: `h-6`/`min-h-8`/`h-8`/`size-8`/`gap-1`/`px-1`/`px-2`/`size-3.5` in `key-prompt.tsx`,
    `skill-check.tsx`, `menu-row.tsx`, `tile.tsx`, `stat.tsx`, `nui-image.tsx`. Should read `--nk-h-key`, `--nk-h-chip`,
    `--nk-space-*`, `--nk-icon-*` (the lanes editing those files).
-4. **Progress-line and edge-fill thickness** (`h-0.5` in `notice.tsx` 432, `key-prompt.tsx` 363; `0.125rem` kit.css
-   ~1859, ~2037) is not `--nk-gauge-track`. Lever: `--nk-line-height` or read `--nk-fill-height`.
-5. **Row bar geometry** (`0.1875rem` wide, `2.5 × space` inset), **hold ring pad** (`2px`), **pips** (`10%`, `2px`),
-   **meter segment gap** (`0.125rem`), **glow radii** (`1rem` / `.75rem` / `.625rem`): fixed shapes under switchable
-   styles. Levers: `--nk-row-bar-width` (exists, derived), `--nk-hold-ring-pad`, `--nk-pip-gap`, `--nk-glow-radius`.
+4. ~~Progress-line and edge-fill thickness~~ done in kit.css: the edge fill and action-bar hold line are `--nk-gauge-track / 2`. The registry `h-0.5` literals stay with their lane.
+5. ~~Row bar, hold ring, pips, meter segment gap, glow radii~~ done: `--nk-row-bar-thickness`, `--nk-row-bar-inset-scale`, `--nk-hold-ring-pad`, `--nk-pip-size`, `--nk-pip-gap`, `--nk-meter-segment-gap`, `--nk-glow-radius`.
 6. **The elevation recipes** (`elevationShadow`) and **the motion ladder multipliers** are compiler constants; a
    theme picks one of four shadows or sets `--nk-plate-drop`. Acceptable for now: `--nk-plate-drop` covers plates,
    `--nk-panel-shadow` covers panels.
