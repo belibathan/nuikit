@@ -1,4 +1,4 @@
-<a href="https://nuikit.vercel.app"><img src="https://raw.githubusercontent.com/belibathan/nuikit/main/docs/assets/banner.png" alt="nuikit — shadcn/ui + Tailwind v4 for FiveM" width="100%" /></a>
+<a href="https://nuikit.vercel.app"><img src="https://raw.githubusercontent.com/belibathan/nuikit/main/docs/assets/banner.png" alt="nuikit, the design system for FiveM NUI" width="100%" /></a>
 
 # nuikit-core
 
