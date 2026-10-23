@@ -83,8 +83,7 @@ function CompactDial({ v, settings, paint, center, style }: CompactProps) {
         ref={root}
         live
         speed={v.speed}
-        rpm={v.rpm ?? 0}
-        redline={clamp01(v.rpm ?? 0) >= redline}
+        rpm={0} // live: the painter (follow hooks) owns the rpm and the redline; props are not read
         gear={v.gear}
         fuel={fuel}
         unit={UNIT_LABEL[v.units]}
