@@ -4,7 +4,7 @@
 ]]
 
 NUI = NUI or {}
-local nk = NUI
+nk = NUI -- the global every resource reaches the arsenal through (init.lua sets it too; a vendored runtime gets it here)
 
 --- The domain table nk.<name>. When an old function sat at that name (NUI.surface, NUI.theme), the table stays
 --- callable with it, so code written for the old name keeps working; returns the table and that function.

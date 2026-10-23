@@ -295,12 +295,17 @@ export async function createClient(options: { syncEvents?: boolean; onNuiMessage
       IsDuplicityVersion = IsDuplicityVersion or function() return false end
     `);
     const runtime = startOptions.runtime ?? "vendored";
-    if (runtime === "vendored") await lua.doString(SOURCE);
+    if (runtime === "vendored") {
+      await lua.doString(SOURCE);
+      await lua.doString(lua_("api.lua")); // nk and the domain tables exist before the resource's own scripts run
+    }
     else if (runtime === "import") {
       g.set("__nuikitInit", lua_("init.lua"));
       await lua.doString(lua_("init.lua"));
     }
     for (const file of startOptions.scripts ?? []) await lua.doString(lua_(file));
+    // and again after the services (lua/intents.lua, camera…) the resource loaded, so the domains bind to them (api.lua is idempotent)
+    if (runtime === "vendored") await lua.doString(lua_("api.lua"));
     flush();
     trigger("onClientResourceStart", name);
     flush();

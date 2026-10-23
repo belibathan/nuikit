@@ -288,7 +288,7 @@ local function apply()
 
   -- services: an open surface's `controls` set (controls.lua, loaded after this file)
   local controls = rawget(NUI, 'controls')
-  if controls then controls._surfaces(view, defs) end
+  if controls and controls._surfaces then controls._surfaces(view, defs) end
   local payload = { surfaces = view, states = states }
   local encoded = json.encode(payload)
   if encoded ~= lastSent then
