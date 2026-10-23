@@ -44,8 +44,11 @@ print('^2[nuikit_dev]^7 on: /nk test <what> (ace ' .. NkDev.ACE .. ')')
 
 -- Restart queue (dev only): a local tool appends resource names, one per line, to this resource's restart.queue
 -- (`.local/nk-restart.ps1 nuikit_hud ox_inventory`); each is ensured within a second. Lets an agent iterate
--- without the txAdmin console. A resource that stops dependants (ox_inventory) gets them back via `then`.
-local after = { ox_inventory = { 'ox_fuel', 'qbx_ambulancejob' }, nuikit = { 'nuikit_chat', 'nuikit_death', 'nuikit_hud', 'nuikit_loading', 'nuikit_pause', 'nuikit_stress', 'nuikit_dev', 'nuikit_voice', 'nuikit_screen', 'nuikit_skins' } }
+-- without the txAdmin console. A resource that stops dependants (ox_inventory) gets them back via `after`.
+-- Never `nuikit` (or anything this resource depends on): stopping it stops this resource mid-command, which
+-- crashed FXServer (SIGSEGV, Oct 22). Restart those from the txAdmin console.
+local refuse = { nuikit = true, ox_lib = true }
+local after = { ox_inventory = { 'ox_fuel', 'qbx_ambulancejob' } }
 CreateThread(function()
   while true do
     Wait(1000)
@@ -54,9 +57,13 @@ CreateThread(function()
       SaveResourceFile(GetCurrentResourceName(), 'restart.queue', '', 0)
       -- only names of resources that exist (never a command: NkDev.queueNames), at most 32 per round
       for _, name in ipairs(NkDev.queueNames(queue, GetCurrentResourceName(), function(n) return GetResourceState(n) ~= 'missing' end)) do
-        print('[nuikit_dev] restart ' .. name)
-        ExecuteCommand('ensure ' .. name) -- starts it, or restarts it when running
-        for _, dep in ipairs(after[name] or {}) do ExecuteCommand('ensure ' .. dep) end
+        if refuse[name] then
+          print(('[nuikit_dev] not restarting %s from the queue (it would stop nuikit_dev mid-command); use the txAdmin console'):format(name))
+        else
+          print('[nuikit_dev] restart ' .. name)
+          ExecuteCommand('ensure ' .. name) -- starts it, or restarts it when running
+          for _, dep in ipairs(after[name] or {}) do ExecuteCommand('ensure ' .. dep) end
+        end
       end
     end
   end

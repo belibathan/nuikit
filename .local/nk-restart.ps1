@@ -2,3 +2,4 @@
 param([Parameter(ValueFromRemainingArguments)][string[]]$Names)
 Add-Content -Encoding ascii "$PSScriptRoot\..\systems\nuikit_dev\restart.queue" ($Names -join "`n")
 "queued: $($Names -join ', ') (applied within ~1s)"
+if ($Names -contains 'nuikit' -or $Names -contains 'ox_lib') { "note: nuikit and ox_lib are refused by the queue (restarting them stops nuikit_dev mid-command and crashed FXServer); use the txAdmin console" }
