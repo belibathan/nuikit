@@ -17,7 +17,7 @@
   },
   "systems/nuikit_hud": {
     "errors": 3,
-    "warnings": 190
+    "warnings": 187
   },
   "systems/nuikit_loading": {
     "errors": 0,
@@ -25,7 +25,7 @@
   },
   "systems/nuikit_pause": {
     "errors": 0,
-    "warnings": 57
+    "warnings": 55
   },
   "systems/nuikit_screen": {
     "errors": 0,
@@ -49,11 +49,11 @@
   },
   "addons/illenium-appearance": {
     "errors": 0,
-    "warnings": 1
+    "warnings": 0
   },
   "addons/mm_radio": {
     "errors": 0,
-    "warnings": 4
+    "warnings": 1
   },
   "addons/ox_doorlock": {
     "errors": 0,
@@ -69,7 +69,7 @@
   },
   "addons/ox_target": {
     "errors": 0,
-    "warnings": 2
+    "warnings": 0
   },
   "addons/qbx_idcard": {
     "errors": 0,

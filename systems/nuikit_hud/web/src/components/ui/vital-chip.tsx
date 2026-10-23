@@ -485,6 +485,7 @@ function Root({ ref, value, tone, icon, open = false, active, alert, side, displ
         ref={ref}
         data-slot="vital-chip"
         data-hue={tone}
+        data-shape="keycap"
         data-level="fill"
         data-icon={chip.icon}
         data-open={isOpen || undefined}
@@ -549,8 +550,12 @@ function Keycap({ className, children, ...props }: React.ComponentProps<"span">)
   React.useLayoutEffect(() => {
     let live = true
     void document.fonts?.ready.then(() => live && measure())
+    // a theme's own fonts load after the page's: measure again when they arrive
+    const again = () => live && measure()
+    document.fonts?.addEventListener?.("loadingdone", again)
     return () => {
       live = false
+      document.fonts?.removeEventListener?.("loadingdone", again)
     }
   }, [measure])
   // the icon (and an inline label, which the keycap draws on its plate instead)
