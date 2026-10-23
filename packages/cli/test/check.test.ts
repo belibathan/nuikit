@@ -389,3 +389,57 @@ describe("ink rules", () => {
     expect(ink).toEqual(["theme/unlayered@themes/mine.css:2", "theme/values-only@themes/mine.css:4"]);
   });
 });
+
+// The invariants (docs/design/baseline.md "Invariants" 2 and 3): a page draws no selection or plate of its own.
+describe("invariant rules: selection/local and kit/local-concept", () => {
+  const run = (files: Record<string, string>, rule: RuleId[]) => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "nk-inv-"));
+    fs.cpSync(fixture("level3"), dir, { recursive: true });
+    const base = new Set(checkResource(dir).findings.map((f) => `${f.rule}@${f.file}:${f.line}`));
+    for (const [rel, text] of Object.entries(files)) {
+      fs.mkdirSync(path.dirname(path.join(dir, rel)), { recursive: true });
+      fs.writeFileSync(path.join(dir, rel), text);
+    }
+    const r = checkResource(dir);
+    fs.rmSync(dir, { recursive: true, force: true });
+    return { r, hits: r.findings.filter((f) => rule.includes(f.rule) && !base.has(`${f.rule}@${f.file}:${f.line}`)).map((f) => `${f.rule}@${f.file}:${f.line}`) };
+  };
+
+  it("selection/local flags a page's own selected and hover state, as warnings", () => {
+    const { r, hits } = run(
+      {
+        "web/src/sel.tsx": [
+          `export const A = () => <div className="hover:bg-accent p-1" />;`,
+          `export const B = () => <div className="data-[state=active]:bg-primary" />;`,
+          `export const C = () => <div className="aria-selected:bg-muted" />;`,
+          `export const D = () => <div className="bg-accent text-accent-foreground" />;`,
+          `export const E = () => <div className="hover:bg-transparent text-accent-foreground bg-background" />;`,
+        ].join("\n"),
+        "web/src/sel.css": [".row.selected { background: var(--accent); }", ".row.active { color: red; }", ".row { background: var(--card); }"].join("\n"),
+      },
+      ["selection/local"],
+    );
+    expect(hits.sort()).toEqual(["selection/local@web/src/sel.css:1", "selection/local@web/src/sel.tsx:1", "selection/local@web/src/sel.tsx:2", "selection/local@web/src/sel.tsx:3", "selection/local@web/src/sel.tsx:4"]);
+    expect(r.findings.filter((f) => f.rule === "selection/local").every((f) => f.severity === "warning" && f.level === 0)).toBe(true);
+  });
+
+  it("kit/local-concept flags a hand-drawn wall, skew, underline and level fill", () => {
+    const { hits } = run(
+      {
+        "web/src/plate.css": [
+          ".a { transform: skew(-8deg); }",
+          ".b { box-shadow: 0 0.25rem 0 var(--primary); }",
+          ".c { border-bottom: 3px solid var(--primary); }",
+          ".d { background: linear-gradient(to right, var(--primary) var(--level), transparent 0); }",
+          ".e { box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5); border-bottom: 1px solid var(--border); transform: scale(1.1); }",
+          ".f { background: linear-gradient(to bottom, var(--card), var(--background)); }",
+        ].join("\n"),
+        "web/src/plate.tsx": `export const A = () => <div className="skew-x-6 shadow-[0_4px_0_var(--primary)] border-b-4" />;\n`,
+      },
+      ["kit/local-concept"],
+    );
+    expect(hits.sort()).toEqual(
+      ["kit/local-concept@web/src/plate.css:1", "kit/local-concept@web/src/plate.css:2", "kit/local-concept@web/src/plate.css:3", "kit/local-concept@web/src/plate.css:4", "kit/local-concept@web/src/plate.tsx:1", "kit/local-concept@web/src/plate.tsx:1", "kit/local-concept@web/src/plate.tsx:1"].sort(),
+    );
+  });
+});

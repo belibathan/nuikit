@@ -58,7 +58,10 @@ export type RuleId =
   | "state/alert"
   | "theme/unlayered"
   | "theme/values-only"
-  | "space/off-scale";
+  | "space/off-scale"
+  // the invariants (docs/design/baseline.md "Invariants"): a page draws no concept of its own
+  | "selection/local"
+  | "kit/local-concept";
 
 export const RULES: Record<RuleId, { level: Level; description: string }> = {
   "color/hardcoded": { level: 1, description: "Hex, rgb(), hsl(), oklch()… or named colour literal instead of a theme token" },
@@ -92,11 +95,13 @@ export const RULES: Record<RuleId, { level: Level; description: string }> = {
   "state/alert": { level: 0, description: "data-critical, data-low, data-redline, data-danger, data-ink-deny; the one alert spelling is data-state=\"alert\" (deny: data-nk-deny)" },
   "theme/unlayered": { level: 0, description: "Theme CSS outside @layer nk.theme, !important, or app markup (.inv-*, .pause-*) in a theme; a theme sets tokens" },
   "theme/values-only": { level: 0, description: "A selector or a non-token declaration in a theme file (theme.css, themes/*.css); a theme sets values only, and a rule it needs means the kit is missing a lever (docs/design/levers.md)" },
+  "selection/local": { level: 0, description: "A page draws its own selected/hover state (hover:bg-*, data-[state=active]:bg-*, aria-selected:bg-*, bg-accent, a .selected/.active/.hover class with a background); one selection, one component: MenuRowList, SelectionTile or Tabs" },
+  "kit/local-concept": { level: 0, description: "A page hand-draws a keycap, plate, wall, skew or level fill (transform: skew, box-shadow: 0 Npx 0, border-bottom: Npx solid, a linear-gradient level fill); use Tile, Fill or Chip" },
   "space/off-scale": { level: 0, description: "A gap, padding or margin off the 0.25rem step (0.375rem, 0.3125rem, gap-1.5…); use --nk-space-* and gap-(--nk-gap-*)" },
 };
 
 /** The kit conventions (docs/design/default.md §4): all warnings (level 0) for now. */
-export const KIT_RULES: readonly RuleId[] = ["radius/raw", "radius/pill", "effect/blur", "color/mix", "shadow/soft", "motion/duration", "motion/ease", "motion/property", "type/raw", "selector/class-substring", "state/alert", "theme/unlayered", "theme/values-only", "space/off-scale"];
+export const KIT_RULES: readonly RuleId[] = ["radius/raw", "radius/pill", "effect/blur", "color/mix", "shadow/soft", "motion/duration", "motion/ease", "motion/property", "type/raw", "selector/class-substring", "state/alert", "theme/unlayered", "theme/values-only", "space/off-scale", "selection/local", "kit/local-concept"];
 
 export const LEVEL_NAMES: Record<Level, string> = { 0: "not conformant", 1: "themed", 2: "well-behaved", 3: "native" };
 
@@ -239,12 +244,28 @@ const EASE_WORD = /(?<![\w-])(ease|ease-in|ease-out|ease-in-out)(?![\w-])/g;
 const MOTION_OK = new Set(["transform", "opacity", "none", "-webkit-transform"]);
 const ALERT_ATTR = /\bdata-(critical|low|redline|danger|ink-deny)\b/g;
 
+/** A hard-drop layer: `0 0.25rem 0 …` (no blur) is a keycap wall. */
+const WALL_SHADOW = /(?:^|,)\s*(?:inset\s+)?0(?:px)?\s+(-?[\d.]+)(px|rem)\s+0(?:px|rem)?(?=\s|,|$)/gi;
+/** A wall is a drop of 3px / 0.1875rem or more; the 1-2px neutral drop of the plate recipe is allowed. */
+const isWall = (v: string) => [...v.matchAll(WALL_SHADOW)].some((m) => Math.abs(parseFloat(m[1]!)) >= (m[2] === "rem" ? 0.1875 : 3));
+const LEVEL_VAR = /--(?:level|value|progress|fill|pct|percent)\b/;
+
+/** Invariant 3: a page's own plate, wall, skew or level fill (Tile, Fill and Chip draw these). */
+function localConcept(p: string, v: string, raw: string, at: number, report: Report) {
+  if (p === "transform" && /\bskew[xy]?\(/i.test(v)) report("kit/local-concept", at, "transform: skew is a hand-drawn slant; Tile and the theme's --nk-skew draw it");
+  else if (p === "box-shadow" && isWall(v)) report("kit/local-concept", at, "box-shadow: 0 Npx 0 is a hand-drawn keycap wall; use Tile (the plate recipe)");
+  else if (/^border-bottom(-width)?$/.test(p) && (p.endsWith("width") || /\bsolid\b/.test(v)) && [...v.matchAll(LENGTH)].some((m) => (m[2] === "px" ? parseFloat(m[1]!) >= 2 : m[2] === "rem" && parseFloat(m[1]!) >= 0.125)))
+    report("kit/local-concept", at, "border-bottom: Npx solid is a hand-drawn wall or underline; use Tile or the row indicator");
+  else if (/^background(-image)?$/.test(p) && /linear-gradient\(/i.test(raw) && LEVEL_VAR.test(raw)) report("kit/local-concept", at, "a linear-gradient level fill; use Fill");
+}
+
 /** One CSS declaration against the Default rules. `at` is the declaration's offset, `vat` its value's. */
 function kitDeclaration(prop: string, value: string, at: number, vat: number, report: Report) {
   const p = prop.toLowerCase();
   const v = blankVars(value);
   if (/color-mix\(/i.test(value)) report("color/mix", at, `${prop}: color-mix() isn't in Chromium 103; use rgba(var(--…-rgb), a)`);
   if (p.startsWith("--")) return;
+  localConcept(p, v, value, at, report);
   if (/^border(-(top|bottom)-(left|right))?-radius$/.test(p)) {
     if (/(?<![\w.-])(9999px|999px|50%)/.test(v)) report("radius/pill", at, `${prop}: a pill; use --nk-r-chip (or a Chip dot)`);
     else if ([...v.matchAll(LENGTH)].some((m) => parseFloat(m[1]!) !== 0)) report("radius/raw", at, `${prop}: a radius literal; use --nk-r-key / -chip / -control / -surface`);
@@ -308,6 +329,9 @@ function kitSelector(prelude: string, at: number, report: Report) {
   for (const m of prelude.matchAll(ALERT_ATTR)) report("state/alert", at + m.index!, `${m[0]}: the one alert spelling is data-state="alert" (deny: data-nk-deny)`);
 }
 
+/** A page rule that backs its own selected/hover state: .selected, .active, .hover (and .is-*). */
+const LOCAL_STATE_SELECTOR = /\.(is-)?(selected|active|hover)(?![\w-])/;
+
 // class names in markup and script strings
 const CLASS_RULES: [RegExp, RuleId, string][] = [
   [/(?<![\w-])rounded(-[trblse]{1,2})?-full(?![\w-])/g, "radius/pill", "a pill; use rounded-(--nk-r-chip) or a Chip dot"],
@@ -318,6 +342,11 @@ const CLASS_RULES: [RegExp, RuleId, string][] = [
   [/(?<![\w-])ease-(in|out|in-out|\[cubic-bezier[^\]]*\])(?![\w-])/g, "motion/ease", "a literal ease; use ease-(--nk-ease-*)"],
   [/(?<![\w-])transition(-all|-colors|-shadow|-\[(?!transform|opacity)[^\]]+\])?(?![\w-])/g, "motion/property", "a transition beyond transform and opacity; use transition-transform or transition-opacity"],
   [/(?<![\w-])(text-(xs|sm|base|lg|xl|2xl|3xl|4xl|5xl)|text-\[\d[^\]]*\]|font-(medium|semibold))(?![\w-])/g, "type/raw", "a type literal; use a role class (nk-scan, nk-title, nk-label, nk-num, nk-body)"],
+  [/(?<![\w-])(?:[\w-]+:)*(hover:bg-|data-\[state=(?:active|checked|selected|open)\]:bg-|aria-selected:bg-|aria-checked:bg-)(?!transparent|none)[\w\[(-][^\s"'`]*/g, "selection/local", "a page-drawn selected/hover background; use MenuRowList, SelectionTile or Tabs"],
+  [/(?<![\w:-])bg-accent(?![\w-])/g, "selection/local", "bg-accent on a row is a page-drawn selection; use MenuRowList, SelectionTile or Tabs"],
+  [/(?<![\w-])-?skew(-[xy])?-(\d+|\[[^\]]+\])|(?<![\w-])skew[XY]?\(|\[transform:skew/g, "kit/local-concept", "a hand-drawn slant; Tile and --nk-skew draw it"],
+  [/shadow-\[(?:inset_)?0(?:px)?_-?(?:[3-9]|\d{2,}|0?\.(?:1[89]|[2-9])\d*(?=rem))[\d.]*(?:px|rem)_0(?:px|rem)?[_\],]/g, "kit/local-concept", "a hand-drawn keycap wall (box-shadow 0 Npx 0); use Tile"],
+  [/(?<![\w-])(?:[\w-]+:)*border-b-(?:[2-9]|\[[2-9]\d*px\])(?![\w-])/g, "kit/local-concept", "a hand-drawn wall or underline; use Tile or the row indicator"],
   [/(?<![\w-])-?(gap(-[xy])?|p[xytrblse]?|m[xytrblse]?|space-[xy])-\d+\.5(?![\w-])/g, "space/off-scale", "off the 0.25rem step; use gap-(--nk-gap-*) or --nk-space-*"],
 ];
 
@@ -443,6 +472,8 @@ function scanCss(css: string, base: number, report: Report, ctx: FileContext) {
       if (ctx.inlineStyle) for (const m of value.matchAll(/\b(color-mix|oklch|oklab)\(/gi)) report("cef/color-mix-inline", base + valueOffset + m.index!, `${m[1]}() in an inline style isn't lowered (the plugin only rewrites stylesheets); use a token class or rgb()`);
     }
     if (ctx.kit) kitDeclaration(prop, value, base + lead, base + valueOffset, report);
+    if (ctx.kit && /^background(-color|-image)?$/i.test(prop) && selectors.length && LOCAL_STATE_SELECTOR.test(selectors[selectors.length - 1]!))
+      report("selection/local", base + lead, `${selectors[selectors.length - 1]!.trim().slice(0, 40)}: a page-drawn selected/hover background; use MenuRowList, SelectionTile or Tabs`);
     const inTheme = selectors.some((s) => THEME_SELECTOR.test(s));
     if (prop.startsWith("--")) {
       const name = prop.slice(2);
