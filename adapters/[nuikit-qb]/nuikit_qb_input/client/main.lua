@@ -4,7 +4,7 @@
   Clean-room, from docs/adapters/qb-input.md. Answers under qb-input's own name (`provide` + the
   __cfx_export_qb-input_* events).
 
-    exports['qb-input']:ShowInput(data)  → nk.input, blocks the caller's thread, returns { [name] = value } or nil
+    exports['qb-input']:ShowInput(data)  → nk.intent.input, blocks the caller's thread, returns { [name] = value } or nil
     exports['qb-input']:CloseMenu()      → cancel: the pending ShowInput returns nil
 
   Unknowns (the spec's "to confirm"; change Config if a recording shows otherwise):
@@ -93,7 +93,7 @@ local function ShowInput(data)
   if type(data) ~= 'table' or type(data.inputs) ~= 'table' or #data.inputs == 0 then return nil end
   CloseMenu() -- one form at a time: the previous caller gets nil
   local props = translate(data)
-  local handle = nk.input(props, { async = true })
+  local handle = nk.intent.input(props, { async = true })
   current = handle
   local result, reason = handle:await()
   if current == handle then current = nil end

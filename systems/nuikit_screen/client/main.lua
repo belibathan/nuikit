@@ -16,7 +16,7 @@ local cfg = Config or {}
 local screens, nextId = {}, 0
 local using = nil
 -- while one is in use: a modal on the stack (the pause menu and other modals stay away), no NUI focus
-local surface = NUI.surface('screen', { layer = 'modal', input = 'none', escape = 'ignore', hides = { 'hud' } })
+local surface = nk.surface.define('screen', { layer = 'modal', input = 'none', escape = 'ignore', hides = { 'hud' } })
 
 local DRAW_DISTANCE = cfg.drawDistance or 25.0
 local USE_DISTANCE = cfg.useDistance or 1.6

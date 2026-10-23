@@ -48,7 +48,7 @@ files {
 }
 
 -- client.lua: player UI preferences and the theme for override pages. host.lua: the host.
--- client/intents.lua: the intent runtime (docs/intents.md): nk.notify, nk.menu… from every resource
+-- client/intents.lua: the intent runtime (docs/intents.md): nk.intent.notify, nk.intent.menu… from every resource
 -- land here and are drawn in this frame by the renderers in web/. client/renderers.lua: renderer
 -- packs (resources declaring nuikit_renderer '<kind>') replace a default renderer in that frame.
 -- client/images.lua: the image resolver's lookups (docs/images.md): https://nuikit/images, https://nuikit/vehicle.

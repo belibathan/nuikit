@@ -59,7 +59,7 @@ function Inventory.currentFrame()
   return Inventory.frame(w, h)
 end
 
--- A raw callback (not NUI.on): the inventory page belongs to another resource (ox_inventory) and
+-- A raw callback (not nk.message.on): the inventory page belongs to another resource (ox_inventory) and
 -- posts here without nuikit's handshake. Always answers, so its fetch never hangs.
 RegisterNUICallback('inventory:frame', function(data, cb)
   Inventory.setFrame(data)

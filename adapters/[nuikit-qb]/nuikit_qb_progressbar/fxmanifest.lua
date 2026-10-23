@@ -3,7 +3,7 @@ game 'gta5'
 lua54 'yes'
 
 name 'nuikit_qb_progressbar'
-description 'nuikit adapter: stands in for progressbar (QBCore.Functions.Progressbar). Progress / ProgressWithStartEvent / ProgressWithTickEvent / isDoingSomething land on the nk.progress intent; animation, props and control disabling stay in Lua as before.'
+description 'nuikit adapter: stands in for progressbar (QBCore.Functions.Progressbar). Progress / ProgressWithStartEvent / ProgressWithTickEvent / isDoingSomething land on the nk.intent.progress intent; animation, props and control disabling stay in Lua as before.'
 repository 'https://github.com/belibathan/nuikit'
 version '0.8.0'
 

@@ -95,7 +95,7 @@ local function send(w)
   local key = w and ('%s|%d|%d'):format(w.kind, w.clip, w.reserve or -1) or 'off'
   if key == last then return end
   last = key
-  NUI.send('hud:weapon', w or false)
+  nk.message.send('hud:weapon', w or false)
 end
 
 function Weapon.tick()

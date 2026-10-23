@@ -3,7 +3,7 @@ if GetConvar('nuikit_dev', '0') ~= '1' then return end
 local running = false
 
 local function note(description, status)
-  nk.notify({ title = 'nuikit_dev', description = description, status = status or 'info' })
+  nk.intent.notify({ title = 'nuikit_dev', description = description, status = status or 'info' })
 end
 
 local function result(label, value)
@@ -14,16 +14,16 @@ local tests = {}
 
 function tests.notify()
   for _, status in ipairs({ 'info', 'success', 'warning', 'error' }) do
-    nk.notify({ title = status, description = 'A ' .. status .. ' notification', status = status })
+    nk.intent.notify({ title = status, description = 'A ' .. status .. ' notification', status = status })
   end
   -- The same id twice merges into one toast.
-  nk.notify({ id = 'dev-merge', title = 'Merged', description = 'First', status = 'info' })
+  nk.intent.notify({ id = 'dev-merge', title = 'Merged', description = 'First', status = 'info' })
   Wait(800)
-  nk.notify({ id = 'dev-merge', title = 'Merged', description = 'Second (replaced in place)', status = 'success' })
+  nk.intent.notify({ id = 'dev-merge', title = 'Merged', description = 'Second (replaced in place)', status = 'success' })
 end
 
 function tests.menu()
-  result('menu', nk.menu({
+  result('menu', nk.intent.menu({
     title = 'Garage',
     items = {
       { label = 'Sultan', description = 'Sports sedan', args = { plate = 'ABC123' } },
@@ -34,7 +34,7 @@ function tests.menu()
 end
 
 function tests.input()
-  result('input', nk.input({
+  result('input', nk.intent.input({
     title = 'New contact',
     fields = {
       { type = 'text', label = 'Name', required = true },
@@ -45,16 +45,16 @@ function tests.input()
 end
 
 function tests.confirm()
-  result('confirm', nk.confirm({ title = 'Delete item?', description = 'This cannot be undone.' }))
+  result('confirm', nk.intent.confirm({ title = 'Delete item?', description = 'This cannot be undone.' }))
 end
 
 function tests.progress()
-  result('progress bar', nk.progress({ label = 'Repairing', duration = 4000, style = 'bar', cancel = true }))
-  result('progress ring', nk.progress({ label = 'Searching', duration = 4000, style = 'ring', cancel = true }))
+  result('progress bar', nk.intent.progress({ label = 'Repairing', duration = 4000, style = 'bar', cancel = true }))
+  result('progress ring', nk.intent.progress({ label = 'Searching', duration = 4000, style = 'ring', cancel = true }))
 end
 
 function tests.prompt()
-  local p = nk.prompt('[E] Open garage')
+  local p = nk.intent.prompt('[E] Open garage')
   Wait(3000)
   p:update({ active = true })
   Wait(2000)
@@ -95,7 +95,7 @@ function tests.target()
     { label = 'Lock', icon = 'lock', id = 'lock' },
     { label = 'Honk', icon = 'volume-2', id = 'honk' },
   }
-  local handle = nk.target({ title = 'Target test', eye = true, active = false, options = options }, {
+  local handle = nk.intent.target({ title = 'Target test', eye = true, active = false, options = options }, {
     cb = function(res, reason)
       local o = res and options[res.index or 0]
       note(o and ('Target option chosen: ' .. o.label) or ('Target closed (' .. tostring(reason) .. ')'))
@@ -118,14 +118,14 @@ function tests.target()
 end
 
 function tests.radial()
-  result('radial', nk.radial({
+  result('radial', nk.intent.radial({
     label = 'Actions',
     items = { { label = 'Wave' }, { label = 'Sit' }, { label = 'Point' }, { label = 'Dance' } },
   }))
 end
 
 function tests.challenge()
-  result('challenge', nk.challenge('easy'))
+  result('challenge', nk.intent.challenge('easy'))
 end
 
 function tests.ox_notify()

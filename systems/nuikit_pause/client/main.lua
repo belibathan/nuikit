@@ -8,7 +8,7 @@ local P_KEY = 199        -- INPUT_FRONTEND_PAUSE (P): left to GTA unless Config.
 local QUIET_MS = 400     -- ignore Esc this long after a menu closes, so one press can't reopen it
 local BLUR_MS = 200.0
 
-local pause = NUI.surface('pause', {
+local pause = nk.surface.define('pause', {
   layer = 'modal', input = 'full', exclusive = true, hides = { 'hud' }, blockedBy = { 'dead' },
 })
 
@@ -27,11 +27,11 @@ local views = Config.views or {}
 local mapCfg = Config.map or {}
 
 --- Scripted cameras (the focus camera and the 3D map) only when the server allows them
---- (Config.camera) and the player hasn't asked for reduced motion (NUI.prefs). Otherwise the menu is
+--- (Config.camera) and the player hasn't asked for reduced motion (nk.theme.prefs). Otherwise the menu is
 --- flat: Home blurs the game and Map opens GTA's own map.
 function Pause.cameras()
   if Config.camera == false then return false end
-  local prefs = NUI.prefs and NUI.prefs.get() or {}
+  local prefs = nk.theme.prefs and nk.theme.prefs() or {}
   return not prefs.reducedMotion
 end
 local view = "home"        -- home | map | keys | info
@@ -92,8 +92,8 @@ function Pause.blocked()
   -- chat input, a phone, another resource's UI: whoever has focus owns Esc
   if IsNuiFocused() then return 'focus' end
   local player = NUI.player.get()
-  if player.dead or NUI.getState('dead') then return 'dead' end
-  for _, e in ipairs(NUI.surfaces()) do
+  if player.dead or nk.surface.getState('dead') then return 'dead' end
+  for _, e in ipairs(nk.surface.list()) do
     if not (e.resource == RESOURCE and e.name == 'pause') then
       if e.layer == 'modal' or e.layer == 'system' then return 'modal' end
       if e.input ~= 'none' then return 'surface' end
@@ -170,7 +170,7 @@ function Pause.setView(next)
     Map3D.stop(focused and "handover" or nil)
     blur(not focused)
   end
-  if next == "keys" then NUI.send("pause:keys", Keys.resolve()) end
+  if next == "keys" then nk.message.send("pause:keys", Keys.resolve()) end
   return { ok = true, preview = Focus.isActive() }
 end
 
@@ -191,7 +191,7 @@ local downAt, downNow = 0, false
 local function downCached(now)
   if now >= downAt then
     downAt = now + 250
-    downNow = NUI.player.get().dead == true or NUI.getState('dead') and true or false
+    downNow = NUI.player.get().dead == true or nk.surface.getState('dead') and true or false
   end
   return downNow
 end
@@ -262,7 +262,7 @@ local function frontend(menu, deeper)
 end
 
 local function action(name, fn)
-  NUI.on('pause:' .. name, function(data)
+  nk.message.on('pause:' .. name, function(data)
     if not enabled[name] then return { ok = false } end
     fn(data)
     return { ok = true }
@@ -276,7 +276,7 @@ action('keybinds', function() frontend(Config.frontend.keybinds) end)
 
 -- The bigger menu (docs/pause-3d.md). Every handler is a no-op unless the menu is open.
 local function open(name, fn)
-  NUI.on(name, function(data)
+  nk.message.on(name, function(data)
     if not pause:isOpen() then return { ok = false } end
     local r = fn(type(data) == "table" and data or {})
     if type(r) == "table" then return r end

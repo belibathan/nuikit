@@ -59,7 +59,7 @@ local function run(data, start, tick, done)
     meta = { library = LIB, useWhileDead = data.useWhileDead == true },
   }
   running = bar
-  bar.handle = nk.progress(props, {
+  bar.handle = nk.intent.progress(props, {
     cb = function(result, reason)
       if running ~= bar then return end
       if reason == 'busy' then

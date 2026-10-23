@@ -4,10 +4,10 @@
 
 local KEY_E, KEY_G = 38, 47 -- the controls the stock medical resources listen for
 
-local screen = NUI.surface('death', { layer = 'system', input = 'none', hides = { 'hud' } })
+local screen = nk.surface.define('death', { layer = 'system', input = 'none', hides = { 'hud' } })
 -- How far E has been held, 0–1, on its own channel: the page glides it (useFollow), so the bar moves
 -- smoothly whatever steps the medical resource counts in, and the screen's data doesn't churn.
-local holdBar = NUI.stream('death:hold', { rate = 30, precision = 0.01 })
+local holdBar = nk.message.stream('death:hold', { rate = 30, precision = 0.01 })
 
 Death = {}
 
@@ -318,9 +318,9 @@ function Death.update()
   if snap and snap.phase ~= was then
     if not was and Death.medical == 'qbx' then TriggerServerEvent('nuikit_death:doctors') doctorsAt = now() end
     -- every nuikit surface with blockedBy = { 'dead' } (the pause menu, shops…) now refuses to open
-    NUI.state('dead', snap.phase)
+    nk.surface.setState('dead', snap.phase)
   elseif not snap and was then
-    NUI.state('dead', false)
+    nk.surface.setState('dead', false)
     keys.gPressed, keys.held, keys.heldSince, keys.full = false, 0, nil, nil
   elseif snap and Death.medical == 'qbx' and now() - doctorsAt > 60000 then
     -- qbx_ambulancejob refreshes its doctor count once a minute; so do we

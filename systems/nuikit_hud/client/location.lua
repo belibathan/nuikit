@@ -65,7 +65,7 @@ function Location.tick(units, shown)
   local key = ('%s|%s|%s|%s|%s|%s|%s'):format(tostring(s.visible), s.street or '', s.crossing or '', s.zone or '', s.postal or '', s.waypoint or '', s.bearing or '')
   if key ~= last then
     last = key
-    NUI.send('hud:location', s)
+    nk.message.send('hud:location', s)
   end
 end
 

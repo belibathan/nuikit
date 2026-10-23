@@ -3,7 +3,7 @@ game 'gta5'
 lua54 'yes'
 
 name 'nuikit_esx_menu_default'
-description 'nuikit adapter: esx_menu_default → nk.menu. Stand-in as the ESX.UI.Menu "default" type. Clean-room from docs/adapters/esx-menu-default.md.'
+description 'nuikit adapter: esx_menu_default → nk.intent.menu. Stand-in as the ESX.UI.Menu "default" type. Clean-room from docs/adapters/esx-menu-default.md.'
 author '@belibathan'
 version '0.8.0'
 

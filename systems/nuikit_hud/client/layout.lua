@@ -249,7 +249,7 @@ function Layout.update(force)
   local key = ('%d|%d|%.4f|%.4f|%.4f|%s'):format(width, height, msg.l, msg.b, safezone, msg.source)
   if force or key ~= sentKey then
     sentKey = key
-    NUI.send('hud:layout', msg)
+    nk.message.send('hud:layout', msg)
     if Config.debug then
       local st = Layout.stage(width, height, safezone)
       print(('[nuikit_hud] layout: %dx%d (%.2f:1) safezone %.2f, %s area left %.0f bottom %.0f unit %.0fx%.0f (stage rule: left %.0f bottom %.0f)'):format(

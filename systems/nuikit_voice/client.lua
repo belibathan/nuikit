@@ -12,7 +12,7 @@ local function put(key, on, props)
     if not on then return end
     props.order = cfg.order
     props.hidden = false
-    slots[key] = NUI.slot(Config.cluster, key, props)
+    slots[key] = nk.slot.join(Config.cluster, key, props)
     return
   end
   props.hidden = not on

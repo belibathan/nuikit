@@ -72,7 +72,7 @@ local function state()
 end
 
 local function push()
-  NUI.send('nuikit:renderer', { op = 'state', active = state() })
+  nk.message.send('nuikit:renderer', { op = 'state', active = state() })
 end
 
 local function add(resource)
@@ -108,13 +108,13 @@ AddEventHandler('onClientResourceStart', function(resource) add(resource) end)
 AddEventHandler('onClientResourceStop', function(resource) remove(resource) end)
 
 -- The frame (re)loaded: give it the state.
-NUI.on('nuikit:renderer:sync', function()
+nk.message.on('nuikit:renderer:sync', function()
   push()
   return { ok = true }
 end)
 
 -- A pack failed for a kind; the frame already fell back to the default.
-NUI.on('nuikit:renderer:failed', function(req)
+nk.message.on('nuikit:renderer:failed', function(req)
   if type(req) ~= 'table' then return { ok = false } end
   print(('^1[nuikit] renderer pack %s failed for %s (%s): %s. Using the default renderer.^7'):format(
     tostring(req.resource), tostring(req.kind), tostring(req.url), tostring(req.message)))

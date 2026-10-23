@@ -3,7 +3,7 @@ game 'gta5'
 lua54 'yes'
 
 name 'nuikit_qb_drawtext'
-description 'nuikit adapter: listens to qb-core DrawText / ChangeText / HideText / KeyPressed events and draws them with the nk.prompt intent.'
+description 'nuikit adapter: listens to qb-core DrawText / ChangeText / HideText / KeyPressed events and draws them with the nk.intent.prompt intent.'
 repository 'https://github.com/belibathan/nuikit'
 version '0.8.0'
 

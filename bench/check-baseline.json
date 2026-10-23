@@ -1,35 +1,35 @@
 {
   "systems/nuikit": {
-    "errors": 5,
-    "warnings": 45
+    "errors": 1,
+    "warnings": 35
   },
   "systems/nuikit_chat": {
     "errors": 0,
     "warnings": 6
   },
   "systems/nuikit_death": {
-    "errors": 2,
-    "warnings": 4
+    "errors": 1,
+    "warnings": 0
   },
   "systems/nuikit_dev": {
     "errors": 0,
-    "warnings": 13
+    "warnings": 0
   },
   "systems/nuikit_hud": {
-    "errors": 5,
-    "warnings": 224
+    "errors": 1,
+    "warnings": 187
   },
   "systems/nuikit_loading": {
-    "errors": 2,
+    "errors": 0,
     "warnings": 1
   },
   "systems/nuikit_pause": {
-    "errors": 2,
-    "warnings": 71
+    "errors": 1,
+    "warnings": 55
   },
   "systems/nuikit_screen": {
-    "errors": 2,
-    "warnings": 1
+    "errors": 1,
+    "warnings": 0
   },
   "systems/nuikit_skins": {
     "errors": 0,
@@ -41,54 +41,54 @@
   },
   "systems/nuikit_voice": {
     "errors": 0,
-    "warnings": 1
+    "warnings": 0
   },
   "addons/Renewed-Banking": {
-    "errors": 2,
+    "errors": 0,
     "warnings": 1
   },
   "addons/illenium-appearance": {
-    "errors": 2,
+    "errors": 0,
     "warnings": 0
   },
   "addons/mm_radio": {
-    "errors": 2,
+    "errors": 0,
     "warnings": 1
   },
   "addons/ox_doorlock": {
-    "errors": 2,
+    "errors": 0,
     "warnings": 1
   },
   "addons/ox_inventory": {
-    "errors": 2,
+    "errors": 0,
     "warnings": 45
   },
   "addons/ox_lib": {
-    "errors": 5,
+    "errors": 0,
     "warnings": 18
   },
   "addons/ox_target": {
-    "errors": 2,
+    "errors": 0,
     "warnings": 0
   },
   "addons/qbx_idcard": {
-    "errors": 2,
+    "errors": 0,
     "warnings": 1
   },
   "addons/qbx_scoreboard": {
-    "errors": 2,
+    "errors": 0,
     "warnings": 0
   },
   "addons/qbx_taxijob": {
-    "errors": 2,
+    "errors": 0,
     "warnings": 1
   },
   "addons/qbx_vehiclesales": {
-    "errors": 2,
+    "errors": 0,
     "warnings": 7
   },
   "packages/create-nuikit/template": {
-    "errors": 2,
-    "warnings": 10
+    "errors": 1,
+    "warnings": 2
   }
 }

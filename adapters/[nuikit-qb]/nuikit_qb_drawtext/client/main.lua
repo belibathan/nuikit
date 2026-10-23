@@ -2,7 +2,7 @@
   nuikit_qb_drawtext: qb-core's DrawText on the `prompt` intent.  MIT · https://github.com/belibathan/nuikit
 
   Clean-room, from docs/adapters/qb-drawtext.md. A listener for the four events (client and server):
-    qb-core:client:DrawText(message, position?)  → nk.prompt (one, replaced when drawn again)
+    qb-core:client:DrawText(message, position?)  → nk.intent.prompt (one, replaced when drawn again)
     qb-core:client:ChangeText(message, position?) → update
     qb-core:client:HideText()                     → cancel
     qb-core:client:KeyPressed()                   → update { pressed = true }, hidden ~500 ms later
@@ -42,7 +42,7 @@ local function DrawText(message, position)
   p.id = 'drawtext'
   p.pressed = false
   hideAt = 0
-  current = nk.prompt(p) -- same id: replaces the one shown
+  current = nk.intent.prompt(p) -- same id: replaces the one shown
   log('draw', p.label)
 end
 

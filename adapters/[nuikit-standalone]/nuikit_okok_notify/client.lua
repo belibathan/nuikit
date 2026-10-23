@@ -1,5 +1,5 @@
 --[[
-  nuikit_okok_notify: okokNotify's public API, drawn by nk.notify (docs/adapters/okok-notify.md).
+  nuikit_okok_notify: okokNotify's public API, drawn by nk.intent.notify (docs/adapters/okok-notify.md).
 
   Mechanism: stand-in. `provide 'okokNotify'` plus `Alert` registered under okokNotify's name, and the
   client event `okokNotify:Alert` (the server path) handled. okokNotify is only UI, so nothing else is kept.
@@ -20,7 +20,7 @@ local function Alert(title, message, time, kind, playSound)
   local ms = tonumber(time)
   if ms and ms >= 0 then props.duration = math.floor(ms) end
   if playSound ~= nil then props.sound = playSound == true end
-  nk.notify(props)
+  nk.intent.notify(props)
 end
 
 exports('Alert', Alert)

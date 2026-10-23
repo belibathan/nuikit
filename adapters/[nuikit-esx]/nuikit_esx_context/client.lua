@@ -1,5 +1,5 @@
 --[[
-  nuikit_esx_context: esx_context's public API, drawn by nk.menu (docs/adapters/esx-context.md).
+  nuikit_esx_context: esx_context's public API, drawn by nk.intent.menu (docs/adapters/esx-context.md).
 
   Mechanism: stand-in. `provide 'esx_context'` plus the four exports registered under esx_context's name
   (`Open`, `Preview`, `Close`, `Refresh`: the calls `ESX.OpenContext` / `PreviewContext` / `CloseContext` /
@@ -98,7 +98,7 @@ local function open(position, elements, canClose, onSelect, onClose, preview)
   local title, description, items, rows = build(elements)
   c.rows = rows
   local closable = canClose ~= false
-  c.handle = nk.menu({
+  c.handle = nk.intent.menu({
     id = 'context',
     title = title,
     description = description,

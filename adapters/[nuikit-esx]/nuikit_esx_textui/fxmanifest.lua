@@ -3,7 +3,7 @@ game 'gta5'
 lua54 'yes'
 
 name 'nuikit_esx_textui'
-description 'nuikit adapter: esx_textui → nk.prompt. Stand-in (provide). Clean-room from docs/adapters/esx-textui.md.'
+description 'nuikit adapter: esx_textui → nk.intent.prompt. Stand-in (provide). Clean-room from docs/adapters/esx-textui.md.'
 author '@belibathan'
 version '0.8.0'
 

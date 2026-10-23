@@ -1,5 +1,5 @@
 --[[
-  nuikit_esx_progressbar: esx_progressbar's public API, drawn by nk.progress (docs/adapters/esx-progressbar.md).
+  nuikit_esx_progressbar: esx_progressbar's public API, drawn by nk.intent.progress (docs/adapters/esx-progressbar.md).
 
   Mechanism: stand-in. `provide 'esx_progressbar'` plus `Progressbar` / `CancelProgressbar` registered
   under esx_progressbar's name, so `ESX.Progressbar` / `ESX.CancelProgressbar` and the exports land here.
@@ -70,7 +70,7 @@ local function Progressbar(text, length, options)
   end
   local run = { options = options }
   current = run
-  run.handle = nk.progress({ label = type(text) == 'string' and text or nil, duration = math.floor(ms), cancel = false, style = 'bar' }, {
+  run.handle = nk.intent.progress({ label = type(text) == 'string' and text or nil, duration = math.floor(ms), cancel = false, style = 'bar' }, {
     cb = function(result, reason)
       if current ~= run then return end
       current = nil

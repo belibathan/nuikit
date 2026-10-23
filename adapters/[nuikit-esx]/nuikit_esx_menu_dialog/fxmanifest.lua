@@ -3,7 +3,7 @@ game 'gta5'
 lua54 'yes'
 
 name 'nuikit_esx_menu_dialog'
-description 'nuikit adapter: esx_menu_dialog → nk.input. Stand-in as the ESX.UI.Menu "dialog" type. Clean-room from docs/adapters/esx-menu-dialog.md.'
+description 'nuikit adapter: esx_menu_dialog → nk.intent.input. Stand-in as the ESX.UI.Menu "dialog" type. Clean-room from docs/adapters/esx-menu-dialog.md.'
 author '@belibathan'
 version '0.8.0'
 

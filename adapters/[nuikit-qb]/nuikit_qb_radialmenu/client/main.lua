@@ -5,7 +5,7 @@
   the __cfx_export_qb-radialmenu_* events):
 
     AddOption(data, id?) → id     RemoveOption(id)     (undocumented but widely used)
-    the open key (Config.OpenKey, F1) opens nk.radial with Config.MenuItems + Config.JobInteractions[job]
+    the open key (Config.OpenKey, F1) opens nk.intent.radial with Config.MenuItems + Config.JobInteractions[job]
     + the added options; selecting dispatches by `type`; shouldClose = false keeps it open.
 
   UI only: vehicle doors, extras and seats (gameplay qb-radialmenu did itself) are not translated; the
@@ -96,7 +96,7 @@ local function open()
   local items, byId = build()
   if #items == 0 then log('nothing to show') return end
   local menu = { byId = byId }
-  menu.handle = nk.radial({ id = 'radial', label = Config.Label, items = items, meta = { library = LIB } }, {
+  menu.handle = nk.intent.radial({ id = 'radial', label = Config.Label, items = items, meta = { library = LIB } }, {
     cb = function(result, reason)
       if current ~= menu then return end
       current = nil

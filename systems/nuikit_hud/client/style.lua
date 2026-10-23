@@ -36,7 +36,7 @@ local function say(msg)
 end
 
 -- the page asks for the stored style when it loads
-NUI.on('hud:style:get', function()
+nk.message.on('hud:style:get', function()
   return { style = style }
 end)
 
@@ -44,7 +44,7 @@ RegisterCommand('hudstyle', function(_, args)
   if not args[1] or args[1]:lower() == 'reset' then
     style = nil
     DeleteResourceKvp(KVP)
-    NUI.send('hud:style', false)
+    nk.message.send('hud:style', false)
     say('style reset to the theme')
     return
   end
@@ -64,7 +64,7 @@ RegisterCommand('hudstyle', function(_, args)
   end
   style = t
   SetResourceKvp(KVP, json.encode(t))
-  NUI.send('hud:style', t)
+  nk.message.send('hud:style', t)
   say(('style: %s %s %s %s'):format(t.shape or '-', t.level or '-', t.attach or '-', t.icon or '-'))
 end, false)
 
@@ -74,7 +74,7 @@ RegisterCommand('hudpop', function(_, args)
     say('usage: /hudpop health|armor|hunger|thirst|stress [change]')
     return
   end
-  NUI.send('hud:pop', { tone = tone, by = tonumber(args[2]) or 10 })
+  nk.message.send('hud:pop', { tone = tone, by = tonumber(args[2]) or 10 })
 end, false)
 
 TriggerEvent('chat:addSuggestion', '/hudstyle', 'HUD chip style (yours only)', {
