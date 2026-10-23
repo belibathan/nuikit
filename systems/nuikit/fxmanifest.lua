@@ -9,10 +9,12 @@ version '0.8.0'
 
 -- The server compiles theme.css into the nuikit tokens (docs/tokens.md) at start and on
 -- `nuikit theme reload`, logs contrast warnings, and publishes GlobalState.nuikitTheme.
--- compiler.js is nuikit-core's compiler and doctor, copied by `pnpm sync`. doctor.js: `nuikit doctor`.
+-- compiler.js is nuikit-core's compiler, doctor and installer, copied by `pnpm sync`. doctor.js: `nuikit doctor`.
+-- install.js: `nuikit install | upgrade | uninstall` (the overrides under overrides/ here; docs/install.md).
 server_scripts {
   'server/compiler.js',
   'server/main.js',
+  'server/install.js',
   'server/doctor.js',
 }
 

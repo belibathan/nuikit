@@ -20,6 +20,7 @@ that have been superseded outright.
 | Doc | What | Status |
 |---|---|---|
 | [`coverage.md`](coverage.md) | What nuikit covers on a Qbox server, and the in-game checklists | Current |
+| [`install.md`](install.md) | Server owners: install per framework, `nuikit install` / `upgrade` / `uninstall` for the overrides | Current |
 | [`doctor.md`](doctor.md) | `nuikit doctor`: what it checks and says | Current |
 | [`settings.md`](settings.md) | `nk.settings` and the pause Settings page | Current |
 | [`images.md`](images.md) | The image resolver (`https://nuikit/images`, `/vehicle`) | Current |

@@ -55,9 +55,9 @@ and add one line to `server.cfg`, after your framework:
 exec @nuikit/nuikit.cfg
 ```
 
-For each folder in `overrides/`, back up the real resource and copy ours over it (merge, don't replace). Start order,
-what gets stopped and the upgrade path, per framework: [`docs/install.md`](docs/install.md). New Qbox servers can use
-the txAdmin recipe in [`install/recipe-qbox.yaml`](install/recipe-qbox.yaml).
+Then, in the server console, `nuikit install` merges the overrides (ox_lib, ox_inventory…) into the resources you run,
+with a backup; `nuikit doctor` says what's left; `nuikit upgrade` after a new zip, `nuikit uninstall` to go back.
+Per-framework steps, start order and what gets stopped: [`docs/install.md`](docs/install.md).
 
 **Build a UI.**
 

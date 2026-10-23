@@ -30,7 +30,7 @@ Resource statuses:
 | `on nuikit (hosted)` | a module in nuikit's frame | `nuikit_ui` |
 | `on nuikit (loadscreen)`, `on nuikit (theme)` | nuikit's own loading screen (it runs before the runtime, so no handshake) and chat theme (no page: `chat_theme`) | a `nuikit_*` resource with `loadscreen` or `chat_theme` and no `nuikit_protocol`. Another loading screen or chat theme next to them is `untouched` with "stop it" as the next step |
 | `adapted (<resource>)` | a running adapter draws its UI calls | another started resource declares `nuikit_adapter '<this resource>'` (reserved for the packs) |
-| `override` | its page is one of ours | the page at `ui_page` carries `<meta name="nuikit-handshake" content="off">` (protocol §5.6). `(override changed)` / `(override missing)` when `overrides.json` disagrees, §3 |
+| `override` | its page is one of ours | the page at `ui_page` carries `<meta name="nuikit-handshake" content="off">` (protocol §5.6). `(override changed)` / `(override missing)` when `overrides.json` disagrees; `(override 0.8.0, outdated)` / `(override edited)` from the `nuikit install` manifest, §3 |
 | `untouched` | its own UI, nothing of nuikit in it | none of the above |
 
 ## 2. Findings
@@ -40,8 +40,10 @@ Resource statuses:
 | `provide-conflict` | error | a started resource declares `provide 'X'` and `X` is started too | stop one of them |
 | `start-order` | error | a resource that imports `@nuikit/` or depends on `nuikit` was already started when nuikit's server script ran | `ensure nuikit` earlier, restart the resource |
 | `protocol-newer` | error | `nuikit_protocol` higher than the runtime's | update nuikit |
-| `override-missing` | warn | `overrides.json` lists a page for a started resource and the file has no marker (a library update put the stock UI back) | copy the override again |
-| `override-drifted` | warn | the page has the marker but its hash isn't the shipped one | copy the override again unless you edited it |
+| `override-missing` | warn | `overrides.json` lists a page for a started resource and the file has no marker (a library update put the stock UI back, or it was never installed) | `nuikit install <resource>` |
+| `override-outdated` | warn | `<resource>/.nuikit-backup/manifest.json` says an older nuikit installed it than the zip running | `nuikit upgrade <resource>` |
+| `override-edited` | info | a file `nuikit install` wrote differs from what it wrote (the owner's edit; upgrades leave it alone) | keep it, or `nuikit install <resource> --force` |
+| `override-drifted` | warn | the page has the marker but its hash isn't the shipped one, and no manifest explains it (copied by hand, another release) | `nuikit install <resource>` unless you edited it |
 | `manifest-changed` | warn | a started resource's `fxmanifest.lua` on disk differs from when it started (hash on `onResourceStart`); a new `files` entry isn't served until then | `refresh`, then `restart <resource>` |
 | `missing-dependency` | warn | imports `@nuikit/init.lua` without `dependency 'nuikit'` | add the line |
 | `systems-stopped` | warn / info | a `[nuikit]` system is installed but not running (warn), or none is known to the server (info) | `exec @nuikit/nuikit.cfg` (ensures each by name) or `ensure <name>`; real folders, not junctions |
@@ -71,9 +73,11 @@ Everything registers through fxmanifest metadata or a file; no code calls into t
   ```
 
   `path` is the replaced resource's `ui_page`; `hash` is `pageHash(html)` from nuikit-core (FNV-1a 32-bit over
-  the built page, line endings normalised). The doctor loads the live page with `LoadResourceFile` and compares.
-  **Not wired yet:** `scripts/pack-systems.mjs` doesn't write the file (lead's lane; the diff is in the PR).
-  Without the file, the marker check still runs and the hash checks are skipped.
+  the built page, line endings normalised). Since 0.9 each entry also carries `files` (rel → `bytesHash`, every file
+  the override ships), which `nuikit install` uses ([install.md](install.md)). The doctor loads the live page with
+  `LoadResourceFile` and compares; `server/install.js` hands it each resource's `.nuikit-backup/manifest.json`
+  (`installed`) and a byte hasher (`fileHash`) for the outdated and edited checks. Without the file, the marker check
+  still runs and the hash checks are skipped.
 - **Newest release.** `set nuikit_latest 0.7.0` in server.cfg makes the doctor compare. No network calls are made;
   `nuikit_check_updates 1` is reserved for an opt-in online check and prints that it isn't built yet.
 - **Intent counts.** §4.
@@ -107,7 +111,7 @@ resources with a UI (6): 2 on nuikit, 0 adapted, 2 override, 2 untouched
   ox_lib                   override (override changed)
   ox_target                override (override page)
   ox_inventory             untouched (override missing)
-                             → copy overrides/ox_inventory/ from nuikit.zip back over resources/ox_inventory/
+                             → `nuikit install ox_inventory`
   nuikit_pause             on nuikit v1 level 3
   nuikit_hud               on nuikit v1
                              → declare nuikit_level '<1-3>' from `nuikit check` so the doctor can show it
@@ -117,15 +121,15 @@ findings: 1 error, 4 warnings
   ERROR my_garage started before nuikit; its @nuikit import failed on that start
         → put `ensure nuikit` before `ensure my_garage` in server.cfg, then `restart my_garage`
   WARN  ox_lib: the override page at web/build/index.html isn't the one nuikit 0.6.0 shipped (edited, or from another release)
-        → if you didn't edit it, copy overrides/ox_lib/ from nuikit.zip over resources/ox_lib/ and `restart ox_lib`
-  WARN  ox_inventory: the nuikit override page isn't at web/build/index.html (a library update replaced it, or it was never copied)
-        → copy overrides/ox_inventory/ from nuikit.zip over resources/ox_inventory/ again and `restart ox_inventory`
+        → if you didn't edit it, `nuikit install ox_lib` and `restart ox_lib`
+  WARN  ox_inventory: the nuikit override page isn't at web/build/index.html (a library update replaced it, or it was never installed)
+        → `nuikit install ox_inventory` in the server console, then `restart ox_inventory`
   WARN  my_garage imports @nuikit/init.lua but doesn't declare `dependency 'nuikit'`
         → add `dependency 'nuikit'` to its fxmanifest.lua so FiveM starts nuikit first
   WARN  theme: muted-foreground on muted is 3.10:1 (min 4.5:1)
         → lighten or darken `--muted-foreground` or `--muted` in nuikit/theme.css, then `nuikit theme reload`
   INFO  nuikit 0.6.0 is running; 0.7.0 is out
-        → download nuikit.zip from github.com/belibathan/nuikit/releases/tag/v0.7.0 and replace [nuikit]/ and overrides/
+        → download nuikit.zip from github.com/belibathan/nuikit/releases/tag/v0.7.0, replace [nuikit]/, then `nuikit upgrade` (docs/install.md)
   → adapter packs that fit: [nuikit-ox] (not shipped yet)
 intents drawn since start (by source):
   ox_lib                   53  (notify 41, menu 12)
@@ -142,6 +146,8 @@ intents drawn since start (by source):
   `LoadResourceFile`, `GetConvar`), counts `nuikit:intent`, prints. Tested in `doctor-server.test.ts` with fake
   natives.
 - `systems/nuikit/server/main.js` routes `nuikit doctor [json]` to it and hands over the compiled theme.
+- `systems/nuikit/server/install.js`: `nuikit install | upgrade | uninstall` ([install.md](install.md)); the planner is
+  `packages/core/src/install.ts` (tested in `install.test.ts`, the glue in `install-server.test.ts` against a temp dir).
 
 Unproven in game (the natives are used as documented, but nothing here has run on FXServer yet):
 
