@@ -56,7 +56,7 @@ for (const [e, f] of Object.entries(ENTRIES)) {
       const type = checker.getTypeOfSymbolAtLocation(real, decl);
       const sigs = type.getCallSignatures();
       signature = sigs.length
-        ? `${sym.name}${checker.signatureToString(sigs[0], undefined, ts.TypeFormatFlags.NoTruncation | ts.TypeFormatFlags.WriteArrowStyleSignature).replace(/^(<[^(]*>)?\((.*)\) => /, "$1($2): ")}`
+        ? `${sym.name}${checker.signatureToString(sigs[0], undefined, ts.TypeFormatFlags.NoTruncation)}`
         : undefined;
     }
     const module = decl ? decl.getSourceFile().fileName.replace(`${root}src/`, "").replace(/\.tsx?$/, "") : e;

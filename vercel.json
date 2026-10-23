@@ -21,7 +21,7 @@
   ],
   "rewrites": [
     {
-      "source": "/(start|components|blocks|design|coverage|theme|language|protocol|intents|adopt)",
+      "source": "/(start|kit|components|blocks|design|coverage|theme|language|protocol|intents|adopt)",
       "destination": "/index.html"
     },
     {
