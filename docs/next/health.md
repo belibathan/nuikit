@@ -7,17 +7,21 @@ Scope: `packages/cli`, `packages/vite`, `scripts/`, `bench/`, `.github/workflows
 
 `pnpm install --frozen-lockfile`, package builds, `pnpm sync` (clean), `pnpm typecheck`, `pnpm test`
 (core 634 incl. Lua under wasmoon, create-nuikit 831, cli 45, vite 11, www 191) and both `nuikit check`
-runs from CI: all green after the fixes below. Before them, `main` was red in CI and failed every Release run.
+runs from CI: all green after the fixes below. Before them, `main` was red in CI (the www theme studio test).
 
 ## Fixed
 
 - **CI red on main**: `apps/www` theme studio's `exportThemeCss` didn't round-trip Ink. It dropped every
   derived token (Ink sets its own `--nk-ease-expand` / `--nk-ease-breathe`, re-derived to stock curves) and
-  wrote the tile treatment's `var(--font-display)` defaults, which recompiling resolved to literals. The
-  export now recompiles itself and keeps or omits exactly those tokens.
-- **Release failed on every push** (15 of the last 15): `changesets/action` tried to open the version PR,
-  which Actions may not do here, and force-pushed `changeset-release/main`. Pending changesets are now a
-  notice; the bump stays local (CLAUDE.md "Releasing"). Dropped the unneeded `pull-requests: write`.
+  wrote the tile treatment's `var(--font-display)` defaults, which recompiling resolved to literals (and,
+  after today's accent-gradient commit, `var(--nk-accent-gradient)`, which it warned about). The export now
+  recompiles itself and keeps or omits exactly those tokens.
+- **Release fails on every push** (15 of the last 15): `changesets/action` tries to open the version PR,
+  which Actions may not do here, and force-pushes `changeset-release/main`. Fix written but **not pushed**:
+  the git credential lacks the `workflow` scope, so GitHub refuses any `.github/workflows` change. It is
+  commit "ci(release): pending changesets are a notice" on the local branch `auto/health-workflow`
+  (in `C:\dev\nuikit`): the `changesets/action` step becomes an `echo "::notice …"` and
+  `pull-requests: write` goes. Owner: `gh auth refresh -s workflow`, then push or cherry-pick it.
 - `nuikit --version` printed `0.6.0` (hard-coded); now read from package.json. `--level=3` (with `=`) was
   silently level 0; now parsed. An exception inside `check()` exits 2 with a message, not a stack.
 - `nuikit-doctor`: a file `lowerCss` throws on is reported and the run continues (exit 1).
@@ -35,8 +39,8 @@ runs from CI: all green after the fixes below. Before them, `main` was red in CI
    user's `fxmanifest.lua`; only `compat.ts` has tests. A temp-dir test: serve → localhost, close → page.
 2. **Signal handlers pile up** on every Vite server restart (`process.once` per `configureServer`); register
    once per process (module-level flag) to avoid MaxListeners warnings in long dev sessions.
-3. **Release workflow** still installs and builds packages when changesets are pending; move the
-   `pending` count before install and skip both.
+3. **Release workflow**: after the fix above, it still installs and builds when changesets are pending;
+   move the `pending` count before install and skip both.
 4. **`pack-systems.mjs` and `new-system.mjs` have no tests**; `sync-template.mjs` pruning (it deletes files
    listed in `sync-manifest.json`) is only covered indirectly by `core/test/scaffold.test.ts`.
 5. **`packages/cli` is `private: true`** yet carries `files`, `exports` and `bin` for publishing, and the
