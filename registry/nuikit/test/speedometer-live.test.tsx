@@ -1,14 +1,15 @@
 // @vitest-environment jsdom
 import * as React from "react"
 import { act } from "react"
-import { createRoot, type Root } from "react-dom/client"
+// @ts-ignore www has no @types/react-dom
+import { createRoot } from "react-dom/client"
 import { afterEach, describe, expect, it } from "vitest"
 
 import { Speedometer, speedometerLit, speedometerPainter } from "@/components/ui/speedometer"
 
 ;(globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true
 
-let mounted: { root: Root; el: HTMLElement } | null = null
+let mounted: { root: { render(n: React.ReactNode): void; unmount(): void }; el: HTMLElement } | null = null
 afterEach(() => {
   if (mounted) act(() => mounted!.root.unmount())
   mounted?.el.remove()

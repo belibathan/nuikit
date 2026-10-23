@@ -249,7 +249,7 @@ const KEYCAP_CSS = `
   --nk-vital-face: calc(var(--vital-size, 2.125rem) * var(--nk-vital-face-ratio, 0.94));
   --nk-vital-tag: 0px;
   --nk-vital-tag-pad: var(--nk-vital-tag-gap, 1rem);
-  --nk-vital-plate-drop: 0.25rem;
+  --nk-vital-plate-drop: calc(var(--nk-tile-wall, 0.1875rem) * 4 / 3);
   --nk-vital-plate-x: 0rem;
   --nk-vital-d: 1;
 }

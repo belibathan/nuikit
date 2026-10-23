@@ -91,7 +91,7 @@
   --nk-tile-plate-y: 0px;
   --nk-tile-press: 0px;
   --nk-tile-inset: 0.25rem;
-  --nk-chip-shape: rounded;
+  --nk-chip-shape: auto;
 
   /* depth: none. Flat surfaces, a faint hairline, no edge light, no drop, no glow */
   --nk-elevation: none;
