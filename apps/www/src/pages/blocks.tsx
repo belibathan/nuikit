@@ -36,7 +36,7 @@ export function BlocksPage() {
             <a href="/components" className="text-foreground underline underline-offset-4">
               components
             </a>
-            , each wired to typed NUI messages with Lua that runs, shown in any of the four identities (Graphite, Signal, Velvet, Vector) or your own
+            , each wired to typed NUI messages with Lua that runs, shown in Ink, any other identity or your own
             theme. Add one to your UI with the shadcn CLI, or start a resource from it with{" "}
             <code className="font-mono text-foreground">npm create nuikit</code>. Every preview is its real size at 1080p.
           </p>
@@ -58,8 +58,8 @@ export function BlocksPage() {
                 }}
               >
                 <span className="flex -space-x-1">
-                  {t.swatch.map((c) => (
-                    <span key={c} className="size-3 rounded-full ring-2 ring-background" style={{ background: c }} />
+                  {t.swatch.map((c, j) => (
+                    <span key={j} className="size-3 rounded-(--nk-r-key) ring-2 ring-background" style={{ background: c }} />
                   ))}
                 </span>
                 {t.name}

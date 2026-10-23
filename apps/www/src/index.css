@@ -3,6 +3,9 @@
 @import "@fontsource-variable/geist-mono";
 /* The same nk-* kit every game UI is built with (synced into their index.css). */
 @import "../../../packages/create-nuikit/kit.css";
+/* Ink, the site's identity (src/lib/ink.ts paints its tokens): the few rules its tokens can't say, as the nuikit
+   resource serves them in game. */
+@import "../../../systems/nuikit/theme/ink.css";
 @source "../../../registry";
 @source "../../../vendor";
 
@@ -169,11 +172,43 @@
   }
 }
 
+/*
+ * Ink on the site: Barlow Condensed italic caps for anything you scan (headings, eyebrows, keys, numbers),
+ * Geist for sentences. .ink-display / .ink-eyebrow are the site's type steps on Ink's roles; the 0.15em
+ * end pad keeps the italic overhang inside its box.
+ */
+@utility ink-display {
+  font-family: var(--font-display, "Barlow Condensed"), "Arial Narrow", sans-serif;
+  font-style: italic;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+  line-height: 0.92;
+  padding-inline-end: 0.15em;
+}
+@utility ink-eyebrow {
+  font-family: var(--font-display, "Barlow Condensed"), "Arial Narrow", sans-serif;
+  font-style: italic;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 0.8125rem;
+  line-height: 1;
+  color: var(--muted-foreground);
+  padding-inline-end: 0.15em;
+}
+/* a surface on the page: Ink's plate (flat, a hairline, a hard drop), never a blur or a soft shadow */
+@utility ink-plate {
+  border-radius: var(--nk-r-surface, 0.75rem);
+  background-color: var(--card);
+  box-shadow: inset 0 0 0 1px var(--nk-plate-hair, rgba(255, 255, 255, 0.12)), 0 0.125rem 0 rgba(0, 0, 0, 0.6);
+}
+
 /* Markdown pages (/design, /coverage). */
 @layer components {
   .doc { @apply text-[15px] leading-7 text-foreground; }
-  .doc h1 { @apply mb-6 text-4xl font-semibold tracking-tight text-balance; }
-  .doc h2 { @apply mt-14 mb-4 border-b pb-2 text-2xl font-semibold tracking-tight; }
+  .doc h1 { @apply ink-display mb-6 text-5xl text-balance; }
+  .doc h2 { @apply ink-display mt-14 mb-4 border-b pb-2 text-3xl; line-height: 1.05; }
   .doc h3 { @apply mt-10 mb-3 text-lg font-semibold; }
   .doc p { @apply my-4 text-pretty; }
   .doc a { @apply underline underline-offset-4; }
