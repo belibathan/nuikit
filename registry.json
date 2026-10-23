@@ -1624,6 +1624,9 @@
           "type": "registry:ui"
         }
       ],
+      "registryDependencies": [
+        "https://nuikit.vercel.app/r/tile.json"
+      ],
       "dependencies": [
         "class-variance-authority"
       ],

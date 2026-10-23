@@ -3,6 +3,7 @@ import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
 
 import { cn } from "@/lib/utils"
+import { Kbd } from "@/components/ui/tile"
 
 /**
  * Text — the type roles as one component (docs/design/components.md, foundation): scan (a key legend), title,
@@ -15,9 +16,13 @@ import { cn } from "@/lib/utils"
  *   <Text variant="num" size="md">$48,210</Text>
  *   <Text as="p" variant="caption">Until you can respawn</Text>
  *
+ * Key tokens: any string child may carry `[E]`, `[LEFT MOUSE]`, `[SHIFT + E]` tokens (`[A-Z0-9 +-]{1,12}` in square
+ * brackets, at least one letter or digit); they render as the kit's keycap inline. `keys={false}` keeps the brackets
+ * literally. The lever `--nk-inline-key-scale` (default 1) sizes the inline keycap. Plain React nodes, never HTML.
+ *
  * Role: Every piece of text in one of the kit's type roles, on one value ladder.
  * Anatomy: text (one element: span, p, div, h2…)
- * Props: variant (the role), size, as.
+ * Props: variant (the role), size, as, keys (inline key tokens, default true).
  * Rules: Pick a role (variant), never a font size: the role's levers (--nk-type-<role>-family, -weight, -tracking, -case)
  *   come from the theme. size is for values only (sm | md | display); inherit keeps the parent's size.
  */
@@ -52,18 +57,70 @@ const textVariants = cva("", {
 type TextRole = NonNullable<VariantProps<typeof textVariants>["variant"]>
 type TextSize = NonNullable<VariantProps<typeof textVariants>["size"]>
 
+type KeyPart = { key: boolean; text: string }
+
+const KEY_TOKEN = /\[([A-Z0-9 +-]{1,12})\]/g
+
+/** Splits a string into plain runs and `[KEY]` tokens. A token needs a letter or digit (`[ ]`, `[-]` stay text). */
+function parseKeyTokens(input: string): KeyPart[] {
+  const out: KeyPart[] = []
+  let last = 0
+  for (const m of input.matchAll(KEY_TOKEN)) {
+    const label = m[1].trim()
+    if (!/[A-Z0-9]/.test(label)) continue
+    const at = m.index ?? 0
+    if (at > last) out.push({ key: false, text: input.slice(last, at) })
+    out.push({ key: true, text: label })
+    last = at + m[0].length
+  }
+  if (last < input.length) out.push({ key: false, text: input.slice(last) })
+  return out
+}
+
+/** The inline keycap: the kit's Kbd, sized by --nk-inline-key-scale. */
+function InlineKey({ children }: { children: string }) {
+  return (
+    <Kbd
+      data-inline-key=""
+      className="mx-0.5 h-[calc(var(--nk-h-key)*var(--nk-inline-key-scale,1))] min-w-[calc(var(--nk-h-key)*var(--nk-inline-key-scale,1))] align-middle text-[length:calc(var(--nk-text-key)*var(--nk-inline-key-scale,1))]"
+    >
+      {children}
+    </Kbd>
+  )
+}
+
+/** Renders a node with key tokens in its string parts; other nodes pass through untouched. */
+function withKeys(node: React.ReactNode): React.ReactNode {
+  if (typeof node === "string") {
+    if (!node.includes("[")) return node
+    const parts = parseKeyTokens(node)
+    if (!parts.some((p) => p.key)) return node
+    return parts.map((p, i) => (p.key ? <InlineKey key={i}>{p.text}</InlineKey> : <React.Fragment key={i}>{p.text}</React.Fragment>))
+  }
+  if (Array.isArray(node)) return node.map((n, i) => (typeof n === "string" ? <React.Fragment key={i}>{withKeys(n)}</React.Fragment> : n))
+  return node
+}
+
 function Text({
   as: Comp = "span",
   variant,
   size,
   className,
+  keys = true,
+  children,
   ...props
 }: React.HTMLAttributes<HTMLElement> &
   VariantProps<typeof textVariants> & {
     /** The element. Default span. */
     as?: React.ElementType
+    /** Render `[E]`-style tokens in string children as keycaps. Default true; false keeps the brackets. */
+    keys?: boolean
   }) {
-  return <Comp data-slot="text" data-variant={variant ?? "body"} className={cn(textVariants({ variant, size }), className)} {...props} />
+  return (
+    <Comp data-slot="text" data-variant={variant ?? "body"} className={cn(textVariants({ variant, size }), className)} {...props}>
+      {keys ? withKeys(children) : children}
+    </Comp>
+  )
 }
 
-export { Text, textVariants, type TextRole, type TextSize }
+export { Text, textVariants, parseKeyTokens, withKeys, type TextRole, type TextSize, type KeyPart }

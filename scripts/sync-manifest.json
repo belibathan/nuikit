@@ -149,6 +149,7 @@
       "web/src/components/ui/smooth-input.tsx",
       "web/src/components/ui/spinner.tsx",
       "web/src/components/ui/switch.tsx",
+      "web/src/components/ui/text.tsx",
       "web/src/components/ui/textarea.tsx",
       "web/src/components/ui/tile.tsx",
       "web/src/hooks/use-linear-run.ts",
@@ -193,6 +194,7 @@
       "web/src/components/ui/stat.tsx",
       "web/src/components/ui/text-roll.tsx",
       "web/src/components/ui/text.tsx",
+      "web/src/components/ui/tile.tsx",
       "web/src/hooks/use-linear-run.ts",
       "web/src/index.css",
       "web/src/lib/utils.ts"
@@ -462,6 +464,7 @@
       "web/src/components/ui/spinner.tsx",
       "web/src/components/ui/switch.tsx",
       "web/src/components/ui/text-roll.tsx",
+      "web/src/components/ui/text.tsx",
       "web/src/components/ui/textarea.tsx",
       "web/src/components/ui/tile.tsx",
       "web/src/components/ui/tooltip.tsx",

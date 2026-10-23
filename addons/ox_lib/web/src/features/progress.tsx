@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { withKeys } from "@/components/ui/text";
 import { flushSync } from "react-dom";
 import { Kbd } from "@/components/ui/kbd";
 import { Meter } from "@/components/ui/meter";
@@ -110,7 +111,7 @@ export function ProgressBar() {
         className={cn("nk-slab-stack gap-(--nk-space-3) rounded-(--nk-slab-radius) bg-(--nk-slab-bg) p-(--nk-space-4) text-(--nk-slab-fg) shadow-[inset_0_0_0_var(--nk-border)_var(--nk-slab-border)]", presenceMotion)}
       >
         <div className="nk-slab-stack-row">
-          <span data-slot="progress-label" className="truncate">{run.label}</span>
+          <span data-slot="progress-label" className="truncate">{withKeys(run.label)}</span>
           <span ref={pct} data-slot="progress-percent" className="nk-num" aria-hidden>
             0%
           </span>
