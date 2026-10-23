@@ -47,6 +47,9 @@
     "test": "vitest run",
     "typecheck": "tsc --noEmit"
   },
+  "dependencies": {
+    "nuikit-core": "workspace:*"
+  },
   "devDependencies": {
     "@types/node": "^22.10.0",
     "tsup": "^8.3.5",
