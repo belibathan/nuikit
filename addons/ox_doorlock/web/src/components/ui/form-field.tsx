@@ -14,6 +14,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Slider } from "@/components/ui/slider"
 import { Switch } from "@/components/ui/switch"
+import { SmoothInput, SmoothTextarea } from "@/components/ui/smooth-input"
 import { Textarea } from "@/components/ui/textarea"
 
 /**
@@ -480,7 +481,7 @@ function TextControl({
   const [reveal, setReveal] = React.useState(false)
   if (multiline) {
     return (
-      <Textarea
+      <SmoothTextarea
         {...controlProps(f)}
         data-slot="form-field-control"
         disabled={f.disabled}
@@ -501,7 +502,7 @@ function TextControl({
           {icon}
         </span>
       )}
-      <Input
+      <SmoothInput
         {...inputProps}
         {...controlProps(f)}
         data-slot="form-field-control"
