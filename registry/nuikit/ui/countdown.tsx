@@ -258,7 +258,8 @@ function Countdown({
             size === "hero" ? "mt-6 w-80" : size === "sm" ? "mt-2 w-24" : "mt-3 w-40",
             game ? "nk-track" : "bg-foreground/15"
           )}
-          style={{ "--nk-fill-color": lineFill !== "neutral" ? LINE_FILL[lineFill as keyof typeof LINE_FILL] : "var(--foreground)" } as React.CSSProperties}
+          // its own hue (the root's data-hue) until the warning; otherwise the line's tone, never an ancestor's hue
+          color={hue ? undefined : lineFill !== "neutral" ? LINE_FILL[lineFill as keyof typeof LINE_FILL] : "var(--foreground)"}
         />
       )}
     </div>

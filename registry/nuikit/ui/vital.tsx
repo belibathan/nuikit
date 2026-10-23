@@ -15,7 +15,7 @@ import { Meter, type MeterTone } from "@/components/ui/meter"
  *   Removed in 0.10.0.
  *
  * Role: A player stat as an icon and a bar: an alias of Meter.
- * Anatomy: Meter (icon > bar)
+ * Anatomy: Meter, data-slot="vital" (icon > bar)
  * Props: value, icon, label, low, tone, size.
  * Level means: value / 100: how full the stat is.
  * Rules: Use Meter. At or under low it is data-state="alert". Colours from the vital tokens, never a literal.
@@ -50,6 +50,7 @@ function Vital({
       low={low >= 0 ? low : undefined}
       tone={!tone || tone === "default" ? "primary" : tone}
       className={cn(size === "sm" ? "w-20" : "w-32", className)}
+      data-slot="vital"
       {...props}
     />
   )

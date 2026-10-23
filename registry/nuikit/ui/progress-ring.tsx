@@ -89,11 +89,11 @@ function ringHalfKeyframes(half: "right" | "left"): Keyframe[] {
  * The default centre text of a timed run, written straight to the DOM every STEP_MS (no React render); the
  * rotors themselves run on useLinearRun.
  */
-function useRunText(root: React.RefObject<HTMLElement | null>, duration: number | undefined) {
+function useRunText(root: React.RefObject<HTMLElement | null>, duration: number | undefined, auto: boolean) {
   React.useLayoutEffect(() => {
-    if (!duration || duration <= 0) return
+    if (!duration || duration <= 0 || !auto) return
     const t0 = performance.now()
-    const text = root.current?.querySelector<HTMLElement>("[data-slot=progress-ring-center][data-auto]")
+    const text = root.current?.querySelector<HTMLElement>("[data-slot=progress-ring-center]")
     if (!text) return
     const tick = setInterval(() => {
       text.textContent = `${Math.round(ringPercent(performance.now() - t0, duration))}%`
@@ -103,7 +103,7 @@ function useRunText(root: React.RefObject<HTMLElement | null>, duration: number 
       clearInterval(tick)
       clearTimeout(end)
     }
-  }, [root, duration])
+  }, [root, duration, auto])
 }
 
 type ProgressRingProps = Omit<React.ComponentProps<"div">, "children"> &
@@ -157,7 +157,7 @@ function ProgressRing({
         keyframes: ringHalfKeyframes(half),
       })),
   })
-  useRunText(box, duration)
+  useRunText(box, duration, center === undefined)
   const timed = duration !== undefined && duration > 0
   const running = timed && !done
   const percent = timed ? (done ? 100 : 0) : ringPercent(value, max)
@@ -200,16 +200,17 @@ function ProgressRing({
         trackProps={{ className: game ? "stroke-(--scrim)" : "stroke-(--muted)", strokeOpacity: game ? 0.35 : 1 }}
         // timed: the rotors draw the run, the value arc waits (a butt cap draws nothing at 0)
         valueProps={{ "data-slot": "progress-ring-fill", className: toneClass, strokeLinecap: timed ? "butt" : "round" }}
-        aria-hidden
         className={cn(progressRingVariants({ size }), game && "nk-shadow")}
       >
-        {running &&
+        {timed &&
           // Timed: each half of the box clips a rotor carrying the opposite half-ring; rotating the rotor
           // sweeps its arc into view (right half first, from 12 o'clock clockwise). Transform only.
           (["right", "left"] as const).map((half) => (
             <div
               key={half}
               aria-hidden
+              // mounted for the whole timed life (a restart finds them), hidden once the run is done
+              hidden={!running}
               className={cn("absolute inset-y-0 w-1/2 overflow-hidden", half === "right" ? "right-0" : "left-0")}
             >
               <div

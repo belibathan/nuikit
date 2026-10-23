@@ -69,6 +69,9 @@ describe("composites", () => {
     expect(segs[0]).toContain("--level:1")
     expect(segs[2]).toContain("--level:0")
     expect(segs[0]).toContain("--nk-fill-color:var(--vital-health)")
+    expect(segs[0]).toContain("data-color")
+    // critical: the alert beats a hue
+    expect(dom(<Meter value={10} low={20} segments={2} hue="police" />).tags('data-slot="meter-segment"', 'data-state="alert"')).toHaveLength(2)
   })
 
   it("Meter's slab line is a Fill", () => {
@@ -127,8 +130,8 @@ describe("aliases render their canonical component", () => {
 
   it("Vital is a Meter", () => {
     const d = dom(<Vital value={10} tone="health" label="Health" icon={<svg />} />)
-    expect(d.has('data-slot="meter"', 'data-state="alert"', "w-32")).toBe(true)
-    expect(html(<Vital value={60} tone="armor" />)).toBe(html(<Meter value={60} tone="armor" low={20} className="w-32" />))
+    expect(d.has('data-slot="vital"', 'data-state="alert"', "w-32")).toBe(true)
+    expect(html(<Vital value={60} tone="armor" />)).toBe(html(<Meter value={60} tone="armor" low={20} className="w-32" data-slot="vital" />))
   })
 
   it("NuiMenu is a Panel of MenuRows", () => {

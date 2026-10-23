@@ -217,7 +217,9 @@ function EdgeSheetEdge({ value, danger = 90, className }: { value?: number; dang
       variant="edge"
       level={v === undefined ? 0 : v / 100}
       alert={v !== undefined && v >= danger}
-      className={cn("shrink-0", className)}
+      color="var(--brand, var(--primary))"
+      // no level: the hairline alone (no edge mark at its start)
+      className={cn("shrink-0", v === undefined && "after:hidden", className)}
       style={{ "--nk-fill-track": "var(--nk-panel-border)" } as React.CSSProperties}
     />
   )
