@@ -8,7 +8,6 @@ import "./index.css";
 // The landing page ships in the first chunk; every other page loads on its own.
 const ComponentsPage = lazy(() => import("./pages/components").then((m) => ({ default: m.ComponentsPage })));
 const BlocksPage = lazy(() => import("./pages/blocks").then((m) => ({ default: m.BlocksPage })));
-const ShotPage = lazy(() => import("./pages/shot").then((m) => ({ default: m.ShotPage })));
 const ThemePage = lazy(() => import("./pages/theme").then((m) => ({ default: m.ThemePage })));
 const DocPage = lazy(() => import("./pages/doc").then((m) => ({ default: m.DocPage })));
 const StartPage = lazy(() => import("./pages/start").then((m) => ({ default: m.StartPage })));
@@ -31,8 +30,6 @@ const pages: Record<string, () => ReactNode> = {
   "/adopt": () => <DocPage load={adopt} path="docs/adopt.md" />,
   "/language": () => <DocPage load={language} path="docs/design/your-language.md" />,
   "/theme": () => <ThemePage />,
-  // one block state full-viewport, for bench/blocks/shots.mjs (not linked)
-  "/blocks/shot": () => <ShotPage />,
 };
 loadIdentityFonts();
 applySiteTheme();
