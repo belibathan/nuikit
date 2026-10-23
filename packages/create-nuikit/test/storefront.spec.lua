@@ -276,6 +276,17 @@ Config.money.remove = realRemove
 r = buy(1, { { id = 'cola', count = 1 } })
 check(r.ok, 'and the next one goes through')
 
+-- the stock is held while the payment waits: another buyer can't get the same last items
+Config.money.remove = function(src, a, n) Wait(); return realRemove(src, a, n) end
+local left = stockOf('shake')
+NOW = NOW + 1000
+a = start(1, 'buy', { business = BIZ, items = { { id = 'shake', count = left } }, payment = 'cash' })
+NOW = NOW + 1000
+b = start(2, 'buy', { business = BIZ, items = { { id = 'shake', count = 1 } }, payment = 'cash' })()
+ra = a()
+Config.money.remove = realRemove
+check(left > 0 and ra.ok and not b.ok and stockOf('shake') == 0, 'the last ' .. left .. ' milkshakes, paying: a second buyer meanwhile is refused, never oversold (' .. tostring(b.error) .. ')')
+
 -- the same player twice within Config.rateMs
 NOW = NOW + 1000
 local x = start(1, 'open', { business = BIZ })()
@@ -287,6 +298,14 @@ local z = start(2, 'open', { business = BIZ })()
 check(z.ok, 'the rate limit is per player: another player is not slowed down')
 NOW = NOW + 300
 check(start(1, 'open', { business = BIZ })().ok, 'after the interval the player can ask again')
+NOW = NOW + 1000
+x = start(1, 'buy', { business = BIZ, items = { { id = 'cola', count = 1 } }, payment = 'cash' })()
+NOW = NOW + 50
+y = start(1, 'open', { business = BIZ })()
+check(x.ok and y.ok, 'a purchase and the snapshot 50 ms after it: both answered (' .. tostring(y.error) .. ')')
+NOW = NOW + 50
+y = start(1, 'buy', { business = BIZ, items = { { id = 'cola', count = 1 } }, payment = 'cash' })()
+check(not y.ok and y.error == 'Slow down.', 'two purchases 100 ms apart: the second is refused')
 
 -- OneSync off
 ONESYNC_CONVAR = 'off'

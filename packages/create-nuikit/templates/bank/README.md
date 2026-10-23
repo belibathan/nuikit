@@ -28,6 +28,11 @@ Legion Square Fleeca is the default) and press F9 or run `/{{name}}`.
 
 Every amount is checked again on the server (whole dollars, enough money, a recipient online). The page's
 checks are only for the player. A refused move ("There isn't that much in the account.") shows in the dialog.
+Where the player stands is the server's own position for them, never the page's: deposit and withdraw need a
+bank or an ATM, transfers (savings included) a bank. Requests are rate-limited per player.
+
+**OneSync:** the position check needs it. Without it the resource prints a red warning at start, the panel
+still opens, and every money move is refused.
 
 ## Files
 

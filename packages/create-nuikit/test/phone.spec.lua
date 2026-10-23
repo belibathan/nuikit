@@ -210,3 +210,14 @@ check(r.ok and r.phone.number == '5550007', 'a new player gets the free number')
 r = req(10, 'open')
 check(not r.ok and r.error == 'No numbers are left on the network.', 'no free number: refused with a clear error (' .. tostring(r.error) .. ')')
 math.random = realRandom
+
+-- opening is limited too (a snapshot can be large), on its own budget: it never uses up texting
+later()
+local opened = 0
+for _ = 1, 40 do if req(1, 'open').ok then opened = opened + 1 end end
+r = req(1, 'open')
+check(opened == Config.rate.opens and not r.ok and r.error == 'Slow down.', 'more than Config.rate.opens snapshots in a window: refused (' .. opened .. ' answered)')
+r = send(1, p2.number, 'still here')
+check(r.ok, 'while opening is limited, a text still goes through')
+later()
+check(req(1, 'open').ok, 'the next window: open again')

@@ -217,10 +217,20 @@ handlers.buy = function(src, data)
 
   -- Pay, give each product, credit the business; if any step fails (refused, or the framework
   -- errors), undo the ones before it. Every framework call is guarded so a throw can't skip the undo.
+  -- The stock is held for this order first (a framework call below may wait, and another buyer must
+  -- not get the same last items meanwhile); every failure puts it back.
+  local function hold(sign)
+    for _, product in ipairs(order) do
+      local ps = st.products[product.id]
+      if ps.stock then ps.stock = ps.stock - sign * want[product.id] end
+    end
+  end
+  hold(1)
   busy[src] = true
   local why = 'storefront ' .. biz.id
   local paidOk, paid = pcall(pay, src, payment, total, why)
   if not (paidOk and paid) then
+    hold(-1)
     busy[src] = nil
     return { ok = false, error = "The payment didn't go through. Nothing was taken." }
   end
@@ -230,6 +240,7 @@ handlers.buy = function(src, data)
     if not (backOk and back) then
       print(('^1[%s] refund of %d (%s) to %s failed: give it back by hand^0'):format(resource, total, payment, owner(src)))
     end
+    hold(-1)
     busy[src] = nil
     save()
   end
@@ -249,10 +260,6 @@ handlers.buy = function(src, data)
     return { ok = false, error = "The business couldn't take the payment. Nothing was bought." }
   end
   busy[src] = nil
-  for _, product in ipairs(order) do
-    local ps = st.products[product.id]
-    if ps.stock then ps.stock = ps.stock - want[product.id] end
-  end
   save()
   return { ok = true }
 end
@@ -308,11 +315,14 @@ RegisterNetEvent('{{name}}:req', function(id, name, data)
   local src = source
   local function reply(result) TriggerClientEvent('{{name}}:res', src, id, result) end
   if not ONESYNC then return reply({ ok = false, error = 'This storefront needs OneSync on the server.' }) end
-  -- One request per player per Config.rateMs.
-  local now = GetGameTimer()
-  if last[src] and now - last[src] < Config.rateMs then return reply({ ok = false, error = 'Slow down.' }) end
-  last[src] = now
+  -- One request of each kind per player per Config.rateMs (a purchase and the snapshot right after
+  -- it are two kinds, so the refresh isn't refused).
   local handler = type(name) == 'string' and handlers[name]
+  if not handler then return reply({ ok = false, error = 'Unknown request.' }) end
+  local now, mine = GetGameTimer(), last[src] or {}
+  last[src] = mine
+  if mine[name] and now - mine[name] < Config.rateMs then return reply({ ok = false, error = 'Slow down.' }) end
+  mine[name] = now
   local ok, result = pcall(function() return handler and handler(src, type(data) == 'table' and data or {}) end)
   if not ok then print(('[{{name}}] %s failed: %s'):format(name, result)) end
   reply(ok and result or { ok = false, error = 'The business had a problem. Try again.' })

@@ -216,10 +216,25 @@ handlers.release = function(src, data)
   return { ok = true }
 end
 
+-- At most RATE requests a second per player: the page asks far less often, and a store or take
+-- writes the whole file and may spawn a vehicle.
+local hits, RATE = {}, 10
+local function limited(src)
+  local now, h = GetGameTimer(), hits[src]
+  if not h or now - h.at >= 1000 then h = { at = now, n = 0 }; hits[src] = h end
+  h.n = h.n + 1
+  return h.n > RATE
+end
+AddEventHandler('playerDropped', function() hits[source] = nil end)
+
 RegisterNetEvent('{{name}}:req', function(id, name, data)
   local src = source
   if not ONESYNC then
     TriggerClientEvent('{{name}}:res', src, id, { ok = false, error = 'This garage needs OneSync on the server.' })
+    return
+  end
+  if limited(src) then
+    TriggerClientEvent('{{name}}:res', src, id, { ok = false, error = 'Not so fast.' })
     return
   end
   local handler = type(name) == 'string' and handlers[name]

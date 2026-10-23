@@ -21,6 +21,8 @@ function GetPlayerPed(s) return POS[s] and 1000 + s or 0 end
 function GetEntityCoords(p) return POS[p - 1000] end
 function GetEntityHeading() return 90.0 end
 function CreateThread() end
+local clock = 0
+function GetGameTimer() return clock end
 local handler, onStart, dropped
 function RegisterNetEvent(_, fn) handler = fn end
 function AddEventHandler(name, fn) if name == 'onResourceStart' then onStart = fn elseif name == 'playerDropped' then dropped = fn end end
@@ -32,7 +34,7 @@ local function boot()
 end
 boot()
 check(#PRINTED == 0, 'OneSync on, no other multicharacter: nothing printed at start')
-local function req(src, name, data) source = src; handler(1, name, data); return last end
+local function req(src, name, data) clock = clock + 150; source = src; handler(1, name, data); return last end
 local function open(src) return req(src, 'open').data end
 local function create(src, t) return req(src, 'create', t) end
 local function aged(years) local now = os.date('!*t') return ('%04d-%02d-%02d'):format(now.year - years, now.month, now.day) end
@@ -120,6 +122,17 @@ POS[1] = vector3(777, 888, 50)
 source = 1; dropped()
 r = req(1, 'play', { id = alex, spawn = 'last' })
 check(r.ok and r.at.x == 777, 'leaving saves the position: next time "last" is 777')
+
+-- rate limit: a client spamming open (each one writes the whole file)
+clock = clock + 5000
+local refused, saves = 0, 0
+local realSave = SaveResourceFile
+SaveResourceFile = function() saves = saves + 1 end
+for _ = 1, 30 do source = 1; handler(1, 'open', {}); if last.error == 'Not so fast.' then refused = refused + 1 end end
+SaveResourceFile = realSave
+check(refused == 20 and saves == 10, '30 opens in the same instant: 10 answered (10 saves), 20 refused (' .. refused .. ')')
+clock = clock + 1000
+check(req(1, 'open').ok, 'a second later: requests go through again')
 
 -- OneSync off; another multicharacter
 ONESYNC_CONVAR = 'off'

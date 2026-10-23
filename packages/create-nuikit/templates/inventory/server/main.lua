@@ -111,7 +111,21 @@ local function watching(src, stashId)
     viewers[stashId][src] = true
   end
 end
-AddEventHandler('playerDropped', function() watching(source, nil) end)
+-- At most RATE requests a second per player: the page asks far less often, and every move saves
+-- the whole file and refreshes the other viewers.
+local hits, lastUse, RATE = {}, {}, 10
+local function limited(src)
+  local now, h = GetGameTimer(), hits[src]
+  if not h or now - h.at >= 1000 then h = { at = now, n = 0 }; hits[src] = h end
+  h.n = h.n + 1
+  return h.n > RATE
+end
+
+AddEventHandler('playerDropped', function()
+  local src = source
+  watching(src, nil)
+  hits[src], lastUse[src] = nil, nil
+end)
 
 local handlers = {}
 
@@ -194,7 +208,6 @@ handlers.move = function(src, data)
   return { ok = true }
 end
 
-local lastUse = {}
 handlers.use = function(src, data)
   local inv = pockets(src)
   local key = slotOf(Config.player, data.slot)
@@ -213,6 +226,10 @@ end
 
 RegisterNetEvent('{{name}}:req', function(id, name, data)
   local src = source
+  if limited(src) then
+    TriggerClientEvent('{{name}}:res', src, id, { ok = false, error = 'Not so fast.' })
+    return
+  end
   local handler = type(name) == 'string' and handlers[name]
   local ok, result = pcall(function() return handler and handler(src, type(data) == 'table' and data or {}) end)
   if not ok then print(('[{{name}}] %s failed: %s'):format(name, result)) end

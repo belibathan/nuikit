@@ -26,6 +26,14 @@ Config = {
   },
 
   notify = true,                -- "Feeling more stressed" when it goes up
+
+  -- hud:server:GainStress / RelieveStress come from the client, so a cheat can send them too. Server
+  -- scripts use exports.nuikit_stress:AddStress / RelieveStress, which aren't limited.
+  limits = {
+    events = 10,                -- per player per window
+    window = 10000,             -- ms
+    relievePerMinute = 60,      -- stress a client can relieve per minute (a snack relieves about 12-24)
+  },
 }
 
 -- Stand down when the original HUD still runs stress (no double gain), or on frameworks without it.

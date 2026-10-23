@@ -347,7 +347,14 @@ function resumeOwn(t)
   end
 end
 
+--- A claim or release may only be about the resource that sent it.
+local function sentBy(resource)
+  local from = GetInvokingResource and GetInvokingResource()
+  return type(resource) == 'string' and (from == nil or from == resource)
+end
+
 AddEventHandler(EV.claim, function(e)
+  if type(e) ~= 'table' or not sentBy(e.resource) then return end
   seen = seen + 1
   seq = seq + 1
   local i = find(e.resource, e.id)
@@ -366,6 +373,7 @@ AddEventHandler(EV.claim, function(e)
 end)
 
 AddEventHandler(EV.release, function(resource, id)
+  if not sentBy(resource) then return end
   seen = seen + 1
   local i = find(resource, id)
   if not i then return end -- our own release has already applied it

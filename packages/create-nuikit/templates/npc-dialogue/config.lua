@@ -22,6 +22,8 @@ Config = {
   --   reason           the text shown when locked, instead of "Police only" / "Needs $500" / "Needs Lockpick"
   --   take / give      { money = 500, items = { { name = 'water', count = 1 } } }, all or nothing
   --   next             the node it leads to; leave it out and the conversation ends
+  --   cooldown         ms before the same player can take it again (give one to every choice that pays
+  --                    and can be reached again, or the loop is free money)
   account = 'cash', -- the account money requirements and prices use
   dialogues = {
     bartender = {
@@ -46,7 +48,8 @@ Config = {
         rumours = {
           text = "The sergeant at Mission Row has been asking questions. Keep your head down.",
           choices = {
-            { id = 'tip', label = 'Ask for a better tip', requires = { job = 'police' }, give = { money = 100 }, next = 'greet' },
+            -- it pays, and the tree leads back here: once every 30 minutes, or it's a money tap
+            { id = 'tip', label = 'Ask for a better tip', requires = { job = 'police' }, give = { money = 100 }, cooldown = 30 * 60 * 1000, next = 'greet' },
             { id = 'back', label = 'Thanks', next = 'greet' },
           },
         },

@@ -16,6 +16,8 @@ POS = { [1] = vector3(25.7, -1347.3, 29.5), [2] = vector3(25.0, -1346.0, 29.5), 
 function GetPlayerPed(s) return POS[s] and 1000 + s or 0 end
 function GetEntityCoords(p) return POS[p - 1000] end
 function Wait() coroutine.yield() end
+NOW = 0
+function GetGameTimer() return NOW end
 local handler, dropped
 function RegisterNetEvent(_, fn) handler = fn end
 function AddEventHandler(name, fn) if name == 'playerDropped' then dropped = fn end end
@@ -27,7 +29,9 @@ local function boot()
 end
 boot()
 local seq = 0
+-- Each request comes a second after the last, so the rate limit stays out of the way unless tested.
 local function start(src, name, data)
+  NOW = NOW + 1000
   seq = seq + 1
   local id = seq
   local co = coroutine.create(function() source = src; handler(id, name, data) end)
@@ -143,6 +147,33 @@ check(ra.ok and not b.ok and fw.cash == 741, 'two purchases at once: the second 
 Config.money.remove = realRemove
 r = buy(1, { { id = 'cola', count = 1 } })
 check(r.ok, 'and the next one goes through')
+
+-- the stock is held while the payment waits: another player can't buy the same last items
+Config.money.remove = function(src, a, n) Wait(); return realRemove(src, a, n) end
+local left = stockOf('sandwich')
+a = start(1, 'buy', { shop = SHOP, items = { { id = 'sandwich', count = left } }, payment = 'cash' })
+b = req(2, 'buy', { shop = SHOP, items = { { id = 'sandwich', count = 1 } }, payment = 'cash' })
+ra = a()
+Config.money.remove = realRemove
+check(ra.ok and not b.ok and stockOf('sandwich') == 0 and fw.bag.sandwich == left, 'the last ' .. left .. ' sandwiches, paying: a second buyer meanwhile is refused, never oversold (' .. tostring(b.error) .. ')')
+
+-- rate limit, per player and request
+local function at(src, name, d) return start(src, name, d)() end
+local x = req(1, 'open', { shop = SHOP })
+NOW = NOW - 950
+local y = at(1, 'open', { shop = SHOP })
+check(x.ok and not y.ok and y.error == 'Slow down.', 'two opens 50 ms apart: the second is refused (' .. tostring(y.error) .. ')')
+NOW = NOW - 950
+check(at(2, 'open', { shop = SHOP }).ok, 'the rate limit is per player: another player is not slowed down')
+x = req(1, 'buy', { shop = SHOP, items = { { id = 'cola', count = 1 } }, payment = 'cash' })
+NOW = NOW - 950
+y = at(1, 'open', { shop = SHOP })
+check(x.ok and y.ok, 'a buy and the snapshot right after it: both answered')
+x = req(1, 'buy', { shop = SHOP, items = { { id = 'cola', count = 1 } }, payment = 'cash' })
+local cash = fw.cash
+NOW = NOW - 950
+y = at(1, 'buy', { shop = SHOP, items = { { id = 'cola', count = 1 } }, payment = 'cash' })
+check(x.ok and not y.ok and fw.cash == cash, 'two buys 50 ms apart: the second is refused, charged once')
 
 -- OneSync off
 ONESYNC_CONVAR = 'off'

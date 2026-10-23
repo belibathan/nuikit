@@ -98,4 +98,33 @@ describe("NkDev.grantItems", () => {
     expect(r.ok).toBe(false);
     expect(r.msg).toContain("1 of 3");
   });
+  it("takes back what it gave when a later AddItem fails (all or nothing)", async () => {
+    const r = await run<any>(`
+      local inv, n = {}, 0
+      D = {
+        invStarted = function() return true end,
+        canCarry = function() return true end,
+        add = function(_, name, count) n = n + 1 if n == 3 then return false end inv[name] = (inv[name] or 0) + count return true end,
+        remove = function(_, name, count) inv[name] = inv[name] - count return true end,
+        playerData = function() return nil end,
+      }
+      local ok, msg = NkDev.grantItems(D, 5)
+      return { ok = ok, msg = msg, id = inv.id_card, water = inv.water }
+    `);
+    expect(r).toMatchObject({ ok: false, id: 0, water: 0 });
+    expect(r.msg).toContain("2 taken back");
+  });
+});
+
+describe("NkDev.queueNames (the dev restart queue)", () => {
+  const names = (queue: string) =>
+    run<string[]>(`return NkDev.queueNames(${JSON.stringify(queue)}, 'nuikit_dev', function(n) return n ~= 'ghost' end)`).then((r) => Object.values(r ?? {}));
+  it("keeps whole names of resources that exist, once each, never itself", async () => {
+    expect(await names("nuikit_hud\nox_inventory\r\nnuikit_hud nuikit_dev ghost")).toEqual(["nuikit_hud", "ox_inventory"]);
+  });
+  it("never yields anything a console would read as another command or a flag", async () => {
+    expect(await names("nuikit_hud;quit\nstop all\n-x\nrcon_password x\n`a`\nexec server.cfg")).toEqual(["stop", "all", "exec"]);
+    expect(await names("a".repeat(65))).toEqual([]);
+    expect((await names(Array.from({ length: 40 }, (_, i) => `r${i}`).join(" "))).length).toBe(32);
+  });
 });

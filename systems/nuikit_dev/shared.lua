@@ -32,6 +32,23 @@ function NkDev.authorize(state, source, what, now, isAllowed)
   return true
 end
 
+-- The restart queue's resource names (server.lua runs `ensure <name>` for each): whitespace-separated
+-- tokens that are whole resource names (letters, digits, _ and -, not starting with -), not this resource,
+-- existing (exists(name)), de-duplicated, at most 32. Anything else in the file is ignored, so it can
+-- never run another command.
+function NkDev.queueNames(queue, self, exists)
+  local out, seen = {}, {}
+  if type(queue) ~= 'string' then return out end
+  for token in queue:gmatch('%S+') do
+    if #out >= 32 then break end
+    if token:match('^[%w_][%w_%-]*$') and #token <= 64 and token ~= self and not seen[token] and exists(token) then
+      seen[token] = true
+      out[#out + 1] = token
+    end
+  end
+  return out
+end
+
 -- The qbx_idcard item metadata, from the player's data (qbx_core PlayerData) or placeholders.
 function NkDev.idCardMetadata(pd)
   pd = pd or {}
@@ -49,7 +66,8 @@ function NkDev.idCardMetadata(pd)
 end
 
 -- deps: invStarted() -> bool, canCarry(src, name, count) -> bool, add(src, name, count, metadata) -> bool,
--- playerData(src) -> table|nil. Returns ok, message.
+-- playerData(src) -> table|nil, remove(src, name, count, metadata) -> bool (optional). Returns ok, message.
+-- All or nothing: when one AddItem fails, what was already given is taken back.
 function NkDev.grantItems(deps, source)
   if not deps.invStarted() then return false, 'ox_inventory is not started' end
   local list = { { name = 'id_card', count = 1, metadata = NkDev.idCardMetadata(deps.playerData(source)) } }
@@ -60,7 +78,12 @@ function NkDev.grantItems(deps, source)
   local given = 0
   for _, it in ipairs(list) do
     if not deps.add(source, it.name, it.count, it.metadata) then
-      return false, ('could not add %s (%d of %d given)'):format(it.name, given, #list)
+      local kept = given
+      for i = given, 1, -1 do
+        local back = list[i]
+        if deps.remove and deps.remove(source, back.name, back.count, back.metadata) then kept = kept - 1 end
+      end
+      return false, ('could not add %s (%d of %d given, %d taken back)'):format(it.name, given, #list, given - kept)
     end
     given = given + 1
   end

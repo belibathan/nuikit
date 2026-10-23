@@ -69,15 +69,17 @@ local function allowed(src)
   return ok and has == true
 end
 
---- At most Config.rate.max requests per Config.rate.window seconds, per player.
-local function limited(src)
+--- At most `max` requests of a kind ('change', or 'open': a snapshot can be big) per
+--- Config.rate.window seconds, per player.
+local function limited(src, kind, max)
   local now, window = GetGameTimer(), Config.rate.window * 1000
-  local list = {}
-  for _, t in ipairs(hits[src] or {}) do
+  local mine, list = hits[src] or {}, {}
+  hits[src] = mine
+  for _, t in ipairs(mine[kind] or {}) do
     if now - t < window then list[#list + 1] = t end
   end
-  hits[src] = list
-  if #list >= Config.rate.max then return true end
+  mine[kind] = list
+  if #list >= max then return true end
   list[#list + 1] = now
   return false
 end
@@ -131,11 +133,12 @@ end
 
 local handlers = {}
 
---- Every handler starts here: the player may have a phone and has a number, and (for changes) isn't
+--- Every handler starts here: the player may have a phone and has a number, and isn't
 --- spamming. Returns the player's state, or nil and the answer to send.
 local function begin(src, changes)
   if not allowed(src) then return nil, { ok = false, error = "You don't have a phone." } end
-  if changes and limited(src) then return nil, { ok = false, error = 'Slow down.' } end
+  local kind = changes and 'change' or 'open'
+  if limited(src, kind, changes and Config.rate.max or (Config.rate.opens or 30)) then return nil, { ok = false, error = 'Slow down.' } end
   local st = account(src)
   if not st then return nil, { ok = false, error = 'No numbers are left on the network.' } end
   return st

@@ -85,6 +85,17 @@ open(2); r = choose(2, 'rumours')
 check(r.ok and not byId(r, 'tip').locked, 'a police officer sees the tip unlocked')
 r = choose(2, 'tip'); check(r.ok, 'and takes it (+$100)')
 r = open(2); r = choose(2, 'drink'); r = choose(2, 'pay'); check(r.ok, 'player 2 keeps their own state (a separate conversation)')
+-- the tip pays and the tree leads back to it: its cooldown stops a money loop
+local paid, t0 = 0, NOW
+Config.money = { get = function() return 1000 end, remove = function() return true end, add = function(_, _, n) paid = paid + n return true end }
+r = choose(2, 'rumours'); r = choose(2, 'tip')
+check(r.ok == false and r.error == 'Not again so soon.' and paid == 0, 'the tip again right away (greet, rumours, tip): refused, nothing paid (' .. tostring(r.error) .. ')')
+source = 2; dropped(); open(2); r = choose(2, 'rumours'); r = choose(2, 'tip')
+check(not r.ok and paid == 0, 'a reconnect does not reset the cooldown')
+NOW = NOW + 30 * 60 * 1000
+r = choose(2, 'tip'); check(r.ok and paid == 100, 'after the cooldown the tip is paid again')
+Config.money = nil
+source = 2; dropped(); NOW = t0 -- back to the spec's clock for what follows
 Config.job = nil
 
 -- far away: the conversation is dropped

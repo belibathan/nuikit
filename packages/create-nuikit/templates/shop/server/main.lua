@@ -104,8 +104,19 @@ local function snapshot(src, shop)
   return { title = shop.label, description = shop.description, categories = shop.categories, items = items, wallet = wallet, payment = shop.payment or { 'cash' } }
 end
 
-local busy = {}
-AddEventHandler('playerDropped', function() busy[source] = nil end)
+local busy, last = {}, {}
+AddEventHandler('playerDropped', function() busy[source] = nil; last[source] = nil end)
+
+-- Per player and request: at most one every MIN_GAP ms (a buy and the snapshot after it are two
+-- requests, so each has its own clock).
+local MIN_GAP = 250
+local function tooSoon(src, name)
+  local now, mine = GetGameTimer(), last[src] or {}
+  last[src] = mine
+  if mine[name] and now - mine[name] < MIN_GAP then return true end
+  mine[name] = now
+  return false
+end
 
 local handlers = {}
 
@@ -145,11 +156,21 @@ handlers.buy = function(src, data)
   end
   if balance(src, payment) < total then return { ok = false, error = payment == 'cash' and "You don't have enough cash." or "You don't have enough money in the bank." } end
 
+  -- The stock is held for this purchase first (a framework call below may wait, and another player
+  -- must not buy the same last items meanwhile); every failure puts it back.
+  local function restock(sign)
+    for _, item in ipairs(order) do
+      if stock[shop.id][item.id] then stock[shop.id][item.id] = stock[shop.id][item.id] + sign * want[item.id] end
+    end
+  end
+  restock(-1)
+
   -- Pay, then give each item; if one can't be given (refused, or the framework errors), take back
   -- what was given and refund. Every framework call is guarded so a throw can't skip the undo.
   busy[src] = true
   local paidOk, paid = pcall(pay, src, payment, total, 'shop ' .. shop.id)
   if not (paidOk and paid) then
+    restock(1)
     busy[src] = nil
     return { ok = false, error = "The payment didn't go through. Nothing was taken." }
   end
@@ -164,14 +185,12 @@ handlers.buy = function(src, data)
     if not (backOk and back) then
       print(('^1[%s] refund of %d (%s) to %s failed: give it back by hand^0'):format(resource, total, payment, owner(src)))
     end
+    restock(1)
     busy[src] = nil
     save()
     return { ok = false, error = "You can't carry all that. Nothing was bought." }
   end
   busy[src] = nil
-  for _, item in ipairs(order) do
-    if stock[shop.id][item.id] then stock[shop.id][item.id] = stock[shop.id][item.id] - want[item.id] end
-  end
   save()
   return { ok = true }
 end
@@ -183,7 +202,14 @@ RegisterNetEvent('{{name}}:req', function(id, name, data)
     return
   end
   local handler = type(name) == 'string' and handlers[name]
+  if handler and tooSoon(src, name) then
+    TriggerClientEvent('{{name}}:res', src, id, { ok = false, error = 'Slow down.' })
+    return
+  end
   local ok, result = pcall(function() return handler and handler(src, type(data) == 'table' and data or {}) end)
-  if not ok then print(('[{{name}}] %s failed: %s'):format(name, result)) end
+  if not ok then
+    busy[src] = nil
+    print(('[{{name}}] %s failed: %s'):format(name, result))
+  end
   TriggerClientEvent('{{name}}:res', src, id, ok and result or { ok = false, error = 'The shop had a problem. Try again.' })
 end)

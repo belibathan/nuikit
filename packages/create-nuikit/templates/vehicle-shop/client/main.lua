@@ -32,14 +32,17 @@ end)
 -- ───────────────────────────────── paint, the preview car, the camera
 
 local function paint(veh, hex)
-  if not hex or not hex:match('^#%x%x%x%x%x%x$') then return end
+  if type(hex) ~= 'string' or not hex:match('^#%x%x%x%x%x%x$') or not IsEntityAVehicle(veh) then return end
   local r, g, b = tonumber(hex:sub(2, 3), 16), tonumber(hex:sub(4, 5), 16), tonumber(hex:sub(6, 7), 16)
   SetVehicleCustomPrimaryColour(veh, r, g, b)
   SetVehicleCustomSecondaryColour(veh, r, g, b)
 end
 
--- Cars the server spawned carry their colour in a state bag; paint them when they stream in.
+-- Cars the server spawned carry their colour in a state bag; paint them when they stream in. Any
+-- client can set this key on an entity it owns, so the value is checked and only a vehicle is
+-- painted (no more than its owner could do to it anyway).
 AddStateBagChangeHandler('nkColour', nil, function(bag, _, value)
+  if type(value) ~= 'string' then return end
   local net = tonumber(bag:match('^entity:(%d+)$'))
   if not net then return end
   local deadline = GetGameTimer() + 3000

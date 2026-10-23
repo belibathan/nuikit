@@ -49,7 +49,9 @@ local function boot()
 end
 boot()
 local seq = 0
+-- Each request comes a second after the last, so the rate limit stays out of the way unless tested.
 local function start(src, name, data)
+  clock = clock + 1000
   seq = seq + 1
   local id = seq
   local co = coroutine.create(function() source = src; handler(id, name, data) end)
@@ -176,6 +178,28 @@ check(r.ok, 'right after a failed spawn the next one works (reservation and cool
 car = r.net
 source = 1; dropped()
 check(ents[car] == nil, 'the player leaves mid test drive: the car is removed')
+-- the player leaves while the test car is still arriving: it is removed when it comes
+SPAWN = 'slow'
+local alive2 = count(ents)
+local t = start(2, 'test', { shop = 'pdm', id = 'sultan', colour = '#0b0b0b' })
+source = 2; dropped()
+r = t()
+SPAWN = 'ok'
+check(not r.ok and count(ents) == alive2, 'the player leaves before the test car arrives: no car is left behind (' .. tostring(r.error) .. ')')
+
+-- rate limit, per player and request
+local function at(src, name, d) return start(src, name, d)() end
+local x = req(1, 'open', { shop = 'pdm' })
+clock = clock - 950
+local y = at(1, 'open', { shop = 'pdm' })
+check(x.ok and not y.ok and y.error == 'Slow down.', 'two opens 50 ms apart: the second is refused (' .. tostring(y.error) .. ')')
+clock = clock - 950
+check(at(2, 'open', { shop = 'pdm' }).ok, 'the rate limit is per player: another player is not slowed down')
+local bank = wallet(1).bank
+x = buy(1, 'panto', '#0b0b0b')
+clock = clock - 950
+y = at(1, 'buy', { shop = 'pdm', id = 'panto', colour = '#0b0b0b', payment = 'bank' })
+check(x.ok and not y.ok and y.error == 'Slow down.' and wallet(1).bank == bank - 4500, 'two purchases 50 ms apart: the second is refused, charged once')
 
 -- OneSync off
 ONESYNC_CONVAR = 'off'

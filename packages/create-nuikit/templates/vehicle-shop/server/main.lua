@@ -109,7 +109,17 @@ local function snapshot(src, shop)
   }
 end
 
-local busy, tests, lastTest = {}, {}, {}
+local busy, tests, lastTest, last = {}, {}, {}, {}
+
+-- Per player and request: at most one every MIN_GAP ms.
+local MIN_GAP = 250
+local function tooSoon(src, name)
+  local now, mine = GetGameTimer(), last[src] or {}
+  last[src] = mine
+  if mine[name] and now - mine[name] < MIN_GAP then return true end
+  mine[name] = now
+  return false
+end
 
 local function endTest(src)
   local t = tests[src]
@@ -120,7 +130,7 @@ local function endTest(src)
 end
 AddEventHandler('playerDropped', function()
   local src = source
-  busy[src] = nil
+  busy[src], last[src] = nil, nil
   if tests[src] then
     if DoesEntityExist(tests[src].entity) then DeleteEntity(tests[src].entity) end
     tests[src] = nil
@@ -196,6 +206,10 @@ handlers.test = function(src, data)
     tests[src], lastTest[src] = nil, nil -- a car that never came doesn't count against the player
     return { ok = false, error = "The car didn't arrive. Try again." }
   end
+  if not tests[src] then -- the player left while it arrived: nobody else will remove it
+    if DoesEntityExist(entity) then DeleteEntity(entity) end
+    return { ok = false, error = "You left before the car arrived." }
+  end
   tests[src].entity = entity
   SetTimeout(shop.testDrive.seconds * 1000, function()
     if tests[src] and tests[src].entity == entity then endTest(src) end
@@ -210,6 +224,10 @@ RegisterNetEvent('{{name}}:req', function(id, name, data)
     return
   end
   local handler = type(name) == 'string' and handlers[name]
+  if handler and tooSoon(src, name) then
+    TriggerClientEvent('{{name}}:res', src, id, { ok = false, error = 'Slow down.' })
+    return
+  end
   local ok, result = pcall(function() return handler and handler(src, type(data) == 'table' and data or {}) end)
   if not ok then
     busy[src] = nil

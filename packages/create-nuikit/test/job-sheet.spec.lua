@@ -17,6 +17,8 @@ function GetPlayerIdentifierByType(s) return NAMES[s] and ('license:' .. s) or n
 local events = {}
 function TriggerEvent(...) events[#events+1] = { ... } end
 function AddEventHandler() end
+local clock = 0
+function GetGameTimer() return clock end
 local synced = {}
 local handler, commands = nil, {}
 function RegisterNetEvent(_, fn) handler = fn end
@@ -25,7 +27,7 @@ local last
 function TriggerClientEvent(_, _, _, result) last = result end
 boot()
 Config.sync = function(src, job, grade, onDuty) synced[#synced+1] = { src = src, job = job, grade = grade, onDuty = onDuty } end
-local function req(src, name, data) source = src; handler(1, name, data); return last end
+local function req(src, name, data) clock = clock + 150; source = src; handler(1, name, data); return last end
 local function open(src) return req(src, 'open') end
 local function pageOf(data, id) for _, p in ipairs(data.pages) do if p.id == id then return p end end end
 local function rowIds(p) local t = {} for _, s in ipairs(p.sections) do for _, r in ipairs(s.rows) do t[r.id] = r end end return t end
@@ -52,6 +54,7 @@ check(armory.pistol and not armory.carbine, 'the officer does not see the carbin
 r = open(3)
 root = rowIds(r.data.pages[1])
 check(not root.armory and not root.billing and root.locker and root.garage, 'a cadet (grade 0) sees neither the armory nor billing')
+check(not pageOf(r.data, 'armory') and pageOf(r.data, 'records'), 'a cadet is not sent the armory page (its only way in is above their grade)')
 r = open(2)
 check(rowIds(pageOf(r.data, 'armory')).carbine ~= nil, 'a sergeant sees the carbine')
 local leaked = false
@@ -80,8 +83,14 @@ r = req(1, 'row', { page = 'root', id = 'armory' })
 check(not r.ok and r.error == "You can't do that.", 'a sub-page row is never an action')
 r = req(1, 'row', { page = 'armory', id = 'carbine' })
 check(not r.ok and r.error == "You can't do that.", 'a row above your grade: refused even when the page sends it')
+r = req(3, 'row', { page = 'armory', id = 'pistol' })
+check(not r.ok and r.error == "You can't do that.", 'a cadet asking for a row on the armory page (no minGrade of its own): refused, the way in is above their grade')
 r = req(2, 'row', { page = 'armory', id = 'carbine' })
-check(r.ok, 'the same row for a sergeant: allowed')
+check(not r.ok and r.error == 'Go on duty first.', 'a sergeant off duty on the armory page (its way in is on-duty only): refused')
+req(2, 'duty', { onDuty = true })
+r = req(2, 'row', { page = 'armory', id = 'carbine' })
+check(r.ok, 'the same row for a sergeant on duty: allowed')
+req(2, 'duty', { onDuty = false })
 r = req(1, 'row', { page = 'root', id = 'pistol' })
 check(not r.ok, 'a row from another page: refused')
 r = req(1, 'row', { page = 'armory', id = 'takeall' })
@@ -117,3 +126,12 @@ check(r.ok and type(inner) == 'table' and inner.ok == false and inner.error == '
 TriggerEvent = real
 r = req(1, 'row', { page = 'root', id = 'locker' })
 check(r.ok, 'and the player is free again after it')
+
+-- rate limit: a client spamming the event (each duty change saves and syncs)
+clock = clock + 5000
+local refused, n0 = 0, #synced
+for _ = 1, 30 do source = 1; handler(1, 'duty', { onDuty = true }); if last.error == 'Not so fast.' then refused = refused + 1 end end
+check(refused == 20 and #synced == n0 + 10, '30 requests in the same instant: 10 go through, 20 refused (' .. refused .. ')')
+clock = clock + 1000
+r = req(1, 'open')
+check(r.ok, 'a second later: requests go through again')

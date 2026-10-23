@@ -212,8 +212,23 @@ handlers.grade = function(src, data)
   return { ok = true }
 end
 
+-- At most RATE requests a second per player: the menu asks far less often, and each one may save,
+-- sync the framework or announce an action that spawns something.
+local hits, RATE = {}, 10
+local function limited(src)
+  local now, h = GetGameTimer(), hits[src]
+  if not h or now - h.at >= 1000 then h = { at = now, n = 0 }; hits[src] = h end
+  h.n = h.n + 1
+  return h.n > RATE
+end
+AddEventHandler('playerDropped', function() hits[source] = nil end)
+
 RegisterNetEvent('{{name}}:req', function(id, name, data)
   local src = source
+  if limited(src) then
+    TriggerClientEvent('{{name}}:res', src, id, { ok = false, error = 'Not so fast.' })
+    return
+  end
   local handler = type(name) == 'string' and handlers[name]
   local ok, result = pcall(function() return handler and handler(src, type(data) == 'table' and data or {}) end)
   if not ok then print(('[{{name}}] %s failed: %s'):format(name, result)) end
