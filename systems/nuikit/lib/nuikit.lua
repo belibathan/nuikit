@@ -747,6 +747,23 @@ function NUI.zone(name, rects)
   bag:set(ZONES, all, false)
 end
 
+-- a page publishes its own zones (nuikit-core publishZone): { name, rects } in screen fractions, nil removes
+NUI.on('nuikit:zone', function(body)
+  if type(body) ~= 'table' or type(body.name) ~= 'string' or #body.name > 64 then return { ok = false } end
+  local rects = nil
+  if type(body.rects) == 'table' then
+    rects = {}
+    for i, r in ipairs(body.rects) do
+      if i > 32 then break end
+      if type(r) == 'table' and type(r.x) == 'number' and type(r.y) == 'number' and type(r.w) == 'number' and type(r.h) == 'number' then
+        rects[#rects + 1] = { x = r.x, y = r.y, w = r.w, h = r.h }
+      end
+    end
+  end
+  NUI.zone(body.name, rects)
+  return { ok = true }
+end)
+
 if AddStateBagChangeHandler then
   AddStateBagChangeHandler(ZONES, nil, function(bagName, _, value)
     if not NUI._isOwnBag(bagName) then return end

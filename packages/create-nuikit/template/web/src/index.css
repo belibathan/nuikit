@@ -1,6 +1,6 @@
 /* Cascade layers (tokens 1.5, docs/design/default.md §4), declared before Tailwind's own so the kit's sit between
    them: kit defaults and primitives under the utilities, a theme (nk.theme) and the page (nk.app) over them. */
-@layer theme, base, nk.base, components, nk.kit, utilities, nk.theme, nk.app;
+@layer theme, base, nk.base, nk.layout, components, nk.kit, utilities, nk.theme, nk.app;
 @import "tailwindcss";
 /* shadcn's enter/exit animations (data-[state=open]:animate-in …): every page ships them. */
 @import "tw-animate-css";
@@ -854,10 +854,11 @@
 
 /* NUI scale: the kit is designed at 1080p and grows with the game's resolution (docs/design.md). */
 @layer base {
-  /* 1rem = 16px at 1080p, scaling with the game's resolution (21px at 1440p, 32px at 4K),
-     times --nk-scale (the theme's UI size × the player's UI scale preference). */
+  /* 1rem = 16px at 1080p, scaling with the game's resolution (21px at 1440p, 32px at 4K), and with the width
+     on a screen narrower than 16:9 (16:10, 4:3) so the 16:9 design fits; never under 16px × --nk-scale-min
+     (12px), times --nk-scale (the theme's UI size × the player's UI scale preference). docs/design/layout.md */
   html {
-    font-size: calc(clamp(12px, 1.4815vh, 32px) * var(--nk-scale, 1));
+    font-size: calc(clamp(calc(16px * var(--nk-scale-min, 0.75)), min(1.4815vh, 0.8333vw), 32px) * var(--nk-scale, 1));
     font-family: var(--font-sans, ui-sans-serif, system-ui, sans-serif);
     font-weight: var(--nk-weight-body, 400);
     -webkit-font-smoothing: antialiased;
@@ -894,7 +895,7 @@
  * on documented data attributes), a page into nk.app or unlayered. Tailwind's utilities sit between nk.kit and
  * nk.theme, so a className still restyles a primitive. index.css.tpl declares the order before Tailwind's own.
  */
-@layer theme, base, nk.base, components, nk.kit, utilities, nk.theme, nk.app;
+@layer theme, base, nk.base, nk.layout, components, nk.kit, utilities, nk.theme, nk.app;
 
 /*
  * Tokens 1.5 (docs/design/default.md §2): the Default theme levers, every theme gets them. These are the Graphite defaults
@@ -1766,37 +1767,38 @@
 }
 /*
  * Anchors: pin an element to a corner or edge of the screen, --nk-edge in (1.5rem unless an
- * ancestor sets it). Absolute, so put them inside the full-screen root. The edge-centred ones
+ * ancestor sets it), inside the layout's content box and safe area (nk.layout: the 16:9 box on an ultrawide).
+ * The same geometry as a [data-nk-zone]; prefer a Zone (registry zone.tsx) for anything new. Absolute, so put them inside the full-screen root. The edge-centred ones
  * centre with auto margins, not a transform, so nk-enter and dialogs never fight over it.
  */
 /* @merge nk-anchor */
 @utility nk-anchor-tl {
   position: absolute;
-  top: var(--nk-edge, 1.5rem);
-  left: var(--nk-edge, 1.5rem);
+  top: calc(var(--nk-area-t, 0px) + var(--nk-safe-y, 0rem) + var(--nk-edge, 1.5rem));
+  left: calc(var(--nk-area-l, 0px) + var(--nk-safe-x, 0rem) + var(--nk-edge, 1.5rem));
 }
 /* @merge nk-anchor */
 @utility nk-anchor-tr {
   position: absolute;
-  top: var(--nk-edge, 1.5rem);
-  right: var(--nk-edge, 1.5rem);
+  top: calc(var(--nk-area-t, 0px) + var(--nk-safe-y, 0rem) + var(--nk-edge, 1.5rem));
+  right: calc(var(--nk-area-r, 0px) + var(--nk-safe-x, 0rem) + var(--nk-edge, 1.5rem));
 }
 /* @merge nk-anchor */
 @utility nk-anchor-bl {
   position: absolute;
-  bottom: var(--nk-edge, 1.5rem);
-  left: var(--nk-edge, 1.5rem);
+  bottom: calc(var(--nk-area-b, 0px) + var(--nk-safe-y, 0rem) + var(--nk-edge, 1.5rem));
+  left: calc(var(--nk-area-l, 0px) + var(--nk-safe-x, 0rem) + var(--nk-edge, 1.5rem));
 }
 /* @merge nk-anchor */
 @utility nk-anchor-br {
   position: absolute;
-  bottom: var(--nk-edge, 1.5rem);
-  right: var(--nk-edge, 1.5rem);
+  bottom: calc(var(--nk-area-b, 0px) + var(--nk-safe-y, 0rem) + var(--nk-edge, 1.5rem));
+  right: calc(var(--nk-area-r, 0px) + var(--nk-safe-x, 0rem) + var(--nk-edge, 1.5rem));
 }
 /* @merge nk-anchor */
 @utility nk-anchor-t {
   position: absolute;
-  top: var(--nk-edge, 1.5rem);
+  top: calc(var(--nk-area-t, 0px) + var(--nk-safe-y, 0rem) + var(--nk-edge, 1.5rem));
   left: 0;
   right: 0;
   width: max-content;
@@ -1805,7 +1807,7 @@
 /* @merge nk-anchor */
 @utility nk-anchor-b {
   position: absolute;
-  bottom: var(--nk-edge, 1.5rem);
+  bottom: calc(var(--nk-area-b, 0px) + var(--nk-safe-y, 0rem) + var(--nk-edge, 1.5rem));
   left: 0;
   right: 0;
   width: max-content;
@@ -1814,7 +1816,7 @@
 /* @merge nk-anchor */
 @utility nk-anchor-l {
   position: absolute;
-  left: var(--nk-edge, 1.5rem);
+  left: calc(var(--nk-area-l, 0px) + var(--nk-safe-x, 0rem) + var(--nk-edge, 1.5rem));
   top: 0;
   bottom: 0;
   height: max-content;
@@ -1823,7 +1825,7 @@
 /* @merge nk-anchor */
 @utility nk-anchor-r {
   position: absolute;
-  right: var(--nk-edge, 1.5rem);
+  right: calc(var(--nk-area-r, 0px) + var(--nk-safe-x, 0rem) + var(--nk-edge, 1.5rem));
   top: 0;
   bottom: 0;
   height: max-content;
@@ -3358,4 +3360,235 @@ html[data-nk-backdrop="on"] * {
 }
 :is(html, *)[data-nk-fill="soft"] [data-slot="vital-chip"][data-level="fill"] [data-slot="vital-chip-icon-ink"] {
   display: none;
+}
+
+/*
+ * Layout (docs/design/layout.md): Screen → zones → containers. The screen is the only container a NUI page
+ * has (Chromium 103: no @container), so the levers live on :root and the aspect class picks their defaults.
+ *
+ *   --nk-screen-ratio  the content box's width / height (16:9). On a wider screen the box stays 16:9 and
+ *                      centred; a zone or page with data-nk-bleed (or a huge ratio) uses the whole width.
+ *   --nk-area-{l,r,t,b} the box's insets from the screen (derived; the HUD sets them from GTA's own area).
+ *   --nk-safe-{x,y}    a safe area inside the box (TV overscan, a bezel), rem.
+ *   --nk-edge          a zone's distance from the safe area (per aspect: 1rem at 4:3, 1.25rem at 16:10).
+ *   --nk-zone-inset / --nk-zone-gap / --nk-zone-z  per zone: its inset (default --nk-edge), the gap between
+ *                      what it stacks, its stacking order.
+ *   --nk-scale-min     the rem floor as a fraction of the 1080p rem (0.75: 12px), so 1280×720 and 4:3 stay readable.
+ * VIEWPORTS (nuikit-core src/viewport.ts) is the same table; a test keeps them equal.
+ */
+@layer nk.layout {
+  :root,
+  [data-nk-theme] {
+    --nk-screen-ratio: 1.7778;
+    --nk-screen-max: calc(100vh * var(--nk-screen-ratio));
+    --nk-area-l: max(0px, calc((100vw - var(--nk-screen-max)) / 2));
+    --nk-area-r: max(0px, calc((100vw - var(--nk-screen-max)) / 2));
+    --nk-area-t: 0px;
+    --nk-area-b: 0px;
+    --nk-safe-x: 0rem;
+    --nk-safe-y: 0rem;
+    --nk-edge: 1.5rem;
+    --nk-scale-min: 0.75;
+    --nk-zone-gap: var(--nk-space-3);
+    --nk-region-max: 28rem;
+    --nk-region-pad: var(--nk-pad-surface, 1.5rem);
+    --nk-grid-cell: 5.5rem;
+    --nk-grid-gap: var(--nk-space-2);
+  }
+  /* aspect defaults (VIEWPORTS): narrower screens pull the edges in */
+  @media (max-aspect-ratio: 3/2) {
+    :root {
+      --nk-edge: 1rem;
+    }
+  }
+  @media (min-aspect-ratio: 3/2) and (max-aspect-ratio: 17/10) {
+    :root {
+      --nk-edge: 1.25rem;
+    }
+  }
+  [data-nk-bleed] {
+    --nk-area-l: 0px;
+    --nk-area-r: 0px;
+  }
+  /* a fixed 1920×1080 stage inside another page (the site's previews): the 16:9 defaults, whatever the window */
+  [data-nk-stage] {
+    --nk-area-l: 0px;
+    --nk-area-r: 0px;
+    --nk-edge: 1.5rem;
+  }
+
+  /* Screen: the root of a page */
+  [data-slot="screen"] {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  /*
+   * Zones: nine places (tl tc tr / ml mc mr / bl bc br) and four edges (t r b l). A zone is a flex column that
+   * grows towards the screen centre (bottom zones stack upwards: the first child at the edge), aligned to its
+   * own side. data-nk-flow and data-nk-align override; useClearOf's inline top/bottom/left/right moves it clear.
+   */
+  [data-nk-zone] {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    gap: var(--nk-zone-gap);
+    z-index: var(--nk-zone-z, auto);
+    max-width: calc(100% - var(--nk-area-l) - var(--nk-area-r) - 2 * var(--nk-safe-x) - 2 * var(--nk-zone-inset, var(--nk-edge)));
+    max-height: calc(100% - var(--nk-area-t) - var(--nk-area-b) - 2 * var(--nk-safe-y) - 2 * var(--nk-zone-inset, var(--nk-edge)));
+  }
+  [data-nk-zone]:not([data-nk-zone="t"], [data-nk-zone="b"], [data-nk-zone="l"], [data-nk-zone="r"]) > * {
+    pointer-events: auto;
+  }
+  [data-nk-zone^="t"] {
+    top: calc(var(--nk-area-t) + var(--nk-safe-y) + var(--nk-zone-inset, var(--nk-edge)));
+  }
+  [data-nk-zone^="b"] {
+    bottom: calc(var(--nk-area-b) + var(--nk-safe-y) + var(--nk-zone-inset, var(--nk-edge)));
+    flex-direction: column-reverse;
+  }
+  [data-nk-zone^="m"] {
+    top: 0;
+    bottom: 0;
+    height: max-content;
+    margin-block: auto;
+  }
+  [data-nk-zone$="l"] {
+    left: calc(var(--nk-area-l) + var(--nk-safe-x) + var(--nk-zone-inset, var(--nk-edge)));
+    align-items: flex-start;
+  }
+  [data-nk-zone$="r"] {
+    right: calc(var(--nk-area-r) + var(--nk-safe-x) + var(--nk-zone-inset, var(--nk-edge)));
+    align-items: flex-end;
+  }
+  [data-nk-zone$="c"] {
+    left: 0;
+    right: 0;
+    width: max-content;
+    margin-inline: auto;
+    align-items: center;
+  }
+  /* edges: flush to the box, spanning their side (sheets, bands) */
+  [data-nk-zone="t"],
+  [data-nk-zone="b"],
+  [data-nk-zone="l"],
+  [data-nk-zone="r"] {
+    margin: 0;
+    width: auto;
+    height: auto;
+    max-width: none;
+    max-height: none;
+    align-items: stretch;
+  }
+  [data-nk-zone="t"] {
+    top: var(--nk-area-t);
+    left: var(--nk-area-l);
+    right: var(--nk-area-r);
+    bottom: auto;
+    flex-direction: column;
+  }
+  [data-nk-zone="b"] {
+    bottom: var(--nk-area-b);
+    left: var(--nk-area-l);
+    right: var(--nk-area-r);
+    top: auto;
+  }
+  [data-nk-zone="l"],
+  [data-nk-zone="r"] {
+    top: var(--nk-area-t);
+    bottom: var(--nk-area-b);
+    flex-direction: row;
+  }
+  [data-nk-zone="l"] {
+    left: var(--nk-area-l);
+    right: auto;
+  }
+  [data-nk-zone="r"] {
+    right: var(--nk-area-r);
+    left: auto;
+    flex-direction: row-reverse;
+  }
+
+  /* flex patterns as data, never per-screen CSS */
+  [data-nk-flow="row"] {
+    flex-direction: row;
+  }
+  [data-nk-flow="column"] {
+    flex-direction: column;
+  }
+  [data-nk-flow="row-reverse"] {
+    flex-direction: row-reverse;
+  }
+  [data-nk-flow="column-reverse"] {
+    flex-direction: column-reverse;
+  }
+  [data-nk-flow="wrap"] {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+  [data-nk-align="start"] {
+    align-items: flex-start;
+  }
+  [data-nk-align="center"] {
+    align-items: center;
+  }
+  [data-nk-align="end"] {
+    align-items: flex-end;
+  }
+  [data-nk-align="stretch"] {
+    align-items: stretch;
+  }
+  [data-nk-justify="start"] {
+    justify-content: flex-start;
+  }
+  [data-nk-justify="center"] {
+    justify-content: center;
+  }
+  [data-nk-justify="end"] {
+    justify-content: flex-end;
+  }
+  [data-nk-justify="between"] {
+    justify-content: space-between;
+  }
+
+  /* Region: a content column (header, body, footer) with a max width and the padding scale */
+  [data-slot="region"] {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    width: 100%;
+    max-width: var(--nk-region-max);
+    padding: var(--nk-region-pad);
+  }
+  [data-slot="region"][data-pad="none"] {
+    --nk-region-pad: 0rem;
+  }
+  [data-slot="region"][data-pad="tight"] {
+    --nk-region-pad: var(--nk-space-4);
+  }
+  [data-slot="region"][data-fill] {
+    height: 100%;
+  }
+  [data-slot="region-body"] {
+    min-height: 0;
+    flex: 1 1 auto;
+  }
+  [data-slot="region-footer"] {
+    margin-top: auto;
+    flex-shrink: 0;
+  }
+
+  /* Grid: slot grids on two levers; columns fixed (--nk-grid-cols) or as many as fit */
+  [data-slot="grid"] {
+    display: grid;
+    grid-template-columns: repeat(var(--nk-grid-cols, auto-fill), var(--nk-grid-cell));
+    grid-auto-rows: var(--nk-grid-cell);
+    gap: var(--nk-grid-gap);
+    justify-content: start;
+  }
+  [data-slot="grid"][data-fluid] {
+    grid-template-columns: repeat(var(--nk-grid-cols, auto-fill), minmax(var(--nk-grid-cell), 1fr));
+  }
 }

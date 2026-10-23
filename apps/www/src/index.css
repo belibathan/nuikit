@@ -1,5 +1,5 @@
 /* The kit's layer order before Tailwind declares its own (as every UI's index.css does): nk.kit under utilities. */
-@layer theme, base, nk.base, components, nk.kit, utilities, nk.theme, nk.app;
+@layer theme, base, nk.base, nk.layout, components, nk.kit, utilities, nk.theme, nk.app;
 @import "tailwindcss";
 @import "@fontsource-variable/geist";
 @import "@fontsource-variable/geist-mono";
