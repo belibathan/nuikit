@@ -1,7 +1,7 @@
 // The theme studio's model: a pasted theme (TweakCN / shadcn CSS variables) plus token tweaks,
 // compiled exactly as the nuikit resource compiles nuikit/theme.css, and exported back as a
 // theme.css that compiles to the same tokens. Shared by /theme and the /blocks theme switcher.
-import { IDENTITY_TOKENS, compileTheme, toRgba, type CompiledTheme, type ThemeVars } from "nuikit-core";
+import { IDENTITY_TOKENS, TREATMENTS, TREATMENT_PRESETS, compileTheme, toRgba, type CompiledTheme, type ThemeVars } from "nuikit-core";
 
 const DERIVED = new Set(IDENTITY_TOKENS.filter((t) => t.group === "derived").map((t) => t.name));
 
@@ -45,7 +45,7 @@ export const TWEAKS: { group: string; tokens: { name: string; label: string }[] 
 
 /** A control on the identity tier (tokens 1.1 / 1.2): a slider over a range, a choice, or a font. */
 export type IdentityControl =
-  | { name: string; label: string; kind: "range"; min: number; max: number; step: number; unit?: "" | "rem" | "px" | "ms" | "em"; hint?: string; def?: number }
+  | { name: string; label: string; kind: "range"; min: number; max: number; step: number; unit?: "" | "rem" | "px" | "ms" | "em" | "deg"; hint?: string; def?: number }
   | { name: string; label: string; kind: "choice"; options: readonly { value: string; label: string }[]; hint?: string }
   | { name: string; label: string; kind: "font"; hint?: string };
 
@@ -94,9 +94,9 @@ export const IDENTITY: { group: string; controls: IdentityControl[] }[] = [
       { name: "nk-surface-tint", label: "Brand tint", kind: "range", min: 0, max: 0.12, step: 0.01 },
       { name: "nk-surface-gradient", label: "Gradient", kind: "range", min: 0, max: 0.2, step: 0.01 },
       { name: "nk-surface-edge", label: "Machined edge", kind: "range", min: 0, max: 0.3, step: 0.01 },
-      { name: "nk-elevation", label: "Elevation", kind: "choice", options: [{ value: "none", label: "None" }, { value: "soft", label: "Soft" }, { value: "deep", label: "Deep" }] },
+      { name: "nk-elevation", label: "Elevation", kind: "choice", options: [{ value: "none", label: "None" }, { value: "soft", label: "Soft" }, { value: "deep", label: "Deep" }, { value: "hard", label: "Hard" }] },
       { name: "nk-glow", label: "Glow", kind: "range", min: 0, max: 0.6, step: 0.05, hint: "Brand glow on active parts" },
-      { name: "nk-row-indicator", label: "Active row", kind: "choice", options: [{ value: "bar", label: "Bar" }, { value: "fill", label: "Fill" }, { value: "outline", label: "Outline" }] },
+      { name: "nk-row-indicator", label: "Active row", kind: "choice", options: [{ value: "bar", label: "Bar" }, { value: "fill", label: "Fill" }, { value: "outline", label: "Outline" }, { value: "sweep", label: "Sweep" }] },
     ],
   },
   {
@@ -254,4 +254,119 @@ export function withAlpha(hex: string, previous: string | undefined): string {
   if (a === undefined || a >= 1) return hex;
   const n = parseInt(hex.slice(1), 16);
   return `rgba(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}, ${a})`;
+}
+
+export type Treatment = (typeof TREATMENTS)[number];
+
+/** The five treatments (docs/design/levers.md): a named set of lever values under whatever the theme sets itself. */
+export const TREATMENT_INFO: Record<Treatment, string> = {
+  soft: "Nothing set: plain palette, soft panels. The blank page.",
+  glass: "Deep shadows, a lit edge, blur behind panels, smooth motion.",
+  plate: "Chamfered plates, uppercase labels, scanlines, stepped motion.",
+  slab: "Heavy hairlines, hard shadows, slanted italics, snapping motion.",
+  tile: "Slanted keycaps on hard plates: the Default language.",
+};
+export { TREATMENTS };
+
+const choice = (...v: string[]) => v.map((value) => ({ value, label: value[0]!.toUpperCase() + value.slice(1) }));
+const ROLES = [
+  ["scan", "Keys, buttons, tabs"],
+  ["title", "Titles"],
+  ["label", "Labels"],
+  ["num", "Numbers"],
+] as const;
+
+/**
+ * The lever groups of docs/design/levers.md the studio exposes beyond the identity tier: geometry, type
+ * voices, fills, selection, motion. `def` is the kit's default (what the slider shows when the theme sets
+ * nothing); ranges are the compiler's.
+ */
+export const LEVERS: { group: string; controls: IdentityControl[] }[] = [
+  {
+    group: "Geometry",
+    controls: [
+      { name: "nk-skew", label: "Skew: chips, badges", kind: "range", min: -20, max: 20, step: 1, unit: "deg", def: 0, hint: "Text stays upright" },
+      { name: "nk-tile-skew", label: "Skew: keycaps", kind: "range", min: -20, max: 20, step: 1, unit: "deg", def: 0, hint: "The face only, the box stays upright" },
+      { name: "nk-tile-wall", label: "Keycap wall", kind: "range", min: 0, max: 0.5, step: 0.0625, unit: "rem", def: 0.1875, hint: "How far the face sits above its plate; 0 = flat" },
+      { name: "nk-tile-wall-shade", label: "Wall shade", kind: "range", min: 0, max: 1, step: 0.05, def: 0.45 },
+      { name: "nk-r-key", label: "Radius: keys", kind: "range", min: 0, max: 0.75, step: 0.0625, unit: "rem", def: 0.25 },
+      { name: "nk-r-chip", label: "Radius: chips", kind: "range", min: 0, max: 1.25, step: 0.0625, unit: "rem", def: 0.25 },
+      { name: "nk-r-control", label: "Radius: buttons, fields, rows", kind: "range", min: 0, max: 1, step: 0.0625, unit: "rem", def: 0.375 },
+      { name: "nk-r-surface", label: "Radius: panels", kind: "range", min: 0, max: 1.5, step: 0.0625, unit: "rem", def: 0.625 },
+    ],
+  },
+  ...ROLES.map(([r, what]) => ({
+    group: `Type voice: ${r}`,
+    controls: [
+      { name: `nk-type-${r}-style`, label: `${what}: style`, kind: "choice", options: choice("normal", "italic") },
+      { name: `nk-type-${r}-case`, label: "Case", kind: "choice", options: choice("none", "uppercase") },
+      { name: `nk-type-${r}-weight`, label: "Weight", kind: "range", min: 100, max: 900, step: 100, def: 600 },
+      { name: `nk-type-${r}-tracking`, label: "Tracking", kind: "range", min: -0.05, max: 0.2, step: 0.01, unit: "em", def: 0 },
+    ] as IdentityControl[],
+  })),
+  {
+    group: "Fills",
+    controls: [
+      { name: "nk-fill-style", label: "Fill language", kind: "choice", options: choice("solid", "soft"), hint: "Meters, progress, the selected row" },
+      { name: "nk-tile-tint", label: "Soft tint", kind: "range", min: 0, max: 1, step: 0.02, def: 0.16, hint: "Opacity of a soft selection" },
+      { name: "nk-hold-style", label: "Hold", kind: "choice", options: choice("bar", "ring", "fill") },
+      { name: "nk-level-style", label: "Level", kind: "choice", options: choice("bar", "ring", "liquid", "slab", "pips") },
+    ],
+  },
+  {
+    group: "Selection and focus",
+    controls: [
+      { name: "nk-focus-style", label: "Focus", kind: "choice", options: choice("ring", "halo", "tint", "fill", "invert", "bar") },
+      { name: "nk-focus-shift", label: "Focus shift", kind: "range", min: 0, max: 0.5, step: 0.0625, unit: "rem", def: 0 },
+      { name: "nk-row-lift", label: "Row lift", kind: "range", min: 0, max: 1, step: 0.0625, unit: "rem", def: 0.5, hint: "How far a selected row steps out" },
+    ],
+  },
+  {
+    group: "Motion levers",
+    controls: [
+      { name: "nk-exit-factor", label: "Exit speed", kind: "range", min: 0.3, max: 1, step: 0.05, def: 0.7, hint: "Exits are this × the enter" },
+      { name: "nk-confirm-scale", label: "Confirm pop", kind: "range", min: 1, max: 1.2, step: 0.01, def: 1.04 },
+      { name: "nk-rise", label: "Entrance rise", kind: "range", min: 0, max: 1, step: 0.0625, unit: "rem", def: 0.5 },
+    ],
+  },
+];
+
+/** A start theme with a treatment chosen over it: the treatment fills what the theme leaves out. */
+export function withTreatment(css: string, treatment: Treatment | null): string {
+  return treatment ? `${css}\n.dark { --nk-treatment: ${treatment}; }` : css;
+}
+
+export type ThemeChange = { name: string; from: string | undefined; to: string };
+
+/**
+ * What the studio changed against the theme it started from: every token that compiles to a different value,
+ * derived ones left out (compiling the file derives them again). A treatment's own preset values are implied
+ * by `--nk-treatment`, so they are not repeated.
+ */
+export function diffTheme(theme: CompiledTheme, base: CompiledTheme): ThemeChange[] {
+  const t = theme.vars["nk-treatment"] as Treatment | undefined;
+  const changedTreatment = t !== base.vars["nk-treatment"];
+  const out: ThemeChange[] = [];
+  for (const [k, v] of Object.entries(theme.vars)) {
+    if (DERIVED.has(k)) continue;
+    if (base.vars[k] === v) continue;
+    if (k !== "nk-treatment" && changedTreatment && t && TREATMENT_PRESETS[t][k] === v) continue;
+    out.push({ name: k, from: base.vars[k], to: v });
+  }
+  return out;
+}
+
+/** theme.css of only the changed values: values only, in `@layer nk.theme`, as `nuikit check` wants. */
+export function exportChangesCss(changes: ThemeChange[], from: string): string {
+  const body = changes.length ? changes.map((c) => `    --${c.name}: ${c.to};`).join("\n") : "    /* nothing changed yet */";
+  return [
+    `/* nuikit theme: only what changed from ${from}. Values only (docs/design/levers.md).`,
+    "   Made in the theme studio: https://nuikit.vercel.app/theme. Put it after the base theme; run `nuikit theme reload`. */",
+    "@layer nk.theme {",
+    "  .dark {",
+    body,
+    "  }",
+    "}",
+    "",
+  ].join("\n");
 }

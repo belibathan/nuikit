@@ -11,6 +11,7 @@ const PAGES = [
   { href: "/components", label: "Components" },
   { href: "/blocks", label: "Blocks" },
   { href: "/theme", label: "Theme studio" },
+  { href: "/language", label: "Your language" },
   { href: "/design", label: "Design" },
   { href: "/protocol", label: "Protocol" },
   { href: "/intents", label: "Intents" },
