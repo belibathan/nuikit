@@ -3,8 +3,8 @@
 -- defaults); any settings page shows them, the pause menu's Settings page included, which also shows
 -- every other resource's section (the HUD's, a job's) the same way.
 -- What the rows do (onChange, live while a page previews a draft): text size, contrast and reduced
--- motion are the UI prefs every nuikit page follows (NUI.prefs); streamer mode and HUD hide are
--- client-wide states other resources read (NUI.getState('streamer'), NUI.getState('hud:hidden')).
+-- motion are the UI prefs every nuikit page follows (nk.theme.prefs); streamer mode and HUD hide are
+-- client-wide states other resources read (nk.surface.getState('streamer'), nk.surface.getState('hud:hidden')).
 
 Settings = {}
 
@@ -49,13 +49,13 @@ for k, v in pairs(DEFAULTS) do fallback[k] = v end
 
 --- What the values mean: the UI prefs and the client-wide states.
 local function apply(v)
-  local prefs = NUI.prefs.get() or {}
+  local prefs = nk.theme.prefs() or {}
   local want = { scale = v.textSize or 1, highContrast = v.contrast == true, reducedMotion = v.reducedMotion == true }
   if prefs.scale ~= want.scale or prefs.highContrast ~= want.highContrast or prefs.reducedMotion ~= want.reducedMotion then
-    NUI.prefs.set(want)
+    nk.theme.setPrefs(want)
   end
-  NUI.state('streamer', v.streamer == true)
-  NUI.state('hud:hidden', v.hud == false)
+  nk.surface.setState('streamer', v.streamer == true)
+  nk.surface.setState('hud:hidden', v.hud == false)
 end
 
 function Settings.values()

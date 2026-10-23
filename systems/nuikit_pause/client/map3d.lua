@@ -239,7 +239,7 @@ local function refreshBlips(now, force)
   local key = listKey(list)
   if key == blipKey then return end
   blipList, blipKey = list, key
-  NUI.send('pause:map:blips', list)
+  nk.message.send('pause:map:blips', list)
 end
 Map3D.refreshBlips = refreshBlips
 
@@ -282,7 +282,7 @@ local function publish(now, ped)
     local key = pinsKey(p)
     if key ~= lastPins then
       lastPins, lastPinsAt = key, now
-      NUI.send('pause:map:pins', p)
+      nk.message.send('pause:map:pins', p)
     end
   end
   if now - lastInfoAt >= INFO_MS then
@@ -291,7 +291,7 @@ local function publish(now, ped)
     local ikey = ('%s|%s|%s|%s|%s'):format(i.zone, i.street, tostring(i.topdown), tostring(i.waypoint), tostring(i.follow))
     if ikey ~= lastInfo then
       lastInfo = ikey
-      NUI.send('pause:map:info', i)
+      nk.message.send('pause:map:info', i)
     end
   end
 end
