@@ -30,11 +30,9 @@ import { Fill } from "@/components/ui/fill";
 import { IconText } from "@/components/ui/icon-text";
 import { MenuRow, MenuRowList } from "@/components/ui/menu-row";
 import { NuiImage } from "@/components/ui/nui-image";
-import { NuiMenu } from "@/components/ui/nui-menu";
 import { SmoothInput, SmoothTextarea } from "@/components/ui/smooth-input";
 import { NumberRoll, TextRoll } from "@/components/ui/text-roll";
 import { Tile } from "@/components/ui/tile";
-import { Vital } from "@/components/ui/vital";
 import { VitalChip } from "@/components/ui/vital-chip";
 import type { SectionComponent } from "@/pages/components";
 import registry from "../../../../registry.json";
@@ -323,18 +321,6 @@ function EdgeSheetDemo() {
   );
 }
 
-function VitalDemo() {
-  const hp = useWalk(0.72, 0.07, 900);
-  return (
-    <div className="flex w-56 flex-col gap-3">
-      <Vital value={hp * 100} tone="destructive" icon={<HeartPulseIcon />} label="Health" />
-      <Vital value={64} icon={<ShieldIcon />} label="Armor" low={-1} />
-      <Vital value={38} tone="chart-2" icon={<UtensilsIcon />} label="Hunger" />
-      <Vital value={14} tone="chart-3" icon={<DropletIcon />} label="Thirst" size="sm" />
-    </div>
-  );
-}
-
 function CollapseDemo() {
   const [v, setV] = useState({ health: 82, armor: 46, hunger: 38, thirst: 64, stress: 12 });
   const icons: Record<string, ReactNode> = {
@@ -370,23 +356,6 @@ function CollapseDemo() {
       </div>
       <CollapseMore count={2} />
     </div>
-  );
-}
-
-function NuiMenuDemo() {
-  return (
-    <NuiMenu
-      global={false}
-      title="Garage"
-      description="Legion Square"
-      items={[
-        { id: "a", label: "Pegassi Zentorno", description: "Stored · 98% condition", icon: <CarIcon />, meta: "ZEN 01" },
-        { id: "b", label: "Bravado Buffalo", description: "Impounded · $250 fee", icon: <CarIcon />, meta: "BUF 22" },
-        { id: "c", label: "Repair all", description: "Fix everything", icon: <WrenchIcon />, meta: "$900" },
-        { id: "d", label: "Give keys", description: "Share with a player", icon: <KeyIcon /> },
-      ]}
-      onSelect={(i) => emit("nuikit:notify", { title: i.label, description: 'fetchNui("garage:spawn")' })}
-    />
   );
 }
 
@@ -458,12 +427,6 @@ export function NewSections({ Section }: { Section: SectionComponent }) {
       </Section>
       <Section name="edge-sheet" title="Edge sheet" text="A full-height sheet on a screen edge: the pause menu's backdrop and the context sheet as one component. A back key, a level traced along the header, sub-pages that swap in place, a staggered slide-in and a faster exit." stageClassName="items-center">
         <EdgeSheetDemo />
-      </Section>
-      <Section name="nui-menu" title="NUI menu" text="A keyboard menu on a panel: arrows move, Enter selects, the highlight follows the theme. Items carry an icon, a description and meta." stageClassName="items-center">
-        <NuiMenuDemo />
-      </Section>
-      <Section name="vital" title="Vital" text="The compact vital: an icon and a bar, coloured by a theme token, pulsing when low. The HUD's chips are VitalChip; this is the bar form." stageClassName="items-center">
-        <VitalDemo />
       </Section>
       <Section name="collapse-stack" title="Collapse stack" text="Clustered indicators on the collapse engine: icons at rest, a change opens a chip for --nk-behavior-rest, changes within 400 ms open together, critical first, at most max, then +N." stageClassName="items-center">
         <CollapseDemo />

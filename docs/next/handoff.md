@@ -20,7 +20,7 @@ owner's local Qbox server; the owner has played most of it.
 - **Registry** (`registry/nuikit/ui`): a network of ~10 foundations (Tile/Kbd, Fill, Chip, Text, IconText, Dial,
   Stack/Cluster, Panel, ActionBar, `useLinearRun`) + `SelectionTile`/`useSelectionIndicator`; composites are
   built from them (Meter, ProgressRing = segmented Dial, Notice, Countdown, DialogShell, SheetSection,
-  Speedometer…). Deprecated aliases (HudChip, Vital, NuiMenu) live until 0.10.
+  Speedometer…). The deprecated aliases (HudChip, Vital, NuiMenu) were deleted Oct 23 (use Chip material="hud", Meter, Panel + MenuRow).
 - **Baseline** ([`baseline.md`](../design/baseline.md)): what made the speedometer premium, written as rules every
   component and theme inherits: generous spacing, two type voices, one icon size in a tile column, solid fills,
   segmented progress, keycap primary buttons, no focus rings, the selection is one sliding keycap per list, rows

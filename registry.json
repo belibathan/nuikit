@@ -651,54 +651,6 @@
       }
     },
     {
-      "name": "hud-chip",
-      "type": "registry:ui",
-      "title": "HUD Chip",
-      "description": "Deprecated: use Chip with material=\"hud\" (the same markup and look). Still works. An always-on mark on the game world (voice range, radio, seatbelt): an alias of Chip's HUD material.",
-      "files": [
-        {
-          "path": "registry/nuikit/ui/hud-chip.tsx",
-          "type": "registry:ui"
-        }
-      ],
-      "meta": {
-        "since": "0.5.0",
-        "status": "deprecated",
-        "replaces": [],
-        "removeIn": "0.10.0",
-        "spec": {
-          "role": "A small fact on the HUD (voice range, radio, seatbelt): an alias of Chip's HUD material.",
-          "anatomy": [
-            "Chip material=\"hud\" (pill | tile)",
-            "icon",
-            "text"
-          ],
-          "props": [
-            "shape",
-            "state",
-            "active",
-            "icon",
-            "density",
-            "motion",
-            "hue"
-          ],
-          "rules": [
-            "Use Chip material=\"hud\"; the alias renders it unchanged.",
-            "warning is the theme's destructive; active is primary."
-          ]
-        },
-        "replacedBy": [
-          "chip"
-        ],
-        "group": "HUD",
-        "tier": "alias",
-        "hidden": true
-      },
-      "registryDependencies": [
-        "https://nuikit.vercel.app/r/chip.json"
-      ]
-    },
-    {
       "name": "text-roll",
       "type": "registry:ui",
       "title": "Text Roll",
@@ -799,52 +751,6 @@
           ],
           "hooks": []
         }
-      }
-    },
-    {
-      "name": "vital",
-      "type": "registry:ui",
-      "title": "Vital",
-      "description": "Deprecated: use Meter (the same icon and bar, with labels, segments and runs). Still works. A player stat as an icon and a bar: a preset of Meter (value 0\u2013100, a vital tone, low).",
-      "files": [
-        {
-          "path": "registry/nuikit/ui/vital.tsx",
-          "type": "registry:ui"
-        }
-      ],
-      "registryDependencies": [
-        "https://nuikit.vercel.app/r/meter.json"
-      ],
-      "meta": {
-        "since": "0.3.0",
-        "status": "deprecated",
-        "replaces": [],
-        "removeIn": "0.10.0",
-        "spec": {
-          "role": "A player stat as an icon and a bar: an alias of Meter.",
-          "anatomy": [
-            "Meter (icon > bar)"
-          ],
-          "props": [
-            "value",
-            "icon",
-            "label",
-            "low",
-            "tone",
-            "size"
-          ],
-          "level": "value / 100: how full the stat is.",
-          "rules": [
-            "Use Meter; the alias maps value, tone, low and size onto it.",
-            "At or under low it is data-state=\"alert\"."
-          ]
-        },
-        "replacedBy": [
-          "meter"
-        ],
-        "group": "Gauges & vitals",
-        "tier": "alias",
-        "hidden": true
       }
     },
     {
@@ -1112,55 +1018,6 @@
             "useCollapse"
           ]
         }
-      }
-    },
-    {
-      "name": "nui-menu",
-      "type": "registry:ui",
-      "title": "NUI Menu",
-      "description": "Deprecated: use Panel + MenuRowList + MenuRow. Still works. A keyboard-first list menu from data (arrows / W S move, Enter / E select): a Panel of MenuRows whose active row the identity's indicator marks.",
-      "files": [
-        {
-          "path": "registry/nuikit/ui/nui-menu.tsx",
-          "type": "registry:ui"
-        }
-      ],
-      "registryDependencies": [
-        "https://nuikit.vercel.app/r/menu-row.json",
-        "https://nuikit.vercel.app/r/panel.json"
-      ],
-      "meta": {
-        "since": "0.3.0",
-        "status": "deprecated",
-        "replaces": [],
-        "removeIn": "0.10.0",
-        "spec": {
-          "role": "A keyboard-first list menu from data: Panel > MenuRowList > MenuRow.",
-          "anatomy": [
-            "Panel",
-            "PanelHeader (title, description)",
-            "PanelBody > MenuRowList",
-            "MenuRow (icon, label, description, meta)"
-          ],
-          "props": [
-            "title",
-            "description",
-            "items",
-            "onSelect",
-            "global"
-          ],
-          "rules": [
-            "Arrows move, Enter selects; keys are read on window by default.",
-            "The active row is the identity's row indicator (MenuRowList), never the hover accent."
-          ]
-        },
-        "replacedBy": [
-          "panel",
-          "menu-row"
-        ],
-        "group": "Lists & selection",
-        "tier": "alias",
-        "hidden": true
       }
     },
     {
