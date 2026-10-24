@@ -7,10 +7,11 @@ import { ThemePreview } from "@/components/theme-preview";
 import { VariantsDemo } from "@/components/variants-demo";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { SelectField, SliderField } from "@/components/ui/form-field";
 import { Textarea } from "@/components/ui/textarea";
 import { applyStageTheme, clearStageTheme } from "@/lib/stage-theme";
-import { COMPONENTS, diffTheme, exportChangesCss, exportThemeCss, fontChoice, FONT_CHOICES, IDENTITY, identityNumber, identityValue, LEVERS, studioTheme, toHex, TREATMENT_INFO, TREATMENTS, TWEAKS, withAlpha, withTreatment, type IdentityControl, type Treatment } from "@/lib/theme-studio";
+import { diffTheme, exportChangesCss, exportThemeCss, studioTheme } from "@/lib/theme-studio";
+import { groupsOf, TIER_ORDER, TIER_TITLE, type LeverGroup, type LeverRow } from "@/lib/levers";
+import { LeverControl } from "@/components/lever-control";
 import { LanguageStrip } from "@/components/language-strip";
 import { cn } from "@/lib/utils";
 import { identities, themes } from "@/themes";
@@ -26,8 +27,7 @@ export function ThemePage() {
   const [css, setCss] = useState(PRESETS[0]!.css);
   const [preset, setPreset] = useState<number | null>(0);
   const [tweaks, setTweaks] = useState<ThemeVars>({});
-  const [treatment, setTreatment] = useState<Treatment | null>(null);
-  const theme = useMemo(() => studioTheme(withTreatment(css, treatment), tweaks), [css, treatment, tweaks]);
+  const theme = useMemo(() => studioTheme(css, tweaks), [css, tweaks]);
   const base = useMemo(() => studioTheme(css), [css]);
   const file = useMemo(() => exportThemeCss(theme), [theme]);
   const changes = useMemo(() => diffTheme(theme, base), [theme, base]);
@@ -74,7 +74,7 @@ export function ThemePage() {
             <a href="https://tweakcn.com" className="text-foreground underline underline-offset-4">
               TweakCN
             </a>{" "}
-            or shadcn theme, tweak the colours and the identity (type, shape, surface, density, motion, HUD), and watch the kit change on a game screen. Pick a treatment, then drag the levers. The checks are the ones your server runs. Download
+            or shadcn theme, tweak the colours and the identity (type, shape, surface, density, motion, HUD), and watch the kit change on a game screen. Then drag the levers. The checks are the ones your server runs. Download
             theme.css, drop it in <code className="font-mono text-foreground">nuikit/theme.css</code> and run{" "}
             <code className="font-mono text-foreground">nuikit theme reload</code>. New to this?{" "}
             <a href="/language" className="text-foreground underline underline-offset-4">
@@ -164,7 +164,6 @@ export function ThemePage() {
                       setPreset(i);
                       setCss(t.css);
                       setTweaks({});
-                      setTreatment(null);
                     }}
                   >
                     <span className="flex -space-x-1">
@@ -191,7 +190,6 @@ export function ThemePage() {
                   onChange={(e) => {
                     setCss(e.target.value);
                     setPreset(null);
-                    setTreatment(null);
                   }}
                   spellCheck={false}
                   className="h-56 resize-y font-mono text-xs"
@@ -199,116 +197,7 @@ export function ThemePage() {
               </CardContent>
             </Card>
 
-            <Card className="gap-4 py-5">
-              <CardHeader className="px-5">
-                <CardTitle>Treatment</CardTitle>
-                <CardDescription>How the palette is drawn: a named set of levers. Anything you set yourself wins over it.</CardDescription>
-              </CardHeader>
-              <CardContent className="flex flex-col gap-3 px-5">
-                <div className="flex flex-wrap gap-1" role="radiogroup" aria-label="Treatment">
-                  {TREATMENTS.map((t) => (
-                    <Button key={t} role="radio" aria-checked={theme.vars["nk-treatment"] === t} variant={theme.vars["nk-treatment"] === t ? "secondary" : "outline"} size="sm" onClick={() => setTreatment(t)} className="capitalize">
-                      {t}
-                    </Button>
-                  ))}
-                </div>
-                <p className="text-sm text-muted-foreground">{TREATMENT_INFO[(theme.vars["nk-treatment"] as Treatment) ?? "soft"]}</p>
-              </CardContent>
-            </Card>
-            <Card className="gap-4 py-5">
-              <CardHeader className="px-5">
-                <CardTitle>1 · Identity</CardTitle>
-                <CardDescription>
-                  What makes the UI yours besides colour: type, shape, surface, density, motion and the HUD. Each control sets one token; the compiler derives
-                  the rest and warns when a floor is crossed.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="flex flex-col gap-6 px-5">
-                {IDENTITY.map((g) => (
-                  <div key={g.group} className="flex flex-col gap-3">
-                    <p className="text-xs font-medium text-muted-foreground">{g.group}</p>
-                    {g.controls.map((c) => (
-                      <IdentityField key={c.name} control={c} value={theme.vars[c.name]} tweaked={c.name in tweaks} onChange={(v) => tweak(c.name, v)} />
-                    ))}
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
-            <Card className="gap-4 py-5">
-              <CardHeader className="px-5">
-                <CardTitle className="flex items-center justify-between">
-                  2 · Colours
-                  {Object.keys(tweaks).length > 0 && (
-                    <Button variant="ghost" size="sm" onClick={() => { setTweaks({}); setTreatment(null); }}>
-                      <RotateCcwIcon /> Undo tweaks
-                    </Button>
-                  )}
-                </CardTitle>
-                <CardDescription>The semantic tokens: what each colour means (surfaces, actions, status, the game). A tweak sets the token outright, on top of the paste.</CardDescription>
-              </CardHeader>
-              <CardContent className="flex flex-col gap-5 px-5">
-                {TWEAKS.map((g) => (
-                  <div key={g.group} className="flex flex-col gap-2">
-                    <p className="text-xs font-medium text-muted-foreground">{g.group}</p>
-                    <div className="grid grid-cols-2 gap-2">
-                      {g.tokens.map((t) => (
-                        <label key={t.name} className="flex items-center gap-2 rounded-md border px-2 py-1.5 text-sm">
-                          <input
-                            type="color"
-                            aria-label={t.label}
-                            value={toHex(theme.vars[t.name])}
-                            onChange={(e) => setTweaks((prev) => ({ ...prev, [t.name]: withAlpha(e.target.value, theme.vars[t.name]) }))}
-                            className="size-6 shrink-0 cursor-pointer rounded border-0 bg-transparent p-0"
-                          />
-                          <span className="truncate">{t.label}</span>
-                          {tweaks[t.name] && <span className="ml-auto size-1.5 shrink-0 rounded-full bg-primary" aria-label="Tweaked" />}
-                        </label>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
-            <Card className="gap-4 py-5">
-              <CardHeader className="px-5">
-                <CardTitle>3 · Components</CardTitle>
-                <CardDescription>
-                  One part of the kit, set outright. Left alone, each follows the identity above (density, radius, gauges); a UI can still pick a
-                  variant per component (density, shape, motion) on top.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="flex flex-col gap-6 px-5">
-                {COMPONENTS.map((g) => (
-                  <div key={g.group} className="flex flex-col gap-3">
-                    <p className="text-xs font-medium text-muted-foreground">{g.group}</p>
-                    {g.controls.map((c) => (
-                      <IdentityField key={c.name} control={c} value={theme.vars[c.name]} tweaked={c.name in tweaks} onChange={(v) => tweak(c.name, v)} />
-                    ))}
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
-
-
-            <Card className="gap-4 py-5">
-              <CardHeader className="px-5">
-                <CardTitle>4 · Levers</CardTitle>
-                <CardDescription>
-                  Geometry, type voices, fills, selection and motion: every one a token a theme file may set (
-                  <a href="https://github.com/belibathan/nuikit/blob/main/docs/design/levers.md" className="underline underline-offset-4">levers.md</a>). A dot marks what you moved.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="flex flex-col gap-6 px-5">
-                {LEVERS.map((g) => (
-                  <div key={g.group} className="flex flex-col gap-3">
-                    <p className="text-xs font-medium text-muted-foreground">{g.group}</p>
-                    {g.controls.map((c) => (
-                      <IdentityField key={c.name} control={c} value={theme.vars[c.name]} tweaked={c.name in tweaks} onChange={(v) => tweak(c.name, v)} />
-                    ))}
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
+            <LeverStudio vars={theme.vars} tweaks={tweaks} onChange={tweak} onReset={() => setTweaks({})} />
 
             <Card className="gap-4 py-5">
               <CardHeader className="px-5">
@@ -363,60 +252,61 @@ export function ThemePage() {
   );
 }
 
-/** One identity control: a slider with its unit, a segmented choice, or a font select. */
-function IdentityField({ control: c, value, tweaked, onChange }: { control: IdentityControl; value: string | undefined; tweaked: boolean; onChange: (v: string) => void }) {
-  const dot = tweaked ? <span className="size-1.5 shrink-0 rounded-full bg-primary" aria-label="Tweaked" /> : null;
-  if (c.kind === "range") {
-    return (
-      <SliderField
-        label={
-          <span className="flex items-center gap-2">
-            {c.label}
-            {dot}
-          </span>
-        }
-        description={c.hint}
-        min={c.min}
-        max={c.max}
-        step={c.step}
-        value={identityNumber(value, c.def ?? c.min)}
-        format={(n) => identityValue(c, n)}
-        onValueChange={(n) => onChange(identityValue(c, n))}
-      />
-    );
-  }
-  if (c.kind === "choice") {
-    return (
-      <div className="flex items-center justify-between gap-3">
-        <span className="flex items-center gap-2 text-sm">
-          {c.label}
-          {dot}
-        </span>
-        <div className="flex gap-1" role="radiogroup" aria-label={c.label}>
-          {c.options.map((o) => (
-            <Button key={o.value} role="radio" aria-checked={value === o.value} variant={value === o.value ? "secondary" : "ghost"} size="sm" onClick={() => onChange(o.value)}>
-              {o.label}
-            </Button>
-          ))}
-        </div>
-      </div>
-    );
-  }
-  const current = fontChoice(value);
+/** Every lever the spec declares: identity first, then semantic, then each component by part. Generated from LEVER_ROWS. */
+function LeverStudio({ vars, tweaks, onChange, onReset }: { vars: ThemeVars; tweaks: ThemeVars; onChange: (name: string, v: string) => void; onReset: () => void }) {
   return (
-    <SelectField
-      label={
-        <span className="flex items-center gap-2">
-          {c.label}
-          {dot}
-        </span>
-      }
-      description={c.hint}
-      placeholder={current === null && value ? value.split(",")[0]!.replace(/"/g, "") : "Pick a font"}
-      options={FONT_CHOICES.map((f) => ({ value: f.value, label: f.label }))}
-      value={current}
-      onValueChange={(v) => v && onChange(v)}
-    />
+    <Card className="gap-4 py-5">
+      <CardHeader className="px-5">
+        <CardTitle className="flex items-center justify-between">
+          Levers
+          {Object.keys(tweaks).length > 0 && (
+            <Button variant="ghost" size="sm" onClick={onReset}>
+              <RotateCcwIcon /> Undo tweaks
+            </Button>
+          )}
+        </CardTitle>
+        <CardDescription>
+          Every token a theme file may set, from the spec: identity (what a server chooses), semantic (what every component shares), then each component by part. A dot marks what you moved.
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="flex flex-col gap-6 px-5">
+        {TIER_ORDER.map((tier) => (
+          <div key={tier} className="flex flex-col gap-1">
+            <p className="site-eyebrow mb-1">{TIER_TITLE[tier]}</p>
+            {groupsOf(tier).map((g) => (
+              <LeverGroupView key={g.key} group={g} open={g.key === "identity:"} vars={vars} tweaks={tweaks} onChange={onChange} />
+            ))}
+          </div>
+        ))}
+      </CardContent>
+    </Card>
+  );
+}
+
+function LeverGroupView({ group, open, vars, tweaks, onChange }: { group: LeverGroup; open: boolean; vars: ThemeVars; tweaks: ThemeVars; onChange: (name: string, v: string) => void }) {
+  const [shown, setShown] = useState(open);
+  const moved = group.rows.filter((r) => r.name in tweaks).length;
+  const field = (r: LeverRow) => <LeverControl key={r.name} row={r} value={vars[r.name]} tweaked={r.name in tweaks} onChange={(v) => onChange(r.name, v)} />;
+  return (
+    <details open={open} onToggle={(e) => setShown((e.currentTarget as HTMLDetailsElement).open)} className="border-b py-2">
+      <summary className="flex cursor-pointer items-center gap-2 text-sm">
+        {group.title}
+        <span className="text-xs text-muted-foreground">{group.rows.length}</span>
+        {moved > 0 && <span className="size-1.5 rounded-full bg-primary" aria-label="Changed" />}
+      </summary>
+      {shown && (
+        <div className="mt-3 flex flex-col gap-4">
+          {group.parts
+            ? group.parts.map((p) => (
+                <div key={p.part} className="flex flex-col gap-3">
+                  <p className="text-xs font-medium text-muted-foreground">{p.part || "Root"}</p>
+                  {p.rows.map(field)}
+                </div>
+              ))
+            : group.rows.map(field)}
+        </div>
+      )}
+    </details>
   );
 }
 

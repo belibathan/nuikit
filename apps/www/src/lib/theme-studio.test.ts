@@ -1,7 +1,8 @@
 import { compileTheme } from "nuikit-core";
 import { describe, expect, it } from "vitest";
+import { controlFor, LEVER_ROWS, sliderValue } from "./levers";
 import { identities, themes } from "@/themes";
-import { exportThemeCss, fontChoice, identityValue, IDENTITY, studioTheme, toHex, withAlpha } from "./theme-studio";
+import { exportThemeCss, fontChoice, studioTheme, toHex, withAlpha } from "./theme-studio";
 
 /** Warnings about contrast and about the paste itself, minus wording that depends on the input form. */
 const roundTrip = (css: string) => {
@@ -110,15 +111,16 @@ describe("theme studio: identities (tokens 1.2)", () => {
     expect(t.warnings.some((w) => w.includes("nk-motion-duration"))).toBe(true);
   });
 
-  it("every identity control names a real token with a value in every identity", () => {
-    const compiled = identities.map((i) => studioTheme(i.css));
-    for (const g of IDENTITY) for (const c of g.controls) for (const t of compiled) expect(t.vars[c.name], `${c.name} in ${t.hash}`).toBeDefined();
+  it("every spec lever has a control the studio can draw", () => {
+    for (const r of LEVER_ROWS) expect(controlFor(r, undefined).kind, r.name).toBeTruthy();
+    expect(controlFor(LEVER_ROWS.find((r) => r.type === "angle")!, undefined).kind).toBe("slider");
+    expect(controlFor(LEVER_ROWS.find((r) => r.type === "color")!, undefined).kind).toBe("color");
   });
 
   it("formats range values with their unit and finds the bundled font behind a stack", () => {
-    expect(identityValue({ name: "nk-shape-cut", label: "", kind: "range", min: 0, max: 1, step: 0.125, unit: "rem" }, 0.75)).toBe("0.75rem");
-    expect(identityValue({ name: "nk-motion-duration", label: "", kind: "range", min: 60, max: 400, step: 10, unit: "ms" }, 140)).toBe("140ms");
-    expect(identityValue({ name: "nk-density", label: "", kind: "range", min: 0.75, max: 1.3, step: 0.025 }, 1)).toBe("1");
+    expect(sliderValue({ kind: "slider", min: 0, max: 1, step: 0.125, unit: "rem", value: 0 }, 0.75)).toBe("0.75rem");
+    expect(sliderValue({ kind: "slider", min: 60, max: 400, step: 10, unit: "ms", value: 0 }, 140)).toBe("140ms");
+    expect(sliderValue({ kind: "slider", min: 0, max: 2, step: 0.025, unit: "", value: 0 }, 1)).toBe("1");
     expect(fontChoice('"Barlow Condensed", Barlow, sans-serif')).toContain("Barlow Condensed");
     expect(fontChoice("Comic Sans, cursive")).toBeNull();
   });
