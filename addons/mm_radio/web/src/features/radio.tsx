@@ -153,7 +153,7 @@ export function Handheld() {
     <Panel size="auto" animate={false} selected={moveMode} className={cn("relative h-[34rem] w-72 gap-3 p-3", moveMode && "cursor-move")}>
         {moveMode && <Move className="text-primary absolute top-3 right-3 size-4" />}
 
-        <div className="bg-background relative min-h-0 flex-1 overflow-hidden rounded-(--nk-r-surface) border p-3">
+        <div className="bg-background relative min-h-0 flex-1 overflow-hidden rounded-(--nk-radius-surface) border p-3">
           {charged ? (
             <div className="flex h-full flex-col">
               <StatusBar message={message} />

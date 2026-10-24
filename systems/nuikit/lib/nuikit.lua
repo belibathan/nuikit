@@ -572,15 +572,15 @@ end)
 ---@return { version: integer, mode: string, hash: string, vars: table<string, string>, imports: string[] }|string|nil
 local currentPrefs -- defined below (the player's prefs pick their look)
 
---- The key of the look in use ('studio|slab'), or nil for the server theme: the player's prefs (identity,
---- treatment) when GlobalState.nuikitLooks (nuikit_identities / nuikit_treatments) has them. Keys are compared,
---- not tables: every GlobalState read is a fresh copy.
+--- The key of the look in use ('neon-pop'), or nil for the server theme: the player's prefs.identity when
+--- GlobalState.nuikitLooks (nuikit_identities) has it. Keys are compared, not tables: every GlobalState read is a
+--- fresh copy.
 function NUI.lookKey()
   local looks = GlobalState and GlobalState.nuikitLooks
   if type(looks) ~= 'table' or type(looks.themes) ~= 'table' or not currentPrefs then return nil end
   local p = currentPrefs()
-  if not p.identity and not p.treatment then return nil end
-  local key = (p.identity or 'server') .. '|' .. (p.treatment or '')
+  if not p.identity then return nil end
+  local key = p.identity
   local theme = looks.themes[key]
   return type(theme) == 'table' and theme.vars and key or nil
 end
@@ -623,18 +623,13 @@ end
 ---@field highContrast boolean  maximum-contrast text and borders
 ---@field density number        0.85–1.2, multiplies the theme's --nk-density
 ---@field identity string|nil   a look from nuikit_identities (nil: the server theme)
----@field treatment string|nil  a treatment from nuikit_treatments over that look
 
 local PREFS_KVP = 'nuikit:prefs'
 local prefs = nil -- last known, from the nuikit resource (or this resource's KVP without it)
 
--- Renamed theme ids, kept for one minor (docs/next/decisions.md): a pref saved as 'ink' still finds Default.
-local THEME_ALIASES = { ink = 'default' }
-
 local function lookName(v)
   if type(v) ~= 'string' or not v:match('^[%w_-]+$') or #v > 32 then return nil end
-  local name = v:lower()
-  return THEME_ALIASES[name] or name
+  return v:lower()
 end
 
 local function normalizePrefs(p)
@@ -650,7 +645,6 @@ local function normalizePrefs(p)
     density = math.floor(density * 100 + 0.5) / 100,
     -- a look (Settings › Look); the server's allow-list decides whether it applies
     identity = lookName(p.identity),
-    treatment = lookName(p.treatment),
   }
 end
 
@@ -673,7 +667,7 @@ NUI.prefs = {}
 ---@return NuiPrefs
 function NUI.prefs.get()
   local p = prefs or localPrefs()
-  return { scale = p.scale, reducedMotion = p.reducedMotion, highContrast = p.highContrast, density = p.density, identity = p.identity, treatment = p.treatment }
+  return { scale = p.scale, reducedMotion = p.reducedMotion, highContrast = p.highContrast, density = p.density, identity = p.identity }
 end
 currentPrefs = NUI.prefs.get
 

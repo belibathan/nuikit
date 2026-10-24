@@ -222,7 +222,7 @@ export function MapStage({ model: m, left }: { model: MapModel; left: string }) 
       <Blips blips={m.blips} hidden={m.hidden} selectedId={m.selectedBlip} onChoose={m.chooseBlip} />
       <Pins places={m.places} selectedId={m.selectedId} onChoose={m.choose} compass={m.compass} waypointSet={m.waypointSet} />
       {/* the open area, right of the sheet: the camera buttons on its edge */}
-      <div className="pointer-events-none absolute inset-y-0 right-0 [--nk-edge:1.5rem] [&>*]:pointer-events-auto" style={{ left }}>
+      <div className="pointer-events-none absolute inset-y-0 right-0 [--nk-screen-edge:1.5rem] [&>*]:pointer-events-auto" style={{ left }}>
         <Controls topdown={m.info.topdown} following={m.info.follow === true} follow={m.follow} zoom={zoom} compass={m.compass} />
       </div>
     </div>
@@ -421,8 +421,8 @@ const Pins = memo(function Pins({
             { transform: "translate3d(0, 0.15rem, 0) scale(1.04)", opacity: 1, offset: 0.7 },
             { transform: "none", opacity: 1 },
           ],
-      // the ladder: a landing is a "move" (--nk-time-move), reduced the capped fade (--nk-time-reduced)
-      { duration: reduced ? tokenMs("--nk-time-reduced", 100) : tokenMs("--nk-time-move", 210) * 1.5, easing: token("--nk-ease-emphasized") || "cubic-bezier(0.05, 0.7, 0.1, 1)" },
+      // the ladder: a landing is a "move" (--nk-time-slow), reduced the capped fade (--nk-motion-reduced)
+      { duration: reduced ? tokenMs("--nk-motion-reduced", 100) : tokenMs("--nk-time-slow", 210) * 1.5, easing: token("--nk-ease-expand") || "cubic-bezier(0.05, 0.7, 0.1, 1)" },
     );
   }, [waypointSet]);
 

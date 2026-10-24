@@ -137,7 +137,7 @@ function PauseMenu({
         <aside className="flex h-full w-80 shrink-0 flex-col p-12">
           <header className="flex items-center gap-3">
             {server.logo ? (
-              <div className="flex size-10 shrink-0 items-center justify-center rounded-(--nk-r-control) bg-primary text-(length:--nk-text-label) [font-weight:var(--nk-weight-strong,600)] text-primary-foreground">
+              <div className="flex size-10 shrink-0 items-center justify-center rounded-(--nk-radius-control) bg-primary text-(length:--nk-text-label) [font-weight:var(--nk-type-weight-strong,600)] text-primary-foreground">
                 {server.logo}
               </div>
             ) : null}

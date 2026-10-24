@@ -55,7 +55,7 @@ stylesheet.
 
 Tokens (all optional): `--nk-background`, `--nk-foreground`, `--nk-primary`, `--nk-primary-foreground`,
 `--nk-secondary`, `--nk-muted`, `--nk-muted-foreground`, `--nk-accent`, `--nk-popover`, `--nk-card`,
-`--nk-border`, `--nk-ring`, `--nk-destructive`, `--nk-scrim`, `--nk-radius`, `--nk-font-sans`, and every
+`--nk-line-width`, `--nk-ring`, `--nk-destructive`, `--nk-scrim`, `--nk-radius`, `--nk-font-sans`, and every
 colour's `-rgb` channels for translucency (`rgba(var(--nk-popover-rgb), 0.85)`). The full list is
 [`docs/tokens.md`](../../docs/tokens.md).
 

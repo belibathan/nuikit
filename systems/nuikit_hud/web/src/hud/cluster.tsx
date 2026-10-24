@@ -1,5 +1,5 @@
 // The vehicle cluster: cars, bikes and boats get a gauge (arc, bar or digital, from the identity's
-// --nk-gauge-style), aircraft get flight instruments (aircraft.tsx). Speed, rpm and heading are live
+// --nk-style-gauge), aircraft get flight instruments (aircraft.tsx). Speed, rpm and heading are live
 // values: they glide at the game's frame rate and are written straight to the DOM (useFollow), never
 // through a React render. React renders only when `hud:vehicle` changes (gear, fuel, damage, lights…).
 import { followed, useFollow } from "nuikit-core/react";

@@ -7,156 +7,65 @@
  * Pure: no DOM, runs in the browser, in Node and in the FXServer JS runtime.
  */
 import { composite, contrastRatio, formatRgba, mix, oklchToRgb, rgbToOklch, toRgba, type RGBA } from "./color";
+import { ROLE_DEFAULTS, ROLES } from "./spec/roles";
+import type { LeverType } from "./spec/lang";
+import { LEVER_ROWS, type LeverRow } from "./tokens.generated";
 
 export type ThemeVars = Record<string, string>;
 export type ThemeMode = "dark" | "light";
 
-/** The token contract version. Bumped only for breaking renames/removals; additions keep v1. */
-export const TOKENS_VERSION = 1 as const;
+/** The token contract version. Bumped for breaking renames/removals: 2 is the token language (src/spec). */
+export const TOKENS_VERSION = 2 as const;
+/** The contract revision: the language's first. */
+export const TOKENS_REVISION = "2.0" as const;
+
+/** A lever's type (src/spec/lang.ts). */
+export type TokenType = LeverType;
+
 /**
- * The contract revision: 1.1 added the identity tokens (IDENTITY_TOKENS), 1.2 the motion tokens (MOTION_TOKENS),
- * 1.4 the foundation (FOUNDATION_TOKENS), 1.5 the Default theme levers (KIT_TOKENS: scales, type roles, tile, plate, fill;
- * docs/design/default.md), 1.6 the baseline every component shares (BASELINE_TOKENS: row rhythm and voices, the field,
- * the keycap button, the segmented ring; docs/design/baseline.md), 1.7 the selection convention (SELECTION_TOKENS: the
- * selection is the keycap Tile, one per list, rows a list gap apart; baseline.md "Selection"). Additive, so still v1.
+ * One lever as the compiler sees it: a row of the generated table (src/tokens.generated.ts) plus its group. Every
+ * table below is a filter of LEVER_ROWS; nothing here names a token by hand.
  */
-export const TOKENS_REVISION = "1.7" as const;
-
-export type TokenType = "color" | "dimension" | "fontFamily" | "number" | "keyword" | "duration" | "cubicBezier" | "shadow" | "image";
-
-export interface TokenSpec {
-  name: string;
-  type: TokenType;
-  /**
-   * shadcn: what every shadcn/TweakCN theme has. nuikit: game semantics, derived when absent.
-   * identity (1.1): type, shape, surface, density, motion, brand and HUD style, derived when absent.
-   * derived (1.1): computed from identity tokens so CSS needn't branch (a theme may still set them).
-   * Motion tokens (1.2) are identity (nk-motion-feel, nk-spring-bounce) and derived (the ladder, easings, springs).
-   */
-  group: "shadcn" | "nuikit" | "identity" | "derived";
-  description: string;
-  /** How the value is derived when the theme doesn't set it. */
+export interface TokenSpec extends LeverRow {
+  /** palette (the v1 colours, radius and faces: what a TweakCN paste sets), identity, semantic, component; derived levers are computed. */
+  group: "palette" | "identity" | "semantic" | "component" | "derived";
+  /** What a theme that leaves it out gets (the rule for the palette and derived levers, else the CSS default). */
   fallback: string;
-  /** Keyword tokens: the values accepted. */
-  values?: readonly string[];
-  /** Numbers: accepted range. */
-  range?: readonly [number, number];
-  /** The revision that added it. */
-  since?: "1.1" | "1.2" | "1.3" | "1.4" | "1.5" | "1.6" | "1.7";
-  /**
-   * Tokens 1.5 (KIT_TOKENS): the default is a kit.css formula over the identity (so a subtree's density or
-   * radius re-derives it), not a compiled literal. The compiler validates a value a theme or treatment sets and
-   * passes it through; it never emits the default.
-   */
-  css?: boolean;
 }
 
-/** The default sans stack (Graphite): Inter, bundled with every nuikit UI (docs/tokens.md#fonts). */
-export const DEFAULT_FONT_SANS = "Inter, ui-sans-serif, system-ui, sans-serif";
-export const DEFAULT_FONT_DISPLAY = `"Inter Tight", ${DEFAULT_FONT_SANS}`;
-export const DEFAULT_FONT_MONO = `"Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace`;
+const spec = (r: LeverRow): TokenSpec => ({
+  ...r,
+  group: r.derived ? "derived" : r.scope === "" || r.scope === "font" ? "palette" : r.tier,
+  fallback: r.rule ?? r.default,
+});
 
-const c = (name: string, description: string, fallback = "stock shadcn neutral"): TokenSpec => ({ name, type: "color", group: "shadcn", description, fallback });
-const n = (name: string, type: TokenType, description: string, fallback: string): TokenSpec => ({ name, type, group: "nuikit", description, fallback });
-
-/** Every token in the contract, in documentation order. */
-export const TOKENS: readonly TokenSpec[] = [
-  c("background", "Full-screen surfaces (pause, loading, death scrim)"),
-  c("foreground", "Text on full-screen surfaces"),
-  c("card", "Raised blocks on a full-screen surface"),
-  c("card-foreground", "Text on cards"),
-  c("popover", "Every floating panel (nk-panel)"),
-  c("popover-foreground", "Text in panels"),
-  c("primary", "The one main action per surface, progress fills, selection"),
-  c("primary-foreground", "Text on primary"),
-  c("secondary", "Secondary buttons"),
-  c("secondary-foreground", "Text on secondary"),
-  c("muted", "Tracks, slots and wells inside a panel"),
-  c("muted-foreground", "Secondary text"),
-  c("accent", "Hover and keyboard highlight"),
-  c("accent-foreground", "Text on accent"),
-  c("destructive", "Danger, damage, low values, death"),
-  c("destructive-foreground", "Text on destructive", "foreground or background, whichever contrasts more with destructive"),
-  c("border", "Hairlines"),
-  c("input", "Field borders"),
-  c("ring", "Focus rings"),
-  c("chart-1", "Categorical colour 1"),
-  c("chart-2", "Categorical colour 2"),
-  c("chart-3", "Categorical colour 3"),
-  c("chart-4", "Categorical colour 4"),
-  c("chart-5", "Categorical colour 5"),
-  { name: "radius", type: "dimension", group: "shadcn", description: "Corner radius (panels radius + 4px, controls radius − 2px)", fallback: "0.625rem" },
-  { name: "font-sans", type: "fontFamily", group: "shadcn", description: "Text", fallback: DEFAULT_FONT_SANS },
-  { name: "font-mono", type: "fontFamily", group: "shadcn", description: "Codes and IDs a player might type", fallback: DEFAULT_FONT_MONO },
-  n("success", "color", "Positive status: done, paid, online", "oklch(L, C, 150): green at the lightness/chroma of destructive"),
-  n("success-foreground", "color", "Text on success", "foreground or background, whichever contrasts more"),
-  n("warning", "color", "Caution status: low fuel, about to expire", "oklch(L + 0.08, C, 75): amber at the lightness/chroma of destructive"),
-  n("warning-foreground", "color", "Text on warning", "foreground or background, whichever contrasts more"),
-  n("info", "color", "Neutral status: tips, notices", "primary"),
-  n("info-foreground", "color", "Text on info", "primary-foreground"),
-  n("hud", "color", "Surfaces drawn straight on the game: HUD chips, hotbar, target eye", "rgba(0, 0, 0, 0.45)"),
-  n("hud-foreground", "color", "Text and icons on hud", "rgb(255, 255, 255)"),
-  n("scrim", "color", "Darkens the game behind full-screen screens, bar tracks and shadows on the game; always used with opacity", "rgb(0, 0, 0)"),
-  n("vital-health", "color", "Health bar", "chart-1 if red, else another red chart-*, else destructive if red, else oklch(0.68 0.21 25)"),
-  n("vital-armor", "color", "Armor bar", "chart-2 if blue, else another blue chart-*, else oklch(0.68 0.16 250)"),
-  n("vital-hunger", "color", "Hunger bar", "chart-3 if orange/amber, else another one, else oklch(0.78 0.16 70)"),
-  n("vital-thirst", "color", "Thirst bar", "chart-4 if cyan/blue, else another one, else oklch(0.76 0.13 215)"),
-  n("vital-stress", "color", "Stress bar", "chart-5 if purple/magenta, else another one, else oklch(0.68 0.2 320)"),
-  n("nk-scale", "number", "UI size multiplier (unitless). Players can scale further (0.85–1.25).", "1"),
-  n("nk-motion", "number", "1 = animations on, 0 = off. Painted as 0 when the theme or the player's reduced-motion pref turns motion down.", "1"),
-];
-
-/** The v1 names (unchanged since 1.0). Every compiled theme carries them. */
+/** Every lever, in spec order. */
+export const ALL_TOKENS: readonly TokenSpec[] = LEVER_ROWS.map(spec);
+export const ALL_TOKEN_NAMES: readonly string[] = ALL_TOKENS.map((t) => t.name);
+const SPEC = new Map(ALL_TOKENS.map((t) => [t.name, t]));
+/** The palette: shadcn's names and the game families, unprefixed (a TweakCN paste is a theme). Every compiled theme carries them. */
+export const TOKENS: readonly TokenSpec[] = ALL_TOKENS.filter((t) => t.group === "palette" || (t.scope === "" && t.derived));
 export const TOKEN_NAMES: readonly string[] = TOKENS.map((t) => t.name);
+/** Identity levers (what a server chooses) and the derived ones the compiler writes. */
+export const IDENTITY_TOKENS: readonly TokenSpec[] = ALL_TOKENS.filter((t) => t.scope !== "" && t.scope !== "font" && (t.tier === "identity" || t.derived));
+/** Keyword levers painted as data-nk-<attr> on the themed element, so kit.css switches on an attribute. */
+export const KEYWORD_ATTRS: readonly (readonly [string, string])[] = ALL_TOKENS.filter((t) => t.attr).map((t) => [`data-nk-${t.attr}`, t.name] as const);
+export { ANATOMY, type Lever, type LeverRow } from "./tokens.generated";
 
-const id = (name: string, type: TokenType, description: string, fallback: string, extra: Partial<TokenSpec> = {}): TokenSpec => ({ name, type, group: "identity", description, fallback, since: "1.1", ...extra });
-const dv = (name: string, type: TokenType, description: string, fallback: string): TokenSpec => ({ name, type, group: "derived", description, fallback, since: "1.1" });
+/** The default faces: the premium baseline's two voices (Geist for sentences, Barlow Condensed for anything scanned). */
+const face = (n: string) => SPEC.get(n)!.default;
+export const DEFAULT_FONT_SANS = face("font-sans");
+export const DEFAULT_FONT_DISPLAY = face("font-display");
+export const DEFAULT_FONT_MONO = face("font-mono");
 
-/** Motion feels (tokens 1.2): how an identity moves. Painted as html[data-nk-feel]. */
-export const MOTION_FEELS = ["crisp", "snap", "smooth", "stepped"] as const;
+/** Motion feels: how an identity moves. Painted as data-nk-feel. */
+export const MOTION_FEELS = SPEC.get("nk-motion-feel")!.values as readonly ["crisp", "snap", "smooth", "stepped"];
 export type MotionFeel = (typeof MOTION_FEELS)[number];
 /** The four spring presets (docs/tokens.md#motion), run by nuikit-core/motion as sampled WAAPI keyframes. */
 export const SPRING_PRESETS = ["snap", "move", "soft", "pop"] as const;
 export type SpringPresetName = (typeof SPRING_PRESETS)[number];
 
-const mt = (name: string, type: TokenType, description: string, fallback: string): TokenSpec => ({ name, type, group: "derived", description, fallback, since: "1.2" });
-
-/**
- * Motion tokens (tokens 1.2, docs/archive/design-research/motion.md §2.2). Two identity inputs; everything else is
- * derived from --nk-duration (d), --nk-ease, the feel and the bounce. The compiler writes literal values (no
- * calc() on <time> inside animation shorthands in Chromium 103), and the player's prefs clamp them
- * (withPrefs): off = 0ms; reduced = at most 100ms and no movement (--nk-motion-move: 0).
- */
-export const MOTION_TOKENS: readonly TokenSpec[] = [
-  { name: "nk-motion-feel", type: "keyword", group: "identity", description: "How the identity moves: crisp (Graphite), snap (Signal: no glide on selection, flash instead of press scale), smooth (Velvet: longer springs, a hint of bounce), stepped (Vector: values tick in steps)", fallback: "crisp", values: MOTION_FEELS, since: "1.2" },
-  { name: "nk-spring-bounce", type: "number", group: "identity", description: "Bounce folded into the snap, move and soft springs (0 = critically damped; 0.3 is the most the kit allows)", fallback: "0", range: [0, 0.3], since: "1.2" },
-  mt("nk-motion-move", "number", "1 = things may move (translate, scale, rotate, FLIP, stagger); 0 under reduced motion or off, where only fades of at most 100ms are kept", "1"),
-  mt("nk-time-instant", "duration", "State that must be immediate: keyboard and controller selection, held key-repeat", "0ms"),
-  { ...mt("nk-time-snap", "duration", "The ladder (1.5): snap, 0.5 × d. A press, a rim switching state", "70ms"), since: "1.5" },
-  { ...mt("nk-time-fast", "duration", "The ladder (1.5): fast, 0.667 × d. Hover, a deny beat", "93ms"), since: "1.5" },
-  { ...mt("nk-time-slow", "duration", "The ladder (1.5): slow, 1.556 × d. A sheet or dialog opening, a confirm pop", "218ms"), since: "1.5" },
-  mt("nk-time-press", "duration", "Press, toggle, key-chip flash: 0.5 × d, 50–100ms", "70ms"),
-  mt("nk-time-hover", "duration", "Pointer hover colour and row background: 0.75 × d", "105ms"),
-  mt("nk-time-base", "duration", "Panel and menu enter, the selection indicator, tab switch: d (kit.css --nk-time)", "140ms"),
-  mt("nk-time-exit", "duration", "Every exit (panel, toast, menu, modal): 0.7 × d", "98ms"),
-  mt("nk-time-move", "duration", "Toasts entering, FLIP moves, meters gaining: 1.5 × d, at most 300ms", "210ms"),
-  mt("nk-time-modal", "duration", "Dialog enter (on an inner wrapper): 1.25 × d", "175ms"),
-  mt("nk-time-screen", "duration", "Full-screen enter (pause, death, loading): 2.5 × d, at most 400ms", "350ms"),
-  mt("nk-time-ambient", "duration", "HUD show-on-change fades and the damage trail; not scaled by the identity", "400ms"),
-  mt("nk-stagger", "duration", "Delay per item on a list's first open: 0.15 × d (snap and smooth 0.125 × d), at most 20ms (smooth 30ms)", "20ms"),
-  mt("nk-stagger-max", "duration", "Total stagger cap: items past the fifth enter together", "100ms"),
-  mt("nk-ease-out", "cubicBezier", "Enter, hover, anything arriving: the identity's --nk-ease", "nk-ease"),
-  mt("nk-ease-in", "cubicBezier", "Exits (speeds up as it leaves)", "cubic-bezier(0.4, 0, 1, 1)"),
-  mt("nk-ease-in-out", "cubicBezier", "On-screen moves (indicator, FLIP, tab underline) when not a spring", "cubic-bezier(0.2, 0, 0, 1)"),
-  mt("nk-ease-emphasized", "cubicBezier", "Full-screen enter, big moments", "cubic-bezier(0.05, 0.7, 0.1, 1)"),
-  mt("nk-ease-linear", "keyword", "Progress, countdowns, streamed values, needles", "linear"),
-  mt("nk-spring-snap", "keyword", "Spring (duration, bounce): selection indicator, tab underline, needle catch-up", "160ms 0"),
-  mt("nk-spring-move", "keyword", "Spring (duration, bounce): toasts in, FLIP reflow, drawers, digit roll", "240ms 0.1"),
-  mt("nk-spring-soft", "keyword", "Spring (duration, bounce): full-screen content, large frame changes", "360ms 0"),
-  mt("nk-spring-pop", "keyword", "Spring (duration, bounce): rewards only (item added, level-up, a ×3 badge)", "260ms 0.3"),
-];
-
-/** Spring period per preset (snap, move, soft, pop) as a multiple of d, per feel (motion.md §2.4). */
+/** Spring period per preset (snap, move, soft, pop) as a multiple of d, per feel. */
 const SPRING_RATIO: Record<MotionFeel, readonly [number, number, number, number]> = {
   crisp: [1.15, 1.7, 2.55, 1.85],
   snap: [1.1, 1.65, 2.5, 1.8],
@@ -165,11 +74,11 @@ const SPRING_RATIO: Record<MotionFeel, readonly [number, number, number, number]
 };
 /** Each preset's ceiling (ms). */
 const SPRING_MAX = [400, 400, 450, 400] as const;
-/** The slowest base duration the kit allows; the compiler warns above it (motion.md §2.4). */
+/** The slowest base duration the kit allows; the compiler warns above it. */
 export const MAX_DURATION_MS = 260;
 
-/** The derived motion tokens for a base duration (ms), feel and bounce, as literals. Graphite is (140, crisp, 0). */
-export function motionTokens(d: number, feel: MotionFeel = "crisp", bounce = 0, opts: { exitFactor?: number; ladder?: boolean } = {}): ThemeVars {
+/** The derived motion levers for a base duration d (ms), feel, bounce and exit factor: the ladder and the springs, as literals. */
+export function motionTokens(d: number, feel: MotionFeel = "crisp", bounce = 0, opts: { exitFactor?: number } = {}): ThemeVars {
   const ms = (x: number) => `${Math.round(x)}ms`;
   const exit = opts.exitFactor !== undefined && Number.isFinite(opts.exitFactor) ? opts.exitFactor : 0.7;
   const b = Math.max(0, Math.min(0.3, bounce));
@@ -178,35 +87,17 @@ export function motionTokens(d: number, feel: MotionFeel = "crisp", bounce = 0, 
   const out: ThemeVars = {
     "nk-motion-move": "1",
     "nk-time-instant": "0ms",
-    "nk-time-press": ms(Math.max(50, Math.min(100, d * 0.5))),
-    "nk-time-hover": ms(d * 0.75),
-    "nk-time-base": ms(d),
-    "nk-time-exit": ms(d * exit),
-    "nk-time-move": ms(Math.min(300, d * 1.5)),
-    "nk-time-modal": ms(d * 1.25),
-    "nk-time-screen": ms(Math.min(400, d * 2.5)),
-    "nk-time-ambient": "400ms",
-    "nk-stagger": ms(feel === "smooth" ? Math.min(30, d * 0.125) : Math.min(20, d * (feel === "snap" ? 0.125 : 0.15))),
-    "nk-stagger-max": "100ms",
-    // tokens 1.4: the extra rungs (foundation.md §9)
-    "nk-time-confirm": ms(Math.max(60, d * 0.65)),
-    "nk-time-retract": ms(Math.min(300, d * 1.55)),
-    "nk-time-fill": ms(d * 3),
-    "nk-time-pulse": "1000ms",
-    // tokens 1.5: the ladder (default.md §2): snap .5, fast .667, base 1, slow 1.556, fill 2.333 × d
     "nk-time-snap": ms(d * 0.5),
     "nk-time-fast": ms(d * 0.667),
+    "nk-time-base": ms(d),
     "nk-time-slow": ms(d * 1.556),
+    "nk-time-fill": ms(d * 2.333),
+    "nk-time-exit": ms(d * exit),
+    // written by the compiler (not left to kit.css) so the player's prefs can clamp them
+    "nk-time-pulse": "1000ms",
+    "nk-stagger": "40ms",
+    "nk-stagger-max": "100ms",
   };
-  // ladder (the tile treatment): the 1.2 rungs read the ladder, so one scale moves everything. Other
-  // treatments keep the 1.2 formulas for one revision, so Graphite's look is unchanged.
-  if (opts.ladder) {
-    out["nk-time-fill"] = ms(d * 2.333);
-    out["nk-time-press"] = out["nk-time-snap"]!;
-    out["nk-time-hover"] = out["nk-time-fast"]!;
-    for (const k of ["nk-time-move", "nk-time-modal", "nk-time-confirm", "nk-time-retract", "nk-time-screen"]) out[k] = out["nk-time-slow"]!;
-    out["nk-time-ambient"] = out["nk-time-fill"]!;
-  }
   SPRING_PRESETS.forEach((name, i) => {
     const t = Math.min(SPRING_MAX[i]!, Math.round((d * r[i]!) / 10) * 10);
     out[`nk-spring-${name}`] = `${t}ms ${Math.round(bounces[i]! * 1000) / 1000}`;
@@ -214,454 +105,17 @@ export function motionTokens(d: number, feel: MotionFeel = "crisp", bounce = 0, 
   return out;
 }
 
-/** The time tokens the player's prefs clamp (the whole ladder except instant and the stagger cap). */
-export const MOTION_TIME_TOKENS: readonly string[] = ["nk-time-press", "nk-time-hover", "nk-time-base", "nk-time-exit", "nk-time-move", "nk-time-modal", "nk-time-screen", "nk-time-ambient", "nk-stagger", "nk-time-confirm", "nk-time-retract", "nk-time-fill", "nk-time-pulse", "nk-time-snap", "nk-time-fast", "nk-time-slow"];
-/** Under reduced motion fades are kept, but no longer than this (WCAG 2.3.3 counts opacity and colour changes as non-motion). A theme's --nk-time-reduced (1.5) replaces it. */
+/** The time levers the player's prefs clamp. */
+export const MOTION_TIME_TOKENS: readonly string[] = ["nk-time-snap", "nk-time-fast", "nk-time-base", "nk-time-slow", "nk-time-fill", "nk-time-exit", "nk-time-pulse", "nk-stagger"];
+/** Under reduced motion fades are kept, but no longer than this; a theme's --nk-motion-reduced replaces it. */
 export const REDUCED_FADE_MS = 100;
 
-// ─────────────────────────────────────────── tokens 1.4 (docs/design/foundation.md)
-
-/** Treatments (1.4): how the palette is drawn. Each fills defaults under the theme's own values. */
-export const TREATMENTS = ["soft", "glass", "plate", "slab", "tile"] as const;
-export type Treatment = (typeof TREATMENTS)[number];
-
-/**
- * What each treatment sets when the theme leaves a token out. `soft` is empty: it is today's defaults
- * (Graphite), so a plain TweakCN paste compiles exactly as before.
- */
-export const TREATMENT_PRESETS: Record<Treatment, ThemeVars> = {
-  soft: {},
-  glass: {
-    "nk-surface-edge": "0.12",
-    "nk-surface-gradient": "0.06",
-    "nk-elevation": "deep",
-    "nk-focus-style": "halo",
-    "nk-motion-feel": "smooth",
-    "nk-material-hud-blur": "1.25rem",
-    "nk-material-menu-blur": "2rem",
-    "nk-material-overlay-blur": "0.5rem",
-  },
-  plate: {
-    "nk-cut": "0.5rem",
-    "nk-surface-edge": "0.1",
-    "nk-label-case": "uppercase",
-    "nk-tracking-label": "0.1em",
-    "nk-row-indicator": "outline",
-    "nk-focus-style": "bar",
-    "nk-motion-feel": "stepped",
-    "nk-material-menu-texture": "scanlines",
-    "nk-material-hud-radius": "0px",
-    "nk-material-menu-radius": "0px",
-  },
-  slab: {
-    "nk-border-width": "2px",
-    "nk-elevation": "hard",
-    "nk-surface-opacity": "1",
-    "nk-surface-tint": "0",
-    "nk-surface-edge": "0",
-    "nk-display-style": "italic",
-    "nk-skew": "-8deg",
-    "nk-weight-display": "900",
-    "nk-motion-feel": "snap",
-    "nk-row-indicator": "fill",
-    "nk-focus-style": "fill",
-    "nk-focus-shift": "0.25rem",
-    "nk-hold-style": "fill",
-    "nk-level-style": "slab",
-    "nk-slash": "cut",
-  },
-  /**
-   * tile (1.5, docs/design/default.md): Default's values, so Default is `tile` plus a palette. One slanted keycap language
-   * on hard plates, fill-based status, italic caps for anything scanned, the 1.5 motion ladder.
-   */
-  tile: {
-    "nk-density": "1",
-    "nk-duration": "180ms",
-    "nk-elevation": "hard",
-    "nk-display-style": "italic",
-    "nk-label-case": "uppercase",
-    "nk-row-indicator": "sweep",
-    "nk-hold-style": "fill",
-    "nk-confirm-scale": "1.08",
-    "nk-stagger": "40ms",
-    "nk-surface-edge": "0",
-    "nk-surface-gradient": "0",
-    // scales
-    "nk-r-key": "0.25rem",
-    "nk-r-chip": "0.375rem",
-    "nk-r-control": "0.5rem",
-    "nk-r-surface": "0.75rem",
-    "nk-h-key": "1.5rem",
-    "nk-h-chip": "1.75rem",
-    "nk-h-control": "2.25rem",
-    "nk-h-row": "3rem",
-    "nk-text-key": "0.8125rem",
-    // baseline (1.6): the condensed face reads a step larger as a row title
-    "nk-row-title-size": "1.125rem",
-    // type roles: Barlow italic caps (font-display) for anything scanned, the sans for sentences
-    ...Object.fromEntries(
-      (["scan", "title", "label", "num"] as const).flatMap((r) => [
-        [`nk-type-${r}-family`, "var(--font-display)"],
-        [`nk-type-${r}-style`, "italic"],
-        [`nk-type-${r}-weight`, r === "scan" || r === "title" ? "800" : "700"],
-        [`nk-type-${r}-tracking`, r === "label" ? "0.03em" : r === "num" ? "0.01em" : "0.02em"],
-        [`nk-type-${r}-case`, r === "num" ? "none" : "uppercase"],
-        [`nk-type-${r}-pad`, "0.15em"],
-      ]),
-    ),
-    // tile
-    "nk-tile-face": "rgb(22, 22, 22)",
-    "nk-tile-ink": "rgb(255, 255, 255)",
-    "nk-tile-light": "rgba(255, 255, 255, 0.16)",
-    "nk-tile-shade": "rgba(0, 0, 0, 0)",
-    "nk-tile-rim": "rgba(255, 255, 255, 0.32)",
-    "nk-tile-rim-focus": "rgba(255, 255, 255, 0.4)",
-    "nk-tile-plate": "rgb(115, 115, 115)",
-    "nk-tile-plate-dim": "rgb(38, 38, 38)",
-    "nk-tile-plate-x": "2px",
-    "nk-tile-plate-y": "2px",
-    "nk-tile-press": "1px",
-    "nk-tile-skew": "-12deg",
-    "nk-tile-active": "var(--nk-tile-confirm-face)",
-    // plate (surface recipe)
-    "nk-plate": "rgb(10, 10, 10)",
-    "nk-plate-hair": "rgba(255, 255, 255, 0.12)",
-    "nk-plate-drop": "0 0.125rem 0 rgba(0, 0, 0, 0.6)",
-    // fill
-    "nk-fill-color": "var(--foreground)",
-    "nk-fill-track": "rgba(255, 255, 255, 0.12)",
-    "nk-fill-tint": "rgba(255, 255, 255, 0.12)",
-    "nk-fill-edge": "rgba(255, 255, 255, 0.4)",
-    // motion distances
-    "nk-lift": "0.5rem",
-    "nk-rise": "0.5rem",
-    "nk-land-scale": "0.6",
-    "nk-deny-x": "0.3125rem",
-  },
-};
-
-/** Role sets (1.4): a frame sets `data-hue="<role>"`, its children read the --hue-* ramp. */
-export const ROLE_SETS = {
-  vitals: ["health", "armor", "hunger", "thirst", "stress", "stamina", "oxygen"],
-  status: ["info", "success", "warning", "danger"],
-  faction: ["police", "ems", "mech", "gang", "civ", "staff"],
-  rarity: ["common", "uncommon", "rare", "epic", "legendary"],
-  brand: ["brand"],
-  neutral: ["neutral"],
-} as const;
-export const ROLES: readonly string[] = Object.values(ROLE_SETS).flat();
-
-/**
- * Where each role's colour comes from when the theme doesn't set --role-<name>: another token (vitals keep
- * today's vital colours; stamina and oxygen alias their status), or a fixed OKLCH (factions, rarity).
- */
-const ROLE_DEFAULTS: Record<string, string | readonly [number, number, number]> = {
-  health: "vital-health",
-  armor: "vital-armor",
-  hunger: "vital-hunger",
-  thirst: "vital-thirst",
-  stress: "vital-stress",
-  stamina: "success",
-  oxygen: "info",
-  info: "info",
-  success: "success",
-  warning: "warning",
-  danger: "destructive",
-  police: [0.62, 0.17, 255],
-  ems: [0.64, 0.2, 25],
-  mech: [0.74, 0.15, 60],
-  gang: [0.6, 0.2, 305],
-  civ: "muted-foreground",
-  staff: "brand",
-  common: "muted-foreground",
-  uncommon: [0.72, 0.17, 145],
-  rare: [0.66, 0.16, 250],
-  epic: [0.62, 0.22, 305],
-  legendary: [0.78, 0.16, 75],
-  brand: "brand",
-  neutral: "muted-foreground",
-};
-
-const f14 = (name: string, type: TokenType, description: string, fallback: string, extra: Partial<TokenSpec> = {}): TokenSpec => ({ name, type, group: "identity", description, fallback, since: "1.4", ...extra });
-const d14 = (name: string, type: TokenType, description: string, fallback: string): TokenSpec => ({ name, type, group: "derived", description, fallback, since: "1.4" });
-const MATERIAL_CONTEXTS = { hud: "HUD parts drawn over the game", menu: "menus, sheets and dialogs", overlay: "full-screen overlays (pause, death, loading)" } as const;
-const MS: [number, number] = [0, 60000];
-
-/** Tokens 1.4: treatment, states, roles, materials, legibility, behaviour, motion steps, layers, offsets, attention. */
-export const FOUNDATION_TOKENS: readonly TokenSpec[] = [
-  f14("nk-treatment", "keyword", "How the palette is drawn: soft (Graphite), glass, plate or slab. Fills material, stroke, type, focus and motion defaults; any value the theme sets wins", "soft", { values: TREATMENTS }),
-  f14("nk-focus-style", "keyword", "Every component's focus (controller and keyboard highlight)", "ring", { values: ["ring", "halo", "tint", "fill", "invert", "bar"] }),
-  f14("nk-hold-style", "keyword", "How a press-and-hold shows its progress", "bar", { values: ["bar", "ring", "fill"] }),
-  f14("nk-confirm-scale", "number", "The short pop of a confirm", "1.04", { range: [1, 1.2] }),
-  f14("nk-level-style", "keyword", "How a level (--level, 0–1) is drawn by meters, vitals, holds, timers and cooldowns", "bar", { values: ["bar", "ring", "liquid", "slab", "pips"] }),
-  ...ROLES.map((r) => f14(`role-${r}`, "color", `Role colour ${r}: the --hue-* ramp under data-hue="${r}"`, typeof ROLE_DEFAULTS[r] === "string" ? String(ROLE_DEFAULTS[r]) : `oklch(${(ROLE_DEFAULTS[r] as readonly number[]).join(" ")})`)),
-  ...ROLES.flatMap((r) => [
-    d14(`role-${r}-deep`, "color", `${r}, darker: the ramp's deep step and gradient end`, `role-${r}, OKLCH lightness − 0.12`),
-    d14(`role-${r}-light`, "color", `${r}, lighter: the ramp's gradient start`, `role-${r}, OKLCH lightness + 0.1`),
-  ]),
-  f14("nk-hue-line", "number", "Alpha of a role's line (borders, tracks)", "0.5", { range: [0, 1] }),
-  f14("nk-hue-tint", "number", "Alpha of a role's tint (fills behind text)", "0.14", { range: [0, 1] }),
-  f14("nk-hue-glow", "number", "Alpha of a role's glow (under the glow budget)", "0.45", { range: [0, 1] }),
-  f14("nk-hue-alert", "number", "Alpha of a role's alert wash (below the alert threshold)", "0.24", { range: [0, 1] }),
-  ...Object.entries(MATERIAL_CONTEXTS).flatMap(([ctx, what]) => [
-    f14(`nk-material-${ctx}-opacity`, "number", `Surface opacity of ${what}`, ctx === "hud" ? "nk-hud-opacity" : "nk-surface-opacity", { range: [0, 1] }),
-    f14(`nk-material-${ctx}-blur`, "dimension", `Backdrop blur behind ${what}`, "0px"),
-    f14(`nk-material-${ctx}-radius`, "dimension", `Corner radius of ${what}`, "radius"),
-    f14(`nk-material-${ctx}-edge`, "number", `Inner top highlight of ${what} (alpha)`, "nk-surface-edge", { range: [0, 0.3] }),
-    f14(`nk-material-${ctx}-texture`, "keyword", `Texture over ${what}`, "none", { values: ["none", "scanlines"] }),
-  ]),
-  f14("nk-backdrop", "keyword", "Backdrop filters (blur behind materials, the death screen's desaturation): off by default, because FiveM's NUI draws backdrop-filter as a black box over the game; on applies each surface's --nk-backdrop-filter (browser previews, clients that draw it right)", "off", { values: ["on", "off"] }),
-  f14("nk-slash", "keyword", "A decorative diagonal cut on menus, at most once per full-screen moment", "none", { values: ["none", "cut"] }),
-  f14("nk-legibility", "keyword", "night: as designed. day: surfaces and hairlines lifted for a bright sky (not a light theme). auto: day while the game clock says so (html[data-nk-daytime], set by the HUD)", "auto", { values: ["auto", "night", "day"] }),
-  f14("nk-legibility-lift", "number", "How far day closes the gap to opaque (0 none, 1 fully opaque)", "0.5", { range: [0, 1] }),
-  f14("nk-alert-threshold", "number", "A level at or under this is an alert (vitals, durability)", "0.2", { range: [0, 1] }),
-  f14("nk-fuel-threshold", "number", "Fuel alert level", "0.15", { range: [0, 1] }),
-  ...["info", "success", "warning", "danger"].map((s) => f14(`nk-notify-ms-${s}`, "duration", `How long a ${s} notice stays`, "5000ms", { range: MS })),
-  f14("nk-hold-ms", "duration", "Press-and-hold time", "800ms", { range: MS }),
-  f14("nk-cooldown-ms", "duration", "Default cooldown after an action", "0ms", { range: MS }),
-  f14("nk-rest-delay", "duration", "How long an idle HUD part waits before it retracts (0 = never)", "0ms", { range: MS }),
-  f14("nk-motion-profile", "keyword", "full: as designed. reduced: no movement, short fades. instant: nothing animates", "full", { values: ["full", "reduced", "instant"] }),
-  d14("nk-ease-standard", "cubicBezier", "On-screen moves", "nk-ease-in-out"),
-  d14("nk-ease-expand", "cubicBezier", "Things opening and growing", "nk-ease-emphasized"),
-  d14("nk-ease-retract", "cubicBezier", "Things closing and tucking away", "nk-ease-in"),
-  d14("nk-ease-spring", "cubicBezier", "An overshoot without a spring (confirm pops)", "cubic-bezier(0.34, 1.56, 0.64, 1)"),
-  d14("nk-ease-breathe", "cubicBezier", "Loops (alerts, pulses)", "cubic-bezier(0.37, 0, 0.63, 1)"),
-  d14("nk-time-confirm", "duration", "A confirm pop: 0.65 × d, at least 60ms", "91ms"),
-  d14("nk-time-retract", "duration", "A HUD part tucking away: 1.55 × d, at most 300ms", "217ms"),
-  d14("nk-time-fill", "duration", "A level filling or draining: 3 × d", "420ms"),
-  d14("nk-time-pulse", "duration", "One alert pulse", "1000ms"),
-  ...(["world", "hud", "scrim", "surface", "dim", "dialog", "system"] as const).map((l, i) => f14(`nk-z-${l}`, "number", `Stacking layer: ${l}. A modal is the current surface + dim + dialog`, String((i + 1) * 10), { range: [0, 100000] })),
-  f14("nk-focus-shift", "dimension", "The focused row's nudge toward its content", "0rem"),
-  f14("nk-glow-budget", "number", "How many elements may glow at once (the top surface's focused one first); 0 = no limit", "1", { range: [0, 8] }),
-];
-
-/**
- * Identity tokens (tokens 1.1, docs/archive/design-v2.md): what makes a UI recognisable besides colour. A server
- * sets a handful in theme.css; everything left out is derived, so a plain TweakCN paste is Graphite.
- */
-export const IDENTITY_TOKENS: readonly TokenSpec[] = [
-  id("brand", "color", "The server's signature colour: active indicators, gauge needles, focus, logos (not the action: that's primary)", "primary if chromatic (OKLCH C ≥ 0.06), else chart-1"),
-  id("brand-foreground", "color", "Text on brand", "foreground or background, whichever contrasts more"),
-  id("world-foreground", "color", "Text and icons drawn straight on the game, no panel (death text, unplated HUD values, nk-on-game). Light in every theme, light or dark", "rgb(255, 255, 255)"),
-  id("world-foreground-muted", "color", "Secondary text on the game", "world-foreground at 80% (3:1 on a mid-grey frame)"),
-  id("world-shadow", "shadow", "Text-shadow that keeps world-foreground legible over any frame", "0 1px 2px rgba(0, 0, 0, 0.65), 0 0 0.5rem rgba(0, 0, 0, 0.35)"),
-  id("world-success", "color", "A gain drawn on the game or the HUD plate (slab deltas: +2, $250). Reads on the dark plate in every theme, light or dark", "success, OKLCH lightness at least 0.7", { since: "1.3" }),
-  id("world-destructive", "color", "A loss drawn on the game or the HUD plate (slab deltas: −1)", "destructive, OKLCH lightness at least 0.7", { since: "1.3" }),
-  id("font-display", "fontFamily", "Headings and big moments (titles, timers, the balance)", "font-sans; Inter Tight when font-sans is the default Inter"),
-  id("font-numeric", "fontFamily", "Every number on a gauge, money or timer (always tabular)", "font-sans"),
-  id("nk-type-ratio", "number", "Step between type sizes: 1.125 calm … 1.333 dramatic", "1.2", { range: [1, 1.6] }),
-  id("nk-weight-body", "number", "Body text weight", "400", { range: [100, 900] }),
-  id("nk-weight-strong", "number", "Titles, key numbers, active rows", "600", { range: [100, 900] }),
-  id("nk-weight-display", "number", "Display type (full-screen titles, big numbers)", "700", { range: [100, 900] }),
-  id("nk-tracking-display", "dimension", "Letter-spacing of display type", "-0.02em"),
-  id("nk-label-case", "keyword", "Captions (the short names of values) in uppercase or as written", "uppercase", { values: ["none", "uppercase"] }),
-  id("nk-tracking-label", "dimension", "Letter-spacing of captions (uppercase wants 0.06–0.12em)", "0.06em"),
-  id("nk-border-width", "dimension", "Hairline weight of panels, rows and fields", "1px"),
-  id("nk-cut", "dimension", "Chamfered corners (top left, bottom right), drawn with clip-path; 0 = off", "0px"),
-  id("nk-display-style", "keyword", "Display, heading, title and numeric text upright or italic (a real italic face where the font has one)", "normal", { values: ["normal", "italic"], since: "1.3" }),
-  id("nk-pause-style", "keyword", "The pause menu: a full-height sheet, or a light slash panel with a diagonal edge into the scene", "sheet", { values: ["sheet", "slash"], since: "1.3" }),
-  id("nk-pause-surface", "color", "The slash pause panel's light surface", "rgb(246, 247, 249)", { since: "1.3" }),
-  id("nk-pause-ink", "color", "Text on the slash pause panel", "rgb(14, 16, 20)", { since: "1.3" }),
-  id("nk-skew", "dimension", "Badges, chips, key caps, tags and the primary / selected bar drawn skewed (their text stays upright); 0deg = off, at most ±20deg", "0deg", { since: "1.3" }),
-  id("nk-surface-opacity", "number", "Panel opacity over the game (floor 0.92 for text panels)", "0.96", { range: [0, 1] }),
-  id("nk-surface-tint", "number", "How much brand tints neutral surfaces (0–0.12)", "0.02", { range: [0, 0.12] }),
-  id("nk-surface-gradient", "number", "Top-to-bottom light falloff on panels (0 = flat)", "0", { range: [0, 0.2] }),
-  id("nk-surface-edge", "number", "Inner top highlight, the machined edge (alpha)", "0.06", { range: [0, 0.3] }),
-  id("nk-elevation", "keyword", "Shadow recipe of floating panels: none, soft, deep, or hard (a solid offset drop, no blur; tokens 1.3)", "soft", { values: ["none", "soft", "deep", "hard"] }),
-  id("nk-glow", "number", "Brand glow on active parts and HUD fills (alpha, 0 = off)", "0", { range: [0, 1] }),
-  id("nk-density", "number", "Multiplies the kit's spacing scale: 0.875 compact (Graphite) … 1.15 roomy", "0.875", { range: [0.75, 1.3] }),
-  id("nk-ease", "cubicBezier", "The one easing curve", "cubic-bezier(0.2, 0.8, 0.2, 1)"),
-  id("nk-duration", "duration", "Base duration (panel enter, transitions); × nk-motion", "140ms"),
-  id("nk-hud-opacity", "number", "Minimum backplate opacity of HUD chips and tiles", "0.55", { range: [0, 1] }),
-  id("nk-hud-text-shadow", "keyword", "Shadow under text drawn on the game", "soft", { values: ["none", "soft", "strong"] }),
-  id("nk-gauge-style", "keyword", "How gauges are drawn", "arc", { values: ["arc", "bar", "digital"] }),
-  id("nk-gauge-track", "dimension", "Gauge and meter track thickness", "0.25rem"),
-  id("nk-gauge-ticks", "number", "Tick marks on gauges: 1 on, 0 off", "1", { range: [0, 1] }),
-  id("nk-row-indicator", "keyword", "How the active row is marked: bar, fill, outline, or sweep (1.5: no bar, the row's --nk-fill-tint sweep alone)", "bar", { values: ["bar", "fill", "outline", "sweep"] }),
-  dv("surface", "color", "Floating panel surface: popover tinted by brand (× nk-surface-tint); drawn at nk-surface-opacity", "mix(popover, brand, nk-surface-tint)"),
-  dv("nk-elevation-shadow", "shadow", "The box-shadow nk-elevation names, in scrim colour", "from nk-elevation"),
-  dv("nk-hud-shadow", "shadow", "The text-shadow nk-hud-text-shadow names, in scrim colour", "from nk-hud-text-shadow"),
-  dv("nk-row-bar", "number", "1 when nk-row-indicator is bar", "from nk-row-indicator"),
-  dv("nk-row-fill", "number", "1 when nk-row-indicator is fill", "from nk-row-indicator"),
-  dv("nk-row-outline", "number", "1 when nk-row-indicator is outline", "from nk-row-indicator"),
-  dv("nk-clip", "keyword", "clip-path of panels: the nk-cut chamfer, or none when nk-cut is 0 (a clip-path would also clip the shadow)", "from nk-cut"),
-  dv("nk-clip-sm", "keyword", "clip-path of chips, tiles and buttons: half the panel chamfer", "from nk-cut"),
-  ...MOTION_TOKENS,
-  ...FOUNDATION_TOKENS,
-  // tokens 1.5: the motion inputs the compiler needs (the rest of 1.5 is KIT_TOKENS, kit.css defaults)
-  { ...id("nk-exit-factor", "number", "Every exit is this × its enter (--nk-time-exit = base × factor)", "0.7", { range: [0.3, 1] }), since: "1.5" },
-  { ...id("nk-time-reduced", "duration", "The one reduced-motion duration: under reduced motion every fade is at most this", "100ms", { range: [0, 400] }), since: "1.5" },
-];
-
-// ─────────────────────────────────────────── tokens 1.5 (docs/design/default.md §2): the Default theme levers
-
-const k15 = (name: string, type: TokenType, description: string, fallback: string, extra: Partial<TokenSpec> = {}): TokenSpec => ({ name, type, group: "identity", description, fallback, since: "1.5", css: true, ...extra });
-
-/** Spacing, radius, height and icon scales. Defaults are today's Graphite proportions (kit.css). */
-export const SCALE_TOKENS: readonly TokenSpec[] = [
-  k15("nk-space-unit", "dimension", "The spacing step: 0.25rem × --nk-density (aliases --nk-space)", "calc(0.25rem * nk-density)"),
-  ...[1, 2, 3, 4, 6, 8].map((n) => k15(`nk-space-${n}`, "dimension", `${n} × the spacing step`, `${n} × nk-space-unit`)),
-  k15("nk-gap-cluster", "dimension", "Icon + text, key + label", "nk-space-2"),
-  k15("nk-gap-items", "dimension", "Items in a bar", "nk-space-1"),
-  k15("nk-pad-x", "dimension", "Inline padding of anything labelled", "nk-space-3"),
-  k15("nk-pad-surface", "dimension", "Padding of a surface (dialog body, sheet column)", "nk-space-6"),
-  k15("nk-r-key", "dimension", "Radius of keys and tiles (aliased by --nk-key-radius)", "max(0.25rem, radius − 4px)"),
-  k15("nk-r-chip", "dimension", "Radius of chips and badges (aliased by --nk-chip-radius)", "max(0.25rem, radius − 4px)"),
-  k15("nk-r-control", "dimension", "Radius of buttons, fields and rows (aliased by --nk-row-radius)", "radius − 2px"),
-  k15("nk-r-surface", "dimension", "Radius of panels, sheets and dialogs", "nk-material-menu-radius"),
-  k15("nk-h-key", "dimension", "Height of a key / small tile", "1.25rem"),
-  k15("nk-h-chip", "dimension", "Height of a chip / medium tile (aliased by --nk-chip-height)", "calc(2rem * nk-density)"),
-  k15("nk-h-control", "dimension", "Height of buttons, fields and bar items / large tile", "2.25rem"),
-  k15("nk-h-row", "dimension", "Height of a list row (aliased by --nk-row-height)", "calc(2.75rem * nk-density)"),
-  k15("nk-icon-sm", "dimension", "Small icon", "0.75rem"),
-  k15("nk-icon-md", "dimension", "Icon next to text (the default)", "1rem"),
-  k15("nk-icon-lg", "dimension", "Large icon", "1.25rem"),
-  k15("nk-icon-stroke", "number", "Icon stroke width", "2", { range: [0.5, 4] }),
-];
-
-/** The five type roles. A kit class (.nk-scan, .nk-title, .nk-label, .nk-num, .nk-body) applies one. */
-export const TYPE_ROLES = ["scan", "title", "label", "num", "body"] as const;
-const ROLE_WHAT: Record<(typeof TYPE_ROLES)[number], string> = { scan: "keys, buttons, tabs", title: "titles", label: "labels", num: "numbers", body: "sentences" };
-export const TYPE_ROLE_TOKENS: readonly TokenSpec[] = [
-  k15("nk-text-key", "dimension", "Size of the scan role (keys, buttons, tabs)", "0.8125rem"),
-  k15("nk-text-body", "dimension", "Size of the body role", "nk-text-base"),
-  ...TYPE_ROLES.flatMap((r) => [
-    k15(`nk-type-${r}-family`, "fontFamily", `Font of the ${r} role (${ROLE_WHAT[r]})`, r === "body" ? "font-sans" : r === "scan" ? "nk-key-font" : r === "num" ? "font-numeric" : r === "title" ? "nk-heading-font" : "font-sans"),
-    k15(`nk-type-${r}-style`, "keyword", `normal or italic, for the ${r} role`, r === "title" || r === "num" || r === "scan" ? "nk-display-style" : "normal", { values: ["normal", "italic"] }),
-    k15(`nk-type-${r}-weight`, "number", `Weight of the ${r} role`, r === "scan" ? "nk-weight-strong" : r === "title" ? "nk-heading-weight" : r === "body" ? "nk-weight-body" : r === "label" ? "500" : "inherit", { range: [100, 900] }),
-    k15(`nk-type-${r}-tracking`, "dimension", `Letter-spacing of the ${r} role`, r === "title" ? "nk-heading-tracking" : r === "num" ? "-0.02em" : "0em"),
-    k15(`nk-type-${r}-case`, "keyword", `Case of the ${r} role`, r === "title" ? "nk-heading-case" : "none", { values: ["none", "uppercase"] }),
-    k15(`nk-type-${r}-pad`, "dimension", `Trailing pad of the ${r} role (the italic overhang)`, "0em"),
-  ]),
-];
-
-/** Tile / Keycap: one slanted key language (keys, notice icons, tab marks, checked boxes, telltales). */
-export const TILE_TOKENS: readonly TokenSpec[] = [
-  k15("nk-tile-face", "color", "The tile's face (aliased by --nk-key-bg)", "muted"),
-  k15("nk-tile-ink", "color", "The legend on the face (aliased by --nk-key-fg)", "popover-foreground"),
-  k15("nk-tile-light", "color", "The face's top hairline", "popover-foreground at 1.5 × nk-surface-edge"),
-  k15("nk-tile-shade", "color", "The face's bottom inner shade", "scrim at 0.35"),
-  k15("nk-tile-rim", "color", "The face's 1px rim (aliased by --nk-key-border)", "border"),
-  k15("nk-tile-rim-focus", "color", "The rim while focused", "ring"),
-  k15("nk-tile-plate", "color", "The solid plate behind the face", "border"),
-  k15("nk-tile-plate-dim", "color", "The plate on the HUD", "nk-tile-plate"),
-  k15("nk-tile-plate-x", "dimension", "How far the plate sits right of the face (0 = no plate)", "0px; 0.1875rem under --nk-skew"),
-  k15("nk-tile-plate-y", "dimension", "How far the plate sits below the face", "0px; 0.1875rem under --nk-skew"),
-  k15("nk-tile-press", "dimension", "How far a held tile presses toward its plate", "1px"),
-  k15("nk-tile-skew", "dimension", "The face's slant (the box stays upright); at most ±20deg", "nk-skew"),
-  k15("nk-tile-confirm-face", "color", "The face when confirmed or active", "foreground"),
-  k15("nk-tile-confirm-ink", "color", "The legend when confirmed or active", "background"),
-  k15("nk-tile-hold", "color", "The hold fill over the face", "foreground at 0.35"),
-  k15("nk-tile-active", "image", "The face of an active tile (data-active: the mic while talking, N on the compass, a checked box); a colour or a gradient", "nk-tile-confirm-face; tile: nk-accent-gradient"),
-  k15("nk-tile-tag-delay", "duration", "The tag opens this long after the tile lands", "80ms"),
-];
-
-/** Plate: the one surface recipe (sheets, dialogs, notices), hard drop, no blur. */
-export const PLATE_TOKENS: readonly TokenSpec[] = [
-  k15("nk-plate", "color", "The plate colour (its channels, --nk-plate-rgb, are drawn at the context's material opacity)", "surface"),
-  k15("nk-plate-hair", "color", "The plate's hairline", "nk-panel-border"),
-  k15("nk-plate-drop", "shadow", "The plate's drop: hard, no blur", "nk-panel-shadow"),
-  k15("nk-plate-radius", "dimension", "The plate's radius", "nk-r-surface"),
-];
-
-/** Fill: status as a level filling left to right. --level (0–1) is set inline. */
-export const FILL_TOKENS: readonly TokenSpec[] = [
-  k15("nk-fill-color", "color", "The bar", "brand"),
-  k15("nk-fill-track", "color", "The track behind the bar", "nk-meter-track"),
-  k15("nk-fill-tint", "color", "The row sweep (a fill at level 1)", "accent"),
-  k15("nk-fill-edge", "color", "The bar's leading 1px edge", "transparent"),
-  k15("nk-fill-alert", "color", "The bar at or under the alert threshold", "destructive"),
-];
-
-/** Accent (1.5): the signature paint. A colour or a gradient for HTML layers, and its stops for SVG strokes
- *  (an SVG stroke can't take a CSS gradient). A flat brand by default, so a theme without one looks the same. */
-export const ACCENT_TOKENS: readonly TokenSpec[] = [
-  k15("nk-accent-from", "color", "The accent's first stop (SVG strokes: the speedometer arc, the lubber mark)", "brand"),
-  k15("nk-accent-via", "color", "The accent's middle stop", "nk-accent-from"),
-  k15("nk-accent-to", "color", "The accent's last stop", "nk-accent-from"),
-];
-
-/** Motion distances (1.5): the ladder itself is in MOTION_TOKENS. */
-export const MOTION_15_TOKENS: readonly TokenSpec[] = [
-  k15("nk-lift", "dimension", "Row slide and slot lift on focus", "0rem"),
-  k15("nk-rise", "dimension", "How far things rise as they enter", "0.5rem"),
-  k15("nk-land-scale", "number", "The scale a tile lands from", "1", { range: [0, 1] }),
-  k15("nk-deny-x", "dimension", "The deny shake's distance (two beats of fast)", "0.3125rem"),
-];
-
-/** Tokens components already read (vital-chip.tsx), moved into the contract (1.5). Unset = the component's default. */
-export const HYGIENE_TOKENS: readonly TokenSpec[] = [
-  k15("nk-vital-icon", "keyword", "Vital icons: each vital's own, or one uniform glyph", "vital", { values: ["vital", "uniform"] }),
-  k15("nk-vital-display", "keyword", "What a vital chip shows", "auto", { values: ["auto", "pill", "value", "icon", "expand"] }),
-  k15("nk-vital-neighbours", "keyword", "What a growing chip does to its neighbours", "push", { values: ["push", "collapse", "overlay"] }),
-];
-
-/** Every 1.5 lever: kit.css holds the defaults; the compiler validates what a theme or treatment sets. */
-export const KIT_TOKENS: readonly TokenSpec[] = [...SCALE_TOKENS, ...TYPE_ROLE_TOKENS, ...TILE_TOKENS, ...PLATE_TOKENS, ...FILL_TOKENS, ...ACCENT_TOKENS, ...MOTION_15_TOKENS, ...HYGIENE_TOKENS];
-
-const k16 = (name: string, type: TokenType, description: string, fallback: string, extra: Partial<TokenSpec> = {}): TokenSpec => ({ name, type, group: "identity", description, fallback, since: "1.6", css: true, ...extra });
-
-/**
- * The baseline (1.6, docs/design/baseline.md): what every component shares in every theme, read off the
- * speedometer and the minimap. Generous rows with an icon tile column and two voices, one selection language
- * (a marker, a fading tint and a lift), a single focus rim, keycap primaries and segmented rings. kit.css holds
- * each default (the same in every theme); a theme tunes a value, never a rule.
- */
-export const BASELINE_TOKENS: readonly TokenSpec[] = [
-  k16("nk-fill-style", "keyword", "How fills read: solid (flat, full, vivid: progress, meters, vital liquid, the selected row) or soft (translucent, a fading tint)", "solid", { values: ["solid", "soft"] }),
-  k16("nk-row-pad-y", "dimension", "A list row's block padding", "nk-space-2"),
-  k16("nk-row-pad-x", "dimension", "A list row's inline padding", "nk-space-3"),
-  k16("nk-row-gap", "dimension", "Between a row's icon tile, its text and its trail", "nk-space-4"),
-  k16("nk-row-lift", "dimension", "How far the selected row's content slides in", "nk-space-2"),
-  k16("nk-row-title-size", "dimension", "A row title (the label voice)", "nk-text-base; tile: 1.125rem"),
-  k16("nk-row-desc-size", "dimension", "A row description (the body voice)", "0.875rem"),
-  k16("nk-row-icon-box", "dimension", "The icon tile beside a row title (the icon inside is --nk-icon-md)", "2rem"),
-  k16("nk-row-marker-width", "dimension", "Retired in 1.7 (the selection is a Tile, SELECTION_TOKENS); read by nothing", "0.25rem"),
-  k16("nk-row-tint-reach", "number", "Retired in 1.7 (the soft selection is a tinted Tile face, --nk-tile-tint); read by nothing", "0.7", { range: [0, 1] }),
-  k16("nk-h-field", "dimension", "Height of text inputs, selects and dialog buttons", "2.75rem"),
-  k16("nk-focus-rim", "color", "A text field's caret focus (and a checkbox's or switch's lit rim): a single 1px rim. Nothing else draws focus (1.7)", "ring"),
-  k16("nk-ring-segments", "number", "Segments in a progress ring (the speedometer's language)", "24", { range: [6, 60] }),
-  k16("nk-ring-gap", "number", "Degrees between a progress ring's segments", "4", { range: [0, 12] }),
-];
-
-const k17 = (name: string, type: TokenType, description: string, fallback: string, extra: Partial<TokenSpec> = {}): TokenSpec => ({ name, type, group: "identity", description, fallback, since: "1.7", css: true, ...extra });
-
-/**
- * Selection (1.7, docs/design/baseline.md "Selection"): no focus rings anywhere (focus renders the hover state), the
- * selection IS the primary keycap's Tile (one lever set, so Resume and a lit row are one object in two states), one
- * sliding tile per list, rows a list gap apart so a lit tile never touches its neighbour.
- */
-export const SELECTION_TOKENS: readonly TokenSpec[] = [
-  k17("nk-tile-wall", "dimension", "The keycap's wall: how far the face sits above its plate (the primary button and the selection tile)", "0.1875rem"),
-  k17("nk-tile-wall-shade", "number", "How dark the wall is under its face (0–1, the scrim over the face colour)", "0.45", { range: [0, 1] }),
-  k17("nk-tile-radius", "dimension", "The keycap's radius (the primary button and the selection tile)", "nk-r-control"),
-  k17("nk-tile-key", "color", "The keycap face under --nk-fill-style: solid (the primary button, the lit row, the active tab)", "primary"),
-  k17("nk-tile-key-ink", "color", "Text on the keycap face", "primary-foreground"),
-  k17("nk-tile-key-rim", "color", "The keycap face's rim, --nk-border-width wide (the primary button and the selection tile); transparent = none", "transparent"),
-  k17("nk-tile-tint", "number", "The face's opacity under --nk-fill-style: soft (a tinted tile, the foreground ink)", "0.16", { range: [0, 1] }),
-  k17("nk-tile-inset", "dimension", "How far a selection tile sits in from its item's sides (room for the skew; never over a neighbour)", "0.375rem"),
-  k17("nk-tile-lift", "dimension", "How far a keycap's face rises on hover and focus (0 = flat)", "1px"),
-  k17("nk-tile-press-ratio", "number", "How far a pressed keycap sinks, as a fraction of its wall (1 = flush with the plate)", "0.67", { range: [0, 1.5] }),
-  k17("nk-leading-tight", "dimension", "Line height of small text (captions, field labels, notice and row descriptions' tight lines)", "1rem"),
-  k17("nk-leading-normal", "dimension", "Line height of body-size text (rows, notices, slabs, row titles)", "1.25rem"),
-  k17("nk-row-bar-thickness", "dimension", "Width of the active row's bar (× nk-row-bar)", "0.1875rem"),
-  k17("nk-row-bar-inset-scale", "number", "The row bar's inset from the row's top and bottom, in spacing units", "2.5", { range: [0, 6] }),
-  k17("nk-hold-ring-pad", "dimension", "Thickness of the hold ring around a key under nk-hold-style ring", "2px"),
-  k17("nk-pip-size", "dimension", "Width of one pip under nk-level-style pips (a percentage of the bar: 10% = ten pips)", "10%"),
-  k17("nk-pip-gap", "dimension", "The gap between pips", "2px"),
-  k17("nk-meter-segment-gap", "dimension", "The gap between a segmented meter's segments", "0.125rem"),
-  k17("nk-glow-radius", "dimension", "Blur radius of a row's glow (a chip's is 0.75 of it, a meter's 0.625)", "1rem"),
-  k17("nk-list-gap", "dimension", "Between the items of a list: the wall plus breathing room, so a lit tile never touches the next row", "calc(nk-tile-wall + nk-space-1)"),
-];
+/** Role sets: a frame sets data-hue="<role>", its children read the --hue-* ramp. */
+export { ROLE_SETS, ROLES } from "./spec/roles";
 
 /** The chamfer (top left and bottom right) as a clip-path of a cut size. */
 export const chamferClip = (cut: string) =>
   `polygon(${cut} 0, 100% 0, 100% calc(100% - ${cut}), calc(100% - ${cut}) 100%, 0 100%, 0 ${cut})`;
-
-/** Every token: v1 then the 1.1 identity tokens. */
-export const ALL_TOKENS: readonly TokenSpec[] = [...TOKENS, ...IDENTITY_TOKENS, ...KIT_TOKENS, ...BASELINE_TOKENS, ...SELECTION_TOKENS];
-export const ALL_TOKEN_NAMES: readonly string[] = ALL_TOKENS.map((t) => t.name);
-const SPEC = new Map(ALL_TOKENS.map((t) => [t.name, t]));
 
 /** Stock shadcn neutral (vendor/shadcn/colors/neutral.json): what missing shadcn tokens fall back to. */
 export const NEUTRAL: Record<ThemeMode, ThemeVars> = {
@@ -1004,7 +458,7 @@ export function compileTheme(input: ThemeInput, opts: CompileOptions = {}): Comp
     value.replace(/var\(\s*--([\w-]+)\s*(?:,\s*([^()]*(?:\([^()]*\))?[^()]*))?\)/g, (m, ref: string, fb?: string) => lookup(ref, depth) ?? fb?.trim() ?? m);
 
   const missing: string[] = [];
-  for (const t of TOKENS) if (t.group === "shadcn" && t.type === "color" && raw[t.name] === undefined && NEUTRAL[mode][t.name] !== undefined) missing.push(t.name);
+  for (const name of Object.keys(NEUTRAL[mode])) if (name !== "radius" && raw[name] === undefined) missing.push(name);
   if (!opts.partial && missing.length && missing.length < 23) {
     warnings.push(`The theme doesn't set ${missing.map((m) => `--${m}`).join(", ")}; stock shadcn values are used.`);
   }
@@ -1036,7 +490,7 @@ export function compileTheme(input: ThemeInput, opts: CompileOptions = {}): Comp
   if (!opts.partial) {
     const given = new Set(Object.keys(resolved));
     derive(resolved, mode, warnings);
-    deriveIdentity(resolved, warnings, given);
+    deriveLevers(resolved, warnings, given);
   }
   else if (resolved["nk-scale"] !== undefined || resolved["nk-motion"] !== undefined) derive(resolved, mode, warnings, true);
   if (opts.highContrast) highContrast(resolved);
@@ -1127,7 +581,7 @@ function vitalFit(c: RGBA | null, ranges: readonly (readonly [number, number])[]
 }
 
 function derive(vars: ThemeVars, mode: ThemeMode, warnings: string[], onlyNumbers = false) {
-  // numbers
+  // the player-facing numbers
   const scale = vars["nk-scale"] === undefined ? 1 : parseFloat(vars["nk-scale"]);
   if (Number.isNaN(scale) || scale < 0.5 || scale > 2) {
     warnings.push(`--nk-scale must be a number between 0.5 and 2 (got ${vars["nk-scale"]}); 1 is used.`);
@@ -1140,7 +594,13 @@ function derive(vars: ThemeVars, mode: ThemeMode, warnings: string[], onlyNumber
   } else vars["nk-motion"] = motion ?? "1";
   if (onlyNumbers) return;
 
-  for (const t of TOKENS) if (t.group === "shadcn" && t.type !== "color" && vars[t.name] === undefined) vars[t.name] = t.fallback;
+  // radius and the faces: the palette's non-colours
+  if (vars.radius === undefined) vars.radius = SPEC.get("radius")!.default;
+  const sans = vars["font-sans"];
+  if (sans === undefined) vars["font-sans"] = DEFAULT_FONT_SANS;
+  if (vars["font-display"] === undefined) vars["font-display"] = sans === undefined ? DEFAULT_FONT_DISPLAY : sans;
+  if (vars["font-numeric"] === undefined) vars["font-numeric"] = sans === undefined ? face("font-numeric") : sans;
+  if (vars["font-mono"] === undefined) vars["font-mono"] = DEFAULT_FONT_MONO;
 
   const destructive = rgba(vars, "destructive") ?? toRgba(NEUTRAL[mode].destructive!)!;
   const d = rgbToOklch(destructive);
@@ -1155,21 +615,19 @@ function derive(vars: ThemeVars, mode: ThemeMode, warnings: string[], onlyNumber
   if (vars.info === undefined) vars.info = vars.primary!;
   if (vars["info-foreground"] === undefined) vars["info-foreground"] = vars["primary-foreground"]!;
   if (vars.hud === undefined) vars.hud = "rgba(0, 0, 0, 0.45)";
-  // on the game (1.1): light in every theme, light or dark, unless the theme says otherwise
   const world = rgba(vars, "world-foreground") ?? WHITE;
   if (vars["world-foreground"] === undefined) vars["world-foreground"] = formatRgba(world);
   if (vars["world-foreground-muted"] === undefined) vars["world-foreground-muted"] = formatRgba([world[0], world[1], world[2], 0.8]);
   if (vars["world-shadow"] === undefined) vars["world-shadow"] = WORLD_SHADOW;
-  // gains and losses on the game (1.3): the status hue, lifted so it reads on the dark HUD plate (a light
-  // theme's success and destructive are dark, for its light panels)
-  for (const [world, status] of [["world-success", "success"], ["world-destructive", "destructive"]] as const) {
-    const c = vars[world] === undefined ? rgba(vars, status) : null;
+  for (const [w, status] of [["world-success", "success"], ["world-destructive", "destructive"]] as const) {
+    const c = vars[w] === undefined ? rgba(vars, status) : null;
     if (!c) continue;
     const o = rgbToOklch(c);
-    vars[world] = fmtOklch(Math.max(o.l, 0.7), o.c, o.h);
+    vars[w] = fmtOklch(Math.max(o.l, 0.7), o.c, o.h);
   }
   if (vars["hud-foreground"] === undefined) vars["hud-foreground"] = vars["world-foreground"]!;
   if (vars.scrim === undefined) vars.scrim = "rgb(0, 0, 0)";
+  for (const k of ["pause-surface", "pause-ink"]) if (vars[k] === undefined) vars[k] = lower(SPEC.get(k)!.default)!;
 
   const used = new Set<number>();
   for (const v of VITALS) {
@@ -1191,10 +649,10 @@ function derive(vars: ThemeVars, mode: ThemeMode, warnings: string[], onlyNumber
   }
 }
 
-// ─────────────────────────────────────────── identity tokens (1.1)
+// ─────────────────────────────────────────── levers
 
 const NUM = /^-?(?:\d+\.?\d*|\.\d+)$/;
-const DIM = /^(-?(?:\d+\.?\d*|\.\d+))(px|rem|em)$/;
+const DIM = /^(-?(?:\d+\.?\d*|\.\d+))(px|rem|em|%)$/;
 const DUR = /^(\d+\.?\d*|\.\d+)(ms|s)$/;
 const BEZIER = /^cubic-bezier\(\s*(-?[\d.]+)\s*,\s*(-?[\d.]+)\s*,\s*(-?[\d.]+)\s*,\s*(-?[\d.]+)\s*\)$/;
 const EASE_KEYWORDS: Record<string, string> = {
@@ -1206,37 +664,37 @@ const EASE_KEYWORDS: Record<string, string> = {
 };
 const trimNum = (n: number) => String(Math.round(n * 10000) / 10000);
 
-/** Normalise one identity value; null if it isn't valid for its type. */
-function identityValue(spec: TokenSpec, raw: string): string | null {
+/** Normalise one lever value by its type and range; null if it isn't valid. */
+function leverValue(spec: TokenSpec, raw: string): string | null {
   const v = raw.trim();
-  // an angle, not a length (tokens 1.3)
-  if (spec.name === "nk-skew" || spec.name === "nk-tile-skew") {
-    if (v === "0") return "0deg";
-    const m = /^(-?\d*\.?\d+)deg$/.exec(v);
-    if (!m) return null;
-    const n = parseFloat(m[1]!);
-    return Math.abs(n) <= 20 ? `${trimNum(n)}deg` : null;
-  }
   switch (spec.type) {
+    case "angle": {
+      if (v === "0") return "0deg";
+      const m = /^(-?\d*\.?\d+)deg$/.exec(v);
+      if (!m) return null;
+      const n = parseFloat(m[1]!);
+      const [lo, hi] = spec.range ?? [-360, 360];
+      return n >= lo && n <= hi ? `${trimNum(n)}deg` : null;
+    }
     case "number": {
       if (!NUM.test(v)) return null;
       const n = parseFloat(v);
       if (spec.range && (n < spec.range[0] || n > spec.range[1])) return null;
       return trimNum(n);
     }
-    case "dimension": {
+    case "length": {
       if (v === "0") return "0px";
       const m = DIM.exec(v);
       return m ? `${trimNum(parseFloat(m[1]!))}${m[2]}` : null;
     }
-    case "duration": {
+    case "time": {
       const m = DUR.exec(v);
       if (!m) return null;
       const ms = parseFloat(m[1]!) * (m[2] === "s" ? 1000 : 1);
       const [lo, hi] = spec.range ?? [0, 2000];
       return ms >= lo && ms <= hi ? `${trimNum(ms)}ms` : null;
     }
-    case "cubicBezier": {
+    case "ease": {
       const k = EASE_KEYWORDS[v];
       if (k) return k;
       const m = BEZIER.exec(v);
@@ -1251,52 +709,36 @@ function identityValue(spec: TokenSpec, raw: string): string | null {
       return v || null;
   }
 }
+const want = (spec: TokenSpec) =>
+  spec.values ? spec.values.join(", ") : spec.range ? `a number from ${spec.range[0]} to ${spec.range[1]}` : spec.type === "length" ? "a length in px, rem, em or %" : spec.type === "time" ? "a duration up to 2000ms" : spec.type === "angle" ? "an angle in deg" : spec.type === "ease" ? "cubic-bezier(x1, y1, x2, y2)" : "a valid value";
 
 const chromatic = (c: RGBA | null) => !!c && c[3] > 0 && rgbToOklch(c).c >= 0.06;
 
-/** The box-shadow behind each nk-elevation, in the theme's scrim colour (s = "r, g, b"). */
+/** The box-shadow behind each surface.elevation, in the theme's scrim colour (s = "r, g, b"). */
 export function elevationShadow(level: string, s: string): string {
   if (level === "none") return `0 0 0 0 rgba(${s}, 0)`;
-  // hard (Street, Arcade): a solid offset drop under the slab, no blur
   if (level === "hard") return `0 0.25rem 0 0 rgba(${s}, 0.5)`;
-  if (level === "deep")
-    return `0 0 0 1px rgba(${s}, 0.3), 0 2px 4px rgba(${s}, 0.2), 0 18px 40px -10px rgba(${s}, 0.55), 0 44px 96px -28px rgba(${s}, 0.75)`;
-  // soft (Graphite): a hairline and a short, tight drop; no halo
+  if (level === "deep") return `0 0 0 1px rgba(${s}, 0.3), 0 2px 4px rgba(${s}, 0.2), 0 18px 40px -10px rgba(${s}, 0.55), 0 44px 96px -28px rgba(${s}, 0.75)`;
   return `0 0 0 1px rgba(${s}, 0.25), 0 12px 32px -16px rgba(${s}, 0.6)`;
 }
 
-/** The text-shadow behind each nk-hud-text-shadow, in the theme's scrim colour. */
+/** The text-shadow behind each hud.text, in the theme's scrim colour. */
 export function hudTextShadow(level: string, s: string): string {
   if (level === "none") return "none";
   if (level === "strong") return `0 0 2px rgba(${s}, 0.9), 0 1px 3px rgba(${s}, 0.8)`;
   return `0 1px 2px rgba(${s}, 0.6)`;
 }
 
-/** The HUD backplate (hud at no less than nk-hud-opacity) over a white sky: what HUD text is judged against. */
+/** The HUD backplate (hud at no less than the hud material's opacity) over a white sky: what HUD text is judged against. */
 function hudPlateOverWhite(vars: ThemeVars): RGBA | null {
   const hud = rgba(vars, "hud");
   if (!hud) return null;
-  const a = Math.max(hud[3], parseFloat(vars["nk-hud-opacity"] ?? "0") || 0);
+  const a = Math.max(hud[3], parseFloat(vars["nk-material-hud-opacity"] ?? "0") || 0);
   return composite([hud[0], hud[1], hud[2], a], WHITE);
 }
 
-/** Material tokens whose default is another token's value (1.4), filled by deriveFoundation. */
-const REF_DEFAULTS = new Set(Object.keys(MATERIAL_CONTEXTS).flatMap((c) => [`nk-material-${c}-opacity`, `nk-material-${c}-radius`, `nk-material-${c}-edge`]));
-
-/** --nk-treatment: validate it, then fill its preset under whatever the theme set (tokens 1.4). */
-function applyTreatment(vars: ThemeVars, warnings: string[]) {
-  const raw = vars["nk-treatment"];
-  let t: Treatment = "soft";
-  if (raw !== undefined) {
-    if ((TREATMENTS as readonly string[]).includes(raw.trim())) t = raw.trim() as Treatment;
-    else warnings.push(`--nk-treatment must be ${TREATMENTS.join(", ")} (got ${raw}); soft is used.`);
-  }
-  vars["nk-treatment"] = t;
-  for (const [k, v] of Object.entries(TREATMENT_PRESETS[t])) if (vars[k] === undefined) vars[k] = v;
-}
-
-/** Roles and materials (tokens 1.4): each role's colour and its deep / light steps; material defaults. */
-function deriveFoundation(vars: ThemeVars) {
+/** Roles: each role's colour and its deep / light steps. */
+function deriveRoles(vars: ThemeVars) {
   for (const role of ROLES) {
     const name = `role-${role}`;
     if (vars[name] === undefined) {
@@ -1309,45 +751,30 @@ function deriveFoundation(vars: ThemeVars) {
     if (vars[`${name}-deep`] === undefined) vars[`${name}-deep`] = fmtOklch(clamp(l - 0.12, 0.2, 1), ch * 0.9, h);
     if (vars[`${name}-light`] === undefined) vars[`${name}-light`] = fmtOklch(clamp(l + 0.1, 0, 0.95), ch * 0.85, h);
   }
-  for (const ctx of Object.keys(MATERIAL_CONTEXTS)) {
-    const k = (p: string) => `nk-material-${ctx}-${p}`;
-    if (vars[k("opacity")] === undefined) vars[k("opacity")] = vars[ctx === "hud" ? "nk-hud-opacity" : "nk-surface-opacity"]!;
-    if (vars[k("radius")] === undefined) vars[k("radius")] = vars.radius ?? "0.625rem";
-    if (vars[k("edge")] === undefined) vars[k("edge")] = vars["nk-surface-edge"]!;
-  }
 }
 
-function deriveIdentity(vars: ThemeVars, warnings: string[], given: ReadonlySet<string> = new Set()) {
-  // treatment (1.4): its preset fills what the theme left out, before the defaults do
-  applyTreatment(vars, warnings);
-  // validate what the theme set; anything invalid falls back to the default, with a warning
-  for (const spec of IDENTITY_TOKENS) {
-    if (spec.type === "color" || spec.type === "fontFamily" || spec.type === "shadow" || spec.type === "image" || spec.group === "derived") continue;
+/**
+ * The levers: validate every value the theme set (identity, semantic, component) against its type and range; an
+ * invalid one falls back to the default with a warning. Identity levers are written into the compiled theme (the
+ * compiler derives from them); semantic and component levers are kept only when the theme set them (kit.css holds
+ * their defaults, so a subtree's density or radius re-derives them). A formula (calc(), var()) is the theme's call.
+ */
+function deriveLevers(vars: ThemeVars, warnings: string[], given: ReadonlySet<string> = new Set()) {
+  for (const spec of ALL_TOKENS) {
+    if (spec.group === "palette" || spec.scope === "") continue;
     const value = vars[spec.name];
+    const literal = spec.tier === "identity" && !spec.derived && !/var\(|calc\(/.test(spec.default);
     if (value === undefined) {
-      // a default that is another token's value (materials): filled once those are known
-      if (!REF_DEFAULTS.has(spec.name)) vars[spec.name] = spec.fallback;
+      if (literal && spec.type !== "color" && spec.type !== "font" && spec.type !== "shadow" && spec.type !== "paint") vars[spec.name] = spec.default;
       continue;
     }
-    const v = identityValue(spec, value);
-    if (v === null) {
-      const want = spec.values ? spec.values.join(", ") : spec.range ? `a number from ${spec.range[0]} to ${spec.range[1]}` : spec.type === "dimension" ? "a length in px, rem or em" : spec.type === "duration" ? "a duration up to 2000ms" : "cubic-bezier(x1, y1, x2, y2)";
-      warnings.push(`--${spec.name} must be ${want} (got ${value}); ${spec.fallback} is used.`);
-      if (REF_DEFAULTS.has(spec.name)) delete vars[spec.name];
-      else vars[spec.name] = spec.fallback;
-    } else vars[spec.name] = v;
-  }
-  // 1.5 levers: kit.css holds the defaults, so only a value the theme or treatment set is checked (and kept)
-  for (const spec of [...KIT_TOKENS, ...BASELINE_TOKENS, ...SELECTION_TOKENS]) {
-    const value = vars[spec.name];
-    if (value === undefined || spec.type === "color" || spec.type === "fontFamily" || spec.type === "shadow" || spec.type === "image") continue;
-    // a formula (calc(), var()) is the theme's call: CSS resolves it
+    if (spec.type === "color" || spec.type === "font" || spec.type === "shadow" || spec.type === "paint" || spec.type === "string") continue;
     if (/^(calc|var|max|min|clamp)\(/.test(value.trim())) continue;
-    const v = identityValue(spec, value);
+    const v = leverValue(spec, value);
     if (v === null) {
-      const want = spec.values ? spec.values.join(", ") : spec.range ? `a number from ${spec.range[0]} to ${spec.range[1]}` : spec.type === "dimension" ? "a length in px, rem or em" : spec.type === "duration" ? "a duration up to 2000ms" : "a valid value";
-      warnings.push(`--${spec.name} must be ${want} (got ${value}); the kit default is used.`);
-      delete vars[spec.name];
+      warnings.push(`--${spec.name} must be ${want(spec)} (got ${value}); ${literal ? spec.default : "the kit default"} is used.`);
+      if (literal) vars[spec.name] = spec.default;
+      else delete vars[spec.name];
     } else vars[spec.name] = v;
   }
 
@@ -1359,66 +786,39 @@ function deriveIdentity(vars: ThemeVars, warnings: string[], given: ReadonlySet<
   const brand = rgba(vars, "brand") ?? rgba(vars, "primary")!;
   if (vars["brand-foreground"] === undefined) vars["brand-foreground"] = bestText(vars, brand);
 
-  // fonts: display and numbers follow the body font unless the theme picks its own
-  const sans = vars["font-sans"] ?? DEFAULT_FONT_SANS;
-  if (vars["font-display"] === undefined) vars["font-display"] = sans === DEFAULT_FONT_SANS ? DEFAULT_FONT_DISPLAY : sans;
-  if (vars["font-numeric"] === undefined) vars["font-numeric"] = sans;
-
   // surface: the panel colour, tinted toward the brand
   if (vars.surface === undefined) {
     const pop = rgba(vars, "popover");
-    if (pop) {
-      const t = parseFloat(vars["nk-surface-tint"]!);
-      const m = mix(pop, [brand[0], brand[1], brand[2], pop[3]], t);
-      vars.surface = formatRgba(m);
-    }
+    if (pop) vars.surface = formatRgba(mix(pop, [brand[0], brand[1], brand[2], pop[3]], parseFloat(vars["nk-surface-tint"]!)));
   }
 
   // keywords → values CSS can use without branching
   const scrim = rgba(vars, "scrim") ?? BLACK;
   const s = `${scrim[0]}, ${scrim[1]}, ${scrim[2]}`;
-  if (vars["nk-elevation-shadow"] === undefined) vars["nk-elevation-shadow"] = elevationShadow(vars["nk-elevation"]!, s);
-  if (vars["nk-hud-shadow"] === undefined) vars["nk-hud-shadow"] = hudTextShadow(vars["nk-hud-text-shadow"]!, s);
-  const cut = parseFloat(vars["nk-cut"]!);
-  if (vars["nk-clip"] === undefined) vars["nk-clip"] = cut > 0 ? chamferClip("var(--nk-cut)") : "none";
-  if (vars["nk-clip-sm"] === undefined) vars["nk-clip-sm"] = cut > 0 ? chamferClip("calc(var(--nk-cut) / 2)") : "none";
-  // sweep (1.5) is none of the three: no bar, fill or outline, only the row's own sweep
-  const ind = vars["nk-row-indicator"]!;
-  for (const k of ["bar", "fill", "outline"]) if (vars[`nk-row-${k}`] === undefined) vars[`nk-row-${k}`] = ind === k ? "1" : "0";
+  if (vars["nk-depth-elevation"] === undefined) vars["nk-depth-elevation"] = elevationShadow(vars["nk-surface-elevation"]!, s);
+  if (vars["nk-depth-text"] === undefined) vars["nk-depth-text"] = hudTextShadow(vars["nk-hud-text"]!, s);
+  const cut = parseFloat(vars["nk-shape-cut"]!);
+  if (vars["nk-line-clip"] === undefined) vars["nk-line-clip"] = cut > 0 ? chamferClip("var(--nk-shape-cut)") : "none";
+  if (vars["nk-line-clip-sm"] === undefined) vars["nk-line-clip-sm"] = cut > 0 ? chamferClip("calc(var(--nk-shape-cut) / 2)") : "none";
 
-  // motion (1.2): the duration ladder, easings and springs, as literals, from d, the ease, the feel and the bounce
-  const d = parseFloat(vars["nk-duration"]!);
-  const motion = motionTokens(d, vars["nk-motion-feel"] as MotionFeel, parseFloat(vars["nk-spring-bounce"]!), {
-    exitFactor: parseFloat(vars["nk-exit-factor"] ?? "0.7"),
-    ladder: vars["nk-treatment"] === "tile",
-  });
-  motion["nk-ease-out"] = vars["nk-ease"]!;
-  motion["nk-ease-in"] = "cubic-bezier(0.4, 0, 1, 1)";
-  motion["nk-ease-in-out"] = "cubic-bezier(0.2, 0, 0, 1)";
-  motion["nk-ease-emphasized"] = "cubic-bezier(0.05, 0.7, 0.1, 1)";
-  motion["nk-ease-linear"] = "linear";
-  // 1.4 named eases (foundation.md §9): aliases of the ladder's curves, plus a spring and a breathe
-  motion["nk-ease-standard"] = motion["nk-ease-in-out"];
-  motion["nk-ease-expand"] = motion["nk-ease-emphasized"];
-  motion["nk-ease-retract"] = motion["nk-ease-in"];
-  motion["nk-ease-spring"] = "cubic-bezier(0.34, 1.56, 0.64, 1)";
-  motion["nk-ease-breathe"] = "cubic-bezier(0.37, 0, 0.63, 1)";
+  // motion: the ladder and the springs, as literals, from d, the feel, the bounce and the exit factor
+  const d = parseFloat(vars["nk-motion-duration"]!);
+  const motion = motionTokens(d, vars["nk-motion-feel"] as MotionFeel, parseFloat(vars["nk-motion-bounce"]!), { exitFactor: parseFloat(vars["nk-motion-exit-factor"]!) });
   for (const [k, v] of Object.entries(motion)) if (vars[k] === undefined) vars[k] = v;
-  if (d > MAX_DURATION_MS) warnings.push(`--nk-duration is ${d}ms (the kit's ceiling is ${MAX_DURATION_MS}ms); panels and menus will feel slow to a player who opens them hundreds of times.`);
+  if (d > MAX_DURATION_MS) warnings.push(`--nk-motion-duration is ${d}ms (the kit's ceiling is ${MAX_DURATION_MS}ms); panels and menus will feel slow to a player who opens them hundreds of times.`);
 
-  deriveFoundation(vars);
+  deriveRoles(vars);
 
-  // floors (docs/archive/design-research.md §3): warn, never block
-  const op = parseFloat(vars["nk-surface-opacity"]!);
-  if (op < 0.92) warnings.push(`--nk-surface-opacity is ${op} (floor 0.92); the game will show through text in panels, and a bright sky will wash it out.`);
+  // floors: warn, never block
+  const op = parseFloat(vars["nk-material-menu-opacity"]!);
+  if (op < 0.92) warnings.push(`--nk-material-menu-opacity is ${op} (floor 0.92); the game will show through text in panels, and a bright sky will wash it out.`);
   const plate = hudPlateOverWhite(vars);
   const hudFg = rgba(vars, "hud-foreground");
   if (plate && hudFg) {
     const ratio = contrastRatio(composite(hudFg, plate), plate);
     if (ratio < 4.5)
-      warnings.push(`hud-foreground on the HUD backplate over a white sky is ${ratio.toFixed(1)}:1 (needs 4.5:1); raise --nk-hud-opacity or darken --hud so HUD text reads over snow and midday sky.`);
+      warnings.push(`hud-foreground on the HUD backplate over a white sky is ${ratio.toFixed(1)}:1 (needs 4.5:1); raise --nk-material-hud-opacity or darken --hud so HUD text reads over snow and midday sky.`);
   }
-  // text on the game: it must be lighter than the game's average frame (its shadow is dark) and clear it by 3:1
   for (const name of ["world-foreground", "world-foreground-muted"]) {
     if (!given.has(name)) continue;
     const c = rgba(vars, name);
@@ -1465,8 +865,8 @@ export function highContrast(vars: ThemeVars): ThemeVars {
   vars["world-foreground"] = "rgb(255, 255, 255)";
   vars["world-foreground-muted"] = "rgba(255, 255, 255, 0.85)";
   // identity (1.1): opaque panels, a solid HUD plate
-  if (vars["nk-surface-opacity"] !== undefined) vars["nk-surface-opacity"] = "1";
-  if (vars["nk-hud-opacity"] !== undefined) vars["nk-hud-opacity"] = "0.72";
+  if (vars["nk-material-menu-opacity"] !== undefined) vars["nk-material-menu-opacity"] = "1";
+  if (vars["nk-material-hud-opacity"] !== undefined) vars["nk-material-hud-opacity"] = "0.72";
   return vars;
 }
 
@@ -1536,13 +936,10 @@ export function toDtcg(theme: CompiledTheme, description = "nuikit theme"): Dtcg
   };
   const font: Record<string, unknown> = { $type: "fontFamily" };
   const nk: Record<string, unknown> = {};
-  // the treatment's preset fills these again on compile (and its var() values must stay unresolved)
-  const preset = TREATMENT_PRESETS[theme.vars["nk-treatment"] as Treatment] ?? {};
   for (const [name, value] of Object.entries(theme.vars)) {
     const spec = SPEC.get(name);
     // derived tokens are outputs: compiling the file derives them again
     if (spec?.group === "derived") continue;
-    if (preset[name] === value) continue;
     const desc = spec ? { $description: spec.description } : {};
     const col = toRgba(value);
     if (col && (spec?.type ?? "color") === "color") {
@@ -1588,7 +985,7 @@ function dtcgNk(spec: TokenSpec | undefined, value: string, desc: Record<string,
 export function themeJsonSchema(): Record<string, unknown> {
   const properties: Record<string, unknown> = {};
   for (const t of ALL_TOKENS) {
-    const since = t.since ? { $comment: `tokens ${t.since}` } : {};
+    const since = { $comment: `${t.tier} · ${t.path}` };
     properties[t.name] =
       t.type === "color"
         ? { type: "string", pattern: "^rgba?\\(", description: t.description, ...since }
@@ -1600,14 +997,14 @@ export function themeJsonSchema(): Record<string, unknown> {
   }
   return {
     $schema: "https://json-schema.org/draft/2020-12/schema",
-    $id: "https://nuikit.vercel.app/schema/theme.v1.json",
-    title: "nuikit compiled theme (tokens v1, revision 1.1)",
+    $id: "https://nuikit.vercel.app/schema/theme.v2.json",
+    title: "nuikit compiled theme (tokens v2: the token language)",
     description: "What compileTheme() returns and the nuikit resource publishes: every token, lowered so FiveM's browser can read it.",
     type: "object",
     required: ["version", "vars"],
     properties: {
       version: { const: TOKENS_VERSION },
-      revision: { type: "string", description: "Contract revision; \"1.1\" adds the identity tokens (optional in vars, so themes compiled by older nuikit stay valid)" },
+      revision: { type: "string", description: "Contract revision" },
       mode: { enum: ["dark", "light"] },
       hash: { type: "string" },
       imports: { type: "array", items: { type: "string", format: "uri" } },
@@ -1633,7 +1030,6 @@ export interface NuiPrefs {
   density?: number;
   /** The look the player picked (the Lua side applies it as the theme; pages only read it). */
   identity?: string | null;
-  treatment?: string | null;
 }
 
 export const DEFAULT_PREFS: NuiPrefs = { scale: 1, reducedMotion: false, highContrast: false, density: 1 };
@@ -1656,13 +1052,13 @@ export function withPrefs(vars: ThemeVars, prefs: Partial<NuiPrefs> = DEFAULT_PR
   const scale = (parseFloat(out["nk-scale"] ?? "1") || 1) * p.scale;
   out["nk-scale"] = String(Math.round(scale * 1000) / 1000);
   if (p.density !== undefined && p.density !== 1 && out["nk-density"] !== undefined) {
-    out["nk-density"] = String(Math.round((parseFloat(out["nk-density"]) || 0.875) * p.density * 1000) / 1000);
+    out["nk-density"] = String(Math.round((parseFloat(out["nk-density"]) || 1) * p.density * 1000) / 1000);
   }
   const level = themeMotionLevel(vars, p);
   out["nk-motion"] = level === "on" ? "1" : "0";
   if (level !== "on") {
-    // off: nothing animates. reduced: no movement, fades kept but at most --nk-time-reduced (1.5; REDUCED_FADE_MS by default).
-    const cap = parseFloat(out["nk-time-reduced"] ?? "") || REDUCED_FADE_MS;
+    // off: nothing animates. reduced: no movement, fades kept but at most --nk-motion-reduced (REDUCED_FADE_MS by default).
+    const cap = parseFloat(out["nk-motion-reduced"] ?? "") || REDUCED_FADE_MS;
     if (out["nk-motion-move"] !== undefined || out["nk-time-base"] !== undefined) out["nk-motion-move"] = "0";
     for (const name of MOTION_TIME_TOKENS) {
       const v = out[name];

@@ -51,7 +51,7 @@ type ProgressRingTone = "primary" | "success" | "warning" | "info" | "destructiv
 
 /** Literal class names, so Tailwind finds them; tokens read as variables (docs/tokens.md). */
 const TONE: Record<ProgressRingTone, string> = {
-  primary: "stroke-(--nk-gauge-fill)",
+  primary: "stroke-(--nk-gauge-fill-color)",
   success: "stroke-(--success)",
   warning: "stroke-(--warning)",
   info: "stroke-(--info)",
@@ -263,7 +263,7 @@ function ProgressRing({
             type="button"
             data-slot="progress-ring-cancel"
             onClick={onCancel}
-            className="rounded-(--nk-r-control) px-(--nk-space-1) outline-none focus-visible:shadow-[inset_0_0_0_1px_var(--nk-focus-rim)]"
+            className="rounded-(--nk-radius-control) px-(--nk-space-1) outline-none focus-visible:shadow-[inset_0_0_0_1px_var(--nk-line-focus)]"
           >
             {cancel}
           </button>

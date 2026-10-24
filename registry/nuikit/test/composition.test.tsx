@@ -55,7 +55,7 @@ describe("foundation", () => {
   })
 
   it("Text is a role class on the value ladder; Stack and Cluster are gap levers", () => {
-    expect(html(<Text variant="num" size="md">1</Text>)).toMatch(/class="nk-num text-\(length:--nk-hud-value-size\)/)
+    expect(html(<Text variant="num" size="md">1</Text>)).toMatch(/class="nk-num text-\(length:--nk-text-hud\)/)
     expect(html(<Stack gap="items" />)).toContain('class="flex flex-col gap-(--nk-gap-items)"')
     expect(html(<Cluster />)).toContain('class="flex flex-row gap-(--nk-gap-cluster) items-center"')
   })

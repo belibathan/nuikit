@@ -8,13 +8,13 @@ import { useEffect, useState } from "react";
 export type GaugeStyle = "arc" | "bar" | "digital";
 
 export interface HudLook {
-  /** --nk-gauge-style */
+  /** --nk-style-gauge */
   gauge: GaugeStyle;
   /** --nk-gauge-ticks: tick marks on gauges */
   ticks: boolean;
-  /** --nk-gauge-track: track thickness in px at 1080p (the gauges' SVG units) */
+  /** --nk-fill-height: track thickness in px at 1080p (the gauges' SVG units) */
   track: number;
-  /** --nk-hud-text-shadow as a keyword (none / soft / strong); a raw shadow value is used as is by hud.css */
+  /** --nk-chip-text-shadow as a keyword (none / soft / strong); a raw shadow value is used as is by hud.css */
   shadow: "none" | "soft" | "strong";
 }
 
@@ -31,10 +31,10 @@ export function lengthAt1080(value: string, fallback: number): number {
 
 /** The look from a computed style (pure). */
 export function readLook(get: (name: string) => string): HudLook {
-  const style = get("--nk-gauge-style").trim().replace(/["']/g, "");
+  const style = get("--nk-style-gauge").trim().replace(/["']/g, "");
   const ticks = get("--nk-gauge-ticks").trim();
-  const track = get("--nk-gauge-track").trim();
-  const shadow = get("--nk-hud-text-shadow").trim();
+  const track = get("--nk-fill-height").trim();
+  const shadow = get("--nk-chip-text-shadow").trim();
   return {
     gauge: style === "bar" || style === "digital" || style === "arc" ? style : DEFAULT.gauge,
     ticks: ticks === "" ? DEFAULT.ticks : !(ticks === "0" || ticks === "off" || ticks === "none" || ticks === "false"),

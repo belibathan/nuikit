@@ -23,7 +23,7 @@
 ]]
 
 local KVP = 'nuikit:prefs'
-local DEFAULTS = { scale = 1.0, reducedMotion = false, highContrast = false, density = 1.0, identity = false, treatment = false }
+local DEFAULTS = { scale = 1.0, reducedMotion = false, highContrast = false, density = 1.0, identity = false }
 
 local function lookName(v)
   return type(v) == 'string' and v:match('^[%w_-]+$') and #v <= 32 and v:lower() or nil
@@ -42,7 +42,6 @@ local function normalize(p)
     density = math.floor(density * 100 + 0.5) / 100,
     -- the player's look (Look settings); applied when the server's allow-list has it (GlobalState.nuikitLooks)
     identity = lookName(p.identity),
-    treatment = lookName(p.treatment),
   }
 end
 
@@ -62,10 +61,10 @@ local looks = nil -- the last GlobalState.nuikitLooks seen
 
 --- The player's look, when the server allows it, else nil (the server theme).
 local function look()
-  if not prefs.identity and not prefs.treatment then return nil end
+  if not prefs.identity then return nil end
   if looks == nil then looks = GlobalState.nuikitLooks end
   local themes = type(looks) == 'table' and looks.themes
-  local t = type(themes) == 'table' and themes[(prefs.identity or 'server') .. '|' .. (prefs.treatment or '')]
+  local t = type(themes) == 'table' and themes[prefs.identity]
   return type(t) == 'table' and t.vars and t or nil
 end
 
@@ -179,7 +178,7 @@ end
 --- The player's UI preferences.
 ---@return { scale: number, reducedMotion: boolean, highContrast: boolean }
 local function getPrefs()
-  return { scale = prefs.scale, reducedMotion = prefs.reducedMotion, highContrast = prefs.highContrast, density = prefs.density, identity = prefs.identity, treatment = prefs.treatment }
+  return { scale = prefs.scale, reducedMotion = prefs.reducedMotion, highContrast = prefs.highContrast, density = prefs.density, identity = prefs.identity }
 end
 
 --- Change some preferences (missing keys keep their value). Saved and applied to every UI.
@@ -215,11 +214,6 @@ local function lookRows()
     for _, id in ipairs(allowed.identities) do options[#options + 1] = { value = id, label = title(id) } end
     rows[#rows + 1] = { key = 'identity', label = 'Look', options = options, default = '' }
   end
-  if type(allowed.treatments) == 'table' and #allowed.treatments > 0 then
-    local options = { { value = '', label = 'As designed' } }
-    for _, t in ipairs(allowed.treatments) do options[#options + 1] = { value = t, label = title(t) } end
-    rows[#rows + 1] = { key = 'treatment', label = 'Style', options = options, default = '' }
-  end
   rows[#rows + 1] = { key = 'scale', label = 'UI size', range = { 0.85, 1.25, 0.05 }, default = 1.0 }
   rows[#rows + 1] = { key = 'density', label = 'Spacing', range = { 0.85, 1.2, 0.05 }, default = 1.0 }
   rows[#rows + 1] = { key = 'reducedMotion', label = 'Reduce motion', toggle = true, default = false }
@@ -228,7 +222,7 @@ local function lookRows()
 end
 
 local function lookValues()
-  return { identity = prefs.identity or '', treatment = prefs.treatment or '', scale = prefs.scale, density = prefs.density, reducedMotion = prefs.reducedMotion, highContrast = prefs.highContrast }
+  return { identity = prefs.identity or '', scale = prefs.scale, density = prefs.density, reducedMotion = prefs.reducedMotion, highContrast = prefs.highContrast }
 end
 
 local lookRowsKey = nil
@@ -252,7 +246,6 @@ AddEventHandler('nuikit:settings:changed', function(res, values, _, draft)
   if res ~= GetCurrentResourceName() or type(values) ~= 'table' then return end
   local patch = {
     identity = values.identity ~= '' and values.identity or false,
-    treatment = values.treatment ~= '' and values.treatment or false,
     scale = values.scale, density = values.density, reducedMotion = values.reducedMotion, highContrast = values.highContrast,
   }
   applying = true

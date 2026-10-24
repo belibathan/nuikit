@@ -64,10 +64,10 @@ import { SelectionTile } from "@/components/ui/selection-tile"
  * Props: icon, iconSpace, image, description, progress, meta, kbd, chevron, active, checked, value, onStep,
  *   readOnly, alert, inert, actions, as, asChild, tone; MenuRowList: active, indicator, bleed.
  * Level means: progress, the row's progress line (0–100 of its value, drawn 0–1).
- * Rules: one trailing thing per row; height --nk-h-row, padding --nk-row-pad-y / -x, gaps --nk-row-gap; rows of a
+ * Rules: one trailing thing per row; height --nk-height-row, padding --nk-row-pad-y / -x, gaps --nk-row-gap; rows of a
  *   list sit --nk-list-gap apart and the list pads its sides by --nk-list-pad-x (inset + skew overhang) so the lit
  *   tile never touches the panel edge; hover, focus and active are one lit state (data-lit): the Tile under it, the
- *   content slid by --nk-row-lift, the icon tile lit; no focus ring; attention is data-state="alert"; a trailing
+ *   content slid by --nk-gesture-lift, the icon tile lit; no focus ring; attention is data-state="alert"; a trailing
  *   key is a Tile (Kbd), never text.
  */
 const menuRowVariants = cva(
@@ -203,7 +203,7 @@ function MenuRow({
 
   const lead =
     image !== undefined && image !== null ? (
-      <span data-slot="menu-row-image" className="flex size-[var(--nk-menu-row-image,2rem)] shrink-0 overflow-hidden rounded-(--nk-key-radius) bg-muted">
+      <span data-slot="menu-row-image" className="flex size-[var(--nk-menu-row-image-size,2rem)] shrink-0 overflow-hidden rounded-(--nk-tile-face-radius) bg-muted">
         {typeof image === "string" ? <img src={image} alt="" className="size-full object-cover" /> : image}
       </span>
     ) : (
@@ -235,7 +235,7 @@ function MenuRow({
             value={progress}
             color={progressColor}
             label={typeof children === "string" ? children : undefined}
-            className="mt-(--nk-space-2) mb-(--nk-space-1) h-[var(--nk-menu-row-bar-h,0.25rem)]"
+            className="mt-(--nk-space-2) mb-(--nk-space-1) h-[var(--nk-menu-row-progress-height,0.25rem)]"
           />
         )}
       </span>
@@ -249,17 +249,17 @@ function MenuRow({
       {isStepper && (
         <span data-slot="menu-row-stepper" className="flex shrink-0 items-center gap-[var(--nk-menu-row-gap,0.25rem)]">
           <span
-            className={cn("rounded-(--nk-r-key) p-(--nk-space-1)", quiet, hovers && "hover:bg-background/50 hover:text-foreground")}
+            className={cn("rounded-(--nk-radius-key) p-(--nk-space-1)", quiet, hovers && "hover:bg-background/50 hover:text-foreground")}
             onClick={(e) => (e.stopPropagation(), step(-1))}
             aria-hidden
           >
             <ChevronLeftIcon />
           </span>
-          <span data-slot="menu-row-value" data-tone={valueTone} className={cn("nk-num min-w-[var(--nk-menu-row-value-w,3rem)] text-center text-(length:--nk-text-label)", valueTone === "muted" && quiet)}>
+          <span data-slot="menu-row-value" data-tone={valueTone} className={cn("nk-num min-w-[var(--nk-menu-row-value-width,3rem)] text-center text-(length:--nk-text-label)", valueTone === "muted" && quiet)}>
             {value}
           </span>
           <span
-            className={cn("rounded-(--nk-r-key) p-(--nk-space-1)", quiet, hovers && "hover:bg-background/50 hover:text-foreground")}
+            className={cn("rounded-(--nk-radius-key) p-(--nk-space-1)", quiet, hovers && "hover:bg-background/50 hover:text-foreground")}
             onClick={(e) => (e.stopPropagation(), step(1))}
             aria-hidden
           >
@@ -535,11 +535,11 @@ function MenuRowDetails({
  * lit row drawing its own tile.
  *
  * The list keeps the lit tile off its container's edge: inline padding of --nk-list-pad-x, by default the tile's
- * inset plus its skew overhang (--nk-tile-overhang: half a row's height × tan(--nk-tile-skew); 0.25rem for the
+ * inset plus its skew overhang (--nk-tile-key-overhang: half a row's height × tan(--nk-tile-face-skew); 0.25rem for the
  * stock -12deg), so a sheet or panel that puts the list flush never clips the face's slanted corner. `bleed`
  * drops the padding (a list whose container already pads).
  */
-const LIST_PAD = "[padding-inline:var(--nk-list-pad-x,calc(var(--nk-tile-inset)_+_var(--nk-tile-overhang,0.25rem)))]"
+const LIST_PAD = "[padding-inline:var(--nk-list-pad-x,calc(var(--nk-tile-key-inset)_+_var(--nk-tile-key-overhang,0.25rem)))]"
 
 function MenuRowList({
   active,

@@ -7,7 +7,7 @@ import { useCollapse, type UseCollapseOptions } from "@/hooks/use-collapse"
 
 /**
  * CollapseStack — a row of clustered indicators on the collapse engine (useCollapse): at rest each item is its
- * icon; a change opens its chip for --nk-rest-delay; changes within the batch window (400 ms) open together and
+ * icon; a change opens its chip for --nk-behavior-rest; changes within the batch window (400 ms) open together and
  * close together; open chips lead the row, critical first, then the biggest change; at most `max`, then "+N".
  *
  *   <CollapseStack
@@ -20,7 +20,7 @@ import { useCollapse, type UseCollapseOptions } from "@/hooks/use-collapse"
  * Role: Clustered indicators (vitals, voice, job status) that stay icons until something changes.
  * Anatomy: collapse-stack > collapse-stack-item (your chip, via renderItem) > collapse-stack-more (+N)
  * Props: items, renderItem, max, restDelay, batchMs, min, optOut.
- * Rules: At rest only icons; a change opens a chip for --nk-rest-delay. Changes within the batch window (400
+ * Rules: At rest only icons; a change opens a chip for --nk-behavior-rest. Changes within the batch window (400
  *   ms) open and close together. Critical first, then the biggest change; at most max, then +N. Order moves
  *   with CSS order; the DOM never re-orders, nothing remounts.
  */
@@ -71,7 +71,7 @@ function CollapseMore({ count, className, ...props }: React.ComponentProps<"span
     <span
       data-slot="collapse-stack-more"
       className={cn(
-        "nk-num inline-flex h-(--nk-chip-height) items-center rounded-(--nk-chip-radius) bg-(--nk-chip-bg) px-2 text-(length:--nk-text-label) [font-weight:var(--nk-weight-strong,600)] text-(--nk-chip-fg)",
+        "nk-num inline-flex h-(--nk-chip-height) items-center rounded-(--nk-chip-radius) bg-(--nk-chip-bg) px-2 text-(length:--nk-text-label) [font-weight:var(--nk-type-weight-strong,600)] text-(--nk-chip-fg)",
         className
       )}
       {...props}

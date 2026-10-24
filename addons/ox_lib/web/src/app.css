@@ -12,9 +12,9 @@ body {
 /* Markdown from scripts: keep it inside the theme. */
 .ox-md p { margin: 0; white-space: pre-line; } /* scripts write "a\nb" and expect two lines */
 .ox-md p + p { margin-top: var(--nk-space-1); }
-.ox-md h1 { font-size: var(--nk-text-title); font-weight: var(--nk-weight-strong, 600); }
-.ox-md h2 { font-size: var(--nk-text-base); font-weight: var(--nk-weight-strong, 600); }
-.ox-md h3 { font-size: var(--nk-text-label); font-weight: var(--nk-weight-strong, 600); }
+.ox-md h1 { font-size: var(--nk-text-title); font-weight: var(--nk-type-weight-strong, 600); }
+.ox-md h2 { font-size: var(--nk-text-base); font-weight: var(--nk-type-weight-strong, 600); }
+.ox-md h3 { font-size: var(--nk-text-label); font-weight: var(--nk-type-weight-strong, 600); }
 .ox-md a { text-decoration: underline; text-underline-offset: 2px; }
 .ox-md code { font-family: var(--font-mono, ui-monospace, monospace); font-size: 0.85em; }
 .ox-md ul { list-style: disc; padding-left: var(--nk-space-6); }
@@ -25,7 +25,7 @@ body {
 
 /* input dialog colour row: the native picker as a plain swatch */
 .ox-swatch::-webkit-color-swatch-wrapper { padding: 0; }
-.ox-swatch::-webkit-color-swatch { border: none; border-radius: var(--nk-r-key); }
+.ox-swatch::-webkit-color-swatch { border: none; border-radius: var(--nk-radius-key); }
 
 /*
  * Radial menu (features/radial-menu.tsx). A ring of segments in the panel surface with the panel's
@@ -83,7 +83,7 @@ body {
   color: var(--nk-row-fill-foreground);
 }
 [data-slot="radial-segment"][data-active] .ox-radial-label {
-  font-weight: var(--nk-weight-strong, 600);
+  font-weight: var(--nk-type-weight-strong, 600);
 }
 
 /* The hub: the panel surface, the brand hairline; lit (pointer over it) in the hover colour. */
@@ -111,12 +111,12 @@ body {
   max-width: 100%;
   flex-direction: column;
   align-items: center;
-  font-family: var(--nk-heading-font);
+  font-family: var(--nk-type-title-family);
   font-size: 17px;
   line-height: 20px;
-  font-weight: var(--nk-heading-weight);
-  letter-spacing: var(--nk-heading-tracking);
-  text-transform: var(--nk-heading-case);
+  font-weight: var(--nk-type-title-weight);
+  letter-spacing: var(--nk-type-title-tracking);
+  text-transform: var(--nk-type-case);
   overflow-wrap: anywhere;
 }
 .ox-radial-hub-icon {
@@ -129,7 +129,7 @@ body {
   font-size: 12px;
   line-height: 14px;
   font-weight: var(--nk-caption-weight);
-  text-transform: var(--nk-caption-transform);
+  text-transform: var(--nk-caption-case);
   letter-spacing: var(--nk-caption-tracking);
   color: var(--muted-foreground);
 }
@@ -151,13 +151,13 @@ body {
   to { opacity: 1; transform: none; }
 }
 .ox-radial[data-state="open"] .ox-radial-svg {
-  animation: nk-radial-in var(--nk-time-slow, var(--nk-time)) var(--nk-ease-expand, var(--nk-ease-out)) both;
+  animation: nk-radial-in var(--nk-time-slow, var(--nk-time-base)) var(--nk-ease-expand, var(--nk-ease-enter)) both;
 }
 .ox-radial[data-state="open"] .ox-radial-wheel[data-dir="out"] .ox-radial-svg {
   animation-name: nk-radial-out;
 }
 .ox-radial[data-state="open"] [data-slot="radial-hints"] {
-  animation: nk-enter var(--nk-time-slow, var(--nk-time)) var(--nk-ease-expand, var(--nk-ease-out)) both;
+  animation: nk-enter var(--nk-time-slow, var(--nk-time-base)) var(--nk-ease-expand, var(--nk-ease-enter)) both;
 }
 html[data-nk-motion="reduced"] .ox-radial[data-state="open"] .ox-radial-svg {
   animation-name: nk-enter;
@@ -165,7 +165,7 @@ html[data-nk-motion="reduced"] .ox-radial[data-state="open"] .ox-radial-svg {
 
 /* the sheet title: the heading face at section size (the pause title's family, one step down) */
 .ox-sheet-title {
-  --nk-heading-size: var(--nk-text-section);
+  --nk-panel-title-size: var(--nk-text-section);
 }
 .ox-sheet-title p {
   margin: 0;
@@ -173,7 +173,7 @@ html[data-nk-motion="reduced"] .ox-radial[data-state="open"] .ox-radial-svg {
 
 /* Rows are the kit's (the baseline, docs/design/baseline.md): its height, padding, icon column and voices. */
 .ox-list-header {
-  --nk-heading-size: calc(var(--nk-text-title) * 1.1);
+  --nk-panel-title-size: calc(var(--nk-text-title) * 1.1);
 }
 /* The list menu's selection is the kit's SelectionTile (.ox-indicator): one Tile gliding between the rows,
    which paint nothing of their own (kit.css, Selection). Its glide keeps the kit's key-repeat rule. */
@@ -209,12 +209,12 @@ html[data-nk-motion="reduced"] .ox-radial[data-state="open"] :is(.ox-radial-svg,
 
 /* Floating sheets (list menu): the same slide as the edge sheet. */
 .ox-sheet-float[data-state="open"] {
-  animation-duration: var(--nk-time-slow, var(--nk-time)) !important;
-  animation-timing-function: var(--nk-ease-expand, var(--nk-ease-out)) !important;
+  animation-duration: var(--nk-time-slow, var(--nk-time-base)) !important;
+  animation-timing-function: var(--nk-ease-expand, var(--nk-ease-enter)) !important;
 }
 .ox-sheet-float[data-state="closed"] {
-  animation-duration: var(--nk-time-fast, var(--nk-time)) !important;
-  animation-timing-function: var(--nk-ease-retract, var(--nk-ease-in, ease-in)) !important;
+  animation-duration: var(--nk-time-fast, var(--nk-time-base)) !important;
+  animation-timing-function: var(--nk-ease-exit, var(--nk-ease-exit, ease-in)) !important;
 }
 /* the row tooltip (shadcn Tooltip) as a small panel: no arrow, the panel colours */
 .ox-tip > svg,
@@ -235,7 +235,7 @@ html[data-nk-motion="reduced"] .ox-radial[data-state="open"] :is(.ox-radial-svg,
  * notice. --ox-notify-bump (0–1, default 1) scales it; 0 on :root in nuikit/theme.css turns it off.
  */
 .nk-bump {
-  animation: nk-bump var(--nk-time-base, var(--nk-time)) var(--nk-ease-expand, var(--nk-ease-out)) both;
+  animation: nk-bump var(--nk-time-base, var(--nk-time-base)) var(--nk-ease-expand, var(--nk-ease-enter)) both;
 }
 @keyframes nk-bump {
   from {
@@ -253,7 +253,7 @@ html[data-nk-motion="reduced"] .ox-radial[data-state="open"] :is(.ox-radial-svg,
   --nk-panel-radius: var(--nk-plate-radius);
   --nk-panel-shadow: var(--nk-plate-drop);
   --nk-panel-edge: 0 0 0 0 transparent;
-  --nk-backdrop-filter: none;
+  --nk-panel-backdrop: none;
 }
 
 /*
@@ -262,12 +262,12 @@ html[data-nk-motion="reduced"] .ox-radial[data-state="open"] :is(.ox-radial-svg,
  */
 [data-slot="dialog-overlay"],
 [data-slot="alert-dialog-overlay"] {
-  z-index: var(--nk-z-dim, 50) !important;
+  z-index: var(--nk-layer-dim, 50) !important;
   background-color: rgba(var(--scrim-rgb, 0, 0, 0), 0.5) !important;
 }
 [data-slot="dialog-content"],
 [data-slot="alert-dialog-content"] {
-  z-index: var(--nk-z-dialog, 60) !important;
+  z-index: var(--nk-layer-dialog, 60) !important;
 }
 
 /*
@@ -277,15 +277,15 @@ html[data-nk-motion="reduced"] .ox-radial[data-state="open"] :is(.ox-radial-svg,
  */
 [data-slot="dialog-content"],
 [data-slot="alert-dialog-content"] {
-  --ox-dialog-pad: var(--nk-pad-surface);
-  --nk-panel-divider: var(--nk-border) solid var(--nk-panel-border);
+  --ox-dialog-pad: var(--nk-gap-surface);
+  --nk-panel-divider: var(--nk-line-width) solid var(--nk-panel-border);
 }
 :is([data-slot="dialog-content"], [data-slot="alert-dialog-content"]) .nk-panel-header {
   min-height: 0;
   background: none;
 }
 :is([data-slot="dialog-content"], [data-slot="alert-dialog-content"]) .nk-panel-header .nk-title {
-  --nk-heading-size: var(--nk-text-section);
+  --nk-panel-title-size: var(--nk-text-section);
 }
 :is([data-slot="dialog-content"], [data-slot="alert-dialog-content"]) .ox-dialog-body {
   padding: var(--nk-space-6) var(--ox-dialog-pad);
@@ -296,15 +296,15 @@ html[data-nk-motion="reduced"] .ox-radial[data-state="open"] :is(.ox-radial-svg,
 
 /*
  * Dialog and row motion (docs/design/default.md, Motion): transform and opacity only. Dialogs fade in on the
- * expand ease and out on the retract ease (rows slide by the kit's --nk-row-lift).
+ * expand ease and out on the retract ease (rows slide by the kit's --nk-gesture-lift).
  */
 @keyframes nk-dialog-in { from { opacity: 0; } to { opacity: 1; } }
 @keyframes nk-dialog-out { from { opacity: 1; } to { opacity: 0; } }
 :is([data-slot="dialog-content"], [data-slot="alert-dialog-content"])[data-state="open"] {
-  animation: nk-dialog-in var(--nk-time-base, var(--nk-time)) var(--nk-ease-expand, var(--nk-ease-out)) both !important;
+  animation: nk-dialog-in var(--nk-time-base, var(--nk-time-base)) var(--nk-ease-expand, var(--nk-ease-enter)) both !important;
 }
 :is([data-slot="dialog-content"], [data-slot="alert-dialog-content"])[data-state="closed"] {
-  animation: nk-dialog-out var(--nk-time-fast, var(--nk-time)) var(--nk-ease-retract, var(--nk-ease-in, ease-in)) both !important;
+  animation: nk-dialog-out var(--nk-time-fast, var(--nk-time-base)) var(--nk-ease-exit, var(--nk-ease-exit, ease-in)) both !important;
 }
 /* progress: a linear fill that does not ease, so the bar tells the real time left */
 [data-slot="progress-slab"] [role="progressbar"] > * { transition-timing-function: linear; }
@@ -318,13 +318,13 @@ html[data-nk-motion="reduced"] :is([data-slot="dialog-content"], [data-slot="ale
 [data-slot="progress-label"] {
   font-family: var(--nk-type-label-family);
   font-style: var(--nk-type-label-style);
-  font-size: var(--nk-row-title-size);
+  font-size: var(--nk-text-row);
   font-weight: var(--nk-type-label-weight);
   letter-spacing: var(--nk-type-label-tracking);
   text-transform: var(--nk-type-label-case);
   padding-inline-end: var(--nk-type-label-pad);
 }
 [data-slot="progress-percent"] {
-  font-weight: var(--nk-weight-display, 700);
+  font-weight: var(--nk-type-weight-display, 700);
   opacity: 0.7;
 }

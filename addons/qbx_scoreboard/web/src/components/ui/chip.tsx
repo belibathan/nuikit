@@ -8,7 +8,7 @@ import { toneVars } from "@/components/ui/fill"
 /**
  * Chip — a short status on one line (docs/design/components.md, foundation), in one of two materials:
  *
- * - `material="panel"` (default): on a panel. --nk-h-chip tall, --nk-r-chip corners (never a pill), the label
+ * - `material="panel"` (default): on a panel. --nk-height-chip tall, --nk-radius-chip corners (never a pill), the label
  *   role, an --nk-icon-md icon; a hairline rim (fill hair), a tint or a solid. kit.css draws it on
  *   `data-slot="chip"`.
  * - `material="hud"`: on the game world (voice range, radio, a seatbelt warning, a hotbar slot). No panel, no

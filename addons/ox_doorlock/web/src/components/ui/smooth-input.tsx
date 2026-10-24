@@ -19,9 +19,9 @@ import { Textarea } from "@/components/ui/textarea"
  *
  * How: the field's own glyphs and caret are made transparent and a mirror of its text is drawn over it
  * (same font, padding and scroll). The caret is a drawn element that glides to the measured position on the
- * ladder (`--nk-caret-time`, `--nk-caret-ease`, `--nk-caret-width`); every typed character rises in on its own
- * (`--nk-type-in-distance` over `--nk-type-in-time`, a key-stagger between characters of one paste) and a deleted
- * one drops out (`--nk-type-out-time`). While an IME composes, while there is a selection range (the field draws
+ * ladder (`--nk-field-caret-time`, `--nk-field-caret-ease`, `--nk-field-caret-width`); every typed character rises in on its own
+ * (`--nk-field-mirror-rise` over `--nk-field-mirror-in`, a key-stagger between characters of one paste) and a deleted
+ * one drops out (`--nk-field-mirror-out`). While an IME composes, while there is a selection range (the field draws
  * its own highlight then), and whenever motion is off or reduced (`html[data-nk-motion]`, the OS setting), it is
  * the plain native field: nothing is drawn over it. Transform and opacity only; the value, events and form
  * semantics are the field's own.
@@ -66,7 +66,7 @@ const STAGGER_MS = 20
 const RIPPLE_MAX = 12
 const EASE_OUT = "cubic-bezier(0.2, 0.8, 0.2, 1)"
 const EASE_IN = "cubic-bezier(0.4, 0, 1, 1)"
-const distanceOf = () => token("--nk-type-in-distance") || "0.45em"
+const distanceOf = () => token("--nk-field-mirror-rise") || "0.45em"
 
 function useMotionOn() {
   const [on, setOn] = React.useState(() => motionLevel() === "on")
@@ -230,8 +230,8 @@ function useSmoothField<T extends Field>(multiline: boolean) {
         <span
           ref={caret}
           data-slot="smooth-caret"
-          className="absolute top-0 left-0 bg-primary [transition:transform_var(--nk-caret-time,140ms)_var(--nk-caret-ease,cubic-bezier(0.2,0,0,1))]"
-          style={{ width: "var(--nk-caret-width, 0.125rem)", borderRadius: "var(--nk-r-key, 1px)", opacity: 0 }}
+          className="absolute top-0 left-0 bg-primary [transition:transform_var(--nk-field-caret-time,140ms)_var(--nk-field-caret-ease,cubic-bezier(0.2,0,0,1))]"
+          style={{ width: "var(--nk-field-caret-width, 0.125rem)", borderRadius: "var(--nk-radius-key, 1px)", opacity: 0 }}
         />
       </div>
     </div>
@@ -272,14 +272,14 @@ function Mirrored({ view, marker }: { view: View; marker: React.RefObject<HTMLSp
   return <>{out}</>
 }
 
-/** A typed run: each character rises in from --nk-type-in-distance, a key-stagger apart; a paste rises as one. */
+/** A typed run: each character rises in from --nk-field-mirror-rise, a key-stagger apart; a paste rises as one. */
 function Typed({ text }: { text: string }) {
   const ref = React.useRef<HTMLSpanElement>(null)
   const ripple = text.length <= RIPPLE_MAX
   React.useLayoutEffect(() => {
     const el = ref.current
     if (!el || typeof el.animate !== "function") return
-    const time = tokenMs("--nk-type-in-time", TYPE_IN_MS)
+    const time = tokenMs("--nk-field-mirror-in", TYPE_IN_MS)
     const stagger = Math.min(tokenMs("--nk-stagger", STAGGER_MS), 30)
     const frames = [
       { opacity: 0, transform: `translateY(${distanceOf()})` },
@@ -297,7 +297,7 @@ function Typed({ text }: { text: string }) {
   )
 }
 
-/** What was deleted: it drops out and fades over --nk-type-out-time, taking no width (the line closes at once). */
+/** What was deleted: it drops out and fades over --nk-field-mirror-out, taking no width (the line closes at once). */
 function Leaving({ text }: { text: string }) {
   const ref = React.useRef<HTMLSpanElement>(null)
   React.useLayoutEffect(() => {
@@ -308,7 +308,7 @@ function Leaving({ text }: { text: string }) {
         { opacity: 0.8, transform: "translateY(0)" },
         { opacity: 0, transform: `translateY(${distanceOf()})` },
       ],
-      { duration: tokenMs("--nk-type-out-time", TYPE_OUT_MS), easing: EASE_IN, fill: "forwards" }
+      { duration: tokenMs("--nk-field-mirror-out", TYPE_OUT_MS), easing: EASE_IN, fill: "forwards" }
     )
     return () => a.cancel()
   }, [text])

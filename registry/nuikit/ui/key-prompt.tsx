@@ -56,8 +56,8 @@ const keyPromptVariants = cva(
       },
     },
     compoundVariants: [
-      { surface: ["panel", "hud"], size: "sm", className: "min-h-[var(--nk-key-prompt-min-h-sm,2rem)] py-[var(--nk-key-prompt-pad-y,0.25rem)] pr-(--nk-space-3) pl-(--nk-space-2)" },
-      { surface: ["panel", "hud"], size: "default", className: "min-h-[var(--nk-key-prompt-min-h,2.5rem)] py-(--nk-space-2) pr-[var(--nk-key-prompt-pad-r,0.75rem)] pl-[var(--nk-key-prompt-pad-l,0.5rem)]" },
+      { surface: ["panel", "hud"], size: "sm", className: "min-h-[var(--nk-key-prompt-min-height-sm,2rem)] py-[var(--nk-key-prompt-pad-y,0.25rem)] pr-(--nk-space-3) pl-(--nk-space-2)" },
+      { surface: ["panel", "hud"], size: "default", className: "min-h-[var(--nk-key-prompt-min-height,2.5rem)] py-(--nk-space-2) pr-[var(--nk-key-prompt-pad-right,0.75rem)] pl-[var(--nk-key-prompt-pad-left,0.5rem)]" },
       // the slab's own height and padding; sm is a step tighter
       { surface: "slab", size: "sm", className: "[--nk-slab-height:calc(2rem*var(--nk-density,0.875))]" },
     ],
@@ -284,7 +284,7 @@ function KeyPrompt({
         tall && "items-start [&>[data-slot=key-prompt-keys]]:mt-[calc((1.25rem-var(--nk-slab-key-size))/2)]",
         tall && slab && "py-[calc((var(--nk-slab-height)-1.25rem)/2)]",
         wrap && "whitespace-normal",
-        rung === "focus" && "outline-2 -outline-offset-1 outline-(--nk-row-indicator-color)",
+        rung === "focus" && "outline-2 -outline-offset-1 outline-(--nk-row-accent)",
         disabled && "opacity-50",
         interactive && "cursor-pointer outline-none select-none",
         className
@@ -320,7 +320,7 @@ function KeyPrompt({
                     {separator}
                   </span>
                 )}
-                <Kbd className={cn("h-[var(--nk-key-prompt-cap-h,1.5rem)] min-w-[var(--nk-key-prompt-cap-h,1.5rem)] px-(--nk-space-2) text-(length:--nk-text-label)", active && "bg-(--nk-chip-active-bg) text-(--nk-chip-active-fg)")}>
+                <Kbd className={cn("h-[var(--nk-key-prompt-key-height,1.5rem)] min-w-[var(--nk-key-prompt-key-height,1.5rem)] px-(--nk-space-2) text-(length:--nk-text-label)", active && "bg-(--nk-chip-active-bg) text-(--nk-chip-active-fg)")}>
                   {k}
                 </Kbd>
               </React.Fragment>
@@ -330,7 +330,7 @@ function KeyPrompt({
       {icon && (
         <span
           data-slot="key-prompt-icon"
-          className={cn("flex", tall && "h-(--nk-h-key) items-center", surface === "panel" ? "text-muted-foreground" : "opacity-75")}
+          className={cn("flex", tall && "h-(--nk-height-key) items-center", surface === "panel" ? "text-muted-foreground" : "opacity-75")}
         >
           {icon}
         </span>
@@ -360,8 +360,8 @@ function KeyPrompt({
           // constant here never changes, so React leaves that drawing alone.
           level={p}
           tween={false}
-          className={cn("absolute inset-x-0 bottom-0 rounded-none bg-transparent", slab ? "h-(--nk-slab-line-height)" : "h-[calc(var(--nk-gauge-track,0.25rem)/2)]")}
-          color={slab ? "rgb(var(--nk-slab-tone-rgb))" : "var(--nk-row-indicator-color)"}
+          className={cn("absolute inset-x-0 bottom-0 rounded-none bg-transparent", slab ? "h-(--nk-slab-line-height)" : "h-[calc(var(--nk-fill-height,0.25rem)/2)]")}
+          color={slab ? "rgb(var(--nk-slab-tone))" : "var(--nk-row-accent)"}
         />
       )}
     </div>
@@ -404,7 +404,7 @@ function keyPromptPosition(value?: string | null): KeyPromptPosition {
   return alias[v] ?? (v in STACK ? (v as KeyPromptPosition) : "center-right")
 }
 
-/** A column of prompts pinned `--nk-edge` from an edge of the full-screen root. */
+/** A column of prompts pinned `--nk-screen-edge` from an edge of the full-screen root. */
 function KeyPromptStack({
   className,
   position = "center-right",

@@ -2,7 +2,7 @@
 // rounded square, a pill, a circle, Signal's chamfered corners), the track and the fill follow that
 // outline instead of a ring inside the box. The shape is measured from the chip, not assumed:
 // its corner radius (--nk-chip-radius, resolved by the browser) and, when chips are clipped
-// (--nk-chip-clip), the chamfer of half --nk-cut that the kit's clip draws (top left, bottom right).
+// (--nk-chip-clip), the chamfer of half --nk-shape-cut that the kit's clip draws (top left, bottom right).
 import { onTheme } from "nuikit-core";
 import { useEffect, useRef, useState } from "react";
 

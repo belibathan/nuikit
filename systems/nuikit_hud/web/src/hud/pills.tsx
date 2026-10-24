@@ -7,7 +7,7 @@
 // with its name and the difference ("Hunger +25"), so pops of vitals that change together never overlap.
 // (A comms-first hierarchy was tried and shelved, see docs/design.md.)
 //
-// The style comes from the theme tokens (--nk-vital-icon, --nk-vital-display) and a player's override (/hudstyle, kept in KVP by client/style.lua and sent as
+// The style comes from the theme tokens (--nk-vital-chip-icon, --nk-vital-chip-display) and a player's override (/hudstyle, kept in KVP by client/style.lua and sent as
 // `hud:style`). Icon + level + the critical state, never colour alone; the value is in aria-valuenow.
 import { onNui } from "nuikit-core";
 import { fetchNui, Stagger, usePlayer, useSlots, useStaggerItem, type NuiPlayer, type Slot } from "nuikit-core/react";
@@ -46,7 +46,7 @@ const roleColour = (tone: Tone) => ({ "--vital": `var(--hue-solid, var(--vital-$
 export const VitalItem = memo(function VitalItem({ tone, value, mode, low, high, linger, pop, force, display = "icons" }: VitalProps) {
   const v = Math.max(0, Math.min(100, Math.round(value ?? 0)));
   // value and pill keep their label open; expand opens it on a change and settles after the theme's
-  // --nk-rest-delay (the vitals' linger when that is 0); those three show the change there, not as a pop
+  // --nk-behavior-rest (the vitals' linger when that is 0); those three show the change there, not as a pop
   const expanded = useExpanded(`${v}:${force?.nonce ?? 0}`, linger);
   // one variant: a tag tucks out from behind the keycap on a change (or stays out for pill / value)
   const open = display === "value" || display === "pill" || expanded;
@@ -110,7 +110,7 @@ function RadioChip({ radio }: { radio: number | string }) {
 }
 
 /** A player's style override (/hudstyle): the token set on <html>, so every chip reads them. */
-const TOKENS = { icon: "--nk-vital-icon" } as const;
+const TOKENS = { icon: "--nk-vital-chip-icon" } as const;
 type StyleOverride = Partial<Record<keyof typeof TOKENS, string>> | null;
 function applyStyle(s: StyleOverride) {
   const root = document.documentElement.style;

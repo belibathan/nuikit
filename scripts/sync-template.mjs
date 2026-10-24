@@ -136,15 +136,16 @@ const { compileTheme, TOKENS, IDENTITY_TOKENS } = await import(pathToFileURL(cor
 const nuikitTokens = (mode) => {
   const { vars } = compileTheme({ ...cssVars[mode] }, { mode });
   const out = {};
-  for (const t of TOKENS) if (t.group === "nuikit" || t.name === "destructive-foreground" || t.type === "fontFamily") out[t.name] = vars[t.name];
-  for (const t of IDENTITY_TOKENS) out[t.name] = vars[t.name];
+  // the palette beyond shadcn's own colours (game families, derived colours, faces) and the identity levers
+  for (const t of TOKENS) if (cssVars[mode][t.name] === undefined && vars[t.name] !== undefined) out[t.name] = vars[t.name];
+  for (const t of IDENTITY_TOKENS) if (vars[t.name] !== undefined) out[t.name] = vars[t.name];
   out.info = "var(--primary)";
   out["info-foreground"] = "var(--primary-foreground)";
   return out;
 };
 // Identity fonts, per UI (nuikit.json "fonts", or NUIKIT_FONTS for every UI that doesn't say):
 //   "bundle"   (default) every font ships with the UI (from nuikit-core, so the repo holds one copy);
-//   "graphite" the default identity's fonts ship with the UI, the others load from the nuikit resource
+//   "baseline" the token language's own faces (Default's) ship with the UI, the others load from the nuikit resource
 //              (for overrides whose resource serves a fixed file list: the build inlines what it bundles);
 //   "nuikit"   every font loads from the nuikit resource (one copy per server; unproven, see the in-game
 //              check in bench/identity/results.md);
@@ -162,7 +163,7 @@ const FONT_SRC = {
   bundle: () => bundled,
   local: () => local,
   nuikit: () => served,
-  graphite: (f) => (f.identity.includes("graphite") ? bundled : served),
+  baseline: (f) => (f.identity.includes("default") ? bundled : served),
 };
 const fontFaces = (mode) =>
   FONTS.fonts

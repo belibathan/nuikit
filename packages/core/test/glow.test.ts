@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-// The glow budget (tokens 1.4): at most --nk-glow-budget parts glow, the focused one first.
+// The glow budget (tokens 1.4): at most --nk-surface-glow-budget parts glow, the focused one first.
 import { afterEach, describe, expect, it } from "vitest";
 import { __resetGlowBudget, applyGlowBudget, startGlowBudget } from "../src/glow";
 

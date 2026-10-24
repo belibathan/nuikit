@@ -2539,7 +2539,7 @@
           "side": "lua",
           "lua": "nk.theme.look",
           "signature": {},
-          "doc": "The player's look (identity, treatment), or nil for the server theme.",
+          "doc": "The player's look (identity), or nil for the server theme.",
           "only": "lua only: the page receives the look as the theme",
           "since": "0.7.0",
           "status": "stable"
@@ -2565,7 +2565,7 @@
           "signature": {
             "js": "getPrefs(): NuiPrefs"
           },
-          "doc": "The player's UI prefs (scale, reducedMotion, highContrast, identity, treatment).",
+          "doc": "The player's UI prefs (scale, reducedMotion, highContrast, density, identity).",
           "since": "0.4.0",
           "status": "stable"
         },
@@ -2913,7 +2913,7 @@
           "js": "TOKENS",
           "from": "nuikit-core/theme",
           "signature": {},
-          "doc": "The token tables (tokens 1.7): names, specs, groups, presets.",
+          "doc": "The token tables, generated from the token language (src/spec): every lever, the anatomy, the palette.",
           "only": "js only: Lua reads the compiled theme",
           "since": "0.5.0",
           "status": "stable"
@@ -2925,7 +2925,7 @@
           "js": "motionTokens",
           "from": "nuikit-core/theme",
           "signature": {
-            "js": "motionTokens(d: number, feel?: \"crisp\" | \"snap\" | \"smooth\" | \"stepped\", bounce?: number, opts?: { exitFactor?: number | undefined; ladder?: boolean | undefined; }): ThemeVars"
+            "js": "motionTokens(d: number, feel?: \"crisp\" | \"snap\" | \"smooth\" | \"stepped\", bounce?: number, opts?: { exitFactor?: number | undefined; }): ThemeVars"
           },
           "doc": "The motion tokens of a compiled theme.",
           "only": "js only: the page animates",
@@ -2952,7 +2952,7 @@
           "from": "nuikit-core/theme",
           "lua": "NuiPrefs",
           "signature": {},
-          "doc": "scale, reducedMotion, highContrast, identity, treatment.",
+          "doc": "scale, reducedMotion, highContrast, density, identity.",
           "since": "0.4.0",
           "status": "stable"
         }

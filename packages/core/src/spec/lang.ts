@@ -20,6 +20,8 @@ export interface Ref {
   path: string;
   /** Channels of a palette colour (`@primary` → `--primary-rgb`), for rgba() over a theme colour on Chromium 103. */
   channel?: "rgb" | "a";
+  /** var(--x, <fallback>): for a channel of a lever only a theme sets (the compiler writes -rgb next to set colours). */
+  fallback?: Ref;
 }
 /** A CSS expression whose holes are references: css`calc(${ref("space.unit")} * 2)`. */
 export interface Expr {
@@ -48,8 +50,6 @@ export interface LeverDef {
   derived?: boolean;
   /** A literal default below the identity tier that is a floor by design (a hairline's 1px, a 0 that means off). */
   floor?: boolean;
-  /** Re-declared under [data-nk-density] / [data-nk-shape] so a subtree re-derives it. */
-  rederive?: readonly ("density" | "shape")[];
   /** How compileTheme derives it when a theme leaves it out (palette and derived levers: prose, for the docs). */
   rule?: string;
   /** The names this lever replaces (pre-language). migration.json and the codemod are generated from these. */
@@ -92,7 +92,7 @@ export interface ComponentDef {
 
 // ─────────────────────────────────────────── the DSL
 
-export const ref = (path: string, channel?: "rgb" | "a"): Ref => ({ kind: "ref", path, ...(channel ? { channel } : {}) });
+export const ref = (path: string, channel?: "rgb" | "a", fallback?: Ref): Ref => ({ kind: "ref", path, ...(channel ? { channel } : {}), ...(fallback ? { fallback } : {}) });
 /** A palette token (the v1 contract: shadcn's names and the game families, unprefixed). */
 export const pal = (name: string, channel?: "rgb" | "a"): Ref => ref(`@${name}`, channel);
 export const lit = (value: string | number): Lit => ({ kind: "lit", value: String(value) });

@@ -20,7 +20,7 @@ export function anchor(value: IntentAnchor | string | undefined | null, fallback
   return all.includes(v as Anchor) ? (v as Anchor) : fallback;
 }
 
-/** Literal class names (Tailwind reads them here): the kit's anchors, --nk-edge from the edge. */
+/** Literal class names (Tailwind reads them here): the kit's anchors, --nk-screen-edge from the edge. */
 export const ANCHOR_CLASS: Record<Anchor, string> = {
   "top-left": "nk-anchor-tl",
   "top-center": "nk-anchor-t",

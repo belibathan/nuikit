@@ -29,7 +29,7 @@ input::-webkit-inner-spin-button {
 .ia-cam.ia-cam:hover {
   background-color: var(--nk-chip-bg);
   color: var(--nk-chip-fg);
-  box-shadow: inset 0 0 0 var(--nk-border) var(--ring);
+  box-shadow: inset 0 0 0 var(--nk-line-width) var(--ring);
 }
 .ia-cam.ia-cam[data-state="on"] {
   background-color: var(--nk-chip-active-bg);
@@ -42,9 +42,9 @@ input::-webkit-inner-spin-button {
   content: "";
   position: absolute;
   top: 0;
-  left: calc(var(--nk-space) * 3);
-  right: calc(var(--nk-space) * 3);
-  height: var(--nk-border);
+  left: calc(var(--nk-space-unit) * 3);
+  right: calc(var(--nk-space-unit) * 3);
+  height: var(--nk-line-width);
   background-color: var(--border);
   pointer-events: none;
 }
@@ -57,7 +57,7 @@ input::-webkit-inner-spin-button {
 .ia-tray.ia-tray {
   left: 0;
   right: 0;
-  bottom: var(--nk-edge, 1.5rem);
+  bottom: var(--nk-screen-edge, 1.5rem);
   width: max-content;
   height: auto;
   gap: 0;
@@ -66,13 +66,13 @@ input::-webkit-inner-spin-button {
 }
 .ia-tray[data-state="open"] {
   animation-duration: var(--nk-time-slow) !important;
-  animation-delay: calc(var(--nk-time) * 1.5 * var(--nk-motion, 1));
+  animation-delay: calc(var(--nk-time-base) * 1.5 * var(--nk-motion, 1));
   animation-fill-mode: both;
-  animation-timing-function: var(--nk-ease-out) !important;
+  animation-timing-function: var(--nk-ease-enter) !important;
 }
 .ia-tray[data-state="closed"] {
   animation-duration: var(--nk-time-exit) !important;
-  animation-timing-function: var(--nk-ease-in, ease-in) !important;
+  animation-timing-function: var(--nk-ease-exit, ease-in) !important;
 }
 
 /* Clothing preview tiles (components/clothing-grid.tsx): the slots' well, the selection ringed. */
@@ -110,10 +110,10 @@ input::-webkit-inner-spin-button {
  */
 [data-slot="dialog-overlay"],
 [data-slot="alert-dialog-overlay"] {
-  z-index: var(--nk-z-dim, 50) !important;
+  z-index: var(--nk-layer-dim, 50) !important;
   background-color: rgba(var(--scrim-rgb, 0, 0, 0), 0.5) !important;
 }
 [data-slot="dialog-content"],
 [data-slot="alert-dialog-content"] {
-  z-index: var(--nk-z-dialog, 60) !important;
+  z-index: var(--nk-layer-dialog, 60) !important;
 }

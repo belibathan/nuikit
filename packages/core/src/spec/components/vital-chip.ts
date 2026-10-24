@@ -1,5 +1,5 @@
 /** VitalChip: one vital as a keycap Tile with a level inside and a tag that slides out from behind it. */
-import { alpha, color, keyword, length, number, type ComponentDef } from "../lang";
+import { alpha, color, length, number, type ComponentDef } from "../lang";
 
 export const vitalChip: ComponentDef = {
   description: "One vital: a Tile, its level, its icon, and the tag that slides out from behind it",
@@ -8,11 +8,6 @@ export const vitalChip: ComponentDef = {
   levers: {
     size: length("2.125rem", "The chip's box", { floor: true, was: ["vital-size"] }),
     "size-sm": length("1.625rem", "A small chip's box (telltales, compass marks)", { floor: true, was: ["nk-vital-sm"] }),
-    shape: keyword(["auto", "square", "rounded", "circle", "diamond", "hex", "chamfer"], "auto", "The chip's shape (auto: the keycap)", { was: ["nk-chip-shape"] }),
-    display: keyword(["auto", "pill", "value", "icon", "expand"], "expand", "What a chip shows", { was: ["nk-vital-display"] }),
-    icon: keyword(["vital", "uniform"], "uniform", "Each vital's own icon, or one glyph", { was: ["nk-vital-icon"] }),
-    neighbours: keyword(["push", "collapse", "overlay"], "push", "What a growing chip does to its neighbours", { was: ["nk-vital-neighbours"] }),
-    attach: keyword(["inline", "tag", "flag", "none"], "flag", "Where the label sits", { was: ["nk-label-attach"] }),
   },
   parts: {
     tile: { ratio: number(0.94, "The face as a fraction of the box", { range: [0.5, 1], floor: true, was: ["nk-vital-face-ratio"] }) },

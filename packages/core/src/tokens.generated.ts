@@ -472,6 +472,36 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "rule": "a cyan chart colour, else oklch(0.76 0.13 215)"
   },
   {
+    "name": "world-shadow",
+    "path": "@world-shadow",
+    "tier": "identity",
+    "scope": "",
+    "type": "shadow",
+    "default": "0 1px 2px rgba(0, 0, 0, 0.65), 0 0 0.5rem rgba(0, 0, 0, 0.35)",
+    "description": "Text-shadow that keeps world-foreground legible over any frame",
+    "rule": "a tight dark edge plus a soft halo"
+  },
+  {
+    "name": "pause-surface",
+    "path": "@pause-surface",
+    "tier": "identity",
+    "scope": "",
+    "type": "color",
+    "default": "rgb(246, 247, 249)",
+    "description": "The slash pause panel's light surface (style.pause: slash)",
+    "rule": "rgb(246, 247, 249)"
+  },
+  {
+    "name": "pause-ink",
+    "path": "@pause-ink",
+    "tier": "identity",
+    "scope": "",
+    "type": "color",
+    "default": "rgb(14, 16, 20)",
+    "description": "Text on the slash pause panel",
+    "rule": "rgb(14, 16, 20)"
+  },
+  {
     "name": "vital-stress",
     "path": "@vital-stress",
     "tier": "identity",
@@ -482,12 +512,780 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "rule": "a magenta chart colour, else oklch(0.68 0.2 320)"
   },
   {
+    "name": "role-health",
+    "path": "@role-health",
+    "tier": "identity",
+    "scope": "",
+    "type": "color",
+    "default": "var(--vital-health)",
+    "description": "Role health: the --hue-* ramp under data-hue=\"health\"",
+    "rule": "vital-health"
+  },
+  {
+    "name": "role-health-deep",
+    "path": "@role-health-deep",
+    "tier": "identity",
+    "scope": "",
+    "type": "color",
+    "default": "var(--role-health)",
+    "description": "health, darker: the ramp's deep step",
+    "derived": true,
+    "rule": "role-health, OKLCH L − 0.12"
+  },
+  {
+    "name": "role-health-light",
+    "path": "@role-health-light",
+    "tier": "identity",
+    "scope": "",
+    "type": "color",
+    "default": "var(--role-health)",
+    "description": "health, lighter: the ramp's gradient start",
+    "derived": true,
+    "rule": "role-health, OKLCH L + 0.1"
+  },
+  {
+    "name": "role-armor",
+    "path": "@role-armor",
+    "tier": "identity",
+    "scope": "",
+    "type": "color",
+    "default": "var(--vital-armor)",
+    "description": "Role armor: the --hue-* ramp under data-hue=\"armor\"",
+    "rule": "vital-armor"
+  },
+  {
+    "name": "role-armor-deep",
+    "path": "@role-armor-deep",
+    "tier": "identity",
+    "scope": "",
+    "type": "color",
+    "default": "var(--role-armor)",
+    "description": "armor, darker: the ramp's deep step",
+    "derived": true,
+    "rule": "role-armor, OKLCH L − 0.12"
+  },
+  {
+    "name": "role-armor-light",
+    "path": "@role-armor-light",
+    "tier": "identity",
+    "scope": "",
+    "type": "color",
+    "default": "var(--role-armor)",
+    "description": "armor, lighter: the ramp's gradient start",
+    "derived": true,
+    "rule": "role-armor, OKLCH L + 0.1"
+  },
+  {
+    "name": "role-hunger",
+    "path": "@role-hunger",
+    "tier": "identity",
+    "scope": "",
+    "type": "color",
+    "default": "var(--vital-hunger)",
+    "description": "Role hunger: the --hue-* ramp under data-hue=\"hunger\"",
+    "rule": "vital-hunger"
+  },
+  {
+    "name": "role-hunger-deep",
+    "path": "@role-hunger-deep",
+    "tier": "identity",
+    "scope": "",
+    "type": "color",
+    "default": "var(--role-hunger)",
+    "description": "hunger, darker: the ramp's deep step",
+    "derived": true,
+    "rule": "role-hunger, OKLCH L − 0.12"
+  },
+  {
+    "name": "role-hunger-light",
+    "path": "@role-hunger-light",
+    "tier": "identity",
+    "scope": "",
+    "type": "color",
+    "default": "var(--role-hunger)",
+    "description": "hunger, lighter: the ramp's gradient start",
+    "derived": true,
+    "rule": "role-hunger, OKLCH L + 0.1"
+  },
+  {
+    "name": "role-thirst",
+    "path": "@role-thirst",
+    "tier": "identity",
+    "scope": "",
+    "type": "color",
+    "default": "var(--vital-thirst)",
+    "description": "Role thirst: the --hue-* ramp under data-hue=\"thirst\"",
+    "rule": "vital-thirst"
+  },
+  {
+    "name": "role-thirst-deep",
+    "path": "@role-thirst-deep",
+    "tier": "identity",
+    "scope": "",
+    "type": "color",
+    "default": "var(--role-thirst)",
+    "description": "thirst, darker: the ramp's deep step",
+    "derived": true,
+    "rule": "role-thirst, OKLCH L − 0.12"
+  },
+  {
+    "name": "role-thirst-light",
+    "path": "@role-thirst-light",
+    "tier": "identity",
+    "scope": "",
+    "type": "color",
+    "default": "var(--role-thirst)",
+    "description": "thirst, lighter: the ramp's gradient start",
+    "derived": true,
+    "rule": "role-thirst, OKLCH L + 0.1"
+  },
+  {
+    "name": "role-stress",
+    "path": "@role-stress",
+    "tier": "identity",
+    "scope": "",
+    "type": "color",
+    "default": "var(--vital-stress)",
+    "description": "Role stress: the --hue-* ramp under data-hue=\"stress\"",
+    "rule": "vital-stress"
+  },
+  {
+    "name": "role-stress-deep",
+    "path": "@role-stress-deep",
+    "tier": "identity",
+    "scope": "",
+    "type": "color",
+    "default": "var(--role-stress)",
+    "description": "stress, darker: the ramp's deep step",
+    "derived": true,
+    "rule": "role-stress, OKLCH L − 0.12"
+  },
+  {
+    "name": "role-stress-light",
+    "path": "@role-stress-light",
+    "tier": "identity",
+    "scope": "",
+    "type": "color",
+    "default": "var(--role-stress)",
+    "description": "stress, lighter: the ramp's gradient start",
+    "derived": true,
+    "rule": "role-stress, OKLCH L + 0.1"
+  },
+  {
+    "name": "role-stamina",
+    "path": "@role-stamina",
+    "tier": "identity",
+    "scope": "",
+    "type": "color",
+    "default": "var(--success)",
+    "description": "Role stamina: the --hue-* ramp under data-hue=\"stamina\"",
+    "rule": "success"
+  },
+  {
+    "name": "role-stamina-deep",
+    "path": "@role-stamina-deep",
+    "tier": "identity",
+    "scope": "",
+    "type": "color",
+    "default": "var(--role-stamina)",
+    "description": "stamina, darker: the ramp's deep step",
+    "derived": true,
+    "rule": "role-stamina, OKLCH L − 0.12"
+  },
+  {
+    "name": "role-stamina-light",
+    "path": "@role-stamina-light",
+    "tier": "identity",
+    "scope": "",
+    "type": "color",
+    "default": "var(--role-stamina)",
+    "description": "stamina, lighter: the ramp's gradient start",
+    "derived": true,
+    "rule": "role-stamina, OKLCH L + 0.1"
+  },
+  {
+    "name": "role-oxygen",
+    "path": "@role-oxygen",
+    "tier": "identity",
+    "scope": "",
+    "type": "color",
+    "default": "var(--info)",
+    "description": "Role oxygen: the --hue-* ramp under data-hue=\"oxygen\"",
+    "rule": "info"
+  },
+  {
+    "name": "role-oxygen-deep",
+    "path": "@role-oxygen-deep",
+    "tier": "identity",
+    "scope": "",
+    "type": "color",
+    "default": "var(--role-oxygen)",
+    "description": "oxygen, darker: the ramp's deep step",
+    "derived": true,
+    "rule": "role-oxygen, OKLCH L − 0.12"
+  },
+  {
+    "name": "role-oxygen-light",
+    "path": "@role-oxygen-light",
+    "tier": "identity",
+    "scope": "",
+    "type": "color",
+    "default": "var(--role-oxygen)",
+    "description": "oxygen, lighter: the ramp's gradient start",
+    "derived": true,
+    "rule": "role-oxygen, OKLCH L + 0.1"
+  },
+  {
+    "name": "role-info",
+    "path": "@role-info",
+    "tier": "identity",
+    "scope": "",
+    "type": "color",
+    "default": "var(--info)",
+    "description": "Role info: the --hue-* ramp under data-hue=\"info\"",
+    "rule": "info"
+  },
+  {
+    "name": "role-info-deep",
+    "path": "@role-info-deep",
+    "tier": "identity",
+    "scope": "",
+    "type": "color",
+    "default": "var(--role-info)",
+    "description": "info, darker: the ramp's deep step",
+    "derived": true,
+    "rule": "role-info, OKLCH L − 0.12"
+  },
+  {
+    "name": "role-info-light",
+    "path": "@role-info-light",
+    "tier": "identity",
+    "scope": "",
+    "type": "color",
+    "default": "var(--role-info)",
+    "description": "info, lighter: the ramp's gradient start",
+    "derived": true,
+    "rule": "role-info, OKLCH L + 0.1"
+  },
+  {
+    "name": "role-success",
+    "path": "@role-success",
+    "tier": "identity",
+    "scope": "",
+    "type": "color",
+    "default": "var(--success)",
+    "description": "Role success: the --hue-* ramp under data-hue=\"success\"",
+    "rule": "success"
+  },
+  {
+    "name": "role-success-deep",
+    "path": "@role-success-deep",
+    "tier": "identity",
+    "scope": "",
+    "type": "color",
+    "default": "var(--role-success)",
+    "description": "success, darker: the ramp's deep step",
+    "derived": true,
+    "rule": "role-success, OKLCH L − 0.12"
+  },
+  {
+    "name": "role-success-light",
+    "path": "@role-success-light",
+    "tier": "identity",
+    "scope": "",
+    "type": "color",
+    "default": "var(--role-success)",
+    "description": "success, lighter: the ramp's gradient start",
+    "derived": true,
+    "rule": "role-success, OKLCH L + 0.1"
+  },
+  {
+    "name": "role-warning",
+    "path": "@role-warning",
+    "tier": "identity",
+    "scope": "",
+    "type": "color",
+    "default": "var(--warning)",
+    "description": "Role warning: the --hue-* ramp under data-hue=\"warning\"",
+    "rule": "warning"
+  },
+  {
+    "name": "role-warning-deep",
+    "path": "@role-warning-deep",
+    "tier": "identity",
+    "scope": "",
+    "type": "color",
+    "default": "var(--role-warning)",
+    "description": "warning, darker: the ramp's deep step",
+    "derived": true,
+    "rule": "role-warning, OKLCH L − 0.12"
+  },
+  {
+    "name": "role-warning-light",
+    "path": "@role-warning-light",
+    "tier": "identity",
+    "scope": "",
+    "type": "color",
+    "default": "var(--role-warning)",
+    "description": "warning, lighter: the ramp's gradient start",
+    "derived": true,
+    "rule": "role-warning, OKLCH L + 0.1"
+  },
+  {
+    "name": "role-danger",
+    "path": "@role-danger",
+    "tier": "identity",
+    "scope": "",
+    "type": "color",
+    "default": "var(--destructive)",
+    "description": "Role danger: the --hue-* ramp under data-hue=\"danger\"",
+    "rule": "destructive"
+  },
+  {
+    "name": "role-danger-deep",
+    "path": "@role-danger-deep",
+    "tier": "identity",
+    "scope": "",
+    "type": "color",
+    "default": "var(--role-danger)",
+    "description": "danger, darker: the ramp's deep step",
+    "derived": true,
+    "rule": "role-danger, OKLCH L − 0.12"
+  },
+  {
+    "name": "role-danger-light",
+    "path": "@role-danger-light",
+    "tier": "identity",
+    "scope": "",
+    "type": "color",
+    "default": "var(--role-danger)",
+    "description": "danger, lighter: the ramp's gradient start",
+    "derived": true,
+    "rule": "role-danger, OKLCH L + 0.1"
+  },
+  {
+    "name": "role-police",
+    "path": "@role-police",
+    "tier": "identity",
+    "scope": "",
+    "type": "color",
+    "default": "oklch(0.62 0.17 255)",
+    "description": "Role police: the --hue-* ramp under data-hue=\"police\"",
+    "rule": "oklch(0.62 0.17 255)"
+  },
+  {
+    "name": "role-police-deep",
+    "path": "@role-police-deep",
+    "tier": "identity",
+    "scope": "",
+    "type": "color",
+    "default": "var(--role-police)",
+    "description": "police, darker: the ramp's deep step",
+    "derived": true,
+    "rule": "role-police, OKLCH L − 0.12"
+  },
+  {
+    "name": "role-police-light",
+    "path": "@role-police-light",
+    "tier": "identity",
+    "scope": "",
+    "type": "color",
+    "default": "var(--role-police)",
+    "description": "police, lighter: the ramp's gradient start",
+    "derived": true,
+    "rule": "role-police, OKLCH L + 0.1"
+  },
+  {
+    "name": "role-ems",
+    "path": "@role-ems",
+    "tier": "identity",
+    "scope": "",
+    "type": "color",
+    "default": "oklch(0.64 0.2 25)",
+    "description": "Role ems: the --hue-* ramp under data-hue=\"ems\"",
+    "rule": "oklch(0.64 0.2 25)"
+  },
+  {
+    "name": "role-ems-deep",
+    "path": "@role-ems-deep",
+    "tier": "identity",
+    "scope": "",
+    "type": "color",
+    "default": "var(--role-ems)",
+    "description": "ems, darker: the ramp's deep step",
+    "derived": true,
+    "rule": "role-ems, OKLCH L − 0.12"
+  },
+  {
+    "name": "role-ems-light",
+    "path": "@role-ems-light",
+    "tier": "identity",
+    "scope": "",
+    "type": "color",
+    "default": "var(--role-ems)",
+    "description": "ems, lighter: the ramp's gradient start",
+    "derived": true,
+    "rule": "role-ems, OKLCH L + 0.1"
+  },
+  {
+    "name": "role-mech",
+    "path": "@role-mech",
+    "tier": "identity",
+    "scope": "",
+    "type": "color",
+    "default": "oklch(0.74 0.15 60)",
+    "description": "Role mech: the --hue-* ramp under data-hue=\"mech\"",
+    "rule": "oklch(0.74 0.15 60)"
+  },
+  {
+    "name": "role-mech-deep",
+    "path": "@role-mech-deep",
+    "tier": "identity",
+    "scope": "",
+    "type": "color",
+    "default": "var(--role-mech)",
+    "description": "mech, darker: the ramp's deep step",
+    "derived": true,
+    "rule": "role-mech, OKLCH L − 0.12"
+  },
+  {
+    "name": "role-mech-light",
+    "path": "@role-mech-light",
+    "tier": "identity",
+    "scope": "",
+    "type": "color",
+    "default": "var(--role-mech)",
+    "description": "mech, lighter: the ramp's gradient start",
+    "derived": true,
+    "rule": "role-mech, OKLCH L + 0.1"
+  },
+  {
+    "name": "role-gang",
+    "path": "@role-gang",
+    "tier": "identity",
+    "scope": "",
+    "type": "color",
+    "default": "oklch(0.6 0.2 305)",
+    "description": "Role gang: the --hue-* ramp under data-hue=\"gang\"",
+    "rule": "oklch(0.6 0.2 305)"
+  },
+  {
+    "name": "role-gang-deep",
+    "path": "@role-gang-deep",
+    "tier": "identity",
+    "scope": "",
+    "type": "color",
+    "default": "var(--role-gang)",
+    "description": "gang, darker: the ramp's deep step",
+    "derived": true,
+    "rule": "role-gang, OKLCH L − 0.12"
+  },
+  {
+    "name": "role-gang-light",
+    "path": "@role-gang-light",
+    "tier": "identity",
+    "scope": "",
+    "type": "color",
+    "default": "var(--role-gang)",
+    "description": "gang, lighter: the ramp's gradient start",
+    "derived": true,
+    "rule": "role-gang, OKLCH L + 0.1"
+  },
+  {
+    "name": "role-civ",
+    "path": "@role-civ",
+    "tier": "identity",
+    "scope": "",
+    "type": "color",
+    "default": "var(--muted-foreground)",
+    "description": "Role civ: the --hue-* ramp under data-hue=\"civ\"",
+    "rule": "muted-foreground"
+  },
+  {
+    "name": "role-civ-deep",
+    "path": "@role-civ-deep",
+    "tier": "identity",
+    "scope": "",
+    "type": "color",
+    "default": "var(--role-civ)",
+    "description": "civ, darker: the ramp's deep step",
+    "derived": true,
+    "rule": "role-civ, OKLCH L − 0.12"
+  },
+  {
+    "name": "role-civ-light",
+    "path": "@role-civ-light",
+    "tier": "identity",
+    "scope": "",
+    "type": "color",
+    "default": "var(--role-civ)",
+    "description": "civ, lighter: the ramp's gradient start",
+    "derived": true,
+    "rule": "role-civ, OKLCH L + 0.1"
+  },
+  {
+    "name": "role-staff",
+    "path": "@role-staff",
+    "tier": "identity",
+    "scope": "",
+    "type": "color",
+    "default": "var(--brand)",
+    "description": "Role staff: the --hue-* ramp under data-hue=\"staff\"",
+    "rule": "brand"
+  },
+  {
+    "name": "role-staff-deep",
+    "path": "@role-staff-deep",
+    "tier": "identity",
+    "scope": "",
+    "type": "color",
+    "default": "var(--role-staff)",
+    "description": "staff, darker: the ramp's deep step",
+    "derived": true,
+    "rule": "role-staff, OKLCH L − 0.12"
+  },
+  {
+    "name": "role-staff-light",
+    "path": "@role-staff-light",
+    "tier": "identity",
+    "scope": "",
+    "type": "color",
+    "default": "var(--role-staff)",
+    "description": "staff, lighter: the ramp's gradient start",
+    "derived": true,
+    "rule": "role-staff, OKLCH L + 0.1"
+  },
+  {
+    "name": "role-common",
+    "path": "@role-common",
+    "tier": "identity",
+    "scope": "",
+    "type": "color",
+    "default": "var(--muted-foreground)",
+    "description": "Role common: the --hue-* ramp under data-hue=\"common\"",
+    "rule": "muted-foreground"
+  },
+  {
+    "name": "role-common-deep",
+    "path": "@role-common-deep",
+    "tier": "identity",
+    "scope": "",
+    "type": "color",
+    "default": "var(--role-common)",
+    "description": "common, darker: the ramp's deep step",
+    "derived": true,
+    "rule": "role-common, OKLCH L − 0.12"
+  },
+  {
+    "name": "role-common-light",
+    "path": "@role-common-light",
+    "tier": "identity",
+    "scope": "",
+    "type": "color",
+    "default": "var(--role-common)",
+    "description": "common, lighter: the ramp's gradient start",
+    "derived": true,
+    "rule": "role-common, OKLCH L + 0.1"
+  },
+  {
+    "name": "role-uncommon",
+    "path": "@role-uncommon",
+    "tier": "identity",
+    "scope": "",
+    "type": "color",
+    "default": "oklch(0.72 0.17 145)",
+    "description": "Role uncommon: the --hue-* ramp under data-hue=\"uncommon\"",
+    "rule": "oklch(0.72 0.17 145)"
+  },
+  {
+    "name": "role-uncommon-deep",
+    "path": "@role-uncommon-deep",
+    "tier": "identity",
+    "scope": "",
+    "type": "color",
+    "default": "var(--role-uncommon)",
+    "description": "uncommon, darker: the ramp's deep step",
+    "derived": true,
+    "rule": "role-uncommon, OKLCH L − 0.12"
+  },
+  {
+    "name": "role-uncommon-light",
+    "path": "@role-uncommon-light",
+    "tier": "identity",
+    "scope": "",
+    "type": "color",
+    "default": "var(--role-uncommon)",
+    "description": "uncommon, lighter: the ramp's gradient start",
+    "derived": true,
+    "rule": "role-uncommon, OKLCH L + 0.1"
+  },
+  {
+    "name": "role-rare",
+    "path": "@role-rare",
+    "tier": "identity",
+    "scope": "",
+    "type": "color",
+    "default": "oklch(0.66 0.16 250)",
+    "description": "Role rare: the --hue-* ramp under data-hue=\"rare\"",
+    "rule": "oklch(0.66 0.16 250)"
+  },
+  {
+    "name": "role-rare-deep",
+    "path": "@role-rare-deep",
+    "tier": "identity",
+    "scope": "",
+    "type": "color",
+    "default": "var(--role-rare)",
+    "description": "rare, darker: the ramp's deep step",
+    "derived": true,
+    "rule": "role-rare, OKLCH L − 0.12"
+  },
+  {
+    "name": "role-rare-light",
+    "path": "@role-rare-light",
+    "tier": "identity",
+    "scope": "",
+    "type": "color",
+    "default": "var(--role-rare)",
+    "description": "rare, lighter: the ramp's gradient start",
+    "derived": true,
+    "rule": "role-rare, OKLCH L + 0.1"
+  },
+  {
+    "name": "role-epic",
+    "path": "@role-epic",
+    "tier": "identity",
+    "scope": "",
+    "type": "color",
+    "default": "oklch(0.62 0.22 305)",
+    "description": "Role epic: the --hue-* ramp under data-hue=\"epic\"",
+    "rule": "oklch(0.62 0.22 305)"
+  },
+  {
+    "name": "role-epic-deep",
+    "path": "@role-epic-deep",
+    "tier": "identity",
+    "scope": "",
+    "type": "color",
+    "default": "var(--role-epic)",
+    "description": "epic, darker: the ramp's deep step",
+    "derived": true,
+    "rule": "role-epic, OKLCH L − 0.12"
+  },
+  {
+    "name": "role-epic-light",
+    "path": "@role-epic-light",
+    "tier": "identity",
+    "scope": "",
+    "type": "color",
+    "default": "var(--role-epic)",
+    "description": "epic, lighter: the ramp's gradient start",
+    "derived": true,
+    "rule": "role-epic, OKLCH L + 0.1"
+  },
+  {
+    "name": "role-legendary",
+    "path": "@role-legendary",
+    "tier": "identity",
+    "scope": "",
+    "type": "color",
+    "default": "oklch(0.78 0.16 75)",
+    "description": "Role legendary: the --hue-* ramp under data-hue=\"legendary\"",
+    "rule": "oklch(0.78 0.16 75)"
+  },
+  {
+    "name": "role-legendary-deep",
+    "path": "@role-legendary-deep",
+    "tier": "identity",
+    "scope": "",
+    "type": "color",
+    "default": "var(--role-legendary)",
+    "description": "legendary, darker: the ramp's deep step",
+    "derived": true,
+    "rule": "role-legendary, OKLCH L − 0.12"
+  },
+  {
+    "name": "role-legendary-light",
+    "path": "@role-legendary-light",
+    "tier": "identity",
+    "scope": "",
+    "type": "color",
+    "default": "var(--role-legendary)",
+    "description": "legendary, lighter: the ramp's gradient start",
+    "derived": true,
+    "rule": "role-legendary, OKLCH L + 0.1"
+  },
+  {
+    "name": "role-brand",
+    "path": "@role-brand",
+    "tier": "identity",
+    "scope": "",
+    "type": "color",
+    "default": "var(--brand)",
+    "description": "Role brand: the --hue-* ramp under data-hue=\"brand\"",
+    "rule": "brand"
+  },
+  {
+    "name": "role-brand-deep",
+    "path": "@role-brand-deep",
+    "tier": "identity",
+    "scope": "",
+    "type": "color",
+    "default": "var(--role-brand)",
+    "description": "brand, darker: the ramp's deep step",
+    "derived": true,
+    "rule": "role-brand, OKLCH L − 0.12"
+  },
+  {
+    "name": "role-brand-light",
+    "path": "@role-brand-light",
+    "tier": "identity",
+    "scope": "",
+    "type": "color",
+    "default": "var(--role-brand)",
+    "description": "brand, lighter: the ramp's gradient start",
+    "derived": true,
+    "rule": "role-brand, OKLCH L + 0.1"
+  },
+  {
+    "name": "role-neutral",
+    "path": "@role-neutral",
+    "tier": "identity",
+    "scope": "",
+    "type": "color",
+    "default": "var(--muted-foreground)",
+    "description": "Role neutral: the --hue-* ramp under data-hue=\"neutral\"",
+    "rule": "muted-foreground"
+  },
+  {
+    "name": "role-neutral-deep",
+    "path": "@role-neutral-deep",
+    "tier": "identity",
+    "scope": "",
+    "type": "color",
+    "default": "var(--role-neutral)",
+    "description": "neutral, darker: the ramp's deep step",
+    "derived": true,
+    "rule": "role-neutral, OKLCH L − 0.12"
+  },
+  {
+    "name": "role-neutral-light",
+    "path": "@role-neutral-light",
+    "tier": "identity",
+    "scope": "",
+    "type": "color",
+    "default": "var(--role-neutral)",
+    "description": "neutral, lighter: the ramp's gradient start",
+    "derived": true,
+    "rule": "role-neutral, OKLCH L + 0.1"
+  },
+  {
     "name": "font-sans",
     "path": "font.sans",
     "tier": "identity",
     "scope": "font",
     "type": "font",
-    "default": "Inter, ui-sans-serif, system-ui, sans-serif",
+    "default": "Geist, Inter, \"Segoe UI\", system-ui, sans-serif",
     "description": "Sentences (the body voice)"
   },
   {
@@ -496,8 +1294,8 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "tier": "identity",
     "scope": "font",
     "type": "font",
-    "default": "\"Inter Tight\", Inter, ui-sans-serif, system-ui, sans-serif",
-    "description": "Anything scanned: keys, titles, labels (Inter Tight when sans is Inter, else sans)"
+    "default": "\"Barlow Condensed\", \"Arial Narrow\", sans-serif",
+    "description": "Anything scanned: keys, titles, labels, captions"
   },
   {
     "name": "font-numeric",
@@ -505,8 +1303,8 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "tier": "identity",
     "scope": "font",
     "type": "font",
-    "default": "Inter, ui-sans-serif, system-ui, sans-serif",
-    "description": "Every number (always tabular); sans unless set"
+    "default": "\"Barlow Condensed\", \"Arial Narrow\", sans-serif",
+    "description": "Every number (always tabular)"
   },
   {
     "name": "font-mono",
@@ -514,7 +1312,7 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "tier": "identity",
     "scope": "font",
     "type": "font",
-    "default": "\"Geist Mono\", ui-monospace, SFMono-Regular, Menlo, monospace",
+    "default": "\"Geist Mono\", ui-monospace, monospace",
     "description": "Codes and IDs a player might type"
   },
   {
@@ -841,8 +1639,21 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "tier": "identity",
     "scope": "shape",
     "type": "angle",
+    "default": "-12deg",
+    "description": "The keycap's slant: tile faces, the primary button, the selection (their boxes and text stay upright); at most ±20deg",
+    "range": [
+      -20,
+      20
+    ]
+  },
+  {
+    "name": "nk-shape-slab",
+    "path": "shape.slab",
+    "tier": "identity",
+    "scope": "shape",
+    "type": "angle",
     "default": "0deg",
-    "description": "The keycap slant (faces only; their boxes and text stay upright); at most ±20deg",
+    "description": "Chips, badges and tags drawn as skewed slabs too (0deg = upright); at most ±20deg",
     "range": [
       -20,
       20
@@ -899,8 +1710,8 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "tier": "identity",
     "scope": "type",
     "type": "number",
-    "default": "600",
-    "description": "Labels, keys, numbers",
+    "default": "500",
+    "description": "Captions, chips, slabs: text that must hold its own on the game",
     "range": [
       100,
       900
@@ -912,8 +1723,8 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "tier": "identity",
     "scope": "type",
     "type": "number",
-    "default": "800",
-    "description": "Titles and big numbers",
+    "default": "700",
+    "description": "Full-screen titles and big numbers",
     "range": [
       100,
       900
@@ -925,8 +1736,8 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "tier": "identity",
     "scope": "type",
     "type": "length",
-    "default": "0.02em",
-    "description": "Letter-spacing of the display voice"
+    "default": "-0.02em",
+    "description": "Letter-spacing of full-screen titles"
   },
   {
     "name": "nk-type-tracking-label",
@@ -934,7 +1745,7 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "tier": "identity",
     "scope": "type",
     "type": "length",
-    "default": "0.03em",
+    "default": "0.06em",
     "description": "Letter-spacing of captions"
   },
   {
@@ -944,7 +1755,7 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "scope": "type",
     "type": "keyword",
     "default": "uppercase",
-    "description": "Anything scanned (keys, titles, labels) in caps or as written",
+    "description": "Anything scanned (keys, titles, labels, captions) in caps or as written",
     "values": [
       "none",
       "uppercase"
@@ -957,7 +1768,7 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "tier": "identity",
     "scope": "type",
     "type": "keyword",
-    "default": "normal",
+    "default": "italic",
     "description": "The scanned voices upright or italic (a real italic where the face has one)",
     "values": [
       "normal",
@@ -971,20 +1782,357 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "tier": "identity",
     "scope": "type",
     "type": "length",
-    "default": "0em",
-    "description": "Trailing pad of a slanted voice (the italic's overhang)"
+    "default": "0.15em",
+    "description": "Trailing pad of a slanted voice (the italic's overhang); 0em when upright"
   },
   {
-    "name": "nk-surface-opacity",
-    "path": "surface.opacity",
+    "name": "nk-type-scan-family",
+    "path": "type.scan.family",
     "tier": "identity",
-    "scope": "surface",
+    "scope": "type",
+    "type": "font",
+    "default": "var(--font-display)",
+    "description": "Face of the scan voice (keys, buttons, tabs)",
+    "part": "scan"
+  },
+  {
+    "name": "nk-type-scan-style",
+    "path": "type.scan.style",
+    "tier": "identity",
+    "scope": "type",
+    "type": "keyword",
+    "default": "var(--nk-type-slant)",
+    "description": "Slant of the scan voice (keys, buttons, tabs)",
+    "part": "scan",
+    "values": [
+      "normal",
+      "italic"
+    ]
+  },
+  {
+    "name": "nk-type-scan-weight",
+    "path": "type.scan.weight",
+    "tier": "identity",
+    "scope": "type",
     "type": "number",
-    "default": "0.94",
-    "description": "Panel opacity over the game (floor 0.92 for text)",
+    "default": "800",
+    "description": "Weight of the scan voice (keys, buttons, tabs)",
+    "part": "scan",
     "range": [
-      0,
-      1
+      100,
+      900
+    ]
+  },
+  {
+    "name": "nk-type-scan-tracking",
+    "path": "type.scan.tracking",
+    "tier": "identity",
+    "scope": "type",
+    "type": "length",
+    "default": "0.02em",
+    "description": "Letter-spacing of the scan voice (keys, buttons, tabs)",
+    "part": "scan"
+  },
+  {
+    "name": "nk-type-scan-case",
+    "path": "type.scan.case",
+    "tier": "identity",
+    "scope": "type",
+    "type": "keyword",
+    "default": "var(--nk-type-case)",
+    "description": "Case of the scan voice (keys, buttons, tabs)",
+    "part": "scan",
+    "values": [
+      "none",
+      "uppercase"
+    ]
+  },
+  {
+    "name": "nk-type-scan-pad",
+    "path": "type.scan.pad",
+    "tier": "identity",
+    "scope": "type",
+    "type": "length",
+    "default": "var(--nk-type-overhang)",
+    "description": "Trailing pad of the scan voice (keys, buttons, tabs) (the italic overhang)",
+    "part": "scan"
+  },
+  {
+    "name": "nk-type-title-family",
+    "path": "type.title.family",
+    "tier": "identity",
+    "scope": "type",
+    "type": "font",
+    "default": "var(--font-display)",
+    "description": "Face of the title voice (panel and row titles)",
+    "part": "title"
+  },
+  {
+    "name": "nk-type-title-style",
+    "path": "type.title.style",
+    "tier": "identity",
+    "scope": "type",
+    "type": "keyword",
+    "default": "var(--nk-type-slant)",
+    "description": "Slant of the title voice (panel and row titles)",
+    "part": "title",
+    "values": [
+      "normal",
+      "italic"
+    ]
+  },
+  {
+    "name": "nk-type-title-weight",
+    "path": "type.title.weight",
+    "tier": "identity",
+    "scope": "type",
+    "type": "number",
+    "default": "800",
+    "description": "Weight of the title voice (panel and row titles)",
+    "part": "title",
+    "range": [
+      100,
+      900
+    ]
+  },
+  {
+    "name": "nk-type-title-tracking",
+    "path": "type.title.tracking",
+    "tier": "identity",
+    "scope": "type",
+    "type": "length",
+    "default": "0.02em",
+    "description": "Letter-spacing of the title voice (panel and row titles)",
+    "part": "title"
+  },
+  {
+    "name": "nk-type-title-case",
+    "path": "type.title.case",
+    "tier": "identity",
+    "scope": "type",
+    "type": "keyword",
+    "default": "var(--nk-type-case)",
+    "description": "Case of the title voice (panel and row titles)",
+    "part": "title",
+    "values": [
+      "none",
+      "uppercase"
+    ]
+  },
+  {
+    "name": "nk-type-title-pad",
+    "path": "type.title.pad",
+    "tier": "identity",
+    "scope": "type",
+    "type": "length",
+    "default": "var(--nk-type-overhang)",
+    "description": "Trailing pad of the title voice (panel and row titles) (the italic overhang)",
+    "part": "title"
+  },
+  {
+    "name": "nk-type-label-family",
+    "path": "type.label.family",
+    "tier": "identity",
+    "scope": "type",
+    "type": "font",
+    "default": "var(--font-display)",
+    "description": "Face of the label voice (labels, row titles)",
+    "part": "label"
+  },
+  {
+    "name": "nk-type-label-style",
+    "path": "type.label.style",
+    "tier": "identity",
+    "scope": "type",
+    "type": "keyword",
+    "default": "var(--nk-type-slant)",
+    "description": "Slant of the label voice (labels, row titles)",
+    "part": "label",
+    "values": [
+      "normal",
+      "italic"
+    ]
+  },
+  {
+    "name": "nk-type-label-weight",
+    "path": "type.label.weight",
+    "tier": "identity",
+    "scope": "type",
+    "type": "number",
+    "default": "700",
+    "description": "Weight of the label voice (labels, row titles)",
+    "part": "label",
+    "range": [
+      100,
+      900
+    ]
+  },
+  {
+    "name": "nk-type-label-tracking",
+    "path": "type.label.tracking",
+    "tier": "identity",
+    "scope": "type",
+    "type": "length",
+    "default": "0.03em",
+    "description": "Letter-spacing of the label voice (labels, row titles)",
+    "part": "label"
+  },
+  {
+    "name": "nk-type-label-case",
+    "path": "type.label.case",
+    "tier": "identity",
+    "scope": "type",
+    "type": "keyword",
+    "default": "var(--nk-type-case)",
+    "description": "Case of the label voice (labels, row titles)",
+    "part": "label",
+    "values": [
+      "none",
+      "uppercase"
+    ]
+  },
+  {
+    "name": "nk-type-label-pad",
+    "path": "type.label.pad",
+    "tier": "identity",
+    "scope": "type",
+    "type": "length",
+    "default": "var(--nk-type-overhang)",
+    "description": "Trailing pad of the label voice (labels, row titles) (the italic overhang)",
+    "part": "label"
+  },
+  {
+    "name": "nk-type-num-family",
+    "path": "type.num.family",
+    "tier": "identity",
+    "scope": "type",
+    "type": "font",
+    "default": "var(--font-numeric)",
+    "description": "Face of the numeric voice",
+    "part": "num"
+  },
+  {
+    "name": "nk-type-num-style",
+    "path": "type.num.style",
+    "tier": "identity",
+    "scope": "type",
+    "type": "keyword",
+    "default": "var(--nk-type-slant)",
+    "description": "Slant of the numeric voice",
+    "part": "num",
+    "values": [
+      "normal",
+      "italic"
+    ]
+  },
+  {
+    "name": "nk-type-num-weight",
+    "path": "type.num.weight",
+    "tier": "identity",
+    "scope": "type",
+    "type": "number",
+    "default": "700",
+    "description": "Weight of the numeric voice",
+    "part": "num",
+    "range": [
+      100,
+      900
+    ]
+  },
+  {
+    "name": "nk-type-num-tracking",
+    "path": "type.num.tracking",
+    "tier": "identity",
+    "scope": "type",
+    "type": "length",
+    "default": "0.01em",
+    "description": "Letter-spacing of the numeric voice",
+    "part": "num"
+  },
+  {
+    "name": "nk-type-num-case",
+    "path": "type.num.case",
+    "tier": "identity",
+    "scope": "type",
+    "type": "keyword",
+    "default": "none",
+    "description": "Case of the numeric voice",
+    "part": "num",
+    "values": [
+      "none",
+      "uppercase"
+    ]
+  },
+  {
+    "name": "nk-type-num-pad",
+    "path": "type.num.pad",
+    "tier": "identity",
+    "scope": "type",
+    "type": "length",
+    "default": "var(--nk-type-overhang)",
+    "description": "Trailing pad of the numeric voice (the italic overhang)",
+    "part": "num"
+  },
+  {
+    "name": "nk-type-body-family",
+    "path": "type.body.family",
+    "tier": "identity",
+    "scope": "type",
+    "type": "font",
+    "default": "var(--font-sans)",
+    "description": "Face of the body voice (sentences)",
+    "part": "body"
+  },
+  {
+    "name": "nk-type-body-style",
+    "path": "type.body.style",
+    "tier": "identity",
+    "scope": "type",
+    "type": "keyword",
+    "default": "normal",
+    "description": "Slant of the body voice (sentences)",
+    "part": "body",
+    "values": [
+      "normal",
+      "italic"
+    ]
+  },
+  {
+    "name": "nk-type-body-weight",
+    "path": "type.body.weight",
+    "tier": "identity",
+    "scope": "type",
+    "type": "number",
+    "default": "var(--nk-type-weight-body)",
+    "description": "Weight of the body voice (sentences)",
+    "part": "body",
+    "range": [
+      100,
+      900
+    ]
+  },
+  {
+    "name": "nk-type-body-tracking",
+    "path": "type.body.tracking",
+    "tier": "identity",
+    "scope": "type",
+    "type": "length",
+    "default": "0em",
+    "description": "Letter-spacing of the body voice (sentences)",
+    "part": "body"
+  },
+  {
+    "name": "nk-type-body-case",
+    "path": "type.body.case",
+    "tier": "identity",
+    "scope": "type",
+    "type": "keyword",
+    "default": "none",
+    "description": "Case of the body voice (sentences)",
+    "part": "body",
+    "values": [
+      "none",
+      "uppercase"
     ]
   },
   {
@@ -1011,19 +2159,6 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "range": [
       0,
       0.2
-    ]
-  },
-  {
-    "name": "nk-surface-edge",
-    "path": "surface.edge",
-    "tier": "identity",
-    "scope": "surface",
-    "type": "number",
-    "default": "0",
-    "description": "The machined top edge (alpha)",
-    "range": [
-      0,
-      0.3
     ]
   },
   {
@@ -1139,40 +2274,6 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     ]
   },
   {
-    "name": "nk-material-hud-blur",
-    "path": "material.hud.blur",
-    "tier": "identity",
-    "scope": "material",
-    "type": "length",
-    "default": "0px",
-    "description": "Backdrop blur behind the hud material (with surface.backdrop on)",
-    "part": "hud"
-  },
-  {
-    "name": "nk-material-hud-radius",
-    "path": "material.hud.radius",
-    "tier": "identity",
-    "scope": "material",
-    "type": "length",
-    "default": "var(--radius)",
-    "description": "Corner radius of the hud material",
-    "part": "hud"
-  },
-  {
-    "name": "nk-material-hud-edge",
-    "path": "material.hud.edge",
-    "tier": "identity",
-    "scope": "material",
-    "type": "number",
-    "default": "0",
-    "description": "Top edge of the hud material (alpha)",
-    "part": "hud",
-    "range": [
-      0,
-      0.3
-    ]
-  },
-  {
     "name": "nk-material-hud-texture",
     "path": "material.hud.texture",
     "tier": "identity",
@@ -1194,7 +2295,7 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "scope": "material",
     "type": "number",
     "default": "0.94",
-    "description": "Opacity of the menu material",
+    "description": "Opacity of the menu material (floor 0.92 for text)",
     "part": "menu",
     "range": [
       0,
@@ -1208,7 +2309,7 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "scope": "material",
     "type": "length",
     "default": "0px",
-    "description": "Backdrop blur behind the menu material (with surface.backdrop on)",
+    "description": "Backdrop blur behind menus (with surface.backdrop on)",
     "part": "menu"
   },
   {
@@ -1218,7 +2319,7 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "scope": "material",
     "type": "length",
     "default": "var(--radius)",
-    "description": "Corner radius of the menu material",
+    "description": "Corner radius of menus, sheets and dialogs",
     "part": "menu"
   },
   {
@@ -1228,7 +2329,7 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "scope": "material",
     "type": "number",
     "default": "0",
-    "description": "Top edge of the menu material (alpha)",
+    "description": "The machined top edge of menus (alpha)",
     "part": "menu",
     "range": [
       0,
@@ -1249,82 +2350,6 @@ export const LEVER_ROWS: readonly LeverRow[] = [
       "scanlines"
     ],
     "attr": "texture-menu"
-  },
-  {
-    "name": "nk-material-overlay-opacity",
-    "path": "material.overlay.opacity",
-    "tier": "identity",
-    "scope": "material",
-    "type": "number",
-    "default": "0.6",
-    "description": "Opacity of the overlay material",
-    "part": "overlay",
-    "range": [
-      0,
-      1
-    ]
-  },
-  {
-    "name": "nk-material-overlay-blur",
-    "path": "material.overlay.blur",
-    "tier": "identity",
-    "scope": "material",
-    "type": "length",
-    "default": "0px",
-    "description": "Backdrop blur behind the overlay material (with surface.backdrop on)",
-    "part": "overlay"
-  },
-  {
-    "name": "nk-material-overlay-radius",
-    "path": "material.overlay.radius",
-    "tier": "identity",
-    "scope": "material",
-    "type": "length",
-    "default": "var(--radius)",
-    "description": "Corner radius of the overlay material",
-    "part": "overlay"
-  },
-  {
-    "name": "nk-material-overlay-edge",
-    "path": "material.overlay.edge",
-    "tier": "identity",
-    "scope": "material",
-    "type": "number",
-    "default": "0",
-    "description": "Top edge of the overlay material (alpha)",
-    "part": "overlay",
-    "range": [
-      0,
-      0.3
-    ]
-  },
-  {
-    "name": "nk-material-overlay-texture",
-    "path": "material.overlay.texture",
-    "tier": "identity",
-    "scope": "material",
-    "type": "keyword",
-    "default": "none",
-    "description": "Texture over the overlay material",
-    "part": "overlay",
-    "values": [
-      "none",
-      "scanlines"
-    ],
-    "attr": "texture-overlay"
-  },
-  {
-    "name": "nk-hud-opacity",
-    "path": "hud.opacity",
-    "tier": "identity",
-    "scope": "hud",
-    "type": "number",
-    "default": "0.8",
-    "description": "Minimum HUD plate opacity",
-    "range": [
-      0,
-      1
-    ]
   },
   {
     "name": "nk-hud-text",
@@ -1539,6 +2564,49 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "attr": "focus"
   },
   {
+    "name": "nk-style-vital",
+    "path": "style.vital",
+    "tier": "identity",
+    "scope": "style",
+    "type": "keyword",
+    "default": "expand",
+    "description": "What a vital chip shows (expand: the tag opens on a change)",
+    "values": [
+      "auto",
+      "pill",
+      "value",
+      "icon",
+      "expand"
+    ]
+  },
+  {
+    "name": "nk-style-vital-icon",
+    "path": "style.vital-icon",
+    "tier": "identity",
+    "scope": "style",
+    "type": "keyword",
+    "default": "uniform",
+    "description": "Vital icons: each vital's own colour, or the chip's ink",
+    "values": [
+      "vital",
+      "uniform"
+    ]
+  },
+  {
+    "name": "nk-style-vital-neighbours",
+    "path": "style.vital-neighbours",
+    "tier": "identity",
+    "scope": "style",
+    "type": "keyword",
+    "default": "push",
+    "description": "What a growing vital chip does to its neighbours",
+    "values": [
+      "push",
+      "collapse",
+      "overlay"
+    ]
+  },
+  {
     "name": "nk-style-pause",
     "path": "style.pause",
     "tier": "identity",
@@ -1563,45 +2631,6 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "range": [
       0,
       1
-    ]
-  },
-  {
-    "name": "nk-behavior-fuel",
-    "path": "behavior.fuel",
-    "tier": "identity",
-    "scope": "behavior",
-    "type": "number",
-    "default": "0.15",
-    "description": "The fuel alert level",
-    "range": [
-      0,
-      1
-    ]
-  },
-  {
-    "name": "nk-behavior-hold",
-    "path": "behavior.hold",
-    "tier": "identity",
-    "scope": "behavior",
-    "type": "time",
-    "default": "800ms",
-    "description": "Press-and-hold time",
-    "range": [
-      0,
-      60000
-    ]
-  },
-  {
-    "name": "nk-behavior-cooldown",
-    "path": "behavior.cooldown",
-    "tier": "identity",
-    "scope": "behavior",
-    "type": "time",
-    "default": "0ms",
-    "description": "Default cooldown after an action",
-    "range": [
-      0,
-      60000
     ]
   },
   {
@@ -1726,65 +2755,13 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     ]
   },
   {
-    "name": "nk-layer-world",
-    "path": "layer.world",
-    "tier": "identity",
-    "scope": "layer",
-    "type": "number",
-    "default": "10",
-    "description": "Stacking layer: world",
-    "range": [
-      0,
-      100000
-    ]
-  },
-  {
-    "name": "nk-layer-hud",
-    "path": "layer.hud",
-    "tier": "identity",
-    "scope": "layer",
-    "type": "number",
-    "default": "20",
-    "description": "Stacking layer: hud",
-    "range": [
-      0,
-      100000
-    ]
-  },
-  {
-    "name": "nk-layer-scrim",
-    "path": "layer.scrim",
-    "tier": "identity",
-    "scope": "layer",
-    "type": "number",
-    "default": "30",
-    "description": "Stacking layer: scrim",
-    "range": [
-      0,
-      100000
-    ]
-  },
-  {
-    "name": "nk-layer-surface",
-    "path": "layer.surface",
-    "tier": "identity",
-    "scope": "layer",
-    "type": "number",
-    "default": "40",
-    "description": "Stacking layer: surface",
-    "range": [
-      0,
-      100000
-    ]
-  },
-  {
     "name": "nk-layer-dim",
     "path": "layer.dim",
     "tier": "identity",
     "scope": "layer",
     "type": "number",
     "default": "50",
-    "description": "Stacking layer: dim",
+    "description": "Stacking layer: dim (a modal is the current surface + dim + dialog)",
     "range": [
       0,
       100000
@@ -1797,7 +2774,7 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "scope": "layer",
     "type": "number",
     "default": "60",
-    "description": "Stacking layer: dialog",
+    "description": "Stacking layer: dialog (a modal is the current surface + dim + dialog)",
     "range": [
       0,
       100000
@@ -1810,7 +2787,7 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "scope": "layer",
     "type": "number",
     "default": "70",
-    "description": "Stacking layer: system",
+    "description": "Stacking layer: system (a modal is the current surface + dim + dialog)",
     "range": [
       0,
       100000
@@ -1899,7 +2876,9 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "scope": "time",
     "type": "time",
     "default": "1000ms",
-    "description": "One alert pulse"
+    "description": "One alert pulse",
+    "derived": true,
+    "rule": "1000ms (prefs clamp it)"
   },
   {
     "name": "nk-ease-enter",
@@ -1956,18 +2935,6 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "description": "Loops: alert pulses"
   },
   {
-    "name": "nk-ease-linear",
-    "path": "ease.linear",
-    "tier": "semantic",
-    "scope": "ease",
-    "type": "keyword",
-    "default": "linear",
-    "description": "Progress, countdowns, needles",
-    "values": [
-      "linear"
-    ]
-  },
-  {
     "name": "nk-spring-snap",
     "path": "spring.snap",
     "tier": "semantic",
@@ -2018,7 +2985,9 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "range": [
       0,
       200
-    ]
+    ],
+    "derived": true,
+    "rule": "40ms (prefs clamp it)"
   },
   {
     "name": "nk-stagger-max",
@@ -2027,7 +2996,9 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "scope": "stagger",
     "type": "time",
     "default": "100ms",
-    "description": "Total cap: items past the cap enter together"
+    "description": "Total cap: items past the cap enter together",
+    "derived": true,
+    "rule": "100ms"
   },
   {
     "name": "nk-gesture-lift",
@@ -2105,366 +3076,6 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "description": "The focused row's nudge toward its content (style.focus: bar)"
   },
   {
-    "name": "nk-voice-scan-family",
-    "path": "voice.scan.family",
-    "tier": "semantic",
-    "scope": "voice",
-    "type": "font",
-    "default": "var(--font-display)",
-    "description": "Face of the scan voice (keys, buttons, tabs)",
-    "part": "scan"
-  },
-  {
-    "name": "nk-voice-scan-style",
-    "path": "voice.scan.style",
-    "tier": "semantic",
-    "scope": "voice",
-    "type": "keyword",
-    "default": "var(--nk-type-slant)",
-    "description": "Slant of the scan voice (keys, buttons, tabs)",
-    "part": "scan",
-    "values": [
-      "normal",
-      "italic"
-    ]
-  },
-  {
-    "name": "nk-voice-scan-weight",
-    "path": "voice.scan.weight",
-    "tier": "semantic",
-    "scope": "voice",
-    "type": "number",
-    "default": "var(--nk-type-weight-display)",
-    "description": "Weight of the scan voice (keys, buttons, tabs)",
-    "part": "scan",
-    "range": [
-      100,
-      900
-    ]
-  },
-  {
-    "name": "nk-voice-scan-tracking",
-    "path": "voice.scan.tracking",
-    "tier": "semantic",
-    "scope": "voice",
-    "type": "length",
-    "default": "var(--nk-type-tracking-display)",
-    "description": "Letter-spacing of the scan voice (keys, buttons, tabs)",
-    "part": "scan"
-  },
-  {
-    "name": "nk-voice-scan-case",
-    "path": "voice.scan.case",
-    "tier": "semantic",
-    "scope": "voice",
-    "type": "keyword",
-    "default": "var(--nk-type-case)",
-    "description": "Case of the scan voice (keys, buttons, tabs)",
-    "part": "scan",
-    "values": [
-      "none",
-      "uppercase"
-    ]
-  },
-  {
-    "name": "nk-voice-scan-pad",
-    "path": "voice.scan.pad",
-    "tier": "semantic",
-    "scope": "voice",
-    "type": "length",
-    "default": "var(--nk-type-overhang)",
-    "description": "Trailing pad of the scan voice (keys, buttons, tabs) (the italic overhang)",
-    "part": "scan"
-  },
-  {
-    "name": "nk-voice-title-family",
-    "path": "voice.title.family",
-    "tier": "semantic",
-    "scope": "voice",
-    "type": "font",
-    "default": "var(--font-display)",
-    "description": "Face of the title voice",
-    "part": "title"
-  },
-  {
-    "name": "nk-voice-title-style",
-    "path": "voice.title.style",
-    "tier": "semantic",
-    "scope": "voice",
-    "type": "keyword",
-    "default": "var(--nk-type-slant)",
-    "description": "Slant of the title voice",
-    "part": "title",
-    "values": [
-      "normal",
-      "italic"
-    ]
-  },
-  {
-    "name": "nk-voice-title-weight",
-    "path": "voice.title.weight",
-    "tier": "semantic",
-    "scope": "voice",
-    "type": "number",
-    "default": "var(--nk-type-weight-display)",
-    "description": "Weight of the title voice",
-    "part": "title",
-    "range": [
-      100,
-      900
-    ]
-  },
-  {
-    "name": "nk-voice-title-tracking",
-    "path": "voice.title.tracking",
-    "tier": "semantic",
-    "scope": "voice",
-    "type": "length",
-    "default": "var(--nk-type-tracking-display)",
-    "description": "Letter-spacing of the title voice",
-    "part": "title"
-  },
-  {
-    "name": "nk-voice-title-case",
-    "path": "voice.title.case",
-    "tier": "semantic",
-    "scope": "voice",
-    "type": "keyword",
-    "default": "var(--nk-type-case)",
-    "description": "Case of the title voice",
-    "part": "title",
-    "values": [
-      "none",
-      "uppercase"
-    ]
-  },
-  {
-    "name": "nk-voice-title-pad",
-    "path": "voice.title.pad",
-    "tier": "semantic",
-    "scope": "voice",
-    "type": "length",
-    "default": "var(--nk-type-overhang)",
-    "description": "Trailing pad of the title voice (the italic overhang)",
-    "part": "title"
-  },
-  {
-    "name": "nk-voice-label-family",
-    "path": "voice.label.family",
-    "tier": "semantic",
-    "scope": "voice",
-    "type": "font",
-    "default": "var(--font-display)",
-    "description": "Face of the label voice (captions, row titles)",
-    "part": "label"
-  },
-  {
-    "name": "nk-voice-label-style",
-    "path": "voice.label.style",
-    "tier": "semantic",
-    "scope": "voice",
-    "type": "keyword",
-    "default": "var(--nk-type-slant)",
-    "description": "Slant of the label voice (captions, row titles)",
-    "part": "label",
-    "values": [
-      "normal",
-      "italic"
-    ]
-  },
-  {
-    "name": "nk-voice-label-weight",
-    "path": "voice.label.weight",
-    "tier": "semantic",
-    "scope": "voice",
-    "type": "number",
-    "default": "var(--nk-type-weight-strong)",
-    "description": "Weight of the label voice (captions, row titles)",
-    "part": "label",
-    "range": [
-      100,
-      900
-    ]
-  },
-  {
-    "name": "nk-voice-label-tracking",
-    "path": "voice.label.tracking",
-    "tier": "semantic",
-    "scope": "voice",
-    "type": "length",
-    "default": "var(--nk-type-tracking-label)",
-    "description": "Letter-spacing of the label voice (captions, row titles)",
-    "part": "label"
-  },
-  {
-    "name": "nk-voice-label-case",
-    "path": "voice.label.case",
-    "tier": "semantic",
-    "scope": "voice",
-    "type": "keyword",
-    "default": "var(--nk-type-case)",
-    "description": "Case of the label voice (captions, row titles)",
-    "part": "label",
-    "values": [
-      "none",
-      "uppercase"
-    ]
-  },
-  {
-    "name": "nk-voice-label-pad",
-    "path": "voice.label.pad",
-    "tier": "semantic",
-    "scope": "voice",
-    "type": "length",
-    "default": "var(--nk-type-overhang)",
-    "description": "Trailing pad of the label voice (captions, row titles) (the italic overhang)",
-    "part": "label"
-  },
-  {
-    "name": "nk-voice-num-family",
-    "path": "voice.num.family",
-    "tier": "semantic",
-    "scope": "voice",
-    "type": "font",
-    "default": "var(--font-numeric)",
-    "description": "Face of the numeric voice",
-    "part": "num"
-  },
-  {
-    "name": "nk-voice-num-style",
-    "path": "voice.num.style",
-    "tier": "semantic",
-    "scope": "voice",
-    "type": "keyword",
-    "default": "var(--nk-type-slant)",
-    "description": "Slant of the numeric voice",
-    "part": "num",
-    "values": [
-      "normal",
-      "italic"
-    ]
-  },
-  {
-    "name": "nk-voice-num-weight",
-    "path": "voice.num.weight",
-    "tier": "semantic",
-    "scope": "voice",
-    "type": "number",
-    "default": "var(--nk-type-weight-strong)",
-    "description": "Weight of the numeric voice",
-    "part": "num",
-    "range": [
-      100,
-      900
-    ]
-  },
-  {
-    "name": "nk-voice-num-tracking",
-    "path": "voice.num.tracking",
-    "tier": "semantic",
-    "scope": "voice",
-    "type": "length",
-    "default": "0.01em",
-    "description": "Letter-spacing of the numeric voice",
-    "part": "num"
-  },
-  {
-    "name": "nk-voice-num-case",
-    "path": "voice.num.case",
-    "tier": "semantic",
-    "scope": "voice",
-    "type": "keyword",
-    "default": "none",
-    "description": "Case of the numeric voice",
-    "part": "num",
-    "values": [
-      "none",
-      "uppercase"
-    ]
-  },
-  {
-    "name": "nk-voice-num-pad",
-    "path": "voice.num.pad",
-    "tier": "semantic",
-    "scope": "voice",
-    "type": "length",
-    "default": "var(--nk-type-overhang)",
-    "description": "Trailing pad of the numeric voice (the italic overhang)",
-    "part": "num"
-  },
-  {
-    "name": "nk-voice-body-family",
-    "path": "voice.body.family",
-    "tier": "semantic",
-    "scope": "voice",
-    "type": "font",
-    "default": "var(--font-sans)",
-    "description": "Face of the body voice (sentences)",
-    "part": "body"
-  },
-  {
-    "name": "nk-voice-body-style",
-    "path": "voice.body.style",
-    "tier": "semantic",
-    "scope": "voice",
-    "type": "keyword",
-    "default": "normal",
-    "description": "Slant of the body voice (sentences)",
-    "part": "body",
-    "values": [
-      "normal",
-      "italic"
-    ]
-  },
-  {
-    "name": "nk-voice-body-weight",
-    "path": "voice.body.weight",
-    "tier": "semantic",
-    "scope": "voice",
-    "type": "number",
-    "default": "var(--nk-type-weight-body)",
-    "description": "Weight of the body voice (sentences)",
-    "part": "body",
-    "range": [
-      100,
-      900
-    ]
-  },
-  {
-    "name": "nk-voice-body-tracking",
-    "path": "voice.body.tracking",
-    "tier": "semantic",
-    "scope": "voice",
-    "type": "length",
-    "default": "0em",
-    "description": "Letter-spacing of the body voice (sentences)",
-    "part": "body"
-  },
-  {
-    "name": "nk-voice-body-case",
-    "path": "voice.body.case",
-    "tier": "semantic",
-    "scope": "voice",
-    "type": "keyword",
-    "default": "none",
-    "description": "Case of the body voice (sentences)",
-    "part": "body",
-    "values": [
-      "none",
-      "uppercase"
-    ]
-  },
-  {
-    "name": "nk-voice-body-pad",
-    "path": "voice.body.pad",
-    "tier": "semantic",
-    "scope": "voice",
-    "type": "length",
-    "default": "0em",
-    "description": "Trailing pad of the body voice (sentences) (the italic overhang)",
-    "part": "body"
-  },
-  {
     "name": "nk-plate-color",
     "path": "plate.color",
     "tier": "semantic",
@@ -2490,6 +3101,15 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "type": "shadow",
     "default": "0 0.125rem 0 rgba(var(--scrim-rgb), 0.6)",
     "description": "The plate's drop: hard, no blur"
+  },
+  {
+    "name": "nk-plate-bg",
+    "path": "plate.bg",
+    "tier": "semantic",
+    "scope": "plate",
+    "type": "color",
+    "default": "rgba(var(--nk-plate-color-rgb, var(--surface-rgb)), var(--nk-alpha-menu))",
+    "description": "The plate as drawn: its colour at the menu material's alpha"
   },
   {
     "name": "nk-plate-radius",
@@ -2551,8 +3171,8 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "tier": "semantic",
     "scope": "fill",
     "type": "length",
-    "default": "var(--nk-meter-track-height)",
-    "description": "A fill bar's thickness"
+    "default": "0.25rem",
+    "description": "A level bar's thickness: fills, meters, gauge tracks"
   },
   {
     "name": "nk-accent-paint",
@@ -2589,24 +3209,6 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "type": "color",
     "default": "var(--nk-accent-from)",
     "description": "Last stop"
-  },
-  {
-    "name": "nk-list-gap",
-    "path": "list.gap",
-    "tier": "semantic",
-    "scope": "list",
-    "type": "length",
-    "default": "calc(var(--nk-tile-wall-height) + var(--nk-space-1))",
-    "description": "Between items: the wall plus breathing room"
-  },
-  {
-    "name": "nk-list-pad-x",
-    "path": "list.pad-x",
-    "tier": "semantic",
-    "scope": "list",
-    "type": "length",
-    "default": "calc(var(--nk-tile-key-inset) + var(--nk-space-1))",
-    "description": "A list's inline padding (room for the tile's skew)"
   },
   {
     "name": "nk-gap-cluster",
@@ -2697,9 +3299,10 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "tier": "semantic",
     "scope": "depth",
     "type": "shadow",
-    "default": "0 0.25rem 0 0 rgba(0, 0, 0, 0.5)",
-    "description": "The box-shadow surface.elevation names",
-    "derived": true
+    "default": "0 0.25rem 0 0 rgba(var(--scrim-rgb), 0.5)",
+    "description": "The box-shadow surface.elevation names (compileTheme writes the recipe)",
+    "derived": true,
+    "rule": "from surface.elevation"
   },
   {
     "name": "nk-depth-text",
@@ -2707,9 +3310,10 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "tier": "semantic",
     "scope": "depth",
     "type": "shadow",
-    "default": "0 1px 2px rgba(0, 0, 0, 0.6)",
-    "description": "The text-shadow hud.text-shadow names",
-    "derived": true
+    "default": "0 1px 2px rgba(var(--scrim-rgb), 0.6)",
+    "description": "The text-shadow hud.text names (compileTheme writes the recipe)",
+    "derived": true,
+    "rule": "from hud.text"
   },
   {
     "name": "nk-alpha-day",
@@ -2743,13 +3347,207 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "description": "Menus', sheets' and dialogs' alpha"
   },
   {
-    "name": "nk-alpha-overlay",
-    "path": "alpha.overlay",
+    "name": "nk-restore-muted-foreground",
+    "path": "restore.muted-foreground",
     "tier": "semantic",
-    "scope": "alpha",
+    "scope": "restore",
+    "type": "color",
+    "default": "var(--muted-foreground)",
+    "description": "muted-foreground, as the theme set it"
+  },
+  {
+    "name": "nk-restore-muted-foreground-rgb",
+    "path": "restore.muted-foreground-rgb",
+    "tier": "semantic",
+    "scope": "restore",
+    "type": "string",
+    "default": "var(--muted-foreground-rgb)",
+    "description": "Its channels"
+  },
+  {
+    "name": "nk-restore-muted-foreground-a",
+    "path": "restore.muted-foreground-a",
+    "tier": "semantic",
+    "scope": "restore",
+    "type": "string",
+    "default": "var(--muted-foreground-a)",
+    "description": "Its alpha"
+  },
+  {
+    "name": "nk-restore-background",
+    "path": "restore.background",
+    "tier": "semantic",
+    "scope": "restore",
+    "type": "color",
+    "default": "var(--background)",
+    "description": "background, as the theme set it"
+  },
+  {
+    "name": "nk-restore-background-rgb",
+    "path": "restore.background-rgb",
+    "tier": "semantic",
+    "scope": "restore",
+    "type": "string",
+    "default": "var(--background-rgb)",
+    "description": "Its channels"
+  },
+  {
+    "name": "nk-restore-background-a",
+    "path": "restore.background-a",
+    "tier": "semantic",
+    "scope": "restore",
+    "type": "string",
+    "default": "var(--background-a)",
+    "description": "Its alpha"
+  },
+  {
+    "name": "nk-screen-ratio",
+    "path": "screen.ratio",
+    "tier": "component",
+    "scope": "screen",
     "type": "number",
-    "default": "calc(var(--nk-material-overlay-opacity) + (1 - var(--nk-material-overlay-opacity)) * var(--nk-surface-legibility-lift) * var(--nk-alpha-day))",
-    "description": "Full-screen overlays' alpha"
+    "default": "1.7778",
+    "description": "The content box's width / height (wider screens keep it, centred)",
+    "range": [
+      1,
+      4
+    ]
+  },
+  {
+    "name": "nk-screen-max",
+    "path": "screen.max",
+    "tier": "component",
+    "scope": "screen",
+    "type": "length",
+    "default": "calc(100vh * var(--nk-screen-ratio))",
+    "description": "The content box's width"
+  },
+  {
+    "name": "nk-screen-edge",
+    "path": "screen.edge",
+    "tier": "component",
+    "scope": "screen",
+    "type": "length",
+    "default": "1.5rem",
+    "description": "A zone's distance from the safe area (1rem at 4:3, 1.25rem at 16:10)"
+  },
+  {
+    "name": "nk-screen-scale-min",
+    "path": "screen.scale-min",
+    "tier": "component",
+    "scope": "screen",
+    "type": "number",
+    "default": "0.75",
+    "description": "The rem floor as a fraction of the 1080p rem (720p and 4:3 stay readable)",
+    "range": [
+      0.5,
+      1
+    ]
+  },
+  {
+    "name": "nk-screen-area-l",
+    "path": "screen.area.l",
+    "tier": "component",
+    "scope": "screen",
+    "type": "length",
+    "default": "max(0px, calc((100vw - var(--nk-screen-max)) / 2))",
+    "description": "The box's left inset from the screen",
+    "part": "area"
+  },
+  {
+    "name": "nk-screen-area-r",
+    "path": "screen.area.r",
+    "tier": "component",
+    "scope": "screen",
+    "type": "length",
+    "default": "max(0px, calc((100vw - var(--nk-screen-max)) / 2))",
+    "description": "The box's right inset",
+    "part": "area"
+  },
+  {
+    "name": "nk-screen-area-t",
+    "path": "screen.area.t",
+    "tier": "component",
+    "scope": "screen",
+    "type": "length",
+    "default": "0px",
+    "description": "The box's top inset",
+    "part": "area"
+  },
+  {
+    "name": "nk-screen-area-b",
+    "path": "screen.area.b",
+    "tier": "component",
+    "scope": "screen",
+    "type": "length",
+    "default": "0px",
+    "description": "The box's bottom inset",
+    "part": "area"
+  },
+  {
+    "name": "nk-screen-safe-x",
+    "path": "screen.safe.x",
+    "tier": "component",
+    "scope": "screen",
+    "type": "length",
+    "default": "0rem",
+    "description": "A safe area inside the box, inline (TV overscan, a bezel)",
+    "part": "safe"
+  },
+  {
+    "name": "nk-screen-safe-y",
+    "path": "screen.safe.y",
+    "tier": "component",
+    "scope": "screen",
+    "type": "length",
+    "default": "0rem",
+    "description": "A safe area inside the box, block",
+    "part": "safe"
+  },
+  {
+    "name": "nk-zone-gap",
+    "path": "zone.gap",
+    "tier": "component",
+    "scope": "zone",
+    "type": "length",
+    "default": "var(--nk-space-3)",
+    "description": "Between what a zone stacks"
+  },
+  {
+    "name": "nk-region-max",
+    "path": "region.max",
+    "tier": "component",
+    "scope": "region",
+    "type": "length",
+    "default": "28rem",
+    "description": "Its maximum width"
+  },
+  {
+    "name": "nk-region-pad",
+    "path": "region.pad",
+    "tier": "component",
+    "scope": "region",
+    "type": "length",
+    "default": "var(--nk-gap-surface)",
+    "description": "Its padding"
+  },
+  {
+    "name": "nk-grid-cell",
+    "path": "grid.cell",
+    "tier": "component",
+    "scope": "grid",
+    "type": "length",
+    "default": "5.5rem",
+    "description": "A cell's size"
+  },
+  {
+    "name": "nk-grid-gap",
+    "path": "grid.gap",
+    "tier": "component",
+    "scope": "grid",
+    "type": "length",
+    "default": "var(--nk-space-2)",
+    "description": "Between cells"
   },
   {
     "name": "nk-tile-plate-color",
@@ -2900,7 +3698,7 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "path": "tile.face.skew",
     "tier": "component",
     "scope": "tile",
-    "type": "length",
+    "type": "angle",
     "default": "var(--nk-shape-skew)",
     "description": "The face's slant (the box stays upright)",
     "part": "face"
@@ -2971,7 +3769,7 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "tier": "component",
     "scope": "tile",
     "type": "font",
-    "default": "var(--nk-voice-scan-family)",
+    "default": "var(--nk-type-scan-family)",
     "description": "The legend's face",
     "part": "legend"
   },
@@ -2981,7 +3779,7 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "tier": "component",
     "scope": "tile",
     "type": "number",
-    "default": "var(--nk-voice-scan-weight)",
+    "default": "var(--nk-type-scan-weight)",
     "description": "The legend's weight",
     "part": "legend",
     "range": [
@@ -2995,7 +3793,7 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "tier": "component",
     "scope": "tile",
     "type": "length",
-    "default": "calc(var(--nk-voice-scan-pad) / 2)",
+    "default": "calc(var(--nk-type-scan-pad) / 2)",
     "description": "The italic overhang split to both sides",
     "part": "legend"
   },
@@ -3138,6 +3936,743 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "part": "key"
   },
   {
+    "name": "nk-panel-bg",
+    "path": "panel.bg",
+    "tier": "component",
+    "scope": "panel",
+    "type": "color",
+    "default": "rgba(var(--surface-rgb), calc(var(--surface-a) * var(--nk-alpha-menu)))",
+    "description": "The panel's fill: the surface at the menu material's alpha"
+  },
+  {
+    "name": "nk-panel-fg",
+    "path": "panel.fg",
+    "tier": "component",
+    "scope": "panel",
+    "type": "color",
+    "default": "var(--popover-foreground)",
+    "description": "Text in the panel"
+  },
+  {
+    "name": "nk-panel-border",
+    "path": "panel.border",
+    "tier": "component",
+    "scope": "panel",
+    "type": "color",
+    "default": "var(--nk-plate-hair)",
+    "description": "The panel's hairline"
+  },
+  {
+    "name": "nk-panel-radius",
+    "path": "panel.radius",
+    "tier": "component",
+    "scope": "panel",
+    "type": "length",
+    "default": "var(--nk-radius-surface)",
+    "description": "The panel's radius"
+  },
+  {
+    "name": "nk-panel-blur",
+    "path": "panel.blur",
+    "tier": "component",
+    "scope": "panel",
+    "type": "length",
+    "default": "var(--nk-material-menu-blur)",
+    "description": "Backdrop blur (with surface.backdrop on)"
+  },
+  {
+    "name": "nk-panel-cut",
+    "path": "panel.cut",
+    "tier": "component",
+    "scope": "panel",
+    "type": "length",
+    "default": "var(--nk-shape-cut)",
+    "description": "The chamfer's size"
+  },
+  {
+    "name": "nk-panel-clip",
+    "path": "panel.clip",
+    "tier": "component",
+    "scope": "panel",
+    "type": "string",
+    "default": "var(--nk-line-clip)",
+    "description": "The panel's clip-path"
+  },
+  {
+    "name": "nk-panel-gradient",
+    "path": "panel.gradient",
+    "tier": "component",
+    "scope": "panel",
+    "type": "string",
+    "default": "linear-gradient(180deg, rgba(var(--popover-foreground-rgb), var(--nk-surface-gradient)), rgba(var(--popover-foreground-rgb), 0) 60%)",
+    "description": "The light falloff"
+  },
+  {
+    "name": "nk-panel-edge",
+    "path": "panel.edge",
+    "tier": "component",
+    "scope": "panel",
+    "type": "shadow",
+    "default": "inset 0 1px 0 0 rgba(var(--popover-foreground-rgb), var(--nk-material-menu-edge))",
+    "description": "The machined top edge"
+  },
+  {
+    "name": "nk-panel-shadow",
+    "path": "panel.shadow",
+    "tier": "component",
+    "scope": "panel",
+    "type": "shadow",
+    "default": "var(--nk-depth-elevation)",
+    "description": "The panel's drop: the elevation recipe"
+  },
+  {
+    "name": "nk-panel-divider",
+    "path": "panel.divider",
+    "tier": "component",
+    "scope": "panel",
+    "type": "string",
+    "default": "var(--nk-line-width) solid var(--nk-panel-border)",
+    "description": "The one hairline under a header"
+  },
+  {
+    "name": "nk-panel-width",
+    "path": "panel.width",
+    "tier": "component",
+    "scope": "panel",
+    "type": "length",
+    "default": "20rem",
+    "description": "Width (md)"
+  },
+  {
+    "name": "nk-panel-width-sm",
+    "path": "panel.width-sm",
+    "tier": "component",
+    "scope": "panel",
+    "type": "length",
+    "default": "18rem",
+    "description": "Width (sm)"
+  },
+  {
+    "name": "nk-panel-width-lg",
+    "path": "panel.width-lg",
+    "tier": "component",
+    "scope": "panel",
+    "type": "length",
+    "default": "24rem",
+    "description": "Width (lg)"
+  },
+  {
+    "name": "nk-panel-header-height",
+    "path": "panel.header.height",
+    "tier": "component",
+    "scope": "panel",
+    "type": "length",
+    "default": "calc(3.25rem * var(--nk-density))",
+    "description": "A header's minimum height",
+    "part": "header"
+  },
+  {
+    "name": "nk-panel-header-padding",
+    "path": "panel.header.padding",
+    "tier": "component",
+    "scope": "panel",
+    "type": "string",
+    "default": "var(--nk-gap-surface) var(--nk-gap-surface) var(--nk-space-4)",
+    "description": "Surface padding; the title a step off its hairline",
+    "part": "header"
+  },
+  {
+    "name": "nk-panel-title-size",
+    "path": "panel.title.size",
+    "tier": "component",
+    "scope": "panel",
+    "type": "length",
+    "default": "var(--nk-text-title)",
+    "description": "A panel title's size",
+    "part": "title"
+  },
+  {
+    "name": "nk-panel-body-padding",
+    "path": "panel.body.padding",
+    "tier": "component",
+    "scope": "panel",
+    "type": "string",
+    "default": "var(--nk-space-3)",
+    "description": "The body's padding",
+    "part": "body"
+  },
+  {
+    "name": "nk-panel-footer-padding",
+    "path": "panel.footer.padding",
+    "tier": "component",
+    "scope": "panel",
+    "type": "string",
+    "default": "var(--nk-space-4) var(--nk-gap-surface) var(--nk-gap-surface)",
+    "description": "On the panel itself, no rule above it",
+    "part": "footer"
+  },
+  {
+    "name": "nk-panel-footer-rule",
+    "path": "panel.footer.rule",
+    "tier": "component",
+    "scope": "panel",
+    "type": "string",
+    "default": "none",
+    "description": "A rule above the footer (none: spacing separates it)",
+    "part": "footer"
+  },
+  {
+    "name": "nk-panel-actions-bracket",
+    "path": "panel.actions.bracket",
+    "tier": "component",
+    "scope": "panel",
+    "type": "length",
+    "default": "0px",
+    "description": "L-shaped corner marks (0 = off)",
+    "part": "actions"
+  },
+  {
+    "name": "nk-panel-actions-bracket-width",
+    "path": "panel.actions.bracket-width",
+    "tier": "component",
+    "scope": "panel",
+    "type": "length",
+    "default": "calc(var(--nk-line-width) * 2)",
+    "description": "The marks' weight",
+    "part": "actions"
+  },
+  {
+    "name": "nk-panel-actions-bracket-color",
+    "path": "panel.actions.bracket-color",
+    "tier": "component",
+    "scope": "panel",
+    "type": "color",
+    "default": "var(--brand)",
+    "description": "The marks' colour",
+    "part": "actions"
+  },
+  {
+    "name": "nk-display-size",
+    "path": "display.size",
+    "tier": "component",
+    "scope": "display",
+    "type": "length",
+    "default": "var(--nk-text-display)",
+    "description": "Size"
+  },
+  {
+    "name": "nk-display-weight",
+    "path": "display.weight",
+    "tier": "component",
+    "scope": "display",
+    "type": "string",
+    "default": "var(--nk-type-weight-display)",
+    "description": "Weight"
+  },
+  {
+    "name": "nk-display-tracking",
+    "path": "display.tracking",
+    "tier": "component",
+    "scope": "display",
+    "type": "length",
+    "default": "var(--nk-type-tracking-display)",
+    "description": "Letter-spacing"
+  },
+  {
+    "name": "nk-display-case",
+    "path": "display.case",
+    "tier": "component",
+    "scope": "display",
+    "type": "string",
+    "default": "var(--nk-type-case)",
+    "description": "Case"
+  },
+  {
+    "name": "nk-caption-font",
+    "path": "caption.font",
+    "tier": "component",
+    "scope": "caption",
+    "type": "string",
+    "default": "var(--nk-type-label-family)",
+    "description": "Face"
+  },
+  {
+    "name": "nk-caption-size",
+    "path": "caption.size",
+    "tier": "component",
+    "scope": "caption",
+    "type": "length",
+    "default": "var(--nk-text-label)",
+    "description": "Size"
+  },
+  {
+    "name": "nk-caption-weight",
+    "path": "caption.weight",
+    "tier": "component",
+    "scope": "caption",
+    "type": "string",
+    "default": "var(--nk-type-weight-strong)",
+    "description": "Weight"
+  },
+  {
+    "name": "nk-caption-case",
+    "path": "caption.case",
+    "tier": "component",
+    "scope": "caption",
+    "type": "string",
+    "default": "var(--nk-type-case)",
+    "description": "Case"
+  },
+  {
+    "name": "nk-caption-tracking",
+    "path": "caption.tracking",
+    "tier": "component",
+    "scope": "caption",
+    "type": "length",
+    "default": "var(--nk-type-tracking-label)",
+    "description": "Letter-spacing"
+  },
+  {
+    "name": "nk-row-height",
+    "path": "row.height",
+    "tier": "component",
+    "scope": "row",
+    "type": "length",
+    "default": "var(--nk-height-row)",
+    "description": "A single-line row's minimum height"
+  },
+  {
+    "name": "nk-row-radius",
+    "path": "row.radius",
+    "tier": "component",
+    "scope": "row",
+    "type": "length",
+    "default": "var(--nk-radius-control)",
+    "description": "The row's radius"
+  },
+  {
+    "name": "nk-row-clip",
+    "path": "row.clip",
+    "tier": "component",
+    "scope": "row",
+    "type": "string",
+    "default": "var(--nk-line-clip-sm)",
+    "description": "The row's clip-path"
+  },
+  {
+    "name": "nk-row-pad-y",
+    "path": "row.pad-y",
+    "tier": "component",
+    "scope": "row",
+    "type": "length",
+    "default": "var(--nk-space-2)",
+    "description": "Block padding"
+  },
+  {
+    "name": "nk-row-pad-x",
+    "path": "row.pad-x",
+    "tier": "component",
+    "scope": "row",
+    "type": "length",
+    "default": "var(--nk-space-3)",
+    "description": "Inline padding"
+  },
+  {
+    "name": "nk-row-padding",
+    "path": "row.padding",
+    "tier": "component",
+    "scope": "row",
+    "type": "string",
+    "default": "var(--nk-row-pad-y) var(--nk-row-pad-x)",
+    "description": "Both paddings"
+  },
+  {
+    "name": "nk-row-gap",
+    "path": "row.gap",
+    "tier": "component",
+    "scope": "row",
+    "type": "length",
+    "default": "var(--nk-space-4)",
+    "description": "Between the icon tile, the text and the trail"
+  },
+  {
+    "name": "nk-row-font-size",
+    "path": "row.font-size",
+    "tier": "component",
+    "scope": "row",
+    "type": "length",
+    "default": "var(--nk-text-base)",
+    "description": "The row's text size"
+  },
+  {
+    "name": "nk-row-accent",
+    "path": "row.accent",
+    "tier": "component",
+    "scope": "row",
+    "type": "color",
+    "default": "var(--brand)",
+    "description": "The colour that marks the active row or slot (an outline, a hold ring)"
+  },
+  {
+    "name": "nk-row-icon-box",
+    "path": "row.icon.box",
+    "tier": "component",
+    "scope": "row",
+    "type": "length",
+    "default": "2rem",
+    "description": "The icon tile beside the title (the icon inside is icon.md)",
+    "part": "icon"
+  },
+  {
+    "name": "nk-row-bar-width",
+    "path": "row.bar.width",
+    "tier": "component",
+    "scope": "row",
+    "type": "length",
+    "default": "0.1875rem",
+    "description": "The focus bar's width (style.focus: bar)",
+    "part": "bar"
+  },
+  {
+    "name": "nk-list-gap",
+    "path": "list.gap",
+    "tier": "component",
+    "scope": "list",
+    "type": "length",
+    "default": "calc(var(--nk-tile-wall-height) + var(--nk-space-1))",
+    "description": "Between items: the wall plus breathing room"
+  },
+  {
+    "name": "nk-list-pad-x",
+    "path": "list.pad-x",
+    "tier": "component",
+    "scope": "list",
+    "type": "length",
+    "default": "calc(var(--nk-tile-key-inset) + var(--nk-tile-key-overhang))",
+    "description": "Inline padding: room for the tile's inset and skew"
+  },
+  {
+    "name": "nk-menu-row-gap",
+    "path": "menu-row.gap",
+    "tier": "component",
+    "scope": "menu-row",
+    "type": "length",
+    "default": "var(--nk-space-1)",
+    "description": "Between a trail's controls"
+  },
+  {
+    "name": "nk-menu-row-image-size",
+    "path": "menu-row.image.size",
+    "tier": "component",
+    "scope": "menu-row",
+    "type": "length",
+    "default": "2rem",
+    "description": "An image's box",
+    "part": "image"
+  },
+  {
+    "name": "nk-menu-row-progress-height",
+    "path": "menu-row.progress.height",
+    "tier": "component",
+    "scope": "menu-row",
+    "type": "length",
+    "default": "0.25rem",
+    "description": "The progress bar's height",
+    "part": "progress"
+  },
+  {
+    "name": "nk-menu-row-value-width",
+    "path": "menu-row.value.width",
+    "tier": "component",
+    "scope": "menu-row",
+    "type": "length",
+    "default": "3rem",
+    "description": "The value column's minimum width",
+    "part": "value"
+  },
+  {
+    "name": "nk-selection-time",
+    "path": "selection.time",
+    "tier": "component",
+    "scope": "selection",
+    "type": "time",
+    "default": "var(--nk-time-base)",
+    "description": "How long the tile glides"
+  },
+  {
+    "name": "nk-selection-ease",
+    "path": "selection.ease",
+    "tier": "component",
+    "scope": "selection",
+    "type": "string",
+    "default": "var(--nk-ease-move)",
+    "description": "The glide's curve"
+  },
+  {
+    "name": "nk-field-caret-width",
+    "path": "field.caret.width",
+    "tier": "component",
+    "scope": "field",
+    "type": "length",
+    "default": "0.125rem",
+    "description": "The drawn caret's width",
+    "part": "caret"
+  },
+  {
+    "name": "nk-field-caret-time",
+    "path": "field.caret.time",
+    "tier": "component",
+    "scope": "field",
+    "type": "time",
+    "default": "var(--nk-time-base)",
+    "description": "The caret's glide",
+    "part": "caret"
+  },
+  {
+    "name": "nk-field-caret-ease",
+    "path": "field.caret.ease",
+    "tier": "component",
+    "scope": "field",
+    "type": "string",
+    "default": "var(--nk-ease-move)",
+    "description": "The caret's curve",
+    "part": "caret"
+  },
+  {
+    "name": "nk-field-mirror-rise",
+    "path": "field.mirror.rise",
+    "tier": "component",
+    "scope": "field",
+    "type": "length",
+    "default": "0.45em",
+    "description": "How far a typed character rises in",
+    "part": "mirror"
+  },
+  {
+    "name": "nk-field-mirror-in",
+    "path": "field.mirror.in",
+    "tier": "component",
+    "scope": "field",
+    "type": "time",
+    "default": "var(--nk-time-slow)",
+    "description": "A typed character's entrance",
+    "part": "mirror"
+  },
+  {
+    "name": "nk-field-mirror-out",
+    "path": "field.mirror.out",
+    "tier": "component",
+    "scope": "field",
+    "type": "time",
+    "default": "var(--nk-time-exit)",
+    "description": "A deleted character's exit",
+    "part": "mirror"
+  },
+  {
+    "name": "nk-stepper-delay",
+    "path": "stepper.delay",
+    "tier": "component",
+    "scope": "stepper",
+    "type": "time",
+    "default": "350ms",
+    "description": "The first repeat of a held keycap"
+  },
+  {
+    "name": "nk-stepper-rate",
+    "path": "stepper.rate",
+    "tier": "component",
+    "scope": "stepper",
+    "type": "time",
+    "default": "70ms",
+    "description": "Then one repeat every"
+  },
+  {
+    "name": "nk-text-key-scale",
+    "path": "text.key.scale",
+    "tier": "component",
+    "scope": "text",
+    "type": "number",
+    "default": "1",
+    "description": "The inline keycap's size, × height.key",
+    "part": "key",
+    "range": [
+      0.5,
+      2
+    ]
+  },
+  {
+    "name": "nk-notice-width",
+    "path": "notice.width",
+    "tier": "component",
+    "scope": "notice",
+    "type": "length",
+    "default": "20rem",
+    "description": "Width (md)"
+  },
+  {
+    "name": "nk-notice-width-sm",
+    "path": "notice.width-sm",
+    "tier": "component",
+    "scope": "notice",
+    "type": "length",
+    "default": "18rem",
+    "description": "Width (sm)"
+  },
+  {
+    "name": "nk-notice-width-lg",
+    "path": "notice.width-lg",
+    "tier": "component",
+    "scope": "notice",
+    "type": "length",
+    "default": "24rem",
+    "description": "Width (lg)"
+  },
+  {
+    "name": "nk-confirm-width",
+    "path": "confirm.width",
+    "tier": "component",
+    "scope": "confirm",
+    "type": "length",
+    "default": "24rem",
+    "description": "Width (md)"
+  },
+  {
+    "name": "nk-confirm-width-sm",
+    "path": "confirm.width-sm",
+    "tier": "component",
+    "scope": "confirm",
+    "type": "length",
+    "default": "20rem",
+    "description": "Width (sm)"
+  },
+  {
+    "name": "nk-edge-sheet-header-height",
+    "path": "edge-sheet.header.height",
+    "tier": "component",
+    "scope": "edge-sheet",
+    "type": "length",
+    "default": "2rem",
+    "description": "The header's minimum height",
+    "part": "header"
+  },
+  {
+    "name": "nk-chip-height",
+    "path": "chip.height",
+    "tier": "component",
+    "scope": "chip",
+    "type": "length",
+    "default": "var(--nk-height-chip)",
+    "description": "Height"
+  },
+  {
+    "name": "nk-chip-padding",
+    "path": "chip.padding",
+    "tier": "component",
+    "scope": "chip",
+    "type": "length",
+    "default": "calc(var(--nk-space-unit) * 2.5)",
+    "description": "Inline padding"
+  },
+  {
+    "name": "nk-chip-radius",
+    "path": "chip.radius",
+    "tier": "component",
+    "scope": "chip",
+    "type": "length",
+    "default": "var(--nk-radius-chip)",
+    "description": "Radius"
+  },
+  {
+    "name": "nk-chip-hud-radius",
+    "path": "chip.hud-radius",
+    "tier": "component",
+    "scope": "chip",
+    "type": "length",
+    "default": "max(0.25rem, calc(var(--radius) - 0.125rem))",
+    "description": "A square HUD tile's radius (hotbar, target eye)"
+  },
+  {
+    "name": "nk-chip-bg",
+    "path": "chip.bg",
+    "tier": "component",
+    "scope": "chip",
+    "type": "color",
+    "default": "rgba(var(--hud-rgb), max(var(--hud-a), var(--nk-alpha-hud)))",
+    "description": "The plate on the game"
+  },
+  {
+    "name": "nk-chip-fg",
+    "path": "chip.fg",
+    "tier": "component",
+    "scope": "chip",
+    "type": "color",
+    "default": "var(--hud-foreground)",
+    "description": "Text and icons"
+  },
+  {
+    "name": "nk-chip-font-size",
+    "path": "chip.font-size",
+    "tier": "component",
+    "scope": "chip",
+    "type": "length",
+    "default": "0.875rem",
+    "description": "Text size"
+  },
+  {
+    "name": "nk-chip-weight",
+    "path": "chip.weight",
+    "tier": "component",
+    "scope": "chip",
+    "type": "string",
+    "default": "var(--nk-type-weight-strong)",
+    "description": "Text weight"
+  },
+  {
+    "name": "nk-chip-active-bg",
+    "path": "chip.active-bg",
+    "tier": "component",
+    "scope": "chip",
+    "type": "color",
+    "default": "var(--brand)",
+    "description": "An active chip's fill (rises from the bottom)"
+  },
+  {
+    "name": "nk-chip-active-fg",
+    "path": "chip.active-fg",
+    "tier": "component",
+    "scope": "chip",
+    "type": "color",
+    "default": "var(--brand-foreground)",
+    "description": "An active chip's ink"
+  },
+  {
+    "name": "nk-chip-glow",
+    "path": "chip.glow",
+    "tier": "component",
+    "scope": "chip",
+    "type": "shadow",
+    "default": "0 0 calc(var(--nk-line-glow) * 0.75) rgba(var(--brand-rgb), var(--nk-surface-glow))",
+    "description": "An active chip's glow"
+  },
+  {
+    "name": "nk-chip-clip",
+    "path": "chip.clip",
+    "tier": "component",
+    "scope": "chip",
+    "type": "string",
+    "default": "var(--nk-line-clip-sm)",
+    "description": "The chip's clip-path"
+  },
+  {
+    "name": "nk-chip-text-shadow",
+    "path": "chip.text-shadow",
+    "tier": "component",
+    "scope": "chip",
+    "type": "shadow",
+    "default": "var(--nk-depth-text)",
+    "description": "Text drawn on the game"
+  },
+  {
     "name": "nk-vital-chip-size",
     "path": "vital-chip.size",
     "tier": "component",
@@ -3154,82 +4689,6 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "type": "length",
     "default": "1.625rem",
     "description": "A small chip's box (telltales, compass marks)"
-  },
-  {
-    "name": "nk-vital-chip-shape",
-    "path": "vital-chip.shape",
-    "tier": "component",
-    "scope": "vital-chip",
-    "type": "keyword",
-    "default": "auto",
-    "description": "The chip's shape (auto: the keycap)",
-    "values": [
-      "auto",
-      "square",
-      "rounded",
-      "circle",
-      "diamond",
-      "hex",
-      "chamfer"
-    ]
-  },
-  {
-    "name": "nk-vital-chip-display",
-    "path": "vital-chip.display",
-    "tier": "component",
-    "scope": "vital-chip",
-    "type": "keyword",
-    "default": "expand",
-    "description": "What a chip shows",
-    "values": [
-      "auto",
-      "pill",
-      "value",
-      "icon",
-      "expand"
-    ]
-  },
-  {
-    "name": "nk-vital-chip-icon",
-    "path": "vital-chip.icon",
-    "tier": "component",
-    "scope": "vital-chip",
-    "type": "keyword",
-    "default": "uniform",
-    "description": "Each vital's own icon, or one glyph",
-    "values": [
-      "vital",
-      "uniform"
-    ]
-  },
-  {
-    "name": "nk-vital-chip-neighbours",
-    "path": "vital-chip.neighbours",
-    "tier": "component",
-    "scope": "vital-chip",
-    "type": "keyword",
-    "default": "push",
-    "description": "What a growing chip does to its neighbours",
-    "values": [
-      "push",
-      "collapse",
-      "overlay"
-    ]
-  },
-  {
-    "name": "nk-vital-chip-attach",
-    "path": "vital-chip.attach",
-    "tier": "component",
-    "scope": "vital-chip",
-    "type": "keyword",
-    "default": "flag",
-    "description": "Where the label sits",
-    "values": [
-      "inline",
-      "tag",
-      "flag",
-      "none"
-    ]
   },
   {
     "name": "nk-vital-chip-tile-ratio",
@@ -3328,12 +4787,846 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "default": "rgba(var(--hud-foreground-rgb), 0.16)",
     "description": "The level's track",
     "part": "track"
+  },
+  {
+    "name": "nk-meter-radius",
+    "path": "meter.radius",
+    "tier": "component",
+    "scope": "meter",
+    "type": "length",
+    "default": "0.125rem",
+    "description": "The bar's radius"
+  },
+  {
+    "name": "nk-meter-glow",
+    "path": "meter.glow",
+    "tier": "component",
+    "scope": "meter",
+    "type": "shadow",
+    "default": "0 0 calc(var(--nk-line-glow) * 0.625) rgba(var(--brand-rgb), var(--nk-surface-glow))",
+    "description": "The fill's glow"
+  },
+  {
+    "name": "nk-meter-segments",
+    "path": "meter.segments",
+    "tier": "component",
+    "scope": "meter",
+    "type": "number",
+    "default": "0",
+    "description": "1 = segmented, 0 = a continuous fill",
+    "range": [
+      0,
+      1
+    ]
+  },
+  {
+    "name": "nk-meter-track-color",
+    "path": "meter.track.color",
+    "tier": "component",
+    "scope": "meter",
+    "type": "color",
+    "default": "rgba(var(--scrim-rgb), 0.35)",
+    "description": "The track behind the bar",
+    "part": "track"
+  },
+  {
+    "name": "nk-meter-segment-size",
+    "path": "meter.segment.size",
+    "tier": "component",
+    "scope": "meter",
+    "type": "length",
+    "default": "0.5rem",
+    "description": "One segment's length",
+    "part": "segment"
+  },
+  {
+    "name": "nk-meter-segment-gap",
+    "path": "meter.segment.gap",
+    "tier": "component",
+    "scope": "meter",
+    "type": "length",
+    "default": "0.125rem",
+    "description": "The gap between segments",
+    "part": "segment"
+  },
+  {
+    "name": "nk-meter-segment-color",
+    "path": "meter.segment.color",
+    "tier": "component",
+    "scope": "meter",
+    "type": "color",
+    "default": "rgba(var(--popover-rgb), calc(0.85 * var(--nk-meter-segments)))",
+    "description": "The gap's colour (the panel showing through)",
+    "part": "segment"
+  },
+  {
+    "name": "nk-gauge-width",
+    "path": "gauge.width",
+    "tier": "component",
+    "scope": "gauge",
+    "type": "length",
+    "default": "var(--nk-fill-height)",
+    "description": "The arc's thickness"
+  },
+  {
+    "name": "nk-gauge-ticks",
+    "path": "gauge.ticks",
+    "tier": "component",
+    "scope": "gauge",
+    "type": "number",
+    "default": "0",
+    "description": "Tick marks: 1 on, 0 off",
+    "range": [
+      0,
+      1
+    ]
+  },
+  {
+    "name": "nk-gauge-font",
+    "path": "gauge.font",
+    "tier": "component",
+    "scope": "gauge",
+    "type": "string",
+    "default": "var(--nk-type-num-family)",
+    "description": "The readout's face"
+  },
+  {
+    "name": "nk-gauge-track-color",
+    "path": "gauge.track.color",
+    "tier": "component",
+    "scope": "gauge",
+    "type": "color",
+    "default": "rgba(var(--hud-foreground-rgb), 0.16)",
+    "description": "The unlit arc",
+    "part": "track"
+  },
+  {
+    "name": "nk-gauge-fill-color",
+    "path": "gauge.fill.color",
+    "tier": "component",
+    "scope": "gauge",
+    "type": "color",
+    "default": "var(--brand)",
+    "description": "The lit arc",
+    "part": "fill"
+  },
+  {
+    "name": "nk-gauge-needle-color",
+    "path": "gauge.needle.color",
+    "tier": "component",
+    "scope": "gauge",
+    "type": "color",
+    "default": "var(--brand)",
+    "description": "The needle",
+    "part": "needle"
+  },
+  {
+    "name": "nk-gauge-redline-color",
+    "path": "gauge.redline.color",
+    "tier": "component",
+    "scope": "gauge",
+    "type": "color",
+    "default": "var(--destructive)",
+    "description": "The redline",
+    "part": "redline"
+  },
+  {
+    "name": "nk-gauge-tick-color",
+    "path": "gauge.tick.color",
+    "tier": "component",
+    "scope": "gauge",
+    "type": "color",
+    "default": "rgba(var(--hud-foreground-rgb), calc(0.55 * var(--nk-gauge-ticks)))",
+    "description": "A minor tick",
+    "part": "tick"
+  },
+  {
+    "name": "nk-gauge-tick-major",
+    "path": "gauge.tick.major",
+    "tier": "component",
+    "scope": "gauge",
+    "type": "color",
+    "default": "rgba(var(--hud-foreground-rgb), calc(0.9 * var(--nk-gauge-ticks)))",
+    "description": "A major tick",
+    "part": "tick"
+  },
+  {
+    "name": "nk-dial-disc-opacity",
+    "path": "dial.disc.opacity",
+    "tier": "component",
+    "scope": "dial",
+    "type": "number",
+    "default": "var(--nk-alpha-hud)",
+    "description": "The disc's opacity under the arc",
+    "part": "disc",
+    "range": [
+      0,
+      1
+    ]
+  },
+  {
+    "name": "nk-ring-segments",
+    "path": "ring.segments",
+    "tier": "component",
+    "scope": "ring",
+    "type": "number",
+    "default": "24",
+    "description": "Segments in the ring",
+    "range": [
+      6,
+      60
+    ]
+  },
+  {
+    "name": "nk-ring-gap",
+    "path": "ring.gap",
+    "tier": "component",
+    "scope": "ring",
+    "type": "number",
+    "default": "4",
+    "description": "Degrees between segments",
+    "range": [
+      0,
+      12
+    ]
+  },
+  {
+    "name": "nk-speedometer-segments",
+    "path": "speedometer.segments",
+    "tier": "component",
+    "scope": "speedometer",
+    "type": "number",
+    "default": "30",
+    "description": "Segments in the arc",
+    "range": [
+      6,
+      80
+    ]
+  },
+  {
+    "name": "nk-speedometer-digit-dim",
+    "path": "speedometer.digit.dim",
+    "tier": "component",
+    "scope": "speedometer",
+    "type": "number",
+    "default": "0.26",
+    "description": "A leading zero's opacity",
+    "part": "digit",
+    "range": [
+      0,
+      1
+    ]
+  },
+  {
+    "name": "nk-speedometer-digit-tracking",
+    "path": "speedometer.digit.tracking",
+    "tier": "component",
+    "scope": "speedometer",
+    "type": "length",
+    "default": "0.01em",
+    "description": "The digits' letter-spacing",
+    "part": "digit"
+  },
+  {
+    "name": "nk-level-pip-size",
+    "path": "level.pip.size",
+    "tier": "component",
+    "scope": "level",
+    "type": "length",
+    "default": "10%",
+    "description": "One pip's width (10% = ten pips)",
+    "part": "pip"
+  },
+  {
+    "name": "nk-level-pip-gap",
+    "path": "level.pip.gap",
+    "tier": "component",
+    "scope": "level",
+    "type": "length",
+    "default": "2px",
+    "description": "Between pips",
+    "part": "pip"
+  },
+  {
+    "name": "nk-level-hold-pad",
+    "path": "level.hold.pad",
+    "tier": "component",
+    "scope": "level",
+    "type": "length",
+    "default": "2px",
+    "description": "The hold ring's thickness around a key",
+    "part": "hold"
+  },
+  {
+    "name": "nk-slab-height",
+    "path": "slab.height",
+    "tier": "component",
+    "scope": "slab",
+    "type": "length",
+    "default": "calc(2.5rem * var(--nk-density))",
+    "description": "Height"
+  },
+  {
+    "name": "nk-slab-padding",
+    "path": "slab.padding",
+    "tier": "component",
+    "scope": "slab",
+    "type": "string",
+    "default": "0 calc(var(--nk-space-unit) * 3)",
+    "description": "Padding"
+  },
+  {
+    "name": "nk-slab-gap",
+    "path": "slab.gap",
+    "tier": "component",
+    "scope": "slab",
+    "type": "length",
+    "default": "calc(var(--nk-space-unit) * 2.5)",
+    "description": "Between its parts"
+  },
+  {
+    "name": "nk-slab-radius",
+    "path": "slab.radius",
+    "tier": "component",
+    "scope": "slab",
+    "type": "length",
+    "default": "var(--nk-chip-radius)",
+    "description": "Radius"
+  },
+  {
+    "name": "nk-slab-clip",
+    "path": "slab.clip",
+    "tier": "component",
+    "scope": "slab",
+    "type": "string",
+    "default": "var(--nk-chip-clip)",
+    "description": "clip-path"
+  },
+  {
+    "name": "nk-slab-bg",
+    "path": "slab.bg",
+    "tier": "component",
+    "scope": "slab",
+    "type": "color",
+    "default": "var(--nk-chip-bg)",
+    "description": "The plate"
+  },
+  {
+    "name": "nk-slab-fg",
+    "path": "slab.fg",
+    "tier": "component",
+    "scope": "slab",
+    "type": "color",
+    "default": "var(--nk-chip-fg)",
+    "description": "Text"
+  },
+  {
+    "name": "nk-slab-border",
+    "path": "slab.border",
+    "tier": "component",
+    "scope": "slab",
+    "type": "color",
+    "default": "rgba(var(--hud-foreground-rgb), 0.08)",
+    "description": "The rim"
+  },
+  {
+    "name": "nk-slab-font-size",
+    "path": "slab.font-size",
+    "tier": "component",
+    "scope": "slab",
+    "type": "length",
+    "default": "var(--nk-text-base)",
+    "description": "Text size"
+  },
+  {
+    "name": "nk-slab-weight",
+    "path": "slab.weight",
+    "tier": "component",
+    "scope": "slab",
+    "type": "string",
+    "default": "var(--nk-type-weight-strong)",
+    "description": "Text weight"
+  },
+  {
+    "name": "nk-slab-text-shadow",
+    "path": "slab.text-shadow",
+    "tier": "component",
+    "scope": "slab",
+    "type": "shadow",
+    "default": "none",
+    "description": "Text shadow on the plate"
+  },
+  {
+    "name": "nk-slab-tone",
+    "path": "slab.tone",
+    "tier": "component",
+    "scope": "slab",
+    "type": "string",
+    "default": "var(--brand-rgb)",
+    "description": "The accent's channels (a screen sets it per state on any ancestor)"
+  },
+  {
+    "name": "nk-slab-tile-size",
+    "path": "slab.tile.size",
+    "tier": "component",
+    "scope": "slab",
+    "type": "length",
+    "default": "calc(var(--nk-slab-height) - var(--nk-space-unit) * 2)",
+    "description": "The icon tile's size",
+    "part": "tile"
+  },
+  {
+    "name": "nk-slab-tile-bg",
+    "path": "slab.tile.bg",
+    "tier": "component",
+    "scope": "slab",
+    "type": "color",
+    "default": "rgba(var(--hud-foreground-rgb), 0.1)",
+    "description": "The icon tile",
+    "part": "tile"
+  },
+  {
+    "name": "nk-slab-tile-fg",
+    "path": "slab.tile.fg",
+    "tier": "component",
+    "scope": "slab",
+    "type": "color",
+    "default": "var(--nk-slab-fg)",
+    "description": "The icon",
+    "part": "tile"
+  },
+  {
+    "name": "nk-slab-tile-radius",
+    "path": "slab.tile.radius",
+    "tier": "component",
+    "scope": "slab",
+    "type": "length",
+    "default": "max(0.125rem, calc(var(--nk-slab-radius) - var(--nk-space-unit)))",
+    "description": "The icon tile's radius",
+    "part": "tile"
+  },
+  {
+    "name": "nk-slab-delta-font",
+    "path": "slab.delta.font",
+    "tier": "component",
+    "scope": "slab",
+    "type": "string",
+    "default": "var(--nk-type-num-family)",
+    "description": "A delta's face",
+    "part": "delta"
+  },
+  {
+    "name": "nk-slab-delta-up",
+    "path": "slab.delta.up",
+    "tier": "component",
+    "scope": "slab",
+    "type": "color",
+    "default": "var(--world-success)",
+    "description": "A gain",
+    "part": "delta"
+  },
+  {
+    "name": "nk-slab-delta-down",
+    "path": "slab.delta.down",
+    "tier": "component",
+    "scope": "slab",
+    "type": "color",
+    "default": "var(--world-destructive)",
+    "description": "A loss",
+    "part": "delta"
+  },
+  {
+    "name": "nk-slab-key-size",
+    "path": "slab.key.size",
+    "tier": "component",
+    "scope": "slab",
+    "type": "length",
+    "default": "1.5rem",
+    "description": "A key chip's size",
+    "part": "key"
+  },
+  {
+    "name": "nk-slab-key-font-size",
+    "path": "slab.key.font-size",
+    "tier": "component",
+    "scope": "slab",
+    "type": "length",
+    "default": "0.8125rem",
+    "description": "A key chip's text",
+    "part": "key"
+  },
+  {
+    "name": "nk-slab-line-height",
+    "path": "slab.line.height",
+    "tier": "component",
+    "scope": "slab",
+    "type": "length",
+    "default": "0.1875rem",
+    "description": "The progress line's thickness",
+    "part": "line"
+  },
+  {
+    "name": "nk-slab-line-radius",
+    "path": "slab.line.radius",
+    "tier": "component",
+    "scope": "slab",
+    "type": "length",
+    "default": "var(--nk-meter-radius)",
+    "description": "Its radius",
+    "part": "line"
+  },
+  {
+    "name": "nk-slab-line-track",
+    "path": "slab.line.track",
+    "tier": "component",
+    "scope": "slab",
+    "type": "color",
+    "default": "rgba(var(--hud-foreground-rgb), 0.18)",
+    "description": "Its track",
+    "part": "line"
+  },
+  {
+    "name": "nk-slab-stack-width",
+    "path": "slab.stack.width",
+    "tier": "component",
+    "scope": "slab",
+    "type": "length",
+    "default": "20rem",
+    "description": "The progress stack's width",
+    "part": "stack"
+  },
+  {
+    "name": "nk-slab-stack-gap",
+    "path": "slab.stack.gap",
+    "tier": "component",
+    "scope": "slab",
+    "type": "length",
+    "default": "calc(var(--nk-space-unit) * 2)",
+    "description": "Between its rows",
+    "part": "stack"
+  },
+  {
+    "name": "nk-slab-band-padding",
+    "path": "slab.band.padding",
+    "tier": "component",
+    "scope": "slab",
+    "type": "string",
+    "default": "calc(var(--nk-space-unit) * 3) calc(var(--nk-space-unit) * 6)",
+    "description": "The band's padding",
+    "part": "band"
+  },
+  {
+    "name": "nk-slab-band-gap",
+    "path": "slab.band.gap",
+    "tier": "component",
+    "scope": "slab",
+    "type": "length",
+    "default": "var(--nk-space-unit)",
+    "description": "Between its lines",
+    "part": "band"
+  },
+  {
+    "name": "nk-slab-band-bg",
+    "path": "slab.band.bg",
+    "tier": "component",
+    "scope": "slab",
+    "type": "color",
+    "default": "rgba(var(--scrim-rgb), 0.62)",
+    "description": "The game, darkened",
+    "part": "band"
+  },
+  {
+    "name": "nk-slab-band-tint",
+    "path": "slab.band.tint",
+    "tier": "component",
+    "scope": "slab",
+    "type": "number",
+    "default": "0.3",
+    "description": "The tone's alpha over the band",
+    "part": "band",
+    "range": [
+      0,
+      1
+    ]
+  },
+  {
+    "name": "nk-slab-band-edge",
+    "path": "slab.band.edge",
+    "tier": "component",
+    "scope": "slab",
+    "type": "number",
+    "default": "0.6",
+    "description": "The tone's alpha on its edges",
+    "part": "band",
+    "range": [
+      0,
+      1
+    ]
+  },
+  {
+    "name": "nk-slab-band-fg",
+    "path": "slab.band.fg",
+    "tier": "component",
+    "scope": "slab",
+    "type": "color",
+    "default": "var(--hud-foreground)",
+    "description": "Text",
+    "part": "band"
+  },
+  {
+    "name": "nk-slab-band-title-size",
+    "path": "slab.band-title.size",
+    "tier": "component",
+    "scope": "slab",
+    "type": "length",
+    "default": "var(--nk-text-section)",
+    "description": "The band's line",
+    "part": "band-title"
+  },
+  {
+    "name": "nk-item-slot-width",
+    "path": "item-slot.width",
+    "tier": "component",
+    "scope": "item-slot",
+    "type": "length",
+    "default": "5rem",
+    "description": "Width (md)"
+  },
+  {
+    "name": "nk-item-slot-width-sm",
+    "path": "item-slot.width-sm",
+    "tier": "component",
+    "scope": "item-slot",
+    "type": "length",
+    "default": "3.5rem",
+    "description": "Width (sm)"
+  },
+  {
+    "name": "nk-item-slot-width-lg",
+    "path": "item-slot.width-lg",
+    "tier": "component",
+    "scope": "item-slot",
+    "type": "length",
+    "default": "6rem",
+    "description": "Width (lg)"
+  },
+  {
+    "name": "nk-item-slot-gap",
+    "path": "item-slot.gap",
+    "tier": "component",
+    "scope": "item-slot",
+    "type": "length",
+    "default": "0.25rem",
+    "description": "Between its lines"
+  },
+  {
+    "name": "nk-item-slot-top-height",
+    "path": "item-slot.top.height",
+    "tier": "component",
+    "scope": "item-slot",
+    "type": "length",
+    "default": "0.75rem",
+    "description": "The meta line's height",
+    "part": "top"
+  },
+  {
+    "name": "nk-item-slot-corner-lock",
+    "path": "item-slot.corner.lock",
+    "tier": "component",
+    "scope": "item-slot",
+    "type": "length",
+    "default": "0.875rem",
+    "description": "The lock icon",
+    "part": "corner"
+  },
+  {
+    "name": "nk-key-prompt-gap",
+    "path": "key-prompt.gap",
+    "tier": "component",
+    "scope": "key-prompt",
+    "type": "length",
+    "default": "0.25rem",
+    "description": "Between its parts"
+  },
+  {
+    "name": "nk-key-prompt-min-height",
+    "path": "key-prompt.min-height",
+    "tier": "component",
+    "scope": "key-prompt",
+    "type": "length",
+    "default": "2.5rem",
+    "description": "Minimum height (md)"
+  },
+  {
+    "name": "nk-key-prompt-min-height-sm",
+    "path": "key-prompt.min-height-sm",
+    "tier": "component",
+    "scope": "key-prompt",
+    "type": "length",
+    "default": "2rem",
+    "description": "Minimum height (sm)"
+  },
+  {
+    "name": "nk-key-prompt-pad-left",
+    "path": "key-prompt.pad-left",
+    "tier": "component",
+    "scope": "key-prompt",
+    "type": "length",
+    "default": "0.5rem",
+    "description": "Leading padding"
+  },
+  {
+    "name": "nk-key-prompt-pad-right",
+    "path": "key-prompt.pad-right",
+    "tier": "component",
+    "scope": "key-prompt",
+    "type": "length",
+    "default": "0.75rem",
+    "description": "Trailing padding"
+  },
+  {
+    "name": "nk-key-prompt-pad-y",
+    "path": "key-prompt.pad-y",
+    "tier": "component",
+    "scope": "key-prompt",
+    "type": "length",
+    "default": "0.25rem",
+    "description": "Block padding"
+  },
+  {
+    "name": "nk-key-prompt-key-height",
+    "path": "key-prompt.key.height",
+    "tier": "component",
+    "scope": "key-prompt",
+    "type": "length",
+    "default": "1.5rem",
+    "description": "A key cap's height",
+    "part": "key"
+  },
+  {
+    "name": "nk-skill-check-size",
+    "path": "skill-check.size",
+    "tier": "component",
+    "scope": "skill-check",
+    "type": "length",
+    "default": "10rem",
+    "description": "Size (md)"
+  },
+  {
+    "name": "nk-skill-check-size-sm",
+    "path": "skill-check.size-sm",
+    "tier": "component",
+    "scope": "skill-check",
+    "type": "length",
+    "default": "7rem",
+    "description": "Size (sm)"
+  },
+  {
+    "name": "nk-skill-check-size-lg",
+    "path": "skill-check.size-lg",
+    "tier": "component",
+    "scope": "skill-check",
+    "type": "length",
+    "default": "13rem",
+    "description": "Size (lg)"
+  },
+  {
+    "name": "nk-skill-check-key-height",
+    "path": "skill-check.key.height",
+    "tier": "component",
+    "scope": "skill-check",
+    "type": "length",
+    "default": "2rem",
+    "description": "The key's height",
+    "part": "key"
+  },
+  {
+    "name": "nk-skill-check-key-pad",
+    "path": "skill-check.key.pad",
+    "tier": "component",
+    "scope": "skill-check",
+    "type": "length",
+    "default": "0.5rem",
+    "description": "The key's padding",
+    "part": "key"
+  },
+  {
+    "name": "nk-countdown-line-width",
+    "path": "countdown.line.width",
+    "tier": "component",
+    "scope": "countdown",
+    "type": "length",
+    "default": "10rem",
+    "description": "The line (md)",
+    "part": "line"
+  },
+  {
+    "name": "nk-countdown-line-width-sm",
+    "path": "countdown.line.width-sm",
+    "tier": "component",
+    "scope": "countdown",
+    "type": "length",
+    "default": "6rem",
+    "description": "The line (sm)",
+    "part": "line"
+  },
+  {
+    "name": "nk-countdown-line-width-hero",
+    "path": "countdown.line.width-hero",
+    "tier": "component",
+    "scope": "countdown",
+    "type": "length",
+    "default": "20rem",
+    "description": "The line (hero)",
+    "part": "line"
+  },
+  {
+    "name": "nk-stat-gap",
+    "path": "stat.gap",
+    "tier": "component",
+    "scope": "stat",
+    "type": "length",
+    "default": "0.25rem",
+    "description": "Between its parts"
+  },
+  {
+    "name": "nk-stat-label-icon",
+    "path": "stat.label.icon",
+    "tier": "component",
+    "scope": "stat",
+    "type": "length",
+    "default": "0.875rem",
+    "description": "The label's icon",
+    "part": "label"
+  },
+  {
+    "name": "nk-nui-image-icon-max",
+    "path": "nui-image.icon.max",
+    "tier": "component",
+    "scope": "nui-image",
+    "type": "length",
+    "default": "1.5rem",
+    "description": "The fallback glyph's maximum size",
+    "part": "icon"
   }
 ];
 
-export type Lever = "background" | "foreground" | "card" | "card-foreground" | "popover" | "popover-foreground" | "primary" | "primary-foreground" | "secondary" | "secondary-foreground" | "muted" | "muted-foreground" | "accent" | "accent-foreground" | "destructive" | "destructive-foreground" | "border" | "input" | "ring" | "chart-1" | "chart-2" | "chart-3" | "chart-4" | "chart-5" | "radius" | "brand" | "brand-foreground" | "success" | "success-foreground" | "warning" | "warning-foreground" | "info" | "info-foreground" | "hud" | "hud-foreground" | "scrim" | "surface" | "world-foreground" | "world-foreground-muted" | "world-success" | "world-destructive" | "vital-health" | "vital-armor" | "vital-hunger" | "vital-thirst" | "vital-stress" | "font-sans" | "font-display" | "font-numeric" | "font-mono" | "nk-scale" | "nk-density" | "nk-space-1" | "nk-space-2" | "nk-space-3" | "nk-space-4" | "nk-space-6" | "nk-space-8" | "nk-space-unit" | "nk-radius-key" | "nk-radius-chip" | "nk-radius-control" | "nk-radius-surface" | "nk-height-key" | "nk-height-chip" | "nk-height-control" | "nk-height-row" | "nk-height-field" | "nk-icon-sm" | "nk-icon-md" | "nk-icon-lg" | "nk-icon-stroke" | "nk-text-base" | "nk-text-key" | "nk-text-body" | "nk-text-label" | "nk-text-title" | "nk-text-section" | "nk-text-display" | "nk-text-hud" | "nk-text-row" | "nk-text-desc" | "nk-leading-tight" | "nk-leading-normal" | "nk-shape-skew" | "nk-shape-cut" | "nk-shape-stroke" | "nk-type-ratio" | "nk-type-weight-body" | "nk-type-weight-strong" | "nk-type-weight-display" | "nk-type-tracking-display" | "nk-type-tracking-label" | "nk-type-case" | "nk-type-slant" | "nk-type-overhang" | "nk-surface-opacity" | "nk-surface-tint" | "nk-surface-gradient" | "nk-surface-edge" | "nk-surface-elevation" | "nk-surface-glow" | "nk-surface-glow-budget" | "nk-surface-backdrop" | "nk-surface-legibility" | "nk-surface-legibility-lift" | "nk-surface-slash" | "nk-material-hud-opacity" | "nk-material-hud-blur" | "nk-material-hud-radius" | "nk-material-hud-edge" | "nk-material-hud-texture" | "nk-material-menu-opacity" | "nk-material-menu-blur" | "nk-material-menu-radius" | "nk-material-menu-edge" | "nk-material-menu-texture" | "nk-material-overlay-opacity" | "nk-material-overlay-blur" | "nk-material-overlay-radius" | "nk-material-overlay-edge" | "nk-material-overlay-texture" | "nk-hud-opacity" | "nk-hud-text" | "nk-motion" | "nk-motion-duration" | "nk-motion-ease" | "nk-motion-feel" | "nk-motion-bounce" | "nk-motion-exit-factor" | "nk-motion-reduced" | "nk-motion-profile" | "nk-motion-move" | "nk-style-fill" | "nk-style-level" | "nk-style-hold" | "nk-style-gauge" | "nk-style-focus" | "nk-style-pause" | "nk-behavior-alert" | "nk-behavior-fuel" | "nk-behavior-hold" | "nk-behavior-cooldown" | "nk-behavior-rest" | "nk-behavior-notify-info" | "nk-behavior-notify-success" | "nk-behavior-notify-warning" | "nk-behavior-notify-danger" | "nk-hue-line" | "nk-hue-tint" | "nk-hue-glow" | "nk-hue-alert" | "nk-layer-world" | "nk-layer-hud" | "nk-layer-scrim" | "nk-layer-surface" | "nk-layer-dim" | "nk-layer-dialog" | "nk-layer-system" | "nk-time-instant" | "nk-time-snap" | "nk-time-fast" | "nk-time-base" | "nk-time-slow" | "nk-time-fill" | "nk-time-exit" | "nk-time-pulse" | "nk-ease-enter" | "nk-ease-exit" | "nk-ease-move" | "nk-ease-expand" | "nk-ease-spring" | "nk-ease-breathe" | "nk-ease-linear" | "nk-spring-snap" | "nk-spring-move" | "nk-spring-soft" | "nk-spring-pop" | "nk-stagger" | "nk-stagger-max" | "nk-gesture-lift" | "nk-gesture-rise" | "nk-gesture-land" | "nk-gesture-deny" | "nk-gesture-press" | "nk-gesture-confirm" | "nk-gesture-shift" | "nk-voice-scan-family" | "nk-voice-scan-style" | "nk-voice-scan-weight" | "nk-voice-scan-tracking" | "nk-voice-scan-case" | "nk-voice-scan-pad" | "nk-voice-title-family" | "nk-voice-title-style" | "nk-voice-title-weight" | "nk-voice-title-tracking" | "nk-voice-title-case" | "nk-voice-title-pad" | "nk-voice-label-family" | "nk-voice-label-style" | "nk-voice-label-weight" | "nk-voice-label-tracking" | "nk-voice-label-case" | "nk-voice-label-pad" | "nk-voice-num-family" | "nk-voice-num-style" | "nk-voice-num-weight" | "nk-voice-num-tracking" | "nk-voice-num-case" | "nk-voice-num-pad" | "nk-voice-body-family" | "nk-voice-body-style" | "nk-voice-body-weight" | "nk-voice-body-tracking" | "nk-voice-body-case" | "nk-voice-body-pad" | "nk-plate-color" | "nk-plate-hair" | "nk-plate-drop" | "nk-plate-radius" | "nk-fill-color" | "nk-fill-track" | "nk-fill-tint" | "nk-fill-edge" | "nk-fill-alert" | "nk-fill-height" | "nk-accent-paint" | "nk-accent-from" | "nk-accent-via" | "nk-accent-to" | "nk-list-gap" | "nk-list-pad-x" | "nk-gap-cluster" | "nk-gap-items" | "nk-gap-pad-x" | "nk-gap-surface" | "nk-line-width" | "nk-line-focus" | "nk-line-clip" | "nk-line-clip-sm" | "nk-line-glow" | "nk-depth-elevation" | "nk-depth-text" | "nk-alpha-day" | "nk-alpha-hud" | "nk-alpha-menu" | "nk-alpha-overlay" | "nk-tile-plate-color" | "nk-tile-plate-dim" | "nk-tile-plate-x" | "nk-tile-plate-y" | "nk-tile-plate-press" | "nk-tile-wall-height" | "nk-tile-wall-shade" | "nk-tile-face-color" | "nk-tile-face-ink" | "nk-tile-face-light" | "nk-tile-face-shade" | "nk-tile-face-rim" | "nk-tile-face-rim-focus" | "nk-tile-face-radius" | "nk-tile-face-skew" | "nk-tile-face-shadow" | "nk-tile-face-clip" | "nk-tile-face-confirm" | "nk-tile-face-confirm-ink" | "nk-tile-face-active" | "nk-tile-face-hold" | "nk-tile-legend-font" | "nk-tile-legend-weight" | "nk-tile-legend-pad" | "nk-tile-legend-shift" | "nk-tile-legend-gap" | "nk-tile-legend-inset" | "nk-tile-tag-delay" | "nk-tile-key-color" | "nk-tile-key-ink" | "nk-tile-key-rim" | "nk-tile-key-radius" | "nk-tile-key-tint" | "nk-tile-key-inset" | "nk-tile-key-lift" | "nk-tile-key-press" | "nk-tile-key-overhang" | "nk-vital-chip-size" | "nk-vital-chip-size-sm" | "nk-vital-chip-shape" | "nk-vital-chip-display" | "nk-vital-chip-icon" | "nk-vital-chip-neighbours" | "nk-vital-chip-attach" | "nk-vital-chip-tile-ratio" | "nk-vital-chip-icon-ratio" | "nk-vital-chip-label-size" | "nk-vital-chip-label-gap" | "nk-vital-chip-line-width" | "nk-vital-chip-plate-drop" | "nk-vital-chip-plate-x" | "nk-vital-chip-activefill-color" | "nk-vital-chip-track-color";
+export type Lever = "background" | "foreground" | "card" | "card-foreground" | "popover" | "popover-foreground" | "primary" | "primary-foreground" | "secondary" | "secondary-foreground" | "muted" | "muted-foreground" | "accent" | "accent-foreground" | "destructive" | "destructive-foreground" | "border" | "input" | "ring" | "chart-1" | "chart-2" | "chart-3" | "chart-4" | "chart-5" | "radius" | "brand" | "brand-foreground" | "success" | "success-foreground" | "warning" | "warning-foreground" | "info" | "info-foreground" | "hud" | "hud-foreground" | "scrim" | "surface" | "world-foreground" | "world-foreground-muted" | "world-success" | "world-destructive" | "vital-health" | "vital-armor" | "vital-hunger" | "vital-thirst" | "world-shadow" | "pause-surface" | "pause-ink" | "vital-stress" | "role-health" | "role-health-deep" | "role-health-light" | "role-armor" | "role-armor-deep" | "role-armor-light" | "role-hunger" | "role-hunger-deep" | "role-hunger-light" | "role-thirst" | "role-thirst-deep" | "role-thirst-light" | "role-stress" | "role-stress-deep" | "role-stress-light" | "role-stamina" | "role-stamina-deep" | "role-stamina-light" | "role-oxygen" | "role-oxygen-deep" | "role-oxygen-light" | "role-info" | "role-info-deep" | "role-info-light" | "role-success" | "role-success-deep" | "role-success-light" | "role-warning" | "role-warning-deep" | "role-warning-light" | "role-danger" | "role-danger-deep" | "role-danger-light" | "role-police" | "role-police-deep" | "role-police-light" | "role-ems" | "role-ems-deep" | "role-ems-light" | "role-mech" | "role-mech-deep" | "role-mech-light" | "role-gang" | "role-gang-deep" | "role-gang-light" | "role-civ" | "role-civ-deep" | "role-civ-light" | "role-staff" | "role-staff-deep" | "role-staff-light" | "role-common" | "role-common-deep" | "role-common-light" | "role-uncommon" | "role-uncommon-deep" | "role-uncommon-light" | "role-rare" | "role-rare-deep" | "role-rare-light" | "role-epic" | "role-epic-deep" | "role-epic-light" | "role-legendary" | "role-legendary-deep" | "role-legendary-light" | "role-brand" | "role-brand-deep" | "role-brand-light" | "role-neutral" | "role-neutral-deep" | "role-neutral-light" | "font-sans" | "font-display" | "font-numeric" | "font-mono" | "nk-scale" | "nk-density" | "nk-space-1" | "nk-space-2" | "nk-space-3" | "nk-space-4" | "nk-space-6" | "nk-space-8" | "nk-space-unit" | "nk-radius-key" | "nk-radius-chip" | "nk-radius-control" | "nk-radius-surface" | "nk-height-key" | "nk-height-chip" | "nk-height-control" | "nk-height-row" | "nk-height-field" | "nk-icon-sm" | "nk-icon-md" | "nk-icon-lg" | "nk-icon-stroke" | "nk-text-base" | "nk-text-key" | "nk-text-body" | "nk-text-label" | "nk-text-title" | "nk-text-section" | "nk-text-display" | "nk-text-hud" | "nk-text-row" | "nk-text-desc" | "nk-leading-tight" | "nk-leading-normal" | "nk-shape-skew" | "nk-shape-slab" | "nk-shape-cut" | "nk-shape-stroke" | "nk-type-ratio" | "nk-type-weight-body" | "nk-type-weight-strong" | "nk-type-weight-display" | "nk-type-tracking-display" | "nk-type-tracking-label" | "nk-type-case" | "nk-type-slant" | "nk-type-overhang" | "nk-type-scan-family" | "nk-type-scan-style" | "nk-type-scan-weight" | "nk-type-scan-tracking" | "nk-type-scan-case" | "nk-type-scan-pad" | "nk-type-title-family" | "nk-type-title-style" | "nk-type-title-weight" | "nk-type-title-tracking" | "nk-type-title-case" | "nk-type-title-pad" | "nk-type-label-family" | "nk-type-label-style" | "nk-type-label-weight" | "nk-type-label-tracking" | "nk-type-label-case" | "nk-type-label-pad" | "nk-type-num-family" | "nk-type-num-style" | "nk-type-num-weight" | "nk-type-num-tracking" | "nk-type-num-case" | "nk-type-num-pad" | "nk-type-body-family" | "nk-type-body-style" | "nk-type-body-weight" | "nk-type-body-tracking" | "nk-type-body-case" | "nk-surface-tint" | "nk-surface-gradient" | "nk-surface-elevation" | "nk-surface-glow" | "nk-surface-glow-budget" | "nk-surface-backdrop" | "nk-surface-legibility" | "nk-surface-legibility-lift" | "nk-surface-slash" | "nk-material-hud-opacity" | "nk-material-hud-texture" | "nk-material-menu-opacity" | "nk-material-menu-blur" | "nk-material-menu-radius" | "nk-material-menu-edge" | "nk-material-menu-texture" | "nk-hud-text" | "nk-motion" | "nk-motion-duration" | "nk-motion-ease" | "nk-motion-feel" | "nk-motion-bounce" | "nk-motion-exit-factor" | "nk-motion-reduced" | "nk-motion-profile" | "nk-motion-move" | "nk-style-fill" | "nk-style-level" | "nk-style-hold" | "nk-style-gauge" | "nk-style-focus" | "nk-style-vital" | "nk-style-vital-icon" | "nk-style-vital-neighbours" | "nk-style-pause" | "nk-behavior-alert" | "nk-behavior-rest" | "nk-behavior-notify-info" | "nk-behavior-notify-success" | "nk-behavior-notify-warning" | "nk-behavior-notify-danger" | "nk-hue-line" | "nk-hue-tint" | "nk-hue-glow" | "nk-hue-alert" | "nk-layer-dim" | "nk-layer-dialog" | "nk-layer-system" | "nk-time-instant" | "nk-time-snap" | "nk-time-fast" | "nk-time-base" | "nk-time-slow" | "nk-time-fill" | "nk-time-exit" | "nk-time-pulse" | "nk-ease-enter" | "nk-ease-exit" | "nk-ease-move" | "nk-ease-expand" | "nk-ease-spring" | "nk-ease-breathe" | "nk-spring-snap" | "nk-spring-move" | "nk-spring-soft" | "nk-spring-pop" | "nk-stagger" | "nk-stagger-max" | "nk-gesture-lift" | "nk-gesture-rise" | "nk-gesture-land" | "nk-gesture-deny" | "nk-gesture-press" | "nk-gesture-confirm" | "nk-gesture-shift" | "nk-plate-color" | "nk-plate-hair" | "nk-plate-drop" | "nk-plate-bg" | "nk-plate-radius" | "nk-fill-color" | "nk-fill-track" | "nk-fill-tint" | "nk-fill-edge" | "nk-fill-alert" | "nk-fill-height" | "nk-accent-paint" | "nk-accent-from" | "nk-accent-via" | "nk-accent-to" | "nk-gap-cluster" | "nk-gap-items" | "nk-gap-pad-x" | "nk-gap-surface" | "nk-line-width" | "nk-line-focus" | "nk-line-clip" | "nk-line-clip-sm" | "nk-line-glow" | "nk-depth-elevation" | "nk-depth-text" | "nk-alpha-day" | "nk-alpha-hud" | "nk-alpha-menu" | "nk-restore-muted-foreground" | "nk-restore-muted-foreground-rgb" | "nk-restore-muted-foreground-a" | "nk-restore-background" | "nk-restore-background-rgb" | "nk-restore-background-a" | "nk-screen-ratio" | "nk-screen-max" | "nk-screen-edge" | "nk-screen-scale-min" | "nk-screen-area-l" | "nk-screen-area-r" | "nk-screen-area-t" | "nk-screen-area-b" | "nk-screen-safe-x" | "nk-screen-safe-y" | "nk-zone-gap" | "nk-region-max" | "nk-region-pad" | "nk-grid-cell" | "nk-grid-gap" | "nk-tile-plate-color" | "nk-tile-plate-dim" | "nk-tile-plate-x" | "nk-tile-plate-y" | "nk-tile-plate-press" | "nk-tile-wall-height" | "nk-tile-wall-shade" | "nk-tile-face-color" | "nk-tile-face-ink" | "nk-tile-face-light" | "nk-tile-face-shade" | "nk-tile-face-rim" | "nk-tile-face-rim-focus" | "nk-tile-face-radius" | "nk-tile-face-skew" | "nk-tile-face-shadow" | "nk-tile-face-clip" | "nk-tile-face-confirm" | "nk-tile-face-confirm-ink" | "nk-tile-face-active" | "nk-tile-face-hold" | "nk-tile-legend-font" | "nk-tile-legend-weight" | "nk-tile-legend-pad" | "nk-tile-legend-shift" | "nk-tile-legend-gap" | "nk-tile-legend-inset" | "nk-tile-tag-delay" | "nk-tile-key-color" | "nk-tile-key-ink" | "nk-tile-key-rim" | "nk-tile-key-radius" | "nk-tile-key-tint" | "nk-tile-key-inset" | "nk-tile-key-lift" | "nk-tile-key-press" | "nk-tile-key-overhang" | "nk-panel-bg" | "nk-panel-fg" | "nk-panel-border" | "nk-panel-radius" | "nk-panel-blur" | "nk-panel-cut" | "nk-panel-clip" | "nk-panel-gradient" | "nk-panel-edge" | "nk-panel-shadow" | "nk-panel-divider" | "nk-panel-width" | "nk-panel-width-sm" | "nk-panel-width-lg" | "nk-panel-header-height" | "nk-panel-header-padding" | "nk-panel-title-size" | "nk-panel-body-padding" | "nk-panel-footer-padding" | "nk-panel-footer-rule" | "nk-panel-actions-bracket" | "nk-panel-actions-bracket-width" | "nk-panel-actions-bracket-color" | "nk-display-size" | "nk-display-weight" | "nk-display-tracking" | "nk-display-case" | "nk-caption-font" | "nk-caption-size" | "nk-caption-weight" | "nk-caption-case" | "nk-caption-tracking" | "nk-row-height" | "nk-row-radius" | "nk-row-clip" | "nk-row-pad-y" | "nk-row-pad-x" | "nk-row-padding" | "nk-row-gap" | "nk-row-font-size" | "nk-row-accent" | "nk-row-icon-box" | "nk-row-bar-width" | "nk-list-gap" | "nk-list-pad-x" | "nk-menu-row-gap" | "nk-menu-row-image-size" | "nk-menu-row-progress-height" | "nk-menu-row-value-width" | "nk-selection-time" | "nk-selection-ease" | "nk-field-caret-width" | "nk-field-caret-time" | "nk-field-caret-ease" | "nk-field-mirror-rise" | "nk-field-mirror-in" | "nk-field-mirror-out" | "nk-stepper-delay" | "nk-stepper-rate" | "nk-text-key-scale" | "nk-notice-width" | "nk-notice-width-sm" | "nk-notice-width-lg" | "nk-confirm-width" | "nk-confirm-width-sm" | "nk-edge-sheet-header-height" | "nk-chip-height" | "nk-chip-padding" | "nk-chip-radius" | "nk-chip-hud-radius" | "nk-chip-bg" | "nk-chip-fg" | "nk-chip-font-size" | "nk-chip-weight" | "nk-chip-active-bg" | "nk-chip-active-fg" | "nk-chip-glow" | "nk-chip-clip" | "nk-chip-text-shadow" | "nk-vital-chip-size" | "nk-vital-chip-size-sm" | "nk-vital-chip-tile-ratio" | "nk-vital-chip-icon-ratio" | "nk-vital-chip-label-size" | "nk-vital-chip-label-gap" | "nk-vital-chip-line-width" | "nk-vital-chip-plate-drop" | "nk-vital-chip-plate-x" | "nk-vital-chip-activefill-color" | "nk-vital-chip-track-color" | "nk-meter-radius" | "nk-meter-glow" | "nk-meter-segments" | "nk-meter-track-color" | "nk-meter-segment-size" | "nk-meter-segment-gap" | "nk-meter-segment-color" | "nk-gauge-width" | "nk-gauge-ticks" | "nk-gauge-font" | "nk-gauge-track-color" | "nk-gauge-fill-color" | "nk-gauge-needle-color" | "nk-gauge-redline-color" | "nk-gauge-tick-color" | "nk-gauge-tick-major" | "nk-dial-disc-opacity" | "nk-ring-segments" | "nk-ring-gap" | "nk-speedometer-segments" | "nk-speedometer-digit-dim" | "nk-speedometer-digit-tracking" | "nk-level-pip-size" | "nk-level-pip-gap" | "nk-level-hold-pad" | "nk-slab-height" | "nk-slab-padding" | "nk-slab-gap" | "nk-slab-radius" | "nk-slab-clip" | "nk-slab-bg" | "nk-slab-fg" | "nk-slab-border" | "nk-slab-font-size" | "nk-slab-weight" | "nk-slab-text-shadow" | "nk-slab-tone" | "nk-slab-tile-size" | "nk-slab-tile-bg" | "nk-slab-tile-fg" | "nk-slab-tile-radius" | "nk-slab-delta-font" | "nk-slab-delta-up" | "nk-slab-delta-down" | "nk-slab-key-size" | "nk-slab-key-font-size" | "nk-slab-line-height" | "nk-slab-line-radius" | "nk-slab-line-track" | "nk-slab-stack-width" | "nk-slab-stack-gap" | "nk-slab-band-padding" | "nk-slab-band-gap" | "nk-slab-band-bg" | "nk-slab-band-tint" | "nk-slab-band-edge" | "nk-slab-band-fg" | "nk-slab-band-title-size" | "nk-item-slot-width" | "nk-item-slot-width-sm" | "nk-item-slot-width-lg" | "nk-item-slot-gap" | "nk-item-slot-top-height" | "nk-item-slot-corner-lock" | "nk-key-prompt-gap" | "nk-key-prompt-min-height" | "nk-key-prompt-min-height-sm" | "nk-key-prompt-pad-left" | "nk-key-prompt-pad-right" | "nk-key-prompt-pad-y" | "nk-key-prompt-key-height" | "nk-skill-check-size" | "nk-skill-check-size-sm" | "nk-skill-check-size-lg" | "nk-skill-check-key-height" | "nk-skill-check-key-pad" | "nk-countdown-line-width" | "nk-countdown-line-width-sm" | "nk-countdown-line-width-hero" | "nk-stat-gap" | "nk-stat-label-icon" | "nk-nui-image-icon-max";
 
 export const ANATOMY = {
+  "screen": [
+    "area",
+    "safe"
+  ],
+  "zone": [
+    "item"
+  ],
+  "region": [
+    "body"
+  ],
+  "grid": [
+    "cell"
+  ],
   "tile": [
     "plate",
     "wall",
@@ -3343,6 +5636,92 @@ export const ANATOMY = {
     "tag",
     "group",
     "key"
+  ],
+  "panel": [
+    "header",
+    "icon",
+    "title",
+    "description",
+    "actions",
+    "body",
+    "footer"
+  ],
+  "display": [
+    "title"
+  ],
+  "caption": [
+    "text"
+  ],
+  "row": [
+    "icon",
+    "title",
+    "description",
+    "trail",
+    "bar"
+  ],
+  "list": [
+    "item"
+  ],
+  "menu-row": [
+    "image",
+    "icon",
+    "body",
+    "title",
+    "description",
+    "progress",
+    "meta",
+    "stepper",
+    "value",
+    "actions",
+    "chevron",
+    "details",
+    "list"
+  ],
+  "selection": [
+    "tile"
+  ],
+  "field": [
+    "control",
+    "caret",
+    "mirror"
+  ],
+  "stepper": [
+    "tile",
+    "value"
+  ],
+  "text": [
+    "key"
+  ],
+  "notice": [
+    "stack",
+    "item",
+    "icon",
+    "item-tile",
+    "title",
+    "description",
+    "item-name",
+    "item-delta",
+    "time"
+  ],
+  "confirm": [
+    "scrim",
+    "root",
+    "icon",
+    "description",
+    "cancel",
+    "action"
+  ],
+  "edge-sheet": [
+    "column",
+    "header",
+    "actions",
+    "edge",
+    "body",
+    "footer"
+  ],
+  "chip": [
+    "icon",
+    "count"
   ],
   "vital-chip": [
     "row",
@@ -3362,7 +5741,100 @@ export const ANATOMY = {
     "label",
     "name",
     "pop"
+  ],
+  "meter": [
+    "label-row",
+    "label",
+    "value",
+    "track",
+    "fill",
+    "segment",
+    "icon",
+    "cancel-key",
+    "cancel-label"
+  ],
+  "gauge": [
+    "track",
+    "fill",
+    "needle",
+    "tick",
+    "redline",
+    "value"
+  ],
+  "dial": [
+    "disc",
+    "ticks",
+    "track",
+    "segments",
+    "segment",
+    "value",
+    "needle",
+    "center"
+  ],
+  "ring": [
+    "center",
+    "label",
+    "cancel",
+    "cancel-label"
+  ],
+  "speedometer": [
+    "readout",
+    "speed",
+    "digit",
+    "unit",
+    "foot"
+  ],
+  "level": [
+    "pip",
+    "hold"
+  ],
+  "slab": [
+    "tile",
+    "delta",
+    "key",
+    "stack",
+    "line",
+    "band",
+    "band-title"
+  ],
+  "item-slot": [
+    "top",
+    "corner",
+    "right",
+    "label",
+    "durability"
+  ],
+  "key-prompt": [
+    "keys",
+    "key",
+    "icon",
+    "text",
+    "label",
+    "description",
+    "hold",
+    "stack"
+  ],
+  "skill-check": [
+    "ticks",
+    "zone",
+    "rotor",
+    "needle",
+    "key"
+  ],
+  "countdown": [
+    "clock",
+    "label",
+    "line"
+  ],
+  "stat": [
+    "label",
+    "value",
+    "meta",
+    "delta"
+  ],
+  "nui-image": [
+    "icon"
   ]
 } as const;
 
-export const STATE_VARS: readonly string[] = ["nk-tile-now-face","nk-tile-now-ink","nk-tile-now-rim","nk-tile-now-plate","nk-tile-x","nk-tile-y","nk-tile-sel-face","nk-tile-sel-wall","nk-tile-sel-shade","nk-tile-sel-ink","nk-vital-chip-face","nk-vital-chip-tag","nk-vital-chip-tag-pad","nk-vital-chip-room","nk-vital-chip-d"];
+export const STATE_VARS: readonly string[] = ["nk-zone-inset","nk-zone-z","nk-grid-cols","nk-tile-now-face","nk-tile-now-ink","nk-tile-now-rim","nk-tile-now-plate","nk-tile-x","nk-tile-y","nk-tile-sel-face","nk-tile-sel-wall","nk-tile-sel-shade","nk-tile-sel-ink","nk-tile-sel-rim","nk-tile-sel-shape","nk-tile-host-radius","nk-tile-host-clip","nk-tile-tone","nk-panel-backdrop","nk-notice-tone-rgb","nk-notice-delay","nk-chip-tone","nk-chip-tone-rgb","nk-vital-chip-face","nk-vital-chip-tag","nk-vital-chip-tag-pad","nk-vital-chip-room","nk-vital-chip-d","nk-level-fill-now","nk-level-fill-ink","nk-level-fill-opacity","nk-slab-fill","nk-slab-stroke","nk-slab-progress","nk-slab-line-fill"];

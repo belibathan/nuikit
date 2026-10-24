@@ -114,7 +114,7 @@ type DialProps = Omit<React.ComponentProps<"div">, "children"> & {
   /** A plate disc behind the arc: true is the HUD material on the game (the plate on a panel); soft is the
    *  speedometer's scrim, solid under the arc and fading out past it (--nk-dial-disc-opacity, --nk-dial-disc-reach). */
   disc?: boolean | "soft"
-  /** Past this level (0–1; true = 0.88) the arc turns --nk-gauge-redline and the dial is data-state="alert". */
+  /** Past this level (0–1; true = 0.88) the arc turns --nk-gauge-redline-color and the dial is data-state="alert". */
   redline?: number | boolean
   /** Force the alert (a live gauge that computes its own redline). */
   alert?: boolean
@@ -185,9 +185,9 @@ function Dial({
   const accentPaint = paint === "accent" && !hue && (!tone || tone === "neutral")
   // one arc turns the redline whole past it; segments keep their colour, only the red zone's are red
   const accent = accentPaint && !alert
-  const valueClass = alert ? "stroke-(--nk-gauge-redline)" : accent ? "" : "stroke-[var(--hue-solid,var(--nk-gauge-fill))]"
+  const valueClass = alert ? "stroke-(--nk-gauge-redline-color)" : accent ? "" : "stroke-[var(--hue-solid,var(--nk-gauge-fill-color))]"
   const valueStroke = accent ? `url(#${accentId})` : undefined
-  const segClass = accentPaint ? "" : "stroke-[var(--hue-solid,var(--nk-gauge-fill))]"
+  const segClass = accentPaint ? "" : "stroke-[var(--hue-solid,var(--nk-gauge-fill-color))]"
   const segStroke = accentPaint ? `url(#${accentId})` : undefined
   const tickCount = variant === "digital" ? 0 : Math.max(0, Math.floor(ticks))
   const segs = segments !== undefined && segments > 1 ? Math.floor(segments) : 0
@@ -214,9 +214,9 @@ function Dial({
         {accentPaint && (
           <defs>
             <linearGradient id={accentId} gradientUnits="userSpaceOnUse" x1={0} y1={0} x2={size} y2={0}>
-              <stop offset="0" style={{ stopColor: "var(--nk-accent-from, var(--nk-gauge-fill))" }} />
-              <stop offset="0.5" style={{ stopColor: "var(--nk-accent-via, var(--nk-gauge-fill))" }} />
-              <stop offset="1" style={{ stopColor: "var(--nk-accent-to, var(--nk-gauge-fill))" }} />
+              <stop offset="0" style={{ stopColor: "var(--nk-accent-from, var(--nk-gauge-fill-color))" }} />
+              <stop offset="0.5" style={{ stopColor: "var(--nk-accent-via, var(--nk-gauge-fill-color))" }} />
+              <stop offset="1" style={{ stopColor: "var(--nk-accent-to, var(--nk-gauge-fill-color))" }} />
             </linearGradient>
           </defs>
         )}
@@ -224,8 +224,8 @@ function Dial({
           <>
             <defs>
               <radialGradient id={`${accentId}-disc`}>
-                <stop offset="0" style={{ stopColor: "var(--scrim)", stopOpacity: "var(--nk-dial-disc-opacity, var(--nk-hud-alpha, var(--nk-hud-opacity, 0.55)))" }} />
-                <stop offset="0.58" style={{ stopColor: "var(--scrim)", stopOpacity: "var(--nk-dial-disc-opacity, var(--nk-hud-alpha, var(--nk-hud-opacity, 0.55)))" }} />
+                <stop offset="0" style={{ stopColor: "var(--scrim)", stopOpacity: "var(--nk-dial-disc-opacity, var(--nk-alpha-hud, var(--nk-material-hud-opacity, 0.55)))" }} />
+                <stop offset="0.58" style={{ stopColor: "var(--scrim)", stopOpacity: "var(--nk-dial-disc-opacity, var(--nk-alpha-hud, var(--nk-material-hud-opacity, 0.55)))" }} />
                 <stop offset="1" style={{ stopColor: "var(--scrim)", stopOpacity: 0 }} />
               </radialGradient>
             </defs>
@@ -259,10 +259,10 @@ function Dial({
                   strokeWidth={i % 2 === 0 ? 2 : 1.5}
                   className={
                     threshold !== undefined && at > threshold
-                      ? "stroke-(--nk-gauge-redline) [stroke-opacity:var(--nk-gauge-ticks,1)]"
+                      ? "stroke-(--nk-gauge-redline-color) [stroke-opacity:var(--nk-gauge-ticks,1)]"
                       : i % 2 === 0
                         ? "stroke-(--nk-gauge-tick-major)"
-                        : "stroke-(--nk-gauge-tick)"
+                        : "stroke-(--nk-gauge-tick-color)"
                   }
                 />
               )
@@ -316,7 +316,7 @@ function Dial({
                 r={r}
                 fill="none"
                 strokeWidth={stroke}
-                className={cn(isRed(i) ? "stroke-(--nk-gauge-redline)" : segClass, (valueProps as { className?: string } | undefined)?.className)}
+                className={cn(isRed(i) ? "stroke-(--nk-gauge-redline-color)" : segClass, (valueProps as { className?: string } | undefined)?.className)}
                 stroke={isRed(i) ? undefined : segStroke}
                 style={{ opacity: isLit(i) ? 1 : 0 }}
                 strokeDasharray={`${Math.max(0, segLen - segGap)} ${circumference}`}
@@ -347,7 +347,7 @@ function Dial({
             x2={c + r - stroke}
             y2={c}
             strokeWidth={2}
-            className="stroke-(--nk-gauge-needle) transition-transform duration-(--nk-time-fast) ease-(--nk-ease-standard)"
+            className="stroke-(--nk-gauge-needle-color) transition-transform duration-(--nk-time-fast) ease-(--nk-ease-move)"
             style={{ transformOrigin: `${c}px ${c}px`, transform: `rotate(${start + sweep * level}deg)` }}
           />
         )}

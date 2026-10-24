@@ -27,22 +27,22 @@ import { NumberRoll, TextRoll } from "@/components/ui/text-roll"
  * Enter or blur, Escape cancels. Left / Right / Up / Down on the control step; the field announces the value.
  *
  * Role: one value picked by stepping: prev, the value, next, as one joined control.
- * Anatomy: stepper (the rim, --nk-h-control) > stepper-key (a Tile button, prev) > stepper-value (the roll, or the
+ * Anatomy: stepper (the rim, --nk-height-control) > stepper-key (a Tile button, prev) > stepper-value (the roll, or the
  *   input while typing) > stepper-key (next).
  * Props: value, defaultValue, onValueChange, onStep, onCommit, min, max, step, wrap, format, size, disabled.
- * Rules: one height for the three parts (--nk-h-control; `size` picks --nk-h-chip or --nk-h-field); the keycaps
+ * Rules: one height for the three parts (--nk-height-control; `size` picks --nk-height-chip or --nk-height-field); the keycaps
  *   are Tiles and never restyled; the value rolls (per digit) and static text stays still; hold repeats
  *   (--nk-stepper-delay, --nk-stepper-rate); no focus ring (focus and hover are one lit state); rem, never px.
  */
 
 const stepperVariants = cva(
-  "group/stepper inline-flex w-full min-w-0 items-stretch overflow-hidden rounded-(--nk-r-control) border border-(--nk-plate-hair,var(--border)) text-(length:--nk-text-label) select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+  "group/stepper inline-flex w-full min-w-0 items-stretch overflow-hidden rounded-(--nk-radius-control) border border-(--nk-plate-hair,var(--border)) text-(length:--nk-text-label) select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
   {
     variants: {
       size: {
-        sm: "h-(--nk-h-chip)",
-        default: "h-(--nk-h-control)",
-        lg: "h-(--nk-h-field)",
+        sm: "h-(--nk-height-chip)",
+        default: "h-(--nk-height-control)",
+        lg: "h-(--nk-height-field)",
       },
     },
     defaultVariants: { size: "default" },
@@ -236,8 +236,8 @@ function StepperKey({ side, disabled, onStep, children }: { side: "prev" | "next
       onClick={(e) => e.preventDefault()}
       className={cn(
         // one height with the rim; the tile's corners are the rim's (overflow clips), upright inside it
-        "h-full w-auto aspect-square shrink-0 rounded-none [--nk-tile-skew:0deg] [--nk-tile-plate-x:0rem] [--nk-tile-plate-y:0rem] text-muted-foreground",
-        "hover:text-foreground hover:[--nk-tile-face-now:var(--nk-fill-tint,var(--accent))] disabled:pointer-events-none disabled:opacity-40",
+        "h-full w-auto aspect-square shrink-0 rounded-none [--nk-tile-face-skew:0deg] [--nk-tile-plate-x:0rem] [--nk-tile-plate-y:0rem] text-muted-foreground",
+        "hover:text-foreground hover:[--nk-tile-now-face:var(--nk-fill-tint,var(--accent))] disabled:pointer-events-none disabled:opacity-40",
         side === "prev" ? "border-r border-(--nk-plate-hair,var(--border))" : "border-l border-(--nk-plate-hair,var(--border))"
       )}
     >

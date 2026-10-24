@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils"
  * Zone — one of the screen's nine places (tl tc tr / ml mc mr / bl bc br) or four edges (t r b l)
  * (docs/design/layout.md). Every HUD part, notice stack, prompt, sheet and dialog is placed in one, never with
  * coordinates. A zone is a flex column that grows towards the screen centre (a bottom zone stacks upwards),
- * aligned to its own side, `--nk-zone-gap` between what it holds, `--nk-zone-inset` (default --nk-edge) from
+ * aligned to its own side, `--nk-zone-gap` between what it holds, `--nk-zone-inset` (default --nk-screen-edge) from
  * the safe area of the 16:9 box. Edges are flush and span their side (sheets, bands).
  *
  *   <Zone at="tr" clear>{notices}</Zone>          // starts below whatever another UI covers top right
@@ -35,7 +35,7 @@ type ZoneProps = React.HTMLAttributes<HTMLElement> & {
   publish?: string
   /** The gap between its items: a lever name (items, cluster, section) or any CSS length. */
   gap?: "items" | "cluster" | "section" | "surface" | (string & {})
-  /** Its inset from the safe area (a CSS length). Default --nk-edge. */
+  /** Its inset from the safe area (a CSS length). Default --nk-screen-edge. */
   inset?: string
   /** Its stacking order among zones. */
   z?: number
@@ -51,7 +51,7 @@ const GAP: Record<string, string> = {
   items: "var(--nk-gap-items)",
   cluster: "var(--nk-gap-cluster)",
   section: "var(--nk-space-4)",
-  surface: "var(--nk-pad-surface)",
+  surface: "var(--nk-gap-surface)",
 }
 
 function Zone({ at, clear = false, publish, gap, inset, z, flow, align, justify, bleed, as: Comp = "div", className, style, ...props }: ZoneProps) {

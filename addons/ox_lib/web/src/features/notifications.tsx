@@ -44,17 +44,17 @@ const EXIT_MS = 400;
 /** ox_lib's default: a falsy duration means 3000 ms. */
 const DEFAULT_MS = 3000;
 
-/** The behaviour token for a notice's severity (foundation 2: `--nk-notify-ms-{info,success,warning,danger}`). */
+/** The behaviour token for a notice's severity (foundation 2: `--nk-behavior-notify-{info,success,warning,danger}`). */
 const SEVERITY: Record<NoticeStatus, string> = { info: "info", success: "success", warning: "warning", error: "danger" };
 
 /**
  * How long a toast stays: the script's own duration first (ox_lib's protocol), then the ox_lib lever
  * --ox-notify-ms (ox's 3 s unless the server sets it). `--ox-notify-ms: severity` hands it to the
- * behaviour tokens instead (--nk-notify-ms-{info,success,warning,danger}, 5 s each in the stock kit).
+ * behaviour tokens instead (--nk-behavior-notify-{info,success,warning,danger}, 5 s each in the stock kit).
  */
 const durationOf = (data: NotifyData) => {
   if (data.duration) return data.duration;
-  if (tokenRaw("ox-notify-ms") === "severity") return tokenMs(`nk-notify-ms-${SEVERITY[status(data.type)]}`, DEFAULT_MS);
+  if (tokenRaw("ox-notify-ms") === "severity") return tokenMs(`nk-behavior-notify-${SEVERITY[status(data.type)]}`, DEFAULT_MS);
   return tokenMs("ox-notify-ms", DEFAULT_MS);
 };
 
@@ -232,7 +232,7 @@ export function Notifications() {
                 t.leaving
                   ? cn("animate-out fade-out-0 duration-(--nk-time-fill) fill-mode-forwards", EXIT[position])
                   : t.count < 2
-                    ? cn("animate-in fade-in-0 duration-(--nk-time) ease-(--nk-ease-expand)", ENTER[position])
+                    ? cn("animate-in fade-in-0 duration-(--nk-time-base) ease-(--nk-ease-expand)", ENTER[position])
                     : "nk-bump",
               )}
               style={t.count < 2 ? t.style : ({ "--ox-bump-x": BUMP[position][0], "--ox-bump-y": BUMP[position][1], ...t.style } as CSSProperties)}

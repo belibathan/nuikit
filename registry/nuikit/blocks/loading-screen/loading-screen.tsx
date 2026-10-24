@@ -43,7 +43,7 @@ function LoadingScreen({
       <LoadingBackdrop images={h.backgrounds ?? []} interval={h.backgroundInterval} />
 
       <header className="absolute top-12 left-12 flex items-center gap-4">
-        {h.logo && <img src={h.logo} alt="" className="size-12 rounded-(--nk-r-control) object-contain" />}
+        {h.logo && <img src={h.logo} alt="" className="size-12 rounded-(--nk-radius-control) object-contain" />}
         <div className="flex flex-col gap-1">
           {/* the server name: the screen's display moment (the identity's display face) */}
           <h1 className="nk-display [--nk-display-size:var(--nk-text-section)]">{h.serverName || "Welcome"}</h1>
@@ -214,7 +214,7 @@ function LoadingMusic({ tracks, volume = 0.15 }: { tracks: string[]; volume?: nu
       <Button
         variant="outline"
         size="icon"
-        className="size-9 rounded-(--nk-r-control) bg-background/40"
+        className="size-9 rounded-(--nk-radius-control) bg-background/40"
         aria-label={muted ? "Unmute music" : "Mute music"}
         onClick={() => setMuted((m) => !m)}
       >

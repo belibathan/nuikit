@@ -87,8 +87,8 @@
   --color-surface: var(--surface);
   --font-display: var(--font-display);
   --font-numeric: var(--font-numeric);
-  --default-transition-duration: var(--nk-time-base, var(--nk-duration));
-  --default-transition-timing-function: var(--nk-ease);
+  --default-transition-duration: var(--nk-time-base, var(--nk-motion-duration));
+  --default-transition-timing-function: var(--nk-motion-ease);
 }
 
 @layer base {
@@ -151,12 +151,12 @@
 /* NUI scale: the kit is designed at 1080p and grows with the game's resolution (docs/design.md). */
 @layer base {
   /* 1rem = 16px at 1080p, scaling with the game's resolution (21px at 1440p, 32px at 4K), and with the width
-     on a screen narrower than 16:9 (16:10, 4:3) so the 16:9 design fits; never under 16px × --nk-scale-min
+     on a screen narrower than 16:9 (16:10, 4:3) so the 16:9 design fits; never under 16px × --nk-screen-scale-min
      (12px), times --nk-scale (the theme's UI size × the player's UI scale preference). docs/design/layout.md */
   html {
-    font-size: calc(clamp(calc(16px * var(--nk-scale-min, 0.75)), min(1.4815vh, 0.8333vw), 32px) * var(--nk-scale, 1));
+    font-size: calc(clamp(calc(16px * var(--nk-screen-scale-min, 0.75)), min(1.4815vh, 0.8333vw), 32px) * var(--nk-scale, 1));
     font-family: var(--font-sans, ui-sans-serif, system-ui, sans-serif);
-    font-weight: var(--nk-weight-body, 400);
+    font-weight: var(--nk-type-weight-body, 400);
     -webkit-font-smoothing: antialiased;
   }
 }

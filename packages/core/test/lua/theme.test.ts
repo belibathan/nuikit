@@ -27,7 +27,7 @@ describe("server theme in nuikit UIs (nuikit.lua)", () => {
     client.setGlobal("nuikitTheme", theme);
     const ui = await client.start("ui", { before: started(["nuikit", "ui"]) });
     await ui.call("nuikit:ready");
-    expect(last(ui, "nuikit:theme")).toMatchObject({ version: 1, hash: theme.hash, vars: theme.vars });
+    expect(last(ui, "nuikit:theme")).toMatchObject({ version: 2, hash: theme.hash, vars: theme.vars });
     expect(await ui.run(`return NUI.theme().hash`)).toBe(theme.hash);
   });
 

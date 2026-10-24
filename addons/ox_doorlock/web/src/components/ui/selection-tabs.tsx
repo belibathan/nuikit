@@ -9,8 +9,8 @@ import { Tabs, TabsContent, TabsList as ShadcnTabsList, TabsTrigger as ShadcnTab
 
 /**
  * Selection tabs — shadcn's Tabs / TabsList / TabsTrigger / TabsContent with ONE SelectionTile per list that slides
- * to the active trigger (a measured FLIP on --nk-indicator-time / --nk-indicator-ease). The lit trigger wears the
- * keycap tile (solid, or tinted under --nk-fill-style: soft; kit.css paints the ink), triggers sit --nk-list-gap
+ * to the active trigger (a measured FLIP on --nk-selection-time / --nk-selection-ease). The lit trigger wears the
+ * keycap tile (solid, or tinted under --nk-style-fill: soft; kit.css paints the ink), triggers sit --nk-list-gap
  * apart, arrow keys move the tile (Radix roving focus), reduced motion jumps. Same API as stock shadcn; import it in
  * place of `@/components/ui/tabs`.
  *
@@ -27,7 +27,7 @@ import { Tabs, TabsContent, TabsList as ShadcnTabsList, TabsTrigger as ShadcnTab
 function TabsList({ className, children, ...props }: React.ComponentProps<typeof ShadcnTabsList>) {
   return (
     <ShadcnTabsList
-      className={cn("relative h-auto gap-(--nk-list-gap) pb-[calc(3px+var(--nk-tile-wall))]", className)}
+      className={cn("relative h-auto gap-(--nk-list-gap) pb-[calc(3px+var(--nk-tile-wall-height))]", className)}
       {...props}
     >
       <SelectionTile shape="tile" items="[data-slot=tabs-trigger]" lit="[data-state=active]" pointer={false} />
@@ -37,7 +37,7 @@ function TabsList({ className, children, ...props }: React.ComponentProps<typeof
 }
 
 function TabsTrigger({ className, ...props }: React.ComponentProps<typeof ShadcnTabsTrigger>) {
-  return <ShadcnTabsTrigger className={cn("h-auto min-h-(--nk-h-chip) px-3", className)} {...props} />
+  return <ShadcnTabsTrigger className={cn("h-auto min-h-(--nk-height-chip) px-3", className)} {...props} />
 }
 
 type SegmentedOption = { value: string; label: React.ReactNode; disabled?: boolean }

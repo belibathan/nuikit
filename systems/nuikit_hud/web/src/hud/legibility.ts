@@ -1,4 +1,4 @@
-// Foundation 2 legibility (tokens 1.4): the theme's --nk-legibility is 'night', 'day' or 'auto', and
+// Foundation 2 legibility (tokens 1.4): the theme's --nk-surface-legibility is 'night', 'day' or 'auto', and
 // kit.css lifts every material toward opaque by day. With 'auto', "day" means the game's daytime: the
 // HUD's Lua sends it from the game clock (hud:legibility) and this marks html[data-nk-daytime] for the
 // kit to read. Config.legibility.mode forces the clock's answer.

@@ -21,7 +21,7 @@
 }
 .voiceInfo p {
   padding: 2px 10px;
-  border: 1px solid var(--nk-border, rgba(255, 255, 255, 0.12));
+  border: 1px solid var(--nk-line-width, rgba(255, 255, 255, 0.12));
   border-radius: 9999px;
   background: rgba(var(--nk-popover-rgb, 20, 20, 20), 0.85);
   line-height: 18px;

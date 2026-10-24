@@ -30,7 +30,7 @@ import { cn, nkState } from "@/lib/utils"
  */
 
 const itemSlotVariants = cva(
-  "group/item-slot relative flex aspect-square min-w-0 flex-col rounded-(--nk-row-radius) p-[calc(var(--nk-space)*2)] text-left outline-none transition-opacity select-none",
+  "group/item-slot relative flex aspect-square min-w-0 flex-col rounded-(--nk-row-radius) p-[calc(var(--nk-space-unit)*2)] text-left outline-none transition-opacity select-none",
   {
     variants: {
       surface: {
@@ -38,13 +38,13 @@ const itemSlotVariants = cva(
         panel: "",
         /** The game's HUD surface (a hotbar on the world). */
         // The surface itself (nk-hud, or primary when active) is picked in the component.
-        hud: "nk-shadow rounded-(--nk-hud-radius) [clip-path:var(--nk-chip-clip)]",
+        hud: "nk-shadow rounded-(--nk-chip-hud-radius) [clip-path:var(--nk-chip-clip)]",
       },
       size: {
         fill: "w-full",
-        sm: "w-[var(--nk-item-slot-w-sm,3.5rem)]",
-        md: "w-[var(--nk-item-slot-w,5rem)]",
-        lg: "w-[var(--nk-item-slot-w-lg,6rem)]",
+        sm: "w-[var(--nk-item-slot-width-sm,3.5rem)]",
+        md: "w-[var(--nk-item-slot-width,5rem)]",
+        lg: "w-[var(--nk-item-slot-width-lg,6rem)]",
       },
     },
     defaultVariants: {
@@ -156,8 +156,8 @@ function ItemSlot({
         // On the HUD: the HUD surface, or primary with primary-foreground content when active
         // (never both: nk-hud sets its own background and colour).
         hud && (hudActive ? "bg-(--nk-chip-active-bg) text-(--nk-chip-active-fg) [box-shadow:var(--nk-chip-glow)]" : "nk-hud"),
-        state === "active" && !hud && "ring-2 ring-(--nk-row-indicator-color) ring-inset",
-        state === "drop-target" && "bg-accent ring-2 ring-(--nk-row-indicator-color) ring-inset",
+        state === "active" && !hud && "ring-2 ring-(--nk-row-accent) ring-inset",
+        state === "drop-target" && "bg-accent ring-2 ring-(--nk-row-accent) ring-inset",
         state === "dragging" && "opacity-40",
         state === "locked" && "opacity-50",
         className
@@ -174,7 +174,7 @@ function ItemSlot({
     >
       <div
         data-slot="item-slot-top"
-        className={cn("nk-num flex h-[var(--nk-item-slot-meta-h,0.75rem)] shrink-0 items-center justify-between gap-[var(--nk-item-slot-gap,0.25rem)] text-(length:--nk-text-label) leading-none", hudActive ? "" : hud ? "opacity-75" : "text-muted-foreground")}
+        className={cn("nk-num flex h-[var(--nk-item-slot-top-height,0.75rem)] shrink-0 items-center justify-between gap-[var(--nk-item-slot-gap,0.25rem)] text-(length:--nk-text-label) leading-none", hudActive ? "" : hud ? "opacity-75" : "text-muted-foreground")}
       >
         <span data-slot="item-slot-corner">{corner}</span>
         {right !== null && right !== undefined && (
@@ -200,7 +200,7 @@ function ItemSlot({
         </>
       )}
       {locked && (
-        <LockIcon aria-hidden className="absolute right-1.5 bottom-1.5 size-[var(--nk-item-slot-lock,0.875rem)] text-muted-foreground" />
+        <LockIcon aria-hidden className="absolute right-1.5 bottom-1.5 size-[var(--nk-item-slot-corner-lock,0.875rem)] text-muted-foreground" />
       )}
       {dur && (
         <div
@@ -211,7 +211,7 @@ function ItemSlot({
           aria-valuemax={100}
           aria-valuenow={Math.round(dur.value)}
           className={cn(
-            "absolute inset-x-2 bottom-1 h-[calc(var(--nk-gauge-track,0.25rem)/2)] overflow-hidden",
+            "absolute inset-x-2 bottom-1 h-[calc(var(--nk-fill-height,0.25rem)/2)] overflow-hidden",
             hud ? "nk-track" : "bg-foreground/15"
           )}
         >

@@ -265,7 +265,7 @@ function MessagesApp({ data, onSend, params, setBack }: PhoneAppProps) {
         <div className="flex flex-col gap-(--nk-space-2) px-3 py-2">
           {(thread?.messages ?? []).map((m, i) => (
             <div key={i} className={cn("flex max-w-[80%] flex-col gap-(--nk-space-1)", m.from === "me" ? "items-end self-end" : "items-start self-start")}>
-              <p className={cn("rounded-(--nk-r-control) px-3 py-(--nk-space-2) text-(length:--nk-text-label) break-words", m.from === "me" ? "bg-primary text-primary-foreground" : "bg-muted text-foreground")}>{m.text}</p>
+              <p className={cn("rounded-(--nk-radius-control) px-3 py-(--nk-space-2) text-(length:--nk-text-label) break-words", m.from === "me" ? "bg-primary text-primary-foreground" : "bg-muted text-foreground")}>{m.text}</p>
               <span className="nk-num text-(length:--nk-text-label) text-muted-foreground">{formatTime(m.time)}</span>
             </div>
           ))}
@@ -309,7 +309,7 @@ function Signal({ bars }: { bars: number }) {
   return (
     <span role="img" aria-label={`${bars} of 4 signal bars`} className="flex items-end gap-(--nk-space-1)">
       {[1, 2, 3, 4].map((i) => (
-        <span key={i} style={{ height: `${0.25 + i * 0.15}rem` }} className={cn("w-[0.2rem] rounded-(--nk-r-key) bg-foreground", i > bars && "opacity-30")} />
+        <span key={i} style={{ height: `${0.25 + i * 0.15}rem` }} className={cn("w-[0.2rem] rounded-(--nk-radius-key) bg-foreground", i > bars && "opacity-30")} />
       ))}
     </span>
   )

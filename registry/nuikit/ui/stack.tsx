@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils"
  * Stack — layout on the gap levers (docs/design/components.md, foundation): a flex column (Stack) or a centred
  * row (Cluster) whose gap is a named lever, never a number: none, key (--nk-space-1, keys in a combination),
  * items (--nk-gap-items, rows and actions), cluster (--nk-gap-cluster, an icon and its text, chips in a row),
- * section (--nk-space-4) and surface (--nk-pad-surface). A theme's density re-derives every lever, so a
+ * section (--nk-space-4) and surface (--nk-gap-surface). A theme's density re-derives every lever, so a
  * composite laid out on Stack follows it.
  *
  *   <Stack gap="items">{rows}</Stack>
@@ -31,7 +31,7 @@ const stackVariants = cva("flex", {
       items: "gap-(--nk-gap-items)",
       cluster: "gap-(--nk-gap-cluster)",
       section: "gap-(--nk-space-4)",
-      surface: "gap-(--nk-pad-surface)",
+      surface: "gap-(--nk-gap-surface)",
     },
     align: {
       stretch: "",

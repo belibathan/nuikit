@@ -46,31 +46,31 @@
 /*
  * The sheet (shadcn Sheet on the left, views/sheet.tsx): the panel surface flush to the top, left and
  * bottom (no radius or cut: they would only show on the open edge), a touch deeper at the screen edge
- * (tokens only), a hairline on its open edge, the panel depth. The Sheet slides it in over --nk-time x 2.2
+ * (tokens only), a hairline on its open edge, the panel depth. The Sheet slides it in over --nk-time-base x 2.2
  * (capped: the full-screen rule, 400ms or less) and out faster; reduced motion keeps the fade only (kit.css
  * zeroes the slide), motion off zeroes both. The same model as the ox_lib context sheet.
  */
 .pause-sheet {
   color: var(--nk-panel-fg) !important;
   background-color: var(--nk-panel-bg) !important;
-  /* the menu material (tokens 1.4): --nk-panel-bg (× --nk-menu-alpha; blur through --nk-backdrop-filter, on unless a server sets --nk-backdrop: off); the screen-edge depth is a token of its own
+  /* the menu material (tokens 1.4): --nk-panel-bg (× --nk-alpha-menu; blur through --nk-panel-backdrop, on unless a server sets --nk-surface-backdrop: off); the screen-edge depth is a token of its own
      (--pause-sheet-depth, set in theme.css; 0 = flat) */
-  border-right: var(--nk-border) solid var(--nk-panel-border) !important;
+  border-right: var(--nk-line-width) solid var(--nk-panel-border) !important;
   box-shadow: var(--nk-panel-shadow) !important;
   /* the menu material's blur (tokens 1.4: the surface applies it; 0px by default) */
-  --nk-backdrop-filter: blur(var(--nk-panel-blur, 0px));
+  --nk-panel-backdrop: blur(var(--nk-panel-blur, 0px));
 }
 .pause-sheet[data-state="open"] {
-  animation-duration: min(calc(var(--nk-time) * 2.2), 360ms) !important;
-  animation-timing-function: var(--nk-ease-out) !important;
+  animation-duration: min(calc(var(--nk-time-base) * 2.2), 360ms) !important;
+  animation-timing-function: var(--nk-ease-enter) !important;
 }
 .pause-sheet[data-state="closed"] {
-  animation-duration: min(calc(var(--nk-time) * 1.4), 200ms) !important;
-  animation-timing-function: var(--nk-ease-in, ease-in) !important;
+  animation-duration: min(calc(var(--nk-time-base) * 1.4), 200ms) !important;
+  animation-timing-function: var(--nk-ease-exit, ease-in) !important;
 }
 /* a sub-page title: the heading face at section size, one step under Home's display title */
 .pause-page-title {
-  --nk-heading-size: var(--nk-text-section);
+  --nk-panel-title-size: var(--nk-text-section);
 }
 /* the map's camera buttons: a slim strip of the game chip surface on the open area's right edge */
 .pause-controls {
@@ -80,8 +80,8 @@
   color: var(--nk-chip-fg);
 }
 .pause-logo {
-  border-radius: var(--nk-key-radius);
-  clip-path: var(--nk-key-clip);
+  border-radius: var(--nk-tile-face-radius);
+  clip-path: var(--nk-tile-face-clip);
 }
 
 @keyframes pause-fade {
@@ -102,7 +102,7 @@
  */
 .pause-scrim[data-stage] {
   background: transparent;
-  --nk-backdrop-filter: none;
+  --nk-panel-backdrop: none;
 }
 
 /* The map: the world stays sharp; a light shade at the edges keeps the panels readable. */
@@ -158,10 +158,10 @@
   background-color: var(--nk-chip-bg);
   color: var(--nk-chip-fg);
   box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--hud-foreground) 14%, transparent);
-  transition: transform var(--nk-time-hover, 120ms) ease-out;
+  transition: transform var(--nk-time-fast, 120ms) ease-out;
 }
 .pause-blip-accent {
-  box-shadow: inset 0 0 0 var(--nk-border, 1px) var(--blip);
+  box-shadow: inset 0 0 0 var(--nk-line-width, 1px) var(--blip);
 }
 .pause-blip-accent .pause-blip-icon {
   color: var(--blip);
@@ -255,25 +255,25 @@
 }
 
 /*
- * --nk-pause-style: slash (tokens 1.3, html[data-nk-pause="slash"]): a light panel (--nk-pause-surface, ink
- * --nk-pause-ink) with a diagonal right edge cutting into the scene; the column sits on its left, the
+ * --nk-style-pause: slash (tokens 1.3, html[data-nk-pause="slash"]): a light panel (--pause-surface, ink
+ * --pause-ink) with a diagonal right edge cutting into the scene; the column sits on its left, the
  * selected row is the identity's fill bar, the key hints go bottom right. The sheet's open area and the
  * camera frame are unchanged.
  */
 :is(html, *)[data-nk-pause="slash"] .pause-sheet {
-  --foreground: var(--nk-pause-ink);
+  --foreground: var(--pause-ink);
   --foreground-rgb: var(--nk-pause-ink-rgb, 14, 16, 20);
-  --popover-foreground: var(--nk-pause-ink);
+  --popover-foreground: var(--pause-ink);
   --popover-foreground-rgb: var(--nk-pause-ink-rgb, 14, 16, 20);
-  --nk-panel-fg: var(--nk-pause-ink);
+  --nk-panel-fg: var(--pause-ink);
   --muted-foreground: rgba(var(--nk-pause-ink-rgb, 14, 16, 20), 0.62);
   --muted-foreground-rgb: var(--nk-pause-ink-rgb, 14, 16, 20);
   --muted: rgba(var(--nk-pause-ink-rgb, 14, 16, 20), 0.08);
   --border: rgba(var(--nk-pause-ink-rgb, 14, 16, 20), 0.85);
   --accent: rgba(var(--nk-pause-ink-rgb, 14, 16, 20), 0.08);
-  --accent-foreground: var(--nk-pause-ink);
-  color: var(--nk-pause-ink) !important;
-  background-color: var(--nk-pause-surface) !important;
+  --accent-foreground: var(--pause-ink);
+  color: var(--pause-ink) !important;
+  background-color: var(--pause-surface) !important;
   background-image: none;
   border-right: 0 !important;
   box-shadow: none !important;
@@ -300,7 +300,7 @@
    over the sheets' ladder; reduced motion fades only, motion off is instant. */
 .pause-page {
   --pause-page-x: 1.5rem;
-  animation: pause-page-in min(calc(var(--nk-time) * 1.8), 280ms) var(--nk-ease-out, cubic-bezier(0.16, 1, 0.3, 1)) both;
+  animation: pause-page-in min(calc(var(--nk-time-base) * 1.8), 280ms) var(--nk-ease-enter, cubic-bezier(0.16, 1, 0.3, 1)) both;
 }
 .pause-page[data-dir="back"] {
   --pause-page-x: -1.5rem;

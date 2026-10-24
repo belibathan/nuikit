@@ -335,7 +335,7 @@
   var EASE = "cubic-bezier(0.2, 0.8, 0.2, 1)";
 
   /**
-   * The motion levers from <html> (--nk-caret-time/ease, --nk-type-in-time/distance: the kit's, set by
+   * The motion levers from <html> (--nk-field-caret-time/ease, --nk-field-mirror-in/distance: the kit's, set by
    * the server theme or style.css's defaults), resolved by the browser itself on a probe so calc(), var()
    * and em all come out as numbers; the constants above only when a lever is missing.
    */
@@ -345,8 +345,8 @@
       probe = levers.probe = document.createElement("span");
       probe.setAttribute("aria-hidden", "true");
       probe.style.cssText = "position:absolute;visibility:hidden;pointer-events:none;width:0;height:0;overflow:hidden;" +
-        "transition-duration:var(--nk-caret-time,140ms);transition-timing-function:var(--nk-caret-ease,cubic-bezier(0.2,0.8,0.2,1));" +
-        "animation-duration:var(--nk-type-in-time,210ms);margin-left:var(--nk-type-in-distance,0.45em);";
+        "transition-duration:var(--nk-field-caret-time,140ms);transition-timing-function:var(--nk-field-caret-ease,cubic-bezier(0.2,0.8,0.2,1));" +
+        "animation-duration:var(--nk-field-mirror-in,210ms);margin-left:var(--nk-field-mirror-rise,0.45em);";
       document.body.appendChild(probe);
     }
     probe.style.fontSize = getComputedStyle(el).fontSize;

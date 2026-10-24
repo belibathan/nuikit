@@ -45,11 +45,11 @@ describe("the lever catalog", () => {
   });
 
   it("writes each dimension's range from its description, numbers and keywords from the table", () => {
-    const skew = levers().find((t) => t.name === "nk-tile-skew")!;
+    const skew = levers().find((t) => t.name === "nk-tile-face-skew")!;
     expect(rangeOf(skew)).toBe("(-20deg..20deg)");
-    const fill = levers().find((t) => t.name === "nk-fill-style")!;
+    const fill = levers().find((t) => t.name === "nk-style-fill")!;
     expect(rangeOf(fill)).toBe("(solid | soft)");
-    const dur = levers().find((t) => t.name === "nk-duration")!;
+    const dur = levers().find((t) => t.name === "nk-motion-duration")!;
     expect(rangeOf(dur)).toMatch(/^\(/);
   });
 

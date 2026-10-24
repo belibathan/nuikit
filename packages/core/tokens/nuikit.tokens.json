@@ -1,9 +1,9 @@
 {
-  "$description": "nuikit default theme (stock shadcn neutral) (nuikit tokens v1.7, dark)",
+  "$description": "nuikit default theme (stock shadcn neutral) (nuikit tokens v2.0, dark)",
   "$extensions": {
     "dev.nuikit": {
-      "tokens": 1,
-      "revision": "1.7",
+      "tokens": 2,
+      "revision": "2.0",
       "mode": "dark"
     }
   },
@@ -72,7 +72,7 @@
         "alpha": 1,
         "hex": "#171717"
       },
-      "$description": "Every floating panel (nk-panel)"
+      "$description": "Every floating panel"
     },
     "popover-foreground": {
       "$value": {
@@ -98,7 +98,7 @@
         "alpha": 1,
         "hex": "#e5e5e5"
       },
-      "$description": "The one main action per surface, progress fills, selection"
+      "$description": "The one main action per surface, the keycap face, selection"
     },
     "primary-foreground": {
       "$value": {
@@ -176,7 +176,7 @@
         "alpha": 1,
         "hex": "#262626"
       },
-      "$description": "Hover and keyboard highlight"
+      "$description": "Hover tint"
     },
     "accent-foreground": {
       "$value": {
@@ -254,7 +254,7 @@
         "alpha": 1,
         "hex": "#737373"
       },
-      "$description": "Focus rings"
+      "$description": "A text field's caret rim"
     },
     "chart-1": {
       "$value": {
@@ -321,6 +321,32 @@
       },
       "$description": "Categorical colour 5"
     },
+    "brand": {
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.8314,
+          0.8314,
+          0.8314
+        ],
+        "alpha": 1,
+        "hex": "#d4d4d4"
+      },
+      "$description": "The server's signature: active marks, needles, the accent's stops"
+    },
+    "brand-foreground": {
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0,
+          0,
+          0
+        ],
+        "alpha": 1,
+        "hex": "#000000"
+      },
+      "$description": "Text on brand"
+    },
     "success": {
       "$value": {
         "colorSpace": "srgb",
@@ -332,7 +358,7 @@
         "alpha": 1,
         "hex": "#14be5a"
       },
-      "$description": "Positive status: done, paid, online"
+      "$description": "Positive status"
     },
     "success-foreground": {
       "$value": {
@@ -358,7 +384,7 @@
         "alpha": 1,
         "hex": "#f5a600"
       },
-      "$description": "Caution status: low fuel, about to expire"
+      "$description": "Caution status"
     },
     "warning-foreground": {
       "$value": {
@@ -384,7 +410,7 @@
         "alpha": 1,
         "hex": "#e5e5e5"
       },
-      "$description": "Neutral status: tips, notices"
+      "$description": "Neutral status"
     },
     "info-foreground": {
       "$value": {
@@ -410,7 +436,7 @@
         "alpha": 0.45,
         "hex": "#000000"
       },
-      "$description": "Surfaces drawn straight on the game: HUD chips, hotbar, target eye"
+      "$description": "Surfaces drawn straight on the game: HUD chips, hotbar"
     },
     "hud-foreground": {
       "$value": {
@@ -436,98 +462,7 @@
         "alpha": 1,
         "hex": "#000000"
       },
-      "$description": "Darkens the game behind full-screen screens, bar tracks and shadows on the game; always used with opacity"
-    },
-    "vital-health": {
-      "$value": {
-        "colorSpace": "srgb",
-        "components": [
-          1,
-          0.3922,
-          0.4039
-        ],
-        "alpha": 1,
-        "hex": "#ff6467"
-      },
-      "$description": "Health bar"
-    },
-    "vital-armor": {
-      "$value": {
-        "colorSpace": "srgb",
-        "components": [
-          0.2314,
-          0.6118,
-          0.9647
-        ],
-        "alpha": 1,
-        "hex": "#3b9cf6"
-      },
-      "$description": "Armor bar"
-    },
-    "vital-hunger": {
-      "$value": {
-        "colorSpace": "srgb",
-        "components": [
-          0.9686,
-          0.6353,
-          0.1412
-        ],
-        "alpha": 1,
-        "hex": "#f7a224"
-      },
-      "$description": "Hunger bar"
-    },
-    "vital-thirst": {
-      "$value": {
-        "colorSpace": "srgb",
-        "components": [
-          0.1176,
-          0.7725,
-          0.8941
-        ],
-        "alpha": 1,
-        "hex": "#1ec5e4"
-      },
-      "$description": "Thirst bar"
-    },
-    "vital-stress": {
-      "$value": {
-        "colorSpace": "srgb",
-        "components": [
-          0.8,
-          0.4039,
-          0.8902
-        ],
-        "alpha": 1,
-        "hex": "#cc67e3"
-      },
-      "$description": "Stress bar"
-    },
-    "brand": {
-      "$value": {
-        "colorSpace": "srgb",
-        "components": [
-          0.8314,
-          0.8314,
-          0.8314
-        ],
-        "alpha": 1,
-        "hex": "#d4d4d4"
-      },
-      "$description": "The server's signature colour: active indicators, gauge needles, focus, logos (not the action: that's primary)"
-    },
-    "brand-foreground": {
-      "$value": {
-        "colorSpace": "srgb",
-        "components": [
-          0,
-          0,
-          0
-        ],
-        "alpha": 1,
-        "hex": "#000000"
-      },
-      "$description": "Text on brand"
+      "$description": "Darkens the game; shadows and walls; always used with opacity"
     },
     "world-foreground": {
       "$value": {
@@ -540,7 +475,7 @@
         "alpha": 1,
         "hex": "#ffffff"
       },
-      "$description": "Text and icons drawn straight on the game, no panel (death text, unplated HUD values, nk-on-game). Light in every theme, light or dark"
+      "$description": "Text drawn straight on the game, light in every theme"
     },
     "world-foreground-muted": {
       "$value": {
@@ -566,7 +501,7 @@
         "alpha": 1,
         "hex": "#14be5a"
       },
-      "$description": "A gain drawn on the game or the HUD plate (slab deltas: +2, $250). Reads on the dark plate in every theme, light or dark"
+      "$description": "A gain drawn on the game"
     },
     "world-destructive": {
       "$value": {
@@ -579,7 +514,98 @@
         "alpha": 1,
         "hex": "#ff6467"
       },
-      "$description": "A loss drawn on the game or the HUD plate (slab deltas: −1)"
+      "$description": "A loss drawn on the game"
+    },
+    "vital-health": {
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          1,
+          0.3922,
+          0.4039
+        ],
+        "alpha": 1,
+        "hex": "#ff6467"
+      },
+      "$description": "Health"
+    },
+    "vital-armor": {
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.2314,
+          0.6118,
+          0.9647
+        ],
+        "alpha": 1,
+        "hex": "#3b9cf6"
+      },
+      "$description": "Armor"
+    },
+    "vital-hunger": {
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.9686,
+          0.6353,
+          0.1412
+        ],
+        "alpha": 1,
+        "hex": "#f7a224"
+      },
+      "$description": "Hunger"
+    },
+    "vital-thirst": {
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.1176,
+          0.7725,
+          0.8941
+        ],
+        "alpha": 1,
+        "hex": "#1ec5e4"
+      },
+      "$description": "Thirst"
+    },
+    "pause-surface": {
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.9647,
+          0.9686,
+          0.9765
+        ],
+        "alpha": 1,
+        "hex": "#f6f7f9"
+      },
+      "$description": "The slash pause panel's light surface (style.pause: slash)"
+    },
+    "pause-ink": {
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.0549,
+          0.0627,
+          0.0784
+        ],
+        "alpha": 1,
+        "hex": "#0e1014"
+      },
+      "$description": "Text on the slash pause panel"
+    },
+    "vital-stress": {
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.8,
+          0.4039,
+          0.8902
+        ],
+        "alpha": 1,
+        "hex": "#cc67e3"
+      },
+      "$description": "Stress"
     },
     "role-health": {
       "$value": {
@@ -592,7 +618,7 @@
         "alpha": 1,
         "hex": "#ff6467"
       },
-      "$description": "Role colour health: the --hue-* ramp under data-hue=\"health\""
+      "$description": "Role health: the --hue-* ramp under data-hue=\"health\""
     },
     "role-armor": {
       "$value": {
@@ -605,7 +631,7 @@
         "alpha": 1,
         "hex": "#3b9cf6"
       },
-      "$description": "Role colour armor: the --hue-* ramp under data-hue=\"armor\""
+      "$description": "Role armor: the --hue-* ramp under data-hue=\"armor\""
     },
     "role-hunger": {
       "$value": {
@@ -618,7 +644,7 @@
         "alpha": 1,
         "hex": "#f7a224"
       },
-      "$description": "Role colour hunger: the --hue-* ramp under data-hue=\"hunger\""
+      "$description": "Role hunger: the --hue-* ramp under data-hue=\"hunger\""
     },
     "role-thirst": {
       "$value": {
@@ -631,7 +657,7 @@
         "alpha": 1,
         "hex": "#1ec5e4"
       },
-      "$description": "Role colour thirst: the --hue-* ramp under data-hue=\"thirst\""
+      "$description": "Role thirst: the --hue-* ramp under data-hue=\"thirst\""
     },
     "role-stress": {
       "$value": {
@@ -644,7 +670,7 @@
         "alpha": 1,
         "hex": "#cc67e3"
       },
-      "$description": "Role colour stress: the --hue-* ramp under data-hue=\"stress\""
+      "$description": "Role stress: the --hue-* ramp under data-hue=\"stress\""
     },
     "role-stamina": {
       "$value": {
@@ -657,7 +683,7 @@
         "alpha": 1,
         "hex": "#14be5a"
       },
-      "$description": "Role colour stamina: the --hue-* ramp under data-hue=\"stamina\""
+      "$description": "Role stamina: the --hue-* ramp under data-hue=\"stamina\""
     },
     "role-oxygen": {
       "$value": {
@@ -670,7 +696,7 @@
         "alpha": 1,
         "hex": "#e5e5e5"
       },
-      "$description": "Role colour oxygen: the --hue-* ramp under data-hue=\"oxygen\""
+      "$description": "Role oxygen: the --hue-* ramp under data-hue=\"oxygen\""
     },
     "role-info": {
       "$value": {
@@ -683,7 +709,7 @@
         "alpha": 1,
         "hex": "#e5e5e5"
       },
-      "$description": "Role colour info: the --hue-* ramp under data-hue=\"info\""
+      "$description": "Role info: the --hue-* ramp under data-hue=\"info\""
     },
     "role-success": {
       "$value": {
@@ -696,7 +722,7 @@
         "alpha": 1,
         "hex": "#14be5a"
       },
-      "$description": "Role colour success: the --hue-* ramp under data-hue=\"success\""
+      "$description": "Role success: the --hue-* ramp under data-hue=\"success\""
     },
     "role-warning": {
       "$value": {
@@ -709,7 +735,7 @@
         "alpha": 1,
         "hex": "#f5a600"
       },
-      "$description": "Role colour warning: the --hue-* ramp under data-hue=\"warning\""
+      "$description": "Role warning: the --hue-* ramp under data-hue=\"warning\""
     },
     "role-danger": {
       "$value": {
@@ -722,7 +748,7 @@
         "alpha": 1,
         "hex": "#ff6467"
       },
-      "$description": "Role colour danger: the --hue-* ramp under data-hue=\"danger\""
+      "$description": "Role danger: the --hue-* ramp under data-hue=\"danger\""
     },
     "role-police": {
       "$value": {
@@ -735,7 +761,7 @@
         "alpha": 1,
         "hex": "#3186e9"
       },
-      "$description": "Role colour police: the --hue-* ramp under data-hue=\"police\""
+      "$description": "Role police: the --hue-* ramp under data-hue=\"police\""
     },
     "role-ems": {
       "$value": {
@@ -748,7 +774,7 @@
         "alpha": 1,
         "hex": "#ed4a49"
       },
-      "$description": "Role colour ems: the --hue-* ramp under data-hue=\"ems\""
+      "$description": "Role ems: the --hue-* ramp under data-hue=\"ems\""
     },
     "role-mech": {
       "$value": {
@@ -761,7 +787,7 @@
         "alpha": 1,
         "hex": "#ee9138"
       },
-      "$description": "Role colour mech: the --hue-* ramp under data-hue=\"mech\""
+      "$description": "Role mech: the --hue-* ramp under data-hue=\"mech\""
     },
     "role-gang": {
       "$value": {
@@ -774,7 +800,7 @@
         "alpha": 1,
         "hex": "#9d57de"
       },
-      "$description": "Role colour gang: the --hue-* ramp under data-hue=\"gang\""
+      "$description": "Role gang: the --hue-* ramp under data-hue=\"gang\""
     },
     "role-civ": {
       "$value": {
@@ -787,7 +813,7 @@
         "alpha": 1,
         "hex": "#a1a1a1"
       },
-      "$description": "Role colour civ: the --hue-* ramp under data-hue=\"civ\""
+      "$description": "Role civ: the --hue-* ramp under data-hue=\"civ\""
     },
     "role-staff": {
       "$value": {
@@ -800,7 +826,7 @@
         "alpha": 1,
         "hex": "#d4d4d4"
       },
-      "$description": "Role colour staff: the --hue-* ramp under data-hue=\"staff\""
+      "$description": "Role staff: the --hue-* ramp under data-hue=\"staff\""
     },
     "role-common": {
       "$value": {
@@ -813,7 +839,7 @@
         "alpha": 1,
         "hex": "#a1a1a1"
       },
-      "$description": "Role colour common: the --hue-* ramp under data-hue=\"common\""
+      "$description": "Role common: the --hue-* ramp under data-hue=\"common\""
     },
     "role-uncommon": {
       "$value": {
@@ -826,7 +852,7 @@
         "alpha": 1,
         "hex": "#54bf5c"
       },
-      "$description": "Role colour uncommon: the --hue-* ramp under data-hue=\"uncommon\""
+      "$description": "Role uncommon: the --hue-* ramp under data-hue=\"uncommon\""
     },
     "role-rare": {
       "$value": {
@@ -839,7 +865,7 @@
         "alpha": 1,
         "hex": "#3496ef"
       },
-      "$description": "Role colour rare: the --hue-* ramp under data-hue=\"rare\""
+      "$description": "Role rare: the --hue-* ramp under data-hue=\"rare\""
     },
     "role-epic": {
       "$value": {
@@ -852,7 +878,7 @@
         "alpha": 1,
         "hex": "#a657ed"
       },
-      "$description": "Role colour epic: the --hue-* ramp under data-hue=\"epic\""
+      "$description": "Role epic: the --hue-* ramp under data-hue=\"epic\""
     },
     "role-legendary": {
       "$value": {
@@ -865,7 +891,7 @@
         "alpha": 1,
         "hex": "#f2a618"
       },
-      "$description": "Role colour legendary: the --hue-* ramp under data-hue=\"legendary\""
+      "$description": "Role legendary: the --hue-* ramp under data-hue=\"legendary\""
     },
     "role-brand": {
       "$value": {
@@ -878,7 +904,7 @@
         "alpha": 1,
         "hex": "#d4d4d4"
       },
-      "$description": "Role colour brand: the --hue-* ramp under data-hue=\"brand\""
+      "$description": "Role brand: the --hue-* ramp under data-hue=\"brand\""
     },
     "role-neutral": {
       "$value": {
@@ -891,363 +917,418 @@
         "alpha": 1,
         "hex": "#a1a1a1"
       },
-      "$description": "Role colour neutral: the --hue-* ramp under data-hue=\"neutral\""
+      "$description": "Role neutral: the --hue-* ramp under data-hue=\"neutral\""
     }
   },
   "radius": {
     "$type": "dimension",
     "$value": {
-      "value": 0.625,
+      "value": 0.75,
       "unit": "rem"
     },
-    "$description": "Corner radius (panels radius + 4px, controls radius − 2px)"
+    "$description": "The radius scale's base: every radius step derives from it"
   },
   "font": {
     "$type": "fontFamily",
     "sans": {
       "$value": [
+        "Geist",
         "Inter",
-        "ui-sans-serif",
+        "Segoe UI",
         "system-ui",
         "sans-serif"
       ],
-      "$description": "Text"
+      "$description": "Sentences (the body voice)"
+    },
+    "display": {
+      "$value": [
+        "Barlow Condensed",
+        "Arial Narrow",
+        "sans-serif"
+      ],
+      "$description": "Anything scanned: keys, titles, labels, captions"
+    },
+    "numeric": {
+      "$value": [
+        "Barlow Condensed",
+        "Arial Narrow",
+        "sans-serif"
+      ],
+      "$description": "Every number (always tabular)"
     },
     "mono": {
       "$value": [
         "Geist Mono",
         "ui-monospace",
-        "SFMono-Regular",
-        "Menlo",
         "monospace"
       ],
       "$description": "Codes and IDs a player might type"
-    },
-    "display": {
-      "$value": [
-        "Inter Tight",
-        "Inter",
-        "ui-sans-serif",
-        "system-ui",
-        "sans-serif"
-      ],
-      "$description": "Headings and big moments (titles, timers, the balance)"
-    },
-    "numeric": {
-      "$value": [
-        "Inter",
-        "ui-sans-serif",
-        "system-ui",
-        "sans-serif"
-      ],
-      "$description": "Every number on a gauge, money or timer (always tabular)"
     }
   },
   "nk": {
     "scale": {
       "$type": "number",
       "$value": 1,
-      "$description": "UI size multiplier (unitless). Players can scale further (0.85–1.25)."
+      "$description": "UI size multiplier (players scale further, 0.85–1.25)"
     },
-    "motion": {
+    "density": {
       "$type": "number",
       "$value": 1,
-      "$description": "1 = animations on, 0 = off. Painted as 0 when the theme or the player's reduced-motion pref turns motion down."
+      "$description": "Spacing multiplier: 0.75 compact … 1.3 roomy"
     },
-    "type-ratio": {
-      "$type": "number",
-      "$value": 1.2,
-      "$description": "Step between type sizes: 1.125 calm … 1.333 dramatic"
-    },
-    "weight-body": {
-      "$type": "number",
-      "$value": 400,
-      "$description": "Body text weight"
-    },
-    "weight-strong": {
-      "$type": "number",
-      "$value": 600,
-      "$description": "Titles, key numbers, active rows"
-    },
-    "weight-display": {
-      "$type": "number",
-      "$value": 700,
-      "$description": "Display type (full-screen titles, big numbers)"
-    },
-    "tracking-display": {
+    "height-key": {
       "$type": "dimension",
       "$value": {
-        "value": -0.02,
-        "unit": "em"
+        "value": 1.5,
+        "unit": "rem"
       },
-      "$description": "Letter-spacing of display type"
+      "$description": "A key / small tile"
     },
-    "label-case": {
-      "$value": "uppercase",
-      "$description": "Captions (the short names of values) in uppercase or as written",
+    "height-control": {
+      "$type": "dimension",
+      "$value": {
+        "value": 2.25,
+        "unit": "rem"
+      },
+      "$description": "Buttons and bar items / large tile"
+    },
+    "height-field": {
+      "$type": "dimension",
+      "$value": {
+        "value": 2.75,
+        "unit": "rem"
+      },
+      "$description": "Text inputs, selects and dialog buttons"
+    },
+    "icon-sm": {
+      "$type": "dimension",
+      "$value": {
+        "value": 0.75,
+        "unit": "rem"
+      },
+      "$description": "Small icon"
+    },
+    "icon-md": {
+      "$type": "dimension",
+      "$value": {
+        "value": 1,
+        "unit": "rem"
+      },
+      "$description": "Icon next to text (the default)"
+    },
+    "icon-lg": {
+      "$type": "dimension",
+      "$value": {
+        "value": 1.25,
+        "unit": "rem"
+      },
+      "$description": "Large icon"
+    },
+    "icon-stroke": {
+      "$type": "number",
+      "$value": 2,
+      "$description": "Stroke width"
+    },
+    "text-base": {
+      "$type": "dimension",
+      "$value": {
+        "value": 1,
+        "unit": "rem"
+      },
+      "$description": "Body size; every step derives from it"
+    },
+    "text-key": {
+      "$type": "dimension",
+      "$value": {
+        "value": 0.8125,
+        "unit": "rem"
+      },
+      "$description": "The scan voice (keys, buttons, tabs)"
+    },
+    "text-row": {
+      "$type": "dimension",
+      "$value": {
+        "value": 1.125,
+        "unit": "rem"
+      },
+      "$description": "A row or notice title (the label voice)"
+    },
+    "text-desc": {
+      "$type": "dimension",
+      "$value": {
+        "value": 0.875,
+        "unit": "rem"
+      },
+      "$description": "A row or notice description (the body voice)"
+    },
+    "leading-tight": {
+      "$type": "dimension",
+      "$value": {
+        "value": 1,
+        "unit": "rem"
+      },
+      "$description": "Small text: captions, labels, descriptions"
+    },
+    "leading-normal": {
+      "$type": "dimension",
+      "$value": {
+        "value": 1.25,
+        "unit": "rem"
+      },
+      "$description": "Body-size text: rows, notices, slabs"
+    },
+    "shape-skew": {
+      "$value": "-12deg",
+      "$description": "The keycap's slant: tile faces, the primary button, the selection (their boxes and text stay upright); at most ±20deg",
       "$extensions": {
         "dev.nuikit": {
-          "type": "keyword"
+          "type": "angle"
         }
       }
     },
-    "tracking-label": {
+    "shape-slab": {
+      "$value": "0deg",
+      "$description": "Chips, badges and tags drawn as skewed slabs too (0deg = upright); at most ±20deg",
+      "$extensions": {
+        "dev.nuikit": {
+          "type": "angle"
+        }
+      }
+    },
+    "shape-cut": {
       "$type": "dimension",
       "$value": {
-        "value": 0.06,
-        "unit": "em"
+        "value": 0,
+        "unit": "px"
       },
-      "$description": "Letter-spacing of captions (uppercase wants 0.06–0.12em)"
+      "$description": "Chamfered corners (top left, bottom right) as clip-path; 0 = off"
     },
-    "border-width": {
+    "shape-stroke": {
       "$type": "dimension",
       "$value": {
         "value": 1,
         "unit": "px"
       },
-      "$description": "Hairline weight of panels, rows and fields"
+      "$description": "Hairline weight of plates, rims and fields"
     },
-    "cut": {
+    "type-ratio": {
+      "$type": "number",
+      "$value": 1.25,
+      "$description": "Step between type sizes: 1.125 calm … 1.333 dramatic"
+    },
+    "type-weight-body": {
+      "$type": "number",
+      "$value": 400,
+      "$description": "Sentences"
+    },
+    "type-weight-strong": {
+      "$type": "number",
+      "$value": 500,
+      "$description": "Captions, chips, slabs: text that must hold its own on the game"
+    },
+    "type-weight-display": {
+      "$type": "number",
+      "$value": 700,
+      "$description": "Full-screen titles and big numbers"
+    },
+    "type-tracking-display": {
+      "$type": "dimension",
+      "$value": {
+        "value": -0.02,
+        "unit": "em"
+      },
+      "$description": "Letter-spacing of full-screen titles"
+    },
+    "type-tracking-label": {
+      "$type": "dimension",
+      "$value": {
+        "value": 0.06,
+        "unit": "em"
+      },
+      "$description": "Letter-spacing of captions"
+    },
+    "type-case": {
+      "$value": "uppercase",
+      "$description": "Anything scanned (keys, titles, labels, captions) in caps or as written",
+      "$extensions": {
+        "dev.nuikit": {
+          "type": "keyword"
+        }
+      }
+    },
+    "type-slant": {
+      "$value": "italic",
+      "$description": "The scanned voices upright or italic (a real italic where the face has one)",
+      "$extensions": {
+        "dev.nuikit": {
+          "type": "keyword"
+        }
+      }
+    },
+    "type-overhang": {
+      "$type": "dimension",
+      "$value": {
+        "value": 0.15,
+        "unit": "em"
+      },
+      "$description": "Trailing pad of a slanted voice (the italic's overhang); 0em when upright"
+    },
+    "type-scan-weight": {
+      "$type": "number",
+      "$value": 800,
+      "$description": "Weight of the scan voice (keys, buttons, tabs)"
+    },
+    "type-scan-tracking": {
+      "$type": "dimension",
+      "$value": {
+        "value": 0.02,
+        "unit": "em"
+      },
+      "$description": "Letter-spacing of the scan voice (keys, buttons, tabs)"
+    },
+    "type-title-weight": {
+      "$type": "number",
+      "$value": 800,
+      "$description": "Weight of the title voice (panel and row titles)"
+    },
+    "type-title-tracking": {
+      "$type": "dimension",
+      "$value": {
+        "value": 0.02,
+        "unit": "em"
+      },
+      "$description": "Letter-spacing of the title voice (panel and row titles)"
+    },
+    "type-label-weight": {
+      "$type": "number",
+      "$value": 700,
+      "$description": "Weight of the label voice (labels, row titles)"
+    },
+    "type-label-tracking": {
+      "$type": "dimension",
+      "$value": {
+        "value": 0.03,
+        "unit": "em"
+      },
+      "$description": "Letter-spacing of the label voice (labels, row titles)"
+    },
+    "type-num-weight": {
+      "$type": "number",
+      "$value": 700,
+      "$description": "Weight of the numeric voice"
+    },
+    "type-num-tracking": {
+      "$type": "dimension",
+      "$value": {
+        "value": 0.01,
+        "unit": "em"
+      },
+      "$description": "Letter-spacing of the numeric voice"
+    },
+    "type-num-case": {
+      "$value": "none",
+      "$description": "Case of the numeric voice",
+      "$extensions": {
+        "dev.nuikit": {
+          "type": "keyword"
+        }
+      }
+    },
+    "type-body-style": {
+      "$value": "normal",
+      "$description": "Slant of the body voice (sentences)",
+      "$extensions": {
+        "dev.nuikit": {
+          "type": "keyword"
+        }
+      }
+    },
+    "type-body-tracking": {
       "$type": "dimension",
       "$value": {
         "value": 0,
-        "unit": "px"
+        "unit": "em"
       },
-      "$description": "Chamfered corners (top left, bottom right), drawn with clip-path; 0 = off"
+      "$description": "Letter-spacing of the body voice (sentences)"
     },
-    "display-style": {
-      "$value": "normal",
-      "$description": "Display, heading, title and numeric text upright or italic (a real italic face where the font has one)",
+    "type-body-case": {
+      "$value": "none",
+      "$description": "Case of the body voice (sentences)",
       "$extensions": {
         "dev.nuikit": {
           "type": "keyword"
         }
       }
-    },
-    "pause-style": {
-      "$value": "sheet",
-      "$description": "The pause menu: a full-height sheet, or a light slash panel with a diagonal edge into the scene",
-      "$extensions": {
-        "dev.nuikit": {
-          "type": "keyword"
-        }
-      }
-    },
-    "skew": {
-      "$value": "0deg",
-      "$description": "Badges, chips, key caps, tags and the primary / selected bar drawn skewed (their text stays upright); 0deg = off, at most ±20deg",
-      "$extensions": {
-        "dev.nuikit": {
-          "type": "dimension"
-        }
-      }
-    },
-    "surface-opacity": {
-      "$type": "number",
-      "$value": 0.96,
-      "$description": "Panel opacity over the game (floor 0.92 for text panels)"
     },
     "surface-tint": {
       "$type": "number",
-      "$value": 0.02,
-      "$description": "How much brand tints neutral surfaces (0–0.12)"
+      "$value": 0,
+      "$description": "How much brand tints neutral surfaces"
     },
     "surface-gradient": {
       "$type": "number",
       "$value": 0,
-      "$description": "Top-to-bottom light falloff on panels (0 = flat)"
+      "$description": "Top-to-bottom light falloff (0 = flat)"
     },
-    "surface-edge": {
-      "$type": "number",
-      "$value": 0.06,
-      "$description": "Inner top highlight, the machined edge (alpha)"
-    },
-    "elevation": {
-      "$value": "soft",
-      "$description": "Shadow recipe of floating panels: none, soft, deep, or hard (a solid offset drop, no blur; tokens 1.3)",
+    "surface-elevation": {
+      "$value": "hard",
+      "$description": "Shadow recipe: hard is a solid offset drop, no blur",
       "$extensions": {
         "dev.nuikit": {
           "type": "keyword"
         }
       }
     },
-    "glow": {
+    "surface-glow": {
       "$type": "number",
       "$value": 0,
-      "$description": "Brand glow on active parts and HUD fills (alpha, 0 = off)"
+      "$description": "Brand glow on active parts (alpha, 0 = off)"
     },
-    "density": {
-      "$type": "number",
-      "$value": 0.875,
-      "$description": "Multiplies the kit's spacing scale: 0.875 compact (Graphite) … 1.15 roomy"
-    },
-    "ease": {
-      "$type": "cubicBezier",
-      "$value": [
-        0.2,
-        0.8,
-        0.2,
-        1
-      ],
-      "$description": "The one easing curve"
-    },
-    "duration": {
-      "$type": "duration",
-      "$value": {
-        "value": 140,
-        "unit": "ms"
-      },
-      "$description": "Base duration (panel enter, transitions); × nk-motion"
-    },
-    "hud-opacity": {
-      "$type": "number",
-      "$value": 0.55,
-      "$description": "Minimum backplate opacity of HUD chips and tiles"
-    },
-    "hud-text-shadow": {
-      "$value": "soft",
-      "$description": "Shadow under text drawn on the game",
-      "$extensions": {
-        "dev.nuikit": {
-          "type": "keyword"
-        }
-      }
-    },
-    "gauge-style": {
-      "$value": "arc",
-      "$description": "How gauges are drawn",
-      "$extensions": {
-        "dev.nuikit": {
-          "type": "keyword"
-        }
-      }
-    },
-    "gauge-track": {
-      "$type": "dimension",
-      "$value": {
-        "value": 0.25,
-        "unit": "rem"
-      },
-      "$description": "Gauge and meter track thickness"
-    },
-    "gauge-ticks": {
+    "surface-glow-budget": {
       "$type": "number",
       "$value": 1,
-      "$description": "Tick marks on gauges: 1 on, 0 off"
+      "$description": "How many parts may glow at once (0 = no limit)"
     },
-    "row-indicator": {
-      "$value": "bar",
-      "$description": "How the active row is marked: bar, fill, outline, or sweep (1.5: no bar, the row's --nk-fill-tint sweep alone)",
+    "surface-backdrop": {
+      "$value": "off",
+      "$description": "Backdrop blur (FiveM draws it as a black box: off)",
       "$extensions": {
         "dev.nuikit": {
           "type": "keyword"
         }
       }
     },
-    "motion-feel": {
-      "$value": "crisp",
-      "$description": "How the identity moves: crisp (Graphite), snap (Signal: no glide on selection, flash instead of press scale), smooth (Velvet: longer springs, a hint of bounce), stepped (Vector: values tick in steps)",
+    "surface-legibility": {
+      "$value": "auto",
+      "$description": "day lifts surfaces for a bright sky; auto follows the game clock",
       "$extensions": {
         "dev.nuikit": {
           "type": "keyword"
         }
       }
     },
-    "spring-bounce": {
-      "$type": "number",
-      "$value": 0,
-      "$description": "Bounce folded into the snap, move and soft springs (0 = critically damped; 0.3 is the most the kit allows)"
-    },
-    "treatment": {
-      "$value": "soft",
-      "$description": "How the palette is drawn: soft (Graphite), glass, plate or slab. Fills material, stroke, type, focus and motion defaults; any value the theme sets wins",
-      "$extensions": {
-        "dev.nuikit": {
-          "type": "keyword"
-        }
-      }
-    },
-    "focus-style": {
-      "$value": "ring",
-      "$description": "Every component's focus (controller and keyboard highlight)",
-      "$extensions": {
-        "dev.nuikit": {
-          "type": "keyword"
-        }
-      }
-    },
-    "hold-style": {
-      "$value": "bar",
-      "$description": "How a press-and-hold shows its progress",
-      "$extensions": {
-        "dev.nuikit": {
-          "type": "keyword"
-        }
-      }
-    },
-    "confirm-scale": {
-      "$type": "number",
-      "$value": 1.04,
-      "$description": "The short pop of a confirm"
-    },
-    "level-style": {
-      "$value": "bar",
-      "$description": "How a level (--level, 0–1) is drawn by meters, vitals, holds, timers and cooldowns",
-      "$extensions": {
-        "dev.nuikit": {
-          "type": "keyword"
-        }
-      }
-    },
-    "hue-line": {
+    "surface-legibility-lift": {
       "$type": "number",
       "$value": 0.5,
-      "$description": "Alpha of a role's line (borders, tracks)"
+      "$description": "How far day closes the gap to opaque"
     },
-    "hue-tint": {
-      "$type": "number",
-      "$value": 0.14,
-      "$description": "Alpha of a role's tint (fills behind text)"
-    },
-    "hue-glow": {
-      "$type": "number",
-      "$value": 0.45,
-      "$description": "Alpha of a role's glow (under the glow budget)"
-    },
-    "hue-alert": {
-      "$type": "number",
-      "$value": 0.24,
-      "$description": "Alpha of a role's alert wash (below the alert threshold)"
+    "surface-slash": {
+      "$value": "none",
+      "$description": "A decorative diagonal cut on menus",
+      "$extensions": {
+        "dev.nuikit": {
+          "type": "keyword"
+        }
+      }
     },
     "material-hud-opacity": {
       "$type": "number",
-      "$value": 0.55,
-      "$description": "Surface opacity of HUD parts drawn over the game"
-    },
-    "material-hud-blur": {
-      "$type": "dimension",
-      "$value": {
-        "value": 0,
-        "unit": "px"
-      },
-      "$description": "Backdrop blur behind HUD parts drawn over the game"
-    },
-    "material-hud-radius": {
-      "$type": "dimension",
-      "$value": {
-        "value": 0.625,
-        "unit": "rem"
-      },
-      "$description": "Corner radius of HUD parts drawn over the game"
-    },
-    "material-hud-edge": {
-      "$type": "number",
-      "$value": 0.06,
-      "$description": "Inner top highlight of HUD parts drawn over the game (alpha)"
+      "$value": 0.8,
+      "$description": "Opacity of the hud material"
     },
     "material-hud-texture": {
       "$value": "none",
-      "$description": "Texture over HUD parts drawn over the game",
+      "$description": "Texture over the hud material",
       "$extensions": {
         "dev.nuikit": {
           "type": "keyword"
@@ -1256,8 +1337,8 @@
     },
     "material-menu-opacity": {
       "$type": "number",
-      "$value": 0.96,
-      "$description": "Surface opacity of menus, sheets and dialogs"
+      "$value": 0.94,
+      "$description": "Opacity of the menu material (floor 0.92 for text)"
     },
     "material-menu-blur": {
       "$type": "dimension",
@@ -1265,232 +1346,250 @@
         "value": 0,
         "unit": "px"
       },
-      "$description": "Backdrop blur behind menus, sheets and dialogs"
-    },
-    "material-menu-radius": {
-      "$type": "dimension",
-      "$value": {
-        "value": 0.625,
-        "unit": "rem"
-      },
-      "$description": "Corner radius of menus, sheets and dialogs"
+      "$description": "Backdrop blur behind menus (with surface.backdrop on)"
     },
     "material-menu-edge": {
       "$type": "number",
-      "$value": 0.06,
-      "$description": "Inner top highlight of menus, sheets and dialogs (alpha)"
+      "$value": 0,
+      "$description": "The machined top edge of menus (alpha)"
     },
     "material-menu-texture": {
       "$value": "none",
-      "$description": "Texture over menus, sheets and dialogs",
+      "$description": "Texture over the menu material",
       "$extensions": {
         "dev.nuikit": {
           "type": "keyword"
         }
       }
     },
-    "material-overlay-opacity": {
-      "$type": "number",
-      "$value": 0.96,
-      "$description": "Surface opacity of full-screen overlays (pause, death, loading)"
-    },
-    "material-overlay-blur": {
-      "$type": "dimension",
-      "$value": {
-        "value": 0,
-        "unit": "px"
-      },
-      "$description": "Backdrop blur behind full-screen overlays (pause, death, loading)"
-    },
-    "material-overlay-radius": {
-      "$type": "dimension",
-      "$value": {
-        "value": 0.625,
-        "unit": "rem"
-      },
-      "$description": "Corner radius of full-screen overlays (pause, death, loading)"
-    },
-    "material-overlay-edge": {
-      "$type": "number",
-      "$value": 0.06,
-      "$description": "Inner top highlight of full-screen overlays (pause, death, loading) (alpha)"
-    },
-    "material-overlay-texture": {
-      "$value": "none",
-      "$description": "Texture over full-screen overlays (pause, death, loading)",
+    "hud-text": {
+      "$value": "soft",
+      "$description": "Shadow under text drawn on the game (semantic depth.text draws it)",
       "$extensions": {
         "dev.nuikit": {
           "type": "keyword"
         }
       }
     },
-    "backdrop": {
-      "$value": "off",
-      "$description": "Backdrop filters (blur behind materials, the death screen's desaturation): off by default, because FiveM's NUI draws backdrop-filter as a black box over the game; on applies each surface's --nk-backdrop-filter (browser previews, clients that draw it right)",
-      "$extensions": {
-        "dev.nuikit": {
-          "type": "keyword"
-        }
-      }
-    },
-    "slash": {
-      "$value": "none",
-      "$description": "A decorative diagonal cut on menus, at most once per full-screen moment",
-      "$extensions": {
-        "dev.nuikit": {
-          "type": "keyword"
-        }
-      }
-    },
-    "legibility": {
-      "$value": "auto",
-      "$description": "night: as designed. day: surfaces and hairlines lifted for a bright sky (not a light theme). auto: day while the game clock says so (html[data-nk-daytime], set by the HUD)",
-      "$extensions": {
-        "dev.nuikit": {
-          "type": "keyword"
-        }
-      }
-    },
-    "legibility-lift": {
-      "$type": "number",
-      "$value": 0.5,
-      "$description": "How far day closes the gap to opaque (0 none, 1 fully opaque)"
-    },
-    "alert-threshold": {
-      "$type": "number",
-      "$value": 0.2,
-      "$description": "A level at or under this is an alert (vitals, durability)"
-    },
-    "fuel-threshold": {
-      "$type": "number",
-      "$value": 0.15,
-      "$description": "Fuel alert level"
-    },
-    "notify-ms-info": {
-      "$type": "duration",
-      "$value": {
-        "value": 5000,
-        "unit": "ms"
-      },
-      "$description": "How long a info notice stays"
-    },
-    "notify-ms-success": {
-      "$type": "duration",
-      "$value": {
-        "value": 5000,
-        "unit": "ms"
-      },
-      "$description": "How long a success notice stays"
-    },
-    "notify-ms-warning": {
-      "$type": "duration",
-      "$value": {
-        "value": 5000,
-        "unit": "ms"
-      },
-      "$description": "How long a warning notice stays"
-    },
-    "notify-ms-danger": {
-      "$type": "duration",
-      "$value": {
-        "value": 5000,
-        "unit": "ms"
-      },
-      "$description": "How long a danger notice stays"
-    },
-    "hold-ms": {
-      "$type": "duration",
-      "$value": {
-        "value": 800,
-        "unit": "ms"
-      },
-      "$description": "Press-and-hold time"
-    },
-    "cooldown-ms": {
-      "$type": "duration",
-      "$value": {
-        "value": 0,
-        "unit": "ms"
-      },
-      "$description": "Default cooldown after an action"
-    },
-    "rest-delay": {
-      "$type": "duration",
-      "$value": {
-        "value": 0,
-        "unit": "ms"
-      },
-      "$description": "How long an idle HUD part waits before it retracts (0 = never)"
-    },
-    "motion-profile": {
-      "$value": "full",
-      "$description": "full: as designed. reduced: no movement, short fades. instant: nothing animates",
-      "$extensions": {
-        "dev.nuikit": {
-          "type": "keyword"
-        }
-      }
-    },
-    "z-world": {
-      "$type": "number",
-      "$value": 10,
-      "$description": "Stacking layer: world. A modal is the current surface + dim + dialog"
-    },
-    "z-hud": {
-      "$type": "number",
-      "$value": 20,
-      "$description": "Stacking layer: hud. A modal is the current surface + dim + dialog"
-    },
-    "z-scrim": {
-      "$type": "number",
-      "$value": 30,
-      "$description": "Stacking layer: scrim. A modal is the current surface + dim + dialog"
-    },
-    "z-surface": {
-      "$type": "number",
-      "$value": 40,
-      "$description": "Stacking layer: surface. A modal is the current surface + dim + dialog"
-    },
-    "z-dim": {
-      "$type": "number",
-      "$value": 50,
-      "$description": "Stacking layer: dim. A modal is the current surface + dim + dialog"
-    },
-    "z-dialog": {
-      "$type": "number",
-      "$value": 60,
-      "$description": "Stacking layer: dialog. A modal is the current surface + dim + dialog"
-    },
-    "z-system": {
-      "$type": "number",
-      "$value": 70,
-      "$description": "Stacking layer: system. A modal is the current surface + dim + dialog"
-    },
-    "focus-shift": {
-      "$type": "dimension",
-      "$value": {
-        "value": 0,
-        "unit": "rem"
-      },
-      "$description": "The focused row's nudge toward its content"
-    },
-    "glow-budget": {
+    "motion": {
       "$type": "number",
       "$value": 1,
-      "$description": "How many elements may glow at once (the top surface's focused one first); 0 = no limit"
+      "$description": "1 = animations on, 0 = off (painted 0 under the player's reduced-motion pref)"
     },
-    "exit-factor": {
+    "motion-duration": {
+      "$type": "duration",
+      "$value": {
+        "value": 180,
+        "unit": "ms"
+      },
+      "$description": "Base duration d: the ladder is snap 0.5d, fast 0.667d, base d, slow 1.556d, fill 2.333d"
+    },
+    "motion-ease": {
+      "$type": "cubicBezier",
+      "$value": [
+        0.2,
+        0,
+        0,
+        1
+      ],
+      "$description": "The curve of anything arriving"
+    },
+    "motion-feel": {
+      "$value": "crisp",
+      "$description": "How it moves: crisp, snap (flash instead of press scale), smooth (longer springs), stepped",
+      "$extensions": {
+        "dev.nuikit": {
+          "type": "keyword"
+        }
+      }
+    },
+    "motion-bounce": {
+      "$type": "number",
+      "$value": 0,
+      "$description": "Bounce folded into the snap, move and soft springs"
+    },
+    "motion-exit-factor": {
       "$type": "number",
       "$value": 0.7,
-      "$description": "Every exit is this × its enter (--nk-time-exit = base × factor)"
+      "$description": "Every exit is this × its enter"
     },
-    "time-reduced": {
+    "motion-reduced": {
       "$type": "duration",
       "$value": {
         "value": 100,
         "unit": "ms"
       },
-      "$description": "The one reduced-motion duration: under reduced motion every fade is at most this"
+      "$description": "Under reduced motion every fade is at most this"
+    },
+    "motion-profile": {
+      "$value": "full",
+      "$description": "full: as designed; reduced: no movement, short fades; instant: nothing animates",
+      "$extensions": {
+        "dev.nuikit": {
+          "type": "keyword"
+        }
+      }
+    },
+    "style-fill": {
+      "$value": "solid",
+      "$description": "Fills, the selection face and levels: solid (flat, vivid) or soft (a tint)",
+      "$extensions": {
+        "dev.nuikit": {
+          "type": "keyword"
+        }
+      }
+    },
+    "style-level": {
+      "$value": "liquid",
+      "$description": "How a level (0–1) is drawn by vitals, meters, holds",
+      "$extensions": {
+        "dev.nuikit": {
+          "type": "keyword"
+        }
+      }
+    },
+    "style-hold": {
+      "$value": "fill",
+      "$description": "How a press-and-hold shows its progress",
+      "$extensions": {
+        "dev.nuikit": {
+          "type": "keyword"
+        }
+      }
+    },
+    "style-gauge": {
+      "$value": "digital",
+      "$description": "How gauges are drawn",
+      "$extensions": {
+        "dev.nuikit": {
+          "type": "keyword"
+        }
+      }
+    },
+    "style-focus": {
+      "$value": "halo",
+      "$description": "Focus on parts that are not rows (rows and buttons light like hover)",
+      "$extensions": {
+        "dev.nuikit": {
+          "type": "keyword"
+        }
+      }
+    },
+    "style-vital": {
+      "$value": "expand",
+      "$description": "What a vital chip shows (expand: the tag opens on a change)",
+      "$extensions": {
+        "dev.nuikit": {
+          "type": "keyword"
+        }
+      }
+    },
+    "style-vital-icon": {
+      "$value": "uniform",
+      "$description": "Vital icons: each vital's own colour, or the chip's ink",
+      "$extensions": {
+        "dev.nuikit": {
+          "type": "keyword"
+        }
+      }
+    },
+    "style-vital-neighbours": {
+      "$value": "push",
+      "$description": "What a growing vital chip does to its neighbours",
+      "$extensions": {
+        "dev.nuikit": {
+          "type": "keyword"
+        }
+      }
+    },
+    "style-pause": {
+      "$value": "sheet",
+      "$description": "The pause menu: a full-height sheet, or a light slash panel",
+      "$extensions": {
+        "dev.nuikit": {
+          "type": "keyword"
+        }
+      }
+    },
+    "behavior-alert": {
+      "$type": "number",
+      "$value": 0.2,
+      "$description": "A level at or under this is an alert (vitals, durability)"
+    },
+    "behavior-rest": {
+      "$type": "duration",
+      "$value": {
+        "value": 3000,
+        "unit": "ms"
+      },
+      "$description": "How long a changed HUD part stays open before it retracts (0 = never)"
+    },
+    "behavior-notify-info": {
+      "$type": "duration",
+      "$value": {
+        "value": 4000,
+        "unit": "ms"
+      },
+      "$description": "How long an info notice stays"
+    },
+    "behavior-notify-success": {
+      "$type": "duration",
+      "$value": {
+        "value": 4000,
+        "unit": "ms"
+      },
+      "$description": "How long a success notice stays"
+    },
+    "behavior-notify-warning": {
+      "$type": "duration",
+      "$value": {
+        "value": 5000,
+        "unit": "ms"
+      },
+      "$description": "How long a warning stays"
+    },
+    "behavior-notify-danger": {
+      "$type": "duration",
+      "$value": {
+        "value": 7000,
+        "unit": "ms"
+      },
+      "$description": "How long a danger notice stays"
+    },
+    "hue-line": {
+      "$type": "number",
+      "$value": 0.5,
+      "$description": "A role's line (borders, tracks)"
+    },
+    "hue-tint": {
+      "$type": "number",
+      "$value": 0.1,
+      "$description": "A role's tint (fills behind text)"
+    },
+    "hue-glow": {
+      "$type": "number",
+      "$value": 0.25,
+      "$description": "A role's glow (under the glow budget)"
+    },
+    "hue-alert": {
+      "$type": "number",
+      "$value": 0.8,
+      "$description": "A role's alert wash"
+    },
+    "layer-dim": {
+      "$type": "number",
+      "$value": 50,
+      "$description": "Stacking layer: dim (a modal is the current surface + dim + dialog)"
+    },
+    "layer-dialog": {
+      "$type": "number",
+      "$value": 60,
+      "$description": "Stacking layer: dialog (a modal is the current surface + dim + dialog)"
+    },
+    "layer-system": {
+      "$type": "number",
+      "$value": 70,
+      "$description": "Stacking layer: system (a modal is the current surface + dim + dialog)"
     }
   }
 }

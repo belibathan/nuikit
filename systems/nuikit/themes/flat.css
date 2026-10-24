@@ -57,84 +57,70 @@
   --font-numeric: Inter, ui-sans-serif, system-ui, sans-serif;
   --font-mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
   --nk-type-ratio: 1.2;
-  --nk-weight-body: 400;
-  --nk-weight-strong: 600;
-  --nk-weight-display: 600;
-  --nk-tracking-display: -0.01em;
-  --nk-label-case: none;
-  --nk-tracking-label: 0em;
-  --nk-heading-case: none;
-  --nk-display-style: normal;
+  --nk-type-weight-strong: 600;
+  --nk-type-weight-display: 600;
+  --nk-type-tracking-display: -0.01em;
+  --nk-type-tracking-label: 0em;
+  --nk-type-case: none;
+  --nk-type-slant: normal;
+  --nk-type-overhang: 0em;
   --nk-type-scan-weight: 600;
+  --nk-type-scan-tracking: 0em;
+  --nk-type-title-weight: 600;
+  --nk-type-title-tracking: -0.005em;
+  --nk-type-label-family: var(--font-sans);
   --nk-type-label-weight: 500;
+  --nk-type-label-tracking: 0em;
+  --nk-type-num-weight: 500;
+  --nk-type-num-tracking: -0.02em;
+  --nk-text-row: 1rem;
 
-  /* treatment: soft, tuned flat */
-  --nk-treatment: soft;
-  --nk-density: 1;
-
-  /* geometry: round everything, no slant, no wall, no plate, no cut */
-  --nk-r-key: 0.5rem;
-  --nk-r-chip: 0.625rem;
-  --nk-r-control: 0.75rem;
-  --nk-r-surface: 1rem;
-  --nk-h-key: 1.5rem;
-  --nk-h-chip: 1.75rem;
-  --nk-h-control: 2.25rem;
-  --nk-h-row: 2.75rem;
-  --nk-skew: 0deg;
-  --nk-cut: 0px;
-  --nk-border-width: 1px;
-  --nk-tile-skew: 0deg;
-  --nk-tile-wall: 0px;
+  /* geometry: round everything, no slant, no wall, no plate */
+  --nk-radius-key: 0.5rem;
+  --nk-radius-chip: 0.625rem;
+  --nk-radius-control: 0.75rem;
+  --nk-radius-surface: 1rem;
+  --nk-height-row: 2.75rem;
+  --nk-shape-skew: 0deg;
+  --nk-tile-wall-height: 0px;
   --nk-tile-wall-shade: 0;
-  --nk-tile-plate-x: 0px;
   --nk-tile-plate-y: 0px;
-  --nk-tile-press: 0px;
-  --nk-tile-inset: 0.25rem;
+  --nk-tile-plate-press: 0px;
+  --nk-tile-key-inset: 0.25rem;
+  --nk-meter-radius: 9999px;
 
-  /* depth: none. Flat surfaces, a faint hairline, no edge light, no drop, no glow */
-  --nk-elevation: none;
-  --nk-surface-opacity: 0.96;
-  --nk-surface-tint: 0;
-  --nk-surface-gradient: 0;
-  --nk-surface-edge: 0;
-  --nk-glow: 0;
-  --nk-backdrop: off;
-  --nk-tile-face: #23272e;
-  --nk-tile-ink: #e8eaed;
-  --nk-tile-light: rgba(0, 0, 0, 0);
-  --nk-tile-shade: rgba(0, 0, 0, 0);
-  --nk-tile-rim: rgba(255, 255, 255, 0.08);
-  --nk-tile-rim-focus: #5b9dff;
-  --nk-plate: rgb(26, 29, 34);
+  /* depth: none. Flat surfaces, a faint hairline, no edge light, no drop */
+  --nk-surface-elevation: none;
+  --nk-material-menu-opacity: 0.96;
+  --nk-material-hud-opacity: 0.78;
+  --nk-hud-text: none;
+  --nk-tile-face-color: #23272e;
+  --nk-tile-face-ink: #e8eaed;
+  --nk-tile-face-light: rgba(0, 0, 0, 0);
+  --nk-tile-face-rim: rgba(255, 255, 255, 0.08);
+  --nk-tile-face-rim-focus: #5b9dff;
+  --nk-plate-color: rgb(26, 29, 34);
   --nk-plate-hair: rgba(255, 255, 255, 0.08);
   --nk-plate-drop: 0 0 0 0 rgba(0, 0, 0, 0);
-  --nk-hud-opacity: 0.78;
-  --nk-hud-text-shadow: none;
 
-  /* fills and selection: soft. A tinted face, the foreground ink, a thin bar in the brand */
-  --nk-fill-style: soft;
-  --nk-tile-tint: 0.14;
+  /* fills and selection: soft. A tinted face, the foreground ink, bars in the brand */
+  --nk-style-fill: soft;
+  --nk-style-level: bar;
+  --nk-style-hold: bar;
+  --nk-style-gauge: bar;
+  --nk-style-focus: tint;
+  --nk-tile-key-tint: 0.14;
   --nk-fill-color: var(--brand);
   --nk-fill-track: rgba(255, 255, 255, 0.08);
   --nk-fill-tint: rgba(91, 157, 255, 0.1);
   --nk-fill-edge: rgba(0, 0, 0, 0);
-  --nk-row-indicator: sweep;
-  --nk-focus-style: tint;
-  --nk-hold-style: bar;
-  --nk-level-style: bar;
-  --nk-gauge-style: bar;
-  --nk-gauge-track: 0.375rem;
-  --nk-gauge-ticks: 0;
-  --nk-meter-radius: 9999px;
+  --nk-fill-height: 0.375rem;
 
-  /* motion: short and even */
-  --nk-duration: 160ms;
-  --nk-ease: cubic-bezier(0.2, 0, 0, 1);
-  --nk-motion-feel: crisp;
+  /* motion: short and even, nothing lands or slides */
+  --nk-motion-duration: 160ms;
   --nk-stagger: 30ms;
-  --nk-confirm-scale: 1.02;
-  --nk-lift: 0rem;
-  --nk-rise: 0.25rem;
-  --nk-land-scale: 1;
+  --nk-gesture-confirm: 1.02;
+  --nk-gesture-lift: 0rem;
+  --nk-gesture-rise: 0.25rem;
+  --nk-gesture-land: 1;
 }

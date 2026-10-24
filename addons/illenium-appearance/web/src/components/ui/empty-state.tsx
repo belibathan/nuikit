@@ -97,7 +97,7 @@ function EmptyState({
         {/* The weight spelled out (important): EmptyTitle's font-medium would beat nk-title's. A
             screen-size empty state titles at the section size. */}
         <EmptyTitle
-          className={cn("nk-title [font-weight:var(--nk-type-title-weight,var(--nk-heading-weight,600))]!", size === "screen" && "[--nk-heading-size:var(--nk-text-section)]")}
+          className={cn("nk-title [font-weight:var(--nk-type-title-weight,var(--nk-type-title-weight,600))]!", size === "screen" && "[--nk-panel-title-size:var(--nk-text-section)]")}
         >
           {title}
         </EmptyTitle>

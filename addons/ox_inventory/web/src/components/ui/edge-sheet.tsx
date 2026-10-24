@@ -31,7 +31,7 @@ import { Sheet, SheetContent, SheetDescription, SheetTitle } from "@/components/
  * panel time × 2.2 (≤ 360ms), `delay` staggers a second sheet, the body fades up after the sheet,
  * and it slides back out faster (× 1.4, ≤ 200ms; Radix keeps it mounted until the exit ends).
  * `variant="floating"` (the default for menus and inventories) keeps it off the screen edges: inset by
- * --nk-edge (1.5rem) on the top, bottom and its side, the whole nk-panel recipe (border all round, the
+ * --nk-screen-edge (1.5rem) on the top, bottom and its side, the whole nk-panel recipe (border all round, the
  * identity's radius or cut on every corner, the panel shadow), and a tighter column. `variant="flush"`
  * is the pause menu's backdrop: flush to the top, bottom and its edge, a hairline on the open edge only.
  *
@@ -52,7 +52,7 @@ import { Sheet, SheetContent, SheetDescription, SheetTitle } from "@/components/
  */
 
 /** nk-title one step up: the heading face at section size (the pause title's family, one step down). */
-const TITLE = { "--nk-heading-size": "var(--nk-text-section)" } as React.CSSProperties
+const TITLE = { "--nk-panel-title-size": "var(--nk-text-section)" } as React.CSSProperties
 
 type EdgeSheetProps = Omit<React.ComponentProps<typeof SheetContent>, "title" | "side"> & {
   open: boolean
@@ -137,21 +137,21 @@ function EdgeSheet({
         className={cn(
           "z-40 w-(--edge-sheet-width) max-w-none gap-0 sm:max-w-none",
           variant === "floating"
-            ? // the panel recipe, off the edges: --nk-edge from the top, bottom and its side
-              cn("nk-panel h-auto", anchor === "upper" ? "top-[28vh] bottom-auto max-h-[calc(72vh-var(--nk-edge,1.5rem))]" : fit ? "top-(--nk-edge,1.5rem) bottom-auto max-h-[calc(100%-var(--nk-edge,1.5rem)*2)]" : "inset-y-(--nk-edge,1.5rem)", left ? "left-(--nk-edge,1.5rem)" : "right-(--nk-edge,1.5rem)")
+            ? // the panel recipe, off the edges: --nk-screen-edge from the top, bottom and its side
+              cn("nk-panel h-auto", anchor === "upper" ? "top-[28vh] bottom-auto max-h-[calc(72vh-var(--nk-screen-edge,1.5rem))]" : fit ? "top-(--nk-screen-edge,1.5rem) bottom-auto max-h-[calc(100%-var(--nk-screen-edge,1.5rem)*2)]" : "inset-y-(--nk-screen-edge,1.5rem)", left ? "left-(--nk-screen-edge,1.5rem)" : "right-(--nk-screen-edge,1.5rem)")
             : // the surface: the theme's panel, flush, a hairline on the open edge only
               cn(
                 "border-(--nk-panel-border) bg-(--nk-panel-bg) text-(--nk-panel-fg) shadow-(--nk-panel-shadow)",
                 left
-                  ? "border-r-(length:--nk-border) bg-[linear-gradient(90deg,rgba(var(--scrim-rgb),0.22)_0%,rgba(var(--scrim-rgb),0)_70%)]"
-                  : "border-l-(length:--nk-border) bg-[linear-gradient(270deg,rgba(var(--scrim-rgb),0.22)_0%,rgba(var(--scrim-rgb),0)_70%)]"
+                  ? "border-r-(length:--nk-line-width) bg-[linear-gradient(90deg,rgba(var(--scrim-rgb),0.22)_0%,rgba(var(--scrim-rgb),0)_70%)]"
+                  : "border-l-(length:--nk-line-width) bg-[linear-gradient(270deg,rgba(var(--scrim-rgb),0.22)_0%,rgba(var(--scrim-rgb),0)_70%)]"
               ),
           // motion: the ladder, never raw ms; exits faster, eases in. A staggered sheet holds its first
           // frame (off-screen) through the delay: without the fill it drew in place for the delay, then
           // jumped out and slid in (a blink, then a second entrance). The exit never waits.
-          "data-[state=open]:duration-[min(calc(var(--nk-time)*2.2),360ms)] data-[state=open]:ease-(--nk-ease-out)",
+          "data-[state=open]:duration-[min(calc(var(--nk-time-base)*2.2),360ms)] data-[state=open]:ease-(--nk-ease-enter)",
           "data-[state=open]:[animation-delay:calc(var(--edge-sheet-delay)*var(--nk-motion,1))] data-[state=open]:[animation-fill-mode:both]",
-          "data-[state=closed]:duration-[min(calc(var(--nk-time)*1.4),200ms)] data-[state=closed]:ease-(--nk-ease-in)",
+          "data-[state=closed]:duration-[min(calc(var(--nk-time-base)*1.4),200ms)] data-[state=closed]:ease-(--nk-ease-exit)",
           className
         )}
         {...props}
@@ -169,7 +169,7 @@ function EdgeSheet({
         >
           {(title || icon || actions || onBack || onClose) && (
             <header data-slot="edge-sheet-header" className="flex flex-col gap-1 pb-4">
-              <div className="flex min-h-[var(--nk-edge-sheet-header-h,2rem)] items-center gap-3">
+              <div className="flex min-h-[var(--nk-edge-sheet-header-height,2rem)] items-center gap-3">
                 {onBack && back ? (
                   <ActionBar className="-ml-2 shrink-0">
                     <ActionBarItem keys={["Esc"]} label={back === true ? "Back" : back} onClick={onBack} aria-label="Back" />
@@ -248,7 +248,7 @@ function EdgeSheetBody({
     el.addEventListener("scroll", on, { passive: true })
     return () => el.removeEventListener("scroll", on)
   }, [scroll])
-  const enter = { animationDelay: "calc((var(--edge-sheet-delay, 0ms) + var(--nk-time) * 1.5) * var(--nk-motion, 1))", ...style }
+  const enter = { animationDelay: "calc((var(--edge-sheet-delay, 0ms) + var(--nk-time-base) * 1.5) * var(--nk-motion, 1))", ...style }
   if (!scroll) {
     return (
       <div data-slot="edge-sheet-body" className={cn("nk-rise min-h-0 flex-1 pt-4", className)} style={enter} {...props}>

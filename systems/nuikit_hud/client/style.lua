@@ -7,7 +7,7 @@
 --   shape: auto (the theme's) | square | rounded | circle | diamond | hex | chamfer
 --   level: outline | fill | bar | none        label: inline | tag | flag | none     icon: vital | uniform
 --
--- The page sets them as --nk-chip-shape, --nk-level-style, --nk-label-attach and --nk-vital-icon on its
+-- The page sets them as --nk-chip-shape, --nk-style-level, --nk-label-attach and --nk-vital-chip-icon on its
 -- <html> (web/src/hud/pills.tsx), the same tokens a theme sets. Its own command name, so the /hud
 -- command in main.lua (units) stays as it is.
 

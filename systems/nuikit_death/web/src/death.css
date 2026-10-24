@@ -7,11 +7,11 @@
 
 /* the game behind: drained in last stand, nearly black-and-white once unconscious */
 .death-tint {
-  --nk-backdrop-filter: saturate(0.45) contrast(1.06);
+  --nk-panel-backdrop: saturate(0.45) contrast(1.06);
   background: radial-gradient(ellipse 60% 55% at 50% 42%, rgba(var(--scrim-rgb), 0.5) 0%, rgba(var(--scrim-rgb), 0.38) 100%);
 }
 .death-dead .death-tint {
-  --nk-backdrop-filter: grayscale(0.9) brightness(0.62);
+  --nk-panel-backdrop: grayscale(0.9) brightness(0.62);
   background: rgba(var(--scrim-rgb), 0.55);
 }
 
@@ -43,11 +43,11 @@
   40% { opacity: 0.78; }
 }
 @keyframes death-in {
-  from { opacity: 0; transform: translateY(var(--nk-rise)); }
+  from { opacity: 0; transform: translateY(var(--nk-gesture-rise)); }
   to { opacity: 1; transform: none; }
 }
 
-.death-tint, .death-vignette { animation: death-fade calc(var(--nk-time-slow) * 2) var(--nk-ease-standard) both; }
+.death-tint, .death-vignette { animation: death-fade calc(var(--nk-time-slow) * 2) var(--nk-ease-move) both; }
 @keyframes death-fade {
   from { opacity: 0; }
   to { opacity: 1; }
@@ -58,7 +58,7 @@
   min-height: 2.5rem;
   padding-top: 0;
   padding-bottom: 0;
-  animation: death-fade calc(var(--nk-time-slow) * 2) var(--nk-ease-standard) both;
+  animation: death-fade calc(var(--nk-time-slow) * 2) var(--nk-ease-move) both;
 }
 .death-text { text-shadow: var(--world-shadow); }
 .death-text [data-slot="countdown-clock"] { text-shadow: var(--world-shadow); }

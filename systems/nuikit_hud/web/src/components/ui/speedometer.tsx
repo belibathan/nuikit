@@ -10,7 +10,7 @@ import { Tile } from "@/components/ui/tile"
 
 /**
  * Speedometer — the vehicle gauge as refined in game (docs/design/baseline.md: the quality bar): a Dial of
- * --nk-speedo-segments thick segments with small even gaps (digital, the default), or a thin arc over faint ticks
+ * --nk-speedometer-segments thick segments with small even gaps (digital, the default), or a thin arc over faint ticks
  * (arc), the speed big in the middle with its leading zeros dimmed (`0`64), the unit under it, the gear on a keycap
  * Tile seated in the arc's opening, fuel as thinner segments on the outer right-hand curve that drain downward,
  * and the turn signals inside the ring. Past the redline the segments are red (only lit ones; unlit look like the rest),
@@ -31,7 +31,7 @@ import { Tile } from "@/components/ui/tile"
  * Level means: the rpm (0–1) lights the dial's segments from the left; fuel / 100 lights the band from the bottom.
  * Rules: past the redline (rpm ≥ 0.88 by default) the dial and the gear are data-state="alert"; fuel at or under
  *   15 is the danger colour, breathing. No glow filter; the segments switch, nothing tweens on the dash. The
- *   leading zeros are --nk-speedo-dim (0.26). Everything scales with `size`; levers are --nk-speedo-*.
+ *   leading zeros are --nk-speedometer-digit-dim (0.26). Everything scales with `size`; levers are --nk-speedo-*.
  */
 
 /** Past this rpm (0–1) the segments and the gear turn the redline. */
@@ -187,7 +187,7 @@ const gearOrder = (g: string) => (g === "R" ? -1 : g === "N" ? 0 : Number(g) || 
 
 /** The reel window: glyphs stacked, clipped vertically only (italic glyphs overhang sideways). */
 /** A digit: dimmed while it is a leading zero. */
-const DIGIT = "transition-opacity duration-(--nk-time-base) ease-out data-dim:opacity-(--nk-speedo-dim,0.26)"
+const DIGIT = "transition-opacity duration-(--nk-time-base) ease-out data-dim:opacity-(--nk-speedometer-digit-dim,0.26)"
 /** A live reel window: glyphs stacked, clipped vertically only (italic glyphs overhang sideways). */
 const REEL = "inline-grid py-[0.08em] -my-[0.08em] [clip-path:inset(0_-0.5em)] [&>span]:[grid-area:1/1]"
 
@@ -205,7 +205,7 @@ type SpeedometerProps = Omit<React.ComponentProps<"div">, "children"> & {
   surface?: "game" | "theme"
   /** Past the redline; by default rpm ≥ 0.88. For a live gauge whose rpm you write yourself. */
   redline?: boolean
-  /** digital (default): thick segments. arc: a thin arc over short ticks (--nk-gauge-style: arc). */
+  /** digital (default): thick segments. arc: a thin arc over short ticks (--nk-style-gauge: arc). */
   style?: "digital" | "arc"
   /** The turn signals, as bits: 1 left, 2 right (3 both). Undefined draws none. */
   indicators?: number
@@ -306,14 +306,14 @@ function Speedometer({
             thickness={size * G.fuel.stroke}
             inset={size * G.fuel.inset}
             trackProps={{ className: "stroke-(--nk-gauge-track-color)!" }}
-            valueProps={{ className: cn("transition-opacity duration-(--nk-time-fill) ease-out", low ? "stroke-(--nk-gauge-redline)! [animation:nk-breathe_var(--nk-time-pulse,1000ms)_var(--nk-ease-breathe,ease-in-out)_infinite] motion-reduce:[animation:none]" : "stroke-current! [stroke-opacity:0.95]") }}
+            valueProps={{ className: cn("transition-opacity duration-(--nk-time-fill) ease-out", low ? "stroke-(--nk-gauge-redline-color)! [animation:nk-breathe_var(--nk-time-pulse,1000ms)_var(--nk-ease-breathe,ease-in-out)_infinite] motion-reduce:[animation:none]" : "stroke-current! [stroke-opacity:0.95]") }}
             className="absolute inset-0"
           />
           <span
             data-part="speedometer-fuel-icon"
             data-state={low ? "alert" : undefined}
             aria-hidden
-            className="absolute flex -translate-x-1/2 -translate-y-1/2 opacity-70 transition-colors duration-(--nk-time-slow) ease-out data-[state=alert]:text-(--nk-gauge-redline) data-[state=alert]:opacity-100 [&_svg]:size-(--nk-icon-sm)"
+            className="absolute flex -translate-x-1/2 -translate-y-1/2 opacity-70 transition-colors duration-(--nk-time-slow) ease-out data-[state=alert]:text-(--nk-gauge-redline-color) data-[state=alert]:opacity-100 [&_svg]:size-(--nk-icon-sm)"
             style={{ left: rem(0.5 + fuelR * Math.cos(fuelRad)), top: rem(0.5 + fuelR * Math.sin(fuelRad)) }}
           >
             <FuelIcon />
@@ -341,7 +341,7 @@ function Speedometer({
         <span
           data-slot="speedometer-speed"
           aria-label="Speed"
-          className="nk-num flex leading-none [font-family:var(--nk-gauge-font)] [font-weight:var(--nk-weight-display,700)] [letter-spacing:var(--nk-speedo-tracking,0.01em)] pr-[0.15em]"
+          className="nk-num flex leading-none [font-family:var(--nk-gauge-font)] [font-weight:var(--nk-type-weight-display,700)] [letter-spacing:var(--nk-speedometer-digit-tracking,0.01em)] pr-[0.15em]"
           // the in-game face: 3.625rem on the 216px gauge
           style={{ fontSize: rem(0.2685) }}
         >
@@ -361,7 +361,7 @@ function Speedometer({
           data-slot="speedometer-unit"
           value={unit}
           align="center"
-          className="nk-scan mt-(--nk-space-1) uppercase leading-none [letter-spacing:0.08em] [font-weight:var(--nk-weight-display,700)]"
+          className="nk-scan mt-(--nk-space-1) uppercase leading-none [letter-spacing:0.08em] [font-weight:var(--nk-type-weight-display,700)]"
           style={{ fontSize: rem(0.06) }}
         />
       </div>
@@ -376,7 +376,7 @@ function Speedometer({
             tone={g === "R" ? "warning" : undefined}
             className={cn("nk-scan [font-weight:800] [letter-spacing:0.02em] uppercase", g === "N" && "opacity-70")}
             // the in-game glyph: 0.62 of the face
-            style={{ fontSize: "calc(var(--nk-h-chip) * 0.62)" }}
+            style={{ fontSize: "calc(var(--nk-height-chip) * 0.62)" }}
             aria-label="Gear"
           >
             <TextRoll value={g} direction={gearDir.current} align="center" />

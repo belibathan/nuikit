@@ -9,9 +9,9 @@ import { cn } from "@/lib/utils"
 /**
  * Screen — the root of every page's layout (docs/design/layout.md). Full screen, click-through, and the owner
  * of the levers every zone inside reads: the 16:9 content box (`--nk-screen-ratio`; on an ultrawide the zones
- * sit at the box's edges, `bleed` uses the whole width), the safe area (`--nk-safe-x/y`, rem), the density and
+ * sit at the box's edges, `bleed` uses the whole width), the safe area (`--nk-screen-safe-x/y`, rem), the density and
  * the aspect class (`data-nk-aspect` on <html>: 4-3, 16-10, 16-9, 21-9, 32-9, from useViewport). The UI scale is
- * rem itself (index.css: the NUI scale × --nk-scale, floored by --nk-scale-min).
+ * rem itself (index.css: the NUI scale × --nk-scale, floored by --nk-screen-scale-min).
  *
  *   <Screen>
  *     <Zone at="tr" clear>{notices}</Zone>
@@ -29,7 +29,7 @@ type ScreenProps = React.HTMLAttributes<HTMLElement> & {
   bleed?: boolean
   /** The content box's width / height (default the theme's --nk-screen-ratio, 16:9). */
   ratio?: number
-  /** Safe area inside the box, in rem (default the theme's --nk-safe-x / --nk-safe-y). */
+  /** Safe area inside the box, in rem (default the theme's --nk-screen-safe-x / --nk-screen-safe-y). */
   safe?: { x?: number; y?: number }
   /** compact | comfortable: the density of everything inside (the theme's otherwise). */
   density?: "compact" | "comfortable"
@@ -40,8 +40,8 @@ function Screen({ bleed, ratio, safe, density, as: Comp = "div", className, styl
   const vp = useViewport()
   const vars: Record<string, string> = {}
   if (ratio !== undefined && ratio > 0) vars["--nk-screen-ratio"] = String(ratio)
-  if (safe?.x !== undefined) vars["--nk-safe-x"] = `${safe.x}rem`
-  if (safe?.y !== undefined) vars["--nk-safe-y"] = `${safe.y}rem`
+  if (safe?.x !== undefined) vars["--nk-screen-safe-x"] = `${safe.x}rem`
+  if (safe?.y !== undefined) vars["--nk-screen-safe-y"] = `${safe.y}rem`
   return (
     <Comp
       data-slot="screen"

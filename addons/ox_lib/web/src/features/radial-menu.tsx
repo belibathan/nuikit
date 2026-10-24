@@ -61,7 +61,7 @@ function units(value: string): number {
 
 function readShape(): Shape {
   const css = getComputedStyle(document.documentElement);
-  const cut = units(css.getPropertyValue("--nk-cut"));
+  const cut = units(css.getPropertyValue("--nk-shape-cut"));
   // chips and tiles take half the panel chamfer (nk-clip-sm); a segment is about chip-sized
   if (cut > 0) return { kind: "cut", corner: cut / 2 + 4 };
   // controls are radius − 2px (docs/design.md); keep it inside the ring's thickness
@@ -209,7 +209,7 @@ export function RadialMenu() {
     <div
       data-state={presence.state}
       data-hub={hover === "hub" || undefined}
-      className="ox-radial fixed inset-0 z-30 grid place-items-center data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:duration-(--nk-time) data-[state=closed]:fill-mode-forwards"
+      className="ox-radial fixed inset-0 z-30 grid place-items-center data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:duration-(--nk-time-base) data-[state=closed]:fill-mode-forwards"
       onPointerMove={(e) => setHover(hitAt(e))}
       onPointerLeave={() => setHover(null)}
       onClick={(e) => {

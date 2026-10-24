@@ -115,7 +115,7 @@ function IdCard({ open, data, config, labels }: { open: boolean; data: PlayerDat
       <footer className="relative mt-4 flex items-center justify-between gap-4 border-t border-border pt-4">
         <span className="idc-signature nk-title truncate text-foreground/80">{name}</span>
         <div className="flex shrink-0 items-center gap-3">
-          <img src="flags/32.png" alt="" className="h-4 rounded-(--nk-r-key)" onError={(e) => (e.currentTarget.style.display = "none")} />
+          <img src="flags/32.png" alt="" className="h-4 rounded-(--nk-radius-key)" onError={(e) => (e.currentTarget.style.display = "none")} />
           <ActionBar>
             <ActionBarItem keys={[config.idCardSettings?.closeKey ?? "Backspace"]} label="Put away" />
           </ActionBar>
@@ -162,7 +162,7 @@ function Portrait({ src, avatar }: { src?: string; avatar?: boolean }) {
       data-slot="idc-photo"
       className={cn(
         "flex shrink-0 items-center justify-center overflow-hidden border bg-muted",
-        avatar ? "size-16 self-start rounded-(--nk-r-surface)" : "min-h-36 w-32 self-stretch rounded-(--nk-r-control)",
+        avatar ? "size-16 self-start rounded-(--nk-radius-surface)" : "min-h-36 w-32 self-stretch rounded-(--nk-radius-control)",
       )}
     >
       {ok ? (

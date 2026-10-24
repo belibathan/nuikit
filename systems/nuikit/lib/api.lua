@@ -92,11 +92,11 @@ local settings = domain('settings')
 local theme, themeFn = domain('theme')
 --- The compiled theme in use (the player's look, else the server's).  `nk.theme.get() → CompiledTheme|string|nil`
 theme.get = themeFn or theme.get
---- The player's look (identity, treatment), or nil for the server theme.
+--- The player's look (identity), or nil for the server theme.
 theme.look = rawget(nk, 'look')
 --- The key of the look in use ('studio|slab'), or nil.
 theme.lookKey = rawget(nk, 'lookKey')
---- The player's UI prefs (scale, reducedMotion, highContrast, identity, treatment).
+--- The player's UI prefs (scale, reducedMotion, highContrast, density, identity).
 theme.prefs = rawget(nk, 'prefs').get
 --- Change prefs; saved and applied to every nuikit UI.  `nk.theme.setPrefs(patch)`
 theme.setPrefs = rawget(nk, 'prefs').set

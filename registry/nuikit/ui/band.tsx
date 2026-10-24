@@ -30,10 +30,10 @@ import { toneVars } from "@/components/ui/fill"
 const bandVariants = cva("nk-slab-band nk-on-game pointer-events-none z-10", {
   variants: {
     position: {
-      /** Pinned to the bottom edge, --nk-edge above it (absolute: put it in the full-screen root). */
-      bottom: "absolute inset-x-0 bottom-[var(--nk-edge,1.5rem)]",
+      /** Pinned to the bottom edge, --nk-screen-edge above it (absolute: put it in the full-screen root). */
+      bottom: "absolute inset-x-0 bottom-[var(--nk-screen-edge,1.5rem)]",
       /** Pinned to the top edge. */
-      top: "absolute inset-x-0 top-[var(--nk-edge,1.5rem)]",
+      top: "absolute inset-x-0 top-[var(--nk-screen-edge,1.5rem)]",
       /** In the flow, as wide as its container. */
       inline: "relative",
     },
@@ -90,7 +90,7 @@ function Band({
       className={cn(bandVariants({ position }), className)}
       style={
         {
-          ...(rgb ? { "--nk-slab-tone-rgb": rgb } : { "--nk-slab-band-tint": 0, "--nk-slab-band-edge": 0.25, "--nk-slab-tone-rgb": "var(--world-foreground-rgb, 255, 255, 255)" }),
+          ...(rgb ? { "--nk-slab-tone": rgb } : { "--nk-slab-band-tint": 0, "--nk-slab-band-edge": 0.25, "--nk-slab-tone": "var(--world-foreground-rgb, 255, 255, 255)" }),
           ...style,
         } as React.CSSProperties
       }

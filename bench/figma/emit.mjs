@@ -21,8 +21,6 @@ const outs = {
   identity: main("identity", MODES.slice(0, 4)),
   semantic: main("semantic", MODES.slice(0, 4)),
   component: main("component", MODES.slice(0, 4)),
-  yoursIdentity: main("identity", ["graphite"]),
-  yoursComponent: main("component", ["graphite"]),
 };
 for (const k in outs) { writeFileSync(`${scratch}/data-${k}.json`, outs[k]); console.log(k, outs[k].length); }
 writeFileSync(`${scratch}/fonts.json`, JSON.stringify(spec.fonts));

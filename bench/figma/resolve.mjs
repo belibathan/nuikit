@@ -2,31 +2,7 @@
 // Understands var(--x, fallback), calc/max/min, rem/px/em/ms/s/%/deg, rgb()/rgba() and transparent. Nothing else.
 import { readFileSync } from "node:fs";
 
-const kitCss = readFileSync(new URL("../../packages/create-nuikit/kit.css", import.meta.url), "utf8");
-const start = kitCss.indexOf("@layer nk.base");
-const end = kitCss.indexOf("--nk-skew (1.3)", start); // after this: the skewed-plate rule, applied by hand below
-export const KIT_DEFAULTS = {};
-for (const m of kitCss.slice(start, end).matchAll(/^\s*--(nk-[\w-]+):\s*([^;]+);/gm)) if (!(m[1] in KIT_DEFAULTS)) KIT_DEFAULTS[m[1]] = m[2].trim();
-
 const RGB = /^rgba?\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)\s*(?:,\s*([\d.]+)\s*)?\)$/;
-
-/** The lookup table for one mode: the compiled vars, their -rgb/-a channels, the kit defaults, the :root derivations. */
-export function makeEnv(vars) {
-  const env = { ...KIT_DEFAULTS };
-  // :root derivations kit.css computes (the component collection holds them as variables too).
-  env["nk-text-base"] = "1rem";
-  env["nk-ratio"] = vars["nk-type-ratio"] || "1.2";
-  if (!vars["nk-density"]) env["nk-density"] = "0.875";
-  if (vars["nk-skew"] && parseFloat(vars["nk-skew"]) !== 0) {
-    env["nk-tile-plate-x"] = "0.1875rem"; env["nk-tile-plate-y"] = "0.1875rem"; env["nk-tile-plate"] = "var(--nk-key-plate, var(--border))";
-  }
-  Object.assign(env, vars);
-  for (const [k, v] of Object.entries(vars)) {
-    const m = RGB.exec(String(v).trim());
-    if (m) { env[k + "-rgb"] ??= `${m[1]}, ${m[2]}, ${m[3]}`; env[k + "-a"] ??= m[4] ?? "1"; }
-  }
-  return env;
-}
 
 function closing(s, i) { // index of the ")" that closes the "(" at i
   let d = 0;

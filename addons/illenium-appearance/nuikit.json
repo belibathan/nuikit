@@ -3,7 +3,7 @@
     "resource": "illenium-appearance",
     "path": "web/dist"
   },
-  "fonts": "graphite",
+  "fonts": "baseline",
   "lua": [],
   "components": [
     "alert-dialog",
