@@ -26,7 +26,8 @@ import { Tabs, TabsContent, TabsList as ShadcnTabsList, TabsTrigger as ShadcnTab
 function TabsList({ className, children, ...props }: React.ComponentProps<typeof ShadcnTabsList>) {
   return (
     <ShadcnTabsList
-      className={cn("relative h-auto gap-(--nk-list-gap) pb-[calc(3px+var(--nk-tile-wall-height))]", className)}
+      data-selection-tabs="list"
+      className={cn("relative h-auto", className)}
       {...props}
     >
       <SelectionTile shape="tile" items="[data-slot=tabs-trigger]" lit="[data-state=active]" pointer={false} />
@@ -36,7 +37,7 @@ function TabsList({ className, children, ...props }: React.ComponentProps<typeof
 }
 
 function TabsTrigger({ className, ...props }: React.ComponentProps<typeof ShadcnTabsTrigger>) {
-  return <ShadcnTabsTrigger className={cn("h-auto min-h-(--nk-height-chip) px-3", className)} {...props} />
+  return <ShadcnTabsTrigger data-selection-tabs="trigger" className={cn("h-auto", className)} {...props} />
 }
 
 type SegmentedOption = { value: string; label: React.ReactNode; disabled?: boolean }

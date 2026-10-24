@@ -23,7 +23,7 @@ describe("selection tabs", () => {
     expect(tags(h, 'data-slot="selection-tile"')).toHaveLength(1)
     expect(h.indexOf('data-slot="tabs-list"')).toBeLessThan(h.indexOf('data-slot="selection-tile"'))
     expect(h.indexOf('data-slot="selection-tile"')).toBeLessThan(h.indexOf('data-slot="tabs-trigger"'))
-    expect(tags(h, 'data-slot="tabs-list"')[0]).toContain("gap-(--nk-list-gap)")
+    expect(tags(h, 'data-slot="tabs-list"')[0]).toContain('data-selection-tabs="list"')
     expect(tags(h, 'data-slot="tabs-trigger"')).toHaveLength(2)
     expect(h).toContain('data-slot="tabs-content"')
   })

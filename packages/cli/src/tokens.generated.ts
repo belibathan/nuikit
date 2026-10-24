@@ -2419,6 +2419,48 @@ export const GENERATED: { name: string; group: string; type: string; description
     "description": "The glide's curve"
   },
   {
+    "name": "nk-field-marker-height",
+    "group": "kit",
+    "type": "dimension",
+    "description": "The marker the caret reads its box from: a line's height"
+  },
+  {
+    "name": "nk-field-marker-drop",
+    "group": "kit",
+    "type": "dimension",
+    "description": "How far the marker sits below the baseline"
+  },
+  {
+    "name": "nk-field-caret-color",
+    "group": "kit",
+    "type": "color",
+    "description": "The drawn caret"
+  },
+  {
+    "name": "nk-field-caret-radius",
+    "group": "kit",
+    "type": "dimension",
+    "description": "The drawn caret's corners"
+  },
+  {
+    "name": "nk-field-caret-blink",
+    "group": "kit",
+    "type": "number",
+    "description": "One breath of the caret at rest"
+  },
+  {
+    "name": "nk-field-caret-blink-delay",
+    "group": "kit",
+    "type": "number",
+    "description": "How long the caret stays solid after typing or moving"
+  },
+  {
+    "name": "nk-field-caret-blink-dim",
+    "group": "kit",
+    "type": "number",
+    "description": "The caret's opacity at the bottom of its breath"
+  },
+  {
     "name": "nk-field-caret-width",
     "group": "kit",
     "type": "dimension",
@@ -2453,6 +2495,360 @@ export const GENERATED: { name: string; group: string; type: string; description
     "group": "kit",
     "type": "number",
     "description": "A deleted character's exit"
+  },
+  {
+    "name": "nk-form-field-label-gap",
+    "group": "kit",
+    "type": "dimension",
+    "description": "Between the name and its required mark"
+  },
+  {
+    "name": "nk-form-field-label-size",
+    "group": "kit",
+    "type": "dimension",
+    "description": "The label's size"
+  },
+  {
+    "name": "nk-form-field-label-leading",
+    "group": "kit",
+    "type": "dimension",
+    "description": "The label's line height over a control"
+  },
+  {
+    "name": "nk-form-field-label-leading-row",
+    "group": "kit",
+    "type": "dimension",
+    "description": "The label's line height beside a control (checkbox, switch)"
+  },
+  {
+    "name": "nk-form-field-hint-size",
+    "group": "kit",
+    "type": "dimension",
+    "description": "The hint's size"
+  },
+  {
+    "name": "nk-form-field-hint-leading",
+    "group": "kit",
+    "type": "dimension",
+    "description": "The hint's line height"
+  },
+  {
+    "name": "nk-form-field-hint-color",
+    "group": "kit",
+    "type": "color",
+    "description": "The hint's ink"
+  },
+  {
+    "name": "nk-form-field-end-gap",
+    "group": "kit",
+    "type": "dimension",
+    "description": "Between the reset button and the value"
+  },
+  {
+    "name": "nk-form-field-value-size",
+    "group": "kit",
+    "type": "dimension",
+    "description": "The value text's size"
+  },
+  {
+    "name": "nk-form-field-value-leading",
+    "group": "kit",
+    "type": "dimension",
+    "description": "The value text's line height"
+  },
+  {
+    "name": "nk-form-field-value-color",
+    "group": "kit",
+    "type": "color",
+    "description": "The value text's ink"
+  },
+  {
+    "name": "nk-form-field-row-gap",
+    "group": "kit",
+    "type": "dimension",
+    "description": "Between the control, the label and the hint on a row (checkbox, switch)"
+  },
+  {
+    "name": "nk-form-field-row-height",
+    "group": "kit",
+    "type": "dimension",
+    "description": "A row's minimum height, so an icon-xs button never moves it"
+  },
+  {
+    "name": "nk-form-field-trail-gap",
+    "group": "kit",
+    "type": "dimension",
+    "description": "Between the value and the control at a switch row's end"
+  },
+  {
+    "name": "nk-form-field-control-height",
+    "group": "kit",
+    "type": "dimension",
+    "description": "A segmented control's height (date, time)"
+  },
+  {
+    "name": "nk-form-field-control-size",
+    "group": "kit",
+    "type": "dimension",
+    "description": "A segmented control's text size"
+  },
+  {
+    "name": "nk-form-field-control-gap",
+    "group": "kit",
+    "type": "dimension",
+    "description": "Between a segmented control's parts"
+  },
+  {
+    "name": "nk-form-field-control-pad-x",
+    "group": "kit",
+    "type": "dimension",
+    "description": "A segmented control's inline padding"
+  },
+  {
+    "name": "nk-form-field-control-pad-x-dense",
+    "group": "kit",
+    "type": "dimension",
+    "description": "The same, dense (a range)"
+  },
+  {
+    "name": "nk-form-field-control-affix-password",
+    "group": "kit",
+    "type": "dimension",
+    "description": "Room at a password field's end for the reveal button"
+  },
+  {
+    "name": "nk-form-field-control-affix-stepper",
+    "group": "kit",
+    "type": "dimension",
+    "description": "Room at a number field's end for the inline stepper"
+  },
+  {
+    "name": "nk-form-field-icon-size",
+    "group": "kit",
+    "type": "dimension",
+    "description": "A control's leading icon"
+  },
+  {
+    "name": "nk-form-field-icon-color",
+    "group": "kit",
+    "type": "color",
+    "description": "A control's leading icon ink"
+  },
+  {
+    "name": "nk-form-field-icon-inset",
+    "group": "kit",
+    "type": "dimension",
+    "description": "How far a text or number field's icon sits from its start"
+  },
+  {
+    "name": "nk-form-field-icon-gap",
+    "group": "kit",
+    "type": "dimension",
+    "description": "Between a segmented control's icon and its first segment"
+  },
+  {
+    "name": "nk-form-field-icon-pad",
+    "group": "kit",
+    "type": "dimension",
+    "description": "A text or number field's start padding when it has an icon"
+  },
+  {
+    "name": "nk-form-field-stepper-inset",
+    "group": "kit",
+    "type": "dimension",
+    "description": "How far the inline stepper sits from the field's end"
+  },
+  {
+    "name": "nk-form-field-stepper-gap",
+    "group": "kit",
+    "type": "dimension",
+    "description": "Between the stepper's two buttons"
+  },
+  {
+    "name": "nk-form-field-reveal-inset",
+    "group": "kit",
+    "type": "dimension",
+    "description": "How far the password reveal button sits from the field's end"
+  },
+  {
+    "name": "nk-form-field-segment-sep",
+    "group": "kit",
+    "type": "color",
+    "description": "A segmented control's separators (/ : -)"
+  },
+  {
+    "name": "nk-form-field-meridiem-gap",
+    "group": "kit",
+    "type": "dimension",
+    "description": "Between the time segments and AM / PM"
+  },
+  {
+    "name": "nk-form-field-meridiem-pad-x",
+    "group": "kit",
+    "type": "dimension",
+    "description": "The AM / PM button's inline padding"
+  },
+  {
+    "name": "nk-form-field-meridiem-size",
+    "group": "kit",
+    "type": "dimension",
+    "description": "The AM / PM text size"
+  },
+  {
+    "name": "nk-form-field-meridiem-weight",
+    "group": "kit",
+    "type": "number",
+    "description": "The AM / PM weight"
+  },
+  {
+    "name": "nk-form-field-meridiem-color",
+    "group": "kit",
+    "type": "color",
+    "description": "The AM / PM ink at rest"
+  },
+  {
+    "name": "nk-form-field-clear-size",
+    "group": "kit",
+    "type": "dimension",
+    "description": "The clear button's box"
+  },
+  {
+    "name": "nk-form-field-clear-bleed",
+    "group": "kit",
+    "type": "dimension",
+    "description": "How far it reaches into the control's padding"
+  },
+  {
+    "name": "nk-form-field-clear-color",
+    "group": "kit",
+    "type": "color",
+    "description": "The clear button's ink"
+  },
+  {
+    "name": "nk-form-field-date-picker-size",
+    "group": "kit",
+    "type": "dimension",
+    "description": "The calendar button's box"
+  },
+  {
+    "name": "nk-form-field-date-picker-bleed",
+    "group": "kit",
+    "type": "dimension",
+    "description": "How far it reaches into the control's padding"
+  },
+  {
+    "name": "nk-form-field-date-picker-color",
+    "group": "kit",
+    "type": "color",
+    "description": "The calendar button's ink"
+  },
+  {
+    "name": "nk-form-field-date-picker-cell",
+    "group": "kit",
+    "type": "dimension",
+    "description": "A day, year or decade cell (the grid is seven cells wide)"
+  },
+  {
+    "name": "nk-form-field-date-picker-pad",
+    "group": "kit",
+    "type": "dimension",
+    "description": "The popover's padding"
+  },
+  {
+    "name": "nk-form-field-date-picker-gap",
+    "group": "kit",
+    "type": "dimension",
+    "description": "Between the popover's header and grid"
+  },
+  {
+    "name": "nk-form-field-date-picker-step",
+    "group": "kit",
+    "type": "dimension",
+    "description": "Between the header's buttons and between year and decade cells"
+  },
+  {
+    "name": "nk-form-field-swatch-size",
+    "group": "kit",
+    "type": "dimension",
+    "description": "The colour field's preview swatch"
+  },
+  {
+    "name": "nk-form-field-swatch-inset",
+    "group": "kit",
+    "type": "dimension",
+    "description": "How far the preview swatch sits from the field's start"
+  },
+  {
+    "name": "nk-form-field-swatch-pad",
+    "group": "kit",
+    "type": "dimension",
+    "description": "The colour field's start padding (room for the swatch)"
+  },
+  {
+    "name": "nk-form-field-swatch-empty",
+    "group": "kit",
+    "type": "number",
+    "description": "The preview swatch while no colour is set"
+  },
+  {
+    "name": "nk-form-field-swatches-gap",
+    "group": "kit",
+    "type": "dimension",
+    "description": "Between preset swatches"
+  },
+  {
+    "name": "nk-form-field-swatches-size",
+    "group": "kit",
+    "type": "dimension",
+    "description": "A preset swatch's box"
+  },
+  {
+    "name": "nk-form-field-description-size",
+    "group": "kit",
+    "type": "dimension",
+    "description": "The description's size"
+  },
+  {
+    "name": "nk-form-field-description-leading",
+    "group": "kit",
+    "type": "dimension",
+    "description": "The description's line height"
+  },
+  {
+    "name": "nk-form-field-description-color",
+    "group": "kit",
+    "type": "color",
+    "description": "The description's ink"
+  },
+  {
+    "name": "nk-form-field-description-indent",
+    "group": "kit",
+    "type": "dimension",
+    "description": "Its start inset under a checkbox row (aligned with the label)"
+  },
+  {
+    "name": "nk-form-field-error-size",
+    "group": "kit",
+    "type": "dimension",
+    "description": "The error's size"
+  },
+  {
+    "name": "nk-form-field-error-leading",
+    "group": "kit",
+    "type": "dimension",
+    "description": "The error's line height"
+  },
+  {
+    "name": "nk-form-field-error-color",
+    "group": "kit",
+    "type": "color",
+    "description": "The error's ink"
+  },
+  {
+    "name": "nk-form-field-error-indent",
+    "group": "kit",
+    "type": "dimension",
+    "description": "Its start inset under a checkbox row (aligned with the label)"
   },
   {
     "name": "nk-stepper-delay",
@@ -2507,6 +2903,306 @@ export const GENERATED: { name: string; group: string; type: string; description
     "group": "kit",
     "type": "dimension",
     "description": "The header's minimum height"
+  },
+  {
+    "name": "nk-dialog-shell-width",
+    "group": "kit",
+    "type": "dimension",
+    "description": "Width (md)"
+  },
+  {
+    "name": "nk-dialog-shell-width-sm",
+    "group": "kit",
+    "type": "dimension",
+    "description": "Width (sm)"
+  },
+  {
+    "name": "nk-dialog-shell-width-lg",
+    "group": "kit",
+    "type": "dimension",
+    "description": "Width (lg)"
+  },
+  {
+    "name": "nk-dialog-shell-top",
+    "group": "kit",
+    "type": "dimension",
+    "description": "Where a top dialog anchors"
+  },
+  {
+    "name": "nk-dialog-shell-header-gap",
+    "group": "kit",
+    "type": "dimension",
+    "description": "Between the title and the description"
+  },
+  {
+    "name": "nk-dialog-shell-header-pad-x",
+    "group": "kit",
+    "type": "dimension",
+    "description": "Inline padding"
+  },
+  {
+    "name": "nk-dialog-shell-header-pad-y",
+    "group": "kit",
+    "type": "dimension",
+    "description": "Block padding"
+  },
+  {
+    "name": "nk-dialog-shell-body-pad",
+    "group": "kit",
+    "type": "dimension",
+    "description": "The body's padding"
+  },
+  {
+    "name": "nk-dialog-shell-footer-gap",
+    "group": "kit",
+    "type": "dimension",
+    "description": "Between the hints and the buttons"
+  },
+  {
+    "name": "nk-dialog-shell-footer-pad-x",
+    "group": "kit",
+    "type": "dimension",
+    "description": "Inline padding"
+  },
+  {
+    "name": "nk-dialog-shell-footer-pad-y",
+    "group": "kit",
+    "type": "dimension",
+    "description": "Block padding"
+  },
+  {
+    "name": "nk-dialog-shell-footer-bleed",
+    "group": "kit",
+    "type": "dimension",
+    "description": "How far the hints reach back into the padding (the first item's own inset lines up with the title)"
+  },
+  {
+    "name": "nk-empty-state-gap",
+    "group": "kit",
+    "type": "dimension",
+    "description": "Between the header and the actions (panel size)"
+  },
+  {
+    "name": "nk-empty-state-pad",
+    "group": "kit",
+    "type": "dimension",
+    "description": "The panel size's padding"
+  },
+  {
+    "name": "nk-empty-state-gap-screen",
+    "group": "kit",
+    "type": "dimension",
+    "description": "Between the header and the actions (screen size)"
+  },
+  {
+    "name": "nk-empty-state-pad-screen",
+    "group": "kit",
+    "type": "dimension",
+    "description": "The screen size's padding, and the panel's from a medium viewport up"
+  },
+  {
+    "name": "nk-empty-state-header-gap",
+    "group": "kit",
+    "type": "dimension",
+    "description": "Between the icon, the title and the description"
+  },
+  {
+    "name": "nk-empty-state-icon-box",
+    "group": "kit",
+    "type": "dimension",
+    "description": "The icon's box (panel size, no tile)"
+  },
+  {
+    "name": "nk-empty-state-icon-box-screen",
+    "group": "kit",
+    "type": "dimension",
+    "description": "The icon's box (screen size, no tile)"
+  },
+  {
+    "name": "nk-empty-state-icon-glyph",
+    "group": "kit",
+    "type": "dimension",
+    "description": "The glyph inside the box"
+  },
+  {
+    "name": "nk-empty-state-icon-gap",
+    "group": "kit",
+    "type": "dimension",
+    "description": "Under the icon"
+  },
+  {
+    "name": "nk-empty-state-icon-ink",
+    "group": "kit",
+    "type": "color",
+    "description": "The icon's ink"
+  },
+  {
+    "name": "nk-empty-state-icon-ink-error",
+    "group": "kit",
+    "type": "color",
+    "description": "The icon's ink on an error"
+  },
+  {
+    "name": "nk-empty-state-icon-tint-error",
+    "group": "kit",
+    "type": "color",
+    "description": "The icon box's fill on an error"
+  },
+  {
+    "name": "nk-empty-state-title-size-screen",
+    "group": "kit",
+    "type": "dimension",
+    "description": "The title's size at screen size (the panel size takes the panel title)"
+  },
+  {
+    "name": "nk-empty-state-description-size",
+    "group": "kit",
+    "type": "dimension",
+    "description": "The description's size"
+  },
+  {
+    "name": "nk-empty-state-description-leading",
+    "group": "kit",
+    "type": "dimension",
+    "description": "The description's line height"
+  },
+  {
+    "name": "nk-empty-state-actions-gap",
+    "group": "kit",
+    "type": "dimension",
+    "description": "Between actions"
+  },
+  {
+    "name": "nk-radial-menu-size",
+    "group": "kit",
+    "type": "dimension",
+    "description": "The wheel's diameter (the size prop overrides it)"
+  },
+  {
+    "name": "nk-radial-menu-disabled-opacity",
+    "group": "kit",
+    "type": "number",
+    "description": "A disabled wedge or item"
+  },
+  {
+    "name": "nk-radial-menu-wedge-stroke",
+    "group": "kit",
+    "type": "number",
+    "description": "A wedge's rim, in the wheel's 100-unit drawing (the wedge path insets by the same amount)"
+  },
+  {
+    "name": "nk-radial-menu-indicator-stroke",
+    "group": "kit",
+    "type": "number",
+    "description": "The lit wedge's rim, in drawing units"
+  },
+  {
+    "name": "nk-radial-menu-item-width",
+    "group": "kit",
+    "type": "dimension",
+    "description": "An item's width, a share of the wheel"
+  },
+  {
+    "name": "nk-radial-menu-item-gap",
+    "group": "kit",
+    "type": "dimension",
+    "description": "Between an item's icon and label"
+  },
+  {
+    "name": "nk-radial-menu-item-icon",
+    "group": "kit",
+    "type": "dimension",
+    "description": "An item's icon"
+  },
+  {
+    "name": "nk-radial-menu-label-size",
+    "group": "kit",
+    "type": "dimension",
+    "description": "An item's label and the centre's second line"
+  },
+  {
+    "name": "nk-radial-menu-label-leading",
+    "group": "kit",
+    "type": "dimension",
+    "description": "An item's label and the centre's second line: their line height"
+  },
+  {
+    "name": "nk-radial-menu-label-weight",
+    "group": "kit",
+    "type": "number",
+    "description": "An item's label weight"
+  },
+  {
+    "name": "nk-radial-menu-dot-size",
+    "group": "kit",
+    "type": "dimension",
+    "description": "The mark on an item that opens a submenu"
+  },
+  {
+    "name": "nk-radial-menu-dot-opacity",
+    "group": "kit",
+    "type": "number",
+    "description": "The submenu mark's opacity"
+  },
+  {
+    "name": "nk-radial-menu-center-width",
+    "group": "kit",
+    "type": "dimension",
+    "description": "The centre button's width, a share of the wheel"
+  },
+  {
+    "name": "nk-radial-menu-center-pad",
+    "group": "kit",
+    "type": "dimension",
+    "description": "The centre button's padding"
+  },
+  {
+    "name": "nk-radial-menu-center-icon",
+    "group": "kit",
+    "type": "dimension",
+    "description": "The back or close icon"
+  },
+  {
+    "name": "nk-radial-menu-title-size",
+    "group": "kit",
+    "type": "dimension",
+    "description": "The centre's first line"
+  },
+  {
+    "name": "nk-radial-menu-title-leading",
+    "group": "kit",
+    "type": "dimension",
+    "description": "The centre's first line height"
+  },
+  {
+    "name": "nk-radial-menu-title-weight",
+    "group": "kit",
+    "type": "number",
+    "description": "The centre's first line weight"
+  },
+  {
+    "name": "nk-selection-tabs-list-gap",
+    "group": "kit",
+    "type": "dimension",
+    "description": "Between triggers: a lit tile never touches its neighbour"
+  },
+  {
+    "name": "nk-selection-tabs-list-rest",
+    "group": "kit",
+    "type": "dimension",
+    "description": "Room under the triggers besides the tile's wall"
+  },
+  {
+    "name": "nk-selection-tabs-trigger-height",
+    "group": "kit",
+    "type": "dimension",
+    "description": "A trigger's minimum height"
+  },
+  {
+    "name": "nk-selection-tabs-trigger-pad-x",
+    "group": "kit",
+    "type": "dimension",
+    "description": "A trigger's inline padding"
   },
   {
     "name": "nk-chip-height",

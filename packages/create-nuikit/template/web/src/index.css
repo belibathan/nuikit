@@ -1068,12 +1068,79 @@
     --nk-selection-time: var(--nk-time-base);
     --nk-selection-ease: var(--nk-ease-move);
     /* component · field */
+    --nk-field-marker-height: 1.15em;
+    --nk-field-marker-drop: -0.2em;
+    --nk-field-caret-color: var(--primary);
+    --nk-field-caret-radius: var(--nk-radius-key);
+    --nk-field-caret-blink: 1100ms;
+    --nk-field-caret-blink-delay: 500ms;
+    --nk-field-caret-blink-dim: 0.15;
     --nk-field-caret-width: 0.125rem;
     --nk-field-caret-time: var(--nk-time-base);
     --nk-field-caret-ease: var(--nk-ease-move);
     --nk-field-mirror-rise: 0.45em;
     --nk-field-mirror-in: var(--nk-time-slow);
     --nk-field-mirror-out: var(--nk-time-exit);
+    /* component · form-field */
+    --nk-form-field-label-gap: var(--nk-space-1);
+    --nk-form-field-label-size: var(--nk-text-label);
+    --nk-form-field-label-leading: var(--nk-leading-tight);
+    --nk-form-field-label-leading-row: var(--nk-leading-normal);
+    --nk-form-field-hint-size: var(--nk-text-label);
+    --nk-form-field-hint-leading: var(--nk-leading-tight);
+    --nk-form-field-hint-color: var(--muted-foreground);
+    --nk-form-field-end-gap: var(--nk-space-1);
+    --nk-form-field-value-size: var(--nk-text-label);
+    --nk-form-field-value-leading: var(--nk-leading-tight);
+    --nk-form-field-value-color: var(--muted-foreground);
+    --nk-form-field-row-gap: var(--nk-space-2);
+    --nk-form-field-row-height: var(--nk-height-key);
+    --nk-form-field-trail-gap: var(--nk-space-2);
+    --nk-form-field-control-height: var(--nk-height-control);
+    --nk-form-field-control-size: var(--nk-text-label);
+    --nk-form-field-control-gap: var(--nk-space-1);
+    --nk-form-field-control-pad-x: var(--nk-gap-pad-x);
+    --nk-form-field-control-pad-x-dense: var(--nk-space-2);
+    --nk-form-field-control-affix-password: 2.5rem;
+    --nk-form-field-control-affix-stepper: 3.5rem;
+    --nk-form-field-icon-size: var(--nk-icon-md);
+    --nk-form-field-icon-color: var(--muted-foreground);
+    --nk-form-field-icon-inset: var(--nk-space-3);
+    --nk-form-field-icon-gap: var(--nk-space-1);
+    --nk-form-field-icon-pad: calc(var(--nk-form-field-icon-inset) + var(--nk-form-field-icon-size) + var(--nk-space-2));
+    --nk-form-field-stepper-inset: var(--nk-space-1);
+    --nk-form-field-stepper-gap: var(--nk-space-1);
+    --nk-form-field-reveal-inset: 0.375rem;
+    --nk-form-field-segment-sep: var(--muted-foreground);
+    --nk-form-field-meridiem-gap: var(--nk-space-1);
+    --nk-form-field-meridiem-pad-x: var(--nk-space-1);
+    --nk-form-field-meridiem-size: var(--nk-text-label);
+    --nk-form-field-meridiem-weight: var(--nk-type-label-weight);
+    --nk-form-field-meridiem-color: var(--muted-foreground);
+    --nk-form-field-clear-size: 1.75rem;
+    --nk-form-field-clear-bleed: -0.5rem;
+    --nk-form-field-clear-color: var(--muted-foreground);
+    --nk-form-field-date-picker-size: 1.75rem;
+    --nk-form-field-date-picker-bleed: -0.5rem;
+    --nk-form-field-date-picker-color: var(--muted-foreground);
+    --nk-form-field-date-picker-cell: 2rem;
+    --nk-form-field-date-picker-pad: var(--nk-space-3);
+    --nk-form-field-date-picker-gap: var(--nk-space-2);
+    --nk-form-field-date-picker-step: var(--nk-space-1);
+    --nk-form-field-swatch-size: var(--nk-icon-lg);
+    --nk-form-field-swatch-inset: 0.625rem;
+    --nk-form-field-swatch-pad: 2.5rem;
+    --nk-form-field-swatch-empty: repeating-linear-gradient(135deg, transparent 0 3px, var(--border) 3px 5px);
+    --nk-form-field-swatches-gap: var(--nk-space-2);
+    --nk-form-field-swatches-size: var(--nk-height-key);
+    --nk-form-field-description-size: var(--nk-text-label);
+    --nk-form-field-description-leading: var(--nk-leading-tight);
+    --nk-form-field-description-color: var(--muted-foreground);
+    --nk-form-field-description-indent: var(--nk-space-6);
+    --nk-form-field-error-size: var(--nk-text-label);
+    --nk-form-field-error-leading: var(--nk-leading-tight);
+    --nk-form-field-error-color: var(--destructive);
+    --nk-form-field-error-indent: var(--nk-space-6);
     /* component · stepper */
     --nk-stepper-delay: 350ms;
     --nk-stepper-rate: 70ms;
@@ -1089,6 +1156,60 @@
     --nk-confirm-width-lg: 28rem;
     /* component · edge-sheet */
     --nk-edge-sheet-header-height: 2rem;
+    /* component · dialog-shell */
+    --nk-dialog-shell-width: 32rem;
+    --nk-dialog-shell-width-sm: 24rem;
+    --nk-dialog-shell-width-lg: 40rem;
+    --nk-dialog-shell-top: 18vh;
+    --nk-dialog-shell-header-gap: var(--nk-space-1);
+    --nk-dialog-shell-header-pad-x: var(--nk-gap-surface);
+    --nk-dialog-shell-header-pad-y: var(--nk-space-4);
+    --nk-dialog-shell-body-pad: var(--nk-gap-surface);
+    --nk-dialog-shell-footer-gap: var(--nk-gap-cluster);
+    --nk-dialog-shell-footer-pad-x: var(--nk-gap-surface);
+    --nk-dialog-shell-footer-pad-y: var(--nk-space-3);
+    --nk-dialog-shell-footer-bleed: var(--nk-space-2);
+    /* component · empty-state */
+    --nk-empty-state-gap: var(--nk-space-3);
+    --nk-empty-state-pad: var(--nk-space-6);
+    --nk-empty-state-gap-screen: var(--nk-space-4);
+    --nk-empty-state-pad-screen: calc(var(--nk-space-unit) * 12);
+    --nk-empty-state-header-gap: var(--nk-space-2);
+    --nk-empty-state-icon-box: 2.5rem;
+    --nk-empty-state-icon-box-screen: 3rem;
+    --nk-empty-state-icon-glyph: var(--nk-icon-lg);
+    --nk-empty-state-icon-gap: var(--nk-space-1);
+    --nk-empty-state-icon-ink: var(--muted-foreground);
+    --nk-empty-state-icon-ink-error: var(--destructive);
+    --nk-empty-state-icon-tint-error: rgba(var(--destructive-rgb), 0.15);
+    --nk-empty-state-title-size-screen: var(--nk-text-section);
+    --nk-empty-state-description-size: var(--nk-text-label);
+    --nk-empty-state-description-leading: var(--nk-leading-normal);
+    --nk-empty-state-actions-gap: var(--nk-space-2);
+    /* component · radial-menu */
+    --nk-radial-menu-size: 20rem;
+    --nk-radial-menu-disabled-opacity: 0.5;
+    --nk-radial-menu-wedge-stroke: 0.3;
+    --nk-radial-menu-indicator-stroke: var(--nk-radial-menu-wedge-stroke);
+    --nk-radial-menu-item-width: 22%;
+    --nk-radial-menu-item-gap: var(--nk-space-1);
+    --nk-radial-menu-item-icon: var(--nk-icon-lg);
+    --nk-radial-menu-label-size: var(--nk-text-label);
+    --nk-radial-menu-label-leading: var(--nk-leading-tight);
+    --nk-radial-menu-label-weight: var(--nk-type-label-weight);
+    --nk-radial-menu-dot-size: 0.25rem;
+    --nk-radial-menu-dot-opacity: 0.6;
+    --nk-radial-menu-center-width: 34%;
+    --nk-radial-menu-center-pad: var(--nk-space-2);
+    --nk-radial-menu-center-icon: var(--nk-icon-md);
+    --nk-radial-menu-title-size: var(--nk-text-label);
+    --nk-radial-menu-title-leading: var(--nk-leading-normal);
+    --nk-radial-menu-title-weight: var(--nk-type-weight-strong);
+    /* component · selection-tabs */
+    --nk-selection-tabs-list-gap: var(--nk-list-gap);
+    --nk-selection-tabs-list-rest: 3px;
+    --nk-selection-tabs-trigger-height: var(--nk-height-chip);
+    --nk-selection-tabs-trigger-pad-x: var(--nk-gap-pad-x);
     /* component · chip */
     --nk-chip-height: var(--nk-height-chip);
     --nk-chip-tile-size: 3rem;
@@ -1248,6 +1369,46 @@
     --nk-row-gap: var(--nk-space-4);
     --nk-list-gap: calc(var(--nk-tile-wall-height) + var(--nk-space-1));
     --nk-menu-row-gap: var(--nk-space-1);
+    --nk-form-field-label-gap: var(--nk-space-1);
+    --nk-form-field-end-gap: var(--nk-space-1);
+    --nk-form-field-row-gap: var(--nk-space-2);
+    --nk-form-field-trail-gap: var(--nk-space-2);
+    --nk-form-field-control-gap: var(--nk-space-1);
+    --nk-form-field-control-pad-x: var(--nk-gap-pad-x);
+    --nk-form-field-control-pad-x-dense: var(--nk-space-2);
+    --nk-form-field-icon-inset: var(--nk-space-3);
+    --nk-form-field-icon-gap: var(--nk-space-1);
+    --nk-form-field-icon-pad: calc(var(--nk-form-field-icon-inset) + var(--nk-form-field-icon-size) + var(--nk-space-2));
+    --nk-form-field-stepper-inset: var(--nk-space-1);
+    --nk-form-field-stepper-gap: var(--nk-space-1);
+    --nk-form-field-meridiem-gap: var(--nk-space-1);
+    --nk-form-field-meridiem-pad-x: var(--nk-space-1);
+    --nk-form-field-date-picker-pad: var(--nk-space-3);
+    --nk-form-field-date-picker-gap: var(--nk-space-2);
+    --nk-form-field-date-picker-step: var(--nk-space-1);
+    --nk-form-field-swatches-gap: var(--nk-space-2);
+    --nk-form-field-description-indent: var(--nk-space-6);
+    --nk-form-field-error-indent: var(--nk-space-6);
+    --nk-dialog-shell-header-gap: var(--nk-space-1);
+    --nk-dialog-shell-header-pad-x: var(--nk-gap-surface);
+    --nk-dialog-shell-header-pad-y: var(--nk-space-4);
+    --nk-dialog-shell-body-pad: var(--nk-gap-surface);
+    --nk-dialog-shell-footer-gap: var(--nk-gap-cluster);
+    --nk-dialog-shell-footer-pad-x: var(--nk-gap-surface);
+    --nk-dialog-shell-footer-pad-y: var(--nk-space-3);
+    --nk-dialog-shell-footer-bleed: var(--nk-space-2);
+    --nk-empty-state-gap: var(--nk-space-3);
+    --nk-empty-state-pad: var(--nk-space-6);
+    --nk-empty-state-gap-screen: var(--nk-space-4);
+    --nk-empty-state-pad-screen: calc(var(--nk-space-unit) * 12);
+    --nk-empty-state-header-gap: var(--nk-space-2);
+    --nk-empty-state-icon-gap: var(--nk-space-1);
+    --nk-empty-state-actions-gap: var(--nk-space-2);
+    --nk-radial-menu-item-gap: var(--nk-space-1);
+    --nk-radial-menu-center-pad: var(--nk-space-2);
+    --nk-selection-tabs-list-gap: var(--nk-list-gap);
+    --nk-selection-tabs-trigger-height: var(--nk-height-chip);
+    --nk-selection-tabs-trigger-pad-x: var(--nk-gap-pad-x);
     --nk-chip-height: var(--nk-height-chip);
     --nk-chip-padding: calc(var(--nk-space-unit) * 2.5);
     --nk-slab-height: calc(2.5rem * var(--nk-density));
@@ -1271,6 +1432,7 @@
     --nk-tile-key-radius: var(--nk-radius-control);
     --nk-panel-radius: var(--nk-radius-surface);
     --nk-row-radius: var(--nk-radius-control);
+    --nk-field-caret-radius: var(--nk-radius-key);
     --nk-chip-radius: var(--nk-radius-chip);
     --nk-chip-hud-radius: max(0.25rem, calc(var(--radius) - 0.125rem));
     --nk-slab-radius: var(--nk-chip-radius);
@@ -2128,6 +2290,298 @@
   }
   [data-slot="progress-indicator"] {
     box-shadow: var(--nk-meter-glow);
+  }
+
+  /* ───── Specced parts (docs/design/levers.md): the sizes, gaps and inks of FormField, EmptyState, DialogShell,
+     RadialMenu, SelectionTabs and the SmoothInput caret live here, read from their levers. Attribute pairs
+     lift the specificity over the stock shadcn classes underneath. ───── */
+
+  /* form-field: the label row */
+  [data-slot="form-field-label"] {
+    gap: var(--nk-form-field-label-gap);
+    font-size: var(--nk-form-field-label-size);
+    line-height: var(--nk-form-field-label-leading);
+  }
+  [data-slot="form-field"][data-orientation]:not([data-orientation="vertical"]) [data-slot="form-field-label"] {
+    line-height: var(--nk-form-field-label-leading-row);
+    font-weight: var(--nk-type-label-weight);
+  }
+  [data-slot="form-field-hint"] {
+    font-size: var(--nk-form-field-hint-size);
+    line-height: var(--nk-form-field-hint-leading);
+    color: var(--nk-form-field-hint-color);
+  }
+  [data-slot="form-field"][data-orientation]:not([data-orientation="vertical"]) [data-slot="form-field-hint"] {
+    font-weight: normal;
+  }
+  [data-slot="form-field-end"] {
+    gap: var(--nk-form-field-end-gap);
+  }
+  [data-slot="form-field-value"] {
+    font-size: var(--nk-form-field-value-size);
+    line-height: var(--nk-form-field-value-leading);
+    font-weight: var(--nk-type-label-weight);
+    text-transform: none;
+    color: var(--nk-form-field-value-color);
+  }
+  [data-slot="form-field-row"] {
+    gap: var(--nk-form-field-row-gap);
+    min-height: var(--nk-form-field-row-height);
+  }
+  [data-slot="form-field-trail"] {
+    gap: var(--nk-form-field-trail-gap);
+  }
+  [data-slot="form-field-description"] {
+    font-size: var(--nk-form-field-description-size);
+    line-height: var(--nk-form-field-description-leading);
+    color: var(--nk-form-field-description-color);
+  }
+  [data-slot="form-field-error"] {
+    font-size: var(--nk-form-field-error-size);
+    line-height: var(--nk-form-field-error-leading);
+    color: var(--nk-form-field-error-color);
+  }
+  [data-slot="form-field"][data-orientation="horizontal"] [data-slot="form-field-description"] {
+    padding-left: var(--nk-form-field-description-indent);
+  }
+  [data-slot="form-field"][data-orientation="horizontal"] [data-slot="form-field-error"] {
+    padding-left: var(--nk-form-field-error-indent);
+  }
+  /* form-field: the controls */
+  [data-slot="form-field-control"][data-segmented] {
+    height: var(--nk-form-field-control-height);
+    font-size: var(--nk-form-field-control-size);
+    gap: var(--nk-form-field-control-gap);
+    padding-left: var(--nk-form-field-control-pad-x);
+    padding-right: var(--nk-form-field-control-pad-x);
+  }
+  [data-slot="form-field-control"][data-segmented][data-dense] {
+    padding-left: var(--nk-form-field-control-pad-x-dense);
+    padding-right: var(--nk-form-field-control-pad-x-dense);
+  }
+  [data-slot="form-field-control"][data-icon] {
+    padding-left: var(--nk-form-field-icon-pad);
+  }
+  [data-slot="form-field-control"][data-icon="swatch"] {
+    padding-left: var(--nk-form-field-swatch-pad);
+  }
+  [data-slot="form-field-control"][data-affix="password"] {
+    padding-right: var(--nk-form-field-control-affix-password);
+  }
+  [data-slot="form-field-control"][data-affix="stepper"] {
+    padding-right: var(--nk-form-field-control-affix-stepper);
+  }
+  [data-slot="form-field-icon"] {
+    color: var(--nk-form-field-icon-color);
+  }
+  svg[data-slot="form-field-icon"],
+  [data-slot="form-field-icon"] svg:not([class*="size-"]) {
+    width: var(--nk-form-field-icon-size);
+    height: var(--nk-form-field-icon-size);
+  }
+  [data-slot="form-field-icon"][data-place="start"] {
+    left: var(--nk-form-field-icon-inset);
+  }
+  [data-segmented] > [data-slot="form-field-icon"] {
+    margin-right: var(--nk-form-field-icon-gap);
+  }
+  [data-segmented] > [aria-hidden="true"]:not([data-slot]) {
+    color: var(--nk-form-field-segment-sep);
+  }
+  [data-slot="form-field-stepper"] {
+    right: var(--nk-form-field-stepper-inset);
+    gap: var(--nk-form-field-stepper-gap);
+  }
+  [data-slot="form-field-reveal"] {
+    right: var(--nk-form-field-reveal-inset);
+  }
+  [data-slot="form-field-meridiem"] {
+    margin-left: var(--nk-form-field-meridiem-gap);
+    padding-left: var(--nk-form-field-meridiem-pad-x);
+    padding-right: var(--nk-form-field-meridiem-pad-x);
+    font-size: var(--nk-form-field-meridiem-size);
+    font-weight: var(--nk-form-field-meridiem-weight);
+    color: var(--nk-form-field-meridiem-color);
+  }
+  [data-slot="form-field-clear"] {
+    width: var(--nk-form-field-clear-size);
+    height: var(--nk-form-field-clear-size);
+    margin-right: var(--nk-form-field-clear-bleed);
+    color: var(--nk-form-field-clear-color);
+  }
+  [data-slot="form-field-date-picker"] {
+    width: var(--nk-form-field-date-picker-size);
+    height: var(--nk-form-field-date-picker-size);
+    margin-right: var(--nk-form-field-date-picker-bleed);
+    color: var(--nk-form-field-date-picker-color);
+  }
+  [data-slot="form-field-date-picker-popover"] {
+    padding: var(--nk-form-field-date-picker-pad);
+  }
+  [data-slot="form-field-date-picker-content"] {
+    --cell-size: var(--nk-form-field-date-picker-cell);
+    gap: var(--nk-form-field-date-picker-gap);
+  }
+  [data-slot="form-field-swatch"] {
+    left: var(--nk-form-field-swatch-inset);
+    width: var(--nk-form-field-swatch-size);
+    height: var(--nk-form-field-swatch-size);
+  }
+  [data-slot="form-field-swatch"][data-empty] {
+    background-image: var(--nk-form-field-swatch-empty);
+  }
+  [data-slot="form-field-swatches"] {
+    gap: var(--nk-form-field-swatches-gap);
+  }
+  [data-slot="form-field-swatch-option"] {
+    width: var(--nk-form-field-swatches-size);
+    height: var(--nk-form-field-swatches-size);
+  }
+
+  /* empty-state */
+  [data-slot="empty-state"][data-size] {
+    gap: var(--nk-empty-state-gap);
+    padding: var(--nk-empty-state-pad);
+  }
+  @media (min-width: 48rem) {
+    [data-slot="empty-state"][data-size] {
+      padding: var(--nk-empty-state-pad-screen);
+    }
+  }
+  [data-slot="empty-state"][data-size="screen"] {
+    gap: var(--nk-empty-state-gap-screen);
+    padding: var(--nk-empty-state-pad-screen);
+  }
+  [data-slot="empty-state-header"] {
+    gap: var(--nk-empty-state-header-gap);
+  }
+  [data-slot="empty-state"] :is([data-slot="empty-state-icon"], [data-part="empty-state-icon"]) {
+    margin-bottom: var(--nk-empty-state-icon-gap);
+  }
+  [data-slot="empty-state"] [data-slot="empty-state-icon"] {
+    width: var(--nk-empty-state-icon-box);
+    height: var(--nk-empty-state-icon-box);
+    color: var(--nk-empty-state-icon-ink);
+  }
+  [data-slot="empty-state"][data-size="screen"] [data-slot="empty-state-icon"] {
+    width: var(--nk-empty-state-icon-box-screen);
+    height: var(--nk-empty-state-icon-box-screen);
+  }
+  [data-slot="empty-state"] [data-slot="empty-state-icon"] svg:not([class*="size-"]) {
+    width: var(--nk-empty-state-icon-glyph);
+    height: var(--nk-empty-state-icon-glyph);
+  }
+  [data-slot="empty-state"][data-tone="error"] [data-slot="empty-state-icon"] {
+    background-color: var(--nk-empty-state-icon-tint-error);
+    color: var(--nk-empty-state-icon-ink-error);
+  }
+  [data-slot="empty-state"][data-size="screen"] [data-slot="empty-state-title"] {
+    --nk-panel-title-size: var(--nk-empty-state-title-size-screen);
+  }
+  [data-slot="empty-state-description"] {
+    font-size: var(--nk-empty-state-description-size);
+    line-height: var(--nk-empty-state-description-leading);
+  }
+  [data-slot="empty-state-actions"] {
+    gap: var(--nk-empty-state-actions-gap);
+  }
+
+  /* dialog-shell */
+  [data-slot="dialog-shell"][data-size][data-position] {
+    max-width: var(--nk-dialog-shell-width);
+  }
+  [data-slot="dialog-shell"][data-size="sm"][data-position] {
+    max-width: var(--nk-dialog-shell-width-sm);
+  }
+  [data-slot="dialog-shell"][data-size="lg"][data-position] {
+    max-width: var(--nk-dialog-shell-width-lg);
+  }
+  [data-slot="dialog-shell"][data-position="top"][data-size] {
+    top: var(--nk-dialog-shell-top);
+  }
+  [data-slot="dialog-shell-header"] {
+    gap: var(--nk-dialog-shell-header-gap);
+    padding: var(--nk-dialog-shell-header-pad-y) var(--nk-dialog-shell-header-pad-x);
+  }
+  [data-slot="dialog-shell-body"] {
+    padding: var(--nk-dialog-shell-body-pad);
+  }
+  [data-slot="dialog-shell-footer"] {
+    gap: var(--nk-dialog-shell-footer-gap);
+    padding: var(--nk-dialog-shell-footer-pad-y) var(--nk-dialog-shell-footer-pad-x);
+  }
+  [data-slot="dialog-shell-footer"] > [data-slot="action-bar"] {
+    margin-left: calc(var(--nk-dialog-shell-footer-bleed) * -1);
+  }
+
+  /* radial-menu */
+  [data-slot="radial-menu"] {
+    width: var(--nk-radial-menu-size);
+    height: var(--nk-radial-menu-size);
+  }
+  [data-slot="radial-menu-wedge"] {
+    stroke-width: var(--nk-radial-menu-wedge-stroke);
+  }
+  [data-slot="radial-menu-indicator"] {
+    stroke-width: var(--nk-radial-menu-indicator-stroke);
+  }
+  :is([data-slot="radial-menu-wedge"], [data-slot="radial-menu-item"])[data-disabled] {
+    opacity: var(--nk-radial-menu-disabled-opacity);
+  }
+  [data-slot="radial-menu-item"] {
+    width: var(--nk-radial-menu-item-width);
+    gap: var(--nk-radial-menu-item-gap);
+  }
+  [data-slot="radial-menu-item"] svg:not([class*="size-"]) {
+    width: var(--nk-radial-menu-item-icon);
+    height: var(--nk-radial-menu-item-icon);
+  }
+  [data-slot="radial-menu-label"] {
+    font-size: var(--nk-radial-menu-label-size);
+    line-height: var(--nk-radial-menu-label-leading);
+  }
+  [data-slot="radial-menu-item"] [data-slot="radial-menu-label"] {
+    font-weight: var(--nk-radial-menu-label-weight);
+  }
+  [data-slot="radial-menu-dot"] {
+    width: var(--nk-radial-menu-dot-size);
+    height: var(--nk-radial-menu-dot-size);
+    opacity: var(--nk-radial-menu-dot-opacity);
+  }
+  [data-slot="radial-menu-center"] {
+    width: var(--nk-radial-menu-center-width);
+    padding: var(--nk-radial-menu-center-pad);
+  }
+  [data-slot="radial-menu-center"] svg:not([class*="size-"]) {
+    width: var(--nk-radial-menu-center-icon);
+    height: var(--nk-radial-menu-center-icon);
+  }
+  [data-slot="radial-menu-title"] {
+    font-size: var(--nk-radial-menu-title-size);
+    line-height: var(--nk-radial-menu-title-leading);
+    font-weight: var(--nk-radial-menu-title-weight);
+  }
+
+  /* selection-tabs */
+  [data-selection-tabs="list"] {
+    gap: var(--nk-selection-tabs-list-gap);
+    padding-bottom: calc(var(--nk-selection-tabs-list-rest) + var(--nk-tile-wall-height));
+  }
+  [data-selection-tabs="trigger"] {
+    min-height: var(--nk-selection-tabs-trigger-height);
+    padding-left: var(--nk-selection-tabs-trigger-pad-x);
+    padding-right: var(--nk-selection-tabs-trigger-pad-x);
+  }
+
+  /* smooth-input: the drawn caret and its marker */
+  [data-slot="smooth-caret"] {
+    width: var(--nk-field-caret-width);
+    background-color: var(--nk-field-caret-color);
+    border-radius: var(--nk-field-caret-radius);
+  }
+  [data-slot="smooth-field-marker"] {
+    height: var(--nk-field-marker-height);
+    vertical-align: var(--nk-field-marker-drop);
   }
 }
 
