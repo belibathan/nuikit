@@ -45,7 +45,7 @@ const confirmVariants = cva("", {
     size: {
       sm: "w-[var(--nk-confirm-width-sm)]",
       default: "w-[var(--nk-confirm-width)]",
-      lg: "w-[28rem]",
+      lg: "w-(--nk-confirm-width-lg)",
     },
   },
   defaultVariants: {

@@ -4526,6 +4526,16 @@ var NuikitTheme = (() => {
       "part": "progress"
     },
     {
+      "name": "nk-menu-row-details-width",
+      "path": "menu-row.details.width",
+      "tier": "component",
+      "scope": "menu-row",
+      "type": "length",
+      "default": "16rem",
+      "description": "The details flyout's width",
+      "part": "details"
+    },
+    {
       "name": "nk-menu-row-value-width",
       "path": "menu-row.value.width",
       "tier": "component",
@@ -4691,6 +4701,15 @@ var NuikitTheme = (() => {
       "description": "Width (sm)"
     },
     {
+      "name": "nk-confirm-width-lg",
+      "path": "confirm.width-lg",
+      "tier": "component",
+      "scope": "confirm",
+      "type": "length",
+      "default": "28rem",
+      "description": "Width (lg)"
+    },
+    {
       "name": "nk-edge-sheet-header-height",
       "path": "edge-sheet.header.height",
       "tier": "component",
@@ -4708,6 +4727,15 @@ var NuikitTheme = (() => {
       "type": "length",
       "default": "var(--nk-height-chip)",
       "description": "Height"
+    },
+    {
+      "name": "nk-chip-tile-size",
+      "path": "chip.tile-size",
+      "tier": "component",
+      "scope": "chip",
+      "type": "length",
+      "default": "3rem",
+      "description": "A tile chip's box"
     },
     {
       "name": "nk-chip-padding",
@@ -4818,6 +4846,26 @@ var NuikitTheme = (() => {
       "description": "Text drawn on the game"
     },
     {
+      "name": "nk-chip-icon-size",
+      "path": "chip.icon.size",
+      "tier": "component",
+      "scope": "chip",
+      "type": "length",
+      "default": "0.875rem",
+      "description": "A pill chip's icon",
+      "part": "icon"
+    },
+    {
+      "name": "nk-chip-icon-size-tile",
+      "path": "chip.icon.size-tile",
+      "tier": "component",
+      "scope": "chip",
+      "type": "length",
+      "default": "1.25rem",
+      "description": "A tile chip's icon",
+      "part": "icon"
+    },
+    {
       "name": "nk-vital-chip-size",
       "path": "vital-chip.size",
       "tier": "component",
@@ -4882,6 +4930,36 @@ var NuikitTheme = (() => {
       "default": "1rem",
       "description": "Between the face and the tag's text",
       "part": "label"
+    },
+    {
+      "name": "nk-vital-chip-pop-overlap",
+      "path": "vital-chip.pop.overlap",
+      "tier": "component",
+      "scope": "vital-chip",
+      "type": "length",
+      "default": "0.375rem",
+      "description": "How far an open pop tucks behind the chip",
+      "part": "pop"
+    },
+    {
+      "name": "nk-vital-chip-pop-pad",
+      "path": "vital-chip.pop.pad",
+      "tier": "component",
+      "scope": "vital-chip",
+      "type": "length",
+      "default": "0.75rem",
+      "description": "An open pop's leading padding",
+      "part": "pop"
+    },
+    {
+      "name": "nk-vital-chip-pop-max-width",
+      "path": "vital-chip.pop.max-width",
+      "tier": "component",
+      "scope": "vital-chip",
+      "type": "length",
+      "default": "12rem",
+      "description": "An open pop's width",
+      "part": "pop"
     },
     {
       "name": "nk-vital-chip-line-width",
@@ -5114,6 +5192,16 @@ var NuikitTheme = (() => {
         0,
         12
       ]
+    },
+    {
+      "name": "nk-ring-label-max-width",
+      "path": "ring.label.max-width",
+      "tier": "component",
+      "scope": "ring",
+      "type": "length",
+      "default": "12rem",
+      "description": "The label's maximum width",
+      "part": "label"
     },
     {
       "name": "nk-speedometer-digit-dim",
@@ -5569,6 +5657,15 @@ var NuikitTheme = (() => {
       "type": "length",
       "default": "0.25rem",
       "description": "Between its parts"
+    },
+    {
+      "name": "nk-key-prompt-max-width",
+      "path": "key-prompt.max-width",
+      "tier": "component",
+      "scope": "key-prompt",
+      "type": "length",
+      "default": "20rem",
+      "description": "Maximum width"
     },
     {
       "name": "nk-key-prompt-min-height",

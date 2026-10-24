@@ -16,6 +16,11 @@ export const vitalChip: ComponentDef = {
       size: length("0.9375rem", "The tag's text size", { floor: true, was: ["nk-vital-label-size"] }),
       gap: length("1rem", "Between the face and the tag's text", { floor: true, was: ["nk-vital-tag-gap"] }),
     },
+    pop: {
+      overlap: length("0.375rem", "How far an open pop tucks behind the chip", { floor: true }),
+      pad: length("0.75rem", "An open pop's leading padding", { floor: true }),
+      "max-width": length("12rem", "An open pop's width", { floor: true }),
+    },
     line: { width: length("0.125rem", "The level line's thickness", { floor: true, was: ["nk-vital-line"] }) },
     plate: {
       drop: length("0.25rem", "How far the wall drops straight below the face", { floor: true, was: ["nk-vital-plate-drop"] }),

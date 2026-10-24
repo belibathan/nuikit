@@ -42,6 +42,7 @@ export const menuRow: ComponentDef = {
   parts: {
     image: { size: length("2rem", "An image's box", { floor: true, was: ["nk-menu-row-image"] }) },
     progress: { height: length("0.25rem", "The progress bar's height", { floor: true, was: ["nk-menu-row-bar-h"] }) },
+    details: { width: length("16rem", "The details flyout's width", { floor: true }) },
     value: { width: length("3rem", "The value column's minimum width", { floor: true, was: ["nk-menu-row-value-w"] }) },
   },
 };

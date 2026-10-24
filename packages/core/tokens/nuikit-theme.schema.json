@@ -2507,6 +2507,11 @@
           "description": "The progress bar's height",
           "$comment": "component · menu-row.progress.height"
         },
+        "nk-menu-row-details-width": {
+          "type": "string",
+          "description": "The details flyout's width",
+          "$comment": "component · menu-row.details.width"
+        },
         "nk-menu-row-value-width": {
           "type": "string",
           "description": "The value column's minimum width",
@@ -2593,6 +2598,11 @@
           "description": "Width (sm)",
           "$comment": "component · confirm.width-sm"
         },
+        "nk-confirm-width-lg": {
+          "type": "string",
+          "description": "Width (lg)",
+          "$comment": "component · confirm.width-lg"
+        },
         "nk-edge-sheet-header-height": {
           "type": "string",
           "description": "The header's minimum height",
@@ -2602,6 +2612,11 @@
           "type": "string",
           "description": "Height",
           "$comment": "component · chip.height"
+        },
+        "nk-chip-tile-size": {
+          "type": "string",
+          "description": "A tile chip's box",
+          "$comment": "component · chip.tile-size"
         },
         "nk-chip-padding": {
           "type": "string",
@@ -2667,6 +2682,16 @@
           "description": "Text drawn on the game",
           "$comment": "component · chip.text-shadow"
         },
+        "nk-chip-icon-size": {
+          "type": "string",
+          "description": "A pill chip's icon",
+          "$comment": "component · chip.icon.size"
+        },
+        "nk-chip-icon-size-tile": {
+          "type": "string",
+          "description": "A tile chip's icon",
+          "$comment": "component · chip.icon.size-tile"
+        },
         "nk-vital-chip-size": {
           "type": "string",
           "description": "The chip's box",
@@ -2698,6 +2723,21 @@
           "type": "string",
           "description": "Between the face and the tag's text",
           "$comment": "component · vital-chip.label.gap"
+        },
+        "nk-vital-chip-pop-overlap": {
+          "type": "string",
+          "description": "How far an open pop tucks behind the chip",
+          "$comment": "component · vital-chip.pop.overlap"
+        },
+        "nk-vital-chip-pop-pad": {
+          "type": "string",
+          "description": "An open pop's leading padding",
+          "$comment": "component · vital-chip.pop.pad"
+        },
+        "nk-vital-chip-pop-max-width": {
+          "type": "string",
+          "description": "An open pop's width",
+          "$comment": "component · vital-chip.pop.max-width"
         },
         "nk-vital-chip-line-width": {
           "type": "string",
@@ -2821,6 +2861,11 @@
           "pattern": "^-?\\d+(\\.\\d+)?$",
           "description": "Degrees between segments",
           "$comment": "component · ring.gap"
+        },
+        "nk-ring-label-max-width": {
+          "type": "string",
+          "description": "The label's maximum width",
+          "$comment": "component · ring.label.max-width"
         },
         "nk-speedometer-digit-dim": {
           "type": "string",
@@ -3065,6 +3110,11 @@
           "type": "string",
           "description": "Between its parts",
           "$comment": "component · key-prompt.gap"
+        },
+        "nk-key-prompt-max-width": {
+          "type": "string",
+          "description": "Maximum width",
+          "$comment": "component · key-prompt.max-width"
         },
         "nk-key-prompt-min-height": {
           "type": "string",

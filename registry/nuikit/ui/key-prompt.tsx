@@ -39,7 +39,7 @@ import { Kbd, KbdGroup } from "@/components/ui/tile"
  */
 
 const keyPromptVariants = cva(
-  "relative max-w-80 overflow-hidden text-left [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-(--nk-icon-md)",
+  "relative max-w-(--nk-key-prompt-max-width) overflow-hidden text-left [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-(--nk-icon-md)",
   {
     variants: {
       surface: {

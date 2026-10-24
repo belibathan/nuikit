@@ -85,6 +85,7 @@ export const confirm: ComponentDef = {
   levers: {
     width: length("24rem", "Width (md)", { floor: true, was: ["nk-confirm-w"] }),
     "width-sm": length("20rem", "Width (sm)", { floor: true, was: ["nk-confirm-w-sm"] }),
+    "width-lg": length("28rem", "Width (lg)", { floor: true }),
   },
 };
 

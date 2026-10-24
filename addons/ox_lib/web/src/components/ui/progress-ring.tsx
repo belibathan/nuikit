@@ -253,7 +253,7 @@ function ProgressRing({
         )}
       </Dial>
       {label && (
-        <span data-slot="progress-ring-label" className={cn("max-w-48 truncate", game && "nk-shadow")}>
+        <span data-slot="progress-ring-label" className={cn("max-w-(--nk-ring-label-max-width) truncate", game && "nk-shadow")}>
           {label}
         </span>
       )}

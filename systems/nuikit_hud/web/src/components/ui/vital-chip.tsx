@@ -502,8 +502,8 @@ function Pop({ label, mode = "change", min = 3, critical = false, force = null, 
       className={cn(
         // a flag out of the chip's side, in line with the row: it takes its own room, so pops of
         // vitals that change together sit side by side and can never overlap
-        "pointer-events-none relative z-0 data-[open]:-ml-[0.375rem] flex h-[calc(var(--nk-vital-chip-size)*0.8)] max-w-0 items-center gap-(--nk-space-2) self-center overflow-hidden rounded-r-(--nk-chip-radius) bg-(--nk-chip-bg) text-(length:--nk-text-label) leading-none [font-weight:var(--nk-type-weight-strong)] whitespace-nowrap text-(--nk-chip-fg) opacity-0",
-        "-translate-x-1 transition-[opacity,transform] duration-[calc(var(--nk-time-slow)*var(--nk-motion))] ease-(--nk-ease-enter) data-[open]:max-w-48 data-[open]:translate-x-0 data-[open]:pr-(--nk-space-3) data-[open]:pl-[0.75rem] data-[open]:opacity-100"
+        "pointer-events-none relative z-0 data-[open]:-ml-(--nk-vital-chip-pop-overlap) flex h-[calc(var(--nk-vital-chip-size)*0.8)] max-w-0 items-center gap-(--nk-space-2) self-center overflow-hidden rounded-r-(--nk-chip-radius) bg-(--nk-chip-bg) text-(length:--nk-text-label) leading-none [font-weight:var(--nk-type-weight-strong)] whitespace-nowrap text-(--nk-chip-fg) opacity-0",
+        "-translate-x-1 transition-[opacity,transform] duration-[calc(var(--nk-time-slow)*var(--nk-motion))] ease-(--nk-ease-enter) data-[open]:max-w-(--nk-vital-chip-pop-max-width) data-[open]:translate-x-0 data-[open]:pr-(--nk-space-3) data-[open]:pl-(--nk-vital-chip-pop-pad) data-[open]:opacity-100"
       )}
     >
       <span>{label}</span>
