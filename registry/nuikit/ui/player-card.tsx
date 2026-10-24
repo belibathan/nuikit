@@ -88,7 +88,7 @@ function PlayerCard({
         icon={
           <Avatar size="lg" data-slot="player-card-avatar">
             {avatar && <AvatarImage src={avatar} alt="" className="object-cover" />}
-            <AvatarFallback className="[font-weight:var(--nk-type-label-weight,500)]">{initials(name)}</AvatarFallback>
+            <AvatarFallback className="[font-weight:var(--nk-type-label-weight)]">{initials(name)}</AvatarFallback>
             {duty && (
               <AvatarBadge
                 aria-hidden

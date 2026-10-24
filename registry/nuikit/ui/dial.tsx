@@ -213,9 +213,9 @@ function Dial({
         {accentPaint && (
           <defs>
             <linearGradient id={accentId} gradientUnits="userSpaceOnUse" x1={0} y1={0} x2={size} y2={0}>
-              <stop offset="0" style={{ stopColor: "var(--nk-accent-from, var(--nk-gauge-fill-color))" }} />
-              <stop offset="0.5" style={{ stopColor: "var(--nk-accent-via, var(--nk-gauge-fill-color))" }} />
-              <stop offset="1" style={{ stopColor: "var(--nk-accent-to, var(--nk-gauge-fill-color))" }} />
+              <stop offset="0" style={{ stopColor: "var(--nk-accent-from)" }} />
+              <stop offset="0.5" style={{ stopColor: "var(--nk-accent-via)" }} />
+              <stop offset="1" style={{ stopColor: "var(--nk-accent-to)" }} />
             </linearGradient>
           </defs>
         )}
@@ -223,8 +223,8 @@ function Dial({
           <>
             <defs>
               <radialGradient id={`${accentId}-disc`}>
-                <stop offset="0" style={{ stopColor: "var(--scrim)", stopOpacity: "var(--nk-dial-disc-opacity, var(--nk-alpha-hud, var(--nk-material-hud-opacity, 0.55)))" }} />
-                <stop offset="0.58" style={{ stopColor: "var(--scrim)", stopOpacity: "var(--nk-dial-disc-opacity, var(--nk-alpha-hud, var(--nk-material-hud-opacity, 0.55)))" }} />
+                <stop offset="0" style={{ stopColor: "var(--scrim)", stopOpacity: "var(--nk-dial-disc-opacity)" }} />
+                <stop offset="0.58" style={{ stopColor: "var(--scrim)", stopOpacity: "var(--nk-dial-disc-opacity)" }} />
                 <stop offset="1" style={{ stopColor: "var(--scrim)", stopOpacity: 0 }} />
               </radialGradient>
             </defs>
@@ -258,7 +258,7 @@ function Dial({
                   strokeWidth={i % 2 === 0 ? 2 : 1.5}
                   className={
                     threshold !== undefined && at > threshold
-                      ? "stroke-(--nk-gauge-redline-color) [stroke-opacity:var(--nk-gauge-ticks,1)]"
+                      ? "stroke-(--nk-gauge-redline-color) [stroke-opacity:var(--nk-gauge-ticks)]"
                       : i % 2 === 0
                         ? "stroke-(--nk-gauge-tick-major)"
                         : "stroke-(--nk-gauge-tick-color)"

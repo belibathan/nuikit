@@ -72,7 +72,7 @@ function CollapseMore({ count, className, ...props }: React.ComponentProps<"span
     <span
       data-slot="collapse-stack-more"
       className={cn(
-        "nk-num inline-flex h-(--nk-chip-height) items-center rounded-(--nk-chip-radius) bg-(--nk-chip-bg) px-2 text-(length:--nk-text-label) [font-weight:var(--nk-type-weight-strong,600)] text-(--nk-chip-fg)",
+        "nk-num inline-flex h-(--nk-chip-height) items-center rounded-(--nk-chip-radius) bg-(--nk-chip-bg) px-2 text-(length:--nk-text-label) [font-weight:var(--nk-type-weight-strong)] text-(--nk-chip-fg)",
         className
       )}
       {...props}

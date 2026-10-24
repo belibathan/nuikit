@@ -305,7 +305,7 @@ function Speedometer({
             thickness={size * G.fuel.stroke}
             inset={size * G.fuel.inset}
             trackProps={{ className: "stroke-(--nk-gauge-track-color)!" }}
-            valueProps={{ className: cn("transition-opacity duration-(--nk-time-fill) ease-out", low ? "stroke-(--nk-gauge-redline-color)! [animation:nk-breathe_var(--nk-time-pulse,1000ms)_var(--nk-ease-breathe,ease-in-out)_infinite] motion-reduce:[animation:none]" : "stroke-current! [stroke-opacity:0.95]") }}
+            valueProps={{ className: cn("transition-opacity duration-(--nk-time-fill) ease-out", low ? "stroke-(--nk-gauge-redline-color)! [animation:nk-breathe_var(--nk-time-pulse)_var(--nk-ease-breathe)_infinite] motion-reduce:[animation:none]" : "stroke-current! [stroke-opacity:0.95]") }}
             className="absolute inset-0"
           />
           <span
@@ -329,7 +329,7 @@ function Speedometer({
               data-side={bit === 1 ? "left" : "right"}
               data-on={on || undefined}
               aria-label={on ? `Indicator ${bit === 1 ? "left" : "right"}` : undefined}
-              className="absolute flex -translate-x-1/2 -translate-y-1/2 text-(--role-success,var(--success)) opacity-0 data-on:opacity-100 data-on:[animation:nk-blink_calc(680ms*var(--nk-motion,1))_steps(1)_infinite] [&_svg]:size-(--nk-icon-md) [&_svg]:fill-current [&_svg]:stroke-none"
+              className="absolute flex -translate-x-1/2 -translate-y-1/2 text-(--role-success,var(--success)) opacity-0 data-on:opacity-100 data-on:[animation:nk-blink_calc(680ms*var(--nk-motion))_steps(1)_infinite] [&_svg]:size-(--nk-icon-md) [&_svg]:fill-current [&_svg]:stroke-none"
               style={{ left: rem(0.5 + (bit === 1 ? -G.signals.dx : G.signals.dx)), top: rem(G.signals.y) }}
             >
               {bit === 1 ? <ArrowBigLeftIcon /> : <ArrowBigRightIcon />}
@@ -340,7 +340,7 @@ function Speedometer({
         <span
           data-slot="speedometer-speed"
           aria-label="Speed"
-          className="nk-num flex leading-none [font-family:var(--nk-gauge-font)] [font-weight:var(--nk-type-weight-display,700)] [letter-spacing:var(--nk-speedometer-digit-tracking,0.01em)] pr-[0.15em]"
+          className="nk-num flex leading-none [font-family:var(--nk-gauge-font)] [font-weight:var(--nk-type-weight-display)] [letter-spacing:var(--nk-speedometer-digit-tracking)] pr-[0.15em]"
           // the in-game face: 3.625rem on the 216px gauge
           style={{ fontSize: rem(0.2685) }}
         >
@@ -360,7 +360,7 @@ function Speedometer({
           data-slot="speedometer-unit"
           value={unit}
           align="center"
-          className="nk-scan mt-(--nk-space-1) uppercase leading-none [letter-spacing:0.08em] [font-weight:var(--nk-type-weight-display,700)]"
+          className="nk-scan mt-(--nk-space-1) uppercase leading-none [letter-spacing:0.08em] [font-weight:var(--nk-type-weight-display)]"
           style={{ fontSize: rem(0.06) }}
         />
       </div>

@@ -229,8 +229,8 @@ function useSmoothField<T extends Field>(multiline: boolean) {
         <span
           ref={caret}
           data-slot="smooth-caret"
-          className="absolute top-0 left-0 bg-primary [transition:transform_var(--nk-field-caret-time,140ms)_var(--nk-field-caret-ease,cubic-bezier(0.2,0,0,1))]"
-          style={{ width: "var(--nk-field-caret-width, 0.125rem)", borderRadius: "var(--nk-radius-key, 1px)", opacity: 0 }}
+          className="absolute top-0 left-0 bg-primary [transition:transform_var(--nk-field-caret-time)_var(--nk-field-caret-ease)]"
+          style={{ width: "var(--nk-field-caret-width)", borderRadius: "var(--nk-radius-key)", opacity: 0 }}
         />
       </div>
     </div>

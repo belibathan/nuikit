@@ -3531,3 +3531,185 @@ html[data-nk-backdrop="on"] * {
     grid-template-columns: repeat(var(--nk-grid-cols, auto-fill), minmax(var(--nk-grid-cell), 1fr));
   }
 }
+
+/* vital-chip keycap (the in-game vitals); every number is a --nk-vital-chip-* lever. Unlayered on purpose (it was an injected <style>; layering it changes the cascade). */
+[data-slot="vital-chip-shape"][data-shape="keycap"] {
+  width: var(--nk-vital-chip-size);
+  height: var(--nk-vital-chip-size);
+  --nk-vital-chip-face: calc(var(--nk-vital-chip-size) * var(--nk-vital-chip-tile-ratio));
+  --nk-vital-chip-tag: 0px;
+  --nk-vital-chip-tag-pad: var(--nk-vital-chip-label-gap);
+  --nk-vital-chip-plate-drop: calc(var(--nk-tile-wall-height) * 4 / 3);
+  --nk-vital-chip-plate-x: 0rem;
+  --nk-vital-chip-d: 1;
+}
+[data-slot="vital-chip-shape"][data-shape="keycap"][data-side="left"] { --nk-vital-chip-d: -1; }
+[data-slot="vital-chip-shape"][data-shape="keycap"] > [data-slot="tile"],
+[data-slot="vital-chip-shape"][data-shape="keycap"] [data-slot="vital-chip-icon"] {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+/* the face is the kit Tile (its face, rim, slant and alert state), sized by the chip and without its own plate:
+   the chip's plate below is the one that slides out */
+[data-slot="vital-chip-shape"][data-shape="keycap"] > [data-slot="tile"] {
+  --nk-tile-face-radius: var(--nk-radius-chip);
+  --nk-tile-now-plate: transparent;
+  z-index: 2;
+  width: var(--nk-vital-chip-face);
+  min-width: 0;
+  height: var(--nk-vital-chip-face);
+  padding: 0;
+}
+[data-slot="vital-chip-level"] {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  border-radius: inherit;
+  transform: skewX(var(--nk-tile-face-skew));
+}
+[data-slot="vital-chip-liquid"],
+[data-slot="vital-chip-lit"] {
+  position: absolute;
+  inset: 0;
+  transform-origin: 50% 100%;
+}
+/* the level in the vital's role colour (data-hue gives --hue; Default's roles are white): solid by default, a flat
+   full colour (--nk-style-fill); soft keeps the translucent liquid */
+[data-slot="vital-chip-liquid"] {
+  background: rgb(var(--hue, var(--foreground-rgb)));
+  transform: scaleY(var(--level, 0));
+  transition: transform calc(var(--nk-time-fill) * var(--nk-motion)) var(--nk-ease-move);
+}
+:is(html, *)[data-nk-fill="soft"] [data-slot="vital-chip-liquid"] {
+  background: linear-gradient(180deg, rgba(var(--hue, var(--foreground-rgb)), 0.62), rgba(var(--hue, var(--foreground-rgb)), 0.38));
+}
+[data-slot="vital-chip-line"] {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: var(--nk-vital-chip-line-width);
+  background: var(--hue-grad-a, var(--nk-tile-face-ink));
+  transform: translateY(calc((1 - var(--level, 0)) * var(--nk-vital-chip-face) - 0.0625rem));
+  transition: transform calc(var(--nk-time-fill) * var(--nk-motion)) var(--nk-ease-move);
+  opacity: calc(var(--level, 0) * 100);
+}
+/* active (the mic): a bright layer fills the face from the bottom, the icon turns to the dark ink */
+[data-slot="vital-chip-lit"] {
+  background: var(--nk-tile-face-active);
+  transform: scaleY(0);
+  transition: transform calc(var(--nk-time-base) * var(--nk-motion)) var(--nk-ease-move);
+}
+[data-slot="vital-chip-shape"][data-shape="keycap"][data-active] [data-slot="vital-chip-lit"] { transform: scaleY(1); transition-duration: calc(var(--nk-time-fast) * var(--nk-motion)); }
+[data-slot="vital-chip-shape"][data-shape="keycap"] [data-slot="vital-chip-icon"] {
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: calc(var(--nk-vital-chip-face) * var(--nk-vital-chip-icon-ratio));
+  height: calc(var(--nk-vital-chip-face) * var(--nk-vital-chip-icon-ratio));
+  color: var(--nk-tile-face-ink);
+  transition: color calc(var(--nk-time-base) * var(--nk-motion)) ease-out;
+}
+[data-slot="vital-chip-shape"][data-shape="keycap"] [data-slot="vital-chip-icon"] > svg { width: 100%; height: 100%; stroke-width: 2.25; }
+/* the icon's ink copy: dark on the solid level, cut at the surface (the icon box sits 0.24 × the face from its top) */
+[data-slot="vital-chip-shape"][data-shape="keycap"] [data-slot="vital-chip-icon-ink"] {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--nk-level-fill-ink);
+  clip-path: inset(max(0px, calc((1 - var(--level, 0)) * var(--nk-vital-chip-face) - var(--nk-vital-chip-face) * 0.24)) 0 0 0);
+}
+[data-slot="vital-chip-shape"][data-shape="keycap"] [data-slot="vital-chip-icon-ink"] > svg { width: 100%; height: 100%; }
+:is(html, *)[data-nk-fill="soft"] [data-slot="vital-chip-shape"][data-shape="keycap"] [data-slot="vital-chip-icon-ink"],
+[data-slot="vital-chip-shape"][data-shape="keycap"]:not([data-level]) [data-slot="vital-chip-icon-ink"],
+[data-slot="vital-chip-shape"][data-shape="keycap"][data-active] [data-slot="vital-chip-icon-ink"] { display: none; }
+[data-slot="vital-chip-shape"][data-shape="keycap"][data-active] [data-slot="vital-chip-icon"] { color: var(--nk-tile-face-confirm-ink); transition-duration: calc(var(--nk-time-fast) * var(--nk-motion)); }
+/* a letter on the face (a gear, a compass mark): the scan voice, nudged left by the italic's lean */
+[data-slot="vital-chip-shape"][data-shape="keycap"] [data-slot="vital-chip-glyph"] {
+  display: block;
+  font-size: calc(var(--nk-vital-chip-face) * 0.62);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  text-shadow: none;
+  transform: translateX(-0.04em);
+}
+/* the base: the tile's own wall, always there, the face's size dropped by the plate drop, its corners rounded all
+   round. The extension slides out over it from under the face's centre, so the near end you see is always this
+   base's rounded corner, never a clipped edge. */
+[data-slot="vital-chip-wall"] {
+  position: absolute;
+  z-index: 0;
+  top: calc((var(--nk-vital-chip-size) - var(--nk-vital-chip-face)) / 2);
+  left: calc((var(--nk-vital-chip-size) - var(--nk-vital-chip-face)) / 2);
+  width: var(--nk-vital-chip-face);
+  height: var(--nk-vital-chip-face);
+  border-radius: var(--nk-radius-chip);
+  background: var(--nk-tile-plate-dim);
+  box-shadow: 0 0 0 var(--nk-line-width) rgba(var(--scrim-rgb), 0.9);
+  transform: translate(calc(var(--nk-vital-chip-plate-x) * var(--nk-vital-chip-d)), var(--nk-vital-chip-plate-drop)) skewX(var(--nk-tile-face-skew));
+}
+/* the track clips the extension from the face's centre outwards (that cut is always under the face or on the base) */
+[data-slot="vital-chip-track"] {
+  position: absolute;
+  z-index: 1;
+  top: calc((var(--nk-vital-chip-size) - var(--nk-vital-chip-face)) / 2);
+  left: calc((var(--nk-vital-chip-size) - var(--nk-vital-chip-face)) / 2 + var(--nk-vital-chip-face) / 2);
+  width: calc(var(--nk-vital-chip-face) / 2 + var(--nk-vital-chip-tag) + var(--nk-vital-chip-tag-pad) + var(--nk-vital-chip-plate-drop) + 0.5rem + 2px);
+  height: calc(var(--nk-vital-chip-face) + var(--nk-vital-chip-plate-drop) + 2px);
+  overflow: hidden;
+  pointer-events: none;
+}
+[data-slot="vital-chip-shape"][data-shape="keycap"][data-side="left"] [data-slot="vital-chip-track"] { left: auto; right: calc((var(--nk-vital-chip-size) - var(--nk-vital-chip-face)) / 2 + var(--nk-vital-chip-face) / 2); }
+[data-slot="vital-chip-plate"] {
+  position: absolute;
+  top: 0;
+  left: calc(var(--nk-vital-chip-face) / -2);
+  width: calc(var(--nk-vital-chip-face) + var(--nk-vital-chip-tag) + var(--nk-vital-chip-tag-pad));
+  height: var(--nk-vital-chip-face);
+  border-radius: var(--nk-radius-chip);
+  background: var(--nk-tile-plate-dim);
+  box-shadow: 0 0 0 var(--nk-line-width) rgba(var(--scrim-rgb), 0.9);
+  /* at rest only the drop offset shows behind the face */
+  transform: translate(calc(var(--nk-vital-chip-plate-x) - var(--nk-vital-chip-d) * (var(--nk-vital-chip-tag) + var(--nk-vital-chip-tag-pad))), var(--nk-vital-chip-plate-drop)) skewX(var(--nk-tile-face-skew));
+  transition: transform calc(var(--nk-time-slow) * var(--nk-motion)) var(--nk-ease-expand);
+}
+[data-slot="vital-chip-shape"][data-shape="keycap"][data-side="left"] [data-slot="vital-chip-plate"] { left: auto; right: calc(var(--nk-vital-chip-face) / -2); }
+[data-slot="vital-chip-shape"][data-shape="keycap"][data-open] [data-slot="vital-chip-plate"] { transform: translate(var(--nk-vital-chip-plate-x), var(--nk-vital-chip-plate-drop)) skewX(var(--nk-tile-face-skew)); }
+[data-slot="vital-chip-shape"][data-shape="keycap"][data-side="left"][data-open] [data-slot="vital-chip-plate"] { transform: translate(calc(var(--nk-vital-chip-plate-x) * -1), var(--nk-vital-chip-plate-drop)) skewX(var(--nk-tile-face-skew)); }
+/* the label on the revealed plate: the scan voice, fading in a beat after the plate */
+[data-slot="vital-chip-label"][data-attach="plate"] {
+  position: absolute;
+  z-index: 1;
+  top: 50%;
+  left: calc((var(--nk-vital-chip-size) + var(--nk-vital-chip-face)) / 2 + 0.5rem);
+  display: block;
+  transform: translateY(-50%);
+  white-space: nowrap;
+  font-size: var(--nk-vital-chip-label-size);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--nk-tile-face-ink);
+  opacity: 0;
+  transition: opacity calc(var(--nk-time-fast) * var(--nk-motion)) ease-out;
+}
+[data-slot="vital-chip-shape"][data-shape="keycap"][data-side="left"] [data-slot="vital-chip-label"][data-attach="plate"] { left: auto; right: calc((var(--nk-vital-chip-size) + var(--nk-vital-chip-face)) / 2 + 0.5rem); }
+[data-slot="vital-chip-label"][data-attach="plate"][data-open] { opacity: 1; transition-duration: calc(var(--nk-time-base) * var(--nk-motion)); transition-delay: calc(var(--nk-time-fast) * var(--nk-motion)); }
+[data-slot="vital-chip-label"][data-attach="plate"] [data-slot="vital-chip-name"] { opacity: 0.7; margin-right: 0.25rem; }
+/* alert: the liquid and its line take the status colour (the Tile's rim breathes) */
+[data-slot="vital-chip-shape"][data-shape="keycap"][data-state="alert"] [data-slot="vital-chip-liquid"] { background: var(--vital, var(--nk-fill-alert)); }
+:is(html, *)[data-nk-fill="soft"] [data-slot="vital-chip-shape"][data-shape="keycap"][data-state="alert"] [data-slot="vital-chip-liquid"] { background: rgba(var(--destructive-rgb, 239, 68, 68), 0.7); }
+[data-slot="vital-chip-shape"][data-shape="keycap"][data-state="alert"] [data-slot="vital-chip-line"] { background: var(--vital, var(--nk-fill-alert)); }
+[data-shape="keycap"][data-display][data-state="alert"] { --vital: var(--nk-fill-alert); }
+/* the room the plate takes in the row: the chip's margin on its plate side, FLIPped by Row (the Root: the one
+   element with the shape and the display; a composer may rename its data-slot) */
+[data-shape="keycap"][data-display] { --nk-vital-chip-room: 0px; margin-right: var(--nk-vital-chip-room); }
+[data-shape="keycap"][data-display][data-side="left"] { margin-right: 0; margin-left: var(--nk-vital-chip-room); }
+:is(html, *)[data-nk-motion="reduced"] :is([data-slot="vital-chip-liquid"], [data-slot="vital-chip-line"], [data-slot="vital-chip-lit"], [data-slot="vital-chip-plate"], [data-slot="vital-chip-label"][data-attach="plate"], [data-slot="vital-chip-shape"][data-shape="keycap"] [data-slot="vital-chip-icon"]) { transition: none; }

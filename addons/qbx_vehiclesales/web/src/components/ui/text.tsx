@@ -41,9 +41,9 @@ const textVariants = cva("", {
     size: {
       inherit: "",
       /** The body size, strong: a value in a row. */
-      sm: "text-(length:--nk-text-base) leading-5 [font-weight:var(--nk-type-weight-strong,600)]",
+      sm: "text-(length:--nk-text-base) leading-5 [font-weight:var(--nk-type-weight-strong)]",
       /** The HUD value size (18px+), strong: the default stat. */
-      md: "text-(length:--nk-text-hud) leading-7 [font-weight:var(--nk-type-weight-strong,600)]",
+      md: "text-(length:--nk-text-hud) leading-7 [font-weight:var(--nk-type-weight-strong)]",
       /** Display type in the numeric face: the number is the point (a balance, a clock). */
       display: "nk-display [font-family:var(--nk-type-num-family)]!",
     },
@@ -82,7 +82,7 @@ function InlineKey({ children }: { children: string }) {
   return (
     <Kbd
       data-inline-key=""
-      className="mx-0.5 h-[calc(var(--nk-height-key)*var(--nk-text-key-scale,1))] min-w-[calc(var(--nk-height-key)*var(--nk-text-key-scale,1))] align-middle text-[length:calc(var(--nk-text-key)*var(--nk-text-key-scale,1))]"
+      className="mx-0.5 h-[calc(var(--nk-height-key)*var(--nk-text-key-scale))] min-w-[calc(var(--nk-height-key)*var(--nk-text-key-scale))] align-middle text-[length:calc(var(--nk-text-key)*var(--nk-text-key-scale))]"
     >
       {children}
     </Kbd>

@@ -151,7 +151,7 @@ function FormField({
       data-slot="form-field-label"
       className={cn(
         "min-w-0 gap-1",
-        row ? "text-(length:--nk-text-label) leading-5 [font-weight:var(--nk-type-label-weight,500)]" : "text-(length:--nk-text-label) leading-4",
+        row ? "text-(length:--nk-text-label) leading-5 [font-weight:var(--nk-type-label-weight)]" : "text-(length:--nk-text-label) leading-4",
         disabled && "opacity-50"
       )}
     >
@@ -184,7 +184,7 @@ function FormField({
         </Button>
       )}
       {valueText !== undefined && valueText !== null && (
-        <span data-slot="form-field-value" className="nk-num text-(length:--nk-text-label) leading-4 [font-weight:var(--nk-type-label-weight,500)] normal-case text-muted-foreground">
+        <span data-slot="form-field-value" className="nk-num text-(length:--nk-text-label) leading-4 [font-weight:var(--nk-type-label-weight)] normal-case text-muted-foreground">
           {valueText}
         </span>
       )}
@@ -1349,7 +1349,7 @@ function DatePickerButton({
               type="button"
               variant="ghost"
               data-slot="form-field-date-picker-title"
-              className="h-(--cell-size) flex-1 [font-weight:var(--nk-type-weight-strong,600)]"
+              className="h-(--cell-size) flex-1 [font-weight:var(--nk-type-weight-strong)]"
               disabled={view === "decades"}
               onClick={up}
               aria-label={view === "days" ? `${title}: choose a year` : view === "years" ? `${title}: choose a decade` : title}
@@ -1685,7 +1685,7 @@ function TimeControl({
               if (pm !== parts.pm) update({ ...parts, pm })
             }
           }}
-          className="nk-num ml-1 rounded-(--nk-radius-key) px-1 text-(length:--nk-text-label) [font-weight:var(--nk-type-label-weight,500)] text-muted-foreground outline-none hover:text-foreground focus-visible:bg-accent focus-visible:text-accent-foreground"
+          className="nk-num ml-1 rounded-(--nk-radius-key) px-1 text-(length:--nk-text-label) [font-weight:var(--nk-type-label-weight)] text-muted-foreground outline-none hover:text-foreground focus-visible:bg-accent focus-visible:text-accent-foreground"
         >
           {parts.pm ? "PM" : "AM"}
         </button>

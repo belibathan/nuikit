@@ -38,9 +38,9 @@ import { Kbd } from "@/components/ui/tile"
 const skillCheckVariants = cva("relative shrink-0", {
   variants: {
     size: {
-      sm: "size-[var(--nk-skill-check-size-sm,7rem)]",
-      default: "size-[var(--nk-skill-check-size,10rem)]",
-      lg: "size-[var(--nk-skill-check-size-lg,13rem)]",
+      sm: "size-[var(--nk-skill-check-size-sm)]",
+      default: "size-[var(--nk-skill-check-size)]",
+      lg: "size-[var(--nk-skill-check-size-lg)]",
     },
   },
   defaultVariants: {
@@ -294,7 +294,7 @@ function SkillCheck({
         <Kbd
           data-slot="skill-check-key"
           className={cn(
-            "h-[var(--nk-skill-check-key-height,2rem)] min-w-[var(--nk-skill-check-key-height,2rem)] rounded-(--nk-radius-control) bg-popover px-[var(--nk-skill-check-key-pad,0.5rem)] text-(length:--nk-text-label) [font-weight:var(--nk-type-weight-strong,600)] text-popover-foreground uppercase ring-1 ring-border",
+            "h-[var(--nk-skill-check-key-height)] min-w-[var(--nk-skill-check-key-height)] rounded-(--nk-radius-control) bg-popover px-[var(--nk-skill-check-key-pad)] text-(length:--nk-text-label) [font-weight:var(--nk-type-weight-strong)] text-popover-foreground uppercase ring-1 ring-border",
             shown === "success" && "ring-success",
             shown === "fail" && "ring-destructive"
           )}

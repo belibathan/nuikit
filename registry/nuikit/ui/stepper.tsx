@@ -237,7 +237,7 @@ function StepperKey({ side, disabled, onStep, children }: { side: "prev" | "next
       className={cn(
         // one height with the rim; the tile's corners are the rim's (overflow clips), upright inside it
         "h-full w-auto aspect-square shrink-0 rounded-none [--nk-tile-face-skew:0deg] [--nk-tile-plate-x:0rem] [--nk-tile-plate-y:0rem] text-muted-foreground",
-        "hover:text-foreground hover:[--nk-tile-now-face:var(--nk-fill-tint,var(--accent))] disabled:pointer-events-none disabled:opacity-40",
+        "hover:text-foreground hover:[--nk-tile-now-face:var(--nk-fill-tint)] disabled:pointer-events-none disabled:opacity-40",
         side === "prev" ? "border-r border-(--nk-plate-hair,var(--border))" : "border-l border-(--nk-plate-hair,var(--border))"
       )}
     >

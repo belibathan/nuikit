@@ -43,8 +43,8 @@ import { Spinner } from "@/components/ui/spinner"
 const confirmVariants = cva("", {
   variants: {
     size: {
-      sm: "w-[var(--nk-confirm-width-sm,20rem)]",
-      default: "w-[var(--nk-confirm-width,24rem)]",
+      sm: "w-[var(--nk-confirm-width-sm)]",
+      default: "w-[var(--nk-confirm-width)]",
       lg: "w-[28rem]",
     },
   },

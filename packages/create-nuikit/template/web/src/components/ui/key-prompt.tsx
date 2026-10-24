@@ -46,9 +46,9 @@ const keyPromptVariants = cva(
         /** The prompt slab on the game: key chip + verb, the HUD plate (nk-slab). */
         slab: "nk-slab",
         /** A small floating panel, like the rest of the kit's floating UI. */
-        panel: "nk-panel inline-flex items-center gap-(--nk-space-3) text-(length:--nk-text-label) leading-5 [font-weight:var(--nk-type-label-weight,500)]",
+        panel: "nk-panel inline-flex items-center gap-(--nk-space-3) text-(length:--nk-text-label) leading-5 [font-weight:var(--nk-type-label-weight)]",
         /** The game's dark HUD surface, for prompts that sit on the world (nk-hud). */
-        hud: "nk-hud nk-shadow inline-flex items-center gap-(--nk-space-3) text-(length:--nk-text-label) leading-5 [font-weight:var(--nk-type-label-weight,500)]",
+        hud: "nk-hud nk-shadow inline-flex items-center gap-(--nk-space-3) text-(length:--nk-text-label) leading-5 [font-weight:var(--nk-type-label-weight)]",
       },
       size: {
         sm: "",
@@ -56,10 +56,10 @@ const keyPromptVariants = cva(
       },
     },
     compoundVariants: [
-      { surface: ["panel", "hud"], size: "sm", className: "min-h-[var(--nk-key-prompt-min-height-sm,2rem)] py-[var(--nk-key-prompt-pad-y,0.25rem)] pr-(--nk-space-3) pl-(--nk-space-2)" },
-      { surface: ["panel", "hud"], size: "default", className: "min-h-[var(--nk-key-prompt-min-height,2.5rem)] py-(--nk-space-2) pr-[var(--nk-key-prompt-pad-right,0.75rem)] pl-[var(--nk-key-prompt-pad-left,0.5rem)]" },
+      { surface: ["panel", "hud"], size: "sm", className: "min-h-[var(--nk-key-prompt-min-height-sm)] py-[var(--nk-key-prompt-pad-y)] pr-(--nk-space-3) pl-(--nk-space-2)" },
+      { surface: ["panel", "hud"], size: "default", className: "min-h-[var(--nk-key-prompt-min-height)] py-(--nk-space-2) pr-[var(--nk-key-prompt-pad-right)] pl-[var(--nk-key-prompt-pad-left)]" },
       // the slab's own height and padding; sm is a step tighter
-      { surface: "slab", size: "sm", className: "[--nk-slab-height:calc(2rem*var(--nk-density,0.875))]" },
+      { surface: "slab", size: "sm", className: "[--nk-slab-height:calc(2rem*var(--nk-density))]" },
     ],
     defaultVariants: {
       surface: "slab",
@@ -294,7 +294,7 @@ function KeyPrompt({
     >
       {list.length > 0 &&
         (slab ? (
-          <span data-slot="key-prompt-keys" className="flex shrink-0 items-center gap-[var(--nk-key-prompt-gap,0.25rem)]">
+          <span data-slot="key-prompt-keys" className="flex shrink-0 items-center gap-[var(--nk-key-prompt-gap)]">
             {list.map((k, i) => (
               <React.Fragment key={`${k}-${i}`}>
                 {i > 0 && (
@@ -320,7 +320,7 @@ function KeyPrompt({
                     {separator}
                   </span>
                 )}
-                <Kbd className={cn("h-[var(--nk-key-prompt-key-height,1.5rem)] min-w-[var(--nk-key-prompt-key-height,1.5rem)] px-(--nk-space-2) text-(length:--nk-text-label)", active && "bg-(--nk-chip-active-bg) text-(--nk-chip-active-fg)")}>
+                <Kbd className={cn("h-[var(--nk-key-prompt-key-height)] min-w-[var(--nk-key-prompt-key-height)] px-(--nk-space-2) text-(length:--nk-text-label)", active && "bg-(--nk-chip-active-bg) text-(--nk-chip-active-fg)")}>
                   {k}
                 </Kbd>
               </React.Fragment>
@@ -360,7 +360,7 @@ function KeyPrompt({
           // constant here never changes, so React leaves that drawing alone.
           level={p}
           tween={false}
-          className={cn("absolute inset-x-0 bottom-0 rounded-none bg-transparent", slab ? "h-(--nk-slab-line-height)" : "h-[calc(var(--nk-fill-height,0.25rem)/2)]")}
+          className={cn("absolute inset-x-0 bottom-0 rounded-none bg-transparent", slab ? "h-(--nk-slab-line-height)" : "h-[calc(var(--nk-fill-height)/2)]")}
           color={slab ? "rgb(var(--nk-slab-tone))" : "var(--nk-row-accent)"}
         />
       )}
