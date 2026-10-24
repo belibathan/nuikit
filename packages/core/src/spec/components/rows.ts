@@ -59,9 +59,18 @@ export const selection: ComponentDef = {
 
 export const field: ComponentDef = {
   description: "Text fields and the smooth caret (SmoothInput)",
-  anatomy: ["control", "caret", "mirror"],
+  anatomy: ["control", "mirror", "marker", "caret"],
   parts: {
+    marker: {
+      height: length("1.15em", "The marker the caret reads its box from: a line's height", { floor: true }),
+      drop: length("-0.2em", "How far the marker sits below the baseline", { floor: true }),
+    },
     caret: {
+      color: color(pal("primary"), "The drawn caret"),
+      radius: length(ref("radius.key"), "The drawn caret's corners"),
+      blink: time("1100ms", "One breath of the caret at rest", { floor: true }),
+      "blink-delay": time("500ms", "How long the caret stays solid after typing or moving", { floor: true }),
+      "blink-dim": number(0.15, "The caret's opacity at the bottom of its breath", { range: [0, 1], floor: true }),
       width: length("0.125rem", "The drawn caret's width", { floor: true, was: ["nk-caret-width"] }),
       time: time(ref("time.base"), "The caret's glide", { was: ["nk-caret-time"] }),
       ease: string(ref("ease.move"), "The caret's curve", { was: ["nk-caret-ease"] }),

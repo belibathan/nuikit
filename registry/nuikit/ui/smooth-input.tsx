@@ -61,6 +61,9 @@ const MIRRORED = [
 const TYPE_IN_MS = 210
 const TYPE_OUT_MS = 98
 const STAGGER_MS = 20
+const BLINK_MS = 1100
+const BLINK_DELAY_MS = 500
+const BLINK_DIM = 0.15
 /** Past this many characters an insertion (a paste) rises as one block, not a ripple. */
 const RIPPLE_MAX = 12
 const EASE_OUT = "cubic-bezier(0.2, 0.8, 0.2, 1)"
@@ -203,8 +206,15 @@ function useSmoothField<T extends Field>(multiline: boolean) {
     c.style.opacity = ""
     // typing or moving restarts the breath, so the caret is solid while it moves
     c.getAnimations?.().forEach((a) => a.cancel())
-    if (typeof c.animate === "function")
-      c.animate([{ opacity: 1 }, { opacity: 1, offset: 0.45 }, { opacity: 0.15, offset: 0.7 }, { opacity: 1 }], { duration: 1100, delay: 500, iterations: Infinity, easing: "linear" })
+    if (typeof c.animate === "function") {
+      const dim = Number(token("--nk-field-caret-blink-dim") || BLINK_DIM)
+      c.animate([{ opacity: 1 }, { opacity: 1, offset: 0.45 }, { opacity: dim, offset: 0.7 }, { opacity: 1 }], {
+        duration: tokenMs("--nk-field-caret-blink", BLINK_MS),
+        delay: tokenMs("--nk-field-caret-blink-delay", BLINK_DELAY_MS),
+        iterations: Infinity,
+        easing: "linear",
+      })
+    }
   })
 
   // the caret's breath stops when the field loses focus (nothing runs while idle)
@@ -229,8 +239,8 @@ function useSmoothField<T extends Field>(multiline: boolean) {
         <span
           ref={caret}
           data-slot="smooth-caret"
-          className="absolute top-0 left-0 bg-primary [transition:transform_var(--nk-field-caret-time)_var(--nk-field-caret-ease)]"
-          style={{ width: "var(--nk-field-caret-width)", borderRadius: "var(--nk-radius-key)", opacity: 0 }}
+          className="absolute top-0 left-0 [transition:transform_var(--nk-field-caret-time)_var(--nk-field-caret-ease)]"
+          style={{ opacity: 0 }}
         />
       </div>
     </div>
@@ -259,7 +269,7 @@ function Mirrored({ view, marker }: { view: View; marker: React.RefObject<HTMLSp
   for (let i = 0; i < points.length; i++) {
     const at = points[i]!
     if (del && del.at === at) out.push(<Leaving key={`d${del.key}`} text={del.text} />)
-    if (caret === at) out.push(<span key={`m${at}`} ref={marker} className="inline-block w-0 align-baseline" style={{ height: "1.15em", verticalAlign: "-0.2em" }} />)
+    if (caret === at) out.push(<span key={`m${at}`} ref={marker} data-slot="smooth-field-marker" className="inline-block w-0 align-baseline" />)
     const next = points[i + 1]
     if (next === undefined || next <= at) continue
     const text = value.slice(at, next)

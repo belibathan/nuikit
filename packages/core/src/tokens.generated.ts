@@ -4373,6 +4373,80 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "description": "The glide's curve"
   },
   {
+    "name": "nk-field-marker-height",
+    "path": "field.marker.height",
+    "tier": "component",
+    "scope": "field",
+    "type": "length",
+    "default": "1.15em",
+    "description": "The marker the caret reads its box from: a line's height",
+    "part": "marker"
+  },
+  {
+    "name": "nk-field-marker-drop",
+    "path": "field.marker.drop",
+    "tier": "component",
+    "scope": "field",
+    "type": "length",
+    "default": "-0.2em",
+    "description": "How far the marker sits below the baseline",
+    "part": "marker"
+  },
+  {
+    "name": "nk-field-caret-color",
+    "path": "field.caret.color",
+    "tier": "component",
+    "scope": "field",
+    "type": "color",
+    "default": "var(--primary)",
+    "description": "The drawn caret",
+    "part": "caret"
+  },
+  {
+    "name": "nk-field-caret-radius",
+    "path": "field.caret.radius",
+    "tier": "component",
+    "scope": "field",
+    "type": "length",
+    "default": "var(--nk-radius-key)",
+    "description": "The drawn caret's corners",
+    "part": "caret"
+  },
+  {
+    "name": "nk-field-caret-blink",
+    "path": "field.caret.blink",
+    "tier": "component",
+    "scope": "field",
+    "type": "time",
+    "default": "1100ms",
+    "description": "One breath of the caret at rest",
+    "part": "caret"
+  },
+  {
+    "name": "nk-field-caret-blink-delay",
+    "path": "field.caret.blink-delay",
+    "tier": "component",
+    "scope": "field",
+    "type": "time",
+    "default": "500ms",
+    "description": "How long the caret stays solid after typing or moving",
+    "part": "caret"
+  },
+  {
+    "name": "nk-field-caret-blink-dim",
+    "path": "field.caret.blink-dim",
+    "tier": "component",
+    "scope": "field",
+    "type": "number",
+    "default": "0.15",
+    "description": "The caret's opacity at the bottom of its breath",
+    "part": "caret",
+    "range": [
+      0,
+      1
+    ]
+  },
+  {
     "name": "nk-field-caret-width",
     "path": "field.caret.width",
     "tier": "component",
@@ -4431,6 +4505,600 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "default": "var(--nk-time-exit)",
     "description": "A deleted character's exit",
     "part": "mirror"
+  },
+  {
+    "name": "nk-form-field-label-gap",
+    "path": "form-field.label.gap",
+    "tier": "component",
+    "scope": "form-field",
+    "type": "length",
+    "default": "var(--nk-space-1)",
+    "description": "Between the name and its required mark",
+    "part": "label"
+  },
+  {
+    "name": "nk-form-field-label-size",
+    "path": "form-field.label.size",
+    "tier": "component",
+    "scope": "form-field",
+    "type": "length",
+    "default": "var(--nk-text-label)",
+    "description": "The label's size",
+    "part": "label"
+  },
+  {
+    "name": "nk-form-field-label-leading",
+    "path": "form-field.label.leading",
+    "tier": "component",
+    "scope": "form-field",
+    "type": "length",
+    "default": "var(--nk-leading-tight)",
+    "description": "The label's line height over a control",
+    "part": "label"
+  },
+  {
+    "name": "nk-form-field-label-leading-row",
+    "path": "form-field.label.leading-row",
+    "tier": "component",
+    "scope": "form-field",
+    "type": "length",
+    "default": "var(--nk-leading-normal)",
+    "description": "The label's line height beside a control (checkbox, switch)",
+    "part": "label"
+  },
+  {
+    "name": "nk-form-field-hint-size",
+    "path": "form-field.hint.size",
+    "tier": "component",
+    "scope": "form-field",
+    "type": "length",
+    "default": "var(--nk-text-label)",
+    "description": "The hint's size",
+    "part": "hint"
+  },
+  {
+    "name": "nk-form-field-hint-leading",
+    "path": "form-field.hint.leading",
+    "tier": "component",
+    "scope": "form-field",
+    "type": "length",
+    "default": "var(--nk-leading-tight)",
+    "description": "The hint's line height",
+    "part": "hint"
+  },
+  {
+    "name": "nk-form-field-hint-color",
+    "path": "form-field.hint.color",
+    "tier": "component",
+    "scope": "form-field",
+    "type": "color",
+    "default": "var(--muted-foreground)",
+    "description": "The hint's ink",
+    "part": "hint"
+  },
+  {
+    "name": "nk-form-field-end-gap",
+    "path": "form-field.end.gap",
+    "tier": "component",
+    "scope": "form-field",
+    "type": "length",
+    "default": "var(--nk-space-1)",
+    "description": "Between the reset button and the value",
+    "part": "end"
+  },
+  {
+    "name": "nk-form-field-value-size",
+    "path": "form-field.value.size",
+    "tier": "component",
+    "scope": "form-field",
+    "type": "length",
+    "default": "var(--nk-text-label)",
+    "description": "The value text's size",
+    "part": "value"
+  },
+  {
+    "name": "nk-form-field-value-leading",
+    "path": "form-field.value.leading",
+    "tier": "component",
+    "scope": "form-field",
+    "type": "length",
+    "default": "var(--nk-leading-tight)",
+    "description": "The value text's line height",
+    "part": "value"
+  },
+  {
+    "name": "nk-form-field-value-color",
+    "path": "form-field.value.color",
+    "tier": "component",
+    "scope": "form-field",
+    "type": "color",
+    "default": "var(--muted-foreground)",
+    "description": "The value text's ink",
+    "part": "value"
+  },
+  {
+    "name": "nk-form-field-row-gap",
+    "path": "form-field.row.gap",
+    "tier": "component",
+    "scope": "form-field",
+    "type": "length",
+    "default": "var(--nk-space-2)",
+    "description": "Between the control, the label and the hint on a row (checkbox, switch)",
+    "part": "row"
+  },
+  {
+    "name": "nk-form-field-row-height",
+    "path": "form-field.row.height",
+    "tier": "component",
+    "scope": "form-field",
+    "type": "length",
+    "default": "var(--nk-height-key)",
+    "description": "A row's minimum height, so an icon-xs button never moves it",
+    "part": "row"
+  },
+  {
+    "name": "nk-form-field-trail-gap",
+    "path": "form-field.trail.gap",
+    "tier": "component",
+    "scope": "form-field",
+    "type": "length",
+    "default": "var(--nk-space-2)",
+    "description": "Between the value and the control at a switch row's end",
+    "part": "trail"
+  },
+  {
+    "name": "nk-form-field-control-height",
+    "path": "form-field.control.height",
+    "tier": "component",
+    "scope": "form-field",
+    "type": "length",
+    "default": "var(--nk-height-control)",
+    "description": "A segmented control's height (date, time)",
+    "part": "control"
+  },
+  {
+    "name": "nk-form-field-control-size",
+    "path": "form-field.control.size",
+    "tier": "component",
+    "scope": "form-field",
+    "type": "length",
+    "default": "var(--nk-text-label)",
+    "description": "A segmented control's text size",
+    "part": "control"
+  },
+  {
+    "name": "nk-form-field-control-gap",
+    "path": "form-field.control.gap",
+    "tier": "component",
+    "scope": "form-field",
+    "type": "length",
+    "default": "var(--nk-space-1)",
+    "description": "Between a segmented control's parts",
+    "part": "control"
+  },
+  {
+    "name": "nk-form-field-control-pad-x",
+    "path": "form-field.control.pad-x",
+    "tier": "component",
+    "scope": "form-field",
+    "type": "length",
+    "default": "var(--nk-gap-pad-x)",
+    "description": "A segmented control's inline padding",
+    "part": "control"
+  },
+  {
+    "name": "nk-form-field-control-pad-x-dense",
+    "path": "form-field.control.pad-x-dense",
+    "tier": "component",
+    "scope": "form-field",
+    "type": "length",
+    "default": "var(--nk-space-2)",
+    "description": "The same, dense (a range)",
+    "part": "control"
+  },
+  {
+    "name": "nk-form-field-control-affix-password",
+    "path": "form-field.control.affix-password",
+    "tier": "component",
+    "scope": "form-field",
+    "type": "length",
+    "default": "2.5rem",
+    "description": "Room at a password field's end for the reveal button",
+    "part": "control"
+  },
+  {
+    "name": "nk-form-field-control-affix-stepper",
+    "path": "form-field.control.affix-stepper",
+    "tier": "component",
+    "scope": "form-field",
+    "type": "length",
+    "default": "3.5rem",
+    "description": "Room at a number field's end for the inline stepper",
+    "part": "control"
+  },
+  {
+    "name": "nk-form-field-icon-size",
+    "path": "form-field.icon.size",
+    "tier": "component",
+    "scope": "form-field",
+    "type": "length",
+    "default": "var(--nk-icon-md)",
+    "description": "A control's leading icon",
+    "part": "icon"
+  },
+  {
+    "name": "nk-form-field-icon-color",
+    "path": "form-field.icon.color",
+    "tier": "component",
+    "scope": "form-field",
+    "type": "color",
+    "default": "var(--muted-foreground)",
+    "description": "A control's leading icon ink",
+    "part": "icon"
+  },
+  {
+    "name": "nk-form-field-icon-inset",
+    "path": "form-field.icon.inset",
+    "tier": "component",
+    "scope": "form-field",
+    "type": "length",
+    "default": "var(--nk-space-3)",
+    "description": "How far a text or number field's icon sits from its start",
+    "part": "icon"
+  },
+  {
+    "name": "nk-form-field-icon-gap",
+    "path": "form-field.icon.gap",
+    "tier": "component",
+    "scope": "form-field",
+    "type": "length",
+    "default": "var(--nk-space-1)",
+    "description": "Between a segmented control's icon and its first segment",
+    "part": "icon"
+  },
+  {
+    "name": "nk-form-field-icon-pad",
+    "path": "form-field.icon.pad",
+    "tier": "component",
+    "scope": "form-field",
+    "type": "length",
+    "default": "calc(var(--nk-form-field-icon-inset) + var(--nk-form-field-icon-size) + var(--nk-space-2))",
+    "description": "A text or number field's start padding when it has an icon",
+    "part": "icon"
+  },
+  {
+    "name": "nk-form-field-stepper-inset",
+    "path": "form-field.stepper.inset",
+    "tier": "component",
+    "scope": "form-field",
+    "type": "length",
+    "default": "var(--nk-space-1)",
+    "description": "How far the inline stepper sits from the field's end",
+    "part": "stepper"
+  },
+  {
+    "name": "nk-form-field-stepper-gap",
+    "path": "form-field.stepper.gap",
+    "tier": "component",
+    "scope": "form-field",
+    "type": "length",
+    "default": "var(--nk-space-1)",
+    "description": "Between the stepper's two buttons",
+    "part": "stepper"
+  },
+  {
+    "name": "nk-form-field-reveal-inset",
+    "path": "form-field.reveal.inset",
+    "tier": "component",
+    "scope": "form-field",
+    "type": "length",
+    "default": "0.375rem",
+    "description": "How far the password reveal button sits from the field's end",
+    "part": "reveal"
+  },
+  {
+    "name": "nk-form-field-segment-sep",
+    "path": "form-field.segment.sep",
+    "tier": "component",
+    "scope": "form-field",
+    "type": "color",
+    "default": "var(--muted-foreground)",
+    "description": "A segmented control's separators (/ : -)",
+    "part": "segment"
+  },
+  {
+    "name": "nk-form-field-meridiem-gap",
+    "path": "form-field.meridiem.gap",
+    "tier": "component",
+    "scope": "form-field",
+    "type": "length",
+    "default": "var(--nk-space-1)",
+    "description": "Between the time segments and AM / PM",
+    "part": "meridiem"
+  },
+  {
+    "name": "nk-form-field-meridiem-pad-x",
+    "path": "form-field.meridiem.pad-x",
+    "tier": "component",
+    "scope": "form-field",
+    "type": "length",
+    "default": "var(--nk-space-1)",
+    "description": "The AM / PM button's inline padding",
+    "part": "meridiem"
+  },
+  {
+    "name": "nk-form-field-meridiem-size",
+    "path": "form-field.meridiem.size",
+    "tier": "component",
+    "scope": "form-field",
+    "type": "length",
+    "default": "var(--nk-text-label)",
+    "description": "The AM / PM text size",
+    "part": "meridiem"
+  },
+  {
+    "name": "nk-form-field-meridiem-weight",
+    "path": "form-field.meridiem.weight",
+    "tier": "component",
+    "scope": "form-field",
+    "type": "number",
+    "default": "var(--nk-type-label-weight)",
+    "description": "The AM / PM weight",
+    "part": "meridiem",
+    "range": [
+      100,
+      900
+    ]
+  },
+  {
+    "name": "nk-form-field-meridiem-color",
+    "path": "form-field.meridiem.color",
+    "tier": "component",
+    "scope": "form-field",
+    "type": "color",
+    "default": "var(--muted-foreground)",
+    "description": "The AM / PM ink at rest",
+    "part": "meridiem"
+  },
+  {
+    "name": "nk-form-field-clear-size",
+    "path": "form-field.clear.size",
+    "tier": "component",
+    "scope": "form-field",
+    "type": "length",
+    "default": "1.75rem",
+    "description": "The clear button's box",
+    "part": "clear"
+  },
+  {
+    "name": "nk-form-field-clear-bleed",
+    "path": "form-field.clear.bleed",
+    "tier": "component",
+    "scope": "form-field",
+    "type": "length",
+    "default": "-0.5rem",
+    "description": "How far it reaches into the control's padding",
+    "part": "clear"
+  },
+  {
+    "name": "nk-form-field-clear-color",
+    "path": "form-field.clear.color",
+    "tier": "component",
+    "scope": "form-field",
+    "type": "color",
+    "default": "var(--muted-foreground)",
+    "description": "The clear button's ink",
+    "part": "clear"
+  },
+  {
+    "name": "nk-form-field-date-picker-size",
+    "path": "form-field.date-picker.size",
+    "tier": "component",
+    "scope": "form-field",
+    "type": "length",
+    "default": "1.75rem",
+    "description": "The calendar button's box",
+    "part": "date-picker"
+  },
+  {
+    "name": "nk-form-field-date-picker-bleed",
+    "path": "form-field.date-picker.bleed",
+    "tier": "component",
+    "scope": "form-field",
+    "type": "length",
+    "default": "-0.5rem",
+    "description": "How far it reaches into the control's padding",
+    "part": "date-picker"
+  },
+  {
+    "name": "nk-form-field-date-picker-color",
+    "path": "form-field.date-picker.color",
+    "tier": "component",
+    "scope": "form-field",
+    "type": "color",
+    "default": "var(--muted-foreground)",
+    "description": "The calendar button's ink",
+    "part": "date-picker"
+  },
+  {
+    "name": "nk-form-field-date-picker-cell",
+    "path": "form-field.date-picker.cell",
+    "tier": "component",
+    "scope": "form-field",
+    "type": "length",
+    "default": "2rem",
+    "description": "A day, year or decade cell (the grid is seven cells wide)",
+    "part": "date-picker"
+  },
+  {
+    "name": "nk-form-field-date-picker-pad",
+    "path": "form-field.date-picker.pad",
+    "tier": "component",
+    "scope": "form-field",
+    "type": "length",
+    "default": "var(--nk-space-3)",
+    "description": "The popover's padding",
+    "part": "date-picker"
+  },
+  {
+    "name": "nk-form-field-date-picker-gap",
+    "path": "form-field.date-picker.gap",
+    "tier": "component",
+    "scope": "form-field",
+    "type": "length",
+    "default": "var(--nk-space-2)",
+    "description": "Between the popover's header and grid",
+    "part": "date-picker"
+  },
+  {
+    "name": "nk-form-field-date-picker-step",
+    "path": "form-field.date-picker.step",
+    "tier": "component",
+    "scope": "form-field",
+    "type": "length",
+    "default": "var(--nk-space-1)",
+    "description": "Between the header's buttons and between year and decade cells",
+    "part": "date-picker"
+  },
+  {
+    "name": "nk-form-field-swatch-size",
+    "path": "form-field.swatch.size",
+    "tier": "component",
+    "scope": "form-field",
+    "type": "length",
+    "default": "var(--nk-icon-lg)",
+    "description": "The colour field's preview swatch",
+    "part": "swatch"
+  },
+  {
+    "name": "nk-form-field-swatch-inset",
+    "path": "form-field.swatch.inset",
+    "tier": "component",
+    "scope": "form-field",
+    "type": "length",
+    "default": "0.625rem",
+    "description": "How far the preview swatch sits from the field's start",
+    "part": "swatch"
+  },
+  {
+    "name": "nk-form-field-swatch-pad",
+    "path": "form-field.swatch.pad",
+    "tier": "component",
+    "scope": "form-field",
+    "type": "length",
+    "default": "2.5rem",
+    "description": "The colour field's start padding (room for the swatch)",
+    "part": "swatch"
+  },
+  {
+    "name": "nk-form-field-swatch-empty",
+    "path": "form-field.swatch.empty",
+    "tier": "component",
+    "scope": "form-field",
+    "type": "string",
+    "default": "repeating-linear-gradient(135deg, transparent 0 3px, var(--border) 3px 5px)",
+    "description": "The preview swatch while no colour is set",
+    "part": "swatch"
+  },
+  {
+    "name": "nk-form-field-swatches-gap",
+    "path": "form-field.swatches.gap",
+    "tier": "component",
+    "scope": "form-field",
+    "type": "length",
+    "default": "var(--nk-space-2)",
+    "description": "Between preset swatches",
+    "part": "swatches"
+  },
+  {
+    "name": "nk-form-field-swatches-size",
+    "path": "form-field.swatches.size",
+    "tier": "component",
+    "scope": "form-field",
+    "type": "length",
+    "default": "var(--nk-height-key)",
+    "description": "A preset swatch's box",
+    "part": "swatches"
+  },
+  {
+    "name": "nk-form-field-description-size",
+    "path": "form-field.description.size",
+    "tier": "component",
+    "scope": "form-field",
+    "type": "length",
+    "default": "var(--nk-text-label)",
+    "description": "The description's size",
+    "part": "description"
+  },
+  {
+    "name": "nk-form-field-description-leading",
+    "path": "form-field.description.leading",
+    "tier": "component",
+    "scope": "form-field",
+    "type": "length",
+    "default": "var(--nk-leading-tight)",
+    "description": "The description's line height",
+    "part": "description"
+  },
+  {
+    "name": "nk-form-field-description-color",
+    "path": "form-field.description.color",
+    "tier": "component",
+    "scope": "form-field",
+    "type": "color",
+    "default": "var(--muted-foreground)",
+    "description": "The description's ink",
+    "part": "description"
+  },
+  {
+    "name": "nk-form-field-description-indent",
+    "path": "form-field.description.indent",
+    "tier": "component",
+    "scope": "form-field",
+    "type": "length",
+    "default": "var(--nk-space-6)",
+    "description": "Its start inset under a checkbox row (aligned with the label)",
+    "part": "description"
+  },
+  {
+    "name": "nk-form-field-error-size",
+    "path": "form-field.error.size",
+    "tier": "component",
+    "scope": "form-field",
+    "type": "length",
+    "default": "var(--nk-text-label)",
+    "description": "The error's size",
+    "part": "error"
+  },
+  {
+    "name": "nk-form-field-error-leading",
+    "path": "form-field.error.leading",
+    "tier": "component",
+    "scope": "form-field",
+    "type": "length",
+    "default": "var(--nk-leading-tight)",
+    "description": "The error's line height",
+    "part": "error"
+  },
+  {
+    "name": "nk-form-field-error-color",
+    "path": "form-field.error.color",
+    "tier": "component",
+    "scope": "form-field",
+    "type": "color",
+    "default": "var(--destructive)",
+    "description": "The error's ink",
+    "part": "error"
+  },
+  {
+    "name": "nk-form-field-error-indent",
+    "path": "form-field.error.indent",
+    "tier": "component",
+    "scope": "form-field",
+    "type": "length",
+    "default": "var(--nk-space-6)",
+    "description": "Its start inset under a checkbox row (aligned with the label)",
+    "part": "error"
   },
   {
     "name": "nk-stepper-delay",
@@ -4527,6 +5195,520 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "default": "2rem",
     "description": "The header's minimum height",
     "part": "header"
+  },
+  {
+    "name": "nk-dialog-shell-width",
+    "path": "dialog-shell.width",
+    "tier": "component",
+    "scope": "dialog-shell",
+    "type": "length",
+    "default": "32rem",
+    "description": "Width (md)"
+  },
+  {
+    "name": "nk-dialog-shell-width-sm",
+    "path": "dialog-shell.width-sm",
+    "tier": "component",
+    "scope": "dialog-shell",
+    "type": "length",
+    "default": "24rem",
+    "description": "Width (sm)"
+  },
+  {
+    "name": "nk-dialog-shell-width-lg",
+    "path": "dialog-shell.width-lg",
+    "tier": "component",
+    "scope": "dialog-shell",
+    "type": "length",
+    "default": "40rem",
+    "description": "Width (lg)"
+  },
+  {
+    "name": "nk-dialog-shell-top",
+    "path": "dialog-shell.top",
+    "tier": "component",
+    "scope": "dialog-shell",
+    "type": "length",
+    "default": "18vh",
+    "description": "Where a top dialog anchors"
+  },
+  {
+    "name": "nk-dialog-shell-header-gap",
+    "path": "dialog-shell.header.gap",
+    "tier": "component",
+    "scope": "dialog-shell",
+    "type": "length",
+    "default": "var(--nk-space-1)",
+    "description": "Between the title and the description",
+    "part": "header"
+  },
+  {
+    "name": "nk-dialog-shell-header-pad-x",
+    "path": "dialog-shell.header.pad-x",
+    "tier": "component",
+    "scope": "dialog-shell",
+    "type": "length",
+    "default": "var(--nk-gap-surface)",
+    "description": "Inline padding",
+    "part": "header"
+  },
+  {
+    "name": "nk-dialog-shell-header-pad-y",
+    "path": "dialog-shell.header.pad-y",
+    "tier": "component",
+    "scope": "dialog-shell",
+    "type": "length",
+    "default": "var(--nk-space-4)",
+    "description": "Block padding",
+    "part": "header"
+  },
+  {
+    "name": "nk-dialog-shell-body-pad",
+    "path": "dialog-shell.body.pad",
+    "tier": "component",
+    "scope": "dialog-shell",
+    "type": "length",
+    "default": "var(--nk-gap-surface)",
+    "description": "The body's padding",
+    "part": "body"
+  },
+  {
+    "name": "nk-dialog-shell-footer-gap",
+    "path": "dialog-shell.footer.gap",
+    "tier": "component",
+    "scope": "dialog-shell",
+    "type": "length",
+    "default": "var(--nk-gap-cluster)",
+    "description": "Between the hints and the buttons",
+    "part": "footer"
+  },
+  {
+    "name": "nk-dialog-shell-footer-pad-x",
+    "path": "dialog-shell.footer.pad-x",
+    "tier": "component",
+    "scope": "dialog-shell",
+    "type": "length",
+    "default": "var(--nk-gap-surface)",
+    "description": "Inline padding",
+    "part": "footer"
+  },
+  {
+    "name": "nk-dialog-shell-footer-pad-y",
+    "path": "dialog-shell.footer.pad-y",
+    "tier": "component",
+    "scope": "dialog-shell",
+    "type": "length",
+    "default": "var(--nk-space-3)",
+    "description": "Block padding",
+    "part": "footer"
+  },
+  {
+    "name": "nk-dialog-shell-footer-bleed",
+    "path": "dialog-shell.footer.bleed",
+    "tier": "component",
+    "scope": "dialog-shell",
+    "type": "length",
+    "default": "var(--nk-space-2)",
+    "description": "How far the hints reach back into the padding (the first item's own inset lines up with the title)",
+    "part": "footer"
+  },
+  {
+    "name": "nk-empty-state-gap",
+    "path": "empty-state.gap",
+    "tier": "component",
+    "scope": "empty-state",
+    "type": "length",
+    "default": "var(--nk-space-3)",
+    "description": "Between the header and the actions (panel size)"
+  },
+  {
+    "name": "nk-empty-state-pad",
+    "path": "empty-state.pad",
+    "tier": "component",
+    "scope": "empty-state",
+    "type": "length",
+    "default": "var(--nk-space-6)",
+    "description": "The panel size's padding"
+  },
+  {
+    "name": "nk-empty-state-gap-screen",
+    "path": "empty-state.gap-screen",
+    "tier": "component",
+    "scope": "empty-state",
+    "type": "length",
+    "default": "var(--nk-space-4)",
+    "description": "Between the header and the actions (screen size)"
+  },
+  {
+    "name": "nk-empty-state-pad-screen",
+    "path": "empty-state.pad-screen",
+    "tier": "component",
+    "scope": "empty-state",
+    "type": "length",
+    "default": "calc(var(--nk-space-unit) * 12)",
+    "description": "The screen size's padding, and the panel's from a medium viewport up"
+  },
+  {
+    "name": "nk-empty-state-header-gap",
+    "path": "empty-state.header.gap",
+    "tier": "component",
+    "scope": "empty-state",
+    "type": "length",
+    "default": "var(--nk-space-2)",
+    "description": "Between the icon, the title and the description",
+    "part": "header"
+  },
+  {
+    "name": "nk-empty-state-icon-box",
+    "path": "empty-state.icon.box",
+    "tier": "component",
+    "scope": "empty-state",
+    "type": "length",
+    "default": "2.5rem",
+    "description": "The icon's box (panel size, no tile)",
+    "part": "icon"
+  },
+  {
+    "name": "nk-empty-state-icon-box-screen",
+    "path": "empty-state.icon.box-screen",
+    "tier": "component",
+    "scope": "empty-state",
+    "type": "length",
+    "default": "3rem",
+    "description": "The icon's box (screen size, no tile)",
+    "part": "icon"
+  },
+  {
+    "name": "nk-empty-state-icon-glyph",
+    "path": "empty-state.icon.glyph",
+    "tier": "component",
+    "scope": "empty-state",
+    "type": "length",
+    "default": "var(--nk-icon-lg)",
+    "description": "The glyph inside the box",
+    "part": "icon"
+  },
+  {
+    "name": "nk-empty-state-icon-gap",
+    "path": "empty-state.icon.gap",
+    "tier": "component",
+    "scope": "empty-state",
+    "type": "length",
+    "default": "var(--nk-space-1)",
+    "description": "Under the icon",
+    "part": "icon"
+  },
+  {
+    "name": "nk-empty-state-icon-ink",
+    "path": "empty-state.icon.ink",
+    "tier": "component",
+    "scope": "empty-state",
+    "type": "color",
+    "default": "var(--muted-foreground)",
+    "description": "The icon's ink",
+    "part": "icon"
+  },
+  {
+    "name": "nk-empty-state-icon-ink-error",
+    "path": "empty-state.icon.ink-error",
+    "tier": "component",
+    "scope": "empty-state",
+    "type": "color",
+    "default": "var(--destructive)",
+    "description": "The icon's ink on an error",
+    "part": "icon"
+  },
+  {
+    "name": "nk-empty-state-icon-tint-error",
+    "path": "empty-state.icon.tint-error",
+    "tier": "component",
+    "scope": "empty-state",
+    "type": "color",
+    "default": "rgba(var(--destructive-rgb), 0.15)",
+    "description": "The icon box's fill on an error",
+    "part": "icon"
+  },
+  {
+    "name": "nk-empty-state-title-size-screen",
+    "path": "empty-state.title.size-screen",
+    "tier": "component",
+    "scope": "empty-state",
+    "type": "length",
+    "default": "var(--nk-text-section)",
+    "description": "The title's size at screen size (the panel size takes the panel title)",
+    "part": "title"
+  },
+  {
+    "name": "nk-empty-state-description-size",
+    "path": "empty-state.description.size",
+    "tier": "component",
+    "scope": "empty-state",
+    "type": "length",
+    "default": "var(--nk-text-label)",
+    "description": "The description's size",
+    "part": "description"
+  },
+  {
+    "name": "nk-empty-state-description-leading",
+    "path": "empty-state.description.leading",
+    "tier": "component",
+    "scope": "empty-state",
+    "type": "length",
+    "default": "var(--nk-leading-normal)",
+    "description": "The description's line height",
+    "part": "description"
+  },
+  {
+    "name": "nk-empty-state-actions-gap",
+    "path": "empty-state.actions.gap",
+    "tier": "component",
+    "scope": "empty-state",
+    "type": "length",
+    "default": "var(--nk-space-2)",
+    "description": "Between actions",
+    "part": "actions"
+  },
+  {
+    "name": "nk-radial-menu-size",
+    "path": "radial-menu.size",
+    "tier": "component",
+    "scope": "radial-menu",
+    "type": "length",
+    "default": "20rem",
+    "description": "The wheel's diameter (the size prop overrides it)"
+  },
+  {
+    "name": "nk-radial-menu-disabled-opacity",
+    "path": "radial-menu.disabled-opacity",
+    "tier": "component",
+    "scope": "radial-menu",
+    "type": "number",
+    "default": "0.5",
+    "description": "A disabled wedge or item",
+    "range": [
+      0,
+      1
+    ]
+  },
+  {
+    "name": "nk-radial-menu-wedge-stroke",
+    "path": "radial-menu.wedge.stroke",
+    "tier": "component",
+    "scope": "radial-menu",
+    "type": "number",
+    "default": "0.3",
+    "description": "A wedge's rim, in the wheel's 100-unit drawing (the wedge path insets by the same amount)",
+    "part": "wedge",
+    "range": [
+      0,
+      2
+    ]
+  },
+  {
+    "name": "nk-radial-menu-indicator-stroke",
+    "path": "radial-menu.indicator.stroke",
+    "tier": "component",
+    "scope": "radial-menu",
+    "type": "number",
+    "default": "var(--nk-radial-menu-wedge-stroke)",
+    "description": "The lit wedge's rim, in drawing units",
+    "part": "indicator",
+    "range": [
+      0,
+      2
+    ]
+  },
+  {
+    "name": "nk-radial-menu-item-width",
+    "path": "radial-menu.item.width",
+    "tier": "component",
+    "scope": "radial-menu",
+    "type": "length",
+    "default": "22%",
+    "description": "An item's width, a share of the wheel",
+    "part": "item"
+  },
+  {
+    "name": "nk-radial-menu-item-gap",
+    "path": "radial-menu.item.gap",
+    "tier": "component",
+    "scope": "radial-menu",
+    "type": "length",
+    "default": "var(--nk-space-1)",
+    "description": "Between an item's icon and label",
+    "part": "item"
+  },
+  {
+    "name": "nk-radial-menu-item-icon",
+    "path": "radial-menu.item.icon",
+    "tier": "component",
+    "scope": "radial-menu",
+    "type": "length",
+    "default": "var(--nk-icon-lg)",
+    "description": "An item's icon",
+    "part": "item"
+  },
+  {
+    "name": "nk-radial-menu-label-size",
+    "path": "radial-menu.label.size",
+    "tier": "component",
+    "scope": "radial-menu",
+    "type": "length",
+    "default": "var(--nk-text-label)",
+    "description": "An item's label and the centre's second line",
+    "part": "label"
+  },
+  {
+    "name": "nk-radial-menu-label-leading",
+    "path": "radial-menu.label.leading",
+    "tier": "component",
+    "scope": "radial-menu",
+    "type": "length",
+    "default": "var(--nk-leading-tight)",
+    "description": "An item's label and the centre's second line: their line height",
+    "part": "label"
+  },
+  {
+    "name": "nk-radial-menu-label-weight",
+    "path": "radial-menu.label.weight",
+    "tier": "component",
+    "scope": "radial-menu",
+    "type": "number",
+    "default": "var(--nk-type-label-weight)",
+    "description": "An item's label weight",
+    "part": "label",
+    "range": [
+      100,
+      900
+    ]
+  },
+  {
+    "name": "nk-radial-menu-dot-size",
+    "path": "radial-menu.dot.size",
+    "tier": "component",
+    "scope": "radial-menu",
+    "type": "length",
+    "default": "0.25rem",
+    "description": "The mark on an item that opens a submenu",
+    "part": "dot"
+  },
+  {
+    "name": "nk-radial-menu-dot-opacity",
+    "path": "radial-menu.dot.opacity",
+    "tier": "component",
+    "scope": "radial-menu",
+    "type": "number",
+    "default": "0.6",
+    "description": "The submenu mark's opacity",
+    "part": "dot",
+    "range": [
+      0,
+      1
+    ]
+  },
+  {
+    "name": "nk-radial-menu-center-width",
+    "path": "radial-menu.center.width",
+    "tier": "component",
+    "scope": "radial-menu",
+    "type": "length",
+    "default": "34%",
+    "description": "The centre button's width, a share of the wheel",
+    "part": "center"
+  },
+  {
+    "name": "nk-radial-menu-center-pad",
+    "path": "radial-menu.center.pad",
+    "tier": "component",
+    "scope": "radial-menu",
+    "type": "length",
+    "default": "var(--nk-space-2)",
+    "description": "The centre button's padding",
+    "part": "center"
+  },
+  {
+    "name": "nk-radial-menu-center-icon",
+    "path": "radial-menu.center.icon",
+    "tier": "component",
+    "scope": "radial-menu",
+    "type": "length",
+    "default": "var(--nk-icon-md)",
+    "description": "The back or close icon",
+    "part": "center"
+  },
+  {
+    "name": "nk-radial-menu-title-size",
+    "path": "radial-menu.title.size",
+    "tier": "component",
+    "scope": "radial-menu",
+    "type": "length",
+    "default": "var(--nk-text-label)",
+    "description": "The centre's first line",
+    "part": "title"
+  },
+  {
+    "name": "nk-radial-menu-title-leading",
+    "path": "radial-menu.title.leading",
+    "tier": "component",
+    "scope": "radial-menu",
+    "type": "length",
+    "default": "var(--nk-leading-normal)",
+    "description": "The centre's first line height",
+    "part": "title"
+  },
+  {
+    "name": "nk-radial-menu-title-weight",
+    "path": "radial-menu.title.weight",
+    "tier": "component",
+    "scope": "radial-menu",
+    "type": "number",
+    "default": "var(--nk-type-weight-strong)",
+    "description": "The centre's first line weight",
+    "part": "title",
+    "range": [
+      100,
+      900
+    ]
+  },
+  {
+    "name": "nk-selection-tabs-list-gap",
+    "path": "selection-tabs.list.gap",
+    "tier": "component",
+    "scope": "selection-tabs",
+    "type": "length",
+    "default": "var(--nk-list-gap)",
+    "description": "Between triggers: a lit tile never touches its neighbour",
+    "part": "list"
+  },
+  {
+    "name": "nk-selection-tabs-list-rest",
+    "path": "selection-tabs.list.rest",
+    "tier": "component",
+    "scope": "selection-tabs",
+    "type": "length",
+    "default": "3px",
+    "description": "Room under the triggers besides the tile's wall",
+    "part": "list"
+  },
+  {
+    "name": "nk-selection-tabs-trigger-height",
+    "path": "selection-tabs.trigger.height",
+    "tier": "component",
+    "scope": "selection-tabs",
+    "type": "length",
+    "default": "var(--nk-height-chip)",
+    "description": "A trigger's minimum height",
+    "part": "trigger"
+  },
+  {
+    "name": "nk-selection-tabs-trigger-pad-x",
+    "path": "selection-tabs.trigger.pad-x",
+    "tier": "component",
+    "scope": "selection-tabs",
+    "type": "length",
+    "default": "var(--nk-gap-pad-x)",
+    "description": "A trigger's inline padding",
+    "part": "trigger"
   },
   {
     "name": "nk-chip-height",
@@ -5639,7 +6821,7 @@ export const LEVER_ROWS: readonly LeverRow[] = [
   }
 ];
 
-export type Lever = "background" | "foreground" | "card" | "card-foreground" | "popover" | "popover-foreground" | "primary" | "primary-foreground" | "secondary" | "secondary-foreground" | "muted" | "muted-foreground" | "accent" | "accent-foreground" | "destructive" | "destructive-foreground" | "border" | "input" | "ring" | "chart-1" | "chart-2" | "chart-3" | "chart-4" | "chart-5" | "radius" | "brand" | "brand-foreground" | "success" | "success-foreground" | "warning" | "warning-foreground" | "info" | "info-foreground" | "hud" | "hud-foreground" | "scrim" | "surface" | "world-foreground" | "world-foreground-muted" | "world-success" | "world-destructive" | "vital-health" | "vital-armor" | "vital-hunger" | "vital-thirst" | "world-shadow" | "pause-surface" | "pause-ink" | "vital-stress" | "role-health" | "role-health-deep" | "role-health-light" | "role-armor" | "role-armor-deep" | "role-armor-light" | "role-hunger" | "role-hunger-deep" | "role-hunger-light" | "role-thirst" | "role-thirst-deep" | "role-thirst-light" | "role-stress" | "role-stress-deep" | "role-stress-light" | "role-stamina" | "role-stamina-deep" | "role-stamina-light" | "role-oxygen" | "role-oxygen-deep" | "role-oxygen-light" | "role-info" | "role-info-deep" | "role-info-light" | "role-success" | "role-success-deep" | "role-success-light" | "role-warning" | "role-warning-deep" | "role-warning-light" | "role-danger" | "role-danger-deep" | "role-danger-light" | "role-police" | "role-police-deep" | "role-police-light" | "role-ems" | "role-ems-deep" | "role-ems-light" | "role-mech" | "role-mech-deep" | "role-mech-light" | "role-gang" | "role-gang-deep" | "role-gang-light" | "role-civ" | "role-civ-deep" | "role-civ-light" | "role-staff" | "role-staff-deep" | "role-staff-light" | "role-common" | "role-common-deep" | "role-common-light" | "role-uncommon" | "role-uncommon-deep" | "role-uncommon-light" | "role-rare" | "role-rare-deep" | "role-rare-light" | "role-epic" | "role-epic-deep" | "role-epic-light" | "role-legendary" | "role-legendary-deep" | "role-legendary-light" | "role-brand" | "role-brand-deep" | "role-brand-light" | "role-neutral" | "role-neutral-deep" | "role-neutral-light" | "font-sans" | "font-display" | "font-numeric" | "font-mono" | "nk-scale" | "nk-density" | "nk-space-1" | "nk-space-2" | "nk-space-3" | "nk-space-4" | "nk-space-6" | "nk-space-8" | "nk-space-unit" | "nk-radius-key" | "nk-radius-chip" | "nk-radius-control" | "nk-radius-surface" | "nk-height-key" | "nk-height-chip" | "nk-height-control" | "nk-height-row" | "nk-height-field" | "nk-icon-sm" | "nk-icon-md" | "nk-icon-lg" | "nk-icon-stroke" | "nk-text-base" | "nk-text-key" | "nk-text-body" | "nk-text-label" | "nk-text-title" | "nk-text-section" | "nk-text-display" | "nk-text-hud" | "nk-text-row" | "nk-text-desc" | "nk-leading-tight" | "nk-leading-normal" | "nk-shape-skew" | "nk-shape-slab" | "nk-shape-cut" | "nk-shape-stroke" | "nk-type-ratio" | "nk-type-weight-body" | "nk-type-weight-strong" | "nk-type-weight-display" | "nk-type-tracking-display" | "nk-type-tracking-label" | "nk-type-case" | "nk-type-slant" | "nk-type-overhang" | "nk-type-scan-family" | "nk-type-scan-style" | "nk-type-scan-weight" | "nk-type-scan-tracking" | "nk-type-scan-case" | "nk-type-scan-pad" | "nk-type-title-family" | "nk-type-title-style" | "nk-type-title-weight" | "nk-type-title-tracking" | "nk-type-title-case" | "nk-type-title-pad" | "nk-type-label-family" | "nk-type-label-style" | "nk-type-label-weight" | "nk-type-label-tracking" | "nk-type-label-case" | "nk-type-label-pad" | "nk-type-num-family" | "nk-type-num-style" | "nk-type-num-weight" | "nk-type-num-tracking" | "nk-type-num-case" | "nk-type-num-pad" | "nk-type-body-family" | "nk-type-body-style" | "nk-type-body-weight" | "nk-type-body-tracking" | "nk-type-body-case" | "nk-surface-tint" | "nk-surface-gradient" | "nk-surface-elevation" | "nk-surface-glow" | "nk-surface-glow-budget" | "nk-surface-backdrop" | "nk-surface-legibility" | "nk-surface-legibility-lift" | "nk-surface-slash" | "nk-material-hud-opacity" | "nk-material-hud-texture" | "nk-material-menu-opacity" | "nk-material-menu-blur" | "nk-material-menu-radius" | "nk-material-menu-edge" | "nk-material-menu-texture" | "nk-hud-text" | "nk-motion" | "nk-motion-duration" | "nk-motion-ease" | "nk-motion-feel" | "nk-motion-bounce" | "nk-motion-exit-factor" | "nk-motion-reduced" | "nk-motion-profile" | "nk-style-fill" | "nk-style-level" | "nk-style-hold" | "nk-style-gauge" | "nk-style-focus" | "nk-style-vital" | "nk-style-vital-icon" | "nk-style-vital-neighbours" | "nk-style-pause" | "nk-behavior-alert" | "nk-behavior-rest" | "nk-behavior-notify-info" | "nk-behavior-notify-success" | "nk-behavior-notify-warning" | "nk-behavior-notify-danger" | "nk-hue-line" | "nk-hue-tint" | "nk-hue-glow" | "nk-hue-alert" | "nk-layer-dim" | "nk-layer-dialog" | "nk-time-snap" | "nk-time-fast" | "nk-time-base" | "nk-time-slow" | "nk-time-fill" | "nk-time-exit" | "nk-time-pulse" | "nk-ease-enter" | "nk-ease-exit" | "nk-ease-move" | "nk-ease-expand" | "nk-ease-spring" | "nk-ease-breathe" | "nk-spring-snap" | "nk-spring-move" | "nk-spring-soft" | "nk-spring-pop" | "nk-stagger" | "nk-stagger-max" | "nk-gesture-lift" | "nk-gesture-rise" | "nk-gesture-land" | "nk-gesture-deny" | "nk-gesture-press" | "nk-gesture-confirm" | "nk-plate-color" | "nk-plate-hair" | "nk-plate-drop" | "nk-plate-bg" | "nk-plate-radius" | "nk-fill-color" | "nk-fill-track" | "nk-fill-tint" | "nk-fill-edge" | "nk-fill-alert" | "nk-fill-height" | "nk-accent-paint" | "nk-accent-from" | "nk-accent-via" | "nk-accent-to" | "nk-gap-cluster" | "nk-gap-items" | "nk-gap-pad-x" | "nk-gap-surface" | "nk-line-width" | "nk-line-focus" | "nk-line-clip" | "nk-line-clip-sm" | "nk-line-glow" | "nk-depth-elevation" | "nk-depth-text" | "nk-alpha-day" | "nk-alpha-hud" | "nk-alpha-menu" | "nk-restore-muted-foreground" | "nk-restore-muted-foreground-rgb" | "nk-restore-muted-foreground-a" | "nk-restore-background" | "nk-restore-background-rgb" | "nk-restore-background-a" | "nk-screen-ratio" | "nk-screen-max" | "nk-screen-edge" | "nk-screen-scale-min" | "nk-screen-area-l" | "nk-screen-area-r" | "nk-screen-area-t" | "nk-screen-area-b" | "nk-screen-safe-x" | "nk-screen-safe-y" | "nk-zone-gap" | "nk-region-max" | "nk-region-pad" | "nk-grid-cell" | "nk-grid-gap" | "nk-tile-plate-color" | "nk-tile-plate-dim" | "nk-tile-plate-x" | "nk-tile-plate-y" | "nk-tile-plate-press" | "nk-tile-wall-height" | "nk-tile-wall-shade" | "nk-tile-face-color" | "nk-tile-face-ink" | "nk-tile-face-light" | "nk-tile-face-shade" | "nk-tile-face-rim" | "nk-tile-face-rim-focus" | "nk-tile-face-radius" | "nk-tile-face-skew" | "nk-tile-face-shadow" | "nk-tile-face-clip" | "nk-tile-face-confirm" | "nk-tile-face-confirm-ink" | "nk-tile-face-active" | "nk-tile-face-hold" | "nk-tile-legend-font" | "nk-tile-legend-weight" | "nk-tile-legend-pad" | "nk-tile-legend-shift" | "nk-tile-legend-gap" | "nk-tile-legend-inset" | "nk-tile-tag-delay" | "nk-tile-key-color" | "nk-tile-key-ink" | "nk-tile-key-rim" | "nk-tile-key-radius" | "nk-tile-key-tint" | "nk-tile-key-inset" | "nk-tile-key-lift" | "nk-tile-key-press" | "nk-tile-key-overhang" | "nk-panel-bg" | "nk-panel-fg" | "nk-panel-border" | "nk-panel-radius" | "nk-panel-blur" | "nk-panel-cut" | "nk-panel-clip" | "nk-panel-gradient" | "nk-panel-edge" | "nk-panel-shadow" | "nk-panel-divider" | "nk-panel-width" | "nk-panel-width-sm" | "nk-panel-width-lg" | "nk-panel-header-height" | "nk-panel-header-padding" | "nk-panel-title-size" | "nk-panel-body-padding" | "nk-panel-footer-padding" | "nk-panel-footer-rule" | "nk-panel-actions-bracket" | "nk-panel-actions-bracket-width" | "nk-panel-actions-bracket-color" | "nk-display-size" | "nk-display-weight" | "nk-display-tracking" | "nk-display-case" | "nk-caption-font" | "nk-caption-size" | "nk-caption-weight" | "nk-caption-case" | "nk-caption-tracking" | "nk-row-height" | "nk-row-radius" | "nk-row-clip" | "nk-row-pad-y" | "nk-row-pad-x" | "nk-row-padding" | "nk-row-gap" | "nk-row-font-size" | "nk-row-accent" | "nk-row-icon-box" | "nk-row-bar-width" | "nk-list-gap" | "nk-list-pad-x" | "nk-menu-row-gap" | "nk-menu-row-image-size" | "nk-menu-row-progress-height" | "nk-menu-row-details-width" | "nk-menu-row-value-width" | "nk-selection-time" | "nk-selection-ease" | "nk-field-caret-width" | "nk-field-caret-time" | "nk-field-caret-ease" | "nk-field-mirror-rise" | "nk-field-mirror-in" | "nk-field-mirror-out" | "nk-stepper-delay" | "nk-stepper-rate" | "nk-text-key-scale" | "nk-notice-width" | "nk-notice-width-sm" | "nk-notice-width-lg" | "nk-confirm-width" | "nk-confirm-width-sm" | "nk-confirm-width-lg" | "nk-edge-sheet-header-height" | "nk-chip-height" | "nk-chip-tile-size" | "nk-chip-padding" | "nk-chip-radius" | "nk-chip-hud-radius" | "nk-chip-bg" | "nk-chip-fg" | "nk-chip-font-size" | "nk-chip-weight" | "nk-chip-active-bg" | "nk-chip-active-fg" | "nk-chip-glow" | "nk-chip-clip" | "nk-chip-text-shadow" | "nk-chip-icon-size" | "nk-chip-icon-size-tile" | "nk-vital-chip-size" | "nk-vital-chip-size-sm" | "nk-vital-chip-tile-ratio" | "nk-vital-chip-icon-ratio" | "nk-vital-chip-label-size" | "nk-vital-chip-label-gap" | "nk-vital-chip-pop-overlap" | "nk-vital-chip-pop-pad" | "nk-vital-chip-pop-max-width" | "nk-vital-chip-line-width" | "nk-vital-chip-plate-drop" | "nk-vital-chip-plate-x" | "nk-meter-radius" | "nk-meter-glow" | "nk-meter-segments" | "nk-meter-track-color" | "nk-meter-segment-size" | "nk-meter-segment-gap" | "nk-meter-segment-color" | "nk-gauge-width" | "nk-gauge-ticks" | "nk-gauge-font" | "nk-gauge-track-color" | "nk-gauge-fill-color" | "nk-gauge-needle-color" | "nk-gauge-redline-color" | "nk-gauge-tick-color" | "nk-gauge-tick-major" | "nk-dial-disc-opacity" | "nk-ring-segments" | "nk-ring-gap" | "nk-ring-label-max-width" | "nk-speedometer-digit-dim" | "nk-speedometer-digit-tracking" | "nk-level-pip-size" | "nk-level-pip-gap" | "nk-level-hold-pad" | "nk-level-fill-ink" | "nk-slab-height" | "nk-slab-padding" | "nk-slab-gap" | "nk-slab-radius" | "nk-slab-clip" | "nk-slab-bg" | "nk-slab-fg" | "nk-slab-border" | "nk-slab-font-size" | "nk-slab-weight" | "nk-slab-text-shadow" | "nk-slab-tone" | "nk-slab-tile-size" | "nk-slab-tile-bg" | "nk-slab-tile-fg" | "nk-slab-tile-radius" | "nk-slab-delta-font" | "nk-slab-delta-up" | "nk-slab-delta-down" | "nk-slab-key-size" | "nk-slab-key-font-size" | "nk-slab-line-height" | "nk-slab-line-radius" | "nk-slab-line-track" | "nk-slab-stack-width" | "nk-slab-stack-gap" | "nk-slab-band-padding" | "nk-slab-band-gap" | "nk-slab-band-bg" | "nk-slab-band-tint" | "nk-slab-band-edge" | "nk-slab-band-fg" | "nk-slab-band-title-size" | "nk-item-slot-width" | "nk-item-slot-width-sm" | "nk-item-slot-width-lg" | "nk-item-slot-gap" | "nk-item-slot-top-height" | "nk-item-slot-corner-lock" | "nk-key-prompt-gap" | "nk-key-prompt-max-width" | "nk-key-prompt-min-height" | "nk-key-prompt-min-height-sm" | "nk-key-prompt-pad-left" | "nk-key-prompt-pad-right" | "nk-key-prompt-pad-y" | "nk-key-prompt-key-height" | "nk-skill-check-size" | "nk-skill-check-size-sm" | "nk-skill-check-size-lg" | "nk-skill-check-key-height" | "nk-skill-check-key-pad" | "nk-countdown-line-width" | "nk-countdown-line-width-sm" | "nk-countdown-line-width-hero" | "nk-stat-gap" | "nk-stat-label-icon" | "nk-nui-image-icon-max";
+export type Lever = "background" | "foreground" | "card" | "card-foreground" | "popover" | "popover-foreground" | "primary" | "primary-foreground" | "secondary" | "secondary-foreground" | "muted" | "muted-foreground" | "accent" | "accent-foreground" | "destructive" | "destructive-foreground" | "border" | "input" | "ring" | "chart-1" | "chart-2" | "chart-3" | "chart-4" | "chart-5" | "radius" | "brand" | "brand-foreground" | "success" | "success-foreground" | "warning" | "warning-foreground" | "info" | "info-foreground" | "hud" | "hud-foreground" | "scrim" | "surface" | "world-foreground" | "world-foreground-muted" | "world-success" | "world-destructive" | "vital-health" | "vital-armor" | "vital-hunger" | "vital-thirst" | "world-shadow" | "pause-surface" | "pause-ink" | "vital-stress" | "role-health" | "role-health-deep" | "role-health-light" | "role-armor" | "role-armor-deep" | "role-armor-light" | "role-hunger" | "role-hunger-deep" | "role-hunger-light" | "role-thirst" | "role-thirst-deep" | "role-thirst-light" | "role-stress" | "role-stress-deep" | "role-stress-light" | "role-stamina" | "role-stamina-deep" | "role-stamina-light" | "role-oxygen" | "role-oxygen-deep" | "role-oxygen-light" | "role-info" | "role-info-deep" | "role-info-light" | "role-success" | "role-success-deep" | "role-success-light" | "role-warning" | "role-warning-deep" | "role-warning-light" | "role-danger" | "role-danger-deep" | "role-danger-light" | "role-police" | "role-police-deep" | "role-police-light" | "role-ems" | "role-ems-deep" | "role-ems-light" | "role-mech" | "role-mech-deep" | "role-mech-light" | "role-gang" | "role-gang-deep" | "role-gang-light" | "role-civ" | "role-civ-deep" | "role-civ-light" | "role-staff" | "role-staff-deep" | "role-staff-light" | "role-common" | "role-common-deep" | "role-common-light" | "role-uncommon" | "role-uncommon-deep" | "role-uncommon-light" | "role-rare" | "role-rare-deep" | "role-rare-light" | "role-epic" | "role-epic-deep" | "role-epic-light" | "role-legendary" | "role-legendary-deep" | "role-legendary-light" | "role-brand" | "role-brand-deep" | "role-brand-light" | "role-neutral" | "role-neutral-deep" | "role-neutral-light" | "font-sans" | "font-display" | "font-numeric" | "font-mono" | "nk-scale" | "nk-density" | "nk-space-1" | "nk-space-2" | "nk-space-3" | "nk-space-4" | "nk-space-6" | "nk-space-8" | "nk-space-unit" | "nk-radius-key" | "nk-radius-chip" | "nk-radius-control" | "nk-radius-surface" | "nk-height-key" | "nk-height-chip" | "nk-height-control" | "nk-height-row" | "nk-height-field" | "nk-icon-sm" | "nk-icon-md" | "nk-icon-lg" | "nk-icon-stroke" | "nk-text-base" | "nk-text-key" | "nk-text-body" | "nk-text-label" | "nk-text-title" | "nk-text-section" | "nk-text-display" | "nk-text-hud" | "nk-text-row" | "nk-text-desc" | "nk-leading-tight" | "nk-leading-normal" | "nk-shape-skew" | "nk-shape-slab" | "nk-shape-cut" | "nk-shape-stroke" | "nk-type-ratio" | "nk-type-weight-body" | "nk-type-weight-strong" | "nk-type-weight-display" | "nk-type-tracking-display" | "nk-type-tracking-label" | "nk-type-case" | "nk-type-slant" | "nk-type-overhang" | "nk-type-scan-family" | "nk-type-scan-style" | "nk-type-scan-weight" | "nk-type-scan-tracking" | "nk-type-scan-case" | "nk-type-scan-pad" | "nk-type-title-family" | "nk-type-title-style" | "nk-type-title-weight" | "nk-type-title-tracking" | "nk-type-title-case" | "nk-type-title-pad" | "nk-type-label-family" | "nk-type-label-style" | "nk-type-label-weight" | "nk-type-label-tracking" | "nk-type-label-case" | "nk-type-label-pad" | "nk-type-num-family" | "nk-type-num-style" | "nk-type-num-weight" | "nk-type-num-tracking" | "nk-type-num-case" | "nk-type-num-pad" | "nk-type-body-family" | "nk-type-body-style" | "nk-type-body-weight" | "nk-type-body-tracking" | "nk-type-body-case" | "nk-surface-tint" | "nk-surface-gradient" | "nk-surface-elevation" | "nk-surface-glow" | "nk-surface-glow-budget" | "nk-surface-backdrop" | "nk-surface-legibility" | "nk-surface-legibility-lift" | "nk-surface-slash" | "nk-material-hud-opacity" | "nk-material-hud-texture" | "nk-material-menu-opacity" | "nk-material-menu-blur" | "nk-material-menu-radius" | "nk-material-menu-edge" | "nk-material-menu-texture" | "nk-hud-text" | "nk-motion" | "nk-motion-duration" | "nk-motion-ease" | "nk-motion-feel" | "nk-motion-bounce" | "nk-motion-exit-factor" | "nk-motion-reduced" | "nk-motion-profile" | "nk-style-fill" | "nk-style-level" | "nk-style-hold" | "nk-style-gauge" | "nk-style-focus" | "nk-style-vital" | "nk-style-vital-icon" | "nk-style-vital-neighbours" | "nk-style-pause" | "nk-behavior-alert" | "nk-behavior-rest" | "nk-behavior-notify-info" | "nk-behavior-notify-success" | "nk-behavior-notify-warning" | "nk-behavior-notify-danger" | "nk-hue-line" | "nk-hue-tint" | "nk-hue-glow" | "nk-hue-alert" | "nk-layer-dim" | "nk-layer-dialog" | "nk-time-snap" | "nk-time-fast" | "nk-time-base" | "nk-time-slow" | "nk-time-fill" | "nk-time-exit" | "nk-time-pulse" | "nk-ease-enter" | "nk-ease-exit" | "nk-ease-move" | "nk-ease-expand" | "nk-ease-spring" | "nk-ease-breathe" | "nk-spring-snap" | "nk-spring-move" | "nk-spring-soft" | "nk-spring-pop" | "nk-stagger" | "nk-stagger-max" | "nk-gesture-lift" | "nk-gesture-rise" | "nk-gesture-land" | "nk-gesture-deny" | "nk-gesture-press" | "nk-gesture-confirm" | "nk-plate-color" | "nk-plate-hair" | "nk-plate-drop" | "nk-plate-bg" | "nk-plate-radius" | "nk-fill-color" | "nk-fill-track" | "nk-fill-tint" | "nk-fill-edge" | "nk-fill-alert" | "nk-fill-height" | "nk-accent-paint" | "nk-accent-from" | "nk-accent-via" | "nk-accent-to" | "nk-gap-cluster" | "nk-gap-items" | "nk-gap-pad-x" | "nk-gap-surface" | "nk-line-width" | "nk-line-focus" | "nk-line-clip" | "nk-line-clip-sm" | "nk-line-glow" | "nk-depth-elevation" | "nk-depth-text" | "nk-alpha-day" | "nk-alpha-hud" | "nk-alpha-menu" | "nk-restore-muted-foreground" | "nk-restore-muted-foreground-rgb" | "nk-restore-muted-foreground-a" | "nk-restore-background" | "nk-restore-background-rgb" | "nk-restore-background-a" | "nk-screen-ratio" | "nk-screen-max" | "nk-screen-edge" | "nk-screen-scale-min" | "nk-screen-area-l" | "nk-screen-area-r" | "nk-screen-area-t" | "nk-screen-area-b" | "nk-screen-safe-x" | "nk-screen-safe-y" | "nk-zone-gap" | "nk-region-max" | "nk-region-pad" | "nk-grid-cell" | "nk-grid-gap" | "nk-tile-plate-color" | "nk-tile-plate-dim" | "nk-tile-plate-x" | "nk-tile-plate-y" | "nk-tile-plate-press" | "nk-tile-wall-height" | "nk-tile-wall-shade" | "nk-tile-face-color" | "nk-tile-face-ink" | "nk-tile-face-light" | "nk-tile-face-shade" | "nk-tile-face-rim" | "nk-tile-face-rim-focus" | "nk-tile-face-radius" | "nk-tile-face-skew" | "nk-tile-face-shadow" | "nk-tile-face-clip" | "nk-tile-face-confirm" | "nk-tile-face-confirm-ink" | "nk-tile-face-active" | "nk-tile-face-hold" | "nk-tile-legend-font" | "nk-tile-legend-weight" | "nk-tile-legend-pad" | "nk-tile-legend-shift" | "nk-tile-legend-gap" | "nk-tile-legend-inset" | "nk-tile-tag-delay" | "nk-tile-key-color" | "nk-tile-key-ink" | "nk-tile-key-rim" | "nk-tile-key-radius" | "nk-tile-key-tint" | "nk-tile-key-inset" | "nk-tile-key-lift" | "nk-tile-key-press" | "nk-tile-key-overhang" | "nk-panel-bg" | "nk-panel-fg" | "nk-panel-border" | "nk-panel-radius" | "nk-panel-blur" | "nk-panel-cut" | "nk-panel-clip" | "nk-panel-gradient" | "nk-panel-edge" | "nk-panel-shadow" | "nk-panel-divider" | "nk-panel-width" | "nk-panel-width-sm" | "nk-panel-width-lg" | "nk-panel-header-height" | "nk-panel-header-padding" | "nk-panel-title-size" | "nk-panel-body-padding" | "nk-panel-footer-padding" | "nk-panel-footer-rule" | "nk-panel-actions-bracket" | "nk-panel-actions-bracket-width" | "nk-panel-actions-bracket-color" | "nk-display-size" | "nk-display-weight" | "nk-display-tracking" | "nk-display-case" | "nk-caption-font" | "nk-caption-size" | "nk-caption-weight" | "nk-caption-case" | "nk-caption-tracking" | "nk-row-height" | "nk-row-radius" | "nk-row-clip" | "nk-row-pad-y" | "nk-row-pad-x" | "nk-row-padding" | "nk-row-gap" | "nk-row-font-size" | "nk-row-accent" | "nk-row-icon-box" | "nk-row-bar-width" | "nk-list-gap" | "nk-list-pad-x" | "nk-menu-row-gap" | "nk-menu-row-image-size" | "nk-menu-row-progress-height" | "nk-menu-row-details-width" | "nk-menu-row-value-width" | "nk-selection-time" | "nk-selection-ease" | "nk-field-marker-height" | "nk-field-marker-drop" | "nk-field-caret-color" | "nk-field-caret-radius" | "nk-field-caret-blink" | "nk-field-caret-blink-delay" | "nk-field-caret-blink-dim" | "nk-field-caret-width" | "nk-field-caret-time" | "nk-field-caret-ease" | "nk-field-mirror-rise" | "nk-field-mirror-in" | "nk-field-mirror-out" | "nk-form-field-label-gap" | "nk-form-field-label-size" | "nk-form-field-label-leading" | "nk-form-field-label-leading-row" | "nk-form-field-hint-size" | "nk-form-field-hint-leading" | "nk-form-field-hint-color" | "nk-form-field-end-gap" | "nk-form-field-value-size" | "nk-form-field-value-leading" | "nk-form-field-value-color" | "nk-form-field-row-gap" | "nk-form-field-row-height" | "nk-form-field-trail-gap" | "nk-form-field-control-height" | "nk-form-field-control-size" | "nk-form-field-control-gap" | "nk-form-field-control-pad-x" | "nk-form-field-control-pad-x-dense" | "nk-form-field-control-affix-password" | "nk-form-field-control-affix-stepper" | "nk-form-field-icon-size" | "nk-form-field-icon-color" | "nk-form-field-icon-inset" | "nk-form-field-icon-gap" | "nk-form-field-icon-pad" | "nk-form-field-stepper-inset" | "nk-form-field-stepper-gap" | "nk-form-field-reveal-inset" | "nk-form-field-segment-sep" | "nk-form-field-meridiem-gap" | "nk-form-field-meridiem-pad-x" | "nk-form-field-meridiem-size" | "nk-form-field-meridiem-weight" | "nk-form-field-meridiem-color" | "nk-form-field-clear-size" | "nk-form-field-clear-bleed" | "nk-form-field-clear-color" | "nk-form-field-date-picker-size" | "nk-form-field-date-picker-bleed" | "nk-form-field-date-picker-color" | "nk-form-field-date-picker-cell" | "nk-form-field-date-picker-pad" | "nk-form-field-date-picker-gap" | "nk-form-field-date-picker-step" | "nk-form-field-swatch-size" | "nk-form-field-swatch-inset" | "nk-form-field-swatch-pad" | "nk-form-field-swatch-empty" | "nk-form-field-swatches-gap" | "nk-form-field-swatches-size" | "nk-form-field-description-size" | "nk-form-field-description-leading" | "nk-form-field-description-color" | "nk-form-field-description-indent" | "nk-form-field-error-size" | "nk-form-field-error-leading" | "nk-form-field-error-color" | "nk-form-field-error-indent" | "nk-stepper-delay" | "nk-stepper-rate" | "nk-text-key-scale" | "nk-notice-width" | "nk-notice-width-sm" | "nk-notice-width-lg" | "nk-confirm-width" | "nk-confirm-width-sm" | "nk-confirm-width-lg" | "nk-edge-sheet-header-height" | "nk-dialog-shell-width" | "nk-dialog-shell-width-sm" | "nk-dialog-shell-width-lg" | "nk-dialog-shell-top" | "nk-dialog-shell-header-gap" | "nk-dialog-shell-header-pad-x" | "nk-dialog-shell-header-pad-y" | "nk-dialog-shell-body-pad" | "nk-dialog-shell-footer-gap" | "nk-dialog-shell-footer-pad-x" | "nk-dialog-shell-footer-pad-y" | "nk-dialog-shell-footer-bleed" | "nk-empty-state-gap" | "nk-empty-state-pad" | "nk-empty-state-gap-screen" | "nk-empty-state-pad-screen" | "nk-empty-state-header-gap" | "nk-empty-state-icon-box" | "nk-empty-state-icon-box-screen" | "nk-empty-state-icon-glyph" | "nk-empty-state-icon-gap" | "nk-empty-state-icon-ink" | "nk-empty-state-icon-ink-error" | "nk-empty-state-icon-tint-error" | "nk-empty-state-title-size-screen" | "nk-empty-state-description-size" | "nk-empty-state-description-leading" | "nk-empty-state-actions-gap" | "nk-radial-menu-size" | "nk-radial-menu-disabled-opacity" | "nk-radial-menu-wedge-stroke" | "nk-radial-menu-indicator-stroke" | "nk-radial-menu-item-width" | "nk-radial-menu-item-gap" | "nk-radial-menu-item-icon" | "nk-radial-menu-label-size" | "nk-radial-menu-label-leading" | "nk-radial-menu-label-weight" | "nk-radial-menu-dot-size" | "nk-radial-menu-dot-opacity" | "nk-radial-menu-center-width" | "nk-radial-menu-center-pad" | "nk-radial-menu-center-icon" | "nk-radial-menu-title-size" | "nk-radial-menu-title-leading" | "nk-radial-menu-title-weight" | "nk-selection-tabs-list-gap" | "nk-selection-tabs-list-rest" | "nk-selection-tabs-trigger-height" | "nk-selection-tabs-trigger-pad-x" | "nk-chip-height" | "nk-chip-tile-size" | "nk-chip-padding" | "nk-chip-radius" | "nk-chip-hud-radius" | "nk-chip-bg" | "nk-chip-fg" | "nk-chip-font-size" | "nk-chip-weight" | "nk-chip-active-bg" | "nk-chip-active-fg" | "nk-chip-glow" | "nk-chip-clip" | "nk-chip-text-shadow" | "nk-chip-icon-size" | "nk-chip-icon-size-tile" | "nk-vital-chip-size" | "nk-vital-chip-size-sm" | "nk-vital-chip-tile-ratio" | "nk-vital-chip-icon-ratio" | "nk-vital-chip-label-size" | "nk-vital-chip-label-gap" | "nk-vital-chip-pop-overlap" | "nk-vital-chip-pop-pad" | "nk-vital-chip-pop-max-width" | "nk-vital-chip-line-width" | "nk-vital-chip-plate-drop" | "nk-vital-chip-plate-x" | "nk-meter-radius" | "nk-meter-glow" | "nk-meter-segments" | "nk-meter-track-color" | "nk-meter-segment-size" | "nk-meter-segment-gap" | "nk-meter-segment-color" | "nk-gauge-width" | "nk-gauge-ticks" | "nk-gauge-font" | "nk-gauge-track-color" | "nk-gauge-fill-color" | "nk-gauge-needle-color" | "nk-gauge-redline-color" | "nk-gauge-tick-color" | "nk-gauge-tick-major" | "nk-dial-disc-opacity" | "nk-ring-segments" | "nk-ring-gap" | "nk-ring-label-max-width" | "nk-speedometer-digit-dim" | "nk-speedometer-digit-tracking" | "nk-level-pip-size" | "nk-level-pip-gap" | "nk-level-hold-pad" | "nk-level-fill-ink" | "nk-slab-height" | "nk-slab-padding" | "nk-slab-gap" | "nk-slab-radius" | "nk-slab-clip" | "nk-slab-bg" | "nk-slab-fg" | "nk-slab-border" | "nk-slab-font-size" | "nk-slab-weight" | "nk-slab-text-shadow" | "nk-slab-tone" | "nk-slab-tile-size" | "nk-slab-tile-bg" | "nk-slab-tile-fg" | "nk-slab-tile-radius" | "nk-slab-delta-font" | "nk-slab-delta-up" | "nk-slab-delta-down" | "nk-slab-key-size" | "nk-slab-key-font-size" | "nk-slab-line-height" | "nk-slab-line-radius" | "nk-slab-line-track" | "nk-slab-stack-width" | "nk-slab-stack-gap" | "nk-slab-band-padding" | "nk-slab-band-gap" | "nk-slab-band-bg" | "nk-slab-band-tint" | "nk-slab-band-edge" | "nk-slab-band-fg" | "nk-slab-band-title-size" | "nk-item-slot-width" | "nk-item-slot-width-sm" | "nk-item-slot-width-lg" | "nk-item-slot-gap" | "nk-item-slot-top-height" | "nk-item-slot-corner-lock" | "nk-key-prompt-gap" | "nk-key-prompt-max-width" | "nk-key-prompt-min-height" | "nk-key-prompt-min-height-sm" | "nk-key-prompt-pad-left" | "nk-key-prompt-pad-right" | "nk-key-prompt-pad-y" | "nk-key-prompt-key-height" | "nk-skill-check-size" | "nk-skill-check-size-sm" | "nk-skill-check-size-lg" | "nk-skill-check-key-height" | "nk-skill-check-key-pad" | "nk-countdown-line-width" | "nk-countdown-line-width-sm" | "nk-countdown-line-width-hero" | "nk-stat-gap" | "nk-stat-label-icon" | "nk-nui-image-icon-max";
 
 export const ANATOMY = {
   "screen": [
@@ -5710,8 +6892,29 @@ export const ANATOMY = {
   ],
   "field": [
     "control",
-    "caret",
-    "mirror"
+    "mirror",
+    "marker",
+    "caret"
+  ],
+  "form-field": [
+    "label",
+    "hint",
+    "end",
+    "value",
+    "row",
+    "trail",
+    "control",
+    "icon",
+    "stepper",
+    "reveal",
+    "segment",
+    "meridiem",
+    "clear",
+    "date-picker",
+    "swatch",
+    "swatches",
+    "description",
+    "error"
   ],
   "stepper": [
     "tile",
@@ -5746,6 +6949,34 @@ export const ANATOMY = {
     "edge",
     "body",
     "footer"
+  ],
+  "dialog-shell": [
+    "header",
+    "title",
+    "description",
+    "body",
+    "footer",
+    "actions"
+  ],
+  "empty-state": [
+    "header",
+    "icon",
+    "title",
+    "description",
+    "actions"
+  ],
+  "radial-menu": [
+    "wedge",
+    "indicator",
+    "item",
+    "label",
+    "dot",
+    "center",
+    "title"
+  ],
+  "selection-tabs": [
+    "list",
+    "trigger"
   ],
   "chip": [
     "icon",

@@ -2527,6 +2527,43 @@
           "description": "The glide's curve",
           "$comment": "component · selection.ease"
         },
+        "nk-field-marker-height": {
+          "type": "string",
+          "description": "The marker the caret reads its box from: a line's height",
+          "$comment": "component · field.marker.height"
+        },
+        "nk-field-marker-drop": {
+          "type": "string",
+          "description": "How far the marker sits below the baseline",
+          "$comment": "component · field.marker.drop"
+        },
+        "nk-field-caret-color": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "The drawn caret",
+          "$comment": "component · field.caret.color"
+        },
+        "nk-field-caret-radius": {
+          "type": "string",
+          "description": "The drawn caret's corners",
+          "$comment": "component · field.caret.radius"
+        },
+        "nk-field-caret-blink": {
+          "type": "string",
+          "description": "One breath of the caret at rest",
+          "$comment": "component · field.caret.blink"
+        },
+        "nk-field-caret-blink-delay": {
+          "type": "string",
+          "description": "How long the caret stays solid after typing or moving",
+          "$comment": "component · field.caret.blink-delay"
+        },
+        "nk-field-caret-blink-dim": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "The caret's opacity at the bottom of its breath",
+          "$comment": "component · field.caret.blink-dim"
+        },
         "nk-field-caret-width": {
           "type": "string",
           "description": "The drawn caret's width",
@@ -2556,6 +2593,311 @@
           "type": "string",
           "description": "A deleted character's exit",
           "$comment": "component · field.mirror.out"
+        },
+        "nk-form-field-label-gap": {
+          "type": "string",
+          "description": "Between the name and its required mark",
+          "$comment": "component · form-field.label.gap"
+        },
+        "nk-form-field-label-size": {
+          "type": "string",
+          "description": "The label's size",
+          "$comment": "component · form-field.label.size"
+        },
+        "nk-form-field-label-leading": {
+          "type": "string",
+          "description": "The label's line height over a control",
+          "$comment": "component · form-field.label.leading"
+        },
+        "nk-form-field-label-leading-row": {
+          "type": "string",
+          "description": "The label's line height beside a control (checkbox, switch)",
+          "$comment": "component · form-field.label.leading-row"
+        },
+        "nk-form-field-hint-size": {
+          "type": "string",
+          "description": "The hint's size",
+          "$comment": "component · form-field.hint.size"
+        },
+        "nk-form-field-hint-leading": {
+          "type": "string",
+          "description": "The hint's line height",
+          "$comment": "component · form-field.hint.leading"
+        },
+        "nk-form-field-hint-color": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "The hint's ink",
+          "$comment": "component · form-field.hint.color"
+        },
+        "nk-form-field-end-gap": {
+          "type": "string",
+          "description": "Between the reset button and the value",
+          "$comment": "component · form-field.end.gap"
+        },
+        "nk-form-field-value-size": {
+          "type": "string",
+          "description": "The value text's size",
+          "$comment": "component · form-field.value.size"
+        },
+        "nk-form-field-value-leading": {
+          "type": "string",
+          "description": "The value text's line height",
+          "$comment": "component · form-field.value.leading"
+        },
+        "nk-form-field-value-color": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "The value text's ink",
+          "$comment": "component · form-field.value.color"
+        },
+        "nk-form-field-row-gap": {
+          "type": "string",
+          "description": "Between the control, the label and the hint on a row (checkbox, switch)",
+          "$comment": "component · form-field.row.gap"
+        },
+        "nk-form-field-row-height": {
+          "type": "string",
+          "description": "A row's minimum height, so an icon-xs button never moves it",
+          "$comment": "component · form-field.row.height"
+        },
+        "nk-form-field-trail-gap": {
+          "type": "string",
+          "description": "Between the value and the control at a switch row's end",
+          "$comment": "component · form-field.trail.gap"
+        },
+        "nk-form-field-control-height": {
+          "type": "string",
+          "description": "A segmented control's height (date, time)",
+          "$comment": "component · form-field.control.height"
+        },
+        "nk-form-field-control-size": {
+          "type": "string",
+          "description": "A segmented control's text size",
+          "$comment": "component · form-field.control.size"
+        },
+        "nk-form-field-control-gap": {
+          "type": "string",
+          "description": "Between a segmented control's parts",
+          "$comment": "component · form-field.control.gap"
+        },
+        "nk-form-field-control-pad-x": {
+          "type": "string",
+          "description": "A segmented control's inline padding",
+          "$comment": "component · form-field.control.pad-x"
+        },
+        "nk-form-field-control-pad-x-dense": {
+          "type": "string",
+          "description": "The same, dense (a range)",
+          "$comment": "component · form-field.control.pad-x-dense"
+        },
+        "nk-form-field-control-affix-password": {
+          "type": "string",
+          "description": "Room at a password field's end for the reveal button",
+          "$comment": "component · form-field.control.affix-password"
+        },
+        "nk-form-field-control-affix-stepper": {
+          "type": "string",
+          "description": "Room at a number field's end for the inline stepper",
+          "$comment": "component · form-field.control.affix-stepper"
+        },
+        "nk-form-field-icon-size": {
+          "type": "string",
+          "description": "A control's leading icon",
+          "$comment": "component · form-field.icon.size"
+        },
+        "nk-form-field-icon-color": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "A control's leading icon ink",
+          "$comment": "component · form-field.icon.color"
+        },
+        "nk-form-field-icon-inset": {
+          "type": "string",
+          "description": "How far a text or number field's icon sits from its start",
+          "$comment": "component · form-field.icon.inset"
+        },
+        "nk-form-field-icon-gap": {
+          "type": "string",
+          "description": "Between a segmented control's icon and its first segment",
+          "$comment": "component · form-field.icon.gap"
+        },
+        "nk-form-field-icon-pad": {
+          "type": "string",
+          "description": "A text or number field's start padding when it has an icon",
+          "$comment": "component · form-field.icon.pad"
+        },
+        "nk-form-field-stepper-inset": {
+          "type": "string",
+          "description": "How far the inline stepper sits from the field's end",
+          "$comment": "component · form-field.stepper.inset"
+        },
+        "nk-form-field-stepper-gap": {
+          "type": "string",
+          "description": "Between the stepper's two buttons",
+          "$comment": "component · form-field.stepper.gap"
+        },
+        "nk-form-field-reveal-inset": {
+          "type": "string",
+          "description": "How far the password reveal button sits from the field's end",
+          "$comment": "component · form-field.reveal.inset"
+        },
+        "nk-form-field-segment-sep": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "A segmented control's separators (/ : -)",
+          "$comment": "component · form-field.segment.sep"
+        },
+        "nk-form-field-meridiem-gap": {
+          "type": "string",
+          "description": "Between the time segments and AM / PM",
+          "$comment": "component · form-field.meridiem.gap"
+        },
+        "nk-form-field-meridiem-pad-x": {
+          "type": "string",
+          "description": "The AM / PM button's inline padding",
+          "$comment": "component · form-field.meridiem.pad-x"
+        },
+        "nk-form-field-meridiem-size": {
+          "type": "string",
+          "description": "The AM / PM text size",
+          "$comment": "component · form-field.meridiem.size"
+        },
+        "nk-form-field-meridiem-weight": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "The AM / PM weight",
+          "$comment": "component · form-field.meridiem.weight"
+        },
+        "nk-form-field-meridiem-color": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "The AM / PM ink at rest",
+          "$comment": "component · form-field.meridiem.color"
+        },
+        "nk-form-field-clear-size": {
+          "type": "string",
+          "description": "The clear button's box",
+          "$comment": "component · form-field.clear.size"
+        },
+        "nk-form-field-clear-bleed": {
+          "type": "string",
+          "description": "How far it reaches into the control's padding",
+          "$comment": "component · form-field.clear.bleed"
+        },
+        "nk-form-field-clear-color": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "The clear button's ink",
+          "$comment": "component · form-field.clear.color"
+        },
+        "nk-form-field-date-picker-size": {
+          "type": "string",
+          "description": "The calendar button's box",
+          "$comment": "component · form-field.date-picker.size"
+        },
+        "nk-form-field-date-picker-bleed": {
+          "type": "string",
+          "description": "How far it reaches into the control's padding",
+          "$comment": "component · form-field.date-picker.bleed"
+        },
+        "nk-form-field-date-picker-color": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "The calendar button's ink",
+          "$comment": "component · form-field.date-picker.color"
+        },
+        "nk-form-field-date-picker-cell": {
+          "type": "string",
+          "description": "A day, year or decade cell (the grid is seven cells wide)",
+          "$comment": "component · form-field.date-picker.cell"
+        },
+        "nk-form-field-date-picker-pad": {
+          "type": "string",
+          "description": "The popover's padding",
+          "$comment": "component · form-field.date-picker.pad"
+        },
+        "nk-form-field-date-picker-gap": {
+          "type": "string",
+          "description": "Between the popover's header and grid",
+          "$comment": "component · form-field.date-picker.gap"
+        },
+        "nk-form-field-date-picker-step": {
+          "type": "string",
+          "description": "Between the header's buttons and between year and decade cells",
+          "$comment": "component · form-field.date-picker.step"
+        },
+        "nk-form-field-swatch-size": {
+          "type": "string",
+          "description": "The colour field's preview swatch",
+          "$comment": "component · form-field.swatch.size"
+        },
+        "nk-form-field-swatch-inset": {
+          "type": "string",
+          "description": "How far the preview swatch sits from the field's start",
+          "$comment": "component · form-field.swatch.inset"
+        },
+        "nk-form-field-swatch-pad": {
+          "type": "string",
+          "description": "The colour field's start padding (room for the swatch)",
+          "$comment": "component · form-field.swatch.pad"
+        },
+        "nk-form-field-swatch-empty": {
+          "type": "string",
+          "description": "The preview swatch while no colour is set",
+          "$comment": "component · form-field.swatch.empty"
+        },
+        "nk-form-field-swatches-gap": {
+          "type": "string",
+          "description": "Between preset swatches",
+          "$comment": "component · form-field.swatches.gap"
+        },
+        "nk-form-field-swatches-size": {
+          "type": "string",
+          "description": "A preset swatch's box",
+          "$comment": "component · form-field.swatches.size"
+        },
+        "nk-form-field-description-size": {
+          "type": "string",
+          "description": "The description's size",
+          "$comment": "component · form-field.description.size"
+        },
+        "nk-form-field-description-leading": {
+          "type": "string",
+          "description": "The description's line height",
+          "$comment": "component · form-field.description.leading"
+        },
+        "nk-form-field-description-color": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "The description's ink",
+          "$comment": "component · form-field.description.color"
+        },
+        "nk-form-field-description-indent": {
+          "type": "string",
+          "description": "Its start inset under a checkbox row (aligned with the label)",
+          "$comment": "component · form-field.description.indent"
+        },
+        "nk-form-field-error-size": {
+          "type": "string",
+          "description": "The error's size",
+          "$comment": "component · form-field.error.size"
+        },
+        "nk-form-field-error-leading": {
+          "type": "string",
+          "description": "The error's line height",
+          "$comment": "component · form-field.error.leading"
+        },
+        "nk-form-field-error-color": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "The error's ink",
+          "$comment": "component · form-field.error.color"
+        },
+        "nk-form-field-error-indent": {
+          "type": "string",
+          "description": "Its start inset under a checkbox row (aligned with the label)",
+          "$comment": "component · form-field.error.indent"
         },
         "nk-stepper-delay": {
           "type": "string",
@@ -2607,6 +2949,265 @@
           "type": "string",
           "description": "The header's minimum height",
           "$comment": "component · edge-sheet.header.height"
+        },
+        "nk-dialog-shell-width": {
+          "type": "string",
+          "description": "Width (md)",
+          "$comment": "component · dialog-shell.width"
+        },
+        "nk-dialog-shell-width-sm": {
+          "type": "string",
+          "description": "Width (sm)",
+          "$comment": "component · dialog-shell.width-sm"
+        },
+        "nk-dialog-shell-width-lg": {
+          "type": "string",
+          "description": "Width (lg)",
+          "$comment": "component · dialog-shell.width-lg"
+        },
+        "nk-dialog-shell-top": {
+          "type": "string",
+          "description": "Where a top dialog anchors",
+          "$comment": "component · dialog-shell.top"
+        },
+        "nk-dialog-shell-header-gap": {
+          "type": "string",
+          "description": "Between the title and the description",
+          "$comment": "component · dialog-shell.header.gap"
+        },
+        "nk-dialog-shell-header-pad-x": {
+          "type": "string",
+          "description": "Inline padding",
+          "$comment": "component · dialog-shell.header.pad-x"
+        },
+        "nk-dialog-shell-header-pad-y": {
+          "type": "string",
+          "description": "Block padding",
+          "$comment": "component · dialog-shell.header.pad-y"
+        },
+        "nk-dialog-shell-body-pad": {
+          "type": "string",
+          "description": "The body's padding",
+          "$comment": "component · dialog-shell.body.pad"
+        },
+        "nk-dialog-shell-footer-gap": {
+          "type": "string",
+          "description": "Between the hints and the buttons",
+          "$comment": "component · dialog-shell.footer.gap"
+        },
+        "nk-dialog-shell-footer-pad-x": {
+          "type": "string",
+          "description": "Inline padding",
+          "$comment": "component · dialog-shell.footer.pad-x"
+        },
+        "nk-dialog-shell-footer-pad-y": {
+          "type": "string",
+          "description": "Block padding",
+          "$comment": "component · dialog-shell.footer.pad-y"
+        },
+        "nk-dialog-shell-footer-bleed": {
+          "type": "string",
+          "description": "How far the hints reach back into the padding (the first item's own inset lines up with the title)",
+          "$comment": "component · dialog-shell.footer.bleed"
+        },
+        "nk-empty-state-gap": {
+          "type": "string",
+          "description": "Between the header and the actions (panel size)",
+          "$comment": "component · empty-state.gap"
+        },
+        "nk-empty-state-pad": {
+          "type": "string",
+          "description": "The panel size's padding",
+          "$comment": "component · empty-state.pad"
+        },
+        "nk-empty-state-gap-screen": {
+          "type": "string",
+          "description": "Between the header and the actions (screen size)",
+          "$comment": "component · empty-state.gap-screen"
+        },
+        "nk-empty-state-pad-screen": {
+          "type": "string",
+          "description": "The screen size's padding, and the panel's from a medium viewport up",
+          "$comment": "component · empty-state.pad-screen"
+        },
+        "nk-empty-state-header-gap": {
+          "type": "string",
+          "description": "Between the icon, the title and the description",
+          "$comment": "component · empty-state.header.gap"
+        },
+        "nk-empty-state-icon-box": {
+          "type": "string",
+          "description": "The icon's box (panel size, no tile)",
+          "$comment": "component · empty-state.icon.box"
+        },
+        "nk-empty-state-icon-box-screen": {
+          "type": "string",
+          "description": "The icon's box (screen size, no tile)",
+          "$comment": "component · empty-state.icon.box-screen"
+        },
+        "nk-empty-state-icon-glyph": {
+          "type": "string",
+          "description": "The glyph inside the box",
+          "$comment": "component · empty-state.icon.glyph"
+        },
+        "nk-empty-state-icon-gap": {
+          "type": "string",
+          "description": "Under the icon",
+          "$comment": "component · empty-state.icon.gap"
+        },
+        "nk-empty-state-icon-ink": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "The icon's ink",
+          "$comment": "component · empty-state.icon.ink"
+        },
+        "nk-empty-state-icon-ink-error": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "The icon's ink on an error",
+          "$comment": "component · empty-state.icon.ink-error"
+        },
+        "nk-empty-state-icon-tint-error": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "The icon box's fill on an error",
+          "$comment": "component · empty-state.icon.tint-error"
+        },
+        "nk-empty-state-title-size-screen": {
+          "type": "string",
+          "description": "The title's size at screen size (the panel size takes the panel title)",
+          "$comment": "component · empty-state.title.size-screen"
+        },
+        "nk-empty-state-description-size": {
+          "type": "string",
+          "description": "The description's size",
+          "$comment": "component · empty-state.description.size"
+        },
+        "nk-empty-state-description-leading": {
+          "type": "string",
+          "description": "The description's line height",
+          "$comment": "component · empty-state.description.leading"
+        },
+        "nk-empty-state-actions-gap": {
+          "type": "string",
+          "description": "Between actions",
+          "$comment": "component · empty-state.actions.gap"
+        },
+        "nk-radial-menu-size": {
+          "type": "string",
+          "description": "The wheel's diameter (the size prop overrides it)",
+          "$comment": "component · radial-menu.size"
+        },
+        "nk-radial-menu-disabled-opacity": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "A disabled wedge or item",
+          "$comment": "component · radial-menu.disabled-opacity"
+        },
+        "nk-radial-menu-wedge-stroke": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "A wedge's rim, in the wheel's 100-unit drawing (the wedge path insets by the same amount)",
+          "$comment": "component · radial-menu.wedge.stroke"
+        },
+        "nk-radial-menu-indicator-stroke": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "The lit wedge's rim, in drawing units",
+          "$comment": "component · radial-menu.indicator.stroke"
+        },
+        "nk-radial-menu-item-width": {
+          "type": "string",
+          "description": "An item's width, a share of the wheel",
+          "$comment": "component · radial-menu.item.width"
+        },
+        "nk-radial-menu-item-gap": {
+          "type": "string",
+          "description": "Between an item's icon and label",
+          "$comment": "component · radial-menu.item.gap"
+        },
+        "nk-radial-menu-item-icon": {
+          "type": "string",
+          "description": "An item's icon",
+          "$comment": "component · radial-menu.item.icon"
+        },
+        "nk-radial-menu-label-size": {
+          "type": "string",
+          "description": "An item's label and the centre's second line",
+          "$comment": "component · radial-menu.label.size"
+        },
+        "nk-radial-menu-label-leading": {
+          "type": "string",
+          "description": "An item's label and the centre's second line: their line height",
+          "$comment": "component · radial-menu.label.leading"
+        },
+        "nk-radial-menu-label-weight": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "An item's label weight",
+          "$comment": "component · radial-menu.label.weight"
+        },
+        "nk-radial-menu-dot-size": {
+          "type": "string",
+          "description": "The mark on an item that opens a submenu",
+          "$comment": "component · radial-menu.dot.size"
+        },
+        "nk-radial-menu-dot-opacity": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "The submenu mark's opacity",
+          "$comment": "component · radial-menu.dot.opacity"
+        },
+        "nk-radial-menu-center-width": {
+          "type": "string",
+          "description": "The centre button's width, a share of the wheel",
+          "$comment": "component · radial-menu.center.width"
+        },
+        "nk-radial-menu-center-pad": {
+          "type": "string",
+          "description": "The centre button's padding",
+          "$comment": "component · radial-menu.center.pad"
+        },
+        "nk-radial-menu-center-icon": {
+          "type": "string",
+          "description": "The back or close icon",
+          "$comment": "component · radial-menu.center.icon"
+        },
+        "nk-radial-menu-title-size": {
+          "type": "string",
+          "description": "The centre's first line",
+          "$comment": "component · radial-menu.title.size"
+        },
+        "nk-radial-menu-title-leading": {
+          "type": "string",
+          "description": "The centre's first line height",
+          "$comment": "component · radial-menu.title.leading"
+        },
+        "nk-radial-menu-title-weight": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "The centre's first line weight",
+          "$comment": "component · radial-menu.title.weight"
+        },
+        "nk-selection-tabs-list-gap": {
+          "type": "string",
+          "description": "Between triggers: a lit tile never touches its neighbour",
+          "$comment": "component · selection-tabs.list.gap"
+        },
+        "nk-selection-tabs-list-rest": {
+          "type": "string",
+          "description": "Room under the triggers besides the tile's wall",
+          "$comment": "component · selection-tabs.list.rest"
+        },
+        "nk-selection-tabs-trigger-height": {
+          "type": "string",
+          "description": "A trigger's minimum height",
+          "$comment": "component · selection-tabs.trigger.height"
+        },
+        "nk-selection-tabs-trigger-pad-x": {
+          "type": "string",
+          "description": "A trigger's inline padding",
+          "$comment": "component · selection-tabs.trigger.pad-x"
         },
         "nk-chip-height": {
           "type": "string",

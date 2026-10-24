@@ -144,15 +144,13 @@ function FormField({
     [fid, invalid, errId, description, descId, required, disabled]
   )
 
-  const row = orientation !== "vertical"
   const labelEl = label !== undefined && (
     <Label
       htmlFor={fid}
       id={`${fid}-label`}
       data-slot="form-field-label"
       className={cn(
-        "min-w-0 gap-1",
-        row ? "text-(length:--nk-text-label) leading-5 [font-weight:var(--nk-type-label-weight)]" : "text-(length:--nk-text-label) leading-4",
+        "min-w-0",
         disabled && "opacity-50"
       )}
     >
@@ -165,12 +163,12 @@ function FormField({
     </Label>
   )
   const hintEl = hint !== undefined && (
-    <span data-slot="form-field-hint" className={cn("truncate text-(length:--nk-text-label) leading-4 text-muted-foreground", row && "font-normal")}>
+    <span data-slot="form-field-hint" className="truncate">
       {hint}
     </span>
   )
   const end = (onReset || (valueText !== undefined && valueText !== null)) && (
-    <span className="ml-auto flex shrink-0 items-center gap-1">
+    <span data-slot="form-field-end" className="ml-auto flex shrink-0 items-center">
       {onReset && (
         <Button
           type="button"
@@ -185,18 +183,18 @@ function FormField({
         </Button>
       )}
       {valueText !== undefined && valueText !== null && (
-        <span data-slot="form-field-value" className="nk-num text-(length:--nk-text-label) leading-4 [font-weight:var(--nk-type-label-weight)] normal-case text-muted-foreground">
+        <span data-slot="form-field-value" className="nk-num">
           {valueText}
         </span>
       )}
     </span>
   )
   const below = invalid ? (
-    <p id={errId} data-slot="form-field-error" role="alert" className={cn("text-(length:--nk-text-label) leading-4 text-destructive", orientation === "horizontal" && "pl-6")}>
+    <p id={errId} data-slot="form-field-error" role="alert" >
       {error}
     </p>
   ) : description ? (
-    <p id={descId} data-slot="form-field-description" className={cn("text-(length:--nk-text-label) leading-4 text-muted-foreground", orientation === "horizontal" && "pl-6")}>
+    <p id={descId} data-slot="form-field-description" >
       {description}
     </p>
   ) : null
@@ -205,6 +203,7 @@ function FormField({
     <FormFieldContext.Provider value={ctx}>
       <div
         data-slot="form-field"
+        data-orientation={orientation}
         data-invalid={invalid || undefined}
         data-disabled={disabled || undefined}
         className={cn(formFieldVariants({ orientation }), className)}
@@ -222,17 +221,17 @@ function FormField({
             {children}
           </>
         ) : orientation === "horizontal" ? (
-          <div className="flex min-h-6 min-w-0 items-center gap-2">
+          <div data-slot="form-field-row" className="flex min-w-0 items-center">
             {children}
             {labelEl}
             {hintEl}
             {end}
           </div>
         ) : (
-          <div className="flex min-h-6 min-w-0 items-center gap-2">
+          <div data-slot="form-field-row" className="flex min-w-0 items-center">
             {labelEl}
             {hintEl}
-            <span className="ml-auto flex shrink-0 items-center gap-2">
+            <span data-slot="form-field-trail" className="ml-auto flex shrink-0 items-center">
               {end}
               {children}
             </span>
@@ -498,7 +497,7 @@ function TextControl({
   return (
     <div className="relative">
       {icon && (
-        <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-muted-foreground [&_svg:not([class*='size-'])]:size-4">
+        <span data-slot="form-field-icon" data-place="start" className="pointer-events-none absolute inset-y-0 flex items-center">
           {icon}
         </span>
       )}
@@ -513,7 +512,9 @@ function TextControl({
         maxLength={maxLength}
         value={value}
         onChange={(e) => onValueChange(e.target.value)}
-        className={cn(icon && "pl-9", password && "pr-10", inputProps?.className)}
+        data-icon={icon ? "" : undefined}
+        data-affix={password ? "password" : undefined}
+        className={inputProps?.className}
       />
       {password && (
         <Button
@@ -524,7 +525,8 @@ function TextControl({
           aria-pressed={reveal}
           disabled={f.disabled}
           onClick={() => setReveal((r) => !r)}
-          className="absolute inset-y-0 right-1.5 my-auto text-muted-foreground"
+          data-slot="form-field-reveal"
+          className="absolute inset-y-0 my-auto text-muted-foreground"
         >
           {reveal ? <EyeOffIcon /> : <EyeIcon />}
         </Button>
@@ -586,7 +588,7 @@ function NumberControl({
     <div className="flex items-center gap-(--nk-space-2)">
       <div className="relative min-w-0 flex-1">
         {icon && (
-          <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-muted-foreground [&_svg:not([class*='size-'])]:size-4">
+          <span data-slot="form-field-icon" data-place="start" className="pointer-events-none absolute inset-y-0 flex items-center">
             {icon}
           </span>
         )}
@@ -605,10 +607,12 @@ function NumberControl({
             setText(e.target.value)
             onValueChange(parseNumber(e.target.value, precision))
           }}
-          className={cn("nk-num [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none", icon && "pl-9", inline && "pr-14")}
+          data-icon={icon ? "" : undefined}
+          data-affix={inline ? "stepper" : undefined}
+          className="nk-num [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
         />
         {inline && (
-          <span data-slot="form-field-stepper" className="absolute inset-y-0 right-1 flex items-center gap-(--nk-space-1)">
+          <span data-slot="form-field-stepper" className="absolute inset-y-0 flex items-center">
             <Button type="button" variant="ghost" size="icon-xs" aria-label="Decrease" className="text-muted-foreground" disabled={atMin} onClick={() => press(-1)}>
               <ChevronDownIcon />
             </Button>
@@ -1039,13 +1043,14 @@ function SegmentedInput({
     <div
       role="group"
       data-slot="form-field-control"
+      data-segmented=""
+      data-dense={dense || undefined}
       aria-labelledby={f.labelId}
       aria-describedby={f.describedBy}
       aria-invalid={bad}
       data-disabled={f.disabled || undefined}
       className={cn(
-        "flex h-9 w-full min-w-0 items-center rounded-(--nk-radius-control) border border-input bg-transparent text-(length:--nk-text-label) shadow-xs dark:bg-input/30",
-        dense ? "gap-(--nk-space-1) px-2" : "gap-1 px-3",
+        "flex w-full min-w-0 items-center rounded-(--nk-radius-control) border border-input bg-transparent shadow-xs dark:bg-input/30",
         "focus-within:border-ring",
         "aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40",
         "data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
@@ -1117,7 +1122,7 @@ function SegmentedInput({
   )
 }
 
-const sepClass = "text-muted-foreground"
+const sepClass = ""
 
 type DateParts = Record<DatePart, string>
 
@@ -1154,7 +1159,7 @@ function DateControl({
 
   return (
     <SegmentedInput
-      icon={<CalendarIcon aria-hidden className="mr-1 size-4 shrink-0 text-muted-foreground" />}
+      icon={<CalendarIcon aria-hidden data-slot="form-field-icon" className="shrink-0" />}
       invalid={complete && !real}
       separator={() => (
         <span aria-hidden className={sepClass}>
@@ -1335,14 +1340,14 @@ function DatePickerButton({
           disabled={disabled}
           aria-label="Pick a date"
           data-slot="form-field-date-picker"
-          className="-mr-2 ml-auto size-7 shrink-0 text-muted-foreground"
+          className="ml-auto shrink-0"
         >
           <CalendarIcon />
         </Button>
       </PopoverTrigger>
-      <PopoverContent align="end" className="w-auto p-3" onOpenAutoFocus={(e) => e.preventDefault()}>
-        <div data-slot="form-field-date-picker-content" data-view={view} className="flex flex-col gap-2 [--cell-size:2rem]">
-          <div className="flex w-[calc(var(--cell-size)*7)] items-center gap-1">
+      <PopoverContent align="end" data-slot="form-field-date-picker-popover" className="w-auto" onOpenAutoFocus={(e) => e.preventDefault()}>
+        <div data-slot="form-field-date-picker-content" data-view={view} className="flex flex-col">
+          <div className="flex w-[calc(var(--cell-size)*7)] items-center gap-(--nk-form-field-date-picker-step)">
             <Button type="button" variant="ghost" size="icon" className="size-(--cell-size)" disabled={prevOff} onClick={() => step(-1)} aria-label="Previous">
               <ChevronLeftIcon />
             </Button>
@@ -1390,7 +1395,7 @@ function DatePickerButton({
           )}
 
           {view === "years" && (
-            <div className="grid w-[calc(var(--cell-size)*7)] grid-cols-4 gap-1" role="grid" aria-label="Years">
+            <div className="grid w-[calc(var(--cell-size)*7)] grid-cols-4 gap-(--nk-form-field-date-picker-step)" role="grid" aria-label="Years">
               {Array.from({ length: PICKER_YEARS }, (_, i) => page + i).map((y) =>
                 cell(y, y, !!selected && Number(selected.slice(0, 4)) === y, y < loYear || y > hiYear, () => pickYear(y))
               )}
@@ -1398,7 +1403,7 @@ function DatePickerButton({
           )}
 
           {view === "decades" && (
-            <div className="grid w-[calc(var(--cell-size)*7)] grid-cols-4 gap-1" role="grid" aria-label="Decades">
+            <div className="grid w-[calc(var(--cell-size)*7)] grid-cols-4 gap-(--nk-form-field-date-picker-step)" role="grid" aria-label="Decades">
               {Array.from({ length: PICKER_DECADES }, (_, i) => page + i * 10).map((d) =>
                 cell(
                   d,
@@ -1501,7 +1506,7 @@ function DateRangeControl({
 
   return (
     <SegmentedInput
-      icon={<CalendarIcon aria-hidden className="mr-1 size-4 shrink-0 text-muted-foreground" />}
+      icon={<CalendarIcon aria-hidden data-slot="form-field-icon" className="shrink-0" />}
       dense
       invalid={(full(parts.start) && !s) || (full(parts.end) && !e) || backwards}
       separator={(i) =>
@@ -1649,9 +1654,9 @@ function TimeControl({
     <SegmentedInput
       icon={
         icon === undefined ? (
-          <ClockIcon aria-hidden className="mr-1 size-4 shrink-0 text-muted-foreground" />
+          <ClockIcon aria-hidden data-slot="form-field-icon" className="shrink-0" />
         ) : icon === null || icon === false ? undefined : (
-          <span aria-hidden data-slot="form-field-icon" className="mr-1 flex shrink-0 text-muted-foreground [&_svg:not([class*='size-'])]:size-4">
+          <span aria-hidden data-slot="form-field-icon" className="flex shrink-0">
             {icon}
           </span>
         )
@@ -1686,7 +1691,7 @@ function TimeControl({
               if (pm !== parts.pm) update({ ...parts, pm })
             }
           }}
-          className="nk-num ml-1 rounded-(--nk-radius-key) px-1 text-(length:--nk-text-label) [font-weight:var(--nk-type-label-weight)] text-muted-foreground outline-none hover:text-foreground focus-visible:bg-accent focus-visible:text-accent-foreground"
+          className="nk-num rounded-(--nk-radius-key) outline-none hover:text-foreground focus-visible:bg-accent focus-visible:text-accent-foreground"
         >
           {parts.pm ? "PM" : "AM"}
         </button>
@@ -1700,7 +1705,7 @@ function TimeControl({
           aria-label="Clear"
           disabled={f.disabled}
           onClick={() => update({ hour: "", minute: "", pm: parts.pm })}
-          className="-mr-2 ml-auto size-7 shrink-0 text-muted-foreground"
+          className="ml-auto shrink-0"
         >
           <XIcon />
         </Button>
@@ -1752,9 +1757,9 @@ function ColorControl({
           aria-hidden
           data-slot="form-field-swatch"
           className={cn(
-            "pointer-events-none absolute inset-y-0 left-2.5 my-auto size-5 rounded-(--nk-radius-key) border border-input",
-            !value && "bg-[repeating-linear-gradient(135deg,transparent_0_3px,var(--border)_3px_5px)]"
+            "pointer-events-none absolute inset-y-0 my-auto rounded-(--nk-radius-key) border border-input",
           )}
+          data-empty={!value || undefined}
           // A user's colour, not a theme colour: plain hex, never oklch / color-mix.
           style={value ? { backgroundColor: value } : undefined}
         />
@@ -1777,11 +1782,12 @@ function ColorControl({
             const hex = normalizeHex(text)
             if (hex) setText(hex)
           }}
-          className="pl-10 font-mono uppercase placeholder:normal-case"
+          data-icon="swatch"
+          className="font-mono uppercase placeholder:normal-case"
         />
       </div>
       {normalized && normalized.length > 0 && (
-        <div role="group" aria-label="Swatches" className="flex flex-wrap gap-(--nk-space-2)">
+        <div role="group" aria-label="Swatches" data-slot="form-field-swatches" className="flex flex-wrap">
           {normalized.map((s) => {
             const on = s === value
             return (
@@ -1789,6 +1795,7 @@ function ColorControl({
                 key={s}
                 type="button"
                 aria-label={s}
+                data-slot="form-field-swatch-option"
                 aria-pressed={on}
                 title={s}
                 disabled={f.disabled}
@@ -1797,7 +1804,7 @@ function ColorControl({
                   onValueChange(s)
                 }}
                 className={cn(
-                  "grid size-6 place-items-center rounded-(--nk-radius-control) border border-input outline-none hover:bg-accent focus-visible:bg-accent disabled:opacity-50",
+                  "grid place-items-center rounded-(--nk-radius-control) border border-input outline-none hover:bg-accent focus-visible:bg-accent disabled:opacity-50",
                   on && "ring-2 ring-ring ring-offset-1 ring-offset-popover"
                 )}
                 style={{ backgroundColor: s }}

@@ -108,6 +108,8 @@ function radialSpin(deg: number) {
   return `translate(${c}px, ${c}px) rotate(${deg}deg) translate(${-c}px, ${-c}px)`
 }
 const INNER = 0.42 // inner radius as a share of the outer
+/** The wedges' outer inset in drawing units, equal to the rim's default (--nk-radial-menu-wedge-stroke) so the rim stays inside the wheel. */
+const RIM = 0.3
 
 const RadialMenu = React.forwardRef<
   RadialMenuHandle,
@@ -118,7 +120,7 @@ const RadialMenu = React.forwardRef<
     onClose?: () => void
     /** The centre's title when nothing is highlighted (the menu's name). */
     label?: string
-    /** Diameter in px at 1080p (laid out in rem). */
+    /** Diameter in px at 1080p (laid out in rem). Default: --nk-radial-menu-size. */
     size?: number
     /** Highlighted on mount (previews, a controller's last choice). */
     defaultActive?: string
@@ -126,7 +128,7 @@ const RadialMenu = React.forwardRef<
     showLabels?: boolean
   }
 >(function RadialMenu(
-  { className, items, onSelect, onClose, label = "Select", size = 320, defaultActive, showLabels, style, onKeyDown, ...props },
+  { className, items, onSelect, onClose, label = "Select", size, defaultActive, showLabels, style, onKeyDown, ...props },
   ref
 ) {
   const [path, setPath] = React.useState<RadialMenuItem[]>([])
@@ -215,7 +217,7 @@ const RadialMenu = React.forwardRef<
         "relative rounded-full text-popover-foreground outline-none select-none",
         className
       )}
-      style={{ width: `${size / 16}rem`, height: `${size / 16}rem`, ...style }}
+      style={size === undefined ? style : { width: `${size / 16}rem`, height: `${size / 16}rem`, ...style }}
       onPointerMove={onPointerMove}
       onPointerLeave={() => setActive(null)}
       onKeyDown={(e) => {
@@ -243,9 +245,9 @@ const RadialMenu = React.forwardRef<
               key={item.id}
               data-slot="radial-menu-wedge"
               data-active={i === active || undefined}
-              d={wedgePath(r, r, inner, r - 0.3, a0, a1)}
-              strokeWidth={0.3}
-              className={cn("fill-(--nk-panel-bg) stroke-(--nk-panel-border)", item.disabled && "opacity-50")}
+              data-disabled={item.disabled || undefined}
+              d={wedgePath(r, r, inner, r - RIM, a0, a1)}
+              className="fill-(--nk-panel-bg) stroke-(--nk-panel-border)"
               onClick={() => choose(i)}
             />
           )
@@ -255,8 +257,7 @@ const RadialMenu = React.forwardRef<
             ref={lit}
             data-slot="radial-menu-indicator"
             aria-hidden
-            d={wedgePath(r, r, inner, r - 0.3, (-0.5 / n) * Math.PI * 2 - Math.PI / 2 + gap, (0.5 / n) * Math.PI * 2 - Math.PI / 2 - gap)}
-            strokeWidth={0.3}
+            d={wedgePath(r, r, inner, r - RIM, (-0.5 / n) * Math.PI * 2 - Math.PI / 2 + gap, (0.5 / n) * Math.PI * 2 - Math.PI / 2 - gap)}
             className="nk-indicator fill-(--nk-tile-sel-face) stroke-(--nk-tile-sel-face)"
             style={{ position: "static", transformOrigin: "0 0", transform: radialSpin(0), opacity: 0 }}
           />
@@ -275,18 +276,19 @@ const RadialMenu = React.forwardRef<
             aria-haspopup={item.items?.length ? "menu" : undefined}
             data-slot="radial-menu-item"
             data-active={on || undefined}
+            data-disabled={item.disabled || undefined}
             data-state={nkState({ disabled: item.disabled, focus: on })}
-            className={cn(
-              "pointer-events-none absolute flex w-[22%] flex-col items-center gap-1 text-center [&_svg:not([class*='size-'])]:size-5",
-              on ? "text-(--nk-tile-sel-ink)" : "text-muted-foreground",
-              item.disabled && "opacity-50"
-            )}
+            className={cn("pointer-events-none absolute flex flex-col items-center text-center", on ? "text-(--nk-tile-sel-ink)" : "text-muted-foreground")}
             // transform, not Tailwind's translate-*: the individual `translate` property is Chromium 104+.
             style={{ left: `${50 + Math.cos(a) * d}%`, top: `${50 + Math.sin(a) * d}%`, transform: "translate(-50%, -50%)" }}
           >
             {item.icon}
-            {labels && <span className={cn("w-full truncate text-(length:--nk-text-label) leading-4 [font-weight:var(--nk-type-label-weight)]", !on && "text-popover-foreground/80")}>{item.label}</span>}
-            {item.items?.length ? <span aria-hidden className="size-1 rounded-(--nk-radius-key) bg-current opacity-60" /> : null}
+            {labels && (
+              <span data-slot="radial-menu-label" className={cn("w-full truncate", !on && "text-popover-foreground/80")}>
+                {item.label}
+              </span>
+            )}
+            {item.items?.length ? <span aria-hidden data-slot="radial-menu-dot" className="rounded-(--nk-radius-key) bg-current" /> : null}
           </div>
         )
       })}
@@ -299,18 +301,18 @@ const RadialMenu = React.forwardRef<
         onClick={onCentre}
         className={cn(
           // nuikit-ignore-next-line radius/pill: the round centre of the circle
-          "absolute top-1/2 left-1/2 grid aspect-square w-[34%] place-items-center rounded-full border border-(--nk-panel-border) bg-(--nk-panel-bg) p-2 text-center text-(--nk-panel-fg) [box-shadow:var(--nk-panel-edge),var(--nk-panel-shadow)]",
+          "absolute top-1/2 left-1/2 grid aspect-square place-items-center rounded-full border border-(--nk-panel-border) bg-(--nk-panel-bg) text-center text-(--nk-panel-fg) [box-shadow:var(--nk-panel-edge),var(--nk-panel-shadow)]",
           centre ? "cursor-pointer hover:bg-accent hover:text-accent-foreground" : "pointer-events-none"
         )}
         style={{ transform: "translate(-50%, -50%)" }}
       >
         <span className="flex min-w-0 flex-col items-center gap-(--nk-space-1)">
-          {!current && centre === "back" && <ArrowLeftIcon className="size-4 text-muted-foreground" />}
-          {!current && centre === "close" && <XIcon className="size-4 text-muted-foreground" />}
-          <span className="w-full truncate text-(length:--nk-text-label) leading-5 [font-weight:var(--nk-type-weight-strong)]">
+          {!current && centre === "back" && <ArrowLeftIcon className="text-muted-foreground" />}
+          {!current && centre === "close" && <XIcon className="text-muted-foreground" />}
+          <span data-slot="radial-menu-title" className="w-full truncate">
             {current?.label ?? (path.length ? path[path.length - 1]!.label : label)}
           </span>
-          <span className="w-full truncate text-(length:--nk-text-label) leading-4 text-muted-foreground">
+          <span data-slot="radial-menu-label" className="w-full truncate text-muted-foreground">
             {current
               ? current.disabled
                 ? "Not available"

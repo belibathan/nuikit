@@ -28,7 +28,7 @@ import { Cluster } from "@/components/ui/stack"
  *   sets --nk-plate-*.
  */
 
-const SIZE = { sm: "max-w-[24rem]", md: "max-w-[32rem]", lg: "max-w-[40rem]" } as const
+const SIZE = { sm: true, md: true, lg: true } as const
 
 /** Which Radix primitive the parts use (Title and Description must match their root). */
 const AlertContext = React.createContext(false)
@@ -76,13 +76,12 @@ function DialogShell({
           {...extra}
           className={cn(
             // the plate recipe instead of shadcn's card (no border, no soft shadow, the surface radius)
-            "nk-plate z-(--nk-layer-dialog,60) flex w-full flex-col gap-0 overflow-hidden border-0 bg-(--nk-plate-bg) p-0 shadow-none sm:max-w-none",
-            SIZE[size] ?? SIZE.md,
+            "nk-plate z-(--nk-layer-dialog) flex w-full flex-col gap-0 overflow-hidden border-0 bg-(--nk-plate-bg) p-0 shadow-none",
             // motion: opacity only when centred; a top dialog rises by --nk-gesture-rise (enter slow, exit 0.7×)
             "data-[state=closed]:zoom-out-100 data-[state=open]:zoom-in-100",
-            "data-[state=open]:duration-(--nk-time-slow,280ms) data-[state=open]:ease-(--nk-ease-expand)",
-            "data-[state=closed]:duration-(--nk-time-exit,196ms) data-[state=closed]:ease-(--nk-ease-exit)",
-            position === "top" && "top-[18vh] translate-y-0 data-[state=open]:slide-in-from-bottom-(--nk-gesture-rise)",
+            "data-[state=open]:duration-(--nk-time-slow) data-[state=open]:ease-(--nk-ease-expand)",
+            "data-[state=closed]:duration-(--nk-time-exit) data-[state=closed]:ease-(--nk-ease-exit)",
+            position === "top" && "translate-y-0 data-[state=open]:slide-in-from-bottom-(--nk-gesture-rise)",
             className
           )}
           {...props}
@@ -110,12 +109,16 @@ function DialogShellHeader({
   return (
     <header
       data-slot="dialog-shell-header"
-      className={cn("flex flex-col gap-(--nk-space-1) border-b border-(--nk-plate-hair) px-(--nk-gap-surface) py-(--nk-space-4)", className)}
+      className={cn("flex flex-col border-b border-(--nk-plate-hair)", className)}
       {...props}
     >
-      <Title className="nk-title">{title}</Title>
+      <Title data-slot="dialog-shell-title" className="nk-title">
+        {title}
+      </Title>
       {description ? (
-        <Description className="nk-body text-muted-foreground">{description}</Description>
+        <Description data-slot="dialog-shell-description" className="nk-body text-muted-foreground">
+          {description}
+        </Description>
       ) : (
         <Description className="sr-only">{typeof title === "string" ? title : ""}</Description>
       )}
@@ -126,7 +129,7 @@ function DialogShellHeader({
 
 /** The body, padded by --nk-gap-surface. */
 function DialogShellBody({ className, ...props }: React.ComponentProps<"div">) {
-  return <div data-slot="dialog-shell-body" className={cn("nk-body min-h-0 p-(--nk-gap-surface)", className)} {...props} />
+  return <div data-slot="dialog-shell-body" className={cn("nk-body min-h-0", className)} {...props} />
 }
 
 /** The footer: an ActionBar of hints on the left, buttons on the right. */
@@ -134,11 +137,11 @@ function DialogShellFooter({ className, hints, children, ...props }: React.Compo
   return (
     <footer
       data-slot="dialog-shell-footer"
-      className={cn("flex items-center gap-(--nk-gap-cluster) border-t border-(--nk-plate-hair) px-(--nk-gap-surface) py-(--nk-space-3)", className)}
+      className={cn("flex items-center border-t border-(--nk-plate-hair)", className)}
       {...props}
     >
       {hints && hints.length > 0 && (
-        <ActionBar className="-ml-(--nk-space-2) min-w-0">
+        <ActionBar className="min-w-0">
           {hints.map((h, i) => (
             <ActionBarItem key={i} {...h} />
           ))}

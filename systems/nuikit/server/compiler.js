@@ -4564,6 +4564,80 @@ var NuikitTheme = (() => {
       "description": "The glide's curve"
     },
     {
+      "name": "nk-field-marker-height",
+      "path": "field.marker.height",
+      "tier": "component",
+      "scope": "field",
+      "type": "length",
+      "default": "1.15em",
+      "description": "The marker the caret reads its box from: a line's height",
+      "part": "marker"
+    },
+    {
+      "name": "nk-field-marker-drop",
+      "path": "field.marker.drop",
+      "tier": "component",
+      "scope": "field",
+      "type": "length",
+      "default": "-0.2em",
+      "description": "How far the marker sits below the baseline",
+      "part": "marker"
+    },
+    {
+      "name": "nk-field-caret-color",
+      "path": "field.caret.color",
+      "tier": "component",
+      "scope": "field",
+      "type": "color",
+      "default": "var(--primary)",
+      "description": "The drawn caret",
+      "part": "caret"
+    },
+    {
+      "name": "nk-field-caret-radius",
+      "path": "field.caret.radius",
+      "tier": "component",
+      "scope": "field",
+      "type": "length",
+      "default": "var(--nk-radius-key)",
+      "description": "The drawn caret's corners",
+      "part": "caret"
+    },
+    {
+      "name": "nk-field-caret-blink",
+      "path": "field.caret.blink",
+      "tier": "component",
+      "scope": "field",
+      "type": "time",
+      "default": "1100ms",
+      "description": "One breath of the caret at rest",
+      "part": "caret"
+    },
+    {
+      "name": "nk-field-caret-blink-delay",
+      "path": "field.caret.blink-delay",
+      "tier": "component",
+      "scope": "field",
+      "type": "time",
+      "default": "500ms",
+      "description": "How long the caret stays solid after typing or moving",
+      "part": "caret"
+    },
+    {
+      "name": "nk-field-caret-blink-dim",
+      "path": "field.caret.blink-dim",
+      "tier": "component",
+      "scope": "field",
+      "type": "number",
+      "default": "0.15",
+      "description": "The caret's opacity at the bottom of its breath",
+      "part": "caret",
+      "range": [
+        0,
+        1
+      ]
+    },
+    {
       "name": "nk-field-caret-width",
       "path": "field.caret.width",
       "tier": "component",
@@ -4622,6 +4696,600 @@ var NuikitTheme = (() => {
       "default": "var(--nk-time-exit)",
       "description": "A deleted character's exit",
       "part": "mirror"
+    },
+    {
+      "name": "nk-form-field-label-gap",
+      "path": "form-field.label.gap",
+      "tier": "component",
+      "scope": "form-field",
+      "type": "length",
+      "default": "var(--nk-space-1)",
+      "description": "Between the name and its required mark",
+      "part": "label"
+    },
+    {
+      "name": "nk-form-field-label-size",
+      "path": "form-field.label.size",
+      "tier": "component",
+      "scope": "form-field",
+      "type": "length",
+      "default": "var(--nk-text-label)",
+      "description": "The label's size",
+      "part": "label"
+    },
+    {
+      "name": "nk-form-field-label-leading",
+      "path": "form-field.label.leading",
+      "tier": "component",
+      "scope": "form-field",
+      "type": "length",
+      "default": "var(--nk-leading-tight)",
+      "description": "The label's line height over a control",
+      "part": "label"
+    },
+    {
+      "name": "nk-form-field-label-leading-row",
+      "path": "form-field.label.leading-row",
+      "tier": "component",
+      "scope": "form-field",
+      "type": "length",
+      "default": "var(--nk-leading-normal)",
+      "description": "The label's line height beside a control (checkbox, switch)",
+      "part": "label"
+    },
+    {
+      "name": "nk-form-field-hint-size",
+      "path": "form-field.hint.size",
+      "tier": "component",
+      "scope": "form-field",
+      "type": "length",
+      "default": "var(--nk-text-label)",
+      "description": "The hint's size",
+      "part": "hint"
+    },
+    {
+      "name": "nk-form-field-hint-leading",
+      "path": "form-field.hint.leading",
+      "tier": "component",
+      "scope": "form-field",
+      "type": "length",
+      "default": "var(--nk-leading-tight)",
+      "description": "The hint's line height",
+      "part": "hint"
+    },
+    {
+      "name": "nk-form-field-hint-color",
+      "path": "form-field.hint.color",
+      "tier": "component",
+      "scope": "form-field",
+      "type": "color",
+      "default": "var(--muted-foreground)",
+      "description": "The hint's ink",
+      "part": "hint"
+    },
+    {
+      "name": "nk-form-field-end-gap",
+      "path": "form-field.end.gap",
+      "tier": "component",
+      "scope": "form-field",
+      "type": "length",
+      "default": "var(--nk-space-1)",
+      "description": "Between the reset button and the value",
+      "part": "end"
+    },
+    {
+      "name": "nk-form-field-value-size",
+      "path": "form-field.value.size",
+      "tier": "component",
+      "scope": "form-field",
+      "type": "length",
+      "default": "var(--nk-text-label)",
+      "description": "The value text's size",
+      "part": "value"
+    },
+    {
+      "name": "nk-form-field-value-leading",
+      "path": "form-field.value.leading",
+      "tier": "component",
+      "scope": "form-field",
+      "type": "length",
+      "default": "var(--nk-leading-tight)",
+      "description": "The value text's line height",
+      "part": "value"
+    },
+    {
+      "name": "nk-form-field-value-color",
+      "path": "form-field.value.color",
+      "tier": "component",
+      "scope": "form-field",
+      "type": "color",
+      "default": "var(--muted-foreground)",
+      "description": "The value text's ink",
+      "part": "value"
+    },
+    {
+      "name": "nk-form-field-row-gap",
+      "path": "form-field.row.gap",
+      "tier": "component",
+      "scope": "form-field",
+      "type": "length",
+      "default": "var(--nk-space-2)",
+      "description": "Between the control, the label and the hint on a row (checkbox, switch)",
+      "part": "row"
+    },
+    {
+      "name": "nk-form-field-row-height",
+      "path": "form-field.row.height",
+      "tier": "component",
+      "scope": "form-field",
+      "type": "length",
+      "default": "var(--nk-height-key)",
+      "description": "A row's minimum height, so an icon-xs button never moves it",
+      "part": "row"
+    },
+    {
+      "name": "nk-form-field-trail-gap",
+      "path": "form-field.trail.gap",
+      "tier": "component",
+      "scope": "form-field",
+      "type": "length",
+      "default": "var(--nk-space-2)",
+      "description": "Between the value and the control at a switch row's end",
+      "part": "trail"
+    },
+    {
+      "name": "nk-form-field-control-height",
+      "path": "form-field.control.height",
+      "tier": "component",
+      "scope": "form-field",
+      "type": "length",
+      "default": "var(--nk-height-control)",
+      "description": "A segmented control's height (date, time)",
+      "part": "control"
+    },
+    {
+      "name": "nk-form-field-control-size",
+      "path": "form-field.control.size",
+      "tier": "component",
+      "scope": "form-field",
+      "type": "length",
+      "default": "var(--nk-text-label)",
+      "description": "A segmented control's text size",
+      "part": "control"
+    },
+    {
+      "name": "nk-form-field-control-gap",
+      "path": "form-field.control.gap",
+      "tier": "component",
+      "scope": "form-field",
+      "type": "length",
+      "default": "var(--nk-space-1)",
+      "description": "Between a segmented control's parts",
+      "part": "control"
+    },
+    {
+      "name": "nk-form-field-control-pad-x",
+      "path": "form-field.control.pad-x",
+      "tier": "component",
+      "scope": "form-field",
+      "type": "length",
+      "default": "var(--nk-gap-pad-x)",
+      "description": "A segmented control's inline padding",
+      "part": "control"
+    },
+    {
+      "name": "nk-form-field-control-pad-x-dense",
+      "path": "form-field.control.pad-x-dense",
+      "tier": "component",
+      "scope": "form-field",
+      "type": "length",
+      "default": "var(--nk-space-2)",
+      "description": "The same, dense (a range)",
+      "part": "control"
+    },
+    {
+      "name": "nk-form-field-control-affix-password",
+      "path": "form-field.control.affix-password",
+      "tier": "component",
+      "scope": "form-field",
+      "type": "length",
+      "default": "2.5rem",
+      "description": "Room at a password field's end for the reveal button",
+      "part": "control"
+    },
+    {
+      "name": "nk-form-field-control-affix-stepper",
+      "path": "form-field.control.affix-stepper",
+      "tier": "component",
+      "scope": "form-field",
+      "type": "length",
+      "default": "3.5rem",
+      "description": "Room at a number field's end for the inline stepper",
+      "part": "control"
+    },
+    {
+      "name": "nk-form-field-icon-size",
+      "path": "form-field.icon.size",
+      "tier": "component",
+      "scope": "form-field",
+      "type": "length",
+      "default": "var(--nk-icon-md)",
+      "description": "A control's leading icon",
+      "part": "icon"
+    },
+    {
+      "name": "nk-form-field-icon-color",
+      "path": "form-field.icon.color",
+      "tier": "component",
+      "scope": "form-field",
+      "type": "color",
+      "default": "var(--muted-foreground)",
+      "description": "A control's leading icon ink",
+      "part": "icon"
+    },
+    {
+      "name": "nk-form-field-icon-inset",
+      "path": "form-field.icon.inset",
+      "tier": "component",
+      "scope": "form-field",
+      "type": "length",
+      "default": "var(--nk-space-3)",
+      "description": "How far a text or number field's icon sits from its start",
+      "part": "icon"
+    },
+    {
+      "name": "nk-form-field-icon-gap",
+      "path": "form-field.icon.gap",
+      "tier": "component",
+      "scope": "form-field",
+      "type": "length",
+      "default": "var(--nk-space-1)",
+      "description": "Between a segmented control's icon and its first segment",
+      "part": "icon"
+    },
+    {
+      "name": "nk-form-field-icon-pad",
+      "path": "form-field.icon.pad",
+      "tier": "component",
+      "scope": "form-field",
+      "type": "length",
+      "default": "calc(var(--nk-form-field-icon-inset) + var(--nk-form-field-icon-size) + var(--nk-space-2))",
+      "description": "A text or number field's start padding when it has an icon",
+      "part": "icon"
+    },
+    {
+      "name": "nk-form-field-stepper-inset",
+      "path": "form-field.stepper.inset",
+      "tier": "component",
+      "scope": "form-field",
+      "type": "length",
+      "default": "var(--nk-space-1)",
+      "description": "How far the inline stepper sits from the field's end",
+      "part": "stepper"
+    },
+    {
+      "name": "nk-form-field-stepper-gap",
+      "path": "form-field.stepper.gap",
+      "tier": "component",
+      "scope": "form-field",
+      "type": "length",
+      "default": "var(--nk-space-1)",
+      "description": "Between the stepper's two buttons",
+      "part": "stepper"
+    },
+    {
+      "name": "nk-form-field-reveal-inset",
+      "path": "form-field.reveal.inset",
+      "tier": "component",
+      "scope": "form-field",
+      "type": "length",
+      "default": "0.375rem",
+      "description": "How far the password reveal button sits from the field's end",
+      "part": "reveal"
+    },
+    {
+      "name": "nk-form-field-segment-sep",
+      "path": "form-field.segment.sep",
+      "tier": "component",
+      "scope": "form-field",
+      "type": "color",
+      "default": "var(--muted-foreground)",
+      "description": "A segmented control's separators (/ : -)",
+      "part": "segment"
+    },
+    {
+      "name": "nk-form-field-meridiem-gap",
+      "path": "form-field.meridiem.gap",
+      "tier": "component",
+      "scope": "form-field",
+      "type": "length",
+      "default": "var(--nk-space-1)",
+      "description": "Between the time segments and AM / PM",
+      "part": "meridiem"
+    },
+    {
+      "name": "nk-form-field-meridiem-pad-x",
+      "path": "form-field.meridiem.pad-x",
+      "tier": "component",
+      "scope": "form-field",
+      "type": "length",
+      "default": "var(--nk-space-1)",
+      "description": "The AM / PM button's inline padding",
+      "part": "meridiem"
+    },
+    {
+      "name": "nk-form-field-meridiem-size",
+      "path": "form-field.meridiem.size",
+      "tier": "component",
+      "scope": "form-field",
+      "type": "length",
+      "default": "var(--nk-text-label)",
+      "description": "The AM / PM text size",
+      "part": "meridiem"
+    },
+    {
+      "name": "nk-form-field-meridiem-weight",
+      "path": "form-field.meridiem.weight",
+      "tier": "component",
+      "scope": "form-field",
+      "type": "number",
+      "default": "var(--nk-type-label-weight)",
+      "description": "The AM / PM weight",
+      "part": "meridiem",
+      "range": [
+        100,
+        900
+      ]
+    },
+    {
+      "name": "nk-form-field-meridiem-color",
+      "path": "form-field.meridiem.color",
+      "tier": "component",
+      "scope": "form-field",
+      "type": "color",
+      "default": "var(--muted-foreground)",
+      "description": "The AM / PM ink at rest",
+      "part": "meridiem"
+    },
+    {
+      "name": "nk-form-field-clear-size",
+      "path": "form-field.clear.size",
+      "tier": "component",
+      "scope": "form-field",
+      "type": "length",
+      "default": "1.75rem",
+      "description": "The clear button's box",
+      "part": "clear"
+    },
+    {
+      "name": "nk-form-field-clear-bleed",
+      "path": "form-field.clear.bleed",
+      "tier": "component",
+      "scope": "form-field",
+      "type": "length",
+      "default": "-0.5rem",
+      "description": "How far it reaches into the control's padding",
+      "part": "clear"
+    },
+    {
+      "name": "nk-form-field-clear-color",
+      "path": "form-field.clear.color",
+      "tier": "component",
+      "scope": "form-field",
+      "type": "color",
+      "default": "var(--muted-foreground)",
+      "description": "The clear button's ink",
+      "part": "clear"
+    },
+    {
+      "name": "nk-form-field-date-picker-size",
+      "path": "form-field.date-picker.size",
+      "tier": "component",
+      "scope": "form-field",
+      "type": "length",
+      "default": "1.75rem",
+      "description": "The calendar button's box",
+      "part": "date-picker"
+    },
+    {
+      "name": "nk-form-field-date-picker-bleed",
+      "path": "form-field.date-picker.bleed",
+      "tier": "component",
+      "scope": "form-field",
+      "type": "length",
+      "default": "-0.5rem",
+      "description": "How far it reaches into the control's padding",
+      "part": "date-picker"
+    },
+    {
+      "name": "nk-form-field-date-picker-color",
+      "path": "form-field.date-picker.color",
+      "tier": "component",
+      "scope": "form-field",
+      "type": "color",
+      "default": "var(--muted-foreground)",
+      "description": "The calendar button's ink",
+      "part": "date-picker"
+    },
+    {
+      "name": "nk-form-field-date-picker-cell",
+      "path": "form-field.date-picker.cell",
+      "tier": "component",
+      "scope": "form-field",
+      "type": "length",
+      "default": "2rem",
+      "description": "A day, year or decade cell (the grid is seven cells wide)",
+      "part": "date-picker"
+    },
+    {
+      "name": "nk-form-field-date-picker-pad",
+      "path": "form-field.date-picker.pad",
+      "tier": "component",
+      "scope": "form-field",
+      "type": "length",
+      "default": "var(--nk-space-3)",
+      "description": "The popover's padding",
+      "part": "date-picker"
+    },
+    {
+      "name": "nk-form-field-date-picker-gap",
+      "path": "form-field.date-picker.gap",
+      "tier": "component",
+      "scope": "form-field",
+      "type": "length",
+      "default": "var(--nk-space-2)",
+      "description": "Between the popover's header and grid",
+      "part": "date-picker"
+    },
+    {
+      "name": "nk-form-field-date-picker-step",
+      "path": "form-field.date-picker.step",
+      "tier": "component",
+      "scope": "form-field",
+      "type": "length",
+      "default": "var(--nk-space-1)",
+      "description": "Between the header's buttons and between year and decade cells",
+      "part": "date-picker"
+    },
+    {
+      "name": "nk-form-field-swatch-size",
+      "path": "form-field.swatch.size",
+      "tier": "component",
+      "scope": "form-field",
+      "type": "length",
+      "default": "var(--nk-icon-lg)",
+      "description": "The colour field's preview swatch",
+      "part": "swatch"
+    },
+    {
+      "name": "nk-form-field-swatch-inset",
+      "path": "form-field.swatch.inset",
+      "tier": "component",
+      "scope": "form-field",
+      "type": "length",
+      "default": "0.625rem",
+      "description": "How far the preview swatch sits from the field's start",
+      "part": "swatch"
+    },
+    {
+      "name": "nk-form-field-swatch-pad",
+      "path": "form-field.swatch.pad",
+      "tier": "component",
+      "scope": "form-field",
+      "type": "length",
+      "default": "2.5rem",
+      "description": "The colour field's start padding (room for the swatch)",
+      "part": "swatch"
+    },
+    {
+      "name": "nk-form-field-swatch-empty",
+      "path": "form-field.swatch.empty",
+      "tier": "component",
+      "scope": "form-field",
+      "type": "string",
+      "default": "repeating-linear-gradient(135deg, transparent 0 3px, var(--border) 3px 5px)",
+      "description": "The preview swatch while no colour is set",
+      "part": "swatch"
+    },
+    {
+      "name": "nk-form-field-swatches-gap",
+      "path": "form-field.swatches.gap",
+      "tier": "component",
+      "scope": "form-field",
+      "type": "length",
+      "default": "var(--nk-space-2)",
+      "description": "Between preset swatches",
+      "part": "swatches"
+    },
+    {
+      "name": "nk-form-field-swatches-size",
+      "path": "form-field.swatches.size",
+      "tier": "component",
+      "scope": "form-field",
+      "type": "length",
+      "default": "var(--nk-height-key)",
+      "description": "A preset swatch's box",
+      "part": "swatches"
+    },
+    {
+      "name": "nk-form-field-description-size",
+      "path": "form-field.description.size",
+      "tier": "component",
+      "scope": "form-field",
+      "type": "length",
+      "default": "var(--nk-text-label)",
+      "description": "The description's size",
+      "part": "description"
+    },
+    {
+      "name": "nk-form-field-description-leading",
+      "path": "form-field.description.leading",
+      "tier": "component",
+      "scope": "form-field",
+      "type": "length",
+      "default": "var(--nk-leading-tight)",
+      "description": "The description's line height",
+      "part": "description"
+    },
+    {
+      "name": "nk-form-field-description-color",
+      "path": "form-field.description.color",
+      "tier": "component",
+      "scope": "form-field",
+      "type": "color",
+      "default": "var(--muted-foreground)",
+      "description": "The description's ink",
+      "part": "description"
+    },
+    {
+      "name": "nk-form-field-description-indent",
+      "path": "form-field.description.indent",
+      "tier": "component",
+      "scope": "form-field",
+      "type": "length",
+      "default": "var(--nk-space-6)",
+      "description": "Its start inset under a checkbox row (aligned with the label)",
+      "part": "description"
+    },
+    {
+      "name": "nk-form-field-error-size",
+      "path": "form-field.error.size",
+      "tier": "component",
+      "scope": "form-field",
+      "type": "length",
+      "default": "var(--nk-text-label)",
+      "description": "The error's size",
+      "part": "error"
+    },
+    {
+      "name": "nk-form-field-error-leading",
+      "path": "form-field.error.leading",
+      "tier": "component",
+      "scope": "form-field",
+      "type": "length",
+      "default": "var(--nk-leading-tight)",
+      "description": "The error's line height",
+      "part": "error"
+    },
+    {
+      "name": "nk-form-field-error-color",
+      "path": "form-field.error.color",
+      "tier": "component",
+      "scope": "form-field",
+      "type": "color",
+      "default": "var(--destructive)",
+      "description": "The error's ink",
+      "part": "error"
+    },
+    {
+      "name": "nk-form-field-error-indent",
+      "path": "form-field.error.indent",
+      "tier": "component",
+      "scope": "form-field",
+      "type": "length",
+      "default": "var(--nk-space-6)",
+      "description": "Its start inset under a checkbox row (aligned with the label)",
+      "part": "error"
     },
     {
       "name": "nk-stepper-delay",
@@ -4718,6 +5386,520 @@ var NuikitTheme = (() => {
       "default": "2rem",
       "description": "The header's minimum height",
       "part": "header"
+    },
+    {
+      "name": "nk-dialog-shell-width",
+      "path": "dialog-shell.width",
+      "tier": "component",
+      "scope": "dialog-shell",
+      "type": "length",
+      "default": "32rem",
+      "description": "Width (md)"
+    },
+    {
+      "name": "nk-dialog-shell-width-sm",
+      "path": "dialog-shell.width-sm",
+      "tier": "component",
+      "scope": "dialog-shell",
+      "type": "length",
+      "default": "24rem",
+      "description": "Width (sm)"
+    },
+    {
+      "name": "nk-dialog-shell-width-lg",
+      "path": "dialog-shell.width-lg",
+      "tier": "component",
+      "scope": "dialog-shell",
+      "type": "length",
+      "default": "40rem",
+      "description": "Width (lg)"
+    },
+    {
+      "name": "nk-dialog-shell-top",
+      "path": "dialog-shell.top",
+      "tier": "component",
+      "scope": "dialog-shell",
+      "type": "length",
+      "default": "18vh",
+      "description": "Where a top dialog anchors"
+    },
+    {
+      "name": "nk-dialog-shell-header-gap",
+      "path": "dialog-shell.header.gap",
+      "tier": "component",
+      "scope": "dialog-shell",
+      "type": "length",
+      "default": "var(--nk-space-1)",
+      "description": "Between the title and the description",
+      "part": "header"
+    },
+    {
+      "name": "nk-dialog-shell-header-pad-x",
+      "path": "dialog-shell.header.pad-x",
+      "tier": "component",
+      "scope": "dialog-shell",
+      "type": "length",
+      "default": "var(--nk-gap-surface)",
+      "description": "Inline padding",
+      "part": "header"
+    },
+    {
+      "name": "nk-dialog-shell-header-pad-y",
+      "path": "dialog-shell.header.pad-y",
+      "tier": "component",
+      "scope": "dialog-shell",
+      "type": "length",
+      "default": "var(--nk-space-4)",
+      "description": "Block padding",
+      "part": "header"
+    },
+    {
+      "name": "nk-dialog-shell-body-pad",
+      "path": "dialog-shell.body.pad",
+      "tier": "component",
+      "scope": "dialog-shell",
+      "type": "length",
+      "default": "var(--nk-gap-surface)",
+      "description": "The body's padding",
+      "part": "body"
+    },
+    {
+      "name": "nk-dialog-shell-footer-gap",
+      "path": "dialog-shell.footer.gap",
+      "tier": "component",
+      "scope": "dialog-shell",
+      "type": "length",
+      "default": "var(--nk-gap-cluster)",
+      "description": "Between the hints and the buttons",
+      "part": "footer"
+    },
+    {
+      "name": "nk-dialog-shell-footer-pad-x",
+      "path": "dialog-shell.footer.pad-x",
+      "tier": "component",
+      "scope": "dialog-shell",
+      "type": "length",
+      "default": "var(--nk-gap-surface)",
+      "description": "Inline padding",
+      "part": "footer"
+    },
+    {
+      "name": "nk-dialog-shell-footer-pad-y",
+      "path": "dialog-shell.footer.pad-y",
+      "tier": "component",
+      "scope": "dialog-shell",
+      "type": "length",
+      "default": "var(--nk-space-3)",
+      "description": "Block padding",
+      "part": "footer"
+    },
+    {
+      "name": "nk-dialog-shell-footer-bleed",
+      "path": "dialog-shell.footer.bleed",
+      "tier": "component",
+      "scope": "dialog-shell",
+      "type": "length",
+      "default": "var(--nk-space-2)",
+      "description": "How far the hints reach back into the padding (the first item's own inset lines up with the title)",
+      "part": "footer"
+    },
+    {
+      "name": "nk-empty-state-gap",
+      "path": "empty-state.gap",
+      "tier": "component",
+      "scope": "empty-state",
+      "type": "length",
+      "default": "var(--nk-space-3)",
+      "description": "Between the header and the actions (panel size)"
+    },
+    {
+      "name": "nk-empty-state-pad",
+      "path": "empty-state.pad",
+      "tier": "component",
+      "scope": "empty-state",
+      "type": "length",
+      "default": "var(--nk-space-6)",
+      "description": "The panel size's padding"
+    },
+    {
+      "name": "nk-empty-state-gap-screen",
+      "path": "empty-state.gap-screen",
+      "tier": "component",
+      "scope": "empty-state",
+      "type": "length",
+      "default": "var(--nk-space-4)",
+      "description": "Between the header and the actions (screen size)"
+    },
+    {
+      "name": "nk-empty-state-pad-screen",
+      "path": "empty-state.pad-screen",
+      "tier": "component",
+      "scope": "empty-state",
+      "type": "length",
+      "default": "calc(var(--nk-space-unit) * 12)",
+      "description": "The screen size's padding, and the panel's from a medium viewport up"
+    },
+    {
+      "name": "nk-empty-state-header-gap",
+      "path": "empty-state.header.gap",
+      "tier": "component",
+      "scope": "empty-state",
+      "type": "length",
+      "default": "var(--nk-space-2)",
+      "description": "Between the icon, the title and the description",
+      "part": "header"
+    },
+    {
+      "name": "nk-empty-state-icon-box",
+      "path": "empty-state.icon.box",
+      "tier": "component",
+      "scope": "empty-state",
+      "type": "length",
+      "default": "2.5rem",
+      "description": "The icon's box (panel size, no tile)",
+      "part": "icon"
+    },
+    {
+      "name": "nk-empty-state-icon-box-screen",
+      "path": "empty-state.icon.box-screen",
+      "tier": "component",
+      "scope": "empty-state",
+      "type": "length",
+      "default": "3rem",
+      "description": "The icon's box (screen size, no tile)",
+      "part": "icon"
+    },
+    {
+      "name": "nk-empty-state-icon-glyph",
+      "path": "empty-state.icon.glyph",
+      "tier": "component",
+      "scope": "empty-state",
+      "type": "length",
+      "default": "var(--nk-icon-lg)",
+      "description": "The glyph inside the box",
+      "part": "icon"
+    },
+    {
+      "name": "nk-empty-state-icon-gap",
+      "path": "empty-state.icon.gap",
+      "tier": "component",
+      "scope": "empty-state",
+      "type": "length",
+      "default": "var(--nk-space-1)",
+      "description": "Under the icon",
+      "part": "icon"
+    },
+    {
+      "name": "nk-empty-state-icon-ink",
+      "path": "empty-state.icon.ink",
+      "tier": "component",
+      "scope": "empty-state",
+      "type": "color",
+      "default": "var(--muted-foreground)",
+      "description": "The icon's ink",
+      "part": "icon"
+    },
+    {
+      "name": "nk-empty-state-icon-ink-error",
+      "path": "empty-state.icon.ink-error",
+      "tier": "component",
+      "scope": "empty-state",
+      "type": "color",
+      "default": "var(--destructive)",
+      "description": "The icon's ink on an error",
+      "part": "icon"
+    },
+    {
+      "name": "nk-empty-state-icon-tint-error",
+      "path": "empty-state.icon.tint-error",
+      "tier": "component",
+      "scope": "empty-state",
+      "type": "color",
+      "default": "rgba(var(--destructive-rgb), 0.15)",
+      "description": "The icon box's fill on an error",
+      "part": "icon"
+    },
+    {
+      "name": "nk-empty-state-title-size-screen",
+      "path": "empty-state.title.size-screen",
+      "tier": "component",
+      "scope": "empty-state",
+      "type": "length",
+      "default": "var(--nk-text-section)",
+      "description": "The title's size at screen size (the panel size takes the panel title)",
+      "part": "title"
+    },
+    {
+      "name": "nk-empty-state-description-size",
+      "path": "empty-state.description.size",
+      "tier": "component",
+      "scope": "empty-state",
+      "type": "length",
+      "default": "var(--nk-text-label)",
+      "description": "The description's size",
+      "part": "description"
+    },
+    {
+      "name": "nk-empty-state-description-leading",
+      "path": "empty-state.description.leading",
+      "tier": "component",
+      "scope": "empty-state",
+      "type": "length",
+      "default": "var(--nk-leading-normal)",
+      "description": "The description's line height",
+      "part": "description"
+    },
+    {
+      "name": "nk-empty-state-actions-gap",
+      "path": "empty-state.actions.gap",
+      "tier": "component",
+      "scope": "empty-state",
+      "type": "length",
+      "default": "var(--nk-space-2)",
+      "description": "Between actions",
+      "part": "actions"
+    },
+    {
+      "name": "nk-radial-menu-size",
+      "path": "radial-menu.size",
+      "tier": "component",
+      "scope": "radial-menu",
+      "type": "length",
+      "default": "20rem",
+      "description": "The wheel's diameter (the size prop overrides it)"
+    },
+    {
+      "name": "nk-radial-menu-disabled-opacity",
+      "path": "radial-menu.disabled-opacity",
+      "tier": "component",
+      "scope": "radial-menu",
+      "type": "number",
+      "default": "0.5",
+      "description": "A disabled wedge or item",
+      "range": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "nk-radial-menu-wedge-stroke",
+      "path": "radial-menu.wedge.stroke",
+      "tier": "component",
+      "scope": "radial-menu",
+      "type": "number",
+      "default": "0.3",
+      "description": "A wedge's rim, in the wheel's 100-unit drawing (the wedge path insets by the same amount)",
+      "part": "wedge",
+      "range": [
+        0,
+        2
+      ]
+    },
+    {
+      "name": "nk-radial-menu-indicator-stroke",
+      "path": "radial-menu.indicator.stroke",
+      "tier": "component",
+      "scope": "radial-menu",
+      "type": "number",
+      "default": "var(--nk-radial-menu-wedge-stroke)",
+      "description": "The lit wedge's rim, in drawing units",
+      "part": "indicator",
+      "range": [
+        0,
+        2
+      ]
+    },
+    {
+      "name": "nk-radial-menu-item-width",
+      "path": "radial-menu.item.width",
+      "tier": "component",
+      "scope": "radial-menu",
+      "type": "length",
+      "default": "22%",
+      "description": "An item's width, a share of the wheel",
+      "part": "item"
+    },
+    {
+      "name": "nk-radial-menu-item-gap",
+      "path": "radial-menu.item.gap",
+      "tier": "component",
+      "scope": "radial-menu",
+      "type": "length",
+      "default": "var(--nk-space-1)",
+      "description": "Between an item's icon and label",
+      "part": "item"
+    },
+    {
+      "name": "nk-radial-menu-item-icon",
+      "path": "radial-menu.item.icon",
+      "tier": "component",
+      "scope": "radial-menu",
+      "type": "length",
+      "default": "var(--nk-icon-lg)",
+      "description": "An item's icon",
+      "part": "item"
+    },
+    {
+      "name": "nk-radial-menu-label-size",
+      "path": "radial-menu.label.size",
+      "tier": "component",
+      "scope": "radial-menu",
+      "type": "length",
+      "default": "var(--nk-text-label)",
+      "description": "An item's label and the centre's second line",
+      "part": "label"
+    },
+    {
+      "name": "nk-radial-menu-label-leading",
+      "path": "radial-menu.label.leading",
+      "tier": "component",
+      "scope": "radial-menu",
+      "type": "length",
+      "default": "var(--nk-leading-tight)",
+      "description": "An item's label and the centre's second line: their line height",
+      "part": "label"
+    },
+    {
+      "name": "nk-radial-menu-label-weight",
+      "path": "radial-menu.label.weight",
+      "tier": "component",
+      "scope": "radial-menu",
+      "type": "number",
+      "default": "var(--nk-type-label-weight)",
+      "description": "An item's label weight",
+      "part": "label",
+      "range": [
+        100,
+        900
+      ]
+    },
+    {
+      "name": "nk-radial-menu-dot-size",
+      "path": "radial-menu.dot.size",
+      "tier": "component",
+      "scope": "radial-menu",
+      "type": "length",
+      "default": "0.25rem",
+      "description": "The mark on an item that opens a submenu",
+      "part": "dot"
+    },
+    {
+      "name": "nk-radial-menu-dot-opacity",
+      "path": "radial-menu.dot.opacity",
+      "tier": "component",
+      "scope": "radial-menu",
+      "type": "number",
+      "default": "0.6",
+      "description": "The submenu mark's opacity",
+      "part": "dot",
+      "range": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "nk-radial-menu-center-width",
+      "path": "radial-menu.center.width",
+      "tier": "component",
+      "scope": "radial-menu",
+      "type": "length",
+      "default": "34%",
+      "description": "The centre button's width, a share of the wheel",
+      "part": "center"
+    },
+    {
+      "name": "nk-radial-menu-center-pad",
+      "path": "radial-menu.center.pad",
+      "tier": "component",
+      "scope": "radial-menu",
+      "type": "length",
+      "default": "var(--nk-space-2)",
+      "description": "The centre button's padding",
+      "part": "center"
+    },
+    {
+      "name": "nk-radial-menu-center-icon",
+      "path": "radial-menu.center.icon",
+      "tier": "component",
+      "scope": "radial-menu",
+      "type": "length",
+      "default": "var(--nk-icon-md)",
+      "description": "The back or close icon",
+      "part": "center"
+    },
+    {
+      "name": "nk-radial-menu-title-size",
+      "path": "radial-menu.title.size",
+      "tier": "component",
+      "scope": "radial-menu",
+      "type": "length",
+      "default": "var(--nk-text-label)",
+      "description": "The centre's first line",
+      "part": "title"
+    },
+    {
+      "name": "nk-radial-menu-title-leading",
+      "path": "radial-menu.title.leading",
+      "tier": "component",
+      "scope": "radial-menu",
+      "type": "length",
+      "default": "var(--nk-leading-normal)",
+      "description": "The centre's first line height",
+      "part": "title"
+    },
+    {
+      "name": "nk-radial-menu-title-weight",
+      "path": "radial-menu.title.weight",
+      "tier": "component",
+      "scope": "radial-menu",
+      "type": "number",
+      "default": "var(--nk-type-weight-strong)",
+      "description": "The centre's first line weight",
+      "part": "title",
+      "range": [
+        100,
+        900
+      ]
+    },
+    {
+      "name": "nk-selection-tabs-list-gap",
+      "path": "selection-tabs.list.gap",
+      "tier": "component",
+      "scope": "selection-tabs",
+      "type": "length",
+      "default": "var(--nk-list-gap)",
+      "description": "Between triggers: a lit tile never touches its neighbour",
+      "part": "list"
+    },
+    {
+      "name": "nk-selection-tabs-list-rest",
+      "path": "selection-tabs.list.rest",
+      "tier": "component",
+      "scope": "selection-tabs",
+      "type": "length",
+      "default": "3px",
+      "description": "Room under the triggers besides the tile's wall",
+      "part": "list"
+    },
+    {
+      "name": "nk-selection-tabs-trigger-height",
+      "path": "selection-tabs.trigger.height",
+      "tier": "component",
+      "scope": "selection-tabs",
+      "type": "length",
+      "default": "var(--nk-height-chip)",
+      "description": "A trigger's minimum height",
+      "part": "trigger"
+    },
+    {
+      "name": "nk-selection-tabs-trigger-pad-x",
+      "path": "selection-tabs.trigger.pad-x",
+      "tier": "component",
+      "scope": "selection-tabs",
+      "type": "length",
+      "default": "var(--nk-gap-pad-x)",
+      "description": "A trigger's inline padding",
+      "part": "trigger"
     },
     {
       "name": "nk-chip-height",

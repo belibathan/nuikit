@@ -5951,7 +5951,111 @@
     }
   },
   "field": {
+    "marker": {
+      "height": {
+        "$type": "dimension",
+        "$value": "1.15em",
+        "$description": "The marker the caret reads its box from: a line's height",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "field",
+            "part": "marker",
+            "css": "--nk-field-marker-height",
+            "type": "length"
+          }
+        }
+      },
+      "drop": {
+        "$type": "dimension",
+        "$value": "-0.2em",
+        "$description": "How far the marker sits below the baseline",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "field",
+            "part": "marker",
+            "css": "--nk-field-marker-drop",
+            "type": "length"
+          }
+        }
+      }
+    },
     "caret": {
+      "color": {
+        "$type": "color",
+        "$value": "{palette.primary}",
+        "$description": "The drawn caret",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "field",
+            "part": "caret",
+            "css": "--nk-field-caret-color",
+            "type": "color"
+          }
+        }
+      },
+      "radius": {
+        "$type": "dimension",
+        "$value": "{radius.key}",
+        "$description": "The drawn caret's corners",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "field",
+            "part": "caret",
+            "css": "--nk-field-caret-radius",
+            "type": "length"
+          }
+        }
+      },
+      "blink": {
+        "$type": "duration",
+        "$value": "1100ms",
+        "$description": "One breath of the caret at rest",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "field",
+            "part": "caret",
+            "css": "--nk-field-caret-blink",
+            "type": "time"
+          }
+        }
+      },
+      "blink-delay": {
+        "$type": "duration",
+        "$value": "500ms",
+        "$description": "How long the caret stays solid after typing or moving",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "field",
+            "part": "caret",
+            "css": "--nk-field-caret-blink-delay",
+            "type": "time"
+          }
+        }
+      },
+      "blink-dim": {
+        "$type": "number",
+        "$value": "0.15",
+        "$description": "The caret's opacity at the bottom of its breath",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "field",
+            "part": "caret",
+            "css": "--nk-field-caret-blink-dim",
+            "type": "number",
+            "range": [
+              0,
+              1
+            ]
+          }
+        }
+      },
       "width": {
         "$type": "dimension",
         "$value": "0.125rem",
@@ -6034,6 +6138,873 @@
             "part": "mirror",
             "css": "--nk-field-mirror-out",
             "type": "time"
+          }
+        }
+      }
+    }
+  },
+  "form-field": {
+    "label": {
+      "gap": {
+        "$type": "dimension",
+        "$value": "{space.1}",
+        "$description": "Between the name and its required mark",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "form-field",
+            "part": "label",
+            "css": "--nk-form-field-label-gap",
+            "type": "length"
+          }
+        }
+      },
+      "size": {
+        "$type": "dimension",
+        "$value": "{text.label}",
+        "$description": "The label's size",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "form-field",
+            "part": "label",
+            "css": "--nk-form-field-label-size",
+            "type": "length"
+          }
+        }
+      },
+      "leading": {
+        "$type": "dimension",
+        "$value": "{leading.tight}",
+        "$description": "The label's line height over a control",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "form-field",
+            "part": "label",
+            "css": "--nk-form-field-label-leading",
+            "type": "length"
+          }
+        }
+      },
+      "leading-row": {
+        "$type": "dimension",
+        "$value": "{leading.normal}",
+        "$description": "The label's line height beside a control (checkbox, switch)",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "form-field",
+            "part": "label",
+            "css": "--nk-form-field-label-leading-row",
+            "type": "length"
+          }
+        }
+      }
+    },
+    "hint": {
+      "size": {
+        "$type": "dimension",
+        "$value": "{text.label}",
+        "$description": "The hint's size",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "form-field",
+            "part": "hint",
+            "css": "--nk-form-field-hint-size",
+            "type": "length"
+          }
+        }
+      },
+      "leading": {
+        "$type": "dimension",
+        "$value": "{leading.tight}",
+        "$description": "The hint's line height",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "form-field",
+            "part": "hint",
+            "css": "--nk-form-field-hint-leading",
+            "type": "length"
+          }
+        }
+      },
+      "color": {
+        "$type": "color",
+        "$value": "{palette.muted-foreground}",
+        "$description": "The hint's ink",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "form-field",
+            "part": "hint",
+            "css": "--nk-form-field-hint-color",
+            "type": "color"
+          }
+        }
+      }
+    },
+    "end": {
+      "gap": {
+        "$type": "dimension",
+        "$value": "{space.1}",
+        "$description": "Between the reset button and the value",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "form-field",
+            "part": "end",
+            "css": "--nk-form-field-end-gap",
+            "type": "length"
+          }
+        }
+      }
+    },
+    "value": {
+      "size": {
+        "$type": "dimension",
+        "$value": "{text.label}",
+        "$description": "The value text's size",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "form-field",
+            "part": "value",
+            "css": "--nk-form-field-value-size",
+            "type": "length"
+          }
+        }
+      },
+      "leading": {
+        "$type": "dimension",
+        "$value": "{leading.tight}",
+        "$description": "The value text's line height",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "form-field",
+            "part": "value",
+            "css": "--nk-form-field-value-leading",
+            "type": "length"
+          }
+        }
+      },
+      "color": {
+        "$type": "color",
+        "$value": "{palette.muted-foreground}",
+        "$description": "The value text's ink",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "form-field",
+            "part": "value",
+            "css": "--nk-form-field-value-color",
+            "type": "color"
+          }
+        }
+      }
+    },
+    "row": {
+      "gap": {
+        "$type": "dimension",
+        "$value": "{space.2}",
+        "$description": "Between the control, the label and the hint on a row (checkbox, switch)",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "form-field",
+            "part": "row",
+            "css": "--nk-form-field-row-gap",
+            "type": "length"
+          }
+        }
+      },
+      "height": {
+        "$type": "dimension",
+        "$value": "{height.key}",
+        "$description": "A row's minimum height, so an icon-xs button never moves it",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "form-field",
+            "part": "row",
+            "css": "--nk-form-field-row-height",
+            "type": "length"
+          }
+        }
+      }
+    },
+    "trail": {
+      "gap": {
+        "$type": "dimension",
+        "$value": "{space.2}",
+        "$description": "Between the value and the control at a switch row's end",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "form-field",
+            "part": "trail",
+            "css": "--nk-form-field-trail-gap",
+            "type": "length"
+          }
+        }
+      }
+    },
+    "control": {
+      "height": {
+        "$type": "dimension",
+        "$value": "{height.control}",
+        "$description": "A segmented control's height (date, time)",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "form-field",
+            "part": "control",
+            "css": "--nk-form-field-control-height",
+            "type": "length"
+          }
+        }
+      },
+      "size": {
+        "$type": "dimension",
+        "$value": "{text.label}",
+        "$description": "A segmented control's text size",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "form-field",
+            "part": "control",
+            "css": "--nk-form-field-control-size",
+            "type": "length"
+          }
+        }
+      },
+      "gap": {
+        "$type": "dimension",
+        "$value": "{space.1}",
+        "$description": "Between a segmented control's parts",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "form-field",
+            "part": "control",
+            "css": "--nk-form-field-control-gap",
+            "type": "length"
+          }
+        }
+      },
+      "pad-x": {
+        "$type": "dimension",
+        "$value": "{gap.pad-x}",
+        "$description": "A segmented control's inline padding",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "form-field",
+            "part": "control",
+            "css": "--nk-form-field-control-pad-x",
+            "type": "length"
+          }
+        }
+      },
+      "pad-x-dense": {
+        "$type": "dimension",
+        "$value": "{space.2}",
+        "$description": "The same, dense (a range)",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "form-field",
+            "part": "control",
+            "css": "--nk-form-field-control-pad-x-dense",
+            "type": "length"
+          }
+        }
+      },
+      "affix-password": {
+        "$type": "dimension",
+        "$value": "2.5rem",
+        "$description": "Room at a password field's end for the reveal button",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "form-field",
+            "part": "control",
+            "css": "--nk-form-field-control-affix-password",
+            "type": "length"
+          }
+        }
+      },
+      "affix-stepper": {
+        "$type": "dimension",
+        "$value": "3.5rem",
+        "$description": "Room at a number field's end for the inline stepper",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "form-field",
+            "part": "control",
+            "css": "--nk-form-field-control-affix-stepper",
+            "type": "length"
+          }
+        }
+      }
+    },
+    "icon": {
+      "size": {
+        "$type": "dimension",
+        "$value": "{icon.md}",
+        "$description": "A control's leading icon",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "form-field",
+            "part": "icon",
+            "css": "--nk-form-field-icon-size",
+            "type": "length"
+          }
+        }
+      },
+      "color": {
+        "$type": "color",
+        "$value": "{palette.muted-foreground}",
+        "$description": "A control's leading icon ink",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "form-field",
+            "part": "icon",
+            "css": "--nk-form-field-icon-color",
+            "type": "color"
+          }
+        }
+      },
+      "inset": {
+        "$type": "dimension",
+        "$value": "{space.3}",
+        "$description": "How far a text or number field's icon sits from its start",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "form-field",
+            "part": "icon",
+            "css": "--nk-form-field-icon-inset",
+            "type": "length"
+          }
+        }
+      },
+      "gap": {
+        "$type": "dimension",
+        "$value": "{space.1}",
+        "$description": "Between a segmented control's icon and its first segment",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "form-field",
+            "part": "icon",
+            "css": "--nk-form-field-icon-gap",
+            "type": "length"
+          }
+        }
+      },
+      "pad": {
+        "$type": "dimension",
+        "$value": "calc(var(--nk-form-field-icon-inset) + var(--nk-form-field-icon-size) + var(--nk-space-2))",
+        "$description": "A text or number field's start padding when it has an icon",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "form-field",
+            "part": "icon",
+            "css": "--nk-form-field-icon-pad",
+            "type": "length"
+          }
+        }
+      }
+    },
+    "stepper": {
+      "inset": {
+        "$type": "dimension",
+        "$value": "{space.1}",
+        "$description": "How far the inline stepper sits from the field's end",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "form-field",
+            "part": "stepper",
+            "css": "--nk-form-field-stepper-inset",
+            "type": "length"
+          }
+        }
+      },
+      "gap": {
+        "$type": "dimension",
+        "$value": "{space.1}",
+        "$description": "Between the stepper's two buttons",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "form-field",
+            "part": "stepper",
+            "css": "--nk-form-field-stepper-gap",
+            "type": "length"
+          }
+        }
+      }
+    },
+    "reveal": {
+      "inset": {
+        "$type": "dimension",
+        "$value": "0.375rem",
+        "$description": "How far the password reveal button sits from the field's end",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "form-field",
+            "part": "reveal",
+            "css": "--nk-form-field-reveal-inset",
+            "type": "length"
+          }
+        }
+      }
+    },
+    "segment": {
+      "sep": {
+        "$type": "color",
+        "$value": "{palette.muted-foreground}",
+        "$description": "A segmented control's separators (/ : -)",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "form-field",
+            "part": "segment",
+            "css": "--nk-form-field-segment-sep",
+            "type": "color"
+          }
+        }
+      }
+    },
+    "meridiem": {
+      "gap": {
+        "$type": "dimension",
+        "$value": "{space.1}",
+        "$description": "Between the time segments and AM / PM",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "form-field",
+            "part": "meridiem",
+            "css": "--nk-form-field-meridiem-gap",
+            "type": "length"
+          }
+        }
+      },
+      "pad-x": {
+        "$type": "dimension",
+        "$value": "{space.1}",
+        "$description": "The AM / PM button's inline padding",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "form-field",
+            "part": "meridiem",
+            "css": "--nk-form-field-meridiem-pad-x",
+            "type": "length"
+          }
+        }
+      },
+      "size": {
+        "$type": "dimension",
+        "$value": "{text.label}",
+        "$description": "The AM / PM text size",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "form-field",
+            "part": "meridiem",
+            "css": "--nk-form-field-meridiem-size",
+            "type": "length"
+          }
+        }
+      },
+      "weight": {
+        "$type": "number",
+        "$value": "{type.label.weight}",
+        "$description": "The AM / PM weight",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "form-field",
+            "part": "meridiem",
+            "css": "--nk-form-field-meridiem-weight",
+            "type": "number",
+            "range": [
+              100,
+              900
+            ]
+          }
+        }
+      },
+      "color": {
+        "$type": "color",
+        "$value": "{palette.muted-foreground}",
+        "$description": "The AM / PM ink at rest",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "form-field",
+            "part": "meridiem",
+            "css": "--nk-form-field-meridiem-color",
+            "type": "color"
+          }
+        }
+      }
+    },
+    "clear": {
+      "size": {
+        "$type": "dimension",
+        "$value": "1.75rem",
+        "$description": "The clear button's box",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "form-field",
+            "part": "clear",
+            "css": "--nk-form-field-clear-size",
+            "type": "length"
+          }
+        }
+      },
+      "bleed": {
+        "$type": "dimension",
+        "$value": "-0.5rem",
+        "$description": "How far it reaches into the control's padding",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "form-field",
+            "part": "clear",
+            "css": "--nk-form-field-clear-bleed",
+            "type": "length"
+          }
+        }
+      },
+      "color": {
+        "$type": "color",
+        "$value": "{palette.muted-foreground}",
+        "$description": "The clear button's ink",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "form-field",
+            "part": "clear",
+            "css": "--nk-form-field-clear-color",
+            "type": "color"
+          }
+        }
+      }
+    },
+    "date-picker": {
+      "size": {
+        "$type": "dimension",
+        "$value": "1.75rem",
+        "$description": "The calendar button's box",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "form-field",
+            "part": "date-picker",
+            "css": "--nk-form-field-date-picker-size",
+            "type": "length"
+          }
+        }
+      },
+      "bleed": {
+        "$type": "dimension",
+        "$value": "-0.5rem",
+        "$description": "How far it reaches into the control's padding",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "form-field",
+            "part": "date-picker",
+            "css": "--nk-form-field-date-picker-bleed",
+            "type": "length"
+          }
+        }
+      },
+      "color": {
+        "$type": "color",
+        "$value": "{palette.muted-foreground}",
+        "$description": "The calendar button's ink",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "form-field",
+            "part": "date-picker",
+            "css": "--nk-form-field-date-picker-color",
+            "type": "color"
+          }
+        }
+      },
+      "cell": {
+        "$type": "dimension",
+        "$value": "2rem",
+        "$description": "A day, year or decade cell (the grid is seven cells wide)",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "form-field",
+            "part": "date-picker",
+            "css": "--nk-form-field-date-picker-cell",
+            "type": "length"
+          }
+        }
+      },
+      "pad": {
+        "$type": "dimension",
+        "$value": "{space.3}",
+        "$description": "The popover's padding",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "form-field",
+            "part": "date-picker",
+            "css": "--nk-form-field-date-picker-pad",
+            "type": "length"
+          }
+        }
+      },
+      "gap": {
+        "$type": "dimension",
+        "$value": "{space.2}",
+        "$description": "Between the popover's header and grid",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "form-field",
+            "part": "date-picker",
+            "css": "--nk-form-field-date-picker-gap",
+            "type": "length"
+          }
+        }
+      },
+      "step": {
+        "$type": "dimension",
+        "$value": "{space.1}",
+        "$description": "Between the header's buttons and between year and decade cells",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "form-field",
+            "part": "date-picker",
+            "css": "--nk-form-field-date-picker-step",
+            "type": "length"
+          }
+        }
+      }
+    },
+    "swatch": {
+      "size": {
+        "$type": "dimension",
+        "$value": "{icon.lg}",
+        "$description": "The colour field's preview swatch",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "form-field",
+            "part": "swatch",
+            "css": "--nk-form-field-swatch-size",
+            "type": "length"
+          }
+        }
+      },
+      "inset": {
+        "$type": "dimension",
+        "$value": "0.625rem",
+        "$description": "How far the preview swatch sits from the field's start",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "form-field",
+            "part": "swatch",
+            "css": "--nk-form-field-swatch-inset",
+            "type": "length"
+          }
+        }
+      },
+      "pad": {
+        "$type": "dimension",
+        "$value": "2.5rem",
+        "$description": "The colour field's start padding (room for the swatch)",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "form-field",
+            "part": "swatch",
+            "css": "--nk-form-field-swatch-pad",
+            "type": "length"
+          }
+        }
+      },
+      "empty": {
+        "$value": "repeating-linear-gradient(135deg, transparent 0 3px, var(--border) 3px 5px)",
+        "$description": "The preview swatch while no colour is set",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "form-field",
+            "part": "swatch",
+            "css": "--nk-form-field-swatch-empty",
+            "type": "string"
+          }
+        }
+      }
+    },
+    "swatches": {
+      "gap": {
+        "$type": "dimension",
+        "$value": "{space.2}",
+        "$description": "Between preset swatches",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "form-field",
+            "part": "swatches",
+            "css": "--nk-form-field-swatches-gap",
+            "type": "length"
+          }
+        }
+      },
+      "size": {
+        "$type": "dimension",
+        "$value": "{height.key}",
+        "$description": "A preset swatch's box",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "form-field",
+            "part": "swatches",
+            "css": "--nk-form-field-swatches-size",
+            "type": "length"
+          }
+        }
+      }
+    },
+    "description": {
+      "size": {
+        "$type": "dimension",
+        "$value": "{text.label}",
+        "$description": "The description's size",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "form-field",
+            "part": "description",
+            "css": "--nk-form-field-description-size",
+            "type": "length"
+          }
+        }
+      },
+      "leading": {
+        "$type": "dimension",
+        "$value": "{leading.tight}",
+        "$description": "The description's line height",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "form-field",
+            "part": "description",
+            "css": "--nk-form-field-description-leading",
+            "type": "length"
+          }
+        }
+      },
+      "color": {
+        "$type": "color",
+        "$value": "{palette.muted-foreground}",
+        "$description": "The description's ink",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "form-field",
+            "part": "description",
+            "css": "--nk-form-field-description-color",
+            "type": "color"
+          }
+        }
+      },
+      "indent": {
+        "$type": "dimension",
+        "$value": "{space.6}",
+        "$description": "Its start inset under a checkbox row (aligned with the label)",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "form-field",
+            "part": "description",
+            "css": "--nk-form-field-description-indent",
+            "type": "length"
+          }
+        }
+      }
+    },
+    "error": {
+      "size": {
+        "$type": "dimension",
+        "$value": "{text.label}",
+        "$description": "The error's size",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "form-field",
+            "part": "error",
+            "css": "--nk-form-field-error-size",
+            "type": "length"
+          }
+        }
+      },
+      "leading": {
+        "$type": "dimension",
+        "$value": "{leading.tight}",
+        "$description": "The error's line height",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "form-field",
+            "part": "error",
+            "css": "--nk-form-field-error-leading",
+            "type": "length"
+          }
+        }
+      },
+      "color": {
+        "$type": "color",
+        "$value": "{palette.destructive}",
+        "$description": "The error's ink",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "form-field",
+            "part": "error",
+            "css": "--nk-form-field-error-color",
+            "type": "color"
+          }
+        }
+      },
+      "indent": {
+        "$type": "dimension",
+        "$value": "{space.6}",
+        "$description": "Its start inset under a checkbox row (aligned with the label)",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "form-field",
+            "part": "error",
+            "css": "--nk-form-field-error-indent",
+            "type": "length"
           }
         }
       }
@@ -6161,6 +7132,762 @@
             "scope": "edge-sheet",
             "part": "header",
             "css": "--nk-edge-sheet-header-height",
+            "type": "length"
+          }
+        }
+      }
+    }
+  },
+  "dialog-shell": {
+    "width": {
+      "$type": "dimension",
+      "$value": "32rem",
+      "$description": "Width (md)",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "dialog-shell",
+          "css": "--nk-dialog-shell-width",
+          "type": "length"
+        }
+      }
+    },
+    "width-sm": {
+      "$type": "dimension",
+      "$value": "24rem",
+      "$description": "Width (sm)",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "dialog-shell",
+          "css": "--nk-dialog-shell-width-sm",
+          "type": "length"
+        }
+      }
+    },
+    "width-lg": {
+      "$type": "dimension",
+      "$value": "40rem",
+      "$description": "Width (lg)",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "dialog-shell",
+          "css": "--nk-dialog-shell-width-lg",
+          "type": "length"
+        }
+      }
+    },
+    "top": {
+      "$type": "dimension",
+      "$value": "18vh",
+      "$description": "Where a top dialog anchors",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "dialog-shell",
+          "css": "--nk-dialog-shell-top",
+          "type": "length"
+        }
+      }
+    },
+    "header": {
+      "gap": {
+        "$type": "dimension",
+        "$value": "{space.1}",
+        "$description": "Between the title and the description",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "dialog-shell",
+            "part": "header",
+            "css": "--nk-dialog-shell-header-gap",
+            "type": "length"
+          }
+        }
+      },
+      "pad-x": {
+        "$type": "dimension",
+        "$value": "{gap.surface}",
+        "$description": "Inline padding",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "dialog-shell",
+            "part": "header",
+            "css": "--nk-dialog-shell-header-pad-x",
+            "type": "length"
+          }
+        }
+      },
+      "pad-y": {
+        "$type": "dimension",
+        "$value": "{space.4}",
+        "$description": "Block padding",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "dialog-shell",
+            "part": "header",
+            "css": "--nk-dialog-shell-header-pad-y",
+            "type": "length"
+          }
+        }
+      }
+    },
+    "body": {
+      "pad": {
+        "$type": "dimension",
+        "$value": "{gap.surface}",
+        "$description": "The body's padding",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "dialog-shell",
+            "part": "body",
+            "css": "--nk-dialog-shell-body-pad",
+            "type": "length"
+          }
+        }
+      }
+    },
+    "footer": {
+      "gap": {
+        "$type": "dimension",
+        "$value": "{gap.cluster}",
+        "$description": "Between the hints and the buttons",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "dialog-shell",
+            "part": "footer",
+            "css": "--nk-dialog-shell-footer-gap",
+            "type": "length"
+          }
+        }
+      },
+      "pad-x": {
+        "$type": "dimension",
+        "$value": "{gap.surface}",
+        "$description": "Inline padding",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "dialog-shell",
+            "part": "footer",
+            "css": "--nk-dialog-shell-footer-pad-x",
+            "type": "length"
+          }
+        }
+      },
+      "pad-y": {
+        "$type": "dimension",
+        "$value": "{space.3}",
+        "$description": "Block padding",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "dialog-shell",
+            "part": "footer",
+            "css": "--nk-dialog-shell-footer-pad-y",
+            "type": "length"
+          }
+        }
+      },
+      "bleed": {
+        "$type": "dimension",
+        "$value": "{space.2}",
+        "$description": "How far the hints reach back into the padding (the first item's own inset lines up with the title)",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "dialog-shell",
+            "part": "footer",
+            "css": "--nk-dialog-shell-footer-bleed",
+            "type": "length"
+          }
+        }
+      }
+    }
+  },
+  "empty-state": {
+    "gap": {
+      "$type": "dimension",
+      "$value": "{space.3}",
+      "$description": "Between the header and the actions (panel size)",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "empty-state",
+          "css": "--nk-empty-state-gap",
+          "type": "length"
+        }
+      }
+    },
+    "pad": {
+      "$type": "dimension",
+      "$value": "{space.6}",
+      "$description": "The panel size's padding",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "empty-state",
+          "css": "--nk-empty-state-pad",
+          "type": "length"
+        }
+      }
+    },
+    "gap-screen": {
+      "$type": "dimension",
+      "$value": "{space.4}",
+      "$description": "Between the header and the actions (screen size)",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "empty-state",
+          "css": "--nk-empty-state-gap-screen",
+          "type": "length"
+        }
+      }
+    },
+    "pad-screen": {
+      "$type": "dimension",
+      "$value": "calc(var(--nk-space-unit) * 12)",
+      "$description": "The screen size's padding, and the panel's from a medium viewport up",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "empty-state",
+          "css": "--nk-empty-state-pad-screen",
+          "type": "length"
+        }
+      }
+    },
+    "header": {
+      "gap": {
+        "$type": "dimension",
+        "$value": "{space.2}",
+        "$description": "Between the icon, the title and the description",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "empty-state",
+            "part": "header",
+            "css": "--nk-empty-state-header-gap",
+            "type": "length"
+          }
+        }
+      }
+    },
+    "icon": {
+      "box": {
+        "$type": "dimension",
+        "$value": "2.5rem",
+        "$description": "The icon's box (panel size, no tile)",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "empty-state",
+            "part": "icon",
+            "css": "--nk-empty-state-icon-box",
+            "type": "length"
+          }
+        }
+      },
+      "box-screen": {
+        "$type": "dimension",
+        "$value": "3rem",
+        "$description": "The icon's box (screen size, no tile)",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "empty-state",
+            "part": "icon",
+            "css": "--nk-empty-state-icon-box-screen",
+            "type": "length"
+          }
+        }
+      },
+      "glyph": {
+        "$type": "dimension",
+        "$value": "{icon.lg}",
+        "$description": "The glyph inside the box",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "empty-state",
+            "part": "icon",
+            "css": "--nk-empty-state-icon-glyph",
+            "type": "length"
+          }
+        }
+      },
+      "gap": {
+        "$type": "dimension",
+        "$value": "{space.1}",
+        "$description": "Under the icon",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "empty-state",
+            "part": "icon",
+            "css": "--nk-empty-state-icon-gap",
+            "type": "length"
+          }
+        }
+      },
+      "ink": {
+        "$type": "color",
+        "$value": "{palette.muted-foreground}",
+        "$description": "The icon's ink",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "empty-state",
+            "part": "icon",
+            "css": "--nk-empty-state-icon-ink",
+            "type": "color"
+          }
+        }
+      },
+      "ink-error": {
+        "$type": "color",
+        "$value": "{palette.destructive}",
+        "$description": "The icon's ink on an error",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "empty-state",
+            "part": "icon",
+            "css": "--nk-empty-state-icon-ink-error",
+            "type": "color"
+          }
+        }
+      },
+      "tint-error": {
+        "$type": "color",
+        "$value": "rgba(var(--destructive-rgb), 0.15)",
+        "$description": "The icon box's fill on an error",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "empty-state",
+            "part": "icon",
+            "css": "--nk-empty-state-icon-tint-error",
+            "type": "color"
+          }
+        }
+      }
+    },
+    "title": {
+      "size-screen": {
+        "$type": "dimension",
+        "$value": "{text.section}",
+        "$description": "The title's size at screen size (the panel size takes the panel title)",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "empty-state",
+            "part": "title",
+            "css": "--nk-empty-state-title-size-screen",
+            "type": "length"
+          }
+        }
+      }
+    },
+    "description": {
+      "size": {
+        "$type": "dimension",
+        "$value": "{text.label}",
+        "$description": "The description's size",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "empty-state",
+            "part": "description",
+            "css": "--nk-empty-state-description-size",
+            "type": "length"
+          }
+        }
+      },
+      "leading": {
+        "$type": "dimension",
+        "$value": "{leading.normal}",
+        "$description": "The description's line height",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "empty-state",
+            "part": "description",
+            "css": "--nk-empty-state-description-leading",
+            "type": "length"
+          }
+        }
+      }
+    },
+    "actions": {
+      "gap": {
+        "$type": "dimension",
+        "$value": "{space.2}",
+        "$description": "Between actions",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "empty-state",
+            "part": "actions",
+            "css": "--nk-empty-state-actions-gap",
+            "type": "length"
+          }
+        }
+      }
+    }
+  },
+  "radial-menu": {
+    "size": {
+      "$type": "dimension",
+      "$value": "20rem",
+      "$description": "The wheel's diameter (the size prop overrides it)",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "radial-menu",
+          "css": "--nk-radial-menu-size",
+          "type": "length"
+        }
+      }
+    },
+    "disabled-opacity": {
+      "$type": "number",
+      "$value": "0.5",
+      "$description": "A disabled wedge or item",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "radial-menu",
+          "css": "--nk-radial-menu-disabled-opacity",
+          "type": "number",
+          "range": [
+            0,
+            1
+          ]
+        }
+      }
+    },
+    "wedge": {
+      "stroke": {
+        "$type": "number",
+        "$value": "0.3",
+        "$description": "A wedge's rim, in the wheel's 100-unit drawing (the wedge path insets by the same amount)",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "radial-menu",
+            "part": "wedge",
+            "css": "--nk-radial-menu-wedge-stroke",
+            "type": "number",
+            "range": [
+              0,
+              2
+            ]
+          }
+        }
+      }
+    },
+    "indicator": {
+      "stroke": {
+        "$type": "number",
+        "$value": "{radial-menu.wedge.stroke}",
+        "$description": "The lit wedge's rim, in drawing units",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "radial-menu",
+            "part": "indicator",
+            "css": "--nk-radial-menu-indicator-stroke",
+            "type": "number",
+            "range": [
+              0,
+              2
+            ]
+          }
+        }
+      }
+    },
+    "item": {
+      "width": {
+        "$type": "dimension",
+        "$value": "22%",
+        "$description": "An item's width, a share of the wheel",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "radial-menu",
+            "part": "item",
+            "css": "--nk-radial-menu-item-width",
+            "type": "length"
+          }
+        }
+      },
+      "gap": {
+        "$type": "dimension",
+        "$value": "{space.1}",
+        "$description": "Between an item's icon and label",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "radial-menu",
+            "part": "item",
+            "css": "--nk-radial-menu-item-gap",
+            "type": "length"
+          }
+        }
+      },
+      "icon": {
+        "$type": "dimension",
+        "$value": "{icon.lg}",
+        "$description": "An item's icon",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "radial-menu",
+            "part": "item",
+            "css": "--nk-radial-menu-item-icon",
+            "type": "length"
+          }
+        }
+      }
+    },
+    "label": {
+      "size": {
+        "$type": "dimension",
+        "$value": "{text.label}",
+        "$description": "An item's label and the centre's second line",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "radial-menu",
+            "part": "label",
+            "css": "--nk-radial-menu-label-size",
+            "type": "length"
+          }
+        }
+      },
+      "leading": {
+        "$type": "dimension",
+        "$value": "{leading.tight}",
+        "$description": "An item's label and the centre's second line: their line height",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "radial-menu",
+            "part": "label",
+            "css": "--nk-radial-menu-label-leading",
+            "type": "length"
+          }
+        }
+      },
+      "weight": {
+        "$type": "number",
+        "$value": "{type.label.weight}",
+        "$description": "An item's label weight",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "radial-menu",
+            "part": "label",
+            "css": "--nk-radial-menu-label-weight",
+            "type": "number",
+            "range": [
+              100,
+              900
+            ]
+          }
+        }
+      }
+    },
+    "dot": {
+      "size": {
+        "$type": "dimension",
+        "$value": "0.25rem",
+        "$description": "The mark on an item that opens a submenu",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "radial-menu",
+            "part": "dot",
+            "css": "--nk-radial-menu-dot-size",
+            "type": "length"
+          }
+        }
+      },
+      "opacity": {
+        "$type": "number",
+        "$value": "0.6",
+        "$description": "The submenu mark's opacity",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "radial-menu",
+            "part": "dot",
+            "css": "--nk-radial-menu-dot-opacity",
+            "type": "number",
+            "range": [
+              0,
+              1
+            ]
+          }
+        }
+      }
+    },
+    "center": {
+      "width": {
+        "$type": "dimension",
+        "$value": "34%",
+        "$description": "The centre button's width, a share of the wheel",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "radial-menu",
+            "part": "center",
+            "css": "--nk-radial-menu-center-width",
+            "type": "length"
+          }
+        }
+      },
+      "pad": {
+        "$type": "dimension",
+        "$value": "{space.2}",
+        "$description": "The centre button's padding",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "radial-menu",
+            "part": "center",
+            "css": "--nk-radial-menu-center-pad",
+            "type": "length"
+          }
+        }
+      },
+      "icon": {
+        "$type": "dimension",
+        "$value": "{icon.md}",
+        "$description": "The back or close icon",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "radial-menu",
+            "part": "center",
+            "css": "--nk-radial-menu-center-icon",
+            "type": "length"
+          }
+        }
+      }
+    },
+    "title": {
+      "size": {
+        "$type": "dimension",
+        "$value": "{text.label}",
+        "$description": "The centre's first line",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "radial-menu",
+            "part": "title",
+            "css": "--nk-radial-menu-title-size",
+            "type": "length"
+          }
+        }
+      },
+      "leading": {
+        "$type": "dimension",
+        "$value": "{leading.normal}",
+        "$description": "The centre's first line height",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "radial-menu",
+            "part": "title",
+            "css": "--nk-radial-menu-title-leading",
+            "type": "length"
+          }
+        }
+      },
+      "weight": {
+        "$type": "number",
+        "$value": "{type.weight-strong}",
+        "$description": "The centre's first line weight",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "radial-menu",
+            "part": "title",
+            "css": "--nk-radial-menu-title-weight",
+            "type": "number",
+            "range": [
+              100,
+              900
+            ]
+          }
+        }
+      }
+    }
+  },
+  "selection-tabs": {
+    "list": {
+      "gap": {
+        "$type": "dimension",
+        "$value": "{list.gap}",
+        "$description": "Between triggers: a lit tile never touches its neighbour",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "selection-tabs",
+            "part": "list",
+            "css": "--nk-selection-tabs-list-gap",
+            "type": "length"
+          }
+        }
+      },
+      "rest": {
+        "$type": "dimension",
+        "$value": "3px",
+        "$description": "Room under the triggers besides the tile's wall",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "selection-tabs",
+            "part": "list",
+            "css": "--nk-selection-tabs-list-rest",
+            "type": "length"
+          }
+        }
+      }
+    },
+    "trigger": {
+      "height": {
+        "$type": "dimension",
+        "$value": "{height.chip}",
+        "$description": "A trigger's minimum height",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "selection-tabs",
+            "part": "trigger",
+            "css": "--nk-selection-tabs-trigger-height",
+            "type": "length"
+          }
+        }
+      },
+      "pad-x": {
+        "$type": "dimension",
+        "$value": "{gap.pad-x}",
+        "$description": "A trigger's inline padding",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "selection-tabs",
+            "part": "trigger",
+            "css": "--nk-selection-tabs-trigger-pad-x",
             "type": "length"
           }
         }

@@ -10,7 +10,7 @@ generated `@layer nk.base` block, and components read only levers. Four tiers, e
 - **semantic**: roles every component shares (the motion ladder, eases, plate, fill, accent, lines, depth).
 - **component** and **part**: `--nk-<component>-<prop>` and `--nk-<component>-<part>-<prop>`; parts are the component's anatomy, its `data-slot` names in render order. A component references only itself, a component it `inherits`, or the tiers above.
 
-**539 levers** (247 identity, 60 semantic, 232 component) · **33 components** · **34 state variables** (set by kit.css rules per state; not levers). Old names: `packages/core/spec/migration.json`, applied by `node packages/core/scripts/migrate-levers.mjs <path>`.
+**655 levers** (247 identity, 60 semantic, 348 component) · **38 components** · **34 state variables** (set by kit.css rules per state; not levers). Old names: `packages/core/spec/migration.json`, applied by `node packages/core/scripts/migrate-levers.mjs <path>`.
 
 ## Identity
 
@@ -754,16 +754,89 @@ The one sliding selection tile per list (nk-indicator, SelectionTile). Anatomy: 
 
 ### field
 
-Text fields and the smooth caret (SmoothInput). Anatomy: `control` → `caret` → `mirror`.
+Text fields and the smooth caret (SmoothInput). Anatomy: `control` → `mirror` → `marker` → `caret`.
 
 | Lever | Type | Default | Range / values | What it moves |
 |---|---|---|---|---|
+| `--nk-field-marker-height` | length | `1.15em` |  | The marker the caret reads its box from: a line's height |
+| `--nk-field-marker-drop` | length | `-0.2em` |  | How far the marker sits below the baseline |
+| `--nk-field-caret-color` | color | `var(--primary)` |  | The drawn caret |
+| `--nk-field-caret-radius` | length | `var(--nk-radius-key)` |  | The drawn caret's corners |
+| `--nk-field-caret-blink` | time | `1100ms` |  | One breath of the caret at rest |
+| `--nk-field-caret-blink-delay` | time | `500ms` |  | How long the caret stays solid after typing or moving |
+| `--nk-field-caret-blink-dim` | number | `0.15` | 0–1 | The caret's opacity at the bottom of its breath |
 | `--nk-field-caret-width` | length | `0.125rem` |  | The drawn caret's width |
 | `--nk-field-caret-time` | time | `var(--nk-time-base)` |  | The caret's glide |
 | `--nk-field-caret-ease` | string | `var(--nk-ease-move)` |  | The caret's curve |
 | `--nk-field-mirror-rise` | length | `0.45em` |  | How far a typed character rises in |
 | `--nk-field-mirror-in` | time | `var(--nk-time-slow)` |  | A typed character's entrance |
 | `--nk-field-mirror-out` | time | `var(--nk-time-exit)` |  | A deleted character's exit |
+
+### form-field
+
+One row of a game form: a label row over (or beside) the control, then a description or an error; text, number, select, date, time and colour controls. Anatomy: `label` → `hint` → `end` → `value` → `row` → `trail` → `control` → `icon` → `stepper` → `reveal` → `segment` → `meridiem` → `clear` → `date-picker` → `swatch` → `swatches` → `description` → `error`. Inherits: `field`.
+
+| Lever | Type | Default | Range / values | What it moves |
+|---|---|---|---|---|
+| `--nk-form-field-label-gap` | length | `var(--nk-space-1)` |  | Between the name and its required mark |
+| `--nk-form-field-label-size` | length | `var(--nk-text-label)` |  | The label's size |
+| `--nk-form-field-label-leading` | length | `var(--nk-leading-tight)` |  | The label's line height over a control |
+| `--nk-form-field-label-leading-row` | length | `var(--nk-leading-normal)` |  | The label's line height beside a control (checkbox, switch) |
+| `--nk-form-field-hint-size` | length | `var(--nk-text-label)` |  | The hint's size |
+| `--nk-form-field-hint-leading` | length | `var(--nk-leading-tight)` |  | The hint's line height |
+| `--nk-form-field-hint-color` | color | `var(--muted-foreground)` |  | The hint's ink |
+| `--nk-form-field-end-gap` | length | `var(--nk-space-1)` |  | Between the reset button and the value |
+| `--nk-form-field-value-size` | length | `var(--nk-text-label)` |  | The value text's size |
+| `--nk-form-field-value-leading` | length | `var(--nk-leading-tight)` |  | The value text's line height |
+| `--nk-form-field-value-color` | color | `var(--muted-foreground)` |  | The value text's ink |
+| `--nk-form-field-row-gap` | length | `var(--nk-space-2)` |  | Between the control, the label and the hint on a row (checkbox, switch) |
+| `--nk-form-field-row-height` | length | `var(--nk-height-key)` |  | A row's minimum height, so an icon-xs button never moves it |
+| `--nk-form-field-trail-gap` | length | `var(--nk-space-2)` |  | Between the value and the control at a switch row's end |
+| `--nk-form-field-control-height` | length | `var(--nk-height-control)` |  | A segmented control's height (date, time) |
+| `--nk-form-field-control-size` | length | `var(--nk-text-label)` |  | A segmented control's text size |
+| `--nk-form-field-control-gap` | length | `var(--nk-space-1)` |  | Between a segmented control's parts |
+| `--nk-form-field-control-pad-x` | length | `var(--nk-gap-pad-x)` |  | A segmented control's inline padding |
+| `--nk-form-field-control-pad-x-dense` | length | `var(--nk-space-2)` |  | The same, dense (a range) |
+| `--nk-form-field-control-affix-password` | length | `2.5rem` |  | Room at a password field's end for the reveal button |
+| `--nk-form-field-control-affix-stepper` | length | `3.5rem` |  | Room at a number field's end for the inline stepper |
+| `--nk-form-field-icon-size` | length | `var(--nk-icon-md)` |  | A control's leading icon |
+| `--nk-form-field-icon-color` | color | `var(--muted-foreground)` |  | A control's leading icon ink |
+| `--nk-form-field-icon-inset` | length | `var(--nk-space-3)` |  | How far a text or number field's icon sits from its start |
+| `--nk-form-field-icon-gap` | length | `var(--nk-space-1)` |  | Between a segmented control's icon and its first segment |
+| `--nk-form-field-icon-pad` | length | `calc(var(--nk-form-field-icon-inset) + var(--nk-form-field-icon-size) + var(--nk-space-2))` |  | A text or number field's start padding when it has an icon |
+| `--nk-form-field-stepper-inset` | length | `var(--nk-space-1)` |  | How far the inline stepper sits from the field's end |
+| `--nk-form-field-stepper-gap` | length | `var(--nk-space-1)` |  | Between the stepper's two buttons |
+| `--nk-form-field-reveal-inset` | length | `0.375rem` |  | How far the password reveal button sits from the field's end |
+| `--nk-form-field-segment-sep` | color | `var(--muted-foreground)` |  | A segmented control's separators (/ : -) |
+| `--nk-form-field-meridiem-gap` | length | `var(--nk-space-1)` |  | Between the time segments and AM / PM |
+| `--nk-form-field-meridiem-pad-x` | length | `var(--nk-space-1)` |  | The AM / PM button's inline padding |
+| `--nk-form-field-meridiem-size` | length | `var(--nk-text-label)` |  | The AM / PM text size |
+| `--nk-form-field-meridiem-weight` | number | `var(--nk-type-label-weight)` | 100–900 | The AM / PM weight |
+| `--nk-form-field-meridiem-color` | color | `var(--muted-foreground)` |  | The AM / PM ink at rest |
+| `--nk-form-field-clear-size` | length | `1.75rem` |  | The clear button's box |
+| `--nk-form-field-clear-bleed` | length | `-0.5rem` |  | How far it reaches into the control's padding |
+| `--nk-form-field-clear-color` | color | `var(--muted-foreground)` |  | The clear button's ink |
+| `--nk-form-field-date-picker-size` | length | `1.75rem` |  | The calendar button's box |
+| `--nk-form-field-date-picker-bleed` | length | `-0.5rem` |  | How far it reaches into the control's padding |
+| `--nk-form-field-date-picker-color` | color | `var(--muted-foreground)` |  | The calendar button's ink |
+| `--nk-form-field-date-picker-cell` | length | `2rem` |  | A day, year or decade cell (the grid is seven cells wide) |
+| `--nk-form-field-date-picker-pad` | length | `var(--nk-space-3)` |  | The popover's padding |
+| `--nk-form-field-date-picker-gap` | length | `var(--nk-space-2)` |  | Between the popover's header and grid |
+| `--nk-form-field-date-picker-step` | length | `var(--nk-space-1)` |  | Between the header's buttons and between year and decade cells |
+| `--nk-form-field-swatch-size` | length | `var(--nk-icon-lg)` |  | The colour field's preview swatch |
+| `--nk-form-field-swatch-inset` | length | `0.625rem` |  | How far the preview swatch sits from the field's start |
+| `--nk-form-field-swatch-pad` | length | `2.5rem` |  | The colour field's start padding (room for the swatch) |
+| `--nk-form-field-swatch-empty` | string | `repeating-linear-gradient(135deg, transparent 0 3px, var(--border) 3px 5px)` |  | The preview swatch while no colour is set |
+| `--nk-form-field-swatches-gap` | length | `var(--nk-space-2)` |  | Between preset swatches |
+| `--nk-form-field-swatches-size` | length | `var(--nk-height-key)` |  | A preset swatch's box |
+| `--nk-form-field-description-size` | length | `var(--nk-text-label)` |  | The description's size |
+| `--nk-form-field-description-leading` | length | `var(--nk-leading-tight)` |  | The description's line height |
+| `--nk-form-field-description-color` | color | `var(--muted-foreground)` |  | The description's ink |
+| `--nk-form-field-description-indent` | length | `var(--nk-space-6)` |  | Its start inset under a checkbox row (aligned with the label) |
+| `--nk-form-field-error-size` | length | `var(--nk-text-label)` |  | The error's size |
+| `--nk-form-field-error-leading` | length | `var(--nk-leading-tight)` |  | The error's line height |
+| `--nk-form-field-error-color` | color | `var(--destructive)` |  | The error's ink |
+| `--nk-form-field-error-indent` | length | `var(--nk-space-6)` |  | Its start inset under a checkbox row (aligned with the label) |
 
 ### stepper
 
@@ -811,6 +884,84 @@ A full-height sheet against a screen edge. Anatomy: `column` → `header` → `a
 | Lever | Type | Default | Range / values | What it moves |
 |---|---|---|---|---|
 | `--nk-edge-sheet-header-height` | length | `2rem` |  | The header's minimum height |
+
+### dialog-shell
+
+A modal question or form over the current surface: stock Dialog or AlertDialog on the plate recipe, a header, a padded body and an action-bar footer. Anatomy: `header` → `title` → `description` → `body` → `footer` → `actions`.
+
+| Lever | Type | Default | Range / values | What it moves |
+|---|---|---|---|---|
+| `--nk-dialog-shell-width` | length | `32rem` |  | Width (md) |
+| `--nk-dialog-shell-width-sm` | length | `24rem` |  | Width (sm) |
+| `--nk-dialog-shell-width-lg` | length | `40rem` |  | Width (lg) |
+| `--nk-dialog-shell-top` | length | `18vh` |  | Where a top dialog anchors |
+| `--nk-dialog-shell-header-gap` | length | `var(--nk-space-1)` |  | Between the title and the description |
+| `--nk-dialog-shell-header-pad-x` | length | `var(--nk-gap-surface)` |  | Inline padding |
+| `--nk-dialog-shell-header-pad-y` | length | `var(--nk-space-4)` |  | Block padding |
+| `--nk-dialog-shell-body-pad` | length | `var(--nk-gap-surface)` |  | The body's padding |
+| `--nk-dialog-shell-footer-gap` | length | `var(--nk-gap-cluster)` |  | Between the hints and the buttons |
+| `--nk-dialog-shell-footer-pad-x` | length | `var(--nk-gap-surface)` |  | Inline padding |
+| `--nk-dialog-shell-footer-pad-y` | length | `var(--nk-space-3)` |  | Block padding |
+| `--nk-dialog-shell-footer-bleed` | length | `var(--nk-space-2)` |  | How far the hints reach back into the padding (the first item's own inset lines up with the title) |
+
+### empty-state
+
+What a list, a search or a screen shows when there is nothing (or something went wrong): an icon, a title, one sentence, an action. Anatomy: `header` → `icon` → `title` → `description` → `actions`. Inherits: `tile`.
+
+| Lever | Type | Default | Range / values | What it moves |
+|---|---|---|---|---|
+| `--nk-empty-state-gap` | length | `var(--nk-space-3)` |  | Between the header and the actions (panel size) |
+| `--nk-empty-state-pad` | length | `var(--nk-space-6)` |  | The panel size's padding |
+| `--nk-empty-state-gap-screen` | length | `var(--nk-space-4)` |  | Between the header and the actions (screen size) |
+| `--nk-empty-state-pad-screen` | length | `calc(var(--nk-space-unit) * 12)` |  | The screen size's padding, and the panel's from a medium viewport up |
+| `--nk-empty-state-header-gap` | length | `var(--nk-space-2)` |  | Between the icon, the title and the description |
+| `--nk-empty-state-icon-box` | length | `2.5rem` |  | The icon's box (panel size, no tile) |
+| `--nk-empty-state-icon-box-screen` | length | `3rem` |  | The icon's box (screen size, no tile) |
+| `--nk-empty-state-icon-glyph` | length | `var(--nk-icon-lg)` |  | The glyph inside the box |
+| `--nk-empty-state-icon-gap` | length | `var(--nk-space-1)` |  | Under the icon |
+| `--nk-empty-state-icon-ink` | color | `var(--muted-foreground)` |  | The icon's ink |
+| `--nk-empty-state-icon-ink-error` | color | `var(--destructive)` |  | The icon's ink on an error |
+| `--nk-empty-state-icon-tint-error` | color | `rgba(var(--destructive-rgb), 0.15)` |  | The icon box's fill on an error |
+| `--nk-empty-state-title-size-screen` | length | `var(--nk-text-section)` |  | The title's size at screen size (the panel size takes the panel title) |
+| `--nk-empty-state-description-size` | length | `var(--nk-text-label)` |  | The description's size |
+| `--nk-empty-state-description-leading` | length | `var(--nk-leading-normal)` |  | The description's line height |
+| `--nk-empty-state-actions-gap` | length | `var(--nk-space-2)` |  | Between actions |
+
+### radial-menu
+
+The action wheel: SVG wedges, one lit wedge turned to the pointed item, items on a ring, a centre that goes back or closes. Anatomy: `wedge` → `indicator` → `item` → `label` → `dot` → `center` → `title`. Inherits: `panel`, `tile`.
+
+| Lever | Type | Default | Range / values | What it moves |
+|---|---|---|---|---|
+| `--nk-radial-menu-size` | length | `20rem` |  | The wheel's diameter (the size prop overrides it) |
+| `--nk-radial-menu-disabled-opacity` | number | `0.5` | 0–1 | A disabled wedge or item |
+| `--nk-radial-menu-wedge-stroke` | number | `0.3` | 0–2 | A wedge's rim, in the wheel's 100-unit drawing (the wedge path insets by the same amount) |
+| `--nk-radial-menu-indicator-stroke` | number | `var(--nk-radial-menu-wedge-stroke)` | 0–2 | The lit wedge's rim, in drawing units |
+| `--nk-radial-menu-item-width` | length | `22%` |  | An item's width, a share of the wheel |
+| `--nk-radial-menu-item-gap` | length | `var(--nk-space-1)` |  | Between an item's icon and label |
+| `--nk-radial-menu-item-icon` | length | `var(--nk-icon-lg)` |  | An item's icon |
+| `--nk-radial-menu-label-size` | length | `var(--nk-text-label)` |  | An item's label and the centre's second line |
+| `--nk-radial-menu-label-leading` | length | `var(--nk-leading-tight)` |  | An item's label and the centre's second line: their line height |
+| `--nk-radial-menu-label-weight` | number | `var(--nk-type-label-weight)` | 100–900 | An item's label weight |
+| `--nk-radial-menu-dot-size` | length | `0.25rem` |  | The mark on an item that opens a submenu |
+| `--nk-radial-menu-dot-opacity` | number | `0.6` | 0–1 | The submenu mark's opacity |
+| `--nk-radial-menu-center-width` | length | `34%` |  | The centre button's width, a share of the wheel |
+| `--nk-radial-menu-center-pad` | length | `var(--nk-space-2)` |  | The centre button's padding |
+| `--nk-radial-menu-center-icon` | length | `var(--nk-icon-md)` |  | The back or close icon |
+| `--nk-radial-menu-title-size` | length | `var(--nk-text-label)` |  | The centre's first line |
+| `--nk-radial-menu-title-leading` | length | `var(--nk-leading-normal)` |  | The centre's first line height |
+| `--nk-radial-menu-title-weight` | number | `var(--nk-type-weight-strong)` | 100–900 | The centre's first line weight |
+
+### selection-tabs
+
+Tabs and segmented choices as one list with one sliding keycap (the tabs-list, tabs-trigger and tabs-content slots are shadcn's). Anatomy: `list` → `trigger`. Inherits: `selection`, `list`, `tile`.
+
+| Lever | Type | Default | Range / values | What it moves |
+|---|---|---|---|---|
+| `--nk-selection-tabs-list-gap` | length | `var(--nk-list-gap)` |  | Between triggers: a lit tile never touches its neighbour |
+| `--nk-selection-tabs-list-rest` | length | `3px` |  | Room under the triggers besides the tile's wall |
+| `--nk-selection-tabs-trigger-height` | length | `var(--nk-height-chip)` |  | A trigger's minimum height |
+| `--nk-selection-tabs-trigger-pad-x` | length | `var(--nk-gap-pad-x)` |  | A trigger's inline padding |
 
 ### chip
 

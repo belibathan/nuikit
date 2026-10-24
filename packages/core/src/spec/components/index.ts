@@ -2,7 +2,12 @@
 import { chip, dial, gauge, level, meter, ring, slab, speedometer } from "./hud";
 import { field, list, menuRow, row, selection, stepper, text } from "./rows";
 import { caption, confirm, display, edgeSheet, notice, panel } from "./surfaces";
+import { dialogShell } from "./dialog-shell";
+import { emptyState } from "./empty-state";
+import { formField } from "./form-field";
 import { grid, region, screen, zone } from "./layout";
+import { radialMenu } from "./radial-menu";
+import { selectionTabs } from "./selection-tabs";
 import { tile } from "./tile";
 import { vitalChip } from "./vital-chip";
 import { countdown, itemSlot, keyPrompt, nuiImage, skillCheck, stat } from "./widgets";
@@ -21,11 +26,16 @@ export const COMPONENTS = {
   "menu-row": menuRow,
   selection,
   field,
+  "form-field": formField,
   stepper,
   text,
   notice,
   confirm,
   "edge-sheet": edgeSheet,
+  "dialog-shell": dialogShell,
+  "empty-state": emptyState,
+  "radial-menu": radialMenu,
+  "selection-tabs": selectionTabs,
   chip,
   "vital-chip": vitalChip,
   meter,

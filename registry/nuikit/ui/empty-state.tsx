@@ -30,9 +30,9 @@ const emptyStateVariants = cva("border-0 text-balance", {
   variants: {
     size: {
       /** Inside a panel body or a list. */
-      panel: "gap-3 p-6",
+      panel: "",
       /** A whole screen or a large region. */
-      screen: "gap-4 p-12",
+      screen: "",
     },
   },
   defaultVariants: {
@@ -71,39 +71,38 @@ function EmptyState({
     <Empty
       data-slot="empty-state"
       data-tone={tone}
+      data-size={size ?? "panel"}
       role={error ? "alert" : undefined}
       className={cn(emptyStateVariants({ size }), className)}
       {...props}
     >
-      <EmptyHeader className="gap-(--nk-space-2)">
+      <EmptyHeader data-slot="empty-state-header">
         {iconEl !== null && iconEl !== false && tile && (
-          <Tile shape="square" size={size === "screen" ? "lg" : "md"} tone={error ? "danger" : undefined} className="mb-1">
+          <Tile shape="square" size={size === "screen" ? "lg" : "md"} tone={error ? "danger" : undefined} data-part="empty-state-icon">
             {iconEl}
           </Tile>
         )}
         {iconEl !== null && iconEl !== false && !tile && (
           <EmptyMedia
             variant="icon"
-            className={cn(
-              "mb-1 [&_svg:not([class*='size-'])]:size-5",
-              size === "screen" ? "size-12" : "size-10",
-              error ? "bg-destructive/15 text-destructive" : "text-muted-foreground"
-            )}
+            data-slot="empty-state-icon"
           >
             {iconEl}
           </EmptyMedia>
         )}
         {/* The weight spelled out (important): EmptyTitle's font-medium would beat nk-title's. A
             screen-size empty state titles at the section size. */}
-        <EmptyTitle
-          className={cn("nk-title [font-weight:var(--nk-type-title-weight)]!", size === "screen" && "[--nk-panel-title-size:var(--nk-text-section)]")}
-        >
+        <EmptyTitle data-slot="empty-state-title" className="nk-title [font-weight:var(--nk-type-title-weight)]!">
           {title}
         </EmptyTitle>
-        {description && <EmptyDescription className="text-(length:--nk-text-label) leading-5 text-pretty">{description}</EmptyDescription>}
+        {description && (
+          <EmptyDescription data-slot="empty-state-description" className="text-pretty">
+            {description}
+          </EmptyDescription>
+        )}
       </EmptyHeader>
       {(action || children) && (
-        <EmptyContent className="flex-row justify-center gap-2">
+        <EmptyContent data-slot="empty-state-actions" className="flex-row justify-center">
           {action}
           {children}
         </EmptyContent>
