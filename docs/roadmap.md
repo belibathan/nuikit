@@ -108,6 +108,17 @@ lever catalog is the documentation.*
 | D5 Studio and CLI: studio done; `nuikit theme new --from <theme>` still open | Half |
 | D6 `docs/design/your-language.md` + `/language` | Done Oct 23 |
 
+## 0.9 · Track F: the system (the owner, Oct 23 evening: "the perfect system, from the foundations, no accommodation")
+
+| Item | State |
+|---|---|
+| F1 The token language: `packages/core/src/spec/` is the one source — identity → semantic → component → part, declared anatomy, explicit inheritance; everything generated (kit.css declarations, `tokens.generated.ts`, DTCG, `docs/design/levers.md`, Figma input); rules enforced in tests; no aliases, no fallbacks; every registry component specced; deprecated aliases deleted | Done Oct 23; Default pixel-identical to the in-game build |
+| F2 Themes: Default, Neon Pop, Flat, Square as value diffs on the premium baseline; the other seven deleted | Done Oct 23 |
+| F3 The API spec: 17 typed domains mirrored JS ↔ Lua (`nuikit-core/<domain>`, `nk.<domain>.<verb>`, `nuikit:<domain>:<event>`), generated entry points, Lua API, event types, `arsenal.json`, `/kit`; every export claimed; every event implemented on both sides; `nuikit check` warns on undeclared paths; all systems migrated | Done Oct 23 |
+| F4 The layout system: Screen, nine Zones, Region, Grid, the viewport table; HUD, pause, host frame on it; verified 1280×720 → 3440×1440 | Done Oct 23; the other screens adopt it next |
+| F5 Invariants in CI: themes never change anatomy; one selection component; no page-drawn plates; every lever read; `pnpm look` + Read before any visual push | Done Oct 23, all at zero |
+| F6 In game: the owner's checkpoint on all of the above (`docs/releases/v0.9.0-test.md`), then 0.9.0 | **Owner** |
+
 ## 0.9 · Track E: lean (the owner, Oct 23)
 
 *"We just need the right stuff and show off the individual systems." No stored images, no mock renders of every page, no
