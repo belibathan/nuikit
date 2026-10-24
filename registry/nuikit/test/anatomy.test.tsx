@@ -66,6 +66,10 @@ const CASES: Record<string, () => React.ReactElement> = {
   "empty-state": () => { const m = mod("empty-state"); return <m.EmptyState title="T" description="D" /> },
   "skill-check": () => { const m = mod("skill-check"); return <m.SkillCheck zoneStart={40} zoneSize={30} angle={10} /> },
   stepper: () => { const m = mod("stepper"); return <m.Stepper defaultValue={1} min={0} max={3} /> },
+  screen: () => { const m = mod("screen"); return <m.Screen>x</m.Screen> },
+  zone: () => { const m = mod("zone"); return <m.Zone at="tl">x</m.Zone> },
+  region: () => { const m = mod("region"); return <m.Region header="h" footer="f">x</m.Region> },
+  grid: () => { const m = mod("grid"); return <m.Grid cols={2}><div>a</div><div>b</div></m.Grid> },
 }
 
 /** The anatomy: data-slot / data-part names in document order (React-rendered DOM, portals included). */
