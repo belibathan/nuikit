@@ -736,7 +736,8 @@ function scanLua(rel: string, src: string, report: Report, ctx: LuaContext) {
       ctx.focusCalls.push({ file: rel, offset: m.index! });
       report("focus/direct", m.index!, `${m[0].replace(/\s*\($/, "")} called directly; declare a surface (nk.surface) and let nuikit own focus (protocol §3.2)`);
     }
-    if (/\b(?:NUI|nk)\s*\.\s*(surface|open|toggle)\s*\(/.test(bare)) ctx.surfaces = true;
+    // nk.surface.define/open/toggle (the arsenal) or the old NUI.surface / NUI.open / NUI.toggle
+    if (/\b(?:NUI|nk)\s*\.\s*(?:surface\s*\.\s*(?:define|open|toggle)|surface|open|toggle)\s*\(/.test(bare)) ctx.surfaces = true;
   }
   // the runtime's own files (synced into lib/ or vendored into client/) implement the arsenal; they aren't graded by it
   const runtime = own || /(^|\/)(lib|client)\/(bridge|camera|controls|host|intents|intents\.schema|keys|settings|api)\.lua$/.test(rel) && /MIT · https:\/\/github\.com\/belibathan\/nuikit|^\s*nk\.(keys|settings):/m.test(src.slice(0, 600));
