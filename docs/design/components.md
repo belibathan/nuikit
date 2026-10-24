@@ -188,9 +188,9 @@ Chip material="hud" markup for markup; Vital renders a Meter; NuiMenu renders a 
 
 | Old name | Renders | `removeIn` |
 |---|---|---|
-| `HudChip` (`hud-chip`), `hudChipVariants` | `<Chip material="hud">`, `chipHudVariants` | 0.10.0 |
-| `Vital` (`vital`), `vitalVariants` | `<Meter low={20} className="w-32">` | 0.10.0 |
-| `NuiMenu` (`nui-menu`) | `Panel` > `PanelHeader` > `PanelBody` > `MenuRowList` > `MenuRow` | 0.10.0 |
+| `HudChip` (`hud-chip`), `hudChipVariants` | `<Chip material="hud">`, `chipHudVariants` | deleted Oct 23 |
+| `Vital` (`vital`), `vitalVariants` | `<Meter low={20} className="w-32">` | deleted Oct 23 |
+| `NuiMenu` (`nui-menu`) | `Panel` > `PanelHeader` > `PanelBody` > `MenuRowList` > `MenuRow` | deleted Oct 23 |
 
 Imports keep working; the pause map, Renewed-Banking and the death-screen, hud-minimal and interaction blocks moved
 to `Chip material="hud"`.

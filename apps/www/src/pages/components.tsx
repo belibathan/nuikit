@@ -32,7 +32,6 @@ import { Entry, StageBar, useStageRef } from "@/components/preview";
 import { ITEMS, NewSections, ORDER } from "@/components/registry-docs";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { HudChip } from "@/components/ui/hud-chip";
 import { MenuRow, MenuRowList, } from "@/components/ui/menu-row";
 import { Meter, } from "@/components/ui/meter";
 import { Panel, PanelBody, PanelFooter, PanelHeader } from "@/components/ui/panel";
@@ -188,44 +187,6 @@ export function ComponentsPage() {
             <Meter aria-label="Hunger" icon={<UtensilsIcon />} value={72} tone="chart-1" track="game" size="sm" />
             <Meter aria-label="Thirst" icon={<DropletIcon />} value={58} tone="chart-2" track="game" size="sm" />
             <Meter aria-label="Stress" icon={<FlameIcon />} value={84} high={80} tone="chart-4" track="game" size="sm" />
-          </div>
-        </Section>
-
-
-        <Section
-          name="hud-chip"
-          title="HUD chip"
-          text="Always-on marks on the game: a pill with an icon and short text, or a square tile. Active is primary (talking, selected); warning is destructive."
-        >
-          <div className="flex flex-col items-start gap-6">
-            <div className="flex flex-wrap items-center gap-2">
-              <HudChip icon={<MicIcon />}>Normal</HudChip>
-              <HudChip icon={<MicIcon />} active>
-                Shouting
-              </HudChip>
-              <HudChip icon={<RadioIcon />}>101 MHz</HudChip>
-              <HudChip icon={<TriangleAlertIcon />} state="warning">
-                Seatbelt
-              </HudChip>
-              <HudChip icon={<CarFrontIcon />} state="warning">
-                Engine 28%
-              </HudChip>
-            </div>
-            <div className="flex gap-2">
-              <HudChip shape="tile" icon={<PillIcon />}>
-                3
-              </HudChip>
-              <HudChip shape="tile" icon={<UtensilsIcon />} active>
-                2
-              </HudChip>
-              <HudChip shape="tile" icon={<WrenchIcon />}>
-                1
-              </HudChip>
-              <HudChip shape="tile" icon={<FuelIcon />} state="warning">
-                0
-              </HudChip>
-              <HudChip shape="tile" />
-            </div>
           </div>
         </Section>
 

@@ -2,7 +2,7 @@
 
 A death screen made with [nuikit](https://github.com/belibathan/nuikit), from the `death-screen` block:
 a countdown, the keys to call EMS and to respawn (held, with a live bar), and red at the edges of the
-screen. It's built from the kit (Meter, HudChip, Kbd) and follows the server's nuikit theme.
+screen. It's built from the kit (Meter, Chip, Kbd) and follows the server's nuikit theme.
 
 ```bash
 cd web

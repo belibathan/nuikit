@@ -108,7 +108,7 @@ const targets = [
   {
     dir: "packages/create-nuikit/template",
     lua: [], // imports @nuikit/init.lua
-    components: ["badge", "button", "checkbox", "kbd", "progress", "scroll-area", "separator", "panel", "menu-row", "meter", "stat", "hud-chip", "key-prompt", "notice"],
+    components: ["badge", "button", "checkbox", "kbd", "progress", "scroll-area", "separator", "panel", "menu-row", "meter", "stat", "chip", "key-prompt", "notice"],
     hooks: ["use-nui-store"],
   },
 ];

@@ -11,7 +11,7 @@ const registry = JSON.parse(fs.readFileSync(path.join(root, "registry.json"), "u
 }
 const names = new Set(registry.items.map((i) => i.name))
 // removed after their deprecation; `replaces` still names them (history)
-const REMOVED = ["key-hint", "task-progress", "nui-toaster"]
+const REMOVED = ["key-hint", "task-progress", "nui-toaster", "hud-chip", "vital", "nui-menu"]
 const releases = fs
   .readdirSync(path.join(root, "docs/releases"))
   .map((f) => f.match(/^v(\d+\.\d+\.\d+)\.md$/)?.[1])
@@ -62,7 +62,7 @@ describe("registry meta", () => {
 // and the same template in each component's doc comment (docs/design/ink.md §3).
 describe("component specs", () => {
   const UI = registry.items.filter((i) => i.type === "registry:ui")
-  const LEVEL = ["meter", "vital-chip", "progress-ring", "notice", "key-prompt", "dial", "countdown", "speedometer", "vital"]
+  const LEVEL = ["meter", "vital-chip", "progress-ring", "notice", "key-prompt", "dial", "countdown", "speedometer"]
   const meta = (n: string) => registry.items.find((i) => i.name === n)?.meta
 
   it("every component says its role, anatomy and rules", () => {

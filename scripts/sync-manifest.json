@@ -7,7 +7,6 @@
       "web/src/components/ui/checkbox.tsx",
       "web/src/components/ui/chip.tsx",
       "web/src/components/ui/fill.tsx",
-      "web/src/components/ui/hud-chip.tsx",
       "web/src/components/ui/kbd.tsx",
       "web/src/components/ui/key-prompt.tsx",
       "web/src/components/ui/menu-row.tsx",

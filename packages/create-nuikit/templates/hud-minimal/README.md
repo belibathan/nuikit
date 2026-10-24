@@ -3,7 +3,7 @@
 A HUD made with [nuikit](https://github.com/belibathan/nuikit), from the `hud-minimal` block: health,
 armor, hunger, thirst and stress with the voice range and radio bottom left, cash, bank and job top
 right, and a speedometer with seatbelt and engine warnings while driving. It's built from the kit
-(Meter, Stat, HudChip, Speedometer) and follows the server's nuikit theme, vital colours included.
+(Meter, Stat, Chip, Speedometer) and follows the server's nuikit theme, vital colours included.
 
 ```bash
 cd web

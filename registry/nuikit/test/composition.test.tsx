@@ -6,20 +6,17 @@ import { Chip } from "@/components/ui/chip"
 import { Countdown } from "@/components/ui/countdown"
 import { EdgeSheetEdge } from "@/components/ui/edge-sheet"
 import { Fill, fillTargets } from "@/components/ui/fill"
-import { HudChip } from "@/components/ui/hud-chip"
 import { KeyPrompt } from "@/components/ui/key-prompt"
 import { Meter } from "@/components/ui/meter"
 import { Money } from "@/components/ui/money"
 import { Notice } from "@/components/ui/notice"
 import { VitalChip } from "@/components/ui/vital-chip"
-import { NuiMenu } from "@/components/ui/nui-menu"
 import { ProgressRing } from "@/components/ui/progress-ring"
 import { SheetSection } from "@/components/ui/sheet-section"
 import { Speedometer } from "@/components/ui/speedometer"
 import { Cluster, Stack } from "@/components/ui/stack"
 import { Stat } from "@/components/ui/stat"
 import { Text } from "@/components/ui/text"
-import { Vital } from "@/components/ui/vital"
 
 // The composition contracts (docs/design/components.md): every composite draws its parts with the foundation,
 // and every deprecated alias renders its canonical component.
@@ -122,37 +119,6 @@ describe("composites", () => {
 
   it("SheetSection's rows are a Stack", () => {
     expect(html(<SheetSection label="Cars" rows="items" />)).toContain('data-slot="sheet-section-rows" class="flex flex-col gap-(--nk-gap-items)"')
-  })
-})
-
-describe("aliases render their canonical component", () => {
-  it("HudChip is Chip material=\"hud\", markup for markup", () => {
-    const props = { icon: <svg />, active: true, hue: "police", children: "Normal" }
-    expect(html(<HudChip {...props} />)).toBe(html(<Chip material="hud" {...props} />))
-    expect(html(<HudChip state="warning">Seatbelt</HudChip>)).toContain('data-slot="hud-chip"')
-    expect(html(<Chip material="hud" tone="danger">Seatbelt</Chip>)).toBe(html(<HudChip state="warning">Seatbelt</HudChip>))
-  })
-
-  it("Vital is a Meter", () => {
-    const d = dom(<Vital value={10} tone="health" label="Health" icon={<svg />} />)
-    expect(d.has('data-slot="vital"', 'data-state="alert"', "w-32")).toBe(true)
-    expect(html(<Vital value={60} tone="armor" />)).toBe(html(<Meter value={60} tone="armor" low={20} className="w-32" data-slot="vital" />))
-  })
-
-  it("NuiMenu is a Panel of MenuRows", () => {
-    const d = dom(
-      <NuiMenu
-        title="Garage"
-        items={[
-          { id: "a", label: "Sultan" },
-          { id: "b", label: "Buffalo", disabled: true },
-        ]}
-        onSelect={() => {}}
-      />
-    )
-    expect(d.has('data-slot="nui-menu"', "nk-panel")).toBe(true)
-    expect(d.has('data-slot="menu-row-list"')).toBe(true)
-    expect(d.tags('data-slot="menu-row"')).toHaveLength(2)
   })
 })
 
