@@ -1,7 +1,7 @@
 // The theme studio's model: a pasted theme (TweakCN / shadcn CSS variables) plus token tweaks,
 // compiled exactly as the nuikit resource compiles nuikit/theme.css, and exported back as a
 // theme.css that compiles to the same tokens. Shared by /theme and the /blocks theme switcher.
-import { IDENTITY_TOKENS, TREATMENTS, TREATMENT_PRESETS, compileTheme, toRgba, type CompiledTheme, type ThemeVars } from "nuikit-core";
+import { IDENTITY_TOKENS, compileTheme, toRgba, type CompiledTheme, type ThemeVars } from "nuikit-core";
 
 const DERIVED = new Set(IDENTITY_TOKENS.filter((t) => t.group === "derived").map((t) => t.name));
 
@@ -75,28 +75,29 @@ export const IDENTITY: { group: string; controls: IdentityControl[] }[] = [
       { name: "font-display", label: "Display", kind: "font", hint: "Titles, timers, the balance" },
       { name: "font-numeric", label: "Numbers", kind: "font", hint: "Gauges, money, timers (tabular)" },
       { name: "nk-type-ratio", label: "Type ratio", kind: "range", min: 1.125, max: 1.4, step: 0.025, hint: "1.125 calm … 1.333 dramatic" },
-      { name: "nk-weight-display", label: "Display weight", kind: "range", min: 300, max: 900, step: 100 },
-      { name: "nk-label-case", label: "Captions", kind: "choice", options: [{ value: "uppercase", label: "Uppercase" }, { value: "none", label: "As written" }] },
+      { name: "nk-type-weight-display", label: "Display weight", kind: "range", min: 300, max: 900, step: 100 },
+      { name: "nk-type-slant", label: "Slant", kind: "choice", options: [{ value: "italic", label: "Italic" }, { value: "normal", label: "Upright" }] },
+      { name: "nk-shape-skew", label: "Keycap slant", kind: "range", min: -20, max: 20, step: 1, unit: "deg" },
+      { name: "nk-type-case", label: "Scanned text", kind: "choice", options: [{ value: "uppercase", label: "Uppercase" }, { value: "none", label: "As written" }] },
     ],
   },
   {
     group: "Shape",
     controls: [
       { name: "radius", label: "Corner radius", kind: "range", min: 0, max: 1.5, step: 0.125, unit: "rem" },
-      { name: "nk-cut", label: "Chamfer", kind: "range", min: 0, max: 1, step: 0.125, unit: "rem", hint: "Cut corners, 0 = off" },
-      { name: "nk-border-width", label: "Hairline", kind: "range", min: 0, max: 3, step: 1, unit: "px" },
+      { name: "nk-shape-cut", label: "Chamfer", kind: "range", min: 0, max: 1, step: 0.125, unit: "rem", hint: "Cut corners, 0 = off" },
+      { name: "nk-shape-stroke", label: "Hairline", kind: "range", min: 0, max: 3, step: 1, unit: "px" },
     ],
   },
   {
     group: "Surface",
     controls: [
-      { name: "nk-surface-opacity", label: "Panel opacity", kind: "range", min: 0.8, max: 1, step: 0.01, hint: "Floor 0.92 for text panels" },
+      { name: "nk-material-menu-opacity", label: "Panel opacity", kind: "range", min: 0.8, max: 1, step: 0.01, hint: "Floor 0.92 for text panels" },
       { name: "nk-surface-tint", label: "Brand tint", kind: "range", min: 0, max: 0.12, step: 0.01 },
       { name: "nk-surface-gradient", label: "Gradient", kind: "range", min: 0, max: 0.2, step: 0.01 },
-      { name: "nk-surface-edge", label: "Machined edge", kind: "range", min: 0, max: 0.3, step: 0.01 },
-      { name: "nk-elevation", label: "Elevation", kind: "choice", options: [{ value: "none", label: "None" }, { value: "soft", label: "Soft" }, { value: "deep", label: "Deep" }, { value: "hard", label: "Hard" }] },
-      { name: "nk-glow", label: "Glow", kind: "range", min: 0, max: 0.6, step: 0.05, hint: "Brand glow on active parts" },
-      { name: "nk-row-indicator", label: "Active row", kind: "choice", options: [{ value: "bar", label: "Bar" }, { value: "fill", label: "Fill" }, { value: "outline", label: "Outline" }, { value: "sweep", label: "Sweep" }] },
+      { name: "nk-material-menu-edge", label: "Machined edge", kind: "range", min: 0, max: 0.3, step: 0.01 },
+      { name: "nk-surface-elevation", label: "Elevation", kind: "choice", options: [{ value: "none", label: "None" }, { value: "soft", label: "Soft" }, { value: "deep", label: "Deep" }, { value: "hard", label: "Hard" }] },
+      { name: "nk-surface-glow", label: "Glow", kind: "range", min: 0, max: 0.6, step: 0.05, hint: "Brand glow on active parts" },
     ],
   },
   {
@@ -107,19 +108,17 @@ export const IDENTITY: { group: string; controls: IdentityControl[] }[] = [
     group: "Motion",
     controls: [
       { name: "nk-motion-feel", label: "Feel", kind: "choice", options: [{ value: "crisp", label: "Crisp" }, { value: "snap", label: "Snap" }, { value: "smooth", label: "Smooth" }, { value: "stepped", label: "Stepped" }] },
-      { name: "nk-duration", label: "Duration", kind: "range", min: 60, max: 400, step: 10, unit: "ms", hint: "Warns above 260ms" },
-      { name: "nk-spring-bounce", label: "Bounce", kind: "range", min: 0, max: 0.3, step: 0.05 },
+      { name: "nk-motion-duration", label: "Duration", kind: "range", min: 60, max: 400, step: 10, unit: "ms", hint: "Warns above 260ms" },
+      { name: "nk-motion-bounce", label: "Bounce", kind: "range", min: 0, max: 0.3, step: 0.05 },
       { name: "nk-motion", label: "Animations", kind: "choice", options: [{ value: "1", label: "On" }, { value: "0", label: "Off" }] },
     ],
   },
   {
     group: "HUD",
     controls: [
-      { name: "nk-hud-opacity", label: "Backplate", kind: "range", min: 0.3, max: 1, step: 0.01, hint: "HUD text is checked over a white sky" },
-      { name: "nk-hud-text-shadow", label: "Text shadow", kind: "choice", options: [{ value: "none", label: "None" }, { value: "soft", label: "Soft" }, { value: "strong", label: "Strong" }] },
-      { name: "nk-gauge-style", label: "Gauges", kind: "choice", options: [{ value: "arc", label: "Arc" }, { value: "bar", label: "Bar" }, { value: "digital", label: "Digital" }] },
-      { name: "nk-gauge-track", label: "Track", kind: "range", min: 0.125, max: 0.625, step: 0.0625, unit: "rem", hint: "Gauge and meter thickness" },
-      { name: "nk-gauge-ticks", label: "Ticks", kind: "choice", options: [{ value: "1", label: "On" }, { value: "0", label: "Off" }] },
+      { name: "nk-material-hud-opacity", label: "Backplate", kind: "range", min: 0.3, max: 1, step: 0.01, hint: "HUD text is checked over a white sky" },
+      { name: "nk-hud-text", label: "Text shadow", kind: "choice", options: [{ value: "none", label: "None" }, { value: "soft", label: "Soft" }, { value: "strong", label: "Strong" }] },
+      { name: "nk-style-gauge", label: "Gauges", kind: "choice", options: [{ value: "arc", label: "Arc" }, { value: "bar", label: "Bar" }, { value: "digital", label: "Digital" }] },
     ],
   },
 ];
@@ -143,8 +142,8 @@ export const COMPONENTS: { group: string; controls: IdentityControl[] }[] = [
     controls: [
       { name: "nk-chip-radius", label: "Chip corners", kind: "range", min: 0, max: 1.25, step: 0.0625, unit: "rem", def: 0.375, hint: "HUD chips, slabs, notices on the game" },
       { name: "nk-slab-height", label: "Slab height", kind: "range", min: 1.75, max: 3.25, step: 0.125, unit: "rem", def: 2.25, hint: "Prompts, item notices, timed progress" },
-      { name: "nk-key-radius", label: "Key corners", kind: "range", min: 0, max: 0.75, step: 0.0625, unit: "rem", def: 0.375 },
-      { name: "nk-meter-height", label: "Meter thickness", kind: "range", min: 0.125, max: 0.625, step: 0.0625, unit: "rem", def: 0.25 },
+      { name: "nk-tile-face-radius", label: "Key corners", kind: "range", min: 0, max: 0.75, step: 0.0625, unit: "rem", def: 0.375 },
+      { name: "nk-fill-height", label: "Meter thickness", kind: "range", min: 0.125, max: 0.625, step: 0.0625, unit: "rem", def: 0.25 },
     ],
   },
 ];
@@ -209,7 +208,7 @@ function dropEmptyValues(css: string): { css: string; empty: string[] } {
  * theme.css for nuikit/theme.css (or any TweakCN slot): every compiled token in a `.dark` block, the
  * set nuikit reads in game, with the font @imports first. Derived tokens (surface, shadows, clip
  * paths, the motion ladder) are left out, as toDtcg leaves them out: compiling the file derives them
- * again, so it gives the same tokens, and a hand edit to `--nk-cut` or `--nk-duration` still takes.
+ * again, so it gives the same tokens, and a hand edit to `--nk-shape-cut` or `--nk-motion-duration` still takes.
  * Two exceptions, found by compiling the file and comparing: a derived token the theme set itself
  * (Default's `--nk-ease-expand`) is written out, and a default that is a `var()` reference (the tile
  * treatment's `--nk-type-*-family`) is left out, since writing it would resolve it to a literal.
@@ -256,17 +255,11 @@ export function withAlpha(hex: string, previous: string | undefined): string {
   return `rgba(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}, ${a})`;
 }
 
-export type Treatment = (typeof TREATMENTS)[number];
-
-/** The five treatments (docs/design/levers.md): a named set of lever values under whatever the theme sets itself. */
-export const TREATMENT_INFO: Record<Treatment, string> = {
-  soft: "Nothing set: plain palette, soft panels. The blank page.",
-  glass: "Deep shadows, a lit edge, blur behind panels, smooth motion.",
-  plate: "Chamfered plates, uppercase labels, scanlines, stepped motion.",
-  slab: "Heavy hairlines, hard shadows, slanted italics, snapping motion.",
-  tile: "Slanted keycaps on hard plates: the Default language.",
-};
-export { TREATMENTS };
+/** Treatments are gone: the token language's defaults are one language and a theme is values on top. Kept as an
+ *  empty set so the picker renders nothing until the site lane removes it. */
+export type Treatment = never;
+export const TREATMENTS: readonly Treatment[] = [];
+export const TREATMENT_INFO: Record<Treatment, string> = {};
 
 const choice = (...v: string[]) => v.map((value) => ({ value, label: value[0]!.toUpperCase() + value.slice(1) }));
 const ROLES = [
@@ -285,14 +278,14 @@ export const LEVERS: { group: string; controls: IdentityControl[] }[] = [
   {
     group: "Geometry",
     controls: [
-      { name: "nk-skew", label: "Skew: chips, badges", kind: "range", min: -20, max: 20, step: 1, unit: "deg", def: 0, hint: "Text stays upright" },
-      { name: "nk-tile-skew", label: "Skew: keycaps", kind: "range", min: -20, max: 20, step: 1, unit: "deg", def: 0, hint: "The face only, the box stays upright" },
-      { name: "nk-tile-wall", label: "Keycap wall", kind: "range", min: 0, max: 0.5, step: 0.0625, unit: "rem", def: 0.1875, hint: "How far the face sits above its plate; 0 = flat" },
+      { name: "nk-shape-slab", label: "Skew: chips, badges", kind: "range", min: -20, max: 20, step: 1, unit: "deg", def: 0, hint: "Text stays upright" },
+      { name: "nk-tile-face-skew", label: "Skew: keycaps", kind: "range", min: -20, max: 20, step: 1, unit: "deg", def: -12, hint: "The face only, the box stays upright" },
+      { name: "nk-tile-wall-height", label: "Keycap wall", kind: "range", min: 0, max: 0.5, step: 0.0625, unit: "rem", def: 0.1875, hint: "How far the face sits above its plate; 0 = flat" },
       { name: "nk-tile-wall-shade", label: "Wall shade", kind: "range", min: 0, max: 1, step: 0.05, def: 0.45 },
-      { name: "nk-r-key", label: "Radius: keys", kind: "range", min: 0, max: 0.75, step: 0.0625, unit: "rem", def: 0.25 },
-      { name: "nk-r-chip", label: "Radius: chips", kind: "range", min: 0, max: 1.25, step: 0.0625, unit: "rem", def: 0.25 },
-      { name: "nk-r-control", label: "Radius: buttons, fields, rows", kind: "range", min: 0, max: 1, step: 0.0625, unit: "rem", def: 0.375 },
-      { name: "nk-r-surface", label: "Radius: panels", kind: "range", min: 0, max: 1.5, step: 0.0625, unit: "rem", def: 0.625 },
+      { name: "nk-radius-key", label: "Radius: keys", kind: "range", min: 0, max: 0.75, step: 0.0625, unit: "rem", def: 0.25 },
+      { name: "nk-radius-chip", label: "Radius: chips", kind: "range", min: 0, max: 1.25, step: 0.0625, unit: "rem", def: 0.25 },
+      { name: "nk-radius-control", label: "Radius: buttons, fields, rows", kind: "range", min: 0, max: 1, step: 0.0625, unit: "rem", def: 0.375 },
+      { name: "nk-radius-surface", label: "Radius: panels", kind: "range", min: 0, max: 1.5, step: 0.0625, unit: "rem", def: 0.625 },
     ],
   },
   ...ROLES.map(([r, what]) => ({
@@ -307,33 +300,32 @@ export const LEVERS: { group: string; controls: IdentityControl[] }[] = [
   {
     group: "Fills",
     controls: [
-      { name: "nk-fill-style", label: "Fill language", kind: "choice", options: choice("solid", "soft"), hint: "Meters, progress, the selected row" },
-      { name: "nk-tile-tint", label: "Soft tint", kind: "range", min: 0, max: 1, step: 0.02, def: 0.16, hint: "Opacity of a soft selection" },
-      { name: "nk-hold-style", label: "Hold", kind: "choice", options: choice("bar", "ring", "fill") },
-      { name: "nk-level-style", label: "Level", kind: "choice", options: choice("bar", "ring", "liquid", "slab", "pips") },
+      { name: "nk-style-fill", label: "Fill language", kind: "choice", options: choice("solid", "soft"), hint: "Meters, progress, the selected row" },
+      { name: "nk-tile-key-tint", label: "Soft tint", kind: "range", min: 0, max: 1, step: 0.02, def: 0.16, hint: "Opacity of a soft selection" },
+      { name: "nk-style-hold", label: "Hold", kind: "choice", options: choice("bar", "ring", "fill") },
+      { name: "nk-style-level", label: "Level", kind: "choice", options: choice("bar", "ring", "liquid", "slab", "pips") },
     ],
   },
   {
     group: "Selection and focus",
     controls: [
-      { name: "nk-focus-style", label: "Focus", kind: "choice", options: choice("ring", "halo", "tint", "fill", "invert", "bar") },
-      { name: "nk-focus-shift", label: "Focus shift", kind: "range", min: 0, max: 0.5, step: 0.0625, unit: "rem", def: 0 },
-      { name: "nk-row-lift", label: "Row lift", kind: "range", min: 0, max: 1, step: 0.0625, unit: "rem", def: 0.5, hint: "How far a selected row steps out" },
+      { name: "nk-style-focus", label: "Focus", kind: "choice", options: choice("ring", "halo", "tint", "fill", "invert", "bar") },
+      { name: "nk-gesture-lift", label: "Row lift", kind: "range", min: 0, max: 1, step: 0.0625, unit: "rem", def: 0.5, hint: "How far a selected row steps out" },
     ],
   },
   {
     group: "Motion levers",
     controls: [
-      { name: "nk-exit-factor", label: "Exit speed", kind: "range", min: 0.3, max: 1, step: 0.05, def: 0.7, hint: "Exits are this × the enter" },
-      { name: "nk-confirm-scale", label: "Confirm pop", kind: "range", min: 1, max: 1.2, step: 0.01, def: 1.04 },
-      { name: "nk-rise", label: "Entrance rise", kind: "range", min: 0, max: 1, step: 0.0625, unit: "rem", def: 0.5 },
+      { name: "nk-motion-exit-factor", label: "Exit speed", kind: "range", min: 0.3, max: 1, step: 0.05, def: 0.7, hint: "Exits are this × the enter" },
+      { name: "nk-gesture-confirm", label: "Confirm pop", kind: "range", min: 1, max: 1.2, step: 0.01, def: 1.04 },
+      { name: "nk-gesture-rise", label: "Entrance rise", kind: "range", min: 0, max: 1, step: 0.0625, unit: "rem", def: 0.5 },
     ],
   },
 ];
 
 /** A start theme with a treatment chosen over it: the treatment fills what the theme leaves out. */
-export function withTreatment(css: string, treatment: Treatment | null): string {
-  return treatment ? `${css}\n.dark { --nk-treatment: ${treatment}; }` : css;
+export function withTreatment(css: string, _treatment: Treatment | null): string {
+  return css;
 }
 
 export type ThemeChange = { name: string; from: string | undefined; to: string };
@@ -344,13 +336,10 @@ export type ThemeChange = { name: string; from: string | undefined; to: string }
  * by `--nk-treatment`, so they are not repeated.
  */
 export function diffTheme(theme: CompiledTheme, base: CompiledTheme): ThemeChange[] {
-  const t = theme.vars["nk-treatment"] as Treatment | undefined;
-  const changedTreatment = t !== base.vars["nk-treatment"];
   const out: ThemeChange[] = [];
   for (const [k, v] of Object.entries(theme.vars)) {
     if (DERIVED.has(k)) continue;
     if (base.vars[k] === v) continue;
-    if (k !== "nk-treatment" && changedTreatment && t && TREATMENT_PRESETS[t][k] === v) continue;
     out.push({ name: k, from: base.vars[k], to: v });
   }
   return out;

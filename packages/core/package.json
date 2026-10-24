@@ -124,14 +124,17 @@
       "types": "./dist/layout.d.ts",
       "import": "./dist/layout.js"
     },
-    "./arsenal.json": "./arsenal.json"
+    "./arsenal.json": "./arsenal.json",
+    "./levers.json": "./tokens/nuikit.levers.json"
   },
   "scripts": {
     "intents": "node scripts/gen-intents.mjs",
-    "build": "node scripts/gen-intents.mjs && node scripts/arsenal.mjs && node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\" && tsup && node scripts/export-tokens.mjs",
+    "build": "node scripts/gen-intents.mjs && node scripts/gen-tokens.mjs && node scripts/arsenal.mjs && node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\" && tsup && node scripts/export-tokens.mjs",
     "arsenal": "node scripts/arsenal.mjs",
     "test": "vitest run",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "gen:tokens": "node scripts/gen-tokens.mjs",
+    "migrate:levers": "node scripts/migrate-levers.mjs"
   },
   "peerDependencies": {
     "react": ">=18",

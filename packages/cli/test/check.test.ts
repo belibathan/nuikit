@@ -266,7 +266,7 @@ describe("cef/* (old-CEF profile, advisory)", () => {
 
   it("fires on each bad CSS sample, as warnings that keep the level", () => {
     const { r, base } = run({
-      "web/src/bad.css": `.a { backdrop-filter: blur(4px); }\n.b:has(> img) { color: var(--primary); }\n@container (min-width: 10px) { .c { color: var(--primary); } }\n.d { container-type: inline-size; scale: 1.1; translate: 0 4px; rotate: 3deg; }\n.ok { --nk-backdrop-filter: blur(4px); }\n`,
+      "web/src/bad.css": `.a { backdrop-filter: blur(4px); }\n.b:has(> img) { color: var(--primary); }\n@container (min-width: 10px) { .c { color: var(--primary); } }\n.d { container-type: inline-size; scale: 1.1; translate: 0 4px; rotate: 3deg; }\n.ok { --nk-panel-backdrop: blur(4px); }\n`,
     });
     expect(cef(r)).toEqual([
       "cef/backdrop-filter@web/src/bad.css:1",
@@ -324,7 +324,7 @@ describe("ink rules", () => {
         ".d { background: color-mix(in oklab, var(--primary) 50%, transparent); }",
         ".e { box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5); }",
         ".f { transition: transform 150ms ease-out; }",
-        ".g { transition: color var(--nk-time) var(--nk-ease-out); }",
+        ".g { transition: color var(--nk-time-base) var(--nk-ease-enter); }",
         ".h { font-size: 13px; font-weight: 600; }",
         ".i[class*=\"ring-\"] { color: var(--primary); }",
         ".j[data-critical] { color: var(--destructive); }",
@@ -363,12 +363,12 @@ describe("ink rules", () => {
   it("stays quiet on the token way, and on synced copies", () => {
     const { ink } = run({
       "web/src/good.css": [
-        ".a { border-radius: var(--nk-r-chip); box-shadow: 0 0.125rem 0 rgba(0, 0, 0, 0.6), inset 0 0 0 1px var(--border); }",
-        ".b { transition: transform var(--nk-time-base) var(--nk-ease-standard), opacity var(--nk-time-fast) var(--nk-ease-out); }",
+        ".a { border-radius: var(--nk-radius-chip); box-shadow: 0 0.125rem 0 rgba(0, 0, 0, 0.6), inset 0 0 0 1px var(--border); }",
+        ".b { transition: transform var(--nk-time-base) var(--nk-ease-move), opacity var(--nk-time-fast) var(--nk-ease-enter); }",
         ".c { gap: var(--nk-gap-cluster); padding: 0.5rem 0.75rem; font-size: var(--nk-text-key); }",
         ".d[data-state=\"alert\"] { color: var(--destructive); }",
       ].join("\n") + "\n",
-      "web/src/good.tsx": `export const A = () => <div className="rounded-(--nk-r-chip) gap-(--nk-gap-cluster) transition-transform duration-(--nk-time-fast) ease-(--nk-ease-out) nk-label" />;\n`,
+      "web/src/good.tsx": `export const A = () => <div className="rounded-(--nk-radius-chip) gap-(--nk-gap-cluster) transition-transform duration-(--nk-time-fast) ease-(--nk-ease-enter) nk-label" />;\n`,
       "web/src/components/ui/vendored.tsx": `export const B = () => <div className="rounded-md shadow-lg text-sm" />;\n`,
     });
     expect(ink).toEqual([]);
@@ -376,14 +376,14 @@ describe("ink rules", () => {
 
   it("asks a theme to stay in @layer nk.theme", () => {
     const { ink } = run({
-      "theme.css": [":root { --nk-tile-skew: -12deg; }", "@layer nk.theme {", "  [data-slot=\"tile\"][data-state=\"alert\"] { opacity: 0.8; }", "}", ".inv-key { color: var(--primary) !important; }"].join("\n") + "\n",
+      "theme.css": [":root { --nk-tile-face-skew: -12deg; }", "@layer nk.theme {", "  [data-slot=\"tile\"][data-state=\"alert\"] { opacity: 0.8; }", "}", ".inv-key { color: var(--primary) !important; }"].join("\n") + "\n",
     });
     expect(ink).toEqual(["theme/values-only@theme.css:3", "theme/unlayered@theme.css:5", "theme/unlayered@theme.css:5"]);
   });
 
   it("asks a theme file to set values only (D4), and leaves the rule sheet in theme/ alone", () => {
     const { ink } = run({
-      "themes/mine.css": ["@import url(\"https://cfx-nui-nuikit/theme/default.css\");", ".dark { --nk-tile-skew: 0deg; --radius: 0rem; color: red; }", "@layer nk.theme {", "  [data-slot=\"tile\"] { border-radius: 0; }", "}"].join("\n") + "\n",
+      "themes/mine.css": ["@import url(\"https://cfx-nui-nuikit/theme/default.css\");", ".dark { --nk-tile-face-skew: 0deg; --radius: 0rem; color: red; }", "@layer nk.theme {", "  [data-slot=\"tile\"] { border-radius: 0; }", "}"].join("\n") + "\n",
       "theme/mine.css": "@layer nk.theme {\n  [data-slot=\"tile\"][data-state=\"alert\"] { opacity: 0.8; }\n}\n",
     });
     expect(ink).toEqual(["theme/unlayered@themes/mine.css:2", "theme/values-only@themes/mine.css:4"]);

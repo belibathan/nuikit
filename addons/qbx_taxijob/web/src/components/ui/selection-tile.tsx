@@ -26,7 +26,7 @@ import { cn } from "@/lib/utils"
  * fast (data-repeat="fast"), the third in a row jumps (data-repeat="jump"), so it never trails a held d-pad.
  *
  * Role: the one selection mark of a list, tabs or a menu: a Tile that slides to the lit item.
- * Anatomy: nk-indicator (absolute, behind the items) > ::before (the wall, dropped --nk-tile-wall) > ::after (the face).
+ * Anatomy: nk-indicator (absolute, behind the items) > ::before (the wall, dropped --nk-tile-wall-height) > ::after (the face).
  * Props: items, active, lit, pointer, focus, list, shape (inherit | tile).
  * Rules: one tile per list; the lit item gets data-lit and never paints its own fill; pointer, focus and the
  *   active index are one language (last input wins); moves are transform only, sizes a FLIP; reduced motion jumps.
@@ -48,8 +48,8 @@ type SelectionOptions = {
 }
 
 /**
- * What the mark looks like (the `--nk-sel-shape` lever, set as data-shape): `inherit` (default) is a flat face in the
- * shape of what it sits on (radius `--nk-host-radius`, clip `--nk-host-clip`, no skew, no wall: a grid slot, a tile of
+ * What the mark looks like (the `--nk-tile-sel-shape` lever, set as data-shape): `inherit` (default) is a flat face in the
+ * shape of what it sits on (radius `--nk-tile-host-radius`, clip `--nk-tile-host-clip`, no skew, no wall: a grid slot, a tile of
  * a sheet); `tile` is the primary keycap (skewed face over its wall), which rows and tabs ask for.
  */
 type SelectionShape = "inherit" | "tile"

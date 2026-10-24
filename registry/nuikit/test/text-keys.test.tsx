@@ -25,7 +25,7 @@ describe("Text keys", () => {
   it("renders tokens as keycaps inline", () => {
     const html = renderToStaticMarkup(<Text>Press [E] to open</Text>)
     expect(html).toContain('data-slot="kbd"')
-    expect(html).toContain("--nk-inline-key-scale")
+    expect(html).toContain("--nk-text-key-scale")
     expect(html).toContain("Press ")
   })
   it("keys={false} keeps the brackets literally", () => {

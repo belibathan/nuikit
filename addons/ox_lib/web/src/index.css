@@ -21,91 +21,11 @@
   unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
 }
 @font-face {
-  font-family: "Inter Tight";
-  font-style: normal;
-  font-weight: 100 900;
-  font-display: swap;
-  src: url("../node_modules/nuikit-core/fonts/inter-tight-latin-wght-normal.woff2") format("woff2");
-  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
-}
-@font-face {
   font-family: "Geist Mono";
   font-style: normal;
   font-weight: 100 900;
   font-display: swap;
   src: url("../node_modules/nuikit-core/fonts/geist-mono-latin-wght-normal.woff2") format("woff2");
-  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
-}
-@font-face {
-  font-family: "Barlow";
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url("../node_modules/nuikit-core/fonts/barlow-latin-400-normal.woff2") format("woff2");
-  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
-}
-@font-face {
-  font-family: "Barlow";
-  font-style: normal;
-  font-weight: 500;
-  font-display: swap;
-  src: url("../node_modules/nuikit-core/fonts/barlow-latin-500-normal.woff2") format("woff2");
-  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
-}
-@font-face {
-  font-family: "Barlow";
-  font-style: normal;
-  font-weight: 600;
-  font-display: swap;
-  src: url("../node_modules/nuikit-core/fonts/barlow-latin-600-normal.woff2") format("woff2");
-  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
-}
-@font-face {
-  font-family: "Barlow Condensed";
-  font-style: normal;
-  font-weight: 600;
-  font-display: swap;
-  src: url("../node_modules/nuikit-core/fonts/barlow-condensed-latin-600-normal.woff2") format("woff2");
-  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
-}
-@font-face {
-  font-family: "Barlow Condensed";
-  font-style: normal;
-  font-weight: 700;
-  font-display: swap;
-  src: url("../node_modules/nuikit-core/fonts/barlow-condensed-latin-700-normal.woff2") format("woff2");
-  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
-}
-@font-face {
-  font-family: "Barlow";
-  font-style: normal;
-  font-weight: 700;
-  font-display: swap;
-  src: url("../node_modules/nuikit-core/fonts/barlow-latin-700-normal.woff2") format("woff2");
-  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
-}
-@font-face {
-  font-family: "Barlow";
-  font-style: normal;
-  font-weight: 800;
-  font-display: swap;
-  src: url("../node_modules/nuikit-core/fonts/barlow-latin-800-normal.woff2") format("woff2");
-  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
-}
-@font-face {
-  font-family: "Barlow Condensed";
-  font-style: normal;
-  font-weight: 800;
-  font-display: swap;
-  src: url("../node_modules/nuikit-core/fonts/barlow-condensed-latin-800-normal.woff2") format("woff2");
-  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
-}
-@font-face {
-  font-family: "Barlow Condensed";
-  font-style: normal;
-  font-weight: 900;
-  font-display: swap;
-  src: url("../node_modules/nuikit-core/fonts/barlow-condensed-latin-900-normal.woff2") format("woff2");
   unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
 }
 @font-face {
@@ -127,14 +47,6 @@
 @font-face {
   font-family: "Barlow Condensed";
   font-style: italic;
-  font-weight: 900;
-  font-display: swap;
-  src: url("../node_modules/nuikit-core/fonts/barlow-condensed-latin-900-italic.woff2") format("woff2");
-  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
-}
-@font-face {
-  font-family: "Barlow Condensed";
-  font-style: italic;
   font-weight: 600;
   font-display: swap;
   src: url("../node_modules/nuikit-core/fonts/barlow-condensed-latin-600-italic.woff2") format("woff2");
@@ -146,22 +58,6 @@
   font-weight: 100 900;
   font-display: swap;
   src: url("../node_modules/nuikit-core/fonts/geist-latin-wght-normal.woff2") format("woff2");
-  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
-}
-@font-face {
-  font-family: "Fraunces";
-  font-style: normal;
-  font-weight: 100 900;
-  font-display: swap;
-  src: url("../node_modules/nuikit-core/fonts/fraunces-latin-wght-normal.woff2") format("woff2");
-  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
-}
-@font-face {
-  font-family: "DM Sans";
-  font-style: normal;
-  font-weight: 100 1000;
-  font-display: swap;
-  src: url("../node_modules/nuikit-core/fonts/dm-sans-latin-wght-normal.woff2") format("woff2");
   unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
 }
 @font-face {
@@ -186,30 +82,6 @@
   font-weight: 600;
   font-display: swap;
   src: url("../node_modules/nuikit-core/fonts/ibm-plex-sans-latin-600-normal.woff2") format("woff2");
-  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
-}
-@font-face {
-  font-family: "Chakra Petch";
-  font-style: normal;
-  font-weight: 500;
-  font-display: swap;
-  src: url("../node_modules/nuikit-core/fonts/chakra-petch-latin-500-normal.woff2") format("woff2");
-  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
-}
-@font-face {
-  font-family: "Chakra Petch";
-  font-style: normal;
-  font-weight: 600;
-  font-display: swap;
-  src: url("../node_modules/nuikit-core/fonts/chakra-petch-latin-600-normal.woff2") format("woff2");
-  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
-}
-@font-face {
-  font-family: "Chakra Petch";
-  font-style: normal;
-  font-weight: 700;
-  font-display: swap;
-  src: url("../node_modules/nuikit-core/fonts/chakra-petch-latin-700-normal.woff2") format("woff2");
   unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
 }
 @font-face {
@@ -287,8 +159,8 @@
  */
 :root {
   --destructive-foreground: rgb(255, 255, 255);
-  --font-sans: Inter, ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --brand: rgb(212, 212, 212);
+  --brand-foreground: rgb(0, 0, 0);
   --success: rgb(0, 146, 66);
   --success-foreground: rgb(10, 10, 10);
   --warning: rgb(194, 131, 0);
@@ -298,221 +170,204 @@
   --hud: rgba(0, 0, 0, 0.45);
   --hud-foreground: rgb(255, 255, 255);
   --scrim: rgb(0, 0, 0);
+  --surface: rgb(255, 255, 255);
+  --world-foreground: rgb(255, 255, 255);
+  --world-foreground-muted: rgba(255, 255, 255, 0.8);
+  --world-success: rgb(68, 185, 103);
+  --world-destructive: rgb(255, 96, 85);
   --vital-health: rgb(228, 0, 21);
   --vital-armor: rgb(59, 156, 246);
   --vital-hunger: rgb(247, 162, 36);
   --vital-thirst: rgb(30, 197, 228);
-  --vital-stress: rgb(204, 103, 227);
-  --nk-scale: 1;
-  --nk-motion: 1;
-  --brand: rgb(212, 212, 212);
-  --brand-foreground: rgb(0, 0, 0);
-  --world-foreground: rgb(255, 255, 255);
-  --world-foreground-muted: rgba(255, 255, 255, 0.8);
   --world-shadow: 0 1px 2px rgba(0, 0, 0, 0.65), 0 0 0.5rem rgba(0, 0, 0, 0.35);
-  --world-success: rgb(68, 185, 103);
-  --world-destructive: rgb(255, 96, 85);
-  --font-display: "Inter Tight", Inter, ui-sans-serif, system-ui, sans-serif;
-  --font-numeric: Inter, ui-sans-serif, system-ui, sans-serif;
-  --nk-type-ratio: 1.2;
-  --nk-weight-body: 400;
-  --nk-weight-strong: 600;
-  --nk-weight-display: 700;
-  --nk-tracking-display: -0.02em;
-  --nk-label-case: uppercase;
-  --nk-tracking-label: 0.06em;
-  --nk-border-width: 1px;
-  --nk-cut: 0px;
-  --nk-display-style: normal;
-  --nk-pause-style: sheet;
-  --nk-pause-surface: undefined;
-  --nk-pause-ink: undefined;
-  --nk-skew: 0deg;
-  --nk-surface-opacity: 0.96;
-  --nk-surface-tint: 0.02;
-  --nk-surface-gradient: 0;
-  --nk-surface-edge: 0.06;
-  --nk-elevation: soft;
-  --nk-glow: 0;
-  --nk-density: 0.875;
-  --nk-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
-  --nk-duration: 140ms;
-  --nk-hud-opacity: 0.55;
-  --nk-hud-text-shadow: soft;
-  --nk-gauge-style: arc;
-  --nk-gauge-track: 0.25rem;
-  --nk-gauge-ticks: 1;
-  --nk-row-indicator: bar;
-  --surface: rgb(254, 254, 254);
-  --nk-elevation-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25), 0 12px 32px -16px rgba(0, 0, 0, 0.6);
-  --nk-hud-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
-  --nk-row-bar: 1;
-  --nk-row-fill: 0;
-  --nk-row-outline: 0;
-  --nk-clip: none;
-  --nk-clip-sm: none;
-  --nk-motion-feel: crisp;
-  --nk-spring-bounce: 0;
-  --nk-motion-move: 1;
-  --nk-time-instant: 0ms;
-  --nk-time-snap: 70ms;
-  --nk-time-fast: 93ms;
-  --nk-time-slow: 218ms;
-  --nk-time-press: 70ms;
-  --nk-time-hover: 105ms;
-  --nk-time-base: 140ms;
-  --nk-time-exit: 98ms;
-  --nk-time-move: 210ms;
-  --nk-time-modal: 175ms;
-  --nk-time-screen: 350ms;
-  --nk-time-ambient: 400ms;
-  --nk-stagger: 20ms;
-  --nk-stagger-max: 100ms;
-  --nk-ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
-  --nk-ease-in: cubic-bezier(0.4, 0, 1, 1);
-  --nk-ease-in-out: cubic-bezier(0.2, 0, 0, 1);
-  --nk-ease-emphasized: cubic-bezier(0.05, 0.7, 0.1, 1);
-  --nk-ease-linear: linear;
-  --nk-spring-snap: 160ms 0;
-  --nk-spring-move: 240ms 0.1;
-  --nk-spring-soft: 360ms 0;
-  --nk-spring-pop: 260ms 0.3;
-  --nk-treatment: soft;
-  --nk-focus-style: ring;
-  --nk-hold-style: bar;
-  --nk-confirm-scale: 1.04;
-  --nk-level-style: bar;
+  --pause-surface: rgb(246, 247, 249);
+  --pause-ink: rgb(14, 16, 20);
+  --vital-stress: rgb(204, 103, 227);
   --role-health: rgb(228, 0, 21);
-  --role-armor: rgb(59, 156, 246);
-  --role-hunger: rgb(247, 162, 36);
-  --role-thirst: rgb(30, 197, 228);
-  --role-stress: rgb(204, 103, 227);
-  --role-stamina: rgb(0, 146, 66);
-  --role-oxygen: rgb(23, 23, 23);
-  --role-info: rgb(23, 23, 23);
-  --role-success: rgb(0, 146, 66);
-  --role-warning: rgb(194, 131, 0);
-  --role-danger: rgb(228, 0, 21);
-  --role-police: rgb(49, 134, 233);
-  --role-ems: rgb(237, 74, 73);
-  --role-mech: rgb(238, 145, 56);
-  --role-gang: rgb(157, 87, 222);
-  --role-civ: rgb(115, 115, 115);
-  --role-staff: rgb(212, 212, 212);
-  --role-common: rgb(115, 115, 115);
-  --role-uncommon: rgb(84, 191, 92);
-  --role-rare: rgb(52, 150, 239);
-  --role-epic: rgb(166, 87, 237);
-  --role-legendary: rgb(242, 166, 24);
-  --role-brand: rgb(212, 212, 212);
-  --role-neutral: rgb(115, 115, 115);
   --role-health-deep: rgb(168, 0, 10);
   --role-health-light: rgb(251, 88, 77);
+  --role-armor: rgb(59, 156, 246);
   --role-armor-deep: rgb(30, 119, 197);
   --role-armor-light: rgb(122, 188, 255);
+  --role-hunger: rgb(247, 162, 36);
   --role-hunger-deep: rgb(201, 127, 0);
   --role-hunger-light: rgb(255, 204, 140);
+  --role-thirst: rgb(30, 197, 228);
   --role-thirst-deep: rgb(0, 157, 183);
   --role-thirst-light: rgb(112, 227, 254);
+  --role-stress: rgb(204, 103, 227);
   --role-stress-deep: rgb(160, 72, 180);
   --role-stress-light: rgb(230, 144, 250);
+  --role-stamina: rgb(0, 146, 66);
   --role-stamina-deep: rgb(0, 106, 45);
   --role-stamina-light: rgb(81, 174, 105);
+  --role-oxygen: rgb(23, 23, 23);
   --role-oxygen-deep: rgb(22, 22, 22);
   --role-oxygen-light: rgb(47, 47, 47);
+  --role-info: rgb(23, 23, 23);
   --role-info-deep: rgb(22, 22, 22);
   --role-info-light: rgb(47, 47, 47);
+  --role-success: rgb(0, 146, 66);
   --role-success-deep: rgb(0, 106, 45);
   --role-success-light: rgb(81, 174, 105);
+  --role-warning: rgb(194, 131, 0);
   --role-warning-deep: rgb(148, 99, 0);
   --role-warning-light: rgb(220, 165, 84);
+  --role-danger: rgb(228, 0, 21);
   --role-danger-deep: rgb(168, 0, 10);
   --role-danger-light: rgb(251, 88, 77);
+  --role-police: rgb(49, 134, 233);
   --role-police-deep: rgb(19, 98, 183);
   --role-police-light: rgb(98, 167, 253);
+  --role-ems: rgb(237, 74, 73);
   --role-ems-deep: rgb(186, 43, 46);
   --role-ems-light: rgb(255, 126, 118);
+  --role-mech: rgb(238, 145, 56);
   --role-mech-deep: rgb(192, 111, 28);
   --role-mech-light: rgb(255, 185, 126);
+  --role-gang: rgb(157, 87, 222);
   --role-gang-deep: rgb(118, 55, 173);
   --role-gang-light: rgb(184, 127, 242);
+  --role-civ: rgb(115, 115, 115);
   --role-civ-deep: rgb(81, 81, 81);
   --role-civ-light: rgb(145, 145, 145);
+  --role-staff: rgb(212, 212, 212);
   --role-staff-deep: rgb(174, 174, 174);
   --role-staff-light: rgb(238, 238, 238);
+  --role-common: rgb(115, 115, 115);
   --role-common-deep: rgb(81, 81, 81);
   --role-common-light: rgb(145, 145, 145);
+  --role-uncommon: rgb(84, 191, 92);
   --role-uncommon-deep: rgb(56, 151, 64);
   --role-uncommon-light: rgb(133, 220, 136);
+  --role-rare: rgb(52, 150, 239);
   --role-rare-deep: rgb(21, 113, 190);
   --role-rare-light: rgb(108, 182, 255);
+  --role-epic: rgb(166, 87, 237);
   --role-epic-deep: rgb(127, 55, 187);
   --role-epic-light: rgb(192, 130, 255);
+  --role-legendary: rgb(242, 166, 24);
   --role-legendary-deep: rgb(195, 131, 0);
   --role-legendary-light: rgb(255, 205, 130);
+  --role-brand: rgb(212, 212, 212);
   --role-brand-deep: rgb(174, 174, 174);
   --role-brand-light: rgb(238, 238, 238);
+  --role-neutral: rgb(115, 115, 115);
   --role-neutral-deep: rgb(81, 81, 81);
   --role-neutral-light: rgb(145, 145, 145);
-  --nk-hue-line: 0.5;
-  --nk-hue-tint: 0.14;
-  --nk-hue-glow: 0.45;
-  --nk-hue-alert: 0.24;
-  --nk-material-hud-opacity: 0.55;
-  --nk-material-hud-blur: 0px;
-  --nk-material-hud-radius: 0.625rem;
-  --nk-material-hud-edge: 0.06;
+  --font-sans: Geist, Inter, "Segoe UI", system-ui, sans-serif;
+  --font-display: "Barlow Condensed", "Arial Narrow", sans-serif;
+  --font-numeric: "Barlow Condensed", "Arial Narrow", sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, monospace;
+  --nk-scale: 1;
+  --nk-density: 1;
+  --nk-height-key: 1.5rem;
+  --nk-height-control: 2.25rem;
+  --nk-height-field: 2.75rem;
+  --nk-icon-sm: 0.75rem;
+  --nk-icon-md: 1rem;
+  --nk-icon-lg: 1.25rem;
+  --nk-icon-stroke: 2;
+  --nk-text-base: 1rem;
+  --nk-text-key: 0.8125rem;
+  --nk-text-row: 1.125rem;
+  --nk-text-desc: 0.875rem;
+  --nk-leading-tight: 1rem;
+  --nk-leading-normal: 1.25rem;
+  --nk-shape-skew: -12deg;
+  --nk-shape-slab: 0deg;
+  --nk-shape-cut: 0px;
+  --nk-shape-stroke: 1px;
+  --nk-type-ratio: 1.25;
+  --nk-type-weight-body: 400;
+  --nk-type-weight-strong: 500;
+  --nk-type-weight-display: 700;
+  --nk-type-tracking-display: -0.02em;
+  --nk-type-tracking-label: 0.06em;
+  --nk-type-case: uppercase;
+  --nk-type-slant: italic;
+  --nk-type-overhang: 0.15em;
+  --nk-type-scan-weight: 800;
+  --nk-type-scan-tracking: 0.02em;
+  --nk-type-title-weight: 800;
+  --nk-type-title-tracking: 0.02em;
+  --nk-type-label-weight: 700;
+  --nk-type-label-tracking: 0.03em;
+  --nk-type-num-weight: 700;
+  --nk-type-num-tracking: 0.01em;
+  --nk-type-num-case: none;
+  --nk-type-body-style: normal;
+  --nk-type-body-tracking: 0em;
+  --nk-type-body-case: none;
+  --nk-surface-tint: 0;
+  --nk-surface-gradient: 0;
+  --nk-surface-elevation: hard;
+  --nk-surface-glow: 0;
+  --nk-surface-glow-budget: 1;
+  --nk-surface-backdrop: off;
+  --nk-surface-legibility: auto;
+  --nk-surface-legibility-lift: 0.5;
+  --nk-surface-slash: none;
+  --nk-material-hud-opacity: 0.8;
   --nk-material-hud-texture: none;
-  --nk-material-menu-opacity: 0.96;
+  --nk-material-menu-opacity: 0.94;
   --nk-material-menu-blur: 0px;
-  --nk-material-menu-radius: 0.625rem;
-  --nk-material-menu-edge: 0.06;
+  --nk-material-menu-edge: 0;
   --nk-material-menu-texture: none;
-  --nk-material-overlay-opacity: 0.96;
-  --nk-material-overlay-blur: 0px;
-  --nk-material-overlay-radius: 0.625rem;
-  --nk-material-overlay-edge: 0.06;
-  --nk-material-overlay-texture: none;
-  --nk-backdrop: off;
-  --nk-slash: none;
-  --nk-legibility: auto;
-  --nk-legibility-lift: 0.5;
-  --nk-alert-threshold: 0.2;
-  --nk-fuel-threshold: 0.15;
-  --nk-notify-ms-info: 5000ms;
-  --nk-notify-ms-success: 5000ms;
-  --nk-notify-ms-warning: 5000ms;
-  --nk-notify-ms-danger: 5000ms;
-  --nk-hold-ms: 800ms;
-  --nk-cooldown-ms: 0ms;
-  --nk-rest-delay: 0ms;
+  --nk-hud-text: soft;
+  --nk-motion: 1;
+  --nk-motion-duration: 180ms;
+  --nk-motion-ease: cubic-bezier(0.2, 0, 0, 1);
+  --nk-motion-feel: crisp;
+  --nk-motion-bounce: 0;
+  --nk-motion-exit-factor: 0.7;
+  --nk-motion-reduced: 100ms;
   --nk-motion-profile: full;
-  --nk-ease-standard: cubic-bezier(0.2, 0, 0, 1);
-  --nk-ease-expand: cubic-bezier(0.05, 0.7, 0.1, 1);
-  --nk-ease-retract: cubic-bezier(0.4, 0, 1, 1);
-  --nk-ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
-  --nk-ease-breathe: cubic-bezier(0.37, 0, 0.63, 1);
-  --nk-time-confirm: 91ms;
-  --nk-time-retract: 217ms;
+  --nk-style-fill: solid;
+  --nk-style-level: liquid;
+  --nk-style-hold: fill;
+  --nk-style-gauge: digital;
+  --nk-style-focus: halo;
+  --nk-style-vital: expand;
+  --nk-style-vital-icon: uniform;
+  --nk-style-vital-neighbours: push;
+  --nk-style-pause: sheet;
+  --nk-behavior-alert: 0.2;
+  --nk-behavior-rest: 3000ms;
+  --nk-behavior-notify-info: 4000ms;
+  --nk-behavior-notify-success: 4000ms;
+  --nk-behavior-notify-warning: 5000ms;
+  --nk-behavior-notify-danger: 7000ms;
+  --nk-hue-line: 0.5;
+  --nk-hue-tint: 0.1;
+  --nk-hue-glow: 0.25;
+  --nk-hue-alert: 0.8;
+  --nk-layer-dim: 50;
+  --nk-layer-dialog: 60;
+  --nk-time-snap: 90ms;
+  --nk-time-fast: 120ms;
+  --nk-time-base: 180ms;
+  --nk-time-slow: 280ms;
   --nk-time-fill: 420ms;
+  --nk-time-exit: 126ms;
   --nk-time-pulse: 1000ms;
-  --nk-z-world: 10;
-  --nk-z-hud: 20;
-  --nk-z-scrim: 30;
-  --nk-z-surface: 40;
-  --nk-z-dim: 50;
-  --nk-z-dialog: 60;
-  --nk-z-system: 70;
-  --nk-focus-shift: 0rem;
-  --nk-glow-budget: 1;
-  --nk-exit-factor: 0.7;
-  --nk-time-reduced: 100ms;
+  --nk-spring-snap: 210ms 0;
+  --nk-spring-move: 310ms 0.1;
+  --nk-spring-soft: 450ms 0;
+  --nk-spring-pop: 330ms 0.3;
+  --nk-stagger: 40ms;
+  --nk-stagger-max: 100ms;
+  --nk-line-clip: none;
+  --nk-line-clip-sm: none;
+  --nk-depth-elevation: 0 0.25rem 0 0 rgba(0, 0, 0, 0.5);
+  --nk-depth-text: 0 1px 2px rgba(0, 0, 0, 0.6);
 }
 
 .dark {
   --destructive-foreground: rgb(10, 10, 10);
-  --font-sans: Inter, ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --radius: 0.75rem;
+  --brand: rgb(212, 212, 212);
+  --brand-foreground: rgb(0, 0, 0);
   --success: rgb(20, 190, 90);
   --success-foreground: rgb(10, 10, 10);
   --warning: rgb(245, 166, 0);
@@ -522,215 +377,197 @@
   --hud: rgba(0, 0, 0, 0.45);
   --hud-foreground: rgb(255, 255, 255);
   --scrim: rgb(0, 0, 0);
+  --surface: rgb(23, 23, 23);
+  --world-foreground: rgb(255, 255, 255);
+  --world-foreground-muted: rgba(255, 255, 255, 0.8);
+  --world-success: rgb(20, 190, 90);
+  --world-destructive: rgb(255, 100, 103);
   --vital-health: rgb(255, 100, 103);
   --vital-armor: rgb(59, 156, 246);
   --vital-hunger: rgb(247, 162, 36);
   --vital-thirst: rgb(30, 197, 228);
-  --vital-stress: rgb(204, 103, 227);
-  --nk-scale: 1;
-  --nk-motion: 1;
-  --brand: rgb(212, 212, 212);
-  --brand-foreground: rgb(0, 0, 0);
-  --world-foreground: rgb(255, 255, 255);
-  --world-foreground-muted: rgba(255, 255, 255, 0.8);
   --world-shadow: 0 1px 2px rgba(0, 0, 0, 0.65), 0 0 0.5rem rgba(0, 0, 0, 0.35);
-  --world-success: rgb(20, 190, 90);
-  --world-destructive: rgb(255, 100, 103);
-  --font-display: "Inter Tight", Inter, ui-sans-serif, system-ui, sans-serif;
-  --font-numeric: Inter, ui-sans-serif, system-ui, sans-serif;
-  --nk-type-ratio: 1.2;
-  --nk-weight-body: 400;
-  --nk-weight-strong: 600;
-  --nk-weight-display: 700;
-  --nk-tracking-display: -0.02em;
-  --nk-label-case: uppercase;
-  --nk-tracking-label: 0.06em;
-  --nk-border-width: 1px;
-  --nk-cut: 0px;
-  --nk-display-style: normal;
-  --nk-pause-style: sheet;
-  --nk-pause-surface: undefined;
-  --nk-pause-ink: undefined;
-  --nk-skew: 0deg;
-  --nk-surface-opacity: 0.96;
-  --nk-surface-tint: 0.02;
-  --nk-surface-gradient: 0;
-  --nk-surface-edge: 0.06;
-  --nk-elevation: soft;
-  --nk-glow: 0;
-  --nk-density: 0.875;
-  --nk-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
-  --nk-duration: 140ms;
-  --nk-hud-opacity: 0.55;
-  --nk-hud-text-shadow: soft;
-  --nk-gauge-style: arc;
-  --nk-gauge-track: 0.25rem;
-  --nk-gauge-ticks: 1;
-  --nk-row-indicator: bar;
-  --surface: rgb(27, 27, 27);
-  --nk-elevation-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25), 0 12px 32px -16px rgba(0, 0, 0, 0.6);
-  --nk-hud-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
-  --nk-row-bar: 1;
-  --nk-row-fill: 0;
-  --nk-row-outline: 0;
-  --nk-clip: none;
-  --nk-clip-sm: none;
-  --nk-motion-feel: crisp;
-  --nk-spring-bounce: 0;
-  --nk-motion-move: 1;
-  --nk-time-instant: 0ms;
-  --nk-time-snap: 70ms;
-  --nk-time-fast: 93ms;
-  --nk-time-slow: 218ms;
-  --nk-time-press: 70ms;
-  --nk-time-hover: 105ms;
-  --nk-time-base: 140ms;
-  --nk-time-exit: 98ms;
-  --nk-time-move: 210ms;
-  --nk-time-modal: 175ms;
-  --nk-time-screen: 350ms;
-  --nk-time-ambient: 400ms;
-  --nk-stagger: 20ms;
-  --nk-stagger-max: 100ms;
-  --nk-ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
-  --nk-ease-in: cubic-bezier(0.4, 0, 1, 1);
-  --nk-ease-in-out: cubic-bezier(0.2, 0, 0, 1);
-  --nk-ease-emphasized: cubic-bezier(0.05, 0.7, 0.1, 1);
-  --nk-ease-linear: linear;
-  --nk-spring-snap: 160ms 0;
-  --nk-spring-move: 240ms 0.1;
-  --nk-spring-soft: 360ms 0;
-  --nk-spring-pop: 260ms 0.3;
-  --nk-treatment: soft;
-  --nk-focus-style: ring;
-  --nk-hold-style: bar;
-  --nk-confirm-scale: 1.04;
-  --nk-level-style: bar;
+  --pause-surface: rgb(246, 247, 249);
+  --pause-ink: rgb(14, 16, 20);
+  --vital-stress: rgb(204, 103, 227);
   --role-health: rgb(255, 100, 103);
-  --role-armor: rgb(59, 156, 246);
-  --role-hunger: rgb(247, 162, 36);
-  --role-thirst: rgb(30, 197, 228);
-  --role-stress: rgb(204, 103, 227);
-  --role-stamina: rgb(20, 190, 90);
-  --role-oxygen: rgb(229, 229, 229);
-  --role-info: rgb(229, 229, 229);
-  --role-success: rgb(20, 190, 90);
-  --role-warning: rgb(245, 166, 0);
-  --role-danger: rgb(255, 100, 103);
-  --role-police: rgb(49, 134, 233);
-  --role-ems: rgb(237, 74, 73);
-  --role-mech: rgb(238, 145, 56);
-  --role-gang: rgb(157, 87, 222);
-  --role-civ: rgb(161, 161, 161);
-  --role-staff: rgb(212, 212, 212);
-  --role-common: rgb(161, 161, 161);
-  --role-uncommon: rgb(84, 191, 92);
-  --role-rare: rgb(52, 150, 239);
-  --role-epic: rgb(166, 87, 237);
-  --role-legendary: rgb(242, 166, 24);
-  --role-brand: rgb(212, 212, 212);
-  --role-neutral: rgb(161, 161, 161);
   --role-health-deep: rgb(204, 70, 74);
   --role-health-light: rgb(255, 158, 155);
+  --role-armor: rgb(59, 156, 246);
   --role-armor-deep: rgb(30, 119, 197);
   --role-armor-light: rgb(122, 188, 255);
+  --role-hunger: rgb(247, 162, 36);
   --role-hunger-deep: rgb(201, 127, 0);
   --role-hunger-light: rgb(255, 204, 140);
+  --role-thirst: rgb(30, 197, 228);
   --role-thirst-deep: rgb(0, 157, 183);
   --role-thirst-light: rgb(112, 227, 254);
+  --role-stress: rgb(204, 103, 227);
   --role-stress-deep: rgb(160, 72, 180);
   --role-stress-light: rgb(230, 144, 250);
+  --role-stamina: rgb(20, 190, 90);
   --role-stamina-deep: rgb(0, 148, 66);
   --role-stamina-light: rgb(102, 219, 133);
+  --role-oxygen: rgb(229, 229, 229);
   --role-oxygen-deep: rgb(190, 190, 190);
   --role-oxygen-light: rgb(238, 238, 238);
+  --role-info: rgb(229, 229, 229);
   --role-info-deep: rgb(190, 190, 190);
   --role-info-light: rgb(238, 238, 238);
+  --role-success: rgb(20, 190, 90);
   --role-success-deep: rgb(0, 148, 66);
   --role-success-light: rgb(102, 219, 133);
+  --role-warning: rgb(245, 166, 0);
   --role-warning-deep: rgb(197, 132, 0);
   --role-warning-light: rgb(255, 207, 136);
+  --role-danger: rgb(255, 100, 103);
   --role-danger-deep: rgb(204, 70, 74);
   --role-danger-light: rgb(255, 158, 155);
+  --role-police: rgb(49, 134, 233);
   --role-police-deep: rgb(19, 98, 183);
   --role-police-light: rgb(98, 167, 253);
+  --role-ems: rgb(237, 74, 73);
   --role-ems-deep: rgb(186, 43, 46);
   --role-ems-light: rgb(255, 126, 118);
+  --role-mech: rgb(238, 145, 56);
   --role-mech-deep: rgb(192, 111, 28);
   --role-mech-light: rgb(255, 185, 126);
+  --role-gang: rgb(157, 87, 222);
   --role-gang-deep: rgb(118, 55, 173);
   --role-gang-light: rgb(184, 127, 242);
+  --role-civ: rgb(161, 161, 161);
   --role-civ-deep: rgb(125, 125, 125);
   --role-civ-light: rgb(192, 192, 192);
+  --role-staff: rgb(212, 212, 212);
   --role-staff-deep: rgb(174, 174, 174);
   --role-staff-light: rgb(238, 238, 238);
+  --role-common: rgb(161, 161, 161);
   --role-common-deep: rgb(125, 125, 125);
   --role-common-light: rgb(192, 192, 192);
+  --role-uncommon: rgb(84, 191, 92);
   --role-uncommon-deep: rgb(56, 151, 64);
   --role-uncommon-light: rgb(133, 220, 136);
+  --role-rare: rgb(52, 150, 239);
   --role-rare-deep: rgb(21, 113, 190);
   --role-rare-light: rgb(108, 182, 255);
+  --role-epic: rgb(166, 87, 237);
   --role-epic-deep: rgb(127, 55, 187);
   --role-epic-light: rgb(192, 130, 255);
+  --role-legendary: rgb(242, 166, 24);
   --role-legendary-deep: rgb(195, 131, 0);
   --role-legendary-light: rgb(255, 205, 130);
+  --role-brand: rgb(212, 212, 212);
   --role-brand-deep: rgb(174, 174, 174);
   --role-brand-light: rgb(238, 238, 238);
+  --role-neutral: rgb(161, 161, 161);
   --role-neutral-deep: rgb(125, 125, 125);
   --role-neutral-light: rgb(192, 192, 192);
-  --nk-hue-line: 0.5;
-  --nk-hue-tint: 0.14;
-  --nk-hue-glow: 0.45;
-  --nk-hue-alert: 0.24;
-  --nk-material-hud-opacity: 0.55;
-  --nk-material-hud-blur: 0px;
-  --nk-material-hud-radius: 0.625rem;
-  --nk-material-hud-edge: 0.06;
+  --font-sans: Geist, Inter, "Segoe UI", system-ui, sans-serif;
+  --font-display: "Barlow Condensed", "Arial Narrow", sans-serif;
+  --font-numeric: "Barlow Condensed", "Arial Narrow", sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, monospace;
+  --nk-scale: 1;
+  --nk-density: 1;
+  --nk-height-key: 1.5rem;
+  --nk-height-control: 2.25rem;
+  --nk-height-field: 2.75rem;
+  --nk-icon-sm: 0.75rem;
+  --nk-icon-md: 1rem;
+  --nk-icon-lg: 1.25rem;
+  --nk-icon-stroke: 2;
+  --nk-text-base: 1rem;
+  --nk-text-key: 0.8125rem;
+  --nk-text-row: 1.125rem;
+  --nk-text-desc: 0.875rem;
+  --nk-leading-tight: 1rem;
+  --nk-leading-normal: 1.25rem;
+  --nk-shape-skew: -12deg;
+  --nk-shape-slab: 0deg;
+  --nk-shape-cut: 0px;
+  --nk-shape-stroke: 1px;
+  --nk-type-ratio: 1.25;
+  --nk-type-weight-body: 400;
+  --nk-type-weight-strong: 500;
+  --nk-type-weight-display: 700;
+  --nk-type-tracking-display: -0.02em;
+  --nk-type-tracking-label: 0.06em;
+  --nk-type-case: uppercase;
+  --nk-type-slant: italic;
+  --nk-type-overhang: 0.15em;
+  --nk-type-scan-weight: 800;
+  --nk-type-scan-tracking: 0.02em;
+  --nk-type-title-weight: 800;
+  --nk-type-title-tracking: 0.02em;
+  --nk-type-label-weight: 700;
+  --nk-type-label-tracking: 0.03em;
+  --nk-type-num-weight: 700;
+  --nk-type-num-tracking: 0.01em;
+  --nk-type-num-case: none;
+  --nk-type-body-style: normal;
+  --nk-type-body-tracking: 0em;
+  --nk-type-body-case: none;
+  --nk-surface-tint: 0;
+  --nk-surface-gradient: 0;
+  --nk-surface-elevation: hard;
+  --nk-surface-glow: 0;
+  --nk-surface-glow-budget: 1;
+  --nk-surface-backdrop: off;
+  --nk-surface-legibility: auto;
+  --nk-surface-legibility-lift: 0.5;
+  --nk-surface-slash: none;
+  --nk-material-hud-opacity: 0.8;
   --nk-material-hud-texture: none;
-  --nk-material-menu-opacity: 0.96;
+  --nk-material-menu-opacity: 0.94;
   --nk-material-menu-blur: 0px;
-  --nk-material-menu-radius: 0.625rem;
-  --nk-material-menu-edge: 0.06;
+  --nk-material-menu-edge: 0;
   --nk-material-menu-texture: none;
-  --nk-material-overlay-opacity: 0.96;
-  --nk-material-overlay-blur: 0px;
-  --nk-material-overlay-radius: 0.625rem;
-  --nk-material-overlay-edge: 0.06;
-  --nk-material-overlay-texture: none;
-  --nk-backdrop: off;
-  --nk-slash: none;
-  --nk-legibility: auto;
-  --nk-legibility-lift: 0.5;
-  --nk-alert-threshold: 0.2;
-  --nk-fuel-threshold: 0.15;
-  --nk-notify-ms-info: 5000ms;
-  --nk-notify-ms-success: 5000ms;
-  --nk-notify-ms-warning: 5000ms;
-  --nk-notify-ms-danger: 5000ms;
-  --nk-hold-ms: 800ms;
-  --nk-cooldown-ms: 0ms;
-  --nk-rest-delay: 0ms;
+  --nk-hud-text: soft;
+  --nk-motion: 1;
+  --nk-motion-duration: 180ms;
+  --nk-motion-ease: cubic-bezier(0.2, 0, 0, 1);
+  --nk-motion-feel: crisp;
+  --nk-motion-bounce: 0;
+  --nk-motion-exit-factor: 0.7;
+  --nk-motion-reduced: 100ms;
   --nk-motion-profile: full;
-  --nk-ease-standard: cubic-bezier(0.2, 0, 0, 1);
-  --nk-ease-expand: cubic-bezier(0.05, 0.7, 0.1, 1);
-  --nk-ease-retract: cubic-bezier(0.4, 0, 1, 1);
-  --nk-ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
-  --nk-ease-breathe: cubic-bezier(0.37, 0, 0.63, 1);
-  --nk-time-confirm: 91ms;
-  --nk-time-retract: 217ms;
+  --nk-style-fill: solid;
+  --nk-style-level: liquid;
+  --nk-style-hold: fill;
+  --nk-style-gauge: digital;
+  --nk-style-focus: halo;
+  --nk-style-vital: expand;
+  --nk-style-vital-icon: uniform;
+  --nk-style-vital-neighbours: push;
+  --nk-style-pause: sheet;
+  --nk-behavior-alert: 0.2;
+  --nk-behavior-rest: 3000ms;
+  --nk-behavior-notify-info: 4000ms;
+  --nk-behavior-notify-success: 4000ms;
+  --nk-behavior-notify-warning: 5000ms;
+  --nk-behavior-notify-danger: 7000ms;
+  --nk-hue-line: 0.5;
+  --nk-hue-tint: 0.1;
+  --nk-hue-glow: 0.25;
+  --nk-hue-alert: 0.8;
+  --nk-layer-dim: 50;
+  --nk-layer-dialog: 60;
+  --nk-time-snap: 90ms;
+  --nk-time-fast: 120ms;
+  --nk-time-base: 180ms;
+  --nk-time-slow: 280ms;
   --nk-time-fill: 420ms;
+  --nk-time-exit: 126ms;
   --nk-time-pulse: 1000ms;
-  --nk-z-world: 10;
-  --nk-z-hud: 20;
-  --nk-z-scrim: 30;
-  --nk-z-surface: 40;
-  --nk-z-dim: 50;
-  --nk-z-dialog: 60;
-  --nk-z-system: 70;
-  --nk-focus-shift: 0rem;
-  --nk-glow-budget: 1;
-  --nk-exit-factor: 0.7;
-  --nk-time-reduced: 100ms;
+  --nk-spring-snap: 210ms 0;
+  --nk-spring-move: 310ms 0.1;
+  --nk-spring-soft: 450ms 0;
+  --nk-spring-pop: 330ms 0.3;
+  --nk-stagger: 40ms;
+  --nk-stagger-max: 100ms;
+  --nk-line-clip: none;
+  --nk-line-clip-sm: none;
+  --nk-depth-elevation: 0 0.25rem 0 0 rgba(0, 0, 0, 0.5);
+  --nk-depth-text: 0 1px 2px rgba(0, 0, 0, 0.6);
 }
 
 /* Readability at 1080p (docs/design/research.md §3): small text one step up from Tailwind's defaults,
@@ -792,8 +629,8 @@
   --color-surface: var(--surface);
   --font-display: var(--font-display);
   --font-numeric: var(--font-numeric);
-  --default-transition-duration: var(--nk-time-base, var(--nk-duration));
-  --default-transition-timing-function: var(--nk-ease);
+  --default-transition-duration: var(--nk-time-base, var(--nk-motion-duration));
+  --default-transition-timing-function: var(--nk-motion-ease);
 }
 
 @layer base {
@@ -856,12 +693,12 @@
 /* NUI scale: the kit is designed at 1080p and grows with the game's resolution (docs/design.md). */
 @layer base {
   /* 1rem = 16px at 1080p, scaling with the game's resolution (21px at 1440p, 32px at 4K), and with the width
-     on a screen narrower than 16:9 (16:10, 4:3) so the 16:9 design fits; never under 16px × --nk-scale-min
+     on a screen narrower than 16:9 (16:10, 4:3) so the 16:9 design fits; never under 16px × --nk-screen-scale-min
      (12px), times --nk-scale (the theme's UI size × the player's UI scale preference). docs/design/layout.md */
   html {
-    font-size: calc(clamp(calc(16px * var(--nk-scale-min, 0.75)), min(1.4815vh, 0.8333vw), 32px) * var(--nk-scale, 1));
+    font-size: calc(clamp(calc(16px * var(--nk-screen-scale-min, 0.75)), min(1.4815vh, 0.8333vw), 32px) * var(--nk-scale, 1));
     font-family: var(--font-sans, ui-sans-serif, system-ui, sans-serif);
-    font-weight: var(--nk-weight-body, 400);
+    font-weight: var(--nk-type-weight-body, 400);
     -webkit-font-smoothing: antialiased;
   }
 }
@@ -945,24 +782,52 @@
     --nk-leading-tight: 1rem;
     --nk-leading-normal: 1.25rem;
     /* identity · shape */
-    --nk-shape-skew: 0deg;
+    --nk-shape-skew: -12deg;
+    --nk-shape-slab: 0deg;
     --nk-shape-cut: 0px;
     --nk-shape-stroke: 1px;
     /* identity · type */
     --nk-type-ratio: 1.25;
     --nk-type-weight-body: 400;
-    --nk-type-weight-strong: 600;
-    --nk-type-weight-display: 800;
-    --nk-type-tracking-display: 0.02em;
-    --nk-type-tracking-label: 0.03em;
+    --nk-type-weight-strong: 500;
+    --nk-type-weight-display: 700;
+    --nk-type-tracking-display: -0.02em;
+    --nk-type-tracking-label: 0.06em;
     --nk-type-case: uppercase;
-    --nk-type-slant: normal;
-    --nk-type-overhang: 0em;
+    --nk-type-slant: italic;
+    --nk-type-overhang: 0.15em;
+    --nk-type-scan-family: var(--font-display);
+    --nk-type-scan-style: var(--nk-type-slant);
+    --nk-type-scan-weight: 800;
+    --nk-type-scan-tracking: 0.02em;
+    --nk-type-scan-case: var(--nk-type-case);
+    --nk-type-scan-pad: var(--nk-type-overhang);
+    --nk-type-title-family: var(--font-display);
+    --nk-type-title-style: var(--nk-type-slant);
+    --nk-type-title-weight: 800;
+    --nk-type-title-tracking: 0.02em;
+    --nk-type-title-case: var(--nk-type-case);
+    --nk-type-title-pad: var(--nk-type-overhang);
+    --nk-type-label-family: var(--font-display);
+    --nk-type-label-style: var(--nk-type-slant);
+    --nk-type-label-weight: 700;
+    --nk-type-label-tracking: 0.03em;
+    --nk-type-label-case: var(--nk-type-case);
+    --nk-type-label-pad: var(--nk-type-overhang);
+    --nk-type-num-family: var(--font-numeric);
+    --nk-type-num-style: var(--nk-type-slant);
+    --nk-type-num-weight: 700;
+    --nk-type-num-tracking: 0.01em;
+    --nk-type-num-case: none;
+    --nk-type-num-pad: var(--nk-type-overhang);
+    --nk-type-body-family: var(--font-sans);
+    --nk-type-body-style: normal;
+    --nk-type-body-weight: var(--nk-type-weight-body);
+    --nk-type-body-tracking: 0em;
+    --nk-type-body-case: none;
     /* identity · surface */
-    --nk-surface-opacity: 0.94;
     --nk-surface-tint: 0;
     --nk-surface-gradient: 0;
-    --nk-surface-edge: 0;
     --nk-surface-elevation: hard;
     --nk-surface-glow: 0;
     --nk-surface-glow-budget: 1;
@@ -972,22 +837,13 @@
     --nk-surface-slash: none;
     /* identity · material */
     --nk-material-hud-opacity: 0.8;
-    --nk-material-hud-blur: 0px;
-    --nk-material-hud-radius: var(--radius);
-    --nk-material-hud-edge: 0;
     --nk-material-hud-texture: none;
     --nk-material-menu-opacity: 0.94;
     --nk-material-menu-blur: 0px;
     --nk-material-menu-radius: var(--radius);
     --nk-material-menu-edge: 0;
     --nk-material-menu-texture: none;
-    --nk-material-overlay-opacity: 0.6;
-    --nk-material-overlay-blur: 0px;
-    --nk-material-overlay-radius: var(--radius);
-    --nk-material-overlay-edge: 0;
-    --nk-material-overlay-texture: none;
     /* identity · hud */
-    --nk-hud-opacity: 0.8;
     --nk-hud-text: soft;
     /* identity · motion */
     --nk-motion: 1;
@@ -998,19 +854,18 @@
     --nk-motion-exit-factor: 0.7;
     --nk-motion-reduced: 100ms;
     --nk-motion-profile: full;
-    --nk-motion-move: 1;
     /* identity · style */
     --nk-style-fill: solid;
     --nk-style-level: liquid;
     --nk-style-hold: fill;
     --nk-style-gauge: digital;
     --nk-style-focus: halo;
+    --nk-style-vital: expand;
+    --nk-style-vital-icon: uniform;
+    --nk-style-vital-neighbours: push;
     --nk-style-pause: sheet;
     /* identity · behavior */
     --nk-behavior-alert: 0.2;
-    --nk-behavior-fuel: 0.15;
-    --nk-behavior-hold: 800ms;
-    --nk-behavior-cooldown: 0ms;
     --nk-behavior-rest: 3000ms;
     --nk-behavior-notify-info: 4000ms;
     --nk-behavior-notify-success: 4000ms;
@@ -1022,15 +877,9 @@
     --nk-hue-glow: 0.25;
     --nk-hue-alert: 0.8;
     /* identity · layer */
-    --nk-layer-world: 10;
-    --nk-layer-hud: 20;
-    --nk-layer-scrim: 30;
-    --nk-layer-surface: 40;
     --nk-layer-dim: 50;
     --nk-layer-dialog: 60;
-    --nk-layer-system: 70;
     /* semantic · time */
-    --nk-time-instant: 0ms;
     --nk-time-snap: 90ms;
     --nk-time-fast: 120ms;
     --nk-time-base: 180ms;
@@ -1045,7 +894,6 @@
     --nk-ease-expand: cubic-bezier(0.16, 1, 0.3, 1);
     --nk-ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
     --nk-ease-breathe: cubic-bezier(0.45, 0, 0.55, 1);
-    --nk-ease-linear: linear;
     /* semantic · spring */
     --nk-spring-snap: 0ms 0;
     --nk-spring-move: 0ms 0;
@@ -1061,42 +909,11 @@
     --nk-gesture-deny: 0.3125rem;
     --nk-gesture-press: 0.97;
     --nk-gesture-confirm: 1.08;
-    --nk-gesture-shift: 0rem;
-    /* semantic · voice */
-    --nk-voice-scan-family: var(--font-display);
-    --nk-voice-scan-style: var(--nk-type-slant);
-    --nk-voice-scan-weight: var(--nk-type-weight-display);
-    --nk-voice-scan-tracking: var(--nk-type-tracking-display);
-    --nk-voice-scan-case: var(--nk-type-case);
-    --nk-voice-scan-pad: var(--nk-type-overhang);
-    --nk-voice-title-family: var(--font-display);
-    --nk-voice-title-style: var(--nk-type-slant);
-    --nk-voice-title-weight: var(--nk-type-weight-display);
-    --nk-voice-title-tracking: var(--nk-type-tracking-display);
-    --nk-voice-title-case: var(--nk-type-case);
-    --nk-voice-title-pad: var(--nk-type-overhang);
-    --nk-voice-label-family: var(--font-display);
-    --nk-voice-label-style: var(--nk-type-slant);
-    --nk-voice-label-weight: var(--nk-type-weight-strong);
-    --nk-voice-label-tracking: var(--nk-type-tracking-label);
-    --nk-voice-label-case: var(--nk-type-case);
-    --nk-voice-label-pad: var(--nk-type-overhang);
-    --nk-voice-num-family: var(--font-numeric);
-    --nk-voice-num-style: var(--nk-type-slant);
-    --nk-voice-num-weight: var(--nk-type-weight-strong);
-    --nk-voice-num-tracking: 0.01em;
-    --nk-voice-num-case: none;
-    --nk-voice-num-pad: var(--nk-type-overhang);
-    --nk-voice-body-family: var(--font-sans);
-    --nk-voice-body-style: normal;
-    --nk-voice-body-weight: var(--nk-type-weight-body);
-    --nk-voice-body-tracking: 0em;
-    --nk-voice-body-case: none;
-    --nk-voice-body-pad: 0em;
     /* semantic · plate */
     --nk-plate-color: var(--surface);
     --nk-plate-hair: var(--border);
     --nk-plate-drop: 0 0.125rem 0 rgba(var(--scrim-rgb), 0.6);
+    --nk-plate-bg: rgba(var(--nk-plate-color-rgb, var(--surface-rgb)), var(--nk-alpha-menu));
     --nk-plate-radius: var(--nk-radius-surface);
     /* semantic · fill */
     --nk-fill-color: var(--foreground);
@@ -1104,15 +921,12 @@
     --nk-fill-tint: rgba(var(--foreground-rgb), 0.12);
     --nk-fill-edge: rgba(var(--foreground-rgb), 0.4);
     --nk-fill-alert: var(--destructive);
-    --nk-fill-height: var(--nk-meter-track-height);
+    --nk-fill-height: 0.25rem;
     /* semantic · accent */
     --nk-accent-paint: var(--brand);
     --nk-accent-from: var(--brand);
     --nk-accent-via: var(--nk-accent-from);
     --nk-accent-to: var(--nk-accent-from);
-    /* semantic · list */
-    --nk-list-gap: calc(var(--nk-tile-wall-height) + var(--nk-space-1));
-    --nk-list-pad-x: calc(var(--nk-tile-key-inset) + var(--nk-space-1));
     /* semantic · gap */
     --nk-gap-cluster: var(--nk-space-2);
     --nk-gap-items: var(--nk-space-1);
@@ -1131,7 +945,32 @@
     --nk-alpha-day: 0;
     --nk-alpha-hud: calc(var(--nk-material-hud-opacity) + (1 - var(--nk-material-hud-opacity)) * var(--nk-surface-legibility-lift) * var(--nk-alpha-day));
     --nk-alpha-menu: calc(var(--nk-material-menu-opacity) + (1 - var(--nk-material-menu-opacity)) * var(--nk-surface-legibility-lift) * var(--nk-alpha-day));
-    --nk-alpha-overlay: calc(var(--nk-material-overlay-opacity) + (1 - var(--nk-material-overlay-opacity)) * var(--nk-surface-legibility-lift) * var(--nk-alpha-day));
+    /* semantic · restore */
+    --nk-restore-muted-foreground: var(--muted-foreground);
+    --nk-restore-muted-foreground-rgb: var(--muted-foreground-rgb);
+    --nk-restore-muted-foreground-a: var(--muted-foreground-a);
+    --nk-restore-background: var(--background);
+    --nk-restore-background-rgb: var(--background-rgb);
+    --nk-restore-background-a: var(--background-a);
+    /* component · screen */
+    --nk-screen-ratio: 1.7778;
+    --nk-screen-max: calc(100vh * var(--nk-screen-ratio));
+    --nk-screen-edge: 1.5rem;
+    --nk-screen-scale-min: 0.75;
+    --nk-screen-area-l: max(0px, calc((100vw - var(--nk-screen-max)) / 2));
+    --nk-screen-area-r: max(0px, calc((100vw - var(--nk-screen-max)) / 2));
+    --nk-screen-area-t: 0px;
+    --nk-screen-area-b: 0px;
+    --nk-screen-safe-x: 0rem;
+    --nk-screen-safe-y: 0rem;
+    /* component · zone */
+    --nk-zone-gap: var(--nk-space-3);
+    /* component · region */
+    --nk-region-max: 28rem;
+    --nk-region-pad: var(--nk-gap-surface);
+    /* component · grid */
+    --nk-grid-cell: 5.5rem;
+    --nk-grid-gap: var(--nk-space-2);
     /* component · tile */
     --nk-tile-plate-color: var(--border);
     --nk-tile-plate-dim: var(--nk-tile-plate-color);
@@ -1154,9 +993,9 @@
     --nk-tile-face-confirm-ink: var(--background);
     --nk-tile-face-active: var(--nk-accent-paint);
     --nk-tile-face-hold: rgba(var(--foreground-rgb), 0.35);
-    --nk-tile-legend-font: var(--nk-voice-scan-family);
-    --nk-tile-legend-weight: var(--nk-voice-scan-weight);
-    --nk-tile-legend-pad: calc(var(--nk-voice-scan-pad) / 2);
+    --nk-tile-legend-font: var(--nk-type-scan-family);
+    --nk-tile-legend-weight: var(--nk-type-scan-weight);
+    --nk-tile-legend-pad: calc(var(--nk-type-scan-pad) / 2);
     --nk-tile-legend-shift: 0em;
     --nk-tile-legend-gap: var(--nk-space-1);
     --nk-tile-legend-inset: var(--nk-space-1);
@@ -1170,14 +1009,102 @@
     --nk-tile-key-lift: 1px;
     --nk-tile-key-press: 0.67;
     --nk-tile-key-overhang: 0.25rem;
+    /* component · panel */
+    --nk-panel-bg: rgba(var(--surface-rgb), calc(var(--surface-a) * var(--nk-alpha-menu)));
+    --nk-panel-fg: var(--popover-foreground);
+    --nk-panel-border: var(--nk-plate-hair);
+    --nk-panel-radius: var(--nk-radius-surface);
+    --nk-panel-blur: var(--nk-material-menu-blur);
+    --nk-panel-cut: var(--nk-shape-cut);
+    --nk-panel-clip: var(--nk-line-clip);
+    --nk-panel-gradient: linear-gradient(180deg, rgba(var(--popover-foreground-rgb), var(--nk-surface-gradient)), rgba(var(--popover-foreground-rgb), 0) 60%);
+    --nk-panel-edge: inset 0 1px 0 0 rgba(var(--popover-foreground-rgb), var(--nk-material-menu-edge));
+    --nk-panel-shadow: var(--nk-depth-elevation);
+    --nk-panel-divider: var(--nk-line-width) solid var(--nk-panel-border);
+    --nk-panel-width: 20rem;
+    --nk-panel-width-sm: 18rem;
+    --nk-panel-width-lg: 24rem;
+    --nk-panel-header-height: calc(3.25rem * var(--nk-density));
+    --nk-panel-header-padding: var(--nk-gap-surface) var(--nk-gap-surface) var(--nk-space-4);
+    --nk-panel-title-size: var(--nk-text-title);
+    --nk-panel-body-padding: var(--nk-space-3);
+    --nk-panel-footer-padding: var(--nk-space-4) var(--nk-gap-surface) var(--nk-gap-surface);
+    --nk-panel-footer-rule: none;
+    --nk-panel-actions-bracket: 0px;
+    --nk-panel-actions-bracket-width: calc(var(--nk-line-width) * 2);
+    --nk-panel-actions-bracket-color: var(--brand);
+    /* component · display */
+    --nk-display-size: var(--nk-text-display);
+    --nk-display-weight: var(--nk-type-weight-display);
+    --nk-display-tracking: var(--nk-type-tracking-display);
+    --nk-display-case: var(--nk-type-case);
+    /* component · caption */
+    --nk-caption-font: var(--nk-type-label-family);
+    --nk-caption-size: var(--nk-text-label);
+    --nk-caption-weight: var(--nk-type-weight-strong);
+    --nk-caption-case: var(--nk-type-case);
+    --nk-caption-tracking: var(--nk-type-tracking-label);
+    /* component · row */
+    --nk-row-height: var(--nk-height-row);
+    --nk-row-radius: var(--nk-radius-control);
+    --nk-row-clip: var(--nk-line-clip-sm);
+    --nk-row-pad-y: var(--nk-space-2);
+    --nk-row-pad-x: var(--nk-space-3);
+    --nk-row-padding: var(--nk-row-pad-y) var(--nk-row-pad-x);
+    --nk-row-gap: var(--nk-space-4);
+    --nk-row-font-size: var(--nk-text-base);
+    --nk-row-accent: var(--brand);
+    --nk-row-icon-box: 2rem;
+    --nk-row-bar-width: 0.1875rem;
+    /* component · list */
+    --nk-list-gap: calc(var(--nk-tile-wall-height) + var(--nk-space-1));
+    --nk-list-pad-x: calc(var(--nk-tile-key-inset) + var(--nk-tile-key-overhang));
+    /* component · menu-row */
+    --nk-menu-row-gap: var(--nk-space-1);
+    --nk-menu-row-image-size: 2rem;
+    --nk-menu-row-progress-height: 0.25rem;
+    --nk-menu-row-value-width: 3rem;
+    /* component · selection */
+    --nk-selection-time: var(--nk-time-base);
+    --nk-selection-ease: var(--nk-ease-move);
+    /* component · field */
+    --nk-field-caret-width: 0.125rem;
+    --nk-field-caret-time: var(--nk-time-base);
+    --nk-field-caret-ease: var(--nk-ease-move);
+    --nk-field-mirror-rise: 0.45em;
+    --nk-field-mirror-in: var(--nk-time-slow);
+    --nk-field-mirror-out: var(--nk-time-exit);
+    /* component · stepper */
+    --nk-stepper-delay: 350ms;
+    --nk-stepper-rate: 70ms;
+    /* component · text */
+    --nk-text-key-scale: 1;
+    /* component · notice */
+    --nk-notice-width: 20rem;
+    --nk-notice-width-sm: 18rem;
+    --nk-notice-width-lg: 24rem;
+    /* component · confirm */
+    --nk-confirm-width: 24rem;
+    --nk-confirm-width-sm: 20rem;
+    /* component · edge-sheet */
+    --nk-edge-sheet-header-height: 2rem;
+    /* component · chip */
+    --nk-chip-height: var(--nk-height-chip);
+    --nk-chip-padding: calc(var(--nk-space-unit) * 2.5);
+    --nk-chip-radius: var(--nk-radius-chip);
+    --nk-chip-hud-radius: max(0.25rem, calc(var(--radius) - 0.125rem));
+    --nk-chip-bg: rgba(var(--hud-rgb), max(var(--hud-a), var(--nk-alpha-hud)));
+    --nk-chip-fg: var(--hud-foreground);
+    --nk-chip-font-size: 0.875rem;
+    --nk-chip-weight: var(--nk-type-weight-strong);
+    --nk-chip-active-bg: var(--brand);
+    --nk-chip-active-fg: var(--brand-foreground);
+    --nk-chip-glow: 0 0 calc(var(--nk-line-glow) * 0.75) rgba(var(--brand-rgb), var(--nk-surface-glow));
+    --nk-chip-clip: var(--nk-line-clip-sm);
+    --nk-chip-text-shadow: var(--nk-depth-text);
     /* component · vital-chip */
     --nk-vital-chip-size: 2.125rem;
     --nk-vital-chip-size-sm: 1.625rem;
-    --nk-vital-chip-shape: auto;
-    --nk-vital-chip-display: expand;
-    --nk-vital-chip-icon: uniform;
-    --nk-vital-chip-neighbours: push;
-    --nk-vital-chip-attach: flag;
     --nk-vital-chip-tile-ratio: 0.94;
     --nk-vital-chip-icon-ratio: 0.52;
     --nk-vital-chip-label-size: 0.9375rem;
@@ -1185,8 +1112,101 @@
     --nk-vital-chip-line-width: 0.125rem;
     --nk-vital-chip-plate-drop: 0.25rem;
     --nk-vital-chip-plate-x: 0rem;
-    --nk-vital-chip-activefill-color: transparent;
-    --nk-vital-chip-track-color: rgba(var(--hud-foreground-rgb), 0.16);
+    /* component · meter */
+    --nk-meter-radius: 0.125rem;
+    --nk-meter-glow: 0 0 calc(var(--nk-line-glow) * 0.625) rgba(var(--brand-rgb), var(--nk-surface-glow));
+    --nk-meter-segments: 0;
+    --nk-meter-track-color: rgba(var(--scrim-rgb), 0.35);
+    --nk-meter-segment-size: 0.5rem;
+    --nk-meter-segment-gap: 0.125rem;
+    --nk-meter-segment-color: rgba(var(--popover-rgb), calc(0.85 * var(--nk-meter-segments)));
+    /* component · gauge */
+    --nk-gauge-width: var(--nk-fill-height);
+    --nk-gauge-ticks: 0;
+    --nk-gauge-font: var(--nk-type-num-family);
+    --nk-gauge-track-color: rgba(var(--hud-foreground-rgb), 0.16);
+    --nk-gauge-fill-color: var(--brand);
+    --nk-gauge-needle-color: var(--brand);
+    --nk-gauge-redline-color: var(--destructive);
+    --nk-gauge-tick-color: rgba(var(--hud-foreground-rgb), calc(0.55 * var(--nk-gauge-ticks)));
+    --nk-gauge-tick-major: rgba(var(--hud-foreground-rgb), calc(0.9 * var(--nk-gauge-ticks)));
+    /* component · dial */
+    --nk-dial-disc-opacity: var(--nk-alpha-hud);
+    /* component · ring */
+    --nk-ring-segments: 24;
+    --nk-ring-gap: 4;
+    /* component · speedometer */
+    --nk-speedometer-digit-dim: 0.26;
+    --nk-speedometer-digit-tracking: 0.01em;
+    /* component · level */
+    --nk-level-pip-size: 10%;
+    --nk-level-pip-gap: 2px;
+    --nk-level-hold-pad: 2px;
+    --nk-level-fill-ink: var(--nk-tile-face-confirm-ink);
+    /* component · slab */
+    --nk-slab-height: calc(2.5rem * var(--nk-density));
+    --nk-slab-padding: 0 calc(var(--nk-space-unit) * 3);
+    --nk-slab-gap: calc(var(--nk-space-unit) * 2.5);
+    --nk-slab-radius: var(--nk-chip-radius);
+    --nk-slab-clip: var(--nk-chip-clip);
+    --nk-slab-bg: var(--nk-chip-bg);
+    --nk-slab-fg: var(--nk-chip-fg);
+    --nk-slab-border: rgba(var(--hud-foreground-rgb), 0.08);
+    --nk-slab-font-size: var(--nk-text-base);
+    --nk-slab-weight: var(--nk-type-weight-strong);
+    --nk-slab-text-shadow: none;
+    --nk-slab-tone: var(--brand-rgb);
+    --nk-slab-tile-size: calc(var(--nk-slab-height) - var(--nk-space-unit) * 2);
+    --nk-slab-tile-bg: rgba(var(--hud-foreground-rgb), 0.1);
+    --nk-slab-tile-fg: var(--nk-slab-fg);
+    --nk-slab-tile-radius: max(0.125rem, calc(var(--nk-slab-radius) - var(--nk-space-unit)));
+    --nk-slab-delta-font: var(--nk-type-num-family);
+    --nk-slab-delta-up: var(--world-success);
+    --nk-slab-delta-down: var(--world-destructive);
+    --nk-slab-key-size: 1.5rem;
+    --nk-slab-key-font-size: 0.8125rem;
+    --nk-slab-line-height: 0.1875rem;
+    --nk-slab-line-radius: var(--nk-meter-radius);
+    --nk-slab-line-track: rgba(var(--hud-foreground-rgb), 0.18);
+    --nk-slab-stack-width: 20rem;
+    --nk-slab-stack-gap: calc(var(--nk-space-unit) * 2);
+    --nk-slab-band-padding: calc(var(--nk-space-unit) * 3) calc(var(--nk-space-unit) * 6);
+    --nk-slab-band-gap: var(--nk-space-unit);
+    --nk-slab-band-bg: rgba(var(--scrim-rgb), 0.62);
+    --nk-slab-band-tint: 0.3;
+    --nk-slab-band-edge: 0.6;
+    --nk-slab-band-fg: var(--hud-foreground);
+    --nk-slab-band-title-size: var(--nk-text-section);
+    /* component · item-slot */
+    --nk-item-slot-width: 5rem;
+    --nk-item-slot-width-sm: 3.5rem;
+    --nk-item-slot-width-lg: 6rem;
+    --nk-item-slot-gap: 0.25rem;
+    --nk-item-slot-top-height: 0.75rem;
+    --nk-item-slot-corner-lock: 0.875rem;
+    /* component · key-prompt */
+    --nk-key-prompt-gap: 0.25rem;
+    --nk-key-prompt-min-height: 2.5rem;
+    --nk-key-prompt-min-height-sm: 2rem;
+    --nk-key-prompt-pad-left: 0.5rem;
+    --nk-key-prompt-pad-right: 0.75rem;
+    --nk-key-prompt-pad-y: 0.25rem;
+    --nk-key-prompt-key-height: 1.5rem;
+    /* component · skill-check */
+    --nk-skill-check-size: 10rem;
+    --nk-skill-check-size-sm: 7rem;
+    --nk-skill-check-size-lg: 13rem;
+    --nk-skill-check-key-height: 2rem;
+    --nk-skill-check-key-pad: 0.5rem;
+    /* component · countdown */
+    --nk-countdown-line-width: 10rem;
+    --nk-countdown-line-width-sm: 6rem;
+    --nk-countdown-line-width-hero: 20rem;
+    /* component · stat */
+    --nk-stat-gap: 0.25rem;
+    --nk-stat-label-icon: 0.875rem;
+    /* component · nui-image */
+    --nk-nui-image-icon-max: 1.5rem;
   }
   /* a subtree that changes --nk-density re-derives these */
   [data-nk-density] {
@@ -1203,367 +1223,52 @@
     --nk-gap-items: var(--nk-space-1);
     --nk-gap-pad-x: var(--nk-space-3);
     --nk-gap-surface: var(--nk-space-6);
+    --nk-zone-gap: var(--nk-space-3);
+    --nk-region-pad: var(--nk-gap-surface);
+    --nk-grid-gap: var(--nk-space-2);
+    --nk-tile-legend-gap: var(--nk-space-1);
+    --nk-tile-legend-inset: var(--nk-space-1);
+    --nk-panel-header-height: calc(3.25rem * var(--nk-density));
+    --nk-panel-header-padding: var(--nk-gap-surface) var(--nk-gap-surface) var(--nk-space-4);
+    --nk-panel-body-padding: var(--nk-space-3);
+    --nk-panel-footer-padding: var(--nk-space-4) var(--nk-gap-surface) var(--nk-gap-surface);
+    --nk-row-height: var(--nk-height-row);
+    --nk-row-pad-y: var(--nk-space-2);
+    --nk-row-pad-x: var(--nk-space-3);
+    --nk-row-padding: var(--nk-row-pad-y) var(--nk-row-pad-x);
+    --nk-row-gap: var(--nk-space-4);
+    --nk-list-gap: calc(var(--nk-tile-wall-height) + var(--nk-space-1));
+    --nk-menu-row-gap: var(--nk-space-1);
+    --nk-chip-height: var(--nk-height-chip);
+    --nk-chip-padding: calc(var(--nk-space-unit) * 2.5);
+    --nk-slab-height: calc(2.5rem * var(--nk-density));
+    --nk-slab-padding: 0 calc(var(--nk-space-unit) * 3);
+    --nk-slab-gap: calc(var(--nk-space-unit) * 2.5);
+    --nk-slab-tile-size: calc(var(--nk-slab-height) - var(--nk-space-unit) * 2);
+    --nk-slab-tile-radius: max(0.125rem, calc(var(--nk-slab-radius) - var(--nk-space-unit)));
+    --nk-slab-stack-gap: calc(var(--nk-space-unit) * 2);
+    --nk-slab-band-padding: calc(var(--nk-space-unit) * 3) calc(var(--nk-space-unit) * 6);
+    --nk-slab-band-gap: var(--nk-space-unit);
   }
-  /* a subtree that changes --nk-radius re-derives these */
+  /* a subtree that changes --radius re-derives these */
   [data-nk-shape] {
     --nk-radius-key: max(0.25rem, calc(var(--radius) - 0.5rem));
     --nk-radius-chip: max(0.25rem, calc(var(--radius) - 0.375rem));
     --nk-radius-control: calc(var(--radius) - 0.25rem);
     --nk-radius-surface: var(--nk-material-menu-radius);
+    --nk-material-menu-radius: var(--radius);
+    --nk-plate-radius: var(--nk-radius-surface);
     --nk-tile-face-radius: var(--nk-radius-key);
     --nk-tile-key-radius: var(--nk-radius-control);
+    --nk-panel-radius: var(--nk-radius-surface);
+    --nk-row-radius: var(--nk-radius-control);
+    --nk-chip-radius: var(--nk-radius-chip);
+    --nk-chip-hud-radius: max(0.25rem, calc(var(--radius) - 0.125rem));
+    --nk-slab-radius: var(--nk-chip-radius);
+    --nk-slab-tile-radius: max(0.125rem, calc(var(--nk-slab-radius) - var(--nk-space-unit)));
   }
 }
 /* @end generated levers */
-
-/*
- * Tokens 1.5 (docs/design/default.md §2): the Default theme levers, every theme gets them. These are the Graphite defaults
- * (today's proportions); the `tile` treatment and Default set their own values. The older component tokens below
- * read these (--nk-key-radius: var(--nk-r-key)…), so a theme may set either name.
- */
-@layer nk.base {
-  :root,
-  [data-nk-theme] {
-    /* spacing: one step × density, and the semantic gaps */
-    --nk-space-unit: calc(0.25rem * var(--nk-density, 0.875));
-    --nk-space-1: var(--nk-space-unit);
-    --nk-space-2: calc(var(--nk-space-unit) * 2);
-    --nk-space-3: calc(var(--nk-space-unit) * 3);
-    --nk-space-4: calc(var(--nk-space-unit) * 4);
-    --nk-space-6: calc(var(--nk-space-unit) * 6);
-    --nk-space-8: calc(var(--nk-space-unit) * 8);
-    --nk-gap-cluster: var(--nk-space-2);
-    --nk-gap-items: var(--nk-space-1);
-    --nk-pad-x: var(--nk-space-3);
-    --nk-pad-surface: var(--nk-space-6);
-    /* radius: four steps, no pill */
-    --nk-r-key: max(0.25rem, calc(var(--radius) - 4px));
-    --nk-r-chip: max(0.25rem, calc(var(--radius) - 4px));
-    --nk-r-control: calc(var(--radius) - 2px);
-    --nk-r-surface: var(--nk-material-menu-radius, var(--radius));
-    /* heights */
-    --nk-h-key: 1.25rem;
-    --nk-h-chip: calc(2rem * var(--nk-density, 0.875));
-    --nk-h-control: 2.25rem;
-    --nk-h-row: calc(2.75rem * var(--nk-density, 0.875));
-    /* icons */
-    --nk-icon-sm: 0.75rem;
-    --nk-icon-md: 1rem;
-    --nk-icon-lg: 1.25rem;
-    --nk-icon-stroke: 2;
-    /* type roles: scan (keys, buttons, tabs), title, label, num, body */
-    --nk-text-key: 0.8125rem;
-    --nk-text-body: var(--nk-text-base, 1rem);
-    --nk-type-scan-family: var(--font-numeric, var(--font-sans));
-    --nk-type-scan-style: var(--nk-display-style, normal);
-    --nk-type-scan-weight: var(--nk-weight-strong, 600);
-    --nk-type-scan-tracking: 0em;
-    --nk-type-scan-case: none;
-    --nk-type-scan-pad: 0em;
-    --nk-type-title-family: var(--nk-heading-font, var(--font-display, var(--font-sans)));
-    --nk-type-title-style: var(--nk-display-style, normal);
-    --nk-type-title-weight: var(--nk-heading-weight, var(--nk-weight-strong, 600));
-    --nk-type-title-tracking: var(--nk-heading-tracking, -0.01em);
-    --nk-type-title-case: var(--nk-heading-case, none);
-    --nk-type-title-pad: 0em;
-    --nk-type-label-family: var(--nk-label-font, var(--font-sans));
-    --nk-type-label-style: normal;
-    --nk-type-label-weight: var(--nk-label-weight, 500);
-    --nk-type-label-tracking: 0em;
-    --nk-type-label-case: none;
-    --nk-type-label-pad: 0em;
-    --nk-type-num-family: var(--nk-num-font, var(--font-numeric, var(--font-sans)));
-    --nk-type-num-style: var(--nk-display-style, normal);
-    --nk-type-num-weight: inherit;
-    --nk-type-num-tracking: var(--nk-num-tracking, -0.02em);
-    --nk-type-num-case: none;
-    --nk-type-num-pad: 0em;
-    --nk-type-body-family: var(--font-sans);
-    --nk-type-body-style: normal;
-    --nk-type-body-weight: var(--nk-weight-body, 400);
-    --nk-type-body-tracking: 0em;
-    --nk-type-body-case: none;
-    /* tile: Graphite's keycap (no plate, no slant); the tile treatment and --nk-skew add them */
-    --nk-tile-face: var(--muted);
-    --nk-tile-ink: var(--popover-foreground);
-    --nk-tile-light: rgba(var(--popover-foreground-rgb), calc(var(--nk-surface-edge, 0.06) * 1.5));
-    --nk-tile-shade: rgba(var(--scrim-rgb), 0.35);
-    --nk-tile-rim: var(--border);
-    --nk-tile-rim-focus: var(--ring);
-    --nk-tile-plate: var(--border);
-    --nk-tile-plate-dim: var(--nk-tile-plate);
-    --nk-tile-plate-x: 0px;
-    --nk-tile-plate-y: 0px;
-    --nk-tile-press: 1px;
-    --nk-tile-skew: var(--nk-skew, 0deg);
-    --nk-tile-confirm-face: var(--foreground);
-    --nk-tile-confirm-ink: var(--background);
-    --nk-tile-hold: rgba(var(--foreground-rgb), 0.35);
-    --nk-tile-tag-delay: 80ms;
-    /* the legend's seat on the face: the italic pad split to both sides, and a nudge for a leaning face */
-    --nk-tile-legend-pad: calc(var(--nk-type-scan-pad) / 2);
-    --nk-tile-legend-shift: 0em;
-    --nk-tile-active: var(--nk-tile-confirm-face);
-    /* accent: the signature paint, a colour or a gradient (flat brand by default); its stops paint SVG strokes */
-    --nk-accent-from: var(--brand, var(--primary));
-    --nk-accent-via: var(--nk-accent-from);
-    --nk-accent-to: var(--nk-accent-from);
-    /* plate: the one surface recipe (Graphite: the panel's). No color-mix on Chromium 103: channels */
-    --nk-plate-bg: rgba(var(--nk-plate-rgb, var(--surface-rgb, var(--popover-rgb))), var(--nk-menu-alpha, var(--nk-surface-opacity, 0.96)));
-    --nk-plate-hair: var(--border);
-    --nk-plate-drop: var(--nk-elevation-shadow, 0 0 0 1px rgba(var(--scrim-rgb), 0.25), 0 8px 16px -8px rgba(var(--scrim-rgb), 0.6));
-    --nk-plate-radius: var(--nk-r-surface);
-    /* fill: status as a level (--level, 0–1) */
-    --nk-fill-color: var(--brand, var(--primary));
-    --nk-fill-track: rgba(var(--scrim-rgb), 0.35);
-    --nk-fill-tint: var(--accent);
-    --nk-fill-edge: transparent;
-    --nk-fill-alert: var(--destructive);
-    --nk-fill-height: var(--nk-gauge-track, 0.25rem);
-    /* motion distances */
-    --nk-lift: 0rem;
-    --nk-rise: 0.5rem;
-    --nk-land-scale: 1;
-    --nk-deny-x: 0.3125rem;
-    /* baseline (1.6, docs/design/baseline.md): what every component shares, the same in every theme. Rows:
-       generous padding, an icon tile column, two voices; selection is a Tile and a lift (1.7, below). */
-    --nk-row-pad-y: var(--nk-space-2);
-    --nk-row-pad-x: var(--nk-space-3);
-    --nk-row-gap: var(--nk-space-4);
-    --nk-row-lift: var(--nk-space-2);
-    --nk-row-title-size: var(--nk-text-base, 1rem);
-    --nk-row-desc-size: 0.875rem;
-    --nk-row-icon-box: 2rem;
-    /* Selection (1.7, docs/design/baseline.md "Selection"): the selection IS a Tile, the primary keycap's
-       geometry. A face in the theme's skew over its wall (the face's colour in shade, dropped straight down),
-       one radius, one top light. Resume and a lit row are the same object in two states. */
-    --nk-tile-wall: 0.1875rem;
-    --nk-tile-wall-shade: 0.45;
-    --nk-tile-radius: var(--nk-r-control);
-    --nk-tile-key: var(--primary);
-    --nk-tile-key-ink: var(--primary-foreground);
-    /* the keycap face's rim (the primary button, the selection tile): none by default; a hard-rim language sets it */
-    --nk-tile-key-rim: transparent;
-    --nk-tile-tint: 0.16;
-    --nk-tile-inset: 0.375rem;
-    --nk-list-gap: calc(var(--nk-tile-wall) + var(--nk-space-1));
-    /* fields and buttons: one height; a text field's caret focus is one rim; the primary is a keycap */
-    --nk-h-field: 2.75rem;
-    --nk-focus-rim: var(--ring);
-    /* progress rings are segmented, like the speedometer */
-    --nk-ring-segments: 24;
-    --nk-ring-gap: 4;
-  }
-  /* --nk-skew (1.3) keeps its keycap plate: a slanted key sits on an offset plate */
-  :is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"]) {
-    --nk-tile-plate-x: 0.1875rem;
-    --nk-tile-plate-y: 0.1875rem;
-    --nk-tile-plate: var(--nk-key-plate, var(--border));
-  }
-}
-
-:root,
-[data-nk-theme] {
-  /* ── scale: the kit's spacing step × --nk-density, type sizes from one base × --nk-type-ratio */
-  --nk-space: var(--nk-space-unit);
-  --nk-ratio: var(--nk-type-ratio, 1.2);
-  /* research §3: 16px body, 13–14px labels, 18px+ for HUD values read in motion */
-  --nk-text-base: 1rem;
-  --nk-text-label: max(0.8125rem, calc(var(--nk-text-base) / var(--nk-ratio)));
-  --nk-hud-value-size: max(1.125rem, calc(var(--nk-text-base) * var(--nk-ratio)));
-  /* ≈ base × √ratio (no pow() in Chromium 103) */
-  --nk-text-title: calc(var(--nk-text-base) * (1 + (var(--nk-ratio) - 1) / 2));
-  --nk-text-section: calc(var(--nk-text-base) * var(--nk-ratio) * var(--nk-ratio));
-  --nk-text-display: calc(var(--nk-text-base) * var(--nk-ratio) * var(--nk-ratio) * var(--nk-ratio) * var(--nk-ratio) * 1.1);
-  --nk-border: var(--nk-border-width, 1px);
-  /* the theme's own colours, resolved here, so a panel inside nk-on-game can restore them */
-  --nk-theme-muted-foreground: var(--muted-foreground);
-  --nk-theme-muted-foreground-rgb: var(--muted-foreground-rgb);
-  --nk-theme-muted-foreground-a: var(--muted-foreground-a);
-  --nk-theme-background: var(--background);
-  --nk-theme-background-rgb: var(--background-rgb);
-  --nk-theme-background-a: var(--background-a);
-  /* ── motion (tokens 1.2, docs/tokens.md#motion): the compiler writes the ladder as literals and the
-     player's prefs clamp it (reduced: ≤ 100ms, no movement; off: 0ms). --nk-time is the base step. */
-  --nk-ease-out: var(--nk-ease, cubic-bezier(0.2, 0.8, 0.2, 1));
-  --nk-time: var(--nk-time-base, calc(var(--nk-duration, 140ms) * var(--nk-motion, 1)));
-  --nk-press-scale: 0.97;
-  /* the selection tile: one element per list that slides to the lit item (nk-indicator, SelectionTile) */
-  /* a slide to read, not a snap: longer than a panel fade (a theme sets --nk-indicator-time) */
-  --nk-indicator-time: calc(var(--nk-time) * 1.6);
-  --nk-indicator-ease: var(--nk-ease-in-out, cubic-bezier(0.2, 0, 0, 1));
-  /* smooth type (SmoothInput, registry): the drawn caret glides to the measured position; a typed character rises
-     --nk-type-in-distance in over --nk-type-in-time, a deleted one drops out over --nk-type-out-time. Reduced motion
-     and motion off draw the native field instead (nothing here plays). */
-  --nk-caret-time: var(--nk-time);
-  --nk-caret-ease: var(--nk-ease-standard, var(--nk-ease-in-out, cubic-bezier(0.2, 0, 0, 1)));
-  --nk-caret-width: 0.125rem;
-  --nk-type-in-distance: 0.45em;
-  --nk-type-in-time: var(--nk-time-move, calc(var(--nk-time) * 1.5));
-  --nk-type-out-time: var(--nk-time-exit, calc(var(--nk-time) * 0.7));
-
-  /* ── panel: every floating surface */
-  /* panels draw the menu material (tokens 1.4): opacity (lifted by day legibility), radius, edge, blur */
-  --nk-panel-bg: rgba(var(--surface-rgb, var(--popover-rgb)), calc(var(--surface-a, var(--popover-a, 1)) * var(--nk-menu-alpha, var(--nk-surface-opacity, 0.96))));
-  --nk-panel-fg: var(--popover-foreground);
-  --nk-panel-border: var(--border);
-  /* the theme's radius as is (10px in Graphite): compact panels read crisper than rounded ones */
-  --nk-panel-radius: var(--nk-material-menu-radius, var(--radius));
-  /* the menu material's backdrop blur (0px by default); a surface sets --nk-backdrop-filter: blur(var(--nk-panel-blur)); --nk-backdrop: off turns it off */
-  --nk-panel-blur: var(--nk-material-menu-blur, 0px);
-  --nk-panel-cut: var(--nk-cut, 0px);
-  --nk-panel-clip: var(--nk-clip, none);
-  --nk-panel-gradient: linear-gradient(
-    180deg,
-    rgba(var(--popover-foreground-rgb), var(--nk-surface-gradient, 0)),
-    rgba(var(--popover-foreground-rgb), 0) 60%
-  );
-  --nk-panel-edge: inset 0 1px 0 0 rgba(var(--popover-foreground-rgb), var(--nk-material-menu-edge, var(--nk-surface-edge, 0.06)));
-  --nk-panel-shadow: var(--nk-elevation-shadow, 0 0 0 1px rgba(var(--scrim-rgb), 0.25), 0 8px 16px -8px rgba(var(--scrim-rgb), 0.6));
-  --nk-panel-header-height: calc(3.25rem * var(--nk-density, 0.875));
-  /* baseline (1.6): the surface padding on every side, the title a step off its hairline, the footer on the
-     panel itself (no rule: spacing separates it) */
-  --nk-panel-header-padding: var(--nk-pad-surface) var(--nk-pad-surface) var(--nk-space-4);
-  --nk-panel-body-padding: var(--nk-space-3);
-  --nk-panel-footer-padding: var(--nk-space-4) var(--nk-pad-surface) var(--nk-pad-surface);
-  --nk-panel-footer-rule: none;
-  --nk-panel-divider: var(--nk-border) solid var(--nk-panel-border);
-  /* corner brackets (Vector): L-shaped brand marks at the four corners; 0 = off */
-  --nk-panel-bracket: 0px;
-  --nk-panel-bracket-width: calc(var(--nk-border) * 2);
-  --nk-panel-bracket-color: var(--brand, var(--primary));
-
-  /* ── heading: panel titles (nk-title) and full-screen titles (nk-display) */
-  --nk-heading-font: var(--font-display, var(--font-sans));
-  --nk-heading-size: var(--nk-text-title);
-  --nk-heading-weight: var(--nk-weight-strong, 600);
-  --nk-heading-tracking: calc(var(--nk-tracking-display, -0.02em) / 2);
-  --nk-heading-case: none;
-  --nk-display-size: var(--nk-text-display);
-  --nk-display-weight: var(--nk-weight-display, 700);
-  --nk-display-tracking: var(--nk-tracking-display, -0.02em);
-  --nk-display-case: var(--nk-heading-case);
-
-  /* ── label: small secondary text (nk-label, always as written: it often carries a sentence) */
-  --nk-label-font: var(--font-sans);
-  --nk-label-size: var(--nk-text-label);
-  --nk-label-weight: 500;
-  /* ── caption: short names of things (nk-caption, nk-field-label, chips): the identity's label case */
-  --nk-caption-font: var(--font-sans);
-  --nk-caption-size: var(--nk-text-label);
-  --nk-caption-weight: 500;
-  --nk-caption-transform: var(--nk-label-case, uppercase);
-  --nk-caption-tracking: var(--nk-tracking-label, 0.06em);
-  --nk-num-font: var(--font-numeric, var(--font-sans));
-  --nk-num-tracking: -0.02em;
-
-  /* ── row: the 40px list row. Active = [data-active], :focus-visible or [data-highlighted] */
-  --nk-row-height: var(--nk-h-row);
-  --nk-row-radius: var(--nk-r-control);
-  --nk-row-clip: var(--nk-clip-sm, none);
-  --nk-row-padding: var(--nk-row-pad-y) var(--nk-row-pad-x);
-  --nk-row-font-size: var(--nk-text-base);
-  --nk-row-indicator-color: var(--brand, var(--primary));
-  /* bar: a pill at the row's leading edge */
-  --nk-row-bar-width: calc(var(--nk-row-bar-thickness, 0.1875rem) * var(--nk-row-bar, 1));
-  /* fill: the row in solid brand, its text in brand-foreground ([data-nk-row="fill"] on an ancestor, set by applyTheme) */
-  --nk-row-fill-color: var(--brand, var(--primary));
-  --nk-row-fill-foreground: var(--brand-foreground, var(--primary-foreground));
-  /* outline: a brand hairline */
-
-  /* ── key: shadcn's Kbd, as a keycap */
-  /* aliases of the 1.5 tile and scan-role levers (a theme may set either name) */
-  --nk-key-bg: var(--nk-tile-face);
-  --nk-key-fg: var(--nk-tile-ink);
-  --nk-key-border: var(--nk-tile-rim);
-  --nk-key-radius: var(--nk-r-key);
-  --nk-key-font: var(--nk-type-scan-family);
-  --nk-key-weight: var(--nk-type-scan-weight);
-  --nk-key-shadow: inset 0 -1px 0 0 var(--nk-tile-shade), inset 0 1px 0 0 var(--nk-tile-light);
-  --nk-key-clip: var(--nk-clip-sm, none);
-
-  /* ── chip: always-on HUD chips (nk-chip) and tiles (nk-hud) on the game */
-  --nk-chip-height: var(--nk-h-chip);
-  --nk-chip-padding: calc(var(--nk-space) * 2.5);
-  /* a small rounded rect (6px in Graphite); Velvet sets 9999px for pills */
-  --nk-chip-radius: var(--nk-r-chip);
-  --nk-chip-bg: rgba(var(--hud-rgb), max(var(--hud-a, 0.45), var(--nk-hud-alpha, var(--nk-hud-opacity, 0.55))));
-  --nk-chip-fg: var(--hud-foreground);
-  --nk-chip-font-size: 0.875rem;
-  --nk-chip-weight: 500;
-  --nk-chip-active-bg: var(--brand, var(--primary));
-  --nk-chip-active-fg: var(--brand-foreground, var(--primary-foreground));
-  --nk-chip-glow: 0 0 calc(var(--nk-glow-radius, 1rem) * 0.75) rgba(var(--brand-rgb, var(--primary-rgb)), var(--nk-glow, 0));
-  --nk-chip-clip: var(--nk-clip-sm, none);
-  --nk-hud-radius: max(0.25rem, calc(var(--radius) - 2px));
-  --nk-hud-text-shadow: var(--nk-hud-shadow, 0 1px 2px rgba(var(--scrim-rgb), 0.6));
-
-  /* ── meter: bars (shadcn Progress, nk-track); segmented when --nk-meter-segments is 1 */
-  --nk-meter-height: var(--nk-gauge-track, 0.25rem);
-  --nk-meter-radius: 9999px;
-  --nk-meter-track: rgba(var(--scrim-rgb), 0.35);
-  --nk-meter-glow: 0 0 calc(var(--nk-glow-radius, 1rem) * 0.625) rgba(var(--brand-rgb, var(--primary-rgb)), var(--nk-glow, 0));
-  --nk-meter-segments: 0;
-  --nk-meter-segment: 0.5rem;
-  --nk-meter-gap: rgba(var(--popover-rgb), calc(0.85 * var(--nk-meter-segments)));
-
-  /* ── gauge: speedometer, RPM, fuel (the HUD reads --nk-gauge-style: arc | bar | digital) */
-  --nk-gauge-width: var(--nk-gauge-track, 0.25rem);
-  --nk-gauge-track-color: rgba(var(--hud-foreground-rgb), 0.16);
-  --nk-gauge-fill: var(--brand, var(--primary));
-  --nk-gauge-needle: var(--brand, var(--primary));
-  --nk-gauge-redline: var(--destructive);
-  --nk-gauge-tick: rgba(var(--hud-foreground-rgb), calc(0.55 * var(--nk-gauge-ticks, 1)));
-  --nk-gauge-tick-major: rgba(var(--hud-foreground-rgb), calc(0.9 * var(--nk-gauge-ticks, 1)));
-  --nk-gauge-font: var(--font-numeric, var(--font-sans));
-
-  /* ── slab: transient feedback on the game (design v2 §4.5). One anatomy for every script, so new
-     scripts look native: item added (tile + name + delta), prompt (key + verb), progress (label + thin
-     line + cancel key), incapacitated (a full-width band). Sits on the game, so it wears the HUD plate. */
-  --nk-slab-height: calc(2.5rem * var(--nk-density, 0.875));
-  --nk-slab-padding: 0 calc(var(--nk-space) * 3);
-  --nk-slab-gap: calc(var(--nk-space) * 2.5);
-  --nk-slab-radius: var(--nk-chip-radius);
-  --nk-slab-clip: var(--nk-chip-clip);
-  --nk-slab-bg: var(--nk-chip-bg);
-  --nk-slab-fg: var(--nk-chip-fg);
-  --nk-slab-border: rgba(var(--hud-foreground-rgb), 0.08);
-  --nk-slab-font-size: var(--nk-text-base);
-  --nk-slab-weight: var(--nk-weight-strong, 600);
-  --nk-slab-text-shadow: none;
-  /* the slab's accent, as channels: the line's fill, the band's tint and edges. A screen sets it per
-     state on any ancestor (--nk-slab-tone-rgb: var(--destructive-rgb) on the death band). Everything
-     drawn in the tone is resolved in the utility, not here, so that override reaches it; --nk-slab-line-fill
-     is unset (the tone) unless a theme sets it. */
-  --nk-slab-tone-rgb: var(--brand-rgb, var(--primary-rgb));
-  /* icon tile: a square inset by one spacing step */
-  --nk-slab-tile-size: calc(var(--nk-slab-height) - var(--nk-space) * 2);
-  --nk-slab-tile-bg: rgba(var(--hud-foreground-rgb), 0.1);
-  --nk-slab-tile-fg: var(--nk-slab-fg);
-  --nk-slab-tile-radius: max(0.125rem, calc(var(--nk-slab-radius) - var(--nk-space)));
-  /* delta: +1, −2, $250 */
-  --nk-slab-delta-font: var(--nk-num-font);
-  --nk-slab-delta-up: var(--world-success, var(--success));
-  --nk-slab-delta-down: var(--world-destructive, var(--destructive));
-  /* key chip: the key tokens, at a fixed slab size */
-  --nk-slab-key-size: 1.5rem;
-  --nk-slab-key-font-size: 0.8125rem;
-  /* thin line (progress): drawn with a transform, so it never repaints the slab */
-  --nk-slab-line-height: 0.1875rem;
-  --nk-slab-line-radius: var(--nk-meter-radius);
-  --nk-slab-line-track: rgba(var(--hud-foreground-rgb), 0.18);
-  --nk-slab-stack-width: 20rem;
-  --nk-slab-stack-gap: calc(var(--nk-space) * 2);
-  /* full-width band */
-  --nk-slab-band-padding: calc(var(--nk-space) * 3) calc(var(--nk-space) * 6);
-  --nk-slab-band-gap: var(--nk-space);
-  --nk-slab-band-bg: rgba(var(--scrim-rgb), 0.62);
-  /* alphas of the tone over the band and on its edges */
-  --nk-slab-band-tint: 0.3;
-  --nk-slab-band-edge: 0.6;
-  --nk-slab-band-fg: var(--hud-foreground);
-  --nk-slab-band-title-size: var(--nk-text-section);
-}
 
 /*
  * Variants: density and shape for one subtree (a component's `density` / `shape` prop paints these
@@ -1579,65 +1284,17 @@
 [data-nk-density="comfortable"] {
   --nk-density: 1.15;
 }
-[data-nk-density] {
-  --nk-space-unit: calc(0.25rem * var(--nk-density, 0.875));
-  --nk-space-1: var(--nk-space-unit);
-  --nk-space-2: calc(var(--nk-space-unit) * 2);
-  --nk-space-3: calc(var(--nk-space-unit) * 3);
-  --nk-space-4: calc(var(--nk-space-unit) * 4);
-  --nk-space-6: calc(var(--nk-space-unit) * 6);
-  --nk-space-8: calc(var(--nk-space-unit) * 8);
-  --nk-gap-cluster: var(--nk-space-2);
-  --nk-gap-items: var(--nk-space-1);
-  --nk-pad-x: var(--nk-space-3);
-  --nk-pad-surface: var(--nk-space-6);
-  --nk-h-chip: calc(2rem * var(--nk-density, 0.875));
-  --nk-h-row: calc(2.75rem * var(--nk-density, 0.875));
-  --nk-space: calc(0.25rem * var(--nk-density, 0.875));
-  --nk-panel-header-height: calc(3.25rem * var(--nk-density, 0.875));
-  --nk-panel-header-padding: var(--nk-pad-surface) var(--nk-pad-surface) var(--nk-space-4);
-  --nk-panel-body-padding: var(--nk-space-3);
-  --nk-panel-footer-padding: var(--nk-space-4) var(--nk-pad-surface) var(--nk-pad-surface);
-  --nk-row-height: calc(2.75rem * var(--nk-density, 0.875));
-  --nk-row-pad-y: var(--nk-space-2);
-  --nk-row-pad-x: var(--nk-space-3);
-  --nk-row-gap: var(--nk-space-4);
-  --nk-row-lift: var(--nk-space-2);
-  --nk-row-padding: var(--nk-row-pad-y) var(--nk-row-pad-x);
-  --nk-chip-height: calc(2rem * var(--nk-density, 0.875));
-  --nk-chip-padding: calc(var(--nk-space) * 2.5);
-  --nk-slab-height: calc(2.5rem * var(--nk-density, 0.875));
-  --nk-slab-padding: 0 calc(var(--nk-space) * 3);
-  --nk-slab-gap: calc(var(--nk-space) * 2.5);
-  --nk-slab-tile-size: calc(var(--nk-slab-height) - var(--nk-space) * 2);
-  --nk-slab-tile-radius: max(0.125rem, calc(var(--nk-slab-radius) - var(--nk-space)));
-  --nk-slab-stack-gap: calc(var(--nk-space) * 2);
-  --nk-slab-band-padding: calc(var(--nk-space) * 3) calc(var(--nk-space) * 6);
-  --nk-slab-band-gap: var(--nk-space);
-}
-[data-nk-shape] {
-  --nk-r-key: max(0.25rem, calc(var(--radius) - 4px));
-  --nk-r-chip: max(0.25rem, calc(var(--radius) - 4px));
-  --nk-r-control: calc(var(--radius) - 2px);
-  --nk-chip-radius: max(0.25rem, calc(var(--radius) - 4px));
-  --nk-key-radius: max(0.25rem, calc(var(--radius) - 4px));
-  --nk-panel-radius: var(--radius);
-  --nk-row-radius: calc(var(--radius) - 2px);
-  --nk-hud-radius: max(0.25rem, calc(var(--radius) - 2px));
-  --nk-slab-radius: var(--nk-chip-radius);
-  --nk-slab-tile-radius: max(0.125rem, calc(var(--nk-slab-radius) - var(--nk-space)));
-}
 [data-nk-shape="square"] {
   --radius: 0.125rem;
-  --nk-r-key: 0.125rem;
-  --nk-r-chip: 0.125rem;
+  --nk-radius-key: 0.125rem;
+  --nk-radius-chip: 0.125rem;
   --nk-chip-radius: 0.125rem;
-  --nk-key-radius: 0.125rem;
+  --nk-tile-face-radius: 0.125rem;
   --nk-meter-radius: 0.0625rem;
 }
 [data-nk-shape="round"] {
   --radius: 1rem;
-  --nk-r-chip: 9999px;
+  --nk-radius-chip: 9999px;
   --nk-chip-radius: 9999px;
 }
 
@@ -1646,14 +1303,14 @@
   /* !important so it wins over a shadcn primitive's own surface (DialogContent's bg-background) */
   background-color: var(--nk-panel-bg) !important;
   color: var(--nk-panel-fg) !important;
-  border: var(--nk-border) solid var(--nk-panel-border);
+  border: var(--nk-line-width) solid var(--nk-panel-border);
   border-radius: var(--nk-panel-radius) !important;
-  /* chamfer hairlines (only when --nk-cut > 0: a 0-size image isn't drawn), then the light falloff */
+  /* chamfer hairlines (only when --nk-shape-cut > 0: a 0-size image isn't drawn), then the light falloff */
   background-image:
-    linear-gradient(135deg, transparent calc(50% - var(--nk-border)), var(--nk-panel-border) calc(50% - var(--nk-border)), var(--nk-panel-border) 50%, transparent 50%),
-    linear-gradient(315deg, transparent calc(50% - var(--nk-border)), var(--nk-panel-border) calc(50% - var(--nk-border)), var(--nk-panel-border) 50%, transparent 50%),
-    linear-gradient(var(--nk-panel-bracket-color), var(--nk-panel-bracket-color)), linear-gradient(var(--nk-panel-bracket-color), var(--nk-panel-bracket-color)), linear-gradient(var(--nk-panel-bracket-color), var(--nk-panel-bracket-color)), linear-gradient(var(--nk-panel-bracket-color), var(--nk-panel-bracket-color)),
-    linear-gradient(var(--nk-panel-bracket-color), var(--nk-panel-bracket-color)), linear-gradient(var(--nk-panel-bracket-color), var(--nk-panel-bracket-color)), linear-gradient(var(--nk-panel-bracket-color), var(--nk-panel-bracket-color)), linear-gradient(var(--nk-panel-bracket-color), var(--nk-panel-bracket-color)),
+    linear-gradient(135deg, transparent calc(50% - var(--nk-line-width)), var(--nk-panel-border) calc(50% - var(--nk-line-width)), var(--nk-panel-border) 50%, transparent 50%),
+    linear-gradient(315deg, transparent calc(50% - var(--nk-line-width)), var(--nk-panel-border) calc(50% - var(--nk-line-width)), var(--nk-panel-border) 50%, transparent 50%),
+    linear-gradient(var(--nk-panel-actions-bracket-color), var(--nk-panel-actions-bracket-color)), linear-gradient(var(--nk-panel-actions-bracket-color), var(--nk-panel-actions-bracket-color)), linear-gradient(var(--nk-panel-actions-bracket-color), var(--nk-panel-actions-bracket-color)), linear-gradient(var(--nk-panel-actions-bracket-color), var(--nk-panel-actions-bracket-color)),
+    linear-gradient(var(--nk-panel-actions-bracket-color), var(--nk-panel-actions-bracket-color)), linear-gradient(var(--nk-panel-actions-bracket-color), var(--nk-panel-actions-bracket-color)), linear-gradient(var(--nk-panel-actions-bracket-color), var(--nk-panel-actions-bracket-color)), linear-gradient(var(--nk-panel-actions-bracket-color), var(--nk-panel-actions-bracket-color)),
     var(--nk-panel-gradient);
   background-position:
     top left, bottom right,
@@ -1661,10 +1318,10 @@
     0 0;
   background-size:
     var(--nk-panel-cut) var(--nk-panel-cut), var(--nk-panel-cut) var(--nk-panel-cut),
-    var(--nk-panel-bracket) var(--nk-panel-bracket-width), var(--nk-panel-bracket-width) var(--nk-panel-bracket),
-    var(--nk-panel-bracket) var(--nk-panel-bracket-width), var(--nk-panel-bracket-width) var(--nk-panel-bracket),
-    var(--nk-panel-bracket) var(--nk-panel-bracket-width), var(--nk-panel-bracket-width) var(--nk-panel-bracket),
-    var(--nk-panel-bracket) var(--nk-panel-bracket-width), var(--nk-panel-bracket-width) var(--nk-panel-bracket),
+    var(--nk-panel-actions-bracket) var(--nk-panel-actions-bracket-width), var(--nk-panel-actions-bracket-width) var(--nk-panel-actions-bracket),
+    var(--nk-panel-actions-bracket) var(--nk-panel-actions-bracket-width), var(--nk-panel-actions-bracket-width) var(--nk-panel-actions-bracket),
+    var(--nk-panel-actions-bracket) var(--nk-panel-actions-bracket-width), var(--nk-panel-actions-bracket-width) var(--nk-panel-actions-bracket),
+    var(--nk-panel-actions-bracket) var(--nk-panel-actions-bracket-width), var(--nk-panel-actions-bracket-width) var(--nk-panel-actions-bracket),
     100% 100%;
   background-repeat: no-repeat;
   background-origin: border-box;
@@ -1676,7 +1333,7 @@
   display: flex;
   text-align: left;
   align-items: center;
-  gap: calc(var(--nk-space) * 3);
+  gap: calc(var(--nk-space-unit) * 3);
   min-height: var(--nk-panel-header-height);
   padding: var(--nk-panel-header-padding);
   border-bottom: var(--nk-panel-divider);
@@ -1697,7 +1354,7 @@
   flex-direction: column;
   align-items: stretch;
   text-align: left;
-  gap: calc(var(--nk-space) * 3);
+  gap: calc(var(--nk-space-unit) * 3);
   padding: var(--nk-panel-header-padding);
   border-bottom: var(--nk-panel-divider);
 }
@@ -1706,14 +1363,14 @@
 @utility nk-panel-title-row {
   display: flex;
   align-items: center;
-  gap: calc(var(--nk-space) * 3);
+  gap: calc(var(--nk-space-unit) * 3);
   min-height: 1.75rem;
 }
 /* Form field inside a panel: a label row above its control (slider, stepper, input, swatches). */
 @utility nk-field {
   display: flex;
   flex-direction: column;
-  gap: calc(var(--nk-space) * 2);
+  gap: calc(var(--nk-space-unit) * 2);
 }
 /* The field's label row: name, an optional hint, then the value and a reset button on the right
    (give that group ml-auto). 24px tall, so an icon-xs reset button never moves it. */
@@ -1727,7 +1384,7 @@
   font-size: var(--nk-caption-size);
   line-height: var(--nk-leading-tight, 1rem);
   font-weight: var(--nk-caption-weight);
-  text-transform: var(--nk-caption-transform);
+  text-transform: var(--nk-caption-case);
   letter-spacing: var(--nk-caption-tracking);
 }
 /* Title inside a panel header. @merge nk-type */
@@ -1736,7 +1393,7 @@
   font-family: var(--nk-type-title-family);
   font-style: var(--nk-type-title-style);
   /* !important: shadcn titles carry text-lg, which would otherwise win */
-  font-size: var(--nk-heading-size) !important;
+  font-size: var(--nk-panel-title-size) !important;
   font-weight: var(--nk-type-title-weight);
   line-height: 1.3 !important;
   letter-spacing: var(--nk-type-title-tracking);
@@ -1746,7 +1403,7 @@
 @utility nk-label {
   /* the label role (1.5): --nk-type-label-*; its style, tracking and case apply under the tile treatment */
   font-family: var(--nk-type-label-family);
-  font-size: var(--nk-label-size) !important;
+  font-size: var(--nk-caption-size) !important;
   line-height: var(--nk-leading-tight, 1rem) !important;
   font-weight: var(--nk-type-label-weight);
   color: var(--muted-foreground);
@@ -1770,14 +1427,14 @@
   text-transform: var(--nk-type-body-case);
 }
 /* The short name of a value (Fuel, Balance, Voice): the identity's label case and tracking
-   (--nk-label-case: uppercase in Signal and Vector). One to three words; sentences use nk-label.
+   (--nk-type-case: uppercase in Signal and Vector). One to three words; sentences use nk-label.
    @merge nk-type */
 @utility nk-caption {
   font-family: var(--nk-caption-font);
   font-size: var(--nk-caption-size) !important;
   line-height: var(--nk-leading-tight, 1rem) !important;
   font-weight: var(--nk-caption-weight);
-  text-transform: var(--nk-caption-transform);
+  text-transform: var(--nk-caption-case);
   letter-spacing: var(--nk-caption-tracking);
   color: var(--muted-foreground);
 }
@@ -1789,7 +1446,7 @@
   isolation: isolate;
   display: flex;
   align-items: center;
-  gap: var(--nk-row-gap, calc(var(--nk-space) * 3));
+  gap: var(--nk-row-gap, calc(var(--nk-space-unit) * 3));
   min-height: var(--nk-row-height);
   padding: var(--nk-row-padding);
   border-radius: var(--nk-row-radius);
@@ -1798,12 +1455,12 @@
   outline: none;
   /* a state changes ink at once (the tile carries the movement); a press dips and springs back */
   transition-property: color, transform;
-  transition-duration: var(--nk-time-fast, var(--nk-time)), var(--nk-time-press, 120ms);
-  transition-timing-function: var(--nk-ease-standard, var(--nk-ease-out)), var(--nk-ease-spring, cubic-bezier(0.34, 1.56, 0.64, 1));
+  transition-duration: var(--nk-time-fast, var(--nk-time-base)), var(--nk-time-snap, 120ms);
+  transition-timing-function: var(--nk-ease-move, var(--nk-ease-enter)), var(--nk-ease-spring, cubic-bezier(0.34, 1.56, 0.64, 1));
   &:not([aria-disabled="true"], [data-disabled], :disabled):is(:active, [data-nk-press]) {
-    transform: scale(var(--nk-press-scale, 0.97));
-    transition-duration: var(--nk-time-fast, var(--nk-time)), var(--nk-time-press, 70ms);
-    transition-timing-function: var(--nk-ease-out);
+    transform: scale(var(--nk-gesture-press, 0.97));
+    transition-duration: var(--nk-time-fast, var(--nk-time-base)), var(--nk-time-snap, 70ms);
+    transition-timing-function: var(--nk-ease-enter);
   }
   :is(html, *)[data-nk-motion="reduced"] & {
     transition-property: color;
@@ -1819,7 +1476,7 @@
   display: flex;
   flex-direction: column;
   gap: var(--nk-list-gap);
-  padding-bottom: var(--nk-tile-wall);
+  padding-bottom: var(--nk-tile-wall-height);
 }
 /* Numbers: money, timers, counts. */
 @utility nk-num {
@@ -1833,7 +1490,7 @@
 @utility nk-chip {
   display: inline-flex;
   align-items: center;
-  gap: calc(var(--nk-space) * 1.5);
+  gap: calc(var(--nk-space-unit) * 1.5);
   height: var(--nk-chip-height);
   padding: 0 var(--nk-chip-padding);
   border-radius: var(--nk-chip-radius);
@@ -1848,8 +1505,8 @@
   background-position: center bottom;
   background-size: 100% 0%;
   transition:
-    background-size var(--nk-time) var(--nk-ease-out),
-    color var(--nk-time) var(--nk-ease-out);
+    background-size var(--nk-time-base) var(--nk-ease-enter),
+    color var(--nk-time-base) var(--nk-ease-enter);
 }
 /* Active chip (talking, selected): the brand, filling up from the bottom. */
 @utility nk-chip-active {
@@ -1860,18 +1517,18 @@
 }
 /* Square HUD tile on the game (hotbar slots, the target eye): the chip's surface, any size. @merge nk-surface */
 @utility nk-hud {
-  border-radius: var(--nk-hud-radius);
+  border-radius: var(--nk-chip-hud-radius);
   background-color: var(--nk-chip-bg);
   color: var(--nk-chip-fg);
   clip-path: var(--nk-chip-clip);
 }
 /* Bar track on the game world: theme-tinted tracks vanish over a bright sky. */
 @utility nk-track {
-  background-color: var(--nk-meter-track);
+  background-color: var(--nk-meter-track-color);
 }
 /* Text and marks drawn straight on the game. */
 @utility nk-shadow {
-  text-shadow: var(--nk-hud-text-shadow);
+  text-shadow: var(--nk-chip-text-shadow);
   filter: drop-shadow(0 1px 1px color-mix(in oklab, var(--scrim) 35%, transparent));
 }
 /*
@@ -1897,19 +1554,19 @@
     --foreground: var(--popover-foreground);
     --foreground-rgb: var(--popover-foreground-rgb);
     --foreground-a: var(--popover-foreground-a);
-    --muted-foreground: var(--nk-theme-muted-foreground);
-    --muted-foreground-rgb: var(--nk-theme-muted-foreground-rgb);
-    --muted-foreground-a: var(--nk-theme-muted-foreground-a);
-    --background: var(--nk-theme-background);
-    --background-rgb: var(--nk-theme-background-rgb);
-    --background-a: var(--nk-theme-background-a);
+    --muted-foreground: var(--nk-restore-muted-foreground);
+    --muted-foreground-rgb: var(--nk-restore-muted-foreground-rgb);
+    --muted-foreground-a: var(--nk-restore-muted-foreground-a);
+    --background: var(--nk-restore-background);
+    --background-rgb: var(--nk-restore-background-rgb);
+    --background-a: var(--nk-restore-background-a);
     text-shadow: none;
   }
 }
 /* Full-screen title (pause, loading, death): 32px at 1080p (Graphite). @merge nk-type */
 @utility nk-display {
-  font-family: var(--nk-heading-font);
-  font-style: var(--nk-display-style, normal);
+  font-family: var(--nk-type-title-family);
+  font-style: var(--nk-type-slant, normal);
   font-size: var(--nk-display-size);
   line-height: 1.2;
   font-weight: var(--nk-display-weight);
@@ -1935,7 +1592,7 @@
   clip-path: var(--nk-slab-clip);
   background-color: var(--nk-slab-bg);
   color: var(--nk-slab-fg);
-  box-shadow: inset 0 0 0 var(--nk-border) var(--nk-slab-border);
+  box-shadow: inset 0 0 0 var(--nk-line-width) var(--nk-slab-border);
   font-size: var(--nk-slab-font-size);
   font-weight: var(--nk-slab-weight);
   line-height: var(--nk-leading-normal, 1.25rem);
@@ -1950,7 +1607,7 @@
   justify-content: center;
   width: var(--nk-slab-tile-size);
   height: var(--nk-slab-tile-size);
-  margin-left: calc(var(--nk-space) * -2);
+  margin-left: calc(var(--nk-space-unit) * -2);
   border-radius: var(--nk-slab-tile-radius);
   background-color: var(--nk-slab-tile-bg);
   color: var(--nk-slab-tile-fg);
@@ -1965,7 +1622,7 @@
   padding-left: var(--nk-slab-gap);
   font-family: var(--nk-slab-delta-font);
   font-variant-numeric: tabular-nums;
-  letter-spacing: var(--nk-num-tracking);
+  letter-spacing: var(--nk-type-num-tracking);
   color: var(--nk-slab-delta-up);
   &[data-delta="down"] {
     color: var(--nk-slab-delta-down);
@@ -1980,14 +1637,14 @@
   min-width: var(--nk-slab-key-size);
   height: var(--nk-slab-key-size);
   padding: 0 0.375rem;
-  border-radius: var(--nk-key-radius);
-  clip-path: var(--nk-key-clip);
-  background-color: var(--nk-key-bg);
-  color: var(--nk-key-fg);
-  box-shadow: var(--nk-key-shadow), inset 0 0 0 var(--nk-border) var(--nk-key-border);
-  font-family: var(--nk-key-font);
+  border-radius: var(--nk-tile-face-radius);
+  clip-path: var(--nk-tile-face-clip);
+  background-color: var(--nk-tile-face-color);
+  color: var(--nk-tile-face-ink);
+  box-shadow: var(--nk-tile-face-shadow), inset 0 0 0 var(--nk-line-width) var(--nk-tile-face-rim);
+  font-family: var(--nk-tile-legend-font);
   font-size: var(--nk-slab-key-font-size);
-  font-weight: var(--nk-key-weight);
+  font-weight: var(--nk-tile-legend-weight);
   line-height: 1;
   text-shadow: none;
 }
@@ -1998,13 +1655,13 @@
   gap: var(--nk-slab-stack-gap);
   width: var(--nk-slab-stack-width);
   color: var(--nk-slab-fg);
-  text-shadow: var(--nk-hud-text-shadow);
+  text-shadow: var(--nk-chip-text-shadow);
 }
 /* The stack's label row: label left, then the cancel key and its verb pushed right. */
 @utility nk-slab-stack-row {
   display: flex;
   align-items: center;
-  gap: calc(var(--nk-space) * 2);
+  gap: calc(var(--nk-space-unit) * 2);
   font-size: var(--nk-slab-font-size);
   font-weight: var(--nk-slab-weight);
   line-height: var(--nk-leading-normal, 1.25rem);
@@ -2026,11 +1683,11 @@
     content: "";
     position: absolute;
     inset: 0;
-    background-color: var(--nk-slab-line-fill, rgb(var(--nk-slab-tone-rgb)));
-    box-shadow: 0 0 0.5rem rgba(var(--nk-slab-tone-rgb), var(--nk-glow, 0));
+    background-color: var(--nk-slab-line-fill, rgb(var(--nk-slab-tone)));
+    box-shadow: 0 0 0.5rem rgba(var(--nk-slab-tone), var(--nk-surface-glow, 0));
     transform-origin: left center;
     transform: scaleX(var(--nk-slab-progress, 0));
-    transition: transform var(--nk-time) linear;
+    transition: transform var(--nk-time-base) linear;
   }
 }
 /* A full-width band at the bottom of the screen (incapacitated, arrested, spectating): the game
@@ -2044,12 +1701,12 @@
   width: 100%;
   padding: var(--nk-slab-band-padding);
   background-color: var(--nk-slab-band-bg);
-  background-image: linear-gradient(rgba(var(--nk-slab-tone-rgb), var(--nk-slab-band-tint)), rgba(var(--nk-slab-tone-rgb), var(--nk-slab-band-tint)));
-  border-top: var(--nk-border) solid rgba(var(--nk-slab-tone-rgb), var(--nk-slab-band-edge));
-  border-bottom: var(--nk-border) solid rgba(var(--nk-slab-tone-rgb), var(--nk-slab-band-edge));
+  background-image: linear-gradient(rgba(var(--nk-slab-tone), var(--nk-slab-band-tint)), rgba(var(--nk-slab-tone), var(--nk-slab-band-tint)));
+  border-top: var(--nk-line-width) solid rgba(var(--nk-slab-tone), var(--nk-slab-band-edge));
+  border-bottom: var(--nk-line-width) solid rgba(var(--nk-slab-tone), var(--nk-slab-band-edge));
   color: var(--nk-slab-band-fg);
   text-align: center;
-  text-shadow: var(--nk-hud-text-shadow);
+  text-shadow: var(--nk-chip-text-shadow);
   & .nk-caption {
     color: inherit;
     opacity: 0.85;
@@ -2057,7 +1714,7 @@
 }
 /* The band's one line: the display face at section size. */
 @utility nk-slab-band-title {
-  font-family: var(--nk-heading-font);
+  font-family: var(--nk-type-title-family);
   font-size: var(--nk-slab-band-title-size);
   font-weight: var(--nk-display-weight);
   letter-spacing: var(--nk-display-tracking);
@@ -2072,10 +1729,10 @@
 }
 /* Distance from the screen edge for anything anchored to it. */
 @utility nk-edge {
-  --nk-edge: 1.5rem;
+  --nk-screen-edge: 1.5rem;
 }
 /*
- * Anchors: pin an element to a corner or edge of the screen, --nk-edge in (1.5rem unless an
+ * Anchors: pin an element to a corner or edge of the screen, --nk-screen-edge in (1.5rem unless an
  * ancestor sets it), inside the layout's content box and safe area (nk.layout: the 16:9 box on an ultrawide).
  * The same geometry as a [data-nk-zone]; prefer a Zone (registry zone.tsx) for anything new. Absolute, so put them inside the full-screen root. The edge-centred ones
  * centre with auto margins, not a transform, so nk-enter and dialogs never fight over it.
@@ -2083,31 +1740,31 @@
 /* @merge nk-anchor */
 @utility nk-anchor-tl {
   position: absolute;
-  top: calc(var(--nk-area-t, 0px) + var(--nk-safe-y, 0rem) + var(--nk-edge, 1.5rem));
-  left: calc(var(--nk-area-l, 0px) + var(--nk-safe-x, 0rem) + var(--nk-edge, 1.5rem));
+  top: calc(var(--nk-screen-area-t, 0px) + var(--nk-screen-safe-y, 0rem) + var(--nk-screen-edge, 1.5rem));
+  left: calc(var(--nk-screen-area-l, 0px) + var(--nk-screen-safe-x, 0rem) + var(--nk-screen-edge, 1.5rem));
 }
 /* @merge nk-anchor */
 @utility nk-anchor-tr {
   position: absolute;
-  top: calc(var(--nk-area-t, 0px) + var(--nk-safe-y, 0rem) + var(--nk-edge, 1.5rem));
-  right: calc(var(--nk-area-r, 0px) + var(--nk-safe-x, 0rem) + var(--nk-edge, 1.5rem));
+  top: calc(var(--nk-screen-area-t, 0px) + var(--nk-screen-safe-y, 0rem) + var(--nk-screen-edge, 1.5rem));
+  right: calc(var(--nk-screen-area-r, 0px) + var(--nk-screen-safe-x, 0rem) + var(--nk-screen-edge, 1.5rem));
 }
 /* @merge nk-anchor */
 @utility nk-anchor-bl {
   position: absolute;
-  bottom: calc(var(--nk-area-b, 0px) + var(--nk-safe-y, 0rem) + var(--nk-edge, 1.5rem));
-  left: calc(var(--nk-area-l, 0px) + var(--nk-safe-x, 0rem) + var(--nk-edge, 1.5rem));
+  bottom: calc(var(--nk-screen-area-b, 0px) + var(--nk-screen-safe-y, 0rem) + var(--nk-screen-edge, 1.5rem));
+  left: calc(var(--nk-screen-area-l, 0px) + var(--nk-screen-safe-x, 0rem) + var(--nk-screen-edge, 1.5rem));
 }
 /* @merge nk-anchor */
 @utility nk-anchor-br {
   position: absolute;
-  bottom: calc(var(--nk-area-b, 0px) + var(--nk-safe-y, 0rem) + var(--nk-edge, 1.5rem));
-  right: calc(var(--nk-area-r, 0px) + var(--nk-safe-x, 0rem) + var(--nk-edge, 1.5rem));
+  bottom: calc(var(--nk-screen-area-b, 0px) + var(--nk-screen-safe-y, 0rem) + var(--nk-screen-edge, 1.5rem));
+  right: calc(var(--nk-screen-area-r, 0px) + var(--nk-screen-safe-x, 0rem) + var(--nk-screen-edge, 1.5rem));
 }
 /* @merge nk-anchor */
 @utility nk-anchor-t {
   position: absolute;
-  top: calc(var(--nk-area-t, 0px) + var(--nk-safe-y, 0rem) + var(--nk-edge, 1.5rem));
+  top: calc(var(--nk-screen-area-t, 0px) + var(--nk-screen-safe-y, 0rem) + var(--nk-screen-edge, 1.5rem));
   left: 0;
   right: 0;
   width: max-content;
@@ -2116,7 +1773,7 @@
 /* @merge nk-anchor */
 @utility nk-anchor-b {
   position: absolute;
-  bottom: calc(var(--nk-area-b, 0px) + var(--nk-safe-y, 0rem) + var(--nk-edge, 1.5rem));
+  bottom: calc(var(--nk-screen-area-b, 0px) + var(--nk-screen-safe-y, 0rem) + var(--nk-screen-edge, 1.5rem));
   left: 0;
   right: 0;
   width: max-content;
@@ -2125,7 +1782,7 @@
 /* @merge nk-anchor */
 @utility nk-anchor-l {
   position: absolute;
-  left: calc(var(--nk-area-l, 0px) + var(--nk-safe-x, 0rem) + var(--nk-edge, 1.5rem));
+  left: calc(var(--nk-screen-area-l, 0px) + var(--nk-screen-safe-x, 0rem) + var(--nk-screen-edge, 1.5rem));
   top: 0;
   bottom: 0;
   height: max-content;
@@ -2134,7 +1791,7 @@
 /* @merge nk-anchor */
 @utility nk-anchor-r {
   position: absolute;
-  right: calc(var(--nk-area-r, 0px) + var(--nk-safe-x, 0rem) + var(--nk-edge, 1.5rem));
+  right: calc(var(--nk-screen-area-r, 0px) + var(--nk-screen-safe-x, 0rem) + var(--nk-screen-edge, 1.5rem));
   top: 0;
   bottom: 0;
   height: max-content;
@@ -2146,11 +1803,11 @@
  * the nk-panel-body padding and half an nk-row (1px, 8px and 22px in Graphite).
  */
 @utility nk-first-row {
-  margin-top: calc(-1 * var(--nk-border) - var(--nk-space) * 2 - var(--nk-row-height) / 2);
+  margin-top: calc(-1 * var(--nk-line-width) - var(--nk-space-unit) * 2 - var(--nk-row-height) / 2);
 }
 /* The one open animation. --nk-motion: 0 (theme or the player's reduced-motion pref) skips it. */
 @utility nk-enter {
-  animation: nk-enter var(--nk-time) var(--nk-ease-out) backwards;
+  animation: nk-enter var(--nk-time-base) var(--nk-ease-enter) backwards;
 }
 /* Opacity only: a transform here would override the translate that centres dialogs, and
    Chromium 103 has no separate `scale` property. */
@@ -2168,13 +1825,13 @@
  * motion ([data-nk-motion="reduced"] on an ancestor) each falls back to its fade, at most 100ms.
  */
 /* A floating panel opening from its trigger: popovers, menus, tooltips, the target eye. Scale 0.96 → 1
-   and fade over --nk-time, from Radix's trigger-side origin. Never on a centred dialog (its transform
+   and fade over --nk-time-base, from Radix's trigger-side origin. Never on a centred dialog (its transform
    centres it): put nk-pop on an inner wrapper there. */
 @utility nk-pop {
   transform-origin: var(--radix-popper-transform-origin, center);
-  animation: nk-pop var(--nk-time) var(--nk-ease-out) both;
+  animation: nk-pop var(--nk-time-base) var(--nk-ease-enter) both;
   &[data-state="closed"] {
-    animation: nk-fade-out var(--nk-time-exit, var(--nk-time)) var(--nk-ease-in, ease-in) both;
+    animation: nk-fade-out var(--nk-time-exit, var(--nk-time-base)) var(--nk-ease-exit, ease-in) both;
   }
   :is(html, *)[data-nk-motion="reduced"] &:not([data-state="closed"]) {
     animation-name: nk-enter;
@@ -2201,22 +1858,22 @@
    while it waits, then the element's own transforms, a press dip, are free again); leaving holds the
    end. Reduced motion: fades; off: instant. */
 [data-nk-stagger="in"][data-nk-stagger-kind="rise"] {
-  animation: nk-rise var(--nk-time) var(--nk-ease-out) backwards;
+  animation: nk-rise var(--nk-time-base) var(--nk-ease-enter) backwards;
 }
 [data-nk-stagger="in"][data-nk-stagger-kind="pop"] {
-  animation: nk-pop var(--nk-time) var(--nk-ease-out) backwards;
+  animation: nk-pop var(--nk-time-base) var(--nk-ease-enter) backwards;
 }
 [data-nk-stagger="in"][data-nk-stagger-kind="fade"] {
-  animation: nk-enter var(--nk-time) var(--nk-ease-out) backwards;
+  animation: nk-enter var(--nk-time-base) var(--nk-ease-enter) backwards;
 }
 [data-nk-stagger="out"][data-nk-stagger-kind="rise"] {
-  animation: nk-fold-out var(--nk-time-exit, var(--nk-time)) var(--nk-ease-in, ease-in) both;
+  animation: nk-fold-out var(--nk-time-exit, var(--nk-time-base)) var(--nk-ease-exit, ease-in) both;
 }
 [data-nk-stagger="out"][data-nk-stagger-kind="pop"] {
-  animation: nk-pop-out var(--nk-time-exit, var(--nk-time)) var(--nk-ease-in, ease-in) both;
+  animation: nk-pop-out var(--nk-time-exit, var(--nk-time-base)) var(--nk-ease-exit, ease-in) both;
 }
 [data-nk-stagger="out"][data-nk-stagger-kind="fade"] {
-  animation: nk-fade-out var(--nk-time-exit, var(--nk-time)) var(--nk-ease-in, ease-in) both;
+  animation: nk-fade-out var(--nk-time-exit, var(--nk-time-base)) var(--nk-ease-exit, ease-in) both;
 }
 :is(html, *)[data-nk-motion="reduced"] [data-nk-stagger="in"] {
   animation-name: nk-enter;
@@ -2227,7 +1884,7 @@
 /* An entrance with a short rise (4px), for lists, toasts and panel contents: an inner wrapper, never a
    centred dialog. Reduced motion keeps the fade. */
 @utility nk-rise {
-  animation: nk-rise var(--nk-time) var(--nk-ease-out) both;
+  animation: nk-rise var(--nk-time-base) var(--nk-ease-enter) both;
   :is(html, *)[data-nk-motion="reduced"] & {
     animation-name: nk-enter;
   }
@@ -2242,13 +1899,13 @@
 @utility nk-stagger {
   animation-delay: min(calc(var(--i, 0) * var(--nk-stagger, 20ms)), var(--nk-stagger-max, 100ms));
 }
-/* Tactile press: scale(--nk-press-scale) while held, over --nk-time-press. On buttons, rows and tiles,
+/* Tactile press: scale(--nk-gesture-press) while held, over --nk-time-snap. On buttons, rows and tiles,
    never on a centred dialog. Signal (snap) and Vector (stepped) answer with their background instead,
    and reduced motion or off doesn't scale. */
 @utility nk-press {
-  transition: transform var(--nk-time-press, 70ms) var(--nk-ease-out);
+  transition: transform var(--nk-time-snap, 70ms) var(--nk-ease-enter);
   &:active {
-    transform: scale(var(--nk-press-scale));
+    transform: scale(var(--nk-gesture-press));
   }
   :is(html, *)[data-nk-motion="reduced"] &:active,
   :is(html, *)[data-nk-motion="off"] &:active,
@@ -2296,7 +1953,7 @@
  * to the lit item by transform; the items never animate a fill of their own. Drive it with SelectionTile /
  * useSelectionIndicator (registry), which sets its box (translate, width, height; a size change is a measured
  * FLIP), data-tone and the key-repeat rule: data-repeat="fast" (sooner than --nk-time-base apart) glides in
- * --nk-time-press, "jump" (the third such move in a row) doesn't glide, so it never trails a held d-pad.
+ * --nk-time-snap, "jump" (the third such move in a row) doesn't glide, so it never trails a held d-pad.
  * Reduced motion and motion off jump. It is the primary keycap: ::before the wall, ::after the face.
  */
 @utility nk-indicator {
@@ -2309,10 +1966,10 @@
   will-change: transform;
   isolation: isolate;
   transition:
-    transform var(--nk-indicator-time) var(--nk-indicator-ease),
-    opacity var(--nk-time-fast, var(--nk-time)) var(--nk-ease-standard, var(--nk-ease-out));
+    transform var(--nk-selection-time) var(--nk-selection-ease),
+    opacity var(--nk-time-fast, var(--nk-time-base)) var(--nk-ease-move, var(--nk-ease-enter));
   &[data-repeat="fast"] {
-    transition-duration: var(--nk-time-press, 70ms), var(--nk-time-fast, var(--nk-time));
+    transition-duration: var(--nk-time-snap, 70ms), var(--nk-time-fast, var(--nk-time-base));
   }
   &[data-repeat="jump"],
   :is(html, *)[data-nk-motion="reduced"] &,
@@ -2333,12 +1990,12 @@
      bg-muted and the element's own shadow and clip give way here; tooltip variants still win (more specific) */
   [data-slot="kbd"] {
     background-color: transparent;
-    color: var(--nk-key-fg);
-    border-radius: var(--nk-key-radius);
+    color: var(--nk-tile-face-ink);
+    border-radius: var(--nk-tile-face-radius);
     box-shadow: none;
-    font-family: var(--nk-key-font);
-    font-weight: var(--nk-key-weight);
-    font-style: var(--nk-type-scan-style, var(--nk-display-style, normal));
+    font-family: var(--nk-tile-legend-font);
+    font-weight: var(--nk-tile-legend-weight);
+    font-style: var(--nk-type-scan-style, var(--nk-type-slant, normal));
     clip-path: none;
   }
   [data-slot="button"] {
@@ -2367,61 +2024,61 @@
   [data-slot="button"][data-variant="link"]:focus-visible {
     text-decoration-line: underline;
   }
-  /* The primary is a keycap: the Tile (Selection, 1.7). A face on its wall: the face in --nk-tile-key, the wall
-     the same colour in shade (--nk-tile-wall-shade) dropped --nk-tile-wall straight down, the tile's slant and
+  /* The primary is a keycap: the Tile (Selection, 1.7). A face on its wall: the face in --nk-tile-key-color, the wall
+     the same colour in shade (--nk-tile-wall-shade) dropped --nk-tile-wall-height straight down, the tile's slant and
      radius. Hover (and focus) raises the face a pixel; a press sinks it onto the wall. The element stays
      upright and transparent; ::after is the face, ::before the wall. A lit row is the same object. */
   :is([data-slot="button"], [data-slot="alert-dialog-action"])[data-variant="default"] {
     position: relative;
     isolation: isolate;
-    margin-bottom: var(--nk-tile-wall);
+    margin-bottom: var(--nk-tile-wall-height);
     background-color: transparent;
     background-image: none;
     box-shadow: none;
     border-color: transparent;
-    border-radius: var(--nk-tile-radius);
+    border-radius: var(--nk-tile-key-radius);
     color: var(--nk-tile-key-ink);
     clip-path: none;
     &::before,
     &::after {
       content: "";
       position: absolute;
-      inset: 0 var(--nk-tile-inset);
+      inset: 0 var(--nk-tile-key-inset);
       pointer-events: none;
       border-radius: inherit;
-      background-color: var(--nk-tile-key);
-      transition: transform var(--nk-time-snap, 70ms) var(--nk-ease-standard, cubic-bezier(0.2, 0, 0, 1));
+      background-color: var(--nk-tile-key-color);
+      transition: transform var(--nk-time-snap, 70ms) var(--nk-ease-move, cubic-bezier(0.2, 0, 0, 1));
     }
     &::before {
       z-index: -2;
       box-shadow: inset 0 0 0 100vmax rgba(var(--scrim-rgb, 0, 0, 0), var(--nk-tile-wall-shade));
-      transform: translateY(var(--nk-tile-wall)) skewX(var(--nk-tile-skew, 0deg));
+      transform: translateY(var(--nk-tile-wall-height)) skewX(var(--nk-tile-face-skew, 0deg));
     }
     &::after {
       z-index: -1;
-      box-shadow: inset 0 0 0 var(--nk-border, 1px) var(--nk-tile-key-rim), inset 0 1px 0 var(--nk-tile-light);
-      transform: skewX(var(--nk-tile-skew, 0deg));
+      box-shadow: inset 0 0 0 var(--nk-line-width, 1px) var(--nk-tile-key-rim), inset 0 1px 0 var(--nk-tile-face-light);
+      transform: skewX(var(--nk-tile-face-skew, 0deg));
     }
     &:is(:hover, :focus-visible) {
       background-color: transparent;
       border-color: transparent;
     }
     &:is(:hover, :focus-visible)::after {
-      transform: translateY(calc(var(--nk-tile-lift, 1px) * -1)) skewX(var(--nk-tile-skew, 0deg));
+      transform: translateY(calc(var(--nk-tile-key-lift, 1px) * -1)) skewX(var(--nk-tile-face-skew, 0deg));
     }
     &:not(:disabled):is(:active, [data-nk-press]) {
       transform: none;
     }
     &:not(:disabled):is(:active, [data-nk-press])::after {
-      transform: translateY(calc(var(--nk-tile-wall) * var(--nk-tile-press-ratio, 0.67))) skewX(var(--nk-tile-skew, 0deg));
+      transform: translateY(calc(var(--nk-tile-wall-height) * var(--nk-tile-key-press, 0.67))) skewX(var(--nk-tile-face-skew, 0deg));
     }
   }
   /* a Kbd on the face reads dark on it */
   :is([data-slot="button"], [data-slot="alert-dialog-action"])[data-variant="default"] [data-slot="kbd"] {
-    --nk-tile-face-now: rgba(var(--scrim-rgb, 0, 0, 0), 0.25);
-    --nk-tile-ink-now: var(--nk-tile-key-ink);
-    --nk-tile-rim-now: rgba(var(--scrim-rgb, 0, 0, 0), 0.35);
-    --nk-tile-plate-now: transparent;
+    --nk-tile-now-face: rgba(var(--scrim-rgb, 0, 0, 0), 0.25);
+    --nk-tile-now-ink: var(--nk-tile-key-ink);
+    --nk-tile-now-rim: rgba(var(--scrim-rgb, 0, 0, 0), 0.35);
+    --nk-tile-now-plate: transparent;
     color: var(--nk-tile-key-ink);
   }
   /* secondary (outline): a hairline rim on the panel, the tint on hover and focus */
@@ -2437,14 +2094,14 @@
   /* Fields (baseline 1.6): one height. A text field keeps ONE crisp rim while it holds the caret (typing needs
      to show where it goes; Selection, 1.7); checkboxes and switches light their rim the same way. No halo. */
   :is([data-slot="input"], [data-slot="select-trigger"], input[data-slot="form-field-control"], button[data-slot="form-field-control"]:not([role="checkbox"], [role="switch"])) {
-    min-height: var(--nk-h-field);
+    min-height: var(--nk-height-field);
   }
   :is([data-slot="input"], [data-slot="textarea"], [data-slot="select-trigger"], [data-slot="input-group"], [data-slot="form-field-control"], [data-slot="checkbox"], [data-slot="switch"]):is(:focus-visible, :focus-within, [data-state="open"]) {
-    border-color: var(--nk-focus-rim);
+    border-color: var(--nk-line-focus);
   }
   /* a press dips and springs back */
   [data-slot="button"]:not([class*="translate"], :disabled):is(:active, [data-nk-press]) {
-    transform: scale(var(--nk-press-scale, 0.97));
+    transform: scale(var(--nk-gesture-press, 0.97));
   }
   :is(html, *)[data-nk-motion="reduced"] [data-slot="button"]:active,
   :is(html, *)[data-nk-motion="off"] [data-slot="button"]:active {
@@ -2458,7 +2115,7 @@
     position: absolute;
     inset: 0;
     pointer-events: none;
-    background-image: repeating-linear-gradient(90deg, transparent 0 calc(var(--nk-meter-segment) - var(--nk-meter-segment-gap, 0.125rem)), var(--nk-meter-gap) calc(var(--nk-meter-segment) - var(--nk-meter-segment-gap, 0.125rem)) var(--nk-meter-segment));
+    background-image: repeating-linear-gradient(90deg, transparent 0 calc(var(--nk-meter-segment-size) - var(--nk-meter-segment-gap, 0.125rem)), var(--nk-meter-segment-color) calc(var(--nk-meter-segment-size) - var(--nk-meter-segment-gap, 0.125rem)) var(--nk-meter-segment-size));
   }
   [data-slot="progress-indicator"] {
     box-shadow: var(--nk-meter-glow);
@@ -2471,10 +2128,10 @@
 }
 
 /*
- * Skew (tokens 1.3: --nk-skew, painted as html[data-nk-skew] by applyTheme). Badges, chips, key caps,
+ * Skew (tokens 1.3: --nk-shape-slab, painted as html[data-nk-skew] by applyTheme). Badges, chips, key caps,
  * tags, the primary button and the selected row are drawn as skewed slabs, Valorant / Fortnite style: the
  * slab is a ::after behind the content, skewed with transform (Chromium 103); the content itself stays
- * upright (or italic, with --nk-display-style). Nothing here applies at 0deg, so the other identities are
+ * upright (or italic, with --nk-type-slant). Nothing here applies at 0deg, so the other identities are
  * untouched. Each part names its fill (--nk-slab-fill) and stroke (--nk-slab-stroke).
  */
 :is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"]) :is(.nk-chip, [data-slot="badge"], [data-slot="button"][data-variant="default"]) {
@@ -2494,7 +2151,7 @@
   pointer-events: none;
   background-color: var(--nk-slab-fill, transparent);
   box-shadow: var(--nk-slab-stroke, none);
-  transform: skewX(var(--nk-skew));
+  transform: skewX(var(--nk-shape-slab));
 }
 :is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"]) .nk-chip {
   --nk-slab-fill: var(--nk-chip-bg);
@@ -2516,12 +2173,12 @@
 }
 :is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"]) [data-slot="badge"][data-variant="outline"] {
   --nk-slab-fill: transparent;
-  --nk-slab-stroke: inset 0 0 0 var(--nk-border) var(--border);
+  --nk-slab-stroke: inset 0 0 0 var(--nk-line-width) var(--border);
 }
 :is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"]) [data-slot="button"][data-variant="default"] {
   --nk-slab-fill: var(--primary);
 }
-/* key caps: the Tile (nk.kit, 1.5) draws the slant (--nk-tile-skew = --nk-skew) and the offset plate */
+/* key caps: the Tile (nk.kit, 1.5) draws the slant (--nk-tile-face-skew = --nk-shape-slab) and the offset plate */
 /* notification type badges: a small skewed slab in the type's colour, the glyph dark on it */
 :is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"]) [data-slot="notice-icon"] {
   position: relative;
@@ -2538,7 +2195,7 @@
   pointer-events: none;
   background-color: currentColor;
   box-shadow: 0.125rem 0.125rem 0 0 rgba(var(--scrim-rgb), 0.6);
-  transform: skewX(var(--nk-skew));
+  transform: skewX(var(--nk-shape-slab));
 }
 :is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"]) [data-slot="notice-icon"] svg {
   color: var(--background);
@@ -2575,7 +2232,7 @@ html :focus-visible {
   --tw-exit-rotate: 0 !important;
 }
 :is(html, *)[data-nk-motion="reduced"] :is([class*="animate-in"], [class*="animate-out"]) {
-  animation-duration: var(--nk-time-reduced, 100ms) !important;
+  animation-duration: var(--nk-motion-reduced, 100ms) !important;
 }
 :is(html, *)[data-nk-motion="reduced"] *,
 :is(html, *)[data-nk-motion="reduced"] *::before,
@@ -2635,55 +2292,50 @@ html :focus-visible {
   --hue-grad-b: rgb(var(--hue-deep-rgb));
 }
 
-/* Legibility: day lifts each material's opacity toward opaque by --nk-legibility-lift (not a light
+/* Legibility: day lifts each material's opacity toward opaque by --nk-surface-legibility-lift (not a light
    theme). The theme's day applies always; auto applies while the HUD marks html[data-nk-daytime]. Surfaces
    read --nk-{hud,menu,overlay}-alpha, never the raw material opacity. */
-:root {
-  --nk-day: 0;
-  --nk-hud-alpha: calc(var(--nk-material-hud-opacity, 0.55) + (1 - var(--nk-material-hud-opacity, 0.55)) * var(--nk-legibility-lift, 0.5) * var(--nk-day));
-  --nk-menu-alpha: calc(var(--nk-material-menu-opacity, 0.96) + (1 - var(--nk-material-menu-opacity, 0.96)) * var(--nk-legibility-lift, 0.5) * var(--nk-day));
-}
 html[data-nk-legibility="day"],
 html[data-nk-legibility="auto"][data-nk-daytime] {
-  --nk-day: 1;
+  --nk-alpha-day: 1;
 }
 
 /* Glow budget: a part that may glow says so with data-nk-glow; the runtime (nuikit-core glow.ts) marks at
-   most --nk-glow-budget of them data-nk-glow-on, the top surface's focused one first. The rest don't glow. */
+   most --nk-surface-glow-budget of them data-nk-glow-on, the top surface's focused one first. The rest don't glow. */
 [data-nk-glow]:not([data-nk-glow-on]) {
-  --nk-glow: 0;
+  --nk-surface-glow: 0;
   --nk-hue-glow: 0;
 }
 
-/* Backdrop filters (tokens 1.4, --nk-backdrop, default off). In game, FiveM's NUI draws backdrop-filter as a
+/* Backdrop filters (tokens 1.4, --nk-surface-backdrop, default off). In game, FiveM's NUI draws backdrop-filter as a
    black box over the game (seen on the pause menu, Oct 22), and even blur(0px) costs a filter pass, so it is opt-in:
-   the world blur behind the pause menu is GTA's own (TriggerScreenblurFadeIn). A surface sets --nk-backdrop-filter
+   the world blur behind the pause menu is GTA's own (TriggerScreenblurFadeIn). A surface sets --nk-panel-backdrop
    (never backdrop-filter itself); only html[data-nk-backdrop="on"] applies it (a browser preview, or a client that
    draws it right). The property doesn't inherit, so it stays on the element that set it. */
-@property --nk-backdrop-filter {
+@property --nk-panel-backdrop {
   syntax: "*";
   inherits: false;
 }
 html[data-nk-backdrop="on"] * {
-  /* nuikit-ignore cef/backdrop-filter: the one place, behind --nk-backdrop */
-  -webkit-backdrop-filter: var(--nk-backdrop-filter);
-  /* nuikit-ignore cef/backdrop-filter: the one place, behind --nk-backdrop */
-  backdrop-filter: var(--nk-backdrop-filter);
+  /* nuikit-ignore cef/backdrop-filter: the one place, behind --nk-surface-backdrop */
+  -webkit-backdrop-filter: var(--nk-panel-backdrop);
+  /* nuikit-ignore cef/backdrop-filter: the one place, behind --nk-surface-backdrop */
+  backdrop-filter: var(--nk-panel-backdrop);
 }
 
 /*
  * States (Foundation 2): every interactive kit component draws one of rest / focus / hold / confirm /
  * disabled / alert on data-state (nkState() in lib/utils). Components already style focus (the identity
  * indicator), hold (the filling line) and disabled; here, what is the same for all of them: confirm is a
- * short pop (--nk-confirm-scale over --nk-time-confirm, from nkConfirm()). A theme restyles any state with
+ * short pop (--nk-gesture-confirm over --nk-time-slow, from nkConfirm()). A theme restyles any state with
  * [data-state="…"]. Only these values: Radix uses data-state for open / closed / checked.
  */
 [data-state="confirm"] {
-  animation: nk-confirm var(--nk-time-confirm, 160ms) var(--nk-ease-spring, cubic-bezier(0.34, 1.56, 0.64, 1));
+  animation: nk-confirm var(--nk-time-slow, 160ms) var(--nk-ease-spring, cubic-bezier(0.34, 1.56, 0.64, 1));
 }
 @keyframes nk-confirm {
   40% {
-    transform: scale(var(--nk-confirm-scale, 1.04));
+    transform: scale(var(--nk-gesture-confirm, 1.04));
   }
 }
 :is(html, *)[data-nk-motion="reduced"] [data-state="confirm"],
@@ -2694,7 +2346,7 @@ html[data-nk-backdrop="on"] * {
 }
 
 /*
- * Focus (tokens 1.4: --nk-focus-style, painted as data-nk-focus): how every kit component's focus state
+ * Focus (tokens 1.4: --nk-style-focus, painted as data-nk-focus): how every kit component's focus state
  * draws. ring is each component's own look (the default); the others replace it. Rows keep the identity
  * indicator (--nk-row-indicator), which a treatment sets alongside.
  */
@@ -2704,7 +2356,7 @@ html[data-nk-backdrop="on"] * {
 :is(html, *)[data-nk-focus="halo"] [data-state="focus"]:not(.nk-row) {
   box-shadow:
     0 0 0 2px rgba(var(--brand-rgb, var(--primary-rgb)), 0.9),
-    0 0 var(--nk-glow-radius, 1rem) rgba(var(--brand-rgb, var(--primary-rgb)), var(--nk-hue-glow, 0.45));
+    0 0 var(--nk-line-glow, 1rem) rgba(var(--brand-rgb, var(--primary-rgb)), var(--nk-hue-glow, 0.45));
 }
 :is(html, *)[data-nk-focus="tint"] [data-state="focus"]:not(.nk-row) {
   background-color: rgba(var(--brand-rgb, var(--primary-rgb)), var(--nk-hue-tint, 0.14));
@@ -2722,7 +2374,7 @@ html[data-nk-backdrop="on"] * {
 }
 
 /*
- * Hold (tokens 1.4: --nk-hold-style, data-nk-hold): how a press-and-hold shows its progress, from the
+ * Hold (tokens 1.4: --nk-style-hold, data-nk-hold): how a press-and-hold shows its progress, from the
  * prompt's --level. bar is the line under the prompt (the default); ring fills around the key chips;
  * fill sweeps the prompt's background.
  */
@@ -2731,8 +2383,8 @@ html[data-nk-backdrop="on"] * {
   display: none;
 }
 :is(html, *)[data-nk-hold="ring"] [data-slot="key-prompt"][data-state="hold"] > [data-slot="key-prompt-keys"] {
-  padding: var(--nk-hold-ring-pad, 2px);
-  border-radius: calc(var(--nk-key-radius, 0.375rem) + var(--nk-hold-ring-pad, 2px));
+  padding: var(--nk-level-hold-pad, 2px);
+  border-radius: calc(var(--nk-tile-face-radius, 0.375rem) + var(--nk-level-hold-pad, 2px));
   background: conic-gradient(var(--brand, var(--primary)) calc(var(--level, 0) * 360deg), rgba(var(--hud-foreground-rgb, 255, 255, 255), 0.16) 0);
 }
 :is(html, *)[data-nk-hold="fill"] [data-slot="key-prompt"][data-state="hold"] {
@@ -2740,13 +2392,13 @@ html[data-nk-backdrop="on"] * {
 }
 
 /*
- * Level (tokens 1.4: --nk-level-style, data-nk-level): how a level reads. bar is the default; pips cuts a
+ * Level (tokens 1.4: --nk-style-level, data-nk-level): how a level reads. bar is the default; pips cuts a
  * meter's bar into ten plates (a meter with its own segments keeps them). vital-chip maps it to its
  * drawings (ring → outline, liquid → fill, bar / slab / pips → bar).
  */
 :is(html, *)[data-nk-level="pips"] [data-slot="meter"] [data-slot="progress"] {
-  -webkit-mask-image: repeating-linear-gradient(to right, #000 0 calc(var(--nk-pip-size, 10%) - var(--nk-pip-gap, 2px)), transparent calc(var(--nk-pip-size, 10%) - var(--nk-pip-gap, 2px)) var(--nk-pip-size, 10%));
-  mask-image: repeating-linear-gradient(to right, #000 0 calc(var(--nk-pip-size, 10%) - var(--nk-pip-gap, 2px)), transparent calc(var(--nk-pip-size, 10%) - var(--nk-pip-gap, 2px)) var(--nk-pip-size, 10%));
+  -webkit-mask-image: repeating-linear-gradient(to right, #000 0 calc(var(--nk-level-pip-size, 10%) - var(--nk-level-pip-gap, 2px)), transparent calc(var(--nk-level-pip-size, 10%) - var(--nk-level-pip-gap, 2px)) var(--nk-level-pip-size, 10%));
+  mask-image: repeating-linear-gradient(to right, #000 0 calc(var(--nk-level-pip-size, 10%) - var(--nk-level-pip-gap, 2px)), transparent calc(var(--nk-level-pip-size, 10%) - var(--nk-level-pip-gap, 2px)) var(--nk-level-pip-size, 10%));
 }
 
 /* Roles on chips: a chip with data-hue draws its icon in the role's colour. */
@@ -2757,10 +2409,10 @@ html[data-nk-backdrop="on"] * {
 /*
  * The interaction ladder (wave 3) on a key prompt's data-ladder: dormant (the thing is near: the key chip
  * alone, quiet) → aware (in reach: the whole prompt, a step back) → focus (the key acts on it) → hold →
- * confirm (data-state, the pop). Each step eases in over --nk-time.
+ * confirm (data-state, the pop). Each step eases in over --nk-time-base.
  */
 [data-slot="key-prompt"][data-ladder] {
-  transition: opacity var(--nk-time, 160ms) var(--nk-ease-standard, ease-out);
+  transition: opacity var(--nk-time-base, 160ms) var(--nk-ease-move, ease-out);
 }
 [data-slot="key-prompt"][data-ladder="dormant"] {
   opacity: 0.6;
@@ -2804,17 +2456,17 @@ html[data-nk-backdrop="on"] * {
    data-tone = neutral | info | success | warning | danger; data-hue = a role; --level = 0–1. */
 @layer nk.kit {
   /* ── Tile / Keycap: shadcn's Kbd and the registry Tile. Back to front: the plate (::before, offset by
-     --nk-tile-plate-x/y), the face (::after, slanted by --nk-tile-skew while the box stays upright, carrying
+     --nk-tile-plate-x/y), the face (::after, slanted by --nk-tile-face-skew while the box stays upright, carrying
      the rim and the top light), a hold fill (tile-fill, scaleX(--level)), the legend. Graphite: the face is
      today's keycap, no plate, no slant. */
   :is([data-slot="tile"], [data-slot="kbd"]) {
     position: relative;
     isolation: isolate;
     overflow: visible;
-    --nk-tile-face-now: var(--nk-key-bg);
-    --nk-tile-ink-now: var(--nk-key-fg);
-    --nk-tile-rim-now: var(--nk-key-border);
-    --nk-tile-plate-now: var(--nk-tile-plate);
+    --nk-tile-now-face: var(--nk-tile-face-color);
+    --nk-tile-now-ink: var(--nk-tile-face-ink);
+    --nk-tile-now-rim: var(--nk-tile-face-rim);
+    --nk-tile-now-plate: var(--nk-tile-plate-color);
     --nk-tile-x: 0px;
     --nk-tile-y: 0px;
   }
@@ -2831,15 +2483,15 @@ html[data-nk-backdrop="on"] * {
     /* no wall (plate offset 0: Flat, the stepper's keys): the plate sits half a px inside the face, so its colour
        never bleeds at the face's anti-aliased edge (the "grooves"); with a wall it is the full face size */
     inset: calc(0.5px - min(0.5px, max(var(--nk-tile-plate-x), 0px - var(--nk-tile-plate-x)) + max(var(--nk-tile-plate-y), 0px - var(--nk-tile-plate-y))));
-    background-color: var(--nk-tile-plate-now);
-    transform: translate(var(--nk-tile-plate-x), var(--nk-tile-plate-y)) skewX(var(--nk-tile-skew));
+    background-color: var(--nk-tile-now-plate);
+    transform: translate(var(--nk-tile-plate-x), var(--nk-tile-plate-y)) skewX(var(--nk-tile-face-skew));
   }
   :is([data-slot="tile"], [data-slot="kbd"])::after {
     z-index: -2;
-    background-color: var(--nk-tile-face-now);
-    box-shadow: var(--nk-key-shadow), inset 0 0 0 var(--nk-border, 1px) var(--nk-tile-rim-now);
-    clip-path: var(--nk-key-clip, none);
-    transform: translate(var(--nk-tile-x), var(--nk-tile-y)) skewX(var(--nk-tile-skew));
+    background-color: var(--nk-tile-now-face);
+    box-shadow: var(--nk-tile-face-shadow), inset 0 0 0 var(--nk-line-width, 1px) var(--nk-tile-now-rim);
+    clip-path: var(--nk-tile-face-clip, none);
+    transform: translate(var(--nk-tile-x), var(--nk-tile-y)) skewX(var(--nk-tile-face-skew));
   }
   /* a tooltip's own key surface (shadcn's variant on the element) shows through */
   [data-slot="tooltip-content"] [data-slot="kbd"]::after {
@@ -2852,15 +2504,15 @@ html[data-nk-backdrop="on"] * {
     align-items: center;
     justify-content: center;
     gap: var(--nk-space-1);
-    height: var(--nk-h-key);
-    min-width: var(--nk-h-key);
+    height: var(--nk-height-key);
+    min-width: var(--nk-height-key);
     padding-inline: var(--nk-space-1);
-    border-radius: var(--nk-key-radius);
-    color: var(--nk-tile-ink-now);
-    font-family: var(--nk-key-font);
+    border-radius: var(--nk-tile-face-radius);
+    color: var(--nk-tile-now-ink);
+    font-family: var(--nk-tile-legend-font);
     font-style: var(--nk-type-scan-style);
     font-size: var(--nk-text-key);
-    font-weight: var(--nk-key-weight);
+    font-weight: var(--nk-tile-legend-weight);
     letter-spacing: var(--nk-type-scan-tracking);
     text-transform: var(--nk-type-scan-case);
     line-height: 1;
@@ -2876,13 +2528,13 @@ html[data-nk-backdrop="on"] * {
     }
   }
   [data-slot="tile"][data-size="md"] {
-    height: var(--nk-h-chip);
-    min-width: var(--nk-h-chip);
+    height: var(--nk-height-chip);
+    min-width: var(--nk-height-chip);
     padding-inline: var(--nk-space-2);
   }
   [data-slot="tile"][data-size="lg"] {
-    height: var(--nk-h-control);
-    min-width: var(--nk-h-control);
+    height: var(--nk-height-control);
+    min-width: var(--nk-height-control);
     padding-inline: var(--nk-space-3);
     & svg {
       width: var(--nk-icon-lg);
@@ -2895,13 +2547,13 @@ html[data-nk-backdrop="on"] * {
   }
   [data-slot="tile"][data-shape="square"] {
     padding-inline: 0;
-    width: var(--nk-h-key);
+    width: var(--nk-height-key);
   }
   [data-slot="tile"][data-shape="square"][data-size="md"] {
-    width: var(--nk-h-chip);
+    width: var(--nk-height-chip);
   }
   [data-slot="tile"][data-shape="square"][data-size="lg"] {
-    width: var(--nk-h-control);
+    width: var(--nk-height-control);
   }
   /* the legend sits on the face's optical centre: the italic overhang pad is split to both sides (an
      end-only pad pushed A, D, ESC left of the slanted face) and --nk-tile-legend-shift (0em) nudges the
@@ -2914,30 +2566,30 @@ html[data-nk-backdrop="on"] * {
   }
   /* the HUD's dimmer plate */
   [data-slot="tile"][data-plate="dim"] {
-    --nk-tile-plate-now: var(--nk-tile-plate-dim);
+    --nk-tile-now-plate: var(--nk-tile-plate-dim);
   }
   /* states. Rims switch, they never tween; the face moves with transform only. */
   :is([data-slot="tile"], [data-slot="kbd"])[data-state="focus"] {
-    --nk-tile-rim-now: var(--nk-tile-rim-focus);
+    --nk-tile-now-rim: var(--nk-tile-face-rim-focus);
   }
   :is([data-slot="tile"], [data-slot="kbd"])[data-state="hold"] {
-    --nk-tile-x: var(--nk-tile-press);
-    --nk-tile-y: var(--nk-tile-press);
+    --nk-tile-x: var(--nk-tile-plate-press);
+    --nk-tile-y: var(--nk-tile-plate-press);
   }
   :is([data-slot="tile"], [data-slot="kbd"]):is([data-state="confirm"], [data-active]) {
-    --nk-tile-face-now: var(--nk-tile-confirm-face);
-    --nk-tile-ink-now: var(--nk-tile-confirm-ink);
-    color: var(--nk-tile-confirm-ink);
+    --nk-tile-now-face: var(--nk-tile-face-confirm);
+    --nk-tile-now-ink: var(--nk-tile-face-confirm-ink);
+    color: var(--nk-tile-face-confirm-ink);
   }
-  /* active (not confirming): the face takes --nk-tile-active, a colour or the accent gradient */
+  /* active (not confirming): the face takes --nk-tile-face-active, a colour or the accent gradient */
   :is([data-slot="tile"], [data-slot="kbd"])[data-active]:not([data-state="confirm"])::after {
-    background: var(--nk-tile-active);
+    background: var(--nk-tile-face-active);
   }
   :is([data-slot="tile"], [data-slot="kbd"])[data-state="confirm"] {
-    animation: nk-confirm var(--nk-time-slow, var(--nk-time-confirm, 160ms)) var(--nk-ease-spring, cubic-bezier(0.34, 1.56, 0.64, 1));
+    animation: nk-confirm var(--nk-time-slow, var(--nk-time-slow, 160ms)) var(--nk-ease-spring, cubic-bezier(0.34, 1.56, 0.64, 1));
   }
   :is([data-slot="tile"], [data-slot="kbd"])[data-state="alert"] {
-    --nk-tile-rim-now: var(--nk-fill-alert);
+    --nk-tile-now-rim: var(--nk-fill-alert);
     animation: nk-breathe var(--nk-time-pulse, 1000ms) var(--nk-ease-breathe, cubic-bezier(0.37, 0, 0.63, 1)) infinite;
   }
   :is([data-slot="tile"], [data-slot="kbd"]):is([data-state="disabled"], [data-disabled]) {
@@ -2950,8 +2602,8 @@ html[data-nk-backdrop="on"] * {
   [data-slot="tile"][data-tone="danger"] { --nk-tile-tone: var(--destructive); }
   [data-slot="tile"][data-hue] { --nk-tile-tone: var(--hue-solid); }
   [data-slot="tile"]:is([data-tone]:not([data-tone="neutral"]), [data-hue]):not([data-state="confirm"], [data-active]) {
-    --nk-tile-ink-now: var(--nk-tile-tone);
-    --nk-tile-rim-now: var(--nk-tile-tone);
+    --nk-tile-now-ink: var(--nk-tile-tone);
+    --nk-tile-now-rim: var(--nk-tile-tone);
   }
   /* hold: the face fills left to right */
   [data-slot="tile-fill"] {
@@ -2960,9 +2612,9 @@ html[data-nk-backdrop="on"] * {
     z-index: -1;
     border-radius: inherit;
     pointer-events: none;
-    background-color: var(--nk-tile-hold);
+    background-color: var(--nk-tile-face-hold);
     transform-origin: left center;
-    transform: translate(var(--nk-tile-x), var(--nk-tile-y)) skewX(var(--nk-tile-skew)) scaleX(var(--level, 0));
+    transform: translate(var(--nk-tile-x), var(--nk-tile-y)) skewX(var(--nk-tile-face-skew)) scaleX(var(--level, 0));
   }
   /* tag: the plate extending right with a label, opening (a reveal on the compositor) after the tile lands */
   [data-slot="tile-group"] {
@@ -2978,8 +2630,8 @@ html[data-nk-backdrop="on"] * {
     align-items: center;
     align-self: stretch;
     margin-left: calc(var(--nk-space-2) * -1);
-    padding-inline: calc(var(--nk-space-2) + var(--nk-space-1)) var(--nk-pad-x);
-    color: var(--nk-tile-ink);
+    padding-inline: calc(var(--nk-space-2) + var(--nk-space-1)) var(--nk-gap-pad-x);
+    color: var(--nk-tile-face-ink);
     font-family: var(--nk-type-label-family);
     font-style: var(--nk-type-label-style);
     font-size: var(--nk-text-label);
@@ -2988,16 +2640,16 @@ html[data-nk-backdrop="on"] * {
     text-transform: var(--nk-type-label-case);
     white-space: nowrap;
     opacity: 0;
-    transition: opacity var(--nk-time-fast, 93ms) var(--nk-ease-out, ease-out);
+    transition: opacity var(--nk-time-fast, 93ms) var(--nk-ease-enter, ease-out);
     &::before {
       content: "";
       position: absolute;
       inset: 0;
       z-index: -1;
-      border-radius: 0 var(--nk-key-radius) var(--nk-key-radius) 0;
-      background-color: var(--nk-tile-plate);
+      border-radius: 0 var(--nk-tile-face-radius) var(--nk-tile-face-radius) 0;
+      background-color: var(--nk-tile-plate-color);
       transform-origin: left center;
-      transform: translate(var(--nk-tile-plate-x), var(--nk-tile-plate-y)) skewX(var(--nk-tile-skew)) scaleX(0);
+      transform: translate(var(--nk-tile-plate-x), var(--nk-tile-plate-y)) skewX(var(--nk-tile-face-skew)) scaleX(0);
       transition: transform var(--nk-time-base, 140ms) var(--nk-ease-expand, ease-out) var(--nk-tile-tag-delay);
     }
   }
@@ -3005,10 +2657,10 @@ html[data-nk-backdrop="on"] * {
     opacity: 1;
     transition-delay: calc(var(--nk-tile-tag-delay) + var(--nk-time-fast, 93ms));
     &::before {
-      transform: translate(var(--nk-tile-plate-x), var(--nk-tile-plate-y)) skewX(var(--nk-tile-skew)) scaleX(1);
+      transform: translate(var(--nk-tile-plate-x), var(--nk-tile-plate-y)) skewX(var(--nk-tile-face-skew)) scaleX(1);
     }
   }
-  /* a tile lands: from --nk-land-scale with the spring (opt-in: data-land) */
+  /* a tile lands: from --nk-gesture-land with the spring (opt-in: data-land) */
   [data-slot="tile"][data-land] {
     animation: nk-land var(--nk-time-slow, 218ms) var(--nk-ease-spring, cubic-bezier(0.34, 1.56, 0.64, 1)) backwards;
   }
@@ -3022,17 +2674,17 @@ html[data-nk-backdrop="on"] * {
     height: var(--nk-fill-height);
     border-radius: var(--nk-meter-radius);
     background-color: var(--nk-fill-track);
-    --nk-fill-now: var(--nk-fill-color);
+    --nk-level-fill-now: var(--nk-fill-color);
     &::before,
     &::after {
       content: "";
       position: absolute;
       inset: 0;
       pointer-events: none;
-      transition: transform var(--nk-time-fill, 420ms) var(--nk-ease-standard, cubic-bezier(0.2, 0, 0, 1));
+      transition: transform var(--nk-time-fill, 420ms) var(--nk-ease-move, cubic-bezier(0.2, 0, 0, 1));
     }
     &::before {
-      background-color: var(--nk-fill-now);
+      background-color: var(--nk-level-fill-now);
       transform-origin: left center;
       transform: scaleX(var(--level, 0));
     }
@@ -3042,20 +2694,20 @@ html[data-nk-backdrop="on"] * {
       transform: translateX(calc((var(--level, 0) - 1) * 100%));
     }
   }
-  :is(.nk-fill, [data-slot="fill"])[data-tone="info"] { --nk-fill-now: var(--info); }
-  :is(.nk-fill, [data-slot="fill"])[data-tone="success"] { --nk-fill-now: var(--success); }
-  :is(.nk-fill, [data-slot="fill"])[data-tone="warning"] { --nk-fill-now: var(--warning); }
-  :is(.nk-fill, [data-slot="fill"])[data-tone="danger"] { --nk-fill-now: var(--destructive); }
+  :is(.nk-fill, [data-slot="fill"])[data-tone="info"] { --nk-level-fill-now: var(--info); }
+  :is(.nk-fill, [data-slot="fill"])[data-tone="success"] { --nk-level-fill-now: var(--success); }
+  :is(.nk-fill, [data-slot="fill"])[data-tone="warning"] { --nk-level-fill-now: var(--warning); }
+  :is(.nk-fill, [data-slot="fill"])[data-tone="danger"] { --nk-level-fill-now: var(--destructive); }
   :is(.nk-fill, [data-slot="fill"])[data-hue],
-  [data-hue] :is(.nk-fill, [data-slot="fill"]):not([data-tone], [data-color]) { --nk-fill-now: var(--hue-solid); }
-  :is(.nk-fill, [data-slot="fill"])[data-state="alert"] { --nk-fill-now: var(--nk-fill-alert); }
+  [data-hue] :is(.nk-fill, [data-slot="fill"]):not([data-tone], [data-color]) { --nk-level-fill-now: var(--hue-solid); }
+  :is(.nk-fill, [data-slot="fill"])[data-state="alert"] { --nk-level-fill-now: var(--nk-fill-alert); }
   /* tween off: a level drawn every frame (a hold) or by a run (useLinearRun + fillTargets) never eases */
   :is(.nk-fill, [data-slot="fill"])[data-tween="off"]::before,
   :is(.nk-fill, [data-slot="fill"])[data-tween="off"]::after {
     transition: none;
   }
   :is(.nk-fill, [data-slot="fill"])[data-variant="edge"] {
-    height: calc(var(--nk-gauge-track, 0.25rem) / 2);
+    height: calc(var(--nk-fill-height, 0.25rem) / 2);
     border-radius: 0;
   }
 
@@ -3066,9 +2718,9 @@ html[data-nk-backdrop="on"] * {
     align-items: center;
     justify-content: center;
     gap: var(--nk-gap-cluster);
-    height: var(--nk-h-chip);
+    height: var(--nk-height-chip);
     padding-inline: var(--nk-space-2);
-    border-radius: var(--nk-r-chip);
+    border-radius: var(--nk-radius-chip);
     font-family: var(--nk-type-label-family);
     font-style: var(--nk-type-label-style);
     font-size: var(--nk-text-label);
@@ -3080,7 +2732,7 @@ html[data-nk-backdrop="on"] * {
     --nk-chip-tone: var(--muted-foreground);
     --nk-chip-tone-rgb: var(--muted-foreground-rgb);
     color: var(--foreground);
-    box-shadow: inset 0 0 0 var(--nk-border, 1px) var(--border);
+    box-shadow: inset 0 0 0 var(--nk-line-width, 1px) var(--border);
     & svg {
       width: var(--nk-icon-md);
       height: var(--nk-icon-md);
@@ -3094,7 +2746,7 @@ html[data-nk-backdrop="on"] * {
   [data-slot="chip"][data-tone="danger"] { --nk-chip-tone: var(--destructive); --nk-chip-tone-rgb: var(--destructive-rgb); }
   [data-slot="chip"][data-hue] { --nk-chip-tone: var(--hue-solid); --nk-chip-tone-rgb: var(--hue); }
   [data-slot="chip"]:is([data-tone]:not([data-tone="neutral"]), [data-hue]) {
-    box-shadow: inset 0 0 0 var(--nk-border, 1px) rgba(var(--nk-chip-tone-rgb), var(--nk-hue-line, 0.5));
+    box-shadow: inset 0 0 0 var(--nk-line-width, 1px) rgba(var(--nk-chip-tone-rgb), var(--nk-hue-line, 0.5));
   }
   [data-slot="chip"][data-fill="tint"] {
     background-color: rgba(var(--nk-chip-tone-rgb), var(--nk-hue-tint, 0.14));
@@ -3115,7 +2767,7 @@ html[data-nk-backdrop="on"] * {
     width: var(--nk-space-2);
     height: var(--nk-space-2);
     padding: 0;
-    border-radius: var(--nk-r-key);
+    border-radius: var(--nk-radius-key);
     background-color: var(--nk-chip-tone);
     box-shadow: none;
   }
@@ -3174,16 +2826,16 @@ html[data-nk-backdrop="on"] * {
     padding: var(--nk-space-1);
     border-radius: var(--nk-plate-radius);
     background-color: var(--nk-plate-bg);
-    box-shadow: inset 0 0 0 var(--nk-border, 1px) var(--nk-plate-hair), var(--nk-plate-drop);
+    box-shadow: inset 0 0 0 var(--nk-line-width, 1px) var(--nk-plate-hair), var(--nk-plate-drop);
   }
   .nk-action-bar [data-slot="action-bar-item"] {
     position: relative;
     display: inline-flex;
     align-items: center;
     gap: var(--nk-gap-cluster);
-    height: var(--nk-h-control);
+    height: var(--nk-height-control);
     padding-inline: var(--nk-space-2);
-    border-radius: var(--nk-r-control);
+    border-radius: var(--nk-radius-control);
     color: var(--foreground);
     white-space: nowrap;
     & > svg {
@@ -3222,7 +2874,7 @@ html[data-nk-backdrop="on"] * {
   }
   .nk-action-bar [data-slot="action-bar-sep"] {
     flex: none;
-    width: var(--nk-border, 1px);
+    width: var(--nk-line-width, 1px);
     height: var(--nk-icon-lg);
     margin-inline: var(--nk-space-1);
     background-color: var(--nk-plate-hair);
@@ -3233,7 +2885,7 @@ html[data-nk-backdrop="on"] * {
     left: var(--nk-space-2);
     right: var(--nk-space-2);
     bottom: 0;
-    height: calc(var(--nk-gauge-track, 0.25rem) / 2);
+    height: calc(var(--nk-fill-height, 0.25rem) / 2);
   }
 
   /* ── Plate (.nk-plate): the one surface recipe for sheets, dialogs and notices. Flat (no gradient, no
@@ -3241,12 +2893,12 @@ html[data-nk-backdrop="on"] * {
   .nk-plate {
     border-radius: var(--nk-plate-radius);
     background-color: var(--nk-plate-bg);
-    box-shadow: inset 0 0 0 var(--nk-border, 1px) var(--nk-plate-hair), var(--nk-plate-drop);
+    box-shadow: inset 0 0 0 var(--nk-line-width, 1px) var(--nk-plate-hair), var(--nk-plate-drop);
   }
 
-  /* ── type-role extras under the tile treatment: the role properties Graphite's classes never set (a label's
-     case and tracking, a number's weight, the italic overhang pad), so Graphite's inherited values stand. */
-  :is(html, *)[data-nk-treatment="tile"] {
+  /* ── the voices' extras: a label's case and tracking, a number's weight and case, the italic overhang pad, and
+     the notice icon as a Tile. */
+  :is(html, [data-nk-theme]) {
     & :is(.nk-label, .nk-caption) {
       font-style: var(--nk-type-label-style);
       letter-spacing: var(--nk-type-label-tracking);
@@ -3280,31 +2932,31 @@ html[data-nk-backdrop="on"] * {
         position: absolute;
         inset: 0;
         pointer-events: none;
-        border-radius: var(--nk-key-radius);
+        border-radius: var(--nk-tile-face-radius);
       }
       &::before {
         z-index: -2;
-        background-color: var(--nk-tile-plate);
-        transform: translate(var(--nk-tile-plate-x), var(--nk-tile-plate-y)) skewX(var(--nk-tile-skew));
+        background-color: var(--nk-tile-plate-color);
+        transform: translate(var(--nk-tile-plate-x), var(--nk-tile-plate-y)) skewX(var(--nk-tile-face-skew));
       }
       &::after {
         z-index: -1;
         background-color: currentColor;
-        transform: skewX(var(--nk-tile-skew));
+        transform: skewX(var(--nk-tile-face-skew));
       }
       & svg {
         width: var(--nk-icon-md);
         height: var(--nk-icon-md);
-        color: var(--nk-tile-confirm-ink);
+        color: var(--nk-tile-face-confirm-ink);
       }
     }
   }
 
   /* ── Row (MenuRow, .nk-row), the baseline (1.6, docs/design/baseline.md): every theme. Anatomy: an icon tile
      column (--nk-row-icon-box, one icon size), a title in the label voice over a description in the body voice.
-     The lit row (the Selection section, unlayered at the end) slides its content in by --nk-row-lift. */
+     The lit row (the Selection section, unlayered at the end) slides its content in by --nk-gesture-lift. */
   .nk-row > * {
-    transition: transform var(--nk-time-base, var(--nk-time)) var(--nk-ease-standard, cubic-bezier(0.2, 0, 0, 1));
+    transition: transform var(--nk-time-base, var(--nk-time-base)) var(--nk-ease-move, cubic-bezier(0.2, 0, 0, 1));
   }
   [data-slot="menu-row-icon"] {
     display: inline-flex;
@@ -3317,8 +2969,8 @@ html[data-nk-backdrop="on"] * {
       width: var(--nk-row-icon-box);
       min-width: var(--nk-row-icon-box);
       height: var(--nk-row-icon-box);
-      --nk-tile-ink-now: var(--muted-foreground);
-      color: var(--nk-tile-ink-now);
+      --nk-tile-now-ink: var(--muted-foreground);
+      color: var(--nk-tile-now-ink);
     }
     & svg {
       width: var(--nk-icon-md);
@@ -3326,7 +2978,7 @@ html[data-nk-backdrop="on"] * {
     }
   }
   .nk-row[data-tone="destructive"] > [data-slot="menu-row-icon"] > [data-slot="tile"] {
-    --nk-tile-ink-now: var(--destructive);
+    --nk-tile-now-ink: var(--destructive);
   }
   [data-slot="menu-row-body"] {
     display: flex;
@@ -3339,7 +2991,7 @@ html[data-nk-backdrop="on"] * {
   [data-slot="menu-row-title"] {
     font-family: var(--nk-type-label-family);
     font-style: var(--nk-type-label-style);
-    font-size: var(--nk-row-title-size);
+    font-size: var(--nk-text-row);
     font-weight: var(--nk-type-label-weight);
     letter-spacing: var(--nk-type-label-tracking);
     text-transform: var(--nk-type-label-case);
@@ -3355,7 +3007,7 @@ html[data-nk-backdrop="on"] * {
     justify-content: center;
     width: var(--nk-row-icon-box);
     height: var(--nk-row-icon-box);
-    border-radius: var(--nk-r-key);
+    border-radius: var(--nk-radius-key);
     background-color: rgba(var(--nk-notice-tone-rgb, var(--foreground-rgb)), var(--nk-hue-tint, 0.14));
     & svg {
       width: var(--nk-icon-md);
@@ -3370,7 +3022,7 @@ html[data-nk-backdrop="on"] * {
   [data-slot="notice-title"] {
     font-family: var(--nk-type-label-family);
     font-style: var(--nk-type-label-style);
-    font-size: var(--nk-row-title-size);
+    font-size: var(--nk-text-row);
     font-weight: var(--nk-type-label-weight);
     letter-spacing: var(--nk-type-label-tracking);
     text-transform: var(--nk-type-label-case);
@@ -3382,7 +3034,7 @@ html[data-nk-backdrop="on"] * {
   }
   [data-slot="notice-description"] {
     font-family: var(--nk-type-body-family);
-    font-size: var(--nk-row-desc-size);
+    font-size: var(--nk-text-desc);
     font-weight: var(--nk-type-body-weight);
     line-height: var(--nk-leading-normal, 1.25rem);
   }
@@ -3391,7 +3043,7 @@ html[data-nk-backdrop="on"] * {
   [data-slot="progress-ring-center"] {
     font-family: var(--nk-type-num-family);
     font-style: var(--nk-type-num-style);
-    font-weight: var(--nk-weight-display, 700);
+    font-weight: var(--nk-type-weight-display, 700);
     font-variant-numeric: tabular-nums;
     letter-spacing: var(--nk-type-num-tracking);
     line-height: 1;
@@ -3411,7 +3063,7 @@ html[data-nk-backdrop="on"] * {
     line-height: 1.25;
   }
   [data-slot="progress-ring-label"] {
-    font-size: var(--nk-row-title-size);
+    font-size: var(--nk-text-row);
   }
   [data-slot="progress-ring-cancel-label"] {
     font-size: var(--nk-text-label);
@@ -3420,7 +3072,7 @@ html[data-nk-backdrop="on"] * {
   [data-slot="menu-row-description"] {
     font-family: var(--nk-type-body-family);
     font-style: normal;
-    font-size: var(--nk-row-desc-size);
+    font-size: var(--nk-text-desc);
     font-weight: var(--nk-type-body-weight);
     letter-spacing: 0;
     text-transform: none;
@@ -3436,7 +3088,7 @@ html[data-nk-backdrop="on"] * {
 @keyframes nk-land {
   from {
     opacity: 0;
-    transform: scale(var(--nk-land-scale, 0.6));
+    transform: scale(var(--nk-gesture-land, 0.6));
   }
 }
 /* Reduced motion (1.5): the primitives keep their fades, no movement */
@@ -3452,37 +3104,37 @@ html[data-nk-backdrop="on"] * {
  * Selection (1.7, docs/design/baseline.md "Selection"): one language, every theme.
  * 1. No focus rings. Keyboard, controller and programmatic focus light an element exactly as the pointer's hover
  *    does; a text field keeps one rim while it holds the caret (the Fields rule above), nothing draws a ring.
- * 2. The selection IS a Tile: the primary keycap's face (the theme's skew, --nk-tile-radius, the top light) over
- *    its wall (dropped --nk-tile-wall straight down, in shade). --nk-fill-style: solid paints it --nk-tile-key with
- *    --nk-tile-key-ink; soft paints a tinted face (--nk-tile-tint) and keeps the foreground ink.
+ * 2. The selection IS a Tile: the primary keycap's face (the theme's skew, --nk-tile-key-radius, the top light) over
+ *    its wall (dropped --nk-tile-wall-height straight down, in shade). --nk-style-fill: solid paints it --nk-tile-key-color with
+ *    --nk-tile-key-ink; soft paints a tinted face (--nk-tile-key-tint) and keeps the foreground ink.
  * 3. One tile per list (nk-indicator, driven by SelectionTile): it slides to the lit item; the item only takes the
- *    ink, the lift (--nk-row-lift) and its lit icon tile, never a fill of its own. In a list ([data-nk-sel]) the
+ *    ink, the lift (--nk-gesture-lift) and its lit icon tile, never a fill of its own. In a list ([data-nk-sel]) the
  *    lit item is the one carrying data-lit; a row or a tab on its own draws the same tile itself.
  * 4. Rows never touch: a list (nk-list) spaces them by --nk-list-gap (the wall plus breathing room) and the tile is
- *    inset by --nk-tile-inset.
+ *    inset by --nk-tile-key-inset.
  * Unlayered on purpose: it must beat shadcn's focus and hover utilities and the rows' own text colours.
  */
 :root,
 [data-nk-theme] {
-  --nk-sel-face: var(--nk-tile-key);
-  --nk-sel-wall: var(--nk-tile-key);
-  --nk-sel-shade: var(--nk-tile-wall-shade);
-  --nk-sel-ink: var(--nk-tile-key-ink);
+  --nk-tile-sel-face: var(--nk-tile-key-color);
+  --nk-tile-sel-wall: var(--nk-tile-key-color);
+  --nk-tile-sel-shade: var(--nk-tile-wall-shade);
+  --nk-tile-sel-ink: var(--nk-tile-key-ink);
 }
 :is(html, *)[data-nk-fill="soft"] {
-  --nk-sel-face: rgba(var(--primary-rgb), var(--nk-tile-tint));
-  --nk-sel-wall: rgba(var(--primary-rgb), calc(var(--nk-tile-tint) * 0.5));
-  --nk-sel-shade: 0;
-  --nk-sel-ink: var(--foreground);
+  --nk-tile-sel-face: rgba(var(--primary-rgb), var(--nk-tile-key-tint));
+  --nk-tile-sel-wall: rgba(var(--primary-rgb), calc(var(--nk-tile-key-tint) * 0.5));
+  --nk-tile-sel-shade: 0;
+  --nk-tile-sel-ink: var(--foreground);
 }
 :is(.nk-indicator, .nk-row)[data-tone="destructive"] {
-  --nk-sel-face: var(--destructive);
-  --nk-sel-wall: var(--destructive);
+  --nk-tile-sel-face: var(--destructive);
+  --nk-tile-sel-wall: var(--destructive);
 }
 :is(html, *)[data-nk-fill="soft"] :is(.nk-indicator, .nk-row)[data-tone="destructive"] {
-  --nk-sel-face: rgba(var(--destructive-rgb), var(--nk-tile-tint));
-  --nk-sel-wall: rgba(var(--destructive-rgb), calc(var(--nk-tile-tint) * 0.5));
-  --nk-sel-ink: var(--destructive);
+  --nk-tile-sel-face: rgba(var(--destructive-rgb), var(--nk-tile-key-tint));
+  --nk-tile-sel-wall: rgba(var(--destructive-rgb), calc(var(--nk-tile-key-tint) * 0.5));
+  --nk-tile-sel-ink: var(--destructive);
 }
 
 /* 1. no rings: whatever a utility asked for on focus (shadcn's 3px halo, an outline) */
@@ -3501,35 +3153,35 @@ html[data-nk-backdrop="on"] * {
 [data-slot="tabs-trigger"]:not([data-nk-sel] *)::after {
   content: "";
   position: absolute;
-  inset: 0 var(--nk-tile-inset);
-  border-radius: var(--nk-tile-radius);
+  inset: 0 var(--nk-tile-key-inset);
+  border-radius: var(--nk-tile-key-radius);
   pointer-events: none;
 }
 .nk-indicator::before,
 .nk-row:not([data-nk-sel] *)::before,
 [data-slot="tabs-trigger"]:not([data-nk-sel] *)::before {
   z-index: -2;
-  background-color: var(--nk-sel-wall);
-  box-shadow: inset 0 0 0 100vmax rgba(var(--scrim-rgb, 0, 0, 0), var(--nk-sel-shade));
-  transform: translateY(var(--nk-tile-wall)) skewX(var(--nk-tile-skew, 0deg));
+  background-color: var(--nk-tile-sel-wall);
+  box-shadow: inset 0 0 0 100vmax rgba(var(--scrim-rgb, 0, 0, 0), var(--nk-tile-sel-shade));
+  transform: translateY(var(--nk-tile-wall-height)) skewX(var(--nk-tile-face-skew, 0deg));
 }
 .nk-indicator::after,
 .nk-row:not([data-nk-sel] *)::after,
 [data-slot="tabs-trigger"]:not([data-nk-sel] *)::after {
   z-index: -1;
-  background-color: var(--nk-sel-face);
-  box-shadow: inset 0 0 0 var(--nk-border, 1px) var(--nk-tile-key-rim), inset 0 1px 0 var(--nk-tile-light);
-  transform: skewX(var(--nk-tile-skew, 0deg));
+  background-color: var(--nk-tile-sel-face);
+  box-shadow: inset 0 0 0 var(--nk-line-width, 1px) var(--nk-tile-key-rim), inset 0 1px 0 var(--nk-tile-face-light);
+  transform: skewX(var(--nk-tile-face-skew, 0deg));
 }
 .nk-indicator::before,
 .nk-indicator::after {
-  transition: background-color var(--nk-time-fast, var(--nk-time)) var(--nk-ease-standard, var(--nk-ease-out));
+  transition: background-color var(--nk-time-fast, var(--nk-time-base)) var(--nk-ease-move, var(--nk-ease-enter));
 }
-/* shape inherit (SelectionTile's default, the --nk-sel-shape lever): the mark takes the shape of what it is on: the
+/* shape inherit (SelectionTile's default, the --nk-tile-sel-shape lever): the mark takes the shape of what it is on: the
    host's radius and clip, a flat face, no skew and no wall. A list that wants the keycap passes shape="tile". */
 .nk-indicator[data-shape="inherit"] {
-  border-radius: var(--nk-host-radius, var(--nk-tile-radius));
-  clip-path: var(--nk-host-clip, none);
+  border-radius: var(--nk-tile-host-radius, var(--nk-tile-key-radius));
+  clip-path: var(--nk-tile-host-clip, none);
 }
 .nk-indicator[data-shape="inherit"]::before {
   display: none;
@@ -3538,7 +3190,7 @@ html[data-nk-backdrop="on"] * {
   inset: 0;
   border-radius: inherit;
   transform: none;
-  box-shadow: inset 0 0 0 var(--nk-border, 1px) var(--nk-sel-rim, var(--nk-tile-key-rim));
+  box-shadow: inset 0 0 0 var(--nk-line-width, 1px) var(--nk-tile-sel-rim, var(--nk-tile-key-rim));
 }
 /* a row or a tab on its own: the tile only while it is lit, at once (no per-row fade) */
 .nk-row:not([data-nk-sel] *)::before,
@@ -3560,53 +3212,53 @@ html[data-nk-backdrop="on"] * {
 
 /* 3. the lit item: the ink, the lift, its lit icon tile. Rows in a list are lit by data-lit only (one at a time). */
 .nk-row:is([data-lit], :not([data-nk-sel] *):is([data-active], [data-highlighted], :focus-visible, [data-hover]:hover)):not([data-readonly], [aria-disabled="true"], :disabled, [data-disabled]) {
-  color: var(--nk-sel-ink);
+  color: var(--nk-tile-sel-ink);
 }
 .nk-row:is([data-lit], :not([data-nk-sel] *):is([data-active], [data-highlighted], :focus-visible, [data-hover]:hover)):not([data-readonly], [aria-disabled="true"], :disabled, [data-disabled]) :not([data-slot="kbd"], [data-slot="kbd"] *, [data-slot="tile"], [data-slot="tile"] *, [data-slot="progress"], [data-slot="progress"] *, [data-slot="meter"], [data-slot="meter"] *, [data-slot="checkbox"], [data-slot="checkbox"] *) {
   color: inherit;
 }
 /* the lead and the text slide in; the trail (meta, keys, a checkbox, a stepper, a chevron) holds its column */
 .nk-row:is([data-lit], :not([data-nk-sel] *):is([data-active], [data-highlighted], :focus-visible, [data-hover]:hover)):not([data-readonly], [aria-disabled="true"], :disabled, [data-disabled]) > :not([data-slot="menu-row-meta"], [data-slot="menu-row-stepper"], [data-slot="menu-row-actions"], [data-slot="menu-row-chevron"], [data-part="menu-row-kbd"], [data-slot="checkbox"]) {
-  transform: translateX(var(--nk-row-lift, 0rem));
+  transform: translateX(var(--nk-gesture-lift, 0rem));
 }
 /* the icon tile on a lit row: a dark keycap on the solid face (the speedometer's gear); on a soft face it lights */
 .nk-row:is([data-lit], :not([data-nk-sel] *):is([data-active], [data-highlighted], :focus-visible, [data-hover]:hover)):not([data-readonly], [aria-disabled="true"], :disabled, [data-disabled]) > [data-slot="menu-row-icon"] > [data-slot="tile"] {
-  --nk-tile-face-now: var(--nk-tile-face);
-  --nk-tile-ink-now: var(--nk-tile-ink);
-  --nk-tile-rim-now: transparent;
-  color: var(--nk-tile-ink);
+  --nk-tile-now-face: var(--nk-tile-face-color);
+  --nk-tile-now-ink: var(--nk-tile-face-ink);
+  --nk-tile-now-rim: transparent;
+  color: var(--nk-tile-face-ink);
 }
 :is(html, *)[data-nk-fill="soft"] .nk-row:is([data-lit], :not([data-nk-sel] *):is([data-active], [data-highlighted], :focus-visible, [data-hover]:hover)):not([data-readonly], [aria-disabled="true"], :disabled, [data-disabled]) > [data-slot="menu-row-icon"] > [data-slot="tile"] {
-  --nk-tile-face-now: var(--nk-tile-confirm-face);
-  --nk-tile-ink-now: var(--nk-tile-confirm-ink);
-  color: var(--nk-tile-confirm-ink);
+  --nk-tile-now-face: var(--nk-tile-face-confirm);
+  --nk-tile-now-ink: var(--nk-tile-face-confirm-ink);
+  color: var(--nk-tile-face-confirm-ink);
 }
 /* a key and a checkbox on a solid lit row read dark on it, as on the primary keycap */
 .nk-row:is([data-lit], :not([data-nk-sel] *):is([data-active], [data-highlighted], :focus-visible, [data-hover]:hover)):not([data-readonly], [aria-disabled="true"], :disabled, [data-disabled]) [data-slot="kbd"],
 [data-nk-sel] [data-slot="dropdown-menu-item"][data-lit] [data-slot="kbd"] {
-  --nk-tile-face-now: rgba(var(--scrim-rgb, 0, 0, 0), 0.25);
-  --nk-tile-ink-now: var(--nk-sel-ink);
-  --nk-tile-rim-now: rgba(var(--scrim-rgb, 0, 0, 0), 0.35);
-  --nk-tile-plate-now: transparent;
-  color: var(--nk-sel-ink);
+  --nk-tile-now-face: rgba(var(--scrim-rgb, 0, 0, 0), 0.25);
+  --nk-tile-now-ink: var(--nk-tile-sel-ink);
+  --nk-tile-now-rim: rgba(var(--scrim-rgb, 0, 0, 0), 0.35);
+  --nk-tile-now-plate: transparent;
+  color: var(--nk-tile-sel-ink);
 }
 .nk-row:is([data-lit], :not([data-nk-sel] *):is([data-active], [data-highlighted], :focus-visible, [data-hover]:hover)):not([data-readonly], [aria-disabled="true"], :disabled, [data-disabled]) [data-slot="checkbox"] {
-  border-color: var(--nk-sel-ink);
+  border-color: var(--nk-tile-sel-ink);
   background-color: transparent;
-  color: var(--nk-sel-ink);
+  color: var(--nk-tile-sel-ink);
 }
 .nk-row:is([data-lit], :not([data-nk-sel] *):is([data-active], [data-highlighted], :focus-visible, [data-hover]:hover)):not([data-readonly], [aria-disabled="true"], :disabled, [data-disabled]) [data-slot="checkbox"][data-state="checked"] {
-  background-color: var(--nk-sel-ink);
-  color: var(--nk-sel-face);
+  background-color: var(--nk-tile-sel-ink);
+  color: var(--nk-tile-sel-face);
 }
 /* soft: the key keeps its own face (the tint is not a surface to darken) */
 :is(html, *)[data-nk-fill="soft"] .nk-row[data-lit] [data-slot="kbd"],
 :is(html, *)[data-nk-fill="soft"] [data-nk-sel] [data-slot="dropdown-menu-item"][data-lit] [data-slot="kbd"] {
-  --nk-tile-face-now: var(--nk-tile-face);
-  --nk-tile-ink-now: var(--nk-tile-ink);
-  --nk-tile-rim-now: var(--nk-tile-rim-focus);
-  --nk-tile-plate-now: var(--nk-tile-plate);
-  color: var(--nk-tile-ink);
+  --nk-tile-now-face: var(--nk-tile-face-color);
+  --nk-tile-now-ink: var(--nk-tile-face-ink);
+  --nk-tile-now-rim: var(--nk-tile-face-rim-focus);
+  --nk-tile-now-plate: var(--nk-tile-plate-color);
+  color: var(--nk-tile-face-ink);
 }
 /* other items of a list (menu items, tabs): no fill of their own; the lit one takes the ink */
 [data-nk-sel] :is([data-slot="dropdown-menu-item"], [data-slot="dropdown-menu-sub-trigger"], [data-slot="tabs-trigger"]) {
@@ -3617,7 +3269,7 @@ html[data-nk-backdrop="on"] * {
 }
 [data-nk-sel] :is([data-slot="dropdown-menu-item"], [data-slot="dropdown-menu-sub-trigger"], [data-slot="tabs-trigger"])[data-lit],
 [data-slot="tabs-trigger"]:not([data-nk-sel] *)[data-state="active"] {
-  color: var(--nk-sel-ink);
+  color: var(--nk-tile-sel-ink);
 }
 [data-nk-sel] :is([data-slot="dropdown-menu-item"], [data-slot="dropdown-menu-sub-trigger"], [data-slot="tabs-trigger"])[data-lit] :not([data-slot="kbd"], [data-slot="kbd"] *),
 [data-slot="tabs-trigger"]:not([data-nk-sel] *)[data-state="active"] :not([data-slot="kbd"], [data-slot="kbd"] *) {
@@ -3635,29 +3287,25 @@ html[data-nk-backdrop="on"] * {
   display: flex;
   flex-direction: column;
   gap: var(--nk-list-gap);
-  padding-bottom: calc(var(--nk-space-1) + var(--nk-tile-wall));
+  padding-bottom: calc(var(--nk-space-1) + var(--nk-tile-wall-height));
 }
 [data-slot="tabs-list"][data-nk-sel] {
   height: auto;
-  padding-bottom: calc(0.1875rem + var(--nk-tile-wall));
-  --nk-tile-inset: 0.125rem;
+  padding-bottom: calc(0.1875rem + var(--nk-tile-wall-height));
+  --nk-tile-key-inset: 0.125rem;
 }
 [data-slot="tabs-list"][data-nk-sel] > [data-slot="tabs-trigger"] {
-  min-height: var(--nk-h-control, 2.25rem);
+  min-height: var(--nk-height-control, 2.25rem);
 }
 
 /* Fill style (baseline 1.6): solid fills are full and opaque; soft is today's translucent liquid. A vital's
    icon over a solid fill keeps a copy in the fill's ink, clipped to the part under the surface. */
-:root,
-[data-nk-theme] {
-  --nk-fill-ink: var(--nk-tile-confirm-ink, var(--background));
-}
 [data-slot="vital-chip-icon-ink"] {
   position: absolute;
   inset: 0;
   display: none;
-  color: var(--nk-fill-ink);
-  clip-path: inset(max(0px, calc((1 - var(--level, 0)) * var(--vital-size, 1.875rem) - (var(--vital-size, 1.875rem) - var(--vital-icon-size, 1rem)) / 2)) 0 0 0);
+  color: var(--nk-level-fill-ink);
+  clip-path: inset(max(0px, calc((1 - var(--level, 0)) * var(--nk-vital-chip-size, 1.875rem) - (var(--nk-vital-chip-size, 1.875rem) - var(--vital-icon-size, 1rem)) / 2)) 0 0 0);
 }
 [data-slot="vital-chip"][data-level="fill"] [data-slot="vital-chip-icon-ink"] {
   display: flex;
@@ -3674,51 +3322,33 @@ html[data-nk-backdrop="on"] * {
  *                      centred; a zone or page with data-nk-bleed (or a huge ratio) uses the whole width.
  *   --nk-area-{l,r,t,b} the box's insets from the screen (derived; the HUD sets them from GTA's own area).
  *   --nk-safe-{x,y}    a safe area inside the box (TV overscan, a bezel), rem.
- *   --nk-edge          a zone's distance from the safe area (per aspect: 1rem at 4:3, 1.25rem at 16:10).
- *   --nk-zone-inset / --nk-zone-gap / --nk-zone-z  per zone: its inset (default --nk-edge), the gap between
+ *   --nk-screen-edge          a zone's distance from the safe area (per aspect: 1rem at 4:3, 1.25rem at 16:10).
+ *   --nk-zone-inset / --nk-zone-gap / --nk-zone-z  per zone: its inset (default --nk-screen-edge), the gap between
  *                      what it stacks, its stacking order.
- *   --nk-scale-min     the rem floor as a fraction of the 1080p rem (0.75: 12px), so 1280×720 and 4:3 stay readable.
+ *   --nk-screen-scale-min     the rem floor as a fraction of the 1080p rem (0.75: 12px), so 1280×720 and 4:3 stay readable.
  * VIEWPORTS (nuikit-core src/viewport.ts) is the same table; a test keeps them equal.
  */
 @layer nk.layout {
-  :root,
-  [data-nk-theme] {
-    --nk-screen-ratio: 1.7778;
-    --nk-screen-max: calc(100vh * var(--nk-screen-ratio));
-    --nk-area-l: max(0px, calc((100vw - var(--nk-screen-max)) / 2));
-    --nk-area-r: max(0px, calc((100vw - var(--nk-screen-max)) / 2));
-    --nk-area-t: 0px;
-    --nk-area-b: 0px;
-    --nk-safe-x: 0rem;
-    --nk-safe-y: 0rem;
-    --nk-edge: 1.5rem;
-    --nk-scale-min: 0.75;
-    --nk-zone-gap: var(--nk-space-3);
-    --nk-region-max: 28rem;
-    --nk-region-pad: var(--nk-pad-surface, 1.5rem);
-    --nk-grid-cell: 5.5rem;
-    --nk-grid-gap: var(--nk-space-2);
-  }
   /* aspect defaults (VIEWPORTS): narrower screens pull the edges in */
   @media (max-aspect-ratio: 3/2) {
     :root {
-      --nk-edge: 1rem;
+      --nk-screen-edge: 1rem;
     }
   }
   @media (min-aspect-ratio: 3/2) and (max-aspect-ratio: 17/10) {
     :root {
-      --nk-edge: 1.25rem;
+      --nk-screen-edge: 1.25rem;
     }
   }
   [data-nk-bleed] {
-    --nk-area-l: 0px;
-    --nk-area-r: 0px;
+    --nk-screen-area-l: 0px;
+    --nk-screen-area-r: 0px;
   }
   /* a fixed 1920×1080 stage inside another page (the site's previews): the 16:9 defaults, whatever the window */
   [data-nk-stage] {
-    --nk-area-l: 0px;
-    --nk-area-r: 0px;
-    --nk-edge: 1.5rem;
+    --nk-screen-area-l: 0px;
+    --nk-screen-area-r: 0px;
+    --nk-screen-edge: 1.5rem;
   }
 
   /* Screen: the root of a page */
@@ -3740,14 +3370,14 @@ html[data-nk-backdrop="on"] * {
     flex-direction: column;
     gap: var(--nk-zone-gap);
     z-index: var(--nk-zone-z, auto);
-    max-width: calc(100% - var(--nk-area-l) - var(--nk-area-r) - 2 * var(--nk-safe-x) - 2 * var(--nk-zone-inset, var(--nk-edge)));
-    max-height: calc(100% - var(--nk-area-t) - var(--nk-area-b) - 2 * var(--nk-safe-y) - 2 * var(--nk-zone-inset, var(--nk-edge)));
+    max-width: calc(100% - var(--nk-screen-area-l) - var(--nk-screen-area-r) - 2 * var(--nk-screen-safe-x) - 2 * var(--nk-zone-inset, var(--nk-screen-edge)));
+    max-height: calc(100% - var(--nk-screen-area-t) - var(--nk-screen-area-b) - 2 * var(--nk-screen-safe-y) - 2 * var(--nk-zone-inset, var(--nk-screen-edge)));
   }
   [data-nk-zone^="t"] {
-    top: calc(var(--nk-area-t) + var(--nk-safe-y) + var(--nk-zone-inset, var(--nk-edge)));
+    top: calc(var(--nk-screen-area-t) + var(--nk-screen-safe-y) + var(--nk-zone-inset, var(--nk-screen-edge)));
   }
   [data-nk-zone^="b"] {
-    bottom: calc(var(--nk-area-b) + var(--nk-safe-y) + var(--nk-zone-inset, var(--nk-edge)));
+    bottom: calc(var(--nk-screen-area-b) + var(--nk-screen-safe-y) + var(--nk-zone-inset, var(--nk-screen-edge)));
     flex-direction: column-reverse;
   }
   [data-nk-zone^="m"] {
@@ -3757,11 +3387,11 @@ html[data-nk-backdrop="on"] * {
     margin-block: auto;
   }
   [data-nk-zone$="l"] {
-    left: calc(var(--nk-area-l) + var(--nk-safe-x) + var(--nk-zone-inset, var(--nk-edge)));
+    left: calc(var(--nk-screen-area-l) + var(--nk-screen-safe-x) + var(--nk-zone-inset, var(--nk-screen-edge)));
     align-items: flex-start;
   }
   [data-nk-zone$="r"] {
-    right: calc(var(--nk-area-r) + var(--nk-safe-x) + var(--nk-zone-inset, var(--nk-edge)));
+    right: calc(var(--nk-screen-area-r) + var(--nk-screen-safe-x) + var(--nk-zone-inset, var(--nk-screen-edge)));
     align-items: flex-end;
   }
   [data-nk-zone$="c"] {
@@ -3784,30 +3414,30 @@ html[data-nk-backdrop="on"] * {
     align-items: stretch;
   }
   [data-nk-zone="t"] {
-    top: var(--nk-area-t);
-    left: var(--nk-area-l);
-    right: var(--nk-area-r);
+    top: var(--nk-screen-area-t);
+    left: var(--nk-screen-area-l);
+    right: var(--nk-screen-area-r);
     bottom: auto;
     flex-direction: column;
   }
   [data-nk-zone="b"] {
-    bottom: var(--nk-area-b);
-    left: var(--nk-area-l);
-    right: var(--nk-area-r);
+    bottom: var(--nk-screen-area-b);
+    left: var(--nk-screen-area-l);
+    right: var(--nk-screen-area-r);
     top: auto;
   }
   [data-nk-zone="l"],
   [data-nk-zone="r"] {
-    top: var(--nk-area-t);
-    bottom: var(--nk-area-b);
+    top: var(--nk-screen-area-t);
+    bottom: var(--nk-screen-area-b);
     flex-direction: row;
   }
   [data-nk-zone="l"] {
-    left: var(--nk-area-l);
+    left: var(--nk-screen-area-l);
     right: auto;
   }
   [data-nk-zone="r"] {
-    right: var(--nk-area-r);
+    right: var(--nk-screen-area-r);
     left: auto;
     flex-direction: row-reverse;
   }

@@ -48,10 +48,10 @@
      rem this follows the game's height directly. calc(var(--nk-px) * 14) is 14px at 1080p. */
   --nk-px: calc(100vh / 1080);
   /* smooth caret and typing levers (the kit's; a server theme's own values replace these) */
-  --nk-caret-time: 140ms;
-  --nk-caret-ease: cubic-bezier(0.2, 0, 0, 1);
-  --nk-type-in-time: 210ms;
-  --nk-type-in-distance: 0.45em;
+  --nk-field-caret-time: 140ms;
+  --nk-field-caret-ease: cubic-bezier(0.2, 0, 0, 1);
+  --nk-field-mirror-in: 210ms;
+  --nk-field-mirror-rise: 0.45em;
 }
 
 /* ── window ─────────────────────────────────────────────────────────────── */
@@ -61,7 +61,7 @@
   background: transparent !important;
   font-family: var(--nk-font-sans);
   /* Default: show/hide is opacity only, 280ms standard ease */
-  transition: opacity var(--nk-time-slow, 280ms) var(--nk-ease-standard, cubic-bezier(0.2, 0, 0, 1));
+  transition: opacity var(--nk-time-slow, 280ms) var(--nk-ease-move, cubic-bezier(0.2, 0, 0, 1));
 }
 .chat-input { animation: nk-chat-in var(--nk-time-slow, 280ms) var(--nk-ease-expand, cubic-bezier(0.16, 1, 0.3, 1)) backwards; }
 @keyframes nk-chat-in { from { opacity: 0; transform: translateY(8px); } }
@@ -100,7 +100,7 @@
   box-sizing: border-box;
   padding: calc(var(--nk-px) * 6) calc(var(--nk-px) * 12);
   border: 1px solid var(--nk-border);
-  border-radius: var(--nk-r-control, 0.5rem);
+  border-radius: var(--nk-radius-control, 0.5rem);
   background: rgba(var(--nk-card-rgb), 0.86);
   color: var(--nk-card-foreground);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
@@ -111,7 +111,7 @@
 }
 
 .chat-messages .nk-author {
-  font-weight: var(--nk-weight-strong, 600);
+  font-weight: var(--nk-type-weight-strong, 600);
   margin-right: calc(var(--nk-px) * 8);
 }
 
@@ -130,7 +130,7 @@
   display: inline-block;
   margin-right: calc(var(--nk-px) * 8);
   padding: 0 calc(var(--nk-px) * 6);
-  border-radius: var(--nk-r-chip, 0.375rem);
+  border-radius: var(--nk-radius-chip, 0.375rem);
   background: var(--nk-muted);
   color: var(--nk-muted-foreground);
   font-family: var(--nk-font-sans);
@@ -181,7 +181,7 @@
 .chat-messages .nk-presence {
   padding: 0.25rem 0.5rem;
   border-color: transparent;
-  border-radius: var(--nk-r-chip, 0.375rem);
+  border-radius: var(--nk-radius-chip, 0.375rem);
   background: rgba(var(--nk-card-rgb), 0.6);
   box-shadow: none;
   color: var(--nk-muted-foreground);
@@ -195,7 +195,7 @@
   width: calc(var(--nk-px) * 6);
   height: calc(var(--nk-px) * 6);
   margin-right: calc(var(--nk-px) * 6);
-  border-radius: var(--nk-r-key, 0.25rem);
+  border-radius: var(--nk-radius-key, 0.25rem);
   vertical-align: calc(var(--nk-px) * 1);
   background: rgb(var(--nk-success-rgb));
 }
@@ -233,7 +233,7 @@
   box-sizing: border-box;
   min-height: calc(var(--nk-px) * 36);
   border: 1px solid var(--nk-input);
-  border-radius: var(--nk-r-control, 0.5rem);
+  border-radius: var(--nk-radius-control, 0.5rem);
   background: rgba(var(--nk-popover-rgb), 0.95) !important;
   box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25), 0 12px 32px -12px rgba(0, 0, 0, 0.7);
   overflow: hidden;
@@ -250,7 +250,7 @@
   height: auto;
   margin: 0 0 0 calc(var(--nk-px) * 8);
   padding: 0 calc(var(--nk-px) * 6);
-  border-radius: var(--nk-r-chip, 0.375rem);
+  border-radius: var(--nk-radius-chip, 0.375rem);
   background: var(--nk-muted);
   color: var(--nk-muted-foreground); /* a mode's own colour (inline) wins */
   font-size: calc(var(--nk-px) * 12);
@@ -299,7 +299,7 @@
   box-sizing: border-box;
   width: 100%;
   border: 1px solid var(--nk-border);
-  border-radius: var(--nk-r-surface, 0.75rem);
+  border-radius: var(--nk-radius-surface, 0.75rem);
   background: rgba(var(--nk-popover-rgb), 0.97) !important;
   color: var(--nk-popover-foreground);
   box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25), 0 24px 64px -24px rgba(0, 0, 0, 0.7);
@@ -308,7 +308,7 @@
 .chat-input .suggestion {
   margin: 0;
   padding: calc(var(--nk-px) * 6) calc(var(--nk-px) * 12);
-  border-radius: var(--nk-r-control, 0.5rem);
+  border-radius: var(--nk-radius-control, 0.5rem);
 }
 .chat-input .suggestion:first-child {
   background: var(--nk-accent);
@@ -382,7 +382,7 @@
   position: absolute;
   top: 0;
   left: 0;
-  width: var(--nk-caret-width, calc(var(--nk-px) * 2));
-  border-radius: var(--nk-r-key, 0.25rem);
+  width: var(--nk-field-caret-width, calc(var(--nk-px) * 2));
+  border-radius: var(--nk-radius-key, 0.25rem);
   background: var(--nk-primary);
 }

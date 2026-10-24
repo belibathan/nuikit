@@ -85,7 +85,7 @@ function Stat({
       <span
         data-slot="stat-label"
         className={cn(
-          "nk-caption flex min-w-0 items-center gap-(--nk-space-2) [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-[var(--nk-stat-icon,0.875rem)]",
+          "nk-caption flex min-w-0 items-center gap-(--nk-space-2) [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-[var(--nk-stat-label-icon,0.875rem)]",
           game && "text-world-foreground-muted",
           align === "end" && "flex-row-reverse"
         )}
@@ -113,7 +113,7 @@ function Stat({
           data-slot="stat-delta"
           data-trend={trend}
           className={cn(
-            "nk-num flex items-center gap-[var(--nk-stat-gap,0.25rem)] text-(length:--nk-text-label) [font-weight:var(--nk-type-label-weight,500)] [&_svg]:size-[var(--nk-stat-icon,0.875rem)]",
+            "nk-num flex items-center gap-[var(--nk-stat-gap,0.25rem)] text-(length:--nk-text-label) [font-weight:var(--nk-type-label-weight,500)] [&_svg]:size-[var(--nk-stat-label-icon,0.875rem)]",
             trend === "down" ? "text-destructive" : "text-muted-foreground"
           )}
         >

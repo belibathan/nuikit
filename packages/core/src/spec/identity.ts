@@ -3,7 +3,8 @@
  * (docs/design/baseline.md): compileTheme("") already draws keycap tiles on hard plates, solid fills, segmented
  * progress, two voices and one sliding selection. A theme is a handful of values on top.
  */
-import { angle, color, css, ease, font, keyword, length, lit, number, pal, ref, time, times, type Group } from "./lang";
+import { angle, color, css, ease, font, keyword, length, lit, number, pal, ref, shadow, time, times, type Group, type LeverDef, type Value } from "./lang";
+import { ROLE_DEFAULTS, ROLES } from "./roles";
 
 const MS: [number, number] = [0, 60000];
 
@@ -62,7 +63,21 @@ export const palette: Group = {
     "vital-armor": color(lit("oklch(0.68 0.16 250)"), "Armor", { rule: "a blue chart colour, else oklch(0.68 0.16 250)" }),
     "vital-hunger": color(lit("oklch(0.78 0.16 70)"), "Hunger", { rule: "an amber chart colour, else oklch(0.78 0.16 70)" }),
     "vital-thirst": color(lit("oklch(0.76 0.13 215)"), "Thirst", { rule: "a cyan chart colour, else oklch(0.76 0.13 215)" }),
+    "world-shadow": shadow(lit("0 1px 2px rgba(0, 0, 0, 0.65), 0 0 0.5rem rgba(0, 0, 0, 0.35)"), "Text-shadow that keeps world-foreground legible over any frame", { rule: "a tight dark edge plus a soft halo" }),
+    "pause-surface": color(lit("rgb(246, 247, 249)"), "The slash pause panel's light surface (style.pause: slash)", { rule: "rgb(246, 247, 249)", was: ["nk-pause-surface"] }),
+    "pause-ink": color(lit("rgb(14, 16, 20)"), "Text on the slash pause panel", { rule: "rgb(14, 16, 20)", was: ["nk-pause-ink"] }),
     "vital-stress": color(lit("oklch(0.68 0.2 320)"), "Stress", { rule: "a magenta chart colour, else oklch(0.68 0.2 320)" }),
+    ...Object.fromEntries(
+      ROLES.flatMap((r) => {
+        const d = ROLE_DEFAULTS[r]!;
+        const rule = typeof d === "string" ? d : `oklch(${d.join(" ")})`;
+        return [
+          [`role-${r}`, color(lit(typeof d === "string" ? `var(--${d})` : `oklch(${d.join(" ")})`), `Role ${r}: the --hue-* ramp under data-hue="${r}"`, { rule })],
+          [`role-${r}-deep`, color(lit(`var(--role-${r})`), `${r}, darker: the ramp's deep step`, { rule: `role-${r}, OKLCH L − 0.12`, derived: true })],
+          [`role-${r}-light`, color(lit(`var(--role-${r})`), `${r}, lighter: the ramp's gradient start`, { rule: `role-${r}, OKLCH L + 0.1`, derived: true })],
+        ];
+      }),
+    ),
   },
 };
 
@@ -72,10 +87,10 @@ export const fonts: Group = {
   prefix: "font",
   description: "The four faces every voice picks from",
   levers: {
-    sans: font(lit("Inter, ui-sans-serif, system-ui, sans-serif"), "Sentences (the body voice)"),
-    display: font(lit('"Inter Tight", Inter, ui-sans-serif, system-ui, sans-serif'), "Anything scanned: keys, titles, labels (Inter Tight when sans is Inter, else sans)"),
-    numeric: font(lit("Inter, ui-sans-serif, system-ui, sans-serif"), "Every number (always tabular); sans unless set"),
-    mono: font(lit('"Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace'), "Codes and IDs a player might type"),
+    sans: font(lit('Geist, Inter, "Segoe UI", system-ui, sans-serif'), "Sentences (the body voice)"),
+    display: font(lit('"Barlow Condensed", "Arial Narrow", sans-serif'), "Anything scanned: keys, titles, labels, captions"),
+    numeric: font(lit('"Barlow Condensed", "Arial Narrow", sans-serif'), "Every number (always tabular)"),
+    mono: font(lit('"Geist Mono", ui-monospace, monospace'), "Codes and IDs a player might type"),
   },
 };
 
@@ -100,9 +115,9 @@ export const space: Group = {
   tier: "identity",
   description: "The spacing scale: one step × density",
   levers: {
-    unit: length(css`calc(0.25rem * ${ref("density")})`, "The spacing step", { rederive: ["density"], was: ["nk-space-unit", "nk-space"] }),
+    unit: length(css`calc(0.25rem * ${ref("density")})`, "The spacing step", { was: ["nk-space-unit", "nk-space"] }),
     ...Object.fromEntries(
-      [1, 2, 3, 4, 6, 8].map((n) => [String(n), length(n === 1 ? ref("space.unit") : times("space.unit", n), `${n} × the step`, { rederive: ["density"], was: [`nk-space-${n}`] })]),
+      [1, 2, 3, 4, 6, 8].map((n) => [String(n), length(n === 1 ? ref("space.unit") : times("space.unit", n), `${n} × the step`, { was: [`nk-space-${n}`] })]),
     ),
   },
 };
@@ -112,10 +127,10 @@ export const radius: Group = {
   tier: "identity",
   description: "Four radius steps from --radius",
   levers: {
-    key: length(css`max(0.25rem, calc(${pal("radius")} - 0.5rem))`, "Keys and small tiles", { rederive: ["shape"], was: ["nk-r-key"] }),
-    chip: length(css`max(0.25rem, calc(${pal("radius")} - 0.375rem))`, "Chips and badges", { rederive: ["shape"], was: ["nk-r-chip"] }),
-    control: length(css`calc(${pal("radius")} - 0.25rem)`, "Buttons, fields, rows, the keycap", { rederive: ["shape"], was: ["nk-r-control"] }),
-    surface: length(ref("material.menu.radius"), "Panels, sheets, dialogs", { rederive: ["shape"], was: ["nk-r-surface"] }),
+    key: length(css`max(0.25rem, calc(${pal("radius")} - 0.5rem))`, "Keys and small tiles", { was: ["nk-r-key"] }),
+    chip: length(css`max(0.25rem, calc(${pal("radius")} - 0.375rem))`, "Chips and badges", { was: ["nk-r-chip"] }),
+    control: length(css`calc(${pal("radius")} - 0.25rem)`, "Buttons, fields, rows, the keycap", { was: ["nk-r-control"] }),
+    surface: length(ref("material.menu.radius"), "Panels, sheets, dialogs", { was: ["nk-r-surface"] }),
   },
 };
 
@@ -125,9 +140,9 @@ export const height: Group = {
   description: "The height steps",
   levers: {
     key: length("1.5rem", "A key / small tile", { was: ["nk-h-key"] }),
-    chip: length(css`calc(1.75rem * ${ref("density")})`, "A chip / medium tile", { rederive: ["density"], was: ["nk-h-chip"] }),
+    chip: length(css`calc(1.75rem * ${ref("density")})`, "A chip / medium tile", { was: ["nk-h-chip"] }),
     control: length("2.25rem", "Buttons and bar items / large tile", { was: ["nk-h-control"] }),
-    row: length(css`calc(3rem * ${ref("density")})`, "A list row", { rederive: ["density"], was: ["nk-h-row"] }),
+    row: length(css`calc(3rem * ${ref("density")})`, "A list row", { was: ["nk-h-row"] }),
     field: length("2.75rem", "Text inputs, selects and dialog buttons", { was: ["nk-h-field"] }),
   },
 };
@@ -177,26 +192,44 @@ export const shape: Group = {
   tier: "identity",
   description: "Slant, chamfer and hairline weight",
   levers: {
-    skew: angle("0deg", "The keycap slant (faces only; their boxes and text stay upright); at most ±20deg", { range: [-20, 20], attr: "skew", was: ["nk-skew"] }),
+    skew: angle("-12deg", "The keycap's slant: tile faces, the primary button, the selection (their boxes and text stay upright); at most ±20deg", { range: [-20, 20], was: [] }),
+    slab: angle("0deg", "Chips, badges and tags drawn as skewed slabs too (0deg = upright); at most ±20deg", { range: [-20, 20], attr: "skew", was: ["nk-skew"] }),
     cut: length("0px", "Chamfered corners (top left, bottom right) as clip-path; 0 = off", { was: ["nk-cut"] }),
     stroke: length("1px", "Hairline weight of plates, rims and fields", { was: ["nk-border-width"] }),
   },
 };
+
+const voice = (family: string, weight: Value, tracking: Value, kase: boolean, slant: boolean, pad: boolean, what: string, was: string): Record<string, LeverDef> => ({
+  family: font(ref(family), `Face of the ${what}`, { was: [`nk-type-${was}-family`, ...(was === "title" ? ["nk-heading-font"] : was === "num" ? ["nk-num-font"] : [])] }),
+  style: keyword(["normal", "italic"], slant ? ref("type.slant") : lit("normal"), `Slant of the ${what}`, { was: [`nk-type-${was}-style`] }),
+  weight: number(weight, `Weight of the ${what}`, { range: [100, 900], was: [`nk-type-${was}-weight`, ...(was === "title" ? ["nk-heading-weight"] : [])] }),
+  tracking: length(tracking, `Letter-spacing of the ${what}`, { was: [`nk-type-${was}-tracking`, ...(was === "title" ? ["nk-heading-tracking"] : was === "num" ? ["nk-num-tracking"] : [])] }),
+  case: keyword(["none", "uppercase"], kase ? ref("type.case") : lit("none"), `Case of the ${what}`, { was: [`nk-type-${was}-case`] }),
+  ...(pad ? { pad: length(ref("type.overhang"), `Trailing pad of the ${what} (the italic overhang)`, { was: [`nk-type-${was}-pad`] }) } : {}),
+});
 
 /** Type identity: what the voices are made of. */
 export const type: Group = {
   tier: "identity",
   description: "The type scale's ratio, the three weights, tracking, case and slant",
   levers: {
-    ratio: number(1.25, "Step between type sizes: 1.125 calm … 1.333 dramatic", { range: [1, 1.6], was: ["nk-type-ratio"] }),
+    ratio: number(1.25, "Step between type sizes: 1.125 calm … 1.333 dramatic", { range: [1, 1.6], was: ["nk-type-ratio", "nk-ratio"] }),
     "weight-body": number(400, "Sentences", { range: [100, 900], was: ["nk-weight-body"] }),
-    "weight-strong": number(600, "Labels, keys, numbers", { range: [100, 900], was: ["nk-weight-strong"] }),
-    "weight-display": number(800, "Titles and big numbers", { range: [100, 900], was: ["nk-weight-display"] }),
-    "tracking-display": length("0.02em", "Letter-spacing of the display voice", { was: ["nk-tracking-display"] }),
-    "tracking-label": length("0.03em", "Letter-spacing of captions", { was: ["nk-tracking-label"] }),
-    case: keyword(["none", "uppercase"], "uppercase", "Anything scanned (keys, titles, labels) in caps or as written", { attr: "case", was: ["nk-label-case", "nk-heading-case"] }),
-    slant: keyword(["normal", "italic"], "normal", "The scanned voices upright or italic (a real italic where the face has one)", { attr: "slant", was: ["nk-display-style"] }),
-    overhang: length("0em", "Trailing pad of a slanted voice (the italic's overhang)", { was: [] }),
+    "weight-strong": number(500, "Captions, chips, slabs: text that must hold its own on the game", { range: [100, 900], was: ["nk-weight-strong"] }),
+    "weight-display": number(700, "Full-screen titles and big numbers", { range: [100, 900], was: ["nk-weight-display"] }),
+    "tracking-display": length("-0.02em", "Letter-spacing of full-screen titles", { was: ["nk-tracking-display"] }),
+    "tracking-label": length("0.06em", "Letter-spacing of captions", { was: ["nk-tracking-label"] }),
+    case: keyword(["none", "uppercase"], "uppercase", "Anything scanned (keys, titles, labels, captions) in caps or as written", { attr: "case", was: ["nk-label-case", "nk-heading-case"] }),
+    slant: keyword(["normal", "italic"], "italic", "The scanned voices upright or italic (a real italic where the face has one)", { attr: "slant", was: ["nk-display-style"] }),
+    overhang: length("0.15em", "Trailing pad of a slanted voice (the italic's overhang); 0em when upright", { was: [] }),
+  },
+  // the five voices: two in practice, the display face for anything scanned and the sans for sentences
+  parts: {
+    scan: voice("font.display", lit("800"), lit("0.02em"), true, true, true, "scan voice (keys, buttons, tabs)", "scan"),
+    title: voice("font.display", lit("800"), lit("0.02em"), true, true, true, "title voice (panel and row titles)", "title"),
+    label: voice("font.display", lit("700"), lit("0.03em"), true, true, true, "label voice (labels, row titles)", "label"),
+    num: voice("font.numeric", lit("700"), lit("0.01em"), false, true, true, "numeric voice", "num"),
+    body: voice("font.sans", ref("type.weight-body"), lit("0em"), false, false, false, "body voice (sentences)", "body"),
   },
 };
 
@@ -205,10 +238,8 @@ export const surface: Group = {
   tier: "identity",
   description: "How surfaces sit over the game: opacity, tint, light, depth, glow",
   levers: {
-    opacity: number(0.94, "Panel opacity over the game (floor 0.92 for text)", { range: [0, 1], was: ["nk-surface-opacity"] }),
     tint: number(0, "How much brand tints neutral surfaces", { range: [0, 0.12], was: ["nk-surface-tint"] }),
     gradient: number(0, "Top-to-bottom light falloff (0 = flat)", { range: [0, 0.2], was: ["nk-surface-gradient"] }),
-    edge: number(0, "The machined top edge (alpha)", { range: [0, 0.3], was: ["nk-surface-edge"] }),
     elevation: keyword(["none", "soft", "deep", "hard"], "hard", "Shadow recipe: hard is a solid offset drop, no blur", { attr: "elevation", was: ["nk-elevation"] }),
     glow: number(0, "Brand glow on active parts (alpha, 0 = off)", { range: [0, 1], was: ["nk-glow"] }),
     "glow-budget": number(1, "How many parts may glow at once (0 = no limit)", { range: [0, 8], was: ["nk-glow-budget"] }),
@@ -222,16 +253,20 @@ export const surface: Group = {
 /** Materials: one per context. Defaults follow surface.* (the compiler fills them). */
 export const material: Group = {
   tier: "identity",
-  description: "Per context (hud, menu, overlay): opacity, blur, radius, edge, texture",
+  description: "Per context (hud: drawn on the game; menu: menus, sheets, dialogs): opacity, blur, radius, edge, texture",
   levers: {},
   parts: Object.fromEntries(
-    (["hud", "menu", "overlay"] as const).map((ctx) => [
+    (["hud", "menu"] as const).map((ctx) => [
       ctx,
       {
-        opacity: number(ctx === "hud" ? 0.8 : ctx === "menu" ? 0.94 : 0.6, `Opacity of the ${ctx} material`, { range: [0, 1], was: [`nk-material-${ctx}-opacity`] }),
-        blur: length("0px", `Backdrop blur behind the ${ctx} material (with surface.backdrop on)`, { was: [`nk-material-${ctx}-blur`] }),
-        radius: length(lit("var(--radius)"), `Corner radius of the ${ctx} material`, { was: [`nk-material-${ctx}-radius`] }),
-        edge: number(0, `Top edge of the ${ctx} material (alpha)`, { range: [0, 0.3], was: [`nk-material-${ctx}-edge`] }),
+        opacity: number(ctx === "hud" ? 0.8 : 0.94, `Opacity of the ${ctx} material${ctx === "menu" ? " (floor 0.92 for text)" : ""}`, { range: [0, 1], was: [`nk-material-${ctx}-opacity`, ...(ctx === "menu" ? ["nk-surface-opacity"] : ctx === "hud" ? ["nk-hud-opacity"] : [])] }),
+        ...(ctx === "menu"
+          ? {
+              blur: length("0px", "Backdrop blur behind menus (with surface.backdrop on)", { was: ["nk-material-menu-blur"] }),
+              radius: length(pal("radius"), "Corner radius of menus, sheets and dialogs", { was: ["nk-material-menu-radius"] }),
+              edge: number(0, "The machined top edge of menus (alpha)", { range: [0, 0.3], was: ["nk-material-menu-edge", "nk-surface-edge"] }),
+            }
+          : {}),
         texture: keyword(["none", "scanlines"], "none", `Texture over the ${ctx} material`, { attr: `texture-${ctx}`, was: [`nk-material-${ctx}-texture`] }),
       },
     ]),
@@ -241,9 +276,8 @@ export const material: Group = {
 /** The HUD over the game. */
 export const hud: Group = {
   tier: "identity",
-  description: "HUD plates and text on the game",
+  description: "Text drawn on the game",
   levers: {
-    opacity: number(0.8, "Minimum HUD plate opacity", { range: [0, 1], was: ["nk-hud-opacity"] }),
     text: keyword(["none", "soft", "strong"], "soft", "Shadow under text drawn on the game (semantic depth.text draws it)", { was: [] }),
   },
 };
@@ -261,7 +295,6 @@ export const motion: Group = {
     "exit-factor": number(0.7, "Every exit is this × its enter", { range: [0.3, 1], was: ["nk-exit-factor"] }),
     reduced: time("100ms", "Under reduced motion every fade is at most this", { range: [0, 400], was: ["nk-time-reduced"] }),
     profile: keyword(["full", "reduced", "instant"], "full", "full: as designed; reduced: no movement, short fades; instant: nothing animates", { attr: "profile", was: ["nk-motion-profile"] }),
-    move: number(1, "1 = things may move; 0 under reduced motion (fades only)", { range: [0, 1], derived: true, was: ["nk-motion-move"] }),
   },
 };
 
@@ -275,6 +308,9 @@ export const style: Group = {
     hold: keyword(["bar", "ring", "fill"], "fill", "How a press-and-hold shows its progress", { attr: "hold", was: ["nk-hold-style"] }),
     gauge: keyword(["arc", "bar", "digital"], "digital", "How gauges are drawn", { attr: "gauge", was: ["nk-gauge-style"] }),
     focus: keyword(["ring", "halo", "tint", "fill", "invert", "bar"], "halo", "Focus on parts that are not rows (rows and buttons light like hover)", { attr: "focus", was: ["nk-focus-style"] }),
+    vital: keyword(["auto", "pill", "value", "icon", "expand"], "expand", "What a vital chip shows (expand: the tag opens on a change)", { was: ["nk-vital-display"] }),
+    "vital-icon": keyword(["vital", "uniform"], "uniform", "Vital icons: each vital's own colour, or the chip's ink", { was: ["nk-vital-icon"] }),
+    "vital-neighbours": keyword(["push", "collapse", "overlay"], "push", "What a growing vital chip does to its neighbours", { was: ["nk-vital-neighbours"] }),
     pause: keyword(["sheet", "slash"], "sheet", "The pause menu: a full-height sheet, or a light slash panel", { attr: "pause", was: ["nk-pause-style"] }),
   },
 };
@@ -285,9 +321,6 @@ export const behavior: Group = {
   description: "Thresholds and how long things stay",
   levers: {
     alert: number(0.2, "A level at or under this is an alert (vitals, durability)", { range: [0, 1], was: ["nk-alert-threshold"] }),
-    fuel: number(0.15, "The fuel alert level", { range: [0, 1], was: ["nk-fuel-threshold"] }),
-    hold: time("800ms", "Press-and-hold time", { range: MS, was: ["nk-hold-ms"] }),
-    cooldown: time("0ms", "Default cooldown after an action", { range: MS, was: ["nk-cooldown-ms"] }),
     rest: time("3000ms", "How long a changed HUD part stays open before it retracts (0 = never)", { range: MS, was: ["nk-rest-delay"] }),
   },
   parts: {
@@ -317,7 +350,7 @@ export const layer: Group = {
   tier: "identity",
   description: "Stacking layers",
   levers: Object.fromEntries(
-    (["world", "hud", "scrim", "surface", "dim", "dialog", "system"] as const).map((l, i) => [l, number((i + 1) * 10, `Stacking layer: ${l}`, { range: [0, 100000], was: [`nk-z-${l}`] })]),
+    ([["dim", 50], ["dialog", 60]] as const).map(([l, z]) => [l, number(z, `Stacking layer: ${l} (a modal is the current surface + dim + dialog)`, { range: [0, 100000], was: [`nk-z-${l}`] })]),
   ),
 };
 

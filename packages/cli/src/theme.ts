@@ -13,10 +13,10 @@ import { themeValuesFindings } from "./check";
 
 const require = createRequire(import.meta.url);
 /** The shipped theme files: nuikit-core exports "./themes/*" (its package.json is not exported), so resolve the baseline. */
-export const THEMES_DIR = path.dirname(require.resolve("nuikit-core/themes/graphite.css"));
+export const THEMES_DIR = path.dirname(require.resolve("nuikit-core/themes/default.css"));
 
-/** The theme `nuikit theme new` starts from when no --from is given: the kit's own baseline (compileTheme("")). */
-export const DEFAULT_FROM = "graphite";
+/** The theme `nuikit theme new` starts from when no --from is given: Default (the language's own look, a palette on top). */
+export const DEFAULT_FROM = "default";
 
 export function shippedThemes(): string[] {
   return fs
@@ -27,69 +27,49 @@ export function shippedThemes(): string[] {
 }
 
 /**
- * The levers: every token in the tables except the palette a TweakCN paste sets (the shadcn group: background, primary,
- * chart-*, radius, fonts) and the nuikit status group (success, hud, scrim, vital-*, the player prefs nk-scale and
- * nk-motion). Everything nuikit adds on top of that is a lever: identity, derived and the kit's own levers.
+ * The levers: every lever the token language declares beyond the palette (a TweakCN paste's colours, radius and faces)
+ * and the levers the compiler derives. Straight from nuikit-core's generated tables, never a list copied here.
  */
 export function levers(): TokenSpec[] {
-  return ALL_TOKENS.filter((t) => t.group !== "shadcn" && t.group !== "nuikit");
+  return ALL_TOKENS.filter((t) => t.group !== "palette" && t.group !== "derived");
 }
 
-/** The levers.md concepts, in the order a theme author meets them (docs/design/your-language.md). */
+/** The sections of a theme file: the language's tiers, identity first (what a server chooses), then the detail tiers. */
 export const CONCEPTS = [
-  { id: "treatment", heading: "Treatment and vitals: the named treatment, vital chips, alert levels, the pause screen" },
-  { id: "geometry", heading: "Geometry: slant, keycap wall, radii, chamfer and hairlines" },
-  { id: "depth", heading: "Depth and material: shadows, plates, surface opacity, blur, glow, legibility" },
-  { id: "colour", heading: "Colour: role ramps, world text, keycap and plate colours" },
-  { id: "type", heading: "Type voices: families, roles, weights, tracking and case" },
-  { id: "fills", heading: "Fills, selection and focus: fill style, rows, focus, holds, levels, gauges" },
-  { id: "space", heading: "Spacing and size: density, spacing steps, heights, icons, panels" },
-  { id: "motion", heading: "Motion: durations, eases, feel, distances and timings" },
+  { id: "identity", heading: "Identity: what a server chooses (scales, shape, type, surfaces, motion, which drawing each family uses)" },
+  { id: "semantic", heading: "Semantic: the roles every component shares (motion ladder, plate, fill, accent, lines)" },
+  { id: "component", heading: "Components and parts: one component's own levers (docs/design/levers.md)" },
 ] as const;
 
 export type ConceptId = (typeof CONCEPTS)[number]["id"];
 
-/** Ordered: the first rule that matches a lever's name decides its concept. Colours not named here fall to `colour`. */
-const RULES: [ConceptId, RegExp][] = [
-  ["treatment", /^nk-(treatment|vital-|alert-threshold|fuel-threshold|pause-)/],
-  ["motion", /^nk-(time-|duration|stagger|ease|spring|motion-|exit-factor|rest-delay|notify-ms|hold-ms|cooldown-ms|tile-tag-delay|confirm-scale|land-scale|rise$|lift$|deny-x$|press-scale$)/],
-  ["depth", /^nk-(glow|elevation|plate-drop|plate$|plate-hair|surface-|material-.*-(opacity|blur|edge|texture)|hud-opacity|hud-text-shadow|hud-shadow|legibility|backdrop|slash|z-)|^(world-shadow|shadow)/],
-  ["type", /^nk-(type-|weight-|tracking|num-tracking|label-case|display-style|row-title-size|row-desc-size|text-key|text-body)|^font-/],
-  ["space", /^nk-(space|gap-|pad-|density|h-|icon-|edge$|slab-|panel-|row-pad|row-gap|row-icon-box|leading|list-gap|meter-segment-gap|pip-|hold-ring-pad)/],
-  ["geometry", /^nk-(skew|tile-skew|tile-wall|tile-press|tile-lift|tile-plate|tile-inset|tile-rim|tile-key-rim|tile-radius|button-wall|cut$|clip|border-width|panel-bracket|panel-edge|r-)|radius$/],
-  ["fills", /^nk-(fill-|tile-tint|tile-active|tile-confirm|tile-hold|tile-key|tile-face|tile-ink|tile-light|tile-shade|row-|focus-|hold-|level-|gauge-|ring-|hue-|accent-|alert|tile-tint)/],
-];
-
-/** The concept a lever belongs to, or "other" (a lever the rules don't yet name: the test fails on it). */
-export function conceptOf(t: TokenSpec): ConceptId | "other" {
-  for (const [id, re] of RULES) if (re.test(t.name)) return id;
-  if (t.type === "color") return "colour";
-  return "other";
+/** The section a lever belongs to: its tier. */
+export function conceptOf(t: TokenSpec): ConceptId {
+  return t.tier;
 }
 
 /** The range or set of values a lever takes, for its line: `(-20deg..20deg)`, `(solid | soft)`, `(colour)`. */
 export function rangeOf(t: TokenSpec): string {
   if (t.values?.length) return `(${t.values.join(" | ")})`;
   if (t.range) {
-    const unit = t.type === "duration" ? "ms" : "";
+    const unit = t.type === "time" ? "ms" : t.type === "angle" ? "deg" : "";
     return `(${t.range[0]}${unit}..${t.range[1]}${unit})`;
   }
-  // a dimension's range is written in its description ("at most ±20deg"), not in the table
-  const m = /±\s*(\d+(?:\.\d+)?)([a-z%]*)/.exec(t.description);
-  if (m) return `(-${m[1]}${m[2]}..${m[1]}${m[2]})`;
   return `(${TYPE_HINT[t.type] ?? t.type})`;
 }
 
 const TYPE_HINT: Record<string, string> = {
   color: "colour",
-  dimension: "length",
-  fontFamily: "font stack",
+  length: "length",
+  angle: "angle",
+  font: "font stack",
   number: "number",
-  duration: "duration",
+  time: "duration",
   shadow: "shadow",
-  cubicBezier: "cubic-bezier",
-  image: "image",
+  ease: "cubic-bezier",
+  paint: "colour or gradient",
   keyword: "keyword",
+  string: "value",
 };
 
 export interface RenderOptions {

@@ -27,15 +27,15 @@ input {
    it closed first, so the first open slides too. Reduced motion: a fade only; motion off: instant. */
 .radio-slide {
   transition:
-    transform var(--nk-time-slow) var(--nk-ease-out),
-    opacity var(--nk-time-slow) var(--nk-ease-out);
+    transform var(--nk-time-slow) var(--nk-ease-enter),
+    opacity var(--nk-time-slow) var(--nk-ease-enter);
   will-change: transform, opacity;
 }
 .radio-slide[data-state="closed"] {
   transform: translateY(120%);
   opacity: 0;
   transition-duration: var(--nk-time-exit);
-  transition-timing-function: var(--nk-ease-in, ease-in);
+  transition-timing-function: var(--nk-ease-exit, ease-in);
 }
 :is(html, *)[data-nk-motion="reduced"] .radio-slide[data-state="closed"] {
   transform: none;

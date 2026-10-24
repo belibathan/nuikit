@@ -229,7 +229,7 @@ function Minimap.layout(width, height, safezone, area)
   local r = rem(height, width)
   local size = o.size * r
   local band = o.band * r
-  -- --nk-edge (1.5rem) inside GTA's safe area, like every other anchor of the HUD
+  -- --nk-screen-edge (1.5rem) inside GTA's safe area, like every other anchor of the HUD
   local edge = 1.5 * r
   local anchor = o.anchor
   local x = anchor:find('right') and (area.right - edge - size) or (area.left + edge)

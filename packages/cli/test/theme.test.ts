@@ -12,7 +12,7 @@ const names = shippedThemes();
 describe("shipped themes", () => {
   it("lists the themes in nuikit-core/themes", () => {
     expect(names).toEqual(fs.readdirSync(THEMES_DIR).filter((f) => f.endsWith(".css")).map((f) => f.slice(0, -4)).sort());
-    expect(names).toEqual(expect.arrayContaining(["default", "flat", "graphite", "square"]));
+    expect(names).toEqual(["default", "flat", "neon-pop", "square"]);
   });
 });
 
@@ -38,24 +38,22 @@ describe("theme new, for every shipped theme", () => {
 });
 
 describe("the lever catalog", () => {
-  it("classifies every lever into a levers.md concept (none left in other)", () => {
-    const other = levers().filter((t) => conceptOf(t) === "other").map((t) => t.name);
-    expect(other).toEqual([]);
-    expect(CONCEPTS.map((c) => c.id)).toEqual(expect.arrayContaining(["geometry", "motion", "type"]));
+  it("groups every lever by its tier in the token language", () => {
+    for (const t of levers()) expect(CONCEPTS.map((c) => c.id), t.name).toContain(conceptOf(t));
   });
 
-  it("writes each dimension's range from its description, numbers and keywords from the table", () => {
-    const skew = levers().find((t) => t.name === "nk-tile-skew")!;
+  it("writes ranges and keywords from the generated table", () => {
+    const skew = levers().find((t) => t.name === "nk-shape-skew")!;
     expect(rangeOf(skew)).toBe("(-20deg..20deg)");
-    const fill = levers().find((t) => t.name === "nk-fill-style")!;
+    const fill = levers().find((t) => t.name === "nk-style-fill")!;
     expect(rangeOf(fill)).toBe("(solid | soft)");
-    const dur = levers().find((t) => t.name === "nk-duration")!;
+    const dur = levers().find((t) => t.name === "nk-motion-duration")!;
     expect(rangeOf(dur)).toMatch(/^\(/);
   });
 
   it("names the starting theme in the header", () => {
-    const { text } = renderTheme({ name: "x", from: "graphite", css: source("graphite") });
-    expect(text.startsWith("/*\n * x: a theme started from graphite")).toBe(true);
+    const { text } = renderTheme({ name: "x", from: "flat", css: source("flat") });
+    expect(text.startsWith("/*\n * x: a theme started from flat")).toBe(true);
     expect(text).toContain("@layer nk.theme {");
   });
 });

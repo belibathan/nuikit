@@ -255,7 +255,7 @@ function SkillCheck({
           strokeWidth="2.5"
           strokeDasharray={TICKS.dash}
           strokeDashoffset={TICKS.offset}
-          className="stroke-(--nk-gauge-tick)"
+          className="stroke-(--nk-gauge-tick-color)"
         />
         <circle
           data-slot="skill-check-zone"
@@ -266,7 +266,7 @@ function SkillCheck({
           strokeWidth="6"
           strokeDasharray={zone.dash}
           transform={zone.rotate}
-          className={shown === "success" ? "stroke-success" : shown === "fail" ? "stroke-destructive" : "stroke-(--nk-gauge-fill)"}
+          className={shown === "success" ? "stroke-success" : shown === "fail" ? "stroke-destructive" : "stroke-(--nk-gauge-fill-color)"}
         />
       </svg>
       {/* the needle, drawn at 12 o'clock on its own layer; the layer turns (transform only) */}
@@ -295,7 +295,7 @@ function SkillCheck({
         <Kbd
           data-slot="skill-check-key"
           className={cn(
-            "h-[var(--nk-skill-check-key-h,2rem)] min-w-[var(--nk-skill-check-key-h,2rem)] rounded-(--nk-r-control) bg-popover px-[var(--nk-skill-check-key-pad,0.5rem)] text-(length:--nk-text-label) [font-weight:var(--nk-weight-strong,600)] text-popover-foreground uppercase ring-1 ring-border",
+            "h-[var(--nk-skill-check-key-height,2rem)] min-w-[var(--nk-skill-check-key-height,2rem)] rounded-(--nk-radius-control) bg-popover px-[var(--nk-skill-check-key-pad,0.5rem)] text-(length:--nk-text-label) [font-weight:var(--nk-type-weight-strong,600)] text-popover-foreground uppercase ring-1 ring-border",
             shown === "success" && "ring-success",
             shown === "fail" && "ring-destructive"
           )}

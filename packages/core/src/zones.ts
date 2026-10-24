@@ -98,7 +98,7 @@ export interface ZoneFrame {
   area?: { l: number; r: number; t: number; b: number };
   /** Safe area in px. */
   safe?: { x: number; y: number };
-  /** The zone's inset from the safe area in px (--nk-zone-inset, default --nk-edge). */
+  /** The zone's inset from the safe area in px (--nk-zone-inset, default --nk-screen-edge). */
   inset?: number;
 }
 
@@ -181,7 +181,7 @@ export function onZones(fn: () => void): () => void {
 export interface ClearOptions {
   /** The stack's width in px (what it would cover from its edge). Default 20rem. */
   width?: number;
-  /** Its distance from the screen edge in px. Default --nk-edge (1.5rem). */
+  /** Its distance from the screen edge in px. Default --nk-screen-edge (1.5rem). */
   edge?: number;
   /** Space kept under (or over) the zone it clears, in px. Default 0.75rem. */
   gap?: number;

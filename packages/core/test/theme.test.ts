@@ -95,7 +95,7 @@ describe("applyTheme (compiled tokens)", () => {
     applyTheme(".dark { --primary: #333333; }");
     expect(css("sidebar")).toBe("");
     expect(css("sidebar-rgb")).toBe("");
-    expect(css("radius")).toBe("0.625rem");
+    expect(css("radius")).toBe("0.75rem");
   });
 
   it("accepts the compiled theme Lua sends as nuikit:theme, and raw CSS from older servers", () => {
@@ -112,9 +112,8 @@ describe("applyTheme (compiled tokens)", () => {
     expect(css("nk-motion")).toBe("0");
     // tokens 1.2: the pref is "reduced" (no movement, fades ≤ 100ms); "off" is the theme's --nk-motion: 0
     expect(html().getAttribute("data-nk-motion")).toBe("reduced");
-    expect(css("nk-motion-move")).toBe("0");
     expect(css("nk-time-base")).toBe("100ms");
-    expect(css("nk-time-press")).toBe("70ms");
+    expect(css("nk-time-snap")).toBe("90ms");
     setPrefs({ highContrast: true });
     expect(html().getAttribute("data-nk-contrast")).toBe("high");
     expect(css("hud")).toBe("rgba(0, 0, 0, 0.72)");

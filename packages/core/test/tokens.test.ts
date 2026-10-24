@@ -32,17 +32,10 @@ const LEGACY = /okl(ch|ab)\(|color-mix\(|\blab\(|\blch\(/;
 const hue = (v: string) => rgbToOklch(toRgba(v)!).h;
 
 describe("the token contract", () => {
-  it("is v1 with the documented names (other packages depend on them)", () => {
-    expect(TOKENS_VERSION).toBe(1);
-    expect(TOKEN_NAMES).toEqual([
-      "background", "foreground", "card", "card-foreground", "popover", "popover-foreground",
-      "primary", "primary-foreground", "secondary", "secondary-foreground", "muted", "muted-foreground",
-      "accent", "accent-foreground", "destructive", "destructive-foreground", "border", "input", "ring",
-      "chart-1", "chart-2", "chart-3", "chart-4", "chart-5", "radius", "font-sans", "font-mono",
-      "success", "success-foreground", "warning", "warning-foreground", "info", "info-foreground",
-      "hud", "hud-foreground", "scrim", "vital-health", "vital-armor", "vital-hunger", "vital-thirst", "vital-stress",
-      "nk-scale", "nk-motion",
-    ]);
+  it("is v2: the palette keeps shadcn's names and the game families, every lever comes from the spec", () => {
+    expect(TOKENS_VERSION).toBe(2);
+    for (const n of ["background", "foreground", "primary", "primary-foreground", "destructive", "border", "ring", "chart-1", "radius", "font-sans", "font-mono", "success", "warning", "info", "hud", "hud-foreground", "scrim", "vital-health", "brand", "surface", "role-health"])
+      expect(TOKEN_NAMES, n).toContain(n);
     for (const t of TOKENS) expect(t.fallback, t.name).toBeTruthy();
   });
 
@@ -55,14 +48,14 @@ describe("the token contract", () => {
   it("publishes a JSON Schema that requires every token", () => {
     const schema = themeJsonSchema() as any;
     expect(schema.properties.vars.required).toEqual([...TOKEN_NAMES]);
-    expect(schema.properties.version.const).toBe(1);
+    expect(schema.properties.version.const).toBe(2);
     const published = JSON.parse(read("packages/core/tokens/nuikit-theme.schema.json"));
     expect(published).toEqual(schema);
   });
 
   it("ships the default theme as a DTCG file that compiles back to the same tokens", () => {
     const file = JSON.parse(read("packages/core/tokens/nuikit.tokens.json"));
-    const stock = compileTheme(THEMES.neutral);
+    const stock = compileTheme({ ...NEUTRAL.dark });
     expect(compileTheme(file).vars).toEqual(stock.vars);
     expect(file).toEqual(toDtcg(stock, "nuikit default theme (stock shadcn neutral)"));
   });
@@ -286,9 +279,9 @@ describe("compileTheme inputs", () => {
     expect(t.vars).toMatchObject({ success: "rgb(0, 255, 0)", hud: "rgba(20, 20, 20, 0.6)", "vital-health": "rgb(255, 0, 0)", info: "rgb(0, 0, 255)" });
   });
 
-  it("an empty paste is the stock theme, with one warning", () => {
+  it("an empty paste is the stock palette on the language's baseline (its radius), with one warning", () => {
     const t = compileTheme("");
-    expect(t.vars).toEqual(compileTheme(THEMES.neutral).vars);
+    expect(t.vars).toEqual(compileTheme(THEMES.neutral.replace(/--radius:[^;]+;/, "--radius: 0.75rem;")).vars);
     expect(t.warnings).toEqual(["The theme has no variables; the stock theme is used."]);
   });
 

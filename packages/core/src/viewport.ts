@@ -8,7 +8,7 @@
 // The model: the UI is designed on a 16:9 box at 1080p (1rem = 16px). On a wider screen the box stays 16:9
 // and centred (--nk-screen-max = 100vh × --nk-screen-ratio); zones sit at its edges unless they bleed. On a
 // narrower one the box is the full width and rem follows the width too (min(1.4815vh, 0.8333vw)), floored at
-// 16px × --nk-scale-min so nothing becomes unreadable at 1280×720 or 1024×768.
+// 16px × --nk-screen-scale-min so nothing becomes unreadable at 1280×720 or 1024×768.
 
 /** The aspect classes, narrowest first. */
 export type AspectId = "4-3" | "16-10" | "16-9" | "21-9" | "32-9";
@@ -21,9 +21,9 @@ export interface ViewportSpec {
   min: [number, number];
   /** Safe area inset in rem, from the 16:9 box's edges (TV overscan, a bezel). */
   safe: { x: number; y: number };
-  /** Distance in rem from the safe area to a zone's content (--nk-edge). */
+  /** Distance in rem from the safe area to a zone's content (--nk-screen-edge). */
   edge: number;
-  /** rem never drops below 16px × this (--nk-scale-min). */
+  /** rem never drops below 16px × this (--nk-screen-scale-min). */
   scaleMin: number;
   /** A size a player actually runs, for the devtools picker and `pnpm look --viewport`. */
   sample: [number, number];
@@ -61,7 +61,7 @@ export function aspectOf(w: number, h: number): ViewportSpec {
 export interface ViewportOptions {
   /** The theme × player UI size (--nk-scale). Default 1. */
   scale?: number;
-  /** Override the aspect's floor (--nk-scale-min). */
+  /** Override the aspect's floor (--nk-screen-scale-min). */
   scaleMin?: number;
   /** The content box's ratio (--nk-screen-ratio). Default 16/9; Infinity is full bleed. */
   ratio?: number;
@@ -83,7 +83,7 @@ export interface Viewport {
   floored: boolean;
   /** The safe area inset in px. */
   safe: { x: number; y: number };
-  /** The edge inset in px (--nk-edge). */
+  /** The edge inset in px (--nk-screen-edge). */
   edge: number;
   /** The content box in px: 16:9 and centred on a wider screen, the whole screen otherwise. */
   box: { x: number; y: number; w: number; h: number };
@@ -135,7 +135,7 @@ function read(): Viewport {
     const v = parseFloat(cs.getPropertyValue(n));
     return Number.isFinite(v) ? v : undefined;
   };
-  const v = viewportOf(window.innerWidth, window.innerHeight, { scale: num("--nk-scale"), scaleMin: num("--nk-scale-min"), ratio: num("--nk-screen-ratio") });
+  const v = viewportOf(window.innerWidth, window.innerHeight, { scale: num("--nk-scale"), scaleMin: num("--nk-screen-scale-min"), ratio: num("--nk-screen-ratio") });
   // the page's real rem wins over the model (a theme can set font-size its own way)
   const rem = parseFloat(cs.fontSize);
   if (Number.isFinite(rem) && rem > 0) {

@@ -1,7 +1,7 @@
 // Foundation 2 situations: which zones show while the player is at rest, in a moment, driving or
 // interacting (Config.situations). Lua sends the situation it can see (hud:situation: rest, driving,
 // interaction); a moment is told apart from rest here, on the page: anything the HUD shows changed
-// within the theme's --nk-rest-delay (0, the default: never at rest). With retract off (the default)
+// within the theme's --nk-behavior-rest (0, the default: never at rest). With retract off (the default)
 // every zone shows, as always.
 import { createContext, useContext, useEffect, useState } from "react";
 import type { ZoneName } from "./parts";
@@ -15,12 +15,12 @@ export interface HudSituations {
   interaction?: ZoneName[];
 }
 
-/** The theme's --nk-rest-delay (tokens 1.4) as ms ("8s", "8000ms"); 0, its default, or unset: never. Read at
+/** The theme's --nk-behavior-rest (tokens 1.4) as ms ("8s", "8000ms"); 0, its default, or unset: never. Read at
  *  most once a second (a theme reload is caught then): reading styles per change forced a recalc. */
 let delayRead = { at: -Infinity, value: "" };
 function delayToken() {
   const now = performance.now();
-  if (now - delayRead.at > 1000) delayRead = { at: now, value: getComputedStyle(document.documentElement).getPropertyValue("--nk-rest-delay") };
+  if (now - delayRead.at > 1000) delayRead = { at: now, value: getComputedStyle(document.documentElement).getPropertyValue("--nk-behavior-rest") };
   return delayRead.value;
 }
 export function restDelay(value = delayToken()): number {
@@ -30,7 +30,7 @@ export function restDelay(value = delayToken()): number {
   return v.endsWith("ms") ? n : v.endsWith("s") ? n * 1000 : n;
 }
 
-/** The situation now: Lua's, with rest split into a moment for --nk-rest-delay after `key` changes. */
+/** The situation now: Lua's, with rest split into a moment for --nk-behavior-rest after `key` changes. */
 export function useSituation(lua: Situation, key: string): Situation {
   const [moment, setMoment] = useState(true); // the HUD comes in as a moment, then settles
   useEffect(() => {

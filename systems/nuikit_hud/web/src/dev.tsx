@@ -1,7 +1,7 @@
 // The game, faked for browser development. Press ` for the devtools.
 //
 // ?fixture=<name>   foot (default), low, idle, cruise, redline, reverse, damaged, plane, boat, wide
-// &gauge=arc|bar|digital   force a gauge style (else the theme's --nk-gauge-style)
+// &gauge=arc|bar|digital   force a gauge style (else the theme's --nk-style-gauge)
 // &identity=<name>  try identity tokens before they ship: signal, vector (sets --nk-* on <html>)
 // &theme=ember      a colourful TweakCN-style theme instead of stock neutral
 // &scene=<url|name> the background (an image URL, or day / dusk / night)
@@ -144,8 +144,8 @@ const place: HudLocation = { visible: true, street: "Elgin Ave", crossing: "Vesp
 
 // Identity tokens from design v2 (another branch ships them); here only to show the HUD reads them.
 const IDENTITIES: Record<string, Record<string, string>> = {
-  signal: { "--nk-gauge-style": "bar", "--nk-label-case": "uppercase", "--nk-tracking-label": "0.06em", "--nk-gauge-track": "0.5rem", "--nk-hud-text-shadow": "strong" },
-  vector: { "--nk-gauge-style": "digital", "--nk-glow": "0.6", "--nk-gauge-ticks": "1", "--nk-hud-opacity": "0.7" },
+  signal: { "--nk-style-gauge": "bar", "--nk-type-case": "uppercase", "--nk-type-tracking-label": "0.06em", "--nk-fill-height": "0.5rem", "--nk-chip-text-shadow": "strong" },
+  vector: { "--nk-style-gauge": "digital", "--nk-surface-glow": "0.6", "--nk-gauge-ticks": "1", "--nk-material-hud-opacity": "0.7" },
 };
 
 // nuikit-ignore-start color/hardcoded (a sample theme and a fake radar: browser development only)
@@ -280,8 +280,8 @@ export default function Dev() {
       if (v.altitude !== undefined) emit("hud:vehicle:altitude", v.altitude);
     }
     if (radar) setFrame(mf);
-    // ?retract: Foundation 2 situations with the lever on (status and vitals slide away after --nk-rest-delay)
-    if (q.has("retract")) document.documentElement.style.setProperty("--nk-rest-delay", "8s");
+    // ?retract: Foundation 2 situations with the lever on (status and vitals slide away after --nk-behavior-rest)
+    if (q.has("retract")) document.documentElement.style.setProperty("--nk-behavior-rest", "8s");
     if (q.has("retract")) settings.situations = { retract: true, rest: ["map", "vehicle"], moment: ["status", "map", "vitals", "vehicle"], driving: ["status", "map", "vitals", "vehicle"], interaction: ["map", "vitals"] };
     devSettings = settings;
     // for bench/hud-perf: open and close the HUD (the entrance and the exit) with any settings on top

@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://nuikit.vercel.app/schema/theme.v1.json",
-  "title": "nuikit compiled theme (tokens v1, revision 1.1)",
+  "$id": "https://nuikit.vercel.app/schema/theme.v2.json",
+  "title": "nuikit compiled theme (tokens v2: the token language)",
   "description": "What compileTheme() returns and the nuikit resource publishes: every token, lowered so FiveM's browser can read it.",
   "type": "object",
   "required": [
@@ -10,11 +10,11 @@
   ],
   "properties": {
     "version": {
-      "const": 1
+      "const": 2
     },
     "revision": {
       "type": "string",
-      "description": "Contract revision; \"1.1\" adds the identity tokens (optional in vars, so themes compiled by older nuikit stay valid)"
+      "description": "Contract revision"
     },
     "mode": {
       "enum": [
@@ -66,8 +66,8 @@
         "chart-4",
         "chart-5",
         "radius",
-        "font-sans",
-        "font-mono",
+        "brand",
+        "brand-foreground",
         "success",
         "success-foreground",
         "warning",
@@ -77,507 +77,1402 @@
         "hud",
         "hud-foreground",
         "scrim",
+        "surface",
+        "world-foreground",
+        "world-foreground-muted",
+        "world-success",
+        "world-destructive",
         "vital-health",
         "vital-armor",
         "vital-hunger",
         "vital-thirst",
+        "world-shadow",
+        "pause-surface",
+        "pause-ink",
         "vital-stress",
-        "nk-scale",
-        "nk-motion"
+        "role-health",
+        "role-health-deep",
+        "role-health-light",
+        "role-armor",
+        "role-armor-deep",
+        "role-armor-light",
+        "role-hunger",
+        "role-hunger-deep",
+        "role-hunger-light",
+        "role-thirst",
+        "role-thirst-deep",
+        "role-thirst-light",
+        "role-stress",
+        "role-stress-deep",
+        "role-stress-light",
+        "role-stamina",
+        "role-stamina-deep",
+        "role-stamina-light",
+        "role-oxygen",
+        "role-oxygen-deep",
+        "role-oxygen-light",
+        "role-info",
+        "role-info-deep",
+        "role-info-light",
+        "role-success",
+        "role-success-deep",
+        "role-success-light",
+        "role-warning",
+        "role-warning-deep",
+        "role-warning-light",
+        "role-danger",
+        "role-danger-deep",
+        "role-danger-light",
+        "role-police",
+        "role-police-deep",
+        "role-police-light",
+        "role-ems",
+        "role-ems-deep",
+        "role-ems-light",
+        "role-mech",
+        "role-mech-deep",
+        "role-mech-light",
+        "role-gang",
+        "role-gang-deep",
+        "role-gang-light",
+        "role-civ",
+        "role-civ-deep",
+        "role-civ-light",
+        "role-staff",
+        "role-staff-deep",
+        "role-staff-light",
+        "role-common",
+        "role-common-deep",
+        "role-common-light",
+        "role-uncommon",
+        "role-uncommon-deep",
+        "role-uncommon-light",
+        "role-rare",
+        "role-rare-deep",
+        "role-rare-light",
+        "role-epic",
+        "role-epic-deep",
+        "role-epic-light",
+        "role-legendary",
+        "role-legendary-deep",
+        "role-legendary-light",
+        "role-brand",
+        "role-brand-deep",
+        "role-brand-light",
+        "role-neutral",
+        "role-neutral-deep",
+        "role-neutral-light",
+        "font-sans",
+        "font-display",
+        "font-numeric",
+        "font-mono"
       ],
       "properties": {
         "background": {
           "type": "string",
           "pattern": "^rgba?\\(",
-          "description": "Full-screen surfaces (pause, loading, death scrim)"
+          "description": "Full-screen surfaces (pause, loading, death scrim)",
+          "$comment": "identity · @background"
         },
         "foreground": {
           "type": "string",
           "pattern": "^rgba?\\(",
-          "description": "Text on full-screen surfaces"
+          "description": "Text on full-screen surfaces",
+          "$comment": "identity · @foreground"
         },
         "card": {
           "type": "string",
           "pattern": "^rgba?\\(",
-          "description": "Raised blocks on a full-screen surface"
+          "description": "Raised blocks on a full-screen surface",
+          "$comment": "identity · @card"
         },
         "card-foreground": {
           "type": "string",
           "pattern": "^rgba?\\(",
-          "description": "Text on cards"
+          "description": "Text on cards",
+          "$comment": "identity · @card-foreground"
         },
         "popover": {
           "type": "string",
           "pattern": "^rgba?\\(",
-          "description": "Every floating panel (nk-panel)"
+          "description": "Every floating panel",
+          "$comment": "identity · @popover"
         },
         "popover-foreground": {
           "type": "string",
           "pattern": "^rgba?\\(",
-          "description": "Text in panels"
+          "description": "Text in panels",
+          "$comment": "identity · @popover-foreground"
         },
         "primary": {
           "type": "string",
           "pattern": "^rgba?\\(",
-          "description": "The one main action per surface, progress fills, selection"
+          "description": "The one main action per surface, the keycap face, selection",
+          "$comment": "identity · @primary"
         },
         "primary-foreground": {
           "type": "string",
           "pattern": "^rgba?\\(",
-          "description": "Text on primary"
+          "description": "Text on primary",
+          "$comment": "identity · @primary-foreground"
         },
         "secondary": {
           "type": "string",
           "pattern": "^rgba?\\(",
-          "description": "Secondary buttons"
+          "description": "Secondary buttons",
+          "$comment": "identity · @secondary"
         },
         "secondary-foreground": {
           "type": "string",
           "pattern": "^rgba?\\(",
-          "description": "Text on secondary"
+          "description": "Text on secondary",
+          "$comment": "identity · @secondary-foreground"
         },
         "muted": {
           "type": "string",
           "pattern": "^rgba?\\(",
-          "description": "Tracks, slots and wells inside a panel"
+          "description": "Tracks, slots and wells inside a panel",
+          "$comment": "identity · @muted"
         },
         "muted-foreground": {
           "type": "string",
           "pattern": "^rgba?\\(",
-          "description": "Secondary text"
+          "description": "Secondary text",
+          "$comment": "identity · @muted-foreground"
         },
         "accent": {
           "type": "string",
           "pattern": "^rgba?\\(",
-          "description": "Hover and keyboard highlight"
+          "description": "Hover tint",
+          "$comment": "identity · @accent"
         },
         "accent-foreground": {
           "type": "string",
           "pattern": "^rgba?\\(",
-          "description": "Text on accent"
+          "description": "Text on accent",
+          "$comment": "identity · @accent-foreground"
         },
         "destructive": {
           "type": "string",
           "pattern": "^rgba?\\(",
-          "description": "Danger, damage, low values, death"
+          "description": "Danger, damage, low values, death",
+          "$comment": "identity · @destructive"
         },
         "destructive-foreground": {
           "type": "string",
           "pattern": "^rgba?\\(",
-          "description": "Text on destructive"
+          "description": "Text on destructive",
+          "$comment": "identity · @destructive-foreground"
         },
         "border": {
           "type": "string",
           "pattern": "^rgba?\\(",
-          "description": "Hairlines"
+          "description": "Hairlines",
+          "$comment": "identity · @border"
         },
         "input": {
           "type": "string",
           "pattern": "^rgba?\\(",
-          "description": "Field borders"
+          "description": "Field borders",
+          "$comment": "identity · @input"
         },
         "ring": {
           "type": "string",
           "pattern": "^rgba?\\(",
-          "description": "Focus rings"
+          "description": "A text field's caret rim",
+          "$comment": "identity · @ring"
         },
         "chart-1": {
           "type": "string",
           "pattern": "^rgba?\\(",
-          "description": "Categorical colour 1"
+          "description": "Categorical colour 1",
+          "$comment": "identity · @chart-1"
         },
         "chart-2": {
           "type": "string",
           "pattern": "^rgba?\\(",
-          "description": "Categorical colour 2"
+          "description": "Categorical colour 2",
+          "$comment": "identity · @chart-2"
         },
         "chart-3": {
           "type": "string",
           "pattern": "^rgba?\\(",
-          "description": "Categorical colour 3"
+          "description": "Categorical colour 3",
+          "$comment": "identity · @chart-3"
         },
         "chart-4": {
           "type": "string",
           "pattern": "^rgba?\\(",
-          "description": "Categorical colour 4"
+          "description": "Categorical colour 4",
+          "$comment": "identity · @chart-4"
         },
         "chart-5": {
           "type": "string",
           "pattern": "^rgba?\\(",
-          "description": "Categorical colour 5"
+          "description": "Categorical colour 5",
+          "$comment": "identity · @chart-5"
         },
         "radius": {
           "type": "string",
-          "description": "Corner radius (panels radius + 4px, controls radius − 2px)"
-        },
-        "font-sans": {
-          "type": "string",
-          "description": "Text"
-        },
-        "font-mono": {
-          "type": "string",
-          "description": "Codes and IDs a player might type"
-        },
-        "success": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "Positive status: done, paid, online"
-        },
-        "success-foreground": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "Text on success"
-        },
-        "warning": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "Caution status: low fuel, about to expire"
-        },
-        "warning-foreground": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "Text on warning"
-        },
-        "info": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "Neutral status: tips, notices"
-        },
-        "info-foreground": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "Text on info"
-        },
-        "hud": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "Surfaces drawn straight on the game: HUD chips, hotbar, target eye"
-        },
-        "hud-foreground": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "Text and icons on hud"
-        },
-        "scrim": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "Darkens the game behind full-screen screens, bar tracks and shadows on the game; always used with opacity"
-        },
-        "vital-health": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "Health bar"
-        },
-        "vital-armor": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "Armor bar"
-        },
-        "vital-hunger": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "Hunger bar"
-        },
-        "vital-thirst": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "Thirst bar"
-        },
-        "vital-stress": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "Stress bar"
-        },
-        "nk-scale": {
-          "type": "string",
-          "pattern": "^-?\\d+(\\.\\d+)?$",
-          "description": "UI size multiplier (unitless). Players can scale further (0.85–1.25)."
-        },
-        "nk-motion": {
-          "type": "string",
-          "pattern": "^-?\\d+(\\.\\d+)?$",
-          "description": "1 = animations on, 0 = off. Painted as 0 when the theme or the player's reduced-motion pref turns motion down."
+          "description": "The radius scale's base: every radius step derives from it",
+          "$comment": "identity · @radius"
         },
         "brand": {
           "type": "string",
           "pattern": "^rgba?\\(",
-          "description": "The server's signature colour: active indicators, gauge needles, focus, logos (not the action: that's primary)",
-          "$comment": "tokens 1.1"
+          "description": "The server's signature: active marks, needles, the accent's stops",
+          "$comment": "identity · @brand"
         },
         "brand-foreground": {
           "type": "string",
           "pattern": "^rgba?\\(",
           "description": "Text on brand",
-          "$comment": "tokens 1.1"
+          "$comment": "identity · @brand-foreground"
+        },
+        "success": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "Positive status",
+          "$comment": "identity · @success"
+        },
+        "success-foreground": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "Text on success",
+          "$comment": "identity · @success-foreground"
+        },
+        "warning": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "Caution status",
+          "$comment": "identity · @warning"
+        },
+        "warning-foreground": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "Text on warning",
+          "$comment": "identity · @warning-foreground"
+        },
+        "info": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "Neutral status",
+          "$comment": "identity · @info"
+        },
+        "info-foreground": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "Text on info",
+          "$comment": "identity · @info-foreground"
+        },
+        "hud": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "Surfaces drawn straight on the game: HUD chips, hotbar",
+          "$comment": "identity · @hud"
+        },
+        "hud-foreground": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "Text and icons on hud",
+          "$comment": "identity · @hud-foreground"
+        },
+        "scrim": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "Darkens the game; shadows and walls; always used with opacity",
+          "$comment": "identity · @scrim"
+        },
+        "surface": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "The panel colour, tinted toward brand by surface.tint",
+          "$comment": "identity · @surface"
         },
         "world-foreground": {
           "type": "string",
           "pattern": "^rgba?\\(",
-          "description": "Text and icons drawn straight on the game, no panel (death text, unplated HUD values, nk-on-game). Light in every theme, light or dark",
-          "$comment": "tokens 1.1"
+          "description": "Text drawn straight on the game, light in every theme",
+          "$comment": "identity · @world-foreground"
         },
         "world-foreground-muted": {
           "type": "string",
           "pattern": "^rgba?\\(",
           "description": "Secondary text on the game",
-          "$comment": "tokens 1.1"
-        },
-        "world-shadow": {
-          "type": "string",
-          "description": "Text-shadow that keeps world-foreground legible over any frame",
-          "$comment": "tokens 1.1"
+          "$comment": "identity · @world-foreground-muted"
         },
         "world-success": {
           "type": "string",
           "pattern": "^rgba?\\(",
-          "description": "A gain drawn on the game or the HUD plate (slab deltas: +2, $250). Reads on the dark plate in every theme, light or dark",
-          "$comment": "tokens 1.3"
+          "description": "A gain drawn on the game",
+          "$comment": "identity · @world-success"
         },
         "world-destructive": {
           "type": "string",
           "pattern": "^rgba?\\(",
-          "description": "A loss drawn on the game or the HUD plate (slab deltas: −1)",
-          "$comment": "tokens 1.3"
+          "description": "A loss drawn on the game",
+          "$comment": "identity · @world-destructive"
+        },
+        "vital-health": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "Health",
+          "$comment": "identity · @vital-health"
+        },
+        "vital-armor": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "Armor",
+          "$comment": "identity · @vital-armor"
+        },
+        "vital-hunger": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "Hunger",
+          "$comment": "identity · @vital-hunger"
+        },
+        "vital-thirst": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "Thirst",
+          "$comment": "identity · @vital-thirst"
+        },
+        "world-shadow": {
+          "type": "string",
+          "description": "Text-shadow that keeps world-foreground legible over any frame",
+          "$comment": "identity · @world-shadow"
+        },
+        "pause-surface": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "The slash pause panel's light surface (style.pause: slash)",
+          "$comment": "identity · @pause-surface"
+        },
+        "pause-ink": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "Text on the slash pause panel",
+          "$comment": "identity · @pause-ink"
+        },
+        "vital-stress": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "Stress",
+          "$comment": "identity · @vital-stress"
+        },
+        "role-health": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "Role health: the --hue-* ramp under data-hue=\"health\"",
+          "$comment": "identity · @role-health"
+        },
+        "role-health-deep": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "health, darker: the ramp's deep step",
+          "$comment": "identity · @role-health-deep"
+        },
+        "role-health-light": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "health, lighter: the ramp's gradient start",
+          "$comment": "identity · @role-health-light"
+        },
+        "role-armor": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "Role armor: the --hue-* ramp under data-hue=\"armor\"",
+          "$comment": "identity · @role-armor"
+        },
+        "role-armor-deep": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "armor, darker: the ramp's deep step",
+          "$comment": "identity · @role-armor-deep"
+        },
+        "role-armor-light": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "armor, lighter: the ramp's gradient start",
+          "$comment": "identity · @role-armor-light"
+        },
+        "role-hunger": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "Role hunger: the --hue-* ramp under data-hue=\"hunger\"",
+          "$comment": "identity · @role-hunger"
+        },
+        "role-hunger-deep": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "hunger, darker: the ramp's deep step",
+          "$comment": "identity · @role-hunger-deep"
+        },
+        "role-hunger-light": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "hunger, lighter: the ramp's gradient start",
+          "$comment": "identity · @role-hunger-light"
+        },
+        "role-thirst": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "Role thirst: the --hue-* ramp under data-hue=\"thirst\"",
+          "$comment": "identity · @role-thirst"
+        },
+        "role-thirst-deep": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "thirst, darker: the ramp's deep step",
+          "$comment": "identity · @role-thirst-deep"
+        },
+        "role-thirst-light": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "thirst, lighter: the ramp's gradient start",
+          "$comment": "identity · @role-thirst-light"
+        },
+        "role-stress": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "Role stress: the --hue-* ramp under data-hue=\"stress\"",
+          "$comment": "identity · @role-stress"
+        },
+        "role-stress-deep": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "stress, darker: the ramp's deep step",
+          "$comment": "identity · @role-stress-deep"
+        },
+        "role-stress-light": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "stress, lighter: the ramp's gradient start",
+          "$comment": "identity · @role-stress-light"
+        },
+        "role-stamina": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "Role stamina: the --hue-* ramp under data-hue=\"stamina\"",
+          "$comment": "identity · @role-stamina"
+        },
+        "role-stamina-deep": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "stamina, darker: the ramp's deep step",
+          "$comment": "identity · @role-stamina-deep"
+        },
+        "role-stamina-light": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "stamina, lighter: the ramp's gradient start",
+          "$comment": "identity · @role-stamina-light"
+        },
+        "role-oxygen": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "Role oxygen: the --hue-* ramp under data-hue=\"oxygen\"",
+          "$comment": "identity · @role-oxygen"
+        },
+        "role-oxygen-deep": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "oxygen, darker: the ramp's deep step",
+          "$comment": "identity · @role-oxygen-deep"
+        },
+        "role-oxygen-light": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "oxygen, lighter: the ramp's gradient start",
+          "$comment": "identity · @role-oxygen-light"
+        },
+        "role-info": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "Role info: the --hue-* ramp under data-hue=\"info\"",
+          "$comment": "identity · @role-info"
+        },
+        "role-info-deep": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "info, darker: the ramp's deep step",
+          "$comment": "identity · @role-info-deep"
+        },
+        "role-info-light": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "info, lighter: the ramp's gradient start",
+          "$comment": "identity · @role-info-light"
+        },
+        "role-success": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "Role success: the --hue-* ramp under data-hue=\"success\"",
+          "$comment": "identity · @role-success"
+        },
+        "role-success-deep": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "success, darker: the ramp's deep step",
+          "$comment": "identity · @role-success-deep"
+        },
+        "role-success-light": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "success, lighter: the ramp's gradient start",
+          "$comment": "identity · @role-success-light"
+        },
+        "role-warning": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "Role warning: the --hue-* ramp under data-hue=\"warning\"",
+          "$comment": "identity · @role-warning"
+        },
+        "role-warning-deep": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "warning, darker: the ramp's deep step",
+          "$comment": "identity · @role-warning-deep"
+        },
+        "role-warning-light": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "warning, lighter: the ramp's gradient start",
+          "$comment": "identity · @role-warning-light"
+        },
+        "role-danger": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "Role danger: the --hue-* ramp under data-hue=\"danger\"",
+          "$comment": "identity · @role-danger"
+        },
+        "role-danger-deep": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "danger, darker: the ramp's deep step",
+          "$comment": "identity · @role-danger-deep"
+        },
+        "role-danger-light": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "danger, lighter: the ramp's gradient start",
+          "$comment": "identity · @role-danger-light"
+        },
+        "role-police": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "Role police: the --hue-* ramp under data-hue=\"police\"",
+          "$comment": "identity · @role-police"
+        },
+        "role-police-deep": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "police, darker: the ramp's deep step",
+          "$comment": "identity · @role-police-deep"
+        },
+        "role-police-light": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "police, lighter: the ramp's gradient start",
+          "$comment": "identity · @role-police-light"
+        },
+        "role-ems": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "Role ems: the --hue-* ramp under data-hue=\"ems\"",
+          "$comment": "identity · @role-ems"
+        },
+        "role-ems-deep": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "ems, darker: the ramp's deep step",
+          "$comment": "identity · @role-ems-deep"
+        },
+        "role-ems-light": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "ems, lighter: the ramp's gradient start",
+          "$comment": "identity · @role-ems-light"
+        },
+        "role-mech": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "Role mech: the --hue-* ramp under data-hue=\"mech\"",
+          "$comment": "identity · @role-mech"
+        },
+        "role-mech-deep": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "mech, darker: the ramp's deep step",
+          "$comment": "identity · @role-mech-deep"
+        },
+        "role-mech-light": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "mech, lighter: the ramp's gradient start",
+          "$comment": "identity · @role-mech-light"
+        },
+        "role-gang": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "Role gang: the --hue-* ramp under data-hue=\"gang\"",
+          "$comment": "identity · @role-gang"
+        },
+        "role-gang-deep": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "gang, darker: the ramp's deep step",
+          "$comment": "identity · @role-gang-deep"
+        },
+        "role-gang-light": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "gang, lighter: the ramp's gradient start",
+          "$comment": "identity · @role-gang-light"
+        },
+        "role-civ": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "Role civ: the --hue-* ramp under data-hue=\"civ\"",
+          "$comment": "identity · @role-civ"
+        },
+        "role-civ-deep": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "civ, darker: the ramp's deep step",
+          "$comment": "identity · @role-civ-deep"
+        },
+        "role-civ-light": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "civ, lighter: the ramp's gradient start",
+          "$comment": "identity · @role-civ-light"
+        },
+        "role-staff": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "Role staff: the --hue-* ramp under data-hue=\"staff\"",
+          "$comment": "identity · @role-staff"
+        },
+        "role-staff-deep": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "staff, darker: the ramp's deep step",
+          "$comment": "identity · @role-staff-deep"
+        },
+        "role-staff-light": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "staff, lighter: the ramp's gradient start",
+          "$comment": "identity · @role-staff-light"
+        },
+        "role-common": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "Role common: the --hue-* ramp under data-hue=\"common\"",
+          "$comment": "identity · @role-common"
+        },
+        "role-common-deep": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "common, darker: the ramp's deep step",
+          "$comment": "identity · @role-common-deep"
+        },
+        "role-common-light": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "common, lighter: the ramp's gradient start",
+          "$comment": "identity · @role-common-light"
+        },
+        "role-uncommon": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "Role uncommon: the --hue-* ramp under data-hue=\"uncommon\"",
+          "$comment": "identity · @role-uncommon"
+        },
+        "role-uncommon-deep": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "uncommon, darker: the ramp's deep step",
+          "$comment": "identity · @role-uncommon-deep"
+        },
+        "role-uncommon-light": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "uncommon, lighter: the ramp's gradient start",
+          "$comment": "identity · @role-uncommon-light"
+        },
+        "role-rare": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "Role rare: the --hue-* ramp under data-hue=\"rare\"",
+          "$comment": "identity · @role-rare"
+        },
+        "role-rare-deep": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "rare, darker: the ramp's deep step",
+          "$comment": "identity · @role-rare-deep"
+        },
+        "role-rare-light": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "rare, lighter: the ramp's gradient start",
+          "$comment": "identity · @role-rare-light"
+        },
+        "role-epic": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "Role epic: the --hue-* ramp under data-hue=\"epic\"",
+          "$comment": "identity · @role-epic"
+        },
+        "role-epic-deep": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "epic, darker: the ramp's deep step",
+          "$comment": "identity · @role-epic-deep"
+        },
+        "role-epic-light": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "epic, lighter: the ramp's gradient start",
+          "$comment": "identity · @role-epic-light"
+        },
+        "role-legendary": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "Role legendary: the --hue-* ramp under data-hue=\"legendary\"",
+          "$comment": "identity · @role-legendary"
+        },
+        "role-legendary-deep": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "legendary, darker: the ramp's deep step",
+          "$comment": "identity · @role-legendary-deep"
+        },
+        "role-legendary-light": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "legendary, lighter: the ramp's gradient start",
+          "$comment": "identity · @role-legendary-light"
+        },
+        "role-brand": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "Role brand: the --hue-* ramp under data-hue=\"brand\"",
+          "$comment": "identity · @role-brand"
+        },
+        "role-brand-deep": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "brand, darker: the ramp's deep step",
+          "$comment": "identity · @role-brand-deep"
+        },
+        "role-brand-light": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "brand, lighter: the ramp's gradient start",
+          "$comment": "identity · @role-brand-light"
+        },
+        "role-neutral": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "Role neutral: the --hue-* ramp under data-hue=\"neutral\"",
+          "$comment": "identity · @role-neutral"
+        },
+        "role-neutral-deep": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "neutral, darker: the ramp's deep step",
+          "$comment": "identity · @role-neutral-deep"
+        },
+        "role-neutral-light": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "neutral, lighter: the ramp's gradient start",
+          "$comment": "identity · @role-neutral-light"
+        },
+        "font-sans": {
+          "type": "string",
+          "description": "Sentences (the body voice)",
+          "$comment": "identity · font.sans"
         },
         "font-display": {
           "type": "string",
-          "description": "Headings and big moments (titles, timers, the balance)",
-          "$comment": "tokens 1.1"
+          "description": "Anything scanned: keys, titles, labels, captions",
+          "$comment": "identity · font.display"
         },
         "font-numeric": {
           "type": "string",
-          "description": "Every number on a gauge, money or timer (always tabular)",
-          "$comment": "tokens 1.1"
+          "description": "Every number (always tabular)",
+          "$comment": "identity · font.numeric"
+        },
+        "font-mono": {
+          "type": "string",
+          "description": "Codes and IDs a player might type",
+          "$comment": "identity · font.mono"
+        },
+        "nk-scale": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "UI size multiplier (players scale further, 0.85–1.25)",
+          "$comment": "identity · scale"
+        },
+        "nk-density": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "Spacing multiplier: 0.75 compact … 1.3 roomy",
+          "$comment": "identity · density"
+        },
+        "nk-space-1": {
+          "type": "string",
+          "description": "1 × the step",
+          "$comment": "identity · space.1"
+        },
+        "nk-space-2": {
+          "type": "string",
+          "description": "2 × the step",
+          "$comment": "identity · space.2"
+        },
+        "nk-space-3": {
+          "type": "string",
+          "description": "3 × the step",
+          "$comment": "identity · space.3"
+        },
+        "nk-space-4": {
+          "type": "string",
+          "description": "4 × the step",
+          "$comment": "identity · space.4"
+        },
+        "nk-space-6": {
+          "type": "string",
+          "description": "6 × the step",
+          "$comment": "identity · space.6"
+        },
+        "nk-space-8": {
+          "type": "string",
+          "description": "8 × the step",
+          "$comment": "identity · space.8"
+        },
+        "nk-space-unit": {
+          "type": "string",
+          "description": "The spacing step",
+          "$comment": "identity · space.unit"
+        },
+        "nk-radius-key": {
+          "type": "string",
+          "description": "Keys and small tiles",
+          "$comment": "identity · radius.key"
+        },
+        "nk-radius-chip": {
+          "type": "string",
+          "description": "Chips and badges",
+          "$comment": "identity · radius.chip"
+        },
+        "nk-radius-control": {
+          "type": "string",
+          "description": "Buttons, fields, rows, the keycap",
+          "$comment": "identity · radius.control"
+        },
+        "nk-radius-surface": {
+          "type": "string",
+          "description": "Panels, sheets, dialogs",
+          "$comment": "identity · radius.surface"
+        },
+        "nk-height-key": {
+          "type": "string",
+          "description": "A key / small tile",
+          "$comment": "identity · height.key"
+        },
+        "nk-height-chip": {
+          "type": "string",
+          "description": "A chip / medium tile",
+          "$comment": "identity · height.chip"
+        },
+        "nk-height-control": {
+          "type": "string",
+          "description": "Buttons and bar items / large tile",
+          "$comment": "identity · height.control"
+        },
+        "nk-height-row": {
+          "type": "string",
+          "description": "A list row",
+          "$comment": "identity · height.row"
+        },
+        "nk-height-field": {
+          "type": "string",
+          "description": "Text inputs, selects and dialog buttons",
+          "$comment": "identity · height.field"
+        },
+        "nk-icon-sm": {
+          "type": "string",
+          "description": "Small icon",
+          "$comment": "identity · icon.sm"
+        },
+        "nk-icon-md": {
+          "type": "string",
+          "description": "Icon next to text (the default)",
+          "$comment": "identity · icon.md"
+        },
+        "nk-icon-lg": {
+          "type": "string",
+          "description": "Large icon",
+          "$comment": "identity · icon.lg"
+        },
+        "nk-icon-stroke": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "Stroke width",
+          "$comment": "identity · icon.stroke"
+        },
+        "nk-text-base": {
+          "type": "string",
+          "description": "Body size; every step derives from it",
+          "$comment": "identity · text.base"
+        },
+        "nk-text-key": {
+          "type": "string",
+          "description": "The scan voice (keys, buttons, tabs)",
+          "$comment": "identity · text.key"
+        },
+        "nk-text-body": {
+          "type": "string",
+          "description": "Sentences",
+          "$comment": "identity · text.body"
+        },
+        "nk-text-label": {
+          "type": "string",
+          "description": "Labels and captions",
+          "$comment": "identity · text.label"
+        },
+        "nk-text-title": {
+          "type": "string",
+          "description": "Panel titles (≈ base × √ratio)",
+          "$comment": "identity · text.title"
+        },
+        "nk-text-section": {
+          "type": "string",
+          "description": "Section and sheet titles",
+          "$comment": "identity · text.section"
+        },
+        "nk-text-display": {
+          "type": "string",
+          "description": "Full-screen titles",
+          "$comment": "identity · text.display"
+        },
+        "nk-text-hud": {
+          "type": "string",
+          "description": "HUD values read in motion",
+          "$comment": "identity · text.hud"
+        },
+        "nk-text-row": {
+          "type": "string",
+          "description": "A row or notice title (the label voice)",
+          "$comment": "identity · text.row"
+        },
+        "nk-text-desc": {
+          "type": "string",
+          "description": "A row or notice description (the body voice)",
+          "$comment": "identity · text.desc"
+        },
+        "nk-leading-tight": {
+          "type": "string",
+          "description": "Small text: captions, labels, descriptions",
+          "$comment": "identity · leading.tight"
+        },
+        "nk-leading-normal": {
+          "type": "string",
+          "description": "Body-size text: rows, notices, slabs",
+          "$comment": "identity · leading.normal"
+        },
+        "nk-shape-skew": {
+          "type": "string",
+          "description": "The keycap's slant: tile faces, the primary button, the selection (their boxes and text stay upright); at most ±20deg",
+          "$comment": "identity · shape.skew"
+        },
+        "nk-shape-slab": {
+          "type": "string",
+          "description": "Chips, badges and tags drawn as skewed slabs too (0deg = upright); at most ±20deg",
+          "$comment": "identity · shape.slab"
+        },
+        "nk-shape-cut": {
+          "type": "string",
+          "description": "Chamfered corners (top left, bottom right) as clip-path; 0 = off",
+          "$comment": "identity · shape.cut"
+        },
+        "nk-shape-stroke": {
+          "type": "string",
+          "description": "Hairline weight of plates, rims and fields",
+          "$comment": "identity · shape.stroke"
         },
         "nk-type-ratio": {
           "type": "string",
           "pattern": "^-?\\d+(\\.\\d+)?$",
           "description": "Step between type sizes: 1.125 calm … 1.333 dramatic",
-          "$comment": "tokens 1.1"
+          "$comment": "identity · type.ratio"
         },
-        "nk-weight-body": {
+        "nk-type-weight-body": {
           "type": "string",
           "pattern": "^-?\\d+(\\.\\d+)?$",
-          "description": "Body text weight",
-          "$comment": "tokens 1.1"
+          "description": "Sentences",
+          "$comment": "identity · type.weight-body"
         },
-        "nk-weight-strong": {
+        "nk-type-weight-strong": {
           "type": "string",
           "pattern": "^-?\\d+(\\.\\d+)?$",
-          "description": "Titles, key numbers, active rows",
-          "$comment": "tokens 1.1"
+          "description": "Captions, chips, slabs: text that must hold its own on the game",
+          "$comment": "identity · type.weight-strong"
         },
-        "nk-weight-display": {
+        "nk-type-weight-display": {
           "type": "string",
           "pattern": "^-?\\d+(\\.\\d+)?$",
-          "description": "Display type (full-screen titles, big numbers)",
-          "$comment": "tokens 1.1"
+          "description": "Full-screen titles and big numbers",
+          "$comment": "identity · type.weight-display"
         },
-        "nk-tracking-display": {
+        "nk-type-tracking-display": {
           "type": "string",
-          "description": "Letter-spacing of display type",
-          "$comment": "tokens 1.1"
+          "description": "Letter-spacing of full-screen titles",
+          "$comment": "identity · type.tracking-display"
         },
-        "nk-label-case": {
+        "nk-type-tracking-label": {
+          "type": "string",
+          "description": "Letter-spacing of captions",
+          "$comment": "identity · type.tracking-label"
+        },
+        "nk-type-case": {
           "enum": [
             "none",
             "uppercase"
           ],
-          "description": "Captions (the short names of values) in uppercase or as written",
-          "$comment": "tokens 1.1"
+          "description": "Anything scanned (keys, titles, labels, captions) in caps or as written",
+          "$comment": "identity · type.case"
         },
-        "nk-tracking-label": {
-          "type": "string",
-          "description": "Letter-spacing of captions (uppercase wants 0.06–0.12em)",
-          "$comment": "tokens 1.1"
-        },
-        "nk-border-width": {
-          "type": "string",
-          "description": "Hairline weight of panels, rows and fields",
-          "$comment": "tokens 1.1"
-        },
-        "nk-cut": {
-          "type": "string",
-          "description": "Chamfered corners (top left, bottom right), drawn with clip-path; 0 = off",
-          "$comment": "tokens 1.1"
-        },
-        "nk-display-style": {
+        "nk-type-slant": {
           "enum": [
             "normal",
             "italic"
           ],
-          "description": "Display, heading, title and numeric text upright or italic (a real italic face where the font has one)",
-          "$comment": "tokens 1.3"
+          "description": "The scanned voices upright or italic (a real italic where the face has one)",
+          "$comment": "identity · type.slant"
         },
-        "nk-pause-style": {
+        "nk-type-overhang": {
+          "type": "string",
+          "description": "Trailing pad of a slanted voice (the italic's overhang); 0em when upright",
+          "$comment": "identity · type.overhang"
+        },
+        "nk-type-scan-family": {
+          "type": "string",
+          "description": "Face of the scan voice (keys, buttons, tabs)",
+          "$comment": "identity · type.scan.family"
+        },
+        "nk-type-scan-style": {
           "enum": [
-            "sheet",
-            "slash"
+            "normal",
+            "italic"
           ],
-          "description": "The pause menu: a full-height sheet, or a light slash panel with a diagonal edge into the scene",
-          "$comment": "tokens 1.3"
+          "description": "Slant of the scan voice (keys, buttons, tabs)",
+          "$comment": "identity · type.scan.style"
         },
-        "nk-pause-surface": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "The slash pause panel's light surface",
-          "$comment": "tokens 1.3"
-        },
-        "nk-pause-ink": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "Text on the slash pause panel",
-          "$comment": "tokens 1.3"
-        },
-        "nk-skew": {
-          "type": "string",
-          "description": "Badges, chips, key caps, tags and the primary / selected bar drawn skewed (their text stays upright); 0deg = off, at most ±20deg",
-          "$comment": "tokens 1.3"
-        },
-        "nk-surface-opacity": {
+        "nk-type-scan-weight": {
           "type": "string",
           "pattern": "^-?\\d+(\\.\\d+)?$",
-          "description": "Panel opacity over the game (floor 0.92 for text panels)",
-          "$comment": "tokens 1.1"
+          "description": "Weight of the scan voice (keys, buttons, tabs)",
+          "$comment": "identity · type.scan.weight"
+        },
+        "nk-type-scan-tracking": {
+          "type": "string",
+          "description": "Letter-spacing of the scan voice (keys, buttons, tabs)",
+          "$comment": "identity · type.scan.tracking"
+        },
+        "nk-type-scan-case": {
+          "enum": [
+            "none",
+            "uppercase"
+          ],
+          "description": "Case of the scan voice (keys, buttons, tabs)",
+          "$comment": "identity · type.scan.case"
+        },
+        "nk-type-scan-pad": {
+          "type": "string",
+          "description": "Trailing pad of the scan voice (keys, buttons, tabs) (the italic overhang)",
+          "$comment": "identity · type.scan.pad"
+        },
+        "nk-type-title-family": {
+          "type": "string",
+          "description": "Face of the title voice (panel and row titles)",
+          "$comment": "identity · type.title.family"
+        },
+        "nk-type-title-style": {
+          "enum": [
+            "normal",
+            "italic"
+          ],
+          "description": "Slant of the title voice (panel and row titles)",
+          "$comment": "identity · type.title.style"
+        },
+        "nk-type-title-weight": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "Weight of the title voice (panel and row titles)",
+          "$comment": "identity · type.title.weight"
+        },
+        "nk-type-title-tracking": {
+          "type": "string",
+          "description": "Letter-spacing of the title voice (panel and row titles)",
+          "$comment": "identity · type.title.tracking"
+        },
+        "nk-type-title-case": {
+          "enum": [
+            "none",
+            "uppercase"
+          ],
+          "description": "Case of the title voice (panel and row titles)",
+          "$comment": "identity · type.title.case"
+        },
+        "nk-type-title-pad": {
+          "type": "string",
+          "description": "Trailing pad of the title voice (panel and row titles) (the italic overhang)",
+          "$comment": "identity · type.title.pad"
+        },
+        "nk-type-label-family": {
+          "type": "string",
+          "description": "Face of the label voice (labels, row titles)",
+          "$comment": "identity · type.label.family"
+        },
+        "nk-type-label-style": {
+          "enum": [
+            "normal",
+            "italic"
+          ],
+          "description": "Slant of the label voice (labels, row titles)",
+          "$comment": "identity · type.label.style"
+        },
+        "nk-type-label-weight": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "Weight of the label voice (labels, row titles)",
+          "$comment": "identity · type.label.weight"
+        },
+        "nk-type-label-tracking": {
+          "type": "string",
+          "description": "Letter-spacing of the label voice (labels, row titles)",
+          "$comment": "identity · type.label.tracking"
+        },
+        "nk-type-label-case": {
+          "enum": [
+            "none",
+            "uppercase"
+          ],
+          "description": "Case of the label voice (labels, row titles)",
+          "$comment": "identity · type.label.case"
+        },
+        "nk-type-label-pad": {
+          "type": "string",
+          "description": "Trailing pad of the label voice (labels, row titles) (the italic overhang)",
+          "$comment": "identity · type.label.pad"
+        },
+        "nk-type-num-family": {
+          "type": "string",
+          "description": "Face of the numeric voice",
+          "$comment": "identity · type.num.family"
+        },
+        "nk-type-num-style": {
+          "enum": [
+            "normal",
+            "italic"
+          ],
+          "description": "Slant of the numeric voice",
+          "$comment": "identity · type.num.style"
+        },
+        "nk-type-num-weight": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "Weight of the numeric voice",
+          "$comment": "identity · type.num.weight"
+        },
+        "nk-type-num-tracking": {
+          "type": "string",
+          "description": "Letter-spacing of the numeric voice",
+          "$comment": "identity · type.num.tracking"
+        },
+        "nk-type-num-case": {
+          "enum": [
+            "none",
+            "uppercase"
+          ],
+          "description": "Case of the numeric voice",
+          "$comment": "identity · type.num.case"
+        },
+        "nk-type-num-pad": {
+          "type": "string",
+          "description": "Trailing pad of the numeric voice (the italic overhang)",
+          "$comment": "identity · type.num.pad"
+        },
+        "nk-type-body-family": {
+          "type": "string",
+          "description": "Face of the body voice (sentences)",
+          "$comment": "identity · type.body.family"
+        },
+        "nk-type-body-style": {
+          "enum": [
+            "normal",
+            "italic"
+          ],
+          "description": "Slant of the body voice (sentences)",
+          "$comment": "identity · type.body.style"
+        },
+        "nk-type-body-weight": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "Weight of the body voice (sentences)",
+          "$comment": "identity · type.body.weight"
+        },
+        "nk-type-body-tracking": {
+          "type": "string",
+          "description": "Letter-spacing of the body voice (sentences)",
+          "$comment": "identity · type.body.tracking"
+        },
+        "nk-type-body-case": {
+          "enum": [
+            "none",
+            "uppercase"
+          ],
+          "description": "Case of the body voice (sentences)",
+          "$comment": "identity · type.body.case"
         },
         "nk-surface-tint": {
           "type": "string",
           "pattern": "^-?\\d+(\\.\\d+)?$",
-          "description": "How much brand tints neutral surfaces (0–0.12)",
-          "$comment": "tokens 1.1"
+          "description": "How much brand tints neutral surfaces",
+          "$comment": "identity · surface.tint"
         },
         "nk-surface-gradient": {
           "type": "string",
           "pattern": "^-?\\d+(\\.\\d+)?$",
-          "description": "Top-to-bottom light falloff on panels (0 = flat)",
-          "$comment": "tokens 1.1"
+          "description": "Top-to-bottom light falloff (0 = flat)",
+          "$comment": "identity · surface.gradient"
         },
-        "nk-surface-edge": {
-          "type": "string",
-          "pattern": "^-?\\d+(\\.\\d+)?$",
-          "description": "Inner top highlight, the machined edge (alpha)",
-          "$comment": "tokens 1.1"
-        },
-        "nk-elevation": {
+        "nk-surface-elevation": {
           "enum": [
             "none",
             "soft",
             "deep",
             "hard"
           ],
-          "description": "Shadow recipe of floating panels: none, soft, deep, or hard (a solid offset drop, no blur; tokens 1.3)",
-          "$comment": "tokens 1.1"
+          "description": "Shadow recipe: hard is a solid offset drop, no blur",
+          "$comment": "identity · surface.elevation"
         },
-        "nk-glow": {
+        "nk-surface-glow": {
           "type": "string",
           "pattern": "^-?\\d+(\\.\\d+)?$",
-          "description": "Brand glow on active parts and HUD fills (alpha, 0 = off)",
-          "$comment": "tokens 1.1"
+          "description": "Brand glow on active parts (alpha, 0 = off)",
+          "$comment": "identity · surface.glow"
         },
-        "nk-density": {
+        "nk-surface-glow-budget": {
           "type": "string",
           "pattern": "^-?\\d+(\\.\\d+)?$",
-          "description": "Multiplies the kit's spacing scale: 0.875 compact (Graphite) … 1.15 roomy",
-          "$comment": "tokens 1.1"
+          "description": "How many parts may glow at once (0 = no limit)",
+          "$comment": "identity · surface.glow-budget"
         },
-        "nk-ease": {
-          "type": "string",
-          "description": "The one easing curve",
-          "$comment": "tokens 1.1"
+        "nk-surface-backdrop": {
+          "enum": [
+            "on",
+            "off"
+          ],
+          "description": "Backdrop blur (FiveM draws it as a black box: off)",
+          "$comment": "identity · surface.backdrop"
         },
-        "nk-duration": {
-          "type": "string",
-          "description": "Base duration (panel enter, transitions); × nk-motion",
-          "$comment": "tokens 1.1"
+        "nk-surface-legibility": {
+          "enum": [
+            "auto",
+            "night",
+            "day"
+          ],
+          "description": "day lifts surfaces for a bright sky; auto follows the game clock",
+          "$comment": "identity · surface.legibility"
         },
-        "nk-hud-opacity": {
+        "nk-surface-legibility-lift": {
           "type": "string",
           "pattern": "^-?\\d+(\\.\\d+)?$",
-          "description": "Minimum backplate opacity of HUD chips and tiles",
-          "$comment": "tokens 1.1"
+          "description": "How far day closes the gap to opaque",
+          "$comment": "identity · surface.legibility-lift"
         },
-        "nk-hud-text-shadow": {
+        "nk-surface-slash": {
+          "enum": [
+            "none",
+            "cut"
+          ],
+          "description": "A decorative diagonal cut on menus",
+          "$comment": "identity · surface.slash"
+        },
+        "nk-material-hud-opacity": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "Opacity of the hud material",
+          "$comment": "identity · material.hud.opacity"
+        },
+        "nk-material-hud-texture": {
+          "enum": [
+            "none",
+            "scanlines"
+          ],
+          "description": "Texture over the hud material",
+          "$comment": "identity · material.hud.texture"
+        },
+        "nk-material-menu-opacity": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "Opacity of the menu material (floor 0.92 for text)",
+          "$comment": "identity · material.menu.opacity"
+        },
+        "nk-material-menu-blur": {
+          "type": "string",
+          "description": "Backdrop blur behind menus (with surface.backdrop on)",
+          "$comment": "identity · material.menu.blur"
+        },
+        "nk-material-menu-radius": {
+          "type": "string",
+          "description": "Corner radius of menus, sheets and dialogs",
+          "$comment": "identity · material.menu.radius"
+        },
+        "nk-material-menu-edge": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "The machined top edge of menus (alpha)",
+          "$comment": "identity · material.menu.edge"
+        },
+        "nk-material-menu-texture": {
+          "enum": [
+            "none",
+            "scanlines"
+          ],
+          "description": "Texture over the menu material",
+          "$comment": "identity · material.menu.texture"
+        },
+        "nk-hud-text": {
           "enum": [
             "none",
             "soft",
             "strong"
           ],
-          "description": "Shadow under text drawn on the game",
-          "$comment": "tokens 1.1"
+          "description": "Shadow under text drawn on the game (semantic depth.text draws it)",
+          "$comment": "identity · hud.text"
         },
-        "nk-gauge-style": {
-          "enum": [
-            "arc",
-            "bar",
-            "digital"
-          ],
-          "description": "How gauges are drawn",
-          "$comment": "tokens 1.1"
-        },
-        "nk-gauge-track": {
-          "type": "string",
-          "description": "Gauge and meter track thickness",
-          "$comment": "tokens 1.1"
-        },
-        "nk-gauge-ticks": {
+        "nk-motion": {
           "type": "string",
           "pattern": "^-?\\d+(\\.\\d+)?$",
-          "description": "Tick marks on gauges: 1 on, 0 off",
-          "$comment": "tokens 1.1"
+          "description": "1 = animations on, 0 = off (painted 0 under the player's reduced-motion pref)",
+          "$comment": "identity · motion"
         },
-        "nk-row-indicator": {
-          "enum": [
-            "bar",
-            "fill",
-            "outline",
-            "sweep"
-          ],
-          "description": "How the active row is marked: bar, fill, outline, or sweep (1.5: no bar, the row's --nk-fill-tint sweep alone)",
-          "$comment": "tokens 1.1"
-        },
-        "surface": {
+        "nk-motion-duration": {
           "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "Floating panel surface: popover tinted by brand (× nk-surface-tint); drawn at nk-surface-opacity",
-          "$comment": "tokens 1.1"
+          "description": "Base duration d: the ladder is snap 0.5d, fast 0.667d, base d, slow 1.556d, fill 2.333d",
+          "$comment": "identity · motion.duration"
         },
-        "nk-elevation-shadow": {
+        "nk-motion-ease": {
           "type": "string",
-          "description": "The box-shadow nk-elevation names, in scrim colour",
-          "$comment": "tokens 1.1"
-        },
-        "nk-hud-shadow": {
-          "type": "string",
-          "description": "The text-shadow nk-hud-text-shadow names, in scrim colour",
-          "$comment": "tokens 1.1"
-        },
-        "nk-row-bar": {
-          "type": "string",
-          "pattern": "^-?\\d+(\\.\\d+)?$",
-          "description": "1 when nk-row-indicator is bar",
-          "$comment": "tokens 1.1"
-        },
-        "nk-row-fill": {
-          "type": "string",
-          "pattern": "^-?\\d+(\\.\\d+)?$",
-          "description": "1 when nk-row-indicator is fill",
-          "$comment": "tokens 1.1"
-        },
-        "nk-row-outline": {
-          "type": "string",
-          "pattern": "^-?\\d+(\\.\\d+)?$",
-          "description": "1 when nk-row-indicator is outline",
-          "$comment": "tokens 1.1"
-        },
-        "nk-clip": {
-          "type": "string",
-          "description": "clip-path of panels: the nk-cut chamfer, or none when nk-cut is 0 (a clip-path would also clip the shadow)",
-          "$comment": "tokens 1.1"
-        },
-        "nk-clip-sm": {
-          "type": "string",
-          "description": "clip-path of chips, tiles and buttons: half the panel chamfer",
-          "$comment": "tokens 1.1"
+          "description": "The curve of anything arriving",
+          "$comment": "identity · motion.ease"
         },
         "nk-motion-feel": {
           "enum": [
@@ -586,148 +1481,73 @@
             "smooth",
             "stepped"
           ],
-          "description": "How the identity moves: crisp (Graphite), snap (Signal: no glide on selection, flash instead of press scale), smooth (Velvet: longer springs, a hint of bounce), stepped (Vector: values tick in steps)",
-          "$comment": "tokens 1.2"
+          "description": "How it moves: crisp, snap (flash instead of press scale), smooth (longer springs), stepped",
+          "$comment": "identity · motion.feel"
         },
-        "nk-spring-bounce": {
+        "nk-motion-bounce": {
           "type": "string",
           "pattern": "^-?\\d+(\\.\\d+)?$",
-          "description": "Bounce folded into the snap, move and soft springs (0 = critically damped; 0.3 is the most the kit allows)",
-          "$comment": "tokens 1.2"
+          "description": "Bounce folded into the snap, move and soft springs",
+          "$comment": "identity · motion.bounce"
         },
-        "nk-motion-move": {
+        "nk-motion-exit-factor": {
           "type": "string",
           "pattern": "^-?\\d+(\\.\\d+)?$",
-          "description": "1 = things may move (translate, scale, rotate, FLIP, stagger); 0 under reduced motion or off, where only fades of at most 100ms are kept",
-          "$comment": "tokens 1.2"
+          "description": "Every exit is this × its enter",
+          "$comment": "identity · motion.exit-factor"
         },
-        "nk-time-instant": {
+        "nk-motion-reduced": {
           "type": "string",
-          "description": "State that must be immediate: keyboard and controller selection, held key-repeat",
-          "$comment": "tokens 1.2"
+          "description": "Under reduced motion every fade is at most this",
+          "$comment": "identity · motion.reduced"
         },
-        "nk-time-snap": {
-          "type": "string",
-          "description": "The ladder (1.5): snap, 0.5 × d. A press, a rim switching state",
-          "$comment": "tokens 1.5"
-        },
-        "nk-time-fast": {
-          "type": "string",
-          "description": "The ladder (1.5): fast, 0.667 × d. Hover, a deny beat",
-          "$comment": "tokens 1.5"
-        },
-        "nk-time-slow": {
-          "type": "string",
-          "description": "The ladder (1.5): slow, 1.556 × d. A sheet or dialog opening, a confirm pop",
-          "$comment": "tokens 1.5"
-        },
-        "nk-time-press": {
-          "type": "string",
-          "description": "Press, toggle, key-chip flash: 0.5 × d, 50–100ms",
-          "$comment": "tokens 1.2"
-        },
-        "nk-time-hover": {
-          "type": "string",
-          "description": "Pointer hover colour and row background: 0.75 × d",
-          "$comment": "tokens 1.2"
-        },
-        "nk-time-base": {
-          "type": "string",
-          "description": "Panel and menu enter, the selection indicator, tab switch: d (kit.css --nk-time)",
-          "$comment": "tokens 1.2"
-        },
-        "nk-time-exit": {
-          "type": "string",
-          "description": "Every exit (panel, toast, menu, modal): 0.7 × d",
-          "$comment": "tokens 1.2"
-        },
-        "nk-time-move": {
-          "type": "string",
-          "description": "Toasts entering, FLIP moves, meters gaining: 1.5 × d, at most 300ms",
-          "$comment": "tokens 1.2"
-        },
-        "nk-time-modal": {
-          "type": "string",
-          "description": "Dialog enter (on an inner wrapper): 1.25 × d",
-          "$comment": "tokens 1.2"
-        },
-        "nk-time-screen": {
-          "type": "string",
-          "description": "Full-screen enter (pause, death, loading): 2.5 × d, at most 400ms",
-          "$comment": "tokens 1.2"
-        },
-        "nk-time-ambient": {
-          "type": "string",
-          "description": "HUD show-on-change fades and the damage trail; not scaled by the identity",
-          "$comment": "tokens 1.2"
-        },
-        "nk-stagger": {
-          "type": "string",
-          "description": "Delay per item on a list's first open: 0.15 × d (snap and smooth 0.125 × d), at most 20ms (smooth 30ms)",
-          "$comment": "tokens 1.2"
-        },
-        "nk-stagger-max": {
-          "type": "string",
-          "description": "Total stagger cap: items past the fifth enter together",
-          "$comment": "tokens 1.2"
-        },
-        "nk-ease-out": {
-          "type": "string",
-          "description": "Enter, hover, anything arriving: the identity's --nk-ease",
-          "$comment": "tokens 1.2"
-        },
-        "nk-ease-in": {
-          "type": "string",
-          "description": "Exits (speeds up as it leaves)",
-          "$comment": "tokens 1.2"
-        },
-        "nk-ease-in-out": {
-          "type": "string",
-          "description": "On-screen moves (indicator, FLIP, tab underline) when not a spring",
-          "$comment": "tokens 1.2"
-        },
-        "nk-ease-emphasized": {
-          "type": "string",
-          "description": "Full-screen enter, big moments",
-          "$comment": "tokens 1.2"
-        },
-        "nk-ease-linear": {
-          "type": "string",
-          "description": "Progress, countdowns, streamed values, needles",
-          "$comment": "tokens 1.2"
-        },
-        "nk-spring-snap": {
-          "type": "string",
-          "description": "Spring (duration, bounce): selection indicator, tab underline, needle catch-up",
-          "$comment": "tokens 1.2"
-        },
-        "nk-spring-move": {
-          "type": "string",
-          "description": "Spring (duration, bounce): toasts in, FLIP reflow, drawers, digit roll",
-          "$comment": "tokens 1.2"
-        },
-        "nk-spring-soft": {
-          "type": "string",
-          "description": "Spring (duration, bounce): full-screen content, large frame changes",
-          "$comment": "tokens 1.2"
-        },
-        "nk-spring-pop": {
-          "type": "string",
-          "description": "Spring (duration, bounce): rewards only (item added, level-up, a ×3 badge)",
-          "$comment": "tokens 1.2"
-        },
-        "nk-treatment": {
+        "nk-motion-profile": {
           "enum": [
-            "soft",
-            "glass",
-            "plate",
-            "slab",
-            "tile"
+            "full",
+            "reduced",
+            "instant"
           ],
-          "description": "How the palette is drawn: soft (Graphite), glass, plate or slab. Fills material, stroke, type, focus and motion defaults; any value the theme sets wins",
-          "$comment": "tokens 1.4"
+          "description": "full: as designed; reduced: no movement, short fades; instant: nothing animates",
+          "$comment": "identity · motion.profile"
         },
-        "nk-focus-style": {
+        "nk-style-fill": {
+          "enum": [
+            "solid",
+            "soft"
+          ],
+          "description": "Fills, the selection face and levels: solid (flat, vivid) or soft (a tint)",
+          "$comment": "identity · style.fill"
+        },
+        "nk-style-level": {
+          "enum": [
+            "bar",
+            "ring",
+            "liquid",
+            "slab",
+            "pips"
+          ],
+          "description": "How a level (0–1) is drawn by vitals, meters, holds",
+          "$comment": "identity · style.level"
+        },
+        "nk-style-hold": {
+          "enum": [
+            "bar",
+            "ring",
+            "fill"
+          ],
+          "description": "How a press-and-hold shows its progress",
+          "$comment": "identity · style.hold"
+        },
+        "nk-style-gauge": {
+          "enum": [
+            "arc",
+            "bar",
+            "digital"
+          ],
+          "description": "How gauges are drawn",
+          "$comment": "identity · style.gauge"
+        },
+        "nk-style-focus": {
           "enum": [
             "ring",
             "halo",
@@ -736,1284 +1556,10 @@
             "invert",
             "bar"
           ],
-          "description": "Every component's focus (controller and keyboard highlight)",
-          "$comment": "tokens 1.4"
+          "description": "Focus on parts that are not rows (rows and buttons light like hover)",
+          "$comment": "identity · style.focus"
         },
-        "nk-hold-style": {
-          "enum": [
-            "bar",
-            "ring",
-            "fill"
-          ],
-          "description": "How a press-and-hold shows its progress",
-          "$comment": "tokens 1.4"
-        },
-        "nk-confirm-scale": {
-          "type": "string",
-          "pattern": "^-?\\d+(\\.\\d+)?$",
-          "description": "The short pop of a confirm",
-          "$comment": "tokens 1.4"
-        },
-        "nk-level-style": {
-          "enum": [
-            "bar",
-            "ring",
-            "liquid",
-            "slab",
-            "pips"
-          ],
-          "description": "How a level (--level, 0–1) is drawn by meters, vitals, holds, timers and cooldowns",
-          "$comment": "tokens 1.4"
-        },
-        "role-health": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "Role colour health: the --hue-* ramp under data-hue=\"health\"",
-          "$comment": "tokens 1.4"
-        },
-        "role-armor": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "Role colour armor: the --hue-* ramp under data-hue=\"armor\"",
-          "$comment": "tokens 1.4"
-        },
-        "role-hunger": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "Role colour hunger: the --hue-* ramp under data-hue=\"hunger\"",
-          "$comment": "tokens 1.4"
-        },
-        "role-thirst": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "Role colour thirst: the --hue-* ramp under data-hue=\"thirst\"",
-          "$comment": "tokens 1.4"
-        },
-        "role-stress": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "Role colour stress: the --hue-* ramp under data-hue=\"stress\"",
-          "$comment": "tokens 1.4"
-        },
-        "role-stamina": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "Role colour stamina: the --hue-* ramp under data-hue=\"stamina\"",
-          "$comment": "tokens 1.4"
-        },
-        "role-oxygen": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "Role colour oxygen: the --hue-* ramp under data-hue=\"oxygen\"",
-          "$comment": "tokens 1.4"
-        },
-        "role-info": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "Role colour info: the --hue-* ramp under data-hue=\"info\"",
-          "$comment": "tokens 1.4"
-        },
-        "role-success": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "Role colour success: the --hue-* ramp under data-hue=\"success\"",
-          "$comment": "tokens 1.4"
-        },
-        "role-warning": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "Role colour warning: the --hue-* ramp under data-hue=\"warning\"",
-          "$comment": "tokens 1.4"
-        },
-        "role-danger": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "Role colour danger: the --hue-* ramp under data-hue=\"danger\"",
-          "$comment": "tokens 1.4"
-        },
-        "role-police": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "Role colour police: the --hue-* ramp under data-hue=\"police\"",
-          "$comment": "tokens 1.4"
-        },
-        "role-ems": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "Role colour ems: the --hue-* ramp under data-hue=\"ems\"",
-          "$comment": "tokens 1.4"
-        },
-        "role-mech": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "Role colour mech: the --hue-* ramp under data-hue=\"mech\"",
-          "$comment": "tokens 1.4"
-        },
-        "role-gang": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "Role colour gang: the --hue-* ramp under data-hue=\"gang\"",
-          "$comment": "tokens 1.4"
-        },
-        "role-civ": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "Role colour civ: the --hue-* ramp under data-hue=\"civ\"",
-          "$comment": "tokens 1.4"
-        },
-        "role-staff": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "Role colour staff: the --hue-* ramp under data-hue=\"staff\"",
-          "$comment": "tokens 1.4"
-        },
-        "role-common": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "Role colour common: the --hue-* ramp under data-hue=\"common\"",
-          "$comment": "tokens 1.4"
-        },
-        "role-uncommon": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "Role colour uncommon: the --hue-* ramp under data-hue=\"uncommon\"",
-          "$comment": "tokens 1.4"
-        },
-        "role-rare": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "Role colour rare: the --hue-* ramp under data-hue=\"rare\"",
-          "$comment": "tokens 1.4"
-        },
-        "role-epic": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "Role colour epic: the --hue-* ramp under data-hue=\"epic\"",
-          "$comment": "tokens 1.4"
-        },
-        "role-legendary": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "Role colour legendary: the --hue-* ramp under data-hue=\"legendary\"",
-          "$comment": "tokens 1.4"
-        },
-        "role-brand": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "Role colour brand: the --hue-* ramp under data-hue=\"brand\"",
-          "$comment": "tokens 1.4"
-        },
-        "role-neutral": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "Role colour neutral: the --hue-* ramp under data-hue=\"neutral\"",
-          "$comment": "tokens 1.4"
-        },
-        "role-health-deep": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "health, darker: the ramp's deep step and gradient end",
-          "$comment": "tokens 1.4"
-        },
-        "role-health-light": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "health, lighter: the ramp's gradient start",
-          "$comment": "tokens 1.4"
-        },
-        "role-armor-deep": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "armor, darker: the ramp's deep step and gradient end",
-          "$comment": "tokens 1.4"
-        },
-        "role-armor-light": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "armor, lighter: the ramp's gradient start",
-          "$comment": "tokens 1.4"
-        },
-        "role-hunger-deep": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "hunger, darker: the ramp's deep step and gradient end",
-          "$comment": "tokens 1.4"
-        },
-        "role-hunger-light": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "hunger, lighter: the ramp's gradient start",
-          "$comment": "tokens 1.4"
-        },
-        "role-thirst-deep": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "thirst, darker: the ramp's deep step and gradient end",
-          "$comment": "tokens 1.4"
-        },
-        "role-thirst-light": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "thirst, lighter: the ramp's gradient start",
-          "$comment": "tokens 1.4"
-        },
-        "role-stress-deep": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "stress, darker: the ramp's deep step and gradient end",
-          "$comment": "tokens 1.4"
-        },
-        "role-stress-light": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "stress, lighter: the ramp's gradient start",
-          "$comment": "tokens 1.4"
-        },
-        "role-stamina-deep": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "stamina, darker: the ramp's deep step and gradient end",
-          "$comment": "tokens 1.4"
-        },
-        "role-stamina-light": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "stamina, lighter: the ramp's gradient start",
-          "$comment": "tokens 1.4"
-        },
-        "role-oxygen-deep": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "oxygen, darker: the ramp's deep step and gradient end",
-          "$comment": "tokens 1.4"
-        },
-        "role-oxygen-light": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "oxygen, lighter: the ramp's gradient start",
-          "$comment": "tokens 1.4"
-        },
-        "role-info-deep": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "info, darker: the ramp's deep step and gradient end",
-          "$comment": "tokens 1.4"
-        },
-        "role-info-light": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "info, lighter: the ramp's gradient start",
-          "$comment": "tokens 1.4"
-        },
-        "role-success-deep": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "success, darker: the ramp's deep step and gradient end",
-          "$comment": "tokens 1.4"
-        },
-        "role-success-light": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "success, lighter: the ramp's gradient start",
-          "$comment": "tokens 1.4"
-        },
-        "role-warning-deep": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "warning, darker: the ramp's deep step and gradient end",
-          "$comment": "tokens 1.4"
-        },
-        "role-warning-light": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "warning, lighter: the ramp's gradient start",
-          "$comment": "tokens 1.4"
-        },
-        "role-danger-deep": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "danger, darker: the ramp's deep step and gradient end",
-          "$comment": "tokens 1.4"
-        },
-        "role-danger-light": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "danger, lighter: the ramp's gradient start",
-          "$comment": "tokens 1.4"
-        },
-        "role-police-deep": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "police, darker: the ramp's deep step and gradient end",
-          "$comment": "tokens 1.4"
-        },
-        "role-police-light": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "police, lighter: the ramp's gradient start",
-          "$comment": "tokens 1.4"
-        },
-        "role-ems-deep": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "ems, darker: the ramp's deep step and gradient end",
-          "$comment": "tokens 1.4"
-        },
-        "role-ems-light": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "ems, lighter: the ramp's gradient start",
-          "$comment": "tokens 1.4"
-        },
-        "role-mech-deep": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "mech, darker: the ramp's deep step and gradient end",
-          "$comment": "tokens 1.4"
-        },
-        "role-mech-light": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "mech, lighter: the ramp's gradient start",
-          "$comment": "tokens 1.4"
-        },
-        "role-gang-deep": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "gang, darker: the ramp's deep step and gradient end",
-          "$comment": "tokens 1.4"
-        },
-        "role-gang-light": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "gang, lighter: the ramp's gradient start",
-          "$comment": "tokens 1.4"
-        },
-        "role-civ-deep": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "civ, darker: the ramp's deep step and gradient end",
-          "$comment": "tokens 1.4"
-        },
-        "role-civ-light": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "civ, lighter: the ramp's gradient start",
-          "$comment": "tokens 1.4"
-        },
-        "role-staff-deep": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "staff, darker: the ramp's deep step and gradient end",
-          "$comment": "tokens 1.4"
-        },
-        "role-staff-light": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "staff, lighter: the ramp's gradient start",
-          "$comment": "tokens 1.4"
-        },
-        "role-common-deep": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "common, darker: the ramp's deep step and gradient end",
-          "$comment": "tokens 1.4"
-        },
-        "role-common-light": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "common, lighter: the ramp's gradient start",
-          "$comment": "tokens 1.4"
-        },
-        "role-uncommon-deep": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "uncommon, darker: the ramp's deep step and gradient end",
-          "$comment": "tokens 1.4"
-        },
-        "role-uncommon-light": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "uncommon, lighter: the ramp's gradient start",
-          "$comment": "tokens 1.4"
-        },
-        "role-rare-deep": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "rare, darker: the ramp's deep step and gradient end",
-          "$comment": "tokens 1.4"
-        },
-        "role-rare-light": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "rare, lighter: the ramp's gradient start",
-          "$comment": "tokens 1.4"
-        },
-        "role-epic-deep": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "epic, darker: the ramp's deep step and gradient end",
-          "$comment": "tokens 1.4"
-        },
-        "role-epic-light": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "epic, lighter: the ramp's gradient start",
-          "$comment": "tokens 1.4"
-        },
-        "role-legendary-deep": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "legendary, darker: the ramp's deep step and gradient end",
-          "$comment": "tokens 1.4"
-        },
-        "role-legendary-light": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "legendary, lighter: the ramp's gradient start",
-          "$comment": "tokens 1.4"
-        },
-        "role-brand-deep": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "brand, darker: the ramp's deep step and gradient end",
-          "$comment": "tokens 1.4"
-        },
-        "role-brand-light": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "brand, lighter: the ramp's gradient start",
-          "$comment": "tokens 1.4"
-        },
-        "role-neutral-deep": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "neutral, darker: the ramp's deep step and gradient end",
-          "$comment": "tokens 1.4"
-        },
-        "role-neutral-light": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "neutral, lighter: the ramp's gradient start",
-          "$comment": "tokens 1.4"
-        },
-        "nk-hue-line": {
-          "type": "string",
-          "pattern": "^-?\\d+(\\.\\d+)?$",
-          "description": "Alpha of a role's line (borders, tracks)",
-          "$comment": "tokens 1.4"
-        },
-        "nk-hue-tint": {
-          "type": "string",
-          "pattern": "^-?\\d+(\\.\\d+)?$",
-          "description": "Alpha of a role's tint (fills behind text)",
-          "$comment": "tokens 1.4"
-        },
-        "nk-hue-glow": {
-          "type": "string",
-          "pattern": "^-?\\d+(\\.\\d+)?$",
-          "description": "Alpha of a role's glow (under the glow budget)",
-          "$comment": "tokens 1.4"
-        },
-        "nk-hue-alert": {
-          "type": "string",
-          "pattern": "^-?\\d+(\\.\\d+)?$",
-          "description": "Alpha of a role's alert wash (below the alert threshold)",
-          "$comment": "tokens 1.4"
-        },
-        "nk-material-hud-opacity": {
-          "type": "string",
-          "pattern": "^-?\\d+(\\.\\d+)?$",
-          "description": "Surface opacity of HUD parts drawn over the game",
-          "$comment": "tokens 1.4"
-        },
-        "nk-material-hud-blur": {
-          "type": "string",
-          "description": "Backdrop blur behind HUD parts drawn over the game",
-          "$comment": "tokens 1.4"
-        },
-        "nk-material-hud-radius": {
-          "type": "string",
-          "description": "Corner radius of HUD parts drawn over the game",
-          "$comment": "tokens 1.4"
-        },
-        "nk-material-hud-edge": {
-          "type": "string",
-          "pattern": "^-?\\d+(\\.\\d+)?$",
-          "description": "Inner top highlight of HUD parts drawn over the game (alpha)",
-          "$comment": "tokens 1.4"
-        },
-        "nk-material-hud-texture": {
-          "enum": [
-            "none",
-            "scanlines"
-          ],
-          "description": "Texture over HUD parts drawn over the game",
-          "$comment": "tokens 1.4"
-        },
-        "nk-material-menu-opacity": {
-          "type": "string",
-          "pattern": "^-?\\d+(\\.\\d+)?$",
-          "description": "Surface opacity of menus, sheets and dialogs",
-          "$comment": "tokens 1.4"
-        },
-        "nk-material-menu-blur": {
-          "type": "string",
-          "description": "Backdrop blur behind menus, sheets and dialogs",
-          "$comment": "tokens 1.4"
-        },
-        "nk-material-menu-radius": {
-          "type": "string",
-          "description": "Corner radius of menus, sheets and dialogs",
-          "$comment": "tokens 1.4"
-        },
-        "nk-material-menu-edge": {
-          "type": "string",
-          "pattern": "^-?\\d+(\\.\\d+)?$",
-          "description": "Inner top highlight of menus, sheets and dialogs (alpha)",
-          "$comment": "tokens 1.4"
-        },
-        "nk-material-menu-texture": {
-          "enum": [
-            "none",
-            "scanlines"
-          ],
-          "description": "Texture over menus, sheets and dialogs",
-          "$comment": "tokens 1.4"
-        },
-        "nk-material-overlay-opacity": {
-          "type": "string",
-          "pattern": "^-?\\d+(\\.\\d+)?$",
-          "description": "Surface opacity of full-screen overlays (pause, death, loading)",
-          "$comment": "tokens 1.4"
-        },
-        "nk-material-overlay-blur": {
-          "type": "string",
-          "description": "Backdrop blur behind full-screen overlays (pause, death, loading)",
-          "$comment": "tokens 1.4"
-        },
-        "nk-material-overlay-radius": {
-          "type": "string",
-          "description": "Corner radius of full-screen overlays (pause, death, loading)",
-          "$comment": "tokens 1.4"
-        },
-        "nk-material-overlay-edge": {
-          "type": "string",
-          "pattern": "^-?\\d+(\\.\\d+)?$",
-          "description": "Inner top highlight of full-screen overlays (pause, death, loading) (alpha)",
-          "$comment": "tokens 1.4"
-        },
-        "nk-material-overlay-texture": {
-          "enum": [
-            "none",
-            "scanlines"
-          ],
-          "description": "Texture over full-screen overlays (pause, death, loading)",
-          "$comment": "tokens 1.4"
-        },
-        "nk-backdrop": {
-          "enum": [
-            "on",
-            "off"
-          ],
-          "description": "Backdrop filters (blur behind materials, the death screen's desaturation): off by default, because FiveM's NUI draws backdrop-filter as a black box over the game; on applies each surface's --nk-backdrop-filter (browser previews, clients that draw it right)",
-          "$comment": "tokens 1.4"
-        },
-        "nk-slash": {
-          "enum": [
-            "none",
-            "cut"
-          ],
-          "description": "A decorative diagonal cut on menus, at most once per full-screen moment",
-          "$comment": "tokens 1.4"
-        },
-        "nk-legibility": {
-          "enum": [
-            "auto",
-            "night",
-            "day"
-          ],
-          "description": "night: as designed. day: surfaces and hairlines lifted for a bright sky (not a light theme). auto: day while the game clock says so (html[data-nk-daytime], set by the HUD)",
-          "$comment": "tokens 1.4"
-        },
-        "nk-legibility-lift": {
-          "type": "string",
-          "pattern": "^-?\\d+(\\.\\d+)?$",
-          "description": "How far day closes the gap to opaque (0 none, 1 fully opaque)",
-          "$comment": "tokens 1.4"
-        },
-        "nk-alert-threshold": {
-          "type": "string",
-          "pattern": "^-?\\d+(\\.\\d+)?$",
-          "description": "A level at or under this is an alert (vitals, durability)",
-          "$comment": "tokens 1.4"
-        },
-        "nk-fuel-threshold": {
-          "type": "string",
-          "pattern": "^-?\\d+(\\.\\d+)?$",
-          "description": "Fuel alert level",
-          "$comment": "tokens 1.4"
-        },
-        "nk-notify-ms-info": {
-          "type": "string",
-          "description": "How long a info notice stays",
-          "$comment": "tokens 1.4"
-        },
-        "nk-notify-ms-success": {
-          "type": "string",
-          "description": "How long a success notice stays",
-          "$comment": "tokens 1.4"
-        },
-        "nk-notify-ms-warning": {
-          "type": "string",
-          "description": "How long a warning notice stays",
-          "$comment": "tokens 1.4"
-        },
-        "nk-notify-ms-danger": {
-          "type": "string",
-          "description": "How long a danger notice stays",
-          "$comment": "tokens 1.4"
-        },
-        "nk-hold-ms": {
-          "type": "string",
-          "description": "Press-and-hold time",
-          "$comment": "tokens 1.4"
-        },
-        "nk-cooldown-ms": {
-          "type": "string",
-          "description": "Default cooldown after an action",
-          "$comment": "tokens 1.4"
-        },
-        "nk-rest-delay": {
-          "type": "string",
-          "description": "How long an idle HUD part waits before it retracts (0 = never)",
-          "$comment": "tokens 1.4"
-        },
-        "nk-motion-profile": {
-          "enum": [
-            "full",
-            "reduced",
-            "instant"
-          ],
-          "description": "full: as designed. reduced: no movement, short fades. instant: nothing animates",
-          "$comment": "tokens 1.4"
-        },
-        "nk-ease-standard": {
-          "type": "string",
-          "description": "On-screen moves",
-          "$comment": "tokens 1.4"
-        },
-        "nk-ease-expand": {
-          "type": "string",
-          "description": "Things opening and growing",
-          "$comment": "tokens 1.4"
-        },
-        "nk-ease-retract": {
-          "type": "string",
-          "description": "Things closing and tucking away",
-          "$comment": "tokens 1.4"
-        },
-        "nk-ease-spring": {
-          "type": "string",
-          "description": "An overshoot without a spring (confirm pops)",
-          "$comment": "tokens 1.4"
-        },
-        "nk-ease-breathe": {
-          "type": "string",
-          "description": "Loops (alerts, pulses)",
-          "$comment": "tokens 1.4"
-        },
-        "nk-time-confirm": {
-          "type": "string",
-          "description": "A confirm pop: 0.65 × d, at least 60ms",
-          "$comment": "tokens 1.4"
-        },
-        "nk-time-retract": {
-          "type": "string",
-          "description": "A HUD part tucking away: 1.55 × d, at most 300ms",
-          "$comment": "tokens 1.4"
-        },
-        "nk-time-fill": {
-          "type": "string",
-          "description": "A level filling or draining: 3 × d",
-          "$comment": "tokens 1.4"
-        },
-        "nk-time-pulse": {
-          "type": "string",
-          "description": "One alert pulse",
-          "$comment": "tokens 1.4"
-        },
-        "nk-z-world": {
-          "type": "string",
-          "pattern": "^-?\\d+(\\.\\d+)?$",
-          "description": "Stacking layer: world. A modal is the current surface + dim + dialog",
-          "$comment": "tokens 1.4"
-        },
-        "nk-z-hud": {
-          "type": "string",
-          "pattern": "^-?\\d+(\\.\\d+)?$",
-          "description": "Stacking layer: hud. A modal is the current surface + dim + dialog",
-          "$comment": "tokens 1.4"
-        },
-        "nk-z-scrim": {
-          "type": "string",
-          "pattern": "^-?\\d+(\\.\\d+)?$",
-          "description": "Stacking layer: scrim. A modal is the current surface + dim + dialog",
-          "$comment": "tokens 1.4"
-        },
-        "nk-z-surface": {
-          "type": "string",
-          "pattern": "^-?\\d+(\\.\\d+)?$",
-          "description": "Stacking layer: surface. A modal is the current surface + dim + dialog",
-          "$comment": "tokens 1.4"
-        },
-        "nk-z-dim": {
-          "type": "string",
-          "pattern": "^-?\\d+(\\.\\d+)?$",
-          "description": "Stacking layer: dim. A modal is the current surface + dim + dialog",
-          "$comment": "tokens 1.4"
-        },
-        "nk-z-dialog": {
-          "type": "string",
-          "pattern": "^-?\\d+(\\.\\d+)?$",
-          "description": "Stacking layer: dialog. A modal is the current surface + dim + dialog",
-          "$comment": "tokens 1.4"
-        },
-        "nk-z-system": {
-          "type": "string",
-          "pattern": "^-?\\d+(\\.\\d+)?$",
-          "description": "Stacking layer: system. A modal is the current surface + dim + dialog",
-          "$comment": "tokens 1.4"
-        },
-        "nk-focus-shift": {
-          "type": "string",
-          "description": "The focused row's nudge toward its content",
-          "$comment": "tokens 1.4"
-        },
-        "nk-glow-budget": {
-          "type": "string",
-          "pattern": "^-?\\d+(\\.\\d+)?$",
-          "description": "How many elements may glow at once (the top surface's focused one first); 0 = no limit",
-          "$comment": "tokens 1.4"
-        },
-        "nk-exit-factor": {
-          "type": "string",
-          "pattern": "^-?\\d+(\\.\\d+)?$",
-          "description": "Every exit is this × its enter (--nk-time-exit = base × factor)",
-          "$comment": "tokens 1.5"
-        },
-        "nk-time-reduced": {
-          "type": "string",
-          "description": "The one reduced-motion duration: under reduced motion every fade is at most this",
-          "$comment": "tokens 1.5"
-        },
-        "nk-space-unit": {
-          "type": "string",
-          "description": "The spacing step: 0.25rem × --nk-density (aliases --nk-space)",
-          "$comment": "tokens 1.5"
-        },
-        "nk-space-1": {
-          "type": "string",
-          "description": "1 × the spacing step",
-          "$comment": "tokens 1.5"
-        },
-        "nk-space-2": {
-          "type": "string",
-          "description": "2 × the spacing step",
-          "$comment": "tokens 1.5"
-        },
-        "nk-space-3": {
-          "type": "string",
-          "description": "3 × the spacing step",
-          "$comment": "tokens 1.5"
-        },
-        "nk-space-4": {
-          "type": "string",
-          "description": "4 × the spacing step",
-          "$comment": "tokens 1.5"
-        },
-        "nk-space-6": {
-          "type": "string",
-          "description": "6 × the spacing step",
-          "$comment": "tokens 1.5"
-        },
-        "nk-space-8": {
-          "type": "string",
-          "description": "8 × the spacing step",
-          "$comment": "tokens 1.5"
-        },
-        "nk-gap-cluster": {
-          "type": "string",
-          "description": "Icon + text, key + label",
-          "$comment": "tokens 1.5"
-        },
-        "nk-gap-items": {
-          "type": "string",
-          "description": "Items in a bar",
-          "$comment": "tokens 1.5"
-        },
-        "nk-pad-x": {
-          "type": "string",
-          "description": "Inline padding of anything labelled",
-          "$comment": "tokens 1.5"
-        },
-        "nk-pad-surface": {
-          "type": "string",
-          "description": "Padding of a surface (dialog body, sheet column)",
-          "$comment": "tokens 1.5"
-        },
-        "nk-r-key": {
-          "type": "string",
-          "description": "Radius of keys and tiles (aliased by --nk-key-radius)",
-          "$comment": "tokens 1.5"
-        },
-        "nk-r-chip": {
-          "type": "string",
-          "description": "Radius of chips and badges (aliased by --nk-chip-radius)",
-          "$comment": "tokens 1.5"
-        },
-        "nk-r-control": {
-          "type": "string",
-          "description": "Radius of buttons, fields and rows (aliased by --nk-row-radius)",
-          "$comment": "tokens 1.5"
-        },
-        "nk-r-surface": {
-          "type": "string",
-          "description": "Radius of panels, sheets and dialogs",
-          "$comment": "tokens 1.5"
-        },
-        "nk-h-key": {
-          "type": "string",
-          "description": "Height of a key / small tile",
-          "$comment": "tokens 1.5"
-        },
-        "nk-h-chip": {
-          "type": "string",
-          "description": "Height of a chip / medium tile (aliased by --nk-chip-height)",
-          "$comment": "tokens 1.5"
-        },
-        "nk-h-control": {
-          "type": "string",
-          "description": "Height of buttons, fields and bar items / large tile",
-          "$comment": "tokens 1.5"
-        },
-        "nk-h-row": {
-          "type": "string",
-          "description": "Height of a list row (aliased by --nk-row-height)",
-          "$comment": "tokens 1.5"
-        },
-        "nk-icon-sm": {
-          "type": "string",
-          "description": "Small icon",
-          "$comment": "tokens 1.5"
-        },
-        "nk-icon-md": {
-          "type": "string",
-          "description": "Icon next to text (the default)",
-          "$comment": "tokens 1.5"
-        },
-        "nk-icon-lg": {
-          "type": "string",
-          "description": "Large icon",
-          "$comment": "tokens 1.5"
-        },
-        "nk-icon-stroke": {
-          "type": "string",
-          "pattern": "^-?\\d+(\\.\\d+)?$",
-          "description": "Icon stroke width",
-          "$comment": "tokens 1.5"
-        },
-        "nk-text-key": {
-          "type": "string",
-          "description": "Size of the scan role (keys, buttons, tabs)",
-          "$comment": "tokens 1.5"
-        },
-        "nk-text-body": {
-          "type": "string",
-          "description": "Size of the body role",
-          "$comment": "tokens 1.5"
-        },
-        "nk-type-scan-family": {
-          "type": "string",
-          "description": "Font of the scan role (keys, buttons, tabs)",
-          "$comment": "tokens 1.5"
-        },
-        "nk-type-scan-style": {
-          "enum": [
-            "normal",
-            "italic"
-          ],
-          "description": "normal or italic, for the scan role",
-          "$comment": "tokens 1.5"
-        },
-        "nk-type-scan-weight": {
-          "type": "string",
-          "pattern": "^-?\\d+(\\.\\d+)?$",
-          "description": "Weight of the scan role",
-          "$comment": "tokens 1.5"
-        },
-        "nk-type-scan-tracking": {
-          "type": "string",
-          "description": "Letter-spacing of the scan role",
-          "$comment": "tokens 1.5"
-        },
-        "nk-type-scan-case": {
-          "enum": [
-            "none",
-            "uppercase"
-          ],
-          "description": "Case of the scan role",
-          "$comment": "tokens 1.5"
-        },
-        "nk-type-scan-pad": {
-          "type": "string",
-          "description": "Trailing pad of the scan role (the italic overhang)",
-          "$comment": "tokens 1.5"
-        },
-        "nk-type-title-family": {
-          "type": "string",
-          "description": "Font of the title role (titles)",
-          "$comment": "tokens 1.5"
-        },
-        "nk-type-title-style": {
-          "enum": [
-            "normal",
-            "italic"
-          ],
-          "description": "normal or italic, for the title role",
-          "$comment": "tokens 1.5"
-        },
-        "nk-type-title-weight": {
-          "type": "string",
-          "pattern": "^-?\\d+(\\.\\d+)?$",
-          "description": "Weight of the title role",
-          "$comment": "tokens 1.5"
-        },
-        "nk-type-title-tracking": {
-          "type": "string",
-          "description": "Letter-spacing of the title role",
-          "$comment": "tokens 1.5"
-        },
-        "nk-type-title-case": {
-          "enum": [
-            "none",
-            "uppercase"
-          ],
-          "description": "Case of the title role",
-          "$comment": "tokens 1.5"
-        },
-        "nk-type-title-pad": {
-          "type": "string",
-          "description": "Trailing pad of the title role (the italic overhang)",
-          "$comment": "tokens 1.5"
-        },
-        "nk-type-label-family": {
-          "type": "string",
-          "description": "Font of the label role (labels)",
-          "$comment": "tokens 1.5"
-        },
-        "nk-type-label-style": {
-          "enum": [
-            "normal",
-            "italic"
-          ],
-          "description": "normal or italic, for the label role",
-          "$comment": "tokens 1.5"
-        },
-        "nk-type-label-weight": {
-          "type": "string",
-          "pattern": "^-?\\d+(\\.\\d+)?$",
-          "description": "Weight of the label role",
-          "$comment": "tokens 1.5"
-        },
-        "nk-type-label-tracking": {
-          "type": "string",
-          "description": "Letter-spacing of the label role",
-          "$comment": "tokens 1.5"
-        },
-        "nk-type-label-case": {
-          "enum": [
-            "none",
-            "uppercase"
-          ],
-          "description": "Case of the label role",
-          "$comment": "tokens 1.5"
-        },
-        "nk-type-label-pad": {
-          "type": "string",
-          "description": "Trailing pad of the label role (the italic overhang)",
-          "$comment": "tokens 1.5"
-        },
-        "nk-type-num-family": {
-          "type": "string",
-          "description": "Font of the num role (numbers)",
-          "$comment": "tokens 1.5"
-        },
-        "nk-type-num-style": {
-          "enum": [
-            "normal",
-            "italic"
-          ],
-          "description": "normal or italic, for the num role",
-          "$comment": "tokens 1.5"
-        },
-        "nk-type-num-weight": {
-          "type": "string",
-          "pattern": "^-?\\d+(\\.\\d+)?$",
-          "description": "Weight of the num role",
-          "$comment": "tokens 1.5"
-        },
-        "nk-type-num-tracking": {
-          "type": "string",
-          "description": "Letter-spacing of the num role",
-          "$comment": "tokens 1.5"
-        },
-        "nk-type-num-case": {
-          "enum": [
-            "none",
-            "uppercase"
-          ],
-          "description": "Case of the num role",
-          "$comment": "tokens 1.5"
-        },
-        "nk-type-num-pad": {
-          "type": "string",
-          "description": "Trailing pad of the num role (the italic overhang)",
-          "$comment": "tokens 1.5"
-        },
-        "nk-type-body-family": {
-          "type": "string",
-          "description": "Font of the body role (sentences)",
-          "$comment": "tokens 1.5"
-        },
-        "nk-type-body-style": {
-          "enum": [
-            "normal",
-            "italic"
-          ],
-          "description": "normal or italic, for the body role",
-          "$comment": "tokens 1.5"
-        },
-        "nk-type-body-weight": {
-          "type": "string",
-          "pattern": "^-?\\d+(\\.\\d+)?$",
-          "description": "Weight of the body role",
-          "$comment": "tokens 1.5"
-        },
-        "nk-type-body-tracking": {
-          "type": "string",
-          "description": "Letter-spacing of the body role",
-          "$comment": "tokens 1.5"
-        },
-        "nk-type-body-case": {
-          "enum": [
-            "none",
-            "uppercase"
-          ],
-          "description": "Case of the body role",
-          "$comment": "tokens 1.5"
-        },
-        "nk-type-body-pad": {
-          "type": "string",
-          "description": "Trailing pad of the body role (the italic overhang)",
-          "$comment": "tokens 1.5"
-        },
-        "nk-tile-face": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "The tile's face (aliased by --nk-key-bg)",
-          "$comment": "tokens 1.5"
-        },
-        "nk-tile-ink": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "The legend on the face (aliased by --nk-key-fg)",
-          "$comment": "tokens 1.5"
-        },
-        "nk-tile-light": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "The face's top hairline",
-          "$comment": "tokens 1.5"
-        },
-        "nk-tile-shade": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "The face's bottom inner shade",
-          "$comment": "tokens 1.5"
-        },
-        "nk-tile-rim": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "The face's 1px rim (aliased by --nk-key-border)",
-          "$comment": "tokens 1.5"
-        },
-        "nk-tile-rim-focus": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "The rim while focused",
-          "$comment": "tokens 1.5"
-        },
-        "nk-tile-plate": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "The solid plate behind the face",
-          "$comment": "tokens 1.5"
-        },
-        "nk-tile-plate-dim": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "The plate on the HUD",
-          "$comment": "tokens 1.5"
-        },
-        "nk-tile-plate-x": {
-          "type": "string",
-          "description": "How far the plate sits right of the face (0 = no plate)",
-          "$comment": "tokens 1.5"
-        },
-        "nk-tile-plate-y": {
-          "type": "string",
-          "description": "How far the plate sits below the face",
-          "$comment": "tokens 1.5"
-        },
-        "nk-tile-press": {
-          "type": "string",
-          "description": "How far a held tile presses toward its plate",
-          "$comment": "tokens 1.5"
-        },
-        "nk-tile-skew": {
-          "type": "string",
-          "description": "The face's slant (the box stays upright); at most ±20deg",
-          "$comment": "tokens 1.5"
-        },
-        "nk-tile-confirm-face": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "The face when confirmed or active",
-          "$comment": "tokens 1.5"
-        },
-        "nk-tile-confirm-ink": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "The legend when confirmed or active",
-          "$comment": "tokens 1.5"
-        },
-        "nk-tile-hold": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "The hold fill over the face",
-          "$comment": "tokens 1.5"
-        },
-        "nk-tile-active": {
-          "type": "string",
-          "description": "The face of an active tile (data-active: the mic while talking, N on the compass, a checked box); a colour or a gradient",
-          "$comment": "tokens 1.5"
-        },
-        "nk-tile-tag-delay": {
-          "type": "string",
-          "description": "The tag opens this long after the tile lands",
-          "$comment": "tokens 1.5"
-        },
-        "nk-plate": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "The plate colour (its channels, --nk-plate-rgb, are drawn at the context's material opacity)",
-          "$comment": "tokens 1.5"
-        },
-        "nk-plate-hair": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "The plate's hairline",
-          "$comment": "tokens 1.5"
-        },
-        "nk-plate-drop": {
-          "type": "string",
-          "description": "The plate's drop: hard, no blur",
-          "$comment": "tokens 1.5"
-        },
-        "nk-plate-radius": {
-          "type": "string",
-          "description": "The plate's radius",
-          "$comment": "tokens 1.5"
-        },
-        "nk-fill-color": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "The bar",
-          "$comment": "tokens 1.5"
-        },
-        "nk-fill-track": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "The track behind the bar",
-          "$comment": "tokens 1.5"
-        },
-        "nk-fill-tint": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "The row sweep (a fill at level 1)",
-          "$comment": "tokens 1.5"
-        },
-        "nk-fill-edge": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "The bar's leading 1px edge",
-          "$comment": "tokens 1.5"
-        },
-        "nk-fill-alert": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "The bar at or under the alert threshold",
-          "$comment": "tokens 1.5"
-        },
-        "nk-accent-from": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "The accent's first stop (SVG strokes: the speedometer arc, the lubber mark)",
-          "$comment": "tokens 1.5"
-        },
-        "nk-accent-via": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "The accent's middle stop",
-          "$comment": "tokens 1.5"
-        },
-        "nk-accent-to": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "The accent's last stop",
-          "$comment": "tokens 1.5"
-        },
-        "nk-lift": {
-          "type": "string",
-          "description": "Row slide and slot lift on focus",
-          "$comment": "tokens 1.5"
-        },
-        "nk-rise": {
-          "type": "string",
-          "description": "How far things rise as they enter",
-          "$comment": "tokens 1.5"
-        },
-        "nk-land-scale": {
-          "type": "string",
-          "pattern": "^-?\\d+(\\.\\d+)?$",
-          "description": "The scale a tile lands from",
-          "$comment": "tokens 1.5"
-        },
-        "nk-deny-x": {
-          "type": "string",
-          "description": "The deny shake's distance (two beats of fast)",
-          "$comment": "tokens 1.5"
-        },
-        "nk-vital-icon": {
-          "enum": [
-            "vital",
-            "uniform"
-          ],
-          "description": "Vital icons: each vital's own, or one uniform glyph",
-          "$comment": "tokens 1.5"
-        },
-        "nk-vital-display": {
+        "nk-style-vital": {
           "enum": [
             "auto",
             "pill",
@@ -2021,201 +1567,1589 @@
             "icon",
             "expand"
           ],
-          "description": "What a vital chip shows",
-          "$comment": "tokens 1.5"
+          "description": "What a vital chip shows (expand: the tag opens on a change)",
+          "$comment": "identity · style.vital"
         },
-        "nk-vital-neighbours": {
+        "nk-style-vital-icon": {
+          "enum": [
+            "vital",
+            "uniform"
+          ],
+          "description": "Vital icons: each vital's own colour, or the chip's ink",
+          "$comment": "identity · style.vital-icon"
+        },
+        "nk-style-vital-neighbours": {
           "enum": [
             "push",
             "collapse",
             "overlay"
           ],
-          "description": "What a growing chip does to its neighbours",
-          "$comment": "tokens 1.5"
+          "description": "What a growing vital chip does to its neighbours",
+          "$comment": "identity · style.vital-neighbours"
         },
-        "nk-fill-style": {
+        "nk-style-pause": {
           "enum": [
-            "solid",
-            "soft"
+            "sheet",
+            "slash"
           ],
-          "description": "How fills read: solid (flat, full, vivid: progress, meters, vital liquid, the selected row) or soft (translucent, a fading tint)",
-          "$comment": "tokens 1.6"
+          "description": "The pause menu: a full-height sheet, or a light slash panel",
+          "$comment": "identity · style.pause"
         },
-        "nk-row-pad-y": {
-          "type": "string",
-          "description": "A list row's block padding",
-          "$comment": "tokens 1.6"
-        },
-        "nk-row-pad-x": {
-          "type": "string",
-          "description": "A list row's inline padding",
-          "$comment": "tokens 1.6"
-        },
-        "nk-row-gap": {
-          "type": "string",
-          "description": "Between a row's icon tile, its text and its trail",
-          "$comment": "tokens 1.6"
-        },
-        "nk-row-lift": {
-          "type": "string",
-          "description": "How far the selected row's content slides in",
-          "$comment": "tokens 1.6"
-        },
-        "nk-row-title-size": {
-          "type": "string",
-          "description": "A row title (the label voice)",
-          "$comment": "tokens 1.6"
-        },
-        "nk-row-desc-size": {
-          "type": "string",
-          "description": "A row description (the body voice)",
-          "$comment": "tokens 1.6"
-        },
-        "nk-row-icon-box": {
-          "type": "string",
-          "description": "The icon tile beside a row title (the icon inside is --nk-icon-md)",
-          "$comment": "tokens 1.6"
-        },
-        "nk-row-marker-width": {
-          "type": "string",
-          "description": "Retired in 1.7 (the selection is a Tile, SELECTION_TOKENS); read by nothing",
-          "$comment": "tokens 1.6"
-        },
-        "nk-row-tint-reach": {
+        "nk-behavior-alert": {
           "type": "string",
           "pattern": "^-?\\d+(\\.\\d+)?$",
-          "description": "Retired in 1.7 (the soft selection is a tinted Tile face, --nk-tile-tint); read by nothing",
-          "$comment": "tokens 1.6"
+          "description": "A level at or under this is an alert (vitals, durability)",
+          "$comment": "identity · behavior.alert"
         },
-        "nk-h-field": {
+        "nk-behavior-rest": {
           "type": "string",
-          "description": "Height of text inputs, selects and dialog buttons",
-          "$comment": "tokens 1.6"
+          "description": "How long a changed HUD part stays open before it retracts (0 = never)",
+          "$comment": "identity · behavior.rest"
         },
-        "nk-focus-rim": {
+        "nk-behavior-notify-info": {
+          "type": "string",
+          "description": "How long an info notice stays",
+          "$comment": "identity · behavior.notify.info"
+        },
+        "nk-behavior-notify-success": {
+          "type": "string",
+          "description": "How long a success notice stays",
+          "$comment": "identity · behavior.notify.success"
+        },
+        "nk-behavior-notify-warning": {
+          "type": "string",
+          "description": "How long a warning stays",
+          "$comment": "identity · behavior.notify.warning"
+        },
+        "nk-behavior-notify-danger": {
+          "type": "string",
+          "description": "How long a danger notice stays",
+          "$comment": "identity · behavior.notify.danger"
+        },
+        "nk-hue-line": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "A role's line (borders, tracks)",
+          "$comment": "identity · hue.line"
+        },
+        "nk-hue-tint": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "A role's tint (fills behind text)",
+          "$comment": "identity · hue.tint"
+        },
+        "nk-hue-glow": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "A role's glow (under the glow budget)",
+          "$comment": "identity · hue.glow"
+        },
+        "nk-hue-alert": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "A role's alert wash",
+          "$comment": "identity · hue.alert"
+        },
+        "nk-layer-dim": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "Stacking layer: dim (a modal is the current surface + dim + dialog)",
+          "$comment": "identity · layer.dim"
+        },
+        "nk-layer-dialog": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "Stacking layer: dialog (a modal is the current surface + dim + dialog)",
+          "$comment": "identity · layer.dialog"
+        },
+        "nk-time-snap": {
+          "type": "string",
+          "description": "A press, a rim switching state (0.5d)",
+          "$comment": "semantic · time.snap"
+        },
+        "nk-time-fast": {
+          "type": "string",
+          "description": "Hover, a face rising, a deny beat (0.667d)",
+          "$comment": "semantic · time.fast"
+        },
+        "nk-time-base": {
+          "type": "string",
+          "description": "Panel enter, the selection tile, tab switch (d)",
+          "$comment": "semantic · time.base"
+        },
+        "nk-time-slow": {
+          "type": "string",
+          "description": "Sheets, dialogs, a tile landing, toasts, a confirm pop (1.556d)",
+          "$comment": "semantic · time.slow"
+        },
+        "nk-time-fill": {
+          "type": "string",
+          "description": "A level filling or draining; HUD show-on-change (2.333d)",
+          "$comment": "semantic · time.fill"
+        },
+        "nk-time-exit": {
+          "type": "string",
+          "description": "Every exit (d × exit-factor)",
+          "$comment": "semantic · time.exit"
+        },
+        "nk-time-pulse": {
+          "type": "string",
+          "description": "One alert pulse",
+          "$comment": "semantic · time.pulse"
+        },
+        "nk-ease-enter": {
+          "type": "string",
+          "description": "Anything arriving: enter, hover",
+          "$comment": "semantic · ease.enter"
+        },
+        "nk-ease-exit": {
+          "type": "string",
+          "description": "Exits and things tucking away (speeds up as it leaves)",
+          "$comment": "semantic · ease.exit"
+        },
+        "nk-ease-move": {
+          "type": "string",
+          "description": "On-screen moves: the selection tile, FLIP, a tab underline",
+          "$comment": "semantic · ease.move"
+        },
+        "nk-ease-expand": {
+          "type": "string",
+          "description": "Things opening and growing; full-screen enter",
+          "$comment": "semantic · ease.expand"
+        },
+        "nk-ease-spring": {
+          "type": "string",
+          "description": "An overshoot without a spring (confirm pops, press release)",
+          "$comment": "semantic · ease.spring"
+        },
+        "nk-ease-breathe": {
+          "type": "string",
+          "description": "Loops: alert pulses",
+          "$comment": "semantic · ease.breathe"
+        },
+        "nk-spring-snap": {
+          "type": "string",
+          "description": "Spring: selection, tab underline, needle catch-up",
+          "$comment": "semantic · spring.snap"
+        },
+        "nk-spring-move": {
+          "type": "string",
+          "description": "Spring: toasts in, FLIP reflow, drawers, digit roll",
+          "$comment": "semantic · spring.move"
+        },
+        "nk-spring-soft": {
+          "type": "string",
+          "description": "Spring: full-screen content, large frame changes",
+          "$comment": "semantic · spring.soft"
+        },
+        "nk-spring-pop": {
+          "type": "string",
+          "description": "Spring: rewards only",
+          "$comment": "semantic · spring.pop"
+        },
+        "nk-stagger": {
+          "type": "string",
+          "description": "Delay per item",
+          "$comment": "semantic · stagger"
+        },
+        "nk-stagger-max": {
+          "type": "string",
+          "description": "Total cap: items past the cap enter together",
+          "$comment": "semantic · stagger.max"
+        },
+        "nk-gesture-lift": {
+          "type": "string",
+          "description": "A row's content and a slot sliding in on focus",
+          "$comment": "semantic · gesture.lift"
+        },
+        "nk-gesture-rise": {
+          "type": "string",
+          "description": "How far things rise as they enter",
+          "$comment": "semantic · gesture.rise"
+        },
+        "nk-gesture-land": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "The scale a tile lands from",
+          "$comment": "semantic · gesture.land"
+        },
+        "nk-gesture-deny": {
+          "type": "string",
+          "description": "The deny shake's distance",
+          "$comment": "semantic · gesture.deny"
+        },
+        "nk-gesture-press": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "The scale of a pressed row or button",
+          "$comment": "semantic · gesture.press"
+        },
+        "nk-gesture-confirm": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "The short pop of a confirm",
+          "$comment": "semantic · gesture.confirm"
+        },
+        "nk-plate-color": {
           "type": "string",
           "pattern": "^rgba?\\(",
-          "description": "A text field's caret focus (and a checkbox's or switch's lit rim): a single 1px rim. Nothing else draws focus (1.7)",
-          "$comment": "tokens 1.6"
+          "description": "The plate colour (drawn at its material's opacity through its channels)",
+          "$comment": "semantic · plate.color"
         },
-        "nk-ring-segments": {
+        "nk-plate-hair": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "The plate's hairline",
+          "$comment": "semantic · plate.hair"
+        },
+        "nk-plate-drop": {
+          "type": "string",
+          "description": "The plate's drop: hard, no blur",
+          "$comment": "semantic · plate.drop"
+        },
+        "nk-plate-bg": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "The plate as drawn: its colour at the menu material's alpha",
+          "$comment": "semantic · plate.bg"
+        },
+        "nk-plate-radius": {
+          "type": "string",
+          "description": "The plate's radius",
+          "$comment": "semantic · plate.radius"
+        },
+        "nk-fill-color": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "The bar",
+          "$comment": "semantic · fill.color"
+        },
+        "nk-fill-track": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "The track behind it",
+          "$comment": "semantic · fill.track"
+        },
+        "nk-fill-tint": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "The soft tint: an outline button's hover, a row sweep",
+          "$comment": "semantic · fill.tint"
+        },
+        "nk-fill-edge": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "The bar's leading 1px edge",
+          "$comment": "semantic · fill.edge"
+        },
+        "nk-fill-alert": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "The bar at or under behavior.alert",
+          "$comment": "semantic · fill.alert"
+        },
+        "nk-fill-height": {
+          "type": "string",
+          "description": "A level bar's thickness: fills, meters, gauge tracks",
+          "$comment": "semantic · fill.height"
+        },
+        "nk-accent-paint": {
+          "type": "string",
+          "description": "An active tile's face, the speedometer's level, the compass N (a colour or a gradient)",
+          "$comment": "semantic · accent.paint"
+        },
+        "nk-accent-from": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "First stop (SVG strokes)",
+          "$comment": "semantic · accent.from"
+        },
+        "nk-accent-via": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "Middle stop",
+          "$comment": "semantic · accent.via"
+        },
+        "nk-accent-to": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "Last stop",
+          "$comment": "semantic · accent.to"
+        },
+        "nk-gap-cluster": {
+          "type": "string",
+          "description": "Icon + text, key + label",
+          "$comment": "semantic · gap.cluster"
+        },
+        "nk-gap-items": {
+          "type": "string",
+          "description": "Items in a bar",
+          "$comment": "semantic · gap.items"
+        },
+        "nk-gap-pad-x": {
+          "type": "string",
+          "description": "Inline padding of anything labelled",
+          "$comment": "semantic · gap.pad-x"
+        },
+        "nk-gap-surface": {
+          "type": "string",
+          "description": "Padding of a surface (dialog body, sheet column)",
+          "$comment": "semantic · gap.surface"
+        },
+        "nk-line-width": {
+          "type": "string",
+          "description": "Every hairline",
+          "$comment": "semantic · line.width"
+        },
+        "nk-line-focus": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "A text field's caret rim (and a checkbox's or switch's lit rim): the only focus line",
+          "$comment": "semantic · line.focus"
+        },
+        "nk-line-clip": {
+          "type": "string",
+          "description": "clip-path of panels: the shape.cut chamfer, or none",
+          "$comment": "semantic · line.clip"
+        },
+        "nk-line-clip-sm": {
+          "type": "string",
+          "description": "clip-path of chips, tiles and buttons: half the chamfer",
+          "$comment": "semantic · line.clip-sm"
+        },
+        "nk-line-glow": {
+          "type": "string",
+          "description": "Blur radius of a row's glow (a chip's is 0.75 of it, a meter's 0.625)",
+          "$comment": "semantic · line.glow"
+        },
+        "nk-depth-elevation": {
+          "type": "string",
+          "description": "The box-shadow surface.elevation names (compileTheme writes the recipe)",
+          "$comment": "semantic · depth.elevation"
+        },
+        "nk-depth-text": {
+          "type": "string",
+          "description": "The text-shadow hud.text names (compileTheme writes the recipe)",
+          "$comment": "semantic · depth.text"
+        },
+        "nk-alpha-day": {
           "type": "string",
           "pattern": "^-?\\d+(\\.\\d+)?$",
-          "description": "Segments in a progress ring (the speedometer's language)",
-          "$comment": "tokens 1.6"
+          "description": "1 while day legibility applies (set by kit.css rules)",
+          "$comment": "semantic · alpha.day"
         },
-        "nk-ring-gap": {
+        "nk-alpha-hud": {
           "type": "string",
           "pattern": "^-?\\d+(\\.\\d+)?$",
-          "description": "Degrees between a progress ring's segments",
-          "$comment": "tokens 1.6"
+          "description": "The HUD's alpha",
+          "$comment": "semantic · alpha.hud"
         },
-        "nk-tile-wall": {
+        "nk-alpha-menu": {
           "type": "string",
-          "description": "The keycap's wall: how far the face sits above its plate (the primary button and the selection tile)",
-          "$comment": "tokens 1.7"
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "Menus', sheets' and dialogs' alpha",
+          "$comment": "semantic · alpha.menu"
+        },
+        "nk-restore-muted-foreground": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "muted-foreground, as the theme set it",
+          "$comment": "semantic · restore.muted-foreground"
+        },
+        "nk-restore-muted-foreground-rgb": {
+          "type": "string",
+          "description": "Its channels",
+          "$comment": "semantic · restore.muted-foreground-rgb"
+        },
+        "nk-restore-muted-foreground-a": {
+          "type": "string",
+          "description": "Its alpha",
+          "$comment": "semantic · restore.muted-foreground-a"
+        },
+        "nk-restore-background": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "background, as the theme set it",
+          "$comment": "semantic · restore.background"
+        },
+        "nk-restore-background-rgb": {
+          "type": "string",
+          "description": "Its channels",
+          "$comment": "semantic · restore.background-rgb"
+        },
+        "nk-restore-background-a": {
+          "type": "string",
+          "description": "Its alpha",
+          "$comment": "semantic · restore.background-a"
+        },
+        "nk-screen-ratio": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "The content box's width / height (wider screens keep it, centred)",
+          "$comment": "component · screen.ratio"
+        },
+        "nk-screen-max": {
+          "type": "string",
+          "description": "The content box's width",
+          "$comment": "component · screen.max"
+        },
+        "nk-screen-edge": {
+          "type": "string",
+          "description": "A zone's distance from the safe area (1rem at 4:3, 1.25rem at 16:10)",
+          "$comment": "component · screen.edge"
+        },
+        "nk-screen-scale-min": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "The rem floor as a fraction of the 1080p rem (720p and 4:3 stay readable)",
+          "$comment": "component · screen.scale-min"
+        },
+        "nk-screen-area-l": {
+          "type": "string",
+          "description": "The box's left inset from the screen",
+          "$comment": "component · screen.area.l"
+        },
+        "nk-screen-area-r": {
+          "type": "string",
+          "description": "The box's right inset",
+          "$comment": "component · screen.area.r"
+        },
+        "nk-screen-area-t": {
+          "type": "string",
+          "description": "The box's top inset",
+          "$comment": "component · screen.area.t"
+        },
+        "nk-screen-area-b": {
+          "type": "string",
+          "description": "The box's bottom inset",
+          "$comment": "component · screen.area.b"
+        },
+        "nk-screen-safe-x": {
+          "type": "string",
+          "description": "A safe area inside the box, inline (TV overscan, a bezel)",
+          "$comment": "component · screen.safe.x"
+        },
+        "nk-screen-safe-y": {
+          "type": "string",
+          "description": "A safe area inside the box, block",
+          "$comment": "component · screen.safe.y"
+        },
+        "nk-zone-gap": {
+          "type": "string",
+          "description": "Between what a zone stacks",
+          "$comment": "component · zone.gap"
+        },
+        "nk-region-max": {
+          "type": "string",
+          "description": "Its maximum width",
+          "$comment": "component · region.max"
+        },
+        "nk-region-pad": {
+          "type": "string",
+          "description": "Its padding",
+          "$comment": "component · region.pad"
+        },
+        "nk-grid-cell": {
+          "type": "string",
+          "description": "A cell's size",
+          "$comment": "component · grid.cell"
+        },
+        "nk-grid-gap": {
+          "type": "string",
+          "description": "Between cells",
+          "$comment": "component · grid.gap"
+        },
+        "nk-tile-plate-color": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "The solid plate behind the face",
+          "$comment": "component · tile.plate.color"
+        },
+        "nk-tile-plate-dim": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "The plate on the HUD",
+          "$comment": "component · tile.plate.dim"
+        },
+        "nk-tile-plate-x": {
+          "type": "string",
+          "description": "How far the plate sits right of the face (0 = none)",
+          "$comment": "component · tile.plate.x"
+        },
+        "nk-tile-plate-y": {
+          "type": "string",
+          "description": "How far the plate sits below the face",
+          "$comment": "component · tile.plate.y"
+        },
+        "nk-tile-plate-press": {
+          "type": "string",
+          "description": "How far a held tile presses toward its plate",
+          "$comment": "component · tile.plate.press"
+        },
+        "nk-tile-wall-height": {
+          "type": "string",
+          "description": "How far the face sits above its wall (the primary button, the selection)",
+          "$comment": "component · tile.wall.height"
         },
         "nk-tile-wall-shade": {
           "type": "string",
           "pattern": "^-?\\d+(\\.\\d+)?$",
-          "description": "How dark the wall is under its face (0–1, the scrim over the face colour)",
-          "$comment": "tokens 1.7"
+          "description": "How dark the wall is (the scrim over the face colour)",
+          "$comment": "component · tile.wall.shade"
         },
-        "nk-tile-radius": {
-          "type": "string",
-          "description": "The keycap's radius (the primary button and the selection tile)",
-          "$comment": "tokens 1.7"
-        },
-        "nk-tile-key": {
+        "nk-tile-face-color": {
           "type": "string",
           "pattern": "^rgba?\\(",
-          "description": "The keycap face under --nk-fill-style: solid (the primary button, the lit row, the active tab)",
-          "$comment": "tokens 1.7"
+          "description": "The face",
+          "$comment": "component · tile.face.color"
+        },
+        "nk-tile-face-ink": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "The legend's colour on the face",
+          "$comment": "component · tile.face.ink"
+        },
+        "nk-tile-face-light": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "The face's top hairline",
+          "$comment": "component · tile.face.light"
+        },
+        "nk-tile-face-shade": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "The face's bottom inner shade",
+          "$comment": "component · tile.face.shade"
+        },
+        "nk-tile-face-rim": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "The face's rim",
+          "$comment": "component · tile.face.rim"
+        },
+        "nk-tile-face-rim-focus": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "The rim while lit",
+          "$comment": "component · tile.face.rim-focus"
+        },
+        "nk-tile-face-radius": {
+          "type": "string",
+          "description": "The face's radius",
+          "$comment": "component · tile.face.radius"
+        },
+        "nk-tile-face-skew": {
+          "type": "string",
+          "description": "The face's slant (the box stays upright)",
+          "$comment": "component · tile.face.skew"
+        },
+        "nk-tile-face-shadow": {
+          "type": "string",
+          "description": "The face's inner light and shade",
+          "$comment": "component · tile.face.shadow"
+        },
+        "nk-tile-face-clip": {
+          "type": "string",
+          "description": "The face's clip-path (the chamfer)",
+          "$comment": "component · tile.face.clip"
+        },
+        "nk-tile-face-confirm": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "The face when confirmed",
+          "$comment": "component · tile.face.confirm"
+        },
+        "nk-tile-face-confirm-ink": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "The legend when confirmed",
+          "$comment": "component · tile.face.confirm-ink"
+        },
+        "nk-tile-face-active": {
+          "type": "string",
+          "description": "The face of an active tile (the mic while talking, N on the compass, a checked box)",
+          "$comment": "component · tile.face.active"
+        },
+        "nk-tile-face-hold": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "The hold fill over the face",
+          "$comment": "component · tile.face.hold"
+        },
+        "nk-tile-legend-font": {
+          "type": "string",
+          "description": "The legend's face",
+          "$comment": "component · tile.legend.font"
+        },
+        "nk-tile-legend-weight": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "The legend's weight",
+          "$comment": "component · tile.legend.weight"
+        },
+        "nk-tile-legend-pad": {
+          "type": "string",
+          "description": "The italic overhang split to both sides",
+          "$comment": "component · tile.legend.pad"
+        },
+        "nk-tile-legend-shift": {
+          "type": "string",
+          "description": "A nudge for a leaning face",
+          "$comment": "component · tile.legend.shift"
+        },
+        "nk-tile-legend-gap": {
+          "type": "string",
+          "description": "Between a tile's glyphs",
+          "$comment": "component · tile.legend.gap"
+        },
+        "nk-tile-legend-inset": {
+          "type": "string",
+          "description": "The legend's inline padding",
+          "$comment": "component · tile.legend.inset"
+        },
+        "nk-tile-tag-delay": {
+          "type": "string",
+          "description": "The tag opens this long after the tile lands",
+          "$comment": "component · tile.tag.delay"
+        },
+        "nk-tile-key-color": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "The keycap face under style.fill solid (the primary button, the lit row, the active tab)",
+          "$comment": "component · tile.key.color"
         },
         "nk-tile-key-ink": {
           "type": "string",
           "pattern": "^rgba?\\(",
           "description": "Text on the keycap face",
-          "$comment": "tokens 1.7"
+          "$comment": "component · tile.key.ink"
         },
         "nk-tile-key-rim": {
           "type": "string",
           "pattern": "^rgba?\\(",
-          "description": "The keycap face's rim, --nk-border-width wide (the primary button and the selection tile); transparent = none",
-          "$comment": "tokens 1.7"
+          "description": "The keycap face's rim (transparent = none)",
+          "$comment": "component · tile.key.rim"
         },
-        "nk-tile-tint": {
+        "nk-tile-key-radius": {
+          "type": "string",
+          "description": "The keycap's radius",
+          "$comment": "component · tile.key.radius"
+        },
+        "nk-tile-key-tint": {
           "type": "string",
           "pattern": "^-?\\d+(\\.\\d+)?$",
-          "description": "The face's opacity under --nk-fill-style: soft (a tinted tile, the foreground ink)",
-          "$comment": "tokens 1.7"
+          "description": "The face's opacity under style.fill soft",
+          "$comment": "component · tile.key.tint"
         },
-        "nk-tile-inset": {
+        "nk-tile-key-inset": {
           "type": "string",
-          "description": "How far a selection tile sits in from its item's sides (room for the skew; never over a neighbour)",
-          "$comment": "tokens 1.7"
+          "description": "How far a selection tile sits in from its item's sides (room for the skew)",
+          "$comment": "component · tile.key.inset"
         },
-        "nk-tile-lift": {
+        "nk-tile-key-lift": {
           "type": "string",
-          "description": "How far a keycap's face rises on hover and focus (0 = flat)",
-          "$comment": "tokens 1.7"
+          "description": "How far the face rises on hover and focus",
+          "$comment": "component · tile.key.lift"
         },
-        "nk-tile-press-ratio": {
-          "type": "string",
-          "pattern": "^-?\\d+(\\.\\d+)?$",
-          "description": "How far a pressed keycap sinks, as a fraction of its wall (1 = flush with the plate)",
-          "$comment": "tokens 1.7"
-        },
-        "nk-leading-tight": {
-          "type": "string",
-          "description": "Line height of small text (captions, field labels, notice and row descriptions' tight lines)",
-          "$comment": "tokens 1.7"
-        },
-        "nk-leading-normal": {
-          "type": "string",
-          "description": "Line height of body-size text (rows, notices, slabs, row titles)",
-          "$comment": "tokens 1.7"
-        },
-        "nk-row-bar-thickness": {
-          "type": "string",
-          "description": "Width of the active row's bar (× nk-row-bar)",
-          "$comment": "tokens 1.7"
-        },
-        "nk-row-bar-inset-scale": {
+        "nk-tile-key-press": {
           "type": "string",
           "pattern": "^-?\\d+(\\.\\d+)?$",
-          "description": "The row bar's inset from the row's top and bottom, in spacing units",
-          "$comment": "tokens 1.7"
+          "description": "How far a pressed keycap sinks, as a fraction of its wall",
+          "$comment": "component · tile.key.press"
         },
-        "nk-hold-ring-pad": {
+        "nk-tile-key-overhang": {
           "type": "string",
-          "description": "Thickness of the hold ring around a key under nk-hold-style ring",
-          "$comment": "tokens 1.7"
+          "description": "How far a row's selection tile reaches past its text",
+          "$comment": "component · tile.key.overhang"
         },
-        "nk-pip-size": {
+        "nk-panel-bg": {
           "type": "string",
-          "description": "Width of one pip under nk-level-style pips (a percentage of the bar: 10% = ten pips)",
-          "$comment": "tokens 1.7"
+          "pattern": "^rgba?\\(",
+          "description": "The panel's fill: the surface at the menu material's alpha",
+          "$comment": "component · panel.bg"
         },
-        "nk-pip-gap": {
+        "nk-panel-fg": {
           "type": "string",
-          "description": "The gap between pips",
-          "$comment": "tokens 1.7"
+          "pattern": "^rgba?\\(",
+          "description": "Text in the panel",
+          "$comment": "component · panel.fg"
         },
-        "nk-meter-segment-gap": {
+        "nk-panel-border": {
           "type": "string",
-          "description": "The gap between a segmented meter's segments",
-          "$comment": "tokens 1.7"
+          "pattern": "^rgba?\\(",
+          "description": "The panel's hairline",
+          "$comment": "component · panel.border"
         },
-        "nk-glow-radius": {
+        "nk-panel-radius": {
           "type": "string",
-          "description": "Blur radius of a row's glow (a chip's is 0.75 of it, a meter's 0.625)",
-          "$comment": "tokens 1.7"
+          "description": "The panel's radius",
+          "$comment": "component · panel.radius"
+        },
+        "nk-panel-blur": {
+          "type": "string",
+          "description": "Backdrop blur (with surface.backdrop on)",
+          "$comment": "component · panel.blur"
+        },
+        "nk-panel-cut": {
+          "type": "string",
+          "description": "The chamfer's size",
+          "$comment": "component · panel.cut"
+        },
+        "nk-panel-clip": {
+          "type": "string",
+          "description": "The panel's clip-path",
+          "$comment": "component · panel.clip"
+        },
+        "nk-panel-gradient": {
+          "type": "string",
+          "description": "The light falloff",
+          "$comment": "component · panel.gradient"
+        },
+        "nk-panel-edge": {
+          "type": "string",
+          "description": "The machined top edge",
+          "$comment": "component · panel.edge"
+        },
+        "nk-panel-shadow": {
+          "type": "string",
+          "description": "The panel's drop: the elevation recipe",
+          "$comment": "component · panel.shadow"
+        },
+        "nk-panel-divider": {
+          "type": "string",
+          "description": "The one hairline under a header",
+          "$comment": "component · panel.divider"
+        },
+        "nk-panel-width": {
+          "type": "string",
+          "description": "Width (md)",
+          "$comment": "component · panel.width"
+        },
+        "nk-panel-width-sm": {
+          "type": "string",
+          "description": "Width (sm)",
+          "$comment": "component · panel.width-sm"
+        },
+        "nk-panel-width-lg": {
+          "type": "string",
+          "description": "Width (lg)",
+          "$comment": "component · panel.width-lg"
+        },
+        "nk-panel-header-height": {
+          "type": "string",
+          "description": "A header's minimum height",
+          "$comment": "component · panel.header.height"
+        },
+        "nk-panel-header-padding": {
+          "type": "string",
+          "description": "Surface padding; the title a step off its hairline",
+          "$comment": "component · panel.header.padding"
+        },
+        "nk-panel-title-size": {
+          "type": "string",
+          "description": "A panel title's size",
+          "$comment": "component · panel.title.size"
+        },
+        "nk-panel-body-padding": {
+          "type": "string",
+          "description": "The body's padding",
+          "$comment": "component · panel.body.padding"
+        },
+        "nk-panel-footer-padding": {
+          "type": "string",
+          "description": "On the panel itself, no rule above it",
+          "$comment": "component · panel.footer.padding"
+        },
+        "nk-panel-footer-rule": {
+          "type": "string",
+          "description": "A rule above the footer (none: spacing separates it)",
+          "$comment": "component · panel.footer.rule"
+        },
+        "nk-panel-actions-bracket": {
+          "type": "string",
+          "description": "L-shaped corner marks (0 = off)",
+          "$comment": "component · panel.actions.bracket"
+        },
+        "nk-panel-actions-bracket-width": {
+          "type": "string",
+          "description": "The marks' weight",
+          "$comment": "component · panel.actions.bracket-width"
+        },
+        "nk-panel-actions-bracket-color": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "The marks' colour",
+          "$comment": "component · panel.actions.bracket-color"
+        },
+        "nk-display-size": {
+          "type": "string",
+          "description": "Size",
+          "$comment": "component · display.size"
+        },
+        "nk-display-weight": {
+          "type": "string",
+          "description": "Weight",
+          "$comment": "component · display.weight"
+        },
+        "nk-display-tracking": {
+          "type": "string",
+          "description": "Letter-spacing",
+          "$comment": "component · display.tracking"
+        },
+        "nk-display-case": {
+          "type": "string",
+          "description": "Case",
+          "$comment": "component · display.case"
+        },
+        "nk-caption-font": {
+          "type": "string",
+          "description": "Face",
+          "$comment": "component · caption.font"
+        },
+        "nk-caption-size": {
+          "type": "string",
+          "description": "Size",
+          "$comment": "component · caption.size"
+        },
+        "nk-caption-weight": {
+          "type": "string",
+          "description": "Weight",
+          "$comment": "component · caption.weight"
+        },
+        "nk-caption-case": {
+          "type": "string",
+          "description": "Case",
+          "$comment": "component · caption.case"
+        },
+        "nk-caption-tracking": {
+          "type": "string",
+          "description": "Letter-spacing",
+          "$comment": "component · caption.tracking"
+        },
+        "nk-row-height": {
+          "type": "string",
+          "description": "A single-line row's minimum height",
+          "$comment": "component · row.height"
+        },
+        "nk-row-radius": {
+          "type": "string",
+          "description": "The row's radius",
+          "$comment": "component · row.radius"
+        },
+        "nk-row-clip": {
+          "type": "string",
+          "description": "The row's clip-path",
+          "$comment": "component · row.clip"
+        },
+        "nk-row-pad-y": {
+          "type": "string",
+          "description": "Block padding",
+          "$comment": "component · row.pad-y"
+        },
+        "nk-row-pad-x": {
+          "type": "string",
+          "description": "Inline padding",
+          "$comment": "component · row.pad-x"
+        },
+        "nk-row-padding": {
+          "type": "string",
+          "description": "Both paddings",
+          "$comment": "component · row.padding"
+        },
+        "nk-row-gap": {
+          "type": "string",
+          "description": "Between the icon tile, the text and the trail",
+          "$comment": "component · row.gap"
+        },
+        "nk-row-font-size": {
+          "type": "string",
+          "description": "The row's text size",
+          "$comment": "component · row.font-size"
+        },
+        "nk-row-accent": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "The colour that marks the active row or slot (an outline, a hold ring)",
+          "$comment": "component · row.accent"
+        },
+        "nk-row-icon-box": {
+          "type": "string",
+          "description": "The icon tile beside the title (the icon inside is icon.md)",
+          "$comment": "component · row.icon.box"
+        },
+        "nk-row-bar-width": {
+          "type": "string",
+          "description": "The focus bar's width (style.focus: bar)",
+          "$comment": "component · row.bar.width"
         },
         "nk-list-gap": {
           "type": "string",
-          "description": "Between the items of a list: the wall plus breathing room, so a lit tile never touches the next row",
-          "$comment": "tokens 1.7"
+          "description": "Between items: the wall plus breathing room",
+          "$comment": "component · list.gap"
+        },
+        "nk-list-pad-x": {
+          "type": "string",
+          "description": "Inline padding: room for the tile's inset and skew",
+          "$comment": "component · list.pad-x"
+        },
+        "nk-menu-row-gap": {
+          "type": "string",
+          "description": "Between a trail's controls",
+          "$comment": "component · menu-row.gap"
+        },
+        "nk-menu-row-image-size": {
+          "type": "string",
+          "description": "An image's box",
+          "$comment": "component · menu-row.image.size"
+        },
+        "nk-menu-row-progress-height": {
+          "type": "string",
+          "description": "The progress bar's height",
+          "$comment": "component · menu-row.progress.height"
+        },
+        "nk-menu-row-value-width": {
+          "type": "string",
+          "description": "The value column's minimum width",
+          "$comment": "component · menu-row.value.width"
+        },
+        "nk-selection-time": {
+          "type": "string",
+          "description": "How long the tile glides",
+          "$comment": "component · selection.time"
+        },
+        "nk-selection-ease": {
+          "type": "string",
+          "description": "The glide's curve",
+          "$comment": "component · selection.ease"
+        },
+        "nk-field-caret-width": {
+          "type": "string",
+          "description": "The drawn caret's width",
+          "$comment": "component · field.caret.width"
+        },
+        "nk-field-caret-time": {
+          "type": "string",
+          "description": "The caret's glide",
+          "$comment": "component · field.caret.time"
+        },
+        "nk-field-caret-ease": {
+          "type": "string",
+          "description": "The caret's curve",
+          "$comment": "component · field.caret.ease"
+        },
+        "nk-field-mirror-rise": {
+          "type": "string",
+          "description": "How far a typed character rises in",
+          "$comment": "component · field.mirror.rise"
+        },
+        "nk-field-mirror-in": {
+          "type": "string",
+          "description": "A typed character's entrance",
+          "$comment": "component · field.mirror.in"
+        },
+        "nk-field-mirror-out": {
+          "type": "string",
+          "description": "A deleted character's exit",
+          "$comment": "component · field.mirror.out"
+        },
+        "nk-stepper-delay": {
+          "type": "string",
+          "description": "The first repeat of a held keycap",
+          "$comment": "component · stepper.delay"
+        },
+        "nk-stepper-rate": {
+          "type": "string",
+          "description": "Then one repeat every",
+          "$comment": "component · stepper.rate"
+        },
+        "nk-text-key-scale": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "The inline keycap's size, × height.key",
+          "$comment": "component · text.key.scale"
+        },
+        "nk-notice-width": {
+          "type": "string",
+          "description": "Width (md)",
+          "$comment": "component · notice.width"
+        },
+        "nk-notice-width-sm": {
+          "type": "string",
+          "description": "Width (sm)",
+          "$comment": "component · notice.width-sm"
+        },
+        "nk-notice-width-lg": {
+          "type": "string",
+          "description": "Width (lg)",
+          "$comment": "component · notice.width-lg"
+        },
+        "nk-confirm-width": {
+          "type": "string",
+          "description": "Width (md)",
+          "$comment": "component · confirm.width"
+        },
+        "nk-confirm-width-sm": {
+          "type": "string",
+          "description": "Width (sm)",
+          "$comment": "component · confirm.width-sm"
+        },
+        "nk-edge-sheet-header-height": {
+          "type": "string",
+          "description": "The header's minimum height",
+          "$comment": "component · edge-sheet.header.height"
+        },
+        "nk-chip-height": {
+          "type": "string",
+          "description": "Height",
+          "$comment": "component · chip.height"
+        },
+        "nk-chip-padding": {
+          "type": "string",
+          "description": "Inline padding",
+          "$comment": "component · chip.padding"
+        },
+        "nk-chip-radius": {
+          "type": "string",
+          "description": "Radius",
+          "$comment": "component · chip.radius"
+        },
+        "nk-chip-hud-radius": {
+          "type": "string",
+          "description": "A square HUD tile's radius (hotbar, target eye)",
+          "$comment": "component · chip.hud-radius"
+        },
+        "nk-chip-bg": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "The plate on the game",
+          "$comment": "component · chip.bg"
+        },
+        "nk-chip-fg": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "Text and icons",
+          "$comment": "component · chip.fg"
+        },
+        "nk-chip-font-size": {
+          "type": "string",
+          "description": "Text size",
+          "$comment": "component · chip.font-size"
+        },
+        "nk-chip-weight": {
+          "type": "string",
+          "description": "Text weight",
+          "$comment": "component · chip.weight"
+        },
+        "nk-chip-active-bg": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "An active chip's fill (rises from the bottom)",
+          "$comment": "component · chip.active-bg"
+        },
+        "nk-chip-active-fg": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "An active chip's ink",
+          "$comment": "component · chip.active-fg"
+        },
+        "nk-chip-glow": {
+          "type": "string",
+          "description": "An active chip's glow",
+          "$comment": "component · chip.glow"
+        },
+        "nk-chip-clip": {
+          "type": "string",
+          "description": "The chip's clip-path",
+          "$comment": "component · chip.clip"
+        },
+        "nk-chip-text-shadow": {
+          "type": "string",
+          "description": "Text drawn on the game",
+          "$comment": "component · chip.text-shadow"
+        },
+        "nk-vital-chip-size": {
+          "type": "string",
+          "description": "The chip's box",
+          "$comment": "component · vital-chip.size"
+        },
+        "nk-vital-chip-size-sm": {
+          "type": "string",
+          "description": "A small chip's box (telltales, compass marks)",
+          "$comment": "component · vital-chip.size-sm"
+        },
+        "nk-vital-chip-tile-ratio": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "The face as a fraction of the box",
+          "$comment": "component · vital-chip.tile.ratio"
+        },
+        "nk-vital-chip-icon-ratio": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "The icon as a fraction of the face",
+          "$comment": "component · vital-chip.icon.ratio"
+        },
+        "nk-vital-chip-label-size": {
+          "type": "string",
+          "description": "The tag's text size",
+          "$comment": "component · vital-chip.label.size"
+        },
+        "nk-vital-chip-label-gap": {
+          "type": "string",
+          "description": "Between the face and the tag's text",
+          "$comment": "component · vital-chip.label.gap"
+        },
+        "nk-vital-chip-line-width": {
+          "type": "string",
+          "description": "The level line's thickness",
+          "$comment": "component · vital-chip.line.width"
+        },
+        "nk-vital-chip-plate-drop": {
+          "type": "string",
+          "description": "How far the wall drops straight below the face",
+          "$comment": "component · vital-chip.plate.drop"
+        },
+        "nk-vital-chip-plate-x": {
+          "type": "string",
+          "description": "The wall's sideways step",
+          "$comment": "component · vital-chip.plate.x"
+        },
+        "nk-meter-radius": {
+          "type": "string",
+          "description": "The bar's radius",
+          "$comment": "component · meter.radius"
+        },
+        "nk-meter-glow": {
+          "type": "string",
+          "description": "The fill's glow",
+          "$comment": "component · meter.glow"
+        },
+        "nk-meter-segments": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "1 = segmented, 0 = a continuous fill",
+          "$comment": "component · meter.segments"
+        },
+        "nk-meter-track-color": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "The track behind the bar",
+          "$comment": "component · meter.track.color"
+        },
+        "nk-meter-segment-size": {
+          "type": "string",
+          "description": "One segment's length",
+          "$comment": "component · meter.segment.size"
+        },
+        "nk-meter-segment-gap": {
+          "type": "string",
+          "description": "The gap between segments",
+          "$comment": "component · meter.segment.gap"
+        },
+        "nk-meter-segment-color": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "The gap's colour (the panel showing through)",
+          "$comment": "component · meter.segment.color"
+        },
+        "nk-gauge-width": {
+          "type": "string",
+          "description": "The arc's thickness",
+          "$comment": "component · gauge.width"
+        },
+        "nk-gauge-ticks": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "Tick marks: 1 on, 0 off",
+          "$comment": "component · gauge.ticks"
+        },
+        "nk-gauge-font": {
+          "type": "string",
+          "description": "The readout's face",
+          "$comment": "component · gauge.font"
+        },
+        "nk-gauge-track-color": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "The unlit arc",
+          "$comment": "component · gauge.track.color"
+        },
+        "nk-gauge-fill-color": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "The lit arc",
+          "$comment": "component · gauge.fill.color"
+        },
+        "nk-gauge-needle-color": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "The needle",
+          "$comment": "component · gauge.needle.color"
+        },
+        "nk-gauge-redline-color": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "The redline",
+          "$comment": "component · gauge.redline.color"
+        },
+        "nk-gauge-tick-color": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "A minor tick",
+          "$comment": "component · gauge.tick.color"
+        },
+        "nk-gauge-tick-major": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "A major tick",
+          "$comment": "component · gauge.tick.major"
+        },
+        "nk-dial-disc-opacity": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "The disc's opacity under the arc",
+          "$comment": "component · dial.disc.opacity"
+        },
+        "nk-ring-segments": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "Segments in the ring",
+          "$comment": "component · ring.segments"
+        },
+        "nk-ring-gap": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "Degrees between segments",
+          "$comment": "component · ring.gap"
+        },
+        "nk-speedometer-digit-dim": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "A leading zero's opacity",
+          "$comment": "component · speedometer.digit.dim"
+        },
+        "nk-speedometer-digit-tracking": {
+          "type": "string",
+          "description": "The digits' letter-spacing",
+          "$comment": "component · speedometer.digit.tracking"
+        },
+        "nk-level-pip-size": {
+          "type": "string",
+          "description": "One pip's width (10% = ten pips)",
+          "$comment": "component · level.pip.size"
+        },
+        "nk-level-pip-gap": {
+          "type": "string",
+          "description": "Between pips",
+          "$comment": "component · level.pip.gap"
+        },
+        "nk-level-hold-pad": {
+          "type": "string",
+          "description": "The hold ring's thickness around a key",
+          "$comment": "component · level.hold.pad"
+        },
+        "nk-level-fill-ink": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "An icon's copy over a solid fill (vital chips, HUD keys): dark on the fill",
+          "$comment": "component · level.fill.ink"
+        },
+        "nk-slab-height": {
+          "type": "string",
+          "description": "Height",
+          "$comment": "component · slab.height"
+        },
+        "nk-slab-padding": {
+          "type": "string",
+          "description": "Padding",
+          "$comment": "component · slab.padding"
+        },
+        "nk-slab-gap": {
+          "type": "string",
+          "description": "Between its parts",
+          "$comment": "component · slab.gap"
+        },
+        "nk-slab-radius": {
+          "type": "string",
+          "description": "Radius",
+          "$comment": "component · slab.radius"
+        },
+        "nk-slab-clip": {
+          "type": "string",
+          "description": "clip-path",
+          "$comment": "component · slab.clip"
+        },
+        "nk-slab-bg": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "The plate",
+          "$comment": "component · slab.bg"
+        },
+        "nk-slab-fg": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "Text",
+          "$comment": "component · slab.fg"
+        },
+        "nk-slab-border": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "The rim",
+          "$comment": "component · slab.border"
+        },
+        "nk-slab-font-size": {
+          "type": "string",
+          "description": "Text size",
+          "$comment": "component · slab.font-size"
+        },
+        "nk-slab-weight": {
+          "type": "string",
+          "description": "Text weight",
+          "$comment": "component · slab.weight"
+        },
+        "nk-slab-text-shadow": {
+          "type": "string",
+          "description": "Text shadow on the plate",
+          "$comment": "component · slab.text-shadow"
+        },
+        "nk-slab-tone": {
+          "type": "string",
+          "description": "The accent's channels (a screen sets it per state on any ancestor)",
+          "$comment": "component · slab.tone"
+        },
+        "nk-slab-tile-size": {
+          "type": "string",
+          "description": "The icon tile's size",
+          "$comment": "component · slab.tile.size"
+        },
+        "nk-slab-tile-bg": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "The icon tile",
+          "$comment": "component · slab.tile.bg"
+        },
+        "nk-slab-tile-fg": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "The icon",
+          "$comment": "component · slab.tile.fg"
+        },
+        "nk-slab-tile-radius": {
+          "type": "string",
+          "description": "The icon tile's radius",
+          "$comment": "component · slab.tile.radius"
+        },
+        "nk-slab-delta-font": {
+          "type": "string",
+          "description": "A delta's face",
+          "$comment": "component · slab.delta.font"
+        },
+        "nk-slab-delta-up": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "A gain",
+          "$comment": "component · slab.delta.up"
+        },
+        "nk-slab-delta-down": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "A loss",
+          "$comment": "component · slab.delta.down"
+        },
+        "nk-slab-key-size": {
+          "type": "string",
+          "description": "A key chip's size",
+          "$comment": "component · slab.key.size"
+        },
+        "nk-slab-key-font-size": {
+          "type": "string",
+          "description": "A key chip's text",
+          "$comment": "component · slab.key.font-size"
+        },
+        "nk-slab-line-height": {
+          "type": "string",
+          "description": "The progress line's thickness",
+          "$comment": "component · slab.line.height"
+        },
+        "nk-slab-line-radius": {
+          "type": "string",
+          "description": "Its radius",
+          "$comment": "component · slab.line.radius"
+        },
+        "nk-slab-line-track": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "Its track",
+          "$comment": "component · slab.line.track"
+        },
+        "nk-slab-stack-width": {
+          "type": "string",
+          "description": "The progress stack's width",
+          "$comment": "component · slab.stack.width"
+        },
+        "nk-slab-stack-gap": {
+          "type": "string",
+          "description": "Between its rows",
+          "$comment": "component · slab.stack.gap"
+        },
+        "nk-slab-band-padding": {
+          "type": "string",
+          "description": "The band's padding",
+          "$comment": "component · slab.band.padding"
+        },
+        "nk-slab-band-gap": {
+          "type": "string",
+          "description": "Between its lines",
+          "$comment": "component · slab.band.gap"
+        },
+        "nk-slab-band-bg": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "The game, darkened",
+          "$comment": "component · slab.band.bg"
+        },
+        "nk-slab-band-tint": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "The tone's alpha over the band",
+          "$comment": "component · slab.band.tint"
+        },
+        "nk-slab-band-edge": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "The tone's alpha on its edges",
+          "$comment": "component · slab.band.edge"
+        },
+        "nk-slab-band-fg": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "Text",
+          "$comment": "component · slab.band.fg"
+        },
+        "nk-slab-band-title-size": {
+          "type": "string",
+          "description": "The band's line",
+          "$comment": "component · slab.band-title.size"
+        },
+        "nk-item-slot-width": {
+          "type": "string",
+          "description": "Width (md)",
+          "$comment": "component · item-slot.width"
+        },
+        "nk-item-slot-width-sm": {
+          "type": "string",
+          "description": "Width (sm)",
+          "$comment": "component · item-slot.width-sm"
+        },
+        "nk-item-slot-width-lg": {
+          "type": "string",
+          "description": "Width (lg)",
+          "$comment": "component · item-slot.width-lg"
+        },
+        "nk-item-slot-gap": {
+          "type": "string",
+          "description": "Between its lines",
+          "$comment": "component · item-slot.gap"
+        },
+        "nk-item-slot-top-height": {
+          "type": "string",
+          "description": "The meta line's height",
+          "$comment": "component · item-slot.top.height"
+        },
+        "nk-item-slot-corner-lock": {
+          "type": "string",
+          "description": "The lock icon",
+          "$comment": "component · item-slot.corner.lock"
+        },
+        "nk-key-prompt-gap": {
+          "type": "string",
+          "description": "Between its parts",
+          "$comment": "component · key-prompt.gap"
+        },
+        "nk-key-prompt-min-height": {
+          "type": "string",
+          "description": "Minimum height (md)",
+          "$comment": "component · key-prompt.min-height"
+        },
+        "nk-key-prompt-min-height-sm": {
+          "type": "string",
+          "description": "Minimum height (sm)",
+          "$comment": "component · key-prompt.min-height-sm"
+        },
+        "nk-key-prompt-pad-left": {
+          "type": "string",
+          "description": "Leading padding",
+          "$comment": "component · key-prompt.pad-left"
+        },
+        "nk-key-prompt-pad-right": {
+          "type": "string",
+          "description": "Trailing padding",
+          "$comment": "component · key-prompt.pad-right"
+        },
+        "nk-key-prompt-pad-y": {
+          "type": "string",
+          "description": "Block padding",
+          "$comment": "component · key-prompt.pad-y"
+        },
+        "nk-key-prompt-key-height": {
+          "type": "string",
+          "description": "A key cap's height",
+          "$comment": "component · key-prompt.key.height"
+        },
+        "nk-skill-check-size": {
+          "type": "string",
+          "description": "Size (md)",
+          "$comment": "component · skill-check.size"
+        },
+        "nk-skill-check-size-sm": {
+          "type": "string",
+          "description": "Size (sm)",
+          "$comment": "component · skill-check.size-sm"
+        },
+        "nk-skill-check-size-lg": {
+          "type": "string",
+          "description": "Size (lg)",
+          "$comment": "component · skill-check.size-lg"
+        },
+        "nk-skill-check-key-height": {
+          "type": "string",
+          "description": "The key's height",
+          "$comment": "component · skill-check.key.height"
+        },
+        "nk-skill-check-key-pad": {
+          "type": "string",
+          "description": "The key's padding",
+          "$comment": "component · skill-check.key.pad"
+        },
+        "nk-countdown-line-width": {
+          "type": "string",
+          "description": "The line (md)",
+          "$comment": "component · countdown.line.width"
+        },
+        "nk-countdown-line-width-sm": {
+          "type": "string",
+          "description": "The line (sm)",
+          "$comment": "component · countdown.line.width-sm"
+        },
+        "nk-countdown-line-width-hero": {
+          "type": "string",
+          "description": "The line (hero)",
+          "$comment": "component · countdown.line.width-hero"
+        },
+        "nk-stat-gap": {
+          "type": "string",
+          "description": "Between its parts",
+          "$comment": "component · stat.gap"
+        },
+        "nk-stat-label-icon": {
+          "type": "string",
+          "description": "The label's icon",
+          "$comment": "component · stat.label.icon"
+        },
+        "nk-nui-image-icon-max": {
+          "type": "string",
+          "description": "The fallback glyph's maximum size",
+          "$comment": "component · nui-image.icon.max"
         }
       },
       "additionalProperties": {

@@ -29,6 +29,6 @@ describe("stagger token cache", () => {
     applyTheme(".dark { --primary: #ff00ff; }");
     await run();
     expect(reads()).toBe(2);
-    expect(els[1]!.style.getPropertyValue("--nk-stagger-delay")).toMatch(/^\d+ms$/);
+    expect(els[1]!.style.getPropertyValue("--nk-notice-delay")).toMatch(/^\d+ms$/);
   });
 });

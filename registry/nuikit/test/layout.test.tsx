@@ -28,7 +28,7 @@ describe("layout: screen, zone, region, grid", () => {
     expect(out).toMatch(/data-aspect="(4-3|16-10|16-9|21-9|32-9)"/)
     expect(out).toContain("data-nk-bleed")
     expect(out).toContain('data-nk-density="compact"')
-    expect(out).toContain("--nk-safe-x:1rem")
+    expect(out).toContain("--nk-screen-safe-x:1rem")
     expect(out).toContain("--nk-screen-ratio:2.37")
   })
 

@@ -776,7 +776,7 @@ function MultiSelectControl({
                 <label
                   key={o.value}
                   className={cn(
-                    "flex min-h-8 items-center gap-2 rounded-(--nk-r-key) px-2 text-(length:--nk-text-label) hover:bg-accent hover:text-accent-foreground",
+                    "flex min-h-8 items-center gap-2 rounded-(--nk-radius-key) px-2 text-(length:--nk-text-label) hover:bg-accent hover:text-accent-foreground",
                     off && "pointer-events-none opacity-50"
                   )}
                 >
@@ -1043,7 +1043,7 @@ function SegmentedInput({
       aria-invalid={bad}
       data-disabled={f.disabled || undefined}
       className={cn(
-        "flex h-9 w-full min-w-0 items-center rounded-(--nk-r-control) border border-input bg-transparent text-(length:--nk-text-label) shadow-xs dark:bg-input/30",
+        "flex h-9 w-full min-w-0 items-center rounded-(--nk-radius-control) border border-input bg-transparent text-(length:--nk-text-label) shadow-xs dark:bg-input/30",
         dense ? "gap-(--nk-space-1) px-2" : "gap-1 px-3",
         "focus-within:border-ring",
         "aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40",
@@ -1349,7 +1349,7 @@ function DatePickerButton({
               type="button"
               variant="ghost"
               data-slot="form-field-date-picker-title"
-              className="h-(--cell-size) flex-1 [font-weight:var(--nk-weight-strong,600)]"
+              className="h-(--cell-size) flex-1 [font-weight:var(--nk-type-weight-strong,600)]"
               disabled={view === "decades"}
               onClick={up}
               aria-label={view === "days" ? `${title}: choose a year` : view === "years" ? `${title}: choose a decade` : title}
@@ -1685,7 +1685,7 @@ function TimeControl({
               if (pm !== parts.pm) update({ ...parts, pm })
             }
           }}
-          className="nk-num ml-1 rounded-(--nk-r-key) px-1 text-(length:--nk-text-label) [font-weight:var(--nk-type-label-weight,500)] text-muted-foreground outline-none hover:text-foreground focus-visible:bg-accent focus-visible:text-accent-foreground"
+          className="nk-num ml-1 rounded-(--nk-radius-key) px-1 text-(length:--nk-text-label) [font-weight:var(--nk-type-label-weight,500)] text-muted-foreground outline-none hover:text-foreground focus-visible:bg-accent focus-visible:text-accent-foreground"
         >
           {parts.pm ? "PM" : "AM"}
         </button>
@@ -1751,7 +1751,7 @@ function ColorControl({
           aria-hidden
           data-slot="form-field-swatch"
           className={cn(
-            "pointer-events-none absolute inset-y-0 left-2.5 my-auto size-5 rounded-(--nk-r-key) border border-input",
+            "pointer-events-none absolute inset-y-0 left-2.5 my-auto size-5 rounded-(--nk-radius-key) border border-input",
             !value && "bg-[repeating-linear-gradient(135deg,transparent_0_3px,var(--border)_3px_5px)]"
           )}
           // A user's colour, not a theme colour: plain hex, never oklch / color-mix.
@@ -1796,7 +1796,7 @@ function ColorControl({
                   onValueChange(s)
                 }}
                 className={cn(
-                  "grid size-6 place-items-center rounded-(--nk-r-control) border border-input outline-none hover:bg-accent focus-visible:bg-accent disabled:opacity-50",
+                  "grid size-6 place-items-center rounded-(--nk-radius-control) border border-input outline-none hover:bg-accent focus-visible:bg-accent disabled:opacity-50",
                   on && "ring-2 ring-ring ring-offset-1 ring-offset-popover"
                 )}
                 style={{ backgroundColor: s }}

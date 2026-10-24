@@ -3,7 +3,7 @@
     "resource": "ox_inventory",
     "path": "web/build"
   },
-  "fonts": "graphite",
+  "fonts": "baseline",
   "lua": [],
   "components": [
     "button",

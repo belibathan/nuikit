@@ -80,14 +80,14 @@ export const RULES: Record<RuleId, { level: Level; description: string }> = {
   "native/components": { level: 3, description: "Doesn't build on shadcn/ui or nuikit registry components" },
   "perf/remote-asset": { level: 0, description: "Font or asset loaded from the network instead of the resource" },
   "perf/frame-send": { level: 0, description: "NUI message sent from a Wait(0) loop (every frame)" },
-  "attention/glow": { level: 0, description: "More than one part marked data-nk-glow: the runtime lets --nk-glow-budget (1) glow, so rank them or drop the extra marks" },
-  "cef/backdrop-filter": { level: 0, description: "Raw backdrop-filter: go through --nk-backdrop-filter, so --nk-backdrop: off can turn it off where NUI draws it as a black box" },
+  "attention/glow": { level: 0, description: "More than one part marked data-nk-glow: the runtime lets --nk-surface-glow-budget (1) glow, so rank them or drop the extra marks" },
+  "cef/backdrop-filter": { level: 0, description: "Raw backdrop-filter: go through --nk-panel-backdrop, so --nk-surface-backdrop: off can turn it off where NUI draws it as a black box" },
   "cef/has": { level: 0, description: ":has() is unsupported in Chromium 103 (the build polyfills some uses); don't rely on it for anything essential" },
   "cef/container": { level: 0, description: "@container queries and container-type are unsupported in Chromium 103; use media queries" },
   "cef/individual-transform": { level: 0, description: "Individual scale/translate/rotate properties are Chromium 104+ and clobber transform animations; use transform" },
   "cef/color-mix-inline": { level: 0, description: "color-mix()/oklch() in an inline style: the plugin only lowers stylesheets, so Chromium 103 drops it; use a token class or rgb()" },
-  "radius/raw": { level: 0, description: "A radius literal (border-radius: 6px, rounded-md, rounded-[…], calc(var(--radius) - 2px)); use --nk-r-key / -chip / -control / -surface" },
-  "radius/pill": { level: 0, description: "A pill (rounded-full, 9999px, 50%); use --nk-r-chip, or a Chip dot" },
+  "radius/raw": { level: 0, description: "A radius literal (border-radius: 6px, rounded-md, rounded-[…], calc(var(--radius) - 2px)); use --nk-radius-key / -chip / -control / -surface" },
+  "radius/pill": { level: 0, description: "A pill (rounded-full, 9999px, 50%); use --nk-radius-chip, or a Chip dot" },
   "effect/blur": { level: 0, description: "backdrop-filter, backdrop-blur-*, filter: blur / drop-shadow / grayscale, drop-shadow-*; depth is the plate recipe, dimming is opacity" },
   "color/mix": { level: 0, description: "color-mix() (Chromium 103 lacks it); use rgba(var(--…-rgb), a)" },
   "shadow/soft": { level: 0, description: "A soft shadow (blur > 0, shadow-sm…2xl); hard drops only: --nk-plate-drop or the tile plate" },
@@ -258,7 +258,7 @@ const LEVEL_VAR = /--(?:level|value|progress|fill|pct|percent)\b/;
 
 /** Invariant 3: a page's own plate, wall, skew or level fill (Tile, Fill and Chip draw these). */
 function localConcept(p: string, v: string, raw: string, at: number, report: Report) {
-  if (p === "transform" && /\bskew[xy]?\(/i.test(v)) report("kit/local-concept", at, "transform: skew is a hand-drawn slant; Tile and the theme's --nk-skew draw it");
+  if (p === "transform" && /\bskew[xy]?\(/i.test(v)) report("kit/local-concept", at, "transform: skew is a hand-drawn slant; Tile and the theme's --nk-shape-slab draw it");
   else if (p === "box-shadow" && isWall(v)) report("kit/local-concept", at, "box-shadow: 0 Npx 0 is a hand-drawn keycap wall; use Tile (the plate recipe)");
   else if (/^border-bottom(-width)?$/.test(p) && (p.endsWith("width") || /\bsolid\b/.test(v)) && [...v.matchAll(LENGTH)].some((m) => (m[2] === "px" ? parseFloat(m[1]!) >= 2 : m[2] === "rem" && parseFloat(m[1]!) >= 0.125)))
     report("kit/local-concept", at, "border-bottom: Npx solid is a hand-drawn wall or underline; use Tile or the row indicator");
@@ -273,8 +273,8 @@ function kitDeclaration(prop: string, value: string, at: number, vat: number, re
   if (p.startsWith("--")) return;
   localConcept(p, v, value, at, report);
   if (/^border(-(top|bottom)-(left|right))?-radius$/.test(p)) {
-    if (/(?<![\w.-])(9999px|999px|50%)/.test(v)) report("radius/pill", at, `${prop}: a pill; use --nk-r-chip (or a Chip dot)`);
-    else if ([...v.matchAll(LENGTH)].some((m) => parseFloat(m[1]!) !== 0)) report("radius/raw", at, `${prop}: a radius literal; use --nk-r-key / -chip / -control / -surface`);
+    if (/(?<![\w.-])(9999px|999px|50%)/.test(v)) report("radius/pill", at, `${prop}: a pill; use --nk-radius-chip (or a Chip dot)`);
+    else if ([...v.matchAll(LENGTH)].some((m) => parseFloat(m[1]!) !== 0)) report("radius/raw", at, `${prop}: a radius literal; use --nk-radius-key / -chip / -control / -surface`);
   }
   if (/^(-webkit-)?backdrop-filter$/.test(p) || (/^(-webkit-)?filter$/.test(p) && /\b(blur|drop-shadow|grayscale)\(/.test(value)))
     report("effect/blur", at, `${prop}: blur, drop-shadow and grayscale draw badly over the game; depth is the plate recipe, dimming is opacity`);
@@ -340,8 +340,8 @@ const LOCAL_STATE_SELECTOR = /\.(is-)?(selected|active|hover)(?![\w-])/;
 
 // class names in markup and script strings
 const CLASS_RULES: [RegExp, RuleId, string][] = [
-  [/(?<![\w-])rounded(-[trblse]{1,2})?-full(?![\w-])/g, "radius/pill", "a pill; use rounded-(--nk-r-chip) or a Chip dot"],
-  [/(?<![\w-])rounded(-[trblse]{1,2})?-(xs|sm|md|lg|xl|2xl|3xl|\[[^\]]+\])(?![\w-])/g, "radius/raw", "a radius class; use rounded-(--nk-r-key / -chip / -control / -surface)"],
+  [/(?<![\w-])rounded(-[trblse]{1,2})?-full(?![\w-])/g, "radius/pill", "a pill; use rounded-(--nk-radius-chip) or a Chip dot"],
+  [/(?<![\w-])rounded(-[trblse]{1,2})?-(xs|sm|md|lg|xl|2xl|3xl|\[[^\]]+\])(?![\w-])/g, "radius/raw", "a radius class; use rounded-(--nk-radius-key / -chip / -control / -surface)"],
   [/(?<![\w-])(backdrop-blur(-\w+)?|drop-shadow(-\w+)?|blur-(sm|md|lg|xl|2xl|3xl)|grayscale)(?![\w-])/g, "effect/blur", "blur, drop-shadow and grayscale draw badly over the game; use the plate recipe or opacity"],
   [/(?<![\w-])shadow-(sm|md|lg|xl|2xl)(?![\w-])/g, "shadow/soft", "a soft shadow; hard drops only (--nk-plate-drop)"],
   [/(?<![\w-])(duration|delay)-(\d+|\[\d[^\]]*\])(?![\w-])/g, "motion/duration", "a duration literal; use duration-(--nk-time-*)"],
@@ -350,7 +350,7 @@ const CLASS_RULES: [RegExp, RuleId, string][] = [
   [/(?<![\w-])(text-(xs|sm|base|lg|xl|2xl|3xl|4xl|5xl)|text-\[\d[^\]]*\]|font-(medium|semibold))(?![\w-])/g, "type/raw", "a type literal; use a role class (nk-scan, nk-title, nk-label, nk-num, nk-body)"],
   [/(?<![\w-])(?:[\w-]+:)*(hover:bg-|data-\[state=(?:active|checked|selected|open)\]:bg-|aria-selected:bg-|aria-checked:bg-)(?!transparent|none)[\w\[(-][^\s"'`]*/g, "selection/local", "a page-drawn selected/hover background; use MenuRowList, SelectionTile or Tabs"],
   [/(?<![\w:-])bg-accent(?![\w-])/g, "selection/local", "bg-accent on a row is a page-drawn selection; use MenuRowList, SelectionTile or Tabs"],
-  [/(?<![\w-])-?skew(-[xy])?-(\d+|\[[^\]]+\])|(?<![\w-])skew[XY]?\(|\[transform:skew/g, "kit/local-concept", "a hand-drawn slant; Tile and --nk-skew draw it"],
+  [/(?<![\w-])-?skew(-[xy])?-(\d+|\[[^\]]+\])|(?<![\w-])skew[XY]?\(|\[transform:skew/g, "kit/local-concept", "a hand-drawn slant; Tile and --nk-shape-slab draw it"],
   [/shadow-\[(?:inset_)?0(?:px)?_-?(?:[3-9]|\d{2,}|0?\.(?:1[89]|[2-9])\d*(?=rem))[\d.]*(?:px|rem)_0(?:px|rem)?[_\],]/g, "kit/local-concept", "a hand-drawn keycap wall (box-shadow 0 Npx 0); use Tile"],
   [/(?<![\w-])(?:[\w-]+:)*border-b-(?:[2-9]|\[[2-9]\d*px\])(?![\w-])/g, "kit/local-concept", "a hand-drawn wall or underline; use Tile or the row indicator"],
   [/(?<![\w-])-?(gap(-[xy])?|p[xytrblse]?|m[xytrblse]?|space-[xy])-\d+\.5(?![\w-])/g, "space/off-scale", "off the 0.25rem step; use gap-(--nk-gap-*) or --nk-space-*"],
@@ -472,7 +472,7 @@ function scanCss(css: string, base: number, report: Report, ctx: FileContext) {
     const value = t.slice(colon + 1);
     remoteInCss(value, base + valueOffset, report);
     if (!ctx.built) {
-      if (/^backdrop-filter$/i.test(prop)) report("cef/backdrop-filter", base + lead, "backdrop-filter draws a black box over the game in NUI; set --nk-backdrop-filter instead (kit.css applies it behind --nk-backdrop, which a server turns off)");
+      if (/^backdrop-filter$/i.test(prop)) report("cef/backdrop-filter", base + lead, "backdrop-filter draws a black box over the game in NUI; set --nk-panel-backdrop instead (kit.css applies it behind --nk-surface-backdrop, which a server turns off)");
       else if (/^container(-type|-name)?$/i.test(prop)) report("cef/container", base + lead, `${prop} is unsupported in Chromium 103`);
       else if (/^(scale|translate|rotate)$/i.test(prop)) report("cef/individual-transform", base + lead, `${prop}: is Chromium 104+ and clobbers transform animations; use transform: ${prop}(…)`);
       if (ctx.inlineStyle) for (const m of value.matchAll(/\b(color-mix|oklch|oklab)\(/gi)) report("cef/color-mix-inline", base + valueOffset + m.index!, `${m[1]}() in an inline style isn't lowered (the plugin only rewrites stylesheets); use a token class or rgb()`);
@@ -577,7 +577,7 @@ const GLOW_MARK = /\bdata-nk-glow(?![-\w])/g;
 /** The glow budget: a page whose source marks more than one part as glowing gets one warning. */
 function scanGlow(text: string, base: number, report: Report, ctx: FileContext) {
   for (const m of text.matchAll(GLOW_MARK)) {
-    if (++ctx.glowMarks === 2) report("attention/glow", base + m.index!, "a second part is marked data-nk-glow; only --nk-glow-budget (1) glows at a time, the focused one first: give each a rank (data-nk-glow=\"2\") or keep one");
+    if (++ctx.glowMarks === 2) report("attention/glow", base + m.index!, "a second part is marked data-nk-glow; only --nk-surface-glow-budget (1) glows at a time, the focused one first: give each a rank (data-nk-glow=\"2\") or keep one");
   }
 }
 
@@ -663,7 +663,7 @@ function scanScript(src: string, base: number, report: Report, ctx: FileContext)
   if (!ctx.built) scanOldCefScript(src, code, strings, rep);
 }
 
-const BACKDROP_MSG = "backdrop-filter draws a black box over the game in NUI; set --nk-backdrop-filter instead (kit.css applies it behind --nk-backdrop, which a server turns off)";
+const BACKDROP_MSG = "backdrop-filter draws a black box over the game in NUI; set --nk-panel-backdrop instead (kit.css applies it behind --nk-surface-backdrop, which a server turns off)";
 /** Inline styles in script: backdropFilter keys, and colour functions the plugin can't lower (it only rewrites stylesheets). */
 function scanOldCefScript(src: string, code: string, strings: Span[], report: Report) {
   for (const m of code.matchAll(/\b(?:Webkit)?[bB]ackdropFilter\b/g)) report("cef/backdrop-filter", m.index!, BACKDROP_MSG);

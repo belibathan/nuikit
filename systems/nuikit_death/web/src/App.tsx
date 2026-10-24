@@ -83,7 +83,7 @@ function Band({ data, laststand, seconds }: { data: DeathData; laststand: boolea
   return (
     <div
       data-slot="death-band"
-      className="nk-slab-band death-band absolute inset-x-0 bottom-0 flex-row justify-between [--nk-slab-tone-rgb:var(--destructive-rgb)]"
+      className="nk-slab-band death-band absolute inset-x-0 bottom-0 flex-row justify-between [--nk-slab-tone:var(--destructive-rgb)]"
       style={{ "--i": 6 } as CSSProperties}
       aria-live="off"
     >
@@ -98,7 +98,7 @@ function Band({ data, laststand, seconds }: { data: DeathData; laststand: boolea
             <span aria-hidden className="opacity-50">
               ·
             </span>
-            <span className="nk-num [font-family:var(--nk-num-font)]">{`${pad(seconds / 60)}:${pad(seconds % 60)}`}</span>
+            <span className="nk-num [font-family:var(--nk-type-num-family)]">{`${pad(seconds / 60)}:${pad(seconds % 60)}`}</span>
           </>
         )}
       </span>

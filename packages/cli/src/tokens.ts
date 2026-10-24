@@ -73,8 +73,8 @@ export const DEFAULT_TOKENS: Token[] = [
   c("brand", "base", "The server's signature colour"),
   c("brand-foreground", "base", "Text on brand"),
   c("surface", "base", "Floating panel surface: popover tinted by brand"),
-  { name: "nk-elevation-shadow", group: "kit", type: "dimension", description: "The panel shadow --nk-elevation names" },
-  { name: "nk-hud-shadow", group: "kit", type: "dimension", description: "The text shadow --nk-hud-text-shadow names" },
+  { name: "nk-depth-elevation", group: "kit", type: "dimension", description: "The panel shadow --nk-surface-elevation names" },
+  { name: "nk-depth-text", group: "kit", type: "dimension", description: "The text shadow --nk-chip-text-shadow names" },
   { name: "world-shadow", group: "kit", type: "dimension", description: "The text shadow that keeps text on the game legible" },
 ];
 

@@ -54,8 +54,8 @@ import { useLinearRun } from "@/hooks/use-linear-run"
  *   a body-role description > dismiss > time line (the duration Fill along the bottom edge).
  * Props: tone, status, hue, title, description, icon, duration, elapsed, paused, onDismiss, item, slide, leaving.
  * Level means: the time left, 1 when it appears, 0 when it expires (--level, the time line drains from it).
- * Rules: danger is data-state="alert" and role="alert"; lifetimes come from --nk-notify-ms-*; the stack sits on
- *   --nk-z-system; transform and opacity only; the time line is hidden with motion off.
+ * Rules: danger is data-state="alert" and role="alert"; lifetimes come from --nk-behavior-notify-*; the stack sits on
+ *   --nk-layer-system; transform and opacity only; the time line is hidden with motion off.
  */
 
 type NoticeStatus = "info" | "success" | "warning" | "error"
@@ -173,9 +173,9 @@ const noticeVariants = cva(
   {
     variants: {
       size: {
-        sm: "w-[var(--nk-notice-w-sm,18rem)]",
-        default: "w-[var(--nk-notice-w,20rem)]",
-        lg: "w-[var(--nk-notice-w-lg,24rem)]",
+        sm: "w-[var(--nk-notice-width-sm,18rem)]",
+        default: "w-[var(--nk-notice-width,20rem)]",
+        lg: "w-[var(--nk-notice-width-lg,24rem)]",
       },
       iconAlign: {
         start: "items-start",
@@ -204,7 +204,7 @@ function noticeOffset(position: NoticePosition | null): [string, string] {
 }
 
 /**
- * The edge motion, on the sheets' ladder: in from the stack's edge with a fade (--nk-time x 2.2, at
+ * The edge motion, on the sheets' ladder: in from the stack's edge with a fade (--nk-time-base x 2.2, at
  * most 360 ms, ease-out) after the stack's stagger delay; while `leaving`, back out toward it (x 1.4,
  * at most 200 ms, ease-in). Web Animations on the notice itself (the queue's flip moves its wrapper,
  * so the two transforms never fight), so there is no stylesheet to install.
@@ -218,13 +218,13 @@ function useEdgeMotion(ref: React.RefObject<HTMLDivElement | null>, on: boolean,
     const [x, y] = level === "reduced" ? ["0rem", "0rem"] : noticeOffset(position)
     const away = { opacity: 0, transform: `translate3d(${x}, ${y}, 0) scale(0.98)` }
     const here = { opacity: 1, transform: "translate3d(0, 0, 0) scale(1)" }
-    const time = tokenMs("--nk-time", 160)
+    const time = tokenMs("--nk-time-base", 160)
     const anim = leaving
-      ? el.animate([here, away], { duration: Math.min(time * 1.4, 200), easing: token("--nk-ease-in") || "cubic-bezier(0.4, 0, 1, 1)", fill: "forwards" })
-      : el.animate([away, here], { duration: Math.min(time * 2.2, 360), easing: token("--nk-ease-out") || "cubic-bezier(0.16, 1, 0.3, 1)", fill: "backwards" })
+      ? el.animate([here, away], { duration: Math.min(time * 1.4, 200), easing: token("--nk-ease-exit") || "cubic-bezier(0.4, 0, 1, 1)", fill: "forwards" })
+      : el.animate([away, here], { duration: Math.min(time * 2.2, 360), easing: token("--nk-ease-enter") || "cubic-bezier(0.16, 1, 0.3, 1)", fill: "backwards" })
     // notices that arrive together come in one after another: the stack's stagger sets this one's
     // delay in a microtask queued before this one
-    if (!leaving) queueMicrotask(() => anim.effect?.updateTiming({ delay: parseFloat(el.style.getPropertyValue("--nk-stagger-delay")) || 0 }))
+    if (!leaving) queueMicrotask(() => anim.effect?.updateTiming({ delay: parseFloat(el.style.getPropertyValue("--nk-notice-delay")) || 0 }))
     return () => anim.cancel()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [on, leaving])
@@ -335,7 +335,7 @@ function Notice({
         data-delta={down ? "down" : "up"}
         data-leaving={leaving || undefined}
         role="status"
-        className={cn("nk-slab pointer-events-auto max-w-[var(--nk-notice-w,20rem)]", animate && !slide && "nk-enter", leaving && "pointer-events-none", className)}
+        className={cn("nk-slab pointer-events-auto max-w-[var(--nk-notice-width,20rem)]", animate && !slide && "nk-enter", leaving && "pointer-events-none", className)}
         {...props}
       >
         <span data-slot="notice-item-tile" className="nk-slab-tile">
@@ -430,7 +430,7 @@ function Notice({
           tween={false}
           tone={STATUS_TONE[status] ?? "info"}
           hue={hue}
-          className="absolute inset-x-0 bottom-0 h-[calc(var(--nk-gauge-track,0.25rem)/2)] rounded-none bg-transparent motion-reduce:hidden [[data-nk-motion=off]_&]:hidden"
+          className="absolute inset-x-0 bottom-0 h-[calc(var(--nk-fill-height,0.25rem)/2)] rounded-none bg-transparent motion-reduce:hidden [[data-nk-motion=off]_&]:hidden"
         />
       )}
     </div>
@@ -450,7 +450,7 @@ const STACK: Record<NoticePosition, string> = {
 }
 
 /**
- * A column of notices pinned `--nk-edge` from a corner or edge of the full-screen root. Children
+ * A column of notices pinned `--nk-screen-edge` from a corner or edge of the full-screen root. Children
  * newest first: the newest sits nearest the edge. Clicks pass through to the game around them.
  */
 function NoticeStack({

@@ -27,7 +27,7 @@ restyle it through tokens, or replace it.
 | Location | Under the map: the street, then `cross street · zone postal` smaller | A strip above the map with a heading badge |
 | Money and job | Under the location | Top right |
 | Vitals | Bottom left: one icon-only chip per vital (health, armor, hunger, thirst, stress), its level traced along the chip outline; a mic chip and the radio channel | The same chips, a size larger, beside the map |
-| Vehicle | Bottom right: the speed with dimmed leading zeros inside a small rpm arc (`arc`: a thin arc over faint ticks; `digital`: segmented ticks; `bar`: a plate with a segmented bar, from the identity's `--nk-gauge-style`), the gear as a brand chip under it, a fuel line (pump, line, %) under the gauge, telltales as a column on the left lit only when on | The large arc / bar / digital gauge, shift lights, telltale row, worded warnings |
+| Vehicle | Bottom right: the speed with dimmed leading zeros inside a small rpm arc (`arc`: a thin arc over faint ticks; `digital`: segmented ticks; `bar`: a plate with a segmented bar, from the identity's `--nk-style-gauge`), the gear as a brand chip under it, a fuel line (pump, line, %) under the gauge, telltales as a column on the left lit only when on | The large arc / bar / digital gauge, shift lights, telltale row, worded warnings |
 | Ammo | Over the vehicle, bottom right | Under the money, top right |
 | Heading strip | None (the ring carries it) | Top centre |
 
@@ -44,7 +44,7 @@ A 0.6 `config.lua` (`layout = { source = … }`) keeps `classic`. Aircraft use t
 | Ammo | `12 / 48` (clip / reserve) with a weapon glyph; thrown weapons show the count. Only while armed with a gun or a throwable; an empty clip turns the warning colour | See Layouts |
 | Telltales | Lights (low / high beam), seatbelt, cruise (with its speed), handbrake, engine and body damage. Lit in their colour; unlit ones stay faintly in place so the row never jumps | Under the gauge |
 | Warnings | "Fasten seatbelt" (moving, unbuckled), "Low fuel 7 %", "Engine 18 %" | Under the telltales |
-| Gauge styles | `arc`, `bar`, `digital`, from the identity's `--nk-gauge-style` (or forced in config) | |
+| Gauge styles | `arc`, `bar`, `digital`, from the identity's `--nk-style-gauge` (or forced in config) | |
 | Aircraft | Airspeed (knots), a heading rose, altitude (ft / m); landing gear, lights, engine, fuel | Bottom right |
 | Boats | The gauge in knots with the heading where the gear would be | Bottom right |
 | Minimap | GTA's radar placed and framed in the panel surface (square or circle), north in the brand colour; the 0.5.0 fixes (own mask, big-map flick, placed only once in the world) are kept | Bottom left |
@@ -65,9 +65,9 @@ Everything is in `config.lua` with a comment on each line. The main switches:
 | `parts` | Move any part (`map`, `location`, `wallet`, `vitals`, `ammo`, `vehicle`) on top of the preset: a corner, `'map'`, `false`, or `{ at, order }`. `compact` and `classic` are presets of it (`client/layout.lua` `Layout.PARTS`); notices follow (screen zones) |
 | `playerLayout` | `true`. Players move the parts for themselves: `/hud edit` (drag a part to a corner, onto the map or off, and reorder it; or click it and then a place; the HUD and the notices follow live; Save keeps it on their machine per preset, Escape or Cancel drops it), `/hud reset`. `/hud export` prints the layout on screen as a `parts = { … }` block for config.lua (F8). `false` turns the editor and saved layouts off |
 | `styles` | How each part draws, the server's defaults (nil: the setting it comes from, so today's look): `vitals.display` (`icons`, `value`, `pill`, `expand`), `vitals.voice` (`beside`, `collapse`), `vehicle.gauge`, `map.radar` / `shape` / `size` / `halo` / `compass` / `column`, the column's `street` / `area` / `money` / `job` lines and `align`, and a size per cluster (`scale.<corner>`, `scale.map`: 80 to 150%, from its own anchor). Players pick their own in `/hud edit`, Style, or any settings page (`nk.settings` rows, previewed live, kept by the nuikit resource; presets Standard, Minimal, Cinema, Streamer; flags `hud_layout`, `hud_style`), within `allow` (per key; nil: every option); `players = false` gives everyone the defaults |
-| `situations` | Foundation 2: which zones (`status`, `map`, `vitals`, `vehicle`) show at `rest`, in a `moment` (a vital, money, the street or the weapon just changed), `driving`, or during an `interaction` (`TriggerEvent('nuikit_hud:interaction', true/false)` from a target or prompt resource). `retract = false` (default): all show, as always. On, the others slide away, at rest after the theme's `--nk-rest-delay` (tokens 1.4; `0ms`, the default, never: set e.g. `--nk-rest-delay: 8s`). The map stays |
+| `situations` | Foundation 2: which zones (`status`, `map`, `vitals`, `vehicle`) show at `rest`, in a `moment` (a vital, money, the street or the weapon just changed), `driving`, or during an `interaction` (`TriggerEvent('nuikit_hud:interaction', true/false)` from a target or prompt resource). `retract = false` (default): all show, as always. On, the others slide away, at rest after the theme's `--nk-behavior-rest` (tokens 1.4; `0ms`, the default, never: set e.g. `--nk-behavior-rest: 8s`). The map stays |
 | `zones` | Foundation 2 named zones: `status`, `map`, `vitals`, `vehicle` (measured on screen) and `prompts`, `interaction`, `toasts` (default boxes, fractions of the safe area). `exports.nuikit_hud:zones()` returns all seven; a box here replaces a default |
-| `legibility` | `{ dayFrom = 7, dayTo = 19, mode = nil }`: with the theme's `--nk-legibility: auto` (tokens 1.4), the game clock marks `html[data-nk-daytime]` and the kit lifts the surfaces by day (other resources get `nuikit:legibility`); `mode` forces the clock's answer; `false` stops it |
+| `legibility` | `{ dayFrom = 7, dayTo = 19, mode = nil }`: with the theme's `--nk-surface-legibility: auto` (tokens 1.4), the game clock marks `html[data-nk-daytime]` and the kit lifts the surfaces by day (other resources get `nuikit:legibility`); `mode` forces the clock's answer; `false` stops it |
 | `area` | `'game'` (read GTA's HUD alignment, fall back when it looks wrong) or `'stage'` (the 0.5.0 rule); was `layout.source` |
 | `minimap.style` | `'ring'` (default: nuikit places GTA's radar and draws the ring or frame) or `'stock'` (GTA's radar untouched, put back to GTA's own placement; the HUD lays out around it). `enabled = false` is the 0.6 spelling of `'stock'` |
 | `minimap.yieldTo` | Minimap resources nuikit gives way to: when one is started the style becomes `'stock'` and F8 says so once. `nil` = the built-in list (`circleminimap`, `squaremap`, `minimap`, `jg-hud`, `ps-hud`, `qb-hud`, `qbx_hud`), `{}` = never |
@@ -76,7 +76,7 @@ Everything is in `config.lua` with a comment on each line. The main switches:
 | `minimap.aspect` | the radar box's width over height; `nil` follows `routeClip` (square for `'box'`, else GTA's 1.41: the map isn't squeezed, the mask shows the middle); set it to force either |
 | `minimap.routeClip` | how the GPS route is kept in the map (0.7.0 A4: GTA draws it across the whole box, through no mask nuikit knows): `'box'` (default: a square radar box, so the route can only reach past the ring at its corners; the map is squeezed about 29%), `'mask'` (minimap_mask over the hole at GTA's aspect: the map unsqueezed, the route overhangs the sides), `'inset'` (minimap_mask on the disc's inner square), `'texture'` (our disc on `radarmask1g` too), `'stock'` (minimap_mask untouched); all but the box are unproven. With `Config.debug`, F8 `nuikit_minimap route <x>` switches live |
 | `minimap.slide` | `false`. A spike, not seen in game: `true` slides GTA's radar and its ring 2.5rem toward their edge with the HUD's exit and entrance (per-frame component placement) instead of cutting them. If the radar doesn't move in game, leave it off |
-| `minimap.halo` | `true`. A soft dark plate behind the round ring, the one the compact speedometer sits on: same strength (`--nk-hud-opacity`), fading out over `--nk-map-halo-size` (2.5rem; `--nk-map-halo-opacity` overrides the strength). It never covers the map inside the ring |
+| `minimap.halo` | `true`. A soft dark plate behind the round ring, the one the compact speedometer sits on: same strength (`--nk-material-hud-opacity`), fading out over `--nk-map-halo-size` (2.5rem; `--nk-map-halo-opacity` overrides the strength). It never covers the map inside the ring |
 | `minimap.waypointTag` | `false`. `true` puts nuikit's waypoint tag on the round ring (an arrow toward the waypoint and the distance). With the radar off the distance reads under the location either way |
 | `minimap.gameDistance` | `false` hides GTA's own GPS distance readout inside the radar (the satnav: the `nuikit` resource sends the minimap movie `HIDE_SATNAV` every frame while the HUD runs). `true` leaves it. Not seen in game |
 | `ammo` | `false` hides the ammo |
@@ -92,11 +92,11 @@ Everything is in `config.lua` with a comment on each line. The main switches:
 | `compass.enabled`, `compass.onFoot` | the heading strip (classic) |
 
 The look is the identity's: colours from the theme tokens, and these identity / component tokens when
-the theme sets them (design v2): `--brand`, `--font-display`, `--font-numeric`, `--nk-label-case`,
-`--nk-tracking-label`, `--nk-weight-display`, `--nk-hud-opacity`, `--nk-hud-text-shadow`
-(`none` / `soft` / `strong`), `--nk-glow`, `--nk-chip-bg`, `--nk-chip-foreground`, `--nk-chip-radius`,
-`--nk-meter-track`, `--nk-gauge-style`, `--nk-gauge-track`, `--nk-gauge-ticks`, `--nk-gauge-fill`,
-`--nk-gauge-needle`, `--nk-gauge-redline`. Without them it falls back to tokens v1.
+the theme sets them (design v2): `--brand`, `--font-display`, `--font-numeric`, `--nk-type-case`,
+`--nk-type-tracking-label`, `--nk-type-weight-display`, `--nk-material-hud-opacity`, `--nk-chip-text-shadow`
+(`none` / `soft` / `strong`), `--nk-surface-glow`, `--nk-chip-bg`, `--nk-chip-fg`, `--nk-chip-radius`,
+`--nk-meter-track-color`, `--nk-style-gauge`, `--nk-fill-height`, `--nk-gauge-ticks`, `--nk-gauge-fill-color`,
+`--nk-gauge-needle-color`, `--nk-gauge-redline-color`. Without them it falls back to tokens v1.
 
 ## Hook events
 

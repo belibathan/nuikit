@@ -575,7 +575,7 @@ export class StaggerGroup {
         const ms = `${Math.round(i * step)}ms`;
         r.el.style.transitionDelay = ms;
         r.el.style.animationDelay = ms;
-        r.el.style.setProperty("--nk-stagger-delay", ms);
+        r.el.style.setProperty("--nk-notice-delay", ms);
         if (r.animate) {
           r.el.setAttribute("data-nk-stagger", r.on ? "in" : "out");
           r.el.setAttribute("data-nk-stagger-kind", r.animate);
@@ -611,7 +611,7 @@ export function useStaggerGroup(): { group: StaggerGroup; on: boolean } | null {
 
 /**
  * One member of a <Stagger> group: when `on` changes, the element gets its delay in the group's sequence
- * (transition-delay, animation-delay and --nk-stagger-delay), so its own CSS transition plays in turn.
+ * (transition-delay, animation-delay and --nk-notice-delay), so its own CSS transition plays in turn.
  * Returns the ref to put on the element. Outside a group it does nothing.
  */
 export function useStaggerItem<T extends HTMLElement | SVGElement>(

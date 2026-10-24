@@ -205,21 +205,21 @@ export function ListMenu() {
         onOpenAutoFocus={(e) => e.preventDefault()}
         onCloseAutoFocus={(e) => e.preventDefault()}
         className={cn(
-          // a floating sheet: the panel recipe, --nk-edge off the screen edges, as tall as its content
+          // a floating sheet: the panel recipe, --nk-screen-edge off the screen edges, as tall as its content
           "ox-sheet-float ox-list nk-panel z-30 h-auto w-[26rem] gap-0 sm:max-w-[26rem]",
-          bottom ? "top-auto bottom-(--nk-edge,1.5rem)" : "top-(--nk-edge,1.5rem) bottom-auto",
-          right ? "right-(--nk-edge,1.5rem) left-auto" : "left-(--nk-edge,1.5rem) right-auto",
+          bottom ? "top-auto bottom-(--nk-screen-edge,1.5rem)" : "top-(--nk-screen-edge,1.5rem) bottom-auto",
+          right ? "right-(--nk-screen-edge,1.5rem) left-auto" : "left-(--nk-screen-edge,1.5rem) right-auto",
         )}
       >
         <TooltipProvider delayDuration={0}>
-          <div className="flex min-h-0 flex-col p-(--nk-pad-surface) pb-0">
+          <div className="flex min-h-0 flex-col p-(--nk-gap-surface) pb-0">
             <header className="pb-(--nk-space-4)">
               <SheetTitle className="ox-sheet-title nk-title truncate">{view.title}</SheetTitle>
             </header>
             {/* At most 7 rows tall (and their gaps), so scrollIntoView({ block: "nearest" }) always lands on a whole
                 row. The rows change state instantly; only the selection Tile moves (SelectionTile: the selected row,
                 which the keys and the pointer both move). Rows sit --nk-list-gap apart and never touch. */}
-            <div ref={list} className="ox-rows nk-list max-h-[calc(var(--nk-row-height)*7_+_var(--nk-list-gap)*6_+_var(--nk-tile-wall))] overflow-y-hidden">
+            <div ref={list} className="ox-rows nk-list max-h-[calc(var(--nk-row-height)*7_+_var(--nk-list-gap)*6_+_var(--nk-tile-wall-height))] overflow-y-hidden">
               <SelectionTile className="ox-indicator" items=".nk-row[data-index]" lit={`[data-index="${selected}"]`} pointer={false} focus={false} />
               {items.map((item, i) =>
                 item.label ? (

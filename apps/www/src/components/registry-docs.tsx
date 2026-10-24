@@ -173,7 +173,7 @@ function FillDemo() {
         { label: "Default (--nk-fill-color)", el: <Fill level={lv} /> },
         { label: 'hue="health"', el: <Fill level={lv} hue="health" /> },
         { label: 'tone="warning"', el: <Fill level={lv} tone="warning" /> },
-        { label: "alertAt (≤ --nk-alert-threshold turns it danger)", el: <Fill level={lv} alertAt /> },
+        { label: "alertAt (≤ --nk-behavior-alert turns it danger)", el: <Fill level={lv} alertAt /> },
         { label: 'variant="edge"', el: <Fill level={lv} variant="edge" /> },
       ].map((r) => (
         <div key={r.label}>
@@ -430,7 +430,7 @@ function NuiImageDemo() {
   return (
     <div className="flex flex-wrap items-end justify-center gap-6 text-white">
       <figure className="flex flex-col items-center gap-2">
-        <NuiImage kind="item" imageKey="water" urls={["/missing-water.png"]} className="size-24 rounded-(--nk-r-control) bg-black/40" />
+        <NuiImage kind="item" imageKey="water" urls={["/missing-water.png"]} className="size-24 rounded-(--nk-radius-control) bg-black/40" />
         <figcaption className="text-xs text-white/70">None load: the fallback icon</figcaption>
       </figure>
     </div>
@@ -441,13 +441,13 @@ function NuiImageDemo() {
 export function NewSections({ Section }: { Section: SectionComponent }) {
   return (
     <>
-      <Section name="tile" title="Tile" text="The one key language: keys, notice icons, tab marks, checked boxes, gears and telltales. A face slanted by --nk-tile-skew on a hard plate straight below it; sizes, shapes, states, tone and hue, a hold fill and a tag." stageClassName="items-start justify-start gap-10">
+      <Section name="tile" title="Tile" text="The one key language: keys, notice icons, tab marks, checked boxes, gears and telltales. A face slanted by --nk-tile-face-skew on a hard plate straight below it; sizes, shapes, states, tone and hue, a hold fill and a tag." stageClassName="items-start justify-start gap-10">
         <TileDemo />
       </Section>
       <Section name="fill" title="Fill" text="Status as a level filling left to right: a track, a bar scaled from the left (transform only) and a bright leading edge. Hue, then tone, then --nk-fill-color; at or under the alert threshold it turns danger." stageClassName="items-center">
         <FillDemo />
       </Section>
-      <Section name="chip" title="Chip" text="A short status on one line: --nk-h-chip tall, --nk-r-chip corners (never a pill), the label role. Hair, tint or solid; tone or hue only when the colour means something; a count; a status dot." stageClassName="items-start justify-start gap-10">
+      <Section name="chip" title="Chip" text="A short status on one line: --nk-height-chip tall, --nk-radius-chip corners (never a pill), the label role. Hair, tint or solid; tone or hue only when the colour means something; a count; a status dot." stageClassName="items-start justify-start gap-10">
         <ChipDemo />
       </Section>
       <Section name="icon-text" title="Icon text" text="An icon and a value on one centre line: one gap, one icon size per step, the text in a role (num, label or body). Money, job, fuel, ammo and notes all use it." stageClassName="items-start justify-start">
@@ -465,7 +465,7 @@ export function NewSections({ Section }: { Section: SectionComponent }) {
       <Section name="vital" title="Vital" text="The compact vital: an icon and a bar, coloured by a theme token, pulsing when low. The HUD's chips are VitalChip; this is the bar form." stageClassName="items-center">
         <VitalDemo />
       </Section>
-      <Section name="collapse-stack" title="Collapse stack" text="Clustered indicators on the collapse engine: icons at rest, a change opens a chip for --nk-rest-delay, changes within 400 ms open together, critical first, at most max, then +N." stageClassName="items-center">
+      <Section name="collapse-stack" title="Collapse stack" text="Clustered indicators on the collapse engine: icons at rest, a change opens a chip for --nk-behavior-rest, changes within 400 ms open together, critical first, at most max, then +N." stageClassName="items-center">
         <CollapseDemo />
       </Section>
       <Section name="text-roll" title="Text roll" text="A value that changes like a slot reel: the old one rolls out, the new one in, masked to the line. NumberRoll rolls each digit on its own. Swaps at once when motion is off." stageClassName="items-center">

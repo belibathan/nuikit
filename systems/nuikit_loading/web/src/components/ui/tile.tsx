@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils"
 /**
  * Tile — the one key language (docs/design/ink.md §3): keys, notice icons, tab marks, checked boxes, vital
  * chips, gears and telltales. A face (rim and top light) on a solid plate, the face slanted by
- * --nk-tile-skew while the box stays upright. kit.css draws it on `data-slot="tile"` (and on shadcn's Kbd,
+ * --nk-tile-face-skew while the box stays upright. kit.css draws it on `data-slot="tile"` (and on shadcn's Kbd,
  * which is the same tile); a theme only sets --nk-tile-*. Graphite: today's keycap, no plate, no slant.
  *
  *   <Tile>E</Tile>
@@ -15,7 +15,7 @@ import { cn } from "@/lib/utils"
  *   <Tile tag="Open door" tagOpen={near}>E</Tile>
  *   <Kbd>Esc</Kbd>                       // Tile size sm with data-slot="kbd"
  *
- * States (data-state): focus switches the rim; hold presses by --nk-tile-press and fills (`level`); confirm
+ * States (data-state): focus switches the rim; hold presses by --nk-tile-plate-press and fills (`level`); confirm
  * turns the face white and pops; alert sets a danger rim and breathes; disabled is half opacity. `active`
  * (on, selected, checked) is the white face.
  *
@@ -31,7 +31,7 @@ type TileState = "rest" | "focus" | "hold" | "confirm" | "alert" | "disabled"
 
 type TileProps = Omit<React.ComponentProps<"span">, "children"> & {
   children?: React.ReactNode
-  /** sm = --nk-h-key, md = --nk-h-chip, lg = --nk-h-control. */
+  /** sm = --nk-height-key, md = --nk-height-chip, lg = --nk-height-control. */
   size?: "sm" | "md" | "lg"
   /** key: as wide as its legend. square: a square (icons). */
   shape?: "key" | "square"
@@ -48,7 +48,7 @@ type TileProps = Omit<React.ComponentProps<"span">, "children"> & {
   tagOpen?: boolean
   /** The HUD's dimmer plate. */
   plate?: "default" | "dim"
-  /** Land from --nk-land-scale when mounted. */
+  /** Land from --nk-gesture-land when mounted. */
   land?: boolean
   /** The data-slot: "tile", or "kbd" for the Kbd alias. */
   slot?: "tile" | "kbd"
@@ -111,7 +111,7 @@ function Kbd({ className, ...props }: Omit<TileProps, "slot">) {
       slot="kbd"
       size="sm"
       className={cn(
-        "pointer-events-none inline-flex h-(--nk-h-key) w-fit min-w-(--nk-h-key) items-center justify-center gap-[var(--nk-tile-gap,0.25rem)] px-[var(--nk-tile-pad,0.25rem)] text-(length:--nk-text-key) select-none [&_svg:not([class*='size-'])]:size-(--nk-icon-sm)",
+        "pointer-events-none inline-flex h-(--nk-height-key) w-fit min-w-(--nk-height-key) items-center justify-center gap-[var(--nk-tile-legend-gap,0.25rem)] px-[var(--nk-tile-legend-inset,0.25rem)] text-(length:--nk-text-key) select-none [&_svg:not([class*='size-'])]:size-(--nk-icon-sm)",
         className
       )}
       {...props}

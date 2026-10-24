@@ -19,7 +19,7 @@ import { useLinearRun } from "@/hooks/use-linear-run"
  * `duration` in ms and it runs on its own; `onComplete` fires from a timer (never an animation
  * event), so it still fires with motion off. Restart a run with a new `key`.
  *
- * The clock is the identity's display type in its numeric face (nk-display, --nk-num-font); the
+ * The clock is the identity's display type in its numeric face (nk-display, --nk-type-num-family); the
  * label is a caption (nk-caption). The line drains on its own between updates: one linear
  * compositor animation from the time left to zero, re-aimed whenever `seconds` changes, so a clock
  * Lua updates once a second still drains smoothly. With motion off it steps.
@@ -36,11 +36,11 @@ import { useLinearRun } from "@/hooks/use-linear-run"
 // Display type in the numeric face: nk-display's size, weight and tracking, the numbers' font.
 // The line-height lives in each size: tailwind-merge treats a font size as overriding an earlier
 // leading-*, so a base leading-none would be dropped (the hero clock then got a tall line box).
-const countdownVariants = cva("nk-display tabular-nums [font-family:var(--nk-num-font)]!", {
+const countdownVariants = cva("nk-display tabular-nums [font-family:var(--nk-type-num-family)]!", {
   variants: {
     size: {
       /** A clock in a row or a slab: the HUD value size. */
-      sm: "[--nk-display-size:var(--nk-hud-value-size)] leading-none",
+      sm: "[--nk-display-size:var(--nk-text-hud)] leading-none",
       /** nk-display (36px in Graphite): a number that is the point of a panel. */
       default: "leading-none",
       /** The full-screen clock (death, loading): 3.5× display, at most 8rem (128px at 1080p). */
@@ -254,8 +254,8 @@ function Countdown({
           // the warning colour beats a hue (data-tone), a hue beats the line's tone (the root's data-hue)
           tone={state === "warning" ? (lineFill === "warning" ? "warning" : "danger") : undefined}
           className={cn(
-            "h-(--nk-meter-height) before:[box-shadow:var(--nk-meter-glow)]",
-            size === "hero" ? "mt-6 w-[var(--nk-countdown-bar-w-hero,20rem)]" : size === "sm" ? "mt-2 w-[var(--nk-countdown-bar-w-sm,6rem)]" : "mt-3 w-[var(--nk-countdown-bar-w,10rem)]",
+            "h-(--nk-fill-height) before:[box-shadow:var(--nk-meter-glow)]",
+            size === "hero" ? "mt-6 w-[var(--nk-countdown-line-width-hero,20rem)]" : size === "sm" ? "mt-2 w-[var(--nk-countdown-line-width-sm,6rem)]" : "mt-3 w-[var(--nk-countdown-line-width,10rem)]",
             game ? "nk-track" : "bg-foreground/15"
           )}
           // its own hue (the root's data-hue) until the warning; otherwise the line's tone, never an ancestor's hue

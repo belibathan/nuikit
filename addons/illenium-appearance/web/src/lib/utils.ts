@@ -187,13 +187,13 @@ export function nkState(s: { disabled?: boolean; confirm?: boolean; hold?: boole
 }
 
 /**
- * The confirm pop on an element: data-state="confirm" for --nk-time-confirm (160ms), then back to what
+ * The confirm pop on an element: data-state="confirm" for --nk-time-slow (160ms), then back to what
  * it was, unless something changed it meanwhile. Set on the DOM, so the component doesn't re-render.
  */
 export function nkConfirm(el: Element | null | undefined) {
   if (!el || typeof window === "undefined") return
   const before = el.getAttribute("data-state")
-  const ms = parseFloat(getComputedStyle(el).getPropertyValue("--nk-time-confirm")) || 160
+  const ms = parseFloat(getComputedStyle(el).getPropertyValue("--nk-time-slow")) || 160
   el.setAttribute("data-state", "confirm")
   window.setTimeout(() => {
     if (el.getAttribute("data-state") !== "confirm") return

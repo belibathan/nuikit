@@ -108,7 +108,7 @@ export function ProgressBar() {
         data-slot="progress-slab"
         data-state={presence.state}
         // the baseline: the HUD plate, the label voice, the percentage in the numeric voice, a key tile, a solid fill
-        className={cn("nk-slab-stack gap-(--nk-space-3) rounded-(--nk-slab-radius) bg-(--nk-slab-bg) p-(--nk-space-4) text-(--nk-slab-fg) shadow-[inset_0_0_0_var(--nk-border)_var(--nk-slab-border)]", presenceMotion)}
+        className={cn("nk-slab-stack gap-(--nk-space-3) rounded-(--nk-slab-radius) bg-(--nk-slab-bg) p-(--nk-space-4) text-(--nk-slab-fg) shadow-[inset_0_0_0_var(--nk-line-width)_var(--nk-slab-border)]", presenceMotion)}
       >
         <div className="nk-slab-stack-row">
           <span data-slot="progress-label" className="truncate">{withKeys(run.label)}</span>

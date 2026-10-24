@@ -69,7 +69,7 @@ export function VariantsDemo() {
           </PanelBody>
         </Panel>
         <div className="flex flex-col items-start gap-4">
-          <div className="relative h-48 w-[26rem] [--nk-edge:0rem]">
+          <div className="relative h-48 w-[26rem] [--nk-screen-edge:0rem]">
             <NoticeStack position="top-right" key={`n${run}`} {...v}>
               <Notice size={size} status="success" title="Paid" description="$500 from Lester" duration={0} />
               <Notice item={{ name: "Water bottle", count: 2, icon: <CupSodaIcon /> }} duration={0} />

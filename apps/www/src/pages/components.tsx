@@ -111,7 +111,7 @@ export function ComponentsPage() {
         <Section
           name="vital-chip"
           title="Vital chip"
-          text="What a chip shows, per server or per player: pill (icon, name, value), value (icon and value), icon (the level as fill), expand (the icon opens to the pill on a change and settles after --nk-rest-delay). A chip that opens (voice while talking) pushes its neighbours, collapses them to icons, or floats over them."
+          text="What a chip shows, per server or per player: pill (icon, name, value), value (icon and value), icon (the level as fill), expand (the icon opens to the pill on a change and settles after --nk-behavior-rest). A chip that opens (voice while talking) pushes its neighbours, collapses them to icons, or floats over them."
           stageClassName="flex-col items-center"
         >
           <ChipModesDemo />
@@ -279,7 +279,7 @@ export function ComponentsPage() {
           text="The key and what it does, near what the player can use. One or several, a combination, hold-to-confirm with a line that fills, the active one, a locked one with a reason. On a panel or on the HUD. In game the key is read in Lua; the hold arrives as progress."
           // The stage is smaller than a screen: anchor 2.5rem in (not the in-game 1.5rem) so the
           // edge rows have room inside its rounded border.
-          stageClassName="min-h-[34rem] items-center [--nk-edge:2.5rem]"
+          stageClassName="min-h-[34rem] items-center [--nk-screen-edge:2.5rem]"
         >
           <KeyPromptStates />
           <KeyPromptDemo />
@@ -289,7 +289,7 @@ export function ComponentsPage() {
           name="progress-ring"
           title="Progress ring"
           text="A circle that fills: a level, or a timed run that says when it's done from a timer, so it still finishes with motion off. On the game or on a panel, three sizes, status tones, any centre, a cancel hint. The bar is the meter."
-          stageClassName="min-h-[30rem] items-center [--nk-edge:2.5rem]"
+          stageClassName="min-h-[30rem] items-center [--nk-screen-edge:2.5rem]"
         >
           <ProgressRingStates />
           <ProgressRingDemo />

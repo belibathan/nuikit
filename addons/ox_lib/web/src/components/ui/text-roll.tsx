@@ -76,10 +76,10 @@ function useAlign(root: React.RefObject<HTMLElement | null>, align?: Align): Ali
 }
 
 const EASE = "cubic-bezier(0.2, 0.8, 0.2, 1)"
-/** One roll's duration: about 1.6 panel steps (the identity's --nk-duration), at most 420 ms. */
+/** One roll's duration: about 1.6 panel steps (the identity's --nk-motion-duration), at most 420 ms. */
 function rollMs() {
   // the cached token read (nuikit-core/motion), not a getComputedStyle per roll per digit
-  return Math.min(420, Math.max(120, tokenMs("--nk-duration", 140) * 1.6))
+  return Math.min(420, Math.max(120, tokenMs("--nk-motion-duration", 140) * 1.6))
 }
 
 interface Layer {

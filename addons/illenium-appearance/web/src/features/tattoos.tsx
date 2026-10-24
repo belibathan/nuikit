@@ -56,7 +56,7 @@ function Zone({ zone, items }: { zone: TattooZone; items: Tattoo[] }) {
         <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
         <Input placeholder={`Search ${items.length} designs`} value={query} onChange={(e) => setQuery(e.target.value)} className="h-9 pl-9" />
       </div>
-      <ScrollArea className="h-60 rounded-(--nk-r-control) border [&_[data-slot=scroll-area-viewport]>div]:!block">
+      <ScrollArea className="h-60 rounded-(--nk-radius-control) border [&_[data-slot=scroll-area-viewport]>div]:!block">
         <div className="p-1">
           {filtered.map((t) => {
             const on = applied.some((a) => a.name === t.name);

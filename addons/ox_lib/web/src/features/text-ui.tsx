@@ -41,7 +41,7 @@ const SLIDE: Record<KeyPromptPosition, string> = {
   "bottom-center": "data-[state=open]:slide-in-from-bottom-4 data-[state=closed]:slide-out-to-bottom-2",
 };
 const MOTION =
-  "data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:duration-(--nk-time) data-[state=open]:ease-(--nk-ease-out) data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:duration-(--nk-time) data-[state=closed]:ease-(--nk-ease-retract) data-[state=closed]:fill-mode-forwards";
+  "data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:duration-(--nk-time-base) data-[state=open]:ease-(--nk-ease-enter) data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:duration-(--nk-time-base) data-[state=closed]:ease-(--nk-ease-exit) data-[state=closed]:fill-mode-forwards";
 
 export function TextUi() {
   // lever (README): where a text UI without a position goes (nuikit's default bottom-center; ox's was right-center)

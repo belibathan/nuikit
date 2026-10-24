@@ -39,31 +39,9 @@ interface Painted {
 }
 
 const painted = new Map<HTMLElement, Painted>();
-/** Identity keywords painted as attributes on the themed element: data-nk-row="fill", data-nk-gauge="digital"… */
-export const KEYWORD_ATTRS: readonly (readonly [string, string])[] = [
-  ["data-nk-row", "nk-row-indicator"],
-  ["data-nk-gauge", "nk-gauge-style"],
-  ["data-nk-elevation", "nk-elevation"],
-  ["data-nk-label-case", "nk-label-case"],
-  ["data-nk-feel", "nk-motion-feel"],
-  ["data-nk-display-style", "nk-display-style"],
-  ["data-nk-skew", "nk-skew"],
-  ["data-nk-pause", "nk-pause-style"],
-  // tokens 1.4
-  ["data-nk-treatment", "nk-treatment"],
-  ["data-nk-focus", "nk-focus-style"],
-  ["data-nk-hold", "nk-hold-style"],
-  ["data-nk-level", "nk-level-style"],
-  ["data-nk-legibility", "nk-legibility"],
-  ["data-nk-profile", "nk-motion-profile"],
-  ["data-nk-slash", "nk-slash"],
-  ["data-nk-backdrop", "nk-backdrop"],
-  // tokens 1.6 (the baseline): solid or soft fills
-  ["data-nk-fill", "nk-fill-style"],
-  ["data-nk-texture-hud", "nk-material-hud-texture"],
-  ["data-nk-texture-menu", "nk-material-menu-texture"],
-  ["data-nk-texture-overlay", "nk-material-overlay-texture"],
-];
+/** Identity keywords painted as attributes on the themed element (data-nk-feel="snap"…): every keyword lever with an `attr` in the spec. */
+export { KEYWORD_ATTRS } from "./tokens";
+import { KEYWORD_ATTRS } from "./tokens";
 const DERIVED = new Set(IDENTITY_TOKENS.filter((t) => t.group === "derived").map((t) => t.name));
 let prefs: NuiPrefs = { ...DEFAULT_PREFS };
 const themeListeners = new Set<(theme: CompiledTheme) => void>();
@@ -96,7 +74,7 @@ export function applyTheme(theme: ThemeInput, target?: HTMLElement, mode?: Theme
   const vars = paint(el, compiled);
   if (el === document.documentElement) {
     // the glow budget (tokens 1.4) follows the theme on the page's root
-    startGlowBudget(compiled.vars["nk-glow-budget"] ?? 1);
+    startGlowBudget(compiled.vars["nk-surface-glow-budget"] ?? 1);
     themeListeners.forEach((l) => l(compiled));
   }
   return vars;

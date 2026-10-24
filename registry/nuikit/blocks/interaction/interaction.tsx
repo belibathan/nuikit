@@ -163,7 +163,7 @@ function Target({
         aria-hidden
         className={cn(
           // a Lua-driven state (live): it changes on the kit's base time, never Tailwind's default
-          "nk-hud nk-shadow flex size-10 items-center justify-center rounded-(--nk-r-control) [&_svg]:size-5",
+          "nk-hud nk-shadow flex size-10 items-center justify-center rounded-(--nk-radius-control) [&_svg]:size-5",
           live ? "text-primary" : "opacity-60"
         )}
       >

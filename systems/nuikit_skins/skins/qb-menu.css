@@ -27,8 +27,8 @@
 
   --md-error: var(--nk-destructive, #b3261e);
   --md-on-error: var(--nk-primary-foreground, #ffffff);
-  --md-outline: var(--nk-border, #79747e);
-  --md-outline-variant: var(--nk-border, #49454f);
+  --md-outline: var(--nk-line-width, #79747e);
+  --md-outline-variant: var(--nk-line-width, #49454f);
   --md-inverse-surface: var(--nk-foreground, #e6e1e5);
   --md-inverse-on-surface: var(--nk-background, #1c1b1f);
   --md-scrim: rgba(var(--nk-scrim-rgb, 0, 0, 0), 0.6);

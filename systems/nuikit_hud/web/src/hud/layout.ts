@@ -23,10 +23,10 @@ export function layoutVars(layout: HudLayout, map: MinimapFrame | null, width: n
     "--hud-b": pct(layout.b),
     // the layout's content box is GTA's HUD area (client/layout.lua: the 16:9 box unless Config.bleed), so every
     // zone, nk-anchor and notice clear lines up with the radar Lua places in the same area
-    "--nk-area-l": pct(layout.l),
-    "--nk-area-r": pct(layout.r),
-    "--nk-area-t": pct(layout.t),
-    "--nk-area-b": pct(layout.b),
+    "--nk-screen-area-l": pct(layout.l),
+    "--nk-screen-area-r": pct(layout.r),
+    "--nk-screen-area-t": pct(layout.t),
+    "--nk-screen-area-b": pct(layout.b),
   };
   if (map) {
     vars["--hud-map-x"] = px(map.x * width);

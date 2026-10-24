@@ -46,7 +46,7 @@ export function StageBar({ target, className }: { target: React.RefObject<HTMLEl
           <Button key={t.name} role="radio" aria-checked={id === i} variant={id === i ? "secondary" : "ghost"} size="sm" onClick={() => setId(i)}>
             <span className="flex" aria-hidden>
               {t.swatch.map((c, j) => (
-                <span key={j} className="size-3 rounded-(--nk-r-key) border border-white/20" style={{ background: c, marginLeft: j ? -3 : 0 }} />
+                <span key={j} className="size-3 rounded-(--nk-radius-key) border border-white/20" style={{ background: c, marginLeft: j ? -3 : 0 }} />
               ))}
             </span>
             {t.name}
@@ -156,7 +156,7 @@ export function Entry({ name, title, text, scene, stageClassName, children, focu
         </div>
         <Command className="h-10 w-full max-w-md text-xs">{installLine(name)}</Command>
       </div>
-      <div className="relative isolate mt-5 overflow-hidden rounded-(--nk-r-surface) border" style={{ background: stageBackground(scene) }}>
+      <div className="relative isolate mt-5 overflow-hidden rounded-(--nk-radius-surface) border" style={{ background: stageBackground(scene) }}>
         {/* phones: the stage scrolls sideways rather than squeezing a 1080p part */}
         <div className="overflow-x-auto">
           <div className={cn("relative flex min-h-64 flex-wrap items-start justify-center gap-8 p-4 sm:p-10", stageClassName)}>{children}</div>

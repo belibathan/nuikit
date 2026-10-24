@@ -3,10 +3,10 @@
  *
  * Colours come only from theme tokens. Identity and component tokens (docs/design/v2.md §1) are read
  * with fallbacks, so this works on tokens v1 today and takes an identity's look when it sets them:
- *   --brand, --font-display, --font-numeric, --nk-label-case, --nk-tracking-label, --nk-weight-display,
- *   --nk-hud-opacity, --nk-glow, --nk-chip-bg, --nk-chip-foreground, --nk-chip-radius, --nk-meter-track,
- *   --nk-gauge-fill, --nk-gauge-needle, --nk-gauge-redline (+ --nk-gauge-style, -track, -ticks and
- *   --nk-hud-text-shadow, read in JS: hud/look.ts).
+ *   --brand, --font-display, --font-numeric, --nk-type-case, --nk-type-tracking-label, --nk-type-weight-display,
+ *   --nk-material-hud-opacity, --nk-surface-glow, --nk-chip-bg, --nk-chip-fg, --nk-chip-radius, --nk-meter-track-color,
+ *   --nk-gauge-fill-color, --nk-gauge-needle-color, --nk-gauge-redline-color (+ --nk-style-gauge, -track, -ticks and
+ *   --nk-chip-text-shadow, read in JS: hud/look.ts).
  *
  * Chromium 103: no :has, no @container, no individual scale/translate, no CSS blur. Anchors read the
  * HUD area from --hud-l/-r/-t/-b (GTA's safe area, from client/layout.lua) and the map from --hud-map-*.
@@ -22,26 +22,26 @@
   --hud-fg-muted: var(--world-foreground-muted, color-mix(in oklab, var(--hud-fg) 72%, transparent));
   color: var(--hud-fg);
   font-family: var(--font-sans);
-  --edge: var(--nk-edge, 1.5rem);
+  --edge: var(--nk-screen-edge, 1.5rem);
   --hud-accent: var(--brand, var(--primary));
   --hud-accent-foreground: var(--brand-foreground, var(--primary-foreground));
   --hud-chip-bg: var(--nk-chip-bg, var(--hud));
-  --hud-chip-fg: var(--nk-chip-foreground, var(--hud-foreground)); /* on its backplate: the chip pair */
+  --hud-chip-fg: var(--nk-chip-fg, var(--hud-foreground)); /* on its backplate: the chip pair */
   --hud-chip-radius: var(--nk-chip-radius, 9999px);
   --hud-faint: color-mix(in oklab, var(--hud-fg) 18%, transparent);
   --hud-hairline: color-mix(in oklab, var(--hud-fg) 10%, transparent);
-  --hud-track: var(--nk-meter-track, color-mix(in oklab, var(--hud-fg) 16%, transparent));
+  --hud-track: var(--nk-meter-track-color, color-mix(in oklab, var(--hud-fg) 16%, transparent));
   /* status colours on the roles (tokens 1.4: --role-<name>); the 1.3 tokens only for an older theme */
   --hud-ok: var(--role-success, var(--success));
   --hud-warn: var(--role-warning, var(--warning));
   --hud-danger: var(--role-danger, var(--destructive));
-  --hud-redline: var(--nk-gauge-redline, var(--hud-danger));
-  --hud-fill: var(--nk-gauge-fill, var(--brand, var(--primary)));
-  --hud-needle: var(--nk-gauge-needle, var(--hud-fg));
+  --hud-redline: var(--nk-gauge-redline-color, var(--hud-danger));
+  --hud-fill: var(--nk-gauge-fill-color, var(--brand, var(--primary)));
+  --hud-needle: var(--nk-gauge-needle-color, var(--hud-fg));
   --hud-font-num: var(--font-numeric, var(--font-sans));
   --hud-font-display: var(--font-display, var(--font-sans));
-  /* the HUD material (tokens 1.4), which legibility lifts by day; 1.3 themes: --nk-hud-opacity */
-  --hud-plate-opacity: var(--nk-hud-alpha, var(--nk-hud-opacity, 0.55));
+  /* the HUD material (tokens 1.4), which legibility lifts by day; 1.3 themes: --nk-material-hud-opacity */
+  --hud-plate-opacity: var(--nk-alpha-hud, var(--nk-material-hud-opacity, 0.55));
   --hud-ms: calc(var(--nk-time-slow) * var(--nk-motion, 1));
   text-shadow: var(--world-shadow, var(--hud-ts));
 }
@@ -58,7 +58,7 @@
 
 .hud-num {
   font-family: var(--hud-font-num);
-  font-style: var(--nk-display-style, normal);
+  font-style: var(--nk-type-slant, normal);
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.02em;
 }
@@ -68,11 +68,11 @@
   line-height: 1rem;
   font-weight: 500;
   opacity: 0.75;
-  text-transform: var(--nk-label-case, none);
-  letter-spacing: var(--nk-tracking-label, 0);
+  text-transform: var(--nk-type-case, none);
+  letter-spacing: var(--nk-type-tracking-label, 0);
 }
 
-/* ───────────────────────────── anchors: GTA's safe area + --nk-edge */
+/* ───────────────────────────── anchors: GTA's safe area + --nk-screen-edge */
 
 .hud-anchor-bl,
 .hud-anchor-br,
@@ -102,7 +102,7 @@
   align-items: flex-start;
   gap: 0.75rem;
 }
-/* a corner is a layout zone (kit.css nk.layout): GTA's area via --nk-area-*, --nk-edge in; the HUD's own gaps */
+/* a corner is a layout zone (kit.css nk.layout): GTA's area via --nk-area-*, --nk-screen-edge in; the HUD's own gaps */
 .hud-root [data-slot="hud-corner"][data-nk-zone] {
   --nk-zone-gap: 0.75rem;
 }
@@ -132,17 +132,17 @@
 
 /* ───────────────────────────── the status row: comms first, then vitals (components/ui/vital-chip)
 
-   Every chip is the kit's VitalChip: one shape path (--nk-chip-shape), its level (--nk-level-style),
+   Every chip is the kit's VitalChip: one shape path (--nk-chip-shape), its level (--nk-style-level),
    its label attachment (--nk-label-attach); the defaults are the 0.7 look, the rest are experimental
    (/hudstyle). The vitals fold away when they have nothing to say; a change pops a flag from the side. */
 
 .hud-vitals-row {
-  --vital-size: 2.125rem;
+  --nk-vital-chip-size: 2.125rem;
   --vital-icon-size: 1rem;
   --hud-vchip-gap: 0.375rem;
   --nk-chip-bg: var(--hud-chip-bg);
   --nk-chip-fg: var(--hud-chip-fg);
-  --nk-chip-track: var(--hud-track);
+  --nk-vital-chip-track-color: var(--hud-track);
   display: flex;
   /* anchor-preserving growth (Foundation 2): a chip that grows (a pop, a taller identity) grows away
      from the corner the row is anchored to, so its bottom edge stays put (top corners: its top) */
@@ -155,7 +155,7 @@
   align-items: flex-start;
 }
 .hud-vitals-row[data-layout="classic"] {
-  --vital-size: 2.5rem;
+  --nk-vital-chip-size: 2.5rem;
   --vital-icon-size: 1.0625rem;
   --hud-vchip-gap: 0.5rem;
 }
@@ -169,7 +169,7 @@
   /* transform and opacity only: the row never lays out per frame (pills.tsx useFold, flip.ts) */
   transition:
     opacity var(--hud-ms) ease-out,
-    transform var(--hud-ms) var(--nk-ease-out);
+    transform var(--hud-ms) var(--nk-ease-enter);
 }
 /* each chip sits over the one to its right, so a chip that folds away slides under its left neighbour */
 .hud-vitals-row > .hud-vchip:nth-child(1) { z-index: 9; }
@@ -189,7 +189,7 @@
   opacity: 0;
   transform: translateX(-45%) scale(0.82);
   transition-duration: calc(var(--nk-time-slow) * var(--nk-motion, 1));
-  transition-timing-function: var(--nk-ease-retract);
+  transition-timing-function: var(--nk-ease-exit);
 }
 :is(html, *)[data-nk-motion="reduced"] .hud-vchip {
   transform: none;
@@ -197,13 +197,13 @@
 }
 /* talking: the accent fills the chip from the bottom up, the ink eases with it */
 .hud-vchip {
-  --nk-chip-active-fill: var(--hud-accent);
+  --nk-vital-chip-activefill-color: var(--hud-accent);
 }
 .hud-vchip [data-slot="vital-chip-activefill"] {
   transform-box: fill-box;
   transform-origin: center bottom;
   transform: scaleY(0);
-  transition: transform calc(var(--nk-time-slow) * var(--nk-motion, 1)) var(--nk-ease-out);
+  transition: transform calc(var(--nk-time-slow) * var(--nk-motion, 1)) var(--nk-ease-enter);
 }
 .hud-vchip [data-slot="vital-chip-shape"] {
   transition: color calc(var(--nk-time-slow) * var(--nk-motion, 1)) ease-out;
@@ -213,14 +213,14 @@
 }
 .hud-vchip[data-active] {
   --nk-chip-fg: var(--hud-accent-foreground);
-  --nk-chip-track: transparent;
+  --nk-vital-chip-track-color: transparent;
 }
 :is(html, *)[data-nk-motion="reduced"] .hud-vchip [data-slot="vital-chip-activefill"] {
   transition: none;
 }
 /* past its threshold: the whole outline takes the vital's colour (outline level) */
 .hud-vchip[data-state="alert"] {
-  --nk-chip-track: color-mix(in oklab, var(--vital) 40%, transparent);
+  --nk-vital-chip-track-color: color-mix(in oklab, var(--vital) 40%, transparent);
 }
 .hud-vchip[data-tone="health"] { --vital: var(--vital-health); }
 .hud-vchip[data-tone="armor"] { --vital: var(--vital-armor); }
@@ -272,7 +272,7 @@
   font-size: 1.125rem;
   line-height: 1.375rem;
   font-weight: 600;
-  letter-spacing: var(--nk-tracking-display, -0.01em);
+  letter-spacing: var(--nk-type-tracking-display, -0.01em);
 }
 .hud-area {
   overflow: hidden;
@@ -310,7 +310,7 @@
 
 /* ───────────────────────────── heading strip */
 
-/* placed by its zone (App.tsx: <Zone at="tc">, inside GTA's area at --nk-edge) */
+/* placed by its zone (App.tsx: <Zone at="tc">, inside GTA's area at --nk-screen-edge) */
 .hud-compass {
   position: relative;
   width: 26rem;
@@ -494,9 +494,9 @@
   font-family: var(--hud-font-display);
   font-size: 1.75rem;
   line-height: 2.25rem;
-  font-weight: var(--nk-weight-display, 700);
+  font-weight: var(--nk-type-weight-display, 700);
   font-variant-numeric: tabular-nums;
-  letter-spacing: var(--nk-tracking-display, -0.02em);
+  letter-spacing: var(--nk-type-tracking-display, -0.02em);
 }
 .hud-money-delta {
   margin-right: 0.25rem;
@@ -537,7 +537,7 @@
 .hud-gauge {
   position: relative;
 }
-/* the backplate: how much the game is darkened behind the gauge (--nk-hud-opacity) */
+/* the backplate: how much the game is darkened behind the gauge (--nk-material-hud-opacity) */
 .hud-plate {
   position: absolute;
   inset: -1.25rem;
@@ -563,7 +563,7 @@
   font-family: var(--hud-font-num);
   font-size: 3.75rem;
   line-height: 1;
-  font-weight: var(--nk-weight-display, 700);
+  font-weight: var(--nk-type-weight-display, 700);
   letter-spacing: -0.04em;
 }
 .hud-gear {
@@ -791,7 +791,7 @@
   stroke-linecap: round;
 }
 .hud-arc-glow {
-  opacity: calc(var(--nk-glow, 0) * 0.5);
+  opacity: calc(var(--nk-surface-glow, 0) * 0.5);
 }
 [data-state="alert"] .hud-arc-fill,
 [data-state="alert"] .hud-arc-glow {
@@ -981,7 +981,7 @@
 .hud-air-value {
   font-size: 2.25rem;
   line-height: 2.75rem;
-  font-weight: var(--nk-weight-display, 700);
+  font-weight: var(--nk-type-weight-display, 700);
 }
 .hud-air-rose {
   display: flex;
@@ -1065,8 +1065,8 @@
   --hud-solid: var(--nk-panel-bg, var(--popover));
   --hud-solid-fg: var(--nk-panel-fg, var(--popover-foreground));
   --hud-caption-font: var(--nk-caption-font, var(--font-sans));
-  --hud-caption-case: var(--nk-caption-transform, var(--nk-label-case, none));
-  --hud-caption-tracking: var(--nk-caption-tracking, var(--nk-tracking-label, 0));
+  --hud-caption-case: var(--nk-caption-case, var(--nk-type-case, none));
+  --hud-caption-tracking: var(--nk-caption-tracking, var(--nk-type-tracking-label, 0));
 }
 
 /* ───────────────────────────── map ring + compass */
@@ -1080,7 +1080,7 @@
   overflow: visible;
 }
 /* Config.minimap.halo: the speedometer's plate behind the round ring, at the same strength
-   (--hud-plate-opacity, the theme's --nk-hud-opacity). It starts at the ring's outer edge and fades
+   (--hud-plate-opacity, the theme's --nk-material-hud-opacity). It starts at the ring's outer edge and fades
    out over --nk-map-halo-size, so it darkens the game around the ring, never the map inside it. */
 .hud-map-plate {
   position: absolute;
@@ -1201,8 +1201,8 @@
   font-family: var(--hud-font-display);
   font-size: 1.0625rem;
   line-height: 1.375rem;
-  font-weight: var(--nk-weight-strong, 600);
-  letter-spacing: calc(var(--nk-tracking-display, -0.02em) / 2);
+  font-weight: var(--nk-type-weight-strong, 600);
+  letter-spacing: calc(var(--nk-type-tracking-display, -0.02em) / 2);
 }
 /* cross street · zone postal: one muted line, a dot between the parts */
 .hud-loc-detail {
@@ -1297,7 +1297,7 @@
 .hud-ammo-clip {
   font-size: 1.875rem;
   line-height: 1;
-  font-weight: var(--nk-weight-display, 700);
+  font-weight: var(--nk-type-weight-display, 700);
 }
 .hud-ammo-reserve {
   margin-left: 0.3125rem;
@@ -1351,7 +1351,7 @@
   display: flex;
   font-size: 2.875rem;
   line-height: 1;
-  font-weight: var(--nk-weight-display, 700);
+  font-weight: var(--nk-type-weight-display, 700);
   letter-spacing: -0.03em;
 }
 .hud-c-speed > [data-dim] {
@@ -1563,7 +1563,7 @@
   position: absolute;
   inset: 0;
   pointer-events: none;
-  animation: hud-side-in calc(var(--nk-time-slow) * var(--nk-motion, 1)) var(--nk-ease-out, var(--nk-ease-expand)) both;
+  animation: hud-side-in calc(var(--nk-time-slow) * var(--nk-motion, 1)) var(--nk-ease-enter, var(--nk-ease-expand)) both;
 }
 .hud-side[data-side="left"] {
   --hud-side-x: -2.5rem;
@@ -1579,14 +1579,14 @@ html[data-nk-motion="reduced"] .hud-side {
   --hud-side-y: 0;
 }
 [data-surface="hud"][data-closing] .hud-side {
-  animation: hud-side-out calc(var(--nk-time-slow) * var(--nk-motion, 1)) var(--nk-ease-in, var(--nk-ease-retract)) both;
+  animation: hud-side-out calc(var(--nk-time-slow) * var(--nk-motion, 1)) var(--nk-ease-exit, var(--nk-ease-exit)) both;
 }
 .hud-side[data-side="map"] {
   animation: none;
 }
 /* the ring mounts when the radar shows (Lua's hud:minimap), so it fades in on its own mount */
 .hud-side[data-side="map"] > * {
-  animation: hud-map-in calc(var(--nk-time-slow) * var(--nk-motion, 1)) var(--nk-ease-out, ease-out) both;
+  animation: hud-map-in calc(var(--nk-time-slow) * var(--nk-motion, 1)) var(--nk-ease-enter, ease-out) both;
 }
 [data-surface="hud"][data-closing] .hud-side[data-side="map"] {
   animation: none;
@@ -1596,7 +1596,7 @@ html[data-nk-motion="reduced"] .hud-side {
    slides with it and doesn't fade (the radar can't) */
 .hud-side[data-side="map"][data-slide] {
   --hud-side-x: 2.5rem;
-  animation: hud-map-slide-in calc(var(--nk-time-slow) * var(--nk-motion, 1)) var(--nk-ease-out, var(--nk-ease-expand)) both;
+  animation: hud-map-slide-in calc(var(--nk-time-slow) * var(--nk-motion, 1)) var(--nk-ease-enter, var(--nk-ease-expand)) both;
 }
 .hud-side[data-side="map"][data-slide="left"] {
   --hud-side-x: -2.5rem;
@@ -1606,7 +1606,7 @@ html[data-nk-motion="reduced"] .hud-side {
 }
 [data-surface="hud"][data-closing] .hud-side[data-side="map"][data-slide] {
   opacity: 1;
-  animation: hud-map-slide-out calc(var(--nk-time-slow) * var(--nk-motion, 1)) var(--nk-ease-in, var(--nk-ease-retract)) both;
+  animation: hud-map-slide-out calc(var(--nk-time-slow) * var(--nk-motion, 1)) var(--nk-ease-exit, var(--nk-ease-exit)) both;
 }
 @keyframes hud-map-slide-in {
   from {
@@ -1736,8 +1736,8 @@ html[data-nk-motion="off"] .hud-root * {
    its side's edge and fades, and comes back the same way */
 .hud-part {
   transition:
-    opacity calc(var(--nk-time-retract, 320ms) * var(--nk-motion, 1)) var(--nk-ease-retract, var(--nk-ease-out, ease-out)),
-    transform calc(var(--nk-time-retract, 320ms) * var(--nk-motion, 1)) var(--nk-ease-retract, var(--nk-ease-out, ease-out));
+    opacity calc(var(--nk-time-slow, 320ms) * var(--nk-motion, 1)) var(--nk-ease-exit, var(--nk-ease-enter, ease-out)),
+    transform calc(var(--nk-time-slow, 320ms) * var(--nk-motion, 1)) var(--nk-ease-exit, var(--nk-ease-enter, ease-out));
 }
 .hud-part[data-retracted] {
   opacity: 0;
@@ -1840,7 +1840,7 @@ html[data-nk-motion="off"] .hud-root * {
 .hud-vitals-row[data-collapsed] > [data-slot="hud-radio"],
 .hud-vitals-row[data-collapsed] > [data-slot="hud-slot"]:not([data-voice]) {
   opacity: 0;
-  transform: translateX(calc((var(--vital-size) + var(--hud-vchip-gap)) * var(--i, 1) * -1)) scale(0.82);
+  transform: translateX(calc((var(--nk-vital-chip-size) + var(--hud-vchip-gap)) * var(--i, 1) * -1)) scale(0.82);
 }
 .hud-vitals-row[data-collapsed] > :nth-child(2) { --i: 1; }
 .hud-vitals-row[data-collapsed] > :nth-child(3) { --i: 2; }
@@ -1985,11 +1985,11 @@ html[data-nk-motion="off"] .hud-root * {
 .hud-c-tell[data-tone="info"] [data-slot="vital-chip-icon"] { color: var(--info); }
 .hud-c-tell[data-tone="warning"] [data-slot="vital-chip-icon"] { color: var(--hud-warn); }
 .hud-c-tell[data-tone="destructive"] [data-slot="vital-chip-icon"] { color: var(--hud-danger); }
-/* a small keycap (a telltale, a compass mark): --nk-vital-sm, the key radius, a shallower drop */
-[data-slot="vital-chip"][data-size="sm"] { --vital-size: var(--nk-vital-sm, 1.625rem); }
-[data-slot="vital-chip"][data-size="sm"] [data-slot="vital-chip-shape"] { --nk-vital-plate-drop: var(--nk-tile-wall, 0.1875rem); --nk-vital-label-size: 0.8125rem; }
-[data-slot="vital-chip"][data-size="sm"] :is([data-slot="vital-chip-wall"], [data-slot="vital-chip-plate"]) { border-radius: var(--nk-r-key); }
-[data-slot="vital-chip"][data-size="sm"] > [data-slot="vital-chip-shape"] > [data-slot="tile"] { --nk-key-radius: var(--nk-r-key); }
+/* a small keycap (a telltale, a compass mark): --nk-vital-chip-size-sm, the key radius, a shallower drop */
+[data-slot="vital-chip"][data-size="sm"] { --nk-vital-chip-size: var(--nk-vital-chip-size-sm, 1.625rem); }
+[data-slot="vital-chip"][data-size="sm"] [data-slot="vital-chip-shape"] { --nk-vital-chip-plate-drop: var(--nk-tile-wall-height, 0.1875rem); --nk-vital-chip-label-size: 0.8125rem; }
+[data-slot="vital-chip"][data-size="sm"] :is([data-slot="vital-chip-wall"], [data-slot="vital-chip-plate"]) { border-radius: var(--nk-radius-key); }
+[data-slot="vital-chip"][data-size="sm"] > [data-slot="vital-chip-shape"] > [data-slot="tile"] { --nk-tile-face-radius: var(--nk-radius-key); }
 .hud-c-tells { width: auto; gap: var(--nk-space-2, 0.5rem); }
 
 
@@ -2020,7 +2020,7 @@ html[data-nk-motion="off"] .hud-root * {
 /* the gear: one tile; reverse takes the warning rim, the redline fills the face red */
 .hud-c-gear-tile { display: block; }
 .hud-c-gear-tile[data-gear="N"] [data-slot="vital-chip"] { opacity: 0.7; }
-.hud-c-gear-tile[data-gear="R"] [data-slot="tile"] { --nk-tile-rim-now: var(--hud-warn); }
+.hud-c-gear-tile[data-gear="R"] [data-slot="tile"] { --nk-tile-now-rim: var(--hud-warn); }
 .hud-gauge[data-state="alert"] .hud-c-gear-tile [data-slot="vital-chip-lit"] { background: var(--hud-redline); transform: scaleY(1); }
 
 .hud-c-center { top: 8.75rem; }

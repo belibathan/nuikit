@@ -50,7 +50,7 @@ export function tokenRaw(name: string): string {
 }
 
 /**
- * A duration token in ms (`--nk-notify-ms-info: 4000`, `4s` or `4000ms`) from the page's computed
+ * A duration token in ms (`--nk-behavior-notify-info: 4000`, `4s` or `4000ms`) from the page's computed
  * style, so the kit's defaults and the server theme both count; `fallback` when it isn't set.
  */
 export function tokenMs(name: string, fallback: number): number {

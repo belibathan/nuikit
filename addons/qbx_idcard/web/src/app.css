@@ -13,7 +13,7 @@ body {
 /* The card type's colour (config/shared.lua `background`), as "r, g, b" in --idc-accent: a flat rim. */
 .idc-tint {
   border-radius: inherit;
-  box-shadow: inset 0 0 0 var(--nk-border, 1px) rgba(var(--idc-accent), 0.6);
+  box-shadow: inset 0 0 0 var(--nk-line-width, 1px) rgba(var(--idc-accent), 0.6);
 }
 .idc-icon {
   color: rgb(var(--idc-accent));

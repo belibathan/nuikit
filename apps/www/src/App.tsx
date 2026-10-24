@@ -85,7 +85,7 @@ function Strip() {
     { k: "thirst", icon: <DropletIcon />, label: "Thirst" },
   ] as const;
   return (
-    <div className="mt-12 flex flex-wrap items-center justify-between gap-8 overflow-hidden rounded-(--nk-r-surface) border p-6 sm:p-10" style={{ background: stageBackground() }} aria-label="nuikit's Default look">
+    <div className="mt-12 flex flex-wrap items-center justify-between gap-8 overflow-hidden rounded-(--nk-radius-surface) border p-6 sm:p-10" style={{ background: stageBackground() }} aria-label="nuikit's Default look">
       <VitalChip.Row>
         {vitals.map((x) => (
           <VitalChip.Root key={x.k} value={v[x.k]} tone={x.k}>

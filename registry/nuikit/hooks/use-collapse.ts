@@ -3,7 +3,7 @@ import { tokenMs } from "nuikit-core/motion"
 
 /**
  * The collapse engine (Foundation 2, wave 3) for clustered indicators: vitals, voice, anything that sits in a
- * row of icons. At rest only the icons show; a change opens that key's chip for --nk-rest-delay; changes that
+ * row of icons. At rest only the icons show; a change opens that key's chip for --nk-behavior-rest; changes that
  * come within the batch window of each other join one stack and close together; the stack shows critical
  * keys first, then the biggest change; at most `max` open, the rest counted as "+N". Keys can opt out (never
  * open).
@@ -109,8 +109,8 @@ export function useCollapse({ max = 3, restDelay, batchMs = COLLAPSE_BATCH_MS, m
     if (next.open !== was) setOpen(next.open)
   }, [])
   const opts = React.useRef<CollapseOptions>({ restDelay: 2500, batchMs, min, optOut })
-  // --nk-rest-delay is 0 (never) by default: a chip that opens on a change still closes, after 2.5 s
-  opts.current = { restDelay: restDelay ?? (tokenMs("--nk-rest-delay", 0) || 2500), batchMs, min, optOut }
+  // --nk-behavior-rest is 0 (never) by default: a chip that opens on a change still closes, after 2.5 s
+  opts.current = { restDelay: restDelay ?? (tokenMs("--nk-behavior-rest", 0) || 2500), batchMs, min, optOut }
 
   const report = React.useCallback((key: string, value: number, o: { critical?: boolean } = {}) => {
     commit(collapseReport(state.current, key, value, Date.now(), opts.current, !!o.critical))

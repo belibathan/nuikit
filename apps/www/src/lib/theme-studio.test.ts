@@ -72,12 +72,12 @@ describe("theme studio: tweaks", () => {
 
 describe("theme studio: identities (tokens 1.2)", () => {
   it("reads every identity (all of packages/core/themes) with no warnings, each a different identity", () => {
-    expect(identities.map((t) => t.name).slice(0, 9)).toEqual(["Default", "Neon Pop", "Graphite", "Signal", "Velvet", "Vector", "Arcade", "Street", "Studio"]);
+    expect(identities.map((t) => t.name)).toEqual(["Default", "Neon Pop", "Flat", "Square"]);
     const seen = new Set<string>();
     for (const t of identities) {
       const theme = studioTheme(t.css);
       expect(theme.warnings, t.name).toEqual([]);
-      const key = [theme.vars["font-display"], theme.vars["nk-cut"], theme.vars["nk-row-indicator"], theme.vars["nk-motion-feel"], theme.vars["nk-density"], theme.vars.primary, theme.vars["nk-skew"], theme.vars["nk-display-style"]].join("|");
+      const key = [theme.vars["font-display"], theme.vars["nk-shape-cut"], theme.vars["nk-motion-feel"], theme.vars["nk-density"], theme.vars.primary, theme.vars["nk-shape-slab"], theme.vars["nk-type-slant"]].join("|");
       expect(seen.has(key), t.name).toBe(false);
       seen.add(key);
     }
@@ -94,22 +94,20 @@ describe("theme studio: identities (tokens 1.2)", () => {
 
   it("an identity tweak re-derives what hangs off it (the motion ladder, the clip path, the row flags)", () => {
     const base = studioTheme(identities[0]!.css);
-    const t = studioTheme(identities[0]!.css, { "nk-duration": "240ms", "nk-cut": "0.5rem", "nk-row-indicator": "fill", "nk-elevation": "deep" });
+    const t = studioTheme(identities[0]!.css, { "nk-motion-duration": "240ms", "nk-shape-cut": "0.5rem", "nk-surface-elevation": "deep" });
     expect(t.vars["nk-time-base"]).toBe("240ms");
     expect(t.vars["nk-time-base"]).not.toBe(base.vars["nk-time-base"]);
-    expect(t.vars["nk-clip"]).not.toBe("none");
-    expect(base.vars["nk-clip"]).toBe("none");
-    expect(t.vars["nk-row-fill"]).toBe("1");
-    expect(t.vars["nk-row-bar"]).toBe("0");
-    expect(t.vars["nk-elevation-shadow"]).not.toBe(base.vars["nk-elevation-shadow"]);
+    expect(t.vars["nk-line-clip"]).not.toBe("none");
+    expect(base.vars["nk-line-clip"]).toBe("none");
+    expect(t.vars["nk-depth-elevation"]).not.toBe(base.vars["nk-depth-elevation"]);
     // and the file compiles back to the same thing
     expect(compileTheme(exportThemeCss(t), { mode: "dark" }).vars).toEqual(t.vars);
   });
 
   it("warns on the floors a control can cross (surface opacity, duration)", () => {
-    const t = studioTheme(identities[0]!.css, { "nk-surface-opacity": "0.8", "nk-duration": "400ms" });
-    expect(t.warnings.some((w) => w.includes("nk-surface-opacity"))).toBe(true);
-    expect(t.warnings.some((w) => w.includes("nk-duration"))).toBe(true);
+    const t = studioTheme(identities[0]!.css, { "nk-material-menu-opacity": "0.8", "nk-motion-duration": "400ms" });
+    expect(t.warnings.some((w) => w.includes("nk-material-menu-opacity"))).toBe(true);
+    expect(t.warnings.some((w) => w.includes("nk-motion-duration"))).toBe(true);
   });
 
   it("every identity control names a real token with a value in every identity", () => {
@@ -118,8 +116,8 @@ describe("theme studio: identities (tokens 1.2)", () => {
   });
 
   it("formats range values with their unit and finds the bundled font behind a stack", () => {
-    expect(identityValue({ name: "nk-cut", label: "", kind: "range", min: 0, max: 1, step: 0.125, unit: "rem" }, 0.75)).toBe("0.75rem");
-    expect(identityValue({ name: "nk-duration", label: "", kind: "range", min: 60, max: 400, step: 10, unit: "ms" }, 140)).toBe("140ms");
+    expect(identityValue({ name: "nk-shape-cut", label: "", kind: "range", min: 0, max: 1, step: 0.125, unit: "rem" }, 0.75)).toBe("0.75rem");
+    expect(identityValue({ name: "nk-motion-duration", label: "", kind: "range", min: 60, max: 400, step: 10, unit: "ms" }, 140)).toBe("140ms");
     expect(identityValue({ name: "nk-density", label: "", kind: "range", min: 0.75, max: 1.3, step: 0.025 }, 1)).toBe("1");
     expect(fontChoice('"Barlow Condensed", Barlow, sans-serif')).toContain("Barlow Condensed");
     expect(fontChoice("Comic Sans, cursive")).toBeNull();

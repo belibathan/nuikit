@@ -1,5 +1,5 @@
 {
-  "fonts": "graphite",
+  "fonts": "baseline",
   "target": {
     "resource": "ox_doorlock",
     "path": "web/build"

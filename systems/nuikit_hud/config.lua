@@ -76,7 +76,7 @@ Config = {
   -- just changed: a vital, money, the street, a weapon), driving, or interacting (a resource sends
   -- TriggerEvent('nuikit_hud:interaction', true/false)). retract is the lever, off: everything
   -- shows as it always has. On, a zone not listed for the situation slides away, at rest only after
-  -- the theme's --nk-rest-delay without a moment (0ms, its default, never: set e.g. 8s in theme.css). The map stays (GTA's radar can't retract).
+  -- the theme's --nk-behavior-rest without a moment (0ms, its default, never: set e.g. 8s in theme.css). The map stays (GTA's radar can't retract).
   situations = {
     retract = false,
     rest = { 'map', 'vehicle' },
@@ -129,7 +129,7 @@ Config = {
     slide = false,
     -- A soft dark plate behind the round ring, the same one the compact speedometer sits on, so the
     -- ring reads over a bright sky (an experiment, on). Its strength is the theme's HUD plate
-    -- (--nk-hud-opacity, shared with the speedometer); --nk-map-halo-size (2.5rem) is how far it fades out.
+    -- (--nk-material-hud-opacity, shared with the speedometer); --nk-map-halo-size (2.5rem) is how far it fades out.
     halo = true,
     -- Where the location and money column stands: 'auto' (under a map in a top corner, over one in a
     -- bottom corner), 'below' or 'above'. Over a round map it clears the heading read above the ring.
@@ -172,7 +172,7 @@ Config = {
 
   vehicle = {
     enabled = true,
-    -- 'theme' follows the identity's --nk-gauge-style; or force 'arc', 'bar' or 'digital'.
+    -- 'theme' follows the identity's --nk-style-gauge; or force 'arc', 'bar' or 'digital'.
     gauge = 'theme',
     redline = 0.9,     -- rpm (0.2 idle … 1.0 limiter) where the red zone starts
     shiftLight = true,
@@ -218,7 +218,7 @@ Config = {
     onFoot = false,
   },
 
-  -- Legibility (Foundation 2): the theme's --nk-legibility 'auto' follows the game clock, day from
+  -- Legibility (Foundation 2): the theme's --nk-surface-legibility 'auto' follows the game clock, day from
   -- dayFrom to dayTo (game hours): the HUD marks html[data-nk-daytime] and the kit lifts every surface.
   -- mode forces the clock's answer ('day' or 'night'); false stops sending it.
   legibility = { dayFrom = 7, dayTo = 19, mode = nil },

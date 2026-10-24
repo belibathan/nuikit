@@ -89,7 +89,7 @@ export function PedSection() {
         </ButtonGroup>
       </div>
       {!FREEMODE[current.model] && (
-        <p className="rounded-(--nk-r-control) bg-muted px-3 py-2 nk-label">
+        <p className="rounded-(--nk-radius-control) bg-muted px-3 py-2 nk-label">
           Heritage, face, makeup and tattoos need a freemode ped. Clothing and accessories still apply.
         </p>
       )}

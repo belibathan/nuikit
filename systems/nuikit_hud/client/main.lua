@@ -285,9 +285,9 @@ end)
 -- ───────────────────────────────── the page (re)loaded, units changed
 
 
--- ───────────────────────────────── legibility (Foundation 2: --nk-legibility auto)
+-- ───────────────────────────────── legibility (Foundation 2: --nk-surface-legibility auto)
 
--- 'day' or 'night' from the game clock, for --nk-legibility: auto (the theme's token, or
+-- 'day' or 'night' from the game clock, for --nk-surface-legibility: auto (the theme's token, or
 -- Config.legibility.mode to force it). The page marks html[data-nk-daytime] and kit.css lifts every
 -- material by day (tokens 1.4); not a light theme. Sent to this page (hud:legibility) and as a client
 -- event other resources can follow (nuikit:legibility), only when it changes.

@@ -279,8 +279,8 @@ export function stagger(i: number): number {
 
 /**
  * A list's selection indicator (kit.css nk-indicator): one element that moves to the active row with a
- * transform. Key-repeat rule (motion.md §3.3): a move that comes sooner than --nk-time after the last one
- * glides in --nk-time-press (data-repeat="fast"); from the third such move in a row it jumps
+ * transform. Key-repeat rule (motion.md §3.3): a move that comes sooner than --nk-time-base after the last one
+ * glides in --nk-time-snap (data-repeat="fast"); from the third such move in a row it jumps
  * (data-repeat="jump"), so it never trails a held d-pad by more than a row.
  */
 export function indicator(el: HTMLElement) {

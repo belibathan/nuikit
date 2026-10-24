@@ -54,8 +54,8 @@ describe("the nuikit resource's server script", () => {
   it("compiles theme.css at start and publishes GlobalState.nuikitTheme", () => {
     const s = boot({ "theme.css": THEME });
     const t = compileTheme(THEME);
-    expect(s.state.nuikitTheme).toEqual({ version: 1, mode: "dark", hash: t.hash, vars: t.vars, imports: [] });
-    expect(s.logs[0]).toMatch(/theme compiled: tokens v1, \d+ values, dark set, 9\/9 contrast checks pass/);
+    expect(s.state.nuikitTheme).toEqual({ version: 2, mode: "dark", hash: t.hash, vars: t.vars, imports: [] });
+    expect(s.logs[0]).toMatch(/theme compiled: tokens v2, \d+ values, dark set, 9\/9 contrast checks pass/);
   });
 
   it("logs contrast warnings in the server console", () => {
@@ -95,7 +95,7 @@ describe("the nuikit resource's server script", () => {
 
   it("exports getTheme / reloadTheme for other server scripts", () => {
     const s = boot({ "theme.css": THEME });
-    expect((s.exported.get("getTheme")!() as { version: number }).version).toBe(1);
+    expect((s.exported.get("getTheme")!() as { version: number }).version).toBe(2);
     expect(s.exported.get("reloadTheme")!()).toBe(true);
   });
 
@@ -116,20 +116,17 @@ describe("the nuikit resource's server script", () => {
 });
 
 describe("player looks (server/main.js publishLooks)", () => {
-  const ARCADE = readFileSync(dir + "themes/arcade.css", "utf8");
-  it("compiles every allowed identity and treatment combination; unknown names are left out with a line", () => {
-    const s = boot({ "theme.css": THEME, "themes/arcade.css": ARCADE }, {}, { nuikit_identities: "arcade, nope", nuikit_treatments: "slab,chrome" });
-    const looks = s.state.nuikitLooks as { identities: string[]; treatments: string[]; themes: Record<string, { hash: string; vars: Record<string, string> }> };
-    expect(looks.identities).toEqual(["arcade"]);
-    expect(looks.treatments).toEqual(["slab"]);
-    expect(Object.keys(looks.themes).sort()).toEqual(["arcade|", "arcade|slab", "server|slab"]);
-    expect(looks.themes["arcade|"]!.hash).toBe(compileTheme(ARCADE).hash);
-    expect(looks.themes["server|slab"]!.vars["nk-treatment"]).toBe("slab");
+  const FLAT = readFileSync(dir + "themes/flat.css", "utf8");
+  it("compiles every allowed theme; unknown names are left out with a line", () => {
+    const s = boot({ "theme.css": THEME, "themes/flat.css": FLAT }, {}, { nuikit_identities: "flat, nope" });
+    const looks = s.state.nuikitLooks as { identities: string[]; themes: Record<string, { hash: string; vars: Record<string, string> }> };
+    expect(looks.identities).toEqual(["flat"]);
+    expect(Object.keys(looks.themes)).toEqual(["flat"]);
+    expect(looks.themes.flat!.hash).toBe(compileTheme(FLAT).hash);
     expect(s.logs.some((l) => /no themes\/nope\.css/.test(l))).toBe(true);
-    expect(s.logs.some((l) => /chrome isn't a treatment/.test(l))).toBe(true);
   });
   it("publishes empty lists by default (the server theme only)", () => {
     const s = boot({ "theme.css": THEME });
-    expect(s.state.nuikitLooks).toEqual({ identities: [], treatments: [], themes: {} });
+    expect(s.state.nuikitLooks).toEqual({ identities: [], themes: {} });
   });
 });

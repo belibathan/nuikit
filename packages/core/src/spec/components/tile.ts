@@ -3,7 +3,7 @@
  * primary button, the list's selection. A face (skewed, rimmed, top-lit) over a wall (the face's colour in shade,
  * dropped straight down), optionally on an offset plate.
  */
-import { alpha, color, css, font, length, number, pal, paint, ref, shadow, string, time, type ComponentDef } from "../lang";
+import { alpha, angle, color, css, font, length, number, pal, paint, ref, shadow, string, time, type ComponentDef } from "../lang";
 
 export const tile: ComponentDef = {
   description: "The keycap: Kbd, notice icons, telltales, the primary button and the selection",
@@ -28,8 +28,8 @@ export const tile: ComponentDef = {
       shade: color(alpha("scrim", 0), "The face's bottom inner shade", { was: ["nk-tile-shade"] }),
       rim: color(alpha("foreground", 0.32), "The face's rim", { was: ["nk-tile-rim", "nk-key-border"] }),
       "rim-focus": color(alpha("foreground", 0.4), "The rim while lit", { was: ["nk-tile-rim-focus"] }),
-      radius: length(ref("radius.key"), "The face's radius", { rederive: ["shape"], was: ["nk-key-radius"] }),
-      skew: length(ref("shape.skew"), "The face's slant (the box stays upright)", { was: ["nk-tile-skew"] }),
+      radius: length(ref("radius.key"), "The face's radius", { was: ["nk-key-radius"] }),
+      skew: angle(ref("shape.skew"), "The face's slant (the box stays upright)", { was: ["nk-tile-skew"] }),
       shadow: shadow(css`inset 0 -1px 0 0 ${ref("tile.face.shade")}, inset 0 1px 0 0 ${ref("tile.face.light")}`, "The face's inner light and shade", { was: ["nk-key-shadow"] }),
       clip: string(ref("line.clip-sm"), "The face's clip-path (the chamfer)", { was: ["nk-key-clip"] }),
       confirm: color(pal("foreground"), "The face when confirmed", { was: ["nk-tile-confirm-face"] }),
@@ -38,9 +38,9 @@ export const tile: ComponentDef = {
       hold: color(alpha("foreground", 0.35), "The hold fill over the face", { was: ["nk-tile-hold"] }),
     },
     legend: {
-      font: font(ref("voice.scan.family"), "The legend's face", { was: ["nk-key-font"] }),
-      weight: number(ref("voice.scan.weight"), "The legend's weight", { range: [100, 900], was: ["nk-key-weight"] }),
-      pad: length(css`calc(${ref("voice.scan.pad")} / 2)`, "The italic overhang split to both sides", { was: ["nk-tile-legend-pad"] }),
+      font: font(ref("type.scan.family"), "The legend's face", { was: ["nk-key-font"] }),
+      weight: number(ref("type.scan.weight"), "The legend's weight", { range: [100, 900], was: ["nk-key-weight"] }),
+      pad: length(css`calc(${ref("type.scan.pad")} / 2)`, "The italic overhang split to both sides", { was: ["nk-tile-legend-pad"] }),
       shift: length("0em", "A nudge for a leaning face", { floor: true, was: ["nk-tile-legend-shift"] }),
       gap: length(ref("space.1"), "Between a tile's glyphs", { was: ["nk-tile-gap"] }),
       inset: length(ref("space.1"), "The legend's inline padding", { was: ["nk-tile-pad"] }),
@@ -52,7 +52,7 @@ export const tile: ComponentDef = {
       color: color(pal("primary"), "The keycap face under style.fill solid (the primary button, the lit row, the active tab)", { was: ["nk-tile-key"] }),
       ink: color(pal("primary-foreground"), "Text on the keycap face", { was: ["nk-tile-key-ink"] }),
       rim: color("transparent", "The keycap face's rim (transparent = none)", { floor: true, was: ["nk-tile-key-rim"] }),
-      radius: length(ref("radius.control"), "The keycap's radius", { rederive: ["shape"], was: ["nk-tile-radius"] }),
+      radius: length(ref("radius.control"), "The keycap's radius", { was: ["nk-tile-radius"] }),
       tint: number(0.16, "The face's opacity under style.fill soft", { range: [0, 1], floor: true, was: ["nk-tile-tint"] }),
       inset: length("0.375rem", "How far a selection tile sits in from its item's sides (room for the skew)", { floor: true, was: ["nk-tile-inset"] }),
       lift: length("1px", "How far the face rises on hover and focus", { floor: true, was: ["nk-tile-lift"] }),
@@ -71,5 +71,10 @@ export const tile: ComponentDef = {
     "sel-wall": { type: "color", description: "The selection wall this tone shows", was: ["nk-sel-wall"] },
     "sel-shade": { type: "number", description: "The selection wall's shade this tone shows", was: ["nk-sel-shade"] },
     "sel-ink": { type: "color", description: "The selection ink this tone shows", was: ["nk-sel-ink"] },
+    "sel-rim": { type: "color", description: "The selection rim this tone shows", was: ["nk-sel-rim"] },
+    "sel-shape": { type: "keyword", description: "The selection's shape: its own, or inherit (the host's)", was: ["nk-sel-shape"] },
+    "host-radius": { type: "length", description: "The radius of what the selection sits on (shape inherit)", was: ["nk-host-radius"] },
+    "host-clip": { type: "string", description: "The clip-path of what the selection sits on", was: ["nk-host-clip"] },
+    tone: { type: "color", description: "A tile's tone (data-tone, data-hue)", was: ["nk-tile-tone"] },
   },
 };

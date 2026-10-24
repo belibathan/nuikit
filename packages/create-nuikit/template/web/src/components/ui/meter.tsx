@@ -39,14 +39,14 @@ import { useLinearRun } from "@/hooks/use-linear-run"
  * Rules: Data is value/max or --level, never a variant. Thresholds turn it destructive; tone never encodes
  *   data. A timed run completes from a timer, so it finishes with motion off.
  */
-// The bar's thickness is the identity's (--nk-meter-height: --nk-gauge-track, 4px in Graphite);
+// The bar's thickness is the identity's (--nk-fill-height: --nk-fill-height, 4px in Graphite);
 // sm and lg step it down and up from there.
 const meterVariants = cva("min-w-0", {
   variants: {
     size: {
-      sm: "[--meter-h:max(0.125rem,calc(var(--nk-meter-height,0.25rem)*0.75))]",
-      default: "[--meter-h:var(--nk-meter-height,0.25rem)]",
-      lg: "[--meter-h:calc(var(--nk-meter-height,0.25rem)*1.5)]",
+      sm: "[--meter-h:max(0.125rem,calc(var(--nk-fill-height,0.25rem)*0.75))]",
+      default: "[--meter-h:var(--nk-fill-height,0.25rem)]",
+      lg: "[--meter-h:calc(var(--nk-fill-height,0.25rem)*1.5)]",
     },
   },
   defaultVariants: {
@@ -313,7 +313,7 @@ function Meter({
     hue?: string
     /**
      * The alert threshold as a level (0–1): at or under it the meter is data-state="alert" (destructive).
-     * `true` = the theme's default, 0.2 (--nk-alert-threshold). The same rule as `low`, in the level's units.
+     * `true` = the theme's default, 0.2 (--nk-behavior-alert). The same rule as `low`, in the level's units.
      */
     threshold?: number | boolean
     /** theme: on a panel. game: a dark track on the game world. */
@@ -415,7 +415,7 @@ function Meter({
             ...nkLevel(percent / 100),
             ...style,
             ...(toneVar
-              ? { "--nk-slab-tone-rgb": toneVar === "--brand" ? "var(--brand-rgb, var(--primary-rgb))" : toneVar === "--hue" ? "var(--hue, var(--brand-rgb, var(--primary-rgb)))" : `var(${toneVar}-rgb)` }
+              ? { "--nk-slab-tone": toneVar === "--brand" ? "var(--brand-rgb, var(--primary-rgb))" : toneVar === "--hue" ? "var(--hue, var(--brand-rgb, var(--primary-rgb)))" : `var(${toneVar}-rgb)` }
               : { "--nk-slab-line-fill": color }),
           } as React.CSSProperties
         }
@@ -452,8 +452,8 @@ function Meter({
           level={drawn / 100}
           tween={!timed}
           // the slab line's track and height (nk-slab-line); its bar is the Fill's, in the slab's tone, with its glow
-          color="var(--nk-slab-line-fill, rgb(var(--nk-slab-tone-rgb)))"
-          className="nk-slab-line after:hidden before:[box-shadow:0_0_0.5rem_rgba(var(--nk-slab-tone-rgb),var(--nk-glow,0))]"
+          color="var(--nk-slab-line-fill, rgb(var(--nk-slab-tone)))"
+          className="nk-slab-line after:hidden before:[box-shadow:0_0_0.5rem_rgba(var(--nk-slab-tone),var(--nk-surface-glow,0))]"
         />
       </div>
     )

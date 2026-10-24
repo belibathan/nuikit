@@ -30,11 +30,11 @@ body {
 .ld-slide {
   opacity: 0;
   transform: scale(1.04);
-  transition: opacity calc(var(--nk-time-fill) * 4) var(--nk-ease-standard);
+  transition: opacity calc(var(--nk-time-fill) * 4) var(--nk-ease-move);
 }
 .ld-slide-on {
   opacity: 1;
-  animation: ld-zoom calc(var(--nk-time-pulse) * 24) var(--nk-ease-out) forwards;
+  animation: ld-zoom calc(var(--nk-time-pulse) * 24) var(--nk-ease-enter) forwards;
 }
 @keyframes ld-zoom {
   from { transform: scale(1.04); }
@@ -48,9 +48,9 @@ body {
 }
 
 .ld-fade {
-  animation: ld-fade var(--nk-time-move, 210ms) var(--nk-ease-out) both;
+  animation: ld-fade var(--nk-time-slow, 210ms) var(--nk-ease-enter) both;
 }
 @keyframes ld-fade {
-  from { opacity: 0; transform: translateY(var(--nk-rise)); }
+  from { opacity: 0; transform: translateY(var(--nk-gesture-rise)); }
   to { opacity: 1; transform: none; }
 }

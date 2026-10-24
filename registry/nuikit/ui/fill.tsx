@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils"
  *   <Fill level={fuel} tone="warning" variant="edge" />
  *
  * Colour: `hue` (a role, data-hue) or an ancestor's data-hue, then `tone`, then --nk-fill-color. At or under
- * `alertAt` (true: the theme's --nk-alert-threshold, 0.2) it is data-state="alert" (--nk-fill-alert).
+ * `alertAt` (true: the theme's --nk-behavior-alert, 0.2) it is data-state="alert" (--nk-fill-alert).
  *
  * A timed fill (a run, a drain) animates its bar and edge with fillTargets() under useLinearRun; `tween={false}`
  * drops the level's ease, for a level something else draws every frame (a hold) or a run.
@@ -81,7 +81,7 @@ function Fill({
   tone?: FillTone | "destructive" | "error"
   /** A role from ROLE_SETS (health, armor, police, legendary…). */
   hue?: string
-  /** Alert at or under this level; true = 0.2 (--nk-alert-threshold). Off by default. */
+  /** Alert at or under this level; true = 0.2 (--nk-behavior-alert). Off by default. */
   alertAt?: number | boolean
   /** Force the alert (a level that alerts high, like a weight over its limit). Wins over alertAt. */
   alert?: boolean

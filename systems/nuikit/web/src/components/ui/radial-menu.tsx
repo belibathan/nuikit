@@ -24,7 +24,7 @@ import { cn, nkState } from "@/lib/utils"
  *   />
  *
  * The lit wedge is ONE element (the list's selection tile, in a circle): a wedge-shaped face drawn once and turned
- * to the pointed item by `rotate()` on the ladder (`--nk-indicator-time`, `--nk-indicator-ease`), the short way
+ * to the pointed item by `rotate()` on the ladder (`--nk-selection-time`, `--nk-selection-ease`), the short way
  * round, so the highlight travels with the pointer or the arrows instead of jumping wedge to wedge. Reduced motion
  * and motion off jump (kit.css nk-indicator). The items never paint a fill of their own.
  *
@@ -257,7 +257,7 @@ const RadialMenu = React.forwardRef<
             aria-hidden
             d={wedgePath(r, r, inner, r - 0.3, (-0.5 / n) * Math.PI * 2 - Math.PI / 2 + gap, (0.5 / n) * Math.PI * 2 - Math.PI / 2 - gap)}
             strokeWidth={0.3}
-            className="nk-indicator fill-(--nk-sel-face) stroke-(--nk-sel-face)"
+            className="nk-indicator fill-(--nk-tile-sel-face) stroke-(--nk-tile-sel-face)"
             style={{ position: "static", transformOrigin: "0 0", transform: radialSpin(0), opacity: 0 }}
           />
         )}
@@ -278,7 +278,7 @@ const RadialMenu = React.forwardRef<
             data-state={nkState({ disabled: item.disabled, focus: on })}
             className={cn(
               "pointer-events-none absolute flex w-[22%] flex-col items-center gap-1 text-center [&_svg:not([class*='size-'])]:size-5",
-              on ? "text-(--nk-sel-ink)" : "text-muted-foreground",
+              on ? "text-(--nk-tile-sel-ink)" : "text-muted-foreground",
               item.disabled && "opacity-50"
             )}
             // transform, not Tailwind's translate-*: the individual `translate` property is Chromium 104+.
@@ -286,7 +286,7 @@ const RadialMenu = React.forwardRef<
           >
             {item.icon}
             {labels && <span className={cn("w-full truncate text-(length:--nk-text-label) leading-4 [font-weight:var(--nk-type-label-weight,500)]", !on && "text-popover-foreground/80")}>{item.label}</span>}
-            {item.items?.length ? <span aria-hidden className="size-1 rounded-(--nk-r-key) bg-current opacity-60" /> : null}
+            {item.items?.length ? <span aria-hidden className="size-1 rounded-(--nk-radius-key) bg-current opacity-60" /> : null}
           </div>
         )
       })}
@@ -307,7 +307,7 @@ const RadialMenu = React.forwardRef<
         <span className="flex min-w-0 flex-col items-center gap-(--nk-space-1)">
           {!current && centre === "back" && <ArrowLeftIcon className="size-4 text-muted-foreground" />}
           {!current && centre === "close" && <XIcon className="size-4 text-muted-foreground" />}
-          <span className="w-full truncate text-(length:--nk-text-label) leading-5 [font-weight:var(--nk-weight-strong,600)]">
+          <span className="w-full truncate text-(length:--nk-text-label) leading-5 [font-weight:var(--nk-type-weight-strong,600)]">
             {current?.label ?? (path.length ? path[path.length - 1]!.label : label)}
           </span>
           <span className="w-full truncate text-(length:--nk-text-label) leading-4 text-muted-foreground">

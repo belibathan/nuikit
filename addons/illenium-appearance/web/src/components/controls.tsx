@@ -184,7 +184,7 @@ export function Swatches({
             aria-label={`${typeof label === "string" ? label : "Colour"} ${i}`}
             onClick={() => value !== i && onChange(i)}
             className={cn(
-              "aspect-square w-full rounded-(--nk-r-key) border border-white/10 ring-offset-2 ring-offset-popover transition-transform outline-none hover:scale-110 focus-visible:scale-110",
+              "aspect-square w-full rounded-(--nk-radius-key) border border-white/10 ring-offset-2 ring-offset-popover transition-transform outline-none hover:scale-110 focus-visible:scale-110",
               value === i && "z-10 border-transparent ring-2 ring-foreground",
             )}
             style={{ backgroundColor: `rgb(${c[0]}, ${c[1]}, ${c[2]})` }}

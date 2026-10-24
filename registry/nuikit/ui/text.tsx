@@ -17,7 +17,7 @@ import { Kbd } from "@/components/ui/tile"
  *
  * Key tokens: any string child may carry `[E]`, `[LEFT MOUSE]`, `[SHIFT + E]` tokens (`[A-Z0-9 +-]{1,12}` in square
  * brackets, at least one letter or digit); they render as the kit's keycap inline. `keys={false}` keeps the brackets
- * literally. The lever `--nk-inline-key-scale` (default 1) sizes the inline keycap. Plain React nodes, never HTML.
+ * literally. The lever `--nk-text-key-scale` (default 1) sizes the inline keycap. Plain React nodes, never HTML.
  *
  * Role: Every piece of text in one of the kit's type roles, on one value ladder.
  * Anatomy: text (one element: span, p, div, h2…)
@@ -40,11 +40,11 @@ const textVariants = cva("", {
     size: {
       inherit: "",
       /** The body size, strong: a value in a row. */
-      sm: "text-(length:--nk-text-base) leading-5 [font-weight:var(--nk-weight-strong,600)]",
+      sm: "text-(length:--nk-text-base) leading-5 [font-weight:var(--nk-type-weight-strong,600)]",
       /** The HUD value size (18px+), strong: the default stat. */
-      md: "text-(length:--nk-hud-value-size) leading-7 [font-weight:var(--nk-weight-strong,600)]",
+      md: "text-(length:--nk-text-hud) leading-7 [font-weight:var(--nk-type-weight-strong,600)]",
       /** Display type in the numeric face: the number is the point (a balance, a clock). */
-      display: "nk-display [font-family:var(--nk-num-font)]!",
+      display: "nk-display [font-family:var(--nk-type-num-family)]!",
     },
   },
   defaultVariants: {
@@ -76,12 +76,12 @@ function parseKeyTokens(input: string): KeyPart[] {
   return out
 }
 
-/** The inline keycap: the kit's Kbd, sized by --nk-inline-key-scale. */
+/** The inline keycap: the kit's Kbd, sized by --nk-text-key-scale. */
 function InlineKey({ children }: { children: string }) {
   return (
     <Kbd
       data-inline-key=""
-      className="mx-0.5 h-[calc(var(--nk-h-key)*var(--nk-inline-key-scale,1))] min-w-[calc(var(--nk-h-key)*var(--nk-inline-key-scale,1))] align-middle text-[length:calc(var(--nk-text-key)*var(--nk-inline-key-scale,1))]"
+      className="mx-0.5 h-[calc(var(--nk-height-key)*var(--nk-text-key-scale,1))] min-w-[calc(var(--nk-height-key)*var(--nk-text-key-scale,1))] align-middle text-[length:calc(var(--nk-text-key)*var(--nk-text-key-scale,1))]"
     >
       {children}
     </Kbd>

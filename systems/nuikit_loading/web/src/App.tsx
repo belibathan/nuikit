@@ -27,7 +27,7 @@ export default function App() {
       <Backdrop images={h.backgrounds ?? []} interval={h.backgroundInterval} />
 
       <header className="absolute top-12 left-12 flex items-center gap-4">
-        {h.logo && <img src={h.logo} alt="" className="size-12 rounded-(--nk-r-chip) object-contain" />}
+        {h.logo && <img src={h.logo} alt="" className="size-12 rounded-(--nk-radius-chip) object-contain" />}
         <div className="flex flex-col gap-1">
           <h1 className="nk-display">{name}</h1>
           {h.tagline && <p className="nk-label">{h.tagline}</p>}
@@ -96,7 +96,7 @@ function Tips({ tips, interval = 8000 }: { tips: Tip[]; interval?: number }) {
           {tips.map((_, n) => (
             <span
               key={n}
-              className={cn("h-0.5 rounded-(--nk-r-key) transition-opacity duration-(--nk-time)", n === i % tips.length ? "w-6 bg-foreground" : "w-3 bg-foreground opacity-25")}
+              className={cn("h-0.5 rounded-(--nk-radius-key) transition-opacity duration-(--nk-time-base)", n === i % tips.length ? "w-6 bg-foreground" : "w-3 bg-foreground opacity-25")}
             />
           ))}
         </div>
@@ -192,7 +192,7 @@ function Music({ tracks, volume = 0.15 }: { tracks: string[]; volume?: LoadingHa
       <Button
         variant="outline"
         size="icon"
-        className="size-9 rounded-(--nk-r-control) bg-background/70"
+        className="size-9 rounded-(--nk-radius-control) bg-background/70"
         aria-label={muted ? "Unmute music" : "Mute music"}
         onClick={() => setMuted((m) => !m)}
       >

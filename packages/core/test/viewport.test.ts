@@ -51,14 +51,14 @@ describe("viewport table", () => {
 
   it("kit.css mirrors the table: the edge per aspect, the floor, the ratio", () => {
     const css = fs.readFileSync(path.resolve(__dirname, "../../create-nuikit/kit.css"), "utf8");
-    const layer = css.slice(css.indexOf("@layer nk.layout {"));
+    const layer = css; // the defaults are in the generated block, the aspect rules in @layer nk.layout
     expect(layer).toMatch(/--nk-screen-ratio: 1\.7778;/);
-    expect(layer).toMatch(new RegExp(`--nk-scale-min: ${VIEWPORTS.find((v) => v.id === "16-9")!.scaleMin};`));
-    expect(layer).toMatch(new RegExp(`--nk-edge: ${VIEWPORTS.find((v) => v.id === "16-9")!.edge}rem;`));
-    expect(layer).toMatch(new RegExp(`max-aspect-ratio: 3/2\\)[^}]*--nk-edge: ${VIEWPORTS.find((v) => v.id === "4-3")!.edge}rem`));
-    expect(layer).toMatch(new RegExp(`max-aspect-ratio: 17/10\\)[^}]*--nk-edge: ${VIEWPORTS.find((v) => v.id === "16-10")!.edge}rem`));
+    expect(layer).toMatch(new RegExp(`--nk-screen-scale-min: ${VIEWPORTS.find((v) => v.id === "16-9")!.scaleMin};`));
+    expect(layer).toMatch(new RegExp(`--nk-screen-edge: ${VIEWPORTS.find((v) => v.id === "16-9")!.edge}rem;`));
+    expect(layer).toMatch(new RegExp(`max-aspect-ratio: 3/2\\)[^}]*--nk-screen-edge: ${VIEWPORTS.find((v) => v.id === "4-3")!.edge}rem`));
+    expect(layer).toMatch(new RegExp(`max-aspect-ratio: 17/10\\)[^}]*--nk-screen-edge: ${VIEWPORTS.find((v) => v.id === "16-10")!.edge}rem`));
     const tpl = fs.readFileSync(path.resolve(__dirname, "../../create-nuikit/index.css.tpl"), "utf8");
     expect(tpl).toContain("min(1.4815vh, 0.8333vw)");
-    expect(tpl).toContain("var(--nk-scale-min, 0.75)");
+    expect(tpl).toContain("var(--nk-screen-scale-min, 0.75)");
   });
 });

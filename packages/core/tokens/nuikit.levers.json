@@ -1,0 +1,7671 @@
+{
+  "$description": "nuikit token language: every lever, generated from packages/core/src/spec. Values are the language's defaults.",
+  "$extensions": {
+    "nuikit": {
+      "generator": "packages/core/scripts/gen-tokens.mjs"
+    }
+  },
+  "palette": {
+    "background": {
+      "$type": "color",
+      "$value": "oklch(0.145 0 0)",
+      "$description": "Full-screen surfaces (pause, loading, death scrim)",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--background",
+          "type": "color"
+        }
+      }
+    },
+    "foreground": {
+      "$type": "color",
+      "$value": "oklch(0.985 0 0)",
+      "$description": "Text on full-screen surfaces",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--foreground",
+          "type": "color"
+        }
+      }
+    },
+    "card": {
+      "$type": "color",
+      "$value": "oklch(0.205 0 0)",
+      "$description": "Raised blocks on a full-screen surface",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--card",
+          "type": "color"
+        }
+      }
+    },
+    "card-foreground": {
+      "$type": "color",
+      "$value": "oklch(0.985 0 0)",
+      "$description": "Text on cards",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--card-foreground",
+          "type": "color"
+        }
+      }
+    },
+    "popover": {
+      "$type": "color",
+      "$value": "oklch(0.205 0 0)",
+      "$description": "Every floating panel",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--popover",
+          "type": "color"
+        }
+      }
+    },
+    "popover-foreground": {
+      "$type": "color",
+      "$value": "oklch(0.985 0 0)",
+      "$description": "Text in panels",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--popover-foreground",
+          "type": "color"
+        }
+      }
+    },
+    "primary": {
+      "$type": "color",
+      "$value": "oklch(0.922 0 0)",
+      "$description": "The one main action per surface, the keycap face, selection",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--primary",
+          "type": "color"
+        }
+      }
+    },
+    "primary-foreground": {
+      "$type": "color",
+      "$value": "oklch(0.205 0 0)",
+      "$description": "Text on primary",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--primary-foreground",
+          "type": "color"
+        }
+      }
+    },
+    "secondary": {
+      "$type": "color",
+      "$value": "oklch(0.269 0 0)",
+      "$description": "Secondary buttons",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--secondary",
+          "type": "color"
+        }
+      }
+    },
+    "secondary-foreground": {
+      "$type": "color",
+      "$value": "oklch(0.985 0 0)",
+      "$description": "Text on secondary",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--secondary-foreground",
+          "type": "color"
+        }
+      }
+    },
+    "muted": {
+      "$type": "color",
+      "$value": "oklch(0.269 0 0)",
+      "$description": "Tracks, slots and wells inside a panel",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--muted",
+          "type": "color"
+        }
+      }
+    },
+    "muted-foreground": {
+      "$type": "color",
+      "$value": "oklch(0.708 0 0)",
+      "$description": "Secondary text",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--muted-foreground",
+          "type": "color"
+        }
+      }
+    },
+    "accent": {
+      "$type": "color",
+      "$value": "oklch(0.269 0 0)",
+      "$description": "Hover tint",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--accent",
+          "type": "color"
+        }
+      }
+    },
+    "accent-foreground": {
+      "$type": "color",
+      "$value": "oklch(0.985 0 0)",
+      "$description": "Text on accent",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--accent-foreground",
+          "type": "color"
+        }
+      }
+    },
+    "destructive": {
+      "$type": "color",
+      "$value": "oklch(0.704 0.191 22.216)",
+      "$description": "Danger, damage, low values, death",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--destructive",
+          "type": "color"
+        }
+      }
+    },
+    "destructive-foreground": {
+      "$type": "color",
+      "$value": "oklch(0.985 0 0)",
+      "$description": "Text on destructive",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--destructive-foreground",
+          "type": "color"
+        }
+      }
+    },
+    "border": {
+      "$type": "color",
+      "$value": "oklch(1 0 0 / 10%)",
+      "$description": "Hairlines",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--border",
+          "type": "color"
+        }
+      }
+    },
+    "input": {
+      "$type": "color",
+      "$value": "oklch(1 0 0 / 15%)",
+      "$description": "Field borders",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--input",
+          "type": "color"
+        }
+      }
+    },
+    "ring": {
+      "$type": "color",
+      "$value": "oklch(0.556 0 0)",
+      "$description": "A text field's caret rim",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--ring",
+          "type": "color"
+        }
+      }
+    },
+    "chart-1": {
+      "$type": "color",
+      "$value": "oklch(0.87 0 0)",
+      "$description": "Categorical colour 1",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--chart-1",
+          "type": "color"
+        }
+      }
+    },
+    "chart-2": {
+      "$type": "color",
+      "$value": "oklch(0.556 0 0)",
+      "$description": "Categorical colour 2",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--chart-2",
+          "type": "color"
+        }
+      }
+    },
+    "chart-3": {
+      "$type": "color",
+      "$value": "oklch(0.439 0 0)",
+      "$description": "Categorical colour 3",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--chart-3",
+          "type": "color"
+        }
+      }
+    },
+    "chart-4": {
+      "$type": "color",
+      "$value": "oklch(0.371 0 0)",
+      "$description": "Categorical colour 4",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--chart-4",
+          "type": "color"
+        }
+      }
+    },
+    "chart-5": {
+      "$type": "color",
+      "$value": "oklch(0.269 0 0)",
+      "$description": "Categorical colour 5",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--chart-5",
+          "type": "color"
+        }
+      }
+    },
+    "radius": {
+      "$type": "dimension",
+      "$value": "0.75rem",
+      "$description": "The radius scale's base: every radius step derives from it",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--radius",
+          "type": "length"
+        }
+      }
+    },
+    "brand": {
+      "$type": "color",
+      "$value": "var(--primary)",
+      "$description": "The server's signature: active marks, needles, the accent's stops",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--brand",
+          "type": "color"
+        }
+      }
+    },
+    "brand-foreground": {
+      "$type": "color",
+      "$value": "var(--primary-foreground)",
+      "$description": "Text on brand",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--brand-foreground",
+          "type": "color"
+        }
+      }
+    },
+    "success": {
+      "$type": "color",
+      "$value": "oklch(0.7 0.17 150)",
+      "$description": "Positive status",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--success",
+          "type": "color"
+        }
+      }
+    },
+    "success-foreground": {
+      "$type": "color",
+      "$value": "var(--background)",
+      "$description": "Text on success",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--success-foreground",
+          "type": "color"
+        }
+      }
+    },
+    "warning": {
+      "$type": "color",
+      "$value": "oklch(0.78 0.17 75)",
+      "$description": "Caution status",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--warning",
+          "type": "color"
+        }
+      }
+    },
+    "warning-foreground": {
+      "$type": "color",
+      "$value": "var(--background)",
+      "$description": "Text on warning",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--warning-foreground",
+          "type": "color"
+        }
+      }
+    },
+    "info": {
+      "$type": "color",
+      "$value": "var(--primary)",
+      "$description": "Neutral status",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--info",
+          "type": "color"
+        }
+      }
+    },
+    "info-foreground": {
+      "$type": "color",
+      "$value": "var(--primary-foreground)",
+      "$description": "Text on info",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--info-foreground",
+          "type": "color"
+        }
+      }
+    },
+    "hud": {
+      "$type": "color",
+      "$value": "rgba(0, 0, 0, 0.45)",
+      "$description": "Surfaces drawn straight on the game: HUD chips, hotbar",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--hud",
+          "type": "color"
+        }
+      }
+    },
+    "hud-foreground": {
+      "$type": "color",
+      "$value": "rgb(255, 255, 255)",
+      "$description": "Text and icons on hud",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--hud-foreground",
+          "type": "color"
+        }
+      }
+    },
+    "scrim": {
+      "$type": "color",
+      "$value": "rgb(0, 0, 0)",
+      "$description": "Darkens the game; shadows and walls; always used with opacity",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--scrim",
+          "type": "color"
+        }
+      }
+    },
+    "surface": {
+      "$type": "color",
+      "$value": "var(--popover)",
+      "$description": "The panel colour, tinted toward brand by surface.tint",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--surface",
+          "type": "color",
+          "derived": true
+        }
+      }
+    },
+    "world-foreground": {
+      "$type": "color",
+      "$value": "rgb(255, 255, 255)",
+      "$description": "Text drawn straight on the game, light in every theme",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--world-foreground",
+          "type": "color"
+        }
+      }
+    },
+    "world-foreground-muted": {
+      "$type": "color",
+      "$value": "rgba(255, 255, 255, 0.8)",
+      "$description": "Secondary text on the game",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--world-foreground-muted",
+          "type": "color"
+        }
+      }
+    },
+    "world-success": {
+      "$type": "color",
+      "$value": "var(--success)",
+      "$description": "A gain drawn on the game",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--world-success",
+          "type": "color"
+        }
+      }
+    },
+    "world-destructive": {
+      "$type": "color",
+      "$value": "var(--destructive)",
+      "$description": "A loss drawn on the game",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--world-destructive",
+          "type": "color"
+        }
+      }
+    },
+    "vital-health": {
+      "$type": "color",
+      "$value": "oklch(0.68 0.21 25)",
+      "$description": "Health",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--vital-health",
+          "type": "color"
+        }
+      }
+    },
+    "vital-armor": {
+      "$type": "color",
+      "$value": "oklch(0.68 0.16 250)",
+      "$description": "Armor",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--vital-armor",
+          "type": "color"
+        }
+      }
+    },
+    "vital-hunger": {
+      "$type": "color",
+      "$value": "oklch(0.78 0.16 70)",
+      "$description": "Hunger",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--vital-hunger",
+          "type": "color"
+        }
+      }
+    },
+    "vital-thirst": {
+      "$type": "color",
+      "$value": "oklch(0.76 0.13 215)",
+      "$description": "Thirst",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--vital-thirst",
+          "type": "color"
+        }
+      }
+    },
+    "world-shadow": {
+      "$type": "shadow",
+      "$value": "0 1px 2px rgba(0, 0, 0, 0.65), 0 0 0.5rem rgba(0, 0, 0, 0.35)",
+      "$description": "Text-shadow that keeps world-foreground legible over any frame",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--world-shadow",
+          "type": "shadow"
+        }
+      }
+    },
+    "pause-surface": {
+      "$type": "color",
+      "$value": "rgb(246, 247, 249)",
+      "$description": "The slash pause panel's light surface (style.pause: slash)",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--pause-surface",
+          "type": "color"
+        }
+      }
+    },
+    "pause-ink": {
+      "$type": "color",
+      "$value": "rgb(14, 16, 20)",
+      "$description": "Text on the slash pause panel",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--pause-ink",
+          "type": "color"
+        }
+      }
+    },
+    "vital-stress": {
+      "$type": "color",
+      "$value": "oklch(0.68 0.2 320)",
+      "$description": "Stress",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--vital-stress",
+          "type": "color"
+        }
+      }
+    },
+    "role-health": {
+      "$type": "color",
+      "$value": "var(--vital-health)",
+      "$description": "Role health: the --hue-* ramp under data-hue=\"health\"",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--role-health",
+          "type": "color"
+        }
+      }
+    },
+    "role-health-deep": {
+      "$type": "color",
+      "$value": "var(--role-health)",
+      "$description": "health, darker: the ramp's deep step",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--role-health-deep",
+          "type": "color",
+          "derived": true
+        }
+      }
+    },
+    "role-health-light": {
+      "$type": "color",
+      "$value": "var(--role-health)",
+      "$description": "health, lighter: the ramp's gradient start",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--role-health-light",
+          "type": "color",
+          "derived": true
+        }
+      }
+    },
+    "role-armor": {
+      "$type": "color",
+      "$value": "var(--vital-armor)",
+      "$description": "Role armor: the --hue-* ramp under data-hue=\"armor\"",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--role-armor",
+          "type": "color"
+        }
+      }
+    },
+    "role-armor-deep": {
+      "$type": "color",
+      "$value": "var(--role-armor)",
+      "$description": "armor, darker: the ramp's deep step",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--role-armor-deep",
+          "type": "color",
+          "derived": true
+        }
+      }
+    },
+    "role-armor-light": {
+      "$type": "color",
+      "$value": "var(--role-armor)",
+      "$description": "armor, lighter: the ramp's gradient start",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--role-armor-light",
+          "type": "color",
+          "derived": true
+        }
+      }
+    },
+    "role-hunger": {
+      "$type": "color",
+      "$value": "var(--vital-hunger)",
+      "$description": "Role hunger: the --hue-* ramp under data-hue=\"hunger\"",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--role-hunger",
+          "type": "color"
+        }
+      }
+    },
+    "role-hunger-deep": {
+      "$type": "color",
+      "$value": "var(--role-hunger)",
+      "$description": "hunger, darker: the ramp's deep step",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--role-hunger-deep",
+          "type": "color",
+          "derived": true
+        }
+      }
+    },
+    "role-hunger-light": {
+      "$type": "color",
+      "$value": "var(--role-hunger)",
+      "$description": "hunger, lighter: the ramp's gradient start",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--role-hunger-light",
+          "type": "color",
+          "derived": true
+        }
+      }
+    },
+    "role-thirst": {
+      "$type": "color",
+      "$value": "var(--vital-thirst)",
+      "$description": "Role thirst: the --hue-* ramp under data-hue=\"thirst\"",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--role-thirst",
+          "type": "color"
+        }
+      }
+    },
+    "role-thirst-deep": {
+      "$type": "color",
+      "$value": "var(--role-thirst)",
+      "$description": "thirst, darker: the ramp's deep step",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--role-thirst-deep",
+          "type": "color",
+          "derived": true
+        }
+      }
+    },
+    "role-thirst-light": {
+      "$type": "color",
+      "$value": "var(--role-thirst)",
+      "$description": "thirst, lighter: the ramp's gradient start",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--role-thirst-light",
+          "type": "color",
+          "derived": true
+        }
+      }
+    },
+    "role-stress": {
+      "$type": "color",
+      "$value": "var(--vital-stress)",
+      "$description": "Role stress: the --hue-* ramp under data-hue=\"stress\"",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--role-stress",
+          "type": "color"
+        }
+      }
+    },
+    "role-stress-deep": {
+      "$type": "color",
+      "$value": "var(--role-stress)",
+      "$description": "stress, darker: the ramp's deep step",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--role-stress-deep",
+          "type": "color",
+          "derived": true
+        }
+      }
+    },
+    "role-stress-light": {
+      "$type": "color",
+      "$value": "var(--role-stress)",
+      "$description": "stress, lighter: the ramp's gradient start",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--role-stress-light",
+          "type": "color",
+          "derived": true
+        }
+      }
+    },
+    "role-stamina": {
+      "$type": "color",
+      "$value": "var(--success)",
+      "$description": "Role stamina: the --hue-* ramp under data-hue=\"stamina\"",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--role-stamina",
+          "type": "color"
+        }
+      }
+    },
+    "role-stamina-deep": {
+      "$type": "color",
+      "$value": "var(--role-stamina)",
+      "$description": "stamina, darker: the ramp's deep step",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--role-stamina-deep",
+          "type": "color",
+          "derived": true
+        }
+      }
+    },
+    "role-stamina-light": {
+      "$type": "color",
+      "$value": "var(--role-stamina)",
+      "$description": "stamina, lighter: the ramp's gradient start",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--role-stamina-light",
+          "type": "color",
+          "derived": true
+        }
+      }
+    },
+    "role-oxygen": {
+      "$type": "color",
+      "$value": "var(--info)",
+      "$description": "Role oxygen: the --hue-* ramp under data-hue=\"oxygen\"",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--role-oxygen",
+          "type": "color"
+        }
+      }
+    },
+    "role-oxygen-deep": {
+      "$type": "color",
+      "$value": "var(--role-oxygen)",
+      "$description": "oxygen, darker: the ramp's deep step",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--role-oxygen-deep",
+          "type": "color",
+          "derived": true
+        }
+      }
+    },
+    "role-oxygen-light": {
+      "$type": "color",
+      "$value": "var(--role-oxygen)",
+      "$description": "oxygen, lighter: the ramp's gradient start",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--role-oxygen-light",
+          "type": "color",
+          "derived": true
+        }
+      }
+    },
+    "role-info": {
+      "$type": "color",
+      "$value": "var(--info)",
+      "$description": "Role info: the --hue-* ramp under data-hue=\"info\"",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--role-info",
+          "type": "color"
+        }
+      }
+    },
+    "role-info-deep": {
+      "$type": "color",
+      "$value": "var(--role-info)",
+      "$description": "info, darker: the ramp's deep step",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--role-info-deep",
+          "type": "color",
+          "derived": true
+        }
+      }
+    },
+    "role-info-light": {
+      "$type": "color",
+      "$value": "var(--role-info)",
+      "$description": "info, lighter: the ramp's gradient start",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--role-info-light",
+          "type": "color",
+          "derived": true
+        }
+      }
+    },
+    "role-success": {
+      "$type": "color",
+      "$value": "var(--success)",
+      "$description": "Role success: the --hue-* ramp under data-hue=\"success\"",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--role-success",
+          "type": "color"
+        }
+      }
+    },
+    "role-success-deep": {
+      "$type": "color",
+      "$value": "var(--role-success)",
+      "$description": "success, darker: the ramp's deep step",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--role-success-deep",
+          "type": "color",
+          "derived": true
+        }
+      }
+    },
+    "role-success-light": {
+      "$type": "color",
+      "$value": "var(--role-success)",
+      "$description": "success, lighter: the ramp's gradient start",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--role-success-light",
+          "type": "color",
+          "derived": true
+        }
+      }
+    },
+    "role-warning": {
+      "$type": "color",
+      "$value": "var(--warning)",
+      "$description": "Role warning: the --hue-* ramp under data-hue=\"warning\"",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--role-warning",
+          "type": "color"
+        }
+      }
+    },
+    "role-warning-deep": {
+      "$type": "color",
+      "$value": "var(--role-warning)",
+      "$description": "warning, darker: the ramp's deep step",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--role-warning-deep",
+          "type": "color",
+          "derived": true
+        }
+      }
+    },
+    "role-warning-light": {
+      "$type": "color",
+      "$value": "var(--role-warning)",
+      "$description": "warning, lighter: the ramp's gradient start",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--role-warning-light",
+          "type": "color",
+          "derived": true
+        }
+      }
+    },
+    "role-danger": {
+      "$type": "color",
+      "$value": "var(--destructive)",
+      "$description": "Role danger: the --hue-* ramp under data-hue=\"danger\"",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--role-danger",
+          "type": "color"
+        }
+      }
+    },
+    "role-danger-deep": {
+      "$type": "color",
+      "$value": "var(--role-danger)",
+      "$description": "danger, darker: the ramp's deep step",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--role-danger-deep",
+          "type": "color",
+          "derived": true
+        }
+      }
+    },
+    "role-danger-light": {
+      "$type": "color",
+      "$value": "var(--role-danger)",
+      "$description": "danger, lighter: the ramp's gradient start",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--role-danger-light",
+          "type": "color",
+          "derived": true
+        }
+      }
+    },
+    "role-police": {
+      "$type": "color",
+      "$value": "oklch(0.62 0.17 255)",
+      "$description": "Role police: the --hue-* ramp under data-hue=\"police\"",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--role-police",
+          "type": "color"
+        }
+      }
+    },
+    "role-police-deep": {
+      "$type": "color",
+      "$value": "var(--role-police)",
+      "$description": "police, darker: the ramp's deep step",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--role-police-deep",
+          "type": "color",
+          "derived": true
+        }
+      }
+    },
+    "role-police-light": {
+      "$type": "color",
+      "$value": "var(--role-police)",
+      "$description": "police, lighter: the ramp's gradient start",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--role-police-light",
+          "type": "color",
+          "derived": true
+        }
+      }
+    },
+    "role-ems": {
+      "$type": "color",
+      "$value": "oklch(0.64 0.2 25)",
+      "$description": "Role ems: the --hue-* ramp under data-hue=\"ems\"",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--role-ems",
+          "type": "color"
+        }
+      }
+    },
+    "role-ems-deep": {
+      "$type": "color",
+      "$value": "var(--role-ems)",
+      "$description": "ems, darker: the ramp's deep step",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--role-ems-deep",
+          "type": "color",
+          "derived": true
+        }
+      }
+    },
+    "role-ems-light": {
+      "$type": "color",
+      "$value": "var(--role-ems)",
+      "$description": "ems, lighter: the ramp's gradient start",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--role-ems-light",
+          "type": "color",
+          "derived": true
+        }
+      }
+    },
+    "role-mech": {
+      "$type": "color",
+      "$value": "oklch(0.74 0.15 60)",
+      "$description": "Role mech: the --hue-* ramp under data-hue=\"mech\"",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--role-mech",
+          "type": "color"
+        }
+      }
+    },
+    "role-mech-deep": {
+      "$type": "color",
+      "$value": "var(--role-mech)",
+      "$description": "mech, darker: the ramp's deep step",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--role-mech-deep",
+          "type": "color",
+          "derived": true
+        }
+      }
+    },
+    "role-mech-light": {
+      "$type": "color",
+      "$value": "var(--role-mech)",
+      "$description": "mech, lighter: the ramp's gradient start",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--role-mech-light",
+          "type": "color",
+          "derived": true
+        }
+      }
+    },
+    "role-gang": {
+      "$type": "color",
+      "$value": "oklch(0.6 0.2 305)",
+      "$description": "Role gang: the --hue-* ramp under data-hue=\"gang\"",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--role-gang",
+          "type": "color"
+        }
+      }
+    },
+    "role-gang-deep": {
+      "$type": "color",
+      "$value": "var(--role-gang)",
+      "$description": "gang, darker: the ramp's deep step",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--role-gang-deep",
+          "type": "color",
+          "derived": true
+        }
+      }
+    },
+    "role-gang-light": {
+      "$type": "color",
+      "$value": "var(--role-gang)",
+      "$description": "gang, lighter: the ramp's gradient start",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--role-gang-light",
+          "type": "color",
+          "derived": true
+        }
+      }
+    },
+    "role-civ": {
+      "$type": "color",
+      "$value": "var(--muted-foreground)",
+      "$description": "Role civ: the --hue-* ramp under data-hue=\"civ\"",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--role-civ",
+          "type": "color"
+        }
+      }
+    },
+    "role-civ-deep": {
+      "$type": "color",
+      "$value": "var(--role-civ)",
+      "$description": "civ, darker: the ramp's deep step",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--role-civ-deep",
+          "type": "color",
+          "derived": true
+        }
+      }
+    },
+    "role-civ-light": {
+      "$type": "color",
+      "$value": "var(--role-civ)",
+      "$description": "civ, lighter: the ramp's gradient start",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--role-civ-light",
+          "type": "color",
+          "derived": true
+        }
+      }
+    },
+    "role-staff": {
+      "$type": "color",
+      "$value": "var(--brand)",
+      "$description": "Role staff: the --hue-* ramp under data-hue=\"staff\"",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--role-staff",
+          "type": "color"
+        }
+      }
+    },
+    "role-staff-deep": {
+      "$type": "color",
+      "$value": "var(--role-staff)",
+      "$description": "staff, darker: the ramp's deep step",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--role-staff-deep",
+          "type": "color",
+          "derived": true
+        }
+      }
+    },
+    "role-staff-light": {
+      "$type": "color",
+      "$value": "var(--role-staff)",
+      "$description": "staff, lighter: the ramp's gradient start",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--role-staff-light",
+          "type": "color",
+          "derived": true
+        }
+      }
+    },
+    "role-common": {
+      "$type": "color",
+      "$value": "var(--muted-foreground)",
+      "$description": "Role common: the --hue-* ramp under data-hue=\"common\"",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--role-common",
+          "type": "color"
+        }
+      }
+    },
+    "role-common-deep": {
+      "$type": "color",
+      "$value": "var(--role-common)",
+      "$description": "common, darker: the ramp's deep step",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--role-common-deep",
+          "type": "color",
+          "derived": true
+        }
+      }
+    },
+    "role-common-light": {
+      "$type": "color",
+      "$value": "var(--role-common)",
+      "$description": "common, lighter: the ramp's gradient start",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--role-common-light",
+          "type": "color",
+          "derived": true
+        }
+      }
+    },
+    "role-uncommon": {
+      "$type": "color",
+      "$value": "oklch(0.72 0.17 145)",
+      "$description": "Role uncommon: the --hue-* ramp under data-hue=\"uncommon\"",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--role-uncommon",
+          "type": "color"
+        }
+      }
+    },
+    "role-uncommon-deep": {
+      "$type": "color",
+      "$value": "var(--role-uncommon)",
+      "$description": "uncommon, darker: the ramp's deep step",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--role-uncommon-deep",
+          "type": "color",
+          "derived": true
+        }
+      }
+    },
+    "role-uncommon-light": {
+      "$type": "color",
+      "$value": "var(--role-uncommon)",
+      "$description": "uncommon, lighter: the ramp's gradient start",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--role-uncommon-light",
+          "type": "color",
+          "derived": true
+        }
+      }
+    },
+    "role-rare": {
+      "$type": "color",
+      "$value": "oklch(0.66 0.16 250)",
+      "$description": "Role rare: the --hue-* ramp under data-hue=\"rare\"",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--role-rare",
+          "type": "color"
+        }
+      }
+    },
+    "role-rare-deep": {
+      "$type": "color",
+      "$value": "var(--role-rare)",
+      "$description": "rare, darker: the ramp's deep step",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--role-rare-deep",
+          "type": "color",
+          "derived": true
+        }
+      }
+    },
+    "role-rare-light": {
+      "$type": "color",
+      "$value": "var(--role-rare)",
+      "$description": "rare, lighter: the ramp's gradient start",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--role-rare-light",
+          "type": "color",
+          "derived": true
+        }
+      }
+    },
+    "role-epic": {
+      "$type": "color",
+      "$value": "oklch(0.62 0.22 305)",
+      "$description": "Role epic: the --hue-* ramp under data-hue=\"epic\"",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--role-epic",
+          "type": "color"
+        }
+      }
+    },
+    "role-epic-deep": {
+      "$type": "color",
+      "$value": "var(--role-epic)",
+      "$description": "epic, darker: the ramp's deep step",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--role-epic-deep",
+          "type": "color",
+          "derived": true
+        }
+      }
+    },
+    "role-epic-light": {
+      "$type": "color",
+      "$value": "var(--role-epic)",
+      "$description": "epic, lighter: the ramp's gradient start",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--role-epic-light",
+          "type": "color",
+          "derived": true
+        }
+      }
+    },
+    "role-legendary": {
+      "$type": "color",
+      "$value": "oklch(0.78 0.16 75)",
+      "$description": "Role legendary: the --hue-* ramp under data-hue=\"legendary\"",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--role-legendary",
+          "type": "color"
+        }
+      }
+    },
+    "role-legendary-deep": {
+      "$type": "color",
+      "$value": "var(--role-legendary)",
+      "$description": "legendary, darker: the ramp's deep step",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--role-legendary-deep",
+          "type": "color",
+          "derived": true
+        }
+      }
+    },
+    "role-legendary-light": {
+      "$type": "color",
+      "$value": "var(--role-legendary)",
+      "$description": "legendary, lighter: the ramp's gradient start",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--role-legendary-light",
+          "type": "color",
+          "derived": true
+        }
+      }
+    },
+    "role-brand": {
+      "$type": "color",
+      "$value": "var(--brand)",
+      "$description": "Role brand: the --hue-* ramp under data-hue=\"brand\"",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--role-brand",
+          "type": "color"
+        }
+      }
+    },
+    "role-brand-deep": {
+      "$type": "color",
+      "$value": "var(--role-brand)",
+      "$description": "brand, darker: the ramp's deep step",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--role-brand-deep",
+          "type": "color",
+          "derived": true
+        }
+      }
+    },
+    "role-brand-light": {
+      "$type": "color",
+      "$value": "var(--role-brand)",
+      "$description": "brand, lighter: the ramp's gradient start",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--role-brand-light",
+          "type": "color",
+          "derived": true
+        }
+      }
+    },
+    "role-neutral": {
+      "$type": "color",
+      "$value": "var(--muted-foreground)",
+      "$description": "Role neutral: the --hue-* ramp under data-hue=\"neutral\"",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--role-neutral",
+          "type": "color"
+        }
+      }
+    },
+    "role-neutral-deep": {
+      "$type": "color",
+      "$value": "var(--role-neutral)",
+      "$description": "neutral, darker: the ramp's deep step",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--role-neutral-deep",
+          "type": "color",
+          "derived": true
+        }
+      }
+    },
+    "role-neutral-light": {
+      "$type": "color",
+      "$value": "var(--role-neutral)",
+      "$description": "neutral, lighter: the ramp's gradient start",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "",
+          "css": "--role-neutral-light",
+          "type": "color",
+          "derived": true
+        }
+      }
+    }
+  },
+  "font": {
+    "sans": {
+      "$type": "fontFamily",
+      "$value": "Geist, Inter, \"Segoe UI\", system-ui, sans-serif",
+      "$description": "Sentences (the body voice)",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "font",
+          "css": "--font-sans",
+          "type": "font"
+        }
+      }
+    },
+    "display": {
+      "$type": "fontFamily",
+      "$value": "\"Barlow Condensed\", \"Arial Narrow\", sans-serif",
+      "$description": "Anything scanned: keys, titles, labels, captions",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "font",
+          "css": "--font-display",
+          "type": "font"
+        }
+      }
+    },
+    "numeric": {
+      "$type": "fontFamily",
+      "$value": "\"Barlow Condensed\", \"Arial Narrow\", sans-serif",
+      "$description": "Every number (always tabular)",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "font",
+          "css": "--font-numeric",
+          "type": "font"
+        }
+      }
+    },
+    "mono": {
+      "$type": "fontFamily",
+      "$value": "\"Geist Mono\", ui-monospace, monospace",
+      "$description": "Codes and IDs a player might type",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "font",
+          "css": "--font-mono",
+          "type": "font"
+        }
+      }
+    }
+  },
+  "scale": {
+    "$type": "number",
+    "$value": "1",
+    "$description": "UI size multiplier (players scale further, 0.85–1.25)",
+    "$extensions": {
+      "nuikit": {
+        "tier": "identity",
+        "scope": "scale",
+        "css": "--nk-scale",
+        "type": "number",
+        "range": [
+          0.5,
+          2
+        ]
+      }
+    }
+  },
+  "density": {
+    "$type": "number",
+    "$value": "1",
+    "$description": "Spacing multiplier: 0.75 compact … 1.3 roomy",
+    "$extensions": {
+      "nuikit": {
+        "tier": "identity",
+        "scope": "density",
+        "css": "--nk-density",
+        "type": "number",
+        "range": [
+          0.75,
+          1.3
+        ]
+      }
+    }
+  },
+  "space": {
+    "1": {
+      "$type": "dimension",
+      "$value": "{space.unit}",
+      "$description": "1 × the step",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "space",
+          "css": "--nk-space-1",
+          "type": "length"
+        }
+      }
+    },
+    "2": {
+      "$type": "dimension",
+      "$value": "calc(var(--nk-space-unit) * 2)",
+      "$description": "2 × the step",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "space",
+          "css": "--nk-space-2",
+          "type": "length"
+        }
+      }
+    },
+    "3": {
+      "$type": "dimension",
+      "$value": "calc(var(--nk-space-unit) * 3)",
+      "$description": "3 × the step",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "space",
+          "css": "--nk-space-3",
+          "type": "length"
+        }
+      }
+    },
+    "4": {
+      "$type": "dimension",
+      "$value": "calc(var(--nk-space-unit) * 4)",
+      "$description": "4 × the step",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "space",
+          "css": "--nk-space-4",
+          "type": "length"
+        }
+      }
+    },
+    "6": {
+      "$type": "dimension",
+      "$value": "calc(var(--nk-space-unit) * 6)",
+      "$description": "6 × the step",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "space",
+          "css": "--nk-space-6",
+          "type": "length"
+        }
+      }
+    },
+    "8": {
+      "$type": "dimension",
+      "$value": "calc(var(--nk-space-unit) * 8)",
+      "$description": "8 × the step",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "space",
+          "css": "--nk-space-8",
+          "type": "length"
+        }
+      }
+    },
+    "unit": {
+      "$type": "dimension",
+      "$value": "calc(0.25rem * var(--nk-density))",
+      "$description": "The spacing step",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "space",
+          "css": "--nk-space-unit",
+          "type": "length"
+        }
+      }
+    }
+  },
+  "radius": {
+    "key": {
+      "$type": "dimension",
+      "$value": "max(0.25rem, calc(var(--radius) - 0.5rem))",
+      "$description": "Keys and small tiles",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "radius",
+          "css": "--nk-radius-key",
+          "type": "length"
+        }
+      }
+    },
+    "chip": {
+      "$type": "dimension",
+      "$value": "max(0.25rem, calc(var(--radius) - 0.375rem))",
+      "$description": "Chips and badges",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "radius",
+          "css": "--nk-radius-chip",
+          "type": "length"
+        }
+      }
+    },
+    "control": {
+      "$type": "dimension",
+      "$value": "calc(var(--radius) - 0.25rem)",
+      "$description": "Buttons, fields, rows, the keycap",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "radius",
+          "css": "--nk-radius-control",
+          "type": "length"
+        }
+      }
+    },
+    "surface": {
+      "$type": "dimension",
+      "$value": "{material.menu.radius}",
+      "$description": "Panels, sheets, dialogs",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "radius",
+          "css": "--nk-radius-surface",
+          "type": "length"
+        }
+      }
+    }
+  },
+  "height": {
+    "key": {
+      "$type": "dimension",
+      "$value": "1.5rem",
+      "$description": "A key / small tile",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "height",
+          "css": "--nk-height-key",
+          "type": "length"
+        }
+      }
+    },
+    "chip": {
+      "$type": "dimension",
+      "$value": "calc(1.75rem * var(--nk-density))",
+      "$description": "A chip / medium tile",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "height",
+          "css": "--nk-height-chip",
+          "type": "length"
+        }
+      }
+    },
+    "control": {
+      "$type": "dimension",
+      "$value": "2.25rem",
+      "$description": "Buttons and bar items / large tile",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "height",
+          "css": "--nk-height-control",
+          "type": "length"
+        }
+      }
+    },
+    "row": {
+      "$type": "dimension",
+      "$value": "calc(3rem * var(--nk-density))",
+      "$description": "A list row",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "height",
+          "css": "--nk-height-row",
+          "type": "length"
+        }
+      }
+    },
+    "field": {
+      "$type": "dimension",
+      "$value": "2.75rem",
+      "$description": "Text inputs, selects and dialog buttons",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "height",
+          "css": "--nk-height-field",
+          "type": "length"
+        }
+      }
+    }
+  },
+  "icon": {
+    "sm": {
+      "$type": "dimension",
+      "$value": "0.75rem",
+      "$description": "Small icon",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "icon",
+          "css": "--nk-icon-sm",
+          "type": "length"
+        }
+      }
+    },
+    "md": {
+      "$type": "dimension",
+      "$value": "1rem",
+      "$description": "Icon next to text (the default)",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "icon",
+          "css": "--nk-icon-md",
+          "type": "length"
+        }
+      }
+    },
+    "lg": {
+      "$type": "dimension",
+      "$value": "1.25rem",
+      "$description": "Large icon",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "icon",
+          "css": "--nk-icon-lg",
+          "type": "length"
+        }
+      }
+    },
+    "stroke": {
+      "$type": "number",
+      "$value": "2",
+      "$description": "Stroke width",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "icon",
+          "css": "--nk-icon-stroke",
+          "type": "number",
+          "range": [
+            0.5,
+            4
+          ]
+        }
+      }
+    }
+  },
+  "text": {
+    "base": {
+      "$type": "dimension",
+      "$value": "1rem",
+      "$description": "Body size; every step derives from it",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "text",
+          "css": "--nk-text-base",
+          "type": "length"
+        }
+      }
+    },
+    "key": {
+      "$type": "dimension",
+      "$value": "0.8125rem",
+      "$description": "The scan voice (keys, buttons, tabs)",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "text",
+          "css": "--nk-text-key",
+          "type": "length"
+        }
+      },
+      "scale": {
+        "$type": "number",
+        "$value": "1",
+        "$description": "The inline keycap's size, × height.key",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "text",
+            "part": "key",
+            "css": "--nk-text-key-scale",
+            "type": "number",
+            "range": [
+              0.5,
+              2
+            ]
+          }
+        }
+      }
+    },
+    "body": {
+      "$type": "dimension",
+      "$value": "{text.base}",
+      "$description": "Sentences",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "text",
+          "css": "--nk-text-body",
+          "type": "length"
+        }
+      }
+    },
+    "label": {
+      "$type": "dimension",
+      "$value": "max(0.8125rem, calc(var(--nk-text-base) / var(--nk-type-ratio)))",
+      "$description": "Labels and captions",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "text",
+          "css": "--nk-text-label",
+          "type": "length"
+        }
+      }
+    },
+    "title": {
+      "$type": "dimension",
+      "$value": "calc(var(--nk-text-base) * (1 + (var(--nk-type-ratio) - 1) / 2))",
+      "$description": "Panel titles (≈ base × √ratio)",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "text",
+          "css": "--nk-text-title",
+          "type": "length"
+        }
+      }
+    },
+    "section": {
+      "$type": "dimension",
+      "$value": "calc(var(--nk-text-base) * var(--nk-type-ratio) * var(--nk-type-ratio))",
+      "$description": "Section and sheet titles",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "text",
+          "css": "--nk-text-section",
+          "type": "length"
+        }
+      }
+    },
+    "display": {
+      "$type": "dimension",
+      "$value": "calc(var(--nk-text-base) * var(--nk-type-ratio) * var(--nk-type-ratio) * var(--nk-type-ratio) * var(--nk-type-ratio) * 1.1)",
+      "$description": "Full-screen titles",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "text",
+          "css": "--nk-text-display",
+          "type": "length"
+        }
+      }
+    },
+    "hud": {
+      "$type": "dimension",
+      "$value": "max(1.125rem, calc(var(--nk-text-base) * var(--nk-type-ratio)))",
+      "$description": "HUD values read in motion",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "text",
+          "css": "--nk-text-hud",
+          "type": "length"
+        }
+      }
+    },
+    "row": {
+      "$type": "dimension",
+      "$value": "1.125rem",
+      "$description": "A row or notice title (the label voice)",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "text",
+          "css": "--nk-text-row",
+          "type": "length"
+        }
+      }
+    },
+    "desc": {
+      "$type": "dimension",
+      "$value": "0.875rem",
+      "$description": "A row or notice description (the body voice)",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "text",
+          "css": "--nk-text-desc",
+          "type": "length"
+        }
+      }
+    }
+  },
+  "leading": {
+    "tight": {
+      "$type": "dimension",
+      "$value": "1rem",
+      "$description": "Small text: captions, labels, descriptions",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "leading",
+          "css": "--nk-leading-tight",
+          "type": "length"
+        }
+      }
+    },
+    "normal": {
+      "$type": "dimension",
+      "$value": "1.25rem",
+      "$description": "Body-size text: rows, notices, slabs",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "leading",
+          "css": "--nk-leading-normal",
+          "type": "length"
+        }
+      }
+    }
+  },
+  "shape": {
+    "skew": {
+      "$type": "number",
+      "$value": "-12deg",
+      "$description": "The keycap's slant: tile faces, the primary button, the selection (their boxes and text stay upright); at most ±20deg",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "shape",
+          "css": "--nk-shape-skew",
+          "type": "angle",
+          "range": [
+            -20,
+            20
+          ]
+        }
+      }
+    },
+    "slab": {
+      "$type": "number",
+      "$value": "0deg",
+      "$description": "Chips, badges and tags drawn as skewed slabs too (0deg = upright); at most ±20deg",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "shape",
+          "css": "--nk-shape-slab",
+          "type": "angle",
+          "range": [
+            -20,
+            20
+          ]
+        }
+      }
+    },
+    "cut": {
+      "$type": "dimension",
+      "$value": "0px",
+      "$description": "Chamfered corners (top left, bottom right) as clip-path; 0 = off",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "shape",
+          "css": "--nk-shape-cut",
+          "type": "length"
+        }
+      }
+    },
+    "stroke": {
+      "$type": "dimension",
+      "$value": "1px",
+      "$description": "Hairline weight of plates, rims and fields",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "shape",
+          "css": "--nk-shape-stroke",
+          "type": "length"
+        }
+      }
+    }
+  },
+  "type": {
+    "ratio": {
+      "$type": "number",
+      "$value": "1.25",
+      "$description": "Step between type sizes: 1.125 calm … 1.333 dramatic",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "type",
+          "css": "--nk-type-ratio",
+          "type": "number",
+          "range": [
+            1,
+            1.6
+          ]
+        }
+      }
+    },
+    "weight-body": {
+      "$type": "number",
+      "$value": "400",
+      "$description": "Sentences",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "type",
+          "css": "--nk-type-weight-body",
+          "type": "number",
+          "range": [
+            100,
+            900
+          ]
+        }
+      }
+    },
+    "weight-strong": {
+      "$type": "number",
+      "$value": "500",
+      "$description": "Captions, chips, slabs: text that must hold its own on the game",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "type",
+          "css": "--nk-type-weight-strong",
+          "type": "number",
+          "range": [
+            100,
+            900
+          ]
+        }
+      }
+    },
+    "weight-display": {
+      "$type": "number",
+      "$value": "700",
+      "$description": "Full-screen titles and big numbers",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "type",
+          "css": "--nk-type-weight-display",
+          "type": "number",
+          "range": [
+            100,
+            900
+          ]
+        }
+      }
+    },
+    "tracking-display": {
+      "$type": "dimension",
+      "$value": "-0.02em",
+      "$description": "Letter-spacing of full-screen titles",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "type",
+          "css": "--nk-type-tracking-display",
+          "type": "length"
+        }
+      }
+    },
+    "tracking-label": {
+      "$type": "dimension",
+      "$value": "0.06em",
+      "$description": "Letter-spacing of captions",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "type",
+          "css": "--nk-type-tracking-label",
+          "type": "length"
+        }
+      }
+    },
+    "case": {
+      "$value": "uppercase",
+      "$description": "Anything scanned (keys, titles, labels, captions) in caps or as written",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "type",
+          "css": "--nk-type-case",
+          "type": "keyword",
+          "values": [
+            "none",
+            "uppercase"
+          ]
+        }
+      }
+    },
+    "slant": {
+      "$value": "italic",
+      "$description": "The scanned voices upright or italic (a real italic where the face has one)",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "type",
+          "css": "--nk-type-slant",
+          "type": "keyword",
+          "values": [
+            "normal",
+            "italic"
+          ]
+        }
+      }
+    },
+    "overhang": {
+      "$type": "dimension",
+      "$value": "0.15em",
+      "$description": "Trailing pad of a slanted voice (the italic's overhang); 0em when upright",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "type",
+          "css": "--nk-type-overhang",
+          "type": "length"
+        }
+      }
+    },
+    "scan": {
+      "family": {
+        "$type": "fontFamily",
+        "$value": "{font.display}",
+        "$description": "Face of the scan voice (keys, buttons, tabs)",
+        "$extensions": {
+          "nuikit": {
+            "tier": "identity",
+            "scope": "type",
+            "part": "scan",
+            "css": "--nk-type-scan-family",
+            "type": "font"
+          }
+        }
+      },
+      "style": {
+        "$value": "{type.slant}",
+        "$description": "Slant of the scan voice (keys, buttons, tabs)",
+        "$extensions": {
+          "nuikit": {
+            "tier": "identity",
+            "scope": "type",
+            "part": "scan",
+            "css": "--nk-type-scan-style",
+            "type": "keyword",
+            "values": [
+              "normal",
+              "italic"
+            ]
+          }
+        }
+      },
+      "weight": {
+        "$type": "number",
+        "$value": "800",
+        "$description": "Weight of the scan voice (keys, buttons, tabs)",
+        "$extensions": {
+          "nuikit": {
+            "tier": "identity",
+            "scope": "type",
+            "part": "scan",
+            "css": "--nk-type-scan-weight",
+            "type": "number",
+            "range": [
+              100,
+              900
+            ]
+          }
+        }
+      },
+      "tracking": {
+        "$type": "dimension",
+        "$value": "0.02em",
+        "$description": "Letter-spacing of the scan voice (keys, buttons, tabs)",
+        "$extensions": {
+          "nuikit": {
+            "tier": "identity",
+            "scope": "type",
+            "part": "scan",
+            "css": "--nk-type-scan-tracking",
+            "type": "length"
+          }
+        }
+      },
+      "case": {
+        "$value": "{type.case}",
+        "$description": "Case of the scan voice (keys, buttons, tabs)",
+        "$extensions": {
+          "nuikit": {
+            "tier": "identity",
+            "scope": "type",
+            "part": "scan",
+            "css": "--nk-type-scan-case",
+            "type": "keyword",
+            "values": [
+              "none",
+              "uppercase"
+            ]
+          }
+        }
+      },
+      "pad": {
+        "$type": "dimension",
+        "$value": "{type.overhang}",
+        "$description": "Trailing pad of the scan voice (keys, buttons, tabs) (the italic overhang)",
+        "$extensions": {
+          "nuikit": {
+            "tier": "identity",
+            "scope": "type",
+            "part": "scan",
+            "css": "--nk-type-scan-pad",
+            "type": "length"
+          }
+        }
+      }
+    },
+    "title": {
+      "family": {
+        "$type": "fontFamily",
+        "$value": "{font.display}",
+        "$description": "Face of the title voice (panel and row titles)",
+        "$extensions": {
+          "nuikit": {
+            "tier": "identity",
+            "scope": "type",
+            "part": "title",
+            "css": "--nk-type-title-family",
+            "type": "font"
+          }
+        }
+      },
+      "style": {
+        "$value": "{type.slant}",
+        "$description": "Slant of the title voice (panel and row titles)",
+        "$extensions": {
+          "nuikit": {
+            "tier": "identity",
+            "scope": "type",
+            "part": "title",
+            "css": "--nk-type-title-style",
+            "type": "keyword",
+            "values": [
+              "normal",
+              "italic"
+            ]
+          }
+        }
+      },
+      "weight": {
+        "$type": "number",
+        "$value": "800",
+        "$description": "Weight of the title voice (panel and row titles)",
+        "$extensions": {
+          "nuikit": {
+            "tier": "identity",
+            "scope": "type",
+            "part": "title",
+            "css": "--nk-type-title-weight",
+            "type": "number",
+            "range": [
+              100,
+              900
+            ]
+          }
+        }
+      },
+      "tracking": {
+        "$type": "dimension",
+        "$value": "0.02em",
+        "$description": "Letter-spacing of the title voice (panel and row titles)",
+        "$extensions": {
+          "nuikit": {
+            "tier": "identity",
+            "scope": "type",
+            "part": "title",
+            "css": "--nk-type-title-tracking",
+            "type": "length"
+          }
+        }
+      },
+      "case": {
+        "$value": "{type.case}",
+        "$description": "Case of the title voice (panel and row titles)",
+        "$extensions": {
+          "nuikit": {
+            "tier": "identity",
+            "scope": "type",
+            "part": "title",
+            "css": "--nk-type-title-case",
+            "type": "keyword",
+            "values": [
+              "none",
+              "uppercase"
+            ]
+          }
+        }
+      },
+      "pad": {
+        "$type": "dimension",
+        "$value": "{type.overhang}",
+        "$description": "Trailing pad of the title voice (panel and row titles) (the italic overhang)",
+        "$extensions": {
+          "nuikit": {
+            "tier": "identity",
+            "scope": "type",
+            "part": "title",
+            "css": "--nk-type-title-pad",
+            "type": "length"
+          }
+        }
+      }
+    },
+    "label": {
+      "family": {
+        "$type": "fontFamily",
+        "$value": "{font.display}",
+        "$description": "Face of the label voice (labels, row titles)",
+        "$extensions": {
+          "nuikit": {
+            "tier": "identity",
+            "scope": "type",
+            "part": "label",
+            "css": "--nk-type-label-family",
+            "type": "font"
+          }
+        }
+      },
+      "style": {
+        "$value": "{type.slant}",
+        "$description": "Slant of the label voice (labels, row titles)",
+        "$extensions": {
+          "nuikit": {
+            "tier": "identity",
+            "scope": "type",
+            "part": "label",
+            "css": "--nk-type-label-style",
+            "type": "keyword",
+            "values": [
+              "normal",
+              "italic"
+            ]
+          }
+        }
+      },
+      "weight": {
+        "$type": "number",
+        "$value": "700",
+        "$description": "Weight of the label voice (labels, row titles)",
+        "$extensions": {
+          "nuikit": {
+            "tier": "identity",
+            "scope": "type",
+            "part": "label",
+            "css": "--nk-type-label-weight",
+            "type": "number",
+            "range": [
+              100,
+              900
+            ]
+          }
+        }
+      },
+      "tracking": {
+        "$type": "dimension",
+        "$value": "0.03em",
+        "$description": "Letter-spacing of the label voice (labels, row titles)",
+        "$extensions": {
+          "nuikit": {
+            "tier": "identity",
+            "scope": "type",
+            "part": "label",
+            "css": "--nk-type-label-tracking",
+            "type": "length"
+          }
+        }
+      },
+      "case": {
+        "$value": "{type.case}",
+        "$description": "Case of the label voice (labels, row titles)",
+        "$extensions": {
+          "nuikit": {
+            "tier": "identity",
+            "scope": "type",
+            "part": "label",
+            "css": "--nk-type-label-case",
+            "type": "keyword",
+            "values": [
+              "none",
+              "uppercase"
+            ]
+          }
+        }
+      },
+      "pad": {
+        "$type": "dimension",
+        "$value": "{type.overhang}",
+        "$description": "Trailing pad of the label voice (labels, row titles) (the italic overhang)",
+        "$extensions": {
+          "nuikit": {
+            "tier": "identity",
+            "scope": "type",
+            "part": "label",
+            "css": "--nk-type-label-pad",
+            "type": "length"
+          }
+        }
+      }
+    },
+    "num": {
+      "family": {
+        "$type": "fontFamily",
+        "$value": "{font.numeric}",
+        "$description": "Face of the numeric voice",
+        "$extensions": {
+          "nuikit": {
+            "tier": "identity",
+            "scope": "type",
+            "part": "num",
+            "css": "--nk-type-num-family",
+            "type": "font"
+          }
+        }
+      },
+      "style": {
+        "$value": "{type.slant}",
+        "$description": "Slant of the numeric voice",
+        "$extensions": {
+          "nuikit": {
+            "tier": "identity",
+            "scope": "type",
+            "part": "num",
+            "css": "--nk-type-num-style",
+            "type": "keyword",
+            "values": [
+              "normal",
+              "italic"
+            ]
+          }
+        }
+      },
+      "weight": {
+        "$type": "number",
+        "$value": "700",
+        "$description": "Weight of the numeric voice",
+        "$extensions": {
+          "nuikit": {
+            "tier": "identity",
+            "scope": "type",
+            "part": "num",
+            "css": "--nk-type-num-weight",
+            "type": "number",
+            "range": [
+              100,
+              900
+            ]
+          }
+        }
+      },
+      "tracking": {
+        "$type": "dimension",
+        "$value": "0.01em",
+        "$description": "Letter-spacing of the numeric voice",
+        "$extensions": {
+          "nuikit": {
+            "tier": "identity",
+            "scope": "type",
+            "part": "num",
+            "css": "--nk-type-num-tracking",
+            "type": "length"
+          }
+        }
+      },
+      "case": {
+        "$value": "none",
+        "$description": "Case of the numeric voice",
+        "$extensions": {
+          "nuikit": {
+            "tier": "identity",
+            "scope": "type",
+            "part": "num",
+            "css": "--nk-type-num-case",
+            "type": "keyword",
+            "values": [
+              "none",
+              "uppercase"
+            ]
+          }
+        }
+      },
+      "pad": {
+        "$type": "dimension",
+        "$value": "{type.overhang}",
+        "$description": "Trailing pad of the numeric voice (the italic overhang)",
+        "$extensions": {
+          "nuikit": {
+            "tier": "identity",
+            "scope": "type",
+            "part": "num",
+            "css": "--nk-type-num-pad",
+            "type": "length"
+          }
+        }
+      }
+    },
+    "body": {
+      "family": {
+        "$type": "fontFamily",
+        "$value": "{font.sans}",
+        "$description": "Face of the body voice (sentences)",
+        "$extensions": {
+          "nuikit": {
+            "tier": "identity",
+            "scope": "type",
+            "part": "body",
+            "css": "--nk-type-body-family",
+            "type": "font"
+          }
+        }
+      },
+      "style": {
+        "$value": "normal",
+        "$description": "Slant of the body voice (sentences)",
+        "$extensions": {
+          "nuikit": {
+            "tier": "identity",
+            "scope": "type",
+            "part": "body",
+            "css": "--nk-type-body-style",
+            "type": "keyword",
+            "values": [
+              "normal",
+              "italic"
+            ]
+          }
+        }
+      },
+      "weight": {
+        "$type": "number",
+        "$value": "{type.weight-body}",
+        "$description": "Weight of the body voice (sentences)",
+        "$extensions": {
+          "nuikit": {
+            "tier": "identity",
+            "scope": "type",
+            "part": "body",
+            "css": "--nk-type-body-weight",
+            "type": "number",
+            "range": [
+              100,
+              900
+            ]
+          }
+        }
+      },
+      "tracking": {
+        "$type": "dimension",
+        "$value": "0em",
+        "$description": "Letter-spacing of the body voice (sentences)",
+        "$extensions": {
+          "nuikit": {
+            "tier": "identity",
+            "scope": "type",
+            "part": "body",
+            "css": "--nk-type-body-tracking",
+            "type": "length"
+          }
+        }
+      },
+      "case": {
+        "$value": "none",
+        "$description": "Case of the body voice (sentences)",
+        "$extensions": {
+          "nuikit": {
+            "tier": "identity",
+            "scope": "type",
+            "part": "body",
+            "css": "--nk-type-body-case",
+            "type": "keyword",
+            "values": [
+              "none",
+              "uppercase"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "surface": {
+    "tint": {
+      "$type": "number",
+      "$value": "0",
+      "$description": "How much brand tints neutral surfaces",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "surface",
+          "css": "--nk-surface-tint",
+          "type": "number",
+          "range": [
+            0,
+            0.12
+          ]
+        }
+      }
+    },
+    "gradient": {
+      "$type": "number",
+      "$value": "0",
+      "$description": "Top-to-bottom light falloff (0 = flat)",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "surface",
+          "css": "--nk-surface-gradient",
+          "type": "number",
+          "range": [
+            0,
+            0.2
+          ]
+        }
+      }
+    },
+    "elevation": {
+      "$value": "hard",
+      "$description": "Shadow recipe: hard is a solid offset drop, no blur",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "surface",
+          "css": "--nk-surface-elevation",
+          "type": "keyword",
+          "values": [
+            "none",
+            "soft",
+            "deep",
+            "hard"
+          ]
+        }
+      }
+    },
+    "glow": {
+      "$type": "number",
+      "$value": "0",
+      "$description": "Brand glow on active parts (alpha, 0 = off)",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "surface",
+          "css": "--nk-surface-glow",
+          "type": "number",
+          "range": [
+            0,
+            1
+          ]
+        }
+      }
+    },
+    "glow-budget": {
+      "$type": "number",
+      "$value": "1",
+      "$description": "How many parts may glow at once (0 = no limit)",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "surface",
+          "css": "--nk-surface-glow-budget",
+          "type": "number",
+          "range": [
+            0,
+            8
+          ]
+        }
+      }
+    },
+    "backdrop": {
+      "$value": "off",
+      "$description": "Backdrop blur (FiveM draws it as a black box: off)",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "surface",
+          "css": "--nk-surface-backdrop",
+          "type": "keyword",
+          "values": [
+            "on",
+            "off"
+          ]
+        }
+      }
+    },
+    "legibility": {
+      "$value": "auto",
+      "$description": "day lifts surfaces for a bright sky; auto follows the game clock",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "surface",
+          "css": "--nk-surface-legibility",
+          "type": "keyword",
+          "values": [
+            "auto",
+            "night",
+            "day"
+          ]
+        }
+      }
+    },
+    "legibility-lift": {
+      "$type": "number",
+      "$value": "0.5",
+      "$description": "How far day closes the gap to opaque",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "surface",
+          "css": "--nk-surface-legibility-lift",
+          "type": "number",
+          "range": [
+            0,
+            1
+          ]
+        }
+      }
+    },
+    "slash": {
+      "$value": "none",
+      "$description": "A decorative diagonal cut on menus",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "surface",
+          "css": "--nk-surface-slash",
+          "type": "keyword",
+          "values": [
+            "none",
+            "cut"
+          ]
+        }
+      }
+    }
+  },
+  "material": {
+    "hud": {
+      "opacity": {
+        "$type": "number",
+        "$value": "0.8",
+        "$description": "Opacity of the hud material",
+        "$extensions": {
+          "nuikit": {
+            "tier": "identity",
+            "scope": "material",
+            "part": "hud",
+            "css": "--nk-material-hud-opacity",
+            "type": "number",
+            "range": [
+              0,
+              1
+            ]
+          }
+        }
+      },
+      "texture": {
+        "$value": "none",
+        "$description": "Texture over the hud material",
+        "$extensions": {
+          "nuikit": {
+            "tier": "identity",
+            "scope": "material",
+            "part": "hud",
+            "css": "--nk-material-hud-texture",
+            "type": "keyword",
+            "values": [
+              "none",
+              "scanlines"
+            ]
+          }
+        }
+      }
+    },
+    "menu": {
+      "opacity": {
+        "$type": "number",
+        "$value": "0.94",
+        "$description": "Opacity of the menu material (floor 0.92 for text)",
+        "$extensions": {
+          "nuikit": {
+            "tier": "identity",
+            "scope": "material",
+            "part": "menu",
+            "css": "--nk-material-menu-opacity",
+            "type": "number",
+            "range": [
+              0,
+              1
+            ]
+          }
+        }
+      },
+      "blur": {
+        "$type": "dimension",
+        "$value": "0px",
+        "$description": "Backdrop blur behind menus (with surface.backdrop on)",
+        "$extensions": {
+          "nuikit": {
+            "tier": "identity",
+            "scope": "material",
+            "part": "menu",
+            "css": "--nk-material-menu-blur",
+            "type": "length"
+          }
+        }
+      },
+      "radius": {
+        "$type": "dimension",
+        "$value": "{palette.radius}",
+        "$description": "Corner radius of menus, sheets and dialogs",
+        "$extensions": {
+          "nuikit": {
+            "tier": "identity",
+            "scope": "material",
+            "part": "menu",
+            "css": "--nk-material-menu-radius",
+            "type": "length"
+          }
+        }
+      },
+      "edge": {
+        "$type": "number",
+        "$value": "0",
+        "$description": "The machined top edge of menus (alpha)",
+        "$extensions": {
+          "nuikit": {
+            "tier": "identity",
+            "scope": "material",
+            "part": "menu",
+            "css": "--nk-material-menu-edge",
+            "type": "number",
+            "range": [
+              0,
+              0.3
+            ]
+          }
+        }
+      },
+      "texture": {
+        "$value": "none",
+        "$description": "Texture over the menu material",
+        "$extensions": {
+          "nuikit": {
+            "tier": "identity",
+            "scope": "material",
+            "part": "menu",
+            "css": "--nk-material-menu-texture",
+            "type": "keyword",
+            "values": [
+              "none",
+              "scanlines"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "hud": {
+    "text": {
+      "$value": "soft",
+      "$description": "Shadow under text drawn on the game (semantic depth.text draws it)",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "hud",
+          "css": "--nk-hud-text",
+          "type": "keyword",
+          "values": [
+            "none",
+            "soft",
+            "strong"
+          ]
+        }
+      }
+    }
+  },
+  "motion": {
+    "$type": "number",
+    "$value": "1",
+    "$description": "1 = animations on, 0 = off (painted 0 under the player's reduced-motion pref)",
+    "$extensions": {
+      "nuikit": {
+        "tier": "identity",
+        "scope": "motion",
+        "css": "--nk-motion",
+        "type": "number",
+        "range": [
+          0,
+          1
+        ]
+      }
+    },
+    "duration": {
+      "$type": "duration",
+      "$value": "180ms",
+      "$description": "Base duration d: the ladder is snap 0.5d, fast 0.667d, base d, slow 1.556d, fill 2.333d",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "motion",
+          "css": "--nk-motion-duration",
+          "type": "time",
+          "range": [
+            0,
+            2000
+          ]
+        }
+      }
+    },
+    "ease": {
+      "$type": "cubicBezier",
+      "$value": "cubic-bezier(0.2, 0, 0, 1)",
+      "$description": "The curve of anything arriving",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "motion",
+          "css": "--nk-motion-ease",
+          "type": "ease"
+        }
+      }
+    },
+    "feel": {
+      "$value": "crisp",
+      "$description": "How it moves: crisp, snap (flash instead of press scale), smooth (longer springs), stepped",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "motion",
+          "css": "--nk-motion-feel",
+          "type": "keyword",
+          "values": [
+            "crisp",
+            "snap",
+            "smooth",
+            "stepped"
+          ]
+        }
+      }
+    },
+    "bounce": {
+      "$type": "number",
+      "$value": "0",
+      "$description": "Bounce folded into the snap, move and soft springs",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "motion",
+          "css": "--nk-motion-bounce",
+          "type": "number",
+          "range": [
+            0,
+            0.3
+          ]
+        }
+      }
+    },
+    "exit-factor": {
+      "$type": "number",
+      "$value": "0.7",
+      "$description": "Every exit is this × its enter",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "motion",
+          "css": "--nk-motion-exit-factor",
+          "type": "number",
+          "range": [
+            0.3,
+            1
+          ]
+        }
+      }
+    },
+    "reduced": {
+      "$type": "duration",
+      "$value": "100ms",
+      "$description": "Under reduced motion every fade is at most this",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "motion",
+          "css": "--nk-motion-reduced",
+          "type": "time",
+          "range": [
+            0,
+            400
+          ]
+        }
+      }
+    },
+    "profile": {
+      "$value": "full",
+      "$description": "full: as designed; reduced: no movement, short fades; instant: nothing animates",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "motion",
+          "css": "--nk-motion-profile",
+          "type": "keyword",
+          "values": [
+            "full",
+            "reduced",
+            "instant"
+          ]
+        }
+      }
+    }
+  },
+  "style": {
+    "fill": {
+      "$value": "solid",
+      "$description": "Fills, the selection face and levels: solid (flat, vivid) or soft (a tint)",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "style",
+          "css": "--nk-style-fill",
+          "type": "keyword",
+          "values": [
+            "solid",
+            "soft"
+          ]
+        }
+      }
+    },
+    "level": {
+      "$value": "liquid",
+      "$description": "How a level (0–1) is drawn by vitals, meters, holds",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "style",
+          "css": "--nk-style-level",
+          "type": "keyword",
+          "values": [
+            "bar",
+            "ring",
+            "liquid",
+            "slab",
+            "pips"
+          ]
+        }
+      }
+    },
+    "hold": {
+      "$value": "fill",
+      "$description": "How a press-and-hold shows its progress",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "style",
+          "css": "--nk-style-hold",
+          "type": "keyword",
+          "values": [
+            "bar",
+            "ring",
+            "fill"
+          ]
+        }
+      }
+    },
+    "gauge": {
+      "$value": "digital",
+      "$description": "How gauges are drawn",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "style",
+          "css": "--nk-style-gauge",
+          "type": "keyword",
+          "values": [
+            "arc",
+            "bar",
+            "digital"
+          ]
+        }
+      }
+    },
+    "focus": {
+      "$value": "halo",
+      "$description": "Focus on parts that are not rows (rows and buttons light like hover)",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "style",
+          "css": "--nk-style-focus",
+          "type": "keyword",
+          "values": [
+            "ring",
+            "halo",
+            "tint",
+            "fill",
+            "invert",
+            "bar"
+          ]
+        }
+      }
+    },
+    "vital": {
+      "$value": "expand",
+      "$description": "What a vital chip shows (expand: the tag opens on a change)",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "style",
+          "css": "--nk-style-vital",
+          "type": "keyword",
+          "values": [
+            "auto",
+            "pill",
+            "value",
+            "icon",
+            "expand"
+          ]
+        }
+      }
+    },
+    "vital-icon": {
+      "$value": "uniform",
+      "$description": "Vital icons: each vital's own colour, or the chip's ink",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "style",
+          "css": "--nk-style-vital-icon",
+          "type": "keyword",
+          "values": [
+            "vital",
+            "uniform"
+          ]
+        }
+      }
+    },
+    "vital-neighbours": {
+      "$value": "push",
+      "$description": "What a growing vital chip does to its neighbours",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "style",
+          "css": "--nk-style-vital-neighbours",
+          "type": "keyword",
+          "values": [
+            "push",
+            "collapse",
+            "overlay"
+          ]
+        }
+      }
+    },
+    "pause": {
+      "$value": "sheet",
+      "$description": "The pause menu: a full-height sheet, or a light slash panel",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "style",
+          "css": "--nk-style-pause",
+          "type": "keyword",
+          "values": [
+            "sheet",
+            "slash"
+          ]
+        }
+      }
+    }
+  },
+  "behavior": {
+    "alert": {
+      "$type": "number",
+      "$value": "0.2",
+      "$description": "A level at or under this is an alert (vitals, durability)",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "behavior",
+          "css": "--nk-behavior-alert",
+          "type": "number",
+          "range": [
+            0,
+            1
+          ]
+        }
+      }
+    },
+    "rest": {
+      "$type": "duration",
+      "$value": "3000ms",
+      "$description": "How long a changed HUD part stays open before it retracts (0 = never)",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "behavior",
+          "css": "--nk-behavior-rest",
+          "type": "time",
+          "range": [
+            0,
+            60000
+          ]
+        }
+      }
+    },
+    "notify": {
+      "info": {
+        "$type": "duration",
+        "$value": "4000ms",
+        "$description": "How long an info notice stays",
+        "$extensions": {
+          "nuikit": {
+            "tier": "identity",
+            "scope": "behavior",
+            "part": "notify",
+            "css": "--nk-behavior-notify-info",
+            "type": "time",
+            "range": [
+              0,
+              60000
+            ]
+          }
+        }
+      },
+      "success": {
+        "$type": "duration",
+        "$value": "4000ms",
+        "$description": "How long a success notice stays",
+        "$extensions": {
+          "nuikit": {
+            "tier": "identity",
+            "scope": "behavior",
+            "part": "notify",
+            "css": "--nk-behavior-notify-success",
+            "type": "time",
+            "range": [
+              0,
+              60000
+            ]
+          }
+        }
+      },
+      "warning": {
+        "$type": "duration",
+        "$value": "5000ms",
+        "$description": "How long a warning stays",
+        "$extensions": {
+          "nuikit": {
+            "tier": "identity",
+            "scope": "behavior",
+            "part": "notify",
+            "css": "--nk-behavior-notify-warning",
+            "type": "time",
+            "range": [
+              0,
+              60000
+            ]
+          }
+        }
+      },
+      "danger": {
+        "$type": "duration",
+        "$value": "7000ms",
+        "$description": "How long a danger notice stays",
+        "$extensions": {
+          "nuikit": {
+            "tier": "identity",
+            "scope": "behavior",
+            "part": "notify",
+            "css": "--nk-behavior-notify-danger",
+            "type": "time",
+            "range": [
+              0,
+              60000
+            ]
+          }
+        }
+      }
+    }
+  },
+  "hue": {
+    "line": {
+      "$type": "number",
+      "$value": "0.5",
+      "$description": "A role's line (borders, tracks)",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "hue",
+          "css": "--nk-hue-line",
+          "type": "number",
+          "range": [
+            0,
+            1
+          ]
+        }
+      }
+    },
+    "tint": {
+      "$type": "number",
+      "$value": "0.1",
+      "$description": "A role's tint (fills behind text)",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "hue",
+          "css": "--nk-hue-tint",
+          "type": "number",
+          "range": [
+            0,
+            1
+          ]
+        }
+      }
+    },
+    "glow": {
+      "$type": "number",
+      "$value": "0.25",
+      "$description": "A role's glow (under the glow budget)",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "hue",
+          "css": "--nk-hue-glow",
+          "type": "number",
+          "range": [
+            0,
+            1
+          ]
+        }
+      }
+    },
+    "alert": {
+      "$type": "number",
+      "$value": "0.8",
+      "$description": "A role's alert wash",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "hue",
+          "css": "--nk-hue-alert",
+          "type": "number",
+          "range": [
+            0,
+            1
+          ]
+        }
+      }
+    }
+  },
+  "layer": {
+    "dim": {
+      "$type": "number",
+      "$value": "50",
+      "$description": "Stacking layer: dim (a modal is the current surface + dim + dialog)",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "layer",
+          "css": "--nk-layer-dim",
+          "type": "number",
+          "range": [
+            0,
+            100000
+          ]
+        }
+      }
+    },
+    "dialog": {
+      "$type": "number",
+      "$value": "60",
+      "$description": "Stacking layer: dialog (a modal is the current surface + dim + dialog)",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "layer",
+          "css": "--nk-layer-dialog",
+          "type": "number",
+          "range": [
+            0,
+            100000
+          ]
+        }
+      }
+    }
+  },
+  "time": {
+    "snap": {
+      "$type": "duration",
+      "$value": "90ms",
+      "$description": "A press, a rim switching state (0.5d)",
+      "$extensions": {
+        "nuikit": {
+          "tier": "semantic",
+          "scope": "time",
+          "css": "--nk-time-snap",
+          "type": "time",
+          "derived": true
+        }
+      }
+    },
+    "fast": {
+      "$type": "duration",
+      "$value": "120ms",
+      "$description": "Hover, a face rising, a deny beat (0.667d)",
+      "$extensions": {
+        "nuikit": {
+          "tier": "semantic",
+          "scope": "time",
+          "css": "--nk-time-fast",
+          "type": "time",
+          "derived": true
+        }
+      }
+    },
+    "base": {
+      "$type": "duration",
+      "$value": "180ms",
+      "$description": "Panel enter, the selection tile, tab switch (d)",
+      "$extensions": {
+        "nuikit": {
+          "tier": "semantic",
+          "scope": "time",
+          "css": "--nk-time-base",
+          "type": "time",
+          "derived": true
+        }
+      }
+    },
+    "slow": {
+      "$type": "duration",
+      "$value": "280ms",
+      "$description": "Sheets, dialogs, a tile landing, toasts, a confirm pop (1.556d)",
+      "$extensions": {
+        "nuikit": {
+          "tier": "semantic",
+          "scope": "time",
+          "css": "--nk-time-slow",
+          "type": "time",
+          "derived": true
+        }
+      }
+    },
+    "fill": {
+      "$type": "duration",
+      "$value": "420ms",
+      "$description": "A level filling or draining; HUD show-on-change (2.333d)",
+      "$extensions": {
+        "nuikit": {
+          "tier": "semantic",
+          "scope": "time",
+          "css": "--nk-time-fill",
+          "type": "time",
+          "derived": true
+        }
+      }
+    },
+    "exit": {
+      "$type": "duration",
+      "$value": "126ms",
+      "$description": "Every exit (d × exit-factor)",
+      "$extensions": {
+        "nuikit": {
+          "tier": "semantic",
+          "scope": "time",
+          "css": "--nk-time-exit",
+          "type": "time",
+          "derived": true
+        }
+      }
+    },
+    "pulse": {
+      "$type": "duration",
+      "$value": "1000ms",
+      "$description": "One alert pulse",
+      "$extensions": {
+        "nuikit": {
+          "tier": "semantic",
+          "scope": "time",
+          "css": "--nk-time-pulse",
+          "type": "time",
+          "derived": true
+        }
+      }
+    }
+  },
+  "ease": {
+    "enter": {
+      "$type": "cubicBezier",
+      "$value": "{motion.ease}",
+      "$description": "Anything arriving: enter, hover",
+      "$extensions": {
+        "nuikit": {
+          "tier": "semantic",
+          "scope": "ease",
+          "css": "--nk-ease-enter",
+          "type": "ease"
+        }
+      }
+    },
+    "exit": {
+      "$type": "cubicBezier",
+      "$value": "cubic-bezier(0.4, 0, 1, 1)",
+      "$description": "Exits and things tucking away (speeds up as it leaves)",
+      "$extensions": {
+        "nuikit": {
+          "tier": "semantic",
+          "scope": "ease",
+          "css": "--nk-ease-exit",
+          "type": "ease"
+        }
+      }
+    },
+    "move": {
+      "$type": "cubicBezier",
+      "$value": "{motion.ease}",
+      "$description": "On-screen moves: the selection tile, FLIP, a tab underline",
+      "$extensions": {
+        "nuikit": {
+          "tier": "semantic",
+          "scope": "ease",
+          "css": "--nk-ease-move",
+          "type": "ease"
+        }
+      }
+    },
+    "expand": {
+      "$type": "cubicBezier",
+      "$value": "cubic-bezier(0.16, 1, 0.3, 1)",
+      "$description": "Things opening and growing; full-screen enter",
+      "$extensions": {
+        "nuikit": {
+          "tier": "semantic",
+          "scope": "ease",
+          "css": "--nk-ease-expand",
+          "type": "ease"
+        }
+      }
+    },
+    "spring": {
+      "$type": "cubicBezier",
+      "$value": "cubic-bezier(0.34, 1.56, 0.64, 1)",
+      "$description": "An overshoot without a spring (confirm pops, press release)",
+      "$extensions": {
+        "nuikit": {
+          "tier": "semantic",
+          "scope": "ease",
+          "css": "--nk-ease-spring",
+          "type": "ease"
+        }
+      }
+    },
+    "breathe": {
+      "$type": "cubicBezier",
+      "$value": "cubic-bezier(0.45, 0, 0.55, 1)",
+      "$description": "Loops: alert pulses",
+      "$extensions": {
+        "nuikit": {
+          "tier": "semantic",
+          "scope": "ease",
+          "css": "--nk-ease-breathe",
+          "type": "ease"
+        }
+      }
+    }
+  },
+  "spring": {
+    "snap": {
+      "$value": "0ms 0",
+      "$description": "Spring: selection, tab underline, needle catch-up",
+      "$extensions": {
+        "nuikit": {
+          "tier": "semantic",
+          "scope": "spring",
+          "css": "--nk-spring-snap",
+          "type": "string",
+          "derived": true
+        }
+      }
+    },
+    "move": {
+      "$value": "0ms 0",
+      "$description": "Spring: toasts in, FLIP reflow, drawers, digit roll",
+      "$extensions": {
+        "nuikit": {
+          "tier": "semantic",
+          "scope": "spring",
+          "css": "--nk-spring-move",
+          "type": "string",
+          "derived": true
+        }
+      }
+    },
+    "soft": {
+      "$value": "0ms 0",
+      "$description": "Spring: full-screen content, large frame changes",
+      "$extensions": {
+        "nuikit": {
+          "tier": "semantic",
+          "scope": "spring",
+          "css": "--nk-spring-soft",
+          "type": "string",
+          "derived": true
+        }
+      }
+    },
+    "pop": {
+      "$value": "0ms 0",
+      "$description": "Spring: rewards only",
+      "$extensions": {
+        "nuikit": {
+          "tier": "semantic",
+          "scope": "spring",
+          "css": "--nk-spring-pop",
+          "type": "string",
+          "derived": true
+        }
+      }
+    }
+  },
+  "stagger": {
+    "$type": "duration",
+    "$value": "40ms",
+    "$description": "Delay per item",
+    "$extensions": {
+      "nuikit": {
+        "tier": "semantic",
+        "scope": "stagger",
+        "css": "--nk-stagger",
+        "type": "time",
+        "range": [
+          0,
+          200
+        ],
+        "derived": true
+      }
+    },
+    "max": {
+      "$type": "duration",
+      "$value": "100ms",
+      "$description": "Total cap: items past the cap enter together",
+      "$extensions": {
+        "nuikit": {
+          "tier": "semantic",
+          "scope": "stagger",
+          "css": "--nk-stagger-max",
+          "type": "time",
+          "derived": true
+        }
+      }
+    }
+  },
+  "gesture": {
+    "lift": {
+      "$type": "dimension",
+      "$value": "0.5rem",
+      "$description": "A row's content and a slot sliding in on focus",
+      "$extensions": {
+        "nuikit": {
+          "tier": "semantic",
+          "scope": "gesture",
+          "css": "--nk-gesture-lift",
+          "type": "length"
+        }
+      }
+    },
+    "rise": {
+      "$type": "dimension",
+      "$value": "0.5rem",
+      "$description": "How far things rise as they enter",
+      "$extensions": {
+        "nuikit": {
+          "tier": "semantic",
+          "scope": "gesture",
+          "css": "--nk-gesture-rise",
+          "type": "length"
+        }
+      }
+    },
+    "land": {
+      "$type": "number",
+      "$value": "0.6",
+      "$description": "The scale a tile lands from",
+      "$extensions": {
+        "nuikit": {
+          "tier": "semantic",
+          "scope": "gesture",
+          "css": "--nk-gesture-land",
+          "type": "number",
+          "range": [
+            0,
+            1
+          ]
+        }
+      }
+    },
+    "deny": {
+      "$type": "dimension",
+      "$value": "0.3125rem",
+      "$description": "The deny shake's distance",
+      "$extensions": {
+        "nuikit": {
+          "tier": "semantic",
+          "scope": "gesture",
+          "css": "--nk-gesture-deny",
+          "type": "length"
+        }
+      }
+    },
+    "press": {
+      "$type": "number",
+      "$value": "0.97",
+      "$description": "The scale of a pressed row or button",
+      "$extensions": {
+        "nuikit": {
+          "tier": "semantic",
+          "scope": "gesture",
+          "css": "--nk-gesture-press",
+          "type": "number",
+          "range": [
+            0.8,
+            1
+          ]
+        }
+      }
+    },
+    "confirm": {
+      "$type": "number",
+      "$value": "1.08",
+      "$description": "The short pop of a confirm",
+      "$extensions": {
+        "nuikit": {
+          "tier": "semantic",
+          "scope": "gesture",
+          "css": "--nk-gesture-confirm",
+          "type": "number",
+          "range": [
+            1,
+            1.2
+          ]
+        }
+      }
+    }
+  },
+  "plate": {
+    "color": {
+      "$type": "color",
+      "$value": "{palette.surface}",
+      "$description": "The plate colour (drawn at its material's opacity through its channels)",
+      "$extensions": {
+        "nuikit": {
+          "tier": "semantic",
+          "scope": "plate",
+          "css": "--nk-plate-color",
+          "type": "color"
+        }
+      }
+    },
+    "hair": {
+      "$type": "color",
+      "$value": "{palette.border}",
+      "$description": "The plate's hairline",
+      "$extensions": {
+        "nuikit": {
+          "tier": "semantic",
+          "scope": "plate",
+          "css": "--nk-plate-hair",
+          "type": "color"
+        }
+      }
+    },
+    "drop": {
+      "$type": "shadow",
+      "$value": "0 0.125rem 0 rgba(var(--scrim-rgb), 0.6)",
+      "$description": "The plate's drop: hard, no blur",
+      "$extensions": {
+        "nuikit": {
+          "tier": "semantic",
+          "scope": "plate",
+          "css": "--nk-plate-drop",
+          "type": "shadow"
+        }
+      }
+    },
+    "bg": {
+      "$type": "color",
+      "$value": "rgba(var(--nk-plate-color-rgb, var(--surface-rgb)), var(--nk-alpha-menu))",
+      "$description": "The plate as drawn: its colour at the menu material's alpha",
+      "$extensions": {
+        "nuikit": {
+          "tier": "semantic",
+          "scope": "plate",
+          "css": "--nk-plate-bg",
+          "type": "color"
+        }
+      }
+    },
+    "radius": {
+      "$type": "dimension",
+      "$value": "{radius.surface}",
+      "$description": "The plate's radius",
+      "$extensions": {
+        "nuikit": {
+          "tier": "semantic",
+          "scope": "plate",
+          "css": "--nk-plate-radius",
+          "type": "length"
+        }
+      }
+    }
+  },
+  "fill": {
+    "color": {
+      "$type": "color",
+      "$value": "{palette.foreground}",
+      "$description": "The bar",
+      "$extensions": {
+        "nuikit": {
+          "tier": "semantic",
+          "scope": "fill",
+          "css": "--nk-fill-color",
+          "type": "color"
+        }
+      }
+    },
+    "track": {
+      "$type": "color",
+      "$value": "rgba(var(--foreground-rgb), 0.12)",
+      "$description": "The track behind it",
+      "$extensions": {
+        "nuikit": {
+          "tier": "semantic",
+          "scope": "fill",
+          "css": "--nk-fill-track",
+          "type": "color"
+        }
+      }
+    },
+    "tint": {
+      "$type": "color",
+      "$value": "rgba(var(--foreground-rgb), 0.12)",
+      "$description": "The soft tint: an outline button's hover, a row sweep",
+      "$extensions": {
+        "nuikit": {
+          "tier": "semantic",
+          "scope": "fill",
+          "css": "--nk-fill-tint",
+          "type": "color"
+        }
+      }
+    },
+    "edge": {
+      "$type": "color",
+      "$value": "rgba(var(--foreground-rgb), 0.4)",
+      "$description": "The bar's leading 1px edge",
+      "$extensions": {
+        "nuikit": {
+          "tier": "semantic",
+          "scope": "fill",
+          "css": "--nk-fill-edge",
+          "type": "color"
+        }
+      }
+    },
+    "alert": {
+      "$type": "color",
+      "$value": "{palette.destructive}",
+      "$description": "The bar at or under behavior.alert",
+      "$extensions": {
+        "nuikit": {
+          "tier": "semantic",
+          "scope": "fill",
+          "css": "--nk-fill-alert",
+          "type": "color"
+        }
+      }
+    },
+    "height": {
+      "$type": "dimension",
+      "$value": "0.25rem",
+      "$description": "A level bar's thickness: fills, meters, gauge tracks",
+      "$extensions": {
+        "nuikit": {
+          "tier": "semantic",
+          "scope": "fill",
+          "css": "--nk-fill-height",
+          "type": "length"
+        }
+      }
+    }
+  },
+  "accent": {
+    "paint": {
+      "$type": "color",
+      "$value": "{palette.brand}",
+      "$description": "An active tile's face, the speedometer's level, the compass N (a colour or a gradient)",
+      "$extensions": {
+        "nuikit": {
+          "tier": "semantic",
+          "scope": "accent",
+          "css": "--nk-accent-paint",
+          "type": "paint"
+        }
+      }
+    },
+    "from": {
+      "$type": "color",
+      "$value": "{palette.brand}",
+      "$description": "First stop (SVG strokes)",
+      "$extensions": {
+        "nuikit": {
+          "tier": "semantic",
+          "scope": "accent",
+          "css": "--nk-accent-from",
+          "type": "color"
+        }
+      }
+    },
+    "via": {
+      "$type": "color",
+      "$value": "{accent.from}",
+      "$description": "Middle stop",
+      "$extensions": {
+        "nuikit": {
+          "tier": "semantic",
+          "scope": "accent",
+          "css": "--nk-accent-via",
+          "type": "color"
+        }
+      }
+    },
+    "to": {
+      "$type": "color",
+      "$value": "{accent.from}",
+      "$description": "Last stop",
+      "$extensions": {
+        "nuikit": {
+          "tier": "semantic",
+          "scope": "accent",
+          "css": "--nk-accent-to",
+          "type": "color"
+        }
+      }
+    }
+  },
+  "gap": {
+    "cluster": {
+      "$type": "dimension",
+      "$value": "{space.2}",
+      "$description": "Icon + text, key + label",
+      "$extensions": {
+        "nuikit": {
+          "tier": "semantic",
+          "scope": "gap",
+          "css": "--nk-gap-cluster",
+          "type": "length"
+        }
+      }
+    },
+    "items": {
+      "$type": "dimension",
+      "$value": "{space.1}",
+      "$description": "Items in a bar",
+      "$extensions": {
+        "nuikit": {
+          "tier": "semantic",
+          "scope": "gap",
+          "css": "--nk-gap-items",
+          "type": "length"
+        }
+      }
+    },
+    "pad-x": {
+      "$type": "dimension",
+      "$value": "{space.3}",
+      "$description": "Inline padding of anything labelled",
+      "$extensions": {
+        "nuikit": {
+          "tier": "semantic",
+          "scope": "gap",
+          "css": "--nk-gap-pad-x",
+          "type": "length"
+        }
+      }
+    },
+    "surface": {
+      "$type": "dimension",
+      "$value": "{space.6}",
+      "$description": "Padding of a surface (dialog body, sheet column)",
+      "$extensions": {
+        "nuikit": {
+          "tier": "semantic",
+          "scope": "gap",
+          "css": "--nk-gap-surface",
+          "type": "length"
+        }
+      }
+    }
+  },
+  "line": {
+    "width": {
+      "$type": "dimension",
+      "$value": "{shape.stroke}",
+      "$description": "Every hairline",
+      "$extensions": {
+        "nuikit": {
+          "tier": "semantic",
+          "scope": "line",
+          "css": "--nk-line-width",
+          "type": "length"
+        }
+      }
+    },
+    "focus": {
+      "$type": "color",
+      "$value": "{palette.ring}",
+      "$description": "A text field's caret rim (and a checkbox's or switch's lit rim): the only focus line",
+      "$extensions": {
+        "nuikit": {
+          "tier": "semantic",
+          "scope": "line",
+          "css": "--nk-line-focus",
+          "type": "color"
+        }
+      }
+    },
+    "clip": {
+      "$value": "none",
+      "$description": "clip-path of panels: the shape.cut chamfer, or none",
+      "$extensions": {
+        "nuikit": {
+          "tier": "semantic",
+          "scope": "line",
+          "css": "--nk-line-clip",
+          "type": "string",
+          "derived": true
+        }
+      }
+    },
+    "clip-sm": {
+      "$value": "none",
+      "$description": "clip-path of chips, tiles and buttons: half the chamfer",
+      "$extensions": {
+        "nuikit": {
+          "tier": "semantic",
+          "scope": "line",
+          "css": "--nk-line-clip-sm",
+          "type": "string",
+          "derived": true
+        }
+      }
+    },
+    "glow": {
+      "$type": "dimension",
+      "$value": "1rem",
+      "$description": "Blur radius of a row's glow (a chip's is 0.75 of it, a meter's 0.625)",
+      "$extensions": {
+        "nuikit": {
+          "tier": "semantic",
+          "scope": "line",
+          "css": "--nk-line-glow",
+          "type": "length"
+        }
+      }
+    }
+  },
+  "depth": {
+    "elevation": {
+      "$type": "shadow",
+      "$value": "0 0.25rem 0 0 rgba(var(--scrim-rgb), 0.5)",
+      "$description": "The box-shadow surface.elevation names (compileTheme writes the recipe)",
+      "$extensions": {
+        "nuikit": {
+          "tier": "semantic",
+          "scope": "depth",
+          "css": "--nk-depth-elevation",
+          "type": "shadow",
+          "derived": true
+        }
+      }
+    },
+    "text": {
+      "$type": "shadow",
+      "$value": "0 1px 2px rgba(var(--scrim-rgb), 0.6)",
+      "$description": "The text-shadow hud.text names (compileTheme writes the recipe)",
+      "$extensions": {
+        "nuikit": {
+          "tier": "semantic",
+          "scope": "depth",
+          "css": "--nk-depth-text",
+          "type": "shadow",
+          "derived": true
+        }
+      }
+    }
+  },
+  "alpha": {
+    "day": {
+      "$type": "number",
+      "$value": "0",
+      "$description": "1 while day legibility applies (set by kit.css rules)",
+      "$extensions": {
+        "nuikit": {
+          "tier": "semantic",
+          "scope": "alpha",
+          "css": "--nk-alpha-day",
+          "type": "number",
+          "range": [
+            0,
+            1
+          ]
+        }
+      }
+    },
+    "hud": {
+      "$type": "number",
+      "$value": "calc(var(--nk-material-hud-opacity) + (1 - var(--nk-material-hud-opacity)) * var(--nk-surface-legibility-lift) * var(--nk-alpha-day))",
+      "$description": "The HUD's alpha",
+      "$extensions": {
+        "nuikit": {
+          "tier": "semantic",
+          "scope": "alpha",
+          "css": "--nk-alpha-hud",
+          "type": "number"
+        }
+      }
+    },
+    "menu": {
+      "$type": "number",
+      "$value": "calc(var(--nk-material-menu-opacity) + (1 - var(--nk-material-menu-opacity)) * var(--nk-surface-legibility-lift) * var(--nk-alpha-day))",
+      "$description": "Menus', sheets' and dialogs' alpha",
+      "$extensions": {
+        "nuikit": {
+          "tier": "semantic",
+          "scope": "alpha",
+          "css": "--nk-alpha-menu",
+          "type": "number"
+        }
+      }
+    }
+  },
+  "restore": {
+    "muted-foreground": {
+      "$type": "color",
+      "$value": "{palette.muted-foreground}",
+      "$description": "muted-foreground, as the theme set it",
+      "$extensions": {
+        "nuikit": {
+          "tier": "semantic",
+          "scope": "restore",
+          "css": "--nk-restore-muted-foreground",
+          "type": "color"
+        }
+      }
+    },
+    "muted-foreground-rgb": {
+      "$value": "var(--muted-foreground-rgb)",
+      "$description": "Its channels",
+      "$extensions": {
+        "nuikit": {
+          "tier": "semantic",
+          "scope": "restore",
+          "css": "--nk-restore-muted-foreground-rgb",
+          "type": "string"
+        }
+      }
+    },
+    "muted-foreground-a": {
+      "$value": "var(--muted-foreground-a)",
+      "$description": "Its alpha",
+      "$extensions": {
+        "nuikit": {
+          "tier": "semantic",
+          "scope": "restore",
+          "css": "--nk-restore-muted-foreground-a",
+          "type": "string"
+        }
+      }
+    },
+    "background": {
+      "$type": "color",
+      "$value": "{palette.background}",
+      "$description": "background, as the theme set it",
+      "$extensions": {
+        "nuikit": {
+          "tier": "semantic",
+          "scope": "restore",
+          "css": "--nk-restore-background",
+          "type": "color"
+        }
+      }
+    },
+    "background-rgb": {
+      "$value": "var(--background-rgb)",
+      "$description": "Its channels",
+      "$extensions": {
+        "nuikit": {
+          "tier": "semantic",
+          "scope": "restore",
+          "css": "--nk-restore-background-rgb",
+          "type": "string"
+        }
+      }
+    },
+    "background-a": {
+      "$value": "var(--background-a)",
+      "$description": "Its alpha",
+      "$extensions": {
+        "nuikit": {
+          "tier": "semantic",
+          "scope": "restore",
+          "css": "--nk-restore-background-a",
+          "type": "string"
+        }
+      }
+    }
+  },
+  "screen": {
+    "ratio": {
+      "$type": "number",
+      "$value": "1.7778",
+      "$description": "The content box's width / height (wider screens keep it, centred)",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "screen",
+          "css": "--nk-screen-ratio",
+          "type": "number",
+          "range": [
+            1,
+            4
+          ]
+        }
+      }
+    },
+    "max": {
+      "$type": "dimension",
+      "$value": "calc(100vh * var(--nk-screen-ratio))",
+      "$description": "The content box's width",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "screen",
+          "css": "--nk-screen-max",
+          "type": "length"
+        }
+      }
+    },
+    "edge": {
+      "$type": "dimension",
+      "$value": "1.5rem",
+      "$description": "A zone's distance from the safe area (1rem at 4:3, 1.25rem at 16:10)",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "screen",
+          "css": "--nk-screen-edge",
+          "type": "length"
+        }
+      }
+    },
+    "scale-min": {
+      "$type": "number",
+      "$value": "0.75",
+      "$description": "The rem floor as a fraction of the 1080p rem (720p and 4:3 stay readable)",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "screen",
+          "css": "--nk-screen-scale-min",
+          "type": "number",
+          "range": [
+            0.5,
+            1
+          ]
+        }
+      }
+    },
+    "area": {
+      "l": {
+        "$type": "dimension",
+        "$value": "max(0px, calc((100vw - var(--nk-screen-max)) / 2))",
+        "$description": "The box's left inset from the screen",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "screen",
+            "part": "area",
+            "css": "--nk-screen-area-l",
+            "type": "length"
+          }
+        }
+      },
+      "r": {
+        "$type": "dimension",
+        "$value": "max(0px, calc((100vw - var(--nk-screen-max)) / 2))",
+        "$description": "The box's right inset",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "screen",
+            "part": "area",
+            "css": "--nk-screen-area-r",
+            "type": "length"
+          }
+        }
+      },
+      "t": {
+        "$type": "dimension",
+        "$value": "0px",
+        "$description": "The box's top inset",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "screen",
+            "part": "area",
+            "css": "--nk-screen-area-t",
+            "type": "length"
+          }
+        }
+      },
+      "b": {
+        "$type": "dimension",
+        "$value": "0px",
+        "$description": "The box's bottom inset",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "screen",
+            "part": "area",
+            "css": "--nk-screen-area-b",
+            "type": "length"
+          }
+        }
+      }
+    },
+    "safe": {
+      "x": {
+        "$type": "dimension",
+        "$value": "0rem",
+        "$description": "A safe area inside the box, inline (TV overscan, a bezel)",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "screen",
+            "part": "safe",
+            "css": "--nk-screen-safe-x",
+            "type": "length"
+          }
+        }
+      },
+      "y": {
+        "$type": "dimension",
+        "$value": "0rem",
+        "$description": "A safe area inside the box, block",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "screen",
+            "part": "safe",
+            "css": "--nk-screen-safe-y",
+            "type": "length"
+          }
+        }
+      }
+    }
+  },
+  "zone": {
+    "gap": {
+      "$type": "dimension",
+      "$value": "{space.3}",
+      "$description": "Between what a zone stacks",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "zone",
+          "css": "--nk-zone-gap",
+          "type": "length"
+        }
+      }
+    }
+  },
+  "region": {
+    "max": {
+      "$type": "dimension",
+      "$value": "28rem",
+      "$description": "Its maximum width",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "region",
+          "css": "--nk-region-max",
+          "type": "length"
+        }
+      }
+    },
+    "pad": {
+      "$type": "dimension",
+      "$value": "{gap.surface}",
+      "$description": "Its padding",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "region",
+          "css": "--nk-region-pad",
+          "type": "length"
+        }
+      }
+    }
+  },
+  "grid": {
+    "cell": {
+      "$type": "dimension",
+      "$value": "5.5rem",
+      "$description": "A cell's size",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "grid",
+          "css": "--nk-grid-cell",
+          "type": "length"
+        }
+      }
+    },
+    "gap": {
+      "$type": "dimension",
+      "$value": "{space.2}",
+      "$description": "Between cells",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "grid",
+          "css": "--nk-grid-gap",
+          "type": "length"
+        }
+      }
+    }
+  },
+  "tile": {
+    "plate": {
+      "color": {
+        "$type": "color",
+        "$value": "{palette.border}",
+        "$description": "The solid plate behind the face",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "tile",
+            "part": "plate",
+            "css": "--nk-tile-plate-color",
+            "type": "color"
+          }
+        }
+      },
+      "dim": {
+        "$type": "color",
+        "$value": "{tile.plate.color}",
+        "$description": "The plate on the HUD",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "tile",
+            "part": "plate",
+            "css": "--nk-tile-plate-dim",
+            "type": "color"
+          }
+        }
+      },
+      "x": {
+        "$type": "dimension",
+        "$value": "0px",
+        "$description": "How far the plate sits right of the face (0 = none)",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "tile",
+            "part": "plate",
+            "css": "--nk-tile-plate-x",
+            "type": "length"
+          }
+        }
+      },
+      "y": {
+        "$type": "dimension",
+        "$value": "2px",
+        "$description": "How far the plate sits below the face",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "tile",
+            "part": "plate",
+            "css": "--nk-tile-plate-y",
+            "type": "length"
+          }
+        }
+      },
+      "press": {
+        "$type": "dimension",
+        "$value": "1px",
+        "$description": "How far a held tile presses toward its plate",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "tile",
+            "part": "plate",
+            "css": "--nk-tile-plate-press",
+            "type": "length"
+          }
+        }
+      }
+    },
+    "wall": {
+      "height": {
+        "$type": "dimension",
+        "$value": "0.1875rem",
+        "$description": "How far the face sits above its wall (the primary button, the selection)",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "tile",
+            "part": "wall",
+            "css": "--nk-tile-wall-height",
+            "type": "length"
+          }
+        }
+      },
+      "shade": {
+        "$type": "number",
+        "$value": "0.45",
+        "$description": "How dark the wall is (the scrim over the face colour)",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "tile",
+            "part": "wall",
+            "css": "--nk-tile-wall-shade",
+            "type": "number",
+            "range": [
+              0,
+              1
+            ]
+          }
+        }
+      }
+    },
+    "face": {
+      "color": {
+        "$type": "color",
+        "$value": "{palette.muted}",
+        "$description": "The face",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "tile",
+            "part": "face",
+            "css": "--nk-tile-face-color",
+            "type": "color"
+          }
+        }
+      },
+      "ink": {
+        "$type": "color",
+        "$value": "{palette.popover-foreground}",
+        "$description": "The legend's colour on the face",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "tile",
+            "part": "face",
+            "css": "--nk-tile-face-ink",
+            "type": "color"
+          }
+        }
+      },
+      "light": {
+        "$type": "color",
+        "$value": "rgba(var(--popover-foreground-rgb), 0.16)",
+        "$description": "The face's top hairline",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "tile",
+            "part": "face",
+            "css": "--nk-tile-face-light",
+            "type": "color"
+          }
+        }
+      },
+      "shade": {
+        "$type": "color",
+        "$value": "rgba(var(--scrim-rgb), 0)",
+        "$description": "The face's bottom inner shade",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "tile",
+            "part": "face",
+            "css": "--nk-tile-face-shade",
+            "type": "color"
+          }
+        }
+      },
+      "rim": {
+        "$type": "color",
+        "$value": "rgba(var(--foreground-rgb), 0.32)",
+        "$description": "The face's rim",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "tile",
+            "part": "face",
+            "css": "--nk-tile-face-rim",
+            "type": "color"
+          }
+        }
+      },
+      "rim-focus": {
+        "$type": "color",
+        "$value": "rgba(var(--foreground-rgb), 0.4)",
+        "$description": "The rim while lit",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "tile",
+            "part": "face",
+            "css": "--nk-tile-face-rim-focus",
+            "type": "color"
+          }
+        }
+      },
+      "radius": {
+        "$type": "dimension",
+        "$value": "{radius.key}",
+        "$description": "The face's radius",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "tile",
+            "part": "face",
+            "css": "--nk-tile-face-radius",
+            "type": "length"
+          }
+        }
+      },
+      "skew": {
+        "$type": "number",
+        "$value": "{shape.skew}",
+        "$description": "The face's slant (the box stays upright)",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "tile",
+            "part": "face",
+            "css": "--nk-tile-face-skew",
+            "type": "angle"
+          }
+        }
+      },
+      "shadow": {
+        "$type": "shadow",
+        "$value": "inset 0 -1px 0 0 var(--nk-tile-face-shade), inset 0 1px 0 0 var(--nk-tile-face-light)",
+        "$description": "The face's inner light and shade",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "tile",
+            "part": "face",
+            "css": "--nk-tile-face-shadow",
+            "type": "shadow"
+          }
+        }
+      },
+      "clip": {
+        "$value": "{line.clip-sm}",
+        "$description": "The face's clip-path (the chamfer)",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "tile",
+            "part": "face",
+            "css": "--nk-tile-face-clip",
+            "type": "string"
+          }
+        }
+      },
+      "confirm": {
+        "$type": "color",
+        "$value": "{palette.foreground}",
+        "$description": "The face when confirmed",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "tile",
+            "part": "face",
+            "css": "--nk-tile-face-confirm",
+            "type": "color"
+          }
+        }
+      },
+      "confirm-ink": {
+        "$type": "color",
+        "$value": "{palette.background}",
+        "$description": "The legend when confirmed",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "tile",
+            "part": "face",
+            "css": "--nk-tile-face-confirm-ink",
+            "type": "color"
+          }
+        }
+      },
+      "active": {
+        "$type": "color",
+        "$value": "{accent.paint}",
+        "$description": "The face of an active tile (the mic while talking, N on the compass, a checked box)",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "tile",
+            "part": "face",
+            "css": "--nk-tile-face-active",
+            "type": "paint"
+          }
+        }
+      },
+      "hold": {
+        "$type": "color",
+        "$value": "rgba(var(--foreground-rgb), 0.35)",
+        "$description": "The hold fill over the face",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "tile",
+            "part": "face",
+            "css": "--nk-tile-face-hold",
+            "type": "color"
+          }
+        }
+      }
+    },
+    "legend": {
+      "font": {
+        "$type": "fontFamily",
+        "$value": "{type.scan.family}",
+        "$description": "The legend's face",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "tile",
+            "part": "legend",
+            "css": "--nk-tile-legend-font",
+            "type": "font"
+          }
+        }
+      },
+      "weight": {
+        "$type": "number",
+        "$value": "{type.scan.weight}",
+        "$description": "The legend's weight",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "tile",
+            "part": "legend",
+            "css": "--nk-tile-legend-weight",
+            "type": "number",
+            "range": [
+              100,
+              900
+            ]
+          }
+        }
+      },
+      "pad": {
+        "$type": "dimension",
+        "$value": "calc(var(--nk-type-scan-pad) / 2)",
+        "$description": "The italic overhang split to both sides",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "tile",
+            "part": "legend",
+            "css": "--nk-tile-legend-pad",
+            "type": "length"
+          }
+        }
+      },
+      "shift": {
+        "$type": "dimension",
+        "$value": "0em",
+        "$description": "A nudge for a leaning face",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "tile",
+            "part": "legend",
+            "css": "--nk-tile-legend-shift",
+            "type": "length"
+          }
+        }
+      },
+      "gap": {
+        "$type": "dimension",
+        "$value": "{space.1}",
+        "$description": "Between a tile's glyphs",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "tile",
+            "part": "legend",
+            "css": "--nk-tile-legend-gap",
+            "type": "length"
+          }
+        }
+      },
+      "inset": {
+        "$type": "dimension",
+        "$value": "{space.1}",
+        "$description": "The legend's inline padding",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "tile",
+            "part": "legend",
+            "css": "--nk-tile-legend-inset",
+            "type": "length"
+          }
+        }
+      }
+    },
+    "tag": {
+      "delay": {
+        "$type": "duration",
+        "$value": "80ms",
+        "$description": "The tag opens this long after the tile lands",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "tile",
+            "part": "tag",
+            "css": "--nk-tile-tag-delay",
+            "type": "time"
+          }
+        }
+      }
+    },
+    "key": {
+      "color": {
+        "$type": "color",
+        "$value": "{palette.primary}",
+        "$description": "The keycap face under style.fill solid (the primary button, the lit row, the active tab)",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "tile",
+            "part": "key",
+            "css": "--nk-tile-key-color",
+            "type": "color"
+          }
+        }
+      },
+      "ink": {
+        "$type": "color",
+        "$value": "{palette.primary-foreground}",
+        "$description": "Text on the keycap face",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "tile",
+            "part": "key",
+            "css": "--nk-tile-key-ink",
+            "type": "color"
+          }
+        }
+      },
+      "rim": {
+        "$type": "color",
+        "$value": "transparent",
+        "$description": "The keycap face's rim (transparent = none)",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "tile",
+            "part": "key",
+            "css": "--nk-tile-key-rim",
+            "type": "color"
+          }
+        }
+      },
+      "radius": {
+        "$type": "dimension",
+        "$value": "{radius.control}",
+        "$description": "The keycap's radius",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "tile",
+            "part": "key",
+            "css": "--nk-tile-key-radius",
+            "type": "length"
+          }
+        }
+      },
+      "tint": {
+        "$type": "number",
+        "$value": "0.16",
+        "$description": "The face's opacity under style.fill soft",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "tile",
+            "part": "key",
+            "css": "--nk-tile-key-tint",
+            "type": "number",
+            "range": [
+              0,
+              1
+            ]
+          }
+        }
+      },
+      "inset": {
+        "$type": "dimension",
+        "$value": "0.375rem",
+        "$description": "How far a selection tile sits in from its item's sides (room for the skew)",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "tile",
+            "part": "key",
+            "css": "--nk-tile-key-inset",
+            "type": "length"
+          }
+        }
+      },
+      "lift": {
+        "$type": "dimension",
+        "$value": "1px",
+        "$description": "How far the face rises on hover and focus",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "tile",
+            "part": "key",
+            "css": "--nk-tile-key-lift",
+            "type": "length"
+          }
+        }
+      },
+      "press": {
+        "$type": "number",
+        "$value": "0.67",
+        "$description": "How far a pressed keycap sinks, as a fraction of its wall",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "tile",
+            "part": "key",
+            "css": "--nk-tile-key-press",
+            "type": "number",
+            "range": [
+              0,
+              1.5
+            ]
+          }
+        }
+      },
+      "overhang": {
+        "$type": "dimension",
+        "$value": "0.25rem",
+        "$description": "How far a row's selection tile reaches past its text",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "tile",
+            "part": "key",
+            "css": "--nk-tile-key-overhang",
+            "type": "length"
+          }
+        }
+      }
+    }
+  },
+  "panel": {
+    "bg": {
+      "$type": "color",
+      "$value": "rgba(var(--surface-rgb), calc(var(--surface-a) * var(--nk-alpha-menu)))",
+      "$description": "The panel's fill: the surface at the menu material's alpha",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "panel",
+          "css": "--nk-panel-bg",
+          "type": "color"
+        }
+      }
+    },
+    "fg": {
+      "$type": "color",
+      "$value": "{palette.popover-foreground}",
+      "$description": "Text in the panel",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "panel",
+          "css": "--nk-panel-fg",
+          "type": "color"
+        }
+      }
+    },
+    "border": {
+      "$type": "color",
+      "$value": "{plate.hair}",
+      "$description": "The panel's hairline",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "panel",
+          "css": "--nk-panel-border",
+          "type": "color"
+        }
+      }
+    },
+    "radius": {
+      "$type": "dimension",
+      "$value": "{radius.surface}",
+      "$description": "The panel's radius",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "panel",
+          "css": "--nk-panel-radius",
+          "type": "length"
+        }
+      }
+    },
+    "blur": {
+      "$type": "dimension",
+      "$value": "{material.menu.blur}",
+      "$description": "Backdrop blur (with surface.backdrop on)",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "panel",
+          "css": "--nk-panel-blur",
+          "type": "length"
+        }
+      }
+    },
+    "cut": {
+      "$type": "dimension",
+      "$value": "{shape.cut}",
+      "$description": "The chamfer's size",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "panel",
+          "css": "--nk-panel-cut",
+          "type": "length"
+        }
+      }
+    },
+    "clip": {
+      "$value": "{line.clip}",
+      "$description": "The panel's clip-path",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "panel",
+          "css": "--nk-panel-clip",
+          "type": "string"
+        }
+      }
+    },
+    "gradient": {
+      "$value": "linear-gradient(180deg, rgba(var(--popover-foreground-rgb), var(--nk-surface-gradient)), rgba(var(--popover-foreground-rgb), 0) 60%)",
+      "$description": "The light falloff",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "panel",
+          "css": "--nk-panel-gradient",
+          "type": "string"
+        }
+      }
+    },
+    "edge": {
+      "$type": "shadow",
+      "$value": "inset 0 1px 0 0 rgba(var(--popover-foreground-rgb), var(--nk-material-menu-edge))",
+      "$description": "The machined top edge",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "panel",
+          "css": "--nk-panel-edge",
+          "type": "shadow"
+        }
+      }
+    },
+    "shadow": {
+      "$type": "shadow",
+      "$value": "{depth.elevation}",
+      "$description": "The panel's drop: the elevation recipe",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "panel",
+          "css": "--nk-panel-shadow",
+          "type": "shadow"
+        }
+      }
+    },
+    "divider": {
+      "$value": "var(--nk-line-width) solid var(--nk-panel-border)",
+      "$description": "The one hairline under a header",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "panel",
+          "css": "--nk-panel-divider",
+          "type": "string"
+        }
+      }
+    },
+    "width": {
+      "$type": "dimension",
+      "$value": "20rem",
+      "$description": "Width (md)",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "panel",
+          "css": "--nk-panel-width",
+          "type": "length"
+        }
+      }
+    },
+    "width-sm": {
+      "$type": "dimension",
+      "$value": "18rem",
+      "$description": "Width (sm)",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "panel",
+          "css": "--nk-panel-width-sm",
+          "type": "length"
+        }
+      }
+    },
+    "width-lg": {
+      "$type": "dimension",
+      "$value": "24rem",
+      "$description": "Width (lg)",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "panel",
+          "css": "--nk-panel-width-lg",
+          "type": "length"
+        }
+      }
+    },
+    "header": {
+      "height": {
+        "$type": "dimension",
+        "$value": "calc(3.25rem * var(--nk-density))",
+        "$description": "A header's minimum height",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "panel",
+            "part": "header",
+            "css": "--nk-panel-header-height",
+            "type": "length"
+          }
+        }
+      },
+      "padding": {
+        "$value": "var(--nk-gap-surface) var(--nk-gap-surface) var(--nk-space-4)",
+        "$description": "Surface padding; the title a step off its hairline",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "panel",
+            "part": "header",
+            "css": "--nk-panel-header-padding",
+            "type": "string"
+          }
+        }
+      }
+    },
+    "title": {
+      "size": {
+        "$type": "dimension",
+        "$value": "{text.title}",
+        "$description": "A panel title's size",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "panel",
+            "part": "title",
+            "css": "--nk-panel-title-size",
+            "type": "length"
+          }
+        }
+      }
+    },
+    "body": {
+      "padding": {
+        "$value": "{space.3}",
+        "$description": "The body's padding",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "panel",
+            "part": "body",
+            "css": "--nk-panel-body-padding",
+            "type": "string"
+          }
+        }
+      }
+    },
+    "footer": {
+      "padding": {
+        "$value": "var(--nk-space-4) var(--nk-gap-surface) var(--nk-gap-surface)",
+        "$description": "On the panel itself, no rule above it",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "panel",
+            "part": "footer",
+            "css": "--nk-panel-footer-padding",
+            "type": "string"
+          }
+        }
+      },
+      "rule": {
+        "$value": "none",
+        "$description": "A rule above the footer (none: spacing separates it)",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "panel",
+            "part": "footer",
+            "css": "--nk-panel-footer-rule",
+            "type": "string"
+          }
+        }
+      }
+    },
+    "actions": {
+      "bracket": {
+        "$type": "dimension",
+        "$value": "0px",
+        "$description": "L-shaped corner marks (0 = off)",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "panel",
+            "part": "actions",
+            "css": "--nk-panel-actions-bracket",
+            "type": "length"
+          }
+        }
+      },
+      "bracket-width": {
+        "$type": "dimension",
+        "$value": "calc(var(--nk-line-width) * 2)",
+        "$description": "The marks' weight",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "panel",
+            "part": "actions",
+            "css": "--nk-panel-actions-bracket-width",
+            "type": "length"
+          }
+        }
+      },
+      "bracket-color": {
+        "$type": "color",
+        "$value": "{palette.brand}",
+        "$description": "The marks' colour",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "panel",
+            "part": "actions",
+            "css": "--nk-panel-actions-bracket-color",
+            "type": "color"
+          }
+        }
+      }
+    }
+  },
+  "display": {
+    "size": {
+      "$type": "dimension",
+      "$value": "{text.display}",
+      "$description": "Size",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "display",
+          "css": "--nk-display-size",
+          "type": "length"
+        }
+      }
+    },
+    "weight": {
+      "$value": "{type.weight-display}",
+      "$description": "Weight",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "display",
+          "css": "--nk-display-weight",
+          "type": "string"
+        }
+      }
+    },
+    "tracking": {
+      "$type": "dimension",
+      "$value": "{type.tracking-display}",
+      "$description": "Letter-spacing",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "display",
+          "css": "--nk-display-tracking",
+          "type": "length"
+        }
+      }
+    },
+    "case": {
+      "$value": "{type.case}",
+      "$description": "Case",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "display",
+          "css": "--nk-display-case",
+          "type": "string"
+        }
+      }
+    }
+  },
+  "caption": {
+    "font": {
+      "$value": "{type.label.family}",
+      "$description": "Face",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "caption",
+          "css": "--nk-caption-font",
+          "type": "string"
+        }
+      }
+    },
+    "size": {
+      "$type": "dimension",
+      "$value": "{text.label}",
+      "$description": "Size",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "caption",
+          "css": "--nk-caption-size",
+          "type": "length"
+        }
+      }
+    },
+    "weight": {
+      "$value": "{type.weight-strong}",
+      "$description": "Weight",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "caption",
+          "css": "--nk-caption-weight",
+          "type": "string"
+        }
+      }
+    },
+    "case": {
+      "$value": "{type.case}",
+      "$description": "Case",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "caption",
+          "css": "--nk-caption-case",
+          "type": "string"
+        }
+      }
+    },
+    "tracking": {
+      "$type": "dimension",
+      "$value": "{type.tracking-label}",
+      "$description": "Letter-spacing",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "caption",
+          "css": "--nk-caption-tracking",
+          "type": "length"
+        }
+      }
+    }
+  },
+  "row": {
+    "height": {
+      "$type": "dimension",
+      "$value": "{height.row}",
+      "$description": "A single-line row's minimum height",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "row",
+          "css": "--nk-row-height",
+          "type": "length"
+        }
+      }
+    },
+    "radius": {
+      "$type": "dimension",
+      "$value": "{radius.control}",
+      "$description": "The row's radius",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "row",
+          "css": "--nk-row-radius",
+          "type": "length"
+        }
+      }
+    },
+    "clip": {
+      "$value": "{line.clip-sm}",
+      "$description": "The row's clip-path",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "row",
+          "css": "--nk-row-clip",
+          "type": "string"
+        }
+      }
+    },
+    "pad-y": {
+      "$type": "dimension",
+      "$value": "{space.2}",
+      "$description": "Block padding",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "row",
+          "css": "--nk-row-pad-y",
+          "type": "length"
+        }
+      }
+    },
+    "pad-x": {
+      "$type": "dimension",
+      "$value": "{space.3}",
+      "$description": "Inline padding",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "row",
+          "css": "--nk-row-pad-x",
+          "type": "length"
+        }
+      }
+    },
+    "padding": {
+      "$value": "var(--nk-row-pad-y) var(--nk-row-pad-x)",
+      "$description": "Both paddings",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "row",
+          "css": "--nk-row-padding",
+          "type": "string"
+        }
+      }
+    },
+    "gap": {
+      "$type": "dimension",
+      "$value": "{space.4}",
+      "$description": "Between the icon tile, the text and the trail",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "row",
+          "css": "--nk-row-gap",
+          "type": "length"
+        }
+      }
+    },
+    "font-size": {
+      "$type": "dimension",
+      "$value": "{text.base}",
+      "$description": "The row's text size",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "row",
+          "css": "--nk-row-font-size",
+          "type": "length"
+        }
+      }
+    },
+    "accent": {
+      "$type": "color",
+      "$value": "{palette.brand}",
+      "$description": "The colour that marks the active row or slot (an outline, a hold ring)",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "row",
+          "css": "--nk-row-accent",
+          "type": "color"
+        }
+      }
+    },
+    "icon": {
+      "box": {
+        "$type": "dimension",
+        "$value": "2rem",
+        "$description": "The icon tile beside the title (the icon inside is icon.md)",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "row",
+            "part": "icon",
+            "css": "--nk-row-icon-box",
+            "type": "length"
+          }
+        }
+      }
+    },
+    "bar": {
+      "width": {
+        "$type": "dimension",
+        "$value": "0.1875rem",
+        "$description": "The focus bar's width (style.focus: bar)",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "row",
+            "part": "bar",
+            "css": "--nk-row-bar-width",
+            "type": "length"
+          }
+        }
+      }
+    }
+  },
+  "list": {
+    "gap": {
+      "$type": "dimension",
+      "$value": "calc(var(--nk-tile-wall-height) + var(--nk-space-1))",
+      "$description": "Between items: the wall plus breathing room",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "list",
+          "css": "--nk-list-gap",
+          "type": "length"
+        }
+      }
+    },
+    "pad-x": {
+      "$type": "dimension",
+      "$value": "calc(var(--nk-tile-key-inset) + var(--nk-tile-key-overhang))",
+      "$description": "Inline padding: room for the tile's inset and skew",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "list",
+          "css": "--nk-list-pad-x",
+          "type": "length"
+        }
+      }
+    }
+  },
+  "menu-row": {
+    "gap": {
+      "$type": "dimension",
+      "$value": "{space.1}",
+      "$description": "Between a trail's controls",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "menu-row",
+          "css": "--nk-menu-row-gap",
+          "type": "length"
+        }
+      }
+    },
+    "image": {
+      "size": {
+        "$type": "dimension",
+        "$value": "2rem",
+        "$description": "An image's box",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "menu-row",
+            "part": "image",
+            "css": "--nk-menu-row-image-size",
+            "type": "length"
+          }
+        }
+      }
+    },
+    "progress": {
+      "height": {
+        "$type": "dimension",
+        "$value": "0.25rem",
+        "$description": "The progress bar's height",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "menu-row",
+            "part": "progress",
+            "css": "--nk-menu-row-progress-height",
+            "type": "length"
+          }
+        }
+      }
+    },
+    "value": {
+      "width": {
+        "$type": "dimension",
+        "$value": "3rem",
+        "$description": "The value column's minimum width",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "menu-row",
+            "part": "value",
+            "css": "--nk-menu-row-value-width",
+            "type": "length"
+          }
+        }
+      }
+    }
+  },
+  "selection": {
+    "time": {
+      "$type": "duration",
+      "$value": "{time.base}",
+      "$description": "How long the tile glides",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "selection",
+          "css": "--nk-selection-time",
+          "type": "time"
+        }
+      }
+    },
+    "ease": {
+      "$value": "{ease.move}",
+      "$description": "The glide's curve",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "selection",
+          "css": "--nk-selection-ease",
+          "type": "string"
+        }
+      }
+    }
+  },
+  "field": {
+    "caret": {
+      "width": {
+        "$type": "dimension",
+        "$value": "0.125rem",
+        "$description": "The drawn caret's width",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "field",
+            "part": "caret",
+            "css": "--nk-field-caret-width",
+            "type": "length"
+          }
+        }
+      },
+      "time": {
+        "$type": "duration",
+        "$value": "{time.base}",
+        "$description": "The caret's glide",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "field",
+            "part": "caret",
+            "css": "--nk-field-caret-time",
+            "type": "time"
+          }
+        }
+      },
+      "ease": {
+        "$value": "{ease.move}",
+        "$description": "The caret's curve",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "field",
+            "part": "caret",
+            "css": "--nk-field-caret-ease",
+            "type": "string"
+          }
+        }
+      }
+    },
+    "mirror": {
+      "rise": {
+        "$type": "dimension",
+        "$value": "0.45em",
+        "$description": "How far a typed character rises in",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "field",
+            "part": "mirror",
+            "css": "--nk-field-mirror-rise",
+            "type": "length"
+          }
+        }
+      },
+      "in": {
+        "$type": "duration",
+        "$value": "{time.slow}",
+        "$description": "A typed character's entrance",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "field",
+            "part": "mirror",
+            "css": "--nk-field-mirror-in",
+            "type": "time"
+          }
+        }
+      },
+      "out": {
+        "$type": "duration",
+        "$value": "{time.exit}",
+        "$description": "A deleted character's exit",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "field",
+            "part": "mirror",
+            "css": "--nk-field-mirror-out",
+            "type": "time"
+          }
+        }
+      }
+    }
+  },
+  "stepper": {
+    "delay": {
+      "$type": "duration",
+      "$value": "350ms",
+      "$description": "The first repeat of a held keycap",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "stepper",
+          "css": "--nk-stepper-delay",
+          "type": "time"
+        }
+      }
+    },
+    "rate": {
+      "$type": "duration",
+      "$value": "70ms",
+      "$description": "Then one repeat every",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "stepper",
+          "css": "--nk-stepper-rate",
+          "type": "time"
+        }
+      }
+    }
+  },
+  "notice": {
+    "width": {
+      "$type": "dimension",
+      "$value": "20rem",
+      "$description": "Width (md)",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "notice",
+          "css": "--nk-notice-width",
+          "type": "length"
+        }
+      }
+    },
+    "width-sm": {
+      "$type": "dimension",
+      "$value": "18rem",
+      "$description": "Width (sm)",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "notice",
+          "css": "--nk-notice-width-sm",
+          "type": "length"
+        }
+      }
+    },
+    "width-lg": {
+      "$type": "dimension",
+      "$value": "24rem",
+      "$description": "Width (lg)",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "notice",
+          "css": "--nk-notice-width-lg",
+          "type": "length"
+        }
+      }
+    }
+  },
+  "confirm": {
+    "width": {
+      "$type": "dimension",
+      "$value": "24rem",
+      "$description": "Width (md)",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "confirm",
+          "css": "--nk-confirm-width",
+          "type": "length"
+        }
+      }
+    },
+    "width-sm": {
+      "$type": "dimension",
+      "$value": "20rem",
+      "$description": "Width (sm)",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "confirm",
+          "css": "--nk-confirm-width-sm",
+          "type": "length"
+        }
+      }
+    }
+  },
+  "edge-sheet": {
+    "header": {
+      "height": {
+        "$type": "dimension",
+        "$value": "2rem",
+        "$description": "The header's minimum height",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "edge-sheet",
+            "part": "header",
+            "css": "--nk-edge-sheet-header-height",
+            "type": "length"
+          }
+        }
+      }
+    }
+  },
+  "chip": {
+    "height": {
+      "$type": "dimension",
+      "$value": "{height.chip}",
+      "$description": "Height",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "chip",
+          "css": "--nk-chip-height",
+          "type": "length"
+        }
+      }
+    },
+    "padding": {
+      "$type": "dimension",
+      "$value": "calc(var(--nk-space-unit) * 2.5)",
+      "$description": "Inline padding",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "chip",
+          "css": "--nk-chip-padding",
+          "type": "length"
+        }
+      }
+    },
+    "radius": {
+      "$type": "dimension",
+      "$value": "{radius.chip}",
+      "$description": "Radius",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "chip",
+          "css": "--nk-chip-radius",
+          "type": "length"
+        }
+      }
+    },
+    "hud-radius": {
+      "$type": "dimension",
+      "$value": "max(0.25rem, calc(var(--radius) - 0.125rem))",
+      "$description": "A square HUD tile's radius (hotbar, target eye)",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "chip",
+          "css": "--nk-chip-hud-radius",
+          "type": "length"
+        }
+      }
+    },
+    "bg": {
+      "$type": "color",
+      "$value": "rgba(var(--hud-rgb), max(var(--hud-a), var(--nk-alpha-hud)))",
+      "$description": "The plate on the game",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "chip",
+          "css": "--nk-chip-bg",
+          "type": "color"
+        }
+      }
+    },
+    "fg": {
+      "$type": "color",
+      "$value": "{palette.hud-foreground}",
+      "$description": "Text and icons",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "chip",
+          "css": "--nk-chip-fg",
+          "type": "color"
+        }
+      }
+    },
+    "font-size": {
+      "$type": "dimension",
+      "$value": "0.875rem",
+      "$description": "Text size",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "chip",
+          "css": "--nk-chip-font-size",
+          "type": "length"
+        }
+      }
+    },
+    "weight": {
+      "$value": "{type.weight-strong}",
+      "$description": "Text weight",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "chip",
+          "css": "--nk-chip-weight",
+          "type": "string"
+        }
+      }
+    },
+    "active-bg": {
+      "$type": "color",
+      "$value": "{palette.brand}",
+      "$description": "An active chip's fill (rises from the bottom)",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "chip",
+          "css": "--nk-chip-active-bg",
+          "type": "color"
+        }
+      }
+    },
+    "active-fg": {
+      "$type": "color",
+      "$value": "{palette.brand-foreground}",
+      "$description": "An active chip's ink",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "chip",
+          "css": "--nk-chip-active-fg",
+          "type": "color"
+        }
+      }
+    },
+    "glow": {
+      "$type": "shadow",
+      "$value": "0 0 calc(var(--nk-line-glow) * 0.75) rgba(var(--brand-rgb), var(--nk-surface-glow))",
+      "$description": "An active chip's glow",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "chip",
+          "css": "--nk-chip-glow",
+          "type": "shadow"
+        }
+      }
+    },
+    "clip": {
+      "$value": "{line.clip-sm}",
+      "$description": "The chip's clip-path",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "chip",
+          "css": "--nk-chip-clip",
+          "type": "string"
+        }
+      }
+    },
+    "text-shadow": {
+      "$type": "shadow",
+      "$value": "{depth.text}",
+      "$description": "Text drawn on the game",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "chip",
+          "css": "--nk-chip-text-shadow",
+          "type": "shadow"
+        }
+      }
+    }
+  },
+  "vital-chip": {
+    "size": {
+      "$type": "dimension",
+      "$value": "2.125rem",
+      "$description": "The chip's box",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "vital-chip",
+          "css": "--nk-vital-chip-size",
+          "type": "length"
+        }
+      }
+    },
+    "size-sm": {
+      "$type": "dimension",
+      "$value": "1.625rem",
+      "$description": "A small chip's box (telltales, compass marks)",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "vital-chip",
+          "css": "--nk-vital-chip-size-sm",
+          "type": "length"
+        }
+      }
+    },
+    "tile": {
+      "ratio": {
+        "$type": "number",
+        "$value": "0.94",
+        "$description": "The face as a fraction of the box",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "vital-chip",
+            "part": "tile",
+            "css": "--nk-vital-chip-tile-ratio",
+            "type": "number",
+            "range": [
+              0.5,
+              1
+            ]
+          }
+        }
+      }
+    },
+    "icon": {
+      "ratio": {
+        "$type": "number",
+        "$value": "0.52",
+        "$description": "The icon as a fraction of the face",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "vital-chip",
+            "part": "icon",
+            "css": "--nk-vital-chip-icon-ratio",
+            "type": "number",
+            "range": [
+              0.2,
+              1
+            ]
+          }
+        }
+      }
+    },
+    "label": {
+      "size": {
+        "$type": "dimension",
+        "$value": "0.9375rem",
+        "$description": "The tag's text size",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "vital-chip",
+            "part": "label",
+            "css": "--nk-vital-chip-label-size",
+            "type": "length"
+          }
+        }
+      },
+      "gap": {
+        "$type": "dimension",
+        "$value": "1rem",
+        "$description": "Between the face and the tag's text",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "vital-chip",
+            "part": "label",
+            "css": "--nk-vital-chip-label-gap",
+            "type": "length"
+          }
+        }
+      }
+    },
+    "line": {
+      "width": {
+        "$type": "dimension",
+        "$value": "0.125rem",
+        "$description": "The level line's thickness",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "vital-chip",
+            "part": "line",
+            "css": "--nk-vital-chip-line-width",
+            "type": "length"
+          }
+        }
+      }
+    },
+    "plate": {
+      "drop": {
+        "$type": "dimension",
+        "$value": "0.25rem",
+        "$description": "How far the wall drops straight below the face",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "vital-chip",
+            "part": "plate",
+            "css": "--nk-vital-chip-plate-drop",
+            "type": "length"
+          }
+        }
+      },
+      "x": {
+        "$type": "dimension",
+        "$value": "0rem",
+        "$description": "The wall's sideways step",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "vital-chip",
+            "part": "plate",
+            "css": "--nk-vital-chip-plate-x",
+            "type": "length"
+          }
+        }
+      }
+    }
+  },
+  "meter": {
+    "radius": {
+      "$type": "dimension",
+      "$value": "0.125rem",
+      "$description": "The bar's radius",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "meter",
+          "css": "--nk-meter-radius",
+          "type": "length"
+        }
+      }
+    },
+    "glow": {
+      "$type": "shadow",
+      "$value": "0 0 calc(var(--nk-line-glow) * 0.625) rgba(var(--brand-rgb), var(--nk-surface-glow))",
+      "$description": "The fill's glow",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "meter",
+          "css": "--nk-meter-glow",
+          "type": "shadow"
+        }
+      }
+    },
+    "segments": {
+      "$type": "number",
+      "$value": "0",
+      "$description": "1 = segmented, 0 = a continuous fill",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "meter",
+          "css": "--nk-meter-segments",
+          "type": "number",
+          "range": [
+            0,
+            1
+          ]
+        }
+      }
+    },
+    "track": {
+      "color": {
+        "$type": "color",
+        "$value": "rgba(var(--scrim-rgb), 0.35)",
+        "$description": "The track behind the bar",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "meter",
+            "part": "track",
+            "css": "--nk-meter-track-color",
+            "type": "color"
+          }
+        }
+      }
+    },
+    "segment": {
+      "size": {
+        "$type": "dimension",
+        "$value": "0.5rem",
+        "$description": "One segment's length",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "meter",
+            "part": "segment",
+            "css": "--nk-meter-segment-size",
+            "type": "length"
+          }
+        }
+      },
+      "gap": {
+        "$type": "dimension",
+        "$value": "0.125rem",
+        "$description": "The gap between segments",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "meter",
+            "part": "segment",
+            "css": "--nk-meter-segment-gap",
+            "type": "length"
+          }
+        }
+      },
+      "color": {
+        "$type": "color",
+        "$value": "rgba(var(--popover-rgb), calc(0.85 * var(--nk-meter-segments)))",
+        "$description": "The gap's colour (the panel showing through)",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "meter",
+            "part": "segment",
+            "css": "--nk-meter-segment-color",
+            "type": "color"
+          }
+        }
+      }
+    }
+  },
+  "gauge": {
+    "width": {
+      "$type": "dimension",
+      "$value": "{fill.height}",
+      "$description": "The arc's thickness",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "gauge",
+          "css": "--nk-gauge-width",
+          "type": "length"
+        }
+      }
+    },
+    "ticks": {
+      "$type": "number",
+      "$value": "0",
+      "$description": "Tick marks: 1 on, 0 off",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "gauge",
+          "css": "--nk-gauge-ticks",
+          "type": "number",
+          "range": [
+            0,
+            1
+          ]
+        }
+      }
+    },
+    "font": {
+      "$value": "{type.num.family}",
+      "$description": "The readout's face",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "gauge",
+          "css": "--nk-gauge-font",
+          "type": "string"
+        }
+      }
+    },
+    "track": {
+      "color": {
+        "$type": "color",
+        "$value": "rgba(var(--hud-foreground-rgb), 0.16)",
+        "$description": "The unlit arc",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "gauge",
+            "part": "track",
+            "css": "--nk-gauge-track-color",
+            "type": "color"
+          }
+        }
+      }
+    },
+    "fill": {
+      "color": {
+        "$type": "color",
+        "$value": "{palette.brand}",
+        "$description": "The lit arc",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "gauge",
+            "part": "fill",
+            "css": "--nk-gauge-fill-color",
+            "type": "color"
+          }
+        }
+      }
+    },
+    "needle": {
+      "color": {
+        "$type": "color",
+        "$value": "{palette.brand}",
+        "$description": "The needle",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "gauge",
+            "part": "needle",
+            "css": "--nk-gauge-needle-color",
+            "type": "color"
+          }
+        }
+      }
+    },
+    "redline": {
+      "color": {
+        "$type": "color",
+        "$value": "{palette.destructive}",
+        "$description": "The redline",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "gauge",
+            "part": "redline",
+            "css": "--nk-gauge-redline-color",
+            "type": "color"
+          }
+        }
+      }
+    },
+    "tick": {
+      "color": {
+        "$type": "color",
+        "$value": "rgba(var(--hud-foreground-rgb), calc(0.55 * var(--nk-gauge-ticks)))",
+        "$description": "A minor tick",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "gauge",
+            "part": "tick",
+            "css": "--nk-gauge-tick-color",
+            "type": "color"
+          }
+        }
+      },
+      "major": {
+        "$type": "color",
+        "$value": "rgba(var(--hud-foreground-rgb), calc(0.9 * var(--nk-gauge-ticks)))",
+        "$description": "A major tick",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "gauge",
+            "part": "tick",
+            "css": "--nk-gauge-tick-major",
+            "type": "color"
+          }
+        }
+      }
+    }
+  },
+  "dial": {
+    "disc": {
+      "opacity": {
+        "$type": "number",
+        "$value": "{alpha.hud}",
+        "$description": "The disc's opacity under the arc",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "dial",
+            "part": "disc",
+            "css": "--nk-dial-disc-opacity",
+            "type": "number",
+            "range": [
+              0,
+              1
+            ]
+          }
+        }
+      }
+    }
+  },
+  "ring": {
+    "segments": {
+      "$type": "number",
+      "$value": "24",
+      "$description": "Segments in the ring",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "ring",
+          "css": "--nk-ring-segments",
+          "type": "number",
+          "range": [
+            6,
+            60
+          ]
+        }
+      }
+    },
+    "gap": {
+      "$type": "number",
+      "$value": "4",
+      "$description": "Degrees between segments",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "ring",
+          "css": "--nk-ring-gap",
+          "type": "number",
+          "range": [
+            0,
+            12
+          ]
+        }
+      }
+    }
+  },
+  "speedometer": {
+    "digit": {
+      "dim": {
+        "$type": "number",
+        "$value": "0.26",
+        "$description": "A leading zero's opacity",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "speedometer",
+            "part": "digit",
+            "css": "--nk-speedometer-digit-dim",
+            "type": "number",
+            "range": [
+              0,
+              1
+            ]
+          }
+        }
+      },
+      "tracking": {
+        "$type": "dimension",
+        "$value": "0.01em",
+        "$description": "The digits' letter-spacing",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "speedometer",
+            "part": "digit",
+            "css": "--nk-speedometer-digit-tracking",
+            "type": "length"
+          }
+        }
+      }
+    }
+  },
+  "level": {
+    "pip": {
+      "size": {
+        "$type": "dimension",
+        "$value": "10%",
+        "$description": "One pip's width (10% = ten pips)",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "level",
+            "part": "pip",
+            "css": "--nk-level-pip-size",
+            "type": "length"
+          }
+        }
+      },
+      "gap": {
+        "$type": "dimension",
+        "$value": "2px",
+        "$description": "Between pips",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "level",
+            "part": "pip",
+            "css": "--nk-level-pip-gap",
+            "type": "length"
+          }
+        }
+      }
+    },
+    "hold": {
+      "pad": {
+        "$type": "dimension",
+        "$value": "2px",
+        "$description": "The hold ring's thickness around a key",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "level",
+            "part": "hold",
+            "css": "--nk-level-hold-pad",
+            "type": "length"
+          }
+        }
+      }
+    },
+    "fill": {
+      "ink": {
+        "$type": "color",
+        "$value": "{tile.face.confirm-ink}",
+        "$description": "An icon's copy over a solid fill (vital chips, HUD keys): dark on the fill",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "level",
+            "part": "fill",
+            "css": "--nk-level-fill-ink",
+            "type": "color"
+          }
+        }
+      }
+    }
+  },
+  "slab": {
+    "height": {
+      "$type": "dimension",
+      "$value": "calc(2.5rem * var(--nk-density))",
+      "$description": "Height",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "slab",
+          "css": "--nk-slab-height",
+          "type": "length"
+        }
+      }
+    },
+    "padding": {
+      "$value": "0 calc(var(--nk-space-unit) * 3)",
+      "$description": "Padding",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "slab",
+          "css": "--nk-slab-padding",
+          "type": "string"
+        }
+      }
+    },
+    "gap": {
+      "$type": "dimension",
+      "$value": "calc(var(--nk-space-unit) * 2.5)",
+      "$description": "Between its parts",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "slab",
+          "css": "--nk-slab-gap",
+          "type": "length"
+        }
+      }
+    },
+    "radius": {
+      "$type": "dimension",
+      "$value": "{chip.radius}",
+      "$description": "Radius",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "slab",
+          "css": "--nk-slab-radius",
+          "type": "length"
+        }
+      }
+    },
+    "clip": {
+      "$value": "{chip.clip}",
+      "$description": "clip-path",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "slab",
+          "css": "--nk-slab-clip",
+          "type": "string"
+        }
+      }
+    },
+    "bg": {
+      "$type": "color",
+      "$value": "{chip.bg}",
+      "$description": "The plate",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "slab",
+          "css": "--nk-slab-bg",
+          "type": "color"
+        }
+      }
+    },
+    "fg": {
+      "$type": "color",
+      "$value": "{chip.fg}",
+      "$description": "Text",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "slab",
+          "css": "--nk-slab-fg",
+          "type": "color"
+        }
+      }
+    },
+    "border": {
+      "$type": "color",
+      "$value": "rgba(var(--hud-foreground-rgb), 0.08)",
+      "$description": "The rim",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "slab",
+          "css": "--nk-slab-border",
+          "type": "color"
+        }
+      }
+    },
+    "font-size": {
+      "$type": "dimension",
+      "$value": "{text.base}",
+      "$description": "Text size",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "slab",
+          "css": "--nk-slab-font-size",
+          "type": "length"
+        }
+      }
+    },
+    "weight": {
+      "$value": "{type.weight-strong}",
+      "$description": "Text weight",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "slab",
+          "css": "--nk-slab-weight",
+          "type": "string"
+        }
+      }
+    },
+    "text-shadow": {
+      "$type": "shadow",
+      "$value": "none",
+      "$description": "Text shadow on the plate",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "slab",
+          "css": "--nk-slab-text-shadow",
+          "type": "shadow"
+        }
+      }
+    },
+    "tone": {
+      "$value": "var(--brand-rgb)",
+      "$description": "The accent's channels (a screen sets it per state on any ancestor)",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "slab",
+          "css": "--nk-slab-tone",
+          "type": "string"
+        }
+      }
+    },
+    "tile": {
+      "size": {
+        "$type": "dimension",
+        "$value": "calc(var(--nk-slab-height) - var(--nk-space-unit) * 2)",
+        "$description": "The icon tile's size",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "slab",
+            "part": "tile",
+            "css": "--nk-slab-tile-size",
+            "type": "length"
+          }
+        }
+      },
+      "bg": {
+        "$type": "color",
+        "$value": "rgba(var(--hud-foreground-rgb), 0.1)",
+        "$description": "The icon tile",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "slab",
+            "part": "tile",
+            "css": "--nk-slab-tile-bg",
+            "type": "color"
+          }
+        }
+      },
+      "fg": {
+        "$type": "color",
+        "$value": "{slab.fg}",
+        "$description": "The icon",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "slab",
+            "part": "tile",
+            "css": "--nk-slab-tile-fg",
+            "type": "color"
+          }
+        }
+      },
+      "radius": {
+        "$type": "dimension",
+        "$value": "max(0.125rem, calc(var(--nk-slab-radius) - var(--nk-space-unit)))",
+        "$description": "The icon tile's radius",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "slab",
+            "part": "tile",
+            "css": "--nk-slab-tile-radius",
+            "type": "length"
+          }
+        }
+      }
+    },
+    "delta": {
+      "font": {
+        "$value": "{type.num.family}",
+        "$description": "A delta's face",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "slab",
+            "part": "delta",
+            "css": "--nk-slab-delta-font",
+            "type": "string"
+          }
+        }
+      },
+      "up": {
+        "$type": "color",
+        "$value": "{palette.world-success}",
+        "$description": "A gain",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "slab",
+            "part": "delta",
+            "css": "--nk-slab-delta-up",
+            "type": "color"
+          }
+        }
+      },
+      "down": {
+        "$type": "color",
+        "$value": "{palette.world-destructive}",
+        "$description": "A loss",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "slab",
+            "part": "delta",
+            "css": "--nk-slab-delta-down",
+            "type": "color"
+          }
+        }
+      }
+    },
+    "key": {
+      "size": {
+        "$type": "dimension",
+        "$value": "1.5rem",
+        "$description": "A key chip's size",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "slab",
+            "part": "key",
+            "css": "--nk-slab-key-size",
+            "type": "length"
+          }
+        }
+      },
+      "font-size": {
+        "$type": "dimension",
+        "$value": "0.8125rem",
+        "$description": "A key chip's text",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "slab",
+            "part": "key",
+            "css": "--nk-slab-key-font-size",
+            "type": "length"
+          }
+        }
+      }
+    },
+    "line": {
+      "height": {
+        "$type": "dimension",
+        "$value": "0.1875rem",
+        "$description": "The progress line's thickness",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "slab",
+            "part": "line",
+            "css": "--nk-slab-line-height",
+            "type": "length"
+          }
+        }
+      },
+      "radius": {
+        "$type": "dimension",
+        "$value": "{meter.radius}",
+        "$description": "Its radius",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "slab",
+            "part": "line",
+            "css": "--nk-slab-line-radius",
+            "type": "length"
+          }
+        }
+      },
+      "track": {
+        "$type": "color",
+        "$value": "rgba(var(--hud-foreground-rgb), 0.18)",
+        "$description": "Its track",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "slab",
+            "part": "line",
+            "css": "--nk-slab-line-track",
+            "type": "color"
+          }
+        }
+      }
+    },
+    "stack": {
+      "width": {
+        "$type": "dimension",
+        "$value": "20rem",
+        "$description": "The progress stack's width",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "slab",
+            "part": "stack",
+            "css": "--nk-slab-stack-width",
+            "type": "length"
+          }
+        }
+      },
+      "gap": {
+        "$type": "dimension",
+        "$value": "calc(var(--nk-space-unit) * 2)",
+        "$description": "Between its rows",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "slab",
+            "part": "stack",
+            "css": "--nk-slab-stack-gap",
+            "type": "length"
+          }
+        }
+      }
+    },
+    "band": {
+      "padding": {
+        "$value": "calc(var(--nk-space-unit) * 3) calc(var(--nk-space-unit) * 6)",
+        "$description": "The band's padding",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "slab",
+            "part": "band",
+            "css": "--nk-slab-band-padding",
+            "type": "string"
+          }
+        }
+      },
+      "gap": {
+        "$type": "dimension",
+        "$value": "{space.unit}",
+        "$description": "Between its lines",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "slab",
+            "part": "band",
+            "css": "--nk-slab-band-gap",
+            "type": "length"
+          }
+        }
+      },
+      "bg": {
+        "$type": "color",
+        "$value": "rgba(var(--scrim-rgb), 0.62)",
+        "$description": "The game, darkened",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "slab",
+            "part": "band",
+            "css": "--nk-slab-band-bg",
+            "type": "color"
+          }
+        }
+      },
+      "tint": {
+        "$type": "number",
+        "$value": "0.3",
+        "$description": "The tone's alpha over the band",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "slab",
+            "part": "band",
+            "css": "--nk-slab-band-tint",
+            "type": "number",
+            "range": [
+              0,
+              1
+            ]
+          }
+        }
+      },
+      "edge": {
+        "$type": "number",
+        "$value": "0.6",
+        "$description": "The tone's alpha on its edges",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "slab",
+            "part": "band",
+            "css": "--nk-slab-band-edge",
+            "type": "number",
+            "range": [
+              0,
+              1
+            ]
+          }
+        }
+      },
+      "fg": {
+        "$type": "color",
+        "$value": "{palette.hud-foreground}",
+        "$description": "Text",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "slab",
+            "part": "band",
+            "css": "--nk-slab-band-fg",
+            "type": "color"
+          }
+        }
+      }
+    },
+    "band-title": {
+      "size": {
+        "$type": "dimension",
+        "$value": "{text.section}",
+        "$description": "The band's line",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "slab",
+            "part": "band-title",
+            "css": "--nk-slab-band-title-size",
+            "type": "length"
+          }
+        }
+      }
+    }
+  },
+  "item-slot": {
+    "width": {
+      "$type": "dimension",
+      "$value": "5rem",
+      "$description": "Width (md)",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "item-slot",
+          "css": "--nk-item-slot-width",
+          "type": "length"
+        }
+      }
+    },
+    "width-sm": {
+      "$type": "dimension",
+      "$value": "3.5rem",
+      "$description": "Width (sm)",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "item-slot",
+          "css": "--nk-item-slot-width-sm",
+          "type": "length"
+        }
+      }
+    },
+    "width-lg": {
+      "$type": "dimension",
+      "$value": "6rem",
+      "$description": "Width (lg)",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "item-slot",
+          "css": "--nk-item-slot-width-lg",
+          "type": "length"
+        }
+      }
+    },
+    "gap": {
+      "$type": "dimension",
+      "$value": "0.25rem",
+      "$description": "Between its lines",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "item-slot",
+          "css": "--nk-item-slot-gap",
+          "type": "length"
+        }
+      }
+    },
+    "top": {
+      "height": {
+        "$type": "dimension",
+        "$value": "0.75rem",
+        "$description": "The meta line's height",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "item-slot",
+            "part": "top",
+            "css": "--nk-item-slot-top-height",
+            "type": "length"
+          }
+        }
+      }
+    },
+    "corner": {
+      "lock": {
+        "$type": "dimension",
+        "$value": "0.875rem",
+        "$description": "The lock icon",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "item-slot",
+            "part": "corner",
+            "css": "--nk-item-slot-corner-lock",
+            "type": "length"
+          }
+        }
+      }
+    }
+  },
+  "key-prompt": {
+    "gap": {
+      "$type": "dimension",
+      "$value": "0.25rem",
+      "$description": "Between its parts",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "key-prompt",
+          "css": "--nk-key-prompt-gap",
+          "type": "length"
+        }
+      }
+    },
+    "min-height": {
+      "$type": "dimension",
+      "$value": "2.5rem",
+      "$description": "Minimum height (md)",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "key-prompt",
+          "css": "--nk-key-prompt-min-height",
+          "type": "length"
+        }
+      }
+    },
+    "min-height-sm": {
+      "$type": "dimension",
+      "$value": "2rem",
+      "$description": "Minimum height (sm)",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "key-prompt",
+          "css": "--nk-key-prompt-min-height-sm",
+          "type": "length"
+        }
+      }
+    },
+    "pad-left": {
+      "$type": "dimension",
+      "$value": "0.5rem",
+      "$description": "Leading padding",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "key-prompt",
+          "css": "--nk-key-prompt-pad-left",
+          "type": "length"
+        }
+      }
+    },
+    "pad-right": {
+      "$type": "dimension",
+      "$value": "0.75rem",
+      "$description": "Trailing padding",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "key-prompt",
+          "css": "--nk-key-prompt-pad-right",
+          "type": "length"
+        }
+      }
+    },
+    "pad-y": {
+      "$type": "dimension",
+      "$value": "0.25rem",
+      "$description": "Block padding",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "key-prompt",
+          "css": "--nk-key-prompt-pad-y",
+          "type": "length"
+        }
+      }
+    },
+    "key": {
+      "height": {
+        "$type": "dimension",
+        "$value": "1.5rem",
+        "$description": "A key cap's height",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "key-prompt",
+            "part": "key",
+            "css": "--nk-key-prompt-key-height",
+            "type": "length"
+          }
+        }
+      }
+    }
+  },
+  "skill-check": {
+    "size": {
+      "$type": "dimension",
+      "$value": "10rem",
+      "$description": "Size (md)",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "skill-check",
+          "css": "--nk-skill-check-size",
+          "type": "length"
+        }
+      }
+    },
+    "size-sm": {
+      "$type": "dimension",
+      "$value": "7rem",
+      "$description": "Size (sm)",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "skill-check",
+          "css": "--nk-skill-check-size-sm",
+          "type": "length"
+        }
+      }
+    },
+    "size-lg": {
+      "$type": "dimension",
+      "$value": "13rem",
+      "$description": "Size (lg)",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "skill-check",
+          "css": "--nk-skill-check-size-lg",
+          "type": "length"
+        }
+      }
+    },
+    "key": {
+      "height": {
+        "$type": "dimension",
+        "$value": "2rem",
+        "$description": "The key's height",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "skill-check",
+            "part": "key",
+            "css": "--nk-skill-check-key-height",
+            "type": "length"
+          }
+        }
+      },
+      "pad": {
+        "$type": "dimension",
+        "$value": "0.5rem",
+        "$description": "The key's padding",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "skill-check",
+            "part": "key",
+            "css": "--nk-skill-check-key-pad",
+            "type": "length"
+          }
+        }
+      }
+    }
+  },
+  "countdown": {
+    "line": {
+      "width": {
+        "$type": "dimension",
+        "$value": "10rem",
+        "$description": "The line (md)",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "countdown",
+            "part": "line",
+            "css": "--nk-countdown-line-width",
+            "type": "length"
+          }
+        }
+      },
+      "width-sm": {
+        "$type": "dimension",
+        "$value": "6rem",
+        "$description": "The line (sm)",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "countdown",
+            "part": "line",
+            "css": "--nk-countdown-line-width-sm",
+            "type": "length"
+          }
+        }
+      },
+      "width-hero": {
+        "$type": "dimension",
+        "$value": "20rem",
+        "$description": "The line (hero)",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "countdown",
+            "part": "line",
+            "css": "--nk-countdown-line-width-hero",
+            "type": "length"
+          }
+        }
+      }
+    }
+  },
+  "stat": {
+    "gap": {
+      "$type": "dimension",
+      "$value": "0.25rem",
+      "$description": "Between its parts",
+      "$extensions": {
+        "nuikit": {
+          "tier": "component",
+          "scope": "stat",
+          "css": "--nk-stat-gap",
+          "type": "length"
+        }
+      }
+    },
+    "label": {
+      "icon": {
+        "$type": "dimension",
+        "$value": "0.875rem",
+        "$description": "The label's icon",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "stat",
+            "part": "label",
+            "css": "--nk-stat-label-icon",
+            "type": "length"
+          }
+        }
+      }
+    }
+  },
+  "nui-image": {
+    "icon": {
+      "max": {
+        "$type": "dimension",
+        "$value": "1.5rem",
+        "$description": "The fallback glyph's maximum size",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "nui-image",
+            "part": "icon",
+            "css": "--nk-nui-image-icon-max",
+            "type": "length"
+          }
+        }
+      }
+    }
+  }
+}

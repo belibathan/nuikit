@@ -77,7 +77,7 @@ export function Hotbar() {
   if (!visible && !leaving) return null;
   const slots: Slot[] = Array.from({ length: 5 }, (_, i) => items[i] ?? { slot: i + 1 });
   return (
-    <div className="nk-edge pointer-events-none fixed inset-x-0 bottom-[var(--nk-edge)] flex justify-center">
+    <div className="nk-edge pointer-events-none fixed inset-x-0 bottom-[var(--nk-screen-edge)] flex justify-center">
       <div className="inv-hotbar flex gap-2" data-leaving={!visible || undefined}>
         {slots.map((s) => (
           <div key={s.slot} className="w-[4.5rem]">
@@ -116,7 +116,7 @@ export function ItemNotifications() {
   if (!notes.length) return null;
   return (
     // Above the hotbar's row (edge + 4.5rem tile + 0.75rem), newest at the bottom.
-    <div ref={stack} className="nk-edge pointer-events-none fixed inset-x-0 bottom-[calc(var(--nk-edge)+5.25rem)] flex flex-col items-center gap-2">
+    <div ref={stack} className="nk-edge pointer-events-none fixed inset-x-0 bottom-[calc(var(--nk-screen-edge)+5.25rem)] flex flex-col items-center gap-2">
       {notes.map((n) => (
         // the flip moves the wrapper, the enter and exit move the chip: the two transforms never fight
         <div key={n.id} className="inv-note" data-leaving={n.leaving || undefined}>

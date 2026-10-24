@@ -27,9 +27,9 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 const panelVariants = cva("nk-panel flex flex-col overflow-hidden", {
   variants: {
     size: {
-      sm: "w-[var(--nk-panel-w-sm,18rem)]",
-      default: "w-[var(--nk-panel-w,20rem)]",
-      lg: "w-[var(--nk-panel-w-lg,24rem)]",
+      sm: "w-[var(--nk-panel-width-sm,18rem)]",
+      default: "w-[var(--nk-panel-width,20rem)]",
+      lg: "w-[var(--nk-panel-width-lg,24rem)]",
       auto: "w-max",
     },
   },
@@ -62,7 +62,7 @@ function Panel({
       className={cn(
         panelVariants({ size }),
         animate && "nk-enter",
-        selected && "outline-2 -outline-offset-1 outline-(--nk-row-indicator-color)",
+        selected && "outline-2 -outline-offset-1 outline-(--nk-row-accent)",
         className
       )}
       {...props}
@@ -142,7 +142,7 @@ const panelBodyVariants = cva("", {
       /** Rows: 8px around 40px rows. */
       list: "nk-panel-body flex flex-col gap-(--nk-space-1)",
       /** Fields and text: 16px, 16px between groups. */
-      form: "flex flex-col gap-[calc(var(--nk-space)*4)] p-[calc(var(--nk-space)*4)]",
+      form: "flex flex-col gap-[calc(var(--nk-space-unit)*4)] p-[calc(var(--nk-space-unit)*4)]",
     },
   },
   defaultVariants: {
