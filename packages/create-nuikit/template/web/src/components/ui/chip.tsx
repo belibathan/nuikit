@@ -37,7 +37,7 @@ const chipHudVariants = cva("nk-num shrink-0 [&_svg]:pointer-events-none [&_svg]
       /** 28px pill: icon + short text. */
       pill: "nk-chip [&_svg:not([class*='size-'])]:size-3.5",
       /** 48px square tile: icon over a short label. */
-      tile: "nk-hud inline-flex size-12 flex-col items-center justify-center gap-(--nk-space-1) text-(length:--nk-text-label) leading-4 [font-weight:var(--nk-type-label-weight,500)] [&_svg:not([class*='size-'])]:size-5",
+      tile: "nk-hud inline-flex size-12 flex-col items-center justify-center gap-(--nk-space-1) text-(length:--nk-text-label) leading-4 [font-weight:var(--nk-type-label-weight)] [&_svg:not([class*='size-'])]:size-5",
     },
     state: {
       default: "[&_[data-slot=hud-chip-icon]]:opacity-75",

@@ -44,9 +44,9 @@ import { useLinearRun } from "@/hooks/use-linear-run"
 const meterVariants = cva("min-w-0", {
   variants: {
     size: {
-      sm: "[--meter-h:max(0.125rem,calc(var(--nk-fill-height,0.25rem)*0.75))]",
-      default: "[--meter-h:var(--nk-fill-height,0.25rem)]",
-      lg: "[--meter-h:calc(var(--nk-fill-height,0.25rem)*1.5)]",
+      sm: "[--meter-h:max(0.125rem,calc(var(--nk-fill-height)*0.75))]",
+      default: "[--meter-h:var(--nk-fill-height)]",
+      lg: "[--meter-h:calc(var(--nk-fill-height)*1.5)]",
     },
   },
   defaultVariants: {
@@ -452,8 +452,8 @@ function Meter({
           level={drawn / 100}
           tween={!timed}
           // the slab line's track and height (nk-slab-line); its bar is the Fill's, in the slab's tone, with its glow
-          color="var(--nk-slab-line-fill, rgb(var(--nk-slab-tone)))"
-          className="nk-slab-line after:hidden before:[box-shadow:0_0_0.5rem_rgba(var(--nk-slab-tone),var(--nk-surface-glow,0))]"
+          color="rgb(var(--nk-slab-tone))"
+          className="nk-slab-line after:hidden before:[box-shadow:0_0_0.5rem_rgba(var(--nk-slab-tone),var(--nk-surface-glow))]"
         />
       </div>
     )
@@ -521,7 +521,7 @@ function Meter({
             {iconEl}
             {label !== undefined && <span data-slot="meter-label" className="nk-caption min-w-0 flex-1 truncate">{label}</span>}
             {valueText !== undefined && (
-              <span data-slot="meter-value" className={cn("nk-num ml-auto shrink-0 text-(length:--nk-caption-size) leading-4 [font-weight:var(--nk-type-label-weight,500)]", critical && "text-destructive")}>
+              <span data-slot="meter-value" className={cn("nk-num ml-auto shrink-0 text-(length:--nk-caption-size) leading-4 [font-weight:var(--nk-type-label-weight)]", critical && "text-destructive")}>
                 {valueText}
               </span>
             )}

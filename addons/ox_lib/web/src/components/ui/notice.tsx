@@ -173,9 +173,9 @@ const noticeVariants = cva(
   {
     variants: {
       size: {
-        sm: "w-[var(--nk-notice-width-sm,18rem)]",
-        default: "w-[var(--nk-notice-width,20rem)]",
-        lg: "w-[var(--nk-notice-width-lg,24rem)]",
+        sm: "w-[var(--nk-notice-width-sm)]",
+        default: "w-[var(--nk-notice-width)]",
+        lg: "w-[var(--nk-notice-width-lg)]",
       },
       iconAlign: {
         start: "items-start",
@@ -335,7 +335,7 @@ function Notice({
         data-delta={down ? "down" : "up"}
         data-leaving={leaving || undefined}
         role="status"
-        className={cn("nk-slab pointer-events-auto max-w-[var(--nk-notice-width,20rem)]", animate && !slide && "nk-enter", leaving && "pointer-events-none", className)}
+        className={cn("nk-slab pointer-events-auto max-w-[var(--nk-notice-width)]", animate && !slide && "nk-enter", leaving && "pointer-events-none", className)}
         {...props}
       >
         <span data-slot="notice-item-tile" className="nk-slab-tile">
@@ -430,7 +430,7 @@ function Notice({
           tween={false}
           tone={STATUS_TONE[status] ?? "info"}
           hue={hue}
-          className="absolute inset-x-0 bottom-0 h-[calc(var(--nk-fill-height,0.25rem)/2)] rounded-none bg-transparent motion-reduce:hidden [[data-nk-motion=off]_&]:hidden"
+          className="absolute inset-x-0 bottom-0 h-[calc(var(--nk-fill-height)/2)] rounded-none bg-transparent motion-reduce:hidden [[data-nk-motion=off]_&]:hidden"
         />
       )}
     </div>

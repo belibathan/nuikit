@@ -123,195 +123,6 @@ function useChipStyle(): ChipStyle {
   return React.useSyncExternalStore(subscribeChipStyle, () => chipStyle, () => DEFAULT_STYLE)
 }
 
-// ───────────────────────────────── the keycap's stylesheet
-//
-// The keycap is drawn by these rules (the in-game vitals, hud.css before 0.9), shipped with the component so
-// `npx shadcn add vital-chip` gets the look without a kit.css change; every number is a --nk-vital-* lever with the
-// in-game value as its default. Injected once per document. (kit.css may absorb it; the selectors are stable.)
-const KEYCAP_CSS = `
-[data-slot="vital-chip-shape"][data-shape="keycap"] {
-  width: var(--nk-vital-chip-size, 2.125rem);
-  height: var(--nk-vital-chip-size, 2.125rem);
-  --nk-vital-chip-face: calc(var(--nk-vital-chip-size, 2.125rem) * var(--nk-vital-chip-tile-ratio, 0.94));
-  --nk-vital-chip-tag: 0px;
-  --nk-vital-chip-tag-pad: var(--nk-vital-chip-label-gap, 1rem);
-  --nk-vital-chip-plate-drop: calc(var(--nk-tile-wall-height, 0.1875rem) * 4 / 3);
-  --nk-vital-chip-plate-x: 0rem;
-  --nk-vital-chip-d: 1;
-}
-[data-slot="vital-chip-shape"][data-shape="keycap"][data-side="left"] { --nk-vital-chip-d: -1; }
-[data-slot="vital-chip-shape"][data-shape="keycap"] > [data-slot="tile"],
-[data-slot="vital-chip-shape"][data-shape="keycap"] [data-slot="vital-chip-icon"] {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-}
-/* the face is the kit Tile (its face, rim, slant and alert state), sized by the chip and without its own plate:
-   the chip's plate below is the one that slides out */
-[data-slot="vital-chip-shape"][data-shape="keycap"] > [data-slot="tile"] {
-  --nk-tile-face-radius: var(--nk-radius-chip);
-  --nk-tile-now-plate: transparent;
-  z-index: 2;
-  width: var(--nk-vital-chip-face);
-  min-width: 0;
-  height: var(--nk-vital-chip-face);
-  padding: 0;
-}
-[data-slot="vital-chip-level"] {
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  overflow: hidden;
-  border-radius: inherit;
-  transform: skewX(var(--nk-tile-face-skew));
-}
-[data-slot="vital-chip-liquid"],
-[data-slot="vital-chip-lit"] {
-  position: absolute;
-  inset: 0;
-  transform-origin: 50% 100%;
-}
-/* the level in the vital's role colour (data-hue gives --hue; Default's roles are white): solid by default, a flat
-   full colour (--nk-style-fill); soft keeps the translucent liquid */
-[data-slot="vital-chip-liquid"] {
-  background: rgb(var(--hue, var(--foreground-rgb)));
-  transform: scaleY(var(--level, 0));
-  transition: transform calc(var(--nk-time-fill) * var(--nk-motion, 1)) var(--nk-ease-move);
-}
-:is(html, *)[data-nk-fill="soft"] [data-slot="vital-chip-liquid"] {
-  background: linear-gradient(180deg, rgba(var(--hue, var(--foreground-rgb)), 0.62), rgba(var(--hue, var(--foreground-rgb)), 0.38));
-}
-[data-slot="vital-chip-line"] {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: var(--nk-vital-chip-line-width, 0.125rem);
-  background: var(--hue-grad-a, var(--nk-tile-face-ink));
-  transform: translateY(calc((1 - var(--level, 0)) * var(--nk-vital-chip-face) - 0.0625rem));
-  transition: transform calc(var(--nk-time-fill) * var(--nk-motion, 1)) var(--nk-ease-move);
-  opacity: calc(var(--level, 0) * 100);
-}
-/* active (the mic): a bright layer fills the face from the bottom, the icon turns to the dark ink */
-[data-slot="vital-chip-lit"] {
-  background: var(--nk-tile-face-active, var(--nk-tile-face-confirm));
-  transform: scaleY(0);
-  transition: transform calc(var(--nk-time-base) * var(--nk-motion, 1)) var(--nk-ease-move);
-}
-[data-slot="vital-chip-shape"][data-shape="keycap"][data-active] [data-slot="vital-chip-lit"] { transform: scaleY(1); transition-duration: calc(var(--nk-time-fast) * var(--nk-motion, 1)); }
-[data-slot="vital-chip-shape"][data-shape="keycap"] [data-slot="vital-chip-icon"] {
-  z-index: 3;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: calc(var(--nk-vital-chip-face) * var(--nk-vital-chip-icon-ratio, 0.52));
-  height: calc(var(--nk-vital-chip-face) * var(--nk-vital-chip-icon-ratio, 0.52));
-  color: var(--nk-tile-face-ink);
-  transition: color calc(var(--nk-time-base) * var(--nk-motion, 1)) ease-out;
-}
-[data-slot="vital-chip-shape"][data-shape="keycap"] [data-slot="vital-chip-icon"] > svg { width: 100%; height: 100%; stroke-width: 2.25; }
-/* the icon's ink copy: dark on the solid level, cut at the surface (the icon box sits 0.24 × the face from its top) */
-[data-slot="vital-chip-shape"][data-shape="keycap"] [data-slot="vital-chip-icon-ink"] {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--nk-level-fill-ink, var(--nk-tile-face-confirm-ink));
-  clip-path: inset(max(0px, calc((1 - var(--level, 0)) * var(--nk-vital-chip-face) - var(--nk-vital-chip-face) * 0.24)) 0 0 0);
-}
-[data-slot="vital-chip-shape"][data-shape="keycap"] [data-slot="vital-chip-icon-ink"] > svg { width: 100%; height: 100%; }
-:is(html, *)[data-nk-fill="soft"] [data-slot="vital-chip-shape"][data-shape="keycap"] [data-slot="vital-chip-icon-ink"],
-[data-slot="vital-chip-shape"][data-shape="keycap"]:not([data-level]) [data-slot="vital-chip-icon-ink"],
-[data-slot="vital-chip-shape"][data-shape="keycap"][data-active] [data-slot="vital-chip-icon-ink"] { display: none; }
-[data-slot="vital-chip-shape"][data-shape="keycap"][data-active] [data-slot="vital-chip-icon"] { color: var(--nk-tile-face-confirm-ink); transition-duration: calc(var(--nk-time-fast) * var(--nk-motion, 1)); }
-/* a letter on the face (a gear, a compass mark): the scan voice, nudged left by the italic's lean */
-[data-slot="vital-chip-shape"][data-shape="keycap"] [data-slot="vital-chip-glyph"] {
-  display: block;
-  font-size: calc(var(--nk-vital-chip-face) * 0.62);
-  font-weight: 800;
-  line-height: 1;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
-  white-space: nowrap;
-  text-shadow: none;
-  transform: translateX(-0.04em);
-}
-/* the base: the tile's own wall, always there, the face's size dropped by the plate drop, its corners rounded all
-   round. The extension slides out over it from under the face's centre, so the near end you see is always this
-   base's rounded corner, never a clipped edge. */
-[data-slot="vital-chip-wall"] {
-  position: absolute;
-  z-index: 0;
-  top: calc((var(--nk-vital-chip-size, 2.125rem) - var(--nk-vital-chip-face)) / 2);
-  left: calc((var(--nk-vital-chip-size, 2.125rem) - var(--nk-vital-chip-face)) / 2);
-  width: var(--nk-vital-chip-face);
-  height: var(--nk-vital-chip-face);
-  border-radius: var(--nk-radius-chip);
-  background: var(--nk-tile-plate-dim);
-  box-shadow: 0 0 0 var(--nk-line-width, 1px) rgba(var(--scrim-rgb), 0.9);
-  transform: translate(calc(var(--nk-vital-chip-plate-x) * var(--nk-vital-chip-d)), var(--nk-vital-chip-plate-drop)) skewX(var(--nk-tile-face-skew));
-}
-/* the track clips the extension from the face's centre outwards (that cut is always under the face or on the base) */
-[data-slot="vital-chip-track"] {
-  position: absolute;
-  z-index: 1;
-  top: calc((var(--nk-vital-chip-size, 2.125rem) - var(--nk-vital-chip-face)) / 2);
-  left: calc((var(--nk-vital-chip-size, 2.125rem) - var(--nk-vital-chip-face)) / 2 + var(--nk-vital-chip-face) / 2);
-  width: calc(var(--nk-vital-chip-face) / 2 + var(--nk-vital-chip-tag) + var(--nk-vital-chip-tag-pad) + var(--nk-vital-chip-plate-drop) + 0.5rem + 2px);
-  height: calc(var(--nk-vital-chip-face) + var(--nk-vital-chip-plate-drop) + 2px);
-  overflow: hidden;
-  pointer-events: none;
-}
-[data-slot="vital-chip-shape"][data-shape="keycap"][data-side="left"] [data-slot="vital-chip-track"] { left: auto; right: calc((var(--nk-vital-chip-size, 2.125rem) - var(--nk-vital-chip-face)) / 2 + var(--nk-vital-chip-face) / 2); }
-[data-slot="vital-chip-plate"] {
-  position: absolute;
-  top: 0;
-  left: calc(var(--nk-vital-chip-face) / -2);
-  width: calc(var(--nk-vital-chip-face) + var(--nk-vital-chip-tag) + var(--nk-vital-chip-tag-pad));
-  height: var(--nk-vital-chip-face);
-  border-radius: var(--nk-radius-chip);
-  background: var(--nk-tile-plate-dim);
-  box-shadow: 0 0 0 var(--nk-line-width, 1px) rgba(var(--scrim-rgb), 0.9);
-  /* at rest only the drop offset shows behind the face */
-  transform: translate(calc(var(--nk-vital-chip-plate-x) - var(--nk-vital-chip-d) * (var(--nk-vital-chip-tag) + var(--nk-vital-chip-tag-pad))), var(--nk-vital-chip-plate-drop)) skewX(var(--nk-tile-face-skew));
-  transition: transform calc(var(--nk-time-slow) * var(--nk-motion, 1)) var(--nk-ease-expand);
-}
-[data-slot="vital-chip-shape"][data-shape="keycap"][data-side="left"] [data-slot="vital-chip-plate"] { left: auto; right: calc(var(--nk-vital-chip-face) / -2); }
-[data-slot="vital-chip-shape"][data-shape="keycap"][data-open] [data-slot="vital-chip-plate"] { transform: translate(var(--nk-vital-chip-plate-x), var(--nk-vital-chip-plate-drop)) skewX(var(--nk-tile-face-skew)); }
-[data-slot="vital-chip-shape"][data-shape="keycap"][data-side="left"][data-open] [data-slot="vital-chip-plate"] { transform: translate(calc(var(--nk-vital-chip-plate-x) * -1), var(--nk-vital-chip-plate-drop)) skewX(var(--nk-tile-face-skew)); }
-/* the label on the revealed plate: the scan voice, fading in a beat after the plate */
-[data-slot="vital-chip-label"][data-attach="plate"] {
-  position: absolute;
-  z-index: 1;
-  top: 50%;
-  left: calc((var(--nk-vital-chip-size, 2.125rem) + var(--nk-vital-chip-face)) / 2 + 0.5rem);
-  display: block;
-  transform: translateY(-50%);
-  white-space: nowrap;
-  font-size: var(--nk-vital-chip-label-size, 0.9375rem);
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-  color: var(--nk-tile-face-ink);
-  opacity: 0;
-  transition: opacity calc(var(--nk-time-fast) * var(--nk-motion, 1)) ease-out;
-}
-[data-slot="vital-chip-shape"][data-shape="keycap"][data-side="left"] [data-slot="vital-chip-label"][data-attach="plate"] { left: auto; right: calc((var(--nk-vital-chip-size, 2.125rem) + var(--nk-vital-chip-face)) / 2 + 0.5rem); }
-[data-slot="vital-chip-label"][data-attach="plate"][data-open] { opacity: 1; transition-duration: calc(var(--nk-time-base) * var(--nk-motion, 1)); transition-delay: calc(var(--nk-time-fast) * var(--nk-motion, 1)); }
-[data-slot="vital-chip-label"][data-attach="plate"] [data-slot="vital-chip-name"] { opacity: 0.7; margin-right: 0.25rem; }
-/* alert: the liquid and its line take the status colour (the Tile's rim breathes) */
-[data-slot="vital-chip-shape"][data-shape="keycap"][data-state="alert"] [data-slot="vital-chip-liquid"] { background: var(--vital, var(--nk-fill-alert)); }
-:is(html, *)[data-nk-fill="soft"] [data-slot="vital-chip-shape"][data-shape="keycap"][data-state="alert"] [data-slot="vital-chip-liquid"] { background: rgba(var(--destructive-rgb, 239, 68, 68), 0.7); }
-[data-slot="vital-chip-shape"][data-shape="keycap"][data-state="alert"] [data-slot="vital-chip-line"] { background: var(--vital, var(--nk-fill-alert)); }
-[data-shape="keycap"][data-display][data-state="alert"] { --vital: var(--nk-fill-alert, var(--destructive)); }
-/* the room the plate takes in the row: the chip's margin on its plate side, FLIPped by Row (the Root: the one
-   element with the shape and the display; a composer may rename its data-slot) */
-[data-shape="keycap"][data-display] { margin-right: var(--nk-vital-chip-room, 0px); }
-[data-shape="keycap"][data-display][data-side="left"] { margin-right: 0; margin-left: var(--nk-vital-chip-room, 0px); }
-:is(html, *)[data-nk-motion="reduced"] :is([data-slot="vital-chip-liquid"], [data-slot="vital-chip-line"], [data-slot="vital-chip-lit"], [data-slot="vital-chip-plate"], [data-slot="vital-chip-label"][data-attach="plate"], [data-slot="vital-chip-shape"][data-shape="keycap"] [data-slot="vital-chip-icon"]) { transition: none; }
-`
-
-
 /**
  * FLIP for a row of chips: run `mutate` (a chip taking or giving room), then slide every other chip from where it
  * was. Layout is read twice per change (before, after), never per frame; the row's width itself never animates
@@ -329,18 +140,6 @@ function flipRow(row: Element | null, mutate: () => void) {
     if (a == null || b == null || Math.abs(a - b) < 0.5) return
     k.animate([{ transform: `translateX(${(a - b).toFixed(1)}px)` }, { transform: "translateX(0)" }], { duration: tokenMs("--nk-time-slow", 300) || 300, easing: "cubic-bezier(0.2, 0.8, 0.2, 1)", composite: "add" })
   })
-}
-
-let keycapStyled = false
-function useKeycapStyle() {
-  React.useInsertionEffect(() => {
-    if (keycapStyled || typeof document === "undefined") return
-    keycapStyled = true
-    const el = document.createElement("style")
-    el.dataset.nk = "vital-chip-keycap"
-    el.textContent = KEYCAP_CSS
-    document.head.appendChild(el)
-  }, [])
 }
 
 // ───────────────────────────────── parts
@@ -512,7 +311,6 @@ function Shape({ className, children, ...props }: React.ComponentProps<"span">) 
 
 /** The in-game keycap: the kit's Tile face over a sliding plate, the liquid inside the face, the label on the plate. */
 function Keycap({ className, children, ...props }: React.ComponentProps<"span">) {
-  useKeycapStyle()
   const { value, open, active, alert, side: sideProp, style, valueText, valueOnly } = useChip()
   const root = React.useRef<HTMLSpanElement>(null)
   const text = React.useRef<HTMLSpanElement>(null)
@@ -703,8 +501,8 @@ function Pop({ label, mode = "change", min = 3, critical = false, force = null, 
       className={cn(
         // a flag out of the chip's side, in line with the row: it takes its own room, so pops of
         // vitals that change together sit side by side and can never overlap
-        "pointer-events-none relative z-0 data-[open]:-ml-[0.375rem] flex h-[calc(var(--nk-vital-chip-size)*0.8)] max-w-0 items-center gap-(--nk-space-2) self-center overflow-hidden rounded-r-(--nk-chip-radius) bg-(--nk-chip-bg) text-(length:--nk-text-label) leading-none [font-weight:var(--nk-type-weight-strong,600)] whitespace-nowrap text-(--nk-chip-fg) opacity-0",
-        "-translate-x-1 transition-[opacity,transform] duration-[calc(var(--nk-time-slow)*var(--nk-motion,1))] ease-(--nk-ease-enter) data-[open]:max-w-48 data-[open]:translate-x-0 data-[open]:pr-(--nk-space-3) data-[open]:pl-[0.75rem] data-[open]:opacity-100"
+        "pointer-events-none relative z-0 data-[open]:-ml-[0.375rem] flex h-[calc(var(--nk-vital-chip-size)*0.8)] max-w-0 items-center gap-(--nk-space-2) self-center overflow-hidden rounded-r-(--nk-chip-radius) bg-(--nk-chip-bg) text-(length:--nk-text-label) leading-none [font-weight:var(--nk-type-weight-strong)] whitespace-nowrap text-(--nk-chip-fg) opacity-0",
+        "-translate-x-1 transition-[opacity,transform] duration-[calc(var(--nk-time-slow)*var(--nk-motion))] ease-(--nk-ease-enter) data-[open]:max-w-48 data-[open]:translate-x-0 data-[open]:pr-(--nk-space-3) data-[open]:pl-[0.75rem] data-[open]:opacity-100"
       )}
     >
       <span>{label}</span>

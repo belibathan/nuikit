@@ -284,7 +284,7 @@ const RadialMenu = React.forwardRef<
             style={{ left: `${50 + Math.cos(a) * d}%`, top: `${50 + Math.sin(a) * d}%`, transform: "translate(-50%, -50%)" }}
           >
             {item.icon}
-            {labels && <span className={cn("w-full truncate text-(length:--nk-text-label) leading-4 [font-weight:var(--nk-type-label-weight,500)]", !on && "text-popover-foreground/80")}>{item.label}</span>}
+            {labels && <span className={cn("w-full truncate text-(length:--nk-text-label) leading-4 [font-weight:var(--nk-type-label-weight)]", !on && "text-popover-foreground/80")}>{item.label}</span>}
             {item.items?.length ? <span aria-hidden className="size-1 rounded-(--nk-radius-key) bg-current opacity-60" /> : null}
           </div>
         )
@@ -306,7 +306,7 @@ const RadialMenu = React.forwardRef<
         <span className="flex min-w-0 flex-col items-center gap-(--nk-space-1)">
           {!current && centre === "back" && <ArrowLeftIcon className="size-4 text-muted-foreground" />}
           {!current && centre === "close" && <XIcon className="size-4 text-muted-foreground" />}
-          <span className="w-full truncate text-(length:--nk-text-label) leading-5 [font-weight:var(--nk-type-weight-strong,600)]">
+          <span className="w-full truncate text-(length:--nk-text-label) leading-5 [font-weight:var(--nk-type-weight-strong)]">
             {current?.label ?? (path.length ? path[path.length - 1]!.label : label)}
           </span>
           <span className="w-full truncate text-(length:--nk-text-label) leading-4 text-muted-foreground">

@@ -138,7 +138,7 @@ function EdgeSheet({
           "z-40 w-(--edge-sheet-width) max-w-none gap-0 sm:max-w-none",
           variant === "floating"
             ? // the panel recipe, off the edges: --nk-screen-edge from the top, bottom and its side
-              cn("nk-panel h-auto", anchor === "upper" ? "top-[28vh] bottom-auto max-h-[calc(72vh-var(--nk-screen-edge,1.5rem))]" : fit ? "top-(--nk-screen-edge,1.5rem) bottom-auto max-h-[calc(100%-var(--nk-screen-edge,1.5rem)*2)]" : "inset-y-(--nk-screen-edge,1.5rem)", left ? "left-(--nk-screen-edge,1.5rem)" : "right-(--nk-screen-edge,1.5rem)")
+              cn("nk-panel h-auto", anchor === "upper" ? "top-[28vh] bottom-auto max-h-[calc(72vh-var(--nk-screen-edge))]" : fit ? "top-(--nk-screen-edge,1.5rem) bottom-auto max-h-[calc(100%-var(--nk-screen-edge)*2)]" : "inset-y-(--nk-screen-edge,1.5rem)", left ? "left-(--nk-screen-edge,1.5rem)" : "right-(--nk-screen-edge,1.5rem)")
             : // the surface: the theme's panel, flush, a hairline on the open edge only
               cn(
                 "border-(--nk-panel-border) bg-(--nk-panel-bg) text-(--nk-panel-fg) shadow-(--nk-panel-shadow)",
@@ -150,7 +150,7 @@ function EdgeSheet({
           // frame (off-screen) through the delay: without the fill it drew in place for the delay, then
           // jumped out and slid in (a blink, then a second entrance). The exit never waits.
           "data-[state=open]:duration-[min(calc(var(--nk-time-base)*2.2),360ms)] data-[state=open]:ease-(--nk-ease-enter)",
-          "data-[state=open]:[animation-delay:calc(var(--edge-sheet-delay)*var(--nk-motion,1))] data-[state=open]:[animation-fill-mode:both]",
+          "data-[state=open]:[animation-delay:calc(var(--edge-sheet-delay)*var(--nk-motion))] data-[state=open]:[animation-fill-mode:both]",
           "data-[state=closed]:duration-[min(calc(var(--nk-time-base)*1.4),200ms)] data-[state=closed]:ease-(--nk-ease-exit)",
           className
         )}
@@ -169,7 +169,7 @@ function EdgeSheet({
         >
           {(title || icon || actions || onBack || onClose) && (
             <header data-slot="edge-sheet-header" className="flex flex-col gap-1 pb-4">
-              <div className="flex min-h-[var(--nk-edge-sheet-header-height,2rem)] items-center gap-3">
+              <div className="flex min-h-[var(--nk-edge-sheet-header-height)] items-center gap-3">
                 {onBack && back ? (
                   <ActionBar className="-ml-2 shrink-0">
                     <ActionBarItem keys={["Esc"]} label={back === true ? "Back" : back} onClick={onBack} aria-label="Back" />
@@ -248,7 +248,7 @@ function EdgeSheetBody({
     el.addEventListener("scroll", on, { passive: true })
     return () => el.removeEventListener("scroll", on)
   }, [scroll])
-  const enter = { animationDelay: "calc((var(--edge-sheet-delay, 0ms) + var(--nk-time-base) * 1.5) * var(--nk-motion, 1))", ...style }
+  const enter = { animationDelay: "calc((var(--edge-sheet-delay, 0ms) + var(--nk-time-base) * 1.5) * var(--nk-motion))", ...style }
   if (!scroll) {
     return (
       <div data-slot="edge-sheet-body" className={cn("nk-rise min-h-0 flex-1 pt-4", className)} style={enter} {...props}>

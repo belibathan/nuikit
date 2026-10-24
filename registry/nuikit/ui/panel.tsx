@@ -27,9 +27,9 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 const panelVariants = cva("nk-panel flex flex-col overflow-hidden", {
   variants: {
     size: {
-      sm: "w-[var(--nk-panel-width-sm,18rem)]",
-      default: "w-[var(--nk-panel-width,20rem)]",
-      lg: "w-[var(--nk-panel-width-lg,24rem)]",
+      sm: "w-[var(--nk-panel-width-sm)]",
+      default: "w-[var(--nk-panel-width)]",
+      lg: "w-[var(--nk-panel-width-lg)]",
       auto: "w-max",
     },
   },

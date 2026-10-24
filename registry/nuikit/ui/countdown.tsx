@@ -255,7 +255,7 @@ function Countdown({
           tone={state === "warning" ? (lineFill === "warning" ? "warning" : "danger") : undefined}
           className={cn(
             "h-(--nk-fill-height) before:[box-shadow:var(--nk-meter-glow)]",
-            size === "hero" ? "mt-6 w-[var(--nk-countdown-line-width-hero,20rem)]" : size === "sm" ? "mt-2 w-[var(--nk-countdown-line-width-sm,6rem)]" : "mt-3 w-[var(--nk-countdown-line-width,10rem)]",
+            size === "hero" ? "mt-6 w-[var(--nk-countdown-line-width-hero)]" : size === "sm" ? "mt-2 w-[var(--nk-countdown-line-width-sm)]" : "mt-3 w-[var(--nk-countdown-line-width)]",
             game ? "nk-track" : "bg-foreground/15"
           )}
           // its own hue (the root's data-hue) until the warning; otherwise the line's tone, never an ancestor's hue

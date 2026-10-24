@@ -31,9 +31,9 @@ const bandVariants = cva("nk-slab-band nk-on-game pointer-events-none z-10", {
   variants: {
     position: {
       /** Pinned to the bottom edge, --nk-screen-edge above it (absolute: put it in the full-screen root). */
-      bottom: "absolute inset-x-0 bottom-[var(--nk-screen-edge,1.5rem)]",
+      bottom: "absolute inset-x-0 bottom-[var(--nk-screen-edge)]",
       /** Pinned to the top edge. */
-      top: "absolute inset-x-0 top-[var(--nk-screen-edge,1.5rem)]",
+      top: "absolute inset-x-0 top-[var(--nk-screen-edge)]",
       /** In the flow, as wide as its container. */
       inline: "relative",
     },
