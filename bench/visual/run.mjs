@@ -1,5 +1,5 @@
 // Visual baselines (docs/design/contract.md, "Follow-up: visual baselines"): the dev fixtures of systems/nuikit_hud
-// and systems/nuikit_pause plus four sections of the site's /components, each under Default, Neon Pop, Graphite,
+// and systems/nuikit_pause plus four sections of the site's /components, each under Default, Neon Pop,
 // Flat and Square at 1920x1080, animations off, fonts from npm (fontsource), in Chromium 103 (the FiveM CEF build
 // `pnpm proof` uses: @sparticuz/chromium from examples/cef-proof), compared with the committed PNGs in
 // bench/visual/baselines/<page>-<theme>.png by a pixel ratio. Baselines are never committed (bench/.gitignore):
@@ -29,7 +29,6 @@ const ONLY = (process.env.VISUAL_ONLY ?? "").split(",").filter(Boolean);
 const THEMES = [
   ["default", "Default"],
   ["neon-pop", "Neon Pop"],
-  ["graphite", "Graphite"],
   ["flat", "Flat"],
   ["square", "Square"],
 ];

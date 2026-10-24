@@ -295,7 +295,6 @@ export const motion: Group = {
     "exit-factor": number(0.7, "Every exit is this × its enter", { range: [0.3, 1], was: ["nk-exit-factor"] }),
     reduced: time("100ms", "Under reduced motion every fade is at most this", { range: [0, 400], was: ["nk-time-reduced"] }),
     profile: keyword(["full", "reduced", "instant"], "full", "full: as designed; reduced: no movement, short fades; instant: nothing animates", { attr: "profile", was: ["nk-motion-profile"] }),
-    move: number(1, "1 = things may move; 0 under reduced motion (fades only)", { range: [0, 1], derived: true, was: ["nk-motion-move"] }),
   },
 };
 
@@ -351,7 +350,7 @@ export const layer: Group = {
   tier: "identity",
   description: "Stacking layers",
   levers: Object.fromEntries(
-    ([["dim", 50], ["dialog", 60], ["system", 70]] as const).map(([l, z]) => [l, number(z, `Stacking layer: ${l} (a modal is the current surface + dim + dialog)`, { range: [0, 100000], was: [`nk-z-${l}`] })]),
+    ([["dim", 50], ["dialog", 60]] as const).map(([l, z]) => [l, number(z, `Stacking layer: ${l} (a modal is the current surface + dim + dialog)`, { range: [0, 100000], was: [`nk-z-${l}`] })]),
   ),
 };
 

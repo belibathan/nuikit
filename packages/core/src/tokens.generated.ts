@@ -2471,20 +2471,6 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "attr": "profile"
   },
   {
-    "name": "nk-motion-move",
-    "path": "motion.move",
-    "tier": "identity",
-    "scope": "motion",
-    "type": "number",
-    "default": "1",
-    "description": "1 = things may move; 0 under reduced motion (fades only)",
-    "range": [
-      0,
-      1
-    ],
-    "derived": true
-  },
-  {
     "name": "nk-style-fill",
     "path": "style.fill",
     "tier": "identity",
@@ -2781,29 +2767,6 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     ]
   },
   {
-    "name": "nk-layer-system",
-    "path": "layer.system",
-    "tier": "identity",
-    "scope": "layer",
-    "type": "number",
-    "default": "70",
-    "description": "Stacking layer: system (a modal is the current surface + dim + dialog)",
-    "range": [
-      0,
-      100000
-    ]
-  },
-  {
-    "name": "nk-time-instant",
-    "path": "time.instant",
-    "tier": "semantic",
-    "scope": "time",
-    "type": "time",
-    "default": "0ms",
-    "description": "Keyboard and controller selection, held key-repeat",
-    "derived": true
-  },
-  {
     "name": "nk-time-snap",
     "path": "time.snap",
     "tier": "semantic",
@@ -3065,15 +3028,6 @@ export const LEVER_ROWS: readonly LeverRow[] = [
       1,
       1.2
     ]
-  },
-  {
-    "name": "nk-gesture-shift",
-    "path": "gesture.shift",
-    "tier": "semantic",
-    "scope": "gesture",
-    "type": "length",
-    "default": "0rem",
-    "description": "The focused row's nudge toward its content (style.focus: bar)"
   },
   {
     "name": "nk-plate-color",
@@ -4769,26 +4723,6 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "part": "plate"
   },
   {
-    "name": "nk-vital-chip-activefill-color",
-    "path": "vital-chip.activefill.color",
-    "tier": "component",
-    "scope": "vital-chip",
-    "type": "color",
-    "default": "transparent",
-    "description": "The active fill behind the level",
-    "part": "activefill"
-  },
-  {
-    "name": "nk-vital-chip-track-color",
-    "path": "vital-chip.track.color",
-    "tier": "component",
-    "scope": "vital-chip",
-    "type": "color",
-    "default": "rgba(var(--hud-foreground-rgb), 0.16)",
-    "description": "The level's track",
-    "part": "track"
-  },
-  {
     "name": "nk-meter-radius",
     "path": "meter.radius",
     "tier": "component",
@@ -4991,19 +4925,6 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     ]
   },
   {
-    "name": "nk-speedometer-segments",
-    "path": "speedometer.segments",
-    "tier": "component",
-    "scope": "speedometer",
-    "type": "number",
-    "default": "30",
-    "description": "Segments in the arc",
-    "range": [
-      6,
-      80
-    ]
-  },
-  {
     "name": "nk-speedometer-digit-dim",
     "path": "speedometer.digit.dim",
     "tier": "component",
@@ -5056,6 +4977,16 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "default": "2px",
     "description": "The hold ring's thickness around a key",
     "part": "hold"
+  },
+  {
+    "name": "nk-level-fill-ink",
+    "path": "level.fill.ink",
+    "tier": "component",
+    "scope": "level",
+    "type": "color",
+    "default": "var(--nk-tile-face-confirm-ink)",
+    "description": "An icon's copy over a solid fill (vital chips, HUD keys): dark on the fill",
+    "part": "fill"
   },
   {
     "name": "nk-slab-height",
@@ -5611,7 +5542,7 @@ export const LEVER_ROWS: readonly LeverRow[] = [
   }
 ];
 
-export type Lever = "background" | "foreground" | "card" | "card-foreground" | "popover" | "popover-foreground" | "primary" | "primary-foreground" | "secondary" | "secondary-foreground" | "muted" | "muted-foreground" | "accent" | "accent-foreground" | "destructive" | "destructive-foreground" | "border" | "input" | "ring" | "chart-1" | "chart-2" | "chart-3" | "chart-4" | "chart-5" | "radius" | "brand" | "brand-foreground" | "success" | "success-foreground" | "warning" | "warning-foreground" | "info" | "info-foreground" | "hud" | "hud-foreground" | "scrim" | "surface" | "world-foreground" | "world-foreground-muted" | "world-success" | "world-destructive" | "vital-health" | "vital-armor" | "vital-hunger" | "vital-thirst" | "world-shadow" | "pause-surface" | "pause-ink" | "vital-stress" | "role-health" | "role-health-deep" | "role-health-light" | "role-armor" | "role-armor-deep" | "role-armor-light" | "role-hunger" | "role-hunger-deep" | "role-hunger-light" | "role-thirst" | "role-thirst-deep" | "role-thirst-light" | "role-stress" | "role-stress-deep" | "role-stress-light" | "role-stamina" | "role-stamina-deep" | "role-stamina-light" | "role-oxygen" | "role-oxygen-deep" | "role-oxygen-light" | "role-info" | "role-info-deep" | "role-info-light" | "role-success" | "role-success-deep" | "role-success-light" | "role-warning" | "role-warning-deep" | "role-warning-light" | "role-danger" | "role-danger-deep" | "role-danger-light" | "role-police" | "role-police-deep" | "role-police-light" | "role-ems" | "role-ems-deep" | "role-ems-light" | "role-mech" | "role-mech-deep" | "role-mech-light" | "role-gang" | "role-gang-deep" | "role-gang-light" | "role-civ" | "role-civ-deep" | "role-civ-light" | "role-staff" | "role-staff-deep" | "role-staff-light" | "role-common" | "role-common-deep" | "role-common-light" | "role-uncommon" | "role-uncommon-deep" | "role-uncommon-light" | "role-rare" | "role-rare-deep" | "role-rare-light" | "role-epic" | "role-epic-deep" | "role-epic-light" | "role-legendary" | "role-legendary-deep" | "role-legendary-light" | "role-brand" | "role-brand-deep" | "role-brand-light" | "role-neutral" | "role-neutral-deep" | "role-neutral-light" | "font-sans" | "font-display" | "font-numeric" | "font-mono" | "nk-scale" | "nk-density" | "nk-space-1" | "nk-space-2" | "nk-space-3" | "nk-space-4" | "nk-space-6" | "nk-space-8" | "nk-space-unit" | "nk-radius-key" | "nk-radius-chip" | "nk-radius-control" | "nk-radius-surface" | "nk-height-key" | "nk-height-chip" | "nk-height-control" | "nk-height-row" | "nk-height-field" | "nk-icon-sm" | "nk-icon-md" | "nk-icon-lg" | "nk-icon-stroke" | "nk-text-base" | "nk-text-key" | "nk-text-body" | "nk-text-label" | "nk-text-title" | "nk-text-section" | "nk-text-display" | "nk-text-hud" | "nk-text-row" | "nk-text-desc" | "nk-leading-tight" | "nk-leading-normal" | "nk-shape-skew" | "nk-shape-slab" | "nk-shape-cut" | "nk-shape-stroke" | "nk-type-ratio" | "nk-type-weight-body" | "nk-type-weight-strong" | "nk-type-weight-display" | "nk-type-tracking-display" | "nk-type-tracking-label" | "nk-type-case" | "nk-type-slant" | "nk-type-overhang" | "nk-type-scan-family" | "nk-type-scan-style" | "nk-type-scan-weight" | "nk-type-scan-tracking" | "nk-type-scan-case" | "nk-type-scan-pad" | "nk-type-title-family" | "nk-type-title-style" | "nk-type-title-weight" | "nk-type-title-tracking" | "nk-type-title-case" | "nk-type-title-pad" | "nk-type-label-family" | "nk-type-label-style" | "nk-type-label-weight" | "nk-type-label-tracking" | "nk-type-label-case" | "nk-type-label-pad" | "nk-type-num-family" | "nk-type-num-style" | "nk-type-num-weight" | "nk-type-num-tracking" | "nk-type-num-case" | "nk-type-num-pad" | "nk-type-body-family" | "nk-type-body-style" | "nk-type-body-weight" | "nk-type-body-tracking" | "nk-type-body-case" | "nk-surface-tint" | "nk-surface-gradient" | "nk-surface-elevation" | "nk-surface-glow" | "nk-surface-glow-budget" | "nk-surface-backdrop" | "nk-surface-legibility" | "nk-surface-legibility-lift" | "nk-surface-slash" | "nk-material-hud-opacity" | "nk-material-hud-texture" | "nk-material-menu-opacity" | "nk-material-menu-blur" | "nk-material-menu-radius" | "nk-material-menu-edge" | "nk-material-menu-texture" | "nk-hud-text" | "nk-motion" | "nk-motion-duration" | "nk-motion-ease" | "nk-motion-feel" | "nk-motion-bounce" | "nk-motion-exit-factor" | "nk-motion-reduced" | "nk-motion-profile" | "nk-motion-move" | "nk-style-fill" | "nk-style-level" | "nk-style-hold" | "nk-style-gauge" | "nk-style-focus" | "nk-style-vital" | "nk-style-vital-icon" | "nk-style-vital-neighbours" | "nk-style-pause" | "nk-behavior-alert" | "nk-behavior-rest" | "nk-behavior-notify-info" | "nk-behavior-notify-success" | "nk-behavior-notify-warning" | "nk-behavior-notify-danger" | "nk-hue-line" | "nk-hue-tint" | "nk-hue-glow" | "nk-hue-alert" | "nk-layer-dim" | "nk-layer-dialog" | "nk-layer-system" | "nk-time-instant" | "nk-time-snap" | "nk-time-fast" | "nk-time-base" | "nk-time-slow" | "nk-time-fill" | "nk-time-exit" | "nk-time-pulse" | "nk-ease-enter" | "nk-ease-exit" | "nk-ease-move" | "nk-ease-expand" | "nk-ease-spring" | "nk-ease-breathe" | "nk-spring-snap" | "nk-spring-move" | "nk-spring-soft" | "nk-spring-pop" | "nk-stagger" | "nk-stagger-max" | "nk-gesture-lift" | "nk-gesture-rise" | "nk-gesture-land" | "nk-gesture-deny" | "nk-gesture-press" | "nk-gesture-confirm" | "nk-gesture-shift" | "nk-plate-color" | "nk-plate-hair" | "nk-plate-drop" | "nk-plate-bg" | "nk-plate-radius" | "nk-fill-color" | "nk-fill-track" | "nk-fill-tint" | "nk-fill-edge" | "nk-fill-alert" | "nk-fill-height" | "nk-accent-paint" | "nk-accent-from" | "nk-accent-via" | "nk-accent-to" | "nk-gap-cluster" | "nk-gap-items" | "nk-gap-pad-x" | "nk-gap-surface" | "nk-line-width" | "nk-line-focus" | "nk-line-clip" | "nk-line-clip-sm" | "nk-line-glow" | "nk-depth-elevation" | "nk-depth-text" | "nk-alpha-day" | "nk-alpha-hud" | "nk-alpha-menu" | "nk-restore-muted-foreground" | "nk-restore-muted-foreground-rgb" | "nk-restore-muted-foreground-a" | "nk-restore-background" | "nk-restore-background-rgb" | "nk-restore-background-a" | "nk-screen-ratio" | "nk-screen-max" | "nk-screen-edge" | "nk-screen-scale-min" | "nk-screen-area-l" | "nk-screen-area-r" | "nk-screen-area-t" | "nk-screen-area-b" | "nk-screen-safe-x" | "nk-screen-safe-y" | "nk-zone-gap" | "nk-region-max" | "nk-region-pad" | "nk-grid-cell" | "nk-grid-gap" | "nk-tile-plate-color" | "nk-tile-plate-dim" | "nk-tile-plate-x" | "nk-tile-plate-y" | "nk-tile-plate-press" | "nk-tile-wall-height" | "nk-tile-wall-shade" | "nk-tile-face-color" | "nk-tile-face-ink" | "nk-tile-face-light" | "nk-tile-face-shade" | "nk-tile-face-rim" | "nk-tile-face-rim-focus" | "nk-tile-face-radius" | "nk-tile-face-skew" | "nk-tile-face-shadow" | "nk-tile-face-clip" | "nk-tile-face-confirm" | "nk-tile-face-confirm-ink" | "nk-tile-face-active" | "nk-tile-face-hold" | "nk-tile-legend-font" | "nk-tile-legend-weight" | "nk-tile-legend-pad" | "nk-tile-legend-shift" | "nk-tile-legend-gap" | "nk-tile-legend-inset" | "nk-tile-tag-delay" | "nk-tile-key-color" | "nk-tile-key-ink" | "nk-tile-key-rim" | "nk-tile-key-radius" | "nk-tile-key-tint" | "nk-tile-key-inset" | "nk-tile-key-lift" | "nk-tile-key-press" | "nk-tile-key-overhang" | "nk-panel-bg" | "nk-panel-fg" | "nk-panel-border" | "nk-panel-radius" | "nk-panel-blur" | "nk-panel-cut" | "nk-panel-clip" | "nk-panel-gradient" | "nk-panel-edge" | "nk-panel-shadow" | "nk-panel-divider" | "nk-panel-width" | "nk-panel-width-sm" | "nk-panel-width-lg" | "nk-panel-header-height" | "nk-panel-header-padding" | "nk-panel-title-size" | "nk-panel-body-padding" | "nk-panel-footer-padding" | "nk-panel-footer-rule" | "nk-panel-actions-bracket" | "nk-panel-actions-bracket-width" | "nk-panel-actions-bracket-color" | "nk-display-size" | "nk-display-weight" | "nk-display-tracking" | "nk-display-case" | "nk-caption-font" | "nk-caption-size" | "nk-caption-weight" | "nk-caption-case" | "nk-caption-tracking" | "nk-row-height" | "nk-row-radius" | "nk-row-clip" | "nk-row-pad-y" | "nk-row-pad-x" | "nk-row-padding" | "nk-row-gap" | "nk-row-font-size" | "nk-row-accent" | "nk-row-icon-box" | "nk-row-bar-width" | "nk-list-gap" | "nk-list-pad-x" | "nk-menu-row-gap" | "nk-menu-row-image-size" | "nk-menu-row-progress-height" | "nk-menu-row-value-width" | "nk-selection-time" | "nk-selection-ease" | "nk-field-caret-width" | "nk-field-caret-time" | "nk-field-caret-ease" | "nk-field-mirror-rise" | "nk-field-mirror-in" | "nk-field-mirror-out" | "nk-stepper-delay" | "nk-stepper-rate" | "nk-text-key-scale" | "nk-notice-width" | "nk-notice-width-sm" | "nk-notice-width-lg" | "nk-confirm-width" | "nk-confirm-width-sm" | "nk-edge-sheet-header-height" | "nk-chip-height" | "nk-chip-padding" | "nk-chip-radius" | "nk-chip-hud-radius" | "nk-chip-bg" | "nk-chip-fg" | "nk-chip-font-size" | "nk-chip-weight" | "nk-chip-active-bg" | "nk-chip-active-fg" | "nk-chip-glow" | "nk-chip-clip" | "nk-chip-text-shadow" | "nk-vital-chip-size" | "nk-vital-chip-size-sm" | "nk-vital-chip-tile-ratio" | "nk-vital-chip-icon-ratio" | "nk-vital-chip-label-size" | "nk-vital-chip-label-gap" | "nk-vital-chip-line-width" | "nk-vital-chip-plate-drop" | "nk-vital-chip-plate-x" | "nk-vital-chip-activefill-color" | "nk-vital-chip-track-color" | "nk-meter-radius" | "nk-meter-glow" | "nk-meter-segments" | "nk-meter-track-color" | "nk-meter-segment-size" | "nk-meter-segment-gap" | "nk-meter-segment-color" | "nk-gauge-width" | "nk-gauge-ticks" | "nk-gauge-font" | "nk-gauge-track-color" | "nk-gauge-fill-color" | "nk-gauge-needle-color" | "nk-gauge-redline-color" | "nk-gauge-tick-color" | "nk-gauge-tick-major" | "nk-dial-disc-opacity" | "nk-ring-segments" | "nk-ring-gap" | "nk-speedometer-segments" | "nk-speedometer-digit-dim" | "nk-speedometer-digit-tracking" | "nk-level-pip-size" | "nk-level-pip-gap" | "nk-level-hold-pad" | "nk-slab-height" | "nk-slab-padding" | "nk-slab-gap" | "nk-slab-radius" | "nk-slab-clip" | "nk-slab-bg" | "nk-slab-fg" | "nk-slab-border" | "nk-slab-font-size" | "nk-slab-weight" | "nk-slab-text-shadow" | "nk-slab-tone" | "nk-slab-tile-size" | "nk-slab-tile-bg" | "nk-slab-tile-fg" | "nk-slab-tile-radius" | "nk-slab-delta-font" | "nk-slab-delta-up" | "nk-slab-delta-down" | "nk-slab-key-size" | "nk-slab-key-font-size" | "nk-slab-line-height" | "nk-slab-line-radius" | "nk-slab-line-track" | "nk-slab-stack-width" | "nk-slab-stack-gap" | "nk-slab-band-padding" | "nk-slab-band-gap" | "nk-slab-band-bg" | "nk-slab-band-tint" | "nk-slab-band-edge" | "nk-slab-band-fg" | "nk-slab-band-title-size" | "nk-item-slot-width" | "nk-item-slot-width-sm" | "nk-item-slot-width-lg" | "nk-item-slot-gap" | "nk-item-slot-top-height" | "nk-item-slot-corner-lock" | "nk-key-prompt-gap" | "nk-key-prompt-min-height" | "nk-key-prompt-min-height-sm" | "nk-key-prompt-pad-left" | "nk-key-prompt-pad-right" | "nk-key-prompt-pad-y" | "nk-key-prompt-key-height" | "nk-skill-check-size" | "nk-skill-check-size-sm" | "nk-skill-check-size-lg" | "nk-skill-check-key-height" | "nk-skill-check-key-pad" | "nk-countdown-line-width" | "nk-countdown-line-width-sm" | "nk-countdown-line-width-hero" | "nk-stat-gap" | "nk-stat-label-icon" | "nk-nui-image-icon-max";
+export type Lever = "background" | "foreground" | "card" | "card-foreground" | "popover" | "popover-foreground" | "primary" | "primary-foreground" | "secondary" | "secondary-foreground" | "muted" | "muted-foreground" | "accent" | "accent-foreground" | "destructive" | "destructive-foreground" | "border" | "input" | "ring" | "chart-1" | "chart-2" | "chart-3" | "chart-4" | "chart-5" | "radius" | "brand" | "brand-foreground" | "success" | "success-foreground" | "warning" | "warning-foreground" | "info" | "info-foreground" | "hud" | "hud-foreground" | "scrim" | "surface" | "world-foreground" | "world-foreground-muted" | "world-success" | "world-destructive" | "vital-health" | "vital-armor" | "vital-hunger" | "vital-thirst" | "world-shadow" | "pause-surface" | "pause-ink" | "vital-stress" | "role-health" | "role-health-deep" | "role-health-light" | "role-armor" | "role-armor-deep" | "role-armor-light" | "role-hunger" | "role-hunger-deep" | "role-hunger-light" | "role-thirst" | "role-thirst-deep" | "role-thirst-light" | "role-stress" | "role-stress-deep" | "role-stress-light" | "role-stamina" | "role-stamina-deep" | "role-stamina-light" | "role-oxygen" | "role-oxygen-deep" | "role-oxygen-light" | "role-info" | "role-info-deep" | "role-info-light" | "role-success" | "role-success-deep" | "role-success-light" | "role-warning" | "role-warning-deep" | "role-warning-light" | "role-danger" | "role-danger-deep" | "role-danger-light" | "role-police" | "role-police-deep" | "role-police-light" | "role-ems" | "role-ems-deep" | "role-ems-light" | "role-mech" | "role-mech-deep" | "role-mech-light" | "role-gang" | "role-gang-deep" | "role-gang-light" | "role-civ" | "role-civ-deep" | "role-civ-light" | "role-staff" | "role-staff-deep" | "role-staff-light" | "role-common" | "role-common-deep" | "role-common-light" | "role-uncommon" | "role-uncommon-deep" | "role-uncommon-light" | "role-rare" | "role-rare-deep" | "role-rare-light" | "role-epic" | "role-epic-deep" | "role-epic-light" | "role-legendary" | "role-legendary-deep" | "role-legendary-light" | "role-brand" | "role-brand-deep" | "role-brand-light" | "role-neutral" | "role-neutral-deep" | "role-neutral-light" | "font-sans" | "font-display" | "font-numeric" | "font-mono" | "nk-scale" | "nk-density" | "nk-space-1" | "nk-space-2" | "nk-space-3" | "nk-space-4" | "nk-space-6" | "nk-space-8" | "nk-space-unit" | "nk-radius-key" | "nk-radius-chip" | "nk-radius-control" | "nk-radius-surface" | "nk-height-key" | "nk-height-chip" | "nk-height-control" | "nk-height-row" | "nk-height-field" | "nk-icon-sm" | "nk-icon-md" | "nk-icon-lg" | "nk-icon-stroke" | "nk-text-base" | "nk-text-key" | "nk-text-body" | "nk-text-label" | "nk-text-title" | "nk-text-section" | "nk-text-display" | "nk-text-hud" | "nk-text-row" | "nk-text-desc" | "nk-leading-tight" | "nk-leading-normal" | "nk-shape-skew" | "nk-shape-slab" | "nk-shape-cut" | "nk-shape-stroke" | "nk-type-ratio" | "nk-type-weight-body" | "nk-type-weight-strong" | "nk-type-weight-display" | "nk-type-tracking-display" | "nk-type-tracking-label" | "nk-type-case" | "nk-type-slant" | "nk-type-overhang" | "nk-type-scan-family" | "nk-type-scan-style" | "nk-type-scan-weight" | "nk-type-scan-tracking" | "nk-type-scan-case" | "nk-type-scan-pad" | "nk-type-title-family" | "nk-type-title-style" | "nk-type-title-weight" | "nk-type-title-tracking" | "nk-type-title-case" | "nk-type-title-pad" | "nk-type-label-family" | "nk-type-label-style" | "nk-type-label-weight" | "nk-type-label-tracking" | "nk-type-label-case" | "nk-type-label-pad" | "nk-type-num-family" | "nk-type-num-style" | "nk-type-num-weight" | "nk-type-num-tracking" | "nk-type-num-case" | "nk-type-num-pad" | "nk-type-body-family" | "nk-type-body-style" | "nk-type-body-weight" | "nk-type-body-tracking" | "nk-type-body-case" | "nk-surface-tint" | "nk-surface-gradient" | "nk-surface-elevation" | "nk-surface-glow" | "nk-surface-glow-budget" | "nk-surface-backdrop" | "nk-surface-legibility" | "nk-surface-legibility-lift" | "nk-surface-slash" | "nk-material-hud-opacity" | "nk-material-hud-texture" | "nk-material-menu-opacity" | "nk-material-menu-blur" | "nk-material-menu-radius" | "nk-material-menu-edge" | "nk-material-menu-texture" | "nk-hud-text" | "nk-motion" | "nk-motion-duration" | "nk-motion-ease" | "nk-motion-feel" | "nk-motion-bounce" | "nk-motion-exit-factor" | "nk-motion-reduced" | "nk-motion-profile" | "nk-style-fill" | "nk-style-level" | "nk-style-hold" | "nk-style-gauge" | "nk-style-focus" | "nk-style-vital" | "nk-style-vital-icon" | "nk-style-vital-neighbours" | "nk-style-pause" | "nk-behavior-alert" | "nk-behavior-rest" | "nk-behavior-notify-info" | "nk-behavior-notify-success" | "nk-behavior-notify-warning" | "nk-behavior-notify-danger" | "nk-hue-line" | "nk-hue-tint" | "nk-hue-glow" | "nk-hue-alert" | "nk-layer-dim" | "nk-layer-dialog" | "nk-time-snap" | "nk-time-fast" | "nk-time-base" | "nk-time-slow" | "nk-time-fill" | "nk-time-exit" | "nk-time-pulse" | "nk-ease-enter" | "nk-ease-exit" | "nk-ease-move" | "nk-ease-expand" | "nk-ease-spring" | "nk-ease-breathe" | "nk-spring-snap" | "nk-spring-move" | "nk-spring-soft" | "nk-spring-pop" | "nk-stagger" | "nk-stagger-max" | "nk-gesture-lift" | "nk-gesture-rise" | "nk-gesture-land" | "nk-gesture-deny" | "nk-gesture-press" | "nk-gesture-confirm" | "nk-plate-color" | "nk-plate-hair" | "nk-plate-drop" | "nk-plate-bg" | "nk-plate-radius" | "nk-fill-color" | "nk-fill-track" | "nk-fill-tint" | "nk-fill-edge" | "nk-fill-alert" | "nk-fill-height" | "nk-accent-paint" | "nk-accent-from" | "nk-accent-via" | "nk-accent-to" | "nk-gap-cluster" | "nk-gap-items" | "nk-gap-pad-x" | "nk-gap-surface" | "nk-line-width" | "nk-line-focus" | "nk-line-clip" | "nk-line-clip-sm" | "nk-line-glow" | "nk-depth-elevation" | "nk-depth-text" | "nk-alpha-day" | "nk-alpha-hud" | "nk-alpha-menu" | "nk-restore-muted-foreground" | "nk-restore-muted-foreground-rgb" | "nk-restore-muted-foreground-a" | "nk-restore-background" | "nk-restore-background-rgb" | "nk-restore-background-a" | "nk-screen-ratio" | "nk-screen-max" | "nk-screen-edge" | "nk-screen-scale-min" | "nk-screen-area-l" | "nk-screen-area-r" | "nk-screen-area-t" | "nk-screen-area-b" | "nk-screen-safe-x" | "nk-screen-safe-y" | "nk-zone-gap" | "nk-region-max" | "nk-region-pad" | "nk-grid-cell" | "nk-grid-gap" | "nk-tile-plate-color" | "nk-tile-plate-dim" | "nk-tile-plate-x" | "nk-tile-plate-y" | "nk-tile-plate-press" | "nk-tile-wall-height" | "nk-tile-wall-shade" | "nk-tile-face-color" | "nk-tile-face-ink" | "nk-tile-face-light" | "nk-tile-face-shade" | "nk-tile-face-rim" | "nk-tile-face-rim-focus" | "nk-tile-face-radius" | "nk-tile-face-skew" | "nk-tile-face-shadow" | "nk-tile-face-clip" | "nk-tile-face-confirm" | "nk-tile-face-confirm-ink" | "nk-tile-face-active" | "nk-tile-face-hold" | "nk-tile-legend-font" | "nk-tile-legend-weight" | "nk-tile-legend-pad" | "nk-tile-legend-shift" | "nk-tile-legend-gap" | "nk-tile-legend-inset" | "nk-tile-tag-delay" | "nk-tile-key-color" | "nk-tile-key-ink" | "nk-tile-key-rim" | "nk-tile-key-radius" | "nk-tile-key-tint" | "nk-tile-key-inset" | "nk-tile-key-lift" | "nk-tile-key-press" | "nk-tile-key-overhang" | "nk-panel-bg" | "nk-panel-fg" | "nk-panel-border" | "nk-panel-radius" | "nk-panel-blur" | "nk-panel-cut" | "nk-panel-clip" | "nk-panel-gradient" | "nk-panel-edge" | "nk-panel-shadow" | "nk-panel-divider" | "nk-panel-width" | "nk-panel-width-sm" | "nk-panel-width-lg" | "nk-panel-header-height" | "nk-panel-header-padding" | "nk-panel-title-size" | "nk-panel-body-padding" | "nk-panel-footer-padding" | "nk-panel-footer-rule" | "nk-panel-actions-bracket" | "nk-panel-actions-bracket-width" | "nk-panel-actions-bracket-color" | "nk-display-size" | "nk-display-weight" | "nk-display-tracking" | "nk-display-case" | "nk-caption-font" | "nk-caption-size" | "nk-caption-weight" | "nk-caption-case" | "nk-caption-tracking" | "nk-row-height" | "nk-row-radius" | "nk-row-clip" | "nk-row-pad-y" | "nk-row-pad-x" | "nk-row-padding" | "nk-row-gap" | "nk-row-font-size" | "nk-row-accent" | "nk-row-icon-box" | "nk-row-bar-width" | "nk-list-gap" | "nk-list-pad-x" | "nk-menu-row-gap" | "nk-menu-row-image-size" | "nk-menu-row-progress-height" | "nk-menu-row-value-width" | "nk-selection-time" | "nk-selection-ease" | "nk-field-caret-width" | "nk-field-caret-time" | "nk-field-caret-ease" | "nk-field-mirror-rise" | "nk-field-mirror-in" | "nk-field-mirror-out" | "nk-stepper-delay" | "nk-stepper-rate" | "nk-text-key-scale" | "nk-notice-width" | "nk-notice-width-sm" | "nk-notice-width-lg" | "nk-confirm-width" | "nk-confirm-width-sm" | "nk-edge-sheet-header-height" | "nk-chip-height" | "nk-chip-padding" | "nk-chip-radius" | "nk-chip-hud-radius" | "nk-chip-bg" | "nk-chip-fg" | "nk-chip-font-size" | "nk-chip-weight" | "nk-chip-active-bg" | "nk-chip-active-fg" | "nk-chip-glow" | "nk-chip-clip" | "nk-chip-text-shadow" | "nk-vital-chip-size" | "nk-vital-chip-size-sm" | "nk-vital-chip-tile-ratio" | "nk-vital-chip-icon-ratio" | "nk-vital-chip-label-size" | "nk-vital-chip-label-gap" | "nk-vital-chip-line-width" | "nk-vital-chip-plate-drop" | "nk-vital-chip-plate-x" | "nk-meter-radius" | "nk-meter-glow" | "nk-meter-segments" | "nk-meter-track-color" | "nk-meter-segment-size" | "nk-meter-segment-gap" | "nk-meter-segment-color" | "nk-gauge-width" | "nk-gauge-ticks" | "nk-gauge-font" | "nk-gauge-track-color" | "nk-gauge-fill-color" | "nk-gauge-needle-color" | "nk-gauge-redline-color" | "nk-gauge-tick-color" | "nk-gauge-tick-major" | "nk-dial-disc-opacity" | "nk-ring-segments" | "nk-ring-gap" | "nk-speedometer-digit-dim" | "nk-speedometer-digit-tracking" | "nk-level-pip-size" | "nk-level-pip-gap" | "nk-level-hold-pad" | "nk-level-fill-ink" | "nk-slab-height" | "nk-slab-padding" | "nk-slab-gap" | "nk-slab-radius" | "nk-slab-clip" | "nk-slab-bg" | "nk-slab-fg" | "nk-slab-border" | "nk-slab-font-size" | "nk-slab-weight" | "nk-slab-text-shadow" | "nk-slab-tone" | "nk-slab-tile-size" | "nk-slab-tile-bg" | "nk-slab-tile-fg" | "nk-slab-tile-radius" | "nk-slab-delta-font" | "nk-slab-delta-up" | "nk-slab-delta-down" | "nk-slab-key-size" | "nk-slab-key-font-size" | "nk-slab-line-height" | "nk-slab-line-radius" | "nk-slab-line-track" | "nk-slab-stack-width" | "nk-slab-stack-gap" | "nk-slab-band-padding" | "nk-slab-band-gap" | "nk-slab-band-bg" | "nk-slab-band-tint" | "nk-slab-band-edge" | "nk-slab-band-fg" | "nk-slab-band-title-size" | "nk-item-slot-width" | "nk-item-slot-width-sm" | "nk-item-slot-width-lg" | "nk-item-slot-gap" | "nk-item-slot-top-height" | "nk-item-slot-corner-lock" | "nk-key-prompt-gap" | "nk-key-prompt-min-height" | "nk-key-prompt-min-height-sm" | "nk-key-prompt-pad-left" | "nk-key-prompt-pad-right" | "nk-key-prompt-pad-y" | "nk-key-prompt-key-height" | "nk-skill-check-size" | "nk-skill-check-size-sm" | "nk-skill-check-size-lg" | "nk-skill-check-key-height" | "nk-skill-check-key-pad" | "nk-countdown-line-width" | "nk-countdown-line-width-sm" | "nk-countdown-line-width-hero" | "nk-stat-gap" | "nk-stat-label-icon" | "nk-nui-image-icon-max";
 
 export const ANATOMY = {
   "screen": [
@@ -5786,7 +5717,8 @@ export const ANATOMY = {
   ],
   "level": [
     "pip",
-    "hold"
+    "hold",
+    "fill"
   ],
   "slab": [
     "tile",
@@ -5837,4 +5769,4 @@ export const ANATOMY = {
   ]
 } as const;
 
-export const STATE_VARS: readonly string[] = ["nk-zone-inset","nk-zone-z","nk-grid-cols","nk-tile-now-face","nk-tile-now-ink","nk-tile-now-rim","nk-tile-now-plate","nk-tile-x","nk-tile-y","nk-tile-sel-face","nk-tile-sel-wall","nk-tile-sel-shade","nk-tile-sel-ink","nk-tile-sel-rim","nk-tile-sel-shape","nk-tile-host-radius","nk-tile-host-clip","nk-tile-tone","nk-panel-backdrop","nk-notice-tone-rgb","nk-notice-delay","nk-chip-tone","nk-chip-tone-rgb","nk-vital-chip-face","nk-vital-chip-tag","nk-vital-chip-tag-pad","nk-vital-chip-room","nk-vital-chip-d","nk-level-fill-now","nk-level-fill-ink","nk-level-fill-opacity","nk-slab-fill","nk-slab-stroke","nk-slab-progress","nk-slab-line-fill"];
+export const STATE_VARS: readonly string[] = ["nk-zone-inset","nk-zone-z","nk-grid-cols","nk-tile-now-face","nk-tile-now-ink","nk-tile-now-rim","nk-tile-now-plate","nk-tile-x","nk-tile-y","nk-tile-sel-face","nk-tile-sel-wall","nk-tile-sel-shade","nk-tile-sel-ink","nk-tile-sel-rim","nk-tile-sel-shape","nk-tile-host-radius","nk-tile-host-clip","nk-tile-tone","nk-panel-backdrop","nk-notice-tone-rgb","nk-notice-delay","nk-chip-tone","nk-chip-tone-rgb","nk-vital-chip-face","nk-vital-chip-tag","nk-vital-chip-tag-pad","nk-vital-chip-room","nk-vital-chip-d","nk-level-fill-now","nk-level-fill-opacity","nk-slab-fill","nk-slab-stroke","nk-slab-progress","nk-slab-line-fill"];

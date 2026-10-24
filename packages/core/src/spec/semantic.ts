@@ -9,7 +9,6 @@ export const timeGroup: Group = {
   tier: "semantic",
   description: "The duration ladder, derived from motion.duration",
   levers: {
-    instant: time("0ms", "Keyboard and controller selection, held key-repeat", { derived: true, floor: true, was: ["nk-time-instant"] }),
     snap: time("90ms", "A press, a rim switching state (0.5d)", { derived: true, floor: true, rule: "0.5 × motion.duration", was: ["nk-time-snap", "nk-time-press"] }),
     fast: time("120ms", "Hover, a face rising, a deny beat (0.667d)", { derived: true, floor: true, rule: "0.667 × motion.duration", was: ["nk-time-fast", "nk-time-hover"] }),
     base: time("180ms", "Panel enter, the selection tile, tab switch (d)", { derived: true, floor: true, rule: "motion.duration", was: ["nk-time-base", "nk-time"] }),
@@ -68,7 +67,6 @@ export const gesture: Group = {
     deny: length("0.3125rem", "The deny shake's distance", { floor: true, was: ["nk-deny-x"] }),
     press: number(0.97, "The scale of a pressed row or button", { range: [0.8, 1], floor: true, was: ["nk-press-scale"] }),
     confirm: number(1.08, "The short pop of a confirm", { range: [1, 1.2], floor: true, was: ["nk-confirm-scale"] }),
-    shift: length("0rem", "The focused row's nudge toward its content (style.focus: bar)", { floor: true, was: ["nk-focus-shift"] }),
   },
 };
 

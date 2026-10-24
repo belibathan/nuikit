@@ -1441,18 +1441,6 @@ export const GENERATED: { name: string; group: string; type: string; description
     "description": "Stacking layer: dialog (a modal is the current surface + dim + dialog)"
   },
   {
-    "name": "nk-layer-system",
-    "group": "kit",
-    "type": "number",
-    "description": "Stacking layer: system (a modal is the current surface + dim + dialog)"
-  },
-  {
-    "name": "nk-time-instant",
-    "group": "kit",
-    "type": "number",
-    "description": "Keyboard and controller selection, held key-repeat"
-  },
-  {
     "name": "nk-time-snap",
     "group": "kit",
     "type": "number",
@@ -1595,12 +1583,6 @@ export const GENERATED: { name: string; group: string; type: string; description
     "group": "kit",
     "type": "number",
     "description": "The short pop of a confirm"
-  },
-  {
-    "name": "nk-gesture-shift",
-    "group": "kit",
-    "type": "dimension",
-    "description": "The focused row's nudge toward its content (style.focus: bar)"
   },
   {
     "name": "nk-plate-color",
@@ -2647,18 +2629,6 @@ export const GENERATED: { name: string; group: string; type: string; description
     "description": "The wall's sideways step"
   },
   {
-    "name": "nk-vital-chip-activefill-color",
-    "group": "kit",
-    "type": "color",
-    "description": "The active fill behind the level"
-  },
-  {
-    "name": "nk-vital-chip-track-color",
-    "group": "kit",
-    "type": "color",
-    "description": "The level's track"
-  },
-  {
     "name": "nk-meter-radius",
     "group": "kit",
     "type": "dimension",
@@ -2773,12 +2743,6 @@ export const GENERATED: { name: string; group: string; type: string; description
     "description": "Degrees between segments"
   },
   {
-    "name": "nk-speedometer-segments",
-    "group": "kit",
-    "type": "number",
-    "description": "Segments in the arc"
-  },
-  {
     "name": "nk-speedometer-digit-dim",
     "group": "kit",
     "type": "number",
@@ -2807,6 +2771,12 @@ export const GENERATED: { name: string; group: string; type: string; description
     "group": "kit",
     "type": "dimension",
     "description": "The hold ring's thickness around a key"
+  },
+  {
+    "name": "nk-level-fill-ink",
+    "group": "kit",
+    "type": "color",
+    "description": "An icon's copy over a solid fill (vital chips, HUD keys): dark on the fill"
   },
   {
     "name": "nk-slab-height",

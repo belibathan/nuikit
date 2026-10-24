@@ -82,8 +82,17 @@ const otherText = [
 ].filter((f) => !f.endsWith("tokens.ts") && !f.endsWith("tokens.generated.ts")).map((f) => strip(read(f)))
 const readElsewhere = new Set<string>()
 for (const s of [...otherText, tpl]) for (const n of readsIn(s)) readElsewhere.add(n)
-// keyword levers are read as attributes (applyTheme paints data-nk-row, data-nk-treatment… from them)
+// keyword levers are read as attributes (applyTheme paints data-nk-fill, data-nk-feel… from them)
 for (const [, token] of KEYWORD_ATTRS) readElsewhere.add(`--${token}`)
+// theme inputs the compiler reads by name (motion bounce, surface tint…), and colours read through their channels
+const compiler = read("packages/core/src/tokens.ts") + read("packages/core/src/theme.ts")
+for (const n of leverNamesAll()) if (compiler.includes(`"${n.slice(2)}"`)) readElsewhere.add(n)
+for (const s of [kit, ...otherText, ...uiText.map(([, t]) => t)]) for (const m of s.matchAll(/var\((--nk-[a-z0-9-]+)-rgb\b/g)) readElsewhere.add(m[1]!)
+// a part read by a computed name (nk-behavior-notify-${severity}), springs read as --nk-spring-${name} by nuikit-core/motion
+for (const s of [...otherText, ...uiText.map(([, t]) => t)]) for (const m of s.matchAll(/nk-([a-z-]+)-\$\{/g)) for (const n of leverNamesAll()) if (n.startsWith(`--nk-${m[1]}-`)) readElsewhere.add(n)
+function leverNamesAll() {
+  return [...leverNames]
+}
 // a lever read inside another declaration of kit.css (var(--nk-a) in a value) counts as read: `reads` covers kit.css
 
 /** Reads with no declaration anywhere (existing debt: delete a row when fixed). */

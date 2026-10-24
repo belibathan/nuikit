@@ -112,7 +112,6 @@ describe("applyTheme (compiled tokens)", () => {
     expect(css("nk-motion")).toBe("0");
     // tokens 1.2: the pref is "reduced" (no movement, fades ≤ 100ms); "off" is the theme's --nk-motion: 0
     expect(html().getAttribute("data-nk-motion")).toBe("reduced");
-    expect(css("nk-motion-move")).toBe("0");
     expect(css("nk-time-base")).toBe("100ms");
     expect(css("nk-time-snap")).toBe("90ms");
     setPrefs({ highContrast: true });

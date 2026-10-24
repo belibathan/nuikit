@@ -26,8 +26,6 @@ describe("the motion ladder", () => {
     const v = compileTheme(".dark { --primary: #22c55e; }").vars;
     expect(v).toMatchObject({
       "nk-motion-feel": "crisp",
-      "nk-motion-move": "1",
-      "nk-time-instant": "0ms",
       "nk-time-snap": "90ms",
       "nk-time-fast": "120ms",
       "nk-time-base": "180ms",
@@ -101,7 +99,6 @@ describe("reduced motion, two levels", () => {
     const out = withPrefs(vars, { reducedMotion: true });
     expect(themeMotionLevel(vars, { reducedMotion: true })).toBe("reduced");
     expect(out["nk-motion"]).toBe("0");
-    expect(out["nk-motion-move"]).toBe("0");
     for (const k of ["nk-time-base", "nk-time-slow", "nk-time-fill"]) expect(out[k], k).toBe("100ms");
     expect(out["nk-time-snap"]).toBe("90ms"); // already under the cap
     expect(out["nk-stagger"]).toBe("0ms");
@@ -118,7 +115,6 @@ describe("reduced motion, two levels", () => {
     expect(themeMotionLevel(off, { reducedMotion: true })).toBe("off");
     const out = withPrefs(off);
     for (const k of ["nk-time-snap", "nk-time-base", "nk-time-exit", "nk-time-slow", "nk-stagger"]) expect(out[k], k).toBe("0ms");
-    expect(out["nk-motion-move"]).toBe("0");
   });
 
   it("applyTheme paints the level and the feel", () => {
@@ -128,7 +124,6 @@ describe("reduced motion, two levels", () => {
     expect(css("nk-time-base")).toBe("100ms");
     setPrefs({ reducedMotion: true });
     expect(html().getAttribute("data-nk-motion")).toBe("reduced");
-    expect(css("nk-motion-move")).toBe("0");
     applyTheme({ "nk-motion": "0" });
     expect(html().getAttribute("data-nk-motion")).toBe("off");
     expect(css("nk-time-base")).toBe("0ms");

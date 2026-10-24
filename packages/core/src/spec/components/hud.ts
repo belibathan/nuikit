@@ -89,7 +89,6 @@ export const speedometer: ComponentDef = {
   description: "The speedometer: a segmented arc and rolling digits",
   inherits: ["dial", "gauge"],
   anatomy: ["readout", "speed", "digit", "unit", "foot"],
-  levers: { segments: number(30, "Segments in the arc", { range: [6, 80], floor: true, was: ["nk-speedo-segments"] }) },
   parts: {
     digit: {
       dim: number(0.26, "A leading zero's opacity", { range: [0, 1], floor: true, was: ["nk-speedo-dim"] }),
@@ -99,18 +98,19 @@ export const speedometer: ComponentDef = {
 };
 
 export const level: ComponentDef = {
-  description: "How a level is drawn under style.level and style.hold (pips, the hold ring)",
-  anatomy: ["pip", "hold"],
+  description: "How a level is drawn under style.level and style.hold (pips, the hold ring, the ink over a solid fill)",
+  inherits: ["tile"],
+  anatomy: ["pip", "hold", "fill"],
   parts: {
     pip: {
       size: length("10%", "One pip's width (10% = ten pips)", { floor: true, was: ["nk-pip-size"] }),
       gap: length("2px", "Between pips", { floor: true, was: ["nk-pip-gap"] }),
     },
     hold: { pad: length("2px", "The hold ring's thickness around a key", { floor: true, was: ["nk-hold-ring-pad"] }) },
+    fill: { ink: color(ref("tile.face.confirm-ink"), "An icon's copy over a solid fill (vital chips, HUD keys): dark on the fill", { was: ["nk-fill-ink"] }) },
   },
   state: {
     "fill-now": { type: "color", description: "The fill colour this state shows", was: ["nk-fill-now"] },
-    "fill-ink": { type: "color", description: "The ink copy over a solid fill", was: ["nk-fill-ink"] },
     "fill-opacity": { type: "number", description: "The liquid's opacity under style.fill", was: ["nk-fill-opacity"] },
   },
 };

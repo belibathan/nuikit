@@ -1510,12 +1510,6 @@
           "description": "full: as designed; reduced: no movement, short fades; instant: nothing animates",
           "$comment": "identity · motion.profile"
         },
-        "nk-motion-move": {
-          "type": "string",
-          "pattern": "^-?\\d+(\\.\\d+)?$",
-          "description": "1 = things may move; 0 under reduced motion (fades only)",
-          "$comment": "identity · motion.move"
-        },
         "nk-style-fill": {
           "enum": [
             "solid",
@@ -1668,17 +1662,6 @@
           "description": "Stacking layer: dialog (a modal is the current surface + dim + dialog)",
           "$comment": "identity · layer.dialog"
         },
-        "nk-layer-system": {
-          "type": "string",
-          "pattern": "^-?\\d+(\\.\\d+)?$",
-          "description": "Stacking layer: system (a modal is the current surface + dim + dialog)",
-          "$comment": "identity · layer.system"
-        },
-        "nk-time-instant": {
-          "type": "string",
-          "description": "Keyboard and controller selection, held key-repeat",
-          "$comment": "semantic · time.instant"
-        },
         "nk-time-snap": {
           "type": "string",
           "description": "A press, a rim switching state (0.5d)",
@@ -1806,11 +1789,6 @@
           "pattern": "^-?\\d+(\\.\\d+)?$",
           "description": "The short pop of a confirm",
           "$comment": "semantic · gesture.confirm"
-        },
-        "nk-gesture-shift": {
-          "type": "string",
-          "description": "The focused row's nudge toward its content (style.focus: bar)",
-          "$comment": "semantic · gesture.shift"
         },
         "nk-plate-color": {
           "type": "string",
@@ -2736,18 +2714,6 @@
           "description": "The wall's sideways step",
           "$comment": "component · vital-chip.plate.x"
         },
-        "nk-vital-chip-activefill-color": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "The active fill behind the level",
-          "$comment": "component · vital-chip.activefill.color"
-        },
-        "nk-vital-chip-track-color": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "The level's track",
-          "$comment": "component · vital-chip.track.color"
-        },
         "nk-meter-radius": {
           "type": "string",
           "description": "The bar's radius",
@@ -2856,12 +2822,6 @@
           "description": "Degrees between segments",
           "$comment": "component · ring.gap"
         },
-        "nk-speedometer-segments": {
-          "type": "string",
-          "pattern": "^-?\\d+(\\.\\d+)?$",
-          "description": "Segments in the arc",
-          "$comment": "component · speedometer.segments"
-        },
         "nk-speedometer-digit-dim": {
           "type": "string",
           "pattern": "^-?\\d+(\\.\\d+)?$",
@@ -2887,6 +2847,12 @@
           "type": "string",
           "description": "The hold ring's thickness around a key",
           "$comment": "component · level.hold.pad"
+        },
+        "nk-level-fill-ink": {
+          "type": "string",
+          "pattern": "^rgba?\\(",
+          "description": "An icon's copy over a solid fill (vital chips, HUD keys): dark on the fill",
+          "$comment": "component · level.fill.ink"
         },
         "nk-slab-height": {
           "type": "string",

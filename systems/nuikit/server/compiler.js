@@ -2662,20 +2662,6 @@ var NuikitTheme = (() => {
       "attr": "profile"
     },
     {
-      "name": "nk-motion-move",
-      "path": "motion.move",
-      "tier": "identity",
-      "scope": "motion",
-      "type": "number",
-      "default": "1",
-      "description": "1 = things may move; 0 under reduced motion (fades only)",
-      "range": [
-        0,
-        1
-      ],
-      "derived": true
-    },
-    {
       "name": "nk-style-fill",
       "path": "style.fill",
       "tier": "identity",
@@ -2972,29 +2958,6 @@ var NuikitTheme = (() => {
       ]
     },
     {
-      "name": "nk-layer-system",
-      "path": "layer.system",
-      "tier": "identity",
-      "scope": "layer",
-      "type": "number",
-      "default": "70",
-      "description": "Stacking layer: system (a modal is the current surface + dim + dialog)",
-      "range": [
-        0,
-        1e5
-      ]
-    },
-    {
-      "name": "nk-time-instant",
-      "path": "time.instant",
-      "tier": "semantic",
-      "scope": "time",
-      "type": "time",
-      "default": "0ms",
-      "description": "Keyboard and controller selection, held key-repeat",
-      "derived": true
-    },
-    {
       "name": "nk-time-snap",
       "path": "time.snap",
       "tier": "semantic",
@@ -3256,15 +3219,6 @@ var NuikitTheme = (() => {
         1,
         1.2
       ]
-    },
-    {
-      "name": "nk-gesture-shift",
-      "path": "gesture.shift",
-      "tier": "semantic",
-      "scope": "gesture",
-      "type": "length",
-      "default": "0rem",
-      "description": "The focused row's nudge toward its content (style.focus: bar)"
     },
     {
       "name": "nk-plate-color",
@@ -4960,26 +4914,6 @@ var NuikitTheme = (() => {
       "part": "plate"
     },
     {
-      "name": "nk-vital-chip-activefill-color",
-      "path": "vital-chip.activefill.color",
-      "tier": "component",
-      "scope": "vital-chip",
-      "type": "color",
-      "default": "transparent",
-      "description": "The active fill behind the level",
-      "part": "activefill"
-    },
-    {
-      "name": "nk-vital-chip-track-color",
-      "path": "vital-chip.track.color",
-      "tier": "component",
-      "scope": "vital-chip",
-      "type": "color",
-      "default": "rgba(var(--hud-foreground-rgb), 0.16)",
-      "description": "The level's track",
-      "part": "track"
-    },
-    {
       "name": "nk-meter-radius",
       "path": "meter.radius",
       "tier": "component",
@@ -5182,19 +5116,6 @@ var NuikitTheme = (() => {
       ]
     },
     {
-      "name": "nk-speedometer-segments",
-      "path": "speedometer.segments",
-      "tier": "component",
-      "scope": "speedometer",
-      "type": "number",
-      "default": "30",
-      "description": "Segments in the arc",
-      "range": [
-        6,
-        80
-      ]
-    },
-    {
       "name": "nk-speedometer-digit-dim",
       "path": "speedometer.digit.dim",
       "tier": "component",
@@ -5247,6 +5168,16 @@ var NuikitTheme = (() => {
       "default": "2px",
       "description": "The hold ring's thickness around a key",
       "part": "hold"
+    },
+    {
+      "name": "nk-level-fill-ink",
+      "path": "level.fill.ink",
+      "tier": "component",
+      "scope": "level",
+      "type": "color",
+      "default": "var(--nk-tile-face-confirm-ink)",
+      "description": "An icon's copy over a solid fill (vital chips, HUD keys): dark on the fill",
+      "part": "fill"
     },
     {
       "name": "nk-slab-height",
@@ -5842,8 +5773,6 @@ var NuikitTheme = (() => {
     const r = (_a = SPRING_RATIO[feel]) != null ? _a : SPRING_RATIO.crisp;
     const bounces = [b, Math.max(0.1, b), b, Math.max(0.3, b)];
     const out = {
-      "nk-motion-move": "1",
-      "nk-time-instant": "0ms",
       "nk-time-snap": ms(d * 0.5),
       "nk-time-fast": ms(d * 0.667),
       "nk-time-base": ms(d),

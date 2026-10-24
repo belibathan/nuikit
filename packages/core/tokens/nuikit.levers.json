@@ -3262,24 +3262,6 @@
           ]
         }
       }
-    },
-    "move": {
-      "$type": "number",
-      "$value": "1",
-      "$description": "1 = things may move; 0 under reduced motion (fades only)",
-      "$extensions": {
-        "nuikit": {
-          "tier": "identity",
-          "scope": "motion",
-          "css": "--nk-motion-move",
-          "type": "number",
-          "range": [
-            0,
-            1
-          ],
-          "derived": true
-        }
-      }
     }
   },
   "style": {
@@ -3655,40 +3637,9 @@
           ]
         }
       }
-    },
-    "system": {
-      "$type": "number",
-      "$value": "70",
-      "$description": "Stacking layer: system (a modal is the current surface + dim + dialog)",
-      "$extensions": {
-        "nuikit": {
-          "tier": "identity",
-          "scope": "layer",
-          "css": "--nk-layer-system",
-          "type": "number",
-          "range": [
-            0,
-            100000
-          ]
-        }
-      }
     }
   },
   "time": {
-    "instant": {
-      "$type": "duration",
-      "$value": "0ms",
-      "$description": "Keyboard and controller selection, held key-repeat",
-      "$extensions": {
-        "nuikit": {
-          "tier": "semantic",
-          "scope": "time",
-          "css": "--nk-time-instant",
-          "type": "time",
-          "derived": true
-        }
-      }
-    },
     "snap": {
       "$type": "duration",
       "$value": "90ms",
@@ -4042,19 +3993,6 @@
             1,
             1.2
           ]
-        }
-      }
-    },
-    "shift": {
-      "$type": "dimension",
-      "$value": "0rem",
-      "$description": "The focused row's nudge toward its content (style.focus: bar)",
-      "$extensions": {
-        "nuikit": {
-          "tier": "semantic",
-          "scope": "gesture",
-          "css": "--nk-gesture-shift",
-          "type": "length"
         }
       }
     }
@@ -6511,38 +6449,6 @@
           }
         }
       }
-    },
-    "activefill": {
-      "color": {
-        "$type": "color",
-        "$value": "transparent",
-        "$description": "The active fill behind the level",
-        "$extensions": {
-          "nuikit": {
-            "tier": "component",
-            "scope": "vital-chip",
-            "part": "activefill",
-            "css": "--nk-vital-chip-activefill-color",
-            "type": "color"
-          }
-        }
-      }
-    },
-    "track": {
-      "color": {
-        "$type": "color",
-        "$value": "rgba(var(--hud-foreground-rgb), 0.16)",
-        "$description": "The level's track",
-        "$extensions": {
-          "nuikit": {
-            "tier": "component",
-            "scope": "vital-chip",
-            "part": "track",
-            "css": "--nk-vital-chip-track-color",
-            "type": "color"
-          }
-        }
-      }
     }
   },
   "meter": {
@@ -6847,23 +6753,6 @@
     }
   },
   "speedometer": {
-    "segments": {
-      "$type": "number",
-      "$value": "30",
-      "$description": "Segments in the arc",
-      "$extensions": {
-        "nuikit": {
-          "tier": "component",
-          "scope": "speedometer",
-          "css": "--nk-speedometer-segments",
-          "type": "number",
-          "range": [
-            6,
-            80
-          ]
-        }
-      }
-    },
     "digit": {
       "dim": {
         "$type": "number",
@@ -6942,6 +6831,22 @@
             "part": "hold",
             "css": "--nk-level-hold-pad",
             "type": "length"
+          }
+        }
+      }
+    },
+    "fill": {
+      "ink": {
+        "$type": "color",
+        "$value": "{tile.face.confirm-ink}",
+        "$description": "An icon's copy over a solid fill (vital chips, HUD keys): dark on the fill",
+        "$extensions": {
+          "nuikit": {
+            "tier": "component",
+            "scope": "level",
+            "part": "fill",
+            "css": "--nk-level-fill-ink",
+            "type": "color"
           }
         }
       }

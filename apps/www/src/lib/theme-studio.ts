@@ -76,7 +76,9 @@ export const IDENTITY: { group: string; controls: IdentityControl[] }[] = [
       { name: "font-numeric", label: "Numbers", kind: "font", hint: "Gauges, money, timers (tabular)" },
       { name: "nk-type-ratio", label: "Type ratio", kind: "range", min: 1.125, max: 1.4, step: 0.025, hint: "1.125 calm … 1.333 dramatic" },
       { name: "nk-type-weight-display", label: "Display weight", kind: "range", min: 300, max: 900, step: 100 },
-      { name: "nk-type-case", label: "Captions", kind: "choice", options: [{ value: "uppercase", label: "Uppercase" }, { value: "none", label: "As written" }] },
+      { name: "nk-type-slant", label: "Slant", kind: "choice", options: [{ value: "italic", label: "Italic" }, { value: "normal", label: "Upright" }] },
+      { name: "nk-shape-skew", label: "Keycap slant", kind: "range", min: -20, max: 20, step: 1, unit: "deg" },
+      { name: "nk-type-case", label: "Scanned text", kind: "choice", options: [{ value: "uppercase", label: "Uppercase" }, { value: "none", label: "As written" }] },
     ],
   },
   {
@@ -96,7 +98,6 @@ export const IDENTITY: { group: string; controls: IdentityControl[] }[] = [
       { name: "nk-material-menu-edge", label: "Machined edge", kind: "range", min: 0, max: 0.3, step: 0.01 },
       { name: "nk-surface-elevation", label: "Elevation", kind: "choice", options: [{ value: "none", label: "None" }, { value: "soft", label: "Soft" }, { value: "deep", label: "Deep" }, { value: "hard", label: "Hard" }] },
       { name: "nk-surface-glow", label: "Glow", kind: "range", min: 0, max: 0.6, step: 0.05, hint: "Brand glow on active parts" },
-      { name: "nk-row-indicator", label: "Active row", kind: "choice", options: [{ value: "bar", label: "Bar" }, { value: "fill", label: "Fill" }, { value: "outline", label: "Outline" }, { value: "sweep", label: "Sweep" }] },
     ],
   },
   {
@@ -116,10 +117,8 @@ export const IDENTITY: { group: string; controls: IdentityControl[] }[] = [
     group: "HUD",
     controls: [
       { name: "nk-material-hud-opacity", label: "Backplate", kind: "range", min: 0.3, max: 1, step: 0.01, hint: "HUD text is checked over a white sky" },
-      { name: "nk-chip-text-shadow", label: "Text shadow", kind: "choice", options: [{ value: "none", label: "None" }, { value: "soft", label: "Soft" }, { value: "strong", label: "Strong" }] },
+      { name: "nk-hud-text", label: "Text shadow", kind: "choice", options: [{ value: "none", label: "None" }, { value: "soft", label: "Soft" }, { value: "strong", label: "Strong" }] },
       { name: "nk-style-gauge", label: "Gauges", kind: "choice", options: [{ value: "arc", label: "Arc" }, { value: "bar", label: "Bar" }, { value: "digital", label: "Digital" }] },
-      { name: "nk-fill-height", label: "Track", kind: "range", min: 0.125, max: 0.625, step: 0.0625, unit: "rem", hint: "Gauge and meter thickness" },
-      { name: "nk-gauge-ticks", label: "Ticks", kind: "choice", options: [{ value: "1", label: "On" }, { value: "0", label: "Off" }] },
     ],
   },
 ];
@@ -280,7 +279,7 @@ export const LEVERS: { group: string; controls: IdentityControl[] }[] = [
     group: "Geometry",
     controls: [
       { name: "nk-shape-slab", label: "Skew: chips, badges", kind: "range", min: -20, max: 20, step: 1, unit: "deg", def: 0, hint: "Text stays upright" },
-      { name: "nk-tile-face-skew", label: "Skew: keycaps", kind: "range", min: -20, max: 20, step: 1, unit: "deg", def: 0, hint: "The face only, the box stays upright" },
+      { name: "nk-tile-face-skew", label: "Skew: keycaps", kind: "range", min: -20, max: 20, step: 1, unit: "deg", def: -12, hint: "The face only, the box stays upright" },
       { name: "nk-tile-wall-height", label: "Keycap wall", kind: "range", min: 0, max: 0.5, step: 0.0625, unit: "rem", def: 0.1875, hint: "How far the face sits above its plate; 0 = flat" },
       { name: "nk-tile-wall-shade", label: "Wall shade", kind: "range", min: 0, max: 1, step: 0.05, def: 0.45 },
       { name: "nk-radius-key", label: "Radius: keys", kind: "range", min: 0, max: 0.75, step: 0.0625, unit: "rem", def: 0.25 },
@@ -311,7 +310,6 @@ export const LEVERS: { group: string; controls: IdentityControl[] }[] = [
     group: "Selection and focus",
     controls: [
       { name: "nk-style-focus", label: "Focus", kind: "choice", options: choice("ring", "halo", "tint", "fill", "invert", "bar") },
-      { name: "nk-gesture-shift", label: "Focus shift", kind: "range", min: 0, max: 0.5, step: 0.0625, unit: "rem", def: 0 },
       { name: "nk-gesture-lift", label: "Row lift", kind: "range", min: 0, max: 1, step: 0.0625, unit: "rem", def: 0.5, hint: "How far a selected row steps out" },
     ],
   },

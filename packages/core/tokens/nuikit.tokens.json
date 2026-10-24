@@ -1585,11 +1585,6 @@
       "$type": "number",
       "$value": 60,
       "$description": "Stacking layer: dialog (a modal is the current surface + dim + dialog)"
-    },
-    "layer-system": {
-      "$type": "number",
-      "$value": 70,
-      "$description": "Stacking layer: system (a modal is the current surface + dim + dialog)"
     }
   }
 }

@@ -1,22 +1,36 @@
-# nuikit tokens v1 (revision 1.5)
+# nuikit tokens v2: the token language
 
 The theme contract every nuikit UI reads. A server's theme is any shadcn / TweakCN paste in
-`nuikit/theme.css`; the compiler (`compileTheme` in `nuikit-core`) turns it into this exact set of
-CSS variables, so a UI built on the tokens matches every server it runs on.
+`nuikit/theme.css` plus any lever values; the compiler (`compileTheme` in `nuikit-core`) turns it into one set of
+CSS variables, so a UI built on them matches every server it runs on.
 
-- **Version:** tokens v1 (`TOKENS_VERSION = 1`), revision 1.4 (`TOKENS_REVISION`, `revision` on a compiled
-  theme). Adding a token keeps v1; renaming or removing one is v2. 1.4 added the [foundation](#foundation-14) (treatment, roles, materials, behaviour…); 1.2 the [motion tokens](#motion-12)
-  (additive). 1.1 added the
-  [identity tokens](#identity-tokens-11) and [component tokens](#component-tokens-11): additive, every v1 name
-  and meaning is unchanged. The defaults of `--font-sans` / `--font-mono` changed from the system stack to
-  Inter / Geist Mono (bundled, with the system stack behind them).
-- **Machine-readable:** [`packages/core/tokens/nuikit-theme.schema.json`](../packages/core/tokens/nuikit-theme.schema.json)
-  (JSON Schema for a compiled theme), [`packages/core/tokens/nuikit.tokens.json`](../packages/core/tokens/nuikit.tokens.json)
-  (the default theme as a [DTCG 2025.10](https://www.designtokens.org/) file). Both ship in the npm package
-  (`nuikit-core/theme.schema.json`, `nuikit-core/tokens.json`).
-- **In CSS:** `var(--<name>)`, plus `--<name>-rgb` / `--<name>-a` channels for every colour (what
-  `bg-x/50` compiles to on Chromium 103). Tailwind names: `bg-success`, `text-warning`, `bg-hud`,
-  `text-vital-health`… (`@theme inline` in every synced `index.css`).
+## Architecture (v2, Oct 2026)
+
+**One source.** Every custom property is declared once in the token language, `packages/core/src/spec/`
+(TypeScript, declarative). Nothing else names a token: `pnpm --filter nuikit-core gen:tokens` (part of the build,
+idempotent, `--check` in CI) generates kit.css's `@layer nk.base` block, `src/tokens.generated.ts` (the tables
+`compileTheme` validates against, the `Lever` type, `ANATOMY`), `tokens/nuikit.levers.json` (DTCG with
+`$extensions.nuikit`), [`docs/design/levers.md`](design/levers.md) (the catalog) and the Figma input.
+
+**Four tiers, references only point up.**
+
+| Tier | What | Defaults |
+|---|---|---|
+| identity | what a server chooses: palette, faces, scales, shape, type, surfaces, motion, which drawing each family uses | literals: the premium baseline (`compileTheme("")` already draws keycaps, solid fills, two voices) |
+| semantic | roles every component shares: motion ladder, eases, plate, fill, accent, lines, depth | references to identity |
+| component | `--nk-<component>-<prop>` | references to itself, a component it `inherits`, semantic, identity |
+| part | `--nk-<component>-<part>-<prop>`; parts are the anatomy, the `data-slot` names in render order | same as its component |
+
+Rules (`packages/core/test/spec-rules.test.ts`): one declaration per lever; generated names only; references
+resolve and point up; no literal below identity except documented floors; no colour literal below identity, ever;
+every component has an anatomy; every lever has a reader. Old names map to new in
+`packages/core/spec/migration.json`; `node packages/core/scripts/migrate-levers.mjs <path>` applies it.
+
+**Themes are values.** Default, Neon Pop, Flat and Square (`packages/core/themes/`) are short diffs on the baseline.
+Treatments are gone: the baseline is one language, a theme moves it.
+
+*The sections below describe the v1 contract and are being rewritten against the generated catalog; where they
+disagree, [levers.md](design/levers.md) is right.*
 
 ## Tokens
 

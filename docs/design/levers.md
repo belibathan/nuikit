@@ -10,7 +10,7 @@ generated `@layer nk.base` block, and components read only levers. Four tiers, e
 - **semantic**: roles every component shares (the motion ladder, eases, plate, fill, accent, lines, depth).
 - **component** and **part**: `--nk-<component>-<prop>` and `--nk-<component>-<part>-<prop>`; parts are the component's anatomy, its `data-slot` names in render order. A component references only itself, a component it `inherits`, or the tiers above.
 
-**535 levers** (249 identity, 62 semantic, 224 component) · **33 components** · **35 state variables** (set by kit.css rules per state; not levers). Old names: `packages/core/spec/migration.json`, applied by `node packages/core/scripts/migrate-levers.mjs <path>`.
+**529 levers** (247 identity, 60 semantic, 222 component) · **33 components** · **34 state variables** (set by kit.css rules per state; not levers). Old names: `packages/core/spec/migration.json`, applied by `node packages/core/scripts/migrate-levers.mjs <path>`.
 
 ## Identity
 
@@ -351,7 +351,6 @@ The base duration and curve the ladder derives from, the feel, the springs' boun
 | `--nk-motion-exit-factor` | number | `0.7` | 0.3–1 | Every exit is this × its enter |
 | `--nk-motion-reduced` | time | `100ms` | 0–400 | Under reduced motion every fade is at most this |
 | `--nk-motion-profile` | keyword | `full` | full reduced instant | full: as designed; reduced: no movement, short fades; instant: nothing animates |
-| `--nk-motion-move` | number (derived) | `1` | 0–1 | 1 = things may move; 0 under reduced motion (fades only) |
 
 ### style
 
@@ -401,7 +400,6 @@ Stacking layers.
 |---|---|---|---|---|
 | `--nk-layer-dim` | number | `50` | 0–100000 | Stacking layer: dim (a modal is the current surface + dim + dialog) |
 | `--nk-layer-dialog` | number | `60` | 0–100000 | Stacking layer: dialog (a modal is the current surface + dim + dialog) |
-| `--nk-layer-system` | number | `70` | 0–100000 | Stacking layer: system (a modal is the current surface + dim + dialog) |
 
 ## Semantic
 
@@ -411,7 +409,6 @@ The duration ladder, derived from motion.duration.
 
 | Lever | Type | Default | Range / values | What it moves |
 |---|---|---|---|---|
-| `--nk-time-instant` | time (derived) | `0ms` |  | Keyboard and controller selection, held key-repeat |
 | `--nk-time-snap` | time (derived) | `90ms` |  | A press, a rim switching state (0.5d) |
 | `--nk-time-fast` | time (derived) | `120ms` |  | Hover, a face rising, a deny beat (0.667d) |
 | `--nk-time-base` | time (derived) | `180ms` |  | Panel enter, the selection tile, tab switch (d) |
@@ -465,7 +462,6 @@ How far things travel and scale.
 | `--nk-gesture-deny` | length | `0.3125rem` |  | The deny shake's distance |
 | `--nk-gesture-press` | number | `0.97` | 0.8–1 | The scale of a pressed row or button |
 | `--nk-gesture-confirm` | number | `1.08` | 1–1.2 | The short pop of a confirm |
-| `--nk-gesture-shift` | length | `0rem` |  | The focused row's nudge toward its content (style.focus: bar) |
 
 ### plate
 
@@ -851,8 +847,6 @@ One vital: a Tile, its level, its icon, and the tag that slides out from behind 
 | `--nk-vital-chip-line-width` | length | `0.125rem` |  | The level line's thickness |
 | `--nk-vital-chip-plate-drop` | length | `0.25rem` |  | How far the wall drops straight below the face |
 | `--nk-vital-chip-plate-x` | length | `0rem` |  | The wall's sideways step |
-| `--nk-vital-chip-activefill-color` | color | `transparent` |  | The active fill behind the level |
-| `--nk-vital-chip-track-color` | color | `rgba(var(--hud-foreground-rgb), 0.16)` |  | The level's track |
 
 State: `--nk-vital-chip-face`, `--nk-vital-chip-tag`, `--nk-vital-chip-tag-pad`, `--nk-vital-chip-room`, `--nk-vital-chip-d`.
 
@@ -909,21 +903,21 @@ The speedometer: a segmented arc and rolling digits. Anatomy: `readout` → `spe
 
 | Lever | Type | Default | Range / values | What it moves |
 |---|---|---|---|---|
-| `--nk-speedometer-segments` | number | `30` | 6–80 | Segments in the arc |
 | `--nk-speedometer-digit-dim` | number | `0.26` | 0–1 | A leading zero's opacity |
 | `--nk-speedometer-digit-tracking` | length | `0.01em` |  | The digits' letter-spacing |
 
 ### level
 
-How a level is drawn under style.level and style.hold (pips, the hold ring). Anatomy: `pip` → `hold`.
+How a level is drawn under style.level and style.hold (pips, the hold ring, the ink over a solid fill). Anatomy: `pip` → `hold` → `fill`. Inherits: `tile`.
 
 | Lever | Type | Default | Range / values | What it moves |
 |---|---|---|---|---|
 | `--nk-level-pip-size` | length | `10%` |  | One pip's width (10% = ten pips) |
 | `--nk-level-pip-gap` | length | `2px` |  | Between pips |
 | `--nk-level-hold-pad` | length | `2px` |  | The hold ring's thickness around a key |
+| `--nk-level-fill-ink` | color | `var(--nk-tile-face-confirm-ink)` |  | An icon's copy over a solid fill (vital chips, HUD keys): dark on the fill |
 
-State: `--nk-level-fill-now`, `--nk-level-fill-ink`, `--nk-level-fill-opacity`.
+State: `--nk-level-fill-now`, `--nk-level-fill-opacity`.
 
 ### slab
 

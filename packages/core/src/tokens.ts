@@ -85,8 +85,6 @@ export function motionTokens(d: number, feel: MotionFeel = "crisp", bounce = 0, 
   const r = SPRING_RATIO[feel] ?? SPRING_RATIO.crisp;
   const bounces = [b, Math.max(0.1, b), b, Math.max(0.3, b)];
   const out: ThemeVars = {
-    "nk-motion-move": "1",
-    "nk-time-instant": "0ms",
     "nk-time-snap": ms(d * 0.5),
     "nk-time-fast": ms(d * 0.667),
     "nk-time-base": ms(d),
@@ -1059,7 +1057,6 @@ export function withPrefs(vars: ThemeVars, prefs: Partial<NuiPrefs> = DEFAULT_PR
   if (level !== "on") {
     // off: nothing animates. reduced: no movement, fades kept but at most --nk-motion-reduced (REDUCED_FADE_MS by default).
     const cap = parseFloat(out["nk-motion-reduced"] ?? "") || REDUCED_FADE_MS;
-    if (out["nk-motion-move"] !== undefined || out["nk-time-base"] !== undefined) out["nk-motion-move"] = "0";
     for (const name of MOTION_TIME_TOKENS) {
       const v = out[name];
       if (v === undefined) continue;

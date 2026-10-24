@@ -25,7 +25,8 @@ describe("site tokens", () => {
       const { vars } = compileTheme({ ...cssVars[mode] }, { mode });
       const site = block(sel);
       for (const t of TOKENS) {
-        if (t.group !== "nuikit" && t.name !== "destructive-foreground") continue;
+        // the game layer the kit's components read before a theme is applied: status, HUD, scrim, vitals
+        if (!/^(destructive-foreground|success|success-foreground|warning|warning-foreground|info|info-foreground|hud|hud-foreground|scrim|vital-[a-z]+)$/.test(t.name)) continue;
         const want = t.name === "info" ? "var(--primary)" : t.name === "info-foreground" ? "var(--primary-foreground)" : vars[t.name];
         expect(site[t.name], `--${t.name}`).toBe(want);
       }
@@ -34,7 +35,7 @@ describe("site tokens", () => {
 
   it("exposes every nuikit colour token to Tailwind (bg-scrim/35, text-vital-health…)", () => {
     for (const t of TOKENS) {
-      if (t.group !== "nuikit" || t.name.startsWith("nk-")) continue;
+      if (!/^(success|warning|info|hud|scrim|vital-[a-z]+)(-foreground)?$/.test(t.name)) continue;
       expect(css, `--color-${t.name}`).toContain(`--color-${t.name}: var(--${t.name});`);
     }
   });

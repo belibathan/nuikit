@@ -149,7 +149,6 @@
     --nk-motion-exit-factor: 0.7;
     --nk-motion-reduced: 100ms;
     --nk-motion-profile: full;
-    --nk-motion-move: 1;
     /* identity · style */
     --nk-style-fill: solid;
     --nk-style-level: liquid;
@@ -175,9 +174,7 @@
     /* identity · layer */
     --nk-layer-dim: 50;
     --nk-layer-dialog: 60;
-    --nk-layer-system: 70;
     /* semantic · time */
-    --nk-time-instant: 0ms;
     --nk-time-snap: 90ms;
     --nk-time-fast: 120ms;
     --nk-time-base: 180ms;
@@ -207,7 +204,6 @@
     --nk-gesture-deny: 0.3125rem;
     --nk-gesture-press: 0.97;
     --nk-gesture-confirm: 1.08;
-    --nk-gesture-shift: 0rem;
     /* semantic · plate */
     --nk-plate-color: var(--surface);
     --nk-plate-hair: var(--border);
@@ -411,8 +407,6 @@
     --nk-vital-chip-line-width: 0.125rem;
     --nk-vital-chip-plate-drop: 0.25rem;
     --nk-vital-chip-plate-x: 0rem;
-    --nk-vital-chip-activefill-color: transparent;
-    --nk-vital-chip-track-color: rgba(var(--hud-foreground-rgb), 0.16);
     /* component · meter */
     --nk-meter-radius: 0.125rem;
     --nk-meter-glow: 0 0 calc(var(--nk-line-glow) * 0.625) rgba(var(--brand-rgb), var(--nk-surface-glow));
@@ -437,13 +431,13 @@
     --nk-ring-segments: 24;
     --nk-ring-gap: 4;
     /* component · speedometer */
-    --nk-speedometer-segments: 30;
     --nk-speedometer-digit-dim: 0.26;
     --nk-speedometer-digit-tracking: 0.01em;
     /* component · level */
     --nk-level-pip-size: 10%;
     --nk-level-pip-gap: 2px;
     --nk-level-hold-pad: 2px;
+    --nk-level-fill-ink: var(--nk-tile-face-confirm-ink);
     /* component · slab */
     --nk-slab-height: calc(2.5rem * var(--nk-density));
     --nk-slab-padding: 0 calc(var(--nk-space-unit) * 3);

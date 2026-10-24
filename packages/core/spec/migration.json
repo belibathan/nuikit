@@ -14,9 +14,7 @@
   "nk-caret-ease": "nk-field-caret-ease",
   "nk-caret-time": "nk-field-caret-time",
   "nk-caret-width": "nk-field-caret-width",
-  "nk-chip-active-fill": "nk-vital-chip-activefill-color",
   "nk-chip-foreground": "nk-chip-fg",
-  "nk-chip-track": "nk-vital-chip-track-color",
   "nk-clip": "nk-line-clip",
   "nk-clip-sm": "nk-line-clip-sm",
   "nk-confirm-scale": "nk-gesture-confirm",
@@ -47,7 +45,6 @@
   "nk-fill-opacity": "nk-level-fill-opacity",
   "nk-fill-style": "nk-style-fill",
   "nk-focus-rim": "nk-line-focus",
-  "nk-focus-shift": "nk-gesture-shift",
   "nk-focus-style": "nk-style-focus",
   "nk-gauge-fill": "nk-gauge-fill-color",
   "nk-gauge-needle": "nk-gauge-needle-color",
@@ -167,7 +164,6 @@
   "nk-slash": "nk-surface-slash",
   "nk-space": "nk-space-unit",
   "nk-speedo-dim": "nk-speedometer-digit-dim",
-  "nk-speedo-segments": "nk-speedometer-segments",
   "nk-speedo-tracking": "nk-speedometer-digit-tracking",
   "nk-spring-bounce": "nk-motion-bounce",
   "nk-stagger-delay": "nk-notice-delay",
@@ -243,6 +239,5 @@
   "nk-weight-strong": "nk-type-weight-strong",
   "nk-z-dialog": "nk-layer-dialog",
   "nk-z-dim": "nk-layer-dim",
-  "nk-z-system": "nk-layer-system",
   "vital-size": "nk-vital-chip-size"
 }

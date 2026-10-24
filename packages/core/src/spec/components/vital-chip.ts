@@ -1,5 +1,5 @@
 /** VitalChip: one vital as a keycap Tile with a level inside and a tag that slides out from behind it. */
-import { alpha, color, length, number, type ComponentDef } from "../lang";
+import { length, number, type ComponentDef } from "../lang";
 
 export const vitalChip: ComponentDef = {
   description: "One vital: a Tile, its level, its icon, and the tag that slides out from behind it",
@@ -21,8 +21,6 @@ export const vitalChip: ComponentDef = {
       drop: length("0.25rem", "How far the wall drops straight below the face", { floor: true, was: ["nk-vital-plate-drop"] }),
       x: length("0rem", "The wall's sideways step", { floor: true, was: ["nk-vital-plate-x"] }),
     },
-    activefill: { color: color("transparent", "The active fill behind the level", { floor: true, was: ["nk-chip-active-fill"] }) },
-    track: { color: color(alpha("hud-foreground", 0.16), "The level's track", { was: ["nk-chip-track"] }) },
   },
   state: {
     face: { type: "length", description: "The face's measured size", was: ["nk-vital-face"] },
