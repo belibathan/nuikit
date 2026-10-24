@@ -6,6 +6,7 @@ export const chip: ComponentDef = {
   anatomy: ["icon", "count"],
   levers: {
     height: length(ref("height.chip"), "Height", { was: ["nk-chip-height"] }),
+    "tile-size": length("3rem", "A tile chip's box", { floor: true }),
     padding: length(css`calc(${ref("space.unit")} * 2.5)`, "Inline padding", { was: ["nk-chip-padding"] }),
     radius: length(ref("radius.chip"), "Radius", { was: ["nk-chip-radius"] }),
     "hud-radius": length(css`max(0.25rem, calc(${pal("radius")} - 0.125rem))`, "A square HUD tile's radius (hotbar, target eye)", { was: ["nk-hud-radius"] }),
@@ -19,6 +20,7 @@ export const chip: ComponentDef = {
     clip: string(ref("line.clip-sm"), "The chip's clip-path", { was: ["nk-chip-clip"] }),
     "text-shadow": shadow(ref("depth.text"), "Text drawn on the game", { was: ["nk-hud-text-shadow"] }),
   },
+  parts: { icon: { size: length("0.875rem", "A pill chip's icon", { floor: true }), "size-tile": length("1.25rem", "A tile chip's icon", { floor: true }) } },
   state: {
     tone: { type: "color", description: "A chip's tone", was: ["nk-chip-tone"] },
     "tone-rgb": { type: "string", description: "A chip's tone channels", was: ["nk-chip-tone-rgb"] },
@@ -69,6 +71,7 @@ export const ring: ComponentDef = {
   description: "Progress rings: a Dial in segments, like the speedometer",
   inherits: ["dial"],
   anatomy: ["center", "label", "cancel", "cancel-label"],
+  parts: { label: { "max-width": length("12rem", "The label's maximum width", { floor: true }) } },
   levers: {
     segments: number(24, "Segments in the ring", { range: [6, 60], floor: true, was: ["nk-ring-segments"] }),
     gap: number(4, "Degrees between segments", { range: [0, 12], floor: true, was: ["nk-ring-gap"] }),

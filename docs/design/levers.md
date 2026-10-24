@@ -10,7 +10,7 @@ generated `@layer nk.base` block, and components read only levers. Four tiers, e
 - **semantic**: roles every component shares (the motion ladder, eases, plate, fill, accent, lines, depth).
 - **component** and **part**: `--nk-<component>-<prop>` and `--nk-<component>-<part>-<prop>`; parts are the component's anatomy, its `data-slot` names in render order. A component references only itself, a component it `inherits`, or the tiers above.
 
-**529 levers** (247 identity, 60 semantic, 222 component) · **33 components** · **34 state variables** (set by kit.css rules per state; not levers). Old names: `packages/core/spec/migration.json`, applied by `node packages/core/scripts/migrate-levers.mjs <path>`.
+**539 levers** (247 identity, 60 semantic, 232 component) · **33 components** · **34 state variables** (set by kit.css rules per state; not levers). Old names: `packages/core/spec/migration.json`, applied by `node packages/core/scripts/migrate-levers.mjs <path>`.
 
 ## Identity
 
@@ -740,6 +740,7 @@ A menu row: icon or image, title and description, progress, meta, a stepper or v
 | `--nk-menu-row-gap` | length | `var(--nk-space-1)` |  | Between a trail's controls |
 | `--nk-menu-row-image-size` | length | `2rem` |  | An image's box |
 | `--nk-menu-row-progress-height` | length | `0.25rem` |  | The progress bar's height |
+| `--nk-menu-row-details-width` | length | `16rem` |  | The details flyout's width |
 | `--nk-menu-row-value-width` | length | `3rem` |  | The value column's minimum width |
 
 ### selection
@@ -801,6 +802,7 @@ A confirmation dialog. Anatomy: `scrim` → `root` → `icon` → `description` 
 |---|---|---|---|---|
 | `--nk-confirm-width` | length | `24rem` |  | Width (md) |
 | `--nk-confirm-width-sm` | length | `20rem` |  | Width (sm) |
+| `--nk-confirm-width-lg` | length | `28rem` |  | Width (lg) |
 
 ### edge-sheet
 
@@ -817,6 +819,7 @@ Always-on HUD chips and tiles on the game (nk-chip, nk-hud). Anatomy: `icon` →
 | Lever | Type | Default | Range / values | What it moves |
 |---|---|---|---|---|
 | `--nk-chip-height` | length | `var(--nk-height-chip)` |  | Height |
+| `--nk-chip-tile-size` | length | `3rem` |  | A tile chip's box |
 | `--nk-chip-padding` | length | `calc(var(--nk-space-unit) * 2.5)` |  | Inline padding |
 | `--nk-chip-radius` | length | `var(--nk-radius-chip)` |  | Radius |
 | `--nk-chip-hud-radius` | length | `max(0.25rem, calc(var(--radius) - 0.125rem))` |  | A square HUD tile's radius (hotbar, target eye) |
@@ -829,6 +832,8 @@ Always-on HUD chips and tiles on the game (nk-chip, nk-hud). Anatomy: `icon` →
 | `--nk-chip-glow` | shadow | `0 0 calc(var(--nk-line-glow) * 0.75) rgba(var(--brand-rgb), var(--nk-surface-glow))` |  | An active chip's glow |
 | `--nk-chip-clip` | string | `var(--nk-line-clip-sm)` |  | The chip's clip-path |
 | `--nk-chip-text-shadow` | shadow | `var(--nk-depth-text)` |  | Text drawn on the game |
+| `--nk-chip-icon-size` | length | `0.875rem` |  | A pill chip's icon |
+| `--nk-chip-icon-size-tile` | length | `1.25rem` |  | A tile chip's icon |
 
 State: `--nk-chip-tone`, `--nk-chip-tone-rgb`.
 
@@ -844,6 +849,9 @@ One vital: a Tile, its level, its icon, and the tag that slides out from behind 
 | `--nk-vital-chip-icon-ratio` | number | `0.52` | 0.2–1 | The icon as a fraction of the face |
 | `--nk-vital-chip-label-size` | length | `0.9375rem` |  | The tag's text size |
 | `--nk-vital-chip-label-gap` | length | `1rem` |  | Between the face and the tag's text |
+| `--nk-vital-chip-pop-overlap` | length | `0.375rem` |  | How far an open pop tucks behind the chip |
+| `--nk-vital-chip-pop-pad` | length | `0.75rem` |  | An open pop's leading padding |
+| `--nk-vital-chip-pop-max-width` | length | `12rem` |  | An open pop's width |
 | `--nk-vital-chip-line-width` | length | `0.125rem` |  | The level line's thickness |
 | `--nk-vital-chip-plate-drop` | length | `0.25rem` |  | How far the wall drops straight below the face |
 | `--nk-vital-chip-plate-x` | length | `0rem` |  | The wall's sideways step |
@@ -896,6 +904,7 @@ Progress rings: a Dial in segments, like the speedometer. Anatomy: `center` → 
 |---|---|---|---|---|
 | `--nk-ring-segments` | number | `24` | 6–60 | Segments in the ring |
 | `--nk-ring-gap` | number | `4` | 0–12 | Degrees between segments |
+| `--nk-ring-label-max-width` | length | `12rem` |  | The label's maximum width |
 
 ### speedometer
 
@@ -981,6 +990,7 @@ A key and its verb (E Open), with a hold. Anatomy: `keys` → `key` → `icon` �
 | Lever | Type | Default | Range / values | What it moves |
 |---|---|---|---|---|
 | `--nk-key-prompt-gap` | length | `0.25rem` |  | Between its parts |
+| `--nk-key-prompt-max-width` | length | `20rem` |  | Maximum width |
 | `--nk-key-prompt-min-height` | length | `2.5rem` |  | Minimum height (md) |
 | `--nk-key-prompt-min-height-sm` | length | `2rem` |  | Minimum height (sm) |
 | `--nk-key-prompt-pad-left` | length | `0.5rem` |  | Leading padding |

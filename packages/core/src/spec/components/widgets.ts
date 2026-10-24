@@ -23,6 +23,7 @@ export const keyPrompt: ComponentDef = {
   anatomy: ["keys", "key", "icon", "text", "label", "description", "hold", "stack"],
   levers: {
     gap: length("0.25rem", "Between its parts", { floor: true, was: ["nk-key-prompt-gap"] }),
+    "max-width": length("20rem", "Maximum width", { floor: true }),
     "min-height": length("2.5rem", "Minimum height (md)", { floor: true, was: ["nk-key-prompt-min-h"] }),
     "min-height-sm": length("2rem", "Minimum height (sm)", { floor: true, was: ["nk-key-prompt-min-h-sm"] }),
     "pad-left": length("0.5rem", "Leading padding", { floor: true, was: ["nk-key-prompt-pad-l"] }),

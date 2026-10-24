@@ -490,7 +490,7 @@ function MenuRowDetails({
   items?: readonly MenuMetadataItem[]
 }) {
   return (
-    <div data-slot="menu-row-details" className={cn("nk-panel nk-enter flex w-64 flex-col overflow-hidden", className)} {...props}>
+    <div data-slot="menu-row-details" className={cn("nk-panel nk-enter flex w-(--nk-menu-row-details-width) flex-col overflow-hidden", className)} {...props}>
       {image !== undefined && image !== null && (
         <div data-slot="menu-row-details-image" className="aspect-video w-full overflow-hidden bg-muted">
           {typeof image === "string" ? <img src={image} alt="" className="size-full object-cover" /> : image}
