@@ -5,7 +5,7 @@ lua54 'yes'
 name 'nuikit_screen'
 description 'nuikit: World screen'
 repository 'https://github.com/belibathan/nuikit'
-version '0.8.0'
+version '0.9.0'
 
 dependency 'nuikit'
 

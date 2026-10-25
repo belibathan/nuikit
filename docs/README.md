@@ -26,7 +26,7 @@ that have been superseded outright.
 | [`settings.md`](settings.md) | `nk.settings` and the pause Settings page | Current |
 | [`images.md`](images.md) | The image resolver (`https://nuikit/images`, `/vehicle`) | Current |
 | [`adapters/`](adapters/README.md) | The adapter packs, one page per adapted library; [`framework-sdk.md`](adapters/framework-sdk.md) for your own framework | Current |
-| [`releases/`](releases/) | Release notes per version (`v0.8.0.md` is the latest); the 0.7.0 test files moved to `archive/` | Current / historical |
+| [`releases/`](releases/) | Release notes per version (`v0.9.0.md` is the latest); the 0.7.0 test files moved to `archive/` | Current / historical |
 
 ## Building on nuikit
 

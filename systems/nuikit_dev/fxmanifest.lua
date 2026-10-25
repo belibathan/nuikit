@@ -5,7 +5,7 @@ lua54 'yes'
 name 'nuikit_dev'
 description 'Test commands: /nk test <what> opens every nuikit intent and ox_lib dialog, or grants test items. Off unless nuikit_dev is 1.'
 repository 'https://github.com/belibathan/nuikit'
-version '0.8.0'
+version '0.9.0'
 
 dependency 'nuikit'
 dependency 'ox_lib'

@@ -1,7 +1,7 @@
 {
   "name": "nuikit-host-web",
   "private": true,
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "The nuikit resource's frame: the host for other resources' UI modules, and the default renderers for the intents (docs/intents.md).",
   "type": "module",
   "scripts": {

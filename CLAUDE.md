@@ -28,8 +28,8 @@ TweakCN theme) is the default look and the showcase, not the product. Design: `d
 
 Roles, lanes and file ownership: `docs/next/dispatch.md`. Read this, then only what your item needs.
 
-Current release: **0.8.0** (npm `nuikit-core`, `vite-plugin-nuikit`, `create-nuikit`; GitHub release
-`v0.8.0` with `nuikit.zip` and the per-framework zips); `main` is ahead of it (tokens 1.7, Default, Neon Pop, the baseline).
+Current release: **0.9.0** (npm `nuikit-core`, `vite-plugin-nuikit`, `create-nuikit`, `nuikit`; GitHub release
+`v0.9.0` with `nuikit.zip`, the per-framework zips and `SHA256SUMS.txt`).
 Direction: `docs/vision.md`, then `docs/architecture.md`. Parallel agents: `docs/next/dispatch.md` (lanes, file ownership, rules).
 
 ## Map

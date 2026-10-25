@@ -5,7 +5,7 @@ lua54 'yes'
 name 'nuikit_pause'
 description 'nuikit: pause menu. Esc opens it in place of GTA\'s; a focus camera on the player, a 3D map, live key bindings and info pages.'
 repository 'https://github.com/belibathan/nuikit'
-version '0.8.0'
+version '0.9.0'
 
 dependency 'nuikit'
 

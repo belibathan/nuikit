@@ -157,8 +157,8 @@ their own: `/nuikit scale 1.1`, `/nuikit motion off`, `/nuikit contrast on`. Tok
 
 ## Status
 
-**0.8.0** is out: intents, adapters, renderer packs, camera and controls services. The kit through 0.7 is tested in
-game on Qbox; 0.8 is checked per PR and still needs a full in-game round, especially on QBCore and ESX. Known
+**0.9.0** is out: the token language, the API spec, the layout system, `nuikit install/upgrade`. Tested in game on
+Qbox at the owner's checkpoint; QBCore and ESX still need a full in-game round. Known
 issues and what's next: [`docs/roadmap.md`](docs/roadmap.md).
 
 ## Docs

@@ -1,7 +1,7 @@
 {
   "name": "nuikit-qbx-taxijob-ui",
   "private": true,
-  "version": "0.3.5",
+  "version": "0.3.6",
   "description": "A drop-in replacement for qbx_taxijob's taxi meter, built from stock shadcn/ui and themed by nuikit/theme.css.",
   "type": "module",
   "scripts": {

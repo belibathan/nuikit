@@ -5,7 +5,7 @@ lua54 'yes'
 name 'nuikit_shims'
 description 'nuikit export shims: old export names (exports[res]:Fn) land in nuikit intents by config. See docs/adapters/shims.md.'
 author '@belibathan'
-version '0.8.0'
+version '0.9.0'
 
 -- One `provide` per old resource name you shim (the same names as in config.lua). Stop the originals.
 nuikit_adapter 'shims'

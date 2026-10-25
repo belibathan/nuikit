@@ -1,6 +1,6 @@
 {
   "name": "nuikit-core",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "description": "The runtime behind nuikit, one design system for your whole FiveM server: typed fetchNui and events, surfaces (focus, layers, Escape across resources), the theme compiler (tokens v1, DTCG) and browser devtools.",
   "author": "belibathan (https://github.com/belibathan)",
   "license": "MIT",
