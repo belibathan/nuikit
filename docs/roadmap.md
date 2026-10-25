@@ -71,7 +71,7 @@ end to end on a machine that is not the owner's, without reading the monorepo.*
 |---|---|
 | Site and registry live at nuikit.vercel.app (verified Oct 23); `/components`, `/blocks`, `/design`, `/coverage`, `/theme` | Live |
 | Site: `/start`, `/protocol`, `/intents`, `/adopt`, `/language` | Done Oct 23 |
-| Publish `packages/cli` so `npx nuikit check` works outside the monorepo (needs the npm name; `nuikit` is free as of Oct 23) | **Owner: claim the npm name**, then drop `private` |
+| Publish `packages/cli` so `npx @belibathan/nuikit check` works outside the monorepo (needs the npm name; `nuikit` is free as of Oct 23) | **Owner: claim the npm name**, then drop `private` |
 | README counts current and the root `CHANGELOG.md` a pointer | Done Oct 23 |
 | `create-nuikit -t renderer-pack` is an overlay template by design (`docs/intents.md` §9), not a block; needs an in-game run | Kept |
 

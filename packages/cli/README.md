@@ -4,10 +4,10 @@ The command line for the [nuikit protocol](https://github.com/belibathan/nuikit/
 the UI platform layer for FiveM.
 
 ```bash
-npx nuikit check ./my_resource          # grade one resource
-npx nuikit check ./resources --level 2  # every resource under a folder; exit 1 if any is below level 2
-npx nuikit tokens                       # the theme tokens a UI should read
-npx nuikit theme new my-server          # a theme file to start from (graphite by default)
+npx @belibathan/nuikit check ./my_resource          # grade one resource
+npx @belibathan/nuikit check ./resources --level 2  # every resource under a folder; exit 1 if any is below level 2
+npx @belibathan/nuikit tokens                       # the theme tokens a UI should read
+npx @belibathan/nuikit theme new my-server          # a theme file to start from (graphite by default)
 ```
 
 ## `nuikit check [path…]`

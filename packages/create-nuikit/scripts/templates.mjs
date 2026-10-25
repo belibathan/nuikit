@@ -52,9 +52,28 @@ function walk(dir, prefix = "") {
 }
 
 const imports = (file) => [...fs.readFileSync(file, "utf8").matchAll(/from\s+["']@\/components\/ui\/([\w-]+)["']/g)].map((m) => m[1]);
+const hookImports = (file) => [...fs.readFileSync(file, "utf8").matchAll(/from\s+["']@\/hooks\/([\w-]+)["']/g)].map((m) => m[1]);
 
-/** Copy every component `file` imports (and theirs) into the project's ui folder. */
+/** Where a hook's source lives (registry first, then shadcn), the way scripts/sync-template.mjs resolves it. */
+function hookSource(name) {
+  for (const p of [`registry/nuikit/hooks/${name}.ts`, `vendor/shadcn/hooks/${name}.ts`]) {
+    if (fs.existsSync(path.join(root, p))) return p;
+  }
+  return null;
+}
+
+/** Copy every component `file` imports (and theirs), and every hook they import, into the project. */
 function addComponents(file, uiDir, added) {
+  for (const name of hookImports(file)) {
+    const dest = path.join(uiDir, "..", "..", "hooks", `${name}.ts`);
+    if (fs.existsSync(dest)) continue;
+    const src = hookSource(name);
+    if (!src) fail(`${path.relative(root, file)} imports @/hooks/${name}, which is neither a registry nor a shadcn hook`);
+    fs.mkdirSync(path.dirname(dest), { recursive: true });
+    fs.copyFileSync(path.join(root, src), dest);
+    added.push(`hooks/${name}`);
+    addComponents(dest, uiDir, added);
+  }
   for (const name of imports(file)) {
     const dest = path.join(uiDir, `${name}.tsx`);
     if (fs.existsSync(dest)) continue;

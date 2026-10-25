@@ -23,4 +23,4 @@ your renderer. If the pack fails to load, nuikit keeps its default renderer and 
   `web/src/renderers.tsx`. One pack may draw several kinds; several packs may draw one kind (the one
   started last wins).
 - Keep colours on theme tokens, sizes in rem, and the kit's `nk-*` utilities (docs/design.md):
-  `npx nuikit check web --level 3`.
+  `npx @belibathan/nuikit check web --level 3`.

@@ -18,7 +18,7 @@ Or paste a TweakCN theme for the palette and layer the levers on top.
 
 ### Start from the CLI
 
-The same start, from a terminal: `npx nuikit theme new my-server --from flat` writes `theme.css`, a file of values in
+The same start, from a terminal: `npx @belibathan/nuikit theme new my-server --from flat` writes `theme.css`, a file of values in
 `@layer nk.theme { .dark { … } }` with the chosen theme's values set and every other lever commented out, with its
 default and range (`/* --nk-tile-skew: nk-skew  (-20deg..20deg) */`). Uncomment a line to change that lever; the file compiles
 with no warnings. `nuikit theme --list` names the shipped themes; the default `--from` is `graphite`, the kit's baseline.
