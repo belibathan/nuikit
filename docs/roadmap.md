@@ -15,7 +15,7 @@ Last updated: Oct 23 2026 (the 0.9 plan).
 | 0.6.0 | 15 components, 7 screens rebuilt on them, 9 blocks + `npm create nuikit -t`, theme studio | Yes (7 of 8) |
 | 0.7.0 | Identities + tokens 1.2, motion, compact HUD, components v2, hardening, `nuikit doctor`, `nuikit.cfg`, per-framework zips | [Results](releases/v0.7.0-results.md) |
 | **0.8.0** | Intents drawn in nuikit's frame, ox_lib routed to them, `[nuikit-qb]` / `[nuikit-esx]` / `[nuikit-standalone]`, `nk.camera` + `nk.controls`, image resolver, currency/locale ([notes](releases/v0.8.0.md)) | Qbox, per feature |
-| main after 0.8.0 | **Tokens 1.6 + 1.7** (the baseline, selection as a sliding keycap tile), **Default** and **Neon Pop** themes, the registry as a network of 10 foundations, security and health passes, the site on Default | Qbox: HUD, pause, inventory, ox_lib played; the rest per feature |
+| **0.9.0** | **The system** (token language, four themes, API spec + `nk.<domain>.<verb>`, layout, invariants), **the adoption surface** (`nuikit install/upgrade/uninstall`, update check, checksums, install.md, site, `/kit`), sliding selection everywhere, Stepper, Tabs, smooth caret, `[KEY]` keycaps, the curated registry, lean repo, `nuikit` CLI on npm ([notes](releases/v0.9.0.md)) | Qbox checkpoint ([results](releases/v0.9.0-test.md)); the rest per feature |
 
 Measured and settled: FiveM shares one browser process across NUI frames (the host saves ~5 MB, stays opt-in);
 mouse over focused UI ~1.2 ms/frame, Lua→page ~0.3 ms, page→Lua ~0.5 ms (hence live values, protocol §5.7).

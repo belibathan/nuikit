@@ -1,7 +1,7 @@
 {
   "name": "nuikit-ox-doorlock-ui",
   "private": true,
-  "version": "0.8.0",
+  "version": "0.8.1",
   "description": "A drop-in replacement for ox_doorlock's door editor, built from stock shadcn/ui and themed by nuikit/theme.css.",
   "type": "module",
   "scripts": {

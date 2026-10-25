@@ -5,7 +5,7 @@ lua54 'yes'
 name 'nuikit_qb_menu'
 description 'nuikit adapter: stands in for qb-menu. openMenu / closeMenu / showHeader (exports and events) land on the nk.intent.menu intent; selections dispatch exactly as qb-menu documents.'
 repository 'https://github.com/belibathan/nuikit'
-version '0.8.0'
+version '0.9.0'
 
 -- Stand-in (docs/architecture.md §3, mechanism 1; spec: docs/adapters/qb-menu.md).
 -- `dependency 'qb-menu'` in other resources resolves to this one; stop the real qb-menu.

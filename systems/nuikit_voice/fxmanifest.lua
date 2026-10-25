@@ -5,7 +5,7 @@ lua54 'yes'
 name 'nuikit_voice'
 description 'nuikit: pma-voice range, radio and call as slots in the vitals cluster (reads pma-voice, never changes it)'
 repository 'https://github.com/belibathan/nuikit'
-version '0.8.0'
+version '0.9.0'
 
 dependency 'nuikit'
 

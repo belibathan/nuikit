@@ -1,5 +1,55 @@
 # nuikit-core
 
+## 0.9.0
+
+### Minor Changes
+
+- The system rebuild: one token language (tokens revision 2, four themes as values), the typed API spec with `nk.<domain>.<verb>`, and the layout system.
+  The adoption surface: `nuikit install/upgrade/uninstall`, update check, checksums, `docs/install.md`.
+  The `nuikit` CLI is now published to npm (`npx nuikit check`); themes arcade, street, studio, signal, vector, velvet, graphite and the `ink` alias are removed.
+- 5f4b6dd: Coverage harness: `nuikit-core/coverage` (session/doctor pairing and targets), the doctor prints the framework target and validates `nuikit:intent` payloads, the nuikit resource sends the event to the server.
+- 1a68fb0: Themes are named universally. The flagship theme **Ink is renamed Default** (`nuikit-core/themes/default.css`,
+  id `default`): it is the theme a new project and the stock `nuikit` resource ship with, and the one the site
+  wears. The nuikit resource's `theme/ink.css` and `theme/ink-fonts.css` are `theme/default.css` and
+  `theme/default-fonts.css`; its theme-layer keyframes are `nk-theme-{reveal,rise-x,rise-y,deny}`. The built-in
+  token defaults are unchanged, so `compileTheme("")` and a plain TweakCN paste still compile to Graphite, which
+  stays a named theme. The id `ink` resolves to `default` for one minor (in `nuikit_identities` and in a saved
+  player pref) with a deprecation line in the log; `nuikit-cli`'s `INK_RULES` is now `KIT_RULES`, with the old
+  name kept as a deprecated alias.
+
+  New theme **Neon Pop** (`nuikit-core/themes/neon-pop.css`): Default's structure — the `tile` treatment, keycap
+  tiles, fills and motion — with a vivid palette. A blue → violet → rose `--nk-accent-gradient`, solid brand
+  `#8A8CFF`, a colour per vital, and a grey → green → blue → violet → amber rarity ladder on near-black surfaces
+  with white text.
+
+  Conventions are written down in `docs/design/naming.md` (themes, treatments, token families, components, data
+  attributes, files and folders), and `docs/design/ink.md` is `docs/design/default.md`.
+
+- 1a68fb0: Default W0 (docs/design/default.md): tokens 1.5. Kit levers every theme gets, with Graphite-equal defaults in kit.css: scales (`--nk-space-*`, `--nk-gap-*`, `--nk-r-{key,chip,control,surface}`, `--nk-h-*`, `--nk-icon-*`), five type roles (`--nk-type-{scan,title,label,num,body}-*`, `.nk-scan`, `.nk-body`), tile (`--nk-tile-*`), plate (`--nk-plate*`) and fill (`--nk-fill-*`) tokens, the motion ladder (`--nk-time-{snap,fast,slow}`, `--nk-exit-factor`, `--nk-time-reduced`, `--nk-lift`, `--nk-rise`, `--nk-land-scale`, `--nk-deny-x`), `--nk-row-indicator: sweep`, and the `--nk-treatment: tile` preset (Default's values). `--nk-hang-*` is removed. Cascade layers `nk.base, nk.kit, nk.theme, nk.app` (a theme writes into `nk.theme`); shadcn's Kbd is drawn as a Tile. Registry: new `tile`, `fill`, `chip`, `icon-text`, `action-bar`; `meter` gains `hue` and `threshold`, `edge-sheet` `back` and `anchor`, `empty-state` `tile`. `nuikit check` gains the Default rules (radius, blur, color-mix, soft shadows, motion, type, class-substring selectors, alert spellings, unlayered themes, off-scale spacing), all warnings for now.
+- ed88d66: Design levers (roadmap Track D). `docs/design/levers.md` catalogs every visual decision, its lever, default, range and treatment, and the gaps. Two new shipped themes built from values only: `themes/flat.css` (flat, rounded, upright, soft fills) and `themes/square.css` (zero radius, 1px rims, mono numerals, high contrast). New lever `--nk-tile-key-rim` (the keycap face's rim; `transparent` by default, so nothing shipped changes). Themes set values only, enforced: a core test over `themes/*.css`, and `nuikit check` warns `theme/values-only` on a selector or a non-token declaration in `theme.css` / `themes/*.css`.
+- b759139: `fetchNui` rejects with a typed `NuiError` (`code`: `TIMEOUT | TRANSPORT | UNKNOWN_CALLBACK | INVALID | CANCELLED`), takes `{ timeoutMs, signal }`, and the page keeps per-resource call diagnostics (`getNuiDiagnostics`, `configureNui`). Devtools show code and timing per call. The host answers an unregistered forwarded callback with `UNKNOWN_CALLBACK`.
+- d67f306: `nuikit install` / `nuikit upgrade` / `nuikit uninstall`: a server console command in the `nuikit` resource that merges the shipped overrides into the resources you run, backs up the stock files to `<resource>/.nuikit-backup/<version>/`, writes a manifest, keeps files you edited (`--force` to overwrite), and restores from the backup. `--dry-run` lists without writing. The zip now ships overrides under `[nuikit]/nuikit/overrides/` and `overrides.json` carries a byte hash per file. `nuikit doctor` reports an override that is outdated or edited and names the command. New in nuikit-core: `planInstall`, `planUninstall`, `formatInstall`, `bytesHash`, `overrideOutdated`. Guide: `docs/install.md`.
+- d6eec14: Screen zones reach override pages: `loadServerTheme` takes `zones` from the `https://nuikit/theme` answers (the nuikit resource serves them from `LocalPlayer.state.nuikitZones`), so `useClearOf` works on ox_lib, qbx_taxijob and other override pages. A zone change alone doesn't repaint the theme (`themeHash`). New: `setZones`.
+- 031bf9f: A player's own look: prefs `identity`, `treatment` and `density`, applied live to every nuikit UI when the server allows them (`nuikit_identities`, `nuikit_treatments`); a Look settings section (look, style, size, spacing, motion, contrast).
+- 7a04527: Screen zones: `NUI.zone(name, rects)` in Lua publishes what a UI covers on screen, and every nuikit page gets the merged set as `nuikit:zones`. `nuikit-core/react` adds `useZones()`, `clearOf(zones, position)` and `useClearOf(position)`, so a corner-anchored stack (notices, prompts) starts clear of the HUD's map or the vehicle cluster.
+- 2ea77e5: Selection is the keycap Tile (tokens 1.7, `SELECTION_TOKENS`, docs/design/baseline.md "Selection"): no focus rings anywhere (focus renders the hover state; a text field keeps one caret rim), a lit row, menu item or tab is the primary keycap's face and wall (`--nk-tile-wall`, `--nk-tile-wall-shade`, `--nk-tile-radius`, `--nk-tile-key`, `--nk-tile-key-ink`, `--nk-tile-tint`, `--nk-tile-inset`), one `nk-indicator` per list slides between items by transform (sizes by FLIP), and lists (`nk-list`) space their rows by `--nk-list-gap` so a lit tile never touches a neighbour. The per-row hover fills, the row sweep and the marker are gone; `--nk-row-indicator` no longer changes rows.
+- 7e782f3: `nk.settings.register({ id, label, icon, rows })`: any resource adds its own Settings section with toggle, select, range or text rows, saved per player (`nuikit:settings:<resource>:<id>`), read with `nk.settings.get(id)` and followed with `nk.settings.onChange(fn)` or the `nuikit:settings:<resource>` message.
+- eb68708: `nk.settings`: resources declare settings rows (options, ranges, toggles) with presets and feature flags; pages show them as a live-preview draft and save or reset (`useSettings`, `loadSettings`, `draftSettings`…, NUI callbacks `https://nuikit/settings*`). Saved per player in KVP, merged over the defaults with a schema version.
+- 4f35582: Cluster slots: `NUI.slot(cluster, key, opts)` lets another resource join a cluster (the HUD vitals row: voice, radio, a job); pages read them ordered with `useSlots(cluster)`.
+- 014dc32: Tokens 1.4 (docs/design/foundation.md): treatment presets (`--nk-treatment: soft | glass | plate | slab`, defaults under the theme's own values), role colours and ramps (`--role-<name>`, `-deep`, `-light`; vitals, status, faction, rarity, brand, neutral), context materials (`--nk-material-{hud,menu,overlay}-*`, `--nk-slash`), `--nk-legibility`, states (`--nk-focus-style`, `--nk-hold-style`, `--nk-confirm-scale`, `--nk-level-style`), behaviour (thresholds, notify durations by severity, hold, cooldown, rest delay), motion steps (named eases, confirm/retract/fill/pulse rungs, `--nk-motion-profile`), z-layers, offsets and `--nk-glow-budget`. Every 1.3 theme compiles to the same values.
+- eece522: Tokens 1.3 adds `--world-success` and `--world-destructive`: gains and losses drawn on the game or the HUD plate, derived from `--success` / `--destructive` with their lightness raised to 0.7, so a light theme's dark status colours still read on the dark plate. The slab delta (`+2`, `−1` on item notices) uses them.
+
+### Patch Changes
+
+- 94ce073: Backdrop filters go through one switch, `--nk-backdrop: on | off` (default on): surfaces set `--nk-backdrop-filter` and kit.css applies it unless `off`, so a server whose clients draw backdrop filters as black boxes turns them all off with one token.
+- 6ea19bb: `nk.camera`: a targeted claim defaults its offset by what it targets (vehicles further out, `{ y = 5.5, z = 1.4 }`; peds as before), set in `nk.camera.defaults`. `StaggerGroup` reads `--nk-stagger` once per theme instead of on every flush.
+- 401badf: `nuikit doctor` knows `[nuikit-qb]` and `[nuikit-esx]` ship, and counts `nuikit_voice` among the systems `nuikit.cfg` ensures.
+- f1fc0b3: `nuikit doctor` warns when a `[nuikit]` system is installed but not running (and says how to start it), and notes when none is known to the server.
+- e7c2aea: `nuikit doctor` checks GitHub once per start for a newer release (one console line when there is one; `nuikit_update_check 0` turns it off, `nuikit_update_delay` sets the wait). Version compare now ranks prereleases below their release. Release zips ship with `SHA256SUMS.txt`.
+- 92684fc: Kit.css literals become levers with today's value as the default: `--nk-tile-lift`, `--nk-tile-press-ratio`, `--nk-leading-tight`, `--nk-leading-normal`, gauge-track-driven edge fills, `--nk-row-bar-thickness`, `--nk-row-bar-inset-scale`, `--nk-hold-ring-pad`, `--nk-pip-size`, `--nk-pip-gap`, `--nk-meter-segment-gap`, `--nk-glow-radius`.
+- bee6e1a: `motionLevel(el)` takes an optional element and reads the nearest `[data-nk-motion]` from it up (a theme painted on a subtree), falling back to `<html>`, like kit.css's identity keywords. `countdown` and `notice`'s time line honour motion off on any ancestor.
+- 378c07d: A theme painted on a subtree (`applyTheme(theme, element)`: a preview stage, a host module) now shows its whole identity: `applyTheme` marks the element `data-nk-theme` and kit.css re-declares its component tokens there, so density, radii, the HUD plate and the rest derive from that theme instead of what `<html>` resolved.
+
 ## 0.8.0
 
 ### Minor Changes

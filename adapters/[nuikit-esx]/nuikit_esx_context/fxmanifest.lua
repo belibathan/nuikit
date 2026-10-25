@@ -5,7 +5,7 @@ lua54 'yes'
 name 'nuikit_esx_context'
 description 'nuikit adapter: esx_context → nk.intent.menu (with inline input rows). Stand-in (provide). Clean-room from docs/adapters/esx-context.md.'
 author '@belibathan'
-version '0.8.0'
+version '0.9.0'
 
 nuikit_adapter 'esx_context'
 provide 'esx_context'
