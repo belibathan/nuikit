@@ -1,19 +1,12 @@
-# The Figma design system (tokens 1.7, four modes)
+# The Figma design system
 
-**Status:** variables regenerated for 1.7 on 2026-10-23; the Figma file itself is not yet repopulated (run
-`bench/figma/populate.js` inside `use_figma`: steps below). Until then the file still holds the 1.2 variables
-(Graphite / Signal / Velvet / Vector, plus Ember) and the pages below describe that state.
+**File:** [nuikit — design system](https://www.figma.com/design/IroNuj1YQL223JPzfxJ1ok). The variables mirror the spec
+(`packages/core/src/spec`): three collections (identity, semantic, component), modes **Default · Neon Pop · Flat · Square**,
+245 / 41 / 314 variables, names 1:1 with the DTCG file. The repo is the source; Figma is the reference.
 
-**File:** [nuikit — design system v2](https://www.figma.com/design/IroNuj1YQL223JPzfxJ1ok) (Quarry Studio team, Professional
-plan). The v2 pages and collections were built on `design/figma-tokens` (Oct 20, 2026) on top of the v1 draft that was
-already in the file; the v1 pages (README, Foundations, Components (v1 baseline)) and collections (Color / Size / Type)
-are kept for reference and marked superseded on the README page.
-
-The repo stays the source of truth: every value in Figma is `compileTheme`'s output for
-`packages/core/themes/{default,neon-pop,flat,square}.css` (tokens 1.7, `docs/tokens.md`), with the 1.5-1.7 levers
-(`docs/design/levers.md`) resolved per mode and falling back to the `kit.css` default where a theme leaves one out.
-Figma is the visual reference and the documentation of the token system, not where tokens are edited. `bench/figma/`
-holds the generator that produces the variables and the exported sheets.
+**Status (Oct 25, 2026):** the variable data is regenerated for tokens revision 2; the file itself still holds the 1.2
+variables until the scripts run. `bench/figma/README.md` has the three commands and the six paste-ready scripts
+(`bench/figma/out/figma-*.js`, run in order in a session with Figma write access).
 
 ## Structure
 
