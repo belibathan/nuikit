@@ -432,7 +432,6 @@ function Icon({ className, children, ...props }: React.ComponentProps<"span">) {
  * The chip's text (voice range, radio channel, a vital's name). Put it inside Shape: the keycap reads its children
  * as the name and writes it, with the value, on its plate. It draws nothing itself.
  */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function Label(_props: React.ComponentProps<"span">) {
   return null
 }
