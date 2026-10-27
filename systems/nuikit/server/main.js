@@ -26,9 +26,19 @@ function log(msg) {
   console.log(`^5[nuikit]^7 ${msg}`);
 }
 
+// A state bag update whose bag name + key + value reach 128 KiB never arrives, and nothing logs it
+// (fivem-foundation, upstream/info/state_bags/state_bags.md: the largest value that still arrived was
+// 131,061 bytes minus the key and bag name). Refuse early and say so, rather than ship a theme nobody receives.
+const STATE_BAG_LIMIT = 131_061;
 function setState(value) {
+  const size = JSON.stringify(value).length + KEY.length + "global".length;
+  if (size >= STATE_BAG_LIMIT) {
+    console.log(`^1[nuikit] the compiled theme is ${size} bytes; a state bag update stops arriving at ${STATE_BAG_LIMIT}. Trim theme.css (fewer @imports, fewer tokens); the previous theme stays published.^7`);
+    return false;
+  }
   if (typeof GlobalState.set === "function") GlobalState.set(KEY, value, true);
   else GlobalState[KEY] = value;
+  return true;
 }
 
 /** Read theme.css, compile it, publish it. Returns the compiled theme (or null on failure). */
