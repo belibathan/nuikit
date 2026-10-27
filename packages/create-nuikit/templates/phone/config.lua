@@ -1,3 +1,4 @@
+-- GLOBAL: this resource's config (fivem-foundation §9)
 Config = {
   -- Open and close the phone with /{{name}} or this key (players can rebind it in Settings → Key Bindings → FiveM).
   key = 'F1',

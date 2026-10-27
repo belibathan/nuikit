@@ -10,6 +10,11 @@
 
 local hud = nk.surface.define('hud', { layer = 'hud' })
 
+-- The loops below run every frame or every 33 ms in a vehicle: their natives as locals (fivem-foundation §20)
+local GetGameTimer, PlayerPedId, IsPedInAnyVehicle, IsPauseMenuActive = GetGameTimer, PlayerPedId, IsPedInAnyVehicle, IsPauseMenuActive
+local GetEntitySpeed, GetEntityHeading, GetEntityCoords, GetVehicleCurrentRpm = GetEntitySpeed, GetEntityHeading, GetEntityCoords, GetVehicleCurrentRpm
+local GetVehiclePedIsIn, GetVehicleClass, HideHudComponentThisFrame, DisplayRadar = GetVehiclePedIsIn, GetVehicleClass, HideHudComponentThisFrame, DisplayRadar
+
 -- ───────────────────────────────── units (config, or the player's own with Config.playerUnits)
 
 local KVP = 'nuikit_hud:units'
@@ -168,7 +173,7 @@ end
 -- The vehicle loop: live values every 33 ms, the rest every 150 ms, nothing on foot (400 ms check).
 CreateThread(function()
   local slowAt = 0
-  while true do
+  while true do -- INFINITE LOOP: the cluster's live values; 33 ms in a vehicle, 400 ms on foot
     if current ~= 0 then
       if (Config.vehicle or {}).enabled ~= false then
         speedLive:push(GetEntitySpeed(current) * factor)
@@ -205,7 +210,7 @@ end)
 -- note C); the HUD shows its own location. They can only be hidden frame by frame, so this runs
 -- only while the cluster is up.
 CreateThread(function()
-  while true do
+  while true do -- INFINITE LOOP: GTA's texts hide per frame (§8 render exception); 50 ms on foot
     -- IsPedInAnyVehicle as well as `current`: GTA starts the name the moment you sit, before the
     -- vehicle loop (400 ms on foot) has picked the car up.
     local seated = current ~= 0 or IsPedInAnyVehicle(PlayerPedId(), false)
@@ -259,7 +264,7 @@ CreateThread(function()
   local locationCfg = Config.location or {}
   local compassCfg = Config.compass or {}
   local mapCfg = Config.minimap or {}
-  while true do
+  while true do -- INFINITE LOOP: radar, compass and location, 250 ms in a vehicle, 500 ms on foot
     local isPaused = IsPauseMenuActive()
     if isPaused ~= paused then paused = isPaused; sync() end
 
@@ -306,7 +311,7 @@ local function pushLegibility()
   TriggerEvent('nuikit:legibility', mode)
 end
 CreateThread(function()
-  while true do
+  while true do -- INFINITE LOOP: day or night from the game clock, every 10 s
     if Config.legibility ~= false then pushLegibility() end
     Wait(10000)
   end
@@ -433,3 +438,9 @@ RegisterCommand('hud', function(_, args)
 end, false)
 
 sync()
+
+-- The resource stopping gives GTA its radar back (§22): this file hid it per frame and placed it.
+AddEventHandler('onResourceStop', function(resource)
+  if resource ~= GetCurrentResourceName() then return end
+  DisplayRadar(true)
+end)

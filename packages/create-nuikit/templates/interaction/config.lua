@@ -1,3 +1,4 @@
+-- GLOBAL: this resource's config (fivem-foundation §9)
 Config = {
   -- Hold this key to target (players can rebind it in Settings → Key Bindings → FiveM). Left Alt
   -- is also ox_target's and qb-target's: don't run them on the same key (the server warns at start).

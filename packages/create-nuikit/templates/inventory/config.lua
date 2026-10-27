@@ -1,3 +1,4 @@
+-- GLOBAL: this resource's config (fivem-foundation §9)
 Config = {
   -- Open the inventory with TAB or /{{name}}; use hotbar slots with 1–5 (players can rebind them).
   key = 'TAB',

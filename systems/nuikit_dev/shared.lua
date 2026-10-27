@@ -1,4 +1,5 @@
 -- Pure rules of /nk test, shared by server.lua and the Lua tests (no natives in here).
+-- GLOBAL: module table, shared by this resource's files
 NkDev = {}
 
 NkDev.WHAT = {

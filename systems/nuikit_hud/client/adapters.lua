@@ -2,6 +2,7 @@
 -- come from whichever resource the server runs; nuikit only reads them (presentation only: no
 -- ejection, no cruise control, no fuel use).
 
+-- GLOBAL: module table, shared by this resource's files
 Adapters = {}
 
 local function started(resource)

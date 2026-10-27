@@ -4,6 +4,7 @@
 -- they move (a passenger in a moving car), keeps out of walls, can be turned with a drag, and hands
 -- back to the gameplay camera when the menu closes.
 
+-- GLOBAL: module table, shared by this resource's files
 Focus = {}
 
 local cfg = Config.preview or {}

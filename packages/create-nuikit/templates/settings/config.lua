@@ -1,3 +1,4 @@
+-- GLOBAL: this resource's config (fivem-foundation §9)
 Config = {
   title = 'Settings',
   -- F10 by default; players can rebind it in Settings → Key Bindings → FiveM.

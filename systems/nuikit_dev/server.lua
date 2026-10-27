@@ -1,5 +1,5 @@
 if GetConvar('nuikit_dev', '0') ~= '1' then
-  print('^3[nuikit_dev]^7 off (set `setr nuikit_dev 1` to enable /nk test)')
+  print('^3[nuikit_dev] off (set `setr nuikit_dev 1` to enable /nk test)^7')
   return
 end
 
@@ -8,7 +8,7 @@ AddEventHandler('playerDropped', function() state.last[source] = nil end)
 
 local function say(src, description, status)
   if src > 0 then TriggerClientEvent('nuikit_dev:notify', src, description, status or 'error')
-  else print('[nuikit_dev] ' .. description) end
+  else print('^5[nuikit_dev] ' .. description .. '^7') end
 end
 
 local deps = {
@@ -40,7 +40,7 @@ RegisterCommand('nk', function(source, args)
   TriggerClientEvent('nuikit_dev:run', source, what)
 end, false)
 
-print('^2[nuikit_dev]^7 on: /nk test <what> (ace ' .. NkDev.ACE .. ')')
+print('^2[nuikit_dev] on: /nk test <what> (ace ' .. NkDev.ACE .. ')^7')
 
 -- Restart queue (dev only): a local tool appends resource names, one per line, to this resource's restart.queue
 -- (`.local/nk-restart.ps1 nuikit_hud ox_inventory`); each is ensured within a second. Lets an agent iterate
@@ -50,7 +50,7 @@ print('^2[nuikit_dev]^7 on: /nk test <what> (ace ' .. NkDev.ACE .. ')')
 local refuse = { nuikit = true, ox_lib = true }
 local after = { ox_inventory = { 'ox_fuel', 'qbx_ambulancejob' } }
 CreateThread(function()
-  while true do
+  while true do -- INFINITE LOOP: the restart queue, once a second (dev only)
     Wait(1000)
     local queue = LoadResourceFile(GetCurrentResourceName(), 'restart.queue')
     if queue and queue:find('%S') then
@@ -58,9 +58,9 @@ CreateThread(function()
       -- only names of resources that exist (never a command: NkDev.queueNames), at most 32 per round
       for _, name in ipairs(NkDev.queueNames(queue, GetCurrentResourceName(), function(n) return GetResourceState(n) ~= 'missing' end)) do
         if refuse[name] then
-          print(('[nuikit_dev] not restarting %s from the queue (it would stop nuikit_dev mid-command); use the txAdmin console'):format(name))
+          print(('^3[nuikit_dev] not restarting %s from the queue (it would stop nuikit_dev mid-command); use the txAdmin console^7'):format(name))
         else
-          print('[nuikit_dev] restart ' .. name)
+          print('^5[nuikit_dev] restart ' .. name .. '^7')
           ExecuteCommand('ensure ' .. name) -- starts it, or restarts it when running
           for _, dep in ipairs(after[name] or {}) do ExecuteCommand('ensure ' .. dep) end
         end

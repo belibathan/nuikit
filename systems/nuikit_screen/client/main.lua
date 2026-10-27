@@ -151,6 +151,7 @@ local function frame()
   if using and dist(pc, using.coords) > USE_DISTANCE * 2 then release() end
   return near
 end
+-- GLOBAL: module table, shared by this resource's files
 Screens = { frame = frame, create = create, remove = remove }
 
 CreateThread(function()

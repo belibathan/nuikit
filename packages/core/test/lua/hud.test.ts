@@ -53,7 +53,8 @@ const natives = `
   function IsControlPressed() return HANDBRAKE_KEY end
   function GetVehicleIndicatorLights() return 0 end
   function GetVehicleLightsState() return true, 0, 0 end
-  function GetEntityHeading() return 0.0 end
+  HEADING = 0.0
+  function GetEntityHeading() return HEADING end -- main.lua caches the native at load (§20): drive HEADING, never redefine it
   function GetEntityCoords() return { x = 0.0, y = 0.0, z = 30.0 } end
   function GetStreetNameAtCoord() return 1, 0 end
   function GetStreetNameFromHashKey() return 'Elgin Ave' end
@@ -339,7 +340,7 @@ describe("systems/nuikit_hud", () => {
 
     await hud.run(`VEH, SPEED_MS = 9, 60.0 for i = 1, 20 do STEP(50) end`);
     expect(sent("hud:vehicle").at(-1)).toMatchObject({ kind: "plane", units: "kts", altUnits: "ft", landingGear: "down", speed: 117, heading: 0, altitude: 98 });
-    await hud.run(`for i = 1, 30 do SPEED_MS = 60.0 + i GetEntityHeading = function() return 360 - i * 2 end STEP(34) end`);
+    await hud.run(`for i = 1, 30 do SPEED_MS = 60.0 + i HEADING = 360 - i * 2 STEP(34) end`);
     expect(sent("hud:vehicle:speed").length).toBeGreaterThan(10);
     expect(sent("hud:vehicle:heading").at(-1)).toBeGreaterThan(40);
     expect(sent("hud:vehicle:rpm")).toEqual([]);

@@ -6,6 +6,7 @@
 -- Saved by the nuikit resource, merged over the defaults with a version. The KVP the HUD used before
 -- (nuikit_hud:parts:<preset>, nuikit_hud:styles) is moved over once and deleted.
 
+-- GLOBAL: module table, shared by this resource's files
 Prefs = {}
 Prefs.defaults = {} -- row key → default, from the last Prefs.rows()
 

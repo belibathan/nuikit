@@ -4,6 +4,7 @@
 -- Nothing in ox_inventory is changed. Turn off ox_inventory's own blur (setr inventory:screenblur
 -- false) so the player isn't blurred.
 
+-- GLOBAL: module table, shared by this resource's files
 Inventory = {}
 
 local cfg = Config.inventory or {}

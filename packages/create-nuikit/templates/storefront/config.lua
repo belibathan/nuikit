@@ -1,3 +1,4 @@
+-- GLOBAL: this resource's config (fivem-foundation §9)
 Config = {
   -- Open the nearest counter with /{{name}} or E (players can rebind it) within `radius` metres.
   key = 'E',

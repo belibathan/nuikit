@@ -1,6 +1,7 @@
 -- nuikit_loading: client scripts start once the game has loaded, while the loading screen is
 -- still up (loadscreen_manual_shutdown). Close it, or tell it we're waiting on another resource.
 
+-- GLOBAL: module table, shared by this resource's files
 Loading = {}
 
 --- Is Qbox's own character menu going to close the loading screen?

@@ -1,5 +1,6 @@
 -- nuikit_hud settings. Every element can be turned off here; the look comes from the server's
 -- identity (nuikit/theme.css). See README.md for what each one does.
+-- GLOBAL: this resource's config (fivem-foundation §9)
 Config = {
   -- Speed unit: 'mph' or 'kmh'. With playerUnits, each player can pick their own (/hud units kmh).
   units = 'mph',

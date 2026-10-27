@@ -13,6 +13,7 @@
 -- and its onLost('handover') runs). Death and the resource stopping are the service's job: it
 -- releases the claim, cuts back to the gameplay camera and runs onLost('dead').
 
+-- GLOBAL: module table, shared by this resource's files
 Camera = {}
 
 local current -- { id, handle, onLost }

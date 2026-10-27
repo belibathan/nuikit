@@ -1,3 +1,4 @@
+-- GLOBAL: this resource's config (fivem-foundation §9)
 Config = {
   -- Which medical resource to read: 'auto' picks the first one that's started.
   --   'qbx'       qbx_medical (+ qbx_ambulancejob for the EMS prompt, doctors and the respawn cost)

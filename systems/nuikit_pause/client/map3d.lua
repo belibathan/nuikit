@@ -2,6 +2,7 @@
 -- the UI floats on top of it. The camera orbits a ground target: distance d, pitch (down is
 -- negative) and heading. Every frame the live state eases toward the goal the UI asks for.
 
+-- GLOBAL: module table, shared by this resource's files
 Map3D = {}
 
 local cfg = Config.map or {}

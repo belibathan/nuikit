@@ -1,3 +1,4 @@
+-- GLOBAL: this resource's config (fivem-foundation §9)
 Config = {
   -- Open the terminal with /{{name}} or F6 (players can rebind it). The server decides who may.
   key = 'F6',

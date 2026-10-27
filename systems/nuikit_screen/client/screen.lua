@@ -3,6 +3,7 @@
 -- an optional tilt back (degrees) and a size in metres. u runs left → right, v top → bottom, as
 -- seen by someone standing in front of it.
 
+-- GLOBAL: module table, shared by this resource's files
 Screen = {}
 
 local rad, sin, cos = math.rad, math.sin, math.cos

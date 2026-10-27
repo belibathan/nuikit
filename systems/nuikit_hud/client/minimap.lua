@@ -26,6 +26,7 @@
 -- scripts do: they offset all three components alike). At (0, 0) it sat in the screen's bottom-left
 -- corner, away from a top-right ring, and the GPS route wasn't drawn inside the ring (0.7.0 test, 7b).
 
+-- GLOBAL: module table, shared by this resource's files
 Minimap = {}
 
 local cfg = Config.minimap or {}
@@ -521,7 +522,7 @@ end
 
 -- Whether the radar shows: a few times a second (cheap: three natives, a message only on change).
 CreateThread(function()
-  while true do
+  while true do -- INFINITE LOOP: whether the radar shows, 250 or 500 ms
     Minimap.tick(Minimap.radarOn)
     Wait(Minimap.radarOn and 250 or 500)
   end
@@ -531,7 +532,7 @@ end)
 -- the location badge), and only when it turned. Minimap.compassOn is set by main.lua.
 Minimap.compassOn = false
 CreateThread(function()
-  while true do
+  while true do -- INFINITE LOOP: the compass at 30 Hz while shown, else 500 ms
     if Minimap.compassOn then
       Minimap.compass()
       Wait(33)
@@ -545,7 +546,7 @@ end)
 -- character switch goes through the loading screen) and whenever the render size or safe zone changes.
 CreateThread(function()
   local lw, lh, ls, lstyle, was = 0, 0, 0.0, nil, false
-  while true do
+  while true do -- INFINITE LOOP: the render size and safe zone, 1.5 s in game, 500 ms before
     local now = Minimap.inGame()
     if now then
       local w, h = GetActiveScreenResolution()
@@ -566,7 +567,7 @@ do
   -- The HUD draws vitals itself: hide GTA's health and armour arcs around the radar (only while
   -- nuikit places it: 'stock' leaves GTA's radar as it is).
   CreateThread(function()
-    while true do
+    while true do -- INFINITE LOOP: GTA's health arcs and GPS distance asked hidden every second
       if Minimap.style() == 'ring' and placedByUs then TriggerEvent('nuikit:minimap:bars', false) end
       -- GTA's own GPS distance inside the radar (Config.minimap.gameDistance): hidden by the nuikit
       -- resource, which holds the minimap movie; asked again every second (it ignores repeats)

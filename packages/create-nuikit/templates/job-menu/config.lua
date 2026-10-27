@@ -1,3 +1,4 @@
+-- GLOBAL: this resource's config (fivem-foundation §9)
 Config = {
   -- Open the menu with /{{name}} (or F5).
   key = 'F5',

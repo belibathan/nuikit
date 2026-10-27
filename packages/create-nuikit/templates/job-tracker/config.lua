@@ -1,3 +1,4 @@
+-- GLOBAL: this resource's config (fivem-foundation §9)
 Config = {
   -- Press this near a job's start to take it, and near the current step's place to do it
   -- (players can rebind it). /{{name}}manage (default J) focuses the panel to abandon.

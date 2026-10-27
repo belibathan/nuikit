@@ -1,3 +1,4 @@
+-- GLOBAL: this resource's config (fivem-foundation §9)
 Config = {
   -- How many characters a player may have, and whether they may delete one.
   slots = 3,

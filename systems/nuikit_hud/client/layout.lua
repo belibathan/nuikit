@@ -11,6 +11,7 @@
 -- The result goes to the page as `hud:layout` (fractions of the screen) and becomes CSS variables
 -- every anchor reads; the minimap uses the same numbers to place GTA's radar.
 
+-- GLOBAL: module table, shared by this resource's files
 Layout = {}
 
 --- The layout preset: 'compact' (default) or 'classic'. A 0.6 config (`layout = { source = … }`) keeps

@@ -1,6 +1,7 @@
 -- nuikit_pause: key bindings, read live from the game (docs/pause-3d.md). Scripts can't change a
 -- key; this only shows what the player has bound now, so a rebound key shows its new key.
 
+-- GLOBAL: module table, shared by this resource's files
 Keys = {}
 
 -- GTA's instructional-button codes for keys that aren't a letter or digit.

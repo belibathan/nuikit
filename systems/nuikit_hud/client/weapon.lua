@@ -5,6 +5,7 @@
 -- Cost: one loop. Unarmed it wakes every 500 ms (one native); armed every 100 ms (three natives),
 -- so a shot shows within a tenth of a second without a per-frame loop.
 
+-- GLOBAL: module table, shared by this resource's files
 Weapon = {}
 
 -- GetWeapontypeGroup → the glyph the page draws. Groups not listed (melee, unarmed, the stun gun,
@@ -108,7 +109,7 @@ end
 function Weapon.resend() last = '' end
 
 CreateThread(function()
-  while true do
+  while true do -- INFINITE LOOP: the weapon in hand, 100 ms armed, 500 ms not
     local armed = Weapon.tick()
     Wait(armed and 100 or 500)
   end

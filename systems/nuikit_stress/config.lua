@@ -1,4 +1,5 @@
 -- Stress: the gameplay half of qbx_hud / qb-hud. nuikit_hud only draws the number.
+-- GLOBAL: this resource's config (fivem-foundation §9)
 Config = {
   enabled = true,
   disableForLeo = true,         -- job type 'leo' gains no stress

@@ -1,5 +1,6 @@
 -- nuikit_loading: everything here reaches the loading screen through the connection handover.
 -- Files are paths inside this resource (put them in media/), or full https:// URLs.
+-- GLOBAL: this resource's config (fivem-foundation §9)
 Config = {
   -- nil uses the sv_projectName convar, then sv_hostname.
   serverName = nil,

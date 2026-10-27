@@ -1,3 +1,4 @@
+-- GLOBAL: this resource's config (fivem-foundation §9)
 Config = {
   -- '' uses the server's sv_projectName.
   serverName = '',

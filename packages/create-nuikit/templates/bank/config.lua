@@ -1,3 +1,4 @@
+-- GLOBAL: this resource's config (fivem-foundation §9)
 Config = {
   -- Where players can open the bank (/{{name}} or F9 within `radius` metres). ATMs: no transfers.
   banks = {

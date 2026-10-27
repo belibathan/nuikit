@@ -1,3 +1,4 @@
+-- GLOBAL: this resource's config (fivem-foundation §9)
 Config = {
   -- Talk to the nearest NPC with /{{name}} or E (players can rebind it) within its `radius` metres.
   key = 'E',

@@ -4,9 +4,17 @@
 -- here changes in steps (gear, fuel, damage, lights…) and goes to the page as `hud:vehicle`, only when
 -- a field changed.
 
+-- GLOBAL: module table, shared by this resource's client files
 Vehicle = {}
 
 local cfg = Config.vehicle or {}
+
+-- Read every 150 ms in a vehicle: natives and math as locals (fivem-foundation §20)
+local GetIsVehicleEngineRunning, GetVehicleEngineHealth, GetVehicleBodyHealth = GetIsVehicleEngineRunning, GetVehicleEngineHealth, GetVehicleBodyHealth
+local GetEntitySpeed, GetEntitySpeedVector, GetVehicleCurrentGear, GetVehicleCurrentRpm = GetEntitySpeed, GetEntitySpeedVector, GetVehicleCurrentGear, GetVehicleCurrentRpm
+local GetVehicleHandbrake, GetPedInVehicleSeat, PlayerPedId, IsControlPressed = GetVehicleHandbrake, GetPedInVehicleSeat, PlayerPedId, IsControlPressed
+local GetVehicleIndicatorLights = GetVehicleIndicatorLights
+local math_max, math_min, math_floor = math.max, math.min, math.floor
 
 --- m/s → the unit shown.
 Vehicle.FACTOR = { mph = 2.236936, kmh = 3.6, kts = 1.943844 }
@@ -61,7 +69,7 @@ function Vehicle.landingGear(state)
 end
 
 local function pct(v, max)
-  return math.max(0, math.min(100, math.floor(v / max * 100 + 0.5)))
+  return math_max(0, math_min(100, math_floor(v / max * 100 + 0.5)))
 end
 
 --- Same fields, same values? (Flat tables: no json.encode on the hot path.)
@@ -83,8 +91,8 @@ function Vehicle.read(vehicle, kind, units)
     units = speedUnits,
     engineOn = engineOn,
     redline = cfg.redline or 0.9,
-    engine = pct(math.max(0.0, GetVehicleEngineHealth(vehicle)), 1000.0),
-    body = pct(math.max(0.0, GetVehicleBodyHealth(vehicle)), 1000.0),
+    engine = pct(math_max(0.0, GetVehicleEngineHealth(vehicle)), 1000.0),
+    body = pct(math_max(0.0, GetVehicleBodyHealth(vehicle)), 1000.0),
   }
   if cfg.fuel ~= false then v.fuel = Adapters.fuel(vehicle) end
   local speed = GetEntitySpeed(vehicle)
@@ -105,8 +113,9 @@ function Vehicle.read(vehicle, kind, units)
       v.gears = (ok and type(high) == 'number' and high > 0) and high or nil
     end
     if cfg.handbrake ~= false and kind ~= 'boat' then
-      -- GetVehicleHandbrake misses the driver holding the key (in game, Oct 20): read the control too
-      v.handbrake = GetVehicleHandbrake(vehicle) == true
+      -- GetVehicleHandbrake misses the driver holding the key (in game, Oct 20): read the control too.
+      -- A BOOL native returns 1 or false, never true (fivem-foundation): never compare with == true.
+      v.handbrake = (GetVehicleHandbrake(vehicle) and true or false)
         or (GetPedInVehicleSeat(vehicle, -1) == PlayerPedId() and IsControlPressed(0, 76))
     end
     if cfg.indicators ~= false and kind ~= 'boat' then v.indicators = GetVehicleIndicatorLights(vehicle) or 0 end

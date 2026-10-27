@@ -12,6 +12,7 @@ local pause = nk.surface.define('pause', {
   layer = 'modal', input = 'full', exclusive = true, hides = { 'hud' }, blockedBy = { 'dead' },
 })
 
+-- GLOBAL: module table, shared by this resource's files
 Pause = {}
 
 local info = {}          -- { players, max } from the server, refreshed on every open

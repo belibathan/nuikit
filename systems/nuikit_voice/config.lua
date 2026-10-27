@@ -1,3 +1,4 @@
+-- GLOBAL: this resource's config (fivem-foundation §9)
 Config = {
   -- The voice resource to read. Only pma-voice today; nothing joins while it isn't started.
   voice = 'pma-voice',

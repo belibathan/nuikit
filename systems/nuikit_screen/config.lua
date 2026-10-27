@@ -1,3 +1,4 @@
+-- GLOBAL: this resource's config (fivem-foundation §9)
 Config = {
   drawDistance = 25.0,  -- metres: screens are drawn (and their page kept live) only this close
   useDistance = 1.6,    -- metres: E uses a screen within this

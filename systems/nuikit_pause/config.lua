@@ -1,3 +1,4 @@
+-- GLOBAL: this resource's config (fivem-foundation §9)
 Config = {
   -- Print what the character stand-in and the map are doing to the F8 console (and the client log).
   debug = true,

@@ -1,3 +1,4 @@
+-- GLOBAL: this resource's config (fivem-foundation §9)
 Config = {
   -- At the top of the menu. An empty name uses the server's sv_projectName.
   -- `logo` is short text in a badge ('LS', 'RP'); '' hides it.

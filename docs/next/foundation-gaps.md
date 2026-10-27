@@ -12,12 +12,12 @@ Convention calls made here are rows 40–44 of [`decisions.md`](decisions.md). L
 4. [x] Templates: every `print` → `Log.*` (colour + `[RESOURCE]` + `^7`) (14 × S).
 5. [x] Templates: deadline `while` loops → `WaitLimiter.waitUntil`; the infinite ones carry `-- INFINITE LOOP:` (S).
 6. [x] Templates and systems: `use_fxv2_oal 'yes'` in every manifest (47 × S, one sweep).
-7. [ ] Runtime: a `Log` module in `nuikit.lua`, every console line through it (M).
-8. [ ] Runtime: `NUI.waitUntil` (the `WaitLimiter` shape) and the frame loops commented as the §8 exception (S).
-9. [ ] `nuikit_hud/client/vehicle.lua:109`: `GetVehicleHandbrake(vehicle) == true` is always false (BOOL natives return `1`) (S).
-10. [ ] `nuikit_hud`: cache natives and `math.*` on the per-frame and 33 ms threads (§20) (M).
+7. [x] Runtime: `nk.log` (arsenal domain `log`) in `nuikit.lua`, every runtime console line through it; `nk.json` for the two decode sites and the KVP writes (M).
+8. [x] Runtime: the four bounded loops carry the §8 exception comment. No `waitUntil` in the runtime: nothing in it polls with a deadline, and unused code is ghost code (§26); templates use `helpers/wait.lua` (S).
+9. [x] `nuikit_hud/client/vehicle.lua:109`: `GetVehicleHandbrake(vehicle) == true` is always false (BOOL natives return `1`) (S).
+10. [x] `nuikit_hud`: natives and `math.*` cached in `main.lua` and `vehicle.lua` (§20); the loops carry the INFINITE LOOP comment; GTA's radar comes back on `onResourceStop` (M).
 
-Then: the `-- GLOBAL:` sweep over module tables (S), spec tests per new guard (M), the §15 `GetPlayerName(src)` check in the shared dispatcher (S).
+Done too: the `-- GLOBAL:` sweep over module tables and configs, spec tests per new guard (`helpers.spec.lua`, `corrupt-save.test.ts`, forged ids), `nuikit_dev` log colours, the `nuikit_death` `source` rename. Left: the §15 `GetPlayerName(src)` check in the shared dispatcher (S, low), `SetResourceKvpNoSync` (S, optional), LuaLS annotations on the template handlers (M, low), `nk.log` in the systems' and adapters' remaining prints (S).
 
 ## 1. Templates (`packages/create-nuikit/templates/*`)
 

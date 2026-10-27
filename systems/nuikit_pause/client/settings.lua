@@ -6,6 +6,7 @@
 -- motion are the UI prefs every nuikit page follows (nk.theme.prefs); streamer mode and HUD hide are
 -- client-wide states other resources read (nk.surface.getState('streamer'), nk.surface.getState('hud:hidden')).
 
+-- GLOBAL: module table, shared by this resource's files
 Settings = {}
 
 local cfg = Config.settings or {}

@@ -2,6 +2,7 @@
 -- waypoint, sent as `hud:location` only when one of them changed. The heading is the compass's own
 -- live channel (minimap.lua).
 
+-- GLOBAL: module table, shared by this resource's files
 Location = {}
 
 local cfg = Config.location or {}

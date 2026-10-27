@@ -1,3 +1,4 @@
+-- GLOBAL: this resource's config (fivem-foundation §9)
 Config = {
   -- Where the garages are. Open one with /{{name}} (or F6) within `radius` metres of it.
   garages = {

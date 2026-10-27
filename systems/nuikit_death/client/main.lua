@@ -9,6 +9,7 @@ local screen = nk.surface.define('death', { layer = 'system', input = 'none', hi
 -- smoothly whatever steps the medical resource counts in, and the screen's data doesn't churn.
 local holdBar = nk.message.stream('death:hold', { rate = 30, precision = 0.01 })
 
+-- GLOBAL: module table, shared by this resource's files
 Death = {}
 
 local function started(resource) return GetResourceState(resource) == 'started' end
@@ -38,19 +39,19 @@ local current = nil   -- last snapshot (nil = alive)
 -- before it respawns (a number, or a function of when the press started), and `frame`, run every
 -- frame. A resource that only looks at E on its own ticks (qbx_medical) sets `ticks`, and `frame`
 -- returns true on the frame a tick happened.
-local source = {}
+local medical = {} -- the medical adapter's read/hold/ticks (was `source`, the net event global's name)
 
 --- Called every frame while downed: how long E has been held, and whether G was just pressed.
 --- Medical resources disable most controls while downed but re-enable E/G; check both forms.
 function Death.watchKeys()
-  local ticked = source.frame and source.frame() or false
+  local ticked = medical.frame and medical.frame() or false
   local e = IsControlPressed(0, KEY_E) or IsDisabledControlPressed(0, KEY_E)
   if e then
     if not keys.heldSince then
       keys.heldSince = now()
-      keys.full = type(source.hold) == 'function' and source.hold(keys.heldSince) or source.hold
+      keys.full = type(medical.hold) == 'function' and medical.hold(keys.heldSince) or medical.hold
     end
-  elseif not source.ticks or ticked then
+  elseif not medical.ticks or ticked then
     -- Released. A ticking resource only sees E at its ticks: a release and re-press between two
     -- ticks doesn't reset its count, so the hold (and the bar) only ends at a tick that finds E up.
     keys.heldSince, keys.full = nil, nil
@@ -77,7 +78,7 @@ end
 --     respawn = { key, available, cost, wait },
 --     ems = { key, state = 'available'|'requested'|'cooldown', seconds },
 --     treatment = true while a hospital bed treats the player (the screen hides; still down) }
--- and, as a second value, the `source` extras above. How far E is held goes out on 'death:hold'.
+-- and, as a second value, the `medical` extras above. How far E is held goes out on 'death:hold'.
 
 local sources = {}
 
@@ -281,7 +282,7 @@ end
 
 Death.medical = detect()
 local read, extras = sources[Death.medical]()
-source = extras or {}
+medical = extras or {}
 local ctx = { doctors = 0 }
 
 RegisterNetEvent('nuikit_death:doctors', function(n) ctx.doctors = tonumber(n) or 0 end)
