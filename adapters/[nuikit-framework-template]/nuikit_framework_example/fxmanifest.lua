@@ -1,6 +1,7 @@
 fx_version 'cerulean'
 game 'gta5'
 lua54 'yes'
+use_fxv2_oal 'yes'
 
 name 'nuikit_framework_example'
 description 'nuikit framework adapter template: a fake in-memory framework behind the contract in docs/adapters/framework-sdk.md.'

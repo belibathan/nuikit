@@ -1,6 +1,7 @@
 fx_version 'cerulean'
 game 'gta5'
 lua54 'yes'
+use_fxv2_oal 'yes'
 
 name 'nuikit_pause'
 description 'nuikit: pause menu. Esc opens it in place of GTA\'s; a focus camera on the player, a 3D map, live key bindings and info pages.'

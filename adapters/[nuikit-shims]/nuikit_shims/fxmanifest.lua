@@ -1,6 +1,7 @@
 fx_version 'cerulean'
 game 'gta5'
 lua54 'yes'
+use_fxv2_oal 'yes'
 
 name 'nuikit_shims'
 description 'nuikit export shims: old export names (exports[res]:Fn) land in nuikit intents by config. See docs/adapters/shims.md.'

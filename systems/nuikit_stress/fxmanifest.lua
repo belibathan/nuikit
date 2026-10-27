@@ -1,6 +1,7 @@
 fx_version 'cerulean'
 game 'gta5'
 lua54 'yes'
+use_fxv2_oal 'yes'
 
 name 'nuikit_stress'
 description 'Stress gameplay for Qbox/QBCore when nuikit_hud replaces qbx_hud / qb-hud. Same events, so other scripts keep working.'

@@ -1,6 +1,7 @@
 fx_version 'cerulean'
 game 'gta5'
 lua54 'yes'
+use_fxv2_oal 'yes'
 
 name 'nuikit_qb_radialmenu'
 description 'nuikit adapter: stands in for qb-radialmenu. Config.MenuItems / JobInteractions and AddOption / RemoveOption land on the nk.intent.radial intent; selections dispatch by type. UI only: vehicle doors, extras and seats are not translated.'

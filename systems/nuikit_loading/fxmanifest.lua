@@ -1,6 +1,7 @@
 fx_version 'cerulean'
 game 'gta5'
 lua54 'yes'
+use_fxv2_oal 'yes'
 
 name 'nuikit_loading'
 description 'nuikit: loading screen with real load progress, tips, backgrounds and music, themed by nuikit/theme.css.'

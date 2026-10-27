@@ -1,6 +1,7 @@
 fx_version 'cerulean'
 game 'gta5'
 lua54 'yes'
+use_fxv2_oal 'yes'
 
 name 'nuikit_esx_menu_dialog'
 description 'nuikit adapter: esx_menu_dialog → nk.intent.input. Stand-in as the ESX.UI.Menu "dialog" type. Clean-room from docs/adapters/esx-menu-dialog.md.'

@@ -1,6 +1,7 @@
 fx_version 'cerulean'
 game 'gta5'
 lua54 'yes'
+use_fxv2_oal 'yes'
 
 name 'nuikit_qb_target'
 description 'nuikit adapter (recorder stage): logs the messages qb-target sends to its page so the render-only override can be written clean-room. Draws nothing yet; nothing of qb-target is replaced.'

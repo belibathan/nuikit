@@ -1,6 +1,7 @@
 fx_version 'cerulean'
 game 'gta5'
 lua54 'yes'
+use_fxv2_oal 'yes'
 
 name 'nuikit_dev'
 description 'Test commands: /nk test <what> opens every nuikit intent and ox_lib dialog, or grants test items. Off unless nuikit_dev is 1.'

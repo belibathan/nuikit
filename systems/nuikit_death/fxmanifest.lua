@@ -1,6 +1,7 @@
 fx_version 'cerulean'
 game 'gta5'
 lua54 'yes'
+use_fxv2_oal 'yes'
 
 name 'nuikit_death'
 description 'nuikit: death and last-stand screen. Shows what your medical resource is doing; never revives or respawns.'

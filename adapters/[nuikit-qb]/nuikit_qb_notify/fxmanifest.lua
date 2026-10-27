@@ -1,6 +1,7 @@
 fx_version 'cerulean'
 game 'gta5'
 lua54 'yes'
+use_fxv2_oal 'yes'
 
 name 'nuikit_qb_notify'
 description 'nuikit adapter: listens to QBCore:Notify (client and server) and draws it with the nk.intent.notify intent. Optional silencer page for qb-core/html (override/).'

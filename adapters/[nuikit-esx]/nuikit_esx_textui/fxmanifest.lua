@@ -1,6 +1,7 @@
 fx_version 'cerulean'
 game 'gta5'
 lua54 'yes'
+use_fxv2_oal 'yes'
 
 name 'nuikit_esx_textui'
 description 'nuikit adapter: esx_textui → nk.intent.prompt. Stand-in (provide). Clean-room from docs/adapters/esx-textui.md.'

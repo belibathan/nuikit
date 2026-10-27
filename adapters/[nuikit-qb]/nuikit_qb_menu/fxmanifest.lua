@@ -1,6 +1,7 @@
 fx_version 'cerulean'
 game 'gta5'
 lua54 'yes'
+use_fxv2_oal 'yes'
 
 name 'nuikit_qb_menu'
 description 'nuikit adapter: stands in for qb-menu. openMenu / closeMenu / showHeader (exports and events) land on the nk.intent.menu intent; selections dispatch exactly as qb-menu documents.'

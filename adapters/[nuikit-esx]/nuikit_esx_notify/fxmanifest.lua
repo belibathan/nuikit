@@ -1,6 +1,7 @@
 fx_version 'cerulean'
 game 'gta5'
 lua54 'yes'
+use_fxv2_oal 'yes'
 
 name 'nuikit_esx_notify'
 description 'nuikit adapter: esx_notify → nk.intent.notify. Stand-in (provide) + listener. Clean-room from docs/adapters/esx-notify.md.'

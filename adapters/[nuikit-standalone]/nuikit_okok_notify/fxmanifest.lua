@@ -1,6 +1,7 @@
 fx_version 'cerulean'
 game 'gta5'
 lua54 'yes'
+use_fxv2_oal 'yes'
 
 name 'nuikit_okok_notify'
 description 'nuikit adapter: okokNotify → nk.intent.notify. Stand-in (provide). Clean-room from docs/adapters/okok-notify.md.'

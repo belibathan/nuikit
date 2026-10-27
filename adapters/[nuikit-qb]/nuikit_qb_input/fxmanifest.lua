@@ -1,6 +1,7 @@
 fx_version 'cerulean'
 game 'gta5'
 lua54 'yes'
+use_fxv2_oal 'yes'
 
 name 'nuikit_qb_input'
 description 'nuikit adapter: stands in for qb-input. ShowInput / CloseMenu land on the nk.intent.input intent; the caller gets the same table back.'

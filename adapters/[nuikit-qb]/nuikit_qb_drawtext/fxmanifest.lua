@@ -1,6 +1,7 @@
 fx_version 'cerulean'
 game 'gta5'
 lua54 'yes'
+use_fxv2_oal 'yes'
 
 name 'nuikit_qb_drawtext'
 description 'nuikit adapter: listens to qb-core DrawText / ChangeText / HideText / KeyPressed events and draws them with the nk.intent.prompt intent.'

@@ -1,6 +1,7 @@
 fx_version 'cerulean'
 game 'gta5'
 lua54 'yes'
+use_fxv2_oal 'yes'
 
 name 'nuikit_hud'
 description 'nuikit HUD: vitals, voice, money, a vehicle, aircraft and boat cluster, a framed minimap and location, on Qbox, QBCore, ESX or standalone.'

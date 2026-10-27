@@ -1,6 +1,7 @@
 fx_version 'cerulean'
 game 'gta5'
 lua54 'yes'
+use_fxv2_oal 'yes'
 
 name 'nuikit'
 description 'nuikit: the design system for your whole server. theme.css here themes every [nuikit] UI.'
