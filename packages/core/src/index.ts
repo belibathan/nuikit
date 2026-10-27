@@ -94,6 +94,12 @@ function ensureListener() {
     return;
   }
   window.addEventListener("message", (event: MessageEvent) => {
+    // Only SendNUIMessage: FiveM's root page posts it, so event.source is window.parent. Every NUI frame on a
+    // client can post into every other (FiveM runs CEF with web security off), and a real postMessage always
+    // carries the sender's window as source, so a message from any other window is dropped (protocol §5.1).
+    // Own window and a null source (jsdom, synthetic events) stay in for development and tests.
+    const source = event.source;
+    if (source != null && source !== window.parent && source !== window) return;
     const msg = event.data as Partial<NuiMessage> | null;
     if (!msg || typeof msg !== "object" || typeof msg.action !== "string") return;
     dispatch(msg as NuiMessage);

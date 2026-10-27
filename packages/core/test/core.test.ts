@@ -42,6 +42,23 @@ describe("events (Lua → UI)", () => {
     window.dispatchEvent(new MessageEvent("message", { data: { type: "x" } }));
     expect(fn).not.toHaveBeenCalled();
   });
+
+  it("takes messages only from the root page (window.parent) or itself, never from another NUI frame (protocol §5.1)", () => {
+    const fn = vi.fn();
+    onNui("a", fn);
+    const other = document.createElement("iframe");
+    document.body.appendChild(other);
+    try {
+      // another resource's frame: FiveM runs CEF with web security off, so it can post into this one
+      window.dispatchEvent(new MessageEvent("message", { data: { action: "a", data: "spoofed" }, source: other.contentWindow }));
+      expect(fn).not.toHaveBeenCalled();
+      // the root page (in a top-level test window, window.parent is window)
+      window.dispatchEvent(new MessageEvent("message", { data: { action: "a", data: "real" }, source: window.parent }));
+      expect(fn).toHaveBeenCalledWith("real");
+    } finally {
+      other.remove();
+    }
+  });
 });
 
 describe("callbacks (UI → Lua)", () => {

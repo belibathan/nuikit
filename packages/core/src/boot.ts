@@ -30,6 +30,7 @@ export function standalone(app: () => Promise<unknown>, options: { timeout?: num
   if (!inGame) return load();
 
   window.addEventListener("message", (e: MessageEvent) => {
+    if (e.source != null && e.source !== window.parent && e.source !== window) return; // SendNUIMessage comes from the root page (protocol §5.1)
     const action = (e.data as { action?: unknown } | null)?.action;
     // The host stopped: render here instead.
     if (action === "nuikit:host:fallback") load();

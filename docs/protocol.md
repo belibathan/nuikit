@@ -285,7 +285,12 @@ sequenceDiagram
 ### 5.1 Envelope
 
 - Lua → page: `SendNUIMessage({ action = <string>, data = <any> })`. The page receives it as a `message`
-  event whose `event.data` is `{ action, data }`. A page MUST ignore messages without a string `action`.
+  event whose `event.data` is `{ action, data }`. A page MUST ignore messages without a string `action`, and
+  MUST ignore a message whose `event.source` is not `window.parent` (FiveM's root page, which relays
+  `SendNUIMessage`). Every NUI frame on a client can read and post into every other: FiveM starts CEF with
+  `disable-web-security` and `disable-site-isolation-trials` (`NUIApp.cpp`; verified in game by
+  fivem-foundation, `upstream/info/nui/cross_frame.md`). A page MAY also accept its own window, or a null source,
+  for development and tests outside the game (a real `postMessage` always carries the sender's window).
 - Page → Lua: `POST https://<resource>/<name>` with `Content-Type: application/json; charset=UTF-8` and a JSON
   body (`{}` when there is no data). Lua registers `<name>` with `RegisterNUICallback` and answers through `cb`.
 
