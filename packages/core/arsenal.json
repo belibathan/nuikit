@@ -3868,6 +3868,87 @@
       ]
     },
     {
+      "js": "log",
+      "lua": "log",
+      "only": "lua only: no page-side API (natives / client events); pages see its effects through other domains",
+      "title": "Log",
+      "doc": "Console lines from Lua, one shape: colour + [nuikit:<resource>] + text + ^7. Debug lines only with setr nuikit_debug 1.",
+      "docs": "docs/next/foundation-gaps.md",
+      "import": null,
+      "entries": [
+        {
+          "name": "info",
+          "kind": "call",
+          "side": "lua",
+          "lua": "nk.log.info",
+          "signature": {
+            "lua": "nk.log.info(message)"
+          },
+          "doc": "A cyan line.",
+          "only": "lua only: the console is the server's or the client's F8",
+          "since": "0.9.1",
+          "status": "stable"
+        },
+        {
+          "name": "success",
+          "kind": "call",
+          "side": "lua",
+          "lua": "nk.log.success",
+          "signature": {
+            "lua": "nk.log.success(message)"
+          },
+          "doc": "A green line.",
+          "only": "lua only: the console is the server's or the client's F8",
+          "since": "0.9.1",
+          "status": "stable"
+        },
+        {
+          "name": "warn",
+          "kind": "call",
+          "side": "lua",
+          "lua": "nk.log.warn",
+          "signature": {
+            "lua": "nk.log.warn(message)"
+          },
+          "doc": "A yellow line.",
+          "only": "lua only: the console is the server's or the client's F8",
+          "since": "0.9.1",
+          "status": "stable"
+        },
+        {
+          "name": "error",
+          "kind": "call",
+          "side": "lua",
+          "lua": "nk.log.error",
+          "signature": {
+            "lua": "nk.log.error(message)"
+          },
+          "doc": "A red line.",
+          "only": "lua only: the console is the server's or the client's F8",
+          "since": "0.9.1",
+          "status": "stable"
+        },
+        {
+          "name": "debug",
+          "kind": "call",
+          "side": "lua",
+          "lua": "nk.log.debug",
+          "signature": {
+            "lua": "nk.log.debug(message)"
+          },
+          "doc": "A purple line, only with setr nuikit_debug 1.",
+          "only": "lua only: the console is the server's or the client's F8",
+          "since": "0.9.1",
+          "status": "stable"
+        }
+      ],
+      "events": [],
+      "legacy": [],
+      "rules": [
+        "Every console line the runtime or a nuikit resource writes goes through nk.log: no bare print with its own colour codes."
+      ]
+    },
+    {
       "js": "host",
       "lua": "host",
       "title": "Host",

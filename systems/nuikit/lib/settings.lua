@@ -137,8 +137,8 @@ if RESOURCE == RUNTIME then
   local function readSaved(res)
     local raw = GetResourceKvpString(kvpKey(res))
     if not raw or raw == '' then return nil end
-    local ok, data = pcall(json.decode, raw)
-    return ok and type(data) == 'table' and data or nil
+    local data = NUI.json.decode(raw)
+    return type(data) == 'table' and data or nil
   end
 
   local function writeSaved(res, s)
@@ -148,7 +148,9 @@ if RESOURCE == RUNTIME then
       local v = s.saved[row.key]
       if v ~= nil and v ~= row.default then values[row.key] = v end
     end
-    SetResourceKvp(kvpKey(res), json.encode({ v = s.schema.version, values = values }))
+    local encoded, reason = NUI.json.encode({ v = s.schema.version, values = values })
+    if not encoded then return NUI.log.warn(('settings for %s not saved: %s'):format(res, reason)) end
+    SetResourceKvp(kvpKey(res), encoded)
   end
 
   local function publish(res, before, draft)
@@ -180,7 +182,7 @@ if RESOURCE == RUNTIME then
   --- Register (or re-register) a resource's schema; `saved` is what its migrate made of the stored values.
   function settings.store(res, schema, saved)
     local clean, problems = settings.validate(schema)
-    for _, p in ipairs(problems) do print(('^3[nuikit] settings for %s: %s^7'):format(res, p)) end
+    for _, p in ipairs(problems) do NUI.log.warn(('settings for %s: %s'):format(res, p)) end
     local stored = saved
     if stored == nil then
       local raw = readSaved(res)
@@ -330,7 +332,7 @@ local function declare(key, schema, push)
   if saved and type(schema.migrate) == 'function' and saved.v ~= (tonumber(schema.version) or 1) then
     local ok, migrated = pcall(schema.migrate, values, saved.v)
     if ok and type(migrated) == 'table' then values = migrated
-    else print(('^3[nuikit] settings migrate failed for %s: %s^7'):format(RESOURCE, tostring(migrated))) end
+    else NUI.log.warn(('settings migrate failed for %s: %s'):format(RESOURCE, tostring(migrated))) end
   end
   local plain = { label = schema.label, icon = schema.icon, version = schema.version, rows = schema.rows, presets = schema.presets }
   local current = store('settingsDefine', key, plain, values) or {}
@@ -369,11 +371,11 @@ local registered, listeners = {}, {}
 --- A `register` row as a define row, or nil (with a console warning) when its type isn't known.
 local function convert(sectionId, row)
   if type(row) ~= 'table' or type(row.id) ~= 'string' or row.id == '' then
-    print(('^3[nuikit] settings %s: a row has no id, skipped^7'):format(sectionId))
+    NUI.log.warn(('settings %s: a row has no id, skipped'):format(sectionId))
     return nil
   end
   if not TYPES[row.type] then
-    print(('^3[nuikit] settings %s: row %s has unknown type %s, skipped^7'):format(sectionId, row.id, tostring(row.type)))
+    NUI.log.warn(('settings %s: row %s has unknown type %s, skipped'):format(sectionId, row.id, tostring(row.type)))
     return nil
   end
   local out = { key = row.id, label = row.label, description = row.description, group = row.group, flag = row.flag, default = row.default }

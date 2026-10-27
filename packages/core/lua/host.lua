@@ -27,7 +27,10 @@ local nextId = 0
 local TIMEOUT = 30000
 
 local function log(...)
-  if debug then print('^5[nuikit:host]^7', ...) end
+  if not debug then return end
+  local parts = { 'host:' }
+  for i = 1, select('#', ...) do parts[#parts + 1] = tostring((select(i, ...))) end
+  NUI.log.debug(table.concat(parts, ' '))
 end
 
 math.randomseed(GetGameTimer and GetGameTimer() or 0)
@@ -142,7 +145,7 @@ RegisterNUICallback('nuikit:host:ready', function(_, cb)
 end)
 
 RegisterNUICallback('nuikit:host:error', function(req, cb)
-  print(('^1[nuikit host] %s failed:^7 %s'):format(tostring(req and req.resource), tostring(req and req.message)))
+  NUI.log.error(('host: %s failed: %s'):format(tostring(req and req.resource), tostring(req and req.message)))
   cb({})
 end)
 

@@ -43,6 +43,7 @@ end
 
 import('lib/nuikit.lua')
 import('lib/intents.lua') -- nk.notify … nk.challenge (docs/intents.md)
+-- GLOBAL: nk and NUI are the one runtime table every resource reaches (decisions 42)
 nk = NUI
 nk.version = version
 -- services (docs/services.md): nk.camera, nk.controls, nk.settings

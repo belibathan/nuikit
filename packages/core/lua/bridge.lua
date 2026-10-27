@@ -353,7 +353,7 @@ function NUI.player.poll()
 end
 
 CreateThread(function()
-  while true do
+  while true do -- INFINITE LOOP: the player poll, for the resource's life, four times a second
     NUI.player.poll()
     Wait(250)
   end

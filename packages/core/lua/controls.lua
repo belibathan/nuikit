@@ -99,6 +99,7 @@ local function loop()
   running = true
   CreateThread(function()
     local nextCheck = 0
+    -- bounded by the handles: ends when the last one is released; Wait(0) because controls are disabled per frame (§8 render exception)
     while #order > 0 do
       local now = GetGameTimer()
       if now >= nextCheck then

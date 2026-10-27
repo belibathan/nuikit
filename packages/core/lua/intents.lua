@@ -269,7 +269,7 @@ local function finish(id, result, reason, data)
   p.handle.result, p.handle.reason = result, reason
   if p.handlers.resolve then
     local ok, err = pcall(p.handlers.resolve, result, reason, data)
-    if not ok then print(('^1[nuikit] %s callback failed:^7 %s'):format(p.kind, tostring(err))) end
+    if not ok then NUI.log.error(('%s callback failed: %s'):format(p.kind, tostring(err))) end
   end
   if p.promise then p.promise:resolve({ result = result, reason = reason, data = data }) end
 end
@@ -295,7 +295,7 @@ function nk.intents.open(kind, props, opts)
     error(('nk.%s: %s%s (%d problem%s)'):format(kind, first.path ~= '' and (first.path .. ' ') or '', first.message, #issues, #issues == 1 and '' or 's'), 3)
   end
   if GetResourceState and GetResourceState(RUNTIME) ~= 'started' then
-    print(('^3[nuikit:%s] nk.%s dropped: the nuikit resource is not started^7'):format(RESOURCE, kind))
+    NUI.log.warn(('nk.%s dropped: the nuikit resource is not started'):format(kind))
     return setmetatable({ id = '', kind = kind, reason = 'stopped' }, Intent)
   end
   local handlers, async = split(opts)
@@ -424,7 +424,7 @@ AddEventHandler('nuikit:intent:event', function(id, event, data)
   local fn = p.handlers[event]
   if fn then
     local ok, err = pcall(fn, data)
-    if not ok then print(('^1[nuikit] %s on%s failed:^7 %s'):format(p.kind, event, tostring(err))) end
+    if not ok then NUI.log.error(('%s on%s failed: %s'):format(p.kind, event, tostring(err))) end
   end
 end)
 

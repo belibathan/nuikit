@@ -382,6 +382,7 @@ AddEventHandler('nuikit:minimap:satnav', function(show)
   satnavBy = by
   CreateThread(function()
     radarMovie = radarMovie or RequestScaleformMovie('minimap')
+    -- bounded by the asking resource: ends when it stops asking or stops; Wait(0) because HIDE_SATNAV is per frame (§8 render exception)
     while satnavBy and GetResourceState(satnavBy) == 'started' do
       if HasScaleformMovieLoaded(radarMovie) then
         BeginScaleformMovieMethod(radarMovie, 'HIDE_SATNAV')

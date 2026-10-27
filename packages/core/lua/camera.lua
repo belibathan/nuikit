@@ -60,7 +60,7 @@ local function call(c, name, ...)
   local fn = c.opts[name]
   if not fn then return end
   local ok, err = pcall(fn, ...)
-  if not ok then print(('^1[nuikit:%s] camera: %s %s failed:^7 %s'):format(RESOURCE, c.id, name, tostring(err))) end
+  if not ok then NUI.log.error(('camera: %s %s failed: %s'):format(c.id, name, tostring(err))) end
 end
 
 --- The player is down: dead to GTA, or dead / in last stand to the death system (nuikit_death sets the
@@ -131,6 +131,7 @@ local function watch()
   watching = true
   CreateThread(function()
     local nextCheck = 0
+    -- bounded by the claims: ends when the last one is released; Wait(0) only while a targeted camera follows (§8 render exception)
     while #order > 0 do
       local now = GetGameTimer()
       if now >= nextCheck then

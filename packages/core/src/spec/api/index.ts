@@ -18,9 +18,10 @@ import surfaces from "./surfaces";
 import theme from "./theme";
 import zones from "./zones";
 import layout from "./layout";
+import log from "./log";
 import type { DomainSpec } from "./types";
 
-export const DOMAINS: DomainSpec[] = [messages, surfaces, intents, camera, controls, keys, settings, player, theme, images, zones, slots, radar, motion, layout, host, devtools, doctor];
+export const DOMAINS: DomainSpec[] = [messages, surfaces, intents, camera, controls, keys, settings, player, theme, images, zones, slots, radar, motion, layout, log, host, devtools, doctor];
 export { checkDomain, checkSpec } from "./naming";
 export type * from "./types";
 

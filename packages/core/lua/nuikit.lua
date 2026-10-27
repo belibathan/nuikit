@@ -29,13 +29,63 @@
     NUI.prefs.get()  NUI.prefs.set({ scale = 1.1 })    -- scale 0.85–1.25, reducedMotion, highContrast
 ]]
 
+-- GLOBAL: the runtime's table; `nk` is the same table (api.lua, init.lua). The sanctioned globals (decisions 42).
 NUI = NUI or {}
 
 local RESOURCE = GetCurrentResourceName()
 local debug = GetConvarInt('nuikit_debug', 0) == 1
 
+-- ───────────────────────────────── console (fivem-foundation §7: colour + [prefix] + text + ^7)
+
+--- Every console line the runtime writes: `nk.log.info('…')`, `nk.log.warn`, `nk.log.error`, `nk.log.success`;
+--- `nk.log.debug` only with `setr nuikit_debug 1`. The prefix names the resource the runtime runs in.
+NUI.log = {}
+local LOG_COLOR = { error = '^1', warn = '^3', success = '^2', info = '^5', debug = '^6' }
+local LOG_PREFIX = ('[nuikit:%s]'):format(RESOURCE)
+local function write(level, message)
+  print(('%s%s %s^7'):format(LOG_COLOR[level] or '^7', LOG_PREFIX, tostring(message)))
+end
+---@param message string
+function NUI.log.error(message) write('error', message) end
+---@param message string
+function NUI.log.warn(message) write('warn', message) end
+---@param message string
+function NUI.log.success(message) write('success', message) end
+---@param message string
+function NUI.log.info(message) write('info', message) end
+---@param message string
+function NUI.log.debug(message) if debug then write('debug', message) end end
+
 local function log(...)
-  if debug then print(('^5[nuikit:%s]^7'):format(RESOURCE), ...) end
+  if debug then
+    local parts = {}
+    for i = 1, select('#', ...) do parts[i] = tostring((select(i, ...))) end
+    write('debug', table.concat(parts, ' '))
+  end
+end
+
+-- ───────────────────────────────── json (fivem-foundation pitfall: decode returns two values, nil on bad input;
+-- encode errors on a function or a boolean key)
+
+--- `json` without the surprises: one return value and a reason, never an error.
+NUI.json = {}
+---@param text any
+---@return any|nil value
+---@return string|nil reason
+function NUI.json.decode(text)
+  if type(text) ~= 'string' or text == '' then return nil, 'text must be a non-empty string' end
+  local ok, value, _, message = pcall(json.decode, text)
+  if not ok then return nil, tostring(value) end
+  if value == nil then return nil, tostring(message or 'invalid JSON') end
+  return value
+end
+---@param value any
+---@return string|nil encoded
+---@return string|nil reason
+function NUI.json.encode(value)
+  local ok, encoded = pcall(json.encode, value)
+  if not ok or type(encoded) ~= 'string' then return nil, tostring(encoded) end
+  return encoded
 end
 
 -- ───────────────────────────────── messages
@@ -57,6 +107,7 @@ end
 -- to it (raw RegisterNUICallback handlers included). nuikit.lua must load before them.
 local nuiCallbacks = {}
 local registerNUICallback = RegisterNUICallback
+-- GLOBAL: the native is wrapped on purpose (decisions 42), so the host sees every callback this resource registers
 RegisterNUICallback = function(name, fn)
   nuiCallbacks[name] = fn
   return registerNUICallback(name, fn)
@@ -73,7 +124,7 @@ function NUI.on(name, handler)
     if ok then
       cb(result == nil and {} or result)
     else
-      print(('^1[nuikit] callback "%s" failed:^7 %s'):format(name, tostring(result)))
+      NUI.log.error(('callback "%s" failed: %s'):format(name, tostring(result)))
       cb({ error = tostring(result) })
     end
   end)
@@ -654,11 +705,8 @@ end
 
 local function localPrefs()
   local raw = GetResourceKvpString and GetResourceKvpString(PREFS_KVP)
-  if raw and raw ~= '' and json.decode then
-    local ok, data = pcall(json.decode, raw)
-    if ok then return normalizePrefs(data) end
-  end
-  return normalizePrefs(nil)
+  local data = raw and NUI.json.decode(raw) -- nil on bad input: the defaults
+  return normalizePrefs(type(data) == 'table' and data or nil)
 end
 
 NUI.prefs = {}
@@ -684,7 +732,8 @@ function NUI.prefs.set(patch)
   for k, v in pairs(patch) do merged[k] = v end
   local before = NUI.lookKey()
   prefs = normalizePrefs(merged)
-  if SetResourceKvp then SetResourceKvp(PREFS_KVP, json.encode(prefs)) end
+  local encoded = NUI.json.encode(prefs)
+  if encoded and SetResourceKvp then SetResourceKvp(PREFS_KVP, encoded) end
   NUI.send('nuikit:prefs', prefs)
   if NUI.lookKey() ~= before then NUI.send('nuikit:theme', NUI.theme()) end
 end

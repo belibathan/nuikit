@@ -93,15 +93,15 @@ local mine = {}
 --- Declare a key. Returns a handle with binding(), or nil when the declaration was refused.
 function keys.define(def)
   if type(def) ~= 'table' or type(def.id) ~= 'string' or not def.id:match('^[%w_]+$') then
-    print('^1[nuikit] nk.keys.define: id must be letters, digits and underscores^7')
+    NUI.log.error('nk.keys.define: id must be letters, digits and underscores')
     return nil
   end
   if mine[def.id] then
-    print(('^1[nuikit] nk.keys.define: %s already declared key "%s"^7'):format(RESOURCE, def.id))
+    NUI.log.error(('nk.keys.define: key "%s" is already declared'):format(def.id))
     return nil
   end
   if def.command ~= nil and (type(def.command) ~= 'string' or not def.command:match('^[%w_]+$')) then
-    print('^1[nuikit] nk.keys.define: command must be letters, digits and underscores^7')
+    NUI.log.error('nk.keys.define: command must be letters, digits and underscores')
     return nil
   end
   local entry = { resource = RESOURCE, id = def.id, label = def.label or def.id, key = def.key or '', mapper = def.mapper or 'keyboard', command = def.command }
