@@ -104,6 +104,12 @@ event (`id, name, data`) dispatched to `handlers[name]` under `pcall`, answered 
 - `print`: 1–4 per file, coloured, `^7`: ok (S, `nk.log` later).
 - Manifests: no `use_fxv2_oal` (in the sweep).
 
+## Given back (3d)
+
+`fivem-foundation/upstream/info/nui/chromium_103_and_focus.md` (English, `tested` + `official`, row in `index/INFO.md`):
+what Chromium 103 drops and what to lower it to, the one-focus-owner surface pattern with its single Escape
+message, and `nuikit check` as a lintable protocol. Submodule pointer bumped to that commit.
+
 ## Not seen in game
 
 Everything here is offline: wasmoon Lua tests and reading. The in-game checkpoint (owner): a `garage` template resource and `nuikit_hud` on the dev server after 3a and 3c.
