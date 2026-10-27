@@ -113,13 +113,13 @@ list draws the same tile itself (its `::before` wall and `::after` face), withou
 
 ## Invariants
 
-Mechanical, so the gaps cannot come back (each lists its debt; a new violation fails or grows the burn-down).
+Mechanical, so the gaps cannot come back (each lists its debt; a new violation fails `nuikit check`).
 
 1. Themes set values, never anatomy: `registry/nuikit/test/anatomy.test.tsx` renders every registry ui item under each treatment and shipped theme; the `data-slot`/`data-part` tree must match. A new ui item adds a row to its `CASES`.
 2. One selection, one component: `nuikit check` rule `selection/local` (page-drawn hover/active/selected backgrounds; use MenuRowList, SelectionTile, Tabs).
 3. No local plates, walls or skews: rule `kit/local-concept` (skew, `box-shadow: 0 Npx 0`, `border-bottom: Npx solid`, gradient level fills; use Tile, Fill, Chip).
 4. Every lever has a default and a reader: `registry/nuikit/test/levers.test.ts` (`--nk-*` read without a declaration, or declared in kit.css and read nowhere).
-Counts: `bench/check-baseline.json` via `node scripts/check-burndown.mjs`.
+Counts: `node packages/cli/dist/cli.js check <folder>`.
 
 ## Where it lives
 

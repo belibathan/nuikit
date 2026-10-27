@@ -17,8 +17,9 @@ TweakCN theme) is the default look and the showcase, not the product. Design: `d
   secrets or a real server. Log new calls in one row of `docs/next/decisions.md`.
 - **Spend few tokens:** read only what your item touches (grep, then line ranges), no screenshot sweeps, matrices,
   long reports, before/after sheets or speculative refactors.
-- **No PRs until servers run nuikit.** Lanes commit small to their own branch and push it; the lead merges into
-  `main` locally and pushes. CI runs on `main` after the fact; red means the next commit fixes it.
+- **One trunk, no PRs.** Work on `main`: `git pull --rebase origin main`, run the gate, commit small, push. A branch
+  only for an item that can't ship green in one sitting, merged by whoever finishes it. CI runs on `main` after the
+  fact (build, typecheck, tests, `nuikit check`); red means the next commit fixes it.
 - **The quick gate (about a minute):** `pnpm typecheck`, the build of what you touched, `pnpm sync` clean. Tests
   where there is real logic. **Visual change: `pnpm look <web dir>` and look at the PNGs (every theme) before pushing.** A POST-log diff only when an override changes what it POSTs (its protocol must not
   break). Nothing else gates shipping.
@@ -26,11 +27,11 @@ TweakCN theme) is the default look and the showcase, not the product. Design: `d
 - One line on what's unproven ("not seen in game"), and move on. The owner tests in game at checkpoints.
 - Premium means subtle: motion, rows not cards, sheets, text that rolls, cameras that don't spin (`docs/design.md`).
 
-Roles, lanes and file ownership: `docs/next/dispatch.md`. Read this, then only what your item needs.
+How the agents work together: `docs/next/dispatch.md`. Read this, then only what your item needs.
 
 Current release: **0.9.0** (npm `nuikit-core`, `vite-plugin-nuikit`, `create-nuikit`, `nuikit`; GitHub release
 `v0.9.0` with `nuikit.zip`, the per-framework zips and `SHA256SUMS.txt`).
-Direction: `docs/vision.md`, then `docs/architecture.md`. Parallel agents: `docs/next/dispatch.md` (lanes, file ownership, rules).
+Direction: `docs/vision.md`, then `docs/architecture.md`. Parallel agents: `docs/next/dispatch.md`.
 
 ## Map
 

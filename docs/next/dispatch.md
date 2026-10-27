@@ -13,20 +13,18 @@ produce the right whole; one agent deliberating produces nothing. When unsure, p
   anything that touches a real server.
 - **Spend few tokens.** Read `CLAUDE.md`, then only the files your item touches. Grep before reading; read ranges. No
   screenshot sweeps, matrices, long reports or speculative refactors.
-- **Small commits, no PRs.** One item per commit. Push your branch; the lead merges into `main` locally and pushes. A broken
-  `main` is fixed by the next commit. (PRs, required CI and reviews come back once real servers run nuikit.)
+- **Small commits on `main`, no PRs.** One item per commit. `git pull --rebase origin main`, gate, commit, push. A broken
+  `main` is fixed by the next commit. (PRs and reviews come back once real servers run nuikit.)
 - **Say what's unproven in one line** ("not seen in game") and move on. The owner tests in game at checkpoints.
 
 ## Two ways of working
 
-**Cloud lanes** (this is most work): a lane session takes a roadmap item, works in its own worktree on `lane-<x>/<item>`,
-runs the gate, pushes, and ends its turn with: the branch, what's in it, what needs an in-game check (3 lines), what's blocked.
-The lead merges.
+**Cloud sessions** (most work): take an item, work on `main` (a branch only when the item can't be green in one sitting),
+run the gate, push, and end the turn with: what's in it, what needs an in-game check (3 lines), what's blocked.
 
 **The owner's local session** (`C:\dev\nuikit`, junctioned into his Qbox server): works live in game, hot-reloading a system
-(`pnpm --filter ./systems/<x>/web dev`) or deploying an addon (`pnpm build`, `.local\deploy.ps1`), and commits its own
-batches straight to `main` when the owner says it's right. Practical notes (what not to restart, the private theme.css,
-worktrees): [`handoff.md`](handoff.md) §6. The two modes don't conflict: cloud lanes rebase on `main` before each item.
+(`pnpm --filter ./systems/<x>/web dev`) or deploying an addon (`pnpm build`, `.local\deploy.ps1`), and commits straight to
+`main` when it's right. Practical notes: [`handoff.md`](handoff.md) §6. Both pull with rebase before each item.
 
 ## The design rule (settles design questions)
 
@@ -43,26 +41,17 @@ configured and connected. Every design question resolves the same way:
 
 Log a new call in one row of [`decisions.md`](decisions.md).
 
-## Lanes for 0.9 and the files they own
+## Who owns what
 
-| Lane | Track | Owns |
-|---|---|---|
-| Lead | all | merges, the roadmap, releases, `CLAUDE.md`, this file |
-| Kit | A | `registry/**`, `registry.json`, `packages/create-nuikit` (except `kit.css` / `index.css.tpl`) |
-| Screens | A (migration), B1 | `systems/nuikit_{hud,pause,death,loading,chat,voice}`, `addons/*` |
-| Platform | B1, B3, C | `packages/{core,cli,vite}`, `systems/nuikit`, `scripts/`, `bench/`, `install/`, `docs/`, `kit.css` + `index.css.tpl` |
-| Site | B2, B4 | `apps/www` |
-| Figma | B4 | the Figma file and `docs/design/figma.md`, `bench/figma` |
-
-Append-only and shared: `registry.json` entries, `.changeset/*.md`. Synced copies (`web/src/index.css`, `web/src/components/ui/*`,
-`lib/`, `client/*.lua` copies) are never edited by hand: change the source, `pnpm sync`. A small, obviously safe edit to a
-shared file (a token, a kit utility) is fine when the item can't ship without it: say so in the commit.
+Nobody owns files; the roadmap owns items. Two sessions on one item is the only thing to avoid: say in the commit what you
+took. Synced copies (`web/src/index.css`, `web/src/components/ui/*`, `lib/`, `client/*.lua` copies) are never edited by hand:
+change the source, `pnpm sync`. `registry.json` entries and `.changeset/*.md` are append-only.
 
 ## The gate (about a minute, before each push)
 
 `pnpm typecheck`, the build of what you touched, `pnpm sync` clean. **Anything visual: `pnpm look <web dir> [url]` and Read the PNGs it writes (every theme) before you push; say in your report which you looked at.** A component that looks different under a theme in any way other than skew, wall, radius, fill style, palette or type is a bug: themes set values, never anatomy. Tests where there is real logic. For an override that
 changes what it POSTs to its resource, a POST-log diff of its main flow (`bench/screens/run.mjs` + `diff.mjs`): that is the
-one change that breaks servers. Full CI runs on `main` after the merge; red means the next commit fixes it.
+one change that breaks servers. CI runs on `main` after the push (build, typecheck, tests, `nuikit check`); red means the next commit fixes it.
 
 ## Hard rules that stay (they protect players and licences)
 

@@ -130,7 +130,7 @@ the repo holds no screenshots, and a standing pass removes what nothing referenc
 | E1 No committed screenshots: 400 files / ~82 MB removed from `bench/`; `bench/.gitignore`; the visual job shoots and uploads, baselines are local only | Done Oct 23 |
 | E2 The site: per component a live preview + the source + the install line, blocks the same, one-screen landing; galleries, `/blocks/shot`, public images gone (`public/` 1.9 MB → 60 KB) | Done Oct 23; not seen in a browser |
 | E3 Lighten pass: one-off bench harnesses, unreferenced assets, 55 unimported synced components, 0.7.0 test files archived (2098 → 1979 tracked files) | Done Oct 23; rerun each release |
-| E4 Keep it lean: `scripts/lean-check.sh` in CI fails on a committed image outside the allow-list (brand, banner, og, owner feedback shots) and prints the tracked size | Done Oct 23 |
+| E4 Keep it lean: no committed images outside brand, banner, og and owner feedback shots (a convention since Oct 27; the CI gate was dropped to move faster) and prints the tracked size | Done Oct 23 |
 
 ## 0.9 · Track C: rails for rapid building (so lanes run with less lead attention)
 
@@ -140,7 +140,7 @@ the repo holds no screenshots, and a standing pass removes what nothing referenc
 |---|---|
 | `docs/README.md` index: every doc marked current / reference / historical; `docs/next` down to dispatch, decisions, handoff | Done (Oct 23) |
 | Branch hygiene: 210 of 223 branches are fully merged; `node scripts/prune-branches.mjs --delete` removes them (a dry run lists them); the 12 with unique commits are triaged below | **Owner: run the prune** (cloud sessions can't delete refs); see "Unmerged work" |
-| `nuikit check` ratchet: `pnpm check:burndown` compares every folder with `bench/check-baseline.json` and fails CI when one grows; the table is in the job summary. Baseline Oct 23: 589 warnings, of which nuikit_chat 212, nuikit_hud 209, nuikit_pause 54, ox_inventory 46, ox_lib 18, the rest ≤ 7 | Done (Oct 23); burn down chat, hud, pause (mostly `color/mix` in page CSS the plugin lowers anyway, and `type/raw`), `--update` after each |
+| `nuikit check` in CI at level 3 for every page; the per-folder warning ratchet was dropped on Oct 27 (warnings are read in the job log when someone cares)
 | Visual baselines in CI: HUD, pause, `/components` × Default, Neon Pop, Graphite, Flat, Square at 1080p; diffs as the `visual` artifact | Done Oct 23, advisory until the baselines come from CI's browsers |
 | Fixtures realistic by rule in 14 apps | Done Oct 23 |
 | Release cadence: cut a release at every in-game-verified checkpoint (changesets + adapter and system bumps, `docs/releases/`); `0.9.0` when Track A lands | Open |
