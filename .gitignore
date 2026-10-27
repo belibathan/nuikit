@@ -13,7 +13,8 @@ out
 addons/*/web/build
 bench/host/.out
 *.tsbuildinfo
-.claude/
+.claude/*
+!.claude/skills/
 bench/identity/shots/*/
 bench/motion/.out
 !bench/coverage/

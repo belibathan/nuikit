@@ -1,0 +1,3 @@
+[submodule "fivem-foundation"]
+	path = fivem-foundation
+	url = https://github.com/belibathan/fivem-foundation.git

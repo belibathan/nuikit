@@ -96,6 +96,10 @@ New system or override: `node scripts/new-system.mjs systems/nuikit_x "Title"` o
 - **Credit** is `@belibathan` only (GitHub avatar + handle). Never a real name in UI, docs, badges or credits.
 - **Secrets.** The npm token lives only in the `NPM_TOKEN` GitHub secret. Never print or commit tokens or
   passwords.
+- **Lua follows fivem-foundation.** `fivem-foundation/AGENTS.md` is the standard for every `.lua` in
+  this repo and for the Lua that `create-nuikit` generates; load the `fivem-dev` skill before touching
+  Lua. Resource prefix: `nuikit_`. Where it conflicts with a nuikit convention, the decision log wins.
+  The submodule: `git submodule update --init` after cloning. Gaps and the queue: `docs/next/foundation-gaps.md`.
 
 ## Verifying UI work
 

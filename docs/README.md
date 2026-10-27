@@ -12,6 +12,7 @@ that have been superseded outright.
 | [`next/handoff.md`](next/handoff.md) | Where everything stood on Oct 23, 2026: state, the philosophy, open bugs, the owner's screenshots | Current (dated snapshot) |
 | [`next/dispatch.md`](next/dispatch.md) | How the agents work: the stance, lanes and file ownership, the gate, the design rule | Current |
 | [`next/decisions.md`](next/decisions.md) | The design-call log (default + switch per decision) | Current, append-only |
+| [`../fivem-foundation/AGENTS.md`](../fivem-foundation/AGENTS.md) | **The Lua standard** (fivem-foundation, a submodule): workflow, hard rules, pitfalls; `STANDARDS.md` §1–§26 behind it. [`next/foundation-gaps.md`](next/foundation-gaps.md) is nuikit's audit against it | Current |
 | [`packages/core/src/spec/api`](../packages/core/src/spec/api) → [`arsenal.json`](../packages/core/arsenal.json), site `/kit` | **The arsenal, the API's source of truth**: every domain (`nk.<domain>.<verb>`, `nuikit-core/<domain>`, `nuikit:<domain>:<event>`), its entries, events, rules, old names; generates the entry points, `lua/api.lua`, the event types, `/kit` and the `nuikit check` arsenal rules (`pnpm --filter nuikit-core arsenal`) | Current |
 | [`vision.md`](vision.md) | Why nuikit exists and what it is for | Reference |
 | [`architecture.md`](architecture.md) | The target design: runtime, intents, adapters, renderers, services, doctor (the 0.7 plan, built) | Reference |
