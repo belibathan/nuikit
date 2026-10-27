@@ -3,7 +3,7 @@ import path from "node:path"
 import { describe, expect, it } from "vitest"
 import { ALL_TOKEN_NAMES, KEYWORD_ATTRS } from "nuikit-core"
 
-// Invariant 4 (docs/design/baseline.md): every lever has a default and a reader. A --nk-* custom property a component
+// Invariant 4 (docs/design.md): every lever has a default and a reader. A --nk-* custom property a component
 // or kit.css reads must be declared (kit.css, index.css.tpl, tokens.ts, or set by the component itself); a lever
 // declared (kit.css base/:root or tokens.ts) must be read somewhere. Existing debt sits in the two ratchet lists below:
 // a new violation fails, and a list entry that is fixed must be deleted.

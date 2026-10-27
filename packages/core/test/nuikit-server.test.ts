@@ -116,13 +116,13 @@ describe("the nuikit resource's server script", () => {
 });
 
 describe("player looks (server/main.js publishLooks)", () => {
-  const FLAT = readFileSync(dir + "themes/flat.css", "utf8");
+  const NEON = readFileSync(dir + "themes/neon-pop.css", "utf8");
   it("compiles every allowed theme; unknown names are left out with a line", () => {
-    const s = boot({ "theme.css": THEME, "themes/flat.css": FLAT }, {}, { nuikit_identities: "flat, nope" });
+    const s = boot({ "theme.css": THEME, "themes/neon-pop.css": NEON }, {}, { nuikit_identities: "neon-pop, nope" });
     const looks = s.state.nuikitLooks as { identities: string[]; themes: Record<string, { hash: string; vars: Record<string, string> }> };
-    expect(looks.identities).toEqual(["flat"]);
-    expect(Object.keys(looks.themes)).toEqual(["flat"]);
-    expect(looks.themes.flat!.hash).toBe(compileTheme(FLAT).hash);
+    expect(looks.identities).toEqual(["neon-pop"]);
+    expect(Object.keys(looks.themes)).toEqual(["neon-pop"]);
+    expect(looks.themes["neon-pop"]!.hash).toBe(compileTheme(NEON).hash);
     expect(s.logs.some((l) => /no themes\/nope\.css/.test(l))).toBe(true);
   });
   it("publishes empty lists by default (the server theme only)", () => {

@@ -4,7 +4,7 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 /**
- * Stack — layout on the gap levers (docs/design/components.md, foundation): a flex column (Stack) or a centred
+ * Stack — layout on the gap levers (docs/design.md, foundation): a flex column (Stack) or a centred
  * row (Cluster) whose gap is a named lever, never a number: none, key (--nk-space-1, keys in a combination),
  * items (--nk-gap-items, rows and actions), cluster (--nk-gap-cluster, an icon and its text, chips in a row),
  * section (--nk-space-4) and surface (--nk-gap-surface). A theme's density re-derives every lever, so a

@@ -1,4 +1,4 @@
-/** Layout (docs/design/layout.md): Screen → zones → containers. The screen is the only container a NUI page has. */
+/** Layout (docs/design.md): Screen → zones → containers. The screen is the only container a NUI page has. */
 import { css, length, number, ref, type ComponentDef } from "../lang";
 
 export const screen: ComponentDef = {

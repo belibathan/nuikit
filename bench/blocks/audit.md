@@ -2,7 +2,7 @@
 
 The 14 blocks in `registry/nuikit/blocks`, read against the v2 components as they are on `base/071`
 (`registry/nuikit/ui`), the component tokens (`docs/tokens.md` 1.1/1.2), the kit utilities
-(`packages/create-nuikit/kit.css`) and the rules in `docs/design.md` / `docs/design/contract.md`.
+(`packages/create-nuikit/kit.css`) and the rules in `docs/design.md` / `docs/design.md`.
 
 What was looked for, per block:
 

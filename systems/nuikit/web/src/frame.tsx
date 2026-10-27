@@ -43,7 +43,7 @@ export function Frame({ store, packs }: { store: IntentStore; packs?: RendererPa
   useEffect(() => packs?.subscribe(bump), [packs]);
 
   return (
-    // the layout root (docs/design/layout.md): every renderer places itself in a zone of this screen
+    // the layout root (docs/design.md): every renderer places itself in a zone of this screen
     <Screen data-nk-frame>
       {ORDER.filter((k) => INTENT_KINDS.includes(k)).map((kind) => {
         const pack = packs?.get(kind);

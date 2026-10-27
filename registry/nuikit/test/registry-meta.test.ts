@@ -2,7 +2,7 @@ import fs from "node:fs"
 import path from "node:path"
 import { describe, expect, it } from "vitest"
 
-// Registry metadata and the deprecation policy (docs/design/contract.md, "Registry metadata").
+// Registry metadata and the deprecation policy (docs/design.md, "Registry metadata").
 const root = path.resolve(__dirname, "../../..")
 type Spec = { role: string; anatomy: string[]; props?: string[]; level?: string; rules: string[] }
 type Meta = { since: string; status: string; replaces: string[]; removeIn: string | null; replacedBy?: string[]; spec?: Spec }
@@ -59,7 +59,7 @@ describe("registry meta", () => {
 })
 
 // Foundation 2: the component spec template (role, anatomy, props, level means, rules) in registry meta,
-// and the same template in each component's doc comment (docs/design/ink.md §3).
+// and the same template in each component's doc comment (docs/design.md §3).
 describe("component specs", () => {
   const UI = registry.items.filter((i) => i.type === "registry:ui")
   const LEVEL = ["meter", "vital-chip", "progress-ring", "notice", "key-prompt", "dial", "countdown", "speedometer"]

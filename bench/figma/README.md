@@ -1,6 +1,6 @@
 # Figma variables for the nuikit spec
 
-The Figma file (`docs/design/figma.md`) mirrors the spec's levers as variables: three collections
+The Figma file (`docs/design.md`) mirrors the spec's levers as variables: three collections
 (`nuikit · 1 identity`, `· 2 semantic`, `· 3 component`), modes **Default · Neon Pop · Flat · Square**.
 The repo is the source; Figma is the reference. Regenerate and push whenever the spec changes:
 

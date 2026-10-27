@@ -15,7 +15,7 @@ import { Tile } from "@/components/ui/tile"
  *   <EmptyState title="No cars here" description="Buy one at the dealership or ask a friend for keys." />
  *   <EmptyState tone="error" title="Couldn't load your bank" description="Try again in a moment." action={<Button size="sm">Try again</Button>} />
  *
- * `tile` (tokens 1.5, docs/design/ink.md §3) draws the icon as a square Tile at rest (danger on error): the
+ * `tile` (tokens 1.5, docs/design.md §3) draws the icon as a square Tile at rest (danger on error): the
  * default theme's empty state. Without it the icon sits in shadcn's EmptyMedia, as before.
  *
  * Named empty-state, not empty: stock shadcn already has `empty`, and this is built on it.

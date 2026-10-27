@@ -2,7 +2,7 @@
 import * as React from "react"
 
 /**
- * useLinearRun — the kit's one timed run (docs/design/components.md, foundation: Motion): a linear Web
+ * useLinearRun — the kit's one timed run (docs/design.md, foundation: Motion): a linear Web
  * Animation on each target (transform only, on the compositor, no React render while it runs), all on one
  * start time so they reach the end together, and a completion that fires from a timer (never an animation
  * event), so it still fires with motion off. Meter's and ProgressRing's `duration`, Notice's time line and

@@ -22,7 +22,7 @@ export function LanguageStrip() {
       </h2>
       <p className="mt-2 max-w-3xl text-muted-foreground text-pretty">
         The same components under Default, Neon Pop, Flat and Square. Each is one theme file of values; no rule, no component edit.{" "}
-        <a href="/language" className="text-foreground underline underline-offset-4">
+        <a href="/design" className="text-foreground underline underline-offset-4">
           Your language in an hour
         </a>
         .

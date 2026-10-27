@@ -1,7 +1,7 @@
 # Roadmap and status
 
 *The one tracker. The lead keeps it per batch; lanes don't edit it. How we work: [`next/dispatch.md`](next/dispatch.md).
-Direction: [`vision.md`](vision.md), design: [`architecture.md`](architecture.md), rules: [`design/baseline.md`](design/baseline.md).
+Direction: [`vision.md`](vision.md), design: [`architecture.md`](architecture.md), rules: [`design.md`](design.md).
 Design calls: [`next/decisions.md`](next/decisions.md). Where everything stood on Oct 23: [`next/handoff.md`](next/handoff.md).*
 
 Last updated: Oct 23 2026 (the 0.9 plan).
@@ -46,7 +46,7 @@ the five bugs are fixed in the foundation and verified in game.*
 | A7 Verify in game: inventory item menu, qbx multichar on ox_lib context, Confirm without DialogShell | owner | Open |
 | A8 HUD editor on the baseline and the sliding selection | `systems/nuikit_hud` | Open |
 | A10 Smooth caret and smooth type are not obvious enough (the owner): make the caret glide and the typed text's entrance visible by default (stronger distance/duration on the ladder, a `--nk-caret-*` / `--nk-type-in-*` lever pair), in every text field | `smooth-input.tsx`, `form-field.tsx`, kit.css | Done Oct 23 (`--nk-caret-*`, `--nk-type-in-*`); not seen in game |
-| A11 Curate the registry (the owner): fewer listed components, the premium ones demonstrated; foundations first, composites grouped by what they're for, weak or duplicate ones deprecated and hidden from the site; every component pre-wired with its variations (treatment, size, tone, motion), shortcuts and the hooks that make it live; blocks as finished screens that show the system, not demos | `registry.json` meta, `apps/www` components/blocks pages, `docs/design/components.md` | In progress (lane) |
+| A11 Curate the registry (the owner): fewer listed components, the premium ones demonstrated; foundations first, composites grouped by what they're for, weak or duplicate ones deprecated and hidden from the site; every component pre-wired with its variations (treatment, size, tone, motion), shortcuts and the hooks that make it live; blocks as finished screens that show the system, not demos | `registry.json` meta, `apps/www` components/blocks pages, `docs/design.md` | In progress (lane) |
 | A9 Promote the screens' refinements into the registry (the owner, Oct 23): the registry speedometer, dial, chip, meter, fill and the HUD/pause blocks must be the premium versions tuned in game, not older drafts; the systems then import the registry component instead of a local copy | `registry/nuikit/{ui,blocks}`, `systems/nuikit_hud`, `systems/nuikit_pause` | Done Oct 23 (Speedometer, Dial, VitalChip keycap, hud-minimal, pause-menu); not seen in game |
 
 ## 0.9 · Track B: the adoption surface (the first ten minutes, per persona)
@@ -88,8 +88,8 @@ end to end on a machine that is not the owner's, without reading the monorepo.*
 | Item | State |
 |---|---|
 | Theme studio: treatment picker, lever groups, start from any theme, diff export, the four-language proof strip | Done Oct 23; not seen in a browser |
-| Figma reference regenerated for tokens 1.7 / Default / Neon Pop (`docs/design/figma.md` is at 1.2 and four identities) | Open (Figma lane) |
-| DTCG `$description` and the CLI help agree with `design/naming.md` on what "default" means | Open, small |
+| Figma reference regenerated for tokens 1.7 / Default / Neon Pop (`docs/design.md` is at 1.2 and four identities) | Open (Figma lane) |
+| DTCG `$description` and the CLI help agree with `design.md` on what "default" means | Open, small |
 
 ## 0.9 · Track D: the styling system is a platform (the owner, Oct 23)
 
@@ -106,7 +106,7 @@ lever catalog is the documentation.*
 | D3 The flexibility proof: Default, Neon Pop, **Flat**, **Square** from values only, side by side on `/theme` | Done Oct 23; not seen in game |
 | D4 Enforce "themes set values only": core test + `nuikit check` rule `theme/values-only` | Done Oct 23 |
 | D5 Studio and CLI: studio done; `nuikit theme new --from <theme>` still open | Half |
-| D6 `docs/design/your-language.md` + `/language` | Done Oct 23 |
+| D6 `docs/design.md` + `/language` | Done Oct 23 |
 
 ## 0.9 · Track F: the system (the owner, Oct 23 evening: "the perfect system, from the foundations, no accommodation")
 

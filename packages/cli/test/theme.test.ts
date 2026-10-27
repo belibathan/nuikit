@@ -12,7 +12,7 @@ const names = shippedThemes();
 describe("shipped themes", () => {
   it("lists the themes in nuikit-core/themes", () => {
     expect(names).toEqual(fs.readdirSync(THEMES_DIR).filter((f) => f.endsWith(".css")).map((f) => f.slice(0, -4)).sort());
-    expect(names).toEqual(["default", "flat", "neon-pop", "square"]);
+    expect(names).toEqual(["default", "neon-pop"]);
   });
 });
 
@@ -52,8 +52,8 @@ describe("the lever catalog", () => {
   });
 
   it("names the starting theme in the header", () => {
-    const { text } = renderTheme({ name: "x", from: "flat", css: source("flat") });
-    expect(text.startsWith("/*\n * x: a theme started from flat")).toBe(true);
+    const { text } = renderTheme({ name: "x", from: "neon-pop", css: source("neon-pop") });
+    expect(text.startsWith("/*\n * x: a theme started from neon-pop")).toBe(true);
     expect(text).toContain("@layer nk.theme {");
   });
 });

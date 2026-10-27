@@ -3,7 +3,7 @@
 *A resource declares its settings as rows; any page shows them as a live-preview draft, then saves or resets.
 Saved per player, merged over the defaults with a schema version, so an update never wipes a player's choices.
 Source: `packages/core/lua/settings.lua` (Lua), `packages/core/src/settings.ts` + `useSettings` (pages). Design:
-[`design/foundation.md`](design/foundation.md) wave 3.*
+[`design.md`](design.md) wave 3.*
 
 ## Declare (Lua, client)
 

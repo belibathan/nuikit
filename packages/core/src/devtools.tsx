@@ -138,7 +138,7 @@ export function NuiDevtools({
     }
   });
   const [visible, setVis] = useState(getVisible());
-  // the viewport picker (docs/design/layout.md): the page again in a WxH frame, scaled to fit the window
+  // the viewport picker (docs/design.md): the page again in a WxH frame, scaled to fit the window
   const framed = typeof window !== "undefined" && window.self !== window.top;
   const [viewport, setViewport] = useState<string>(() => {
     if (framed) return "";

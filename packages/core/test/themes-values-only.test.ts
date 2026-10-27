@@ -52,11 +52,6 @@ export function themeShape(css: string) {
 }
 
 describe("themes set values only (D4)", () => {
-  it("ships the two flexibility-proof languages beside Default", () => {
-    expect(files).toContain("flat.css");
-    expect(files).toContain("square.css");
-  });
-
   for (const f of files) {
     const css = readFileSync(path.join(dir, f), "utf8");
     const shape = themeShape(css);

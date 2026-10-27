@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils"
 import { ScrollArea } from "@/components/ui/scroll-area"
 
 /**
- * Region — a content column inside a zone or a surface (docs/design/layout.md): a max width
+ * Region — a content column inside a zone or a surface (docs/design.md): a max width
  * (`--nk-region-max`, 28rem), the padding scale (`--nk-region-pad`, the surface padding), and three slots:
  * header, body (scrolls with the kit's scrollbar when `scroll`), footer (pinned to the bottom when `fill`).
  *

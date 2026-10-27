@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest"
 
 import { Stepper, stepperVariants } from "@/components/ui/stepper"
 
-// The composition contract (docs/design/components.md): three parts at one height, the keycaps are Tiles, the
+// The composition contract (docs/design.md): three parts at one height, the keycaps are Tiles, the
 // value is a roll (per digit for numbers, a text reel for strings), no focus ring, no px.
 const html = (node: React.ReactElement) => renderToStaticMarkup(node)
 const tags = (markup: string, ...needles: string[]) => [...markup.matchAll(/<[a-z][^>]*>/g)].map((m) => m[0]).filter((t) => needles.every((n) => t.includes(n)))

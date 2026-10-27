@@ -1,4 +1,4 @@
-// Visual baselines (docs/design/contract.md, "Follow-up: visual baselines"): the dev fixtures of systems/nuikit_hud
+// Visual baselines (docs/design.md, "Follow-up: visual baselines"): the dev fixtures of systems/nuikit_hud
 // and systems/nuikit_pause plus four sections of the site's /components, each under Default, Neon Pop,
 // Flat and Square at 1920x1080, animations off, fonts from npm (fontsource), in Chromium 103 (the FiveM CEF build
 // `pnpm proof` uses: @sparticuz/chromium from examples/cef-proof), compared with the committed PNGs in
@@ -101,7 +101,7 @@ async function serve(dir, port) {
 
 let failed = 0;
 let browser, context, cmp;
-// `--viewport 2560x1440` (look only): the window size, as a player's screen (docs/design/layout.md)
+// `--viewport 2560x1440` (look only): the window size, as a player's screen (docs/design.md)
 const VIEWPORT = (() => {
   const i = process.argv.indexOf("--viewport");
   const m = i === -1 ? null : String(process.argv[i + 1] ?? "").match(/^(\d{3,5})[x×](\d{3,5})$/i);

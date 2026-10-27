@@ -18,7 +18,7 @@ import { useLinearRun } from "@/hooks/use-linear-run"
  *
  * With `duration` it runs on its own and `onComplete` fires from a timer when the time is up
  * (never from an animation event, so it still fires with motion off). Restart it with a new `key`.
- * It is the speedometer's language (the baseline, docs/design/baseline.md): a segmented Dial on a dark disc, the
+ * It is the speedometer's language (the baseline, docs/design.md): a segmented Dial on a dark disc, the
  * segments lit solid in the accent (or the tone), the percentage in the numeric voice, the label in the label
  * voice. A timed ring lights its segments on the compositor: one linear opacity step per segment on one start
  * time, the last exactly at `duration`, with no React render (ringSegmentKeyframes()). It plays at every motion

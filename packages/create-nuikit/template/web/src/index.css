@@ -1,4 +1,4 @@
-/* Cascade layers (tokens 1.5, docs/design/default.md §4), declared before Tailwind's own so the kit's sit between
+/* Cascade layers (tokens 1.5, docs/design.md §4), declared before Tailwind's own so the kit's sit between
    them: kit defaults and primitives under the utilities, a theme (nk.theme) and the page (nk.app) over them. */
 @layer theme, base, nk.base, nk.layout, components, nk.kit, utilities, nk.theme, nk.app;
 @import "tailwindcss";
@@ -11,14 +11,6 @@
  * Identity fonts (docs/tokens.md#fonts): open (OFL) woff2 files, latin subset. Bundled into this UI,
  * or served once by the nuikit resource (nui://nuikit/fonts/…), depending on how pnpm sync ran.
  */
-@font-face {
-  font-family: "Inter";
-  font-style: normal;
-  font-weight: 100 900;
-  font-display: swap;
-  src: url("./fonts/inter-latin-wght-normal.woff2") format("woff2");
-  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
-}
 @font-face {
   font-family: "Geist Mono";
   font-style: normal;
@@ -57,38 +49,6 @@
   font-weight: 100 900;
   font-display: swap;
   src: url("./fonts/geist-latin-wght-normal.woff2") format("woff2");
-  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
-}
-@font-face {
-  font-family: "IBM Plex Sans";
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url("./fonts/ibm-plex-sans-latin-400-normal.woff2") format("woff2");
-  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
-}
-@font-face {
-  font-family: "IBM Plex Sans";
-  font-style: normal;
-  font-weight: 500;
-  font-display: swap;
-  src: url("./fonts/ibm-plex-sans-latin-500-normal.woff2") format("woff2");
-  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
-}
-@font-face {
-  font-family: "IBM Plex Sans";
-  font-style: normal;
-  font-weight: 600;
-  font-display: swap;
-  src: url("./fonts/ibm-plex-sans-latin-600-normal.woff2") format("woff2");
-  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
-}
-@font-face {
-  font-family: "JetBrains Mono";
-  font-style: normal;
-  font-weight: 100 800;
-  font-display: swap;
-  src: url("./fonts/jetbrains-mono-latin-wght-normal.woff2") format("woff2");
   unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
 }
 
@@ -693,7 +653,7 @@
 @layer base {
   /* 1rem = 16px at 1080p, scaling with the game's resolution (21px at 1440p, 32px at 4K), and with the width
      on a screen narrower than 16:9 (16:10, 4:3) so the 16:9 design fits; never under 16px × --nk-screen-scale-min
-     (12px), times --nk-scale (the theme's UI size × the player's UI scale preference). docs/design/layout.md */
+     (12px), times --nk-scale (the theme's UI size × the player's UI scale preference). docs/design.md */
   html {
     font-size: calc(clamp(calc(16px * var(--nk-screen-scale-min, 0.75)), min(1.4815vh, 0.8333vw), 32px) * var(--nk-scale, 1));
     font-family: var(--font-sans, ui-sans-serif, system-ui, sans-serif);
@@ -727,7 +687,7 @@
  * The component tokens below are declared on :root and on [data-nk-theme]: a subtree applyTheme painted
  * (a stage, a host module) re-derives them from its own identity tokens.
  *
- * Layers (tokens 1.5, docs/design/default.md §4): nk.base holds the 1.5 lever defaults, nk.kit the primitives
+ * Layers (tokens 1.5, docs/design.md §4): nk.base holds the 1.5 lever defaults, nk.kit the primitives
  * (tile, fill, chip, icon-text, action-bar, plate); a theme writes only into nk.theme (token values and rules
  * on documented data attributes), a page into nk.app or unlayered. Tailwind's utilities sit between nk.kit and
  * nk.theme, so a className still restyles a primitive. index.css.tpl declares the order before Tailwind's own.
@@ -1610,7 +1570,7 @@
   color: var(--muted-foreground);
 }
 /* Interactive row in a list: 44px tall at 1080p (× density). The lit row (hover, focus, the list's selection:
-   one state, docs/design/baseline.md "Selection") sits on a Tile: the list's sliding SelectionTile, or, for a
+   one state, docs/design.md "Selection") sits on a Tile: the list's sliding SelectionTile, or, for a
    row on its own, its own ::before (the wall) and ::after (the face), drawn by the Selection section below. */
 @utility nk-row {
   position: relative;
@@ -2120,7 +2080,7 @@
   50% { opacity: 0.4; }
 }
 /*
- * The selection tile (docs/design/baseline.md "Selection"): ONE element per list, behind the items, that slides
+ * The selection tile (docs/design.md "Selection"): ONE element per list, behind the items, that slides
  * to the lit item by transform; the items never animate a fill of their own. Drive it with SelectionTile /
  * useSelectionIndicator (registry), which sets its box (translate, width, height; a size change is a measured
  * FLIP), data-tone and the key-repeat rule: data-repeat="fast" (sooner than --nk-time-base apart) glides in
@@ -2172,7 +2132,7 @@
   [data-slot="button"] {
     clip-path: var(--nk-chip-clip);
   }
-  /* Buttons (baseline 1.6, docs/design/baseline.md): the scan voice; a text button reads at the field height
+  /* Buttons (baseline 1.6, docs/design.md): the scan voice; a text button reads at the field height
      in a dialog. Focus is the hover state (Selection, 1.7): no ring, no rim; keyboard, controller and
      programmatic focus light a button exactly as the pointer does. */
   :is([data-slot="button"], [data-slot="alert-dialog-action"], [data-slot="alert-dialog-cancel"]):not([data-variant="link"]) {
@@ -2912,7 +2872,7 @@ html[data-nk-backdrop="on"] * {
   }
 }
 
-/* ───────────────────────────── tokens 1.5: the Default primitives (docs/design/default.md §3)
+/* ───────────────────────────── tokens 1.5: the Default primitives (docs/design.md §3)
    Every surface composes these and doesn't restyle them locally; a theme only sets their tokens (nk.theme).
    They live in nk.kit, under Tailwind's utilities, so a className still wins. Shared attributes:
    data-state = rest | focus | hold | confirm | alert | disabled; data-active = on, selected or checked;
@@ -3415,7 +3375,7 @@ html[data-nk-backdrop="on"] * {
     }
   }
 
-  /* ── Row (MenuRow, .nk-row), the baseline (1.6, docs/design/baseline.md): every theme. Anatomy: an icon tile
+  /* ── Row (MenuRow, .nk-row), the baseline (1.6, docs/design.md): every theme. Anatomy: an icon tile
      column (--nk-row-icon-box, one icon size), a title in the label voice over a description in the body voice.
      The lit row (the Selection section, unlayered at the end) slides its content in by --nk-gesture-lift. */
   .nk-row > * {
@@ -3564,7 +3524,7 @@ html[data-nk-backdrop="on"] * {
 }
 
 /*
- * Selection (1.7, docs/design/baseline.md "Selection"): one language, every theme.
+ * Selection (1.7, docs/design.md "Selection"): one language, every theme.
  * 1. No focus rings. Keyboard, controller and programmatic focus light an element exactly as the pointer's hover
  *    does; a text field keeps one rim while it holds the caret (the Fields rule above), nothing draws a ring.
  * 2. The selection IS a Tile: the primary keycap's face (the theme's skew, --nk-tile-key-radius, the top light) over
@@ -3778,7 +3738,7 @@ html[data-nk-backdrop="on"] * {
 }
 
 /*
- * Layout (docs/design/layout.md): Screen → zones → containers. The screen is the only container a NUI page
+ * Layout (docs/design.md): Screen → zones → containers. The screen is the only container a NUI page
  * has (Chromium 103: no @container), so the levers live on :root and the aspect class picks their defaults.
  *
  *   --nk-screen-ratio  the content box's width / height (16:9). On a wider screen the box stays 16:9 and

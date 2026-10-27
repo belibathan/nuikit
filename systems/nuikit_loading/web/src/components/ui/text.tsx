@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils"
 import { Kbd } from "@/components/ui/tile"
 
 /**
- * Text — the type roles as one component (docs/design/components.md, foundation): scan (a key legend), title,
+ * Text — the type roles as one component (docs/design.md, foundation): scan (a key legend), title,
  * label, num (tabular figures in the numeric face), body, caption and display. Each role is a kit class
  * (`nk-scan`, `nk-title`…) read from the theme's --nk-type-<role>-* levers, so a theme restyles every role at
  * once. `size` is the value ladder numbers sit on: sm (the body size), md (the HUD value size) and display (the

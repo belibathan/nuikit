@@ -11,7 +11,7 @@ import { useCollapse, type UseCollapseOptions } from "@/hooks/use-collapse"
 
 /**
  * VitalChip: the HUD's status chip as composable parts (shadcn-style). One anatomy under every theme: the keycap
- * (docs/design/baseline.md). A theme flattens or reshapes it with levers (--nk-tile-face-skew, --nk-tile-wall-height, radius
+ * (docs/design.md). A theme flattens or reshapes it with levers (--nk-tile-face-skew, --nk-tile-wall-height, radius
  * levers), never by swapping parts.
  *
  *   <VitalChip.Root value={hunger} tone="hunger">

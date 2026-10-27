@@ -5,7 +5,7 @@ import { cn, nkVariant, type NkVariantProps } from "@/lib/utils"
 import { toneVars } from "@/components/ui/fill"
 
 /**
- * Chip — a short status on one line (docs/design/components.md, foundation), in one of two materials:
+ * Chip — a short status on one line (docs/design.md, foundation), in one of two materials:
  *
  * - `material="panel"` (default): on a panel. --nk-height-chip tall, --nk-radius-chip corners (never a pill), the label
  *   role, an --nk-icon-md icon; a hairline rim (fill hair), a tint or a solid. kit.css draws it on

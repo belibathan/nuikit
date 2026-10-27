@@ -1,4 +1,4 @@
-// The level contract (docs/design/foundation.md, tokens 1.4): a meter's value is `--level` (0–1) on
+// The level contract (docs/design.md, tokens 1.4): a meter's value is `--level` (0–1) on
 // the element, and "low" means at or under the theme's --nk-behavior-alert (default 0.2, today's
 // 20 % durability). Read once and again when the theme changes, never per slot.
 import { onTheme } from "nuikit-core";

@@ -6,7 +6,7 @@ import { Fill } from "@/components/ui/fill"
 import { Kbd } from "@/components/ui/tile"
 
 /**
- * ActionBar — the one hint, close and back pattern (docs/design/ink.md §3): an optional plate, then items
+ * ActionBar — the one hint, close and back pattern (docs/design.md §3): an optional plate, then items
  * --nk-gap-items apart. An item holds keys (Tile sm) or an icon, plus a label, and is a <button> when it acts.
  * kit.css draws it (`.nk-action-bar` and the action-bar-* slots); a theme sets tokens.
  *

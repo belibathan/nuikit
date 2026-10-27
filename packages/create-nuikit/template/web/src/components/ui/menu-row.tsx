@@ -14,7 +14,7 @@ import { meterColor, type MeterTone } from "@/components/ui/meter"
 import { SelectionTile } from "@/components/ui/selection-tile"
 
 /**
- * MenuRow — the action row every list is made of (docs/design.md, rule 5; the baseline, docs/design/baseline.md):
+ * MenuRow — the action row every list is made of (docs/design.md, rule 5; the baseline, docs/design.md):
  * an icon in a tile (one icon size, one column) or an image, a title in the label voice, an optional description
  * in the body voice and progress, and one trailing thing: meta text, a
  * chevron, a Kbd, a checkbox or a value stepper. Selection is one language (the baseline's Selection

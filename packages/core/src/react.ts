@@ -65,7 +65,7 @@ export {
 export { aspectOf, DESIGN, getViewport, onViewport, parseViewport, viewportOf, VIEWPORT_SAMPLES, VIEWPORTS, watchViewport, type AspectId, type Viewport, type ViewportOptions, type ViewportSpec } from "./viewport";
 
 /**
- * The screen as the layout sees it (docs/design/layout.md): size, aspect class (16-9, 21-9…), rem in px, the
+ * The screen as the layout sees it (docs/design.md): size, aspect class (16-9, 21-9…), rem in px, the
  * UI scale, the safe area and the 16:9 content box. Follows resizes and theme / UI-size changes; starts
  * painting `data-nk-aspect` on <html>.
  */

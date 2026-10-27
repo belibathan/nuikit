@@ -47,7 +47,7 @@ and bindings for React first, then Vue, Svelte and plain JS:
 - **Surfaces:** who owns focus, cursor and keyboard; layers (hud, world, panel, modal, system); Escape order;
   exclusivity; hide/block rules; states like `dead`. Already built (`NUI.surface`), today coordinated peer to peer.
 - **Theme tokens:** the token contract (`docs/design.md`) published as a DTCG file plus CSS variables, with the
-  compiler/validator from `docs/archive/blocks-0.5.md` Part 0. Any resource that reads the tokens matches the server.
+  compiler/validator in `nuikit-core`. Any resource that reads the tokens matches the server.
 - **Context:** the player (bridge over Qbox, QBCore, ESX, ox_core, standalone), locale, UI scale, reduced motion.
 - **Messaging:** typed events and callbacks from one schema, generating TypeScript types, Lua annotations and
   browser mocks.
@@ -74,7 +74,7 @@ protocol carries the platform.
 ### 3. The ecosystem (what makes people show up)
 
 - **Kit:** finished systems and overrides for Qbox/ox_lib servers (0.4.0). The way server owners meet nuikit.
-- **Components and blocks:** shadcn-native, built on the protocol (`docs/archive/blocks-0.5.md`).
+- **Components and blocks:** shadcn-native, built on the protocol (`docs/design.md`).
 - **Tooling:** `create-nuikit`, browser devtools that fake the game, Lua tested under real Lua 5.4, the theme
   studio, and the Chromium 103 compiler kept only as a shim until 144 is everywhere.
 

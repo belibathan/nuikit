@@ -8,7 +8,8 @@ import { __resetTheme, applyTheme, setPrefs } from "../src/theme";
 import { compileTheme, motionTokens, themeJsonSchema, themeMotionLevel, toDtcg, TOKEN_NAMES, withPrefs } from "../src/tokens";
 
 const root = path.resolve(__dirname, "../../..") + "/";
-const theme = (n: string) => compileTheme(readFileSync(`${root}packages/core/themes/${n}.css`, "utf8"));
+const themePath = (n: string) => (["default", "neon-pop"].includes(n) ? `${root}packages/core/themes/${n}.css` : `${root}packages/core/test/fixtures/themes/${n}.css`);
+const theme = (n: string) => compileTheme(readFileSync(themePath(n), "utf8"));
 const ms = (v: string | undefined) => parseFloat(v ?? "NaN");
 const html = () => document.documentElement;
 const css = (k: string) => html().style.getPropertyValue(`--${k}`);
@@ -118,7 +119,7 @@ describe("reduced motion, two levels", () => {
   });
 
   it("applyTheme paints the level and the feel", () => {
-    applyTheme(readFileSync(`${root}packages/core/themes/square.css`, "utf8"));
+    applyTheme(readFileSync(themePath("square"), "utf8"));
     expect(html().getAttribute("data-nk-motion")).toBe("on");
     expect(html().getAttribute("data-nk-feel")).toBe("snap");
     expect(css("nk-time-base")).toBe("100ms");

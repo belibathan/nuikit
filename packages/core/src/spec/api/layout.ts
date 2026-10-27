@@ -6,7 +6,7 @@ export default {
   lua: "layout",
   title: "Layout",
   doc: "The 16:9 screen box, the viewport table, zone ids and placement: every part of every page is placed through these.",
-  docs: "docs/design/layout.md",
+  docs: "docs/design.md",
   entries: [
     { name: "viewports", kind: "const", doc: "The one table of aspects, scale floors and sample sizes.", js: "VIEWPORTS", also: ["VIEWPORT_SAMPLES", "DESIGN"], only: "js only: layout", since: "0.9.0" },
     { name: "viewport", kind: "call", doc: "The current viewport (size, aspect, scale, safe area).", js: "getViewport", also: ["viewportOf", "aspectOf", "parseViewport"], only: "js only: layout", since: "0.9.0" },

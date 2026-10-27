@@ -48,7 +48,7 @@ type Curated = {
 };
 const CURATED = registry.items as { name: string; type: string; title?: string; meta?: Curated }[];
 
-/** The curated map (docs/design/components.md): registry meta says the group, the tier and what is hidden. */
+/** The curated map (docs/design.md): registry meta says the group, the tier and what is hidden. */
 export const GROUP_ORDER = ["Foundations", "Lists & selection", "Gauges & vitals", "Dialogs & sheets", "Notices & prompts", "Inputs", "HUD", "Layout"];
 const UI = CURATED.filter((i) => i.type === "registry:ui");
 const byGroup = (hidden: boolean) =>

@@ -18,7 +18,7 @@ import { Cluster, Stack } from "@/components/ui/stack"
 import { Stat } from "@/components/ui/stat"
 import { Text } from "@/components/ui/text"
 
-// The composition contracts (docs/design/components.md): every composite draws its parts with the foundation,
+// The composition contracts (docs/design.md): every composite draws its parts with the foundation,
 // and every deprecated alias renders its canonical component.
 const html = (node: React.ReactElement) => renderToStaticMarkup(node)
 const dom = (node: React.ReactElement) => {

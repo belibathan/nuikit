@@ -5,7 +5,7 @@ import { cn, nkLevel } from "@/lib/utils"
 import { toneVars } from "@/components/ui/fill"
 
 /**
- * Dial — the speedometer arc as a primitive (docs/design/ink.md §3, Dial): one SVG geometry with a track
+ * Dial — the speedometer arc as a primitive (docs/design.md §3, Dial): one SVG geometry with a track
  * arc, a value arc, ticks and an optional needle, and whatever you put inside (a readout, a gear Tile, a unit).
  * Speedometer composes it; a fuel or boost gauge is a Dial too, and so is ProgressRing: a Dial with `sweep={360}`.
  *

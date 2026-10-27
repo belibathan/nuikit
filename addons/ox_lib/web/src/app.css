@@ -171,7 +171,7 @@ html[data-nk-motion="reduced"] .ox-radial[data-state="open"] .ox-radial-svg {
   margin: 0;
 }
 
-/* Rows are the kit's (the baseline, docs/design/baseline.md): its height, padding, icon column and voices. */
+/* Rows are the kit's (the baseline, docs/design.md): its height, padding, icon column and voices. */
 .ox-list-header {
   --nk-panel-title-size: calc(var(--nk-text-title) * 1.1);
 }
@@ -244,7 +244,7 @@ html[data-nk-motion="reduced"] .ox-radial[data-state="open"] :is(.ox-radial-svg,
   }
 }
 
-/* Sheets, dialogs and the list menu are plates: the kit's --nk-plate-* recipe (docs/design/default.md, Plate). */
+/* Sheets, dialogs and the list menu are plates: the kit's --nk-plate-* recipe (docs/design.md, Plate). */
 [data-slot="edge-sheet"],
 [data-slot="dialog-content"],
 [data-slot="alert-dialog-content"],
@@ -295,7 +295,7 @@ html[data-nk-motion="reduced"] .ox-radial[data-state="open"] :is(.ox-radial-svg,
 }
 
 /*
- * Dialog and row motion (docs/design/default.md, Motion): transform and opacity only. Dialogs fade in on the
+ * Dialog and row motion (docs/design.md, Motion): transform and opacity only. Dialogs fade in on the
  * expand ease and out on the retract ease (rows slide by the kit's --nk-gesture-lift).
  */
 @keyframes nk-dialog-in { from { opacity: 0; } to { opacity: 1; } }

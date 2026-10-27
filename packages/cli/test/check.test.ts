@@ -299,7 +299,7 @@ describe("cef/* (old-CEF profile, advisory)", () => {
   });
 });
 
-// The Default conventions (docs/design/default.md §4): warnings until each directory's wave lands.
+// The Default conventions (docs/design.md §4): warnings until each directory's wave lands.
 describe("ink rules", () => {
   const run = (files: Record<string, string>) => {
     const dir = fs.mkdtempSync(path.join(os.tmpdir(), "nk-ink-"));
@@ -390,7 +390,7 @@ describe("ink rules", () => {
   });
 });
 
-// The invariants (docs/design/baseline.md "Invariants" 2 and 3): a page draws no selection or plate of its own.
+// The invariants (docs/design.md "Invariants" 2 and 3): a page draws no selection or plate of its own.
 describe("invariant rules: selection/local and kit/local-concept", () => {
   const run = (files: Record<string, string>, rule: RuleId[]) => {
     const dir = fs.mkdtempSync(path.join(os.tmpdir(), "nk-inv-"));

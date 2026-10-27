@@ -9,7 +9,7 @@ import { TextRoll } from "@/components/ui/text-roll"
 import { Tile } from "@/components/ui/tile"
 
 /**
- * Speedometer — the vehicle gauge as refined in game (docs/design/baseline.md: the quality bar): a Dial of
+ * Speedometer — the vehicle gauge as refined in game (docs/design.md: the quality bar): a Dial of
  * --nk-speedometer-segments thick segments with small even gaps (digital, the default), or a thin arc over faint ticks
  * (arc), the speed big in the middle with its leading zeros dimmed (`0`64), the unit under it, the gear on a keycap
  * Tile seated in the arc's opening, fuel as thinner segments on the outer right-hand curve that drain downward,

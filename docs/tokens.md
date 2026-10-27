@@ -26,7 +26,7 @@ resolve and point up; no literal below identity except documented floors; no col
 every component has an anatomy; every lever has a reader. Old names map to new in
 `packages/core/spec/migration.json`; `node packages/core/scripts/migrate-levers.mjs <path>` applies it.
 
-**Themes are values.** Default, Neon Pop, Flat and Square (`packages/core/themes/`) are short diffs on the baseline.
+**Themes are values.** Default and Neon Pop (`packages/core/themes/`) are short diffs on the baseline; Flat and Square (`packages/core/test/fixtures/themes/`) prove two more languages come from values alone.
 Treatments are gone: the baseline is one language, a theme moves it.
 
 *The sections below describe the v1 contract and are being rewritten against the generated catalog; where they
@@ -108,7 +108,7 @@ still gets a red health bar instead of five grey ones. Set `--vital-*` in the th
 
 ### Identity tokens (1.1)
 
-What makes a UI premium and recognisable is mostly not colour ([design v2](archive/design-v2.md)). These are the
+What makes a UI premium and recognisable is mostly not colour. These are the
 values a server sets for its own identity. Each is derived when absent, so a plain TweakCN paste gets
 **Graphite**, the default identity (the last column). Invalid values fall back to the default, with a
 warning naming what's allowed. Three tiers: identity → semantic (the colours above) →
@@ -261,7 +261,7 @@ every nuikit UI and override:
 
 ## Motion (1.2)
 
-Design v2 §5A, spec in `docs/archive/design-research/motion.md` (on `main`). Two identity inputs, the rest
+Two identity inputs, the rest
 derived from `--nk-duration` (d) and `--nk-ease`. The compiler writes **literal** values, so nothing relies on
 `calc()` on a `<time>` inside an animation shorthand in Chromium 103.
 
@@ -364,7 +364,7 @@ from `--nk-density` (spacing, row and header heights) and grouping, never from s
 
 ### Slabs
 
-Transient feedback on the game ([design v2 §4.5](archive/design-v2.md)): one anatomy for every script, so a new
+Transient feedback on the game: one anatomy for every script, so a new
 script looks native. Slabs sit on the game, so by default they wear the HUD plate (`--nk-chip-bg`) and
 the chip's radius and clip. Components (`notice`, `key-prompt`, `task-progress`, the death band) build on
 these; a UI can also use the utilities directly.
@@ -455,7 +455,7 @@ Text size outside the kit: synced `index.css` raises Tailwind's two small steps 
 
 ## Foundation (1.4)
 
-Tokens 1.4 ([design/foundation.md](design/foundation.md)) split an identity into **palette** and
+Tokens 1.4 split an identity into **palette** and
 **treatment**, and add the families game UIs need beyond colour. All additive and all defaulted: every theme
 compiles every 1.3 token to the same value (`test/fixtures/compiled-1.3.json` pins it). Names are in
 `FOUNDATION_TOKENS` (nuikit-core), the DTCG file and the schema.
@@ -502,7 +502,7 @@ Arcade and Street `slab`. A server keeps its palette and borrows another treatme
 
 ## Default theme levers (1.5)
 
-Tokens 1.5 ([design/default.md](design/default.md) §2) turn the Default theme into kit levers every theme gets. They are
+Tokens 1.5 turn the Default theme into kit levers every theme gets. They are
 **kit levers**: kit.css holds each default (`@layer nk.base`, a formula over the identity, so a subtree's density or
 radius re-derives it); the compiler validates a value a theme or the `tile` treatment sets and never emits a
 default (`KIT_TOKENS` in nuikit-core, flag `css: true`). Graphite compiles exactly as in 1.4. The older component
@@ -549,7 +549,7 @@ deprecation line in the log, for one minor.
 |---|---|---|
 | **Default** (the flagship, and what a new project and the stock server get) | Monochrome: near-black surfaces, white text, greys for hierarchy, colour only where it carries information | Geist for sentences, Barlow Condensed italic caps for anything you scan; the `tile` treatment (a face slanted -12deg on a hard plate straight below); fills instead of rings, hard drops, no pills, no blur; radius .25/.375/.5/.75rem; density 1; 180ms |
 | **Neon Pop** | Default's structure with a vivid palette | The same `tile` treatment and levers; `--nk-accent-gradient` blue → violet → rose, solid brand #8A8CFF; a colour per vital (health rose, armor blue, hunger amber, thirst sky, stress green); rarity climbs grey, green, blue, violet, amber |
-| **Graphite** (what `compileTheme("")` fills: the token defaults) | Utilitarian: minimal, neat, compact; every element earns its place ([design v2 §4](archive/design-v2.md)) | Stock neutral colours; Inter, Inter Tight, Geist Mono; flat panels with a crisp hairline, a machined edge and a short soft drop; compact rhythm (density 0.875) with 16px reading text; small uppercase captions (13px, 0.06em); panels at `--radius`, chips and slabs as small rounded rects; thin meters (4px); a brand bar on the active row; arc gauges; 140ms. Exactly what a plain paste compiles to |
+| **Graphite** (what `compileTheme("")` fills: the token defaults) | Utilitarian: minimal, neat, compact; every element earns its place | Stock neutral colours; Inter, Inter Tight, Geist Mono; flat panels with a crisp hairline, a machined edge and a short soft drop; compact rhythm (density 0.875) with 16px reading text; small uppercase captions (13px, 0.06em); panels at `--radius`, chips and slabs as small rounded rects; thin meters (4px); a brand bar on the active row; arc gauges; 140ms. Exactly what a plain paste compiles to |
 | **Signal** | Bold and street | Signal yellow on warm black; Barlow, with Barlow Condensed for display and numbers; ratio 1.333; uppercase captions and headings; 0.75rem chamfers on panels, rows, chips and buttons; flat and opaque, with a 3px brand edge on top (`--nk-panel-edge`); solid square `fill` rows; density 0.95; a strong HUD shadow; bar gauges; 120ms snap |
 | **Velvet** | Soft, warm, luxury | Champagne on aubergine; DM Sans, with Fraunces for display and numbers; 1rem radius; strong gradient and edge, deep elevation, a hint of glow; roomy (density 1.15); a solid champagne pill on the active row (`fill`, `--nk-row-radius: 9999px`); 240ms smooth ease |
 | **Vector** | Tactical instrument | Cyan on blue-black; IBM Plex Sans, Chakra Petch display, JetBrains Mono numbers and captions; cyan hairlines and corner brackets (`--nk-panel-bracket`); flat, with a cyan halo instead of a shadow; `outline` rows; segmented meters; glow 0.35; compact (0.85); digital gauges |

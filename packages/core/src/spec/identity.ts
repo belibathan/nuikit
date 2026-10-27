@@ -1,6 +1,6 @@
 /**
  * Identity: what a server chooses. The only tier with literal defaults, and those defaults ARE the premium baseline
- * (docs/design/baseline.md): compileTheme("") already draws keycap tiles on hard plates, solid fills, segmented
+ * (docs/design.md): compileTheme("") already draws keycap tiles on hard plates, solid fills, segmented
  * progress, two voices and one sliding selection. A theme is a handful of values on top.
  */
 import { angle, color, css, ease, font, keyword, length, lit, number, pal, ref, shadow, time, times, type Group, type LeverDef, type Value } from "./lang";

@@ -1,8 +1,6 @@
 # Handoff: where nuikit stands (Oct 23, 2026)
 
-*For the next lead or planning agent. Read this first, then [`../design/baseline.md`](../design/baseline.md),
-[`../design/components.md`](../design/components.md), [`../design/default.md`](../design/default.md),
-[`../design/naming.md`](../design/naming.md) and [`decisions.md`](decisions.md). Owner screenshots referenced
+*For the next lead or planning agent. Read this first, then [`../design.md`](../design.md) and [`decisions.md`](decisions.md). Owner screenshots referenced
 below are in [`feedback/2026-10-23/`](feedback/2026-10-23/).*
 
 ## 1. Where we are
@@ -21,7 +19,7 @@ owner's local Qbox server; the owner has played most of it.
   Stack/Cluster, Panel, ActionBar, `useLinearRun`) + `SelectionTile`/`useSelectionIndicator`; composites are
   built from them (Meter, ProgressRing = segmented Dial, Notice, Countdown, DialogShell, SheetSection,
   Speedometer…). The deprecated aliases (HudChip, Vital, NuiMenu) were deleted Oct 23 (use Chip material="hud", Meter, Panel + MenuRow).
-- **Baseline** ([`baseline.md`](../design/baseline.md)): what made the speedometer premium, written as rules every
+- **Baseline** ([`baseline.md`](../design.md)): what made the speedometer premium, written as rules every
   component and theme inherits: generous spacing, two type voices, one icon size in a tile column, solid fills,
   segmented progress, keycap primary buttons, no focus rings, the selection is one sliding keycap per list, rows
   never touch.

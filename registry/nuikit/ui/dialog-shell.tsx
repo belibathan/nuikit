@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/compone
 import { Cluster } from "@/components/ui/stack"
 
 /**
- * DialogShell — the one dialog chrome (docs/design/ink.md §3, Dialog shell): stock shadcn Dialog (or
+ * DialogShell — the one dialog chrome (docs/design.md §3, Dialog shell): stock shadcn Dialog (or
  * AlertDialog) content on the plate recipe, with a header, a padded body and an action-bar footer.
  *
  *   <DialogShell open={open} onOpenChange={setOpen} title="Transfer" description="To another account"

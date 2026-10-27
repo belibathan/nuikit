@@ -36,7 +36,7 @@ pnpm dev          # the website and playground at localhost:5173
 - **Clean-room overrides.** Write or update `docs/<name>-protocol.md` from the upstream resource, then implement
   from the spec. Never copy upstream code, markup or styles. Every callback payload must match the spec.
 - **Tokens, not values.** Colours, radii, type and motion come from theme tokens (`docs/tokens.md`,
-  `docs/design/default.md`). No `backdrop-filter`, no `color-mix()`, no `:has()`; motion is transform and opacity.
+  `docs/design.md`). No `backdrop-filter`, no `color-mix()`, no `:has()`; motion is transform and opacity.
 - **`nuikit check` stays at level 3** for every page (CI enforces it).
 - **Keyboard and mouse** both work. Check 1280×720, 1920×1080 and 2560×1440.
 - **Add a changeset** (`pnpm changeset`) for user-facing package changes.

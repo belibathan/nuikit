@@ -33,7 +33,7 @@ export const ANCHOR_CLASS: Record<Anchor, string> = {
   center: "absolute inset-0 m-auto h-max w-max",
 };
 
-/** The layout zone of each anchor (docs/design/layout.md): renderers place themselves in these. */
+/** The layout zone of each anchor (docs/design.md): renderers place themselves in these. */
 export const ANCHOR_ZONE: Record<Anchor, ZoneId> = {
   "top-left": "tl",
   "top-center": "tc",

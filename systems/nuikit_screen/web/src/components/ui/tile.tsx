@@ -4,7 +4,7 @@ import * as React from "react"
 import { cn } from "@/lib/utils"
 
 /**
- * Tile — the one key language (docs/design/ink.md §3): keys, notice icons, tab marks, checked boxes, vital
+ * Tile — the one key language (docs/design.md §3): keys, notice icons, tab marks, checked boxes, vital
  * chips, gears and telltales. A face (rim and top light) on a solid plate, the face slanted by
  * --nk-tile-face-skew while the box stays upright. kit.css draws it on `data-slot="tile"` (and on shadcn's Kbd,
  * which is the same tile); a theme only sets --nk-tile-*. Graphite: today's keycap, no plate, no slant.

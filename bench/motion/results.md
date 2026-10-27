@@ -1,6 +1,6 @@
 # Motion system: browser proof and the in-game checklist
 
-Design v2 §5A, spec `docs/archive/design-research/motion.md` (on `main`). Oct 20, 2026, branch `feat/motion` against
+Motion tokens 1.2 (`docs/tokens.md`). Oct 20, 2026, branch `feat/motion` against
 `lead/next` (db6aca4). Everything below is measured in **headless Chromium 141** (`/opt/pw-browsers/chromium`,
 software compositing), not FiveM's CEF (Chromium 103). The in-game checks at the end decide whether it holds.
 

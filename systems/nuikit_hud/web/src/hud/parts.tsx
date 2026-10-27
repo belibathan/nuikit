@@ -49,7 +49,7 @@ export function placeParts(parts: HudParts, els: Record<PartName, ReactNode>) {
 }
 
 /**
- * Each corner is a layout zone (docs/design/layout.md, the registry Zone): placed inside GTA's HUD area (the
+ * Each corner is a layout zone (docs/design.md, the registry Zone): placed inside GTA's HUD area (the
  * Screen's --nk-area-*, set from hud:layout) at --nk-screen-edge, a flex column on --nk-zone-gap. Config.parts' order
  * is top to bottom in every corner, so bottom zones flow as a column too (the zone default stacks upwards).
  */

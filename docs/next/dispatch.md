@@ -1,7 +1,7 @@
 # Dispatch: many agents, one direction
 
 *How the agents work on nuikit at once. What to work on: [`../roadmap.md`](../roadmap.md). Design calls: [`decisions.md`](decisions.md).
-Rules every component follows: [`../design/baseline.md`](../design/baseline.md).*
+The design rules: [`../design.md`](../design.md).*
 
 ## The stance (Oct 22, 2026; unchanged Oct 23)
 

@@ -20,7 +20,7 @@ export type Zones = Record<string, ZoneRect[]>;
 
 export type ZonePosition = "top-left" | "top-center" | "top-right" | "bottom-left" | "bottom-center" | "bottom-right" | "center-left" | "center-right" | "center";
 
-// ─────────────────────────────────────────── the layout zones (docs/design/layout.md)
+// ─────────────────────────────────────────── the layout zones (docs/design.md)
 
 /** The nine zones of the screen and its four edges. */
 export type ZoneId = "tl" | "tc" | "tr" | "ml" | "mc" | "mr" | "bl" | "bc" | "br" | "t" | "r" | "b" | "l";

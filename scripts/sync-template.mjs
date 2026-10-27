@@ -9,7 +9,7 @@
 //   packages/create-nuikit/kit.css    → web/src/index.css (the nk-* kit utilities), and through
 //                                       scripts/kit-merge.mjs → registry/nuikit/lib/utils.ts (the kit-aware
 //                                       cn()) → web/src/lib/utils.ts, apps/www/src/lib/utils.ts
-//   packages/core/themes/*.css        → the nuikit resource's themes/ (the four identities)
+//   packages/core/themes/*.css        → the nuikit resource's themes/ (the shipped themes)
 //   packages/core/fonts/*             → web/src/index.css @font-face (bundled from nuikit-core, or served
 //                                       by the nuikit resource: nuikit.json "fonts" / NUIKIT_FONTS), the
 //                                       nuikit resource's fonts/, the create-nuikit template's web/src/fonts/
@@ -248,7 +248,7 @@ for (const t of targets) {
   }
   // the nuikit resource serves the fonts to every UI (FONT_SRC.nuikit); the template ships its own
   const fontMode = t.fonts === false ? false : t.dir === "packages/create-nuikit/template" ? "local" : (t.fonts ?? FONT_MODE);
-  // the four identities (packages/core/themes): copy one over nuikit/theme.css
+  // the shipped themes (packages/core/themes): copy one over nuikit/theme.css
   if (t.runtime) for (const f of fs.readdirSync(path.join(root, "packages/core/themes"))) copy(`packages/core/themes/${f}`, `themes/${f}`);
   if (t.runtime || fontMode === "local") {
     const into = t.runtime ? "fonts" : "web/src/fonts";

@@ -17,7 +17,7 @@
 //   - a font size still removes an earlier leading-* (tailwind-merge's default; countdown, 4f50a95). In
 //     Tailwind v4 leading-* wins in any order, so that's stricter than the CSS, but turning it off would
 //     change shipped line heights (shadcn's CardTitle leading-none under a text-* className). The rule
-//     instead: a size variant sets its own leading (docs/design/contract.md).
+//     instead: a size variant sets its own leading (docs/design.md).
 //
 // A property this file doesn't classify fails the sync, so a new utility gets a decision, not a guess.
 import { getDefaultConfig } from "tailwind-merge";

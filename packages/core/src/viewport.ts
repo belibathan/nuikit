@@ -1,4 +1,4 @@
-// Resolution adapters (docs/design/layout.md): one table of the screen shapes a FiveM player runs, what each
+// Resolution adapters (docs/design.md): one table of the screen shapes a FiveM player runs, what each
 // one defaults to (the safe area, the edge inset, the scale floor), and the maths every layout reads.
 //
 // Chromium 103 has no @container, so the page itself is the only container that matters: the screen. kit.css

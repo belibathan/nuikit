@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 // The identity tier and the shipped themes: the language's defaults are the premium baseline, and Default,
-// Neon Pop, Flat and Square are value diffs on top of it.
+// Neon Pop are value diffs on top of it; Flat and Square (test/fixtures/themes) prove other languages come from values alone.
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
@@ -10,8 +10,10 @@ import { compileTheme, DEFAULT_FONT_DISPLAY, DEFAULT_FONT_SANS, IDENTITY_TOKENS,
 
 const root = path.resolve(__dirname, "../../..") + "/";
 const read = (p: string) => readFileSync(root + p, "utf8");
-const THEMES = ["default", "neon-pop", "flat", "square"] as const;
-const theme = (n: (typeof THEMES)[number]) => read(`packages/core/themes/${n}.css`);
+const SHIPPED = ["default", "neon-pop"] as const;
+const FIXTURES = ["flat", "square"] as const;
+const THEMES = [...SHIPPED, ...FIXTURES] as const;
+const theme = (n: (typeof THEMES)[number]) => read((SHIPPED as readonly string[]).includes(n) ? `packages/core/themes/${n}.css` : `packages/core/test/fixtures/themes/${n}.css`);
 
 afterEach(() => __resetTheme());
 

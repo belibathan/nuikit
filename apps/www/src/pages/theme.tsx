@@ -77,7 +77,7 @@ export function ThemePage() {
             or shadcn theme, tweak the colours and the identity (type, shape, surface, density, motion, HUD), and watch the kit change on a game screen. Then drag the levers. The checks are the ones your server runs. Download
             theme.css, drop it in <code className="font-mono text-foreground">nuikit/theme.css</code> and run{" "}
             <code className="font-mono text-foreground">nuikit theme reload</code>. New to this?{" "}
-            <a href="/language" className="text-foreground underline underline-offset-4">
+            <a href="/design" className="text-foreground underline underline-offset-4">
               Your language in an hour
             </a>
             .

@@ -73,7 +73,7 @@ function publish(reason) {
 // ───────────────────────────────── player looks
 // What a player may pick instead of the server theme (pause › Settings › Look), compiled here like the theme:
 //
-//   setr nuikit_identities "neon-pop,flat,square"   themes from nuikit/themes/*.css (default: none)
+//   setr nuikit_identities "neon-pop"   themes from nuikit/themes/*.css (default: none)
 //
 // GlobalState.nuikitLooks = { identities, themes = { ["<identity>"] = compiled } }. Clients pick the one matching
 // the player's prefs (nuikit.lua NUI.theme); unknown or disallowed picks get the server theme.

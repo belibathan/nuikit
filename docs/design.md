@@ -1,321 +1,230 @@
-# The nuikit kit language
+# nuikit design
 
-Every nuikit screen is stock shadcn, coloured only by the server's theme, and proportioned by the
-rules below. The theme decides *what colour*; these rules decide *how big, how far apart, how loud,
-and how it moves*. A server that pastes a new theme changes every screen at once and they still look
-like one product.
+The one design doc. Every nuikit screen is stock shadcn, coloured by the server's theme, proportioned and moved
+by the rules here. Where this doc and the code disagree, the code wins and this doc gets fixed in the same commit.
+Sources of truth next to it: `packages/create-nuikit/kit.css` (every default, once), `packages/core/src/spec`
+(the token language; `design/levers.md` is generated from it), `registry/nuikit` (the components), `registry.json`.
 
-The rules in **Surfaces**, **Motion** and **Universal glue** are the owner's, judged in game on the
-v0.7.0 experiment server (`archive/v0.7.0-handoff.md` §2–§4, `archive/v0.7.0-design-patterns.md`).
-They are the system; where an older rule or screen disagrees, these win.
+**The standard was read off the two parts the owner called premium in game: the speedometer and the vitals.** Flat
+solid fills, a few shapes reused, hard depth, two typographic voices, compact motion on one ladder, alignment held.
+The goal is a game UI language, not a web app: rows you select like a GTA menu, keys that look pressable.
 
-## Token contract
+## 1. Principles
 
-The full contract is **[tokens v1](tokens.md)**: names, derived defaults, the compiler, contrast checks
-and how the theme reaches every UI. In short, what a nuikit UI reads:
+1. **Themes set values, never anatomy.** Every design decision is a `--nk-*` lever with a default in `kit.css`. A theme
+   writes values into `@layer nk.theme`; a theme that needs a selector has found a missing lever. Enforced by
+   `packages/core/test/themes-values-only.test.ts` and `nuikit check` `theme/values-only`.
+2. **Colour only from tokens.** No literals, no palette classes, no `oklch()` or `color-mix()` in inline styles. Fixed
+   colours only for what the theme cannot know: GTA's own palettes, item images, shadows.
+3. **Stock shadcn is the foundation.** Compose the vendored new-york-v4 components (`vendor/shadcn`, never edited);
+   nuikit's registry layer is composition, not forks. If shadcn has it, use it.
+4. **One tile language.** Keys, icons, checked boxes, gears, vital chips, the selected row and the primary button are
+   one Tile: a face in the theme's skew, a 1px rim, on a hard wall straight below. Depth is an offset plate, never a
+   blur or a glow.
+5. **Fill, not rings.** Status is a level filling, solid and vivid, with a leading edge. Progress is segmented or a
+   fill, never a thick ring. No translucent washes by default (`--nk-fill-style: solid`; `soft` is the switch).
+6. **Rows, not cards.** Inside a window everything is a row: icon tile, title, description, trail. No cards in cards.
+   Rows never touch (`--nk-list-gap`), and one selection tile per list slides between them.
+7. **Two voices.** A display voice for everything you scan (titles, labels, keys, numbers; Barlow Condensed italic
+   caps in Default) and a body voice for sentences (Geist). Never a bold sans for a row title.
+8. **Quiet and in sentence case.** Neutral surfaces, `primary` once per surface, colour carries meaning. No uppercase
+   tracked labels in markup (a theme may uppercase through `--nk-type-*-case`), no eyebrows, no `A · B · C` strings.
+9. **Motion with a purpose, on one ladder.** Transform and opacity only, `--nk-time-*` and `--nk-ease-*`, exits faster
+   than entrances, nothing animates on its own unless it is live. Reduced motion keeps a fade of 100 ms or less and
+   drops every slide; motion off is instant.
+10. **Subtle over spectacular.** A camera keeps the player's view and moves in; nothing glows, pulses or breathes to
+    be noticed. The HUD stays out of the way: chips and bare text on the `--nk-edge` margin, never panels.
+11. **Replace native, fully.** A nuikit screen that stands in for a GTA one does everything the native did.
+12. **Chromium 103 until 144 ships.** No `:has()` or `@container` for anything essential, no individual `translate`
+    / `scale` / `rotate`, cubic-bezier only, `tw-animate-css` on every page, and never a transform animation on a
+    centred dialog's own element (it overrides the centring; animate an inner wrapper).
 
-| Token | Used for |
-|---|---|
-| `--background` / `--foreground` | Full-screen surfaces (pause, loading, death scrim) |
-| `--popover` / `--popover-foreground` | Every floating panel and sheet (`nk-panel`, `edge-sheet`) |
-| `--card` / `--card-foreground` | Raised blocks on a full-screen surface (not inside a panel: in many themes card = popover) |
-| `--muted` / `--muted-foreground` | Tracks, slots and wells inside a panel, secondary text |
-| `--accent` / `--accent-foreground` | Hover and keyboard highlight |
-| `--primary` / `--primary-foreground` | The one main action per surface, progress fills, selection |
-| `--destructive` / `--success` / `--warning` / `--info` (+ `-foreground`) | Status: danger and low values, done, caution, notices |
-| `--hud` / `--hud-foreground` | Surfaces and text drawn straight on the game (`nk-chip`, `nk-hud`) |
-| `--vital-health` … `--vital-stress` | Health, armor, hunger, thirst, stress |
-| `--border` / `--input` / `--ring` | Hairlines, fields, focus |
-| `--chart-1` … `--chart-5` | Other categorical meaning (transaction types, charts) |
-| `--radius` | Panel corners = radius + 4px, controls = radius − 2px, chips = full |
-| `--font-sans` / `--font-mono` | Text / codes and IDs only |
-| `--nk-scale` / `--nk-motion` | UI size multiplier, animations on/off (theme × player preference) |
+## 2. Tokens and levers
 
-A server theme is any shadcn / TweakCN paste; the nuikit tokens are derived when it doesn't set them.
-A UI never hard-codes a colour that one of these covers. Fixed colours are allowed only for things
-the theme can't know: GTA's own palettes (hair colours, chat `^1` codes), item images, and shadows.
+The contract is [`tokens.md`](tokens.md); the catalog is [`design/levers.md`](design/levers.md) (generated). In short,
+a UI reads shadcn's names unprefixed (`--background`, `--popover`, `--primary`, `--muted`, `--accent`, `--destructive`,
+`--border`, `--ring`, `--radius`, `--font-sans`, `--font-mono`), the game families (`--role-*` for vitals, `--hue-*`,
+`--brand*`, `--hud*`, `--scrim`, `--success` / `--warning` / `--info`), and the kit levers `--nk-<family>-<part>` in
+four tiers that only reference upward:
 
-## Scale
+| Tier | What | Example |
+|---|---|---|
+| identity | what a server chooses: palette, faces, scales, shape, type, surfaces, motion | `--nk-shape-skew`, `--nk-style-fill` |
+| semantic | roles every component shares: the motion ladder, eases, plate, fill, accent, lines, depth | `--nk-time-base`, `--nk-plate-bg` |
+| component | `--nk-<component>-<prop>` | `--nk-tile-wall`, `--nk-row-pad-x` |
+| part | `--nk-<component>-<part>-<prop>`, the `data-slot` anatomy | `--nk-type-scan-pad` |
 
-`1rem` is 16px at 1080p and scales with the game's height (`html { font-size: 1.4815vh }`), so a
-screen is the same size relative to the game at every resolution. Design at 1080p.
+`compileTheme("")` fills the defaults (Graphite, the token default). A theme is any shadcn or TweakCN paste plus the
+levers it wants; everything else is derived. `--nk-scale` and `--nk-motion` combine the theme with the player's prefs.
+
+**The lever rule (Oct 27, 2026).** No new lever until a theme, a component or a server needs it. A lever no theme sets
+and no component reads is deleted, not kept for later (`registry/nuikit/test/levers.test.ts` holds the line). Today
+`kit.css` declares about 550; themes set 74 of them; 231 are read only inside `kit.css` and are candidates to become
+plain values. Shrinking that number is the standing cleanup item.
+
+## 3. Scale and layout
+
+`1rem = 16px` at 1080p and follows the game's height (floored at 12px so 720p and 4:3 stay readable, capped at
+32px), times `--nk-scale`. Design at 1080p; test at 1280×720, 1920×1080 and 2560×1440. Sizes in rem, never px,
+except hairlines and shadow offsets.
 
 | | Values |
 |---|---|
-| Spacing | 4, 8, 12, 16, 24 px (`1 2 3 4 6`) inside panels; 48 (`12`) for the inner column of a flush sheet. Nothing in between. |
-| Screen edge | 24px (`--nk-edge`, 1.5rem) for anything anchored to or inset from an edge |
-| Control height | 32 (compact), 36 (default), **48 (a row in a sheet)**; 44 × `--nk-density` for `nk-row` in a legacy panel |
-| Text | 13 label · 16 body · 17–18 panel title · 23 section · 36+ numbers that are the point (balance, timer); 18+ HUD values. Graphite at ratio 1.2; identities change the ratio (tokens 1.1) |
-| Weight | 400 body, 500 labels and rows, 600 titles and key numbers |
-| Icons | 16px lucide, `muted-foreground` unless the icon is the state |
-| Sheet column | floating: 24px all round; flush: 48px from the screen edge, 24px from the open edge |
+| Spacing | `--nk-space-*` (4, 8, 12, 16, 24 px) inside panels, times `--nk-density`; nothing in between |
+| Screen edge | `--nk-edge` 1.5rem (16:10 1.25, 4:3 1) for anything anchored to or inset from an edge |
+| Rows and controls | `--nk-h-row` 3rem for a row in a sheet, `--nk-h-field` 2.75rem, `--nk-h-control` 2.25rem, keys and chips smaller |
+| Type | 13 label, 16 body, 17–18 panel title, 23 section, 36+ for a number that is the point; 400 body, 500 labels, 600 titles |
+| Icons | `--nk-icon-md` 1rem in a 2rem Tile column; a row without an icon keeps the column |
+| Radius | four steps: key .25, chip .375, control .5, surface .75rem (`--nk-r-*`); no `rounded-full` on new work |
 
-## Surfaces
+**Layout model** (`registry/nuikit/ui/{screen,zone,region,grid}.tsx`, `packages/core/src/viewport.ts`): `<Screen>` is
+the page root and holds a 16:9 content box, centred on an ultrawide (`bleed` for full width) with a safe area inside.
+`<Zone at>` is one of nine places or four edges; a flex column that grows toward the centre, `--nk-zone-inset` from
+the safe area; items stack and never overlap; `clear` moves it clear of what other UIs published there and `publish`
+shares its rect through `NUI.zone`. `Region` is a column with header, scrolling body and pinned footer; Panel, EdgeSheet
+and DialogShell are Regions on a surface. `Grid` is a grid of slots with arrow-key navigation by position.
+`VIEWPORTS` in core is the one aspect table; kit.css mirrors it and a test keeps them equal. `nuikit_hud`'s corners are
+Zones; the pause menu is a bleeding Screen with one Region column.
 
-**One family: every window is a shadcn Sheet** (`edge-sheet` in the registry wraps it). Hand-built
-boxes, nested cards and bespoke frames are out. A sheet has two placements, and the placement is
-decided by what the game is doing behind it, not by taste:
+## 4. Surfaces
 
-| Placement | When | Shape | Examples |
-|---|---|---|---|
-| **Flush** (`<EdgeSheet variant="flush">`) | **The game is paused or replaced.** One system screen at a time: pause, the full map, character select, creation | The backdrop touches the top, bottom and its screen edge; a hairline on the open edge only; a scrim falloff from the edge; the content in an **inner column** (48px from the screen edge, 24px from the open edge) | the pause menu with the map inside the same sheet |
-| **Floating** (`variant="floating"`, **the default**) | **The game keeps running behind it.** Anything opened from the world: inventory, banking, shops, clothing, job menus, context and list menus, dialogs, trays | Inset `--nk-edge` (1.5rem) from the top, bottom and its side; a border all round; the identity's corner shape on every corner; the panel shadow | the two inventory sheets, a job sheet, the ox_lib context menu |
-| **Tray** | Actions and key hints for the window above it | A floating bar along the bottom; it never touches the screen bottom | inventory use / give / amount |
+**Every window is a shadcn Sheet** (`edge-sheet` wraps it). Placement follows what the game is doing behind it:
 
-Flush is reserved for one top-level system screen; everything else floats, picks a side (right for
-menus opened from the world, left for "your stuff") and never designs its own frame. A `fit` floating
-sheet is as tall as its content, from the top edge down.
+| Placement | When | Shape |
+|---|---|---|
+| **Flush** (`variant="flush"`) | the game is paused or replaced: pause, full map, character select | touches top, bottom and its screen edge; a hairline on the open edge; a scrim falloff; content in an inner column (48px from the screen edge, 24px from the open edge) |
+| **Floating** (the default) | the game keeps running: inventory, bank, shops, job menus, context menus, dialogs | inset `--nk-edge` from top, bottom and its side; a border all round; the theme's corner shape; the panel shadow |
+| **Tray** | actions and key hints for the window above it | a floating bar along the bottom, never touching the screen bottom |
 
-**Inside a sheet: rows, not cards.**
+Flush is reserved for one top-level system screen; everything else floats, picks a side (right for menus opened from the
+world, left for "your stuff") and never designs its own frame. Inside a sheet: 48px rows with a hairline between
+sections (`nk-caption` titles), one ScrollArea column with a gutter, sub-pages that swap in place with a back row (Escape
+goes back before it closes), **exactly one primary action** in the actions row, key hints as Kbd next to their action,
+a whole-sheet level traced along the header's hairline (`meter`). A sheet never closes itself: outside clicks, focus
+and Escape belong to the surface and its resource. `nk-panel` stays for small popovers that are not windows.
 
-1. **Rows are 48px** (3rem), icon + label + trailing meta or control, with a hairline between them and a
-   `Separator` between sections. Rows are the unit of everything inside a sheet: an action, a setting, a
-   person, a slot group. No cards inside a sheet, no card inside a card; group with a section title
-   (`nk-caption`) and a hairline.
-2. **One ScrollArea column** with a gutter (`<EdgeSheetBody scroll>`), so the scrollbar never covers content.
-   The header and the actions row stay put; only the column scrolls.
-3. **Sub-pages swap in place** inside the same sheet: change `page`, the column fades to the new one,
-   a back row (`onBack`) leads the header, and Escape goes back before it closes. A sub-page never opens
-   a second card beside the first.
-4. **Exactly one primary action per surface**, drawn as a filled button in the actions row (`EdgeSheetFooter`);
-   everything else is a row or a ghost button. Key hints are `Kbd` next to the action they trigger.
-5. **A level along the edge.** A weight, a capacity or a progress that belongs to the whole sheet is traced
-   along the header's bottom hairline (`meter`), the way a vital is traced along its chip: the hairline is the
-   track, the fill is the brand, destructive past `meterDanger`.
-6. **A sheet never closes itself.** Outside clicks, focus and Escape go to the owner (the surface, the
-   resource); several floating sheets can be open at once (an inventory's two sides), staggered with `delay`.
+## 5. The baseline, lever by lever
 
-`edge-sheet` props: `open`, `side` (`left` | `right`), `variant` (`floating` | `flush`), `fit`, `width`
-(rem, default `36rem`), `delay` (ms), `modal` (default false), `icon`, `title`, `description`, `actions`
-(right of the title), `meter` / `meterDanger`, `page`, `onBack`, `onClose`, `onOpenChange`. Parts:
-`EdgeSheetBody` (`scroll`, `onViewportScroll`), `EdgeSheetFooter`, `EdgeSheetEdge`.
+- **Spacing.** Surface padding `--nk-pad-surface` (space-6); header space-6/6/4, footer space-4/6/6 with no rule above it.
+  Rows: `--nk-row-pad-y` space-2, `--nk-row-pad-x` space-3, `--nk-row-gap` space-4; rows sit space-1 apart with no
+  hairlines between them.
+- **Type.** Titles, row titles, labels, keys, buttons and numbers in the display voice (`--nk-type-{title,label,scan,num}-*`,
+  `--nk-row-title-size` 1rem); descriptions in the body voice (`--nk-row-desc-size` .875rem, muted). Notice titles are
+  sentence-led whatever the script sent.
+- **Selection and focus: one language.** No focus rings anywhere: keyboard, controller and programmatic focus render the
+  pointer's hover state (`data-lit`). The lit row, menu item or tab **is** the primary keycap Tile (face in the theme's
+  skew over the wall, `--nk-tile-radius`); one `SelectionTile` per list slides between items by transform, a size change
+  by FLIP, never a height or width animation; a held key glides fast then jumps. The one exception: a text field with the
+  caret keeps a 1px rim (`--nk-focus-rim`), and checkboxes and switches light the same rim.
+- **Buttons.** The primary is a keycap: face on wall, hover and focus raise it a pixel, a press sinks it. Outline is a
+  hairline rim that tints; ghost and secondary take the accent. Labels in the scan voice.
+- **Progress.** `ProgressRing` is a Dial with `--nk-ring-segments` (24) and `--nk-ring-gap` (4°) on a dark disc; a timed
+  ring lights one segment at a time on the compositor. Bars are a Fill: solid, a leading edge (`--nk-fill-edge`), alert
+  past a threshold.
+- **Fills.** `--nk-fill-style: solid` (opacity 1) covers progress, meters, the vital liquid, overlay fills and
+  selection; `soft` is .42. An icon over a solid fill keeps a dark ink copy clipped to the covered part.
+- **Surfaces.** One plate (`--nk-plate-*`): flat, a hairline, a hard drop. One hairline under a header, none between
+  rows or above a footer. No blur, no soft shadow, no gradient that carries colour.
+- **Motion ladder.** snap 90 (press), fast 120 (hover, a face rising), base 180 (row lift, rim), slow 280 (sheets,
+  dialogs, a tile landing), fill 420 (levels), pulse 1000 (alert); exits at 0.7×. Things land, open, then speak.
+  Entrances: a sheet slides from its edge, rows stagger after it on the first open only; a sub-page fades in place.
+  Values that change in place roll (`TextRoll`, `NumberRoll`: vertical only, alignment per layer, width changes move
+  the neighbours). Keyboard and controller state is instant. Idle cost is zero: a threshold blinks twice, never pulses;
+  a finished animation leaves nothing running.
+- **Graphite under the baseline.** Graphite keeps its palette, fonts and rounded meters; everything else above applies
+  (skew 0, so its keycaps are straight).
 
-The legacy recipe `nk-panel` + `nk-panel-header` / `-body` / `-footer` (the `panel` component) stays for
-small popovers that are not windows (a tooltip-sized card, a confirm); a window is a sheet.
+## 6. Components: the network
 
-## Rules
+The registry is a few **foundation** primitives driven by levers and **composites** that configure them with props;
+**blocks** compose composites into whole screens. A theme restyles a primitive once and every composite follows; a
+composite never draws its own bar, key, chip or gauge. `registry.json` `meta` (tier, group, hidden, variants) drives the
+site; `registry/nuikit/test/registry-meta.test.ts` keeps it honest, `composition.test.tsx` holds the contracts below,
+`anatomy.test.tsx` renders every item under every theme and compares the `data-slot` tree.
 
-1. **Sheets, not boxes.** A window is an `edge-sheet` ([Surfaces](#surfaces)). `nk-panel` is for small
-   popovers only. No nested cards anywhere; group with spacing and a hairline instead.
-2. **Quiet by default.** Neutral surfaces; `primary` appears once per surface (the main action or
-   the progress fill). Colour carries meaning, never decoration.
-3. **Sentence case.** No uppercase tracked labels, no eyebrow text above titles, no `A · B · C` meta
-   strings. Labels say what the value is in plain words. Write text in sentence case; an identity may
-   uppercase captions and headings (`--nk-label-case`, `--nk-heading-case`, tokens 1.1), never in markup.
-4. **Numbers are tabular** (`nk-num`). Mono only for codes a player might type (plate, citizen ID).
-5. **Rows, not tiles,** for lists of anything: 48px in a sheet (`nk-row` 44 × density in a legacy panel),
-   icon + label + trailing meta.
-6. **Keys** are shadcn `Kbd`, next to the action they trigger.
-7. **Motion with a purpose** ([Motion](#motion)). Sheets slide in from their edge and rows stagger after
-   them; values that change in place roll; nothing else animates on its own except things that are live
-   (progress, timers, talking). Keyboard and controller state is instant.
-8. **HUD stays out of the way.** Always-on elements use `nk-chip` / `vital-chip` or bare text with a
-   shadow, no panels, and sit on the `--nk-edge` margin.
-9. **Empty and error states** say what to do next in one sentence.
-10. **Stock components.** Compose shadcn; never fork its files. If shadcn has it, use it (Sheet, Dialog,
-    AlertDialog, ScrollArea, Separator, Item, Kbd, Tooltip, Progress, Slider, ToggleGroup…). The nuikit
-    layer on top (`edge-sheet`, `text-roll`, `smooth-input`, `vital-chip`, `nui-image`) is composition,
-    not forks. Drawer (vaul) is modal underneath even with `modal={false}` and breaks drag between panels:
-    trays are a bottom Sheet.
-11. **Subtle over spectacular.** A focus camera keeps the player's current view and moves in; it never
-    spins or swings round to the face. No studio light on a pause or inventory (lighting stays an opt-in
-    `nk.light` idea). Nothing glows, pulses or breathes to be noticed.
-12. **Replace native, fully.** A nuikit screen that stands in for a GTA one does everything the native did
-    (the pause map shows every blip, filters them, click sets a waypoint).
+| Foundation | What it is | Levers |
+|---|---|---|
+| **Tile** (+ `Kbd`) | the keycap: keys, icon tiles, gears, checked boxes, the selection | `--nk-tile-*`, `--nk-h-key/chip/control`, `--nk-r-key` |
+| **Fill** | the one level bar: holds, sweeps, meters, timers, edges (`toneVars` is the tone and hue vocabulary) | `--nk-fill-*`, `--nk-time-fill` |
+| **Chip** | a short status on one line, `material` panel or hud | `--nk-chip-*`, `--nk-h-chip` |
+| **Text** / **IconText** | the type roles and the value ladder as one component | `--nk-type-<role>-*`, `--nk-text-*` |
+| **Dial** | one arc geometry: gauges (240°) and rings (360°) | `--nk-gauge-*`, `--nk-fill-*` |
+| **Stack** / **Cluster** | layout on the gap levers | `--nk-gap-*` |
+| **Panel** | the floating surface with header, body, footer | `--nk-panel-*` |
+| **SelectionTile** | the one selection mark of a list, tabs or a menu | `--nk-tile-*`, `--nk-list-gap`, `--nk-indicator-*` |
+| **ActionBar** | key hints, back and close: Kbd Tiles, a label, a hold Fill | `--nk-gap-items` |
+| **useLinearRun** | the one timed run: linear Web Animations on one start time, completion from a timer | `data-nk-motion` |
 
-**shadcn is the foundation.** Every new-york-v4 component is vendored in `vendor/shadcn/ui` (plus its
-`use-mobile` hook), and `pnpm sync` follows their imports, so listing `sidebar` in a `nuikit.json` brings
-`sheet`, `tooltip`, … and the hook along; `tw-animate-css` is in every page's `index.css`, so shadcn's
-enter/exit animations always work. Compose from it first: Sheet (side panels and trays), Dialog and
-AlertDialog (confirms), ScrollArea, Separator, Item (rows with media, title, description and actions), Kbd,
-Tooltip, Progress, Slider, ToggleGroup, Tabs, Command (searchable lists), Table, Skeleton, Empty — and
-nuikit's layer on top only for what the game needs (`panel`, `menu-row`, `meter`, `stat`, `hud-chip`,
-`key-prompt`, the toaster). Do not reach for vaul's `Drawer` for a tray: it is modal even with
-`modal={false}` (it leaves `body { pointer-events: none }` behind, which breaks drag and drop and anything
-else on the page), so a bottom tray is a `Sheet` with `side="bottom"`. Components that bring a heavy or
-unproven runtime (`chart`/recharts, `form`/react-hook-form, `combobox` on `@base-ui/react`,
-`message-scroller` on `@shadcn/react`, `carousel`/embla) are vendored but no page uses them yet; sync warns
-when a page lists a component whose npm packages its `web/package.json` lacks.
+Composites and what they compose: Meter (Fill, useLinearRun), ProgressRing and Speedometer (Dial, Tile, Fill), Countdown
+and Notice (Fill, useLinearRun), KeyPrompt and SkillCheck (Kbd Tiles, Fill), EdgeSheet and DialogShell (ActionBar, Fill,
+Stack over shadcn Sheet / Dialog), Confirm (Panel, no Radix: Escape goes through surfaces), MenuRow (Tile column,
+SelectionTile, Meter), Stat and Money (Text), PlayerCard (Panel, Chip, Stat), VitalChip (TextRoll, its own shape engine),
+RadialMenu, ItemSlot, FormField, SmoothInput, NuiImage (their own geometry, no overlap). Entrance and stagger motion live in
+`nuikit-core/react` and `nuikit-core/motion`: runtime, not registry.
 
-## Kit utilities
+**Listed on the site (20):** Tile, Fill, Chip, Panel, ActionBar, Dial, TextRoll; MenuRow, RadialMenu; Meter, Speedometer,
+ProgressRing; EdgeSheet, Confirm; Notice, KeyPrompt, SkillCheck; FormField; VitalChip, Stat. Everything else is hidden with
+a reason in `meta.hiddenReason` (a helper, an internal frame, or "use X instead").
 
-`nk-panel` `nk-panel-header` `nk-panel-header-stack` `nk-panel-title-row` `nk-panel-body` `nk-panel-footer` ·
-`nk-title` `nk-display` `nk-label` `nk-caption` `nk-num` · `nk-row` `nk-scroll` · `nk-field` `nk-field-label` ·
-`nk-chip` `nk-chip-active` `nk-hud` `nk-track` `nk-shadow` · `nk-edge` (`--nk-edge`) `nk-anchor-*` `nk-first-row` ·
-`nk-enter` `nk-rise` `nk-pop` `nk-stagger` `nk-press` `nk-skeleton` `nk-blink` `nk-indicator`.
-Defined once in `packages/create-nuikit/kit.css` and inlined into every synced `index.css`; never redefine an
-`nk-*` name locally. `nk-panel`'s depth is a `box-shadow`, so mark a selected panel with `outline`, not `ring-*`.
+## 7. The component checklist
 
-Sizes are in rem (Tailwind's scale), never px, so they follow the resolution scale.
-Building or changing a registry component? The **[component contract](design/contract.md)** is the merge checklist:
-tokens, states, motion, controller focus, registry metadata, and which items CI checks.
+Before a registry component or hook merges:
 
-## Motion
+1. Colour from tokens, sizes in rem on the kit scale, every look a server might want different behind a lever with its
+   default as the `var()` fallback. Channels (`--x-rgb`, `--x-a`) stay in CSS, never in TSX.
+2. Composes vendored shadcn and `nk-*` utilities; never redefines an `nk-*` name or adds a local `@utility nk-*`. Every
+   class list goes through the kit-aware `cn()` (generated into `lib/utils.ts`); a size variant sets font size, leading
+   and gap together, text-* before leading-*.
+3. `cva` variants exported as `<name>Variants` with `defaultVariants`; shared axes `size` and `tone`; values in pairs
+   (`value` + `onValueChange`, `defaultValue`) so Lua can drive them; sub-components for structure, `className` on
+   every part; `asChild` only around a Radix part.
+4. Every state reachable from props (default, hover, focus, active, disabled, loading, error, empty, over-threshold) and
+   shown on `/components`; the root has `data-slot="<name>"`, parts `data-slot="<name>-<part>"`, states as `data-*`.
+5. Motion on the ladder, transform and opacity only, instant for keyboard and controller, nothing at `--nk-motion: 0`.
+6. Works by keyboard (arrows move, Enter and Space act); Escape goes through surfaces, never a local handler that posts
+   close; the highlight can be driven from Lua (`active` + `inert`); never calls focus natives. `nuikit check` fails
+   `escape/adhoc` and `focus/direct`.
+7. Meaning never by colour alone; `role="status"`, `role="progressbar"` with values; reading text at least 16px,
+   labels at least 13px, in every theme.
+8. A `registry.json` entry with accurate dependencies and `meta` (`since`, `status`, `group`, `tier`); tests for any logic
+   in `registry/nuikit/test/`; `pnpm sync` after (copies in systems and addons are never edited by hand); a changeset
+   when it changes for users.
 
-Motion is a first-class, out-of-the-box nuikit feature, not polish added per screen. Tokens and the helper:
-[`tokens.md#motion-12`](tokens.md#motion-12). Proof: `bench/motion/results.md`. The owner's rules first,
-then the mechanics.
+**Deprecation, until 1.0 (Oct 27, 2026).** Nobody runs nuikit in production, so a replaced component is deleted in the
+same commit as its replacement, with the rename in the release notes. No aliases, no `removeIn` windows. The policy with
+two-minor windows and codemods returns at 1.0.
 
-**The rules**
+## 8. Naming
 
-1. **Entrances.** A sheet slides in from its edge (panel time × 2.2, ≤ 360ms, `--nk-ease-out`); the rows
-   stagger in after it (`nk-stagger` + `--i`, the first five, first open only). A sub-page fades in place
-   (`nk-enter`); the sheet itself only slides on open.
-2. **Exits.** A sheet slides back out on close, faster than it came (× 1.4, ≤ 200ms, `--nk-ease-in`).
-   `nuikit-core`'s `<Surface>` keeps the surface drawn for up to 250ms after close (`useSurfaceOpen()`),
-   and **input is released at once**, so the game never feels stuck behind an animation.
-3. **Text roll** for every value that changes in place: location, money, counts, speed, ammo, labels
-   (`TextRoll`, `NumberRoll`; `NumberRoll` rolls each digit on its own, up when the value grows). Not for
-   text the player reads while it moves (lists, paragraphs). The rule learned the hard way: **rolls are
-   vertical only; alignment is resolved per layer; width changes move neighbours, never the rolling text.**
-   Each layer (the word going out, the word coming in) sits at its own final alignment in the reel (`align`,
-   else read from `text-align` or a centring flex parent), so a centred word leaves straight up from its
-   centre and the next arrives straight up on the same centre; the reel's width tweens and slides the
-   neighbours. Before this rule, centred text slid diagonally and jolted at the end.
-4. **Synchronized selection layer.** A selection indicator is **one element** (`nk-indicator`, `useIndicator`):
-   the fill and the ring glide together, rows never paint their own selected background, and dividers sit
-   under it. Key-repeat: moves sooner than `--nk-time` apart glide in `--nk-time-press`; from the third, it
-   jumps, so it never trails a held d-pad.
-5. **Smooth caret and typing** on every text field (`SmoothInput`, `SmoothTextarea`: drop-ins for shadcn
-   `Input` / `Textarea`). A caret that glides and breathes in the primary, typed characters that ease in;
-   the real field stays underneath (selection, IME, paste, forms).
-6. **Everything obeys motion off and reduced motion.** `/nuikit motion off` (`data-nk-motion="off"`) is
-   instant: no slide, no roll, no caret glide; sheets show and hide at once. Reduced motion
-   (`data-nk-motion="reduced"`) keeps a fade of **100ms or less** and nothing moves: shadcn's enter / exit
-   animations lose their slide and zoom, rolls become a cross-fade, the caret is the native one. Colour
-   still carries state; progress still plays.
+One name for one thing, everywhere. Nothing is named after a server or a person.
 
-**The mechanics**
+| Thing | Rule | Example |
+|---|---|---|
+| Theme | a file in `packages/core/themes/`; id = base name, lowercase kebab; display name title-cased | `neon-pop.css` → "Neon Pop" |
+| Treatment | one lowercase word, a value of `--nk-treatment` | `tile`, `soft` |
+| Kit token | `--nk-<family>-<part>[-<state>]`; the family is the thing, not the page | `--nk-tile-wall` |
+| Kit class | `nk-<name>`, declared once in `kit.css` | `.nk-row` |
+| Page-local class or property | the surface's own prefix, only in its CSS | `.hud-compass`, `--inv-gap` |
+| Site-only class | `site-*`, never `nk-*` | `.site-display` |
+| Component | one concept; kebab file, PascalCase export, `data-slot` = file name | `edge-sheet.tsx` → `EdgeSheet` |
+| Data attribute | `data-slot` (what), `data-state` (how), `data-nk-*` (kit switches) | `data-state="alert"` |
+| Keyframes | `nk-<name>` in the kit, `nk-theme-<name>` in a theme | `nk-theme-reveal` |
+| Files | kebab-case source, `snake_case` resources (`nuikit_<area>`), lowercase docs | `systems/nuikit_hud` |
+| Convar / config | `nuikit_<thing>` server-side; `Config.<thing>` in a resource | `setr nuikit_identities` |
 
-7. **Instant state.** Row highlight, tabs, toggles, checkboxes and focus driven by the keyboard or a
-   controller change with no transition (kit.css zeroes them, shadcn's included). Only pointer hover eases
-   (`--nk-time-hover`). Highlight locally first; the POST confirms.
-8. **Fast, and exits faster.** Use the ladder, never raw ms: press ≤ 100, panel `--nk-time`, exit
-   `--nk-time-exit`, full screen ≤ 400. Enter with `--nk-ease-out`, exit with `--nk-ease-in`.
-9. **Transform and opacity only.** Never animate `width`, `height`, `top`, `left`, `margin`, `box-shadow`,
-   `filter`, `clip-path` or a CSS variable. No `transition: all` in new code. Meters move by `scaleX` or
-   `translateX`; needles and rings by `rotate`; a level traced on an outline by `stroke-dashoffset`.
-10. **Chromium 103.** cubic-bezier only (no `linear()`), no `@starting-style`, no individual `translate` /
-    `scale` / `rotate` properties, nothing essential on `:has()`. Springs come from `nuikit-core/motion`
-    (sampled WAAPI keyframes), never a requestAnimationFrame loop. `tw-animate-css` must be loaded by
-    every page, or shadcn's Sheet and Dialog don't animate at all (the 0.7.0 pause menu's lesson).
-11. **Never on a centred dialog's own element** (its transform centres it): `nk-pop`, `nk-rise` and
-    `nk-press` go on an inner wrapper there. `nk-pop` handles its own `[data-state=closed]` exit; use it
-    plain, not behind a `data-[state=open]:` variant.
-12. **Stagger the first open only**, never on updates, filtering or navigation.
-13. **Zero cost when idle.** No infinite animation on an always-on surface: a threshold gets `nk-blink`
-    (two blinks), not a pulse. A finished animation leaves nothing running (`document.getAnimations()` is
-    empty). Timed runs are one animation for the whole run, and `onComplete` stays on a timer.
-14. **Identity, not code, sets the feel.** Signal snaps, Velvet glides, Vector steps: read the tokens and
-    `data-nk-feel`, never branch on the identity's name.
+## 9. Universal glue
 
-**Motion components** (registry, `npx shadcn add https://nuikit.vercel.app/r/<name>.json`, or list them in a
-system's `nuikit.json` and `pnpm sync`):
+nuikit connects to what servers already have and falls back silently. Images by convention (`docs/images.md`): one
+resolver for items, weapons, vehicles and clothing, trying ox_inventory's and the qb-style paths first, then the
+server's own templates (`setr nuikit_images_item …`), then an icon; nothing in a screen depends on an image loading.
+Adapters and overrides read the data the server has (`bridge.lua`, the resource's protocol) and speak its events; a
+server never needs nuikit's format to use nuikit's screens.
 
-- `edge-sheet` → `import { EdgeSheet, EdgeSheetBody, EdgeSheetFooter } from "@/components/ui/edge-sheet"`.
-  The sheet with its entrance, exit, stagger and in-place sub-pages built in ([Surfaces](#surfaces)).
-- `text-roll` → `import { TextRoll, NumberRoll } from "@/components/ui/text-roll"`. Props: `direction`,
-  per-character `stagger`, `align`.
-- `smooth-input` → `import { SmoothInput, SmoothTextarea } from "@/components/ui/smooth-input"`. Same props
-  and ref as shadcn's `Input` / `Textarea`.
+## 10. Checking it
 
-All of them read `html[data-nk-motion]`: off swaps at once, reduced keeps a ≤ 100ms fade with no movement.
-
-**The HUD status row** (`vital-chip`, `import { VitalChip } from "@/components/ui/vital-chip"`): vitals are
-**one chip family**, no labelled special cases. The chip is composable (`Root`, `Shape`, `Level`, `Icon`,
-`Label`, `Pop`) and one SVG path per shape drives its surface, border, level trace, liquid fill and anchors,
-so the level is traced along the chip's own outline in the identity's shape, never a circle inside a square.
-A change pops a flag out of the chip's side, in line with the row, so several vitals changing at once sit side
-by side and never collide. The other variants (`--nk-level-style`,
-`--nk-vital-icon`; in game `/hudstyle`) are **experimental**: tried with the owner and shelved (too small, weak
-as an aesthetic); the parts structure stays. Voice and radio are the always-on layer; vitals surface on change.
-
-Reference implementations: `systems/nuikit_pause` (flush), the `job-sheet` block (floating, sub-pages, actions
-row). The registry components (`edge-sheet`, `menu-row`, `stat`, `meter`, `hud-chip`, …) are these rules with
-props; prefer them over the raw classes.
-
-## Universal glue
-
-nuikit is a universal glue, not a kit for its own surfaces only. It connects to what servers already have
-instead of inventing a nuikit-only format, and when a convention isn't there it falls back silently.
-
-1. **Images by convention** (`docs/images.md`, `resolveImage` in `nuikit-core`, `<NuiImage>` in the registry).
-   One resolver for every picture: `kind` + key → candidate URLs, best first → an icon fallback. Out of the box:
-   - **Items and weapons:** `nui://ox_inventory/web/images/{name}.png` (and ox_inventory's own `inventory:imagepath`),
-     then qb-inventory, ps-inventory, lj-inventory. A weapon is an item (`WEAPON_PISTOL.png`). HUD weapon and
-     item icons come from here, never from nuikit glyphs.
-   - **Vehicles:** `https://docs.fivem.net/vehicles/{model}.webp` (base-game spawn names).
-   - **Clothing:** no default (packs differ); the server names one template: fivem-greenscreener's
-     `{gender}_{prefix}{id}_{drawable}_{texture}.png`, or a public set like Colbss/FiveM-ClothingData.
-2. **Configurable templates**, one convar per kind (`setr nuikit_images_item "https://cdn…/{name}.webp"`,
-   `_weapon`, `_vehicle`, `_clothing`; `;`-separated, tried before the defaults; `nuikit_images_replace 1`
-   drops the defaults). The nuikit resource serves them to every page (`https://nuikit/images`).
-3. **Silent fallbacks.** A missing image never shows a broken-image icon or an error: the next candidate,
-   then an icon (or the UI's `fallback`), and a UI without any picture keeps its plain controls. Nothing
-   in a nuikit screen depends on an image loading.
-4. **Popular resources first.** Adapters and overrides read the data the server already has (`bridge.lua`
-   for the framework, the resource's own protocol for an override) and speak its conventions (ox, QBCore,
-   ESX events and exports) rather than asking servers to adopt new ones. New conventions are documented in
-   `docs/images.md` and `docs/coverage.md` when they are added; a server never needs nuikit's format to use
-   nuikit's screens.
-
-## Recipes
-
-**Job sheet.** A floating sheet for a resource's menu: header row, sections of rows, a sub-page that swaps in
-place with a back row, one primary in the actions row. The `job-sheet` block is the template
-(`npm create nuikit -t job-sheet`); a resource fills `Config.jobs[...].pages` and never draws its own frame.
-
-```tsx
-<EdgeSheet open side="right" title="LSPD" description="Officer, on duty" page={page.id} onBack={back} onClose={close}>
-  <EdgeSheetBody scroll>
-    {page.sections.map((s) => (
-      <section key={s.id}>
-        {s.title && <p className="nk-caption px-3 pt-4 pb-1">{s.title}</p>}
-        {s.rows.map((r) => <MenuRow key={r.id} className="h-12" …>{r.label}</MenuRow>)}
-        <Separator />
-      </section>
-    ))}
-  </EdgeSheetBody>
-  <EdgeSheetFooter>
-    <Button className="flex-1">Clock out</Button>
-    <Kbd>Esc</Kbd>
-  </EdgeSheetFooter>
-</EdgeSheet>
-```
-
-**Two-row header.** A header that carries tabs, a search or a meter under its title:
-
-```tsx
-<header className="nk-panel-header-stack">
-  <div className="nk-panel-title-row">
-    <h2 className="nk-title flex-1 truncate">Wardrobe</h2>
-    <span className="nk-label">Unsaved changes</span>
-  </div>
-  <TabsList className="w-full">…</TabsList>
-</header>
-```
-
-**Field row.** A control in a form panel gets a label row: name, optional hint, then value and reset on the right.
-
-```tsx
-<div className="nk-field">
-  <div className="nk-field-label">
-    <span className="truncate">Nose width</span>
-    <span className="ml-auto flex items-center gap-1">
-      <Button variant="ghost" size="icon-xs" aria-label="Reset"><RotateCcwIcon /></Button>
-      <span className="nk-num text-muted-foreground">0.40</span>
-    </span>
-  </div>
-  <Slider … />
-</div>
-```
-
-**Anchoring.** Anything pinned to the screen sits `--nk-edge` (24px) from it: `nk-anchor-tl` `-tr` `-bl` `-br` for corners,
-`nk-anchor-t` `-b` `-l` `-r` for the middle of an edge. They are `position: absolute`, so the full-screen root is
-their container, and the edge-centred ones centre with auto margins (no transform for `nk-enter` or a dialog to fight).
-Set `--nk-edge` on the root (or add `nk-edge`) to move every anchor at once.
-
-**First-row alignment.** A floating menu that opens beside a point (the target eye, the cursor, a row it came from)
-lines its first row up with that point, not its top edge. Put the panel's top on the point and add `nk-first-row`:
-it pulls the panel up by the 1px border, the 8px body padding and half a row. Leave a 16px (`ml-4` / `mt-4`) gap
-between the point and the panel.
+- `nuikit check <folder> --level 3` on every page (CI). Rules of note: `theme/values-only`, `selection/local`,
+  `kit/local-concept`, `escape/adhoc`, `focus/direct`, `color/*`.
+- Tests: `themes-values-only`, `anatomy`, `composition`, `levers`, `registry-meta`, `cn` (registry and core).
+- Look: `pnpm look <web dir> [url] --viewport 3440x1440 --themes default,neon-pop`, and in the browser the devtools
+  (`` ` ``) "Scene & size" picker. Anything visual: look at the PNGs in every theme before pushing.
+- The owner's in-game checkpoint is the only design review. A spec section never replaces a screen in the game.

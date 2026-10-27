@@ -16,7 +16,6 @@ const design = () => import("../../../docs/design.md?raw").then((m) => m.default
 const coverage = () => import("../../../docs/coverage.md?raw").then((m) => m.default as string);
 const protocol = () => import("../../../docs/protocol.md?raw").then((m) => m.default as string);
 const intents = () => import("../../../docs/intents.md?raw").then((m) => m.default as string);
-const language = () => import("../../../docs/design/your-language.md?raw").then((m) => m.default as string);
 const adopt = () => import("../../../docs/adopt.md?raw").then((m) => m.default as string);
 
 // Extra pages, no router: vercel.json rewrites them to this index.html.
@@ -30,7 +29,6 @@ const pages: Record<string, () => ReactNode> = {
   "/protocol": () => <DocPage load={protocol} path="docs/protocol.md" />,
   "/intents": () => <DocPage load={intents} path="docs/intents.md" />,
   "/adopt": () => <DocPage load={adopt} path="docs/adopt.md" />,
-  "/language": () => <DocPage load={language} path="docs/design/your-language.md" />,
   "/theme": () => <ThemePage />,
 };
 loadIdentityFonts();

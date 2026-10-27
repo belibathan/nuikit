@@ -1,4 +1,4 @@
-/* Cascade layers (tokens 1.5, docs/design/default.md §4), declared before Tailwind's own so the kit's sit between
+/* Cascade layers (tokens 1.5, docs/design.md §4), declared before Tailwind's own so the kit's sit between
    them: kit defaults and primitives under the utilities, a theme (nk.theme) and the page (nk.app) over them. */
 @layer theme, base, nk.base, nk.layout, components, nk.kit, utilities, nk.theme, nk.app;
 @import "tailwindcss";
@@ -152,7 +152,7 @@
 @layer base {
   /* 1rem = 16px at 1080p, scaling with the game's resolution (21px at 1440p, 32px at 4K), and with the width
      on a screen narrower than 16:9 (16:10, 4:3) so the 16:9 design fits; never under 16px × --nk-screen-scale-min
-     (12px), times --nk-scale (the theme's UI size × the player's UI scale preference). docs/design/layout.md */
+     (12px), times --nk-scale (the theme's UI size × the player's UI scale preference). docs/design.md */
   html {
     font-size: calc(clamp(calc(16px * var(--nk-screen-scale-min, 0.75)), min(1.4815vh, 0.8333vw), 32px) * var(--nk-scale, 1));
     font-family: var(--font-sans, ui-sans-serif, system-ui, sans-serif);

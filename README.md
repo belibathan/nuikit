@@ -88,7 +88,7 @@ on npm yet.
 
 **Default** is the flagship and the default: monochrome, Barlow Condensed italic caps for anything you scan, Geist for
 sentences, one slanted keycap tile for keys, icons and status, fills instead of rings, hard drops, no pills, no
-blur. Colour appears only when it means something. Spec: [`docs/design/default.md`](docs/design/default.md).
+blur. Colour appears only when it means something. Spec: [`docs/design.md`](docs/design.md).
 
 | Identity | Character |
 |---|---|
@@ -172,7 +172,7 @@ issues and what's next: [`docs/roadmap.md`](docs/roadmap.md).
 | [Intents](docs/intents.md) ([site](https://nuikit.vercel.app/intents)) · [Services](docs/services.md) | What scripts ask for; camera and controls |
 | [Adopt](docs/adopt.md) ([site](https://nuikit.vercel.app/adopt)) | Make a resource you sell nuikit-native: tokens, `nuikit_protocol`, `nuikit check` levels, running without nuikit |
 | [Adapters](docs/adapters/README.md) | ox_lib, QBCore, ESX and standalone libraries on nuikit |
-| [Tokens](docs/tokens.md) · [Default](docs/design/default.md) · [Design](docs/design.md) · [Naming](docs/design/naming.md) | Theme contract, the flagship theme, the kit language, the naming conventions |
+| [Tokens](docs/tokens.md) · [Default](docs/design.md) · [Design](docs/design.md) · [Naming](docs/design.md) | Theme contract, the flagship theme, the kit language, the naming conventions |
 | [Coverage](docs/coverage.md) · [Roadmap](docs/roadmap.md) | What's covered on a Qbox server; status and next |
 | [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md) | How to help; how to report a vulnerability |
 

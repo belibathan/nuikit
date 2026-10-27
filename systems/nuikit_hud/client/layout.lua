@@ -177,7 +177,7 @@ local function gfx(x, y)
   return rx, ry
 end
 
---- The layout box (docs/design/layout.md): on a screen wider than 16:9 the HUD keeps to the middle 16:9
+--- The layout box (docs/design.md): on a screen wider than 16:9 the HUD keeps to the middle 16:9
 --- (Config.ultrawide = 'box', the default) or uses GTA's whole area ('bleed'). `gtaLeft` / `gtaBottom` keep
 --- GTA's own origin: minimap components are placed from it, whatever the box. Pure.
 function Layout.box(area, width, height)

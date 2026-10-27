@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils"
 import { textVariants } from "@/components/ui/text"
 
 /**
- * IconText — an icon and a text on one centre line (docs/design/ink.md §3): --nk-gap-cluster apart, the icon
+ * IconText — an icon and a text on one centre line (docs/design.md §3): --nk-gap-cluster apart, the icon
  * at --nk-icon-md (sm / lg step it), the text in a role: label, num or body. One recipe for money, job, fuel,
  * ammo, notes and flag rows (today: nine icon sizes and eight gaps).
  *

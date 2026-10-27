@@ -1,8 +1,7 @@
 # nuikit docs: where to look
 
-*Current* docs describe the code on `main` and are kept up to date. *Reference* docs are stable specs or research that
-the code was built from. *Historical* docs are kept for the record and are not maintained; `archive/` holds the ones
-that have been superseded outright.
+*Current* docs describe the code on `main` and are kept up to date. *Reference* docs are stable specs the code was
+built from. Superseded docs are deleted, not archived: git has them.
 
 ## Start
 
@@ -27,7 +26,7 @@ that have been superseded outright.
 | [`settings.md`](settings.md) | `nk.settings` and the pause Settings page | Current |
 | [`images.md`](images.md) | The image resolver (`https://nuikit/images`, `/vehicle`) | Current |
 | [`adapters/`](adapters/README.md) | The adapter packs, one page per adapted library; [`framework-sdk.md`](adapters/framework-sdk.md) for your own framework | Current |
-| [`releases/`](releases/) | Release notes per version (`v0.9.0.md` is the latest); the 0.7.0 test files moved to `archive/` | Current / historical |
+| [`releases/`](releases/) | Release notes per version (`v0.9.0.md` is the latest); older notes are in git history | Current / historical |
 
 ## Building on nuikit
 
@@ -46,22 +45,6 @@ that have been superseded outright.
 
 | Doc | What | Status |
 |---|---|---|
-| [`design.md`](design.md) | The kit language: the ten rules | Current |
-| [`design/baseline.md`](design/baseline.md) | **The rules every component follows** (tokens 1.6/1.7): spacing, two voices, tiles, fills, selection | Current |
-| [`design/layout.md`](design/layout.md) | **The layout model**: Screen, zones, Region, Grid, the viewport table and its levers | Current |
-| [`design/components.md`](design/components.md) | The registry as a network: foundations, composites, aliases | Current |
-| [`design/default.md`](design/default.md) | The flagship theme's spec (Default, was Ink) | Current |
-| [`design/naming.md`](design/naming.md) | Naming conventions: themes, treatments, tokens, classes, files, resources | Current |
-| [`design/foundation.md`](design/foundation.md), [`design/reference.md`](design/reference.md) | The shadcn foundation; the visual reference shots | Reference |
-| [`design/contract.md`](design/contract.md) | The per-component checklist (tokens 1.1 wording; the rules still hold) | Reference |
-| [`design/figma.md`](design/figma.md) | The Figma design system (at tokens 1.2 and four identities: behind the code, roadmap B4) | Historical until regenerated |
+| [`design.md`](design.md) | **The one design doc**: principles, tokens and levers, scale and layout, surfaces, the baseline, the component network, the checklist, naming, how to check it | Current |
+| [`design/levers.md`](design/levers.md) | The lever catalog, generated from `packages/core/src/spec` | Current (generated) |
 | [`brand/`](brand/README.md), [`assets/`](assets/) | The mark, avatar and site images | Current |
-
-## Archive
-
-| Doc | What |
-|---|---|
-| [`archive/blocks-0.5.md`](archive/blocks-0.5.md) | The 0.5 components-and-blocks plan (shipped) |
-| [`archive/design-v2.md`](archive/design-v2.md), [`archive/design-research.md`](archive/design-research.md), [`archive/design-research/`](archive/design-research/) | Design v2 (identities, tokens 1.1–1.2) and the research behind it; superseded by `design/baseline.md` |
-| [`archive/health-pass-2026-10-22.md`](archive/health-pass-2026-10-22.md), [`archive/security-pass-2026-10-22.md`](archive/security-pass-2026-10-22.md) | What the code-health and security passes fixed and still suggest |
-| [`next/presentation.md`](next/presentation.md) | GitHub About, topics and launch-post drafts (not applied; owner) |

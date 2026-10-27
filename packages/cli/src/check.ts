@@ -45,7 +45,7 @@ export type RuleId =
   | "cef/container"
   | "cef/individual-transform"
   | "cef/color-mix-inline"
-  // the kit conventions (tokens 1.5, docs/design/default.md §4): warnings until each directory's wave lands
+  // the kit conventions (tokens 1.5, docs/design.md §4): warnings until each directory's wave lands
   | "radius/raw"
   | "radius/pill"
   | "effect/blur"
@@ -63,7 +63,7 @@ export type RuleId =
   // the arsenal (packages/core/arsenal.json): every nuikit feature a resource uses is a published, named part
   | "arsenal/unknown"
   | "arsenal/legacy"
-  // the invariants (docs/design/baseline.md "Invariants"): a page draws no concept of its own
+  // the invariants (docs/design.md "Invariants"): a page draws no concept of its own
   | "selection/local"
   | "kit/local-concept";
 
@@ -106,7 +106,7 @@ export const RULES: Record<RuleId, { level: Level; description: string }> = {
   "space/off-scale": { level: 0, description: "A gap, padding or margin off the 0.25rem step (0.375rem, 0.3125rem, gap-1.5…); use --nk-space-* and gap-(--nk-gap-*)" },
 };
 
-/** The kit conventions (docs/design/default.md §4): all warnings (level 0) for now. */
+/** The kit conventions (docs/design.md §4): all warnings (level 0) for now. */
 export const KIT_RULES: readonly RuleId[] = ["radius/raw", "radius/pill", "effect/blur", "color/mix", "shadow/soft", "motion/duration", "motion/ease", "motion/property", "type/raw", "selector/class-substring", "state/alert", "theme/unlayered", "theme/values-only", "space/off-scale", "selection/local", "kit/local-concept"];
 
 export const LEVEL_NAMES: Record<Level, string> = { 0: "not conformant", 1: "themed", 2: "well-behaved", 3: "native" };
@@ -201,7 +201,7 @@ class Collector {
 
 type Report = ReturnType<Collector["file"]>;
 
-// ───────────────────────────────── kit conventions (docs/design/default.md §4), all warnings
+// ───────────────────────────────── kit conventions (docs/design.md §4), all warnings
 
 /** Blank every var(…) (with its fallback): a token reference is never a literal. */
 function blankVars(value: string): string {

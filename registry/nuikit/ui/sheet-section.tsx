@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils"
 import { Stack } from "@/components/ui/stack"
 
 /**
- * SheetSection — one group of rows in a sheet or panel body (docs/design/ink.md §3, Sheet): a label, an
+ * SheetSection — one group of rows in a sheet or panel body (docs/design.md §3, Sheet): a label, an
  * optional meta on the same line, then the rows. Sections are separated by a hairline.
  *
  *   <EdgeSheetBody scroll>

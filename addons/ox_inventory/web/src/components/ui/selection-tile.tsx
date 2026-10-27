@@ -7,7 +7,7 @@ import { tokenMs } from "nuikit-core/motion"
 import { cn } from "@/lib/utils"
 
 /**
- * SelectionTile — the one selection mark of a list (the baseline's Selection section, docs/design/baseline.md):
+ * SelectionTile — the one selection mark of a list (the baseline's Selection section, docs/design.md):
  * the primary keycap's geometry (a face in the theme's skew over its wall, the same radius and depth line, the
  * `--nk-tile-*` levers) as ONE element per list that slides between items by transform. Pointer hover, keyboard,
  * controller and programmatic focus, and the UI's own active index all light the same item: the tile moves under

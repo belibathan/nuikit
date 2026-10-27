@@ -3763,7 +3763,7 @@
       "lua": "layout",
       "title": "Layout",
       "doc": "The 16:9 screen box, the viewport table, zone ids and placement: every part of every page is placed through these.",
-      "docs": "docs/design/layout.md",
+      "docs": "docs/design.md",
       "import": "nuikit-core/layout",
       "entries": [
         {

@@ -2689,7 +2689,7 @@
         "group": "Layout",
         "tier": "foundation",
         "hidden": true,
-        "hiddenReason": "layout primitive every screen composes; documented in docs/design/layout.md",
+        "hiddenReason": "layout primitive every screen composes; documented in docs/design.md",
         "variants": {
           "axes": {},
           "levers": [
@@ -2748,7 +2748,7 @@
         "group": "Layout",
         "tier": "foundation",
         "hidden": true,
-        "hiddenReason": "layout primitive every screen composes; documented in docs/design/layout.md",
+        "hiddenReason": "layout primitive every screen composes; documented in docs/design.md",
         "variants": {
           "axes": {},
           "levers": [
@@ -2807,7 +2807,7 @@
         "group": "Layout",
         "tier": "foundation",
         "hidden": true,
-        "hiddenReason": "layout primitive every screen composes; documented in docs/design/layout.md",
+        "hiddenReason": "layout primitive every screen composes; documented in docs/design.md",
         "variants": {
           "axes": {},
           "levers": [
@@ -2855,7 +2855,7 @@
         "group": "Layout",
         "tier": "foundation",
         "hidden": true,
-        "hiddenReason": "layout primitive every screen composes; documented in docs/design/layout.md",
+        "hiddenReason": "layout primitive every screen composes; documented in docs/design.md",
         "variants": {
           "axes": {},
           "levers": [

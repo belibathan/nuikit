@@ -8,7 +8,7 @@ import { act } from "react"
 import { afterEach, describe, expect, it } from "vitest"
 import { applyTheme, clearTheme } from "nuikit-core"
 
-// Invariant 1 (docs/design/baseline.md): themes set values, never anatomy. Every registry ui component renders the
+// Invariant 1 (docs/design.md): themes set values, never anatomy. Every registry ui component renders the
 // same tree of data-slot / data-part names under every treatment and every shipped theme. A component whose structure
 // depends on the treatment is the bug (VitalChip dropped its label, plate and fill under Flat).
 ;(globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true

@@ -211,7 +211,7 @@ local function useRouteTexture(on, txd, name)
   end
 end
 
---- The kit's rem in pixels for a screen (index.css, docs/design/layout.md): 1.4815% of the height, or of a
+--- The kit's rem in pixels for a screen (index.css, docs/design.md): 1.4815% of the height, or of a
 --- 16:9 width on a narrower screen (16:10, 4:3), 12–32px. `width` may be left out (16:9 and wider).
 local function rem(height, width)
   local h = height

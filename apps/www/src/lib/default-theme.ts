@@ -1,4 +1,4 @@
-// The site wears Default, nuikit's flagship (docs/design/default.md): the same theme file a server copies over
+// The site wears Default, nuikit's flagship (docs/design.md): the same theme file a server copies over
 // nuikit/theme.css, compiled and painted on <html> the way the nuikit resource paints it in game. The rules
 // tokens can't say (systems/nuikit/theme/default.css) are imported by index.css.
 import { applyTheme } from "nuikit-core";

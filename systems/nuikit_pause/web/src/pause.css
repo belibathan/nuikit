@@ -1,4 +1,4 @@
-/* The shell's levers (docs/design/layout.md): the home sheet's width, the settings sheet's, the page column's.
+/* The shell's levers (docs/design.md): the home sheet's width, the settings sheet's, the page column's.
    The stage (the camera's frame, the map) is what's left between them.
    On :root: the sheets are portalled out of the Screen. */
 :root {
@@ -219,7 +219,7 @@
 [data-open] > .pause-pin-center > .pause-blip-label {
   display: flex;
 }
-/* hover opens a pin; keyboard focus lights it the same way (no ring: docs/design/baseline.md, Selection) */
+/* hover opens a pin; keyboard focus lights it the same way (no ring: docs/design.md, Selection) */
 [data-open] > .pause-pin-center > .pause-blip,
 .pause-blip-hit:focus-visible > .pause-pin-center > .pause-blip {
   transform: scale(1.12);

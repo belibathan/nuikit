@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils"
 import { NumberRoll, TextRoll } from "@/components/ui/text-roll"
 
 /**
- * Stepper — one segmented control for a value picked by stepping (docs/design/baseline.md; handoff §4 "steppers
+ * Stepper — one segmented control for a value picked by stepping (docs/design.md; handoff §4 "steppers
  * and pickers as one component"): a prev keycap, the value field and a next keycap, joined in one rim at one
  * control height. The keycaps are Tiles (kit.css draws `data-slot="tile"`; upright inside the rim, the theme's
  * skew is for free-standing keys), the value rolls on change (NumberRoll per digit for numbers, TextRoll for

@@ -21,7 +21,7 @@ describe("the token language", () => {
     expect(names.filter((n, i) => names.indexOf(n) !== i)).toEqual([]);
   });
 
-  it("names are generated: kebab, --nk-<scope>[-<part>]-<prop> (docs/design/naming.md)", () => {
+  it("names are generated: kebab, --nk-<scope>[-<part>]-<prop> (docs/design.md)", () => {
     for (const l of LEVERS) {
       if (l.scope === "") continue; // the palette: shadcn's own names
       expect(l.css, l.path).toMatch(/^--(nk|font)-[a-z0-9]+(-[a-z0-9]+)*$/);
