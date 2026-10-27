@@ -73,3 +73,41 @@ exports('nuikitEvents', function() return { 'myframework:characterChanged' } end
 
 Server-side data is not part of this contract: nuikit's Lua halves are client-side. The full working template
 (fake in-memory framework, every function) is in `adapters/[nuikit-framework-template]/`.
+
+## A script built on fivem-foundation
+
+[fivem-foundation](../../fivem-foundation/AGENTS.md) (the Lua standard every `.lua` here follows) forbids
+dependencies other than oxmysql and routes notifications, progress and interaction through bridge hooks the
+server owner fills in (`src/config/bridge_client.lua`, STANDARDS §10, §17). Its defaults draw with GTA natives:
+the feed, the help text, a `DrawRect` bar. nuikit is the other half of that deal: the script keeps its hooks and
+its freedom from dependencies, and the owner points the hooks at the intents, so the script renders in the
+server's theme with everything else. No `dependency 'nuikit'`: the hook checks that nuikit runs and falls back
+to the default when it does not.
+
+```lua
+-- src/config/bridge_client.lua in a foundation-style script. The nuikit resource exports one function per
+-- intent kind (notify, progress, menu, input, confirm, prompt, target, radial, challenge); each opens the
+-- intent for the calling resource and calls cb(result, reason) when it ends.
+local function nuikitRunning() return GetResourceState('nuikit') == 'started' end
+
+--- @param message string
+--- @param notifyType 'info'|'success'|'error'|nil
+function BridgeClientConfig.notify(message, notifyType)
+  if not nuikitRunning() then return BridgeClientDefaults.notify(message, notifyType) end -- GTA feed
+  exports.nuikit:notify({ description = message, status = notifyType or 'info' })
+end
+
+--- @param label string
+--- @param durationMs number
+--- @return boolean completed
+function BridgeClientConfig.progress(label, durationMs)
+  if not nuikitRunning() then return BridgeClientDefaults.progress(label, durationMs) end -- DrawRect bar
+  local p = promise.new()
+  exports.nuikit:progress({ label = label, duration = durationMs, cancel = true }, function(result) p:resolve(result == true) end)
+  return Citizen.Await(p)
+end
+```
+
+The intents are superset shapes of ox_lib's, QBCore's and ESX's (`docs/intents.md`), so the same two hooks
+cover every status word a foundation script uses. The server-side hooks (`addItem`, `removeMoney`, …) stay
+the framework's: nuikit is presentation and never owns gameplay.

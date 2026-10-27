@@ -20,8 +20,9 @@
 2. **There is no UI platform in FiveM.** Every resource ships its own page in its own iframe, with its own copy of
    React/Vue and Mantine, its own fonts, its own focus calls. Stacking is by load order, `SetNuiFocus` pushes the
    caller to the top, nothing coordinates Escape, and nothing shares a theme. Players run 10–30 UI resources at
-   once: they fight over focus, double up (two notification systems), and cost real frames: several always-on
-   UIs can drop a mid-range PC to 15–20 FPS.
+   once: they fight over focus, double up (two notification systems), and each ships its own framework runtime
+   and fonts. (They share one renderer process, measured in game and confirmed from FiveM's source, so the cost
+   is heaps, fonts and per-frame work, not processes; see `docs/host.md`.)
 3. **The ecosystem builds the same thing over and over.** Developers start from one of dozens of React + Mantine
    boilerplates, and ox_lib is the only shared UI most servers have: a fixed set of widgets driven from Lua.
    Sellers ship a full app per script, so every script on a server looks different.
@@ -110,6 +111,11 @@ protocol carries the platform.
   once developers see servers already running it.
 - **The host shares one document.** A misbehaving or malicious module shares a JS context with the others, which
   iframes prevent. Keep the host opt-in per resource, isolate errors, and never give modules another resource's
-  callbacks.
+  callbacks. Iframes prevent less than they seem to: FiveM runs CEF with `disable-web-security`, so today any NUI
+  frame can read and drive any other (fivem-foundation, `cross_frame.md`); that is why pages accept messages only
+  from the root page (protocol §5.1) and why the server decides everything.
+- **Cfx may remove `disable-web-security`** (the flag carries a `TODO: remove` in `NUIApp.cpp`). The host loads
+  packs with a classic `<script src>`, which CORS does not gate, so it survives; anything that reads another
+  frame's DOM (devtools, test tooling) would not. Nothing in nuikit's runtime should come to depend on it.
 - **Scope.** The protocol is small and stable on purpose; everything opinionated (the look) lives in the kit and
   the registry, where servers can swap it out.

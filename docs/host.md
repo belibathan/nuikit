@@ -93,7 +93,10 @@ keeping one `ui_page` per resource gives the memory gain back when frames get th
 
 ## Decision (measured in game, Oct 19 2026)
 
-**FiveM puts every NUI frame in one shared renderer process.** With the kit running, total FiveM browser memory
+**FiveM puts every NUI frame in one shared renderer process.** Confirmed from the source (Oct 2026,
+fivem-foundation `upstream/info/nui/cross_frame.md`): `NUIApp.cpp` starts CEF with `disable-site-isolation-trials`
+(the comment: to stop users asking "why are there 50 chromes again") and every NUI is an iframe of one root page,
+`nui://game/ui/root.html`. With the kit running, total FiveM browser memory
 was 333 MB with the host on and 338 MB with it off (148 vs 153 MB private, 4 FiveM_ChromeBrowser processes, same
 scene, 30 s settle): about 5 MB, within noise. That is the "one process" column above, so the host saves a frame
 and a JS heap, not a process.
