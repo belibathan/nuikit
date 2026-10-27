@@ -7,7 +7,17 @@
 -- standalone inventory for servers without one, and the example of the rules.)
 
 local resource = GetCurrentResourceName()
-local db = json.decode(LoadResourceFile(resource, Config.saveFile) or '{}') or {}
+-- The save file, or nothing yet. An unreadable file stops the resource (Log.fatal) instead of being
+-- emptied by the next save: loading never writes (fivem-foundation, kvp_store rule 1).
+local db = {}
+do
+  local raw = LoadResourceFile(resource, Config.saveFile)
+  if raw and raw ~= '' then
+    local data, reason = JsonSafe.decode(raw)
+    if type(data) ~= 'table' then Log.fatal(('%s is unreadable (%s): fix or remove it'):format(Config.saveFile, tostring(reason))) end
+    db = data
+  end
+end
 db.players = db.players or {} -- [license] = { [tostring(slot)] = { name, count, durability?, info? } }
 db.stashes = db.stashes or {} -- [stash id] = same
 
@@ -15,7 +25,7 @@ db.stashes = db.stashes or {} -- [stash id] = same
 -- it the pockets work and every stash is refused; say so at start.
 local ONESYNC = GetConvar('onesync', 'off') ~= 'off'
 if not ONESYNC then
-  print(('^3[%s] OneSync is off: stashes can\'t be opened (set onesync on in server.cfg). Pockets work.^0'):format(resource))
+  Log.warn('OneSync is off: stashes can\'t be opened (set onesync on in server.cfg). Pockets work.')
 end
 
 -- Another inventory on the same key (TAB) and the same items would fight this one: say so once at
@@ -24,14 +34,19 @@ local OTHERS = { 'ox_inventory', 'qb-inventory', 'qs-inventory', 'ps-inventory' 
 local function warnOthers(only)
   for _, name in ipairs(OTHERS) do
     if (not only or only == name) and GetResourceState(name) == 'started' then
-      print(('^3[%s] %s is running. This is a standalone inventory: run one or the other (or give this one another key, Config.key).^0'):format(resource, name))
+      Log.warn(('%s is running. This is a standalone inventory: run one or the other (or give this one another key, Config.key).'):format(name))
     end
   end
 end
 warnOthers()
 AddEventHandler('onResourceStart', function(name) warnOthers(name) end)
 
-local function save() SaveResourceFile(resource, Config.saveFile, json.encode(db), -1) end
+--- Write the save file: encode first, write only when that worked (a save never leaves a half file).
+local function save()
+  local encoded, reason = JsonSafe.encode(db)
+  if not encoded then return Log.error(('%s not saved: %s'):format(Config.saveFile, tostring(reason))) end
+  SaveResourceFile(resource, Config.saveFile, encoded, -1)
+end
 local function license(src) return GetPlayerIdentifierByType(src, 'license') or ('src:' .. src) end
 
 local function stashById(id)
@@ -113,18 +128,15 @@ local function watching(src, stashId)
 end
 -- At most RATE requests a second per player: the page asks far less often, and every move saves
 -- the whole file and refreshes the other viewers.
-local hits, lastUse, RATE = {}, {}, 10
-local function limited(src)
-  local now, h = GetGameTimer(), hits[src]
-  if not h or now - h.at >= 1000 then h = { at = now, n = 0 }; hits[src] = h end
-  h.n = h.n + 1
-  return h.n > RATE
-end
+local lastUse, RATE = {}, 10
+local requests = RateLimiter:new(RATE, 1000)
+local function limited(src) return not requests:allow(src) end
 
 AddEventHandler('playerDropped', function()
   local src = source
   watching(src, nil)
-  hits[src], lastUse[src] = nil, nil
+  lastUse[src] = nil
+  requests:cleanup(src)
 end)
 
 local handlers = {}
@@ -232,7 +244,7 @@ RegisterNetEvent('{{name}}:req', function(id, name, data)
   end
   local handler = type(name) == 'string' and handlers[name]
   local ok, result = pcall(function() return handler and handler(src, type(data) == 'table' and data or {}) end)
-  if not ok then print(('[{{name}}] %s failed: %s'):format(name, result)) end
+  if not ok then Log.error(('%s failed: %s'):format(name, result)) end
   TriggerClientEvent('{{name}}:res', src, id, ok and result or { ok = false, error = 'The inventory had a problem. Try again.' })
 end)
 
@@ -240,10 +252,10 @@ end)
 --   {{name}}_give <server id> <item> <count>      e.g. {{name}}_give 1 toolbox 1
 --   add_ace group.admin command.{{name}}_give allow
 RegisterCommand('{{name}}_give', function(src, args)
-  local target, name, count = tonumber(args[1]), args[2], math.floor(tonumber(args[3]) or 1)
+  local target, name, count = ServerId.online(tonumber(args[1])), args[2], math.floor(tonumber(args[3]) or 1)
   local item = Config.items[name or '']
-  if not target or not GetPlayerName(target) or not item or count < 1 then
-    print('Usage: {{name}}_give <server id> <item> <count> (items are in config.lua)')
+  if not target or not item or count < 1 then
+    Log.info('Usage: {{name}}_give <server id> <item> <count> (items are in config.lua)')
     return
   end
   local inv = pockets(target)
@@ -260,5 +272,5 @@ RegisterCommand('{{name}}_give', function(src, args)
   end
   save()
   TriggerClientEvent('{{name}}:refresh', target)
-  print(('[{{name}}] gave %d %s to %s%s'):format(count - left, name, GetPlayerName(target), left > 0 and (' (%d didn\'t fit)'):format(left) or ''))
+  Log.info(('gave %d %s to %s%s'):format(count - left, name, GetPlayerName(target), left > 0 and (' (%d didn\'t fit)'):format(left) or ''))
 end, true)

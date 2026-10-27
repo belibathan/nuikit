@@ -5,7 +5,17 @@
 -- server reads and writes its framework's jobs instead (see the README); keep the same checks.
 
 local resource = GetCurrentResourceName()
-local db = json.decode(LoadResourceFile(resource, Config.saveFile) or '{}') or {}
+-- The save file, or nothing yet. An unreadable file stops the resource (Log.fatal) instead of being
+-- emptied by the next save: loading never writes (fivem-foundation, kvp_store rule 1).
+local db = {}
+do
+  local raw = LoadResourceFile(resource, Config.saveFile)
+  if raw and raw ~= '' then
+    local data, reason = JsonSafe.decode(raw)
+    if type(data) ~= 'table' then Log.fatal(('%s is unreadable (%s): fix or remove it'):format(Config.saveFile, tostring(reason))) end
+    db = data
+  end
+end
 db.members = db.members or {}   -- [license] = { cid, job, grade, onDuty, name }
 db.accounts = db.accounts or {} -- [job] = balance
 db.n = db.n or 0
@@ -14,10 +24,15 @@ db.n = db.n or 0
 -- positions). Without it everything else works and hiring is refused; say so at start.
 local ONESYNC = GetConvar('onesync', 'off') ~= 'off'
 if not ONESYNC then
-  print(('^3[%s] OneSync is off: bosses can\'t see or hire nearby players (set onesync on in server.cfg). Everything else works.^0'):format(resource))
+  Log.warn('OneSync is off: bosses can\'t see or hire nearby players (set onesync on in server.cfg). Everything else works.')
 end
 
-local function save() SaveResourceFile(resource, Config.saveFile, json.encode(db), -1) end
+--- Write the save file: encode first, write only when that worked (a save never leaves a half file).
+local function save()
+  local encoded, reason = JsonSafe.encode(db)
+  if not encoded then return Log.error(('%s not saved: %s'):format(Config.saveFile, tostring(reason))) end
+  SaveResourceFile(resource, Config.saveFile, encoded, -1)
+end
 local function license(src) return GetPlayerIdentifierByType(src, 'license') end
 
 --- The caller's own record and job config, or nil.
@@ -214,14 +229,10 @@ end
 
 -- At most RATE requests a second per player: the menu asks far less often, and each one may save,
 -- sync the framework or announce an action that spawns something.
-local hits, RATE = {}, 10
-local function limited(src)
-  local now, h = GetGameTimer(), hits[src]
-  if not h or now - h.at >= 1000 then h = { at = now, n = 0 }; hits[src] = h end
-  h.n = h.n + 1
-  return h.n > RATE
-end
-AddEventHandler('playerDropped', function() hits[source] = nil end)
+local RATE = 10
+local requests = RateLimiter:new(RATE, 1000)
+local function limited(src) return not requests:allow(src) end
+AddEventHandler('playerDropped', function() requests:cleanup(source) end)
 
 RegisterNetEvent('{{name}}:req', function(id, name, data)
   local src = source
@@ -231,7 +242,7 @@ RegisterNetEvent('{{name}}:req', function(id, name, data)
   end
   local handler = type(name) == 'string' and handlers[name]
   local ok, result = pcall(function() return handler and handler(src, type(data) == 'table' and data or {}) end)
-  if not ok then print(('[{{name}}] %s failed: %s'):format(name, result)) end
+  if not ok then Log.error(('%s failed: %s'):format(name, result)) end
   TriggerClientEvent('{{name}}:res', src, id, ok and result or { ok = false, error = 'The job menu had a problem. Try again.' })
 end)
 
@@ -239,11 +250,11 @@ end)
 --   {{name}}_setjob <server id> <job> <grade>      e.g. {{name}}_setjob 1 police 4
 --   add_ace group.admin command.{{name}}_setjob allow
 RegisterCommand('{{name}}_setjob', function(src, args)
-  local target, jobName, grade = tonumber(args[1]), args[2], tonumber(args[3])
+  local target, jobName, grade = ServerId.online(tonumber(args[1])), args[2], tonumber(args[3])
   local job = Config.jobs[jobName or '']
   local id = target and license(target)
   if not id or not job or not gradeOf(job, grade) then
-    print('Usage: {{name}}_setjob <server id> <job> <grade> (jobs and grades are in config.lua)')
+    Log.info('Usage: {{name}}_setjob <server id> <job> <grade> (jobs and grades are in config.lua)')
     return
   end
   local m = db.members[id]
@@ -252,5 +263,5 @@ RegisterCommand('{{name}}_setjob', function(src, args)
   db.members[id] = m
   save()
   sync(id, m)
-  print(('[{{name}}] %s is now %s, grade %d'):format(m.name, jobName, grade))
+  Log.info(('%s is now %s, grade %d'):format(m.name, jobName, grade))
 end, true)

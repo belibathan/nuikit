@@ -1,6 +1,7 @@
 fx_version 'cerulean'
 game 'gta5'
 lua54 'yes'
+use_fxv2_oal 'yes'
 
 name '{{name}}'
 description 'A bank built with nuikit — https://github.com/belibathan/nuikit'
@@ -22,7 +23,12 @@ files {
 shared_scripts {
   '@nuikit/init.lua',
   'config.lua',
+  'helpers/log.lua',
+  'helpers/json_safe.lua',
 }
 
 client_script 'client/main.lua'
-server_script 'server/main.lua'
+server_scripts {
+  'helpers/rate_limiter.lua',
+  'server/main.lua',
+}

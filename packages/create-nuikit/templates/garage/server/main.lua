@@ -15,9 +15,19 @@ local resource = GetCurrentResourceName()
 -- otherwise add `set onesync on` to server.cfg. Without it the garage refuses every request.
 local ONESYNC = GetConvar('onesync', 'off') ~= 'off'
 if not ONESYNC then
-  print(('^1[%s] OneSync is off. This garage needs it (set onesync on in server.cfg); every request will be refused.^0'):format(resource))
+  Log.error('OneSync is off. This garage needs it (set onesync on in server.cfg); every request will be refused.')
 end
-local db = json.decode(LoadResourceFile(resource, Config.saveFile) or '{}') or {}
+-- The save file, or nothing yet. An unreadable file stops the resource (Log.fatal) instead of being
+-- emptied by the next save: loading never writes (fivem-foundation, kvp_store rule 1).
+local db = {}
+do
+  local raw = LoadResourceFile(resource, Config.saveFile)
+  if raw and raw ~= '' then
+    local data, reason = JsonSafe.decode(raw)
+    if type(data) ~= 'table' then Log.fatal(('%s is unreadable (%s): fix or remove it'):format(Config.saveFile, tostring(reason))) end
+    db = data
+  end
+end
 
 -- Vehicles this resource spawned, in memory (they're deleted when the resource stops):
 -- spawned[owner .. '|' .. id] = entity, and spawnedBy[entity] = owner .. '|' .. id.
@@ -25,8 +35,11 @@ local spawned, spawnedBy = {}, {}
 -- Records with a take-out or release in progress, also in memory: busy[owner .. '|' .. id] = true.
 local busy = {}
 
+--- Write the save file: encode first, write only when that worked (a save never leaves a half file).
 local function save()
-  SaveResourceFile(resource, Config.saveFile, json.encode(db), -1)
+  local encoded, reason = JsonSafe.encode(db)
+  if not encoded then return Log.error(('%s not saved: %s'):format(Config.saveFile, tostring(reason))) end
+  SaveResourceFile(resource, Config.saveFile, encoded, -1)
 end
 
 local function owner(src)
@@ -169,8 +182,7 @@ handlers.take = function(src, data)
   busy[key] = true
   local s = garage.spawn
   local entity = CreateVehicleServerSetter(v.model, v.type or 'automobile', s.x, s.y, s.z, s.w)
-  local deadline = GetGameTimer() + 3000
-  while not live(entity) and GetGameTimer() < deadline do Wait(50) end
+  WaitLimiter.waitUntil(function() return live(entity) end, { timeout = 3000, interval = 50 })
   busy[key] = nil
   if not live(entity) then
     if entity and entity ~= 0 and DoesEntityExist(entity) then DeleteEntity(entity) end
@@ -208,7 +220,7 @@ handlers.release = function(src, data)
   end)
   busy[key] = nil
   if not done then
-    print(('[{{name}}] release of %s failed after charging %d, refunding: %s'):format(id, fee, err))
+    Log.error(('release of %s failed after charging %d, refunding: %s'):format(id, fee, err))
     v.state, v.garage, v.fee = 'impounded', nil, fee
     if fee > 0 then Config.refund(src, fee) end
     return { ok = false, error = "The release didn't go through. Your money was refunded." }
@@ -218,14 +230,10 @@ end
 
 -- At most RATE requests a second per player: the page asks far less often, and a store or take
 -- writes the whole file and may spawn a vehicle.
-local hits, RATE = {}, 10
-local function limited(src)
-  local now, h = GetGameTimer(), hits[src]
-  if not h or now - h.at >= 1000 then h = { at = now, n = 0 }; hits[src] = h end
-  h.n = h.n + 1
-  return h.n > RATE
-end
-AddEventHandler('playerDropped', function() hits[source] = nil end)
+local RATE = 10
+local requests = RateLimiter:new(RATE, 1000)
+local function limited(src) return not requests:allow(src) end
+AddEventHandler('playerDropped', function() requests:cleanup(source) end)
 
 RegisterNetEvent('{{name}}:req', function(id, name, data)
   local src = source
@@ -239,7 +247,7 @@ RegisterNetEvent('{{name}}:req', function(id, name, data)
   end
   local handler = type(name) == 'string' and handlers[name]
   local ok, result = pcall(function() return handler and handler(src, type(data) == 'table' and data or {}) end)
-  if not ok then print(('[{{name}}] %s failed: %s'):format(name, result)) end
+  if not ok then Log.error(('%s failed: %s'):format(name, result)) end
   TriggerClientEvent('{{name}}:res', src, id, ok and result or { ok = false, error = 'The garage had a problem. Try again.' })
 end)
 

@@ -21,7 +21,7 @@ local function open()
   local mine = opened
   TriggerServerEvent('{{name}}:request')
   CreateThread(function()
-    while true do
+    while true do -- INFINITE LOOP: for the resource's life; every pass sleeps
       Wait(3000)
       if mine ~= opened or not board:isOpen() then return end
       TriggerServerEvent('{{name}}:request')

@@ -45,8 +45,7 @@ AddStateBagChangeHandler('nkColour', nil, function(bag, _, value)
   if type(value) ~= 'string' then return end
   local net = tonumber(bag:match('^entity:(%d+)$'))
   if not net then return end
-  local deadline = GetGameTimer() + 3000
-  while not NetworkDoesNetworkIdExist(net) and GetGameTimer() < deadline do Wait(50) end
+  WaitLimiter.waitUntil(function() return NetworkDoesNetworkIdExist(net) end, { timeout = 3000, interval = 50 })
   if NetworkDoesNetworkIdExist(net) then paint(NetToVeh(net), value) end
 end)
 
@@ -59,8 +58,7 @@ local function showPreview(model, hex)
   local hash = GetHashKey(model)
   if not IsModelInCdimage(hash) or not IsModelAVehicle(hash) then return false end
   RequestModel(hash)
-  local deadline = GetGameTimer() + 5000
-  while not HasModelLoaded(hash) and GetGameTimer() < deadline do Wait(50) end
+  WaitLimiter.waitUntil(function() return HasModelLoaded(hash) end, { timeout = 5000, interval = 50 })
   if not HasModelLoaded(hash) then return false end
   clearPreview()
   local s = here.showroom
@@ -121,7 +119,7 @@ RegisterKeyMapping('{{name}}', 'Open the vehicle showroom', 'keyboard', Config.k
 
 CreateThread(function()
   local inside = nil
-  while true do
+  while true do -- INFINITE LOOP: for the resource's life; every pass sleeps
     local s = nearest()
     if s and s ~= inside then nk.notify({ title = s.label, description = ('Press %s to browse'):format(Config.key or 'E') }) end
     inside = s
@@ -131,8 +129,7 @@ end)
 
 --- Wait for a car the server spawned, then put the player in it.
 local function enter(net, hex)
-  local deadline = GetGameTimer() + 5000
-  while not NetworkDoesNetworkIdExist(net) and GetGameTimer() < deadline do Wait(50) end
+  WaitLimiter.waitUntil(function() return NetworkDoesNetworkIdExist(net) end, { timeout = 5000, interval = 50 })
   if not NetworkDoesNetworkIdExist(net) then return end
   local veh = NetToVeh(net)
   paint(veh, hex)

@@ -134,6 +134,10 @@ check(r.ok and ENTS[50].state.locked == true, 'keys given from the console to pl
 PRINTED = {}
 commands.demo_givekeys(0, { '99', 'ZEN 01' })
 check(PRINTED[1] and PRINTED[1]:find('Usage', 1, true), 'the console command with an offline player: usage')
+PRINTED = {}
+commands.demo_givekeys(0, { '1.5', 'ZEN 01' }) -- a native would read 1.5 as player 1 (atoi)
+r = req(1, 'select', { id = 'lock', net = 50 })
+check(PRINTED[1] and PRINTED[1]:find('Usage', 1, true) and not r.ok, 'givekeys "1.5": usage, player 1 still has no keys (ids are whole numbers)')
 r = req(1, 'bogus', {})
 check(r.ok == false, 'unknown request: refused')
 GetPlayerPed = function() return 0 end

@@ -1,6 +1,7 @@
 fx_version 'cerulean'
 game 'gta5'
 lua54 'yes'
+use_fxv2_oal 'yes'
 
 name '{{name}}'
 description 'A nuikit renderer pack — https://github.com/belibathan/nuikit'

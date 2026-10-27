@@ -163,6 +163,13 @@ check(req(1, 'open', {}).ok, 'a second later: requests go through again')
 PRINTED = {}
 commands.demo_give(0, { '9', 'water', '1' })
 check(PRINTED[1] and PRINTED[1]:find('Usage', 1, true), 'give to an offline player: usage')
+PRINTED = {}
+local waterBefore = 0
+for _, it in pairs(mine(1)) do if it.name == 'water' then waterBefore = waterBefore + it.count end end
+commands.demo_give(0, { '1.5', 'water', '1' }) -- a native would read 1.5 as player 1 (atoi)
+local waterAfter = 0
+for _, it in pairs(mine(1)) do if it.name == 'water' then waterAfter = waterAfter + it.count end end
+check(PRINTED[1] and PRINTED[1]:find('Usage', 1, true) and waterAfter == waterBefore, 'give to "1.5": usage, player 1 got nothing (ids are whole numbers)')
 commands.demo_give(0, { '1', 'gold', '1' })
 check(PRINTED[2] and PRINTED[2]:find('Usage', 1, true), 'give an unknown item: usage')
 

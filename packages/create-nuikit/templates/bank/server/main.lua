@@ -4,7 +4,17 @@
 -- framework's own. Every amount is checked here: the page's checks are only for the player.
 
 local resource = GetCurrentResourceName()
-local db = json.decode(LoadResourceFile(resource, Config.saveFile) or '{}') or {}
+-- The save file, or nothing yet. An unreadable file stops the resource (Log.fatal) instead of being
+-- emptied by the next save: loading never writes (fivem-foundation, kvp_store rule 1).
+local db = {}
+do
+  local raw = LoadResourceFile(resource, Config.saveFile)
+  if raw and raw ~= '' then
+    local data, reason = JsonSafe.decode(raw)
+    if type(data) ~= 'table' then Log.fatal(('%s is unreadable (%s): fix or remove it'):format(Config.saveFile, tostring(reason))) end
+    db = data
+  end
+end
 local MAX_TX = 50
 
 -- Money only moves at a bank or an ATM, and only a bank sends transfers: checked here from the
@@ -12,10 +22,15 @@ local MAX_TX = 50
 -- withdrawal and transfer is refused; say so at start.
 local ONESYNC = GetConvar('onesync', 'off') ~= 'off'
 if not ONESYNC then
-  print(('^1[%s] OneSync is off. The bank needs it (set onesync on in server.cfg); every deposit, withdrawal and transfer will be refused.^0'):format(resource))
+  Log.error('OneSync is off. The bank needs it (set onesync on in server.cfg); every deposit, withdrawal and transfer will be refused.')
 end
 
-local function save() SaveResourceFile(resource, Config.saveFile, json.encode(db), -1) end
+--- Write the save file: encode first, write only when that worked (a save never leaves a half file).
+local function save()
+  local encoded, reason = JsonSafe.encode(db)
+  if not encoded then return Log.error(('%s not saved: %s'):format(Config.saveFile, tostring(reason))) end
+  SaveResourceFile(resource, Config.saveFile, encoded, -1)
+end
 local function owner(src) return GetPlayerIdentifierByType(src, 'license') or ('src:' .. src) end
 
 local function record(src)
@@ -171,14 +186,10 @@ end
 
 -- At most RATE requests a second per player: the page asks far less often, and each move writes
 -- the whole file (and calls the framework's money).
-local hits, RATE = {}, 10
-local function limited(src)
-  local now, h = GetGameTimer(), hits[src]
-  if not h or now - h.at >= 1000 then h = { at = now, n = 0 }; hits[src] = h end
-  h.n = h.n + 1
-  return h.n > RATE
-end
-AddEventHandler('playerDropped', function() hits[source] = nil end)
+local RATE = 10
+local requests = RateLimiter:new(RATE, 1000)
+local function limited(src) return not requests:allow(src) end
+AddEventHandler('playerDropped', function() requests:cleanup(source) end)
 
 RegisterNetEvent('{{name}}:req', function(id, name, data)
   local src = source
@@ -188,6 +199,6 @@ RegisterNetEvent('{{name}}:req', function(id, name, data)
   end
   local handler = type(name) == 'string' and handlers[name]
   local ok, result = pcall(function() return handler and handler(src, type(data) == 'table' and data or {}) end)
-  if not ok then print(('[{{name}}] %s failed: %s'):format(name, result)) end
+  if not ok then Log.error(('%s failed: %s'):format(name, result)) end
   TriggerClientEvent('{{name}}:res', src, id, ok and result or { ok = false, error = 'The bank had a problem. Try again.' })
 end)

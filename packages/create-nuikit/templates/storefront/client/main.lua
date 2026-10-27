@@ -64,7 +64,7 @@ RegisterKeyMapping('{{name}}', 'Open the counter', 'keyboard', Config.key or 'E'
 -- Say how once, when the player walks up to a counter.
 CreateThread(function()
   local inside = nil
-  while true do
+  while true do -- INFINITE LOOP: for the resource's life; every pass sleeps
     local b = nearest()
     if b and b ~= inside then nk.notify({ title = b.label, description = ('Press %s to shop'):format(Config.key or 'E') }) end
     inside = b

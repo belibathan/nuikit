@@ -58,7 +58,7 @@ RegisterKeyMapping('{{name}}', 'Open the shop', 'keyboard', Config.key or 'E')
 -- Say how once, when the player walks into a shop.
 CreateThread(function()
   local inside = nil
-  while true do
+  while true do -- INFINITE LOOP: for the resource's life; every pass sleeps
     local s = nearest()
     if s and s ~= inside then nk.notify({ title = s.label, description = ('Press %s to shop'):format(Config.key or 'E') }) end
     inside = s

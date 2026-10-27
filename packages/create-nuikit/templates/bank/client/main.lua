@@ -51,7 +51,7 @@ end
 RegisterCommand('{{name}}', function()
   if panel:isOpen() then return panel:close() end
   where = nearby()
-  if not where then return print("[{{name}}] You're not at a bank or an ATM.") end
+  if not where then return Log.info("You're not at a bank or an ATM.") end
   local data = snapshot()
   if data then panel:open(data) end
 end, false)

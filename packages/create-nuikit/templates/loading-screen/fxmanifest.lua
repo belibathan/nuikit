@@ -1,6 +1,7 @@
 fx_version 'cerulean'
 game 'gta5'
 lua54 'yes'
+use_fxv2_oal 'yes'
 
 name '{{name}}'
 description 'A loading screen built with nuikit — https://github.com/belibathan/nuikit'

@@ -17,6 +17,19 @@ cd web
 **In game:** `ensure nuikit` first, then `ensure {{name}}`. Stand at a bank or an ATM from `config.lua` (the
 Legion Square Fleeca is the default) and press F9 or run `/{{name}}`.
 
+## The server decides, every time
+
+- **Where:** a deposit, withdrawal or transfer only goes through at a bank or ATM from `config.lua`, checked from the
+  server's own view of where the player stands (OneSync). An ATM never sends transfers. The page's "ATM" flag is not
+  trusted.
+- **How much:** whole dollars above zero, below the account's balance for a withdrawal or transfer, and only the
+  accounts that exist (`cash`, `checking`, `savings`). Amounts are read from the request, never from the page's
+  totals.
+- **Transfers:** to a player who is online (by server id or account number); all or nothing, with a refund when the
+  credit fails.
+- **Rate:** at most 10 requests a second per player. Everything refused comes back as an error the panel shows.
+- **Logs:** `helpers/log.lua` (fivem-foundation): every console line is `^N[RESOURCE] … ^7`.
+
 ## Money, and what a framework server changes
 
 | | The example | With `Config.money` filled in |

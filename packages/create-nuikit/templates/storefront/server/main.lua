@@ -9,7 +9,17 @@
 -- job and grade for that business first.
 
 local resource = GetCurrentResourceName()
-local db = json.decode(LoadResourceFile(resource, Config.saveFile) or '{}') or {}
+-- The save file, or nothing yet. An unreadable file stops the resource (Log.fatal) instead of being
+-- emptied by the next save: loading never writes (fivem-foundation, kvp_store rule 1).
+local db = {}
+do
+  local raw = LoadResourceFile(resource, Config.saveFile)
+  if raw and raw ~= '' then
+    local data, reason = JsonSafe.decode(raw)
+    if type(data) ~= 'table' then Log.fatal(('%s is unreadable (%s): fix or remove it'):format(Config.saveFile, tostring(reason))) end
+    db = data
+  end
+end
 db.biz = db.biz or {}      -- [business id] = { open, products = { [id] = { price, stock, enabled } } }
 db.accounts = db.accounts or {} -- [business id] = takings (the example's account)
 
@@ -17,10 +27,15 @@ db.accounts = db.accounts or {} -- [business id] = takings (the example's accoun
 -- it every request is refused; say so at start.
 local ONESYNC = GetConvar('onesync', 'off') ~= 'off'
 if not ONESYNC then
-  print(('^1[%s] OneSync is off. This storefront needs it (set onesync on in server.cfg); every request will be refused.^0'):format(resource))
+  Log.error('OneSync is off. This storefront needs it (set onesync on in server.cfg); every request will be refused.')
 end
 
-local function save() SaveResourceFile(resource, Config.saveFile, json.encode(db), -1) end
+--- Write the save file: encode first, write only when that worked (a save never leaves a half file).
+local function save()
+  local encoded, reason = JsonSafe.encode(db)
+  if not encoded then return Log.error(('%s not saved: %s'):format(Config.saveFile, tostring(reason))) end
+  SaveResourceFile(resource, Config.saveFile, encoded, -1)
+end
 local function owner(src) return GetPlayerIdentifierByType(src, 'license') or ('src:' .. src) end
 
 local function record(src)
@@ -238,7 +253,7 @@ handlers.buy = function(src, data)
     for _, g in ipairs(given) do pcall(take, src, g.id, want[g.id]) end
     local backOk, back = pcall(refund, src, payment, total, 'storefront refund ' .. biz.id)
     if not (backOk and back) then
-      print(('^1[%s] refund of %d (%s) to %s failed: give it back by hand^0'):format(resource, total, payment, owner(src)))
+      Log.error(('refund of %d (%s) to %s failed: give it back by hand'):format(total, payment, owner(src)))
     end
     hold(-1)
     busy[src] = nil
@@ -324,6 +339,6 @@ RegisterNetEvent('{{name}}:req', function(id, name, data)
   if mine[name] and now - mine[name] < Config.rateMs then return reply({ ok = false, error = 'Slow down.' }) end
   mine[name] = now
   local ok, result = pcall(function() return handler and handler(src, type(data) == 'table' and data or {}) end)
-  if not ok then print(('[{{name}}] %s failed: %s'):format(name, result)) end
+  if not ok then Log.error(('%s failed: %s'):format(name, result)) end
   reply(ok and result or { ok = false, error = 'The business had a problem. Try again.' })
 end)

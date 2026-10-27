@@ -7,14 +7,24 @@
 -- the server's own view of the player (OneSync), never sent by the client.
 
 local resource = GetCurrentResourceName()
-local db = json.decode(LoadResourceFile(resource, Config.saveFile) or '{}') or {}
+-- The save file, or nothing yet. An unreadable file stops the resource (Log.fatal) instead of being
+-- emptied by the next save: loading never writes (fivem-foundation, kvp_store rule 1).
+local db = {}
+do
+  local raw = LoadResourceFile(resource, Config.saveFile)
+  if raw and raw ~= '' then
+    local data, reason = JsonSafe.decode(raw)
+    if type(data) ~= 'table' then Log.fatal(('%s is unreadable (%s): fix or remove it'):format(Config.saveFile, tostring(reason))) end
+    db = data
+  end
+end
 db.players = db.players or {} -- [license] = { [character id] = { firstName, lastName, birthdate, gender, cash, bank, last?, lastPlayed? } }
 
 -- Last locations come from server-side positions, which need OneSync. Without it everything works
 -- but 'last' is never offered; say so at start.
 local ONESYNC = GetConvar('onesync', 'off') ~= 'off'
 if not ONESYNC then
-  print(('^3[%s] OneSync is off: "Last location" won\'t be saved or offered (set onesync on in server.cfg).^0'):format(resource))
+  Log.warn('OneSync is off: "Last location" won\'t be saved or offered (set onesync on in server.cfg).')
 end
 
 -- A framework's own character screen would show too, and the two would fight over the player.
@@ -23,14 +33,19 @@ local OTHERS = { 'qbx_core', 'qb-multicharacter', 'esx_multicharacter', 'um-mult
 local function warnOthers(only)
   for _, name in ipairs(OTHERS) do
     if (not only or only == name) and GetResourceState(name) == 'started' then
-      print(('^3[%s] %s is running and has its own character screen: use one or the other (see the README).^0'):format(resource, name))
+      Log.warn(('%s is running and has its own character screen: use one or the other (see the README).'):format(name))
     end
   end
 end
 warnOthers()
 AddEventHandler('onResourceStart', function(name) warnOthers(name) end)
 
-local function save() SaveResourceFile(resource, Config.saveFile, json.encode(db), -1) end
+--- Write the save file: encode first, write only when that worked (a save never leaves a half file).
+local function save()
+  local encoded, reason = JsonSafe.encode(db)
+  if not encoded then return Log.error(('%s not saved: %s'):format(Config.saveFile, tostring(reason))) end
+  SaveResourceFile(resource, Config.saveFile, encoded, -1)
+end
 local function license(src) return GetPlayerIdentifierByType(src, 'license') or ('src:' .. src) end
 local function mine(src)
   local id = license(src)
@@ -197,13 +212,9 @@ end
 
 -- At most RATE requests a second per player: the screen asks far less often, and each open, play
 -- and delete writes the whole file.
-local hits, RATE = {}, 10
-local function limited(src)
-  local now, h = GetGameTimer(), hits[src]
-  if not h or now - h.at >= 1000 then h = { at = now, n = 0 }; hits[src] = h end
-  h.n = h.n + 1
-  return h.n > RATE
-end
+local RATE = 10
+local requests = RateLimiter:new(RATE, 1000)
+local function limited(src) return not requests:allow(src) end
 
 RegisterNetEvent('{{name}}:req', function(id, name, data)
   local src = source
@@ -213,13 +224,13 @@ RegisterNetEvent('{{name}}:req', function(id, name, data)
   end
   local handler = type(name) == 'string' and handlers[name]
   local ok, result = pcall(function() return handler and handler(src, type(data) == 'table' and data or {}) end)
-  if not ok then print(('[{{name}}] %s failed: %s'):format(name, result)) end
+  if not ok then Log.error(('%s failed: %s'):format(name, result)) end
   TriggerClientEvent('{{name}}:res', src, id, ok and result or { ok = false, error = 'Something went wrong. Try again.' })
 end)
 
 -- Where each playing character is, every minute and when they leave (the server's own view).
 CreateThread(function()
-  while true do
+  while true do -- INFINITE LOOP: for the resource's life; every pass sleeps
     Wait(60000)
     for src in pairs(active) do remember(src) end
     save()
@@ -228,6 +239,7 @@ end)
 AddEventHandler('playerDropped', function()
   local src = source
   remember(src)
-  active[src], lastCreate[src], hits[src] = nil, nil, nil
+  active[src], lastCreate[src] = nil, nil
+  requests:cleanup(src)
   save()
 end)

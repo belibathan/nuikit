@@ -5,6 +5,8 @@
 //   3. every component they import (@/components/ui/*) that the base doesn't have, from
 //      registry/nuikit/ui or vendor/shadcn/ui, transitively
 //   4. templates/<block>/ on top: App.tsx, dev.tsx, nui.d.ts, client/main.lua, README.md
+//   5. every helpers/<name>.lua its fxmanifest lists, from packages/create-nuikit/helpers (the
+//      fivem-foundation helpers: Log, WaitLimiter, RateLimiter, Sanitize, JsonSafe, ServerId)
 //
 // A template with `"block": false` (renderer-pack) skips 2: base + overlay, components resolved from
 // every .tsx in the overlay; `"remove": [...]` drops base files it doesn't want.
@@ -85,6 +87,17 @@ function addComponents(file, uiDir, added) {
   }
 }
 
+/** Copy every helpers/<name>.lua the project's fxmanifest lists (one source for every template). */
+function addHelpers(dest) {
+  const manifest = fs.readFileSync(path.join(dest, "fxmanifest.lua"), "utf8");
+  for (const [, name] of manifest.matchAll(/'helpers\/([\w-]+)\.lua'/g)) {
+    const src = path.join(pkg, "helpers", `${name}.lua`);
+    if (!fs.existsSync(src)) fail(`${path.relative(pkg, dest)}/fxmanifest.lua lists helpers/${name}.lua, which packages/create-nuikit/helpers does not have`);
+    fs.mkdirSync(path.join(dest, "helpers"), { recursive: true });
+    fs.copyFileSync(src, path.join(dest, "helpers", `${name}.lua`));
+  }
+}
+
 const templatesDir = path.join(pkg, "templates");
 const names = fs.existsSync(templatesDir)
   ? fs.readdirSync(templatesDir, { withFileTypes: true }).filter((e) => e.isDirectory()).map((e) => e.name).sort()
@@ -119,6 +132,8 @@ for (const name of names) {
   copyDir(overlay, dest, (n) => n === "template.json");
   if (item) addComponents(path.join(dest, "web/src/App.tsx"), ui, added);
   else for (const f of walk(path.join(overlay, "web/src")).filter((f) => f.endsWith(".tsx"))) addComponents(path.join(dest, "web/src", f), ui, added);
+
+  addHelpers(dest);
 
   index.push({ name, title: meta.title, description: meta.description, next: meta.next ?? [] });
   console.log(`✓ template ${name}${added.length ? ` (+ ${added.join(", ")})` : ""}`);

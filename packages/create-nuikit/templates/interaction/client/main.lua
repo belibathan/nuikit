@@ -207,7 +207,7 @@ end
 
 CreateThread(function()
   local shown, holding, since = nil, nil, 0
-  while true do
+  while true do -- INFINITE LOOP: for the resource's life; every pass sleeps
     local pos = GetEntityCoords(PlayerPedId())
     local near = {}
     for _, p in ipairs(Config.points) do

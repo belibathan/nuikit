@@ -152,7 +152,7 @@ local function tick()
 end
 
 CreateThread(function()
-  while true do
+  while true do -- INFINITE LOOP: for the resource's life; every pass sleeps
     tick()
     Wait(0) -- Esc has to be caught the frame it's pressed; nothing is sent from here
   end

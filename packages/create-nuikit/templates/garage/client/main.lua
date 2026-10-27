@@ -48,7 +48,7 @@ end
 local function snapshot()
   local res = request('list', { garage = here.id })
   if not res or not res.ok then
-    print(('^1[{{name}}] %s^0'):format(res and res.error or "The garage didn't answer."))
+    Log.error(('%s'):format(res and res.error or "The garage didn't answer."))
     return nil
   end
   return { title = here.label, vehicles = res.vehicles, canStore = driving() ~= nil }
@@ -57,7 +57,7 @@ end
 local function open()
   here = nearest()
   if not here then
-    print(("[{{name}}] You're not at a garage."))
+    Log.info("You're not at a garage.")
     return
   end
   local data = snapshot()
@@ -110,8 +110,7 @@ nk.on('garage:takeOut', function(data)
   if IsAnyVehicleNearPoint(s.x, s.y, s.z, 3.0) then return { ok = false, error = 'Something is parked in the way.' } end
   local res = request('take', { id = data.id, garage = here.id })
   if not res or not res.ok then return { ok = false, error = res and res.error or "The garage didn't answer." } end
-  local deadline = GetGameTimer() + 5000
-  while not NetworkDoesNetworkIdExist(res.net) and GetGameTimer() < deadline do Wait(50) end
+  WaitLimiter.waitUntil(function() return NetworkDoesNetworkIdExist(res.net) end, { timeout = 5000, interval = 50 })
   local veh = NetworkDoesNetworkIdExist(res.net) and NetToVeh(res.net) or 0
   panel:close()
   if veh == 0 then return { ok = true } end -- it's out at the spawn point, just not streamed in yet

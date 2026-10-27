@@ -30,11 +30,25 @@ press **Take out** (or Enter) to get it back at the garage's spawn point.
 | The fee | `Config.charge` takes it and `Config.refund` gives it back if the release fails (commented Qbox, QBCore, ESX lines; free when standalone) | Uncomment yours |
 | Vehicle mods | Not saved (model, plate, fuel, engine and body only) | Save and apply your framework's vehicle properties |
 
+## The server decides, every time
+
 Every button asks `client/main.lua`, which asks the server. The server checks everything again and trusts
-nothing from the page: ids and plates must be short strings, only your own records are looked up, you must
-be at the garage, a stored vehicle is read from the game (the one you're driving), and the server spawns and
-deletes the vehicles itself (OneSync), so a vehicle can't come out twice. If the answer is an error ("Something is parked in the way",
-"You can't pay the fee"), it shows on the panel; the page never decides on its own.
+nothing from the page:
+- **Who and what:** ids and plates are strings of 1 to 8 letters, digits and spaces; a vehicle is only looked up
+  among the caller's own records (by license); a plate someone else owns is refused.
+- **Where:** the caller stands at the garage, by the server's own view of their position (OneSync; without it every
+  request is refused and a red line says so at start).
+- **Store:** the vehicle is the one the caller is driving (its network id, checked against the driver seat), and
+  model, plate, fuel, engine and body are read from the game, not from the page.
+- **Take out and release:** the server spawns and deletes the vehicles itself, marks a record busy before anything
+  yields (a double click or a replay finds it out), and charges the impound fee only after every check passed,
+  refunding it when the release fails.
+- **Rate:** at most 10 requests a second per player (`helpers/rate_limiter.lua`).
+- **The file:** `vehicles.json` is read once at start with `helpers/json_safe.lua`; an unreadable file stops the
+  resource instead of being emptied by the next save.
+
+If the answer is an error ("Something is parked in the way", "You can't pay the fee"), it shows on the panel; the
+page never decides on its own.
 
 ## Files
 

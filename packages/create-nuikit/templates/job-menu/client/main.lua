@@ -33,7 +33,7 @@ end)
 local function open()
   local res = request('open')
   if not res or not res.ok then
-    print(('[{{name}}] %s'):format(res and res.error or "The job menu didn't answer."))
+    Log.info(('%s'):format(res and res.error or "The job menu didn't answer."))
     return
   end
   panel:open(res.data)
@@ -81,5 +81,5 @@ end)
 
 -- The example's actions just say what would happen. Replace with your armory, garage, outfits…
 AddEventHandler('{{name}}:action', function(job, id)
-  print(('[{{name}}] %s: %s'):format(job, id))
+  Log.info(('%s: %s'):format(job, id))
 end)

@@ -90,7 +90,7 @@ RegisterKeyMapping('{{name}}manage', 'Manage the job', 'keyboard', Config.manage
 
 -- Show the distance to the current step, twice a second (display only).
 CreateThread(function()
-  while true do
+  while true do -- INFINITE LOOP: for the resource's life; every pass sleeps
     local place = stepPlace()
     if place and snap and not (place.count and place.count > 1) then
       snap.distance = #(GetEntityCoords(PlayerPedId()) - place.coords)

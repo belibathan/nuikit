@@ -10,7 +10,7 @@ local resource = GetCurrentResourceName()
 -- and points work and every server one is refused; say so at start.
 local ONESYNC = GetConvar('onesync', 'off') ~= 'off'
 if not ONESYNC then
-  print(('^1[%s] OneSync is off: options and points marked server = true will be refused (set onesync on in server.cfg).^0'):format(resource))
+  Log.error('OneSync is off: options and points marked server = true will be refused (set onesync on in server.cfg).')
 end
 
 -- ox_target and qb-target hold Left Alt too: two eyes on one key fight over the cursor and the
@@ -19,7 +19,7 @@ local OTHERS = { 'ox_target', 'qb-target' }
 local function warnOthers(only)
   for _, name in ipairs(OTHERS) do
     if (not only or only == name) and GetResourceState(name) == 'started' then
-      print(('^3[%s] %s is running. Both target on a held key (Left Alt by default): give this one another key (Config.key, or players rebind it in Settings → Key Bindings → FiveM) or stop one of them.^0'):format(resource, name))
+      Log.warn(('%s is running. Both target on a held key (Left Alt by default): give this one another key (Config.key, or players rebind it in Settings → Key Bindings → FiveM) or stop one of them.'):format(name))
     end
   end
 end
@@ -91,14 +91,14 @@ exports('removeKeys', function(src, plate)
   return mine ~= nil
 end)
 RegisterCommand('{{name}}_givekeys', function(_, args)
-  local target, plate = tonumber(args[1]), plateOf(args[2])
-  if not target or not GetPlayerName(target) or not plate then
-    print('Usage: {{name}}_givekeys <server id> <plate>')
+  local target, plate = ServerId.online(tonumber(args[1])), plateOf(args[2])
+  if not target or not plate then
+    Log.info('Usage: {{name}}_givekeys <server id> <plate>')
     return
   end
   keys[license(target)] = keys[license(target)] or {}
   keys[license(target)][plate] = true
-  print(('[{{name}}] %s has the keys to %s'):format(GetPlayerName(target), plate))
+  Log.info(('%s has the keys to %s'):format(GetPlayerName(target), plate))
 end, true)
 
 --- Lock or unlock a vehicle: only with its keys (checked here, by the plate the server reads).
@@ -172,6 +172,6 @@ RegisterNetEvent('{{name}}:req', function(id, name, data)
   end
   local handler = type(name) == 'string' and handlers[name]
   local ok, result = pcall(function() return handler and handler(src, type(data) == 'table' and data or {}) end)
-  if not ok then print(('[{{name}}] %s failed: %s'):format(name, result)) end
+  if not ok then Log.error(('%s failed: %s'):format(name, result)) end
   TriggerClientEvent('{{name}}:res', src, id, ok and result or { ok = false, error = 'Something went wrong. Try again.' })
 end)

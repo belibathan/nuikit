@@ -26,7 +26,7 @@ local rpmLive = nk.stream('hud:vehicle:rpm', { rate = 30, precision = 0.01 })
 local current = 0 -- the vehicle being driven, or 0
 
 CreateThread(function()
-  while true do
+  while true do -- INFINITE LOOP: for the resource's life; every pass sleeps
     if current ~= 0 then
       speedLive:push(GetEntitySpeed(current) * SPEED)
       rpmLive:push(GetVehicleCurrentRpm(current))
@@ -47,7 +47,7 @@ end
 -- Everything else about the vehicle, sent only when it changed.
 CreateThread(function()
   local last, paused = nil, nil
-  while true do
+  while true do -- INFINITE LOOP: for the resource's life; every pass sleeps
     local isPaused = IsPauseMenuActive()
     if isPaused ~= paused then paused = isPaused; sync() end
 

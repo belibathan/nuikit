@@ -11,7 +11,7 @@ local resource = GetCurrentResourceName()
 -- the dialogue refuses to open; say so at start.
 local ONESYNC = GetConvar('onesync', 'off') ~= 'off'
 if not ONESYNC then
-  print(('^1[%s] OneSync is off. This dialogue needs it (set onesync on in server.cfg); every request will be refused.^0'):format(resource))
+  Log.error('OneSync is off. This dialogue needs it (set onesync on in server.cfg); every request will be refused.')
 end
 
 local ACCOUNT = Config.account or 'cash'
@@ -87,12 +87,12 @@ end
 for _, npc in ipairs(Config.npcs) do
   local tree = Config.dialogues[npc.dialogue]
   if not tree or not tree.nodes[tree.start] then
-    print(('^1[%s] npc %s: dialogue "%s" or its start node is missing^0'):format(resource, npc.id, tostring(npc.dialogue)))
+    Log.error(('npc %s: dialogue "%s" or its start node is missing'):format(npc.id, tostring(npc.dialogue)))
   else
     for nodeId, node in pairs(tree.nodes) do
       for _, c in ipairs(node.choices or {}) do
         if c.next and not tree.nodes[c.next] then
-          print(('^1[%s] dialogue %s, node %s, choice %s: next "%s" does not exist^0'):format(resource, npc.dialogue, nodeId, c.id, c.next))
+          Log.error(('dialogue %s, node %s, choice %s: next "%s" does not exist'):format(npc.dialogue, nodeId, c.id, c.next))
         end
       end
     end
@@ -177,7 +177,7 @@ local function apply(src, npc, c)
       for j = i - 1, 1, -1 do
         local undone, back = pcall(steps[j][2])
         if not (undone and back) then
-          print(('^1[%s] could not undo a step of "%s" for %s: fix it by hand^0'):format(resource, c.id, owner(src)))
+          Log.error(('could not undo a step of "%s" for %s: fix it by hand'):format(c.id, owner(src)))
         end
       end
       return false
@@ -271,7 +271,7 @@ RegisterNetEvent('{{name}}:req', function(id, name, data)
   local ok, result = pcall(function() return handler and handler(src, type(data) == 'table' and data or {}) end)
   if not ok then
     busy[src] = nil
-    print(('[{{name}}] %s failed: %s'):format(name, result))
+    Log.error(('%s failed: %s'):format(name, result))
   end
   TriggerClientEvent('{{name}}:res', src, id, ok and result or { ok = false, error = 'They had a problem. Try again.' })
 end)

@@ -6,12 +6,12 @@ Convention calls made here are rows 40–44 of [`decisions.md`](decisions.md). L
 
 ## The queue (leverage × size), top 10
 
-1. [ ] Templates: ship `helpers/` (`log`, `wait`, `rate_limiter`, `sanitize`, `json_safe`, `server_id`) and load them from every template manifest (S).
-2. [ ] Templates: `json.decode` at load → `JsonSafe.decode`; a corrupt save file is logged and kept, never overwritten (11 × S).
-3. [ ] Templates: admin commands parse the target id with `ServerId.online` (`3.5` / `'3abc'` hit player 3 today) (4 × S).
-4. [ ] Templates: every `print` → `Log.*` (colour + `[RESOURCE]` + `^7`) (14 × S).
-5. [ ] Templates: deadline `while` loops → `WaitLimiter.waitUntil`; the infinite ones carry `-- INFINITE LOOP:` (S).
-6. [ ] Templates and systems: `use_fxv2_oal 'yes'` in every manifest (47 × S, one sweep).
+1. [x] Templates: ship `helpers/` (`log`, `wait`, `rate_limiter`, `sanitize`, `json_safe`, `server_id`) and load them from every template manifest (S).
+2. [x] Templates: `json.decode` at load → `JsonSafe.decode`; a corrupt save file is logged and kept, never overwritten (11 × S).
+3. [x] Templates: admin commands parse the target id with `ServerId.online` (`3.5` / `'3abc'` hit player 3 today) (4 × S).
+4. [x] Templates: every `print` → `Log.*` (colour + `[RESOURCE]` + `^7`) (14 × S).
+5. [x] Templates: deadline `while` loops → `WaitLimiter.waitUntil`; the infinite ones carry `-- INFINITE LOOP:` (S).
+6. [x] Templates and systems: `use_fxv2_oal 'yes'` in every manifest (47 × S, one sweep).
 7. [ ] Runtime: a `Log` module in `nuikit.lua`, every console line through it (M).
 8. [ ] Runtime: `NUI.waitUntil` (the `WaitLimiter` shape) and the frame loops commented as the §8 exception (S).
 9. [ ] `nuikit_hud/client/vehicle.lua:109`: `GetVehicleHandbrake(vehicle) == true` is always false (BOOL natives return `1`) (S).

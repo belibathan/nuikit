@@ -6,7 +6,17 @@
 -- Test drives are spawned and timed here too, and cleaned up when they end or the player leaves.
 
 local resource = GetCurrentResourceName()
-local db = json.decode(LoadResourceFile(resource, Config.saveFile) or '{}') or {}
+-- The save file, or nothing yet. An unreadable file stops the resource (Log.fatal) instead of being
+-- emptied by the next save: loading never writes (fivem-foundation, kvp_store rule 1).
+local db = {}
+do
+  local raw = LoadResourceFile(resource, Config.saveFile)
+  if raw and raw ~= '' then
+    local data, reason = JsonSafe.decode(raw)
+    if type(data) ~= 'table' then Log.fatal(('%s is unreadable (%s): fix or remove it'):format(Config.saveFile, tostring(reason))) end
+    db = data
+  end
+end
 db.wallets = db.wallets or {} -- [license] = { cash, bank }
 db.owned = db.owned or {}     -- [plate] = { owner, model, colour, shop }
 
@@ -14,10 +24,15 @@ db.owned = db.owned or {}     -- [plate] = { owner, model, colour, shop }
 -- showroom refuses everything; say so at start.
 local ONESYNC = GetConvar('onesync', 'off') ~= 'off'
 if not ONESYNC then
-  print(('^1[%s] OneSync is off. This showroom needs it (set onesync on in server.cfg); every request will be refused.^0'):format(resource))
+  Log.error('OneSync is off. This showroom needs it (set onesync on in server.cfg); every request will be refused.')
 end
 
-local function save() SaveResourceFile(resource, Config.saveFile, json.encode(db), -1) end
+--- Write the save file: encode first, write only when that worked (a save never leaves a half file).
+local function save()
+  local encoded, reason = JsonSafe.encode(db)
+  if not encoded then return Log.error(('%s not saved: %s'):format(Config.saveFile, tostring(reason))) end
+  SaveResourceFile(resource, Config.saveFile, encoded, -1)
+end
 local function license(src) return GetPlayerIdentifierByType(src, 'license') or ('src:' .. src) end
 
 local function wallet(src)
@@ -89,8 +104,7 @@ end
 --- Spawn a car for the player and wait for it; the entity, or nil.
 local function spawn(model, at, plate, colour)
   local entity = CreateVehicleServerSetter(GetHashKey(model), 'automobile', at.x, at.y, at.z, at.w)
-  local deadline = GetGameTimer() + 3000
-  while not (entity and entity ~= 0 and DoesEntityExist(entity)) and GetGameTimer() < deadline do Wait(50) end
+  WaitLimiter.waitUntil(function() return entity and entity ~= 0 and DoesEntityExist(entity) end, { timeout = 3000, interval = 50 })
   if not (entity and entity ~= 0 and DoesEntityExist(entity)) then return nil end
   SetVehicleNumberPlateText(entity, plate)
   Entity(entity).state:set('nkColour', colour, true) -- the client paints it (custom colour) when it has it
@@ -176,7 +190,7 @@ handlers.buy = function(src, data)
     if entity and DoesEntityExist(entity) then DeleteEntity(entity) end
     local backOk, back = pcall(refund, src, data.payment, v.price, 'vehicle refund ' .. v.id)
     if not (backOk and back) then
-      print(('^1[%s] refund of %d (%s) to %s failed: give it back by hand^0'):format(resource, v.price, data.payment, license(src)))
+      Log.error(('refund of %d (%s) to %s failed: give it back by hand'):format(v.price, data.payment, license(src)))
     end
     busy[src] = nil
     save()
@@ -231,7 +245,7 @@ RegisterNetEvent('{{name}}:req', function(id, name, data)
   local ok, result = pcall(function() return handler and handler(src, type(data) == 'table' and data or {}) end)
   if not ok then
     busy[src] = nil
-    print(('[{{name}}] %s failed: %s'):format(name, result))
+    Log.error(('%s failed: %s'):format(name, result))
   end
   TriggerClientEvent('{{name}}:res', src, id, ok and result or { ok = false, error = 'The showroom had a problem. Try again.' })
 end)

@@ -5,7 +5,7 @@ local store = nil
 json = { encode = function(t) store = t return 'x' end, decode = function() return store or {} end }
 function IsDuplicityVersion() return true end
 function GetCurrentResourceName() return 'demo' end
-function LoadResourceFile() return nil end
+function LoadResourceFile() return store and 'x' or nil end -- the file exists once something was saved
 function SaveResourceFile() end
 PRINTED = {}
 function print(m) PRINTED[#PRINTED+1] = tostring(m) end
@@ -51,6 +51,8 @@ commands.demo_setjob(0, { '3', 'police', '1' })
 commands.demo_setjob(0, { '6', 'mechanic', '2' })
 commands.demo_setjob(0, { '7', 'police', '4' })
 commands.demo_setjob(0, { '8', 'police', '0' })
+commands.demo_setjob(0, { '3.5', 'police', '4' }) -- a native would read 3.5 as player 3 (atoi)
+check(store.members['license:3'].grade == 1, 'setjob "3.5": refused, player 3 keeps grade 1 (ids are whole numbers)')
 check(members() == 6, 'setjob from the console: 6 members')
 commands.demo_setjob(0, { '4', 'police', '9' })
 check(members() == 6, 'setjob with a grade that does not exist: refused')

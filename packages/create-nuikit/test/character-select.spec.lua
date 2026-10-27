@@ -7,7 +7,7 @@ function vector3(x, y, z) return { x = x, y = y, z = z } end
 function vector4(x, y, z, w) return { x = x, y = y, z = z, w = w } end
 function IsDuplicityVersion() return true end
 function GetCurrentResourceName() return 'demo' end
-function LoadResourceFile() return nil end
+function LoadResourceFile() return store and 'x' or nil end -- the file exists once something was saved
 function SaveResourceFile() end
 PRINTED = {}
 function print(m) PRINTED[#PRINTED+1] = tostring(m) end

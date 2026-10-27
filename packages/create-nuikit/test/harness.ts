@@ -17,11 +17,18 @@ export interface Check {
 
 const templates = (rel: string) => fileURLToPath(new URL(`../templates/${rel}`, import.meta.url));
 const fill = (s: string) => s.replace(/\{\{(\w+)\}\}/g, "demo");
+const helpersDir = (name: string) => fileURLToPath(new URL(`../helpers/${name}.lua`, import.meta.url));
+
+/** The helpers a template's fxmanifest lists, in that order (shared, then server). */
+export function helpers(template: string): { name: string; source: string }[] {
+  const manifest = readFileSync(templates(`${template}/fxmanifest.lua`), "utf8");
+  return [...manifest.matchAll(/'helpers\/([\w-]+)\.lua'/g)].map(([, name]) => ({ name: `helpers/${name}.lua`, source: readFileSync(helpersDir(name), "utf8") }));
+}
 
 const PRELUDE = `
 local __checks = {}
 function check(cond, name) __checks[#__checks + 1] = (cond and '1' or '0') .. '\\t' .. tostring(name):gsub('[\\r\\n\\t]', ' ') end
---- Load the template (config.lua, then server/main.lua) into the current globals.
+--- Load the template (config.lua, then server/main.lua with the helpers its fxmanifest lists ahead of it) into the current globals.
 function boot()
   assert(load(CONFIG, 'config.lua', 't'))()
   assert(load(SERVER, 'server/main.lua', 't'))()
@@ -35,7 +42,8 @@ export async function runServerSpec(template: string, spec: string): Promise<Che
   const checks: Check[] = [];
   try {
     lua.global.set("CONFIG", fill(readFileSync(templates(`${template}/config.lua`), "utf8")));
-    lua.global.set("SERVER", fill(readFileSync(templates(`${template}/server/main.lua`), "utf8")));
+    // The helpers first, as the manifest loads them (they read natives at load, so after the spec's stubs: SERVER is loaded by the spec).
+    lua.global.set("SERVER", [...helpers(template).map((h) => h.source), fill(readFileSync(templates(`${template}/server/main.lua`), "utf8"))].join("\n"));
     await lua.doString(PRELUDE);
     let error: string | null = null;
     try {

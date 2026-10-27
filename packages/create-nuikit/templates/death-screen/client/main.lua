@@ -42,7 +42,7 @@ end
 
 --- Call your dispatch here (ps-dispatch, cd_dispatch, a server event…).
 local function callEms()
-  print(('[{{name}}] EMS called to %s'):format(GetEntityCoords(PlayerPedId())))
+  Log.info(('EMS called to %s'):format(GetEntityCoords(PlayerPedId())))
 end
 
 --- Get up where you fell, at full health.
@@ -75,14 +75,14 @@ CreateThread(function()
     AnimpostfxStop('DeathFailOut')
   end
 
-  while true do
+  while true do -- INFINITE LOOP: for the resource's life; every pass sleeps
     local medical = medicalResource()
     if medical then
       -- that resource owns death: step aside, once, and say what to do
       reset()
       if told ~= medical then
         told = medical
-        print(('[{{name}}] %s is running, so the example death rules are off. Open the screen from what %s is doing (see nuikit_death).'):format(medical, medical))
+        Log.info(('%s is running, so the example death rules are off. Open the screen from what %s is doing (see nuikit_death).'):format(medical, medical))
       end
       Wait(1000)
     elseif not IsEntityDead(PlayerPedId()) then

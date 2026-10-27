@@ -60,7 +60,7 @@ RegisterKeyMapping('{{name}}', 'Talk', 'keyboard', Config.key or 'E')
 -- when the conversation is over however it closed (Escape, walking away).
 CreateThread(function()
   local inside = nil
-  while true do
+  while true do -- INFINITE LOOP: for the resource's life; every pass sleeps
     local n = nearest()
     if n and n ~= inside then nk.notify({ title = n.name, description = ('Press %s to talk'):format(Config.key or 'E') }) end
     inside = n

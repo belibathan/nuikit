@@ -39,6 +39,8 @@ commands.demo_setjob(0, { '3', 'police', '0' })
 commands.demo_setjob(0, { '4', 'police', '9' })
 check(store.members['license:1'] and store.members['license:2'] and store.members['license:3'] and not store.members['license:4'], 'setjob from the console: three members; a grade that does not exist is refused')
 check(#synced == 3 and synced[1].src == 1 and synced[1].job == 'police', 'setjob syncs the framework for that player')
+commands.demo_setjob(0, { '1.5', 'police', '2' }) -- a native would read 1.5 as player 1 (atoi)
+check(store.members['license:1'].grade == 1 and #synced == 3, 'setjob "1.5": refused, player 1 keeps grade 1 (ids are whole numbers)')
 
 -- open: the pages are built per grade
 local r = open(4)

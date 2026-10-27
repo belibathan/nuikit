@@ -64,7 +64,7 @@ local function show()
   Wait(300)
   hold(true)
   if not refresh() then
-    print('[{{name}}] The server did not answer; try /{{name}}.')
+    Log.info('The server did not answer; try /{{name}}.')
     hold(false)
   end
   DoScreenFadeIn(500)
@@ -72,7 +72,8 @@ end
 
 -- When the player arrives (and when this resource restarts while they're in).
 CreateThread(function()
-  while not NetworkIsSessionStarted() do Wait(250) end
+  -- joining can take a while; the limiter stops this when the resource stops, and after ten minutes
+  if not WaitLimiter.waitUntil(NetworkIsSessionStarted, { timeout = 600000, interval = 250 }) then return end
   show()
 end)
 
@@ -96,8 +97,7 @@ nk.on('character:play', function(data)
       RequestCollisionAtCoord(res.at.x, res.at.y, res.at.z)
       SetEntityCoords(ped, res.at.x, res.at.y, res.at.z, false, false, false, false)
       SetEntityHeading(ped, res.at.w or 0.0)
-      local deadline = GetGameTimer() + 3000
-      while not HasCollisionLoadedAroundEntity(ped) and GetGameTimer() < deadline do Wait(50) end
+      WaitLimiter.waitUntil(function() return HasCollisionLoadedAroundEntity(ped) end, { timeout = 3000, interval = 50 })
     end
     hold(false)
     DoScreenFadeIn(800)

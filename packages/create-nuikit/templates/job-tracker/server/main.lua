@@ -6,15 +6,30 @@
 -- once, when the last step completes. Requests are rate-limited and one at a time per player.
 
 local resource = GetCurrentResourceName()
-local db = json.decode(LoadResourceFile(resource, Config.saveFile) or '{}') or {}
+-- The save file, or nothing yet. An unreadable file stops the resource (Log.fatal) instead of being
+-- emptied by the next save: loading never writes (fivem-foundation, kvp_store rule 1).
+local db = {}
+do
+  local raw = LoadResourceFile(resource, Config.saveFile)
+  if raw and raw ~= '' then
+    local data, reason = JsonSafe.decode(raw)
+    if type(data) ~= 'table' then Log.fatal(('%s is unreadable (%s): fix or remove it'):format(Config.saveFile, tostring(reason))) end
+    db = data
+  end
+end
 
 -- Presence checks need OneSync (server-side positions). Without it every request is refused.
 local ONESYNC = GetConvar('onesync', 'off') ~= 'off'
 if not ONESYNC then
-  print(('^1[%s] OneSync is off. This resource needs it (set onesync on in server.cfg); every request will be refused.^0'):format(resource))
+  Log.error('OneSync is off. This resource needs it (set onesync on in server.cfg); every request will be refused.')
 end
 
-local function save() SaveResourceFile(resource, Config.saveFile, json.encode(db), -1) end
+--- Write the save file: encode first, write only when that worked (a save never leaves a half file).
+local function save()
+  local encoded, reason = JsonSafe.encode(db)
+  if not encoded then return Log.error(('%s not saved: %s'):format(Config.saveFile, tostring(reason))) end
+  SaveResourceFile(resource, Config.saveFile, encoded, -1)
+end
 local function owner(src) return GetPlayerIdentifierByType(src, 'license') or ('src:' .. src) end
 
 local function record(src)
@@ -192,6 +207,6 @@ RegisterNetEvent('{{name}}:req', function(id, name, data)
   end
   local good, result = pcall(handler, src, type(data) == 'table' and data or {})
   busy[src] = nil
-  if not good then print(('[{{name}}] %s failed: %s'):format(name, result)) end
+  if not good then Log.error(('%s failed: %s'):format(name, result)) end
   TriggerClientEvent('{{name}}:res', src, id, good and result or no('The job had a problem. Try again.'))
 end)

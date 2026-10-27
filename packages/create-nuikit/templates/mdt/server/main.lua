@@ -6,12 +6,27 @@
 -- server's time; whatever author or time the page sends is ignored.
 
 local resource = GetCurrentResourceName()
-local db = json.decode(LoadResourceFile(resource, Config.saveFile) or '{}') or {}
+-- The save file, or nothing yet. An unreadable file stops the resource (Log.fatal) instead of being
+-- emptied by the next save: loading never writes (fivem-foundation, kvp_store rule 1).
+local db = {}
+do
+  local raw = LoadResourceFile(resource, Config.saveFile)
+  if raw and raw ~= '' then
+    local data, reason = JsonSafe.decode(raw)
+    if type(data) ~= 'table' then Log.fatal(('%s is unreadable (%s): fix or remove it'):format(Config.saveFile, tostring(reason))) end
+    db = data
+  end
+end
 db.players = db.players or {}  -- the example's [license] = { onDuty }
 db.reports = db.reports or {}  -- newest last
 db.nextReport = db.nextReport or 1
 
-local function save() SaveResourceFile(resource, Config.saveFile, json.encode(db), -1) end
+--- Write the save file: encode first, write only when that worked (a save never leaves a half file).
+local function save()
+  local encoded, reason = JsonSafe.encode(db)
+  if not encoded then return Log.error(('%s not saved: %s'):format(Config.saveFile, tostring(reason))) end
+  SaveResourceFile(resource, Config.saveFile, encoded, -1)
+end
 local function license(src) return GetPlayerIdentifierByType(src, 'license') or ('src:' .. src) end
 
 -- ───────────────────────────────── who is asking
@@ -217,7 +232,7 @@ RegisterNetEvent('{{name}}:req', function(id, name, data)
   local src = source
   local handler = type(name) == 'string' and handlers[name]
   local ok, result = pcall(function() return handler and handler(src, type(data) == 'table' and data or {}) end)
-  if not ok then print(('[{{name}}] %s failed: %s'):format(tostring(name), result)) end
+  if not ok then Log.error(('%s failed: %s'):format(tostring(name), result)) end
   TriggerClientEvent('{{name}}:res', src, id, ok and result or { ok = false, error = 'The terminal had a problem. Try again.' })
 end)
 

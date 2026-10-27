@@ -24,6 +24,19 @@ and two eyes on one key fight over the cursor and the controls. Change `Config.k
 in Settings → Key Bindings → FiveM, as "Target (hold)"), or stop one of them. The server prints a warning at start
 when either is running.
 
+## The server decides, every time
+
+Options and points marked `server = true` go to the server, which checks again before acting:
+- **Exists and fits:** the option is one of `Config.targets` for that kind of entity (vehicle, player, ped, model), or
+  the point is one of `Config.points`; anything else is "You can't do that".
+- **Reach:** the caller's own position, as the server sees it (OneSync), is within the option's or point's distance.
+  Without OneSync every server option is refused and a red line says so at start.
+- **Cooldowns:** per player and option (`cooldown`, 500 ms by default; 1000 ms for a point).
+- **Keys:** locking a vehicle needs the keys the server handed out (`exports.giveKeys`, the console command),
+  which are per player and plate. The console command parses the player id as a whole number
+  (`helpers/server_id.lua`): `1.5` is not player 1.
+- **Logs:** `helpers/log.lua` (fivem-foundation): every console line is `^N[RESOURCE] … ^7`.
+
 ## What does the work
 
 Lua does everything the page draws: the raycast, which options apply, the keys, the hold. The page never decides.

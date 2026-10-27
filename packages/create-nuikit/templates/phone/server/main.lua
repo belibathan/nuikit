@@ -200,6 +200,6 @@ RegisterNetEvent('{{name}}:req', function(id, name, data)
     if not handler then return { ok = false, error = 'Unknown request.' } end
     return handler(src, type(data) == 'table' and data or {})
   end)
-  if not ok then print(('[{{name}}] %s failed: %s'):format(tostring(name), result)) end
+  if not ok then Log.error(('%s failed: %s'):format(tostring(name), result)) end
   TriggerClientEvent('{{name}}:res', src, id, ok and result or { ok = false, error = 'The phone had a problem. Try again.' })
 end)
