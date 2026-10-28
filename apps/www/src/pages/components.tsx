@@ -60,7 +60,6 @@ import { KeyPrompt, KeyPromptStack } from "@/components/ui/key-prompt";
 import { ProgressRing } from "@/components/ui/progress-ring";
 import { Speedometer } from "@/components/ui/speedometer";
 import { Countdown } from "@/components/ui/countdown";
-import { Band } from "@/components/ui/band";
 import { VitalChip } from "@/components/ui/vital-chip";
 import { Money } from "@/components/ui/money";
 import { ItemSlot } from "@/components/ui/item-slot";
@@ -196,21 +195,6 @@ export function ComponentsPage() {
           text="A notification on the game: status icon, title, description, and a line that empties as its time runs out (it pauses while hovered). A stack pins them to any corner or edge; the newest sits nearest the edge."
         >
           <NoticeStates />
-        </Section>
-
-
-
-        <Section
-          name="band"
-          title="Band"
-          text="A full-width band for a state the player is in: incapacitated, cuffed, spectating. The game darkened and tinted by the tone, hairlines above and below, a title in the display face and a caption. Pinned to the bottom or top, or in the flow."
-          stageClassName="min-h-[30rem] flex-col items-stretch justify-center gap-6 px-0"
-        >
-          <Band position="inline" title="You are incapacitated" subtitle="Wait for EMS" />
-          <Band position="inline" tone="warning" title="Cuffed" subtitle="Officer Vale has you in custody" />
-          <Band position="inline" tone="neutral" title="Spectating" subtitle="Niko Bellic">
-            <Countdown surface="game" size="sm" seconds={42} label="Back in" className="mt-2" />
-          </Band>
         </Section>
 
         <Section

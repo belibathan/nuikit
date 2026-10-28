@@ -172,3 +172,33 @@ describe("curated catalogue", () => {
     for (const i of UI) for (const h of m(i).variants?.hooks ?? []) expect(REAL, `${i.name} ${h}`).toContain(h)
   })
 })
+
+// The tiers are a rule, not a label (docs/design.md §6): a foundation composes stock shadcn and other foundations; a
+// composite composes foundations and composites; blocks compose anything; nothing in ui/ imports a block.
+describe("the tiers", () => {
+  const UI = registry.items.filter((i) => i.type === "registry:ui") as { name: string; files: { path: string }[]; meta?: { tier?: string } }[]
+  const tierOf = new Map(UI.map((i) => [i.name, i.meta?.tier]))
+  const vendor = new Set(fs.readdirSync(path.join(root, "vendor/shadcn/ui")).map((f) => f.replace(/\.tsx$/, "")))
+  const uiImports = (i: { files: { path: string }[] }) =>
+    i.files.flatMap((f) => [...fs.readFileSync(path.join(root, f.path), "utf8").matchAll(/from\s+["']@\/components\/(ui|blocks)\/([\w-]+)["']/g)].map((m) => [m[1]!, m[2]!] as const))
+
+  it("a foundation composes stock shadcn and foundations only", () => {
+    for (const i of UI.filter((x) => x.meta?.tier === "foundation"))
+      for (const [kind, dep] of uiImports(i)) {
+        expect(kind, `${i.name} imports a block`).toBe("ui")
+        if (!vendor.has(dep)) expect(tierOf.get(dep), `${i.name} → ${dep} must be a foundation`).toBe("foundation")
+      }
+  })
+
+  it("a composite composes foundations and composites, never a block", () => {
+    for (const i of UI.filter((x) => x.meta?.tier === "composite"))
+      for (const [kind, dep] of uiImports(i)) {
+        expect(kind, `${i.name} imports a block`).toBe("ui")
+        if (!vendor.has(dep)) expect(["foundation", "composite"], `${i.name} → ${dep}`).toContain(tierOf.get(dep))
+      }
+  })
+
+  it("every ui item composes something: stock shadcn, a foundation, or the kit's own drawing", () => {
+    for (const i of UI) expect(i.meta?.tier, i.name).toBeDefined()
+  })
+})

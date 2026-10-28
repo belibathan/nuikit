@@ -95,7 +95,7 @@ the page root and holds a 16:9 content box, centred on an ultrawide (`bleed` for
 `<Zone at>` is one of nine places or four edges; a flex column that grows toward the centre, `--nk-zone-inset` from
 the safe area; items stack and never overlap; `clear` moves it clear of what other UIs published there and `publish`
 shares its rect through `NUI.zone`. `Region` is a column with header, scrolling body and pinned footer; Panel, EdgeSheet
-and DialogShell are Regions on a surface. `Grid` is a grid of slots with arrow-key navigation by position.
+are Regions on a surface. `Grid` is a grid of slots with arrow-key navigation by position.
 `VIEWPORTS` in core is the one aspect table; kit.css mirrors it and a test keeps them equal. `nuikit_hud`'s corners are
 Zones; the pause menu is a bleeding Screen with one Region column.
 
@@ -156,36 +156,51 @@ reads; the table "The language: the primitives" in [`design/levers.md`](design/l
 renderer that emits that anatomy and reads those levers is conformant whatever it is written in, and `nuikit check`
 judges the DOM, not the framework. The React registry below is the reference renderer.
 
-The registry is a few **foundation** primitives driven by levers and **composites** that configure them with props;
-**blocks** compose composites into whole screens. A theme restyles a primitive once and every composite follows; a
-composite never draws its own bar, key, chip or gauge. `registry.json` `meta` (tier, group, hidden, variants) drives the
-site; `registry/nuikit/test/registry-meta.test.ts` keeps it honest, `composition.test.tsx` holds the contracts below,
-`anatomy.test.tsx` renders every item under every theme and compares the `data-slot` tree.
+The registry is nuikit's addition to shadcn: three tiers, and the tiers are a rule the tests keep
+(`registry-meta.test.ts`, "the tiers").
+
+| Tier | What it is | May compose |
+|---|---|---|
+| **Base** | stock shadcn new-york-v4 (`vendor/shadcn`, never edited) | itself |
+| **Foundation** | a drawing primitive driven by levers, universal to game UI (a legend on a face, a level, a mark, a chip, the type roles, an arc, the floating surface) | base, foundations |
+| **Composite** | a FiveM-universal piece configured by props (a menu row, a meter, a notice, a key prompt, a vital) | base, foundations, composites |
+| **Block** | a whole screen (`registry/nuikit/blocks`: garage, inventory, pause, death…) | anything |
+
+A theme restyles a foundation once and every composite and block follows; a composite never draws its own bar, key, chip
+or gauge. `registry.json` `meta` (tier, group, hidden, variants, spec) drives the site; `registry-meta.test.ts` keeps it
+honest, `composition.test.tsx` holds the contracts below, `anatomy.test.tsx` renders every item under every theme and
+compares the `data-slot` tree. Nothing ships in `ui/` without a user: a component a block or a system does not compose is
+deleted (decision 54).
 
 | Foundation | What it is | Levers |
 |---|---|---|
 | **Glyph** (+ `Kbd`) | a legend on the control face: keys, icon marks, gears, checked boxes | `--nk-control-*`, `--nk-h-key/chip/control`, `--nk-r-key` |
-| **Selection** | the one mark of a list, tabs or a menu, sliding to the lit item | `--nk-control-primary-*`, `--nk-selection-*` |
+| **Selection** | the one mark of a list, tabs or a menu, sliding to the lit item | `--nk-control-primary-*`, `--nk-indicator-*`, `--nk-list-gap` |
 | **Fill** | the one level bar: holds, sweeps, meters, timers, edges (`toneVars` is the tone and hue vocabulary) | `--nk-fill-*`, `--nk-time-fill` |
 | **Chip** | a short status on one line, `material` panel or hud | `--nk-chip-*`, `--nk-h-chip` |
 | **Text** / **IconText** | the type roles and the value ladder as one component | `--nk-type-<role>-*`, `--nk-text-*` |
+| **TextRoll** / **NumberRoll** | text and numbers that roll to their next value | `--nk-time-*` |
 | **Dial** | one arc geometry: gauges (240°) and rings (360°) | `--nk-gauge-*`, `--nk-fill-*` |
-| **Stack** / **Cluster** | layout on the gap levers | `--nk-gap-*` |
 | **Panel** | the floating surface with header, body, footer | `--nk-panel-*` |
-| **Selection** | the one selection mark of a list, tabs or a menu | `--nk-control-*`, `--nk-list-gap`, `--nk-indicator-*` |
-| **ActionBar** | key hints, back and close: Kbd Tiles, a label, a hold Fill | `--nk-gap-items` |
+| **ActionBar** | key hints, back and close: Kbd, a label, a hold Fill | `--nk-gap-items` |
+| **Screen** / **Zone** / **Region** / **Grid** | where things sit: the viewport, its nine zones, a scrolling region, a grid of slots with spatial arrow keys | `--nk-edge-*`, `--nk-gap-*` |
 | **useLinearRun** | the one timed run: linear Web Animations on one start time, completion from a timer | `data-nk-motion` |
 
 Composites and what they compose: Meter (Fill, useLinearRun), ProgressRing and Speedometer (Dial, Glyph, Fill), Countdown
-and Notice (Fill, useLinearRun), KeyPrompt and SkillCheck (Kbd Tiles, Fill), EdgeSheet and DialogShell (ActionBar, Fill,
-Stack over shadcn Sheet / Dialog), Confirm (Panel, no Radix: Escape goes through surfaces), MenuRow (Glyph column,
-Selection, Meter), Stat and Money (Text), PlayerCard (Panel, Chip, Stat), VitalChip (TextRoll, its own shape engine),
-RadialMenu, ItemSlot, FormField, SmoothInput, NuiImage (their own geometry, no overlap). Entrance and stagger motion live in
-`nuikit-core/react` and `nuikit-core/motion`: runtime, not registry.
+and Notice (Fill, useLinearRun), KeyPrompt and SkillCheck (Kbd, Fill), EdgeSheet (ActionBar, Fill over shadcn Sheet),
+Confirm (Panel, no Radix: Escape goes through surfaces), MenuRow (Glyph column, Selection, Meter), SelectionTabs
+(Selection over shadcn Tabs), Stat and Money (Text), PlayerCard (Panel, Chip, Stat), VitalChip (TextRoll, CollapseStack,
+its own shape engine), RadialMenu, ItemSlot, FormField, SmoothInput, NuiImage, Stepper (their own geometry, no overlap).
+Entrance and stagger motion live in `nuikit-core/react` and `nuikit-core/motion`: runtime, not registry.
 
 **Listed on the site (20):** Glyph, Fill, Chip, Panel, ActionBar, Dial, TextRoll; MenuRow, RadialMenu; Meter, Speedometer,
 ProgressRing; EdgeSheet, Confirm; Notice, KeyPrompt, SkillCheck; FormField; VitalChip, Stat. Everything else is hidden with
 a reason in `meta.hiddenReason` (a helper, an internal frame, or "use X instead").
+
+**Adding one.** `node scripts/new-component.mjs <name> "Title" --tier foundation|composite --group "<group>"` writes the
+file with the spec header (Role, Anatomy, Props, Rules), a test and the `registry.json` item; the suite then says what is
+missing (its anatomy case, its demo). Start from the checklist below; a component is done when every state is reachable
+from props and shown on `/components`.
 
 ## 7. The component checklist
 

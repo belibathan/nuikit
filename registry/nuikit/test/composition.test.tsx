@@ -12,9 +12,7 @@ import { Money } from "@/components/ui/money"
 import { Notice } from "@/components/ui/notice"
 import { VitalChip } from "@/components/ui/vital-chip"
 import { ProgressRing } from "@/components/ui/progress-ring"
-import { SheetSection } from "@/components/ui/sheet-section"
 import { Speedometer } from "@/components/ui/speedometer"
-import { Cluster, Stack } from "@/components/ui/stack"
 import { Stat } from "@/components/ui/stat"
 import { Text } from "@/components/ui/text"
 
@@ -51,10 +49,8 @@ describe("foundation", () => {
     expect(t[1]!.keyframes).toEqual([{ transform: "translateX(0%)" }, { transform: "translateX(-75%)" }])
   })
 
-  it("Text is a role class on the value ladder; Stack and Cluster are gap levers", () => {
+  it("Text is a role class on the value ladder", () => {
     expect(html(<Text variant="num" size="md">1</Text>)).toMatch(/class="nk-num text-\(length:--nk-text-hud\)/)
-    expect(html(<Stack gap="items" />)).toContain('class="flex flex-col gap-(--nk-gap-items)"')
-    expect(html(<Cluster />)).toContain('class="flex flex-row gap-(--nk-gap-cluster) items-center"')
   })
 })
 
@@ -117,9 +113,6 @@ describe("composites", () => {
     expect(dom(<Money amount={5} currency="USD" locale="en-US" />).has('data-slot="money"', 'data-variant="num"', "nk-num")).toBe(true)
   })
 
-  it("SheetSection's rows are a Stack", () => {
-    expect(html(<SheetSection label="Cars" rows="items" />)).toContain('data-slot="sheet-section-rows" class="flex flex-col gap-(--nk-gap-items)"')
-  })
 })
 
 describe("VitalChip keycap (the in-game vitals)", () => {

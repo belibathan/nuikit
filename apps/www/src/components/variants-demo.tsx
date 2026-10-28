@@ -1,6 +1,5 @@
 import { CarIcon, CupSodaIcon, MicIcon, RadioIcon } from "lucide-react";
 import { useState } from "react";
-import { Band } from "@/components/ui/band";
 import { Chip } from "@/components/ui/chip";
 import { KeyPrompt } from "@/components/ui/key-prompt";
 import { MenuRow, MenuRowList } from "@/components/ui/menu-row";
@@ -91,7 +90,6 @@ export function VariantsDemo() {
           </div>
         </div>
       </div>
-      <Band position="inline" tone="destructive" title="You are incapacitated" subtitle="Hold E to call for help" {...v} />
     </div>
   );
 }
