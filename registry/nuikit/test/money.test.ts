@@ -1,7 +1,7 @@
 import { __reset, emit } from "nuikit-core"
 import { afterEach, describe, expect, it } from "vitest"
 
-import { formatMoney, moneyDirection } from "@/components/ui/money"
+import { formatMoney, formatCount, moneyDirection } from "@/components/ui/money"
 
 afterEach(() => __reset())
 
@@ -80,5 +80,12 @@ describe("money follows the server context (nuikit:context)", () => {
     expect(plain(formatMoney(1520))).toBe("1.520 $")
     emit("nuikit:context", { currency: "NOPE", locale: "xx-INVALID-TAG-@" } as never)
     expect(plain(formatMoney(1520))).toBe("1,520")
+  })
+})
+
+describe("formatCount", () => {
+  it("writes a count for a tight space, rounded down so it never overstates", () => {
+    const cases: [number, string][] = [[0, "0"], [1, "1"], [999, "999"], [1000, "1k"], [2450, "2.4k"], [2999, "2.9k"], [9999, "9.9k"], [10000, "10k"], [24_999, "24k"], [245_100, "245k"], [999_999, "999k"], [1_000_000, "1M"], [1_250_000, "1.2M"], [3_000_000_000, "3B"], [-5, "0"], [Number.NaN, "0"], [12.7, "12"]]
+    for (const [n, want] of cases) expect(formatCount(n), String(n)).toBe(want)
   })
 })

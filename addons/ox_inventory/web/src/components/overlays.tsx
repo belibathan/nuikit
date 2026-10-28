@@ -7,6 +7,7 @@ import { useOx } from "@/lib/nui";
 import type { Slot } from "@/lib/types";
 import { inv, itemImage, itemLabel } from "@/state/inventory";
 import { onPointerMove, pointer, ui } from "@/state/ui";
+import { SlotCount } from "@/components/slot-tile";
 
 /** The item under the cursor while dragging. Positioned straight on the node, no re-render per move. */
 export function DragPreview() {
@@ -33,11 +34,7 @@ export function DragPreview() {
     <div ref={ref} className="pointer-events-none fixed top-0 left-0 z-[70]">
       <div className="inv-drag relative grid size-(--inv-slot-size) place-items-center">
         <ItemImage src={itemImage(drag.item)} name={drag.item.name} className="size-12" />
-        {count > 1 && (
-          <span className="inv-drag-count nk-num absolute -top-2 -right-2 grid h-6 min-w-6 place-items-center px-1.5 text-sm leading-none font-semibold">
-            {moving.toLocaleString("en-US")}
-          </span>
-        )}
+        <SlotCount count={count > 1 ? moving : 0} className="inv-drag-count absolute -top-2 -right-2" />
       </div>
     </div>
   );

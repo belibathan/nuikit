@@ -21,7 +21,15 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 const here = path.dirname(fileURLToPath(import.meta.url));
 const repo = path.resolve(here, "../..");
 const require = createRequire(import.meta.url);
-const { chromium } = require(process.env.PLAYWRIGHT ?? "/opt/npm-tools/node_modules/playwright");
+// Playwright: $PLAYWRIGHT, else any resolvable playwright or playwright-core (the repo's own, or a machine-wide install)
+const { chromium } = (() => {
+  for (const m of [process.env.PLAYWRIGHT, "playwright", "playwright-core", "/opt/node-tools/node_modules/playwright", "/opt/npm-tools/node_modules/playwright"].filter(Boolean)) {
+    try {
+      return require(m);
+    } catch {}
+  }
+  throw new Error("Playwright not found: set PLAYWRIGHT to its module path");
+})();
 const arg = (name, def) => process.argv.find((a) => a.startsWith(`--${name}=`))?.split("=")[1] ?? def;
 
 const NAME = arg("name");
@@ -55,8 +63,13 @@ const server = http.createServer((req, res) => {
 await new Promise((r) => server.listen(0, "127.0.0.1", r));
 const url = `http://127.0.0.1:${server.address().port}/${scenario.entry ?? "index.html"}`;
 
-const scene = scenario.scene ? `data:image/jpeg;base64,${fs.readFileSync(path.join(repo, "apps/www/public/bg", scenario.scene)).toString("base64")}` : null;
-const browser = await chromium.launch({ executablePath: process.env.CHROMIUM ?? "/opt/pw-browsers/chromium-1194/chrome-linux/chrome" });
+// the scene photo, if the site still ships it (the stored backgrounds were deleted, ed55faca): otherwise a dusk gradient,
+// which still shows how a surface reads over a bright sky and a dark street
+const scenePath = scenario.scene && path.join(repo, "apps/www/public/bg", scenario.scene);
+const scene = scenePath && fs.existsSync(scenePath) ? `url("data:image/jpeg;base64,${fs.readFileSync(scenePath).toString("base64")}")` : "linear-gradient(#26304a, #8a5a3c 55%, #1a1a1a 56%, #0d0d0d)";
+// Chromium: $CHROMIUM, else a pre-installed one, else Playwright's own
+const chromiumPath = [process.env.CHROMIUM, "/opt/pw-browsers/chromium"].find((p) => p && fs.existsSync(p));
+const browser = await chromium.launch({ ...(chromiumPath && { executablePath: chromiumPath }), args: ["--no-sandbox"] });
 const result = {};
 if (WANT_SHOTS) fs.mkdirSync(SHOTS, { recursive: true });
 
@@ -91,7 +104,7 @@ try {
       return route.fulfill({ status: 404, body: "" });
     });
     await page.goto(url, { waitUntil: "networkidle" });
-    if (scene) await page.addStyleTag({ content: `html { background: #000 url("${scene}") center / cover no-repeat fixed !important; }` });
+    await page.addStyleTag({ content: `html { background: #000 ${scene} center / cover no-repeat fixed !important; }` });
     const api = {
       page,
       sleep,

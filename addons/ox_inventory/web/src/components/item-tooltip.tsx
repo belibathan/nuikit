@@ -73,7 +73,11 @@ function TooltipBody({ item, invType }: { item: Slot; invType: string }) {
     <>
       <header className="flex items-start gap-3 px-4 py-3">
         <div className="min-w-0 flex-1">
-          <div className="nk-title truncate">{meta.label || data.label || item.name}</div>
+          <div className="nk-title truncate">
+            {meta.label || data.label || item.name}
+            {/* the exact count (the slot shows 2.4k past 999) */}
+            {!!item.count && item.count > 1 && <span className="nk-text-num ml-2 text-muted-foreground">×{item.count.toLocaleString("en-US")}</span>}
+          </div>
           {!!item.weight && <div className="nk-label nk-num">{formatWeight(item.weight)}</div>}
         </div>
         {aside && <span className="nk-label nk-num shrink-0 leading-5">{aside}</span>}

@@ -4,7 +4,7 @@ import { useStaggerItem } from "nuikit-core/react";
 import { memo, useEffect, useRef, useState, type CSSProperties, type MouseEvent } from "react";
 import { ItemImage } from "@/components/item-image";
 import { SlotOutline } from "@/components/outline";
-import { formatMoney } from "@/components/ui/money";
+import { formatCount, formatMoney } from "@/components/ui/money";
 import { useT } from "@/lib/locale";
 import type { Side, Slot } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -52,6 +52,23 @@ function Price({ item }: { item: Slot }) {
 }
 
 /**
+ * A stack's count: the num text style (tabular), compact past 999 (2,450 reads 2.4k, rounded down; the tooltip has
+ * the exact number), on the chip's plate so it reads over any item image. A count of 1 is implied and not drawn.
+ */
+export function SlotCount({ count, className }: { count: number; className?: string }) {
+  if (!(count > 1)) return null;
+  const exact = count.toLocaleString("en-US");
+  return (
+    <span data-slot="inv-count" className={cn("inv-count nk-text-num", className)} aria-label={`${exact}×`}>
+      {formatCount(count)}
+      <span className="inv-count-x" aria-hidden>
+        ×
+      </span>
+    </span>
+  );
+}
+
+/**
  * One slot: a tile in the identity's chip shape (the vitals' family). The hotbar key sits in a key
  * cap, the count top right, the label along the foot; durability is traced along the tile's own
  * outline, like a vital's level on its chip.
@@ -79,7 +96,7 @@ export const SlotTile = memo(function SlotTile({ side, item, invType, locked, di
   };
 
   // Top row: hotbar key and count, or in a shop the stock and the price. A count of 1 is implied.
-  const count = filled && item.count && item.count > 1 ? item.count.toLocaleString("en-US") : null;
+  const count = filled && item.count && item.count > 1 ? item.count : 0;
   const stock = shop && filled && item.count !== undefined ? item.count.toLocaleString("en-US") : null;
   const durability = !shop && filled && item.durability !== undefined ? Math.max(0, Math.min(100, item.durability)) : undefined;
   // the level contract: durability as --level (0–1); worn at the theme's alert threshold
@@ -125,7 +142,7 @@ export const SlotTile = memo(function SlotTile({ side, item, invType, locked, di
       {durability !== undefined && <SlotOutline value={durability} />}
       <div className="inv-slot-top">
         {hot ? <Kbd>{item.slot}</Kbd> : <span className="nk-num">{stock}</span>}
-        {shop ? <Price item={item} /> : count && <Chip>{count}</Chip>}
+        {shop ? <Price item={item} /> : <SlotCount count={count} />}
       </div>
 
       {filled && (

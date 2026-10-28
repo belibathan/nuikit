@@ -51,6 +51,22 @@ type MoneyFormat = {
 }
 
 /** The amount as text, by the same rules as <Money>. NaN or Infinity → 0. Currency and locale default to the server's (getContext()). */
+/**
+ * A count for a tight space (a slot, a badge): as written up to 999, then 2.4k, 24k, 245k, 1.2M, 1.2B. Always rounded
+ * down, so a count never reads as more than there is (2,999 is 2.9k). Show the exact value somewhere near (a tooltip).
+ */
+function formatCount(n: number): string {
+  const v = Math.max(0, Math.trunc(Number.isFinite(n) ? n : 0))
+  if (v < 1000) return String(v)
+  for (const [d, unit] of [[1e9, "B"], [1e6, "M"], [1e3, "k"]] as const) {
+    if (v < d) continue
+    const x = v / d
+    const t = x < 10 ? Math.floor(x * 10) / 10 : Math.floor(x)
+    return `${Number.isInteger(t) ? t : t.toFixed(1)}${unit}`
+  }
+  return String(v)
+}
+
 function formatMoney(
   amount: number,
   { currency = getContext().currency, locale = getContext().locale, fractionDigits, sign = "auto", compact = false, prefix = "", suffix = "" }: MoneyFormat = {}
@@ -137,4 +153,4 @@ function Money({
   )
 }
 
-export { Money, moneyVariants, formatMoney, useFormatMoney, moneyDirection, type MoneyFormat, type MoneySign }
+export { Money, moneyVariants, formatMoney, formatCount, useFormatMoney, moneyDirection, type MoneyFormat, type MoneySign }

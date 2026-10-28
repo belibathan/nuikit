@@ -124,6 +124,25 @@ body.inv-dragging * {
 .inv-slot.nk-hud .inv-slot-top {
   color: var(--nk-chip-fg);
 }
+/* a stack's count (SlotCount): the chip's plate, the num style at the label size, one corner, same height as the key */
+.inv-count {
+  display: inline-flex;
+  align-items: baseline;
+  justify-content: center;
+  height: var(--nk-height-key);
+  min-width: var(--nk-height-key);
+  padding-inline: var(--nk-space-1);
+  border-radius: var(--nk-radius-key);
+  background-color: var(--nk-chip-bg);
+  color: var(--nk-chip-fg);
+  font-size: var(--nk-text-label);
+  line-height: var(--nk-height-key);
+  white-space: nowrap;
+}
+.inv-count-x {
+  margin-inline-start: 0.0625rem;
+  opacity: 0.6;
+}
 .inv-slot-label {
   position: relative;
   overflow: hidden;
