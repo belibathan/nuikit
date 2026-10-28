@@ -298,13 +298,10 @@
   --nk-surface-backdrop: off;
   --nk-surface-legibility: auto;
   --nk-surface-legibility-lift: 0.5;
-  --nk-surface-slash: none;
   --nk-material-hud-opacity: 0.8;
-  --nk-material-hud-texture: none;
   --nk-material-menu-opacity: 0.94;
   --nk-material-menu-blur: 0px;
   --nk-material-menu-edge: 0;
-  --nk-material-menu-texture: none;
   --nk-hud-text: soft;
   --nk-motion: 1;
   --nk-motion-duration: 180ms;
@@ -508,13 +505,10 @@
   --nk-surface-backdrop: off;
   --nk-surface-legibility: auto;
   --nk-surface-legibility-lift: 0.5;
-  --nk-surface-slash: none;
   --nk-material-hud-opacity: 0.8;
-  --nk-material-hud-texture: none;
   --nk-material-menu-opacity: 0.94;
   --nk-material-menu-blur: 0px;
   --nk-material-menu-edge: 0;
-  --nk-material-menu-texture: none;
   --nk-hud-text: soft;
   --nk-motion: 1;
   --nk-motion-duration: 180ms;
@@ -833,15 +827,12 @@
     --nk-surface-backdrop: off;
     --nk-surface-legibility: auto;
     --nk-surface-legibility-lift: 0.5;
-    --nk-surface-slash: none;
     /* identity · material */
     --nk-material-hud-opacity: 0.8;
-    --nk-material-hud-texture: none;
     --nk-material-menu-opacity: 0.94;
     --nk-material-menu-blur: 0px;
     --nk-material-menu-radius: var(--radius);
     --nk-material-menu-edge: 0;
-    --nk-material-menu-texture: none;
     /* identity · hud */
     --nk-hud-text: soft;
     /* identity · motion */
@@ -1144,19 +1135,6 @@
     --nk-confirm-width-lg: 28rem;
     /* component · edge-sheet */
     --nk-edge-sheet-header-height: 2rem;
-    /* component · dialog-shell */
-    --nk-dialog-shell-width: 32rem;
-    --nk-dialog-shell-width-sm: 24rem;
-    --nk-dialog-shell-width-lg: 40rem;
-    --nk-dialog-shell-top: 18vh;
-    --nk-dialog-shell-header-gap: var(--nk-space-1);
-    --nk-dialog-shell-header-pad-x: var(--nk-gap-surface);
-    --nk-dialog-shell-header-pad-y: var(--nk-space-4);
-    --nk-dialog-shell-body-pad: var(--nk-gap-surface);
-    --nk-dialog-shell-footer-gap: var(--nk-gap-cluster);
-    --nk-dialog-shell-footer-pad-x: var(--nk-gap-surface);
-    --nk-dialog-shell-footer-pad-y: var(--nk-space-3);
-    --nk-dialog-shell-footer-bleed: var(--nk-space-2);
     /* component · empty-state */
     --nk-empty-state-gap: var(--nk-space-3);
     --nk-empty-state-pad: var(--nk-space-6);
@@ -1293,7 +1271,6 @@
     --nk-slab-band-tint: 0.3;
     --nk-slab-band-edge: 0.6;
     --nk-slab-band-fg: var(--hud-foreground);
-    --nk-slab-band-title-size: var(--nk-text-section);
     /* component · item-slot */
     --nk-item-slot-width: 5rem;
     --nk-item-slot-width-sm: 3.5rem;
@@ -1377,14 +1354,6 @@
     --nk-form-field-swatches-gap: var(--nk-space-2);
     --nk-form-field-description-indent: var(--nk-space-6);
     --nk-form-field-error-indent: var(--nk-space-6);
-    --nk-dialog-shell-header-gap: var(--nk-space-1);
-    --nk-dialog-shell-header-pad-x: var(--nk-gap-surface);
-    --nk-dialog-shell-header-pad-y: var(--nk-space-4);
-    --nk-dialog-shell-body-pad: var(--nk-gap-surface);
-    --nk-dialog-shell-footer-gap: var(--nk-gap-cluster);
-    --nk-dialog-shell-footer-pad-x: var(--nk-gap-surface);
-    --nk-dialog-shell-footer-pad-y: var(--nk-space-3);
-    --nk-dialog-shell-footer-bleed: var(--nk-space-2);
     --nk-empty-state-gap: var(--nk-space-3);
     --nk-empty-state-pad: var(--nk-space-6);
     --nk-empty-state-gap-screen: var(--nk-space-4);
@@ -1867,7 +1836,7 @@
  *   prompt:   <div class="nk-slab"><kbd class="nk-slab-key">E</kbd>Clean dishes</div>
  *   progress: <div class="nk-slab-stack"><div class="nk-slab-stack-row"><span class="nk-caption">Repairing</span>
  *               <kbd class="nk-slab-key">Esc</kbd>Cancel</div><div class="nk-slab-line" style="--nk-slab-progress: .4"></div></div>
- *   band:     <div class="nk-slab-band"><p class="nk-slab-band-title">You are incapacitated</p><p class="nk-caption">…</p></div>
+ *   band:     <div class="nk-slab-band"><p class="nk-text-section">You are incapacitated</p><p class="nk-caption">…</p></div>
  * @merge nk-surface
  */
 @utility nk-slab {
@@ -1999,21 +1968,6 @@
     color: inherit;
     opacity: 0.85;
   }
-}
-/* The band's one line: the display face at section size. */
-@utility nk-slab-band-title {
-  font-family: var(--nk-type-title-family);
-  font-size: var(--nk-slab-band-title-size);
-  font-weight: var(--nk-type-weight-display);
-  letter-spacing: var(--nk-type-tracking-display);
-  text-transform: var(--nk-type-case);
-  line-height: 1.2;
-}
-/* Scrolling list inside a panel. */
-@utility nk-scroll {
-  overflow-y: auto;
-  scrollbar-width: thin;
-  scrollbar-gutter: stable;
 }
 /* Distance from the screen edge for anything anchored to it. */
 @utility nk-edge {
@@ -2186,47 +2140,6 @@
    updates, filtering or keyboard navigation. */
 @utility nk-stagger {
   animation-delay: min(calc(var(--i, 0) * var(--nk-stagger, 20ms)), var(--nk-stagger-max, 100ms));
-}
-/* Tactile press: scale(--nk-gesture-press) while held, over --nk-time-snap. On buttons, rows and tiles,
-   never on a centred dialog. Signal (snap) and Vector (stepped) answer with their background instead,
-   and reduced motion or off doesn't scale. */
-@utility nk-press {
-  transition: transform var(--nk-time-snap, 70ms) var(--nk-ease-enter);
-  &:active {
-    transform: scale(var(--nk-gesture-press));
-  }
-  :is(html, *)[data-nk-motion="reduced"] &:active,
-  :is(html, *)[data-nk-motion="off"] &:active,
-  :is(html, *)[data-nk-feel="snap"] &:active,
-  :is(html, *)[data-nk-feel="stepped"] &:active {
-    transform: none;
-  }
-}
-/* A loading placeholder in the content's exact box: a muted block, and a shimmer only while motion is
-   on. Delay it ~200ms and keep it ≥ 400ms (no flicker); never on an always-on surface. */
-@utility nk-skeleton {
-  position: relative;
-  overflow: hidden;
-  border-radius: max(0.25rem, calc(var(--radius) - 4px));
-  background-color: rgba(var(--foreground-rgb), 0.08);
-  color: transparent !important;
-  pointer-events: none;
-  &::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background-image: linear-gradient(90deg, transparent, rgba(var(--foreground-rgb), 0.08), transparent);
-    transform: translateX(-100%);
-    animation: nk-shimmer 1.4s linear infinite;
-  }
-  :is(html, *)[data-nk-motion="reduced"] &::after,
-  :is(html, *)[data-nk-motion="off"] &::after {
-    animation: none;
-    display: none;
-  }
-}
-@keyframes nk-shimmer {
-  to { transform: translateX(100%); }
 }
 /* One attention cue when a value crosses a threshold, then steady: two opacity blinks (no infinite
    pulse on the HUD: every animated frame is a frame the game composites). Kept under reduced motion. */
@@ -2601,34 +2514,6 @@
   }
   [data-slot="empty-state-actions"] {
     gap: var(--nk-empty-state-actions-gap);
-  }
-
-  /* dialog-shell */
-  [data-slot="dialog-shell"][data-size][data-position] {
-    max-width: var(--nk-dialog-shell-width);
-  }
-  [data-slot="dialog-shell"][data-size="sm"][data-position] {
-    max-width: var(--nk-dialog-shell-width-sm);
-  }
-  [data-slot="dialog-shell"][data-size="lg"][data-position] {
-    max-width: var(--nk-dialog-shell-width-lg);
-  }
-  [data-slot="dialog-shell"][data-position="top"][data-size] {
-    top: var(--nk-dialog-shell-top);
-  }
-  [data-slot="dialog-shell-header"] {
-    gap: var(--nk-dialog-shell-header-gap);
-    padding: var(--nk-dialog-shell-header-pad-y) var(--nk-dialog-shell-header-pad-x);
-  }
-  [data-slot="dialog-shell-body"] {
-    padding: var(--nk-dialog-shell-body-pad);
-  }
-  [data-slot="dialog-shell-footer"] {
-    gap: var(--nk-dialog-shell-footer-gap);
-    padding: var(--nk-dialog-shell-footer-pad-y) var(--nk-dialog-shell-footer-pad-x);
-  }
-  [data-slot="dialog-shell-footer"] > [data-slot="action-bar"] {
-    margin-left: calc(var(--nk-dialog-shell-footer-bleed) * -1);
   }
 
   /* radial-menu */

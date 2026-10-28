@@ -3074,22 +3074,6 @@
           ]
         }
       }
-    },
-    "slash": {
-      "$value": "none",
-      "$description": "A decorative diagonal cut on menus",
-      "$extensions": {
-        "nuikit": {
-          "tier": "identity",
-          "scope": "surface",
-          "css": "--nk-surface-slash",
-          "type": "keyword",
-          "values": [
-            "none",
-            "cut"
-          ]
-        }
-      }
     }
   },
   "material": {
@@ -3110,23 +3094,6 @@
               1
             ],
             "core": true
-          }
-        }
-      },
-      "texture": {
-        "$value": "none",
-        "$description": "Texture over the hud material",
-        "$extensions": {
-          "nuikit": {
-            "tier": "identity",
-            "scope": "material",
-            "part": "hud",
-            "css": "--nk-material-hud-texture",
-            "type": "keyword",
-            "values": [
-              "none",
-              "scanlines"
-            ]
           }
         }
       }
@@ -3193,23 +3160,6 @@
             "range": [
               0,
               0.3
-            ]
-          }
-        }
-      },
-      "texture": {
-        "$value": "none",
-        "$description": "Texture over the menu material",
-        "$extensions": {
-          "nuikit": {
-            "tier": "identity",
-            "scope": "material",
-            "part": "menu",
-            "css": "--nk-material-menu-texture",
-            "type": "keyword",
-            "values": [
-              "none",
-              "scanlines"
             ]
           }
         }
@@ -7119,178 +7069,6 @@
       }
     }
   },
-  "dialog-shell": {
-    "width": {
-      "$type": "dimension",
-      "$value": "32rem",
-      "$description": "Width (md)",
-      "$extensions": {
-        "nuikit": {
-          "tier": "component",
-          "scope": "dialog-shell",
-          "css": "--nk-dialog-shell-width",
-          "type": "length"
-        }
-      }
-    },
-    "width-sm": {
-      "$type": "dimension",
-      "$value": "24rem",
-      "$description": "Width (sm)",
-      "$extensions": {
-        "nuikit": {
-          "tier": "component",
-          "scope": "dialog-shell",
-          "css": "--nk-dialog-shell-width-sm",
-          "type": "length"
-        }
-      }
-    },
-    "width-lg": {
-      "$type": "dimension",
-      "$value": "40rem",
-      "$description": "Width (lg)",
-      "$extensions": {
-        "nuikit": {
-          "tier": "component",
-          "scope": "dialog-shell",
-          "css": "--nk-dialog-shell-width-lg",
-          "type": "length"
-        }
-      }
-    },
-    "top": {
-      "$type": "dimension",
-      "$value": "18vh",
-      "$description": "Where a top dialog anchors",
-      "$extensions": {
-        "nuikit": {
-          "tier": "component",
-          "scope": "dialog-shell",
-          "css": "--nk-dialog-shell-top",
-          "type": "length"
-        }
-      }
-    },
-    "header": {
-      "gap": {
-        "$type": "dimension",
-        "$value": "{space.1}",
-        "$description": "Between the title and the description",
-        "$extensions": {
-          "nuikit": {
-            "tier": "component",
-            "scope": "dialog-shell",
-            "part": "header",
-            "css": "--nk-dialog-shell-header-gap",
-            "type": "length"
-          }
-        }
-      },
-      "pad-x": {
-        "$type": "dimension",
-        "$value": "{gap.surface}",
-        "$description": "Inline padding",
-        "$extensions": {
-          "nuikit": {
-            "tier": "component",
-            "scope": "dialog-shell",
-            "part": "header",
-            "css": "--nk-dialog-shell-header-pad-x",
-            "type": "length"
-          }
-        }
-      },
-      "pad-y": {
-        "$type": "dimension",
-        "$value": "{space.4}",
-        "$description": "Block padding",
-        "$extensions": {
-          "nuikit": {
-            "tier": "component",
-            "scope": "dialog-shell",
-            "part": "header",
-            "css": "--nk-dialog-shell-header-pad-y",
-            "type": "length"
-          }
-        }
-      }
-    },
-    "body": {
-      "pad": {
-        "$type": "dimension",
-        "$value": "{gap.surface}",
-        "$description": "The body's padding",
-        "$extensions": {
-          "nuikit": {
-            "tier": "component",
-            "scope": "dialog-shell",
-            "part": "body",
-            "css": "--nk-dialog-shell-body-pad",
-            "type": "length"
-          }
-        }
-      }
-    },
-    "footer": {
-      "gap": {
-        "$type": "dimension",
-        "$value": "{gap.cluster}",
-        "$description": "Between the hints and the buttons",
-        "$extensions": {
-          "nuikit": {
-            "tier": "component",
-            "scope": "dialog-shell",
-            "part": "footer",
-            "css": "--nk-dialog-shell-footer-gap",
-            "type": "length"
-          }
-        }
-      },
-      "pad-x": {
-        "$type": "dimension",
-        "$value": "{gap.surface}",
-        "$description": "Inline padding",
-        "$extensions": {
-          "nuikit": {
-            "tier": "component",
-            "scope": "dialog-shell",
-            "part": "footer",
-            "css": "--nk-dialog-shell-footer-pad-x",
-            "type": "length"
-          }
-        }
-      },
-      "pad-y": {
-        "$type": "dimension",
-        "$value": "{space.3}",
-        "$description": "Block padding",
-        "$extensions": {
-          "nuikit": {
-            "tier": "component",
-            "scope": "dialog-shell",
-            "part": "footer",
-            "css": "--nk-dialog-shell-footer-pad-y",
-            "type": "length"
-          }
-        }
-      },
-      "bleed": {
-        "$type": "dimension",
-        "$value": "{space.2}",
-        "$description": "How far the hints reach back into the padding (the first item's own inset lines up with the title)",
-        "$extensions": {
-          "nuikit": {
-            "tier": "component",
-            "scope": "dialog-shell",
-            "part": "footer",
-            "css": "--nk-dialog-shell-footer-bleed",
-            "type": "length"
-          }
-        }
-      }
-    }
-  },
   "empty-state": {
     "gap": {
       "$type": "dimension",
@@ -9139,22 +8917,6 @@
             "part": "band",
             "css": "--nk-slab-band-fg",
             "type": "color"
-          }
-        }
-      }
-    },
-    "band-title": {
-      "size": {
-        "$type": "dimension",
-        "$value": "{text.section}",
-        "$description": "The band's line",
-        "$extensions": {
-          "nuikit": {
-            "tier": "component",
-            "scope": "slab",
-            "part": "band-title",
-            "css": "--nk-slab-band-title-size",
-            "type": "length"
           }
         }
       }

@@ -10,7 +10,7 @@ generated `@layer nk.base` block, and components read only levers. Four tiers, e
 - **semantic**: roles every component shares (the motion ladder, eases, plate, fill, accent, lines, depth).
 - **component** and **part**: `--nk-<component>-<prop>` and `--nk-<component>-<part>-<prop>`; parts are the component's anatomy, its `data-slot` names in render order. A component references only itself, a component it `inherits`, or the tiers above.
 
-**650 levers** (252 identity, 60 semantic, 338 component) · **36 components** · **34 state variables** (set by kit.css rules per state; not levers). Old names: `packages/core/spec/migration.json`, applied by `node packages/core/scripts/migrate-levers.mjs <path>`.
+**634 levers** (249 identity, 60 semantic, 325 component) · **35 components** · **34 state variables** (set by kit.css rules per state; not levers). Old names: `packages/core/spec/migration.json`, applied by `node packages/core/scripts/migrate-levers.mjs <path>`.
 
 ## The language: the core identity
 
@@ -99,7 +99,7 @@ the DOM, not the framework. Composites (meters, sheets, notices) are nuikit's ow
 | **chip** | Always-on HUD chips and squares on the game (nk-chip, nk-hud) | `icon` → `count` | 16 |
 | **level** | How a level is drawn under style.level and style.hold (pips, the hold ring, the ink over a solid fill) | `pip` → `hold` → `fill` | 4 |
 | **dial** | The dial under gauges and rings: a disc, ticks, a segmented track | `disc` → `ticks` → `track` → `segments` → `segment` → `value` → `needle` → `center` | 1 |
-| **slab** | Transient feedback on the game: item, prompt, progress, band (nk-slab*) | `icon` → `delta` → `key` → `stack` → `line` → `band` → `band-title` | 33 |
+| **slab** | Transient feedback on the game: item, prompt, progress, band (nk-slab*) | `icon` → `delta` → `key` → `stack` → `line` → `band` | 32 |
 
 ## Identity
 
@@ -407,21 +407,18 @@ How surfaces sit over the game: opacity, tint, light, depth, glow.
 | `--nk-surface-backdrop` | keyword | `off` | on off | Backdrop blur (FiveM draws it as a black box: off) |
 | `--nk-surface-legibility` | keyword | `auto` | auto night day | day lifts surfaces for a bright sky; auto follows the game clock |
 | `--nk-surface-legibility-lift` | number | `0.5` | 0–1 | How far day closes the gap to opaque |
-| `--nk-surface-slash` | keyword | `none` | none cut | A decorative diagonal cut on menus |
 
 ### material
 
-Per context (hud: drawn on the game; menu: menus, sheets, dialogs): opacity, blur, radius, edge, texture.
+Per context (hud: drawn on the game; menu: menus, sheets, dialogs): opacity, blur, radius, edge.
 
 | Lever | Type | Default | Range / values | What it moves |
 |---|---|---|---|---|
 | `--nk-material-hud-opacity` | number | `0.8` | 0–1 | Opacity of the hud material |
-| `--nk-material-hud-texture` | keyword | `none` | none scanlines | Texture over the hud material |
 | `--nk-material-menu-opacity` | number | `0.94` | 0–1 | Opacity of the menu material (floor 0.92 for text) |
 | `--nk-material-menu-blur` | length | `0px` |  | Backdrop blur behind menus (with surface.backdrop on) |
 | `--nk-material-menu-radius` | length | `var(--radius)` |  | Corner radius of menus, sheets and dialogs |
 | `--nk-material-menu-edge` | number | `0` | 0–0.3 | The machined top edge of menus (alpha) |
-| `--nk-material-menu-texture` | keyword | `none` | none scanlines | Texture over the menu material |
 
 ### hud
 
@@ -955,25 +952,6 @@ A full-height sheet against a screen edge. Anatomy: `column` → `header` → `a
 |---|---|---|---|---|
 | `--nk-edge-sheet-header-height` | length | `2rem` |  | The header's minimum height |
 
-### dialog-shell
-
-A modal question or form over the current surface: stock Dialog or AlertDialog on the plate recipe, a header, a padded body and an action-bar footer. Anatomy: `header` → `title` → `description` → `body` → `footer` → `actions`.
-
-| Lever | Type | Default | Range / values | What it moves |
-|---|---|---|---|---|
-| `--nk-dialog-shell-width` | length | `32rem` |  | Width (md) |
-| `--nk-dialog-shell-width-sm` | length | `24rem` |  | Width (sm) |
-| `--nk-dialog-shell-width-lg` | length | `40rem` |  | Width (lg) |
-| `--nk-dialog-shell-top` | length | `18vh` |  | Where a top dialog anchors |
-| `--nk-dialog-shell-header-gap` | length | `var(--nk-space-1)` |  | Between the title and the description |
-| `--nk-dialog-shell-header-pad-x` | length | `var(--nk-gap-surface)` |  | Inline padding |
-| `--nk-dialog-shell-header-pad-y` | length | `var(--nk-space-4)` |  | Block padding |
-| `--nk-dialog-shell-body-pad` | length | `var(--nk-gap-surface)` |  | The body's padding |
-| `--nk-dialog-shell-footer-gap` | length | `var(--nk-gap-cluster)` |  | Between the hints and the buttons |
-| `--nk-dialog-shell-footer-pad-x` | length | `var(--nk-gap-surface)` |  | Inline padding |
-| `--nk-dialog-shell-footer-pad-y` | length | `var(--nk-space-3)` |  | Block padding |
-| `--nk-dialog-shell-footer-bleed` | length | `var(--nk-space-2)` |  | How far the hints reach back into the padding (the first item's own inset lines up with the title) |
-
 ### empty-state
 
 What a list, a search or a screen shows when there is nothing (or something went wrong): an icon, a title, one sentence, an action. Anatomy: `header` → `icon` → `title` → `description` → `actions`. Inherits: `control`.
@@ -1151,7 +1129,7 @@ State: `--nk-level-fill-now`, `--nk-level-fill-opacity`.
 
 ### slab
 
-Transient feedback on the game: item, prompt, progress, band (nk-slab*). Anatomy: `icon` → `delta` → `key` → `stack` → `line` → `band` → `band-title`. Inherits: `chip`, `control`, `meter`.
+Transient feedback on the game: item, prompt, progress, band (nk-slab*). Anatomy: `icon` → `delta` → `key` → `stack` → `line` → `band`. Inherits: `chip`, `control`, `meter`.
 
 | Lever | Type | Default | Range / values | What it moves |
 |---|---|---|---|---|
@@ -1187,7 +1165,6 @@ Transient feedback on the game: item, prompt, progress, band (nk-slab*). Anatomy
 | `--nk-slab-band-tint` | number | `0.3` | 0–1 | The tone's alpha over the band |
 | `--nk-slab-band-edge` | number | `0.6` | 0–1 | The tone's alpha on its edges |
 | `--nk-slab-band-fg` | color | `var(--hud-foreground)` |  | Text |
-| `--nk-slab-band-title-size` | length | `var(--nk-text-section)` |  | The band's line |
 
 State: `--nk-slab-fill`, `--nk-slab-stroke`, `--nk-slab-progress`, `--nk-slab-line-fill`.
 

@@ -251,14 +251,13 @@ export const surface: Group = {
     backdrop: keyword(["on", "off"], "off", "Backdrop blur (FiveM draws it as a black box: off)", { attr: "backdrop", was: ["nk-backdrop"] }),
     legibility: keyword(["auto", "night", "day"], "auto", "day lifts surfaces for a bright sky; auto follows the game clock", { attr: "legibility", was: ["nk-legibility"] }),
     "legibility-lift": number(0.5, "How far day closes the gap to opaque", { range: [0, 1], was: ["nk-legibility-lift"] }),
-    slash: keyword(["none", "cut"], "none", "A decorative diagonal cut on menus", { attr: "slash", was: ["nk-slash"] }),
   },
 };
 
 /** Materials: one per context. Defaults follow surface.* (the compiler fills them). */
 export const material: Group = {
   tier: "identity",
-  description: "Per context (hud: drawn on the game; menu: menus, sheets, dialogs): opacity, blur, radius, edge, texture",
+  description: "Per context (hud: drawn on the game; menu: menus, sheets, dialogs): opacity, blur, radius, edge",
   levers: {},
   parts: Object.fromEntries(
     (["hud", "menu"] as const).map((ctx) => [
@@ -272,7 +271,6 @@ export const material: Group = {
               edge: number(0, "The machined top edge of menus (alpha)", { range: [0, 0.3], was: ["nk-material-menu-edge", "nk-surface-edge"] }),
             }
           : {}),
-        texture: keyword(["none", "scanlines"], "none", `Texture over the ${ctx} material`, { attr: `texture-${ctx}`, was: [`nk-material-${ctx}-texture`] }),
       },
     ]),
   ),

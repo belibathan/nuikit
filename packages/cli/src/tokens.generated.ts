@@ -1285,22 +1285,10 @@ export const GENERATED: { name: string; group: string; type: string; description
     "description": "How far day closes the gap to opaque"
   },
   {
-    "name": "nk-surface-slash",
-    "group": "kit",
-    "type": "number",
-    "description": "A decorative diagonal cut on menus"
-  },
-  {
     "name": "nk-material-hud-opacity",
     "group": "kit",
     "type": "number",
     "description": "Opacity of the hud material"
-  },
-  {
-    "name": "nk-material-hud-texture",
-    "group": "kit",
-    "type": "number",
-    "description": "Texture over the hud material"
   },
   {
     "name": "nk-material-menu-opacity",
@@ -1325,12 +1313,6 @@ export const GENERATED: { name: string; group: string; type: string; description
     "group": "kit",
     "type": "number",
     "description": "The machined top edge of menus (alpha)"
-  },
-  {
-    "name": "nk-material-menu-texture",
-    "group": "kit",
-    "type": "number",
-    "description": "Texture over the menu material"
   },
   {
     "name": "nk-hud-text",
@@ -2875,78 +2857,6 @@ export const GENERATED: { name: string; group: string; type: string; description
     "description": "The header's minimum height"
   },
   {
-    "name": "nk-dialog-shell-width",
-    "group": "kit",
-    "type": "dimension",
-    "description": "Width (md)"
-  },
-  {
-    "name": "nk-dialog-shell-width-sm",
-    "group": "kit",
-    "type": "dimension",
-    "description": "Width (sm)"
-  },
-  {
-    "name": "nk-dialog-shell-width-lg",
-    "group": "kit",
-    "type": "dimension",
-    "description": "Width (lg)"
-  },
-  {
-    "name": "nk-dialog-shell-top",
-    "group": "kit",
-    "type": "dimension",
-    "description": "Where a top dialog anchors"
-  },
-  {
-    "name": "nk-dialog-shell-header-gap",
-    "group": "kit",
-    "type": "dimension",
-    "description": "Between the title and the description"
-  },
-  {
-    "name": "nk-dialog-shell-header-pad-x",
-    "group": "kit",
-    "type": "dimension",
-    "description": "Inline padding"
-  },
-  {
-    "name": "nk-dialog-shell-header-pad-y",
-    "group": "kit",
-    "type": "dimension",
-    "description": "Block padding"
-  },
-  {
-    "name": "nk-dialog-shell-body-pad",
-    "group": "kit",
-    "type": "dimension",
-    "description": "The body's padding"
-  },
-  {
-    "name": "nk-dialog-shell-footer-gap",
-    "group": "kit",
-    "type": "dimension",
-    "description": "Between the hints and the buttons"
-  },
-  {
-    "name": "nk-dialog-shell-footer-pad-x",
-    "group": "kit",
-    "type": "dimension",
-    "description": "Inline padding"
-  },
-  {
-    "name": "nk-dialog-shell-footer-pad-y",
-    "group": "kit",
-    "type": "dimension",
-    "description": "Block padding"
-  },
-  {
-    "name": "nk-dialog-shell-footer-bleed",
-    "group": "kit",
-    "type": "dimension",
-    "description": "How far the hints reach back into the padding (the first item's own inset lines up with the title)"
-  },
-  {
     "name": "nk-empty-state-gap",
     "group": "kit",
     "type": "dimension",
@@ -3689,12 +3599,6 @@ export const GENERATED: { name: string; group: string; type: string; description
     "group": "kit",
     "type": "color",
     "description": "Text"
-  },
-  {
-    "name": "nk-slab-band-title-size",
-    "group": "kit",
-    "type": "dimension",
-    "description": "The band's line"
   },
   {
     "name": "nk-item-slot-width",

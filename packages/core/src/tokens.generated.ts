@@ -2330,20 +2330,6 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     ]
   },
   {
-    "name": "nk-surface-slash",
-    "path": "surface.slash",
-    "tier": "identity",
-    "scope": "surface",
-    "type": "keyword",
-    "default": "none",
-    "description": "A decorative diagonal cut on menus",
-    "values": [
-      "none",
-      "cut"
-    ],
-    "attr": "slash"
-  },
-  {
     "name": "nk-material-hud-opacity",
     "path": "material.hud.opacity",
     "tier": "identity",
@@ -2357,21 +2343,6 @@ export const LEVER_ROWS: readonly LeverRow[] = [
       1
     ],
     "core": true
-  },
-  {
-    "name": "nk-material-hud-texture",
-    "path": "material.hud.texture",
-    "tier": "identity",
-    "scope": "material",
-    "type": "keyword",
-    "default": "none",
-    "description": "Texture over the hud material",
-    "part": "hud",
-    "values": [
-      "none",
-      "scanlines"
-    ],
-    "attr": "texture-hud"
   },
   {
     "name": "nk-material-menu-opacity",
@@ -2421,21 +2392,6 @@ export const LEVER_ROWS: readonly LeverRow[] = [
       0,
       0.3
     ]
-  },
-  {
-    "name": "nk-material-menu-texture",
-    "path": "material.menu.texture",
-    "tier": "identity",
-    "scope": "material",
-    "type": "keyword",
-    "default": "none",
-    "description": "Texture over the menu material",
-    "part": "menu",
-    "values": [
-      "none",
-      "scanlines"
-    ],
-    "attr": "texture-menu"
   },
   {
     "name": "nk-hud-text",
@@ -5201,122 +5157,6 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "part": "header"
   },
   {
-    "name": "nk-dialog-shell-width",
-    "path": "dialog-shell.width",
-    "tier": "component",
-    "scope": "dialog-shell",
-    "type": "length",
-    "default": "32rem",
-    "description": "Width (md)"
-  },
-  {
-    "name": "nk-dialog-shell-width-sm",
-    "path": "dialog-shell.width-sm",
-    "tier": "component",
-    "scope": "dialog-shell",
-    "type": "length",
-    "default": "24rem",
-    "description": "Width (sm)"
-  },
-  {
-    "name": "nk-dialog-shell-width-lg",
-    "path": "dialog-shell.width-lg",
-    "tier": "component",
-    "scope": "dialog-shell",
-    "type": "length",
-    "default": "40rem",
-    "description": "Width (lg)"
-  },
-  {
-    "name": "nk-dialog-shell-top",
-    "path": "dialog-shell.top",
-    "tier": "component",
-    "scope": "dialog-shell",
-    "type": "length",
-    "default": "18vh",
-    "description": "Where a top dialog anchors"
-  },
-  {
-    "name": "nk-dialog-shell-header-gap",
-    "path": "dialog-shell.header.gap",
-    "tier": "component",
-    "scope": "dialog-shell",
-    "type": "length",
-    "default": "var(--nk-space-1)",
-    "description": "Between the title and the description",
-    "part": "header"
-  },
-  {
-    "name": "nk-dialog-shell-header-pad-x",
-    "path": "dialog-shell.header.pad-x",
-    "tier": "component",
-    "scope": "dialog-shell",
-    "type": "length",
-    "default": "var(--nk-gap-surface)",
-    "description": "Inline padding",
-    "part": "header"
-  },
-  {
-    "name": "nk-dialog-shell-header-pad-y",
-    "path": "dialog-shell.header.pad-y",
-    "tier": "component",
-    "scope": "dialog-shell",
-    "type": "length",
-    "default": "var(--nk-space-4)",
-    "description": "Block padding",
-    "part": "header"
-  },
-  {
-    "name": "nk-dialog-shell-body-pad",
-    "path": "dialog-shell.body.pad",
-    "tier": "component",
-    "scope": "dialog-shell",
-    "type": "length",
-    "default": "var(--nk-gap-surface)",
-    "description": "The body's padding",
-    "part": "body"
-  },
-  {
-    "name": "nk-dialog-shell-footer-gap",
-    "path": "dialog-shell.footer.gap",
-    "tier": "component",
-    "scope": "dialog-shell",
-    "type": "length",
-    "default": "var(--nk-gap-cluster)",
-    "description": "Between the hints and the buttons",
-    "part": "footer"
-  },
-  {
-    "name": "nk-dialog-shell-footer-pad-x",
-    "path": "dialog-shell.footer.pad-x",
-    "tier": "component",
-    "scope": "dialog-shell",
-    "type": "length",
-    "default": "var(--nk-gap-surface)",
-    "description": "Inline padding",
-    "part": "footer"
-  },
-  {
-    "name": "nk-dialog-shell-footer-pad-y",
-    "path": "dialog-shell.footer.pad-y",
-    "tier": "component",
-    "scope": "dialog-shell",
-    "type": "length",
-    "default": "var(--nk-space-3)",
-    "description": "Block padding",
-    "part": "footer"
-  },
-  {
-    "name": "nk-dialog-shell-footer-bleed",
-    "path": "dialog-shell.footer.bleed",
-    "tier": "component",
-    "scope": "dialog-shell",
-    "type": "length",
-    "default": "var(--nk-space-2)",
-    "description": "How far the hints reach back into the padding (the first item's own inset lines up with the title)",
-    "part": "footer"
-  },
-  {
     "name": "nk-empty-state-gap",
     "path": "empty-state.gap",
     "tier": "component",
@@ -6579,16 +6419,6 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "part": "band"
   },
   {
-    "name": "nk-slab-band-title-size",
-    "path": "slab.band-title.size",
-    "tier": "component",
-    "scope": "slab",
-    "type": "length",
-    "default": "var(--nk-text-section)",
-    "description": "The band's line",
-    "part": "band-title"
-  },
-  {
     "name": "nk-item-slot-width",
     "path": "item-slot.width",
     "tier": "component",
@@ -6825,7 +6655,7 @@ export const LEVER_ROWS: readonly LeverRow[] = [
   }
 ];
 
-export type Lever = "background" | "foreground" | "card" | "card-foreground" | "popover" | "popover-foreground" | "primary" | "primary-foreground" | "secondary" | "secondary-foreground" | "muted" | "muted-foreground" | "accent" | "accent-foreground" | "destructive" | "destructive-foreground" | "border" | "input" | "ring" | "chart-1" | "chart-2" | "chart-3" | "chart-4" | "chart-5" | "radius" | "brand" | "brand-foreground" | "success" | "success-foreground" | "warning" | "warning-foreground" | "info" | "info-foreground" | "hud" | "hud-foreground" | "scrim" | "surface" | "world-foreground" | "world-foreground-muted" | "world-success" | "world-destructive" | "vital-health" | "vital-armor" | "vital-hunger" | "vital-thirst" | "world-shadow" | "pause-surface" | "pause-ink" | "vital-stress" | "role-health" | "role-health-deep" | "role-health-light" | "role-armor" | "role-armor-deep" | "role-armor-light" | "role-hunger" | "role-hunger-deep" | "role-hunger-light" | "role-thirst" | "role-thirst-deep" | "role-thirst-light" | "role-stress" | "role-stress-deep" | "role-stress-light" | "role-stamina" | "role-stamina-deep" | "role-stamina-light" | "role-oxygen" | "role-oxygen-deep" | "role-oxygen-light" | "role-info" | "role-info-deep" | "role-info-light" | "role-success" | "role-success-deep" | "role-success-light" | "role-warning" | "role-warning-deep" | "role-warning-light" | "role-danger" | "role-danger-deep" | "role-danger-light" | "role-police" | "role-police-deep" | "role-police-light" | "role-ems" | "role-ems-deep" | "role-ems-light" | "role-mech" | "role-mech-deep" | "role-mech-light" | "role-gang" | "role-gang-deep" | "role-gang-light" | "role-civ" | "role-civ-deep" | "role-civ-light" | "role-staff" | "role-staff-deep" | "role-staff-light" | "role-common" | "role-common-deep" | "role-common-light" | "role-uncommon" | "role-uncommon-deep" | "role-uncommon-light" | "role-rare" | "role-rare-deep" | "role-rare-light" | "role-epic" | "role-epic-deep" | "role-epic-light" | "role-legendary" | "role-legendary-deep" | "role-legendary-light" | "role-brand" | "role-brand-deep" | "role-brand-light" | "role-neutral" | "role-neutral-deep" | "role-neutral-light" | "font-sans" | "font-display" | "font-numeric" | "font-mono" | "nk-scale" | "nk-density" | "nk-space-1" | "nk-space-2" | "nk-space-3" | "nk-space-4" | "nk-space-6" | "nk-space-8" | "nk-space-unit" | "nk-radius-key" | "nk-radius-chip" | "nk-radius-control" | "nk-radius-surface" | "nk-height-key" | "nk-height-chip" | "nk-height-control" | "nk-height-row" | "nk-height-field" | "nk-icon-sm" | "nk-icon-md" | "nk-icon-lg" | "nk-icon-stroke" | "nk-text-base" | "nk-text-key" | "nk-text-body" | "nk-text-label" | "nk-text-title" | "nk-text-section" | "nk-text-display" | "nk-text-figure" | "nk-text-hud" | "nk-text-row" | "nk-text-desc" | "nk-leading-tight" | "nk-leading-normal" | "nk-leading-title" | "nk-leading-display" | "nk-leading-figure" | "nk-shape-skew" | "nk-shape-slab" | "nk-shape-cut" | "nk-shape-stroke" | "nk-type-ratio" | "nk-type-weight-body" | "nk-type-weight-strong" | "nk-type-weight-display" | "nk-type-tracking-display" | "nk-type-tracking-label" | "nk-type-case" | "nk-type-slant" | "nk-type-overhang" | "nk-type-overhang-clip" | "nk-type-scan-family" | "nk-type-scan-style" | "nk-type-scan-weight" | "nk-type-scan-tracking" | "nk-type-scan-case" | "nk-type-scan-pad" | "nk-type-title-family" | "nk-type-title-style" | "nk-type-title-weight" | "nk-type-title-tracking" | "nk-type-title-case" | "nk-type-title-pad" | "nk-type-label-family" | "nk-type-label-style" | "nk-type-label-weight" | "nk-type-label-tracking" | "nk-type-label-case" | "nk-type-label-pad" | "nk-type-num-family" | "nk-type-num-style" | "nk-type-num-weight" | "nk-type-num-tracking" | "nk-type-num-case" | "nk-type-num-pad" | "nk-type-body-family" | "nk-type-body-style" | "nk-type-body-weight" | "nk-type-body-tracking" | "nk-type-body-case" | "nk-surface-tint" | "nk-surface-gradient" | "nk-surface-elevation" | "nk-surface-glow" | "nk-surface-glow-budget" | "nk-surface-backdrop" | "nk-surface-legibility" | "nk-surface-legibility-lift" | "nk-surface-slash" | "nk-material-hud-opacity" | "nk-material-hud-texture" | "nk-material-menu-opacity" | "nk-material-menu-blur" | "nk-material-menu-radius" | "nk-material-menu-edge" | "nk-material-menu-texture" | "nk-hud-text" | "nk-motion" | "nk-motion-duration" | "nk-motion-ease" | "nk-motion-feel" | "nk-motion-bounce" | "nk-motion-exit-factor" | "nk-motion-reduced" | "nk-motion-profile" | "nk-style-fill" | "nk-style-level" | "nk-style-hold" | "nk-style-gauge" | "nk-style-focus" | "nk-style-vital" | "nk-style-vital-icon" | "nk-style-vital-neighbours" | "nk-style-pause" | "nk-behavior-alert" | "nk-behavior-rest" | "nk-behavior-notify-info" | "nk-behavior-notify-success" | "nk-behavior-notify-warning" | "nk-behavior-notify-danger" | "nk-hue-line" | "nk-hue-tint" | "nk-hue-glow" | "nk-hue-alert" | "nk-layer-dim" | "nk-layer-dialog" | "nk-time-snap" | "nk-time-fast" | "nk-time-base" | "nk-time-slow" | "nk-time-fill" | "nk-time-exit" | "nk-time-pulse" | "nk-ease-enter" | "nk-ease-exit" | "nk-ease-move" | "nk-ease-expand" | "nk-ease-spring" | "nk-ease-breathe" | "nk-spring-snap" | "nk-spring-move" | "nk-spring-soft" | "nk-spring-pop" | "nk-stagger" | "nk-stagger-max" | "nk-gesture-lift" | "nk-gesture-rise" | "nk-gesture-land" | "nk-gesture-deny" | "nk-gesture-press" | "nk-gesture-confirm" | "nk-plate-color" | "nk-plate-hair" | "nk-plate-drop" | "nk-plate-bg" | "nk-plate-radius" | "nk-fill-color" | "nk-fill-track" | "nk-fill-tint" | "nk-fill-edge" | "nk-fill-alert" | "nk-fill-height" | "nk-accent-paint" | "nk-accent-from" | "nk-accent-via" | "nk-accent-to" | "nk-gap-cluster" | "nk-gap-items" | "nk-gap-pad-x" | "nk-gap-surface" | "nk-line-width" | "nk-line-focus" | "nk-line-clip" | "nk-line-clip-sm" | "nk-line-glow" | "nk-depth-elevation" | "nk-depth-text" | "nk-alpha-day" | "nk-alpha-hud" | "nk-alpha-menu" | "nk-restore-muted-foreground" | "nk-restore-muted-foreground-rgb" | "nk-restore-muted-foreground-a" | "nk-restore-background" | "nk-restore-background-rgb" | "nk-restore-background-a" | "nk-screen-ratio" | "nk-screen-max" | "nk-screen-edge" | "nk-screen-scale-min" | "nk-screen-area-l" | "nk-screen-area-r" | "nk-screen-area-t" | "nk-screen-area-b" | "nk-screen-safe-x" | "nk-screen-safe-y" | "nk-zone-gap" | "nk-region-max" | "nk-region-pad" | "nk-grid-cell" | "nk-grid-gap" | "nk-control-plate-color" | "nk-control-plate-dim" | "nk-control-plate-x" | "nk-control-plate-y" | "nk-control-plate-press" | "nk-control-wall-height" | "nk-control-wall-shade" | "nk-control-face-color" | "nk-control-face-ink" | "nk-control-face-light" | "nk-control-face-shade" | "nk-control-face-rim" | "nk-control-face-rim-focus" | "nk-control-face-radius" | "nk-control-face-skew" | "nk-control-face-shadow" | "nk-control-face-clip" | "nk-control-face-confirm" | "nk-control-face-confirm-ink" | "nk-control-face-active" | "nk-control-face-hold" | "nk-control-legend-font" | "nk-control-legend-weight" | "nk-control-legend-pad" | "nk-control-legend-shift" | "nk-control-legend-gap" | "nk-control-legend-inset" | "nk-control-tag-delay" | "nk-control-primary-color" | "nk-control-primary-ink" | "nk-control-primary-rim" | "nk-control-primary-radius" | "nk-control-primary-tint" | "nk-control-primary-inset" | "nk-control-primary-lift" | "nk-control-primary-press" | "nk-control-primary-overhang" | "nk-panel-bg" | "nk-panel-fg" | "nk-panel-border" | "nk-panel-radius" | "nk-panel-blur" | "nk-panel-cut" | "nk-panel-clip" | "nk-panel-gradient" | "nk-panel-edge" | "nk-panel-shadow" | "nk-panel-divider" | "nk-panel-width" | "nk-panel-width-sm" | "nk-panel-width-lg" | "nk-panel-header-height" | "nk-panel-header-padding" | "nk-panel-body-padding" | "nk-panel-footer-padding" | "nk-panel-footer-rule" | "nk-panel-actions-bracket" | "nk-panel-actions-bracket-width" | "nk-panel-actions-bracket-color" | "nk-row-height" | "nk-row-radius" | "nk-row-clip" | "nk-row-pad-y" | "nk-row-pad-x" | "nk-row-padding" | "nk-row-gap" | "nk-row-font-size" | "nk-row-accent" | "nk-row-icon-box" | "nk-row-bar-width" | "nk-list-gap" | "nk-list-pad-x" | "nk-menu-row-gap" | "nk-menu-row-image-size" | "nk-menu-row-progress-height" | "nk-menu-row-details-width" | "nk-menu-row-value-width" | "nk-selection-time" | "nk-selection-ease" | "nk-field-marker-height" | "nk-field-marker-drop" | "nk-field-caret-color" | "nk-field-caret-radius" | "nk-field-caret-blink" | "nk-field-caret-blink-delay" | "nk-field-caret-blink-dim" | "nk-field-caret-width" | "nk-field-caret-time" | "nk-field-caret-ease" | "nk-field-mirror-rise" | "nk-field-mirror-in" | "nk-field-mirror-out" | "nk-form-field-label-gap" | "nk-form-field-label-size" | "nk-form-field-label-leading" | "nk-form-field-label-leading-row" | "nk-form-field-hint-size" | "nk-form-field-hint-leading" | "nk-form-field-hint-color" | "nk-form-field-end-gap" | "nk-form-field-value-size" | "nk-form-field-value-leading" | "nk-form-field-value-color" | "nk-form-field-row-gap" | "nk-form-field-row-height" | "nk-form-field-trail-gap" | "nk-form-field-control-height" | "nk-form-field-control-size" | "nk-form-field-control-gap" | "nk-form-field-control-pad-x" | "nk-form-field-control-pad-x-dense" | "nk-form-field-control-affix-password" | "nk-form-field-control-affix-stepper" | "nk-form-field-icon-size" | "nk-form-field-icon-color" | "nk-form-field-icon-inset" | "nk-form-field-icon-gap" | "nk-form-field-icon-pad" | "nk-form-field-stepper-inset" | "nk-form-field-stepper-gap" | "nk-form-field-reveal-inset" | "nk-form-field-segment-sep" | "nk-form-field-meridiem-gap" | "nk-form-field-meridiem-pad-x" | "nk-form-field-meridiem-size" | "nk-form-field-meridiem-weight" | "nk-form-field-meridiem-color" | "nk-form-field-clear-size" | "nk-form-field-clear-bleed" | "nk-form-field-clear-color" | "nk-form-field-date-picker-size" | "nk-form-field-date-picker-bleed" | "nk-form-field-date-picker-color" | "nk-form-field-date-picker-cell" | "nk-form-field-date-picker-pad" | "nk-form-field-date-picker-gap" | "nk-form-field-date-picker-step" | "nk-form-field-swatch-size" | "nk-form-field-swatch-inset" | "nk-form-field-swatch-pad" | "nk-form-field-swatch-empty" | "nk-form-field-swatches-gap" | "nk-form-field-swatches-size" | "nk-form-field-description-size" | "nk-form-field-description-leading" | "nk-form-field-description-color" | "nk-form-field-description-indent" | "nk-form-field-error-size" | "nk-form-field-error-leading" | "nk-form-field-error-color" | "nk-form-field-error-indent" | "nk-stepper-delay" | "nk-stepper-rate" | "nk-text-key-scale" | "nk-notice-width" | "nk-notice-width-sm" | "nk-notice-width-lg" | "nk-confirm-width" | "nk-confirm-width-sm" | "nk-confirm-width-lg" | "nk-edge-sheet-header-height" | "nk-dialog-shell-width" | "nk-dialog-shell-width-sm" | "nk-dialog-shell-width-lg" | "nk-dialog-shell-top" | "nk-dialog-shell-header-gap" | "nk-dialog-shell-header-pad-x" | "nk-dialog-shell-header-pad-y" | "nk-dialog-shell-body-pad" | "nk-dialog-shell-footer-gap" | "nk-dialog-shell-footer-pad-x" | "nk-dialog-shell-footer-pad-y" | "nk-dialog-shell-footer-bleed" | "nk-empty-state-gap" | "nk-empty-state-pad" | "nk-empty-state-gap-screen" | "nk-empty-state-pad-screen" | "nk-empty-state-header-gap" | "nk-empty-state-icon-box" | "nk-empty-state-icon-box-screen" | "nk-empty-state-icon-glyph" | "nk-empty-state-icon-gap" | "nk-empty-state-icon-ink" | "nk-empty-state-icon-ink-error" | "nk-empty-state-icon-tint-error" | "nk-empty-state-title-size-screen" | "nk-empty-state-description-size" | "nk-empty-state-description-leading" | "nk-empty-state-actions-gap" | "nk-radial-menu-size" | "nk-radial-menu-disabled-opacity" | "nk-radial-menu-wedge-stroke" | "nk-radial-menu-indicator-stroke" | "nk-radial-menu-item-width" | "nk-radial-menu-item-gap" | "nk-radial-menu-item-icon" | "nk-radial-menu-label-size" | "nk-radial-menu-label-leading" | "nk-radial-menu-label-weight" | "nk-radial-menu-dot-size" | "nk-radial-menu-dot-opacity" | "nk-radial-menu-center-width" | "nk-radial-menu-center-pad" | "nk-radial-menu-center-icon" | "nk-radial-menu-title-size" | "nk-radial-menu-title-leading" | "nk-radial-menu-title-weight" | "nk-selection-tabs-list-gap" | "nk-selection-tabs-list-rest" | "nk-selection-tabs-trigger-height" | "nk-selection-tabs-trigger-pad-x" | "nk-chip-height" | "nk-chip-square-size" | "nk-chip-padding" | "nk-chip-radius" | "nk-chip-hud-radius" | "nk-chip-bg" | "nk-chip-fg" | "nk-chip-font-size" | "nk-chip-weight" | "nk-chip-active-bg" | "nk-chip-active-fg" | "nk-chip-glow" | "nk-chip-clip" | "nk-chip-text-shadow" | "nk-chip-icon-size" | "nk-chip-icon-size-square" | "nk-vital-chip-size" | "nk-vital-chip-size-sm" | "nk-vital-chip-glyph-ratio" | "nk-vital-chip-icon-ratio" | "nk-vital-chip-label-size" | "nk-vital-chip-label-gap" | "nk-vital-chip-pop-overlap" | "nk-vital-chip-pop-pad" | "nk-vital-chip-pop-max-width" | "nk-vital-chip-line-width" | "nk-vital-chip-plate-drop" | "nk-vital-chip-plate-x" | "nk-meter-radius" | "nk-meter-glow" | "nk-meter-segments" | "nk-meter-track-color" | "nk-meter-segment-size" | "nk-meter-segment-gap" | "nk-meter-segment-color" | "nk-gauge-width" | "nk-gauge-ticks" | "nk-gauge-font" | "nk-gauge-track-color" | "nk-gauge-fill-color" | "nk-gauge-needle-color" | "nk-gauge-redline-color" | "nk-gauge-tick-color" | "nk-gauge-tick-major" | "nk-dial-disc-opacity" | "nk-ring-segments" | "nk-ring-gap" | "nk-ring-label-max-width" | "nk-speedometer-digit-dim" | "nk-speedometer-digit-tracking" | "nk-level-pip-size" | "nk-level-pip-gap" | "nk-level-hold-pad" | "nk-level-fill-ink" | "nk-slab-height" | "nk-slab-padding" | "nk-slab-gap" | "nk-slab-radius" | "nk-slab-clip" | "nk-slab-bg" | "nk-slab-fg" | "nk-slab-border" | "nk-slab-font-size" | "nk-slab-weight" | "nk-slab-text-shadow" | "nk-slab-tone" | "nk-slab-icon-size" | "nk-slab-icon-bg" | "nk-slab-icon-fg" | "nk-slab-icon-radius" | "nk-slab-delta-font" | "nk-slab-delta-up" | "nk-slab-delta-down" | "nk-slab-key-size" | "nk-slab-key-font-size" | "nk-slab-line-height" | "nk-slab-line-radius" | "nk-slab-line-track" | "nk-slab-stack-width" | "nk-slab-stack-gap" | "nk-slab-band-padding" | "nk-slab-band-gap" | "nk-slab-band-bg" | "nk-slab-band-tint" | "nk-slab-band-edge" | "nk-slab-band-fg" | "nk-slab-band-title-size" | "nk-item-slot-width" | "nk-item-slot-width-sm" | "nk-item-slot-width-lg" | "nk-item-slot-gap" | "nk-item-slot-top-height" | "nk-item-slot-corner-lock" | "nk-key-prompt-gap" | "nk-key-prompt-max-width" | "nk-key-prompt-min-height" | "nk-key-prompt-min-height-sm" | "nk-key-prompt-pad-left" | "nk-key-prompt-pad-right" | "nk-key-prompt-pad-y" | "nk-key-prompt-key-height" | "nk-skill-check-size" | "nk-skill-check-size-sm" | "nk-skill-check-size-lg" | "nk-skill-check-key-height" | "nk-skill-check-key-pad" | "nk-countdown-line-width" | "nk-countdown-line-width-sm" | "nk-countdown-line-width-hero" | "nk-stat-gap" | "nk-stat-label-icon" | "nk-nui-image-icon-max";
+export type Lever = "background" | "foreground" | "card" | "card-foreground" | "popover" | "popover-foreground" | "primary" | "primary-foreground" | "secondary" | "secondary-foreground" | "muted" | "muted-foreground" | "accent" | "accent-foreground" | "destructive" | "destructive-foreground" | "border" | "input" | "ring" | "chart-1" | "chart-2" | "chart-3" | "chart-4" | "chart-5" | "radius" | "brand" | "brand-foreground" | "success" | "success-foreground" | "warning" | "warning-foreground" | "info" | "info-foreground" | "hud" | "hud-foreground" | "scrim" | "surface" | "world-foreground" | "world-foreground-muted" | "world-success" | "world-destructive" | "vital-health" | "vital-armor" | "vital-hunger" | "vital-thirst" | "world-shadow" | "pause-surface" | "pause-ink" | "vital-stress" | "role-health" | "role-health-deep" | "role-health-light" | "role-armor" | "role-armor-deep" | "role-armor-light" | "role-hunger" | "role-hunger-deep" | "role-hunger-light" | "role-thirst" | "role-thirst-deep" | "role-thirst-light" | "role-stress" | "role-stress-deep" | "role-stress-light" | "role-stamina" | "role-stamina-deep" | "role-stamina-light" | "role-oxygen" | "role-oxygen-deep" | "role-oxygen-light" | "role-info" | "role-info-deep" | "role-info-light" | "role-success" | "role-success-deep" | "role-success-light" | "role-warning" | "role-warning-deep" | "role-warning-light" | "role-danger" | "role-danger-deep" | "role-danger-light" | "role-police" | "role-police-deep" | "role-police-light" | "role-ems" | "role-ems-deep" | "role-ems-light" | "role-mech" | "role-mech-deep" | "role-mech-light" | "role-gang" | "role-gang-deep" | "role-gang-light" | "role-civ" | "role-civ-deep" | "role-civ-light" | "role-staff" | "role-staff-deep" | "role-staff-light" | "role-common" | "role-common-deep" | "role-common-light" | "role-uncommon" | "role-uncommon-deep" | "role-uncommon-light" | "role-rare" | "role-rare-deep" | "role-rare-light" | "role-epic" | "role-epic-deep" | "role-epic-light" | "role-legendary" | "role-legendary-deep" | "role-legendary-light" | "role-brand" | "role-brand-deep" | "role-brand-light" | "role-neutral" | "role-neutral-deep" | "role-neutral-light" | "font-sans" | "font-display" | "font-numeric" | "font-mono" | "nk-scale" | "nk-density" | "nk-space-1" | "nk-space-2" | "nk-space-3" | "nk-space-4" | "nk-space-6" | "nk-space-8" | "nk-space-unit" | "nk-radius-key" | "nk-radius-chip" | "nk-radius-control" | "nk-radius-surface" | "nk-height-key" | "nk-height-chip" | "nk-height-control" | "nk-height-row" | "nk-height-field" | "nk-icon-sm" | "nk-icon-md" | "nk-icon-lg" | "nk-icon-stroke" | "nk-text-base" | "nk-text-key" | "nk-text-body" | "nk-text-label" | "nk-text-title" | "nk-text-section" | "nk-text-display" | "nk-text-figure" | "nk-text-hud" | "nk-text-row" | "nk-text-desc" | "nk-leading-tight" | "nk-leading-normal" | "nk-leading-title" | "nk-leading-display" | "nk-leading-figure" | "nk-shape-skew" | "nk-shape-slab" | "nk-shape-cut" | "nk-shape-stroke" | "nk-type-ratio" | "nk-type-weight-body" | "nk-type-weight-strong" | "nk-type-weight-display" | "nk-type-tracking-display" | "nk-type-tracking-label" | "nk-type-case" | "nk-type-slant" | "nk-type-overhang" | "nk-type-overhang-clip" | "nk-type-scan-family" | "nk-type-scan-style" | "nk-type-scan-weight" | "nk-type-scan-tracking" | "nk-type-scan-case" | "nk-type-scan-pad" | "nk-type-title-family" | "nk-type-title-style" | "nk-type-title-weight" | "nk-type-title-tracking" | "nk-type-title-case" | "nk-type-title-pad" | "nk-type-label-family" | "nk-type-label-style" | "nk-type-label-weight" | "nk-type-label-tracking" | "nk-type-label-case" | "nk-type-label-pad" | "nk-type-num-family" | "nk-type-num-style" | "nk-type-num-weight" | "nk-type-num-tracking" | "nk-type-num-case" | "nk-type-num-pad" | "nk-type-body-family" | "nk-type-body-style" | "nk-type-body-weight" | "nk-type-body-tracking" | "nk-type-body-case" | "nk-surface-tint" | "nk-surface-gradient" | "nk-surface-elevation" | "nk-surface-glow" | "nk-surface-glow-budget" | "nk-surface-backdrop" | "nk-surface-legibility" | "nk-surface-legibility-lift" | "nk-material-hud-opacity" | "nk-material-menu-opacity" | "nk-material-menu-blur" | "nk-material-menu-radius" | "nk-material-menu-edge" | "nk-hud-text" | "nk-motion" | "nk-motion-duration" | "nk-motion-ease" | "nk-motion-feel" | "nk-motion-bounce" | "nk-motion-exit-factor" | "nk-motion-reduced" | "nk-motion-profile" | "nk-style-fill" | "nk-style-level" | "nk-style-hold" | "nk-style-gauge" | "nk-style-focus" | "nk-style-vital" | "nk-style-vital-icon" | "nk-style-vital-neighbours" | "nk-style-pause" | "nk-behavior-alert" | "nk-behavior-rest" | "nk-behavior-notify-info" | "nk-behavior-notify-success" | "nk-behavior-notify-warning" | "nk-behavior-notify-danger" | "nk-hue-line" | "nk-hue-tint" | "nk-hue-glow" | "nk-hue-alert" | "nk-layer-dim" | "nk-layer-dialog" | "nk-time-snap" | "nk-time-fast" | "nk-time-base" | "nk-time-slow" | "nk-time-fill" | "nk-time-exit" | "nk-time-pulse" | "nk-ease-enter" | "nk-ease-exit" | "nk-ease-move" | "nk-ease-expand" | "nk-ease-spring" | "nk-ease-breathe" | "nk-spring-snap" | "nk-spring-move" | "nk-spring-soft" | "nk-spring-pop" | "nk-stagger" | "nk-stagger-max" | "nk-gesture-lift" | "nk-gesture-rise" | "nk-gesture-land" | "nk-gesture-deny" | "nk-gesture-press" | "nk-gesture-confirm" | "nk-plate-color" | "nk-plate-hair" | "nk-plate-drop" | "nk-plate-bg" | "nk-plate-radius" | "nk-fill-color" | "nk-fill-track" | "nk-fill-tint" | "nk-fill-edge" | "nk-fill-alert" | "nk-fill-height" | "nk-accent-paint" | "nk-accent-from" | "nk-accent-via" | "nk-accent-to" | "nk-gap-cluster" | "nk-gap-items" | "nk-gap-pad-x" | "nk-gap-surface" | "nk-line-width" | "nk-line-focus" | "nk-line-clip" | "nk-line-clip-sm" | "nk-line-glow" | "nk-depth-elevation" | "nk-depth-text" | "nk-alpha-day" | "nk-alpha-hud" | "nk-alpha-menu" | "nk-restore-muted-foreground" | "nk-restore-muted-foreground-rgb" | "nk-restore-muted-foreground-a" | "nk-restore-background" | "nk-restore-background-rgb" | "nk-restore-background-a" | "nk-screen-ratio" | "nk-screen-max" | "nk-screen-edge" | "nk-screen-scale-min" | "nk-screen-area-l" | "nk-screen-area-r" | "nk-screen-area-t" | "nk-screen-area-b" | "nk-screen-safe-x" | "nk-screen-safe-y" | "nk-zone-gap" | "nk-region-max" | "nk-region-pad" | "nk-grid-cell" | "nk-grid-gap" | "nk-control-plate-color" | "nk-control-plate-dim" | "nk-control-plate-x" | "nk-control-plate-y" | "nk-control-plate-press" | "nk-control-wall-height" | "nk-control-wall-shade" | "nk-control-face-color" | "nk-control-face-ink" | "nk-control-face-light" | "nk-control-face-shade" | "nk-control-face-rim" | "nk-control-face-rim-focus" | "nk-control-face-radius" | "nk-control-face-skew" | "nk-control-face-shadow" | "nk-control-face-clip" | "nk-control-face-confirm" | "nk-control-face-confirm-ink" | "nk-control-face-active" | "nk-control-face-hold" | "nk-control-legend-font" | "nk-control-legend-weight" | "nk-control-legend-pad" | "nk-control-legend-shift" | "nk-control-legend-gap" | "nk-control-legend-inset" | "nk-control-tag-delay" | "nk-control-primary-color" | "nk-control-primary-ink" | "nk-control-primary-rim" | "nk-control-primary-radius" | "nk-control-primary-tint" | "nk-control-primary-inset" | "nk-control-primary-lift" | "nk-control-primary-press" | "nk-control-primary-overhang" | "nk-panel-bg" | "nk-panel-fg" | "nk-panel-border" | "nk-panel-radius" | "nk-panel-blur" | "nk-panel-cut" | "nk-panel-clip" | "nk-panel-gradient" | "nk-panel-edge" | "nk-panel-shadow" | "nk-panel-divider" | "nk-panel-width" | "nk-panel-width-sm" | "nk-panel-width-lg" | "nk-panel-header-height" | "nk-panel-header-padding" | "nk-panel-body-padding" | "nk-panel-footer-padding" | "nk-panel-footer-rule" | "nk-panel-actions-bracket" | "nk-panel-actions-bracket-width" | "nk-panel-actions-bracket-color" | "nk-row-height" | "nk-row-radius" | "nk-row-clip" | "nk-row-pad-y" | "nk-row-pad-x" | "nk-row-padding" | "nk-row-gap" | "nk-row-font-size" | "nk-row-accent" | "nk-row-icon-box" | "nk-row-bar-width" | "nk-list-gap" | "nk-list-pad-x" | "nk-menu-row-gap" | "nk-menu-row-image-size" | "nk-menu-row-progress-height" | "nk-menu-row-details-width" | "nk-menu-row-value-width" | "nk-selection-time" | "nk-selection-ease" | "nk-field-marker-height" | "nk-field-marker-drop" | "nk-field-caret-color" | "nk-field-caret-radius" | "nk-field-caret-blink" | "nk-field-caret-blink-delay" | "nk-field-caret-blink-dim" | "nk-field-caret-width" | "nk-field-caret-time" | "nk-field-caret-ease" | "nk-field-mirror-rise" | "nk-field-mirror-in" | "nk-field-mirror-out" | "nk-form-field-label-gap" | "nk-form-field-label-size" | "nk-form-field-label-leading" | "nk-form-field-label-leading-row" | "nk-form-field-hint-size" | "nk-form-field-hint-leading" | "nk-form-field-hint-color" | "nk-form-field-end-gap" | "nk-form-field-value-size" | "nk-form-field-value-leading" | "nk-form-field-value-color" | "nk-form-field-row-gap" | "nk-form-field-row-height" | "nk-form-field-trail-gap" | "nk-form-field-control-height" | "nk-form-field-control-size" | "nk-form-field-control-gap" | "nk-form-field-control-pad-x" | "nk-form-field-control-pad-x-dense" | "nk-form-field-control-affix-password" | "nk-form-field-control-affix-stepper" | "nk-form-field-icon-size" | "nk-form-field-icon-color" | "nk-form-field-icon-inset" | "nk-form-field-icon-gap" | "nk-form-field-icon-pad" | "nk-form-field-stepper-inset" | "nk-form-field-stepper-gap" | "nk-form-field-reveal-inset" | "nk-form-field-segment-sep" | "nk-form-field-meridiem-gap" | "nk-form-field-meridiem-pad-x" | "nk-form-field-meridiem-size" | "nk-form-field-meridiem-weight" | "nk-form-field-meridiem-color" | "nk-form-field-clear-size" | "nk-form-field-clear-bleed" | "nk-form-field-clear-color" | "nk-form-field-date-picker-size" | "nk-form-field-date-picker-bleed" | "nk-form-field-date-picker-color" | "nk-form-field-date-picker-cell" | "nk-form-field-date-picker-pad" | "nk-form-field-date-picker-gap" | "nk-form-field-date-picker-step" | "nk-form-field-swatch-size" | "nk-form-field-swatch-inset" | "nk-form-field-swatch-pad" | "nk-form-field-swatch-empty" | "nk-form-field-swatches-gap" | "nk-form-field-swatches-size" | "nk-form-field-description-size" | "nk-form-field-description-leading" | "nk-form-field-description-color" | "nk-form-field-description-indent" | "nk-form-field-error-size" | "nk-form-field-error-leading" | "nk-form-field-error-color" | "nk-form-field-error-indent" | "nk-stepper-delay" | "nk-stepper-rate" | "nk-text-key-scale" | "nk-notice-width" | "nk-notice-width-sm" | "nk-notice-width-lg" | "nk-confirm-width" | "nk-confirm-width-sm" | "nk-confirm-width-lg" | "nk-edge-sheet-header-height" | "nk-empty-state-gap" | "nk-empty-state-pad" | "nk-empty-state-gap-screen" | "nk-empty-state-pad-screen" | "nk-empty-state-header-gap" | "nk-empty-state-icon-box" | "nk-empty-state-icon-box-screen" | "nk-empty-state-icon-glyph" | "nk-empty-state-icon-gap" | "nk-empty-state-icon-ink" | "nk-empty-state-icon-ink-error" | "nk-empty-state-icon-tint-error" | "nk-empty-state-title-size-screen" | "nk-empty-state-description-size" | "nk-empty-state-description-leading" | "nk-empty-state-actions-gap" | "nk-radial-menu-size" | "nk-radial-menu-disabled-opacity" | "nk-radial-menu-wedge-stroke" | "nk-radial-menu-indicator-stroke" | "nk-radial-menu-item-width" | "nk-radial-menu-item-gap" | "nk-radial-menu-item-icon" | "nk-radial-menu-label-size" | "nk-radial-menu-label-leading" | "nk-radial-menu-label-weight" | "nk-radial-menu-dot-size" | "nk-radial-menu-dot-opacity" | "nk-radial-menu-center-width" | "nk-radial-menu-center-pad" | "nk-radial-menu-center-icon" | "nk-radial-menu-title-size" | "nk-radial-menu-title-leading" | "nk-radial-menu-title-weight" | "nk-selection-tabs-list-gap" | "nk-selection-tabs-list-rest" | "nk-selection-tabs-trigger-height" | "nk-selection-tabs-trigger-pad-x" | "nk-chip-height" | "nk-chip-square-size" | "nk-chip-padding" | "nk-chip-radius" | "nk-chip-hud-radius" | "nk-chip-bg" | "nk-chip-fg" | "nk-chip-font-size" | "nk-chip-weight" | "nk-chip-active-bg" | "nk-chip-active-fg" | "nk-chip-glow" | "nk-chip-clip" | "nk-chip-text-shadow" | "nk-chip-icon-size" | "nk-chip-icon-size-square" | "nk-vital-chip-size" | "nk-vital-chip-size-sm" | "nk-vital-chip-glyph-ratio" | "nk-vital-chip-icon-ratio" | "nk-vital-chip-label-size" | "nk-vital-chip-label-gap" | "nk-vital-chip-pop-overlap" | "nk-vital-chip-pop-pad" | "nk-vital-chip-pop-max-width" | "nk-vital-chip-line-width" | "nk-vital-chip-plate-drop" | "nk-vital-chip-plate-x" | "nk-meter-radius" | "nk-meter-glow" | "nk-meter-segments" | "nk-meter-track-color" | "nk-meter-segment-size" | "nk-meter-segment-gap" | "nk-meter-segment-color" | "nk-gauge-width" | "nk-gauge-ticks" | "nk-gauge-font" | "nk-gauge-track-color" | "nk-gauge-fill-color" | "nk-gauge-needle-color" | "nk-gauge-redline-color" | "nk-gauge-tick-color" | "nk-gauge-tick-major" | "nk-dial-disc-opacity" | "nk-ring-segments" | "nk-ring-gap" | "nk-ring-label-max-width" | "nk-speedometer-digit-dim" | "nk-speedometer-digit-tracking" | "nk-level-pip-size" | "nk-level-pip-gap" | "nk-level-hold-pad" | "nk-level-fill-ink" | "nk-slab-height" | "nk-slab-padding" | "nk-slab-gap" | "nk-slab-radius" | "nk-slab-clip" | "nk-slab-bg" | "nk-slab-fg" | "nk-slab-border" | "nk-slab-font-size" | "nk-slab-weight" | "nk-slab-text-shadow" | "nk-slab-tone" | "nk-slab-icon-size" | "nk-slab-icon-bg" | "nk-slab-icon-fg" | "nk-slab-icon-radius" | "nk-slab-delta-font" | "nk-slab-delta-up" | "nk-slab-delta-down" | "nk-slab-key-size" | "nk-slab-key-font-size" | "nk-slab-line-height" | "nk-slab-line-radius" | "nk-slab-line-track" | "nk-slab-stack-width" | "nk-slab-stack-gap" | "nk-slab-band-padding" | "nk-slab-band-gap" | "nk-slab-band-bg" | "nk-slab-band-tint" | "nk-slab-band-edge" | "nk-slab-band-fg" | "nk-item-slot-width" | "nk-item-slot-width-sm" | "nk-item-slot-width-lg" | "nk-item-slot-gap" | "nk-item-slot-top-height" | "nk-item-slot-corner-lock" | "nk-key-prompt-gap" | "nk-key-prompt-max-width" | "nk-key-prompt-min-height" | "nk-key-prompt-min-height-sm" | "nk-key-prompt-pad-left" | "nk-key-prompt-pad-right" | "nk-key-prompt-pad-y" | "nk-key-prompt-key-height" | "nk-skill-check-size" | "nk-skill-check-size-sm" | "nk-skill-check-size-lg" | "nk-skill-check-key-height" | "nk-skill-check-key-pad" | "nk-countdown-line-width" | "nk-countdown-line-width-sm" | "nk-countdown-line-width-hero" | "nk-stat-gap" | "nk-stat-label-icon" | "nk-nui-image-icon-max";
 
 export const ANATOMY = {
   "screen": [
@@ -6948,14 +6778,6 @@ export const ANATOMY = {
     "body",
     "footer"
   ],
-  "dialog-shell": [
-    "header",
-    "title",
-    "description",
-    "body",
-    "footer",
-    "actions"
-  ],
   "empty-state": [
     "header",
     "icon",
@@ -7052,8 +6874,7 @@ export const ANATOMY = {
     "key",
     "stack",
     "line",
-    "band",
-    "band-title"
+    "band"
   ],
   "item-slot": [
     "top",

@@ -47,8 +47,6 @@ type KitClassGroup =
   | "nk-slab-stack-row"
   | "nk-slab-line"
   | "nk-slab-band"
-  | "nk-slab-band-title"
-  | "nk-scroll"
   | "nk-edge"
   | "nk-anchor-tl"
   | "nk-anchor-tr"
@@ -63,8 +61,6 @@ type KitClassGroup =
   | "nk-pop"
   | "nk-rise"
   | "nk-stagger"
-  | "nk-press"
-  | "nk-skeleton"
   | "nk-blink"
   | "nk-indicator"
 
@@ -113,8 +109,6 @@ const twMerge = extendTailwindMerge<KitClassGroup>({
       "nk-slab-stack-row": ["nk-slab-stack-row"],
       "nk-slab-line": ["nk-slab-line"],
       "nk-slab-band": ["nk-slab-band"],
-      "nk-slab-band-title": ["nk-slab-band-title"],
-      "nk-scroll": ["nk-scroll"],
       "nk-edge": ["nk-edge"],
       "nk-anchor-tl": ["nk-anchor-tl"],
       "nk-anchor-tr": ["nk-anchor-tr"],
@@ -129,8 +123,6 @@ const twMerge = extendTailwindMerge<KitClassGroup>({
       "nk-pop": ["nk-pop"],
       "nk-rise": ["nk-rise"],
       "nk-stagger": ["nk-stagger"],
-      "nk-press": ["nk-press"],
-      "nk-skeleton": ["nk-skeleton"],
       "nk-blink": ["nk-blink"],
       "nk-indicator": ["nk-indicator"],
     },
@@ -171,7 +163,6 @@ const twMerge = extendTailwindMerge<KitClassGroup>({
       "nk-slab-stack-row": ["font-size", "font-weight", "leading"],
       "nk-slab-line": ["bg-color"],
       "nk-slab-band": ["bg-color", "text-color"],
-      "nk-slab-band-title": ["font-family", "font-size", "font-weight", "leading", "text-transform", "tracking"],
       "nk-anchor-tl": ["nk-anchor-b", "nk-anchor-bl", "nk-anchor-br", "nk-anchor-l", "nk-anchor-r", "nk-anchor-t", "nk-anchor-tr"],
       "nk-anchor-tr": ["nk-anchor-b", "nk-anchor-bl", "nk-anchor-br", "nk-anchor-l", "nk-anchor-r", "nk-anchor-t", "nk-anchor-tl"],
       "nk-anchor-bl": ["nk-anchor-b", "nk-anchor-br", "nk-anchor-l", "nk-anchor-r", "nk-anchor-t", "nk-anchor-tl", "nk-anchor-tr"],
@@ -180,7 +171,6 @@ const twMerge = extendTailwindMerge<KitClassGroup>({
       "nk-anchor-b": ["nk-anchor-bl", "nk-anchor-br", "nk-anchor-l", "nk-anchor-r", "nk-anchor-t", "nk-anchor-tl", "nk-anchor-tr"],
       "nk-anchor-l": ["nk-anchor-b", "nk-anchor-bl", "nk-anchor-br", "nk-anchor-r", "nk-anchor-t", "nk-anchor-tl", "nk-anchor-tr"],
       "nk-anchor-r": ["nk-anchor-b", "nk-anchor-bl", "nk-anchor-br", "nk-anchor-l", "nk-anchor-t", "nk-anchor-tl", "nk-anchor-tr"],
-      "nk-skeleton": ["bg-color", "text-color"],
     },
   },
 })

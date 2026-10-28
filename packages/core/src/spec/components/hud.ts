@@ -121,7 +121,7 @@ export const level: ComponentDef = {
 export const slab: ComponentDef = {
   description: "Transient feedback on the game: item, prompt, progress, band (nk-slab*)",
   inherits: ["chip", "control", "meter"],
-  anatomy: ["icon", "delta", "key", "stack", "line", "band", "band-title"],
+  anatomy: ["icon", "delta", "key", "stack", "line", "band"],
   levers: {
     height: length(css`calc(2.5rem * ${ref("density")})`, "Height", { was: ["nk-slab-height"] }),
     padding: string(css`0 calc(${ref("space.unit")} * 3)`, "Padding", { was: ["nk-slab-padding"] }),
@@ -169,7 +169,6 @@ export const slab: ComponentDef = {
       edge: number(0.6, "The tone's alpha on its edges", { range: [0, 1], floor: true, was: ["nk-slab-band-edge"] }),
       fg: color(pal("hud-foreground"), "Text", { was: ["nk-slab-band-fg"] }),
     },
-    "band-title": { size: length(ref("text.section"), "The band's line", { was: ["nk-slab-band-title-size"] }) },
   },
   state: {
     fill: { type: "color", description: "A skewed part's fill", was: ["nk-slab-fill"] },

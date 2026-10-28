@@ -1425,27 +1425,11 @@
           "description": "How far day closes the gap to opaque",
           "$comment": "identity · surface.legibility-lift"
         },
-        "nk-surface-slash": {
-          "enum": [
-            "none",
-            "cut"
-          ],
-          "description": "A decorative diagonal cut on menus",
-          "$comment": "identity · surface.slash"
-        },
         "nk-material-hud-opacity": {
           "type": "string",
           "pattern": "^-?\\d+(\\.\\d+)?$",
           "description": "Opacity of the hud material",
           "$comment": "identity · material.hud.opacity"
-        },
-        "nk-material-hud-texture": {
-          "enum": [
-            "none",
-            "scanlines"
-          ],
-          "description": "Texture over the hud material",
-          "$comment": "identity · material.hud.texture"
         },
         "nk-material-menu-opacity": {
           "type": "string",
@@ -1468,14 +1452,6 @@
           "pattern": "^-?\\d+(\\.\\d+)?$",
           "description": "The machined top edge of menus (alpha)",
           "$comment": "identity · material.menu.edge"
-        },
-        "nk-material-menu-texture": {
-          "enum": [
-            "none",
-            "scanlines"
-          ],
-          "description": "Texture over the menu material",
-          "$comment": "identity · material.menu.texture"
         },
         "nk-hud-text": {
           "enum": [
@@ -2928,66 +2904,6 @@
           "description": "The header's minimum height",
           "$comment": "component · edge-sheet.header.height"
         },
-        "nk-dialog-shell-width": {
-          "type": "string",
-          "description": "Width (md)",
-          "$comment": "component · dialog-shell.width"
-        },
-        "nk-dialog-shell-width-sm": {
-          "type": "string",
-          "description": "Width (sm)",
-          "$comment": "component · dialog-shell.width-sm"
-        },
-        "nk-dialog-shell-width-lg": {
-          "type": "string",
-          "description": "Width (lg)",
-          "$comment": "component · dialog-shell.width-lg"
-        },
-        "nk-dialog-shell-top": {
-          "type": "string",
-          "description": "Where a top dialog anchors",
-          "$comment": "component · dialog-shell.top"
-        },
-        "nk-dialog-shell-header-gap": {
-          "type": "string",
-          "description": "Between the title and the description",
-          "$comment": "component · dialog-shell.header.gap"
-        },
-        "nk-dialog-shell-header-pad-x": {
-          "type": "string",
-          "description": "Inline padding",
-          "$comment": "component · dialog-shell.header.pad-x"
-        },
-        "nk-dialog-shell-header-pad-y": {
-          "type": "string",
-          "description": "Block padding",
-          "$comment": "component · dialog-shell.header.pad-y"
-        },
-        "nk-dialog-shell-body-pad": {
-          "type": "string",
-          "description": "The body's padding",
-          "$comment": "component · dialog-shell.body.pad"
-        },
-        "nk-dialog-shell-footer-gap": {
-          "type": "string",
-          "description": "Between the hints and the buttons",
-          "$comment": "component · dialog-shell.footer.gap"
-        },
-        "nk-dialog-shell-footer-pad-x": {
-          "type": "string",
-          "description": "Inline padding",
-          "$comment": "component · dialog-shell.footer.pad-x"
-        },
-        "nk-dialog-shell-footer-pad-y": {
-          "type": "string",
-          "description": "Block padding",
-          "$comment": "component · dialog-shell.footer.pad-y"
-        },
-        "nk-dialog-shell-footer-bleed": {
-          "type": "string",
-          "description": "How far the hints reach back into the padding (the first item's own inset lines up with the title)",
-          "$comment": "component · dialog-shell.footer.bleed"
-        },
         "nk-empty-state-gap": {
           "type": "string",
           "description": "Between the header and the actions (panel size)",
@@ -3649,11 +3565,6 @@
           "pattern": "^rgba?\\(",
           "description": "Text",
           "$comment": "component · slab.band.fg"
-        },
-        "nk-slab-band-title-size": {
-          "type": "string",
-          "description": "The band's line",
-          "$comment": "component · slab.band-title.size"
         },
         "nk-item-slot-width": {
           "type": "string",
