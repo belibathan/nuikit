@@ -35,7 +35,7 @@ built from. Superseded docs are deleted, not archived: git has them.
 | [`intents.md`](intents.md) | `nk.notify` … `nk.challenge`: the intent shapes and renderers | Current |
 | [`services.md`](services.md) | `nk.camera`, `nk.controls`, surfaces | Current |
 | [`slots.md`](slots.md) | Slots: how a resource adds to the HUD's clusters | Current |
-| [`tokens.md`](tokens.md) | The theme contract: the token language, the compiler, distribution, prefs, fonts | Current |
+| [`tokens.md`](tokens.md) | The theme contract: the token tiers, the compiler, distribution, prefs, fonts | Current |
 | [`host.md`](host.md) | The one-frame host prototype and its measurements | Reference (opt-in) |
 | [`pause-3d.md`](pause-3d.md), [`loadscreen-events.md`](loadscreen-events.md) | The pause menu's 3D map; loading-screen events | Current |
 | `*-protocol.md` | Clean-room specs of each overridden resource's page protocol (ox_lib, ox_inventory, ox_target, …) | Reference (per override) |
@@ -44,6 +44,6 @@ built from. Superseded docs are deleted, not archived: git has them.
 
 | Doc | What | Status |
 |---|---|---|
-| [`design.md`](design.md) | **The one design doc**: principles, tokens and levers, scale and layout, surfaces, the baseline, the component network, the checklist, naming, how to check it | Current |
+| [`design.md`](design.md) | **The one design doc**: principles, tokens and levers, type and icons, scale and layout, surfaces, the component network, the checklist, naming | Current |
 | [`design/levers.md`](design/levers.md) | The lever catalog, generated from `packages/core/src/spec` | Current (generated) |
 | [`brand/`](brand/README.md), [`assets/`](assets/) | The mark, avatar and site images | Current |

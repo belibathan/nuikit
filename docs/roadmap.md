@@ -4,7 +4,7 @@
 [`next/dispatch.md`](next/dispatch.md). Direction: [`vision.md`](vision.md), [`architecture.md`](architecture.md).
 Rules: [`design.md`](design.md). Design calls: [`next/decisions.md`](next/decisions.md).*
 
-Last updated: Oct 28, 2026 (flat baseline, Glyph and Selection, the Keycap theme).
+Last updated: Oct 28, 2026 (flat baseline, text styles, Hugeicons, the minimap's aspect).
 
 ## Released
 
@@ -31,18 +31,19 @@ screen or another spec: it is a second server, and whatever that server breaks.
 
 - **A second server.** One Qbox or QBCore server that is not the owner's installs nuikit from the zip and
   `install.md`, reports what the first ten minutes look like. Everything below reorders around what it finds.
-- **The owner's in-game checkpoint** on this week's changes: the flat baseline on every screen (keys, rows, the
-  selection, the HUD's glyphs), the Keycap theme from the Settings picker, the template `garage` with the foundation
-  helpers, `nuikit_hud` (the handbrake light, the radar after a restart).
-- **Levers.** `kit.css` declares about 550 `--nk-*` properties and themes set 74. The ones nothing reads (the debt
-  list in `registry/nuikit/test/levers.test.ts`, about 30 by a strict count) go: a spec edit in
-  `packages/core/src/spec` plus `gen:tokens`. Not the ones only kit rules read: those are how a theme moves a rule.
-- **Verify in game** (owner, carried from 0.9): inventory item menu, qbx multichar on the ox_lib context menu, Confirm
-  without DialogShell, the HUD editor on the sliding selection, smooth caret visible enough by default.
+- **The owner's in-game checkpoint** on this week's changes:
+  - the flat baseline on every screen: keys, rows, the sliding selection, the HUD's glyphs, upright and wall-free;
+  - Barlow Condensed upright for titles, labels, keys and numbers in Default and Neon Pop, Geist for sentences; the
+    Keycap theme from the Settings picker (slanted faces, italic caps);
+  - the text styles: no italic left anywhere outside Keycap, sizes and weights unchanged where they were right;
+  - Hugeicons everywhere, including stock shadcn parts (chevrons, checks, close);
+  - the minimap at GTA's aspect (`routeClip = 'mask'`): true to scale, how far the GPS route overhangs the ring;
+  - ox_inventory's count badges and the item menu.
+- **Verify in game** (carried from 0.9): qbx multichar on the ox_lib context menu, Confirm without its old dialog
+  shell, the HUD editor on the sliding selection, the smooth caret visible enough by default.
 
 ## Next
 
-- `nuikit theme new --from <theme>` in the CLI (the studio already does it).
 - The override workflow outside the monorepo: `new-system.mjs` and the POST-log bench as a published starter, or an
   honest "fork the monorepo" page.
 - The framework SDK verified by one custom adapter end to end; a fivem-foundation script's `notify` and `progress`
