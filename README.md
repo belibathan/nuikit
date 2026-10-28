@@ -86,7 +86,7 @@ on npm yet.
 
 ## Themes
 
-**Default** is the flagship and the default: monochrome, Barlow Condensed italic caps for anything you scan, Geist for
+**Default** is the flagship and the default: monochrome, Barlow Condensed upright for anything you scan, Geist for
 sentences, one flat control face for keys, icons and the selection, fills instead of rings, hard drops, no pills, no
 blur. Colour appears only when it means something. Spec: [`docs/design.md`](docs/design.md).
 

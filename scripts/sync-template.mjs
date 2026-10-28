@@ -153,6 +153,8 @@ const nuikitTokens = (mode) => {
 //              check: unproven in game);
 //   false      no @font-face (a UI that brings its own fonts).
 // A font that fails to load falls back down the family's stack (system fonts); nothing breaks.
+// The first line of the stock nuikit/theme.css. While it is there, sync keeps the file identical to themes/default.css.
+const STOCK_THEME = "/* stock theme: pnpm sync keeps this file identical to themes/default.css while this line is first. Paste your own theme over the whole file and sync leaves it alone. */";
 const FONTS_DIR = path.join(root, "packages/core/fonts");
 const FONTS = JSON.parse(fs.readFileSync(path.join(FONTS_DIR, "fonts.json"), "utf8"));
 const FONT_MODE = process.env.NUIKIT_FONTS ?? "bundle";
@@ -252,6 +254,16 @@ for (const t of targets) {
   const fontMode = t.fonts === false ? false : t.dir === "packages/create-nuikit/template" ? "local" : (t.fonts ?? FONT_MODE);
   // the shipped themes (packages/core/themes): copy one over nuikit/theme.css
   if (t.runtime) for (const f of fs.readdirSync(path.join(root, "packages/core/themes"))) copy(`packages/core/themes/${f}`, `themes/${f}`);
+  // the stock server theme (nuikit/theme.css) is Default, kept identical while it carries STOCK_THEME on its first line;
+  // a server's own theme (pasted over the whole file) has no such line and is never touched
+  if (t.runtime) {
+    const dest = path.join(root, t.dir, "theme.css");
+    const current = fs.existsSync(dest) ? fs.readFileSync(dest, "utf8") : null;
+    const stock = `${STOCK_THEME}\n${fs.readFileSync(path.join(root, "packages/core/themes/default.css"), "utf8")}`;
+    if (current === null || current.startsWith(STOCK_THEME)) {
+      if (current !== stock) fs.writeFileSync(dest, stock);
+    } else console.log(`  ${t.dir}/theme.css is a server's own theme (no stock line): left as it is`);
+  }
   if (t.runtime || fontMode === "local") {
     const into = t.runtime ? "fonts" : "web/src/fonts";
     for (const f of fs.readdirSync(FONTS_DIR)) if (/\.(woff2|txt)$/.test(f)) copy(`packages/core/fonts/${f}`, `${into}/${f}`);

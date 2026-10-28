@@ -78,6 +78,10 @@
   --nk-accent-via: #a066f2;
   --nk-accent-to: #f04d6e;
 
+  /* the scanned voices (keys, titles, labels, numbers) in Barlow Condensed, upright; sentences stay Geist */
+  --font-display: "Barlow Condensed", "Arial Narrow", sans-serif;
+  --font-numeric: "Barlow Condensed", "Arial Narrow", sans-serif;
+
   /* tunes on the baseline */
   --nk-control-face-color: rgb(22, 22, 22);
   --nk-control-face-ink: rgb(250, 250, 250);

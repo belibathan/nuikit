@@ -15,6 +15,36 @@
     },
     {
       "family": "Barlow Condensed",
+      "file": "barlow-condensed-latin-600-normal.woff2",
+      "weight": "600",
+      "identity": [
+        "default",
+        "neon-pop"
+      ],
+      "license": "barlow-condensed.OFL.txt"
+    },
+    {
+      "family": "Barlow Condensed",
+      "file": "barlow-condensed-latin-700-normal.woff2",
+      "weight": "700",
+      "identity": [
+        "default",
+        "neon-pop"
+      ],
+      "license": "barlow-condensed.OFL.txt"
+    },
+    {
+      "family": "Barlow Condensed",
+      "file": "barlow-condensed-latin-800-normal.woff2",
+      "weight": "800",
+      "identity": [
+        "default",
+        "neon-pop"
+      ],
+      "license": "barlow-condensed.OFL.txt"
+    },
+    {
+      "family": "Barlow Condensed",
       "file": "barlow-condensed-latin-700-italic.woff2",
       "weight": "700",
       "style": "italic",

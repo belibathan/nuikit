@@ -224,7 +224,7 @@ HUD plate (`--nk-plate-*`, `--hud`), the chip radius, a Fill for the level or th
 
 Theme fonts are open (SIL OFL 1.1) woff2 files, latin subset (`unicode-range`; other scripts fall back down the
 stack to system fonts). One source: `packages/core/fonts/` (`fonts.json` lists family, file, weights, the themes that
-use it and the licence). Today: Geist and Geist Mono (every theme), Barlow Condensed italic 600–800 (the Keycap theme's display
+use it and the licence). Today: Geist and Geist Mono (every theme), Barlow Condensed upright 600–800 (Default and Neon Pop's display and numbers, bundled in every UI) and italic 600–800 (the Keycap theme's display
 voice). Never a Google Fonts URL at runtime. `pnpm sync` writes the `@font-face` rules into every UI's `index.css`,
 per UI (`nuikit.json` `"fonts"`, or `NUIKIT_FONTS`):
 

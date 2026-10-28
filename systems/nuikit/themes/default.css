@@ -1,7 +1,8 @@
 /*
  * Default: nuikit's flagship theme, and the one a new project and the stock server get. Black and white:
  * near-black surfaces, white text and lines, greys for hierarchy, colour only where it means something
- * (status, a role, a vital in alert). One face (Geist) for everything, upright and in sentence case; flat
+ * (status, a role, a vital in alert). Barlow Condensed upright for anything you scan (keys, titles, labels,
+ * numbers), Geist for sentences, both in sentence case; flat
  * controls (no slant, no wall, no plate), solid fills, hard drops, no pills, no blur. Those are the token
  * language's own defaults (packages/core/src/spec): Default is a palette and a few tunes on top of them, and
  * every lever is in docs/design/levers.md. The keycap look (slanted faces on walls, condensed italic caps)
@@ -9,7 +10,8 @@
  *
  * Use it: copy this file over nuikit/theme.css, then `nuikit theme reload`. The compiler keeps only
  * variables and @import URLs, so the few rules tokens can't say live in the nuikit resource's
- * theme/default.css, imported below. The fonts (Geist; SIL OFL 1.1) ship in every UI through fonts.json.
+ * theme/default.css, imported below. The fonts (Geist, Barlow Condensed; SIL OFL 1.1) ship in every UI through
+ * fonts.json.
  */
 @import url("https://cfx-nui-nuikit/theme/default.css");
 
@@ -77,6 +79,10 @@
   --nk-hue-tint: 0.1;
   --nk-hue-glow: 0.25;
   --nk-hue-alert: 0.8;
+
+  /* the scanned voices (keys, titles, labels, numbers) in Barlow Condensed, upright; sentences stay Geist */
+  --font-display: "Barlow Condensed", "Arial Narrow", sans-serif;
+  --font-numeric: "Barlow Condensed", "Arial Narrow", sans-serif;
 
   /* tunes on the baseline */
   --nk-control-face-color: rgb(22, 22, 22);
