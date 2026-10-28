@@ -143,7 +143,7 @@ resolutions): [`shots/graphite.jpg`](shots/graphite.jpg) (the utilitarian baseli
 [`shots/signal.jpg`](shots/signal.jpg), [`shots/velvet.jpg`](shots/velvet.jpg),
 [`shots/vector.jpg`](shots/vector.jpg), and [`shots/daylight.jpg`](shots/daylight.jpg): the flexibility
 check (`packages/core/test/themes/daylight.css`, light, roomy and round, no kit changes;
-`docs/tokens.md#flexibility`). Full-size PNGs are written next to them and not committed.
+`docs/tokens.md`). Full-size PNGs are written next to them and not committed.
 
 Known gaps the tokens can't close (other lanes' files, step 3): the death title and bank balance use their
 own type classes, not `nk-display`, so their fonts follow `--font-sans` / `--font-numeric` rather than

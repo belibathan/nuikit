@@ -19,7 +19,7 @@ const hex = (v: string | undefined) => {
 };
 
 /**
- * The nuikit identities (tokens 1.1+, docs/tokens.md#identities): colour plus type, shape, surface,
+ * The nuikit identities (tokens 1.1+, docs/tokens.md): colour plus type, shape, surface,
  * density, motion and HUD style. First in the pickers on /blocks and /theme; the swatch is the
  * compiled brand, foreground and background.
  */

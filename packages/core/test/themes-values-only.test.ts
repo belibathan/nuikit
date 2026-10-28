@@ -78,7 +78,7 @@ describe("themes set values only (D4)", () => {
 });
 
 /**
- * Component tokens a theme may also set: what kit.css declares on :root (docs/tokens.md#component-tokens-11; they pass
+ * Component tokens a theme may also set: what kit.css declares on :root (docs/tokens.md; they pass
  * through the compiler as-is), plus the HUD's documented ring levers (systems/nuikit_hud hud.css). docs/design/levers.md
  * lists them; promoting one to tokens.ts needs nothing here.
  */

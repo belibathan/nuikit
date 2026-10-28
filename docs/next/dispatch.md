@@ -24,7 +24,7 @@ run the gate, push, and end the turn with: what's in it, what needs an in-game c
 
 **The owner's local session** (`C:\dev\nuikit`, junctioned into his Qbox server): works live in game, hot-reloading a system
 (`pnpm --filter ./systems/<x>/web dev`) or deploying an addon (`pnpm build`, `.local\deploy.ps1`), and commits straight to
-`main` when it's right. Practical notes: [`handoff.md`](handoff.md) §6. Both pull with rebase before each item.
+`main` when it's right. Practical notes below. Both pull with rebase before each item.
 
 ## The design rule (settles design questions)
 
@@ -62,3 +62,20 @@ one change that breaks servers. CI runs on `main` after the push (build, typeche
   page; validate types and ranges; check identity, permission, presence and distance on the server; move money and items
   atomically with rollback; rate-limit per player; never send identifiers to the page; Lua tests for each rule.
 - Credit `@belibathan` only. Never print or commit secrets.
+
+## Working on the owner's machine
+
+- Repo `C:\dev\nuikit`; server data `C:\FXServer\txData\Qbox_D52860.base` (`server.cfg` holds secrets: never
+  print). Systems are junctioned into the server; addons deploy with `.local\deploy.ps1` after `pnpm build`.
+- **`systems/nuikit/theme.css` is locally modified** (the owner's private server palette; its source copy is in
+  `.local/`): never commit it; `git stash push -- systems/nuikit/theme.css` around merges, and restore it from the
+  `.local/` copy if lost. The committed stock is Default; `.local/theme-ink-server.css` is a backup of it.
+- Live loop: `pnpm --filter ./systems/<x>/web dev` hot-reloads that page in game (the vite plugin rewrites
+  `ui_page`, restored on exit); `.local\nk-restart.ps1 <resource>` restarts a resource via `nuikit_dev`.
+  **Never queue `nuikit` or `ox_lib`** (refused: restarting them stops `nuikit_dev` mid-command and crashed
+  FXServer). Those need the txAdmin console or a full restart.
+- Full restart: txAdmin (owner logs in; the agent must not enter credentials) or stop/start `FXServer.exe` in a
+  terminal tab. ox_lib/ox_target UI changes need a full restart.
+- Don't use worktree isolation from a session whose cwd might be another repo: create worktrees explicitly with
+  `git -C C:/dev/nuikit worktree add …`. Never touch the owner's private server repo.
+- Credit `@belibathan` only. No server names (the private palette ships publicly only as "Neon Pop").

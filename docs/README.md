@@ -7,9 +7,8 @@ built from. Superseded docs are deleted, not archived: git has them.
 
 | Doc | What | Status |
 |---|---|---|
-| [`roadmap.md`](roadmap.md) | **The one tracker**: released, where we are, the 0.9 plan, unmerged work | Current |
-| [`next/handoff.md`](next/handoff.md) | Where everything stood on Oct 23, 2026: state, the philosophy, open bugs, the owner's screenshots | Current (dated snapshot) |
-| [`next/dispatch.md`](next/dispatch.md) | How the agents work: the stance, lanes and file ownership, the gate, the design rule | Current |
+| [`roadmap.md`](roadmap.md) | **The one tracker**: released, where we are, now, next, later | Current |
+| [`next/dispatch.md`](next/dispatch.md) | How the agents work: the stance, one trunk, the gate, the design rule, the owner's machine | Current |
 | [`next/decisions.md`](next/decisions.md) | The design-call log (default + switch per decision) | Current, append-only |
 | [`../fivem-foundation/AGENTS.md`](../fivem-foundation/AGENTS.md) | **The Lua standard** (fivem-foundation, a submodule): workflow, hard rules, pitfalls; `STANDARDS.md` §1–§26 behind it. [`next/foundation-gaps.md`](next/foundation-gaps.md) is nuikit's audit against it | Current |
 | [`packages/core/src/spec/api`](../packages/core/src/spec/api) → [`arsenal.json`](../packages/core/arsenal.json), site `/kit` | **The arsenal, the API's source of truth**: every domain (`nk.<domain>.<verb>`, `nuikit-core/<domain>`, `nuikit:<domain>:<event>`), its entries, events, rules, old names; generates the entry points, `lua/api.lua`, the event types, `/kit` and the `nuikit check` arsenal rules (`pnpm --filter nuikit-core arsenal`) | Current |
@@ -36,7 +35,7 @@ built from. Superseded docs are deleted, not archived: git has them.
 | [`intents.md`](intents.md) | `nk.notify` … `nk.challenge`: the intent shapes and renderers | Current |
 | [`services.md`](services.md) | `nk.camera`, `nk.controls`, surfaces | Current |
 | [`slots.md`](slots.md) | Slots: how a resource adds to the HUD's clusters | Current |
-| [`tokens.md`](tokens.md) | Tokens (revision 1.7): tiers, the DTCG file, the theme pipeline, prefs | Current |
+| [`tokens.md`](tokens.md) | The theme contract: the token language, the compiler, distribution, prefs, fonts | Current |
 | [`host.md`](host.md) | The one-frame host prototype and its measurements | Reference (opt-in) |
 | [`pause-3d.md`](pause-3d.md), [`loadscreen-events.md`](loadscreen-events.md) | The pause menu's 3D map; loading-screen events | Current |
 | `*-protocol.md` | Clean-room specs of each overridden resource's page protocol (ox_lib, ox_inventory, ox_target, …) | Reference (per override) |

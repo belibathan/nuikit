@@ -1,4 +1,4 @@
-// The glow budget (tokens 1.4, docs/tokens.md#attention): at most --nk-surface-glow-budget parts glow at once.
+// The glow budget (tokens 1.4, docs/tokens.md): at most --nk-surface-glow-budget parts glow at once.
 // A part that may glow carries data-nk-glow (a number ranks it: higher first); this marks the winners
 // data-nk-glow-on and kit.css zeroes the glow of the rest. Focused parts win (data-state="focus",
 // data-focused, :focus-visible), then rank, then the later in the document (on top). Budget 0: no limit.

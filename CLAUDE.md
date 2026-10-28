@@ -6,7 +6,7 @@ intents (notify, menu, input…) and swappable, themed renderers draw them; adap
 scripts in without rewrites; bespoke screens join through the protocol. The kit (stock shadcn/ui, one
 TweakCN theme) is the default look and the showcase, not the product. Design: `docs/architecture.md`.
 
-**Start here (Oct 23, 2026):** [`docs/roadmap.md`](docs/roadmap.md) is the one tracker (the 0.9 plan: finish the foundations, the adoption surface, the rails); [`docs/next/handoff.md`](docs/next/handoff.md) is the dated state snapshot (philosophy, open bugs, owner screenshots); [`docs/design.md`](docs/design.md) is the one design doc; [`docs/README.md`](docs/README.md) says what every other doc is and whether it's current.
+**Start here:** [`docs/roadmap.md`](docs/roadmap.md) is the one tracker (now, next, later); [`docs/design.md`](docs/design.md) is the one design doc; [`docs/tokens.md`](docs/tokens.md) the theme contract; [`docs/README.md`](docs/README.md) says what every other doc is.
 
 **How we work (Oct 22, 2026: fast, many agents, one direction):**
 - **Nobody runs this in production yet. Ship, break, fix.** Many agents moving the same way beat one agent
@@ -48,7 +48,7 @@ Direction: `docs/vision.md`, then `docs/architecture.md`. Parallel agents: `docs
 | `apps/www` | The site + registry host (Vercel, deploys from `main`). |
 | `scripts/` | `sync-template.mjs` (`pnpm sync`), `pack-systems.mjs` (`pnpm pack:systems` → `out/nuikit.zip`), `new-system.mjs` (scaffold), `vendor-shadcn.mjs`, `kit-merge.mjs`, `prune-branches.mjs` (delete fully-merged branches), `server/setup-windows.ps1`. |
 | `bench/host` | Host benchmark (iframes vs one frame) and the host's end-to-end check. Results in `results.md`. |
-| `docs/` | `README.md` is the index. `roadmap.md` (the one tracker), `next/` (dispatch, decisions, handoff), `vision.md`, `architecture.md`, `protocol.md` (v1), `tokens.md`, `design.md` (the one design doc; `design/levers.md` is generated), `coverage.md`, `doctor.md`, the `*-protocol.md` specs, `releases/`. Superseded docs are deleted, not archived. |
+| `docs/` | `README.md` is the index. `roadmap.md` (the one tracker), `next/` (dispatch, decisions, foundation-gaps), `vision.md`, `architecture.md`, `protocol.md` (v1), `tokens.md`, `design.md` (the one design doc; `design/levers.md` is generated), `coverage.md`, `doctor.md`, the `*-protocol.md` specs, `releases/`. Superseded docs are deleted, not archived. |
 
 ## Commands
 

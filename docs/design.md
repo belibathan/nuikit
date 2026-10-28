@@ -57,10 +57,11 @@ four tiers that only reference upward:
 `compileTheme("")` fills the defaults (Graphite, the token default). A theme is any shadcn or TweakCN paste plus the
 levers it wants; everything else is derived. `--nk-scale` and `--nk-motion` combine the theme with the player's prefs.
 
-**The lever rule (Oct 27, 2026).** No new lever until a theme, a component or a server needs it. A lever no theme sets
-and no component reads is deleted, not kept for later (`registry/nuikit/test/levers.test.ts` holds the line). Today
-`kit.css` declares about 550; themes set 74 of them; 231 are read only inside `kit.css` and are candidates to become
-plain values. Shrinking that number is the standing cleanup item.
+**The lever rule (Oct 27, 2026).** No new lever until a theme, a component or a server needs it. A lever nothing
+reads (not a kit rule, not a component, not the compiler) is deleted, not kept for later:
+`registry/nuikit/test/levers.test.ts` holds the line and lists the known debt. Today `kit.css` declares about 550;
+themes set 74. A lever only kit rules read is still a lever (that is how a theme moves a rule); one nothing reads is
+dead. Working the debt list down to zero is the standing cleanup item.
 
 ## 3. Scale and layout
 

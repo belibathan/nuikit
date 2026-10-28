@@ -61,7 +61,7 @@ needs another lane.
   in the last 30 s, which the component already does on the kit's rules).
 - Subtitle and "Waiting for help" use `text-foreground/75` over the game: the death screen is text on
   the game, which has its own tokens (`--world-foreground`, `-muted`, `--world-shadow`;
-  `docs/tokens.md#text-on-the-game`). The block root now wears `nk-on-game`, so `text-foreground`
+  `docs/tokens.md`). The block root now wears `nk-on-game`, so `text-foreground`
   reads the world colour and carries the world shadow in any theme (Daylight included), and the
   secondary lines use `text-world-foreground-muted`. **fix**
 - Background gradients in inline `style` read `var(--destructive)` / `var(--scrim)`: tokens, no
@@ -75,7 +75,7 @@ needs another lane.
   is exactly that (avatar/initials, name, job + grade, duty dot and words, stats grid). **fix**: on
   `PlayerCard`, with the players-online meter and server ID as its children.
 - Server name as `text-xl leading-7 font-semibold tracking-tight` → `nk-display` ("the pause title"
-  is one of the four display moments in `docs/tokens.md#display-and-caption`). **fix**
+  is one of the four display moments in `docs/tokens.md`). **fix**
 - `links` list: a `dl` with `text-sm` → `nk-label` / `nk-num`. **fix**
 - Keyboard: W/S and arrows between rows; local, no POST. **keep**
 - States: full, opening (no server answer yet), no-character, minimal, confirming. `/blocks` lacked

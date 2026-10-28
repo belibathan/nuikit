@@ -13,7 +13,7 @@ talk.set({ hidden = true })                -- keep the slot, draw nothing
 talk.remove()                              -- leave the cluster (or NUI.unslot('vitals', 'talk'))
 ```
 
-`order` (default 100, lower first) and whatever the cluster draws: `label`, `icon`, `hue` (a [role](tokens.md#foundation-14)),
+`order` (default 100, lower first) and whatever the cluster draws: `label`, `icon`, `hue` (a [role](tokens.md)),
 `level` (0–1, its meaning is the slot's own), `value`, `alert`, `hidden`. `key` and `resource` are fixed. A stopped
 resource leaves every cluster it joined. `NUI.slots()` reads the whole set.
 
