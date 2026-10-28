@@ -54,6 +54,12 @@ export interface LeverDef {
   rule?: string;
   /** The names this lever replaces (pre-language). migration.json and the codemod are generated from these. */
   was?: readonly string[];
+  /**
+   * One of the canonical choices a theme author makes: the public surface of the design language (about forty levers,
+   * identity tier only). Everything else is derived from these and is the reference renderer's business. The catalog
+   * lists them first; the studio shows them first; another implementation of the language must honour them.
+   */
+  core?: boolean;
 }
 
 /** A custom property set by kit.css rules for one state (the face colour a tile shows right now): no default, no theme value. */

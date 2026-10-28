@@ -14,6 +14,15 @@ const refsOf = (v: Value): Ref[] => (v.kind === "ref" ? [v, ...(v.fallback ? [v.
 const TIER = { identity: 0, semantic: 1, component: 2 } as const;
 
 describe("the token language", () => {
+  it("the core identity is small and sits in the identity tier: the language a theme author learns", () => {
+    const core = LEVERS.filter((l) => l.core);
+    expect(core.length).toBeGreaterThanOrEqual(24);
+    expect(core.length).toBeLessThanOrEqual(48);
+    for (const l of core) expect(l.tier, l.path).toBe("identity");
+    // the four things a designer decides first are in it
+    for (const p of ["@primary", "font.display", "shape.skew", "motion.duration", "style.fill"]) expect(core.some((l) => l.path === p), p).toBe(true);
+  });
+
   it("every lever has exactly one declaration (one path, one CSS name)", () => {
     const paths = LEVERS.map((l) => l.path);
     const names = [...LEVERS.map((l) => l.css), ...STATE.map((s) => s.css)];

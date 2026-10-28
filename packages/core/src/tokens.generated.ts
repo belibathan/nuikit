@@ -17,6 +17,8 @@ export interface LeverRow {
   attr?: string;
   derived?: boolean;
   rule?: string;
+  /** One of the canonical choices a theme author makes (the public surface of the language). */
+  core?: boolean;
 }
 
 export const LEVER_ROWS: readonly LeverRow[] = [
@@ -28,7 +30,8 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "type": "color",
     "default": "oklch(0.145 0 0)",
     "description": "Full-screen surfaces (pause, loading, death scrim)",
-    "rule": "stock shadcn neutral"
+    "rule": "stock shadcn neutral",
+    "core": true
   },
   {
     "name": "foreground",
@@ -38,7 +41,8 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "type": "color",
     "default": "oklch(0.985 0 0)",
     "description": "Text on full-screen surfaces",
-    "rule": "stock shadcn neutral"
+    "rule": "stock shadcn neutral",
+    "core": true
   },
   {
     "name": "card",
@@ -68,7 +72,8 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "type": "color",
     "default": "oklch(0.205 0 0)",
     "description": "Every floating panel",
-    "rule": "stock shadcn neutral"
+    "rule": "stock shadcn neutral",
+    "core": true
   },
   {
     "name": "popover-foreground",
@@ -78,7 +83,8 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "type": "color",
     "default": "oklch(0.985 0 0)",
     "description": "Text in panels",
-    "rule": "stock shadcn neutral"
+    "rule": "stock shadcn neutral",
+    "core": true
   },
   {
     "name": "primary",
@@ -88,7 +94,8 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "type": "color",
     "default": "oklch(0.922 0 0)",
     "description": "The one main action per surface, the keycap face, selection",
-    "rule": "stock shadcn neutral"
+    "rule": "stock shadcn neutral",
+    "core": true
   },
   {
     "name": "primary-foreground",
@@ -98,7 +105,8 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "type": "color",
     "default": "oklch(0.205 0 0)",
     "description": "Text on primary",
-    "rule": "stock shadcn neutral"
+    "rule": "stock shadcn neutral",
+    "core": true
   },
   {
     "name": "secondary",
@@ -128,7 +136,8 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "type": "color",
     "default": "oklch(0.269 0 0)",
     "description": "Tracks, slots and wells inside a panel",
-    "rule": "stock shadcn neutral"
+    "rule": "stock shadcn neutral",
+    "core": true
   },
   {
     "name": "muted-foreground",
@@ -138,7 +147,8 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "type": "color",
     "default": "oklch(0.708 0 0)",
     "description": "Secondary text",
-    "rule": "stock shadcn neutral"
+    "rule": "stock shadcn neutral",
+    "core": true
   },
   {
     "name": "accent",
@@ -168,7 +178,8 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "type": "color",
     "default": "oklch(0.704 0.191 22.216)",
     "description": "Danger, damage, low values, death",
-    "rule": "stock shadcn neutral"
+    "rule": "stock shadcn neutral",
+    "core": true
   },
   {
     "name": "destructive-foreground",
@@ -188,7 +199,8 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "type": "color",
     "default": "oklch(1 0 0 / 10%)",
     "description": "Hairlines",
-    "rule": "stock shadcn neutral"
+    "rule": "stock shadcn neutral",
+    "core": true
   },
   {
     "name": "input",
@@ -268,7 +280,8 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "type": "length",
     "default": "0.75rem",
     "description": "The radius scale's base: every radius step derives from it",
-    "rule": "0.75rem"
+    "rule": "0.75rem",
+    "core": true
   },
   {
     "name": "brand",
@@ -278,7 +291,8 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "type": "color",
     "default": "var(--primary)",
     "description": "The server's signature: active marks, needles, the accent's stops",
-    "rule": "primary if chromatic (OKLCH C ≥ 0.06), else chart-1"
+    "rule": "primary if chromatic (OKLCH C ≥ 0.06), else chart-1",
+    "core": true
   },
   {
     "name": "brand-foreground",
@@ -358,7 +372,8 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "type": "color",
     "default": "rgba(0, 0, 0, 0.45)",
     "description": "Surfaces drawn straight on the game: HUD chips, hotbar",
-    "rule": "rgba(0, 0, 0, 0.45)"
+    "rule": "rgba(0, 0, 0, 0.45)",
+    "core": true
   },
   {
     "name": "hud-foreground",
@@ -1286,7 +1301,8 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "scope": "font",
     "type": "font",
     "default": "Geist, Inter, \"Segoe UI\", system-ui, sans-serif",
-    "description": "Sentences (the body voice)"
+    "description": "Sentences (the body voice)",
+    "core": true
   },
   {
     "name": "font-display",
@@ -1295,7 +1311,8 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "scope": "font",
     "type": "font",
     "default": "\"Barlow Condensed\", \"Arial Narrow\", sans-serif",
-    "description": "Anything scanned: keys, titles, labels, captions"
+    "description": "Anything scanned: keys, titles, labels, captions",
+    "core": true
   },
   {
     "name": "font-numeric",
@@ -1313,7 +1330,8 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "scope": "font",
     "type": "font",
     "default": "\"Geist Mono\", ui-monospace, monospace",
-    "description": "Codes and IDs a player might type"
+    "description": "Codes and IDs a player might type",
+    "core": true
   },
   {
     "name": "nk-scale",
@@ -1339,7 +1357,8 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "range": [
       0.75,
       1.3
-    ]
+    ],
+    "core": true
   },
   {
     "name": "nk-space-1",
@@ -1644,7 +1663,8 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "range": [
       -20,
       20
-    ]
+    ],
+    "core": true
   },
   {
     "name": "nk-shape-slab",
@@ -1667,7 +1687,8 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "scope": "shape",
     "type": "length",
     "default": "0px",
-    "description": "Chamfered corners (top left, bottom right) as clip-path; 0 = off"
+    "description": "Chamfered corners (top left, bottom right) as clip-path; 0 = off",
+    "core": true
   },
   {
     "name": "nk-shape-stroke",
@@ -1676,7 +1697,8 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "scope": "shape",
     "type": "length",
     "default": "1px",
-    "description": "Hairline weight of plates, rims and fields"
+    "description": "Hairline weight of plates, rims and fields",
+    "core": true
   },
   {
     "name": "nk-type-ratio",
@@ -1689,7 +1711,8 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "range": [
       1,
       1.6
-    ]
+    ],
+    "core": true
   },
   {
     "name": "nk-type-weight-body",
@@ -1760,7 +1783,8 @@ export const LEVER_ROWS: readonly LeverRow[] = [
       "none",
       "uppercase"
     ],
-    "attr": "case"
+    "attr": "case",
+    "core": true
   },
   {
     "name": "nk-type-slant",
@@ -1774,7 +1798,8 @@ export const LEVER_ROWS: readonly LeverRow[] = [
       "normal",
       "italic"
     ],
-    "attr": "slant"
+    "attr": "slant",
+    "core": true
   },
   {
     "name": "nk-type-overhang",
@@ -2146,7 +2171,8 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "range": [
       0,
       0.12
-    ]
+    ],
+    "core": true
   },
   {
     "name": "nk-surface-gradient",
@@ -2175,7 +2201,8 @@ export const LEVER_ROWS: readonly LeverRow[] = [
       "deep",
       "hard"
     ],
-    "attr": "elevation"
+    "attr": "elevation",
+    "core": true
   },
   {
     "name": "nk-surface-glow",
@@ -2271,7 +2298,8 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "range": [
       0,
       1
-    ]
+    ],
+    "core": true
   },
   {
     "name": "nk-material-hud-texture",
@@ -2300,7 +2328,8 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "range": [
       0,
       1
-    ]
+    ],
+    "core": true
   },
   {
     "name": "nk-material-menu-blur",
@@ -2363,7 +2392,8 @@ export const LEVER_ROWS: readonly LeverRow[] = [
       "none",
       "soft",
       "strong"
-    ]
+    ],
+    "core": true
   },
   {
     "name": "nk-motion",
@@ -2389,7 +2419,8 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "range": [
       0,
       2000
-    ]
+    ],
+    "core": true
   },
   {
     "name": "nk-motion-ease",
@@ -2398,7 +2429,8 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "scope": "motion",
     "type": "ease",
     "default": "cubic-bezier(0.2, 0, 0, 1)",
-    "description": "The curve of anything arriving"
+    "description": "The curve of anything arriving",
+    "core": true
   },
   {
     "name": "nk-motion-feel",
@@ -2414,7 +2446,8 @@ export const LEVER_ROWS: readonly LeverRow[] = [
       "smooth",
       "stepped"
     ],
-    "attr": "feel"
+    "attr": "feel",
+    "core": true
   },
   {
     "name": "nk-motion-bounce",
@@ -2482,7 +2515,8 @@ export const LEVER_ROWS: readonly LeverRow[] = [
       "solid",
       "soft"
     ],
-    "attr": "fill"
+    "attr": "fill",
+    "core": true
   },
   {
     "name": "nk-style-level",
@@ -2499,7 +2533,8 @@ export const LEVER_ROWS: readonly LeverRow[] = [
       "slab",
       "pips"
     ],
-    "attr": "level"
+    "attr": "level",
+    "core": true
   },
   {
     "name": "nk-style-hold",
@@ -2529,7 +2564,8 @@ export const LEVER_ROWS: readonly LeverRow[] = [
       "bar",
       "digital"
     ],
-    "attr": "gauge"
+    "attr": "gauge",
+    "core": true
   },
   {
     "name": "nk-style-focus",
@@ -2547,7 +2583,8 @@ export const LEVER_ROWS: readonly LeverRow[] = [
       "invert",
       "bar"
     ],
-    "attr": "focus"
+    "attr": "focus",
+    "core": true
   },
   {
     "name": "nk-style-vital",
@@ -2617,7 +2654,8 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "range": [
       0,
       1
-    ]
+    ],
+    "core": true
   },
   {
     "name": "nk-behavior-rest",
@@ -7098,3 +7136,6 @@ export const ANATOMY = {
 } as const;
 
 export const STATE_VARS: readonly string[] = ["nk-zone-inset","nk-zone-z","nk-grid-cols","nk-tile-now-face","nk-tile-now-ink","nk-tile-now-rim","nk-tile-now-plate","nk-tile-x","nk-tile-y","nk-tile-sel-face","nk-tile-sel-wall","nk-tile-sel-shade","nk-tile-sel-ink","nk-tile-sel-rim","nk-tile-sel-shape","nk-tile-host-radius","nk-tile-host-clip","nk-tile-tone","nk-panel-backdrop","nk-notice-tone-rgb","nk-notice-delay","nk-chip-tone","nk-chip-tone-rgb","nk-vital-chip-face","nk-vital-chip-tag","nk-vital-chip-tag-pad","nk-vital-chip-room","nk-vital-chip-d","nk-level-fill-now","nk-level-fill-opacity","nk-slab-fill","nk-slab-stroke","nk-slab-progress","nk-slab-line-fill"];
+
+/** The core identity: the canonical choices a theme author makes, in the catalog's order (compiled-theme keys). */
+export const CORE_LEVERS: readonly string[] = ["background","foreground","popover","popover-foreground","primary","primary-foreground","muted","muted-foreground","destructive","border","radius","brand","hud","font-sans","font-display","font-mono","nk-density","nk-shape-skew","nk-shape-cut","nk-shape-stroke","nk-type-ratio","nk-type-case","nk-type-slant","nk-surface-tint","nk-surface-elevation","nk-material-hud-opacity","nk-material-menu-opacity","nk-hud-text","nk-motion-duration","nk-motion-ease","nk-motion-feel","nk-style-fill","nk-style-level","nk-style-gauge","nk-style-focus","nk-behavior-alert"];

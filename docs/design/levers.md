@@ -12,6 +12,75 @@ generated `@layer nk.base` block, and components read only levers. Four tiers, e
 
 **655 levers** (247 identity, 60 semantic, 348 component) · **38 components** · **34 state variables** (set by kit.css rules per state; not levers). Old names: `packages/core/spec/migration.json`, applied by `node packages/core/scripts/migrate-levers.mjs <path>`.
 
+## The language: the core identity
+
+The design language is these **36 choices**. A theme author sets some of them; everything else below is derived from them and
+is the reference renderer's business. Another implementation of the language (another framework, another engine) honours these and
+the primitives' anatomy, and may emit them under any CSS prefix: the contract is the path (`tokens/nuikit.levers.json`, a W3C Design
+Tokens file), not the `--nk-` name nuikit's kit uses. The palette rows are shadcn's own names, so any shadcn or TweakCN theme is a theme.
+
+| Lever | Type | Default | Range / values | What it moves |
+|---|---|---|---|---|
+| `--background` | color | `stock shadcn neutral` |  | Full-screen surfaces (pause, loading, death scrim) |
+| `--foreground` | color | `stock shadcn neutral` |  | Text on full-screen surfaces |
+| `--popover` | color | `stock shadcn neutral` |  | Every floating panel |
+| `--popover-foreground` | color | `stock shadcn neutral` |  | Text in panels |
+| `--primary` | color | `stock shadcn neutral` |  | The one main action per surface, the keycap face, selection |
+| `--primary-foreground` | color | `stock shadcn neutral` |  | Text on primary |
+| `--muted` | color | `stock shadcn neutral` |  | Tracks, slots and wells inside a panel |
+| `--muted-foreground` | color | `stock shadcn neutral` |  | Secondary text |
+| `--destructive` | color | `stock shadcn neutral` |  | Danger, damage, low values, death |
+| `--border` | color | `stock shadcn neutral` |  | Hairlines |
+| `--radius` | length | `0.75rem` |  | The radius scale's base: every radius step derives from it |
+| `--brand` | color | `primary if chromatic (OKLCH C ≥ 0.06), else chart-1` |  | The server's signature: active marks, needles, the accent's stops |
+| `--hud` | color | `rgba(0, 0, 0, 0.45)` |  | Surfaces drawn straight on the game: HUD chips, hotbar |
+| `--font-sans` | font | `Geist, Inter, "Segoe UI", system-ui, sans-serif` |  | Sentences (the body voice) |
+| `--font-display` | font | `"Barlow Condensed", "Arial Narrow", sans-serif` |  | Anything scanned: keys, titles, labels, captions |
+| `--font-mono` | font | `"Geist Mono", ui-monospace, monospace` |  | Codes and IDs a player might type |
+| `--nk-density` | number | `1` | 0.75–1.3 | Spacing multiplier: 0.75 compact … 1.3 roomy |
+| `--nk-shape-skew` | angle | `-12deg` | -20–20 | The keycap's slant: tile faces, the primary button, the selection (their boxes and text stay upright); at most ±20deg |
+| `--nk-shape-cut` | length | `0px` |  | Chamfered corners (top left, bottom right) as clip-path; 0 = off |
+| `--nk-shape-stroke` | length | `1px` |  | Hairline weight of plates, rims and fields |
+| `--nk-type-ratio` | number | `1.25` | 1–1.6 | Step between type sizes: 1.125 calm … 1.333 dramatic |
+| `--nk-type-case` | keyword | `uppercase` | none uppercase | Anything scanned (keys, titles, labels, captions) in caps or as written |
+| `--nk-type-slant` | keyword | `italic` | normal italic | The scanned voices upright or italic (a real italic where the face has one) |
+| `--nk-surface-tint` | number | `0` | 0–0.12 | How much brand tints neutral surfaces |
+| `--nk-surface-elevation` | keyword | `hard` | none soft deep hard | Shadow recipe: hard is a solid offset drop, no blur |
+| `--nk-material-hud-opacity` | number | `0.8` | 0–1 | Opacity of the hud material |
+| `--nk-material-menu-opacity` | number | `0.94` | 0–1 | Opacity of the menu material (floor 0.92 for text) |
+| `--nk-hud-text` | keyword | `soft` | none soft strong | Shadow under text drawn on the game (semantic depth.text draws it) |
+| `--nk-motion-duration` | time | `180ms` | 0–2000 | Base duration d: the ladder is snap 0.5d, fast 0.667d, base d, slow 1.556d, fill 2.333d |
+| `--nk-motion-ease` | ease | `cubic-bezier(0.2, 0, 0, 1)` |  | The curve of anything arriving |
+| `--nk-motion-feel` | keyword | `crisp` | crisp snap smooth stepped | How it moves: crisp, snap (flash instead of press scale), smooth (longer springs), stepped |
+| `--nk-style-fill` | keyword | `solid` | solid soft | Fills, the selection face and levels: solid (flat, vivid) or soft (a tint) |
+| `--nk-style-level` | keyword | `liquid` | bar ring liquid slab pips | How a level (0–1) is drawn by vitals, meters, holds |
+| `--nk-style-gauge` | keyword | `digital` | arc bar digital | How gauges are drawn |
+| `--nk-style-focus` | keyword | `halo` | ring halo tint fill invert bar | Focus on parts that are not rows (rows and buttons light like hover) |
+| `--nk-behavior-alert` | number | `0.2` | 0–1 | A level at or under this is an alert (vitals, durability) |
+
+## The language: the primitives
+
+A primitive is a DOM contract: its anatomy (the `data-slot` tree in render order), the state variables kit rules set per state, and the
+levers it reads. A renderer that emits this anatomy and reads these levers is conformant, whatever it is written in; `nuikit check` reads
+the DOM, not the framework. Composites (meters, sheets, notices) are nuikit's own and compose these.
+
+| Primitive | What it is | Anatomy (`data-slot`) | Levers |
+|---|---|---|---|
+| **screen** | The root of a page: a 16:9 content box centred on any screen, a safe area inside it | `area` → `safe` | 10 |
+| **zone** | Nine places and four edges; a zone stacks what it holds towards the screen centre | `item` | 1 |
+| **region** | A readable column inside a zone | `body` | 2 |
+| **grid** | A grid of cells (inventories, shops) | `cell` | 2 |
+| **tile** | The keycap: Kbd, notice icons, telltales, the primary button and the selection | `plate` → `wall` → `face` → `fill` → `legend` → `tag` → `group` → `key` | 37 |
+| **panel** | Every floating surface: menus, inventories, dialogs (the nk-panel utility) | `header` → `icon` → `title` → `description` → `actions` → `body` → `footer` | 23 |
+| **row** | The list row (nk-row): generous padding, an icon tile column, two voices; lit on the keycap Tile | `icon` → `title` → `description` → `trail` → `bar` | 11 |
+| **list** | A list of selectable items (nk-list, MenuRowList): items a gap apart so a lit tile never touches its neighbour | `item` | 2 |
+| **selection** | The one sliding selection tile per list (nk-indicator, SelectionTile) | `tile` | 2 |
+| **text** | Rich text with inline keycaps | `key` | 1 |
+| **chip** | Always-on HUD chips and tiles on the game (nk-chip, nk-hud) | `icon` → `count` | 16 |
+| **level** | How a level is drawn under style.level and style.hold (pips, the hold ring, the ink over a solid fill) | `pip` → `hold` → `fill` | 4 |
+| **dial** | The dial under gauges and rings: a disc, ticks, a segmented track | `disc` → `ticks` → `track` → `segments` → `segment` → `value` → `needle` → `center` | 1 |
+| **slab** | Transient feedback on the game: item, prompt, progress, band (nk-slab*) | `tile` → `delta` → `key` → `stack` → `line` → `band` → `band-title` | 33 |
+
 ## Identity
 
 ### palette

@@ -104,6 +104,7 @@ const END = "/* @end generated levers */";
     if (l.attr) o.attr = l.attr;
     if (l.derived) o.derived = true;
     if (l.rule) o.rule = l.rule;
+    if (l.core) o.core = true;
     return o;
   });
   const ts = [
@@ -126,6 +127,8 @@ const END = "/* @end generated levers */";
     "  attr?: string;",
     "  derived?: boolean;",
     "  rule?: string;",
+    "  /** One of the canonical choices a theme author makes (the public surface of the language). */",
+    "  core?: boolean;",
     "}",
     "",
     `export const LEVER_ROWS: readonly LeverRow[] = ${JSON.stringify(rows, null, 2)};`,
@@ -135,6 +138,9 @@ const END = "/* @end generated levers */";
     `export const ANATOMY = ${JSON.stringify(ANATOMY, null, 2)} as const;`,
     "",
     `export const STATE_VARS: readonly string[] = ${JSON.stringify(STATE.map((s) => s.css.slice(2)))};`,
+    "",
+    "/** The core identity: the canonical choices a theme author makes, in the catalog's order (compiled-theme keys). */",
+    `export const CORE_LEVERS: readonly string[] = ${JSON.stringify(LEVERS.filter((l) => l.core).map((l) => l.name))};`,
     "",
   ].join("\n");
   write(path.join(core, "src/tokens.generated.ts"), ts);
@@ -163,7 +169,7 @@ const DTCG_TYPE = { color: "color", length: "dimension", angle: "number", time: 
     const leaf = keys[keys.length - 1];
     const v = l.default;
     const value = v.kind === "ref" && !v.channel ? dtcgRef(v) : render(v);
-    const ext = { tier: l.tier, scope: l.scope, ...(l.part ? { part: l.part } : {}), css: l.css, type: l.type, ...(l.range ? { range: l.range } : {}), ...(l.values ? { values: l.values } : {}), ...(l.derived ? { derived: true } : {}) };
+    const ext = { tier: l.tier, scope: l.scope, ...(l.part ? { part: l.part } : {}), css: l.css, type: l.type, ...(l.range ? { range: l.range } : {}), ...(l.values ? { values: l.values } : {}), ...(l.derived ? { derived: true } : {}), ...(l.core ? { core: true } : {}) };
     // a leaf can share its name with a group (stagger and stagger.max): DTCG puts the leaf's value at "$root"
     const target = typeof node[leaf] === "object" && node[leaf] !== null && !("$value" in node[leaf]) ? (node[leaf].$root = {}) : (node[leaf] = node[leaf] && "$value" in node[leaf] ? node[leaf] : {});
     Object.assign(target, { ...(DTCG_TYPE[l.type] ? { $type: DTCG_TYPE[l.type] } : {}), $value: value, $description: l.description, $extensions: { nuikit: ext } });
@@ -197,6 +203,34 @@ const DTCG_TYPE = { color: "color", length: "dimension", angle: "number", time: 
     for (const l of rows) md.push(`| \`${l.css}\` | ${l.type}${l.derived ? " (derived)" : ""} | \`${cell(defaultOf(l))}\` | ${l.values ? l.values.join(" ") : l.range ? `${l.range[0]}–${l.range[1]}` : ""} | ${cell(l.description)} |`);
     md.push("");
   };
+  const core = LEVERS.filter((l) => l.core);
+  md.push(
+    "## The language: the core identity",
+    "",
+    `The design language is these **${core.length} choices**. A theme author sets some of them; everything else below is derived from them and`,
+    "is the reference renderer's business. Another implementation of the language (another framework, another engine) honours these and",
+    "the primitives' anatomy, and may emit them under any CSS prefix: the contract is the path (`tokens/nuikit.levers.json`, a W3C Design",
+    "Tokens file), not the `--nk-` name nuikit's kit uses. The palette rows are shadcn's own names, so any shadcn or TweakCN theme is a theme.",
+    "",
+  );
+  table(core);
+  const PRIMITIVES = ["screen", "zone", "region", "grid", "tile", "panel", "row", "list", "selection", "text", "chip", "level", "dial", "slab"];
+  md.push(
+    "## The language: the primitives",
+    "",
+    "A primitive is a DOM contract: its anatomy (the `data-slot` tree in render order), the state variables kit rules set per state, and the",
+    "levers it reads. A renderer that emits this anatomy and reads these levers is conformant, whatever it is written in; `nuikit check` reads",
+    "the DOM, not the framework. Composites (meters, sheets, notices) are nuikit's own and compose these.",
+    "",
+    "| Primitive | What it is | Anatomy (`data-slot`) | Levers |",
+    "|---|---|---|---|",
+  );
+  for (const k of PRIMITIVES) {
+    const c = COMPONENTS[k];
+    if (!c) continue;
+    md.push(`| **${k}** | ${cell(c.description)} | ${c.anatomy.map((p) => `\`${p}\``).join(" → ")} | ${LEVERS.filter((l) => l.scope === k && l.tier === "component").length} |`);
+  }
+  md.push("");
   for (const tier of ["identity", "semantic"]) {
     md.push(`## ${tier[0].toUpperCase()}${tier.slice(1)}`, "");
     const scopes = [...new Set(LEVERS.filter((l) => l.tier === tier).map((l) => l.scope))];

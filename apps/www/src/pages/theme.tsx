@@ -10,7 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Textarea } from "@/components/ui/textarea";
 import { applyStageTheme, clearStageTheme } from "@/lib/stage-theme";
 import { diffTheme, exportChangesCss, exportThemeCss, studioTheme } from "@/lib/theme-studio";
-import { groupsOf, TIER_ORDER, TIER_TITLE, type LeverGroup, type LeverRow } from "@/lib/levers";
+import { coreGroup, groupsOf, TIER_ORDER, TIER_TITLE, type LeverGroup, type LeverRow } from "@/lib/levers";
 import { LeverControl } from "@/components/lever-control";
 import { LanguageStrip } from "@/components/language-strip";
 import { cn } from "@/lib/utils";
@@ -270,11 +270,15 @@ function LeverStudio({ vars, tweaks, onChange, onReset }: { vars: ThemeVars; twe
         </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-6 px-5">
+        <div className="flex flex-col gap-1">
+          <p className="site-eyebrow mb-1">The language</p>
+          <LeverGroupView group={coreGroup()} open vars={vars} tweaks={tweaks} onChange={onChange} />
+        </div>
         {TIER_ORDER.map((tier) => (
           <div key={tier} className="flex flex-col gap-1">
             <p className="site-eyebrow mb-1">{TIER_TITLE[tier]}</p>
             {groupsOf(tier).map((g) => (
-              <LeverGroupView key={g.key} group={g} open={g.key === "identity:"} vars={vars} tweaks={tweaks} onChange={onChange} />
+              <LeverGroupView key={g.key} group={g} open={false} vars={vars} tweaks={tweaks} onChange={onChange} />
             ))}
           </div>
         ))}

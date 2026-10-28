@@ -15,7 +15,8 @@
           "tier": "identity",
           "scope": "",
           "css": "--background",
-          "type": "color"
+          "type": "color",
+          "core": true
         }
       }
     },
@@ -28,7 +29,8 @@
           "tier": "identity",
           "scope": "",
           "css": "--foreground",
-          "type": "color"
+          "type": "color",
+          "core": true
         }
       }
     },
@@ -67,7 +69,8 @@
           "tier": "identity",
           "scope": "",
           "css": "--popover",
-          "type": "color"
+          "type": "color",
+          "core": true
         }
       }
     },
@@ -80,7 +83,8 @@
           "tier": "identity",
           "scope": "",
           "css": "--popover-foreground",
-          "type": "color"
+          "type": "color",
+          "core": true
         }
       }
     },
@@ -93,7 +97,8 @@
           "tier": "identity",
           "scope": "",
           "css": "--primary",
-          "type": "color"
+          "type": "color",
+          "core": true
         }
       }
     },
@@ -106,7 +111,8 @@
           "tier": "identity",
           "scope": "",
           "css": "--primary-foreground",
-          "type": "color"
+          "type": "color",
+          "core": true
         }
       }
     },
@@ -145,7 +151,8 @@
           "tier": "identity",
           "scope": "",
           "css": "--muted",
-          "type": "color"
+          "type": "color",
+          "core": true
         }
       }
     },
@@ -158,7 +165,8 @@
           "tier": "identity",
           "scope": "",
           "css": "--muted-foreground",
-          "type": "color"
+          "type": "color",
+          "core": true
         }
       }
     },
@@ -197,7 +205,8 @@
           "tier": "identity",
           "scope": "",
           "css": "--destructive",
-          "type": "color"
+          "type": "color",
+          "core": true
         }
       }
     },
@@ -223,7 +232,8 @@
           "tier": "identity",
           "scope": "",
           "css": "--border",
-          "type": "color"
+          "type": "color",
+          "core": true
         }
       }
     },
@@ -327,7 +337,8 @@
           "tier": "identity",
           "scope": "",
           "css": "--radius",
-          "type": "length"
+          "type": "length",
+          "core": true
         }
       }
     },
@@ -340,7 +351,8 @@
           "tier": "identity",
           "scope": "",
           "css": "--brand",
-          "type": "color"
+          "type": "color",
+          "core": true
         }
       }
     },
@@ -444,7 +456,8 @@
           "tier": "identity",
           "scope": "",
           "css": "--hud",
-          "type": "color"
+          "type": "color",
+          "core": true
         }
       }
     },
@@ -1639,7 +1652,8 @@
           "tier": "identity",
           "scope": "font",
           "css": "--font-sans",
-          "type": "font"
+          "type": "font",
+          "core": true
         }
       }
     },
@@ -1652,7 +1666,8 @@
           "tier": "identity",
           "scope": "font",
           "css": "--font-display",
-          "type": "font"
+          "type": "font",
+          "core": true
         }
       }
     },
@@ -1678,7 +1693,8 @@
           "tier": "identity",
           "scope": "font",
           "css": "--font-mono",
-          "type": "font"
+          "type": "font",
+          "core": true
         }
       }
     }
@@ -1713,7 +1729,8 @@
         "range": [
           0.75,
           1.3
-        ]
+        ],
+        "core": true
       }
     }
   },
@@ -2181,7 +2198,8 @@
           "range": [
             -20,
             20
-          ]
+          ],
+          "core": true
         }
       }
     },
@@ -2211,7 +2229,8 @@
           "tier": "identity",
           "scope": "shape",
           "css": "--nk-shape-cut",
-          "type": "length"
+          "type": "length",
+          "core": true
         }
       }
     },
@@ -2224,7 +2243,8 @@
           "tier": "identity",
           "scope": "shape",
           "css": "--nk-shape-stroke",
-          "type": "length"
+          "type": "length",
+          "core": true
         }
       }
     }
@@ -2243,7 +2263,8 @@
           "range": [
             1,
             1.6
-          ]
+          ],
+          "core": true
         }
       }
     },
@@ -2336,7 +2357,8 @@
           "values": [
             "none",
             "uppercase"
-          ]
+          ],
+          "core": true
         }
       }
     },
@@ -2352,7 +2374,8 @@
           "values": [
             "normal",
             "italic"
-          ]
+          ],
+          "core": true
         }
       }
     },
@@ -2850,7 +2873,8 @@
           "range": [
             0,
             0.12
-          ]
+          ],
+          "core": true
         }
       }
     },
@@ -2885,7 +2909,8 @@
             "soft",
             "deep",
             "hard"
-          ]
+          ],
+          "core": true
         }
       }
     },
@@ -3006,7 +3031,8 @@
             "range": [
               0,
               1
-            ]
+            ],
+            "core": true
           }
         }
       },
@@ -3043,7 +3069,8 @@
             "range": [
               0,
               1
-            ]
+            ],
+            "core": true
           }
         }
       },
@@ -3126,7 +3153,8 @@
             "none",
             "soft",
             "strong"
-          ]
+          ],
+          "core": true
         }
       }
     }
@@ -3160,7 +3188,8 @@
           "range": [
             0,
             2000
-          ]
+          ],
+          "core": true
         }
       }
     },
@@ -3173,7 +3202,8 @@
           "tier": "identity",
           "scope": "motion",
           "css": "--nk-motion-ease",
-          "type": "ease"
+          "type": "ease",
+          "core": true
         }
       }
     },
@@ -3191,7 +3221,8 @@
             "snap",
             "smooth",
             "stepped"
-          ]
+          ],
+          "core": true
         }
       }
     },
@@ -3277,7 +3308,8 @@
           "values": [
             "solid",
             "soft"
-          ]
+          ],
+          "core": true
         }
       }
     },
@@ -3296,7 +3328,8 @@
             "liquid",
             "slab",
             "pips"
-          ]
+          ],
+          "core": true
         }
       }
     },
@@ -3330,7 +3363,8 @@
             "arc",
             "bar",
             "digital"
-          ]
+          ],
+          "core": true
         }
       }
     },
@@ -3350,7 +3384,8 @@
             "fill",
             "invert",
             "bar"
-          ]
+          ],
+          "core": true
         }
       }
     },
@@ -3437,7 +3472,8 @@
           "range": [
             0,
             1
-          ]
+          ],
+          "core": true
         }
       }
     },

@@ -12,6 +12,9 @@ const title = (s: string) => (s ? s[0]!.toUpperCase() + s.slice(1).replace(/-/g,
 
 export type LeverGroup = { key: string; title: string; rows: LeverRow[]; parts?: { part: string; rows: LeverRow[] }[] };
 
+/** The core identity (docs/design.md §2): the choices a theme author makes, listed first and open in the studio. */
+export const coreGroup = (): LeverGroup => ({ key: "core", title: "The language: core identity", rows: LEVER_ROWS.filter((r) => r.core) });
+
 /** Rows of one tier as the studio lists them: identity and semantic by group (scope), component by component then part. */
 export function groupsOf(tier: (typeof TIERS)[number]): LeverGroup[] {
   const rows = LEVER_ROWS.filter((r) => r.tier === tier);

@@ -18,23 +18,23 @@ export const palette: Group = {
   prefix: "",
   description: "Colours: shadcn's set and the game's (status, HUD, scrim, world, vitals, roles)",
   levers: {
-    background: color(lit("oklch(0.145 0 0)"), "Full-screen surfaces (pause, loading, death scrim)", { rule: "stock shadcn neutral" }),
-    foreground: color(lit("oklch(0.985 0 0)"), "Text on full-screen surfaces", { rule: "stock shadcn neutral" }),
+    background: color(lit("oklch(0.145 0 0)"), "Full-screen surfaces (pause, loading, death scrim)", { rule: "stock shadcn neutral", core: true }),
+    foreground: color(lit("oklch(0.985 0 0)"), "Text on full-screen surfaces", { rule: "stock shadcn neutral", core: true }),
     card: color(lit("oklch(0.205 0 0)"), "Raised blocks on a full-screen surface", { rule: "stock shadcn neutral" }),
     "card-foreground": color(lit("oklch(0.985 0 0)"), "Text on cards", { rule: "stock shadcn neutral" }),
-    popover: color(lit("oklch(0.205 0 0)"), "Every floating panel", { rule: "stock shadcn neutral" }),
-    "popover-foreground": color(lit("oklch(0.985 0 0)"), "Text in panels", { rule: "stock shadcn neutral" }),
-    primary: color(lit("oklch(0.922 0 0)"), "The one main action per surface, the keycap face, selection", { rule: "stock shadcn neutral" }),
-    "primary-foreground": color(lit("oklch(0.205 0 0)"), "Text on primary", { rule: "stock shadcn neutral" }),
+    popover: color(lit("oklch(0.205 0 0)"), "Every floating panel", { rule: "stock shadcn neutral", core: true }),
+    "popover-foreground": color(lit("oklch(0.985 0 0)"), "Text in panels", { rule: "stock shadcn neutral", core: true }),
+    primary: color(lit("oklch(0.922 0 0)"), "The one main action per surface, the keycap face, selection", { rule: "stock shadcn neutral", core: true }),
+    "primary-foreground": color(lit("oklch(0.205 0 0)"), "Text on primary", { rule: "stock shadcn neutral", core: true }),
     secondary: color(lit("oklch(0.269 0 0)"), "Secondary buttons", { rule: "stock shadcn neutral" }),
     "secondary-foreground": color(lit("oklch(0.985 0 0)"), "Text on secondary", { rule: "stock shadcn neutral" }),
-    muted: color(lit("oklch(0.269 0 0)"), "Tracks, slots and wells inside a panel", { rule: "stock shadcn neutral" }),
-    "muted-foreground": color(lit("oklch(0.708 0 0)"), "Secondary text", { rule: "stock shadcn neutral" }),
+    muted: color(lit("oklch(0.269 0 0)"), "Tracks, slots and wells inside a panel", { rule: "stock shadcn neutral", core: true }),
+    "muted-foreground": color(lit("oklch(0.708 0 0)"), "Secondary text", { rule: "stock shadcn neutral", core: true }),
     accent: color(lit("oklch(0.269 0 0)"), "Hover tint", { rule: "stock shadcn neutral" }),
     "accent-foreground": color(lit("oklch(0.985 0 0)"), "Text on accent", { rule: "stock shadcn neutral" }),
-    destructive: color(lit("oklch(0.704 0.191 22.216)"), "Danger, damage, low values, death", { rule: "stock shadcn neutral" }),
+    destructive: color(lit("oklch(0.704 0.191 22.216)"), "Danger, damage, low values, death", { rule: "stock shadcn neutral", core: true }),
     "destructive-foreground": color(lit("oklch(0.985 0 0)"), "Text on destructive", { rule: "foreground or background, whichever contrasts more" }),
-    border: color(lit("oklch(1 0 0 / 10%)"), "Hairlines", { rule: "stock shadcn neutral" }),
+    border: color(lit("oklch(1 0 0 / 10%)"), "Hairlines", { rule: "stock shadcn neutral", core: true }),
     input: color(lit("oklch(1 0 0 / 15%)"), "Field borders", { rule: "stock shadcn neutral" }),
     ring: color(lit("oklch(0.556 0 0)"), "A text field's caret rim", { rule: "stock shadcn neutral" }),
     "chart-1": color(lit("oklch(0.87 0 0)"), "Categorical colour 1", { rule: "stock shadcn neutral" }),
@@ -42,8 +42,8 @@ export const palette: Group = {
     "chart-3": color(lit("oklch(0.439 0 0)"), "Categorical colour 3", { rule: "stock shadcn neutral" }),
     "chart-4": color(lit("oklch(0.371 0 0)"), "Categorical colour 4", { rule: "stock shadcn neutral" }),
     "chart-5": color(lit("oklch(0.269 0 0)"), "Categorical colour 5", { rule: "stock shadcn neutral" }),
-    radius: length(lit("0.75rem"), "The radius scale's base: every radius step derives from it", { rule: "0.75rem" }),
-    brand: color(lit("var(--primary)"), "The server's signature: active marks, needles, the accent's stops", { rule: "primary if chromatic (OKLCH C ≥ 0.06), else chart-1" }),
+    radius: length(lit("0.75rem"), "The radius scale's base: every radius step derives from it", { rule: "0.75rem", core: true }),
+    brand: color(lit("var(--primary)"), "The server's signature: active marks, needles, the accent's stops", { rule: "primary if chromatic (OKLCH C ≥ 0.06), else chart-1", core: true }),
     "brand-foreground": color(lit("var(--primary-foreground)"), "Text on brand", { rule: "foreground or background, whichever contrasts more" }),
     success: color(lit("oklch(0.7 0.17 150)"), "Positive status", { rule: "green at the lightness / chroma of destructive" }),
     "success-foreground": color(lit("var(--background)"), "Text on success", { rule: "whichever contrasts more" }),
@@ -51,7 +51,7 @@ export const palette: Group = {
     "warning-foreground": color(lit("var(--background)"), "Text on warning", { rule: "whichever contrasts more" }),
     info: color(lit("var(--primary)"), "Neutral status", { rule: "primary" }),
     "info-foreground": color(lit("var(--primary-foreground)"), "Text on info", { rule: "primary-foreground" }),
-    hud: color(lit("rgba(0, 0, 0, 0.45)"), "Surfaces drawn straight on the game: HUD chips, hotbar", { rule: "rgba(0, 0, 0, 0.45)" }),
+    hud: color(lit("rgba(0, 0, 0, 0.45)"), "Surfaces drawn straight on the game: HUD chips, hotbar", { rule: "rgba(0, 0, 0, 0.45)", core: true }),
     "hud-foreground": color(lit("rgb(255, 255, 255)"), "Text and icons on hud", { rule: "white" }),
     scrim: color(lit("rgb(0, 0, 0)"), "Darkens the game; shadows and walls; always used with opacity", { rule: "black" }),
     surface: color(lit("var(--popover)"), "The panel colour, tinted toward brand by surface.tint", { rule: "mix(popover, brand, surface.tint)", derived: true }),
@@ -87,10 +87,10 @@ export const fonts: Group = {
   prefix: "font",
   description: "The four faces every voice picks from",
   levers: {
-    sans: font(lit('Geist, Inter, "Segoe UI", system-ui, sans-serif'), "Sentences (the body voice)"),
-    display: font(lit('"Barlow Condensed", "Arial Narrow", sans-serif'), "Anything scanned: keys, titles, labels, captions"),
+    sans: font(lit('Geist, Inter, "Segoe UI", system-ui, sans-serif'), "Sentences (the body voice)", { core: true }),
+    display: font(lit('"Barlow Condensed", "Arial Narrow", sans-serif'), "Anything scanned: keys, titles, labels, captions", { core: true }),
     numeric: font(lit('"Barlow Condensed", "Arial Narrow", sans-serif'), "Every number (always tabular)"),
-    mono: font(lit('"Geist Mono", ui-monospace, monospace'), "Codes and IDs a player might type"),
+    mono: font(lit('"Geist Mono", ui-monospace, monospace'), "Codes and IDs a player might type", { core: true }),
   },
 };
 
@@ -106,7 +106,7 @@ export const density: Group = {
   tier: "identity",
   description: "Multiplies the spacing scale and the row, chip and slab heights",
   levers: {
-    $: number(1, "Spacing multiplier: 0.75 compact … 1.3 roomy", { range: [0.75, 1.3], was: ["nk-density"] }),
+    $: number(1, "Spacing multiplier: 0.75 compact … 1.3 roomy", { range: [0.75, 1.3], was: ["nk-density"], core: true }),
   },
 };
 
@@ -192,10 +192,10 @@ export const shape: Group = {
   tier: "identity",
   description: "Slant, chamfer and hairline weight",
   levers: {
-    skew: angle("-12deg", "The keycap's slant: tile faces, the primary button, the selection (their boxes and text stay upright); at most ±20deg", { range: [-20, 20], was: [] }),
+    skew: angle("-12deg", "The keycap's slant: tile faces, the primary button, the selection (their boxes and text stay upright); at most ±20deg", { range: [-20, 20], was: [], core: true }),
     slab: angle("0deg", "Chips, badges and tags drawn as skewed slabs too (0deg = upright); at most ±20deg", { range: [-20, 20], attr: "skew", was: ["nk-skew"] }),
-    cut: length("0px", "Chamfered corners (top left, bottom right) as clip-path; 0 = off", { was: ["nk-cut"] }),
-    stroke: length("1px", "Hairline weight of plates, rims and fields", { was: ["nk-border-width"] }),
+    cut: length("0px", "Chamfered corners (top left, bottom right) as clip-path; 0 = off", { was: ["nk-cut"], core: true }),
+    stroke: length("1px", "Hairline weight of plates, rims and fields", { was: ["nk-border-width"], core: true }),
   },
 };
 
@@ -213,14 +213,14 @@ export const type: Group = {
   tier: "identity",
   description: "The type scale's ratio, the three weights, tracking, case and slant",
   levers: {
-    ratio: number(1.25, "Step between type sizes: 1.125 calm … 1.333 dramatic", { range: [1, 1.6], was: ["nk-type-ratio", "nk-ratio"] }),
+    ratio: number(1.25, "Step between type sizes: 1.125 calm … 1.333 dramatic", { range: [1, 1.6], was: ["nk-type-ratio", "nk-ratio"], core: true }),
     "weight-body": number(400, "Sentences", { range: [100, 900], was: ["nk-weight-body"] }),
     "weight-strong": number(500, "Captions, chips, slabs: text that must hold its own on the game", { range: [100, 900], was: ["nk-weight-strong"] }),
     "weight-display": number(700, "Full-screen titles and big numbers", { range: [100, 900], was: ["nk-weight-display"] }),
     "tracking-display": length("-0.02em", "Letter-spacing of full-screen titles", { was: ["nk-tracking-display"] }),
     "tracking-label": length("0.06em", "Letter-spacing of captions", { was: ["nk-tracking-label"] }),
-    case: keyword(["none", "uppercase"], "uppercase", "Anything scanned (keys, titles, labels, captions) in caps or as written", { attr: "case", was: ["nk-label-case", "nk-heading-case"] }),
-    slant: keyword(["normal", "italic"], "italic", "The scanned voices upright or italic (a real italic where the face has one)", { attr: "slant", was: ["nk-display-style"] }),
+    case: keyword(["none", "uppercase"], "uppercase", "Anything scanned (keys, titles, labels, captions) in caps or as written", { attr: "case", was: ["nk-label-case", "nk-heading-case"], core: true }),
+    slant: keyword(["normal", "italic"], "italic", "The scanned voices upright or italic (a real italic where the face has one)", { attr: "slant", was: ["nk-display-style"], core: true }),
     overhang: length("0.15em", "Trailing pad of a slanted voice (the italic's overhang); 0em when upright", { was: [] }),
   },
   // the five voices: two in practice, the display face for anything scanned and the sans for sentences
@@ -238,9 +238,9 @@ export const surface: Group = {
   tier: "identity",
   description: "How surfaces sit over the game: opacity, tint, light, depth, glow",
   levers: {
-    tint: number(0, "How much brand tints neutral surfaces", { range: [0, 0.12], was: ["nk-surface-tint"] }),
+    tint: number(0, "How much brand tints neutral surfaces", { range: [0, 0.12], was: ["nk-surface-tint"], core: true }),
     gradient: number(0, "Top-to-bottom light falloff (0 = flat)", { range: [0, 0.2], was: ["nk-surface-gradient"] }),
-    elevation: keyword(["none", "soft", "deep", "hard"], "hard", "Shadow recipe: hard is a solid offset drop, no blur", { attr: "elevation", was: ["nk-elevation"] }),
+    elevation: keyword(["none", "soft", "deep", "hard"], "hard", "Shadow recipe: hard is a solid offset drop, no blur", { attr: "elevation", was: ["nk-elevation"], core: true }),
     glow: number(0, "Brand glow on active parts (alpha, 0 = off)", { range: [0, 1], was: ["nk-glow"] }),
     "glow-budget": number(1, "How many parts may glow at once (0 = no limit)", { range: [0, 8], was: ["nk-glow-budget"] }),
     backdrop: keyword(["on", "off"], "off", "Backdrop blur (FiveM draws it as a black box: off)", { attr: "backdrop", was: ["nk-backdrop"] }),
@@ -259,7 +259,7 @@ export const material: Group = {
     (["hud", "menu"] as const).map((ctx) => [
       ctx,
       {
-        opacity: number(ctx === "hud" ? 0.8 : 0.94, `Opacity of the ${ctx} material${ctx === "menu" ? " (floor 0.92 for text)" : ""}`, { range: [0, 1], was: [`nk-material-${ctx}-opacity`, ...(ctx === "menu" ? ["nk-surface-opacity"] : ctx === "hud" ? ["nk-hud-opacity"] : [])] }),
+        opacity: number(ctx === "hud" ? 0.8 : 0.94, `Opacity of the ${ctx} material${ctx === "menu" ? " (floor 0.92 for text)" : ""}`, { core: true, range: [0, 1], was: [`nk-material-${ctx}-opacity`, ...(ctx === "menu" ? ["nk-surface-opacity"] : ctx === "hud" ? ["nk-hud-opacity"] : [])] }),
         ...(ctx === "menu"
           ? {
               blur: length("0px", "Backdrop blur behind menus (with surface.backdrop on)", { was: ["nk-material-menu-blur"] }),
@@ -278,7 +278,7 @@ export const hud: Group = {
   tier: "identity",
   description: "Text drawn on the game",
   levers: {
-    text: keyword(["none", "soft", "strong"], "soft", "Shadow under text drawn on the game (semantic depth.text draws it)", { was: [] }),
+    text: keyword(["none", "soft", "strong"], "soft", "Shadow under text drawn on the game (semantic depth.text draws it)", { was: [], core: true }),
   },
 };
 
@@ -288,9 +288,9 @@ export const motion: Group = {
   description: "The base duration and curve the ladder derives from, the feel, the springs' bounce",
   levers: {
     $: number(1, "1 = animations on, 0 = off (painted 0 under the player's reduced-motion pref)", { range: [0, 1], was: ["nk-motion"] }),
-    duration: time("180ms", "Base duration d: the ladder is snap 0.5d, fast 0.667d, base d, slow 1.556d, fill 2.333d", { range: [0, 2000], was: ["nk-duration"] }),
-    ease: ease("cubic-bezier(0.2, 0, 0, 1)", "The curve of anything arriving", { was: ["nk-ease"] }),
-    feel: keyword(["crisp", "snap", "smooth", "stepped"], "crisp", "How it moves: crisp, snap (flash instead of press scale), smooth (longer springs), stepped", { attr: "feel", was: ["nk-motion-feel"] }),
+    duration: time("180ms", "Base duration d: the ladder is snap 0.5d, fast 0.667d, base d, slow 1.556d, fill 2.333d", { range: [0, 2000], was: ["nk-duration"], core: true }),
+    ease: ease("cubic-bezier(0.2, 0, 0, 1)", "The curve of anything arriving", { was: ["nk-ease"], core: true }),
+    feel: keyword(["crisp", "snap", "smooth", "stepped"], "crisp", "How it moves: crisp, snap (flash instead of press scale), smooth (longer springs), stepped", { attr: "feel", was: ["nk-motion-feel"], core: true }),
     bounce: number(0, "Bounce folded into the snap, move and soft springs", { range: [0, 0.3], was: ["nk-spring-bounce"] }),
     "exit-factor": number(0.7, "Every exit is this × its enter", { range: [0.3, 1], was: ["nk-exit-factor"] }),
     reduced: time("100ms", "Under reduced motion every fade is at most this", { range: [0, 400], was: ["nk-time-reduced"] }),
@@ -303,11 +303,11 @@ export const style: Group = {
   tier: "identity",
   description: "Which drawing each family uses",
   levers: {
-    fill: keyword(["solid", "soft"], "solid", "Fills, the selection face and levels: solid (flat, vivid) or soft (a tint)", { attr: "fill", was: ["nk-fill-style"] }),
-    level: keyword(["bar", "ring", "liquid", "slab", "pips"], "liquid", "How a level (0–1) is drawn by vitals, meters, holds", { attr: "level", was: ["nk-level-style"] }),
+    fill: keyword(["solid", "soft"], "solid", "Fills, the selection face and levels: solid (flat, vivid) or soft (a tint)", { attr: "fill", was: ["nk-fill-style"], core: true }),
+    level: keyword(["bar", "ring", "liquid", "slab", "pips"], "liquid", "How a level (0–1) is drawn by vitals, meters, holds", { attr: "level", was: ["nk-level-style"], core: true }),
     hold: keyword(["bar", "ring", "fill"], "fill", "How a press-and-hold shows its progress", { attr: "hold", was: ["nk-hold-style"] }),
-    gauge: keyword(["arc", "bar", "digital"], "digital", "How gauges are drawn", { attr: "gauge", was: ["nk-gauge-style"] }),
-    focus: keyword(["ring", "halo", "tint", "fill", "invert", "bar"], "halo", "Focus on parts that are not rows (rows and buttons light like hover)", { attr: "focus", was: ["nk-focus-style"] }),
+    gauge: keyword(["arc", "bar", "digital"], "digital", "How gauges are drawn", { attr: "gauge", was: ["nk-gauge-style"], core: true }),
+    focus: keyword(["ring", "halo", "tint", "fill", "invert", "bar"], "halo", "Focus on parts that are not rows (rows and buttons light like hover)", { attr: "focus", was: ["nk-focus-style"], core: true }),
     vital: keyword(["auto", "pill", "value", "icon", "expand"], "expand", "What a vital chip shows (expand: the tag opens on a change)", { was: ["nk-vital-display"] }),
     "vital-icon": keyword(["vital", "uniform"], "uniform", "Vital icons: each vital's own colour, or the chip's ink", { was: ["nk-vital-icon"] }),
     "vital-neighbours": keyword(["push", "collapse", "overlay"], "push", "What a growing vital chip does to its neighbours", { was: ["nk-vital-neighbours"] }),
@@ -320,7 +320,7 @@ export const behavior: Group = {
   tier: "identity",
   description: "Thresholds and how long things stay",
   levers: {
-    alert: number(0.2, "A level at or under this is an alert (vitals, durability)", { range: [0, 1], was: ["nk-alert-threshold"] }),
+    alert: number(0.2, "A level at or under this is an alert (vitals, durability)", { range: [0, 1], was: ["nk-alert-threshold"], core: true }),
     rest: time("3000ms", "How long a changed HUD part stays open before it retracts (0 = never)", { range: MS, was: ["nk-rest-delay"] }),
   },
   parts: {

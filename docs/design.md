@@ -41,8 +41,19 @@ The goal is a game UI language, not a web app: rows you select like a GTA menu, 
 
 ## 2. Tokens and levers
 
-The contract is [`tokens.md`](tokens.md); the catalog is [`design/levers.md`](design/levers.md) (generated). In short,
-a UI reads shadcn's names unprefixed (`--background`, `--popover`, `--primary`, `--muted`, `--accent`, `--destructive`,
+**What the language is.** The contract is the token file, `packages/core/tokens/nuikit.levers.json`, a W3C Design
+Tokens document whose paths (`tile.face.radius`, `palette.primary`, `motion.duration`) carry no CSS prefix, plus the
+primitives' anatomy (§6). The language is **the 36 core identity levers** listed first in
+[`design/levers.md`](design/levers.md): the choices a theme author makes (palette, three faces, density, type ratio
+and case and slant, skew, chamfer and hairline, surface tint and elevation, two material opacities, text shadow on the
+game, motion duration, ease and feel, which drawing fills, levels, gauges and focus use, the alert threshold).
+Everything else is derived from those and belongs to the reference renderer. `--nk-` is how nuikit's kit emits the
+paths into CSS; another implementation may emit them under any prefix, since the path is the name. Unprefixed CSS
+would not be more universal, it would collide with the next library in the same document; shadcn's own names stay
+unprefixed because they are the server's theme, the layer any TweakCN paste already speaks.
+
+The full reference is [`tokens.md`](tokens.md); the catalog is [`design/levers.md`](design/levers.md) (generated). In
+short, a UI reads shadcn's names unprefixed (`--background`, `--popover`, `--primary`, `--muted`, `--accent`, `--destructive`,
 `--border`, `--ring`, `--radius`, `--font-sans`, `--font-mono`), the game families (`--role-*` for vitals, `--hue-*`,
 `--brand*`, `--hud*`, `--scrim`, `--success` / `--warning` / `--info`), and the kit levers `--nk-<family>-<part>` in
 four tiers that only reference upward:
@@ -136,6 +147,12 @@ and Escape belong to the surface and its resource. `nk-panel` stays for small po
   (skew 0, so its keycaps are straight).
 
 ## 6. Components: the network
+
+**Primitives are DOM contracts, not React components.** Each is an anatomy (the `data-slot` tree in render order), the
+state variables kit rules set per state (`data-state`, `data-lit`, the `--nk-<component>-now-*` variables) and the levers it
+reads; the table "The language: the primitives" in [`design/levers.md`](design/levers.md) is generated from the spec. A
+renderer that emits that anatomy and reads those levers is conformant whatever it is written in, and `nuikit check`
+judges the DOM, not the framework. The React registry below is the reference renderer.
 
 The registry is a few **foundation** primitives driven by levers and **composites** that configure them with props;
 **blocks** compose composites into whole screens. A theme restyles a primitive once and every composite follows; a
