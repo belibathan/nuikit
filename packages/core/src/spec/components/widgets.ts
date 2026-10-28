@@ -3,7 +3,7 @@ import { length, type ComponentDef } from "../lang";
 
 export const itemSlot: ComponentDef = {
   description: "An inventory slot",
-  inherits: ["tile"],
+  inherits: ["control"],
   anatomy: ["top", "corner", "right", "label", "durability"],
   levers: {
     width: length("5rem", "Width (md)", { floor: true, was: ["nk-item-slot-w"] }),
@@ -19,7 +19,7 @@ export const itemSlot: ComponentDef = {
 
 export const keyPrompt: ComponentDef = {
   description: "A key and its verb (E Open), with a hold",
-  inherits: ["tile", "row"],
+  inherits: ["control", "row"],
   anatomy: ["keys", "key", "icon", "text", "label", "description", "hold", "stack"],
   levers: {
     gap: length("0.25rem", "Between its parts", { floor: true, was: ["nk-key-prompt-gap"] }),
@@ -35,7 +35,7 @@ export const keyPrompt: ComponentDef = {
 
 export const skillCheck: ComponentDef = {
   description: "A skill check: a rotor, a zone, a key",
-  inherits: ["tile"],
+  inherits: ["control"],
   anatomy: ["ticks", "zone", "rotor", "needle", "key"],
   levers: {
     size: length("10rem", "Size (md)", { floor: true, was: ["nk-skill-check-size"] }),

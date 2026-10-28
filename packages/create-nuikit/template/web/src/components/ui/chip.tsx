@@ -21,7 +21,7 @@ import { toneVars } from "@/components/ui/fill"
  *   <Chip variant="dot" tone="success" aria-label="Online" />
  *   <Chip material="hud" icon={<MicIcon />} active={talking}>Normal</Chip>
  *   <Chip material="hud" icon={<TriangleAlertIcon />} tone="danger">Seatbelt</Chip>
- *   <Chip material="hud" shape="tile" icon={<PillIcon />}>3</Chip>
+ *   <Chip material="hud" shape="square" icon={<PillIcon />}>3</Chip>
  *
  * Role: A tag, a count, a status dot, a fact on the HUD: one chip.
  * Anatomy: chip (panel: data-slot="chip"; hud: data-slot="hud-chip", pill | tile) > icon > label > count
@@ -36,8 +36,8 @@ const chipHudVariants = cva("nk-num shrink-0 [&_svg]:pointer-events-none [&_svg]
     shape: {
       /** 28px pill: icon + short text. */
       pill: "nk-chip [&_svg:not([class*='size-'])]:size-(--nk-chip-icon-size)",
-      /** 48px square tile: icon over a short label. */
-      tile: "nk-hud inline-flex size-(--nk-chip-tile-size) flex-col items-center justify-center gap-(--nk-space-1) text-(length:--nk-text-label) leading-4 [font-weight:var(--nk-type-label-weight)] [&_svg:not([class*='size-'])]:size-(--nk-chip-icon-size-tile)",
+      /** 48px square: icon over a short label. */
+      square: "nk-hud inline-flex size-(--nk-chip-square-size) flex-col items-center justify-center gap-(--nk-space-1) text-(length:--nk-text-label) leading-4 [font-weight:var(--nk-type-label-weight)] [&_svg:not([class*='size-'])]:size-(--nk-chip-icon-size-square)",
     },
     state: {
       default: "[&_[data-slot=hud-chip-icon]]:opacity-75",

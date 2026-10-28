@@ -82,11 +82,11 @@
   --nk-radius-surface: 1rem;
   --nk-height-row: 2.75rem;
   --nk-shape-skew: 0deg;
-  --nk-tile-wall-height: 0px;
-  --nk-tile-wall-shade: 0;
-  --nk-tile-plate-y: 0px;
-  --nk-tile-plate-press: 0px;
-  --nk-tile-key-inset: 0.25rem;
+  --nk-control-wall-height: 0px;
+  --nk-control-wall-shade: 0;
+  --nk-control-plate-y: 0px;
+  --nk-control-plate-press: 0px;
+  --nk-control-primary-inset: 0.25rem;
   --nk-meter-radius: 9999px;
 
   /* depth: none. Flat surfaces, a faint hairline, no edge light, no drop */
@@ -94,11 +94,11 @@
   --nk-material-menu-opacity: 0.96;
   --nk-material-hud-opacity: 0.78;
   --nk-hud-text: none;
-  --nk-tile-face-color: #23272e;
-  --nk-tile-face-ink: #e8eaed;
-  --nk-tile-face-light: rgba(0, 0, 0, 0);
-  --nk-tile-face-rim: rgba(255, 255, 255, 0.08);
-  --nk-tile-face-rim-focus: #5b9dff;
+  --nk-control-face-color: #23272e;
+  --nk-control-face-ink: #e8eaed;
+  --nk-control-face-light: rgba(0, 0, 0, 0);
+  --nk-control-face-rim: rgba(255, 255, 255, 0.08);
+  --nk-control-face-rim-focus: #5b9dff;
   --nk-plate-color: rgb(26, 29, 34);
   --nk-plate-hair: rgba(255, 255, 255, 0.08);
   --nk-plate-drop: 0 0 0 0 rgba(0, 0, 0, 0);
@@ -109,7 +109,7 @@
   --nk-style-hold: bar;
   --nk-style-gauge: bar;
   --nk-style-focus: tint;
-  --nk-tile-key-tint: 0.14;
+  --nk-control-primary-tint: 0.14;
   --nk-fill-color: var(--brand);
   --nk-fill-track: rgba(255, 255, 255, 0.08);
   --nk-fill-tint: rgba(91, 157, 255, 0.1);

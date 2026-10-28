@@ -4,7 +4,7 @@ import { CircleAlertIcon, InboxIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty"
-import { Tile } from "@/components/ui/tile"
+import { Glyph } from "@/components/ui/glyph"
 
 /**
  * EmptyState — what a list, a search or a screen shows when there's nothing (or something went
@@ -14,13 +14,13 @@ import { Tile } from "@/components/ui/tile"
  *   <EmptyState title="No cars here" description="Buy one at the dealership or ask a friend for keys." />
  *   <EmptyState tone="error" title="Couldn't load your bank" description="Try again in a moment." action={<Button size="sm">Try again</Button>} />
  *
- * `tile` (tokens 1.5, docs/design.md §3) draws the icon as a square Tile at rest (danger on error): the
+ * `tile` (tokens 1.5, docs/design.md §3) draws the icon as a square Glyph at rest (danger on error): the
  * default theme's empty state. Without it the icon sits in shadcn's EmptyMedia, as before.
  *
  * Named empty-state, not empty: stock shadcn already has `empty`, and this is built on it.
  *
  * Role: What a list, a search or a screen shows when there is nothing, or something went wrong.
- * Anatomy: empty > icon (EmptyMedia, or a square Tile with tile) > title (title role) > description (one
+ * Anatomy: empty > icon (EmptyMedia, or a square Glyph with tile) > title (title role) > description (one
  *   sentence) > actions
  * Props: size, tone, icon, title, description, action, tile.
  * Rules: One sentence on what to do next. error is role alert and the danger tone.
@@ -62,7 +62,7 @@ function EmptyState({
     description?: React.ReactNode
     /** A button or two: try again, buy one, open the map. */
     action?: React.ReactNode
-    /** The icon as a square Tile (1.5). */
+    /** The icon as a square Glyph (1.5). */
     tile?: boolean
   }) {
   const error = tone === "error"
@@ -78,9 +78,9 @@ function EmptyState({
     >
       <EmptyHeader data-slot="empty-state-header">
         {iconEl !== null && iconEl !== false && tile && (
-          <Tile shape="square" size={size === "screen" ? "lg" : "md"} tone={error ? "danger" : undefined} data-part="empty-state-icon">
+          <Glyph shape="square" size={size === "screen" ? "lg" : "md"} tone={error ? "danger" : undefined} data-part="empty-state-icon">
             {iconEl}
-          </Tile>
+          </Glyph>
         )}
         {iconEl !== null && iconEl !== false && !tile && (
           <EmptyMedia

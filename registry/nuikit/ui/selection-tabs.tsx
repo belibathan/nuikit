@@ -3,11 +3,11 @@
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
-import { SelectionTile } from "@/components/ui/selection-tile"
+import { Selection } from "@/components/ui/selection"
 import { Tabs, TabsContent, TabsList as ShadcnTabsList, TabsTrigger as ShadcnTabsTrigger } from "@/components/ui/tabs"
 
 /**
- * Selection tabs — shadcn's Tabs / TabsList / TabsTrigger / TabsContent with ONE SelectionTile per list that slides
+ * Selection tabs — shadcn's Tabs / TabsList / TabsTrigger / TabsContent with ONE Selection per list that slides
  * to the active trigger (a measured FLIP on --nk-selection-time / --nk-selection-ease). The lit trigger wears the
  * keycap tile (solid, or tinted under --nk-style-fill: soft; kit.css paints the ink), triggers sit --nk-list-gap
  * apart, arrow keys move the tile (Radix roving focus), reduced motion jumps. Same API as stock shadcn; import it in
@@ -18,7 +18,7 @@ import { Tabs, TabsContent, TabsList as ShadcnTabsList, TabsTrigger as ShadcnTab
  *   <SegmentedControl value={v} onValueChange={setV} options={[{ value: "a", label: "A" }, …]} />
  *
  * Role: tabs and segmented choices as one list with one sliding keycap.
- * Anatomy: tabs-list (the list, data-nk-sel) > selection-tile + tabs-trigger…; tabs-content beside it.
+ * Anatomy: tabs-list (the list, data-nk-sel) > selection + tabs-trigger…; tabs-content beside it.
  * Props: Tabs, TabsList, TabsTrigger, TabsContent as shadcn; SegmentedControl: options, value, defaultValue, onValueChange, stretch.
  * Rules: one tile per list; transform and opacity only; the trigger paints no fill of its own; no focus ring.
  */
@@ -30,7 +30,7 @@ function TabsList({ className, children, ...props }: React.ComponentProps<typeof
       className={cn("relative h-auto", className)}
       {...props}
     >
-      <SelectionTile shape="tile" items="[data-slot=tabs-trigger]" lit="[data-state=active]" pointer={false} />
+      <Selection shape="own" items="[data-slot=tabs-trigger]" lit="[data-state=active]" pointer={false} />
       {children}
     </ShadcnTabsList>
   )

@@ -8,10 +8,10 @@ import { Slot } from "radix-ui"
 
 import { cn, nkConfirm, nkState, nkVariant, type NkVariantProps } from "@/lib/utils"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Kbd, KbdGroup, Tile } from "@/components/ui/tile"
+import { Kbd, KbdGroup, Glyph } from "@/components/ui/glyph"
 import { Progress } from "@/components/ui/progress"
 import { meterColor, type MeterTone } from "@/components/ui/meter"
-import { SelectionTile } from "@/components/ui/selection-tile"
+import { Selection } from "@/components/ui/selection"
 
 /**
  * MenuRow — the action row every list is made of (docs/design.md, rule 5; the baseline, docs/design.md):
@@ -19,8 +19,8 @@ import { SelectionTile } from "@/components/ui/selection-tile"
  * in the body voice and progress, and one trailing thing: meta text, a
  * chevron, a Kbd, a checkbox or a value stepper. Selection is one language (the baseline's Selection
  * section): the pointer's hover, keyboard, controller and programmatic focus, and the list's active row all
- * light the row the same way, and the lit row sits on a Tile (the primary keycap's face and wall). In a
- * `MenuRowList` that Tile is one SelectionTile sliding between the rows; a row on its own draws it itself.
+ * light the row the same way, and the lit row sits on a Glyph (the primary keycap's face and wall). In a
+ * `MenuRowList` that Glyph is one Selection sliding between the rows; a row on its own draws it itself.
  * No focus ring, no per-row hover fill. The default look of the `menu` intent's items (docs/architecture.md §2).
  *
  *   <MenuRow icon={<MapIcon />} kbd="P" onClick={openMap}>Map</MenuRow>
@@ -42,7 +42,7 @@ import { SelectionTile } from "@/components/ui/selection-tile"
  * itself sets it and hover changes nothing (background, text, icon, chevron). `readOnly` is a row
  * you read, not use: no highlight, no click, not dimmed.
  *
- * `MenuRowList` holds the rows of a list: one SelectionTile slides to the lit row (the hovered or focused one,
+ * `MenuRowList` holds the rows of a list: one Selection slides to the lit row (the hovered or focused one,
  * else `active`, the row the UI drives: keys, Lua) instead of each row marking itself. Rows sit
  * --nk-list-gap apart, so the tile's wall never touches the next row, and the list pads its sides by
  * --nk-list-pad-x (the tile's inset plus its skew overhang), so the face never touches the panel's edge:
@@ -58,16 +58,16 @@ import { SelectionTile } from "@/components/ui/selection-tile"
  * row a parent drives), and `kbd` takes one key or a list (["Shift", "E"]): the kbd trail, Tiles gap-items apart.
  *
  * Role: the one action row every list is made of (menus, sheets, settings, pickers).
- * Anatomy: the lit tile (the list's SelectionTile, or the row's own ::before wall and ::after face) > lead (an icon Tile in the icon column, or an image) > body (a
+ * Anatomy: the lit tile (the list's Selection, or the row's own ::before wall and ::after face) > lead (an icon Glyph in the icon column, or an image) > body (a
  *   label-voice title over a body-voice description, an optional progress line) > trail (meta, the kbd trail, a checkbox, a stepper, actions, a chevron).
  * Props: icon, iconSpace, image, description, progress, meta, kbd, chevron, active, checked, value, onStep,
  *   readOnly, alert, inert, actions, as, asChild, tone; MenuRowList: active, indicator, bleed.
  * Level means: progress, the row's progress line (0–100 of its value, drawn 0–1).
  * Rules: one trailing thing per row; height --nk-height-row, padding --nk-row-pad-y / -x, gaps --nk-row-gap; rows of a
  *   list sit --nk-list-gap apart and the list pads its sides by --nk-list-pad-x (inset + skew overhang) so the lit
- *   tile never touches the panel edge; hover, focus and active are one lit state (data-lit): the Tile under it, the
+ *   tile never touches the panel edge; hover, focus and active are one lit state (data-lit): the Glyph under it, the
  *   content slid by --nk-gesture-lift, the icon tile lit; no focus ring; attention is data-state="alert"; a trailing
- *   key is a Tile (Kbd), never text.
+ *   key is a Glyph (Kbd), never text.
  */
 const menuRowVariants = cva(
   [
@@ -114,7 +114,7 @@ type MenuRowProps = Omit<React.ComponentProps<"button">, "value" | "inert"> &
     progressColor?: string
     /** Right-aligned text: a price, a count, a plate. Tabular. */
     meta?: React.ReactNode
-    /** The key that triggers this row (a Tile Kbd), or keys pressed together: the kbd trail. */
+    /** The key that triggers this row (a Glyph Kbd), or keys pressed together: the kbd trail. */
     kbd?: React.ReactNode | readonly React.ReactNode[]
     /** A chevron: this row opens something. */
     chevron?: boolean
@@ -202,16 +202,16 @@ function MenuRow({
 
   const lead =
     image !== undefined && image !== null ? (
-      <span data-slot="menu-row-image" className="flex size-[var(--nk-menu-row-image-size)] shrink-0 overflow-hidden rounded-(--nk-tile-face-radius) bg-muted">
+      <span data-slot="menu-row-image" className="flex size-[var(--nk-menu-row-image-size)] shrink-0 overflow-hidden rounded-(--nk-control-face-radius) bg-muted">
         {typeof image === "string" ? <img src={image} alt="" className="size-full object-cover" /> : image}
       </span>
     ) : (
       icon ? (
         // the icon column: one icon size in a small tile (the tile lights with the row)
         <span data-slot="menu-row-icon">
-          <Tile size="md" shape="square" aria-hidden>
+          <Glyph size="md" shape="square" aria-hidden>
             {icon}
-          </Tile>
+          </Glyph>
         </span>
       ) : (
         iconSpace && <span data-slot="menu-row-icon" aria-hidden />
@@ -528,13 +528,13 @@ function MenuRowDetails({
 }
 
 /**
- * The rows of one list, --nk-list-gap apart, with one SelectionTile sliding to the lit row: the hovered or
+ * The rows of one list, --nk-list-gap apart, with one Selection sliding to the lit row: the hovered or
  * focused one, else `active` (an index among the rows; null or undefined: none). The rows change state
  * instantly; only the tile moves, and a held key jumps instead of trailing. `indicator={false}` leaves each
  * lit row drawing its own tile.
  *
  * The list keeps the lit tile off its container's edge: inline padding of --nk-list-pad-x, by default the tile's
- * inset plus its skew overhang (--nk-tile-key-overhang: half a row's height × tan(--nk-tile-face-skew); 0.25rem for the
+ * inset plus its skew overhang (--nk-control-primary-overhang: half a row's height × tan(--nk-control-face-skew); 0.25rem for the
  * stock -12deg), so a sheet or panel that puts the list flush never clips the face's slanted corner. `bleed`
  * drops the padding (a list whose container already pads).
  */
@@ -553,7 +553,7 @@ function MenuRowList({
 }: NkVariantProps & React.ComponentProps<"div"> & { active?: number | null; indicator?: boolean; bleed?: boolean }) {
   return (
     <div {...nkVariant({ density, shape, motion })} data-slot="menu-row-list" className={cn("nk-list", !bleed && LIST_PAD, className)} {...props}>
-      {indicator && <SelectionTile shape="tile" data-part="menu-row-indicator" items="[data-slot=menu-row]" pointer="[data-hover]" active={active} />}
+      {indicator && <Selection shape="own" data-part="menu-row-indicator" items="[data-slot=menu-row]" pointer="[data-hover]" active={active} />}
       {children}
     </div>
   )

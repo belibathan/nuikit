@@ -6,27 +6,27 @@ import { tokenMs } from "nuikit-core/motion"
 import { cn } from "@/lib/utils"
 
 /**
- * SelectionTile — the one selection mark of a list (the baseline's Selection section, docs/design.md):
+ * Selection — the one selection mark of a list (the baseline's Selection section, docs/design.md):
  * the primary keycap's geometry (a face in the theme's skew over its wall, the same radius and depth line, the
- * `--nk-tile-*` levers) as ONE element per list that slides between items by transform. Pointer hover, keyboard,
+ * `--nk-control-*` levers) as ONE element per list that slides between items by transform. Pointer hover, keyboard,
  * controller and programmatic focus, and the UI's own active index all light the same item: the tile moves under
  * it and the item gets `data-lit` (its ink and lift; the item never paints a fill of its own). A size change is a
  * measured FLIP (the new box, scaled from the old one), never a height or width animation. Reduced motion jumps.
  *
  *   <div className="flex flex-col">            // the list: the tile's parent (it marks it data-nk-sel)
- *     <SelectionTile items="[data-slot=menu-row]" active={i} />
+ *     <Selection items="[data-slot=menu-row]" active={i} />
  *     {rows}
  *   </div>
- *   <TabsList><SelectionTile items="[data-slot=tabs-trigger]" lit="[data-state=active]" axis="x" />…</TabsList>
- *   <DropdownMenuContent><SelectionTile items="[data-slot=dropdown-menu-item]" lit="[data-highlighted]" />…
+ *   <TabsList><Selection items="[data-slot=tabs-trigger]" lit="[data-state=active]" axis="x" />…</TabsList>
+ *   <DropdownMenuContent><Selection items="[data-slot=dropdown-menu-item]" lit="[data-highlighted]" />…
  *
  * `useSelectionIndicator(tileRef, options)` is the engine, for a list that renders its own tile element
  * (kit.css `nk-indicator`). The key-repeat rule holds: a move sooner than --nk-time-base after the last glides
  * fast (data-repeat="fast"), the third in a row jumps (data-repeat="jump"), so it never trails a held d-pad.
  *
- * Role: the one selection mark of a list, tabs or a menu: a Tile that slides to the lit item.
- * Anatomy: nk-indicator (absolute, behind the items) > ::before (the wall, dropped --nk-tile-wall-height) > ::after (the face).
- * Props: items, active, lit, pointer, focus, list, shape (inherit | tile).
+ * Role: the one selection mark of a list, tabs or a menu: a Glyph that slides to the lit item.
+ * Anatomy: nk-indicator (absolute, behind the items) > ::before (the wall, dropped --nk-control-wall-height) > ::after (the face).
+ * Props: items, active, lit, pointer, focus, list, shape (inherit | own).
  * Rules: one tile per list; the lit item gets data-lit and never paints its own fill; pointer, focus and the
  *   active index are one language (last input wins); moves are transform only, sizes a FLIP; reduced motion jumps.
  */
@@ -47,11 +47,11 @@ type SelectionOptions = {
 }
 
 /**
- * What the mark looks like (the `--nk-tile-sel-shape` lever, set as data-shape): `inherit` (default) is a flat face in the
- * shape of what it sits on (radius `--nk-tile-host-radius`, clip `--nk-tile-host-clip`, no skew, no wall: a grid slot, a tile of
+ * What the mark looks like (the `--nk-control-sel-shape` lever, set as data-shape): `inherit` (default) is a flat face in the
+ * shape of what it sits on (radius `--nk-control-host-radius`, clip `--nk-control-host-clip`, no skew, no wall: a grid slot, a tile of
  * a sheet); `tile` is the primary keycap (skewed face over its wall), which rows and tabs ask for.
  */
-type SelectionShape = "inherit" | "tile"
+type SelectionShape = "inherit" | "own"
 
 const NOT_USABLE = '[data-inert], [data-readonly], [aria-disabled="true"], :disabled, [data-disabled]'
 
@@ -259,7 +259,7 @@ function useSelectionIndicator(tileRef: React.RefObject<HTMLElement | null>, opt
   React.useLayoutEffect(() => resolve())
 }
 
-function SelectionTile({
+function Selection({
   className,
   items,
   active,
@@ -272,7 +272,7 @@ function SelectionTile({
 }: Omit<React.ComponentProps<"div">, "children"> & SelectionOptions & { shape?: SelectionShape }) {
   const ref = React.useRef<HTMLDivElement>(null)
   useSelectionIndicator(ref, { items, active, lit, pointer, focus, list })
-  return <div ref={ref} aria-hidden data-slot="selection-tile" data-shape={shape} data-hidden="" className={cn("nk-indicator", className)} {...props} />
+  return <div ref={ref} aria-hidden data-slot="selection" data-shape={shape} data-hidden="" className={cn("nk-indicator", className)} {...props} />
 }
 
-export { SelectionTile, useSelectionIndicator, type SelectionOptions, type SelectionShape }
+export { Selection, useSelectionIndicator, type SelectionOptions, type SelectionShape }

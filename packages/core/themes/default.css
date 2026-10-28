@@ -1,15 +1,15 @@
 /*
  * Default: nuikit's flagship theme, and the one a new project and the stock server get. Black and white:
  * near-black surfaces, white text and lines, greys for hierarchy, colour only where it means something
- * (status, a role, a vital in alert). Barlow Condensed italic caps for anything you scan, Geist for
- * sentences. One keycap language (the tile: a slanted face on a hard plate straight below it), fills
- * instead of rings, hard drops, no pills, no blur. Those are the token language's own defaults (packages/core/src/spec):
- * Default is a palette and a few tunes on top of them, and every lever is in docs/design/levers.md.
+ * (status, a role, a vital in alert). One face (Geist) for everything, upright and in sentence case; flat
+ * controls (no slant, no wall, no plate), solid fills, hard drops, no pills, no blur. Those are the token
+ * language's own defaults (packages/core/src/spec): Default is a palette and a few tunes on top of them, and
+ * every lever is in docs/design/levers.md. The keycap look (slanted faces on walls, condensed italic caps)
+ * is the Keycap theme next to this file.
  *
  * Use it: copy this file over nuikit/theme.css, then `nuikit theme reload`. The compiler keeps only
  * variables and @import URLs, so the few rules tokens can't say live in the nuikit resource's
- * theme/default.css, imported below. The fonts (Geist, Barlow Condensed italic; SIL OFL 1.1) ship in
- * every UI through fonts.json.
+ * theme/default.css, imported below. The fonts (Geist; SIL OFL 1.1) ship in every UI through fonts.json.
  */
 @import url("https://cfx-nui-nuikit/theme/default.css");
 
@@ -79,10 +79,10 @@
   --nk-hue-alert: 0.8;
 
   /* tunes on the baseline */
-  --nk-tile-face-color: rgb(22, 22, 22);
-  --nk-tile-face-ink: rgb(250, 250, 250);
-  --nk-tile-plate-color: rgb(115, 115, 115);
-  --nk-tile-plate-dim: rgb(38, 38, 38);
+  --nk-control-face-color: rgb(22, 22, 22);
+  --nk-control-face-ink: rgb(250, 250, 250);
+  --nk-control-plate-color: rgb(115, 115, 115);
+  --nk-control-plate-dim: rgb(38, 38, 38);
   --nk-plate-color: rgb(10, 10, 10);
   --nk-plate-hair: rgba(255, 255, 255, 0.12);
   --nk-hud-text: none;

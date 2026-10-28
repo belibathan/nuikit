@@ -257,7 +257,7 @@ const RadialMenu = React.forwardRef<
             data-slot="radial-menu-indicator"
             aria-hidden
             d={wedgePath(r, r, inner, r - RIM, (-0.5 / n) * Math.PI * 2 - Math.PI / 2 + gap, (0.5 / n) * Math.PI * 2 - Math.PI / 2 - gap)}
-            className="nk-indicator fill-(--nk-tile-sel-face) stroke-(--nk-tile-sel-face)"
+            className="nk-indicator fill-(--nk-control-sel-face) stroke-(--nk-control-sel-face)"
             style={{ position: "static", transformOrigin: "0 0", transform: radialSpin(0), opacity: 0 }}
           />
         )}
@@ -277,7 +277,7 @@ const RadialMenu = React.forwardRef<
             data-active={on || undefined}
             data-disabled={item.disabled || undefined}
             data-state={nkState({ disabled: item.disabled, focus: on })}
-            className={cn("pointer-events-none absolute flex flex-col items-center text-center", on ? "text-(--nk-tile-sel-ink)" : "text-muted-foreground")}
+            className={cn("pointer-events-none absolute flex flex-col items-center text-center", on ? "text-(--nk-control-sel-ink)" : "text-muted-foreground")}
             // transform, not Tailwind's translate-*: the individual `translate` property is Chromium 104+.
             style={{ left: `${50 + Math.cos(a) * d}%`, top: `${50 + Math.sin(a) * d}%`, transform: "translate(-50%, -50%)" }}
           >

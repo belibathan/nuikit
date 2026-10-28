@@ -49,7 +49,7 @@ import { useLinearRun } from "@/hooks/use-linear-run"
  * `status`, which stays as its older name (`error` = danger, neutral = info); `hue` colours it with a role.
  *
  * Role: a message on top of the game that speaks once and leaves (the notify intent), or an item change.
- * Anatomy: plate (nk-panel) > icon (a square Tile under the tile treatment; tone = status) > title (strong) over
+ * Anatomy: plate (nk-panel) > icon (a square Glyph under the tile treatment; tone = status) > title (strong) over
  *   a body-role description > dismiss > time line (the duration Fill along the bottom edge).
  * Props: tone, status, hue, title, description, icon, duration, elapsed, paused, onDismiss, item, slide, leaving.
  * Level means: the time left, 1 when it appears, 0 when it expires (--level, the time line drains from it).
@@ -337,7 +337,7 @@ function Notice({
         className={cn("nk-slab pointer-events-auto max-w-[var(--nk-notice-width)]", animate && !slide && "nk-enter", leaving && "pointer-events-none", className)}
         {...props}
       >
-        <span data-slot="notice-item-tile" className="nk-slab-tile">
+        <span data-slot="notice-item-glyph" className="nk-slab-icon">
           {item.image ? <img src={item.image} alt="" draggable={false} className="size-full object-contain p-(--nk-space-1)" /> : (item.icon ?? <PackageIcon />)}
         </span>
         <span data-slot="notice-item-name" className="min-w-0 truncate">

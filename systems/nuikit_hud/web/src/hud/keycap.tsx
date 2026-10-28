@@ -22,7 +22,7 @@ export function Keycap({ glyph, icon, size = "md", active, alert, open = false, 
   return (
     <VitalChip.Root active={active} alert={alert} open={open} display="auto" data-size={size} className={className}>
       <VitalChip.Shape>
-        <VitalChip.Icon>{glyph !== undefined ? <VitalChip.Glyph>{glyph}</VitalChip.Glyph> : icon}</VitalChip.Icon>
+        <VitalChip.Icon>{glyph !== undefined ? <VitalChip.Letter>{glyph}</VitalChip.Letter> : icon}</VitalChip.Icon>
         {label !== undefined && label !== false && <VitalChip.Label>{label}</VitalChip.Label>}
       </VitalChip.Shape>
     </VitalChip.Root>

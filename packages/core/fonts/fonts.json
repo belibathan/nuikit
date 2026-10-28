@@ -8,7 +8,8 @@
       "weight": "100 900",
       "identity": [
         "default",
-        "neon-pop"
+        "neon-pop",
+        "keycap"
       ],
       "license": "geist-mono.OFL.txt"
     },
@@ -18,8 +19,7 @@
       "weight": "700",
       "style": "italic",
       "identity": [
-        "default",
-        "neon-pop"
+        "keycap"
       ],
       "license": "barlow-condensed.OFL.txt"
     },
@@ -29,8 +29,7 @@
       "weight": "800",
       "style": "italic",
       "identity": [
-        "default",
-        "neon-pop"
+        "keycap"
       ],
       "license": "barlow-condensed.OFL.txt"
     },
@@ -40,8 +39,7 @@
       "weight": "600",
       "style": "italic",
       "identity": [
-        "default",
-        "neon-pop"
+        "keycap"
       ],
       "license": "barlow-condensed.OFL.txt"
     },
@@ -51,7 +49,8 @@
       "weight": "100 900",
       "identity": [
         "default",
-        "neon-pop"
+        "neon-pop",
+        "keycap"
       ],
       "license": "geist.OFL.txt"
     }

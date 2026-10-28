@@ -10,10 +10,10 @@ const html = (node: React.ReactElement) => renderToStaticMarkup(node)
 const tags = (markup: string, ...needles: string[]) => [...markup.matchAll(/<[a-z][^>]*>/g)].map((m) => m[0]).filter((t) => needles.every((n) => t.includes(n)))
 
 describe("stepper", () => {
-  it("is one control at --nk-height-control with two Tile keycaps and a rolling value", () => {
+  it("is one control at --nk-height-control with two Glyph keycaps and a rolling value", () => {
     const h = html(<Stepper value={12} min={0} max={243} aria-label="Drawable" />)
     expect(tags(h, 'data-slot="stepper"', "h-(--nk-height-control)", "rounded-(--nk-radius-control)")).toHaveLength(1)
-    const keys = tags(h, 'data-slot="tile"', 'data-size="lg"', 'data-shape="square"', "h-full")
+    const keys = tags(h, 'data-slot="glyph"', 'data-size="lg"', 'data-shape="square"', "h-full")
     expect(keys).toHaveLength(2)
     expect(keys[0]).toContain('data-part="stepper-prev"')
     expect(keys[1]).toContain('data-part="stepper-next"')

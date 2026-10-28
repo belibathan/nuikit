@@ -87,12 +87,13 @@ on npm yet.
 ## Themes
 
 **Default** is the flagship and the default: monochrome, Barlow Condensed italic caps for anything you scan, Geist for
-sentences, one slanted keycap tile for keys, icons and status, fills instead of rings, hard drops, no pills, no
+sentences, one flat control face for keys, icons and the selection, fills instead of rings, hard drops, no pills, no
 blur. Colour appears only when it means something. Spec: [`docs/design.md`](docs/design.md).
 
 | Identity | Character |
 |---|---|
-| **Default** (default) | Black and white, italic caps, slanted keycaps, fill-based status |
+| **Default** (default) | Black and white, flat and upright, fill-based status |
+| **Keycap** | Default's palette with slanted keycaps on walls and condensed italic caps |
 | **Neon Pop** | Default's structure, vivid palette: a blue-violet-rose accent gradient, a colour per vital |
 | **Graphite** | Utilitarian: stock shadcn neutrals, Inter, compact |
 | **Signal** | Bold and street: condensed type, chamfered corners, high-vis yellow |
@@ -145,7 +146,7 @@ their own: `/nuikit scale 1.1`, `/nuikit motion off`, `/nuikit contrast on`. Tok
 
 **Registry** (`npx shadcn add https://nuikit.vercel.app/r/<name>.json`)
 
-- Components: `tile`, `fill`, `chip`, `action-bar`, `icon-text`, `menu-row`, `edge-sheet`, `panel`, `meter`,
+- Components: `glyph`, `selection`, `fill`, `chip`, `action-bar`, `icon-text`, `menu-row`, `edge-sheet`, `panel`, `meter`,
   `vital-chip`, `speedometer`, `notice`, `key-prompt`, `skill-check`, `item-slot`, `radial-menu`, `text-roll` and
   more on [/components](https://nuikit.vercel.app/components).
 - Blocks (`npm create nuikit my-ui -- -t <block>`): `hud-minimal`, `pause-menu`, `death-screen`, `loading-screen`,

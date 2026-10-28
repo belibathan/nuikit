@@ -11,7 +11,7 @@ import { NumberRoll, TextRoll } from "@/components/ui/text-roll"
 /**
  * Stepper — one segmented control for a value picked by stepping (docs/design.md; handoff §4 "steppers
  * and pickers as one component"): a prev keycap, the value field and a next keycap, joined in one rim at one
- * control height. The keycaps are Tiles (kit.css draws `data-slot="tile"`; upright inside the rim, the theme's
+ * control height. The keycaps are Tiles (kit.css draws `data-slot="glyph"`; upright inside the rim, the theme's
  * skew is for free-standing keys), the value rolls on change (NumberRoll per digit for numbers, TextRoll for
  * text: a static separator never moves), and a keycap held down repeats after `--nk-stepper-delay` every
  * `--nk-stepper-rate`. Appearance drawables and textures, settings pickers, an input dialog's number.
@@ -27,7 +27,7 @@ import { NumberRoll, TextRoll } from "@/components/ui/text-roll"
  * Enter or blur, Escape cancels. Left / Right / Up / Down on the control step; the field announces the value.
  *
  * Role: one value picked by stepping: prev, the value, next, as one joined control.
- * Anatomy: stepper (the rim, --nk-height-control) > stepper-key (a Tile button, prev) > stepper-value (the roll, or the
+ * Anatomy: stepper (the rim, --nk-height-control) > stepper-key (a Glyph button, prev) > stepper-value (the roll, or the
  *   input while typing) > stepper-key (next).
  * Props: value, defaultValue, onValueChange, onStep, onCommit, min, max, step, wrap, format, size, disabled.
  * Rules: one height for the three parts (--nk-height-control; `size` picks --nk-height-chip or --nk-height-field); the keycaps
@@ -196,7 +196,7 @@ function Stepper({
 const holdDelay = () => tokenMs("--nk-stepper-delay", 350)
 const holdRate = () => tokenMs("--nk-stepper-rate", 70)
 
-/** A keycap of the control: a Tile button, upright, at the control's height; held, it repeats. */
+/** A keycap of the control: a Glyph button, upright, at the control's height; held, it repeats. */
 function StepperKey({ side, disabled, onStep, children }: { side: "prev" | "next"; disabled: boolean; onStep: (dir: -1 | 1) => void; children: React.ReactNode }) {
   const dir = side === "prev" ? -1 : 1
   const timer = React.useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -222,7 +222,7 @@ function StepperKey({ side, disabled, onStep, children }: { side: "prev" | "next
     <button
       type="button"
       tabIndex={-1}
-      data-slot="tile"
+      data-slot="glyph"
       data-shape="square"
       data-size="lg"
       data-part={`stepper-${side}`}
@@ -236,8 +236,8 @@ function StepperKey({ side, disabled, onStep, children }: { side: "prev" | "next
       onClick={(e) => e.preventDefault()}
       className={cn(
         // one height with the rim; the tile's corners are the rim's (overflow clips), upright inside it
-        "h-full w-auto aspect-square shrink-0 rounded-none [--nk-tile-face-skew:0deg] [--nk-tile-plate-x:0rem] [--nk-tile-plate-y:0rem] text-muted-foreground",
-        "hover:text-foreground hover:[--nk-tile-now-face:var(--nk-fill-tint)] disabled:pointer-events-none disabled:opacity-40",
+        "h-full w-auto aspect-square shrink-0 rounded-none [--nk-control-face-skew:0deg] [--nk-control-plate-x:0rem] [--nk-control-plate-y:0rem] text-muted-foreground",
+        "hover:text-foreground hover:[--nk-control-now-face:var(--nk-fill-tint)] disabled:pointer-events-none disabled:opacity-40",
         side === "prev" ? "border-r border-(--nk-plate-hair,var(--border))" : "border-l border-(--nk-plate-hair,var(--border))"
       )}
     >

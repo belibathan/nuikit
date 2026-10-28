@@ -3,18 +3,18 @@ import * as React from "react"
 import { cn } from "@/lib/utils"
 
 /**
- * Tile — the one key language (docs/design.md §3): keys, notice icons, tab marks, checked boxes, vital
+ * Glyph — the one key language (docs/design.md §3): keys, notice icons, tab marks, checked boxes, vital
  * chips, gears and telltales. A face (rim and top light) on a solid plate, the face slanted by
- * --nk-tile-face-skew while the box stays upright. kit.css draws it on `data-slot="tile"` (and on shadcn's Kbd,
- * which is the same tile); a theme only sets --nk-tile-*. Graphite: today's keycap, no plate, no slant.
+ * --nk-control-face-skew while the box stays upright. kit.css draws it on `data-slot="glyph"` (and on shadcn's Kbd,
+ * which is the same tile); a theme only sets --nk-control-*. Graphite: today's keycap, no plate, no slant.
  *
- *   <Tile>E</Tile>
- *   <Tile shape="square" size="md" tone="danger"><TriangleAlertIcon /></Tile>
- *   <Tile state="hold" level={0.6}>F</Tile>
- *   <Tile tag="Open door" tagOpen={near}>E</Tile>
- *   <Kbd>Esc</Kbd>                       // Tile size sm with data-slot="kbd"
+ *   <Glyph>E</Glyph>
+ *   <Glyph shape="square" size="md" tone="danger"><TriangleAlertIcon /></Glyph>
+ *   <Glyph state="hold" level={0.6}>F</Glyph>
+ *   <Glyph tag="Open door" tagOpen={near}>E</Glyph>
+ *   <Kbd>Esc</Kbd>                       // Glyph size sm with data-slot="kbd"
  *
- * States (data-state): focus switches the rim; hold presses by --nk-tile-plate-press and fills (`level`); confirm
+ * States (data-state): focus switches the rim; hold presses by --nk-control-plate-press and fills (`level`); confirm
  * turns the face white and pops; alert sets a danger rim and breathes; disabled is half opacity. `active`
  * (on, selected, checked) is the white face.
  *
@@ -23,18 +23,18 @@ import { cn } from "@/lib/utils"
  *   extending right)
  * Props: size, shape, state, active, level, tone, hue, tag, tagOpen, plate, land.
  * Rules: Rims switch state, they never tween. Hard drops only: the plate is an offset, never a blur. A theme
- *   sets --nk-tile-* values, never selectors.
+ *   sets --nk-control-* values, never selectors.
  */
 
-type TileState = "rest" | "focus" | "hold" | "confirm" | "alert" | "disabled"
+type GlyphState = "rest" | "focus" | "hold" | "confirm" | "alert" | "disabled"
 
-type TileProps = Omit<React.ComponentProps<"span">, "children"> & {
+type GlyphProps = Omit<React.ComponentProps<"span">, "children"> & {
   children?: React.ReactNode
   /** sm = --nk-height-key, md = --nk-height-chip, lg = --nk-height-control. */
   size?: "sm" | "md" | "lg"
   /** key: as wide as its legend. square: a square (icons). */
   shape?: "key" | "square"
-  state?: TileState
+  state?: GlyphState
   active?: boolean
   /** Hold progress, 0–1 (drawn while state is hold, or whenever set). */
   level?: number
@@ -49,11 +49,11 @@ type TileProps = Omit<React.ComponentProps<"span">, "children"> & {
   plate?: "default" | "dim"
   /** Land from --nk-gesture-land when mounted. */
   land?: boolean
-  /** The data-slot: "tile", or "kbd" for the Kbd alias. */
-  slot?: "tile" | "kbd"
+  /** The data-slot: "glyph", or "kbd" for the Kbd alias. */
+  slot?: "glyph" | "kbd"
 }
 
-function Tile({
+function Glyph({
   className,
   size = "sm",
   shape = "key",
@@ -66,13 +66,13 @@ function Tile({
   tagOpen = true,
   plate,
   land,
-  slot = "tile",
+  slot = "glyph",
   style,
   children,
   ...props
-}: TileProps) {
+}: GlyphProps) {
   const lv = level === undefined || !Number.isFinite(level) ? undefined : Math.max(0, Math.min(1, level))
-  const legend = typeof children === "string" || typeof children === "number" ? <span data-slot="tile-legend">{children}</span> : children
+  const legend = typeof children === "string" || typeof children === "number" ? <span data-slot="glyph-legend">{children}</span> : children
   const tile = (
     <span
       data-slot={slot}
@@ -90,27 +90,27 @@ function Tile({
       {...props}
     >
       {legend}
-      {lv !== undefined && <span data-slot="tile-fill" aria-hidden />}
+      {lv !== undefined && <span data-slot="glyph-fill" aria-hidden />}
     </span>
   )
   if (!tag) return tile
   return (
-    <span data-slot="tile-group" data-open={tagOpen || undefined}>
+    <span data-slot="glyph-group" data-open={tagOpen || undefined}>
       {tile}
-      <span data-slot="tile-tag">{tag}</span>
+      <span data-slot="glyph-tag">{tag}</span>
     </span>
   )
 }
 
-/** shadcn's Kbd as a Tile: size sm, data-slot="kbd" (so every rule for kbd applies). */
-function Kbd({ className, ...props }: Omit<TileProps, "slot">) {
+/** shadcn's Kbd as a Glyph: size sm, data-slot="kbd" (so every rule for kbd applies). */
+function Kbd({ className, ...props }: Omit<GlyphProps, "slot">) {
   // shadcn's Kbd box (the kit's kbd rules paint it), at the key height
   return (
-    <Tile
+    <Glyph
       slot="kbd"
       size="sm"
       className={cn(
-        "pointer-events-none inline-flex h-(--nk-height-key) w-fit min-w-(--nk-height-key) items-center justify-center gap-[var(--nk-tile-legend-gap)] px-[var(--nk-tile-legend-inset)] text-(length:--nk-text-key) select-none [&_svg:not([class*='size-'])]:size-(--nk-icon-sm)",
+        "pointer-events-none inline-flex h-(--nk-height-key) w-fit min-w-(--nk-height-key) items-center justify-center gap-[var(--nk-control-legend-gap)] px-[var(--nk-control-legend-inset)] text-(length:--nk-text-key) select-none [&_svg:not([class*='size-'])]:size-(--nk-icon-sm)",
         className
       )}
       {...props}
@@ -123,4 +123,4 @@ function KbdGroup({ className, ...props }: React.ComponentProps<"span">) {
   return <span data-slot="kbd-group" className={cn("inline-flex items-center gap-(--nk-space-1)", className)} {...props} />
 }
 
-export { Tile, Kbd, KbdGroup, type TileProps, type TileState }
+export { Glyph, Kbd, KbdGroup, type GlyphProps, type GlyphState }

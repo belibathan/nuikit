@@ -240,7 +240,7 @@
       "name": "menu-row",
       "type": "registry:ui",
       "title": "Menu Row",
-      "description": "The 40px action row: icon, label, description, a progress bar in any tone or colour, and a trailing meta, chevron, kbd trail (one key or several, Tile Kbds), checkbox or value stepper; as=\"div\" for a focusable div with the row look. Active, disabled and destructive. MenuRowList spaces its rows by --nk-list-gap and slides one SelectionTile (the keycap face and wall) to the lit row: hover, focus and active are one state, no focus ring. MenuRowDetails shows metadata with per-item bar colours.",
+      "description": "The 40px action row: icon, label, description, a progress bar in any tone or colour, and a trailing meta, chevron, kbd trail (one key or several, Glyph Kbds), checkbox or value stepper; as=\"div\" for a focusable div with the row look. Active, disabled and destructive. MenuRowList spaces its rows by --nk-list-gap and slides one Selection (the keycap face and wall) to the lit row: hover, focus and active are one state, no focus ring. MenuRowDetails shows metadata with per-item bar colours.",
       "files": [
         {
           "path": "registry/nuikit/ui/menu-row.tsx",
@@ -257,8 +257,8 @@
         "checkbox",
         "progress",
         "https://nuikit.vercel.app/r/meter.json",
-        "https://nuikit.vercel.app/r/tile.json",
-        "https://nuikit.vercel.app/r/selection-tile.json"
+        "https://nuikit.vercel.app/r/glyph.json",
+        "https://nuikit.vercel.app/r/selection.json"
       ],
       "meta": {
         "since": "0.5.0",
@@ -270,7 +270,7 @@
           "anatomy": [
             "menu-row (icon | image, label, description, progress)",
             "one trailing thing: meta | chevron | kbd | checkbox | stepper | actions",
-            "menu-row-list + its SelectionTile (the sliding lit tile)"
+            "menu-row-list + its Selection (the sliding mark)"
           ],
           "props": [
             "active",
@@ -289,9 +289,9 @@
           "level": "progress: the row's progress line (0\u20131 of its value).",
           "rules": [
             "States on data-state: rest, focus (active), confirm (on click), disabled, alert; the lit row carries data-lit.",
-            "Hover, keyboard, controller and programmatic focus and the active row are one lit state: a Tile under the row, no focus ring, no hover fill.",
-            "A list slides one SelectionTile (MenuRowList); rows sit --nk-list-gap apart and never touch; the list pads its sides by --nk-list-pad-x (the tile inset plus the skew overhang) so the lit tile never touches the panel edge (bleed turns it off).",
-            "A trailing key is a Tile (Kbd); as=\"div\" keeps the row look on a focusable div."
+            "Hover, keyboard, controller and programmatic focus and the active row are one lit state: a Glyph under the row, no focus ring, no hover fill.",
+            "A list slides one Selection (MenuRowList); rows sit --nk-list-gap apart and never touch; the list pads its sides by --nk-list-pad-x (the tile inset plus the skew overhang) so the lit tile never touches the panel edge (bleed turns it off).",
+            "A trailing key is a Glyph (Kbd); as=\"div\" keeps the row look on a focusable div."
           ]
         },
         "group": "Lists & selection",
@@ -333,13 +333,13 @@
             "--nk-space-1",
             "--nk-space-2",
             "--nk-text-label",
-            "--nk-tile-confirm-face",
-            "--nk-tile-confirm-ink",
-            "--nk-tile-face",
-            "--nk-tile-ink",
-            "--nk-tile-inset",
-            "--nk-tile-overhang",
-            "--nk-tile-skew",
+            "--nk-control-confirm-face",
+            "--nk-control-confirm-ink",
+            "--nk-control-face",
+            "--nk-control-ink",
+            "--nk-control-inset",
+            "--nk-control-overhang",
+            "--nk-control-skew",
             "--nk-type-body-family",
             "--nk-type-body-weight",
             "--nk-type-label-case",
@@ -357,13 +357,13 @@
       }
     },
     {
-      "name": "selection-tile",
+      "name": "selection",
       "type": "registry:ui",
-      "title": "Selection Tile",
-      "description": "The one selection mark of a list, tabs or a menu: the primary keycap's face and wall (--nk-tile-*) as one element that slides to the lit item by transform, its size by a measured FLIP. Hover, keyboard, controller and programmatic focus and the active index light the same item (data-lit); useSelectionIndicator is the engine.",
+      "title": "Selection Glyph",
+      "description": "The one selection mark of a list, tabs or a menu: the primary keycap's face and wall (--nk-control-*) as one element that slides to the lit item by transform, its size by a measured FLIP. Hover, keyboard, controller and programmatic focus and the active index light the same item (data-lit); useSelectionIndicator is the engine.",
       "files": [
         {
-          "path": "registry/nuikit/ui/selection-tile.tsx",
+          "path": "registry/nuikit/ui/selection.tsx",
           "type": "registry:ui"
         }
       ],
@@ -376,10 +376,10 @@
         "replaces": [],
         "removeIn": null,
         "spec": {
-          "role": "The one selection mark of a list, tabs or a menu: a Tile that slides to the lit item.",
+          "role": "The one selection mark of a list, tabs or a menu: a Glyph that slides to the lit item.",
           "anatomy": [
             "nk-indicator (absolute, behind the items)",
-            "::before the wall (dropped --nk-tile-wall), ::after the face (the theme skew)"
+            "::before the wall (dropped --nk-control-wall-height), ::after the face (the theme's skew, if any)"
           ],
           "props": [
             "items",
@@ -401,8 +401,8 @@
         "variants": {
           "axes": {},
           "levers": [
-            "--nk-tile",
-            "--nk-tile-wall",
+            "--nk-control",
+            "--nk-control-wall",
             "--nk-time-base"
           ],
           "hooks": [
@@ -415,7 +415,7 @@
       "name": "selection-tabs",
       "type": "registry:ui",
       "title": "Selection Tabs",
-      "description": "shadcn Tabs with one SelectionTile sliding to the active trigger (FLIP on --nk-indicator-time/-ease), the lit trigger the keycap tile, triggers --nk-list-gap apart, arrows move it, reduced motion jumps. SegmentedControl is the same with a value prop and no panels.",
+      "description": "shadcn Tabs with one Selection sliding to the active trigger (FLIP on --nk-indicator-time/-ease), the lit trigger the keycap tile, triggers --nk-list-gap apart, arrows move it, reduced motion jumps. SegmentedControl is the same with a value prop and no panels.",
       "files": [
         {
           "path": "registry/nuikit/ui/selection-tabs.tsx",
@@ -424,7 +424,7 @@
       ],
       "registryDependencies": [
         "tabs",
-        "selection-tile"
+        "selection"
       ],
       "meta": {
         "since": "unreleased",
@@ -434,7 +434,7 @@
         "spec": {
           "role": "Tabs and segmented choices as one list with one sliding keycap.",
           "anatomy": [
-            "tabs-list (data-nk-sel) > selection-tile + tabs-trigger\u2026",
+            "tabs-list (data-nk-sel) > selection + tabs-trigger\u2026",
             "tabs-content beside it"
           ],
           "props": [
@@ -456,7 +456,7 @@
         "variants": {
           "axes": {},
           "levers": [
-            "--nk-tile-wall",
+            "--nk-control-wall",
             "--nk-list-gap",
             "--nk-fill-style",
             "--nk-indicator-time"
@@ -866,7 +866,7 @@
       "name": "vital-chip",
       "type": "registry:ui",
       "title": "Vital Chip",
-      "description": "The HUD status chip as composable parts (Root, Shape, Level, Icon, Label, Glyph, Pop): the in-game keycap by default (a Tile face over a plate that slides out with the label, the level as a liquid in the face, white when active), or one SVG path per shape (auto, square, rounded, circle, diamond, hex, chamfer); level fill/outline/bar/none; a pop with the signed change. Themed by --nk-chip-shape, --nk-level-style, --nk-label-attach, --nk-vital-icon and the --nk-vital-* levers.",
+      "description": "The HUD status chip as composable parts (Root, Shape, Level, Icon, Label, Glyph, Pop): the in-game keycap by default (a Glyph face over a plate that slides out with the label, the level as a liquid in the face, white when active), or one SVG path per shape (auto, square, rounded, circle, diamond, hex, chamfer); level fill/outline/bar/none; a pop with the signed change. Themed by --nk-chip-shape, --nk-level-style, --nk-label-attach, --nk-vital-icon and the --nk-vital-* levers.",
       "files": [
         {
           "path": "registry/nuikit/ui/vital-chip.tsx",
@@ -879,7 +879,7 @@
       "registryDependencies": [
         "text-roll",
         "https://nuikit.vercel.app/r/collapse-stack.json",
-        "https://nuikit.vercel.app/r/tile.json",
+        "https://nuikit.vercel.app/r/glyph.json",
         "https://nuikit.vercel.app/r/use-collapse.json"
       ],
       "meta": {
@@ -891,7 +891,7 @@
           "role": "One vital on the HUD: health, armor, hunger, thirst, stress.",
           "anatomy": [
             "vital-chip-row (optional: chips that know each other)",
-            "vital-chip (keycap: plate, face Tile, liquid, icon; or an SVG shape)",
+            "vital-chip (keycap: plate, face Glyph, liquid, icon; or an SVG shape)",
             "icon",
             "level drawing (outline | liquid | bar)",
             "label (name, value)",
@@ -916,7 +916,7 @@
           "level": "the vital, 0\u2013100 as 0\u20131.",
           "rules": [
             "data-hue carries the vital's role (health, armor\u2026).",
-            "The default shape is the keycap (the in-game vitals): a Tile face over a plate that slides out with the label, the level as a liquid in the face; every number is a --nk-vital-* lever.",
+            "The default shape is the keycap (the in-game vitals): a Glyph face over a plate that slides out with the label, the level as a liquid in the face; every number is a --nk-vital-* lever.",
             "The level style comes from the theme (liquid, outline, bar); the data never picks it.",
             "Readable over a bright sky (legibility fixture).",
             "display: pill (icon, name, value) | value | icon (level as fill) | expand (opens on a change, settles after --nk-rest-delay); the theme default is --nk-vital-display.",
@@ -973,22 +973,22 @@
             "--nk-space-3",
             "--nk-text-key",
             "--nk-text-label",
-            "--nk-tile-active",
-            "--nk-tile-confirm-face",
-            "--nk-tile-confirm-ink",
-            "--nk-tile-face",
-            "--nk-tile-ink",
-            "--nk-tile-legend-shift",
-            "--nk-tile-plate",
-            "--nk-tile-plate-dim",
-            "--nk-tile-plate-x",
-            "--nk-tile-plate-y",
-            "--nk-tile-press",
-            "--nk-tile-rim-focus",
-            "--nk-tile-skew",
-            "--nk-tile-tone",
-            "--nk-tile-x",
-            "--nk-tile-y",
+            "--nk-control-active",
+            "--nk-control-confirm-face",
+            "--nk-control-confirm-ink",
+            "--nk-control-face",
+            "--nk-control-ink",
+            "--nk-control-legend-shift",
+            "--nk-control-plate",
+            "--nk-control-plate-dim",
+            "--nk-control-plate-x",
+            "--nk-control-plate-y",
+            "--nk-control-press",
+            "--nk-control-rim-focus",
+            "--nk-control-skew",
+            "--nk-control-tone",
+            "--nk-control-x",
+            "--nk-control-y",
             "--nk-time-base",
             "--nk-time-confirm",
             "--nk-time-fast",
@@ -1088,7 +1088,7 @@
       "name": "speedometer",
       "type": "registry:ui",
       "title": "Speedometer",
-      "description": "The in-game vehicle gauge on a Dial: thick rpm segments with even gaps (or a thin arc), the redline, the speed with its leading zeros dimmed, a gear Tile in the opening, fuel as outer segments and the turn signals; speedometerPainter() for live writes.",
+      "description": "The in-game vehicle gauge on a Dial: thick rpm segments with even gaps (or a thin arc), the redline, the speed with its leading zeros dimmed, a gear Glyph in the opening, fuel as outer segments and the turn signals; speedometerPainter() for live writes.",
       "files": [
         {
           "path": "registry/nuikit/ui/speedometer.tsx",
@@ -1102,7 +1102,7 @@
       "registryDependencies": [
         "https://nuikit.vercel.app/r/dial.json",
         "https://nuikit.vercel.app/r/text-roll.json",
-        "https://nuikit.vercel.app/r/tile.json"
+        "https://nuikit.vercel.app/r/glyph.json"
       ],
       "meta": {
         "since": "0.3.0",
@@ -1116,7 +1116,7 @@
             "fuel band (outer segments, the pump)",
             "signals",
             "readout: speed digits (leading zeros dimmed), unit",
-            "foot: gear Tile, or center"
+            "foot: gear Glyph, or center"
           ],
           "props": [
             "speed",
@@ -1564,10 +1564,10 @@
           "levers": [
             "--nk-ease-spring",
             "--nk-text-label",
-            "--nk-tile-active",
-            "--nk-tile-confirm-face",
-            "--nk-tile-confirm-ink",
-            "--nk-tile-tone",
+            "--nk-control-active",
+            "--nk-control-confirm-face",
+            "--nk-control-confirm-ink",
+            "--nk-control-tone",
             "--nk-time-confirm",
             "--nk-time-slow"
           ],
@@ -1591,7 +1591,7 @@
       ],
       "registryDependencies": [
         "https://nuikit.vercel.app/r/fill.json",
-        "https://nuikit.vercel.app/r/tile.json"
+        "https://nuikit.vercel.app/r/glyph.json"
       ],
       "meta": {
         "since": "0.6.0",
@@ -1700,7 +1700,7 @@
       ],
       "registryDependencies": [
         "https://nuikit.vercel.app/r/fill.json",
-        "https://nuikit.vercel.app/r/tile.json",
+        "https://nuikit.vercel.app/r/glyph.json",
         "https://nuikit.vercel.app/r/dial.json",
         "https://nuikit.vercel.app/r/use-linear-run.json"
       ],
@@ -2053,7 +2053,7 @@
         "group": "Lists & selection",
         "tier": "composite",
         "hidden": true,
-        "hiddenReason": "a Tile with an image and a count; the inventory block shows it composed",
+        "hiddenReason": "a Glyph with an image and a count; the inventory block shows it composed",
         "variants": {
           "axes": {
             "size": [
@@ -2226,13 +2226,13 @@
       }
     },
     {
-      "name": "tile",
+      "name": "glyph",
       "type": "registry:ui",
-      "title": "Tile",
-      "description": "The one key language (tokens 1.5): a face with a rim and top light on a solid plate, slanted by --nk-tile-skew while the box stays upright. Sizes, shapes, states (focus, hold, confirm, alert, disabled), tone and hue, a hold fill and a plate-extension tag. Also exports Kbd (a Tile with data-slot=kbd) and KbdGroup.",
+      "title": "Glyph",
+      "description": "The one key language (tokens 1.5): a face with a rim and top light on a solid plate, slanted by --nk-control-skew while the box stays upright. Sizes, shapes, states (focus, hold, confirm, alert, disabled), tone and hue, a hold fill and a plate-extension tag. Also exports Kbd (a Glyph with data-slot=kbd) and KbdGroup.",
       "files": [
         {
-          "path": "registry/nuikit/ui/tile.tsx",
+          "path": "registry/nuikit/ui/glyph.tsx",
           "type": "registry:ui"
         }
       ],
@@ -2246,9 +2246,9 @@
           "anatomy": [
             "plate (::before)",
             "face (::after: rim, light)",
-            "tile-fill (hold)",
+            "glyph-fill (hold)",
             "legend",
-            "tile-tag (the plate extending right)"
+            "glyph-tag (the plate extending right)"
           ],
           "props": [
             "size",
@@ -2266,7 +2266,7 @@
           "rules": [
             "Rims switch state, they never tween.",
             "Hard drops only: the plate is an offset, never a blur.",
-            "A theme sets --nk-tile-* values, never selectors."
+            "A theme sets --nk-control-* values, never selectors."
           ]
         },
         "group": "Foundations",
@@ -2314,26 +2314,26 @@
             "--nk-space-1",
             "--nk-space-2",
             "--nk-text-key",
-            "--nk-tile",
-            "--nk-tile-active",
-            "--nk-tile-confirm-face",
-            "--nk-tile-confirm-ink",
-            "--nk-tile-face",
-            "--nk-tile-hold",
-            "--nk-tile-ink",
-            "--nk-tile-key-ink",
-            "--nk-tile-legend-pad",
-            "--nk-tile-legend-shift",
-            "--nk-tile-plate",
-            "--nk-tile-plate-dim",
-            "--nk-tile-plate-x",
-            "--nk-tile-plate-y",
-            "--nk-tile-press",
-            "--nk-tile-rim-focus",
-            "--nk-tile-skew",
-            "--nk-tile-tone",
-            "--nk-tile-x",
-            "--nk-tile-y",
+            "--nk-control",
+            "--nk-control-active",
+            "--nk-control-confirm-face",
+            "--nk-control-confirm-ink",
+            "--nk-control-face",
+            "--nk-control-hold",
+            "--nk-control-ink",
+            "--nk-control-primary-ink",
+            "--nk-control-legend-pad",
+            "--nk-control-legend-shift",
+            "--nk-control-plate",
+            "--nk-control-plate-dim",
+            "--nk-control-plate-x",
+            "--nk-control-plate-y",
+            "--nk-control-press",
+            "--nk-control-rim-focus",
+            "--nk-control-skew",
+            "--nk-control-tone",
+            "--nk-control-x",
+            "--nk-control-y",
             "--nk-time-confirm",
             "--nk-time-pulse",
             "--nk-time-slow",
@@ -2409,7 +2409,7 @@
             ],
             "shape": [
               "pill",
-              "tile"
+              "square"
             ],
             "state": [
               "default",
@@ -2530,7 +2530,7 @@
         }
       ],
       "registryDependencies": [
-        "https://nuikit.vercel.app/r/tile.json"
+        "https://nuikit.vercel.app/r/glyph.json"
       ],
       "dependencies": [
         "class-variance-authority"
@@ -2871,7 +2871,7 @@
       "name": "action-bar",
       "type": "registry:ui",
       "title": "Action bar",
-      "description": "The one hint, close and back pattern (tokens 1.5): an optional plate, items gap-items apart, each keys (Tile sm) or an icon plus a label, a button when it acts, with a hold level.",
+      "description": "The one hint, close and back pattern (tokens 1.5): an optional plate, items gap-items apart, each keys (Glyph sm) or an icon plus a label, a button when it acts, with a hold level.",
       "files": [
         {
           "path": "registry/nuikit/ui/action-bar.tsx",
@@ -2879,7 +2879,7 @@
         }
       ],
       "registryDependencies": [
-        "https://nuikit.vercel.app/r/tile.json",
+        "https://nuikit.vercel.app/r/glyph.json",
         "https://nuikit.vercel.app/r/fill.json"
       ],
       "meta": {
@@ -3184,7 +3184,7 @@
       "name": "empty-state",
       "type": "registry:ui",
       "title": "Empty state",
-      "description": "When there's nothing to show or something went wrong: an icon, a short title, one sentence on what to do next, optional actions. Stock shadcn Empty on the kit's scale; empty or error tone; panel or screen size. tile: the icon as a square Tile (tokens 1.5).",
+      "description": "When there's nothing to show or something went wrong: an icon, a short title, one sentence on what to do next, optional actions. Stock shadcn Empty on the kit's scale; empty or error tone; panel or screen size. tile: the icon as a square Glyph (tokens 1.5).",
       "files": [
         {
           "path": "registry/nuikit/ui/empty-state.tsx",
@@ -3197,7 +3197,7 @@
       ],
       "registryDependencies": [
         "empty",
-        "https://nuikit.vercel.app/r/tile.json"
+        "https://nuikit.vercel.app/r/glyph.json"
       ],
       "meta": {
         "since": "0.6.0",
@@ -3208,7 +3208,7 @@
           "role": "What a list, a search or a screen shows when there is nothing, or something went wrong.",
           "anatomy": [
             "empty",
-            "icon (EmptyMedia, or a square Tile with tile)",
+            "icon (EmptyMedia, or a square Glyph with tile)",
             "title (title role)",
             "description (one sentence)",
             "actions"
@@ -3220,7 +3220,7 @@
             "title",
             "description",
             "action",
-            "tile"
+            "glyph"
           ],
           "rules": [
             "One sentence on what to do next.",
@@ -3230,7 +3230,7 @@
         "group": "Layout",
         "tier": "composite",
         "hidden": true,
-        "hiddenReason": "a Panel body with Text and an icon Tile; panels and lists carry their own empty state",
+        "hiddenReason": "a Panel body with Text and an icon Glyph; panels and lists carry their own empty state",
         "variants": {
           "axes": {
             "size": [
@@ -3269,7 +3269,7 @@
         "class-variance-authority"
       ],
       "registryDependencies": [
-        "https://nuikit.vercel.app/r/tile.json"
+        "https://nuikit.vercel.app/r/glyph.json"
       ],
       "meta": {
         "since": "0.6.0",
@@ -4233,7 +4233,7 @@
           "role": "One value picked by stepping: prev, the value, next, as one joined control.",
           "anatomy": [
             "stepper (the rim, --nk-h-control)",
-            "stepper-key (a Tile button, prev)",
+            "stepper-key (a Glyph button, prev)",
             "stepper-value (the roll, or the input while typing)",
             "stepper-key (next)"
           ],
@@ -4291,22 +4291,22 @@
             "--nk-stepper-delay",
             "--nk-stepper-rate",
             "--nk-text-label",
-            "--nk-tile-active",
-            "--nk-tile-confirm-face",
-            "--nk-tile-confirm-ink",
-            "--nk-tile-face",
-            "--nk-tile-ink",
-            "--nk-tile-legend-shift",
-            "--nk-tile-plate",
-            "--nk-tile-plate-dim",
-            "--nk-tile-plate-x",
-            "--nk-tile-plate-y",
-            "--nk-tile-press",
-            "--nk-tile-rim-focus",
-            "--nk-tile-skew",
-            "--nk-tile-tone",
-            "--nk-tile-x",
-            "--nk-tile-y",
+            "--nk-control-active",
+            "--nk-control-confirm-face",
+            "--nk-control-confirm-ink",
+            "--nk-control-face",
+            "--nk-control-ink",
+            "--nk-control-legend-shift",
+            "--nk-control-plate",
+            "--nk-control-plate-dim",
+            "--nk-control-plate-x",
+            "--nk-control-plate-y",
+            "--nk-control-press",
+            "--nk-control-rim-focus",
+            "--nk-control-skew",
+            "--nk-control-tone",
+            "--nk-control-x",
+            "--nk-control-y",
             "--nk-time-confirm",
             "--nk-time-pulse",
             "--nk-time-slow"

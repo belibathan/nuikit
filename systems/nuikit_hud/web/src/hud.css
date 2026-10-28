@@ -1987,9 +1987,9 @@ html[data-nk-motion="off"] .hud-root * {
 .hud-c-tell[data-tone="destructive"] [data-slot="vital-chip-icon"] { color: var(--hud-danger); }
 /* a small keycap (a telltale, a compass mark): --nk-vital-chip-size-sm, the key radius, a shallower drop */
 [data-slot="vital-chip"][data-size="sm"] { --nk-vital-chip-size: var(--nk-vital-chip-size-sm, 1.625rem); }
-[data-slot="vital-chip"][data-size="sm"] [data-slot="vital-chip-shape"] { --nk-vital-chip-plate-drop: var(--nk-tile-wall-height, 0.1875rem); --nk-vital-chip-label-size: 0.8125rem; }
+[data-slot="vital-chip"][data-size="sm"] [data-slot="vital-chip-shape"] { --nk-vital-chip-plate-drop: var(--nk-control-wall-height, 0.1875rem); --nk-vital-chip-label-size: 0.8125rem; }
 [data-slot="vital-chip"][data-size="sm"] :is([data-slot="vital-chip-wall"], [data-slot="vital-chip-plate"]) { border-radius: var(--nk-radius-key); }
-[data-slot="vital-chip"][data-size="sm"] > [data-slot="vital-chip-shape"] > [data-slot="tile"] { --nk-tile-face-radius: var(--nk-radius-key); }
+[data-slot="vital-chip"][data-size="sm"] > [data-slot="vital-chip-shape"] > [data-slot="glyph"] { --nk-control-face-radius: var(--nk-radius-key); }
 .hud-c-tells { width: auto; gap: var(--nk-space-2, 0.5rem); }
 
 
@@ -1999,7 +1999,7 @@ html[data-nk-motion="off"] .hud-root * {
 .hud-money { transition: opacity var(--hud-ms) ease-out, max-height 0s linear 0s; }
 .hud-money:not([data-shown]) { transition: opacity var(--hud-ms) ease-out, max-height 0s linear var(--hud-ms); }
 
-/* the compass heading ("NE 32°") is a Tile (the kit's key: its face, wall and slant come from --nk-tile-*), set
+/* the compass heading ("NE 32°") is a Glyph (the kit's key: its face, wall and slant come from --nk-control-*), set
    to the HUD's display voice; the text is painted into it, so it only needs its box and font */
 .hud-map-heading {
   position: absolute;
@@ -2020,7 +2020,7 @@ html[data-nk-motion="off"] .hud-root * {
 /* the gear: one tile; reverse takes the warning rim, the redline fills the face red */
 .hud-c-gear-tile { display: block; }
 .hud-c-gear-tile[data-gear="N"] [data-slot="vital-chip"] { opacity: 0.7; }
-.hud-c-gear-tile[data-gear="R"] [data-slot="tile"] { --nk-tile-now-rim: var(--hud-warn); }
+.hud-c-gear-tile[data-gear="R"] [data-slot="glyph"] { --nk-control-now-rim: var(--hud-warn); }
 .hud-gauge[data-state="alert"] .hud-c-gear-tile [data-slot="vital-chip-lit"] { background: var(--hud-redline); transform: scaleY(1); }
 
 .hud-c-center { top: 8.75rem; }

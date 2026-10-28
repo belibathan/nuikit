@@ -1,16 +1,16 @@
-/** VitalChip: one vital as a keycap Tile with a level inside and a tag that slides out from behind it. */
+/** VitalChip: one vital as a keycap Glyph with a level inside and a tag that slides out from behind it. */
 import { length, number, type ComponentDef } from "../lang";
 
 export const vitalChip: ComponentDef = {
-  description: "One vital: a Tile, its level, its icon, and the tag that slides out from behind it",
-  inherits: ["tile"],
-  anatomy: ["row", "shape", "plate", "wall", "tile", "track", "level", "liquid", "line", "activefill", "lit", "icon", "icon-ink", "glyph", "label", "name", "pop"],
+  description: "One vital: a Glyph, its level, its icon, and the tag that slides out from behind it",
+  inherits: ["control"],
+  anatomy: ["row", "shape", "plate", "wall", "face", "track", "level", "liquid", "line", "activefill", "lit", "icon", "icon-ink", "glyph", "label", "name", "pop"],
   levers: {
     size: length("2.125rem", "The chip's box", { floor: true, was: ["vital-size"] }),
     "size-sm": length("1.625rem", "A small chip's box (telltales, compass marks)", { floor: true, was: ["nk-vital-sm"] }),
   },
   parts: {
-    tile: { ratio: number(0.94, "The face as a fraction of the box", { range: [0.5, 1], floor: true, was: ["nk-vital-face-ratio"] }) },
+    glyph: { ratio: number(0.94, "The face as a fraction of the box", { range: [0.5, 1], floor: true, was: ["nk-vital-face-ratio"] }) },
     icon: { ratio: number(0.52, "The icon as a fraction of the face", { range: [0.2, 1], floor: true, was: ["nk-vital-icon-ratio"] }) },
     label: {
       size: length("0.9375rem", "The tag's text size", { floor: true, was: ["nk-vital-label-size"] }),

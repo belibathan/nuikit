@@ -3,7 +3,7 @@ import { length, ref, type ComponentDef } from "../lang";
 
 export const selectionTabs: ComponentDef = {
   description: "Tabs and segmented choices as one list with one sliding keycap (the tabs-list, tabs-trigger and tabs-content slots are shadcn's)",
-  inherits: ["selection", "list", "tile"],
+  inherits: ["selection", "list", "control"],
   anatomy: ["list", "trigger"],
   parts: {
     list: {

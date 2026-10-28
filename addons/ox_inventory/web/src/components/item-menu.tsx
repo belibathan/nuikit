@@ -11,7 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Kbd, KbdGroup } from "@/components/ui/kbd";
-import { SelectionTile } from "@/components/ui/selection-tile";
+import { Selection } from "@/components/ui/selection";
 import { useT } from "@/lib/locale";
 import { copyText } from "@/lib/nui";
 import { giveItem, moveItem, removeAmmo, removeComponent, useButton, useItem } from "@/state/actions";
@@ -55,8 +55,8 @@ export function ItemMenu() {
       </DropdownMenuTrigger>
       {open && item && (
         <DropdownMenuContent align="start" side="right" sideOffset={2} className="inv-menu w-64" onCloseAutoFocus={(e) => e.preventDefault()}>
-          {/* one selection Tile slides to the highlighted item (pointer and keys alike: Radix highlights both) */}
-          <SelectionTile items="[data-slot=dropdown-menu-item], [data-slot=dropdown-menu-sub-trigger]" lit="[data-highlighted], [data-state=open]" pointer={false} focus={false} />
+          {/* one selection Glyph slides to the highlighted item (pointer and keys alike: Radix highlights both) */}
+          <Selection items="[data-slot=dropdown-menu-item], [data-slot=dropdown-menu-sub-trigger]" lit="[data-highlighted], [data-state=open]" pointer={false} focus={false} />
           <DropdownMenuLabel className="flex items-center gap-2.5 px-2 py-1.5">
             <ItemImage src={itemImage(item)} name={item.name} className="size-8 shrink-0" />
             <span className="flex min-w-0 flex-col">
@@ -102,7 +102,7 @@ export function ItemMenu() {
                 {t("ui_removeattachments")}
               </DropdownMenuSubTrigger>
               <DropdownMenuSubContent className="w-52">
-                <SelectionTile items="[data-slot=dropdown-menu-item], [data-slot=dropdown-menu-sub-trigger]" lit="[data-highlighted], [data-state=open]" pointer={false} focus={false} />
+                <Selection items="[data-slot=dropdown-menu-item], [data-slot=dropdown-menu-sub-trigger]" lit="[data-highlighted], [data-state=open]" pointer={false} focus={false} />
                 {components.map((c, i) => (
                   <DropdownMenuItem key={`${c}-${i}`} onSelect={() => removeComponent(c, item.slot)}>
                     {Items[c]?.label ?? c}
@@ -121,7 +121,7 @@ export function ItemMenu() {
                   {g.name}
                 </DropdownMenuSubTrigger>
                 <DropdownMenuSubContent className="w-52">
-                  <SelectionTile items="[data-slot=dropdown-menu-item], [data-slot=dropdown-menu-sub-trigger]" lit="[data-highlighted], [data-state=open]" pointer={false} focus={false} />
+                  <Selection items="[data-slot=dropdown-menu-item], [data-slot=dropdown-menu-sub-trigger]" lit="[data-highlighted], [data-state=open]" pointer={false} focus={false} />
                   {g.buttons.map((b) => (
                     <DropdownMenuItem key={b.index} onSelect={() => useButton(b.index, item.slot)}>
                       {b.label}

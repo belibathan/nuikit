@@ -11,11 +11,11 @@ export * from "./lang";
 export { IDENTITY, SEMANTIC, COMPONENTS };
 
 export interface Lever extends LeverDef {
-  /** tile.face.color, space.2, @primary (palette), font.sans */
+  /** control.face.color, space.2, @primary (palette), font.sans */
   path: string;
-  /** --nk-tile-face-color */
+  /** --nk-control-face-color */
   css: string;
-  /** The compiled-theme key: nk-tile-face-color, primary */
+  /** The compiled-theme key: nk-control-face-color, primary */
   name: string;
   tier: Tier;
   /** The group or component. "" for the palette. */

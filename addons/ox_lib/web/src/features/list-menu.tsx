@@ -1,7 +1,7 @@
 import { ChevronDownIcon } from "lucide-react";
 import { useEffect, useMemo, useRef, useState, type ComponentProps, type CSSProperties } from "react";
 import { MenuRow } from "@/components/ui/menu-row";
-import { SelectionTile } from "@/components/ui/selection-tile";
+import { Selection } from "@/components/ui/selection";
 import { ActionBar, ActionBarItem } from "@/components/ui/action-bar";
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -217,10 +217,10 @@ export function ListMenu() {
               <SheetTitle className="ox-sheet-title nk-title truncate">{view.title}</SheetTitle>
             </header>
             {/* At most 7 rows tall (and their gaps), so scrollIntoView({ block: "nearest" }) always lands on a whole
-                row. The rows change state instantly; only the selection Tile moves (SelectionTile: the selected row,
+                row. The rows change state instantly; only the selection Glyph moves (Selection: the selected row,
                 which the keys and the pointer both move). Rows sit --nk-list-gap apart and never touch. */}
-            <div ref={list} className="ox-rows nk-list max-h-[calc(var(--nk-row-height)*7_+_var(--nk-list-gap)*6_+_var(--nk-tile-wall-height))] overflow-y-hidden">
-              <SelectionTile className="ox-indicator" items=".nk-row[data-index]" lit={`[data-index="${selected}"]`} pointer={false} focus={false} />
+            <div ref={list} className="ox-rows nk-list max-h-[calc(var(--nk-row-height)*7_+_var(--nk-list-gap)*6_+_var(--nk-control-wall-height))] overflow-y-hidden">
+              <Selection className="ox-indicator" items=".nk-row[data-index]" lit={`[data-index="${selected}"]`} pointer={false} focus={false} />
               {items.map((item, i) =>
                 item.label ? (
                   <Tooltip key={i} open={i === selected && !!tooltip && !!menu}>

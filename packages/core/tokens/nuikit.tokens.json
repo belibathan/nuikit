@@ -942,16 +942,20 @@
     },
     "display": {
       "$value": [
-        "Barlow Condensed",
-        "Arial Narrow",
+        "Geist",
+        "Inter",
+        "Segoe UI",
+        "system-ui",
         "sans-serif"
       ],
-      "$description": "Anything scanned: keys, titles, labels, captions"
+      "$description": "Anything scanned: keys, titles, labels, captions (the body face unless a theme says otherwise)"
     },
     "numeric": {
       "$value": [
-        "Barlow Condensed",
-        "Arial Narrow",
+        "Geist",
+        "Inter",
+        "Segoe UI",
+        "system-ui",
         "sans-serif"
       ],
       "$description": "Every number (always tabular)"
@@ -1078,8 +1082,8 @@
       "$description": "Body-size text: rows, notices, slabs"
     },
     "shape-skew": {
-      "$value": "-12deg",
-      "$description": "The keycap's slant: tile faces, the primary button, the selection (their boxes and text stay upright); at most ±20deg",
+      "$value": "0deg",
+      "$description": "The slant of faces (keys, the primary button, the selection; boxes and text stay upright): 0 = upright, at most ±20deg",
       "$extensions": {
         "dev.nuikit": {
           "type": "angle"
@@ -1148,7 +1152,7 @@
       "$description": "Letter-spacing of captions"
     },
     "type-case": {
-      "$value": "uppercase",
+      "$value": "none",
       "$description": "Anything scanned (keys, titles, labels, captions) in caps or as written",
       "$extensions": {
         "dev.nuikit": {
@@ -1157,7 +1161,7 @@
       }
     },
     "type-slant": {
-      "$value": "italic",
+      "$value": "normal",
       "$description": "The scanned voices upright or italic (a real italic where the face has one)",
       "$extensions": {
         "dev.nuikit": {
@@ -1168,7 +1172,7 @@
     "type-overhang": {
       "$type": "dimension",
       "$value": {
-        "value": 0.15,
+        "value": 0,
         "unit": "em"
       },
       "$description": "Trailing pad of a slanted voice (the italic's overhang); 0em when upright"

@@ -6,12 +6,12 @@ import { motionLevel, token, tokenMs } from "nuikit-core/motion"
 import { cn, nkLevel } from "@/lib/utils"
 import { NumberRoll } from "@/components/ui/text-roll"
 import { CollapseMore } from "@/components/ui/collapse-stack"
-import { Tile } from "@/components/ui/tile"
+import { Glyph } from "@/components/ui/glyph"
 import { useCollapse, type UseCollapseOptions } from "@/hooks/use-collapse"
 
 /**
  * VitalChip: the HUD's status chip as composable parts (shadcn-style). One anatomy under every theme: the keycap
- * (docs/design.md). A theme flattens or reshapes it with levers (--nk-tile-face-skew, --nk-tile-wall-height, radius
+ * (docs/design.md). A theme flattens or reshapes it with levers (--nk-control-face-skew, --nk-control-wall-height, radius
  * levers), never by swapping parts.
  *
  *   <VitalChip.Root value={hunger} tone="hunger">
@@ -22,7 +22,7 @@ import { useCollapse, type UseCollapseOptions } from "@/hooks/use-collapse"
  *     <VitalChip.Pop label="Hunger" />
  *   </VitalChip.Root>
  *
- * Anatomy: tile (the kit Tile as the face), icon, label (name, value), value, plate (slides out from behind the
+ * Anatomy: tile (the kit Glyph as the face), icon, label (name, value), value, plate (slides out from behind the
  * face; the label sits on it), fill (the liquid rising inside the face, --level, scaleY, with a surface line and a
  * copy of the icon in the fill's ink), track (clips the plate), wall (the base, dropped by --nk-vital-chip-plate-drop).
  * `active` (the mic while talking) lights the face. Its room in a Row is measured once per open and FLIPped,
@@ -309,7 +309,7 @@ function Shape({ className, children, ...props }: React.ComponentProps<"span">) 
   return <Keycap className={className} {...props}>{children}</Keycap>
 }
 
-/** The in-game keycap: the kit's Tile face over a sliding plate, the liquid inside the face, the label on the plate. */
+/** The in-game keycap: the kit's Glyph face over a sliding plate, the liquid inside the face, the label on the plate. */
 function Keycap({ className, children, ...props }: React.ComponentProps<"span">) {
   const { value, open, active, alert, side: sideProp, style, valueText, valueOnly } = useChip()
   const root = React.useRef<HTMLSpanElement>(null)
@@ -367,7 +367,7 @@ function Keycap({ className, children, ...props }: React.ComponentProps<"span">)
       data-state={alert ? "alert" : undefined}
       data-side={side}
       data-level={level === undefined ? undefined : ""}
-      className={cn("relative block shrink-0 text-(--nk-tile-face-ink)", className)}
+      className={cn("relative block shrink-0 text-(--nk-control-face-ink)", className)}
       {...props}
     >
       {/* the base: the tile's own wall, always there, dropped straight down by --nk-vital-chip-plate-drop */}
@@ -376,14 +376,14 @@ function Keycap({ className, children, ...props }: React.ComponentProps<"span">)
       <span aria-hidden data-slot="vital-chip-track">
         <span data-slot="vital-chip-plate" />
       </span>
-      <Tile aria-hidden data-slot="tile" data-part="vital-chip-face" size="md" shape="square" state={alert ? "alert" : undefined} active={active}>
+      <Glyph aria-hidden data-slot="glyph" data-part="vital-chip-face" size="md" shape="square" state={alert ? "alert" : undefined} active={active}>
         <span data-slot="vital-chip-level" style={level === undefined ? undefined : ({ "--level": level.toFixed(3) } as React.CSSProperties)}>
           {level !== undefined && <span data-slot="vital-chip-liquid" />}
           {level !== undefined && <span data-slot="vital-chip-line" />}
           <span data-slot="vital-chip-lit" />
         </span>
         {icon}
-      </Tile>
+      </Glyph>
       <span ref={text} data-slot="vital-chip-label" data-attach="plate" data-open={open || undefined} className="nk-scan">
         {valueOnly ? (
           <span className="nk-num">{plateValue}</span>
@@ -513,11 +513,11 @@ function Pop({ label, mode = "change", min = 3, critical = false, force = null, 
   )
 }
 
-/** A letter on a keycap's face (a gear, a compass mark), in the scan voice. */
-function Glyph({ className, ...props }: React.ComponentProps<"span">) {
+/** A letter on the face (a gear, a compass mark), in the scan voice. */
+function Letter({ className, ...props }: React.ComponentProps<"span">) {
   return <span data-slot="vital-chip-glyph" className={cn("nk-scan", className)} {...props} />
 }
 
-const VitalChip = { Root, Row, Shape, Level, Icon, Label, Pop, Glyph }
+const VitalChip = { Root, Row, Shape, Level, Icon, Label, Pop, Letter }
 
 export { VitalChip }

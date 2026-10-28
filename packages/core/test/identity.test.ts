@@ -20,12 +20,12 @@ afterEach(() => __resetTheme());
 describe("the baseline (compileTheme with no theme)", () => {
   const t = compileTheme(`.dark { --primary: oklch(0.6 0.2 150); }`);
 
-  it("is the premium baseline: keycaps slanted on hard plates, two voices in caps, solid fills, the 180ms ladder", () => {
+  it("is the flat baseline: upright faces, no wall, one face in sentence case, solid fills, the 180ms ladder", () => {
     expect(TOKENS_REVISION).toBe("2.0");
-    expect(t.vars["nk-shape-skew"]).toBe("-12deg");
+    expect(t.vars["nk-shape-skew"]).toBe("0deg");
     expect(t.vars["nk-surface-elevation"]).toBe("hard");
-    expect(t.vars["nk-type-case"]).toBe("uppercase");
-    expect(t.vars["nk-type-slant"]).toBe("italic");
+    expect(t.vars["nk-type-case"]).toBe("none");
+    expect(t.vars["nk-type-slant"]).toBe("normal");
     expect(t.vars["nk-style-fill"]).toBe("solid");
     expect(t.vars["nk-style-level"]).toBe("liquid");
     expect(t.vars["nk-motion-duration"]).toBe("180ms");
@@ -75,7 +75,7 @@ describe("validation and floors", () => {
     const t = compileTheme(`.dark { --nk-surface-elevation: huge; --nk-density: 3; --nk-shape-skew: 40deg; --nk-motion-ease: linear(0, 1); }`);
     expect(t.vars["nk-surface-elevation"]).toBe("hard");
     expect(t.vars["nk-density"]).toBe("1");
-    expect(t.vars["nk-shape-skew"]).toBe("-12deg");
+    expect(t.vars["nk-shape-skew"]).toBe("0deg");
     expect(t.vars["nk-motion-ease"]).toBe("cubic-bezier(0.2, 0, 0, 1)");
     const w = t.warnings.join("\n");
     expect(w).toMatch(/--nk-surface-elevation must be none, soft, deep, hard \(got huge\)/);
@@ -84,10 +84,10 @@ describe("validation and floors", () => {
   });
 
   it("validates component levers a theme sets, and drops an invalid one back to the kit default", () => {
-    const t = compileTheme(`.dark { --nk-tile-wall-shade: 3; --nk-tile-key-inset: 0.5rem; }`);
-    expect(t.vars["nk-tile-wall-shade"]).toBeUndefined();
-    expect(t.vars["nk-tile-key-inset"]).toBe("0.5rem");
-    expect(t.warnings.join("\n")).toMatch(/--nk-tile-wall-shade must be a number from 0 to 1/);
+    const t = compileTheme(`.dark { --nk-control-wall-shade: 3; --nk-control-primary-inset: 0.5rem; }`);
+    expect(t.vars["nk-control-wall-shade"]).toBeUndefined();
+    expect(t.vars["nk-control-primary-inset"]).toBe("0.5rem");
+    expect(t.warnings.join("\n")).toMatch(/--nk-control-wall-shade must be a number from 0 to 1/);
   });
 
   it("warns when menus go below the 0.92 opacity floor", () => {

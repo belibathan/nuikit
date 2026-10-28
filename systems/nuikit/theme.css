@@ -79,10 +79,10 @@
   --nk-hue-alert: 0.8;
 
   /* tunes on the baseline */
-  --nk-tile-face-color: rgb(22, 22, 22);
-  --nk-tile-face-ink: rgb(250, 250, 250);
-  --nk-tile-plate-color: rgb(115, 115, 115);
-  --nk-tile-plate-dim: rgb(38, 38, 38);
+  --nk-control-face-color: rgb(22, 22, 22);
+  --nk-control-face-ink: rgb(250, 250, 250);
+  --nk-control-plate-color: rgb(115, 115, 115);
+  --nk-control-plate-dim: rgb(38, 38, 38);
   --nk-plate-color: rgb(10, 10, 10);
   --nk-plate-hair: rgba(255, 255, 255, 0.12);
   --nk-hud-text: none;

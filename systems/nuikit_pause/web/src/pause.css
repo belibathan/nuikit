@@ -80,8 +80,8 @@
   color: var(--nk-chip-fg);
 }
 .pause-logo {
-  border-radius: var(--nk-tile-face-radius);
-  clip-path: var(--nk-tile-face-clip);
+  border-radius: var(--nk-control-face-radius);
+  clip-path: var(--nk-control-face-clip);
 }
 
 @keyframes pause-fade {

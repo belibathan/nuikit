@@ -179,7 +179,7 @@ export default function App() {
       width="34rem"
       fit
       aria-labelledby="contract-title"
-          icon={<img src="./logo.svg" alt="" className="size-7 rounded-(--nk-tile-face-radius)" draggable={false} />}
+          icon={<img src="./logo.svg" alt="" className="size-7 rounded-(--nk-control-face-radius)" draggable={false} />}
           // "Vehicle Sales Contract - Larry's Vehicle Sales" → the business is the title
           title={
             <span id="contract-title" title={shown.bizName}>

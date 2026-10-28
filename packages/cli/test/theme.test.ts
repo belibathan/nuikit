@@ -12,7 +12,7 @@ const names = shippedThemes();
 describe("shipped themes", () => {
   it("lists the themes in nuikit-core/themes", () => {
     expect(names).toEqual(fs.readdirSync(THEMES_DIR).filter((f) => f.endsWith(".css")).map((f) => f.slice(0, -4)).sort());
-    expect(names).toEqual(["default", "neon-pop"]);
+    expect(names).toEqual(["default", "keycap", "neon-pop"]);
   });
 });
 

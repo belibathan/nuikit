@@ -29,7 +29,7 @@ type KitClassGroup =
   | "nk-on-game"
   | "nk-display"
   | "nk-slab"
-  | "nk-slab-tile"
+  | "nk-slab-icon"
   | "nk-slab-delta"
   | "nk-slab-key"
   | "nk-slab-stack"
@@ -84,7 +84,7 @@ const twMerge = extendTailwindMerge<KitClassGroup>({
       "nk-on-game": ["nk-on-game"],
       "nk-display": ["nk-display"],
       "nk-slab": ["nk-slab"],
-      "nk-slab-tile": ["nk-slab-tile"],
+      "nk-slab-icon": ["nk-slab-icon"],
       "nk-slab-delta": ["nk-slab-delta"],
       "nk-slab-key": ["nk-slab-key"],
       "nk-slab-stack": ["nk-slab-stack"],
@@ -131,7 +131,7 @@ const twMerge = extendTailwindMerge<KitClassGroup>({
       "nk-on-game": ["text-color"],
       "nk-display": ["font-family", "font-size", "font-style", "font-weight", "leading", "nk-body", "nk-caption", "nk-label", "nk-scan", "nk-title", "text-transform", "tracking"],
       "nk-slab": ["bg-color", "font-size", "font-weight", "leading", "nk-chip", "nk-hud", "nk-panel", "text-color"],
-      "nk-slab-tile": ["bg-color", "text-color"],
+      "nk-slab-icon": ["bg-color", "text-color"],
       "nk-slab-delta": ["font-family", "fvn-figure", "fvn-fraction", "fvn-normal", "fvn-ordinal", "fvn-slashed-zero", "fvn-spacing", "text-color", "tracking"],
       "nk-slab-key": ["bg-color", "font-family", "font-size", "font-weight", "leading", "text-color"],
       "nk-slab-stack": ["text-color"],

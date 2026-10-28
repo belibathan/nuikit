@@ -90,7 +90,7 @@ export const RULES: Record<RuleId, { level: Level; description: string }> = {
   "radius/pill": { level: 0, description: "A pill (rounded-full, 9999px, 50%); use --nk-radius-chip, or a Chip dot" },
   "effect/blur": { level: 0, description: "backdrop-filter, backdrop-blur-*, filter: blur / drop-shadow / grayscale, drop-shadow-*; depth is the plate recipe, dimming is opacity" },
   "color/mix": { level: 0, description: "color-mix() (Chromium 103 lacks it); use rgba(var(--…-rgb), a)" },
-  "shadow/soft": { level: 0, description: "A soft shadow (blur > 0, shadow-sm…2xl); hard drops only: --nk-plate-drop or the tile plate" },
+  "shadow/soft": { level: 0, description: "A soft shadow (blur > 0, shadow-sm…2xl); hard drops only: --nk-plate-drop or the control plate" },
   "motion/duration": { level: 0, description: "A duration literal (ms / s, duration-*, animationDelay); use --nk-time-* and calc(var(--nk-stagger) * var(--i))" },
   "motion/ease": { level: 0, description: "A cubic-bezier literal or an ease / ease-in / ease-out keyword; use --nk-ease-*" },
   "motion/property": { level: 0, description: "A transition on anything but transform and opacity (transition-all, transition-colors…); switch rims, move with transform" },
@@ -99,8 +99,8 @@ export const RULES: Record<RuleId, { level: Level; description: string }> = {
   "state/alert": { level: 0, description: "data-critical, data-low, data-redline, data-danger, data-ink-deny; the one alert spelling is data-state=\"alert\" (deny: data-nk-deny)" },
   "theme/unlayered": { level: 0, description: "Theme CSS outside @layer nk.theme, !important, or app markup (.inv-*, .pause-*) in a theme; a theme sets tokens" },
   "theme/values-only": { level: 0, description: "A selector or a non-token declaration in a theme file (theme.css, themes/*.css); a theme sets values only, and a rule it needs means the kit is missing a lever (docs/design/levers.md)" },
-  "selection/local": { level: 0, description: "A page draws its own selected/hover state (hover:bg-*, data-[state=active]:bg-*, aria-selected:bg-*, bg-accent, a .selected/.active/.hover class with a background); one selection, one component: MenuRowList, SelectionTile or Tabs" },
-  "kit/local-concept": { level: 0, description: "A page hand-draws a keycap, plate, wall, skew or level fill (transform: skew, box-shadow: 0 Npx 0, border-bottom: Npx solid, a linear-gradient level fill); use Tile, Fill or Chip" },
+  "selection/local": { level: 0, description: "A page draws its own selected/hover state (hover:bg-*, data-[state=active]:bg-*, aria-selected:bg-*, bg-accent, a .selected/.active/.hover class with a background); one selection, one component: MenuRowList, Selection or Tabs" },
+  "kit/local-concept": { level: 0, description: "A page hand-draws a keycap, plate, wall, skew or level fill (transform: skew, box-shadow: 0 Npx 0, border-bottom: Npx solid, a linear-gradient level fill); use Glyph, Fill or Chip" },
   "arsenal/unknown": { level: 0, description: "A nk.* / NUI.* call, or a nuikit:* event, that the arsenal (packages/core/arsenal.json) doesn't declare: a private path, not a published part" },
   "arsenal/legacy": { level: 0, description: "An old name (nk.notify, NUI.surface…) the arsenal lists with a replacement and removeIn; use the nk.<domain>.<verb> it names" },
   "space/off-scale": { level: 0, description: "A gap, padding or margin off the 0.25rem step (0.375rem, 0.3125rem, gap-1.5…); use --nk-space-* and gap-(--nk-gap-*)" },
@@ -256,12 +256,12 @@ const WALL_SHADOW = /(?:^|,)\s*(?:inset\s+)?0(?:px)?\s+(-?[\d.]+)(px|rem)\s+0(?:
 const isWall = (v: string) => [...v.matchAll(WALL_SHADOW)].some((m) => Math.abs(parseFloat(m[1]!)) >= (m[2] === "rem" ? 0.1875 : 3));
 const LEVEL_VAR = /--(?:level|value|progress|fill|pct|percent)\b/;
 
-/** Invariant 3: a page's own plate, wall, skew or level fill (Tile, Fill and Chip draw these). */
+/** Invariant 3: a page's own plate, wall, skew or level fill (Glyph, Fill and Chip draw these). */
 function localConcept(p: string, v: string, raw: string, at: number, report: Report) {
-  if (p === "transform" && /\bskew[xy]?\(/i.test(v)) report("kit/local-concept", at, "transform: skew is a hand-drawn slant; Tile and the theme's --nk-shape-slab draw it");
-  else if (p === "box-shadow" && isWall(v)) report("kit/local-concept", at, "box-shadow: 0 Npx 0 is a hand-drawn keycap wall; use Tile (the plate recipe)");
+  if (p === "transform" && /\bskew[xy]?\(/i.test(v)) report("kit/local-concept", at, "transform: skew is a hand-drawn slant; Glyph and the theme's --nk-shape-slab draw it");
+  else if (p === "box-shadow" && isWall(v)) report("kit/local-concept", at, "box-shadow: 0 Npx 0 is a hand-drawn keycap wall; use Glyph (the plate recipe)");
   else if (/^border-bottom(-width)?$/.test(p) && (p.endsWith("width") || /\bsolid\b/.test(v)) && [...v.matchAll(LENGTH)].some((m) => (m[2] === "px" ? parseFloat(m[1]!) >= 2 : m[2] === "rem" && parseFloat(m[1]!) >= 0.125)))
-    report("kit/local-concept", at, "border-bottom: Npx solid is a hand-drawn wall or underline; use Tile or the row indicator");
+    report("kit/local-concept", at, "border-bottom: Npx solid is a hand-drawn wall or underline; use Glyph or the row indicator");
   else if (/^background(-image)?$/.test(p) && /linear-gradient\(/i.test(raw) && LEVEL_VAR.test(raw)) report("kit/local-concept", at, "a linear-gradient level fill; use Fill");
 }
 
@@ -287,7 +287,7 @@ function kitDeclaration(prop: string, value: string, at: number, vat: number, re
         .split(/\s+/)
         .filter((t) => /^-?\d*\.?\d+(px|rem|em)?$/.test(t));
       if (nums.length >= 3 && parseFloat(nums[2]!) !== 0) {
-        report("shadow/soft", vat + l.at, "a soft shadow (blur > 0); hard drops only: --nk-plate-drop or the tile plate");
+        report("shadow/soft", vat + l.at, "a soft shadow (blur > 0); hard drops only: --nk-plate-drop or the control plate");
         break;
       }
     }
@@ -348,11 +348,11 @@ const CLASS_RULES: [RegExp, RuleId, string][] = [
   [/(?<![\w-])ease-(in|out|in-out|\[cubic-bezier[^\]]*\])(?![\w-])/g, "motion/ease", "a literal ease; use ease-(--nk-ease-*)"],
   [/(?<![\w-])transition(-all|-colors|-shadow|-\[(?!transform|opacity)[^\]]+\])?(?![\w-])/g, "motion/property", "a transition beyond transform and opacity; use transition-transform or transition-opacity"],
   [/(?<![\w-])(text-(xs|sm|base|lg|xl|2xl|3xl|4xl|5xl)|text-\[\d[^\]]*\]|font-(medium|semibold))(?![\w-])/g, "type/raw", "a type literal; use a role class (nk-scan, nk-title, nk-label, nk-num, nk-body)"],
-  [/(?<![\w-])(?:[\w-]+:)*(hover:bg-|data-\[state=(?:active|checked|selected|open)\]:bg-|aria-selected:bg-|aria-checked:bg-)(?!transparent|none)[\w\[(-][^\s"'`]*/g, "selection/local", "a page-drawn selected/hover background; use MenuRowList, SelectionTile or Tabs"],
-  [/(?<![\w:-])bg-accent(?![\w-])/g, "selection/local", "bg-accent on a row is a page-drawn selection; use MenuRowList, SelectionTile or Tabs"],
-  [/(?<![\w-])-?skew(-[xy])?-(\d+|\[[^\]]+\])|(?<![\w-])skew[XY]?\(|\[transform:skew/g, "kit/local-concept", "a hand-drawn slant; Tile and --nk-shape-slab draw it"],
-  [/shadow-\[(?:inset_)?0(?:px)?_-?(?:[3-9]|\d{2,}|0?\.(?:1[89]|[2-9])\d*(?=rem))[\d.]*(?:px|rem)_0(?:px|rem)?[_\],]/g, "kit/local-concept", "a hand-drawn keycap wall (box-shadow 0 Npx 0); use Tile"],
-  [/(?<![\w-])(?:[\w-]+:)*border-b-(?:[2-9]|\[[2-9]\d*px\])(?![\w-])/g, "kit/local-concept", "a hand-drawn wall or underline; use Tile or the row indicator"],
+  [/(?<![\w-])(?:[\w-]+:)*(hover:bg-|data-\[state=(?:active|checked|selected|open)\]:bg-|aria-selected:bg-|aria-checked:bg-)(?!transparent|none)[\w\[(-][^\s"'`]*/g, "selection/local", "a page-drawn selected/hover background; use MenuRowList, Selection or Tabs"],
+  [/(?<![\w:-])bg-accent(?![\w-])/g, "selection/local", "bg-accent on a row is a page-drawn selection; use MenuRowList, Selection or Tabs"],
+  [/(?<![\w-])-?skew(-[xy])?-(\d+|\[[^\]]+\])|(?<![\w-])skew[XY]?\(|\[transform:skew/g, "kit/local-concept", "a hand-drawn slant; Glyph and --nk-shape-slab draw it"],
+  [/shadow-\[(?:inset_)?0(?:px)?_-?(?:[3-9]|\d{2,}|0?\.(?:1[89]|[2-9])\d*(?=rem))[\d.]*(?:px|rem)_0(?:px|rem)?[_\],]/g, "kit/local-concept", "a hand-drawn keycap wall (box-shadow 0 Npx 0); use Glyph"],
+  [/(?<![\w-])(?:[\w-]+:)*border-b-(?:[2-9]|\[[2-9]\d*px\])(?![\w-])/g, "kit/local-concept", "a hand-drawn wall or underline; use Glyph or the row indicator"],
   [/(?<![\w-])-?(gap(-[xy])?|p[xytrblse]?|m[xytrblse]?|space-[xy])-\d+\.5(?![\w-])/g, "space/off-scale", "off the 0.25rem step; use gap-(--nk-gap-*) or --nk-space-*"],
 ];
 
@@ -479,7 +479,7 @@ function scanCss(css: string, base: number, report: Report, ctx: FileContext) {
     }
     if (ctx.kit) kitDeclaration(prop, value, base + lead, base + valueOffset, report);
     if (ctx.kit && /^background(-color|-image)?$/i.test(prop) && selectors.length && LOCAL_STATE_SELECTOR.test(selectors[selectors.length - 1]!))
-      report("selection/local", base + lead, `${selectors[selectors.length - 1]!.trim().slice(0, 40)}: a page-drawn selected/hover background; use MenuRowList, SelectionTile or Tabs`);
+      report("selection/local", base + lead, `${selectors[selectors.length - 1]!.trim().slice(0, 40)}: a page-drawn selected/hover background; use MenuRowList, Selection or Tabs`);
     const inTheme = selectors.some((s) => THEME_SELECTOR.test(s));
     if (prop.startsWith("--")) {
       const name = prop.slice(2);

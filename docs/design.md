@@ -18,15 +18,16 @@ The goal is a game UI language, not a web app: rows you select like a GTA menu, 
    colours only for what the theme cannot know: GTA's own palettes, item images, shadows.
 3. **Stock shadcn is the foundation.** Compose the vendored new-york-v4 components (`vendor/shadcn`, never edited);
    nuikit's registry layer is composition, not forks. If shadcn has it, use it.
-4. **One tile language.** Keys, icons, checked boxes, gears, vital chips, the selected row and the primary button are
-   one Tile: a face in the theme's skew, a 1px rim, on a hard wall straight below. Depth is an offset plate, never a
-   blur or a glow.
+4. **One control surface.** Keys, icons, checked boxes, gears, vital chips, the selected row and the primary button
+   draw the same face (`--nk-control-*`): flat, a 1px rim, upright. A theme may slant it, set it on a wall or an offset
+   plate (the Keycap theme does); depth is never a blur or a glow.
 5. **Fill, not rings.** Status is a level filling, solid and vivid, with a leading edge. Progress is segmented or a
    fill, never a thick ring. No translucent washes by default (`--nk-fill-style: solid`; `soft` is the switch).
-6. **Rows, not cards.** Inside a window everything is a row: icon tile, title, description, trail. No cards in cards.
-   Rows never touch (`--nk-list-gap`), and one selection tile per list slides between them.
-7. **Two voices.** A display voice for everything you scan (titles, labels, keys, numbers; Barlow Condensed italic
-   caps in Default) and a body voice for sentences (Geist). Never a bold sans for a row title.
+6. **Rows, not cards.** Inside a window everything is a row: icon, title, description, trail. No cards in cards.
+   Rows never touch (`--nk-list-gap`), and one Selection per list slides between them.
+7. **Two voices, one face by default.** A scan voice for everything you read at a glance (titles, labels, keys,
+   numbers: heavier, tighter) and a body voice for sentences. Both are Geist, upright, sentence case in the baseline;
+   a theme may give the scan voice its own face, caps and slant (`--font-display`, `--nk-type-case`, `--nk-type-slant`).
 8. **Quiet and in sentence case.** Neutral surfaces, `primary` once per surface, colour carries meaning. No uppercase
    tracked labels in markup (a theme may uppercase through `--nk-type-*-case`), no eyebrows, no `A · B · C` strings.
 9. **Motion with a purpose, on one ladder.** Transform and opacity only, `--nk-time-*` and `--nk-ease-*`, exits faster
@@ -42,7 +43,7 @@ The goal is a game UI language, not a web app: rows you select like a GTA menu, 
 ## 2. Tokens and levers
 
 **What the language is.** The contract is the token file, `packages/core/tokens/nuikit.levers.json`, a W3C Design
-Tokens document whose paths (`tile.face.radius`, `palette.primary`, `motion.duration`) carry no CSS prefix, plus the
+Tokens document whose paths (`control.face.radius`, `palette.primary`, `motion.duration`) carry no CSS prefix, plus the
 primitives' anatomy (§6). The language is **the 36 core identity levers** listed first in
 [`design/levers.md`](design/levers.md): the choices a theme author makes (palette, three faces, density, type ratio
 and case and slant, skew, chamfer and hairline, surface tint and elevation, two material opacities, text shadow on the
@@ -62,7 +63,7 @@ four tiers that only reference upward:
 |---|---|---|
 | identity | what a server chooses: palette, faces, scales, shape, type, surfaces, motion | `--nk-shape-skew`, `--nk-style-fill` |
 | semantic | roles every component shares: the motion ladder, eases, plate, fill, accent, lines, depth | `--nk-time-base`, `--nk-plate-bg` |
-| component | `--nk-<component>-<prop>` | `--nk-tile-wall`, `--nk-row-pad-x` |
+| component | `--nk-<component>-<prop>` | `--nk-control-wall`, `--nk-row-pad-x` |
 | part | `--nk-<component>-<part>-<prop>`, the `data-slot` anatomy | `--nk-type-scan-pad` |
 
 `compileTheme("")` fills the defaults (Graphite, the token default). A theme is any shadcn or TweakCN paste plus the
@@ -86,7 +87,7 @@ except hairlines and shadow offsets.
 | Screen edge | `--nk-edge` 1.5rem (16:10 1.25, 4:3 1) for anything anchored to or inset from an edge |
 | Rows and controls | `--nk-h-row` 3rem for a row in a sheet, `--nk-h-field` 2.75rem, `--nk-h-control` 2.25rem, keys and chips smaller |
 | Type | 13 label, 16 body, 17–18 panel title, 23 section, 36+ for a number that is the point; 400 body, 500 labels, 600 titles |
-| Icons | `--nk-icon-md` 1rem in a 2rem Tile column; a row without an icon keeps the column |
+| Icons | `--nk-icon-md` 1rem in a 2rem Glyph column; a row without an icon keeps the column |
 | Radius | four steps: key .25, chip .375, control .5, surface .75rem (`--nk-r-*`); no `rounded-full` on new work |
 
 **Layout model** (`registry/nuikit/ui/{screen,zone,region,grid}.tsx`, `packages/core/src/viewport.ts`): `<Screen>` is
@@ -124,12 +125,13 @@ and Escape belong to the surface and its resource. `nk-panel` stays for small po
   `--nk-row-title-size` 1rem); descriptions in the body voice (`--nk-row-desc-size` .875rem, muted). Notice titles are
   sentence-led whatever the script sent.
 - **Selection and focus: one language.** No focus rings anywhere: keyboard, controller and programmatic focus render the
-  pointer's hover state (`data-lit`). The lit row, menu item or tab **is** the primary keycap Tile (face in the theme's
-  skew over the wall, `--nk-tile-radius`); one `SelectionTile` per list slides between items by transform, a size change
+  pointer's hover state (`data-lit`). The lit row, menu item or tab **is** the primary control face (`--nk-control-primary-*`,
+  slanted or walled only if the theme says so); one `Selection` per list slides between items by transform, a size change
   by FLIP, never a height or width animation; a held key glides fast then jumps. The one exception: a text field with the
   caret keeps a 1px rim (`--nk-focus-rim`), and checkboxes and switches light the same rim.
-- **Buttons.** The primary is a keycap: face on wall, hover and focus raise it a pixel, a press sinks it. Outline is a
-  hairline rim that tints; ghost and secondary take the accent. Labels in the scan voice.
+- **Buttons.** The primary is the control face: hover and focus raise it a pixel, a press sinks it (onto its wall when
+  the theme has one). Outline is a hairline rim that tints; ghost and secondary take the accent. Labels in the scan voice.
+- **Stock shadcn Tabs** keep their stock look; `selection-tabs` is the one sliding Selection.
 - **Progress.** `ProgressRing` is a Dial with `--nk-ring-segments` (24) and `--nk-ring-gap` (4°) on a dark disc; a timed
   ring lights one segment at a time on the compositor. Bars are a Fill: solid, a leading edge (`--nk-fill-edge`), alert
   past a threshold.
@@ -138,13 +140,13 @@ and Escape belong to the surface and its resource. `nk-panel` stays for small po
 - **Surfaces.** One plate (`--nk-plate-*`): flat, a hairline, a hard drop. One hairline under a header, none between
   rows or above a footer. No blur, no soft shadow, no gradient that carries colour.
 - **Motion ladder.** snap 90 (press), fast 120 (hover, a face rising), base 180 (row lift, rim), slow 280 (sheets,
-  dialogs, a tile landing), fill 420 (levels), pulse 1000 (alert); exits at 0.7×. Things land, open, then speak.
+  dialogs, a glyph landing), fill 420 (levels), pulse 1000 (alert); exits at 0.7×. Things land, open, then speak.
   Entrances: a sheet slides from its edge, rows stagger after it on the first open only; a sub-page fades in place.
   Values that change in place roll (`TextRoll`, `NumberRoll`: vertical only, alignment per layer, width changes move
   the neighbours). Keyboard and controller state is instant. Idle cost is zero: a threshold blinks twice, never pulses;
   a finished animation leaves nothing running.
 - **Graphite under the baseline.** Graphite keeps its palette, fonts and rounded meters; everything else above applies
-  (skew 0, so its keycaps are straight).
+  (it is the baseline's own flat look with its palette).
 
 ## 6. Components: the network
 
@@ -162,25 +164,26 @@ site; `registry/nuikit/test/registry-meta.test.ts` keeps it honest, `composition
 
 | Foundation | What it is | Levers |
 |---|---|---|
-| **Tile** (+ `Kbd`) | the keycap: keys, icon tiles, gears, checked boxes, the selection | `--nk-tile-*`, `--nk-h-key/chip/control`, `--nk-r-key` |
+| **Glyph** (+ `Kbd`) | a legend on the control face: keys, icon marks, gears, checked boxes | `--nk-control-*`, `--nk-h-key/chip/control`, `--nk-r-key` |
+| **Selection** | the one mark of a list, tabs or a menu, sliding to the lit item | `--nk-control-primary-*`, `--nk-selection-*` |
 | **Fill** | the one level bar: holds, sweeps, meters, timers, edges (`toneVars` is the tone and hue vocabulary) | `--nk-fill-*`, `--nk-time-fill` |
 | **Chip** | a short status on one line, `material` panel or hud | `--nk-chip-*`, `--nk-h-chip` |
 | **Text** / **IconText** | the type roles and the value ladder as one component | `--nk-type-<role>-*`, `--nk-text-*` |
 | **Dial** | one arc geometry: gauges (240°) and rings (360°) | `--nk-gauge-*`, `--nk-fill-*` |
 | **Stack** / **Cluster** | layout on the gap levers | `--nk-gap-*` |
 | **Panel** | the floating surface with header, body, footer | `--nk-panel-*` |
-| **SelectionTile** | the one selection mark of a list, tabs or a menu | `--nk-tile-*`, `--nk-list-gap`, `--nk-indicator-*` |
+| **Selection** | the one selection mark of a list, tabs or a menu | `--nk-control-*`, `--nk-list-gap`, `--nk-indicator-*` |
 | **ActionBar** | key hints, back and close: Kbd Tiles, a label, a hold Fill | `--nk-gap-items` |
 | **useLinearRun** | the one timed run: linear Web Animations on one start time, completion from a timer | `data-nk-motion` |
 
-Composites and what they compose: Meter (Fill, useLinearRun), ProgressRing and Speedometer (Dial, Tile, Fill), Countdown
+Composites and what they compose: Meter (Fill, useLinearRun), ProgressRing and Speedometer (Dial, Glyph, Fill), Countdown
 and Notice (Fill, useLinearRun), KeyPrompt and SkillCheck (Kbd Tiles, Fill), EdgeSheet and DialogShell (ActionBar, Fill,
-Stack over shadcn Sheet / Dialog), Confirm (Panel, no Radix: Escape goes through surfaces), MenuRow (Tile column,
-SelectionTile, Meter), Stat and Money (Text), PlayerCard (Panel, Chip, Stat), VitalChip (TextRoll, its own shape engine),
+Stack over shadcn Sheet / Dialog), Confirm (Panel, no Radix: Escape goes through surfaces), MenuRow (Glyph column,
+Selection, Meter), Stat and Money (Text), PlayerCard (Panel, Chip, Stat), VitalChip (TextRoll, its own shape engine),
 RadialMenu, ItemSlot, FormField, SmoothInput, NuiImage (their own geometry, no overlap). Entrance and stagger motion live in
 `nuikit-core/react` and `nuikit-core/motion`: runtime, not registry.
 
-**Listed on the site (20):** Tile, Fill, Chip, Panel, ActionBar, Dial, TextRoll; MenuRow, RadialMenu; Meter, Speedometer,
+**Listed on the site (20):** Glyph, Fill, Chip, Panel, ActionBar, Dial, TextRoll; MenuRow, RadialMenu; Meter, Speedometer,
 ProgressRing; EdgeSheet, Confirm; Notice, KeyPrompt, SkillCheck; FormField; VitalChip, Stat. Everything else is hidden with
 a reason in `meta.hiddenReason` (a helper, an internal frame, or "use X instead").
 
@@ -220,7 +223,7 @@ One name for one thing, everywhere. Nothing is named after a server or a person.
 |---|---|---|
 | Theme | a file in `packages/core/themes/`; id = base name, lowercase kebab; display name title-cased | `neon-pop.css` → "Neon Pop" |
 | Treatment | one lowercase word, a value of `--nk-treatment` | `tile`, `soft` |
-| Kit token | `--nk-<family>-<part>[-<state>]`; the family is the thing, not the page | `--nk-tile-wall` |
+| Kit token | `--nk-<family>-<part>[-<state>]`; the family is the thing, not the page | `--nk-control-wall` |
 | Kit class | `nk-<name>`, declared once in `kit.css` | `.nk-row` |
 | Page-local class or property | the surface's own prefix, only in its CSS | `.hud-compass`, `--inv-gap` |
 | Site-only class | `site-*`, never `nk-*` | `.site-display` |

@@ -25,7 +25,7 @@
   font-style: italic;
   font-weight: 700;
   font-display: swap;
-  src: url("../node_modules/nuikit-core/fonts/barlow-condensed-latin-700-italic.woff2") format("woff2");
+  src: url("https://cfx-nui-nuikit/fonts/barlow-condensed-latin-700-italic.woff2") format("woff2"), url("nui://nuikit/fonts/barlow-condensed-latin-700-italic.woff2") format("woff2");
   unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
 }
 @font-face {
@@ -33,7 +33,7 @@
   font-style: italic;
   font-weight: 800;
   font-display: swap;
-  src: url("../node_modules/nuikit-core/fonts/barlow-condensed-latin-800-italic.woff2") format("woff2");
+  src: url("https://cfx-nui-nuikit/fonts/barlow-condensed-latin-800-italic.woff2") format("woff2"), url("nui://nuikit/fonts/barlow-condensed-latin-800-italic.woff2") format("woff2");
   unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
 }
 @font-face {
@@ -41,7 +41,7 @@
   font-style: italic;
   font-weight: 600;
   font-display: swap;
-  src: url("../node_modules/nuikit-core/fonts/barlow-condensed-latin-600-italic.woff2") format("woff2");
+  src: url("https://cfx-nui-nuikit/fonts/barlow-condensed-latin-600-italic.woff2") format("woff2"), url("nui://nuikit/fonts/barlow-condensed-latin-600-italic.woff2") format("woff2");
   unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
 }
 @font-face {
@@ -216,8 +216,8 @@
   --role-neutral-deep: rgb(81, 81, 81);
   --role-neutral-light: rgb(145, 145, 145);
   --font-sans: Geist, Inter, "Segoe UI", system-ui, sans-serif;
-  --font-display: "Barlow Condensed", "Arial Narrow", sans-serif;
-  --font-numeric: "Barlow Condensed", "Arial Narrow", sans-serif;
+  --font-display: Geist, Inter, "Segoe UI", system-ui, sans-serif;
+  --font-numeric: Geist, Inter, "Segoe UI", system-ui, sans-serif;
   --font-mono: "Geist Mono", ui-monospace, monospace;
   --nk-scale: 1;
   --nk-density: 1;
@@ -234,7 +234,7 @@
   --nk-text-desc: 0.875rem;
   --nk-leading-tight: 1rem;
   --nk-leading-normal: 1.25rem;
-  --nk-shape-skew: -12deg;
+  --nk-shape-skew: 0deg;
   --nk-shape-slab: 0deg;
   --nk-shape-cut: 0px;
   --nk-shape-stroke: 1px;
@@ -244,9 +244,9 @@
   --nk-type-weight-display: 700;
   --nk-type-tracking-display: -0.02em;
   --nk-type-tracking-label: 0.06em;
-  --nk-type-case: uppercase;
-  --nk-type-slant: italic;
-  --nk-type-overhang: 0.15em;
+  --nk-type-case: none;
+  --nk-type-slant: normal;
+  --nk-type-overhang: 0em;
   --nk-type-scan-weight: 800;
   --nk-type-scan-tracking: 0.02em;
   --nk-type-title-weight: 800;
@@ -423,8 +423,8 @@
   --role-neutral-deep: rgb(125, 125, 125);
   --role-neutral-light: rgb(192, 192, 192);
   --font-sans: Geist, Inter, "Segoe UI", system-ui, sans-serif;
-  --font-display: "Barlow Condensed", "Arial Narrow", sans-serif;
-  --font-numeric: "Barlow Condensed", "Arial Narrow", sans-serif;
+  --font-display: Geist, Inter, "Segoe UI", system-ui, sans-serif;
+  --font-numeric: Geist, Inter, "Segoe UI", system-ui, sans-serif;
   --font-mono: "Geist Mono", ui-monospace, monospace;
   --nk-scale: 1;
   --nk-density: 1;
@@ -441,7 +441,7 @@
   --nk-text-desc: 0.875rem;
   --nk-leading-tight: 1rem;
   --nk-leading-normal: 1.25rem;
-  --nk-shape-skew: -12deg;
+  --nk-shape-skew: 0deg;
   --nk-shape-slab: 0deg;
   --nk-shape-cut: 0px;
   --nk-shape-stroke: 1px;
@@ -451,9 +451,9 @@
   --nk-type-weight-display: 700;
   --nk-type-tracking-display: -0.02em;
   --nk-type-tracking-label: 0.06em;
-  --nk-type-case: uppercase;
-  --nk-type-slant: italic;
-  --nk-type-overhang: 0.15em;
+  --nk-type-case: none;
+  --nk-type-slant: normal;
+  --nk-type-overhang: 0em;
   --nk-type-scan-weight: 800;
   --nk-type-scan-tracking: 0.02em;
   --nk-type-title-weight: 800;
@@ -742,7 +742,7 @@
     --nk-leading-tight: 1rem;
     --nk-leading-normal: 1.25rem;
     /* identity · shape */
-    --nk-shape-skew: -12deg;
+    --nk-shape-skew: 0deg;
     --nk-shape-slab: 0deg;
     --nk-shape-cut: 0px;
     --nk-shape-stroke: 1px;
@@ -753,9 +753,9 @@
     --nk-type-weight-display: 700;
     --nk-type-tracking-display: -0.02em;
     --nk-type-tracking-label: 0.06em;
-    --nk-type-case: uppercase;
-    --nk-type-slant: italic;
-    --nk-type-overhang: 0.15em;
+    --nk-type-case: none;
+    --nk-type-slant: normal;
+    --nk-type-overhang: 0em;
     --nk-type-scan-family: var(--font-display);
     --nk-type-scan-style: var(--nk-type-slant);
     --nk-type-scan-weight: 800;
@@ -931,44 +931,44 @@
     /* component · grid */
     --nk-grid-cell: 5.5rem;
     --nk-grid-gap: var(--nk-space-2);
-    /* component · tile */
-    --nk-tile-plate-color: var(--border);
-    --nk-tile-plate-dim: var(--nk-tile-plate-color);
-    --nk-tile-plate-x: 0px;
-    --nk-tile-plate-y: 2px;
-    --nk-tile-plate-press: 1px;
-    --nk-tile-wall-height: 0.1875rem;
-    --nk-tile-wall-shade: 0.45;
-    --nk-tile-face-color: var(--muted);
-    --nk-tile-face-ink: var(--popover-foreground);
-    --nk-tile-face-light: rgba(var(--popover-foreground-rgb), 0.16);
-    --nk-tile-face-shade: rgba(var(--scrim-rgb), 0);
-    --nk-tile-face-rim: rgba(var(--foreground-rgb), 0.32);
-    --nk-tile-face-rim-focus: rgba(var(--foreground-rgb), 0.4);
-    --nk-tile-face-radius: var(--nk-radius-key);
-    --nk-tile-face-skew: var(--nk-shape-skew);
-    --nk-tile-face-shadow: inset 0 -1px 0 0 var(--nk-tile-face-shade), inset 0 1px 0 0 var(--nk-tile-face-light);
-    --nk-tile-face-clip: var(--nk-line-clip-sm);
-    --nk-tile-face-confirm: var(--foreground);
-    --nk-tile-face-confirm-ink: var(--background);
-    --nk-tile-face-active: var(--nk-accent-paint);
-    --nk-tile-face-hold: rgba(var(--foreground-rgb), 0.35);
-    --nk-tile-legend-font: var(--nk-type-scan-family);
-    --nk-tile-legend-weight: var(--nk-type-scan-weight);
-    --nk-tile-legend-pad: calc(var(--nk-type-scan-pad) / 2);
-    --nk-tile-legend-shift: 0em;
-    --nk-tile-legend-gap: var(--nk-space-1);
-    --nk-tile-legend-inset: var(--nk-space-1);
-    --nk-tile-tag-delay: 80ms;
-    --nk-tile-key-color: var(--primary);
-    --nk-tile-key-ink: var(--primary-foreground);
-    --nk-tile-key-rim: transparent;
-    --nk-tile-key-radius: var(--nk-radius-control);
-    --nk-tile-key-tint: 0.16;
-    --nk-tile-key-inset: 0.375rem;
-    --nk-tile-key-lift: 1px;
-    --nk-tile-key-press: 0.67;
-    --nk-tile-key-overhang: 0.25rem;
+    /* component · control */
+    --nk-control-plate-color: var(--border);
+    --nk-control-plate-dim: var(--nk-control-plate-color);
+    --nk-control-plate-x: 0px;
+    --nk-control-plate-y: 0px;
+    --nk-control-plate-press: 1px;
+    --nk-control-wall-height: 0rem;
+    --nk-control-wall-shade: 0.45;
+    --nk-control-face-color: var(--muted);
+    --nk-control-face-ink: var(--popover-foreground);
+    --nk-control-face-light: rgba(var(--popover-foreground-rgb), 0);
+    --nk-control-face-shade: rgba(var(--scrim-rgb), 0);
+    --nk-control-face-rim: rgba(var(--foreground-rgb), 0.32);
+    --nk-control-face-rim-focus: rgba(var(--foreground-rgb), 0.4);
+    --nk-control-face-radius: var(--nk-radius-key);
+    --nk-control-face-skew: var(--nk-shape-skew);
+    --nk-control-face-shadow: inset 0 -1px 0 0 var(--nk-control-face-shade), inset 0 1px 0 0 var(--nk-control-face-light);
+    --nk-control-face-clip: var(--nk-line-clip-sm);
+    --nk-control-face-confirm: var(--foreground);
+    --nk-control-face-confirm-ink: var(--background);
+    --nk-control-face-active: var(--nk-accent-paint);
+    --nk-control-face-hold: rgba(var(--foreground-rgb), 0.35);
+    --nk-control-legend-font: var(--nk-type-scan-family);
+    --nk-control-legend-weight: var(--nk-type-scan-weight);
+    --nk-control-legend-pad: calc(var(--nk-type-scan-pad) / 2);
+    --nk-control-legend-shift: 0em;
+    --nk-control-legend-gap: var(--nk-space-1);
+    --nk-control-legend-inset: var(--nk-space-1);
+    --nk-control-tag-delay: 80ms;
+    --nk-control-primary-color: var(--primary);
+    --nk-control-primary-ink: var(--primary-foreground);
+    --nk-control-primary-rim: transparent;
+    --nk-control-primary-radius: var(--nk-radius-control);
+    --nk-control-primary-tint: 0.16;
+    --nk-control-primary-inset: 0.375rem;
+    --nk-control-primary-lift: 1px;
+    --nk-control-primary-press: 0.67;
+    --nk-control-primary-overhang: 0.25rem;
     /* component · panel */
     --nk-panel-bg: rgba(var(--surface-rgb), calc(var(--surface-a) * var(--nk-alpha-menu)));
     --nk-panel-fg: var(--popover-foreground);
@@ -1017,8 +1017,8 @@
     --nk-row-icon-box: 2rem;
     --nk-row-bar-width: 0.1875rem;
     /* component · list */
-    --nk-list-gap: calc(var(--nk-tile-wall-height) + var(--nk-space-1));
-    --nk-list-pad-x: calc(var(--nk-tile-key-inset) + var(--nk-tile-key-overhang));
+    --nk-list-gap: calc(var(--nk-control-wall-height) + var(--nk-space-1));
+    --nk-list-pad-x: calc(var(--nk-control-primary-inset) + var(--nk-control-primary-overhang));
     /* component · menu-row */
     --nk-menu-row-gap: var(--nk-space-1);
     --nk-menu-row-image-size: 2rem;
@@ -1173,7 +1173,7 @@
     --nk-selection-tabs-trigger-pad-x: var(--nk-gap-pad-x);
     /* component · chip */
     --nk-chip-height: var(--nk-height-chip);
-    --nk-chip-tile-size: 3rem;
+    --nk-chip-square-size: 3rem;
     --nk-chip-padding: calc(var(--nk-space-unit) * 2.5);
     --nk-chip-radius: var(--nk-radius-chip);
     --nk-chip-hud-radius: max(0.25rem, calc(var(--radius) - 0.125rem));
@@ -1187,11 +1187,11 @@
     --nk-chip-clip: var(--nk-line-clip-sm);
     --nk-chip-text-shadow: var(--nk-depth-text);
     --nk-chip-icon-size: 0.875rem;
-    --nk-chip-icon-size-tile: 1.25rem;
+    --nk-chip-icon-size-square: 1.25rem;
     /* component · vital-chip */
     --nk-vital-chip-size: 2.125rem;
     --nk-vital-chip-size-sm: 1.625rem;
-    --nk-vital-chip-tile-ratio: 0.94;
+    --nk-vital-chip-glyph-ratio: 0.94;
     --nk-vital-chip-icon-ratio: 0.52;
     --nk-vital-chip-label-size: 0.9375rem;
     --nk-vital-chip-label-gap: 1rem;
@@ -1232,7 +1232,7 @@
     --nk-level-pip-size: 10%;
     --nk-level-pip-gap: 2px;
     --nk-level-hold-pad: 2px;
-    --nk-level-fill-ink: var(--nk-tile-face-confirm-ink);
+    --nk-level-fill-ink: var(--nk-control-face-confirm-ink);
     /* component · slab */
     --nk-slab-height: calc(2.5rem * var(--nk-density));
     --nk-slab-padding: 0 calc(var(--nk-space-unit) * 3);
@@ -1246,10 +1246,10 @@
     --nk-slab-weight: var(--nk-type-weight-strong);
     --nk-slab-text-shadow: none;
     --nk-slab-tone: var(--brand-rgb);
-    --nk-slab-tile-size: calc(var(--nk-slab-height) - var(--nk-space-unit) * 2);
-    --nk-slab-tile-bg: rgba(var(--hud-foreground-rgb), 0.1);
-    --nk-slab-tile-fg: var(--nk-slab-fg);
-    --nk-slab-tile-radius: max(0.125rem, calc(var(--nk-slab-radius) - var(--nk-space-unit)));
+    --nk-slab-icon-size: calc(var(--nk-slab-height) - var(--nk-space-unit) * 2);
+    --nk-slab-icon-bg: rgba(var(--hud-foreground-rgb), 0.1);
+    --nk-slab-icon-fg: var(--nk-slab-fg);
+    --nk-slab-icon-radius: max(0.125rem, calc(var(--nk-slab-radius) - var(--nk-space-unit)));
     --nk-slab-delta-font: var(--nk-type-num-family);
     --nk-slab-delta-up: var(--world-success);
     --nk-slab-delta-down: var(--world-destructive);
@@ -1317,8 +1317,8 @@
     --nk-zone-gap: var(--nk-space-3);
     --nk-region-pad: var(--nk-gap-surface);
     --nk-grid-gap: var(--nk-space-2);
-    --nk-tile-legend-gap: var(--nk-space-1);
-    --nk-tile-legend-inset: var(--nk-space-1);
+    --nk-control-legend-gap: var(--nk-space-1);
+    --nk-control-legend-inset: var(--nk-space-1);
     --nk-panel-header-height: calc(3.25rem * var(--nk-density));
     --nk-panel-header-padding: var(--nk-gap-surface) var(--nk-gap-surface) var(--nk-space-4);
     --nk-panel-body-padding: var(--nk-space-3);
@@ -1328,7 +1328,7 @@
     --nk-row-pad-x: var(--nk-space-3);
     --nk-row-padding: var(--nk-row-pad-y) var(--nk-row-pad-x);
     --nk-row-gap: var(--nk-space-4);
-    --nk-list-gap: calc(var(--nk-tile-wall-height) + var(--nk-space-1));
+    --nk-list-gap: calc(var(--nk-control-wall-height) + var(--nk-space-1));
     --nk-menu-row-gap: var(--nk-space-1);
     --nk-form-field-label-gap: var(--nk-space-1);
     --nk-form-field-end-gap: var(--nk-space-1);
@@ -1375,8 +1375,8 @@
     --nk-slab-height: calc(2.5rem * var(--nk-density));
     --nk-slab-padding: 0 calc(var(--nk-space-unit) * 3);
     --nk-slab-gap: calc(var(--nk-space-unit) * 2.5);
-    --nk-slab-tile-size: calc(var(--nk-slab-height) - var(--nk-space-unit) * 2);
-    --nk-slab-tile-radius: max(0.125rem, calc(var(--nk-slab-radius) - var(--nk-space-unit)));
+    --nk-slab-icon-size: calc(var(--nk-slab-height) - var(--nk-space-unit) * 2);
+    --nk-slab-icon-radius: max(0.125rem, calc(var(--nk-slab-radius) - var(--nk-space-unit)));
     --nk-slab-stack-gap: calc(var(--nk-space-unit) * 2);
     --nk-slab-band-padding: calc(var(--nk-space-unit) * 3) calc(var(--nk-space-unit) * 6);
     --nk-slab-band-gap: var(--nk-space-unit);
@@ -1389,15 +1389,15 @@
     --nk-radius-surface: var(--nk-material-menu-radius);
     --nk-material-menu-radius: var(--radius);
     --nk-plate-radius: var(--nk-radius-surface);
-    --nk-tile-face-radius: var(--nk-radius-key);
-    --nk-tile-key-radius: var(--nk-radius-control);
+    --nk-control-face-radius: var(--nk-radius-key);
+    --nk-control-primary-radius: var(--nk-radius-control);
     --nk-panel-radius: var(--nk-radius-surface);
     --nk-row-radius: var(--nk-radius-control);
     --nk-field-caret-radius: var(--nk-radius-key);
     --nk-chip-radius: var(--nk-radius-chip);
     --nk-chip-hud-radius: max(0.25rem, calc(var(--radius) - 0.125rem));
     --nk-slab-radius: var(--nk-chip-radius);
-    --nk-slab-tile-radius: max(0.125rem, calc(var(--nk-slab-radius) - var(--nk-space-unit)));
+    --nk-slab-icon-radius: max(0.125rem, calc(var(--nk-slab-radius) - var(--nk-space-unit)));
   }
 }
 /* @end generated levers */
@@ -1421,7 +1421,7 @@
   --nk-radius-key: 0.125rem;
   --nk-radius-chip: 0.125rem;
   --nk-chip-radius: 0.125rem;
-  --nk-tile-face-radius: 0.125rem;
+  --nk-control-face-radius: 0.125rem;
   --nk-meter-radius: 0.0625rem;
 }
 [data-nk-shape="round"] {
@@ -1571,7 +1571,7 @@
   color: var(--muted-foreground);
 }
 /* Interactive row in a list: 44px tall at 1080p (× density). The lit row (hover, focus, the list's selection:
-   one state, docs/design.md "Selection") sits on a Tile: the list's sliding SelectionTile, or, for a
+   one state, docs/design.md "Selection") sits on a Glyph: the list's sliding Selection, or, for a
    row on its own, its own ::before (the wall) and ::after (the face), drawn by the Selection section below. */
 @utility nk-row {
   position: relative;
@@ -1601,14 +1601,14 @@
     transform: none;
   }
 }
-/* A list (MenuRowList, any SelectionTile's parent): rows --nk-list-gap apart (the wall plus breathing room), so
+/* A list (MenuRowList, any Selection's parent): rows --nk-list-gap apart (the wall plus breathing room), so
    a lit tile never touches its neighbour; room under the last row for its wall. */
 @utility nk-list {
   position: relative;
   display: flex;
   flex-direction: column;
   gap: var(--nk-list-gap);
-  padding-bottom: var(--nk-tile-wall-height);
+  padding-bottom: var(--nk-control-wall-height);
 }
 /* Numbers: money, timers, counts. */
 @utility nk-num {
@@ -1707,7 +1707,7 @@
 }
 /*
  * Slabs: transient feedback on the game, one anatomy everywhere (design v2 §4.5, docs/tokens.md#slabs).
- *   item:     <div class="nk-slab"><span class="nk-slab-tile"><Icon/></span>Water bottle<span class="nk-slab-delta">+2</span></div>
+ *   item:     <div class="nk-slab"><span class="nk-slab-icon"><Icon/></span>Water bottle<span class="nk-slab-delta">+2</span></div>
  *   prompt:   <div class="nk-slab"><kbd class="nk-slab-key">E</kbd>Clean dishes</div>
  *   progress: <div class="nk-slab-stack"><div class="nk-slab-stack-row"><span class="nk-caption">Repairing</span>
  *               <kbd class="nk-slab-key">Esc</kbd>Cancel</div><div class="nk-slab-line" style="--nk-slab-progress: .4"></div></div>
@@ -1732,17 +1732,17 @@
   white-space: nowrap;
 }
 /* The icon tile at the slab's leading edge, inset by one spacing step. */
-@utility nk-slab-tile {
+@utility nk-slab-icon {
   display: inline-flex;
   flex: none;
   align-items: center;
   justify-content: center;
-  width: var(--nk-slab-tile-size);
-  height: var(--nk-slab-tile-size);
+  width: var(--nk-slab-icon-size);
+  height: var(--nk-slab-icon-size);
   margin-left: calc(var(--nk-space-unit) * -2);
-  border-radius: var(--nk-slab-tile-radius);
-  background-color: var(--nk-slab-tile-bg);
-  color: var(--nk-slab-tile-fg);
+  border-radius: var(--nk-slab-icon-radius);
+  background-color: var(--nk-slab-icon-bg);
+  color: var(--nk-slab-icon-fg);
   & svg {
     width: 1rem;
     height: 1rem;
@@ -1769,14 +1769,14 @@
   min-width: var(--nk-slab-key-size);
   height: var(--nk-slab-key-size);
   padding: 0 0.375rem;
-  border-radius: var(--nk-tile-face-radius);
-  clip-path: var(--nk-tile-face-clip);
-  background-color: var(--nk-tile-face-color);
-  color: var(--nk-tile-face-ink);
-  box-shadow: var(--nk-tile-face-shadow), inset 0 0 0 var(--nk-line-width) var(--nk-tile-face-rim);
-  font-family: var(--nk-tile-legend-font);
+  border-radius: var(--nk-control-face-radius);
+  clip-path: var(--nk-control-face-clip);
+  background-color: var(--nk-control-face-color);
+  color: var(--nk-control-face-ink);
+  box-shadow: var(--nk-control-face-shadow), inset 0 0 0 var(--nk-line-width) var(--nk-control-face-rim);
+  font-family: var(--nk-control-legend-font);
   font-size: var(--nk-slab-key-font-size);
-  font-weight: var(--nk-tile-legend-weight);
+  font-weight: var(--nk-control-legend-weight);
   line-height: 1;
   text-shadow: none;
 }
@@ -2082,7 +2082,7 @@
 }
 /*
  * The selection tile (docs/design.md "Selection"): ONE element per list, behind the items, that slides
- * to the lit item by transform; the items never animate a fill of their own. Drive it with SelectionTile /
+ * to the lit item by transform; the items never animate a fill of their own. Drive it with Selection /
  * useSelectionIndicator (registry), which sets its box (translate, width, height; a size change is a measured
  * FLIP), data-tone and the key-repeat rule: data-repeat="fast" (sooner than --nk-time-base apart) glides in
  * --nk-time-snap, "jump" (the third such move in a row) doesn't glide, so it never trails a held d-pad.
@@ -2118,15 +2118,15 @@
  * specific a UI adds (group-data-[active]:bg-background/60).
  */
 @layer utilities {
-  /* shadcn's Kbd is a Tile (1.5): its face and plate are drawn by the tile rules in nk.kit, so the stock
+  /* shadcn's Kbd is a Glyph (1.5): its face and plate are drawn by the tile rules in nk.kit, so the stock
      bg-muted and the element's own shadow and clip give way here; tooltip variants still win (more specific) */
   [data-slot="kbd"] {
     background-color: transparent;
-    color: var(--nk-tile-face-ink);
-    border-radius: var(--nk-tile-face-radius);
+    color: var(--nk-control-face-ink);
+    border-radius: var(--nk-control-face-radius);
     box-shadow: none;
-    font-family: var(--nk-tile-legend-font);
-    font-weight: var(--nk-tile-legend-weight);
+    font-family: var(--nk-control-legend-font);
+    font-weight: var(--nk-control-legend-weight);
     font-style: var(--nk-type-scan-style, var(--nk-type-slant, normal));
     clip-path: none;
   }
@@ -2156,62 +2156,62 @@
   [data-slot="button"][data-variant="link"]:focus-visible {
     text-decoration-line: underline;
   }
-  /* The primary is a keycap: the Tile (Selection, 1.7). A face on its wall: the face in --nk-tile-key-color, the wall
-     the same colour in shade (--nk-tile-wall-shade) dropped --nk-tile-wall-height straight down, the tile's slant and
+  /* The primary is a keycap: the Glyph (Selection, 1.7). A face on its wall: the face in --nk-control-primary-color, the wall
+     the same colour in shade (--nk-control-wall-shade) dropped --nk-control-wall-height straight down, the tile's slant and
      radius. Hover (and focus) raises the face a pixel; a press sinks it onto the wall. The element stays
      upright and transparent; ::after is the face, ::before the wall. A lit row is the same object. */
   :is([data-slot="button"], [data-slot="alert-dialog-action"])[data-variant="default"] {
     position: relative;
     isolation: isolate;
-    margin-bottom: var(--nk-tile-wall-height);
+    margin-bottom: var(--nk-control-wall-height);
     background-color: transparent;
     background-image: none;
     box-shadow: none;
     border-color: transparent;
-    border-radius: var(--nk-tile-key-radius);
-    color: var(--nk-tile-key-ink);
+    border-radius: var(--nk-control-primary-radius);
+    color: var(--nk-control-primary-ink);
     clip-path: none;
     &::before,
     &::after {
       content: "";
       position: absolute;
-      inset: 0 var(--nk-tile-key-inset);
+      inset: 0 var(--nk-control-primary-inset);
       pointer-events: none;
       border-radius: inherit;
-      background-color: var(--nk-tile-key-color);
+      background-color: var(--nk-control-primary-color);
       transition: transform var(--nk-time-snap, 70ms) var(--nk-ease-move, cubic-bezier(0.2, 0, 0, 1));
     }
     &::before {
       z-index: -2;
-      box-shadow: inset 0 0 0 100vmax rgba(var(--scrim-rgb, 0, 0, 0), var(--nk-tile-wall-shade));
-      transform: translateY(var(--nk-tile-wall-height)) skewX(var(--nk-tile-face-skew, 0deg));
+      box-shadow: inset 0 0 0 100vmax rgba(var(--scrim-rgb, 0, 0, 0), var(--nk-control-wall-shade));
+      transform: translateY(var(--nk-control-wall-height)) skewX(var(--nk-control-face-skew, 0deg));
     }
     &::after {
       z-index: -1;
-      box-shadow: inset 0 0 0 var(--nk-line-width, 1px) var(--nk-tile-key-rim), inset 0 1px 0 var(--nk-tile-face-light);
-      transform: skewX(var(--nk-tile-face-skew, 0deg));
+      box-shadow: inset 0 0 0 var(--nk-line-width, 1px) var(--nk-control-primary-rim), inset 0 1px 0 var(--nk-control-face-light);
+      transform: skewX(var(--nk-control-face-skew, 0deg));
     }
     &:is(:hover, :focus-visible) {
       background-color: transparent;
       border-color: transparent;
     }
     &:is(:hover, :focus-visible)::after {
-      transform: translateY(calc(var(--nk-tile-key-lift, 1px) * -1)) skewX(var(--nk-tile-face-skew, 0deg));
+      transform: translateY(calc(var(--nk-control-primary-lift, 1px) * -1)) skewX(var(--nk-control-face-skew, 0deg));
     }
     &:not(:disabled):is(:active, [data-nk-press]) {
       transform: none;
     }
     &:not(:disabled):is(:active, [data-nk-press])::after {
-      transform: translateY(calc(var(--nk-tile-wall-height) * var(--nk-tile-key-press, 0.67))) skewX(var(--nk-tile-face-skew, 0deg));
+      transform: translateY(calc(var(--nk-control-wall-height) * var(--nk-control-primary-press, 0.67))) skewX(var(--nk-control-face-skew, 0deg));
     }
   }
   /* a Kbd on the face reads dark on it */
   :is([data-slot="button"], [data-slot="alert-dialog-action"])[data-variant="default"] [data-slot="kbd"] {
-    --nk-tile-now-face: rgba(var(--scrim-rgb, 0, 0, 0), 0.25);
-    --nk-tile-now-ink: var(--nk-tile-key-ink);
-    --nk-tile-now-rim: rgba(var(--scrim-rgb, 0, 0, 0), 0.35);
-    --nk-tile-now-plate: transparent;
-    color: var(--nk-tile-key-ink);
+    --nk-control-now-face: rgba(var(--scrim-rgb, 0, 0, 0), 0.25);
+    --nk-control-now-ink: var(--nk-control-primary-ink);
+    --nk-control-now-rim: rgba(var(--scrim-rgb, 0, 0, 0), 0.35);
+    --nk-control-now-plate: transparent;
+    color: var(--nk-control-primary-ink);
   }
   /* secondary (outline): a hairline rim on the panel, the tint on hover and focus */
   :is([data-slot="button"], [data-slot="alert-dialog-cancel"])[data-variant="outline"] {
@@ -2526,7 +2526,7 @@
   /* selection-tabs */
   [data-selection-tabs="list"] {
     gap: var(--nk-selection-tabs-list-gap);
-    padding-bottom: calc(var(--nk-selection-tabs-list-rest) + var(--nk-tile-wall-height));
+    padding-bottom: calc(var(--nk-selection-tabs-list-rest) + var(--nk-control-wall-height));
   }
   [data-selection-tabs="trigger"] {
     min-height: var(--nk-selection-tabs-trigger-height);
@@ -2602,7 +2602,7 @@
 :is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"]) [data-slot="button"][data-variant="default"] {
   --nk-slab-fill: var(--primary);
 }
-/* key caps: the Tile (nk.kit, 1.5) draws the slant (--nk-tile-face-skew = --nk-shape-slab) and the offset plate */
+/* key caps: the Glyph (nk.kit, 1.5) draws the slant (--nk-control-face-skew = --nk-shape-slab) and the offset plate */
 /* notification type badges: a small skewed slab in the type's colour, the glyph dark on it */
 :is(html, *)[data-nk-skew]:not([data-nk-skew="0deg"]) [data-slot="notice-icon"] {
   position: relative;
@@ -2808,7 +2808,7 @@ html[data-nk-backdrop="on"] * {
 }
 :is(html, *)[data-nk-hold="ring"] [data-slot="key-prompt"][data-state="hold"] > [data-slot="key-prompt-keys"] {
   padding: var(--nk-level-hold-pad, 2px);
-  border-radius: calc(var(--nk-tile-face-radius, 0.375rem) + var(--nk-level-hold-pad, 2px));
+  border-radius: calc(var(--nk-control-face-radius, 0.375rem) + var(--nk-level-hold-pad, 2px));
   background: conic-gradient(var(--brand, var(--primary)) calc(var(--level, 0) * 360deg), rgba(var(--hud-foreground-rgb, 255, 255, 255), 0.16) 0);
 }
 :is(html, *)[data-nk-hold="fill"] [data-slot="key-prompt"][data-state="hold"] {
@@ -2879,50 +2879,50 @@ html[data-nk-backdrop="on"] * {
    data-state = rest | focus | hold | confirm | alert | disabled; data-active = on, selected or checked;
    data-tone = neutral | info | success | warning | danger; data-hue = a role; --level = 0–1. */
 @layer nk.kit {
-  /* ── Tile / Keycap: shadcn's Kbd and the registry Tile. Back to front: the plate (::before, offset by
-     --nk-tile-plate-x/y), the face (::after, slanted by --nk-tile-face-skew while the box stays upright, carrying
+  /* ── Glyph / Keycap: shadcn's Kbd and the registry Glyph. Back to front: the plate (::before, offset by
+     --nk-control-plate-x/y), the face (::after, slanted by --nk-control-face-skew while the box stays upright, carrying
      the rim and the top light), a hold fill (tile-fill, scaleX(--level)), the legend. Graphite: the face is
      today's keycap, no plate, no slant. */
-  :is([data-slot="tile"], [data-slot="kbd"]) {
+  :is([data-slot="glyph"], [data-slot="kbd"]) {
     position: relative;
     isolation: isolate;
     overflow: visible;
-    --nk-tile-now-face: var(--nk-tile-face-color);
-    --nk-tile-now-ink: var(--nk-tile-face-ink);
-    --nk-tile-now-rim: var(--nk-tile-face-rim);
-    --nk-tile-now-plate: var(--nk-tile-plate-color);
-    --nk-tile-x: 0px;
-    --nk-tile-y: 0px;
+    --nk-control-now-face: var(--nk-control-face-color);
+    --nk-control-now-ink: var(--nk-control-face-ink);
+    --nk-control-now-rim: var(--nk-control-face-rim);
+    --nk-control-now-plate: var(--nk-control-plate-color);
+    --nk-control-x: 0px;
+    --nk-control-y: 0px;
   }
-  :is([data-slot="tile"], [data-slot="kbd"])::before,
-  :is([data-slot="tile"], [data-slot="kbd"])::after {
+  :is([data-slot="glyph"], [data-slot="kbd"])::before,
+  :is([data-slot="glyph"], [data-slot="kbd"])::after {
     content: "";
     position: absolute;
     inset: 0;
     pointer-events: none;
     border-radius: inherit;
   }
-  :is([data-slot="tile"], [data-slot="kbd"])::before {
+  :is([data-slot="glyph"], [data-slot="kbd"])::before {
     z-index: -3;
     /* no wall (plate offset 0: Flat, the stepper's keys): the plate sits half a px inside the face, so its colour
        never bleeds at the face's anti-aliased edge (the "grooves"); with a wall it is the full face size */
-    inset: calc(0.5px - min(0.5px, max(var(--nk-tile-plate-x), 0px - var(--nk-tile-plate-x)) + max(var(--nk-tile-plate-y), 0px - var(--nk-tile-plate-y))));
-    background-color: var(--nk-tile-now-plate);
-    transform: translate(var(--nk-tile-plate-x), var(--nk-tile-plate-y)) skewX(var(--nk-tile-face-skew));
+    inset: calc(0.5px - min(0.5px, max(var(--nk-control-plate-x), 0px - var(--nk-control-plate-x)) + max(var(--nk-control-plate-y), 0px - var(--nk-control-plate-y))));
+    background-color: var(--nk-control-now-plate);
+    transform: translate(var(--nk-control-plate-x), var(--nk-control-plate-y)) skewX(var(--nk-control-face-skew));
   }
-  :is([data-slot="tile"], [data-slot="kbd"])::after {
+  :is([data-slot="glyph"], [data-slot="kbd"])::after {
     z-index: -2;
-    background-color: var(--nk-tile-now-face);
-    box-shadow: var(--nk-tile-face-shadow), inset 0 0 0 var(--nk-line-width, 1px) var(--nk-tile-now-rim);
-    clip-path: var(--nk-tile-face-clip, none);
-    transform: translate(var(--nk-tile-x), var(--nk-tile-y)) skewX(var(--nk-tile-face-skew));
+    background-color: var(--nk-control-now-face);
+    box-shadow: var(--nk-control-face-shadow), inset 0 0 0 var(--nk-line-width, 1px) var(--nk-control-now-rim);
+    clip-path: var(--nk-control-face-clip, none);
+    transform: translate(var(--nk-control-x), var(--nk-control-y)) skewX(var(--nk-control-face-skew));
   }
   /* a tooltip's own key surface (shadcn's variant on the element) shows through */
   [data-slot="tooltip-content"] [data-slot="kbd"]::after {
     background-color: transparent;
   }
-  /* the registry Tile: sizes, shape, the scan role */
-  [data-slot="tile"] {
+  /* the registry Glyph: sizes, shape, the scan role */
+  [data-slot="glyph"] {
     display: inline-flex;
     flex: none;
     align-items: center;
@@ -2931,19 +2931,19 @@ html[data-nk-backdrop="on"] * {
     height: var(--nk-height-key);
     min-width: var(--nk-height-key);
     padding-inline: var(--nk-space-1);
-    border-radius: var(--nk-tile-face-radius);
-    color: var(--nk-tile-now-ink);
-    font-family: var(--nk-tile-legend-font);
+    border-radius: var(--nk-control-face-radius);
+    color: var(--nk-control-now-ink);
+    font-family: var(--nk-control-legend-font);
     font-style: var(--nk-type-scan-style);
     font-size: var(--nk-text-key);
-    font-weight: var(--nk-tile-legend-weight);
+    font-weight: var(--nk-control-legend-weight);
     letter-spacing: var(--nk-type-scan-tracking);
     text-transform: var(--nk-type-scan-case);
     line-height: 1;
     white-space: nowrap;
     user-select: none;
-    & > :not([data-slot="tile-fill"]) {
-      transform: translate(var(--nk-tile-x), var(--nk-tile-y));
+    & > :not([data-slot="glyph-fill"]) {
+      transform: translate(var(--nk-control-x), var(--nk-control-y));
     }
     & svg {
       width: var(--nk-icon-md);
@@ -2951,12 +2951,12 @@ html[data-nk-backdrop="on"] * {
       stroke-width: var(--nk-icon-stroke);
     }
   }
-  [data-slot="tile"][data-size="md"] {
+  [data-slot="glyph"][data-size="md"] {
     height: var(--nk-height-chip);
     min-width: var(--nk-height-chip);
     padding-inline: var(--nk-space-2);
   }
-  [data-slot="tile"][data-size="lg"] {
+  [data-slot="glyph"][data-size="lg"] {
     height: var(--nk-height-control);
     min-width: var(--nk-height-control);
     padding-inline: var(--nk-space-3);
@@ -2965,89 +2965,89 @@ html[data-nk-backdrop="on"] * {
       height: var(--nk-icon-lg);
     }
   }
-  [data-slot="tile"][data-size="sm"] svg {
+  [data-slot="glyph"][data-size="sm"] svg {
     width: var(--nk-icon-sm);
     height: var(--nk-icon-sm);
   }
-  [data-slot="tile"][data-shape="square"] {
+  [data-slot="glyph"][data-shape="square"] {
     padding-inline: 0;
     width: var(--nk-height-key);
   }
-  [data-slot="tile"][data-shape="square"][data-size="md"] {
+  [data-slot="glyph"][data-shape="square"][data-size="md"] {
     width: var(--nk-height-chip);
   }
-  [data-slot="tile"][data-shape="square"][data-size="lg"] {
+  [data-slot="glyph"][data-shape="square"][data-size="lg"] {
     width: var(--nk-height-control);
   }
   /* the legend sits on the face's optical centre: the italic overhang pad is split to both sides (an
-     end-only pad pushed A, D, ESC left of the slanted face) and --nk-tile-legend-shift (0em) nudges the
+     end-only pad pushed A, D, ESC left of the slanted face) and --nk-control-legend-shift (0em) nudges the
      glyph for a face that leans; the box, not the pad, decides the width */
-  [data-slot="tile-legend"] {
-    padding-inline: var(--nk-tile-legend-pad);
+  [data-slot="glyph-legend"] {
+    padding-inline: var(--nk-control-legend-pad);
   }
-  :is([data-slot="tile"], [data-slot="kbd"]) > [data-slot="tile-legend"] {
-    transform: translate(calc(var(--nk-tile-x) + var(--nk-tile-legend-shift)), var(--nk-tile-y));
+  :is([data-slot="glyph"], [data-slot="kbd"]) > [data-slot="glyph-legend"] {
+    transform: translate(calc(var(--nk-control-x) + var(--nk-control-legend-shift)), var(--nk-control-y));
   }
   /* the HUD's dimmer plate */
-  [data-slot="tile"][data-plate="dim"] {
-    --nk-tile-now-plate: var(--nk-tile-plate-dim);
+  [data-slot="glyph"][data-plate="dim"] {
+    --nk-control-now-plate: var(--nk-control-plate-dim);
   }
   /* states. Rims switch, they never tween; the face moves with transform only. */
-  :is([data-slot="tile"], [data-slot="kbd"])[data-state="focus"] {
-    --nk-tile-now-rim: var(--nk-tile-face-rim-focus);
+  :is([data-slot="glyph"], [data-slot="kbd"])[data-state="focus"] {
+    --nk-control-now-rim: var(--nk-control-face-rim-focus);
   }
-  :is([data-slot="tile"], [data-slot="kbd"])[data-state="hold"] {
-    --nk-tile-x: var(--nk-tile-plate-press);
-    --nk-tile-y: var(--nk-tile-plate-press);
+  :is([data-slot="glyph"], [data-slot="kbd"])[data-state="hold"] {
+    --nk-control-x: var(--nk-control-plate-press);
+    --nk-control-y: var(--nk-control-plate-press);
   }
-  :is([data-slot="tile"], [data-slot="kbd"]):is([data-state="confirm"], [data-active]) {
-    --nk-tile-now-face: var(--nk-tile-face-confirm);
-    --nk-tile-now-ink: var(--nk-tile-face-confirm-ink);
-    color: var(--nk-tile-face-confirm-ink);
+  :is([data-slot="glyph"], [data-slot="kbd"]):is([data-state="confirm"], [data-active]) {
+    --nk-control-now-face: var(--nk-control-face-confirm);
+    --nk-control-now-ink: var(--nk-control-face-confirm-ink);
+    color: var(--nk-control-face-confirm-ink);
   }
-  /* active (not confirming): the face takes --nk-tile-face-active, a colour or the accent gradient */
-  :is([data-slot="tile"], [data-slot="kbd"])[data-active]:not([data-state="confirm"])::after {
-    background: var(--nk-tile-face-active);
+  /* active (not confirming): the face takes --nk-control-face-active, a colour or the accent gradient */
+  :is([data-slot="glyph"], [data-slot="kbd"])[data-active]:not([data-state="confirm"])::after {
+    background: var(--nk-control-face-active);
   }
-  :is([data-slot="tile"], [data-slot="kbd"])[data-state="confirm"] {
+  :is([data-slot="glyph"], [data-slot="kbd"])[data-state="confirm"] {
     animation: nk-confirm var(--nk-time-slow, var(--nk-time-slow, 160ms)) var(--nk-ease-spring, cubic-bezier(0.34, 1.56, 0.64, 1));
   }
-  :is([data-slot="tile"], [data-slot="kbd"])[data-state="alert"] {
-    --nk-tile-now-rim: var(--nk-fill-alert);
+  :is([data-slot="glyph"], [data-slot="kbd"])[data-state="alert"] {
+    --nk-control-now-rim: var(--nk-fill-alert);
     animation: nk-breathe var(--nk-time-pulse, 1000ms) var(--nk-ease-breathe, cubic-bezier(0.37, 0, 0.63, 1)) infinite;
   }
-  :is([data-slot="tile"], [data-slot="kbd"]):is([data-state="disabled"], [data-disabled]) {
+  :is([data-slot="glyph"], [data-slot="kbd"]):is([data-state="disabled"], [data-disabled]) {
     opacity: 0.5;
   }
   /* tone and hue colour the legend and the rim; a confirmed or active tile keeps its white face */
-  [data-slot="tile"][data-tone="info"] { --nk-tile-tone: var(--info); }
-  [data-slot="tile"][data-tone="success"] { --nk-tile-tone: var(--success); }
-  [data-slot="tile"][data-tone="warning"] { --nk-tile-tone: var(--warning); }
-  [data-slot="tile"][data-tone="danger"] { --nk-tile-tone: var(--destructive); }
-  [data-slot="tile"][data-hue] { --nk-tile-tone: var(--hue-solid); }
-  [data-slot="tile"]:is([data-tone]:not([data-tone="neutral"]), [data-hue]):not([data-state="confirm"], [data-active]) {
-    --nk-tile-now-ink: var(--nk-tile-tone);
-    --nk-tile-now-rim: var(--nk-tile-tone);
+  [data-slot="glyph"][data-tone="info"] { --nk-control-tone: var(--info); }
+  [data-slot="glyph"][data-tone="success"] { --nk-control-tone: var(--success); }
+  [data-slot="glyph"][data-tone="warning"] { --nk-control-tone: var(--warning); }
+  [data-slot="glyph"][data-tone="danger"] { --nk-control-tone: var(--destructive); }
+  [data-slot="glyph"][data-hue] { --nk-control-tone: var(--hue-solid); }
+  [data-slot="glyph"]:is([data-tone]:not([data-tone="neutral"]), [data-hue]):not([data-state="confirm"], [data-active]) {
+    --nk-control-now-ink: var(--nk-control-tone);
+    --nk-control-now-rim: var(--nk-control-tone);
   }
   /* hold: the face fills left to right */
-  [data-slot="tile-fill"] {
+  [data-slot="glyph-fill"] {
     position: absolute;
     inset: 0;
     z-index: -1;
     border-radius: inherit;
     pointer-events: none;
-    background-color: var(--nk-tile-face-hold);
+    background-color: var(--nk-control-face-hold);
     transform-origin: left center;
-    transform: translate(var(--nk-tile-x), var(--nk-tile-y)) skewX(var(--nk-tile-face-skew)) scaleX(var(--level, 0));
+    transform: translate(var(--nk-control-x), var(--nk-control-y)) skewX(var(--nk-control-face-skew)) scaleX(var(--level, 0));
   }
   /* tag: the plate extending right with a label, opening (a reveal on the compositor) after the tile lands */
-  [data-slot="tile-group"] {
+  [data-slot="glyph-group"] {
     position: relative;
     isolation: isolate;
     display: inline-flex;
     align-items: center;
   }
-  [data-slot="tile-tag"] {
+  [data-slot="glyph-tag"] {
     position: relative;
     z-index: -1;
     display: inline-flex;
@@ -3055,7 +3055,7 @@ html[data-nk-backdrop="on"] * {
     align-self: stretch;
     margin-left: calc(var(--nk-space-2) * -1);
     padding-inline: calc(var(--nk-space-2) + var(--nk-space-1)) var(--nk-gap-pad-x);
-    color: var(--nk-tile-face-ink);
+    color: var(--nk-control-face-ink);
     font-family: var(--nk-type-label-family);
     font-style: var(--nk-type-label-style);
     font-size: var(--nk-text-label);
@@ -3070,22 +3070,22 @@ html[data-nk-backdrop="on"] * {
       position: absolute;
       inset: 0;
       z-index: -1;
-      border-radius: 0 var(--nk-tile-face-radius) var(--nk-tile-face-radius) 0;
-      background-color: var(--nk-tile-plate-color);
+      border-radius: 0 var(--nk-control-face-radius) var(--nk-control-face-radius) 0;
+      background-color: var(--nk-control-plate-color);
       transform-origin: left center;
-      transform: translate(var(--nk-tile-plate-x), var(--nk-tile-plate-y)) skewX(var(--nk-tile-face-skew)) scaleX(0);
-      transition: transform var(--nk-time-base, 140ms) var(--nk-ease-expand, ease-out) var(--nk-tile-tag-delay);
+      transform: translate(var(--nk-control-plate-x), var(--nk-control-plate-y)) skewX(var(--nk-control-face-skew)) scaleX(0);
+      transition: transform var(--nk-time-base, 140ms) var(--nk-ease-expand, ease-out) var(--nk-control-tag-delay);
     }
   }
-  [data-slot="tile-group"][data-open] [data-slot="tile-tag"] {
+  [data-slot="glyph-group"][data-open] [data-slot="glyph-tag"] {
     opacity: 1;
-    transition-delay: calc(var(--nk-tile-tag-delay) + var(--nk-time-fast, 93ms));
+    transition-delay: calc(var(--nk-control-tag-delay) + var(--nk-time-fast, 93ms));
     &::before {
-      transform: translate(var(--nk-tile-plate-x), var(--nk-tile-plate-y)) skewX(var(--nk-tile-face-skew)) scaleX(1);
+      transform: translate(var(--nk-control-plate-x), var(--nk-control-plate-y)) skewX(var(--nk-control-face-skew)) scaleX(1);
     }
   }
   /* a tile lands: from --nk-gesture-land with the spring (opt-in: data-land) */
-  [data-slot="tile"][data-land] {
+  [data-slot="glyph"][data-land] {
     animation: nk-land var(--nk-time-slow, 218ms) var(--nk-ease-spring, cubic-bezier(0.34, 1.56, 0.64, 1)) backwards;
   }
 
@@ -3321,7 +3321,7 @@ html[data-nk-backdrop="on"] * {
   }
 
   /* ── the voices' extras: a label's case and tracking, a number's weight and case, the italic overhang pad, and
-     the notice icon as a Tile. */
+     the notice icon as a Glyph. */
   :is(html, [data-nk-theme]) {
     & :is(.nk-label, .nk-caption) {
       font-style: var(--nk-type-label-style);
@@ -3341,7 +3341,7 @@ html[data-nk-backdrop="on"] * {
       letter-spacing: var(--nk-type-scan-tracking);
       text-transform: var(--nk-type-scan-case);
     }
-    /* Notice / Toast: the status icon is a square Tile, its face the status colour, the glyph dark on it */
+    /* Notice / Toast: the status icon is a square Glyph, its face the status colour, the glyph dark on it */
     & [data-slot="notice-icon"] {
       position: relative;
       isolation: isolate;
@@ -3356,22 +3356,22 @@ html[data-nk-backdrop="on"] * {
         position: absolute;
         inset: 0;
         pointer-events: none;
-        border-radius: var(--nk-tile-face-radius);
+        border-radius: var(--nk-control-face-radius);
       }
       &::before {
         z-index: -2;
-        background-color: var(--nk-tile-plate-color);
-        transform: translate(var(--nk-tile-plate-x), var(--nk-tile-plate-y)) skewX(var(--nk-tile-face-skew));
+        background-color: var(--nk-control-plate-color);
+        transform: translate(var(--nk-control-plate-x), var(--nk-control-plate-y)) skewX(var(--nk-control-face-skew));
       }
       &::after {
         z-index: -1;
         background-color: currentColor;
-        transform: skewX(var(--nk-tile-face-skew));
+        transform: skewX(var(--nk-control-face-skew));
       }
       & svg {
         width: var(--nk-icon-md);
         height: var(--nk-icon-md);
-        color: var(--nk-tile-face-confirm-ink);
+        color: var(--nk-control-face-confirm-ink);
       }
     }
   }
@@ -3389,20 +3389,20 @@ html[data-nk-backdrop="on"] * {
     justify-content: center;
     width: var(--nk-row-icon-box);
     height: var(--nk-row-icon-box);
-    & > [data-slot="tile"] {
+    & > [data-slot="glyph"] {
       width: var(--nk-row-icon-box);
       min-width: var(--nk-row-icon-box);
       height: var(--nk-row-icon-box);
-      --nk-tile-now-ink: var(--muted-foreground);
-      color: var(--nk-tile-now-ink);
+      --nk-control-now-ink: var(--muted-foreground);
+      color: var(--nk-control-now-ink);
     }
     & svg {
       width: var(--nk-icon-md);
       height: var(--nk-icon-md);
     }
   }
-  .nk-row[data-tone="destructive"] > [data-slot="menu-row-icon"] > [data-slot="tile"] {
-    --nk-tile-now-ink: var(--destructive);
+  .nk-row[data-tone="destructive"] > [data-slot="menu-row-icon"] > [data-slot="glyph"] {
+    --nk-control-now-ink: var(--destructive);
   }
   [data-slot="menu-row-body"] {
     display: flex;
@@ -3516,8 +3516,8 @@ html[data-nk-backdrop="on"] * {
   }
 }
 /* Reduced motion (1.5): the primitives keep their fades, no movement */
-:is(html, *)[data-nk-motion="reduced"] :is([data-slot="tile"], [data-slot="kbd"]):is([data-state="confirm"], [data-state="alert"], [data-land]),
-:is(html, *)[data-nk-motion="off"] :is([data-slot="tile"], [data-slot="kbd"]):is([data-state="confirm"], [data-state="alert"], [data-land]) {
+:is(html, *)[data-nk-motion="reduced"] :is([data-slot="glyph"], [data-slot="kbd"]):is([data-state="confirm"], [data-state="alert"], [data-land]),
+:is(html, *)[data-nk-motion="off"] :is([data-slot="glyph"], [data-slot="kbd"]):is([data-state="confirm"], [data-state="alert"], [data-land]) {
   animation: none;
 }
 :is(html, *)[data-nk-motion="reduced"] .nk-row > * {
@@ -3528,37 +3528,37 @@ html[data-nk-backdrop="on"] * {
  * Selection (1.7, docs/design.md "Selection"): one language, every theme.
  * 1. No focus rings. Keyboard, controller and programmatic focus light an element exactly as the pointer's hover
  *    does; a text field keeps one rim while it holds the caret (the Fields rule above), nothing draws a ring.
- * 2. The selection IS a Tile: the primary keycap's face (the theme's skew, --nk-tile-key-radius, the top light) over
- *    its wall (dropped --nk-tile-wall-height straight down, in shade). --nk-style-fill: solid paints it --nk-tile-key-color with
- *    --nk-tile-key-ink; soft paints a tinted face (--nk-tile-key-tint) and keeps the foreground ink.
- * 3. One tile per list (nk-indicator, driven by SelectionTile): it slides to the lit item; the item only takes the
+ * 2. The selection IS a Glyph: the primary keycap's face (the theme's skew, --nk-control-primary-radius, the top light) over
+ *    its wall (dropped --nk-control-wall-height straight down, in shade). --nk-style-fill: solid paints it --nk-control-primary-color with
+ *    --nk-control-primary-ink; soft paints a tinted face (--nk-control-primary-tint) and keeps the foreground ink.
+ * 3. One tile per list (nk-indicator, driven by Selection): it slides to the lit item; the item only takes the
  *    ink, the lift (--nk-gesture-lift) and its lit icon tile, never a fill of its own. In a list ([data-nk-sel]) the
  *    lit item is the one carrying data-lit; a row or a tab on its own draws the same tile itself.
  * 4. Rows never touch: a list (nk-list) spaces them by --nk-list-gap (the wall plus breathing room) and the tile is
- *    inset by --nk-tile-key-inset.
+ *    inset by --nk-control-primary-inset.
  * Unlayered on purpose: it must beat shadcn's focus and hover utilities and the rows' own text colours.
  */
 :root,
 [data-nk-theme] {
-  --nk-tile-sel-face: var(--nk-tile-key-color);
-  --nk-tile-sel-wall: var(--nk-tile-key-color);
-  --nk-tile-sel-shade: var(--nk-tile-wall-shade);
-  --nk-tile-sel-ink: var(--nk-tile-key-ink);
+  --nk-control-sel-face: var(--nk-control-primary-color);
+  --nk-control-sel-wall: var(--nk-control-primary-color);
+  --nk-control-sel-shade: var(--nk-control-wall-shade);
+  --nk-control-sel-ink: var(--nk-control-primary-ink);
 }
 :is(html, *)[data-nk-fill="soft"] {
-  --nk-tile-sel-face: rgba(var(--primary-rgb), var(--nk-tile-key-tint));
-  --nk-tile-sel-wall: rgba(var(--primary-rgb), calc(var(--nk-tile-key-tint) * 0.5));
-  --nk-tile-sel-shade: 0;
-  --nk-tile-sel-ink: var(--foreground);
+  --nk-control-sel-face: rgba(var(--primary-rgb), var(--nk-control-primary-tint));
+  --nk-control-sel-wall: rgba(var(--primary-rgb), calc(var(--nk-control-primary-tint) * 0.5));
+  --nk-control-sel-shade: 0;
+  --nk-control-sel-ink: var(--foreground);
 }
 :is(.nk-indicator, .nk-row)[data-tone="destructive"] {
-  --nk-tile-sel-face: var(--destructive);
-  --nk-tile-sel-wall: var(--destructive);
+  --nk-control-sel-face: var(--destructive);
+  --nk-control-sel-wall: var(--destructive);
 }
 :is(html, *)[data-nk-fill="soft"] :is(.nk-indicator, .nk-row)[data-tone="destructive"] {
-  --nk-tile-sel-face: rgba(var(--destructive-rgb), var(--nk-tile-key-tint));
-  --nk-tile-sel-wall: rgba(var(--destructive-rgb), calc(var(--nk-tile-key-tint) * 0.5));
-  --nk-tile-sel-ink: var(--destructive);
+  --nk-control-sel-face: rgba(var(--destructive-rgb), var(--nk-control-primary-tint));
+  --nk-control-sel-wall: rgba(var(--destructive-rgb), calc(var(--nk-control-primary-tint) * 0.5));
+  --nk-control-sel-ink: var(--destructive);
 }
 
 /* 1. no rings: whatever a utility asked for on focus (shadcn's 3px halo, an outline) */
@@ -3568,44 +3568,40 @@ html[data-nk-backdrop="on"] * {
   --tw-ring-offset-shadow: 0 0 transparent;
 }
 
-/* 2. the tile: the list's sliding one, and the one a row or a tab on its own draws */
+/* 2. the mark: the list's sliding one, and the one a row on its own draws (stock shadcn Tabs keep their stock look) */
 .nk-indicator::before,
 .nk-indicator::after,
 .nk-row:not([data-nk-sel] *)::before,
-.nk-row:not([data-nk-sel] *)::after,
-[data-slot="tabs-trigger"]:not([data-nk-sel] *)::before,
-[data-slot="tabs-trigger"]:not([data-nk-sel] *)::after {
+.nk-row:not([data-nk-sel] *)::after {
   content: "";
   position: absolute;
-  inset: 0 var(--nk-tile-key-inset);
-  border-radius: var(--nk-tile-key-radius);
+  inset: 0 var(--nk-control-primary-inset);
+  border-radius: var(--nk-control-primary-radius);
   pointer-events: none;
 }
 .nk-indicator::before,
-.nk-row:not([data-nk-sel] *)::before,
-[data-slot="tabs-trigger"]:not([data-nk-sel] *)::before {
+.nk-row:not([data-nk-sel] *)::before {
   z-index: -2;
-  background-color: var(--nk-tile-sel-wall);
-  box-shadow: inset 0 0 0 100vmax rgba(var(--scrim-rgb, 0, 0, 0), var(--nk-tile-sel-shade));
-  transform: translateY(var(--nk-tile-wall-height)) skewX(var(--nk-tile-face-skew, 0deg));
+  background-color: var(--nk-control-sel-wall);
+  box-shadow: inset 0 0 0 100vmax rgba(var(--scrim-rgb, 0, 0, 0), var(--nk-control-sel-shade));
+  transform: translateY(var(--nk-control-wall-height)) skewX(var(--nk-control-face-skew, 0deg));
 }
 .nk-indicator::after,
-.nk-row:not([data-nk-sel] *)::after,
-[data-slot="tabs-trigger"]:not([data-nk-sel] *)::after {
+.nk-row:not([data-nk-sel] *)::after {
   z-index: -1;
-  background-color: var(--nk-tile-sel-face);
-  box-shadow: inset 0 0 0 var(--nk-line-width, 1px) var(--nk-tile-key-rim), inset 0 1px 0 var(--nk-tile-face-light);
-  transform: skewX(var(--nk-tile-face-skew, 0deg));
+  background-color: var(--nk-control-sel-face);
+  box-shadow: inset 0 0 0 var(--nk-line-width, 1px) var(--nk-control-primary-rim), inset 0 1px 0 var(--nk-control-face-light);
+  transform: skewX(var(--nk-control-face-skew, 0deg));
 }
 .nk-indicator::before,
 .nk-indicator::after {
   transition: background-color var(--nk-time-fast, var(--nk-time-base)) var(--nk-ease-move, var(--nk-ease-enter));
 }
-/* shape inherit (SelectionTile's default, the --nk-tile-sel-shape lever): the mark takes the shape of what it is on: the
-   host's radius and clip, a flat face, no skew and no wall. A list that wants the keycap passes shape="tile". */
+/* shape inherit (Selection's default, the --nk-control-sel-shape lever): the mark takes the shape of what it is on: the
+   host's radius and clip, a flat face, no skew and no wall. A list that wants the keycap passes shape="own". */
 .nk-indicator[data-shape="inherit"] {
-  border-radius: var(--nk-tile-host-radius, var(--nk-tile-key-radius));
-  clip-path: var(--nk-tile-host-clip, none);
+  border-radius: var(--nk-control-host-radius, var(--nk-control-primary-radius));
+  clip-path: var(--nk-control-host-clip, none);
 }
 .nk-indicator[data-shape="inherit"]::before {
   display: none;
@@ -3614,31 +3610,23 @@ html[data-nk-backdrop="on"] * {
   inset: 0;
   border-radius: inherit;
   transform: none;
-  box-shadow: inset 0 0 0 var(--nk-line-width, 1px) var(--nk-tile-sel-rim, var(--nk-tile-key-rim));
+  box-shadow: inset 0 0 0 var(--nk-line-width, 1px) var(--nk-control-sel-rim, var(--nk-control-primary-rim));
 }
-/* a row or a tab on its own: the tile only while it is lit, at once (no per-row fade) */
+/* a row on its own: the mark only while it is lit, at once (no per-row fade) */
 .nk-row:not([data-nk-sel] *)::before,
-.nk-row:not([data-nk-sel] *)::after,
-[data-slot="tabs-trigger"]:not([data-nk-sel] *)::before,
-[data-slot="tabs-trigger"]:not([data-nk-sel] *)::after {
+.nk-row:not([data-nk-sel] *)::after {
   opacity: 0;
 }
 .nk-row:not([data-nk-sel] *):is([data-active], [data-highlighted], :focus-visible, [data-hover]:hover):not([data-readonly], [aria-disabled="true"], :disabled, [data-disabled])::before,
-.nk-row:not([data-nk-sel] *):is([data-active], [data-highlighted], :focus-visible, [data-hover]:hover):not([data-readonly], [aria-disabled="true"], :disabled, [data-disabled])::after,
-[data-slot="tabs-trigger"]:not([data-nk-sel] *)[data-state="active"]::before,
-[data-slot="tabs-trigger"]:not([data-nk-sel] *)[data-state="active"]::after {
+.nk-row:not([data-nk-sel] *):is([data-active], [data-highlighted], :focus-visible, [data-hover]:hover):not([data-readonly], [aria-disabled="true"], :disabled, [data-disabled])::after {
   opacity: 1;
-}
-[data-slot="tabs-trigger"] {
-  position: relative;
-  isolation: isolate;
 }
 
 /* 3. the lit item: the ink, the lift, its lit icon tile. Rows in a list are lit by data-lit only (one at a time). */
 .nk-row:is([data-lit], :not([data-nk-sel] *):is([data-active], [data-highlighted], :focus-visible, [data-hover]:hover)):not([data-readonly], [aria-disabled="true"], :disabled, [data-disabled]) {
-  color: var(--nk-tile-sel-ink);
+  color: var(--nk-control-sel-ink);
 }
-.nk-row:is([data-lit], :not([data-nk-sel] *):is([data-active], [data-highlighted], :focus-visible, [data-hover]:hover)):not([data-readonly], [aria-disabled="true"], :disabled, [data-disabled]) :not([data-slot="kbd"], [data-slot="kbd"] *, [data-slot="tile"], [data-slot="tile"] *, [data-slot="progress"], [data-slot="progress"] *, [data-slot="meter"], [data-slot="meter"] *, [data-slot="checkbox"], [data-slot="checkbox"] *) {
+.nk-row:is([data-lit], :not([data-nk-sel] *):is([data-active], [data-highlighted], :focus-visible, [data-hover]:hover)):not([data-readonly], [aria-disabled="true"], :disabled, [data-disabled]) :not([data-slot="kbd"], [data-slot="kbd"] *, [data-slot="glyph"], [data-slot="glyph"] *, [data-slot="progress"], [data-slot="progress"] *, [data-slot="meter"], [data-slot="meter"] *, [data-slot="checkbox"], [data-slot="checkbox"] *) {
   color: inherit;
 }
 /* the lead and the text slide in; the trail (meta, keys, a checkbox, a stepper, a chevron) holds its column */
@@ -3646,43 +3634,43 @@ html[data-nk-backdrop="on"] * {
   transform: translateX(var(--nk-gesture-lift, 0rem));
 }
 /* the icon tile on a lit row: a dark keycap on the solid face (the speedometer's gear); on a soft face it lights */
-.nk-row:is([data-lit], :not([data-nk-sel] *):is([data-active], [data-highlighted], :focus-visible, [data-hover]:hover)):not([data-readonly], [aria-disabled="true"], :disabled, [data-disabled]) > [data-slot="menu-row-icon"] > [data-slot="tile"] {
-  --nk-tile-now-face: var(--nk-tile-face-color);
-  --nk-tile-now-ink: var(--nk-tile-face-ink);
-  --nk-tile-now-rim: transparent;
-  color: var(--nk-tile-face-ink);
+.nk-row:is([data-lit], :not([data-nk-sel] *):is([data-active], [data-highlighted], :focus-visible, [data-hover]:hover)):not([data-readonly], [aria-disabled="true"], :disabled, [data-disabled]) > [data-slot="menu-row-icon"] > [data-slot="glyph"] {
+  --nk-control-now-face: var(--nk-control-face-color);
+  --nk-control-now-ink: var(--nk-control-face-ink);
+  --nk-control-now-rim: transparent;
+  color: var(--nk-control-face-ink);
 }
-:is(html, *)[data-nk-fill="soft"] .nk-row:is([data-lit], :not([data-nk-sel] *):is([data-active], [data-highlighted], :focus-visible, [data-hover]:hover)):not([data-readonly], [aria-disabled="true"], :disabled, [data-disabled]) > [data-slot="menu-row-icon"] > [data-slot="tile"] {
-  --nk-tile-now-face: var(--nk-tile-face-confirm);
-  --nk-tile-now-ink: var(--nk-tile-face-confirm-ink);
-  color: var(--nk-tile-face-confirm-ink);
+:is(html, *)[data-nk-fill="soft"] .nk-row:is([data-lit], :not([data-nk-sel] *):is([data-active], [data-highlighted], :focus-visible, [data-hover]:hover)):not([data-readonly], [aria-disabled="true"], :disabled, [data-disabled]) > [data-slot="menu-row-icon"] > [data-slot="glyph"] {
+  --nk-control-now-face: var(--nk-control-face-confirm);
+  --nk-control-now-ink: var(--nk-control-face-confirm-ink);
+  color: var(--nk-control-face-confirm-ink);
 }
 /* a key and a checkbox on a solid lit row read dark on it, as on the primary keycap */
 .nk-row:is([data-lit], :not([data-nk-sel] *):is([data-active], [data-highlighted], :focus-visible, [data-hover]:hover)):not([data-readonly], [aria-disabled="true"], :disabled, [data-disabled]) [data-slot="kbd"],
 [data-nk-sel] [data-slot="dropdown-menu-item"][data-lit] [data-slot="kbd"] {
-  --nk-tile-now-face: rgba(var(--scrim-rgb, 0, 0, 0), 0.25);
-  --nk-tile-now-ink: var(--nk-tile-sel-ink);
-  --nk-tile-now-rim: rgba(var(--scrim-rgb, 0, 0, 0), 0.35);
-  --nk-tile-now-plate: transparent;
-  color: var(--nk-tile-sel-ink);
+  --nk-control-now-face: rgba(var(--scrim-rgb, 0, 0, 0), 0.25);
+  --nk-control-now-ink: var(--nk-control-sel-ink);
+  --nk-control-now-rim: rgba(var(--scrim-rgb, 0, 0, 0), 0.35);
+  --nk-control-now-plate: transparent;
+  color: var(--nk-control-sel-ink);
 }
 .nk-row:is([data-lit], :not([data-nk-sel] *):is([data-active], [data-highlighted], :focus-visible, [data-hover]:hover)):not([data-readonly], [aria-disabled="true"], :disabled, [data-disabled]) [data-slot="checkbox"] {
-  border-color: var(--nk-tile-sel-ink);
+  border-color: var(--nk-control-sel-ink);
   background-color: transparent;
-  color: var(--nk-tile-sel-ink);
+  color: var(--nk-control-sel-ink);
 }
 .nk-row:is([data-lit], :not([data-nk-sel] *):is([data-active], [data-highlighted], :focus-visible, [data-hover]:hover)):not([data-readonly], [aria-disabled="true"], :disabled, [data-disabled]) [data-slot="checkbox"][data-state="checked"] {
-  background-color: var(--nk-tile-sel-ink);
-  color: var(--nk-tile-sel-face);
+  background-color: var(--nk-control-sel-ink);
+  color: var(--nk-control-sel-face);
 }
 /* soft: the key keeps its own face (the tint is not a surface to darken) */
 :is(html, *)[data-nk-fill="soft"] .nk-row[data-lit] [data-slot="kbd"],
 :is(html, *)[data-nk-fill="soft"] [data-nk-sel] [data-slot="dropdown-menu-item"][data-lit] [data-slot="kbd"] {
-  --nk-tile-now-face: var(--nk-tile-face-color);
-  --nk-tile-now-ink: var(--nk-tile-face-ink);
-  --nk-tile-now-rim: var(--nk-tile-face-rim-focus);
-  --nk-tile-now-plate: var(--nk-tile-plate-color);
-  color: var(--nk-tile-face-ink);
+  --nk-control-now-face: var(--nk-control-face-color);
+  --nk-control-now-ink: var(--nk-control-face-ink);
+  --nk-control-now-rim: var(--nk-control-face-rim-focus);
+  --nk-control-now-plate: var(--nk-control-plate-color);
+  color: var(--nk-control-face-ink);
 }
 /* other items of a list (menu items, tabs): no fill of their own; the lit one takes the ink */
 [data-nk-sel] :is([data-slot="dropdown-menu-item"], [data-slot="dropdown-menu-sub-trigger"], [data-slot="tabs-trigger"]) {
@@ -3691,12 +3679,10 @@ html[data-nk-backdrop="on"] * {
   border-color: transparent;
   box-shadow: none;
 }
-[data-nk-sel] :is([data-slot="dropdown-menu-item"], [data-slot="dropdown-menu-sub-trigger"], [data-slot="tabs-trigger"])[data-lit],
-[data-slot="tabs-trigger"]:not([data-nk-sel] *)[data-state="active"] {
-  color: var(--nk-tile-sel-ink);
+[data-nk-sel] :is([data-slot="dropdown-menu-item"], [data-slot="dropdown-menu-sub-trigger"], [data-slot="tabs-trigger"])[data-lit] {
+  color: var(--nk-control-sel-ink);
 }
-[data-nk-sel] :is([data-slot="dropdown-menu-item"], [data-slot="dropdown-menu-sub-trigger"], [data-slot="tabs-trigger"])[data-lit] :not([data-slot="kbd"], [data-slot="kbd"] *),
-[data-slot="tabs-trigger"]:not([data-nk-sel] *)[data-state="active"] :not([data-slot="kbd"], [data-slot="kbd"] *) {
+[data-nk-sel] :is([data-slot="dropdown-menu-item"], [data-slot="dropdown-menu-sub-trigger"], [data-slot="tabs-trigger"])[data-lit] :not([data-slot="kbd"], [data-slot="kbd"] *) {
   color: inherit;
 }
 /* a tab that isn't the selected one lights its text on hover and focus alike */
@@ -3711,12 +3697,15 @@ html[data-nk-backdrop="on"] * {
   display: flex;
   flex-direction: column;
   gap: var(--nk-list-gap);
-  padding-bottom: calc(var(--nk-space-1) + var(--nk-tile-wall-height));
+  padding-bottom: calc(var(--nk-space-1) + var(--nk-control-wall-height));
 }
 [data-slot="tabs-list"][data-nk-sel] {
   height: auto;
-  padding-bottom: calc(0.1875rem + var(--nk-tile-wall-height));
-  --nk-tile-key-inset: 0.125rem;
+  /* shadcn's muted pill and 3px inset go: the one Selection is the only mark */
+  background-color: transparent;
+  padding: 0;
+  padding-bottom: var(--nk-control-wall-height);
+  --nk-control-primary-inset: 0;
 }
 [data-slot="tabs-list"][data-nk-sel] > [data-slot="tabs-trigger"] {
   min-height: var(--nk-height-control, 2.25rem);
@@ -3956,26 +3945,26 @@ html[data-nk-backdrop="on"] * {
 [data-slot="vital-chip-shape"][data-shape="keycap"] {
   width: var(--nk-vital-chip-size);
   height: var(--nk-vital-chip-size);
-  --nk-vital-chip-face: calc(var(--nk-vital-chip-size) * var(--nk-vital-chip-tile-ratio));
+  --nk-vital-chip-face: calc(var(--nk-vital-chip-size) * var(--nk-vital-chip-glyph-ratio));
   --nk-vital-chip-tag: 0px;
   --nk-vital-chip-tag-pad: var(--nk-vital-chip-label-gap);
-  --nk-vital-chip-plate-drop: calc(var(--nk-tile-wall-height) * 4 / 3);
+  --nk-vital-chip-plate-drop: calc(var(--nk-control-wall-height) * 4 / 3);
   --nk-vital-chip-plate-x: 0rem;
   --nk-vital-chip-d: 1;
 }
 [data-slot="vital-chip-shape"][data-shape="keycap"][data-side="left"] { --nk-vital-chip-d: -1; }
-[data-slot="vital-chip-shape"][data-shape="keycap"] > [data-slot="tile"],
+[data-slot="vital-chip-shape"][data-shape="keycap"] > [data-slot="glyph"],
 [data-slot="vital-chip-shape"][data-shape="keycap"] [data-slot="vital-chip-icon"] {
   position: absolute;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
 }
-/* the face is the kit Tile (its face, rim, slant and alert state), sized by the chip and without its own plate:
+/* the face is the kit Glyph (its face, rim, slant and alert state), sized by the chip and without its own plate:
    the chip's plate below is the one that slides out */
-[data-slot="vital-chip-shape"][data-shape="keycap"] > [data-slot="tile"] {
-  --nk-tile-face-radius: var(--nk-radius-chip);
-  --nk-tile-now-plate: transparent;
+[data-slot="vital-chip-shape"][data-shape="keycap"] > [data-slot="glyph"] {
+  --nk-control-face-radius: var(--nk-radius-chip);
+  --nk-control-now-plate: transparent;
   z-index: 2;
   width: var(--nk-vital-chip-face);
   min-width: 0;
@@ -3988,7 +3977,7 @@ html[data-nk-backdrop="on"] * {
   z-index: -1;
   overflow: hidden;
   border-radius: inherit;
-  transform: skewX(var(--nk-tile-face-skew));
+  transform: skewX(var(--nk-control-face-skew));
 }
 [data-slot="vital-chip-liquid"],
 [data-slot="vital-chip-lit"] {
@@ -4012,14 +4001,14 @@ html[data-nk-backdrop="on"] * {
   top: 0;
   width: 100%;
   height: var(--nk-vital-chip-line-width);
-  background: var(--hue-grad-a, var(--nk-tile-face-ink));
+  background: var(--hue-grad-a, var(--nk-control-face-ink));
   transform: translateY(calc((1 - var(--level, 0)) * var(--nk-vital-chip-face) - 0.0625rem));
   transition: transform calc(var(--nk-time-fill) * var(--nk-motion)) var(--nk-ease-move);
   opacity: calc(var(--level, 0) * 100);
 }
 /* active (the mic): a bright layer fills the face from the bottom, the icon turns to the dark ink */
 [data-slot="vital-chip-lit"] {
-  background: var(--nk-tile-face-active);
+  background: var(--nk-control-face-active);
   transform: scaleY(0);
   transition: transform calc(var(--nk-time-base) * var(--nk-motion)) var(--nk-ease-move);
 }
@@ -4031,7 +4020,7 @@ html[data-nk-backdrop="on"] * {
   justify-content: center;
   width: calc(var(--nk-vital-chip-face) * var(--nk-vital-chip-icon-ratio));
   height: calc(var(--nk-vital-chip-face) * var(--nk-vital-chip-icon-ratio));
-  color: var(--nk-tile-face-ink);
+  color: var(--nk-control-face-ink);
   transition: color calc(var(--nk-time-base) * var(--nk-motion)) ease-out;
 }
 [data-slot="vital-chip-shape"][data-shape="keycap"] [data-slot="vital-chip-icon"] > svg { width: 100%; height: 100%; stroke-width: 2.25; }
@@ -4047,7 +4036,7 @@ html[data-nk-backdrop="on"] * {
 :is(html, *)[data-nk-fill="soft"] [data-slot="vital-chip-shape"][data-shape="keycap"] [data-slot="vital-chip-icon-ink"],
 [data-slot="vital-chip-shape"][data-shape="keycap"]:not([data-level]) [data-slot="vital-chip-icon-ink"],
 [data-slot="vital-chip-shape"][data-shape="keycap"][data-active] [data-slot="vital-chip-icon-ink"] { display: none; }
-[data-slot="vital-chip-shape"][data-shape="keycap"][data-active] [data-slot="vital-chip-icon"] { color: var(--nk-tile-face-confirm-ink); transition-duration: calc(var(--nk-time-fast) * var(--nk-motion)); }
+[data-slot="vital-chip-shape"][data-shape="keycap"][data-active] [data-slot="vital-chip-icon"] { color: var(--nk-control-face-confirm-ink); transition-duration: calc(var(--nk-time-fast) * var(--nk-motion)); }
 /* a letter on the face (a gear, a compass mark): the scan voice, nudged left by the italic's lean */
 [data-slot="vital-chip-shape"][data-shape="keycap"] [data-slot="vital-chip-glyph"] {
   display: block;
@@ -4071,9 +4060,9 @@ html[data-nk-backdrop="on"] * {
   width: var(--nk-vital-chip-face);
   height: var(--nk-vital-chip-face);
   border-radius: var(--nk-radius-chip);
-  background: var(--nk-tile-plate-dim);
+  background: var(--nk-control-plate-dim);
   box-shadow: 0 0 0 var(--nk-line-width) rgba(var(--scrim-rgb), 0.9);
-  transform: translate(calc(var(--nk-vital-chip-plate-x) * var(--nk-vital-chip-d)), var(--nk-vital-chip-plate-drop)) skewX(var(--nk-tile-face-skew));
+  transform: translate(calc(var(--nk-vital-chip-plate-x) * var(--nk-vital-chip-d)), var(--nk-vital-chip-plate-drop)) skewX(var(--nk-control-face-skew));
 }
 /* the track clips the extension from the face's centre outwards (that cut is always under the face or on the base) */
 [data-slot="vital-chip-track"] {
@@ -4094,15 +4083,15 @@ html[data-nk-backdrop="on"] * {
   width: calc(var(--nk-vital-chip-face) + var(--nk-vital-chip-tag) + var(--nk-vital-chip-tag-pad));
   height: var(--nk-vital-chip-face);
   border-radius: var(--nk-radius-chip);
-  background: var(--nk-tile-plate-dim);
+  background: var(--nk-control-plate-dim);
   box-shadow: 0 0 0 var(--nk-line-width) rgba(var(--scrim-rgb), 0.9);
   /* at rest only the drop offset shows behind the face */
-  transform: translate(calc(var(--nk-vital-chip-plate-x) - var(--nk-vital-chip-d) * (var(--nk-vital-chip-tag) + var(--nk-vital-chip-tag-pad))), var(--nk-vital-chip-plate-drop)) skewX(var(--nk-tile-face-skew));
+  transform: translate(calc(var(--nk-vital-chip-plate-x) - var(--nk-vital-chip-d) * (var(--nk-vital-chip-tag) + var(--nk-vital-chip-tag-pad))), var(--nk-vital-chip-plate-drop)) skewX(var(--nk-control-face-skew));
   transition: transform calc(var(--nk-time-slow) * var(--nk-motion)) var(--nk-ease-expand);
 }
 [data-slot="vital-chip-shape"][data-shape="keycap"][data-side="left"] [data-slot="vital-chip-plate"] { left: auto; right: calc(var(--nk-vital-chip-face) / -2); }
-[data-slot="vital-chip-shape"][data-shape="keycap"][data-open] [data-slot="vital-chip-plate"] { transform: translate(var(--nk-vital-chip-plate-x), var(--nk-vital-chip-plate-drop)) skewX(var(--nk-tile-face-skew)); }
-[data-slot="vital-chip-shape"][data-shape="keycap"][data-side="left"][data-open] [data-slot="vital-chip-plate"] { transform: translate(calc(var(--nk-vital-chip-plate-x) * -1), var(--nk-vital-chip-plate-drop)) skewX(var(--nk-tile-face-skew)); }
+[data-slot="vital-chip-shape"][data-shape="keycap"][data-open] [data-slot="vital-chip-plate"] { transform: translate(var(--nk-vital-chip-plate-x), var(--nk-vital-chip-plate-drop)) skewX(var(--nk-control-face-skew)); }
+[data-slot="vital-chip-shape"][data-shape="keycap"][data-side="left"][data-open] [data-slot="vital-chip-plate"] { transform: translate(calc(var(--nk-vital-chip-plate-x) * -1), var(--nk-vital-chip-plate-drop)) skewX(var(--nk-control-face-skew)); }
 /* the label on the revealed plate: the scan voice, fading in a beat after the plate */
 [data-slot="vital-chip-label"][data-attach="plate"] {
   position: absolute;
@@ -4116,14 +4105,14 @@ html[data-nk-backdrop="on"] * {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.03em;
-  color: var(--nk-tile-face-ink);
+  color: var(--nk-control-face-ink);
   opacity: 0;
   transition: opacity calc(var(--nk-time-fast) * var(--nk-motion)) ease-out;
 }
 [data-slot="vital-chip-shape"][data-shape="keycap"][data-side="left"] [data-slot="vital-chip-label"][data-attach="plate"] { left: auto; right: calc((var(--nk-vital-chip-size) + var(--nk-vital-chip-face)) / 2 + 0.5rem); }
 [data-slot="vital-chip-label"][data-attach="plate"][data-open] { opacity: 1; transition-duration: calc(var(--nk-time-base) * var(--nk-motion)); transition-delay: calc(var(--nk-time-fast) * var(--nk-motion)); }
 [data-slot="vital-chip-label"][data-attach="plate"] [data-slot="vital-chip-name"] { opacity: 0.7; margin-right: 0.25rem; }
-/* alert: the liquid and its line take the status colour (the Tile's rim breathes) */
+/* alert: the liquid and its line take the status colour (the Glyph's rim breathes) */
 [data-slot="vital-chip-shape"][data-shape="keycap"][data-state="alert"] [data-slot="vital-chip-liquid"] { background: var(--vital, var(--nk-fill-alert)); }
 :is(html, *)[data-nk-fill="soft"] [data-slot="vital-chip-shape"][data-shape="keycap"][data-state="alert"] [data-slot="vital-chip-liquid"] { background: rgba(var(--destructive-rgb, 239, 68, 68), 0.7); }
 [data-slot="vital-chip-shape"][data-shape="keycap"][data-state="alert"] [data-slot="vital-chip-line"] { background: var(--vital, var(--nk-fill-alert)); }

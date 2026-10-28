@@ -149,7 +149,7 @@ function PauseMenu({
           </header>
 
           <nav ref={nav} className="mt-12 flex flex-col" aria-label="Pause menu" onKeyDown={onKeyDown}>
-            {/* one SelectionTile slides from row to row with the focus (docs/design.md, Selection) */}
+            {/* one Selection slides from row to row with the focus (docs/design.md, Selection) */}
             <MenuRowList>
               {actions.map((a, i) => {
                 if (a === "disconnect") return null

@@ -16,7 +16,7 @@ idempotent, `--check` in CI) generates kit.css's `@layer nk.base` block, `src/to
 
 | Tier | What | Defaults |
 |---|---|---|
-| identity | what a server chooses: palette, faces, scales, shape, type, surfaces, motion, which drawing each family uses | literals: the premium baseline (`compileTheme("")` already draws keycaps, solid fills, two voices) |
+| identity | what a server chooses: palette, faces, scales, shape, type, surfaces, motion, which drawing each family uses | literals: the flat baseline (`compileTheme("")` draws upright faces, solid fills, one face in two weights) |
 | semantic | roles every component shares: motion ladder, eases, plate, fill, accent, lines, depth | references to identity |
 | component | `--nk-<component>-<prop>` | references to itself, a component it `inherits`, semantic, identity |
 | part | `--nk-<component>-<part>-<prop>`; parts are the anatomy, the `data-slot` names in render order | same as its component |
@@ -224,7 +224,7 @@ HUD plate (`--nk-plate-*`, `--hud`), the chip radius, a Fill for the level or th
 
 Theme fonts are open (SIL OFL 1.1) woff2 files, latin subset (`unicode-range`; other scripts fall back down the
 stack to system fonts). One source: `packages/core/fonts/` (`fonts.json` lists family, file, weights, the themes that
-use it and the licence). Today: Geist and Geist Mono (sentences, codes), Barlow Condensed italic 600–800 (the display
+use it and the licence). Today: Geist and Geist Mono (every theme), Barlow Condensed italic 600–800 (the Keycap theme's display
 voice). Never a Google Fonts URL at runtime. `pnpm sync` writes the `@font-face` rules into every UI's `index.css`,
 per UI (`nuikit.json` `"fonts"`, or `NUIKIT_FONTS`):
 

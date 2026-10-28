@@ -7,7 +7,7 @@ import { Footer, Nav, REPO, SITE } from "@/components/site";
 import { Button } from "@/components/ui/button";
 import { Chip } from "@/components/ui/chip";
 import { Notice } from "@/components/ui/notice";
-import { Tile } from "@/components/ui/tile";
+import { Glyph } from "@/components/ui/glyph";
 import { VitalChip } from "@/components/ui/vital-chip";
 
 const LINKS = [
@@ -98,9 +98,9 @@ function Strip() {
           </VitalChip.Root>
         ))}
       </VitalChip.Row>
-      <Tile size="lg" tag="Open garage" land>
+      <Glyph size="lg" tag="Open garage" land>
         E
-      </Tile>
+      </Glyph>
       <Notice status="success" title="Paid" description="$500 from Lester" duration={0} pauseOnHover={false} className="w-full sm:w-80" />
     </div>
   );

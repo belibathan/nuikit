@@ -5,13 +5,13 @@ import { motionLevel } from "nuikit-core/motion"
 import { cn } from "@/lib/utils"
 import { Dial, DIAL_REDLINE, dialDash, dialSegments, gaugeStroke } from "@/components/ui/dial"
 import { TextRoll } from "@/components/ui/text-roll"
-import { Tile } from "@/components/ui/tile"
+import { Glyph } from "@/components/ui/glyph"
 
 /**
  * Speedometer — the vehicle gauge as refined in game (docs/design.md: the quality bar): a Dial of
  * --nk-speedometer-segments thick segments with small even gaps (digital, the default), or a thin arc over faint ticks
  * (arc), the speed big in the middle with its leading zeros dimmed (`0`64), the unit under it, the gear on a keycap
- * Tile seated in the arc's opening, fuel as thinner segments on the outer right-hand curve that drain downward,
+ * Glyph seated in the arc's opening, fuel as thinner segments on the outer right-hand curve that drain downward,
  * and the turn signals inside the ring. Past the redline the segments are red (only lit ones; unlit look like the rest),
  * the dial and the gear data-state="alert". The dial sits on a soft scrim that fades out past the ring.
  *
@@ -24,7 +24,7 @@ import { Tile } from "@/components/ui/tile"
  *
  * Role: speed, rpm, gear and fuel while driving, drawn on the game (`surface="game"`) or a panel ("theme").
  * Anatomy: Dial (segments or arc + ticks, the redline, the soft disc) > fuel band (outer segments, the pump) >
- *   signals > readout (speed digits, unit) > foot (gear Tile, or `center`).
+ *   signals > readout (speed digits, unit) > foot (gear Glyph, or `center`).
  * Props: speed, rpm, gear, fuel, unit, size (px at 1080p, laid out in rem), surface, redline, style (digital | arc),
  *   indicators, engine, center, live.
  * Level means: the rpm (0–1) lights the dial's segments from the left; fuel / 100 lights the band from the bottom.
@@ -366,7 +366,7 @@ function Speedometer({
       </div>
       <div data-slot="speedometer-foot" className="absolute left-1/2 -translate-x-1/2 -translate-y-1/2" style={{ top: rem(G.gear) }}>
         {center ?? (
-          <Tile
+          <Glyph
             size="md"
             shape="square"
             data-part="speedometer-gear"
@@ -379,7 +379,7 @@ function Speedometer({
             aria-label="Gear"
           >
             <TextRoll value={g} direction={gearDir.current} align="center" />
-          </Tile>
+          </Glyph>
         )}
       </div>
     </Dial>

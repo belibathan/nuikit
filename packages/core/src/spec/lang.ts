@@ -14,7 +14,7 @@
 export type Tier = "identity" | "semantic" | "component";
 export type LeverType = "color" | "length" | "angle" | "time" | "ease" | "number" | "keyword" | "font" | "shadow" | "paint" | "string";
 
-/** A reference to another lever by its path (`radius.control`, `tile.face.radius`) or to a palette token (`@primary`). */
+/** A reference to another lever by its path (`radius.control`, `control.face.radius`) or to a palette token (`@primary`). */
 export interface Ref {
   kind: "ref";
   path: string;
@@ -62,7 +62,7 @@ export interface LeverDef {
   core?: boolean;
 }
 
-/** A custom property set by kit.css rules for one state (the face colour a tile shows right now): no default, no theme value. */
+/** A custom property set by kit.css rules for one state (the face colour a glyph shows right now): no default, no theme value. */
 export interface StateDef {
   type: LeverType;
   description: string;
@@ -158,7 +158,7 @@ export const inherit = (from: string, description: string, type: LeverType, opts
 
 // ─────────────────────────────────────────── names
 
-/** The CSS custom property of a lever path: tile.face.radius → --nk-tile-face-radius. */
+/** The CSS custom property of a lever path: control.face.radius → --nk-control-face-radius. */
 export const cssName = (path: string): string => (path.startsWith("@") ? `--${path.slice(1)}` : `--nk-${path.split(".").join("-")}`);
 /** The compiled-theme key (no leading --). */
 export const varName = (path: string): string => cssName(path).slice(2);

@@ -3,7 +3,7 @@ import { alpha, color, css, length, pal, ref, type ComponentDef } from "../lang"
 
 export const emptyState: ComponentDef = {
   description: "What a list, a search or a screen shows when there is nothing (or something went wrong): an icon, a title, one sentence, an action",
-  inherits: ["tile"],
+  inherits: ["control"],
   anatomy: ["header", "icon", "title", "description", "actions"],
   levers: {
     gap: length(ref("space.3"), "Between the header and the actions (panel size)"),

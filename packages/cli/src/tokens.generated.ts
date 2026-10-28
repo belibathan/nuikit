@@ -736,7 +736,7 @@ export const GENERATED: { name: string; group: string; type: string; description
     "name": "font-display",
     "group": "font",
     "type": "fontFamily",
-    "description": "Anything scanned: keys, titles, labels, captions"
+    "description": "Anything scanned: keys, titles, labels, captions (the body face unless a theme says otherwise)"
   },
   {
     "name": "font-numeric",
@@ -958,7 +958,7 @@ export const GENERATED: { name: string; group: string; type: string; description
     "name": "nk-shape-skew",
     "group": "kit",
     "type": "number",
-    "description": "The keycap's slant: tile faces, the primary button, the selection (their boxes and text stay upright); at most ±20deg"
+    "description": "The slant of faces (keys, the primary button, the selection; boxes and text stay upright): 0 = upright, at most ±20deg"
   },
   {
     "name": "nk-shape-slab",
@@ -1885,223 +1885,223 @@ export const GENERATED: { name: string; group: string; type: string; description
     "description": "Between cells"
   },
   {
-    "name": "nk-tile-plate-color",
+    "name": "nk-control-plate-color",
     "group": "kit",
     "type": "color",
     "description": "The solid plate behind the face"
   },
   {
-    "name": "nk-tile-plate-dim",
+    "name": "nk-control-plate-dim",
     "group": "kit",
     "type": "color",
     "description": "The plate on the HUD"
   },
   {
-    "name": "nk-tile-plate-x",
+    "name": "nk-control-plate-x",
     "group": "kit",
     "type": "dimension",
     "description": "How far the plate sits right of the face (0 = none)"
   },
   {
-    "name": "nk-tile-plate-y",
+    "name": "nk-control-plate-y",
     "group": "kit",
     "type": "dimension",
-    "description": "How far the plate sits below the face"
+    "description": "How far the plate sits below the face (0 = none)"
   },
   {
-    "name": "nk-tile-plate-press",
+    "name": "nk-control-plate-press",
     "group": "kit",
     "type": "dimension",
     "description": "How far a held tile presses toward its plate"
   },
   {
-    "name": "nk-tile-wall-height",
+    "name": "nk-control-wall-height",
     "group": "kit",
     "type": "dimension",
-    "description": "How far the face sits above its wall (the primary button, the selection)"
+    "description": "How far the face sits above its wall (0 = flat; the primary button, the selection)"
   },
   {
-    "name": "nk-tile-wall-shade",
+    "name": "nk-control-wall-shade",
     "group": "kit",
     "type": "number",
     "description": "How dark the wall is (the scrim over the face colour)"
   },
   {
-    "name": "nk-tile-face-color",
+    "name": "nk-control-face-color",
     "group": "kit",
     "type": "color",
     "description": "The face"
   },
   {
-    "name": "nk-tile-face-ink",
+    "name": "nk-control-face-ink",
     "group": "kit",
     "type": "color",
     "description": "The legend's colour on the face"
   },
   {
-    "name": "nk-tile-face-light",
+    "name": "nk-control-face-light",
     "group": "kit",
     "type": "color",
-    "description": "The face's top hairline"
+    "description": "The face's top hairline (transparent = flat)"
   },
   {
-    "name": "nk-tile-face-shade",
+    "name": "nk-control-face-shade",
     "group": "kit",
     "type": "color",
     "description": "The face's bottom inner shade"
   },
   {
-    "name": "nk-tile-face-rim",
+    "name": "nk-control-face-rim",
     "group": "kit",
     "type": "color",
     "description": "The face's rim"
   },
   {
-    "name": "nk-tile-face-rim-focus",
+    "name": "nk-control-face-rim-focus",
     "group": "kit",
     "type": "color",
     "description": "The rim while lit"
   },
   {
-    "name": "nk-tile-face-radius",
+    "name": "nk-control-face-radius",
     "group": "kit",
     "type": "dimension",
     "description": "The face's radius"
   },
   {
-    "name": "nk-tile-face-skew",
+    "name": "nk-control-face-skew",
     "group": "kit",
     "type": "number",
     "description": "The face's slant (the box stays upright)"
   },
   {
-    "name": "nk-tile-face-shadow",
+    "name": "nk-control-face-shadow",
     "group": "kit",
     "type": "number",
     "description": "The face's inner light and shade"
   },
   {
-    "name": "nk-tile-face-clip",
+    "name": "nk-control-face-clip",
     "group": "kit",
     "type": "number",
     "description": "The face's clip-path (the chamfer)"
   },
   {
-    "name": "nk-tile-face-confirm",
+    "name": "nk-control-face-confirm",
     "group": "kit",
     "type": "color",
     "description": "The face when confirmed"
   },
   {
-    "name": "nk-tile-face-confirm-ink",
+    "name": "nk-control-face-confirm-ink",
     "group": "kit",
     "type": "color",
     "description": "The legend when confirmed"
   },
   {
-    "name": "nk-tile-face-active",
+    "name": "nk-control-face-active",
     "group": "kit",
     "type": "color",
     "description": "The face of an active tile (the mic while talking, N on the compass, a checked box)"
   },
   {
-    "name": "nk-tile-face-hold",
+    "name": "nk-control-face-hold",
     "group": "kit",
     "type": "color",
     "description": "The hold fill over the face"
   },
   {
-    "name": "nk-tile-legend-font",
+    "name": "nk-control-legend-font",
     "group": "kit",
     "type": "fontFamily",
     "description": "The legend's face"
   },
   {
-    "name": "nk-tile-legend-weight",
+    "name": "nk-control-legend-weight",
     "group": "kit",
     "type": "number",
     "description": "The legend's weight"
   },
   {
-    "name": "nk-tile-legend-pad",
+    "name": "nk-control-legend-pad",
     "group": "kit",
     "type": "dimension",
     "description": "The italic overhang split to both sides"
   },
   {
-    "name": "nk-tile-legend-shift",
+    "name": "nk-control-legend-shift",
     "group": "kit",
     "type": "dimension",
     "description": "A nudge for a leaning face"
   },
   {
-    "name": "nk-tile-legend-gap",
+    "name": "nk-control-legend-gap",
     "group": "kit",
     "type": "dimension",
     "description": "Between a tile's glyphs"
   },
   {
-    "name": "nk-tile-legend-inset",
+    "name": "nk-control-legend-inset",
     "group": "kit",
     "type": "dimension",
     "description": "The legend's inline padding"
   },
   {
-    "name": "nk-tile-tag-delay",
+    "name": "nk-control-tag-delay",
     "group": "kit",
     "type": "number",
     "description": "The tag opens this long after the tile lands"
   },
   {
-    "name": "nk-tile-key-color",
+    "name": "nk-control-primary-color",
     "group": "kit",
     "type": "color",
     "description": "The keycap face under style.fill solid (the primary button, the lit row, the active tab)"
   },
   {
-    "name": "nk-tile-key-ink",
+    "name": "nk-control-primary-ink",
     "group": "kit",
     "type": "color",
     "description": "Text on the keycap face"
   },
   {
-    "name": "nk-tile-key-rim",
+    "name": "nk-control-primary-rim",
     "group": "kit",
     "type": "color",
     "description": "The keycap face's rim (transparent = none)"
   },
   {
-    "name": "nk-tile-key-radius",
+    "name": "nk-control-primary-radius",
     "group": "kit",
     "type": "dimension",
     "description": "The keycap's radius"
   },
   {
-    "name": "nk-tile-key-tint",
+    "name": "nk-control-primary-tint",
     "group": "kit",
     "type": "number",
     "description": "The face's opacity under style.fill soft"
   },
   {
-    "name": "nk-tile-key-inset",
+    "name": "nk-control-primary-inset",
     "group": "kit",
     "type": "dimension",
     "description": "How far a selection tile sits in from its item's sides (room for the skew)"
   },
   {
-    "name": "nk-tile-key-lift",
+    "name": "nk-control-primary-lift",
     "group": "kit",
     "type": "dimension",
     "description": "How far the face rises on hover and focus"
   },
   {
-    "name": "nk-tile-key-press",
+    "name": "nk-control-primary-press",
     "group": "kit",
     "type": "number",
     "description": "How far a pressed keycap sinks, as a fraction of its wall"
   },
   {
-    "name": "nk-tile-key-overhang",
+    "name": "nk-control-primary-overhang",
     "group": "kit",
     "type": "dimension",
     "description": "How far a row's selection tile reaches past its text"
@@ -3211,7 +3211,7 @@ export const GENERATED: { name: string; group: string; type: string; description
     "description": "Height"
   },
   {
-    "name": "nk-chip-tile-size",
+    "name": "nk-chip-square-size",
     "group": "kit",
     "type": "dimension",
     "description": "A tile chip's box"
@@ -3295,7 +3295,7 @@ export const GENERATED: { name: string; group: string; type: string; description
     "description": "A pill chip's icon"
   },
   {
-    "name": "nk-chip-icon-size-tile",
+    "name": "nk-chip-icon-size-square",
     "group": "kit",
     "type": "dimension",
     "description": "A tile chip's icon"
@@ -3313,7 +3313,7 @@ export const GENERATED: { name: string; group: string; type: string; description
     "description": "A small chip's box (telltales, compass marks)"
   },
   {
-    "name": "nk-vital-chip-tile-ratio",
+    "name": "nk-vital-chip-glyph-ratio",
     "group": "kit",
     "type": "number",
     "description": "The face as a fraction of the box"
@@ -3601,25 +3601,25 @@ export const GENERATED: { name: string; group: string; type: string; description
     "description": "The accent's channels (a screen sets it per state on any ancestor)"
   },
   {
-    "name": "nk-slab-tile-size",
+    "name": "nk-slab-icon-size",
     "group": "kit",
     "type": "dimension",
     "description": "The icon tile's size"
   },
   {
-    "name": "nk-slab-tile-bg",
+    "name": "nk-slab-icon-bg",
     "group": "kit",
     "type": "color",
     "description": "The icon tile"
   },
   {
-    "name": "nk-slab-tile-fg",
+    "name": "nk-slab-icon-fg",
     "group": "kit",
     "type": "color",
     "description": "The icon"
   },
   {
-    "name": "nk-slab-tile-radius",
+    "name": "nk-slab-icon-radius",
     "group": "kit",
     "type": "dimension",
     "description": "The icon tile's radius"
@@ -3886,7 +3886,7 @@ export const GENERATED: { name: string; group: string; type: string; description
     "name": "display",
     "group": "base",
     "type": "fontFamily",
-    "description": "Anything scanned: keys, titles, labels, captions"
+    "description": "Anything scanned: keys, titles, labels, captions (the body face unless a theme says otherwise)"
   },
   {
     "name": "numeric",

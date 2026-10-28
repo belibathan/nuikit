@@ -2,7 +2,7 @@ import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
 
 import { cn } from "@/lib/utils"
-import { Kbd } from "@/components/ui/tile"
+import { Kbd } from "@/components/ui/glyph"
 
 /**
  * Text — the type roles as one component (docs/design.md, foundation): scan (a key legend), title,

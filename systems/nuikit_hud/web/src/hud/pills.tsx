@@ -1,5 +1,5 @@
 // The status row (both layouts), built from the kit's VitalChip (components/ui/vital-chip): the keycap
-// (its default shape: a Tile face over a plate that slides out with the label, the level as a liquid in the
+// (its default shape: a Glyph face over a plate that slides out with the label, the level as a liquid in the
 // face), or a shape path per chip (/hudstyle), and a pop.
 //
 // Voice first, the vitals, the radio channel last (the 0.7 order and look). Each vital shows on change or

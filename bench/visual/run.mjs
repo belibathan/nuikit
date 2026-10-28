@@ -29,6 +29,7 @@ const ONLY = (process.env.VISUAL_ONLY ?? "").split(",").filter(Boolean);
 const THEMES = [
   ["default", "Default"],
   ["neon-pop", "Neon Pop"],
+  ["keycap", "Keycap"],
   ["flat", "Flat"],
   ["square", "Square"],
 ];

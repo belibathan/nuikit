@@ -13,7 +13,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { SelectionTile } from "@/components/ui/selection-tile";
+import { Selection } from "@/components/ui/selection";
 import { SlotTile } from "@/components/slot-tile";
 import { EdgeSheet, EdgeSheetBody } from "@/components/ui/edge-sheet";
 import { NumberRoll } from "@/components/ui/text-roll";
@@ -105,7 +105,7 @@ export function InventoryPanel({ side, open }: { side: Side; open: boolean }) {
       <EdgeSheetBody scroll onViewportScroll={onScroll}className={cn(busy && "pointer-events-none")}>
         <div className="inv-grid">
           {/* one selection tile per grid: it slides between the filled slots under the pointer (never a wash per slot) */}
-          <SelectionTile className="inv-grid-focus" items="[data-slot=item-slot][data-filled]" pointer />
+          <Selection className="inv-grid-focus" items="[data-slot=item-slot][data-filled]" pointer />
           {inventory.items.slice(0, limit).map((item, i) => (
             <SlotTile
               key={`${inventory.type}-${inventory.id}-${item.slot}`}

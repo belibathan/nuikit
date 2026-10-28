@@ -88,8 +88,8 @@ export const fonts: Group = {
   description: "The four faces every voice picks from",
   levers: {
     sans: font(lit('Geist, Inter, "Segoe UI", system-ui, sans-serif'), "Sentences (the body voice)", { core: true }),
-    display: font(lit('"Barlow Condensed", "Arial Narrow", sans-serif'), "Anything scanned: keys, titles, labels, captions", { core: true }),
-    numeric: font(lit('"Barlow Condensed", "Arial Narrow", sans-serif'), "Every number (always tabular)"),
+    display: font(lit('Geist, Inter, "Segoe UI", system-ui, sans-serif'), "Anything scanned: keys, titles, labels, captions (the body face unless a theme says otherwise)", { core: true }),
+    numeric: font(lit('Geist, Inter, "Segoe UI", system-ui, sans-serif'), "Every number (always tabular)"),
     mono: font(lit('"Geist Mono", ui-monospace, monospace'), "Codes and IDs a player might type", { core: true }),
   },
 };
@@ -192,7 +192,7 @@ export const shape: Group = {
   tier: "identity",
   description: "Slant, chamfer and hairline weight",
   levers: {
-    skew: angle("-12deg", "The keycap's slant: tile faces, the primary button, the selection (their boxes and text stay upright); at most ±20deg", { range: [-20, 20], was: [], core: true }),
+    skew: angle("0deg", "The slant of faces (keys, the primary button, the selection; boxes and text stay upright): 0 = upright, at most ±20deg", { range: [-20, 20], was: [], core: true }),
     slab: angle("0deg", "Chips, badges and tags drawn as skewed slabs too (0deg = upright); at most ±20deg", { range: [-20, 20], attr: "skew", was: ["nk-skew"] }),
     cut: length("0px", "Chamfered corners (top left, bottom right) as clip-path; 0 = off", { was: ["nk-cut"], core: true }),
     stroke: length("1px", "Hairline weight of plates, rims and fields", { was: ["nk-border-width"], core: true }),
@@ -219,9 +219,9 @@ export const type: Group = {
     "weight-display": number(700, "Full-screen titles and big numbers", { range: [100, 900], was: ["nk-weight-display"] }),
     "tracking-display": length("-0.02em", "Letter-spacing of full-screen titles", { was: ["nk-tracking-display"] }),
     "tracking-label": length("0.06em", "Letter-spacing of captions", { was: ["nk-tracking-label"] }),
-    case: keyword(["none", "uppercase"], "uppercase", "Anything scanned (keys, titles, labels, captions) in caps or as written", { attr: "case", was: ["nk-label-case", "nk-heading-case"], core: true }),
-    slant: keyword(["normal", "italic"], "italic", "The scanned voices upright or italic (a real italic where the face has one)", { attr: "slant", was: ["nk-display-style"], core: true }),
-    overhang: length("0.15em", "Trailing pad of a slanted voice (the italic's overhang); 0em when upright", { was: [] }),
+    case: keyword(["none", "uppercase"], "none", "Anything scanned (keys, titles, labels, captions) in caps or as written", { attr: "case", was: ["nk-label-case", "nk-heading-case"], core: true }),
+    slant: keyword(["normal", "italic"], "normal", "The scanned voices upright or italic (a real italic where the face has one)", { attr: "slant", was: ["nk-display-style"], core: true }),
+    overhang: length("0em", "Trailing pad of a slanted voice (the italic's overhang); 0em when upright", { was: [] }),
   },
   // the five voices: two in practice, the display face for anything scanned and the sans for sentences
   parts: {

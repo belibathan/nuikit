@@ -90,8 +90,8 @@ export const confirm: ComponentDef = {
 };
 
 export const notice: ComponentDef = {
-  description: "A notice / toast: a Tile icon, a title, a description, a time line",
-  inherits: ["tile", "panel"],
+  description: "A notice / toast: a Glyph icon, a title, a description, a time line",
+  inherits: ["control", "panel"],
   anatomy: ["stack", "item", "icon", "item-tile", "title", "description", "item-name", "item-delta", "time"],
   levers: {
     width: length("20rem", "Width (md)", { floor: true, was: ["nk-notice-w"] }),

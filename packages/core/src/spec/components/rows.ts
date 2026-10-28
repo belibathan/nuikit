@@ -2,8 +2,8 @@
 import { alpha, color, css, length, number, pal, ref, shadow, string, time, type ComponentDef } from "../lang";
 
 export const row: ComponentDef = {
-  description: "The list row (nk-row): generous padding, an icon tile column, two voices; lit on the keycap Tile",
-  inherits: ["tile"],
+  description: "The list row (nk-row): generous padding, an icon tile column, two voices; lit on the keycap Glyph",
+  inherits: ["control"],
   anatomy: ["icon", "title", "description", "trail", "bar"],
   levers: {
     height: length(ref("height.row"), "A single-line row's minimum height", { was: ["nk-row-height"] }),
@@ -26,17 +26,17 @@ export const row: ComponentDef = {
 
 export const list: ComponentDef = {
   description: "A list of selectable items (nk-list, MenuRowList): items a gap apart so a lit tile never touches its neighbour",
-  inherits: ["tile"],
+  inherits: ["control"],
   anatomy: ["item"],
   levers: {
-    gap: length(css`calc(${ref("tile.wall.height")} + ${ref("space.1")})`, "Between items: the wall plus breathing room", { was: ["nk-list-gap"] }),
-    "pad-x": length(css`calc(${ref("tile.key.inset")} + ${ref("tile.key.overhang")})`, "Inline padding: room for the tile's inset and skew", { was: ["nk-list-pad-x"] }),
+    gap: length(css`calc(${ref("control.wall.height")} + ${ref("space.1")})`, "Between items: the wall plus breathing room", { was: ["nk-list-gap"] }),
+    "pad-x": length(css`calc(${ref("control.primary.inset")} + ${ref("control.primary.overhang")})`, "Inline padding: room for the tile's inset and skew", { was: ["nk-list-pad-x"] }),
   },
 };
 
 export const menuRow: ComponentDef = {
   description: "A menu row: icon or image, title and description, progress, meta, a stepper or value, actions",
-  inherits: ["row", "tile"],
+  inherits: ["row", "control"],
   anatomy: ["image", "icon", "body", "title", "description", "progress", "meta", "stepper", "value", "actions", "chevron", "details", "list"],
   levers: { gap: length(ref("space.1"), "Between a trail's controls", { was: ["nk-menu-row-gap"] }) },
   parts: {
@@ -48,9 +48,9 @@ export const menuRow: ComponentDef = {
 };
 
 export const selection: ComponentDef = {
-  description: "The one sliding selection tile per list (nk-indicator, SelectionTile)",
-  inherits: ["tile"],
-  anatomy: ["tile"],
+  description: "The one sliding selection tile per list (nk-indicator, Selection)",
+  inherits: ["control"],
+  anatomy: ["glyph"],
   levers: {
     time: time(ref("time.base"), "How long the tile glides", { was: ["nk-indicator-time"] }),
     ease: string(ref("ease.move"), "The glide's curve", { was: ["nk-indicator-ease"] }),
@@ -85,8 +85,8 @@ export const field: ComponentDef = {
 
 export const stepper: ComponentDef = {
   description: "A value between two keycaps; held, it repeats",
-  inherits: ["tile"],
-  anatomy: ["tile", "value"],
+  inherits: ["control"],
+  anatomy: ["glyph", "value"],
   levers: {
     delay: time("350ms", "The first repeat of a held keycap", { floor: true, was: ["nk-stepper-delay"] }),
     rate: time("70ms", "Then one repeat every", { floor: true, was: ["nk-stepper-rate"] }),
@@ -95,7 +95,7 @@ export const stepper: ComponentDef = {
 
 export const text: ComponentDef = {
   description: "Rich text with inline keycaps",
-  inherits: ["tile"],
+  inherits: ["control"],
   anatomy: ["key"],
   parts: { key: { scale: number(1, "The inline keycap's size, × height.key", { range: [0.5, 2], floor: true, was: ["nk-inline-key-scale"] }) } },
 };

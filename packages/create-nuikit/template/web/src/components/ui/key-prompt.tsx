@@ -5,7 +5,7 @@ import { cva, type VariantProps } from "class-variance-authority"
 
 import { cn, nkConfirm, nkLevel, nkState, nkVariant, type NkVariantProps } from "@/lib/utils"
 import { Fill } from "@/components/ui/fill"
-import { Kbd, KbdGroup } from "@/components/ui/tile"
+import { Kbd, KbdGroup } from "@/components/ui/glyph"
 
 /**
  * KeyPrompt — "[E] Open garage": the key and what it does, near what the player can use. The

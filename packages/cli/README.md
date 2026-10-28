@@ -74,7 +74,7 @@ kit has, commented out with its default and range, grouped by the concepts of [l
 
 ```css
     /* Geometry: slant, keycap wall, radii, chamfer and hairlines */
-    /* --nk-tile-skew: nk-skew  (-20deg..20deg) */
+    /* --nk-control-skew: nk-skew  (-20deg..20deg) */
 ```
 
 The levers come from nuikit-core's token tables, so a new lever shows up here when it lands in the tokens. The file is

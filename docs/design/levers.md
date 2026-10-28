@@ -35,15 +35,15 @@ Tokens file), not the `--nk-` name nuikit's kit uses. The palette rows are shadc
 | `--brand` | color | `primary if chromatic (OKLCH C ≥ 0.06), else chart-1` |  | The server's signature: active marks, needles, the accent's stops |
 | `--hud` | color | `rgba(0, 0, 0, 0.45)` |  | Surfaces drawn straight on the game: HUD chips, hotbar |
 | `--font-sans` | font | `Geist, Inter, "Segoe UI", system-ui, sans-serif` |  | Sentences (the body voice) |
-| `--font-display` | font | `"Barlow Condensed", "Arial Narrow", sans-serif` |  | Anything scanned: keys, titles, labels, captions |
+| `--font-display` | font | `Geist, Inter, "Segoe UI", system-ui, sans-serif` |  | Anything scanned: keys, titles, labels, captions (the body face unless a theme says otherwise) |
 | `--font-mono` | font | `"Geist Mono", ui-monospace, monospace` |  | Codes and IDs a player might type |
 | `--nk-density` | number | `1` | 0.75–1.3 | Spacing multiplier: 0.75 compact … 1.3 roomy |
-| `--nk-shape-skew` | angle | `-12deg` | -20–20 | The keycap's slant: tile faces, the primary button, the selection (their boxes and text stay upright); at most ±20deg |
+| `--nk-shape-skew` | angle | `0deg` | -20–20 | The slant of faces (keys, the primary button, the selection; boxes and text stay upright): 0 = upright, at most ±20deg |
 | `--nk-shape-cut` | length | `0px` |  | Chamfered corners (top left, bottom right) as clip-path; 0 = off |
 | `--nk-shape-stroke` | length | `1px` |  | Hairline weight of plates, rims and fields |
 | `--nk-type-ratio` | number | `1.25` | 1–1.6 | Step between type sizes: 1.125 calm … 1.333 dramatic |
-| `--nk-type-case` | keyword | `uppercase` | none uppercase | Anything scanned (keys, titles, labels, captions) in caps or as written |
-| `--nk-type-slant` | keyword | `italic` | normal italic | The scanned voices upright or italic (a real italic where the face has one) |
+| `--nk-type-case` | keyword | `none` | none uppercase | Anything scanned (keys, titles, labels, captions) in caps or as written |
+| `--nk-type-slant` | keyword | `normal` | normal italic | The scanned voices upright or italic (a real italic where the face has one) |
 | `--nk-surface-tint` | number | `0` | 0–0.12 | How much brand tints neutral surfaces |
 | `--nk-surface-elevation` | keyword | `hard` | none soft deep hard | Shadow recipe: hard is a solid offset drop, no blur |
 | `--nk-material-hud-opacity` | number | `0.8` | 0–1 | Opacity of the hud material |
@@ -70,16 +70,15 @@ the DOM, not the framework. Composites (meters, sheets, notices) are nuikit's ow
 | **zone** | Nine places and four edges; a zone stacks what it holds towards the screen centre | `item` | 1 |
 | **region** | A readable column inside a zone | `body` | 2 |
 | **grid** | A grid of cells (inventories, shops) | `cell` | 2 |
-| **tile** | The keycap: Kbd, notice icons, telltales, the primary button and the selection | `plate` → `wall` → `face` → `fill` → `legend` → `tag` → `group` → `key` | 37 |
 | **panel** | Every floating surface: menus, inventories, dialogs (the nk-panel utility) | `header` → `icon` → `title` → `description` → `actions` → `body` → `footer` | 23 |
-| **row** | The list row (nk-row): generous padding, an icon tile column, two voices; lit on the keycap Tile | `icon` → `title` → `description` → `trail` → `bar` | 11 |
+| **row** | The list row (nk-row): generous padding, an icon tile column, two voices; lit on the keycap Glyph | `icon` → `title` → `description` → `trail` → `bar` | 11 |
 | **list** | A list of selectable items (nk-list, MenuRowList): items a gap apart so a lit tile never touches its neighbour | `item` | 2 |
-| **selection** | The one sliding selection tile per list (nk-indicator, SelectionTile) | `tile` | 2 |
+| **selection** | The one sliding selection tile per list (nk-indicator, Selection) | `glyph` | 2 |
 | **text** | Rich text with inline keycaps | `key` | 1 |
 | **chip** | Always-on HUD chips and tiles on the game (nk-chip, nk-hud) | `icon` → `count` | 16 |
 | **level** | How a level is drawn under style.level and style.hold (pips, the hold ring, the ink over a solid fill) | `pip` → `hold` → `fill` | 4 |
 | **dial** | The dial under gauges and rings: a disc, ticks, a segmented track | `disc` → `ticks` → `track` → `segments` → `segment` → `value` → `needle` → `center` | 1 |
-| **slab** | Transient feedback on the game: item, prompt, progress, band (nk-slab*) | `tile` → `delta` → `key` → `stack` → `line` → `band` → `band-title` | 33 |
+| **slab** | Transient feedback on the game: item, prompt, progress, band (nk-slab*) | `icon` → `delta` → `key` → `stack` → `line` → `band` → `band-title` | 33 |
 
 ## Identity
 
@@ -218,8 +217,8 @@ The four faces every voice picks from.
 | Lever | Type | Default | Range / values | What it moves |
 |---|---|---|---|---|
 | `--font-sans` | font | `Geist, Inter, "Segoe UI", system-ui, sans-serif` |  | Sentences (the body voice) |
-| `--font-display` | font | `"Barlow Condensed", "Arial Narrow", sans-serif` |  | Anything scanned: keys, titles, labels, captions |
-| `--font-numeric` | font | `"Barlow Condensed", "Arial Narrow", sans-serif` |  | Every number (always tabular) |
+| `--font-display` | font | `Geist, Inter, "Segoe UI", system-ui, sans-serif` |  | Anything scanned: keys, titles, labels, captions (the body face unless a theme says otherwise) |
+| `--font-numeric` | font | `Geist, Inter, "Segoe UI", system-ui, sans-serif` |  | Every number (always tabular) |
 | `--font-mono` | font | `"Geist Mono", ui-monospace, monospace` |  | Codes and IDs a player might type |
 
 ### scale
@@ -318,7 +317,7 @@ Slant, chamfer and hairline weight.
 
 | Lever | Type | Default | Range / values | What it moves |
 |---|---|---|---|---|
-| `--nk-shape-skew` | angle | `-12deg` | -20–20 | The keycap's slant: tile faces, the primary button, the selection (their boxes and text stay upright); at most ±20deg |
+| `--nk-shape-skew` | angle | `0deg` | -20–20 | The slant of faces (keys, the primary button, the selection; boxes and text stay upright): 0 = upright, at most ±20deg |
 | `--nk-shape-slab` | angle | `0deg` | -20–20 | Chips, badges and tags drawn as skewed slabs too (0deg = upright); at most ±20deg |
 | `--nk-shape-cut` | length | `0px` |  | Chamfered corners (top left, bottom right) as clip-path; 0 = off |
 | `--nk-shape-stroke` | length | `1px` |  | Hairline weight of plates, rims and fields |
@@ -335,9 +334,9 @@ The type scale's ratio, the three weights, tracking, case and slant.
 | `--nk-type-weight-display` | number | `700` | 100–900 | Full-screen titles and big numbers |
 | `--nk-type-tracking-display` | length | `-0.02em` |  | Letter-spacing of full-screen titles |
 | `--nk-type-tracking-label` | length | `0.06em` |  | Letter-spacing of captions |
-| `--nk-type-case` | keyword | `uppercase` | none uppercase | Anything scanned (keys, titles, labels, captions) in caps or as written |
-| `--nk-type-slant` | keyword | `italic` | normal italic | The scanned voices upright or italic (a real italic where the face has one) |
-| `--nk-type-overhang` | length | `0.15em` |  | Trailing pad of a slanted voice (the italic's overhang); 0em when upright |
+| `--nk-type-case` | keyword | `none` | none uppercase | Anything scanned (keys, titles, labels, captions) in caps or as written |
+| `--nk-type-slant` | keyword | `normal` | normal italic | The scanned voices upright or italic (a real italic where the face has one) |
+| `--nk-type-overhang` | length | `0em` |  | Trailing pad of a slanted voice (the italic's overhang); 0em when upright |
 | `--nk-type-scan-family` | font | `var(--font-display)` |  | Face of the scan voice (keys, buttons, tabs) |
 | `--nk-type-scan-style` | keyword | `var(--nk-type-slant)` | normal italic | Slant of the scan voice (keys, buttons, tabs) |
 | `--nk-type-scan-weight` | number | `800` | 100–900 | Weight of the scan voice (keys, buttons, tabs) |
@@ -672,51 +671,51 @@ A grid of cells (inventories, shops). Anatomy: `cell`.
 
 State: `--nk-grid-cols`.
 
-### tile
+### control
 
-The keycap: Kbd, notice icons, telltales, the primary button and the selection. Anatomy: `plate` → `wall` → `face` → `fill` → `legend` → `tag` → `group` → `key`.
+The keycap: Kbd, notice icons, telltales, the primary button and the selection. Anatomy: `plate` → `wall` → `face` → `fill` → `legend` → `tag` → `group` → `primary`.
 
 | Lever | Type | Default | Range / values | What it moves |
 |---|---|---|---|---|
-| `--nk-tile-plate-color` | color | `var(--border)` |  | The solid plate behind the face |
-| `--nk-tile-plate-dim` | color | `var(--nk-tile-plate-color)` |  | The plate on the HUD |
-| `--nk-tile-plate-x` | length | `0px` |  | How far the plate sits right of the face (0 = none) |
-| `--nk-tile-plate-y` | length | `2px` |  | How far the plate sits below the face |
-| `--nk-tile-plate-press` | length | `1px` |  | How far a held tile presses toward its plate |
-| `--nk-tile-wall-height` | length | `0.1875rem` |  | How far the face sits above its wall (the primary button, the selection) |
-| `--nk-tile-wall-shade` | number | `0.45` | 0–1 | How dark the wall is (the scrim over the face colour) |
-| `--nk-tile-face-color` | color | `var(--muted)` |  | The face |
-| `--nk-tile-face-ink` | color | `var(--popover-foreground)` |  | The legend's colour on the face |
-| `--nk-tile-face-light` | color | `rgba(var(--popover-foreground-rgb), 0.16)` |  | The face's top hairline |
-| `--nk-tile-face-shade` | color | `rgba(var(--scrim-rgb), 0)` |  | The face's bottom inner shade |
-| `--nk-tile-face-rim` | color | `rgba(var(--foreground-rgb), 0.32)` |  | The face's rim |
-| `--nk-tile-face-rim-focus` | color | `rgba(var(--foreground-rgb), 0.4)` |  | The rim while lit |
-| `--nk-tile-face-radius` | length | `var(--nk-radius-key)` |  | The face's radius |
-| `--nk-tile-face-skew` | angle | `var(--nk-shape-skew)` |  | The face's slant (the box stays upright) |
-| `--nk-tile-face-shadow` | shadow | `inset 0 -1px 0 0 var(--nk-tile-face-shade), inset 0 1px 0 0 var(--nk-tile-face-light)` |  | The face's inner light and shade |
-| `--nk-tile-face-clip` | string | `var(--nk-line-clip-sm)` |  | The face's clip-path (the chamfer) |
-| `--nk-tile-face-confirm` | color | `var(--foreground)` |  | The face when confirmed |
-| `--nk-tile-face-confirm-ink` | color | `var(--background)` |  | The legend when confirmed |
-| `--nk-tile-face-active` | paint | `var(--nk-accent-paint)` |  | The face of an active tile (the mic while talking, N on the compass, a checked box) |
-| `--nk-tile-face-hold` | color | `rgba(var(--foreground-rgb), 0.35)` |  | The hold fill over the face |
-| `--nk-tile-legend-font` | font | `var(--nk-type-scan-family)` |  | The legend's face |
-| `--nk-tile-legend-weight` | number | `var(--nk-type-scan-weight)` | 100–900 | The legend's weight |
-| `--nk-tile-legend-pad` | length | `calc(var(--nk-type-scan-pad) / 2)` |  | The italic overhang split to both sides |
-| `--nk-tile-legend-shift` | length | `0em` |  | A nudge for a leaning face |
-| `--nk-tile-legend-gap` | length | `var(--nk-space-1)` |  | Between a tile's glyphs |
-| `--nk-tile-legend-inset` | length | `var(--nk-space-1)` |  | The legend's inline padding |
-| `--nk-tile-tag-delay` | time | `80ms` |  | The tag opens this long after the tile lands |
-| `--nk-tile-key-color` | color | `var(--primary)` |  | The keycap face under style.fill solid (the primary button, the lit row, the active tab) |
-| `--nk-tile-key-ink` | color | `var(--primary-foreground)` |  | Text on the keycap face |
-| `--nk-tile-key-rim` | color | `transparent` |  | The keycap face's rim (transparent = none) |
-| `--nk-tile-key-radius` | length | `var(--nk-radius-control)` |  | The keycap's radius |
-| `--nk-tile-key-tint` | number | `0.16` | 0–1 | The face's opacity under style.fill soft |
-| `--nk-tile-key-inset` | length | `0.375rem` |  | How far a selection tile sits in from its item's sides (room for the skew) |
-| `--nk-tile-key-lift` | length | `1px` |  | How far the face rises on hover and focus |
-| `--nk-tile-key-press` | number | `0.67` | 0–1.5 | How far a pressed keycap sinks, as a fraction of its wall |
-| `--nk-tile-key-overhang` | length | `0.25rem` |  | How far a row's selection tile reaches past its text |
+| `--nk-control-plate-color` | color | `var(--border)` |  | The solid plate behind the face |
+| `--nk-control-plate-dim` | color | `var(--nk-control-plate-color)` |  | The plate on the HUD |
+| `--nk-control-plate-x` | length | `0px` |  | How far the plate sits right of the face (0 = none) |
+| `--nk-control-plate-y` | length | `0px` |  | How far the plate sits below the face (0 = none) |
+| `--nk-control-plate-press` | length | `1px` |  | How far a held tile presses toward its plate |
+| `--nk-control-wall-height` | length | `0rem` |  | How far the face sits above its wall (0 = flat; the primary button, the selection) |
+| `--nk-control-wall-shade` | number | `0.45` | 0–1 | How dark the wall is (the scrim over the face colour) |
+| `--nk-control-face-color` | color | `var(--muted)` |  | The face |
+| `--nk-control-face-ink` | color | `var(--popover-foreground)` |  | The legend's colour on the face |
+| `--nk-control-face-light` | color | `rgba(var(--popover-foreground-rgb), 0)` |  | The face's top hairline (transparent = flat) |
+| `--nk-control-face-shade` | color | `rgba(var(--scrim-rgb), 0)` |  | The face's bottom inner shade |
+| `--nk-control-face-rim` | color | `rgba(var(--foreground-rgb), 0.32)` |  | The face's rim |
+| `--nk-control-face-rim-focus` | color | `rgba(var(--foreground-rgb), 0.4)` |  | The rim while lit |
+| `--nk-control-face-radius` | length | `var(--nk-radius-key)` |  | The face's radius |
+| `--nk-control-face-skew` | angle | `var(--nk-shape-skew)` |  | The face's slant (the box stays upright) |
+| `--nk-control-face-shadow` | shadow | `inset 0 -1px 0 0 var(--nk-control-face-shade), inset 0 1px 0 0 var(--nk-control-face-light)` |  | The face's inner light and shade |
+| `--nk-control-face-clip` | string | `var(--nk-line-clip-sm)` |  | The face's clip-path (the chamfer) |
+| `--nk-control-face-confirm` | color | `var(--foreground)` |  | The face when confirmed |
+| `--nk-control-face-confirm-ink` | color | `var(--background)` |  | The legend when confirmed |
+| `--nk-control-face-active` | paint | `var(--nk-accent-paint)` |  | The face of an active tile (the mic while talking, N on the compass, a checked box) |
+| `--nk-control-face-hold` | color | `rgba(var(--foreground-rgb), 0.35)` |  | The hold fill over the face |
+| `--nk-control-legend-font` | font | `var(--nk-type-scan-family)` |  | The legend's face |
+| `--nk-control-legend-weight` | number | `var(--nk-type-scan-weight)` | 100–900 | The legend's weight |
+| `--nk-control-legend-pad` | length | `calc(var(--nk-type-scan-pad) / 2)` |  | The italic overhang split to both sides |
+| `--nk-control-legend-shift` | length | `0em` |  | A nudge for a leaning face |
+| `--nk-control-legend-gap` | length | `var(--nk-space-1)` |  | Between a tile's glyphs |
+| `--nk-control-legend-inset` | length | `var(--nk-space-1)` |  | The legend's inline padding |
+| `--nk-control-tag-delay` | time | `80ms` |  | The tag opens this long after the tile lands |
+| `--nk-control-primary-color` | color | `var(--primary)` |  | The keycap face under style.fill solid (the primary button, the lit row, the active tab) |
+| `--nk-control-primary-ink` | color | `var(--primary-foreground)` |  | Text on the keycap face |
+| `--nk-control-primary-rim` | color | `transparent` |  | The keycap face's rim (transparent = none) |
+| `--nk-control-primary-radius` | length | `var(--nk-radius-control)` |  | The keycap's radius |
+| `--nk-control-primary-tint` | number | `0.16` | 0–1 | The face's opacity under style.fill soft |
+| `--nk-control-primary-inset` | length | `0.375rem` |  | How far a selection tile sits in from its item's sides (room for the skew) |
+| `--nk-control-primary-lift` | length | `1px` |  | How far the face rises on hover and focus |
+| `--nk-control-primary-press` | number | `0.67` | 0–1.5 | How far a pressed keycap sinks, as a fraction of its wall |
+| `--nk-control-primary-overhang` | length | `0.25rem` |  | How far a row's selection tile reaches past its text |
 
-State: `--nk-tile-now-face`, `--nk-tile-now-ink`, `--nk-tile-now-rim`, `--nk-tile-now-plate`, `--nk-tile-x`, `--nk-tile-y`, `--nk-tile-sel-face`, `--nk-tile-sel-wall`, `--nk-tile-sel-shade`, `--nk-tile-sel-ink`, `--nk-tile-sel-rim`, `--nk-tile-sel-shape`, `--nk-tile-host-radius`, `--nk-tile-host-clip`, `--nk-tile-tone`.
+State: `--nk-control-now-face`, `--nk-control-now-ink`, `--nk-control-now-rim`, `--nk-control-now-plate`, `--nk-control-x`, `--nk-control-y`, `--nk-control-sel-face`, `--nk-control-sel-wall`, `--nk-control-sel-shade`, `--nk-control-sel-ink`, `--nk-control-sel-rim`, `--nk-control-sel-shape`, `--nk-control-host-radius`, `--nk-control-host-clip`, `--nk-control-tone`.
 
 ### panel
 
@@ -775,7 +774,7 @@ The short name of a value: nk-caption, nk-field-label. Anatomy: `text`.
 
 ### row
 
-The list row (nk-row): generous padding, an icon tile column, two voices; lit on the keycap Tile. Anatomy: `icon` → `title` → `description` → `trail` → `bar`. Inherits: `tile`.
+The list row (nk-row): generous padding, an icon tile column, two voices; lit on the keycap Glyph. Anatomy: `icon` → `title` → `description` → `trail` → `bar`. Inherits: `control`.
 
 | Lever | Type | Default | Range / values | What it moves |
 |---|---|---|---|---|
@@ -793,16 +792,16 @@ The list row (nk-row): generous padding, an icon tile column, two voices; lit on
 
 ### list
 
-A list of selectable items (nk-list, MenuRowList): items a gap apart so a lit tile never touches its neighbour. Anatomy: `item`. Inherits: `tile`.
+A list of selectable items (nk-list, MenuRowList): items a gap apart so a lit tile never touches its neighbour. Anatomy: `item`. Inherits: `control`.
 
 | Lever | Type | Default | Range / values | What it moves |
 |---|---|---|---|---|
-| `--nk-list-gap` | length | `calc(var(--nk-tile-wall-height) + var(--nk-space-1))` |  | Between items: the wall plus breathing room |
-| `--nk-list-pad-x` | length | `calc(var(--nk-tile-key-inset) + var(--nk-tile-key-overhang))` |  | Inline padding: room for the tile's inset and skew |
+| `--nk-list-gap` | length | `calc(var(--nk-control-wall-height) + var(--nk-space-1))` |  | Between items: the wall plus breathing room |
+| `--nk-list-pad-x` | length | `calc(var(--nk-control-primary-inset) + var(--nk-control-primary-overhang))` |  | Inline padding: room for the tile's inset and skew |
 
 ### menu-row
 
-A menu row: icon or image, title and description, progress, meta, a stepper or value, actions. Anatomy: `image` → `icon` → `body` → `title` → `description` → `progress` → `meta` → `stepper` → `value` → `actions` → `chevron` → `details` → `list`. Inherits: `row`, `tile`.
+A menu row: icon or image, title and description, progress, meta, a stepper or value, actions. Anatomy: `image` → `icon` → `body` → `title` → `description` → `progress` → `meta` → `stepper` → `value` → `actions` → `chevron` → `details` → `list`. Inherits: `row`, `control`.
 
 | Lever | Type | Default | Range / values | What it moves |
 |---|---|---|---|---|
@@ -814,7 +813,7 @@ A menu row: icon or image, title and description, progress, meta, a stepper or v
 
 ### selection
 
-The one sliding selection tile per list (nk-indicator, SelectionTile). Anatomy: `tile`. Inherits: `tile`.
+The one sliding selection tile per list (nk-indicator, Selection). Anatomy: `glyph`. Inherits: `control`.
 
 | Lever | Type | Default | Range / values | What it moves |
 |---|---|---|---|---|
@@ -909,7 +908,7 @@ One row of a game form: a label row over (or beside) the control, then a descrip
 
 ### stepper
 
-A value between two keycaps; held, it repeats. Anatomy: `tile` → `value`. Inherits: `tile`.
+A value between two keycaps; held, it repeats. Anatomy: `glyph` → `value`. Inherits: `control`.
 
 | Lever | Type | Default | Range / values | What it moves |
 |---|---|---|---|---|
@@ -918,7 +917,7 @@ A value between two keycaps; held, it repeats. Anatomy: `tile` → `value`. Inhe
 
 ### text
 
-Rich text with inline keycaps. Anatomy: `key`. Inherits: `tile`.
+Rich text with inline keycaps. Anatomy: `key`. Inherits: `control`.
 
 | Lever | Type | Default | Range / values | What it moves |
 |---|---|---|---|---|
@@ -926,7 +925,7 @@ Rich text with inline keycaps. Anatomy: `key`. Inherits: `tile`.
 
 ### notice
 
-A notice / toast: a Tile icon, a title, a description, a time line. Anatomy: `stack` → `item` → `icon` → `item-tile` → `title` → `description` → `item-name` → `item-delta` → `time`. Inherits: `tile`, `panel`.
+A notice / toast: a Glyph icon, a title, a description, a time line. Anatomy: `stack` → `item` → `icon` → `item-tile` → `title` → `description` → `item-name` → `item-delta` → `time`. Inherits: `control`, `panel`.
 
 | Lever | Type | Default | Range / values | What it moves |
 |---|---|---|---|---|
@@ -975,7 +974,7 @@ A modal question or form over the current surface: stock Dialog or AlertDialog o
 
 ### empty-state
 
-What a list, a search or a screen shows when there is nothing (or something went wrong): an icon, a title, one sentence, an action. Anatomy: `header` → `icon` → `title` → `description` → `actions`. Inherits: `tile`.
+What a list, a search or a screen shows when there is nothing (or something went wrong): an icon, a title, one sentence, an action. Anatomy: `header` → `icon` → `title` → `description` → `actions`. Inherits: `control`.
 
 | Lever | Type | Default | Range / values | What it moves |
 |---|---|---|---|---|
@@ -998,7 +997,7 @@ What a list, a search or a screen shows when there is nothing (or something went
 
 ### radial-menu
 
-The action wheel: SVG wedges, one lit wedge turned to the pointed item, items on a ring, a centre that goes back or closes. Anatomy: `wedge` → `indicator` → `item` → `label` → `dot` → `center` → `title`. Inherits: `panel`, `tile`.
+The action wheel: SVG wedges, one lit wedge turned to the pointed item, items on a ring, a centre that goes back or closes. Anatomy: `wedge` → `indicator` → `item` → `label` → `dot` → `center` → `title`. Inherits: `panel`, `control`.
 
 | Lever | Type | Default | Range / values | What it moves |
 |---|---|---|---|---|
@@ -1023,7 +1022,7 @@ The action wheel: SVG wedges, one lit wedge turned to the pointed item, items on
 
 ### selection-tabs
 
-Tabs and segmented choices as one list with one sliding keycap (the tabs-list, tabs-trigger and tabs-content slots are shadcn's). Anatomy: `list` → `trigger`. Inherits: `selection`, `list`, `tile`.
+Tabs and segmented choices as one list with one sliding keycap (the tabs-list, tabs-trigger and tabs-content slots are shadcn's). Anatomy: `list` → `trigger`. Inherits: `selection`, `list`, `control`.
 
 | Lever | Type | Default | Range / values | What it moves |
 |---|---|---|---|---|
@@ -1039,7 +1038,7 @@ Always-on HUD chips and tiles on the game (nk-chip, nk-hud). Anatomy: `icon` →
 | Lever | Type | Default | Range / values | What it moves |
 |---|---|---|---|---|
 | `--nk-chip-height` | length | `var(--nk-height-chip)` |  | Height |
-| `--nk-chip-tile-size` | length | `3rem` |  | A tile chip's box |
+| `--nk-chip-square-size` | length | `3rem` |  | A tile chip's box |
 | `--nk-chip-padding` | length | `calc(var(--nk-space-unit) * 2.5)` |  | Inline padding |
 | `--nk-chip-radius` | length | `var(--nk-radius-chip)` |  | Radius |
 | `--nk-chip-hud-radius` | length | `max(0.25rem, calc(var(--radius) - 0.125rem))` |  | A square HUD tile's radius (hotbar, target eye) |
@@ -1053,19 +1052,19 @@ Always-on HUD chips and tiles on the game (nk-chip, nk-hud). Anatomy: `icon` →
 | `--nk-chip-clip` | string | `var(--nk-line-clip-sm)` |  | The chip's clip-path |
 | `--nk-chip-text-shadow` | shadow | `var(--nk-depth-text)` |  | Text drawn on the game |
 | `--nk-chip-icon-size` | length | `0.875rem` |  | A pill chip's icon |
-| `--nk-chip-icon-size-tile` | length | `1.25rem` |  | A tile chip's icon |
+| `--nk-chip-icon-size-square` | length | `1.25rem` |  | A tile chip's icon |
 
 State: `--nk-chip-tone`, `--nk-chip-tone-rgb`.
 
 ### vital-chip
 
-One vital: a Tile, its level, its icon, and the tag that slides out from behind it. Anatomy: `row` → `shape` → `plate` → `wall` → `tile` → `track` → `level` → `liquid` → `line` → `activefill` → `lit` → `icon` → `icon-ink` → `glyph` → `label` → `name` → `pop`. Inherits: `tile`.
+One vital: a Glyph, its level, its icon, and the tag that slides out from behind it. Anatomy: `row` → `shape` → `plate` → `wall` → `face` → `track` → `level` → `liquid` → `line` → `activefill` → `lit` → `icon` → `icon-ink` → `glyph` → `label` → `name` → `pop`. Inherits: `control`.
 
 | Lever | Type | Default | Range / values | What it moves |
 |---|---|---|---|---|
 | `--nk-vital-chip-size` | length | `2.125rem` |  | The chip's box |
 | `--nk-vital-chip-size-sm` | length | `1.625rem` |  | A small chip's box (telltales, compass marks) |
-| `--nk-vital-chip-tile-ratio` | number | `0.94` | 0.5–1 | The face as a fraction of the box |
+| `--nk-vital-chip-glyph-ratio` | number | `0.94` | 0.5–1 | The face as a fraction of the box |
 | `--nk-vital-chip-icon-ratio` | number | `0.52` | 0.2–1 | The icon as a fraction of the face |
 | `--nk-vital-chip-label-size` | length | `0.9375rem` |  | The tag's text size |
 | `--nk-vital-chip-label-gap` | length | `1rem` |  | Between the face and the tag's text |
@@ -1137,20 +1136,20 @@ The speedometer: a segmented arc and rolling digits. Anatomy: `readout` → `spe
 
 ### level
 
-How a level is drawn under style.level and style.hold (pips, the hold ring, the ink over a solid fill). Anatomy: `pip` → `hold` → `fill`. Inherits: `tile`.
+How a level is drawn under style.level and style.hold (pips, the hold ring, the ink over a solid fill). Anatomy: `pip` → `hold` → `fill`. Inherits: `control`.
 
 | Lever | Type | Default | Range / values | What it moves |
 |---|---|---|---|---|
 | `--nk-level-pip-size` | length | `10%` |  | One pip's width (10% = ten pips) |
 | `--nk-level-pip-gap` | length | `2px` |  | Between pips |
 | `--nk-level-hold-pad` | length | `2px` |  | The hold ring's thickness around a key |
-| `--nk-level-fill-ink` | color | `var(--nk-tile-face-confirm-ink)` |  | An icon's copy over a solid fill (vital chips, HUD keys): dark on the fill |
+| `--nk-level-fill-ink` | color | `var(--nk-control-face-confirm-ink)` |  | An icon's copy over a solid fill (vital chips, HUD keys): dark on the fill |
 
 State: `--nk-level-fill-now`, `--nk-level-fill-opacity`.
 
 ### slab
 
-Transient feedback on the game: item, prompt, progress, band (nk-slab*). Anatomy: `tile` → `delta` → `key` → `stack` → `line` → `band` → `band-title`. Inherits: `chip`, `tile`, `meter`.
+Transient feedback on the game: item, prompt, progress, band (nk-slab*). Anatomy: `icon` → `delta` → `key` → `stack` → `line` → `band` → `band-title`. Inherits: `chip`, `control`, `meter`.
 
 | Lever | Type | Default | Range / values | What it moves |
 |---|---|---|---|---|
@@ -1166,10 +1165,10 @@ Transient feedback on the game: item, prompt, progress, band (nk-slab*). Anatomy
 | `--nk-slab-weight` | string | `var(--nk-type-weight-strong)` |  | Text weight |
 | `--nk-slab-text-shadow` | shadow | `none` |  | Text shadow on the plate |
 | `--nk-slab-tone` | string | `var(--brand-rgb)` |  | The accent's channels (a screen sets it per state on any ancestor) |
-| `--nk-slab-tile-size` | length | `calc(var(--nk-slab-height) - var(--nk-space-unit) * 2)` |  | The icon tile's size |
-| `--nk-slab-tile-bg` | color | `rgba(var(--hud-foreground-rgb), 0.1)` |  | The icon tile |
-| `--nk-slab-tile-fg` | color | `var(--nk-slab-fg)` |  | The icon |
-| `--nk-slab-tile-radius` | length | `max(0.125rem, calc(var(--nk-slab-radius) - var(--nk-space-unit)))` |  | The icon tile's radius |
+| `--nk-slab-icon-size` | length | `calc(var(--nk-slab-height) - var(--nk-space-unit) * 2)` |  | The icon tile's size |
+| `--nk-slab-icon-bg` | color | `rgba(var(--hud-foreground-rgb), 0.1)` |  | The icon tile |
+| `--nk-slab-icon-fg` | color | `var(--nk-slab-fg)` |  | The icon |
+| `--nk-slab-icon-radius` | length | `max(0.125rem, calc(var(--nk-slab-radius) - var(--nk-space-unit)))` |  | The icon tile's radius |
 | `--nk-slab-delta-font` | string | `var(--nk-type-num-family)` |  | A delta's face |
 | `--nk-slab-delta-up` | color | `var(--world-success)` |  | A gain |
 | `--nk-slab-delta-down` | color | `var(--world-destructive)` |  | A loss |
@@ -1192,7 +1191,7 @@ State: `--nk-slab-fill`, `--nk-slab-stroke`, `--nk-slab-progress`, `--nk-slab-li
 
 ### item-slot
 
-An inventory slot. Anatomy: `top` → `corner` → `right` → `label` → `durability`. Inherits: `tile`.
+An inventory slot. Anatomy: `top` → `corner` → `right` → `label` → `durability`. Inherits: `control`.
 
 | Lever | Type | Default | Range / values | What it moves |
 |---|---|---|---|---|
@@ -1205,7 +1204,7 @@ An inventory slot. Anatomy: `top` → `corner` → `right` → `label` → `dura
 
 ### key-prompt
 
-A key and its verb (E Open), with a hold. Anatomy: `keys` → `key` → `icon` → `text` → `label` → `description` → `hold` → `stack`. Inherits: `tile`, `row`.
+A key and its verb (E Open), with a hold. Anatomy: `keys` → `key` → `icon` → `text` → `label` → `description` → `hold` → `stack`. Inherits: `control`, `row`.
 
 | Lever | Type | Default | Range / values | What it moves |
 |---|---|---|---|---|
@@ -1220,7 +1219,7 @@ A key and its verb (E Open), with a hold. Anatomy: `keys` → `key` → `icon` �
 
 ### skill-check
 
-A skill check: a rotor, a zone, a key. Anatomy: `ticks` → `zone` → `rotor` → `needle` → `key`. Inherits: `tile`.
+A skill check: a rotor, a zone, a key. Anatomy: `ticks` → `zone` → `rotor` → `needle` → `key`. Inherits: `control`.
 
 | Lever | Type | Default | Range / values | What it moves |
 |---|---|---|---|---|

@@ -3,7 +3,7 @@ import { length, number, ref, type ComponentDef } from "../lang";
 
 export const radialMenu: ComponentDef = {
   description: "The action wheel: SVG wedges, one lit wedge turned to the pointed item, items on a ring, a centre that goes back or closes",
-  inherits: ["panel", "tile"],
+  inherits: ["panel", "control"],
   anatomy: ["wedge", "indicator", "item", "label", "dot", "center", "title"],
   levers: {
     size: length("20rem", "The wheel's diameter (the size prop overrides it)", { floor: true }),

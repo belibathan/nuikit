@@ -4375,7 +4375,7 @@
     {
       "name": "action-bar",
       "title": "Action bar",
-      "doc": "The one hint, close and back pattern (tokens 1.5): an optional plate, items gap-items apart, each keys (Tile sm) or an icon plus a label, a button when it acts, with a hold level.",
+      "doc": "The one hint, close and back pattern (tokens 1.5): an optional plate, items gap-items apart, each keys (Glyph sm) or an icon plus a label, a button when it acts, with a hold level.",
       "since": "unreleased",
       "status": "stable",
       "kind": "component",
@@ -4409,6 +4409,15 @@
       "system": "foundations"
     },
     {
+      "name": "glyph",
+      "title": "Glyph",
+      "doc": "The one key language (tokens 1.5): a face with a rim and top light on a solid plate, slanted by --nk-control-skew while the box stays upright.",
+      "since": "unreleased",
+      "status": "stable",
+      "kind": "component",
+      "system": "foundations"
+    },
+    {
       "name": "panel",
       "title": "Panel",
       "doc": "The one floating surface: nk-panel with a header (title, description, actions, optional tabs row), a scrolling body and a footer.",
@@ -4421,15 +4430,6 @@
       "name": "text-roll",
       "title": "Text Roll",
       "doc": "A short text that changes like a slot reel: the old value rolls out and the new one in, masked to the line, with direction and per-character stagger; NumberRoll rolls each digit on its own (money, speed, ammo, clocks).",
-      "since": "unreleased",
-      "status": "stable",
-      "kind": "component",
-      "system": "foundations"
-    },
-    {
-      "name": "tile",
-      "title": "Tile",
-      "doc": "The one key language (tokens 1.5): a face with a rim and top light on a solid plate, slanted by --nk-tile-skew while the box stays upright.",
       "since": "unreleased",
       "status": "stable",
       "kind": "component",
@@ -4456,7 +4456,7 @@
     {
       "name": "speedometer",
       "title": "Speedometer",
-      "doc": "The in-game vehicle gauge on a Dial: thick rpm segments with even gaps (or a thin arc), the redline, the speed with its leading zeros dimmed, a gear Tile in the opening, fuel as outer segments and the turn signals; speedometerPainter() for live writes.",
+      "doc": "The in-game vehicle gauge on a Dial: thick rpm segments with even gaps (or a thin arc), the redline, the speed with its leading zeros dimmed, a gear Glyph in the opening, fuel as outer segments and the turn signals; speedometerPainter() for live writes.",
       "since": "0.3.0",
       "status": "stable",
       "kind": "component",
@@ -4465,7 +4465,7 @@
     {
       "name": "vital-chip",
       "title": "Vital Chip",
-      "doc": "The HUD status chip as composable parts (Root, Shape, Level, Icon, Label, Glyph, Pop): the in-game keycap by default (a Tile face over a plate that slides out with the label, the level as a liquid in the face, white when active), or one SVG path per shape (auto, square, rounded, circle, diamond, hex, chamfer); level fill/outline/bar/none; a pop with the signed change.",
+      "doc": "The HUD status chip as composable parts (Root, Shape, Level, Icon, Label, Glyph, Pop): the in-game keycap by default (a Glyph face over a plate that slides out with the label, the level as a liquid in the face, white when active), or one SVG path per shape (auto, square, rounded, circle, diamond, hex, chamfer); level fill/outline/bar/none; a pop with the signed change.",
       "since": "unreleased",
       "status": "stable",
       "kind": "component",
@@ -4474,7 +4474,7 @@
     {
       "name": "menu-row",
       "title": "Menu Row",
-      "doc": "The 40px action row: icon, label, description, a progress bar in any tone or colour, and a trailing meta, chevron, kbd trail (one key or several, Tile Kbds), checkbox or value stepper; as=\"div\" for a focusable div with the row look.",
+      "doc": "The 40px action row: icon, label, description, a progress bar in any tone or colour, and a trailing meta, chevron, kbd trail (one key or several, Glyph Kbds), checkbox or value stepper; as=\"div\" for a focusable div with the row look.",
       "since": "0.5.0",
       "status": "stable",
       "kind": "component",
@@ -4490,18 +4490,18 @@
       "system": "menus"
     },
     {
-      "name": "selection-tabs",
-      "title": "Selection Tabs",
-      "doc": "shadcn Tabs with one SelectionTile sliding to the active trigger (FLIP on --nk-indicator-time/-ease), the lit trigger the keycap tile, triggers --nk-list-gap apart, arrows move it, reduced motion jumps.",
+      "name": "selection",
+      "title": "Selection Glyph",
+      "doc": "The one selection mark of a list, tabs or a menu: the primary keycap's face and wall (--nk-control-*) as one element that slides to the lit item by transform, its size by a measured FLIP.",
       "since": "unreleased",
       "status": "stable",
       "kind": "component",
       "system": "menus"
     },
     {
-      "name": "selection-tile",
-      "title": "Selection Tile",
-      "doc": "The one selection mark of a list, tabs or a menu: the primary keycap's face and wall (--nk-tile-*) as one element that slides to the lit item by transform, its size by a measured FLIP.",
+      "name": "selection-tabs",
+      "title": "Selection Tabs",
+      "doc": "shadcn Tabs with one Selection sliding to the active trigger (FLIP on --nk-indicator-time/-ease), the lit trigger the keycap tile, triggers --nk-list-gap apart, arrows move it, reduced motion jumps.",
       "since": "unreleased",
       "status": "stable",
       "kind": "component",

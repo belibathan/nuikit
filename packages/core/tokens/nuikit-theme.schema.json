@@ -899,7 +899,7 @@
         },
         "font-display": {
           "type": "string",
-          "description": "Anything scanned: keys, titles, labels, captions",
+          "description": "Anything scanned: keys, titles, labels, captions (the body face unless a theme says otherwise)",
           "$comment": "identity · font.display"
         },
         "font-numeric": {
@@ -1087,7 +1087,7 @@
         },
         "nk-shape-skew": {
           "type": "string",
-          "description": "The keycap's slant: tile faces, the primary button, the selection (their boxes and text stay upright); at most ±20deg",
+          "description": "The slant of faces (keys, the primary button, the selection; boxes and text stay upright): 0 = upright, at most ±20deg",
           "$comment": "identity · shape.skew"
         },
         "nk-shape-slab": {
@@ -2059,208 +2059,208 @@
           "description": "Between cells",
           "$comment": "component · grid.gap"
         },
-        "nk-tile-plate-color": {
+        "nk-control-plate-color": {
           "type": "string",
           "pattern": "^rgba?\\(",
           "description": "The solid plate behind the face",
-          "$comment": "component · tile.plate.color"
+          "$comment": "component · control.plate.color"
         },
-        "nk-tile-plate-dim": {
+        "nk-control-plate-dim": {
           "type": "string",
           "pattern": "^rgba?\\(",
           "description": "The plate on the HUD",
-          "$comment": "component · tile.plate.dim"
+          "$comment": "component · control.plate.dim"
         },
-        "nk-tile-plate-x": {
+        "nk-control-plate-x": {
           "type": "string",
           "description": "How far the plate sits right of the face (0 = none)",
-          "$comment": "component · tile.plate.x"
+          "$comment": "component · control.plate.x"
         },
-        "nk-tile-plate-y": {
+        "nk-control-plate-y": {
           "type": "string",
-          "description": "How far the plate sits below the face",
-          "$comment": "component · tile.plate.y"
+          "description": "How far the plate sits below the face (0 = none)",
+          "$comment": "component · control.plate.y"
         },
-        "nk-tile-plate-press": {
+        "nk-control-plate-press": {
           "type": "string",
           "description": "How far a held tile presses toward its plate",
-          "$comment": "component · tile.plate.press"
+          "$comment": "component · control.plate.press"
         },
-        "nk-tile-wall-height": {
+        "nk-control-wall-height": {
           "type": "string",
-          "description": "How far the face sits above its wall (the primary button, the selection)",
-          "$comment": "component · tile.wall.height"
+          "description": "How far the face sits above its wall (0 = flat; the primary button, the selection)",
+          "$comment": "component · control.wall.height"
         },
-        "nk-tile-wall-shade": {
+        "nk-control-wall-shade": {
           "type": "string",
           "pattern": "^-?\\d+(\\.\\d+)?$",
           "description": "How dark the wall is (the scrim over the face colour)",
-          "$comment": "component · tile.wall.shade"
+          "$comment": "component · control.wall.shade"
         },
-        "nk-tile-face-color": {
+        "nk-control-face-color": {
           "type": "string",
           "pattern": "^rgba?\\(",
           "description": "The face",
-          "$comment": "component · tile.face.color"
+          "$comment": "component · control.face.color"
         },
-        "nk-tile-face-ink": {
+        "nk-control-face-ink": {
           "type": "string",
           "pattern": "^rgba?\\(",
           "description": "The legend's colour on the face",
-          "$comment": "component · tile.face.ink"
+          "$comment": "component · control.face.ink"
         },
-        "nk-tile-face-light": {
+        "nk-control-face-light": {
           "type": "string",
           "pattern": "^rgba?\\(",
-          "description": "The face's top hairline",
-          "$comment": "component · tile.face.light"
+          "description": "The face's top hairline (transparent = flat)",
+          "$comment": "component · control.face.light"
         },
-        "nk-tile-face-shade": {
+        "nk-control-face-shade": {
           "type": "string",
           "pattern": "^rgba?\\(",
           "description": "The face's bottom inner shade",
-          "$comment": "component · tile.face.shade"
+          "$comment": "component · control.face.shade"
         },
-        "nk-tile-face-rim": {
+        "nk-control-face-rim": {
           "type": "string",
           "pattern": "^rgba?\\(",
           "description": "The face's rim",
-          "$comment": "component · tile.face.rim"
+          "$comment": "component · control.face.rim"
         },
-        "nk-tile-face-rim-focus": {
+        "nk-control-face-rim-focus": {
           "type": "string",
           "pattern": "^rgba?\\(",
           "description": "The rim while lit",
-          "$comment": "component · tile.face.rim-focus"
+          "$comment": "component · control.face.rim-focus"
         },
-        "nk-tile-face-radius": {
+        "nk-control-face-radius": {
           "type": "string",
           "description": "The face's radius",
-          "$comment": "component · tile.face.radius"
+          "$comment": "component · control.face.radius"
         },
-        "nk-tile-face-skew": {
+        "nk-control-face-skew": {
           "type": "string",
           "description": "The face's slant (the box stays upright)",
-          "$comment": "component · tile.face.skew"
+          "$comment": "component · control.face.skew"
         },
-        "nk-tile-face-shadow": {
+        "nk-control-face-shadow": {
           "type": "string",
           "description": "The face's inner light and shade",
-          "$comment": "component · tile.face.shadow"
+          "$comment": "component · control.face.shadow"
         },
-        "nk-tile-face-clip": {
+        "nk-control-face-clip": {
           "type": "string",
           "description": "The face's clip-path (the chamfer)",
-          "$comment": "component · tile.face.clip"
+          "$comment": "component · control.face.clip"
         },
-        "nk-tile-face-confirm": {
+        "nk-control-face-confirm": {
           "type": "string",
           "pattern": "^rgba?\\(",
           "description": "The face when confirmed",
-          "$comment": "component · tile.face.confirm"
+          "$comment": "component · control.face.confirm"
         },
-        "nk-tile-face-confirm-ink": {
+        "nk-control-face-confirm-ink": {
           "type": "string",
           "pattern": "^rgba?\\(",
           "description": "The legend when confirmed",
-          "$comment": "component · tile.face.confirm-ink"
+          "$comment": "component · control.face.confirm-ink"
         },
-        "nk-tile-face-active": {
+        "nk-control-face-active": {
           "type": "string",
           "description": "The face of an active tile (the mic while talking, N on the compass, a checked box)",
-          "$comment": "component · tile.face.active"
+          "$comment": "component · control.face.active"
         },
-        "nk-tile-face-hold": {
+        "nk-control-face-hold": {
           "type": "string",
           "pattern": "^rgba?\\(",
           "description": "The hold fill over the face",
-          "$comment": "component · tile.face.hold"
+          "$comment": "component · control.face.hold"
         },
-        "nk-tile-legend-font": {
+        "nk-control-legend-font": {
           "type": "string",
           "description": "The legend's face",
-          "$comment": "component · tile.legend.font"
+          "$comment": "component · control.legend.font"
         },
-        "nk-tile-legend-weight": {
+        "nk-control-legend-weight": {
           "type": "string",
           "pattern": "^-?\\d+(\\.\\d+)?$",
           "description": "The legend's weight",
-          "$comment": "component · tile.legend.weight"
+          "$comment": "component · control.legend.weight"
         },
-        "nk-tile-legend-pad": {
+        "nk-control-legend-pad": {
           "type": "string",
           "description": "The italic overhang split to both sides",
-          "$comment": "component · tile.legend.pad"
+          "$comment": "component · control.legend.pad"
         },
-        "nk-tile-legend-shift": {
+        "nk-control-legend-shift": {
           "type": "string",
           "description": "A nudge for a leaning face",
-          "$comment": "component · tile.legend.shift"
+          "$comment": "component · control.legend.shift"
         },
-        "nk-tile-legend-gap": {
+        "nk-control-legend-gap": {
           "type": "string",
           "description": "Between a tile's glyphs",
-          "$comment": "component · tile.legend.gap"
+          "$comment": "component · control.legend.gap"
         },
-        "nk-tile-legend-inset": {
+        "nk-control-legend-inset": {
           "type": "string",
           "description": "The legend's inline padding",
-          "$comment": "component · tile.legend.inset"
+          "$comment": "component · control.legend.inset"
         },
-        "nk-tile-tag-delay": {
+        "nk-control-tag-delay": {
           "type": "string",
           "description": "The tag opens this long after the tile lands",
-          "$comment": "component · tile.tag.delay"
+          "$comment": "component · control.tag.delay"
         },
-        "nk-tile-key-color": {
+        "nk-control-primary-color": {
           "type": "string",
           "pattern": "^rgba?\\(",
           "description": "The keycap face under style.fill solid (the primary button, the lit row, the active tab)",
-          "$comment": "component · tile.key.color"
+          "$comment": "component · control.primary.color"
         },
-        "nk-tile-key-ink": {
+        "nk-control-primary-ink": {
           "type": "string",
           "pattern": "^rgba?\\(",
           "description": "Text on the keycap face",
-          "$comment": "component · tile.key.ink"
+          "$comment": "component · control.primary.ink"
         },
-        "nk-tile-key-rim": {
+        "nk-control-primary-rim": {
           "type": "string",
           "pattern": "^rgba?\\(",
           "description": "The keycap face's rim (transparent = none)",
-          "$comment": "component · tile.key.rim"
+          "$comment": "component · control.primary.rim"
         },
-        "nk-tile-key-radius": {
+        "nk-control-primary-radius": {
           "type": "string",
           "description": "The keycap's radius",
-          "$comment": "component · tile.key.radius"
+          "$comment": "component · control.primary.radius"
         },
-        "nk-tile-key-tint": {
+        "nk-control-primary-tint": {
           "type": "string",
           "pattern": "^-?\\d+(\\.\\d+)?$",
           "description": "The face's opacity under style.fill soft",
-          "$comment": "component · tile.key.tint"
+          "$comment": "component · control.primary.tint"
         },
-        "nk-tile-key-inset": {
+        "nk-control-primary-inset": {
           "type": "string",
           "description": "How far a selection tile sits in from its item's sides (room for the skew)",
-          "$comment": "component · tile.key.inset"
+          "$comment": "component · control.primary.inset"
         },
-        "nk-tile-key-lift": {
+        "nk-control-primary-lift": {
           "type": "string",
           "description": "How far the face rises on hover and focus",
-          "$comment": "component · tile.key.lift"
+          "$comment": "component · control.primary.lift"
         },
-        "nk-tile-key-press": {
+        "nk-control-primary-press": {
           "type": "string",
           "pattern": "^-?\\d+(\\.\\d+)?$",
           "description": "How far a pressed keycap sinks, as a fraction of its wall",
-          "$comment": "component · tile.key.press"
+          "$comment": "component · control.primary.press"
         },
-        "nk-tile-key-overhang": {
+        "nk-control-primary-overhang": {
           "type": "string",
           "description": "How far a row's selection tile reaches past its text",
-          "$comment": "component · tile.key.overhang"
+          "$comment": "component · control.primary.overhang"
         },
         "nk-panel-bg": {
           "type": "string",
@@ -3214,10 +3214,10 @@
           "description": "Height",
           "$comment": "component · chip.height"
         },
-        "nk-chip-tile-size": {
+        "nk-chip-square-size": {
           "type": "string",
           "description": "A tile chip's box",
-          "$comment": "component · chip.tile-size"
+          "$comment": "component · chip.square-size"
         },
         "nk-chip-padding": {
           "type": "string",
@@ -3288,10 +3288,10 @@
           "description": "A pill chip's icon",
           "$comment": "component · chip.icon.size"
         },
-        "nk-chip-icon-size-tile": {
+        "nk-chip-icon-size-square": {
           "type": "string",
           "description": "A tile chip's icon",
-          "$comment": "component · chip.icon.size-tile"
+          "$comment": "component · chip.icon.size-square"
         },
         "nk-vital-chip-size": {
           "type": "string",
@@ -3303,11 +3303,11 @@
           "description": "A small chip's box (telltales, compass marks)",
           "$comment": "component · vital-chip.size-sm"
         },
-        "nk-vital-chip-tile-ratio": {
+        "nk-vital-chip-glyph-ratio": {
           "type": "string",
           "pattern": "^-?\\d+(\\.\\d+)?$",
           "description": "The face as a fraction of the box",
-          "$comment": "component · vital-chip.tile.ratio"
+          "$comment": "component · vital-chip.glyph.ratio"
         },
         "nk-vital-chip-icon-ratio": {
           "type": "string",
@@ -3563,27 +3563,27 @@
           "description": "The accent's channels (a screen sets it per state on any ancestor)",
           "$comment": "component · slab.tone"
         },
-        "nk-slab-tile-size": {
+        "nk-slab-icon-size": {
           "type": "string",
           "description": "The icon tile's size",
-          "$comment": "component · slab.tile.size"
+          "$comment": "component · slab.icon.size"
         },
-        "nk-slab-tile-bg": {
+        "nk-slab-icon-bg": {
           "type": "string",
           "pattern": "^rgba?\\(",
           "description": "The icon tile",
-          "$comment": "component · slab.tile.bg"
+          "$comment": "component · slab.icon.bg"
         },
-        "nk-slab-tile-fg": {
+        "nk-slab-icon-fg": {
           "type": "string",
           "pattern": "^rgba?\\(",
           "description": "The icon",
-          "$comment": "component · slab.tile.fg"
+          "$comment": "component · slab.icon.fg"
         },
-        "nk-slab-tile-radius": {
+        "nk-slab-icon-radius": {
           "type": "string",
           "description": "The icon tile's radius",
-          "$comment": "component · slab.tile.radius"
+          "$comment": "component · slab.icon.radius"
         },
         "nk-slab-delta-font": {
           "type": "string",

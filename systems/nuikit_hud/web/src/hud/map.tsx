@@ -17,7 +17,7 @@ import { cardinal, setText } from "./util";
 import { TextRoll } from "@/components/ui/text-roll";
 import { calm, rollText } from "./reel";
 import { Keycap } from "./keycap";
-import { Tile } from "@/components/ui/tile";
+import { Glyph } from "@/components/ui/glyph";
 
 const CARDINALS = [
   { label: "N", at: 0 },
@@ -150,7 +150,7 @@ export function MapRing({ frame, start, compass = true, location, units, halo = 
             })}
           </div>
           <span data-slot="hud-heading" className="hud-map-heading" style={{ left: c, bottom: size + 0.875 * rem }} aria-label={headingText(start)}>
-            <Tile ref={readout} size="md" className="hud-num hud-map-heading-tile" />
+            <Glyph ref={readout} size="md" className="hud-num hud-map-heading-tile" />
           </span>
         </>
       )}

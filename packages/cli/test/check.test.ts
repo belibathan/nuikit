@@ -376,14 +376,14 @@ describe("ink rules", () => {
 
   it("asks a theme to stay in @layer nk.theme", () => {
     const { ink } = run({
-      "theme.css": [":root { --nk-tile-face-skew: -12deg; }", "@layer nk.theme {", "  [data-slot=\"tile\"][data-state=\"alert\"] { opacity: 0.8; }", "}", ".inv-key { color: var(--primary) !important; }"].join("\n") + "\n",
+      "theme.css": [":root { --nk-control-face-skew: -12deg; }", "@layer nk.theme {", "  [data-slot=\"tile\"][data-state=\"alert\"] { opacity: 0.8; }", "}", ".inv-key { color: var(--primary) !important; }"].join("\n") + "\n",
     });
     expect(ink).toEqual(["theme/values-only@theme.css:3", "theme/unlayered@theme.css:5", "theme/unlayered@theme.css:5"]);
   });
 
   it("asks a theme file to set values only (D4), and leaves the rule sheet in theme/ alone", () => {
     const { ink } = run({
-      "themes/mine.css": ["@import url(\"https://cfx-nui-nuikit/theme/default.css\");", ".dark { --nk-tile-face-skew: 0deg; --radius: 0rem; color: red; }", "@layer nk.theme {", "  [data-slot=\"tile\"] { border-radius: 0; }", "}"].join("\n") + "\n",
+      "themes/mine.css": ["@import url(\"https://cfx-nui-nuikit/theme/default.css\");", ".dark { --nk-control-face-skew: 0deg; --radius: 0rem; color: red; }", "@layer nk.theme {", "  [data-slot=\"tile\"] { border-radius: 0; }", "}"].join("\n") + "\n",
       "theme/mine.css": "@layer nk.theme {\n  [data-slot=\"tile\"][data-state=\"alert\"] { opacity: 0.8; }\n}\n",
     });
     expect(ink).toEqual(["theme/unlayered@themes/mine.css:2", "theme/values-only@themes/mine.css:4"]);

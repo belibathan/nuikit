@@ -6,27 +6,27 @@
 @layer nk.theme {
   /* a prompt's state reaches its keys: focus lights the rim, hold presses the cap, confirm turns it white */
   [data-slot="key-prompt"][data-state="focus"] [data-slot="kbd"] {
-    --nk-tile-now-rim: var(--nk-tile-face-rim-focus);
+    --nk-control-now-rim: var(--nk-control-face-rim-focus);
   }
   [data-slot="key-prompt"][data-state="hold"] [data-slot="kbd"] {
-    --nk-tile-now-rim: var(--nk-tile-face-rim-focus);
-    --nk-tile-x: var(--nk-tile-plate-press);
-    --nk-tile-y: var(--nk-tile-plate-press);
+    --nk-control-now-rim: var(--nk-control-face-rim-focus);
+    --nk-control-x: var(--nk-control-plate-press);
+    --nk-control-y: var(--nk-control-plate-press);
   }
   [data-slot="key-prompt"][data-state="confirm"] [data-slot="kbd"] {
-    --nk-tile-now-face: var(--nk-tile-face-confirm);
-    --nk-tile-now-ink: var(--nk-tile-face-confirm-ink);
-    color: var(--nk-tile-face-confirm-ink);
+    --nk-control-now-face: var(--nk-control-face-confirm);
+    --nk-control-now-ink: var(--nk-control-face-confirm-ink);
+    color: var(--nk-control-face-confirm-ink);
   }
 
-  /* the active tab is the kit's selection Tile (kit.css, Selection): no mark of its own */
+  /* the active tab is the kit's selection Glyph (kit.css, Selection): no mark of its own */
 
   /* a checked box is a small key: a hard plate straight below */
   [data-slot="checkbox"] {
     border-radius: var(--nk-radius-key);
   }
   [data-slot="checkbox"][data-state="checked"] {
-    box-shadow: 0 var(--nk-tile-plate-y) 0 var(--nk-tile-plate-color);
+    box-shadow: 0 var(--nk-control-plate-y) 0 var(--nk-control-plate-color);
   }
 
   /* slots: focus lifts by --nk-gesture-lift onto a white rim and a hard plate (a layer that fades in) */
@@ -41,7 +41,7 @@
     inset: 0;
     border-radius: inherit;
     pointer-events: none;
-    box-shadow: inset 0 0 0 1px var(--nk-tile-face-rim-focus), 0 var(--nk-tile-plate-y) 0 var(--nk-tile-plate-dim);
+    box-shadow: inset 0 0 0 1px var(--nk-control-face-rim-focus), 0 var(--nk-control-plate-y) 0 var(--nk-control-plate-dim);
     opacity: 0;
     transition: opacity var(--nk-time-base) var(--nk-ease-move);
   }

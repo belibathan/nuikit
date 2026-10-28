@@ -85,11 +85,11 @@ describe("composites", () => {
     expect(d.has('data-slot="dial-segment"', 'data-active="true"')).toBe(true)
   })
 
-  it("Speedometer is a segmented Dial, a gear Tile and a fuel Dial on the outer curve", () => {
+  it("Speedometer is a segmented Dial, a gear Glyph and a fuel Dial on the outer curve", () => {
     const d = dom(<Speedometer speed={80} rpm={0.95} gear={3} fuel={10} />)
     expect(d.has('data-slot="speedometer"', 'data-state="alert"')).toBe(true)
     expect(d.has('data-slot="dial-segment"', 'data-active="true"')).toBe(true)
-    expect(d.has('data-slot="tile"', 'data-part="speedometer-gear"', 'data-state="alert"')).toBe(true)
+    expect(d.has('data-slot="glyph"', 'data-part="speedometer-gear"', 'data-state="alert"')).toBe(true)
     expect(d.has('data-slot="dial"', 'data-part="speedometer-fuel"', 'data-state="alert"')).toBe(true)
     // the leading zero is dimmed
     expect(d.has('data-slot="speedometer-digit"', "data-dim")).toBe(true)
@@ -123,7 +123,7 @@ describe("composites", () => {
 })
 
 describe("VitalChip keycap (the in-game vitals)", () => {
-  it("is a Tile face over a sliding plate, the level a liquid in the face", () => {
+  it("is a Glyph face over a sliding plate, the level a liquid in the face", () => {
     const d = dom(
       <VitalChip.Root value={40} tone="health" open>
         <VitalChip.Shape>
@@ -133,7 +133,7 @@ describe("VitalChip keycap (the in-game vitals)", () => {
       </VitalChip.Root>
     )
     expect(d.has('data-slot="vital-chip"', 'data-shape="keycap"', "--level:0.4")).toBe(true)
-    expect(d.has('data-slot="tile"', 'data-part="vital-chip-face"', 'data-shape="square"')).toBe(true)
+    expect(d.has('data-slot="glyph"', 'data-part="vital-chip-face"', 'data-shape="square"')).toBe(true)
     expect(d.has('data-slot="vital-chip-plate"')).toBe(true)
     expect(d.has('data-slot="vital-chip-liquid"')).toBe(true)
     // the plate reads the name and the value
@@ -149,6 +149,6 @@ describe("VitalChip keycap (the in-game vitals)", () => {
       </VitalChip.Root>
     )
     expect(d.has('data-slot="vital-chip"', 'data-state="alert"', 'data-active="true"')).toBe(true)
-    expect(d.has('data-slot="tile"', 'data-state="alert"', 'data-active="true"')).toBe(true)
+    expect(d.has('data-slot="glyph"', 'data-state="alert"', 'data-active="true"')).toBe(true)
   })
 })

@@ -4,7 +4,7 @@
 [`next/dispatch.md`](next/dispatch.md). Direction: [`vision.md`](vision.md), [`architecture.md`](architecture.md).
 Rules: [`design.md`](design.md). Design calls: [`next/decisions.md`](next/decisions.md).*
 
-Last updated: Oct 28, 2026.
+Last updated: Oct 28, 2026 (flat baseline, Glyph and Selection, the Keycap theme).
 
 ## Released
 
@@ -31,8 +31,9 @@ screen or another spec: it is a second server, and whatever that server breaks.
 
 - **A second server.** One Qbox or QBCore server that is not the owner's installs nuikit from the zip and
   `install.md`, reports what the first ten minutes look like. Everything below reorders around what it finds.
-- **The owner's in-game checkpoint** on this week's changes: the template `garage` with the foundation helpers,
-  `nuikit_hud` (the handbrake light, the radar after a restart), the two-theme picker in Settings.
+- **The owner's in-game checkpoint** on this week's changes: the flat baseline on every screen (keys, rows, the
+  selection, the HUD's glyphs), the Keycap theme from the Settings picker, the template `garage` with the foundation
+  helpers, `nuikit_hud` (the handbrake light, the radar after a restart).
 - **Levers.** `kit.css` declares about 550 `--nk-*` properties and themes set 74. The ones nothing reads (the debt
   list in `registry/nuikit/test/levers.test.ts`, about 30 by a strict count) go: a spec edit in
   `packages/core/src/spec` plus `gen:tokens`. Not the ones only kit rules read: those are how a theme moves a rule.

@@ -6,7 +6,7 @@ export const chip: ComponentDef = {
   anatomy: ["icon", "count"],
   levers: {
     height: length(ref("height.chip"), "Height", { was: ["nk-chip-height"] }),
-    "tile-size": length("3rem", "A tile chip's box", { floor: true }),
+    "square-size": length("3rem", "A tile chip's box", { floor: true }),
     padding: length(css`calc(${ref("space.unit")} * 2.5)`, "Inline padding", { was: ["nk-chip-padding"] }),
     radius: length(ref("radius.chip"), "Radius", { was: ["nk-chip-radius"] }),
     "hud-radius": length(css`max(0.25rem, calc(${pal("radius")} - 0.125rem))`, "A square HUD tile's radius (hotbar, target eye)", { was: ["nk-hud-radius"] }),
@@ -20,7 +20,7 @@ export const chip: ComponentDef = {
     clip: string(ref("line.clip-sm"), "The chip's clip-path", { was: ["nk-chip-clip"] }),
     "text-shadow": shadow(ref("depth.text"), "Text drawn on the game", { was: ["nk-hud-text-shadow"] }),
   },
-  parts: { icon: { size: length("0.875rem", "A pill chip's icon", { floor: true }), "size-tile": length("1.25rem", "A tile chip's icon", { floor: true }) } },
+  parts: { icon: { size: length("0.875rem", "A pill chip's icon", { floor: true }), "size-square": length("1.25rem", "A tile chip's icon", { floor: true }) } },
   state: {
     tone: { type: "color", description: "A chip's tone", was: ["nk-chip-tone"] },
     "tone-rgb": { type: "string", description: "A chip's tone channels", was: ["nk-chip-tone-rgb"] },
@@ -102,7 +102,7 @@ export const speedometer: ComponentDef = {
 
 export const level: ComponentDef = {
   description: "How a level is drawn under style.level and style.hold (pips, the hold ring, the ink over a solid fill)",
-  inherits: ["tile"],
+  inherits: ["control"],
   anatomy: ["pip", "hold", "fill"],
   parts: {
     pip: {
@@ -110,7 +110,7 @@ export const level: ComponentDef = {
       gap: length("2px", "Between pips", { floor: true, was: ["nk-pip-gap"] }),
     },
     hold: { pad: length("2px", "The hold ring's thickness around a key", { floor: true, was: ["nk-hold-ring-pad"] }) },
-    fill: { ink: color(ref("tile.face.confirm-ink"), "An icon's copy over a solid fill (vital chips, HUD keys): dark on the fill", { was: ["nk-fill-ink"] }) },
+    fill: { ink: color(ref("control.face.confirm-ink"), "An icon's copy over a solid fill (vital chips, HUD keys): dark on the fill", { was: ["nk-fill-ink"] }) },
   },
   state: {
     "fill-now": { type: "color", description: "The fill colour this state shows", was: ["nk-fill-now"] },
@@ -120,8 +120,8 @@ export const level: ComponentDef = {
 
 export const slab: ComponentDef = {
   description: "Transient feedback on the game: item, prompt, progress, band (nk-slab*)",
-  inherits: ["chip", "tile", "meter"],
-  anatomy: ["tile", "delta", "key", "stack", "line", "band", "band-title"],
+  inherits: ["chip", "control", "meter"],
+  anatomy: ["icon", "delta", "key", "stack", "line", "band", "band-title"],
   levers: {
     height: length(css`calc(2.5rem * ${ref("density")})`, "Height", { was: ["nk-slab-height"] }),
     padding: string(css`0 calc(${ref("space.unit")} * 3)`, "Padding", { was: ["nk-slab-padding"] }),
@@ -137,11 +137,11 @@ export const slab: ComponentDef = {
     tone: string(pal("brand", "rgb"), "The accent's channels (a screen sets it per state on any ancestor)", { was: ["nk-slab-tone-rgb"] }),
   },
   parts: {
-    tile: {
-      size: length(css`calc(${ref("slab.height")} - ${ref("space.unit")} * 2)`, "The icon tile's size", { was: ["nk-slab-tile-size"] }),
-      bg: color(alpha("hud-foreground", 0.1), "The icon tile", { was: ["nk-slab-tile-bg"] }),
-      fg: color(ref("slab.fg"), "The icon", { was: ["nk-slab-tile-fg"] }),
-      radius: length(css`max(0.125rem, calc(${ref("slab.radius")} - ${ref("space.unit")}))`, "The icon tile's radius", { was: ["nk-slab-tile-radius"] }),
+    icon: {
+      size: length(css`calc(${ref("slab.height")} - ${ref("space.unit")} * 2)`, "The icon tile's size", { was: ["nk-slab-icon-size"] }),
+      bg: color(alpha("hud-foreground", 0.1), "The icon tile", { was: ["nk-slab-icon-bg"] }),
+      fg: color(ref("slab.fg"), "The icon", { was: ["nk-slab-icon-fg"] }),
+      radius: length(css`max(0.125rem, calc(${ref("slab.radius")} - ${ref("space.unit")}))`, "The icon tile's radius", { was: ["nk-slab-icon-radius"] }),
     },
     delta: {
       font: string(ref("type.num.family"), "A delta's face", { was: ["nk-slab-delta-font"] }),

@@ -6,7 +6,7 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn, nkLevel } from "@/lib/utils"
 import { Dial } from "@/components/ui/dial"
 import { toneVars } from "@/components/ui/fill"
-import { Kbd } from "@/components/ui/tile"
+import { Kbd } from "@/components/ui/glyph"
 import { useLinearRun } from "@/hooks/use-linear-run"
 
 /**
@@ -26,7 +26,7 @@ import { useLinearRun } from "@/hooks/use-linear-run"
  *
  * Role: the round half of the progress intent: a timed action or a level, on the game or a panel.
  * Anatomy: root (role="progressbar", --level) > Dial (sweep 360, a disc, segmented track and value segments)
- *   > center (the percentage, num voice) > label (label voice) > cancel (a Kbd Tile and its label; a button with onCancel).
+ *   > center (the percentage, num voice) > label (label voice) > cancel (a Kbd Glyph and its label; a button with onCancel).
  * Props: value, max, duration, onComplete, label, tone, hue, track, center, cancelKey, cancelLabel, onCancel, size.
  * Level means: the fraction done, 0 at the start, 1 when complete (data-complete).
  * Rules: tones use the shared vocabulary through toneVars() (danger = destructive), `hue` a role; a timed ring

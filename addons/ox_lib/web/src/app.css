@@ -175,7 +175,7 @@ html[data-nk-motion="reduced"] .ox-radial[data-state="open"] .ox-radial-svg {
 .ox-list-header {
   --nk-panel-title-size: calc(var(--nk-text-title) * 1.1);
 }
-/* The list menu's selection is the kit's SelectionTile (.ox-indicator): one Tile gliding between the rows,
+/* The list menu's selection is the kit's Selection (.ox-indicator): one Glyph gliding between the rows,
    which paint nothing of their own (kit.css, Selection). Its glide keeps the kit's key-repeat rule. */
 
 /* Modal dialogs (shadcn AlertDialog / Dialog): the game darkened with the theme's scrim, not black. */

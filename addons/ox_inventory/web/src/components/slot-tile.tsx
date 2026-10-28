@@ -1,5 +1,5 @@
 import { Chip } from "@/components/ui/chip";
-import { Kbd } from "@/components/ui/tile";
+import { Kbd } from "@/components/ui/glyph";
 import { useStaggerItem } from "nuikit-core/react";
 import { memo, useEffect, useRef, useState, type CSSProperties, type MouseEvent } from "react";
 import { ItemImage } from "@/components/item-image";

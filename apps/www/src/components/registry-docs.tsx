@@ -32,7 +32,7 @@ import { MenuRow, MenuRowList } from "@/components/ui/menu-row";
 import { NuiImage } from "@/components/ui/nui-image";
 import { SmoothInput, SmoothTextarea } from "@/components/ui/smooth-input";
 import { NumberRoll, TextRoll } from "@/components/ui/text-roll";
-import { Tile } from "@/components/ui/tile";
+import { Glyph } from "@/components/ui/glyph";
 import { VitalChip } from "@/components/ui/vital-chip";
 import type { SectionComponent } from "@/pages/components";
 import registry from "../../../../registry.json";
@@ -86,7 +86,7 @@ function Label({ children }: { children: ReactNode }) {
   return <p className="site-eyebrow mb-3 text-white/70">{children}</p>;
 }
 
-function TileDemo() {
+function GlyphDemo() {
   const left = useWalk(0.6, 0.05, 120);
   const [held, setHeld] = useState(false);
   return (
@@ -94,68 +94,68 @@ function TileDemo() {
       <div>
         <Label>Sizes and shapes</Label>
         <div className="flex items-end gap-3">
-          <Tile size="sm">E</Tile>
-          <Tile size="md">E</Tile>
-          <Tile size="lg">Esc</Tile>
-          <Tile size="lg" shape="square">
+          <Glyph size="sm">E</Glyph>
+          <Glyph size="md">E</Glyph>
+          <Glyph size="lg">Esc</Glyph>
+          <Glyph size="lg" shape="square">
             <KeyIcon />
-          </Tile>
+          </Glyph>
         </div>
       </div>
       <div>
         <Label>States</Label>
         <div className="flex items-end gap-3">
-          <Tile size="lg">F</Tile>
-          <Tile size="lg" state="focus">
+          <Glyph size="lg">F</Glyph>
+          <Glyph size="lg" state="focus">
             F
-          </Tile>
-          <Tile size="lg" state="hold" level={1 - left}>
+          </Glyph>
+          <Glyph size="lg" state="hold" level={1 - left}>
             F
-          </Tile>
-          <Tile size="lg" state="confirm">
+          </Glyph>
+          <Glyph size="lg" state="confirm">
             F
-          </Tile>
-          <Tile size="lg" state="alert" shape="square">
+          </Glyph>
+          <Glyph size="lg" state="alert" shape="square">
             <TriangleAlertIcon />
-          </Tile>
-          <Tile size="lg" state="disabled">
+          </Glyph>
+          <Glyph size="lg" state="disabled">
             F
-          </Tile>
-          <Tile size="lg" active>
+          </Glyph>
+          <Glyph size="lg" active>
             F
-          </Tile>
+          </Glyph>
         </div>
       </div>
       <div>
         <Label>Tone and hue</Label>
         <div className="flex items-end gap-3">
-          <Tile size="lg" shape="square" tone="success">
+          <Glyph size="lg" shape="square" tone="success">
             <ShieldIcon />
-          </Tile>
-          <Tile size="lg" shape="square" tone="warning">
+          </Glyph>
+          <Glyph size="lg" shape="square" tone="warning">
             <FuelIcon />
-          </Tile>
-          <Tile size="lg" shape="square" tone="danger">
+          </Glyph>
+          <Glyph size="lg" shape="square" tone="danger">
             <HeartPulseIcon />
-          </Tile>
-          <Tile size="lg" shape="square" hue="police">
+          </Glyph>
+          <Glyph size="lg" shape="square" hue="police">
             <RadioIcon />
-          </Tile>
-          <Tile size="lg" shape="square" hue="legendary">
+          </Glyph>
+          <Glyph size="lg" shape="square" hue="legendary">
             <PackageIcon />
-          </Tile>
+          </Glyph>
         </div>
       </div>
       <div>
         <Label>A tag (the plate extending right)</Label>
         <div className="flex flex-col items-start gap-3">
-          <Tile size="lg" tag="Open garage" land>
+          <Glyph size="lg" tag="Open garage" land>
             E
-          </Tile>
+          </Glyph>
           <button type="button" onPointerDown={() => setHeld(true)} onPointerUp={() => setHeld(false)} onPointerLeave={() => setHeld(false)} className="text-left">
-            <Tile size="lg" tag={held ? "Holding…" : "Press and hold me"} state={held ? "hold" : undefined}>
+            <Glyph size="lg" tag={held ? "Holding…" : "Press and hold me"} state={held ? "hold" : undefined}>
               G
-            </Tile>
+            </Glyph>
           </button>
         </div>
       </div>
@@ -410,8 +410,8 @@ function NuiImageDemo() {
 export function NewSections({ Section }: { Section: SectionComponent }) {
   return (
     <>
-      <Section name="tile" title="Tile" text="The one key language: keys, notice icons, tab marks, checked boxes, gears and telltales. A face slanted by --nk-tile-face-skew on a hard plate straight below it; sizes, shapes, states, tone and hue, a hold fill and a tag." stageClassName="items-start justify-start gap-10">
-        <TileDemo />
+      <Section name="glyph" title="Glyph" text="A legend on a small surface: keys, notice icons, checked boxes, gears and telltales. Sizes, shapes, states, tone and hue, a hold fill and a tag; a theme may slant it or set it on a wall (--nk-control-*)." stageClassName="items-start justify-start gap-10">
+        <GlyphDemo />
       </Section>
       <Section name="fill" title="Fill" text="Status as a level filling left to right: a track, a bar scaled from the left (transform only) and a bright leading edge. Hue, then tone, then --nk-fill-color; at or under the alert threshold it turns danger." stageClassName="items-center">
         <FillDemo />

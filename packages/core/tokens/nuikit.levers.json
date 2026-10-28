@@ -1659,8 +1659,8 @@
     },
     "display": {
       "$type": "fontFamily",
-      "$value": "\"Barlow Condensed\", \"Arial Narrow\", sans-serif",
-      "$description": "Anything scanned: keys, titles, labels, captions",
+      "$value": "Geist, Inter, \"Segoe UI\", system-ui, sans-serif",
+      "$description": "Anything scanned: keys, titles, labels, captions (the body face unless a theme says otherwise)",
       "$extensions": {
         "nuikit": {
           "tier": "identity",
@@ -1673,7 +1673,7 @@
     },
     "numeric": {
       "$type": "fontFamily",
-      "$value": "\"Barlow Condensed\", \"Arial Narrow\", sans-serif",
+      "$value": "Geist, Inter, \"Segoe UI\", system-ui, sans-serif",
       "$description": "Every number (always tabular)",
       "$extensions": {
         "nuikit": {
@@ -2187,8 +2187,8 @@
   "shape": {
     "skew": {
       "$type": "number",
-      "$value": "-12deg",
-      "$description": "The keycap's slant: tile faces, the primary button, the selection (their boxes and text stay upright); at most ±20deg",
+      "$value": "0deg",
+      "$description": "The slant of faces (keys, the primary button, the selection; boxes and text stay upright): 0 = upright, at most ±20deg",
       "$extensions": {
         "nuikit": {
           "tier": "identity",
@@ -2346,7 +2346,7 @@
       }
     },
     "case": {
-      "$value": "uppercase",
+      "$value": "none",
       "$description": "Anything scanned (keys, titles, labels, captions) in caps or as written",
       "$extensions": {
         "nuikit": {
@@ -2363,7 +2363,7 @@
       }
     },
     "slant": {
-      "$value": "italic",
+      "$value": "normal",
       "$description": "The scanned voices upright or italic (a real italic where the face has one)",
       "$extensions": {
         "nuikit": {
@@ -2381,7 +2381,7 @@
     },
     "overhang": {
       "$type": "dimension",
-      "$value": "0.15em",
+      "$value": "0em",
       "$description": "Trailing pad of a slanted voice (the italic's overhang); 0em when upright",
       "$extensions": {
         "nuikit": {
@@ -4727,7 +4727,7 @@
       }
     }
   },
-  "tile": {
+  "control": {
     "plate": {
       "color": {
         "$type": "color",
@@ -4736,23 +4736,23 @@
         "$extensions": {
           "nuikit": {
             "tier": "component",
-            "scope": "tile",
+            "scope": "control",
             "part": "plate",
-            "css": "--nk-tile-plate-color",
+            "css": "--nk-control-plate-color",
             "type": "color"
           }
         }
       },
       "dim": {
         "$type": "color",
-        "$value": "{tile.plate.color}",
+        "$value": "{control.plate.color}",
         "$description": "The plate on the HUD",
         "$extensions": {
           "nuikit": {
             "tier": "component",
-            "scope": "tile",
+            "scope": "control",
             "part": "plate",
-            "css": "--nk-tile-plate-dim",
+            "css": "--nk-control-plate-dim",
             "type": "color"
           }
         }
@@ -4764,23 +4764,23 @@
         "$extensions": {
           "nuikit": {
             "tier": "component",
-            "scope": "tile",
+            "scope": "control",
             "part": "plate",
-            "css": "--nk-tile-plate-x",
+            "css": "--nk-control-plate-x",
             "type": "length"
           }
         }
       },
       "y": {
         "$type": "dimension",
-        "$value": "2px",
-        "$description": "How far the plate sits below the face",
+        "$value": "0px",
+        "$description": "How far the plate sits below the face (0 = none)",
         "$extensions": {
           "nuikit": {
             "tier": "component",
-            "scope": "tile",
+            "scope": "control",
             "part": "plate",
-            "css": "--nk-tile-plate-y",
+            "css": "--nk-control-plate-y",
             "type": "length"
           }
         }
@@ -4792,9 +4792,9 @@
         "$extensions": {
           "nuikit": {
             "tier": "component",
-            "scope": "tile",
+            "scope": "control",
             "part": "plate",
-            "css": "--nk-tile-plate-press",
+            "css": "--nk-control-plate-press",
             "type": "length"
           }
         }
@@ -4803,14 +4803,14 @@
     "wall": {
       "height": {
         "$type": "dimension",
-        "$value": "0.1875rem",
-        "$description": "How far the face sits above its wall (the primary button, the selection)",
+        "$value": "0rem",
+        "$description": "How far the face sits above its wall (0 = flat; the primary button, the selection)",
         "$extensions": {
           "nuikit": {
             "tier": "component",
-            "scope": "tile",
+            "scope": "control",
             "part": "wall",
-            "css": "--nk-tile-wall-height",
+            "css": "--nk-control-wall-height",
             "type": "length"
           }
         }
@@ -4822,9 +4822,9 @@
         "$extensions": {
           "nuikit": {
             "tier": "component",
-            "scope": "tile",
+            "scope": "control",
             "part": "wall",
-            "css": "--nk-tile-wall-shade",
+            "css": "--nk-control-wall-shade",
             "type": "number",
             "range": [
               0,
@@ -4842,9 +4842,9 @@
         "$extensions": {
           "nuikit": {
             "tier": "component",
-            "scope": "tile",
+            "scope": "control",
             "part": "face",
-            "css": "--nk-tile-face-color",
+            "css": "--nk-control-face-color",
             "type": "color"
           }
         }
@@ -4856,23 +4856,23 @@
         "$extensions": {
           "nuikit": {
             "tier": "component",
-            "scope": "tile",
+            "scope": "control",
             "part": "face",
-            "css": "--nk-tile-face-ink",
+            "css": "--nk-control-face-ink",
             "type": "color"
           }
         }
       },
       "light": {
         "$type": "color",
-        "$value": "rgba(var(--popover-foreground-rgb), 0.16)",
-        "$description": "The face's top hairline",
+        "$value": "rgba(var(--popover-foreground-rgb), 0)",
+        "$description": "The face's top hairline (transparent = flat)",
         "$extensions": {
           "nuikit": {
             "tier": "component",
-            "scope": "tile",
+            "scope": "control",
             "part": "face",
-            "css": "--nk-tile-face-light",
+            "css": "--nk-control-face-light",
             "type": "color"
           }
         }
@@ -4884,9 +4884,9 @@
         "$extensions": {
           "nuikit": {
             "tier": "component",
-            "scope": "tile",
+            "scope": "control",
             "part": "face",
-            "css": "--nk-tile-face-shade",
+            "css": "--nk-control-face-shade",
             "type": "color"
           }
         }
@@ -4898,9 +4898,9 @@
         "$extensions": {
           "nuikit": {
             "tier": "component",
-            "scope": "tile",
+            "scope": "control",
             "part": "face",
-            "css": "--nk-tile-face-rim",
+            "css": "--nk-control-face-rim",
             "type": "color"
           }
         }
@@ -4912,9 +4912,9 @@
         "$extensions": {
           "nuikit": {
             "tier": "component",
-            "scope": "tile",
+            "scope": "control",
             "part": "face",
-            "css": "--nk-tile-face-rim-focus",
+            "css": "--nk-control-face-rim-focus",
             "type": "color"
           }
         }
@@ -4926,9 +4926,9 @@
         "$extensions": {
           "nuikit": {
             "tier": "component",
-            "scope": "tile",
+            "scope": "control",
             "part": "face",
-            "css": "--nk-tile-face-radius",
+            "css": "--nk-control-face-radius",
             "type": "length"
           }
         }
@@ -4940,23 +4940,23 @@
         "$extensions": {
           "nuikit": {
             "tier": "component",
-            "scope": "tile",
+            "scope": "control",
             "part": "face",
-            "css": "--nk-tile-face-skew",
+            "css": "--nk-control-face-skew",
             "type": "angle"
           }
         }
       },
       "shadow": {
         "$type": "shadow",
-        "$value": "inset 0 -1px 0 0 var(--nk-tile-face-shade), inset 0 1px 0 0 var(--nk-tile-face-light)",
+        "$value": "inset 0 -1px 0 0 var(--nk-control-face-shade), inset 0 1px 0 0 var(--nk-control-face-light)",
         "$description": "The face's inner light and shade",
         "$extensions": {
           "nuikit": {
             "tier": "component",
-            "scope": "tile",
+            "scope": "control",
             "part": "face",
-            "css": "--nk-tile-face-shadow",
+            "css": "--nk-control-face-shadow",
             "type": "shadow"
           }
         }
@@ -4967,9 +4967,9 @@
         "$extensions": {
           "nuikit": {
             "tier": "component",
-            "scope": "tile",
+            "scope": "control",
             "part": "face",
-            "css": "--nk-tile-face-clip",
+            "css": "--nk-control-face-clip",
             "type": "string"
           }
         }
@@ -4981,9 +4981,9 @@
         "$extensions": {
           "nuikit": {
             "tier": "component",
-            "scope": "tile",
+            "scope": "control",
             "part": "face",
-            "css": "--nk-tile-face-confirm",
+            "css": "--nk-control-face-confirm",
             "type": "color"
           }
         }
@@ -4995,9 +4995,9 @@
         "$extensions": {
           "nuikit": {
             "tier": "component",
-            "scope": "tile",
+            "scope": "control",
             "part": "face",
-            "css": "--nk-tile-face-confirm-ink",
+            "css": "--nk-control-face-confirm-ink",
             "type": "color"
           }
         }
@@ -5009,9 +5009,9 @@
         "$extensions": {
           "nuikit": {
             "tier": "component",
-            "scope": "tile",
+            "scope": "control",
             "part": "face",
-            "css": "--nk-tile-face-active",
+            "css": "--nk-control-face-active",
             "type": "paint"
           }
         }
@@ -5023,9 +5023,9 @@
         "$extensions": {
           "nuikit": {
             "tier": "component",
-            "scope": "tile",
+            "scope": "control",
             "part": "face",
-            "css": "--nk-tile-face-hold",
+            "css": "--nk-control-face-hold",
             "type": "color"
           }
         }
@@ -5039,9 +5039,9 @@
         "$extensions": {
           "nuikit": {
             "tier": "component",
-            "scope": "tile",
+            "scope": "control",
             "part": "legend",
-            "css": "--nk-tile-legend-font",
+            "css": "--nk-control-legend-font",
             "type": "font"
           }
         }
@@ -5053,9 +5053,9 @@
         "$extensions": {
           "nuikit": {
             "tier": "component",
-            "scope": "tile",
+            "scope": "control",
             "part": "legend",
-            "css": "--nk-tile-legend-weight",
+            "css": "--nk-control-legend-weight",
             "type": "number",
             "range": [
               100,
@@ -5071,9 +5071,9 @@
         "$extensions": {
           "nuikit": {
             "tier": "component",
-            "scope": "tile",
+            "scope": "control",
             "part": "legend",
-            "css": "--nk-tile-legend-pad",
+            "css": "--nk-control-legend-pad",
             "type": "length"
           }
         }
@@ -5085,9 +5085,9 @@
         "$extensions": {
           "nuikit": {
             "tier": "component",
-            "scope": "tile",
+            "scope": "control",
             "part": "legend",
-            "css": "--nk-tile-legend-shift",
+            "css": "--nk-control-legend-shift",
             "type": "length"
           }
         }
@@ -5099,9 +5099,9 @@
         "$extensions": {
           "nuikit": {
             "tier": "component",
-            "scope": "tile",
+            "scope": "control",
             "part": "legend",
-            "css": "--nk-tile-legend-gap",
+            "css": "--nk-control-legend-gap",
             "type": "length"
           }
         }
@@ -5113,9 +5113,9 @@
         "$extensions": {
           "nuikit": {
             "tier": "component",
-            "scope": "tile",
+            "scope": "control",
             "part": "legend",
-            "css": "--nk-tile-legend-inset",
+            "css": "--nk-control-legend-inset",
             "type": "length"
           }
         }
@@ -5129,15 +5129,15 @@
         "$extensions": {
           "nuikit": {
             "tier": "component",
-            "scope": "tile",
+            "scope": "control",
             "part": "tag",
-            "css": "--nk-tile-tag-delay",
+            "css": "--nk-control-tag-delay",
             "type": "time"
           }
         }
       }
     },
-    "key": {
+    "primary": {
       "color": {
         "$type": "color",
         "$value": "{palette.primary}",
@@ -5145,9 +5145,9 @@
         "$extensions": {
           "nuikit": {
             "tier": "component",
-            "scope": "tile",
-            "part": "key",
-            "css": "--nk-tile-key-color",
+            "scope": "control",
+            "part": "primary",
+            "css": "--nk-control-primary-color",
             "type": "color"
           }
         }
@@ -5159,9 +5159,9 @@
         "$extensions": {
           "nuikit": {
             "tier": "component",
-            "scope": "tile",
-            "part": "key",
-            "css": "--nk-tile-key-ink",
+            "scope": "control",
+            "part": "primary",
+            "css": "--nk-control-primary-ink",
             "type": "color"
           }
         }
@@ -5173,9 +5173,9 @@
         "$extensions": {
           "nuikit": {
             "tier": "component",
-            "scope": "tile",
-            "part": "key",
-            "css": "--nk-tile-key-rim",
+            "scope": "control",
+            "part": "primary",
+            "css": "--nk-control-primary-rim",
             "type": "color"
           }
         }
@@ -5187,9 +5187,9 @@
         "$extensions": {
           "nuikit": {
             "tier": "component",
-            "scope": "tile",
-            "part": "key",
-            "css": "--nk-tile-key-radius",
+            "scope": "control",
+            "part": "primary",
+            "css": "--nk-control-primary-radius",
             "type": "length"
           }
         }
@@ -5201,9 +5201,9 @@
         "$extensions": {
           "nuikit": {
             "tier": "component",
-            "scope": "tile",
-            "part": "key",
-            "css": "--nk-tile-key-tint",
+            "scope": "control",
+            "part": "primary",
+            "css": "--nk-control-primary-tint",
             "type": "number",
             "range": [
               0,
@@ -5219,9 +5219,9 @@
         "$extensions": {
           "nuikit": {
             "tier": "component",
-            "scope": "tile",
-            "part": "key",
-            "css": "--nk-tile-key-inset",
+            "scope": "control",
+            "part": "primary",
+            "css": "--nk-control-primary-inset",
             "type": "length"
           }
         }
@@ -5233,9 +5233,9 @@
         "$extensions": {
           "nuikit": {
             "tier": "component",
-            "scope": "tile",
-            "part": "key",
-            "css": "--nk-tile-key-lift",
+            "scope": "control",
+            "part": "primary",
+            "css": "--nk-control-primary-lift",
             "type": "length"
           }
         }
@@ -5247,9 +5247,9 @@
         "$extensions": {
           "nuikit": {
             "tier": "component",
-            "scope": "tile",
-            "part": "key",
-            "css": "--nk-tile-key-press",
+            "scope": "control",
+            "part": "primary",
+            "css": "--nk-control-primary-press",
             "type": "number",
             "range": [
               0,
@@ -5265,9 +5265,9 @@
         "$extensions": {
           "nuikit": {
             "tier": "component",
-            "scope": "tile",
-            "part": "key",
-            "css": "--nk-tile-key-overhang",
+            "scope": "control",
+            "part": "primary",
+            "css": "--nk-control-primary-overhang",
             "type": "length"
           }
         }
@@ -5855,7 +5855,7 @@
   "list": {
     "gap": {
       "$type": "dimension",
-      "$value": "calc(var(--nk-tile-wall-height) + var(--nk-space-1))",
+      "$value": "calc(var(--nk-control-wall-height) + var(--nk-space-1))",
       "$description": "Between items: the wall plus breathing room",
       "$extensions": {
         "nuikit": {
@@ -5868,7 +5868,7 @@
     },
     "pad-x": {
       "$type": "dimension",
-      "$value": "calc(var(--nk-tile-key-inset) + var(--nk-tile-key-overhang))",
+      "$value": "calc(var(--nk-control-primary-inset) + var(--nk-control-primary-overhang))",
       "$description": "Inline padding: room for the tile's inset and skew",
       "$extensions": {
         "nuikit": {
@@ -7944,7 +7944,7 @@
         }
       }
     },
-    "tile-size": {
+    "square-size": {
       "$type": "dimension",
       "$value": "3rem",
       "$description": "A tile chip's box",
@@ -7952,7 +7952,7 @@
         "nuikit": {
           "tier": "component",
           "scope": "chip",
-          "css": "--nk-chip-tile-size",
+          "css": "--nk-chip-square-size",
           "type": "length"
         }
       }
@@ -8126,7 +8126,7 @@
           }
         }
       },
-      "size-tile": {
+      "size-square": {
         "$type": "dimension",
         "$value": "1.25rem",
         "$description": "A tile chip's icon",
@@ -8135,7 +8135,7 @@
             "tier": "component",
             "scope": "chip",
             "part": "icon",
-            "css": "--nk-chip-icon-size-tile",
+            "css": "--nk-chip-icon-size-square",
             "type": "length"
           }
         }
@@ -8169,7 +8169,7 @@
         }
       }
     },
-    "tile": {
+    "glyph": {
       "ratio": {
         "$type": "number",
         "$value": "0.94",
@@ -8178,8 +8178,8 @@
           "nuikit": {
             "tier": "component",
             "scope": "vital-chip",
-            "part": "tile",
-            "css": "--nk-vital-chip-tile-ratio",
+            "part": "glyph",
+            "css": "--nk-vital-chip-glyph-ratio",
             "type": "number",
             "range": [
               0.5,
@@ -8733,7 +8733,7 @@
     "fill": {
       "ink": {
         "$type": "color",
-        "$value": "{tile.face.confirm-ink}",
+        "$value": "{control.face.confirm-ink}",
         "$description": "An icon's copy over a solid fill (vital chips, HUD keys): dark on the fill",
         "$extensions": {
           "nuikit": {
@@ -8900,7 +8900,7 @@
         }
       }
     },
-    "tile": {
+    "icon": {
       "size": {
         "$type": "dimension",
         "$value": "calc(var(--nk-slab-height) - var(--nk-space-unit) * 2)",
@@ -8909,8 +8909,8 @@
           "nuikit": {
             "tier": "component",
             "scope": "slab",
-            "part": "tile",
-            "css": "--nk-slab-tile-size",
+            "part": "icon",
+            "css": "--nk-slab-icon-size",
             "type": "length"
           }
         }
@@ -8923,8 +8923,8 @@
           "nuikit": {
             "tier": "component",
             "scope": "slab",
-            "part": "tile",
-            "css": "--nk-slab-tile-bg",
+            "part": "icon",
+            "css": "--nk-slab-icon-bg",
             "type": "color"
           }
         }
@@ -8937,8 +8937,8 @@
           "nuikit": {
             "tier": "component",
             "scope": "slab",
-            "part": "tile",
-            "css": "--nk-slab-tile-fg",
+            "part": "icon",
+            "css": "--nk-slab-icon-fg",
             "type": "color"
           }
         }
@@ -8951,8 +8951,8 @@
           "nuikit": {
             "tier": "component",
             "scope": "slab",
-            "part": "tile",
-            "css": "--nk-slab-tile-radius",
+            "part": "icon",
+            "css": "--nk-slab-icon-radius",
             "type": "length"
           }
         }

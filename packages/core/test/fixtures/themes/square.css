@@ -83,23 +83,23 @@
   --nk-meter-radius: 0px;
   --nk-height-row: 2.75rem;
   --nk-shape-skew: 0deg;
-  --nk-tile-wall-height: 0px;
-  --nk-tile-wall-shade: 0;
-  --nk-tile-plate-y: 0px;
-  --nk-tile-plate-press: 0px;
-  --nk-tile-key-inset: 0.125rem;
+  --nk-control-wall-height: 0px;
+  --nk-control-wall-shade: 0;
+  --nk-control-plate-y: 0px;
+  --nk-control-plate-press: 0px;
+  --nk-control-primary-inset: 0.125rem;
 
   /* depth: none. Black plates with a white rim, no edge light, no drop */
   --nk-surface-elevation: none;
   --nk-material-menu-opacity: 1;
   --nk-material-hud-opacity: 0.85;
   --nk-hud-text: none;
-  --nk-tile-face-color: #000000;
-  --nk-tile-face-ink: #ffffff;
-  --nk-tile-face-light: rgba(0, 0, 0, 0);
-  --nk-tile-face-rim: rgba(255, 255, 255, 0.6);
-  --nk-tile-face-rim-focus: #ffd400;
-  --nk-tile-key-rim: #ffffff;
+  --nk-control-face-color: #000000;
+  --nk-control-face-ink: #ffffff;
+  --nk-control-face-light: rgba(0, 0, 0, 0);
+  --nk-control-face-rim: rgba(255, 255, 255, 0.6);
+  --nk-control-face-rim-focus: #ffd400;
+  --nk-control-primary-rim: #ffffff;
   --nk-plate-color: rgb(0, 0, 0);
   --nk-plate-hair: rgba(255, 255, 255, 0.5);
   --nk-plate-drop: 0 0 0 0 rgba(0, 0, 0, 0);
@@ -109,7 +109,7 @@
   --nk-style-level: bar;
   --nk-style-hold: bar;
   --nk-style-focus: invert;
-  --nk-tile-key-tint: 0.1;
+  --nk-control-primary-tint: 0.1;
   --nk-fill-track: rgba(255, 255, 255, 0.15);
   --nk-fill-tint: rgba(255, 255, 255, 0.08);
   --nk-fill-edge: rgba(0, 0, 0, 0);

@@ -36,17 +36,17 @@ body.inv-dragging * {
   grid-template-columns: repeat(var(--inv-columns), var(--inv-slot-size));
   gap: var(--inv-gap);
 }
-/* the grid's selection tile (registry SelectionTile, kit.css nk-indicator): the one lit mark, over the wells so the
+/* the grid's selection tile (registry Selection, kit.css nk-indicator): the one lit mark, over the wells so the
    item stays visible through a soft face in the slot's own shape; it glides slot to slot on --nk-selection-time */
 .inv-grid-focus {
   z-index: 1;
-  --nk-tile-sel-face: rgba(var(--primary-rgb), var(--nk-tile-key-tint, 0.16));
-  --nk-tile-sel-wall: rgba(var(--primary-rgb), calc(var(--nk-tile-key-tint, 0.16) * 0.5));
-  --nk-tile-sel-shade: 0;
-  --nk-tile-sel-rim: rgba(var(--primary-rgb), 0.5);
+  --nk-control-sel-face: rgba(var(--primary-rgb), var(--nk-control-primary-tint, 0.16));
+  --nk-control-sel-wall: rgba(var(--primary-rgb), calc(var(--nk-control-primary-tint, 0.16) * 0.5));
+  --nk-control-sel-shade: 0;
+  --nk-control-sel-rim: rgba(var(--primary-rgb), 0.5);
   /* the slot's shape, set once: the selection tile (shape inherit) and the drag ghost both wear it */
-  --nk-tile-host-radius: var(--nk-chip-radius);
-  --nk-tile-host-clip: var(--nk-chip-clip, none);
+  --nk-control-host-radius: var(--nk-chip-radius);
+  --nk-control-host-clip: var(--nk-chip-clip, none);
 }
 
 /* ───────────────────────────── slots: the vitals' chip family, as wells in the sheet */

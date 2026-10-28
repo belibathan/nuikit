@@ -145,7 +145,7 @@ export function ContextMenu() {
       onClose={data.canClose === false ? undefined : close}
     >
       <EdgeSheetBody scroll onViewportScroll={() => setHover(null)}>
-        {/* the baseline: rows breathe (--nk-list-gap) instead of hairlines; one selection Tile slides between them */}
+        {/* the baseline: rows breathe (--nk-list-gap) instead of hairlines; one selection Glyph slides between them */}
         <MenuRowList>
           {entries.map(([key, option]) => (
             <ContextOption key={key} id={key} option={option} iconColumn={iconColumn} normalise={normalise} onEnter={(e) => enter(key, e)} onLeave={() => setHover((h) => (h?.key === key ? null : h))} />

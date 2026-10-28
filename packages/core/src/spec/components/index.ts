@@ -8,7 +8,7 @@ import { formField } from "./form-field";
 import { grid, region, screen, zone } from "./layout";
 import { radialMenu } from "./radial-menu";
 import { selectionTabs } from "./selection-tabs";
-import { tile } from "./tile";
+import { control } from "./control";
 import { vitalChip } from "./vital-chip";
 import { countdown, itemSlot, keyPrompt, nuiImage, skillCheck, stat } from "./widgets";
 
@@ -17,7 +17,7 @@ export const COMPONENTS = {
   zone,
   region,
   grid,
-  tile,
+  control,
   panel,
   display,
   caption,

@@ -21,7 +21,7 @@ describe("menu-row", () => {
         React.createElement(MenuRow, { key: "c", tone: "destructive" }, "Disconnect"),
       ])
     )
-    expect(html.match(/data-slot="selection-tile"/g)).toHaveLength(1)
+    expect(html.match(/data-slot="selection"/g)).toHaveLength(1)
     expect(html).toMatch(/data-slot="menu-row-list" class="nk-list \[padding-inline:var\(--nk-list-pad-x\)\]"/)
     // bleed: a container that already pads
     expect(renderToStaticMarkup(React.createElement(MenuRowList, { bleed: true }))).toMatch(/class="nk-list"/)

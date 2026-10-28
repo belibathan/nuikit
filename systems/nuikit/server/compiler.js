@@ -219,7 +219,8 @@ var NuikitTheme = (() => {
       "type": "color",
       "default": "oklch(0.145 0 0)",
       "description": "Full-screen surfaces (pause, loading, death scrim)",
-      "rule": "stock shadcn neutral"
+      "rule": "stock shadcn neutral",
+      "core": true
     },
     {
       "name": "foreground",
@@ -229,7 +230,8 @@ var NuikitTheme = (() => {
       "type": "color",
       "default": "oklch(0.985 0 0)",
       "description": "Text on full-screen surfaces",
-      "rule": "stock shadcn neutral"
+      "rule": "stock shadcn neutral",
+      "core": true
     },
     {
       "name": "card",
@@ -259,7 +261,8 @@ var NuikitTheme = (() => {
       "type": "color",
       "default": "oklch(0.205 0 0)",
       "description": "Every floating panel",
-      "rule": "stock shadcn neutral"
+      "rule": "stock shadcn neutral",
+      "core": true
     },
     {
       "name": "popover-foreground",
@@ -269,7 +272,8 @@ var NuikitTheme = (() => {
       "type": "color",
       "default": "oklch(0.985 0 0)",
       "description": "Text in panels",
-      "rule": "stock shadcn neutral"
+      "rule": "stock shadcn neutral",
+      "core": true
     },
     {
       "name": "primary",
@@ -279,7 +283,8 @@ var NuikitTheme = (() => {
       "type": "color",
       "default": "oklch(0.922 0 0)",
       "description": "The one main action per surface, the keycap face, selection",
-      "rule": "stock shadcn neutral"
+      "rule": "stock shadcn neutral",
+      "core": true
     },
     {
       "name": "primary-foreground",
@@ -289,7 +294,8 @@ var NuikitTheme = (() => {
       "type": "color",
       "default": "oklch(0.205 0 0)",
       "description": "Text on primary",
-      "rule": "stock shadcn neutral"
+      "rule": "stock shadcn neutral",
+      "core": true
     },
     {
       "name": "secondary",
@@ -319,7 +325,8 @@ var NuikitTheme = (() => {
       "type": "color",
       "default": "oklch(0.269 0 0)",
       "description": "Tracks, slots and wells inside a panel",
-      "rule": "stock shadcn neutral"
+      "rule": "stock shadcn neutral",
+      "core": true
     },
     {
       "name": "muted-foreground",
@@ -329,7 +336,8 @@ var NuikitTheme = (() => {
       "type": "color",
       "default": "oklch(0.708 0 0)",
       "description": "Secondary text",
-      "rule": "stock shadcn neutral"
+      "rule": "stock shadcn neutral",
+      "core": true
     },
     {
       "name": "accent",
@@ -359,7 +367,8 @@ var NuikitTheme = (() => {
       "type": "color",
       "default": "oklch(0.704 0.191 22.216)",
       "description": "Danger, damage, low values, death",
-      "rule": "stock shadcn neutral"
+      "rule": "stock shadcn neutral",
+      "core": true
     },
     {
       "name": "destructive-foreground",
@@ -379,7 +388,8 @@ var NuikitTheme = (() => {
       "type": "color",
       "default": "oklch(1 0 0 / 10%)",
       "description": "Hairlines",
-      "rule": "stock shadcn neutral"
+      "rule": "stock shadcn neutral",
+      "core": true
     },
     {
       "name": "input",
@@ -459,7 +469,8 @@ var NuikitTheme = (() => {
       "type": "length",
       "default": "0.75rem",
       "description": "The radius scale's base: every radius step derives from it",
-      "rule": "0.75rem"
+      "rule": "0.75rem",
+      "core": true
     },
     {
       "name": "brand",
@@ -469,7 +480,8 @@ var NuikitTheme = (() => {
       "type": "color",
       "default": "var(--primary)",
       "description": "The server's signature: active marks, needles, the accent's stops",
-      "rule": "primary if chromatic (OKLCH C \u2265 0.06), else chart-1"
+      "rule": "primary if chromatic (OKLCH C \u2265 0.06), else chart-1",
+      "core": true
     },
     {
       "name": "brand-foreground",
@@ -549,7 +561,8 @@ var NuikitTheme = (() => {
       "type": "color",
       "default": "rgba(0, 0, 0, 0.45)",
       "description": "Surfaces drawn straight on the game: HUD chips, hotbar",
-      "rule": "rgba(0, 0, 0, 0.45)"
+      "rule": "rgba(0, 0, 0, 0.45)",
+      "core": true
     },
     {
       "name": "hud-foreground",
@@ -1477,7 +1490,8 @@ var NuikitTheme = (() => {
       "scope": "font",
       "type": "font",
       "default": 'Geist, Inter, "Segoe UI", system-ui, sans-serif',
-      "description": "Sentences (the body voice)"
+      "description": "Sentences (the body voice)",
+      "core": true
     },
     {
       "name": "font-display",
@@ -1485,8 +1499,9 @@ var NuikitTheme = (() => {
       "tier": "identity",
       "scope": "font",
       "type": "font",
-      "default": '"Barlow Condensed", "Arial Narrow", sans-serif',
-      "description": "Anything scanned: keys, titles, labels, captions"
+      "default": 'Geist, Inter, "Segoe UI", system-ui, sans-serif',
+      "description": "Anything scanned: keys, titles, labels, captions (the body face unless a theme says otherwise)",
+      "core": true
     },
     {
       "name": "font-numeric",
@@ -1494,7 +1509,7 @@ var NuikitTheme = (() => {
       "tier": "identity",
       "scope": "font",
       "type": "font",
-      "default": '"Barlow Condensed", "Arial Narrow", sans-serif',
+      "default": 'Geist, Inter, "Segoe UI", system-ui, sans-serif',
       "description": "Every number (always tabular)"
     },
     {
@@ -1504,7 +1519,8 @@ var NuikitTheme = (() => {
       "scope": "font",
       "type": "font",
       "default": '"Geist Mono", ui-monospace, monospace',
-      "description": "Codes and IDs a player might type"
+      "description": "Codes and IDs a player might type",
+      "core": true
     },
     {
       "name": "nk-scale",
@@ -1530,7 +1546,8 @@ var NuikitTheme = (() => {
       "range": [
         0.75,
         1.3
-      ]
+      ],
+      "core": true
     },
     {
       "name": "nk-space-1",
@@ -1830,12 +1847,13 @@ var NuikitTheme = (() => {
       "tier": "identity",
       "scope": "shape",
       "type": "angle",
-      "default": "-12deg",
-      "description": "The keycap's slant: tile faces, the primary button, the selection (their boxes and text stay upright); at most \xB120deg",
+      "default": "0deg",
+      "description": "The slant of faces (keys, the primary button, the selection; boxes and text stay upright): 0 = upright, at most \xB120deg",
       "range": [
         -20,
         20
-      ]
+      ],
+      "core": true
     },
     {
       "name": "nk-shape-slab",
@@ -1858,7 +1876,8 @@ var NuikitTheme = (() => {
       "scope": "shape",
       "type": "length",
       "default": "0px",
-      "description": "Chamfered corners (top left, bottom right) as clip-path; 0 = off"
+      "description": "Chamfered corners (top left, bottom right) as clip-path; 0 = off",
+      "core": true
     },
     {
       "name": "nk-shape-stroke",
@@ -1867,7 +1886,8 @@ var NuikitTheme = (() => {
       "scope": "shape",
       "type": "length",
       "default": "1px",
-      "description": "Hairline weight of plates, rims and fields"
+      "description": "Hairline weight of plates, rims and fields",
+      "core": true
     },
     {
       "name": "nk-type-ratio",
@@ -1880,7 +1900,8 @@ var NuikitTheme = (() => {
       "range": [
         1,
         1.6
-      ]
+      ],
+      "core": true
     },
     {
       "name": "nk-type-weight-body",
@@ -1945,13 +1966,14 @@ var NuikitTheme = (() => {
       "tier": "identity",
       "scope": "type",
       "type": "keyword",
-      "default": "uppercase",
+      "default": "none",
       "description": "Anything scanned (keys, titles, labels, captions) in caps or as written",
       "values": [
         "none",
         "uppercase"
       ],
-      "attr": "case"
+      "attr": "case",
+      "core": true
     },
     {
       "name": "nk-type-slant",
@@ -1959,13 +1981,14 @@ var NuikitTheme = (() => {
       "tier": "identity",
       "scope": "type",
       "type": "keyword",
-      "default": "italic",
+      "default": "normal",
       "description": "The scanned voices upright or italic (a real italic where the face has one)",
       "values": [
         "normal",
         "italic"
       ],
-      "attr": "slant"
+      "attr": "slant",
+      "core": true
     },
     {
       "name": "nk-type-overhang",
@@ -1973,7 +1996,7 @@ var NuikitTheme = (() => {
       "tier": "identity",
       "scope": "type",
       "type": "length",
-      "default": "0.15em",
+      "default": "0em",
       "description": "Trailing pad of a slanted voice (the italic's overhang); 0em when upright"
     },
     {
@@ -2337,7 +2360,8 @@ var NuikitTheme = (() => {
       "range": [
         0,
         0.12
-      ]
+      ],
+      "core": true
     },
     {
       "name": "nk-surface-gradient",
@@ -2366,7 +2390,8 @@ var NuikitTheme = (() => {
         "deep",
         "hard"
       ],
-      "attr": "elevation"
+      "attr": "elevation",
+      "core": true
     },
     {
       "name": "nk-surface-glow",
@@ -2462,7 +2487,8 @@ var NuikitTheme = (() => {
       "range": [
         0,
         1
-      ]
+      ],
+      "core": true
     },
     {
       "name": "nk-material-hud-texture",
@@ -2491,7 +2517,8 @@ var NuikitTheme = (() => {
       "range": [
         0,
         1
-      ]
+      ],
+      "core": true
     },
     {
       "name": "nk-material-menu-blur",
@@ -2554,7 +2581,8 @@ var NuikitTheme = (() => {
         "none",
         "soft",
         "strong"
-      ]
+      ],
+      "core": true
     },
     {
       "name": "nk-motion",
@@ -2580,7 +2608,8 @@ var NuikitTheme = (() => {
       "range": [
         0,
         2e3
-      ]
+      ],
+      "core": true
     },
     {
       "name": "nk-motion-ease",
@@ -2589,7 +2618,8 @@ var NuikitTheme = (() => {
       "scope": "motion",
       "type": "ease",
       "default": "cubic-bezier(0.2, 0, 0, 1)",
-      "description": "The curve of anything arriving"
+      "description": "The curve of anything arriving",
+      "core": true
     },
     {
       "name": "nk-motion-feel",
@@ -2605,7 +2635,8 @@ var NuikitTheme = (() => {
         "smooth",
         "stepped"
       ],
-      "attr": "feel"
+      "attr": "feel",
+      "core": true
     },
     {
       "name": "nk-motion-bounce",
@@ -2673,7 +2704,8 @@ var NuikitTheme = (() => {
         "solid",
         "soft"
       ],
-      "attr": "fill"
+      "attr": "fill",
+      "core": true
     },
     {
       "name": "nk-style-level",
@@ -2690,7 +2722,8 @@ var NuikitTheme = (() => {
         "slab",
         "pips"
       ],
-      "attr": "level"
+      "attr": "level",
+      "core": true
     },
     {
       "name": "nk-style-hold",
@@ -2720,7 +2753,8 @@ var NuikitTheme = (() => {
         "bar",
         "digital"
       ],
-      "attr": "gauge"
+      "attr": "gauge",
+      "core": true
     },
     {
       "name": "nk-style-focus",
@@ -2738,7 +2772,8 @@ var NuikitTheme = (() => {
         "invert",
         "bar"
       ],
-      "attr": "focus"
+      "attr": "focus",
+      "core": true
     },
     {
       "name": "nk-style-vital",
@@ -2808,7 +2843,8 @@ var NuikitTheme = (() => {
       "range": [
         0,
         1
-      ]
+      ],
+      "core": true
     },
     {
       "name": "nk-behavior-rest",
@@ -3695,70 +3731,70 @@ var NuikitTheme = (() => {
       "description": "Between cells"
     },
     {
-      "name": "nk-tile-plate-color",
-      "path": "tile.plate.color",
+      "name": "nk-control-plate-color",
+      "path": "control.plate.color",
       "tier": "component",
-      "scope": "tile",
+      "scope": "control",
       "type": "color",
       "default": "var(--border)",
       "description": "The solid plate behind the face",
       "part": "plate"
     },
     {
-      "name": "nk-tile-plate-dim",
-      "path": "tile.plate.dim",
+      "name": "nk-control-plate-dim",
+      "path": "control.plate.dim",
       "tier": "component",
-      "scope": "tile",
+      "scope": "control",
       "type": "color",
-      "default": "var(--nk-tile-plate-color)",
+      "default": "var(--nk-control-plate-color)",
       "description": "The plate on the HUD",
       "part": "plate"
     },
     {
-      "name": "nk-tile-plate-x",
-      "path": "tile.plate.x",
+      "name": "nk-control-plate-x",
+      "path": "control.plate.x",
       "tier": "component",
-      "scope": "tile",
+      "scope": "control",
       "type": "length",
       "default": "0px",
       "description": "How far the plate sits right of the face (0 = none)",
       "part": "plate"
     },
     {
-      "name": "nk-tile-plate-y",
-      "path": "tile.plate.y",
+      "name": "nk-control-plate-y",
+      "path": "control.plate.y",
       "tier": "component",
-      "scope": "tile",
+      "scope": "control",
       "type": "length",
-      "default": "2px",
-      "description": "How far the plate sits below the face",
+      "default": "0px",
+      "description": "How far the plate sits below the face (0 = none)",
       "part": "plate"
     },
     {
-      "name": "nk-tile-plate-press",
-      "path": "tile.plate.press",
+      "name": "nk-control-plate-press",
+      "path": "control.plate.press",
       "tier": "component",
-      "scope": "tile",
+      "scope": "control",
       "type": "length",
       "default": "1px",
       "description": "How far a held tile presses toward its plate",
       "part": "plate"
     },
     {
-      "name": "nk-tile-wall-height",
-      "path": "tile.wall.height",
+      "name": "nk-control-wall-height",
+      "path": "control.wall.height",
       "tier": "component",
-      "scope": "tile",
+      "scope": "control",
       "type": "length",
-      "default": "0.1875rem",
-      "description": "How far the face sits above its wall (the primary button, the selection)",
+      "default": "0rem",
+      "description": "How far the face sits above its wall (0 = flat; the primary button, the selection)",
       "part": "wall"
     },
     {
-      "name": "nk-tile-wall-shade",
-      "path": "tile.wall.shade",
+      "name": "nk-control-wall-shade",
+      "path": "control.wall.shade",
       "tier": "component",
-      "scope": "tile",
+      "scope": "control",
       "type": "number",
       "default": "0.45",
       "description": "How dark the wall is (the scrim over the face colour)",
@@ -3769,160 +3805,160 @@ var NuikitTheme = (() => {
       ]
     },
     {
-      "name": "nk-tile-face-color",
-      "path": "tile.face.color",
+      "name": "nk-control-face-color",
+      "path": "control.face.color",
       "tier": "component",
-      "scope": "tile",
+      "scope": "control",
       "type": "color",
       "default": "var(--muted)",
       "description": "The face",
       "part": "face"
     },
     {
-      "name": "nk-tile-face-ink",
-      "path": "tile.face.ink",
+      "name": "nk-control-face-ink",
+      "path": "control.face.ink",
       "tier": "component",
-      "scope": "tile",
+      "scope": "control",
       "type": "color",
       "default": "var(--popover-foreground)",
       "description": "The legend's colour on the face",
       "part": "face"
     },
     {
-      "name": "nk-tile-face-light",
-      "path": "tile.face.light",
+      "name": "nk-control-face-light",
+      "path": "control.face.light",
       "tier": "component",
-      "scope": "tile",
+      "scope": "control",
       "type": "color",
-      "default": "rgba(var(--popover-foreground-rgb), 0.16)",
-      "description": "The face's top hairline",
+      "default": "rgba(var(--popover-foreground-rgb), 0)",
+      "description": "The face's top hairline (transparent = flat)",
       "part": "face"
     },
     {
-      "name": "nk-tile-face-shade",
-      "path": "tile.face.shade",
+      "name": "nk-control-face-shade",
+      "path": "control.face.shade",
       "tier": "component",
-      "scope": "tile",
+      "scope": "control",
       "type": "color",
       "default": "rgba(var(--scrim-rgb), 0)",
       "description": "The face's bottom inner shade",
       "part": "face"
     },
     {
-      "name": "nk-tile-face-rim",
-      "path": "tile.face.rim",
+      "name": "nk-control-face-rim",
+      "path": "control.face.rim",
       "tier": "component",
-      "scope": "tile",
+      "scope": "control",
       "type": "color",
       "default": "rgba(var(--foreground-rgb), 0.32)",
       "description": "The face's rim",
       "part": "face"
     },
     {
-      "name": "nk-tile-face-rim-focus",
-      "path": "tile.face.rim-focus",
+      "name": "nk-control-face-rim-focus",
+      "path": "control.face.rim-focus",
       "tier": "component",
-      "scope": "tile",
+      "scope": "control",
       "type": "color",
       "default": "rgba(var(--foreground-rgb), 0.4)",
       "description": "The rim while lit",
       "part": "face"
     },
     {
-      "name": "nk-tile-face-radius",
-      "path": "tile.face.radius",
+      "name": "nk-control-face-radius",
+      "path": "control.face.radius",
       "tier": "component",
-      "scope": "tile",
+      "scope": "control",
       "type": "length",
       "default": "var(--nk-radius-key)",
       "description": "The face's radius",
       "part": "face"
     },
     {
-      "name": "nk-tile-face-skew",
-      "path": "tile.face.skew",
+      "name": "nk-control-face-skew",
+      "path": "control.face.skew",
       "tier": "component",
-      "scope": "tile",
+      "scope": "control",
       "type": "angle",
       "default": "var(--nk-shape-skew)",
       "description": "The face's slant (the box stays upright)",
       "part": "face"
     },
     {
-      "name": "nk-tile-face-shadow",
-      "path": "tile.face.shadow",
+      "name": "nk-control-face-shadow",
+      "path": "control.face.shadow",
       "tier": "component",
-      "scope": "tile",
+      "scope": "control",
       "type": "shadow",
-      "default": "inset 0 -1px 0 0 var(--nk-tile-face-shade), inset 0 1px 0 0 var(--nk-tile-face-light)",
+      "default": "inset 0 -1px 0 0 var(--nk-control-face-shade), inset 0 1px 0 0 var(--nk-control-face-light)",
       "description": "The face's inner light and shade",
       "part": "face"
     },
     {
-      "name": "nk-tile-face-clip",
-      "path": "tile.face.clip",
+      "name": "nk-control-face-clip",
+      "path": "control.face.clip",
       "tier": "component",
-      "scope": "tile",
+      "scope": "control",
       "type": "string",
       "default": "var(--nk-line-clip-sm)",
       "description": "The face's clip-path (the chamfer)",
       "part": "face"
     },
     {
-      "name": "nk-tile-face-confirm",
-      "path": "tile.face.confirm",
+      "name": "nk-control-face-confirm",
+      "path": "control.face.confirm",
       "tier": "component",
-      "scope": "tile",
+      "scope": "control",
       "type": "color",
       "default": "var(--foreground)",
       "description": "The face when confirmed",
       "part": "face"
     },
     {
-      "name": "nk-tile-face-confirm-ink",
-      "path": "tile.face.confirm-ink",
+      "name": "nk-control-face-confirm-ink",
+      "path": "control.face.confirm-ink",
       "tier": "component",
-      "scope": "tile",
+      "scope": "control",
       "type": "color",
       "default": "var(--background)",
       "description": "The legend when confirmed",
       "part": "face"
     },
     {
-      "name": "nk-tile-face-active",
-      "path": "tile.face.active",
+      "name": "nk-control-face-active",
+      "path": "control.face.active",
       "tier": "component",
-      "scope": "tile",
+      "scope": "control",
       "type": "paint",
       "default": "var(--nk-accent-paint)",
       "description": "The face of an active tile (the mic while talking, N on the compass, a checked box)",
       "part": "face"
     },
     {
-      "name": "nk-tile-face-hold",
-      "path": "tile.face.hold",
+      "name": "nk-control-face-hold",
+      "path": "control.face.hold",
       "tier": "component",
-      "scope": "tile",
+      "scope": "control",
       "type": "color",
       "default": "rgba(var(--foreground-rgb), 0.35)",
       "description": "The hold fill over the face",
       "part": "face"
     },
     {
-      "name": "nk-tile-legend-font",
-      "path": "tile.legend.font",
+      "name": "nk-control-legend-font",
+      "path": "control.legend.font",
       "tier": "component",
-      "scope": "tile",
+      "scope": "control",
       "type": "font",
       "default": "var(--nk-type-scan-family)",
       "description": "The legend's face",
       "part": "legend"
     },
     {
-      "name": "nk-tile-legend-weight",
-      "path": "tile.legend.weight",
+      "name": "nk-control-legend-weight",
+      "path": "control.legend.weight",
       "tier": "component",
-      "scope": "tile",
+      "scope": "control",
       "type": "number",
       "default": "var(--nk-type-scan-weight)",
       "description": "The legend's weight",
@@ -3933,152 +3969,152 @@ var NuikitTheme = (() => {
       ]
     },
     {
-      "name": "nk-tile-legend-pad",
-      "path": "tile.legend.pad",
+      "name": "nk-control-legend-pad",
+      "path": "control.legend.pad",
       "tier": "component",
-      "scope": "tile",
+      "scope": "control",
       "type": "length",
       "default": "calc(var(--nk-type-scan-pad) / 2)",
       "description": "The italic overhang split to both sides",
       "part": "legend"
     },
     {
-      "name": "nk-tile-legend-shift",
-      "path": "tile.legend.shift",
+      "name": "nk-control-legend-shift",
+      "path": "control.legend.shift",
       "tier": "component",
-      "scope": "tile",
+      "scope": "control",
       "type": "length",
       "default": "0em",
       "description": "A nudge for a leaning face",
       "part": "legend"
     },
     {
-      "name": "nk-tile-legend-gap",
-      "path": "tile.legend.gap",
+      "name": "nk-control-legend-gap",
+      "path": "control.legend.gap",
       "tier": "component",
-      "scope": "tile",
+      "scope": "control",
       "type": "length",
       "default": "var(--nk-space-1)",
       "description": "Between a tile's glyphs",
       "part": "legend"
     },
     {
-      "name": "nk-tile-legend-inset",
-      "path": "tile.legend.inset",
+      "name": "nk-control-legend-inset",
+      "path": "control.legend.inset",
       "tier": "component",
-      "scope": "tile",
+      "scope": "control",
       "type": "length",
       "default": "var(--nk-space-1)",
       "description": "The legend's inline padding",
       "part": "legend"
     },
     {
-      "name": "nk-tile-tag-delay",
-      "path": "tile.tag.delay",
+      "name": "nk-control-tag-delay",
+      "path": "control.tag.delay",
       "tier": "component",
-      "scope": "tile",
+      "scope": "control",
       "type": "time",
       "default": "80ms",
       "description": "The tag opens this long after the tile lands",
       "part": "tag"
     },
     {
-      "name": "nk-tile-key-color",
-      "path": "tile.key.color",
+      "name": "nk-control-primary-color",
+      "path": "control.primary.color",
       "tier": "component",
-      "scope": "tile",
+      "scope": "control",
       "type": "color",
       "default": "var(--primary)",
       "description": "The keycap face under style.fill solid (the primary button, the lit row, the active tab)",
-      "part": "key"
+      "part": "primary"
     },
     {
-      "name": "nk-tile-key-ink",
-      "path": "tile.key.ink",
+      "name": "nk-control-primary-ink",
+      "path": "control.primary.ink",
       "tier": "component",
-      "scope": "tile",
+      "scope": "control",
       "type": "color",
       "default": "var(--primary-foreground)",
       "description": "Text on the keycap face",
-      "part": "key"
+      "part": "primary"
     },
     {
-      "name": "nk-tile-key-rim",
-      "path": "tile.key.rim",
+      "name": "nk-control-primary-rim",
+      "path": "control.primary.rim",
       "tier": "component",
-      "scope": "tile",
+      "scope": "control",
       "type": "color",
       "default": "transparent",
       "description": "The keycap face's rim (transparent = none)",
-      "part": "key"
+      "part": "primary"
     },
     {
-      "name": "nk-tile-key-radius",
-      "path": "tile.key.radius",
+      "name": "nk-control-primary-radius",
+      "path": "control.primary.radius",
       "tier": "component",
-      "scope": "tile",
+      "scope": "control",
       "type": "length",
       "default": "var(--nk-radius-control)",
       "description": "The keycap's radius",
-      "part": "key"
+      "part": "primary"
     },
     {
-      "name": "nk-tile-key-tint",
-      "path": "tile.key.tint",
+      "name": "nk-control-primary-tint",
+      "path": "control.primary.tint",
       "tier": "component",
-      "scope": "tile",
+      "scope": "control",
       "type": "number",
       "default": "0.16",
       "description": "The face's opacity under style.fill soft",
-      "part": "key",
+      "part": "primary",
       "range": [
         0,
         1
       ]
     },
     {
-      "name": "nk-tile-key-inset",
-      "path": "tile.key.inset",
+      "name": "nk-control-primary-inset",
+      "path": "control.primary.inset",
       "tier": "component",
-      "scope": "tile",
+      "scope": "control",
       "type": "length",
       "default": "0.375rem",
       "description": "How far a selection tile sits in from its item's sides (room for the skew)",
-      "part": "key"
+      "part": "primary"
     },
     {
-      "name": "nk-tile-key-lift",
-      "path": "tile.key.lift",
+      "name": "nk-control-primary-lift",
+      "path": "control.primary.lift",
       "tier": "component",
-      "scope": "tile",
+      "scope": "control",
       "type": "length",
       "default": "1px",
       "description": "How far the face rises on hover and focus",
-      "part": "key"
+      "part": "primary"
     },
     {
-      "name": "nk-tile-key-press",
-      "path": "tile.key.press",
+      "name": "nk-control-primary-press",
+      "path": "control.primary.press",
       "tier": "component",
-      "scope": "tile",
+      "scope": "control",
       "type": "number",
       "default": "0.67",
       "description": "How far a pressed keycap sinks, as a fraction of its wall",
-      "part": "key",
+      "part": "primary",
       "range": [
         0,
         1.5
       ]
     },
     {
-      "name": "nk-tile-key-overhang",
-      "path": "tile.key.overhang",
+      "name": "nk-control-primary-overhang",
+      "path": "control.primary.overhang",
       "tier": "component",
-      "scope": "tile",
+      "scope": "control",
       "type": "length",
       "default": "0.25rem",
       "description": "How far a row's selection tile reaches past its text",
-      "part": "key"
+      "part": "primary"
     },
     {
       "name": "nk-panel-bg",
@@ -4484,7 +4520,7 @@ var NuikitTheme = (() => {
       "tier": "component",
       "scope": "list",
       "type": "length",
-      "default": "calc(var(--nk-tile-wall-height) + var(--nk-space-1))",
+      "default": "calc(var(--nk-control-wall-height) + var(--nk-space-1))",
       "description": "Between items: the wall plus breathing room"
     },
     {
@@ -4493,7 +4529,7 @@ var NuikitTheme = (() => {
       "tier": "component",
       "scope": "list",
       "type": "length",
-      "default": "calc(var(--nk-tile-key-inset) + var(--nk-tile-key-overhang))",
+      "default": "calc(var(--nk-control-primary-inset) + var(--nk-control-primary-overhang))",
       "description": "Inline padding: room for the tile's inset and skew"
     },
     {
@@ -5911,8 +5947,8 @@ var NuikitTheme = (() => {
       "description": "Height"
     },
     {
-      "name": "nk-chip-tile-size",
-      "path": "chip.tile-size",
+      "name": "nk-chip-square-size",
+      "path": "chip.square-size",
       "tier": "component",
       "scope": "chip",
       "type": "length",
@@ -6038,8 +6074,8 @@ var NuikitTheme = (() => {
       "part": "icon"
     },
     {
-      "name": "nk-chip-icon-size-tile",
-      "path": "chip.icon.size-tile",
+      "name": "nk-chip-icon-size-square",
+      "path": "chip.icon.size-square",
       "tier": "component",
       "scope": "chip",
       "type": "length",
@@ -6066,14 +6102,14 @@ var NuikitTheme = (() => {
       "description": "A small chip's box (telltales, compass marks)"
     },
     {
-      "name": "nk-vital-chip-tile-ratio",
-      "path": "vital-chip.tile.ratio",
+      "name": "nk-vital-chip-glyph-ratio",
+      "path": "vital-chip.glyph.ratio",
       "tier": "component",
       "scope": "vital-chip",
       "type": "number",
       "default": "0.94",
       "description": "The face as a fraction of the box",
-      "part": "tile",
+      "part": "glyph",
       "range": [
         0.5,
         1
@@ -6445,7 +6481,7 @@ var NuikitTheme = (() => {
       "tier": "component",
       "scope": "level",
       "type": "color",
-      "default": "var(--nk-tile-face-confirm-ink)",
+      "default": "var(--nk-control-face-confirm-ink)",
       "description": "An icon's copy over a solid fill (vital chips, HUD keys): dark on the fill",
       "part": "fill"
     },
@@ -6558,44 +6594,44 @@ var NuikitTheme = (() => {
       "description": "The accent's channels (a screen sets it per state on any ancestor)"
     },
     {
-      "name": "nk-slab-tile-size",
-      "path": "slab.tile.size",
+      "name": "nk-slab-icon-size",
+      "path": "slab.icon.size",
       "tier": "component",
       "scope": "slab",
       "type": "length",
       "default": "calc(var(--nk-slab-height) - var(--nk-space-unit) * 2)",
       "description": "The icon tile's size",
-      "part": "tile"
+      "part": "icon"
     },
     {
-      "name": "nk-slab-tile-bg",
-      "path": "slab.tile.bg",
+      "name": "nk-slab-icon-bg",
+      "path": "slab.icon.bg",
       "tier": "component",
       "scope": "slab",
       "type": "color",
       "default": "rgba(var(--hud-foreground-rgb), 0.1)",
       "description": "The icon tile",
-      "part": "tile"
+      "part": "icon"
     },
     {
-      "name": "nk-slab-tile-fg",
-      "path": "slab.tile.fg",
+      "name": "nk-slab-icon-fg",
+      "path": "slab.icon.fg",
       "tier": "component",
       "scope": "slab",
       "type": "color",
       "default": "var(--nk-slab-fg)",
       "description": "The icon",
-      "part": "tile"
+      "part": "icon"
     },
     {
-      "name": "nk-slab-tile-radius",
-      "path": "slab.tile.radius",
+      "name": "nk-slab-icon-radius",
+      "path": "slab.icon.radius",
       "tier": "component",
       "scope": "slab",
       "type": "length",
       "default": "max(0.125rem, calc(var(--nk-slab-radius) - var(--nk-space-unit)))",
       "description": "The icon tile's radius",
-      "part": "tile"
+      "part": "icon"
     },
     {
       "name": "nk-slab-delta-font",

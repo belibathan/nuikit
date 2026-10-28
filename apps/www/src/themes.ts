@@ -8,7 +8,7 @@ import { compileTheme, toRgba } from "nuikit-core";
 const files = import.meta.glob("../../../packages/core/themes/*.css", { query: "?raw", import: "default", eager: true }) as Record<string, string>;
 
 /** The identities first in the pickers (Default, the flagship, leads); any other file there follows in name order. */
-const ORDER = ["default", "neon-pop"];
+const ORDER = ["default", "neon-pop", "keycap"];
 
 /** A theme id as a display name: "neon-pop" → "Neon Pop". */
 const title = (id: string) => id.split("-").map((w) => w[0]!.toUpperCase() + w.slice(1)).join(" ");
