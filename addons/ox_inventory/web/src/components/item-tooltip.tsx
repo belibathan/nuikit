@@ -10,7 +10,7 @@ import { onPointerMove, pointer, ui } from "@/state/ui";
 /** One fact about the item: plain label left, value right. */
 function Row({ k, children, wrap }: { k: string; children: ReactNode; wrap?: boolean }) {
   return (
-    <div className="flex items-baseline justify-between gap-4 text-xs leading-4">
+    <div className="flex items-baseline justify-between gap-4 text-(length:--nk-text-label) leading-4">
       <span className="shrink-0 text-muted-foreground">{k}</span>
       <span className={wrap ? "min-w-0 text-right [font-weight:var(--nk-type-weight-strong)]" : "nk-num min-w-0 truncate text-right"}>{children}</span>
     </div>
@@ -27,7 +27,7 @@ function Ingredients({ item }: { item: Slot }) {
         const text = n >= 1 ? `${n}x ${label}` : n === 0 ? label : `${Math.round(n * 100)}% ${label}`;
         const ok = hasIngredient(name, n);
         return (
-          <div key={name} className="flex items-center gap-2 text-xs leading-4">
+          <div key={name} className="flex items-center gap-2 text-(length:--nk-text-label) leading-4">
             <ItemImage src={itemImage(name)} name={name} className="size-5 shrink-0" />
             <span className="nk-num min-w-0 flex-1 truncate">{text}</span>
             {ok ? <CheckIcon className="size-4 text-muted-foreground" /> : <XIcon className="size-4 text-destructive" />}
@@ -85,7 +85,7 @@ function TooltipBody({ item, invType }: { item: Slot; invType: string }) {
       {hasBody && (
         <div className="flex flex-col gap-3 border-t px-4 py-3">
           {description && (
-            <div className="inv-md text-xs leading-5 text-muted-foreground">
+            <div className="inv-md nk-text-desc">
               <Markdown>{String(description)}</Markdown>
             </div>
           )}

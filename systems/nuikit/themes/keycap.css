@@ -81,7 +81,7 @@
   --nk-control-face-light: rgba(250, 250, 250, 0.16);
   --nk-type-case: uppercase;
   --nk-type-slant: italic;
-  --nk-type-overhang: 0.15em;
+  --nk-type-overhang: 0.2em; /* Barlow Condensed italic 800 caps lean about 0.7em × tan(12°) plus the stroke */
   --font-display: "Barlow Condensed", "Arial Narrow", sans-serif;
   --font-numeric: "Barlow Condensed", "Arial Narrow", sans-serif;
 

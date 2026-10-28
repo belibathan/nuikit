@@ -1057,6 +1057,12 @@ export const GENERATED: { name: string; group: string; type: string; description
     "description": "Trailing pad of a slanted voice (the italic's overhang); 0em when upright"
   },
   {
+    "name": "nk-type-overhang-clip",
+    "group": "kit",
+    "type": "dimension",
+    "description": "How far a clipped text window (TextRoll, a reel) reaches past its text on each side: twice the overhang, since a heavy slanted cap leans further than its trailing pad, plus a hair for antialiasing"
+  },
+  {
     "name": "nk-type-scan-family",
     "group": "kit",
     "type": "fontFamily",

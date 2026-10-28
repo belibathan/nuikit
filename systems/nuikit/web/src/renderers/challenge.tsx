@@ -74,7 +74,7 @@ function OneChallenge({ id, props, ctx }: { id: string; props: ChallengeProps; c
         />
         {props.label && <span className="nk-shadow text-sm font-medium text-(color:--hud-foreground)">{props.label}</span>}
         {all.length > 1 && (
-          <span className="nk-shadow nk-num text-xs text-(color:--hud-foreground) opacity-80">
+          <span className="nk-shadow nk-num text-(length:--nk-text-label) text-(color:--hud-foreground) opacity-80">
             {index + 1} / {all.length}
           </span>
         )}

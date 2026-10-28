@@ -59,7 +59,7 @@
 }
 .hud-label,
 .hud-unit {
-  font-size: 0.75rem;
+  font-size: var(--nk-text-label);
   line-height: 1rem;
   opacity: 0.75;
 }
@@ -244,7 +244,7 @@
 }
 .hud-bearing-deg {
   margin-top: 0.1875rem;
-  font-size: 0.6875rem;
+  font-size: var(--nk-text-label);
   line-height: 1;
   opacity: 0.75;
 }
@@ -257,7 +257,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-size: 1.125rem;
+  font-size: var(--nk-text-row);
   line-height: 1.375rem;
 }
 .hud-area {
@@ -283,7 +283,7 @@
   background-color: var(--hud-chip-bg);
   color: var(--hud-chip-fg);
   box-shadow: inset 0 0 0 1px var(--hud-hairline);
-  font-size: 0.75rem;
+  font-size: var(--nk-text-label);
   text-shadow: none;
 }
 .hud-tag svg {
@@ -616,7 +616,7 @@
   display: flex;
   align-items: center;
   gap: 0.375rem;
-  font-size: 0.75rem;
+  font-size: var(--nk-text-label);
   line-height: 1;
 }
 .hud-fuel svg {
@@ -996,7 +996,7 @@
   padding: 0 0.5rem;
   border-radius: var(--hud-chip-radius);
   background-color: color-mix(in oklab, var(--hud-fg) 8%, transparent);
-  font-size: 0.75rem;
+  font-size: var(--nk-text-label);
 }
 .hud-air-flag svg {
   width: 0.875rem;
@@ -1153,7 +1153,7 @@
 /* cross street · zone postal: one muted line, a dot between the parts */
 .hud-loc-detail {
   max-width: none;
-  font-size: 0.75rem;
+  font-size: var(--nk-text-label);
   line-height: 1.125rem;
   white-space: nowrap;
   opacity: 0.72;
@@ -1205,7 +1205,7 @@
 }
 .hud-wallet[data-compact] .hud-job {
   margin-top: 0;
-  font-size: 0.75rem;
+  font-size: var(--nk-text-label);
   line-height: 1rem;
   opacity: 0.8;
 }
@@ -1307,7 +1307,7 @@
 }
 .hud-c-unit {
   margin-top: 0.1875rem;
-  font-size: 0.6875rem;
+  font-size: var(--nk-text-label);
   line-height: 1;
 }
 /* the gear chip sits in the arc's opening at the bottom */
@@ -1869,11 +1869,11 @@ html[data-nk-motion="off"] .hud-root * {
 .hud-beside-map {
   contain: layout;
 }
-.hud-loc-street { font-size: 1.25rem; line-height: 1.5rem; }
+.hud-loc-street { font-size: var(--nk-text-hud); line-height: 1.5rem; }
 .hud-job { font-size: 0.9375rem; gap: 0.5rem; opacity: 0.85; }
 .hud-wallet[data-compact] .hud-job { font-size: 0.875rem; }
 .hud-c-speed { font-size: 3.25rem; }
-.hud-c-unit { font-size: 0.8125rem; }
+.hud-c-unit { font-size: var(--nk-text-label); }
 /* a telltale is a keycap; a lit one carries its status colour on the glyph */
 .hud-c-tell { position: relative; overflow: visible; }
 .hud-c-tell[data-tone="success"] [data-slot="vital-chip-icon"] { color: var(--hud-ok); }

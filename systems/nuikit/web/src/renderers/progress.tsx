@@ -64,7 +64,7 @@ function OneProgress({ id, props, ctx }: { id: string; props: ProgressProps; ctx
             valueText={props.showPercent && driven ? `${Math.round(props.value ?? 0)}%` : undefined}
           />
           {cancel && (
-            <span className="nk-shadow flex items-center justify-end gap-1.5 text-xs leading-4 font-medium opacity-80">
+            <span className="nk-shadow nk-text-label flex items-center justify-end gap-1.5 text-current opacity-80">
               <Kbd className="h-5 min-w-5">{cancel}</Kbd> Cancel
             </span>
           )}

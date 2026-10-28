@@ -94,8 +94,8 @@ export function SheetPage({
         </div>
         <div className="flex min-w-0 flex-col gap-1">
           <SheetTitle asChild>
-            {/* pr: room for an italic face's last glyph */}
-            <h1 className="pause-page-title nk-title truncate pr-[0.2em]">{title}</h1>
+            {/* the title style pads its end by the voice's overhang: a slanted face's last glyph is never cut */}
+            <h1 className="pause-page-title nk-title truncate">{title}</h1>
           </SheetTitle>
           {description ? <p className="nk-label truncate text-muted-foreground">{description}</p> : null}
         </div>

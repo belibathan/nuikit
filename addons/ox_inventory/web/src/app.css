@@ -149,7 +149,7 @@ body.inv-dragging * {
   white-space: nowrap;
   text-overflow: ellipsis;
   text-align: center;
-  font-size: 0.75rem;
+  font-size: var(--nk-text-label);
   line-height: 1rem;
   font-weight: var(--nk-type-weight-strong);
 }
@@ -467,7 +467,7 @@ html[data-nk-motion="off"] :is(.inv-note > .nk-chip, .inv-hotbar) {
   --inv-inset: max(0.5rem, calc(var(--nk-chip-radius, 0.5rem) * 0.45));
   padding: var(--inv-inset);
 }
-.inv-slot-label { padding-inline: 0.15rem 0.3rem; } /* italic overhang + the ellipsis clear the curve */
+.inv-slot-label { padding-inline: 0.15rem calc(0.15rem + var(--nk-type-overhang-clip)); } /* a slanted face's overhang + the ellipsis clear the curve */
 /* Use / Give: icon and text on one optical centre (italic scan type leans right) */
 .inv-zone { line-height: 1; padding-inline: 1rem 1.1rem; }
 .inv-zone-icon { align-items: center; flex-shrink: 0; }

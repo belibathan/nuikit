@@ -113,7 +113,7 @@ function Counted({ children, count }: { children: React.ReactNode; count: number
     <span className="flex items-center gap-2">
       <span className="min-w-0 flex-1">{children}</span>
       {/* keyed on the count: each repeat rises in */}
-      <span key={count} data-slot="notice-count" className="nk-num nk-rise shrink-0 text-xs text-muted-foreground" aria-label={`${count} times`}>
+      <span key={count} data-slot="notice-count" className="nk-num nk-rise shrink-0 text-(length:--nk-text-label) text-muted-foreground" aria-label={`${count} times`}>
         {`×${count}`}
       </span>
     </span>
