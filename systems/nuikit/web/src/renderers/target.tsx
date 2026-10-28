@@ -51,7 +51,7 @@ function OneTarget({ id, props, ctx }: { id: string; props: TargetProps; ctx: Re
           <Panel size="sm" className="nk-first-row nk-enter">
             {(props.title || path.length > 0) && <PanelHeader title={<Text>{path.length ? level === props.options ? props.title : crumbLabel(props.options ?? [], path) : props.title}</Text>} />}
             <PanelBody>
-              {/* one tile per list: it slides between options under the pointer; a new level starts its own */}
+              {/* one Selection per list: it slides between options under the pointer; a new level starts its own */}
               <MenuRowList key={path.join(".")} active={level.findIndex((o) => o.active)}>
                 {level.map((o, i) => (
                   <MenuRow

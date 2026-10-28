@@ -1,32 +1,33 @@
 /* The frame's own CSS, after the synced index.css: icon animations a script can ask for (ox
-   iconAnimation), and the hosted-module containers. Everything else is the kit. */
+   iconAnimation) and where a pointer menu stands top right. Everything else is the kit. */
 
 [data-nk-frame] {
-  font-family: var(--font-sans);
+  font-family: var(--nk-type-body-family);
 }
 
-/* Font Awesome's animation names, on any icon element (lucide or FA). Off with --nk-motion 0. */
-@keyframes nk-fa-spin {
+/* Font Awesome's animation names (ox iconAnimation), on any icon element as data-icon-animation. Off when motion
+   is reduced or off. */
+@keyframes frame-fa-spin {
   to {
     transform: rotate(360deg);
   }
 }
-@keyframes nk-fa-beat {
+@keyframes frame-fa-beat {
   50% {
     transform: scale(1.25);
   }
 }
-@keyframes nk-fa-fade {
+@keyframes frame-fa-fade {
   50% {
     opacity: 0.4;
   }
 }
-@keyframes nk-fa-bounce {
+@keyframes frame-fa-bounce {
   50% {
     transform: translateY(-0.2em);
   }
 }
-@keyframes nk-fa-shake {
+@keyframes frame-fa-shake {
   25% {
     transform: rotate(-12deg);
   }
@@ -34,40 +35,39 @@
     transform: rotate(12deg);
   }
 }
-.nk-fa-spin {
-  animation: nk-fa-spin 2s linear infinite;
+[data-icon-animation="spin"] {
+  animation: frame-fa-spin 2s linear infinite;
 }
-.nk-fa-spinReverse {
-  animation: nk-fa-spin 2s linear infinite reverse;
+[data-icon-animation="spinReverse"] {
+  animation: frame-fa-spin 2s linear infinite reverse;
 }
-.nk-fa-spinPulse {
-  animation: nk-fa-spin 1s steps(8) infinite;
+[data-icon-animation="spinPulse"] {
+  animation: frame-fa-spin 1s steps(8) infinite;
 }
-.nk-fa-pulse {
-  animation: nk-fa-spin 1s steps(8) infinite;
+[data-icon-animation="pulse"] {
+  animation: frame-fa-spin 1s steps(8) infinite;
 }
-.nk-fa-beat {
-  animation: nk-fa-beat 1s ease-in-out infinite;
+[data-icon-animation="beat"] {
+  animation: frame-fa-beat 1s ease-in-out infinite;
 }
-.nk-fa-fade,
-.nk-fa-beatFade {
-  animation: nk-fa-fade 1s ease-in-out infinite;
+[data-icon-animation="fade"],
+[data-icon-animation="beatFade"] {
+  animation: frame-fa-fade 1s ease-in-out infinite;
 }
-.nk-fa-bounce {
-  animation: nk-fa-bounce 1s ease-in-out infinite;
+[data-icon-animation="bounce"] {
+  animation: frame-fa-bounce 1s ease-in-out infinite;
 }
-.nk-fa-shake {
-  animation: nk-fa-shake 1s ease-in-out infinite;
+[data-icon-animation="shake"] {
+  animation: frame-fa-shake 1s ease-in-out infinite;
 }
-html[data-nk-motion="off"] [class*="nk-fa-"],
-html[data-nk-motion="reduced"] [class*="nk-fa-"] {
+html[data-nk-motion="off"] [data-icon-animation],
+html[data-nk-motion="reduced"] [data-icon-animation] {
   animation: none;
 }
 
-
 /* A pointer menu top right sits in from the corner, near where the eye is: 15% down, a quarter of the layout box
    in from its right edge (the box, not the screen: on an ultrawide the notices stand at the box's edge). */
-.nk-menu-inward[data-nk-zone] {
+.frame-menu-inward[data-nk-zone] {
   top: 15%;
   right: calc(var(--nk-screen-area-r, 0px) + (100vw - var(--nk-screen-area-l, 0px) - var(--nk-screen-area-r, 0px)) * 0.25);
 }

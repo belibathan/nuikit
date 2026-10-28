@@ -1,7 +1,7 @@
-// Icons a script can name (the `icon` type in docs/intents.md): a lucide name from the set below,
-// a Font Awesome name ('car', 'fas fa-car', ['fab', 'discord'], { prefix, iconName }), or an image
-// URL. Lucide is bundled (it's what the kit draws with); Font Awesome's free sets are a chunk
-// fetched the first time a script names one, so a server that never does never loads them.
+// Icons a script can name (the `icon` type in docs/intents.md): a kit icon by its lucide-style name from
+// the set below ('lucide:' prefix optional), a Font Awesome name ('car', 'fas fa-car', ['fab', 'discord'],
+// { prefix, iconName }), or an image URL. The kit's icons (@/components/ui/icons) are bundled; Font Awesome's
+// free sets are a chunk fetched the first time a script names one, so a server that never does never loads them.
 import type { IntentIcon } from "nuikit-core/intents";
 import {
   BanIcon,
@@ -59,7 +59,7 @@ import {
 import { useEffect, useState, type CSSProperties, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
-const LUCIDE: Record<string, IconComponent> = {
+const KIT: Record<string, IconComponent> = {
   ban: BanIcon,
   box: BoxIcon,
   briefcase: BriefcaseIcon,
@@ -156,7 +156,7 @@ function FaIcon({ lookup, className, style, animation }: { lookup: FaLookup; cla
   const [w, h, , , path] = def.icon;
   const paths = Array.isArray(path) ? path : [path];
   return (
-    <svg viewBox={`0 0 ${w} ${h}`} fill="currentColor" aria-hidden className={cn("size-4 shrink-0", animation && `nk-fa-${animation}`, className)} style={style}>
+    <svg viewBox={`0 0 ${w} ${h}`} fill="currentColor" aria-hidden className={cn("size-4 shrink-0", className)} data-icon-animation={animation || undefined} style={style}>
       {paths.map((d, i) => (
         <path key={i} d={d} opacity={paths.length > 1 && i === 0 ? 0.4 : undefined} />
       ))}
@@ -192,21 +192,21 @@ export function Icon({
     return <img src={icon as string} alt="" className={cn("size-4 shrink-0 object-contain", className)} style={s} />;
   }
   if (typeof icon === "string") {
-    const L = LUCIDE[icon.toLowerCase().replace(/^lucide:/, "")];
-    if (L) return <L className={cn("size-4 shrink-0", animation && `nk-fa-${animation}`, className)} style={s} aria-hidden />;
+    const L = KIT[icon.toLowerCase().replace(/^lucide:/, "")];
+    if (L) return <L className={cn("size-4 shrink-0", className)} data-icon-animation={animation || undefined} style={s} aria-hidden />;
   }
   const lookup = parseFa(icon);
   if (!lookup) return <>{fallback}</>;
   // Font Awesome aliases scripts use for the kit's own status icons.
-  const alias = FA_TO_LUCIDE[lookup.iconName];
+  const alias = FA_TO_KIT[lookup.iconName];
   if (alias && lookup.prefix === "fas") {
-    const L = LUCIDE[alias]!;
-    return <L className={cn("size-4 shrink-0", animation && `nk-fa-${animation}`, className)} style={s} aria-hidden />;
+    const L = KIT[alias]!;
+    return <L className={cn("size-4 shrink-0", className)} data-icon-animation={animation || undefined} style={s} aria-hidden />;
   }
   return <FaIcon lookup={lookup} className={className} style={s} animation={animation} />;
 }
 
-const FA_TO_LUCIDE: Record<string, string> = {
+const FA_TO_KIT: Record<string, string> = {
   "circle-info": "info",
   "info-circle": "info",
   "circle-check": "circle-check",

@@ -20,19 +20,6 @@ export function anchor(value: IntentAnchor | string | undefined | null, fallback
   return all.includes(v as Anchor) ? (v as Anchor) : fallback;
 }
 
-/** Literal class names (Tailwind reads them here): the kit's anchors, --nk-screen-edge from the edge. */
-export const ANCHOR_CLASS: Record<Anchor, string> = {
-  "top-left": "nk-anchor-tl",
-  "top-center": "nk-anchor-t",
-  "top-right": "nk-anchor-tr",
-  "center-left": "nk-anchor-l",
-  "center-right": "nk-anchor-r",
-  "bottom-left": "nk-anchor-bl",
-  "bottom-center": "nk-anchor-b",
-  "bottom-right": "nk-anchor-br",
-  center: "absolute inset-0 m-auto h-max w-max",
-};
-
 /** The layout zone of each anchor (docs/design.md): renderers place themselves in these. */
 export const ANCHOR_ZONE: Record<Anchor, ZoneId> = {
   "top-left": "tl",
