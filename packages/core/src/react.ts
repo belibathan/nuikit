@@ -642,7 +642,7 @@ export function useStaggerItem<T extends HTMLElement | SVGElement>(
 // ───────────────────────────────── press feel for the keyboard and controller
 
 let pressInstalled = false;
-const PRESSABLE = '[data-slot="button"], .nk-row, [data-slot="menu-row"], [data-slot="tabs-trigger"], .nk-press, [data-nk-pressable]';
+const PRESSABLE = '[data-slot="button"], .nk-row, [data-slot="menu-row"], [data-slot="tabs-trigger"], [data-nk-pressable]';
 /**
  * The kit's press dip (kit.css: :active, [data-nk-press]) for Enter and Space, and for a controller's
  * confirm (which nuikit's controls deliver as Enter): the focused control is marked pressed for a moment,
