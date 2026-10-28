@@ -73,7 +73,7 @@ function Death({ data }: { data: DeathData }) {
 const pad = (n: number) => String(Math.max(0, Math.floor(n))).padStart(2, "0");
 
 /**
- * The incapacitated band (design v2 §4.5, reference screens): one line along the bottom edge in the
+ * The incapacitated band: one line along the bottom edge in the
  * kit's band slab, destructive-toned. Left the state, right the phase and the clock in the numeric
  * face. It keeps to the last 2.5rem, under the medical resources' own text (README).
  */

@@ -1,4 +1,4 @@
-// The compact map cluster (design v2 §4): GTA's radar clipped to a circle (client/minimap.lua places
+// The compact map cluster: GTA's radar clipped to a circle (client/minimap.lua places
 // it and sends the rectangle), a thin ring around it with the compass integrated: cardinal marks and
 // ticks that turn on the ring with the camera, a lubber mark at the top with the heading in degrees
 // above it, and the waypoint distance as a tag on the ring whose arrow points at the waypoint. Under it
@@ -16,7 +16,7 @@ import { formatDistance } from "./location";
 import { cardinal, setText } from "./util";
 import { TextRoll } from "@/components/ui/text-roll";
 import { calm, rollText } from "./reel";
-import { Keycap } from "./keycap";
+import { Mark } from "./mark";
 import { Glyph } from "@/components/ui/glyph";
 
 const CARDINALS = [
@@ -144,13 +144,13 @@ export function MapRing({ frame, start, compass = true, location, units, halo = 
               const p = onRing(m.at, c, r);
               return (
                 <span key={m.label} data-north={m.label === "N" || undefined} className="hud-map-cardinal" style={{ "--x": `${p.x.toFixed(2)}px`, "--y": `${p.y.toFixed(2)}px` } as CSSProperties}>
-                  <Keycap size="sm" active={m.label === "N"} glyph={m.label} />
+                  <Mark size="sm" active={m.label === "N"} glyph={m.label} />
                 </span>
               );
             })}
           </div>
           <span data-slot="hud-heading" className="hud-map-heading" style={{ left: c, bottom: size + 0.875 * rem }} aria-label={headingText(start)}>
-            <Glyph ref={readout} size="md" className="hud-num hud-map-heading-tile" />
+            <Glyph ref={readout} size="md" className="hud-num hud-map-heading-glyph" />
           </span>
         </>
       )}

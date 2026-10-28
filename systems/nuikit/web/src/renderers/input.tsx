@@ -243,7 +243,7 @@ function Field({ field: f, index, value, error, onChange, autoFocus }: { field: 
         <FormField {...row}>
           <div role="radiogroup" className="flex flex-col gap-1.5">
             {(f.options ?? []).map((o) => (
-              <label key={o.value} className="flex cursor-pointer items-center gap-2 text-sm">
+              <label key={o.value} className="flex cursor-pointer items-center gap-2 text-(length:--nk-form-field-value-size)">
                 <input type="radio" name={`field-${index}`} className="accent-(--primary)" checked={value === o.value} onChange={() => onChange(o.value)} disabled={f.disabled} />
                 {o.label ?? o.value}
               </label>
@@ -257,7 +257,7 @@ function Field({ field: f, index, value, error, onChange, autoFocus }: { field: 
         <FormField {...row}>
           <div className="flex flex-col gap-1.5">
             {(f.options ?? []).map((o) => (
-              <label key={o.value} className="flex cursor-pointer items-center gap-2 text-sm">
+              <label key={o.value} className="flex cursor-pointer items-center gap-2 text-(length:--nk-form-field-value-size)">
                 <Checkbox checked={picked.includes(o.value)} disabled={f.disabled} onCheckedChange={(on) => onChange(on ? [...picked, o.value] : picked.filter((x) => x !== o.value))} />
                 {o.label ?? o.value}
               </label>

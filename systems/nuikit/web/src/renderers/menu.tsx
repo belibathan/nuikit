@@ -196,7 +196,7 @@ function OneMenu({ id, props, ctx }: { id: string; props: MenuProps; ctx: Render
       data-intent="menu"
       data-input={props.input ?? "full"}
       data-focus={props.focus === false ? "false" : undefined}
-      className={cn(props.focus === false ? "pointer-events-none" : "pointer-events-auto", place === "top-right" && !keyboard && "nk-menu-inward")}
+      className={cn(props.focus === false ? "pointer-events-none" : "pointer-events-auto", place === "top-right" && !keyboard && "frame-menu-inward")}
       onKeyDown={onKey}
     >
       <div className="relative flex items-start gap-2">
@@ -230,7 +230,7 @@ function OneMenu({ id, props, ctx }: { id: string; props: MenuProps; ctx: Render
             }
           />
           <PanelBody ref={list} scroll onScroll={() => setHover(null)}>
-            {/* one tile per menu: it slides to the lit row (hover, keys, the script's startIndex) instead of each row lighting itself */}
+            {/* one Selection per menu: it slides to the lit row (hover, keys, the script's startIndex) instead of each row lighting itself */}
             <MenuRowList active={keyboard || driven || hover ? rowOrdinal(level, active) : null}>
               {level.map((item, i) => {
                 if (!item.label && !item.description && !item.icon && !item.field) return null; // ox: no label, no row (the index still counts)

@@ -1,5 +1,5 @@
 // Font Awesome's free sets, loaded as one chunk the first time a script names an icon the kit's
-// lucide set doesn't cover (see icon.tsx). Aliases (ellipsis-h → ellipsis) resolve through FA itself.
+// own icons don't cover (see icon.tsx). Aliases (ellipsis-h → ellipsis) resolve through FA itself.
 import { findIconDefinition, library, type IconDefinition, type IconName, type IconPrefix } from "@fortawesome/fontawesome-svg-core";
 import { fab } from "@fortawesome/free-brands-svg-icons";
 import { far } from "@fortawesome/free-regular-svg-icons";

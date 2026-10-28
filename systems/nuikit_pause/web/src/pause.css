@@ -53,11 +53,11 @@
 .pause-sheet {
   color: var(--nk-panel-fg) !important;
   background-color: var(--nk-panel-bg) !important;
-  /* the menu material (tokens 1.4): --nk-panel-bg (× --nk-alpha-menu; blur through --nk-panel-backdrop, on unless a server sets --nk-surface-backdrop: off); the screen-edge depth is a token of its own
+  /* the menu material: --nk-panel-bg (× --nk-alpha-menu; blur through --nk-panel-backdrop, on unless a server sets --nk-surface-backdrop: off); the screen-edge depth is a token of its own
      (--pause-sheet-depth, set in theme.css; 0 = flat) */
   border-right: var(--nk-line-width) solid var(--nk-panel-border) !important;
   box-shadow: var(--nk-panel-shadow) !important;
-  /* the menu material's blur (tokens 1.4: the surface applies it; 0px by default) */
+  /* the menu material's blur (the surface applies it; 0px by default) */
   --nk-panel-backdrop: blur(var(--nk-panel-blur, 0px));
 }
 .pause-sheet[data-state="open"] {
@@ -183,13 +183,17 @@
   right: -0.5rem;
   min-width: 1rem;
   height: 1rem;
-  padding: 0 0.25rem;
+  padding: 0 var(--nk-space-1);
   border-radius: 9999px;
   background-color: var(--hud-foreground);
   color: var(--hud);
+  font-family: var(--nk-type-num-family);
+  font-style: var(--nk-type-num-style);
   font-size: var(--nk-text-label);
-  line-height: 1rem;
+  line-height: var(--nk-leading-tight);
   font-weight: var(--nk-type-weight-strong);
+  letter-spacing: var(--nk-type-num-tracking);
+  font-variant-numeric: tabular-nums;
   text-align: center;
 }
 .pause-blip-label {
@@ -199,15 +203,20 @@
   display: none;
   flex-direction: column;
   max-width: 14rem;
-  padding: 0.25rem 0.625rem;
+  padding: var(--nk-space-1) 0.625rem;
   border-radius: var(--nk-chip-radius);
   clip-path: var(--nk-chip-clip, none);
   background-color: var(--nk-chip-bg);
   color: var(--nk-chip-fg);
   white-space: nowrap;
-  font-size: 0.8125rem;
+  /* the blip's name in the label voice; its kind under it in the body weight */
+  font-family: var(--nk-type-label-family);
+  font-style: var(--nk-type-label-style);
+  font-size: var(--nk-text-label);
   line-height: 1.125rem;
   font-weight: var(--nk-type-weight-strong);
+  letter-spacing: var(--nk-type-label-tracking);
+  text-transform: var(--nk-type-label-case);
   transform: translateY(-50%);
 }
 .pause-blip-kind {
@@ -255,9 +264,9 @@
 }
 
 /*
- * --nk-style-pause: slash (tokens 1.3, html[data-nk-pause="slash"]): a light panel (--pause-surface, ink
+ * --nk-style-pause: slash (html[data-nk-pause="slash"]): a light panel (--pause-surface, ink
  * --pause-ink) with a diagonal right edge cutting into the scene; the column sits on its left, the
- * selected row is the identity's fill bar, the key hints go bottom right. The sheet's open area and the
+ * selected row is the identity's fill bar. The sheet's open area and the
  * camera frame are unchanged.
  */
 :is(html, *)[data-nk-pause="slash"] .pause-sheet {
@@ -286,14 +295,7 @@
 :is(html, *)[data-nk-pause="slash"] .pause-sheet > div > div > div {
   max-width: 24rem;
   padding-left: 3rem;
-  padding-right: 1.5rem;
-}
-/* the key hints: bottom right of the scene */
-:is(html, *)[data-nk-pause="slash"] [data-slot="pause-hints"] {
-  left: auto;
-  right: 0;
-  margin-left: 0;
-  margin-right: 0;
+  padding-right: var(--nk-space-6);
 }
 
 /* Page to page inside the sheet (views/sheet.tsx): deeper slides in from the right, back Home from the left,

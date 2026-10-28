@@ -85,7 +85,7 @@ export function PlayerSummary({ player, data, streamer }: { player: NuiPlayer; d
       <div className="flex items-center gap-3">
         <Avatar className="size-10">
           {/* the ring keeps it a disc in themes where muted sits close to the panel colour */}
-          <AvatarFallback className="bg-muted text-sm font-semibold text-foreground ring-1 ring-border ring-inset">{initials(name)}</AvatarFallback>
+          <AvatarFallback className="bg-muted nk-text-scan text-foreground ring-1 ring-border ring-inset">{initials(name)}</AvatarFallback>
         </Avatar>
         <div className="flex min-w-0 flex-1 flex-col gap-0.5">
           <p className="nk-title truncate">{name}</p>
@@ -130,23 +130,23 @@ export function ServerSummary({ data }: { data: PauseData }) {
         <div className="flex items-center gap-1.5">
           <UsersIcon className="size-4 text-muted-foreground" />
           <span className="nk-label flex-1">Players online</span>
-          <span className="nk-num text-sm">{players ?? "—"}</span>
+          <span className="nk-num text-(length:--nk-text-desc)">{players ?? "—"}</span>
         </div>
       )}
       <dl className="grid grid-cols-2 gap-x-4 gap-y-3">
         {facts.map((f) => (
           <div key={f.label} className="flex min-w-0 flex-col gap-0.5">
             <dt className="nk-label truncate text-muted-foreground">{f.label}</dt>
-            <dd className="nk-num truncate text-sm">{f.value}</dd>
+            <dd className="nk-num truncate text-(length:--nk-text-desc)">{f.value}</dd>
           </div>
         ))}
       </dl>
       {links.length ? (
-        <dl className="flex flex-col gap-2 border-t border-border pt-4 text-sm">
+        <dl className="flex flex-col gap-2 border-t border-border pt-4">
           {links.map((l) => (
             <div key={l.label} className="flex items-baseline justify-between gap-4">
-              <dt className="shrink-0 text-muted-foreground">{l.label}</dt>
-              <dd className="truncate font-medium">{l.value}</dd>
+              <dt className="nk-label shrink-0 text-muted-foreground">{l.label}</dt>
+              <dd className="truncate text-(length:--nk-text-desc) font-(--nk-type-weight-strong)">{l.value}</dd>
             </div>
           ))}
         </dl>

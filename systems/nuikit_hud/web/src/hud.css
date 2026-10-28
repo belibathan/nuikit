@@ -1,8 +1,8 @@
 /*
  * nuikit_hud: the HUD's own CSS (imported after the synced index.css; never edits it).
  *
- * Colours come only from theme tokens. Identity and component tokens (docs/design/v2.md §1) are read
- * with fallbacks, so this works on tokens v1 today and takes an identity's look when it sets them:
+ * Colours come only from theme tokens. Identity and component tokens are read with fallbacks, so an
+ * identity restyles the HUD by setting them:
  *   --brand, --font-display, --font-numeric, --nk-type-case, --nk-type-tracking-label, --nk-type-weight-display,
  *   --nk-material-hud-opacity, --nk-surface-glow, --nk-chip-bg, --nk-chip-fg, --nk-chip-radius, --nk-meter-track-color,
  *   --nk-gauge-fill-color, --nk-gauge-needle-color, --nk-gauge-redline-color (+ --nk-style-gauge, -track, -ticks and
@@ -19,7 +19,6 @@
   /* ink drawn straight on the game: --world-* stay light in every theme (a light theme's
      --hud-foreground can be dark); --hud-foreground is the fallback before tokens ship them */
   --hud-fg: var(--world-foreground, var(--hud-foreground));
-  --hud-fg-muted: var(--world-foreground-muted, color-mix(in oklab, var(--hud-fg) 72%, transparent));
   color: var(--hud-fg);
   font-family: var(--nk-type-body-family);
   --edge: var(--nk-screen-edge, 1.5rem);
@@ -31,19 +30,19 @@
   --hud-faint: color-mix(in oklab, var(--hud-fg) 18%, transparent);
   --hud-hairline: color-mix(in oklab, var(--hud-fg) 10%, transparent);
   --hud-track: var(--nk-meter-track-color, color-mix(in oklab, var(--hud-fg) 16%, transparent));
-  /* status colours on the roles (tokens 1.4: --role-<name>); the 1.3 tokens only for an older theme */
+  /* status colours on the roles (--role-<name>), the older status tokens as fallbacks */
   --hud-ok: var(--role-success, var(--success));
   --hud-warn: var(--role-warning, var(--warning));
   --hud-danger: var(--role-danger, var(--destructive));
   --hud-redline: var(--nk-gauge-redline-color, var(--hud-danger));
   --hud-fill: var(--nk-gauge-fill-color, var(--brand, var(--primary)));
   --hud-needle: var(--nk-gauge-needle-color, var(--hud-fg));
-  /* the HUD material (tokens 1.4), which legibility lifts by day; 1.3 themes: --nk-material-hud-opacity */
+  /* the HUD material, which legibility lifts by day (--nk-material-hud-opacity as a fallback) */
   --hud-plate-opacity: var(--nk-alpha-hud, var(--nk-material-hud-opacity, 0.55));
   --hud-ms: calc(var(--nk-time-slow) * var(--nk-motion, 1));
   text-shadow: var(--world-shadow, var(--hud-ts));
 }
-/* Legibility over the sky (research §2.6): the identity picks how strong. */
+/* Legibility over the sky: the identity picks how strong. */
 .hud-root[data-shadow="soft"] {
   --hud-ts: 0 1px 2px color-mix(in oklab, var(--scrim) 70%, transparent), 0 0 1px color-mix(in oklab, var(--scrim) 45%, transparent);
 }
@@ -60,25 +59,15 @@
 .hud-label,
 .hud-unit {
   font-size: var(--nk-text-label);
-  line-height: 1rem;
+  line-height: var(--nk-leading-tight);
   opacity: 0.75;
 }
 
 /* ───────────────────────────── anchors: GTA's safe area + --nk-screen-edge */
 
-.hud-anchor-bl,
 .hud-anchor-br,
-.hud-anchor-tr,
-.hud-anchor-tl {
+.hud-anchor-tr {
   position: absolute;
-}
-.hud-anchor-tl {
-  left: calc(var(--hud-l, 0%) + var(--edge));
-  top: calc(var(--hud-t, 0%) + var(--edge));
-}
-.hud-anchor-bl {
-  left: calc(var(--hud-l, 0%) + var(--edge));
-  bottom: calc(var(--hud-b, 0%) + var(--edge));
 }
 .hud-anchor-br {
   right: calc(var(--hud-r, 0%) + var(--edge));
@@ -92,24 +81,24 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 0.75rem;
+  gap: var(--nk-space-3);
 }
 /* a corner is a layout zone (kit.css nk.layout): GTA's area via --nk-area-*, --nk-screen-edge in; the HUD's own gaps */
 .hud-root [data-slot="hud-corner"][data-nk-zone] {
-  --nk-zone-gap: 0.75rem;
+  --nk-zone-gap: var(--nk-space-3);
 }
 .hud-root [data-slot="hud-corner"][data-nk-zone="br"] {
-  --nk-zone-gap: 1rem;
+  --nk-zone-gap: var(--nk-space-4);
 }
 /* with the map in the bottom-left corner: location above it, vitals beside its bottom edge */
 .hud-above-map {
   position: absolute;
   left: var(--hud-map-x);
-  bottom: calc(var(--hud-map-top) + 0.75rem);
+  bottom: calc(var(--hud-map-top) + var(--nk-space-3));
 }
 .hud-beside-map {
   position: absolute;
-  left: calc(var(--hud-map-end) + 0.75rem);
+  left: calc(var(--hud-map-end) + var(--nk-space-3));
   bottom: var(--hud-map-bottom);
 }
 
@@ -125,8 +114,7 @@
 /* ───────────────────────────── the status row: comms first, then vitals (components/ui/vital-chip)
 
    Every chip is the kit's VitalChip: one shape path (--nk-chip-shape), its level (--nk-style-level),
-   its label attachment (--nk-label-attach); the defaults are the 0.7 look, the rest are experimental
-   (/hudstyle). The vitals fold away when they have nothing to say; a change pops a flag from the side. */
+   its label attachment (--nk-label-attach). The vitals fold away when they have nothing to say; a change pops a flag from the side. */
 
 .hud-vitals-row {
   --nk-vital-chip-size: 2.125rem;
@@ -136,7 +124,7 @@
   --nk-chip-fg: var(--hud-chip-fg);
   --nk-vital-chip-track-color: var(--hud-track);
   display: flex;
-  /* anchor-preserving growth (Foundation 2): a chip that grows (a pop, a taller identity) grows away
+  /* anchor-preserving growth: a chip that grows (a pop, a taller identity) grows away
      from the corner the row is anchored to, so its bottom edge stays put (top corners: its top) */
   align-items: flex-end;
   gap: var(--hud-vchip-gap);
@@ -187,28 +175,13 @@
   transform: none;
   transition-property: opacity;
 }
-/* talking: the accent fills the chip from the bottom up, the ink eases with it */
-.hud-vchip {
-  --nk-vital-chip-activefill-color: var(--hud-accent);
-}
-.hud-vchip [data-slot="vital-chip-activefill"] {
-  transform-box: fill-box;
-  transform-origin: center bottom;
-  transform: scaleY(0);
-  transition: transform calc(var(--nk-time-slow) * var(--nk-motion, 1)) var(--nk-ease-enter);
-}
+/* talking: the chip lights (VitalChip's active face), the ink eases with it */
 .hud-vchip [data-slot="vital-chip-shape"] {
   transition: color calc(var(--nk-time-slow) * var(--nk-motion, 1)) ease-out;
-}
-.hud-vchip[data-active] [data-slot="vital-chip-activefill"] {
-  transform: scaleY(1);
 }
 .hud-vchip[data-active] {
   --nk-chip-fg: var(--hud-accent-foreground);
   --nk-vital-chip-track-color: transparent;
-}
-:is(html, *)[data-nk-motion="reduced"] .hud-vchip [data-slot="vital-chip-activefill"] {
-  transition: none;
 }
 /* past its threshold: the whole outline takes the vital's colour (outline level) */
 .hud-vchip[data-state="alert"] {
@@ -225,7 +198,7 @@
 .hud-location {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: var(--nk-space-3);
   max-width: 26rem;
 }
 .hud-bearing {
@@ -264,8 +237,8 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-size: 0.875rem;
-  line-height: 1.25rem;
+  font-size: var(--nk-text-desc);
+  line-height: var(--nk-leading-normal);
   opacity: 0.82;
 }
 .hud-tags {
@@ -276,9 +249,9 @@
 .hud-tag {
   display: inline-flex;
   align-items: center;
-  gap: 0.25rem;
+  gap: var(--nk-space-1);
   height: 1.375rem;
-  padding: 0 0.5rem;
+  padding: 0 var(--nk-space-2);
   border-radius: var(--hud-chip-radius);
   background-color: var(--hud-chip-bg);
   color: var(--hud-chip-fg);
@@ -287,8 +260,8 @@
   text-shadow: none;
 }
 .hud-tag svg {
-  width: 0.75rem;
-  height: 0.75rem;
+  width: var(--nk-icon-sm);
+  height: var(--nk-icon-sm);
   opacity: 0.8;
 }
 
@@ -367,12 +340,12 @@
 .hud-compass-readout {
   position: relative;
   margin-top: 0.125rem;
-  padding: 0.125rem 0.5rem;
+  padding: 0.125rem var(--nk-space-2);
   border-radius: var(--hud-chip-radius);
   background-color: var(--hud-chip-bg);
   box-shadow: inset 0 0 0 1px var(--hud-hairline);
-  font-size: 0.8125rem;
-  line-height: 1rem;
+  font-size: var(--nk-text-label);
+  line-height: var(--nk-leading-tight);
 }
 
 /* ───────────────────────────── minimap frame */
@@ -434,13 +407,13 @@
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 0.25rem;
+  gap: var(--nk-space-1);
 }
 .hud-money {
   position: relative;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--nk-space-2);
   max-height: 2.5rem;
   opacity: 1;
   /* opacity only: the line's height snaps (a height transition laid out the column every frame) */
@@ -455,16 +428,16 @@
   opacity: 0.8;
 }
 .hud-money-icon svg {
-  width: 1rem;
-  height: 1rem;
+  width: var(--nk-icon-md);
+  height: var(--nk-icon-md);
 }
 .hud-money-value {
   font-size: 1.0625rem;
   line-height: 1.5rem;
 }
 .hud-money[data-size="lg"] .hud-money-icon svg {
-  width: 1.25rem;
-  height: 1.25rem;
+  width: var(--nk-icon-lg);
+  height: var(--nk-icon-lg);
 }
 .hud-money[data-size="lg"] .hud-money-value {
   font-size: 1.75rem;
@@ -472,8 +445,8 @@
   font-variant-numeric: tabular-nums;
 }
 .hud-money-delta {
-  margin-right: 0.25rem;
-  font-size: 0.875rem;
+  margin-right: var(--nk-space-1);
+  font-size: var(--nk-text-desc);
   color: var(--hud-danger);
   animation: hud-rise calc(5s * var(--nk-motion, 1)) ease-out both;
 }
@@ -486,8 +459,8 @@
   gap: 0.375rem;
   margin-top: 0.125rem;
   max-width: 18rem;
-  font-size: 0.875rem;
-  line-height: 1.25rem;
+  font-size: var(--nk-text-desc);
+  line-height: var(--nk-leading-normal);
   opacity: 0.9;
 }
 .hud-job svg {
@@ -503,7 +476,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--nk-space-2);
 }
 .hud-gauge {
   position: relative;
@@ -540,11 +513,11 @@
   justify-content: center;
   min-width: 2rem;
   height: 2rem;
-  padding: 0 0.5rem;
+  padding: 0 var(--nk-space-2);
   border-radius: calc(var(--radius) - 2px);
   background-color: color-mix(in oklab, var(--hud-fg) 10%, transparent);
   box-shadow: inset 0 0 0 1px var(--hud-faint);
-  font-size: 1.125rem;
+  font-size: var(--nk-text-row);
   line-height: 1;
   transition: background-color calc(var(--nk-time-fast) * var(--nk-motion, 1)), color calc(var(--nk-time-fast) * var(--nk-motion, 1));
 }
@@ -565,7 +538,7 @@
 }
 .hud-gear-wide {
   min-width: 5.5rem;
-  font-size: 0.875rem;
+  font-size: var(--nk-text-desc);
 }
 
 /* shift lights: five steps up to the redline, flashing at it */
@@ -602,8 +575,8 @@
   opacity: 0.16;
 }
 .hud-signal svg {
-  width: 1.25rem;
-  height: 1.25rem;
+  width: var(--nk-icon-lg);
+  height: var(--nk-icon-lg);
   fill: currentColor;
   stroke: none;
 }
@@ -651,7 +624,7 @@
 .hud-telltales {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: var(--nk-space-3);
   height: 2rem;
   padding: 0 0.875rem;
   border-radius: var(--hud-chip-radius);
@@ -665,8 +638,8 @@
   transition: opacity calc(var(--nk-time-fast) * var(--nk-motion, 1));
 }
 .hud-telltale-text {
-  margin-left: 0.25rem;
-  font-size: 0.8125rem;
+  margin-left: var(--nk-space-1);
+  font-size: var(--nk-text-label);
   line-height: 1.125rem;
 }
 .hud-telltale {
@@ -694,7 +667,7 @@
   justify-content: center;
   gap: 0.375rem;
   width: 22rem;
-  margin-bottom: 0.75rem;
+  margin-bottom: var(--nk-space-3);
   transform: translateX(-50%);
   text-shadow: none;
 }
@@ -799,9 +772,9 @@
 .hud-bar {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: var(--nk-space-2);
   width: 19rem;
-  padding: 0.75rem 1rem 1rem;
+  padding: var(--nk-space-3) var(--nk-space-4) var(--nk-space-4);
 }
 .hud-bar > :not(.hud-plate) {
   position: relative;
@@ -815,7 +788,7 @@
 .hud-bar-main {
   display: flex;
   align-items: baseline;
-  gap: 0.5rem;
+  gap: var(--nk-space-2);
 }
 .hud-bar-main .hud-speed {
   font-size: 3.25rem;
@@ -828,7 +801,7 @@
   font-size: 1.375rem;
 }
 .hud-bar-rpm {
-  margin: 0.25rem 0 0.75rem;
+  margin: var(--nk-space-1) 0 var(--nk-space-3);
   border-radius: 9999px;
   background-color: var(--hud-track);
 }
@@ -871,7 +844,7 @@
   flex-direction: column;
   gap: 0.625rem;
   width: 18rem;
-  padding: 0.875rem 1rem 1rem;
+  padding: 0.875rem var(--nk-space-4) var(--nk-space-4);
 }
 .hud-digital > :not(.hud-plate) {
   position: relative;
@@ -899,7 +872,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 0.75rem;
+  gap: var(--nk-space-3);
 }
 .hud-digital-speed {
   display: flex;
@@ -910,21 +883,16 @@
 .hud-digital-speed .hud-speed {
   font-size: 4rem;
 }
-.hud-gear-big {
-  min-width: 3rem;
-  height: 3rem;
-  font-size: 1.75rem;
-}
 
 /* aircraft */
 .hud-air {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  column-gap: 1rem;
-  row-gap: 0.75rem;
+  column-gap: var(--nk-space-4);
+  row-gap: var(--nk-space-3);
   width: 24rem;
-  padding: 1rem 1.25rem 0.875rem;
+  padding: var(--nk-space-4) 1.25rem 0.875rem;
 }
 .hud-air > *:not(.hud-plate) {
   position: relative;
@@ -945,7 +913,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.25rem;
+  gap: var(--nk-space-1);
 }
 .hud-air-rose svg {
   width: 6rem;
@@ -978,8 +946,8 @@
   opacity: 0.85;
 }
 .hud-air-heading {
-  font-size: 0.875rem;
-  line-height: 1.25rem;
+  font-size: var(--nk-text-desc);
+  line-height: var(--nk-leading-normal);
 }
 .hud-air-foot {
   grid-column: 1 / -1;
@@ -993,7 +961,7 @@
   align-items: center;
   gap: 0.3125rem;
   height: 1.5rem;
-  padding: 0 0.5rem;
+  padding: 0 var(--nk-space-2);
   border-radius: var(--hud-chip-radius);
   background-color: color-mix(in oklab, var(--hud-fg) 8%, transparent);
   font-size: var(--nk-text-label);
@@ -1008,7 +976,7 @@
 .hud-air-flag[data-tone="destructive"] { color: var(--hud-danger); }
 .hud-air-flag[data-tone="muted"] { opacity: 0.8; }
 
-/* ═════════════════════════════ compact layout (design v2 §4) ═════════════════════════════
+/* ═════════════════════════════ compact layout ═════════════════════════════
  * One cluster per job: the map (top right), the player (bottom left), the vehicle (bottom right).
  * Small footprint, tight grouping; no idle animation. Every part reads component tokens with
  * fallbacks, so an identity restyles it without touching this file. */
@@ -1083,12 +1051,12 @@
   align-items: center;
   gap: 0.3125rem;
   height: 1.5rem;
-  padding: 0 0.5rem 0 0.4375rem;
+  padding: 0 var(--nk-space-2) 0 0.4375rem;
   border-radius: var(--hud-chip-radius);
   background-color: var(--hud-solid);
   color: var(--hud-solid-fg);
   box-shadow: 0 0 0 1px var(--hud-hairline);
-  font-size: 0.8125rem;
+  font-size: var(--nk-text-label);
   line-height: 1;
   white-space: nowrap;
   text-shadow: none;
@@ -1105,8 +1073,8 @@
   color: var(--hud-accent);
 }
 .hud-map-arrow svg {
-  width: 0.75rem;
-  height: 0.75rem;
+  width: var(--nk-icon-sm);
+  height: var(--nk-icon-sm);
   fill: currentColor;
 }
 
@@ -1117,9 +1085,9 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--nk-space-2);
   width: max(var(--hud-col-w, 12rem), 12rem);
-  padding: 0.75rem 0;
+  padding: var(--nk-space-3) 0;
   text-align: center;
 }
 .hud-column:not([data-placed]) {
@@ -1177,9 +1145,9 @@
   height: 0.6875rem;
 }
 .hud-loc-waypoint {
-  gap: 0.25rem;
-  margin-top: 0.25rem;
-  font-size: 0.8125rem;
+  gap: var(--nk-space-1);
+  margin-top: var(--nk-space-1);
+  font-size: var(--nk-text-label);
 }
 .hud-loc-waypoint svg {
   color: var(--hud-accent);
@@ -1193,20 +1161,20 @@
   height: 0.875rem;
 }
 .hud-money[data-size="md"] .hud-money-value {
-  font-size: 1.125rem;
+  font-size: var(--nk-text-row);
   line-height: 1.5rem;
 }
 .hud-money[data-size="md"] {
   gap: 0.375rem;
 }
 .hud-wallet[data-compact] .hud-money[data-size="sm"] .hud-money-value {
-  font-size: 0.875rem;
-  line-height: 1.25rem;
+  font-size: var(--nk-text-desc);
+  line-height: var(--nk-leading-normal);
 }
 .hud-wallet[data-compact] .hud-job {
   margin-top: 0;
   font-size: var(--nk-text-label);
-  line-height: 1rem;
+  line-height: var(--nk-leading-tight);
   opacity: 0.8;
 }
 
@@ -1219,16 +1187,16 @@
   align-items: flex-end;
 }
 .hud-br-stack {
-  gap: 1rem;
+  gap: var(--nk-space-4);
 }
 .hud-tr-stack {
-  gap: 0.75rem;
+  gap: var(--nk-space-3);
 }
 .hud-ammo {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 0.25rem;
+  gap: var(--nk-space-1);
 }
 .hud-ammo-count {
   display: flex;
@@ -1240,12 +1208,12 @@
 }
 .hud-ammo-reserve {
   margin-left: 0.3125rem;
-  font-size: 1rem;
+  font-size: var(--nk-text-base);
   line-height: 1;
   opacity: 0.6;
 }
 .hud-ammo-sep {
-  margin-right: 0.25rem;
+  margin-right: var(--nk-space-1);
   opacity: 0.6;
 }
 .hud-ammo-glyph {
@@ -1319,7 +1287,7 @@
 }
 
 .hud-c-heading {
-  font-size: 0.875rem;
+  font-size: var(--nk-text-desc);
   line-height: 1;
   white-space: nowrap;
 }
@@ -1346,7 +1314,7 @@
   position: relative;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--nk-space-2);
   height: 1.25rem;
   opacity: 0.85;
 }
@@ -1369,7 +1337,7 @@
   transition: transform calc(var(--nk-time-slow) * var(--nk-motion, 1)) ease-out;
 }
 .hud-c-fuel-value {
-  font-size: 0.8125rem;
+  font-size: var(--nk-text-label);
   line-height: 1;
 }
 .hud-c-fuel[data-state="alert"] {
@@ -1384,7 +1352,7 @@
   align-items: stretch;
   gap: 0;
   width: 13.5rem;
-  padding: 0.75rem 1rem 0;
+  padding: var(--nk-space-3) var(--nk-space-4) 0;
 }
 .hud-c-bar > :not(.hud-plate) {
   position: relative;
@@ -1392,7 +1360,7 @@
 .hud-c-bar-main {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--nk-space-2);
   height: 3rem;
 }
 .hud-c-bar .hud-c-readout {
@@ -1410,11 +1378,6 @@
   position: static;
   transform: none;
 }
-.hud-c-bar .hud-c-gear {
-  min-width: 2rem;
-  height: 2rem;
-  font-size: 1.125rem;
-}
 .hud-c-bar .hud-c-signal {
   position: static;
   transform: none;
@@ -1423,7 +1386,7 @@
   display: flex;
   gap: 0.1875rem;
   height: 0.5rem;
-  margin: 0.5rem 0 0.875rem;
+  margin: var(--nk-space-2) 0 0.875rem;
 }
 .hud-c-bar-rpm > span {
   flex: 1;
@@ -1440,7 +1403,7 @@
 }
 .hud-c-bar .hud-c-fuel {
   justify-content: center;
-  margin-top: 0.25rem;
+  margin-top: var(--nk-space-1);
 }
 .hud-c-tells {
   position: absolute;
@@ -1472,10 +1435,6 @@
 .hud-c-tell svg {
   width: 0.9375rem;
   height: 0.9375rem;
-}
-.hud-c-tell-text {
-  font-size: 0.625rem;
-  line-height: 1;
 }
 .hud-c-tell[data-tone="success"] { color: var(--hud-ok); }
 .hud-c-tell[data-tone="info"] { color: var(--info); }
@@ -1606,12 +1565,12 @@ html[data-nk-motion="off"] .hud-root * {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
-  gap: 1rem;
+  gap: var(--nk-space-4);
 }
 .hud-editor-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 0.5rem;
+  gap: var(--nk-space-2);
 }
 .hud-editor-place {
   display: flex;
@@ -1619,7 +1578,7 @@ html[data-nk-motion="off"] .hud-root * {
   align-items: flex-start;
   gap: 0.375rem;
   min-height: 5.5rem;
-  padding: 0.625rem 0.75rem;
+  padding: 0.625rem var(--nk-space-3);
   border: 1px dashed var(--border);
   border-radius: var(--radius);
   cursor: pointer;
@@ -1636,12 +1595,12 @@ html[data-nk-motion="off"] .hud-root * {
   background-color: rgba(var(--primary-rgb), 0.06);
 }
 .hud-editor-part {
-  padding: 0.25rem 0.625rem;
+  padding: var(--nk-space-1) 0.625rem;
   border-radius: calc(var(--radius) - 2px);
   background-color: var(--secondary);
   color: var(--secondary-foreground);
-  font-size: 0.875rem;
-  line-height: 1.25rem;
+  font-size: var(--nk-text-desc);
+  line-height: var(--nk-leading-normal);
   cursor: grab;
 }
 .hud-editor-part[data-held] {
@@ -1650,8 +1609,8 @@ html[data-nk-motion="off"] .hud-root * {
 .hud-editor-actions {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0 0.5rem 0.5rem;
+  gap: var(--nk-space-2);
+  padding: 0 var(--nk-space-2) var(--nk-space-2);
 }
 
 /* a placed part (parts.tsx Part): a flex item that passes its place's alignment on to the part */
@@ -1661,7 +1620,7 @@ html[data-nk-motion="off"] .hud-root * {
   align-items: inherit;
 }
 
-/* Foundation 2 situations (Config.situations.retract): a zone the situation leaves out slides toward
+/* Situations (Config.situations.retract): a zone the situation leaves out slides toward
    its side's edge and fades, and comes back the same way */
 .hud-part {
   transition:
@@ -1679,7 +1638,7 @@ html[data-nk-motion="off"] .hud-root * {
   position: relative;
   display: flex;
   align-items: center;
-  gap: 0.25rem;
+  gap: var(--nk-space-1);
 }
 .hud-editor-place[data-place$="right"] .hud-editor-row {
   flex-direction: row-reverse;
@@ -1698,7 +1657,7 @@ html[data-nk-motion="off"] .hud-root * {
 .hud-editor-steps button {
   display: flex;
   padding: 0.125rem;
-  border-radius: calc(var(--radius) - 4px);
+  border-radius: var(--nk-radius-control);
   color: var(--muted-foreground);
 }
 .hud-editor-steps button:hover:not(:disabled) {
@@ -1735,13 +1694,13 @@ html[data-nk-motion="off"] .hud-root * {
 }
 .hud-editor-ghost {
   position: fixed;
-  margin: 0.5rem 0 0 0.75rem;
-  padding: 0.25rem 0.625rem;
+  margin: var(--nk-space-2) 0 0 var(--nk-space-3);
+  padding: var(--nk-space-1) 0.625rem;
   border-radius: calc(var(--radius) - 2px);
   background-color: var(--primary);
   color: var(--primary-foreground);
-  font-size: 0.875rem;
-  line-height: 1.25rem;
+  font-size: var(--nk-text-desc);
+  line-height: var(--nk-leading-normal);
   pointer-events: none;
 }
 
@@ -1751,7 +1710,7 @@ html[data-nk-motion="off"] .hud-root * {
   position: absolute;
 }
 .hud-beside[data-corner="top-left"] {
-  left: calc(var(--hud-map-end) + 0.75rem);
+  left: calc(var(--hud-map-end) + var(--nk-space-3));
   top: var(--hud-map-y);
 }
 .hud-beside[data-corner="top-right"] {
@@ -1793,15 +1752,15 @@ html[data-nk-motion="off"] .hud-root * {
 /* /hud edit: the Layout / Style tabs and the Style rows */
 .hud-editor-tabs {
   display: flex;
-  gap: 0.25rem;
+  gap: var(--nk-space-1);
 }
 .hud-editor-tabs button,
 .hud-styles-options button {
-  padding: 0.25rem 0.625rem;
+  padding: var(--nk-space-1) 0.625rem;
   border-radius: calc(var(--radius) - 2px);
   color: var(--muted-foreground);
-  font-size: 0.875rem;
-  line-height: 1.25rem;
+  font-size: var(--nk-text-desc);
+  line-height: var(--nk-leading-normal);
 }
 .hud-editor-tabs button:hover,
 .hud-styles-options button:hover {
@@ -1818,24 +1777,24 @@ html[data-nk-motion="off"] .hud-root * {
 .hud-styles {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: var(--nk-space-4);
   max-height: min(32rem, 60vh);
   overflow-y: auto;
 }
 .hud-styles-group {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: var(--nk-space-1);
 }
 .hud-styles-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
+  gap: var(--nk-space-4);
   min-height: 2rem;
 }
 .hud-styles-name {
-  font-size: 0.875rem;
+  font-size: var(--nk-text-desc);
 }
 .hud-styles-options {
   display: flex;
@@ -1870,24 +1829,22 @@ html[data-nk-motion="off"] .hud-root * {
   contain: layout;
 }
 .hud-loc-street { font-size: var(--nk-text-hud); line-height: 1.5rem; }
-.hud-job { font-size: 0.9375rem; gap: 0.5rem; opacity: 0.85; }
-.hud-wallet[data-compact] .hud-job { font-size: 0.875rem; }
+.hud-job { font-size: 0.9375rem; gap: var(--nk-space-2); opacity: 0.85; }
+.hud-wallet[data-compact] .hud-job { font-size: var(--nk-text-desc); }
 .hud-c-speed { font-size: 3.25rem; }
 .hud-c-unit { font-size: var(--nk-text-label); }
-/* a telltale is a keycap; a lit one carries its status colour on the glyph */
+/* a telltale is a Mark (hud/mark.tsx); a lit one carries its status colour on the glyph */
 .hud-c-tell { position: relative; overflow: visible; }
 .hud-c-tell[data-tone="success"] [data-slot="vital-chip-icon"] { color: var(--hud-ok); }
 .hud-c-tell[data-tone="info"] [data-slot="vital-chip-icon"] { color: var(--info); }
 .hud-c-tell[data-tone="warning"] [data-slot="vital-chip-icon"] { color: var(--hud-warn); }
 .hud-c-tell[data-tone="destructive"] [data-slot="vital-chip-icon"] { color: var(--hud-danger); }
-/* a small keycap (a telltale, a compass mark): --nk-vital-chip-size-sm, the key radius, a shallower drop */
+/* a small Mark (a telltale, a compass letter): --nk-vital-chip-size-sm, the key radius, a shallower drop */
 [data-slot="vital-chip"][data-size="sm"] { --nk-vital-chip-size: var(--nk-vital-chip-size-sm, 1.625rem); }
-[data-slot="vital-chip"][data-size="sm"] [data-slot="vital-chip-shape"] { --nk-vital-chip-plate-drop: var(--nk-control-wall-height, 0.1875rem); --nk-vital-chip-label-size: 0.8125rem; }
+[data-slot="vital-chip"][data-size="sm"] [data-slot="vital-chip-shape"] { --nk-vital-chip-plate-drop: var(--nk-control-wall-height, 0.1875rem); --nk-vital-chip-label-size: var(--nk-text-key); }
 [data-slot="vital-chip"][data-size="sm"] :is([data-slot="vital-chip-wall"], [data-slot="vital-chip-plate"]) { border-radius: var(--nk-radius-key); }
 [data-slot="vital-chip"][data-size="sm"] > [data-slot="vital-chip-shape"] > [data-slot="glyph"] { --nk-control-face-radius: var(--nk-radius-key); }
 .hud-c-tells { width: auto; gap: var(--nk-space-2, 0.5rem); }
-
-
 
 /* a wallet line that goes away fades first, then its row collapses (one layout step, after the fade), so the
    lines never overlap while it leaves */
@@ -1900,18 +1857,18 @@ html[data-nk-motion="off"] .hud-root * {
   position: absolute;
   transform: translateX(-50%);
 }
-.hud-map-heading-tile {
+.hud-map-heading-glyph {
   width: auto;
   padding-inline: calc(0.625rem + var(--nk-type-label-pad)) 0.625rem;
   white-space: pre;
   font-size: 0.9375rem;
   line-height: 1;
 }
-/* the gear: one tile; reverse takes the warning rim, the redline fills the face red */
-.hud-c-gear-tile { display: block; }
-.hud-c-gear-tile[data-gear="N"] [data-slot="vital-chip"] { opacity: 0.7; }
-.hud-c-gear-tile[data-gear="R"] [data-slot="glyph"] { --nk-control-now-rim: var(--hud-warn); }
-.hud-gauge[data-state="alert"] .hud-c-gear-tile [data-slot="vital-chip-lit"] { background: var(--hud-redline); transform: scaleY(1); }
+/* the gear: one Mark; reverse takes the warning rim, the redline fills the face red */
+.hud-c-gear-mark { display: block; }
+.hud-c-gear-mark[data-gear="N"] [data-slot="vital-chip"] { opacity: 0.7; }
+.hud-c-gear-mark[data-gear="R"] [data-slot="glyph"] { --nk-control-now-rim: var(--hud-warn); }
+.hud-gauge[data-state="alert"] .hud-c-gear-mark [data-slot="vital-chip-lit"] { background: var(--hud-redline); transform: scaleY(1); }
 
 .hud-c-center { top: 8.75rem; }
 /* a vital in alert takes the danger colour (Default: colour only on alert) */
@@ -1928,8 +1885,7 @@ html[data-nk-motion="off"] .hud-root * {
     .hud-loc-street,
     .hud-job,
     .hud-c-heading,
-    .hud-c-tell-text,
-    .hud-map-heading-tile,
+    .hud-map-heading-glyph,
     .hud-bearing-point,
     .hud-tape-label,
     .hud-tag,

@@ -1,4 +1,4 @@
-// Ammo (design v2 §4): `12 / 48` with a weapon glyph, only while armed with a gun or a throwable.
+// Ammo: `12 / 48` with a weapon glyph, only while armed with a gun or a throwable.
 // client/weapon.lua reads the ped's weapon and ammo and sends `hud:weapon` only when they change.
 // The glyphs are nuikit's own line drawings (2:1, stroke 1.5, round joins, currentColor) so they sit
 // with the lucide icons around them.

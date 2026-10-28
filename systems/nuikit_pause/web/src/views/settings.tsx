@@ -124,7 +124,7 @@ function Section({ section: s, onDraft, onPreset, onReset }: { section: Settings
       <SheetSection
         label={s.label || s.resource}
         meta={
-          <Button variant="ghost" size="xs" className="-my-1 font-sans" onClick={onReset}>
+          <Button variant="ghost" size="xs" className="-my-1" onClick={onReset}>
             Reset
           </Button>
         }

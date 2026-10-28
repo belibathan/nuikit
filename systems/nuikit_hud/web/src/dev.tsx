@@ -2,13 +2,12 @@
 //
 // ?fixture=<name>   foot (default), low, idle, cruise, redline, reverse, damaged, plane, boat, wide
 // &gauge=arc|bar|digital   force a gauge style (else the theme's --nk-style-gauge)
-// &identity=<name>  try identity tokens before they ship: signal, vector (sets --nk-* on <html>)
 // &theme=ember      a colourful TweakCN-style theme instead of stock neutral
 // &scene=<url|name> the background (an image URL, or day / dusk / night)
 // &heading=<deg>    the camera's bearing
-// &rule=stage       the 0.5.0 layout rule (16:9 in the middle) instead of the game's edges
+// &rule=stage       16:9 in the middle instead of the game's edges
 // &shape=circle     round minimap (classic)
-// &layout=classic   the 0.6 layout (default: compact)
+// &layout=classic   the classic layout (default: compact)
 // &weapon=<kind>|none  the weapon in hand: pistol (default on foot), smg, rifle, shotgun, sniper, heavy, thrown
 // &radar=off        hide the radar (compact on foot with Config.radar = 'vehicle')
 // &style=stock      Config.minimap.style = 'stock': GTA's own radar box bottom left, no frame
@@ -142,12 +141,6 @@ const WEAPONS: Record<string, HudWeapon> = {
 
 const place: HudLocation = { visible: true, street: "Elgin Ave", crossing: "Vespucci Blvd", zone: "Pillbox Hill", postal: "7023", waypoint: 1850, bearing: 300 };
 
-// Identity tokens from design v2 (another branch ships them); here only to show the HUD reads them.
-const IDENTITIES: Record<string, Record<string, string>> = {
-  signal: { "--nk-style-gauge": "bar", "--nk-type-case": "uppercase", "--nk-type-tracking-label": "0.06em", "--nk-fill-height": "0.5rem", "--nk-chip-text-shadow": "strong" },
-  vector: { "--nk-style-gauge": "digital", "--nk-surface-glow": "0.6", "--nk-gauge-ticks": "1", "--nk-material-hud-opacity": "0.7" },
-};
-
 // nuikit-ignore-start color/hardcoded (a sample theme and a fake radar: browser development only)
 const THEMES: Record<string, Record<string, string>> = {
   ember: {
@@ -246,7 +239,6 @@ export default function Dev() {
     const theme = THEMES[q.get("theme") ?? ""];
     if (theme) applyTheme(theme);
     else if (q.get("theme") !== "stock") applyTheme(defaultTheme);
-    for (const [k, v] of Object.entries(IDENTITIES[q.get("identity") ?? ""] ?? {})) document.documentElement.style.setProperty(k, v);
 
     const preset: HudPreset = q.get("layout") === "classic" ? "classic" : "compact";
     const settings: HudSettings = {
@@ -280,7 +272,7 @@ export default function Dev() {
       if (v.altitude !== undefined) emit("hud:vehicle:altitude", v.altitude);
     }
     if (radar) setFrame(mf);
-    // ?retract: Foundation 2 situations with the lever on (status and vitals slide away after --nk-behavior-rest)
+    // ?retract: situations with the lever on (status and vitals slide away after --nk-behavior-rest)
     if (q.has("retract")) document.documentElement.style.setProperty("--nk-behavior-rest", "8s");
     if (q.has("retract")) settings.situations = { retract: true, rest: ["map", "vehicle"], moment: ["status", "map", "vitals", "vehicle"], driving: ["status", "map", "vitals", "vehicle"], interaction: ["map", "vitals"] };
     devSettings = settings;
