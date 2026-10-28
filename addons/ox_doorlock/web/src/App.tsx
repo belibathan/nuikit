@@ -365,7 +365,7 @@ export default function App() {
                       <Row key={i} onRemove={() => set({ items: form.items.filter((_, j) => j !== i) })}>
                         <Input placeholder="Item" value={it.name ?? ""} onChange={(e) => patch({ name: e.target.value })} />
                         <Input placeholder="Metadata type" value={it.metadata ?? ""} onChange={(e) => patch({ metadata: e.target.value })} />
-                        <label className="flex shrink-0 items-center gap-2 pl-1 text-sm text-muted-foreground">
+                        <label className="nk-text-desc flex shrink-0 items-center gap-2 pl-1">
                           <Switch checked={!!it.remove} onCheckedChange={(remove) => patch({ remove })} />
                           Remove
                         </label>

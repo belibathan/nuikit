@@ -1,8 +1,8 @@
 /**
- * ox_lib passes Mantine colour keys for progress bars ('blue', 'red.6', 'dark.3').
+ * ox_lib passes Mantine colour keys ('blue', 'red.6'), as the config's primaryColor.
  * Named hues map onto the theme's roles so meaning survives (red stays danger, green success) and no
  * palette of ours is left: reds are danger, greens success, yellows and oranges warning, the cool hues
- * info, and gray the muted text. 'dark.*' and missing values follow the theme. Raw CSS colours pass through.
+ * info, and gray the muted text.
  */
 export const HUES: Record<string, string> = {
   gray: "var(--muted-foreground)",
@@ -19,11 +19,3 @@ export const HUES: Record<string, string> = {
   yellow: "var(--warning)",
   orange: "var(--warning)",
 };
-
-export function schemeColor(scheme: string | undefined, fallback = "var(--primary)"): string {
-  if (!scheme) return fallback;
-  if (/^(#|rgb|hsl|oklch|var\()/.test(scheme)) return scheme;
-  const name = scheme.split(".")[0]!;
-  if (name === "dark") return fallback;
-  return HUES[name] ?? fallback;
-}

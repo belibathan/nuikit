@@ -1,4 +1,4 @@
-/* index.css is synced from the nuikit template (stock shadcn theme); it also scales 1rem with the
+/* index.css is synced from the nuikit template (theme tokens + the kit layer); it also scales 1rem with the
    game's resolution. This adds a transparent, unscrollable page and the card's identity marks. */
 @import "./index.css";
 

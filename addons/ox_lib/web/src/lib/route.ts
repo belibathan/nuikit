@@ -77,20 +77,12 @@ async function door(body: unknown, timeout = 0): Promise<Answer | null> {
 
 let routed = false;
 let generation = 0;
-const listeners = new Set<(routed: boolean) => void>();
 
 /** True while the nuikit runtime draws this page's intents. Read at each message, never cached by a feature. */
 export const isRouted = () => routed;
 
-export function onRouted(fn: (routed: boolean) => void) {
-  listeners.add(fn);
-  return () => listeners.delete(fn);
-}
-
 function setRouted(next: boolean) {
-  if (routed === next) return;
   routed = next;
-  listeners.forEach((fn) => fn(next));
 }
 
 /** Ask the runtime once. */
@@ -122,12 +114,6 @@ export function startRouting() {
       if (gen !== generation) return;
     }
   })();
-}
-
-/** Tests: stop the probe loop and forget the state. */
-export function __resetRouting() {
-  generation++;
-  routed = false;
 }
 
 // ───────────────────────────────── intents through the door

@@ -93,7 +93,7 @@ function Zone({ zone, items }: { zone: TattooZone; items: Tattoo[] }) {
       <Button className="w-full" variant={appliedOne ? "outline" : "secondary"} disabled={!selected || busy} onClick={() => void apply()}>
         {busy && <Spinner />}
         {appliedOne ? L.delete : L.apply}
-        {selected && <span className="min-w-0 truncate font-normal text-muted-foreground">{selected.label}</span>}
+        {selected && <span className="nk-text-desc min-w-0 truncate">{selected.label}</span>}
       </Button>
       {declined && declined === selected?.name && <p className="text-center nk-label text-destructive">Not applied.</p>}
     </div>

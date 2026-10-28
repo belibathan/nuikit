@@ -1,4 +1,4 @@
-/* index.css is synced from the nuikit template (stock shadcn neutral theme). This file adds what the
+/* index.css is synced from the nuikit template (theme tokens + the kit layer). This file adds what the
    appearance UI needs on top: a transparent, unscrollable page
    (the ped behind it is the backdrop). */
 @import "./index.css";
@@ -37,13 +37,13 @@ input::-webkit-inner-spin-button {
   box-shadow: var(--nk-chip-glow);
 }
 
-/* A section's groups as the pause menu's rows: 48px, a hairline between (drawn without taking layout). */
+/* A section's groups as the pause menu's rows: a hairline between (drawn without taking layout). */
 .ia-groups[data-mode="list"] > .nk-row + .nk-row::after {
   content: "";
   position: absolute;
   top: 0;
-  left: calc(var(--nk-space-unit) * 3);
-  right: calc(var(--nk-space-unit) * 3);
+  left: var(--nk-space-3);
+  right: var(--nk-space-3);
   height: var(--nk-line-width);
   background-color: var(--border);
   pointer-events: none;
@@ -62,7 +62,7 @@ input::-webkit-inner-spin-button {
   height: auto;
   gap: 0;
   margin: 0 auto;
-  padding: 0.75rem 1rem;
+  padding: var(--nk-space-3) var(--nk-space-4);
 }
 .ia-tray[data-state="open"] {
   animation-duration: var(--nk-time-slow) !important;
@@ -97,16 +97,17 @@ input::-webkit-inner-spin-button {
 }
 .ia-thumb-num {
   position: absolute;
-  left: 0.25rem;
+  left: var(--nk-space-1);
   bottom: 0.125rem;
   font-size: var(--nk-text-label);
-  line-height: 1rem;
+  line-height: var(--nk-leading-tight);
+  font-variant-numeric: tabular-nums;
   color: var(--muted-foreground);
 }
 
 /*
- * A modal is the current surface + dim + dialog (foundation 2, layers): no new screen. The sheet that
- * opened it stays where it is under the dim; the dim darkens with the theme's scrim (was black/50).
+ * A modal is the current surface + dim + dialog (layers): no new screen. The sheet that opened it
+ * stays where it is under the dim; the dim darkens with the theme's scrim.
  */
 [data-slot="dialog-overlay"],
 [data-slot="alert-dialog-overlay"] {

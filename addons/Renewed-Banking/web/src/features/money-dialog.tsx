@@ -99,7 +99,7 @@ export function MoneyForm({
                 </Button>
               ))}
               {available >= 1 && (
-                <Button type="button" variant="outline" size="sm" className="px-0 font-normal" onClick={() => setAmount(String(Math.floor(available)))}>
+                <Button type="button" variant="outline" size="sm" className="px-0" onClick={() => setAmount(String(Math.floor(available)))}>
                   {t("nuikit_max")}
                 </Button>
               )}
@@ -109,7 +109,7 @@ export function MoneyForm({
         {action === "transfer" && (
           <Field className="gap-2">
             <FieldLabel htmlFor="rb-target">{t("transfer")}</FieldLabel>
-            <Input id="rb-target" value={target} onChange={(e) => setTarget(e.target.value)} placeholder="#" className="h-10 font-mono" />
+            <Input id="rb-target" value={target} onChange={(e) => setTarget(e.target.value)} placeholder="#" className="h-10 nk-num" />
           </Field>
         )}
         <Field className="gap-2">

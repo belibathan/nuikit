@@ -1,5 +1,5 @@
-/* index.css is synced from the nuikit template (stock shadcn neutral theme). This file adds what
-   the ox_target UI needs on top: a transparent, unscrollable page. */
+/* index.css is synced from the nuikit template (theme tokens + the kit layer). This file adds what
+   the ox_target UI needs on top: a transparent, unscrollable page, the eye and the option list. */
 @import "./index.css";
 
 html,
@@ -11,10 +11,10 @@ body {
 }
 
 /*
- * The eye (rule 8: a HUD mark on the game). Idle: a small chip in the HUD plate, its icon dimmed, so
+ * The eye (a HUD mark on the game). Idle: a small chip in the HUD plate, its icon dimmed, so
  * it marks the centre without shouting. Locked on (something has options): the chip takes the row
  * fill colour (brand, else primary) and four reticle corners close in around it, once. Shapes are the
- * chip tokens (--nk-chip-radius, --nk-chip-clip), so Signal chamfers and Velvet rounds.
+ * chip tokens (--nk-chip-radius, --nk-chip-clip), so a chamfered identity chamfers and a round one rounds.
  */
 .tgt-eye {
   position: absolute;
@@ -93,6 +93,7 @@ body {
 }
 html[data-nk-motion="reduced"] .tgt-reticle {
   animation-name: nk-enter;
+  animation-duration: var(--nk-motion-reduced);
 }
 
 /* A hairline from the eye to the list, so the list reads as belonging to what you aim at. */
@@ -148,24 +149,21 @@ html[data-nk-motion="reduced"] .tgt-eye-chip {
   transition-property: none;
 }
 
-/* The list: the pause menu rows (48px, a hairline between rows, a full rule between groups). */
+/* The list: the pause menu rows (row height, a hairline between rows, a full rule between groups). */
 .tgt-panel {
-  --nk-row-height: 3rem;
+  --nk-row-height: var(--nk-height-row);
 }
 .tgt-group > .nk-row + .nk-row::after {
   content: "";
   position: absolute;
   top: 0;
-  left: calc(var(--nk-space-unit) * 3);
-  right: calc(var(--nk-space-unit) * 3);
+  left: var(--nk-space-3);
+  right: var(--nk-space-3);
   height: var(--nk-line-width);
   background-color: var(--border);
   pointer-events: none;
 }
 .tgt-group-rule {
-  margin: calc(var(--nk-space-unit) * 2) calc(var(--nk-space-unit) * -2);
+  margin: var(--nk-space-2) calc(var(--nk-space-2) * -1);
   width: auto !important;
-}
-html[data-nk-motion="reduced"] .tgt-reticle {
-  animation-duration: var(--nk-motion-reduced);
 }

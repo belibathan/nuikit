@@ -1,5 +1,5 @@
-/* index.css is synced from the nuikit template (stock shadcn neutral theme). This adds a
-   transparent, unscrollable page and the scrim's fade (the contract opens with the kit's nk-enter). */
+/* index.css is synced from the nuikit template (theme tokens + the kit layer). This adds a
+   transparent, unscrollable page and a bare price field (the contract opens with the kit's nk-enter). */
 @import "./index.css";
 
 html,
@@ -8,7 +8,6 @@ body {
   overflow: hidden;
   user-select: none;
 }
-
 
 /* The price field: no number spinners. */
 .price-input::-webkit-outer-spin-button,

@@ -54,7 +54,7 @@ function Breakdown({ price }: { price: number }) {
           {label} <span className="nk-num nk-label text-muted-foreground">{pct}</span>
         </MenuRow>
       ))}
-      <MenuRow readOnly meta={money(Math.ceil((p / 100) * 77))} className="border-t font-medium">
+      <MenuRow readOnly meta={money(Math.ceil((p / 100) * 77))} className="border-t">
         Seller receives <span className="nk-num nk-label text-muted-foreground">77%</span>
       </MenuRow>
     </div>
@@ -65,7 +65,7 @@ function Detail({ label, value, mono }: { label: string; value: string; mono?: b
   return (
     <div className="flex min-w-0 flex-col gap-1">
       <dt className="nk-label">{label}</dt>
-      <dd className={cn("nk-body truncate", mono && "font-mono")} title={value}>
+      <dd className={cn("nk-body truncate", mono && "nk-num")} title={value}>
         {value || "—"}
       </dd>
     </div>
@@ -189,7 +189,7 @@ export default function App() {
           description={selling ? "List your vehicle for sale" : shown.takeBack ? "Your listing" : "Vehicle for sale"}
           actions={
             shown.plate && (
-              <Kbd className="h-7 px-2 font-mono text-sm uppercase" title="Plate">
+              <Kbd className="h-7 px-2 nk-text-scan" title="Plate">
                 {shown.plate}
               </Kbd>
             )
@@ -224,7 +224,7 @@ export default function App() {
               <Field className="gap-2" data-invalid={error ? true : undefined}>
                 <FieldLabel htmlFor="price">Asking price</FieldLabel>
                 <div className="relative">
-                  <span className="text-muted-foreground pointer-events-none absolute inset-y-0 left-3 flex items-center text-sm">$</span>
+                  <span className="nk-text-desc pointer-events-none absolute inset-y-0 left-3 flex items-center">$</span>
                   <Input
                     id="price"
                     ref={priceRef}
@@ -241,7 +241,7 @@ export default function App() {
                     onKeyDown={(e) => e.key === "Enter" && sell()}
                   />
                 </div>
-                {error ? <FieldError>{error}</FieldError> : <FieldDescription className="text-xs">Buyers pay this. The lot keeps 23%.</FieldDescription>}
+                {error ? <FieldError>{error}</FieldError> : <FieldDescription>Buyers pay this. The lot keeps 23%.</FieldDescription>}
               </Field>
               <div className="border-t pt-4">
                 <Breakdown price={typed} />
@@ -251,7 +251,7 @@ export default function App() {
             <>
               <div className="flex flex-col gap-1">
                 <span className="nk-label">Description</span>
-                <p className={cn("text-sm whitespace-pre-line", !shown.desc && "text-muted-foreground")}>{shown.desc || "No description."}</p>
+                <p className={cn("nk-body whitespace-pre-line", !shown.desc && "text-muted-foreground")}>{shown.desc || "No description."}</p>
               </div>
               <div className="flex items-end justify-between gap-3">
                 <Stat size="display" label="Price" value={money(shown.price)} />

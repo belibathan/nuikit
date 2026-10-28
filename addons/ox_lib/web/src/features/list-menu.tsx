@@ -236,7 +236,7 @@ export function ListMenu() {
                         onPointerMove={() => hoverTo(i)}
                       />
                     </TooltipTrigger>
-                    <TooltipContent side={right ? "left" : "right"} align="center" sideOffset={rem() * 2.25} className="ox-tip nk-panel max-w-64 px-3 py-2 text-sm text-muted-foreground">
+                    <TooltipContent side={right ? "left" : "right"} align="center" sideOffset={rem() * 2.25} className="ox-tip nk-panel max-w-64 px-3 py-2 nk-text-desc">
                       {tooltip}
                     </TooltipContent>
                   </Tooltip>

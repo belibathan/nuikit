@@ -5,19 +5,19 @@
     "step": "key-nothing-shown",
     "name": "closeIdCard",
     "body": null,
-    "ms": 24
+    "ms": 8
    },
    {
     "step": "close-id",
     "name": "closeIdCard",
     "body": null,
-    "ms": 12
+    "ms": 9
    },
    {
     "step": "close-driver",
     "name": "closeIdCard",
     "body": null,
-    "ms": 7
+    "ms": 8
    },
    {
     "step": "close-weapon",
@@ -35,19 +35,19 @@
     "step": "close-badge",
     "name": "closeIdCard",
     "body": null,
-    "ms": 8
+    "ms": 6
    },
    {
     "step": "close-nomugshot",
     "name": "closeIdCard",
     "body": null,
-    "ms": 10
+    "ms": 5
    },
    {
     "step": "close-unknown",
     "name": "closeIdCard",
     "body": null,
-    "ms": 7
+    "ms": 6
    },
    {
     "step": "close-recolored",
@@ -70,61 +70,61 @@
     "step": "key-nothing-shown",
     "name": "closeIdCard",
     "body": null,
-    "ms": 47
+    "ms": 13
    },
    {
     "step": "close-id",
     "name": "closeIdCard",
     "body": null,
-    "ms": 8
+    "ms": 17
    },
    {
     "step": "close-driver",
     "name": "closeIdCard",
     "body": null,
-    "ms": 25
+    "ms": 7
    },
    {
     "step": "close-weapon",
     "name": "closeIdCard",
     "body": null,
-    "ms": 16
+    "ms": 7
    },
    {
     "step": "close-lawyer",
     "name": "closeIdCard",
     "body": null,
-    "ms": 7
+    "ms": 10
    },
    {
     "step": "close-badge",
     "name": "closeIdCard",
     "body": null,
-    "ms": 8
+    "ms": 11
    },
    {
     "step": "close-nomugshot",
     "name": "closeIdCard",
     "body": null,
-    "ms": 12
+    "ms": 7
    },
    {
     "step": "close-unknown",
     "name": "closeIdCard",
     "body": null,
-    "ms": 9
+    "ms": 13
    },
    {
     "step": "close-recolored",
     "name": "closeIdCard",
     "body": null,
-    "ms": 9
+    "ms": 7
    },
    {
     "step": "card-autoclose",
     "name": "closeIdCard",
     "body": null,
-    "ms": 1608
+    "ms": 1506
    }
   ],
   "themeRequests": 7
@@ -135,49 +135,49 @@
     "step": "key-nothing-shown",
     "name": "closeIdCard",
     "body": null,
-    "ms": 25
+    "ms": 13
    },
    {
     "step": "close-id",
     "name": "closeIdCard",
     "body": null,
-    "ms": 8
+    "ms": 11
    },
    {
     "step": "close-driver",
     "name": "closeIdCard",
     "body": null,
-    "ms": 11
+    "ms": 10
    },
    {
     "step": "close-weapon",
     "name": "closeIdCard",
     "body": null,
-    "ms": 8
+    "ms": 9
    },
    {
     "step": "close-lawyer",
     "name": "closeIdCard",
     "body": null,
-    "ms": 7
+    "ms": 6
    },
    {
     "step": "close-badge",
     "name": "closeIdCard",
     "body": null,
-    "ms": 8
+    "ms": 12
    },
    {
     "step": "close-nomugshot",
     "name": "closeIdCard",
     "body": null,
-    "ms": 6
+    "ms": 13
    },
    {
     "step": "close-unknown",
     "name": "closeIdCard",
     "body": null,
-    "ms": 6
+    "ms": 10
    },
    {
     "step": "close-recolored",
@@ -189,9 +189,9 @@
     "step": "card-autoclose",
     "name": "closeIdCard",
     "body": null,
-    "ms": 1508
+    "ms": 1513
    }
   ],
-  "themeRequests": 8
+  "themeRequests": 7
  }
 }

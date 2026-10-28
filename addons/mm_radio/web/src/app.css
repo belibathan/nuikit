@@ -1,5 +1,5 @@
-/* index.css is synced from the nuikit template (stock shadcn neutral theme). This adds
-   a transparent, unscrollable page. */
+/* index.css is synced from the nuikit template (theme tokens + the kit layer). This adds a transparent,
+   unscrollable page, the display's digits and the handheld's slide. */
 @import "./index.css";
 
 html,
@@ -15,7 +15,7 @@ input {
 
 /* The radio's display digits: monospaced figures in the theme's mono font. */
 .radio-lcd {
-  font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+  font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.02em;
 }
