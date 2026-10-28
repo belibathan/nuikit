@@ -166,7 +166,7 @@ export function DatePicker({
             <Button
               type="button"
               variant="ghost"
-              className="h-(--cell-size) flex-1 font-medium"
+              className="nk-text-scan h-(--cell-size) flex-1"
               disabled={view === "decades"}
               onClick={up}
               aria-label={view === "days" ? `${title}: choose a year` : view === "years" ? `${title}: choose a decade` : title}

@@ -1,5 +1,4 @@
-/* index.css is synced from the nuikit template (stock shadcn neutral theme). This file adds what
-   the ox_lib UI needs on top: a transparent, unscrollable page. */
+/* index.css is synced from the nuikit template. This file adds what the ox_lib UI needs on top. */
 @import "./index.css";
 
 html,
@@ -12,20 +11,16 @@ body {
 /* Markdown from scripts: keep it inside the theme. */
 .ox-md p { margin: 0; white-space: pre-line; } /* scripts write "a\nb" and expect two lines */
 .ox-md p + p { margin-top: var(--nk-space-1); }
-.ox-md h1 { font-size: var(--nk-text-title); font-weight: var(--nk-type-weight-strong, 600); }
-.ox-md h2 { font-size: var(--nk-text-base); font-weight: var(--nk-type-weight-strong, 600); }
-.ox-md h3 { font-size: var(--nk-text-label); font-weight: var(--nk-type-weight-strong, 600); }
+.ox-md h1 { font-size: var(--nk-text-title); font-weight: var(--nk-type-weight-strong); }
+.ox-md h2 { font-size: var(--nk-text-base); font-weight: var(--nk-type-weight-strong); }
+.ox-md h3 { font-size: var(--nk-text-label); font-weight: var(--nk-type-weight-strong); }
 .ox-md a { text-decoration: underline; text-underline-offset: 2px; }
-.ox-md code { font-family: var(--font-mono, ui-monospace, monospace); font-size: 0.85em; }
+.ox-md code { font-family: var(--font-mono); font-size: 0.85em; }
 .ox-md ul { list-style: disc; padding-left: var(--nk-space-6); }
 .ox-md ol { list-style: decimal; padding-left: var(--nk-space-6); }
 .ox-md table { border-collapse: collapse; margin: var(--nk-space-1) 0; }
 .ox-md th, .ox-md td { border: 1px solid var(--border); padding: var(--nk-space-1) var(--nk-space-2); }
 .ox-md img { max-width: 100%; max-height: 100%; }
-
-/* input dialog colour row: the native picker as a plain swatch */
-.ox-swatch::-webkit-color-swatch-wrapper { padding: 0; }
-.ox-swatch::-webkit-color-swatch { border: none; border-radius: var(--nk-radius-key); }
 
 /*
  * Radial menu (features/radial-menu.tsx). A ring of segments in the panel surface with the panel's
@@ -82,9 +77,6 @@ body {
 [data-slot="radial-segment"][data-active] :is(.ox-radial-item, .ox-radial-icon) {
   color: var(--nk-row-fill-foreground);
 }
-[data-slot="radial-segment"][data-active] .ox-radial-label {
-  font-weight: var(--nk-type-weight-strong, 600);
-}
 
 /* The hub: the panel surface, the brand hairline; lit (pointer over it) in the hover colour. */
 .ox-radial-hub {
@@ -131,8 +123,9 @@ body {
   font-size: 13px; /* SVG units (1px at 1080p): rem would scale twice in the foreignObject; 13 is the label floor */
   line-height: 15px;
   font-weight: var(--nk-type-weight-strong);
-  text-transform: var(--nk-type-case);
+  text-transform: var(--nk-type-label-case);
   letter-spacing: var(--nk-type-tracking-label);
+  padding-inline-end: var(--nk-type-label-pad);
   color: var(--muted-foreground);
 }
 [data-slot="radial-hub"][data-active] :is(.ox-radial-hub-content, .ox-radial-hub-caption) {
@@ -164,6 +157,15 @@ body {
 html[data-nk-motion="reduced"] .ox-radial[data-state="open"] .ox-radial-svg {
   animation-name: nk-enter;
 }
+/* reduced motion: the wheel and its hints fade in ≤ 100ms, no movement */
+html[data-nk-motion="reduced"] .ox-radial[data-state="open"] :is(.ox-radial-svg, [data-slot="radial-hints"]) {
+  animation-duration: var(--nk-time-snap, 90ms);
+}
+/* segments scale and rotate about the wheel's centre */
+[data-slot="radial-segment"] {
+  transform-box: view-box;
+  transform-origin: center;
+}
 
 /* the sheet title: the heading face at section size (the pause title's family, one step down) */
 .ox-sheet-title {
@@ -171,19 +173,6 @@ html[data-nk-motion="reduced"] .ox-radial[data-state="open"] .ox-radial-svg {
 }
 .ox-sheet-title p {
   margin: 0;
-}
-
-/* Rows are the kit's (the baseline, docs/design.md): its height, padding, icon column and voices. */
-.ox-list-header {
-  --nk-text-title: calc(var(--nk-text-title) * 1.1);
-}
-/* The list menu's selection is the kit's Selection (.ox-indicator): one Glyph gliding between the rows,
-   which paint nothing of their own (kit.css, Selection). Its glide keeps the kit's key-repeat rule. */
-
-/* Modal dialogs (shadcn AlertDialog / Dialog): the game darkened with the theme's scrim, not black. */
-[data-slot="alert-dialog-overlay"],
-[data-slot="dialog-overlay"] {
-  background-color: rgba(var(--scrim-rgb), 0.45) !important;
 }
 
 /*
@@ -204,11 +193,6 @@ html[data-nk-motion="reduced"] .ox-radial[data-state="open"] .ox-radial-svg {
   box-shadow: var(--nk-panel-shadow) !important;
 }
 
-/* Reduced motion (the player's /nuikit motion off): the wheel and its hints fade in ≤ 100ms, no movement. */
-html[data-nk-motion="reduced"] .ox-radial[data-state="open"] :is(.ox-radial-svg, [data-slot="radial-hints"]) {
-  animation-duration: var(--nk-time-snap, 90ms);
-}
-
 /* Floating sheets (list menu): the same slide as the edge sheet. */
 .ox-sheet-float[data-state="open"] {
   animation-duration: var(--nk-time-slow, var(--nk-time-base)) !important;
@@ -216,19 +200,12 @@ html[data-nk-motion="reduced"] .ox-radial[data-state="open"] :is(.ox-radial-svg,
 }
 .ox-sheet-float[data-state="closed"] {
   animation-duration: var(--nk-time-fast, var(--nk-time-base)) !important;
-  animation-timing-function: var(--nk-ease-exit, var(--nk-ease-exit, ease-in)) !important;
+  animation-timing-function: var(--nk-ease-exit) !important;
 }
 /* the row tooltip (shadcn Tooltip) as a small panel: no arrow, the panel colours */
 .ox-tip > svg,
 .ox-tip > span[style*="position: absolute"] {
   display: none;
-}
-
-
-/* radial segments fan in and out from the hub (kit choreography) */
-[data-slot="radial-segment"] {
-  transform-box: view-box;
-  transform-origin: center;
 }
 
 /*
@@ -237,7 +214,7 @@ html[data-nk-motion="reduced"] .ox-radial[data-state="open"] :is(.ox-radial-svg,
  * notice. --ox-notify-bump (0–1, default 1) scales it; 0 on :root in nuikit/theme.css turns it off.
  */
 .nk-bump {
-  animation: nk-bump var(--nk-time-base, var(--nk-time-base)) var(--nk-ease-expand, var(--nk-ease-enter)) both;
+  animation: nk-bump var(--nk-time-base) var(--nk-ease-expand, var(--nk-ease-enter)) both;
 }
 @keyframes nk-bump {
   from {
@@ -259,8 +236,8 @@ html[data-nk-motion="reduced"] .ox-radial[data-state="open"] :is(.ox-radial-svg,
 }
 
 /*
- * A modal is the current surface + dim + dialog (foundation 2, layers): no new screen. The sheet that
- * opened it stays where it is under the dim; the dim darkens with the theme's scrim (was black/50).
+ * A modal is the current surface + dim + dialog: no new screen. The sheet that opened it stays where it
+ * is under the dim; the dim darkens the game with the theme's scrim.
  */
 [data-slot="dialog-overlay"],
 [data-slot="alert-dialog-overlay"] {
@@ -303,10 +280,10 @@ html[data-nk-motion="reduced"] .ox-radial[data-state="open"] :is(.ox-radial-svg,
 @keyframes nk-dialog-in { from { opacity: 0; } to { opacity: 1; } }
 @keyframes nk-dialog-out { from { opacity: 1; } to { opacity: 0; } }
 :is([data-slot="dialog-content"], [data-slot="alert-dialog-content"])[data-state="open"] {
-  animation: nk-dialog-in var(--nk-time-base, var(--nk-time-base)) var(--nk-ease-expand, var(--nk-ease-enter)) both !important;
+  animation: nk-dialog-in var(--nk-time-base) var(--nk-ease-expand, var(--nk-ease-enter)) both !important;
 }
 :is([data-slot="dialog-content"], [data-slot="alert-dialog-content"])[data-state="closed"] {
-  animation: nk-dialog-out var(--nk-time-fast, var(--nk-time-base)) var(--nk-ease-exit, var(--nk-ease-exit, ease-in)) both !important;
+  animation: nk-dialog-out var(--nk-time-fast, var(--nk-time-base)) var(--nk-ease-exit) both !important;
 }
 /* progress: a linear fill that does not ease, so the bar tells the real time left */
 [data-slot="progress-slab"] [role="progressbar"] > * { transition-timing-function: linear; }
@@ -314,7 +291,6 @@ html[data-nk-motion="reduced"] :is([data-slot="dialog-content"], [data-slot="ale
   animation-name: nk-enter !important;
   animation-duration: var(--nk-time-fast, 120ms) !important;
 }
-
 
 /* the progress bar's slab (features/progress.tsx): the baseline's voices, label over a solid fill */
 [data-slot="progress-label"] {
@@ -327,6 +303,6 @@ html[data-nk-motion="reduced"] :is([data-slot="dialog-content"], [data-slot="ale
   padding-inline-end: var(--nk-type-label-pad);
 }
 [data-slot="progress-percent"] {
-  font-weight: var(--nk-type-weight-display, 700);
+  font-weight: var(--nk-type-weight-display);
   opacity: 0.7;
 }

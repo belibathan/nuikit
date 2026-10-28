@@ -62,7 +62,7 @@ function units(value: string): number {
 function readShape(): Shape {
   const css = getComputedStyle(document.documentElement);
   const cut = units(css.getPropertyValue("--nk-shape-cut"));
-  // chips and tiles take half the panel chamfer (nk-clip-sm); a segment is about chip-sized
+  // chips take half the panel chamfer (nk-clip-sm); a segment is about chip-sized
   if (cut > 0) return { kind: "cut", corner: cut / 2 + 4 };
   // controls are radius − 2px (docs/design.md); keep it inside the ring's thickness
   const radius = units(css.getPropertyValue("--radius"));
