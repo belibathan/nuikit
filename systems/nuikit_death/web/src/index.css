@@ -3357,14 +3357,6 @@ html[data-nk-backdrop="on"] * {
     height: calc(var(--nk-fill-height, 0.25rem) / 2);
   }
 
-  /* ── Plate (.nk-plate): the one surface recipe for sheets, dialogs and notices. Flat (no gradient, no
-     blur), a hairline, a hard drop. Graphite: the panel's surface and shadow. */
-  .nk-plate {
-    border-radius: var(--nk-plate-radius);
-    background-color: var(--nk-plate-bg);
-    box-shadow: inset 0 0 0 var(--nk-line-width, 1px) var(--nk-plate-hair), var(--nk-plate-drop);
-  }
-
   /* ── the notice icon as a Glyph, and a Kbd's legend in the scan voice's tracking and case. Every other text
      style is a generated nk-text-* utility (packages/core/src/spec/text-styles.ts). */
   :is(html, [data-nk-theme]) {
