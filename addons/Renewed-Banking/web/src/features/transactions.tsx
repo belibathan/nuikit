@@ -50,7 +50,7 @@ function TxRow({ tx, full }: { tx: Transaction; full?: boolean }) {
               {" · "}
               {tx.issuer} → {tx.receiver}
               {" · "}
-              <span className="font-mono">{String(tx.trans_id ?? "").slice(0, 8)}</span>
+              <span className="nk-num">{String(tx.trans_id ?? "").slice(0, 8)}</span>
             </>
           )}
         </>

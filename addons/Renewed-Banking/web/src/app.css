@@ -1,6 +1,6 @@
-/* index.css is synced from the nuikit template (stock shadcn neutral theme + the kit layer). This file
-   adds what the Renewed-Banking UI needs on top: a transparent,
-   unscrollable page. Numbers use the kit's nk-num; panels and toasts open with nk-enter. */
+/* index.css is synced from the nuikit template (theme tokens + the kit layer). This file adds what the
+   Renewed-Banking UI needs on top: a transparent, unscrollable page, bare amount fields and the ATM's
+   account chips. */
 @import "./index.css";
 
 html,
@@ -26,10 +26,10 @@ textarea {
 .rb-chip {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  height: 2.25rem;
+  gap: var(--nk-space-2);
+  height: var(--nk-height-control);
   max-width: 100%;
-  padding: 0 0.75rem;
+  padding: 0 var(--nk-space-3);
   border-radius: var(--nk-chip-radius);
   clip-path: var(--nk-chip-clip, none);
   background-color: var(--muted);

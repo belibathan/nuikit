@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/icons";
 import { useEffect, useMemo, useState } from "react";
 import { Selection } from "@/components/ui/selection";
-import { SlotTile } from "@/components/slot-tile";
+import { InventorySlot } from "@/components/inventory-slot";
 import { EdgeSheet, EdgeSheetBody } from "@/components/ui/edge-sheet";
 import { NumberRoll } from "@/components/ui/text-roll";
 import type { Side } from "@/lib/types";
@@ -97,17 +97,17 @@ export function InventoryPanel({ side, open }: { side: Side; open: boolean }) {
       actions={
         max > 0 && (
           <span className="nk-num text-sm text-muted-foreground">
-            <NumberRoll value={weight} format={formatKg} className={cn("font-semibold", percent >= 90 ? "text-destructive" : "text-foreground")} /> / {formatKg(max)} kg
+            <NumberRoll value={weight} format={formatKg} className={cn(percent >= 90 ? "text-destructive" : "text-foreground")} /> / {formatKg(max)} kg
           </span>
         )
       }
     >
       <EdgeSheetBody scroll onViewportScroll={onScroll}className={cn(busy && "pointer-events-none")}>
         <div className="inv-grid">
-          {/* one selection tile per grid: it slides between the filled slots under the pointer (never a wash per slot) */}
+          {/* one Selection per grid: it slides between the filled slots under the pointer (never a wash per slot) */}
           <Selection className="inv-grid-focus" items="[data-slot=item-slot][data-filled]" pointer />
           {inventory.items.slice(0, limit).map((item, i) => (
-            <SlotTile
+            <InventorySlot
               key={`${inventory.type}-${inventory.id}-${item.slot}`}
               side={side}
               item={item}

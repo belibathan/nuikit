@@ -74,7 +74,7 @@ function useRun() {
 }
 
 /**
- * lib.progressBar: the progress slab (design v2 §4.5, reference screens): the label, the percentage
+ * lib.progressBar: the progress slab: the label, the percentage
  * and, when the run can be cancelled, the cancel key chip over a thin line. ox_lib's `progress`
  * carries only `label` and `duration`; `canCancel` is a nuikit extension (ox_lib's Lua keeps it to
  * itself: X cancels through its own key mapping, so the chip only names that key).
@@ -107,7 +107,7 @@ export function ProgressBar() {
       <div
         data-slot="progress-slab"
         data-state={presence.state}
-        // the baseline: the HUD plate, the label voice, the percentage in the numeric voice, a key tile, a solid fill
+        // the HUD plate, the label voice, the percentage in the numeric voice, a key chip, a solid fill
         className={cn("nk-slab-stack gap-(--nk-space-3) rounded-(--nk-slab-radius) bg-(--nk-slab-bg) p-(--nk-space-4) text-(--nk-slab-fg) shadow-[inset_0_0_0_var(--nk-line-width)_var(--nk-slab-border)]", presenceMotion)}
       >
         <div className="nk-slab-stack-row">

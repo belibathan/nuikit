@@ -24,7 +24,7 @@ export interface NotifyData {
   alignIcon?: "top" | "center";
   style?: CSSProperties;
   /**
-   * nuikit extension (design v2 §4.5): an item added or removed, drawn as the item slab (tile, name,
+   * nuikit extension: an item added or removed, drawn as the item slab (image, name,
    * delta) instead of a panel. ox_lib's Lua never sends it; a nuikit-aware script can.
    */
   item?: { name: string; count: number; image?: string; icon?: string | [string, string] };
@@ -125,7 +125,7 @@ function Counted({ children, count }: { children: React.ReactNode; count: number
  * components behind the `notify` intent. ox_lib's own rules stay here: 3 s default, an id
  * updates in place and restarts its time, 20 on screen at most, no pause on hover (the game
  * keeps the cursor), and nothing is ever posted back to Lua. Protocol: docs/ox-lib-protocol.md §3.
- * nuikit adds two things on top (reference screens, design v2 §5D): a toast that arrives again while
+ * nuikit adds two things on top: a toast that arrives again while
  * it is still on screen (same title, description, type and position, no id) restarts the first one
  * and counts `×N` beside its title instead of stacking; and an `item` payload draws the item slab.
  */

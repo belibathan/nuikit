@@ -108,7 +108,7 @@ export function AlertDialog() {
           </AlertDialogTitle>
         </AlertDialogHeader>
         <AlertDialogDescription asChild>
-          <div className={cn("ox-dialog-body text-base leading-6 text-muted-foreground", data.overflow && "max-h-[60vh] overflow-y-auto")}>
+          <div className={cn("ox-dialog-body nk-body text-muted-foreground", data.overflow && "max-h-[60vh] overflow-y-auto")}>
             <Markdown gfm className="ox-md">
               {data.content}
             </Markdown>

@@ -80,7 +80,7 @@ export default function App() {
       actions={
         <span className="nk-num">
           <NumberRoll value={players} />
-          {max > 0 && <span className="font-normal text-muted-foreground"> / {max}</span>}
+          {max > 0 && <span className="text-muted-foreground"> / {max}</span>}
         </span>
       }
     >

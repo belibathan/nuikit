@@ -13,7 +13,7 @@ export function FieldLabel({ label, value, hint, onReset }: { label: ReactNode; 
   return (
     <div className="nk-field-label">
       <span className="truncate">{label}</span>
-      {hint !== undefined && <span className="truncate text-muted-foreground normal-case tracking-normal">{hint}</span>}
+      {hint !== undefined && <span className="nk-text-desc truncate">{hint}</span>}
       <span className="ml-auto flex shrink-0 items-center gap-1">
         {onReset && (
           <Button variant="ghost" size="icon-xs" className="text-muted-foreground hover:text-foreground" onClick={onReset} aria-label="Revert to original">

@@ -1,7 +1,6 @@
 /**
- * Resource-supplied titles, normalised at the boundary (docs/next/handoff.md §5.7: third-party input is
- * hostile to design). Scripts write "🎽 | Clothing store" or "★ - VIP garage": the glyph is an icon, not a
- * word. `splitTitle` takes a leading emoji (or an icon-like symbol) and the separator after it ("|", "-",
+ * Resource-supplied titles, normalised at the boundary (third-party input is hostile to design).
+ * Scripts write "🎽 | Clothing store" or "★ - VIP garage": the glyph is an icon, not a word. `splitTitle` takes a leading emoji (or an icon-like symbol) and the separator after it ("|", "-",
  * "–", ":", "·", "•") out of the title, so the menu's icon slot draws the glyph and the title reads in the
  * label voice like every other row.
  *

@@ -1,0 +1,125 @@
+{
+ "1280x720": {
+  "posts": [
+   {
+    "step": "start",
+    "name": "enableMeter",
+    "body": "{\"enabled\":true}",
+    "ms": 8
+   },
+   {
+    "step": "cursor",
+    "name": "enableMeter",
+    "body": "{\"enabled\":false}",
+    "ms": 382
+   },
+   {
+    "step": "cursor",
+    "name": "enableMeter",
+    "body": "{\"enabled\":true}",
+    "ms": 623
+   },
+   {
+    "step": "escape",
+    "name": "hideMouse",
+    "body": "{}",
+    "ms": 11
+   },
+   {
+    "step": "stop",
+    "name": "enableMeter",
+    "body": "{\"enabled\":false}",
+    "ms": 7
+   },
+   {
+    "step": "toggle-hidden",
+    "name": "enableMeter",
+    "body": "{\"enabled\":true}",
+    "ms": 5
+   }
+  ],
+  "themeRequests": 5
+ },
+ "1920x1080": {
+  "posts": [
+   {
+    "step": "start",
+    "name": "enableMeter",
+    "body": "{\"enabled\":true}",
+    "ms": 6
+   },
+   {
+    "step": "cursor",
+    "name": "enableMeter",
+    "body": "{\"enabled\":false}",
+    "ms": 348
+   },
+   {
+    "step": "cursor",
+    "name": "enableMeter",
+    "body": "{\"enabled\":true}",
+    "ms": 595
+   },
+   {
+    "step": "escape",
+    "name": "hideMouse",
+    "body": "{}",
+    "ms": 7
+   },
+   {
+    "step": "stop",
+    "name": "enableMeter",
+    "body": "{\"enabled\":false}",
+    "ms": 6
+   },
+   {
+    "step": "toggle-hidden",
+    "name": "enableMeter",
+    "body": "{\"enabled\":true}",
+    "ms": 6
+   }
+  ],
+  "themeRequests": 5
+ },
+ "2560x1440": {
+  "posts": [
+   {
+    "step": "start",
+    "name": "enableMeter",
+    "body": "{\"enabled\":true}",
+    "ms": 7
+   },
+   {
+    "step": "cursor",
+    "name": "enableMeter",
+    "body": "{\"enabled\":false}",
+    "ms": 361
+   },
+   {
+    "step": "cursor",
+    "name": "enableMeter",
+    "body": "{\"enabled\":true}",
+    "ms": 606
+   },
+   {
+    "step": "escape",
+    "name": "hideMouse",
+    "body": "{}",
+    "ms": 15
+   },
+   {
+    "step": "stop",
+    "name": "enableMeter",
+    "body": "{\"enabled\":false}",
+    "ms": 6
+   },
+   {
+    "step": "toggle-hidden",
+    "name": "enableMeter",
+    "body": "{\"enabled\":true}",
+    "ms": 5
+   }
+  ],
+  "themeRequests": 5
+ }
+}

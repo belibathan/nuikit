@@ -58,7 +58,7 @@ export function PedSection() {
           </Button>
           <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
-              <Button variant="outline" size="sm" className="min-w-0 flex-1 justify-between rounded-none font-mono nk-label" disabled={busy}>
+              <Button variant="outline" size="sm" className="min-w-0 flex-1 justify-between rounded-none nk-num" disabled={busy}>
                 <span className="truncate">{current.model}</span>
                 {busy ? <Spinner /> : <ChevronsUpDown className="text-muted-foreground" />}
               </Button>
@@ -71,7 +71,7 @@ export function PedSection() {
               <ScrollArea className="h-72">
                 <MenuRowList>
                   {filtered.map((m) => (
-                    <MenuRow key={m} className="font-mono" active={m === current.model} meta={FREEMODE[m]} onClick={() => void choose(m)}>
+                    <MenuRow key={m} className="nk-num" active={m === current.model} meta={FREEMODE[m]} onClick={() => void choose(m)}>
                       {m}
                     </MenuRow>
                   ))}

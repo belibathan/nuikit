@@ -220,7 +220,7 @@ export function ListMenu() {
                 row. The rows change state instantly; only the selection Glyph moves (Selection: the selected row,
                 which the keys and the pointer both move). Rows sit --nk-list-gap apart and never touch. */}
             <div ref={list} className="ox-rows nk-list max-h-[calc(var(--nk-row-height)*7_+_var(--nk-list-gap)*6_+_var(--nk-control-wall-height))] overflow-y-hidden">
-              <Selection className="ox-indicator" items=".nk-row[data-index]" lit={`[data-index="${selected}"]`} pointer={false} focus={false} />
+              <Selection items=".nk-row[data-index]" lit={`[data-index="${selected}"]`} pointer={false} focus={false} />
               {items.map((item, i) =>
                 item.label ? (
                   <Tooltip key={i} open={i === selected && !!tooltip && !!menu}>
@@ -236,7 +236,7 @@ export function ListMenu() {
                         onPointerMove={() => hoverTo(i)}
                       />
                     </TooltipTrigger>
-                    <TooltipContent side={right ? "left" : "right"} align="center" sideOffset={rem() * 2.25} className="ox-tip nk-panel max-w-64 px-3 py-2 text-sm text-muted-foreground">
+                    <TooltipContent side={right ? "left" : "right"} align="center" sideOffset={rem() * 2.25} className="ox-tip nk-panel max-w-64 px-3 py-2 nk-text-desc">
                       {tooltip}
                     </TooltipContent>
                   </Tooltip>

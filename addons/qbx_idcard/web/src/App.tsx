@@ -104,7 +104,7 @@ function IdCard({ open, data, config, labels }: { open: boolean; data: PlayerDat
         <dl className="grid flex-1 grid-cols-2 content-start gap-x-4 gap-y-3">
           <Field label={labels.lang_firstname} value={data.firstname} strong />
           <Field label={labels.lang_lastname} value={data.lastname} strong />
-          <Field label={labels.lang_citizenid} value={data.citizenid} mono className="col-span-2" />
+          <Field label={labels.lang_citizenid} value={data.citizenid} num className="col-span-2" />
           <Field label={labels.lang_dob} value={data.birthdate} num />
           <Field label={labels.lang_sex} value={data.sex} />
           <Field label={labels.lang_nat} value={data.nationality} className="col-span-2" />
@@ -140,11 +140,11 @@ function sentence(s: string) {
   return t.charAt(0).toUpperCase() + t.slice(1);
 }
 
-function Field({ label, value, strong, mono, num, className }: { label: string; value?: string; strong?: boolean; mono?: boolean; num?: boolean; className?: string }) {
+function Field({ label, value, strong, num, className }: { label: string; value?: string; strong?: boolean; num?: boolean; className?: string }) {
   return (
     <div className={cn("flex min-w-0 flex-col gap-1", className)}>
       <dt className="nk-label truncate">{sentence(label)}</dt>
-      <dd className={cn("nk-body truncate", strong && "font-semibold", mono && "font-mono", num && "nk-num")}>
+      <dd className={cn(strong ? "nk-text-title" : "nk-body", "truncate", num && "nk-num")}>
         {value || "—"}
       </dd>
     </div>

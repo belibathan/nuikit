@@ -19,7 +19,7 @@ type Props = {
   invType: string;
   /** Not buyable / not craftable: greyed out and not draggable. */
   locked?: boolean;
-  /** Hotbar overlay: no interaction, drawn as a HUD tile on the game. */
+  /** Hotbar overlay: no interaction, drawn as a HUD chip on the game. */
   display?: boolean;
   imagepath: string;
   /** Registry revision: re-render when labels/images arrive via getItemData. */
@@ -69,11 +69,11 @@ export function SlotCount({ count, className }: { count: number; className?: str
 }
 
 /**
- * One slot: a tile in the identity's chip shape (the vitals' family). The hotbar key sits in a key
- * cap, the count top right, the label along the foot; durability is traced along the tile's own
+ * One slot in the identity's chip shape (the vitals' family). The hotbar key sits in a key
+ * glyph, the count top right, the label along the foot; durability is traced along the slot's own
  * outline, like a vital's level on its chip.
  */
-export const SlotTile = memo(function SlotTile({ side, item, invType, locked, display, imagepath }: Props) {
+export const InventorySlot = memo(function InventorySlot({ side, item, invType, locked, display, imagepath }: Props) {
   const key = dropKey(side, item.slot);
   const isOver = ui.use((s) => !display && s.over === key);
   const isSource = ui.use((s) => !display && s.drag?.from.side === side && s.drag.from.slot === item.slot);
