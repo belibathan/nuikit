@@ -1,6 +1,6 @@
 <div align="center">
 
-<a href="https://nuikit.vercel.app"><img src="docs/assets/banner.png" alt="nuikit, the design system for FiveM NUI: a pause sheet, vitals with fill meters and slanted keycap hints in the Default theme" width="100%" /></a>
+<a href="https://nuikit.vercel.app"><img src="docs/assets/banner.png" alt="nuikit, the design system for FiveM NUI: a pause sheet, vitals with fill meters and key hints" width="100%" /></a>
 
 # nuikit
 
@@ -41,7 +41,7 @@ One theme repaints all of it. Free and open source.
 | **Intents** | `nk.notify`, `nk.menu`, `nk.input`, `nk.progress`, `nk.target`… drawn by swappable renderer packs. |
 | **Adapters** | QBCore, ESX and standalone libraries (qb-menu, esx_context, okokNotify…) land on the same intents. |
 | **Registry** | 38 components, 20 blocks and 3 hooks, shadcn-native: `npx shadcn add` one, or start from a whole screen. |
-| **Themes** | Tokens in three tiers. Paste a TweakCN theme or pick one of 9 identities; `nuikit theme reload` repaints live. |
+| **Themes** | One token language. Paste a TweakCN theme or pick one of three shipped themes; `nuikit theme reload` repaints live. |
 | **Runtime** | `shared_script '@nuikit/init.lua'` gives any resource `nk`: surfaces, messaging, state, camera, controls. |
 | **Tooling** | `npm create nuikit`, browser devtools that fake the game, `nuikit check` and `nuikit doctor`. |
 
@@ -80,9 +80,8 @@ shop:open({ items = GetItems() })   -- focus, cursor and Escape handled across r
 nk.notify({ title = 'Paid', type = 'success' })
 ```
 
-**Check a resource.** `nuikit check ./my-resource` audits it against the [protocol](docs/protocol.md) and the
-design rules and prints its conformance level (1 to 3). The CLI lives in [`packages/cli`](packages/cli) and isn't
-on npm yet.
+**Check a resource.** `npx @belibathan/nuikit check ./my-resource` audits it against the [protocol](docs/protocol.md)
+and the design rules and prints its conformance level (1 to 3). The CLI lives in [`packages/cli`](packages/cli).
 
 ## Themes
 
@@ -90,16 +89,11 @@ on npm yet.
 sentences, one flat control face for keys, icons and the selection, fills instead of rings, hard drops, no pills, no
 blur. Colour appears only when it means something. Spec: [`docs/design.md`](docs/design.md).
 
-| Identity | Character |
+| Theme | Character |
 |---|---|
 | **Default** (default) | Black and white, flat and upright, fill-based status |
+| **Neon Pop** | Default's structure with a vivid palette: a blue-violet-rose accent gradient, a colour per vital |
 | **Keycap** | Default's palette with slanted keycaps on walls and condensed italic caps |
-| **Neon Pop** | Default's structure, vivid palette: a blue-violet-rose accent gradient, a colour per vital |
-| **Graphite** | Utilitarian: stock shadcn neutrals, Inter, compact |
-| **Signal** | Bold and street: condensed type, chamfered corners, high-vis yellow |
-| **Velvet** | Soft and warm: rounded, serif display, champagne on aubergine |
-| **Vector** | Tactical instrument: mono numerals, hairlines, segmented meters |
-| **Arcade** · **Street** · **Studio** | Loud game UI; slate-and-cyan slabs; calm pro-software panels |
 
 Copy one from `nuikit/themes/` over `nuikit/theme.css` (or paste any [TweakCN](https://tweakcn.com) theme), then
 run `nuikit theme reload`. Missing values are derived and contrast problems print in the console. Players add
@@ -132,7 +126,7 @@ their own: `/nuikit scale 1.1`, `/nuikit motion off`, `/nuikit contrast on`. Tok
 | [`nuikit_loading`](systems/nuikit_loading) | Loading screen with real progress, tips, links and the server theme | `loadscreen` |
 | [`nuikit_chat`](systems/nuikit_chat) | Chat theme in your server's tokens | `qbx_chat_theme` |
 
-**Overrides** (`overrides/`: clean-room from specs in [`docs/`](docs), none of the original code)
+**Overrides** (`addons/` here, `nuikit/overrides/` in the zip: clean-room from specs in [`docs/`](docs), none of the original code)
 
 | Resource | Interface |
 |---|---|
@@ -173,7 +167,7 @@ issues and what's next: [`docs/roadmap.md`](docs/roadmap.md).
 | [Intents](docs/intents.md) ([site](https://nuikit.vercel.app/intents)) · [Services](docs/services.md) | What scripts ask for; camera and controls |
 | [Adopt](docs/adopt.md) ([site](https://nuikit.vercel.app/adopt)) | Make a resource you sell nuikit-native: tokens, `nuikit_protocol`, `nuikit check` levels, running without nuikit |
 | [Adapters](docs/adapters/README.md) | ox_lib, QBCore, ESX and standalone libraries on nuikit |
-| [Tokens](docs/tokens.md) · [Default](docs/design.md) · [Design](docs/design.md) · [Naming](docs/design.md) | Theme contract, the flagship theme, the kit language, the naming conventions |
+| [Design](docs/design.md) · [Tokens](docs/tokens.md) | The design rules and components; the theme contract |
 | [Coverage](docs/coverage.md) · [Roadmap](docs/roadmap.md) | What's covered on a Qbox server; status and next |
 | [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md) | How to help; how to report a vulnerability |
 

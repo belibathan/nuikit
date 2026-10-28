@@ -19,13 +19,15 @@ npx shadcn add dialog tabs                 # anything from ui.shadcn.com
 npx shadcn add @nuikit/speedometer         # game components
 ```
 
-Change the theme by pasting any [TweakCN](https://tweakcn.com) theme into `web/src/index.css`.
+Icons come from `@/components/ui/icons` (Hugeicons; stock shadcn's `lucide-react` imports resolve to it). Text uses
+the `nk-text-*` styles. Change the theme by pasting any [TweakCN](https://tweakcn.com) theme into `web/src/index.css`;
+in game the server's `nuikit/theme.css` repaints it.
 
 ## Files
 
 | | |
 |---|---|
-| `client/main.lua` | Your Lua. `NUI.send`, `NUI.on`, `NUI.open`, `NUI.close`, `NUI.notify` |
+| `client/main.lua` | Your Lua: `nk.surface.define` (focus, Escape, open and close), `nk.message.send` / `nk.message.on` |
 | `fxmanifest.lua` | Imports the nuikit runtime: `shared_script '@nuikit/init.lua'` (needs the `nuikit` resource running) |
 | `web/src/nui.d.ts` | Types for every event and callback, shared by both sides |
 | `web/src/dev.tsx` | Fake payloads for browser development |

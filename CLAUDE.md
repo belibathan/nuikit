@@ -29,7 +29,7 @@ TweakCN theme) is the default look and the showcase, not the product. Design: `d
 
 How the agents work together: `docs/next/dispatch.md`. Read this, then only what your item needs.
 
-Current release: **0.9.0** (npm `nuikit-core`, `vite-plugin-nuikit`, `create-nuikit`, `nuikit`; GitHub release
+Current release: **0.9.0** (npm `nuikit-core`, `vite-plugin-nuikit`, `create-nuikit`, `@belibathan/nuikit`; GitHub release
 `v0.9.0` with `nuikit.zip`, the per-framework zips and `SHA256SUMS.txt`).
 Direction: `docs/vision.md`, then `docs/architecture.md`. Parallel agents: `docs/next/dispatch.md`.
 
@@ -46,7 +46,7 @@ Direction: `docs/vision.md`, then `docs/architecture.md`. Parallel agents: `docs
 | `systems/<name>` | `[nuikit]` resources (fxmanifest, Lua, `web/`). Reference UI: `systems/nuikit_pause`. |
 | `addons/<name>` | Overrides: new web UIs for other resources (ox_lib, ox_inventory…), built into that resource's UI folder. Clean-room from `docs/<name>-protocol.md`. |
 | `apps/www` | The site + registry host (Vercel, deploys from `main`). |
-| `scripts/` | `sync-template.mjs` (`pnpm sync`), `vite-web.mjs` (every in-repo UI's resolve: components and hooks straight from the sources), `pack-systems.mjs` (`pnpm pack:systems` → `out/nuikit.zip`), `new-system.mjs` (scaffold), `vendor-shadcn.mjs`, `kit-merge.mjs`, `prune-branches.mjs` (delete fully-merged branches), `server/setup-windows.ps1`. |
+| `scripts/` | `sync-template.mjs` (`pnpm sync`), `vite-web.mjs` (every in-repo UI's resolve: components and hooks straight from the sources), `pack-systems.mjs` (`pnpm pack:systems` → `out/nuikit.zip`), `new-system.mjs` (scaffold a system or override), `new-component.mjs` (scaffold a registry component), `icons.mjs` (the Hugeicons module, run by sync), `check-built-classes.mjs` (CI: built UIs carry the registry's classes), `vendor-shadcn.mjs`, `kit-merge.mjs`, `prune-branches.mjs` (delete fully-merged branches), `server/setup-windows.ps1`. |
 | `bench/` | `screens/` (the POST-log replay for overrides), `adapters/` (adapter replay tests), `visual/` (`pnpm look`), `coverage/`. Results of finished experiments live in the docs, not here. |
 | `docs/` | `README.md` is the index. `roadmap.md` (the one tracker), `next/` (dispatch, decisions, foundation-gaps), `vision.md`, `architecture.md`, `protocol.md` (v1), `tokens.md`, `design.md` (the one design doc; `design/levers.md` is generated), `coverage.md`, `doctor.md`, the `*-protocol.md` specs, `releases/`. Superseded docs are deleted, not archived. |
 
@@ -72,8 +72,9 @@ Systems and the template import the Lua runtime (`dependency 'nuikit'`, `shared_
 **In-repo UIs copy nothing.** `@/components/ui/*`, `@/hooks/*` and `@/lib/utils` resolve straight to
 `registry/nuikit`, `vendor/shadcn` and the generated `cn()` through `scripts/vite-web.mjs` (`resolve: web(__dirname)`
 in each `vite.config.ts`) and the matching `paths` in each `tsconfig.json`. A UI's own file of the same name wins.
-`pnpm sync` writes each UI's `web/src/index.css` (theme defaults + `kit.css` + fonts; gitignored: run sync before
-`dev` or `build`) and the Lua copies. Only `packages/create-nuikit/template` receives real component copies, because a
+`pnpm sync` writes each UI's `web/src/index.css` (theme defaults + `kit.css` + fonts + `@source` lines naming the
+registry and vendor folders for Tailwind; run sync before `dev` or `build`), `registry/nuikit/ui/icons.tsx` (Hugeicons
+under lucide's names; `lucide-react` resolves to it) and the Lua copies. Only `packages/create-nuikit/template` receives real component copies, because a
 user receives it. Feature CSS goes in a separate file (`app.css`, `pause.css`) imported after `index.css`.
 
 New system or override: `node scripts/new-system.mjs systems/nuikit_x "Title"` or
@@ -87,7 +88,9 @@ New system or override: `node scripts/new-system.mjs systems/nuikit_x "Title"` o
   2560×1440 and 1280×720.
 - **Design.** Follow `docs/design.md`: kit utilities (`nk-*`), the spacing/type scale, rem not px, sentence
   case, one primary per surface, colours only from theme tokens (`docs/tokens.md`; darken the game with
-  `--scrim`). Never redefine an `nk-*` name locally. `nuikit check` must stay at level 3 for every page (CI).
+  `--scrim`). Type only through the `nk-text-*` styles (never a font-style,
+  family, weight or case of your own; slant comes from the theme), icons only from `@/components/ui/icons`. Never
+  redefine an `nk-*` name locally. `nuikit check` must stay at level 3 for every page (CI).
 - **Dev servers** rewrite `ui_page` to localhost while running: stop them with Ctrl+C / SIGINT, never SIGKILL,
   or the fxmanifest is left pointing at the dev server.
 - **Overrides are clean-room.** Read the upstream resource to write `docs/<name>-protocol.md`, then implement
