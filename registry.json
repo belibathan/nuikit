@@ -2860,7 +2860,7 @@
       "name": "empty-state",
       "type": "registry:ui",
       "title": "Empty state",
-      "description": "When there's nothing to show or something went wrong: an icon, a short title, one sentence on what to do next, optional actions. Stock shadcn Empty on the kit's scale; empty or error tone; panel or screen size. tile: the icon as a square Glyph (tokens 1.5).",
+      "description": "When there's nothing to show or something went wrong: an icon, a short title, one sentence on what to do next, optional actions. Stock shadcn Empty on the kit's scale; empty or error tone; panel or screen size.",
       "files": [
         {
           "path": "registry/nuikit/ui/empty-state.tsx",
@@ -2872,7 +2872,6 @@
       ],
       "registryDependencies": [
         "empty",
-        "https://nuikit.vercel.app/r/glyph.json",
         "https://nuikit.vercel.app/r/icons.json"
       ],
       "meta": {
@@ -2884,7 +2883,7 @@
           "role": "What a list, a search or a screen shows when there is nothing, or something went wrong.",
           "anatomy": [
             "empty",
-            "icon (EmptyMedia, or a square Glyph with tile)",
+            "icon (EmptyMedia)",
             "title (title role)",
             "description (one sentence)",
             "actions"
@@ -2895,8 +2894,7 @@
             "icon",
             "title",
             "description",
-            "action",
-            "glyph"
+            "action"
           ],
           "rules": [
             "One sentence on what to do next.",

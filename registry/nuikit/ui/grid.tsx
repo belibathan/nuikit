@@ -5,7 +5,7 @@ import * as React from "react"
 import { cn } from "@/lib/utils"
 
 /**
- * Grid — a slot grid (docs/design.md): inventories, garages, wardrobes. Square cells of `--nk-grid-cell`
+ * Grid — a slot grid (docs/design.md §6): inventories, garages, wardrobes. Square cells of `--nk-grid-cell`
  * (5.5rem), `--nk-grid-gap` apart, `cols` across or as many as fit; `fluid` stretches cells to fill the row.
  * `useGridNav` moves focus between the cells with the arrow keys by where they are on screen (spatial: a
  * wrapped row, a gap, a cell twice as wide all just work), Home / End to the first and last.

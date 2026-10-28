@@ -130,7 +130,7 @@ function PlayerCard({
                   size="sm"
                   icon={s.icon}
                   label={s.label}
-                  value={s.mono ? <span className="font-mono tracking-normal">{s.value}</span> : s.value}
+                  value={s.mono ? <span className="nk-text-num">{s.value}</span> : s.value}
                 />
               ))}
             </div>

@@ -38,14 +38,14 @@ import { useLinearRun } from "@/hooks/use-linear-run"
  * when it ends, while the others glide into the gap (`slide={false}`: a fade in place; `animate={false}`:
  * no entrance at all). Reduced motion fades; motion off draws it still.
  *
- * Items added or removed are the item slab (design v2 §4.5, `nk-slab`): an icon tile, the name and
+ * Items added or removed are the item slab (kit.css `nk-slab`): an icon glyph, the name and
  * the change. Through the queue, changes to the same item in the same direction within 1.5 s merge
  * into one slab ("+1", "+1", "+1" → "+3"):
  *
  *   notify({ item: { name: "Water bottle", count: 2, icon: <CupSodaIcon /> }, position: "center-left" })
  *   <Notice item={{ name: "Lockpick", count: -1 }} />
  *
- * `tone` (1.5) is the shared tone vocabulary (neutral | info | success | warning | danger) and wins over
+ * `tone` is the shared tone vocabulary (neutral | info | success | warning | danger) and wins over
  * `status`, which stays as its older name (`error` = danger, neutral = info); `hue` colours it with a role.
  *
  * Role: a message on top of the game that speaks once and leaves (the notify intent), or an item change.
@@ -59,7 +59,7 @@ import { useLinearRun } from "@/hooks/use-linear-run"
 
 type NoticeStatus = "info" | "success" | "warning" | "error"
 
-/** The shared tone vocabulary (1.5); error and destructive are accepted aliases of danger. */
+/** The shared tone vocabulary; error and destructive are accepted aliases of danger. */
 type NoticeTone = "neutral" | "info" | "success" | "warning" | "danger" | "error" | "destructive"
 
 /** A status as the shared tone (data-tone). */
@@ -86,7 +86,7 @@ type NoticeItem = {
   name: React.ReactNode
   /** The change: 2 for two added, -1 for one removed. */
   count: number
-  /** The tile: an icon, or `image` (a URL: the inventory's own item image). */
+  /** The lead: an icon, or `image` (a URL: the inventory's own item image). */
   icon?: React.ReactNode
   image?: string
   /** What makes two changes the same item, for merging. Default: the name, when it is a string. */
@@ -167,7 +167,7 @@ function noticeTimeLeft(duration: number = NOTICE_DURATION, elapsed = 0) {
 }
 
 const noticeVariants = cva(
-  // baseline (1.6): the row's rhythm (space-4 all round, the icon tile a row-gap from the text)
+  // baseline: the row's rhythm (space-4 all round, the icon glyph a row-gap from the text)
   "nk-panel pointer-events-auto relative flex overflow-hidden p-(--nk-space-4) text-(length:--nk-text-label) leading-5",
   {
     variants: {
@@ -263,7 +263,7 @@ function Notice({
   VariantProps<typeof noticeVariants> & {
     /** The older name of `tone` (error = danger). */
     status?: NoticeStatus
-    /** The tone (1.5): neutral | info | success | warning | danger. Wins over `status`. */
+    /** The tone: neutral | info | success | warning | danger. Wins over `status`. */
     tone?: NoticeTone
     /** A role (health, police…) for the icon and line colour. */
     hue?: string
@@ -291,7 +291,7 @@ function Notice({
     onExpire?: () => void
     /** Shows a close button that calls this. */
     onDismiss?: () => void
-    /** An item added or removed: draws the item slab (icon tile + name + change) instead of a panel. */
+    /** An item added or removed: draws the item slab (icon glyph + name + change) instead of a panel. */
     item?: NoticeItem
   }) {
   const status = tone ? noticeStatus(tone) : statusProp
@@ -502,7 +502,7 @@ type NoticeData = {
   title?: React.ReactNode
   description?: React.ReactNode
   status?: NoticeStatus
-  /** The tone (1.5); wins over status. */
+  /** The tone; wins over status. */
   tone?: NoticeTone
   hue?: string
   icon?: React.ReactNode

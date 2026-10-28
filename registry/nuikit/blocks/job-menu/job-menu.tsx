@@ -299,7 +299,7 @@ function JobStaff({
             }
           >
             {e.name}
-            {e.you && <span className="font-normal text-muted-foreground"> (you)</span>}
+            {e.you && <span className="[font-weight:var(--nk-type-weight-body)] text-muted-foreground"> (you)</span>}
           </MenuRow>
         )
       })}

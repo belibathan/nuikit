@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils"
 import { Kbd } from "@/components/ui/glyph"
 
 /**
- * Text — the type roles as one component (docs/design.md, foundation): scan (a key legend), title,
+ * Text — the type roles as one component (docs/design.md §6): scan (a key legend), title,
  * label, num (tabular figures in the numeric face), body, caption and display. Each role is a kit class
  * (`nk-text-scan`, `nk-text-title`…) read from the theme's --nk-type-<role>-* levers, so a theme restyles every role at
  * once. `size` is the value ladder numbers sit on: sm (the body size), md (the HUD value size) and display (the
@@ -16,8 +16,8 @@ import { Kbd } from "@/components/ui/glyph"
  *   <Text as="p" variant="caption">Until you can respawn</Text>
  *
  * Key tokens: any string child may carry `[E]`, `[LEFT MOUSE]`, `[SHIFT + E]` tokens (`[A-Z0-9 +-]{1,12}` in square
- * brackets, at least one letter or digit); they render as the kit's keycap inline. `keys={false}` keeps the brackets
- * literally. The lever `--nk-text-key-scale` (default 1) sizes the inline keycap. Plain React nodes, never HTML.
+ * brackets, at least one letter or digit); they render as the kit's glyph inline. `keys={false}` keeps the brackets
+ * literally. The lever `--nk-text-key-scale` (default 1) sizes the inline glyph. Plain React nodes, never HTML.
  *
  * Role: Every piece of text in one of the kit's type roles, on one value ladder.
  * Anatomy: text (one element: span, p, div, h2…)
@@ -76,7 +76,7 @@ function parseKeyTokens(input: string): KeyPart[] {
   return out
 }
 
-/** The inline keycap: the kit's Kbd, sized by --nk-text-key-scale. */
+/** The inline glyph: the kit's Kbd, sized by --nk-text-key-scale. */
 function InlineKey({ children }: { children: string }) {
   return (
     <Kbd
@@ -112,7 +112,7 @@ function Text({
   VariantProps<typeof textVariants> & {
     /** The element. Default span. */
     as?: React.ElementType
-    /** Render `[E]`-style tokens in string children as keycaps. Default true; false keeps the brackets. */
+    /** Render `[E]`-style tokens in string children as glyphs. Default true; false keeps the brackets. */
     keys?: boolean
   }) {
   return (

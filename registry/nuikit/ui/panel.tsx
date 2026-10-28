@@ -7,7 +7,7 @@ import { cn, nkVariant, type NkVariantProps } from "@/lib/utils"
 import { ScrollArea } from "@/components/ui/scroll-area"
 
 /**
- * Panel — the one floating surface (docs/design.md, rule 1): menus, inventories, shops and cards
+ * Panel — the one floating surface (docs/design.md §6): menus, inventories, shops and cards
  * on top of the game. The kit's nk-panel recipe with props; colours come from the theme's popover.
  *
  *   <Panel>

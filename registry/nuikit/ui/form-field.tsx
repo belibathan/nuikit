@@ -754,7 +754,7 @@ function MultiSelectControl({
             variant="outline"
             disabled={f.disabled}
             className={cn(
-              "w-full min-w-0 justify-between px-3 font-normal aria-invalid:border-destructive dark:bg-input/30",
+              "w-full min-w-0 justify-between px-3 [font-weight:var(--nk-type-weight-body)] aria-invalid:border-destructive dark:bg-input/30",
               !selected.length && "text-muted-foreground"
             )}
           >
@@ -1323,7 +1323,7 @@ function DatePickerButton({
       aria-pressed={on || undefined}
       aria-label={aria}
       onClick={pick}
-      className="nk-text-num h-(--cell-size) px-0 font-normal"
+      className="nk-text-num h-(--cell-size) px-0 [font-weight:var(--nk-type-weight-body)]"
     >
       {label}
     </Button>
@@ -1782,7 +1782,7 @@ function ColorControl({
             if (hex) setText(hex)
           }}
           data-icon="swatch"
-          className="font-mono uppercase placeholder:normal-case"
+          className="nk-text-num"
         />
       </div>
       {normalized && normalized.length > 0 && (

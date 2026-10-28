@@ -4,25 +4,21 @@ import { CircleAlertIcon, InboxIcon } from "@/components/ui/icons"
 
 import { cn } from "@/lib/utils"
 import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty"
-import { Glyph } from "@/components/ui/glyph"
 
 /**
  * EmptyState — what a list, a search or a screen shows when there's nothing (or something went
- * wrong): an icon, a short title, and one sentence saying what to do next (docs/design.md,
- * rule 9), with an optional action. Stock shadcn Empty, on the kit's scale.
+ * wrong): an icon, a short title, and one sentence saying what to do next (docs/design.md §6),
+ * with an optional action. Stock shadcn Empty, on the kit's scale.
  *
  *   <EmptyState title="No cars here" description="Buy one at the dealership or ask a friend for keys." />
  *   <EmptyState tone="error" title="Couldn't load your bank" description="Try again in a moment." action={<Button size="sm">Try again</Button>} />
  *
- * `tile` (tokens 1.5, docs/design.md §3) draws the icon as a square Glyph at rest (danger on error): the
- * default theme's empty state. Without it the icon sits in shadcn's EmptyMedia, as before.
- *
  * Named empty-state, not empty: stock shadcn already has `empty`, and this is built on it.
  *
  * Role: What a list, a search or a screen shows when there is nothing, or something went wrong.
- * Anatomy: empty > icon (EmptyMedia, or a square Glyph with tile) > title (title role) > description (one
- *   sentence) > actions
- * Props: size, tone, icon, title, description, action, tile.
+ * Anatomy: empty-state > empty-state-header: empty-state-icon (EmptyMedia), empty-state-title (nk-text-title),
+ *   empty-state-description (one sentence) > empty-state-actions
+ * Props: size, tone, icon, title, description, action.
  * Rules: One sentence on what to do next. error is role alert and the danger tone.
  */
 
@@ -48,7 +44,6 @@ function EmptyState({
   title,
   description,
   action,
-  tile = false,
   children,
   ...props
 }: Omit<React.ComponentProps<"div">, "title"> &
@@ -62,8 +57,6 @@ function EmptyState({
     description?: React.ReactNode
     /** A button or two: try again, buy one, open the map. */
     action?: React.ReactNode
-    /** The icon as a square Glyph (1.5). */
-    tile?: boolean
   }) {
   const error = tone === "error"
   const iconEl = icon === undefined ? error ? <CircleAlertIcon /> : <InboxIcon /> : icon
@@ -77,12 +70,7 @@ function EmptyState({
       {...props}
     >
       <EmptyHeader data-slot="empty-state-header">
-        {iconEl !== null && iconEl !== false && tile && (
-          <Glyph shape="square" size={size === "screen" ? "lg" : "md"} tone={error ? "danger" : undefined} data-part="empty-state-icon">
-            {iconEl}
-          </Glyph>
-        )}
-        {iconEl !== null && iconEl !== false && !tile && (
+        {iconEl !== null && iconEl !== false && (
           <EmptyMedia
             variant="icon"
             data-slot="empty-state-icon"

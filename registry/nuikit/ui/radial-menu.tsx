@@ -22,7 +22,7 @@ import { cn, nkState } from "@/lib/utils"
  *     onSelect={run}
  *   />
  *
- * The lit wedge is ONE element (the list's selection tile, in a circle): a wedge-shaped face drawn once and turned
+ * The lit wedge is ONE element (the list's selection mark, in a circle): a wedge-shaped face drawn once and turned
  * to the pointed item by `rotate()` on the ladder (`--nk-selection-time`, `--nk-selection-ease`), the short way
  * round, so the highlight travels with the pointer or the arrows instead of jumping wedge to wedge. Reduced motion
  * and motion off jump (kit.css nk-indicator). The items never paint a fill of their own.

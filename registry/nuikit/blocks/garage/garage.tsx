@@ -158,7 +158,7 @@ function Garage({
                     data-id={v.id}
                     icon={<CarIcon />}
                     description={garageWhere(v, fmt)}
-                    meta={<span className="font-mono">{v.plate}</span>}
+                    meta={<span className="nk-text-num">{v.plate}</span>}
                     active={v.id === selected?.id}
                     className={cn(v.state !== "stored" && "[&_[data-slot=menu-row-description]]:text-muted-foreground", v.state === "impounded" && "[&_[data-slot=menu-row-description]]:text-warning")}
                     onClick={() => setSelectedId(v.id)}

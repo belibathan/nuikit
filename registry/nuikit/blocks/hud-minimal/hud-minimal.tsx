@@ -24,9 +24,9 @@ import { VitalChip } from "@/components/ui/vital-chip"
 import type { HudVehicle } from "./nui"
 
 /**
- * HudMinimal — the always-on HUD: voice, vitals and needs as keycaps bottom left, cash, bank and job top
+ * HudMinimal — the always-on HUD: voice, vitals and needs as vital chips bottom left, cash, bank and job top
  * right, and the in-game speedometer bottom right while driving. Drawn straight on the game (docs/design.md
- * rule 8): bare marks with a shadow and HUD chips, no panels. Built from the kit: VitalChip (the keycap, a
+ * rule 8): bare marks with a shadow and HUD chips, no panels. Built from the kit: VitalChip (a Glyph face, a
  * vital opening on a change), Stat, Chip (material="hud"), Speedometer, Money.
  *
  *   <HudMinimalSurface />                                   // wired: nk.surface('hud') + nk.player in Lua
@@ -67,7 +67,7 @@ function HudMinimal({
   )
 }
 
-/** Bottom left: voice first, then the vitals and needs, as keycaps (the in-game row). */
+/** Bottom left: voice first, then the vitals and needs, as vital chips (the in-game row). */
 function HudStatus({ player, needs }: { player: NuiPlayer; needs: boolean }) {
   const range = player.voice.mode ?? (player.voice.range === undefined ? null : `${Math.round(player.voice.range * 10) / 10} m`)
   const vital = (tone: string, label: string, value: number | undefined, icon: React.ReactNode, extra?: { low?: number; high?: number }) =>

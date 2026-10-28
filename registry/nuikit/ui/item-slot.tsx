@@ -193,7 +193,7 @@ function ItemSlot({
             )}
           </div>
           {label !== undefined && !hud && (
-            <div data-slot="item-slot-label" className="truncate text-center text-(length:--nk-text-label) leading-4 [font-weight:var(--nk-type-label-weight)]">
+            <div data-slot="item-slot-label" className="nk-text-label truncate text-center [color:inherit]">
               {label}
             </div>
           )}

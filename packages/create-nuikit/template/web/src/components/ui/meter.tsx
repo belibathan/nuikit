@@ -39,7 +39,7 @@ import { useLinearRun } from "@/hooks/use-linear-run"
  * Rules: Data is value/max or --level, never a variant. Thresholds turn it destructive; tone never encodes
  *   data. A timed run completes from a timer, so it finishes with motion off.
  */
-// The bar's thickness is the identity's (--nk-fill-height: --nk-fill-height, 4px in Graphite);
+// The bar's thickness is the identity's --nk-fill-height;
 // sm and lg step it down and up from there.
 const meterVariants = cva("min-w-0", {
   variants: {
@@ -72,7 +72,7 @@ type MeterTone =
   | "thirst"
   | "stress"
 
-/** A tone, or "hue" (tokens 1.5): the role colour of data-hue on the meter (`hue`) or its nearest ancestor; --nk-fill-color without one. */
+/** A tone, or "hue": the role colour of data-hue on the meter (`hue`) or its nearest ancestor; --nk-fill-color without one. */
 type MeterFill = MeterTone | "hue"
 
 /** Literal class names, so Tailwind finds them. */
@@ -335,7 +335,7 @@ function Meter({
     onComplete?: () => void
     /**
      * bar (default): the bar, with an optional label row. slab: the timed-progress slab on the game
-     * (design v2 §4.5, `nk-slab-stack`): the label, the cancel key and its verb, a thin line. The
+     * (kit.css `nk-slab-stack`): the label, the cancel key and its verb, a thin line. The
      * successor of `task-progress`: `<Meter variant="slab" label="Repairing" duration={5000}
      * cancelKey="X" onCancel={cancel} />`.
      */

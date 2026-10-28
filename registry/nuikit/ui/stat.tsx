@@ -99,9 +99,7 @@ function Stat({
           <span
             data-slot="stat-meta"
             className={cn(
-              "shrink-0 text-(length:--nk-text-label) [font-weight:var(--nk-type-label-weight)]",
-              "text-muted-foreground",
-              size === "display" && "text-(length:--nk-text-label)"
+              "nk-text-label shrink-0 text-muted-foreground"
             )}
           >
             {meta}

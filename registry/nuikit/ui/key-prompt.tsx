@@ -21,14 +21,14 @@ import { Kbd, KbdGroup } from "@/components/ui/glyph"
  * as `progress` (0–1). With focus (or in the browser) it can run the hold itself: press and hold
  * with the pointer, or `listen` for the key, and `onConfirm` fires when it fills.
  *
- * By default it is the prompt slab (design v2 §4.5): a key chip and a verb on the HUD plate, the
+ * By default it is the prompt slab (docs/design.md §6): a key chip and a verb on the HUD plate, the
  * same anatomy as every other slab (`nk-slab`, docs/tokens.md#slabs). `surface="panel"` and
  * `surface="hud"` keep the earlier looks. `keys={[]}` draws no key chip (a script's text with no
  * key); `wrap` lets a long label run onto more lines instead of truncating. A prompt with a
  * `description` is two lines tall: the slab grows to fit (the key stays on the first line).
  *
  * Role: "[E] Open garage": what a key does here.
- * Anatomy: key-prompt (slab | panel | hud) > keys (slab key chips, or Kbd Tiles) > label, description > hold (a Fill)
+ * Anatomy: key-prompt (slab | panel | hud) > keys (slab key chips, or Kbd) > label, description > hold (a Fill)
  * Props: keys, label, description, hold, progress, active, disabled, listen, onConfirm, surface, size, density,
  *   shape, motion, stage.
  * Level means: the hold progress, 0 → 1 (Lua's progress, or the pointer/key hold).
@@ -46,9 +46,9 @@ const keyPromptVariants = cva(
         /** The prompt slab on the game: key chip + verb, the HUD plate (nk-slab). */
         slab: "nk-slab",
         /** A small floating panel, like the rest of the kit's floating UI. */
-        panel: "nk-panel inline-flex items-center gap-(--nk-space-3) text-(length:--nk-text-label) leading-5 [font-weight:var(--nk-type-label-weight)]",
+        panel: "nk-panel nk-text-label [color:inherit] inline-flex items-center gap-(--nk-space-3)",
         /** The game's dark HUD surface, for prompts that sit on the world (nk-hud). */
-        hud: "nk-hud nk-shadow inline-flex items-center gap-(--nk-space-3) text-(length:--nk-text-label) leading-5 [font-weight:var(--nk-type-label-weight)]",
+        hud: "nk-hud nk-shadow nk-text-label [color:inherit] inline-flex items-center gap-(--nk-space-3)",
       },
       size: {
         sm: "",
@@ -344,7 +344,7 @@ function KeyPrompt({
             data-slot="key-prompt-description"
             className={cn(
               wrap ? "text-pretty break-words" : "truncate",
-              slab ? "nk-text-label [color:inherit]! opacity-75" : "text-(length:--nk-text-label) leading-4 font-normal",
+              slab ? "nk-text-label [color:inherit]! opacity-75" : "text-(length:--nk-text-label) leading-4 [font-weight:var(--nk-type-weight-body)]",
               surface === "panel" ? "text-muted-foreground" : !slab && "opacity-75"
             )}
           >
