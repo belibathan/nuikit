@@ -222,7 +222,7 @@ export function MapStage({ model: m, left }: { model: MapModel; left: string }) 
       <Blips blips={m.blips} hidden={m.hidden} selectedId={m.selectedBlip} onChoose={m.chooseBlip} />
       <Pins places={m.places} selectedId={m.selectedId} onChoose={m.choose} compass={m.compass} waypointSet={m.waypointSet} />
       {/* the open area, right of the sheet: the camera buttons on its edge */}
-      <div className="pointer-events-none absolute inset-y-0 right-0 [--nk-screen-edge:1.5rem] [&>*]:pointer-events-auto" style={{ left }}>
+      <div className="pointer-events-none absolute inset-y-0 right-0 [--nk-screen-edge:var(--nk-space-6)] [&>*]:pointer-events-auto" style={{ left }}>
         <Controls topdown={m.info.topdown} following={m.info.follow === true} follow={m.follow} zoom={zoom} compass={m.compass} />
       </div>
     </div>
@@ -260,7 +260,7 @@ export function MapSheetPage({ model: m, onBack }: { model: MapModel; onBack: ()
         <SheetSection>
           <label className="relative block">
             <SearchIcon className="pointer-events-none absolute top-1/2 left-3 z-10 size-4 -translate-y-1/2 text-muted-foreground" />
-            <SmoothInput value={m.query} onChange={(e) => m.setQuery(e.target.value)} placeholder="Search places and blips" className="h-10 pl-9 text-base" />
+            <SmoothInput value={m.query} onChange={(e) => m.setQuery(e.target.value)} placeholder="Search places and blips" className="h-10 pl-9 text-(length:--nk-text-base)" />
           </label>
         </SheetSection>
       )}
@@ -303,7 +303,7 @@ export function MapSheetPage({ model: m, onBack }: { model: MapModel; onBack: ()
           label="Show on the map"
           meta={
             m.hidden.size > 0 ? (
-              <Button variant="ghost" size="xs" className="-my-1 font-sans" onClick={m.showAll}>
+              <Button variant="ghost" size="xs" className="-my-1" onClick={m.showAll}>
                 Show all
               </Button>
             ) : (

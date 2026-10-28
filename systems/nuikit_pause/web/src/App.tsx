@@ -107,7 +107,7 @@ function Pause({ data, player }: { data: PauseData; player: NuiPlayer }) {
       <Region fill pad="none" className="pause-column overflow-y-auto" footer={<div className="w-full pt-(--nk-space-2)"><ServerSummary data={data} /></div>}>
         <header className="flex items-center gap-4">
           {server.logo ? (
-            <div className="pause-logo flex size-12 shrink-0 items-center justify-center bg-foreground text-base font-semibold text-background">
+            <div className="pause-logo flex size-12 shrink-0 items-center justify-center bg-foreground nk-text-title text-background">
               {server.logo}
             </div>
           ) : null}
@@ -129,7 +129,7 @@ function Pause({ data, player }: { data: PauseData; player: NuiPlayer }) {
 
         <nav className="flex flex-col" aria-label="Pause menu">
           {buttons.includes("resume") ? (
-            <Button size="lg" autoFocus style={rise(first ? 0 : undefined).style} className={cn("h-12 justify-between px-4 text-base", rise(first ? 0 : undefined).className)} onClick={() => run("resume")}>
+            <Button size="lg" autoFocus style={rise(first ? 0 : undefined).style} className={cn("h-12 justify-between px-4 text-(length:--nk-text-base)", rise(first ? 0 : undefined).className)} onClick={() => run("resume")}>
               <span className="flex items-center gap-3">
                 <PlayIcon />
                 Resume
@@ -137,7 +137,7 @@ function Pause({ data, player }: { data: PauseData; player: NuiPlayer }) {
               <Kbd className="bg-primary-foreground/15 text-primary-foreground">Esc</Kbd>
             </Button>
           ) : null}
-          {/* one selection tile slides between the rows (hover and focus alike); Resume, the primary keycap, is
+          {/* one Selection slides between the rows (hover and focus alike); Resume, the primary button, is
               the same object at rest, so the rows sit a list gap below it */}
           <MenuRowList className="mt-(--nk-space-1)">
             {buttons.map((b, i) => {
@@ -146,7 +146,7 @@ function Pause({ data, player }: { data: PauseData; player: NuiPlayer }) {
               if (!item) return null;
               const r = rise(first ? i + 1 : undefined);
               return (
-                <MenuRow key={b} autoFocus={i === 0 && !buttons.includes("resume")} icon={<item.icon />} kbd={item.kbd} onClick={() => run(b)} className={cn("min-h-12 text-base", r.className)} style={r.style}>
+                <MenuRow key={b} autoFocus={i === 0 && !buttons.includes("resume")} icon={<item.icon />} kbd={item.kbd} onClick={() => run(b)} className={cn("min-h-12 text-(length:--nk-text-base)", r.className)} style={r.style}>
                   {item.label}
                 </MenuRow>
               );
@@ -199,7 +199,7 @@ function Disconnect({ rise: r }: { rise: ReturnType<typeof rise> }) {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <MenuRow tone="destructive" icon={<LogOutIcon />} className={cn("min-h-12 text-base", r.className)} style={r.style}>
+        <MenuRow tone="destructive" icon={<LogOutIcon />} className={cn("min-h-12 text-(length:--nk-text-base)", r.className)} style={r.style}>
           Disconnect
         </MenuRow>
       </AlertDialogTrigger>

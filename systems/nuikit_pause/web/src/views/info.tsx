@@ -25,11 +25,11 @@ export function InfoPage({ pages, onBack }: { pages: PausePage[]; onBack: () => 
             <div className="flex flex-col gap-3">
               {blocks(page.body).map((b, i) =>
                 b.kind === "p" ? (
-                  <p key={i} className="text-sm leading-6">
+                  <p key={i} className="nk-text-body">
                     {b.text}
                   </p>
                 ) : (
-                  <ul key={i} className="flex list-disc flex-col gap-1.5 pl-5 text-sm leading-6 marker:text-muted-foreground">
+                  <ul key={i} className="flex list-disc flex-col gap-1.5 pl-5 nk-text-body marker:text-muted-foreground">
                     {b.items.map((item) => (
                       <li key={item}>{item}</li>
                     ))}
