@@ -27,6 +27,7 @@ import { Textarea } from "@/components/ui/textarea"
  *
  * Role: Drop-in Input and Textarea with a caret that glides and characters that ease in.
  * Anatomy: the real field (selection, IME, paste) > overlay (caret, typed characters)
+ * Props: those of stock Input and Textarea (no props of its own).
  * Rules: The real field stays underneath; the overlay never takes the pointer. The native caret with motion
  *   off.
  */

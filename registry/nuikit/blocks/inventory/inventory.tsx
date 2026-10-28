@@ -259,7 +259,7 @@ function Inventory({
           title={c.label}
           actions={
             c.maxWeight ? (
-              <span className="nk-num text-(length:--nk-text-label) text-muted-foreground">
+              <span className="nk-text-num text-(length:--nk-text-label) text-muted-foreground">
                 {formatWeight(weight)} / {formatWeight(c.maxWeight)}
               </span>
             ) : undefined
@@ -375,21 +375,21 @@ function ItemTooltip({ item, className, ...props }: React.ComponentProps<"sectio
       <PanelBody variant="form" className="gap-2 p-3">
         <div className="flex items-baseline justify-between gap-3">
           <span className="truncate [font-weight:var(--nk-type-label-weight,500)]">{item.label}</span>
-          {item.count > 1 && <span className="nk-num text-(length:--nk-text-label) text-muted-foreground">× {item.count}</span>}
+          {item.count > 1 && <span className="nk-text-num text-(length:--nk-text-label) text-muted-foreground">× {item.count}</span>}
         </div>
-        {item.description && <p className="nk-label">{item.description}</p>}
+        {item.description && <p className="nk-text-label">{item.description}</p>}
         {(item.weight !== undefined || info.length > 0) && (
-          <dl className="nk-label flex flex-col gap-1">
+          <dl className="nk-text-label flex flex-col gap-1">
             {item.weight !== undefined && (
               <div className="flex justify-between gap-3">
                 <dt>Weight</dt>
-                <dd className="nk-num text-foreground">{formatWeight(item.weight * item.count)}</dd>
+                <dd className="nk-text-num text-foreground">{formatWeight(item.weight * item.count)}</dd>
               </div>
             )}
             {info.map(([k, v]) => (
               <div key={k} className="flex justify-between gap-3">
                 <dt>{k}</dt>
-                <dd className="nk-num truncate text-foreground">{v}</dd>
+                <dd className="nk-text-num truncate text-foreground">{v}</dd>
               </div>
             ))}
           </dl>

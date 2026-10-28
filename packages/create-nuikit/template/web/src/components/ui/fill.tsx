@@ -3,7 +3,7 @@ import * as React from "react"
 import { cn } from "@/lib/utils"
 
 /**
- * Fill — status as a level filling left to right (docs/design.md §3): a track, a bar scaled from the
+ * Fill — status as a level filling left to right (docs/design.md §6): a track, a bar scaled from the
  * left (transform only), a leading edge. One implementation for holds, row sweeps, meters and timers.
  * kit.css draws it (`.nk-fill` / `data-slot="fill"`); a theme sets --nk-fill-color, -track, -edge, -alert.
  *
@@ -108,4 +108,4 @@ function Fill({
   )
 }
 
-export { Fill, alertAt, toneVars, fillTargets, type FillTone }
+export { Fill, alertAt, toneVars, fillTargets }

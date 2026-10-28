@@ -14,12 +14,12 @@ import { meterColor, type MeterTone } from "@/components/ui/meter"
 import { Selection } from "@/components/ui/selection"
 
 /**
- * MenuRow — the action row every list is made of (docs/design.md, rule 5; the baseline, docs/design.md):
- * an icon in a tile (one icon size, one column) or an image, a title in the label voice, an optional description
+ * MenuRow — the action row every list is made of (docs/design.md §6):
+ * an icon in a glyph (one icon size, one column) or an image, a title in the label voice, an optional description
  * in the body voice and progress, and one trailing thing: meta text, a
  * chevron, a Kbd, a checkbox or a value stepper. Selection is one language (the baseline's Selection
  * section): the pointer's hover, keyboard, controller and programmatic focus, and the list's active row all
- * light the row the same way, and the lit row sits on a Glyph (the primary keycap's face and wall). In a
+ * light the row the same way, and the lit row sits on a Glyph (the primary glyph's face and wall). In a
  * `MenuRowList` that Glyph is one Selection sliding between the rows; a row on its own draws it itself.
  * No focus ring, no per-row hover fill. The default look of the `menu` intent's items (docs/architecture.md §2).
  *
@@ -44,8 +44,8 @@ import { Selection } from "@/components/ui/selection"
  *
  * `MenuRowList` holds the rows of a list: one Selection slides to the lit row (the hovered or focused one,
  * else `active`, the row the UI drives: keys, Lua) instead of each row marking itself. Rows sit
- * --nk-list-gap apart, so the tile's wall never touches the next row, and the list pads its sides by
- * --nk-list-pad-x (the tile's inset plus its skew overhang), so the face never touches the panel's edge:
+ * --nk-list-gap apart, so the mark's wall never touches the next row, and the list pads its sides by
+ * --nk-list-pad-x (the mark's inset plus its skew overhang), so the face never touches the panel's edge:
  *
  *   <MenuRowList active={i}>{items.map((it, j) => <MenuRow key={it.id} active={j === i}>…</MenuRow>)}</MenuRowList>
  *
@@ -54,19 +54,19 @@ import { Selection } from "@/components/ui/selection"
  * items, keeping each item's colorScheme. `menuRowColor()` turns a tone, a library colour name or
  * a CSS colour into what the bars paint with (`progressColor`, an item's `color`).
  *
- * `as="div"` (1.5) renders the row as a focusable div with the row's look (a row inside another control, a
- * row a parent drives), and `kbd` takes one key or a list (["Shift", "E"]): the kbd trail, Tiles gap-items apart.
+ * `as="div"` renders the row as a focusable div with the row's look (a row inside another control, a
+ * row a parent drives), and `kbd` takes one key or a list (["Shift", "E"]): the kbd trail, Glyphs gap-items apart.
  *
  * Role: the one action row every list is made of (menus, sheets, settings, pickers).
- * Anatomy: the lit tile (the list's Selection, or the row's own ::before wall and ::after face) > lead (an icon Glyph in the icon column, or an image) > body (a
+ * Anatomy: the lit mark (the list's Selection, or the row's own ::before wall and ::after face) > lead (an icon Glyph in the icon column, or an image) > body (a
  *   label-voice title over a body-voice description, an optional progress line) > trail (meta, the kbd trail, a checkbox, a stepper, actions, a chevron).
  * Props: icon, iconSpace, image, description, progress, meta, kbd, chevron, active, checked, value, onStep,
  *   readOnly, alert, inert, actions, as, asChild, tone; MenuRowList: active, indicator, bleed.
  * Level means: progress, the row's progress line (0–100 of its value, drawn 0–1).
  * Rules: one trailing thing per row; height --nk-height-row, padding --nk-row-pad-y / -x, gaps --nk-row-gap; rows of a
  *   list sit --nk-list-gap apart and the list pads its sides by --nk-list-pad-x (inset + skew overhang) so the lit
- *   tile never touches the panel edge; hover, focus and active are one lit state (data-lit): the Glyph under it, the
- *   content slid by --nk-gesture-lift, the icon tile lit; no focus ring; attention is data-state="alert"; a trailing
+ *   mark never touches the panel edge; hover, focus and active are one lit state (data-lit): the Glyph under it, the
+ *   content slid by --nk-gesture-lift, the icon glyph lit; no focus ring; attention is data-state="alert"; a trailing
  *   key is a Glyph (Kbd), never text.
  */
 const menuRowVariants = cva(
@@ -138,7 +138,7 @@ type MenuRowProps = Omit<React.ComponentProps<"button">, "value" | "inert"> &
     actions?: React.ReactNode
     /** Render your own element (a link) with the row's styles. */
     asChild?: boolean
-    /** div: a focusable div with the row's look instead of a button (1.5). Default: button (or a div when it must be). */
+    /** div: a focusable div with the row's look instead of a button. Default: button (or a div when it must be). */
     as?: "button" | "div"
   }
 
@@ -207,7 +207,7 @@ function MenuRow({
       </span>
     ) : (
       icon ? (
-        // the icon column: one icon size in a small tile (the tile lights with the row)
+        // the icon column: one icon size in a small glyph (the mark lights with the row)
         <span data-slot="menu-row-icon">
           <Glyph size="md" shape="square" aria-hidden>
             {icon}
@@ -239,7 +239,7 @@ function MenuRow({
         )}
       </span>
       {meta !== undefined && (
-        <span data-slot="menu-row-meta" className={cn("nk-num shrink-0 text-(length:--nk-text-label)", quiet)}>
+        <span data-slot="menu-row-meta" className={cn("nk-text-num shrink-0 text-(length:--nk-text-label)", quiet)}>
           {meta}
         </span>
       )}
@@ -254,7 +254,7 @@ function MenuRow({
           >
             <ChevronLeftIcon />
           </span>
-          <span data-slot="menu-row-value" data-tone={valueTone} className={cn("nk-num min-w-[var(--nk-menu-row-value-width)] text-center text-(length:--nk-text-label)", valueTone === "muted" && quiet)}>
+          <span data-slot="menu-row-value" data-tone={valueTone} className={cn("nk-text-num min-w-[var(--nk-menu-row-value-width)] text-center text-(length:--nk-text-label)", valueTone === "muted" && quiet)}>
             {value}
           </span>
           <span
@@ -498,14 +498,14 @@ function MenuRowDetails({
       )}
       {(title || items.length > 0 || children) && (
         <div className="flex flex-col gap-2 p-3">
-          {title && <p className="nk-title truncate">{title}</p>}
+          {title && <p className="nk-text-title truncate">{title}</p>}
           {items.length > 0 && (
             <dl className="flex flex-col gap-(--nk-space-2) text-(length:--nk-text-label) leading-4">
               {items.map((m, i) => (
                 <div key={i} data-slot="menu-row-details-item" className="flex flex-col gap-1">
                   <div className="flex min-w-0 items-center gap-2">
-                    {m.label !== undefined && <dt className="nk-caption truncate">{m.label}</dt>}
-                    {m.value !== undefined && <dd className={cn("nk-num truncate", m.label !== undefined && "ml-auto")}>{m.value}</dd>}
+                    {m.label !== undefined && <dt className="nk-text-caption truncate">{m.label}</dt>}
+                    {m.value !== undefined && <dd className={cn("nk-text-num truncate", m.label !== undefined && "ml-auto")}>{m.value}</dd>}
                   </div>
                   {m.progress !== undefined && (
                     <ProgressLine
@@ -530,10 +530,10 @@ function MenuRowDetails({
 /**
  * The rows of one list, --nk-list-gap apart, with one Selection sliding to the lit row: the hovered or
  * focused one, else `active` (an index among the rows; null or undefined: none). The rows change state
- * instantly; only the tile moves, and a held key jumps instead of trailing. `indicator={false}` leaves each
- * lit row drawing its own tile.
+ * instantly; only the mark moves, and a held key jumps instead of trailing. `indicator={false}` leaves each
+ * lit row drawing its own mark.
  *
- * The list keeps the lit tile off its container's edge: inline padding of --nk-list-pad-x, by default the tile's
+ * The list keeps the lit mark off its container's edge: inline padding of --nk-list-pad-x, by default the mark's
  * inset plus its skew overhang (--nk-control-primary-overhang: half a row's height × tan(--nk-control-face-skew); 0.25rem for the
  * stock -12deg), so a sheet or panel that puts the list flush never clips the face's slanted corner. `bleed`
  * drops the padding (a list whose container already pads).

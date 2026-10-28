@@ -9,18 +9,18 @@ import { Tabs, TabsContent, TabsList as ShadcnTabsList, TabsTrigger as ShadcnTab
 /**
  * Selection tabs — shadcn's Tabs / TabsList / TabsTrigger / TabsContent with ONE Selection per list that slides
  * to the active trigger (a measured FLIP on --nk-selection-time / --nk-selection-ease). The lit trigger wears the
- * keycap tile (solid, or tinted under --nk-style-fill: soft; kit.css paints the ink), triggers sit --nk-list-gap
- * apart, arrow keys move the tile (Radix roving focus), reduced motion jumps. Same API as stock shadcn; import it in
+ * glyph mark (solid, or tinted under --nk-style-fill: soft; kit.css paints the ink), triggers sit --nk-list-gap
+ * apart, arrow keys move the mark (Radix roving focus), reduced motion jumps. Same API as stock shadcn; import it in
  * place of `@/components/ui/tabs`.
  *
  *   <Tabs value={v} onValueChange={setV}><TabsList><TabsTrigger value="a">A</TabsTrigger>…</TabsList>
  *     <TabsContent value="a">…</TabsContent></Tabs>
  *   <SegmentedControl value={v} onValueChange={setV} options={[{ value: "a", label: "A" }, …]} />
  *
- * Role: tabs and segmented choices as one list with one sliding keycap.
+ * Role: tabs and segmented choices as one list with one sliding glyph.
  * Anatomy: tabs-list (the list, data-nk-sel) > selection + tabs-trigger…; tabs-content beside it.
  * Props: Tabs, TabsList, TabsTrigger, TabsContent as shadcn; SegmentedControl: options, value, defaultValue, onValueChange, stretch.
- * Rules: one tile per list; transform and opacity only; the trigger paints no fill of its own; no focus ring.
+ * Rules: one mark per list; transform and opacity only; the trigger paints no fill of its own; no focus ring.
  */
 
 function TabsList({ className, children, ...props }: React.ComponentProps<typeof ShadcnTabsList>) {
@@ -54,7 +54,7 @@ type SegmentedControlProps = Omit<React.ComponentProps<typeof Tabs>, "children" 
   triggerClassName?: string
 }
 
-/** The same sliding tile with a value prop and no panels. */
+/** The same sliding mark with a value prop and no panels. */
 function SegmentedControl({ options, stretch = true, listClassName, triggerClassName, className, defaultValue, ...props }: SegmentedControlProps) {
   const controlled = props.value !== undefined
   return (
@@ -75,4 +75,4 @@ function SegmentedControl({ options, stretch = true, listClassName, triggerClass
   )
 }
 
-export { Tabs, TabsList, TabsTrigger, TabsContent, SegmentedControl, type SegmentedOption, type SegmentedControlProps }
+export { Tabs, TabsList, TabsTrigger, TabsContent, SegmentedControl }

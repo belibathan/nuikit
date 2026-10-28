@@ -236,7 +236,7 @@ function VehicleShop({
               <ColorField label="Colour" swatches={colours} value={colour} onValueChange={setColour} />
               {payments.length > 1 && (
                 <div className="flex items-center justify-between gap-3">
-                  <span className="nk-label">Pay with</span>
+                  <span className="nk-text-label">Pay with</span>
                   <Tabs value={payment} onValueChange={(v) => setPayment(v as VehicleShopPayment)}>
                     <TabsList>
                       {payments.map((p) => (

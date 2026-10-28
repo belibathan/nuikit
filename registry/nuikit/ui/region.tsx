@@ -6,11 +6,11 @@ import { cn } from "@/lib/utils"
 import { ScrollArea } from "@/components/ui/scroll-area"
 
 /**
- * Region — a content column inside a zone or a surface (docs/design.md): a max width
+ * Region — a content column inside a zone or a surface (docs/design.md §6): a max width
  * (`--nk-region-max`, 28rem), the padding scale (`--nk-region-pad`, the surface padding), and three slots:
  * header, body (scrolls with the kit's scrollbar when `scroll`), footer (pinned to the bottom when `fill`).
  *
- *   <Region fill scroll header={<h2 className="nk-title">Settings</h2>} footer={<Button>Save</Button>}>
+ *   <Region fill scroll header={<h2 className="nk-text-title">Settings</h2>} footer={<Button>Save</Button>}>
  *     {rows}
  *   </Region>
  *
@@ -64,4 +64,4 @@ function Region({ header, footer, scroll, fill, pad, max, as: Comp = "div", clas
   )
 }
 
-export { Region, type RegionProps }
+export { Region }

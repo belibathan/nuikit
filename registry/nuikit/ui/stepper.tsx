@@ -10,10 +10,10 @@ import { NumberRoll, TextRoll } from "@/components/ui/text-roll"
 
 /**
  * Stepper — one segmented control for a value picked by stepping (docs/design.md; handoff §4 "steppers
- * and pickers as one component"): a prev keycap, the value field and a next keycap, joined in one rim at one
- * control height. The keycaps are Tiles (kit.css draws `data-slot="glyph"`; upright inside the rim, the theme's
+ * and pickers as one component"): a prev key, the value field and a next key, joined in one rim at one
+ * control height. The keys are Glyphs (kit.css draws `data-slot="glyph"`; upright inside the rim, the theme's
  * skew is for free-standing keys), the value rolls on change (NumberRoll per digit for numbers, TextRoll for
- * text: a static separator never moves), and a keycap held down repeats after `--nk-stepper-delay` every
+ * text: a static separator never moves), and a key held down repeats after `--nk-stepper-delay` every
  * `--nk-stepper-rate`. Appearance drawables and textures, settings pickers, an input dialog's number.
  *
  *   <Stepper value={drawable} onValueChange={setDrawable} min={0} max={243} aria-label="Drawable" />
@@ -30,8 +30,8 @@ import { NumberRoll, TextRoll } from "@/components/ui/text-roll"
  * Anatomy: stepper (the rim, --nk-height-control) > stepper-key (a Glyph button, prev) > stepper-value (the roll, or the
  *   input while typing) > stepper-key (next).
  * Props: value, defaultValue, onValueChange, onStep, onCommit, min, max, step, wrap, format, size, disabled.
- * Rules: one height for the three parts (--nk-height-control; `size` picks --nk-height-chip or --nk-height-field); the keycaps
- *   are Tiles and never restyled; the value rolls (per digit) and static text stays still; hold repeats
+ * Rules: one height for the three parts (--nk-height-control; `size` picks --nk-height-chip or --nk-height-field); the keys
+ *   are Glyphs and never restyled; the value rolls (per digit) and static text stays still; hold repeats
  *   (--nk-stepper-delay, --nk-stepper-rate); no focus ring (focus and hover are one lit state); rem, never px.
  */
 
@@ -69,7 +69,7 @@ type StepperProps = Omit<React.ComponentProps<"div">, "defaultValue" | "onChange
     /** How the value is written (a number only). Default: the number as is. */
     format?: (value: number) => string
     disabled?: boolean
-    /** The keycaps' legends; default chevrons. */
+    /** The keys' legends; default chevrons. */
     prevIcon?: React.ReactNode
     nextIcon?: React.ReactNode
   }
@@ -116,7 +116,7 @@ function Stepper({
     l.onValueChange?.(next)
   }, [controlled])
 
-  // the edges: at an end without wrap (and without a parent stepping), the keycap is disabled
+  // the edges: at an end without wrap (and without a parent stepping), the key is disabled
   const atLo = !onStep && !wrap && typeof value === "number" && min !== undefined && value <= min
   const atHi = !onStep && !wrap && typeof value === "number" && max !== undefined && value >= max
 
@@ -170,7 +170,7 @@ function Stepper({
             if (e.key === "Enter") (e.preventDefault(), commit(e.currentTarget.value))
             else if (e.key === "Escape") (e.preventDefault(), e.stopPropagation(), setText(null))
           }}
-          className="nk-num min-w-0 flex-1 bg-transparent text-center outline-none"
+          className="nk-text-num min-w-0 flex-1 bg-transparent text-center outline-none"
           aria-label={props["aria-label"]}
         />
       ) : (
@@ -180,7 +180,7 @@ function Stepper({
           tabIndex={disabled ? -1 : 0}
           aria-live="polite"
           onClick={() => onCommit && !disabled && setText(String(value))}
-          className="nk-num flex min-w-0 flex-1 items-center justify-center px-(--nk-space-2) outline-none focus-visible:text-foreground"
+          className="nk-text-num flex min-w-0 flex-1 items-center justify-center px-(--nk-space-2) outline-none focus-visible:text-foreground"
         >
           {shown}
         </span>
@@ -196,7 +196,7 @@ function Stepper({
 const holdDelay = () => tokenMs("--nk-stepper-delay", 350)
 const holdRate = () => tokenMs("--nk-stepper-rate", 70)
 
-/** A keycap of the control: a Glyph button, upright, at the control's height; held, it repeats. */
+/** A key of the control: a Glyph button, upright, at the control's height; held, it repeats. */
 function StepperKey({ side, disabled, onStep, children }: { side: "prev" | "next"; disabled: boolean; onStep: (dir: -1 | 1) => void; children: React.ReactNode }) {
   const dir = side === "prev" ? -1 : 1
   const timer = React.useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -235,7 +235,7 @@ function StepperKey({ side, disabled, onStep, children }: { side: "prev" | "next
       onPointerCancel={stop}
       onClick={(e) => e.preventDefault()}
       className={cn(
-        // one height with the rim; the tile's corners are the rim's (overflow clips), upright inside it
+        // one height with the rim; the key's corners are the rim's (overflow clips), upright inside it
         "h-full w-auto aspect-square shrink-0 rounded-none [--nk-control-face-skew:0deg] [--nk-control-plate-x:0rem] [--nk-control-plate-y:0rem] text-muted-foreground",
         "hover:text-foreground hover:[--nk-control-now-face:var(--nk-fill-tint)] disabled:pointer-events-none disabled:opacity-40",
         side === "prev" ? "border-r border-(--nk-plate-hair,var(--border))" : "border-l border-(--nk-plate-hair,var(--border))"
@@ -246,4 +246,4 @@ function StepperKey({ side, disabled, onStep, children }: { side: "prev" | "next
   )
 }
 
-export { Stepper, stepperVariants, type StepperProps, type StepperValue }
+export { Stepper, stepperVariants }

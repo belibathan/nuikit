@@ -7,7 +7,7 @@ import { useViewport } from "nuikit-core/react"
 import { cn } from "@/lib/utils"
 
 /**
- * Screen — the root of every page's layout (docs/design.md). Full screen, click-through, and the owner
+ * Screen — the root of every page's layout (docs/design.md §6). Full screen, click-through, and the owner
  * of the levers every zone inside reads: the 16:9 content box (`--nk-screen-ratio`; on an ultrawide the zones
  * sit at the box's edges, `bleed` uses the whole width), the safe area (`--nk-screen-safe-x/y`, rem), the density and
  * the aspect class (`data-nk-aspect` on <html>: 4-3, 16-10, 16-9, 21-9, 32-9, from useViewport). The UI scale is
@@ -55,4 +55,4 @@ function Screen({ bleed, ratio, safe, density, as: Comp = "div", className, styl
   )
 }
 
-export { Screen, type ScreenProps }
+export { Screen }

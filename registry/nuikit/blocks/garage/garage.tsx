@@ -142,7 +142,7 @@ function Garage({
                   {FILTERS.map((f) => (
                     <TabsTrigger key={f.value} value={f.value}>
                       {f.label}
-                      {f.value !== "all" && <span className="nk-num text-muted-foreground">{count(f.value)}</span>}
+                      {f.value !== "all" && <span className="nk-text-num text-muted-foreground">{count(f.value)}</span>}
                     </TabsTrigger>
                   ))}
                 </TabsList>
@@ -158,7 +158,7 @@ function Garage({
                     data-id={v.id}
                     icon={<CarIcon />}
                     description={garageWhere(v, fmt)}
-                    meta={<span className="font-mono">{v.plate}</span>}
+                    meta={<span className="nk-text-num">{v.plate}</span>}
                     active={v.id === selected?.id}
                     className={cn(v.state !== "stored" && "[&_[data-slot=menu-row-description]]:text-muted-foreground", v.state === "impounded" && "[&_[data-slot=menu-row-description]]:text-warning")}
                     onClick={() => setSelectedId(v.id)}
@@ -173,7 +173,7 @@ function Garage({
               )}
             </div>
           </PanelBody>
-          <PanelFooter className="nk-label whitespace-nowrap">
+          <PanelFooter className="nk-text-label whitespace-nowrap">
             <Kbd>↑</Kbd>
             <Kbd>↓</Kbd>
             Pick

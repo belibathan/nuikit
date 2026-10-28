@@ -2,7 +2,6 @@ import * as React from "react"
 import { renderToStaticMarkup } from "react-dom/server"
 import { describe, expect, it } from "vitest"
 
-import { Chip } from "@/components/ui/chip"
 import { Countdown } from "@/components/ui/countdown"
 import { EdgeSheetEdge } from "@/components/ui/edge-sheet"
 import { Fill, fillTargets } from "@/components/ui/fill"

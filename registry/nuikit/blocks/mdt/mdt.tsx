@@ -285,7 +285,7 @@ function Mdt({
                       { label: "Reports on file", value: String(reports.length) },
                     ]}
                   />
-                  <p className="nk-caption px-1">Latest reports</p>
+                  <p className="nk-text-caption px-1">Latest reports</p>
                   {reports.length ? (
                     <div>
                       {reports.slice(0, 3).map((r) => (
@@ -408,8 +408,8 @@ function Mdt({
                   {shownReport ? (
                     <div className="flex flex-col gap-3 p-4">
                       <div>
-                        <p className="nk-title">{shownReport.title}</p>
-                        <p className="nk-caption">
+                        <p className="nk-text-title">{shownReport.title}</p>
+                        <p className="nk-text-caption">
                           {shownReport.author}, {mdtWhen(shownReport.time)}
                           {shownReport.person ? `, about ${shownReport.person}` : ""}
                         </p>

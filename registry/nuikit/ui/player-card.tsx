@@ -113,7 +113,7 @@ function PlayerCard({
         }
         actions={
           duty ? (
-            <span data-slot="player-card-duty" className="nk-label flex items-center gap-(--nk-space-2)">
+            <span data-slot="player-card-duty" className="nk-text-label flex items-center gap-(--nk-space-2)">
               <Chip variant="dot" tone={onDuty ? "success" : undefined} aria-hidden />
               {onDuty ? dutyLabels[0] : dutyLabels[1]}
             </span>
@@ -130,7 +130,7 @@ function PlayerCard({
                   size="sm"
                   icon={s.icon}
                   label={s.label}
-                  value={s.mono ? <span className="font-mono tracking-normal">{s.value}</span> : s.value}
+                  value={s.mono ? <span className="nk-text-num">{s.value}</span> : s.value}
                 />
               ))}
             </div>
@@ -143,4 +143,4 @@ function PlayerCard({
   )
 }
 
-export { PlayerCard, initials, type PlayerCardStat }
+export { PlayerCard, initials }

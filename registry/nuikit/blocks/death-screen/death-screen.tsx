@@ -71,8 +71,8 @@ function DeathScreen({
 
       {/* above centre: the bottom of the screen stays clear for the game's own prompts */}
       <div className="nk-enter absolute inset-x-0 top-[20%] flex flex-col items-center px-12 text-center">
-        <h1 className="nk-display">{data.title ?? (down ? "You are down" : "You are unconscious")}</h1>
-        {data.subtitle && <p className="mt-2 nk-body max-w-xl text-muted-foreground">{data.subtitle}</p>}
+        <h1 className="nk-text-display">{data.title ?? (down ? "You are down" : "You are unconscious")}</h1>
+        {data.subtitle && <p className="mt-2 nk-text-body max-w-xl text-muted-foreground">{data.subtitle}</p>}
 
         {timed ? (
           <Countdown
@@ -85,7 +85,7 @@ function DeathScreen({
             warnAt={down ? 30 : undefined}
           />
         ) : (
-          <div className="nk-label mt-12">Waiting for help</div>
+          <div className="nk-text-label mt-12">Waiting for help</div>
         )}
 
         <DeathScreenKeys data={data} hold={hold} />

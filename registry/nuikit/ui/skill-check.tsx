@@ -29,7 +29,7 @@ import { Kbd } from "@/components/ui/glyph"
  * zone, skillCheckHit() is the rule, SKILL_CHECK_PRESETS has easy / medium / hard.
  *
  * Role: Press the key while the needle is in the zone: the challenge intent.
- * Anatomy: dial (track, zone arc) > needle (drawn per frame) > key (a Kbd tile) > outcome
+ * Anatomy: dial (track, zone arc) > needle (drawn per frame) > key (a Kbd) > outcome
  * Props: size, zoneStart, zoneSize, keyLabel, speed, running, listen, result, onResult.
  * Rules: The needle moves without re-rendering; a full turn is a miss. The outcome is success or fail on the
  *   key, never colour alone.

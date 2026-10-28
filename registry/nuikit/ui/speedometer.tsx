@@ -10,7 +10,7 @@ import { Glyph } from "@/components/ui/glyph"
 /**
  * Speedometer — the vehicle gauge as refined in game (docs/design.md: the quality bar): a Dial of
  * --nk-speedometer-segments thick segments with small even gaps (digital, the default), or a thin arc over faint ticks
- * (arc), the speed big in the middle with its leading zeros dimmed (`0`64), the unit under it, the gear on a keycap
+ * (arc), the speed big in the middle with its leading zeros dimmed (`0`64), the unit under it, the gear on a glyph
  * Glyph seated in the arc's opening, fuel as thinner segments on the outer right-hand curve that drain downward,
  * and the turn signals inside the ring. Past the redline the segments are red (only lit ones; unlit look like the rest),
  * the dial and the gear data-state="alert". The dial sits on a soft scrim that fades out past the ring.

@@ -238,7 +238,7 @@ function CharacterSelect({
             icon={<UsersIcon />}
             title={data.title ?? "Characters"}
             actions={
-              <span className="nk-num text-(length:--nk-text-label) text-muted-foreground">
+              <span className="nk-text-num text-(length:--nk-text-label) text-muted-foreground">
                 {characters.length} / {data.slots}
               </span>
             }

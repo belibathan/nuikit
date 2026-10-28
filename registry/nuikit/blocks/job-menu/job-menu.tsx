@@ -165,7 +165,7 @@ function JobMenu({
                   <TabsList className="w-full">
                     <TabsTrigger value="actions">Actions</TabsTrigger>
                     <TabsTrigger value="staff">
-                      Staff <span className="nk-num text-muted-foreground">{list(boss.employees).length}</span>
+                      Staff <span className="nk-text-num text-muted-foreground">{list(boss.employees).length}</span>
                     </TabsTrigger>
                   </TabsList>
                 </Tabs>
@@ -299,12 +299,12 @@ function JobStaff({
             }
           >
             {e.name}
-            {e.you && <span className="font-normal text-muted-foreground"> (you)</span>}
+            {e.you && <span className="[font-weight:var(--nk-type-weight-body)] text-muted-foreground"> (you)</span>}
           </MenuRow>
         )
       })}
 
-      <p className="nk-caption px-3 pt-4 pb-1">Hire someone nearby</p>
+      <p className="nk-text-caption px-3 pt-4 pb-1">Hire someone nearby</p>
       {nearby.length ? (
         nearby.map((p) => (
           <MenuRow

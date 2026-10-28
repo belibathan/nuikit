@@ -182,7 +182,7 @@ function FormField({
         </Button>
       )}
       {valueText !== undefined && valueText !== null && (
-        <span data-slot="form-field-value" className="nk-num">
+        <span data-slot="form-field-value" className="nk-text-num">
           {valueText}
         </span>
       )}
@@ -608,7 +608,7 @@ function NumberControl({
           }}
           data-icon={icon ? "" : undefined}
           data-affix={inline ? "stepper" : undefined}
-          className="nk-num [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+          className="nk-text-num [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
         />
         {inline && (
           <span data-slot="form-field-stepper" className="absolute inset-y-0 flex items-center">
@@ -754,7 +754,7 @@ function MultiSelectControl({
             variant="outline"
             disabled={f.disabled}
             className={cn(
-              "w-full min-w-0 justify-between px-3 font-normal aria-invalid:border-destructive dark:bg-input/30",
+              "w-full min-w-0 justify-between px-3 [font-weight:var(--nk-type-weight-body)] aria-invalid:border-destructive dark:bg-input/30",
               !selected.length && "text-muted-foreground"
             )}
           >
@@ -1066,7 +1066,7 @@ function SegmentedInput({
           {i > 0 && separator(i)}
           <span data-slot="form-field-segment" className="relative inline-grid shrink-0">
             {segmentSizer(s.placeholder, s.length).map((t, j) => (
-              <span key={j} aria-hidden className="nk-num invisible col-start-1 row-start-1 px-px whitespace-pre">
+              <span key={j} aria-hidden className="nk-text-num invisible col-start-1 row-start-1 px-px whitespace-pre">
                 {t}
               </span>
             ))}
@@ -1111,7 +1111,7 @@ function SegmentedInput({
             }}
             // absolute: no intrinsic width of its own (an input keeps one even at size 1), so the sizers set the box
             size={1}
-            className="nk-num absolute inset-0 size-full min-w-0 bg-transparent text-center outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed"
+            className="nk-text-num absolute inset-0 size-full min-w-0 bg-transparent text-center outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed"
           />
           </span>
         </React.Fragment>
@@ -1323,7 +1323,7 @@ function DatePickerButton({
       aria-pressed={on || undefined}
       aria-label={aria}
       onClick={pick}
-      className="nk-num h-(--cell-size) px-0 font-normal"
+      className="nk-text-num h-(--cell-size) px-0 [font-weight:var(--nk-type-weight-body)]"
     >
       {label}
     </Button>
@@ -1369,7 +1369,7 @@ function DatePickerButton({
           {view === "days" && (
             <div className="grid w-[calc(var(--cell-size)*7)] grid-cols-7" role="grid" aria-label={title}>
               {WEEKDAYS.map((d) => (
-                <span key={d} aria-hidden className="nk-caption grid h-(--cell-size) place-items-center">
+                <span key={d} aria-hidden className="nk-text-caption grid h-(--cell-size) place-items-center">
                   {d}
                 </span>
               ))}
@@ -1690,7 +1690,7 @@ function TimeControl({
               if (pm !== parts.pm) update({ ...parts, pm })
             }
           }}
-          className="nk-num rounded-(--nk-radius-key) outline-none hover:text-foreground focus-visible:bg-accent focus-visible:text-accent-foreground"
+          className="nk-text-num rounded-(--nk-radius-key) outline-none hover:text-foreground focus-visible:bg-accent focus-visible:text-accent-foreground"
         >
           {parts.pm ? "PM" : "AM"}
         </button>
@@ -1782,7 +1782,7 @@ function ColorControl({
             if (hex) setText(hex)
           }}
           data-icon="swatch"
-          className="font-mono uppercase placeholder:normal-case"
+          className="nk-text-num"
         />
       </div>
       {normalized && normalized.length > 0 && (

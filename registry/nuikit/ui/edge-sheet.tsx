@@ -18,8 +18,8 @@ import { Sheet, SheetContent, SheetDescription, SheetTitle } from "@/components/
  * Stock shadcn Sheet (Radix Dialog, tw-animate-css slide) in the theme's panel surface, no radius
  * or cut on the edges it touches, a hairline on its open edge, a token-only scrim falloff from the
  * screen edge, and the content in an inner column (48px from the screen edge, 24px from the open
- * edge). Several can be open at once (an inventory's two sides): it is non-modal by default and
- * never closes itself on an outside click, focus or Escape: the owner decides (`open`).
+ * edge). Several can be open at once (an inventory's two sides): it is never modal and never closes itself
+ * on an outside click, focus or Escape: the owner decides (`open`; Escape goes through surfaces).
  *
  *   <EdgeSheet open={open} side="left" title="John Doe" description="17 / 50 slots" meter={52}>
  *     <EdgeSheetBody scroll>{slots}</EdgeSheetBody>
@@ -43,15 +43,13 @@ import { Sheet, SheetContent, SheetDescription, SheetTitle } from "@/components/
  * `meterDanger` (default 90).
  *
  * Role: A sheet from a screen edge: an inventory side, a context menu.
- * Anatomy: edge-sheet (side) > column: header (title, description, actions; back as an ActionBarItem) > edge (a
- *   Fill, variant edge) > body
- * Props: open, side, modal, title, description, actions, density, shape, motion, back, anchor.
+ * Anatomy: edge-sheet (side) > edge-sheet-column > edge-sheet-header (back as an ActionBarItem, title, description,
+ *   edge-sheet-actions) > edge-sheet-edge (a Fill, variant edge) > edge-sheet-body > edge-sheet-footer
+ * Props: open, side, variant, fit, anchor, width, delay, icon, title, description, actions, meter, meterDanger, page,
+ *   onBack, back, onClose, density, shape, motion.
  * Level means: the edge line: a fill such as weight (EdgeSheetEdge value, 0–100).
  * Rules: The game stays visible beside it. Positioned on an edge, never centred with a transform.
  */
-
-/** nk-title one step up: the heading face at section size (the pause title's family, one step down). */
-const TITLE = { "--nk-text-title": "var(--nk-text-section)" } as React.CSSProperties
 
 type EdgeSheetProps = Omit<React.ComponentProps<typeof SheetContent>, "title" | "side"> & {
   open: boolean
@@ -60,14 +58,12 @@ type EdgeSheetProps = Omit<React.ComponentProps<typeof SheetContent>, "title" | 
   variant?: "floating" | "flush"
   /** floating only: as tall as its content (from the top edge down) instead of the full height. */
   fit?: boolean
-  /** floating only (1.5): full height (default), or upper: as tall as its content, from the upper third down. */
+  /** floating only: full height (default), or upper: as tall as its content, from the upper third down. */
   anchor?: "full" | "upper"
   /** Rem width of the whole sheet (the column is this minus 4.5rem). Default 36rem, the pause menu's. */
   width?: string
   /** Stagger after another sheet (ms at full motion). */
   delay?: number
-  /** Trap focus and block the page behind (a sheet that is the only thing on screen). Default false. */
-  modal?: boolean
   icon?: React.ReactNode
   title?: React.ReactNode
   description?: React.ReactNode
@@ -75,15 +71,13 @@ type EdgeSheetProps = Omit<React.ComponentProps<typeof SheetContent>, "title" | 
   actions?: React.ReactNode
   meter?: number
   meterDanger?: number
-  /** Called when Radix would close it (it never closes itself): wire Escape here if you want it. */
-  onOpenChange?: (open: boolean) => void
   /** Sub-page key: a new value swaps the column in place (a short fade), the sheet stays. */
   page?: React.Key
   /** A back button before the title (a sub-page). */
   onBack?: () => void
   /**
-   * With `onBack` (1.5): the back control as an ActionBarItem with its key (Esc) instead of the chevron; a
-   * string or node replaces the label ("Back"). The default theme's header (docs/design.md §3, Sheet).
+   * With `onBack`: the back control as an ActionBarItem with its key (Esc) instead of the chevron; a
+   * string or node replaces the label ("Back").
    */
   back?: boolean | React.ReactNode
   /** A close button after the title. */
@@ -98,14 +92,12 @@ function EdgeSheet({
   anchor = "full",
   width = "36rem",
   delay = 0,
-  modal = false,
   icon,
   title,
   description,
   actions,
   meter,
   meterDanger = 90,
-  onOpenChange,
   page,
   onBack,
   back,
@@ -121,7 +113,7 @@ function EdgeSheet({
   const left = side === "left"
   const keep = (e: Event) => e.preventDefault()
   return (
-    <Sheet open={open} modal={modal} onOpenChange={onOpenChange}>
+    <Sheet open={open} modal={false}>
       <SheetContent
         {...nkVariant({ density, shape, motion })}
         data-slot="edge-sheet"
@@ -130,7 +122,7 @@ function EdgeSheet({
         onOpenAutoFocus={keep}
         onCloseAutoFocus={keep}
         onInteractOutside={keep}
-        onEscapeKeyDown={modal ? undefined : keep}
+        onEscapeKeyDown={keep}
         style={{ "--edge-sheet-width": width, "--edge-sheet-delay": `${delay}ms`, ...style } as React.CSSProperties}
         data-variant={variant}
         className={cn(
@@ -179,7 +171,7 @@ function EdgeSheet({
                   </Button>
                 )}
                 {icon && !onBack && <span className="flex shrink-0 text-muted-foreground [&_svg:not([class*='size-'])]:size-(--nk-icon-lg)">{icon}</span>}
-                <SheetTitle className="nk-title min-w-0 flex-1 truncate" style={TITLE}>
+                <SheetTitle className="nk-text-section min-w-0 flex-1 truncate">
                   {title}
                 </SheetTitle>
                 {actions && <div data-slot="edge-sheet-actions" className="ml-auto flex shrink-0 items-center gap-2">{actions}</div>}
@@ -190,7 +182,7 @@ function EdgeSheet({
                 )}
               </div>
               {description ? (
-                <SheetDescription className="nk-label truncate">{description}</SheetDescription>
+                <SheetDescription className="nk-text-label truncate">{description}</SheetDescription>
               ) : (
                 <SheetDescription className="sr-only">{typeof title === "string" ? title : ""}</SheetDescription>
               )}
@@ -268,4 +260,4 @@ function EdgeSheetFooter({ className, ...props }: React.ComponentProps<"footer">
   return <footer data-slot="edge-sheet-footer" className={cn("flex shrink-0 items-center gap-2 border-t border-(--nk-panel-border) pt-4", className)} {...props} />
 }
 
-export { EdgeSheet, EdgeSheetBody, EdgeSheetEdge, EdgeSheetFooter, type EdgeSheetProps }
+export { EdgeSheet, EdgeSheetBody, EdgeSheetEdge, EdgeSheetFooter }

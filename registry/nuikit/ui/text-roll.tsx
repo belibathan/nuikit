@@ -352,7 +352,7 @@ function NumberRoll({ value, format = plain, direction, stagger = 24, className,
   // keyed from the right, so units, tens and hundreds keep their reel when the length changes; a
   // digit that comes rolls in from nothing, one that goes rolls out and closes its width
   return (
-    <span data-slot="number-roll" className={cn("nk-num inline-flex", className)} {...props}>
+    <span data-slot="number-roll" className={cn("nk-text-num inline-flex", className)} {...props}>
       <span className="sr-only">{text}</span>
       <span aria-hidden className="inline-flex">
         <CharReels text={text} dir={dir} stagger={stagger} appear={false} />

@@ -1,13 +1,12 @@
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
-import { Fill } from "@/components/ui/fill"
 import { Kbd } from "@/components/ui/glyph"
 
 /**
- * ActionBar — the one hint, close and back pattern (docs/design.md §3): an optional plate, then items
- * --nk-gap-items apart. An item holds keys (Glyph sm) or an icon, plus a label, and is a <button> when it acts.
- * kit.css draws it (`.nk-action-bar` and the action-bar-* slots); a theme sets tokens.
+ * ActionBar — the one hint, close and back pattern (docs/design.md §6): an optional plate, then items
+ * --nk-gap-items apart. An item holds keys (Kbd) or an icon, plus a label, and is a <button> when it acts.
+ * kit.css draws it (`.nk-action-bar` and the action-bar-* slots); a theme sets levers.
  *
  *   <ActionBar plate>
  *     <ActionBarItem keys={["Tab"]} label="Choose" />
@@ -17,7 +16,7 @@ import { Kbd } from "@/components/ui/glyph"
  *     <ActionBarItem icon={<MoveHorizontalIcon />} label="Drag to look around" />
  *   </ActionBar>
  *
- * `level` (0–1) shows a hold filling under the item; `state` is the shared data-state.
+ * `state` is the shared data-state; hold and confirm light the item's keys.
  *
  * One action, one place (`dedupe`, default true): when a key hint and a button in the bar name the same
  * action (the same label, or the same key), the bar renders one item that does both: the hint's keys, the
@@ -25,9 +24,9 @@ import { Kbd } from "@/components/ui/glyph"
  * `dedupe={false}` keeps every child as written.
  *
  * Role: Key hints, back and close: one bar.
- * Anatomy: plate (optional) > item: keys (Kbd Tiles) or icon, label, hold (a Fill) > separator
- * Props: plate, dedupe, keys, icon, label, onClick, level, state.
- * Rules: An item that acts is a button. Keys are Tiles, never a styled span. One action is one item.
+ * Anatomy: action-bar (plate optional) > action-bar-item: action-bar-keys (Kbd) or icon, action-bar-label > action-bar-sep
+ * Props: plate, dedupe, keys, icon, label, onClick, state.
+ * Rules: An item that acts is a button. Keys are Kbd, never a styled span. One action is one item.
  */
 function ActionBar({ className, plate = false, dedupe = true, children, ...props }: React.ComponentProps<"div"> & { plate?: boolean; dedupe?: boolean }) {
   return (
@@ -92,13 +91,11 @@ type ActionBarItemProps = Omit<React.ComponentProps<"button">, "children"> & {
   keys?: React.ReactNode[]
   icon?: React.ReactNode
   label?: React.ReactNode
-  /** Hold progress, 0–1. */
-  level?: number
   state?: "rest" | "focus" | "hold" | "confirm" | "alert" | "disabled"
   children?: React.ReactNode
 }
 
-function ActionBarItem({ className, keys, icon, label, level, state, onClick, children, disabled, ...props }: ActionBarItemProps) {
+function ActionBarItem({ className, keys, icon, label, state, onClick, children, disabled, ...props }: ActionBarItemProps) {
   const body = (
     <>
       {keys && keys.length > 0 && (
@@ -111,9 +108,8 @@ function ActionBarItem({ className, keys, icon, label, level, state, onClick, ch
         </span>
       )}
       {!keys?.length && icon}
-      {label !== undefined && <ActionBarLabel>{label}</ActionBarLabel>}
+      {label !== undefined && <span data-slot="action-bar-label">{label}</span>}
       {children}
-      {level !== undefined && <Fill level={level} />}
     </>
   )
   const st = disabled ? "disabled" : state && state !== "rest" ? state : undefined
@@ -131,12 +127,8 @@ function ActionBarItem({ className, keys, icon, label, level, state, onClick, ch
   )
 }
 
-function ActionBarLabel({ className, ...props }: React.ComponentProps<"span">) {
-  return <span data-slot="action-bar-label" className={cn(className)} {...props} />
-}
-
 function ActionBarSep({ className, ...props }: React.ComponentProps<"span">) {
   return <span data-slot="action-bar-sep" aria-hidden className={cn(className)} {...props} />
 }
 
-export { ActionBar, ActionBarItem, ActionBarLabel, ActionBarSep, type ActionBarItemProps }
+export { ActionBar, ActionBarItem, ActionBarSep }

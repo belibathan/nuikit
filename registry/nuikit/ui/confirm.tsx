@@ -34,9 +34,10 @@ import { Spinner } from "@/components/ui/spinner"
  * `ConfirmPanel` is the panel alone, every state from props, for previews or your own layout.
  *
  * Role: A decision before something that can't be undone.
- * Anatomy: confirm-root + scrim > confirm (icon, title, description) > cancel, action
- * Props: title, description, tone, confirmLabel, cancelLabel, loading, scrim, initialFocus, density, shape,
- *   motion.
+ * Anatomy: confirm-root > confirm-scrim + confirm (a Panel): confirm-icon, title, confirm-description >
+ *   confirm-cancel, confirm-action
+ * Props: title, description, icon, tone, size, confirmLabel, cancelLabel, showCancel, loading, initialFocus,
+ *   density, shape, motion.
  * Rules: Focus starts on the action; Escape and Cancel go back. Destructive actions say so in the label.
  */
 
@@ -130,7 +131,7 @@ function ConfirmPanel({
       {(description || children) && (
         <PanelBody variant="form" className="gap-3">
           {description && (
-            <div id={`${id}-description`} data-slot="confirm-description" className="text-(length:--nk-text-label) leading-5 text-pretty text-muted-foreground">
+            <div id={`${id}-description`} data-slot="confirm-description" className="nk-text-desc text-pretty">
               {description}
             </div>
           )}
@@ -171,18 +172,10 @@ function wrapFocus(index: number, count: number, backwards: boolean) {
 }
 
 /**
- * The modal: a scrim over the game and the panel centred on it. It fills its container
+ * The modal: the game darkened by --scrim and the panel centred on it. It fills its container
  * (position: absolute), so put it inside a full-screen root: a nuikit Surface.
  */
-function Confirm({
-  scrim = true,
-  initialFocus = "confirm",
-  className,
-  ...props
-}: NkVariantProps & ConfirmPanelProps & {
-  /** Darken the game behind it. */
-  scrim?: boolean
-}) {
+function Confirm({ initialFocus = "confirm", className, ...props }: NkVariantProps & ConfirmPanelProps) {
   const root = React.useRef<HTMLDivElement>(null)
 
   // Give focus back to whatever had it when the dialog goes. Read on the first render: by the
@@ -204,15 +197,13 @@ function Confirm({
         items[wrapFocus(items.indexOf(document.activeElement as HTMLElement), items.length, e.shiftKey)]?.focus()
       }}
     >
-      {scrim && (
-        // nk-enter ends at opacity 1 (fill both), so the 50% lives on the layer inside it.
-        <div aria-hidden data-slot="confirm-scrim" className="nk-enter absolute inset-0">
-          <div className="size-full bg-(--scrim) opacity-50" />
-        </div>
-      )}
+      {/* nk-enter ends at opacity 1 (fill both), so the 50% lives on the layer inside it. */}
+      <div aria-hidden data-slot="confirm-scrim" className="nk-enter absolute inset-0">
+        <div className="size-full bg-(--scrim) opacity-50" />
+      </div>
       <ConfirmPanel role="alertdialog" aria-modal="true" initialFocus={initialFocus} className={cn("relative", className)} {...props} />
     </div>
   )
 }
 
-export { Confirm, ConfirmPanel, confirmVariants, wrapFocus, type ConfirmTone, type ConfirmPanelProps }
+export { Confirm, ConfirmPanel, confirmVariants, wrapFocus, type ConfirmTone }

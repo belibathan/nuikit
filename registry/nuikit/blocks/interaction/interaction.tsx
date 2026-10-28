@@ -173,7 +173,7 @@ function Target({
         <div className="justify-self-start pl-4">
           <Panel size="sm" className={cn(!data.picking && "pointer-events-none")}>
             <PanelBody ref={rows} role="menu" aria-label={data.label ?? "Options"} onKeyDown={onKeyDown}>
-            {data.label && <p className="nk-caption truncate px-(--nk-space-3) pt-1 pb-(--nk-space-2)">{data.label}</p>}
+            {data.label && <p className="nk-text-caption truncate px-(--nk-space-3) pt-1 pb-(--nk-space-2)">{data.label}</p>}
             {options.map((o, i) => (
               <MenuRow
                 key={o.id}
@@ -189,7 +189,7 @@ function Target({
               </MenuRow>
             ))}
             {error && (
-              <p role="alert" className="nk-label px-(--nk-space-3) pt-(--nk-space-2) pb-1 text-destructive">
+              <p role="alert" className="nk-text-label px-(--nk-space-3) pt-(--nk-space-2) pb-1 text-destructive">
                 {error}
               </p>
             )}

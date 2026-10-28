@@ -4,65 +4,67 @@ import * as React from "react"
 import { motionLevel, token, tokenMs } from "nuikit-core/motion"
 
 import { cn, nkLevel } from "@/lib/utils"
+import { Chip } from "@/components/ui/chip"
 import { NumberRoll } from "@/components/ui/text-roll"
-import { CollapseMore } from "@/components/ui/collapse-stack"
 import { Glyph } from "@/components/ui/glyph"
-import { useCollapse, type UseCollapseOptions } from "@/hooks/use-collapse"
+import { useCollapse } from "@/hooks/use-collapse"
 
 /**
- * VitalChip: the HUD's status chip as composable parts (shadcn-style). One anatomy under every theme: the keycap
- * (docs/design.md). A theme flattens or reshapes it with levers (--nk-control-face-skew, --nk-control-wall-height, radius
- * levers), never by swapping parts.
+ * VitalChip — the HUD's status chip as composable parts (shadcn-style), one anatomy under every theme: a Glyph
+ * face over a plate that slides out with the label. A theme flattens or reshapes it with levers
+ * (--nk-control-face-skew, --nk-control-wall-height, --nk-vital-chip-*), never by swapping parts.
  *
- *   <VitalChip.Root value={hunger} tone="hunger">
- *     <VitalChip.Shape>
- *       <VitalChip.Icon><UtensilsIcon /></VitalChip.Icon>
- *       <VitalChip.Label>Hunger</VitalChip.Label>
- *     </VitalChip.Shape>
- *     <VitalChip.Pop label="Hunger" />
- *   </VitalChip.Root>
+ *   <VitalChip.Row>
+ *     <VitalChip.Root value={hunger} tone="hunger" display="expand">
+ *       <VitalChip.Shape>
+ *         <VitalChip.Icon><UtensilsIcon /></VitalChip.Icon>
+ *         <VitalChip.Label>Hunger</VitalChip.Label>
+ *       </VitalChip.Shape>
+ *     </VitalChip.Root>
+ *   </VitalChip.Row>
  *
- * Anatomy: tile (the kit Glyph as the face), icon, label (name, value), value, plate (slides out from behind the
- * face; the label sits on it), fill (the liquid rising inside the face, --level, scaleY, with a surface line and a
- * copy of the icon in the fill's ink), track (clips the plate), wall (the base, dropped by --nk-vital-chip-plate-drop).
- * `active` (the mic while talking) lights the face. Its room in a Row is measured once per open and FLIPped,
- * never per frame.
+ * The face is the kit Glyph; the level is the liquid rising inside it (--level, scaleY, a surface line and a copy
+ * of the icon in the fill's ink); the plate slides out from behind the face with the name and the value; the wall
+ * is the base, dropped by --nk-vital-chip-plate-drop. `active` (the mic while talking) lights the face. Its room in
+ * a Row is measured once per open and FLIPped, never per frame. The plate slides away from the corner the row is
+ * anchored to (an ancestor's data-corner). Pop: a flag out of the chip's side on a change ("Hunger +25"),
+ * in line with the row, merged while it shows, gone after ~1.5 s.
  *
- * Pop: a flag out of the chip's side on a change ("Hunger +25"), in line with the row, merged while it shows,
- * gone after ~1.5 s.
+ * Theme levers choose the defaults: --nk-style-vital-icon (vital: the icon in the vital's colour; uniform: the
+ * chip's ink), --nk-style-vital, --nk-style-vital-neighbours; display and neighbours props win over them.
+ * Transform and opacity only for motion; Chromium 103.
  *
- * Theme tokens choose the defaults: --nk-style-vital-icon (vital: the icon in the vital's colour; uniform: the chip's
- * ink), --nk-style-vital, --nk-style-vital-neighbours. Props win over tokens. Transform and opacity only for motion;
- * Chromium 103.
- *
- * Role: One vital on the HUD: health, armor, hunger, thirst, stress.
- * Props: value, tone, icon, open, active, alert, display, neighbours, format, max, side.
+ * Role: One vital on the HUD: health, armor, hunger, thirst, stress, voice, radio.
+ * Anatomy: vital-chip-row > vital-chip > vital-chip-shape: vital-chip-wall, vital-chip-track > vital-chip-plate,
+ *   glyph (vital-chip-face) > vital-chip-level + vital-chip-icon, vital-chip-label > vital-chip-name; the row's
+ *   +N is a hud Chip (vital-chip-more); vital-chip-pop beside the shape
+ * Props: value, tone, open, active, alert, display, neighbours.
  * Level means: the vital, 0-100 as 0-1.
  * Rules: data-hue carries the vital's role (health, armor...). display: pill (icon, name, value) | value |
  *   icon (level as fill) | expand (opens on a change, settles after --nk-behavior-rest). neighbours (a chip that
  *   opens, in a Row): push | collapse | overlay. expand chips in a VitalChip.Row open through the row's collapse
- *   engine (useCollapse): batched, ordered, capped at max with +N.
+ *   engine (useCollapse): batched, ordered, at most three open, then +N.
  */
 
-export type IconMode = "vital" | "uniform"
+type IconMode = "vital" | "uniform"
 /**
  * What the chip shows (the owner's HUD customization): pill = icon + label + value; value = icon + value;
  * icon = the icon alone, the level as fill; expand = the icon, which opens to the pill when the value
  * changes and settles back after --nk-behavior-rest (2.5 s when that is 0). auto: the label shows while
  * the Root is open (the parts as composed).
  */
-export type ChipDisplay = "auto" | "pill" | "value" | "icon" | "expand"
+type ChipDisplay = "auto" | "pill" | "value" | "icon" | "expand"
 /**
  * How a chip that opens (voice while talking, an expand) treats the chips beside it in a VitalChip.Row:
  * push = they make way (its label takes room in the row); collapse = they close to their icons while
  * it's open; overlay = they never move (its label floats over them).
  */
-export type ChipNeighbours = "push" | "collapse" | "overlay"
+type ChipNeighbours = "push" | "collapse" | "overlay"
 
 const DISPLAYS: ChipDisplay[] = ["auto", "pill", "value", "icon", "expand"]
 const NEIGHBOURS: ChipNeighbours[] = ["push", "collapse", "overlay"]
 
-export interface ChipStyle {
+interface ChipStyle {
   icon: IconMode
   display: ChipDisplay
   neighbours: ChipNeighbours
@@ -157,7 +159,6 @@ interface Ctx {
   valueOnly: boolean
   active: boolean
   alert: boolean
-  side?: "left" | "right"
 }
 const ChipCtx = React.createContext<Ctx | null>(null)
 
@@ -174,11 +175,11 @@ const RowCtx = React.createContext<{
  * A row of chips that know about each other. A chip that opens with neighbours="collapse" closes the rest.
  * Chips with display="expand" open through the row's collapse engine (useCollapse): changes within the batch
  * window open together and close together, open chips lead the row (critical first, then the biggest
- * change), at most `max` (default 3), then "+N".
+ * change), at most three, then "+N" (a hud Chip).
  */
-function Row({ className, children, max, batchMs, restDelay, optOut, ...props }: React.ComponentProps<"div"> & UseCollapseOptions) {
+function Row({ className, children, ...props }: React.ComponentProps<"div">) {
   const [claim, setClaim] = React.useState<string | null>(null)
-  const collapse = useCollapse({ max, batchMs, restDelay, optOut })
+  const collapse = useCollapse()
   const api = React.useMemo(
     () => ({ claim, take: (id: string) => setClaim(id), give: (id: string) => setClaim((c) => (c === id ? null : c)), collapse }),
     [claim, collapse]
@@ -187,13 +188,17 @@ function Row({ className, children, max, batchMs, restDelay, optOut, ...props }:
     <RowCtx.Provider value={api}>
       <div data-slot="vital-chip-row" className={cn("flex items-center gap-(--nk-space-2)", className)} {...props}>
         {children}
-        {collapse.overflow > 0 && <CollapseMore count={collapse.overflow} style={{ order: -50 }} />}
+        {collapse.overflow > 0 && (
+          <Chip material="hud" data-part="vital-chip-more" style={{ order: -50 }}>
+            +{collapse.overflow}
+          </Chip>
+        )}
       </div>
     </RowCtx.Provider>
   )
 }
 
-/** --nk-behavior-alert (tokens 1.4: 0.2): a vital at or under it is critical. */
+/** --nk-behavior-alert (default 0.2): a vital at or under it is critical. */
 function alertThreshold() {
   const n = parseFloat(token("--nk-behavior-alert"))
   return Number.isFinite(n) ? n : 0.2
@@ -225,28 +230,23 @@ type RootProps = React.ComponentProps<"div"> & {
   value?: number
   /** the vital: its --vital-<tone> colours the level (and the icon unless uniform) */
   tone?: string
-  icon?: IconMode
-  /** the label shows (inline / tag / flag; the keycap's plate slides out) */
+  /** the label shows (the plate slides out) */
   open?: boolean
-  /** on (the mic while talking, N on a compass): the keycap's face lights white, the icon turns to the dark ink */
+  /** on (the mic while talking, N on a compass): the face lights white, the icon turns to the dark ink */
   active?: boolean
   /** past its threshold: the alert state (danger rim, breathing, the level in the danger colour); default: value at or under --nk-behavior-alert */
   alert?: boolean
-  /** which way the keycap's plate slides out: away from the corner it is anchored to. Default: an ancestor's data-corner, else right. */
-  side?: "left" | "right"
   /** what it shows: pill, value, icon, expand (see ChipDisplay); default the theme's --nk-style-vital */
   display?: ChipDisplay
   /** when it opens, what the chips beside it in a Row do (see ChipNeighbours) */
   neighbours?: ChipNeighbours
-  /** the value as text (pill, value, expand); default the rounded number */
-  format?: (value: number) => React.ReactNode
 }
 
-function Root({ ref, value, tone, icon, open = false, active, alert, side, display, neighbours, format, className, style, children, ...props }: RootProps) {
+function Root({ ref, value, tone, open = false, active, alert, display, neighbours, className, style, children, ...props }: RootProps) {
   const theme = useChipStyle()
   const mode = display ?? theme.display
   const chip: ChipStyle = {
-    icon: icon ?? theme.icon,
+    icon: theme.icon,
     display: mode,
     neighbours: neighbours ?? theme.neighbours,
   }
@@ -276,9 +276,9 @@ function Root({ ref, value, tone, icon, open = false, active, alert, side, displ
   const yielded = !!row?.claim && row.claim !== id
   const isOpen = own && !yielded
   const shown = mode === "pill" || mode === "value" || mode === "expand"
-  const valueText = shown && value !== undefined ? (format ? format(value) : Math.round(value)) : null
+  const valueText = shown && value !== undefined ? Math.round(value) : null
   return (
-    <ChipCtx.Provider value={{ value, tone, style: chip, open: isOpen, float: chip.neighbours === "overlay", valueText, valueOnly: mode === "value", active: !!active, alert: critical, side }}>
+    <ChipCtx.Provider value={{ value, tone, style: chip, open: isOpen, float: chip.neighbours === "overlay", valueText, valueOnly: mode === "value", active: !!active, alert: critical }}>
       <div
         ref={ref}
         data-slot="vital-chip"
@@ -289,7 +289,6 @@ function Root({ ref, value, tone, icon, open = false, active, alert, side, displ
         data-open={isOpen || undefined}
         data-active={active || undefined}
         data-state={critical ? "alert" : undefined}
-        data-side={side}
         data-display={mode}
         data-neighbours={chip.neighbours}
         data-yielded={yielded || undefined}
@@ -304,27 +303,21 @@ function Root({ ref, value, tone, icon, open = false, active, alert, side, displ
   )
 }
 
-/** The chip's body: the keycap. */
+/** The chip's body: the kit's Glyph face over a sliding plate, the liquid inside the face, the label on the plate. */
 function Shape({ className, children, ...props }: React.ComponentProps<"span">) {
-  return <Keycap className={className} {...props}>{children}</Keycap>
-}
-
-/** The in-game keycap: the kit's Glyph face over a sliding plate, the liquid inside the face, the label on the plate. */
-function Keycap({ className, children, ...props }: React.ComponentProps<"span">) {
-  const { value, open, active, alert, side: sideProp, style, valueText, valueOnly } = useChip()
+  const { value, open, active, alert, style, valueText, valueOnly } = useChip()
   const root = React.useRef<HTMLSpanElement>(null)
   const text = React.useRef<HTMLSpanElement>(null)
-  const [side, setSide] = React.useState<"left" | "right">(sideProp ?? "right")
+  const [side, setSide] = React.useState<"left" | "right">("right")
   const v = value === undefined ? undefined : Math.max(0, Math.min(1, value / 100))
   const level = v
   // the plate reads the name and the value ("HEALTH 100") whenever there is a value
   const plateValue = valueText ?? (value === undefined ? null : Math.round(value))
   // the plate slides away from the corner the row is anchored to (an ancestor's data-corner), read once per mount
   React.useLayoutEffect(() => {
-    if (sideProp) return setSide(sideProp)
     const corner = root.current?.closest<HTMLElement>("[data-corner]")?.dataset.corner
     setSide(corner?.endsWith("right") ? "left" : "right")
-  }, [sideProp])
+  }, [])
   React.useLayoutEffect(() => {
     root.current?.parentElement?.setAttribute("data-side", side)
   }, [side])
@@ -355,7 +348,7 @@ function Keycap({ className, children, ...props }: React.ComponentProps<"span">)
       document.fonts?.removeEventListener?.("loadingdone", again)
     }
   }, [measure])
-  // the icon (and an inline label, which the keycap draws on its plate instead)
+  // the icon (and an inline label, which the chip draws on its plate instead)
   const icon = React.Children.toArray(children).filter((c) => !(React.isValidElement(c) && c.type === Label))
   return (
     <span
@@ -370,7 +363,7 @@ function Keycap({ className, children, ...props }: React.ComponentProps<"span">)
       className={cn("relative block shrink-0 text-(--nk-control-face-ink)", className)}
       {...props}
     >
-      {/* the base: the tile's own wall, always there, dropped straight down by --nk-vital-chip-plate-drop */}
+      {/* the base: the glyph's own wall, always there, dropped straight down by --nk-vital-chip-plate-drop */}
       <span aria-hidden data-slot="vital-chip-wall" />
       {/* the track clips the plate from the face's centre outwards; the plate slides out on open */}
       <span aria-hidden data-slot="vital-chip-track">
@@ -384,13 +377,13 @@ function Keycap({ className, children, ...props }: React.ComponentProps<"span">)
         </span>
         {icon}
       </Glyph>
-      <span ref={text} data-slot="vital-chip-label" data-attach="plate" data-open={open || undefined} className="nk-scan">
+      <span ref={text} data-slot="vital-chip-label" data-attach="plate" data-open={open || undefined} className="nk-text-scan">
         {valueOnly ? (
-          <span className="nk-num">{plateValue}</span>
+          <span className="nk-text-num">{plateValue}</span>
         ) : (
           <>
-            <KeycapName>{children}</KeycapName>
-            {plateValue !== null && <span className="nk-num">{plateValue}</span>}
+            <PlateName>{children}</PlateName>
+            {plateValue !== null && <span className="nk-text-num">{plateValue}</span>}
           </>
         )}
       </span>
@@ -398,16 +391,11 @@ function Keycap({ className, children, ...props }: React.ComponentProps<"span">)
   )
 }
 
-/** The Label children of a keycap (its name), written on the plate. */
-function KeycapName({ children }: { children: React.ReactNode }) {
+/** The Label children of a chip (its name), written on the plate. */
+function PlateName({ children }: { children: React.ReactNode }) {
   const names = React.Children.toArray(children).filter((c) => React.isValidElement(c) && c.type === Label) as React.ReactElement<{ children?: React.ReactNode }>[]
   if (!names.length) return null
   return <span data-slot="vital-chip-name">{names[0]!.props.children}</span>
-}
-
-/** Kept for API symmetry: the level is drawn by Shape from the Root's value and style. */
-function Level() {
-  return null
 }
 
 /**
@@ -428,7 +416,7 @@ function Icon({ className, children, ...props }: React.ComponentProps<"span">) {
 }
 
 /**
- * The chip's text (voice range, radio channel, a vital's name). Put it inside Shape: the keycap reads its children
+ * The chip's text (voice range, radio channel, a vital's name). Put it inside Shape: the chip reads its children
  * as the name and writes it, with the value, on its plate. It draws nothing itself.
  */
 function Label(_props: React.ComponentProps<"span">) {
@@ -444,32 +432,20 @@ type PopProps = {
   min?: number
   /** true while the value is past its threshold (for mode 'threshold') */
   critical?: boolean
-  /** an extra change to show (a test trigger); bump `nonce` to fire it again */
-  force?: { by: number; nonce: number } | null
   /** how long it stays after the last change */
   ms?: number
-  /** told while it shows, so the chip can stay visible */
-  onShow?: (shown: boolean) => void
 }
 
 /**
- * When the value changes, a flag grows out of the chip's side with the vital's name and the signed
- * change, which rolls (NumberRoll) as further changes merge in; it closes ~1.5 s after the last change.
- * In line with the row, so pops of vitals that change together sit side by side.
+ * When the value changes, a flag grows out of the chip's side with the vital's name and the signed change,
+ * which rolls (NumberRoll) as further changes merge in; it closes `ms` after the last change. In line with
+ * the row, so pops of vitals that change together sit side by side.
  */
-function Pop({ label, mode = "change", min = 3, critical = false, force = null, ms = 1500, onShow }: PopProps) {
+function Pop({ label, mode = "change", min = 3, critical = false, ms = 1500 }: PopProps) {
   const { value } = useChip()
   const prev = React.useRef(value)
   const [sum, setSum] = React.useState<number | null>(null)
   const timer = React.useRef<ReturnType<typeof setTimeout> | null>(null)
-  const show = React.useCallback(
-    (by: number) => {
-      setSum((s) => (s ?? 0) + by)
-      if (timer.current) clearTimeout(timer.current)
-      timer.current = setTimeout(() => setSum(null), ms)
-    },
-    [ms]
-  )
   React.useEffect(() => {
     const before = prev.current
     prev.current = value
@@ -477,13 +453,11 @@ function Pop({ label, mode = "change", min = 3, critical = false, force = null, 
     const by = Math.round(value - before)
     if (by === 0 || Math.abs(by) < min) return
     if (mode === "threshold" && !critical) return
-    show(by)
-  }, [value, mode, min, critical, show])
-  React.useEffect(() => {
-    if (force) show(force.by)
-  }, [force, show])
+    setSum((s) => (s ?? 0) + by)
+    if (timer.current) clearTimeout(timer.current)
+    timer.current = setTimeout(() => setSum(null), ms)
+  }, [value, mode, min, critical, ms])
   React.useEffect(() => () => void (timer.current && clearTimeout(timer.current)), [])
-  React.useEffect(() => onShow?.(sum !== null), [sum, onShow])
 
   const shown = sum !== null
   // the last change stays written while the flag closes
@@ -498,14 +472,12 @@ function Pop({ label, mode = "change", min = 3, critical = false, force = null, 
       data-open={shown || undefined}
       aria-hidden={!shown}
       className={cn(
-        // a flag out of the chip's side, in line with the row: it takes its own room, so pops of
-        // vitals that change together sit side by side and can never overlap
-        "pointer-events-none relative z-0 data-[open]:-ml-(--nk-vital-chip-pop-overlap) flex h-[calc(var(--nk-vital-chip-size)*0.8)] max-w-0 items-center gap-(--nk-space-2) self-center overflow-hidden rounded-r-(--nk-chip-radius) bg-(--nk-chip-bg) text-(length:--nk-text-label) leading-none [font-weight:var(--nk-type-weight-strong)] whitespace-nowrap text-(--nk-chip-fg) opacity-0",
+        "nk-text-label pointer-events-none relative z-0 data-[open]:-ml-(--nk-vital-chip-pop-overlap) flex h-[calc(var(--nk-vital-chip-size)*0.8)] max-w-0 items-center gap-(--nk-space-2) self-center overflow-hidden rounded-r-(--nk-chip-radius) bg-(--nk-chip-bg) whitespace-nowrap text-(--nk-chip-fg) opacity-0",
         "-translate-x-1 transition-[opacity,transform] duration-[calc(var(--nk-time-slow)*var(--nk-motion))] ease-(--nk-ease-enter) data-[open]:max-w-(--nk-vital-chip-pop-max-width) data-[open]:translate-x-0 data-[open]:pr-(--nk-space-3) data-[open]:pl-(--nk-vital-chip-pop-pad) data-[open]:opacity-100"
       )}
     >
       <span>{label}</span>
-      <span className={cn("nk-num", up ? "text-(--vital,currentColor)" : "opacity-80")}>
+      <span className={cn("nk-text-num", up ? "text-(--vital,currentColor)" : "opacity-80")}>
         {up ? "+" : "−"}
         <NumberRoll value={Math.abs(total)} />
       </span>
@@ -515,9 +487,9 @@ function Pop({ label, mode = "change", min = 3, critical = false, force = null, 
 
 /** A letter on the face (a gear, a compass mark), in the scan voice. */
 function Letter({ className, ...props }: React.ComponentProps<"span">) {
-  return <span data-slot="vital-chip-glyph" className={cn("nk-scan", className)} {...props} />
+  return <span data-slot="vital-chip-glyph" className={cn("nk-text-scan", className)} {...props} />
 }
 
-const VitalChip = { Root, Row, Shape, Level, Icon, Label, Pop, Letter }
+const VitalChip = { Root, Row, Shape, Icon, Label, Pop, Letter }
 
 export { VitalChip }

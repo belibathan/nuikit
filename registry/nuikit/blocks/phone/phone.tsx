@@ -260,13 +260,13 @@ function MessagesApp({ data, onSend, params, setBack }: PhoneAppProps) {
 
   return (
     <>
-      <p className="nk-caption px-4 pt-3 pb-1">{contactName(data, number)}</p>
+      <p className="nk-text-caption px-4 pt-3 pb-1">{contactName(data, number)}</p>
       <PanelBody scroll className="flex-1">
         <div className="flex flex-col gap-(--nk-space-2) px-3 py-2">
           {(thread?.messages ?? []).map((m, i) => (
             <div key={i} className={cn("flex max-w-[80%] flex-col gap-(--nk-space-1)", m.from === "me" ? "items-end self-end" : "items-start self-start")}>
               <p className={cn("rounded-(--nk-radius-control) px-3 py-(--nk-space-2) text-(length:--nk-text-label) break-words", m.from === "me" ? "bg-primary text-primary-foreground" : "bg-muted text-foreground")}>{m.text}</p>
-              <span className="nk-num text-(length:--nk-text-label) text-muted-foreground">{formatTime(m.time)}</span>
+              <span className="nk-text-num text-(length:--nk-text-label) text-muted-foreground">{formatTime(m.time)}</span>
             </div>
           ))}
           <div ref={end} />
@@ -361,7 +361,7 @@ function Phone({
   return (
     <div data-slot="phone" className={cn("absolute right-6 bottom-6", className)} {...props}>
       <Panel size="auto" className="nk-enter h-[34rem] w-80">
-        <div data-slot="phone-status" className="nk-num flex shrink-0 items-center justify-between px-4 pt-2 pb-1 text-(length:--nk-text-label) text-muted-foreground">
+        <div data-slot="phone-status" className="nk-text-num flex shrink-0 items-center justify-between px-4 pt-2 pb-1 text-(length:--nk-text-label) text-muted-foreground">
           <span>{formatTime(now / 1000)}</span>
           <Signal bars={Math.max(0, Math.min(4, data.signal ?? 4))} />
         </div>

@@ -47,7 +47,7 @@ function LoadingScreen({
         <div className="flex flex-col gap-1">
           {/* the server name: the screen's display moment (the identity's display face) */}
           <h1 className="nk-text-section">{h.serverName || "Welcome"}</h1>
-          {h.tagline && <p className="nk-label">{h.tagline}</p>}
+          {h.tagline && <p className="nk-text-label">{h.tagline}</p>}
         </div>
       </header>
 
@@ -111,7 +111,7 @@ function LoadingTips({ tips, interval = 8000 }: { tips: LoadingTip[]; interval?:
   return (
     <section className="flex w-96 flex-col gap-3" aria-label="Tip">
       <div key={i} className="nk-enter flex min-h-16 flex-col justify-end gap-1">
-        {title && <h2 className="nk-title">{title}</h2>}
+        {title && <h2 className="nk-text-title">{title}</h2>}
         <p className="text-(length:--nk-text-label) leading-relaxed text-muted-foreground">{text}</p>
       </div>
       {tips.length > 1 && (
@@ -137,7 +137,7 @@ function LoadingLinks({ links }: { links: LoadingLink[] }) {
         <div key={l.label + n} className="flex items-center gap-6">
           {n > 0 && <Separator orientation="vertical" className="h-8!" />}
           <div className="flex flex-col gap-(--nk-space-1) text-right">
-            <dt className="nk-label">{l.label}</dt>
+            <dt className="nk-text-label">{l.label}</dt>
             {l.url && <dd className="[font-weight:var(--nk-type-label-weight,500)]">{l.url}</dd>}
           </div>
         </div>
@@ -154,8 +154,8 @@ function LoadingStatus({ load, player }: { load: LoadState; player?: string }) {
     <section className="flex flex-col gap-3" aria-live="off">
       <div className="flex items-end justify-between gap-6">
         <div className="flex flex-col gap-1">
-          {player && <p className="nk-label">Welcome, {player}</p>}
-          <p className="nk-title flex items-center gap-2">
+          {player && <p className="nk-text-label">Welcome, {player}</p>}
+          <p className="nk-text-title flex items-center gap-2">
             {ready ? <CheckIcon className="size-4" /> : <Spinner className="size-4 text-muted-foreground" />}
             {ready ? "Ready. Hang tight…" : LOAD_PHASES[load.phase]}
           </p>
@@ -164,10 +164,10 @@ function LoadingStatus({ load, player }: { load: LoadState; player?: string }) {
         <Stat size="display" align="end" label="Loaded" value={pct} meta="%" />
       </div>
       <Meter aria-label="Loading" value={pct} tone="foreground" size="sm" />
-      <div className="nk-label flex h-4 items-center justify-between gap-6">
+      <div className="nk-text-label flex h-4 items-center justify-between gap-6">
         <span className="truncate">{detail}</span>
         {load.count > 0 && (
-          <span className="nk-num shrink-0">
+          <span className="nk-text-num shrink-0">
             {load.idx} / {load.count}
           </span>
         )}

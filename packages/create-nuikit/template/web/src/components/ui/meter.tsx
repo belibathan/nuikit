@@ -39,7 +39,7 @@ import { useLinearRun } from "@/hooks/use-linear-run"
  * Rules: Data is value/max or --level, never a variant. Thresholds turn it destructive; tone never encodes
  *   data. A timed run completes from a timer, so it finishes with motion off.
  */
-// The bar's thickness is the identity's (--nk-fill-height: --nk-fill-height, 4px in Graphite);
+// The bar's thickness is the identity's --nk-fill-height;
 // sm and lg step it down and up from there.
 const meterVariants = cva("min-w-0", {
   variants: {
@@ -72,7 +72,7 @@ type MeterTone =
   | "thirst"
   | "stress"
 
-/** A tone, or "hue" (tokens 1.5): the role colour of data-hue on the meter (`hue`) or its nearest ancestor; --nk-fill-color without one. */
+/** A tone, or "hue": the role colour of data-hue on the meter (`hue`) or its nearest ancestor; --nk-fill-color without one. */
 type MeterFill = MeterTone | "hue"
 
 /** Literal class names, so Tailwind finds them. */
@@ -335,7 +335,7 @@ function Meter({
     onComplete?: () => void
     /**
      * bar (default): the bar, with an optional label row. slab: the timed-progress slab on the game
-     * (design v2 §4.5, `nk-slab-stack`): the label, the cancel key and its verb, a thin line. The
+     * (kit.css `nk-slab-stack`): the label, the cancel key and its verb, a thin line. The
      * successor of `task-progress`: `<Meter variant="slab" label="Repairing" duration={5000}
      * cancelKey="X" onCancel={cancel} />`.
      */
@@ -423,11 +423,11 @@ function Meter({
       >
         {(label !== undefined || valueText !== undefined || cancelKey) && (
           <div data-slot="meter-label-row" className="nk-slab-stack-row">
-            <span data-slot="meter-label" className="nk-caption min-w-0 truncate">
+            <span data-slot="meter-label" className="nk-text-caption min-w-0 truncate [color:inherit]!">
               {label}
             </span>
             {valueText !== undefined && (
-              <span data-slot="meter-value" className="nk-num">
+              <span data-slot="meter-value" className="nk-text-num">
                 {valueText}
               </span>
             )}
@@ -519,9 +519,9 @@ function Meter({
         <>
           <div className="flex min-w-0 items-center gap-(--nk-space-2)">
             {iconEl}
-            {label !== undefined && <span data-slot="meter-label" className="nk-caption min-w-0 flex-1 truncate">{label}</span>}
+            {label !== undefined && <span data-slot="meter-label" className="nk-text-caption min-w-0 flex-1 truncate">{label}</span>}
             {valueText !== undefined && (
-              <span data-slot="meter-value" className={cn("nk-num ml-auto shrink-0 text-(length:--nk-text-label) leading-4 [font-weight:var(--nk-type-label-weight)]", critical && "text-destructive")}>
+              <span data-slot="meter-value" className={cn("nk-text-num ml-auto shrink-0 text-(length:--nk-text-label) leading-4 [font-weight:var(--nk-type-label-weight)]", critical && "text-destructive")}>
                 {valueText}
               </span>
             )}
@@ -538,4 +538,4 @@ function Meter({
   )
 }
 
-export { Meter, meterVariants, meterLevel, segmentFills, meterColor, segmentKeyframes, type MeterTone, type MeterFill, type MeterLevel }
+export { Meter, meterVariants, meterLevel, segmentFills, meterColor, segmentKeyframes, type MeterTone }

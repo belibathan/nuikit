@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils"
 
 /**
  * Zone — one of the screen's nine places (tl tc tr / ml mc mr / bl bc br) or four edges (t r b l)
- * (docs/design.md). Every HUD part, notice stack, prompt, sheet and dialog is placed in one, never with
+ * (docs/design.md §6). Every HUD part, notice stack, prompt, sheet and dialog is placed in one, never with
  * coordinates. A zone is a flex column that grows towards the screen centre (a bottom zone stacks upwards),
  * aligned to its own side, `--nk-zone-gap` between what it holds, `--nk-zone-inset` (default --nk-screen-edge) from
  * the safe area of the 16:9 box. Edges are flush and span their side (sheets, bands).
@@ -118,4 +118,4 @@ function usePublishedRect(ref: React.RefObject<HTMLElement | null>, name: string
   }, [ref, name, remote])
 }
 
-export { Zone, usePublishedRect, type ZoneProps }
+export { Zone, usePublishedRect }

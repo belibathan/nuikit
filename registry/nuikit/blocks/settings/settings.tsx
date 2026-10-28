@@ -156,7 +156,7 @@ function Settings({
           )}
         </div>
       </PanelBody>
-      <PanelFooter className="nk-label">
+      <PanelFooter className="nk-text-label">
         {changeable && (
           <>
             <Kbd>↑</Kbd>

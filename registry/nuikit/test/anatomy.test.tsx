@@ -21,8 +21,6 @@ const mod = (file: string) => modules[`../ui/${file}.tsx`]!
 // jsdom has no ResizeObserver; the chip measures with one
 ;(globalThis as { ResizeObserver?: unknown }).ResizeObserver ??= class { observe() {} unobserve() {} disconnect() {} }
 const noop = () => {}
-const rows = [{ id: "a", label: "Alpha" }, { id: "b", label: "Beta" }]
-const J = React.createElement
 
 /** One minimal element per registry item (name → file basename → element). A new ui item must add a row here. */
 const CASES: Record<string, () => React.ReactElement> = {
@@ -36,8 +34,7 @@ const CASES: Record<string, () => React.ReactElement> = {
   meter: () => { const m = mod("meter"); return <m.Meter value={40} /> },
   "text-roll": () => { const m = mod("text-roll"); return <m.TextRoll value="abc" /> },
   "smooth-input": () => { const m = mod("smooth-input"); return <m.SmoothInput defaultValue="a" /> },
-  "collapse-stack": () => { const m = mod("collapse-stack"); return <m.CollapseStack items={[{ key: "a", value: 50 }, { key: "b", value: 20 }]} renderItem={(i: { key: string }) => <span>{i.key}</span>} /> },
-  "vital-chip": () => { const m = mod("vital-chip").VitalChip; return <m.Root value={40} tone="health" open><m.Shape><m.Icon>i</m.Icon><m.Level /></m.Shape><m.Label>Hunger</m.Label></m.Root> },
+  "vital-chip": () => { const m = mod("vital-chip").VitalChip; return <m.Root value={40} tone="health" open><m.Shape><m.Icon>i</m.Icon><m.Label>Hunger</m.Label></m.Shape><m.Pop label="Hunger" /></m.Root> },
   "radial-menu": () => { const m = mod("radial-menu"); return <m.RadialMenu items={[{ id: "a", label: "A" }, { id: "b", label: "B" }, { id: "c", label: "C" }]} onSelect={noop} /> },
   speedometer: () => { const m = mod("speedometer"); return <m.Speedometer speed={50} rpm={0.4} gear="3" fuel={0.5} /> },
   notice: () => { const m = mod("notice"); return <m.Notice title="T" description="D" /> },

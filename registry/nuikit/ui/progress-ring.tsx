@@ -18,7 +18,7 @@ import { useLinearRun } from "@/hooks/use-linear-run"
  *
  * With `duration` it runs on its own and `onComplete` fires from a timer when the time is up
  * (never from an animation event, so it still fires with motion off). Restart it with a new `key`.
- * It is the speedometer's language (the baseline, docs/design.md): a segmented Dial on a dark disc, the
+ * It is the speedometer's language (docs/design.md §6): a segmented Dial on a dark disc, the
  * segments lit solid in the accent (or the tone), the percentage in the numeric voice, the label in the label
  * voice. A timed ring lights its segments on the compositor: one linear opacity step per segment on one start
  * time, the last exactly at `duration`, with no React render (ringSegmentKeyframes()). It plays at every motion
@@ -62,7 +62,7 @@ const TONE: Record<ProgressRingTone, string> = {
 const RING_SIZE = { sm: 48, default: 72, lg: 104 } as const
 
 const STEP_MS = 100
-/** The ring baseline (1.6): --nk-ring-segments and --nk-ring-gap (degrees) when the theme sets none. */
+/** The ring baseline: --nk-ring-segments and --nk-ring-gap (degrees) when the theme sets none. */
 const RING_SEGMENTS = 24
 const RING_GAP = 4
 const RADIUS = 44
@@ -121,7 +121,7 @@ type ProgressRingProps = Omit<React.ComponentProps<"div">, "children"> &
     onComplete?: () => void
     label?: React.ReactNode
     tone?: ProgressRingTone
-    /** A role (health, police…): the ring in its colour (1.5). */
+    /** A role (health, police…): the ring in its colour. */
     hue?: string
     /** game: drawn on the world (dark track, shadowed text). theme: on a panel. */
     track?: "game" | "theme"
@@ -273,4 +273,4 @@ function ProgressRing({
   )
 }
 
-export { ProgressRing, progressRingVariants, ringPercent, ringOffset, ringHalfKeyframes, ringSegmentKeyframes, type ProgressRingTone, type ProgressRingProps }
+export { ProgressRing, progressRingVariants, ringPercent, ringOffset, ringHalfKeyframes }

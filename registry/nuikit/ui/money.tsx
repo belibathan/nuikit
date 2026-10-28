@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils"
 import { Text, textVariants, type TextSize } from "@/components/ui/text"
 
 /**
- * Money — an amount of money, formatted the same way everywhere: tabular figures (nk-num), the
+ * Money — an amount of money, formatted the same way everywhere: tabular figures (nk-text-num), the
  * server's currency and locale (`nuikit:context`, from the `nuikit_currency` / `nuikit_locale`
  * convars; USD and en-US until it arrives) unless you pass your own (Intl), whole units by default
  * (game cash), an optional sign and direction colour for changes, and a compact form for tight
@@ -153,4 +153,4 @@ function Money({
   )
 }
 
-export { Money, moneyVariants, formatMoney, formatCount, useFormatMoney, moneyDirection, type MoneyFormat, type MoneySign }
+export { Money, moneyVariants, formatMoney, formatCount, useFormatMoney, moneyDirection }

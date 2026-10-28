@@ -7,7 +7,7 @@ import { cn, nkVariant, type NkVariantProps } from "@/lib/utils"
 import { ScrollArea } from "@/components/ui/scroll-area"
 
 /**
- * Panel — the one floating surface (docs/design.md, rule 1): menus, inventories, shops and cards
+ * Panel — the one floating surface (docs/design.md §6): menus, inventories, shops and cards
  * on top of the game. The kit's nk-panel recipe with props; colours come from the theme's popover.
  *
  *   <Panel>
@@ -129,11 +129,11 @@ function PanelHeader({
 }
 
 function PanelTitle({ className, ...props }: React.ComponentProps<"h2">) {
-  return <h2 data-slot="panel-title" className={cn("nk-title truncate", className)} {...props} />
+  return <h2 data-slot="panel-title" className={cn("nk-text-title truncate", className)} {...props} />
 }
 
 function PanelDescription({ className, ...props }: React.ComponentProps<"p">) {
-  return <p data-slot="panel-description" className={cn("nk-label truncate", className)} {...props} />
+  return <p data-slot="panel-description" className={cn("nk-text-label truncate", className)} {...props} />
 }
 
 const panelBodyVariants = cva("", {

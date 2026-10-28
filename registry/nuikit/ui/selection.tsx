@@ -6,33 +6,33 @@ import { tokenMs } from "nuikit-core/motion"
 import { cn } from "@/lib/utils"
 
 /**
- * Selection — the one selection mark of a list (the baseline's Selection section, docs/design.md):
- * the primary keycap's geometry (a face in the theme's skew over its wall, the same radius and depth line, the
+ * Selection — the one selection mark of a list (docs/design.md §6):
+ * the primary glyph's geometry (a face in the theme's skew over its wall, the same radius and depth line, the
  * `--nk-control-*` levers) as ONE element per list that slides between items by transform. Pointer hover, keyboard,
- * controller and programmatic focus, and the UI's own active index all light the same item: the tile moves under
+ * controller and programmatic focus, and the UI's own active index all light the same item: the mark moves under
  * it and the item gets `data-lit` (its ink and lift; the item never paints a fill of its own). A size change is a
  * measured FLIP (the new box, scaled from the old one), never a height or width animation. Reduced motion jumps.
  *
- *   <div className="flex flex-col">            // the list: the tile's parent (it marks it data-nk-sel)
+ *   <div className="flex flex-col">            // the list: the mark's parent (it marks it data-nk-sel)
  *     <Selection items="[data-slot=menu-row]" active={i} />
  *     {rows}
  *   </div>
  *   <TabsList><Selection items="[data-slot=tabs-trigger]" lit="[data-state=active]" axis="x" />…</TabsList>
  *   <DropdownMenuContent><Selection items="[data-slot=dropdown-menu-item]" lit="[data-highlighted]" />…
  *
- * `useSelectionIndicator(tileRef, options)` is the engine, for a list that renders its own tile element
+ * `useSelectionIndicator(tileRef, options)` is the engine, for a list that renders its own mark element
  * (kit.css `nk-indicator`). The key-repeat rule holds: a move sooner than --nk-time-base after the last glides
  * fast (data-repeat="fast"), the third in a row jumps (data-repeat="jump"), so it never trails a held d-pad.
  *
  * Role: the one selection mark of a list, tabs or a menu: a Glyph that slides to the lit item.
  * Anatomy: nk-indicator (absolute, behind the items) > ::before (the wall, dropped --nk-control-wall-height) > ::after (the face).
  * Props: items, active, lit, pointer, focus, list, shape (inherit | own).
- * Rules: one tile per list; the lit item gets data-lit and never paints its own fill; pointer, focus and the
+ * Rules: one mark per list; the lit item gets data-lit and never paints its own fill; pointer, focus and the
  *   active index are one language (last input wins); moves are transform only, sizes a FLIP; reduced motion jumps.
  */
 
 type SelectionOptions = {
-  /** The items the tile marks (a selector, matched inside the list). Default `.nk-row`. */
+  /** The items it marks (a selector, matched inside the list). Default `.nk-row`. */
   items?: string
   /** The item the UI drives (keys, Lua, the open section): an index among the items; null for none. */
   active?: number | null
@@ -42,14 +42,14 @@ type SelectionOptions = {
   pointer?: boolean | string
   /** A focused item (:focus-visible: keyboard, controller, programmatic) lights it. Default true. */
   focus?: boolean
-  /** The list element; default the tile's parent. */
+  /** The list element; default the mark's parent. */
   list?: React.RefObject<HTMLElement | null>
 }
 
 /**
  * What the mark looks like (the `--nk-control-sel-shape` lever, set as data-shape): `inherit` (default) is a flat face in the
- * shape of what it sits on (radius `--nk-control-host-radius`, clip `--nk-control-host-clip`, no skew, no wall: a grid slot, a tile of
- * a sheet); `tile` is the primary keycap (skewed face over its wall), which rows and tabs ask for.
+ * shape of what it sits on (radius `--nk-control-host-radius`, clip `--nk-control-host-clip`, no skew, no wall: a grid slot, a cell of
+ * a sheet); `own` is the primary glyph (skewed face over its wall), which rows and tabs ask for.
  */
 type SelectionShape = "inherit" | "own"
 
@@ -118,7 +118,7 @@ function useSelectionIndicator(tileRef: React.RefObject<HTMLElement | null>, opt
     else tile.removeAttribute("data-tone")
     const at = (b: Box) => `translate(${b.x}px, ${b.y}px)`
     if (!from || instant) {
-      // first show (or a resize): no glide from a stale place; the tile fades in where it is
+      // first show (or a resize): no glide from a stale place; the mark fades in where it is
       tile.style.transition = "none"
       tile.style.width = `${to.w}px`
       tile.style.height = `${to.h}px`
@@ -217,7 +217,7 @@ function useSelectionIndicator(tileRef: React.RefObject<HTMLElement | null>, opt
     const onFocusOut = (e: FocusEvent) => {
       if (!st.focus) return
       if (e.relatedTarget instanceof Node && st.focus.contains(e.relatedTarget)) return
-      // focus moving to another item: its focusin moves the tile (a slide, not a hide and a show)
+      // focus moving to another item: its focusin moves the mark (a slide, not a hide and a show)
       if (opts.current.focus !== false && itemAt(e.relatedTarget)) return
       st.focus = null
       resolve()
@@ -275,4 +275,4 @@ function Selection({
   return <div ref={ref} aria-hidden data-slot="selection" data-shape={shape} data-hidden="" className={cn("nk-indicator", className)} {...props} />
 }
 
-export { Selection, useSelectionIndicator, type SelectionOptions, type SelectionShape }
+export { Selection, useSelectionIndicator }
