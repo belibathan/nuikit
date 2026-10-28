@@ -4,7 +4,7 @@ The theme contract every nuikit UI reads. A server's theme is any shadcn / Tweak
 `nuikit/theme.css` plus any lever values; the compiler (`compileTheme` in `nuikit-core`) turns it into one set of
 CSS variables, so a UI built on them matches every server it runs on.
 
-## Architecture (v2, Oct 2026)
+## Architecture
 
 **One source.** Every custom property is declared once in the token language, `packages/core/src/spec/`
 (TypeScript, declarative). Nothing else names a token: `pnpm --filter nuikit-core gen:tokens` (part of the build,
@@ -26,12 +26,13 @@ resolve and point up; no literal below identity except documented floors; no col
 every component has an anatomy; every lever has a reader. Old names map to new in
 `packages/core/spec/migration.json`; `node packages/core/scripts/migrate-levers.mjs <path>` applies it.
 
-**Themes are values.** Default and Neon Pop (`packages/core/themes/`) are short diffs on the baseline; Flat and Square (`packages/core/test/fixtures/themes/`) prove two more languages come from values alone.
-Treatments are gone: the baseline is one language, a theme moves it.
+**Themes are values.** The shipped themes, Default, Neon Pop and Keycap (`packages/core/themes/`, listed in
+[`design.md`](design.md) §2), are short diffs on the baseline; Flat and Square (`packages/core/test/fixtures/themes/`)
+prove that other languages come from values alone.
 
 ## Tokens
 
-The value column is the default theme (stock shadcn neutral, dark), as compiled.
+The value column is stock shadcn neutral (dark), as compiled; the shipped themes set their own.
 
 ### shadcn base
 
@@ -52,8 +53,8 @@ and any other variable pass through untouched (colours lowered to rgb).
 | `--destructive-foreground` | Text on destructive. Derived when absent (shadcn v4 dropped it): the theme's foreground or background, whichever contrasts more | `rgb(10, 10, 10)` |
 | `--border` / `--input` / `--ring` | Hairlines, field borders, focus | `rgba(255, 255, 255, 0.1)` / `rgba(255, 255, 255, 0.15)` / `rgb(115, 115, 115)` |
 | `--chart-1` … `--chart-5` | Categorical colour (charts, transaction types). Not vitals: use `--vital-*` | greys in stock neutral |
-| `--radius` | Panels radius + 4px, controls radius − 2px, chips full | `0.625rem` |
-| `--font-sans` / `--font-mono` | Text / codes and IDs a player might type | `Inter, ui-sans-serif, system-ui, sans-serif` / `"Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace` (1.1; [fonts](#fonts)) |
+| `--radius` | The radius scale's base: `--nk-radius-key`, `-chip`, `-control` and `-surface` derive from it (no pills) | `0.625rem` |
+| `--font-sans` / `--font-mono` | Text / codes and IDs a player might type | `Geist, Inter, "Segoe UI", system-ui, sans-serif` / `"Geist Mono", ui-monospace, monospace` ([fonts](#fonts)) |
 
 ### nuikit semantic
 
@@ -69,7 +70,7 @@ so a plain shadcn paste always works.
 | `--info` | Neutral notices, tips | `--primary` | `rgb(229, 229, 229)` |
 | `--info-foreground` | Text on info | `--primary-foreground` | `rgb(23, 23, 23)` |
 | `--hud` | Surfaces drawn straight on the game: HUD chips, hotbar tiles, target eye (`nk-chip`, `nk-hud`) | `rgba(0, 0, 0, 0.45)` | `rgba(0, 0, 0, 0.45)` |
-| `--hud-foreground` | Text and icons on `--hud` | `--world-foreground` (1.1; [text on the game](#text-on-the-game)) | `rgb(255, 255, 255)` |
+| `--hud-foreground` | Text and icons on `--hud` | `--world-foreground` (white: text drawn straight on the game) | `rgb(255, 255, 255)` |
 | `--scrim` | Darkens the game: behind full-screen screens (pause, death, loading), bar tracks and shadows drawn on the game. Always used with opacity (`bg-scrim/40`, or `color-mix(in oklab, var(--scrim) 40%, transparent)` in CSS, which the plugin lowers) | `rgb(0, 0, 0)` | `rgb(0, 0, 0)` |
 | `--vital-health` | Health bar | See [vitals](#vitals) | `rgb(255, 100, 103)` (destructive) |
 | `--vital-armor` | Armor bar | | `rgb(59, 156, 246)` |
@@ -77,7 +78,7 @@ so a plain shadcn paste always works.
 | `--vital-thirst` | Thirst bar | | `rgb(30, 197, 228)` |
 | `--vital-stress` | Stress bar | | `rgb(204, 103, 227)` |
 | `--nk-scale` | UI size multiplier, unitless (0.5–2). `html` font-size is multiplied by it, so every rem scales. The player's scale preference multiplies it again. | `1` | `1` |
-| `--nk-motion` | `1` animations on, `0` off. `nk-enter` lasts `160ms × --nk-motion`; at 0 every animation and transition is off (`html[data-nk-motion="off"]`). | `1` | `1` |
+| `--nk-motion` | `1` animations on, `0` off: every animation and transition is off (`html[data-nk-motion="off"]`) | `1` | `1` |
 
 ### Vitals
 
@@ -190,7 +191,7 @@ every nuikit UI and override:
 | Pref | Values | Effect |
 |---|---|---|
 | `scale` | 0.85–1.25 (default 1) | `--nk-scale` = theme scale × this |
-| `reducedMotion` | boolean | Reduced motion (1.2): `data-nk-motion="reduced"`, no movement, fades kept at ≤ 100 ms ([Motion](#motion-12)). `--nk-motion` is painted as 0, as before, so legacy `calc(× --nk-motion)` stays instant |
+| `reducedMotion` | boolean | `data-nk-motion="reduced"`: no movement, fades kept at ≤ 100 ms ([Motion](#motion)); `--nk-motion` is painted as 0 |
 | `highContrast` | boolean | Panel/surface text pure white or black, muted text ≥ 7:1, borders at 35% text colour, `--hud` at 72% black; `data-nk-contrast="high"` on `<html>` |
 
 - Players: `/nuikit` (show), `/nuikit scale 1.1`, `/nuikit motion off`, `/nuikit contrast on`, `/nuikit reset`.
@@ -200,8 +201,7 @@ every nuikit UI and override:
 
 ## Motion
 
-The ladder (`--nk-time-snap` 90, `-fast` 120, `-base` 180, `-slow` 280, `-fill` 420, `-pulse` 1000 ms; exits at 0.7×),
-the eases and `--nk-motion-feel` are identity levers in [`design/levers.md`](design/levers.md); the rules that use them
+The ladder (`--nk-time-*`), the eases and the feel are levers in [`design/levers.md`](design/levers.md); the rules that use them
 are in [`design.md`](design.md) §5. The compiler writes literal values for every derived duration and ease, so nothing
 relies on `calc()` inside an animation shorthand in Chromium 103, and paints the keywords CSS cannot branch on as
 `data-nk-*` attributes on `<html>` (`data-nk-fill`, `data-nk-case`, `data-nk-motion`, `data-nk-feel`,
@@ -209,29 +209,31 @@ relies on `calc()` inside an animation shorthand in Chromium 103, and paints the
 
 ## Roles
 
-The type roles (`scan`, `title`, `label`, `num`, `body`, `caption`, `display`) are the two voices as levers:
-`--nk-type-<role>-{family,weight,size,case,tracking,pad}`, read by the `.nk-<role>` classes and the `Text` component.
-The game families beyond shadcn (`--role-health` … `--role-stress`, `--hue-*`, `--brand*`, `--hud*`, `--scrim`) are
-the colour roles; the vitals section above says how they are derived.
+The type voices (`scan`, `title`, `label`, `num`, `body`) are levers: `--nk-type-<voice>-{family,style,weight,tracking,case,pad}`,
+read by the generated text styles (`nk-text-*`, [`design.md`](design.md) §3). The colour roles are `--role-<name>` for
+vitals, status, factions, rarity, brand and neutral (`packages/core/src/spec/roles.ts`); a frame sets `data-hue="<role>"`
+and its children read the `--hue-*` ramp. An unset role takes its palette token (health takes `--vital-health`, danger
+takes `--destructive`) or a fixed colour.
 
 ## Slabs
 
-Transient feedback drawn on the game (notices, key prompts, timed meters, the death band) shares one anatomy: the
-HUD plate (`--nk-plate-*`, `--hud`), the chip radius, a Fill for the level or the time left. Components build on
-`nk-slab-*`; a theme moves the plate and fill levers, never the anatomy.
+Transient feedback drawn on the game (notices, key prompts, timed meters) shares one anatomy: the HUD plate
+(`--nk-plate-*`, `--hud`), the chip radius, a Fill for the level or the time left. A theme moves the plate and fill
+levers, never the anatomy.
 
 ## Fonts
 
 Theme fonts are open (SIL OFL 1.1) woff2 files, latin subset (`unicode-range`; other scripts fall back down the
 stack to system fonts). One source: `packages/core/fonts/` (`fonts.json` lists family, file, weights, the themes that
-use it and the licence). Today: Geist and Geist Mono (every theme), Barlow Condensed upright 600–800 (Default and Neon Pop's display and numbers, bundled in every UI) and italic 600–800 (the Keycap theme's display
-voice). Never a Google Fonts URL at runtime. `pnpm sync` writes the `@font-face` rules into every UI's `index.css`,
+use it and the licence). Today: Geist and Geist Mono (every theme), Barlow Condensed upright 600–800 (the scan voice and numbers of
+Default and Neon Pop) and Barlow Condensed italic 600–800 (Keycap's). Never a Google Fonts URL at runtime. `pnpm sync` writes the `@font-face` rules into every UI's `index.css`,
 per UI (`nuikit.json` `"fonts"`, or `NUIKIT_FONTS`):
 
 | Mode | Where the files come from | Used by |
 |---|---|---|
 | `bundle` (default) | The UI's own build (`../node_modules/nuikit-core/fonts/…`, emitted as assets) | systems, ox_lib, ox_target, mm_radio, Renewed-Banking |
-| `graphite` | The default theme's fonts in the build; the rest from the nuikit resource | overrides whose resource serves a fixed file list: ox_inventory, illenium-appearance, qbx_* |
+| `baseline` | Default's fonts in the build; the rest (Keycap's italics) from the nuikit resource | overrides whose resource serves a fixed file list: ox_inventory, ox_doorlock, illenium-appearance, qbx_* |
+| `local` | Copies next to the UI (`./fonts/`) | the create-nuikit template |
 | `nuikit` | All from the nuikit resource (`https://cfx-nui-nuikit/fonts/…`, `fonts/*.woff2` in its manifest) | opt-in until the in-game check passes |
 | `false` | None | UIs that bring their own fonts |
 
