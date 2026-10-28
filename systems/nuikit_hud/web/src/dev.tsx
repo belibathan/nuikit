@@ -272,7 +272,7 @@ export default function Dev() {
       if (v.altitude !== undefined) emit("hud:vehicle:altitude", v.altitude);
     }
     if (radar) setFrame(mf);
-    // ?retract: Foundation 2 situations with the lever on (status and vitals slide away after --nk-behavior-rest)
+    // ?retract: situations with the lever on (status and vitals slide away after --nk-behavior-rest)
     if (q.has("retract")) document.documentElement.style.setProperty("--nk-behavior-rest", "8s");
     if (q.has("retract")) settings.situations = { retract: true, rest: ["map", "vehicle"], moment: ["status", "map", "vitals", "vehicle"], driving: ["status", "map", "vitals", "vehicle"], interaction: ["map", "vitals"] };
     devSettings = settings;

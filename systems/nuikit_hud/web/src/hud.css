@@ -85,20 +85,20 @@
 }
 /* a corner is a layout zone (kit.css nk.layout): GTA's area via --nk-area-*, --nk-screen-edge in; the HUD's own gaps */
 .hud-root [data-slot="hud-corner"][data-nk-zone] {
-  --nk-zone-gap: 0.75rem;
+  --nk-zone-gap: var(--nk-space-3);
 }
 .hud-root [data-slot="hud-corner"][data-nk-zone="br"] {
-  --nk-zone-gap: 1rem;
+  --nk-zone-gap: var(--nk-space-4);
 }
 /* with the map in the bottom-left corner: location above it, vitals beside its bottom edge */
 .hud-above-map {
   position: absolute;
   left: var(--hud-map-x);
-  bottom: calc(var(--hud-map-top) + 0.75rem);
+  bottom: calc(var(--hud-map-top) + var(--nk-space-3));
 }
 .hud-beside-map {
   position: absolute;
-  left: calc(var(--hud-map-end) + 0.75rem);
+  left: calc(var(--hud-map-end) + var(--nk-space-3));
   bottom: var(--hud-map-bottom);
 }
 
@@ -1710,7 +1710,7 @@ html[data-nk-motion="off"] .hud-root * {
   position: absolute;
 }
 .hud-beside[data-corner="top-left"] {
-  left: calc(var(--hud-map-end) + 0.75rem);
+  left: calc(var(--hud-map-end) + var(--nk-space-3));
   top: var(--hud-map-y);
 }
 .hud-beside[data-corner="top-right"] {
@@ -1841,7 +1841,7 @@ html[data-nk-motion="off"] .hud-root * {
 .hud-c-tell[data-tone="destructive"] [data-slot="vital-chip-icon"] { color: var(--hud-danger); }
 /* a small Mark (a telltale, a compass letter): --nk-vital-chip-size-sm, the key radius, a shallower drop */
 [data-slot="vital-chip"][data-size="sm"] { --nk-vital-chip-size: var(--nk-vital-chip-size-sm, 1.625rem); }
-[data-slot="vital-chip"][data-size="sm"] [data-slot="vital-chip-shape"] { --nk-vital-chip-plate-drop: var(--nk-control-wall-height, 0.1875rem); --nk-vital-chip-label-size: 0.8125rem; }
+[data-slot="vital-chip"][data-size="sm"] [data-slot="vital-chip-shape"] { --nk-vital-chip-plate-drop: var(--nk-control-wall-height, 0.1875rem); --nk-vital-chip-label-size: var(--nk-text-key); }
 [data-slot="vital-chip"][data-size="sm"] :is([data-slot="vital-chip-wall"], [data-slot="vital-chip-plate"]) { border-radius: var(--nk-radius-key); }
 [data-slot="vital-chip"][data-size="sm"] > [data-slot="vital-chip-shape"] > [data-slot="glyph"] { --nk-control-face-radius: var(--nk-radius-key); }
 .hud-c-tells { width: auto; gap: var(--nk-space-2, 0.5rem); }
