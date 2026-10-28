@@ -239,7 +239,7 @@ function MenuRow({
         )}
       </span>
       {meta !== undefined && (
-        <span data-slot="menu-row-meta" className={cn("nk-num shrink-0 text-(length:--nk-text-label)", quiet)}>
+        <span data-slot="menu-row-meta" className={cn("nk-text-num shrink-0 text-(length:--nk-text-label)", quiet)}>
           {meta}
         </span>
       )}
@@ -254,7 +254,7 @@ function MenuRow({
           >
             <ChevronLeftIcon />
           </span>
-          <span data-slot="menu-row-value" data-tone={valueTone} className={cn("nk-num min-w-[var(--nk-menu-row-value-width)] text-center text-(length:--nk-text-label)", valueTone === "muted" && quiet)}>
+          <span data-slot="menu-row-value" data-tone={valueTone} className={cn("nk-text-num min-w-[var(--nk-menu-row-value-width)] text-center text-(length:--nk-text-label)", valueTone === "muted" && quiet)}>
             {value}
           </span>
           <span
@@ -498,14 +498,14 @@ function MenuRowDetails({
       )}
       {(title || items.length > 0 || children) && (
         <div className="flex flex-col gap-2 p-3">
-          {title && <p className="nk-title truncate">{title}</p>}
+          {title && <p className="nk-text-title truncate">{title}</p>}
           {items.length > 0 && (
             <dl className="flex flex-col gap-(--nk-space-2) text-(length:--nk-text-label) leading-4">
               {items.map((m, i) => (
                 <div key={i} data-slot="menu-row-details-item" className="flex flex-col gap-1">
                   <div className="flex min-w-0 items-center gap-2">
-                    {m.label !== undefined && <dt className="nk-caption truncate">{m.label}</dt>}
-                    {m.value !== undefined && <dd className={cn("nk-num truncate", m.label !== undefined && "ml-auto")}>{m.value}</dd>}
+                    {m.label !== undefined && <dt className="nk-text-caption truncate">{m.label}</dt>}
+                    {m.value !== undefined && <dd className={cn("nk-text-num truncate", m.label !== undefined && "ml-auto")}>{m.value}</dd>}
                   </div>
                   {m.progress !== undefined && (
                     <ProgressLine

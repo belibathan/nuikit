@@ -170,7 +170,7 @@ function Stepper({
             if (e.key === "Enter") (e.preventDefault(), commit(e.currentTarget.value))
             else if (e.key === "Escape") (e.preventDefault(), e.stopPropagation(), setText(null))
           }}
-          className="nk-num min-w-0 flex-1 bg-transparent text-center outline-none"
+          className="nk-text-num min-w-0 flex-1 bg-transparent text-center outline-none"
           aria-label={props["aria-label"]}
         />
       ) : (
@@ -180,7 +180,7 @@ function Stepper({
           tabIndex={disabled ? -1 : 0}
           aria-live="polite"
           onClick={() => onCommit && !disabled && setText(String(value))}
-          className="nk-num flex min-w-0 flex-1 items-center justify-center px-(--nk-space-2) outline-none focus-visible:text-foreground"
+          className="nk-text-num flex min-w-0 flex-1 items-center justify-center px-(--nk-space-2) outline-none focus-visible:text-foreground"
         >
           {shown}
         </span>

@@ -5,17 +5,14 @@ import {
   BriefcaseIcon,
   CarIcon,
   CrosshairIcon,
-  DropletIcon,
   FuelIcon,
   HeartPulseIcon,
   KeyIcon,
   MicIcon,
   MoveHorizontalIcon,
-  PackageIcon,
   RadioIcon,
   ShieldIcon,
   TriangleAlertIcon,
-  UtensilsIcon,
   WalletIcon,
   WrenchIcon,
 } from "@/components/ui/icons";
@@ -24,7 +21,6 @@ import { useEffect, useState, type ReactNode } from "react";
 import { ActionBar, ActionBarItem, ActionBarSep } from "@/components/ui/action-bar";
 import { Button } from "@/components/ui/button";
 import { Chip } from "@/components/ui/chip";
-import { CollapseMore, CollapseStack } from "@/components/ui/collapse-stack";
 import { EdgeSheet, EdgeSheetBody, EdgeSheetFooter } from "@/components/ui/edge-sheet";
 import { Fill } from "@/components/ui/fill";
 import { IconText } from "@/components/ui/icon-text";
@@ -33,7 +29,6 @@ import { NuiImage } from "@/components/ui/nui-image";
 import { SmoothInput, SmoothTextarea } from "@/components/ui/smooth-input";
 import { NumberRoll, TextRoll } from "@/components/ui/text-roll";
 import { Glyph } from "@/components/ui/glyph";
-import { VitalChip } from "@/components/ui/vital-chip";
 import type { SectionComponent } from "@/pages/components";
 import registry from "../../../../registry.json";
 
@@ -87,7 +82,6 @@ function Label({ children }: { children: ReactNode }) {
 }
 
 function GlyphDemo() {
-  const left = useWalk(0.6, 0.05, 120);
   const [held, setHeld] = useState(false);
   return (
     <>
@@ -109,7 +103,7 @@ function GlyphDemo() {
           <Glyph size="lg" state="focus">
             F
           </Glyph>
-          <Glyph size="lg" state="hold" level={1 - left}>
+          <Glyph size="lg" state="hold">
             F
           </Glyph>
           <Glyph size="lg" state="confirm">
@@ -127,7 +121,7 @@ function GlyphDemo() {
         </div>
       </div>
       <div>
-        <Label>Tone and hue</Label>
+        <Label>Tone</Label>
         <div className="flex items-end gap-3">
           <Glyph size="lg" shape="square" tone="success">
             <ShieldIcon />
@@ -137,12 +131,6 @@ function GlyphDemo() {
           </Glyph>
           <Glyph size="lg" shape="square" tone="danger">
             <HeartPulseIcon />
-          </Glyph>
-          <Glyph size="lg" shape="square" hue="police">
-            <RadioIcon />
-          </Glyph>
-          <Glyph size="lg" shape="square" hue="legendary">
-            <PackageIcon />
           </Glyph>
         </div>
       </div>
@@ -195,7 +183,7 @@ function ChipDemo() {
         </div>
       </div>
       <div>
-        <Label>Tones, icons, counts</Label>
+        <Label>Tones and icons</Label>
         <div className="flex flex-wrap gap-2">
           <Chip icon={<MicIcon />}>Normal</Chip>
           <Chip icon={<RadioIcon />} tone="info">
@@ -207,11 +195,8 @@ function ChipDemo() {
           <Chip tone="warning" fill="tint" icon={<TriangleAlertIcon />}>
             Seatbelt
           </Chip>
-          <Chip tone="danger" fill="solid" count={3}>
+          <Chip tone="danger" fill="solid">
             Wanted
-          </Chip>
-          <Chip hue="police" fill="tint">
-            LSPD
           </Chip>
         </div>
       </div>
@@ -266,12 +251,6 @@ function IconTextDemo() {
 }
 
 function ActionBarDemo() {
-  const [hold, setHold] = useState(0);
-  useEffect(() => {
-    if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const id = setInterval(() => setHold((h) => (h >= 1.3 ? 0 : h + 0.05)), 80);
-    return () => clearInterval(id);
-  }, []);
   return (
     <div className="flex flex-col items-center gap-6">
       <ActionBar plate>
@@ -283,7 +262,7 @@ function ActionBarDemo() {
       </ActionBar>
       <ActionBar>
         <ActionBarItem keys={["Shift", "E"]} label="Open trunk" />
-        <ActionBarItem keys={["X"]} label={hold > 1 ? "Cancelled" : "Hold to cancel"} level={Math.min(1, hold)} state={hold > 1 ? "confirm" : "hold"} />
+        <ActionBarItem keys={["X"]} label="Hold to cancel" state="hold" />
         <ActionBarItem keys={["G"]} label="Locked" disabled />
       </ActionBar>
     </div>
@@ -296,7 +275,7 @@ function EdgeSheetDemo() {
     <div className="flex flex-col items-center gap-4 text-center text-white">
       <p className="max-w-sm text-sm text-white/80">It sits on a screen edge, so it opens over this page. Close it with its back key or the button.</p>
       <Button onClick={() => setOpen((o) => !o)}>{open ? "Close the sheet" : "Open the sheet"}</Button>
-      <EdgeSheet open={open} onOpenChange={setOpen} side="left" title="Garage" description="Legion Square, 4 of 10 spaces" meter={40} back onBack={() => setOpen(false)}>
+      <EdgeSheet open={open} side="left" title="Garage" description="Legion Square, 4 of 10 spaces" meter={40} back onBack={() => setOpen(false)}>
         <EdgeSheetBody scroll>
           <MenuRowList>
             <MenuRow icon={<CarIcon />} description="Stored, 98% condition" meta="ZEN 01" active>
@@ -317,44 +296,6 @@ function EdgeSheetDemo() {
           </ActionBar>
         </EdgeSheetFooter>
       </EdgeSheet>
-    </div>
-  );
-}
-
-function CollapseDemo() {
-  const [v, setV] = useState({ health: 82, armor: 46, hunger: 38, thirst: 64, stress: 12 });
-  const icons: Record<string, ReactNode> = {
-    health: <HeartPulseIcon />,
-    armor: <ShieldIcon />,
-    hunger: <UtensilsIcon />,
-    thirst: <DropletIcon />,
-    stress: <TriangleAlertIcon />,
-  };
-  const items = Object.entries(v).map(([key, value]) => ({ key, value, critical: key === "health" && value < 25 }));
-  return (
-    <div className="flex flex-col items-center gap-6">
-      <CollapseStack
-        max={3}
-        items={items}
-        renderItem={(item, { open }) => (
-          <VitalChip.Root value={item.value} tone={item.key} open={open}>
-            <VitalChip.Shape>
-              <VitalChip.Level />
-              <VitalChip.Icon>{icons[item.key]}</VitalChip.Icon>
-            </VitalChip.Shape>
-            <VitalChip.Label>{item.key}</VitalChip.Label>
-          </VitalChip.Root>
-        )}
-      />
-      <div className="flex flex-wrap justify-center gap-2">
-        <Button size="sm" variant="outline" onClick={() => setV((p) => ({ ...p, hunger: p.hunger >= 90 ? 20 : p.hunger + 25 }))}>
-          Eat
-        </Button>
-        <Button size="sm" variant="outline" onClick={() => setV((p) => ({ ...p, health: p.health < 25 ? 82 : 12, armor: Math.max(0, p.armor - 20), stress: p.stress + 20 }))}>
-          Take damage (three change)
-        </Button>
-      </div>
-      <CollapseMore count={2} />
     </div>
   );
 }
@@ -410,26 +351,23 @@ function NuiImageDemo() {
 export function NewSections({ Section }: { Section: SectionComponent }) {
   return (
     <>
-      <Section name="glyph" title="Glyph" text="A legend on a small surface: keys, notice icons, checked boxes, gears and telltales. Sizes, shapes, states, tone and hue, a hold fill and a tag; a theme may slant it or set it on a wall (--nk-control-*)." stageClassName="items-start justify-start gap-10">
+      <Section name="glyph" title="Glyph" text="A legend on a small surface: keys, notice icons, checked boxes, gears and telltales. Sizes, shapes, states, tone and a tag; a theme may slant it or set it on a wall (--nk-control-*)." stageClassName="items-start justify-start gap-10">
         <GlyphDemo />
       </Section>
       <Section name="fill" title="Fill" text="Status as a level filling left to right: a track, a bar scaled from the left (transform only) and a bright leading edge. Hue, then tone, then --nk-fill-color; at or under the alert threshold it turns danger." stageClassName="items-center">
         <FillDemo />
       </Section>
-      <Section name="chip" title="Chip" text="A short status on one line: --nk-height-chip tall, --nk-radius-chip corners (never a pill), the label role. Hair, tint or solid; tone or hue only when the colour means something; a count; a status dot." stageClassName="items-start justify-start gap-10">
+      <Section name="chip" title="Chip" text="A short status on one line: --nk-height-chip tall, --nk-radius-chip corners (never a pill), the label role. Hair, tint or solid; tone only when the colour means something; a status dot." stageClassName="items-start justify-start gap-10">
         <ChipDemo />
       </Section>
       <Section name="icon-text" title="Icon text" text="An icon and a value on one centre line: one gap, one icon size per step, the text in a role (num, label or body). Money, job, fuel, ammo and notes all use it." stageClassName="items-start justify-start">
         <IconTextDemo />
       </Section>
-      <Section name="action-bar" title="Action bar" text="The one hint, close and back pattern: an optional plate, items gap-items apart, each keys (Tiles) or an icon plus a label. An item that acts is a button; a hold fills under it." stageClassName="items-center">
+      <Section name="action-bar" title="Action bar" text="The one hint, close and back pattern: an optional plate, items gap-items apart, each keys (Kbd) or an icon plus a label. An item that acts is a button; a held key lights." stageClassName="items-center">
         <ActionBarDemo />
       </Section>
       <Section name="edge-sheet" title="Edge sheet" text="A full-height sheet on a screen edge: the pause menu's backdrop and the context sheet as one component. A back key, a level traced along the header, sub-pages that swap in place, a staggered slide-in and a faster exit." stageClassName="items-center">
         <EdgeSheetDemo />
-      </Section>
-      <Section name="collapse-stack" title="Collapse stack" text="Clustered indicators on the collapse engine: icons at rest, a change opens a chip for --nk-behavior-rest, changes within 400 ms open together, critical first, at most max, then +N." stageClassName="items-center">
-        <CollapseDemo />
       </Section>
       <Section name="text-roll" title="Text roll" text="A value that changes like a slot reel: the old one rolls out, the new one in, masked to the line. NumberRoll rolls each digit on its own. Swaps at once when motion is off." stageClassName="items-center">
         <TextRollDemo />

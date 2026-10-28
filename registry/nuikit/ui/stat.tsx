@@ -7,9 +7,9 @@ import { Text, textVariants, type TextSize } from "@/components/ui/text"
 
 /**
  * Stat — a label over a number that matters: cash, bank, players online, a fine, a timer.
- * Tabular figures in the identity's numeric face (nk-num); the label is a caption (nk-caption: the
+ * Tabular figures in the identity's numeric face (nk-text-num); the label is a caption (nk-text-caption: the
  * identity's label case and tracking). Three sizes on the kit's type scale: sm (the body size),
- * md (the HUD value size, 18px+, the default) and display (nk-display: the number is the point).
+ * md (the HUD value size, 18px+, the default) and display (nk-text-display: the number is the point).
  *
  *   <Stat icon={<WalletIcon />} label="Cash" value="$1,520" />
  *   <Stat label="Players online" value={42} meta="/ 128" size="sm" />
@@ -85,7 +85,7 @@ function Stat({
       <span
         data-slot="stat-label"
         className={cn(
-          "nk-caption flex min-w-0 items-center gap-(--nk-space-2) [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-[var(--nk-stat-label-icon)]",
+          "nk-text-caption flex min-w-0 items-center gap-(--nk-space-2) [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-[var(--nk-stat-label-icon)]",
           game && "text-world-foreground-muted",
           align === "end" && "flex-row-reverse"
         )}
@@ -113,7 +113,7 @@ function Stat({
           data-slot="stat-delta"
           data-trend={trend}
           className={cn(
-            "nk-num flex items-center gap-[var(--nk-stat-gap)] text-(length:--nk-text-label) [font-weight:var(--nk-type-label-weight)] [&_svg]:size-[var(--nk-stat-label-icon)]",
+            "nk-text-num flex items-center gap-[var(--nk-stat-gap)] text-(length:--nk-text-label) [font-weight:var(--nk-type-label-weight)] [&_svg]:size-[var(--nk-stat-label-icon)]",
             trend === "down" ? "text-destructive" : "text-muted-foreground"
           )}
         >

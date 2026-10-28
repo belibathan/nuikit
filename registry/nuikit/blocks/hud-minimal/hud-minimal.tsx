@@ -115,7 +115,7 @@ function HudStatus({ player, needs }: { player: NuiPlayer; needs: boolean }) {
                 <RadioIcon />
               </VitalChip.Icon>
               <VitalChip.Label>
-                <span className="nk-num">{player.voice.radio}</span>
+                <span className="nk-text-num">{player.voice.radio}</span>
               </VitalChip.Label>
             </VitalChip.Shape>
           </VitalChip.Root>
@@ -138,7 +138,7 @@ function HudWallet({ player }: { player: NuiPlayer }) {
       )}
       {job && (
         // a caption on the game (the identity's label style); duty is a status dot, never primary
-        <div data-slot="hud-minimal-job" className="nk-caption nk-on-game flex items-center gap-(--nk-space-2)">
+        <div data-slot="hud-minimal-job" className="nk-text-caption nk-on-game flex items-center gap-(--nk-space-2)">
           {job.onDuty !== undefined && (
             <Chip variant="dot" tone={job.onDuty ? "success" : undefined} aria-label={job.onDuty ? "On duty" : "Off duty"} />
           )}

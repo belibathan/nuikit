@@ -130,7 +130,7 @@ function NpcDialogue({
         <PanelHeader icon={<MessagesSquareIcon />} title={data.speaker} description={data.role} />
         <PanelBody className="px-4 py-3">
           {/* The whole line is laid out from the start (the rest is invisible) so the text doesn't reflow as it types. */}
-          <p aria-label={data.text} onClick={line.skip} className="nk-body min-h-[3.25rem] leading-relaxed">
+          <p aria-label={data.text} onClick={line.skip} className="nk-text-body min-h-[3.25rem] leading-relaxed">
             <span>{line.shown}</span>
             <span aria-hidden className="invisible">
               {line.rest}

@@ -174,7 +174,7 @@ function ItemSlot({
     >
       <div
         data-slot="item-slot-top"
-        className={cn("nk-num flex h-[var(--nk-item-slot-top-height)] shrink-0 items-center justify-between gap-[var(--nk-item-slot-gap)] text-(length:--nk-text-label) leading-none", hudActive ? "" : hud ? "opacity-75" : "text-muted-foreground")}
+        className={cn("nk-text-num flex h-[var(--nk-item-slot-top-height)] shrink-0 items-center justify-between gap-[var(--nk-item-slot-gap)] text-(length:--nk-text-label) leading-none", hudActive ? "" : hud ? "opacity-75" : "text-muted-foreground")}
       >
         <span data-slot="item-slot-corner">{corner}</span>
         {right !== null && right !== undefined && (

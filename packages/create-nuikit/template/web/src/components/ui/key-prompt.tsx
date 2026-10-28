@@ -344,7 +344,7 @@ function KeyPrompt({
             data-slot="key-prompt-description"
             className={cn(
               wrap ? "text-pretty break-words" : "truncate",
-              slab ? "nk-label [color:inherit]! opacity-75" : "text-(length:--nk-text-label) leading-4 font-normal",
+              slab ? "nk-text-label [color:inherit]! opacity-75" : "text-(length:--nk-text-label) leading-4 font-normal",
               surface === "panel" ? "text-muted-foreground" : !slab && "opacity-75"
             )}
           >

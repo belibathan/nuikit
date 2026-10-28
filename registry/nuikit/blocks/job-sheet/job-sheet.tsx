@@ -178,7 +178,7 @@ function JobSheet({
         onClose={root ? onClose : undefined}
       >
         {error && (
-          <p role="alert" className="nk-label pt-3 text-destructive">
+          <p role="alert" className="nk-text-label pt-3 text-destructive">
             {error}
           </p>
         )}
@@ -202,7 +202,7 @@ function JobSheet({
           {list(page?.sections).map((s, i) => (
             <section key={s.id} data-slot="job-sheet-section">
               {i > 0 && <Separator className="my-2" />}
-              {s.title && <p className="nk-caption px-3 pt-2 pb-1 text-muted-foreground">{s.title}</p>}
+              {s.title && <p className="nk-text-caption px-3 pt-2 pb-1 text-muted-foreground">{s.title}</p>}
               {list(s.rows).map((r) => {
                 const key = `${page?.id}:${r.id}`
                 const off = !jobSheetEnabled(r, job.onDuty)
@@ -244,7 +244,7 @@ function JobSheet({
               </Button>
             )
           })}
-          <span className="nk-label ml-auto flex items-center gap-(--nk-space-2) text-muted-foreground">
+          <span className="nk-text-label ml-auto flex items-center gap-(--nk-space-2) text-muted-foreground">
             <Kbd>Esc</Kbd> {root ? "Close" : "Back"}
           </span>
         </EdgeSheetFooter>

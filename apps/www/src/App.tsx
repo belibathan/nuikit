@@ -90,7 +90,6 @@ function Strip() {
         {vitals.map((x) => (
           <VitalChip.Root key={x.k} value={v[x.k]} tone={x.k}>
             <VitalChip.Shape>
-              <VitalChip.Level />
               <VitalChip.Icon>{x.icon}</VitalChip.Icon>
               <VitalChip.Label>{x.label}</VitalChip.Label>
             </VitalChip.Shape>

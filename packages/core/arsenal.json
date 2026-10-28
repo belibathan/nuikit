@@ -4375,7 +4375,7 @@
     {
       "name": "action-bar",
       "title": "Action bar",
-      "doc": "The one hint, close and back pattern (tokens 1.5): an optional plate, items gap-items apart, each keys (Glyph sm) or an icon plus a label, a button when it acts, with a hold level.",
+      "doc": "The one hint, close and back pattern: an optional plate, items gap-items apart, each keys (Kbd) or an icon plus a label, a button when it acts.",
       "since": "unreleased",
       "status": "stable",
       "kind": "component",
@@ -4384,7 +4384,7 @@
     {
       "name": "chip",
       "title": "Chip",
-      "doc": "A short status on one line in two materials: panel (h-chip, r-chip, the label role; fill hair | tint | solid; tone, hue, icon, count, the dot) and hud (the game surface, nk-chip / nk-hud: pill | tile, active, warning).",
+      "doc": "A short status on one line in two materials: panel (the chip height and radius, the label style; fill hair | tint | solid; tone, icon, the dot) and hud (the game surface, nk-chip: active, warning).",
       "since": "unreleased",
       "status": "stable",
       "kind": "component",
@@ -4393,7 +4393,7 @@
     {
       "name": "dial",
       "title": "Dial",
-      "doc": "A round gauge (tokens 1.5): one SVG geometry with a track arc, a value arc or segments, ticks (a tick count lever) and an optional needle around your readout; a redline sets data-state=\"alert\".",
+      "doc": "A round gauge: one SVG geometry with a track arc, a value arc or segments and ticks (a tick count lever) around your readout; a redline sets data-state=\"alert\".",
       "since": "unreleased",
       "status": "stable",
       "kind": "component",
@@ -4411,7 +4411,7 @@
     {
       "name": "glyph",
       "title": "Glyph",
-      "doc": "The one key language (tokens 1.5): a face with a rim and top light on a solid plate, slanted by --nk-control-skew while the box stays upright.",
+      "doc": "The one key language: a face with a rim and top light on a solid plate, slanted by --nk-control-face-skew while the box stays upright.",
       "since": "unreleased",
       "status": "stable",
       "kind": "component",
@@ -4465,7 +4465,7 @@
     {
       "name": "vital-chip",
       "title": "Vital Chip",
-      "doc": "The HUD status chip as composable parts (Root, Shape, Level, Icon, Label, Glyph, Pop): the in-game keycap by default (a Glyph face over a plate that slides out with the label, the level as a liquid in the face, white when active), or one SVG path per shape (auto, square, rounded, circle, diamond, hex, chamfer); level fill/outline/bar/none; a pop with the signed change.",
+      "doc": "The HUD status chip as composable parts (Row, Root, Shape, Icon, Label, Letter): a Glyph face over a plate that slides out with the name and value, the level as a liquid in the face, white when active.",
       "since": "unreleased",
       "status": "stable",
       "kind": "component",
@@ -4519,7 +4519,7 @@
     {
       "name": "edge-sheet",
       "title": "Edge Sheet",
-      "doc": "A full-height sheet flush to a screen edge, the pause menu backdrop and the ox_lib context sheet as one component: stock Sheet (non-modal) in the panel surface, hairline on the open edge, inner column, section-size title with optional back and close buttons, sub-pages that swap in place, a level traced along the header edge, staggered slide-in and a faster exit.",
+      "doc": "A full-height sheet on a screen edge, the pause menu backdrop and the ox_lib context sheet as one component: stock Sheet (never modal) in the panel surface, floating or flush, an inner column, a section-size title with optional back (an ActionBarItem with Esc) and close buttons, sub-pages that swap in place, a level traced along the header edge, a staggered slide-in and a faster exit; anchor=\"upper\" for a sheet as tall as its content.",
       "since": "unreleased",
       "status": "stable",
       "kind": "component",

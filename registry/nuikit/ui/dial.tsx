@@ -1,30 +1,30 @@
 import * as React from "react"
 
 import { cn, nkLevel } from "@/lib/utils"
-import { toneVars } from "@/components/ui/fill"
 
 /**
- * Dial — the speedometer arc as a primitive (docs/design.md §3, Dial): one SVG geometry with a track
- * arc, a value arc, ticks and an optional needle, and whatever you put inside (a readout, a gear Glyph, a unit).
+ * Dial — the speedometer arc as a primitive (docs/design.md §6, Dial): one SVG geometry with a track
+ * arc, a value arc (or segments) and ticks, and whatever you put inside (a readout, a gear Glyph, a unit).
  * Speedometer composes it; a fuel or boost gauge is a Dial too, and so is ProgressRing: a Dial with `sweep={360}`.
  *
  *   <Dial level={rpm} redline={0.88}>
- *     <span className="nk-num">{speed}</span>
+ *     <span className="nk-text-num">{speed}</span>
  *   </Dial>
- *   <Dial level={boost} segments={10} variant="digital" size="sm" hue="info" />
+ *   <Dial level={boost} segments={10} variant="digital" size="sm" />
  *
  * Role: a level read at a glance on a round gauge (rpm, boost, a charge), on the game or on a panel.
- * Anatomy: root (data-slot="dial", --level) > svg (ticks, track arc, value arc or segments, needle) > center (children).
- * Props: level (0–1, or value / max), size (sm | md | lg or px at 1080p), variant (ticks | digital), ticks
+ * Anatomy: dial (--level) > svg (dial-disc, dial-ticks, dial-track, dial-value or dial-segments > dial-segment) >
+ *   dial-center (children)
+ * Props: level (0–1), size (sm | md | lg or px at 1080p), variant (ticks | digital), ticks
  *   (the tick count lever, 0 for none), segments, segmentGap (degrees between them: the speedometer's even gaps; the
  *   track is segmented too), direction (cw: lit from the start; ccw: from the end, a fuel band draining down), paint
  *   (accent: the value in the accent's stops, like the speedometer), disc (true: a plate behind the arc; soft: the
- *   speedometer's scrim that fades out at the edge), redline (lit segments past it are red; unlit ones look like any other), needle, tone,
- *   hue, surface, sweep (256 a gauge, 360 a ring), start, thickness, inset, trackProps, valueProps.
+ *   speedometer's scrim that fades out at the edge), redline (lit segments past it are red; unlit ones look like any other), alert,
+ *   surface, sweep (256 a gauge, 360 a ring), start, thickness, inset, trackProps, valueProps.
  * Level means: how far the value has swept the arc, 0 at the start, 1 at the end of the sweep.
- * Rules: the value arc is data-driven (no CSS tween on the dash; a live gauge writes it with dialDash()); the
- *   needle moves by a rotate transform. Past the redline it is data-state="alert". Colours only from the
- *   gauge and fill tokens (--nk-gauge-*, --nk-fill-*, a hue); no glow filter, no drop shadow.
+ * Rules: the value arc is data-driven (no CSS tween on the dash; a live gauge writes it with dialDash()). Past
+ *   the redline it is data-state="alert". Colours only from the gauge and fill levers (--nk-gauge-*, --nk-fill-*,
+ *   an ancestor's hue); no glow filter, no drop shadow.
  */
 
 /** The arc's sweep in degrees (a gap at the bottom): the speedometer's, as refined in game. */
@@ -92,10 +92,8 @@ const SURFACE = {
 } as const
 
 type DialProps = Omit<React.ComponentProps<"div">, "children"> & {
-  /** 0–1 (or `value` / `max`). */
+  /** 0–1. */
   level?: number
-  value?: number
-  max?: number
   /** sm 128, md 192 (default), lg 256, or a diameter in px at 1080p (laid out in rem). */
   size?: keyof typeof DIAL_SIZE | number
   /** ticks: tick marks round the sweep (default). digital: the arc alone. */
@@ -117,11 +115,6 @@ type DialProps = Omit<React.ComponentProps<"div">, "children"> & {
   redline?: number | boolean
   /** Force the alert (a live gauge that computes its own redline). */
   alert?: boolean
-  /** A needle at the level (a rotate transform). */
-  needle?: boolean
-  tone?: "neutral" | "info" | "success" | "warning" | "danger"
-  /** A role (health, police…): the value arc in its colour. */
-  hue?: string
   /** game: on the world (HUD tokens). theme: on a panel. none: the composite colours it (trackProps, valueProps). */
   surface?: "game" | "theme" | "none"
   /** The arc's sweep in degrees: 240 (a gauge, the gap at the bottom), 360 (a ring). */
@@ -142,8 +135,6 @@ type DialProps = Omit<React.ComponentProps<"div">, "children"> & {
 function Dial({
   className,
   level: levelProp,
-  value,
-  max = 1,
   size: sizeProp = "md",
   variant = "ticks",
   ticks = DIAL_TICKS,
@@ -154,9 +145,6 @@ function Dial({
   disc = false,
   redline: redlineProp = false,
   alert: alertProp,
-  needle = false,
-  tone,
-  hue,
   surface = "game",
   sweep = DIAL_SWEEP,
   start: startProp,
@@ -172,7 +160,7 @@ function Dial({
   const gauge = useGaugeStroke(root)
   const stroke = thickness ?? gauge
   const size = typeof sizeProp === "number" ? sizeProp : (DIAL_SIZE[sizeProp] ?? DIAL_SIZE.md)
-  const level = clamp01(levelProp ?? (value !== undefined && max > 0 ? value / max : 0))
+  const level = clamp01(levelProp ?? 0)
   const threshold = redlineProp === true ? DIAL_REDLINE : redlineProp === false ? undefined : redlineProp
   const alert = alertProp ?? (threshold !== undefined && level > threshold)
   const ring = sweep >= 360
@@ -181,7 +169,7 @@ function Dial({
   const start = startProp ?? (ring ? -90 : geo.start)
   const s = SURFACE[surface] ?? SURFACE.game
   const accentId = `nk-dial-accent-${React.useId().replace(/[^a-zA-Z0-9_-]/g, "")}`
-  const accentPaint = paint === "accent" && !hue && (!tone || tone === "neutral")
+  const accentPaint = paint === "accent"
   // one arc turns the redline whole past it; segments keep their colour, only the red zone's are red
   const accent = accentPaint && !alert
   const valueClass = alert ? "stroke-(--nk-gauge-redline-color)" : accent ? "" : "stroke-[var(--hue-solid,var(--nk-gauge-fill-color))]"
@@ -204,7 +192,6 @@ function Dial({
       data-slot="dial"
       data-variant={variant}
       data-state={alert ? "alert" : undefined}
-      {...toneVars({ tone: tone === "neutral" ? undefined : tone, hue })}
       className={cn("relative shrink-0", s.root, className)}
       style={{ width: `${size / 16}rem`, height: `${size / 16}rem`, ...nkLevel(level), ...style }}
       {...props}
@@ -338,18 +325,6 @@ function Dial({
             {...valueProps}
           />
         )}
-        {needle && (
-          <line
-            data-slot="dial-needle"
-            x1={c}
-            y1={c}
-            x2={c + r - stroke}
-            y2={c}
-            strokeWidth={2}
-            className="stroke-(--nk-gauge-needle-color) transition-transform duration-(--nk-time-fast) ease-(--nk-ease-move)"
-            style={{ transformOrigin: `${c}px ${c}px`, transform: `rotate(${start + sweep * level}deg)` }}
-          />
-        )}
       </svg>
       {children !== undefined && children !== null && (
         <div data-slot="dial-center" className="absolute inset-0 flex flex-col items-center justify-center">
@@ -360,4 +335,4 @@ function Dial({
   )
 }
 
-export { Dial, dialGeometry, dialDash, dialSegments, gaugeStroke, DIAL_SWEEP, DIAL_STROKE, DIAL_TICKS, DIAL_SIZE, DIAL_REDLINE, type DialProps }
+export { Dial, dialGeometry, dialDash, dialSegments, gaugeStroke, DIAL_REDLINE }

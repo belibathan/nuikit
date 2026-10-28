@@ -90,9 +90,7 @@ function EmptyState({
             {iconEl}
           </EmptyMedia>
         )}
-        {/* The weight spelled out (important): EmptyTitle's font-medium would beat nk-title's. A
-            screen-size empty state titles at the section size. */}
-        <EmptyTitle data-slot="empty-state-title" className="nk-title [font-weight:var(--nk-type-title-weight)]!">
+        <EmptyTitle data-slot="empty-state-title" className="nk-text-title">
           {title}
         </EmptyTitle>
         {description && (

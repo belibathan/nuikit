@@ -129,11 +129,11 @@ function PanelHeader({
 }
 
 function PanelTitle({ className, ...props }: React.ComponentProps<"h2">) {
-  return <h2 data-slot="panel-title" className={cn("nk-title truncate", className)} {...props} />
+  return <h2 data-slot="panel-title" className={cn("nk-text-title truncate", className)} {...props} />
 }
 
 function PanelDescription({ className, ...props }: React.ComponentProps<"p">) {
-  return <p data-slot="panel-description" className={cn("nk-label truncate", className)} {...props} />
+  return <p data-slot="panel-description" className={cn("nk-text-label truncate", className)} {...props} />
 }
 
 const panelBodyVariants = cva("", {

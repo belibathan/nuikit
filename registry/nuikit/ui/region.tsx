@@ -10,7 +10,7 @@ import { ScrollArea } from "@/components/ui/scroll-area"
  * (`--nk-region-max`, 28rem), the padding scale (`--nk-region-pad`, the surface padding), and three slots:
  * header, body (scrolls with the kit's scrollbar when `scroll`), footer (pinned to the bottom when `fill`).
  *
- *   <Region fill scroll header={<h2 className="nk-title">Settings</h2>} footer={<Button>Save</Button>}>
+ *   <Region fill scroll header={<h2 className="nk-text-title">Settings</h2>} footer={<Button>Save</Button>}>
  *     {rows}
  *   </Region>
  *

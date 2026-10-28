@@ -263,7 +263,7 @@ export function ComponentsPage() {
           text="A timer that matters: until you can respawn, until the alarm, until the restart. Tabular mm:ss (h:mm:ss past an hour), a label, a line that drains (in a theme tone from the start with lineTone), a warning threshold, a dimmed done state. From Lua's seconds, or running on its own with onComplete from a timer."
           stageClassName="min-h-[36rem] items-center"
         >
-          <Countdown surface="game" size="hero" seconds={154} total={300} label="Until you can respawn" />
+          <Countdown size="hero" seconds={154} total={300} label="Until you can respawn" />
           <CountdownStates />
           <CountdownDemo />
         </Section>
@@ -475,7 +475,6 @@ function ChipModesDemo() {
         {(Object.keys(vitals) as (keyof typeof vitals)[]).map((k) => (
           <VitalChip.Root key={k} value={vitals[k]} tone={k} display={display}>
             <VitalChip.Shape>
-              <VitalChip.Level />
               <VitalChip.Icon>{icons[k]}</VitalChip.Icon>
               <VitalChip.Label>{names[k]}</VitalChip.Label>
             </VitalChip.Shape>
@@ -1071,17 +1070,16 @@ function ProgressRingDemo() {
 // ox_lib metadata, in two of its shapes (menuMetadata reads all three). Each bar keeps its own
 // colorScheme, as ox passes it (Mantine names); the fuel line takes a tone.
 /**
- * The other states from props, straight on the game (surface="game": HUD text with a shadow).
- * On a panel or a tinted full-screen surface, the default theme surface (the Bank alarm panel).
+ * The other states from props.
  */
 function CountdownStates() {
   return (
     <div className="flex flex-col items-center gap-8">
       {/* lineTone: a last stand drains in destructive from the start, not only from warnAt */}
-      <Countdown surface="game" seconds={42} total={60} warnAt={10} lineTone="destructive" label="Last stand" />
-      <Countdown surface="game" seconds={8} total={60} warnAt={30} label="Until you bleed out" />
-      <Countdown surface="game" seconds={0} total={300} label="You can respawn" />
-      <Countdown surface="game" size="sm" seconds={3723} label="Until the server restarts" />
+      <Countdown seconds={42} total={60} warnAt={10} lineTone="destructive" label="Last stand" />
+      <Countdown seconds={8} total={60} warnAt={30} label="Until you bleed out" />
+      <Countdown seconds={0} total={300} label="You can respawn" />
+      <Countdown size="sm" seconds={3723} label="Until the server restarts" />
     </div>
   );
 }

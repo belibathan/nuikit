@@ -92,7 +92,7 @@
       "name": "edge-sheet",
       "type": "registry:ui",
       "title": "Edge Sheet",
-      "description": "A full-height sheet flush to a screen edge, the pause menu backdrop and the ox_lib context sheet as one component: stock Sheet (non-modal) in the panel surface, hairline on the open edge, inner column, section-size title with optional back and close buttons, sub-pages that swap in place, a level traced along the header edge, staggered slide-in and a faster exit. back: the back control as an ActionBarItem with Esc; anchor=\"upper\" (tokens 1.5).",
+      "description": "A full-height sheet on a screen edge, the pause menu backdrop and the ox_lib context sheet as one component: stock Sheet (never modal) in the panel surface, floating or flush, an inner column, a section-size title with optional back (an ActionBarItem with Esc) and close buttons, sub-pages that swap in place, a level traced along the header edge, a staggered slide-in and a faster exit; anchor=\"upper\" for a sheet as tall as its content.",
       "files": [
         {
           "path": "registry/nuikit/ui/edge-sheet.tsx",
@@ -118,23 +118,33 @@
         "spec": {
           "role": "A sheet from a screen edge: an inventory side, a context menu.",
           "anatomy": [
-            "edge-sheet (side)",
-            "column: header (title, description, actions)",
-            "edge (a level line)",
-            "body"
+            "edge-sheet (side) > edge-sheet-column",
+            "edge-sheet-header (back, title, description, edge-sheet-actions)",
+            "edge-sheet-edge (a Fill, variant edge)",
+            "edge-sheet-body",
+            "edge-sheet-footer"
           ],
           "props": [
             "open",
             "side",
-            "modal",
+            "variant",
+            "fit",
+            "anchor",
+            "width",
+            "delay",
+            "icon",
             "title",
             "description",
             "actions",
+            "meter",
+            "meterDanger",
+            "page",
+            "onBack",
+            "back",
+            "onClose",
             "density",
             "shape",
-            "motion",
-            "back",
-            "anchor"
+            "motion"
           ],
           "level": "the edge line: a fill such as weight (EdgeSheetEdge value, 0\u2013100).",
           "rules": [
@@ -801,74 +811,10 @@
       }
     },
     {
-      "name": "collapse-stack",
-      "type": "registry:ui",
-      "title": "Collapse stack",
-      "description": "A row of clustered indicators on the collapse engine: icons at rest, a change opens a chip, open chips lead (critical first, then the biggest change), at most max, then +N.",
-      "files": [
-        {
-          "path": "registry/nuikit/ui/collapse-stack.tsx",
-          "type": "registry:ui"
-        }
-      ],
-      "registryDependencies": [
-        "https://nuikit.vercel.app/r/use-collapse.json"
-      ],
-      "meta": {
-        "since": "unreleased",
-        "status": "stable",
-        "replaces": [],
-        "removeIn": null,
-        "spec": {
-          "role": "Clustered indicators (vitals, voice, job status) that stay icons until something changes.",
-          "anatomy": [
-            "collapse-stack",
-            "collapse-stack-item (your chip, via renderItem)",
-            "collapse-stack-more (+N)"
-          ],
-          "props": [
-            "items",
-            "renderItem",
-            "max",
-            "restDelay",
-            "batchMs",
-            "min",
-            "optOut"
-          ],
-          "rules": [
-            "At rest only icons; a change opens a chip for --nk-rest-delay.",
-            "Changes within the batch window (400 ms) open and close together.",
-            "Critical first, then the biggest change; at most max, then +N.",
-            "Order moves with CSS order; the DOM never re-orders, nothing remounts."
-          ]
-        },
-        "group": "HUD",
-        "tier": "composite",
-        "hidden": true,
-        "hiddenReason": "the collapse engine behind VitalChip, kept as a helper; the HUD block shows it live",
-        "variants": {
-          "axes": {},
-          "levers": [
-            "--nk-chip-bg",
-            "--nk-chip-fg",
-            "--nk-chip-height",
-            "--nk-chip-radius",
-            "--nk-behavior-rest",
-            "--nk-space-2",
-            "--nk-text-label",
-            "--nk-type-weight-strong"
-          ],
-          "hooks": [
-            "useCollapse"
-          ]
-        }
-      }
-    },
-    {
       "name": "vital-chip",
       "type": "registry:ui",
       "title": "Vital Chip",
-      "description": "The HUD status chip as composable parts (Root, Shape, Level, Icon, Label, Glyph, Pop): the in-game keycap by default (a Glyph face over a plate that slides out with the label, the level as a liquid in the face, white when active), or one SVG path per shape (auto, square, rounded, circle, diamond, hex, chamfer); level fill/outline/bar/none; a pop with the signed change. Themed by --nk-chip-shape, --nk-level-style, --nk-label-attach, --nk-vital-icon and the --nk-vital-* levers.",
+      "description": "The HUD status chip as composable parts (Row, Root, Shape, Icon, Label, Pop, Letter): a Glyph face over a plate that slides out with the name and value, the level as a liquid in the face, white when active. display pill | value | icon | expand, neighbours push | collapse | overlay; a Row opens expand chips through the collapse engine, at most three, then +N. Themed by --nk-style-vital*, --nk-control-* and the --nk-vital-chip-* levers.",
       "files": [
         {
           "path": "registry/nuikit/ui/vital-chip.tsx",
@@ -879,9 +825,9 @@
         "nuikit-core"
       ],
       "registryDependencies": [
-        "text-roll",
-        "https://nuikit.vercel.app/r/collapse-stack.json",
+        "https://nuikit.vercel.app/r/chip.json",
         "https://nuikit.vercel.app/r/glyph.json",
+        "https://nuikit.vercel.app/r/text-roll.json",
         "https://nuikit.vercel.app/r/use-collapse.json"
       ],
       "meta": {
@@ -890,40 +836,31 @@
         "replaces": [],
         "removeIn": null,
         "spec": {
-          "role": "One vital on the HUD: health, armor, hunger, thirst, stress.",
+          "role": "One vital on the HUD: health, armor, hunger, thirst, stress, voice, radio.",
           "anatomy": [
-            "vital-chip-row (optional: chips that know each other)",
-            "vital-chip (keycap: plate, face Glyph, liquid, icon; or an SVG shape)",
-            "icon",
-            "level drawing (outline | liquid | bar)",
-            "label (name, value)",
-            "pop (a change)"
+            "vital-chip-row (optional: chips that know each other) > +N (a hud Chip, vital-chip-more)",
+            "vital-chip > vital-chip-shape",
+            "vital-chip-wall, vital-chip-track > vital-chip-plate",
+            "glyph (vital-chip-face) > vital-chip-level, vital-chip-icon",
+            "vital-chip-label > vital-chip-name, value",
+            "vital-chip-pop (a flag out of the side on a change)"
           ],
           "props": [
             "value",
             "tone",
-            "shape",
-            "level",
-            "attach",
-            "icon",
             "open",
             "active",
             "alert",
-            "side",
             "display",
-            "neighbours",
-            "format",
-            "max"
+            "neighbours"
           ],
           "level": "the vital, 0\u2013100 as 0\u20131.",
           "rules": [
             "data-hue carries the vital's role (health, armor\u2026).",
-            "The default shape is the keycap (the in-game vitals): a Glyph face over a plate that slides out with the label, the level as a liquid in the face; every number is a --nk-vital-* lever.",
-            "The level style comes from the theme (liquid, outline, bar); the data never picks it.",
-            "Readable over a bright sky (legibility fixture).",
-            "display: pill (icon, name, value) | value | icon (level as fill) | expand (opens on a change, settles after --nk-rest-delay); the theme default is --nk-vital-display.",
-            "neighbours (a chip that opens, in a Row): push | collapse | overlay; the theme default is --nk-vital-neighbours.",
-            "expand chips in a VitalChip.Row open through the row's collapse engine (useCollapse): batched, ordered, capped at max with +N."
+            "A Glyph face over a plate that slides out with the label, the level as a liquid in the face; every number is a --nk-vital-chip-* lever.",
+            "display: pill (icon, name, value) | value | icon (level as fill) | expand (opens on a change, settles after --nk-behavior-rest); the theme default is --nk-style-vital.",
+            "neighbours (a chip that opens, in a Row): push | collapse | overlay; the theme default is --nk-style-vital-neighbours.",
+            "expand chips in a VitalChip.Row open through the row's collapse engine (useCollapse): batched, ordered, at most three, then +N."
           ]
         },
         "group": "HUD",
@@ -1016,7 +953,6 @@
             "--nk-type-weight-strong"
           ],
           "hooks": [
-            "NumberRoll",
             "useCollapse"
           ]
         }
@@ -1513,18 +1449,20 @@
         "spec": {
           "role": "A decision before something that can't be undone.",
           "anatomy": [
-            "confirm-root + scrim",
-            "confirm (icon, title, description)",
-            "cancel, action"
+            "confirm-root > confirm-scrim + confirm (a Panel)",
+            "confirm-icon, title, confirm-description",
+            "confirm-cancel, confirm-action"
           ],
           "props": [
             "title",
             "description",
+            "icon",
             "tone",
+            "size",
             "confirmLabel",
             "cancelLabel",
+            "showCancel",
             "loading",
-            "scrim",
             "initialFocus",
             "density",
             "shape",
@@ -1560,7 +1498,8 @@
               "lg"
             ],
             "tone": [
-              "theme tones"
+              "primary",
+              "destructive"
             ]
           },
           "levers": [
@@ -1570,7 +1509,6 @@
             "--nk-control-face-confirm",
             "--nk-control-face-confirm-ink",
             "--nk-control-tone",
-            "--nk-time-slow",
             "--nk-time-slow"
           ],
           "hooks": []
@@ -1790,7 +1728,7 @@
       "name": "countdown",
       "type": "registry:ui",
       "title": "Countdown",
-      "description": "A timer that matters: tabular mm:ss (h:mm:ss past an hour) in the identity's display type, a caption, a line that drains on its own between updates, a warning threshold (data-state=\"alert\"), a hue or tone line through toneVars(), a done state, sizes up to a full-screen clock, theme or game surface. From Lua's seconds, or running on its own with onComplete from a timer.",
+      "description": "A timer that matters: tabular mm:ss (h:mm:ss past an hour) in the figure text style, a caption, a line that drains on its own between updates, a warning threshold (data-state=\"alert\"), a tone line, a done state, sizes up to a full-screen clock. From Lua's seconds, or running on its own with onComplete from a timer.",
       "files": [
         {
           "path": "registry/nuikit/ui/countdown.tsx",
@@ -1808,10 +1746,10 @@
         "spec": {
           "role": "A wait that matters, read from across the screen: respawn, alarm, restart.",
           "anatomy": [
-            "root",
-            "clock (display size, num face, role timer)",
-            "label (caption)",
-            "line (track and draining fill)"
+            "countdown",
+            "countdown-clock (nk-text-figure, role timer)",
+            "countdown-label (caption)",
+            "countdown-line (a Fill that drains)"
           ],
           "props": [
             "seconds",
@@ -1822,11 +1760,8 @@
             "warnAt",
             "warnTone",
             "lineTone",
-            "hue",
             "size",
-            "surface",
-            "line",
-            "format"
+            "line"
           ],
           "level": "The line is the time left over the total: 1 at the start, 0 when done.",
           "rules": [
@@ -2197,7 +2132,7 @@
       "name": "glyph",
       "type": "registry:ui",
       "title": "Glyph",
-      "description": "The one key language (tokens 1.5): a face with a rim and top light on a solid plate, slanted by --nk-control-skew while the box stays upright. Sizes, shapes, states (focus, hold, confirm, alert, disabled), tone and hue, a hold fill and a plate-extension tag. Also exports Kbd (a Glyph with data-slot=kbd) and KbdGroup.",
+      "description": "The one key language: a face with a rim and top light on a solid plate, slanted by --nk-control-face-skew while the box stays upright. Sizes, shapes, states (focus, hold, confirm, alert, disabled), tone and a plate-extension tag. Also exports Kbd (a Glyph with data-slot=kbd) and KbdGroup.",
       "files": [
         {
           "path": "registry/nuikit/ui/glyph.tsx",
@@ -2210,25 +2145,19 @@
         "replaces": [],
         "removeIn": null,
         "spec": {
-          "role": "Keys, notice icons, tab marks, checked boxes, gears and telltales: one tile.",
+          "role": "Keys, notice icons, tab marks, checked boxes, gears and telltales: one glyph.",
           "anatomy": [
-            "plate (::before)",
-            "face (::after: rim, light)",
-            "glyph-fill (hold)",
-            "legend",
-            "glyph-tag (the plate extending right)"
+            "glyph (plate ::before, face ::after)",
+            "glyph-legend",
+            "glyph-group > glyph + glyph-tag (the plate extending right)"
           ],
           "props": [
             "size",
             "shape",
             "state",
             "active",
-            "level",
             "tone",
-            "hue",
             "tag",
-            "tagOpen",
-            "plate",
             "land"
           ],
           "rules": [
@@ -2317,7 +2246,7 @@
       "name": "chip",
       "type": "registry:ui",
       "title": "Chip",
-      "description": "A short status on one line in two materials: panel (h-chip, r-chip, the label role; fill hair | tint | solid; tone, hue, icon, count, the dot) and hud (the game surface, nk-chip / nk-hud: pill | tile, active, warning). HudChip is Chip material=\"hud\".",
+      "description": "A short status on one line in two materials: panel (the chip height and radius, the label style; fill hair | tint | solid; tone, icon, the dot) and hud (the game surface, nk-chip or nk-hud: pill | square, active, warning).",
       "files": [
         {
           "path": "registry/nuikit/ui/chip.tsx",
@@ -2335,20 +2264,16 @@
         ],
         "removeIn": null,
         "spec": {
-          "role": "A tag, a count, a status dot: one chip.",
+          "role": "A tag, a status dot, a fact on the HUD: one chip.",
           "anatomy": [
-            "chip (panel: data-slot=chip; hud: data-slot=hud-chip, pill | tile)",
-            "icon",
-            "label",
-            "count"
+            "chip (panel) > icon > label",
+            "hud-chip (hud, pill | square) > hud-chip-icon > label"
           ],
           "props": [
             "material",
             "tone",
-            "hue",
             "fill",
             "icon",
-            "count",
             "variant",
             "shape",
             "state",
@@ -2357,8 +2282,8 @@
             "motion"
           ],
           "rules": [
-            "No pills: r-chip, or the dot at r-key.",
-            "Colour means something: tone or hue only."
+            "No pills on a panel: the chip radius, or the dot at the key radius.",
+            "Colour means something: tone only."
           ]
         },
         "group": "Foundations",
@@ -2374,10 +2299,6 @@
               "on",
               "off",
               "reduced"
-            ],
-            "shape": [
-              "pill",
-              "square"
             ],
             "state": [
               "default",
@@ -2782,7 +2703,7 @@
       "name": "action-bar",
       "type": "registry:ui",
       "title": "Action bar",
-      "description": "The one hint, close and back pattern (tokens 1.5): an optional plate, items gap-items apart, each keys (Glyph sm) or an icon plus a label, a button when it acts, with a hold level.",
+      "description": "The one hint, close and back pattern: an optional plate, items gap-items apart, each keys (Kbd) or an icon plus a label, a button when it acts.",
       "files": [
         {
           "path": "registry/nuikit/ui/action-bar.tsx",
@@ -2790,8 +2711,7 @@
         }
       ],
       "registryDependencies": [
-        "https://nuikit.vercel.app/r/glyph.json",
-        "https://nuikit.vercel.app/r/fill.json"
+        "https://nuikit.vercel.app/r/glyph.json"
       ],
       "meta": {
         "since": "unreleased",
@@ -2801,22 +2721,23 @@
         "spec": {
           "role": "Key hints, back and close: one bar.",
           "anatomy": [
-            "plate (optional)",
-            "item: keys or icon, label, hold fill",
-            "separator"
+            "action-bar (plate optional)",
+            "action-bar-item: action-bar-keys (Kbd) or icon, action-bar-label",
+            "action-bar-sep"
           ],
           "props": [
             "plate",
+            "dedupe",
             "keys",
             "icon",
             "label",
             "onClick",
-            "level",
             "state"
           ],
           "rules": [
             "An item that acts is a button.",
-            "Keys are Tiles, never a styled span."
+            "Keys are Kbd, never a styled span.",
+            "One action is one item."
           ]
         },
         "group": "Foundations",
@@ -2825,9 +2746,7 @@
           "axes": {},
           "levers": [
             "--nk-line-width",
-            "--nk-fill-tint",
             "--nk-gap-items",
-            "--nk-fill-height",
             "--nk-icon-lg",
             "--nk-plate-bg",
             "--nk-plate-drop",
@@ -2843,9 +2762,7 @@
             "--nk-type-label-tracking",
             "--nk-type-label-weight"
           ],
-          "hooks": [
-            "useLinearRun"
-          ]
+          "hooks": []
         }
       }
     },
@@ -2853,7 +2770,7 @@
       "name": "dial",
       "type": "registry:ui",
       "title": "Dial",
-      "description": "A round gauge (tokens 1.5): one SVG geometry with a track arc, a value arc or segments, ticks (a tick count lever) and an optional needle around your readout; a redline sets data-state=\"alert\". Speedometer composes it.",
+      "description": "A round gauge: one SVG geometry with a track arc, a value arc or segments and ticks (a tick count lever) around your readout; a redline sets data-state=\"alert\". Speedometer and ProgressRing compose it.",
       "files": [
         {
           "path": "registry/nuikit/ui/dial.tsx",
@@ -2868,17 +2785,13 @@
         "spec": {
           "role": "A level read at a glance on a round gauge: rpm, boost, a charge.",
           "anatomy": [
-            "root (--level)",
-            "ticks",
-            "track arc",
-            "value arc or segments",
-            "needle",
-            "center (children)"
+            "dial (--level)",
+            "dial-disc, dial-ticks, dial-track",
+            "dial-value or dial-segments > dial-segment",
+            "dial-center (children)"
           ],
           "props": [
             "level",
-            "value",
-            "max",
             "size",
             "variant",
             "ticks",
@@ -2888,9 +2801,7 @@
             "paint",
             "disc",
             "redline",
-            "needle",
-            "tone",
-            "hue",
+            "alert",
             "surface",
             "sweep",
             "start",
@@ -2899,9 +2810,9 @@
           ],
           "level": "How far the value has swept the arc: 0 at its start, 1 at its end.",
           "rules": [
-            "The value arc is data-driven, never tweened; the needle moves by rotate.",
+            "The value arc is data-driven, never tweened.",
             "Past the redline it is data-state=\"alert\".",
-            "Colours only from --nk-gauge-* and --nk-fill-* (or a hue); no glow filter."
+            "Colours only from --nk-gauge-* and --nk-fill-* (or an ancestor's hue); no glow filter."
           ]
         },
         "group": "Foundations",
@@ -2916,13 +2827,6 @@
             "treatment": [
               "ticks",
               "digital"
-            ],
-            "tone": [
-              "neutral",
-              "info",
-              "success",
-              "warning",
-              "danger"
             ]
           },
           "levers": [
@@ -2933,12 +2837,10 @@
             "--nk-dial-disc-opacity",
             "--nk-dial-disc-reach",
             "--nk-dial-red-dim",
-            "--nk-ease-move",
             "--nk-fill",
             "--nk-fill-track",
             "--nk-gauge",
             "--nk-gauge-fill-color",
-            "--nk-gauge-needle-color",
             "--nk-gauge-redline-color",
             "--nk-gauge-tick-color",
             "--nk-gauge-tick-major",
@@ -2950,14 +2852,9 @@
             "--nk-plate-bg",
             "--nk-time-fast"
           ],
-          "hooks": [
-            "useLinearRun"
-          ]
+          "hooks": []
         }
-      },
-      "registryDependencies": [
-        "https://nuikit.vercel.app/r/fill.json"
-      ]
+      }
     },
     {
       "name": "empty-state",

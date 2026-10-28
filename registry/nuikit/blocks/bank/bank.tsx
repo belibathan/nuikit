@@ -222,7 +222,7 @@ function BankAccountPanel({
         </div>
       </PanelBody>
       <div className="nk-panel-header border-t border-b-0 py-2">
-        <span className="nk-caption">Recent</span>
+        <span className="nk-text-caption">Recent</span>
       </div>
       <PanelBody scroll className="max-h-[18rem]">
         {transactions.length ? (
@@ -351,7 +351,7 @@ function BankMoneyDialog({
           value={amount}
           onValueChange={(v) => setAmount(v.replace(/[^\d.]/g, ""))}
           error={amountError}
-          inputProps={{ inputMode: "numeric", className: "nk-num" }}
+          inputProps={{ inputMode: "numeric", className: "nk-text-num" }}
         />
         {action === "transfer" && (
           <TextField label="Send to" placeholder="Server ID or account number" value={to} onValueChange={setTo} error={toError} />

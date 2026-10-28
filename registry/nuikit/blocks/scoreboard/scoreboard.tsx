@@ -74,7 +74,7 @@ function Scoreboard({
           icon={<UsersIcon />}
           title={data.title || "Players"}
           actions={
-            <span className="nk-num text-(length:--nk-text-label) [font-weight:var(--nk-type-label-weight,500)]">
+            <span className="nk-text-num text-(length:--nk-text-label) [font-weight:var(--nk-type-label-weight,500)]">
               {players.length}
               {data.max ? <span className="text-muted-foreground"> / {data.max}</span> : null}
             </span>
@@ -107,7 +107,7 @@ function Scoreboard({
             )}
           </div>
         </PanelBody>
-        <PanelFooter className="nk-label">
+        <PanelFooter className="nk-text-label">
           <span className="flex-1">Ping</span>
           <span className="flex items-center gap-(--nk-space-2)">
             <Chip variant="dot" aria-hidden />
@@ -132,7 +132,7 @@ function ScoreboardRow({ player: p }: { player: ScoreboardPlayer }) {
   const level = pingLevel(p.ping)
   return (
     <div role="row" data-slot="scoreboard-row" data-you={p.you || undefined} className={cn("nk-row", p.you && "bg-accent text-accent-foreground")}>
-      <span role="cell" className="nk-num w-10 shrink-0 text-(length:--nk-text-label) text-muted-foreground">
+      <span role="cell" className="nk-text-num w-10 shrink-0 text-(length:--nk-text-label) text-muted-foreground">
         {p.id}
       </span>
       <span role="cell" className="flex min-w-0 flex-1 items-center gap-2 [font-weight:var(--nk-type-label-weight,500)]">
@@ -145,7 +145,7 @@ function ScoreboardRow({ player: p }: { player: ScoreboardPlayer }) {
       <span
         role="cell"
         className={cn(
-          "nk-num w-14 shrink-0 text-right text-(length:--nk-text-label)",
+          "nk-text-num w-14 shrink-0 text-right text-(length:--nk-text-label)",
           level === "good" && "text-muted-foreground",
           level === "fair" && "text-warning",
           level === "poor" && "text-destructive"

@@ -142,7 +142,7 @@ function Garage({
                   {FILTERS.map((f) => (
                     <TabsTrigger key={f.value} value={f.value}>
                       {f.label}
-                      {f.value !== "all" && <span className="nk-num text-muted-foreground">{count(f.value)}</span>}
+                      {f.value !== "all" && <span className="nk-text-num text-muted-foreground">{count(f.value)}</span>}
                     </TabsTrigger>
                   ))}
                 </TabsList>
@@ -173,7 +173,7 @@ function Garage({
               )}
             </div>
           </PanelBody>
-          <PanelFooter className="nk-label whitespace-nowrap">
+          <PanelFooter className="nk-text-label whitespace-nowrap">
             <Kbd>↑</Kbd>
             <Kbd>↓</Kbd>
             Pick

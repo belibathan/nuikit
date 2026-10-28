@@ -144,7 +144,7 @@ function PauseMenu({
             <div className="min-w-0">
               {/* the pause title: one of the screen's display moments (the identity's display face) */}
               <h1 className="nk-text-section truncate">{server.name || "Paused"}</h1>
-              {server.tagline ? <p className="nk-label truncate">{server.tagline}</p> : null}
+              {server.tagline ? <p className="nk-text-label truncate">{server.tagline}</p> : null}
             </div>
           </header>
 
@@ -175,7 +175,7 @@ function PauseMenu({
           <dl className="mt-auto flex flex-col gap-2">
             {list(data?.links).map((l) => (
               <div key={l.label} className="flex items-baseline justify-between gap-4">
-                <dt className="nk-caption">{l.label}</dt>
+                <dt className="nk-text-caption">{l.label}</dt>
                 <dd className="truncate text-(length:--nk-text-label) [font-weight:var(--nk-type-label-weight,500)]">{l.value}</dd>
               </div>
             ))}
@@ -239,8 +239,8 @@ function PausePlayerCard({ player, data }: { player: NuiPlayer; data: PauseMenuD
             <Stat size="sm" icon={<UsersIcon />} label="Players online" value={players ?? "—"} />
           )}
           <div className="flex items-center justify-between">
-            <span className="nk-caption">Server ID</span>
-            <span className="nk-num text-(length:--nk-text-label) [font-weight:var(--nk-type-label-weight,500)]">{data?.serverId ?? "—"}</span>
+            <span className="nk-text-caption">Server ID</span>
+            <span className="nk-text-num text-(length:--nk-text-label) [font-weight:var(--nk-type-label-weight,500)]">{data?.serverId ?? "—"}</span>
           </div>
         </div>
       }

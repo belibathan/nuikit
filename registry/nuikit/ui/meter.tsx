@@ -423,11 +423,11 @@ function Meter({
       >
         {(label !== undefined || valueText !== undefined || cancelKey) && (
           <div data-slot="meter-label-row" className="nk-slab-stack-row">
-            <span data-slot="meter-label" className="nk-caption min-w-0 truncate">
+            <span data-slot="meter-label" className="nk-text-caption min-w-0 truncate [color:inherit]!">
               {label}
             </span>
             {valueText !== undefined && (
-              <span data-slot="meter-value" className="nk-num">
+              <span data-slot="meter-value" className="nk-text-num">
                 {valueText}
               </span>
             )}
@@ -519,9 +519,9 @@ function Meter({
         <>
           <div className="flex min-w-0 items-center gap-(--nk-space-2)">
             {iconEl}
-            {label !== undefined && <span data-slot="meter-label" className="nk-caption min-w-0 flex-1 truncate">{label}</span>}
+            {label !== undefined && <span data-slot="meter-label" className="nk-text-caption min-w-0 flex-1 truncate">{label}</span>}
             {valueText !== undefined && (
-              <span data-slot="meter-value" className={cn("nk-num ml-auto shrink-0 text-(length:--nk-text-label) leading-4 [font-weight:var(--nk-type-label-weight)]", critical && "text-destructive")}>
+              <span data-slot="meter-value" className={cn("nk-text-num ml-auto shrink-0 text-(length:--nk-text-label) leading-4 [font-weight:var(--nk-type-label-weight)]", critical && "text-destructive")}>
                 {valueText}
               </span>
             )}

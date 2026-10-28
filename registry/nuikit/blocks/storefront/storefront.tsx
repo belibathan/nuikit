@@ -249,7 +249,7 @@ function Storefront({
           description={data.description}
           actions={
             <span className="flex items-center gap-3 text-(length:--nk-text-label)">
-              <span className={cn("nk-caption", data.open ? "text-foreground" : "text-destructive")}>{data.open ? "Open" : "Closed"}</span>
+              <span className={cn("nk-text-caption", data.open ? "text-foreground" : "text-destructive")}>{data.open ? "Open" : "Closed"}</span>
               {payments.map((p) => {
                 const Icon = PAYMENT[p].icon
                 return (
@@ -299,9 +299,9 @@ function Storefront({
               )}
             </PanelBody>
             <div data-slot="storefront-cart" className="flex min-h-0 flex-col border-l">
-              <p className="nk-caption flex items-center gap-(--nk-space-2) px-4 pt-3 pb-1 [&_svg]:size-3.5">
+              <p className="nk-text-caption flex items-center gap-(--nk-space-2) px-4 pt-3 pb-1 [&_svg]:size-3.5">
                 <ShoppingCartIcon /> Cart
-                {count > 0 && <span className="nk-num ml-auto text-foreground">{count}</span>}
+                {count > 0 && <span className="nk-text-num ml-auto text-foreground">{count}</span>}
               </p>
               <PanelBody scroll className="h-[21.5rem]">
                 {lines.length ? (

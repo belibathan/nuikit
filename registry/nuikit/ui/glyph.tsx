@@ -3,25 +3,24 @@ import * as React from "react"
 import { cn } from "@/lib/utils"
 
 /**
- * Glyph — the one key language (docs/design.md §3): keys, notice icons, tab marks, checked boxes, vital
+ * Glyph — the one key language (docs/design.md §6): keys, notice icons, tab marks, checked boxes, vital
  * chips, gears and telltales. A face (rim and top light) on a solid plate, the face slanted by
  * --nk-control-face-skew while the box stays upright. kit.css draws it on `data-slot="glyph"` (and on shadcn's Kbd,
- * which is the same tile); a theme only sets --nk-control-*. Graphite: today's keycap, no plate, no slant.
+ * which is the same glyph); a theme only sets --nk-control-* levers.
  *
  *   <Glyph>E</Glyph>
  *   <Glyph shape="square" size="md" tone="danger"><TriangleAlertIcon /></Glyph>
- *   <Glyph state="hold" level={0.6}>F</Glyph>
- *   <Glyph tag="Open door" tagOpen={near}>E</Glyph>
+ *   <Glyph tag="Open door" land>E</Glyph>
  *   <Kbd>Esc</Kbd>                       // Glyph size sm with data-slot="kbd"
  *
- * States (data-state): focus switches the rim; hold presses by --nk-control-plate-press and fills (`level`); confirm
- * turns the face white and pops; alert sets a danger rim and breathes; disabled is half opacity. `active`
- * (on, selected, checked) is the white face.
+ * States (data-state): focus switches the rim; hold presses by --nk-control-plate-press; confirm turns the face
+ * white and pops; alert sets a danger rim and breathes; disabled is half opacity. `active` (on, selected,
+ * checked) is the white face.
  *
- * Role: Keys, notice icons, tab marks, checked boxes, gears and telltales: one tile.
- * Anatomy: plate (::before) > face (::after: rim, light) > tile-fill (hold) > legend > tile-tag (the plate
- *   extending right)
- * Props: size, shape, state, active, level, tone, hue, tag, tagOpen, plate, land.
+ * Role: Keys, notice icons, tab marks, checked boxes, gears and telltales: one glyph.
+ * Anatomy: glyph (plate ::before, face ::after) > glyph-legend; with a tag: glyph-group > glyph + glyph-tag (the
+ *   plate extending right)
+ * Props: size, shape, state, active, tone, tag, land.
  * Rules: Rims switch state, they never tween. Hard drops only: the plate is an offset, never a blur. A theme
  *   sets --nk-control-* values, never selectors.
  */
@@ -36,17 +35,9 @@ type GlyphProps = Omit<React.ComponentProps<"span">, "children"> & {
   shape?: "key" | "square"
   state?: GlyphState
   active?: boolean
-  /** Hold progress, 0–1 (drawn while state is hold, or whenever set). */
-  level?: number
   tone?: "neutral" | "info" | "success" | "warning" | "danger"
-  /** A role (health, police, legendary…): colours the legend and rim. */
-  hue?: string
-  /** The plate extending right with a label ("Open door"). */
+  /** The plate extending right with a label ("Open door"); it reveals after the glyph lands. */
   tag?: React.ReactNode
-  /** Whether the tag is open (it reveals after the tile lands). Default true. */
-  tagOpen?: boolean
-  /** The HUD's dimmer plate. */
-  plate?: "default" | "dim"
   /** Land from --nk-gesture-land when mounted. */
   land?: boolean
   /** The data-slot: "glyph", or "kbd" for the Kbd alias. */
@@ -59,19 +50,13 @@ function Glyph({
   shape = "key",
   state,
   active,
-  level,
   tone,
-  hue,
   tag,
-  tagOpen = true,
-  plate,
   land,
   slot = "glyph",
-  style,
   children,
   ...props
 }: GlyphProps) {
-  const lv = level === undefined || !Number.isFinite(level) ? undefined : Math.max(0, Math.min(1, level))
   const legend = typeof children === "string" || typeof children === "number" ? <span data-slot="glyph-legend">{children}</span> : children
   const tile = (
     <span
@@ -81,21 +66,17 @@ function Glyph({
       data-state={state && state !== "rest" ? state : undefined}
       data-active={active || undefined}
       data-tone={tone && tone !== "neutral" ? tone : undefined}
-      data-hue={hue || undefined}
-      data-plate={plate === "dim" ? "dim" : undefined}
       data-land={land || undefined}
       data-tag={tag ? "" : undefined}
       className={cn(className)}
-      style={lv === undefined ? style : ({ "--level": String(lv), ...style } as React.CSSProperties)}
       {...props}
     >
       {legend}
-      {lv !== undefined && <span data-slot="glyph-fill" aria-hidden />}
     </span>
   )
   if (!tag) return tile
   return (
-    <span data-slot="glyph-group" data-open={tagOpen || undefined}>
+    <span data-slot="glyph-group" data-open>
       {tile}
       <span data-slot="glyph-tag">{tag}</span>
     </span>
@@ -123,4 +104,4 @@ function KbdGroup({ className, ...props }: React.ComponentProps<"span">) {
   return <span data-slot="kbd-group" className={cn("inline-flex items-center gap-(--nk-space-1)", className)} {...props} />
 }
 
-export { Glyph, Kbd, KbdGroup, type GlyphProps, type GlyphState }
+export { Glyph, Kbd, KbdGroup }

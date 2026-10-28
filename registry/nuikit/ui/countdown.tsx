@@ -19,18 +19,18 @@ import { useLinearRun } from "@/hooks/use-linear-run"
  * `duration` in ms and it runs on its own; `onComplete` fires from a timer (never an animation
  * event), so it still fires with motion off. Restart a run with a new `key`.
  *
- * The clock is the identity's display type in its numeric face (nk-display, --nk-type-num-family); the
- * label is a caption (nk-caption). The line drains on its own between updates: one linear
+ * The clock is the figure text style (nk-text-figure: the numeric face at display weight); the label is a
+ * caption (nk-text-caption). The line drains on its own between updates: one linear
  * compositor animation from the time left to zero, re-aimed whenever `seconds` changes, so a clock
  * Lua updates once a second still drains smoothly. With motion off it steps.
  *
  * Role: a wait that matters, read from across the screen (respawn, alarm, restart).
- * Anatomy: root > clock (display size, num face, role="timer") > label (caption) > line (a Fill that drains on
- *   useLinearRun, transform only).
- * Props: seconds, total, duration, onComplete, label, warnAt, warnTone, lineTone, hue, size, surface, line, format.
+ * Anatomy: countdown > countdown-clock (nk-text-figure, role="timer"), countdown-label (caption), countdown-line (a
+ *   Fill that drains on useLinearRun, transform only)
+ * Props: seconds, total, duration, onComplete, label, warnAt, warnTone, lineTone, size, line.
  * Level means: the line is the time left over the total, 1 at the start, 0 when it is done.
  * Rules: at or under warnAt the root is data-state="alert" (data-phase keeps running | warning | done) and the
- *   clock pulses; tones use the shared vocabulary (danger = destructive) through toneVars(), `hue` a role.
+ *   clock pulses; tones use the shared vocabulary (danger = destructive).
  */
 
 // The figure text style (a number that is the point: num voice, display weight, tabular, leading 1). The sizes
@@ -40,7 +40,7 @@ const countdownVariants = cva("nk-text-figure", {
     size: {
       /** A clock in a row or a slab: the HUD value size. */
       sm: "[--nk-text-figure:var(--nk-text-hud)]",
-      /** The display size (36px in Graphite): a number that is the point of a panel. */
+      /** The display size: a number that is the point of a panel. */
       default: "",
       /** The full-screen clock (death, loading): 3.5× display, at most 8rem (128px at 1080p). */
       hero: "[--nk-text-figure:min(8rem,calc(var(--nk-text-display)*3.5))]",
@@ -148,7 +148,7 @@ function countdownLineTone(
   warnTone: keyof typeof TONE = "destructive"
 ): CountdownLineTone {
   const has = (o: object, k: string) => Object.prototype.hasOwnProperty.call(o, k)
-  // danger is the shared name of destructive (1.5)
+  // danger is the shared name of destructive
   if (state === "warning") return has(TONE, warnTone) ? (warnTone === "danger" ? "destructive" : warnTone) : "destructive"
   if (lineTone === "danger") return "destructive"
   return has(LINE_FILL, lineTone) ? lineTone : "neutral"
@@ -165,10 +165,7 @@ function Countdown({
   warnAt,
   warnTone = "destructive",
   lineTone = "neutral",
-  surface = "theme",
   line,
-  hue,
-  format = formatCountdown,
   ...props
 }: Omit<React.ComponentProps<"div">, "children"> &
   VariantProps<typeof countdownVariants> & {
@@ -189,13 +186,8 @@ function Countdown({
      * `warnTone` takes over.
      */
     lineTone?: CountdownLineTone
-    /** theme: on a full-screen surface or a panel. game: straight on the world (HUD tokens). */
-    surface?: "theme" | "game"
     /** Draw the line (default: when there's a total, or when running on its own). */
     line?: boolean
-    /** A role (health, police…): the line in its colour until the warning (1.5). */
-    hue?: string
-    format?: (seconds: number) => React.ReactNode
   }) {
   const running = useRun(duration, onComplete)
   const timed = duration !== undefined && duration > 0
@@ -203,7 +195,6 @@ function Countdown({
   const whole = timed ? duration / 1000 : total
   const state = countdownState(seconds, warnAt)
   const showLine = (line ?? whole !== undefined) && !!whole && whole > 0
-  const game = surface === "game"
   const lineFill = countdownLineTone(state, lineTone, warnTone)
   const root = React.useRef<HTMLDivElement>(null)
   // Timed runs drain once over the whole duration (from mount); from Lua, from each new value. Motion: one
@@ -222,8 +213,7 @@ function Countdown({
       data-slot="countdown"
       data-state={state === "warning" ? "alert" : undefined}
       data-phase={state}
-      data-hue={hue || undefined}
-      className={cn("inline-flex flex-col items-center", game ? "nk-on-game" : "text-foreground", className)}
+      className={cn("inline-flex flex-col items-center text-foreground", className)}
       {...props}
     >
       <div
@@ -237,28 +227,26 @@ function Countdown({
           state === "done" && "opacity-40"
         )}
       >
-        {format(seconds)}
+        {formatCountdown(seconds)}
       </div>
       {label && (
-        <div data-slot="countdown-label" className={cn("nk-caption", size === "hero" ? "mt-4" : "mt-2")}>
+        <div data-slot="countdown-label" className={cn("nk-text-caption", size === "hero" ? "mt-4" : "mt-2")}>
           {label}
         </div>
       )}
       {showLine && (
-        // the line is a Fill: the meter's track and height, the tone's (or the hue's) colour, the meter glow
+        // the line is a Fill: the meter's height, the tone's colour, the meter glow
         <Fill
           data-slot="countdown-line"
           level={drain.from}
           tween={false}
-          // the warning colour beats a hue (data-tone), a hue beats the line's tone (the root's data-hue)
           tone={state === "warning" ? (lineFill === "warning" ? "warning" : "danger") : undefined}
           className={cn(
             "h-(--nk-fill-height) before:[box-shadow:var(--nk-meter-glow)]",
             size === "hero" ? "mt-6 w-[var(--nk-countdown-line-width-hero)]" : size === "sm" ? "mt-2 w-[var(--nk-countdown-line-width-sm)]" : "mt-3 w-[var(--nk-countdown-line-width)]",
-            game ? "nk-track" : "bg-foreground/15"
+            "bg-foreground/15"
           )}
-          // its own hue (the root's data-hue) until the warning; otherwise the line's tone, never an ancestor's hue
-          color={hue ? undefined : lineFill !== "neutral" ? LINE_FILL[lineFill as keyof typeof LINE_FILL] : "var(--foreground)"}
+          color={lineFill !== "neutral" ? LINE_FILL[lineFill as keyof typeof LINE_FILL] : "var(--foreground)"}
         />
       )}
     </div>
@@ -273,6 +261,5 @@ export {
   countdownState,
   countdownLineTone,
   countdownDrain,
-  type CountdownState,
   type CountdownLineTone,
 }

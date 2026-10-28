@@ -268,9 +268,9 @@ function Shop({
             </div>
           </PanelBody>
           <div data-slot="shop-cart" className="flex min-h-0 flex-col border-l">
-            <p className="nk-caption flex items-center gap-(--nk-space-2) px-4 pt-3 pb-1 [&_svg]:size-3.5">
+            <p className="nk-text-caption flex items-center gap-(--nk-space-2) px-4 pt-3 pb-1 [&_svg]:size-3.5">
               <ShoppingCartIcon /> Cart
-              {count > 0 && <span className="nk-num ml-auto text-foreground">{count}</span>}
+              {count > 0 && <span className="nk-text-num ml-auto text-foreground">{count}</span>}
             </p>
             <PanelBody scroll className="h-[21.5rem]">
               {lines.length ? (
