@@ -981,7 +981,6 @@
     --nk-control-face-confirm: var(--foreground);
     --nk-control-face-confirm-ink: var(--background);
     --nk-control-face-active: var(--nk-accent-paint);
-    --nk-control-face-hold: rgba(var(--foreground-rgb), 0.35);
     --nk-control-legend-font: var(--nk-type-scan-family);
     --nk-control-legend-weight: var(--nk-type-scan-weight);
     --nk-control-legend-pad: calc(var(--nk-type-scan-pad) / 2);
@@ -1177,7 +1176,6 @@
     --nk-selection-tabs-trigger-pad-x: var(--nk-gap-pad-x);
     /* component · chip */
     --nk-chip-height: var(--nk-height-chip);
-    --nk-chip-square-size: 3rem;
     --nk-chip-padding: calc(var(--nk-space-unit) * 2.5);
     --nk-chip-radius: var(--nk-radius-chip);
     --nk-chip-hud-radius: max(0.25rem, calc(var(--radius) - 0.125rem));
@@ -1191,7 +1189,6 @@
     --nk-chip-clip: var(--nk-line-clip-sm);
     --nk-chip-text-shadow: var(--nk-depth-text);
     --nk-chip-icon-size: 0.875rem;
-    --nk-chip-icon-size-square: 1.25rem;
     /* component · vital-chip */
     --nk-vital-chip-size: 2.125rem;
     --nk-vital-chip-size-sm: 1.625rem;
@@ -1199,9 +1196,6 @@
     --nk-vital-chip-icon-ratio: 0.52;
     --nk-vital-chip-label-size: 0.9375rem;
     --nk-vital-chip-label-gap: 1rem;
-    --nk-vital-chip-pop-overlap: 0.375rem;
-    --nk-vital-chip-pop-pad: 0.75rem;
-    --nk-vital-chip-pop-max-width: 12rem;
     --nk-vital-chip-line-width: 0.125rem;
     --nk-vital-chip-plate-drop: 0.25rem;
     --nk-vital-chip-plate-x: 0rem;
@@ -2888,7 +2882,7 @@ html[data-nk-backdrop="on"] * {
 @layer nk.kit {
   /* ── Glyph: shadcn's Kbd and the registry Glyph. Back to front: the plate (::before, offset by
      --nk-control-plate-x/y), the face (::after, slanted by --nk-control-face-skew while the box stays upright, carrying
-     the rim and the top light), a hold fill (glyph-fill, scaleX(--level)), the legend. By default the plate sits
+     the rim and the top light), the legend. By default the plate sits
      under the face (no offset) and nothing slants. */
   :is([data-slot="glyph"], [data-slot="kbd"]) {
     position: relative;
@@ -2949,7 +2943,7 @@ html[data-nk-backdrop="on"] * {
     line-height: 1;
     white-space: nowrap;
     user-select: none;
-    & > :not([data-slot="glyph-fill"]) {
+    & > * {
       transform: translate(var(--nk-control-x), var(--nk-control-y));
     }
     & svg {
@@ -2995,10 +2989,6 @@ html[data-nk-backdrop="on"] * {
   :is([data-slot="glyph"], [data-slot="kbd"]) > [data-slot="glyph-legend"] {
     transform: translate(calc(var(--nk-control-x) + var(--nk-control-legend-shift)), var(--nk-control-y));
   }
-  /* the HUD's dimmer plate */
-  [data-slot="glyph"][data-plate="dim"] {
-    --nk-control-now-plate: var(--nk-control-plate-dim);
-  }
   /* states. Rims switch, they never tween; the face moves with transform only. */
   :is([data-slot="glyph"], [data-slot="kbd"])[data-state="focus"] {
     --nk-control-now-rim: var(--nk-control-face-rim-focus);
@@ -3035,17 +3025,6 @@ html[data-nk-backdrop="on"] * {
   [data-slot="glyph"]:is([data-tone]:not([data-tone="neutral"]), [data-hue]):not([data-state="confirm"], [data-active]) {
     --nk-control-now-ink: var(--nk-control-tone);
     --nk-control-now-rim: var(--nk-control-tone);
-  }
-  /* hold: the face fills left to right */
-  [data-slot="glyph-fill"] {
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    border-radius: inherit;
-    pointer-events: none;
-    background-color: var(--nk-control-face-hold);
-    transform-origin: left center;
-    transform: translate(var(--nk-control-x), var(--nk-control-y)) skewX(var(--nk-control-face-skew)) scaleX(var(--level, 0));
   }
   /* tag: the plate extending right with a label, opening (a reveal on the compositor) after the Glyph lands */
   [data-slot="glyph-group"] {

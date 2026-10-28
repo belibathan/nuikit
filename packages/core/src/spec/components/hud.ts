@@ -6,7 +6,6 @@ export const chip: ComponentDef = {
   anatomy: ["icon", "count"],
   levers: {
     height: length(ref("height.chip"), "Height", { was: ["nk-chip-height"] }),
-    "square-size": length("3rem", "A square chip's box", { floor: true }),
     padding: length(css`calc(${ref("space.unit")} * 2.5)`, "Inline padding", { was: ["nk-chip-padding"] }),
     radius: length(ref("radius.chip"), "Radius", { was: ["nk-chip-radius"] }),
     "hud-radius": length(css`max(0.25rem, calc(${pal("radius")} - 0.125rem))`, "A square HUD chip's radius (hotbar, target eye)", { was: ["nk-hud-radius"] }),
@@ -20,7 +19,7 @@ export const chip: ComponentDef = {
     clip: string(ref("line.clip-sm"), "The chip's clip-path", { was: ["nk-chip-clip"] }),
     "text-shadow": shadow(ref("depth.text"), "Text drawn on the game", { was: ["nk-hud-text-shadow"] }),
   },
-  parts: { icon: { size: length("0.875rem", "A pill chip's icon", { floor: true }), "size-square": length("1.25rem", "A square chip's icon", { floor: true }) } },
+  parts: { icon: { size: length("0.875rem", "A pill chip's icon", { floor: true }) } },
   state: {
     tone: { type: "color", description: "A chip's tone", was: ["nk-chip-tone"] },
     "tone-rgb": { type: "string", description: "A chip's tone channels", was: ["nk-chip-tone-rgb"] },

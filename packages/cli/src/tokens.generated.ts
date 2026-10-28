@@ -2017,12 +2017,6 @@ export const GENERATED: { name: string; group: string; type: string; description
     "description": "The face of an active glyph (the mic while talking, N on the compass, a checked box)"
   },
   {
-    "name": "nk-control-face-hold",
-    "group": "kit",
-    "type": "color",
-    "description": "The hold fill over the face"
-  },
-  {
     "name": "nk-control-legend-font",
     "group": "kit",
     "type": "fontFamily",
@@ -3091,12 +3085,6 @@ export const GENERATED: { name: string; group: string; type: string; description
     "description": "Height"
   },
   {
-    "name": "nk-chip-square-size",
-    "group": "kit",
-    "type": "dimension",
-    "description": "A square chip's box"
-  },
-  {
     "name": "nk-chip-padding",
     "group": "kit",
     "type": "dimension",
@@ -3175,12 +3163,6 @@ export const GENERATED: { name: string; group: string; type: string; description
     "description": "A pill chip's icon"
   },
   {
-    "name": "nk-chip-icon-size-square",
-    "group": "kit",
-    "type": "dimension",
-    "description": "A square chip's icon"
-  },
-  {
     "name": "nk-vital-chip-size",
     "group": "kit",
     "type": "dimension",
@@ -3215,24 +3197,6 @@ export const GENERATED: { name: string; group: string; type: string; description
     "group": "kit",
     "type": "dimension",
     "description": "Between the face and the tag's text"
-  },
-  {
-    "name": "nk-vital-chip-pop-overlap",
-    "group": "kit",
-    "type": "dimension",
-    "description": "How far an open pop tucks behind the chip"
-  },
-  {
-    "name": "nk-vital-chip-pop-pad",
-    "group": "kit",
-    "type": "dimension",
-    "description": "An open pop's leading padding"
-  },
-  {
-    "name": "nk-vital-chip-pop-max-width",
-    "group": "kit",
-    "type": "dimension",
-    "description": "An open pop's width"
   },
   {
     "name": "nk-vital-chip-line-width",

@@ -4384,7 +4384,7 @@
     {
       "name": "chip",
       "title": "Chip",
-      "doc": "A short status on one line in two materials: panel (the chip height and radius, the label style; fill hair | tint | solid; tone, icon, the dot) and hud (the game surface, nk-chip: active, warning).",
+      "doc": "A short status on one line in two materials: panel (the chip height and radius, the label style; fill hair | tint | solid; tone, icon, the dot) and hud (the game surface, nk-chip or nk-hud: pill | square, active, warning).",
       "since": "unreleased",
       "status": "stable",
       "kind": "component",
@@ -4465,7 +4465,7 @@
     {
       "name": "vital-chip",
       "title": "Vital Chip",
-      "doc": "The HUD status chip as composable parts (Row, Root, Shape, Icon, Label, Letter): a Glyph face over a plate that slides out with the name and value, the level as a liquid in the face, white when active.",
+      "doc": "The HUD status chip as composable parts (Row, Root, Shape, Icon, Label, Pop, Letter): a Glyph face over a plate that slides out with the name and value, the level as a liquid in the face, white when active.",
       "since": "unreleased",
       "status": "stable",
       "kind": "component",

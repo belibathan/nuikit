@@ -2174,12 +2174,6 @@
           "description": "The face of an active glyph (the mic while talking, N on the compass, a checked box)",
           "$comment": "component · control.face.active"
         },
-        "nk-control-face-hold": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "The hold fill over the face",
-          "$comment": "component · control.face.hold"
-        },
         "nk-control-legend-font": {
           "type": "string",
           "description": "The legend's face",
@@ -3108,11 +3102,6 @@
           "description": "Height",
           "$comment": "component · chip.height"
         },
-        "nk-chip-square-size": {
-          "type": "string",
-          "description": "A square chip's box",
-          "$comment": "component · chip.square-size"
-        },
         "nk-chip-padding": {
           "type": "string",
           "description": "Inline padding",
@@ -3182,11 +3171,6 @@
           "description": "A pill chip's icon",
           "$comment": "component · chip.icon.size"
         },
-        "nk-chip-icon-size-square": {
-          "type": "string",
-          "description": "A square chip's icon",
-          "$comment": "component · chip.icon.size-square"
-        },
         "nk-vital-chip-size": {
           "type": "string",
           "description": "The chip's box",
@@ -3218,21 +3202,6 @@
           "type": "string",
           "description": "Between the face and the tag's text",
           "$comment": "component · vital-chip.label.gap"
-        },
-        "nk-vital-chip-pop-overlap": {
-          "type": "string",
-          "description": "How far an open pop tucks behind the chip",
-          "$comment": "component · vital-chip.pop.overlap"
-        },
-        "nk-vital-chip-pop-pad": {
-          "type": "string",
-          "description": "An open pop's leading padding",
-          "$comment": "component · vital-chip.pop.pad"
-        },
-        "nk-vital-chip-pop-max-width": {
-          "type": "string",
-          "description": "An open pop's width",
-          "$comment": "component · vital-chip.pop.max-width"
         },
         "nk-vital-chip-line-width": {
           "type": "string",

@@ -5,7 +5,6 @@ import { motionLevel, token, tokenMs } from "nuikit-core/motion"
 
 import { cn, nkLevel } from "@/lib/utils"
 import { Chip } from "@/components/ui/chip"
-import { NumberRoll } from "@/components/ui/text-roll"
 import { Glyph } from "@/components/ui/glyph"
 import { useCollapse } from "@/hooks/use-collapse"
 
@@ -27,8 +26,7 @@ import { useCollapse } from "@/hooks/use-collapse"
  * of the icon in the fill's ink); the plate slides out from behind the face with the name and the value; the wall
  * is the base, dropped by --nk-vital-chip-plate-drop. `active` (the mic while talking) lights the face. Its room in
  * a Row is measured once per open and FLIPped, never per frame. The plate slides away from the corner the row is
- * anchored to (an ancestor's data-corner). Pop: a flag out of the chip's side on a change ("Hunger +25"),
- * in line with the row, merged while it shows, gone after ~1.5 s.
+ * anchored to (an ancestor's data-corner).
  *
  * Theme levers choose the defaults: --nk-style-vital-icon (vital: the icon in the vital's colour; uniform: the
  * chip's ink), --nk-style-vital, --nk-style-vital-neighbours; display and neighbours props win over them.
@@ -37,7 +35,7 @@ import { useCollapse } from "@/hooks/use-collapse"
  * Role: One vital on the HUD: health, armor, hunger, thirst, stress, voice, radio.
  * Anatomy: vital-chip-row > vital-chip > vital-chip-shape: vital-chip-wall, vital-chip-track > vital-chip-plate,
  *   glyph (vital-chip-face) > vital-chip-level + vital-chip-icon, vital-chip-label > vital-chip-name; the row's
- *   +N is a hud Chip (vital-chip-more); vital-chip-pop beside the shape
+ *   +N is a hud Chip (vital-chip-more)
  * Props: value, tone, open, active, alert, display, neighbours.
  * Level means: the vital, 0-100 as 0-1.
  * Rules: data-hue carries the vital's role (health, armor...). display: pill (icon, name, value) | value |
@@ -423,73 +421,11 @@ function Label(_props: React.ComponentProps<"span">) {
   return null
 }
 
-type PopProps = {
-  /** the vital's name ("Hunger") */
-  label: string
-  /** when it pops: on every change (of at least `min`), only past a threshold, or never */
-  mode?: false | "change" | "threshold"
-  /** a change smaller than this doesn't pop (regeneration ticks) */
-  min?: number
-  /** true while the value is past its threshold (for mode 'threshold') */
-  critical?: boolean
-  /** how long it stays after the last change */
-  ms?: number
-}
-
-/**
- * When the value changes, a flag grows out of the chip's side with the vital's name and the signed change,
- * which rolls (NumberRoll) as further changes merge in; it closes `ms` after the last change. In line with
- * the row, so pops of vitals that change together sit side by side.
- */
-function Pop({ label, mode = "change", min = 3, critical = false, ms = 1500 }: PopProps) {
-  const { value } = useChip()
-  const prev = React.useRef(value)
-  const [sum, setSum] = React.useState<number | null>(null)
-  const timer = React.useRef<ReturnType<typeof setTimeout> | null>(null)
-  React.useEffect(() => {
-    const before = prev.current
-    prev.current = value
-    if (mode === false || value === undefined || before === undefined) return
-    const by = Math.round(value - before)
-    if (by === 0 || Math.abs(by) < min) return
-    if (mode === "threshold" && !critical) return
-    setSum((s) => (s ?? 0) + by)
-    if (timer.current) clearTimeout(timer.current)
-    timer.current = setTimeout(() => setSum(null), ms)
-  }, [value, mode, min, critical, ms])
-  React.useEffect(() => () => void (timer.current && clearTimeout(timer.current)), [])
-
-  const shown = sum !== null
-  // the last change stays written while the flag closes
-  const last = React.useRef(0)
-  if (sum !== null) last.current = sum
-  const total = sum ?? last.current
-  const up = total > 0
-  return (
-    <span
-      role="status"
-      data-slot="vital-chip-pop"
-      data-open={shown || undefined}
-      aria-hidden={!shown}
-      className={cn(
-        "nk-text-label pointer-events-none relative z-0 data-[open]:-ml-(--nk-vital-chip-pop-overlap) flex h-[calc(var(--nk-vital-chip-size)*0.8)] max-w-0 items-center gap-(--nk-space-2) self-center overflow-hidden rounded-r-(--nk-chip-radius) bg-(--nk-chip-bg) whitespace-nowrap text-(--nk-chip-fg) opacity-0",
-        "-translate-x-1 transition-[opacity,transform] duration-[calc(var(--nk-time-slow)*var(--nk-motion))] ease-(--nk-ease-enter) data-[open]:max-w-(--nk-vital-chip-pop-max-width) data-[open]:translate-x-0 data-[open]:pr-(--nk-space-3) data-[open]:pl-(--nk-vital-chip-pop-pad) data-[open]:opacity-100"
-      )}
-    >
-      <span>{label}</span>
-      <span className={cn("nk-text-num", up ? "text-(--vital,currentColor)" : "opacity-80")}>
-        {up ? "+" : "−"}
-        <NumberRoll value={Math.abs(total)} />
-      </span>
-    </span>
-  )
-}
-
 /** A letter on the face (a gear, a compass mark), in the scan voice. */
 function Letter({ className, ...props }: React.ComponentProps<"span">) {
   return <span data-slot="vital-chip-glyph" className={cn("nk-text-scan", className)} {...props} />
 }
 
-const VitalChip = { Root, Row, Shape, Icon, Label, Pop, Letter }
+const VitalChip = { Root, Row, Shape, Icon, Label, Letter }
 
 export { VitalChip }

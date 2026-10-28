@@ -11,7 +11,7 @@ import { toneVars } from "@/components/ui/fill"
  *   style, an --nk-icon-md icon; a hairline rim (fill hair), a tint or a solid. kit.css draws it on
  *   `data-slot="chip"`.
  * - `material="hud"`: on the game world (voice range, radio, a seatbelt warning). No panel, no border: the kit's
- *   dark game surface (nk-chip, or nk-hud for `shape="square"`), so it reads over any sky with any theme. `active` (talking, the selected slot)
+ *   dark game surface (nk-chip), so it reads over any sky with any theme. `active` (talking, the selected slot)
  *   is the theme's primary rising from the bottom; `state="warning"` (or tone danger) is destructive. Drawn on
  *   `data-slot="hud-chip"`.
  *
@@ -20,10 +20,9 @@ import { toneVars } from "@/components/ui/fill"
  *   <Chip variant="dot" tone="success" aria-label="Online" />
  *   <Chip material="hud" icon={<MicIcon />} active={talking}>Normal</Chip>
  *   <Chip material="hud" icon={<TriangleAlertIcon />} tone="danger">Seatbelt</Chip>
- *   <Chip material="hud" shape="square" icon={<PillIcon />}>3</Chip>
  *
  * Role: A tag, a status dot, a fact on the HUD: one chip.
- * Anatomy: chip (panel) > icon > label; hud-chip (hud, pill | square) > hud-chip-icon > label
+ * Anatomy: chip (panel) > icon > label; hud-chip (hud, pill) > hud-chip-icon > label
  * Props: material, tone, fill, icon, variant, shape, state, active, density, motion.
  * Rules: No pills on a panel: the chip radius, or the dot at the key radius; on the HUD the corners follow
  *   data-nk-shape. Colour means something: tone only (the HUD's warning is destructive, active is primary).
@@ -35,9 +34,6 @@ const chipVariants = cva("shrink-0 [&_svg]:pointer-events-none [&_svg]:shrink-0"
       shape: {
         /** icon + short text, --nk-height-chip tall. */
         pill: "nk-chip nk-text-num [&_svg:not([class*='size-'])]:size-(--nk-chip-icon-size)",
-        /** a square: icon over a short label (a hotbar slot). */
-        square:
-          "nk-hud nk-text-label inline-flex size-(--nk-chip-square-size) flex-col items-center justify-center gap-(--nk-space-1) [&_svg:not([class*='size-'])]:size-(--nk-chip-icon-size-square)",
       },
       state: {
         default: "[&_[data-slot=hud-chip-icon]]:opacity-75",

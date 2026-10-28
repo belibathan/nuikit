@@ -10,7 +10,7 @@ generated `@layer nk.base` block, and components read only levers. Four tiers, e
 - **semantic**: roles every component shares (the motion ladder, eases, plate, fill, accent, lines, depth).
 - **component** and **part**: `--nk-<component>-<prop>` and `--nk-<component>-<part>-<prop>`; parts are the component's anatomy, its `data-slot` names in render order. A component references only itself, a component it `inherits`, or the tiers above.
 
-**628 levers** (249 identity, 60 semantic, 319 component) · **35 components** · **34 state variables** (set by kit.css rules per state; not levers). Old names: `packages/core/spec/migration.json`, applied by `node packages/core/scripts/migrate-levers.mjs <path>`.
+**622 levers** (249 identity, 60 semantic, 313 component) · **35 components** · **34 state variables** (set by kit.css rules per state; not levers). Old names: `packages/core/spec/migration.json`, applied by `node packages/core/scripts/migrate-levers.mjs <path>`.
 
 ## The language: the core identity
 
@@ -90,13 +90,13 @@ the DOM, not the framework. Composites (meters, sheets, notices) are nuikit's ow
 | **zone** | Nine places and four edges; a zone stacks what it holds towards the screen centre | `item` | 1 |
 | **region** | A readable column inside a zone | `body` | 2 |
 | **grid** | A grid of cells (inventories, shops) | `cell` | 2 |
-| **control** | The Glyph: Kbd, notice icons, telltales, the primary button and the selection | `plate` → `wall` → `face` → `fill` → `legend` → `tag` → `group` → `primary` | 37 |
+| **control** | The Glyph: Kbd, notice icons, telltales, the primary button and the selection | `plate` → `wall` → `face` → `fill` → `legend` → `tag` → `group` → `primary` | 36 |
 | **panel** | Every floating surface: menus, inventories, dialogs (the nk-panel utility) | `header` → `icon` → `title` → `description` → `actions` → `body` → `footer` | 22 |
 | **row** | The list row (nk-row): generous padding, an icon column, two voices; lit on the control face | `icon` → `title` → `description` → `trail` → `bar` | 11 |
 | **list** | A list of selectable items (nk-list, MenuRowList): items a gap apart so a lit selection never touches its neighbour | `item` | 2 |
 | **selection** | The one sliding selection per list (nk-indicator, Selection) | `glyph` | 2 |
 | **text** | Rich text with inline keys | `key` | 1 |
-| **chip** | Always-on HUD chips and squares on the game (nk-chip, nk-hud) | `icon` → `count` | 16 |
+| **chip** | Always-on HUD chips and squares on the game (nk-chip, nk-hud) | `icon` → `count` | 14 |
 | **level** | How a level is drawn under style.level and style.hold (pips, the hold ring, the ink over a solid fill) | `pip` → `hold` → `fill` | 4 |
 | **dial** | The dial under gauges and rings: a disc, ticks, a segmented track | `disc` → `ticks` → `track` → `segments` → `segment` → `value` → `needle` → `center` | 1 |
 | **slab** | Transient feedback on the game: item, prompt, progress (nk-slab*) | `icon` → `delta` → `key` → `stack` → `line` | 26 |
@@ -720,7 +720,6 @@ The Glyph: Kbd, notice icons, telltales, the primary button and the selection. A
 | `--nk-control-face-confirm` | color | `var(--foreground)` |  | The face when confirmed |
 | `--nk-control-face-confirm-ink` | color | `var(--background)` |  | The legend when confirmed |
 | `--nk-control-face-active` | paint | `var(--nk-accent-paint)` |  | The face of an active glyph (the mic while talking, N on the compass, a checked box) |
-| `--nk-control-face-hold` | color | `rgba(var(--foreground-rgb), 0.35)` |  | The hold fill over the face |
 | `--nk-control-legend-font` | font | `var(--nk-type-scan-family)` |  | The legend's face |
 | `--nk-control-legend-weight` | number | `var(--nk-type-scan-weight)` | 100–900 | The legend's weight |
 | `--nk-control-legend-pad` | length | `calc(var(--nk-type-scan-pad) / 2)` |  | The italic overhang split to both sides |
@@ -1018,7 +1017,6 @@ Always-on HUD chips and squares on the game (nk-chip, nk-hud). Anatomy: `icon` �
 | Lever | Type | Default | Range / values | What it moves |
 |---|---|---|---|---|
 | `--nk-chip-height` | length | `var(--nk-height-chip)` |  | Height |
-| `--nk-chip-square-size` | length | `3rem` |  | A square chip's box |
 | `--nk-chip-padding` | length | `calc(var(--nk-space-unit) * 2.5)` |  | Inline padding |
 | `--nk-chip-radius` | length | `var(--nk-radius-chip)` |  | Radius |
 | `--nk-chip-hud-radius` | length | `max(0.25rem, calc(var(--radius) - 0.125rem))` |  | A square HUD chip's radius (hotbar, target eye) |
@@ -1032,13 +1030,12 @@ Always-on HUD chips and squares on the game (nk-chip, nk-hud). Anatomy: `icon` �
 | `--nk-chip-clip` | string | `var(--nk-line-clip-sm)` |  | The chip's clip-path |
 | `--nk-chip-text-shadow` | shadow | `var(--nk-depth-text)` |  | Text drawn on the game |
 | `--nk-chip-icon-size` | length | `0.875rem` |  | A pill chip's icon |
-| `--nk-chip-icon-size-square` | length | `1.25rem` |  | A square chip's icon |
 
 State: `--nk-chip-tone`, `--nk-chip-tone-rgb`.
 
 ### vital-chip
 
-One vital: a Glyph, its level, its icon, and the tag that slides out from behind it. Anatomy: `row` → `shape` → `plate` → `wall` → `face` → `track` → `level` → `liquid` → `line` → `activefill` → `lit` → `icon` → `icon-ink` → `glyph` → `label` → `name` → `pop`. Inherits: `control`.
+One vital: a Glyph, its level, its icon, and the tag that slides out from behind it. Anatomy: `row` → `shape` → `plate` → `wall` → `face` → `track` → `level` → `liquid` → `line` → `activefill` → `lit` → `icon` → `icon-ink` → `glyph` → `label` → `name`. Inherits: `control`.
 
 | Lever | Type | Default | Range / values | What it moves |
 |---|---|---|---|---|
@@ -1048,9 +1045,6 @@ One vital: a Glyph, its level, its icon, and the tag that slides out from behind
 | `--nk-vital-chip-icon-ratio` | number | `0.52` | 0.2–1 | The icon as a fraction of the face |
 | `--nk-vital-chip-label-size` | length | `0.9375rem` |  | The tag's text size |
 | `--nk-vital-chip-label-gap` | length | `1rem` |  | Between the face and the tag's text |
-| `--nk-vital-chip-pop-overlap` | length | `0.375rem` |  | How far an open pop tucks behind the chip |
-| `--nk-vital-chip-pop-pad` | length | `0.75rem` |  | An open pop's leading padding |
-| `--nk-vital-chip-pop-max-width` | length | `12rem` |  | An open pop's width |
 | `--nk-vital-chip-line-width` | length | `0.125rem` |  | The level line's thickness |
 | `--nk-vital-chip-plate-drop` | length | `0.25rem` |  | How far the wall drops straight below the face |
 | `--nk-vital-chip-plate-x` | length | `0rem` |  | The wall's sideways step |

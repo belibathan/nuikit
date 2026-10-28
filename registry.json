@@ -814,7 +814,7 @@
       "name": "vital-chip",
       "type": "registry:ui",
       "title": "Vital Chip",
-      "description": "The HUD status chip as composable parts (Row, Root, Shape, Icon, Label, Pop, Letter): a Glyph face over a plate that slides out with the name and value, the level as a liquid in the face, white when active. display pill | value | icon | expand, neighbours push | collapse | overlay; a Row opens expand chips through the collapse engine, at most three, then +N. Themed by --nk-style-vital*, --nk-control-* and the --nk-vital-chip-* levers.",
+      "description": "The HUD status chip as composable parts (Row, Root, Shape, Icon, Label, Letter): a Glyph face over a plate that slides out with the name and value, the level as a liquid in the face, white when active. display pill | value | icon | expand, neighbours push | collapse | overlay; a Row opens expand chips through the collapse engine, at most three, then +N. Themed by --nk-style-vital*, --nk-control-* and the --nk-vital-chip-* levers.",
       "files": [
         {
           "path": "registry/nuikit/ui/vital-chip.tsx",
@@ -827,7 +827,6 @@
       "registryDependencies": [
         "https://nuikit.vercel.app/r/chip.json",
         "https://nuikit.vercel.app/r/glyph.json",
-        "https://nuikit.vercel.app/r/text-roll.json",
         "https://nuikit.vercel.app/r/use-collapse.json"
       ],
       "meta": {
@@ -842,8 +841,7 @@
             "vital-chip > vital-chip-shape",
             "vital-chip-wall, vital-chip-track > vital-chip-plate",
             "glyph (vital-chip-face) > vital-chip-level, vital-chip-icon",
-            "vital-chip-label > vital-chip-name, value",
-            "vital-chip-pop (a flag out of the side on a change)"
+            "vital-chip-label > vital-chip-name, value"
           ],
           "props": [
             "value",

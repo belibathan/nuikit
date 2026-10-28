@@ -4,7 +4,7 @@ import { length, number, type ComponentDef } from "../lang";
 export const vitalChip: ComponentDef = {
   description: "One vital: a Glyph, its level, its icon, and the tag that slides out from behind it",
   inherits: ["control"],
-  anatomy: ["row", "shape", "plate", "wall", "face", "track", "level", "liquid", "line", "activefill", "lit", "icon", "icon-ink", "glyph", "label", "name", "pop"],
+  anatomy: ["row", "shape", "plate", "wall", "face", "track", "level", "liquid", "line", "activefill", "lit", "icon", "icon-ink", "glyph", "label", "name"],
   levers: {
     size: length("2.125rem", "The chip's box", { floor: true, was: ["vital-size"] }),
     "size-sm": length("1.625rem", "A small chip's box (telltales, compass marks)", { floor: true, was: ["nk-vital-sm"] }),
@@ -15,11 +15,6 @@ export const vitalChip: ComponentDef = {
     label: {
       size: length("0.9375rem", "The tag's text size", { floor: true, was: ["nk-vital-label-size"] }),
       gap: length("1rem", "Between the face and the tag's text", { floor: true, was: ["nk-vital-tag-gap"] }),
-    },
-    pop: {
-      overlap: length("0.375rem", "How far an open pop tucks behind the chip", { floor: true }),
-      pad: length("0.75rem", "An open pop's leading padding", { floor: true }),
-      "max-width": length("12rem", "An open pop's width", { floor: true }),
     },
     line: { width: length("0.125rem", "The level line's thickness", { floor: true, was: ["nk-vital-line"] }) },
     plate: {

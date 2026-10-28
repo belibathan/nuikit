@@ -3948,16 +3948,6 @@ var NuikitTheme = (() => {
       "part": "face"
     },
     {
-      "name": "nk-control-face-hold",
-      "path": "control.face.hold",
-      "tier": "component",
-      "scope": "control",
-      "type": "color",
-      "default": "rgba(var(--foreground-rgb), 0.35)",
-      "description": "The hold fill over the face",
-      "part": "face"
-    },
-    {
       "name": "nk-control-legend-font",
       "path": "control.legend.font",
       "tier": "component",
@@ -5753,15 +5743,6 @@ var NuikitTheme = (() => {
       "description": "Height"
     },
     {
-      "name": "nk-chip-square-size",
-      "path": "chip.square-size",
-      "tier": "component",
-      "scope": "chip",
-      "type": "length",
-      "default": "3rem",
-      "description": "A square chip's box"
-    },
-    {
       "name": "nk-chip-padding",
       "path": "chip.padding",
       "tier": "component",
@@ -5880,16 +5861,6 @@ var NuikitTheme = (() => {
       "part": "icon"
     },
     {
-      "name": "nk-chip-icon-size-square",
-      "path": "chip.icon.size-square",
-      "tier": "component",
-      "scope": "chip",
-      "type": "length",
-      "default": "1.25rem",
-      "description": "A square chip's icon",
-      "part": "icon"
-    },
-    {
       "name": "nk-vital-chip-size",
       "path": "vital-chip.size",
       "tier": "component",
@@ -5954,36 +5925,6 @@ var NuikitTheme = (() => {
       "default": "1rem",
       "description": "Between the face and the tag's text",
       "part": "label"
-    },
-    {
-      "name": "nk-vital-chip-pop-overlap",
-      "path": "vital-chip.pop.overlap",
-      "tier": "component",
-      "scope": "vital-chip",
-      "type": "length",
-      "default": "0.375rem",
-      "description": "How far an open pop tucks behind the chip",
-      "part": "pop"
-    },
-    {
-      "name": "nk-vital-chip-pop-pad",
-      "path": "vital-chip.pop.pad",
-      "tier": "component",
-      "scope": "vital-chip",
-      "type": "length",
-      "default": "0.75rem",
-      "description": "An open pop's leading padding",
-      "part": "pop"
-    },
-    {
-      "name": "nk-vital-chip-pop-max-width",
-      "path": "vital-chip.pop.max-width",
-      "tier": "component",
-      "scope": "vital-chip",
-      "type": "length",
-      "default": "12rem",
-      "description": "An open pop's width",
-      "part": "pop"
     },
     {
       "name": "nk-vital-chip-line-width",

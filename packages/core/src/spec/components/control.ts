@@ -35,7 +35,6 @@ export const control: ComponentDef = {
       confirm: color(pal("foreground"), "The face when confirmed", { was: ["nk-control-confirm-face"] }),
       "confirm-ink": color(pal("background"), "The legend when confirmed", { was: ["nk-control-confirm-ink"] }),
       active: paint(ref("accent.paint"), "The face of an active glyph (the mic while talking, N on the compass, a checked box)", { was: ["nk-control-active"] }),
-      hold: color(alpha("foreground", 0.35), "The hold fill over the face", { was: ["nk-control-hold"] }),
     },
     legend: {
       font: font(ref("type.scan.family"), "The legend's face", { was: ["nk-key-font"] }),
