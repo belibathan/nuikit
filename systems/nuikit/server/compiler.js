@@ -1726,8 +1726,8 @@ var NuikitTheme = (() => {
       "tier": "identity",
       "scope": "icon",
       "type": "number",
-      "default": "2",
-      "description": "Stroke width",
+      "default": "1.5",
+      "description": "Stroke width of every icon (Hugeicons draw at 1.5)",
       "range": [
         0.5,
         4

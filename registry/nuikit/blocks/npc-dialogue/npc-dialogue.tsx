@@ -1,7 +1,7 @@
 import * as React from "react"
 import { fetchNui, Surface, useSurface } from "nuikit-core/react"
 import { motionLevel } from "nuikit-core/motion"
-import { MessagesSquareIcon } from "lucide-react"
+import { MessagesSquareIcon } from "@/components/ui/icons"
 
 import { cn } from "@/lib/utils"
 import { MenuRow, MenuRowList } from "@/components/ui/menu-row"

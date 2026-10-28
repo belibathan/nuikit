@@ -1,6 +1,6 @@
 import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
-import { ArrowDownRightIcon, ArrowUpRightIcon } from "lucide-react"
+import { ArrowDownRightIcon, ArrowUpRightIcon } from "@/components/ui/icons"
 
 import { cn } from "@/lib/utils"
 import { Text, textVariants, type TextSize } from "@/components/ui/text"

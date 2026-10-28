@@ -1,4 +1,4 @@
-import { ArrowRight, Delete, Lock, MicOff, Radio as RadioIcon, Settings, Star, Unplug } from "lucide-react";
+import { ArrowRight, Delete, Lock, MicOff, Radio as RadioIcon, Settings, Star, Unplug } from "@/components/ui/icons";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Chip } from "@/components/ui/chip";

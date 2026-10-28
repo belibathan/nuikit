@@ -11,7 +11,7 @@
 // `hud:style`). Icon + level + the critical state, never colour alone; the value is in aria-valuenow.
 import { onNui } from "nuikit-core";
 import { fetchNui, Stagger, usePlayer, useSlots, useStaggerItem, type NuiPlayer, type Slot } from "nuikit-core/react";
-import { BriefcaseIcon, CircleIcon, MicIcon, PhoneIcon, RadioIcon, ShieldIcon, type LucideIcon } from "lucide-react";
+import { BriefcaseIcon, CircleIcon, MicIcon, PhoneIcon, RadioIcon, ShieldIcon, type IconComponent } from "@/components/ui/icons";
 import { memo, useCallback, useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { motionLevel } from "nuikit-core/motion";
 import { flipRow, FOLD_EASE, FOLD_MS, FOLDED, inlineDelay } from "./flip";
@@ -245,7 +245,7 @@ function useExpanded(value: number | string | undefined, linger: number) {
 const VOICE_RESOURCE = "nuikit_voice";
 
 /** A slot's `icon` name → the glyph; an unknown name draws a dot. */
-const SLOT_ICONS: Record<string, LucideIcon> = { mic: MicIcon, radio: RadioIcon, phone: PhoneIcon, briefcase: BriefcaseIcon, job: BriefcaseIcon, shield: ShieldIcon };
+const SLOT_ICONS: Record<string, IconComponent> = { mic: MicIcon, radio: RadioIcon, phone: PhoneIcon, briefcase: BriefcaseIcon, job: BriefcaseIcon, shield: ShieldIcon };
 
 /**
  * A chip another resource put in the vitals cluster (NUI.slot('vitals', …)): drawn and folded by the

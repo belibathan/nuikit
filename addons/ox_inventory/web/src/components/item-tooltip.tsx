@@ -1,4 +1,4 @@
-import { CheckIcon, XIcon } from "lucide-react";
+import { CheckIcon, XIcon } from "@/components/ui/icons";
 import { useLayoutEffect, useRef, type ReactNode } from "react";
 import Markdown from "react-markdown";
 import { ItemImage, Meter } from "@/components/item-image";

@@ -2,7 +2,7 @@
 
 import * as React from "react"
 
-import { ChevronLeftIcon, XIcon } from "lucide-react"
+import { ChevronLeftIcon, XIcon } from "@/components/ui/icons"
 
 import { Stagger } from "nuikit-core/react"
 

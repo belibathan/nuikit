@@ -1022,7 +1022,7 @@
         "nk-icon-stroke": {
           "type": "string",
           "pattern": "^-?\\d+(\\.\\d+)?$",
-          "description": "Stroke width",
+          "description": "Stroke width of every icon (Hugeicons draw at 1.5)",
           "$comment": "identity · icon.stroke"
         },
         "nk-text-base": {

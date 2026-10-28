@@ -1,6 +1,6 @@
 import * as React from "react"
 import { applyTheme } from "nuikit-core"
-import { CheckIcon, Volume2Icon, VolumeXIcon } from "lucide-react"
+import { CheckIcon, Volume2Icon, VolumeXIcon } from "@/components/ui/icons"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"

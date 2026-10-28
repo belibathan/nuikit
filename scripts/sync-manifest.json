@@ -8,6 +8,7 @@
       "web/src/components/ui/chip.tsx",
       "web/src/components/ui/fill.tsx",
       "web/src/components/ui/glyph.tsx",
+      "web/src/components/ui/icons.tsx",
       "web/src/components/ui/kbd.tsx",
       "web/src/components/ui/key-prompt.tsx",
       "web/src/components/ui/menu-row.tsx",

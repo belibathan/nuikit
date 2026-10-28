@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { getImageConfig, loadImageConfig, onImageConfig, resolveImage, type ImageConfig, type ImageKey, type ImageKind } from "nuikit-core"
-import { ImageIcon } from "lucide-react"
+import { ImageIcon } from "@/components/ui/icons"
 
 import { cn } from "@/lib/utils"
 

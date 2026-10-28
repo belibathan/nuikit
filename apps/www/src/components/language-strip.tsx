@@ -1,4 +1,4 @@
-import { CarIcon, HeartPulseIcon, MicIcon, WrenchIcon } from "lucide-react";
+import { CarIcon, HeartPulseIcon, MicIcon, WrenchIcon } from "@/components/ui/icons";
 import { useLayoutEffect, useMemo, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Chip } from "@/components/ui/chip";

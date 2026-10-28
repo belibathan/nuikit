@@ -11,8 +11,8 @@ import {
   SnowflakeIcon,
   UsersIcon,
   WalletIcon,
-  type LucideIcon,
-} from "lucide-react"
+  type IconComponent,
+} from "@/components/ui/icons"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -60,13 +60,13 @@ function BankSurface() {
   )
 }
 
-const ACCOUNT_ICON: Record<BankAccountKind, LucideIcon> = {
+const ACCOUNT_ICON: Record<BankAccountKind, IconComponent> = {
   personal: WalletIcon,
   savings: PiggyBankIcon,
   shared: UsersIcon,
   business: BriefcaseIcon,
 }
-const TX_ICON: Record<BankTransactionKind, LucideIcon> = {
+const TX_ICON: Record<BankTransactionKind, IconComponent> = {
   deposit: ArrowDownLeftIcon,
   withdraw: ArrowUpRightIcon,
   transfer: ArrowLeftRightIcon,

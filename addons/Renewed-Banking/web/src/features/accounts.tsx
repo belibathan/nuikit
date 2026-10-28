@@ -1,4 +1,4 @@
-import { Building2, Search, Snowflake, UserRound } from "lucide-react";
+import { Building2, Search, Snowflake, UserRound } from "@/components/ui/icons";
 import { Fragment, useMemo, useState } from "react";
 import { EmptyState } from "@/components/ui/empty-state";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";

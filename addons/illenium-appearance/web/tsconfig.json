@@ -56,6 +56,10 @@
       "nuikit-core/*": [
         "./node_modules/nuikit-core/dist/*.d.ts"
       ],
+      "lucide-react": [
+        "./src/components/ui/icons.tsx",
+        "../../../registry/nuikit/ui/icons.tsx"
+      ],
       "*": [
         "./node_modules/*"
       ]

@@ -4,12 +4,12 @@ import {
   CarIcon,
   FileTextIcon,
   LayoutDashboardIcon,
-  type LucideIcon,
+  type IconComponent,
   MonitorIcon,
   PlusIcon,
   SearchIcon,
   UsersIcon,
-} from "lucide-react"
+} from "@/components/ui/icons"
 
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
@@ -77,7 +77,7 @@ function MdtSurface() {
 
 type MdtSection = "dashboard" | "people" | "vehicles" | "reports"
 
-const NAV: { id: MdtSection; label: string; icon: LucideIcon }[] = [
+const NAV: { id: MdtSection; label: string; icon: IconComponent }[] = [
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboardIcon },
   { id: "people", label: "People", icon: UsersIcon },
   { id: "vehicles", label: "Vehicles", icon: CarIcon },

@@ -13,7 +13,7 @@ import {
   PlusIcon,
   SearchIcon,
   XIcon,
-} from "lucide-react";
+} from "@/components/ui/icons";
 import { memo, useEffect, useMemo, useRef, useState, type ReactNode, type RefObject } from "react";
 import type { MapBlip, MapInfo, MapPick, PauseData, PausePlace } from "../nui";
 import { Blips, type BlipChoice } from "./blips";

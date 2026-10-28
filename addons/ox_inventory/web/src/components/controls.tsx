@@ -1,4 +1,4 @@
-import { HandIcon, SparklesIcon } from "lucide-react";
+import { HandIcon, SparklesIcon } from "@/components/ui/icons";
 import type { ReactNode } from "react";
 import { ActionBar, ActionBarItem, ActionBarSep } from "@/components/ui/action-bar";
 import { MenuRow } from "@/components/ui/menu-row";

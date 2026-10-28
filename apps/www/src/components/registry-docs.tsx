@@ -18,7 +18,7 @@ import {
   UtensilsIcon,
   WalletIcon,
   WrenchIcon,
-} from "lucide-react";
+} from "@/components/ui/icons";
 import { emit } from "nuikit-core/react";
 import { useEffect, useState, type ReactNode } from "react";
 import { ActionBar, ActionBarItem, ActionBarSep } from "@/components/ui/action-bar";

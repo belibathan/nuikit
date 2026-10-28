@@ -15,8 +15,8 @@ import {
   Volume1,
   Volume2,
   VolumeX,
-  type LucideIcon,
-} from "lucide-react";
+  type IconComponent,
+} from "@/components/ui/icons";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Panel } from "@/components/ui/panel";
@@ -67,7 +67,7 @@ function StatusBar({ message }: { message: string | null }) {
   );
 }
 
-function NavKey({ icon: Icon, label, tab, disabled }: { icon: LucideIcon; label: string; tab: Tab; disabled?: boolean }) {
+function NavKey({ icon: Icon, label, tab, disabled }: { icon: IconComponent; label: string; tab: Tab; disabled?: boolean }) {
   const { tab: current, setTab } = useCtx();
   return (
     <TabsTrigger

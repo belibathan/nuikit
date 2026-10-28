@@ -1,6 +1,6 @@
 import * as React from "react"
 import { Surface, useFollow } from "nuikit-core/react"
-import { CheckIcon, HeartPulseIcon } from "lucide-react"
+import { CheckIcon, HeartPulseIcon } from "@/components/ui/icons"
 
 import { cn } from "@/lib/utils"
 import { Countdown, formatCountdown } from "@/components/ui/countdown"

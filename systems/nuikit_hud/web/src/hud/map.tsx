@@ -9,7 +9,7 @@
 // React render. The marks and ticks sit in one dial layer that rotates by -deg; each mark counter-rotates
 // by +deg (CSS reads --deg), so they stay upright. No transitions on those transforms.
 import { follow } from "nuikit-core/react";
-import { FlagIcon, NavigationIcon } from "lucide-react";
+import { FlagIcon, NavigationIcon } from "@/components/ui/icons";
 import { useEffect, useRef, type ReactNode, type CSSProperties } from "react";
 import type { HudLocation, MinimapFrame } from "../nui";
 import { formatDistance } from "./location";

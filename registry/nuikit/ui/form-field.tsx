@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
-import { CalendarIcon, ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon, ChevronUpIcon, ClockIcon, EyeIcon, EyeOffIcon, MinusIcon, PlusIcon, RotateCcwIcon, XIcon } from "lucide-react"
+import { CalendarIcon, ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon, ChevronUpIcon, ClockIcon, EyeIcon, EyeOffIcon, MinusIcon, PlusIcon, RotateCcwIcon, XIcon } from "@/components/ui/icons"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"

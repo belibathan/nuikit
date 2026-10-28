@@ -1,7 +1,7 @@
 import { MenuRow, MenuRowList } from "@/components/ui/menu-row";
 import { EmptyState } from "@/components/ui/empty-state";
 import { fetchNui, type NuiPlayer } from "nuikit-core/react";
-import { LandmarkIcon, MoveHorizontalIcon, UsersIcon, WalletIcon } from "lucide-react";
+import { LandmarkIcon, MoveHorizontalIcon, UsersIcon, WalletIcon } from "@/components/ui/icons";
 import { useEffect, useRef, type ReactNode } from "react";
 import type { PauseData } from "../nui";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";

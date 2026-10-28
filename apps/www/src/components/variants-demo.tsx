@@ -1,4 +1,4 @@
-import { CarIcon, CupSodaIcon, MicIcon, RadioIcon } from "lucide-react";
+import { CarIcon, CupSodaIcon, MicIcon, RadioIcon } from "@/components/ui/icons";
 import { useState } from "react";
 import { Chip } from "@/components/ui/chip";
 import { KeyPrompt } from "@/components/ui/key-prompt";

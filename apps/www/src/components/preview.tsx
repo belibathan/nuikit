@@ -1,5 +1,5 @@
 import { useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import { ChevronDownIcon } from "lucide-react";
+import { ChevronDownIcon } from "@/components/ui/icons";
 import { CodeBlock, Command } from "@/components/code";
 import { stageBackground } from "@/components/scene";
 import { SITE } from "@/components/site";

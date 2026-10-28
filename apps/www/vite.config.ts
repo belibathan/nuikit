@@ -25,8 +25,10 @@ export default defineConfig({
       { find: new RegExp(`^@/hooks/(${hooks.join("|")})$`), replacement: `${registry}/hooks/$1.ts` },
       // The registry's blocks, for /blocks (their own imports resolve through the lines above).
       { find: /^@\/blocks\/(.*)$/, replacement: `${registry}/blocks/$1` },
+      // the kit's one icon set (Hugeicons): stock shadcn's lucide-react imports draw it too
+      { find: /^lucide-react$/, replacement: `${registry}/ui/icons.tsx` },
       { find: "@", replacement: path.resolve(__dirname, "src") },
     ],
-    dedupe: ["react", "react-dom", "nuikit-core", "sonner", "radix-ui", "next-themes", "class-variance-authority", "lucide-react", "clsx", "tailwind-merge"],
+    dedupe: ["react", "react-dom", "nuikit-core", "sonner", "radix-ui", "next-themes", "class-variance-authority", "@hugeicons/react", "@hugeicons/core-free-icons", "clsx", "tailwind-merge"],
   },
 });

@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
-import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react"
+import { ChevronLeftIcon, ChevronRightIcon } from "@/components/ui/icons"
 import { tokenMs } from "nuikit-core/motion"
 
 import { cn } from "@/lib/utils"

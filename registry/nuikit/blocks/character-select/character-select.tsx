@@ -7,7 +7,7 @@ import {
   HospitalIcon,
   HotelIcon,
   HouseIcon,
-  type LucideIcon,
+  type IconComponent,
   MapPinIcon,
   PalmtreeIcon,
   PlaneIcon,
@@ -16,7 +16,7 @@ import {
   TrainFrontIcon,
   Trash2Icon,
   UsersIcon,
-} from "lucide-react"
+} from "@/components/ui/icons"
 
 import { cn } from "@/lib/utils"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -67,7 +67,7 @@ function CharacterSelectSurface() {
   )
 }
 
-const SPAWN_ICONS: Record<SpawnIcon, LucideIcon> = {
+const SPAWN_ICONS: Record<SpawnIcon, IconComponent> = {
   last: HistoryIcon,
   house: HouseIcon,
   apartment: Building2Icon,

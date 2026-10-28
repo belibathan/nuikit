@@ -13,7 +13,7 @@ import {
   InfoIcon,
   KeyIcon,
   LockIcon,
-  type LucideIcon,
+  type IconComponent,
   PhoneIcon,
   SearchIcon,
   ShirtIcon,
@@ -21,7 +21,7 @@ import {
   UnlockIcon,
   UserIcon,
   WrenchIcon,
-} from "lucide-react"
+} from "@/components/ui/icons"
 
 import { cn } from "@/lib/utils"
 import { Chip } from "@/components/ui/chip"
@@ -64,7 +64,7 @@ function InteractionSurface() {
   )
 }
 
-const ICONS: Record<InteractionIcon, LucideIcon> = {
+const ICONS: Record<InteractionIcon, IconComponent> = {
   car: CarIcon,
   door: DoorOpenIcon,
   hand: HandIcon,

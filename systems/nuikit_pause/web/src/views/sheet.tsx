@@ -2,7 +2,7 @@
 // the top, left and bottom, the same model as the ox_lib context menu. It slides in once when the menu
 // opens; going to a sub-page (Map, Key bindings, Info, Help) or back swaps the column inside it with a
 // short fade instead of closing and reopening it. The rows of the first page rise in one after another.
-import { ChevronLeftIcon } from "lucide-react";
+import { ChevronLeftIcon } from "@/components/ui/icons";
 import { useSurfaceOpen } from "nuikit-core/react";
 import { useEffect, useRef, type CSSProperties, type ReactNode } from "react";
 import { Button } from "@/components/ui/button";

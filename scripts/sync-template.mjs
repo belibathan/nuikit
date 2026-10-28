@@ -99,6 +99,8 @@ function missingPackages(dir, components) {
   if (!fs.existsSync(pkgPath)) return [];
   const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf8"));
   const have = new Set([...Object.keys(pkg.dependencies ?? {}), ...Object.keys(pkg.devDependencies ?? {})]);
+  // stock shadcn's lucide-react resolves to the kit's icon set (Hugeicons): the UI needs that package instead
+  if (have.has("@hugeicons/react")) have.add("lucide-react");
   const missing = new Set();
   for (const c of components) for (const p of importsOf(c).packages) if (!have.has(p)) missing.add(`${p} (${c})`);
   return [...missing];
@@ -272,6 +274,8 @@ for (const t of targets) {
   // only the template receives copies; in-repo UIs resolve the sources (scripts/vite-web.mjs)
   const copies = t.dir === "packages/create-nuikit/template";
   if (copies) {
+    // the icon set travels with the components (stock shadcn's lucide-react resolves to it: the template's vite.config.ts)
+    if (need.components.length && !need.components.includes("icons")) need.components.push("icons");
     for (const c of need.components) copy(source(c), `web/src/components/ui/${c}.tsx`);
     for (const h of need.hooks) copy(hookSource(h), `web/src/hooks/${h}.ts`);
     if (need.components.length) copy(UTILS, "web/src/lib/utils.ts");

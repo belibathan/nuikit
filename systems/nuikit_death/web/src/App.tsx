@@ -1,5 +1,5 @@
 import { Surface, useFollow } from "nuikit-core/react";
-import { CheckIcon, HeartCrackIcon, HeartPulseIcon } from "lucide-react";
+import { CheckIcon, HeartCrackIcon, HeartPulseIcon } from "@/components/ui/icons";
 import { useRef, type CSSProperties, type ReactNode } from "react";
 import type { DeathData } from "./nui";
 import { cn } from "@/lib/utils";

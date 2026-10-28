@@ -1,4 +1,4 @@
-import { ChevronDownIcon } from "lucide-react";
+import { ChevronDownIcon } from "@/components/ui/icons";
 import { useEffect, useMemo, useRef, useState, type ComponentProps, type CSSProperties } from "react";
 import { MenuRow } from "@/components/ui/menu-row";
 import { Selection } from "@/components/ui/selection";

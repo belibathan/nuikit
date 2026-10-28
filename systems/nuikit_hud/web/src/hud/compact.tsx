@@ -8,7 +8,7 @@
 // Live values (speed, rpm, heading) are painted straight into the DOM by the Cluster's follow hooks
 // (cluster.tsx): the Speedometer's painter rolls a digit only when it changes and switches a segment only when
 // the lit count changes; the speed is gated by calm() (smoothed, at most `speedRate` changes a second).
-import { FuelIcon } from "lucide-react";
+import { FuelIcon } from "@/components/ui/icons";
 import { useLayoutEffect, useRef, type ReactNode } from "react";
 import { Stagger, useStaggerItem } from "nuikit-core/react";
 import { TextRoll } from "@/components/ui/text-roll";

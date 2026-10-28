@@ -15,14 +15,14 @@ import {
   FlashlightIcon,
   FuelIcon,
   KeyRoundIcon,
-  type LucideIcon,
+  type IconComponent,
   PackageIcon,
   RadioIcon,
   SandwichIcon,
   ShirtIcon,
   SmartphoneIcon,
   WrenchIcon,
-} from "lucide-react"
+} from "@/components/ui/icons"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -69,7 +69,7 @@ function InventorySurface() {
   )
 }
 
-const ICONS: Record<InventoryIcon, LucideIcon> = {
+const ICONS: Record<InventoryIcon, IconComponent> = {
   drink: CupSodaIcon,
   coffee: CoffeeIcon,
   food: SandwichIcon,

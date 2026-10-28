@@ -1,7 +1,7 @@
 import * as React from "react"
 import * as core from "nuikit-core/react"
 import { fetchNui, Surface, useSurface } from "nuikit-core/react"
-import { BriefcaseIcon } from "lucide-react"
+import { BriefcaseIcon } from "@/components/ui/icons"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"

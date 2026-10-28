@@ -1,4 +1,4 @@
-import { ChevronLeft, ChevronRight, ChevronsUpDown, Search } from "lucide-react";
+import { ChevronLeft, ChevronRight, ChevronsUpDown, Search } from "@/components/ui/icons";
 import { EmptyState } from "@/components/ui/empty-state";
 import { useMemo, useState } from "react";
 import { FieldLabel } from "@/components/controls";

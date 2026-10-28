@@ -51,6 +51,7 @@ const CASES: Record<string, () => React.ReactElement> = {
   "player-card": () => { const m = mod("player-card"); return <m.PlayerCard name="Ada Lovelace" job="EMS" stats={[{ label: "Cash", value: "1" }]} /> },
   fill: () => { const m = mod("fill"); return <m.Fill level={0.4} /> },
   glyph: () => { const m = mod("glyph"); return <m.Glyph>E</m.Glyph> },
+  icons: () => { const m = mod("icons"); return <m.SearchIcon /> },
   chip: () => { const m = mod("chip"); return <m.Chip>x</m.Chip> },
   "icon-text": () => { const m = mod("icon-text"); return <m.IconText icon="i">t</m.IconText> },
   text: () => { const m = mod("text"); return <m.Text variant="label">t</m.Text> },

@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import { CalendarIcon, ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
+import { CalendarIcon, ChevronLeftIcon, ChevronRightIcon } from "@/components/ui/icons";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";

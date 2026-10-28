@@ -180,6 +180,7 @@ deleted (decision 54).
 | Foundation | What it is | Levers |
 |---|---|---|
 | **Glyph** (+ `Kbd`) | a legend on the control face: keys, icon marks, gears, checked boxes | `--nk-control-*`, `--nk-h-key/chip/control`, `--nk-r-key` |
+| **Icons** | the one icon set: Hugeicons under lucide's names (`scripts/icons.mjs` generates it from what the sources use) | `--nk-icon-sm/md/lg`, `--nk-icon-stroke` |
 | **Selection** | the one mark of a list, tabs or a menu, sliding to the lit item | `--nk-control-primary-*`, `--nk-indicator-*`, `--nk-list-gap` |
 | **Fill** | the one level bar: holds, sweeps, meters, timers, edges (`toneVars` is the tone and hue vocabulary) | `--nk-fill-*`, `--nk-time-fill` |
 | **Chip** | a short status on one line, `material` panel or hud | `--nk-chip-*`, `--nk-h-chip` |

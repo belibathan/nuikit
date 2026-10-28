@@ -10,7 +10,7 @@
     "noEmit": true,
     "isolatedModules": true,
     "types": ["vite/client", "node"],
-    "paths": { "@/*": ["./src/*"] }
+    "paths": { "@/*": ["./src/*"], "lucide-react": ["./src/components/ui/icons.tsx"] }
   },
   "include": ["src"]
 }

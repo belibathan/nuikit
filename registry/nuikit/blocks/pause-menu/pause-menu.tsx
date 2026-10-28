@@ -11,8 +11,8 @@ import {
   TimerIcon,
   UsersIcon,
   WalletIcon,
-  type LucideIcon,
-} from "lucide-react"
+  type IconComponent,
+} from "@/components/ui/icons"
 
 import { cn } from "@/lib/utils"
 import { Confirm } from "@/components/ui/confirm"
@@ -59,7 +59,7 @@ function PauseMenuSurface() {
   )
 }
 
-const ACTIONS: Record<Exclude<PauseMenuAction, "disconnect">, { label: string; icon: LucideIcon; kbd?: string }> = {
+const ACTIONS: Record<Exclude<PauseMenuAction, "disconnect">, { label: string; icon: IconComponent; kbd?: string }> = {
   resume: { label: "Resume", icon: PlayIcon, kbd: "Esc" },
   map: { label: "Map", icon: MapIcon, kbd: "P" },
   settings: { label: "Settings", icon: SettingsIcon },

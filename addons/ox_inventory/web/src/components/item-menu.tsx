@@ -1,4 +1,4 @@
-import { CopyIcon, CrosshairIcon, HandIcon, PackageOpenIcon, PuzzleIcon, SparklesIcon, SquareMousePointerIcon, Trash2Icon } from "lucide-react";
+import { CopyIcon, CrosshairIcon, HandIcon, PackageOpenIcon, PuzzleIcon, SparklesIcon, SquareMousePointerIcon, Trash2Icon } from "@/components/ui/icons";
 import {
   DropdownMenu,
   DropdownMenuContent,

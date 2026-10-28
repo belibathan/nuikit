@@ -1,7 +1,7 @@
 // Aircraft: airspeed, a heading rose and altitude, all live (they glide at the game's frame rate,
 // written straight to the DOM). Telltales for the landing gear, lights and engine, plus fuel.
 import { useFollow } from "nuikit-core/react";
-import { FuelIcon } from "lucide-react";
+import { FuelIcon } from "@/components/ui/icons";
 import { useRef, useState } from "react";
 import type { HudVehicle } from "../nui";
 import { cardinal, setText, UNIT_LABEL } from "./util";

@@ -23,11 +23,11 @@ import {
   UtensilsIcon,
   WarehouseIcon,
   WrenchIcon,
-  type LucideIcon,
-} from "lucide-react";
+  type IconComponent,
+} from "@/components/ui/icons";
 
 /** The lucide icons a config can name (kebab-case, as on lucide.dev). Anything else is a pin. */
-const ICONS: Record<string, LucideIcon> = {
+const ICONS: Record<string, IconComponent> = {
   anchor: AnchorIcon,
   "book-open": BookOpenIcon,
   briefcase: BriefcaseIcon,
@@ -54,6 +54,6 @@ const ICONS: Record<string, LucideIcon> = {
   wrench: WrenchIcon,
 };
 
-export function icon(name: string | undefined, fallback: LucideIcon = MapPinIcon): LucideIcon {
+export function icon(name: string | undefined, fallback: IconComponent = MapPinIcon): IconComponent {
   return (name && ICONS[name]) || fallback;
 }

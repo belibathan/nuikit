@@ -3,7 +3,7 @@
 // values: they glide at the game's frame rate and are written straight to the DOM (useFollow), never
 // through a React render. React renders only when `hud:vehicle` changes (gear, fuel, damage, lights…).
 import { followed, useFollow } from "nuikit-core/react";
-import { ArrowBigLeftIcon, ArrowBigRightIcon, FuelIcon, TriangleAlertIcon } from "lucide-react";
+import { ArrowBigLeftIcon, ArrowBigRightIcon, FuelIcon, TriangleAlertIcon } from "@/components/ui/icons";
 import { useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import type { HudSettings, HudVehicle } from "../nui";
 import { BodyIcon, CruiseIcon, EngineIcon, HandbrakeIcon, HighBeamIcon, LowBeamIcon, SeatbeltIcon } from "./icons";

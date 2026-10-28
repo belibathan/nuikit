@@ -4,7 +4,7 @@
 // arrows reorder within a place (the keyboard and controller path). Save keeps it for this player
 // (client/main.lua, KVP); Escape or Cancel drops it.
 import { fetchNui, useSurface } from "nuikit-core/react";
-import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
+import { ChevronDownIcon, ChevronUpIcon } from "@/components/ui/icons";
 import { useEffect, useRef, useState, type MouseEvent as ReactMouseEvent } from "react";
 import { Button } from "@/components/ui/button";
 import type { HudCorner, HudEditData, HudParts, HudStyles } from "../nui";

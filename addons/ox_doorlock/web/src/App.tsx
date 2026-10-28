@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { CopyIcon, DoorClosedIcon, LockIcon, LockOpenIcon, MapPinIcon, PlusIcon, SearchIcon, Trash2Icon, XIcon } from "lucide-react";
+import { CopyIcon, DoorClosedIcon, LockIcon, LockOpenIcon, MapPinIcon, PlusIcon, SearchIcon, Trash2Icon, XIcon } from "@/components/ui/icons";
 import { Button } from "@/components/ui/button";
 import { Confirm } from "@/components/ui/confirm";
 import { EdgeSheet, EdgeSheetBody, EdgeSheetFooter } from "@/components/ui/edge-sheet";

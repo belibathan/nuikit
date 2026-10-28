@@ -1,5 +1,5 @@
 // Floating camera / pose / clothing preview controls (docs/illenium-appearance-protocol.md §6).
-import { ArrowDownToLine, Footprints, HardHat, PersonStanding, Repeat2, RotateCcw, RotateCw, ScanFace, Shirt } from "lucide-react";
+import { ArrowDownToLine, Footprints, HardHat, PersonStanding, Repeat2, RotateCcw, RotateCw, ScanFace, Shirt } from "@/components/ui/icons";
 import type { ReactNode } from "react";
 import { Kbd } from "@/components/ui/kbd";
 import { Toggle } from "@/components/ui/toggle";

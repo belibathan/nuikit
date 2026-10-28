@@ -1,4 +1,4 @@
-import { PackageIcon } from "lucide-react";
+import { PackageIcon } from "@/components/ui/icons";
 import { memo, useState, type CSSProperties } from "react";
 import { NuiImage } from "@/components/ui/nui-image";
 import { alertThreshold } from "@/lib/level";

@@ -1,7 +1,7 @@
 // Vitals: health, armor, hunger, thirst, stress from the bridge (`nuikit:player`). In 'auto' each one
 // shows when it changes or crosses its threshold, then fades back: the world is the hero (research §2.2).
 // The shared pieces; the chips themselves are in pills.tsx (one chip for every vital, both layouts).
-import { DropletIcon, FlameIcon, HeartPulseIcon, ShieldIcon, UtensilsIcon } from "lucide-react";
+import { DropletIcon, FlameIcon, HeartPulseIcon, ShieldIcon, UtensilsIcon } from "@/components/ui/icons";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import type { VitalMode } from "../nui";
 

@@ -100,15 +100,15 @@
         }
       ],
       "dependencies": [
-        "nuikit-core",
-        "lucide-react"
+        "nuikit-core"
       ],
       "registryDependencies": [
         "sheet",
         "scroll-area",
         "button",
         "https://nuikit.vercel.app/r/action-bar.json",
-        "https://nuikit.vercel.app/r/fill.json"
+        "https://nuikit.vercel.app/r/fill.json",
+        "https://nuikit.vercel.app/r/icons.json"
       ],
       "meta": {
         "since": "unreleased",
@@ -199,8 +199,7 @@
         }
       ],
       "dependencies": [
-        "nuikit-core",
-        "lucide-react"
+        "nuikit-core"
       ],
       "meta": {
         "since": "unreleased",
@@ -234,7 +233,10 @@
           "levers": [],
           "hooks": []
         }
-      }
+      },
+      "registryDependencies": [
+        "https://nuikit.vercel.app/r/icons.json"
+      ]
     },
     {
       "name": "menu-row",
@@ -249,7 +251,6 @@
       ],
       "dependencies": [
         "class-variance-authority",
-        "lucide-react",
         "radix-ui",
         "nuikit-core"
       ],
@@ -258,7 +259,8 @@
         "progress",
         "https://nuikit.vercel.app/r/meter.json",
         "https://nuikit.vercel.app/r/glyph.json",
-        "https://nuikit.vercel.app/r/selection.json"
+        "https://nuikit.vercel.app/r/selection.json",
+        "https://nuikit.vercel.app/r/icons.json"
       ],
       "meta": {
         "since": "0.5.0",
@@ -479,8 +481,7 @@
         }
       ],
       "dependencies": [
-        "class-variance-authority",
-        "lucide-react"
+        "class-variance-authority"
       ],
       "meta": {
         "since": "0.5.0",
@@ -534,7 +535,8 @@
         "hiddenReason": "a Text/IconText composition; Text shows the voices"
       },
       "registryDependencies": [
-        "https://nuikit.vercel.app/r/text.json"
+        "https://nuikit.vercel.app/r/text.json",
+        "https://nuikit.vercel.app/r/icons.json"
       ]
     },
     {
@@ -1080,8 +1082,8 @@
           "hooks": []
         }
       },
-      "dependencies": [
-        "lucide-react"
+      "registryDependencies": [
+        "https://nuikit.vercel.app/r/icons.json"
       ]
     },
     {
@@ -1096,13 +1098,13 @@
         }
       ],
       "dependencies": [
-        "lucide-react",
         "nuikit-core"
       ],
       "registryDependencies": [
         "https://nuikit.vercel.app/r/dial.json",
         "https://nuikit.vercel.app/r/text-roll.json",
-        "https://nuikit.vercel.app/r/glyph.json"
+        "https://nuikit.vercel.app/r/glyph.json",
+        "https://nuikit.vercel.app/r/icons.json"
       ],
       "meta": {
         "since": "0.3.0",
@@ -1208,13 +1210,13 @@
       ],
       "dependencies": [
         "class-variance-authority",
-        "lucide-react",
         "nuikit-core"
       ],
       "registryDependencies": [
         "button",
         "https://nuikit.vercel.app/r/fill.json",
-        "https://nuikit.vercel.app/r/use-linear-run.json"
+        "https://nuikit.vercel.app/r/use-linear-run.json",
+        "https://nuikit.vercel.app/r/icons.json"
       ],
       "meta": {
         "since": "0.6.0",
@@ -1327,8 +1329,7 @@
         }
       ],
       "dependencies": [
-        "class-variance-authority",
-        "lucide-react"
+        "class-variance-authority"
       ],
       "registryDependencies": [
         "button",
@@ -1340,7 +1341,8 @@
         "slider",
         "smooth-input",
         "switch",
-        "textarea"
+        "textarea",
+        "https://nuikit.vercel.app/r/icons.json"
       ],
       "meta": {
         "since": "0.6.0",
@@ -1416,14 +1418,14 @@
         }
       ],
       "dependencies": [
-        "lucide-react",
         "nuikit-core"
       ],
       "registryDependencies": [
         "https://nuikit.vercel.app/r/countdown.json",
         "https://nuikit.vercel.app/r/key-prompt.json",
         "https://nuikit.vercel.app/r/money.json",
-        "https://nuikit.vercel.app/r/chip.json"
+        "https://nuikit.vercel.app/r/chip.json",
+        "https://nuikit.vercel.app/r/icons.json"
       ],
       "categories": [
         "screens"
@@ -1461,7 +1463,6 @@
         }
       ],
       "dependencies": [
-        "lucide-react",
         "nuikit-core"
       ],
       "registryDependencies": [
@@ -1469,7 +1470,8 @@
         "https://nuikit.vercel.app/r/stat.json",
         "https://nuikit.vercel.app/r/speedometer.json",
         "https://nuikit.vercel.app/r/money.json",
-        "https://nuikit.vercel.app/r/chip.json"
+        "https://nuikit.vercel.app/r/chip.json",
+        "https://nuikit.vercel.app/r/icons.json"
       ],
       "categories": [
         "screens"
@@ -1933,8 +1935,7 @@
         }
       ],
       "dependencies": [
-        "class-variance-authority",
-        "lucide-react"
+        "class-variance-authority"
       ],
       "meta": {
         "since": "0.6.0",
@@ -1996,7 +1997,10 @@
           ],
           "hooks": []
         }
-      }
+      },
+      "registryDependencies": [
+        "https://nuikit.vercel.app/r/icons.json"
+      ]
     },
     {
       "name": "player-card",
@@ -2142,6 +2146,51 @@
             "useLinearRun"
           ]
         }
+      }
+    },
+    {
+      "name": "icons",
+      "type": "registry:ui",
+      "title": "Icons",
+      "description": "The kit's one icon set: Hugeicons (free, stroke rounded) under lucide's names, so a shadcn snippet pastes in unchanged and the whole set swaps in one file. Icon draws any other Hugeicon at the kit's stroke.",
+      "files": [
+        {
+          "path": "registry/nuikit/ui/icons.tsx",
+          "type": "registry:ui"
+        }
+      ],
+      "dependencies": [
+        "@hugeicons/core-free-icons",
+        "@hugeicons/react"
+      ],
+      "meta": {
+        "since": "unreleased",
+        "status": "experimental",
+        "replaces": [],
+        "removeIn": null,
+        "spec": {
+          "role": "The one icon set, by lucide's names.",
+          "anatomy": [
+            "svg (data-slot=icon)"
+          ],
+          "props": [
+            "size",
+            "strokeWidth",
+            "className"
+          ],
+          "rules": [
+            "Icons come from here, never from an icon package directly; sizes from --nk-icon-*; colour is currentColor."
+          ]
+        },
+        "group": "Foundations",
+        "tier": "foundation",
+        "variants": {
+          "axes": {},
+          "levers": [],
+          "hooks": []
+        },
+        "hidden": true,
+        "hiddenReason": "the icon set every item uses; shown through them"
       }
     },
     {
@@ -2922,12 +2971,12 @@
         }
       ],
       "dependencies": [
-        "class-variance-authority",
-        "lucide-react"
+        "class-variance-authority"
       ],
       "registryDependencies": [
         "empty",
-        "https://nuikit.vercel.app/r/glyph.json"
+        "https://nuikit.vercel.app/r/glyph.json",
+        "https://nuikit.vercel.app/r/icons.json"
       ],
       "meta": {
         "since": "0.6.0",
@@ -3075,7 +3124,6 @@
         }
       ],
       "dependencies": [
-        "lucide-react",
         "nuikit-core"
       ],
       "registryDependencies": [
@@ -3086,7 +3134,8 @@
         "https://nuikit.vercel.app/r/meter.json",
         "https://nuikit.vercel.app/r/confirm.json",
         "https://nuikit.vercel.app/r/money.json",
-        "https://nuikit.vercel.app/r/player-card.json"
+        "https://nuikit.vercel.app/r/player-card.json",
+        "https://nuikit.vercel.app/r/icons.json"
       ],
       "categories": [
         "screens"
@@ -3129,7 +3178,6 @@
         }
       ],
       "dependencies": [
-        "lucide-react",
         "nuikit-core"
       ],
       "registryDependencies": [
@@ -3137,7 +3185,8 @@
         "separator",
         "spinner",
         "https://nuikit.vercel.app/r/meter.json",
-        "https://nuikit.vercel.app/r/stat.json"
+        "https://nuikit.vercel.app/r/stat.json",
+        "https://nuikit.vercel.app/r/icons.json"
       ],
       "categories": [
         "screens"
@@ -3175,7 +3224,6 @@
         }
       ],
       "dependencies": [
-        "lucide-react",
         "nuikit-core"
       ],
       "registryDependencies": [
@@ -3185,7 +3233,8 @@
         "https://nuikit.vercel.app/r/panel.json",
         "https://nuikit.vercel.app/r/menu-row.json",
         "https://nuikit.vercel.app/r/form-field.json",
-        "https://nuikit.vercel.app/r/empty-state.json"
+        "https://nuikit.vercel.app/r/empty-state.json",
+        "https://nuikit.vercel.app/r/icons.json"
       ],
       "categories": [
         "screens"
@@ -3223,7 +3272,6 @@
         }
       ],
       "dependencies": [
-        "lucide-react",
         "nuikit-core"
       ],
       "registryDependencies": [
@@ -3233,7 +3281,8 @@
         "https://nuikit.vercel.app/r/meter.json",
         "https://nuikit.vercel.app/r/menu-row.json",
         "https://nuikit.vercel.app/r/empty-state.json",
-        "https://nuikit.vercel.app/r/chip.json"
+        "https://nuikit.vercel.app/r/chip.json",
+        "https://nuikit.vercel.app/r/icons.json"
       ],
       "categories": [
         "screens"
@@ -3271,7 +3320,6 @@
         }
       ],
       "dependencies": [
-        "lucide-react",
         "nuikit-core"
       ],
       "registryDependencies": [
@@ -3283,7 +3331,8 @@
         "https://nuikit.vercel.app/r/menu-row.json",
         "https://nuikit.vercel.app/r/meter.json",
         "https://nuikit.vercel.app/r/money.json",
-        "https://nuikit.vercel.app/r/empty-state.json"
+        "https://nuikit.vercel.app/r/empty-state.json",
+        "https://nuikit.vercel.app/r/icons.json"
       ],
       "categories": [
         "screens"
@@ -3321,7 +3370,6 @@
         }
       ],
       "dependencies": [
-        "lucide-react",
         "nuikit-core"
       ],
       "registryDependencies": [
@@ -3332,7 +3380,8 @@
         "https://nuikit.vercel.app/r/confirm.json",
         "https://nuikit.vercel.app/r/form-field.json",
         "https://nuikit.vercel.app/r/money.json",
-        "https://nuikit.vercel.app/r/empty-state.json"
+        "https://nuikit.vercel.app/r/empty-state.json",
+        "https://nuikit.vercel.app/r/icons.json"
       ],
       "categories": [
         "screens"
@@ -3370,7 +3419,6 @@
         }
       ],
       "dependencies": [
-        "lucide-react",
         "nuikit-core"
       ],
       "registryDependencies": [
@@ -3383,7 +3431,8 @@
         "https://nuikit.vercel.app/r/confirm.json",
         "https://nuikit.vercel.app/r/money.json",
         "https://nuikit.vercel.app/r/empty-state.json",
-        "https://nuikit.vercel.app/r/chip.json"
+        "https://nuikit.vercel.app/r/chip.json",
+        "https://nuikit.vercel.app/r/icons.json"
       ],
       "categories": [
         "screens"
@@ -3421,7 +3470,6 @@
         }
       ],
       "dependencies": [
-        "lucide-react",
         "nuikit-core"
       ],
       "registryDependencies": [
@@ -3431,7 +3479,8 @@
         "spinner",
         "https://nuikit.vercel.app/r/menu-row.json",
         "https://nuikit.vercel.app/r/chip.json",
-        "https://nuikit.vercel.app/r/edge-sheet.json"
+        "https://nuikit.vercel.app/r/edge-sheet.json",
+        "https://nuikit.vercel.app/r/icons.json"
       ],
       "categories": [
         "screens"
@@ -3469,7 +3518,6 @@
         }
       ],
       "dependencies": [
-        "lucide-react",
         "nuikit-core"
       ],
       "registryDependencies": [
@@ -3477,7 +3525,8 @@
         "https://nuikit.vercel.app/r/key-prompt.json",
         "https://nuikit.vercel.app/r/menu-row.json",
         "https://nuikit.vercel.app/r/panel.json",
-        "https://nuikit.vercel.app/r/chip.json"
+        "https://nuikit.vercel.app/r/chip.json",
+        "https://nuikit.vercel.app/r/icons.json"
       ],
       "categories": [
         "screens"
@@ -3515,7 +3564,6 @@
         }
       ],
       "dependencies": [
-        "lucide-react",
         "nuikit-core"
       ],
       "registryDependencies": [
@@ -3527,7 +3575,8 @@
         "https://nuikit.vercel.app/r/money.json",
         "https://nuikit.vercel.app/r/menu-row.json",
         "https://nuikit.vercel.app/r/confirm.json",
-        "https://nuikit.vercel.app/r/empty-state.json"
+        "https://nuikit.vercel.app/r/empty-state.json",
+        "https://nuikit.vercel.app/r/icons.json"
       ],
       "categories": [
         "screens"
@@ -3565,7 +3614,6 @@
         }
       ],
       "dependencies": [
-        "lucide-react",
         "nuikit-core"
       ],
       "registryDependencies": [
@@ -3573,7 +3621,8 @@
         "spinner",
         "https://nuikit.vercel.app/r/panel.json",
         "https://nuikit.vercel.app/r/item-slot.json",
-        "https://nuikit.vercel.app/r/meter.json"
+        "https://nuikit.vercel.app/r/meter.json",
+        "https://nuikit.vercel.app/r/icons.json"
       ],
       "categories": [
         "screens"
@@ -3611,7 +3660,6 @@
         }
       ],
       "dependencies": [
-        "lucide-react",
         "nuikit-core"
       ],
       "registryDependencies": [
@@ -3623,7 +3671,8 @@
         "https://nuikit.vercel.app/r/meter.json",
         "https://nuikit.vercel.app/r/money.json",
         "https://nuikit.vercel.app/r/form-field.json",
-        "https://nuikit.vercel.app/r/confirm.json"
+        "https://nuikit.vercel.app/r/confirm.json",
+        "https://nuikit.vercel.app/r/icons.json"
       ],
       "categories": [
         "screens"
@@ -3661,7 +3710,6 @@
         }
       ],
       "dependencies": [
-        "lucide-react",
         "nuikit-core"
       ],
       "registryDependencies": [
@@ -3673,7 +3721,8 @@
         "https://nuikit.vercel.app/r/money.json",
         "https://nuikit.vercel.app/r/confirm.json",
         "https://nuikit.vercel.app/r/form-field.json",
-        "avatar"
+        "avatar",
+        "https://nuikit.vercel.app/r/icons.json"
       ],
       "categories": [
         "screens"
@@ -3711,12 +3760,12 @@
         }
       ],
       "dependencies": [
-        "lucide-react",
         "nuikit-core"
       ],
       "registryDependencies": [
         "https://nuikit.vercel.app/r/panel.json",
-        "https://nuikit.vercel.app/r/menu-row.json"
+        "https://nuikit.vercel.app/r/menu-row.json",
+        "https://nuikit.vercel.app/r/icons.json"
       ],
       "categories": [
         "screens"
@@ -3756,7 +3805,6 @@
         }
       ],
       "dependencies": [
-        "lucide-react",
         "nuikit-core"
       ],
       "registryDependencies": [
@@ -3767,7 +3815,8 @@
         "https://nuikit.vercel.app/r/meter.json",
         "https://nuikit.vercel.app/r/key-prompt.json",
         "https://nuikit.vercel.app/r/money.json",
-        "https://nuikit.vercel.app/r/confirm.json"
+        "https://nuikit.vercel.app/r/confirm.json",
+        "https://nuikit.vercel.app/r/icons.json"
       ],
       "categories": [
         "screens"
@@ -3807,7 +3856,6 @@
         }
       ],
       "dependencies": [
-        "lucide-react",
         "nuikit-core"
       ],
       "registryDependencies": [
@@ -3819,7 +3867,8 @@
         "https://nuikit.vercel.app/r/money.json",
         "https://nuikit.vercel.app/r/menu-row.json",
         "https://nuikit.vercel.app/r/confirm.json",
-        "https://nuikit.vercel.app/r/empty-state.json"
+        "https://nuikit.vercel.app/r/empty-state.json",
+        "https://nuikit.vercel.app/r/icons.json"
       ],
       "categories": [
         "screens"
@@ -3859,7 +3908,6 @@
         }
       ],
       "dependencies": [
-        "lucide-react",
         "nuikit-core"
       ],
       "registryDependencies": [
@@ -3869,7 +3917,8 @@
         "https://nuikit.vercel.app/r/panel.json",
         "https://nuikit.vercel.app/r/menu-row.json",
         "https://nuikit.vercel.app/r/form-field.json",
-        "https://nuikit.vercel.app/r/empty-state.json"
+        "https://nuikit.vercel.app/r/empty-state.json",
+        "https://nuikit.vercel.app/r/icons.json"
       ],
       "categories": [
         "screens"
@@ -3907,7 +3956,6 @@
         }
       ],
       "dependencies": [
-        "lucide-react",
         "nuikit-core"
       ],
       "registryDependencies": [
@@ -3920,7 +3968,8 @@
         "https://nuikit.vercel.app/r/player-card.json",
         "https://nuikit.vercel.app/r/form-field.json",
         "https://nuikit.vercel.app/r/confirm.json",
-        "https://nuikit.vercel.app/r/empty-state.json"
+        "https://nuikit.vercel.app/r/empty-state.json",
+        "https://nuikit.vercel.app/r/icons.json"
       ],
       "categories": [
         "screens"
@@ -3948,11 +3997,11 @@
       ],
       "dependencies": [
         "class-variance-authority",
-        "lucide-react",
         "nuikit-core"
       ],
       "registryDependencies": [
-        "https://nuikit.vercel.app/r/text-roll.json"
+        "https://nuikit.vercel.app/r/text-roll.json",
+        "https://nuikit.vercel.app/r/icons.json"
       ],
       "meta": {
         "since": "unreleased",

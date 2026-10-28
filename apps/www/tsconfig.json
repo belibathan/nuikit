@@ -54,7 +54,13 @@
         "./node_modules/next-themes"
       ],
       "lucide-react": [
-        "./node_modules/lucide-react"
+        "../../registry/nuikit/ui/icons.tsx"
+      ],
+      "@hugeicons/react": [
+        "./node_modules/@hugeicons/react"
+      ],
+      "@hugeicons/core-free-icons": [
+        "./node_modules/@hugeicons/core-free-icons"
       ],
       "clsx": [
         "./node_modules/clsx"

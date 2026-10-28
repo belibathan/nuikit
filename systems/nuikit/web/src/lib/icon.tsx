@@ -54,12 +54,12 @@ import {
   WalletIcon,
   WrenchIcon,
   XIcon,
-  type LucideIcon,
-} from "lucide-react";
+  type IconComponent,
+} from "@/components/ui/icons";
 import { useEffect, useState, type CSSProperties, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
-const LUCIDE: Record<string, LucideIcon> = {
+const LUCIDE: Record<string, IconComponent> = {
   ban: BanIcon,
   box: BoxIcon,
   briefcase: BriefcaseIcon,

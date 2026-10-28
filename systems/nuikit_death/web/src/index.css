@@ -255,7 +255,7 @@
   --nk-icon-sm: 0.75rem;
   --nk-icon-md: 1rem;
   --nk-icon-lg: 1.25rem;
-  --nk-icon-stroke: 2;
+  --nk-icon-stroke: 1.5;
   --nk-text-base: 1rem;
   --nk-text-key: 0.8125rem;
   --nk-text-row: 1.125rem;
@@ -465,7 +465,7 @@
   --nk-icon-sm: 0.75rem;
   --nk-icon-md: 1rem;
   --nk-icon-lg: 1.25rem;
-  --nk-icon-stroke: 2;
+  --nk-icon-stroke: 1.5;
   --nk-text-base: 1rem;
   --nk-text-key: 0.8125rem;
   --nk-text-row: 1.125rem;
@@ -764,7 +764,7 @@
     --nk-icon-sm: 0.75rem;
     --nk-icon-md: 1rem;
     --nk-icon-lg: 1.25rem;
-    --nk-icon-stroke: 2;
+    --nk-icon-stroke: 1.5;
     /* identity · text */
     --nk-text-base: 1rem;
     --nk-text-key: 0.8125rem;
@@ -4268,3 +4268,9 @@ html[data-nk-backdrop="on"] * {
 [data-shape="keycap"][data-display] { --nk-vital-chip-room: 0px; margin-right: var(--nk-vital-chip-room); }
 [data-shape="keycap"][data-display][data-side="left"] { margin-right: 0; margin-left: var(--nk-vital-chip-room); }
 :is(html, *)[data-nk-motion="reduced"] :is([data-slot="vital-chip-liquid"], [data-slot="vital-chip-line"], [data-slot="vital-chip-lit"], [data-slot="vital-chip-plate"], [data-slot="vital-chip-label"][data-attach="plate"], [data-slot="vital-chip-shape"][data-shape="keycap"] [data-slot="vital-chip-icon"]) { transition: none; }
+
+/* Icons (registry icons.tsx, Hugeicons): every stroke at --nk-icon-stroke, unless the icon was given its own
+   strokeWidth (data-stroke). Hugeicons set the stroke on each path, so the svg-level rules above can't reach it. */
+svg[data-slot="icon"]:not([data-stroke]) [stroke-width] {
+  stroke-width: var(--nk-icon-stroke);
+}

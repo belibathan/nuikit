@@ -24,7 +24,7 @@ import {
   WalletIcon,
   WarehouseIcon,
   WrenchIcon,
-} from "lucide-react";
+} from "@/components/ui/icons";
 import { closeSurface, openSurface, Surface } from "nuikit-core/react";
 import { cloneElement, createContext, useContext, useLayoutEffect, useState, type ReactElement, type ReactNode } from "react";
 import { Footer, Nav } from "@/components/site";

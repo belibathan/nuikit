@@ -1,5 +1,5 @@
 import { type ThemeVars } from "nuikit-core/react";
-import { CheckIcon, CircleAlertIcon, CopyIcon, DownloadIcon, RotateCcwIcon } from "lucide-react";
+import { CheckIcon, CircleAlertIcon, CopyIcon, DownloadIcon, RotateCcwIcon } from "@/components/ui/icons";
 import { Fragment, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { GameStage } from "@/components/game-stage";
 import { Footer, Nav } from "@/components/site";

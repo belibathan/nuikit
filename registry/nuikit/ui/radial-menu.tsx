@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { ArrowLeftIcon, XIcon } from "lucide-react"
+import { ArrowLeftIcon, XIcon } from "@/components/ui/icons"
 
 import { cn, nkState } from "@/lib/utils"
 

@@ -1,6 +1,6 @@
 import * as React from "react"
 import { Surface } from "nuikit-core/react"
-import { SearchIcon, UsersIcon } from "lucide-react"
+import { SearchIcon, UsersIcon } from "@/components/ui/icons"
 
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"

@@ -304,7 +304,7 @@ Icon sizes and stroke.
 | `--nk-icon-sm` | length | `0.75rem` |  | Small icon |
 | `--nk-icon-md` | length | `1rem` |  | Icon next to text (the default) |
 | `--nk-icon-lg` | length | `1.25rem` |  | Large icon |
-| `--nk-icon-stroke` | number | `2` | 0.5–4 | Stroke width |
+| `--nk-icon-stroke` | number | `1.5` | 0.5–4 | Stroke width of every icon (Hugeicons draw at 1.5) |
 
 ### text
 

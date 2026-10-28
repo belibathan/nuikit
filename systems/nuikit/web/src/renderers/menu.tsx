@@ -2,7 +2,7 @@
 // does). Mouse and keyboard both work; `input: "keyboard"` is ox's list menu (arrows, Enter,
 // Backspace), `input: "cursor"` is ox's context menu. Inline submenus (`items`) open in place;
 // ox-style submenus (`menu: id`) end the intent with reason "submenu" and the script opens the next.
-import { ChevronLeftIcon, XIcon } from "lucide-react";
+import { ChevronLeftIcon, XIcon } from "@/components/ui/icons";
 import type { MenuItem, MenuProps } from "nuikit-core/intents";
 import { defineReactRenderer, type RendererProps } from "nuikit-core/intents-react";
 import { useEffect, useMemo, useRef, useState } from "react";

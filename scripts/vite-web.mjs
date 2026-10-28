@@ -13,7 +13,7 @@ const names = (dir, ext) => (fs.existsSync(dir) ? fs.readdirSync(dir).filter((f)
 const escape = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
 /** Bare packages the registry's sources import: resolved from the UI's own node_modules, one copy each. */
-export const DEDUPE = ["react", "react-dom", "nuikit-core", "radix-ui", "lucide-react", "class-variance-authority", "clsx", "tailwind-merge", "sonner", "next-themes", "cmdk", "vaul", "react-day-picker", "recharts", "embla-carousel-react", "input-otp", "react-hook-form", "react-resizable-panels"];
+export const DEDUPE = ["react", "react-dom", "nuikit-core", "radix-ui", "@hugeicons/react", "@hugeicons/core-free-icons", "class-variance-authority", "clsx", "tailwind-merge", "sonner", "next-themes", "cmdk", "vaul", "react-day-picker", "recharts", "embla-carousel-react", "input-otp", "react-hook-form", "react-resizable-panels"];
 
 /** `resolve` for a UI's vite.config.ts: `resolve: web(__dirname)`. */
 export function web(dir) {
@@ -30,6 +30,8 @@ export function web(dir) {
   group("@/hooks/", ui(path.join(vendor, "hooks"), ".ts", myHooks), `${vendor}/hooks/$1.ts`);
   if (!fs.existsSync(path.join(src, "lib/utils.ts"))) alias.push({ find: /^@\/lib\/utils$/, replacement: `${registry}/lib/utils.ts` });
   alias.push({ find: /^@\/blocks\/(.*)$/, replacement: `${registry}/blocks/$1` });
+  // the kit's one icon set (Hugeicons): stock shadcn's lucide-react imports draw it too, unedited
+  alias.push({ find: /^lucide-react$/, replacement: myUi.has("icons") ? path.join(src, "components/ui/icons.tsx") : `${registry}/ui/icons.tsx` });
   alias.push({ find: "@", replacement: src });
   return { alias, dedupe: DEDUPE };
 }

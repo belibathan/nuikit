@@ -1,5 +1,5 @@
 import * as React from "react"
-import { ArrowBigLeftIcon, ArrowBigRightIcon, FuelIcon } from "lucide-react"
+import { ArrowBigLeftIcon, ArrowBigRightIcon, FuelIcon } from "@/components/ui/icons"
 import { motionLevel } from "nuikit-core/motion"
 
 import { cn } from "@/lib/utils"

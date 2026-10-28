@@ -1,4 +1,4 @@
-import { ArrowDownLeft, ArrowUpRight, FileDown, ReceiptText, Search } from "lucide-react";
+import { ArrowDownLeft, ArrowUpRight, FileDown, ReceiptText, Search } from "@/components/ui/icons";
 import { Fragment, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";

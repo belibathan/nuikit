@@ -1,6 +1,6 @@
 import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
-import { CircleAlertIcon, InboxIcon } from "lucide-react"
+import { CircleAlertIcon, InboxIcon } from "@/components/ui/icons"
 
 import { cn } from "@/lib/utils"
 import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty"

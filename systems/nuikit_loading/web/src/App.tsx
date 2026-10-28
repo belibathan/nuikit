@@ -1,5 +1,5 @@
 import { applyTheme } from "nuikit-core";
-import { CheckIcon, Volume2Icon, VolumeXIcon } from "lucide-react";
+import { CheckIcon, Volume2Icon, VolumeXIcon } from "@/components/ui/icons";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Meter } from "@/components/ui/meter";

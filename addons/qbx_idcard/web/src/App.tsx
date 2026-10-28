@@ -1,5 +1,5 @@
 import { toRgba } from "nuikit-core";
-import { IdCardIcon, UserIcon } from "lucide-react";
+import { IdCardIcon, UserIcon } from "@/components/ui/icons";
 import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
 import { EdgeSheet } from "@/components/ui/edge-sheet";
 import { ActionBar, ActionBarItem } from "@/components/ui/action-bar";

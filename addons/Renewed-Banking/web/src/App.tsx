@@ -1,4 +1,4 @@
-import { ArrowDownLeft, ArrowLeftRight, ArrowUpRight, Landmark, Snowflake, Wallet } from "lucide-react";
+import { ArrowDownLeft, ArrowLeftRight, ArrowUpRight, Landmark, Snowflake, Wallet } from "@/components/ui/icons";
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { EdgeSheet, EdgeSheetBody } from "@/components/ui/edge-sheet";

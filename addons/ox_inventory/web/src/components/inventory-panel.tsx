@@ -10,8 +10,8 @@ import {
   Trash2Icon,
   UserIcon,
   WarehouseIcon,
-  type LucideIcon,
-} from "lucide-react";
+  type IconComponent,
+} from "@/components/ui/icons";
 import { useEffect, useMemo, useState } from "react";
 import { Selection } from "@/components/ui/selection";
 import { SlotTile } from "@/components/slot-tile";
@@ -21,7 +21,7 @@ import type { Side } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { canCraft, canPurchase, formatKg, inv, totalWeight } from "@/state/inventory";
 
-const KINDS: Record<string, { icon: LucideIcon; name: string }> = {
+const KINDS: Record<string, { icon: IconComponent; name: string }> = {
   player: { icon: UserIcon, name: "Player" },
   otherplayer: { icon: UserIcon, name: "Player" },
   inspect: { icon: SearchIcon, name: "Inspect" },

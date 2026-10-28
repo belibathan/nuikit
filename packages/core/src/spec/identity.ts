@@ -155,7 +155,7 @@ export const icon: Group = {
     sm: length("0.75rem", "Small icon", { was: ["nk-icon-sm"] }),
     md: length("1rem", "Icon next to text (the default)", { was: ["nk-icon-md"] }),
     lg: length("1.25rem", "Large icon", { was: ["nk-icon-lg"] }),
-    stroke: number(2, "Stroke width", { range: [0.5, 4], was: ["nk-icon-stroke"] }),
+    stroke: number(1.5, "Stroke width of every icon (Hugeicons draw at 1.5)", { range: [0.5, 4], was: ["nk-icon-stroke"] }),
   },
 };
 

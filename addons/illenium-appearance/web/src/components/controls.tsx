@@ -1,5 +1,5 @@
 // The four building blocks every section uses: index stepper, float slider, colour swatches, field label.
-import { RotateCcw } from "lucide-react";
+import { RotateCcw } from "@/components/ui/icons";
 import { type ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";

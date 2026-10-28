@@ -6,7 +6,7 @@ import {
   CupSodaIcon,
   FuelIcon,
   LandmarkIcon,
-  type LucideIcon,
+  type IconComponent,
   PackageIcon,
   SandwichIcon,
   SettingsIcon,
@@ -15,7 +15,7 @@ import {
   WalletIcon,
   WrenchIcon,
   CogIcon,
-} from "lucide-react"
+} from "@/components/ui/icons"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -72,7 +72,7 @@ function StorefrontSurface() {
   )
 }
 
-const ICONS: Record<StorefrontIcon, LucideIcon> = {
+const ICONS: Record<StorefrontIcon, IconComponent> = {
   burger: BeefIcon,
   drink: CupSodaIcon,
   fries: SandwichIcon,
@@ -83,7 +83,7 @@ const ICONS: Record<StorefrontIcon, LucideIcon> = {
   box: PackageIcon,
 }
 
-const PAYMENT: Record<StorefrontPayment, { label: string; icon: LucideIcon; short: string }> = {
+const PAYMENT: Record<StorefrontPayment, { label: string; icon: IconComponent; short: string }> = {
   cash: { label: "Cash", icon: WalletIcon, short: "cash" },
   bank: { label: "Bank", icon: LandmarkIcon, short: "money in the bank" },
 }

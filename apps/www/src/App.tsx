@@ -1,4 +1,4 @@
-import { ArrowRightIcon, DownloadIcon, DropletIcon, HeartPulseIcon, ShieldIcon, UtensilsIcon } from "lucide-react";
+import { ArrowRightIcon, DownloadIcon, DropletIcon, HeartPulseIcon, ShieldIcon, UtensilsIcon } from "@/components/ui/icons";
 import { useEffect, useState } from "react";
 import { Command } from "@/components/code";
 import { Credit } from "@/components/credit";

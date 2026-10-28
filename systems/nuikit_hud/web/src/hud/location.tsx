@@ -2,7 +2,7 @@
 // the heading strip across the top. The heading is the camera's compass bearing, a live value
 // (`hud:minimap:heading`, followed straight into the DOM).
 import { useFollow } from "nuikit-core/react";
-import { FlagIcon, MapPinIcon } from "lucide-react";
+import { FlagIcon, MapPinIcon } from "@/components/ui/icons";
 import { useRef, type ReactNode } from "react";
 import type { HudLocation } from "../nui";
 import { cardinal, setText } from "./util";

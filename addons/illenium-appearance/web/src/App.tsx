@@ -1,4 +1,4 @@
-import { Dna, Glasses, LogOut, PenTool, Save, Scissors, Shirt, Smile, Users } from "lucide-react";
+import { Dna, Glasses, LogOut, PenTool, Save, Scissors, Shirt, Smile, Users } from "@/components/ui/icons";
 import { useEffect, useMemo, useRef, useState, type ComponentType, type ReactNode } from "react";
 import {
   AlertDialog,

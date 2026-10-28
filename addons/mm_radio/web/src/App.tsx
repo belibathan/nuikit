@@ -1,4 +1,4 @@
-import { Mic } from "lucide-react";
+import { Mic } from "@/components/ui/icons";
 import { Stagger, useStaggerItem } from "nuikit-core/react";
 import { flipFrom } from "nuikit-core/motion";
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";

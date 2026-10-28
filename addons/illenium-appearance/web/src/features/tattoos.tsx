@@ -1,4 +1,4 @@
-import { Check, Search, Trash2 } from "lucide-react";
+import { Check, Search, Trash2 } from "@/components/ui/icons";
 import { EmptyState } from "@/components/ui/empty-state";
 import { useMemo, useState } from "react";
 import { RangeSlider } from "@/components/controls";

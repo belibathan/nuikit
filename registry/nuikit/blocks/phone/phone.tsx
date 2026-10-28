@@ -1,6 +1,6 @@
 import * as React from "react"
 import { fetchNui, Surface, useSurface } from "nuikit-core/react"
-import { BookUserIcon, ChevronLeftIcon, MessageSquareIcon, PlusIcon, SendIcon, UserIcon, type LucideIcon } from "lucide-react"
+import { BookUserIcon, ChevronLeftIcon, MessageSquareIcon, PlusIcon, SendIcon, UserIcon, type IconComponent } from "@/components/ui/icons"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -131,7 +131,7 @@ interface PhoneAppProps {
 interface PhoneApp {
   id: string
   label: string
-  icon: LucideIcon
+  icon: IconComponent
   Component: React.ComponentType<PhoneAppProps>
 }
 

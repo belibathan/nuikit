@@ -1,4 +1,4 @@
-import { Eye } from "lucide-react";
+import { Eye } from "@/components/ui/icons";
 import { Fragment, useEffect, useRef, useState } from "react";
 import { Stagger } from "nuikit-core/react";
 import { MenuRow } from "@/components/ui/menu-row";

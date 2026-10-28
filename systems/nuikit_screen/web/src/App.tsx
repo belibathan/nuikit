@@ -1,5 +1,5 @@
 import { onNui } from "nuikit-core";
-import { BriefcaseIcon, MailIcon, ShieldIcon } from "lucide-react";
+import { BriefcaseIcon, MailIcon, ShieldIcon } from "@/components/ui/icons";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { MenuRow } from "@/components/ui/menu-row";

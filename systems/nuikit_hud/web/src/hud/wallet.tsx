@@ -2,7 +2,7 @@
 // fades; 'always' keeps it. Money is never coloured, only its difference (success / destructive) is.
 // Amounts are formatted with the server's currency and locale (nuikit:context, protocol §7.2).
 import { useNuiContext, usePlayer } from "nuikit-core/react";
-import { BriefcaseIcon, LandmarkIcon, WalletIcon } from "lucide-react";
+import { BriefcaseIcon, LandmarkIcon, WalletIcon } from "@/components/ui/icons";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { formatMoney } from "@/components/ui/money";
 import type { HudSettings, WalletMode } from "../nui";

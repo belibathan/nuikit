@@ -2,7 +2,7 @@
 // (first row on the eye's line, nk-first-row). The targeting library owns the raycast: it opens
 // this with the options it found, updates them as the crosshair moves, and sets `open` when the
 // player presses its key.
-import { EyeIcon } from "lucide-react";
+import { EyeIcon } from "@/components/ui/icons";
 import type { TargetOption, TargetProps } from "nuikit-core/intents";
 import { defineReactRenderer, type RendererProps } from "nuikit-core/intents-react";
 import { useEffect, useState } from "react";

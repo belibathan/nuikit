@@ -1030,8 +1030,8 @@
     },
     "icon-stroke": {
       "$type": "number",
-      "$value": 2,
-      "$description": "Stroke width"
+      "$value": 1.5,
+      "$description": "Stroke width of every icon (Hugeicons draw at 1.5)"
     },
     "text-base": {
       "$type": "dimension",

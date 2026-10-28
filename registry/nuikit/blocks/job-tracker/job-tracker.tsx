@@ -1,6 +1,6 @@
 import * as React from "react"
 import { fetchNui, Surface, useSurface } from "nuikit-core/react"
-import { CheckIcon, CircleDashedIcon, ClipboardListIcon, MapPinIcon } from "lucide-react"
+import { CheckIcon, CircleDashedIcon, ClipboardListIcon, MapPinIcon } from "@/components/ui/icons"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"

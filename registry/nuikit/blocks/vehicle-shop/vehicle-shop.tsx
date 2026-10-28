@@ -1,6 +1,6 @@
 import * as React from "react"
 import { fetchNui, Surface, useSurface } from "nuikit-core/react"
-import { CarFrontIcon, CarIcon, TimerIcon, UsersIcon } from "lucide-react"
+import { CarFrontIcon, CarIcon, TimerIcon, UsersIcon } from "@/components/ui/icons"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"

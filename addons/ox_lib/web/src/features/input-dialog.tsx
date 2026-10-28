@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
-import { XIcon } from "lucide-react";
+import { XIcon } from "@/components/ui/icons";
 import { useRef, useState, type FormEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { EnterKey } from "@/lib/keys";

@@ -36,14 +36,14 @@ import {
   WavesIcon,
   WineIcon,
   WrenchIcon,
-  type LucideIcon,
-} from "lucide-react";
+  type IconComponent,
+} from "@/components/ui/icons";
 import type { MapBlip } from "../nui";
 
 export type BlipKind = "services" | "money" | "shops" | "style" | "garages" | "vehicles" | "fuel" | "jobs" | "property" | "live" | "other";
 
 /** The legend: in this order, with the icon its rows use. */
-export const KINDS: { kind: BlipKind; label: string; icon: LucideIcon }[] = [
+export const KINDS: { kind: BlipKind; label: string; icon: IconComponent }[] = [
   { kind: "services", label: "Services", icon: HospitalIcon },
   { kind: "money", label: "Banks", icon: LandmarkIcon },
   { kind: "shops", label: "Shops", icon: ShoppingBagIcon },
@@ -57,7 +57,7 @@ export const KINDS: { kind: BlipKind; label: string; icon: LucideIcon }[] = [
   { kind: "other", label: "Other", icon: CircleDotIcon },
 ];
 
-type Sprite = [label: string, kind: BlipKind, icon: LucideIcon];
+type Sprite = [label: string, kind: BlipKind, icon: IconComponent];
 
 const SPRITES: Record<number, Sprite> = {
   // services
@@ -136,7 +136,7 @@ const SPRITES: Record<number, Sprite> = {
 export interface BlipLook {
   label: string;
   kind: BlipKind;
-  icon: LucideIcon;
+  icon: IconComponent;
   /** the kind's legend name */
   kindLabel: string;
 }

@@ -1,6 +1,6 @@
 import * as React from "react"
 import { fetchNui, Surface } from "nuikit-core/react"
-import { RotateCcwIcon, SettingsIcon } from "lucide-react"
+import { RotateCcwIcon, SettingsIcon } from "@/components/ui/icons"
 
 import { Button } from "@/components/ui/button"
 import { EmptyState } from "@/components/ui/empty-state"

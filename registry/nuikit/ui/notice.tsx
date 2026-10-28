@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
-import { CircleCheckIcon, CircleXIcon, InfoIcon, PackageIcon, TriangleAlertIcon, XIcon } from "lucide-react"
+import { CircleCheckIcon, CircleXIcon, InfoIcon, PackageIcon, TriangleAlertIcon, XIcon } from "@/components/ui/icons"
 
 import { flipFrom, motionLevel, token, tokenMs } from "nuikit-core/motion"
 import { Stagger, useNuiEvent, useStaggerGroup, useStaggerItem } from "nuikit-core/react"

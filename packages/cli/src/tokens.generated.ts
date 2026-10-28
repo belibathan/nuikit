@@ -880,7 +880,7 @@ export const GENERATED: { name: string; group: string; type: string; description
     "name": "nk-icon-stroke",
     "group": "kit",
     "type": "number",
-    "description": "Stroke width"
+    "description": "Stroke width of every icon (Hugeicons draw at 1.5)"
   },
   {
     "name": "nk-text-base",

@@ -1,4 +1,4 @@
-import { UsersIcon } from "lucide-react";
+import { UsersIcon } from "@/components/ui/icons";
 import { useEffect, useState } from "react";
 import { EdgeSheet, EdgeSheetBody } from "@/components/ui/edge-sheet";
 import { Chip } from "@/components/ui/chip";

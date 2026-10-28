@@ -1,5 +1,5 @@
 import { fetchNui, Surface, usePlayer, useSurfaceOpen, type NuiPlayer } from "nuikit-core/react";
-import { CircleHelpIcon, InfoIcon, KeyboardIcon, LogOutIcon, MapIcon, PlayIcon, SettingsIcon, type LucideIcon } from "lucide-react";
+import { CircleHelpIcon, InfoIcon, KeyboardIcon, LogOutIcon, MapIcon, PlayIcon, SettingsIcon, type IconComponent } from "@/components/ui/icons";
 import { useCallback, useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import type { PauseButton, PauseData, PauseView } from "./nui";
 import {
@@ -39,7 +39,7 @@ export default function App() {
   );
 }
 
-const NAV: Record<Exclude<PauseButton, "disconnect">, { label: string; icon: LucideIcon; kbd?: string }> = {
+const NAV: Record<Exclude<PauseButton, "disconnect">, { label: string; icon: IconComponent; kbd?: string }> = {
   resume: { label: "Resume", icon: PlayIcon, kbd: "Esc" },
   map: { label: "Map", icon: MapIcon, kbd: "P" },
   keybinds: { label: "Key bindings", icon: KeyboardIcon },

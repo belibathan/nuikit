@@ -13,7 +13,7 @@ import {
   UtensilsIcon,
   WalletIcon,
   WrenchIcon,
-} from "lucide-react";
+} from "@/components/ui/icons";
 import type { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { Chip } from "@/components/ui/chip";
