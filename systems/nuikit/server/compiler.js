@@ -282,7 +282,7 @@ var NuikitTheme = (() => {
       "scope": "",
       "type": "color",
       "default": "oklch(0.922 0 0)",
-      "description": "The one main action per surface, the keycap face, selection",
+      "description": "The one main action per surface, the primary face, selection",
       "rule": "stock shadcn neutral",
       "core": true
     },
@@ -1637,7 +1637,7 @@ var NuikitTheme = (() => {
       "scope": "radius",
       "type": "length",
       "default": "calc(var(--radius) - 0.25rem)",
-      "description": "Buttons, fields, rows, the keycap"
+      "description": "Buttons, fields, rows, the primary face"
     },
     {
       "name": "nk-radius-surface",
@@ -4038,7 +4038,7 @@ var NuikitTheme = (() => {
       "scope": "control",
       "type": "color",
       "default": "var(--primary)",
-      "description": "The keycap face under style.fill solid (the primary button, the lit row, the active tab)",
+      "description": "The primary face under style.fill solid (the primary button, the lit row, the active tab)",
       "part": "primary"
     },
     {
@@ -4048,7 +4048,7 @@ var NuikitTheme = (() => {
       "scope": "control",
       "type": "color",
       "default": "var(--primary-foreground)",
-      "description": "Text on the keycap face",
+      "description": "Text on the primary face",
       "part": "primary"
     },
     {
@@ -4058,7 +4058,7 @@ var NuikitTheme = (() => {
       "scope": "control",
       "type": "color",
       "default": "transparent",
-      "description": "The keycap face's rim (transparent = none)",
+      "description": "The primary face's rim (transparent = none)",
       "part": "primary"
     },
     {
@@ -4068,7 +4068,7 @@ var NuikitTheme = (() => {
       "scope": "control",
       "type": "length",
       "default": "var(--nk-radius-control)",
-      "description": "The keycap's radius",
+      "description": "The primary face's radius",
       "part": "primary"
     },
     {
@@ -4112,7 +4112,7 @@ var NuikitTheme = (() => {
       "scope": "control",
       "type": "number",
       "default": "0.67",
-      "description": "How far a pressed keycap sinks, as a fraction of its wall",
+      "description": "How far a pressed primary sinks, as a fraction of its wall",
       "part": "primary",
       "range": [
         0,
@@ -4452,7 +4452,7 @@ var NuikitTheme = (() => {
       "scope": "list",
       "type": "length",
       "default": "calc(var(--nk-control-primary-inset) + var(--nk-control-primary-overhang))",
-      "description": "Inline padding: room for the tile's inset and skew"
+      "description": "Inline padding: room for the selection's inset and skew"
     },
     {
       "name": "nk-menu-row-gap",
@@ -5256,7 +5256,7 @@ var NuikitTheme = (() => {
       "scope": "stepper",
       "type": "time",
       "default": "350ms",
-      "description": "The first repeat of a held keycap"
+      "description": "The first repeat of a held key"
     },
     {
       "name": "nk-stepper-rate",
@@ -5274,7 +5274,7 @@ var NuikitTheme = (() => {
       "scope": "text",
       "type": "number",
       "default": "1",
-      "description": "The inline keycap's size, \xD7 height.key",
+      "description": "The inline key's size, \xD7 height.key",
       "part": "key",
       "range": [
         0.5,
@@ -6538,74 +6538,6 @@ var NuikitTheme = (() => {
       "default": "calc(var(--nk-space-unit) * 2)",
       "description": "Between its rows",
       "part": "stack"
-    },
-    {
-      "name": "nk-slab-band-padding",
-      "path": "slab.band.padding",
-      "tier": "component",
-      "scope": "slab",
-      "type": "string",
-      "default": "calc(var(--nk-space-unit) * 3) calc(var(--nk-space-unit) * 6)",
-      "description": "The band's padding",
-      "part": "band"
-    },
-    {
-      "name": "nk-slab-band-gap",
-      "path": "slab.band.gap",
-      "tier": "component",
-      "scope": "slab",
-      "type": "length",
-      "default": "var(--nk-space-unit)",
-      "description": "Between its lines",
-      "part": "band"
-    },
-    {
-      "name": "nk-slab-band-bg",
-      "path": "slab.band.bg",
-      "tier": "component",
-      "scope": "slab",
-      "type": "color",
-      "default": "rgba(var(--scrim-rgb), 0.62)",
-      "description": "The game, darkened",
-      "part": "band"
-    },
-    {
-      "name": "nk-slab-band-tint",
-      "path": "slab.band.tint",
-      "tier": "component",
-      "scope": "slab",
-      "type": "number",
-      "default": "0.3",
-      "description": "The tone's alpha over the band",
-      "part": "band",
-      "range": [
-        0,
-        1
-      ]
-    },
-    {
-      "name": "nk-slab-band-edge",
-      "path": "slab.band.edge",
-      "tier": "component",
-      "scope": "slab",
-      "type": "number",
-      "default": "0.6",
-      "description": "The tone's alpha on its edges",
-      "part": "band",
-      "range": [
-        0,
-        1
-      ]
-    },
-    {
-      "name": "nk-slab-band-fg",
-      "path": "slab.band.fg",
-      "tier": "component",
-      "scope": "slab",
-      "type": "color",
-      "default": "var(--hud-foreground)",
-      "description": "Text",
-      "part": "band"
     },
     {
       "name": "nk-item-slot-width",

@@ -98,7 +98,7 @@
         "alpha": 1,
         "hex": "#e5e5e5"
       },
-      "$description": "The one main action per surface, the keycap face, selection"
+      "$description": "The one main action per surface, the primary face, selection"
     },
     "primary-foreground": {
       "$value": {

@@ -1,12 +1,12 @@
 /**
- * Glyph: the keycap. One object everywhere a thing is pressable or selected: Kbd, a notice icon, a telltale, the
+ * Glyph: the control face. One object everywhere a thing is pressable or selected: Kbd, a notice icon, a telltale, the
  * primary button, the list's selection. A face (skewed, rimmed, top-lit) over a wall (the face's colour in shade,
  * dropped straight down), optionally on an offset plate.
  */
 import { alpha, angle, color, css, font, length, number, pal, paint, ref, shadow, string, time, type ComponentDef } from "../lang";
 
 export const control: ComponentDef = {
-  description: "The keycap: Kbd, notice icons, telltales, the primary button and the selection",
+  description: "The Glyph: Kbd, notice icons, telltales, the primary button and the selection",
   // render order: the plate behind, the wall, the face, then what sits on it
   anatomy: ["plate", "wall", "face", "fill", "legend", "tag", "group", "primary"],
   parts: {
@@ -49,14 +49,14 @@ export const control: ComponentDef = {
       delay: time("80ms", "The tag opens this long after the glyph lands", { floor: true, was: ["nk-control-tag-delay"] }),
     },
     primary: {
-      color: color(pal("primary"), "The keycap face under style.fill solid (the primary button, the lit row, the active tab)", { was: ["nk-control-key"] }),
-      ink: color(pal("primary-foreground"), "Text on the keycap face", { was: ["nk-control-primary-ink"] }),
-      rim: color("transparent", "The keycap face's rim (transparent = none)", { floor: true, was: ["nk-control-primary-rim"] }),
-      radius: length(ref("radius.control"), "The keycap's radius", { was: ["nk-control-radius"] }),
+      color: color(pal("primary"), "The primary face under style.fill solid (the primary button, the lit row, the active tab)", { was: ["nk-control-key"] }),
+      ink: color(pal("primary-foreground"), "Text on the primary face", { was: ["nk-control-primary-ink"] }),
+      rim: color("transparent", "The primary face's rim (transparent = none)", { floor: true, was: ["nk-control-primary-rim"] }),
+      radius: length(ref("radius.control"), "The primary face's radius", { was: ["nk-control-radius"] }),
       tint: number(0.16, "The face's opacity under style.fill soft", { range: [0, 1], floor: true, was: ["nk-control-tint"] }),
       inset: length("0.375rem", "How far the selection sits in from its item's sides (room for the skew)", { floor: true, was: ["nk-control-inset"] }),
       lift: length("1px", "How far the face rises on hover and focus", { floor: true, was: ["nk-control-lift"] }),
-      press: number(0.67, "How far a pressed keycap sinks, as a fraction of its wall", { range: [0, 1.5], floor: true, was: ["nk-control-press-ratio"] }),
+      press: number(0.67, "How far a pressed primary sinks, as a fraction of its wall", { range: [0, 1.5], floor: true, was: ["nk-control-press-ratio"] }),
       overhang: length("0.25rem", "How far a row's selection reaches past its text", { floor: true, was: ["nk-control-overhang"] }),
     },
   },

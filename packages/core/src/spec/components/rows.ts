@@ -30,7 +30,7 @@ export const list: ComponentDef = {
   anatomy: ["item"],
   levers: {
     gap: length(css`calc(${ref("control.wall.height")} + ${ref("space.1")})`, "Between items: the wall plus breathing room", { was: ["nk-list-gap"] }),
-    "pad-x": length(css`calc(${ref("control.primary.inset")} + ${ref("control.primary.overhang")})`, "Inline padding: room for the tile's inset and skew", { was: ["nk-list-pad-x"] }),
+    "pad-x": length(css`calc(${ref("control.primary.inset")} + ${ref("control.primary.overhang")})`, "Inline padding: room for the selection's inset and skew", { was: ["nk-list-pad-x"] }),
   },
 };
 
@@ -84,20 +84,20 @@ export const field: ComponentDef = {
 };
 
 export const stepper: ComponentDef = {
-  description: "A value between two keycaps; held, it repeats",
+  description: "A value between two keys; held, it repeats",
   inherits: ["control"],
   anatomy: ["glyph", "value"],
   levers: {
-    delay: time("350ms", "The first repeat of a held keycap", { floor: true, was: ["nk-stepper-delay"] }),
+    delay: time("350ms", "The first repeat of a held key", { floor: true, was: ["nk-stepper-delay"] }),
     rate: time("70ms", "Then one repeat every", { floor: true, was: ["nk-stepper-rate"] }),
   },
 };
 
 export const text: ComponentDef = {
-  description: "Rich text with inline keycaps",
+  description: "Rich text with inline keys",
   inherits: ["control"],
   anatomy: ["key"],
-  parts: { key: { scale: number(1, "The inline keycap's size, × height.key", { range: [0.5, 2], floor: true, was: ["nk-inline-key-scale"] }) } },
+  parts: { key: { scale: number(1, "The inline key's size, × height.key", { range: [0.5, 2], floor: true, was: ["nk-inline-key-scale"] }) } },
 };
 
 void alpha;

@@ -207,7 +207,7 @@
         "primary": {
           "type": "string",
           "pattern": "^rgba?\\(",
-          "description": "The one main action per surface, the keycap face, selection",
+          "description": "The one main action per surface, the primary face, selection",
           "$comment": "identity · @primary"
         },
         "primary-foreground": {
@@ -971,7 +971,7 @@
         },
         "nk-radius-control": {
           "type": "string",
-          "description": "Buttons, fields, rows, the keycap",
+          "description": "Buttons, fields, rows, the primary face",
           "$comment": "identity · radius.control"
         },
         "nk-radius-surface": {
@@ -2219,24 +2219,24 @@
         "nk-control-primary-color": {
           "type": "string",
           "pattern": "^rgba?\\(",
-          "description": "The keycap face under style.fill solid (the primary button, the lit row, the active tab)",
+          "description": "The primary face under style.fill solid (the primary button, the lit row, the active tab)",
           "$comment": "component · control.primary.color"
         },
         "nk-control-primary-ink": {
           "type": "string",
           "pattern": "^rgba?\\(",
-          "description": "Text on the keycap face",
+          "description": "Text on the primary face",
           "$comment": "component · control.primary.ink"
         },
         "nk-control-primary-rim": {
           "type": "string",
           "pattern": "^rgba?\\(",
-          "description": "The keycap face's rim (transparent = none)",
+          "description": "The primary face's rim (transparent = none)",
           "$comment": "component · control.primary.rim"
         },
         "nk-control-primary-radius": {
           "type": "string",
-          "description": "The keycap's radius",
+          "description": "The primary face's radius",
           "$comment": "component · control.primary.radius"
         },
         "nk-control-primary-tint": {
@@ -2258,7 +2258,7 @@
         "nk-control-primary-press": {
           "type": "string",
           "pattern": "^-?\\d+(\\.\\d+)?$",
-          "description": "How far a pressed keycap sinks, as a fraction of its wall",
+          "description": "How far a pressed primary sinks, as a fraction of its wall",
           "$comment": "component · control.primary.press"
         },
         "nk-control-primary-overhang": {
@@ -2443,7 +2443,7 @@
         },
         "nk-list-pad-x": {
           "type": "string",
-          "description": "Inline padding: room for the tile's inset and skew",
+          "description": "Inline padding: room for the selection's inset and skew",
           "$comment": "component · list.pad-x"
         },
         "nk-menu-row-gap": {
@@ -2855,7 +2855,7 @@
         },
         "nk-stepper-delay": {
           "type": "string",
-          "description": "The first repeat of a held keycap",
+          "description": "The first repeat of a held key",
           "$comment": "component · stepper.delay"
         },
         "nk-stepper-rate": {
@@ -2866,7 +2866,7 @@
         "nk-text-key-scale": {
           "type": "string",
           "pattern": "^-?\\d+(\\.\\d+)?$",
-          "description": "The inline keycap's size, × height.key",
+          "description": "The inline key's size, × height.key",
           "$comment": "component · text.key.scale"
         },
         "nk-notice-width": {
@@ -3531,40 +3531,6 @@
           "type": "string",
           "description": "Between its rows",
           "$comment": "component · slab.stack.gap"
-        },
-        "nk-slab-band-padding": {
-          "type": "string",
-          "description": "The band's padding",
-          "$comment": "component · slab.band.padding"
-        },
-        "nk-slab-band-gap": {
-          "type": "string",
-          "description": "Between its lines",
-          "$comment": "component · slab.band.gap"
-        },
-        "nk-slab-band-bg": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "The game, darkened",
-          "$comment": "component · slab.band.bg"
-        },
-        "nk-slab-band-tint": {
-          "type": "string",
-          "pattern": "^-?\\d+(\\.\\d+)?$",
-          "description": "The tone's alpha over the band",
-          "$comment": "component · slab.band.tint"
-        },
-        "nk-slab-band-edge": {
-          "type": "string",
-          "pattern": "^-?\\d+(\\.\\d+)?$",
-          "description": "The tone's alpha on its edges",
-          "$comment": "component · slab.band.edge"
-        },
-        "nk-slab-band-fg": {
-          "type": "string",
-          "pattern": "^rgba?\\(",
-          "description": "Text",
-          "$comment": "component · slab.band.fg"
         },
         "nk-item-slot-width": {
           "type": "string",

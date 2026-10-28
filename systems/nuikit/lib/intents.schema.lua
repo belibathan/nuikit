@@ -40,7 +40,7 @@
 ---@field duration? integer  ms on screen. Missing: 5000. 0: stays until the script cancels it (give it an `id`).
 ---@field showDuration? boolean  A line under the toast drains over `duration`.
 ---@field position? NkAnchor
----@field item? { name: string, count: integer, icon?: NkIcon, image?: string }  An item added or removed: draws the item slab (tile + name + change) instead of a panel, and merges with the same item's recent change.
+---@field item? { name: string, count: integer, icon?: NkIcon, image?: string }  An item added or removed: draws the item slab (icon + name + change) instead of a panel, and merges with the same item's recent change.
 ---@field sound? boolean|string|table<string, any>  Play a sound: true for the kit's, a name, or a library's table. The caller's Lua plays it; it never reaches the page (ox strips it the same way).
 ---@field style? table<string, any>  Inline CSS (camelCase) merged over the toast. Escape hatch for adapters; themed UIs don't need it.
 ---@field meta? table<string, any>  Library-specific extras an adapter carries through and a renderer may honour (okok `kind`, mythic `style`, an esx picture…). Never validated.
@@ -441,7 +441,7 @@ return {
               type = 'string',
             },
           },
-          doc = 'An item added or removed: draws the item slab (tile + name + change) instead of a panel, and merges with the same item\'s recent change.',
+          doc = 'An item added or removed: draws the item slab (icon + name + change) instead of a panel, and merges with the same item\'s recent change.',
         },
         sound = {
           type = 'oneOf',

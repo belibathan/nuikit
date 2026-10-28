@@ -46,7 +46,6 @@ type KitClassGroup =
   | "nk-slab-stack"
   | "nk-slab-stack-row"
   | "nk-slab-line"
-  | "nk-slab-band"
   | "nk-edge"
   | "nk-anchor-tl"
   | "nk-anchor-tr"
@@ -108,7 +107,6 @@ const twMerge = extendTailwindMerge<KitClassGroup>({
       "nk-slab-stack": ["nk-slab-stack"],
       "nk-slab-stack-row": ["nk-slab-stack-row"],
       "nk-slab-line": ["nk-slab-line"],
-      "nk-slab-band": ["nk-slab-band"],
       "nk-edge": ["nk-edge"],
       "nk-anchor-tl": ["nk-anchor-tl"],
       "nk-anchor-tr": ["nk-anchor-tr"],
@@ -162,7 +160,6 @@ const twMerge = extendTailwindMerge<KitClassGroup>({
       "nk-slab-stack": ["text-color"],
       "nk-slab-stack-row": ["font-size", "font-weight", "leading"],
       "nk-slab-line": ["bg-color"],
-      "nk-slab-band": ["bg-color", "text-color"],
       "nk-anchor-tl": ["nk-anchor-b", "nk-anchor-bl", "nk-anchor-br", "nk-anchor-l", "nk-anchor-r", "nk-anchor-t", "nk-anchor-tr"],
       "nk-anchor-tr": ["nk-anchor-b", "nk-anchor-bl", "nk-anchor-br", "nk-anchor-l", "nk-anchor-r", "nk-anchor-t", "nk-anchor-tl"],
       "nk-anchor-bl": ["nk-anchor-b", "nk-anchor-br", "nk-anchor-l", "nk-anchor-r", "nk-anchor-t", "nk-anchor-tl", "nk-anchor-tr"],

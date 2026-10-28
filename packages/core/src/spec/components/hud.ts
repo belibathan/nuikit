@@ -119,9 +119,9 @@ export const level: ComponentDef = {
 };
 
 export const slab: ComponentDef = {
-  description: "Transient feedback on the game: item, prompt, progress, band (nk-slab*)",
+  description: "Transient feedback on the game: item, prompt, progress (nk-slab*)",
   inherits: ["chip", "control", "meter"],
-  anatomy: ["icon", "delta", "key", "stack", "line", "band"],
+  anatomy: ["icon", "delta", "key", "stack", "line"],
   levers: {
     height: length(css`calc(2.5rem * ${ref("density")})`, "Height", { was: ["nk-slab-height"] }),
     padding: string(css`0 calc(${ref("space.unit")} * 3)`, "Padding", { was: ["nk-slab-padding"] }),
@@ -160,14 +160,6 @@ export const slab: ComponentDef = {
     stack: {
       width: length("20rem", "The progress stack's width", { floor: true, was: ["nk-slab-stack-width"] }),
       gap: length(css`calc(${ref("space.unit")} * 2)`, "Between its rows", { was: ["nk-slab-stack-gap"] }),
-    },
-    band: {
-      padding: string(css`calc(${ref("space.unit")} * 3) calc(${ref("space.unit")} * 6)`, "The band's padding", { was: ["nk-slab-band-padding"] }),
-      gap: length(ref("space.unit"), "Between its lines", { was: ["nk-slab-band-gap"] }),
-      bg: color(alpha("scrim", 0.62), "The game, darkened", { was: ["nk-slab-band-bg"] }),
-      tint: number(0.3, "The tone's alpha over the band", { range: [0, 1], floor: true, was: ["nk-slab-band-tint"] }),
-      edge: number(0.6, "The tone's alpha on its edges", { range: [0, 1], floor: true, was: ["nk-slab-band-edge"] }),
-      fg: color(pal("hud-foreground"), "Text", { was: ["nk-slab-band-fg"] }),
     },
   },
   state: {

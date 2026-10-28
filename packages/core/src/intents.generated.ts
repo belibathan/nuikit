@@ -58,7 +58,7 @@ export interface NotifyProps {
   /** A line under the toast drains over `duration`. */
   showDuration?: boolean;
   position?: IntentAnchor;
-  /** An item added or removed: draws the item slab (tile + name + change) instead of a panel, and merges with the same item's recent change. */
+  /** An item added or removed: draws the item slab (icon + name + change) instead of a panel, and merges with the same item's recent change. */
   item?: {
   name: string;
   /** Positive for added, negative for removed. */
@@ -807,7 +807,7 @@ export const INTENT_SCHEMAS = {
             "type": "string"
           }
         },
-        "doc": "An item added or removed: draws the item slab (tile + name + change) instead of a panel, and merges with the same item's recent change."
+        "doc": "An item added or removed: draws the item slab (icon + name + change) instead of a panel, and merges with the same item's recent change."
       },
       "sound": {
         "type": "oneOf",

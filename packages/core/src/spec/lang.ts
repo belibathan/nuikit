@@ -4,7 +4,7 @@
  * is generated from it. Names are never written by hand: a lever's CSS name is its path.
  *
  *   identity   what a server chooses (palette, faces, radius scale, density, skew, motion). Literals live here only.
- *   semantic   roles every component shares (surfaces, ink, status, the keycap, fills). References identity.
+ *   semantic   roles every component shares (surfaces, ink, status, the control face, fills). References identity.
  *   component  one component's own levers (its root). References semantic / identity, or a component it inherits.
  *   part       one part of a component's anatomy (a data-slot). Same rules as its component.
  *
